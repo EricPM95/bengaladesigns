@@ -22,7 +22,7 @@ const DosPaises = lazy(() => import('./piezas/DosPaises'))
 const Continentes = lazy(() => import('./piezas/Continentes'))
 const Microestados = lazy(() => import('./piezas/Microestados'))
 const ExclusivoHolo = lazy(() => import('./piezas/ExclusivoHolo'))
-const MedallaDibujo = lazy(() => import('./Medalla').then((m) => ({ default: m.MedallaDibujo })))
+const MedallaSiete = lazy(() => import('./MedallaSiete').then((m) => ({ default: m.MedallaSiete })))
 
 type Grupo = 'mundo' | 'tiempo' | 'como' | 'col'
 const GRUPO: Record<Grupo, { hue: number; color: string; tinta: string }> = {
@@ -104,9 +104,10 @@ export function ChapaDibujo({
     alto = (tam * 140) / 120
     dibujo = <ChapaViajero kind="patrimonio" lv={[0, 2, 3][ix]} max={4} color={GRUPO.mundo.color} num={String([1, 10, 15][ix])} anim={animada} size={tam} locked={bloqueado} />
   } else if (logro === 'maravillas') {
-    const ORD = ['coliseo', 'chichen_itza', 'cristo_redentor', 'gran_muralla', 'machu_picchu', 'petra', 'taj_mahal']
-    alto = (tam * 601) / 516
-    dibujo = <MedallaDibujo encendidas={ORD.slice(0, n ?? 1)} tam={tam} animada={animada} />
+    const ORD = ['coliseo', 'gran_muralla', 'petra', 'cristo_redentor', 'machu_picchu', 'chichen_itza', 'taj_mahal']
+    alto = (tam * 400) / 340
+    // (8B5) La medalla nueva, quieta (con `animada` no se mueve nada: no tiene animación propia).
+    dibujo = <MedallaSiete encendidas={ORD.slice(0, n ?? 1)} tam={tam} />
   } else if (UNICOS[logro]) {
     alto = (tam * 154) / 140
     dibujo = <LogroUnico kind={UNICOS[logro]} size={tam} anim={animada} />

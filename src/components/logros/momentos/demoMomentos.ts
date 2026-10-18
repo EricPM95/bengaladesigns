@@ -90,17 +90,17 @@ const MOMENTOS: Record<string, () => Momento[]> = {
     m({ tipo: 'suma', cat: 'pedazo', coleccion: 'roma_antigua', destino: 'roma', nombre: 'La Roma antigua', n: 1, total: 6, sitios: ['coliseo'], linea: '1 de 6' }),
   ],
   coleccion: () => [m({ tipo: 'coleccion', cat: 'coleccion', clave: 'roma|coleccion|cuatro_joyas', id: 'cuatro_joyas', destino: 'roma', nombre: 'Las 4 joyas de Roma', linea: 'Cuatro joyas, cuatro recuerdos para siempre.', en })],
-  coliseo: () => [m({ tipo: 'emblema', cat: 'emblema', clave: 'roma|emblema|coliseo', id: 'coliseo', destino: 'roma', nombre: 'Una maravilla del mundo', linea: 'El mayor anfiteatro de la Antigüedad.', momento: false, maravilla: 'coliseo', frase: '¡Eh! Aquí hay algo…', en }), m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', en })],
+  coliseo: () => [m({ tipo: 'emblema', cat: 'emblema', clave: 'roma|emblema|coliseo', id: 'coliseo', destino: 'roma', nombre: 'Una maravilla del mundo', linea: 'El mayor anfiteatro de la Antigüedad.', momento: false, maravilla: 'coliseo', frase: '¡Eh! Aquí hay algo…', en }), m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, maravillas: ['coliseo'], nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', en })],
   emblema: () => MOMENTOS['emblema:panteon'](),
   pais: () => [m({ tipo: 'pais', cat: 'pais', clave: '*|pais|Italia', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia', en })],
   destino: () => [m({ tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: '*|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', en })],
-  medalla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', en })],
+  medalla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, maravillas: ['coliseo'], nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', en })],
   final7: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|taj_mahal', id: 'taj_mahal', n: 7, nombre: 'El Taj Mahal', linea: 'La séptima maravilla del mundo.', en })],
-  maravilla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|gran_muralla', id: 'gran_muralla', n: 2, nombre: 'La Gran Muralla', linea: 'Más de 20.000 km de muralla, levantada durante siglos.', en })],
-  patrimonio: () => [m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', nombre: 'Centro histórico de Roma', en })],
+  maravilla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|petra', id: 'petra', n: 2, maravillas: ['coliseo', 'petra'], nombre: 'Petra', linea: 'La ciudad rosada tallada en la roca.', en })],
+  patrimonio: () => [m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', n: 1, nombre: 'Centro histórico de Roma', en })],
   viajero: () => [m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|3', logro: 'paises', escalon: '3', destino: '*', nombre: 'Trotamundos', linea: 'Países distintos que has visitado con la app.', en })],
   ademas: () => [
-    m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', nombre: 'Centro histórico de Roma', en }),
+    m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', n: 1, nombre: 'Centro histórico de Roma', en }),
     m({ tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: '*|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', en }),
     m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|1', logro: 'paises', escalon: '1', destino: '*', nombre: 'Primer sello', linea: 'Países distintos que has visitado con la app.', en }),
   ],
@@ -143,6 +143,14 @@ const api = {
     // El orden del servidor (ajustes.json › orden_momentos): pedazos, emblema, sello, país, destino y, juntas en «Y además…», la maravilla y el Patrimonio (8B4: sin pantalla de la medalla).
     const [emblema, maravilla] = MOMENTOS.coliseo()
     const todo = [...sumas, emblema, ...MOMENTOS.sello(), ...MOMENTOS.pais(), ...MOMENTOS.destino(), maravilla, ...MOMENTOS.patrimonio()]
+    useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
+    return todo.length
+  },
+  /** (8B5) «Y además…» con una SEGUNDA maravilla (Petra, 2 de 7): la medalla con el Coliseo y Petra en oro, «Tu segunda maravilla» y el Patrimonio número 2. */
+  serieSegundaMaravilla: () => {
+    ponerDatos(false, 'wow', 'viaje')
+    datosDePrueba.resumen = null
+    const todo = [...MOMENTOS.maravilla(), m({ tipo: 'patrimonio', cat: 'patrimonio', clave: '*|patrimonio|petra', id: 'petra', n: 2, nombre: 'Petra', en })]
     useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
     return todo.length
   },

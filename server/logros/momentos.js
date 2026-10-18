@@ -72,10 +72,12 @@ export function armarMomentos({ datos, nuevos, despues, antes, ultimaFrase = nul
       salida.push({ tipo: 'continente', cat: 'continente', clave: it.clave, continente: it.escalon, nombre: `Nuevo continente: ${it.escalon}`, primera_vez: true, en: it.en })
     } else if (cat === 'maravilla') {
       const m = datos.viajero.maravillas[it.escalon]
-      salida.push({ tipo: 'maravilla', cat: 'maravilla', clave: it.clave, id: it.escalon, n: cuenta('maravilla', it), nombre: m?.nombre ?? it.escalon, linea: m?.linea ?? null, primera_vez: true, en: it.en })
+      // (8B5) `maravillas`: TODAS las que lleva el viajero hasta esta (la medalla pinta en oro las que tiene de verdad, no las "n primeras").
+      const tiene = [...despues.values()].filter((x) => x.logro === 'maravilla' && new Date(x.en) <= new Date(it.en)).sort((a, b) => new Date(a.en) - new Date(b.en)).map((x) => x.escalon)
+      salida.push({ tipo: 'maravilla', cat: 'maravilla', clave: it.clave, id: it.escalon, n: cuenta('maravilla', it), maravillas: tiene, nombre: m?.nombre ?? it.escalon, linea: m?.linea ?? null, primera_vez: true, en: it.en })
     } else if (cat === 'patrimonio') {
       const p = Object.values(datos.destinos).map((x) => x.patrimonios?.[it.escalon]).find(Boolean)
-      salida.push({ tipo: 'patrimonio', cat: 'patrimonio', clave: it.clave, id: it.escalon, nombre: p?.nombre ?? it.escalon, primera_vez: true, en: it.en })
+      salida.push({ tipo: 'patrimonio', cat: 'patrimonio', clave: it.clave, id: it.escalon, n: cuenta('patrimonio', it), nombre: p?.nombre ?? it.escalon, primera_vez: true, en: it.en })
     } else if (cat === 'viajero') {
       const id = it.logro.slice('viajero:'.length)
       const def = datos.viajero.logros.find((x) => x.id === id)

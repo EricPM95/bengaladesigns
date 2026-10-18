@@ -279,7 +279,7 @@ export function resumen({ datos, destino, items, viaje, desde = null, hasta = nu
     por_categoria: Object.fromEntries(Object.entries(porCategoria).map(([k, v]) => [k, v.length])),
     pendiente: pendientes({ datos, destino, viaje, items, hoy }),
     // Cuál de los dos textos del resumen del viaje toca.
-    texto_viaje: completas >= t.minimo_colecciones && secretos >= t.minimo_secretos ? t.wow : rellenar(t.con_ganas, { n: queda }),
+    texto_viaje: completas >= t.minimo_colecciones && secretos >= t.minimo_secretos ? t.wow : rellenar(t.con_ganas.replace('{n} secretos', '{n} {secretos}'), { n: queda, secretos: queda === 1 ? 'secreto' : 'secretos' }),
     texto_viaje_tipo: completas >= t.minimo_colecciones && secretos >= t.minimo_secretos ? 'wow' : 'con_ganas',
   }
 }

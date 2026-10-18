@@ -50,7 +50,8 @@ const W = await import('../../server/engine/writtenDays.js')
 {
   const lista = tabla.fotos_rechazadas ?? []
   // Las 10 de siempre + las 2 de Museos Vaticanos (Tanda 8B3: fuera la foto de dentro de la Capilla Sixtina).
-  ok(lista.length === DIEZ.length + 2 && lista.filter((r) => /Museos Vaticanos/.test(r.lugar)).length === 2, `1a fotos_rechazadas tiene ${lista.length} sitios y deberían ser ${DIEZ.length + 2} (las 10 y las 2 de Museos Vaticanos)`)
+  // (8B5) Los Museos Vaticanos ya tienen foto propia (la eligió Eric): salen de la lista.
+  ok(lista.length === DIEZ.length && lista.filter((r) => /Museos Vaticanos/.test(r.lugar)).length === 0, `1a fotos_rechazadas tiene ${lista.length} sitios y deberían ser ${DIEZ.length} (las 10; los Museos Vaticanos ya tienen foto propia desde la 8B5)`)
   ok(DIEZ.every((n) => lista.some((r) => r.lugar === n)), `1b faltan en la lista: ${DIEZ.filter((n) => !lista.some((r) => r.lugar === n)).join(' | ')}`)
   ok(lista.every((r) => typeof r.motivo === 'string' && r.motivo.trim().length > 20), '1c algún sitio no lleva su motivo escrito')
   const motivo = (n) => lista.find((r) => r.lugar === n)?.motivo ?? ''

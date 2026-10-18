@@ -1,13 +1,14 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { Chapa, Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
+import { lineaDeSecretos } from './textosResumen'
 import { pedirEstado, pedirResumen, pedirViajero, type EstadoLogros, type LogrosViajero, type ResumenLogros } from './api'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
 
 /**
  * EL RESUMEN DEL VIAJE (Tanda 8B, R1 y R2 de «Logros · Momentos»). Arriba el texto que toca (`roma.json › textos.resumen_viaje`: «¡Wow!» si tiene al menos 3
- * colecciones y 2 secretos, y si no «con ganas de verte» con los secretos que quedan), el sello, las colecciones, «N de 12 secretos encontrados», los logros
+ * colecciones y 2 secretos, y si no «con ganas de verte» con los secretos que quedan), el sello, las colecciones, «Roma aún esconde N secretos.», los logros
  * de viajero nuevos y lo pendiente con su cuenta atrás de 30 días. Al final, [Compartir mi viaje] y [Ver mi viaje].
  * No lleva «Estampar mi sello» (el pasaporte es de otra tanda).
  */
@@ -91,7 +92,7 @@ export default function ResumenViaje(): ReactNode {
           )}
           {secretos && (secretos.total > 0 || secretos.encontrados > 0) && (
             <>
-              <Titulo>{secretos.encontrados > 0 ? secretos.texto || `${secretos.encontrados} de ${secretos.total} secretos encontrados` : estado.ciudad ? `${estado.ciudad} esconde ${secretos.total} secretos` : `${secretos.total} secretos por descubrir`}</Titulo>
+              <Titulo>{lineaDeSecretos(estado.ciudad, secretos.total, secretos.encontrados) ?? ''}</Titulo>
               <div style={{ padding: '10px 20px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {secretos.encontrados_lista.map((e) => (
                   <span key={e.id} style={{ width: 63, height: 63, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Emblema id={e.id} tam={63} /></span>

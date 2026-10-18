@@ -4,28 +4,14 @@ import { useSyncStore } from '../../../store/useSyncStore'
 import { Sello, type GradoDeSello } from '../dibujos'
 import { pedirEstado, pedirResumen, type EstadoLogros, type ResumenLogros } from './api'
 import './momentos.css'
+import { fila, lineaDeSecretos, ORDEN_FILAS, textoDeSello } from './textosResumen'
 import { useMomentosUI } from './useMomentosUI'
 
 /**
  * EL RESUMEN DEL DÍA (Tanda 8B). El mismo al acabar la ruta y al final de las sorpresas. Cuenta lo ganado hoy (del servidor, `GET /api/logros/resumen`; si no
- * contesta, de lo que se acaba de enseñar), el sello con su grado, «N de 12 secretos encontrados» (sin decir cuáles) y lo que queda por reclamar.
- * Textos propios (el diseño no dibuja esta pantalla): «Tu día en {ciudad}», «Esto es lo que has ganado hoy», «Aún no has ganado nada hoy».
+ * contesta, de lo que se acaba de enseñar), el sello con su grado, «Roma aún esconde N secretos.» (sin decir cuáles) y lo que queda por reclamar.
+ * Textos propios (el diseño no dibuja esta pantalla): «Tu día en {ciudad}», «Lo que te llevas de hoy», «Aún no has ganado nada hoy».
  */
-const PLURALES: Record<string, [string, string]> = {
-  pedazo: ['pedazo de colección', 'pedazos de colecciones'],
-  coleccion: ['colección completada', 'colecciones completadas'],
-  sello: ['sello subido de grado', 'sellos subidos de grado'],
-  sello_nuevo: ['sello nuevo', 'sellos nuevos'],
-  emblema: ['emblema oculto', 'emblemas ocultos'],
-  pais: ['país nuevo', 'países nuevos'],
-  destino_nuevo: ['destino nuevo', 'destinos nuevos'],
-  continente: ['continente nuevo', 'continentes nuevos'],
-  maravilla: ['maravilla del mundo', 'maravillas del mundo'],
-  patrimonio: ['Patrimonio de la Humanidad', 'Patrimonios de la Humanidad'],
-  viajero: ['logro de viajero', 'logros de viajero'],
-}
-const ORDEN = ['sello_nuevo', 'sello', 'pedazo', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero']
-
 /**
  * Pura (8B4): de los sellos que salieron ese día (`sello` e `id:grado`), cuántos son NUEVOS (nacen ese día: su primer grado, el bronce; el Vaticano no tiene bronce y nace en plata)
  * y cuántos solo SUBEN de grado. Un sello cuenta una vez aunque ese día haya ganado varios grados; si nació ese día, es nuevo.
@@ -35,6 +21,19 @@ export function contarSellos(sellos: { sello: string; grado: string }[]): { nuev
   for (const x of sellos) por.set(x.sello, (por.get(x.sello) ?? false) || x.grado === 'bronce' || (x.sello === 'vaticano' && x.grado === 'plata'))
   const nuevos = [...por.values()].filter(Boolean).length
   return { nuevos, subidos: por.size - nuevos }
+}
+
+const GRADOS = ['bronce', 'plata', 'oro', 'diamante']
+/** Pura (8B5): de los sellos que salieron ese día, una entrada por sello con el grado MÁS ALTO y si nació ese día (si no, solo sube). Mismo criterio que `contarSellos`. */
+export function detalleSellos(sellos: { sello: string; grado: string }[]): { sello: string; grado: string; nace: boolean }[] {
+  const por = new Map<string, { sello: string; grado: string; nace: boolean }>()
+  for (const x of sellos) {
+    const nace = x.grado === 'bronce' || (x.sello === 'vaticano' && x.grado === 'plata')
+    const antes = por.get(x.sello)
+    if (!antes) por.set(x.sello, { sello: x.sello, grado: x.grado, nace })
+    else por.set(x.sello, { sello: x.sello, grado: GRADOS.indexOf(x.grado) > GRADOS.indexOf(antes.grado) ? x.grado : antes.grado, nace: antes.nace || nace })
+  }
+  return [...por.values()]
 }
 
 /** Pura: de los momentos de una ronda, cuántas cosas de cada tipo (los pedazos se cuentan por sitio). */
@@ -79,7 +78,11 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
     cuentas.sello_nuevo = nuevos
     cuentas.sello = subidos
   }
-  const lineas = ORDEN.filter((k) => (cuentas[k] ?? 0) > 0)
+  // (8B5) Las filas de sello van aparte y sin número; el resto, con su número delante.
+  const sellosDelDia = detalleSellos(resumen ? resumen.ganado.filter((g) => g.logro === 'sello').map((g) => ({ sello: g.escalon.split(':')[0], grado: g.escalon.split(':')[1] })) : ganado.filter((m) => m.tipo === 'sello').map((m) => ({ sello: String(m.sello ?? ''), grado: String(m.grado ?? '') })))
+  const filasSello = sellosDelDia.map((x) => textoDeSello(x.nace, x.sello, x.grado, estado?.sellos.find((e) => e.id === x.sello)?.nombre))
+  const lineas = ORDEN_FILAS.filter((k) => (cuentas[k] ?? 0) > 0)
+  const hayAlgo = lineas.length > 0 || filasSello.length > 0
   const ciudad = estado?.ciudad ?? ''
   const sello = estado?.sellos[0]
   const pendiente = (resumen?.pendiente ?? estado?.pendiente)?.texto ?? null
@@ -88,7 +91,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
     <div className="mo" role="dialog" aria-modal="true" aria-label="Resumen del día" style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#F5EFE4', color: '#1C2230', fontFamily: "'Geist',system-ui,sans-serif", display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
       <div style={{ padding: 'calc(env(safe-area-inset-top,0px) + 34px) 24px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
         <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)', animation: 'moUp .6s ease both' }}>{ciudad ? `Tu día en ${ciudad}` : 'Tu día'}</span>
-        <span style={{ font: "400 36px/1.05 'Instrument Serif',serif", animation: 'moUp .6s .1s ease both' }}>{lineas.length > 0 ? 'Esto es lo que has ganado hoy' : 'Aún no has ganado nada hoy'}</span>
+        <span style={{ font: "400 36px/1.05 'Instrument Serif',serif", animation: 'moUp .6s .1s ease both' }}>{hayAlgo ? 'Lo que te llevas de hoy' : 'Aún no has ganado nada hoy'}</span>
         {sello && sello.grado && (
           <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, animation: 'moIn .8s .25s both' }}>
             <Sello id={sello.id} grado={sello.grado as GradoDeSello} tam={112} />
@@ -97,18 +100,23 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
           </div>
         )}
       </div>
-      {lineas.length > 0 && (
+      {hayAlgo && (
         <ul style={{ margin: '0 20px', padding: 0, listStyle: 'none', borderTop: '1px solid rgba(28,34,48,.1)' }}>
-          {lineas.map((k, n) => (
-            <li key={k} style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '14px 4px', borderBottom: '1px solid rgba(28,34,48,.1)', animation: `moUp .5s ${(0.3 + n * 0.08).toFixed(2)}s ease both` }}>
-              <span style={{ font: "400 28px/1 'Instrument Serif',serif", minWidth: 36, color: 'oklch(0.55 0.17 5)' }}>{cuentas[k]}</span>
-              <span style={{ font: "500 15px 'Geist'" }}>{PLURALES[k][cuentas[k] === 1 ? 0 : 1]}</span>
+          {filasSello.map((texto, n) => (
+            <li key={`s${n}`} data-fila="sello" style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '14px 4px', borderBottom: '1px solid rgba(28,34,48,.1)', animation: `moUp .5s ${(0.3 + n * 0.08).toFixed(2)}s ease both` }}>
+              <span style={{ font: "500 15px 'Geist'" }}>{texto}</span>
             </li>
           ))}
+          {lineas.map((k, n0) => { const n = n0 + filasSello.length; return (
+            <li key={k} style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '14px 4px', borderBottom: '1px solid rgba(28,34,48,.1)', animation: `moUp .5s ${(0.3 + n * 0.08).toFixed(2)}s ease both` }}>
+              <span style={{ font: "400 28px/1 'Instrument Serif',serif", minWidth: 36, color: 'oklch(0.55 0.17 5)' }}>{cuentas[k]}</span>
+              <span style={{ font: "500 15px 'Geist'" }}>{fila(k, cuentas[k])}</span>
+            </li>
+          ) })}
         </ul>
       )}
       <div style={{ padding: '18px 24px 0', display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'center' }}>
-        {estado?.secretos.texto && <span style={{ font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)' }}>{estado.secretos.texto}</span>}
+        {estado && lineaDeSecretos(ciudad, estado.secretos.total, estado.secretos.encontrados) && <span data-secretos="" style={{ font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)' }}>{lineaDeSecretos(ciudad, estado.secretos.total, estado.secretos.encontrados)}</span>}
         {pendiente && <span style={{ font: "600 13.5px 'Geist'", color: 'oklch(0.55 0.17 5)' }}>{pendiente}</span>}
       </div>
       <div style={{ flex: 1 }} />

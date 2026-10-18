@@ -1,0 +1,6 @@
+/* La medalla nueva de las 7 maravillas va QUIETA (8B5): ni el brillo interno de los emblemas se mueve. */
+.ms-quieta,
+.ms-quieta * {
+  animation: none !important;
+  transition: none !important;
+}

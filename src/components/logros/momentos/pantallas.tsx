@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react'
 import type { Momento } from '../../../lib/logros'
-import { Chapa, Insignia, MedallaMaravillas, Sello, type GradoDeSello } from '../dibujos'
+import { Chapa, Insignia, MedallaDeSiete, Sello, type GradoDeSello } from '../dibujos'
 import type { EstadoLogros } from './api'
 import { Centro, FONDO_CALIDO, FONDO_NOCHE, Ojo, ORO, PantallaOscura, Rayos, Estrellas, Sub, Titulo, Vuelo } from './base'
 import { FinalSieteMaravillas } from './FinalSieteMaravillas'
@@ -229,6 +229,13 @@ function PantallaFinal7({ onSeguir, onSaltarTodo, paso }: PropsDePantalla): Reac
 
 /* ── Patrimonio y logro de viajero: la chapa ── */
 const TITULO_CHAPA: Record<string, string> = { patrimonio: 'Patrimonio de la Humanidad', viajero: 'Logro de viajero', maravilla: 'Maravilla del mundo', destino_nuevo: 'Destino nuevo', pais: 'País nuevo', continente: 'Nuevo continente' }
+const ORDINAL_MARAVILLA = ['', 'primera', 'segunda', 'tercera', 'cuarta', 'quinta', 'sexta', 'séptima']
+/** (8B5) El título de la tarjeta, que se lee igual en las cuatro: «Tu país número 1: Italia», «Tu destino número 1: Roma», «Tu primera maravilla», «Tu Patrimonio número 1: Centro histórico de Roma». */
+export function tituloDeMomento(m: Momento): string {
+  if (m.tipo === 'maravilla') return `Tu ${ORDINAL_MARAVILLA[Math.min(7, Math.max(1, Number(m.n ?? 1)))]} maravilla`
+  if (m.tipo === 'patrimonio' && m.n != null) return `Tu Patrimonio número ${Number(m.n)}: ${m.nombre}`
+  return m.nombre
+}
 function chapaDe(m: Momento): { logro: string; escalon: string | number | null } {
   if (m.tipo === 'viajero') return { logro: s(m, 'logro'), escalon: s(m, 'escalon') || null }
   if (m.tipo === 'maravilla') return { logro: 'maravillas', escalon: Number(m.n ?? 1) }
@@ -250,7 +257,7 @@ function PantallaChapa({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePantal
           </div>
         </Vuelo>
         <Ojo en="1.5s">{TITULO_CHAPA[m.tipo] ?? 'Logro'}</Ojo>
-        <Titulo en="1.7s">{m.nombre}</Titulo>
+        <Titulo en="1.7s">{tituloDeMomento(m)}</Titulo>
         {m.linea && <Sub en="1.9s">{m.linea}</Sub>}
       </Centro>
     </PantallaOscura>
@@ -269,11 +276,11 @@ function PantallaAdemas({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePanta
             const ch = chapaDe(m)
             return (
               <div key={`${m.tipo}${i}`} style={{ display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', opacity: 0, animation: `moUp .7s ${(0.5 + i * 0.3).toFixed(1)}s ease both` }}>
-                {m.tipo === 'maravilla' ? <MedallaMaravillas encendidas={[s(m, 'id')]} tam={78} animada={false} /> : <Chapa logro={ch.logro} escalon={ch.escalon} tam={78} />}
+                {m.tipo === 'maravilla' ? <MedallaDeSiete encendidas={Array.isArray(m.maravillas) ? (m.maravillas as string[]) : [s(m, 'id')]} tam={96} /> : <Chapa logro={ch.logro} escalon={ch.escalon} tam={78} />}
                 <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
                   <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: ORO }}>{TITULO_CHAPA[m.tipo] ?? 'Logro'}</span>
-                  <span style={{ font: "400 22px/1.05 'Instrument Serif',serif" }}>{m.tipo === 'maravilla' && Number(m.n ?? 1) === 1 ? 'Tu primera maravilla' : m.nombre}</span>
-                  {m.tipo === 'maravilla' ? <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{Number(m.n ?? 1) === 1 ? `${m.nombre} · 1 de 7` : `${Number(m.n)} de 7`}</span> : m.linea && <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{m.linea}</span>}
+                  <span style={{ font: "400 22px/1.05 'Instrument Serif',serif" }}>{tituloDeMomento(m)}</span>
+                  {m.tipo === 'maravilla' ? <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{`${m.nombre} · ${Number(m.n ?? 1)} de 7`}</span> : m.linea && <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{m.linea}</span>}
                 </span>
               </div>
             )

@@ -60,3 +60,14 @@ Ninguna foto puesta en la app. Página para elegir: `docs/dias/FOTOS_CANDIDATAS_
 - 3 candidatas: Foro Romano y Palatino, Arco de Constantino, Panteón, Piazza Navona (de día), Museos Vaticanos (fachada/patios), Columna de Trajano.
 - Sin ninguna buena (ninguna foto nombra el sitio): Via del Babuino, Terraza de Largo Gaetana Agnesi, Colle Oppio, Mirador de San Pietro in Montorio. Quedan sin foto.
 - Cuando Eric elija: bajar la `raw` de Unsplash, sacar `dia_<sitio>.jpg` (1600 px) y `dia_<sitio>_p.jpg` (640 px), añadir a `_fotos.json` con `fuente: "Unsplash"`, `autor` y `enlace`, quitar el sitio de `sin_foto` / `fotos_rechazadas` si hace falta, `node scripts/generarMiniaturas.mjs` y reiniciar el api-server. Piazza Navona: su foto de día vale todo el año; la de Navidad se queda con sus fechas.
+
+---
+
+# 8B5 (fotos elegidas por Eric)
+Puestas como fotos propias (Unsplash, con autor, enlace y licencia en `_fotos.json`; 1600 px, tarjeta de 640 px y miniatura WebP): Foro Romano y Palatino (opción 2, Himmel S), Arco de Constantino (1, Anton Volnuhin), Panteón (1, Harold Wainwright), Piazza Navona (3, Gabriella Clare Marino; todo el año, la de Navidad sigue con sus fechas), Museos Vaticanos (2, Sui Xu; vale para «Museos Vaticanos» y «Museos Vaticanos y Capilla Sixtina») y Columna de Trajano (2, Gertrud). Script: `scripts/destino/aplicarFotosElegidas8b5.mjs`.
+
+## Pendientes (sin foto, a propósito)
+- Via del Babuino
+- Terraza de Largo Gaetana Agnesi
+- Colle Oppio
+- Mirador de San Pietro in Montorio

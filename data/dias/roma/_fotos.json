@@ -3,24 +3,51 @@
   "carpeta": "/fotos/roma",
   "sin_foto": [
     "Pasear por San Giovanni",
-    "Terraza del Altar de la Patria",
-    "Columna de Trajano"
+    "Terraza del Altar de la Patria"
   ],
   "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya. · 3-oct-2026 (revisión de fotos de Roma): sin foto hasta elegir una buena — no son el sitio (Santa Cecilia, Cementerio Protestante, Mercado de Testaccio, 100 Presepi, Pasear por la Roma Antigua), no son fotos (Domus Aurea, Ostia Antica —excursión—, Pasear por el Esquilino, Galería Nacional de Arte Moderno, Luces de Navidad del Tridente, Nápoles —su nombre de foto es «Naples Italy»—), noches que salen de día (Altar de la Patria, Mirador del Janículo y Terraza del Pincio «(noche)») y Barrio Judío (no se reconoce). Los restaurantes y cafés no se tocan. El Free Tour lleva la foto de la Plaza de España, su punto de encuentro (photo_from en roma.json): decisión del usuario del 11-oct-2026 (antes, el 3-oct, era la de Piazza Navona). · Armando al Pantheon, Trattoria Monti y Felice a Testaccio: sin foto (3-oct-2026) para no repetir la del Panteón, Monti y Testaccio; las fotos de esos tres lugares no se tocan. · 3-oct-2026: TODOS los restaurantes, cafés y heladerías de Roma (el array restaurants de roma.json) van sin foto, también en Explorar y en las tarjetas de comida y cena: ninguno lleva la foto de un sitio que no es suyo. Las fotos de los lugares no se tocan. Si se añade un restaurante nuevo a roma.json, hay que apuntarlo aquí. · 3-oct-2026 (después): los restaurantes, cafés y heladerías ya NO se apuntan aquí. Todo lo que está en la lista `restaurants` de un destino (roma.json y los demás) va sin foto solo, por regla del servidor (isRestaurantName en server/index.js): al añadir uno nuevo o un destino nuevo, nunca busca foto. La tarjeta general «Restaurantes» de Explorar (la foto genérica de una trattoria) no es un restaurante y se queda con su foto.",
   "_fotos_rechazadas": "Tanda 6y2: fotos de Wikipedia que NO son el sitio. Estos lugares van SIN foto (el color neutro de la app) hasta que Eric elija una buena: el servidor no busca nada para ellos ni en Unsplash ni en Wikipedia ni en la caché ni en la foto de su zona (una foto propia suya, si la hay en `fotos`, sí sale). Para sacarlos de la lista: poner la foto propia (docs/dias/FOTOS_ROMA_CANDIDATAS.html tiene 3 candidatas por lugar) y borrar la línea de aquí. Un solo sitio: `fotoOculta` en server/engine/writtenDays.js.",
   "fotos_rechazadas": [
-    {"lugar":"Museos Vaticanos y Capilla Sixtina","motivo":"8B3: Wikipedia servía el interior de la Capilla Sixtina (Sistina-interno.jpg); sin foto hasta tener una propia de fachada o patios."},
-    {"lugar":"Museos Vaticanos","motivo":"8B3: Wikipedia servía el escudo de los Museos (un SVG); sin foto hasta tener una propia."},
-    {"lugar":"Cripta de los Capuchinos","motivo":"Wikipedia servía la «Kapuzinergruft» de Viena (Wien_-_Kapuzinergruft…): una cripta de otra ciudad."},
-    {"lugar":"Trastevere al atardecer","motivo":"Wikipedia servía el reloj del Quirinal (6h-orologioQuirinale.jpg), que no es Trastevere."},
-    {"lugar":"Via dei Coronari","motivo":"Compartía con Borgo Pio la foto del Passetto di Borgo (Passetto_di_Borgo_from_Castel_Sant'Angelo…): no es la calle."},
-    {"lugar":"Borgo Pio","motivo":"Compartía con Via dei Coronari la foto del Passetto di Borgo (Passetto_di_Borgo_from_Castel_Sant'Angelo…): no es la calle."},
-    {"lugar":"Excursión a Florencia y Pisa","motivo":"Wikipedia servía un manuscrito (MauriceManuscript.jpg), ni Florencia ni Pisa."},
-    {"lugar":"Excursión a Nápoles y Pompeya en tren","motivo":"Wikipedia servía una vista aérea de Marsella (Notre-Dame_de_la_Garde_aerial_view_2020…), ni Nápoles ni Pompeya."},
-    {"lugar":"Excursión a la Costa Amalfitana","motivo":"Wikipedia servía un avión de Vueling (Vueling_A320neo…), no la costa."},
-    {"lugar":"Excursión a Florencia en tren de alta velocidad","motivo":"Wikipedia servía un avión de Vueling (Vueling_A320neo…), no Florencia."},
-    {"lugar":"Excursión a Tívoli — Villa d'Este y Villa Adriana","motivo":"Wikipedia servía «Entrance to the Grotto at Posillipo, Naples» (una gruta de Nápoles), no Tívoli."},
-    {"lugar":"Excursión a Pompeya y Sorrento","motivo":"Salía una foto de Unsplash de la que no se ha podido confirmar que sea Pompeya (su descripción no lo dice); hasta que Eric elija una buena, va sin foto."}
+    {
+      "lugar": "Cripta de los Capuchinos",
+      "motivo": "Wikipedia servía la «Kapuzinergruft» de Viena (Wien_-_Kapuzinergruft…): una cripta de otra ciudad."
+    },
+    {
+      "lugar": "Trastevere al atardecer",
+      "motivo": "Wikipedia servía el reloj del Quirinal (6h-orologioQuirinale.jpg), que no es Trastevere."
+    },
+    {
+      "lugar": "Via dei Coronari",
+      "motivo": "Compartía con Borgo Pio la foto del Passetto di Borgo (Passetto_di_Borgo_from_Castel_Sant'Angelo…): no es la calle."
+    },
+    {
+      "lugar": "Borgo Pio",
+      "motivo": "Compartía con Via dei Coronari la foto del Passetto di Borgo (Passetto_di_Borgo_from_Castel_Sant'Angelo…): no es la calle."
+    },
+    {
+      "lugar": "Excursión a Florencia y Pisa",
+      "motivo": "Wikipedia servía un manuscrito (MauriceManuscript.jpg), ni Florencia ni Pisa."
+    },
+    {
+      "lugar": "Excursión a Nápoles y Pompeya en tren",
+      "motivo": "Wikipedia servía una vista aérea de Marsella (Notre-Dame_de_la_Garde_aerial_view_2020…), ni Nápoles ni Pompeya."
+    },
+    {
+      "lugar": "Excursión a la Costa Amalfitana",
+      "motivo": "Wikipedia servía un avión de Vueling (Vueling_A320neo…), no la costa."
+    },
+    {
+      "lugar": "Excursión a Florencia en tren de alta velocidad",
+      "motivo": "Wikipedia servía un avión de Vueling (Vueling_A320neo…), no Florencia."
+    },
+    {
+      "lugar": "Excursión a Tívoli — Villa d'Este y Villa Adriana",
+      "motivo": "Wikipedia servía «Entrance to the Grotto at Posillipo, Naples» (una gruta de Nápoles), no Tívoli."
+    },
+    {
+      "lugar": "Excursión a Pompeya y Sorrento",
+      "motivo": "Salía una foto de Unsplash de la que no se ha podido confirmar que sea Pompeya (su descripción no lo dice); hasta que Eric elija una buena, va sin foto."
+    }
   ],
   "fotos": [
     {
@@ -1135,6 +1162,109 @@
         "autor": "Labicanense",
         "licencia": "CC BY 4.0",
         "enlace": "https://commons.wikimedia.org/wiki/File:Tempio_di_Adriano_-_esterno.jpg"
+      }
+    },
+    {
+      "archivo": "dia_foro_romano_y_palatino.jpg",
+      "lugares": [
+        "Foro Romano y Palatino"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Unsplash",
+      "autor": "Himmel S",
+      "enlace": "https://unsplash.com/photos/a-view-of-a-cemetery-in-a-city-wkQyVJwHAzM?utm_source=viajes_bengala&utm_medium=referral",
+      "nota": "8B5: la opción 2 que eligió Eric entre las candidatas de la 8B4 (Unsplash wkQyVJwHAzM).",
+      "credito": {
+        "autor": "Himmel S",
+        "licencia": "Licencia de Unsplash",
+        "enlace": "https://unsplash.com/photos/a-view-of-a-cemetery-in-a-city-wkQyVJwHAzM?utm_source=viajes_bengala&utm_medium=referral"
+      }
+    },
+    {
+      "archivo": "dia_arco_de_constantino.jpg",
+      "lugares": [
+        "Arco de Constantino"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Unsplash",
+      "autor": "Anton Volnuhin",
+      "enlace": "https://unsplash.com/photos/a-large-stone-structure-in-the-middle-of-a-park-6a3gS1A8GqI?utm_source=viajes_bengala&utm_medium=referral",
+      "nota": "8B5: la opción 1 que eligió Eric entre las candidatas de la 8B4 (Unsplash 6a3gS1A8GqI).",
+      "credito": {
+        "autor": "Anton Volnuhin",
+        "licencia": "Licencia de Unsplash",
+        "enlace": "https://unsplash.com/photos/a-large-stone-structure-in-the-middle-of-a-park-6a3gS1A8GqI?utm_source=viajes_bengala&utm_medium=referral"
+      }
+    },
+    {
+      "archivo": "dia_panteon.jpg",
+      "lugares": [
+        "Panteón"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Unsplash",
+      "autor": "Harold Wainwright",
+      "enlace": "https://unsplash.com/photos/pantheon-rome-with-columns-IpmFVXls4sE?utm_source=viajes_bengala&utm_medium=referral",
+      "nota": "8B5: la opción 1 que eligió Eric entre las candidatas de la 8B4 (Unsplash IpmFVXls4sE).",
+      "credito": {
+        "autor": "Harold Wainwright",
+        "licencia": "Licencia de Unsplash",
+        "enlace": "https://unsplash.com/photos/pantheon-rome-with-columns-IpmFVXls4sE?utm_source=viajes_bengala&utm_medium=referral"
+      }
+    },
+    {
+      "archivo": "dia_piazza_navona.jpg",
+      "lugares": [
+        "Piazza Navona"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Unsplash",
+      "autor": "Gabriella Clare Marino",
+      "enlace": "https://unsplash.com/photos/a-city-square-with-a-fountain-in-the-middle-of-it-ibZR8WQA26o?utm_source=viajes_bengala&utm_medium=referral",
+      "nota": "8B5: la opción 3 que eligió Eric entre las candidatas de la 8B4 (Unsplash ibZR8WQA26o). Su foto de día para todo el año; en las fechas del mercadillo (12-01 a 01-05) sigue ganando la de Navidad.",
+      "credito": {
+        "autor": "Gabriella Clare Marino",
+        "licencia": "Licencia de Unsplash",
+        "enlace": "https://unsplash.com/photos/a-city-square-with-a-fountain-in-the-middle-of-it-ibZR8WQA26o?utm_source=viajes_bengala&utm_medium=referral"
+      }
+    },
+    {
+      "archivo": "dia_museos_vaticanos.jpg",
+      "lugares": [
+        "Museos Vaticanos y Capilla Sixtina",
+        "Museos Vaticanos"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Unsplash",
+      "autor": "Sui Xu",
+      "enlace": "https://unsplash.com/photos/vatican-museums-entrance-with-stone-sculptures-and-sky-QhRg2GNCDtg?utm_source=viajes_bengala&utm_medium=referral",
+      "nota": "8B5: la opción 2 que eligió Eric entre las candidatas de la 8B4 (Unsplash QhRg2GNCDtg).",
+      "credito": {
+        "autor": "Sui Xu",
+        "licencia": "Licencia de Unsplash",
+        "enlace": "https://unsplash.com/photos/vatican-museums-entrance-with-stone-sculptures-and-sky-QhRg2GNCDtg?utm_source=viajes_bengala&utm_medium=referral"
+      }
+    },
+    {
+      "archivo": "dia_columna_de_trajano.jpg",
+      "lugares": [
+        "Columna de Trajano"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Unsplash",
+      "autor": "Gertrud",
+      "enlace": "https://unsplash.com/photos/a-tall-tower-with-a-clock-on-the-top-of-it-RBYZloqbUl4?utm_source=viajes_bengala&utm_medium=referral",
+      "nota": "8B5: la opción 2 que eligió Eric entre las candidatas de la 8B4 (Unsplash RBYZloqbUl4).",
+      "credito": {
+        "autor": "Gertrud",
+        "licencia": "Licencia de Unsplash",
+        "enlace": "https://unsplash.com/photos/a-tall-tower-with-a-clock-on-the-top-of-it-RBYZloqbUl4?utm_source=viajes_bengala&utm_medium=referral"
       }
     }
   ],

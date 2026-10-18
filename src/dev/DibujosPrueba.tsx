@@ -1,6 +1,6 @@
 /** Solo desarrollo: «?dibujos=1» enseña todos los dibujos de los logros en cuadrícula, para compararlos con «Logros · Modelos». */
 import { useState } from 'react'
-import { Sello, Insignia, Emblema, Chapa, MedallaMaravillas } from '../components/logros/dibujos'
+import { Sello, Insignia, Emblema, Chapa, MedallaMaravillas, MedallaDeSiete } from '../components/logros/dibujos'
 import { sitiosDeColeccion } from '../components/logros/dibujos/Insignia'
 import { ESCALONES_DE, LOGROS_CON_CHAPA } from '../components/logros/dibujos/Chapa'
 import viajero from '../../data/logros/viajero.json'
@@ -73,6 +73,7 @@ export function DibujosPrueba() {
       <Fila>{(ESCALONES_DE.paises ?? []).map((n) => <Cel key={n} pie={'países ' + n}><Chapa logro="paises" escalon={n} tam={110} /></Cel>)}</Fila>
 
       <Titulo t="Medalla de las 7 maravillas · 0 a 7" />
+      <Fila>{[0, 1, 2, 3, 4, 5, 6, 7].map((n) => <Cel key={`s${n}`} oscuro pie={'NUEVA ' + n + ' de 7'}><MedallaDeSiete encendidas={MARAVILLAS.slice(0, n)} tam={140} /></Cel>)}</Fila>
       <Fila>{[0, 1, 2, 3, 4, 5, 6, 7].map((n) => <Cel key={n} oscuro pie={n + ' de 7'}><MedallaMaravillas encendidas={MARAVILLAS.slice(0, n)} tam={140} animada={animado} /></Cel>)}</Fila>
     </div>
   )

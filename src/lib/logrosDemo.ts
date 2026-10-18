@@ -77,8 +77,8 @@ function primeraVezEnRoma(): Momento[] {
     { tipo: 'pais', cat: 'pais', clave: 'global|pais|Italia', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia', primera_vez: true, en } as Momento,
     { tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: 'global|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', primera_vez: true, en } as Momento,
     // (8B4) Igual que el servidor: con el primer Visto en el Coliseo también llegan su maravilla (la 1 de 7) y el Patrimonio «Centro histórico de Roma».
-    { tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', primera_vez: true, en } as Momento,
-    { tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', nombre: 'Centro histórico de Roma', primera_vez: true, en } as Momento,
+    { tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, maravillas: ['coliseo'], nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', primera_vez: true, en } as Momento,
+    { tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', n: 1, nombre: 'Centro histórico de Roma', primera_vez: true, en } as Momento,
   ]
 }
 
@@ -230,8 +230,8 @@ export function momentosDeSerie(): Momento[] {
     { tipo: 'pais', cat: 'pais', clave: 'global|pais|Italia', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia', primera_vez: true, en } as Momento,
     { tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: 'global|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', primera_vez: true, en } as Momento,
     { tipo: 'continente', cat: 'continente', clave: 'global|continente|Europa', continente: 'Europa', nombre: 'Nuevo continente: Europa', primera_vez: true, en } as Momento,
-    { tipo: 'maravilla', cat: 'maravilla', clave: 'global|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'Coliseo', linea: 'Una de las nuevas siete maravillas del mundo.', primera_vez: true, en } as Momento,
-    { tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|roma_historica', id: 'roma_historica', nombre: 'Centro histórico de Roma', primera_vez: true, en } as Momento,
+    { tipo: 'maravilla', cat: 'maravilla', clave: 'global|maravilla|coliseo', id: 'coliseo', n: 1, maravillas: ['coliseo'], nombre: 'Coliseo', linea: 'Una de las nuevas siete maravillas del mundo.', primera_vez: true, en } as Momento,
+    { tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|roma_historica', id: 'roma_historica', n: 1, nombre: 'Centro histórico de Roma', primera_vez: true, en } as Momento,
     { tipo: 'viajero', cat: 'viajero', clave: 'global|viajero|trotamundos:1', logro: 'trotamundos', escalon: '1', destino: 'roma', nombre: 'Primera parada', linea: 'Tu primer destino con la app.', primera_vez: true, en } as Momento,
   ]
 }
