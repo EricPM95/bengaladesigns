@@ -163,3 +163,64 @@ export async function canjearInvitacion(codigo: string): Promise<{ tripId: strin
   olvidarInvitacionPendiente()
   return { tripId: d.trip_id, yaEstaba: d.ya_estaba, error: null }
 }
+
+/* ------------------------------------------------------------------ */
+/* Invitar a un amigo a la app (cuentas parte 3, punto 7)              */
+/* ------------------------------------------------------------------ */
+
+const CLAVE_AMIGO = 'trazo:amigo'
+
+/** Pura: el enlace personal para invitar a la app, sin viaje («https://…/?amigo=ABCD2345»). */
+export const enlaceDeAmigo = (origen: string, codigo: string): string => `${origen.replace(/\/+$/, '')}/?amigo=${encodeURIComponent(normalizarCodigo(codigo))}`
+
+/** Pura: el código personal que trae una dirección («?amigo=ABCD2345»), o null. */
+export function codigoDeAmigoDeLaDireccion(busqueda: string): string | null {
+  const valor = new URLSearchParams(busqueda).get('amigo')
+  const codigo = valor ? normalizarCodigo(valor) : ''
+  return codigo.length >= 6 && codigo.length <= 16 ? codigo : null
+}
+
+export function guardarAmigoPendiente(codigo: string): void {
+  try {
+    window.localStorage.setItem(CLAVE_AMIGO, normalizarCodigo(codigo))
+  } catch {
+    /* sin almacenamiento: la invitación no se apunta */
+  }
+}
+export function amigoPendiente(): string | null {
+  try {
+    return window.localStorage.getItem(CLAVE_AMIGO) || null
+  } catch {
+    return null
+  }
+}
+export function olvidarAmigoPendiente(): void {
+  try {
+    window.localStorage.removeItem(CLAVE_AMIGO)
+  } catch {
+    /* nada que quitar */
+  }
+}
+
+/** Mi código personal para invitar a la app (se crea la primera vez). null si no se pudo. */
+export async function miCodigoDeAmigo(): Promise<string | null> {
+  if (!supabase) return null
+  const { data, error } = await supabase.rpc('mi_codigo_app')
+  return error || typeof data !== 'string' ? null : data
+}
+
+/**
+ * Apunta que esta persona llegó invitada por ese código (de viaje, de pase o personal). Cuenta SOLO si con eso se creó una cuenta nueva (lo decide el servidor: una cuenta que ya existía no
+ * cuenta) y solo para el primer invitador. No falla en voz alta: si algo sale mal, simplemente no se apunta.
+ */
+export async function registrarInvitado(codigo: string): Promise<boolean> {
+  try {
+    const token = (await supabase?.auth.getSession())?.data.session?.access_token
+    if (!token) return false
+    const r = await fetch('/api/invitaciones/registrar', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ codigo: normalizarCodigo(codigo) }) })
+    const cuerpo = (await r.json().catch(() => null)) as { registrado?: boolean } | null
+    return r.ok && cuerpo?.registrado === true
+  } catch {
+    return false
+  }
+}

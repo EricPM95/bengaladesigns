@@ -4,6 +4,7 @@ import { cuentasActivas } from '../../lib/cuentas'
 import { demoActivo } from '../../lib/logros'
 import { guardarMiZona, pedirPermisoUnaVez, prepararPermisoDeAvisos } from '../../lib/permisoAvisos'
 import { useAvisosStore } from '../../store/useAvisosStore'
+import { useMiPerfil } from '../../store/useMiPerfil'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useCuenta } from '../cuenta/useCuenta'
 
@@ -36,6 +37,8 @@ function Encendido() {
   useEffect(() => {
     if (!real) return undefined
     void guardarMiZona()
+    // Mi nombre y mi foto (de la cuenta; si entra con Google, su nombre de pila y su foto de Google hasta que ponga otros).
+    if (cuenta.tipo === 'cuenta') void useMiPerfil.getState().cargar(cuenta.uid, cuenta.deGoogle ?? undefined)
     void prepararPermisoDeAvisos()
     const delAviso = avisoDeLaDireccion(window.location.search)
     if (delAviso) {
@@ -67,7 +70,7 @@ function Encendido() {
       document.removeEventListener('visibilitychange', alVolver)
       navigator.serviceWorker?.removeEventListener('message', alMensaje)
     }
-  }, [real, cargar, abrir])
+  }, [real, cargar, abrir]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Al acabar el primer día del viaje: el siguiente toque de la persona pide el permiso (la ventana del móvil exige un toque suyo).
   useEffect(() => {

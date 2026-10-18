@@ -668,7 +668,7 @@ console.log('3. Recomendar cambios: la propuesta, la pareja, R2 y el modo recome
   debe(mapaDias.get('d2')?.length === 1 && mapaDias.get('d3')?.length === 1 && !mapaDias.has('d1'), 'AV8', 'la etiqueta sale en los días que cambiarían, mientras no conteste (las contestadas no cuentan)')
   const solo = fs.readFileSync('src/index.css', 'utf8')
   debe(/html\[data-solo-ver\] \[data-edit-tool\]/.test(solo) && /data-edit-tool/.test(fs.readFileSync('src/components/route/dayDetail/StopConnector.tsx', 'utf8')) && /data-edit-tool/.test(fs.readFileSync('src/components/route/SortableDay.tsx', 'utf8')), 'R1', 'quien mira el viaje de otra persona no ve las herramientas de editar (asas, «+ Añadir parada», «+ Añadir día», la varita)')
-  debe(!fs.existsSync('src/components/cuenta/InvitarProvisional.tsx') && !/InvitarProvisional/.test(fs.readFileSync('src/components/cuenta/CuentaEnPerfil.tsx', 'utf8')), 'perfil', 'el bloque provisional «Invitar y recomendaciones» ya no está en el Perfil')
+  debe(!fs.existsSync('src/components/cuenta/InvitarProvisional.tsx') && !fs.existsSync('src/components/cuenta/CuentaEnPerfil.tsx') && !/Invitar y recomendaciones/.test(fs.readFileSync('src/components/layout/PerfilSheet.tsx', 'utf8')), 'perfil', 'el bloque provisional «Invitar y recomendaciones» ya no está en el Perfil')
   const header = fs.readFileSync('src/components/layout/Header.tsx', 'utf8')
   debe(/Viaje de \$\{nombreAdmin\}/.test(header), 'R1', 'R1: la cabecera dice «Viaje de Elena»')
 }
@@ -907,6 +907,166 @@ const avisosMod = await import('../../server/avisos.js')
   const antesTom = (await q('select count(*)::int as n from public.avisos where user_id = $1', [tom]))[0].n
   const borrado = await borrarCuenta(admin, 'tok-tom4')
   debe(antesTom >= 1 && borrado.estado === 200 && (await q('select count(*)::int as n from public.avisos where user_id = $1', [tom]))[0].n === 0 && (await q('select count(*)::int as n from public.push_suscripciones where user_id = $1', [tom]))[0].n === 0, 'borrar', 'al borrar la cuenta se van sus avisos y sus permisos de avisos del móvil')
+}
+
+/* ═══════════════ PARTES 5, 6 y 7 · Ajustes, Mis pases, Borrar la cuenta, foto y nombre, invitar a un amigo ═══════════════ */
+console.log('5. Ajustes (P3), Mis pases (P4) y Borrar la cuenta (P5)')
+{
+  const M = encendido
+  const duo = { id: 'p1', destino: 'Roma', tipo: 'duo', estado: 'activo', creado_en: '2026-09-02T10:00:00Z', usos_max: 2, usos_usados: 2, es_mio: true, importe_cent: 1099, moneda: 'eur', tiene_recibo: true, viaje: { id: 'v', destino: 'Roma', inicio: '2026-10-10', fin: '2026-10-14' }, miembros: [{ nombre: 'Elena', es_yo: true, es_comprador: true }, { nombre: 'Laura', es_yo: false, es_comprador: false }], invitacion: { id: 'i', codigo: 'K7MQ4XWH', trip_id: 'v' } }
+  const uno = { id: 'p2', destino: 'Lisboa', tipo: 'uno', estado: 'activo', creado_en: '2026-09-30T10:00:00Z', usos_max: 1, usos_usados: 1, es_mio: true, importe_cent: 699, moneda: 'eur', tiene_recibo: true, viaje: { id: 'w', destino: 'Lisboa', inicio: '2026-12-12', fin: '2026-12-15' }, miembros: [{ nombre: 'Elena', es_yo: true, es_comprador: true }], invitacion: null }
+  debe(M.textoDeMisPases([duo, uno]) === '2 pases · Roma (Dúo) y Lisboa' && M.textoDeMisPases([uno]) === '1 pase · Lisboa' && M.textoDeMisPases([]) === 'Todavía no tienes ninguno' && M.textoDeMisPases([{ ...duo, estado: 'anulado' }]) === 'Todavía no tienes ninguno', 'P3', '«2 pases · Roma (Dúo) y Lisboa» con los pases de verdad (los anulados no cuentan)')
+  debe(M.textoDeComoEntra('google') === 'Entras con Google' && M.textoDeComoEntra('email') === 'Entras con tu email' && M.textoDeComoEntra(null) === 'Entras con tu email', 'P3', '«Entras con tu email» o «Entras con Google»')
+  const aj = M.pintaAjustes({ emailInicial: 'elena@correo.com', proveedorInicial: 'email', pasesIniciales: [duo, uno] })
+  debe(/Ajustes/.test(aj) && />Mi cuenta</.test(aj) && /elena@correo\.com/.test(aj) && /Entras con tu email/.test(aj) && /Cerrar sesión/.test(aj), 'P3', 'P3: «Mi cuenta» con su email, cómo entra y [Cerrar sesión]')
+  debe(/>Mis pases<\/span><span[^>]*>2 pases · Roma \(Dúo\) y Lisboa</.test(aj) || /2 pases · Roma \(Dúo\) y Lisboa/.test(aj), 'P3', 'P3: «Mis pases» con los suyos')
+  debe(/Sonido de los momentos/.test(aj) && /Avisos en el móvil/.test(aj) && /El resumen del viaje y «en 10 días empieza tu viaje»/.test(aj) && /Ver otra vez el tutorial/.test(aj) && /Privacidad y condiciones/.test(aj), 'P3', 'P3: «La app» con el sonido, los avisos, el tutorial y la privacidad')
+  debe(/role="switch"/.test(aj) && (aj.match(/role="switch"/g) ?? []).length === 2, 'P3', 'el sonido y los avisos son interruptores de verdad (role switch)')
+  debe(/Invitar a un amigo/.test(aj) && /Compartir el enlace/.test(aj) && /Tengo un código de invitación/.test(aj), 'invitar', 'Ajustes: «Invitar a un amigo» con [Compartir el enlace], y el sitio donde escribir un código')
+  debe(/data-borrar-cuenta[^>]*>Borrar mi cuenta</.test(aj) && !/data-borrar-dialogo/.test(aj), 'P3', 'P3 termina con «Borrar mi cuenta» (sin el diálogo hasta tocarlo)')
+  const p5 = M.pintaAjustes({ emailInicial: 'elena@correo.com', pasesIniciales: [duo], borrandoInicial: true })
+  debe(/¿Borrar tu cuenta\?/.test(p5) && /Se borrarán tu cuenta, tus fotos y tus logros\. No se puede deshacer\./.test(p5) && /data-confirmar-borrar[^>]*>Borrar mi cuenta</.test(p5) && />Cancelar</.test(p5), 'P5', 'P5: «¿Borrar tu cuenta?», [Borrar mi cuenta] y [Cancelar]')
+  debe(!/Seguir sin cuenta|Cerrar sesión y borrar|CuentaEnPerfil/.test(fs.readFileSync('src/components/layout/PerfilSheet.tsx', 'utf8')) && !fs.existsSync('src/components/cuenta/CuentaEnPerfil.tsx'), 'perfil', 'fuera del Perfil los botones provisionales de cerrar sesión y borrar')
+  const gear = fs.readFileSync('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx', 'utf8')
+  const cab = fs.readFileSync('src/components/perfil/CabeceraDeSiempre.tsx', 'utf8')
+  debe(/data-ajustes onClick=\{\(\) => abrirAjustes\(\)\}/.test(gear) && /data-ajustes onClick=\{\(\) => abrirAjustes\(\)\}/.test(cab), 'P3', 'el botón de Ajustes del Perfil (con y sin logros) abre P3')
+  const hosts = fs.readFileSync('src/App.tsx', 'utf8')
+  debe(/<AjustesHosts \/>/.test(hosts), 'P3', 'Ajustes se monta una sola vez en la app')
+
+  // P4
+  debe(M.etiquetaDelPase(duo) === 'PASE DÚO · 2 PERSONAS' && M.etiquetaDelPase(uno) === 'PASE · 1 PERSONA' && M.etiquetaDelPase({ tipo: 'grupo', usos_max: 4 }) === 'PASE GRUPO · 4 PERSONAS', 'P4', 'el tipo de cada pase')
+  debe(M.estadoDelPase(duo, '2026-10-11') === 'En curso' && M.estadoDelPase(uno, '2026-10-11') === 'Próximo' && M.estadoDelPase(duo, '2026-11-01') === 'Terminado' && M.estadoDelPase({ ...duo, estado: 'anulado' }, '2026-10-11') === 'Anulado' && M.estadoDelPase({ estado: 'activo', viaje: null }, '2026-10-11') === 'Sin viaje', 'P4', '«En curso» / «Próximo» según su viaje (y «Anulado» si se devolvió el pago)')
+  debe(M.fechaDeCompra('2026-09-02T10:00:00Z') === '2 sep 2026' && M.rangoDelViaje(duo.viaje) === '10 – 14 oct 2026', 'P4', 'la fecha de compra y el viaje, como en el diseño')
+  debe(JSON.stringify(M.filasDelPase(duo).map((f) => f.k)) === '["Comprado el","Precio","Viaje"]' && M.filasDelPase(duo)[1].v === '10,99 €', 'P4', 'Comprado el · Precio · Viaje')
+  debe(!M.filasDelPase({ ...duo, es_mio: false, importe_cent: null }).some((f) => f.k === 'Precio'), 'P4', 'quien no compró el pase no ve el precio')
+  const pers = M.personasDelPase(duo)
+  debe(pers.length === 2 && pers[0].nombre === 'Elena · tú' && pers[0].estado === 'Quien lo compró' && pers[1].nombre === 'Laura' && pers[1].estado === '✓ Dentro', 'P4', 'con quién lo comparte: «Elena · tú · Quien lo compró» y «Laura · ✓ Dentro»')
+  debe(M.personasDelPase({ ...duo, miembros: [duo.miembros[0]] }).some((p) => p.libre && p.nombre === 'Plaza libre'), 'P4', 'una plaza sin ocupar se enseña como libre')
+  const mp = M.pintaMisPases({ pasesIniciales: [duo, uno], hoy: '2026-10-11' })
+  debe(/Mis pases/.test(mp) && /PASE DÚO · 2 PERSONAS/.test(mp) && /Roma/.test(mp) && /En curso/.test(mp) && /Próximo/.test(mp) && /Lo compartes con/.test(mp) && /Código para invitar/.test(mp) && /K7MQ4XWH/.test(mp) && />Enlace</.test(mp) && (mp.match(/Ver recibo/g) ?? []).length === 2, 'P4', 'P4: tipo, destino, estado, compra, precio, viaje, con quién, código, enlace y [Ver recibo] (uno por pase)')
+  debe(!/Lo compartes con/.test(M.pintaMisPases({ pasesIniciales: [uno], hoy: '2026-10-11' })), 'P4', 'un pase de una persona no lleva «Lo compartes con»')
+  debe(/Ver recibo/.test(M.pintaMisPases({ pasesIniciales: [duo] })) && !/Ver recibo/.test(M.pintaMisPases({ pasesIniciales: [{ ...duo, es_mio: false, tiene_recibo: false, importe_cent: null, invitacion: null }] })), 'P4', '[Ver recibo] solo para quien pagó')
+  debe(/Anulado/.test(M.pintaMisPases({ pasesIniciales: [{ ...duo, estado: 'anulado' }] })) && !/Código para invitar/.test(M.pintaMisPases({ pasesIniciales: [{ ...duo, estado: 'anulado' }] })), 'P4', 'un pase anulado se ve como anulado y ya no deja invitar')
+  const fuenteMP = fs.readFileSync('src/components/ajustes/MisPases.tsx', 'utf8')
+  debe(/verRecibo\(p\.id\)/.test(fuenteMP) && /crearInvitacion\(viaje, \{ passId: p\.id \}\)/.test(fuenteMP), 'P4', '[Ver recibo] abre el recibo y «Crear código» invita con la plaza del pase')
+  const fuenteAj = fs.readFileSync('src/components/ajustes/AjustesScreen.tsx', 'utf8')
+  debe(/apagarAvisosDelMovil/.test(fuenteAj) && /encenderAvisosDelMovil/.test(fuenteAj) && /ponerSonido\(!sonido\)/.test(fuenteAj) && /useMomentosUI\.getState\(\)\.ponerPrimerDia\(true\)/.test(fuenteAj), 'P3', 'los avisos del móvil y el sonido se encienden y apagan de verdad; el tutorial vuelve a salir')
+  debe(/borrarMiCuenta/.test(fuenteAj) && /cerrarSesion/.test(fuenteAj), 'P5', 'Cerrar sesión y Borrar mi cuenta llaman a lo de siempre')
+}
+
+console.log('6. La foto y el nombre del perfil')
+{
+  const M = encendido
+  debe(M.nombreDePila('Laura García') === 'Laura' && M.nombreDePila('  ') === null && M.nombreDePila(null) === null && M.nombreDePila('Ana') === 'Ana', 'nombre', 'el nombre de pila de un nombre completo')
+  debe(M.nombreParaMostrar(null) === 'Viajero' && M.nombreParaMostrar('  ') === 'Viajero' && M.nombreParaMostrar('Elena') === 'Elena', 'nombre', 'con el email, «Viajero» hasta que ponga un nombre')
+  debe(M.inicialDeNombre('elena') === 'E' && M.inicialDeNombre(null) === 'V', 'nombre', 'la inicial: la del nombre o «V» de Viajero')
+  const g = M.estadoDeSesion({ user: { id: 'u', is_anonymous: false, email: 'a@b.es', app_metadata: { provider: 'google' }, user_metadata: { full_name: 'Laura García', avatar_url: 'https://lh3.google.test/a.jpg' } } })
+  debe(g.tipo === 'cuenta' && g.proveedor === 'google' && g.deGoogle.nombre === 'Laura García' && g.deGoogle.foto === 'https://lh3.google.test/a.jpg', 'nombre', 'al entrar con Google, su nombre y su foto de Google llegan con la sesión')
+  const e = M.estadoDeSesion({ user: { id: 'u', is_anonymous: false, email: 'a@b.es', app_metadata: { provider: 'email' }, user_metadata: {} } })
+  debe(e.proveedor === 'email' && e.deGoogle === null, 'nombre', 'con el email no hay nombre ni foto de Google')
+  M.useMiPerfil.setState({ uid: null, nombre: null, fotoPath: null, fotoGoogle: null })
+  await M.useMiPerfil.getState().cargar('u1', { nombre: 'Laura García', foto: 'https://lh3.google.test/a.jpg' })
+  debe(M.useMiPerfil.getState().nombre === 'Laura' && M.useMiPerfil.getState().fotoGoogle === 'https://lh3.google.test/a.jpg', 'nombre', 'la primera vez, el nombre de pila de Google y su foto de Google')
+  await M.useMiPerfil.getState().cargar('u2')
+  debe(M.useMiPerfil.getState().nombre === null && M.useMiPerfil.getState().fotoGoogle === null, 'nombre', 'con el email: sin nombre («Viajero») y sin foto (la inicial)')
+  M.useMiPerfil.setState({ uid: null, nombre: null, fotoPath: null, fotoGoogle: null })
+  // Foto: pequeña y propia.
+  debe(M.OBJETIVO_BYTES_FOTO_PERFIL <= 50 * 1024 && M.PASOS_DE_FOTO_DE_PERFIL[0].lado <= 256 && M.PASOS_DE_FOTO_DE_PERFIL.every((p, i, a) => i === 0 || p.lado <= a[i - 1].lado && p.calidad <= a[i - 1].calidad), 'foto', 'la foto es pequeña (unos pocos KB, un cuadrado de 256 px o menos) y cada intento es más pequeño que el anterior')
+  debe(M.rutaNuevaDeFoto('uid-1', 1700000000000) === 'uid-1/foto-1700000000000.jpg', 'foto', 'cada foto nueva tiene su nombre (nadie ve una foto vieja en la caché), dentro de la carpeta de la persona')
+  debe(M.fotoParaMostrar('uid/foto.jpg', 'https://g/a.jpg') === null || String(M.fotoParaMostrar(null, 'https://g/a.jpg')) === 'https://g/a.jpg', 'foto', 'sin foto propia, la de Google')
+  debe(M.fotoParaMostrar(null, null) === null && M.urlDeFotoDePerfil(null) === null, 'foto', 'sin foto, la inicial')
+  const fuentePerfil = fs.readFileSync('src/lib/miPerfil.ts', 'utf8')
+  debe(/quitarMetadatosJpeg/.test(fuentePerfil) && /createImageBitmap/.test(fuentePerfil) && /BUCKET_PERFILES/.test(fuentePerfil) && /remove\(\[rutaAnterior\]\)/.test(fuentePerfil), 'foto', 'la foto se vuelve a dibujar (sin datos escondidos), va al almacén de perfiles y la anterior se borra')
+  const av = M.pintaAvatar({ foto: null, inicial: 'E', tam: 52 })
+  debe(/data-avatar="inicial"/.test(av) && />E</.test(av) && /data-avatar="foto"/.test(M.pintaAvatar({ foto: 'https://x/y.jpg', inicial: 'E' })), 'foto', 'el círculo: foto si la hay, inicial si no')
+  const cuerpo = fs.readFileSync('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx', 'utf8')
+  debe(/Hola, <em>\{yo\.nombre\}<\/em>/.test(cuerpo) && /foto=\{yo\.foto\}/.test(cuerpo) && /data-editar-perfil/.test(cuerpo), 'foto', 'el Perfil dice «Hola, {nombre}», lleva la foto en el marco y tocarla la cambia')
+  const pie = fs.readFileSync('src/components/logros/momentos/imagen.ts', 'utf8')
+  debe(/inicial: inicialDeNombre\(yo\.nombre\)/.test(pie) && /fotoUrl: fotoParaMostrar/.test(pie) && /crossOrigin = 'anonymous'/.test(pie), 'foto', 'el pie de Compartir lleva mi inicial o mi foto')
+  const lista = fs.readFileSync('src/components/avisos/ListaDeAvisos.tsx', 'utf8')
+  debe(/<Avatar foto=\{fotoDe\?\.\(a\) \?\? null\}/.test(lista) && /fotoDeLaPersona/.test(fs.readFileSync('src/components/layout/NoticesSheet.tsx', 'utf8')), 'foto', 'lo que ven los demás: el «E» y el «L» de la campanita llevan su foto si la tienen')
+  const edit = fs.readFileSync('src/components/ajustes/EditarPerfil.tsx', 'utf8')
+  debe(/Hacer una foto/.test(edit) && /Elegir de la galería/.test(edit) && /capture="user"/.test(edit) && /Quitar la foto/.test(edit) && /Tu nombre/.test(edit), 'foto', 'editar mi perfil: hacer una foto, elegirla de la galería, quitarla y cambiar el nombre')
+}
+
+console.log('7. Invitar a un amigo (la EXP de la 8C1) y borrar la cuenta con su foto')
+{
+  const M = encendido
+  debe(M.enlaceDeAmigo('https://app.ejemplo.es/', 'k7mq-4xwh') === 'https://app.ejemplo.es/?amigo=K7MQ4XWH', 'amigo', 'el enlace personal para invitar a la app')
+  debe(M.codigoDeAmigoDeLaDireccion('?amigo=k7mq4xwh') === 'K7MQ4XWH' && M.codigoDeAmigoDeLaDireccion('?amigo=1') === null && M.codigoDeAmigoDeLaDireccion('') === null, 'amigo', 'el código personal de una dirección')
+  const nueva = await nuevoUsuario('nueva7@correo.es', false, 'Nueva')
+  const vieja = await nuevoUsuario('vieja7@correo.es', false, 'Vieja')
+  const invitadora = await nuevoUsuario('invitadora7@correo.es', false, 'Inés')
+  const otra = await nuevoUsuario('otra7@correo.es', false, 'Otra')
+  // Su código personal (el de siempre).
+  const miCodigo = await como(invitadora, async () => (await q('select public.mi_codigo_app() as c'))[0].c)
+  debe(/^[A-Z2-9]{8}$/.test(miCodigo) && !/[OILol01]/.test(miCodigo), 'amigo', 'el enlace personal usa el mismo formato de código de toda la app')
+  debe((await como(invitadora, async () => (await q('select public.mi_codigo_app() as c'))[0].c)) === miCodigo, 'amigo', 'cada persona tiene un solo código personal')
+  debe((await como(await nuevoUsuario(null, true), () => lanza(() => q('select public.mi_codigo_app()')), { anonimo: true })) !== null, 'amigo', 'una sesión anónima no tiene enlace personal: primero la cuenta')
+  // Fechas de alta: la nueva se acaba de crear; la vieja ya existía.
+  await q("update public.travelers set alta_cuenta = now() where id = $1", [nueva])
+  await q("update public.travelers set alta_cuenta = now() - interval '40 days' where id = $1", [vieja])
+  await q("update public.travelers set alta_cuenta = now() where id = $1", [otra])
+  const reg = (codigo, uid) => servidor(async () => (await q('select public.registrar_referido($1, $2) as r', [codigo, uid]))[0].r)
+  debe((await reg(miCodigo, nueva)).registrado === true, 'amigo', 'cuenta NUEVA que entra por el enlace personal: cuenta como invitación')
+  debe((await reg(miCodigo, vieja)).motivo === 'cuenta_antigua' && (await q('select 1 from public.logro_referidos where invitado_id = $1', [vieja])).length === 0, 'amigo', 'una cuenta que ya existía NO cuenta')
+  debe((await reg(miCodigo, invitadora)).registrado === false, 'amigo', 'nadie se invita a sí mismo')
+  debe((await reg('NOEXISTE', otra)).motivo === 'no_existe', 'amigo', 'un código que no existe no cuenta')
+  // Cada persona tiene un solo invitador: el primero.
+  const otroInvitador = await nuevoUsuario('otroinvitador7@correo.es', false, 'Otro')
+  const codigo2 = await como(otroInvitador, async () => (await q('select public.mi_codigo_app() as c'))[0].c)
+  const segundo = await reg(codigo2, nueva)
+  debe(segundo.registrado === false && segundo.motivo === 'ya_tenia_invitador' && (await q('select invitador_id from public.logro_referidos where invitado_id = $1', [nueva]))[0].invitador_id === invitadora, 'amigo', 'cada persona tiene un solo invitador: el primero')
+  // Entrar por un código de viaje o de pase también cuenta (si crea una cuenta nueva).
+  const viaje7 = await como(invitadora, async () => (await q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [invitadora, rutaDe()]))[0].id)
+  const invViaje = await como(invitadora, async () => (await q('select public.crear_invitacion($1, null, 3) as r', [viaje7]))[0].r)
+  debe((await reg(invViaje.codigo, otra)).registrado === true && (await q('select invitador_id from public.logro_referidos where invitado_id = $1', [otra]))[0].invitador_id === invitadora, 'amigo', 'entrar por el código de un viaje, con una cuenta nueva, cuenta como invitación de quien invitó')
+  const pase7 = (await servidor(() => q("select public.registrar_pago('cs_inv7', 'pi_inv7', 'mentira', $1, 'Roma', 'duo', 2, 1099, 'eur', $2) as r", [invitadora, viaje7])))[0].r
+  const codPase = (await q('select codigo from public.passes where id = $1', [pase7.pase_id]))[0].codigo
+  const recien = await nuevoUsuario('recien7@correo.es', false, 'Recién')
+  await q("update public.travelers set alta_cuenta = now() where id = $1", [recien])
+  debe((await reg(codPase, recien)).registrado === true, 'amigo', 'el código de un pase también cuenta')
+  // Lo demás (100 EXP al acabar el primer viaje, máximo 10 al año) ya estaba: aquí solo se rellena la tabla.
+  const exp = fs.readFileSync('server/logros/exp.js', 'utf8')
+  debe(/viaje_acabado_en/.test(exp), 'amigo', 'la EXP del invitador sigue pidiendo que el amigo acabe su primer viaje (ya estaba)')
+  // La ruta del servidor.
+  const appR = express()
+  appR.use(express.json())
+  fichas.set('tok-nueva7', nueva)
+  fichas.set('tok-vieja7', vieja)
+  const cuentas = await import('../../server/cuentas.js')
+  cuentas.registrarRutasCuentas(appR, admin)
+  const sR = await new Promise((ok) => {
+    const s = appR.listen(0, () => ok(s))
+  })
+  const post = async (token, codigo) => {
+    const r = await fetch(`http://127.0.0.1:${sR.address().port}/api/invitaciones/registrar`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ codigo }) })
+    return { estado: r.status, json: await r.json().catch(() => null) }
+  }
+  const nueva2 = await nuevoUsuario('nueva72@correo.es', false, 'Nueva2')
+  await q("update public.travelers set alta_cuenta = now() where id = $1", [nueva2])
+  fichas.set('tok-nueva72', nueva2)
+  debe((await post(null, miCodigo)).estado === 401 && (await post('tok-anon4', miCodigo)).estado === 401, 'amigo', 'POST /api/invitaciones/registrar pide una cuenta de verdad')
+  debe((await post('tok-nueva72', miCodigo)).json.registrado === true && (await post('tok-vieja7', miCodigo)).json.registrado === false, 'amigo', 'por HTTP: la cuenta nueva cuenta; la vieja, no')
+  sR.close()
+  const cuentasFuente = fs.readFileSync('src/lib/cuentas.ts', 'utf8')
+  debe(/registrarInvitado\(codigo\)/.test(cuentasFuente) && /registrarInvitado\(amigo\)/.test(cuentasFuente) && /guardarAmigoPendiente\(amigo\)/.test(cuentasFuente), 'amigo', 'al crear la cuenta se apunta la invitación (de viaje, de pase o personal)')
+
+  // Borrar la cuenta: la foto de perfil se va (y los registros de cobro se quedan, ya probado).
+  const fotoU = await nuevoUsuario('foto7@correo.es', false, 'Foto')
+  await q("insert into storage.buckets (id, name, public) values ('perfiles', 'perfiles', true) on conflict do nothing")
+  await q("insert into storage.objects (bucket_id, name, owner) values ('perfiles', $1, $2), ('fotos-viaje', $3, $2)", [`${fotoU}/foto-1.jpg`, fotoU, `${fotoU}/x/a.jpg`])
+  await q('update public.travelers set foto_path = $1 where id = $2', [`${fotoU}/foto-1.jpg`, fotoU])
+  fichas.set('tok-foto7', fotoU)
+  const bor = await borrarCuenta(admin, 'tok-foto7')
+  debe(bor.estado === 200 && (await q("select 1 from storage.objects where bucket_id = 'perfiles' and name like $1", [`${fotoU}/%`])).length === 0 && (await q("select 1 from storage.objects where name like $1", [`${fotoU}/%`])).length === 0, 'borrar', 'al borrar la cuenta se va también la foto de perfil (y las demás fotos)')
+  // El almacén de perfiles: público para ver, solo cada persona escribe en su carpeta.
+  const bucket = (await q("select public from storage.buckets where id = 'perfiles'"))[0]
+  debe(bucket?.public === true, 'foto', 'el almacén de perfiles es público para poder verse (cada persona solo escribe en su carpeta)')
+  const meti = await como(nueva, () => lanza(() => q("insert into storage.objects (bucket_id, name, owner) values ('perfiles', $1, $2)", [`${otra}/foto.jpg`, nueva])))
+  debe(meti !== null, 'foto', 'nadie puede subir una foto a la carpeta de otra persona')
+  const mia = await como(nueva, () => lanza(() => q("insert into storage.objects (bucket_id, name, owner) values ('perfiles', $1, $2)", [`${nueva}/foto-1.jpg`, nueva])))
+  debe(mia === null, 'foto', 'cada persona sí puede subir la suya a su carpeta')
 }
 
 /* ═══════════════ Resumen ═══════════════ */

@@ -1,3 +1,5 @@
+import { fotoParaMostrar, inicialDeNombre } from '../../../lib/miPerfil'
+import { useMiPerfil } from '../../../store/useMiPerfil'
 import { createElement, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
@@ -188,6 +190,9 @@ export interface DatosDelPie {
   rango_ix: number
   estrellas: number
   titulo: string | null
+  /** (cuentas parte 3) La inicial de mi nombre y la dirección de mi foto (la mía o la de Google): van dentro del marco. Sin foto, la inicial. */
+  inicial?: string
+  fotoUrl?: string | null
 }
 
 /** Lo del pie que sale del servidor: el rango y las estrellas (de la EXP) y el título elegido (entre sus logros de viajero). Sin cuenta o sin respuesta, null y la imagen sale sin pie. */
@@ -202,19 +207,21 @@ export async function datosDelPie(): Promise<DatosDelPie | null> {
     const def = viajero.logros.find((l) => `viajero:${l.id}` === logro)
     titulo = def ? (def.escalones.find((e) => String(e.n) === escalon)?.nombre ?? def.nombre) : null
   }
-  return { rango_ix: exp.rango_ix, estrellas: exp.estrellas, titulo }
+  const yo = useMiPerfil.getState()
+  return { rango_ix: exp.rango_ix, estrellas: exp.estrellas, titulo, inicial: inicialDeNombre(yo.nombre), fotoUrl: fotoParaMostrar(yo.fotoPath, yo.fotoGoogle) }
 }
 
-const cargarImagen = (src: string) =>
+const cargarImagen = (src: string, deFuera = false) =>
   new Promise<HTMLImageElement | null>((ok) => {
     const i = new Image()
+    if (deFuera) i.crossOrigin = 'anonymous' // (la foto de perfil está en otro sitio: sin esto el lienzo no se podría guardar)
     i.onload = () => ok(i)
     i.onerror = () => ok(null)
     i.src = src
   })
 
 /** Pinta el pie: una raya, el marco con la inicial dentro, el título y, a la derecha, el hueco del logo (vacío mientras no haya logo). No lleva ningún nombre puesto a mano. */
-export async function pintarPie(ctx: CanvasRenderingContext2D, pie: DatosDelPie | null, inicial = 'V', y = 1676): Promise<void> {
+export async function pintarPie(ctx: CanvasRenderingContext2D, pie: DatosDelPie | null, inicial = pie?.inicial ?? 'V', y = 1676): Promise<void> {
   ctx.fillStyle = 'rgba(255,253,248,.14)'
   ctx.fillRect(56, y, ANCHO - 112, 2)
   const base = y + 28
@@ -230,7 +237,17 @@ export async function pintarPie(ctx: CanvasRenderingContext2D, pie: DatosDelPie 
     ctx.fillStyle = '#1C2230'
     ctx.fillRect(x, base, w, w)
     ctx.restore()
-    texto(ctx, inicial, x + w / 2, base + w * 0.5 + 14, "400 38px 'Instrument Serif',serif", '#FFFDF8', 100)
+    // Con foto, la foto llena la ventana del marco (recortada en círculo); sin foto, la inicial.
+    const foto = pie.fotoUrl ? await cargarImagen(pie.fotoUrl, true) : null
+    if (foto) {
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(x + w / 2, base + w * 0.5, w * 0.23, 0, Math.PI * 2)
+      ctx.clip()
+      const lado = Math.min(foto.width, foto.height)
+      ctx.drawImage(foto, (foto.width - lado) / 2, (foto.height - lado) / 2, lado, lado, x + w * 0.27, base + w * 0.27, w * 0.46, w * 0.46)
+      ctx.restore()
+    } else texto(ctx, inicial, x + w / 2, base + w * 0.5 + 14, "400 38px 'Instrument Serif',serif", '#FFFDF8', 100)
     if (marco) ctx.drawImage(marco, x, base, w, w)
     for (let i = 0; i < 5; i++) {
       const on = i < pie.estrellas

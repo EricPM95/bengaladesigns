@@ -6,6 +6,8 @@ import { Icono } from '../ui/Icono'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { ListaDeAvisos } from '../avisos/ListaDeAvisos'
 import { abrirAviso } from '../avisos/abrirAviso'
+import { urlDeFotoDePerfil } from '../../lib/miPerfil'
+import { useViajeCompartido } from '../../store/useViajeCompartido'
 
 const KIND_STYLE: Record<AppNotice['kind'], { label: string; color: string; icon: NombreIcono }> = {
   error: { label: 'Error', color: 'rgb(var(--accent-red))', icon: 'error' },
@@ -32,6 +34,12 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
     onClose()
   }
   const nada = items.length === 0 && avisosDeLaCuenta.length === 0
+  // La foto de quien hace lo que cuenta el aviso (si es de este viaje y la tiene puesta).
+  const gente = useViajeCompartido((state) => state.gente)
+  const fotoDeLaPersona = (aviso: { payload: Record<string, unknown> }) => {
+    const id = (aviso.payload.autor_id ?? aviso.payload.persona_id ?? aviso.payload.admin_id) as string | undefined
+    return urlDeFotoDePerfil(gente.find((p) => p.id === id)?.foto)
+  }
 
   const read = (item: AppNotice) => {
     item.onRead?.()
@@ -54,7 +62,7 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
         </h2>
 
         <div className="mt-4 flex min-h-0 flex-col gap-2.5 overflow-y-auto pb-1">
-          {avisosDeLaCuenta.length > 0 && <ListaDeAvisos avisos={avisosDeLaCuenta} resaltado={resaltado} onTocar={(aviso) => void abrirAviso(aviso)} />}
+          {avisosDeLaCuenta.length > 0 && <ListaDeAvisos avisos={avisosDeLaCuenta} resaltado={resaltado} onTocar={(aviso) => void abrirAviso(aviso)} fotoDe={fotoDeLaPersona} />}
           {nada && <p className="py-4 text-[14px] text-text-soft">No tienes avisos. Cuando haya algo que mirar, saldrá aquí.</p>}
           {items.map((item) => {
             const style = KIND_STYLE[item.kind]

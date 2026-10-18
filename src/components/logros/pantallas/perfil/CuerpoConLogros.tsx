@@ -12,6 +12,9 @@ import { NivelYBarra } from './NivelYBarra'
 import { PiezaDeVitrina } from './PiezaDeVitrina'
 import { TarjetaDeViaje } from './TarjetaDeViaje'
 import { textoDeNivel } from './util'
+import { inicialDeNombre } from '../../../../lib/miPerfil'
+import { useMiNombreYFoto } from '../../../../store/useMiPerfil'
+import { useAjustesUi } from '../../../../store/useAjustesUi'
 
 const ETIQUETA_DE_GRUPO = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em' } as const
 const DORADO = '#F3D59A'
@@ -40,6 +43,10 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
   const [eligiendo, setEligiendo] = useState(false)
   const pantallas = useLogrosPantallas((s) => s.pila.length)
   const abrir = useLogrosPantallas.getState().abrir
+  // Mi nombre y mi foto (cuentas parte 3): «Hola, {nombre}» y la foto en el marco; tocar el círculo los cambia.
+  const yo = useMiNombreYFoto()
+  const abrirAjustes = useAjustesUi((s) => s.abrir)
+  const editarPerfil = useAjustesUi((s) => s.editarPerfil)
 
   // Al abrir el Perfil y cada vez que se vuelve de una pantalla de logros (por si ha cambiado el título o la vitrina).
   useEffect(() => {
@@ -68,12 +75,14 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
   return (
     <>
       <div className="relative flex items-center gap-3.5 px-1" data-cabecera-con-marco>
+        <button type="button" onClick={() => editarPerfil(true)} aria-label="Cambiar mi foto y mi nombre" data-editar-perfil className="flex-none rounded-full">
         <MarcoDeRango rango={exp.rango_ix} estrellas={exp.estrellas} leyenda={exp.leyenda_estrellas} tam={104} etiqueta={`Marco ${exp.rango}, nivel ${exp.estrellas} de 5`}>
-          <InicialEnMarco letra="V" tam={104} />
+          <InicialEnMarco letra={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={104} foto={yo.foto} />
         </MarcoDeRango>
+        </button>
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h2 className="m-0 font-display text-[34px] leading-none tracking-[-.01em] text-text">
-            Hola, <em>viajero</em>
+            Hola, <em>{yo.nombre}</em>
           </h2>
           <span className="text-[13px] font-semibold text-text" data-nivel-y-rango>
             {textoDeNivel(exp)}
@@ -88,7 +97,7 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
             </button>
           )}
         </div>
-        <button type="button" aria-label="Ajustes" data-ajustes className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-text/70">
+        <button type="button" aria-label="Ajustes" data-ajustes onClick={() => abrirAjustes()} className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-text/70">
           <Icono nombre="ajustes" size={22} />
         </button>
       </div>

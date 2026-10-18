@@ -24,6 +24,14 @@ import { haceCuanto, avisoDeLaDireccion } from '../../src/lib/avisos'
 import { tocaPedirPermiso } from '../../src/lib/permisoAvisos'
 import { ListaDeAvisos } from '../../src/components/avisos/ListaDeAvisos'
 import { textoDelAviso, textoDelPush, quienDelAviso } from '../../shared/avisos/textos.js'
+import { textoDeComoEntra, textoDeMisPases, etiquetaDelPase, estadoDelPase, fechaDeCompra, rangoDelViaje, filasDelPase, personasDelPase } from '../../src/lib/ajustes'
+import { nombreDePila, nombreParaMostrar, inicialDeNombre, fotoParaMostrar, urlDeFotoDePerfil, rutaNuevaDeFoto, PASOS_DE_FOTO_DE_PERFIL, OBJETIVO_BYTES_FOTO_PERFIL } from '../../src/lib/miPerfil'
+import { enlaceDeAmigo, codigoDeAmigoDeLaDireccion } from '../../src/lib/invitaciones'
+import { estadoDeSesion } from '../../src/lib/cuentas'
+import { AjustesScreen } from '../../src/components/ajustes/AjustesScreen'
+import { MisPases } from '../../src/components/ajustes/MisPases'
+import { Avatar } from '../../src/components/ajustes/Avatar'
+import { useMiPerfil } from '../../src/store/useMiPerfil'
 import { CambioParada } from '../../src/components/propuesta/CambioParada'
 import { HojaVerPropuesta, FilaDeCambio } from '../../src/components/propuesta/HojaVerPropuesta'
 import { HojaRecomendacion } from '../../src/components/propuesta/HojaRecomendacion'
@@ -100,6 +108,29 @@ export const M = {
   textoDelPush,
   quienDelAviso,
   pintaListaDeAvisos: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(ListaDeAvisos, props as never)),
+  textoDeComoEntra,
+  textoDeMisPases,
+  etiquetaDelPase,
+  estadoDelPase,
+  fechaDeCompra,
+  rangoDelViaje,
+  filasDelPase,
+  personasDelPase,
+  nombreDePila,
+  nombreParaMostrar,
+  inicialDeNombre,
+  fotoParaMostrar,
+  urlDeFotoDePerfil,
+  rutaNuevaDeFoto,
+  PASOS_DE_FOTO_DE_PERFIL,
+  OBJETIVO_BYTES_FOTO_PERFIL,
+  enlaceDeAmigo,
+  codigoDeAmigoDeLaDireccion,
+  estadoDeSesion,
+  useMiPerfil,
+  pintaAjustes: (props: Record<string, unknown> = {}) => renderToStaticMarkup(createElement(AjustesScreen, { onVolver: () => undefined, ...props } as never)),
+  pintaMisPases: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(MisPases, { onVolver: () => undefined, ...props } as never)),
+  pintaAvatar: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(Avatar, props as never)),
   pintaPagoHost: () => renderToStaticMarkup(createElement(PagoHost)),
   pintaTextoPase: (texto: string) => renderToStaticMarkup(createElement(TextoConPase, { texto })),
 }

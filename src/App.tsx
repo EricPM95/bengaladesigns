@@ -11,6 +11,7 @@ import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
 import { PagoHost } from './components/pase/PagoHost'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
 import { AvisosHost } from './components/avisos/AvisosHost'
+import { AjustesHosts } from './components/ajustes/AjustesHosts'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
 import { MomentosHost } from './components/logros/momentos/MomentosHost'
@@ -97,6 +98,7 @@ function App() {
       <PagoHost />
       <PropuestaHost />
       <AvisosHost />
+      <AjustesHosts />
       <VistosPorPersona />
       <LogrosPorVisto />
       <MomentosHost />

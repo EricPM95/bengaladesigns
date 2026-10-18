@@ -7,7 +7,6 @@ import { quitarMetadatosJpeg, pasosDeCompresion, nombreDeArchivo, OBJETIVO_BYTES
 import { vistosDeLaRuta } from '../../src/lib/vistosApi'
 import { APARTADOS_DE_PRIVACIDAD, SERVICIOS_DE_FUERA, TEXTO_PENDIENTE } from '../../src/lib/privacidad'
 import { PuertaDeCuenta } from '../../src/components/cuenta/PuertaDeCuenta'
-import { CuentaEnPerfil } from '../../src/components/cuenta/CuentaEnPerfil'
 import { PrivacidadScreen } from '../../src/components/cuenta/PrivacidadScreen'
 import { EntrarCuenta } from '../../src/components/cuenta/EntrarCuenta'
 import { VistosPorPersona } from '../../src/components/cuenta/VistosPorPersona'
@@ -34,7 +33,6 @@ export const M = {
   SERVICIOS_DE_FUERA,
   TEXTO_PENDIENTE,
   pintaPuerta: () => renderToStaticMarkup(createElement(PuertaDeCuenta)),
-  pintaCuentaEnPerfil: () => renderToStaticMarkup(createElement(CuentaEnPerfil)),
   pintaPrivacidad: () => renderToStaticMarkup(createElement(PrivacidadScreen, { onVolver: () => undefined })),
   resolverRecomendacion,
   vistaPrevia,

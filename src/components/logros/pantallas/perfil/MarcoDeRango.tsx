@@ -66,7 +66,9 @@ export function MarcoDeRango({ rango, estrellas = 1, tam = 110, leyenda = 0, chi
 }
 
 /** La inicial dentro del marco (cuando no hay foto): el círculo oscuro de Design con la letra en la serif de la app. */
-export function InicialEnMarco({ letra, tam }: { letra: string; tam: number }): ReactNode {
+export function InicialEnMarco({ letra, tam, foto = null }: { letra: string; tam: number; foto?: string | null }): ReactNode {
+  // Con foto (la suya o la de Google), la foto llena la ventana del marco; sin foto, la inicial.
+  if (foto) return <img src={foto} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
   return (
     <span aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 38%,#2E3550,#1C2230 75%)', color: '#FFFDF8', display: 'flex', alignItems: 'center', justifyContent: 'center', font: `400 ${Math.round(tam * 0.4)}px/1 'Instrument Serif',serif` }}>
       {letra}

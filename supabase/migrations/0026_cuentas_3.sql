@@ -279,7 +279,7 @@ begin
     select (d ->> 'dayNumber')::integer into v_dia from public.trips t, jsonb_array_elements(coalesce(t.route -> 'days', '[]'::jsonb)) d where t.id = new.trip_id and d ->> 'id' = v_dayid limit 1;
   end if;
   insert into public.avisos (user_id, tipo, clave, payload)
-  values (new.author_id, new.estado, 'resp:' || new.id, jsonb_build_object('trip_id', new.trip_id, 'rec_id', new.id, 'admin', v_nombre, 'tipo_rec', new.tipo, 'dia', v_dia))
+  values (new.author_id, new.estado, 'resp:' || new.id, jsonb_build_object('trip_id', new.trip_id, 'rec_id', new.id, 'admin_id', coalesce(new.decidida_por, v_owner), 'admin', v_nombre, 'tipo_rec', new.tipo, 'dia', v_dia))
   on conflict do nothing;
   update public.avisos set leido_en = coalesce(leido_en, now()) where clave = 'rec:' || new.id;
   return new;
@@ -406,5 +406,84 @@ grant execute on function public.avisos_para_push(integer) to service_role;
 grant execute on function public.marcar_push(uuid) to service_role;
 grant execute on function public.borrar_suscripcion(text) to service_role;
 grant execute on function public.usuarios_para_avisos(date, date) to service_role;
+
+-- ── 6. La foto y el nombre del perfil ────────────────────────────────────────────────────────────────────────────────────────────────
+
+-- La foto del perfil: pequeña (unos pocos KB, sin datos escondidos: la app la vuelve a dibujar), en su propia carpeta pública `perfiles/<tu id>/…`. Se ve en el Perfil, en «Hola, …», en el pie de
+-- Compartir y en lo que ven los demás del viaje (el «E» y el «L»). Se borra con la cuenta (el servidor vacía la carpeta antes de borrar al usuario). El nombre va en `travelers.nombre`.
+insert into storage.buckets (id, name, public) values ('perfiles', 'perfiles', true)
+on conflict (id) do update set public = true;
+drop policy if exists "perfiles insert own" on storage.objects;
+create policy "perfiles insert own" on storage.objects for insert to authenticated
+  with check (bucket_id = 'perfiles' and (storage.foldername(name))[1] = auth.uid()::text);
+drop policy if exists "perfiles update own" on storage.objects;
+create policy "perfiles update own" on storage.objects for update to authenticated
+  using (bucket_id = 'perfiles' and (storage.foldername(name))[1] = auth.uid()::text)
+  with check (bucket_id = 'perfiles' and (storage.foldername(name))[1] = auth.uid()::text);
+drop policy if exists "perfiles delete own" on storage.objects;
+create policy "perfiles delete own" on storage.objects for delete to authenticated
+  using (bucket_id = 'perfiles' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- ── 7. Invitar a un amigo (la EXP de la 8C1) ─────────────────────────────────────────────────────────────────────────────────────────────
+
+-- Cada persona tiene un enlace personal para invitar a la app (sin viaje): un código, el de siempre (8 caracteres sin 0, O, 1, I ni L).
+create table if not exists public.invitaciones_app (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  codigo text not null unique,
+  creado_en timestamptz not null default now()
+);
+alter table public.invitaciones_app enable row level security;
+drop policy if exists "invitaciones_app select own" on public.invitaciones_app;
+create policy "invitaciones_app select own" on public.invitaciones_app for select to authenticated using (user_id = auth.uid());
+
+create or replace function public.mi_codigo_app() returns text
+language plpgsql security definer set search_path = public as $$
+declare
+  v_uid uuid := auth.uid();
+  v_codigo text;
+  v_intento integer := 0;
+begin
+  if v_uid is null then raise exception 'Hace falta una sesión.'; end if;
+  if coalesce((auth.jwt() ->> 'is_anonymous')::boolean, true) then raise exception 'Primero crea tu cuenta.'; end if;
+  select codigo into v_codigo from public.invitaciones_app where user_id = v_uid;
+  if v_codigo is not null then return v_codigo; end if;
+  loop
+    v_intento := v_intento + 1;
+    begin
+      insert into public.invitaciones_app (user_id, codigo) values (v_uid, public.generar_codigo(v_uid::text)) returning codigo into v_codigo;
+      return v_codigo;
+    exception when unique_violation then
+      select codigo into v_codigo from public.invitaciones_app where user_id = v_uid;
+      if v_codigo is not null then return v_codigo; end if;
+      if v_intento >= 8 then raise exception 'No se pudo crear tu enlace; vuelve a probar.'; end if;
+    end;
+  end loop;
+end $$;
+revoke all on function public.mi_codigo_app() from public, anon;
+grant execute on function public.mi_codigo_app() to authenticated;
+
+-- Apunta quién invitó a quién. Solo lo llama el servidor. CUENTA como invitación entrar por un enlace o un código de viaje, de pase o personal SI con eso se crea una cuenta NUEVA (una cuenta que
+-- ya existía no cuenta: se mira que su fecha de alta sea de hoy). Cada persona tiene un solo invitador: el primero. Lo demás (100 EXP cuando el amigo acaba su primer viaje, máximo 10 al año) ya está.
+create or replace function public.registrar_referido(p_codigo text, p_invitado uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  v_codigo text := upper(trim(coalesce(p_codigo, '')));
+  v_alta timestamptz;
+  v_invitador uuid;
+  v_filas integer;
+begin
+  select alta_cuenta into v_alta from public.travelers where id = p_invitado;
+  if v_alta is null or v_alta < now() - interval '24 hours' then return jsonb_build_object('registrado', false, 'motivo', 'cuenta_antigua'); end if;
+  select user_id into v_invitador from public.invitaciones_app where codigo = v_codigo;
+  if v_invitador is null then select creada_por into v_invitador from public.trip_invitations where codigo = v_codigo; end if;
+  if v_invitador is null then select comprador_id into v_invitador from public.passes where codigo = v_codigo; end if;
+  if v_invitador is null then return jsonb_build_object('registrado', false, 'motivo', 'no_existe'); end if;
+  if v_invitador = p_invitado then return jsonb_build_object('registrado', false, 'motivo', 'uno_mismo'); end if;
+  insert into public.logro_referidos (invitador_id, invitado_id) values (v_invitador, p_invitado) on conflict (invitado_id) do nothing;
+  get diagnostics v_filas = row_count;
+  return jsonb_build_object('registrado', v_filas > 0, 'motivo', case when v_filas > 0 then 'ok' else 'ya_tenia_invitador' end);
+end $$;
+revoke all on function public.registrar_referido(text, uuid) from public, anon, authenticated;
+grant execute on function public.registrar_referido(text, uuid) to service_role;
 
 commit;

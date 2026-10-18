@@ -11,6 +11,8 @@
  */
 
 export const BUCKET_FOTOS = 'fotos-viaje'
+/** La foto del perfil (0026): su propio almacén, con una carpeta por persona. */
+export const BUCKET_PERFILES = 'perfiles'
 const SIN_CLAVE = 'Las cuentas todavía no están preparadas en el servidor (falta la clave de servicio de Supabase).'
 
 export const tokenDe = (req) => {
@@ -26,8 +28,8 @@ export async function quienEs(admin, token) {
 }
 
 /** Todos los archivos de la carpeta de ese usuario en el bucket de fotos (con sus subcarpetas), como rutas completas. */
-export async function archivosDe(admin, uid) {
-  const almacen = admin.storage.from(BUCKET_FOTOS)
+export async function archivosDe(admin, uid, bucket = BUCKET_FOTOS) {
+  const almacen = admin.storage.from(bucket)
   const rutas = []
   const pendientes = [uid]
   while (pendientes.length > 0) {
@@ -56,6 +58,12 @@ export async function borrarCuenta(admin, token) {
   for (let i = 0; i < archivos.length; i += 100) {
     const { error } = await admin.storage.from(BUCKET_FOTOS).remove(archivos.slice(i, i + 100))
     if (error) return { estado: 500, cuerpo: { error: 'No se pudieron borrar tus fotos. No se ha borrado nada más; vuelve a probar.' } }
+  }
+  // La foto del perfil (otro almacén): también se va con la cuenta.
+  const delPerfil = await archivosDe(admin, usuario.id, BUCKET_PERFILES)
+  if (delPerfil.length > 0) {
+    const { error } = await admin.storage.from(BUCKET_PERFILES).remove(delPerfil)
+    if (error) return { estado: 500, cuerpo: { error: 'No se pudo borrar tu foto de perfil. No se ha borrado nada más; vuelve a probar.' } }
   }
   const { error } = await admin.auth.admin.deleteUser(usuario.id)
   if (error) return { estado: 500, cuerpo: { error: 'Tus fotos se han borrado, pero no se pudo borrar la cuenta. Vuelve a probar.' } }
@@ -113,6 +121,20 @@ export function registrarRutasCuentas(app, admin) {
     } catch (error) {
       console.error('[cuenta/reclamar]', error)
       res.status(500).json({ error: 'No se pudo pasar lo de este móvil a tu cuenta.' })
+    }
+  })
+  // Invitar a un amigo (la EXP de la 8C1): entrar por un enlace o un código de viaje, de pase o personal cuenta como invitación SI con eso se crea una cuenta nueva (lo decide la base de datos).
+  app.post('/api/invitaciones/registrar', async (req, res) => {
+    if (!admin) return res.status(503).json({ error: SIN_CLAVE })
+    try {
+      const usuario = await quienEs(admin, tokenDe(req))
+      if (!usuario || usuario.is_anonymous === true) return res.status(401).json({ error: 'Tu sesión no es válida. Entra otra vez.' })
+      const { data, error } = await admin.rpc('registrar_referido', { p_codigo: String(req.body?.codigo ?? ''), p_invitado: usuario.id })
+      if (error) return res.status(500).json({ error: 'No se pudo apuntar la invitación.' })
+      res.json({ ok: true, ...data })
+    } catch (error) {
+      console.error('[invitaciones/registrar]', error)
+      res.status(500).json({ error: 'No se pudo apuntar la invitación.' })
     }
   })
   app.delete('/api/cuenta', async (req, res) => {

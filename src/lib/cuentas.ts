@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from './supabaseClient'
-import { canjearInvitacion, codigoDeLaDireccion, guardarInvitacionPendiente, invitacionAceptada, invitacionPendiente, olvidarInvitacionPendiente } from './invitaciones'
+import { amigoPendiente, canjearInvitacion, codigoDeAmigoDeLaDireccion, codigoDeLaDireccion, guardarAmigoPendiente, guardarInvitacionPendiente, invitacionAceptada, invitacionPendiente, olvidarAmigoPendiente, olvidarInvitacionPendiente, registrarInvitado } from './invitaciones'
 
 /**
  * LAS CUENTAS, PARTE 1 (docs/dias/PLAN_CUENTAS.md). Entrar con el email (enlace mágico) o con Google, pasar a la cuenta lo que el móvil tenía, cerrar sesión y
@@ -56,13 +56,27 @@ export function cuentasActivas(): boolean {
 /* Quién es                                                            */
 /* ------------------------------------------------------------------ */
 
-export type EstadoDeCuenta = { tipo: 'cargando' } | { tipo: 'sin_sesion' } | { tipo: 'anonima'; uid: string } | { tipo: 'cuenta'; uid: string; email: string | null }
+export interface DeGoogle {
+  nombre: string | null
+  foto: string | null
+}
+export type EstadoDeCuenta =
+  | { tipo: 'cargando' }
+  | { tipo: 'sin_sesion' }
+  | { tipo: 'anonima'; uid: string }
+  /** `proveedor`: cómo entra («email» o «google»); `deGoogle`: su nombre y su foto de Google, si entra con Google. */
+  | { tipo: 'cuenta'; uid: string; email: string | null; proveedor?: string | null; deGoogle?: DeGoogle | null }
 
 export const esAnonimo = (usuario: Pick<User, 'is_anonymous'> | null | undefined): boolean => usuario?.is_anonymous === true
 
 export function estadoDeSesion(sesion: Session | null): EstadoDeCuenta {
   if (!sesion?.user) return { tipo: 'sin_sesion' }
-  return esAnonimo(sesion.user) ? { tipo: 'anonima', uid: sesion.user.id } : { tipo: 'cuenta', uid: sesion.user.id, email: sesion.user.email ?? null }
+  if (esAnonimo(sesion.user)) return { tipo: 'anonima', uid: sesion.user.id }
+  const meta = (sesion.user.user_metadata ?? {}) as { full_name?: string; name?: string; avatar_url?: string; picture?: string }
+  const proveedor = (sesion.user.app_metadata as { provider?: string } | undefined)?.provider ?? null
+  const nombre = meta.full_name ?? meta.name ?? null
+  const foto = meta.avatar_url ?? meta.picture ?? null
+  return { tipo: 'cuenta', uid: sesion.user.id, email: sesion.user.email ?? null, proveedor, deGoogle: proveedor === 'google' ? { nombre, foto } : null }
 }
 
 /* ------------------------------------------------------------------ */
@@ -244,6 +258,12 @@ export function olvidarAvisoDeInvitacion(): void {
 /** Si la dirección trae `?invitacion=CÓDIGO`, se guarda para canjearla después de entrar y se limpia la dirección. */
 export function recogerInvitacionDeLaDireccion(): string | null {
   try {
+    // El enlace personal para invitar a la app («?amigo=CÓDIGO»): se guarda para apuntar la invitación justo después de crear la cuenta.
+    const amigo = codigoDeAmigoDeLaDireccion(window.location.search)
+    if (amigo) {
+      guardarAmigoPendiente(amigo)
+      window.history.replaceState(null, '', window.location.pathname)
+    }
     const codigo = codigoDeLaDireccion(window.location.search)
     if (!codigo) return null
     guardarInvitacionPendiente(codigo)
@@ -274,11 +294,19 @@ export function completarEntrada(sesion: Session): Promise<void> {
       if (codigo && invitacionAceptada()) {
         const resultado = await canjearInvitacion(codigo)
         olvidarInvitacionPendiente()
+        // Entrar por un enlace o un código de viaje o de pase cuenta como invitación SI con eso se creó una cuenta nueva (lo decide el servidor).
+        if (!resultado.error) await registrarInvitado(codigo)
         if (resultado.error) guardarAvisoDeInvitacion(resultado.error)
         else if (!resultado.yaEstaba) {
           guardarAvisoDeInvitacion('Has entrado en el viaje como invitado.')
           entroEnUnViaje = true
         }
+      }
+      // El enlace personal para invitar a la app (sin viaje).
+      const amigo = amigoPendiente()
+      if (amigo) {
+        await registrarInvitado(amigo)
+        olvidarAmigoPendiente()
       }
       // Con el `uid` cambiado, o con un viaje nuevo, todo lo que la app cargó está viejo: se recarga una vez, con la dirección limpia.
       if (pasado || entroEnUnViaje) recargarLimpio(window.location.pathname)
