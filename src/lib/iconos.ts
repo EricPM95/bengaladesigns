@@ -81,6 +81,10 @@ export const ICONOS = {
   hechoCirculo: 'M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM9 12l2 2 4-4',
   cafe: 'M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M8 3v2M12 3v2',
   portapapeles: 'M7 4h10a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM9 3h6v3H9zM9 12h6M9 16h4',
+  // (Cuentas parte 3) Compartir el viaje, recomendar un cambio y la ficha de una parada: los iconos de «Pase Cuenta».
+  compartirViaje: 'M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v13M7 8l5-5 5 5',
+  recomendar: 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z',
+  ficha: 'M5 4h14v16H5zM8 8h8M8 12h8M8 16h5',
   // ── Los que faltaban para quitar los emojis de la interfaz (Tanda 6z4): mismo trazo ──
   // taxi: ver el bloque «Transporte» (Tanda 6y4), al final de ICONOS.
   arte: 'M12 3a9 9 0 1 0 0 18c1.5 0 2-1 2-2s-.7-1.6-.7-2.6c0-1 .8-1.9 1.9-1.9H18a3 3 0 0 0 3-3A9 9 0 0 0 12 3zM7.5 11h.01M10 7.5h.01M14.5 7.5h.01',

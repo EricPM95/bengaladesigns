@@ -515,6 +515,201 @@ console.log('2c. La prueba de HOY va con la cuenta: una por cuenta, para siempre
 }
 
 
+/* ═══════════════ PARTE 3 · Compartir el viaje y recomendar cambios ═══════════════ */
+console.log('3. Recomendar cambios: la propuesta, la pareja, R2 y el modo recomendación')
+{
+  const M = encendido
+  const st = (id, name, time = '09:00') => ({ id, name, time, description: '', durationMinutes: 60, coordinates: { lat: 41.9, lng: 12.5 }, photoUrl: '' })
+  const dia = (id, n, stops, extra = {}) => ({ id, dayNumber: n, city: 'Roma', title: `Día ${n}`, stops, meals: [], ...extra })
+  const rutaDe3 = () => ({
+    id: 'r', destination: 'Roma', answers: { dateRange: { start: '2026-10-16', end: '2026-10-19' } },
+    days: [
+      dia('d1', 1, [st('a1', 'Piazza Navona'), st('a2', 'Panteón'), st('a3', 'Fontana de Trevi')]),
+      dia('d2', 2, [st('v1', 'Museos Vaticanos'), st('v2', 'Plaza de San Pedro'), st('v3', 'Basílica de San Pedro'), st('v4', 'Castillo de Sant’Angelo')]),
+      dia('d3', 3, [st('r1', 'Coliseo'), st('r2', 'Foro Romano'), st('r3', 'Termas de Caracalla')]),
+      dia('d4', 4, [st('t1', 'Trastevere')]),
+    ],
+  })
+  const conStops = (ruta, dayId, f) => ({ ...ruta, days: ruta.days.map((d) => (d.id === dayId ? { ...d, stops: f(d.stops) } : d)) })
+
+  // La comparación de listas y la pareja.
+  const nom = (x) => x
+  const L = M.lineasDeCambio
+  const swap = L(['A', 'B', 'C', 'D'], ['A', 'B', 'C', 'E'], nom)
+  debe(swap.map((l) => l.tipo).join() === 'igual,igual,igual,pareja' && swap[3].a === 'D' && swap[3].b === 'E', 'pareja', 'cambiar una parada por otra sale como UNA pareja (lo que sale y lo que entra en el mismo hueco)')
+  debe(L(['A', 'B', 'C'], ['A', 'C'], nom).map((l) => l.tipo).join() === 'igual,sale,igual', 'pareja', 'quitar una parada: sale')
+  debe(L(['A', 'C'], ['A', 'B', 'C'], nom).map((l) => l.tipo).join() === 'igual,entra,igual', 'pareja', 'añadir una parada: entra')
+  const mov = L(['A', 'B', 'C'], ['B', 'C', 'A'], nom)
+  debe(mov.some((l) => l.tipo === 'mueve' && l.b === 'A') && !mov.some((l) => l.tipo === 'sale' || l.tipo === 'pareja'), 'pareja', 'mover una parada: «mueve», sin sacarla ni emparejarla')
+  const dos = L(['A', 'B', 'C', 'D'], ['A', 'X', 'Y', 'D'], nom)
+  debe(dos.filter((l) => l.tipo === 'pareja').length === 2, 'pareja', 'dos cambios seguidos son dos parejas, en orden')
+  debe(L(['A', 'B'], ['A', 'B'], nom).every((l) => l.tipo === 'igual') && L([], [], nom).length === 0, 'pareja', 'sin cambios, todo igual')
+  debe(L(['A', 'B', 'C'], ['A', 'X', 'Y', 'C'], nom).filter((l) => l.tipo === 'pareja').length === 1 && L(['A', 'B', 'C'], ['A', 'X', 'Y', 'C'], nom).filter((l) => l.tipo === 'entra').length === 1, 'pareja', 'una sale y dos entran: una pareja y una entra')
+
+  // Los cambios de la copia respecto de la ruta del administrador.
+  const base = rutaDe3()
+  debe(M.cambiosDeLaPropuesta(base, base).length === 0 && M.construirRecomendacion(base, base) === null, 'propuesta', 'sin cambios no hay propuesta')
+  const unaPareja = conStops(base, 'd2', (s) => s.map((p) => (p.id === 'v4' ? st('n1', 'Trastevere', '15:00') : p)))
+  const c1 = M.cambiosDeLaPropuesta(base, unaPareja)
+  debe(c1.length === 1 && c1[0].tipo === 'cambiar' && c1[0].antes.name === 'Castillo de Sant’Angelo' && c1[0].despues.name === 'Trastevere' && c1[0].dayId === 'd2', 'propuesta', 'cambiar una parada por otra cuenta como UN cambio, con su pareja')
+  const r1 = M.construirRecomendacion(base, unaPareja)
+  debe(r1.tipo === 'cambio' && r1.payload.accion === 'cambiar' && r1.payload.stopId === 'v4' && r1.payload.stop.name === 'Trastevere' && r1.payload.dayId === 'd2', 'propuesta', 'un solo cambio de una parada se manda como «cambio» (R2a), y la pareja va junta: la de antes y la de después')
+  const quitar = conStops(base, 'd3', (s) => s.filter((p) => p.id !== 'r3'))
+  debe(M.construirRecomendacion(base, quitar).payload.accion === 'quitar' && M.construirRecomendacion(base, quitar).payload.stopId === 'r3', 'propuesta', 'quitar una parada: «cambio» quitar')
+  const anadir = conStops(base, 'd1', (s) => [...s.slice(0, 1), st('n2', 'Villa Borghese'), ...s.slice(1)])
+  const ra = M.construirRecomendacion(base, anadir)
+  debe(ra.tipo === 'cambio' && ra.payload.accion === 'anadir' && ra.payload.despuesDe === 'a1' && ra.payload.stop.name === 'Villa Borghese', 'propuesta', 'añadir una parada: «cambio» añadir, detrás de la que la precede')
+  const mover = conStops(base, 'd1', (s) => [s[2], s[0], s[1]])
+  const rm = M.construirRecomendacion(base, mover)
+  debe(rm.tipo === 'cambio' && rm.payload.accion === 'mover' && rm.payload.stopId === 'a3' && rm.payload.haciaIndice === 0, 'propuesta', 'mover una parada: «cambio» mover, con su posición final')
+  const dosEnUnDia = conStops(conStops(base, 'd3', (s) => s.map((p) => (p.id === 'r2' ? st('n3', 'Boca de la Verdad') : p))), 'd3', (s) => s.map((p) => (p.id === 'r3' ? st('n4', 'Jardín de los Naranjos') : p)))
+  const rd = M.construirRecomendacion(base, dosEnUnDia)
+  debe(M.cambiosDeLaPropuesta(base, dosEnUnDia).length === 2 && rd.tipo === 'dia' && rd.payload.accion === 'sustituir' && rd.payload.dayId === 'd3' && rd.payload.day.stops.length === 3, 'propuesta', 'dos cambios en un día se mandan como «día» (R2b): el día entero sustituye')
+  const variosDias = conStops(conStops(base, 'd1', (s) => s.map((p) => (p.id === 'a3' ? st('n5', 'Villa Borghese') : p))), 'd4', (s) => [...s, st('n6', 'Castillo de Sant’Angelo')])
+  const rr = M.construirRecomendacion(base, variosDias)
+  debe(rr.tipo === 'ruta' && rr.payload.days.length === 4 && M.cambiosDeLaPropuesta(base, variosDias).length === 2, 'propuesta', 'cambios en varios días se mandan como «ruta» (R2c)')
+  debe(!JSON.stringify(rr.payload).includes('originalSnapshot'), 'propuesta', 'el paquete no lleva la copia de antes del administrador')
+  const conDiaNuevo = { ...base, days: [...base.days, dia('d5', 5, [st('z1', 'Trastevere')], { userAdded: true })] }
+  debe(M.cambiosDeLaPropuesta(base, conDiaNuevo)[0].tipo === 'dia_nuevo' && M.construirRecomendacion(base, conDiaNuevo).tipo === 'ruta', 'propuesta', 'un día nuevo es un cambio y se manda con la ruta')
+  debe(M.textoDeCuantos(1) === '1 cambio' && M.textoDeCuantos(2) === '2 cambios', 'propuesta', '«1 cambio», «2 cambios»')
+  debe(M.etiquetaDeDia(base, 2) === 'Día 2 · vie 17' || M.etiquetaDeDia(base, 2) === 'Día 2 · sáb 17', 'propuesta', 'la cabecera de cada día: «Día 2 · fecha»')
+  debe(M.etiquetaDeDia({ answers: {} }, 3) === 'Día 3', 'propuesta', 'sin fechas, solo «Día 3»')
+
+  // El [Deshacer] de cada cambio.
+  const mezcla = conStops(conStops(conStops(unaPareja, 'd3', (s) => s.filter((p) => p.id !== 'r3')), 'd1', (s) => [...s.slice(0, 1), st('n2', 'Villa Borghese'), ...s.slice(1)]), 'd4', (s) => s)
+  const cs = M.cambiosDeLaPropuesta(base, mezcla)
+  debe(cs.length === 3 && cs.map((c) => c.tipo).join() === 'anadir,cambiar,quitar', 'deshacer', 'tres cambios en tres días, en el orden del viaje')
+  let actual = mezcla
+  actual = M.deshacerCambio(actual, base, cs.find((c) => c.tipo === 'cambiar'))
+  debe(actual.days[1].stops.map((s) => s.name).join() === base.days[1].stops.map((s) => s.name).join(), 'deshacer', 'deshacer la pareja devuelve la parada de antes en su sitio')
+  actual = M.deshacerCambio(actual, base, cs.find((c) => c.tipo === 'quitar'))
+  debe(actual.days[2].stops.map((s) => s.id).join() === 'r1,r2,r3', 'deshacer', 'deshacer un «quitar» la devuelve a su sitio')
+  actual = M.deshacerCambio(actual, base, cs.find((c) => c.tipo === 'anadir'))
+  debe(JSON.stringify(actual.days.map((d) => d.stops.map((s) => s.id))) === JSON.stringify(base.days.map((d) => d.stops.map((s) => s.id))) && M.cambiosDeLaPropuesta(base, actual).length === 0, 'deshacer', 'deshechos los tres, la copia es otra vez la ruta del administrador')
+  const movido = conStops(base, 'd1', (s) => [s[2], s[0], s[1]])
+  debe(M.deshacerCambio(movido, base, M.cambiosDeLaPropuesta(base, movido)[0]).days[0].stops.map((s) => s.id).join() === 'a1,a2,a3', 'deshacer', 'deshacer un «mover» devuelve el orden')
+  debe(M.deshacerCambio(conDiaNuevo, base, M.cambiosDeLaPropuesta(base, conDiaNuevo)[0]).days.length === 4, 'deshacer', 'deshacer un día nuevo lo quita')
+
+  // El modo recomendación (el almacén): nada cambia hasta enviar; cancelar devuelve la ruta del administrador.
+  const E = M.usePropuestaStore
+  M.useRouteStore.setState({ route: structuredClone(base) })
+  E.getState().empezar('parada')
+  debe(E.getState().activa === true && E.getState().base?.days.length === 4, 'RM', 'al entrar en el modo recomendación se guarda una copia de la ruta del administrador')
+  M.useRouteStore.setState({ route: structuredClone(unaPareja) })
+  E.getState().cancelar()
+  debe(E.getState().activa === false && M.useRouteStore.getState().route.days[1].stops[3].name === 'Castillo de Sant’Angelo', 'RM', 'cancelar descarta los cambios: la persona vuelve a ver la ruta del administrador')
+  E.getState().empezar('ruta')
+  M.useRouteStore.setState({ route: structuredClone(unaPareja) })
+  E.getState().deshacer(M.cambiosDeLaPropuesta(base, unaPareja)[0])
+  debe(M.cambiosDeLaPropuesta(E.getState().base, M.useRouteStore.getState().route).length === 0, 'RM', '[Deshacer] de la lista deshace solo ese cambio')
+  E.getState().cancelar()
+  const vacio = await E.getState().enviar()
+  debe(vacio === false, 'RM', 'sin modo recomendación no se envía nada')
+
+  // R2: el administrador, con su ruta de ahora (aunque haya cambiado desde que se mandó).
+  const rec = (tipo, payload) => ({ id: 'rec', tripId: 't', authorId: 'laura', tipo, payload, estado: 'pendiente', creadaEn: '2026-10-10' })
+  const recA = rec(r1.tipo, r1.payload)
+  const prev = M.vistaPrevia(base, M.resolverRecomendacion(base, recA).accion)
+  debe(prev.length === 1 && prev[0].dayId === 'd2', 'R2a', 'R2: solo el día que cambia')
+  const lin = M.lineasDelDia(prev[0].antes, prev[0].despues)
+  debe(lin.map((l) => l.tipo).join() === 'igual,igual,igual,pareja', 'R2a', 'R2a: lo que no cambia, en gris; la pareja, en su recuadro')
+  const adminCambio = conStops(base, 'd2', (s) => s.filter((p) => p.id !== 'v2'))
+  const prev2 = M.vistaPrevia(adminCambio, M.resolverRecomendacion(adminCambio, recA).accion)
+  debe(prev2.length === 1 && prev2[0].antes.join() === 'Museos Vaticanos,Basílica de San Pedro,Castillo de Sant’Angelo', 'R2', 'el «antes» es la ruta de AHORA del administrador, no la de cuando se mandó')
+  const pideDia = M.resolverRecomendacion(base, rec('dia', { accion: 'sustituir', dayId: 'dX', day: dia('dX', 4, [st('q1', 'Trastevere')]) }))
+  debe(pideDia.ok === false && pideDia.necesitaDia === true && pideDia.diasPosibles.length === 4, 'R2d', 'R2d: si el día ya no existe, pide elegir en qué día lo pone (los días de ruta)')
+  const conDiaElegido = M.resolverRecomendacion(base, rec('dia', { accion: 'sustituir', dayId: 'dX', day: dia('dX', 4, [st('q1', 'Trastevere')]) }), 'd1')
+  debe(conDiaElegido.ok === true && conDiaElegido.accion.dayId === 'd1', 'R2d', 'con el día elegido, lo propuesto sustituye a ese día')
+
+  // Las hojas.
+  M.useViajeCompartido.getState().poner({ gente: [{ id: 'elena', nombre: 'Elena', foto: null, esAdmin: true }, { id: 'laura', nombre: 'Laura', foto: null, esAdmin: false }] })
+  const h2a = M.pintaR2({ nombreDelAutor: "Laura", rec: recA, route: base })
+  debe(/Recomendación de Laura/.test(h2a) && /Laura te recomienda un cambio</.test(h2a) && /Día 2 · /.test(h2a) && /data-linea="igual"/.test(h2a) && /data-cambio-parada="pequena"/.test(h2a) && />Aceptar</.test(h2a) && />No, gracias</.test(h2a), 'R2a', 'R2a: «Laura te recomienda un cambio», el día, la pareja, [Aceptar] y [No, gracias]')
+  debe(!/Día 1 · /.test(h2a) && !/Día 3 · /.test(h2a), 'R2a', 'R2a no enseña los días que no cambian')
+  const h2b = M.pintaR2({ nombreDelAutor: "Laura", rec: rec(rd.tipo, rd.payload), route: base })
+  debe(/Laura te recomienda cambios en el día 3/.test(h2b) && (h2b.match(/data-cambio-parada/g) ?? []).length === 2, 'R2b', 'R2b: «cambios en el día 3» con dos parejas')
+  const h2c = M.pintaR2({ nombreDelAutor: "Laura", rec: rec(rr.tipo, rr.payload), route: base })
+  debe(/Laura te recomienda otra ruta/.test(h2c) && (h2c.match(/data-dia-que-cambia/g) ?? []).length === 2 && /data-linea="entra"/.test(h2c), 'R2c', 'R2c: «otra ruta», solo los dos días que cambian, con lo que entra en verde')
+  const h2d = M.pintaR2({ nombreDelAutor: "Laura", rec: rec('dia', { accion: 'sustituir', dayId: 'dX', day: dia('dX', 4, [st('q1', 'Trastevere'), st('q2', 'Castillo')]) }), route: base })
+  debe(/¿En qué día lo pones\?/.test(h2d) && /data-elegir-dia="d1"/.test(h2d) && /Lo que propone/.test(h2d) && /disabled/.test(h2d.slice(h2d.indexOf('data-boton-hoja="aceptar"') - 200, h2d.indexOf('data-boton-hoja="aceptar"') + 50)), 'R2d', 'R2d: «¿En qué día lo pones?», los días a elegir, lo que propone y [Aceptar] apagado hasta elegir')
+  const hQuitar = M.pintaR2({ nombreDelAutor: "Laura", rec: rec('cambio', { dayId: 'd9', accion: 'quitar', stopId: 'zzz' }), route: base })
+  debe(/Puedes aceptarla igualmente/.test(hQuitar), 'R2', 'lo que ya está hecho se acepta sin cambiar nada y lo dice')
+
+  // RM, RV, RSent, AV7 y los menús.
+  const fila = M.pintaFilaDeCambio({ etiqueta: 'Día 2 · jue 17', cambio: c1[0], onDeshacer: () => undefined })
+  debe(/Día 2 · jue 17 · cambiar/.test(fila) && /Propuesta: cambiar/.test(fila) && /Deshacer/.test(fila), 'RV', 'RV: cada cambio con su día, su pareja y [Deshacer]')
+  const filaQuitar = M.pintaFilaDeCambio({ etiqueta: 'Día 3 · vie 18', cambio: cs.find((c) => c.tipo === 'quitar') })
+  debe(/Termas de Caracalla/.test(filaQuitar) && /line-through/.test(filaQuitar), 'RV', 'RV: lo que se quita, tachado en rojo')
+  const av7 = M.pintaVerPropuesta({ nombreDelAdmin: 'Elena', cambiosEnviados: [{ etiqueta: 'Día 2 · jue 17', cambio: c1[0] }, { etiqueta: 'Día 3 · vie 18', cambio: cs.find((c) => c.tipo === 'quitar') }] })
+  debe(/2 cambios/.test(av7) && /Enviada · esperando a Elena/.test(av7) && !/Deshacer/.test(av7), 'AV7', 'AV7: «2 cambios», «Enviada · esperando a Elena» y sin [Deshacer]')
+  const mostrados = M.cambiosDeUnaRecomendacion(base, prev)
+  debe(mostrados.length === 1 && mostrados[0].cambio.tipo === 'cambiar' && mostrados[0].cambio.antes.name === 'Castillo de Sant’Angelo' && mostrados[0].cambio.despues.name === 'Trastevere' && /^Día 2/.test(mostrados[0].etiqueta), 'AV7', 'lo ya mandado se enseña por días y solo lo que cambia, con su pareja')
+  const barra = fs.readFileSync('src/components/propuesta/BarraDePropuesta.tsx', 'utf8')
+  debe(/Enviada · esperando a/.test(barra) && /data-barra-enviada/.test(barra) && /cambiosEnviados={cambios}/.test(barra), 'AV7', 'mientras el administrador no conteste, quien mandó la propuesta ve «Enviada · esperando a Elena» con [Ver]')
+  const sent = M.pintaEnviada('Elena')
+  debe(/Se lo hemos mandado a Elena/.test(sent) && /Volver al viaje/.test(sent), 'RSent', 'RSent: «Se lo hemos mandado a Elena» y [Volver al viaje]')
+  const cp = M.pintaCambioParada({ a: 'Castillo de Sant’Angelo', b: 'Trastevere', detalleA: '15:00 · 1 h', detalleB: '15:00 · 1 h 30' })
+  debe(/Propuesta: cambiar/.test(cp) && /Castillo de Sant’Angelo/.test(cp) && /Trastevere/.test(cp) && /line-through/.test(cp) && /15:00 · 1 h 30/.test(cp), 'RM', 'la pareja «Propuesta: cambiar»: lo que sale tachado en rojo, lo que entra en verde, con sus horas')
+  debe(/Ver la ficha/.test(M.pintaMenuParada()) === false, 'RW1', 'el menú está cerrado hasta que se toca «···»')
+  const fuenteMenus = fs.readFileSync('src/components/propuesta/MenusDelInvitado.tsx', 'utf8')
+  debe(/Ver la ficha/.test(fuenteMenus) && /Cómo llegar/.test(fuenteMenus) && /Recomendar un cambio/.test(fuenteMenus) && /Ver el día en el mapa/.test(fuenteMenus) && /Recomendar cambios en este día/.test(fuenteMenus), 'RW1', 'RW1 y RW2: los menús de quien mira el viaje de otra persona')
+  const fuenteBotones = fs.readFileSync('src/components/propuesta/BotonesDeViaje.tsx', 'utf8')
+  debe(/Compartir viaje/.test(fuenteBotones) && /Recomendar otra ruta/.test(fuenteBotones) && /cuentasActivas\(\)/.test(fuenteBotones), 'RS1', 'RS1 y RW3: [Compartir viaje] y [Recomendar otra ruta] en RUTA, solo con las cuentas encendidas')
+  debe(/RouteOverview/.test('RouteOverview') && /<BotonesDeViaje \/>/.test(fs.readFileSync('src/components/route/RouteOverview.tsx', 'utf8')), 'RS1', 'los botones están en la pestaña RUTA')
+  const fuenteStop = fs.readFileSync('src/components/route/dayDetail/StopMenu.tsx', 'utf8')
+  debe(/soloVer\) return <MenuInvitadoParada/.test(fuenteStop) && /function StopMenuCompleto/.test(fuenteStop), 'RW1', 'el menú de la parada cambia por el de RW1 solo para quien mira (y fuera del modo recomendación)')
+  const fuenteDias = fs.readFileSync('src/components/route/DayList.tsx', 'utf8')
+  debe(/soloVer \? \(/.test(fuenteDias) && /<EtiquetaRecomendacion dayId=\{day\.id\}/.test(fuenteDias), 'RW2', 'la cabecera del día: su menú de RW2 para quien mira y la etiqueta «1 recomendación» para el administrador')
+  const fuenteDetalle = fs.readFileSync('src/components/route/dayDetail/DayDetailPanel.tsx', 'utf8')
+  debe(/parejasDePropuesta\.has\(realStop\.id\)/.test(fuenteDetalle) && /<CambioParada/.test(fuenteDetalle), 'RM', 'en el día, la parada cambiada por otra se pinta como pareja')
+  const etiqueta = fs.readFileSync('src/components/propuesta/EtiquetaRecomendacion.tsx', 'utf8')
+  debe(/1 recomendación/.test(etiqueta) && /abrir\(delDia\[0\]\)/.test(etiqueta), 'AV8', 'la etiqueta «1 recomendación» abre R2 al tocarla')
+  const mapaDias = M.diasConRecomendacion(base, [recA, { ...rec(rd.tipo, rd.payload), id: 'r2' }, { ...recA, id: 'r3', estado: 'aceptada' }])
+  debe(mapaDias.get('d2')?.length === 1 && mapaDias.get('d3')?.length === 1 && !mapaDias.has('d1'), 'AV8', 'la etiqueta sale en los días que cambiarían, mientras no conteste (las contestadas no cuentan)')
+  const solo = fs.readFileSync('src/index.css', 'utf8')
+  debe(/html\[data-solo-ver\] \[data-edit-tool\]/.test(solo) && /data-edit-tool/.test(fs.readFileSync('src/components/route/dayDetail/StopConnector.tsx', 'utf8')) && /data-edit-tool/.test(fs.readFileSync('src/components/route/SortableDay.tsx', 'utf8')), 'R1', 'quien mira el viaje de otra persona no ve las herramientas de editar (asas, «+ Añadir parada», «+ Añadir día», la varita)')
+  debe(!fs.existsSync('src/components/cuenta/InvitarProvisional.tsx') && !/InvitarProvisional/.test(fs.readFileSync('src/components/cuenta/CuentaEnPerfil.tsx', 'utf8')), 'perfil', 'el bloque provisional «Invitar y recomendaciones» ya no está en el Perfil')
+  const header = fs.readFileSync('src/components/layout/Header.tsx', 'utf8')
+  debe(/Viaje de \$\{nombreAdmin\}/.test(header), 'R1', 'R1: la cabecera dice «Viaje de Elena»')
+}
+
+console.log('3b. Compartir y recomendar con la base de datos de verdad (reglas de seguridad)')
+{
+  const lau = await nuevoUsuario('laura3@correo.es', false, 'Laura Gómez')
+  const ele = await nuevoUsuario('elena3@correo.es', false, 'Elena Rey')
+  const otra = await nuevoUsuario('otra3@correo.es', false, 'Otra')
+  const viaje = await como(ele, async () => (await q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [ele, rutaDe('Roma', '2026-10-16', '2026-10-19')]))[0].id)
+  const inv = await como(ele, async () => (await q('select public.crear_invitacion($1, null, 2) as r', [viaje]))[0].r)
+  debe(/^[A-Z2-9]{8}$/.test(inv.codigo) && !/[OILol01]/.test(inv.codigo), 'codigo', 'un solo formato de código: el de la invitación (8 caracteres, sin 0, O, 1, I, L)')
+  const codPase = (await q("select public.generar_codigo('x') as c"))[0].c
+  debe(/^[A-Z2-9]{8}$/.test(codPase) && !/[OILol01]/.test(codPase), 'codigo', 'el código de los pases y el del enlace personal salen de la misma función: el mismo formato')
+  await como(lau, () => q('select public.canjear_invitacion($1)', [inv.codigo]))
+
+  // Quién está en el viaje.
+  const gente = await como(lau, async () => (await q('select public.gente_del_viaje($1) as g', [viaje]))[0].g)
+  debe(gente.length === 2 && gente[0].es_admin === true && gente[0].nombre === 'Elena' && gente[1].nombre === 'Laura' && gente.every((p) => Object.keys(p).sort().join() === 'es_admin,foto,id,nombre'), 'gente', 'quien está en el viaje: el administrador y la invitada, con su nombre de pila (sin apellido, sin email)')
+  debe((await como(otra, async () => (await q('select public.gente_del_viaje($1) as g', [viaje]))[0].g)).length === 0, 'gente', 'quien no está en el viaje no ve a nadie')
+  debe((await como(ele, async () => (await q('select public.gente_del_viaje($1) as g', [viaje]))[0].g)).length === 2, 'gente', 'el administrador ve a los suyos')
+
+  // Laura recomienda; el administrador decide; ella solo ve la suya.
+  const prop = { dayId: 'd2', accion: 'cambiar', stopId: 'v4', stop: { id: 'n1', name: 'Trastevere' } }
+  await como(lau, () => q("insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'cambio', $2::jsonb)", [viaje, JSON.stringify(prop)]))
+  const delAdmin = await como(ele, () => q('select id, estado, author_id from public.trip_recommendations'))
+  debe(delAdmin.length === 1 && delAdmin[0].estado === 'pendiente' && delAdmin[0].author_id === lau, 'recomendar', 'el administrador ve la recomendación pendiente de Laura')
+  const intruso = await como(otra, () => lanza(() => q("insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'cambio', '{}'::jsonb)", [viaje])))
+  debe(intruso !== null, 'recomendar', 'quien no está invitada no puede recomendar')
+  const propia = await como(lau, () => lanza(() => q("update public.trip_recommendations set estado = 'aceptada'")))
+  const sigue = await q("select estado from public.trip_recommendations")
+  debe(sigue[0].estado === 'pendiente', 'recomendar', 'Laura no puede aceptar su propia recomendación')
+  void propia
+  const cambiaPayload = await como(ele, () => lanza(() => q("update public.trip_recommendations set payload = '{}'::jsonb")))
+  debe(cambiaPayload !== null && /no se puede cambiar/.test(cambiaPayload), 'recomendar', 'el administrador solo decide: no puede reescribir lo que Laura recomendó')
+  await como(ele, () => q("update public.trip_recommendations set estado = 'aceptada'"))
+  const verLaura = await como(lau, () => q('select estado, decidida_por from public.trip_recommendations'))
+  debe(verLaura[0].estado === 'aceptada' && verLaura[0].decidida_por === ele, 'recomendar', 'Laura ve que Elena ha aceptado (y quién decidió)')
+  debe((await como(otra, () => q('select 1 from public.trip_recommendations'))).length === 0, 'recomendar', 'una tercera persona no ve las recomendaciones')
+}
+
 /* ═══════════════ Resumen ═══════════════ */
 fs.rmSync(carpeta, { recursive: true, force: true })
 console.log(`\nPrueba de las cuentas (parte 3): ${comprobaciones} comprobaciones · ${fallos.length} fallos`)

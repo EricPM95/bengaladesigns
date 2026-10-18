@@ -31,6 +31,7 @@ export function SortableDay({ id, disabled, children }: SortableDayProps) {
       {...attributes}
       {...listeners}
       onClick={(event) => event.stopPropagation()}
+      data-edit-tool="1"
       aria-label="Mover este día"
       title="Mover este día"
       className="flex h-11 w-11 shrink-0 cursor-grab touch-none items-center justify-center rounded-lg text-text-muted transition-colors hover:text-text-soft active:cursor-grabbing"

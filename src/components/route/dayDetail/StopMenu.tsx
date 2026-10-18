@@ -1,4 +1,6 @@
 import { DesmarcarDelMenu } from '../../logros/visto/DesmarcarDelMenu'
+import { useModoInvitado } from '../../../hooks/useModoInvitado'
+import { MenuInvitadoParada } from '../../propuesta/MenusDelInvitado'
 import { useState } from 'react'
 import type { Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -21,6 +23,8 @@ interface StopMenuProps {
   otherDays: { id: string; dayNumber: number; city: string }[]
   /** Día libre (decisión del usuario, 2026-09-28): Poner / Cambiar / Quitar hora, Mover a otro día, Subir, Bajar y Quitar del día, con "Deshacer". */
   freeDay?: boolean
+  /** Abre la ficha de la parada (el menú de quien mira el viaje de otra persona lo ofrece). */
+  onVerFicha?: () => void
 }
 
 type MenuView = 'menu' | 'remove' | 'move-day' | 'change-time'
@@ -37,7 +41,7 @@ const menuItemClass = 'flex h-[42px] w-full items-center rounded-[10px] px-3 tex
  * ÍNDICE de las paradas, así que cualquier acción que cambie el orden ya los actualiza sin lógica
  * extra.
  */
-export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeDay = false }: StopMenuProps) {
+function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, freeDay = false }: StopMenuProps) {
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<MenuView>('menu')
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -264,4 +268,14 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
       )}
     </div>
   )
+}
+
+/**
+ * El menú de una parada. Quien mira el viaje de otra persona (y no está en el modo recomendación) ve el suyo, el de RW1: [Ver la ficha], [Cómo llegar] y [Recomendar un cambio]. Dentro del modo
+ * recomendación, y para el administrador, el de siempre.
+ */
+export function StopMenu(props: StopMenuProps) {
+  const { soloVer } = useModoInvitado()
+  if (soloVer) return <MenuInvitadoParada nombre={props.stop.name} ciudad={props.city} onVerFicha={props.onVerFicha ?? (() => undefined)} />
+  return <StopMenuCompleto {...props} />
 }

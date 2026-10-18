@@ -18,6 +18,17 @@ import { TarjetaPaseReservas } from '../../src/components/pase/TarjetaPaseReserv
 import { PagoHost } from '../../src/components/pase/PagoHost'
 import { eur, filasDeCompra, limitesDelGrupo, totalDe, textoDeCompartirPase, nombreDelTipo, pagoDeLaDireccion } from '../../src/lib/pagoPase'
 import { parejasQueSePisan, rangoEnPalabras } from '../../src/lib/viajesQueSePisan'
+import { lineasDeCambio, lineasDelDia, cambiosDeLaPropuesta, construirRecomendacion, deshacerCambio, etiquetaDeDia, textoDeCuantos, titularDeRecomendacion, textoDelCambio, sinCambios, cambiosDeUnaRecomendacion } from '../../src/lib/propuesta'
+import { resolverRecomendacion, vistaPrevia } from '../../src/lib/aplicarRecomendacion'
+import { CambioParada } from '../../src/components/propuesta/CambioParada'
+import { HojaVerPropuesta, FilaDeCambio } from '../../src/components/propuesta/HojaVerPropuesta'
+import { HojaRecomendacion } from '../../src/components/propuesta/HojaRecomendacion'
+import { PropuestaEnviada } from '../../src/components/propuesta/PropuestaEnviada'
+import { MenuInvitadoParada, MenuInvitadoDia } from '../../src/components/propuesta/MenusDelInvitado'
+import { diasConRecomendacion } from '../../src/components/propuesta/EtiquetaRecomendacion'
+import { useRouteStore } from '../../src/store/useRouteStore'
+import { usePropuestaStore } from '../../src/store/usePropuestaStore'
+import { useViajeCompartido } from '../../src/store/useViajeCompartido'
 
 export const M = {
   calcularCuentasActivas,
@@ -54,6 +65,30 @@ export const M = {
   pintaInvitar: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(HojaInvitar, { onCerrar: () => undefined, ...props } as never)),
   pintaDosViajes: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(HojaDosViajes, { elegir: async () => null, onCerrar: () => undefined, ...props } as never)),
   pintaP1: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(TarjetaPaseReservas, props as never)),
+  lineasDeCambio,
+  lineasDelDia,
+  cambiosDeLaPropuesta,
+  construirRecomendacion,
+  deshacerCambio,
+  etiquetaDeDia,
+  textoDeCuantos,
+  titularDeRecomendacion,
+  textoDelCambio,
+  sinCambios,
+  cambiosDeUnaRecomendacion,
+  resolverRecomendacion,
+  vistaPrevia,
+  diasConRecomendacion,
+  useRouteStore,
+  usePropuestaStore,
+  useViajeCompartido,
+  pintaCambioParada: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CambioParada, props as never)),
+  pintaFilaDeCambio: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(FilaDeCambio, props as never)),
+  pintaVerPropuesta: (props: Record<string, unknown> = {}) => renderToStaticMarkup(createElement(HojaVerPropuesta, props as never)),
+  pintaR2: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(HojaRecomendacion, { onCerrar: () => undefined, ...props } as never)),
+  pintaEnviada: (nombre: string) => renderToStaticMarkup(createElement(PropuestaEnviada, { nombre, onVolver: () => undefined })),
+  pintaMenuParada: () => renderToStaticMarkup(createElement(MenuInvitadoParada, { nombre: 'Coliseo', ciudad: 'Roma', onVerFicha: () => undefined })),
+  pintaMenuDia: () => renderToStaticMarkup(createElement(MenuInvitadoDia, { onVerEnMapa: () => undefined })),
   pintaPagoHost: () => renderToStaticMarkup(createElement(PagoHost)),
   pintaTextoPase: (texto: string) => renderToStaticMarkup(createElement(TextoConPase, { texto })),
 }

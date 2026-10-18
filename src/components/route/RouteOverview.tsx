@@ -14,6 +14,7 @@ import { withUndo } from '../../store/useAddFlowStore'
 import { Icono } from '../ui/Icono'
 import { BanderaDestino } from '../ui/BanderaDestino'
 import { TarjetaRecuerdosEnRuta } from './fotos/TarjetaRecuerdos'
+import { BotonesDeViaje } from '../propuesta/BotonesDeViaje'
 import { textoDeDuracion } from '../../lib/duracionViaje'
 
 interface RouteOverviewProps {
@@ -70,6 +71,8 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
 
   return (
     <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-6 pt-4">
+      {/* RS1 y RW3 (cuentas parte 3): [Compartir viaje] para quien administra el viaje, [Recomendar otra ruta] para quien lo mira. */}
+      <BotonesDeViaje />
       <TarjetaRecuerdosEnRuta route={route} />
       {segments.map((segment, index) => {
         const segmentDays = route.days.filter((day) => segment.dayIds.includes(day.id) && !day.isReturnLeg)
@@ -106,6 +109,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
                 disabled={!cityChanged}
                 onClick={() => setAskRestoreCity(segment.city)}
                 title={cityChanged ? 'Recuperar mi ruta' : 'Tu ruta está tal como te la preparamos'}
+                data-edit-tool="1"
                 aria-label="Recuperar mi ruta"
                 className="group flex h-11 w-11 shrink-0 items-center justify-center disabled:cursor-not-allowed"
               >

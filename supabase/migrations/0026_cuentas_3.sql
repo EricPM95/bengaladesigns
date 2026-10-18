@@ -185,4 +185,25 @@ grant execute on function public.guardar_recibo(text, text) to service_role;
 grant execute on function public.intencion_de_pago(text) to service_role;
 grant execute on function public.pases_de(uuid) to service_role;
 
+-- ── 3. Compartir el viaje y recomendar cambios ───────────────────────────────────────────────────────────────────────────────────────
+
+-- La foto del perfil (parte 6): la ruta del archivo en el almacenamiento (se borra con la cuenta). Se crea aquí porque `gente_del_viaje` la lee.
+alter table public.travelers add column if not exists foto_path text;
+
+-- Quién está en un viaje: el administrador y sus invitados, con el nombre de pila y la foto (para «Viaje de Elena», «Laura te recomienda…», el «E» y el «L» de la campanita).
+-- Solo lo ve quien está en ese viaje. No enseña el email ni nada más.
+create or replace function public.gente_del_viaje(p_trip uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select case when public.es_dueno(p_trip) or public.es_miembro(p_trip) then (
+    select coalesce(jsonb_agg(jsonb_build_object('id', x.uid, 'nombre', nullif(trim(split_part(coalesce(tr.nombre, ''), ' ', 1)), ''), 'foto', tr.foto_path, 'es_admin', x.es_admin) order by x.orden, x.uid), '[]'::jsonb)
+    from (
+      select t.traveler_id as uid, true as es_admin, 0 as orden from public.trips t where t.id = p_trip
+      union all
+      select m.user_id, false, 1 from public.trip_members m where m.trip_id = p_trip
+    ) x left join public.travelers tr on tr.id = x.uid
+  ) else '[]'::jsonb end
+$$;
+revoke all on function public.gente_del_viaje(uuid) from public, anon;
+grant execute on function public.gente_del_viaje(uuid) to authenticated;
+
 commit;

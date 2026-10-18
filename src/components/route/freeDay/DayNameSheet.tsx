@@ -48,6 +48,7 @@ export function AddDayButton({ onClick, disabled }: { onClick: () => void; disab
       type="button"
       onClick={onClick}
       disabled={disabled}
+      data-edit-tool="1"
       className="flex min-h-[68px] w-full items-center justify-center gap-3 rounded-3xl border-[1.5px] border-dashed border-accent/70 bg-transparent px-4 py-3 text-accent transition-colors hover:bg-accent-soft/60 disabled:cursor-not-allowed disabled:opacity-40"
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-[22px] leading-none text-white" aria-hidden="true">

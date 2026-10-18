@@ -18,6 +18,9 @@ import { seedStopsFromTemplate } from '../../lib/mockDayDetail'
 import { useRouteStore } from '../../store/useRouteStore'
 import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
+import { useModoInvitado } from '../../hooks/useModoInvitado'
+import { MenuInvitadoDia } from '../propuesta/MenusDelInvitado'
+import { EtiquetaRecomendacion } from '../propuesta/EtiquetaRecomendacion'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ConfirmDialog } from './ConfirmDialog'
 import { DateNoticeTag } from './DateNoticesModal'
@@ -94,6 +97,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const deleteDay = useRouteStore((state) => state.deleteDay)
   const restoreOriginalDay = useRouteStore((state) => state.restoreOriginalDay)
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
+  // Quien mira el viaje de otra persona: su menú del día es el de RW2 (ver el día en el mapa, recomendar cambios).
+  const { soloVer } = useModoInvitado()
   /** La ventana del nombre: crear un día o cambiar el de uno libre. */
   const [nameSheet, setNameSheet] = useState<{ dayId: string | null } | null>(null)
   // «+ Añadir día»: primero qué quieres hacer, si el destino tiene excursiones (PARA_CODE_EXCURSIONES, 5).
@@ -294,6 +299,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 ) : (
                   <p data-titulo-del-dia="1" className="min-h-[24px] font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
                 )}
+                <EtiquetaRecomendacion dayId={day.id} />
                 {diaCompleto && <p className="text-[12px] leading-snug text-text/60">{TEXTO_DIA_COMPLETO}</p>}
                 {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). El trayecto («Madrid → Roma») va pequeño, junto a la marca, y no es el título (tanda 6y7). */}
                 {travel && !day.userAdded && (
@@ -319,6 +325,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               </div>
 
               <span onClick={(event) => event.stopPropagation()}>
+                {soloVer ? (
+                  <MenuInvitadoDia onVerEnMapa={() => (expanded ? undefined : toggle())} />
+                ) : (
                 <DayMenu
                   // «Recuperar este día»: solo en los días con cambios; nunca en uno del viajero (no hay ruta nuestra que recuperar) ni en uno fijado por una reserva.
                   onBackToProposed={day.interruptor && day.ownDay ? () => void volverAlDiaPropuesto(day.id) : undefined}
@@ -335,6 +344,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                       : undefined
                   }
                 />
+                )}
               </span>
 
               <span className="flex w-[22px] justify-center text-text/45 transition-transform duration-[400ms]" style={{ transform: expanded ? 'rotate(90deg)' : 'none' }}>

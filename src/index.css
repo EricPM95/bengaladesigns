@@ -323,3 +323,7 @@ body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
   .hoja-panel,
   .hoja-pop { animation: none; }
 }
+
+/* Quien mira el viaje de otra persona (cuentas parte 3): fuera del modo recomendación las herramientas de editar (asas, «+ Añadir parada», «+ Añadir día», la varita) no se ofrecen.
+   PropuestaHost pone `data-solo-ver` en <html> mientras toque. */
+html[data-solo-ver] [data-edit-tool] { display: none !important; }

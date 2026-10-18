@@ -7,6 +7,7 @@ import { Icono } from '../ui/Icono'
 import { NoticesSheet } from './NoticesSheet'
 import { PerfilSheet } from './PerfilSheet'
 import { usePerfilUi } from '../../store/usePerfilUi'
+import { useModoInvitado } from '../../hooks/useModoInvitado'
 
 /** Botón redondo de la cabecera (diseño «La cabecera»): 44 px de toque, sin fondo, la tinta de siempre. */
 const BOTON = 'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text transition-colors hover:bg-text/[.06]'
@@ -28,6 +29,8 @@ export function Header({ onOpenDates }: HeaderProps) {
   const perfilAbierto = usePerfilUi((state) => state.abierto)
   const abrirPerfil = usePerfilUi((state) => state.abrir)
   const cerrarPerfil = usePerfilUi((state) => state.cerrar)
+  // R1: quien mira el viaje de otra persona lo ve escrito en la cabecera («Viaje de Elena · 16 – 19 oct»).
+  const { esInvitado, nombreAdmin } = useModoInvitado()
   if (!route) return null
 
   return (
@@ -35,6 +38,7 @@ export function Header({ onOpenDates }: HeaderProps) {
       <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="truncate font-display text-[30px] leading-none text-text">{route.destination}</span>
         <span className="truncate text-text/55" style={{ font: "500 11px 'Geist Mono',monospace", letterSpacing: '.06em' }}>
+          {esInvitado ? `Viaje de ${nombreAdmin} · ` : ''}
           {subtituloDelViaje(route)}
         </span>
       </span>
