@@ -97,7 +97,7 @@ export function clavesSuperadas(datos, items) {
   return salida
 }
 
-/** La vitrina tal como la ve la persona. Como `construirVitrina`, pero una balda que el viajero ha dejado vacía a propósito (lista vacía guardada) se queda vacía en vez de rellenarse sola, y lo superado (el bronce de un sello que ya es oro) no se pone solo. */
+/** La vitrina tal como la ve la persona. Es LA vitrina del servidor (la vieja `construirVitrina` de vistas.js se quitó: rellenaba sola una balda vaciada y metía el bronce de un sello ya en oro). Una balda que el viajero ha dejado vacía a propósito (lista vacía guardada) se queda vacía en vez de rellenarse sola, y lo superado (el bronce de un sello que ya es oro) no se pone solo. */
 export function vitrinaDeGanados({ items, guardada = { baldas: {}, titulo: null }, superadas = new Set() }) {
   const lista = [...items.values()].filter((it) => !superadas.has(it.clave)).sort((a, b) => new Date(b.en) - new Date(a.en))
   const de = (f) => lista.filter(f)
@@ -316,7 +316,7 @@ export function construirGanados({ datos, catalogos, items, cuentan = [], viajes
         sello: { id: principal.id, nombre: principal.nombre, grado: principal.grado, nombre_grado: principal.nombre_grado, linea: principal.linea },
         sellos: est.sellos.map((s) => ({ id: s.id, nombre: s.nombre, grado: s.grado })),
         colecciones: { completas, total: est.colecciones.length },
-        secretos: { encontrados: est.secretos.encontrados },
+        secretos: { encontrados: est.secretos.encontrados, total: est.secretos.total },
         avance: est.colecciones.length > 0 ? completas / est.colecciones.length : 0,
         desde: primero,
       }

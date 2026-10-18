@@ -18,6 +18,7 @@ import { usePerfilUi } from '../../store/usePerfilUi'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import type { Escaparate } from '../escaparate'
+import { conRuta } from './hoja'
 
 /* ---------------- Viajes de mentira ---------------- */
 const parada = (id: string, name: string, lat: number, lng: number) => ({ id, name, coordinates: { lat, lng }, time: '10:00', durationMinutes: 60, category: 'monumento', tags: [] })
@@ -80,7 +81,9 @@ async function abrirPerfil(p?: Partial<PerfilLogros>) {
   usePerfilUi.setState({ abierto: true, albumDe: null })
   montar(createElement(PerfilSheet, { open: true, onClose: () => desmontar() }))
   // Espera a que lleguen los datos del demo y se pinte el cuerpo con logros.
-  await hasta(() => Boolean(document.querySelector('[data-cabecera-con-marco]')))
+  await hasta(() => Boolean(document.querySelector('[data-cabecera-con-marco]')), 15000)
+  // Si el Perfil nuevo no ha llegado (el trozo perezoso o el demo tardaron), NO se fotografía el de antes: se falla y el script repite con una página nueva.
+  if (!document.querySelector('[data-cabecera-con-marco]')) throw new Error('Execution context: el Perfil nuevo no se ha pintado')
   // Los dibujos de la vitrina y la chapa del título se bajan al pintarse: se espera a que estén.
   await hasta(() => document.querySelectorAll('[data-vitrina-del-perfil] svg, [data-vitrina-del-perfil] img').length >= 3, 4000)
   await espera(900)
@@ -162,21 +165,30 @@ const lista: Escaparate[] = [
     id: 'E1',
     que: 'Un Visto normal: «+140 EXP» flotando abajo, con nivel, rango y barra',
     capturas: [150, 800, 1800],
-    abrir: () => montar(createElement(ExpGanada, { ganada: E1.ganada, antes: E1.antes, despues: mas(E1.antes, E1.ganada) })),
+    abrir: async () => {
+      await conRuta('today')
+      montar(createElement(ExpGanada, { ganada: E1.ganada, antes: E1.antes, despues: mas(E1.antes, E1.ganada) }))
+    },
     cerrar: desmontar,
   },
   {
     id: 'E2',
     que: 'El Coliseo: «+405 EXP» sumados de la película y las sorpresas',
     capturas: [150, 800, 1800],
-    abrir: () => montar(createElement(ExpGanada, { ganada: E2.ganada, antes: E2.antes, despues: mas(E2.antes, E2.ganada) })),
+    abrir: async () => {
+      await conRuta('today')
+      montar(createElement(ExpGanada, { ganada: E2.ganada, antes: E2.antes, despues: mas(E2.antes, E2.ganada) }))
+    },
     cerrar: desmontar,
   },
   {
     id: 'E1-quieto',
     que: 'La EXP ganada con «reducir movimiento»',
     reducirMovimiento: true,
-    abrir: () => montar(createElement(ExpGanada, { ganada: E2.ganada, antes: E2.antes, despues: mas(E2.antes, E2.ganada) })),
+    abrir: async () => {
+      await conRuta('today')
+      montar(createElement(ExpGanada, { ganada: E2.ganada, antes: E2.antes, despues: mas(E2.antes, E2.ganada) }))
+    },
     cerrar: desmontar,
   },
   {

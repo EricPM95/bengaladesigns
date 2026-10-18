@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
 import { lineaDeSecretos } from '../momentos/textosResumen'
@@ -7,6 +7,7 @@ import { COLOR_DE_GRADO, FONDO_DE_DESTINO, FONDO_POR_DEFECTO, conDe } from './de
 import { BotonVolver, Esperando, FONDO_PAPEL, useCarga } from './destino/piezas'
 import './destino/destino.css'
 import { Capa } from './Capa'
+import { useGanados } from './todos/api'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
 
 /**
@@ -48,7 +49,10 @@ function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; r
   const grado = principal?.grado ?? null
   const color = grado ? COLOR_DE_GRADO[grado] : 'rgba(28,34,48,.45)'
   const n = datos.numeros
-  const lineaSecretos = lineaDeSecretos(datos.ciudad, datos.emblemas.total, datos.emblemas.encontrados)
+  const vitrina = useGanados((s) => s.datos?.vitrina)
+  useEffect(() => void useGanados.getState().cargar(), [])
+  const enVitrina = (clave: string): boolean | null => (vitrina ? [...(vitrina.pedestal ?? []), ...(vitrina.exclusivos ?? []), ...Object.values(vitrina.baldas ?? {}).flatMap((b) => b.huecos)].includes(clave) : null)
+  const lineaSecretos = lineaDeSecretos(datos.ciudad, datos.emblemas.total, datos.emblemas.encontrados, !grado)
   return (
     <main style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 40px)', display: 'flex', flexDirection: 'column', gap: 12 }}>
       {/* La cabecera: el color del destino y el sello principal en una tarjeta que sube sobre él. */}
@@ -65,7 +69,7 @@ function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; r
         <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
           <span style={{ font: "400 30px/1 'Instrument Serif',serif" }}>{datos.ciudad}</span>
           <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.08em', color, textTransform: 'uppercase' }}>{grado ? `${grado} · ${principal?.nombre_grado ?? ''}` : 'Por conseguir'}</span>
-          <span style={{ font: "500 12px 'Geist'", color: 'rgba(28,34,48,.62)' }}>{`${n.colecciones_completas} de ${n.colecciones_total} colecciones · ${n.secretos_encontrados} de ${n.secretos_total} secretos`}</span>
+          <span style={{ font: "500 12px 'Geist'", color: 'rgba(28,34,48,.62)' }}>{`${n.colecciones_completas} de ${n.colecciones_total} colecciones${lineaSecretos ? ` · ${lineaSecretos}` : ''}`}</span>
           <div style={{ height: 5, borderRadius: 5, background: 'rgba(28,34,48,.08)', overflow: 'hidden' }}><div style={{ height: '100%', width: `${Math.round(n.avance * 100)}%`, borderRadius: 5, background: grado ? color : 'rgba(28,34,48,.25)' }} /></div>
         </span>
       </div>
@@ -73,20 +77,21 @@ function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; r
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <Titulo>Sellos de ciudad</Titulo>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {datos.sellos.map((s) => <TarjetaDeSello key={s.id} s={s} aqui={resaltar === s.id} />)}
+          {datos.sellos.map((s) => <TarjetaDeSello pin={s.grado ? enVitrina(`${datos.destino}|sello|${s.id}:${s.grado}`) : undefined} key={s.id} s={s} aqui={resaltar === s.id} />)}
         </div>
 
         <Titulo cuenta={`${n.colecciones_completas} de ${n.colecciones_total}`}>Colecciones</Titulo>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
-          {datos.colecciones.map((c) => <TarjetaDeColeccion key={c.id} c={c} abrir={() => abrirColeccion(c.id)} />)}
+          {datos.colecciones.map((c) => <TarjetaDeColeccion key={c.id} c={c} abrir={() => abrirColeccion(c.id)} pin={c.completa ? enVitrina(`${datos.destino}|coleccion|${c.id}`) : undefined} />)}
         </div>
 
-        <Titulo cuenta={`${n.secretos_encontrados} de ${n.secretos_total}`}>Emblemas secretos</Titulo>
+        <Titulo>Emblemas secretos</Titulo>
         <div style={{ borderRadius: 24, background: '#1C2230', color: '#FFFDF8', padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div role="list" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, justifyItems: 'center' }}>
             {datos.emblemas.lista.map((e) => (
-              <span key={e.id} role="listitem" aria-label={e.nombre} style={{ width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span key={e.id} role="listitem" aria-label={e.nombre} style={{ position: 'relative', width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Emblema id={e.id} tam={58} />
+                <PinDeVitrina puesto={enVitrina(`${datos.destino}|emblema|${e.id}`) === null ? null : Boolean(enVitrina(`${datos.destino}|emblema|${e.id}`) || (e.id === 'coliseo' && enVitrina('*|maravilla|coliseo')))} arriba={-4} derecha={-4} />
               </span>
             ))}
             {Array.from({ length: datos.emblemas.faltan }, (_, i) => (
@@ -111,7 +116,22 @@ function Titulo({ children, cuenta }: { children: string; cuenta?: string }): Re
   )
 }
 
-function TarjetaDeSello({ s, aqui }: { s: SelloDePagina; aqui: boolean }): ReactNode {
+/**
+ * El pin de la vitrina (de «Mi vitrina», Piezas/Mi Vitrina.dc.html): solo sale en lo que ya está ganado. Verde con ✓ si está en tu vitrina; dorado con «+» si aún no. Solo se ve (no se toca).
+ * `puesto`: true (en la vitrina), false (ganado, fuera de ella), null/undefined (aún no se sabe o no está ganado: sin pin).
+ */
+function PinDeVitrina({ puesto, arriba = 6, derecha = 6 }: { puesto: boolean | null | undefined; arriba?: number; derecha?: number }): ReactNode {
+  if (puesto == null) return null
+  return (
+    <span data-pin-de-vitrina={puesto ? 'puesto' : 'libre'} title={puesto ? 'En tu vitrina' : 'Añadir a tu vitrina'} style={{ position: 'absolute', top: arriba, right: derecha, width: 26, height: 26, borderRadius: '50%', background: puesto ? 'oklch(0.55 0.11 150)' : 'oklch(0.8 0.14 70)', color: puesto ? '#FFFFFF' : '#17120A', boxShadow: '0 0 0 2px #FFFDF8,0 4px 10px -4px rgba(0,0,0,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3, pointerEvents: 'none' }}>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d={puesto ? 'M5 12.5l4.5 4.5L19 7.5' : 'M12 5v14M5 12h14'} />
+      </svg>
+    </span>
+  )
+}
+
+function TarjetaDeSello({ s, aqui, pin }: { s: SelloDePagina; aqui: boolean; pin?: boolean | null }): ReactNode {
   const color = s.grado ? COLOR_DE_GRADO[s.grado] : 'rgba(28,34,48,.45)'
   return (
     <div style={{ position: 'relative', borderRadius: 20, background: '#FFFDF8', border: `1px solid ${aqui ? 'oklch(0.8 0.14 70)' : 'rgba(28,34,48,.07)'}`, boxShadow: aqui ? '0 0 0 3px oklch(0.8 0.14 70 / .35)' : 'none', padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center' }}>
@@ -119,11 +139,12 @@ function TarjetaDeSello({ s, aqui }: { s: SelloDePagina; aqui: boolean }): React
       <span style={{ font: "400 15px/1.1 'Instrument Serif',serif" }}>{`Sello ${conDe(s.nombre)}`}</span>
       <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.08em', color, textTransform: 'uppercase' }}>{s.grado ?? 'Por conseguir'}</span>
       {aqui && <span style={{ height: 22, padding: '0 9px', borderRadius: 999, background: 'oklch(0.8 0.14 70)', color: '#17120a', font: "700 10.5px/22px 'Geist'" }}>Estás aquí</span>}
+      <PinDeVitrina puesto={pin} arriba={8} derecha={8} />
     </div>
   )
 }
 
-function TarjetaDeColeccion({ c, abrir }: { c: ColeccionDePagina; abrir: () => void }): ReactNode {
+function TarjetaDeColeccion({ c, abrir, pin }: { c: ColeccionDePagina; abrir: () => void; pin?: boolean | null }): ReactNode {
   const hay = c.n > 0
   return (
     <button
@@ -136,6 +157,7 @@ function TarjetaDeColeccion({ c, abrir }: { c: ColeccionDePagina; abrir: () => v
       </span>
       <span style={{ font: "500 11px/1.2 'Geist'", textWrap: 'balance' }}>{c.nombre}</span>
       <span style={{ font: "600 10px 'Geist Mono',monospace", color: c.completa ? 'oklch(0.42 0.09 150)' : hay ? 'oklch(0.48 0.17 5)' : 'rgba(28,34,48,.45)' }}>{c.completa ? '✓ Completa' : hay ? `${c.n} de ${c.total}` : 'Sin empezar'}</span>
+      <PinDeVitrina puesto={pin} />
     </button>
   )
 }

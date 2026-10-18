@@ -40,6 +40,13 @@ const visitadosConLaApp = () => new Set(VISITADOS.map((v) => v.pais))
 const conocidos = () => estado.paises.map((n) => porNombre.get(n)).filter(Boolean) as PaisCat[]
 const recuerdos = () => conocidos().filter((p) => !visitadosConLaApp().has(p.n)).map((p) => ({ pais: p.n, iso: p.i, continente: p.c }))
 
+/** Los números del pasaporte del viajero de ejemplo: los usan el pasaporte y el Perfil (un solo viajero, una sola cuenta). */
+export function numerosDelPasaporte(): { paises: number; ciudades: number; dias_viajando: number; sellos: number; previos: number } {
+  const todos = new Set([...VISITADOS.map((v) => v.pais), ...estado.paises])
+  const reales = VISITADOS.flatMap((v) => v.sellos.filter((s) => !s.vacio))
+  return { paises: todos.size, ciudades: new Set(reales.map((s) => s.destino)).size, dias_viajando: estado.dias + 41, sellos: reales.length + recuerdos().length, previos: conocidos().length }
+}
+
 function paginas() {
   const ficha = (n: string) => ({ iso: porNombre.get(n)?.i ?? null, continente: porNombre.get(n)?.c ?? null })
   return [
@@ -68,13 +75,12 @@ export function responder(ruta: string, _url: URL, c: Record<string, unknown>, o
   }
   if (ruta === '/api/logros/pasaporte2') {
     const pgs = paginas()
-    const todos = new Set([...VISITADOS.map((v) => v.pais), ...estado.paises])
-    const reales = VISITADOS.flatMap((v) => v.sellos.filter((s) => !s.vacio))
+    const { previos: _previos, ...numeros } = numerosDelPasaporte()
     return {
       ok: true,
       tus_paises: [],
       por_descubrir: [],
-      numeros: { paises: todos.size, ciudades: new Set(reales.map((s) => s.destino)).size, dias_viajando: estado.dias + 41, sellos: reales.length + recuerdos().length },
+      numeros,
       paginas: pgs,
     }
   }

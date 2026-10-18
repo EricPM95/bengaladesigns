@@ -22,8 +22,10 @@ const cerrarHoja = () => {
   datosDePrueba.estado = null
 }
 
-async function conRuta(modo: 'days' | 'route' | 'today' = 'days'): Promise<void> {
+export async function conRuta(modo: 'days' | 'route' | 'today' = 'days'): Promise<void> {
   try {
+    // HOY v2 (la foto del sitio con su mapa pequeño) está detrás de su interruptor; sin él, HOY es el de siempre, con el mapa grande. Las capturas de HOY llevan el v2 encendido.
+    if (modo === 'today') window.sessionStorage.setItem('trazo:hoy2', 'on')
     window.localStorage.setItem('trazo:logros:primerdia', 'si')
   } catch {
     /* sin almacenamiento */
@@ -47,9 +49,14 @@ async function conRuta(modo: 'days' | 'route' | 'today' = 'days'): Promise<void>
 }
 
 const abrirHoja = async (estado: unknown, despues?: () => Promise<void> | void) => {
+  // La hoja se enseña sobre la pantalla de verdad (DÍAS), no sobre el formulario de inicio.
   datosDePrueba.estado = como(estado)
+  await conRuta('days')
   useMomentosUI.getState().abrirHojaLogros()
   await espera(900)
+  // Los dibujos de las colecciones se bajan al pintarse: se espera a que no quede ningún hueco gris.
+  for (let i = 0; i < 60 && document.querySelector('[data-hueco-insignia]'); i++) await espera(100)
+  await espera(300)
   await despues?.()
 }
 const tocar = (selector: string) => (document.querySelector(selector) as HTMLElement | null)?.click()

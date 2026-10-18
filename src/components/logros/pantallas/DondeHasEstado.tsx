@@ -160,7 +160,7 @@ function FilaDePais({ pais, marcado, alTocar }: { pais: Pais; marcado: boolean; 
   )
 }
 
-/** J3: «Lo que has ganado». Solo lo que es verdad: tu mundo, los sellos recuerdo del pasaporte y los continentes, calculados por el servidor. Nada de EXP ni de logros. */
+/** J3: «Lo que has ganado». Solo lo que es verdad: tu mundo, los sellos recuerdo del pasaporte, calculados por el servidor (los continentes no se cuentan: ese logro está apagado en la Versión 1). Nada de EXP ni de logros. */
 function LoQueHasGanado({ tierra, marcados, resultado }: { tierra: Parameters<typeof Globo>[0]['tierra']; marcados: Pais[]; resultado: RespuestaPrevios | null }): ReactNode {
   const numeros = resultado?.numeros
   const total = numeros?.paises ?? marcados.length
@@ -180,7 +180,7 @@ function LoQueHasGanado({ tierra, marcados, resultado }: { tierra: Parameters<ty
         <span style={{ position: 'relative', marginTop: 12, maxWidth: 290, font: "italic 400 18px/1.35 'Instrument Serif',serif", color: 'rgba(255,253,248,.8)', textWrap: 'balance', animation: 'muUp .6s 1.9s ease both' }}>Tus próximos viajes con la app te darán tus primeros logros.</span>
         {numeros && (
           <span style={{ position: 'relative', marginTop: 16, font: "500 12px 'Geist Mono',monospace", letterSpacing: '.06em', color: 'rgba(243,213,154,.85)', animation: 'muUp .6s 2.3s ease both' }}>
-            {plural(numeros.sellos_recuerdo, 'sello de recuerdo', 'sellos de recuerdo')} · {plural(numeros.continentes, 'continente', 'continentes')}
+            {plural(numeros.sellos_recuerdo, 'sello de recuerdo', 'sellos de recuerdo')}
           </span>
         )}
         <div style={{ flex: 1 }} />

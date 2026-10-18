@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
+import { useLogrosPantallas } from '../pantallas/useLogrosPantallas'
 import { Chapa, Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
 import { lineaDeSecretos } from './textosResumen'
 import { pedirEstado, pedirResumen, pedirViajero, type EstadoLogros, type LogrosViajero, type ResumenLogros } from './api'
@@ -10,7 +11,7 @@ import { useMomentosUI } from './useMomentosUI'
  * EL RESUMEN DEL VIAJE (Tanda 8B, R1 y R2 de «Logros · Momentos»). Arriba el texto que toca (`roma.json › textos.resumen_viaje`: «¡Wow!» si tiene al menos 3
  * colecciones y 2 secretos, y si no «con ganas de verte» con los secretos que quedan), el sello, las colecciones, «Roma aún esconde N secretos.», los logros
  * de viajero nuevos y lo pendiente con su cuenta atrás de 30 días. Al final, [Compartir mi viaje] y [Ver mi viaje].
- * No lleva «Estampar mi sello» (el pasaporte es de otra tanda).
+ * [Estampar mi sello] (8C3): cierra este aviso y abre el pasaporte en la página del viaje con el sello estampándose (P2e).
  */
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 export function rangoDeFechas(inicio: string, fin: string): string {
@@ -41,6 +42,10 @@ export default function ResumenViaje(): ReactNode {
     }
   }, [tripId])
   const cerrar = () => useMomentosUI.getState().cerrarResumenViaje()
+  const estampar = () => {
+    cerrar()
+    useLogrosPantallas.getState().abrir({ t: 'pasaporte', pagina: `sello:${tripId}` })
+  }
 
   const nuevos = (resumen?.ganado ?? [])
     .filter((g) => g.logro.startsWith('viajero:'))
@@ -123,7 +128,10 @@ export default function ResumenViaje(): ReactNode {
             </div>
           )}
           <div style={{ flex: 1, minHeight: 24 }} />
-          <div style={{ padding: '24px 20px calc(env(safe-area-inset-bottom,0px) + 24px)', display: 'flex', gap: 10 }}>
+          <div style={{ padding: '24px 20px calc(env(safe-area-inset-bottom,0px) + 24px)', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            {tripId && (
+              <button type="button" onClick={estampar} data-estampar-sello style={{ flex: '1 1 100%', height: 52, border: 'none', borderRadius: 999, background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', font: "700 14px 'Geist'", cursor: 'pointer' }}>Estampar mi sello</button>
+            )}
             <button type="button" onClick={() => useMomentosUI.getState().abrirCompartir({ tipo: 'viaje' })} style={{ flex: 1, height: 52, border: 'none', borderRadius: 999, background: '#1C2230', color: '#FFFDF8', font: "700 14px 'Geist'", cursor: 'pointer' }}>Compartir mi viaje</button>
             <button type="button" onClick={cerrar} style={{ flex: 1, height: 52, border: '1px solid rgba(28,34,48,.25)', borderRadius: 999, background: 'transparent', color: '#1C2230', font: "600 14px 'Geist'", cursor: 'pointer' }}>Ver mi viaje</button>
           </div>

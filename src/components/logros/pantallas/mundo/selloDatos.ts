@@ -12,7 +12,8 @@ const MON: Record<string, string> = {
   londres: 'M24 38 V13 H36 V38 M21 38 H39 M24 13 L30 2 L36 13 M26 21 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M27 30 H33',
   pisa: 'M3 38H57M25 38L28 8M35 38L38 8M25.6 31H35.6M26.3 24H36.3M27 17H37M27.6 10H37.6M30 8V5H36V8',
 }
-MON.vaticano = MON.roma
+// El Vaticano lleva su propio monumento (la cúpula de San Pedro con su linterna y su cruz), no el Coliseo.
+MON.vaticano = 'M5 38 H55 M9 38 V27 H51 V38 M13 27 V23 H47 V27 M18 23 V18 H42 V23 M20 18 Q30 0 40 18 M30 9 V3 M28 5 H32 M24 38 V32 Q26 29.5 28 32 V38 M32 38 V32 Q34 29.5 36 32 V38 M20 23 V38 M40 23 V38'
 
 /** «Ciudad del Vaticano» cabe en un sello como «Vaticano». */
 export const corto = (s: string): string => s.replace(/^Ciudad del /i, '')

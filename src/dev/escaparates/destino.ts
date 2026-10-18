@@ -8,6 +8,7 @@ import type { Escaparate } from '../escaparate'
  *   T3   Por destino → Roma · todos sus viajes (arriba, con un viaje abierto)   G0   un destino sin nada ganado (variante)
  *   A    Una colección por dentro, con el día de su ruta y [Cómo llegar]    A2   una colección ya completa (variante)
  *   M1   Mi colección · El mundo     M2   un hueco por conseguir (la hoja de «cómo conseguirlo»)     M3   otra página (Cómo viajas)
+ * El viajero es siempre el mismo (el de «Todos mis logros»: el viaje a Roma acabado, diamante y 11 de 11); solo «A» lo enseña a mitad de viaje, que es cuando una colección aún tiene sitios por ver.
  * Los datos salen de `src/lib/logrosDemo_destino.ts` (las mismas funciones que el servidor).
  */
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -20,11 +21,11 @@ const conViaje = () => {
 const sinViaje = () => {
   if (useSyncStore.getState().activeTripId === tripDelDemo) useSyncStore.getState().setActiveTripId(tripPrevio)
 }
-const modo = (m: 'parcial' | 'vacio') => (window as unknown as { __demoDestino?: { modo: (m: string) => void } }).__demoDestino?.modo(m)
+const modo = (m: 'completo' | 'parcial' | 'vacio') => (window as unknown as { __demoDestino?: { modo: (m: string) => void } }).__demoDestino?.modo(m)
 const cerrar = () => {
   useLogrosPantallas.getState().cerrarTodo()
   sinViaje()
-  modo('parcial')
+  modo('completo')
 }
 const abrirPantalla = (p: unknown) => useLogrosPantallas.getState().abrir(p as never)
 const bajarHasta = (el: Element | null) => (el as HTMLElement | null)?.scrollIntoView({ block: 'end' })
@@ -72,8 +73,9 @@ const lista: Escaparate[] = [
   },
   {
     id: 'A',
-    que: 'Una colección por dentro (Los imprescindibles de Roma): fechas de lo visto, y el día de su ruta con [Cómo llegar]',
+    que: 'Una colección por dentro (Los imprescindibles de Roma) A MITAD DEL VIAJE (12 oct.): fechas de lo visto, y el día de su ruta con [Cómo llegar]',
     abrir: async () => {
+      modo('parcial')
       conViaje()
       abrirPantalla({ t: 'coleccion', destino: 'roma', coleccion: 'imprescindibles' })
       await espera(1500)

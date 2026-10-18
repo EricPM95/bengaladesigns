@@ -64,7 +64,7 @@ export interface DestinoGanado {
   sello: { id: string; nombre: string; grado: string | null; nombre_grado: string | null; linea: string | null }
   sellos: { id: string; nombre: string; grado: string | null }[]
   colecciones: { completas: number; total: number }
-  secretos: { encontrados: number }
+  secretos: { encontrados: number; total?: number }
   avance: number
   desde: string | null
 }

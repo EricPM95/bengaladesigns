@@ -4,7 +4,7 @@ import type { Route, Stop } from './types'
 // directo se corrompe al guardarse (ver mapboxGeocoding.ts, mismo problema).
 const DIACRITICS_PATTERN = new RegExp(String.fromCharCode(0x5b, 0x300, 0x2d, 0x36f, 0x5d), 'g')
 
-function normalizeName(value: string): string {
+export function normalizeName(value: string): string {
   return value.normalize('NFD').replace(DIACRITICS_PATTERN, '').toLowerCase().trim()
 }
 

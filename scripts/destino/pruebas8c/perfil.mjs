@@ -94,7 +94,8 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   debe(v.recientes.length === 3, 'vitrina', 'el resumen de la vitrina dibuja 3 piezas')
   debe(v.recientes.filter((x) => x.logro === 'sello').length <= 1, 'vitrina', 'un sello que sube de grado cuenta una vez')
   debe(!v.recientes.some((x) => x.escalon === 'madrugador'), 'vitrina', 'Madrugador no sale en el resumen (su dibujo lleva una hora)')
-  debe(v.logros === lista.length - 0, 'vitrina', `los logros se cuentan de lo ganado (${v.logros} de ${lista.length})`)
+  // 7 cosas ganadas, pero el país 1 y el 3 son un solo logro y el sello bronce y el oro son un solo sello: 5 logros (los mismos que cuenta «Todos mis logros»).
+  debe(v.logros === lista.length - 2, 'vitrina', `los logros se cuentan una vez cada uno, sin repetir escalones ni grados (${v.logros} de ${lista.length})`)
 
   const exp = resumenDeExp(expDeNivel(8, datos.exp) + 100, datos.exp)
   const p = P.construirPerfil({ datos, items, exp, guardada: { baldas: {}, titulo: '*|viajero:paises|1' }, previos: { paises: ['Francia'], dias: 0 }, ahora, catalogo: catalogoDePaises() })

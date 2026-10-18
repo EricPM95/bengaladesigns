@@ -331,34 +331,6 @@ export function pasaporte({ datos, items, previos = { paises: [], dias: 0 }, aho
   }
 }
 
-/**
- * La vitrina: el pedestal de las maravillas, la balda de los exclusivos y las baldas temáticas de 4 huecos. Los huecos se llenan solos con lo último ganado
- * hasta que el viajero elige (`guardada.baldas[nombre]` = lista de claves); si una balda elegida está llena, hay que quitar una antes.
- */
-export function construirVitrina({ items, guardada = { baldas: {}, titulo: null } }) {
-  const lista = [...items.values()].sort((a, b) => new Date(b.en) - new Date(a.en))
-  const de = (f) => lista.filter(f)
-  const exclusivos = new Set(['viajero:fundador', 'viajero:pionero', 'viajero:edicion_anio', 'viajero:probador'])
-  const baldas = {
-    viajero: de((it) => it.logro.startsWith('viajero:') && !exclusivos.has(it.logro) && it.logro !== 'viajero:maravillas'),
-    sellos: de((it) => it.logro === 'sello'),
-    colecciones: de((it) => it.logro === 'coleccion'),
-    emblemas: de((it) => it.logro === 'emblema'),
-  }
-  const salida = {}
-  for (const [nombre, todos] of Object.entries(baldas)) {
-    const elegidos = (guardada.baldas?.[nombre] ?? []).map((k) => items.get(k)).filter(Boolean)
-    const huecos = elegidos.length > 0 ? elegidos.slice(0, 4) : todos.slice(0, 4)
-    salida[nombre] = { huecos: huecos.map((it) => it.clave), elegida: elegidos.length > 0, hay_mas: todos.length > huecos.length }
-  }
-  return {
-    pedestal: de((it) => it.logro === 'maravilla').map((it) => it.clave),
-    exclusivos: de((it) => exclusivos.has(it.logro)).map((it) => it.clave),
-    baldas: salida,
-    titulo: guardada.titulo && items.get(guardada.titulo) ? guardada.titulo : null,
-  }
-}
-
 /** Para [Llevar a mi vitrina]: pone una clave en una balda; si está llena (4), hay que decir cuál quitar. */
 export function llevarAVitrina(guardada, balda, claveNueva, quitar = null) {
   const actual = [...(guardada.baldas?.[balda] ?? [])]

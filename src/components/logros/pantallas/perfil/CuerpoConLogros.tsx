@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Chapa } from '../../dibujos'
-import { FilaDeViaje } from '../../../perfil/FilaDeViaje'
 import { MapaMisViajes } from '../../../perfil/MapaMisViajes'
 import { agruparViajes } from '../../../perfil/agruparViajes'
 import { Icono } from '../../../ui/Icono'
@@ -11,6 +10,7 @@ import { ElegirTitulo } from './ElegirTitulo'
 import { InicialEnMarco, MarcoDeRango } from './MarcoDeRango'
 import { NivelYBarra } from './NivelYBarra'
 import { PiezaDeVitrina } from './PiezaDeVitrina'
+import { TarjetaDeViaje } from './TarjetaDeViaje'
 import { textoDeNivel } from './util'
 
 const ETIQUETA_DE_GRUPO = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em' } as const
@@ -150,7 +150,7 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
               {g.titulo}
             </span>
             {g.viajes.map((viaje) => (
-              <FilaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} abierto={viaje.id === rutaAbiertaId} onAbrir={() => abrir({ t: 'viaje', tripId: viaje.id })} onAbrirViaje={() => onAbrirViaje(viaje)} />
+              <TarjetaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} enCurso={g.clave === 'en_curso'} abierto={viaje.id === rutaAbiertaId} onAbrir={() => abrir({ t: 'viaje', tripId: viaje.id })} onAbrirViaje={() => onAbrirViaje(viaje)} />
             ))}
           </div>
         ))}
@@ -159,15 +159,12 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
             <span className="px-1.5 pt-1.5 uppercase text-text/55" style={ETIQUETA_DE_GRUPO}>
               Antes de la app
             </span>
-            <button type="button" onClick={() => abrir({ t: 'previos' })} data-viajes-de-antes className="flex min-h-[64px] items-center gap-3 rounded-[18px] border border-text/[.08] bg-white px-3 py-2.5 text-left text-[#1C2230]">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-[#F1EADC]">
-                <Icono nombre="mapa" size={20} />
+            <button type="button" onClick={() => abrir({ t: 'previos' })} data-viajes-de-antes className="relative h-[132px] w-full flex-none overflow-hidden rounded-[22px] text-left text-[#FFFDF8]" style={{ background: 'linear-gradient(160deg,#D6E4EA,#7EA6B8 55%,#3A5866)' }}>
+              <span aria-hidden="true" className="absolute inset-0" style={{ background: 'linear-gradient(180deg,rgba(10,12,20,.1) 20%,rgba(10,12,20,.72))' }} />
+              <span className="absolute bottom-3 left-3.5 flex flex-col gap-[3px]">
+                <span className="font-display text-[24px] leading-none">{plural(perfil.previos.paises, 'país', 'países')}</span>
+                <span className="font-display text-[13px] italic text-[#FFFDF8]/80">Viaje de antes de usar la app</span>
               </span>
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="font-display text-[20px] leading-[1.05]">{plural(perfil.previos.paises, 'país', 'países')}</span>
-                <span className="font-display text-[13px] italic text-text/60">Viaje de antes de usar la app</span>
-              </span>
-              <Icono nombre="adelante" size={16} className="flex-none text-text/40" />
             </button>
           </div>
         )}

@@ -16,7 +16,7 @@ export function DibujoDeItem({ item, tam, apagado = false }: { item: ItemGanado;
       return <MedallaDeSiete encendidas={[item.maravilla ?? '']} tam={tam} />
     case 'viajero':
     case 'exclusivo':
-      return <Chapa logro={item.def ?? ''} escalon={item.escalon === '' ? null : item.escalon} tam={tam} bloqueado={apagado} />
+      return <Chapa logro={item.def ?? ''} escalon={item.escalon === '' ? null : item.escalon} tam={tam} bloqueado={apagado} ciudad={item.lugar?.split(',')[0]} />
   }
 }
 

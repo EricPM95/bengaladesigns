@@ -17,7 +17,8 @@ import { coordenadasDeSitio, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
 import { armarMomentos } from './momentos.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
-import { coleccionesDeSitio, construirVitrina, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen, sitiosDeLaRuta } from './vistas.js'
+import { clavesSuperadas, vitrinaDeGanados } from './pantallas/ganados.js'
+import { coleccionesDeSitio, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen, sitiosDeLaRuta } from './vistas.js'
 
 const CON_QUIEN = { solo: 'solo', couple: 'pareja', group: 'amigos', family: 'familia' }
 
@@ -461,7 +462,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const c = await cargar(userId)
     const perfil = await repo.perfilDe(userId)
     const items = aItems(c.logros)
-    return { ok: true, ...construirVitrina({ items, guardada: perfil.vitrina }) }
+    // La misma vitrina que ve la persona en «Todos mis logros»: una balda vaciada a propósito se queda vacía, y el bronce de un sello que ya es oro no entra.
+    return { ok: true, ...vitrinaDeGanados({ items, guardada: perfil.vitrina, superadas: clavesSuperadas(datos, items) }) }
   }
 
   async function logrosDeViajero(userId) {

@@ -35,8 +35,8 @@ export function Emblema({ id, animado = false, silueta = false, tam = 120, fecha
 }
 
 /** La chapa de un logro de viajero. `logro`: id de `data/logros/viajero.json › logros`; `escalon`: el `n` del escalón (o nada si no tiene escalones). Opcional: `bloqueado` (gris), `animada`, `progreso` (continentes: 'eu,na,sa'; pequeños gigantes y cuatro estaciones: número). */
-export function Chapa({ logro, escalon, tam = 88, bloqueado = false, animada = false, progreso }: { logro: string; escalon?: string | number | null; tam?: number; bloqueado?: boolean; animada?: boolean; progreso?: number | string }): ReactNode {
-  return <ChapaDibujo logro={logro} escalon={escalon} tam={tam} bloqueado={bloqueado} animada={animada} progreso={progreso} />
+export function Chapa({ logro, escalon, tam = 88, bloqueado = false, animada = false, progreso, ciudad }: { ciudad?: string; logro: string; escalon?: string | number | null; tam?: number; bloqueado?: boolean; animada?: boolean; progreso?: number | string }): ReactNode {
+  return <ChapaDibujo logro={logro} escalon={escalon} tam={tam} bloqueado={bloqueado} animada={animada} progreso={progreso} ciudad={ciudad} />
 }
 
 /** La medalla de las 7 maravillas. `encendidas`: ids de las maravillas vistas (coliseo, gran_muralla, petra, …); las demás, apagadas. `tam` es el ancho; el alto es 1,16 veces el ancho. */

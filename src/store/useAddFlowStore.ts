@@ -10,8 +10,8 @@ import { useRouteStore } from './useRouteStore'
  */
 interface AddFlowState {
   /** Abierta: el día al que apunta (null = desde Explorar, sin día). */
-  addFlow: { dayId: string | null } | null
-  openAddFlow: (dayId: string | null) => void
+  addFlow: { dayId: string | null; /** El nombre de un sitio que ya viene puesto (desde la hoja de logros: «Añadir a mi ruta»); la pantalla lo busca en el catálogo y pregunta a qué día. */ lugar?: string } | null
+  openAddFlow: (dayId: string | null, lugar?: string) => void
   closeAddFlow: () => void
   /** «Crear mi propio día»: la pantalla de elegir varios sitios para este día (Tanda 6g). */
   ownDayFlow: { dayId: string } | null
@@ -28,7 +28,7 @@ interface AddFlowState {
 
 export const useAddFlowStore = create<AddFlowState>((set, get) => ({
   addFlow: null,
-  openAddFlow: (dayId) => set({ addFlow: { dayId } }),
+  openAddFlow: (dayId, lugar) => set({ addFlow: { dayId, ...(lugar ? { lugar } : {}) } }),
   closeAddFlow: () => set({ addFlow: null }),
   ownDayFlow: null,
   openOwnDayFlow: (dayId) => set({ ownDayFlow: { dayId } }),

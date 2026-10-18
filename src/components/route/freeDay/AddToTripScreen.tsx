@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Route } from '../../../lib/types'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { addDaysToIso } from '../../../lib/dateRange'
 import { alDia } from '../../../lib/nombreDeDia'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { normalizeName } from '../../../lib/routeStopsIndex'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { AddStopScreen } from '../addStop/AddStopScreen'
@@ -24,6 +25,20 @@ export function AddToTripScreen({ route }: { route: Route }) {
   const { places, excursions, resolved } = useDestinationPool(city, addFlow !== null)
   const [item, setItem] = useState<AddItem | null>(null)
   const [freeTourOpen, setFreeTourOpen] = useState(false)
+  // Desde la hoja de logros («Añadir a mi ruta») el sitio ya viene puesto: se busca en el catálogo y se pregunta a qué día va. Una sola vez por apertura.
+  const lugarPuesto = useRef<string | null>(null)
+  useEffect(() => {
+    const lugar = addFlow?.lugar
+    if (!lugar) {
+      lugarPuesto.current = null
+      return
+    }
+    if (!resolved || lugarPuesto.current === lugar) return
+    lugarPuesto.current = lugar
+    const objetivo = normalizeName(lugar)
+    const place = places.find((p) => p.kind === 'place' && normalizeName(p.name) === objetivo) ?? places.find((p) => p.kind === 'place' && (normalizeName(p.name).startsWith(objetivo) || objetivo.startsWith(normalizeName(p.name))))
+    if (place) setItem({ kind: 'place', place })
+  }, [addFlow?.lugar, resolved, places])
 
   if (!addFlow) return null
 

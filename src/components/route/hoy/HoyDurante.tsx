@@ -275,7 +275,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
               ) : (
                 <span className="flex h-12 items-center justify-center rounded-full bg-[#FFFDF8]/30 text-[14px] font-semibold text-[#1C2230]/60">Cómo llegar</span>
               )}
-              <button type="button" onClick={marcarVisto} className="flex h-12 items-center justify-center gap-[7px] rounded-full border-[1.5px] border-[#FFFDF8]/40 text-[14px] font-semibold text-[#FFFDF8] hover:bg-[#FFFDF8]/10">
+              <button type="button" onClick={marcarVisto} data-boton-visto className="flex h-12 items-center justify-center gap-[7px] rounded-full border-[1.5px] border-[#FFFDF8]/40 text-[14px] font-semibold text-[#FFFDF8] hover:bg-[#FFFDF8]/10">
                 <Icono nombre="hecho" size={15} grosor={2.4} />
                 Visto
               </button>

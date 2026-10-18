@@ -18,7 +18,7 @@ import { catalogoDePaises, paisesConocidos, recuerdosDe } from './previos.js'
 const EMBLEMAS_CON_HORA = new Set(['madrugador', 'nocturno'])
 /** Lo que se dibuja en el resumen de la vitrina del Perfil (los tres últimos logros de estas clases). */
 const CLASES_DE_VITRINA = (it) => it.logro === 'sello' || it.logro === 'coleccion' || (it.logro === 'emblema' && !EMBLEMAS_CON_HORA.has(it.escalon)) || it.logro.startsWith('viajero:')
-/** Lo que cuenta como «un logro» de la vitrina (las mismas clases que `construirVitrina`, más las maravillas). */
+/** Lo que cuenta como «un logro» de la vitrina (las mismas clases que `vitrinaDeGanados`, más las maravillas). */
 const CUENTA_COMO_LOGRO = (it) => it.logro === 'sello' || it.logro === 'coleccion' || it.logro === 'emblema' || it.logro === 'maravilla' || it.logro.startsWith('viajero:')
 
 /**
@@ -50,11 +50,11 @@ function sinRepetidos(lista) {
   })
 }
 
-/** El resumen de la vitrina para el Perfil: cuántos logros hay ganados y los tres últimos (clave, clase, escalón y destino, para dibujarlos). */
+/** El resumen de la vitrina para el Perfil: cuántos logros hay ganados (cada sello y cada logro con escalones, una vez: los mismos que cuenta «Todos mis logros») y los tres últimos (clave, clase, escalón y destino, para dibujarlos). */
 export function resumenDeVitrina({ items }) {
   const lista = [...items.values()].sort((a, b) => new Date(b.en) - new Date(a.en))
   return {
-    logros: lista.filter(CUENTA_COMO_LOGRO).length,
+    logros: sinRepetidos(lista.filter(CUENTA_COMO_LOGRO)).length,
     recientes: sinRepetidos(lista.filter(CLASES_DE_VITRINA)).slice(0, 3).map((it) => ({ clave: it.clave, logro: it.logro, escalon: it.escalon, destino: it.destino })),
   }
 }

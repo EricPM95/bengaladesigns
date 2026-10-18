@@ -7,6 +7,13 @@
  * Los números de la EXP salen de las MISMAS funciones y la MISMA tabla que el servidor (server/logros/exp.js y data/logros/exp.json): aquí no hay ninguno escrito a mano.
  * Los datos de ejemplo (un viajero con unos cuantos logros) son de prueba. El escaparate los cambia con `ponerPerfilDemo`.
  */
+import ajustes from '../../data/logros/ajustes.json'
+import roma from '../../data/logros/roma.json'
+import { soloActivos } from '../../server/logros/viajeroActivo.js'
+import { titulosGanados } from '../../server/logros/pantallas/perfil.js'
+import { numerosDelPasaporte } from './logrosDemo_mundo'
+import { resumenDeVitrina } from '../../server/logros/pantallas/perfil.js'
+import ganadosDatos from './logrosDemo_ganados_datos.json'
 import tablaExp from '../../data/logros/exp.json'
 import viajero from '../../data/logros/viajero.json'
 import { expDeNivel, nivelDeExp, resumenDeExp } from '../../server/logros/exp.js'
@@ -22,32 +29,25 @@ export function expEnNivel(n: number, extra = 0): number {
 }
 export const estrellaDeLeyenda: number = tablaExp.niveles.estrella_cada
 
-const defs = viajero.logros as { id: string; grupo: string; linea?: string; escalones?: { n: number; nombre: string }[]; nombre?: string }[]
-/** Un título como lo manda el servidor: el escalón `n` del logro `id`. */
-function titulo(id: string, n: number): TituloDeViajero {
-  const d = defs.find((x) => x.id === id)!
-  return { clave: `*|viajero:${id}|${n}`, id, grupo: d.grupo, nombre: d.escalones!.find((e) => e.n === n)!.nombre, escalon: n, linea: d.linea ?? null }
-}
+/**
+ * El viajero de ejemplo es EL MISMO de «Todos mis logros» (`logrosDemo_ganados_datos.json`, escenario «lleno»: el viaje a Roma entero) y el del pasaporte (`logrosDemo_mundo.ts`): de ahí salen
+ * los títulos que puede elegir, los logros de la vitrina y los números del pasaporte. Nada de esto está escrito a mano en este archivo.
+ */
+const itemsDeLosGanados = () => new Map((ganadosDatos.lleno.items as { clave: string }[]).map((i) => [i.clave, i as never]))
+const datosDelViajero = { destinos: { roma }, viajero: soloActivos(viajero), ajustes }
+export const TITULOS_DE_EJEMPLO: TituloDeViajero[] = titulosGanados({ datos: datosDelViajero, items: itemsDeLosGanados(), ahora: new Date('2026-10-20T10:00:00Z') }) as TituloDeViajero[]
 
-export const TITULOS_DE_EJEMPLO: TituloDeViajero[] = [titulo('paises', 10), titulo('con_quien_pareja', 3), titulo('cazador_emblemas', 5), titulo('destinos', 3), titulo('viajes', 1)]
-
-/** El viajero de ejemplo: nivel 8 (el mismo del diseño), con título, unos logros en la vitrina y tres países. */
+/** El viajero de ejemplo: nivel 8 (el mismo del diseño), con título, su vitrina y su pasaporte (los del demo del mundo). */
 export function perfilDeEjemplo(): PerfilLogros {
+  const { paises, sellos, previos } = numerosDelPasaporte()
   return {
     ok: true,
     exp: expDeEjemplo(expEnNivel(8, 220)),
-    titulo: TITULOS_DE_EJEMPLO[0],
+    titulo: TITULOS_DE_EJEMPLO.find((t) => t.id === 'cazador_emblemas') ?? TITULOS_DE_EJEMPLO[0] ?? null,
     titulos: TITULOS_DE_EJEMPLO,
-    vitrina: {
-      logros: 38,
-      recientes: [
-        { clave: 'roma|sello|roma:oro', logro: 'sello', escalon: 'roma:oro', destino: 'roma' },
-        { clave: 'roma|emblema|coliseo', logro: 'emblema', escalon: 'coliseo', destino: 'roma' },
-        { clave: '*|viajero:paises|10', logro: 'viajero:paises', escalon: '10', destino: '*' },
-      ],
-    },
-    pasaporte: { paises: 3, sellos: 4 },
-    previos: { paises: 1 },
+    vitrina: resumenDeVitrina({ items: itemsDeLosGanados() }),
+    pasaporte: { paises, sellos },
+    previos: { paises: previos },
   }
 }
 
@@ -63,16 +63,23 @@ export const ganadoDeEjemplo = [
   { clave: '*|pais|Italia', logro: 'pais', escalon: 'Italia', destino: '*', en: '2026-10-10T09:00:00Z' },
 ]
 
+/** Lo que el escaparate ha puesto a mano (el resto del pasaporte sale siempre del demo del mundo, para que cuadre). */
+const puestoAMano = new Set<string>()
 export function ponerPerfilDemo(p: Partial<PerfilLogros>): void {
+  for (const k of Object.keys(p)) puestoAMano.add(k)
   perfil = { ...perfil, ...p }
 }
 export function reiniciarPerfilDemo(): void {
+  puestoAMano.clear()
   perfil = perfilDeEjemplo()
   viajesConGanado.clear()
 }
 
 export function responder(ruta: string, url: URL, cuerpo: Record<string, unknown>, opciones: { metodo?: string; cuerpo?: unknown }): unknown {
-  if (ruta === '/api/logros/perfil') return perfil
+  if (ruta === '/api/logros/perfil') {
+    const vivo = perfilDeEjemplo()
+    return { ...perfil, ...(puestoAMano.has('pasaporte') ? {} : { pasaporte: vivo.pasaporte }), ...(puestoAMano.has('previos') ? {} : { previos: vivo.previos }) }
+  }
   if (ruta === '/api/logros/exp') return { ok: true, ...perfil.exp }
   if (ruta === '/api/logros/vitrina' && opciones.metodo === 'PUT' && 'titulo' in cuerpo && !('balda' in cuerpo)) {
     const clave = (cuerpo.titulo as string | null) ?? null

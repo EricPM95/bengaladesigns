@@ -29,9 +29,11 @@ export function textoDeSello(nace: boolean, selloId: string, grado: string, nomb
 }
 
 /** La línea de abajo del resumen: «Roma aún esconde 9 secretos.» / «…1 secreto.» / «Has encontrado todos los secretos de Roma.». */
-export function lineaDeSecretos(ciudad: string, total: number, encontrados: number): string | null {
+export function lineaDeSecretos(ciudad: string, total: number, encontrados: number, antes = false): string | null {
   if (!(total > 0)) return null
   const lugar = ciudad || 'este destino'
+  // Antes del viaje (nada encontrado y nada empezado): «Roma esconde 12 secretos», sin «aún».
+  if (antes && encontrados === 0) return `${lugar} esconde ${total} ${total === 1 ? 'secreto' : 'secretos'}`
   const quedan = total - encontrados
   if (quedan <= 0) return `Has encontrado todos los secretos de ${lugar}.`
   return `${lugar} aún esconde ${quedan} ${quedan === 1 ? 'secreto' : 'secretos'}.`

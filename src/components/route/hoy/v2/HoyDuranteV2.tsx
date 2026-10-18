@@ -443,7 +443,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           </div>
           <div className="flex flex-col gap-2 px-1">
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={marcarVisto} className="flex h-[46px] items-center justify-center gap-1.5 rounded-full text-[13.5px] font-semibold text-white" style={{ background: VERDE }}>
+              <button type="button" onClick={marcarVisto} data-boton-visto className="flex h-[46px] items-center justify-center gap-1.5 rounded-full text-[13.5px] font-semibold text-white" style={{ background: VERDE }}>
                 <Icono nombre="hecho" size={14} grosor={2.6} />
                 Visto
               </button>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { ResumenDeExp } from './api'
 import { InicialEnMarco, MarcoDeRango } from './MarcoDeRango'
@@ -39,6 +39,14 @@ export function ExpGanada({ ganada, antes, despues, onFin, inicial = 'V' }: { ga
     return () => window.clearTimeout(id)
   }, [quieto])
 
+  // Donde flota: por defecto, 170 px sobre el borde de abajo; si en HOY está el botón [✓ Visto], justo encima de él, para no taparlo (ni la barra de abajo).
+  const [subida] = useState<number | null>(() => {
+    const visto = typeof document === 'undefined' ? null : document.querySelector('[data-boton-visto]')
+    if (!visto) return null
+    const r = visto.getBoundingClientRect()
+    const bottom = window.innerHeight - r.top + 12
+    return r.top > 0 && window.innerHeight - bottom > 150 ? bottom : null
+  })
   const sube = despues.nivel > antes.nivel || despues.rango_ix > antes.rango_ix
   const max = antes.exp_para_siguiente
   const hasta = sube ? max : despues.exp_en_nivel
@@ -56,7 +64,7 @@ export function ExpGanada({ ganada, antes, despues, onFin, inicial = 'V' }: { ga
       role="status"
       aria-label={`+${miles(ganada)} EXP`}
       onClick={acabar}
-      style={{ position: 'fixed', left: 14, right: 14, bottom: 'calc(env(safe-area-inset-bottom,0px) + 170px)', zIndex: 9100, opacity: opacidad, transform: `translateY(${((1 - entra) * 60).toFixed(0)}px)`, cursor: 'pointer', fontFamily: "'Geist',system-ui,sans-serif", WebkitTapHighlightColor: 'transparent' }}
+      style={{ position: 'fixed', left: 14, right: 14, bottom: subida !== null ? subida : 'calc(env(safe-area-inset-bottom,0px) + 170px)', zIndex: 9100, opacity: opacidad, transform: `translateY(${((1 - entra) * 60).toFixed(0)}px)`, cursor: 'pointer', fontFamily: "'Geist',system-ui,sans-serif", WebkitTapHighlightColor: 'transparent' }}
     >
       <span data-exp-chip style={{ position: 'absolute', right: 16, top: -30, height: 28, padding: '0 12px', borderRadius: 999, background: '#F3D59A', color: '#2A1D10', display: 'flex', alignItems: 'center', font: "800 13px 'Geist Mono',monospace", boxShadow: '0 8px 16px -8px rgba(0,0,0,.6)', opacity: quieto ? 1 : chip, transform: `translateY(${quieto ? 0 : (-suave(entre(t, 200, 2000)) * 22).toFixed(0)}px)` }}>
         +{miles(ganada)} EXP

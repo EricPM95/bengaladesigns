@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { MedallaDeSiete, Sello, type GradoDeSello } from '../../dibujos'
 import { flagStripesGradient } from '../../../../lib/flagColors'
+import { lineaDeSecretos } from '../../momentos/textosResumen'
 import { useLogrosPantallas } from '../useLogrosPantallas'
 import { useHojasDeLogros, type DestinoGanado, type FilaDeViajero, type Ganados, type ItemGanado, type PaisGanado } from './api'
 import { ChapaDeFila, DibujoDeItem } from './dibujo'
@@ -125,7 +126,8 @@ function TarjetaDeDestino({ d }: { d: DestinoGanado }): ReactNode {
   const grado = d.sello.grado ?? 'bronce'
   const color = COLOR_DE_GRADO[grado]
   const pct = Math.round(d.avance * 100)
-  const resumen = `${d.colecciones.completas} de ${d.colecciones.total} colecciones${d.secretos.encontrados > 0 ? ` · ${d.secretos.encontrados} ${d.secretos.encontrados === 1 ? 'secreto encontrado' : 'secretos encontrados'}` : ''}`
+  const linea = lineaDeSecretos(d.ciudad, d.secretos.total ?? 0, d.secretos.encontrados, !d.sello.grado)
+  const resumen = `${d.colecciones.completas} de ${d.colecciones.total} colecciones${linea ? ` · ${linea}` : ''}`
   return (
     <button type="button" onClick={() => useLogrosPantallas.getState().abrir({ t: 'destino', destino: d.destino })} style={{ flex: 'none', width: 286, scrollSnapAlign: 'start', position: 'relative', padding: 0, textAlign: 'left', borderRadius: 24, overflow: 'hidden', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 14px 28px -22px rgba(28,34,48,.5)', cursor: 'pointer', color: '#1C2230' }}>
       <span style={{ display: 'block', height: 110, background: FONDO_DE_GRADO[grado] }} />

@@ -246,7 +246,7 @@ function FilaDeColeccion({ c, i, fase, ciudad, abierta, alternar, cerrarHoja }: 
                     if (s.en_ruta) window.open(buildGoogleMapsUrlFromHere(s.lat != null && s.lng != null ? `${s.lat},${s.lng}` : `${s.nombre ?? s.sitio}, ${ciudad}`), '_blank', 'noopener')
                     else {
                       cerrarHoja()
-                      useAddFlowStore.getState().openAddFlow(null)
+                      useAddFlowStore.getState().openAddFlow(null, s.nombre ?? s.sitio)
                     }
                   }}
                   style={{ flex: 'none', minHeight: 44, padding: '0 11px', border: 'none', background: 'transparent', cursor: 'pointer' }}
