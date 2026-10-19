@@ -68,7 +68,7 @@ const MIGRACIONES = [
   { n: '0026', tabla: 'invitaciones_app' },
 ]
 const existe = async (tabla, columna = '*') => {
-  const { error } = await admin.from(tabla).select(columna, { head: true, count: 'exact' }).limit(1)
+  const { error } = await admin.from(tabla).select(columna).limit(1)
   // (Con la clave de servicio, cualquier error al mirar una tabla o columna es que no está; a veces PostgREST devuelve el error sin texto.)
   return !error
 }
