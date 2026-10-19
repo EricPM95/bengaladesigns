@@ -1,0 +1,222 @@
+{
+ "fecha": "2026-10-19",
+ "fuente": "Unsplash (licencia de Unsplash; se apunta siempre el autor)",
+ "sitios": [
+  {
+   "id": "via_del_babuino",
+   "nombre": "Via del Babuino",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id": "YbO1Q6HNbfw",
+     "nombra": false,
+     "entorno": true,
+     "descripcion": "Spanish Steps",
+     "autor": "Jorge Salazar",
+     "autor_enlace": "https://unsplash.com/@jlsfilms?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-group-of-people-walking-up-and-down-some-steps-YbO1Q6HNbfw?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 6000,
+     "alto": 4000,
+     "likes": 5,
+     "grande": "https://images.unsplash.com/photo-1689475132729-ae3341bd9dda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8Um9tZSUyMHN0cmVldCUyMFBpYXp6YSUyMGRlbCUyMFBvcG9sbyUyMFNwYW5pc2glMjBTdGVwc3xlbnwxfDB8fHwxNzkyNDM4NzM3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1689475132729-ae3341bd9dda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8Um9tZSUyMHN0cmVldCUyMFBpYXp6YSUyMGRlbCUyMFBvcG9sbyUyMFNwYW5pc2glMjBTdGVwc3xlbnwxfDB8fHwxNzkyNDM4NzM3fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Rome street Piazza del Popolo Spanish Steps"
+    },
+    {
+     "opcion": 2,
+     "id": "_TRzUy_WJ4k",
+     "nombra": false,
+     "entorno": false,
+     "descripcion": "Evening stroll through Rome and came across this shot I was walking back from Vatican City",
+     "autor": "Dylan Freedom",
+     "autor_enlace": "https://unsplash.com/@d4rock?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/pavement-between-buildings-_TRzUy_WJ4k?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 6000,
+     "alto": 4000,
+     "likes": 234,
+     "grande": "https://images.unsplash.com/photo-1533056903395-a36fb8a4ac8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8VmlhJTIwZGVsJTIwQmFidWlubyUyMFJvbWF8ZW58MXwwfHx8MTc5MjQzODczNnww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1533056903395-a36fb8a4ac8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8VmlhJTIwZGVsJTIwQmFidWlubyUyMFJvbWF8ZW58MXwwfHx8MTc5MjQzODczNnww&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Via del Babuino Roma"
+    },
+    {
+     "opcion": 3,
+     "id": "2qT7kF4uAks",
+     "nombra": false,
+     "entorno": false,
+     "descripcion": "Via S. Agata building during daytime",
+     "autor": "Shurong Li",
+     "autor_enlace": "https://unsplash.com/@hqligao?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/via-s-agata-building-during-daytime-2qT7kF4uAks?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 6240,
+     "alto": 4160,
+     "likes": 119,
+     "grande": "https://images.unsplash.com/photo-1576138450729-d34d5220e0d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFZpYSUyMGRlbCUyMEJhYnVpbm8lMjBSb21hfGVufDF8MHx8fDE3OTI0Mzg3MzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1576138450729-d34d5220e0d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFZpYSUyMGRlbCUyMEJhYnVpbm8lMjBSb21hfGVufDF8MHx8fDE3OTI0Mzg3MzZ8MA&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Via del Babuino Roma"
+    }
+   ]
+  },
+  {
+   "id": "terraza_de_largo_gaetana_agnesi",
+   "nombre": "Terraza de Largo Gaetana Agnesi",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id": "UtNiutTE0yQ",
+     "nombra": false,
+     "entorno": true,
+     "descripcion": "Rome, Trajan's column",
+     "autor": "Tallina Ch",
+     "autor_enlace": "https://unsplash.com/@tallina_ch?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/white-concrete-building-UtNiutTE0yQ?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 4032,
+     "alto": 3024,
+     "likes": 401,
+     "grande": "https://images.unsplash.com/photo-1563211324-2ca9cea9d78f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8VHJhamFuJTIwRm9ydW0lMjB2aWV3JTIwUm9tZSUyMGRvbWUlMjBTYW50YSUyME1hcmlhJTIwZGklMjBMb3JldG98ZW58MXwwfHx8MTc5MjQzODczOXww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1563211324-2ca9cea9d78f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8VHJhamFuJTIwRm9ydW0lMjB2aWV3JTIwUm9tZSUyMGRvbWUlMjBTYW50YSUyME1hcmlhJTIwZGklMjBMb3JldG98ZW58MXwwfHx8MTc5MjQzODczOXww&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Trajan Forum view Rome dome Santa Maria di Loreto"
+    },
+    {
+     "opcion": 2,
+     "id": "mWb2Ypt-7xo",
+     "nombra": false,
+     "entorno": false,
+     "descripcion": "Simple colours ",
+     "autor": "Henry Lai",
+     "autor_enlace": "https://unsplash.com/@henrylaiphotography?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/green-plant-in-black-background-mWb2Ypt-7xo?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 6000,
+     "alto": 4000,
+     "likes": 27,
+     "grande": "https://images.unsplash.com/photo-1580061676721-1d06c24c4816?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MjB8fExhcmdvJTIwR2FldGFuYSUyMEFnbmVzaXxlbnwxfDB8fHwxNzkyNDM4NzM4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1580061676721-1d06c24c4816?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MjB8fExhcmdvJTIwR2FldGFuYSUyMEFnbmVzaXxlbnwxfDB8fHwxNzkyNDM4NzM4fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Largo Gaetana Agnesi"
+    },
+    {
+     "opcion": 3,
+     "id": "ys9wc6W5mSA",
+     "nombra": false,
+     "entorno": false,
+     "descripcion": "Big leaf plants at the Royal Belum State Park, Malaysia",
+     "autor": "Job Savelsberg",
+     "autor_enlace": "https://unsplash.com/@jobsavelsberg?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-large-green-leafy-plant-in-the-middle-of-a-forest-ys9wc6W5mSA?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 5528,
+     "alto": 3745,
+     "likes": 5,
+     "grande": "https://images.unsplash.com/photo-1654427056957-903f52777c05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MjF8fExhcmdvJTIwR2FldGFuYSUyMEFnbmVzaXxlbnwxfDB8fHwxNzkyNDM4NzM4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1654427056957-903f52777c05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MjF8fExhcmdvJTIwR2FldGFuYSUyMEFnbmVzaXxlbnwxfDB8fHwxNzkyNDM4NzM4fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Largo Gaetana Agnesi"
+    }
+   ]
+  },
+  {
+   "id": "colle_oppio",
+   "nombre": "Colle Oppio",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id": "dmvYvIyABIA",
+     "nombra": false,
+     "entorno": false,
+     "descripcion": "Colosseum Rome, Italy during night",
+     "autor": "Andre-Julien Arnassan",
+     "autor_enlace": "https://unsplash.com/@warem974?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/colosseum-rome-italy-during-night-dmvYvIyABIA?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 4946,
+     "alto": 3636,
+     "likes": 93,
+     "grande": "https://images.unsplash.com/photo-1577637492838-c80e3ba339c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTZ8fENvbGxlJTIwT3BwaW98ZW58MXwwfHx8MTc5MjQzODc0MXww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1577637492838-c80e3ba339c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTZ8fENvbGxlJTIwT3BwaW98ZW58MXwwfHx8MTc5MjQzODc0MXww&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Colle Oppio"
+    },
+    {
+     "opcion": 2,
+     "id": "LUdSrJw-BII",
+     "nombra": false,
+     "entorno": false,
+     "descripcion": "Rome, Italy - The Colosseum",
+     "autor": "Mike Swigunski",
+     "autor_enlace": "https://unsplash.com/@mike_swigunski?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/cars-parked-on-road-near-brown-concrete-building-during-daytime-LUdSrJw-BII?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 4013,
+     "alto": 2717,
+     "likes": 65,
+     "grande": "https://images.unsplash.com/photo-1591014979417-20f9a787a4da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8Q29sbGUlMjBPcHBpb3xlbnwxfDB8fHwxNzkyNDM4NzQxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1591014979417-20f9a787a4da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8Q29sbGUlMjBPcHBpb3xlbnwxfDB8fHwxNzkyNDM4NzQxfDA&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Colle Oppio"
+    },
+    {
+     "opcion": 3,
+     "id": "Ynsgi8Lq4yE",
+     "nombra": false,
+     "entorno": false,
+     "descripcion": "Leaning Tower of Pisa",
+     "autor": "Alex Mehl",
+     "autor_enlace": "https://unsplash.com/@alexmehl?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/leaning-tower-of-pisa-Ynsgi8Lq4yE?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 4032,
+     "alto": 3024,
+     "likes": 53,
+     "grande": "https://images.unsplash.com/photo-1575585627380-1caee708db6c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MjF8fENvbGxlJTIwT3BwaW98ZW58MXwwfHx8MTc5MjQzODc0MXww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1575585627380-1caee708db6c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MjF8fENvbGxlJTIwT3BwaW98ZW58MXwwfHx8MTc5MjQzODc0MXww&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Colle Oppio"
+    }
+   ]
+  },
+  {
+   "id": "mirador_de_san_pietro_in_montorio",
+   "nombre": "Mirador de San Pietro in Montorio",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id": "eUod1DAmLWc",
+     "nombra": true,
+     "entorno": false,
+     "descripcion": "San Pietro in Montorio in Rome Italy under blue and white sky",
+     "autor": "Davide Castaldo",
+     "autor_enlace": "https://unsplash.com/@davidecas?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/san-pietro-in-montorio-in-rome-italy-under-blue-and-white-sky-eUod1DAmLWc?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 6016,
+     "alto": 4016,
+     "likes": 50,
+     "grande": "https://images.unsplash.com/photo-1573727488978-9dc35f5dd195?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8U2FuJTIwUGlldHJvJTIwaW4lMjBNb250b3Jpb3xlbnwxfDB8fHwxNzkyNDM4NzQzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1573727488978-9dc35f5dd195?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8U2FuJTIwUGlldHJvJTIwaW4lMjBNb250b3Jpb3xlbnwxfDB8fHwxNzkyNDM4NzQzfDA&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "San Pietro in Montorio"
+    },
+    {
+     "opcion": 2,
+     "id": "KzeZ2Xnuic4",
+     "nombra": false,
+     "entorno": false,
+     "descripcion": "view of church and palace",
+     "autor": "Christoph Schmid",
+     "autor_enlace": "https://unsplash.com/@topf52?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/view-of-church-and-palace-KzeZ2Xnuic4?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 6144,
+     "alto": 4096,
+     "likes": 105,
+     "grande": "https://images.unsplash.com/photo-1555508275-b5451b4c240a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTd8fFRlbXBpZXR0byUyMEJyYW1hbnRlJTIwUm9tZXxlbnwxfDB8fHwxNzkyNDM4NzQ0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1555508275-b5451b4c240a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTd8fFRlbXBpZXR0byUyMEJyYW1hbnRlJTIwUm9tZXxlbnwxfDB8fHwxNzkyNDM4NzQ0fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Tempietto Bramante Rome"
+    },
+    {
+     "opcion": 3,
+     "id": "IOOsPhjaC54",
+     "nombra": false,
+     "entorno": false,
+     "descripcion": "trees beside white structure",
+     "autor": "KaLisa Veer",
+     "autor_enlace": "https://unsplash.com/@kalisaveer?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/trees-beside-white-structure-IOOsPhjaC54?utm_source=viajes_bengala&utm_medium=referral",
+     "ancho": 3434,
+     "alto": 2289,
+     "likes": 90,
+     "grande": "https://images.unsplash.com/photo-1578508748722-3c6d96946d43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8VGVtcGlldHRvJTIwQnJhbWFudGUlMjBSb21lfGVufDF8MHx8fDE3OTI0Mzg3NDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1578508748722-3c6d96946d43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8VGVtcGlldHRvJTIwQnJhbWFudGUlMjBSb21lfGVufDF8MHx8fDE3OTI0Mzg3NDR8MA&ixlib=rb-4.1.0&q=80&w=400",
+     "busqueda": "Tempietto Bramante Rome"
+    }
+   ]
+  }
+ ]
+}

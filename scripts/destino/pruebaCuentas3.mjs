@@ -1262,6 +1262,43 @@ console.log('8. Cuentas 3B: peso, invitado, R2 corta, sin nombre, fotos privadas
   debe(/conInvitados \? 'id, traveler_id, guardado_en,[^']*' : 'id, route, bookings, wishlist, ui_state, generation_state'/.test(persistencia) && /if \(!conInvitados\) consulta = consulta\.eq\('traveler_id', travelerId\)/.test(persistencia), 'migracion', 'apagadas las cuentas, la app NO pide guardado_en ni los viajes de otros: la misma consulta de hoy, con o sin migraciones')
 }
 
+/* ═══════════════ 9 · Tanda 9: reiniciar MIS pruebas (solo el administrador, solo su cuenta) ═══════════════ */
+console.log('9. Tanda 9: reiniciar mis pruebas')
+{
+  const leer = (f) => fs.readFileSync(f, 'utf8')
+  const { reiniciarMisPruebas, TABLAS_DE_PRUEBAS } = await import('../../server/logros/reiniciar.js')
+  const { esAdmin } = await import('../../server/logros/rutas.js')
+  const llamadas = []
+  const falso = (falla = null) => ({
+    from: (tabla) => ({
+      delete: () => ({
+        eq: async (columna, valor) => {
+          llamadas.push({ tabla, columna, valor })
+          return { error: falla === tabla ? { message: 'x' } : null, count: 2 }
+        },
+      }),
+    }),
+  })
+  const r = await reiniciarMisPruebas(falso(), 'uid-de-eric')
+  debe(r.ok === true && llamadas.length === TABLAS_DE_PRUEBAS.length && llamadas.every((c) => c.valor === 'uid-de-eric'), 'reinicio', 'cada borrado lleva el id de la cuenta que reinicia: ninguno es general ni de otra cuenta')
+  debe(['hoy_prueba', 'logro_hechos', 'achievements', 'logro_perfil', 'avisos', 'passes'].every((t) => llamadas.some((c) => c.tabla === t)), 'reinicio', 'se reinicia el día de prueba, los logros, la EXP, los pases y los avisos')
+  debe(!llamadas.some((c) => ['trips', 'trip_photos', 'travelers', 'pagos_registro'].includes(c.tabla)), 'reinicio', 'no toca los viajes, las fotos, la cuenta ni los registros de cobro')
+  llamadas.length = 0
+  const mal = await reiniciarMisPruebas(falso('achievements'), 'uid-de-eric')
+  debe(mal.ok === false && !llamadas.some((c) => c.tabla === 'logro_perfil'), 'reinicio', 'si un borrado falla, lo dice y para')
+  debe((await reiniciarMisPruebas(falso(), '')).ok === false && (await reiniciarMisPruebas(null, 'x')).ok === false, 'reinicio', 'sin cuenta no hace nada')
+  const rutas = leer('server/logros/rutas.js')
+  debe(/reiniciar-mis-pruebas', conAdmin\(async \(req, res, usuario\)/.test(rutas) && /reiniciarMisPruebas\(admin, usuario\.id\)/.test(rutas) && /confirmar !== true/.test(rutas), 'reinicio', 'la ruta es solo de administrador, pide confirmar y usa el id de la sesión (nunca uno del cuerpo)')
+  debe(!/req\.body[^\n]*user_id/.test(rutas.slice(rutas.indexOf('reiniciar-mis-pruebas'), rutas.indexOf('reiniciar-mis-pruebas') + 500)), 'reinicio', 'la ruta ignora cualquier user_id del cuerpo')
+  const env = { LOGROS_ADMIN_EMAILS: 'eric@correo.es' }
+  debe(esAdmin({ id: 'a', email: 'ERIC@correo.es', is_anonymous: false }, env) === true && esAdmin({ id: 'b', email: 'otra@correo.es' }, env) === false && esAdmin({ id: 'a', email: 'eric@correo.es', is_anonymous: true }, env) === false && esAdmin(null, env) === false, 'reinicio', 'solo los emails de LOGROS_ADMIN_EMAILS (y no anónimos)')
+  const quien = (f) => /reiniciar-mis-pruebas|MisPruebas/.test(leer(f))
+  const otros = fs.readdirSync('src', { recursive: true }).map((f) => path.join('src', f)).filter((f) => /\.(ts|tsx)$/.test(f) && !/AdminLogros\.tsx$/.test(f) && quien(f))
+  debe(otros.length === 0, 'reinicio', `el botón no está en ninguna otra pantalla (${otros.join(', ') || 'solo en AdminLogros'})`)
+  const admin = leer('src/components/logros/AdminLogros.tsx')
+  debe(/Reiniciar mis pruebas/.test(admin) && /¿Seguro\?/.test(admin) && /confirmar: true/.test(admin), 'reinicio', 'el botón pide confirmación antes de reiniciar')
+}
+
 /* ═══════════════ Capturas: todas, con el nombre de su pantalla, y ninguna repetida ═══════════════ */
 {
   const dir = 'docs/dias/capturas_cuentas3'

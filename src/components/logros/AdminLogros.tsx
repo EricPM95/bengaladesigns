@@ -31,7 +31,7 @@ interface Panel {
   interruptores: { logros: boolean; push: boolean; cobro: boolean }
 }
 
-const PESTANAS = ['Resumen', 'Sellos y colecciones', 'Emblemas', 'Patrimonios', 'Logros de viajero', 'Simulador', 'Personas', 'Sorteo', 'Probador'] as const
+const PESTANAS = ['Resumen', 'Sellos y colecciones', 'Emblemas', 'Patrimonios', 'Logros de viajero', 'Simulador', 'Personas', 'Sorteo', 'Probador', 'Mis pruebas'] as const
 
 export function AdminLogros() {
   const [panel, setPanel] = useState<Panel | null>(null)
@@ -120,6 +120,7 @@ export function AdminLogros() {
         )}
         {pestana === 'Sorteo' && <Sorteo />}
         {pestana === 'Probador' && <Probador />}
+        {pestana === 'Mis pruebas' && <MisPruebas />}
       </div>
     </main>
   )
@@ -181,6 +182,37 @@ function Sorteo() {
           <ul className="mt-2 space-y-0.5 font-mono text-[12.5px]">{r.lista.map((x) => <li key={x.user_id}>{x.user_id.slice(0, 8)} · nivel {x.nivel} · {x.exp} EXP · {x.viajes_acabados} viaje(s)</li>)}</ul>
         </div>
       )}
+    </section>
+  )
+}
+
+/** Reiniciar MIS pruebas (tanda 9): solo la cuenta con la que has entrado (el servidor la saca de tu sesión; no se puede indicar otra). Pide confirmar. No está en ninguna otra pantalla. */
+function MisPruebas() {
+  const [confirmando, setConfirmando] = useState(false)
+  const [ocupado, setOcupado] = useState(false)
+  const [resultado, setResultado] = useState<string | null>(null)
+  const reiniciar = async () => {
+    setOcupado(true)
+    const r = await llamar<{ ok: boolean; borrados?: Record<string, number>; error?: string }>('/api/admin/logros/reiniciar-mis-pruebas', { cuerpo: { confirmar: true } })
+    setOcupado(false)
+    setConfirmando(false)
+    setResultado(r?.ok ? 'Hecho: tu día de prueba, tus logros, tu EXP, tus pases de prueba y tus avisos están a cero. Cierra la app y vuelve a abrirla.' : 'No se ha podido reiniciar. Vuelve a probar.')
+  }
+  return (
+    <section data-reiniciar-pruebas>
+      <p className="text-text/60">Deja a cero lo de pruebas de TU cuenta (la de ahora): el día de prueba de HOY, los logros, la EXP, los pases de prueba y los avisos. No toca tus viajes, tus fotos ni a nadie más.</p>
+      {!confirmando ? (
+        <button type="button" onClick={() => setConfirmando(true)} className="mt-2 rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-white">Reiniciar mis pruebas</button>
+      ) : (
+        <div className="mt-2 rounded-xl border border-text/20 p-3">
+          <p className="font-semibold">¿Seguro? Se borra lo de pruebas de tu cuenta y no se puede deshacer.</p>
+          <div className="mt-2 flex gap-2">
+            <button type="button" disabled={ocupado} onClick={() => void reiniciar()} className="rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-white">Sí, reiniciar</button>
+            <button type="button" disabled={ocupado} onClick={() => setConfirmando(false)} className="rounded-full border border-text/25 px-4 py-2 text-[14px]">Cancelar</button>
+          </div>
+        </div>
+      )}
+      {resultado && <p className="mt-2" role="status">{resultado}</p>}
     </section>
   )
 }

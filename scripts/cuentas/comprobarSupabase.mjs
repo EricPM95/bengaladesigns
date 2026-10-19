@@ -13,6 +13,8 @@ const API = opcion('api', 'http://localhost:8787')
 const sinPago = args.includes('--sin-pago')
 /** Cuentas 3B: espera el pago de prueba (Stripe en modo pruebas, con `stripe listen` hacia este ordenador). */
 const esperarPago = args.includes('--esperar-pago')
+/** Tanda 9: tras el pago, devuelve el dinero desde Stripe (modo pruebas) y comprueba que el pase se anula y lo ganado se queda. */
+const devolver = args.includes('--devolver')
 const minutosDeEspera = Number(opcion('espera', '5'))
 
 /** Lee `.env.local` sin tocar el entorno de nadie ni enseñar nada. */
@@ -198,6 +200,27 @@ try {
           if (listo?.listo) {
             const { data: pases } = await admin.rpc('pases_de', { p_uid: nueva.user.id })
             comprobar(Array.isArray(pases) && pases.length === 1, 'queda UN solo pase para esa persona', `pases: ${Array.isArray(pases) ? pases.length : '?'}`)
+            if (devolver) {
+              // Tanda 9: la devolución. Se gana algo con el pase, se devuelve el pago desde Stripe (modo pruebas) y llega `charge.refunded` por `stripe listen`: el pase se anula y lo ganado NO se pierde.
+              await admin.from('achievements').insert({ user_id: nueva.user.id, destino: 'Roma', logro: 'prueba_devolucion', escalon: '' })
+              const sk = env.STRIPE_SECRET_KEY
+              const sesionStripe = await fetch(`https://api.stripe.com/v1/checkout/sessions/${j.sesion}`, { headers: { authorization: `Bearer ${sk}` } }).then((x) => x.json())
+              const devolucion = await fetch('https://api.stripe.com/v1/refunds', { method: 'POST', headers: { authorization: `Bearer ${sk}`, 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ payment_intent: sesionStripe.payment_intent }) }).then((x) => x.json())
+              comprobar(devolucion.status === 'succeeded' || devolucion.status === 'pending', 'Stripe hace la devolución del pago de prueba', JSON.stringify(devolucion.error ?? devolucion.status))
+              let anulado = null
+              for (let i = 0; i < 40 && !anulado; i++) {
+                await new Promise((ok) => setTimeout(ok, 3000))
+                const e = await fetch(`${API}/api/pago/estado?sesion=${encodeURIComponent(j.sesion)}`, { headers: { authorization: `Bearer ${sesionComprador.session.access_token}` } }).then((x) => x.json()).catch(() => ({}))
+                if (e.devuelto) anulado = e
+              }
+              comprobar(anulado?.devuelto === true, 'la devolución llega por «stripe listen» y el pase se anula', 'no llegó el aviso de devolución en 2 minutos')
+              const { data: p2 } = await admin.from('passes').select('estado').eq('comprador_id', nueva.user.id)
+              comprobar((p2 ?? []).length === 1 && p2[0].estado === 'anulado', 'el pase queda anulado (no borrado)', JSON.stringify(p2))
+              const { data: logros } = await admin.from('achievements').select('logro').eq('user_id', nueva.user.id)
+              comprobar((logros ?? []).some((l) => l.logro === 'prueba_devolucion'), 'lo ganado con el pase NO se pierde al devolverlo', JSON.stringify(logros))
+              const { data: reg } = await admin.from('pagos_registro').select('estado').eq('pago_ref', j.sesion)
+              comprobar(reg?.[0]?.estado === 'devuelto', 'el registro del cobro queda como «devuelto» (no se borra)', JSON.stringify(reg))
+            }
           }
         } else {
           resultados.push('  – para cerrar el pago: vuelve a lanzar con --esperar-pago (y «stripe listen --forward-to localhost:8787/api/pago/webhook» en otra consola); paga con la tarjeta 4242 4242 4242 4242.')

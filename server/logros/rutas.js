@@ -30,6 +30,7 @@ import { simular } from './servicio.js'
 import { logrosYVisibilidad, llevarAVitrina } from './vistas.js'
 import { enviarAvisosPendientes, pushActivo } from './avisos.js'
 import { registrarPantallas } from './pantallas/index.js'
+import { reiniciarMisPruebas } from './reiniciar.js'
 
 export function logrosActivos(env = process.env) {
   const on = (v) => String(v ?? '').toLowerCase() === 'true'
@@ -160,6 +161,12 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
     if (!objetivo) return res.status(404).json({ ok: false, error: 'No hay ninguna cuenta con ese email.' })
     await repo.darProbador(objetivo.id, ahora().toISOString())
     res.json({ ok: true })
+  }))
+  // Reiniciar MIS pruebas (tanda 9): solo el administrador y solo su propia cuenta (el `uid` sale de la sesión; si el cuerpo trae otro, se ignora). Pide confirmar.
+  app.post('/api/admin/logros/reiniciar-mis-pruebas', conAdmin(async (req, res, usuario) => {
+    if (req.body?.confirmar !== true) return res.status(400).json({ ok: false, error: 'Falta confirmar.' })
+    const r = await reiniciarMisPruebas(admin, usuario.id)
+    res.status(r.ok ? 200 : 500).json(r)
   }))
   // El sorteo del año (solo la regla, sin pantalla): nivel 3 o más y al menos un viaje acabado con la app ese año. Sin nombres ni correos: solo el id de cada cuenta.
   app.get('/api/admin/logros/sorteo', conAdmin(async (req, res) => {
