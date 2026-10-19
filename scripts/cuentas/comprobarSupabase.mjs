@@ -69,7 +69,8 @@ const MIGRACIONES = [
 ]
 const existe = async (tabla, columna = '*') => {
   const { error } = await admin.from(tabla).select(columna, { head: true, count: 'exact' }).limit(1)
-  return !error || !/does not exist|Could not find the table|Could not find the .* column|schema cache/i.test(error.message)
+  // (Con la clave de servicio, cualquier error al mirar una tabla o columna es que no está; a veces PostgREST devuelve el error sin texto.)
+  return !error
 }
 const faltan = []
 for (const m of MIGRACIONES) {
@@ -78,7 +79,8 @@ for (const m of MIGRACIONES) {
 }
 // La 0027 (cuentas 3B) hace privado el almacén de fotos de perfil.
 const { data: bucketPerfiles } = await admin.storage.getBucket('perfiles')
-if (!bucketPerfiles || bucketPerfiles.public !== false) faltan.push({ n: '0027', texto: bucketPerfiles ? '0027 (el almacén «perfiles» sigue siendo público)' : '0026 y 0027 (falta el almacén «perfiles»)' })
+if (!bucketPerfiles) faltan.push({ n: '0026', texto: '0026 (falta el almacén «perfiles»)' })
+if (!bucketPerfiles || bucketPerfiles.public !== false) faltan.push({ n: '0027', texto: '0027 (el almacén «perfiles» no es privado todavía)' })
 if (faltan.length) {
   const numeros = [...new Set(faltan.map((f) => f.n))].sort()
   console.log('No lanzo la comprobación: faltan migraciones por aplicar en Supabase (SQL Editor, en este orden):')
