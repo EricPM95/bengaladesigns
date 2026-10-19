@@ -412,7 +412,7 @@ grant execute on function public.usuarios_para_avisos(date, date) to service_rol
 -- La foto del perfil: pequeña (unos pocos KB, sin datos escondidos: la app la vuelve a dibujar), en su propia carpeta pública `perfiles/<tu id>/…`. Se ve en el Perfil, en «Hola, …», en el pie de
 -- Compartir y en lo que ven los demás del viaje (el «E» y el «L»). Se borra con la cuenta (el servidor vacía la carpeta antes de borrar al usuario). El nombre va en `travelers.nombre`.
 insert into storage.buckets (id, name, public) values ('perfiles', 'perfiles', true)
-on conflict (id) do update set public = true;
+on conflict (id) do nothing;
 drop policy if exists "perfiles insert own" on storage.objects;
 create policy "perfiles insert own" on storage.objects for insert to authenticated
   with check (bucket_id = 'perfiles' and (storage.foldername(name))[1] = auth.uid()::text);
