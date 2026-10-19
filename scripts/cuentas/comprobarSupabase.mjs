@@ -13,6 +13,7 @@ const API = opcion('api', 'http://localhost:8787')
 const sinPago = args.includes('--sin-pago')
 /** Cuentas 3B: espera el pago de prueba (Stripe en modo pruebas, con `stripe listen` hacia este ordenador). */
 const esperarPago = args.includes('--esperar-pago')
+const minutosDeEspera = Number(opcion('espera', '5'))
 
 /** Lee `.env.local` sin tocar el entorno de nadie ni enseñar nada. */
 function leerEnv() {
@@ -93,11 +94,16 @@ ok('las migraciones 0017 a 0027 están aplicadas')
 /* ── 2 · El flujo, con dos personas de prueba ── */
 const creados = { usuarios: [], viaje: null, archivos: [] }
 const persona = async (nombre) => {
+  // Cuentas de verdad (no anónimas, con el correo ya confirmado): invitar, recomendar y borrar la cuenta piden una cuenta («Primero crea tu cuenta»). Se borran al final.
+  const correo = `prueba-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@example.com`
+  const clave = `P-${Math.random().toString(36).slice(2)}-${Date.now()}`
+  const { data: nuevo, error: eNuevo } = await admin.auth.admin.createUser({ email: correo, password: clave, email_confirm: true })
+  if (eNuevo || !nuevo?.user) throw new Error(`no se pudo crear a ${nombre}: ${texto(eNuevo)}`)
+  creados.usuarios.push(nuevo.user.id)
   const cliente = nuevoCliente()
-  const { data, error } = await cliente.auth.signInAnonymously()
-  if (error || !data?.user) throw new Error(`no se pudo crear a ${nombre}: ${texto(error)}`)
-  creados.usuarios.push(data.user.id)
-  await cliente.from('travelers').upsert({ id: data.user.id, is_anonymous: true }, { onConflict: 'id', ignoreDuplicates: true })
+  const { data, error } = await cliente.auth.signInWithPassword({ email: correo, password: clave })
+  if (error || !data?.user) throw new Error(`${nombre} no entra: ${texto(error)}`)
+  await admin.from('travelers').upsert({ id: data.user.id, is_anonymous: false, email: correo }, { onConflict: 'id' })
   return { cliente, id: data.user.id, token: data.session?.access_token }
 }
 
@@ -181,9 +187,9 @@ try {
         comprobar(r.ok && j.url, 'empezar un pago de prueba (el precio lo pone el servidor)', j.error ?? `HTTP ${r.status}`)
         if (esperarPago && r.ok && j.url) {
           // Cuentas 3B: el aviso de Stripe llega a ESTE ordenador con la herramienta de Stripe para la consola (`stripe listen --forward-to localhost:8787/api/pago/webhook`); nada se toca en Vercel.
-          console.log(`\nPara cerrar el pago de prueba:\n  1. En otra consola: stripe listen --forward-to localhost:8787/api/pago/webhook  (su «whsec_…» va en STRIPE_WEBHOOK_SECRET de .env.local, y se reinicia la API)\n  2. Abre esta dirección y paga con la tarjeta 4242 4242 4242 4242 (cualquier fecha futura y CVC):\n     ${j.url}\nEspero hasta 5 minutos a que llegue el aviso de Stripe…`)
+          console.log(`\nPara cerrar el pago de prueba:\n  1. En otra consola: stripe listen --forward-to localhost:8787/api/pago/webhook  (su «whsec_…» va en STRIPE_WEBHOOK_SECRET de .env.local, y se reinicia la API)\n  2. Abre esta dirección y paga con la tarjeta 4242 4242 4242 4242 (cualquier fecha futura y CVC):\n     ${j.url}\nEspero hasta ${minutosDeEspera} minutos a que llegue el aviso de Stripe…`)
           let listo = null
-          for (let i = 0; i < 100 && !listo; i++) {
+          for (let i = 0; i < minutosDeEspera * 20 && !listo; i++) {
             await new Promise((ok) => setTimeout(ok, 3000))
             const e = await fetch(`${API}/api/pago/estado?sesion=${encodeURIComponent(j.sesion)}`, { headers: { authorization: `Bearer ${sesionComprador.session.access_token}` } }).then((x) => x.json()).catch(() => ({}))
             if (e.listo || e.rechazado) listo = e
@@ -208,8 +214,11 @@ try {
     comprobar(r.ok, 'borrar la cuenta desde la API', `HTTP ${r.status}`)
     if (r.ok) {
       creados.usuarios = creados.usuarios.filter((u) => u !== eric.id)
-      const { data: restoViaje } = await admin.from('trips').select('id').eq('id', creados.viaje)
-      comprobar((restoViaje ?? []).length === 0, 'no queda el viaje de la cuenta borrada')
+      // Borrar la cuenta no deja sin viaje a quien estaba invitada (0021, `preparar_borrado`): el viaje PASA a ella; de la cuenta borrada no queda nada.
+      const { data: restoViaje } = await admin.from('trips').select('id, traveler_id').eq('id', creados.viaje)
+      comprobar((restoViaje ?? []).length === 1 && restoViaje[0].traveler_id === laura.id, 'el viaje compartido pasa a la invitada al borrar la cuenta de la dueña (y no se pierde)', JSON.stringify(restoViaje))
+      const { data: restoDueno } = await admin.from('travelers').select('id').eq('id', eric.id)
+      comprobar((restoDueno ?? []).length === 0, 'no queda nada de la cuenta borrada')
       const { data: restoFoto } = await admin.storage.from('perfiles').list(eric.id)
       comprobar((restoFoto ?? []).length === 0, 'no queda la foto de perfil de la cuenta borrada')
       creados.viaje = null

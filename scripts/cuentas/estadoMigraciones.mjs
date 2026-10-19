@@ -24,11 +24,11 @@ const columna = async (t, c) => {
   const { error } = await admin.from(t).select(c).limit(1)
   return !error
 }
-// Una función existe si llamarla sin argumentos NO dice «no está» (PGRST202); cualquier otro error (argumentos, permisos…) es que está.
-const funcion = async (f) => {
-  const { error } = await admin.rpc(f, {})
-  return !(error && (error.code === 'PGRST202' || /Could not find the function/i.test(error.message ?? '')))
-}
+// Las funciones: PostgREST publica su lista en `/rest/v1/` (OpenAPI, `/rpc/<nombre>`). Llamarlas sin argumentos no sirve: las que llevan argumentos dicen «no está» aunque estén.
+const abierta = await fetch(`${env.VITE_SUPABASE_URL}/rest/v1/`, { headers: { apikey: env.SUPABASE_SERVICE_ROLE_KEY, authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` } }).then((r) => r.json()).catch(() => ({}))
+const funcionesQueHay = new Set(Object.keys(abierta.paths ?? {}).filter((x) => x.startsWith('/rpc/')).map((x) => x.slice(5)))
+if (funcionesQueHay.size === 0) console.log('(No he podido leer la lista de funciones de Supabase: las funciones saldrán como «faltan».)')
+const funcion = async (f) => funcionesQueHay.has(f)
 const { data: almacenes } = await admin.storage.listBuckets()
 const buckets = new Map((almacenes ?? []).map((b) => [b.id, b]))
 
@@ -40,7 +40,8 @@ for (const archivo of archivos) {
   const cosas = []
   for (const m of sql.matchAll(/create table (?:if not exists )?public\.(\w+)/gi)) cosas.push({ tipo: 'tabla', nombre: m[1], ok: () => tabla(m[1]) })
   for (const m of sql.matchAll(/alter table (?:if exists )?public\.(\w+)\s+add column (?:if not exists )?(\w+)/gi)) cosas.push({ tipo: 'columna', nombre: `${m[1]}.${m[2]}`, ok: () => columna(m[1], m[2]) })
-  for (const m of sql.matchAll(/create (?:or replace )?function public\.(\w+)\s*\(/gi)) cosas.push({ tipo: 'función', nombre: m[1], ok: () => funcion(m[1]) })
+  // (Las funciones de disparador —`returns trigger`— no se publican por la API: no se pueden mirar desde fuera.)
+  for (const m of sql.matchAll(/create (?:or replace )?function public\.(\w+)\s*\(/gi)) if (!/^[^;]*?returns trigger/i.test(sql.slice(m.index + m[0].length, m.index + m[0].length + 400))) cosas.push({ tipo: 'función', nombre: m[1], ok: () => funcion(m[1]) })
   for (const m of sql.matchAll(/insert into storage\.buckets[^;]*?values\s*\(\s*'(\w[\w-]*)'/gi)) cosas.push({ tipo: 'almacén', nombre: m[1], ok: async () => buckets.has(m[1]) })
   const vistas = new Set()
   const unicas = cosas.filter((c) => (vistas.has(c.tipo + c.nombre) ? false : (vistas.add(c.tipo + c.nombre), true)))

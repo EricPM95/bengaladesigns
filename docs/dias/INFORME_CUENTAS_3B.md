@@ -57,6 +57,20 @@ El error «Cambios sin guardar» de las capturas AV2, AV3 y AV5 **no era por no 
 3. `node scripts/cuentas/comprobarSupabase.mjs --esperar-pago` crea el pago de prueba, te da la dirección de pago (tarjeta `4242 4242 4242 4242`), espera el aviso que llega por `stripe listen` y comprueba que queda **un solo pase**.
 - **Nada de claves ni interruptores nuevos en Vercel en esta tanda.** Encender `PASES_COBRO_ACTIVO` y `VITE_CUENTAS_ACTIVAS` en Vercel (producción) pediría cuenta y pago a todo el mundo: no. Si más adelante hace falta probar en una dirección pública, que sea en una de «Preview» de Vercel (con sus propias variables), **nunca en producción**.
 
+## 4b. La prueba de verdad (19 oct 2026): Supabase y el pago de prueba, HECHAS
+
+**Resultado: todo en 0.** Lo que ha pasado, en orden:
+- **Mi error de comprobación:** las primeras veces dije que las tablas de la 0017 a la 0026 existían. Era falso: el script las miraba con una petición `HEAD`, que no da error aunque la tabla no exista. Lo arreglé (ahora usa `GET`) y creé `scripts/cuentas/estadoMigraciones.mjs`, que mira migración a migración (de la 0001 a la 0027) tablas, columnas, funciones (por la lista de `/rest/v1/`) y almacenes. En tu Supabase estaba hecho hasta la 0016, la 0018 y 0022; faltaban la 0017 y de la 0020 a la 0027.
+- **La 0024 que falló** (`relation "public.trip_recommendations" does not exist`, porque faltaba la 0020) **no dejó nada a medias**: va en una transacción y se deshizo entera.
+- **La 0026**, aunque la parte del almacén «perfiles» ya iba dentro, se ha endurecido para poder repetirse: `on conflict (id) do nothing` en vez de `do update set public = true` (así repetirla tras la 0027 no reabre el almacén).
+- **Migraciones aplicadas por Eric, en este orden, todas con Success:** 0017, 0020, 0021, 0022, 0023, 0024, 0025, 0026, 0027. `estadoMigraciones.mjs` lo confirma: **todo presente, almacén «perfiles» privado.**
+- **`comprobarSupabase.mjs`: «Todo bien».** Guardar un viaje, subir la foto, crear/ver/canjear la invitación, la foto NO se ve con la dirección pública, la dueña y quien comparte el viaje sí la ven con enlace que caduca y una tercera persona no, recomendar y aceptar, el aviso en la campanita, y borrar la cuenta por la API sin restos (ni foto).
+- Dos ajustes al script durante la prueba: las dos personas de prueba ahora son **cuentas de verdad** (invitar y recomendar piden cuenta, no sirve la anónima); y al borrar la cuenta de la dueña, el viaje compartido **pasa a la invitada** (es lo que hace `preparar_borrado`, 0021, para que nadie pierda nada), no se borra: la comprobación esperaba lo contrario y la corregí.
+- **Pago de prueba con Stripe, sin tocar producción:** la herramienta de Stripe (v1.54.0) se instaló con `winget` y **no hizo falta `stripe login`** (usa la clave `sk_test_` con `--api-key`). `stripe listen` reenvió el aviso a `localhost:8787/api/pago/webhook` y la API lo aceptó (`[200]`, firma buena). Pagado con la tarjeta 4242 en la cuenta de pruebas de Stripe «APP RUTAS»: el aviso llegó, se creó el pase y **queda UN solo pase** para esa persona.
+- Solo en `.env.local` (no está en git): `STRIPE_WEBHOOK_SECRET` (el que da `stripe listen`), `PASES_COBRO_ACTIVO=true` y `APP_URL=http://localhost:5173`. **Nada se ha puesto en Vercel.**
+- Al volver del pago el navegador va a `localhost:5173/?pago=ok&sesion=…`; si el servidor de la app (`npm run dev`) no está encendido sale «No se puede acceder a este sitio web». No es un fallo del cobro (el pase ya estaba creado): es solo que la página de vuelta no tenía servidor. Con la app encendida, esa dirección abre la pantalla «Ya tienes tu Pase».
+- **Todavía sin probar:** el devolver el pago (`charge.refunded`), y el móvil de verdad (permiso de avisos, cámara).
+
 ## 5. Pruebas y capturas
 
 - **pruebaCuentas3: 466 comprobaciones, 0 fallos** (incluye peso, invitado en EXPLORAR y RESERVAS, R2 recogida, el nombre, fotos privadas con reglas de seguridad reales, fechas de la campanita, lo de desarrollo, y que las 44 capturas están y ninguna es idéntica a otra: sigue fallando si dos lo son).
