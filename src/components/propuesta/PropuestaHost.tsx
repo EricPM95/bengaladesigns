@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { cuentasActivas } from '../../lib/cuentas'
 import { demoActivo } from '../../lib/logros'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
@@ -7,9 +7,11 @@ import { useR2Store } from '../../store/useR2Store'
 import { useSyncStore } from '../../store/useSyncStore'
 import { useViajeCompartido } from '../../store/useViajeCompartido'
 import { BarraDePropuesta } from './BarraDePropuesta'
-import { HojaRecomendacionAbierta } from './HojaRecomendacion'
-import { HojaVerPropuesta } from './HojaVerPropuesta'
-import { PropuestaEnviada } from './PropuestaEnviada'
+
+// Las hojas se bajan cuando se abren (cuentas 3B, punto 2).
+const HojaRecomendacionAbierta = lazy(() => import('./HojaRecomendacion').then((m) => ({ default: m.HojaRecomendacionAbierta })))
+const HojaVerPropuesta = lazy(() => import('./HojaVerPropuesta').then((m) => ({ default: m.HojaVerPropuesta })))
+const PropuestaEnviada = lazy(() => import('./PropuestaEnviada').then((m) => ({ default: m.PropuestaEnviada })))
 
 const CADA_MS = 45_000
 
@@ -27,6 +29,7 @@ function Encendido() {
   const tripId = useSyncStore((s) => s.activeTripId)
   const cargar = useViajeCompartido((s) => s.cargar)
   const enviada = usePropuestaStore((s) => s.enviada)
+  const verAbierto = usePropuestaStore((s) => s.verAbierto)
   const cerrarEnviada = usePropuestaStore((s) => s.cerrarEnviada)
   const r2 = useR2Store((s) => s.abierta)
   const cerrarR2 = useR2Store((s) => s.cerrar)
@@ -58,9 +61,11 @@ function Encendido() {
   return (
     <>
       <BarraDePropuesta />
-      <HojaVerPropuesta />
-      {enviada && <PropuestaEnviada nombre={nombreAdmin} onVolver={cerrarEnviada} />}
-      {r2 && <HojaRecomendacionAbierta rec={r2} onCerrar={cerrarR2} />}
+      <Suspense fallback={null}>
+        {verAbierto && <HojaVerPropuesta />}
+        {enviada && <PropuestaEnviada nombre={nombreAdmin} onVolver={cerrarEnviada} />}
+        {r2 && <HojaRecomendacionAbierta rec={r2} onCerrar={cerrarR2} />}
+      </Suspense>
     </>
   )
 }

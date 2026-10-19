@@ -9,6 +9,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { misPases } from '../../lib/pagoPase'
 import { pedirPermisoUnaVez } from '../../lib/permisoAvisos'
+import { usePedirNombre } from '../../store/usePedirNombre'
 
 /**
  * LOS BOTONES DE RUTA (RS1 y RW3, cuentas parte 3): arriba de la pestaña RUTA, a la derecha.
@@ -48,6 +49,8 @@ function BotonesEncendidos() {
     // La ventana del móvil que pide permiso para los avisos sale AQUÍ, una sola vez en la vida, en este mismo toque.
     void pedirPermisoUnaVez()
     setOcupado(true)
+    // Quien entró con el email y no tiene nombre: «¿Cómo te llamas?», una sola vez, antes de compartir.
+    await usePedirNombre.getState().pedir()
     // Con un Pase Dúo o Grupo de este destino, la misma hoja que P7; si no, la de compartir el viaje.
     const pases = await misPases()
     const pase = pases.find((p) => p.estado === 'activo' && p.es_mio && p.tipo !== 'uno' && p.destino.toLowerCase() === route.destination.toLowerCase() && p.usos_usados < p.usos_max) ?? null

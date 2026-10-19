@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
-import { cambiosDeLaPropuesta, etiquetaDeDia, textoDelCambio, textoDeCuantos, verboDelCambio, type CambioPropuesto } from '../../lib/propuesta'
+import { cambiosDeLaPropuesta, etiquetaDeDia, textoDelCambio, textoDeCuantos, textoEnviarA, textoEsperandoA, verboDelCambio, type CambioPropuesto } from '../../lib/propuesta'
 import { pedirPermisoUnaVez } from '../../lib/permisoAvisos'
 import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useRouteStore } from '../../store/useRouteStore'
@@ -73,7 +73,7 @@ export function HojaVerPropuesta({ cambiosEnviados = null, onCerrar, nombreDelAd
         {enviada && (
           <span data-enviada-esperando style={{ height: 26, padding: '0 10px', borderRadius: 999, background: '#F5EFE4', color: 'rgba(28,34,48,.7)', display: 'flex', alignItems: 'center', gap: 6, font: "600 11.5px 'Geist'" }}>
             <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'oklch(0.8 0.14 70)' }} />
-            Enviada · esperando a {nombreAdmin}
+            Enviada · {textoEsperandoA(nombreAdmin)}
           </span>
         )}
       </span>
@@ -87,7 +87,7 @@ export function HojaVerPropuesta({ cambiosEnviados = null, onCerrar, nombreDelAd
       )}
       {!enviada && (
         <BotonHoja tipo="principal" disabled={enviando || filas.length === 0} onClick={() => { void pedirPermisoUnaVez(); void enviar() }} datos="enviar-propuesta">
-          Enviar a {nombreAdmin}
+          {textoEnviarA(nombreAdmin)}
         </BotonHoja>
       )}
     </Hoja>

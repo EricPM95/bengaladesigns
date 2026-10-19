@@ -8,6 +8,7 @@ import crypto from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+import zlib from 'node:zlib'
 import { createRequire } from 'node:module'
 import { build } from 'esbuild'
 import { crearBaseDePrueba } from './_baseDeDatosPrueba.mjs'
@@ -143,10 +144,11 @@ console.log('1. Entrar en la cuenta (A1 a A4, I1, I2, P7b)')
 }
 
 /* ═══════════════ La base de datos (PGlite con las migraciones de verdad) ═══════════════ */
-console.log('0. Las migraciones se aplican (hasta la 0026)')
+console.log('0. Las migraciones se aplican (hasta la 0027)')
 const bd = await crearBaseDePrueba({ alFallar: (m) => debe(false, 'migracion', m) })
 const { q, como, servidor, nuevoUsuario } = bd
 debe(bd.aplicadas.includes('0026_cuentas_3.sql'), 'migracion', 'la migración 0026 existe y se aplica sobre las anteriores')
+debe(bd.aplicadas.includes('0027_cuentas_3b.sql'), 'migracion', 'la migración 0027 existe y se aplica sobre la 0026')
 const rutaDe = (destino = 'Roma', inicio = '2026-10-16', fin = '2026-10-19') => JSON.stringify({ id: 'r-' + destino, destination: destino, answers: { dateRange: { start: inicio, end: fin } }, days: [] })
 
 console.log('1b. Lo que se ve de una invitación antes de entrar (P7b)')
@@ -688,7 +690,7 @@ console.log('3b. Compartir y recomendar con la base de datos de verdad (reglas d
 
   // Quién está en el viaje.
   const gente = await como(lau, async () => (await q('select public.gente_del_viaje($1) as g', [viaje]))[0].g)
-  debe(gente.length === 2 && gente[0].es_admin === true && gente[0].nombre === 'Elena' && gente[1].nombre === 'Laura' && gente.every((p) => Object.keys(p).sort().join() === 'es_admin,foto,id,nombre'), 'gente', 'quien está en el viaje: el administrador y la invitada, con su nombre de pila (sin apellido, sin email)')
+  debe(gente.length === 2 && gente[0].es_admin === true && gente[0].nombre === 'Elena' && gente[1].nombre === 'Laura' && gente.every((p) => Object.keys(p).sort().join() === 'es_admin,foto,id,inicial,nombre'), 'gente', 'quien está en el viaje: el administrador y la invitada, con su nombre de pila y la inicial de su email (sin apellido, sin el email entero)')
   debe((await como(otra, async () => (await q('select public.gente_del_viaje($1) as g', [viaje]))[0].g)).length === 0, 'gente', 'quien no está en el viaje no ve a nadie')
   debe((await como(ele, async () => (await q('select public.gente_del_viaje($1) as g', [viaje]))[0].g)).length === 2, 'gente', 'el administrador ve a los suyos')
 
@@ -726,7 +728,7 @@ console.log('4. La campanita de Avisos (los textos, la lista y el permiso)')
   debe(T('d10', { destino: 'Roma', dias: 10 }) === 'En 10 días empieza tu viaje a Roma' && T('d10', { destino: 'Roma', dias: 1 }) === 'Mañana empieza tu viaje a Roma', 'AV2', '«En 10 días empieza tu viaje a Roma»')
   debe(T('resumen', {}) === 'Tu resumen del viaje está listo', 'AV2', '«Tu resumen del viaje está listo»')
   debe(T('sorpresas', { texto: 'Te quedan 3 días para reclamar tus 2 sorpresas de Roma' }) === 'Te quedan 3 días para reclamar tus 2 sorpresas de Roma', 'AV2', '«Te quedan 3 días para reclamar tus 2 sorpresas de Roma»')
-  debe(T('recomendacion', { autor: null, tipo_rec: 'cambio', dia: 2 }).startsWith('Viajero te recomienda'), 'AV2', 'sin nombre puesto, «Viajero»')
+  debe(T('recomendacion', { autor: null, tipo_rec: 'cambio', dia: 2 }) === 'Te recomiendan un cambio en el día 2' && !/Viajero/.test(T('recomendacion', { autor: null, tipo_rec: 'ruta', dia: null })), 'AV2', 'sin nombre puesto no se inventa «Viajero»: «Te recomiendan un cambio en el día 2»')
   const p8 = M.textoDelPush({ tipo: 'd10', payload: { destino: 'Roma', dias: 10, con_pase: true, inicio: '2026-10-16', fin: '2026-10-19' } })
   debe(p8 === 'En 10 días empieza tu viaje a Roma. Tu Pase de Roma está activo para el viaje del 16 al 19 de octubre.', 'P8', 'P8: el aviso de los 10 días en el móvil, con lo del pase')
   debe(M.textoDelPush({ tipo: 'd10', payload: { destino: 'Roma', dias: 10, con_pase: false } }) === 'En 10 días empieza tu viaje a Roma', 'P8', 'sin pase, el aviso de los 10 días no habla del pase')
@@ -975,7 +977,7 @@ console.log('6. La foto y el nombre del perfil')
   debe(M.OBJETIVO_BYTES_FOTO_PERFIL <= 50 * 1024 && M.PASOS_DE_FOTO_DE_PERFIL[0].lado <= 256 && M.PASOS_DE_FOTO_DE_PERFIL.every((p, i, a) => i === 0 || p.lado <= a[i - 1].lado && p.calidad <= a[i - 1].calidad), 'foto', 'la foto es pequeña (unos pocos KB, un cuadrado de 256 px o menos) y cada intento es más pequeño que el anterior')
   debe(M.rutaNuevaDeFoto('uid-1', 1700000000000) === 'uid-1/foto-1700000000000.jpg', 'foto', 'cada foto nueva tiene su nombre (nadie ve una foto vieja en la caché), dentro de la carpeta de la persona')
   debe(M.fotoParaMostrar('uid/foto.jpg', 'https://g/a.jpg') === null || String(M.fotoParaMostrar(null, 'https://g/a.jpg')) === 'https://g/a.jpg', 'foto', 'sin foto propia, la de Google')
-  debe(M.fotoParaMostrar(null, null) === null && M.urlDeFotoDePerfil(null) === null, 'foto', 'sin foto, la inicial')
+  debe(M.fotoParaMostrar(null, null) === null, 'foto', 'sin foto, la inicial')
   const fuentePerfil = fs.readFileSync('src/lib/miPerfil.ts', 'utf8')
   debe(/quitarMetadatosJpeg/.test(fuentePerfil) && /createImageBitmap/.test(fuentePerfil) && /BUCKET_PERFILES/.test(fuentePerfil) && /remove\(\[rutaAnterior\]\)/.test(fuentePerfil), 'foto', 'la foto se vuelve a dibujar (sin datos escondidos), va al almacén de perfiles y la anterior se borra')
   const av = M.pintaAvatar({ foto: null, inicial: 'E', tam: 52 })
@@ -1061,19 +1063,209 @@ console.log('7. Invitar a un amigo (la EXP de la 8C1) y borrar la cuenta con su 
   fichas.set('tok-foto7', fotoU)
   const bor = await borrarCuenta(admin, 'tok-foto7')
   debe(bor.estado === 200 && (await q("select 1 from storage.objects where bucket_id = 'perfiles' and name like $1", [`${fotoU}/%`])).length === 0 && (await q("select 1 from storage.objects where name like $1", [`${fotoU}/%`])).length === 0, 'borrar', 'al borrar la cuenta se va también la foto de perfil (y las demás fotos)')
-  // El almacén de perfiles: público para ver, solo cada persona escribe en su carpeta.
+  // El almacén de perfiles (0027): PRIVADO; cada persona solo escribe en su carpeta.
   const bucket = (await q("select public from storage.buckets where id = 'perfiles'"))[0]
-  debe(bucket?.public === true, 'foto', 'el almacén de perfiles es público para poder verse (cada persona solo escribe en su carpeta)')
+  debe(bucket?.public === false, 'foto', 'el almacén de perfiles es privado (0027): ya no lo ve cualquiera con el enlace')
   const meti = await como(nueva, () => lanza(() => q("insert into storage.objects (bucket_id, name, owner) values ('perfiles', $1, $2)", [`${otra}/foto.jpg`, nueva])))
   debe(meti !== null, 'foto', 'nadie puede subir una foto a la carpeta de otra persona')
   const mia = await como(nueva, () => lanza(() => q("insert into storage.objects (bucket_id, name, owner) values ('perfiles', $1, $2)", [`${nueva}/foto-1.jpg`, nueva])))
   debe(mia === null, 'foto', 'cada persona sí puede subir la suya a su carpeta')
 }
 
+/* ═══════════════ 8 · Las cuentas, parte 3B (docs/dias/INFORME_CUENTAS_3B.md) ═══════════════ */
+console.log('8. Cuentas 3B: peso, invitado, R2 corta, sin nombre, fotos privadas, fechas de la campanita, lo de desarrollo')
+{
+  const M = encendido
+  const leer = (f) => fs.readFileSync(f, 'utf8')
+  const sin = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+
+  // ── 2. El peso al abrir: las hojas se bajan cuando se abren ──
+  const perezosas = [
+    ['src/components/ajustes/AjustesHosts.tsx', ['AjustesScreen', 'EditarPerfil', 'HojaComoTeLlamas']],
+    ['src/components/pase/PagoHost.tsx', ['HojaDeCompra', 'HojaDosViajes', 'HojaInvitar']],
+    ['src/components/propuesta/PropuestaHost.tsx', ['HojaRecomendacion', 'HojaVerPropuesta', 'PropuestaEnviada']],
+    ['src/components/propuesta/BarraDePropuesta.tsx', ['HojaVerPropuesta']],
+  ]
+  for (const [archivo, nombres] of perezosas) {
+    const t = sin(leer(archivo))
+    for (const n of nombres) {
+      debe(new RegExp(`import\\(['"]\\./${n}['"]\\)`).test(t) && !new RegExp(`^import .* from ['"]\\./${n}['"]`, 'm').test(t), 'peso', `${archivo.split('/').pop()}: ${n} se carga solo al abrirla (import dinámico, no estático)`)
+    }
+  }
+  debe(!/stripe/i.test(leer('package.json')), 'peso', 'Stripe sigue sin sumar peso')
+  if (fs.existsSync('dist/index.html')) {
+    const html = leer('dist/index.html')
+    const urls = [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1])
+    const entrada = urls.filter((u) => u.endsWith('.js')).map((u) => leer('dist' + u)).join('\n')
+    const gz = urls.reduce((s, u) => s + zlib.gzipSync(fs.readFileSync('dist' + u)).length, 0)
+    debe(gz < 340 * 1024, 'peso', `al abrir, la descarga pesa menos de 340 KB comprimida (ahora ${(gz / 1024).toFixed(1)} KB)`)
+    const nombres = fs.readdirSync('dist/assets').filter((n) => n.endsWith('.js'))
+    for (const parte of ['AjustesScreen', 'HojaDeCompra', 'HojaInvitar', 'HojaVerPropuesta', 'HojaRecomendacion', 'HojaComoTeLlamas']) debe(nombres.some((n) => n.startsWith(parte)), 'peso', `${parte} va en su propio archivo`)
+    debe(!/Todavía no tienes ningún pase/.test(entrada) && !/¿Cómo te llamas\?/.test(entrada) && !/Un momento, estamos confirmando el pago/.test(entrada), 'peso', 'al abrir no entran ni Mis pases, ni «¿Cómo te llamas?», ni la espera del pago')
+    // Lo de desarrollo no llega a producción.
+    const todos = nombres.map((n) => leer('dist/assets/' + n)).join('\n')
+    debe(!/Dev: ruta rápida/.test(todos), 'desarrollo', 'el botón «Dev: ruta rápida (sin IA)» no está en la versión de producción')
+  } else console.log('   (sin dist/: no se comprueba el peso real; ejecuta antes «npx vite build»)')
+
+  // ── 8. «Pruebas» y la ruta rápida: solo en local y vistas previas, nunca en producción ──
+  const enHost = async (host, entorno, nombre) => {
+    const m = await empaquetar(nombre, entorno, 'scripts/destino/_cuentas3_entrada.tsx')
+    const antes = globalThis.window.location.hostname
+    globalThis.window.location.hostname = host
+    try {
+      return m.esEntornoDePrueba()
+    } finally {
+      globalThis.window.location.hostname = antes
+    }
+  }
+  debe((await enHost('localhost', {}, 'host-local')) === true, 'desarrollo', '«Pruebas» sale en localhost')
+  debe((await enHost('app-rutas-git-main-eric.vercel.app', {}, 'host-preview')) === true, 'desarrollo', '«Pruebas» sale en una vista previa de Vercel')
+  debe((await enHost('app-rutas.vercel.app', {}, 'host-prod')) === false && (await enHost('trazo.app', {}, 'host-dominio')) === false, 'desarrollo', '«Pruebas» NO sale en la dirección de producción ni en un dominio propio')
+  debe((await enHost('localhost', { VITE_VERCEL_ENV: 'production' }, 'env-prod')) === false, 'desarrollo', 'con VITE_VERCEL_ENV=production, «Pruebas» no sale ni en localhost')
+  debe(/import\.meta\.env\.DEV/.test(leer('src/components/trazo/StepRoute.tsx').split('Dev: ruta rápida')[0].slice(-600)), 'desarrollo', '«Dev: ruta rápida» está dentro de import.meta.env.DEV')
+
+  // ── 3. El invitado, sin herramientas que no guardan ──
+  const vista = leer('src/components/route/RouteView.tsx')
+  debe(/esInvitado \? <ReservasSoloVer/.test(vista), 'invitado', 'RESERVAS del viaje de otra persona es la pantalla de solo mirar')
+  const explore = leer('src/components/route/ExplorePanel.tsx')
+  debe(/if \(soloVer\) empezarRecomendacion\('ruta'\)/.test(explore) && /onQuickAdd=\{alAnadir/.test(explore) && /onQuickAddExcursion=\{alAnadir/.test(explore), 'invitado', 'EXPLORAR: «+ Añadir» de quien mira entra en el modo recomendación con el sitio ya puesto')
+  debe(/if \(esInvitado\) return null/.test(leer('src/components/presupuesto/BotonCartera.tsx')), 'invitado', 'quien mira no ve la cartera (el presupuesto es de quien hizo el viaje)')
+  M.useRouteStore.setState({ route: { id: 'r', destination: 'Roma', origin: 'Madrid', transportContext: { transport_option: null }, answers: { dateRange: { start: '2026-10-17', end: '2026-10-20' } }, days: [{ id: 'd1', dayNumber: 1, city: 'Roma', title: 'Roma', stops: [], isReturnLeg: false }] } })
+  const solo = M.pintaReservasSoloVer({ route: M.useRouteStore.getState().route, nombreAdmin: 'Elena' })
+  debe(/data-reservas-solo-ver/.test(solo) && /Esto es lo que ha reservado Elena/.test(solo) && /Aquí solo se mira/.test(solo), 'invitado', 'RESERVAS solo para mirar: dice de quién es y que solo se mira')
+  debe(!/Cambiar|Añadir|Eliminar|Quitar|Editar|Cambia las fechas|Buscar vuelos|Buscar alojamiento/.test(solo.replace(/aria-label="Cerrar"/g, '')), 'invitado', 'RESERVAS solo para mirar no lleva ni un botón de añadir, cambiar o quitar')
+  debe((solo.match(/<button/g) ?? []).length === 1, 'invitado', 'el único botón sin entradas por reservar es [Cerrar]')
+  debe(/setFicha\(item\)/.test(sin(leer('src/components/route/ReservasSoloVer.tsx'))) && /Reservar entrada/.test(leer('src/components/route/ReservasSoloVer.tsx')) && !/AddReservationSheet|setAccommodation|setTransportBooking|setReservations|addReservation|removeReservation/.test(leer('src/components/route/ReservasSoloVer.tsx')), 'invitado', 'lo único que se puede hacer es [Reservar entrada] (abre la ficha para comprar); nada toca las reservas de otro')
+
+  // ── 4. R2, más corta ──
+  const nombres17 = Array.from({ length: 17 }, (_, i) => `Parada ${i + 1}`)
+  const cambioFinal = [...nombres17.slice(0, 16), 'Parque nuevo']
+  const t1 = M.plegarLineas(M.lineasDelDia(nombres17, cambioFinal))
+  debe(t1.length === 3 && t1[0].tipo === 'resumen' && t1[0].lineas.length === 15 && t1[1].tipo === 'linea' && t1[1].l.tipo === 'igual' && t1[2].l.tipo === 'pareja', 'R2', 'R2 con 17 paradas y un cambio al final: «15 paradas más», la de antes en gris y la pareja')
+  const medio = nombres17.map((n, i) => (i === 7 ? 'Parque nuevo' : n))
+  const t2 = M.plegarLineas(M.lineasDelDia(nombres17, medio))
+  debe(t2.map((t) => (t.tipo === 'resumen' ? `r${t.lineas.length}` : t.l.tipo)).join() === 'r6,igual,pareja,igual,r8', 'R2', 'R2 con el cambio en medio: recogidas las de antes (6) y las de después (8), con una en gris a cada lado de la pareja')
+  const sinNada = M.plegarLineas(M.lineasDelDia(['a', 'b', 'c'], ['a', 'b', 'x']))
+  debe(sinNada.every((t) => t.tipo === 'linea'), 'R2', 'si recoger no ahorra casi nada, se enseña el día tal cual')
+  const rutaR2 = { id: 'r', destination: 'Roma', answers: {}, days: [{ id: 'd2', dayNumber: 2, title: 'Dia 2', stops: [], isReturnLeg: false }] }
+  const bloque = M.pintaListaPlegada({ route: rutaR2, c: { dayId: 'd2', title: 'Día 2', antes: nombres17, despues: cambioFinal } })
+  debe((bloque.match(/data-linea="igual"/g) ?? []).length === 1 && /data-paradas-recogidas="15"/.test(bloque) && /15 paradas más, sin cambios/.test(bloque) && /data-cambio-parada="pequena"/.test(bloque), 'R2', 'la hoja enseña UNA parada en gris, «15 paradas más, sin cambios» (que se abre al tocarla) y la pareja')
+  debe(!/Parada 1</.test(bloque) && !/Parada 10</.test(bloque), 'R2', 'las paradas recogidas no salen hasta tocar la línea')
+  debe(/onClick=\{\(\) => setAbiertos/.test(leer('src/components/propuesta/HojaRecomendacion.tsx')), 'R2', 'la línea recogida se abre al tocarla')
+
+  // ── 5. Sin nombre ──
+  debe(M.textoEnviarA('') === 'Enviar' && M.textoEnviarA('  ') === 'Enviar' && M.textoEnviarA('Elena') === 'Enviar a Elena', 'nombre', '«Enviar» solo, o «Enviar a Elena» si tiene nombre')
+  debe(M.textoEsperandoA('') === 'esperando respuesta' && M.textoMandadoA('') === 'Se lo hemos mandado' && M.textoMandadoA('Elena') === 'Se lo hemos mandado a Elena', 'nombre', 'ni «esperando a Viajero» ni «Se lo hemos mandado a Viajero»')
+  debe(M.nombreDe(null) === '' && M.nombreDe({ nombre: ' Laura ' }) === 'Laura' && M.inicialDe({ nombre: null, inicial: 'z' }) === 'Z' && M.inicialDe({ nombre: 'laura', inicial: 'z' }) === 'L', 'nombre', 'sin nombre, el círculo lleva la inicial del email; con nombre, la del nombre')
+  debe(M.titularDeRecomendacion('', 'cambio', 'el día 2') === 'Te recomiendan un cambio en el día 2' && M.titularDeRecomendacion('Laura', 'ruta', null) === 'Laura te recomienda otra ruta', 'nombre', 'R2 sin nombre: «Te recomiendan…»')
+  const T2 = (tipo, payload) => M.textoDelAviso({ tipo, payload })
+  debe(T2('aceptada', { admin: null, tipo_rec: 'cambio', dia: 2 }) === 'Han aceptado tu cambio en el día 2' && T2('rechazada', { admin: '', tipo_rec: 'cambio', dia: 2 }) === 'Han preferido dejar el día 2 como estaba' && T2('unido', { nombre: null }) === 'Alguien se ha unido a tu viaje', 'nombre', 'los avisos de respuesta y de unión tampoco inventan «Viajero»')
+  debe(M.quienDelAviso({ tipo: 'recomendacion', payload: { autor: null, inicial: 'l' } }) === 'L' && M.quienDelAviso({ tipo: 'recomendacion', payload: { autor: null } }) === null && M.quienDelAviso({ tipo: 'recomendacion', payload: { autor: 'Laura', inicial: 'Z' } }) === 'Laura', 'nombre', 'en los avisos, sin nombre, la inicial de su email')
+  debe(![T2('recomendacion', { autor: null, tipo_rec: 'dia', dia: 3 }), T2('aceptada', { tipo_rec: 'ruta' }), T2('unido', {})].some((t) => /Viajero/.test(t)), 'nombre', 'ningún aviso dice «Viajero»')
+  const base0 = { cuentasActivas: true, uid: 'u1', cargado: true, nombre: null, yaPreguntado: false }
+  debe(M.hayQuePedirNombre(base0) === true && M.hayQuePedirNombre({ ...base0, nombre: 'Laura' }) === false && M.hayQuePedirNombre({ ...base0, yaPreguntado: true }) === false && M.hayQuePedirNombre({ ...base0, uid: null }) === false && M.hayQuePedirNombre({ ...base0, cargado: false }) === false && M.hayQuePedirNombre({ ...base0, cuentasActivas: false }) === false, 'nombre', '«¿Cómo te llamas?» solo con cuenta cargada, sin nombre y sin haberlo preguntado ya (una sola vez)')
+  const hn = M.pintaComoTeLlamas()
+  debe(/¿Cómo te llamas\?/.test(hn) && />Seguir</.test(hn) && />Ahora no</.test(hn) && /data-nombre-campo/.test(hn), 'nombre', '«¿Cómo te llamas?» con [Seguir] y «Ahora no»')
+  const botones = sin(leer('src/components/propuesta/BotonesDeViaje.tsx'))
+  debe(/usePedirNombre\.getState\(\)\.pedir\(\)/.test(botones) && /usePedirNombre\.getState\(\)\.pedir\(\)/.test(sin(leer('src/components/cuenta/PuertaDeCuenta.tsx'))) && /usePedirNombre\.getState\(\)\.pedir\(\)/.test(sin(leer('src/components/ajustes/AjustesScreen.tsx'))), 'nombre', 'se pregunta al compartir un viaje, al unirse a uno y al unirse a un pase')
+  debe(/trazo:pedir-nombre-al-volver/.test(leer('src/lib/cuentas.ts')) && /CLAVE_PEDIR_AL_VOLVER/.test(leer('src/components/ajustes/AjustesHosts.tsx')), 'nombre', 'quien se une justo al crear su cuenta también lo ve (al volver a abrir la app)')
+  debe(!/'Viajero'/.test(sin(leer('src/store/useViajeCompartido.ts'))) && !/Enviar a \{nombreAdmin\}/.test(leer('src/components/propuesta/BarraDePropuesta.tsx') + leer('src/components/propuesta/HojaVerPropuesta.tsx')), 'nombre', 'ninguna pantalla de recomendar dice «Viajero» ni «Enviar a {…}» a ciegas')
+
+  // En la base de datos: la inicial del email, solo la letra.
+  const sinNombre = await nuevoUsuario('zeta@correo.es', false, null)
+  const conNombre = await nuevoUsuario('ana@correo.es', false, 'Ana')
+  const viajeN = await como(conNombre, async () => (await q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [conNombre, rutaDe()]))[0].id)
+  await q('insert into public.trip_members (trip_id, user_id) values ($1, $2)', [viajeN, sinNombre])
+  const genteN = await como(conNombre, async () => (await q('select public.gente_del_viaje($1) as g', [viajeN]))[0].g)
+  const zeta = genteN.find((p) => p.id === sinNombre)
+  debe(zeta?.nombre === null && zeta?.inicial === 'Z' && genteN.find((p) => p.id === conNombre)?.inicial === 'A' && !JSON.stringify(genteN).includes('@'), 'nombre', 'gente_del_viaje: sin nombre, la inicial «Z» de su email; nunca el email entero')
+  const avisoUnion = await q("select payload from public.avisos where user_id = $1 and tipo = 'unido' and clave like $2", [conNombre, `unido:${viajeN}:%`])
+  debe(avisoUnion.length === 1 && avisoUnion[0].payload.nombre === null && avisoUnion[0].payload.inicial === 'Z', 'nombre', 'el aviso de «se ha unido» lleva la inicial del email de quien entró sin nombre')
+  const recN = await como(sinNombre, async () => (await q("insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'ruta', '{}'::jsonb) returning id", [viajeN]))[0].id)
+  const avisoRec = await q("select payload from public.avisos where user_id = $1 and clave = $2", [conNombre, `rec:${recN}`])
+  debe(avisoRec.length === 1 && avisoRec[0].payload.autor === null && avisoRec[0].payload.inicial === 'Z', 'nombre', 'el aviso de la recomendación de quien no tiene nombre lleva su inicial (y ningún «Viajero»)')
+
+  // ── 6. Las fotos de perfil, privadas ──
+  const fa = await nuevoUsuario('fa3b@correo.es', false, 'Fa')
+  const fb = await nuevoUsuario('fb3b@correo.es', false, 'Fb')
+  const fc = await nuevoUsuario('fc3b@correo.es', false, 'Fc')
+  const fd = await nuevoUsuario('fd3b@correo.es', false, 'Fd')
+  const viajeF = await como(fa, async () => (await q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [fa, rutaDe()]))[0].id)
+  await q('insert into public.trip_members (trip_id, user_id) values ($1, $2)', [viajeF, fb])
+  for (const u of [fa, fb, fc, fd]) await q("insert into storage.objects (bucket_id, name, owner) values ('perfiles', $1, $2)", [`${u}/foto-3b.jpg`, u])
+  const nombreDeFoto = { [fa]: 'fa', [fb]: 'fb', [fc]: 'fc', [fd]: 'fd' }
+  const ve = async (uid) => (await como(uid, () => q("select name from storage.objects where bucket_id = 'perfiles' and name like '%/foto-3b.jpg'"))).map((r) => nombreDeFoto[r.name.split('/')[0]]).sort().join()
+  debe((await ve(fa)) === 'fa,fb' && (await ve(fb)) === 'fa,fb', 'foto', 'quien comparte un viaje ve la foto de la otra persona (y la suya)')
+  debe((await ve(fc)) === 'fc' && (await ve(fd)) === 'fd', 'foto', 'quien no comparte nada con nadie solo ve la suya: la foto no es de cualquiera con el enlace')
+  const anonVe = await q("select count(*)::int as n from storage.objects where bucket_id = 'perfiles' and name like '%/foto-3b.jpg'")
+  debe(anonVe[0].n === 4, 'foto', '(control: las cuatro fotos existen)')
+  const sinSesion = await (async () => {
+    await bd.db.exec('reset role')
+    await bd.db.query("select set_config('request.jwt.claims', '', false)")
+    await bd.db.exec('set role anon')
+    try {
+      return await q("select count(*)::int as n from storage.objects where bucket_id = 'perfiles'")
+    } catch {
+      return [{ n: 0 }]
+    } finally {
+      await bd.db.exec('reset role')
+    }
+  })()
+  debe(sinSesion[0].n === 0, 'foto', 'sin iniciar sesión no se ve ninguna foto de perfil')
+  debe((await como(fa, () => q('select public.comparte_con($1) as c', [fb])))[0].c === true && (await como(fa, () => q('select public.comparte_con($1) as c', [fc])))[0].c === false && (await como(fa, () => q("select public.comparte_con('no-es-un-id') as c")))[0].c === false, 'foto', 'comparte_con: sí con quien comparte viaje, no con un extraño, y un nombre de carpeta raro no rompe nada')
+  const fuenteFotos = leer('src/lib/miPerfil.ts')
+  debe(/createSignedUrls/.test(fuenteFotos) && !/object\/public/.test(sin(fuenteFotos)) && M.CADUCA_FOTO_S === 3600, 'foto', 'las fotos se piden con enlaces que caducan (a la hora), nunca con la dirección pública')
+  debe(M.renovarEnMs(1_000_000) === 1_000_000 + 3600 * 1000 - 300_000, 'foto', 'el enlace se renueva 5 minutos antes de caducar')
+  debe(M.fotoParaMostrar('https://firmada', 'https://g/a.jpg') === 'https://firmada' && M.fotoParaMostrar(null, 'https://g/a.jpg') === 'https://g/a.jpg' && M.fotoParaMostrar(null, null) === null, 'foto', 'se enseña la subida, o la de Google, o la inicial')
+  const lugaresDeFotos = ['src/store/useMiPerfil.ts', 'src/components/layout/NoticesSheet.tsx', 'src/components/logros/momentos/imagen.ts']
+  debe(lugaresDeFotos.every((f) => /useFotoDePerfil|useFotosDePerfil|firmarFotosDePerfil/.test(leer(f))), 'foto', 'el Perfil, la campanita y la imagen de compartir piden la foto con enlace firmado')
+  debe(/update storage\.buckets set public = false where id = 'perfiles'/.test(leer('supabase/migrations/0027_cuentas_3b.sql')), 'foto', 'la 0027 hace privado el almacén')
+
+  // ── 7. Los datos de ejemplo de la campanita cuadran con el viaje ──
+  const MD = await empaquetar('avisos-ejemplo', {}, 'scripts/destino/_cuentas3b_entrada.tsx')
+  M.useRouteStore.setState({ route: { id: 'r', destination: 'Roma', answers: { dateRange: { start: '2026-10-17', end: '2026-10-20' } }, days: [] } })
+  const dia = (iso) => iso.slice(0, 10)
+  const f = MD.fechasDelViaje()
+  const lad = MD.delAdmin()
+  const ladLaura = MD.deLaura()
+  const por = (lista, tipo) => lista.find((a) => a.tipo === tipo)
+  const ms = (a) => Date.parse(a.creado_en)
+  const iniMs = Date.parse(`${f.inicio}T00:00:00`)
+  const finMs = Date.parse(`${f.fin}T23:59:59`)
+  debe(f.inicio === '2026-10-17' && f.fin === '2026-10-20', 'fechas', 'los avisos de ejemplo leen las fechas del viaje de pruebas (17 al 20 de octubre)')
+  debe(ms(por(lad, 'resumen')) > finMs && ms(por(lad, 'sorpresas')) > finMs && ms(por(ladLaura, 'resumen')) > finMs, 'fechas', '«Tu resumen del viaje está listo» y «Te quedan 3 días…» son de DESPUÉS del viaje')
+  debe(ms(por(lad, 'recomendacion')) < iniMs && ms(por(lad, 'unido')) < iniMs && ms(por(ladLaura, 'aceptada')) < iniMs && ms(por(ladLaura, 'rechazada')) < iniMs, 'fechas', 'la recomendación, la unión y las respuestas son de ANTES del viaje')
+  debe(dia(new Date(ms(por(lad, 'd10'))).toISOString()) === '2026-10-07' || Math.round((iniMs - ms(por(lad, 'd10'))) / 86400000) === 10, 'fechas', 'el aviso de los 10 días llega 10 días antes de empezar')
+  const orden = (lista) => lista.every((a, i, l) => i === 0 || ms(l[i - 1]) >= ms(a))
+  debe(orden(lad) && orden(ladLaura), 'fechas', 'la lista va con lo más nuevo arriba')
+  const avisosFuente = leer('src/dev/escaparates/cuentas_avisos.ts')
+  debe(!/hace\(60 \* 24/.test(avisosFuente) && /lunes, 12 de octubre/.test(avisosFuente) && /miércoles, 7 de octubre/.test(avisosFuente), 'fechas', 'los avisos del móvil de ejemplo llevan días de la semana que existen (12 de octubre de 2026 es lunes; el 7, miércoles)')
+  debe(new Date('2026-10-12T12:00:00').getDay() === 1 && new Date('2026-10-07T12:00:00').getDay() === 3, 'fechas', '(control: 12 de octubre de 2026 es lunes y 7, miércoles)')
+
+  // ── 7b. El guardado en el modo de pruebas ──
+  const sync = sin(leer('src/components/sync/TripSync.tsx'))
+  debe(/async function attemptSave[\s\S]{0,300}if \(demoActivo\(\)\) return/.test(sync) && /!supabase \|\| demoActivo\(\)/.test(sync), 'guardado', 'en el modo de pruebas (?logrosDemo=1, solo desarrollo) no se intenta guardar el viaje de mentira: no sale «Cambios sin guardar»')
+  M.useRouteStore.setState({ route: null })
+
+  // ── 10. Con TODAS las migraciones (de la 0001 a la 0027, en orden) y todo apagado, la app de producción sigue igual ──
+  const todas = await crearBaseDePrueba({ migraciones: /^00(0[1-9]|1[0-9]|2[0-7])_/, alFallar: (m) => debe(false, 'migracion', m) })
+  debe(todas.aplicadas.length >= 27 && todas.aplicadas.at(-1) === '0027_cuentas_3b.sql', 'migracion', 'todas las migraciones, de la 0001 a la 0027, se aplican en orden sin un solo error')
+  const u1 = await todas.nuevoUsuario('uno@correo.es', false, 'Uno')
+  const u2 = await todas.nuevoUsuario('dos@correo.es', false, 'Dos')
+  const viajeU = await todas.como(u1, async () => (await todas.q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [u1, rutaDe()]))[0].id)
+  await todas.q('insert into public.trip_members (trip_id, user_id) values ($1, $2)', [viajeU, u2])
+  const consultaDeSiempre = (uid) => todas.como(uid, () => todas.q('select id, route, bookings, wishlist, ui_state, generation_state from public.trips where traveler_id = $1 order by updated_at desc', [uid]))
+  debe((await consultaDeSiempre(u1)).length === 1 && (await consultaDeSiempre(u2)).length === 0, 'migracion', 'con todo apagado, la consulta de siempre devuelve lo mismo que hoy: cada uno sus viajes (quien es invitado en otro no lo ve ahí)')
+  const consultaConCuentas = (uid) => todas.como(uid, () => todas.q('select id, traveler_id, guardado_en, route, bookings, wishlist, ui_state, generation_state from public.trips order by updated_at desc'))
+  debe((await consultaConCuentas(u2)).length === 1, 'migracion', 'con las cuentas encendidas la consulta pide también guardado_en (0024) y funciona: ya no da el 400 de la 8B')
+  const persistencia = leer('src/lib/tripPersistence.ts')
+  debe(/conInvitados \? 'id, traveler_id, guardado_en,[^']*' : 'id, route, bookings, wishlist, ui_state, generation_state'/.test(persistencia) && /if \(!conInvitados\) consulta = consulta\.eq\('traveler_id', travelerId\)/.test(persistencia), 'migracion', 'apagadas las cuentas, la app NO pide guardado_en ni los viajes de otros: la misma consulta de hoy, con o sin migraciones')
+}
+
 /* ═══════════════ Capturas: todas, con el nombre de su pantalla, y ninguna repetida ═══════════════ */
 {
   const dir = 'docs/dias/capturas_cuentas3'
-  const pedidas = ['A1', 'A2', 'A3', 'A4', 'I1', 'I2', 'P1', 'P6', 'P7', 'P7b', 'P8', 'P8b', 'P9', 'RS1', 'RS2', 'R1', 'RW1', 'RW2', 'RW3', 'RM', 'RV', 'RSent', 'R2a', 'R2b', 'R2c', 'R2d', 'AV1', 'AV2', 'AV3', 'AV4', 'AV5', 'AV6', 'AV7', 'L-P3', 'L-P4', 'L-P5', 'L-P6', 'Perfil-foto-nombre', 'Pasaporte', '1a-hoy']
+  const pedidas = ['A1', 'A2', 'A3', 'A4', 'I1', 'I2', 'P1', 'P6', 'P7', 'P7b', 'P8', 'P8b', 'P9', 'RS1', 'RS2', 'R1', 'RW1', 'RW2', 'RW3', 'RM', 'RV', 'RSent', 'R2a', 'R2b', 'R2c', 'R2d', 'AV1', 'AV2', 'AV3', 'AV4', 'AV5', 'AV6', 'AV7', 'L-P3', 'L-P4', 'L-P5', 'L-P6', 'Perfil-foto-nombre', 'Pasaporte', '1a-hoy', 'Invitado-explorar', 'Invitado-reservas', 'Como-te-llamas']
   const hay = fs.existsSync(dir) ? fs.readdirSync(dir) : []
   const faltan = pedidas.filter((n) => !hay.some((x) => x.replace(/.(jpg|png|webp)$/i, '') === n))
   debe(faltan.length === 0, 'capturas', `estan todas las capturas pedidas (faltan: ${faltan.join(', ') || 'ninguna'})`)

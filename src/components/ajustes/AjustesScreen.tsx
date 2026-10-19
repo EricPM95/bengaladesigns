@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { textoDeComoEntra, textoDeMisPases } from '../../lib/ajustes'
 import { borrarMiCuenta, cerrarSesion, guardarAvisoDeInvitacion } from '../../lib/cuentas'
 import { compartirEnlace } from '../../lib/compartirEnlace'
+import { usePedirNombre } from '../../store/usePedirNombre'
 import { aceptarInvitacionPendiente, canjearInvitacion, enlaceDeAmigo, miCodigoDeAmigo, normalizarCodigo } from '../../lib/invitaciones'
 import { marca } from '../../lib/marca'
 import { apagarAvisosDelMovil, avisosDelMovilEncendidos, encenderAvisosDelMovil } from '../../lib/permisoAvisos'
@@ -127,6 +128,8 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
     if (!codigo) return
     setOcupado(true)
     aceptarInvitacionPendiente()
+    // Sin nombre puesto: «¿Cómo te llamas?», una sola vez, antes de entrar en el viaje o el pase.
+    await usePedirNombre.getState().pedir()
     const r = await canjearInvitacion(codigo)
     setOcupado(false)
     if (r.error) {

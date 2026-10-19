@@ -28,6 +28,15 @@ export function buildAppleMapsUrlFromHere(destination: string): string {
   return `https://maps.apple.com/?${params.toString()}`
 }
 
+/** Abre un enlace de mapa en otra pestaña (un enlace que se pulsa, sin `window.open`: estos enlaces no llevan código de afiliado ni de campaña). */
+export function abrirMapaEnOtraPestana(url: string): void {
+  const a = document.createElement('a')
+  a.href = url
+  a.target = '_blank'
+  a.rel = 'noopener noreferrer'
+  a.click()
+}
+
 export function buildGoogleMapsUrlFromHere(destination: string): string {
   const params = new URLSearchParams({ api: '1', destination, travelmode: 'walking' })
   return `https://www.google.com/maps/dir/?${params.toString()}`

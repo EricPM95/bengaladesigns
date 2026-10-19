@@ -18,14 +18,14 @@ import { TarjetaPaseReservas } from '../../src/components/pase/TarjetaPaseReserv
 import { PagoHost } from '../../src/components/pase/PagoHost'
 import { eur, filasDeCompra, limitesDelGrupo, totalDe, textoDeCompartirPase, nombreDelTipo, pagoDeLaDireccion } from '../../src/lib/pagoPase'
 import { parejasQueSePisan, rangoEnPalabras } from '../../src/lib/viajesQueSePisan'
-import { lineasDeCambio, lineasDelDia, cambiosDeLaPropuesta, construirRecomendacion, deshacerCambio, etiquetaDeDia, textoDeCuantos, titularDeRecomendacion, textoDelCambio, sinCambios, cambiosDeUnaRecomendacion } from '../../src/lib/propuesta'
+import { lineasDeCambio, lineasDelDia, cambiosDeLaPropuesta, construirRecomendacion, deshacerCambio, etiquetaDeDia, textoDeCuantos, titularDeRecomendacion, textoEnviarA, textoEsperandoA, textoMandadoA, textoDelCambio, sinCambios, cambiosDeUnaRecomendacion } from '../../src/lib/propuesta'
 import { resolverRecomendacion, vistaPrevia } from '../../src/lib/aplicarRecomendacion'
 import { haceCuanto, avisoDeLaDireccion } from '../../src/lib/avisos'
 import { tocaPedirPermiso } from '../../src/lib/permisoAvisos'
 import { ListaDeAvisos } from '../../src/components/avisos/ListaDeAvisos'
 import { textoDelAviso, textoDelPush, quienDelAviso } from '../../shared/avisos/textos.js'
 import { textoDeComoEntra, textoDeMisPases, etiquetaDelPase, estadoDelPase, fechaDeCompra, rangoDelViaje, filasDelPase, personasDelPase } from '../../src/lib/ajustes'
-import { nombreDePila, nombreParaMostrar, inicialDeNombre, fotoParaMostrar, urlDeFotoDePerfil, rutaNuevaDeFoto, PASOS_DE_FOTO_DE_PERFIL, OBJETIVO_BYTES_FOTO_PERFIL } from '../../src/lib/miPerfil'
+import { nombreDePila, nombreParaMostrar, inicialDeNombre, fotoParaMostrar, renovarEnMs, CADUCA_FOTO_S, rutaNuevaDeFoto, PASOS_DE_FOTO_DE_PERFIL, OBJETIVO_BYTES_FOTO_PERFIL } from '../../src/lib/miPerfil'
 import { enlaceDeAmigo, codigoDeAmigoDeLaDireccion } from '../../src/lib/invitaciones'
 import { estadoDeSesion } from '../../src/lib/cuentas'
 import { AjustesScreen } from '../../src/components/ajustes/AjustesScreen'
@@ -34,13 +34,17 @@ import { Avatar } from '../../src/components/ajustes/Avatar'
 import { useMiPerfil } from '../../src/store/useMiPerfil'
 import { CambioParada } from '../../src/components/propuesta/CambioParada'
 import { HojaVerPropuesta, FilaDeCambio } from '../../src/components/propuesta/HojaVerPropuesta'
-import { HojaRecomendacion } from '../../src/components/propuesta/HojaRecomendacion'
+import { HojaRecomendacion, BloqueDeDia, plegarLineas } from '../../src/components/propuesta/HojaRecomendacion'
+import { HojaComoTeLlamas } from '../../src/components/ajustes/HojaComoTeLlamas'
+import { ReservasSoloVer } from '../../src/components/route/ReservasSoloVer'
+import { hayQuePedirNombre } from '../../src/store/usePedirNombre'
+import { esEntornoDePrueba } from '../../src/lib/recomendaciones'
 import { PropuestaEnviada } from '../../src/components/propuesta/PropuestaEnviada'
 import { MenuInvitadoParada, MenuInvitadoDia } from '../../src/components/propuesta/MenusDelInvitado'
 import { diasConRecomendacion } from '../../src/components/propuesta/EtiquetaRecomendacion'
 import { useRouteStore } from '../../src/store/useRouteStore'
 import { usePropuestaStore } from '../../src/store/usePropuestaStore'
-import { useViajeCompartido } from '../../src/store/useViajeCompartido'
+import { useViajeCompartido, nombreDe, inicialDe } from '../../src/store/useViajeCompartido'
 
 export const M = {
   calcularCuentasActivas,
@@ -85,6 +89,17 @@ export const M = {
   etiquetaDeDia,
   textoDeCuantos,
   titularDeRecomendacion,
+  textoEnviarA,
+  textoEsperandoA,
+  textoMandadoA,
+  plegarLineas,
+  nombreDe,
+  inicialDe,
+  hayQuePedirNombre,
+  esEntornoDePrueba,
+  pintaComoTeLlamas: () => renderToStaticMarkup(createElement(HojaComoTeLlamas)),
+  pintaReservasSoloVer: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(ReservasSoloVer, { onClose: () => undefined, ...props } as never)),
+  pintaListaPlegada: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(BloqueDeDia, props as never)),
   textoDelCambio,
   sinCambios,
   cambiosDeUnaRecomendacion,
@@ -120,7 +135,8 @@ export const M = {
   nombreParaMostrar,
   inicialDeNombre,
   fotoParaMostrar,
-  urlDeFotoDePerfil,
+  renovarEnMs,
+  CADUCA_FOTO_S,
   rutaNuevaDeFoto,
   PASOS_DE_FOTO_DE_PERFIL,
   OBJETIVO_BYTES_FOTO_PERFIL,

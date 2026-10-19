@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { useFotoDePerfil } from '../hooks/useFotosDePerfil'
 import { cargarMiPerfil, fotoParaMostrar, guardarMiNombre, nombreDePila, nombreParaMostrar, quitarMiFoto, subirMiFoto } from '../lib/miPerfil'
 
 /**
@@ -63,7 +64,8 @@ export function useMiNombreYFoto(): { nombre: string; tieneNombre: boolean; foto
   const nombre = useMiPerfil((s) => s.nombre)
   const fotoPath = useMiPerfil((s) => s.fotoPath)
   const fotoGoogle = useMiPerfil((s) => s.fotoGoogle)
-  return { nombre: nombreParaMostrar(nombre), tieneNombre: Boolean(nombre?.trim()), foto: fotoParaMostrar(fotoPath, fotoGoogle) }
+  const enlace = useFotoDePerfil(fotoPath)
+  return { nombre: nombreParaMostrar(nombre), tieneNombre: Boolean(nombre?.trim()), foto: fotoParaMostrar(enlace, fotoGoogle) }
 }
 
 if (import.meta.env.DEV && typeof window !== 'undefined') (window as unknown as { __miPerfil: typeof useMiPerfil }).__miPerfil = useMiPerfil

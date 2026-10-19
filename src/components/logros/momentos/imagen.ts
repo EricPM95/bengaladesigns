@@ -1,4 +1,4 @@
-import { fotoParaMostrar, inicialDeNombre } from '../../../lib/miPerfil'
+import { firmarFotosDePerfil, fotoParaMostrar, inicialDeNombre } from '../../../lib/miPerfil'
 import { useMiPerfil } from '../../../store/useMiPerfil'
 import { createElement, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
@@ -208,7 +208,9 @@ export async function datosDelPie(): Promise<DatosDelPie | null> {
     titulo = def ? (def.escalones.find((e) => String(e.n) === escalon)?.nombre ?? def.nombre) : null
   }
   const yo = useMiPerfil.getState()
-  return { rango_ix: exp.rango_ix, estrellas: exp.estrellas, titulo, inicial: inicialDeNombre(yo.nombre), fotoUrl: fotoParaMostrar(yo.fotoPath, yo.fotoGoogle) }
+  // (El almacén de fotos es privado: la propia foto se pide con un enlace que caduca.)
+  const enlaces = yo.fotoPath ? await firmarFotosDePerfil([yo.fotoPath]) : {}
+  return { rango_ix: exp.rango_ix, estrellas: exp.estrellas, titulo, inicial: inicialDeNombre(yo.nombre), fotoUrl: fotoParaMostrar(yo.fotoPath ? (enlaces[yo.fotoPath] ?? null) : null, yo.fotoGoogle) }
 }
 
 const cargarImagen = (src: string, deFuera = false) =>

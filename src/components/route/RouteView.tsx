@@ -14,6 +14,8 @@ import type { DayMapView } from './dayDetail/DayDetailPanel'
 import { ExplorePanel } from './ExplorePanel'
 import { MapDestinationHeader } from './MapDestinationHeader'
 import { ReservasPanel } from './ReservasPanel'
+import { ReservasSoloVer } from './ReservasSoloVer'
+import { useModoInvitado } from '../../hooks/useModoInvitado'
 import { RouteOverview } from './RouteOverview'
 import { DateNoticesModal } from './DateNoticesModal'
 import { SeasonCard } from './SeasonCard'
@@ -61,6 +63,8 @@ export function RouteView() {
   const panelSplit = useRouteStore((state) => state.panelSplit)
   const setPanelSplit = useRouteStore((state) => state.setPanelSplit)
   const devSimulatedTodayIso = useRouteStore((state) => state.dev_simulated_today_iso)
+  // Quien mira el viaje de otra persona ve RESERVAS solo para mirar (cuentas parte 3B).
+  const { esInvitado, nombreAdmin } = useModoInvitado()
   // Fechas desde el mapa: en los curados, la ruta se rehace (y se pregunta si ya estaba editada a mano).
   const { onChangeDateRange: setRouteDateRange, dialog: datesDialog } = useDatesChange(route)
   // El calendario de las fechas (Tanda 6y4): uno solo para toda la app, a pantalla completa, y montado en RESERVAS y en el resto de pestañas.
@@ -116,7 +120,7 @@ export function RouteView() {
       <div key={repintado} className="flex h-dvh flex-col bg-bg text-text">
         {/* (Tanda 6z3 y 6z6: la barra de abajo está también aquí, con las mismas pestañas de su versión: nunca se esconde.) */}
         <div className="relative min-h-0 flex-1">
-          <ReservasPanel route={route} onClose={() => setMode('route')} />
+          {esInvitado ? <ReservasSoloVer route={route} nombreAdmin={nombreAdmin} onClose={() => setMode('route')} /> : <ReservasPanel route={route} onClose={() => setMode('route')} />}
         </div>
         <BottomBar />
         <PanelDePruebas route={route} />

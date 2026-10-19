@@ -12,6 +12,8 @@ import { AddToDaySheet, type AddItem } from './freeDay/AddToDaySheet'
 import { confirmAddedStaying } from './freeDay/AddToTripScreen'
 import { useDestinationPool } from '../../lib/useDestinationPool'
 import { useAlojamientoUi } from '../../store/useAlojamientoUi'
+import { useModoInvitado } from '../../hooks/useModoInvitado'
+import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { FreeTourSheet, freeTourAvailable } from './reservas/FreeTourSheet'
 import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
@@ -147,6 +149,13 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const [results, setResults] = useState<NearbyPlaceResult[] | null>(null)
   /** "+ Añadir" desde Explorar (decisión del usuario, 2026-09-28): la ventana pregunta a qué día. */
   const [addItem, setAddItem] = useState<AddItem | null>(null)
+  // Quien mira el viaje de otra persona no lo cambia: «Añadir a mi ruta» entra en el modo recomendación (cuentas parte 3B) y sigue con el sitio ya puesto, sobre una copia.
+  const { soloVer } = useModoInvitado()
+  const empezarRecomendacion = usePropuestaStore((s) => s.empezar)
+  const alAnadir = <T,>(abrir: (x: T) => void) => (x: T) => {
+    if (soloVer) empezarRecomendacion('ruta')
+    abrir(x)
+  }
   const [freeTourOpen, setFreeTourOpen] = useState(false)
   /** Desde dónde se ordena por cercanía cuando EXPLORAR se abre desde HOY («Cerca de ti»). */
   const [origenApertura, setOrigenApertura] = useState<Coordinates | null>(null)
@@ -251,9 +260,9 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         initialOrigin={origenApertura}
         initialNearby={aperturaCerca}
         onHotels={() => useAlojamientoUi.getState().abrirMapa()}
-        onAddFreeTour={freeTourAvailable(route) ? () => setFreeTourOpen(true) : undefined}
-        onQuickAdd={(place) => setAddItem({ kind: 'place', place })}
-        onQuickAddExcursion={(excursion) => setAddItem({ kind: 'excursion', excursion })}
+        onAddFreeTour={freeTourAvailable(route) ? alAnadir<void>(() => setFreeTourOpen(true)) : undefined}
+        onQuickAdd={alAnadir((place: DestinationPlace) => setAddItem({ kind: 'place', place }))}
+        onQuickAddExcursion={alAnadir((excursion: Excursion) => setAddItem({ kind: 'excursion', excursion }))}
         onClose={backToCards}
       />
       {freeTourOpen && <FreeTourSheet route={route} onClose={() => setFreeTourOpen(false)} />}

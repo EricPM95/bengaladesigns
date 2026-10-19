@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
-import { buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
+import { abrirMapaEnOtraPestana, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
+import { ICONOS } from '../../../lib/iconos'
 import { Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
 import { pedirEstado, type ColeccionDeEstado, type EstadoLogros } from './api'
 import { COLOR_DE_GRADO } from './BotonFlotanteLogros'
@@ -175,7 +176,7 @@ function Franja({ fase, estado, hayViaje }: { fase: FaseDelViaje; estado: Estado
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 18, background: verde ? 'oklch(0.96 0.035 150)' : '#F5EFE4', border: `1px solid ${verde ? 'oklch(0.55 0.11 150 / .3)' : 'rgba(28,34,48,.08)'}` }}>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={verde ? 'oklch(0.42 0.09 150)' : 'oklch(0.5 0.17 5)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden>
-        <path d={verde ? 'M6 20.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 7.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 18.5h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8' : 'M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8z'} />
+        <path d={verde ? ICONOS.ruta : 'M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8z'} />
       </svg>
       <span style={{ flex: 1, font: "500 13.5px/1.35 'Geist'", textWrap: 'pretty' as never }}>{texto}</span>
     </div>
@@ -243,7 +244,7 @@ function FilaDeColeccion({ c, i, fase, ciudad, abierta, alternar, cerrarHoja }: 
                 <button
                   type="button"
                   onClick={() => {
-                    if (s.en_ruta) window.open(buildGoogleMapsUrlFromHere(s.lat != null && s.lng != null ? `${s.lat},${s.lng}` : `${s.nombre ?? s.sitio}, ${ciudad}`), '_blank', 'noopener')
+                    if (s.en_ruta) abrirMapaEnOtraPestana(buildGoogleMapsUrlFromHere(s.lat != null && s.lng != null ? `${s.lat},${s.lng}` : `${s.nombre ?? s.sitio}, ${ciudad}`))
                     else {
                       cerrarHoja()
                       useAddFlowStore.getState().openAddFlow(null, s.nombre ?? s.sitio)

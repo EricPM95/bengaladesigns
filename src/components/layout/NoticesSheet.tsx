@@ -6,7 +6,7 @@ import { Icono } from '../ui/Icono'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { ListaDeAvisos } from '../avisos/ListaDeAvisos'
 import { abrirAviso } from '../avisos/abrirAviso'
-import { urlDeFotoDePerfil } from '../../lib/miPerfil'
+import { useFotosDePerfil } from '../../hooks/useFotosDePerfil'
 import { useViajeCompartido } from '../../store/useViajeCompartido'
 
 const KIND_STYLE: Record<AppNotice['kind'], { label: string; color: string; icon: NombreIcono }> = {
@@ -36,9 +36,11 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
   const nada = items.length === 0 && avisosDeLaCuenta.length === 0
   // La foto de quien hace lo que cuenta el aviso (si es de este viaje y la tiene puesta).
   const gente = useViajeCompartido((state) => state.gente)
+  const enlacesDeFotos = useFotosDePerfil(gente.map((p) => p.foto))
   const fotoDeLaPersona = (aviso: { payload: Record<string, unknown> }) => {
     const id = (aviso.payload.autor_id ?? aviso.payload.persona_id ?? aviso.payload.admin_id) as string | undefined
-    return urlDeFotoDePerfil(gente.find((p) => p.id === id)?.foto)
+    const ruta = gente.find((p) => p.id === id)?.foto
+    return ruta ? (enlacesDeFotos[ruta] ?? null) : null
   }
 
   const read = (item: AppNotice) => {

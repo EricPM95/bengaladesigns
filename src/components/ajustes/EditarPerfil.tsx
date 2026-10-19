@@ -58,7 +58,7 @@ export function EditarPerfil({ onCerrar }: { onCerrar: () => void }) {
       )}
       <label className="flex flex-col gap-1.5">
         <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Tu nombre</span>
-        <input value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Viajero" maxLength={40} className="h-[52px] rounded-[14px] border-[1.5px] border-text/20 bg-white px-3.5 text-[16px] outline-none" />
+        <input value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Tu nombre" maxLength={40} className="h-[52px] rounded-[14px] border-[1.5px] border-text/20 bg-white px-3.5 text-[16px] outline-none" />
       </label>
       {error && (
         <p role="alert" className="m-0 text-[13px]" style={{ color: 'oklch(0.5 0.17 5)' }}>

@@ -4,6 +4,7 @@ import { useSyncStore } from '../../store/useSyncStore'
 import { bootstrapTraveler, loadAllTrips, saveTrip, type TripPayload } from '../../lib/tripPersistence'
 import { supabase } from '../../lib/supabaseClient'
 import { getTodayTripContext } from '../../lib/todayMode'
+import { demoActivo } from '../../lib/logros'
 
 const SAVE_DEBOUNCE_MS = 1500
 
@@ -33,6 +34,8 @@ export function buildTripPayload(): TripPayload | null {
 }
 
 async function attemptSave(travelerId: string) {
+  // El modo de pruebas (`?logrosDemo=1`, solo en desarrollo) usa viajes de mentira (`demo-viaje` no es un identificador de verdad): no se guarda nada y no sale «Cambios sin guardar» en las capturas.
+  if (demoActivo()) return
   const payload = buildTripPayload()
   if (!payload) return
   useSyncStore.getState().setStatus('saving')
@@ -85,7 +88,8 @@ export function TripSync() {
   const hydratedRef = useRef(false)
 
   useEffect(() => {
-    if (!supabase) {
+    // Sin Supabase, o en el modo de pruebas (`?logrosDemo=1`, solo desarrollo): sin guardado en la nube. (Con el Supabase de verdad y sin la migración 0024, leer los viajes falla y salía «Cambios sin guardar» en las capturas.)
+    if (!supabase || demoActivo()) {
       useSyncStore.getState().setStatus('disabled')
       return
     }

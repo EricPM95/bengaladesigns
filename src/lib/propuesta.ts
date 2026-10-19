@@ -226,10 +226,21 @@ export function textoDelCambio(c: CambioPropuesto): string {
 
 /** «Laura te recomienda un cambio», «cambios en el día 3», «otra ruta»: el texto de R2 y de la campanita según el tipo de lo recomendado. `cuando` = el día (para «cambios en el día 3»). */
 export function titularDeRecomendacion(nombre: string, tipo: TipoDeRecomendacion, diaTexto: string | null): string {
-  if (tipo === 'cambio') return `${nombre} te recomienda un cambio${diaTexto ? ` en ${diaTexto}` : ''}`
-  if (tipo === 'dia') return `${nombre} te recomienda cambios${diaTexto ? ` en ${diaTexto}` : ' en un día'}`
-  return `${nombre} te recomienda otra ruta`
+  // Sin nombre puesto (cuentas parte 3B), no se inventa uno: «Te recomiendan un cambio».
+  const quien = nombre.trim() ? `${nombre.trim()} te recomienda` : 'Te recomiendan'
+  if (tipo === 'cambio') return `${quien} un cambio${diaTexto ? ` en ${diaTexto}` : ''}`
+  if (tipo === 'dia') return `${quien} cambios${diaTexto ? ` en ${diaTexto}` : ' en un día'}`
+  return `${quien} otra ruta`
 }
+
+/** El botón de enviar la propuesta: «Enviar a Elena», o «Enviar» si la otra persona aún no ha puesto su nombre. */
+export const textoEnviarA = (nombre: string): string => (nombre.trim() ? `Enviar a ${nombre.trim()}` : 'Enviar')
+
+/** «esperando a Elena», o «esperando respuesta» sin nombre. */
+export const textoEsperandoA = (nombre: string): string => (nombre.trim() ? `esperando a ${nombre.trim()}` : 'esperando respuesta')
+
+/** La pantalla de propuesta enviada: «Se lo hemos mandado a Elena», o «Se lo hemos mandado» sin nombre. */
+export const textoMandadoA = (nombre: string): string => (nombre.trim() ? `Se lo hemos mandado a ${nombre.trim()}` : 'Se lo hemos mandado')
 
 /* ------------------------------------------------------------------ */
 /* Lo que ya se mandó (AV7)                                            */

@@ -1,4 +1,5 @@
 import { createElement as h } from 'react'
+import { HojaComoTeLlamas } from '../../components/ajustes/HojaComoTeLlamas'
 import { HojaVerPropuesta } from '../../components/propuesta/HojaVerPropuesta'
 import { etiquetaDeDia } from '../../lib/propuesta'
 import type { Stop } from '../../lib/types'
@@ -38,7 +39,7 @@ const paseDuo = {
   invitacion: null,
 }
 
-type Modo = 'days' | 'route' | 'today'
+type Modo = 'days' | 'route' | 'today' | 'explore' | 'bookings'
 
 /** El viaje de pruebas, como administrador o como invitada (según el rol), con la gente del viaje puesta. */
 async function prepararViaje(rol: 'admin' | 'invitado', modo: Modo = 'days') {
@@ -48,7 +49,7 @@ async function prepararViaje(rol: 'admin' | 'invitado', modo: Modo = 'days') {
   } catch {
     /* sin almacenamiento */
   }
-  await conRuta(modo)
+  await conRuta(modo as never)
   useSyncStore.setState({ activeTripId: 'demo-viaje' })
   usePropuestaStore.setState({ activa: false, base: null, verAbierto: false, enviada: false, error: null })
   useR2Store.getState().cerrar()
@@ -105,7 +106,53 @@ const verPareja = async () => {
   await espera(500)
 }
 
+/** Toca el primer botón cuyo texto cumple la expresión (las tarjetas de EXPLORAR no tienen un nombre propio). */
+const clicTexto = async (texto: RegExp) => {
+  const el = Array.from(document.querySelectorAll('button')).find((b) => texto.test(b.textContent?.trim() ?? '')) as HTMLElement | undefined
+  el?.scrollIntoView({ block: 'center' })
+  await espera(300)
+  el?.click()
+}
+
 const lista: Escaparate[] = [
+  {
+    id: 'c3-Invitado-explorar',
+    que: 'EXPLORAR de quien mira el viaje de otra persona: «+ Añadir» entra en el modo recomendación con el sitio ya puesto (se elige el día y sale «Tu propuesta · 1 cambio»)',
+    abrir: async () => {
+      await prepararViaje('invitado', 'explore')
+      await clicTexto(/^Atracciones/)
+      await espera(2500)
+      const mas = document.querySelector('button[aria-label^="Añadir "]') as HTMLElement | null
+      mas?.click()
+      await espera(1200)
+      // Se elige el día: ya está en el modo recomendación («Tu propuesta · 1 cambio»), sobre una copia.
+      await clicTexto(/^Añadir al /)
+      await espera(1500)
+    },
+    cerrar: cerrarTodo,
+  },
+  {
+    id: 'c3-Invitado-reservas',
+    que: 'RESERVAS de quien mira el viaje de otra persona: solo para mirar (nada de cambiar el vuelo, el alojamiento ni las reservas; solo [Reservar entrada])',
+    abrir: async () => {
+      await prepararViaje('invitado', 'bookings')
+      await espera(1800)
+    },
+    cerrar: cerrarTodo,
+  },
+  {
+    id: 'c3-Como-te-llamas',
+    que: '«¿Cómo te llamas?» (una sola vez, a quien entró con el email y no tiene nombre), con [Seguir] y «Ahora no»',
+    abrir: async () => {
+      await prepararViaje('admin', 'route')
+      montarEnBody('c3-nombre', h(HojaComoTeLlamas))
+      await espera(900)
+    },
+    cerrar: () => {
+      desmontar('c3-nombre')
+      cerrarTodo()
+    },
+  },
   {
     id: 'c3-RS1',
     que: 'El botón [Compartir viaje] en RUTA',

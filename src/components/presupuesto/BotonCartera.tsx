@@ -1,4 +1,5 @@
 import { usePresupuestoUi } from '../../store/usePresupuestoUi'
+import { useModoInvitado } from '../../hooks/useModoInvitado'
 import { Icono } from '../ui/Icono'
 
 /** El botón redondo de la cartera (diseño «La cabecera»): 44 px de toque, sin fondo, la tinta de siempre. */
@@ -10,6 +11,9 @@ const BOTON = 'relative flex h-11 w-11 shrink-0 items-center justify-center roun
  */
 export function BotonCartera() {
   const abrir = usePresupuestoUi((state) => state.abrir)
+  // El presupuesto es de quien hizo el viaje: quien lo mira (cuentas parte 3B) no ve la cartera, porque sus cifras se podrían cambiar y no se guardan.
+  const { esInvitado } = useModoInvitado()
+  if (esInvitado) return null
   return (
     <button type="button" onClick={abrir} aria-label="Presupuesto" title="Presupuesto" data-cartera="1" className={BOTON}>
       <Icono nombre="presupuesto" size={23} />

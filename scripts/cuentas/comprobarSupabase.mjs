@@ -1,6 +1,6 @@
 // Comprueba las cuentas (parte 3) contra el Supabase DE VERDAD. Lo lanza Eric UNA vez, cuando haya aplicado las migraciones y puesto las claves:
 //   node scripts/cuentas/comprobarSupabase.mjs
-// Opciones: --api=http://localhost:8787 (el servidor de la app, para el pago de prueba y el borrado)   --sin-pago (se salta el pago de prueba)
+// Opciones: --api=http://localhost:8787 (el servidor de la app, para el pago de prueba y el borrado)   --sin-pago (se salta el pago de prueba)   --esperar-pago (espera el pago de prueba con «stripe listen»)
 // Las claves se leen SOLO de `.env.local` y no se muestran nunca (ni en pantalla ni en ningún archivo). Si falta una clave o una migración, NO prueba nada: dice qué falta y para.
 // Todo lo que crea (usuarios de prueba, viaje, foto, invitación, recomendación) se borra al final, salga bien o mal.
 import fs from 'node:fs'
@@ -11,6 +11,8 @@ const args = process.argv.slice(2)
 const opcion = (n, def) => args.find((a) => a.startsWith(`--${n}=`))?.split('=').slice(1).join('=') ?? def
 const API = opcion('api', 'http://localhost:8787')
 const sinPago = args.includes('--sin-pago')
+/** Cuentas 3B: espera el pago de prueba (Stripe en modo pruebas, con `stripe listen` hacia este ordenador). */
+const esperarPago = args.includes('--esperar-pago')
 
 /** Lee `.env.local` sin tocar el entorno de nadie ni enseñar nada. */
 function leerEnv() {
@@ -50,31 +52,41 @@ const admin = createClient(url, env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persist
 const nuevoCliente = () => createClient(url, env.VITE_SUPABASE_ANON_KEY, { auth: { persistSession: false, autoRefreshToken: false } })
 
 /* ── 1 · Las migraciones: cada una se reconoce por algo que SOLO ella crea ── */
+// (La 0019 solo limpia la caché de fotos de lugares y no deja nada que se pueda mirar desde fuera: se pide aplicarla siempre que se aplique la 0018 o falte alguna posterior.)
 const MIGRACIONES = [
+  { n: '0017', tabla: 'affiliate_sales' },
+  { n: '0018', tabla: 'trip_photos' },
   { n: '0020', tabla: 'trip_recommendations' },
   { n: '0021', tabla: 'trip_invitations' },
+  { n: '0022', tabla: 'civitatis_cache' },
   { n: '0023', tabla: 'logro_hechos' },
+  { n: '0024', tabla: 'hoy_prueba' },
+  { n: '0024', tabla: 'trips', columna: 'guardado_en' },
+  { n: '0025', tabla: 'logro_referidos' },
   { n: '0026', tabla: 'avisos' },
   { n: '0026', tabla: 'pagos_registro' },
   { n: '0026', tabla: 'invitaciones_app' },
 ]
-const existe = async (tabla) => {
-  const { error } = await admin.from(tabla).select('*', { head: true, count: 'exact' }).limit(1)
-  return !error || !/does not exist|Could not find the table|schema cache/i.test(error.message)
+const existe = async (tabla, columna = '*') => {
+  const { error } = await admin.from(tabla).select(columna, { head: true, count: 'exact' }).limit(1)
+  return !error || !/does not exist|Could not find the table|Could not find the .* column|schema cache/i.test(error.message)
 }
 const faltan = []
 for (const m of MIGRACIONES) {
-  let hay = await existe(m.tabla)
-  if (!hay && m.alternativa) hay = await existe(m.alternativa)
-  if (!hay) faltan.push(`${m.n} (falta la tabla ${m.tabla})`)
+  const hay = await existe(m.tabla, m.columna ?? '*')
+  if (!hay) faltan.push({ n: m.n, texto: `${m.n} (falta ${m.columna ? `la columna ${m.tabla}.${m.columna}` : `la tabla ${m.tabla}`})` })
 }
+// La 0027 (cuentas 3B) hace privado el almacén de fotos de perfil.
+const { data: bucketPerfiles } = await admin.storage.getBucket('perfiles')
+if (!bucketPerfiles || bucketPerfiles.public !== false) faltan.push({ n: '0027', texto: bucketPerfiles ? '0027 (el almacén «perfiles» sigue siendo público)' : '0026 y 0027 (falta el almacén «perfiles»)' })
 if (faltan.length) {
+  const numeros = [...new Set(faltan.map((f) => f.n))].sort()
   console.log('No lanzo la comprobación: faltan migraciones por aplicar en Supabase (SQL Editor, en este orden):')
-  for (const f of faltan) console.log(`  · ${f}`)
-  console.log('Orden: 0020 → 0021 → 0022 → 0023 → 0024 → 0025 → 0026 (y 0017/0018 si no están).')
+  for (const f of faltan) console.log(`  · ${f.texto}`)
+  console.log(`Aplica, en este orden y solo las que faltan: ${numeros.join(' → ')} (cada una es un archivo de supabase/migrations/; la 0019 va entre la 0018 y la 0020 si aplicas la 0018).`)
   process.exit(2)
 }
-ok('las migraciones 0020 a 0026 están aplicadas')
+ok('las migraciones 0017 a 0027 están aplicadas')
 
 /* ── 2 · El flujo, con dos personas de prueba ── */
 const creados = { usuarios: [], viaje: null, archivos: [] }
@@ -90,6 +102,7 @@ const persona = async (nombre) => {
 try {
   const eric = await persona('la dueña')
   const laura = await persona('la invitada')
+  const extrana = await persona('una tercera persona que no comparte nada')
 
   // Guardar un viaje
   const ruta = { id: 'prueba', answers: { destination: { name: 'Roma' } }, days: [] }
@@ -113,6 +126,22 @@ try {
     comprobar(vista?.valida === true, 'ver la invitación antes de entrar', JSON.stringify(vista))
     const { data: unida, error: eUnir } = await laura.cliente.rpc('canjear_invitacion', { p_codigo: codigo })
     comprobar(!eUnir && unida?.ok !== false, 'entrar al viaje con el código', texto(eUnir) || JSON.stringify(unida))
+  }
+
+  // La foto de perfil es privada (0027): ni con el enlace público, ni una tercera persona; sí la dueña y quien comparte su viaje, con un enlace que caduca.
+  if (!subida.error) {
+    const publica = await fetch(`${url}/storage/v1/object/public/perfiles/${rutaFoto}`).then((r) => r.status).catch(() => 0)
+    comprobar(publica >= 400 || publica === 0, 'la foto de perfil NO se ve con la dirección pública', `respondió ${publica}`)
+    const propia = await eric.cliente.storage.from('perfiles').createSignedUrl(rutaFoto, 60)
+    comprobar(!propia.error && Boolean(propia.data?.signedUrl), 'la dueña ve su foto con un enlace que caduca', texto(propia.error))
+    if (propia.data?.signedUrl) {
+      const estado = await fetch(propia.data.signedUrl).then((r) => r.status).catch(() => 0)
+      comprobar(estado === 200, 'el enlace firmado de la foto se abre', `respondió ${estado}`)
+    }
+    const deLaInvitada = await laura.cliente.storage.from('perfiles').createSignedUrl(rutaFoto, 60)
+    comprobar(!deLaInvitada.error && Boolean(deLaInvitada.data?.signedUrl), 'quien comparte el viaje ve la foto', texto(deLaInvitada.error))
+    const deLaExtrana = await extrana.cliente.storage.from('perfiles').createSignedUrl(rutaFoto, 60)
+    comprobar(Boolean(deLaExtrana.error) || !deLaExtrana.data?.signedUrl, 'una tercera persona NO ve la foto', 'pudo pedir un enlace')
   }
 
   // Recomendar y aceptar
@@ -148,7 +177,23 @@ try {
         const r = await fetch(`${API}/api/pago/crear`, { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${sesionComprador.session.access_token}` }, body: JSON.stringify({ plan: 'uno', destino: (cfg.destinos ?? ['Roma'])[0] }) })
         const j = await r.json().catch(() => ({}))
         comprobar(r.ok && j.url, 'empezar un pago de prueba (el precio lo pone el servidor)', j.error ?? `HTTP ${r.status}`)
-        resultados.push('  – para cerrar el pago: abre la URL que da la API con la tarjeta de pruebas 4242 4242 4242 4242, y en Stripe → Webhooks → «Enviar evento de prueba» comprueba que el aviso llega con la firma buena.')
+        if (esperarPago && r.ok && j.url) {
+          // Cuentas 3B: el aviso de Stripe llega a ESTE ordenador con la herramienta de Stripe para la consola (`stripe listen --forward-to localhost:8787/api/pago/webhook`); nada se toca en Vercel.
+          console.log(`\nPara cerrar el pago de prueba:\n  1. En otra consola: stripe listen --forward-to localhost:8787/api/pago/webhook  (su «whsec_…» va en STRIPE_WEBHOOK_SECRET de .env.local, y se reinicia la API)\n  2. Abre esta dirección y paga con la tarjeta 4242 4242 4242 4242 (cualquier fecha futura y CVC):\n     ${j.url}\nEspero hasta 5 minutos a que llegue el aviso de Stripe…`)
+          let listo = null
+          for (let i = 0; i < 100 && !listo; i++) {
+            await new Promise((ok) => setTimeout(ok, 3000))
+            const e = await fetch(`${API}/api/pago/estado?sesion=${encodeURIComponent(j.sesion)}`, { headers: { authorization: `Bearer ${sesionComprador.session.access_token}` } }).then((x) => x.json()).catch(() => ({}))
+            if (e.listo || e.rechazado) listo = e
+          }
+          comprobar(listo?.listo === true, 'el pago de prueba llega por «stripe listen» y se crea el pase', listo ? JSON.stringify(listo) : 'no llegó el aviso en 5 minutos')
+          if (listo?.listo) {
+            const { data: pases } = await admin.rpc('pases_de', { p_uid: nueva.user.id })
+            comprobar(Array.isArray(pases) && pases.length === 1, 'queda UN solo pase para esa persona', `pases: ${Array.isArray(pases) ? pases.length : '?'}`)
+          }
+        } else {
+          resultados.push('  – para cerrar el pago: vuelve a lanzar con --esperar-pago (y «stripe listen --forward-to localhost:8787/api/pago/webhook» en otra consola); paga con la tarjeta 4242 4242 4242 4242.')
+        }
       }
     } catch (e) {
       mal('hablar con la API para el pago de prueba', `${API}: ${texto(e)}`)

@@ -30,10 +30,67 @@ export function BloqueDeDia({ route, c, titulo }: { route: Route; c: CambioDeUnD
   return (
     <div data-dia-que-cambia={c.dayId} style={{ borderRadius: 16, background: '#F5EFE4', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 7 }}>
       <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>{cabecera}</span>
-      {lineasDelDia(c.antes, c.despues).map((l, i) => (
-        <LineaDeDia key={i} l={l} />
-      ))}
+      <LineasPlegadas lineas={lineasDelDia(c.antes, c.despues)} />
     </div>
+  )
+}
+
+type Trozo = { tipo: 'linea'; l: Linea<string> } | { tipo: 'resumen'; lineas: Linea<string>[] }
+
+/**
+ * R2 corta (cuentas parte 3B): lo que cambia, con la parada de antes y la de después en gris; el resto del día, recogido en una línea («12 paradas más, sin cambios») que se abre al tocarla.
+ * De cada racha de paradas que no cambian se enseña la que toca a un cambio por arriba y la que toca por abajo (si hay cambio a ese lado).
+ */
+export function plegarLineas(lineas: Linea<string>[]): Trozo[] {
+  const cambia = (l: Linea<string>) => l.tipo !== 'igual'
+  const salida: Trozo[] = []
+  let i = 0
+  while (i < lineas.length) {
+    if (cambia(lineas[i])) {
+      salida.push({ tipo: 'linea', l: lineas[i++] })
+      continue
+    }
+    let j = i
+    while (j < lineas.length && !cambia(lineas[j])) j++
+    const racha = lineas.slice(i, j)
+    const hayAntes = i > 0
+    const hayDespues = j < lineas.length
+    const arriba = hayAntes ? 1 : 0
+    const abajo = hayDespues ? 1 : 0
+    // Si recoger no ahorra nada (una sola parada escondida), se enseñan todas.
+    if (racha.length - arriba - abajo <= 1) racha.forEach((l) => salida.push({ tipo: 'linea', l }))
+    else {
+      racha.slice(0, arriba).forEach((l) => salida.push({ tipo: 'linea', l }))
+      salida.push({ tipo: 'resumen', lineas: racha.slice(arriba, racha.length - abajo) })
+      racha.slice(racha.length - abajo).forEach((l) => salida.push({ tipo: 'linea', l }))
+    }
+    i = j
+  }
+  return salida
+}
+
+function LineasPlegadas({ lineas }: { lineas: Linea<string>[] }) {
+  const [abiertos, setAbiertos] = useState<Set<number>>(new Set())
+  return (
+    <>
+      {plegarLineas(lineas).map((t, i) =>
+        t.tipo === 'linea' ? (
+          <LineaDeDia key={i} l={t.l} />
+        ) : abiertos.has(i) ? (
+          t.lineas.map((l, k) => <LineaDeDia key={`${i}-${k}`} l={l} />)
+        ) : (
+          <button
+            key={i}
+            type="button"
+            data-paradas-recogidas={t.lineas.length}
+            onClick={() => setAbiertos((previo) => new Set(previo).add(i))}
+            style={{ alignSelf: 'flex-start', minHeight: 32, padding: '0 10px', borderRadius: 999, border: '1px dashed rgba(28,34,48,.25)', background: 'transparent', font: "500 12.5px 'Geist'", color: 'rgba(28,34,48,.65)', cursor: 'pointer' }}
+          >
+            {t.lineas.length === 1 ? '1 parada más, sin cambios' : `${t.lineas.length} paradas más, sin cambios`}
+          </button>
+        )
+      )}
+    </>
   )
 }
 

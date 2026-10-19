@@ -296,6 +296,14 @@ export function completarEntrada(sesion: Session): Promise<void> {
         olvidarInvitacionPendiente()
         // Entrar por un enlace o un código de viaje o de pase cuenta como invitación SI con eso se creó una cuenta nueva (lo decide el servidor).
         if (!resultado.error) await registrarInvitado(codigo)
+        // Entra al crear su cuenta: tras recargar, si no tiene nombre, se le pregunta una vez (AjustesHosts).
+        if (!resultado.error) {
+          try {
+            window.sessionStorage.setItem('trazo:pedir-nombre-al-volver', '1')
+          } catch {
+            /* sin almacenamiento: no se pregunta */
+          }
+        }
         if (resultado.error) guardarAvisoDeInvitacion(resultado.error)
         else if (!resultado.yaEstaba) {
           guardarAvisoDeInvitacion('Has entrado en el viaje como invitado.')

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { cuentasActivas } from '../../lib/cuentas'
 import { EVENTO_PAGAR } from '../../lib/pago'
 import { formatShortDateEs } from '../../lib/dateRange'
@@ -11,9 +11,12 @@ import { useSyncStore } from '../../store/useSyncStore'
 import { usePagoStore } from '../../store/usePagoStore'
 import { TextoConPase } from '../cuenta/TextoConPase'
 import { BotonHoja, Hoja } from '../ui/Hoja'
-import { HojaDeCompra } from './HojaDeCompra'
-import { HojaDosViajes } from './HojaDosViajes'
-import { HojaInvitar } from './HojaInvitar'
+
+// Las hojas de comprar, invitar y de los dos viajes se bajan cuando se abren (cuentas 3B, punto 2).
+const HojaDeCompra = lazy(() => import('./HojaDeCompra').then((m) => ({ default: m.HojaDeCompra })))
+const HojaDosViajes = lazy(() => import('./HojaDosViajes').then((m) => ({ default: m.HojaDosViajes })))
+const HojaInvitar = lazy(() => import('./HojaInvitar').then((m) => ({ default: m.HojaInvitar })))
+const enCarga = (hoja: ReactNode) => <Suspense fallback={null}>{hoja}</Suspense>
 
 /**
  * EL ANFITRIÓN DE LAS HOJAS DEL PASE (cuentas parte 3, punto 2). Siempre montado; con las cuentas apagadas no hace nada.
@@ -75,11 +78,11 @@ function PagoHostEncendido() {
     )
   }
   if (!hoja) return null
-  if (hoja.tipo === 'compra') return <HojaDeCompra destino={hoja.destino} tripId={hoja.tripId} onCerrar={cerrar} />
-  if (hoja.tipo === 'invitar') return <HojaInvitar modo={hoja.modo} destino={hoja.destino} tripId={hoja.tripId} pase={hoja.pase} codigoInicial={hoja.codigoInicial} onCerrar={cerrar} />
+  if (hoja.tipo === 'compra') return enCarga(<HojaDeCompra destino={hoja.destino} tripId={hoja.tripId} onCerrar={cerrar} />)
+  if (hoja.tipo === 'invitar') return enCarga(<HojaInvitar modo={hoja.modo} destino={hoja.destino} tripId={hoja.tripId} pase={hoja.pase} codigoInicial={hoja.codigoInicial} onCerrar={cerrar} />)
   if (hoja.tipo === 'volviendo') return <VolviendoDelPago sesion={hoja.sesion} />
   if (hoja.tipo === 'mentira') return <PagoDeMentira sesion={hoja.sesion} />
-  if (hoja.tipo === 'dosViajes') return <HojaDosViajes modo={hoja.modo} destino={hoja.destino} actual={hoja.actual} otro={hoja.otro} etiquetaDia={hoja.etiquetaDia} elegir={dejarUnViaje} onCerrar={cerrar} />
+  if (hoja.tipo === 'dosViajes') return enCarga(<HojaDosViajes modo={hoja.modo} destino={hoja.destino} actual={hoja.actual} otro={hoja.otro} etiquetaDia={hoja.etiquetaDia} elegir={dejarUnViaje} onCerrar={cerrar} />)
   return (
     <Hoja onCerrar={cerrar} etiqueta="Pase individual" titulo={<TextoConPase texto={`Ya tienes tu Pase de ${hoja.pase.destino}`} />} datos="pase-listo" z={92}>
       <BotonHoja tipo="oscuro" onClick={cerrar}>

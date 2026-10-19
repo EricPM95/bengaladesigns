@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { guardarAvisoDeInvitacion, cuentasActivas } from '../../lib/cuentas'
+import { usePedirNombre } from '../../store/usePedirNombre'
 import { aceptarInvitacionPendiente, canjearInvitacion, invitacionAceptada, invitacionPendiente, olvidarInvitacionPendiente, verInvitacion, type VistaDeInvitacion } from '../../lib/invitaciones'
 import { EntrarCuenta } from './EntrarCuenta'
 import { InvitacionRecibida } from './InvitacionRecibida'
@@ -43,6 +44,8 @@ function PuertaEncendida() {
     setAceptada(true)
     if (estado.tipo !== 'cuenta' || !codigo) return // (sin cuenta: la pantalla de entrar; al entrar se canjea sola)
     setOcupado(true)
+    // Sin nombre puesto: «¿Cómo te llamas?», una sola vez, antes de entrar en el viaje.
+    await usePedirNombre.getState().pedir()
     const r = await canjearInvitacion(codigo)
     setOcupado(false)
     if (r.error) {

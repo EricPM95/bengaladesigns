@@ -80,7 +80,8 @@ console.log('Mapas')
 console.log('Etiquetas')
 {
   const ETIQUETA = /Antes del viaje|Durante el viaje|Después del viaje/
-  const dentro = ficheros('src').filter((f) => !/[\\/]dev[\\/]|PanelDePruebas/.test(f)).flatMap((f) =>
+  const dentro = ficheros('src')// La franja pequeña de arriba de la hoja de logros (8C, `etiquetaDeFase`) es la única etiqueta de momento que existe a propósito; el resto de la app no las lleva.
+  .filter((f) => !/[\\/]dev[\\/]|PanelDePruebas|hoja[\\/]textosHoja\.ts$/.test(f)).flatMap((f) =>
     leer(f)
       .split(/\r?\n/)
       .map((linea, i) => ({ f, i: i + 1, linea: linea.trim() }))

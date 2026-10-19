@@ -32,7 +32,7 @@ export function ListaDeAvisos({ avisos, resaltado = null, onTocar, ahora = Date.
             style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12, borderRadius: 16, minHeight: 44, background: sinLeer ? 'oklch(0.8 0.14 70 / .14)' : 'transparent', outline: resaltado === a.id ? '2px solid oklch(0.8 0.14 70)' : 'none', cursor: tocable ? 'pointer' : 'default' }}
           >
             {a.quien ? (
-              <Avatar foto={fotoDe?.(a) ?? null} inicial={(a.quien[0] ?? 'V').toUpperCase()} tam={38} radio={12} fondo={fondoIcono} color={colorIcono} />
+              <Avatar foto={fotoDe?.(a) ?? null} inicial={(a.quien[0] ?? '·').toUpperCase()} tam={38} radio={12} fondo={fondoIcono} color={colorIcono} />
             ) : (
               <span aria-hidden="true" style={{ width: 38, height: 38, flex: 'none', borderRadius: 12, background: fondoIcono, color: colorIcono, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {icono ? <Icono nombre={icono} size={18} /> : '·'}

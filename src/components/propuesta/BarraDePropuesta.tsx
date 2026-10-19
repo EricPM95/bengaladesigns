@@ -1,14 +1,16 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
 import { resolverRecomendacion, vistaPrevia } from '../../lib/aplicarRecomendacion'
-import { cambiosDeLaPropuesta, cambiosDeUnaRecomendacion, textoDeCuantos } from '../../lib/propuesta'
+import { cambiosDeLaPropuesta, cambiosDeUnaRecomendacion, textoDeCuantos, textoEnviarA, textoEsperandoA } from '../../lib/propuesta'
 import { pedirPermisoUnaVez } from '../../lib/permisoAvisos'
 import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { useViajeCompartido } from '../../store/useViajeCompartido'
-import { HojaVerPropuesta } from './HojaVerPropuesta'
+
+// La hoja se baja cuando se abre (cuentas 3B, punto 2).
+const HojaVerPropuesta = lazy(() => import('./HojaVerPropuesta').then((m) => ({ default: m.HojaVerPropuesta })))
 
 const ESTILO_BARRA = { position: 'fixed', left: 12, right: 12, bottom: 'calc(96px + env(safe-area-inset-bottom))', zIndex: 60, margin: '0 auto', maxWidth: 520, borderRadius: 20, background: '#1C2230', color: '#FFFDF8', padding: '10px 10px 10px 16px', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 16px 30px -12px rgba(0,0,0,.6)' } as const
 
@@ -53,7 +55,7 @@ function BarraAbierta() {
             Ver
           </button>
           <button type="button" disabled={enviando} onClick={() => { void pedirPermisoUnaVez(); void enviar() }} style={{ height: 44, padding: '0 13px', borderRadius: 999, border: 'none', background: 'oklch(0.8 0.14 70)', color: '#17120a', font: "700 12.5px 'Geist'", cursor: 'pointer', opacity: enviando ? 0.6 : 1 }}>
-            Enviar a {nombreAdmin}
+            {textoEnviarA(nombreAdmin)}
           </button>
         </>
       )}
@@ -84,7 +86,7 @@ function BarraEnviada() {
         <div data-barra-enviada style={ESTILO_BARRA}>
           <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: '#F3D59A' }}>Tu propuesta</span>
-            <span style={{ font: "500 14px 'Geist'" }}>Enviada · esperando a {nombreAdmin}</span>
+            <span style={{ font: "500 14px 'Geist'" }}>Enviada · {textoEsperandoA(nombreAdmin)}</span>
           </span>
           <button type="button" onClick={() => setAbierta(true)} style={{ height: 44, padding: '0 14px', borderRadius: 999, border: '1px solid rgba(255,253,248,.3)', background: 'transparent', color: 'inherit', font: "600 12.5px 'Geist'", cursor: 'pointer' }}>
             Ver
@@ -92,7 +94,11 @@ function BarraEnviada() {
         </div>,
         document.body,
       )}
-      {abierta && <HojaVerPropuesta cambiosEnviados={cambios} onCerrar={() => setAbierta(false)} />}
+      {abierta && (
+        <Suspense fallback={null}>
+          <HojaVerPropuesta cambiosEnviados={cambios} onCerrar={() => setAbierta(false)} />
+        </Suspense>
+      )}
     </>
   )
 }

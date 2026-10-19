@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { buildAppleMapsUrlFromHere, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
+import { abrirMapaEnOtraPestana, buildAppleMapsUrlFromHere, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { Insignia } from '../dibujos'
 import { IC, ICONO_SITIO } from '../dibujos/iconos'
@@ -32,7 +32,7 @@ export default function ColeccionPorDentro({ pantalla }: { pantalla: PantallaDe<
 /** [Cómo llegar]: abre la ruta andando desde donde estés, en el mapa del propio móvil (el de Apple en iPhone y iPad, el otro en el resto). Sin hoja intermedia: así no sale el nombre de ninguna empresa. */
 function comoLlegar(destino: string): void {
   const esApple = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
-  window.open(esApple ? buildAppleMapsUrlFromHere(destino) : buildGoogleMapsUrlFromHere(destino), '_blank', 'noopener,noreferrer')
+  abrirMapaEnOtraPestana(esApple ? buildAppleMapsUrlFromHere(destino) : buildGoogleMapsUrlFromHere(destino))
 }
 
 function Album({ datos }: { datos: ColeccionDentroDatos }): ReactNode {
