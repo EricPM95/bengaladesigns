@@ -10,6 +10,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { withUndo } from '../../../store/useAddFlowStore'
 import { HojaAbajo } from '../reservas/HojaAbajo'
 import { Icono } from '../../ui/Icono'
+import { clasesBotonBorde } from './piezas'
 
 /**
  * «MÁS PARA TU DÍA» EN HOY (Tanda 7, punto 11; de pago). En los días que salieron en una versión recortada, junto a [Visto] y [No me da tiempo], el botón [+ Más visitas]. No depende de «Vas bien de tiempo»: lo pulsa el viajero.
@@ -45,9 +46,9 @@ export function useMasVisitas(route: Route, day: DayPlan): MasVisita[] {
 }
 
 /** [+ Más visitas]: del aspecto de [No me da tiempo] (borde claro sobre la tarjeta oscura). */
-export function BotonMasVisitas({ onClick }: { onClick: () => void }) {
+export function BotonMasVisitas({ onClick, claro = false }: { onClick: () => void; claro?: boolean }) {
   return (
-    <button type="button" onClick={onClick} data-mas-visitas className="flex h-11 w-full items-center justify-center gap-[7px] rounded-full border-[1.5px] border-[#FFFDF8]/25 text-[14px] font-semibold text-[#FFFDF8]/85 hover:bg-[#FFFDF8]/10">
+    <button type="button" onClick={onClick} data-mas-visitas className={`flex h-11 w-full items-center justify-center gap-[7px] rounded-full text-[14px] font-semibold ${clasesBotonBorde(claro)}`}>
       <Icono nombre="anadir" size={15} grosor={1.8} />
       Más visitas
     </button>

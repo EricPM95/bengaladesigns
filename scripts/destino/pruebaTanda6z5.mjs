@@ -201,7 +201,7 @@ const htmlSaltada = renderToStaticMarkup(createElement(HoyView, { route: rutaSal
 const tSaltada = aTexto(htmlSaltada)
 debe(rutaSaltada.days[0].stops.find((s) => s.id === paradas[0].id).saltada === true, 'B7 saltada', 'setStopSaltada no marca la parada')
 debe(new RegExp(`data-saltada="true"[^]*?line-through[^]*?${paradas[0].name.slice(0, 12).replace(/[()]/g, '.')}`).test(htmlSaltada), 'B7 saltada', 'la parada saltada no sale tachada en la lista de HOY')
-debe(/rgba\(28,34,48,\.4\)/.test(htmlSaltada.slice(htmlSaltada.indexOf('data-saltada="true"'), htmlSaltada.indexOf('data-saltada="true"') + 900)), 'B7 saltada', 'la parada saltada no sale en gris')
+debe(/rgb\(var\(--text\) \/ \.4\)/.test(htmlSaltada.slice(htmlSaltada.indexOf('data-saltada="true"'), htmlSaltada.indexOf('data-saltada="true"') + 900)), 'B7 saltada', 'la parada saltada no sale en gris')
 debe(JSON.stringify(cuenta(tSaltada)) === JSON.stringify([0, paradas.length - 1]), 'B7 cuenta', `con una saltada de ${paradas.length} debería decir «0 de ${paradas.length - 1} visto» y dice «${cuenta(tSaltada)}»`)
 const siguienteTrasSaltar = tSaltada.split('\n').findIndex((l) => /Siguiente parada/.test(l))
 debe(siguienteTrasSaltar >= 0 && tSaltada.split('\n')[siguienteTrasSaltar + 1]?.includes(paradas[1].name.slice(0, 10)) , 'B7 siguiente', `tras saltar la primera, la siguiente debería ser «${paradas[1].name}» (${tSaltada.split('\n').slice(siguienteTrasSaltar, siguienteTrasSaltar + 3).join(' | ')})`)

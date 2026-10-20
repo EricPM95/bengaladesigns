@@ -103,6 +103,30 @@
   color: #14161c;
 }
 
+/* HOY de noche (Tanda 10): las tarjetas que son blancas o marfil «fijas» (los avisos de «cierra hoy a las 18:30», «Cerca de ti», la lista, el aviso de «Saltada»…) pasan a la tarjeta de noche y su letra
+   de tinta, a la letra clara. Lo que va DENTRO de una tarjeta oscura (el botón [Pon tus fechas], por ejemplo) se queda como estaba. */
+.dark [data-hoy] .bg-white,
+.dark [data-hoy] .bg-\[\#FFFDF8\] {
+  background-color: rgb(var(--bg-card));
+}
+.dark [data-hoy] .bg-\[\#F1EADC\],
+.dark [data-hoy] .bg-\[\#F5EFE4\] {
+  background-color: rgb(var(--bg-hover));
+}
+.dark [data-hoy] .text-\[\#1C2230\] {
+  color: rgb(var(--text));
+}
+.dark [data-hoy] .text-\[\#1C2230\]\/80 {
+  color: rgb(var(--text) / 0.8);
+}
+.dark [data-hoy] .bg-\[\#1C2230\] .bg-\[\#FFFDF8\] {
+  background-color: #fffdf8;
+}
+.dark [data-hoy] .bg-\[\#1C2230\] .bg-\[\#FFFDF8\] .text-\[\#1C2230\],
+.dark [data-hoy] .bg-\[\#1C2230\] .bg-\[\#FFFDF8\].text-\[\#1C2230\] {
+  color: #1c2230;
+}
+
 /* Los títulos van en Instrument Serif, que solo tiene un peso: sin negrita inventada por el navegador. */
 .font-display {
   font-weight: 400 !important;

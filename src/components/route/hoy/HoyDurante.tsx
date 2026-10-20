@@ -17,7 +17,7 @@ import { BotonFoto } from '../fotos/BotonFoto'
 import { TusFotosDeHoy } from '../fotos/TusFotosDeHoy'
 import { RainAlert } from '../today/RainAlert'
 import { TodayExcursion } from '../today/TodayExcursion'
-import { AZUL, ojoMono, TINTA, VERDE } from './piezas'
+import { AZUL, botonOro, fondoPastilla, ojoMono, SOMBRA_TARJETA_CLARA, SOMBRA_TARJETA_OSCURA, useClaro, VERDE } from './piezas'
 import { useHorarioDeParadas, type HorarioDeParada } from '../../../lib/horarioDeParada'
 import { AvisoEntradaReservada, AvisoSaltada, BotonNoMeDaTiempo, HojaPasarAOtroDia } from './saltar'
 import { Escuchar } from './Escuchar'
@@ -65,10 +65,10 @@ function MapaHastaLaParada({ desde, hasta }: { desde: Coordinates | null; hasta:
 }
 
 /** «Historia» (Tanda 6y5), al lado de «Escuchar» en la siguiente parada: lee la historia del sitio. Solo sale si la ficha del sitio tiene historia; sin ella, nada. */
-export function HistoriaDeParada({ destino, nombre, clave }: { destino: string; nombre: string; clave: string }) {
+export function HistoriaDeParada({ destino, nombre, clave, claro = false }: { destino: string; nombre: string; clave: string; claro?: boolean }) {
   const ficha = useFichaDeSitio(destino, nombre)
   if (accesoHistoria(ficha) === 'ninguno') return null
-  return <Escuchar oscuro etiqueta="Historia" texto={textoHistoria(ficha)} clave={`${clave}:historia`} sitio={{ destino, nombre }} />
+  return <Escuchar oscuro={!claro} etiqueta="Historia" texto={textoHistoria(ficha)} clave={`${clave}:historia`} sitio={{ destino, nombre }} />
 }
 
 /**
@@ -78,6 +78,7 @@ export function HistoriaDeParada({ destino, nombre, clave }: { destino: string; 
 export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan; dateIso: string }) {
   const reservations = useRouteStore((state) => state.reservations)
   const setStopVisto = useRouteStore((state) => state.setStopVisto)
+  const claro = useClaro()
   const setStopSaltada = useRouteStore((state) => state.setStopSaltada)
   const info = useDestinationExcursions(route.destination)
   const horarioDe = useHorarioDeParadas(day.city, dateIso)
@@ -233,60 +234,60 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       {/* El día de vuelta sin paradas: la tarjeta «Hoy vuelves a casa» en lugar de «Siguiente parada». */}
       {tarjetaDeVueltaEnLugarDeLaSiguiente && <TarjetaHoyVuelves tarjeta={tarjetaDeVueltaEnLugarDeLaSiguiente} onVerComoIr={() => fichas.abrir('vuelta')} onExplorarMonumentos={() => explorarMonumentos(tarjetaDeVueltaEnLugarDeLaSiguiente.explorar.cerca_de_mi)} />}
       {!sinParadasDeVuelta && (
-      <div className="flex flex-none flex-col gap-3 rounded-[28px] bg-[#1C2230] px-2 pb-3.5 pt-2 text-[#FFFDF8]" style={{ boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
+      <div className={`flex flex-none flex-col gap-3 rounded-[28px] px-2 pb-3.5 pt-2 ${claro ? 'bg-[#FFFDF8] text-[#1C2230]' : 'bg-[#1C2230] text-[#FFFDF8]'}`} style={{ boxShadow: claro ? SOMBRA_TARJETA_CLARA : SOMBRA_TARJETA_OSCURA }} data-hoy-siguiente data-tarjeta={claro ? 'clara' : 'oscura'}>
         {siguiente && hasRealCoordinates(siguiente.coordinates) ? <MapaHastaLaParada desde={origen} hasta={siguiente.coordinates} /> : <div className="h-[118px] rounded-[21px] bg-[#2A3141]" aria-hidden="true" />}
         {siguiente ? (
           <>
             <div className="flex flex-col gap-1.5 px-2">
-              <span style={{ ...ojoMono, color: '#E9C77A' }}>Siguiente parada · {numeros.get(siguiente.id)}</span>
+              <span style={{ ...ojoMono, color: claro ? '#8B6620' : '#E9C77A' }}>Siguiente parada · {numeros.get(siguiente.id)}</span>
               <span style={{ font: "400 34px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(siguiente.name)}</span>
-              <LineaDeHorario horario={horarioDe(siguiente)} oscuro cerradoEsteDia={Boolean(siguiente.closedThisDay)} />
-              <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} oscuro className="self-start" />
+              <LineaDeHorario horario={horarioDe(siguiente)} oscuro={!claro} cerradoEsteDia={Boolean(siguiente.closedThisDay)} />
+              <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} oscuro={!claro} className="self-start" />
               <div className="flex items-center gap-2">
-                <span className="min-w-0 flex-1 text-[13px] leading-[1.4] text-[#FFFDF8]/75">
+                <span className={`min-w-0 flex-1 text-[13px] leading-[1.4] ${claro ? 'text-[#1C2230]/65' : 'text-[#FFFDF8]/75'}`}>
                   {minutos !== null ? `${minutos} min andando${!ubicacion && anterior ? ` · desde ${displayStopName(anterior.name)}` : ''}` : ubicacionEstado === 'no' ? 'No hemos podido ver tu ubicación.' : 'Toca «Ubicación» para ver cuánto falta.'}
                 </span>
                 <button
                   type="button"
                   onClick={pedirUbicacion}
                   disabled={ubicacionEstado === 'pidiendo'}
-                  className="flex h-8 flex-none items-center gap-1.5 rounded-full px-2.5 text-[12px] font-semibold text-[#FFFDF8] disabled:opacity-60"
-                  style={{ background: 'rgba(255,253,248,.12)' }}
+                  className={`flex h-8 flex-none items-center gap-1.5 rounded-full px-2.5 text-[12px] font-semibold disabled:opacity-60 ${claro ? 'text-[#1C2230]' : 'text-[#FFFDF8]'}`}
+                  style={{ background: fondoPastilla(claro) }}
                 >
                   <Icono nombre="ubicacion" size={14} />
                   {ubicacionEstado === 'pidiendo' ? 'Buscando…' : ubicacion ? 'Actualizar' : 'Ubicación'}
                 </button>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <Escuchar oscuro texto={textoResumenDeParada(siguiente)} clave={siguiente.id} />
-                <HistoriaDeParada destino={route.destination} nombre={siguiente.name} clave={siguiente.id} />
+                <Escuchar oscuro={!claro} texto={textoResumenDeParada(siguiente)} clave={siguiente.id} />
+                <HistoriaDeParada destino={route.destination} nombre={siguiente.name} clave={siguiente.id} claro={claro} />
               </div>
             </div>
             {confirmarReservada && horaReservada ? (
-              <AvisoEntradaReservada hora={horaReservada} onSaltarIgual={() => saltar(siguiente)} onCancelar={() => setConfirmarReservada(false)} />
+              <AvisoEntradaReservada claro={claro} hora={horaReservada} onSaltarIgual={() => saltar(siguiente)} onCancelar={() => setConfirmarReservada(false)} />
             ) : (
             <div className="flex flex-col gap-2 px-1.5 pt-0.5">
             <div className="grid gap-2" style={{ gridTemplateColumns: '1.25fr 1fr' }}>
               {comoLlegar ? (
-                <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-12 items-center justify-center gap-[7px] rounded-full bg-[#FFFDF8] text-[14px] font-semibold text-[#1C2230] no-underline">
+                <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-12 items-center justify-center gap-[7px] rounded-full text-[14px] font-bold no-underline" style={botonOro(claro)}>
                   <Icono nombre="explorar" size={16} grosor={1.8} />
                   Cómo llegar
                 </a>
               ) : (
-                <span className="flex h-12 items-center justify-center rounded-full bg-[#FFFDF8]/30 text-[14px] font-semibold text-[#1C2230]/60">Cómo llegar</span>
+                <span className={`flex h-12 items-center justify-center rounded-full text-[14px] font-semibold ${claro ? 'bg-[#1C2230]/8 text-[#1C2230]/45' : 'bg-[#FFFDF8]/30 text-[#1C2230]/60'}`}>Cómo llegar</span>
               )}
-              <button type="button" onClick={marcarVisto} data-boton-visto className="flex h-12 items-center justify-center gap-[7px] rounded-full border-[1.5px] border-[#FFFDF8]/40 text-[14px] font-semibold text-[#FFFDF8] hover:bg-[#FFFDF8]/10">
+              <button type="button" onClick={marcarVisto} data-boton-visto className={`flex h-12 items-center justify-center gap-[7px] rounded-full text-[14px] font-semibold ${claro ? 'text-white' : 'border-[1.5px] border-[#FFFDF8]/40 text-[#FFFDF8] hover:bg-[#FFFDF8]/10'}`} style={claro ? { background: VERDE } : undefined}>
                 <Icono nombre="hecho" size={15} grosor={2.4} />
                 Visto
               </button>
             </div>
             {masVisitas.length > 0 ? (
               <div className="grid grid-cols-2 gap-2">
-                <BotonNoMeDaTiempo onClick={pulsarNoMeDaTiempo} />
-                <BotonMasVisitas onClick={() => setHojaMasVisitas(true)} />
+                <BotonNoMeDaTiempo claro={claro} onClick={pulsarNoMeDaTiempo} />
+                <BotonMasVisitas claro={claro} onClick={() => setHojaMasVisitas(true)} />
               </div>
             ) : (
-              <BotonNoMeDaTiempo onClick={pulsarNoMeDaTiempo} />
+              <BotonNoMeDaTiempo claro={claro} onClick={pulsarNoMeDaTiempo} />
             )}
             </div>
             )}
@@ -295,10 +296,10 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
           <>
             <div className="flex items-center gap-3 px-2">
               <span className="flex-1" style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>
-                {paradas.some((stop) => stop.saltada) ? 'Es todo' : 'Todo visto'} <em style={{ color: 'oklch(0.78 0.11 150)' }}>por hoy</em>
+                {paradas.some((stop) => stop.saltada) ? 'Es todo' : 'Todo visto'} <em style={{ color: claro ? VERDE : 'oklch(0.78 0.11 150)' }}>por hoy</em>
               </span>
               {ultimoVisto && (
-                <button type="button" onClick={deshacer} className="flex h-11 items-center gap-1.5 rounded-full border-[1.5px] border-[#FFFDF8]/40 px-3.5 text-[13px] font-semibold text-[#FFFDF8]">
+                <button type="button" onClick={deshacer} className={`flex h-11 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold ${claro ? 'border-[1.5px] border-[#1C2230]/30 text-[#1C2230]' : 'border-[1.5px] border-[#FFFDF8]/40 text-[#FFFDF8]'}`}>
                   <Icono nombre="recuperar" size={15} grosor={1.8} />
                   Deshacer
                 </button>
@@ -306,7 +307,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
             </div>
             {masVisitas.length > 0 && (
               <div className="px-1.5">
-                <BotonMasVisitas onClick={() => setHojaMasVisitas(true)} />
+                <BotonMasVisitas claro={claro} onClick={() => setHojaMasVisitas(true)} />
               </div>
             )}
           </>
@@ -372,12 +373,12 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
               <div key={stop.id} data-saltada={saltada ? 'true' : undefined} className="flex min-h-[50px] items-center gap-3" style={{ borderBottom: indice < paradas.length - 1 ? '1px solid rgba(28,34,48,.07)' : 'none' }}>
                 <span
                   className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full transition-colors"
-                  style={{ background: vista ? VERDE : ahora ? 'rgb(var(--accent))' : 'transparent', border: `1.5px solid ${vista ? VERDE : ahora ? 'rgb(var(--accent))' : saltada ? 'rgba(28,34,48,.15)' : 'rgba(28,34,48,.25)'}`, color: vista || ahora ? '#fff' : saltada ? 'rgba(28,34,48,.4)' : TINTA, font: "400 15px/1 'Instrument Serif',serif" }}
+                  style={{ background: vista ? VERDE : ahora ? 'rgb(var(--accent))' : 'transparent', border: `1.5px solid ${vista ? VERDE : ahora ? 'rgb(var(--accent))' : saltada ? 'rgb(var(--text) / .15)' : 'rgb(var(--text) / .25)'}`, color: vista || ahora ? '#fff' : saltada ? 'rgb(var(--text) / .4)' : 'rgb(var(--text))', font: "400 15px/1 'Instrument Serif',serif" }}
                 >
                   {vista ? '✓' : numeros.get(stop.id)}
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className={saltada ? 'line-through' : undefined} style={{ font: ahora ? "400 18px/1.15 'Instrument Serif',serif" : "400 14px/1.3 'Geist'", color: saltada ? 'rgba(28,34,48,.4)' : vista ? 'oklch(0.42 0.09 150)' : TINTA, textWrap: 'balance' as never }}>
+                  <span className={saltada ? 'line-through' : undefined} style={{ font: ahora ? "400 18px/1.15 'Instrument Serif',serif" : "400 14px/1.3 'Geist'", color: saltada ? 'rgb(var(--text) / .4)' : vista ? 'rgb(var(--accent-green))' : 'rgb(var(--text))', textWrap: 'balance' as never }}>
                     {displayStopName(stop.name)}
                   </span>
                   {saltada ? <span className="text-[11px] leading-[1.3] text-text/40">Saltada</span> : <LineaDeHorario horario={horarioDe(stop)} cerradoEsteDia={Boolean(stop.closedThisDay)} />}

@@ -1,6 +1,7 @@
 import { Icono } from '../../ui/Icono'
 import { PickerSheet } from '../../ui/PickerSheet'
 import { ListaDeDias } from '../dayDetail/ListaDeDias'
+import { botonOro, clasesBotonBorde } from './piezas'
 
 /**
  * «No me da tiempo» en HOY (Tanda 6z5, solo de pago, durante el viaje): las tres piezas que lo rodean. El botón vive en la tarjeta oscura de
@@ -9,9 +10,9 @@ import { ListaDeDias } from '../dayDetail/ListaDeDias'
  */
 
 /** El botón de la tarjeta oscura, con el aspecto de [✓ Visto] pero de ancho entero (debajo de los otros dos, para que quepa a 375 px). */
-export function BotonNoMeDaTiempo({ onClick }: { onClick: () => void }) {
+export function BotonNoMeDaTiempo({ onClick, claro = false }: { onClick: () => void; claro?: boolean }) {
   return (
-    <button type="button" onClick={onClick} className="flex h-11 w-full items-center justify-center gap-[7px] rounded-full border-[1.5px] border-[#FFFDF8]/25 text-[14px] font-semibold text-[#FFFDF8]/85 hover:bg-[#FFFDF8]/10">
+    <button type="button" onClick={onClick} className={`flex h-11 w-full items-center justify-center gap-[7px] rounded-full text-[14px] font-semibold ${clasesBotonBorde(claro)}`}>
       <Icono nombre="reloj" size={15} grosor={1.8} />
       No me da tiempo
     </button>
@@ -19,15 +20,15 @@ export function BotonNoMeDaTiempo({ onClick }: { onClick: () => void }) {
 }
 
 /** Dentro de la tarjeta oscura, en lugar de los botones: la parada tiene la entrada reservada, así que antes de saltarla se pregunta. */
-export function AvisoEntradaReservada({ hora, onSaltarIgual, onCancelar }: { hora: string; onSaltarIgual: () => void; onCancelar: () => void }) {
+export function AvisoEntradaReservada({ hora, onSaltarIgual, onCancelar, claro = false }: { hora: string; onSaltarIgual: () => void; onCancelar: () => void; claro?: boolean }) {
   return (
     <div className="flex flex-col gap-2.5 px-2 pt-0.5" role="alert">
-      <span className="text-[14px] font-medium leading-[1.35] text-[#FFFDF8]">Tienes la entrada reservada a las {hora}</span>
+      <span className={`text-[14px] font-medium leading-[1.35] ${claro ? 'text-[#1C2230]' : 'text-[#FFFDF8]'}`}>Tienes la entrada reservada a las {hora}</span>
       <div className="grid grid-cols-2 gap-2">
-        <button type="button" onClick={onCancelar} className="flex h-12 items-center justify-center rounded-full bg-[#FFFDF8] text-[14px] font-semibold text-[#1C2230]">
+        <button type="button" onClick={onCancelar} className={`flex h-12 items-center justify-center rounded-full text-[14px] font-semibold ${claro ? '' : 'bg-[#FFFDF8] text-[#1C2230]'}`} style={claro ? botonOro(true) : undefined}>
           Cancelar
         </button>
-        <button type="button" onClick={onSaltarIgual} className="flex h-12 items-center justify-center rounded-full border-[1.5px] border-[#FFFDF8]/40 text-[14px] font-semibold text-[#FFFDF8] hover:bg-[#FFFDF8]/10">
+        <button type="button" onClick={onSaltarIgual} className={`flex h-12 items-center justify-center rounded-full text-[14px] font-semibold ${clasesBotonBorde(claro)}`}>
           Saltar igual
         </button>
       </div>

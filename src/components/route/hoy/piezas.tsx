@@ -1,12 +1,32 @@
 import type { ReactNode } from 'react'
 import { Icono } from '../../ui/Icono'
 import type { NombreIcono } from '../../../lib/iconos'
+import { useRouteStore } from '../../../store/useRouteStore'
 
 /** Los colores de HOY (diseño «Hoy, según el momento»): tinta, frambuesa (falta), verde (hecho) y azul (el tiempo). */
 export const TINTA = '#1C2230'
 export const FRAMBUESA = 'rgb(var(--frambuesa))'
 export const VERDE = 'oklch(0.55 0.11 150)'
 export const AZUL = 'oklch(0.56 0.1 230)'
+
+/**
+ * LA TARJETA DE LA SIGUIENTE PARADA (Tanda 10, Marca JUTRIP 02 · 09 «HOY en modo claro»): de día, clara (tarjeta #FFFDF8, filo de oro, letra de tinta, [Visto] en verde y [Cómo llegar] en oro);
+ * de noche, la oscura de siempre con el oro pálido. `useClaro()` dice cuál toca; solo cambian los colores y el aspecto, no lo que hace cada botón.
+ */
+export function useClaro(): boolean {
+  return !useRouteStore((state) => state.darkMode)
+}
+export const SOMBRA_TARJETA_CLARA = '0 14px 28px -16px rgba(28,34,48,.45),inset 0 0 0 1px rgba(142,104,32,.22)'
+export const SOMBRA_TARJETA_OSCURA = '0 18px 30px -18px rgba(28,34,48,.7)'
+/** [Cómo llegar]: de día, el degradado de marfil con letra de oro profundo; de noche, el oro pálido con letra de tinta. */
+export const botonOro = (claro: boolean) =>
+  claro
+    ? { background: 'linear-gradient(180deg,#FBF3E2 0%,#EBD9AE 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.8),0 8px 14px -8px rgba(110,80,24,.45)', color: '#6E5018' }
+    : { background: '#E9C77A', color: '#14161C' }
+/** Los botones de borde (No me da tiempo, Más visitas, Sobre este lugar…): de día, filo de tinta; de noche, filo claro. */
+export const clasesBotonBorde = (claro: boolean) => (claro ? 'border-[1.5px] border-[#1C2230]/30 text-[#1C2230] hover:bg-[#1C2230]/5' : 'border-[1.5px] border-[#FFFDF8]/30 text-[#FFFDF8]/90 hover:bg-[#FFFDF8]/10')
+/** Las pastillas pequeñas de la tarjeta (Ubicación, duración): de día, un velo de oro; de noche, el velo claro de siempre. */
+export const fondoPastilla = (claro: boolean) => (claro ? 'rgba(142,104,32,.1)' : 'rgba(255,253,248,.12)')
 
 export const ojoMono = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase' as const }
 

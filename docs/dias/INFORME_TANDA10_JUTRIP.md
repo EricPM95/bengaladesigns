@@ -142,3 +142,28 @@ Solo en lo permitido (la prueba lo comprueba archivo por archivo):
 5. **La barra de abajo** de día y de noche.
 6. **Los dos emblemas** (lo más fácil, con el modo de pruebas de logros): Plaza de España y Castillo de Sant'Angelo.
 7. **Visto y no tocado (ya venía así):** en modo noche, algunas tarjetas de RESERVAS y de EXPLORAR llevan fondo marfil fijo con letra clara y casi no se leen. Es de antes de esta tanda; si quieres, lo arreglo en otra.
+
+## 9. Dos arreglos de HOY (después de la tanda)
+
+No he tocado el motor.
+
+**1. La tarjeta de la siguiente parada, en claro** (Marca JUTRIP → 02 · 09)
+- **De día:** tarjeta clara (`#FFFDF8`) con filo de oro, letra de tinta, **[Visto] en verde**, **[Cómo llegar] en oro** (degradado de marfil con letra de oro profundo) y los demás botones (No me da tiempo, Sobre este lugar, Más visitas…) con filo de tinta. **De noche:** la tarjeta oscura de siempre con el oro pálido (el «Siguiente parada» y [Cómo llegar] en `#E9C77A`).
+- Solo colores y aspecto: cada botón hace lo mismo que antes. Está en las dos versiones de HOY: la de ahora (la tarjeta lleva el mapa pequeño arriba) y la nueva (`VITE_HOY_V2`, con la foto arriba como en Design). En la de ahora no he puesto foto (no hay en esa tarjeta): lleva el mapa, como hoy.
+- Dónde está: `useClaro()` y los estilos de la tarjeta en `src/components/route/hoy/piezas.tsx`; la tarjeta en `HoyDurante.tsx` y `v2/HoyDuranteV2.tsx`; los botones sueltos en `saltar.tsx` y `masVisitas.tsx`. La tarjeta lleva `data-tarjeta="clara"|"oscura"`.
+
+**2. Modo noche en HOY**
+- Los avisos («… cierra hoy a las 18:30»), «Cerca de ti», la lista de paradas y el aviso de «Saltada» eran tarjetas blancas fijas con letra de tinta (o clara): ahora, de noche, son tarjetas de noche con letra clara (reglas en `src/index.css` bajo `.dark [data-hoy]`, más la letra de la lista y la etiqueta «HOY · SÁB 17 · 0 de 14 visto», que iban con colores fijos).
+- La prueba nueva mira, en el navegador, el fondo de la tarjeta y de los avisos de día y de noche.
+
+**Repaso de noche en todas las pantallas** (capturas en `docs/dias/capturas_jutrip/interior_*_noche.jpg` y `hoy_*_noche*.jpg`). Pasa también en estos sitios; **no los he tocado** (me pedías que te dijera dónde):
+1. **RESERVAS**: las tarjetas «Llegada y vuelta», «Alojamiento» y «Entradas y Free Tour» y «0 de 3 listo» son marfil fijo con el título casi invisible (letra clara sobre marfil).
+2. **EXPLORAR**: las seis tarjetas (Atracciones, Miradores, Restaurantes, Entradas, Excursiones, Baños) llevan fondo marfil con el nombre en letra clara: no se lee el nombre.
+3. **DÍAS**: «Añade alojamiento en Roma» y la tarjeta azul de «Llegada · desde Madrid» (el texto «Añade tu vuelo…») se leen mal.
+4. **La ficha de una parada** (la hoja que se abre al tocar una parada) sale siempre en claro, también de noche (no sigue el modo noche). Se lee bien, pero no es de noche.
+5. Los escaparates de logros y de Pase (`interior_Logros_*`, `interior_Pase_*`) salen siempre en claro en las capturas porque se montan fuera de la app; en la app de verdad no las he podido mirar de noche con estos datos de prueba.
+- Bien de noche: HOY (los dos), RUTA, la lista de DÍAS y la barra de abajo.
+
+Si quieres, lo siguiente es arreglar 1, 2 y 3 con la misma idea (tarjeta de noche con letra clara) y llevar la ficha de la parada al modo noche.
+
+**Pruebas de este apartado:** `pruebaJutrip` 118 comprobaciones, 0 fallos (10 nuevas de HOY). Batería rápida: 76 pruebas en 0 fallos; `pruebaFase6y5_motor` por procesos, 143.647 comprobaciones, 0 fallos. Dos pruebas viejas miraban el código de HOY y las he actualizado a propósito: `pruebaFase6y7_historias` (el botón «Escuchar» de HOY ahora lleva `oscuro={!claro}`, es decir, claro o oscuro según el modo) y `pruebaTanda6z5` (la parada saltada sale en gris con la letra del tema, `rgb(var(--text) / .4)`, y no con el gris fijo). Capturas de HOY (v1 y v2, de día y de noche, y la parte de abajo) en `docs/dias/capturas_jutrip/hoy_*.jpg`.

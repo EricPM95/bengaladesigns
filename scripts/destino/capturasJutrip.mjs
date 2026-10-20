@@ -178,6 +178,9 @@ if (quiero('interior')) {
     }
     await modo('today')
     await app.captura(png(`interior_HOY_${sufijo}`))
+    await modo('route')
+    await app.esp(2500)
+    await app.captura(png(`interior_RUTA_${sufijo}`))
     await modo('days')
     await app.captura(png(`interior_DIAS_cerrado_${sufijo}`))
     await app.evaluar(`${store}.then((s) => { s.setActiveDayId(s.route.days[0].id); return true })`)
@@ -202,6 +205,32 @@ if (quiero('interior')) {
       await app.esp(500)
     }
     app.cerrar()
+  }
+}
+
+if (quiero('hoy')) {
+  // HOY de día y de noche (la tarjeta de la siguiente parada, los avisos de «cierra hoy» y «Cerca de ti»), con el HOY de ahora (v1) y el nuevo (v2).
+  for (const v2 of [false, true]) {
+    for (const noche of [false, true]) {
+      const nombre = `hoy_${v2 ? 'v2' : 'v1'}_${noche ? 'noche' : 'dia'}`
+      console.log('· ' + nombre)
+      const app = await abrirApp('http://localhost:5173', { ruta: `/?cuentas=on&logros=on&logrosDemo=1&hoy2=${v2 ? 'on' : 'off'}` })
+      await esperarApp(app)
+      for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
+      await app.evaluar('window.__rutaPrueba().then(() => true)')
+      await app.esp(6000)
+      await cerrarAvisos(app)
+      const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
+      if (noche) await app.evaluar(`${store}.then((s) => { if (!s.darkMode) s.toggleDarkMode(); return true })`)
+      await app.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('today'); return true })`)
+      await app.esp(3500)
+      await cerrarAvisos(app)
+      await app.captura(png(nombre))
+      await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = 520; return true })()")
+      await app.esp(800)
+      await app.captura(png(nombre + '_abajo'))
+      app.cerrar()
+    }
   }
 }
 console.log('listo')

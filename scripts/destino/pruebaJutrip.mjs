@@ -447,6 +447,42 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
   debe(/bg-\[#1C2230\]/.test(barra) && /bg-\[#FBF3E2\] text-\[#8E6820\]/.test(barra) && /dark:bg-\[#1E222C\]/.test(barra) && /dark:bg-\[#E9C77A\] dark:text-\[#14161C\]/.test(barra), 'barra', 'la barra de abajo es la A de Marca JUTRIP 03 (tinta, pestaña de marfil) y, de noche, la C (oro pálido)')
 }
 
+// HOY (arreglos de después): la tarjeta de la siguiente parada, clara de día y oscura de noche, con [Visto] en verde y [Cómo llegar] en oro; y de noche las tarjetas de avisos y «Cerca de ti» ya no son blancas.
+{
+  const piezas = leer('src/components/route/hoy/piezas.tsx')
+  debe(/export function useClaro/.test(piezas) && /#FBF3E2 0%,#EBD9AE 100%/.test(piezas) && /background: '#E9C77A', color: '#14161C'/.test(piezas), 'hoy', 'la tarjeta de HOY: [Cómo llegar] en el oro de marfil de día y en oro pálido con letra de tinta de noche')
+  for (const f of ['src/components/route/hoy/HoyDurante.tsx', 'src/components/route/hoy/v2/HoyDuranteV2.tsx']) {
+    const t = leer(f)
+    debe(/claro \? 'bg-\[#FFFDF8\] text-\[#1C2230\]' : 'bg-\[#1C2230\] text-\[#FFFDF8\]'/.test(t) && /data-tarjeta=\{claro/.test(t), 'hoy', `${f}: la tarjeta de la siguiente parada es clara de día y oscura de noche`)
+    debe(/botonOro\(claro\)/.test(t) && /data-boton-visto/.test(t), 'hoy', `${f}: [Cómo llegar] en oro y [Visto] sigue en su sitio, con lo mismo que hace`)
+  }
+  const css = leer('src/index.css')
+  debe(/\.dark \[data-hoy\] \.bg-white/.test(css) && css.includes('.dark [data-hoy] .bg-\\[\\#FFFDF8\\]'), 'hoy', 'de noche, las tarjetas blancas de HOY pasan a la tarjeta de noche (avisos de «cierra hoy» y «Cerca de ti»)')
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1&hoy2=off' })
+  for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
+  for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
+  await app.evaluar('window.__rutaPrueba().then(() => true)')
+  await app.esp(6000)
+  for (let i = 0; i < 4; i++) {
+    const cerrado = await app.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Entendido|Vale)$/.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()")
+    if (!cerrado) break
+    await app.esp(600)
+  }
+  const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
+  const mira = async (noche) => {
+    await app.evaluar(`${store}.then((s) => { if (s.darkMode !== ${noche}) s.toggleDarkMode(); s.setActiveDayId(null); s.setMode('today'); return true })`)
+    await app.esp(2500)
+    return app.evaluar("(() => { const t = document.querySelector('[data-hoy-siguiente]'); const c = document.querySelector('[data-avisos-de-cierre]'); const v = document.querySelector('[data-boton-visto]'); return { tarjeta: t?.getAttribute('data-tarjeta'), fondoTarjeta: t ? getComputedStyle(t).backgroundColor : null, fondoAvisos: c ? getComputedStyle(c).backgroundColor : null, letraAvisos: c ? getComputedStyle(c.querySelector('p')).color : null, visto: v ? getComputedStyle(v).backgroundColor : null } })()")
+  }
+  const dia = await mira(false)
+  debe(dia.tarjeta === 'clara' && dia.fondoTarjeta === 'rgb(255, 253, 248)', 'hoy', `de día la tarjeta de la siguiente parada es clara (${dia.fondoTarjeta})`)
+  debe(Boolean(dia.visto) && dia.visto !== 'rgba(0, 0, 0, 0)', 'hoy', `y [Visto] va en verde (${dia.visto})`)
+  const noche = await mira(true)
+  debe(noche.tarjeta === 'oscura' && noche.fondoTarjeta === 'rgb(28, 34, 48)', 'hoy', `de noche, la tarjeta oscura (${noche.fondoTarjeta})`)
+  debe(noche.fondoAvisos !== 'rgb(255, 255, 255)' && noche.fondoAvisos !== 'rgb(255, 253, 248)', 'hoy', `de noche, la tarjeta de los avisos «cierra hoy» no es blanca (${noche.fondoAvisos}, letra ${noche.letraAvisos})`)
+  app.cerrar()
+}
+
 console.log(`\nPrueba de JUTRIP: ${comprobaciones} comprobaciones · ${fallos.length} fallos`)
 for (const f of fallos) console.log(`  ✗ [${f.regla}] ${f.texto}`)
 process.exit(fallos.length ? 1 : 0)
