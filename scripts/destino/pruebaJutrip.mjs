@@ -457,7 +457,9 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
     debe(/botonOro\(claro\)/.test(t) && /data-boton-visto/.test(t), 'hoy', `${f}: [Cómo llegar] en oro y [Visto] sigue en su sitio, con lo mismo que hace`)
   }
   const css = leer('src/index.css')
-  debe(/\.dark \[data-hoy\] \.bg-white/.test(css) && css.includes('.dark [data-hoy] .bg-\\[\\#FFFDF8\\]'), 'hoy', 'de noche, las tarjetas blancas de HOY pasan a la tarjeta de noche (avisos de «cierra hoy» y «Cerca de ti»)')
+  debe(/\.dark \.bg-white/.test(css) && css.includes('.dark .bg-\\[\\#FFFDF8\\]'), 'noche', 'de noche, las tarjetas blancas fijas (HOY, RESERVAS, EXPLORAR, DÍAS…) pasan a la tarjeta de noche')
+  debe(css.includes('--fondo-llegada') && leer('src/components/route/dayDetail/StopDetailSheet.tsx').includes("noche ? ' dark' : ''"), 'noche', 'de noche, la barra de llegada y la ficha de la parada siguen el modo noche')
+  debe(leer('src/components/route/ExplorePanel.tsx').includes('bg-bg-card p-0'), 'noche', 'de noche, las tarjetas de EXPLORAR son tarjetas de noche')
   const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1&hoy2=off' })
   for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
   for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)

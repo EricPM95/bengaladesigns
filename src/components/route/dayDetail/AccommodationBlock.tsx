@@ -45,7 +45,7 @@ export function AccommodationBlock({ city, segmentDayId, totalNights }: Accommod
       </span>
       <span
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[16px] font-medium leading-none"
-        style={{ background: hecho ? VERDE : '#F1EADC', color: hecho ? '#fff' : 'rgb(var(--accent-hover))' }}
+        style={{ background: hecho ? VERDE : 'rgb(var(--bg-hover))', color: hecho ? '#fff' : 'rgb(var(--accent-hover))' }}
       >
         {hecho ? '✓' : '+'}
       </span>

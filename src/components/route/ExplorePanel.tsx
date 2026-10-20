@@ -74,7 +74,7 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick }: { id: Expl
   const inner = (
     <>
       <span aria-hidden="true" className="absolute bottom-0 right-0 top-0" style={{ width: '58%', clipPath: diagonal, background }} />
-      <span aria-hidden="true" className="absolute bottom-0 right-0 top-0" style={{ width: '58%', clipPath: diagonal, background: 'linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,0) 45%)' }} />
+      <span aria-hidden="true" className="absolute bottom-0 right-0 top-0" style={{ width: '58%', clipPath: diagonal, background: 'linear-gradient(90deg,rgb(var(--bg-card) / .55),rgb(var(--bg-card) / 0) 45%)' }} />
       <span
         aria-hidden="true"
         className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center text-white"
@@ -83,13 +83,13 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick }: { id: Expl
         <Icono nombre={EXPLORE_ICONOS[style.icon]} size={19} />
       </span>
       <span className="absolute bottom-3 left-3 right-3 flex flex-col gap-[3px]">
-        <span className="font-display text-text" style={{ fontSize: 21, lineHeight: 1, textShadow: '0 0 12px #fff,0 0 4px #fff' }}>
+        <span className="font-display text-text" style={{ fontSize: 21, lineHeight: 1, textShadow: '0 0 12px rgb(var(--bg-card)),0 0 4px rgb(var(--bg-card))' }}>
           {label}
         </span>
         {sub && (
           <span
             className="self-start rounded-md bg-bg-card py-0.5 pl-0 pr-1.5"
-            style={{ font: "500 11px 'Geist Mono',monospace", color: 'rgba(28,34,48,.65)' }}
+            style={{ font: "500 11px 'Geist Mono',monospace", color: 'rgb(var(--text) / .65)' }}
           >
             {sub}
           </span>
@@ -97,7 +97,7 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick }: { id: Expl
       </span>
     </>
   )
-  const className = `${wide ? 'col-span-2 ' : ''}relative block h-[132px] overflow-hidden rounded-[20px] border border-text/[0.08] bg-white p-0 text-left text-text transition-transform active:scale-[.98]`
+  const className = `${wide ? 'col-span-2 ' : ''}relative block h-[132px] overflow-hidden rounded-[20px] border border-text/[0.08] bg-bg-card p-0 text-left text-text transition-transform active:scale-[.98]`
   const cardStyle = { boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)', animation: `explore-pop .45s cubic-bezier(.2,.8,.2,1) ${delay}ms both` } as const
   return (
     <button type="button" onClick={onClick} className={className} style={cardStyle}>

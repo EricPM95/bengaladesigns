@@ -58,7 +58,7 @@ export function ArrivalReturnBar({ mode, text, onOpen, onAdd }: ArrivalReturnBar
       className="relative flex h-[60px] w-full cursor-pointer items-center gap-3 overflow-hidden rounded-2xl pr-2 transition-colors max-[479px]:gap-2.5"
       style={{
         border: `1px solid ${hecho ? 'oklch(0.55 0.11 150 / .4)' : 'oklch(0.55 0.12 240 / .25)'}`,
-        background: 'linear-gradient(100deg,oklch(0.97 0.03 230),#FFFFFF 55%)',
+        background: 'var(--fondo-llegada)',
         boxShadow: '0 10px 22px -16px oklch(0.45 0.1 240 / .6)',
       }}
     >

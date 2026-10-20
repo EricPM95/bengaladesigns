@@ -1,5 +1,6 @@
 import { useEffect, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useRouteStore } from '../../../store/useRouteStore'
 import type { Coordinates } from '../../../lib/types'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { fetchPlacePhotoDetail, photoNameOf, type PlacePhoto } from '../../../lib/placePhoto'
@@ -138,6 +139,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
     }
   }, [stop?.name, stop?.photoName, stop?.fixedPhotoUrl, stop?.isBreak, city, dateIso])
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
+  // La ficha va en el body, fuera del contenedor del modo noche: lleva su propia clase para seguirlo (Tanda 10).
+  const noche = useRouteStore((state) => state.darkMode)
   const [internalDescription, setInternalDescription] = useState<StopDescription | null>(null)
   const [internalDescLoading, setInternalDescLoading] = useState(false)
   const [descFailed, setDescFailed] = useState(false)
@@ -400,7 +403,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   return (
     <AnimatePresence>
       {stop && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={`fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg text-text${noche ? ' dark' : ''}`}>
           <div className="relative shrink-0" style={{ height: `${mapVh}vh` }}>
             <StopsMapView markers={markers} activeStopId={stop.id} />
 

@@ -156,14 +156,11 @@ No he tocado el motor.
 - Los avisos («… cierra hoy a las 18:30»), «Cerca de ti», la lista de paradas y el aviso de «Saltada» eran tarjetas blancas fijas con letra de tinta (o clara): ahora, de noche, son tarjetas de noche con letra clara (reglas en `src/index.css` bajo `.dark [data-hoy]`, más la letra de la lista y la etiqueta «HOY · SÁB 17 · 0 de 14 visto», que iban con colores fijos).
 - La prueba nueva mira, en el navegador, el fondo de la tarjeta y de los avisos de día y de noche.
 
-**Repaso de noche en todas las pantallas** (capturas en `docs/dias/capturas_jutrip/interior_*_noche.jpg` y `hoy_*_noche*.jpg`). Pasa también en estos sitios; **no los he tocado** (me pedías que te dijera dónde):
-1. **RESERVAS**: las tarjetas «Llegada y vuelta», «Alojamiento» y «Entradas y Free Tour» y «0 de 3 listo» son marfil fijo con el título casi invisible (letra clara sobre marfil).
-2. **EXPLORAR**: las seis tarjetas (Atracciones, Miradores, Restaurantes, Entradas, Excursiones, Baños) llevan fondo marfil con el nombre en letra clara: no se lee el nombre.
-3. **DÍAS**: «Añade alojamiento en Roma» y la tarjeta azul de «Llegada · desde Madrid» (el texto «Añade tu vuelo…») se leen mal.
-4. **La ficha de una parada** (la hoja que se abre al tocar una parada) sale siempre en claro, también de noche (no sigue el modo noche). Se lee bien, pero no es de noche.
-5. Los escaparates de logros y de Pase (`interior_Logros_*`, `interior_Pase_*`) salen siempre en claro en las capturas porque se montan fuera de la app; en la app de verdad no las he podido mirar de noche con estos datos de prueba.
-- Bien de noche: HOY (los dos), RUTA, la lista de DÍAS y la barra de abajo.
+**Repaso de noche en todas las pantallas** (capturas en `docs/dias/capturas_jutrip/interior_*_noche.jpg` y `hoy_*_noche*.jpg`). Primero lo repasé y vi que pasaba en más sitios; a tu petición, **ya está arreglado**:
+1. **RESERVAS** (las tarjetas «Llegada y vuelta», «Alojamiento», «Entradas y Free Tour» y «0 de 3 listo») y **EXPLORAR** (las seis tarjetas, con su nombre y su contador): ahora son tarjetas de noche con letra clara. La regla general está en `index.css` (`.dark .bg-white`, `.dark .bg-[#FFFDF8]` y los marfiles parecidos pasan a la tarjeta de noche, y la letra de tinta a letra clara; lo que va dentro de una tarjeta oscura se queda como estaba). EXPLORAR, además, lleva su degradado y su sombra de texto con los colores del tema.
+2. **DÍAS**: la tarjeta azul «Llegada · desde Madrid» (y el billete de vuelo) ahora tiene fondo de noche (`--fondo-llegada`); la tarjeta de la comida (melocotón) pasa a tarjeta de noche; el «+» de «Añade alojamiento» también.
+3. **La ficha de una parada** sigue ahora el modo noche (antes salía siempre en claro porque se pinta fuera del contenedor del modo noche: lleva su propia clase `dark`).
+- Bien de noche: HOY (los dos), RUTA, la lista de DÍAS, EXPLORAR, RESERVAS y la barra de abajo.
+- **Sin mirar de noche en la app de verdad:** las hojas de Logros y del Pase (los escaparates se montan fuera de la app y salen siempre en claro); se pintan fuera del contenedor del modo noche, como lo estaba la ficha. Si pasa ahí, es la misma solución (su propia clase `dark`).
 
-Si quieres, lo siguiente es arreglar 1, 2 y 3 con la misma idea (tarjeta de noche con letra clara) y llevar la ficha de la parada al modo noche.
-
-**Pruebas de este apartado:** `pruebaJutrip` 118 comprobaciones, 0 fallos (10 nuevas de HOY). Batería rápida: 76 pruebas en 0 fallos; `pruebaFase6y5_motor` por procesos, 143.647 comprobaciones, 0 fallos. Dos pruebas viejas miraban el código de HOY y las he actualizado a propósito: `pruebaFase6y7_historias` (el botón «Escuchar» de HOY ahora lleva `oscuro={!claro}`, es decir, claro o oscuro según el modo) y `pruebaTanda6z5` (la parada saltada sale en gris con la letra del tema, `rgb(var(--text) / .4)`, y no con el gris fijo). Capturas de HOY (v1 y v2, de día y de noche, y la parte de abajo) en `docs/dias/capturas_jutrip/hoy_*.jpg`.
+**Pruebas:** `pruebaJutrip` 120 comprobaciones, 0 fallos (con las de noche); batería rápida de 76 pruebas en 0 fallos (tres salieron en MAL en una pasada con la máquina cargada y pasan solas: `pruebaFase6y5_pantallas`, `pruebaFase6y3_fotos` y `pruebaFase6y2_fotos`, que no leen nada de lo que he tocado); `pruebaFase6y5_motor` por procesos: 143.647 comprobaciones, 0 fallos.

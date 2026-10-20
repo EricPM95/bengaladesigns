@@ -64,6 +64,8 @@
   --text-muted: 150 146 139;
   --border: 223 218 210;
   --border-accent: 210 193 162;
+  /* El fondo de las tarjetas de llegada y vuelta (el billete y la barra «+ Vuelo»): un azul muy claro que se funde con la tarjeta; de noche, un azul noche. */
+  --fondo-llegada: linear-gradient(100deg, oklch(0.97 0.03 230), #ffffff 60%);
 }
 
 .dark {
@@ -95,6 +97,7 @@
   --text-muted: 140 136 128;
   --border: 46 52 68;
   --border-accent: 97 89 71;
+  --fondo-llegada: linear-gradient(100deg, rgb(30 44 70), rgb(var(--bg-card)) 60%);
 }
 
 /* En modo noche, un botón de relleno de oro lleva el texto en tinta (el blanco sobre el oro pálido no se lee). */
@@ -103,27 +106,32 @@
   color: #14161c;
 }
 
-/* HOY de noche (Tanda 10): las tarjetas que son blancas o marfil «fijas» (los avisos de «cierra hoy a las 18:30», «Cerca de ti», la lista, el aviso de «Saltada»…) pasan a la tarjeta de noche y su letra
-   de tinta, a la letra clara. Lo que va DENTRO de una tarjeta oscura (el botón [Pon tus fechas], por ejemplo) se queda como estaba. */
-.dark [data-hoy] .bg-white,
-.dark [data-hoy] .bg-\[\#FFFDF8\] {
+/* El modo noche de las tarjetas «fijas» (Tanda 10): lo que se pintó con el blanco o el marfil escritos a mano (HOY: los avisos de «cierra hoy a las 18:30», «Cerca de ti», la lista; RESERVAS, EXPLORAR, DÍAS…)
+   pasa de noche a la tarjeta de noche y su letra de tinta, a la letra clara. Lo que va DENTRO de una tarjeta oscura (el botón [Pon tus fechas], por ejemplo) se queda como estaba. */
+.dark .bg-white,
+.dark .bg-\[\#FFFDF8\] {
   background-color: rgb(var(--bg-card));
 }
-.dark [data-hoy] .bg-\[\#F1EADC\],
-.dark [data-hoy] .bg-\[\#F5EFE4\] {
+.dark .bg-\[\#F1EADC\],
+.dark .bg-\[\#F5EFE4\],
+.dark .bg-\[\#FFFEFB\],
+.dark .bg-\[\#F8F3EA\],
+.dark .bg-\[\#F3EEE4\],
+.dark .bg-\[\#EDE4D3\],
+.dark .bg-\[\#E4D9C4\] {
   background-color: rgb(var(--bg-hover));
 }
-.dark [data-hoy] .text-\[\#1C2230\] {
+.dark .text-\[\#1C2230\] {
   color: rgb(var(--text));
 }
-.dark [data-hoy] .text-\[\#1C2230\]\/80 {
+.dark .text-\[\#1C2230\]\/80 {
   color: rgb(var(--text) / 0.8);
 }
-.dark [data-hoy] .bg-\[\#1C2230\] .bg-\[\#FFFDF8\] {
+.dark .bg-\[\#1C2230\] .bg-\[\#FFFDF8\] {
   background-color: #fffdf8;
 }
-.dark [data-hoy] .bg-\[\#1C2230\] .bg-\[\#FFFDF8\] .text-\[\#1C2230\],
-.dark [data-hoy] .bg-\[\#1C2230\] .bg-\[\#FFFDF8\].text-\[\#1C2230\] {
+.dark .bg-\[\#1C2230\] .bg-\[\#FFFDF8\] .text-\[\#1C2230\],
+.dark .bg-\[\#1C2230\] .bg-\[\#FFFDF8\].text-\[\#1C2230\] {
   color: #1c2230;
 }
 

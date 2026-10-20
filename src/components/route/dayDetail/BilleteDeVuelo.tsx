@@ -61,7 +61,7 @@ export function BilleteDeVuelo({ billete, onOpen }: { billete: DatosBillete; onO
       className="relative flex min-h-[96px] w-full cursor-pointer overflow-hidden rounded-[18px]"
       style={{
         border: '1px solid oklch(0.55 0.12 240 / .28)',
-        background: 'linear-gradient(100deg,oklch(0.97 0.03 230),#FFFFFF 60%)',
+        background: 'var(--fondo-llegada)',
         boxShadow: '0 12px 24px -16px oklch(0.45 0.1 240 / .6)',
       }}
     >
