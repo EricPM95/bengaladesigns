@@ -113,7 +113,7 @@ function InfoBlock({ block }: { block?: { titulo?: string; texto: string } }) {
 
 /** La tarjeta de un traslado privado (Tanda 6t), con el estilo de la tarjeta de entrada de RESERVAS. Nunca el nombre del proveedor y sin precio (el enlace no lo da). */
 function TrasladoCard({ title, href }: { title: string; href: string }) {
-  const rosa = 'oklch(0.55 0.17 5)'
+  const rosa = 'rgb(var(--frambuesa))'
   return (
     <div className="relative flex min-h-[104px] w-full bg-white" style={{ borderRadius: 18, border: '1px solid rgba(28,34,48,.08)', boxShadow: '0 1px 2px rgba(28,34,48,.05),0 12px 26px -18px rgba(28,34,48,.4)' }}>
       <div className="relative w-[74px] shrink-0 overflow-hidden text-white" style={{ borderRadius: '17px 0 0 17px' }}>
@@ -138,7 +138,7 @@ function TrasladoCard({ title, href }: { title: string; href: string }) {
             type="button"
             onClick={() => openTicketShop(href, 'Abriendo la tienda de traslados…')}
             className="h-8 whitespace-nowrap rounded-full px-3.5 text-white transition-transform active:scale-[.97]"
-            style={{ background: rosa, boxShadow: '0 8px 16px -8px oklch(0.52 0.17 5)', font: "600 12.5px 'Geist'" }}
+            style={{ background: 'rgb(var(--accent))', boxShadow: '0 8px 16px -8px rgb(var(--accent))', font: "600 12.5px 'Geist'" }}
           >
             Reservar traslado
           </button>
@@ -225,7 +225,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
     const termini = Object.values(info.medios).flatMap((m) => m?.puntos ?? []).find((point) => point.id === 'termini')?.coordenadas ?? null
     const zona = destino.zonasAlojamiento.find((candidate) => candidate.id === (route.accommodationZone ?? ''))
     if (termini && ficha.pasaPorTermini) markers.push({ id: 'ficha-termini', name: 'Termini', coordinates: termini, number: 0, bg: '#FFFDF8', text: '#1C2230', icon: 'T' })
-    if (zona?.coordinates && !ficha.sinZona) markers.push({ id: 'ficha-zona', name: nombreDeZona(zona.nombre), coordinates: zona.coordinates, number: 0, bg: '#BD3964', text: '#ffffff', icon: 'casa' })
+    if (zona?.coordinates && !ficha.sinZona) markers.push({ id: 'ficha-zona', name: nombreDeZona(zona.nombre), coordinates: zona.coordinates, number: 0, bg: '#8E6820', text: '#ffffff', icon: 'casa' })
     const camino = markers.map((marker) => marker.coordinates)
     const lines: StopsMapMarkerLine[] = camino.length > 1 ? [{ id: 'ficha-camino', coordinates: camino, color: '#1C2230', dashed: true, width: 3 }] : []
     return { markers, lines }

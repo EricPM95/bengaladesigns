@@ -49,7 +49,7 @@ export function ListaDeAvisos({ avisos, resaltado = null, onTocar, ahora = Date.
                 )}
               </span>
             </span>
-            {sinLeer && <span aria-label="Sin leer" style={{ width: 9, height: 9, flex: 'none', marginTop: 6, borderRadius: '50%', background: 'oklch(0.55 0.17 5)' }} />}
+            {sinLeer && <span aria-label="Sin leer" style={{ width: 9, height: 9, flex: 'none', marginTop: 6, borderRadius: '50%', background: 'rgb(var(--frambuesa))' }} />}
           </div>
         )
       })}

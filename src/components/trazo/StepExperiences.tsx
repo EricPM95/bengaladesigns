@@ -142,7 +142,7 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
                         font: `500 10px/1 ${MONO}`,
                         letterSpacing: '.08em',
                         textTransform: 'uppercase',
-                        background: active ? 'rgba(255,255,255,.2)' : 'rgba(255,190,30,.22)',
+                        background: active ? 'rgba(255,255,255,.2)' : 'rgba(181,138,46,.22)',
                         color: active ? DARK : INK,
                         transition: 'background .45s,color .45s',
                       }}

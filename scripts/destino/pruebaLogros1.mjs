@@ -52,7 +52,7 @@ console.log('1. Los datos de los logros')
   const tempietto = 'san_pietro_in_montorio_y_tempietto_de_bramante'
   debe(R.colecciones.filter((c) => c.sitios.includes(tempietto)).map((c) => c.id).sort().join() === 'alma_trastevere,roma_secreta', 'datos', 'el Tempietto es un solo sitio y cuenta en El alma de Trastevere y en La Roma secreta')
   debe(R.colecciones.filter((c) => c.sitios.includes('basilica_de_san_pedro')).length === 3, 'datos', 'la Basílica de San Pedro suma en tres colecciones')
-  debe(R.emblemas.length === 12 && R.emblemas.filter((e) => e.tipo === 'sitio').length === 10 && R.emblemas.filter((e) => e.tipo === 'momento').length === 2, 'datos', '12 emblemas: 10 de sitio y 2 de momento')
+  debe(R.emblemas.length === 14 && R.emblemas.filter((e) => e.tipo === 'sitio').length === 12 && R.emblemas.filter((e) => e.tipo === 'momento').length === 2, 'datos', '14 emblemas (Tanda 10): 12 de sitio y 2 de momento')
   debe(R.emblemas.find((e) => e.sitio === 'plaza_de_san_pedro').nombre === 'La frontera que no se ve', 'datos', 'el emblema de la Plaza se llama «La frontera que no se ve»')
   debe(R.emblemas.every((e) => e.nombre && e.linea), 'datos', 'todos los emblemas llevan nombre y línea')
   debe(R.colecciones.every((c) => c.al_completar), 'datos', 'todas las colecciones llevan su frase al completarse')
@@ -408,7 +408,7 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   const estado = await servicio.estado(p.uid, p.trip)
   debe(estado.sellos.find((s) => s.id === 'roma').grado === 'diamante' && estado.sellos.find((s) => s.id === 'roma').siguiente === null, 'sellos', 'el estado dice diamante y nada más que subir')
   debe(estado.colecciones[0].id === 'imprescindibles' && estado.colecciones[0].completa, 'colecciones', 'la colección completa sube arriba de la lista')
-  debe(estado.secretos.encontrados === 0 && estado.secretos.texto === 'Roma esconde 12 secretos', 'emblemas', 'sin emblemas: «Roma esconde 12 secretos» (nunca cuáles ni dónde)')
+  debe(estado.secretos.encontrados === 0 && estado.secretos.texto === 'Roma esconde 14 secretos', 'emblemas', 'sin emblemas: «Roma esconde 14 secretos» (nunca cuáles ni dónde)')
 }
 
 // ── Los 3 grados del Vaticano (sin bronce) ──
@@ -491,8 +491,23 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
     const iM = otra.nuevos.findIndex((m) => m.tipo === 'maravilla' && m.id === 'coliseo')
     debe(iE >= 0 && iM === iE + 1 && otra.nuevos[iE].maravilla === 'coliseo', 'orden', 'la maravilla del Coliseo va justo después de su emblema («Tu primera maravilla · 1 de 7»), no con el «Y además…» (Tanda 8B2)')
   }
+  // (Tanda 10) Los dos emblemas nuevos, como los demás: sin foto no, con una foto válida sí.
+  {
+    const n = await persona('emblemas-nuevos@correo.es')
+    const v1 = await V(n, 'plaza_de_espana', dia(1, '10:00'))
+    debe(!v1.nuevos.some((m) => m.tipo === 'emblema') && !(await tiene(n, 'roma', 'emblema', 'plaza_de_espana')), 'emblemas14', 'Plaza de España: sin foto no hay emblema')
+    const f1 = await F(n, 'plaza_de_espana', dia(1, '10:02'))
+    const e1 = f1.nuevos.find((m) => m.tipo === 'emblema')
+    debe(e1 && e1.id === 'plaza_de_espana' && e1.nombre === 'Escalón a escalón', 'emblemas14', 'Plaza de España: con foto se gana «Escalón a escalón»')
+    const f2 = await F(n, 'castillo_de_santangelo', dia(1, '11:00'))
+    const e2 = f2.nuevos.find((m) => m.tipo === 'emblema')
+    debe(e2 && e2.id === 'castillo_de_santangelo' && e2.nombre === 'Tumba de emperador', 'emblemas14', 'Castillo de Sant’Angelo: con foto se gana «Tumba de emperador»')
+    const est = await servicio.estado(n.uid, n.trip)
+    debe(est.secretos.total === 14 && est.secretos.encontrados === 2 && est.secretos.texto === '2 de 14 secretos encontrados', 'emblemas14', 'el total sale de los datos: 2 de 14')
+    debe(est.secretos.encontrados_lista.some((x) => x.id === 'plaza_de_espana') && est.secretos.encontrados_lista.some((x) => x.id === 'castillo_de_santangelo'), 'emblemas14', 'los dos salen en la lista de los encontrados (la colección y la vitrina)')
+  }
   const estado = await servicio.estado(p.uid, p.trip)
-  debe(estado.puntito === true && estado.secretos.encontrados === 2 && estado.secretos.texto === '2 de 12 secretos encontrados', 'puntito', 'el botón lleva puntito y dice «2 de 12 secretos encontrados»')
+  debe(estado.puntito === true && estado.secretos.encontrados === 2 && estado.secretos.texto === '2 de 14 secretos encontrados', 'puntito', 'el botón lleva puntito y dice «2 de 14 secretos encontrados»')
   await servicio.estado(p.uid, p.trip)
   await repoPG.marcarAnimacion(p.uid, [{ destino: 'roma', logro: 'emblema', escalon: 'fontana_de_trevi' }, { destino: 'roma', logro: 'emblema', escalon: 'coliseo' }], true)
   const filas = await repoPG.logrosDe(p.uid)
@@ -512,9 +527,9 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   debe((await repoPG.hechosDe(p.uid)).length === 0, 'galeria', 'lo rechazado no se guarda')
   const buena = await g({})
   debe(buena.valida && buena.nuevos.some((m) => m.tipo === 'emblema' && m.id === 'panteon'), 'galeria', 'una buena: vale y da el emblema')
-  const amigo = await g({ de_amigo: true, sitio: 'castillo_de_santangelo', tomada_en: '2026-10-12T10:00:00' })
+  const amigo = await g({ de_amigo: true, sitio: 'trastevere', tomada_en: '2026-10-12T10:00:00' })
   debe(amigo.valida, 'galeria', 'la foto de un amigo del grupo también vale')
-  debe(!(await tiene(p, 'roma', 'emblema', 'castillo_de_santangelo')), 'emblema', 'un sitio sin emblema no da emblema')
+  debe(!(await tiene(p, 'roma', 'emblema', 'trastevere')), 'emblema', 'un sitio sin emblema no da emblema')
 }
 
 // ── Un Visto fuera de las fechas del viaje ──
@@ -1184,7 +1199,7 @@ console.log('4. Las rutas y el panel de Eric')
     const v = await llamar('POST /api/logros/visto', { token: 'ok', body: { trip_id: ana.trip, sitio: 'coliseo', instante: dia(1, '09:00'), ubicacion: coords('coliseo'), recibido_en: dia(1, '09:00') } })
     debe(v.estado === 200 && v.cuerpo.cuenta === true && v.cuerpo.nuevos.length > 0, 'rutas', 'con cuenta: el Visto da lo suyo')
     const e = await llamar('GET /api/logros/estado', { token: 'ok', query: { trip_id: ana.trip } })
-    debe(e.estado === 200 && e.cuerpo.sellos.length === 2 && e.cuerpo.colecciones.length === 11 && e.cuerpo.secretos.total === 12, 'rutas', 'el estado trae los sellos, las 11 colecciones y los secretos contados')
+    debe(e.estado === 200 && e.cuerpo.sellos.length === 2 && e.cuerpo.colecciones.length === 11 && e.cuerpo.secretos.total === 14, 'rutas', 'el estado trae los sellos, las 11 colecciones y los secretos contados')
     const pe = await llamar('GET /api/pase/estado', { token: 'ok', query: { trip_id: ana.trip } })
     debe(pe.estado === 200 && pe.cuerpo.cobro === false && pe.cuerpo.hoy.puede === true && pe.cuerpo.precios.planes.length === 3, 'rutas', 'el estado del pase: con el cobro apagado HOY se puede usar y trae los precios')
     const pp = await llamar('POST /api/pase/precio', { body: { plan: 'duo' } })
@@ -1338,7 +1353,7 @@ console.log('5. Tanda 8C1: la Versión 1, los escalones del Dashboard, la EXP, l
   debe(E.nivelDeExp(normal.total, datos.exp).nivel === 3 && normal.total >= 1400 && normal.total < 2700, 'roma', `un viaje normal a Roma (9 sitios, 3 días): nivel 3 (${normal.total} EXP)`)
   debe(E.nivelDeExp(roma100.total, datos.exp).nivel === 4, 'roma', `Roma al 100 %: nivel 4 (${roma100.total} EXP, el 4 va de 2.700 a 4.399)`)
   const base100 = ['pedazo', 'coleccion', 'sello', 'emblema', 'pais', 'destino_nuevo', 'maravilla', 'patrimonio'].reduce((s, k) => s + (aCategorias(roma100)[k] ?? 0), 0)
-  debe(base100 === 2185 && roma100.total > base100, 'roma', `Roma al 100 %: lo que dan los pedazos, colecciones, sellos, emblemas, países, destino, maravilla y Patrimonios son 2.185 EXP; con los logros de viajero, las paradas y el viaje acabado, ${roma100.total}`)
+  debe(base100 === 2235 && roma100.total > base100, 'roma', `Roma al 100 %: lo que dan los pedazos, colecciones, sellos, emblemas, países, destino, maravilla y Patrimonios son 2.235 EXP (Tanda 10: 14 emblemas, 50 más); con los logros de viajero, las paradas y el viaje acabado, ${roma100.total}`)
 
   // Nunca baja: se cambia la tabla y a nadie le sale menos
   const pn = await persona('exp-nunca-baja@correo.es')

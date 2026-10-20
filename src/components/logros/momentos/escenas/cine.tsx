@@ -50,6 +50,8 @@ export const TEXTOS: Record<string, { nombre: string; linea: string; lugar: stri
   boca_de_la_verdad: { nombre: 'Has dicho la verdad', linea: 'Cuenta la leyenda que muerde la mano de quien miente.', lugar: 'Boca de la Verdad · Roma' },
   ojo_cerradura: { nombre: 'Has mirado por la cerradura', linea: 'Por este agujero se ve la cúpula de San Pedro, enmarcada.', lugar: 'Ojo de la Cerradura · Aventino' },
   catacumbas: { nombre: 'La Roma de debajo', linea: 'Kilómetros de galerías donde se enterraron los primeros cristianos.', lugar: 'Catacumbas de San Calixto · Roma' },
+  plaza_de_espana: { nombre: 'Escalón a escalón', linea: 'Los 135 escalones que suben a la Trinità dei Monti.', lugar: 'Plaza de España · Roma' },
+  castillo_de_santangelo: { nombre: 'Tumba de emperador', linea: 'Tumba de emperador, fortaleza de papas.', lugar: 'Castillo de Sant’Angelo · Roma' },
   madrugador: { nombre: 'Madrugador', linea: 'Roma antes que nadie.', lugar: 'Fontana de Trevi · Roma' },
   nocturno: { nombre: 'Nocturno', linea: 'Roma con las luces encendidas.', lugar: 'Coliseo · Roma' },
 }

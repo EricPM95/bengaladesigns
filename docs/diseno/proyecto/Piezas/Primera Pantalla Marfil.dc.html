@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}button,input{font-family:inherit}input::placeholder{color:rgba(28,34,48,.35)}input{outline:none}.fpS::-webkit-scrollbar{display:none}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 20%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 24px 80px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;justify-content:center;gap:48px;flex-wrap:wrap;align-items:flex-start">
+  <div style="position:relative;width:390px;height:844px;flex:none;border-radius:50px;overflow:hidden;background:#F6EFE0;color:#1C2230;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+    <div onPointerDown="{{ pd }}" ref="{{ mref }}" style="position:absolute;left:0;top:0;width:390px;height:600px;touch-action:none;cursor:grab;background:#FFFDF8">{{ mapEl }}</div>
+    
+    <sc-if value="{{ showHint }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;left:50%;top:420px;transform:translateX(-50%);font:500 11px 'Geist';letter-spacing:.04em;color:rgba(28,34,48,.5);pointer-events:none;white-space:nowrap">Arrastra y haz zoom</div></sc-if>
+    
+    <div style="position:absolute;left:0;right:0;top:0;height:210px;background:linear-gradient(180deg,#FFFDF8 30%,rgba(255,253,248,.75) 65%,rgba(255,253,248,0));pointer-events:none"></div>
+    <div style="position:absolute;left:0;right:0;top:420px;height:200px;background:linear-gradient(180deg,rgba(246,239,224,0),#F6EFE0 85%);pointer-events:none"></div>
+    <span style="position:absolute;left:22px;top:30px;z-index:3;display:flex;align-items:center;gap:9px"><svg width="26" height="22" viewBox="0 0 230 190" fill="none" style="overflow:visible"><defs><linearGradient id="fpg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6DC"></stop><stop offset=".3" stop-color="#F3D88F"></stop><stop offset=".55" stop-color="#C99A44"></stop><stop offset=".8" stop-color="#8E6820"></stop><stop offset="1" stop-color="#E9C77A"></stop></linearGradient></defs><path d="M115 14L129 82L196 104L129 126L115 194L101 126L34 104L101 82Z" fill="url(#fpg)" stroke="#6E5018" stroke-width="5" stroke-linejoin="round"></path><circle cx="115" cy="104" r="15" fill="#FFF6DC" stroke="#6E5018" stroke-width="4"></circle></svg><span style="font:500 21px/1 'Bodoni Moda',serif;letter-spacing:.14em;color:#8E6820">JU<span style="font-weight:400">T</span><span style="font-weight:400">R</span>I<span style="font-weight:400">P</span></span></span>
+    <div style="position:absolute;left:22px;right:22px;top:84px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.6)"><span>01 — RUTA</span><span>1/7</span></div>
+      <div style="display:flex;gap:4px"><span style="flex:1;height:3px;border-radius:2px;background:#B58A2E"></span><span style="flex:1;height:3px;border-radius:2px;background:rgba(28,34,48,.16)"></span><span style="flex:1;height:3px;border-radius:2px;background:rgba(28,34,48,.16)"></span><span style="flex:1;height:3px;border-radius:2px;background:rgba(28,34,48,.16)"></span><span style="flex:1;height:3px;border-radius:2px;background:rgba(28,34,48,.16)"></span><span style="flex:1;height:3px;border-radius:2px;background:rgba(28,34,48,.16)"></span><span style="flex:1;height:3px;border-radius:2px;background:rgba(28,34,48,.16)"></span></div>
+      <sc-if value="{{ alt }}" hint-placeholder-val="{{ false }}"><span style="font:400 38px/1.02 'Instrument Serif',serif;text-wrap:balance;margin-top:6px">¿A cuál de estos <em style="color:#B58A2E">te escapas?</em></span></sc-if>
+      <sc-if value="{{ notAlt }}" hint-placeholder-val="{{ true }}"><span style="font:400 38px/1.02 'Instrument Serif',serif;text-wrap:balance;margin-top:6px">¿De dónde sales y <em style="color:#B58A2E">a dónde vas?</em></span></sc-if>
+    </div>
+
+    <sc-if value="{{ showRow }}" hint-placeholder-val="{{ false }}">
+      <div class="fpS" style="position:absolute;left:0;right:0;bottom:296px;padding:0 18px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none">
+        <sc-for list="{{ destList }}" as="c" hint-placeholder-count="6">
+          <div onClick="{{ c.pick }}" style="flex:none;width:76px;border-radius:14px;background:rgba(255,253,248,.82);border:1px solid {{ c.bd }};overflow:hidden;cursor:pointer">
+            <div style="height:54px;background:{{ c.g }};position:relative"><span style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.07) 0 2px,transparent 2px 12px)"></span></div>
+            <div style="padding:7px 8px 8px;font:400 15px/1 'Instrument Serif',serif">{{ c.n }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ showNo }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:18px;right:18px;bottom:296px;padding:16px;border-radius:20px;background:rgba(255,253,248,.9);border:1px solid rgba(28,34,48,.14);display:flex;flex-direction:column;gap:10px">
+        <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+          <span style="font:400 22px/1.1 'Instrument Serif',serif">Aún no tenemos <em style="color:#B58A2E">{{ dq }}</em>.</span>
+          <span style="font:400 13px/1.4 'Geist';color:rgba(28,34,48,.7)">¿Te avisamos cuando llegue?</span>
+          <div style="display:flex;gap:8px"><input value="{{ email }}" onInput="{{ onEmail }}" placeholder="tu@email.com" style="flex:1;min-width:0;height:44px;border-radius:12px;border:1px solid rgba(28,34,48,.2);background:rgba(28,34,48,.06);padding:0 12px;color:#1C2230;font:400 14px 'Geist'"><button onClick="{{ send }}" style="height:44px;padding:0 16px;border-radius:12px;border:0;background:#B58A2E;color:#FFFDF8;font:600 14px 'Geist';cursor:pointer">Avísame</button></div>
+        </sc-if>
+        <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}"><span style="font:400 22px/1.1 'Instrument Serif',serif">¡Hecho! Te escribimos en cuanto llegue <em style="color:#B58A2E">{{ dq }}</em>.</span></sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ showSug }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:18px;right:18px;bottom:296px;border-radius:18px;background:rgba(255,253,248,.92);border:1px solid rgba(28,34,48,.14);overflow:hidden">
+        <sc-for list="{{ sugList }}" as="s" hint-placeholder-count="4"><div onClick="{{ s.pick }}" style="height:46px;padding:0 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(28,34,48,.07);font:500 15px 'Geist';cursor:pointer"><span style="width:10px;height:10px;border-radius:50%;border:1.5px solid #1C2230"></span>{{ s.n }}<span style="margin-left:auto;font:400 12px 'Geist';color:rgba(28,34,48,.5)">{{ s.c }}</span></div></sc-for>
+      </div>
+    </sc-if>
+
+    <div style="position:absolute;left:14px;right:14px;bottom:26px;padding:14px;border-radius:28px;background:rgba(255,253,248,.78);border:1px solid rgba(28,34,48,.14);backdrop-filter:blur(14px);display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 40px -16px rgba(0,0,0,.6)">
+      <div style="height:62px;border-radius:18px;background:rgba(28,34,48,.06);border:1px solid {{ oBd }};display:flex;align-items:center;gap:14px;padding:0 16px">
+        <span style="width:14px;height:14px;flex:none;border-radius:50%;border:2px solid #1C2230"></span>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:500 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.55)">ORIGEN</span><input value="{{ oVal }}" onFocus="{{ fo }}" onInput="{{ onOq }}" placeholder="¿Desde qué ciudad sales?" style="width:100%;border:0;background:transparent;color:#1C2230;font:500 17px 'Geist';padding:0"></div>
+      </div>
+      <div style="height:62px;border-radius:18px;background:rgba(28,34,48,.06);border:1px solid {{ dBd }};display:flex;align-items:center;gap:14px;padding:0 16px">
+        <span style="width:14px;height:14px;flex:none;border-radius:50%;background:#E4405F;box-shadow:0 0 12px #E4405F"></span>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:500 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.55)">DESTINO</span><input value="{{ dVal }}" onFocus="{{ fd }}" onInput="{{ onDq }}" placeholder="Elige uno de nuestros destinos" style="width:100%;border:0;background:transparent;color:#1C2230;font:500 17px 'Geist';padding:0"></div>
+      </div>
+      <div style="height:54px;border-radius:18px;display:flex;align-items:center;justify-content:center;font:600 16px 'Geist';background:{{ btnBg }};color:{{ btnFg }}">Trazar ruta</div>
+    </div>
+  </div>
+
+  <div style="width:260px;display:flex;flex-direction:column;gap:10px;padding-top:6px">
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">ESTADOS</span>
+    <sc-for list="{{ presets }}" as="p" hint-placeholder-count="6"><button onClick="{{ p.go }}" style="text-align:left;height:46px;padding:0 14px;border-radius:14px;border:1px solid rgba(28,34,48,.12);background:#FFFDF8;font:500 13.5px 'Geist';color:#1C2230;cursor:pointer;display:flex;align-items:center;gap:10px"><b style="font:600 11px 'Geist Mono',monospace;color:oklch(0.55 0.17 5)">{{ p.k }}</b>{{ p.t }}</button></sc-for>
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55);margin-top:10px">TÍTULO</span>
+    <div style="display:flex;gap:8px"><button onClick="{{ t1 }}" style="flex:1;height:42px;border-radius:12px;border:1px solid rgba(28,34,48,.12);background:{{ t1bg }};color:{{ t1fg }};font:500 13px 'Geist';cursor:pointer">Actual</button><button onClick="{{ t2 }}" style="flex:1;height:42px;border-radius:12px;border:1px solid rgba(28,34,48,.12);background:{{ t2bg }};color:{{ t2fg }};font:500 13px 'Geist';cursor:pointer">Con pines</button></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const W=2400;
+const prj=(lo,la)=>[(lo+180)/360*W,(1-Math.log(Math.tan(Math.PI/4+la*Math.PI/360))/Math.PI)/2*W];
+const DEST=[['Roma',12.5,41.9,1],['París',2.35,48.86,1],['Londres',-0.12,51.5,1],['Barcelona',2.17,41.39,0],['Madrid',-3.7,40.42,1],['Lisboa',-9.14,38.72,1],['Ámsterdam',4.9,52.37,0],['Praga',14.42,50.08,0],['Berlín',13.4,52.52,1],['Viena',16.37,48.21,0],['Florencia',11.25,43.77,0],['Venecia',12.33,45.44,0],['Atenas',23.73,37.98,1],['Estambul',28.98,41.01,1],['Budapest',19.04,47.5,0],['Sevilla',-5.98,37.39,0],['Dublín',-6.26,53.35,0],['Edimburgo',-3.19,55.95,0],['Nápoles',14.27,40.85,0],['Dubrovnik',18.09,42.65,0],['Cancún',-86.85,21.16,1]].map((c,i)=>({n:c[0],lo:c[1],la:c[2],major:!!c[3],xy:prj(c[1],c[2]),g:`linear-gradient(150deg,oklch(0.55 0.08 ${(i*37)%360}),oklch(0.28 0.05 ${(i*37+30)%360}))`}));
+const ORIG=[...DEST.map(d=>({n:d.n,c:'',lo:d.lo,la:d.la})),
+ ['Buenos Aires','Argentina',-58.38,-34.6],['Ciudad de México','México',-99.13,19.43],['Bogotá','Colombia',-74.07,4.71],['Nueva York','EE. UU.',-74,40.7],['Santiago','Chile',-70.65,-33.45],['Lima','Perú',-77.04,-12.05],['Miami','EE. UU.',-80.19,25.76],['Tokio','Japón',139.69,35.69]].map(x=>Array.isArray(x)?{n:x[0],c:x[1],lo:x[2],la:x[3]}:x).map(o=>({...o,xy:prj(o.lo,o.la)}));
+const nz=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const EU=prj(-28,18);
+let LAND='';
+function landPath(t){const[sx,sy]=t.transform.scale,[tx,ty]=t.transform.translate;
+  const arcs=t.arcs.map(a=>{let x=0,y=0;return a.map(([dx,dy])=>{x+=dx;y+=dy;return[x*sx+tx,y*sy+ty];});});
+  const ring=r=>{let pts=[];r.forEach((i,k)=>{const a=i<0?arcs[~i].slice().reverse():arcs[i];pts=pts.concat(k?a.slice(1):a);});
+    if(pts.every(p=>p[1]<-58))return'';
+    const q=pts.map(p=>prj(p[0],Math.max(-75,Math.min(80,p[1]))));
+    const pcs=[[]];q.forEach((p,i)=>{if(i&&Math.abs(p[0]-q[i-1][0])>W/2)pcs.push([]);pcs[pcs.length-1].push(p);});
+    if(pcs.length>1){const l=pcs.pop();pcs[0]=l.concat(pcs[0]);}
+    return pcs.filter(z=>z.length>2).map(z=>'M'+z.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L')+'Z').join('');};
+  let d='';t.objects.land.geometries.forEach(g=>{const polys=g.type==='Polygon'?[g.arcs]:g.arcs;polys.forEach(p=>p.forEach(r=>{d+=ring(r);}));});
+  return d;}
+class Component extends DCLogic {
+  constructor(p){super(p);this.state={origin:null,dest:null,focus:null,oq:'',dq:'',email:'',sent:false,alt:false};this.cam={cx:EU[0],cy:EU[1],span:1150};this.t0=performance.now();this.near=false;this.mref=React.createRef();this.user=null;this.touched=false;this.ptr=new Map();this.moved=0;}
+  componentDidMount(){
+    this.onW=e=>{e.preventDefault();this.zoom(e.deltaY>0?1.12:.89);};this.onM=e=>this.pm(e);this.onU=e=>this.pu(e);
+    if(this.mref.current)this.mref.current.addEventListener('wheel',this.onW,{passive:false});
+    window.addEventListener('pointermove',this.onM);window.addEventListener('pointerup',this.onU);window.addEventListener('pointercancel',this.onU);
+
+    if(!LAND)fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json').then(r=>r.json()).then(t=>{LAND=landPath(t);this.forceUpdate();}).catch(()=>{});
+    const loop=()=>{const tg=this.target(),c=this.cam;const k=.07;
+      const dx=tg.cx-c.cx,dy=tg.cy-c.cy,ds=tg.span-c.span;
+      const mv=Math.abs(dx)+Math.abs(dy)+Math.abs(ds)>.3;
+      if(mv){c.cx+=dx*k;c.cy+=dy*k;c.span+=ds*k;}
+      if(mv||(this.state.origin&&this.state.dest))this.forceUpdate();
+      this.raf=requestAnimationFrame(loop);};
+    this.raf=requestAnimationFrame(loop);}
+  componentWillUnmount(){if(this.mref.current)this.mref.current.removeEventListener('wheel',this.onW);window.removeEventListener('pointermove',this.onM);window.removeEventListener('pointerup',this.onU);window.removeEventListener('pointercancel',this.onU);cancelAnimationFrame(this.raf);clearTimeout(this.nt);}
+  fit(){const{origin:o,dest:d}=this.state;const dx=Math.abs(o.xy[0]-d.xy[0]),dy=Math.abs(o.xy[1]-d.xy[1]);
+    return{cx:(o.xy[0]+d.xy[0])/2,cy:(o.xy[1]+d.xy[1])/2,span:Math.max(130,dx*1.9,dy*1.9*390/560)};}
+  target(){if(this.user)return this.user;const{origin:o,dest:d}=this.state;
+    if(o&&d){const f=this.fit();if(this.near&&f.span>500)return{cx:d.xy[0]-60,cy:d.xy[1]+10,span:420};return f;}
+    if(d)return{cx:d.xy[0],cy:d.xy[1]-10,span:210};
+    return{cx:EU[0],cy:EU[1],span:900};}
+  after(){clearTimeout(this.nt);this.near=false;this.t0=performance.now();const{origin:o,dest:d}=this.state;
+    if(o&&d&&this.fit().span>500)this.nt=setTimeout(()=>{this.near=true;},3600);}
+  set(s){this.user=null;this.setState(s,()=>this.after());}
+  pd(e){this.ptr.set(e.pointerId,[e.clientX,e.clientY]);this.moved=0;this.pd0=this.pinch();}
+  pinch(){const v=[...this.ptr.values()];return v.length===2?Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]):0;}
+  pm(e){if(!this.ptr.has(e.pointerId))return;const o=this.ptr.get(e.pointerId),c=this.cam;
+    const dx=e.clientX-o[0],dy=e.clientY-o[1];this.ptr.set(e.pointerId,[e.clientX,e.clientY]);
+    this.moved+=Math.abs(dx)+Math.abs(dy);if(this.moved<5)return;
+    const sc=this.sc||1,k=390/c.span;
+    if(this.ptr.size===1){c.cx-=dx/sc/k;c.cy-=dy/sc/k;}
+    else{const d=this.pinch();if(this.pd0&&d){c.span=Math.max(70,Math.min(2600,c.span*this.pd0/d));}this.pd0=d;}
+    this.user={cx:c.cx,cy:c.cy,span:c.span};this.touched=true;this.forceUpdate();}
+  zoom(f){const c=this.cam;c.span=Math.max(70,Math.min(2600,c.span*f));this.user={cx:c.cx,cy:c.cy,span:c.span};this.touched=true;this.forceUpdate();}
+  pu(e){this.ptr.delete(e.pointerId);this.pd0=this.pinch();}
+  wh(e){this.zoom(e.deltaY>0?1.12:.89);}
+  curve(){const{origin:o,dest:d}=this.state;if(!o||!d)return null;
+    const[ox,oy]=o.xy,[dx,dy]=d.xy;const mx=(ox+dx)/2,my=(oy+dy)/2;const L=Math.hypot(dx-ox,dy-oy)||1;
+    let nx=-(dy-oy)/L,ny=(dx-ox)/L;if(ny>0){nx=-nx;ny=-ny;}
+    return{ox,oy,dx,dy,cx:mx+nx*L*.28,cy:my+ny*L*.28};}
+  renderVals(){
+    const s=this.state,c=this.cam,E=React.createElement;
+    const k=390/c.span,AY=300;
+    const X=x=>(x-c.cx)*k+195,Y=y=>(y-c.cy)*k+AY;
+    const cv=this.curve();
+    const kids=[];
+    kids.push(E('path',{key:'l',d:LAND,fill:'#E6D9BC',stroke:'rgba(28,34,48,.2)',strokeWidth:.8,vectorEffect:'non-scaling-stroke',transform:`translate(195 ${AY}) scale(${k}) translate(${-c.cx} ${-c.cy})`}));
+    if(cv){
+      const px=[X(cv.ox),Y(cv.oy)],py=[X(cv.dx),Y(cv.dy)],pc=[X(cv.cx),Y(cv.cy)];
+      kids.push(E('path',{key:'a',d:`M${px[0]} ${px[1]}Q${pc[0]} ${pc[1]} ${py[0]} ${py[1]}`,fill:'none',stroke:'#B58A2E',strokeWidth:2,strokeDasharray:'2 7',strokeLinecap:'round',opacity:.9}));
+      kids.push(E('circle',{key:'o',cx:px[0],cy:px[1],r:7,fill:'#F6EFE0',stroke:'#1C2230',strokeWidth:2.5}));
+      const tt=Math.min(1,((performance.now()-this.t0)%5600)/3000);const e=tt<.5?2*tt*tt:1-Math.pow(-2*tt+2,2)/2;
+      const bx=(1-e)*(1-e)*px[0]+2*(1-e)*e*pc[0]+e*e*py[0],by=(1-e)*(1-e)*px[1]+2*(1-e)*e*pc[1]+e*e*py[1];
+      const tx=2*(1-e)*(pc[0]-px[0])+2*e*(py[0]-pc[0]),ty=2*(1-e)*(pc[1]-px[1])+2*e*(py[1]-pc[1]);
+      const ang=Math.atan2(ty,tx)*180/Math.PI+90;
+      kids.push(E('path',{key:'p',d:'M0 -10L3 -3L11 2L11 4L3 2L2 7L5 9L5 10L0 9L-5 10L-5 9L-2 7L-3 2L-11 4L-11 2L-3 -3Z',fill:'#1C2230',transform:`translate(${bx} ${by}) rotate(${ang}) scale(1.05)`,style:{filter:'drop-shadow(0 2px 4px rgba(0,0,0,.5))'}}));
+    }
+    DEST.forEach(d=>{const x=X(d.xy[0]),y=Y(d.xy[1]);if(x<-30||x>420||y<-30||y>620)return;
+      const sel=s.dest&&s.dest.n===d.n,dim=s.dest&&!sel;
+      const label=sel||d.major||k>1.45;
+      kids.push(E('g',{key:'d'+d.n,transform:`translate(${x} ${y})`,style:{cursor:'pointer',opacity:dim?.42:1,transition:'opacity .5s'},onClick:()=>{if(this.moved>6)return;this.set({dest:d,focus:null,dq:''});}},
+        E('circle',{r:24,fill:'transparent'}),
+        E('circle',{r:sel?9:6,fill:'#E4405F',opacity:sel?.4:.3},E('animate',{attributeName:'r',values:sel?'9;17;9':'6;12;6',dur:sel?'2.2s':'3.4s',repeatCount:'indefinite'}),E('animate',{attributeName:'opacity',values:sel?'.5;0;.5':'.35;0;.35',dur:sel?'2.2s':'3.4s',repeatCount:'indefinite'})),
+        E('circle',{r:sel?6:4.4,fill:sel?'#C9264A':'#E4405F',stroke:'#FFFDF8',strokeWidth:sel?2:1.6,style:{filter:'drop-shadow(0 1px 2px rgba(120,20,40,.45))'}}),
+        label?E('text',{x:sel?12:9,y:4,fill:sel?'#8A1C36':'rgba(28,34,48,.78)',fontSize:sel?12.5:10,fontWeight:sel?600:500,style:{fontFamily:'Geist,sans-serif',paintOrder:'stroke',stroke:'rgba(255,255,255,.75)',strokeWidth:3}},d.n):null));});
+    const mapEl=E('svg',{width:390,height:600,viewBox:'0 0 390 600',style:{display:'block'}},kids);
+    const q=nz(s.dq),match=DEST.filter(d=>!q||nz(d.n).includes(q));
+    const destList=match.map(d=>({n:d.n,g:d.g,bd:s.dest&&s.dest.n===d.n?'#B58A2E':'rgba(28,34,48,.14)',pick:()=>this.set({dest:d,focus:null,dq:''})}));
+    const oqn=nz(s.oq),sug=s.focus==='o'&&oqn?ORIG.filter(o=>nz(o.n).includes(oqn)).slice(0,5):(s.focus==='o'&&!s.origin?ORIG.filter(o=>['Madrid','Buenos Aires','Ciudad de México','Bogotá','Londres'].includes(o.n)):[]);
+    const sugList=sug.map(o=>({n:o.n,c:o.c,pick:()=>this.set({origin:o,focus:null,oq:''})}));
+    const ready=!!(s.origin&&s.dest);
+    const preset=(k,t,st)=>({k,t,go:()=>this.set({origin:null,dest:null,focus:null,oq:'',dq:'',sent:false,...st})});
+    const DE=n=>DEST.find(d=>d.n===n),OR=n=>ORIG.find(d=>d.n===n);
+    const noMatch=s.focus==='d'&&q&&match.length===0;
+    return{mapEl,mref:this.mref,pd:e=>this.pd(e),showReset:!!this.user,showHint:!this.touched&&!s.focus,zin:()=>this.zoom(.7),zout:()=>this.zoom(1.43),reset:()=>{this.user=null;this.forceUpdate();},alt:s.alt,notAlt:!s.alt,
+      showRow:s.focus==='d'&&match.length>0,destList,showNo:noMatch,dq:s.dq.trim(),notSent:!s.sent,sent:s.sent,email:s.email,
+      onEmail:e=>this.setState({email:e.target.value}),send:()=>this.setState({sent:true}),
+      showSug:sugList.length>0,sugList,
+      oVal:s.focus==='o'?s.oq:(s.origin?s.origin.n:s.oq),dVal:s.focus==='d'?s.dq:(s.dest?s.dest.n:s.dq),
+      fo:()=>this.setState({focus:'o',oq:''}),fd:()=>this.setState({focus:'d',dq:''}),
+      onOq:e=>this.setState({oq:e.target.value,origin:null}),onDq:e=>this.setState({dq:e.target.value,dest:null,sent:false}),
+      oBd:s.focus==='o'?'rgba(28,34,48,.5)':'rgba(28,34,48,.14)',dBd:s.focus==='d'?'#B58A2E':'rgba(28,34,48,.14)',
+      btnBg:ready?'#B58A2E':'rgba(28,34,48,.1)',btnFg:ready?'#FFFDF8':'rgba(28,34,48,.4)',
+      presets:[preset('A','Inicio: todos los pines',{}),preset('B','Tocando DESTINO',{focus:'d'}),preset('C','Un destino que no tenemos',{focus:'d',dq:'Tokio'}),preset('D','Destino elegido: Roma',{dest:DE('Roma')}),preset('E','Madrid → Roma',{origin:OR('Madrid'),dest:DE('Roma')}),preset('F','Buenos Aires → Roma',{origin:OR('Buenos Aires'),dest:DE('Roma')}),preset('G','Madrid → Cancún',{origin:OR('Madrid'),dest:DE('Cancún')})],
+      t1:()=>this.setState({alt:false}),t2:()=>this.setState({alt:true}),
+      t1bg:s.alt?'#FFFDF8':'#1C2230',t1fg:s.alt?'#1C2230':'#FFFDF8',t2bg:s.alt?'#1C2230':'#FFFDF8',t2fg:s.alt?'#FFFDF8':'#1C2230'};
+  }
+}
+</script>
+</body>
+</html>

@@ -17,7 +17,7 @@ export function MeGusta({ destino, nombre, variante, className = '' }: { destino
       size={variante === 'ficha' ? 15 : 17}
       grosor={variante === 'ficha' ? 2 : undefined}
       relleno={marcado}
-      className={`flex-none text-accent transition-transform duration-[350ms] ease-[cubic-bezier(.3,1.6,.5,1)] motion-reduce:transition-none ${marcado ? 'scale-[1.15]' : 'scale-100'}`}
+      className={`flex-none text-frambuesa transition-transform duration-[350ms] ease-[cubic-bezier(.3,1.6,.5,1)] motion-reduce:transition-none ${marcado ? 'scale-[1.15]' : 'scale-100'}`}
     />
   )
   const etiqueta = marcado ? `Quitar me gusta de ${nombre}` : `Me gusta ${nombre}`
@@ -29,7 +29,7 @@ export function MeGusta({ destino, nombre, variante, className = '' }: { destino
         aria-pressed={marcado}
         aria-label={etiqueta}
         data-megusta="tarjeta"
-        className={`flex items-center justify-end gap-[3px] text-[12px] font-medium transition-colors ${marcado ? 'text-accent' : 'text-text/55'} ${className}`}
+        className={`flex items-center justify-end gap-[3px] text-[12px] font-medium transition-colors ${marcado ? 'text-frambuesa' : 'text-text/55'} ${className}`}
       >
         {corazon}
         {mostrado !== null && <span className="tabular-nums">{conMiles(mostrado)}</span>}
@@ -44,7 +44,7 @@ export function MeGusta({ destino, nombre, variante, className = '' }: { destino
       aria-pressed={marcado}
       aria-label={etiqueta}
       data-megusta="ficha"
-      className={`flex h-7 items-center gap-1.5 self-start rounded-full border pl-[7px] pr-2.5 transition-[background-color,border-color] duration-300 motion-reduce:transition-none ${marcado ? 'border-accent/40 bg-accent/[.08]' : 'border-text/[.14] bg-transparent'} ${className}`}
+      className={`flex h-7 items-center gap-1.5 self-start rounded-full border pl-[7px] pr-2.5 transition-[background-color,border-color] duration-300 motion-reduce:transition-none ${marcado ? 'border-frambuesa/40 bg-frambuesa/[.08]' : 'border-text/[.14] bg-transparent'} ${className}`}
     >
       {corazon}
       <span className="whitespace-nowrap text-[11.5px] font-medium text-text">

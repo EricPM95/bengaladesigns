@@ -36,7 +36,7 @@ import { BilleteDeVuelo } from '../../dayDetail/BilleteDeVuelo'
 import { BotonAlojamientoHoy, useFichasDeHoy, type MitadDeHoy } from '../llegadaVuelta'
 import { anadirMasVisita, useMasVisitas } from '../masVisitas'
 import type { MasVisita } from '../../../../lib/masVisitas'
-import { AZUL, FRAMBUESA, VERDE, TINTA } from '../piezas'
+import { AZUL, VERDE, TINTA } from '../piezas'
 import { CabeceraHoy } from './HoyAntesV2'
 import { ExtraDeParada } from './ExtraDeParada'
 import { ParadaFotoDeParada } from './ParadaFoto'
@@ -71,7 +71,7 @@ function LineaDeHorario({ horario, cerradoEsteDia }: { horario: HorarioDeParada 
   if (cerradoEsteDia && !horario?.cerrado) horario = { abre: null, cierra: null, ultimaEntrada: null, cerrado: true, tramos: [], texto: CERRADO_ESTE_DIA }
   if (!horario) return null
   return (
-    <span className="text-[12px] leading-[1.3]" style={{ color: horario.cerrado ? 'oklch(0.78 0.11 15)' : 'rgba(255,253,248,.7)' }}>
+    <span className="text-[12px] leading-[1.3]" style={{ color: horario.cerrado ? '#F87171' : 'rgba(255,253,248,.7)' }}>
       {horario.texto}
     </span>
   )
@@ -120,7 +120,7 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
   return (
     <div className="flex items-center gap-2">
       <button type="button" onClick={alPulsar} data-escuchar={estado} className="flex h-[50px] min-w-0 flex-1 items-center justify-center gap-3 rounded-full pl-2 pr-3.5" style={{ background: 'rgba(255,253,248,.1)' }}>
-        <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full" style={{ background: FRAMBUESA }}>
+        <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full" style={{ background: 'rgb(var(--accent))' }}>
           <Icono nombre={estado === 'hablando' ? 'pausa' : 'seguir'} size={13} relleno grosor={1.6} />
         </span>
         <span className="whitespace-nowrap text-[13.5px] font-semibold">{estado === 'parado' ? 'Escuchar historia' : estado === 'hablando' ? 'Pausar' : 'Seguir escuchando'}</span>
@@ -326,8 +326,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const alertas = (
     <>
       {cierres.map((a) => (
-        <div key={a.id} className="flex min-h-14 flex-none items-center gap-3 rounded-[18px] py-[9px] pl-3 pr-2.5" style={{ background: 'oklch(0.55 0.17 5 / .07)', border: '1px solid oklch(0.55 0.17 5 / .25)' }} data-avisos-de-cierre>
-          <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] text-white" style={{ background: FRAMBUESA }}>
+        <div key={a.id} className="flex min-h-14 flex-none items-center gap-3 rounded-[18px] py-[9px] pl-3 pr-2.5" style={{ background: 'rgb(var(--accent-red) / .07)', border: '1px solid rgb(var(--accent-red) / .25)' }} data-avisos-de-cierre>
+          <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] text-white" style={{ background: 'rgb(var(--accent-red))' }}>
             <Icono nombre="reloj" size={16} />
           </span>
           <span className="min-w-0 flex-1 text-[13px] font-medium leading-[1.35]">{a.texto}</span>
@@ -469,7 +469,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
             <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" />
             {masVisitas.length > 0 && (
               <div className="flex justify-center">
-                <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: '1.5px dashed oklch(0.78 0.11 15 / .7)' }}>
+                <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: '1.5px dashed rgba(233,199,122,.7)' }}>
                   <Icono nombre="anadir" size={13} grosor={2.4} />
                   Más visitas
                 </button>
@@ -559,7 +559,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
                     </span>
                     {!saltada && <EtiquetaBarrioDeSitio destination={route.destination} name={stop.name} className="self-start" />}
                     <span className="flex flex-wrap gap-1">
-                      {stop.addedByUser && <span className="h-5 rounded-full px-[7px] text-[10px] font-semibold leading-[18px]" style={{ border: '1px dashed oklch(0.55 0.17 5 / .5)', color: 'oklch(0.5 0.17 5)' }}>Añadida</span>}
+                      {stop.addedByUser && <span className="h-5 rounded-full px-[7px] text-[10px] font-semibold leading-[18px]" style={{ border: '1px dashed rgb(var(--accent) / .5)', color: 'rgb(var(--accent-hover))' }}>Añadida</span>}
                     </span>
                     <ExtraDeParada parada={stop} dayId={day.id} vista={vista} contexto="fila" />
                   </span>
@@ -568,7 +568,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
                       ✓ {reserva.time}
                     </span>
                   )}
-                  {ahora && <span className="h-[22px] flex-none rounded-full px-2 text-[10.5px] font-semibold leading-[22px]" style={{ background: 'oklch(0.55 0.17 5 / .1)', color: 'oklch(0.5 0.17 5)' }}>Ahora</span>}
+                  {ahora && <span className="h-[22px] flex-none rounded-full px-2 text-[10.5px] font-semibold leading-[22px]" style={{ background: 'rgb(var(--accent) / .1)', color: 'rgb(var(--accent-hover))' }}>Ahora</span>}
                   {saltada && (
                     <button type="button" onClick={() => setStopSaltada(day.id, stop.id, false)} className="flex h-11 flex-none items-center gap-1 rounded-full px-1.5 text-[10.5px] font-semibold text-text/75">
                       <span className="flex h-[26px] items-center gap-1 rounded-full border border-[rgba(28,34,48,.16)] bg-white pl-1.5 pr-2">
@@ -717,7 +717,7 @@ function HoyVuelvesV2({ tarjeta, mitad, onVerComoIr, onExplorar }: { tarjeta: No
           <Icono nombre="explorar" size={15} grosor={1.8} />
           {tarjeta.explorar.boton}
         </button>
-        <span data-hoy-vuelves-despedida className="pt-1.5" style={{ font: "italic 400 20px/1.25 'Instrument Serif',serif", color: 'oklch(0.5 0.17 5)', textWrap: 'balance' as never }}>
+        <span data-hoy-vuelves-despedida className="pt-1.5" style={{ font: "italic 400 20px/1.25 'Instrument Serif',serif", color: 'rgb(var(--accent-hover))', textWrap: 'balance' as never }}>
           {tarjeta.despedida}
         </span>
       </div>

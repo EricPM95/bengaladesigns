@@ -58,7 +58,7 @@ export function HojaDosViajes({
     >
       {modo === 'p9' && <span style={{ font: "400 13.5px/1.5 'Geist'", opacity: 0.75 }}>El otro pasa a «Viajes guardados», sin borrarse.</span>}
       {error && (
-        <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'oklch(0.5 0.17 5)' }}>
+        <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>
           {error}
         </p>
       )}

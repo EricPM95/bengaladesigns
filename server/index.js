@@ -43,6 +43,8 @@ import { periodosParaFicha } from '../shared/routeEngine/horarioDeLaFecha.js'
 import { cambioDelDia } from './cambio.js'
 import { registrarRutasTiempo } from './tiempo.js'
 import { registrarRutasCuentas } from './cuentas.js'
+import { registrarRutasAvisosDestino } from './avisosDestino.js'
+import { registrarRutasDestinosCurados } from './destinosCurados.js'
 import { crearServicioAvisos, registrarRutasAvisos } from './avisos.js'
 import { crearClienteCivitatis, civitatisActiva } from './civitatis/cliente.js'
 import { crearCache as crearCacheCivitatis } from './civitatis/cache.js'
@@ -4559,6 +4561,9 @@ app.get('/api/cambio', async (_req, res) => {
 registrarRutasTiempo(app)
 // Las cuentas (parte 1): reclamar lo de una sesión anónima y borrar la cuenta. Con la clave de servicio de Supabase; sin ella responden 503 y no tocan nada.
 registrarRutasCuentas(app, salesAdmin)
+// La primera pantalla (Tanda 10): los destinos curados de verdad que salen en el mapa (de los datos) y el aviso «avísame cuando llegue» de los que aún no tenemos (migración 0028).
+registrarRutasDestinosCurados(app, join(__dirname, '../data'))
+registrarRutasAvisosDestino(app, { admin: salesAdmin })
 // La campanita de avisos (cuentas parte 3): lista, leídos, avisos con fecha (nunca de noche), aviso al móvil (con PUSH_ACTIVO) y la tarea programada de Vercel (con CRON_SECRET).
 if (salesAdmin) registrarRutasAvisos(app, { admin: salesAdmin, servicio: crearServicioAvisos({ admin: salesAdmin, destinos: cargarDatosLogros().destinos }) })
 // La API de consulta (parte 1, sandbox): apagada salvo CIVITATIS_API_ACTIVA=true. Todo pasa por aquí; el móvil nunca ve el usuario, la contraseña ni el token. La caché usa Supabase si está la clave (tabla `civitatis_cache`, migración 0022).

@@ -72,7 +72,7 @@ export function Hoja({
             </span>
           </button>
         )}
-        {etiqueta && <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: oscura ? '#F3D59A' : 'oklch(0.5 0.17 5)' }}>{etiqueta}</span>}
+        {etiqueta && <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: oscura ? '#F3D59A' : 'rgb(var(--accent-hover))' }}>{etiqueta}</span>}
         {titulo && <span style={{ paddingRight: 34, font: "400 25px/1.12 'Instrument Serif',serif", textWrap: 'pretty' }}>{titulo}</span>}
         {children}
       </div>

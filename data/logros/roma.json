@@ -784,6 +784,20 @@
       "linea": "Kilómetros de galerías donde se enterraron los primeros cristianos."
     },
     {
+      "id": "plaza_de_espana",
+      "tipo": "sitio",
+      "sitio": "plaza_de_espana",
+      "nombre": "Escalón a escalón",
+      "linea": "Los 135 escalones que suben a la Trinità dei Monti."
+    },
+    {
+      "id": "castillo_de_santangelo",
+      "tipo": "sitio",
+      "sitio": "castillo_de_santangelo",
+      "nombre": "Tumba de emperador",
+      "linea": "Tumba de emperador, fortaleza de papas."
+    },
+    {
       "id": "madrugador",
       "tipo": "momento",
       "momento": "madrugador",

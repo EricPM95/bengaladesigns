@@ -21,6 +21,11 @@ export default {
         'accent-gold': withOpacity('--accent-gold'),
         'accent-red': withOpacity('--accent-red'),
         'accent-lilac': withOpacity('--accent-lilac'),
+        // JUTRIP (Tanda 10): el oro claro (solo líneas, pines, iconos grandes y brillos) y el frambuesa, que ya no es el color de la marca: solo «falta» y resaltar (corazón de «lo recomiendan», piezas de la colección principal).
+        oro: withOpacity('--oro'),
+        frambuesa: withOpacity('--frambuesa'),
+        'frambuesa-hover': withOpacity('--frambuesa-hover'),
+        'frambuesa-soft': withOpacity('--frambuesa-soft'),
         // El lila de la etiqueta de barrio («Trastevere», Tanda 6y4): un solo sitio, los tripletes de index.css.
         'barrio-lila': withOpacity('--barrio-lila'),
         'barrio-lila-soft': withOpacity('--barrio-lila-soft'),

@@ -1,52 +1,33 @@
 /**
- * El mapa del mundo del formulario Trazo (prototipo "Trazo App" de Claude Design): proyección
- * equirectangular 4 px por grado y la silueta de la tierra de world-atlas (topojson), cargada una vez.
+ * El mapa del mundo de los pasos 2 a 7 del formulario (prototipo "Trazo App" de Claude Design): proyección
+ * equirectangular 4 px por grado y la silueta de la tierra de `tierra110.json` (dentro de la app), cargada una vez.
  */
 export const P = (lat: number, lng: number): [number, number] => [(lng + 180) * 4, (90 - lat) * 4]
 
-interface Topology {
-  transform: { scale: [number, number]; translate: [number, number] }
-  arcs: [number, number][][]
-  objects: { land: { geometries: { type: string; arcs: number[][] | number[][][] }[] } }
-}
+/** `tierra110.json` (por país o isla, anillos [lng, lat, lng, lat, …] en décimas de grado): la silueta de la tierra, que va DENTRO de la app. */
+type TierraCruda = Record<string, number[][]>
 
-function landPath(t: Topology): string {
-  const [sx, sy] = t.transform.scale
-  const [tx, ty] = t.transform.translate
-  const arcs = t.arcs.map((arc) => {
-    let x = 0
-    let y = 0
-    return arc.map(([dx, dy]) => {
-      x += dx
-      y += dy
-      return P(y * sy + ty, x * sx + tx)
-    })
-  })
-  const ring = (indexes: number[]) => {
-    let pts: [number, number][] = []
-    indexes.forEach((i, k) => {
-      const a = i < 0 ? arcs[~i].slice().reverse() : arcs[i]
-      pts = pts.concat(k ? a.slice(1) : a)
-    })
-    // Corta donde el anillo cruza el antimeridiano (salto de más de media vuelta).
-    const pieces: [number, number][][] = [[]]
-    pts.forEach((p, i) => {
-      if (i && Math.abs(p[0] - pts[i - 1][0]) > 720) pieces.push([])
-      pieces[pieces.length - 1].push(p)
-    })
-    if (pieces.length > 1) {
-      const last = pieces.pop()!
-      pieces[0] = last.concat(pieces[0])
-    }
-    return pieces
-      .filter((q) => q.length > 2)
-      .map((q) => 'M' + q.map((p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join('L') + 'Z')
-      .join('')
-  }
+/** Los anillos de la tierra en el mapa de 4 px por grado. Corta donde un anillo cruza el antimeridiano (un salto de más de media vuelta). */
+export function landPath(tierra: TierraCruda): string {
   let d = ''
-  for (const g of t.objects.land.geometries) {
-    const polys = (g.type === 'Polygon' ? [g.arcs] : g.type === 'MultiPolygon' ? g.arcs : []) as number[][][]
-    polys.forEach((poly) => poly.forEach((r) => (d += ring(r as unknown as number[]))))
+  for (const anillos of Object.values(tierra)) {
+    for (const a of anillos) {
+      const n = Math.floor(a.length / 2)
+      if (n < 3) continue
+      const pieces: [number, number][][] = [[]]
+      let prev: [number, number] | null = null
+      for (let i = 0; i < n; i++) {
+        const p = P(a[2 * i + 1] / 10, a[2 * i] / 10)
+        if (prev && Math.abs(p[0] - prev[0]) > 720) pieces.push([])
+        pieces[pieces.length - 1].push(p)
+        prev = p
+      }
+      if (pieces.length > 1) {
+        const last = pieces.pop()!
+        pieces[0] = last.concat(pieces[0])
+      }
+      for (const q of pieces) if (q.length > 2) d += 'M' + q.map((p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join('L') + 'Z'
+    }
   }
   return d
 }
@@ -54,18 +35,15 @@ function landPath(t: Topology): string {
 let landCache: string | null = null
 let landPromise: Promise<string> | null = null
 
-/** La silueta de la tierra (una sola descarga; si falla, el mapa queda solo con luces). */
+/** La silueta de la tierra (una sola carga, de dentro de la app: no se pide nada a internet; si falla, el mapa queda solo con luces). */
 export function loadLand(): Promise<string> {
   if (landCache) return Promise.resolve(landCache)
-  if (!landPromise) {
-    landPromise = fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json')
-      .then((response) => response.json())
-      .then((topology: Topology) => {
-        landCache = landPath(topology)
-        return landCache
-      })
-      .catch(() => '')
-  }
+  landPromise ??= import('../logros/pantallas/mundo/tierra110.json')
+    .then((m) => {
+      landCache = landPath(m.default as unknown as TierraCruda)
+      return landCache
+    })
+    .catch(() => '')
   return landPromise
 }
 

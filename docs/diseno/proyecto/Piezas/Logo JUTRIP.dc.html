@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500&display=swap" rel="stylesheet">
+</helmet>
+<div style="display:inline-flex;flex-direction:{{ dir }};align-items:center;gap:{{ gap }}px">
+  <svg width="{{ size }}" viewBox="0 0 230 200" fill="none" style="overflow:visible;flex:none">
+    <defs>
+      <linearGradient id="{{ u }}m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ m0 }}"></stop><stop offset=".3" stop-color="{{ m1 }}"></stop><stop offset=".55" stop-color="{{ m2 }}"></stop><stop offset=".8" stop-color="{{ m3 }}"></stop><stop offset="1" stop-color="{{ m4 }}"></stop></linearGradient>
+      <radialGradient id="{{ u }}c" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".5" stop-color="{{ m1 }}"></stop><stop offset="1" stop-color="{{ m3 }}"></stop></radialGradient>
+    </defs>
+    <circle cx="115" cy="104" r="78" stroke="url(#{{ u }}m)" stroke-width="3" opacity=".6"></circle>
+    <circle cx="115" cy="104" r="70" stroke="{{ m2 }}" stroke-width="1" stroke-dasharray="1 6" stroke-linecap="round" opacity=".8"></circle>
+    <path d="M115 14L129 82L196 104L129 126L115 194L101 126L34 104L101 82Z" fill="url(#{{ u }}m)" stroke="{{ ed }}" stroke-width="1.4" stroke-linejoin="round"></path>
+    <path d="M115 14L129 82L115 104L101 82Z" fill="#FFFFFF" opacity=".34"></path>
+    <path d="M196 104L129 126L115 104L129 82Z" fill="#000000" opacity=".1"></path>
+    <path d="M115 194L101 126L115 104L129 126Z" fill="#000000" opacity=".22"></path>
+    <path d="M34 104L101 82L115 104L101 126Z" fill="#FFFFFF" opacity=".12"></path>
+    <circle cx="115" cy="104" r="15" fill="url(#{{ u }}c)" stroke="{{ ed }}" stroke-width="1.6"></circle>
+    <path d="M110 97a9 9 0 0 1 8-3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity=".9"></path>
+    <path d="M30 168Q82 124 148 140T214 80" stroke="url(#{{ u }}m)" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="1 9"></path>
+    <circle cx="30" cy="168" r="6" fill="url(#{{ u }}c)" stroke="{{ ed }}" stroke-width="1.4"></circle>
+    <circle cx="214" cy="80" r="5" stroke="{{ m1 }}" stroke-width="2"></circle>
+  </svg>
+  <sc-if value="{{ showWord }}" hint-placeholder-val="{{ true }}">
+    <span style="font-family:'Bodoni Moda',serif;font-size:{{ fs }}px;line-height:1.2;letter-spacing:.1em;padding-left:.1em;color:transparent;background:linear-gradient(180deg,{{ t0 }},{{ t1 }} 50%,{{ t2 }});-webkit-background-clip:text;background-clip:text;white-space:nowrap"><sc-for list="{{ letters }}" as="q" hint-placeholder-count="6"><span style="font-weight:{{ q.w }};font-variation-settings:'opsz' 96">{{ q.c }}</span></sc-for></span>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:120,&quot;tsType&quot;:&quot;number&quot;},&quot;tone&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;light&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  u='lg'+Math.random().toString(36).slice(2,7);
+  renderVals(){
+    const p=this.props,dark=p.tone==='dark';
+    const L={m0:'#C99A44',m1:'#8E6820',m2:'#6E5018',m3:'#5A4010',m4:'#8E6820',ed:'#5A4010',t0:'#C99A44',t1:'#8E6820',t2:'#5A4010'};
+    const D={m0:'#FFF6DC',m1:'#F3D88F',m2:'#C99A44',m3:'#8E6820',m4:'#E9C77A',ed:'#6E5018',t0:'#FFF6DC',t1:'#E9C77A',t2:'#9A7228'};
+    const c=dark?D:L;const size=+p.size||120;
+    return{...c,u:this.u,size,fs:+p.fs||Math.round(size*.42),dir:p.dir||'column',gap:+p.gap||Math.round(size*.06),showWord:p.word!=='no',
+      letters:'JUTRIP'.split('').map(x=>({c:x,w:(x==='R'||x==='P')?400:500}))};
+  }
+}
+</script>
+</body>
+</html>

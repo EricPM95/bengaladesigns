@@ -159,8 +159,8 @@ if (acento) {
   const contraste = (a, b2) => (Math.max(a, b2) + 0.05) / (Math.min(a, b2) + 0.05)
   const blanco = contraste(lum(r, g, b), 1)
   debe(blanco >= 4.5, '7 color', `el texto blanco sobre el frambuesa (${r} ${g} ${b}) da ${blanco.toFixed(2)}:1, menos de 4,5:1`)
-  // El frambuesa se reconoce por su tono rosado (más rojo que verde y azul > verde).
-  debe(r > 150 && b > g && r > b, '7 color', `--accent (${r} ${g} ${b}) no es un frambuesa`)
+  // (Tanda 10: el acento de la marca ya no es el frambuesa sino el oro oscuro #8E6820: más rojo que verde y verde que azul. El frambuesa vive en --frambuesa, solo para «falta» y resaltar.)
+  debe(r > 120 && r > g && g > b && b < 70, '7 color', `--accent (${r} ${g} ${b}) no es el oro de la marca`)
 }
 const terracota = []
 // Quedan fuera los colores que no son «falta» ni «reservar»: los degradados de temporada y de atardecer (TrazoCards, trazoUi), el confeti de las fechas especiales y el color de reserva de una excursión sin color propio y los colores por categoría de los pines (monumentos, restaurantes…).

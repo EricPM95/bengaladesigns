@@ -1,0 +1,207 @@
+// Las capturas de la Tanda 10 (JUTRIP), en tamaño móvil (390 x 844), en docs/dias/capturas_jutrip/: la primera pantalla en sus estados A a G, pasos del formulario, la pantalla de entrar, la
+// de apertura, el icono, las películas E12 y E13 (un fotograma del principio y uno del final) y la app por dentro, de día y de noche.
+// Hace falta `npm run server` y `npm run dev` (y Internet: el buscador del origen es el de siempre).
+//   API_URL=http://localhost:8787 node scripts/destino/capturasJutrip.mjs [parte ...]      (partes: primera formulario entrar apertura peliculas interior)
+import path from 'node:path'
+import { abrirApp } from './_enLaApp.mjs'
+
+const SALIDA = path.resolve('docs/dias/capturas_jutrip')
+const partes = new Set(process.argv.slice(2))
+const quiero = (p) => partes.size === 0 || partes.has(p)
+const png = (n) => path.join(SALIDA, `${n}.jpg`)
+const CANCUN = "window.__destinosCurados=[{clave:'roma',nombre:'Roma',pais:'Italia',iso:'it',lat:41.9028,lng:12.4964},{clave:'cancun',nombre:'Cancún',pais:'México',iso:'mx',lat:21.1619,lng:-86.8515}]"
+
+async function esperarApp(app) {
+  for (let i = 0; i < 120; i++) {
+    // (En la primera pantalla, también la silueta de la tierra: es un trozo aparte y la primera vez tarda.)
+    if (await app.evaluar("Boolean((document.querySelector('[data-primera-pantalla]') && document.querySelector('[data-mapa-primera] svg path')) || document.querySelector('[data-entrar]'))").catch(() => false)) return
+    await app.esp(500)
+  }
+  throw new Error('La app no ha abierto')
+}
+const tocar = (app, selector) => app.evaluar(`(() => { const e = document.querySelector(${JSON.stringify(selector)}); if (!e) return false; e.dispatchEvent(new MouseEvent('click', { bubbles: true })); return true })()`)
+/** Cierra los avisos que salen al abrir un viaje (temporada, fechas…). */
+async function cerrarAvisos(app) {
+  for (let i = 0; i < 4; i++) {
+    const hecho = await app.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Entendido|Vale|Cerrar)$/.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()")
+    if (!hecho) break
+    await app.esp(700)
+  }
+}
+/** Escribe una ciudad en ORIGEN y elige el primer resultado del buscador. */
+async function origen(app, texto) {
+  await app.escribir('[data-campo-origen]', texto)
+  for (let i = 0; i < 40; i++) {
+    await app.esp(300)
+    if (await app.evaluar("Boolean(document.querySelector('[data-origen-opcion]'))")) break
+  }
+  await app.evaluar("(() => { const e = document.querySelector('[data-origen-opcion]'); e.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true })); return true })()")
+  await app.esp(1500)
+}
+
+if (quiero('primera')) {
+  console.log('· primera pantalla A a F')
+  let app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=0' })
+  await esperarApp(app)
+  await app.esp(2500)
+  await app.captura(png('primera_A_todos_los_pines'))
+  await app.evaluar("document.querySelector('[data-campo-destino]').focus()")
+  await app.esp(800)
+  await app.captura(png('primera_B_tocando_destino'))
+  await app.escribir('[data-campo-destino]', 'Tokio')
+  await app.esp(800)
+  await app.captura(png('primera_C_destino_que_no_tenemos'))
+  await app.escribir('[data-campo-destino]', 'rom')
+  await app.esp(400)
+  await tocar(app, '[data-destino-card]')
+  await app.esp(2500)
+  await app.captura(png('primera_D_destino_elegido'))
+  await origen(app, 'Madrid')
+  await app.esp(2500)
+  await app.captura(png('primera_E_madrid_roma'))
+  app.cerrar()
+
+  app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=0' })
+  await esperarApp(app)
+  await app.esp(1500)
+  await tocar(app, '[data-pin="Roma"]')
+  await origen(app, 'Buenos Aires')
+  await app.esp(2500)
+  await app.captura(png('primera_F_buenosaires_roma'))
+  app.cerrar()
+
+  // G: con un destino curado «de mentira» (Cancún) también sale en el mapa.
+  app = await abrirApp('http://localhost:5173', { antes: CANCUN })
+  await esperarApp(app)
+  await app.esp(1500)
+  await tocar(app, '[data-pin="Cancún"]')
+  await origen(app, 'Madrid')
+  await app.esp(2500)
+  await app.captura(png('primera_G_madrid_cancun'))
+  app.cerrar()
+}
+
+/** Toca el primer botón o fila visible cuyo texto cumple la expresión. */
+const clicTexto = (app, re) =>
+  app.evaluar(`(() => { const r = ${re}; const visible = (e) => e.offsetParent !== null && e.getBoundingClientRect().width > 0; const buscar = (sel) => Array.from(document.querySelectorAll(sel)).filter((e) => r.test((e.innerText || '').trim()) && visible(e)); let c = buscar('button'); if (!c.length) c = buscar('[role=button],[role=radio],label,div,span').filter((e) => e.children.length < 4); const e = c[0]; if (!e) return false; e.click(); return (e.innerText || '').slice(0, 30) })()`)
+
+if (quiero('formulario')) {
+  console.log('· pasos del formulario')
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off' })
+  await esperarApp(app)
+  await app.esp(1500)
+  await tocar(app, '[data-pin="Roma"]')
+  await origen(app, 'Madrid')
+  await tocar(app, '[data-trazar-ruta]')
+  await app.esp(5000)
+  await app.captura(png('form_2_transporte'))
+  console.log(await clicTexto(app, '/^Avión/'))
+  await app.esp(1200)
+  await app.captura(png('form_2b_transporte_elegido'))
+  console.log(await clicTexto(app, '/Continuar/'))
+  await app.esp(2500)
+  await app.captura(png('form_3_fechas'))
+  // Dos días del calendario (del lunes 26 al jueves 29) y Continuar.
+  console.log(await clicTexto(app, '/^26$/'))
+  await app.esp(500)
+  console.log(await clicTexto(app, '/^29$/'))
+  await app.esp(800)
+  await app.captura(png('form_3b_fechas_elegidas'))
+  console.log(await clicTexto(app, '/^Continuar/'))
+  await app.esp(2500)
+  await app.captura(png('form_4_compania'))
+  console.log(await clicTexto(app, '/^En pareja/'))
+  await app.esp(800)
+  await app.captura(png('form_4b_compania_elegida'))
+  app.cerrar()
+}
+
+if (quiero('entrar')) {
+  console.log('· pantalla de entrar')
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off' })
+  await esperarApp(app)
+  await app.evaluar("import('/src/dev/escaparate.ts').then(() => window.__escaparate.abrir('c3-A1'))")
+  await app.esp(1500)
+  await app.captura(png('entrar'))
+  app.cerrar()
+}
+
+if (quiero('apertura')) {
+  console.log('· apertura e icono')
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=1' })
+  await app.esp(4000)
+  await app.captura(png('apertura'))
+  app.cerrar()
+  const app2 = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off' })
+  await esperarApp(app2)
+  await app2.evaluar("import('/src/dev/escaparate.ts').then(() => window.__escaparate.abrir('c3-I1'))")
+  await app2.esp(1500)
+  await app2.captura(png('icono_en_la_pantalla_de_inicio'))
+  app2.cerrar()
+}
+if (quiero('peliculas')) {
+  console.log('· películas E12 y E13')
+  for (const [id, nombre] of [['plaza_de_espana', 'E12_plaza_de_espana'], ['castillo_de_santangelo', 'E13_castillo_de_santangelo']]) {
+    const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1' })
+    await esperarApp(app)
+    for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
+    await app.evaluar('window.__rutaPrueba().then(() => true)')
+    await app.esp(6000)
+    await cerrarAvisos(app)
+    await app.evaluar(`window.__momentos.lanzar('emblema:${id}')`)
+    await app.esp(2200)
+    await app.captura(png(`${nombre}_1_principio`))
+    await app.esp(4500)
+    await app.captura(png(`${nombre}_2_mitad`))
+    await app.esp(7500)
+    await app.captura(png(`${nombre}_3_final`))
+    app.cerrar()
+  }
+}
+
+if (quiero('interior')) {
+  for (const noche of [false, true]) {
+    const sufijo = noche ? 'noche' : 'dia'
+    console.log('· la app por dentro, de ' + sufijo)
+    const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1' })
+    await esperarApp(app)
+    for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
+    await app.evaluar('window.__rutaPrueba().then(() => true)')
+    await app.esp(6000)
+    await cerrarAvisos(app)
+    const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
+    if (noche) await app.evaluar(`${store}.then((s) => { if (!s.darkMode) s.toggleDarkMode(); return true })`)
+    const modo = async (m) => {
+      await app.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('${m}'); return true })`)
+      await app.esp(2500)
+      await cerrarAvisos(app)
+    }
+    await modo('today')
+    await app.captura(png(`interior_HOY_${sufijo}`))
+    await modo('days')
+    await app.captura(png(`interior_DIAS_cerrado_${sufijo}`))
+    await app.evaluar(`${store}.then((s) => { s.setActiveDayId(s.route.days[0].id); return true })`)
+    await app.esp(4000)
+    await app.captura(png(`interior_DIAS_dia_abierto_${sufijo}`))
+    // La ficha de una parada: se toca el nombre de la primera parada del día abierto.
+    await app.evaluar("(() => { const p = document.querySelector('[data-stop-id]'); if (!p) return false; (p.querySelector('button') || p).click(); return true })()")
+    await app.esp(2500)
+    await app.captura(png(`interior_DIAS_parada_abierta_${sufijo}`))
+    await modo('explore')
+    await app.esp(3000)
+    await app.captura(png(`interior_EXPLORAR_${sufijo}`))
+    await modo('bookings')
+    await app.captura(png(`interior_RESERVAS_${sufijo}`))
+    // Logros (la hoja de logros del viaje, con sus 14 secretos) y el Pase (Mis pases).
+    await modo('today')
+    for (const [id, nombre] of [['c3-L-P4', 'Pase_mis_pases'], ['T1', 'Logros_todos'], ['3a', 'Logros_la_hoja']]) {
+      await app.evaluar(`import('/src/dev/escaparate.ts').then(() => window.__escaparate.abrir('${id}'))`)
+      await app.esp(2500)
+      await app.captura(png(`interior_${nombre}_${sufijo}`))
+      await app.evaluar("try { window.__escaparate.limpiar() } catch (e) { /* nada abierto */ } true")
+      await app.esp(500)
+    }
+    app.cerrar()
+  }
+}
+console.log('listo')

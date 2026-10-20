@@ -6,7 +6,7 @@ import { useStopEntradas } from './useStopEntradas'
 import { Icono } from '../../ui/Icono'
 
 /** Sin reservar, el frambuesa de la app (`--accent`: «falta»). */
-const FALTA = 'rgb(var(--accent))'
+const FALTA = 'rgb(var(--frambuesa))'
 
 function TicketIcon() {
   return (

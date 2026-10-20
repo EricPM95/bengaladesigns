@@ -14,7 +14,7 @@ export function TarjetaPaseReservas({ hora, destino, noun = 'vuelo', forzar = fa
   if (!forzar && (!pase.cobro || pase.conPase)) return null
   return (
     <div data-reservas-p1="1" className="mt-2.5 flex flex-col gap-3 rounded-[22px] bg-[#FFFDF8] p-[16px]" style={{ border: '1px solid rgba(28,34,48,.07)' }}>
-      <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: 'oklch(0.5 0.17 5)' }}>Llegada</span>
+      <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgb(var(--accent-hover))' }}>Llegada</span>
       <span style={{ font: "400 22px/1.15 'Instrument Serif',serif", textWrap: 'balance' as never }}>
         <TextoConPase texto={`Tu ${noun} llega a las ${hora}. Con el Pase de ${destino}, tu primer día se ajusta solo.`} />
       </span>

@@ -4,7 +4,7 @@ import type { NombreIcono } from '../../../lib/iconos'
 
 /** Los colores de HOY (diseño «Hoy, según el momento»): tinta, frambuesa (falta), verde (hecho) y azul (el tiempo). */
 export const TINTA = '#1C2230'
-export const FRAMBUESA = 'oklch(0.55 0.17 5)'
+export const FRAMBUESA = 'rgb(var(--frambuesa))'
 export const VERDE = 'oklch(0.55 0.11 150)'
 export const AZUL = 'oklch(0.56 0.1 230)'
 
@@ -20,7 +20,7 @@ export function CajaBlanca({ children, className = '', ...resto }: { children: R
 }
 
 /** La tarjeta oscura grande de HOY, con su resplandor de color en una esquina. */
-export function TarjetaOscura({ children, brillo = 'oklch(0.55 0.17 5 / .4)', abajo = false }: { children: ReactNode; brillo?: string; abajo?: boolean }) {
+export function TarjetaOscura({ children, brillo = 'rgba(233,199,122,.32)', abajo = false }: { children: ReactNode; brillo?: string; abajo?: boolean }) {
   return (
     <div className="relative flex flex-none flex-col gap-1 overflow-hidden rounded-[28px] bg-[#1C2230] px-5 pb-[18px] pt-5 text-[#FFFDF8]" style={{ boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
       <span
@@ -34,7 +34,7 @@ export function TarjetaOscura({ children, brillo = 'oklch(0.55 0.17 5 / .4)', ab
 }
 
 /** El cuadradito con icono y el título de una caja («Te falta por reservar»). */
-export function CabeceraCaja({ icono, titulo, derecha, color = FRAMBUESA, fondo = 'oklch(0.55 0.17 5 / .12)' }: { icono: NombreIcono; titulo: string; derecha?: ReactNode; color?: string; fondo?: string }) {
+export function CabeceraCaja({ icono, titulo, derecha, color = 'rgb(var(--accent))', fondo = 'rgb(var(--accent) / .12)' }: { icono: NombreIcono; titulo: string; derecha?: ReactNode; color?: string; fondo?: string }) {
   return (
     <div className="flex items-center gap-3">
       <span className="flex h-9 w-9 flex-none items-center justify-center rounded-xl" style={{ background: fondo, color }}>
@@ -59,7 +59,7 @@ export function FilaPorReservar({ icono, nombre, onReservar }: { icono: NombreIc
         {nombre}
       </span>
       <button type="button" onClick={onReservar} className="h-11 flex-none self-center pl-1 pr-2.5" aria-label={`Reservar ${nombre}`}>
-        <span className="flex h-[34px] items-center rounded-full px-3.5 text-[12.5px] font-semibold text-white" style={{ background: FRAMBUESA, boxShadow: '0 8px 16px -8px oklch(0.55 0.17 5)' }}>
+        <span className="flex h-[34px] items-center rounded-full px-3.5 text-[12.5px] font-semibold text-white" style={{ background: 'rgb(var(--accent))', boxShadow: '0 8px 16px -8px rgb(var(--accent))' }}>
           Reservar
         </span>
       </button>

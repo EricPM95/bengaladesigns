@@ -120,7 +120,7 @@ export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso
 export function CabeceraHoy({ ojo, titulo, sub }: { ojo: string; titulo: string; sub?: string | null }) {
   return (
     <div className="flex flex-none flex-col gap-1 px-1 pb-1" data-hoy-cabecera>
-      <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase', color: 'oklch(0.5 0.17 5)' }}>{ojo}</span>
+      <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgb(var(--accent-hover))' }}>{ojo}</span>
       <span style={{ font: "400 28px/1.02 'Instrument Serif',serif", textWrap: 'balance' as never }} data-titulo-del-dia="1">{titulo}</span>
       {sub && <span style={{ font: "500 12px 'Geist Mono',monospace", letterSpacing: '.04em', color: 'rgba(28,34,48,.6)' }}>{sub}</span>}
     </div>

@@ -239,7 +239,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
                   height: 52,
                   border: 'none',
                   borderRadius: 14,
-                  background: selected ? 'rgba(255,190,30,.08)' : 'transparent',
+                  background: selected ? 'rgba(181,138,46,.08)' : 'transparent',
                   color: INK,
                   textAlign: 'left',
                   cursor: loadDone && row.apt ? 'pointer' : 'default',

@@ -4,8 +4,8 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { Icono } from '../../ui/Icono'
 
 // El frambuesa de la app: los tokens de `src/index.css` (un solo sitio).
-const ROSE = 'rgb(var(--accent))'
-const ROSE_DEEP = 'rgb(var(--accent-hover))'
+const ROSE = 'rgb(var(--frambuesa))'
+const ROSE_DEEP = 'rgb(var(--frambuesa-hover))'
 export const GREEN = 'oklch(0.55 0.11 150)'
 const GREEN_INK = 'oklch(0.45 0.11 150)'
 

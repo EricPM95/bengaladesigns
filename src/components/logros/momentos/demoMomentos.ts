@@ -2,6 +2,7 @@ import type { Momento } from '../../../lib/logros'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { datosDePrueba, datosDePruebaViajero, type EstadoLogros, type ResumenLogros } from './api'
 import { useMomentosUI } from './useMomentosUI'
+import romaLogros from '../../../../data/logros/roma.json'
 
 /**
  * PRUEBAS DE LOS MOMENTOS (Tanda 8B, SOLO en desarrollo: se carga con `import()` desde `MomentosHost` y no entra en la versión de producción).
@@ -9,7 +10,7 @@ import { useMomentosUI } from './useMomentosUI'
  *
  *   window.__momentos.lanzar('sello')            un momento suelto: sello · sello_evo · suma · coleccion · coliseo · emblema · pais · destino · maravilla · patrimonio · viajero · ademas
  *   window.__momentos.lanzar('emblema:panteon')  el emblema que quieras (sus ids: foro_romano, museos_vaticanos, plaza_san_pedro, basilica_san_pedro, panteon,
- *                                                fontana_de_trevi, boca_de_la_verdad, ojo_cerradura, catacumbas, madrugador, nocturno)
+ *                                                fontana_de_trevi, boca_de_la_verdad, ojo_cerradura, catacumbas, plaza_de_espana, castillo_de_santangelo, madrugador, nocturno)
  *   window.__momentos.repetir('panteon')         la escena de un emblema ya guardado (sin frase ni suspense)
  *   window.__momentos.serieCompleta()            un Visto que lo da todo: sello, colecciones, el Coliseo, y «Y además…»
  *   window.__momentos.serieFinal7()              la séptima maravilla: «El final de las 7 maravillas» (8B4)
@@ -31,7 +32,9 @@ const IMPRESCINDIBLES = ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi'
 const JOYAS = ['coliseo', 'fontana_de_trevi', 'panteon', 'museos_vaticanos']
 const ANTIGUA = ['coliseo', 'foro_romano_y_palatino', 'largo_di_torre_argentina', 'castillo_de_santangelo', 'circo_maximo', 'termas_de_caracalla']
 const col = (id: string, nombre: string, sitios: string[], vistos: string[], extra: { en_tu_ruta?: boolean } = {}) => ({ id, nombre, n: vistos.length, total: sitios.length, completa: vistos.length === sitios.length, en_tu_ruta: extra.en_tu_ruta ?? true, nuevo_hoy: true, sitios: sitios.map((x) => ({ sitio: x, visto: vistos.includes(x) })) })
-const secretos = (ids: string[]) => ({ total: 12, encontrados: ids.length, texto: ids.length ? `${ids.length} de 12 secretos encontrados` : 'Roma esconde 12 secretos', encontrados_lista: ids.map((id) => ({ id, nombre: '', linea: '', en })) })
+// El total sale de los datos (Tanda 10: Roma esconde 14 secretos).
+const TOTAL_SECRETOS = romaLogros.emblemas.length
+const secretos = (ids: string[]) => ({ total: TOTAL_SECRETOS, encontrados: ids.length, texto: ids.length ? `${ids.length} de ${TOTAL_SECRETOS} secretos encontrados` : `Roma esconde ${TOTAL_SECRETOS} secretos`, encontrados_lista: ids.map((id) => ({ id, nombre: '', linea: '', en })) })
 const GRADOS_SELLO = [[1, 'bronce', 'Primeros pasos en Roma'], [4, 'plata', 'Roma te atrapa'], [6, 'oro', 'Roma en el corazón'], [8, 'diamante', 'Roma es tuya']] as const
 
 const estadoBase = (acabado: boolean, escenario: Escenario = 'viaje'): EstadoLogros => {
@@ -105,7 +108,7 @@ const MOMENTOS: Record<string, () => Momento[]> = {
     m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|1', logro: 'paises', escalon: '1', destino: '*', nombre: 'Primer sello', linea: 'Países distintos que has visitado con la app.', en }),
   ],
 }
-for (const id of ['foro_romano', 'museos_vaticanos', 'plaza_san_pedro', 'basilica_san_pedro', 'panteon', 'fontana_de_trevi', 'boca_de_la_verdad', 'ojo_cerradura', 'catacumbas', 'madrugador', 'nocturno']) {
+for (const id of ['foro_romano', 'museos_vaticanos', 'plaza_san_pedro', 'basilica_san_pedro', 'panteon', 'fontana_de_trevi', 'boca_de_la_verdad', 'ojo_cerradura', 'catacumbas', 'plaza_de_espana', 'castillo_de_santangelo', 'madrugador', 'nocturno']) {
   MOMENTOS[`emblema:${id}`] = () => [m({ tipo: 'emblema', cat: 'emblema', clave: `roma|emblema|${id}`, id, destino: 'roma', nombre: '', linea: '', momento: id === 'madrugador' || id === 'nocturno', frase: 'Pero… ¿qué es esto?', en })]
 }
 

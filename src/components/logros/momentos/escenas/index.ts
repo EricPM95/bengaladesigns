@@ -11,6 +11,8 @@ export const ESCENAS: Record<string, () => Promise<{ default: ConfigEscena }>> =
   boca_de_la_verdad: () => import('./boca_de_la_verdad'),
   ojo_cerradura: () => import('./ojo_cerradura'),
   catacumbas: () => import('./catacumbas'),
+  plaza_de_espana: () => import('./plaza_de_espana'),
+  castillo_de_santangelo: () => import('./castillo_de_santangelo'),
   madrugador: () => import('./madrugador'),
   nocturno: () => import('./nocturno'),
 }

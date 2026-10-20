@@ -28,6 +28,7 @@
 @keyframes ecIRays{0%{opacity:0}60%{opacity:.5}92%{opacity:.9}100%{opacity:1}}
 @keyframes ecFlyB{0%{transform:none;opacity:1}100%{transform:translate(152px,486px) scale(.2);opacity:.2}}
 @keyframes ecFade{from{opacity:0}to{opacity:1}}
+@keyframes ecCam{from{transform:scale(1)}to{transform:scale(1.3)}}
 @keyframes ecOut{to{opacity:0}}
 @keyframes ecDraw{to{stroke-dashoffset:0}}
 @keyframes ecUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -277,7 +278,7 @@
       </svg>
     </sc-if>
 
-    <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0;overflow:visible" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0;overflow:visible;transform-origin:195px 300px;animation:{{ cam }}" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <sc-for list="{{ ghost }}" as="g" hint-placeholder-count="0"><path d="{{ g.d }}" stroke="{{ g.c }}" stroke-width="{{ g.w }}" stroke-dasharray="{{ g.da }}" style="opacity:0;animation:ecFade 1.2s {{ g.dl }} ease both"></path></sc-for>
       <sc-for list="{{ draw }}" as="p" hint-placeholder-count="0"><path d="{{ p.d }}" pathLength="100" stroke="{{ p.c }}" stroke-width="{{ p.w }}" style="stroke-dasharray:100;stroke-dashoffset:100;animation:ecDraw {{ p.l }} {{ p.dl }} cubic-bezier(.4,0,.2,1) both"></path></sc-for>
       <sc-for list="{{ dots }}" as="d" hint-placeholder-count="0"><g style="opacity:0;animation:ecFade .5s {{ d.d }} ease both"><circle cx="{{ d.x }}" cy="{{ d.y }}" r="{{ d.r }}" fill="{{ d.f }}" stroke="none" style="animation:ecDust {{ d.l }} {{ d.d2 }} ease-in-out infinite"></circle></g></sc-for>
@@ -312,7 +313,7 @@ const s=n=>n.toFixed(2)+'s';
 const G='#E9C77A',GF='rgba(233,199,122,.55)';
 const D=(d,dl,l,w,c)=>({d,dl:s(dl),l:s(l||1.2),w:String(w||2),c:c||G});
 const GH=(d,dl,da,w,c)=>({d,dl:s(dl),da:da||'4 5',w:String(w||1.4),c:c||GF});
-const EK={coliseo:'mar',panteon:'ocu',trevi:'mon',foro:'foro',museos:'cre',plaza:'plaza',basilica:'tumba',boca:'boca',cerradura:'key',catacumbas:'lamp',madrugador:'alba',nocturno:'noche'};
+const EK={coliseo:'mar',panteon:'ocu',trevi:'mon',foro:'foro',museos:'cre',plaza:'plaza',basilica:'tumba',boca:'boca',cerradura:'key',catacumbas:'lamp',madrugador:'alba',nocturno:'noche',escalinata:'esc',castillo:'cas'};
 const TX={
  coliseo:['Una maravilla del mundo','El anfiteatro más grande jamás construido.','Coliseo · Roma'],
  panteon:['Bajo una cúpula de casi 2.000 años','La mayor cúpula de hormigón sin armar del mundo.','Panteón · Roma'],
@@ -325,7 +326,9 @@ const TX={
  cerradura:['Has mirado por la cerradura','Por este agujero se ve la cúpula de San Pedro, enmarcada.','Ojo de la Cerradura · Aventino'],
  catacumbas:['La Roma de debajo','Kilómetros de galerías donde se enterraron los primeros cristianos.','Catacumbas de San Calixto · Roma'],
  madrugador:['Madrugador','Roma antes que nadie.','Fontana de Trevi · Roma'],
- nocturno:['Nocturno','Roma con las luces encendidas.','Coliseo · Roma']};
+ nocturno:['Nocturno','Roma con las luces encendidas.','Coliseo · Roma'],
+ escalinata:['Escalón a escalón','Los 135 escalones que suben a la Trinità dei Monti.','Plaza de España · Roma'],
+ castillo:['Tumba de emperador','Tumba de emperador, fortaleza de papas.','Castillo de Sant’Angelo · Roma']};
 const skyline=()=>{const arch=[],wins=[];
   for(let x=20;x<=104;x+=14){arch.push('M'+x+' 552a4 4 0 0 1 8 0v8h-8z');wins.push([x+4,557]);}
   for(let x=20;x<=132;x+=14){arch.push('M'+x+' 580a4 4 0 0 1 8 0v10h-8z');wins.push([x+4,586]);}
@@ -343,11 +346,11 @@ class Component extends DCLogic {
   componentWillUnmount(){clearTimeout(this.t1);}
   start(){if(this.state.go)return;clearTimeout(this.t1);this.setState({go:true,intro:false});}
   renderVals(){const K=this.props.kind||'panteon';const u=this.u;const T=TX[K]||TX.panteon;
-    const base={u,bg:'#0C0A08',shake:'none',draw:[],ghost:[],dots:[],spk:[],dust:[],caus:[],rays:[],floor:[],bub:[],trail:[],rip1:[],spl:[],mpan:[],steps:[],niches:[],cells:[],studs:[],kbeams:[],sparks:[],stars:[],wins:[],skyl:'',
+    const base={u,cam:'none',bg:'#0C0A08',shake:'none',draw:[],ghost:[],dots:[],spk:[],dust:[],caus:[],rays:[],floor:[],bub:[],trail:[],rip1:[],spl:[],mpan:[],steps:[],niches:[],cells:[],studs:[],kbeams:[],sparks:[],stars:[],wins:[],skyl:'',
       orb:false,orbX:'0px',orbY:'0px',orbD:'6.6s',orbL:'1.2s',orbC:'#FFE7A8',has1:false,has2:false,txt1:'',txt2:'',t1D:'1s',t1L:'3s',t2D:'4.2s',t2L:'3s',tY:'740px',
       dimD:'7.6s',flD:'8s',eDel:8,x1:'9.2s',x2:'9.45s',x3:'9.7s',x4:'10.1s',halo:'rgba(255,226,160,.55)',ring:'#F3D59A',
       eKind:EK[K]||'ocu',title:T[0],line:T[1],place:T[2]};
-    Object.keys(EK).forEach(k=>{base['is'+{coliseo:'Co',panteon:'P',trevi:'T',foro:'F',museos:'M',plaza:'Pl',basilica:'B',boca:'Bo',cerradura:'C',catacumbas:'Ca',madrugador:'Ma',nocturno:'N'}[k]]=K===k;});
+    Object.keys(EK).forEach(k=>{base['is'+{coliseo:'Co',panteon:'P',trevi:'T',foro:'F',museos:'M',plaza:'Pl',basilica:'B',boca:'Bo',cerradura:'C',catacumbas:'Ca',madrugador:'Ma',nocturno:'N',escalinata:'Es',castillo:'Cs'}[k]]=K===k;});
     const ph=(a,ad,al,b,bd,bl,y)=>({has1:!!a,txt1:a||'',t1D:s(ad),t1L:s(al),has2:!!b,txt2:b||'',t2D:s(bd||0),t2L:s(bl||3),tY:y||'740px'});
     let o={};
     if(K==='coliseo'){
@@ -400,6 +403,63 @@ class Component extends DCLogic {
       const draw=[D('M30 110H360V620H30Z',.3,1.8,2),D('M30 110L56 140M360 110L332 140M30 620L56 580M360 620L332 580',1.2,.8,1.2,GF)];const mpan=[];
       ys.forEach((y,r)=>xs.forEach((x,c)=>{const k=r*3+c;draw.push(D('M'+x+' '+y+'h86v140h-86Z',.8+k*.15,.9,1.4));mpan.push({x:String(x),y:String(y),f:C[k],d:s(2.4+k*.12)});}));
       o={bg:'radial-gradient(circle at 50% 40%,#2C2230 0%,#120E14 70%)',draw,mpan,...ph('Levanta la vista…',.8,2.6,'Dos dedos a punto de tocarse.',3.8,3,'700px')};}
+    if(K==='castillo'){
+      const VX=195,VY=430,hw=y=>12+(y-VY)*.565;
+      const ys=[446,462,482,508,540,580,630,690,760,840];
+      const draw=[
+        D('M183 430L-60 860M207 430L450 860',.2,1.6,2.6),
+        D('M183 428L-60 770M207 428L450 770',.5,1.6,1.8),
+        ...ys.map((y,k)=>D('M'+(VX-hw(y)).toFixed(0)+' '+y+'H'+(VX+hw(y)).toFixed(0),.4+k*.34,.5,k%3===0?2.2:1.2,k%3===0?G:GF)),
+        ...ys.slice(0,9).flatMap((y,k)=>{const h=(y-VY)*.52+6,xl=VX-hw(y),xr=VX+hw(y);return [D('M'+xl.toFixed(0)+' '+y+'V'+(y-h).toFixed(0),.6+k*.34,.4,2),D('M'+xr.toFixed(0)+' '+y+'V'+(y-h).toFixed(0),.6+k*.34,.4,2)];}),
+        D('M195 430V840',1.5,2.2,1.2,GF),
+        D('M85 430V345H305V430',3.2,1.4,3),
+        D('M85 345v-9h14v9M117 345v-9h14v9M149 345v-9h14v9M181 345v-9h14v9M213 345v-9h14v9M245 345v-9h14v9M277 345v-9h14v9',4.3,.8,2.2),
+        D('M175 430V404a20 20 0 0 1 40 0V430M105 392v14M285 392v14',4.6,.8,2,GF),
+        D('M120 345V215H270V345M120 280Q195 298 270 280',5,1.4,3),
+        D('M120 215Q195 232 270 215M150 215v-9h12v9M175 215v-9h12v9M200 215v-9h12v9M225 215v-9h12v9',5.8,.9,2.2),
+        D('M140 250v18M195 254v18M250 250v18',6,.6,2,GF),
+        D('M150 206V150H240V206M150 160Q195 174 240 160',6.4,1,2.6),
+        D('M156 150Q195 100 234 150',7,.8,2.6),
+        D('M195 118V96M195 96l-26-30Q184 62 195 76M195 96l26-30Q206 62 195 76M212 74V40',7.5,1.1,2.4)
+      ];
+      const lamp=[];ys.slice(0,9).forEach((y,k)=>{const h=(y-VY)*.52+6;lamp.push([VX-hw(y),y-h-4],[VX+hw(y),y-h-4]);});
+      o={bg:'linear-gradient(180deg,#1A1B3A 0%,#4A3050 26%,#C0683C 46%,#3A2230 62%,#1A1218 100%)',draw,
+        ghost:[GH('M60 360Q195 300 330 360M20 300Q195 240 370 300',1.2,'3 8',1)],
+        dots:lamp.map(([x,y],k)=>({x:x.toFixed(0),y:y.toFixed(0),r:String(2+(k%4)*.5),f:'#FFD98A',d:s(1.2+k*.32),d2:s(1.4+(k%5)*.3),l:s(2.2+(k%4)*.5)})),
+        spk:toC(lamp,5.6,.08),caus:[],cam:'ecCam 8s cubic-bezier(.4,0,.3,1) both',
+        orb:true,orbD:'6.4s',orbL:'1.2s',orbY:'150px',
+        ...ph('Cruzas el puente…',1,3,'…y el castillo se alza ante ti.',4.4,3,'740px'),
+        dimD:'7.6s',flD:'8s',eDel:8};}
+    if(K==='escalinata'){
+      const hw=y=>70+95*(y-280)/305,WB='#BFE4F2';
+      const draw=[
+        D('M70 650Q195 705 320 650',.3,1.4,1.6,GF),
+        D('M95 640Q100 672 150 678H240Q290 672 295 640Q250 656 195 656Q140 656 95 640Z',.5,1.4,3),
+        D('M95 640L84 616M295 640L306 616M118 664Q195 676 272 664',1.4,.9,2),
+        D('M195 656V612M170 612H220M178 606H212',1.9,.8,2.2),
+        D('M125 280L30 585M265 280L360 585',2.4,2.2,3.2),
+        D('M133 280L45 585M257 280L345 585',2.7,2.2,1.4,GF),
+        ...[355,458].map((y,k)=>D('M'+(195-hw(y)).toFixed(0)+' '+y+'Q195 '+(y+20)+' '+(195+hw(y)).toFixed(0)+' '+y,3.4+k*.5,1.2,3)),
+        ...Array.from({length:29},(_,k)=>{const y=583-k*10.5;const w=hw(y);return D('M'+(195-w).toFixed(0)+' '+y.toFixed(0)+'H'+(195+w).toFixed(0),3.3+k*.1,.5,k%9===0?2.2:1.2,k%9===0?G:GF);}),
+        D('M195 280V585',3.6,1.2,1,GF),
+        D('M150 262V188H240V262M122 262H268',6.2,1.2,2.6),
+        D('M146 190L195 160L244 190Z',6.9,.9,2.6),
+        D('M126 262V176H148V262M242 262V176H264V262',7,1.2,2.4),
+        D('M124 176H150L137 150ZM240 176H266L253 150Z',7.5,.7,2.2),
+        D('M137 150V140M195 160V146M189 152H201M253 150V140',7.8,.6,2),
+        D('M182 262V232a13 13 0 0 1 26 0V262M195 196a9 9 0 1 0 .01 0Z',7.7,.8,2)
+      ];
+      const jet=(d,dl)=>D(d,dl,1.2,2.4,WB);
+      draw.push(jet('M195 612V566',2.4),jet('M195 566Q178 552 160 586',2.8),jet('M195 566Q212 552 230 586',2.8),jet('M195 604Q150 580 128 632',3.2),jet('M195 604Q240 580 262 632',3.2));
+      const lamps=[];[[100,380],[75,430],[50,500],[30,560],[290,380],[315,430],[340,500],[360,560],[140,300],[250,300]].forEach(p=>lamps.push(p));
+      o={bg:'linear-gradient(180deg,#1B1426 0%,#4A2A3A 34%,#9A5A44 58%,#241420 78%,#0F0A12 100%)',draw,
+        ghost:[GH('M160 140L190 80M230 140L200 80',6,'2 6',1.2),GH('M18 600Q195 720 372 600',.6,'3 6',1.2,WB)],
+        dots:lamps.map(([x,y],k)=>({x:String(x),y:String(y),r:String(2.6+(k%3)*.6),f:'#FFD98A',d:s(5+k*.18),d2:s(5.2+(k%5)*.3),l:s(2.2+(k%4)*.5)})),
+        spk:toC(lamps,5.6,.08),
+        caus:[0,1,2].map(k=>({p:'M-20 '+(640+k*14)+' q 20 -8 40 0'.repeat(11),l:s(3+k*.6),d:s(k*.4)})),
+        orb:true,orbD:'6.4s',orbL:'1.2s',orbY:'150px',
+        ...ph('Ciento treinta y cinco escalones…',1,3,'…y una barca que lleva siglos sin zarpar.',4.4,3,'740px'),
+        dimD:'7.6s',flD:'8s',eDel:8};}
     if(K==='plaza'){
       o={bg:'radial-gradient(circle at 50% 40%,#25283A 0%,#0F111C 72%)',
         draw:[D('M156.6 207.2A120 94.4 0 0 0 156.6 392.8',.5,1.8,3),D('M233.4 207.2A120 94.4 0 0 1 233.4 392.8',.5,1.8,3),D('M177.4 206.4V160.8M212.6 206.4V160.8',1.6,.8,1.4),

@@ -108,7 +108,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                   En tu ruta
                 </span>
                 <span className="-mt-1.5 flex items-center gap-1.5 text-[12px] text-text/65">
-                  <Icono nombre="reloj" size={13} style={{ color: 'oklch(0.55 0.17 5)' }} />
+                  <Icono nombre="reloj" size={13} style={{ color: 'rgb(var(--accent))' }} />
                   Las más buscadas se agotan: resérvalas pronto
                 </span>
                 {enRuta.map((item) =>

@@ -75,7 +75,7 @@ export function TarjetaRecuerdos({ route, onSubir }: { route: Route; onSubir?: (
         })}
       </div>
       <span className="flex items-start gap-2 text-[13px] leading-[1.45] text-text-soft">
-        <span className="mt-px flex-none" style={{ color: 'oklch(0.5 0.17 5)' }}>
+        <span className="mt-px flex-none" style={{ color: 'rgb(var(--accent-hover))' }}>
           <Icono nombre="mapa" size={16} />
         </span>
         Sube tus fotos y {destinos.texto} {destinos.varios ? 'quedan' : 'queda'} en tu mapa de viajes, en tu perfil.
@@ -87,7 +87,7 @@ export function TarjetaRecuerdos({ route, onSubir }: { route: Route; onSubir?: (
           <Icono nombre="camara" size={18} />
           Subir mis fotos
         </>,
-        { claseContenedor: 'flex w-full flex-col', style: { background: 'oklch(0.55 0.17 5)', boxShadow: '0 12px 22px -12px oklch(0.55 0.17 5)' } },
+        { claseContenedor: 'flex w-full flex-col', style: { background: 'rgb(var(--accent))', boxShadow: '0 12px 22px -12px rgb(var(--accent))' } },
       )}
       {fotos.length > 0 && (
         <button

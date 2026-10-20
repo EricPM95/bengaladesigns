@@ -26,7 +26,7 @@ export async function crearRutaDePrueba(): Promise<Route> {
   // (no dejar un «hoy» fingido de otra prueba: mandaría sobre el de este viaje)
   delete (window as unknown as { __demoHoy?: string }).__demoHoy
   if (!useRouteStore.getState().route) {
-    boton('Dev: ruta rápida')?.click()
+    useRouteStore.getState().setScreen('devQuickRoute')
     await espera(800)
     const campos = Array.from(document.querySelectorAll('input'))
     const origen = campos.find((c) => c.placeholder === 'Madrid')

@@ -10,12 +10,11 @@ import { prefetchPoolPhotos } from '../../lib/placePhoto'
 import { seasonOfMonth } from '../../lib/season'
 import { useRouteGeneration } from '../../lib/useRouteGeneration'
 import { useSyncStore } from '../../store/useSyncStore'
-import type { ConfirmedRoute } from '../destination/RouteSearch'
 import { poolSelectionLimit } from '../questionnaire/CuratedPlacesPool'
 import { cityCode } from './cityCode'
 import { DECOR_ROUTES, LIGHTS, P, arcBetween, loadLand } from './worldMap'
-import { ACCENT, AMBER, INK, SEASON_FX, SeasonFx, SERIF, MONO, THEME } from './trazoUi'
-import { StepRoute } from './StepRoute'
+import { ACCENT, AMBER, INK, ORO_CLARO, SEASON_FX, SeasonFx, SERIF, MONO, THEME } from './trazoUi'
+import { PrimeraPantalla } from './PrimeraPantalla'
 import { StepTransport } from './StepTransport'
 import { StepDates } from './StepDates'
 import { StepCompanion } from './StepCompanion'
@@ -29,6 +28,8 @@ import { buildManualRoute, transportContextOf } from '../../lib/manualRoute'
 import './trazo.css'
 import { textoDeDuracion } from '../../lib/duracionViaje'
 import { Icono } from '../ui/Icono'
+import { LogoPequeno } from '../ui/LogoJutrip'
+import { marca } from '../../lib/marca'
 
 /** Lo que tarda el aviso corto de la pantalla de elegir antes de pasar a la pantalla siguiente. */
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -138,18 +139,6 @@ export function TrazoFlow() {
     go(1)
   }
 
-  const startPanoramic = (route: ConfirmedRoute) => {
-    if (!origin) return
-    const state = store.getState()
-    state.setDestination(route.name, route.startPlace)
-    state.setArchetype('roadtrip_exclusivo', true)
-    state.setKnownCamperAccess(route.camperAccess)
-    updateAnswers({ origin: origin.name, originPlace: origin })
-    setDest(route.startPlace)
-    setProg(0)
-    go(1)
-  }
-
   const confirmDates = () => {
     const state = store.getState()
     state.setDatesConfirmed(true)
@@ -249,7 +238,8 @@ export function TrazoFlow() {
       const isD = place === mapPlaceD
       return { x, y, isD, code: cityCode(place) }
     })
-  const mapO = step <= 1 ? 1 : step === 2 ? 0.5 : isSummaryStep(step) ? 0.55 : 0.18
+  // (La primera pantalla lleva su propio mapa; el de fondo aparece al pasar a Transporte y sigue con el avión.)
+  const mapO = step === 0 ? 0 : step <= 1 ? 1 : step === 2 ? 0.5 : isSummaryStep(step) ? 0.55 : 0.18
 
   // ---- estación ----
   const previewSeason = previewMonth !== null ? seasonOfMonth(previewMonth) : null
@@ -345,8 +335,8 @@ export function TrazoFlow() {
       {side && (
         <aside style={{ width: 330, color: INK, display: 'flex', flexDirection: 'column', gap: 28 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-            <span style={{ font: `400 30px/1 ${SERIF}` }}>Trazo</span>
-            <span style={{ font: `500 10px/1 ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>rutas a medida</span>
+            <LogoPequeno tam={26} />
+            <span style={{ font: `500 10px/1 ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.62)' }}>{marca.lema}</span>
           </div>
           <h2 style={{ margin: 0, font: `400 50px/1 ${SERIF}`, letterSpacing: '-.01em', textWrap: 'balance' }}>
             Tu viaje se construye <em style={{ color: ACCENT }}>mientras eliges.</em>
@@ -405,7 +395,7 @@ export function TrazoFlow() {
                 const [x, y] = P(la, lo)
                 return <circle key={`${la},${lo}`} cx={x} cy={y} r={1.1 / view.s} fill={THEME.dot} />
               })}
-              {arc && step === 0 && <path d={arc.full} fill="none" stroke="rgba(255,190,30,.4)" strokeWidth={1} strokeDasharray="2 5" vectorEffect="non-scaling-stroke" />}
+              {arc && step === 0 && <path d={arc.full} fill="none" stroke="rgba(181,138,46,.4)" strokeWidth={1} strokeDasharray="2 5" vectorEffect="non-scaling-stroke" />}
               {arc && arc.part && <path d={arc.part} fill="none" strokeWidth={2} strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ stroke: ACCENT }} />}
               {ends.map((end) => (
                 <g key={`${end.code}-${end.isD}`}>
@@ -442,7 +432,8 @@ export function TrazoFlow() {
             }}
           />
 
-          {/* Cabecera: atrás, siete segmentos, n/7 y las fichas del viaje. */}
+          {/* Cabecera: atrás, siete segmentos, n/7 y las fichas del viaje. (La primera pantalla lleva la suya, con el logo.) */}
+          {step !== 0 && (
           <div style={{ position: 'absolute', left: 0, right: 0, top: 0, zIndex: 6, padding: `${desk ? 26 : 14}px 20px 0`, display: 'flex', flexDirection: 'column', gap: 12, pointerEvents: 'none' }}>
             {resumeTrip && !isSummaryStep(step) && (
               <button
@@ -506,7 +497,7 @@ export function TrazoFlow() {
                       style={{
                         height: '100%',
                         width: step > i ? '100%' : step === i ? (i === 1 ? `${Math.round(prog * 100)}%` : '30%') : '0%',
-                        background: AMBER,
+                        background: ORO_CLARO,
                         borderRadius: 3,
                         transition: 'width .6s cubic-bezier(.2,.8,.2,1)',
                       }}
@@ -556,8 +547,24 @@ export function TrazoFlow() {
               ))}
             </div>
           </div>
+          )}
 
-          {screen(0, <StepRoute origin={origin} destination={dest} onOrigin={setOrigin} onDestination={setDest} onPanoramic={startPanoramic} onNext={startTrip} />)}
+          <div
+            style={{ position: 'absolute', inset: 0, zIndex: 5, transition: 'opacity .7s ease', opacity: step === 0 ? 1 : 0, pointerEvents: step === 0 ? 'auto' : 'none', visibility: step === 0 ? 'visible' : 'hidden' }}
+            aria-hidden={step !== 0}
+          >
+            <PrimeraPantalla
+              origin={origin}
+              destination={dest}
+              onOrigin={setOrigin}
+              onDestination={setDest}
+              onNext={startTrip}
+              ancho={W}
+              alto={H}
+              totalPasos={stepNames.length}
+              onVolverAMiViaje={resumeTrip && !isSummaryStep(step) ? backToMyTrip : null}
+            />
+          </div>
           {screen(
             1,
             <StepTransport active={step === 1} origin={origin} destination={dest} destinationName={destinationName ?? dest?.name ?? ''} onProgress={onProgress} onNext={() => go(2)} />,

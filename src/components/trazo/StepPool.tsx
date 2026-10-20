@@ -156,7 +156,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    background: active ? 'linear-gradient(180deg,rgba(255,190,30,.28),rgba(255,255,255,0.94))' : 'linear-gradient(180deg,rgba(255,255,255,0.40),rgba(255,255,255,0.94))',
+                    background: active ? 'linear-gradient(180deg,rgba(181,138,46,.28),rgba(255,255,255,0.94))' : 'linear-gradient(180deg,rgba(255,255,255,0.40),rgba(255,255,255,0.94))',
                     transition: 'background .35s',
                   }}
                 />

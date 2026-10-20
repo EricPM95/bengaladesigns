@@ -9,7 +9,7 @@ import { NewTripSheet } from '../../../layout/NewTripSheet'
 import { useMomentosUI } from '../../../logros/momentos/useMomentosUI'
 import { TarjetaRecuerdos } from '../../fotos/TarjetaRecuerdos'
 import { HoyDespues } from '../HoyDespues'
-import { FRAMBUESA, TarjetaOscura } from '../piezas'
+import { TarjetaOscura } from '../piezas'
 
 /**
  * HOY después del viaje, versión 2 (8B2). Con los logros encendidos, la pieza del resumen del viaje de «Logros · Momentos» (la abre `useMomentosUI.abrirResumenViaje()`; la monta MomentosHost):
@@ -38,7 +38,7 @@ function ConResumen({ route, startIso }: { route: Route; startIso: string }) {
     <>
       <TarjetaOscura brillo="oklch(0.55 0.11 150 / .35)" abajo>
         <span className="relative" style={{ font: "400 38px/1 'Instrument Serif',serif" }}>
-          Tu viaje a <em style={{ color: 'oklch(0.78 0.11 15)' }}>{route.destination}</em>
+          Tu viaje a <em style={{ color: '#E9C77A' }}>{route.destination}</em>
         </span>
         <span className="relative text-[#FFFDF8]/75" style={{ font: "500 12px 'Geist Mono',monospace" }}>
           {textoDeDuracion(totalDias)} · {formatHeaderDateRangeShortEs(startIso, finIso)}
@@ -53,7 +53,7 @@ function ConResumen({ route, startIso }: { route: Route; startIso: string }) {
 
       <div className="flex flex-none items-center gap-3 rounded-[22px] bg-[#FFFDF8] py-3.5 pl-[18px] pr-3.5" style={{ border: '1px dashed rgba(28,34,48,.22)' }}>
         <span className="min-w-0 flex-1" style={{ font: "400 22px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>
-          ¿A dónde vamos <em style={{ color: FRAMBUESA }}>ahora</em>?
+          ¿A dónde vamos <em style={{ color: '#E9C77A' }}>ahora</em>?
         </span>
         <button type="button" onClick={() => setNuevoViaje(true)} className="flex h-11 flex-none items-center gap-1.5 rounded-full bg-[#1C2230] pl-3 pr-4 text-[13.5px] font-semibold text-[#FFFDF8]">
           <Icono nombre="anadir" size={15} grosor={2.2} />

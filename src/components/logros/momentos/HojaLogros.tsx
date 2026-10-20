@@ -22,7 +22,7 @@ const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
  *   - Los secretos: nunca se enseñan los que faltan (solo «?»); los encontrados se ven y, al tocarlos, vuelve a ponerse su escena.
  * Nunca enseña un emblema antes de encontrarlo, ni dice cuáles faltan ni dónde están. Todos los números salen de `GET /api/logros/estado`.
  */
-const ID_EMBLEMAS = ['coliseo', 'foro_romano', 'panteon', 'fontana_de_trevi', 'museos_vaticanos', 'plaza_san_pedro', 'basilica_san_pedro', 'boca_de_la_verdad', 'ojo_cerradura', 'catacumbas', 'madrugador', 'nocturno']
+const ID_EMBLEMAS = ['coliseo', 'foro_romano', 'panteon', 'fontana_de_trevi', 'museos_vaticanos', 'plaza_san_pedro', 'basilica_san_pedro', 'boca_de_la_verdad', 'ojo_cerradura', 'catacumbas', 'plaza_de_espana', 'castillo_de_santangelo', 'madrugador', 'nocturno']
 /** La forma del hueco de cada emblema («?» dentro): ancho, alto, radio y giro, como en el diseño. */
 const FORMA_HUECO: [number, number, string, string][] = [
   [69, 78, '50% 50% 14px 14px', 'none'],
@@ -35,6 +35,9 @@ const FORMA_HUECO: [number, number, string, string][] = [
   [75, 75, '50%', 'none'],
   [66, 66, '15px', 'rotate(45deg)'],
   [69, 81, '50% 50% 12px 12px', 'none'],
+  // Plaza de España (la escalinata) y Castillo de Sant’Angelo (redondo), Tanda 10.
+  [75, 72, '14px 14px 6px 6px', 'none'],
+  [75, 75, '50%', 'none'],
   [75, 75, '50%', 'none'],
   [75, 75, '50%', 'none'],
 ]

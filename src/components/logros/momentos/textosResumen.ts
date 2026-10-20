@@ -32,7 +32,7 @@ export function textoDeSello(nace: boolean, selloId: string, grado: string, nomb
 export function lineaDeSecretos(ciudad: string, total: number, encontrados: number, antes = false): string | null {
   if (!(total > 0)) return null
   const lugar = ciudad || 'este destino'
-  // Antes del viaje (nada encontrado y nada empezado): «Roma esconde 12 secretos», sin «aún».
+  // Antes del viaje (nada encontrado y nada empezado): «Roma esconde 14 secretos», sin «aún».
   if (antes && encontrados === 0) return `${lugar} esconde ${total} ${total === 1 ? 'secreto' : 'secretos'}`
   const quedan = total - encontrados
   if (quedan <= 0) return `Has encontrado todos los secretos de ${lugar}.`

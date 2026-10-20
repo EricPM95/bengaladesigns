@@ -1,23 +1,25 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Season } from '../../lib/types'
 
-/** Paleta y tipografías del diseño "Trazo App Piscina" (tema Día: el agua clara). */
-/** Relleno de acento: botones, barra de avance, puntos y fechas elegidas (azul marino del diseño). */
-export const AMBER = '#0B2A5B'
-/** Acento en letra: cursivas, etiquetas pequeñas y lo elegido (azul verdoso del diseño). */
-export const ACCENT = 'oklch(0.5 0.13 225)'
+/** Paleta del formulario (Tanda 10, JUTRIP: «Marca JUTRIP 01 · Colores»): crema, tarjetas, tinta y oro. */
+/** Relleno de acento: botones con texto blanco, fechas y opciones elegidas. Es el ORO OSCURO (#8B6620): el oro claro (#B58A2E) con texto blanco o sobre crema no llega a 4,5 de contraste. */
+export const AMBER = '#8B6620'
+/** El oro claro, solo para lo que no es texto pequeño: la barra de pasos, los puntos, las líneas y los pines. */
+export const ORO_CLARO = '#B58A2E'
+/** Acento en letra: cursivas, etiquetas pequeñas y lo elegido (el oro oscuro, contraste mínimo 4,5 sobre el crema). */
+export const ACCENT = '#8B6620'
 export const INK = '#1C2230'
 export const INK2 = 'rgba(28,34,48,.7)'
 /** La letra sobre un relleno de acento: blanca. */
 export const DARK = '#FFFFFF'
 export const THEME = {
-  page1: '#E4FBFA',
-  page2: '#B9E9EE',
-  bg: '#BDEEF3',
-  bgrgb: '189 238 243',
-  land: '#FFFDF5',
-  landS: 'rgba(0,110,140,.25)',
-  route: 'oklch(0.78 0.16 80 / .85)',
+  page1: '#F1E8D6',
+  page2: '#E0D3BA',
+  bg: '#F6EFE0',
+  bgrgb: '246 239 224',
+  land: '#FFFDF8',
+  landS: 'rgba(142,104,32,.35)',
+  route: 'rgba(181,138,46,.85)',
   dot: 'rgba(28,34,48,.28)',
   dot2: 'rgba(28,34,48,.6)',
   track: 'rgba(28,34,48,.14)',
@@ -128,7 +130,7 @@ export function RadioRow({ label, description, active, onClick }: { label: strin
         minHeight: 44,
         border: 'none',
         borderRadius: 14,
-        background: active ? 'rgba(255,190,30,.08)' : 'transparent',
+        background: active ? 'rgba(181,138,46,.08)' : 'transparent',
         color: active ? ACCENT : INK,
         textAlign: 'left',
         cursor: 'pointer',
@@ -167,8 +169,8 @@ export function ConfirmedCard({ label, value, onChange }: { label: string; value
         padding: '12px 14px',
         minHeight: 48,
         borderRadius: 16,
-        background: 'rgba(255,190,30,.1)',
-        border: '1px solid rgba(255,190,30,.35)',
+        background: 'rgba(181,138,46,.1)',
+        border: '1px solid rgba(181,138,46,.35)',
         animation: 'trazo-chipIn .45s cubic-bezier(.2,.8,.2,1) both',
       }}
     >

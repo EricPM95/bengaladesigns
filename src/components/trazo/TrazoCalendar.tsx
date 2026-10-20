@@ -119,7 +119,7 @@ export function TrazoCalendar({ dateRange, onSelect, onPreviewMonth }: TrazoCale
                 height: 42,
                 border: 'none',
                 borderRadius: inRange ? 6 : 12,
-                background: isEdge ? AMBER : inRange ? 'rgba(255,190,30,.16)' : 'transparent',
+                background: isEdge ? AMBER : inRange ? 'rgba(181,138,46,.16)' : 'transparent',
                 color: isEdge ? '#FFFFFF' : INK,
                 font: `${isEdge ? 600 : 400} 14px 'Geist'`,
                 cursor: disabled ? 'default' : 'pointer',

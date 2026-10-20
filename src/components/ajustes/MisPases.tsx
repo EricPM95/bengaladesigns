@@ -90,7 +90,7 @@ export function MisPases({ onVolver, pasesIniciales = null, hoy = hoyEnLocal() }
                   <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Lo compartes con</span>
                   {personas.map((m, i) => (
                     <div key={i} data-persona-del-pase={m.libre ? 'libre' : 'dentro'} className="flex items-center gap-2.5">
-                      <span aria-hidden="true" className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full font-display text-[17px] leading-none text-[#FFFDF8]" style={{ background: m.libre ? 'transparent' : m.comprador ? 'oklch(0.3 0.03 250)' : 'oklch(0.55 0.17 5)', border: m.libre ? '1.5px dashed rgba(28,34,48,.3)' : 'none', color: m.libre ? 'rgba(28,34,48,.45)' : '#FFFDF8' }}>
+                      <span aria-hidden="true" className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full font-display text-[17px] leading-none text-[#FFFDF8]" style={{ background: m.libre ? 'transparent' : m.comprador ? 'oklch(0.3 0.03 250)' : 'rgb(var(--accent))', border: m.libre ? '1.5px dashed rgba(28,34,48,.3)' : 'none', color: m.libre ? 'rgba(28,34,48,.45)' : '#FFFDF8' }}>
                         {m.libre ? '+' : (m.nombre[0] ?? 'V').toUpperCase()}
                       </span>
                       <span className="flex-1 text-[14px] font-medium">{m.nombre}</span>

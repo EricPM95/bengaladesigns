@@ -24,7 +24,7 @@ export function CambioParada({
   tamano?: 'grande' | 'pequena'
 }) {
   const peq = tamano === 'pequena'
-  const ROJO = 'oklch(0.55 0.17 5)'
+  const ROJO = 'rgb(var(--accent-red))'
   const VERDE = 'oklch(0.38 0.1 150)'
   const marca = (signo: string, fondo: string) => (
     <span style={{ width: 18, height: 18, flex: 'none', borderRadius: '50%', background: fondo, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 11px 'Geist'" }}>{signo}</span>

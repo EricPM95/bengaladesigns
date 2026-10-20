@@ -17,7 +17,7 @@ import { BotonFoto } from '../fotos/BotonFoto'
 import { TusFotosDeHoy } from '../fotos/TusFotosDeHoy'
 import { RainAlert } from '../today/RainAlert'
 import { TodayExcursion } from '../today/TodayExcursion'
-import { AZUL, FRAMBUESA, ojoMono, TINTA, VERDE } from './piezas'
+import { AZUL, ojoMono, TINTA, VERDE } from './piezas'
 import { useHorarioDeParadas, type HorarioDeParada } from '../../../lib/horarioDeParada'
 import { AvisoEntradaReservada, AvisoSaltada, BotonNoMeDaTiempo, HojaPasarAOtroDia } from './saltar'
 import { Escuchar } from './Escuchar'
@@ -39,7 +39,7 @@ function LineaDeHorario({ horario, oscuro = false, cerradoEsteDia = false }: { h
   if (cerradoEsteDia && !horario?.cerrado) horario = { abre: null, cierra: null, ultimaEntrada: null, cerrado: true, tramos: [], texto: CERRADO_ESTE_DIA }
   if (!horario) return null
   return (
-    <span className={`${oscuro ? 'text-[12px]' : 'text-[11px]'} leading-[1.3]`} style={{ color: horario.cerrado ? (oscuro ? 'oklch(0.78 0.11 15)' : 'oklch(0.5 0.17 5)') : oscuro ? 'rgba(255,253,248,.7)' : 'rgba(28,34,48,.55)' }}>
+    <span className={`${oscuro ? 'text-[12px]' : 'text-[11px]'} leading-[1.3]`} style={{ color: horario.cerrado ? (oscuro ? '#F87171' : 'rgb(var(--accent-red))') : oscuro ? 'rgba(255,253,248,.7)' : 'rgba(28,34,48,.55)' }}>
       {horario.texto}
     </span>
   )
@@ -238,7 +238,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
         {siguiente ? (
           <>
             <div className="flex flex-col gap-1.5 px-2">
-              <span style={{ ...ojoMono, color: 'oklch(0.78 0.11 15)' }}>Siguiente parada · {numeros.get(siguiente.id)}</span>
+              <span style={{ ...ojoMono, color: '#E9C77A' }}>Siguiente parada · {numeros.get(siguiente.id)}</span>
               <span style={{ font: "400 34px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(siguiente.name)}</span>
               <LineaDeHorario horario={horarioDe(siguiente)} oscuro cerradoEsteDia={Boolean(siguiente.closedThisDay)} />
               <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} oscuro className="self-start" />
@@ -372,7 +372,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
               <div key={stop.id} data-saltada={saltada ? 'true' : undefined} className="flex min-h-[50px] items-center gap-3" style={{ borderBottom: indice < paradas.length - 1 ? '1px solid rgba(28,34,48,.07)' : 'none' }}>
                 <span
                   className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full transition-colors"
-                  style={{ background: vista ? VERDE : ahora ? FRAMBUESA : 'transparent', border: `1.5px solid ${vista ? VERDE : ahora ? FRAMBUESA : saltada ? 'rgba(28,34,48,.15)' : 'rgba(28,34,48,.25)'}`, color: vista || ahora ? '#fff' : saltada ? 'rgba(28,34,48,.4)' : TINTA, font: "400 15px/1 'Instrument Serif',serif" }}
+                  style={{ background: vista ? VERDE : ahora ? 'rgb(var(--accent))' : 'transparent', border: `1.5px solid ${vista ? VERDE : ahora ? 'rgb(var(--accent))' : saltada ? 'rgba(28,34,48,.15)' : 'rgba(28,34,48,.25)'}`, color: vista || ahora ? '#fff' : saltada ? 'rgba(28,34,48,.4)' : TINTA, font: "400 15px/1 'Instrument Serif',serif" }}
                 >
                   {vista ? '✓' : numeros.get(stop.id)}
                 </span>
@@ -392,7 +392,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                   </button>
                 )}
                 {ahora && (
-                  <span className="h-[22px] flex-none rounded-full px-2 text-[10.5px] font-semibold leading-[22px]" style={{ background: 'oklch(0.55 0.17 5 / .1)', color: 'oklch(0.5 0.17 5)' }}>
+                  <span className="h-[22px] flex-none rounded-full px-2 text-[10.5px] font-semibold leading-[22px]" style={{ background: 'rgb(var(--accent) / .1)', color: 'rgb(var(--accent-hover))' }}>
                     Ahora
                   </span>
                 )}

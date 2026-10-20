@@ -62,7 +62,7 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
       {estado?.phase === 'during' ? (
         <>
           <span className="relative" style={{ font: "400 32px/1.05 'Instrument Serif',serif" }}>
-            Estás en <em style={{ color: 'oklch(0.78 0.11 15)' }}>{estado.context.day.city || route.destination}</em>
+            Estás en <em style={{ color: '#E9C77A' }}>{estado.context.day.city || route.destination}</em>
           </span>
           <span className="relative text-[#FFFDF8]/80" style={{ font: "500 13px 'Geist Mono',monospace" }}>
             {diaCorto(route, estado.context.day.dayNumber)} · {Math.min(estado.context.day.dayNumber, total)} de {total}
@@ -75,13 +75,13 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
           </span>
           <span className="relative flex items-baseline gap-2.5">
             <span style={{ font: "400 72px/.95 'Instrument Serif',serif" }}>{dias}</span>
-            <em style={{ font: "italic 400 32px/1 'Instrument Serif',serif", color: 'oklch(0.78 0.11 15)' }}>{dias === 1 ? 'día' : 'días'}</em>
+            <em style={{ font: "italic 400 32px/1 'Instrument Serif',serif", color: '#E9C77A' }}>{dias === 1 ? 'día' : 'días'}</em>
           </span>
         </>
       ) : (
         <>
           <span className="relative" style={{ font: "400 30px/1.05 'Instrument Serif',serif" }}>
-            Tu viaje a <em style={{ color: 'oklch(0.78 0.11 15)' }}>{route.destination}</em>
+            Tu viaje a <em style={{ color: '#E9C77A' }}>{route.destination}</em>
             {mes ? ` · ${mes}` : ''}
           </span>
           <button type="button" onClick={onPonFechas} className="relative mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#FFFDF8] text-[14.5px] font-semibold text-[#1C2230]">

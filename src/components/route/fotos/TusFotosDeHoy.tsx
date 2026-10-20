@@ -20,7 +20,7 @@ export function TusFotosDeHoy({ day }: { day: DayPlan }) {
   return (
     <section aria-label="Tus fotos de hoy" data-fotos-de-hoy className="flex flex-none flex-col gap-2.5 rounded-[18px] bg-[#FFFDF8] px-3.5 py-3" style={{ border: '1px solid rgba(28,34,48,.07)' }}>
       <div className="flex items-center gap-2.5">
-        <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full" style={{ background: 'oklch(0.55 0.17 5 / .1)', color: 'oklch(0.5 0.17 5)' }}>
+        <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full" style={{ background: 'rgb(var(--accent) / .1)', color: 'rgb(var(--accent-hover))' }}>
           <Icono nombre="camara" size={15} />
         </span>
         <span className="min-w-0 flex-1" style={{ font: "400 17px/1.15 'Instrument Serif',serif" }}>

@@ -10,38 +10,41 @@
 @tailwind utilities;
 
 :root {
-  /* Diseño "Trazo Itinerario" (2026-09-27): papel crema, tinta azul noche y acento terracota — la
-     paleta de TODA la app por dentro. Cada variable es un triplete RGB "R G B" (sin rgb() ni comas)
-     para que Tailwind pueda aplicar modificadores de opacidad (bg-accent-red/10, etc.) vía
-     rgb(var(--x) / <alpha-value>). */
-  --bg: 245 239 228;
-  --bg-card: 255 253 248;
-  --bg-hover: 241 234 220;
-  /* EL ROSA FRAMBUESA (Tanda 6z3, diseño «Una sola familia»): el color de «falta» y «reservar», y el acento de toda la app. UN solo sitio:
-     estos tripletes (y `COLOR_ICONO` de `src/lib/iconos.ts` para lo que se pinta con CSS suelto). Convertidos de OKLCH a sRGB con la matriz
-     OKLab exacta (no a ojo):
-       --accent        = oklch(0.55 0.17 5)  -> 189 57 100  (relleno de botones, pestañitas, bordes, «+»)
-       --accent-hover  = oklch(0.50 0.17 5)  -> 172 40 86   (hover Y el frambuesa que se usa como TEXTO sobre fondo suave)
+  /* JUTRIP (Tanda 10, «Marca JUTRIP 01 · Colores»): mármol y oro. El crema es el fondo, la tarjeta es blanca marfil, la tinta es el texto y el oro es el acento de la marca: botones,
+     pestañas y marcas. Cada variable es un triplete RGB "R G B" (sin rgb() ni comas) para que Tailwind pueda aplicar modificadores de opacidad (bg-accent/10, etc.) vía
+     rgb(var(--x) / <alpha-value>).
+       --bg #F6EFE0 (crema) · --bg-card #FFFDF8 (tarjeta) · --text #1C2230 (tinta) · marfil #FBF3E2 (hojas desde abajo y apertura: se escribe donde se usa)
+       --accent        = oro oscuro  #8B6620 -> 139 102 32 (el #8E6820 de Design, oscurecido lo justo: sobre el crema daba 4,42 y así da 4,56)  (relleno de botones con texto blanco, pestañitas, bordes, «+», texto en oro)
+       --accent-hover  = oro profundo #6E5018 -> 110 80 24  (botón pulsado y TEXTO pequeño en oro sobre fondo suave o marfil)
        --accent-warm   = igual que accent-hover (el énfasis: marcador activo, pastillas «warm»)
-       --accent-soft   = frambuesa al 12 % sobre la tarjeta -> 247 229 230
-       --border-accent = frambuesa al 40 % sobre la tarjeta -> 229 175 189
-     Contraste WCAG (luminancia relativa, (L1+0,05)/(L2+0,05)):
-       blanco sobre accent ........ 5,34  (mínimo 4,5: bien; botones con texto blanco)
-       accent sobre --bg crema ..... 4,67  (bien) · sobre --bg-card 5,25 (bien)
-       accent sobre accent-soft .... 4,40  (NO llega: por eso el texto sobre una pastilla suave usa text-accent-hover)
-       accent-hover sobre accent-soft 5,42 · sobre crema 5,75 · sobre tarjeta 6,47 (bien)
-       blanco sobre accent-hover ... 6,58
-     El verde (hecho/reservado) y el azul (llegada, vuelta, el tiempo) NO cambian. --accent-gold es el ámbar de avisos y tips: no es el de «falta». */
-  --accent: 189 57 100;
-  --accent-hover: 172 40 86;
-  --accent-soft: 247 229 230;
-  --accent-warm: 172 40 86;
+       --accent-soft   = oro suave #F1E3BF -> 241 227 191   (fondo de pastillas y filas elegidas)
+       --border-accent = el oro oscuro al 40 % sobre la tarjeta -> 210 193 162
+       --oro           = oro claro   #B58A2E -> 181 138 46  (SOLO líneas, pines, iconos grandes, rutas de puntos y brillos: nunca texto pequeño)
+     Contraste WCAG (luminancia relativa, (L1+0,05)/(L2+0,05)), medido en scripts/destino/pruebaJutrip.mjs:
+       blanco sobre accent ........ ≥ 4,5 (botones con texto blanco)
+       accent y accent-hover como TEXTO sobre crema y sobre la tarjeta ≥ 4,5 (el texto normal) y ≥ 3 en los títulos grandes
+       --oro sobre el crema no llega a 4,5 (2,8): por eso no se usa para texto.
+     EL FRAMBUESA YA NO ES EL COLOR DE LA MARCA. Se queda solo para dos cosas: lo que FALTA («Falta», el punto de los avisos) y RESALTAR (el corazón de «lo recomiendan» y las piezas de la
+     colección principal). Sus tripletes siguen aquí, con otro nombre, y se piden con `frambuesa` (bg-frambuesa, text-frambuesa…) o rgb(var(--frambuesa)):
+       --frambuesa = oklch(0.55 0.17 5) -> 189 57 100 · --frambuesa-hover = oklch(0.50 0.17 5) -> 172 40 86 · --frambuesa-soft = 247 229 230
+     El verde (hecho/reservado) y el azul (llegada, vuelta, el tiempo) NO cambian. --accent-gold es el ámbar de avisos y tips: no es el de «falta» ni el de la marca. */
+  --bg: 246 239 224;
+  --bg-card: 255 253 248;
+  --bg-hover: 238 230 213;
+  --accent: 139 102 32;
+  --accent-hover: 110 80 24;
+  --accent-soft: 241 227 191;
+  --accent-warm: 110 80 24;
   --accent-gold: 236 150 40;
   --accent-red: 204 39 46;
   --accent-lilac: 236 226 250;
+  --oro: 181 138 46;
+  --frambuesa: 189 57 100;
+  --frambuesa-hover: 172 40 86;
+  --frambuesa-soft: 247 229 230;
   /* EL LILA DE LA ETIQUETA DE BARRIO (Tanda 6y4, «Trastevere»): UN solo sitio (estos tripletes; el componente EtiquetaBarrio los lee). Tono oklch 285, a 36° del morado
-     y del azul de los días (src/lib/dayColors.ts: oklch 321 y 249) y a 100° del frambuesa (oklch 5); además va en píldora suave (luz alta, croma bajo) mientras que los
-     colores de los días son círculos y pines sólidos y saturados. Convertidos de OKLCH a sRGB con la matriz OKLab exacta:
+     y del azul de los días (src/lib/dayColors.ts: oklch 321 y 249); además va en píldora suave (luz alta, croma bajo) mientras que los colores de los días son círculos y pines
+     sólidos y saturados. Convertidos de OKLCH a sRGB con la matriz OKLab exacta:
        --barrio-lila-soft  = oklch(0.93 0.045 285) -> 228 228 255  (fondo de la píldora)
        --barrio-lila       = oklch(0.40 0.13 285)  -> 67 56 137    (texto y borde fuerte)
        --barrio-lila-borde = oklch(0.78 0.09 285)  -> 177 176 239  (borde fino)
@@ -60,24 +63,27 @@
   --text-soft: 106 108 114;
   --text-muted: 150 146 139;
   --border: 223 218 210;
-  --border-accent: 229 175 189;
+  --border-accent: 210 193 162;
 }
 
 .dark {
-  /* Modo noche: el azul noche del formulario Trazo. */
+  /* Modo noche: el azul noche del formulario Trazo; el oro pasa a ser el ORO PÁLIDO #E9C77A (Marca JUTRIP 01) y lo demás del modo noche no cambia.
+     --accent #E9C77A -> 233 199 122 · hover #F3D88F -> 243 216 143 · el frambuesa claro de siempre en --frambuesa (oklch(0.70 0.15 8) -> 234 114 141).
+     Con relleno de botón, el texto blanco no llega a 4,5 sobre el oro pálido: en noche el texto de un botón de oro es la tinta (regla de más abajo). */
   --bg: 16 20 30;
   --bg-card: 24 30 44;
   --bg-hover: 34 41 58;
-  /* Noche: el frambuesa claro, para que se lea sobre el azul noche. oklch(0.70 0.15 8) -> 234 114 141 (sobre --bg 6,39 · sobre --bg-card 5,78);
-     hover/texto oklch(0.78 0.11 15) -> 245 154 161 (8,78 / 7,95; sobre accent-soft 5,69); warm oklch(0.74 0.13 10) -> 240 134 152 (6,80).
-     Con relleno de botón, el texto blanco no llega a 4,5 sobre un rosa tan claro (2,88): en noche el texto del botón debería ser la tinta. */
-  --accent: 234 114 141;
-  --accent-hover: 245 154 161;
-  --accent-soft: 70 48 65;
-  --accent-warm: 240 134 152;
+  --accent: 233 199 122;
+  --accent-hover: 243 216 143;
+  --accent-soft: 66 56 34;
+  --accent-warm: 233 199 122;
   --accent-gold: 247 172 77;
   --accent-red: 248 113 113;
   --accent-lilac: 46 38 64;
+  --oro: 233 199 122;
+  --frambuesa: 234 114 141;
+  --frambuesa-hover: 245 154 161;
+  --frambuesa-soft: 70 48 65;
   /* Noche: texto oklch(0.85 0.09 285) -> 199 198 255 sobre fondo oklch(0.30 0.06 285) -> 43 41 75 (8,51; sobre la tarjeta de noche 10,27); borde oklch(0.45 0.09 285) -> 81 77 133. */
   --barrio-lila: var(--barrio-lila-noche);
   --barrio-lila-soft: var(--barrio-lila-noche-soft);
@@ -88,7 +94,13 @@
   --text-soft: 190 184 172;
   --text-muted: 140 136 128;
   --border: 46 52 68;
-  --border-accent: 119 68 88;
+  --border-accent: 97 89 71;
+}
+
+/* En modo noche, un botón de relleno de oro lleva el texto en tinta (el blanco sobre el oro pálido no se lee). */
+.dark .bg-accent.text-white,
+.dark .bg-accent-hover.text-white {
+  color: #14161c;
 }
 
 /* Los títulos van en Instrument Serif, que solo tiene un peso: sin negrita inventada por el navegador. */

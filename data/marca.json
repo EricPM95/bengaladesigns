@@ -1,12 +1,14 @@
 {
-  "_nota": "El nombre de la app y sus colores, en UN solo sitio (Tanda 8A). El nombre todavía no está decidido (hoy «Routy», pendiente de la búsqueda de marcas): se cambia aquí y se vuelve a desplegar. De aquí salen el manifiesto para instalar la web (GET /api/manifest.webmanifest) y los textos del aviso «Añádela a tu pantalla de inicio». (Cuentas parte 3) «logo»: la ruta del logo cuando exista (null = el hueco vacío, ya preparado en la pantalla de entrar, la de apertura y los avisos). «color_apertura»: el fondo de la pantalla al abrir (I2).",
-  "nombre": "Routy",
-  "nombre_corto": "Routy",
-  "descripcion": "Tu viaje, día a día.",
-  "logo": null,
-  "color_apertura": "#141826",
-  "color_tema": "#BD3964",
-  "color_fondo": "#FFFFFF",
+  "_nota": "El nombre de la app y sus colores, en UN solo sitio (Tanda 8A; Tanda 10: JUTRIP con el logo P4, marfil y oro). Se cambia aquí y se vuelve a desplegar. De aquí salen el manifiesto para instalar la web (GET /api/manifest.webmanifest), la pantalla de apertura, la pantalla de entrar y los textos del aviso «Añádela a tu pantalla de inicio». «logo»: el emblema del logo (la estrella con su anillo y su ruta de puntos); el logo entero, con la palabra en Bodoni Moda, lo dibuja el código (shared/marca/logoJutrip.js). «lema»: va debajo del logo en la pantalla de apertura y es también la descripción del manifiesto. «color_apertura»: el fondo de la pantalla al abrir (marfil).",
+  "nombre": "JUTRIP",
+  "nombre_corto": "JUTRIP",
+  "descripcion": "De viajeros, para viajeros",
+  "lema": "De viajeros, para viajeros",
+  "logo": "/marca/logo-jutrip.svg",
+  "logo_oscuro": "/marca/logo-jutrip-oscuro.svg",
+  "color_apertura": "#FBF3E2",
+  "color_tema": "#F6EFE0",
+  "color_fondo": "#F6EFE0",
   "iconos": [
     {
       "src": "/icons/icon-192.png",

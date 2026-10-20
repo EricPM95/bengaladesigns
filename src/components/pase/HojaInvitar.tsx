@@ -74,7 +74,7 @@ export function HojaInvitar({
         <span style={{ font: "500 12px 'Geist'", color: 'rgba(28,34,48,.6)', textAlign: 'center' }}>{sub}</span>
       </div>
       {error && (
-        <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'oklch(0.5 0.17 5)' }}>
+        <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>
           {error}
         </p>
       )}

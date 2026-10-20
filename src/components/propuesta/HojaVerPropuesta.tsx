@@ -19,8 +19,8 @@ export function FilaDeCambio({ etiqueta, cambio, onDeshacer }: { etiqueta: strin
         {cambio.tipo === 'cambiar' ? (
           <CambioParada a={cambio.antes?.name ?? ''} b={cambio.despues?.name ?? ''} tamano="pequena" />
         ) : cambio.tipo === 'quitar' ? (
-          <span style={{ display: 'flex', alignItems: 'center', gap: 8, font: "500 13.5px/1.3 'Geist'", color: 'oklch(0.55 0.17 5)', textDecoration: 'line-through' }}>
-            <span style={{ width: 18, height: 18, flex: 'none', borderRadius: '50%', background: 'oklch(0.55 0.17 5)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 11px 'Geist'", textDecoration: 'none' }}>−</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8, font: "500 13.5px/1.3 'Geist'", color: 'rgb(var(--accent-red))', textDecoration: 'line-through' }}>
+            <span style={{ width: 18, height: 18, flex: 'none', borderRadius: '50%', background: 'rgb(var(--accent-red))', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 11px 'Geist'", textDecoration: 'none' }}>−</span>
             {texto}
           </span>
         ) : cambio.tipo === 'anadir' || cambio.tipo === 'dia_nuevo' ? (
@@ -81,7 +81,7 @@ export function HojaVerPropuesta({ cambiosEnviados = null, onCerrar, nombreDelAd
         <FilaDeCambio key={(f as unknown as { original?: CambioPropuesto }).original?.id ?? i} etiqueta={f.etiqueta} cambio={f.cambio} onDeshacer={enviada ? undefined : () => deshacer((f as unknown as { original: CambioPropuesto }).original)} />
       ))}
       {error && (
-        <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'oklch(0.5 0.17 5)' }}>
+        <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>
           {error}
         </p>
       )}

@@ -16,8 +16,20 @@
  */
 
 import crypto from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { quienEs, tokenDe } from './cuentas.js'
 import { cobroActivo, precioDelPase } from './logros/pase.js'
+
+/** El nombre de la app (data/marca.json, un solo sitio): sale en el nombre del pase que se ve al pagar. */
+const nombreDeLaApp = () => {
+  try {
+    return JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../data/marca.json'), 'utf8')).nombre
+  } catch {
+    return 'JUTRIP'
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* Los interruptores                                                   */
@@ -199,7 +211,7 @@ export function crearServicioPagos({ admin, precios, destinos, pasarela, env = p
     const sesion = await pasarela.crearSesion({
       importe_cent: importe,
       moneda: String(precios.moneda ?? 'EUR').toLowerCase(),
-      producto: `Pase de ${destino} · ${nombrePlan}`,
+      producto: `${nombreDeLaApp()} · Pase de ${destino} · ${nombrePlan}`,
       email: usuario.email ?? '',
       uid: usuario.id,
       metadata,

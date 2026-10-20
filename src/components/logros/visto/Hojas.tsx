@@ -60,7 +60,8 @@ function Boton({ icono, texto, onClick, estilo, disabled }: { icono: string; tex
   )
 }
 
-const BTN_CAM: CSSProperties = { background: TINTA, color: '#FFFDF8', border: 'none' }
+// (Tanda 10) El botón de la cámara, en oro (lo pidió Eric).
+const BTN_CAM: CSSProperties = { background: 'rgb(var(--accent))', color: '#FFFFFF', border: 'none' }
 const BTN_GAL: CSSProperties = { background: '#FFFFFF', color: TINTA, border: '1px solid rgba(28,34,48,.16)' }
 const BTN_CAM_ORO: CSSProperties = { background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', border: 'none' }
 const BTN_GAL_OSCURO: CSSProperties = { background: 'transparent', color: '#FFFDF8', border: '1px solid rgba(255,253,248,.3)' }

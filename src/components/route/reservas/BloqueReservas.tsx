@@ -48,7 +48,7 @@ export function IconoBloque({ nombre, hecho = false }: { nombre: NombreIcono; he
   return (
     <span
       className="flex h-9 w-9 flex-none items-center justify-center rounded-xl"
-      style={{ background: hecho ? 'oklch(0.55 0.11 150 / .14)' : 'rgb(var(--accent) / .12)', color: hecho ? GR : 'rgb(var(--accent-hover))' }}
+      style={{ background: hecho ? 'oklch(0.55 0.11 150 / .14)' : 'rgb(var(--frambuesa) / .12)', color: hecho ? GR : 'rgb(var(--frambuesa-hover))' }}
     >
       <Icono nombre={nombre} size={18} />
     </span>
@@ -61,7 +61,7 @@ export function IconoBloque({ nombre, hecho = false }: { nombre: NombreIcono; he
  */
 export function EstadoBloque({ texto, hecho }: { texto: string; hecho: boolean }) {
   return (
-    <span className="truncate" data-estado={hecho ? 'hecho' : 'falta'} style={{ font: "600 11px 'Geist Mono',monospace", color: hecho ? GR : 'oklch(0.5 0.17 5)' }}>
+    <span className="truncate" data-estado={hecho ? 'hecho' : 'falta'} style={{ font: "600 11px 'Geist Mono',monospace", color: hecho ? GR : 'rgb(var(--frambuesa-hover))' }}>
       {texto}
     </span>
   )

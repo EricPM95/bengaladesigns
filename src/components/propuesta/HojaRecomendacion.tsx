@@ -10,7 +10,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { BotonHoja, Hoja } from '../ui/Hoja'
 import { CambioParada } from './CambioParada'
 
-const ROJO = 'oklch(0.55 0.17 5)'
+const ROJO = 'rgb(var(--accent-red))'
 const VERDE = 'oklch(0.55 0.11 150)'
 
 /** Una línea de un día en R2: lo que no cambia, en gris; lo que sale, tachado en rojo; lo que entra, en verde; la pareja «cambiar», en su recuadro. */
@@ -180,7 +180,7 @@ export function HojaRecomendacion({ rec, route, onCerrar, alResponder, diasInici
         </p>
       )}
       {mensaje && (
-        <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'oklch(0.5 0.17 5)' }}>
+        <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>
           {mensaje}
         </p>
       )}

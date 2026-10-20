@@ -1,5 +1,5 @@
 /**
- * Los 12 emblemas ocultos de «Logros · Modelos» (sección 3): cada uno con su dibujo y su forma, sobre fondo oscuro.
+ * Los 14 emblemas ocultos de «Logros · Modelos» (sección 3): cada uno con su dibujo y su forma, sobre fondo oscuro.
  * `animado`: la animación en bucle de «encontrado» (CSS, sin vídeo). Sin ella, el dibujo queda quieto (un icono de línea en su forma).
  * `silueta`: la misma forma, apagada y con un «?» (los que faltan).
  * El del Coliseo es la moneda de oro en relieve («Emblema Oro»), que se carga solo cuando se usa.
@@ -15,6 +15,8 @@ const OCT = 'polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%
 const SHIELD = 'polygon(0 0,100% 0,100% 60%,50% 100%,0 60%)'
 const CROSS = 'polygon(32% 0,68% 0,68% 32%,100% 32%,100% 68%,68% 68%,68% 100%,32% 100%,32% 68%,0 68%,0 32%,32% 32%)'
 const STAR = 'polygon(' + Array.from({ length: 16 }, (_, i) => { const a = -Math.PI / 2 + (i * Math.PI) / 8, r = i % 2 ? 37 : 50; return (50 + r * Math.cos(a)).toFixed(1) + '% ' + (50 + r * Math.sin(a)).toFixed(1) + '%' }).join(',') + ')'
+// La escalinata de la Plaza de España: la silueta escalonada (Tanda 10, «Logros · Modelos» 03).
+const ESC = 'polygon(50% 0,64% 0,64% 16%,78% 16%,78% 34%,92% 34%,92% 56%,100% 56%,100% 100%,0 100%,0 56%,8% 56%,8% 34%,22% 34%,22% 16%,36% 16%,36% 0)'
 const KEY = 'path("M52 4a32 32 0 0 1 21 56l14 56H17l14-56A32 32 0 0 1 52 4z")'
 const GOLD = 'linear-gradient(135deg,#FFF6DC,#D9B86A 40%,#FFF1C6 62%,#B48F45)'
 const ORO = 'linear-gradient(135deg,#F6E7BD,#B9944F 45%,#F0DCA6 70%,#A88541)'
@@ -31,6 +33,8 @@ const EMB: Record<string, Cfg> = {
   boca_de_la_verdad: { k: 7, icono: 'boca', w: 122, h: 122, clip: STAR, esp: 'boca' },
   ojo_cerradura: { k: 8, icono: 'ojo', w: 104, h: 120, clip: KEY, it: '0', esp: 'key' },
   catacumbas: { k: 9, icono: 'cata', w: 112, h: 112, clip: OCT, esp: 'lamp' },
+  plaza_de_espana: { k: 12, icono: 'escalinata', w: 118, h: 112, clip: ESC, it: '8px', rim: 'linear-gradient(135deg,#FFF6DC,#E3B6A0 42%,#FFF1C6 62%,#C98B78)', halo: 'oklch(0.86 0.09 40 / .4)', esp: 'esc' },
+  castillo_de_santangelo: { k: 13, icono: 'castillo', w: 112, h: 112, rad: '50%', esp: 'cas' },
   madrugador: { k: 10, icono: 'alba', w: 90, h: 90, rad: '24px', tf: 'rotate(45deg)', itf: 'rotate(-45deg)', rim: '#F3D2A6', halo: 'rgba(255,215,170,.45)', esp: 'alba' },
   nocturno: { k: 11, icono: 'noche', w: 90, h: 90, rad: '24px', tf: 'rotate(45deg)', itf: 'rotate(-45deg)', rim: '#C9D2F2', halo: 'rgba(190,200,240,.45)', esp: 'noche' },
 }
@@ -50,7 +54,7 @@ export function EmblemaDibujo({ id, animado = false, silueta = false, tam = 120,
   if (!c) return <span style={{ display: 'inline-block', width: tam, height: tam }} />
   const k = c.k
   const s = { s1: `${(1.4 + k * 0.25).toFixed(2)}s`, s2: `${(3.1 + k * 0.25).toFixed(2)}s`, s3: `${(1.65 + k * 0.25).toFixed(2)}s`, s4: `${(1.9 + k * 0.25).toFixed(2)}s`, s5: `${(4.9 + k * 0.25).toFixed(2)}s` }
-  const ink = c.rim && c.rim !== GOLD ? c.rim : 'oklch(0.88 0.08 85)'
+  const ink = c.rim && c.rim !== GOLD && !c.rim.includes('gradient') ? c.rim : 'oklch(0.88 0.08 85)'
   const halo = c.halo ?? 'oklch(0.86 0.09 85 / .35)'
   const caja = 150
 
@@ -187,6 +191,51 @@ function Especial({ esp, s, u }: { esp: string; s: Record<string, string>; u: st
           <circle cx="49" cy="24" r="22" fill={`url(#${u}lg)`} stroke={sw} style={{ transformBox: 'fill-box', transformOrigin: 'center', animation: `e_lglow 1.6s ${s.s3} ease-out both,e_bpulse 1.8s ${s.s2} ease-in-out infinite` }} />
           <path d="M8 38c2 6 26 6 32 1l10-5H40c-6-5-26-5-32 0zM8 38c-4 0-5 4-2 6M24 32v-3" />
           <path d="M50 33c-3.2-3-3.2-7.5 0-12.5 3.2 5 3.2 9.5 0 12.5z" fill="#FFD58A" stroke={sw} style={{ transformBox: 'fill-box', transformOrigin: '50% 100%', animation: `e_flame .9s ${s.s1} ease-out both,e_flick .35s ${s.s2} ease-in-out infinite alternate` }} />
+        </svg>
+      )
+    case 'esc': {
+      // La Plaza de España (Tanda 10): la barcaccia, los peldaños que suben de uno en uno y la Trinità dei Monti, que se dibujan solos; el agua sigue brotando.
+      const ret = (d: string, dl: number, l: number, o?: number, st?: string, bucle = false) => (
+        <path d={d} pathLength={1} strokeDasharray={1} opacity={o} stroke={st} style={{ animation: `e_mDraw ${l}s calc(${s.s1} + ${dl}s) ease-out ${bucle ? 'infinite' : 'both'}` }} />
+      )
+      return (
+        <svg width="92" height="92" viewBox="0 -4 80 80" fill="none" stroke="#F3D88F" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ overflow: 'visible', filter: 'drop-shadow(0 0 5px rgba(243,216,143,.55))' }}>
+          {ret('M26 26V12H54V26M22 26H58', 4, 1.1)}
+          {ret('M24 12L40 3L56 12Z', 4.6, 0.8)}
+          {ret('M37 26V19a3 3 0 0 1 6 0V26M30 17V20M50 17V20M40 7V9', 5.2, 0.6)}
+          {ret('M30 25L17 55M50 25L63 55', 2.1, 1.1)}
+          {[30, 35, 40, 45, 50].map((y, i) => {
+            const m = ((y - 25) * 13) / 30
+            return <g key={y}>{ret(`M${(30 - m).toFixed(3)} ${y}H${(50 + m).toFixed(3)}`, [2.6, 2.82, 3.04, 3.26, 3.48][i], 0.45)}</g>
+          })}
+          {ret('M40 25V55', 3.1, 0.8, 0.45)}
+          {ret('M7 60Q9 72 24 73H56Q71 72 73 60Q62 65 40 65Q18 65 7 60Z', 0, 0.9)}
+          {ret('M7 60L4 54M73 60L76 54', 0.8, 0.5)}
+          {ret('M16 68Q40 71 64 68', 1, 0.6, 0.6)}
+          {ret('M40 65V55M34 55H46', 1.3, 0.6)}
+          {ret('M40 55V43', 1.7, 1.8, undefined, '#BFE4F2', true)}
+          {ret('M40 43Q36 35 31 40', 1.9, 1.8, undefined, '#BFE4F2', true)}
+          {ret('M40 43Q44 35 49 40', 1.9, 1.8, undefined, '#BFE4F2', true)}
+          {ret('M40 55Q31 44 25 52', 2.1, 1.8, undefined, '#BFE4F2', true)}
+          {ret('M40 55Q49 44 55 52', 2.1, 1.8, undefined, '#BFE4F2', true)}
+        </svg>
+      )
+    }
+    case 'cas':
+      return (
+        <svg width="92" height="92" viewBox="0 0 60 60" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ overflow: 'visible' }}>
+          {[
+            ['M4 52H56M4 56H56', 0, 0.8],
+            ['M8 52V44H52V52', 0.6, 0.9],
+            ['M12 44V28H48V44M12 35Q30 40 48 35', 1.2, 1.2],
+            ['M12 28Q30 33 48 28M17 28v-3h4v3M26 28v-3h4v3M35 28v-3h4v3M43 28v-3h4v3', 2, 0.9],
+            ['M20 25V16H40V25M20 20Q30 24 40 20', 2.7, 0.9],
+            ['M22 16Q30 8 38 16', 3.3, 0.7],
+            ['M30 11V7M30 7l-6-5M30 7l6-5M30 4V0', 3.8, 0.8],
+          ].map(([d, dl, l]) => (
+            <path key={d as string} d={d as string} pathLength={1} strokeDasharray={1} style={{ animation: `e_mDraw ${l}s calc(${s.s1} + ${dl}s) ease-out both` }} />
+          ))}
+          <circle cx="30" cy="5" r="1.5" fill="#FFF4D6" stroke={sw} style={{ transformBox: 'fill-box', transformOrigin: 'center', animation: `e_spk 2.4s ${s.s2} ease-out infinite` }} />
         </svg>
       )
     case 'key':

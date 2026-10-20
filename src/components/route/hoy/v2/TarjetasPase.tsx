@@ -8,7 +8,7 @@ const BORDE_ORO = 'linear-gradient(120deg,oklch(0.72 0.13 65),oklch(0.92 0.1 90)
 export function TarjetaP3({ etiqueta }: { etiqueta: string }) {
   return (
     <div data-hoy-p3="1" className="flex flex-none flex-col gap-3 rounded-[22px] bg-[#FFFDF8] p-[18px]" style={{ border: '1px solid rgba(28,34,48,.07)' }}>
-      <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: 'oklch(0.5 0.17 5)' }}>{etiqueta}</span>
+      <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgb(var(--accent-hover))' }}>{etiqueta}</span>
       <span style={{ font: "400 24px/1.15 'Instrument Serif',serif", textWrap: 'balance' as never }}>
         ¿Acabas de llegar? Con el <em style={{ fontSize: '1.1em', color: '#B8903E' }}>Pase de Roma</em>, tu primer día se ajusta a tu vuelo.
       </span>

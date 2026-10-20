@@ -62,6 +62,8 @@ Los nombres ✅ ya están. Solo tenían línea corta el Coliseo y el Panteón. �
 | Boca de la Verdad | Has dicho la verdad | 🆕 Cuenta la leyenda que muerde la mano de quien miente. |
 | Ojo de la Cerradura | Has mirado por la cerradura | 🆕 Por este agujero se ve la cúpula de San Pedro, enmarcada. |
 | Catacumbas de San Calixto | La Roma de debajo | 🆕 Kilómetros de galerías donde se enterraron los primeros cristianos. |
+| Plaza de España | Escalón a escalón (Tanda 10) | 🆕 Los 135 escalones que suben a la Trinità dei Monti. |
+| Castillo de Sant’Angelo | Tumba de emperador (Tanda 10) | 🆕 Tumba de emperador, fortaleza de papas. |
 | (antes de las 8:00) | Madrugador | 🆕 Roma antes que nadie. |
 | (de noche) | Nocturno | 🆕 Roma con las luces encendidas. |
 

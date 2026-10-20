@@ -6,17 +6,28 @@
 
 export const TEXTO_PENDIENTE = 'Texto pendiente'
 
+/** Tanda 10: lo que se guarda cuando alguien pide que le avisen de un destino que aún no tenemos (tabla `avisos_destino`, migración 0028). */
+export const AVISO_DE_DESTINOS_PRIVACIDAD =
+  'Avisos de destinos nuevos: si escribes un destino que aún no tenemos y pides que te avisemos, guardamos tu email y ese destino. Solo los usamos para avisarte cuando llegue ese destino.'
+
 export interface ApartadoDePrivacidad {
   id: string
   titulo: string
   /** La pregunta a la que tiene que responder el texto que escriba Eric. */
   pregunta: string
+  /** Líneas ya escritas (Tanda 10: el aviso de destinos). Salen encima del «Texto pendiente». */
+  escrito?: string[]
 }
 
 export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
   { id: 'quien', titulo: 'Quién es el responsable', pregunta: 'Quién trata tus datos y cómo contactar con él.' },
   { id: 'que-guardamos', titulo: 'Qué guardamos', pregunta: 'Tu email, tus viajes, tus Vistos, tus fotos (y la fecha y el sitio de cada una), tus logros y tus pases.' },
-  { id: 'para-que', titulo: 'Para qué lo usamos', pregunta: 'Para qué sirve cada dato y en qué se basa tratarlo.' },
+  {
+    id: 'para-que',
+    titulo: 'Para qué lo usamos',
+    pregunta: 'Para qué sirve cada dato y en qué se basa tratarlo.',
+    escrito: [AVISO_DE_DESTINOS_PRIVACIDAD],
+  },
   { id: 'cuanto-tiempo', titulo: 'Cuánto tiempo lo guardamos', pregunta: 'Cuánto dura cada dato y qué pasa cuando dejas de usar la app.' },
   { id: 'con-quien', titulo: 'Con quién lo compartimos', pregunta: 'Los servicios de fuera que tratan datos para que la app funcione (lista de abajo).' },
   { id: 'como-borrarlo', titulo: 'Cómo borrarlo', pregunta: 'Cómo borrar tu cuenta y todo lo tuyo desde la app, y qué se borra.' },

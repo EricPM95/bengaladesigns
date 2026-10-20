@@ -41,7 +41,7 @@ export function HojaComoTeLlamas() {
         className="h-[52px] rounded-[14px] border-[1.5px] border-text/20 bg-white px-3.5 text-[16px] outline-none"
       />
       {error && (
-        <p role="alert" className="m-0 text-[13px]" style={{ color: 'oklch(0.5 0.17 5)' }}>
+        <p role="alert" className="m-0 text-[13px]" style={{ color: 'rgb(var(--accent-red))' }}>
           {error}
         </p>
       )}

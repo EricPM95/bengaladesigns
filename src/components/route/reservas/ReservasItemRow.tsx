@@ -26,14 +26,14 @@ interface ReservasItemRowProps {
 
 /** El color del bloque en diagonal de cada tipo y la palabra pequeña de encima del nombre (diseño «Trazo Reservas», pantalla 13). */
 const KIND_STYLE: Record<ReadinessItemKind, { color: string; eyebrow: string }> = {
-  // Lo que falta por reservar va en el frambuesa de la app (token `--accent`, un solo sitio); lo ya reservado lo pinta el verde de abajo.
-  transport: { color: 'rgb(var(--accent))', eyebrow: 'Transporte' },
-  accommodation: { color: 'rgb(var(--accent))', eyebrow: 'Alojamiento' },
-  insurance: { color: 'rgb(var(--accent))', eyebrow: 'Imprescindible' },
+  // Lo que falta por reservar va en el frambuesa de la app (token `--frambuesa`, un solo sitio); lo ya reservado lo pinta el verde de abajo.
+  transport: { color: 'rgb(var(--frambuesa))', eyebrow: 'Transporte' },
+  accommodation: { color: 'rgb(var(--frambuesa))', eyebrow: 'Alojamiento' },
+  insurance: { color: 'rgb(var(--frambuesa))', eyebrow: 'Imprescindible' },
   n26: { color: 'oklch(0.45 0.03 250)', eyebrow: 'Pagos sin comisión' },
   'rental-vehicle': { color: 'oklch(0.55 0.12 295)', eyebrow: 'Vehículo' },
   esim: { color: 'oklch(0.56 0.1 220)', eyebrow: 'Datos móviles' },
-  entrada: { color: 'rgb(var(--accent))', eyebrow: 'Entrada' },
+  entrada: { color: 'rgb(var(--frambuesa))', eyebrow: 'Entrada' },
   excursion: { color: 'oklch(0.56 0.1 220)', eyebrow: 'Excursión' },
 }
 

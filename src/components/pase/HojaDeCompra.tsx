@@ -72,7 +72,7 @@ export function HojaDeCompra({ destino, tripId, onCerrar, configInicial = null }
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <span style={{ font: "600 14px 'Geist'" }}>{f.nombre}</span>
-                {f.sub && <span style={{ font: "500 11.5px 'Geist'", color: 'oklch(0.48 0.17 5)' }}>{f.sub}</span>}
+                {f.sub && <span style={{ font: "500 11.5px 'Geist'", color: 'rgb(var(--accent-hover))' }}>{f.sub}</span>}
               </span>
               <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
                 {f.tachado && <span style={{ font: "500 11.5px 'Geist'", opacity: 0.5, textDecoration: 'line-through' }}>{f.tachado}</span>}
@@ -119,7 +119,7 @@ export function HojaDeCompra({ destino, tripId, onCerrar, configInicial = null }
         </p>
       )}
       {error && (
-        <p role="alert" data-error-compra style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'oklch(0.5 0.17 5)' }}>
+        <p role="alert" data-error-compra style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>
           {error}
         </p>
       )}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bodoni+Moda:ital,wght@0,500;1,500&family=Bricolage+Grotesque:wght@500;800&family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;1,600&family=DM+Serif+Display&family=Geist:wght@400..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Italiana&family=Outfit:wght@300;600&family=Playfair+Display:wght@500;700&family=Sora:wght@300;600&family=Syne:wght@700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 40% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 90px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Marca · 30 propuestas</span>
+    <span style="font:400 46px/1 'Instrument Serif',serif">JUTRIP</span>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="3"><button onClick="{{ tb.go }}" style="height:42px;padding:0 20px;border-radius:999px;border:1px solid rgba(28,34,48,.14);background:{{ tb.bg }};color:{{ tb.fg }};font:600 14px 'Geist';cursor:pointer">{{ tb.n }}</button></sc-for></div>
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 34px/1 'Instrument Serif',serif">{{ g.t }}</span><span style="font:400 13.5px/1.4 'Geist';color:rgba(28,34,48,.62)">{{ g.s }}</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:22px">
+        <sc-for list="{{ g.items }}" as="o" hint-placeholder-count="10">
+          <div style="width:340px;display:flex;flex-direction:column;gap:10px">
+            <span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4;align-self:flex-start">{{ o.id }}</span>
+            <div style="height:270px;border-radius:26px;background:{{ o.bg }};display:flex;align-items:center;justify-content:center;box-shadow:0 20px 40px -24px rgba(28,34,48,.5)">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+                <svg width="104" height="104" viewBox="0 0 120 120" fill="none" style="overflow:visible">
+                  <path d="{{ o.l1.d }}" fill="{{ o.l1.f }}" stroke="{{ o.l1.s }}" stroke-width="{{ o.l1.w }}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ o.l1.da }}" opacity="{{ o.l1.o }}"></path>
+                  <path d="{{ o.l2.d }}" fill="{{ o.l2.f }}" stroke="{{ o.l2.s }}" stroke-width="{{ o.l2.w }}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ o.l2.da }}" opacity="{{ o.l2.o }}"></path>
+                  <path d="{{ o.l3.d }}" fill="{{ o.l3.f }}" stroke="{{ o.l3.s }}" stroke-width="{{ o.l3.w }}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ o.l3.da }}" opacity="{{ o.l3.o }}"></path>
+                  <text x="60" y="{{ o.gy }}" text-anchor="middle" font-family="{{ o.gf }}" font-size="{{ o.gs }}" letter-spacing="{{ o.gl }}" fill="{{ o.gc }}">{{ o.glyph }}</text>
+                </svg>
+                <span style="font:{{ o.font }};letter-spacing:{{ o.ls }};color:{{ o.fg }};line-height:1.1;padding-left:{{ o.ls }};white-space:nowrap">{{ o.word }}<span style="color:{{ o.dotc }}">{{ o.dot }}</span></span>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <span style="width:60px;height:60px;flex:none;border-radius:16px;background:{{ o.bg }};display:flex;align-items:center;justify-content:center;box-shadow:0 8px 16px -8px rgba(0,0,0,.5)">
+                <svg width="42" height="42" viewBox="0 0 120 120" fill="none" style="overflow:visible"><path d="{{ o.l1.d }}" fill="{{ o.l1.f }}" stroke="{{ o.l1.s }}" stroke-width="{{ o.l1.w }}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ o.l1.da }}" opacity="{{ o.l1.o }}"></path><path d="{{ o.l2.d }}" fill="{{ o.l2.f }}" stroke="{{ o.l2.s }}" stroke-width="{{ o.l2.w }}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ o.l2.da }}" opacity="{{ o.l2.o }}"></path><path d="{{ o.l3.d }}" fill="{{ o.l3.f }}" stroke="{{ o.l3.s }}" stroke-width="{{ o.l3.w }}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ o.l3.da }}" opacity="{{ o.l3.o }}"></path><text x="60" y="{{ o.gy }}" text-anchor="middle" font-family="{{ o.gf }}" font-size="{{ o.gs }}" letter-spacing="{{ o.gl }}" fill="{{ o.gc }}">{{ o.glyph }}</text></svg></span>
+              <span style="font:400 12.5px/1.4 'Geist';color:rgba(28,34,48,.68)">{{ o.note }}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+  <sc-if value="{{ showPrem }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 34px/1 'Instrument Serif',serif">Premium</span><span style="font:400 13.5px/1.4 'Geist';color:rgba(28,34,48,.62)">Estrella con anillo y ruta de puntos, en metal con relieve. Bodoni.</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:24px">
+    <sc-for list="{{ prem }}" as="o" hint-placeholder-count="10">
+      <div style="width:480px;display:flex;flex-direction:column;gap:10px">
+        <span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4;align-self:flex-start">{{ o.id }}</span>
+        <div style="position:relative;height:360px;border-radius:30px;background:{{ o.bg }};display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 30px 50px -26px rgba(28,34,48,.6)">
+          <span style="position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,{{ o.glow }},transparent 62%)"></span>
+          <div style="position:relative;display:flex;flex-direction:{{ o.dir }};align-items:center;gap:{{ o.gap }}">
+            <svg width="{{ o.sw }}" height="{{ o.sh }}" viewBox="0 0 230 190" fill="none" style="overflow:visible;filter:drop-shadow(0 14px 18px rgba(0,0,0,.4))">
+              <defs>
+                <linearGradient id="{{ o.id }}m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ o.m0 }}"></stop><stop offset=".3" stop-color="{{ o.m1 }}"></stop><stop offset=".55" stop-color="{{ o.m2 }}"></stop><stop offset=".8" stop-color="{{ o.m3 }}"></stop><stop offset="1" stop-color="{{ o.m4 }}"></stop></linearGradient>
+                <linearGradient id="{{ o.id }}f" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{{ o.m4 }}"></stop><stop offset=".5" stop-color="{{ o.m1 }}"></stop><stop offset="1" stop-color="{{ o.m3 }}"></stop></linearGradient>
+                <radialGradient id="{{ o.id }}c" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".5" stop-color="{{ o.m1 }}"></stop><stop offset="1" stop-color="{{ o.m3 }}"></stop></radialGradient>
+                <filter id="{{ o.id }}b" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="bl"></feGaussianBlur><feSpecularLighting in="bl" surfaceScale="3.5" specularConstant=".95" specularExponent="22" lighting-color="{{ o.hi }}" result="sp"><feDistantLight azimuth="235" elevation="46"></feDistantLight></feSpecularLighting><feComposite in="sp" in2="SourceAlpha" operator="in" result="s2"></feComposite><feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".85" k4="0"></feComposite></filter>
+              </defs>
+              <circle cx="115" cy="104" r="78" stroke="url(#{{ o.id }}m)" stroke-width="3" opacity=".6" fill="none"></circle>
+              <circle cx="115" cy="104" r="70" stroke="{{ o.m2 }}" stroke-width="1" stroke-dasharray="1 6" stroke-linecap="round" fill="none" opacity=".8"></circle>
+              <path d="M115 14L129 82L196 104L129 126L115 194L101 126L34 104L101 82Z" fill="url(#{{ o.id }}m)" filter="url(#{{ o.id }}b)"></path>
+              <path d="M115 14L129 82L196 104L129 126L115 194L101 126L34 104L101 82Z" stroke="{{ o.ed }}" stroke-width="1.4" stroke-linejoin="round"></path>
+              <path d="M115 14L129 82L115 104L101 82Z" fill="#FFFFFF" opacity=".34"></path>
+              <path d="M196 104L129 126L115 104L129 82Z" fill="#000000" opacity=".1"></path>
+              <path d="M115 194L101 126L115 104L129 126Z" fill="#000000" opacity=".22"></path>
+              <path d="M34 104L101 82L115 104L101 126Z" fill="#FFFFFF" opacity=".12"></path>
+              <circle cx="115" cy="104" r="15" fill="url(#{{ o.id }}c)" stroke="{{ o.ed }}" stroke-width="1.6"></circle>
+              <path d="M110 97a9 9 0 0 1 8-3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity=".9"></path>
+              <path d="M30 168Q82 124 148 140T214 80" stroke="url(#{{ o.id }}f)" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="1 9" fill="none"></path>
+              <circle cx="30" cy="168" r="6" fill="url(#{{ o.id }}c)" stroke="{{ o.ed }}" stroke-width="1.4"></circle>
+              <circle cx="214" cy="80" r="5" fill="none" stroke="{{ o.m1 }}" stroke-width="2"></circle>
+            </svg>
+            <span style="font:{{ o.font }};letter-spacing:{{ o.ls }};color:transparent;background:linear-gradient(180deg,{{ o.t0 }},{{ o.t1 }} 50%,{{ o.t2 }});-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));line-height:1.25;padding:0 0 6px {{ o.ls }}"><sc-for list="{{ o.lt }}" as="q" hint-placeholder-count="6"><span style="font-weight:{{ q.w }};font-variation-settings:'opsz' 96">{{ q.c }}</span></sc-for></span>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <span style="position:relative;width:76px;height:76px;flex:none;border-radius:20px;background:{{ o.ibg }};display:flex;align-items:center;justify-content:center;box-shadow:0 14px 22px -10px rgba(0,0,0,.55),inset 0 0 0 1.5px {{ o.ring }};overflow:hidden"><svg width="54" height="54" viewBox="0 0 230 190" style="position:relative"><path d="M115 14L129 82L196 104L129 126L115 194L101 126L34 104L101 82Z" fill="url(#{{ o.id }}m)" stroke="{{ o.ed }}" stroke-width="3" stroke-linejoin="round"></path><path d="M115 14L129 82L115 104L101 82Z" fill="#FFFFFF" opacity=".34"></path><circle cx="115" cy="104" r="15" fill="url(#{{ o.id }}c)"></circle></svg></span>
+          <span style="font:400 13px/1.45 'Geist';color:rgba(28,34,48,.68)">{{ o.note }}</span>
+        </div>
+      </div>
+    </sc-for>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state={tab:'premium'};
+  renderVals(){
+    const gold={m0:'#FFF6DC',m1:'#F3D88F',m2:'#C99A44',m3:'#8E6820',m4:'#E9C77A',hi:'#FFF6DC',ed:'#6E5018',t0:'#FFF6DC',t1:'#E9C77A',t2:'#9A7228',ring:'rgba(243,216,143,.55)'};
+    const rose={m0:'#FFE9D2',m1:'#F6C9A8',m2:'#D9926E',m3:'#A55C3E',m4:'#F0B592',hi:'#FFE9D2',ed:'#7A3A26',t0:'#FFE9D2',t1:'#F0B592',t2:'#B8714F',ring:'rgba(246,201,168,.55)'};
+    const plat={m0:'#FFFFFF',m1:'#E3E7EF',m2:'#9FA7B8',m3:'#5E6678',m4:'#C9D0DE',hi:'#FFFFFF',ed:'#4A5266',t0:'#FFFFFF',t1:'#D6DBE8',t2:'#7A8298',ring:'rgba(214,219,232,.5)'};
+    const cop={m0:'#FFD9B8',m1:'#E9A272',m2:'#B8683A',m3:'#7A3C1C',m4:'#D58A58',hi:'#FFE3CC',ed:'#5A2C12',t0:'#FFD9B8',t1:'#E9A272',t2:'#9A5430',ring:'rgba(233,162,114,.55)'};
+    const champ={m0:'#FFFBEF',m1:'#F4E6C3',m2:'#D2B67A',m3:'#9A7F42',m4:'#EAD7A3',hi:'#FFFFFF',ed:'#6E5A28',t0:'#FFFBEF',t1:'#EAD7A3',t2:'#A88B4A',ring:'rgba(234,215,163,.5)'};
+    const dg={m0:'#C99A44',m1:'#8E6820',m2:'#6E5018',m3:'#5A4010',m4:'#8E6820',hi:'#FFFFFF',ed:'#5A4010',t0:'#C99A44',t1:'#8E6820',t2:'#5A4010',ring:'rgba(110,80,24,.5)'};
+    const bg=(a,b,g)=>({bg:'radial-gradient(circle at 50% 30%,'+a+','+b+' 72%)',glow:g,ibg:'linear-gradient(150deg,'+a+','+b+')'});
+    const navy=bg('#22305A','#0E1530','rgba(255,214,140,.22)'),wine=bg('#7A2034','#36101A','rgba(255,200,200,.2)'),ink=bg('#2A2D36','#0D0E12','rgba(255,255,255,.14)'),green=bg('#175640','#08241B','rgba(255,230,160,.18)'),ivory=bg('#FBF3E2','#E7D9BC','rgba(255,255,255,.55)'),plum=bg('#4A2A5A','#1C0F26','rgba(255,220,240,.18)');
+    const col={dir:'column',gap:'6px',sw:230,sh:190},row={dir:'row',gap:'18px',sw:130,sh:107};
+    const FA="500 76px 'Bodoni Moda',serif",FB="italic 500 84px 'Bodoni Moda',serif",FC="600 62px 'Bodoni Moda',serif",FD="500 56px 'Bodoni Moda',serif";
+    const o=(id,m,t,l,f,ls,w,note)=>({id,...m,...t,...l,font:f,ls,word:w,note});
+    const prem=[o('P1',gold,navy,col,FA,'.08em','JUTRIP','Azul noche y oro. El clásico.'),o('P2',rose,wine,col,FB,'.01em','Jutrip','Granate y oro rosa, en cursiva.'),o('P3',champ,wine,col,FA,'.08em','JUTRIP','Granate y champán, más suave.'),o('P4',dg,ivory,col,"500 86px 'Bodoni Moda',serif",'.1em','JUTRIP','Marfil y oro, con la Bodoni de los dos prototipos de JUPI. La R y la P, con el trazo fino de la U.'),o('P5',plat,ink,col,FA,'.1em','JUTRIP','Platino sobre negro.'),o('P6',gold,green,col,FA,'.08em','JUTRIP','Verde botella y oro.'),o('P7',cop,navy,col,FC,'.06em','JUTRIP','Cobre sobre azul noche.'),o('P8',champ,plum,col,FB,'.02em','Jutrip','Champán sobre ciruela.'),o('P9',gold,navy,row,FD,'.06em','JUTRIP','Horizontal, azul noche y oro.'),o('P10',rose,wine,row,"italic 500 54px 'Bodoni Moda',serif",'.01em','Jutrip','Horizontal, granate y oro rosa.')];
+    prem.forEach(p=>{p.lt=p.word.split('').map(c=>({c,w:(p.id==='P4'&&(c==='R'||c==='P'))?400:500}));});
+    const tab=this.state.tab;
+    const tabs=[['premium','Premium'],['dif','Diferentes'],['viaje','Tipo viaje']].map(([k,n])=>({n,go:()=>this.setState({tab:k}),bg:tab===k?'#1C2230':'#FFFDF8',fg:tab===k?'#FFFDF8':'#1C2230'}));
+    const L=(d,f,s,w,da,o)=>({d:d||'M0 0',f:f||'none',s:s||'none',w:w||0,da:da||'none',o:o==null?1:o});
+    const cc=(x,y,r)=>'M'+(x-r)+' '+y+'a'+r+' '+r+' 0 1 0 '+(2*r)+' 0a'+r+' '+r+' 0 1 0 '+(-2*r)+' 0Z';
+    const rr='M26 10H94a16 16 0 0 1 16 16V94a16 16 0 0 1-16 16H26a16 16 0 0 1-16-16V26A16 16 0 0 1 26 10Z';
+    const mk=(id,bg,l,x)=>({id,bg,l1:l[0]||L(),l2:l[1]||L(),l3:l[2]||L(),glyph:'',gf:'serif',gs:0,gy:80,gl:0,gc:'#000',dot:'',dotc:'#000',...x});
+    const A=[
+      mk('A1','#F6EEDD',[L(rr,'#C8553D')],{glyph:'JT',gf:'Playfair Display,serif',gs:54,gy:78,gl:-4,gc:'#FFF3E0',font:"700 40px 'Playfair Display',serif",ls:'.06em',word:'JUTRIP',fg:'#1F1A17',note:'Monograma JT en cuadrado redondeado. Playfair, terracota y crema.'}),
+      mk('A2','#F1E8D6',[L('M72 12V68a26 26 0 0 1-52 0','none','#1B4FB0',12),L(),L(cc(72,12,8),'#E4572E')],{font:"300 44px 'Outfit',sans-serif",ls:'.14em',word:'jutrip',fg:'#14161C',note:'Una J dibujada con un solo trazo y un punto de color. Outfit ligera.'}),
+      mk('A3','#14161C',[L('M14 24H106','none','#FFC93C',12),L('M60 24V100','none','#FFC93C',12),L(cc(60,106,8),'#FFFDF8')],{font:"400 40px 'Archivo Black',sans-serif",ls:'.02em',word:'JUTRIP',fg:'#FFC93C',note:'La T como poste de señales. Archivo Black, amarillo sobre negro.'}),
+      mk('A4','#F6EFE0',[L(cc(42,60,30),'#E4572E',null,0,null,.92),L(cc(78,60,30),'#1B4FB0',null,0,null,.92),L('M60 36A30 30 0 0 1 60 84A30 30 0 0 1 60 36Z','#14161C')],{font:"600 40px 'Sora',sans-serif",ls:'-.01em',word:'JuTrip',fg:'#14161C',note:'Dos círculos que se cruzan: Ju y Trip. Sora, rojo y azul.'}),
+      mk('A5','#0F3B33',[L('M60 6L106 33V87L60 114L14 87V33Z','#F4E9C8')],{glyph:'J',gf:'Playfair Display,serif',gs:78,gy:88,gc:'#0F3B33',font:"500 38px 'Cinzel',serif",ls:'.28em',word:'JUTRIP',fg:'#F4E9C8',note:'Hexágono con la J recortada. Cinzel, crema sobre verde.'}),
+      mk('A6','#0E1530',[L('M10 60a50 50 0 0 1 100 0Z','#FFB84D'),L('M10 68a50 50 0 0 0 100 0Z','#3A5BC7')],{font:"500 34px 'Unbounded',sans-serif",ls:'.04em',word:'JUTRIP',fg:'#FFFDF8',note:'Horizonte: sol arriba y mar abajo. Unbounded, naranja y azul.'}),
+      mk('A7','#E8E2F5',[L(cc(70,36,6)+cc(70,56,6)+cc(70,76,6)+cc(62,92,6)+cc(46,98,6)+cc(30,90,6)+cc(24,74,6),'#4B2E9A'),L(),L(cc(70,16,7),'#E4572E')],{font:"400 34px 'Geist Mono',monospace",ls:'.3em',word:'jutrip',fg:'#2A1B63',note:'La J hecha con puntos, como una ruta. Geist Mono, violeta.'}),
+      mk('A8','#FFC93C',[L(cc(60,60,50),'#14161C')],{glyph:'j',gf:'Bricolage Grotesque,sans-serif',gs:80,gy:84,gc:'#FFC93C',font:"800 50px 'Bricolage Grotesque',sans-serif",ls:'-.03em',word:'jutrip',fg:'#14161C',dot:'.',dotc:'#E4572E',note:'Palabra en minúsculas con punto de color. Bricolage, negro y amarillo.'}),
+      mk('A9','#E4572E',[L(cc(60,60,50),'#FFF3E0'),L(),L('M22 90L90 22L98 30L30 98Z','#14161C')],{glyph:'J',gf:'Syne,sans-serif',gs:70,gy:84,gc:'#E4572E',font:"800 42px 'Syne',sans-serif",ls:'-.01em',word:'JUTRIP',fg:'#FFF3E0',note:'Círculo con un corte en diagonal. Syne, naranja y negro.'}),
+      mk('A10','#EDE6D6',[L('M8 100L50 24L92 100Z','#14161C'),L('M50 100L82 46L112 100Z','#E4572E',null,0,null,.95)],{font:"400 46px 'Italiana',serif",ls:'.2em',word:'JUTRIP',fg:'#14161C',note:'Dos picos que se solapan. Italiana, negro y rojo.'})
+    ];
+    const B=[
+      mk('B1','#1B4FB0',[L('M8 56L112 10L80 108L58 74Z','#FFFDF8'),L('M58 74L112 10L68 62Z','#9DB4D6')],{font:"800 44px 'Syne',sans-serif",ls:'-.02em',word:'jutrip',fg:'#FFFDF8',note:'Avión de papel. Syne, azul y blanco.'}),
+      mk('B2','#FFF1DC',[L('M60 114C38 84 20 68 20 46a40 40 0 0 1 80 0c0 22-18 38-40 68z','#E4572E'),L('M40 72Q48 54 60 58T82 34','none','#FFFDF8',5),L(cc(82,34,6),'#FFFDF8')],{font:"800 44px 'Bricolage Grotesque',sans-serif",ls:'-.03em',word:'jutrip',fg:'#14161C',note:'Pin con el camino dentro. Bricolage, naranja.'}),
+      mk('B3','#14161C',[L('M18 40H102a6 6 0 0 1 6 6V98a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6V46a6 6 0 0 1 6-6Z','#F2B134'),L('M44 40V28a6 6 0 0 1 6-6H70a6 6 0 0 1 6 6V40','none','#F2B134',6),L('M40 40V104M80 40V104','none','#14161C',4)],{font:"400 40px 'Archivo Black',sans-serif",ls:'.01em',word:'JUTRIP',fg:'#F2B134',note:'Maleta con correas. Archivo Black, amarillo sobre negro.'}),
+      mk('B4','#0F3B33',[L('M10 28H110a4 4 0 0 1 4 4V50a13 13 0 0 0 0 28V94a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V78a13 13 0 0 0 0-28V32a4 4 0 0 1 4-4Z','#F6EFE0'),L('M84 34V92','none','#0F3B33',2.5,'3 5'),L('M44 48L49 60L61 63L49 67L44 79L39 67L27 63L39 60Z','#0F3B33')],{font:"italic 400 50px 'Instrument Serif',serif",ls:'.01em',word:'Jutrip',fg:'#F6EFE0',note:'Billete con perforado y estrella. Instrument Serif cursiva.'}),
+      mk('B5','#0E6E73',[L(cc(60,60,48),'none','#FFFDF8',5),L('M60 22L70 60L60 98L50 60Z','#FFC857'),L('M60 22L70 60H50Z','#FFFDF8')],{font:"600 38px 'Sora',sans-serif",ls:'.02em',word:'JuTrip',fg:'#FFFDF8',note:'Brújula plana. Sora, turquesa y amarillo.'}),
+      mk('B6','#16355F',[L(cc(60,60,36),'none','#F3EEE4',4),L('M60 24C78 40 78 80 60 96C42 80 42 40 60 24M24 60H96','none','#F3EEE4',2.5),L('M8 78C28 104 92 98 112 44','none','#FFC857',4,'1 8')],{font:"italic 600 46px 'Cormorant Garamond',serif",ls:'.02em',word:'Jutrip',fg:'#F3EEE4',note:'Globo con ruta de puntos alrededor. Cormorant cursiva.'}),
+      mk('B7','#F4E3C6',[L('M50 112L70 112L82 58L38 58Z','#3A3F4A'),L('M60 108V98M60 90V80M60 72V64','none','#F4E9C8',3),L(cc(60,32,18),'#FF8A3D')],{font:"400 44px 'DM Serif Display',serif",ls:'.04em',word:'JUTRIP',fg:'#3A2A20',note:'Carretera hacia el sol. DM Serif Display, naranja.'}),
+      mk('B8','#B5482A',[L('M14 14H106V106H14Z','#F6EFE0'),L('M14 14H106V106H14Z','none','#B5482A',6,'0.1 10'),L('M28 28H92V92H28Z','none','#B5482A',2)],{glyph:'JT',gf:'Playfair Display,serif',gs:38,gy:72,gl:-2,gc:'#B5482A',font:"700 38px 'Playfair Display',serif",ls:'.1em',word:'JUTRIP',fg:'#F6EFE0',note:'Sello postal con borde perforado. Playfair, terracota.'}),
+      mk('B9','#0B5C7A',[L('M26 74a34 34 0 0 1 68 0Z','#FFB84D'),L('M8 78Q22 68 36 78T64 78T92 78T112 78','none','#FFFDF8',5),L('M8 94Q22 84 36 94T64 94T92 94T112 94','none','#7FD1E8',5)],{font:"500 32px 'Unbounded',sans-serif",ls:'.04em',word:'JUTRIP',fg:'#FFFDF8',note:'Sol y olas, de playa. Unbounded, azul y naranja.'}),
+      mk('B10','#1E3A34',[L('M6 106L48 40L70 72L86 52L114 106Z','#F3EEE4'),L('M48 40L58 56L48 52L38 56Z','#9DB4D6'),L('M48 40V16H68L61 24L68 32H48','#FF6B4A','#FF6B4A',3)],{font:"300 44px 'Outfit',sans-serif",ls:'.16em',word:'jutrip',fg:'#F3EEE4',note:'Montaña con bandera. Outfit ligera, verde y coral.'})
+    ];
+    const G=[{k:'dif',t:'Totalmente diferentes',s:'Letras, formas y colores planos. Sin estrella ni metal.',items:A},{k:'viaje',t:'Tipo viaje',s:'Símbolos de viaje: avión, pin, maleta, billete, brújula, globo, carretera, sello, playa y montaña.',items:B}];
+    return{tabs,prem,showPrem:tab==='premium',groups:G.filter(g=>g.k===tab)};
+  }
+}
+</script>
+</body>
+</html>

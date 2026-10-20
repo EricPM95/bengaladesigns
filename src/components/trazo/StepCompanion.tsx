@@ -79,7 +79,7 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
                 minHeight: 0,
                 borderRadius: 24,
                 border: `1px solid ${active ? AMBER : 'rgba(28,34,48,.1)'}`,
-                background: active ? 'rgba(255,190,30,.12)' : 'rgba(255,255,255,0.80)',
+                background: active ? 'rgba(181,138,46,.12)' : 'rgba(255,255,255,0.80)',
                 backdropFilter: 'blur(14px)',
                 WebkitBackdropFilter: 'blur(14px)',
                 display: 'flex',
@@ -112,7 +112,7 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
         </p>
       )}
       {warning?.level === 'car_over' && !acknowledged && answers.companion && (answers.companionGroupSize !== undefined || answers.companionChildrenAges !== undefined) && (
-        <div style={{ margin: '0 0 10px', padding: 14, borderRadius: 18, background: 'rgba(255,190,30,.1)', border: '1px solid rgba(255,190,30,.35)' }}>
+        <div style={{ margin: '0 0 10px', padding: 14, borderRadius: 18, background: 'rgba(181,138,46,.1)', border: '1px solid rgba(181,138,46,.35)' }}>
           <p style={{ margin: '0 0 6px', font: "400 14px/1.4 'Geist'", color: INK }}>
             Sois {total} — un coche de alquiler estándar llega hasta 5 personas. ¿Alquilamos más de un coche, o prefieres cambiar de vehículo?
           </p>

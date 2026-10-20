@@ -106,7 +106,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
                   height: 34,
                   border: 'none',
                   borderRadius: sel ? '50%' : 10,
-                  background: sel ? AMBER : under ? 'rgba(255,190,30,.16)' : 'rgba(28,34,48,.04)',
+                  background: sel ? AMBER : under ? 'rgba(181,138,46,.16)' : 'rgba(28,34,48,.04)',
                   color: sel ? '#FFFFFF' : INK,
                   font: `${sel ? 600 : 400} 14px 'Geist'`,
                   cursor: 'pointer',

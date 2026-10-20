@@ -161,7 +161,7 @@ for (const [clave, route] of Object.entries(rutas)) {
           if (est) {
             estilosFalta.add(est[2])
             debe(t.indexOf(titulo) >= 0 && t.indexOf(titulo) < t.indexOf('data-estado'), '1d falta', `${nombre}: ${bloque}: el «Falta» no va debajo del nombre`)
-            debe(/Geist Mono/.test(est[2]) && /oklch\(0\.5 0\.17 5\)/.test(est[2]), '1d falta', `${nombre}: ${bloque}: el «Falta» no es monoespaciado frambuesa (${est[2]})`)
+            debe(/Geist Mono/.test(est[2]) && /frambuesa-hover/.test(est[2]), '1d falta', `${nombre}: ${bloque}: el «Falta» no es monoespaciado frambuesa (${est[2]})`)
           }
           debe(!/px-\[9px\] text-\[11px\] font-semibold leading-6/.test(t), '1d falta', `${nombre}: ${bloque}: queda la píldora de estado`)
         }

@@ -85,7 +85,7 @@ export function HojaMasParaTuDia({ visitas, anadidas, onAnadir, onCerrar }: { vi
       <div className="flex items-start gap-3">
         <span className="flex flex-1 flex-col gap-1.5">
           <span style={{ font: "400 28px/1 'Instrument Serif',serif" }}>
-            Más para <em style={{ color: 'oklch(0.55 0.17 5)' }}>tu día</em>
+            Más para <em style={{ color: 'rgb(var(--accent))' }}>tu día</em>
           </span>
           <span className="text-[13px] leading-[1.5] text-[#1C2230]/70">Estas visitas son de la ruta completa de hoy. Si vas bien, añade las que quieras.</span>
         </span>
@@ -157,7 +157,7 @@ export function HojaSobreEsteLugar({ route, parada, onCerrar }: { route: Route; 
       {secciones.length === 0 && <p className="text-[14px] leading-[1.5] text-[#1C2230]/65">De este sitio todavía no tenemos más que contarte.</p>}
       {secciones.map((s) => (
         <div key={s.k} className="flex flex-col gap-[7px] border-t border-[rgba(28,34,48,.08)] pt-4">
-          <span style={{ font: "italic 400 20px/1.1 'Instrument Serif',serif", color: 'oklch(0.5 0.17 5)' }}>{s.k}</span>
+          <span style={{ font: "italic 400 20px/1.1 'Instrument Serif',serif", color: 'rgb(var(--accent-hover))' }}>{s.k}</span>
           {s.t && (
             <p className="m-0 text-[15px] leading-[1.62] text-[#1C2230]/85" style={{ textWrap: 'pretty' as never }}>
               {s.t}

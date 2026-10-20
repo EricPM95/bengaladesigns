@@ -437,7 +437,7 @@ export function LlegadaYVuelta({
                     {!leg.done && leg.mode !== 'coche' && (
                       <>
                         {' · '}
-                        <span className="font-semibold underline underline-offset-2" style={{ color: 'oklch(0.5 0.17 5)' }}>
+                        <span className="font-semibold underline underline-offset-2" style={{ color: 'rgb(var(--accent-hover))' }}>
                           Añadir
                         </span>
                       </>

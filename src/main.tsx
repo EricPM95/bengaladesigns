@@ -33,19 +33,24 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
-// La pantalla al abrir (I2) vive en index.html para verse antes de que cargue nada. Se quita en cuanto la app ha pintado, con un respiro mínimo para que no parpadee.
+// La pantalla al abrir (I2; Tanda 10, la de JUTRIP) vive en index.html para verse antes de que cargue nada. Sale unos 2 segundos desde que se abre la app y un toque la salta (index.html decide si sale: solo al abrir la app, no en cada recarga).
 // En desarrollo se quita al momento (si no, taparía las capturas y las pruebas); `?apertura=1` la deja puesta para verla.
 {
   const apertura = document.getElementById('apertura')
   const dejar = import.meta.env.DEV && new URLSearchParams(window.location.search).get('apertura') === '1'
-  if (import.meta.env.DEV && apertura) (window as unknown as { __aperturaHtml?: string }).__aperturaHtml = apertura.outerHTML // (para la captura de I2)
+  if (import.meta.env.DEV && apertura) (window as unknown as { __aperturaHtml?: string }).__aperturaHtml = apertura.outerHTML // (para la captura de la apertura)
   if (apertura && !dejar) {
     const reducir = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     const quitar = () => {
       apertura.style.opacity = '0'
       window.setTimeout(() => apertura.remove(), reducir ? 0 : 380)
     }
-    if (import.meta.env.DEV || reducir) quitar()
-    else window.setTimeout(quitar, 450)
+    if (import.meta.env.DEV) quitar()
+    else {
+      apertura.style.cursor = 'pointer'
+      apertura.addEventListener('pointerdown', quitar, { once: true })
+      // Unos 2 segundos desde que se abrió la página (la app ya está pintada por debajo); si cargar tardó más, se quita en cuanto pinta.
+      window.setTimeout(quitar, reducir ? 600 : Math.max(0, 2000 - performance.now()))
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { firmarFotosDePerfil, fotoParaMostrar, inicialDeNombre } from '../../../lib/miPerfil'
 import { useMiPerfil } from '../../../store/useMiPerfil'
+import { marca } from '../../../lib/marca'
 import { createElement, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
@@ -183,8 +184,8 @@ export async function imagenDeViaje(e: EstadoLogros, pie: DatosDelPie | null = n
 /* El pie de la imagen (C1 y C2 de Design): el marco de rango del viajero, su título y el hueco del logo                */
 /* ------------------------------------------------------------------ */
 
-/** El logo de la app. Aún no está decidido (ni el nombre ni el logo, ver data/marca.json): `null` deja el hueco vacío y preparado. Cuando haya logo, aquí va su dirección (una imagen de la propia app). */
-export const LOGO_DE_LA_APP: string | null = null
+/** El logo de la app (Tanda 10: la estrella de JUTRIP en su tono oscuro, que es el que se lee sobre el fondo oscuro de la imagen; sale de data/marca.json). Con `null` queda el hueco vacío y preparado. */
+export const LOGO_DE_LA_APP: string | null = marca.logo_oscuro
 
 export interface DatosDelPie {
   rango_ix: number
@@ -275,7 +276,11 @@ export async function pintarPie(ctx: CanvasRenderingContext2D, pie: DatosDelPie 
   const ly = base + 20
   if (LOGO_DE_LA_APP) {
     const logo = await cargarImagen(LOGO_DE_LA_APP)
-    if (logo) ctx.drawImage(logo, lx, ly, lw, lh)
+    if (logo) {
+      // Sin deformar: el logo cabe en la caja y va pegado a la derecha, centrado en vertical.
+      const k = Math.min(lw / logo.width, lh / logo.height)
+      ctx.drawImage(logo, lx + lw - logo.width * k, ly + (lh - logo.height * k) / 2, logo.width * k, logo.height * k)
+    }
   } else {
     ctx.save()
     ctx.setLineDash([10, 8])

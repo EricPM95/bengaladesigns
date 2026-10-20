@@ -1,4 +1,4 @@
-// Mira, migración por migración (de la 0001 a la 0027), qué de lo que crea cada una existe ya en el Supabase de verdad: tablas, columnas, funciones y almacenes.
+// Mira, migración por migración (de la 0001 a la 0028), qué de lo que crea cada una existe ya en el Supabase de verdad: tablas, columnas, funciones y almacenes.
 //   node scripts/cuentas/estadoMigraciones.mjs
 // Lee las migraciones de supabase/migrations y saca de cada una lo que crea; la clave sale de `.env.local` y no se muestra. Solo LEE: no cambia nada en Supabase.
 import fs from 'node:fs'

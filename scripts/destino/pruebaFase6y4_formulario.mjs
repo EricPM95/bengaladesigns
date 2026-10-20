@@ -144,7 +144,7 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
   debe(!/calendar-scope/.test(sinComentarios(fuente('src/components/route/MapDestinationHeader.tsx'))), '4 mismo calendario', 'la cabecera conserva el calendario viejo')
   // El diseño del formulario: sus colores, su letra y su temporada.
   const html = renderToStaticMarkup(createElement(TrazoCalendar, { dateRange: { start: '2027-03-10', end: '2027-03-14' }, onSelect: () => {} }))
-  debe(/#0B2A5B/i.test(html) && /Instrument Serif/.test(html) && /Geist Mono/.test(html), '4 mismo calendario', 'el calendario no lleva los colores y las letras del formulario')
+  debe(/#8B6620/i.test(html) && /Instrument Serif/.test(html) && /Geist Mono/.test(html), '4 mismo calendario', 'el calendario no lleva los colores y las letras del formulario')
   debe(/Marzo 2027/.test(html) && /aria-label="Mes anterior"/.test(html) && /aria-label="Mes siguiente"/.test(html), '4 mismo calendario', 'faltan el mes o las flechas')
   debe(/DatesCalendarModal/.test(modal) && /SEASON_FX/.test(modal) && /SeasonFx/.test(modal) && /seasonOfMonth/.test(modal), '4 mismo calendario', 'el calendario de la app no lleva el ambiente de la temporada')
   debe(/onPreviewMonth/.test(form) && /onPreviewMonth/.test(modal), '4 mismo calendario', 'la temporada no se avisa al elegir la llegada')

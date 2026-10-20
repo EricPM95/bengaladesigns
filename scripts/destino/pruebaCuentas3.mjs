@@ -75,7 +75,8 @@ console.log('1. Entrar en la cuenta (A1 a A4, I1, I2, P7b)')
   debe(entrar.includes(M.marca.nombre), 'marca', 'el nombre de la pantalla de entrar sale de data/marca.json')
   debe(/Continuar con Google/.test(entrar) && /Entrar con mi email/.test(entrar), 'A1', 'A1 ofrece [Continuar con Google] y [Entrar con mi email]')
   debe(/Privacidad y condiciones/.test(entrar), 'A1', 'A1 lleva «Privacidad y condiciones»')
-  debe(/data-logo-hueco/.test(entrar) && />LOGO</.test(entrar), 'A1', 'el hueco del logo está, vacío y preparado')
+  // (Tanda 10: arriba solo la palabra JUTRIP, sin estrella ni recuadro: ya no hay hueco del logo.)
+  debe(/data-nombre-app/.test(entrar) && /data-palabra-jutrip/.test(entrar) && !/data-logo-hueco/.test(entrar) && !/<svg/.test(entrar), 'A1', 'arriba solo la palabra JUTRIP: sin estrella ni recuadro')
   debe(!/Seguir sin cuenta|solo para pruebas|Pantalla provisional/i.test(entrar), 'A1', 'la cuenta se pide al empezar: no hay «seguir sin cuenta»')
   debe(!/Apple/.test(entrar), 'A1', 'Apple no sale (más adelante, con las tiendas)')
   const a2 = M.pintaEntrar({ pasoInicial: 'email' })
@@ -131,7 +132,7 @@ console.log('1. Entrar en la cuenta (A1 a A4, I1, I2, P7b)')
 
   // La marca viene de data/marca.json; el HTML de arranque (título y pantalla al abrir) la recibe del mismo sitio.
   const marcaJson = JSON.parse(fs.readFileSync('data/marca.json', 'utf8'))
-  debe(M.marca.nombre === marcaJson.nombre && 'logo' in marcaJson && marcaJson.logo === null, 'marca', 'la marca sale de data/marca.json, con el hueco del logo vacío y preparado')
+  debe(M.marca.nombre === marcaJson.nombre && marcaJson.logo === '/marca/logo-jutrip.svg', 'marca', 'la marca sale de data/marca.json, con el logo de JUTRIP (Tanda 10)')
   const html = fs.readFileSync('index.html', 'utf8')
   debe(html.includes('%MARCA_NOMBRE%') && !html.includes(marcaJson.nombre) && html.includes('id="apertura"'), 'I2', 'index.html no lleva el nombre escrito: lo pone data/marca.json; la pantalla al abrir está')
   const vite = fs.readFileSync('vite.config.ts', 'utf8')
@@ -1122,7 +1123,8 @@ console.log('8. Cuentas 3B: peso, invitado, R2 corta, sin nombre, fotos privadas
   debe((await enHost('app-rutas-git-main-eric.vercel.app', {}, 'host-preview')) === true, 'desarrollo', '«Pruebas» sale en una vista previa de Vercel')
   debe((await enHost('app-rutas.vercel.app', {}, 'host-prod')) === false && (await enHost('trazo.app', {}, 'host-dominio')) === false, 'desarrollo', '«Pruebas» NO sale en la dirección de producción ni en un dominio propio')
   debe((await enHost('localhost', { VITE_VERCEL_ENV: 'production' }, 'env-prod')) === false, 'desarrollo', 'con VITE_VERCEL_ENV=production, «Pruebas» no sale ni en localhost')
-  debe(/import\.meta\.env\.DEV/.test(leer('src/components/trazo/StepRoute.tsx').split('Dev: ruta rápida')[0].slice(-600)), 'desarrollo', '«Dev: ruta rápida» está dentro de import.meta.env.DEV')
+  // (Tanda 10, a petición de Eric: el botón «Dev: ruta rápida» ya no sale en la pantalla de inicio; la pantalla dev se abre desde `window.__rutaPrueba()`, solo en desarrollo.)
+  debe(!/Dev: ruta rápida/.test(leer('src/components/trazo/PrimeraPantalla.tsx')) && /setScreen\('devQuickRoute'\)/.test(leer('src/dev/rutaDePrueba.ts')), 'desarrollo', 'sin el botón «Dev: ruta rápida» en la pantalla de inicio; la pantalla dev sigue (se abre desde rutaDePrueba, solo en desarrollo)')
 
   // ── 3. El invitado, sin herramientas que no guardan ──
   const vista = leer('src/components/route/RouteView.tsx')

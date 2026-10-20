@@ -99,7 +99,7 @@ console.log('Resumen')
   const cuerpo = r.split('\n').filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l)).join('\n')
   ok(!/Tu viaje a/.test(cuerpo), '4a la tarjeta clara todavía dice «Tu viaje a…»')
   ok(/\{listas\} de \{fichas\.length\} listo/.test(cuerpo), '4b la tarjeta clara no dice «x de n listo»')
-  ok(/oklch\(0\.5 0\.17 5\)/.test(cuerpo) && /<em /.test(cuerpo), '4c la tarjeta clara ha perdido su estilo (frambuesa, cursiva)')
+  ok(/frambuesa-hover/.test(cuerpo) && /<em /.test(cuerpo), '4c la tarjeta clara ha perdido su estilo (frambuesa, cursiva)')
   ok(/h-1 flex-1 rounded/.test(cuerpo) && /rounded-full/.test(cuerpo), '4d la tarjeta clara ha perdido sus rayas o sus botones redondos')
   ok(!/ciudad/.test(cuerpo), '4e la tarjeta clara todavía recibe la ciudad')
 }

@@ -1,0 +1,82 @@
+[
+ {
+  "nombre": "oro oscuro (texto) sobre crema",
+  "r": 4.56,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "oro oscuro (texto) sobre tarjeta",
+  "r": 5.14,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "blanco sobre oro oscuro (botón con texto)",
+  "r": 5.22,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "oro profundo (texto pequeño) sobre marfil",
+  "r": 6.74,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "oro profundo sobre crema",
+  "r": 6.5,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "oro profundo sobre oro suave (pastillas)",
+  "r": 5.84,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "oro oscuro de Design (#8E6820) sobre marfil (pestaña de la barra)",
+  "r": 4.58,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "oro oscuro, el título grande, sobre el mar de la primera pantalla",
+  "r": 3.53,
+  "minimo": 3
+ },
+ {
+  "nombre": "oro oscuro, el título grande, sobre el crema",
+  "r": 4.56,
+  "minimo": 3
+ },
+ {
+  "nombre": "texto del botón de oro (profundo) sobre el degradado de la entrada",
+  "r": 5.34,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "letra pequeña de ORIGEN / DESTINO (tinta al 66 %) sobre la tarjeta",
+  "r": 5.17,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "«Arrastra y haz zoom» (tinta al 60 %) sobre el mar",
+  "r": 3.69,
+  "minimo": 3
+ },
+ {
+  "nombre": "modo noche: oro pálido sobre el fondo",
+  "r": 11.32,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "modo noche: oro pálido sobre la tarjeta",
+  "r": 10.24,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "modo noche: la tinta (texto del botón) sobre el oro pálido",
+  "r": 11.12,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "modo noche: pestaña de la barra (tinta sobre oro pálido)",
+  "r": 11.12,
+  "minimo": 4.5
+ }
+]

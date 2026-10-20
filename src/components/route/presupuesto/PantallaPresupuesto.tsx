@@ -139,7 +139,7 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
             setImporte('')
           }}
           className="h-11 whitespace-nowrap rounded-xl px-3.5 text-[13px] font-semibold text-[#FFFDF8] transition-colors"
-          style={{ background: listo ? 'oklch(0.55 0.17 5)' : 'oklch(0.55 0.17 5 / .4)' }}
+          style={{ background: listo ? 'rgb(var(--accent))' : 'rgb(var(--accent) / .4)' }}
         >
           Añadir
         </button>
@@ -323,7 +323,7 @@ export function PantallaPresupuesto() {
       <div className="flex-1 overflow-y-auto px-4 pb-8 pt-1.5 md:px-8">
         <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5">
           <div className="relative flex flex-none flex-col gap-3.5 overflow-hidden rounded-[26px] bg-[#1C2230] px-[18px] pb-4 pt-[18px] text-[#FFFDF8]">
-            <span aria-hidden="true" className="absolute -right-10 -top-[50px] h-40 w-40 rounded-full" style={{ background: 'oklch(0.55 0.17 5 / .35)', filter: 'blur(28px)' }} />
+            <span aria-hidden="true" className="absolute -right-10 -top-[50px] h-40 w-40 rounded-full" style={{ background: 'rgba(233,199,122,.3)', filter: 'blur(28px)' }} />
             <div className="relative flex items-end justify-between gap-3">
               <span className="flex min-w-0 flex-col gap-1.5">
                 <span className="text-[#FFFDF8]/60" style={ojoStyle}>

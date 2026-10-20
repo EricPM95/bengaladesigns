@@ -5,7 +5,9 @@ import { INK, MONO, SERIF, Title } from './trazoUi'
 import { textoDeDuracion } from '../../lib/duracionViaje'
 import type { PlanChoice } from './planChoice'
 
+// Las tres líneas de los días llevan los colores de los días de la ruta (el primero, el de «falta»: no cambian con la marca); el oro es solo para el texto y la etiqueta.
 const R = COLOR_ICONO.falta
+const ORO = '#8B6620'
 const B = COLOR_ICONO.azul
 const G = COLOR_ICONO.hecho
 const CREMA = '#FFFDF8'
@@ -39,7 +41,7 @@ export function StepElegir({ destinationName, days, picked, onPick }: StepElegir
     <>
       <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.06em', color: 'rgba(28,34,48,.62)' }}>{eyebrow}</div>
       <Title size={36}>
-        ¿Te montamos el itinerario <em style={{ color: R }}>día a día</em>?
+        ¿Te montamos el itinerario <em style={{ color: ORO }}>día a día</em>?
       </Title>
 
       <div
@@ -122,11 +124,11 @@ export function StepElegir({ destinationName, days, picked, onPick }: StepElegir
             transition: 'transform .25s',
           }}
         >
-          <span aria-hidden="true" style={{ position: 'absolute', right: -30, top: -30, width: 120, height: 120, borderRadius: '50%', background: 'oklch(0.55 0.17 5 / .35)', filter: 'blur(22px)' }} />
+          <span aria-hidden="true" style={{ position: 'absolute', right: -30, top: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(181,138,46,.35)', filter: 'blur(22px)' }} />
           <span style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
             <span style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
               <span style={{ font: `400 25px/1 ${SERIF}` }}>¡Sí, hazla por mí!</span>
-              <span style={{ height: 20, padding: '0 7px', borderRadius: 999, background: R, font: `600 9.5px/20px ${MONO}`, letterSpacing: '.1em' }}>RECOMENDADO</span>
+              <span style={{ height: 20, padding: '0 7px', borderRadius: 999, background: ORO, font: `600 9.5px/20px ${MONO}`, letterSpacing: '.1em' }}>RECOMENDADO</span>
             </span>
             <span style={{ font: "400 12.5px/1.4 'Geist'", color: 'rgba(255,253,248,.72)', textWrap: 'pretty' }}>Lo hacemos todo: el orden de cada día, los tiempos entre sitios, dónde comer y qué reservar.</span>
           </span>

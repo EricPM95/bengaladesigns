@@ -89,7 +89,7 @@ export function marcaDeColeccion(p: { fase: FaseDelViaje; completa: boolean; nue
   return { etiqueta: null, texto: null, faltaParaOtroViaje: aparte }
 }
 
-/** El título del bloque oscuro de los secretos: antes del viaje «Roma esconde 12 secretos»; durante y después «Roma aún esconde 9 secretos.» (lo que decidió Eric: nunca «N de 12 encontrados»). */
+/** El título del bloque oscuro de los secretos: antes del viaje «Roma esconde 14 secretos»; durante y después «Roma aún esconde 9 secretos.» (lo que decidió Eric: nunca «N de 12 encontrados»). */
 export function tituloDeSecretos(fase: FaseDelViaje, ciudad: string, total: number, encontrados: number): string | null {
   if (!(total > 0)) return null
   const lugar = ciudad || 'este destino'

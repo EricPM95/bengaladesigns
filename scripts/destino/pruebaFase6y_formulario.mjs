@@ -99,7 +99,7 @@ const cuenta0 = () => llamadas.length
   for (const frase of ['Roma · 5 días · 4 noches', '¡Sí, hazla por mí!', 'RECOMENDADO', 'Lo hacemos todo: el orden de cada día, los tiempos entre sitios, dónde comer y qué reservar.', 'Quiero hacerla yo', 'Crea una ruta a tu gusto: tú eliges los sitios y el orden, y compártela con tus amigos.', 'Día 1', 'Día 2', 'Día 3'])
     debe(texto.split('\n').includes(frase), '2 elegir', `falta el texto «${frase}»: ${plano(texto).slice(0, 300)}`)
   debe(/¿Te montamos el itinerario <em[^>]*>día a día<\/em>\?/.test(html), '2 elegir', 'el título no es «¿Te montamos el itinerario día a día?» con «día a día» resaltado')
-  debe(/<em style="color:oklch\(0\.55 0\.17 5\)">/.test(html), '2 elegir', '«día a día» no va en el frambuesa de la app')
+  debe(/<em style="color:#8B6620">/.test(html), '2 elegir', '«día a día» no va en el oro de la marca (Tanda 10)')
   debe(html.includes(ICONOS.flecha) && html.includes(ICONOS.lapiz), '2 elegir', 'faltan el icono de la flecha o el del lápiz de la familia de iconos')
   debe((html.match(/<path d="M[^"]*" fill="none" stroke="oklch/g) ?? []).length === 3, '2 elegir', 'no se dibujan los tres días sobre el mapa')
   debe(html.includes('background:#1C2230') && html.includes('RECOMENDADO'), '2 elegir', 'la tarjeta oscura con «RECOMENDADO» no está')

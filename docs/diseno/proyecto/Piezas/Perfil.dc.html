@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}button{font-family:inherit;-webkit-tap-highlight-color:transparent}a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+*{box-sizing:border-box}button{font-family:inherit;-webkit-tap-highlight-color:transparent}a:hover{color:oklch(0.55 0.17 5)}
 @keyframes pfSlam{0%{opacity:0;transform:translateY(-260px) scale(2.6) rotate(-14deg);filter:drop-shadow(0 60px 30px rgba(0,0,0,.35))}62%{opacity:1;transform:translateY(-40px) scale(1.5) rotate(-6deg);filter:drop-shadow(0 30px 20px rgba(0,0,0,.3))}88%{transform:translateY(0) scale(.92) rotate(6deg);filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}94%{transform:scale(1.03) rotate(7deg)}100%{opacity:1;transform:scale(1) rotate(7deg);filter:none}}
 @keyframes pfRing{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.9)}}
 @keyframes pfDrop{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
@@ -368,7 +368,7 @@ class Component extends DCLogic {
     const grp=(t,rows)=>({t,hasT:!!t,rows:rows.map((r,k)=>({...r,bd:k?'rgba(28,34,48,.07)':'transparent'}))});
     const ajustes=[grp('Mi cuenta',[R('elena@correo.com','mail',{s:'Entras con tu email',hasS:true}),R('Cerrar sesión','out',{chev:true})]),
       grp('Mis pases',[R('Mis pases','ticket',{s:'2 pases · Roma (Dúo) y Lisboa',hasS:true,chev:true})]),
-      grp('La app',[R('Sonido de los momentos','sound',SW(true)),R('Avisos en el móvil','bell',{s:'El resumen del viaje y «en 10 días empieza tu viaje»',hasS:true,...SW(true)}),R('Ver otra vez el tutorial','play',{chev:true})]),
+      grp('La app',[R('Sonido de los momentos','sound',SW(true)),R('Sugerencias del compañero','bell',SW(true)),R('Avisos en el móvil','bell',{s:'El resumen del viaje y «en 10 días empieza tu viaje»',hasS:true,...SW(true)}),R('Ver otra vez el tutorial','play',{chev:true})]),
       grp('',[R('Privacidad y condiciones','lock',{chev:true})])];
     const TI=[['Ciudadano del mundo','El mundo · 10 países',40,'4',IC.globo,1],['Mapa para dos','Cómo viajas · 3 viajes en pareja',118,'2',IC.pareja,0],['Cazador de emblemas','Coleccionista · 5 emblemas',330,'1',IC.lupa,0],['Ciudad tras ciudad','El mundo · 3 destinos',40,'2',IC.pin,0],['El primer viaje','El tiempo · tu primer viaje',80,'1',IC.maleta,0]];
     const P1=base('P1','El Perfil, entero',{isP:true,h:'auto',ov:'visible'});

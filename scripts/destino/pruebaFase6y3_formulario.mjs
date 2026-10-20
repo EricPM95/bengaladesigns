@@ -250,8 +250,9 @@ ponerVersion('completa')
     debe(!/LandingScreen|PlaceAutocomplete/.test(codigo), '3 landing', `${ruta} nombra LandingScreen o PlaceAutocomplete`)
   }
   // El botón del dev quick route sigue en el formulario nuevo.
-  const paso = fuente('src/components/trazo/StepRoute.tsx')
-  debe(/import\.meta\.env\.DEV/.test(paso) && /setScreen\('devQuickRoute'\)/.test(paso) && /Dev: ruta rápida/.test(paso), '3 landing', 'se perdió el botón «Dev: ruta rápida» de StepRoute')
+  // (Tanda 10, a petición de Eric: la primera pantalla nueva ya no lleva el botón «Dev: ruta rápida» ni «¿Buscas una ruta panorámica?»; la pantalla dev sigue, abierta desde window.__rutaPrueba.)
+  const paso = fuente('src/components/trazo/PrimeraPantalla.tsx')
+  debe(!/Dev: ruta rápida|panorámica/.test(paso) && /setScreen\('devQuickRoute'\)/.test(fuente('src/dev/rutaDePrueba.ts')), '3 landing', 'la pantalla de inicio ya no lleva «Dev: ruta rápida» ni «ruta panorámica» (la pantalla dev se abre desde rutaDePrueba)')
   debe(fs.existsSync('src/components/dev/DevQuickRouteScreen.tsx') && /DevQuickRouteScreen/.test(fuente('src/App.tsx')), '3 landing', 'se perdió la pantalla del dev quick route')
   debe(fs.existsSync('src/components/destination/RouteSearch.tsx'), '3 landing', 'se borró RouteSearch (lo usa StepRoute)')
 }

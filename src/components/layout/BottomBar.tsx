@@ -16,7 +16,7 @@ export const PESTANAS: { id: RouteMode; nombre: string; icono: NombreIcono }[] =
 ]
 
 /**
- * La barra de abajo (Tanda 6z3, diseño «La barra de abajo»): fija al borde, a todo el ancho, y respeta la zona de abajo del iPhone. Cuatro pestañas en la gratis y cinco en la de pago, con su icono y su nombre debajo; la activa, en una píldora clara.
+ * La barra de abajo (Tanda 6z3, diseño «La barra de abajo»): fija al borde, a todo el ancho, y respeta la zona de abajo del iPhone. Cuatro pestañas en la gratis y cinco en la de pago, con su icono y su nombre debajo; la activa, en una píldora de marfil con el icono y el nombre en oro oscuro (Tanda 10, «Marca JUTRIP 03 · La barra», la A; de noche, la C: gris azulado con filo de oro y la píldora en oro pálido).
  * Reservas lleva su «!» mientras falte algo. Nunca cambia ni se esconde según el momento del viaje. Sustituye a la barra de antes (Presupuesto · Perfil · Reservas) y a las pestañas de arriba.
  */
 export function BottomBar() {
@@ -28,7 +28,7 @@ export function BottomBar() {
   const reservasAlert = readiness ? hasUnresolvedYellowItems(readiness.items) : false
 
   return (
-    <nav aria-label="Barra del viaje" className="relative z-30 grid w-full shrink-0 px-1.5 pt-2" style={{ gridTemplateColumns: `repeat(${pestanas.length}, minmax(0, 1fr))`, background: '#1C2230', paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}>
+    <nav aria-label="Barra del viaje" className="relative z-30 grid w-full shrink-0 gap-0.5 bg-[#1C2230] px-1.5 pt-2 dark:bg-[#1E222C] dark:shadow-[inset_0_1px_0_rgba(233,199,122,.2)]" style={{ gridTemplateColumns: `repeat(${pestanas.length}, minmax(0, 1fr))`, paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}>
       {pestanas.map((pestana) => {
         const activa = mode === pestana.id
         const alerta = pestana.id === 'bookings' && reservasAlert
@@ -43,10 +43,9 @@ export function BottomBar() {
               if (pestana.id === 'days' && mode !== 'days') setActiveDayId(null)
               setMode(pestana.id)
             }}
-            className="relative flex h-14 flex-col items-center justify-center gap-1"
-            style={{ color: activa ? '#FFFDF8' : 'rgba(255,253,248,.62)' }}
+            className={`relative flex h-14 flex-col items-center justify-center gap-1 rounded-full transition-colors duration-300 ${activa ? 'bg-[#FBF3E2] text-[#8E6820] dark:bg-[#E9C77A] dark:text-[#14161C]' : 'text-[rgba(251,243,226,.7)] dark:text-[rgba(243,238,228,.6)]'}`}
           >
-            <span className="flex h-[30px] w-[52px] items-center justify-center rounded-full transition-colors duration-300" style={{ background: activa ? '#FFFDF8' : 'transparent', color: activa ? '#1C2230' : 'rgba(255,253,248,.62)' }}>
+            <span className="flex h-[26px] w-[52px] items-center justify-center">
               <Icono nombre={pestana.icono} size={22} />
             </span>
             <span className="text-[11px]" style={{ fontWeight: activa ? 600 : 500 }}>

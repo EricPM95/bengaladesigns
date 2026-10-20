@@ -31,7 +31,7 @@ interface Panel {
   interruptores: { logros: boolean; push: boolean; cobro: boolean }
 }
 
-const PESTANAS = ['Resumen', 'Sellos y colecciones', 'Emblemas', 'Patrimonios', 'Logros de viajero', 'Simulador', 'Personas', 'Sorteo', 'Probador', 'Mis pruebas'] as const
+const PESTANAS = ['Resumen', 'Sellos y colecciones', 'Emblemas', 'Patrimonios', 'Logros de viajero', 'Simulador', 'Personas', 'Sorteo', 'Probador', 'Mis pruebas', 'Destinos pedidos'] as const
 
 export function AdminLogros() {
   const [panel, setPanel] = useState<Panel | null>(null)
@@ -121,6 +121,7 @@ export function AdminLogros() {
         {pestana === 'Sorteo' && <Sorteo />}
         {pestana === 'Probador' && <Probador />}
         {pestana === 'Mis pruebas' && <MisPruebas />}
+        {pestana === 'Destinos pedidos' && <DestinosPedidos />}
       </div>
     </main>
   )
@@ -187,6 +188,34 @@ function Sorteo() {
 }
 
 /** Reiniciar MIS pruebas (tanda 9): solo la cuenta con la que has entrado (el servidor la saca de tu sesión; no se puede indicar otra). Pide confirmar. No está en ninguna otra pantalla. */
+/** (Tanda 10) Qué destinos pide la gente que aún no tenemos y cuántas veces (los avisos de «avísame cuando llegue»). Solo cuenta; no enseña ningún email. */
+function DestinosPedidos() {
+  const [datos, setDatos] = useState<{ destinos: { destino: string; veces: number }[]; error?: string } | null>(null)
+  useEffect(() => {
+    let vivo = true
+    void llamar<{ ok: boolean; destinos: { destino: string; veces: number }[]; error?: string }>('/api/admin/destinos-pedidos').then((r) => vivo && setDatos(r ? { destinos: r.destinos ?? [], error: r.error } : { destinos: [], error: 'No se ha podido leer.' }))
+    return () => {
+      vivo = false
+    }
+  }, [])
+  return (
+    <section data-destinos-pedidos>
+      <p className="text-text/60">Los destinos que la gente escribe en la primera pantalla y que aún no tenemos, con las veces que los han pedido (un aviso por email y destino).</p>
+      {!datos && <p className="mt-2">Cargando…</p>}
+      {datos?.error && <p className="mt-2 text-accent-red" role="alert">{datos.error}</p>}
+      {datos && datos.destinos.length === 0 && !datos.error && <p className="mt-2">Nadie ha pedido ninguno todavía.</p>}
+      <ul className="mt-2 flex list-none flex-col gap-1 p-0">
+        {datos?.destinos.map((d) => (
+          <li key={d.destino} className="flex items-center justify-between rounded-lg border border-text/15 px-3 py-2">
+            <span className="font-semibold">{d.destino}</span>
+            <span className="text-text/70">{d.veces} {d.veces === 1 ? 'vez' : 'veces'}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 function MisPruebas() {
   const [confirmando, setConfirmando] = useState(false)
   const [ocupado, setOcupado] = useState(false)
