@@ -29,3 +29,5 @@ docs/_antes/
 
 # Herramienta (Claude Code)
 .claude/
+
+.env

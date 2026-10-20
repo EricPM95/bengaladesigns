@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { entrarConEmail, entrarConGoogle } from '../../lib/cuentas'
+import { entrarConEmail, entrarConGoogle, errorDeEntradaPendiente } from '../../lib/cuentas'
 import { enlaceDeCorreo, emailResumido, esperaRestante, textoDeEspera } from '../../lib/entrarCuenta'
 import { marca } from '../../lib/marca'
 import { BotonHoja, EnlaceHoja, Hoja } from '../ui/Hoja'
@@ -41,6 +41,12 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
   const [ahora, setAhora] = useState(() => Date.now())
   const [ultimo, setUltimo] = useState<number | null>(() => (pasoInicial === 'enviado' ? Date.now() : leerUltimoEnvio()))
   const restante = esperaRestante(ultimo, ahora)
+
+  // Si el último intento de entrar con Google no pudo (arreglo de entrar): se dice, con el mismo botón de siempre; la página no se recarga.
+  useEffect(() => {
+    const e = errorDeEntradaPendiente()
+    if (e) setMensaje(e)
+  }, [])
 
   useEffect(() => {
     if (restante <= 0) return undefined
