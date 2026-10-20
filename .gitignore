@@ -31,3 +31,4 @@ docs/_antes/
 .claude/
 
 .env
+scripts/destino/_rutasRevisionViajes.json
