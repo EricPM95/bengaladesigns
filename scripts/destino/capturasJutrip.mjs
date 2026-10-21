@@ -278,4 +278,41 @@ if (quiero('tanda10b')) {
   await app.captura(png('reservas_sin_pase_prueba'))
   app.cerrar()
 }
+if (quiero('tanda10c')) {
+  // Tanda 10C: la tarjeta de Roma con los tres iconos, el mapa de RUTA sin medio elegido y HOY y la barra con «Verme como viajero sin pase» encendido.
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1' })
+  for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
+  for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
+  await app.evaluar('window.__rutaPrueba().then(() => true)')
+  for (let i = 0; i < 60 && !(await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await app.esp(1000)
+  await app.esp(6000)
+  await cerrarAvisos(app)
+  const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
+  const poner = (codigo) => app.evaluar("import('/src/store/useRouteStore.ts').then((m) => { const set = m.useRouteStore.setState; const get = m.useRouteStore.getState; " + codigo + "; return true })")
+  const ruta = () => app.evaluar(store + ".then((s) => { s.setActiveDayId(null); s.setMode('route'); return true })")
+  // Sin medio elegido, desde Madrid: el medio que se deduce (avión, Fiumicino y Ciampino).
+  await poner("const r = get().route; set({ route: { ...r, arrivalPointId: null, transportContext: { ...r.transportContext, transport_option: null }, answers: { ...r.answers, originPlace: { name: 'Madrid', fullName: 'Madrid, España', coordinates: { lat: 40.4168, lng: -3.7038 }, countryCode: 'es' } } } })")
+  await ruta()
+  await app.esp(5000)
+  await app.captura(png('ruta_mapa_sin_medio_madrid'))
+  await app.captura(png('ruta_tarjeta_tres_iconos'))
+  // Sin medio y sin origen: Roma Termini, donde conecta todo.
+  await poner("const r = get().route; set({ route: { ...r, answers: { ...r.answers, originPlace: undefined } } })")
+  await ruta()
+  await app.esp(5000)
+  await app.captura(png('ruta_mapa_sin_medio_ni_origen'))
+  // «Verme como viajero sin pase» encendido: HOY y la barra de abajo.
+  await app.evaluar("import('/src/store/useSinPasePrueba.ts').then((m) => { m.useSinPasePrueba.getState().poner(true); return true })")
+  await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => { m.useRouteStore.setState({ dev_simulated_today_iso: '2026-10-01' }); return true })")
+  await app.evaluar(store + ".then((s) => { s.setActiveDayId(null); s.setMode('today'); return true })")
+  await app.esp(3500)
+  await app.captura(png('hoy_sin_pase_antes_del_viaje'))
+  await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = 600; return true })()")
+  await app.esp(800)
+  await app.captura(png('hoy_sin_pase_antes_del_viaje_abajo'))
+  await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => { m.useRouteStore.setState({ dev_simulated_today_iso: '2026-10-28' }); return true })")
+  await app.esp(2500)
+  await app.captura(png('hoy_sin_pase_despues_del_viaje'))
+  app.cerrar()
+}
 console.log('listo')

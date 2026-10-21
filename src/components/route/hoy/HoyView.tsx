@@ -3,6 +3,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { getTodayTripStatus } from '../../../lib/todayMode'
 import { pagoActivo } from '../../../lib/pago'
 import { HoyAntes } from './HoyAntes'
+import { HoySinPase } from './HoySinPase'
 import { HoyDurante } from './HoyDurante'
 import { HoyDespues } from './HoyDespues'
 import { hoyV2Activo } from '../../../lib/hoyV2'
@@ -15,7 +16,14 @@ import { HoyV2 } from './v2/HoyV2'
 export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () => void }) {
   const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
   const estado = getTodayTripStatus(route, simulada ?? undefined)
-  if (!pagoActivo()) return null
+  // Sin el pase (Tanda 10C): la pestaña está, y enseña lo de antes del viaje y la invitación al pase.
+  if (!pagoActivo()) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-7 pt-1" data-hoy="sin-pase">
+        <HoySinPase route={route} startIso={estado?.startIso ?? null} fase={estado?.phase ?? null} onPonFechas={onPonFechas} />
+      </div>
+    )
+  }
   if (hoyV2Activo()) return <HoyV2 route={route} onPonFechas={onPonFechas} />
 
   return (

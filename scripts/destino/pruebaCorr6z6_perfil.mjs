@@ -173,7 +173,8 @@ debe(!/Tips del viaje|TripTipsSheet|setTipsOpen/.test(rv), 'P7', 'RouteView toda
 const ro = leer('src/components/route/RouteOverview.tsx')
 debe(/aria-label=\{`Tips de \$\{city\}`\}/.test(ro) && /<Icono nombre="tips"/.test(ro), 'P7', 'la tarjeta de destino no tiene su bombilla «Tips de {destino}» con el icono «tips»')
 debe(/<TipsButton city=\{segment\.city\}/.test(ro) && ro.indexOf('<TipsButton city') < ro.indexOf('aria-label="Recuperar mi ruta"'), 'P7', 'la bombilla no está en la tarjeta, a la izquierda de la varita')
-debe(/useDestinationTips\(city, true\)/.test(ro) && /if \(!data\) return null/.test(ro), 'P7', 'la bombilla debe salir solo si el destino tiene tips')
+// (Tanda 10C: la bombilla sale siempre; sin tips de ese destino, apagada.)
+debe(/useDestinationTips\(city, true\)/.test(ro) && /disabled=\{!data\}/.test(ro), 'P7', 'la bombilla debe salir siempre, apagada si el destino no tiene tips')
 debe(/<TripTipsSheet open=\{tipsCity !== null\} destination=\{tipsCity \?\? ''\}/.test(ro), 'P7', 'RouteOverview no abre TripTipsSheet con los tips del destino de la tarjeta')
 debe(!/canRestoreRoute/.test(ro.slice(ro.indexOf('<TipsButton city={segment.city}') - 40, ro.indexOf('<TipsButton city={segment.city}') + 60)), 'P7', 'la bombilla depende de la varita (canRestoreRoute)')
 for (const f of ['src/components/route/DayList.tsx', 'src/components/route/dayDetail/DayDetailPanel.tsx', 'src/components/route/ExplorePanel.tsx']) {

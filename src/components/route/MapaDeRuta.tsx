@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { StopsMapView } from '../map/StopsMapView'
 import { tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
-import { construirMapaDeDestinos } from '../../lib/rutaMapaDestinos'
+import { construirMapaDeDestinos, deducirMedio } from '../../lib/rutaMapaDestinos'
 import type { Coordinates, Route } from '../../lib/types'
 
 /**
@@ -12,7 +12,9 @@ export function MapaDeRuta({ route, centro: centroDeParadas }: { route: Route; c
   // El centro de la ciudad de verdad (el del destino); sin él, la media de las paradas.
   const centro = route.destinationCoordinates ?? centroDeParadas
   const info = useArrivalInfo(route.destination, route.days[0]?.city ?? route.destination, route.origin)
-  const { arrival, departure } = tripModes(route)
+  const { departure } = tripModes(route)
+  // El medio con el que llega: el que eligió; si no, el que se deduce de su origen; si no se puede, el punto donde conecta todo.
+  const arrival = deducirMedio({ opcionElegida: route.transportContext.transport_option?.id ?? null, origen: route.answers.originPlace?.coordinates ?? null, destino: centro })
   const { markers, resaltados } = useMemo(
     () =>
       construirMapaDeDestinos({

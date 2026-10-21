@@ -5,7 +5,8 @@
  * Si el viajero ya eligió el punto que va a usar (su vuelo, su tren, su autobús), ese va resaltado. Iconos finos y en oro, como los demás de la app.
  */
 import type { StopsMapMarker } from '../components/map/StopsMapView'
-import type { ArrivalInfo, ArrivalMode } from './arrivalReturn'
+import { arrivalModeOf, type ArrivalInfo, type ArrivalMode } from './arrivalReturn'
+import { haversineMeters } from './distanceMock'
 import { ICONOS, type NombreIcono } from './iconos'
 import type { Coordinates } from './types'
 
@@ -15,12 +16,25 @@ export const ICONO_DEL_MEDIO: Record<ArrivalMode, NombreIcono | null> = { avion:
 const ORO = '#8B6620'
 const MARFIL = '#FFFDF8'
 
+/** A partir de cuántos km el medio que se deduce de su origen es el avión (por debajo no se puede saber si va en tren, autobús o coche). */
+export const KM_PARA_DEDUCIR_AVION = 500
+
+/**
+ * Cómo llega, para el mapa de RUTA (Tanda 10C): el medio que eligió en el formulario; si no eligió, el que se deduce de su origen (lejos: avión); si tampoco se puede deducir (sin origen, o tan cerca
+ * que podría ir de varias maneras), `null`: el mapa enseña el punto donde conecta todo (en Roma, Termini).
+ */
+export function deducirMedio({ opcionElegida, origen, destino }: { opcionElegida?: string | null; origen?: Coordinates | null; destino?: Coordinates | null }): ArrivalMode | null {
+  if (opcionElegida) return arrivalModeOf(opcionElegida, 1)
+  if (origen && destino && haversineMeters(origen, destino) / 1000 >= KM_PARA_DEDUCIR_AVION) return 'avion'
+  return null
+}
+
 export interface MapaDeDestinosEntrada {
   /** El destino y dónde está (el centro de la ciudad). */
   ciudad: string
   centro: Coordinates
-  /** El medio con el que se llega y los datos de llegada del destino (null: sin datos). */
-  modo: ArrivalMode
+  /** El medio con el que se llega (null: no se puede deducir) y los datos de llegada del destino (null: sin datos). */
+  modo: ArrivalMode | null
   info: ArrivalInfo | null
   /** Los puntos elegidos en la ficha de llegada y de vuelta (ids de `_llegada.json`); ausentes: ninguno resaltado. */
   puntoLlegadaId?: string | null
@@ -41,11 +55,12 @@ export function construirMapaDeDestinos(entrada: MapaDeDestinosEntrada): MapaDeD
     { id: 'destino', name: ciudad, coordinates: centro, number: 0, bg: ORO, text: MARFIL, icon: 'ubicacion', iconPath: ICONOS.ubicacion, size: 34 },
   ]
   const resaltados: string[] = []
-  const icono = ICONO_DEL_MEDIO[modo]
-  const puntos = (icono ? info?.medios[modo]?.puntos : null) ?? []
+  // Sin medio que deducir: el punto donde conecta todo (el primero del tren: en Roma, Termini), con el icono del tren.
+  const icono = modo ? ICONO_DEL_MEDIO[modo] : info?.medios.tren ? 'tren' : null
+  const puntos = (modo ? (icono ? info?.medios[modo]?.puntos : null) : info?.medios.tren?.puntos.slice(0, 1)) ?? []
   const elegidos = new Set<string>()
   if (entrada.puntoLlegadaId) elegidos.add(entrada.puntoLlegadaId)
-  if (entrada.puntoSalidaId && (entrada.modoVuelta ?? modo) === modo) elegidos.add(entrada.puntoSalidaId)
+  if (entrada.puntoSalidaId && (entrada.modoVuelta ?? modo) === modo && modo !== null) elegidos.add(entrada.puntoSalidaId)
   for (const punto of puntos) {
     if (!punto.coordenadas || !icono) continue
     const id = `llegada:${punto.id}`

@@ -256,7 +256,9 @@ function hoyCon(nombre, version = 'completa') {
   const hoy = leer('src/components/route/hoy/HoyDurante.tsx')
   debe(!/pagoActivo/.test(hoy) && !/if \(!pago\)/.test(hoy) && !/Gratis: el plan de hoy/.test(hoy) && !/CabeceraDelDia|TituloDelDia/.test(hoy), '6 rama gratis', 'HoyDurante sigue con la rama de HOY gratis')
   const r = JSON.parse(JSON.stringify(ruta))
-  debe(aTexto(pinta(HoyView, { route: r, onPonFechas() {} }, r, { version: 'gratis', mode: 'today', hoy: INICIO })).trim() === '', '6 rama gratis', 'HOY gratis enseña algo')
+  // (Tanda 10C: HOY sin pase enseña lo de antes del viaje y la invitación al pase, nunca la siguiente parada ni la historia.)
+  const hoyGratisTexto = aTexto(pinta(HoyView, { route: r, onPonFechas() {} }, r, { version: 'gratis', mode: 'today', hoy: INICIO }))
+  debe(/Ver el Pase de Roma/.test(hoyGratisTexto) && !/Cómo llegar/.test(hoyGratisTexto) && !/Historia/.test(hoyGratisTexto), '6 rama gratis', 'HOY gratis enseña algo más que la invitación al pase')
 }
 
 console.error = consolaError

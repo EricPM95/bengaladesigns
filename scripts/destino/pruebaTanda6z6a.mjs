@@ -90,15 +90,16 @@ for (const [clave, route] of Object.entries(rutas)) {
         const nombre = `${clave} fechas · ${version} · ${m.clave} · modo guardado ${mode}`
         const html = pintaHtml(BottomBar, {}, route, { version, hoy: m.hoy, mode })
         const barra = aTexto(html)
-        const esperadas = version === 'gratis' ? TODAS.filter((n) => n !== 'Hoy') : TODAS
+        // (Tanda 10C: HOY está siempre en la barra, también sin pase.)
+        const esperadas = TODAS
         const botones = (html.match(/<button/g) ?? []).length
         debe(botones === esperadas.length, '1 barra', `${nombre}: ${botones} botones y deberían ser ${esperadas.length}`)
         debe(esperadas.every((n) => barra.includes(n)) && esperadas.map((n) => barra.indexOf(n)).every((p, i, a) => i === 0 || p > a[i - 1]), '1 barra', `${nombre}: pestañas fuera de orden (${plano(barra)})`)
-        if (version === 'gratis') debe(!/\bHoy\b/.test(barra) && !/candado/i.test(html), '1 barra', `${nombre}: en la gratis sale Hoy o un candado (${plano(barra)})`)
+        if (version === 'gratis') debe(/\bHoy\b/.test(barra) && !/candado/i.test(html), '1 barra', `${nombre}: en la gratis falta Hoy o sale un candado (${plano(barra)})`)
         // La activa: en la gratis, un «today» guardado cae a «route».
         const activa = html.match(/aria-current="page"[^>]*aria-label="([^"]+)"|aria-label="([^"]+)"[^>]*aria-current="page"/)
         const nombreActiva = (activa?.[1] ?? activa?.[2] ?? '').replace(/ \(.*$/, '')
-        const queDebeSer = { today: version === 'gratis' ? 'Ruta' : 'Hoy', route: 'Ruta', days: 'Días', explore: 'Explorar', bookings: 'Reservas' }[mode]
+        const queDebeSer = { today: 'Hoy', route: 'Ruta', days: 'Días', explore: 'Explorar', bookings: 'Reservas' }[mode]
         debe(nombreActiva === queDebeSer, '1 barra', `${nombre}: la pestaña activa es «${nombreActiva}» y debería ser «${queDebeSer}»`)
       }
     }
@@ -106,7 +107,7 @@ for (const [clave, route] of Object.entries(rutas)) {
 }
 {
   ponerVersion('gratis')
-  debe(modoVisible('today') === 'route' && modoVisible('days') === 'days' && modoVisible('bookings') === 'bookings', '1 barra', 'modoVisible no cae a route en la gratis')
+  debe(modoVisible('today') === 'today' && modoVisible('days') === 'days' && modoVisible('bookings') === 'bookings', '1 barra', 'modoVisible no cambia los modos en la gratis (Tanda 10C: HOY está siempre)')
   ponerVersion('completa')
   debe(modoVisible('today') === 'today' && modoVisible('route') === 'route', '1 barra', 'modoVisible cambia los modos en la de pago')
 }
@@ -275,7 +276,8 @@ for (const [clave, route] of Object.entries(rutas)) {
   for (const m of clave === 'con' ? momentos : [{ clave: 'sin-fechas', hoy: null }]) {
     const nombre = `HOY · ${clave} fechas · ${m.clave}`
     const gratis = pintaHtml(HoyView, { route, onPonFechas() {} }, route, { version: 'gratis', hoy: m.hoy })
-    debe(gratis === '', '5 HOY', `${nombre}: HOY pinta algo en la gratis`)
+    // (Tanda 10C: sin pase, HOY enseña la invitación al pase en lugar de desaparecer.)
+    debe(gratis.includes('data-hoy="sin-pase"') && gratis.includes('Ver el Pase de Roma'), '5 HOY', `${nombre}: HOY sin pase no enseña la invitación al pase`)
     const html = pintaHtml(HoyView, { route, onPonFechas() {} }, route, { version: 'completa', hoy: m.hoy })
     const texto = aTexto(html)
     if (m.clave === 'antes') {

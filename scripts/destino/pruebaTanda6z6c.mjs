@@ -90,7 +90,8 @@ const hoyEn = (r, opciones) => aTexto(pinta(HoyView, { route: r, onPonFechas() {
 // ── 1 y 2. Gratis y de pago: HOY durante el viaje ──
 ponerSintesis(sintesisSimulada([VOZ_ES, VOZ_EN]))
 const hoyGratis = hoyEn(route, { version: 'gratis' })
-for (const palabra of ['Escuchar', 'Cerca de ti', 'Cerca de mí']) debe(!hoyGratis.includes(palabra), '1 gratis HOY', `en HOY gratis sale «${palabra}» (${plano(hoyGratis).slice(0, 200)})`)
+// (Tanda 10C: HOY sin pase enseña la lista de lo que tendrá —«Escuchar lo que ves»— y la invitación al pase, pero ningún botón de escuchar ni «Cerca de ti».)
+for (const palabra of ['Escuchar', 'Cerca de ti', 'Cerca de mí']) debe(!hoyGratis.replace('Escuchar lo que ves', '').includes(palabra), '1 gratis HOY', `en HOY gratis sale «${palabra}» (${plano(hoyGratis).slice(0, 200)})`)
 const hoyPago = hoyEn(route, { version: 'completa' })
 debe(/Cerca de ti/.test(hoyPago), '2 pago HOY', 'en HOY de pago, durante el viaje, falta «Cerca de ti»')
 for (const boton of ['Baños', 'Fuentes', 'Comer']) debe(hoyPago.split('\n').includes(boton), '2 pago HOY', `en «Cerca de ti» falta el botón «${boton}»`)

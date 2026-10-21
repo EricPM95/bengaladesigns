@@ -381,27 +381,6 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
         </h1>
       </div>
 
-      {foco === 'd' && coinciden.length > 0 && (
-        <div className="trazo-noscroll" data-destinos-fila style={{ position: 'absolute', left: 0, right: 0, bottom: 296, padding: '0 18px', display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
-          {coinciden.map((d, i) => (
-            <div
-              key={d.clave}
-              data-destino-card={d.nombre}
-              role="button"
-              tabIndex={0}
-              onClick={() => elegirDestino(d)}
-              onKeyDown={(e) => e.key === 'Enter' && elegirDestino(d)}
-              style={{ flex: 'none', width: 76, borderRadius: 14, background: 'rgba(255,253,248,.82)', border: `1px solid ${destination?.name === d.nombre ? ORO_CLARO : 'rgba(28,34,48,.14)'}`, overflow: 'hidden', cursor: 'pointer' }}
-            >
-              <div style={{ height: 54, background: `linear-gradient(150deg,oklch(0.55 0.08 ${(i * 37 + 70) % 360}),oklch(0.28 0.05 ${(i * 37 + 100) % 360}))`, position: 'relative' }}>
-                <span style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.07) 0 2px,transparent 2px 12px)' }} />
-              </div>
-              <div style={{ padding: '7px 8px 8px', font: `400 15px/1 ${SERIF}` }}>{d.nombre}</div>
-            </div>
-          ))}
-        </div>
-      )}
-
       {noHay && (
         <div data-aviso-destino style={{ position: 'absolute', left: 18, right: 18, bottom: 296, padding: 16, borderRadius: 20, background: 'rgba(255,253,248,.96)', border: '1px solid #E4D2A4', display: 'flex', flexDirection: 'column', gap: 10 }}>
           {avisoDeEste?.estado === 'hecho' ? (
@@ -474,6 +453,27 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
       )}
 
       <div style={{ position: 'absolute', left: 14, right: 14, bottom: 'max(26px, env(safe-area-inset-bottom))', padding: 14, borderRadius: 28, background: 'linear-gradient(180deg,rgba(255,253,248,.96),rgba(251,243,226,.94))', border: '1px solid #E4D2A4', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', flexDirection: 'column', gap: 10, boxShadow: '0 20px 40px -16px rgba(110,80,24,.4),inset 0 1px 0 rgba(255,255,255,.8)' }}>
+        {/* (Tanda 10C: las fotos de los destinos curados van pegadas a la tarjeta de ORIGEN, 8 px por encima, no a una altura fija.) */}
+        {foco === 'd' && coinciden.length > 0 && (
+          <div className="trazo-noscroll" data-destinos-fila style={{ position: 'absolute', left: -14, right: -14, bottom: '100%', marginBottom: 8, padding: '0 18px', display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
+            {coinciden.map((d, i) => (
+              <div
+                key={d.clave}
+                data-destino-card={d.nombre}
+                role="button"
+                tabIndex={0}
+                onClick={() => elegirDestino(d)}
+                onKeyDown={(e) => e.key === 'Enter' && elegirDestino(d)}
+                style={{ flex: 'none', width: 76, borderRadius: 14, background: 'rgba(255,253,248,.82)', border: `1px solid ${destination?.name === d.nombre ? ORO_CLARO : 'rgba(28,34,48,.14)'}`, overflow: 'hidden', cursor: 'pointer' }}
+              >
+                <div style={{ height: 54, background: `linear-gradient(150deg,oklch(0.55 0.08 ${(i * 37 + 70) % 360}),oklch(0.28 0.05 ${(i * 37 + 100) % 360}))`, position: 'relative' }}>
+                  <span style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.07) 0 2px,transparent 2px 12px)' }} />
+                </div>
+                <div style={{ padding: '7px 8px 8px', font: `400 15px/1 ${SERIF}` }}>{d.nombre}</div>
+              </div>
+            ))}
+          </div>
+        )}
         <label style={{ height: 62, borderRadius: 18, background: TARJETA, border: `1px solid ${bordeO}`, display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px', cursor: 'text' }}>
           <span style={{ width: 14, height: 14, flex: 'none', borderRadius: '50%', border: `2px solid ${ORO_OSCURO}` }} />
           <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>

@@ -84,7 +84,8 @@ for (const fechas of [true, false]) {
       // La barra
       const barra = aTexto(pinta(BottomBar, {}, route, { version, hoy }))
       // (Tanda 6z6: la gratis lleva cuatro pestañas, sin Hoy; la de pago, las cinco. Lo comprueba a fondo pruebaTanda6z6a.mjs.)
-      const esperadas = version === 'gratis' ? NOMBRES.filter((n) => n !== 'Hoy') : NOMBRES
+      // (Tanda 10C: HOY está siempre en la barra, también sin pase.)
+      const esperadas = NOMBRES
       debe(esperadas.every((n) => barra.includes(n)) && esperadas.map((n) => barra.indexOf(n)).every((p, i, a) => i === 0 || p > a[i - 1]), '1 barra', `${nombre}: la barra no tiene sus pestañas en orden (${plano(barra)})`)
       const botones = (pinta(BottomBar, {}, route, { version, hoy }).match(/<button/g) ?? []).length
       debe(botones === esperadas.length, '1 barra', `${nombre}: la barra tiene ${botones} botones y debería tener ${esperadas.length}`)
@@ -99,7 +100,8 @@ for (const fechas of [true, false]) {
         const texto = aTexto(html)
         // HOY es solo de pago (Tanda 6z6): en la gratis no se pinta nada. Lo de dentro se comprueba en la de pago.
         if (version === 'gratis') {
-          debe(html === '', '1 barra', `${nombre}: HOY pinta algo en la gratis (${plano(texto).slice(0, 120)})`)
+          // (Tanda 10C: sin pase, HOY enseña lo de antes del viaje o «es parte del pase», y [Ver el Pase de Roma]; nunca la siguiente parada, [Cómo llegar] ni [Visto].)
+          debe(/data-hoy="sin-pase"/.test(html) && /Ver el Pase de Roma/.test(texto) && !/Cómo llegar/.test(texto) && !/>Visto</.test(html), '1 barra', `${nombre}: HOY sin pase no enseña la invitación al pase (${plano(texto).slice(0, 120)})`)
           continue
         }
         const fase = html.match(/data-hoy="([^"]+)"/)?.[1]

@@ -16,6 +16,22 @@ const LO_QUE_TENDRAS: { icono: NombreIcono; texto: string }[] = [
   { icono: 'avisos', texto: 'Los avisos del día' },
 ]
 
+/** La lista corta de lo que tendrá HOY (también la usa HOY sin el pase, Tanda 10C). */
+export function ListaLoQueTendras() {
+  return (
+    <ul className="flex flex-col gap-1">
+      {LO_QUE_TENDRAS.map((fila) => (
+        <li key={fila.texto} className="flex min-h-[44px] items-center gap-3 rounded-[14px] px-1.5 py-1">
+          <span className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-[#1C2230] text-[#FFFDF8]">
+            <Icono nombre={fila.icono} size={18} />
+          </span>
+          <span className="min-w-0 flex-1 text-[14px] leading-[1.3]">{fila.texto}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 /**
  * HOY antes del viaje (Tanda 6z6; solo de pago). La cuenta atrás y lo que falta por reservar ya no están aquí: están arriba de RESERVAS (TarjetaCuentaAtras).
  * Con fechas: «Tu modo Hoy se activa el {fecha del primer día}», lo que tendrá, y [Ver mi primer día], que abre DÍAS. Sin fechas: «Pon tus fechas para activar tu modo Hoy» y [Pon tus fechas].
@@ -54,16 +70,7 @@ export function HoyAntes({ route, startIso, onPonFechas }: { route: Route; start
         <span className="pl-1 text-text/55" style={{ ...ojoMono, letterSpacing: '.14em' }}>
           Ese día tendrás
         </span>
-        <ul className="flex flex-col gap-1">
-          {LO_QUE_TENDRAS.map((fila) => (
-            <li key={fila.texto} className="flex min-h-[44px] items-center gap-3 rounded-[14px] px-1.5 py-1">
-              <span className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-[#1C2230] text-[#FFFDF8]">
-                <Icono nombre={fila.icono} size={18} />
-              </span>
-              <span className="min-w-0 flex-1 text-[14px] leading-[1.3]">{fila.texto}</span>
-            </li>
-          ))}
-        </ul>
+        <ListaLoQueTendras />
         <button type="button" onClick={verPrimerDia} className="mt-1 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C2230] text-[14.5px] font-semibold text-[#FFFDF8]">
           <Icono nombre="dias" size={17} />
           Ver mi primer día

@@ -33,10 +33,10 @@ const shortDate = (iso: string) => `${iso.slice(8, 10)} ${MONTHS_SHORT[Number(is
  */
 function TipsButton({ city, onOpen }: { city: string; onOpen: () => void }) {
   const data = useDestinationTips(city, true)
-  if (!data) return null
+  // (Tanda 10C: la bombilla sale siempre; sin tips de ese destino, apagada.)
   return (
-    <button type="button" onClick={onOpen} title={`Tips de ${city}`} aria-label={`Tips de ${city}`} className="group flex h-9 w-9 shrink-0 items-center justify-center">
-      <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover">
+    <button type="button" onClick={onOpen} disabled={!data} title={data ? `Tips de ${city}` : `Aún no hay tips de ${city}`} aria-label={`Tips de ${city}`} className="group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed">
+      <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
         <Icono nombre="tips" className="h-[16px] w-[16px]" />
       </span>
     </button>
@@ -105,21 +105,20 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
             <TipsButton city={segment.city} onOpen={() => setTipsCity(segment.city)} />
             {/* Compartir el viaje (Tanda 10B): el icono de siempre, en la primera tarjeta; abre la hoja de invitar de Cuentas. */}
             {index === 0 && <BotonCompartirViaje />}
-            {canRestoreRoute && (
-              <button
-                type="button"
-                disabled={!cityChanged}
-                onClick={() => setAskRestoreCity(segment.city)}
-                title={cityChanged ? 'Recuperar mi ruta' : 'Tu ruta está tal como te la preparamos'}
-                data-edit-tool="1"
-                aria-label="Recuperar mi ruta"
-                className="group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed"
-              >
-                <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
-                  <Icono nombre="recuperar" className="h-[16px] w-[16px]" />
-                </span>
-              </button>
-            )}
+            {/* La flecha de volver a la ruta de antes SIEMPRE a la vista (Tanda 10C): apagada si no hay una ruta anterior que recuperar o si no hay nada cambiado. */}
+            <button
+              type="button"
+              disabled={!canRestoreRoute || !cityChanged}
+              onClick={() => setAskRestoreCity(segment.city)}
+              title={!canRestoreRoute ? 'Todavía no hay una ruta anterior que recuperar' : cityChanged ? 'Recuperar mi ruta' : 'Tu ruta está tal como te la preparamos'}
+              data-edit-tool="1"
+              aria-label="Recuperar mi ruta"
+              className="group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed"
+            >
+              <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
+                <Icono nombre="recuperar" className="h-[16px] w-[16px]" />
+              </span>
+            </button>
             <button type="button" onClick={() => setDetailCity(segment.city)} aria-label={segment.city} tabIndex={-1} className="flex h-full w-[34px] shrink-0 items-center justify-center pr-2 text-text/45">
               <Icono nombre="adelante" size={18} />
             </button>
