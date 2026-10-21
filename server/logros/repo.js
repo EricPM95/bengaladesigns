@@ -93,6 +93,15 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
     async guardarPrueba(userId, fila) {
       ok(await admin.from('hoy_prueba').upsert({ user_id: userId, ...fila, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }), 'guardarPrueba')
     },
+    /** «Verme como viajero sin pase» (0030, Tanda 10B): solo lo escribe la ruta de administrador. Sin la tabla (migración sin aplicar), siempre apagado. */
+    async sinPaseDe(userId) {
+      const r = await admin.from('admin_sin_pase').select('activo').eq('user_id', userId).maybeSingle()
+      return r.error ? false : Boolean(r.data?.activo)
+    },
+    async ponerSinPase(userId, activo) {
+      const r = await admin.from('admin_sin_pase').upsert({ user_id: userId, activo: Boolean(activo), updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
+      return r.error ? { ok: false, error: r.error.message } : { ok: true }
+    },
     async perfilDe(userId) {
       // `exp_max` (0025): la mayor EXP que ha tenido; sin la migración aplicada, 0 (la EXP se calcula igual, solo que no se guarda el máximo).
       let fila = null

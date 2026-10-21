@@ -14,7 +14,7 @@ import { withUndo } from '../../store/useAddFlowStore'
 import { Icono } from '../ui/Icono'
 import { BanderaDestino } from '../ui/BanderaDestino'
 import { TarjetaRecuerdosEnRuta } from './fotos/TarjetaRecuerdos'
-import { BotonesDeViaje } from '../propuesta/BotonesDeViaje'
+import { BotonCompartirViaje, BotonesDeViaje } from '../propuesta/BotonesDeViaje'
 import { textoDeDuracion } from '../../lib/duracionViaje'
 
 interface RouteOverviewProps {
@@ -35,9 +35,9 @@ function TipsButton({ city, onOpen }: { city: string; onOpen: () => void }) {
   const data = useDestinationTips(city, true)
   if (!data) return null
   return (
-    <button type="button" onClick={onOpen} title={`Tips de ${city}`} aria-label={`Tips de ${city}`} className="group flex h-11 w-11 shrink-0 items-center justify-center">
-      <span className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover">
-        <Icono nombre="tips" className="h-[19px] w-[19px]" />
+    <button type="button" onClick={onOpen} title={`Tips de ${city}`} aria-label={`Tips de ${city}`} className="group flex h-9 w-9 shrink-0 items-center justify-center">
+      <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover">
+        <Icono nombre="tips" className="h-[16px] w-[16px]" />
       </span>
     </button>
   )
@@ -103,6 +103,8 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
               </span>
             </button>
             <TipsButton city={segment.city} onOpen={() => setTipsCity(segment.city)} />
+            {/* Compartir el viaje (Tanda 10B): el icono de siempre, en la primera tarjeta; abre la hoja de invitar de Cuentas. */}
+            {index === 0 && <BotonCompartirViaje />}
             {canRestoreRoute && (
               <button
                 type="button"
@@ -111,10 +113,10 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
                 title={cityChanged ? 'Recuperar mi ruta' : 'Tu ruta está tal como te la preparamos'}
                 data-edit-tool="1"
                 aria-label="Recuperar mi ruta"
-                className="group flex h-11 w-11 shrink-0 items-center justify-center disabled:cursor-not-allowed"
+                className="group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed"
               >
-                <span className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
-                  <Icono nombre="recuperar" className="h-[19px] w-[19px]" />
+                <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
+                  <Icono nombre="recuperar" className="h-[16px] w-[16px]" />
                 </span>
               </button>
             )}

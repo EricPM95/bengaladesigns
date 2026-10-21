@@ -22,6 +22,7 @@ import type { DayPlan, Route, Stop } from './types'
  *       una o dos paradas sueltas de otro grupo no cambian el título).
  *  5. Empates: gana el grupo que aparece antes en el día (por hora; sin horas, por orden).
  *  6. Un día sin paradas se llama «Día libre»; un día de LLEGADA o de VUELTA sin paradas (el de vuelta, `isReturnLeg`; el de llegada, `esDiaDeLlegada`), «Día de viaje», nunca «Día libre» (tanda 6y9, P13; tanda 7, punto 15). Si tiene paradas pero ninguna es de nuestros datos (un sitio que el viajero buscó en el mapa), queda el nombre de siempre.
+ *     Tanda 10B: el de VUELTA sin paradas se llama «Hoy vuelves a casa» (`DIA_DE_VUELTA`, como su tarjeta), con «Roma → Barcelona · Día de viaje» debajo.
  *  7. El trayecto («Barcelona → Roma») NO es el título: va pequeño junto a «Día de viaje» (`viaje`).
  */
 
@@ -44,6 +45,8 @@ export interface NombreDelDia {
 
 /** El título del día de vuelta sintético sin paradas. Con ese título, la etiqueta pequeña del trayecto no repite las palabras (ver `etiquetaDeViaje`). */
 export const DIA_DE_VIAJE = 'Día de viaje'
+/** El título del día de vuelta sin paradas (Tanda 10B): el mismo nombre que la tarjeta de ese día; debajo va «Roma → Barcelona · Día de viaje». */
+export const DIA_DE_VUELTA = 'Hoy vuelves a casa'
 
 /** La marca pequeña junto al trayecto de un día de viaje: «Día de viaje · Madrid → Roma»; si el título ya dice «Día de viaje», vacía y solo queda «Madrid → Roma». */
 export function etiquetaDeViaje(titulo: string): string {
@@ -153,7 +156,7 @@ export function nombreDelDia(route: Route, day: DayPlan, grupos: GruposDelDestin
   const soloGrupos = paradas.filter((stop) => !stop.isFreeTour).map((stop) => grupoDeParada(stop, grupos))
   const nombres = gruposQueNombranElDia(soloGrupos, marcadores)
   if (nombres.length > 0) return sinTrayecto(nombres.join(' y '))
-  if (paradas.length === 0) return sinTrayecto(day.isReturnLeg || esDiaDeLlegada(route, day) ? DIA_DE_VIAJE : FREE_DAY_DEFAULT_NAME)
+  if (paradas.length === 0) return sinTrayecto(day.isReturnLeg ? DIA_DE_VUELTA : esDiaDeLlegada(route, day) ? DIA_DE_VIAJE : FREE_DAY_DEFAULT_NAME)
   return sinTrayecto(nombreDeSiempre(route, day, false).titulo)
 }
 

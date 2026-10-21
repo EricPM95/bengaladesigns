@@ -282,7 +282,6 @@ interface RouteStoreState {
   route: Route | null
   activeDayId: string | null
   mode: RouteMode
-  darkMode: boolean
   intensity: number
   panelSplit: number
   /** Alojamiento mock elegido por estancia (pestaña DIAS/RESERVAS) — clave: id del primer día de la estancia (ver buildDestinationSegments). */
@@ -429,7 +428,6 @@ interface RouteStoreState {
   dejarRutaComoEstaba: () => void
   setActiveDayId: (dayId: string | null) => void
   setMode: (mode: RouteMode) => void
-  toggleDarkMode: () => void
   setIntensity: (intensity: number) => void
   setPanelSplit: (split: number) => void
 
@@ -591,14 +589,11 @@ const updateDay = (route: Route, dayId: string, updater: (day: DayPlan) => DayPl
   days: route.days.map((day) => (day.id === dayId ? updater(day) : day)),
 })
 
-const DARK_MODE_KEY = 'route-planner-dark-mode'
-
-const getInitialDarkMode = (): boolean => {
-  try {
-    return localStorage.getItem(DARK_MODE_KEY) === 'true'
-  } catch {
-    return false
-  }
+// La app ya no tiene modo noche (Tanda 10): sale siempre en claro. Si en este navegador quedó guardado el ajuste de antes, se borra al abrir.
+try {
+  localStorage.removeItem('route-planner-dark-mode')
+} catch {
+  /* sin almacenamiento: no hay nada que borrar */
 }
 
 export const useRouteStore = create<RouteStoreState>((set, get) => ({
@@ -653,7 +648,6 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   sales: [],
   wishlist: [],
   dev_simulated_today_iso: null,
-  darkMode: getInitialDarkMode(),
   intensity: 3,
   panelSplit: 45,
 
@@ -1184,16 +1178,6 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     }),
   setActiveDayId: (dayId) => set({ activeDayId: dayId }),
   setMode: (mode) => set({ mode }),
-  toggleDarkMode: () =>
-    set((state) => {
-      const darkMode = !state.darkMode
-      try {
-        localStorage.setItem(DARK_MODE_KEY, String(darkMode))
-      } catch {
-        // localStorage unavailable — dark mode just won't persist across reloads
-      }
-      return { darkMode }
-    }),
   setIntensity: (intensity) => set({ intensity }),
   setPanelSplit: (split) => set({ panelSplit: split }),
 

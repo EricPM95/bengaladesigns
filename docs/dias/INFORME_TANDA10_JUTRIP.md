@@ -164,3 +164,14 @@ No he tocado el motor.
 - **Sin mirar de noche en la app de verdad:** las hojas de Logros y del Pase (los escaparates se montan fuera de la app y salen siempre en claro); se pintan fuera del contenedor del modo noche, como lo estaba la ficha. Si pasa ahí, es la misma solución (su propia clase `dark`).
 
 **Pruebas:** `pruebaJutrip` 120 comprobaciones, 0 fallos (con las de noche); batería rápida de 76 pruebas en 0 fallos (tres salieron en MAL en una pasada con la máquina cargada y pasan solas: `pruebaFase6y5_pantallas`, `pruebaFase6y3_fotos` y `pruebaFase6y2_fotos`, que no leen nada de lo que he tocado); `pruebaFase6y5_motor` por procesos: 143.647 comprobaciones, 0 fallos.
+
+## 10. Cambio de plan: la app no tiene modo noche
+
+Decidido por Eric: la app sale **siempre en claro** (marfil, blanco y dorado, como en Marca JUTRIP). Se quitó el código del modo noche entero (no había nada que lo hiciera arriesgado):
+
+- **Fuera:** `darkMode`/`toggleDarkMode` del almacén, la clase `dark` del contenedor (`Layout.tsx` queda en un `<div>`) y de la ficha de la parada, el bloque `.dark {}` y todas las reglas `.dark …` de `index.css`, la clave `darkMode: 'class'` de Tailwind y las variantes `dark:` de la barra y de `TrazoCards`. Las ramas de noche de HOY (`useClaro`, `claro`, tarjeta oscura) y de EXPLORAR, DÍAS y RESERVAS (los arreglos de la tanda anterior) también.
+- **Ajuste guardado de antes:** al abrir, el almacén borra `route-planner-dark-mode` del navegador. Con el sistema en oscuro y el ajuste guardado, la app abre en claro (lo comprueba `pruebaJutrip`).
+- **Lo oscuro que queda (lo que Marca JUTRIP dibuja oscuro):** la barra de abajo A, la franja «Estás en Roma» de RESERVAS, y piezas pequeñas (pestaña seleccionada, número de día, reproductor de «Escuchar historia», chips de duración).
+- **Lo que era oscuro y ahora es claro:** el recuadro «33 logros conseguidos» de Logros → Todos mis logros (era un panel de tinta; ahora tarjeta marfil con filo de oro). Las tarjetas de HOY, EXPLORAR, DÍAS y la ficha ya estaban claras de día. Las portadas con degradado del Pase y las insignias de Logros son arte propio y no se tocan.
+- **Capturas:** borradas todas las `_noche`; rehechas las de día de HOY (v1 y v2, antes y después de empezar), DÍAS (cerrado, abierto y parada), EXPLORAR, RESERVAS, RUTA, Logros y Pase.
+- **Peso al abrir:** 325,3 KB antes de este cambio → 325,0 KB ahora (original de la Tanda 10: 322,8 KB).

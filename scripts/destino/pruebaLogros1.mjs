@@ -210,7 +210,7 @@ await db.exec(`
   alter table storage.objects enable row level security;
   create function storage.foldername(name text) returns text[] language sql immutable as $$ select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1] $$;
 `)
-const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020|0021|0023|0024|0025)_/.test(f)).sort()
+const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020|0021|0023|0024|0025|0030)_/.test(f)).sort()
 for (const archivo of migraciones) {
   try {
     await db.exec(fs.readFileSync(path.join('supabase/migrations', archivo), 'utf8'))
@@ -307,6 +307,11 @@ const repoPG = {
   },
   probadorDe: async (u) => (await S("select ganado_en from public.achievements where user_id = $1 and logro = 'viajero:probador'", [u]))[0]?.ganado_en?.toISOString?.() ?? null,
   ultimaFrase: async (u) => (await S('select frase from public.achievements where user_id = $1 and frase is not null order by ganado_en desc limit 1', [u]))[0]?.frase ?? null,
+  sinPaseDe: async (u) => Boolean((await S('select activo from public.admin_sin_pase where user_id = $1', [u]))[0]?.activo),
+  ponerSinPase: async (u, activo) => {
+    await S('insert into public.admin_sin_pase (user_id, activo) values ($1, $2) on conflict (user_id) do update set activo = excluded.activo, updated_at = now()', [u, Boolean(activo)])
+    return { ok: true }
+  },
   pasesDe: (u) => S('select id, destino, tipo from public.passes where comprador_id = $1 or para_id = $1 or id in (select pass_id from public.pass_members where user_id = $1)', [u]),
   pruebaDe: async (u) => {
     const f = (await S('select * from public.hoy_prueba where user_id = $1', [u]))[0]
@@ -1221,6 +1226,44 @@ console.log('4. Las rutas y el panel de Eric')
     debe(dv.estado === 200 && (await repoPG.perfilDe(ana.uid)).previos.paises.length === 2, 'rutas', 'los países de antes se guardan aparte')
     const vit = await llamar('PUT /api/logros/vitrina', { token: 'ok', body: { titulo: '*|maravilla|coliseo' } })
     debe(vit.estado === 200 && vit.cuerpo.titulo === '*|maravilla|coliseo', 'rutas', 'el título de la vitrina se guarda en la cuenta')
+  }
+  // «Verme como viajero sin pase» (Tanda 10B): lo decide el servidor, solo el administrador, solo su cuenta; encendido, lo de pago sale cerrado; apagado, vuelve el pase.
+  {
+    const mont = {}
+    const admin2 = await persona('rutas-admin2@correo.es')
+    const otra2 = await persona('rutas-otra2@correo.es')
+    const usuarios2 = { admin2: { id: admin2.uid, email: 'eric@ejemplo.es', is_anonymous: false }, otra2: { id: otra2.uid, email: 'otra2@correo.es', is_anonymous: false } }
+    registrarRutasLogros({ get: (r, h) => (mont[`GET ${r}`] = h), post: (r, h) => (mont[`POST ${r}`] = h), put: (r, h) => (mont[`PUT ${r}`] = h) }, { admin: { auth: { getUser: async (t) => (usuarios2[t] ? { data: { user: usuarios2[t] } } : { error: { message: 'no' } }) } }, servicio, repo: repoPG, env: { LOGROS_ACTIVOS: 'true', CUENTAS_ACTIVAS: 'true', LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es' }, ahora: () => reloj })
+    const llamar2 = async (ruta, token, { body = {}, query = {} } = {}) => {
+      let estado = 200
+      let cuerpo = null
+      const res = { status: (e) => ((estado = e), res), json: (c) => ((cuerpo = c), res) }
+      await mont[ruta]({ headers: { authorization: `Bearer ${token}` }, get: () => `Bearer ${token}`, body, query }, res)
+      return { estado, cuerpo }
+    }
+    const pasesAntes = (await S('select count(*)::int as n from public.passes'))[0].n
+    debe((await llamar2('GET /api/pase/sin-pase', 'admin2')).cuerpo.activo === false, 'sin_pase', 'apagado por defecto')
+    debe((await llamar2('POST /api/admin/logros/sin-pase', 'otra2', { body: { activo: true } })).estado === 403 && (await repoPG.sinPaseDe(otra2.uid)) === false, 'sin_pase', 'otra cuenta no puede encenderlo (403) y no queda nada guardado')
+    debe((await llamar2('POST /api/admin/logros/sin-pase', 'admin2', { body: { activo: 'si' } })).estado === 400, 'sin_pase', 'el administrador tiene que decir true o false')
+    const encender = await llamar2('POST /api/admin/logros/sin-pase', 'admin2', { body: { activo: true, user_id: otra2.uid } })
+    debe(encender.estado === 200 && (await repoPG.sinPaseDe(admin2.uid)) === true && (await repoPG.sinPaseDe(otra2.uid)) === false, 'sin_pase', 'el administrador lo enciende y solo cambia su propia cuenta (un user_id en el cuerpo se ignora)')
+    debe((await llamar2('GET /api/pase/sin-pase', 'admin2')).cuerpo.activo === true && (await llamar2('GET /api/pase/sin-pase', 'otra2')).cuerpo.activo === false, 'sin_pase', 'el móvil solo lee: el administrador lo ve encendido y los demás nunca')
+    const cerrado = await llamar2('GET /api/pase/estado', 'admin2', { query: { trip_id: admin2.trip } })
+    debe(cerrado.cuerpo.sin_pase_prueba === true && cerrado.cuerpo.cobro === true && cerrado.cuerpo.pases.length === 0 && cerrado.cuerpo.hoy.puede === false && cerrado.cuerpo.hoy.tarjeta === 'pase' && cerrado.cuerpo.prueba.ya_usada === true && cerrado.cuerpo.precios.planes.length === 3, 'sin_pase', 'encendido: cobro puesto, sin pase, HOY cerrado con la tarjeta del pase y los precios a la vista')
+    const normal = await llamar2('GET /api/pase/estado', 'otra2', { query: { trip_id: otra2.trip } })
+    debe(normal.cuerpo.sin_pase_prueba === undefined && normal.cuerpo.hoy.puede === true, 'sin_pase', 'otra cuenta, a lo suyo: no cambia nada')
+    const vistoCerrado = await servicio.visto(admin2.uid, { trip_id: admin2.trip, sitio: 'coliseo', instante: dia(1, '09:00'), ubicacion: coords('coliseo'), recibido_en: dia(1, '09:00') })
+    debe(vistoCerrado.cuenta === false && vistoCerrado.motivo === 'sin_pase_prueba', 'sin_pase', 'encendido, un [Visto] no cuenta (lo de pago, cerrado)')
+    debe((await servicio.usarHoy(admin2.uid, { trip_id: admin2.trip })).acceso === false, 'sin_pase', 'ni usar HOY')
+    await llamar2('POST /api/admin/logros/sin-pase', 'admin2', { body: { activo: false } })
+    const abierto = await llamar2('GET /api/pase/estado', 'admin2', { query: { trip_id: admin2.trip } })
+    debe(abierto.cuerpo.sin_pase_prueba === undefined && abierto.cuerpo.hoy.puede === true, 'sin_pase', 'apagado: vuelve a tener su pase (todo abierto, como antes)')
+    const vistoAbierto = await servicio.visto(admin2.uid, { trip_id: admin2.trip, sitio: 'coliseo', instante: dia(1, '09:00'), ubicacion: coords('coliseo'), recibido_en: dia(1, '09:00') })
+    debe(vistoAbierto.cuenta === true, 'sin_pase', 'y el [Visto] vuelve a contar')
+    debe((await S('select count(*)::int as n from public.passes'))[0].n === pasesAntes, 'sin_pase', 'no toca el pase de verdad ni los cobros (la tabla de pases queda igual)')
+    const fuenteRutas = fs.readFileSync('server/logros/rutas.js', 'utf8')
+    const rutaSinPase = fuenteRutas.slice(fuenteRutas.indexOf("'/api/admin/logros/sin-pase'"), fuenteRutas.indexOf('// El sorteo del año'))
+    debe(rutaSinPase.length > 100 && !/req\.body\??\.(user|uid)/.test(rutaSinPase) && /usuario\.id/.test(rutaSinPase), 'sin_pase', 'la ruta nunca lee el usuario de lo que manda el móvil: usa el de la sesión')
   }
   debe(esAdmin({ id: 'x', email: 'Eric@ejemplo.es' }, { LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es, otra@ejemplo.es' }) === true && esAdmin({ id: 'x', email: 'otro@ejemplo.es' }, { LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es' }) === false && esAdmin({ id: 'x', email: 'eric@ejemplo.es', is_anonymous: true }, { LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es' }) === false && esAdmin({ id: 'x', email: 'eric@ejemplo.es' }, {}) === false, 'admin', 'la cuenta de administrador sale de una variable del servidor; sin variable, nadie')
   const codigo = ['motor', 'servicio', 'rutas', 'datos', 'avisos', 'pase', 'vistas', 'momentos', 'fotos', 'repo', 'exp'].map((f) => fs.readFileSync(`server/logros/${f}.js`, 'utf8')).join('\n')

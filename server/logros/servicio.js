@@ -244,7 +244,11 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
    * ¿Puede esta cuenta ganar logros ese día en ese viaje? Con `usar` (un Visto o «Cómo llegar»: usar HOY de verdad) la prueba se GASTA aquí, salvo que toque la pregunta de las 12:00.
    * `usar.minutosLocales`: la hora local del USO (la del Visto, no la de llegada); `usar.enLinea`: false si el Visto llega cuando ya ha pasado ese día: entonces no se pregunta, se gasta.
    */
+  /** «Verme como viajero sin pase» (Tanda 10B, solo pruebas del administrador): la cuenta se trata como la de alguien que no ha comprado el pase. Sin la tabla o sin la función del repo, apagado. */
+  const sinPaseDe = async (userId) => (typeof repo.sinPaseDe === 'function' ? Boolean(await repo.sinPaseDe(userId)) : false)
+
   async function puedeGanar(userId, c, viaje, fecha, usar = null) {
+    if (await sinPaseDe(userId)) return { puede: false, motivo: 'sin_pase_prueba' }
     if (!cobro) return { puede: true, motivo: 'cobro_apagado' }
     const pases = await repo.pasesDe(userId)
     const { prueba } = await pruebaDeLaCuenta(userId, c)
@@ -316,6 +320,18 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
 
   /** Lo que necesita HOY para saber qué enseñar: si puede usarse, y si no, la tarjeta del pase (la pantalla 12 de Design, sin alertas). */
   async function estadoDelPase(userId, tripId = null) {
+    // Con «Verme como viajero sin pase» encendido: cobro puesto, sin pase y con la prueba ya gastada (lo de pago, cerrado; la tarjeta del pase, abierta).
+    if (await sinPaseDe(userId)) {
+      return {
+        ok: true,
+        cobro: true,
+        sin_pase_prueba: true,
+        pases: [],
+        prueba: { estado: 'gastada', trip_id: null, fecha: null, motivo: 'sin_pase_prueba', ya_usada: true },
+        hoy: { puede: false, motivo: 'sin_pase_prueba', tarjeta: 'pase' },
+        precios: datos.pase.precios,
+      }
+    }
     const c = await cargar(userId)
     const viaje = tripId ? c.viajes[tripId] : null
     const pases = await repo.pasesDe(userId)

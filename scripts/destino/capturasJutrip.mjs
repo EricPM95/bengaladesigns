@@ -143,9 +143,10 @@ if (quiero('peliculas')) {
   console.log('· películas E12 y E13')
   for (const [id, nombre] of [['plaza_de_espana', 'E12_plaza_de_espana'], ['castillo_de_santangelo', 'E13_castillo_de_santangelo']]) {
     const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1' })
-    await esperarApp(app)
+    for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
     for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
     await app.evaluar('window.__rutaPrueba().then(() => true)')
+    for (let i = 0; i < 60 && !(await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await app.esp(1000)
     await app.esp(6000)
     await cerrarAvisos(app)
     await app.evaluar(`window.__momentos.lanzar('emblema:${id}')`)
@@ -160,17 +161,17 @@ if (quiero('peliculas')) {
 }
 
 if (quiero('interior')) {
-  for (const noche of [false, true]) {
-    const sufijo = noche ? 'noche' : 'dia'
+  for (const noche of [false]) {
+    const sufijo = 'dia'
     console.log('· la app por dentro, de ' + sufijo)
     const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1' })
     await esperarApp(app)
     for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
     await app.evaluar('window.__rutaPrueba().then(() => true)')
+    for (let i = 0; i < 60 && !(await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await app.esp(1000)
     await app.esp(6000)
     await cerrarAvisos(app)
     const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
-    if (noche) await app.evaluar(`${store}.then((s) => { if (!s.darkMode) s.toggleDarkMode(); return true })`)
     const modo = async (m) => {
       await app.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('${m}'); return true })`)
       await app.esp(2500)
@@ -211,17 +212,17 @@ if (quiero('interior')) {
 if (quiero('hoy')) {
   // HOY de día y de noche (la tarjeta de la siguiente parada, los avisos de «cierra hoy» y «Cerca de ti»), con el HOY de ahora (v1) y el nuevo (v2).
   for (const v2 of [false, true]) {
-    for (const noche of [false, true]) {
-      const nombre = `hoy_${v2 ? 'v2' : 'v1'}_${noche ? 'noche' : 'dia'}`
+    for (const noche of [false]) {
+      const nombre = `hoy_${v2 ? 'v2' : 'v1'}_dia`
       console.log('· ' + nombre)
       const app = await abrirApp('http://localhost:5173', { ruta: `/?cuentas=on&logros=on&logrosDemo=1&hoy2=${v2 ? 'on' : 'off'}` })
       await esperarApp(app)
       for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
       await app.evaluar('window.__rutaPrueba().then(() => true)')
+    for (let i = 0; i < 60 && !(await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await app.esp(1000)
       await app.esp(6000)
       await cerrarAvisos(app)
       const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
-      if (noche) await app.evaluar(`${store}.then((s) => { if (!s.darkMode) s.toggleDarkMode(); return true })`)
       await app.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('today'); return true })`)
       await app.esp(3500)
       await cerrarAvisos(app)
@@ -229,8 +230,52 @@ if (quiero('hoy')) {
       await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = 520; return true })()")
       await app.esp(800)
       await app.captura(png(nombre + '_abajo'))
+      // Antes y después del viaje (la fecha de hoy fingida): las tarjetas de HOY que no son la de la siguiente parada.
+      for (const [estado, dia] of [['antes', '2026-10-01'], ['despues', '2026-10-28']]) {
+        await app.evaluar(`${store}.then(() => import('/src/store/useRouteStore.ts')).then((m) => { m.useRouteStore.setState({ dev_simulated_today_iso: '${dia}' }); return true })`)
+        await app.esp(2500)
+        await app.captura(png(`${nombre}_${estado}`))
+      }
       app.cerrar()
     }
   }
+}
+if (quiero('tanda10b')) {
+  // Tanda 10B: RUTA con avión, tren, autobús y coche (solo la ciudad y los puntos por donde se llega), DÍAS con el día de vuelta (con pase y sin él) y las pantallas con «Verme como viajero sin pase» encendido.
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1' })
+  for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
+  for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
+  await app.evaluar('window.__rutaPrueba().then(() => true)')
+  for (let i = 0; i < 60 && !(await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await app.esp(1000)
+  await app.esp(6000)
+  await cerrarAvisos(app)
+  const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
+  const poner = (codigo) => app.evaluar("import('/src/store/useRouteStore.ts').then((m) => { const set = m.useRouteStore.setState; const get = m.useRouteStore.getState; " + codigo + "; return true })")
+  const medio = (id, punto) => poner("set({ route: { ...get().route, arrivalPointId: " + JSON.stringify(punto) + ", transportContext: { ...get().route.transportContext, transport_option: { ...get().route.transportContext.transport_option, id: '" + id + "' } } } })")
+  for (const [id, punto, nombre] of [['flight', null, 'avion'], ['train', 'tiburtina', 'tren'], ['bus', null, 'autobus'], ['car', null, 'coche']]) {
+    await medio(id, punto)
+    await app.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('route'); return true })`)
+    await app.esp(5000)
+    await app.captura(png('ruta_mapa_' + nombre))
+  }
+  // El día de vuelta sin paradas y sin hora (en avión): con el pase y sin él.
+  await medio('flight', null)
+  await poner("const r = get().route; if (!r.days.some((d) => d.isReturnLeg)) set({ route: { ...r, days: [...r.days, { id: 'dret', dayNumber: r.days.length + 1, city: r.days[0].city, countryCode: r.days[0].countryCode, title: '', curatedTitle: '', stops: [], meals: [], excursions: [], isReturnLeg: true, colorIndex: 2 }] } })")
+  await app.evaluar(`${store}.then((s) => { s.setMode('days'); s.setActiveDayId(null); return true })`)
+  await app.esp(3500)
+  await app.evaluar("(() => { const t = Array.from(document.querySelectorAll('h2,h3,span,p,div')).find((e) => e.children.length === 0 && (e.textContent || '').trim() === 'Hoy vuelves a casa'); const b = t && (t.closest('button') || t.closest('[role=button]') || t); if (b) b.click(); return Boolean(b) })()")
+  await app.esp(4500)
+  await app.evaluar("(() => { const t = document.querySelector('[data-tarjeta-ultimo-dia]'); if (t) t.scrollIntoView({ block: 'center' }); return true })()")
+  await app.esp(1200)
+  await app.captura(png('dias_vuelta_con_pase'))
+  await app.evaluar("import('/src/store/useSinPasePrueba.ts').then((m) => { m.useSinPasePrueba.getState().poner(true); return true })")
+  await app.esp(2500)
+  await app.evaluar("(() => { const t = document.querySelector('[data-tarjeta-ultimo-dia]'); if (t) t.scrollIntoView({ block: 'center' }); return true })()")
+  await app.esp(800)
+  await app.captura(png('dias_vuelta_sin_pase_prueba'))
+  await app.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('bookings'); return true })`)
+  await app.esp(3000)
+  await app.captura(png('reservas_sin_pase_prueba'))
+  app.cerrar()
 }
 console.log('listo')

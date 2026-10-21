@@ -9,6 +9,8 @@ import { decodeTripFromUrl } from './lib/shareUrl'
 import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
 import { PagoHost } from './components/pase/PagoHost'
+import { SinPasePrueba } from './components/pase/SinPasePrueba'
+import { useSinPasePrueba } from './store/useSinPasePrueba'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
 import { AvisosHost } from './components/avisos/AvisosHost'
 import { AjustesHosts } from './components/ajustes/AjustesHosts'
@@ -54,6 +56,8 @@ function PreparandoViajeContainer() {
 }
 
 function App() {
+  // (Con «Verme como viajero sin pase» encendido, todo lo de pago se vuelve a pintar cerrado.)
+  useSinPasePrueba((state) => state.activo)
   const screen = useRouteStore((state) => state.screen)
   const setDestination = useRouteStore((state) => state.setDestination)
   const setArchetype = useRouteStore((state) => state.setArchetype)
@@ -96,6 +100,7 @@ function App() {
       <TripSync />
       <PuertaDeCuenta />
       <PagoHost />
+      <SinPasePrueba />
       <PropuestaHost />
       <AvisosHost />
       <AjustesHosts />

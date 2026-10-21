@@ -60,6 +60,7 @@ import { pagoActivo, pedirPago } from '../../../lib/pago'
 import { ArrivalReturnSheet } from './ArrivalReturnSheet'
 import { BilleteDeVuelo } from './BilleteDeVuelo'
 import { TarjetaTuUltimoDia } from './TarjetaTuUltimoDia'
+import { textosDelUltimoDia } from '../../../lib/ultimoDia'
 import { TarjetaHoyVuelves } from './TarjetaHoyVuelves'
 import { tarjetaHoyVuelvesDelDia } from '../../../lib/planLlegadaVuelta'
 import { useExploreAperturaStore, type AperturaExplorar } from '../../../store/useExploreAperturaStore'
@@ -401,9 +402,10 @@ export function DayDetailPanel({
   // El billete (Tanda 7, de pago): con la hora de Roma puesta, en lugar de la barra. En coche no hay billete.
   const billeteLlegada = pago && route ? billeteDe({ route, kind: 'llegada', mode: modes.arrival, point: arrivalChosen }) : null
   const billeteVuelta = pago && route ? billeteDe({ route, kind: 'vuelta', mode: modes.departure, point: departureChosen }) : null
-  // La tarjeta «Tu último día también cuenta» (Tanda 7): solo en la gratis, en el día de vuelta, y no en coche. Pequeña si el viajero ya añadió lugares a ese día.
-  const tarjetaUltimoDia = !pago && Boolean(route) && day.isReturnLeg === true && modes.departure !== 'coche'
-  const tarjetaUltimoDiaPequena = day.stops.length > 0
+  // La tarjeta del día de vuelta sin hora (Tanda 10B; antes «Tu último día también cuenta»): con el pase y sin él, en el día de vuelta mientras el viajero no ha puesto la hora de salida. Con la hora puesta ya no sale.
+  const tarjetaUltimoDia = Boolean(route) && day.isReturnLeg === true && !departureTime
+  // Cómo vuelve: el medio que eligió (null si no eligió ninguno: «tu vuelo o tu tren»).
+  const medioDeVuelta = route && (route.returnTransportOptionId || route.transportContext.transport_option?.id) ? modes.departure : null
   const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalChosen, origin, destino: destinoNombre, time: modes.arrival === 'coche' ? null : arrivalTime, pago, codigo: route?.arrivalCodigo ?? null })
   const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departureChosen, origin, destino: destinoNombre, time: modes.departure === 'coche' ? null : departureTime, pago, codigo: route?.departureCodigo ?? null })
   const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)
@@ -1506,9 +1508,14 @@ export function DayDetailPanel({
           {/* Con una excursión de día entero no sale: su tarjeta ya dice que ocupa el día entero. */}
           {/* Ruta a mano (Tanda 6y): [Añadir parada] (y [Añadir excursión] en un día en blanco) en lugar de «Añadir lugares». */}
           {dayType === 'manual' && route && isManualRoute(route) && <ManualDayFooter route={route} day={day} />}
-          {/* Tanda 7: la tarjeta del día de vuelta, solo en la gratis (de pago está el «+ AÑADIR VUELO» de la barra); en coche no hay hora y no sale. Grande con el día en blanco; pequeña debajo de los lugares que añadió. */}
+          {/* Tanda 10B: la tarjeta del día de vuelta sin hora, con el pase y sin él; con ella, la barra de «+ AÑADIR VUELO» y «Fin del viaje» de abajo no salen (no estorban). */}
           {tarjetaUltimoDia && (
-            <TarjetaTuUltimoDia pequena={tarjetaUltimoDiaPequena} onAnadirVuelta={pedirPago} onMontarlo={() => openAddFlow(day.id)} />
+            <TarjetaTuUltimoDia
+              textos={textosDelUltimoDia({ modo: medioDeVuelta, destino: route?.destination ?? day.city, conPase: pago })}
+              conPase={pago}
+              onPrincipal={pago ? () => goToBooking('vuelta') : pedirPago}
+              onAnadirLugares={() => openAddFlow(day.id)}
+            />
           )}
           {/* Tanda 7: «Hoy vuelves a casa» (de pago): el día de vuelta sin paradas y, con una salida de madrugada, el final del último día de ruta. */}
           {tarjetaHoyVuelves && (
@@ -1519,7 +1526,7 @@ export function DayDetailPanel({
               onExplorarMonumentos={() => abrirExplorar({ categoria: 'atracciones', origen: null, cerca: tarjetaHoyVuelves.explorar.cerca_de_mi })}
             />
           )}
-          {dayType === 'manual' && !isManualRoute(route) && !(tarjetaUltimoDia && !tarjetaUltimoDiaPequena) && (
+          {dayType === 'manual' && !isManualRoute(route) && !(tarjetaUltimoDia && day.stops.length === 0) && (
               <button
                 type="button"
                 onClick={() => openAddFlow(day.id)}
@@ -1574,7 +1581,7 @@ export function DayDetailPanel({
           )}
 
           {/* La vuelta: el último día, al final del todo, y la despedida en el idioma del destino. */}
-          {isLastDay && route && (
+          {isLastDay && route && !tarjetaUltimoDia && (
             <div className="space-y-1.5 pt-6">
               {billeteVuelta ? (
                 <BilleteDeVuelo billete={billeteVuelta} onOpen={() => abrirFichaDeVuelta()} />

@@ -236,7 +236,7 @@ function hoyCon(nombre, version = 'completa') {
   debe(!/Escuchar historia|Escuchar la historia/.test(conHist + sinHist), '5 HOY', 'HOY enseña la barra de la ficha')
   // «Escuchar» lee el Resumen y «Historia» lee la historia: el botón pequeño solo cambia de nombre.
   const fuenteHoy = leer('src/components/route/hoy/HoyDurante.tsx')
-  debe(/<Escuchar oscuro=\{!claro\} texto=\{textoResumenDeParada\(siguiente\)\} clave=\{siguiente\.id\} \/>/.test(fuenteHoy) && /etiqueta="Historia" texto=\{textoHistoria\(ficha\)\}/.test(fuenteHoy), '5 HOY', '«Escuchar» de HOY no lee el Resumen o «Historia» no lee la historia')
+  debe(/<Escuchar texto=\{textoResumenDeParada\(siguiente\)\} clave=\{siguiente\.id\} \/>/.test(fuenteHoy) && /etiqueta="Historia" texto=\{textoHistoria\(ficha\)\}/.test(fuenteHoy), '5 HOY', '«Escuchar» de HOY no lee el Resumen o «Historia» no lee la historia')
   const suelto = (nombre, version) => {
     ponerVersion(version)
     return aTexto(renderToStaticMarkup(createElement(HistoriaDeParada, { destino: 'Roma', nombre, clave: 'x' })))

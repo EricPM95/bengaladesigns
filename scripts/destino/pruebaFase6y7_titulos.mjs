@@ -94,7 +94,7 @@ igual(titulo([parada('Roma iluminada', { isNightExperience: true, name: 'Fontana
 igual(titulo(['Coliseo', 'Foro Romano y Palatino', parada('Roma iluminada', { isNightExperience: true, name: 'Fontana de Trevi' }), parada('Roma iluminada 2', { isNightExperience: true, name: 'Panteón' }), parada('Roma iluminada 3', { isNightExperience: true, name: 'Piazza Navona' })]), 'Roma antigua', 'tanda 6y9 P11: las nocturnas no cuentan, aunque sean tres de otro grupo')
 igual(titulo(['Coliseo', 'Foro Romano y Palatino', 'Circo Máximo', parada('Mirador de noche', { isNightView: true, name: 'Mirador del Janículo' }), parada('Mirador de noche 2', { isNightView: true, name: 'Terraza del Pincio' }), parada('Mirador de noche 3', { isNightView: true, name: 'Mirador del Janículo' })]), 'Roma antigua', 'tanda 6y9 P11: los miradores que llegan de noche tampoco cuentan')
 igual(titulo([parada('Roma iluminada', { isNightExperience: true, name: 'Fontana de Trevi' })]), 'Día libre', 'tanda 6y9 P11: un día con solo una nocturna se queda sin paradas')
-igual(titulo([], { isReturnLeg: true }), 'Día de viaje', 'tanda 6y9 P13: el día de vuelta sintético sin paradas se llama «Día de viaje»')
+igual(titulo([], { isReturnLeg: true }), 'Hoy vuelves a casa', 'tanda 10B: el día de vuelta sintético sin paradas se llama «Hoy vuelves a casa» (antes «Día de viaje», tanda 6y9 P13)')
 igual(titulo([], { isReturnLeg: false }), 'Día libre', 'tanda 6y9 P13: cualquier otro día sin paradas sigue siendo «Día libre»')
 igual(titulo(['Fontana de Trevi', 'Panteón', 'Piazza Navona'], { halfDayExcursion: { id: 'e', startsAt: '08:00', endsAt: '14:00', routeStartsAt: '16:00' } }), `${EXCURSION} y Centro histórico`, 'excursión de medio día')
 igual(titulo(['Fontana de Trevi', 'Panteón', parada('Free Tour por Roma', { isFreeTour: true })], { halfDayExcursion: { id: 'e', startsAt: '08:00', endsAt: '14:00', routeStartsAt: '16:00' } }), `Free Tour y ${EXCURSION}`, 'Free Tour y excursión de medio día: solo dos nombres')
@@ -221,7 +221,7 @@ for (const v of [{ dias: 3, ft: true, inicio: '2027-03-10' }, { dias: 2, ft: fal
   const html = pinta(DayList, { route: ruta, activeDayId: null, onSelectDay() {}, showAllDaysOnMap: false }, ruta, { version: 'completa' })
   pantallas++
   const pintados = titulosPintados(html)
-  igual(pintados[pintados.length - 1], 'Día de viaje', 'la vuelta sintética en DÍAS')
+  igual(pintados[pintados.length - 1], 'Hoy vuelves a casa', 'la vuelta sintética en DÍAS (tanda 10B: «Hoy vuelves a casa»)')
   const viajes = [...html.matchAll(/data-viaje-del-dia="1"[^>]*>([^<]*)</g)].map((m) => m[1].replace(/&gt;/g, '>'))
   igual(viajes[viajes.length - 1], 'Roma → Barcelona', 'el trayecto pequeño de la vuelta sintética')
   const trozoVuelta = aTexto(html).split('\nDía de viaje\n')

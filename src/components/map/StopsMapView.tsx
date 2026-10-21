@@ -94,6 +94,10 @@ interface StopsMapViewProps {
   focusCenter?: Coordinates | null
   /** Pines con el aro dorado de «en tu ruta». Va aparte de los marcadores a propósito: cambiar el aro no reconstruye el mapa ni mueve la cámara. */
   ringIds?: string[]
+  /** Con `focusCenter`: a qué zoom se centra (por defecto 15, la calle; la pestaña RUTA enseña la ciudad entera). */
+  focusZoom?: number
+  /** El margen del encuadre cuando hay varios pines (por defecto `FIT_PADDING`). */
+  encuadre?: { top: number; bottom: number; left: number; right: number }
   /** Dónde está el viajero: el punto azul que late. Aparte de los marcadores por lo mismo. */
   userPosition?: Coordinates | null
   /** Cada vez que cambia, la cámara vuela a `userPosition` (el botón de localizarte). */
@@ -116,7 +120,7 @@ interface StopsMapViewProps {
 /** Margen del encuadre: arriba deja sitio a la pastilla del destino y abajo al panel que monta sobre el mapa. */
 const FIT_PADDING = { top: 96, bottom: 48, left: 40, right: 40 }
 
-export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null, ringIds, userPosition = null, recenterKey = 0, offsets, flyTo = null, persistKey }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null, focusZoom = 15, encuadre = FIT_PADDING, ringIds, userPosition = null, recenterKey = 0, offsets, flyTo = null, persistKey }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
@@ -305,9 +309,9 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       // (En un mapa compartido entre pantallas la cámara no se toca: se queda donde está.)
       if (persistKey) return
       if (focusCenter) {
-        map.jumpTo({ center: [focusCenter.lng, focusCenter.lat], zoom: 15 })
+        map.jumpTo({ center: [focusCenter.lng, focusCenter.lat], zoom: focusZoom })
       } else if (toFit.length > 1) {
-        map.fitBounds(computeBounds(toFit), { padding: FIT_PADDING, maxZoom: 15 })
+        map.fitBounds(computeBounds(toFit), { padding: encuadre, maxZoom: 15 })
       }
     }
     // Un mapa nuevo pinta al cargar; uno que ya estaba cargado (compartido) pinta ya.

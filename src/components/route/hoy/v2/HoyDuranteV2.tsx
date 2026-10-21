@@ -36,7 +36,7 @@ import { BilleteDeVuelo } from '../../dayDetail/BilleteDeVuelo'
 import { BotonAlojamientoHoy, useFichasDeHoy, type MitadDeHoy } from '../llegadaVuelta'
 import { anadirMasVisita, useMasVisitas } from '../masVisitas'
 import type { MasVisita } from '../../../../lib/masVisitas'
-import { AZUL, botonOro, clasesBotonBorde, fondoPastilla, SOMBRA_TARJETA_CLARA, SOMBRA_TARJETA_OSCURA, useClaro, VERDE } from '../piezas'
+import { AZUL, botonOro, clasesBotonBorde, fondoPastilla, SOMBRA_TARJETA_CLARA, VERDE } from '../piezas'
 import { CabeceraHoy } from './HoyAntesV2'
 import { ExtraDeParada } from './ExtraDeParada'
 import { ParadaFotoDeParada } from './ParadaFoto'
@@ -67,11 +67,11 @@ function guardarCerrados(rutaId: string, diaId: string, ids: string[]) {
   }
 }
 
-function LineaDeHorario({ horario, cerradoEsteDia, claro = false }: { horario: HorarioDeParada | null; cerradoEsteDia: boolean; claro?: boolean }) {
+function LineaDeHorario({ horario, cerradoEsteDia }: { horario: HorarioDeParada | null; cerradoEsteDia: boolean }) {
   if (cerradoEsteDia && !horario?.cerrado) horario = { abre: null, cierra: null, ultimaEntrada: null, cerrado: true, tramos: [], texto: CERRADO_ESTE_DIA }
   if (!horario) return null
   return (
-    <span className="text-[12px] leading-[1.3]" style={{ color: horario.cerrado ? (claro ? 'rgb(var(--accent-red))' : '#F87171') : claro ? 'rgba(28,34,48,.65)' : 'rgba(255,253,248,.7)' }}>
+    <span className="text-[12px] leading-[1.3]" style={{ color: horario.cerrado ? ('rgb(var(--accent-red))') : 'rgba(28,34,48,.65)'}}>
       {horario.texto}
     </span>
   )
@@ -109,7 +109,7 @@ function FotoYMapa({ parada, desde, ciudad, dateIso }: { parada: Stop; desde: Co
 }
 
 /** [Escuchar historia]: el botón largo con las ondas (solo en los sitios con historia; la historia es de pago salvo la que la ficha marca gratis). */
-function EscucharHistoria({ destino, parada, claro = false }: { destino: string; parada: Stop; claro?: boolean }) {
+function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }) {
   const ficha = useFichaDeSitio(destino, parada.name)
   const audio = useAudioDeHistoria({ destino, nombre: parada.name })
   const texto = textoHistoria(ficha)
@@ -119,19 +119,19 @@ function EscucharHistoria({ destino, parada, claro = false }: { destino: string;
   const onda = ['8px', '14px', '10px', '16px', '7px', '12px', '15px', '9px', '13px', '6px']
   return (
     <div className="flex items-center gap-2">
-      <button type="button" onClick={alPulsar} data-escuchar={estado} className="flex h-[50px] min-w-0 flex-1 items-center justify-center gap-3 rounded-full pl-2 pr-3.5" style={{ background: claro ? 'rgba(142,104,32,.1)' : 'rgba(255,253,248,.1)' }}>
+      <button type="button" onClick={alPulsar} data-escuchar={estado} className="flex h-[50px] min-w-0 flex-1 items-center justify-center gap-3 rounded-full pl-2 pr-3.5" style={{ background: 'rgba(142,104,32,.1)'}}>
         <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full" style={{ background: 'rgb(var(--accent))' }}>
           <Icono nombre={estado === 'hablando' ? 'pausa' : 'seguir'} size={13} relleno grosor={1.6} />
         </span>
         <span className="whitespace-nowrap text-[13.5px] font-semibold">{estado === 'parado' ? 'Escuchar historia' : estado === 'hablando' ? 'Pausar' : 'Seguir escuchando'}</span>
         <span className="flex h-6 items-center gap-[3px]" style={{ opacity: estado === 'hablando' ? 1 : 0.6 }} aria-hidden="true">
           {[...onda, ...onda].map((h, i) => (
-            <span key={i} style={{ width: 2.5, height: h, borderRadius: 2, background: claro ? 'linear-gradient(180deg,#B58A2E,#8B6620)' : 'linear-gradient(180deg,#F3D59A,#FFFDF8)', opacity: i >= 10 ? 0.7 : 1 }} />
+            <span key={i} style={{ width: 2.5, height: h, borderRadius: 2, background: 'linear-gradient(180deg,#B58A2E,#8B6620)', opacity: i >= 10 ? 0.7 : 1 }} />
           ))}
         </span>
       </button>
       {estado !== 'parado' && (
-        <button type="button" onClick={parar} aria-label="Parar" className="flex h-[50px] w-[50px] flex-none items-center justify-center rounded-full" style={{ background: claro ? 'rgba(142,104,32,.1)' : 'rgba(255,253,248,.1)' }}>
+        <button type="button" onClick={parar} aria-label="Parar" className="flex h-[50px] w-[50px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(142,104,32,.1)'}}>
           <Icono nombre="cerrar" size={14} />
         </button>
       )}
@@ -190,7 +190,6 @@ function TarjetaAzul({ children }: { children: React.ReactNode }) {
 export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day: DayPlan; dateIso: string; pase: EstadoPase }) {
   const reservations = useRouteStore((s) => s.reservations)
   const setStopVisto = useRouteStore((s) => s.setStopVisto)
-  const claro = useClaro()
   const setStopSaltada = useRouteStore((s) => s.setStopSaltada)
   const setMode = useRouteStore((s) => s.setMode)
   const pedirExplorar = useExploreAperturaStore((s) => s.pedir)
@@ -423,20 +422,20 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
       {/* 2: la siguiente parada, en grande */}
       {!sinParadasDeVuelta && siguiente && (
-        <div className={`flex flex-none flex-col gap-3 rounded-[28px] px-2 pb-3 pt-2 ${claro ? 'bg-[#FFFDF8] text-[#1C2230]' : 'bg-[#1C2230] text-[#FFFDF8]'}`} style={{ boxShadow: claro ? SOMBRA_TARJETA_CLARA : SOMBRA_TARJETA_OSCURA }} data-hoy-siguiente data-tarjeta={claro ? 'clara' : 'oscura'}>
+        <div className="flex flex-none flex-col gap-3 rounded-[28px] px-2 pb-3 pt-2 bg-[#FFFDF8] text-[#1C2230]" style={{ boxShadow: SOMBRA_TARJETA_CLARA }} data-hoy-siguiente data-tarjeta="clara">
           <FotoYMapa parada={siguiente} desde={origen} ciudad={day.city} dateIso={dateIso} />
           <div className="flex flex-col gap-2 px-2">
             <span style={{ font: "400 32px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(siguiente.name)}</span>
-            <LineaDeHorario horario={horarioDe(siguiente)} claro={claro} cerradoEsteDia={Boolean(siguiente.closedThisDay)} />
-            <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} oscuro={!claro} className="self-start" />
+            <LineaDeHorario horario={horarioDe(siguiente)} cerradoEsteDia={Boolean(siguiente.closedThisDay)} />
+            <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} className="self-start" />
             <span className="flex flex-wrap items-center gap-1.5">
               {siguiente.durationMinutes > 0 && (
-                <span className="flex h-[30px] items-center gap-1.5 rounded-full pl-2 pr-2.5 text-[12px] font-medium" style={{ background: fondoPastilla(claro) }}>
+                <span className="flex h-[30px] items-center gap-1.5 rounded-full pl-2 pr-2.5 text-[12px] font-medium" style={{ background: fondoPastilla() }}>
                   <Icono nombre="arena" size={13} grosor={2} />
                   {formatDuration(siguiente.durationMinutes)}
               </span>
               )}
-              <button type="button" onClick={pedirUbicacion} disabled={ubicacionEstado === 'pidiendo'} className={`flex h-[30px] items-center gap-1.5 rounded-full border pl-2 pr-2.5 text-[12px] font-medium disabled:opacity-60 ${claro ? 'border-[#1C2230]/25' : 'border-[#FFFDF8]/25'}`}>
+              <button type="button" onClick={pedirUbicacion} disabled={ubicacionEstado === 'pidiendo'} className={`flex h-[30px] items-center gap-1.5 rounded-full border pl-2 pr-2.5 text-[12px] font-medium disabled:opacity-60 border-[#1C2230]/25`}>
                 <Icono nombre="ubicacion" size={13} grosor={1.9} />
                 {ubicacionEstado === 'pidiendo' ? 'Buscando…' : minutos !== null ? `${minutos} min andando` : ubicacionEstado === 'no' ? 'Sin ubicación' : 'Ubicación'}
               </button>
@@ -448,29 +447,29 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
                 <Icono nombre="hecho" size={14} grosor={2.6} />
                 Visto
               </button>
-              <button type="button" onClick={() => setHojaSaltar(true)} className={`h-[46px] whitespace-nowrap rounded-full px-2.5 text-[13px] font-semibold ${clasesBotonBorde(claro)}`}>
+              <button type="button" onClick={() => setHojaSaltar(true)} className={`h-[46px] whitespace-nowrap rounded-full px-2.5 text-[13px] font-semibold ${clasesBotonBorde()}`}>
                 No me da tiempo
               </button>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {comoLlegar ? (
-                <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-[46px] items-center justify-center gap-2 rounded-full text-[14px] font-bold no-underline" style={botonOro(claro)}>
+                <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-[46px] items-center justify-center gap-2 rounded-full text-[14px] font-bold no-underline" style={botonOro()}>
                   <Icono nombre="explorar" size={16} grosor={1.8} />
                   Cómo llegar
                 </a>
               ) : (
-                <span className={`flex h-[46px] items-center justify-center rounded-full text-[14px] font-semibold ${claro ? 'bg-[#1C2230]/8 text-[#1C2230]/45' : 'bg-[#FFFDF8]/30 text-[#1C2230]/60'}`}>Cómo llegar</span>
+                <span className={`flex h-[46px] items-center justify-center rounded-full text-[14px] font-semibold bg-[#1C2230]/8 text-[#1C2230]/45`}>Cómo llegar</span>
               )}
-              <button type="button" onClick={() => setHojaSobre(siguiente)} className={`flex h-[46px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-[12.5px] font-semibold ${clasesBotonBorde(claro)}`}>
+              <button type="button" onClick={() => setHojaSobre(siguiente)} className={`flex h-[46px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-[12.5px] font-semibold ${clasesBotonBorde()}`}>
                 <Icono nombre="portapapeles" size={14} grosor={1.8} />
                 Sobre este lugar
               </button>
             </div>
-            <EscucharHistoria destino={route.destination} parada={siguiente} claro={claro} />
+            <EscucharHistoria destino={route.destination} parada={siguiente} />
             <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" />
             {masVisitas.length > 0 && (
               <div className="flex justify-center">
-                <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: claro ? '1.5px dashed rgba(142,104,32,.6)' : '1.5px dashed rgba(233,199,122,.7)' }}>
+                <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: '1.5px dashed rgba(142,104,32,.6)'}}>
                   <Icono nombre="anadir" size={13} grosor={2.4} />
                   Más visitas
                 </button>

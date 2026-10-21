@@ -45,10 +45,10 @@ export function useMasVisitas(route: Route, day: DayPlan): MasVisita[] {
   return masVisitasDe(route, day, datos)
 }
 
-/** [+ Más visitas]: del aspecto de [No me da tiempo] (borde claro sobre la tarjeta oscura). */
-export function BotonMasVisitas({ onClick, claro = false }: { onClick: () => void; claro?: boolean }) {
+/** [+ Más visitas]: del aspecto de [No me da tiempo] (borde de tinta sobre la tarjeta clara). */
+export function BotonMasVisitas({ onClick }: { onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} data-mas-visitas className={`flex h-11 w-full items-center justify-center gap-[7px] rounded-full text-[14px] font-semibold ${clasesBotonBorde(claro)}`}>
+    <button type="button" onClick={onClick} data-mas-visitas className={`flex h-11 w-full items-center justify-center gap-[7px] rounded-full text-[14px] font-semibold ${clasesBotonBorde()}`}>
       <Icono nombre="anadir" size={15} grosor={1.8} />
       Más visitas
     </button>

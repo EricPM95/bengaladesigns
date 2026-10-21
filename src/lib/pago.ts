@@ -1,3 +1,5 @@
+import { sinPasePruebaActivo } from '../store/useSinPasePrueba'
+
 /**
  * El interruptor de pago (Tanda 6s): UN solo sitio para toda la app. Todo lo que es de pago va detrás de `pagoActivo()`; con él apagado no sale
  * nada de eso, ni candados ni avisos. De pago en la 6s: el bloque «Llegada y vuelta», la pregunta de la zona del alojamiento, el resumen de arriba y
@@ -26,6 +28,8 @@ function versionPedida(): 'gratis' | 'completa' | null {
 
 /** ¿Está encendido lo de pago? La dirección manda (`?version=gratis` / `?version=completa`); si no dice nada, el dato de configuración. */
 export function pagoActivo(): boolean {
+  // «Verme como viajero sin pase» (Tanda 10B, solo pruebas del administrador; lo decide el servidor): lo de pago, cerrado.
+  if (sinPasePruebaActivo()) return false
   const pedida = versionPedida()
   return pedida === null ? PAGO_ACTIVO : pedida === 'completa'
 }

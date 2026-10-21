@@ -21,6 +21,7 @@
  *   POST /api/pase/prueba/usar   { trip_id }          usar HOY de verdad sin [Visto] («Cómo llegar»): gasta la prueba o hace la pregunta de las 12:00
  *   POST /api/pase/prueba/responder { trip_id, respuesta: 'hoy'|'manana' }   la respuesta a «Te queda medio día…»
  *   GET  /api/pase/precios · POST /api/pase/precio { plan, personas }   los precios (data/pase/precios.json); paga todo el que compra
+ *   GET  /api/pase/sin-pase           si «Verme como viajero sin pase» está encendido (solo el administrador lo ve encendido)
  *   /api/admin/logros/*           solo para la cuenta de administrador (LOGROS_ADMIN_EMAILS en el servidor)
  */
 
@@ -130,6 +131,11 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
 
   /* ── El pase y la prueba de HOY ── */
   app.get('/api/pase/estado', conUsuario(async (req, res, u) => res.json(await servicio.estadoDelPase(u.id, req.query.trip_id ? String(req.query.trip_id) : null))))
+  // «Verme como viajero sin pase» (Tanda 10B): el móvil solo LEE si está encendido (y solo para el administrador); quien lo enciende es la ruta de administrador, y solo su propia cuenta.
+  app.get('/api/pase/sin-pase', conUsuario(async (_req, res, u) => {
+    const eraAdmin = esAdmin(u, env)
+    res.json({ ok: true, es_admin: eraAdmin, activo: eraAdmin && repo.sinPaseDe ? await repo.sinPaseDe(u.id) : false })
+  }))
   app.post('/api/pase/prueba/usar', conUsuario(async (req, res, u) => res.json(await servicio.usarHoy(u.id, req.body ?? {}))))
   app.post('/api/pase/prueba/responder', conUsuario(async (req, res, u) => res.json(await servicio.responderPrueba(u.id, req.body ?? {}))))
   app.get('/api/pase/precios', (_req, res) => res.json({ ok: true, ...datos.pase.precios }))
@@ -167,6 +173,13 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
     if (req.body?.confirmar !== true) return res.status(400).json({ ok: false, error: 'Falta confirmar.' })
     const r = await reiniciarMisPruebas(admin, usuario.id)
     res.status(r.ok ? 200 : 500).json(r)
+  }))
+  // «Verme como viajero sin pase»: el `uid` sale de la sesión (si el cuerpo trae otro, se ignora) y solo con la cuenta de administrador.
+  app.post('/api/admin/logros/sin-pase', conAdmin(async (req, res, usuario) => {
+    if (typeof req.body?.activo !== 'boolean') return res.status(400).json({ ok: false, error: 'Falta decir si se enciende o se apaga.' })
+    const r = repo.ponerSinPase ? await repo.ponerSinPase(usuario.id, req.body.activo) : { ok: false, error: 'sin repo' }
+    if (!r.ok) return res.status(500).json({ ok: false, error: 'No se ha podido guardar. ¿Está aplicada la migración 0030?' })
+    return res.json({ ok: true, activo: req.body.activo })
   }))
   // El sorteo del año (solo la regla, sin pantalla): nivel 3 o más y al menos un viaje acabado con la app ese año. Sin nombres ni correos: solo el id de cada cuenta.
   app.get('/api/admin/logros/sorteo', conAdmin(async (req, res) => {

@@ -1,0 +1,40 @@
+{
+  "_nota": "Lo que incluye el pase, UNA COSA POR LÍNEA, sacado del apartado «EN EL PASE» de docs/dias/GRATIS_Y_PASE.md (solo lo que ya está hecho, ✅). La app cuenta esta lista: con 21 o más, el texto del día de vuelta dice «más de 20 ventajas»; con menos, el número exacto. Cuando entre algo nuevo (el compañero de HOY, descargar el viaje sin conexión…), se añade aquí una línea y el número sube solo. `origen` es el principio de la línea del documento de donde sale (la prueba comprueba que no falta ninguna).",
+  "ventajas": [
+    { "id": "vuelos_horas", "grupo": "Antes del viaje", "texto": "Poner el vuelo o el tren: el primer y el último día se ajustan a tus horas", "origen": "Poner los vuelos o el tren" },
+    { "id": "orden_dias", "grupo": "Antes del viaje", "texto": "El orden de los días según tu llegada y tu vuelta", "origen": "El orden de los días según la llegada" },
+    { "id": "zona_alojamiento", "grupo": "Antes del viaje", "texto": "La zona del alojamiento", "origen": "La zona del alojamiento" },
+    { "id": "como_llegar_alojamiento", "grupo": "Antes del viaje", "texto": "[Cómo llegar a tu alojamiento]", "origen": "La zona del alojamiento" },
+    { "id": "resumen_reservas", "grupo": "Antes del viaje", "texto": "El resumen de las reservas (lo que llevas hecho)", "origen": "El resumen de las reservas" },
+
+    { "id": "hoy_siguiente_parada", "grupo": "HOY", "texto": "La siguiente parada en grande, con los minutos andando", "origen": "La siguiente parada en grande" },
+    { "id": "hoy_como_llegar", "grupo": "HOY", "texto": "[Cómo llegar]", "origen": "La siguiente parada en grande" },
+    { "id": "hoy_visto", "grupo": "HOY", "texto": "[Visto]", "origen": "[Visto] y [No me da tiempo]" },
+    { "id": "hoy_no_me_da_tiempo", "grupo": "HOY", "texto": "[No me da tiempo]", "origen": "[Visto] y [No me da tiempo]" },
+    { "id": "hoy_billete", "grupo": "HOY", "texto": "El billete de llegada y de vuelta", "origen": "El billete y el día de llegada" },
+    { "id": "hoy_dias_llegada_vuelta", "grupo": "HOY", "texto": "El día de llegada y el de vuelta, ajustados", "origen": "El billete y el día de llegada" },
+    { "id": "hoy_escuchar_historia", "grupo": "HOY", "texto": "[Escuchar historia] en los 31 sitios con historia", "origen": "[Escuchar historia]" },
+    { "id": "hoy_sobre_este_lugar", "grupo": "HOY", "texto": "[Sobre este lugar]", "origen": "[Sobre este lugar]" },
+    { "id": "hoy_cerca_banos", "grupo": "HOY", "texto": "Cerca de ti: baños", "origen": "Cerca de ti" },
+    { "id": "hoy_cerca_fuentes", "grupo": "HOY", "texto": "Cerca de ti: fuentes", "origen": "Cerca de ti" },
+    { "id": "hoy_cerca_comer", "grupo": "HOY", "texto": "Cerca de ti: dónde comer", "origen": "Cerca de ti" },
+    { "id": "hoy_mas_visitas", "grupo": "HOY", "texto": "[+ Más visitas]", "origen": "[+ Más visitas]" },
+    { "id": "hoy_avisos_dia", "grupo": "HOY", "texto": "Los avisos del día", "origen": "Los avisos del día" },
+    { "id": "hoy_aviso_lluvia", "grupo": "HOY", "texto": "El aviso de lluvia con [Ver alternativa]", "origen": "Los avisos del día" },
+
+    { "id": "logros_sellos", "grupo": "Logros", "texto": "Los sellos de Roma y del Vaticano", "origen": "Los sellos de Roma" },
+    { "id": "logros_colecciones", "grupo": "Logros", "texto": "Las 11 colecciones", "origen": "Los sellos de Roma" },
+    { "id": "logros_emblemas", "grupo": "Logros", "texto": "Los 12 emblemas secretos", "origen": "Los sellos de Roma" },
+    { "id": "logros_viajero", "grupo": "Logros", "texto": "Los logros de viajero (países, destinos, maravillas, el tiempo…)", "origen": "Los logros de viajero" },
+    { "id": "logros_boton_flotante", "grupo": "Logros", "texto": "El botón flotante", "origen": "El botón flotante" },
+    { "id": "logros_pantalla", "grupo": "Logros", "texto": "La pantalla de Logros", "origen": "El botón flotante" },
+    { "id": "logros_lo_de_ayer", "grupo": "Logros", "texto": "«Lo de ayer también cuenta» (las fotos de días anteriores)", "origen": "«Lo de ayer también cuenta»" },
+    { "id": "logros_guarda_recuerdo", "grupo": "Logros", "texto": "«Guarda un recuerdo»: las fotos del viaje en la nube", "origen": "«Guarda un recuerdo»" },
+
+    { "id": "despues_resumen_dia", "grupo": "Después del viaje", "texto": "El resumen de cada día", "origen": "El resumen de cada día" },
+    { "id": "despues_resumen_viaje", "grupo": "Después del viaje", "texto": "El resumen del viaje, con la imagen para compartir", "origen": "El resumen de cada día" },
+    { "id": "despues_volver", "grupo": "Después del viaje", "texto": "Volver a Roma: todo sigue (logros, HOY, historias)", "origen": "Volver a Roma" },
+    { "id": "despues_ajustar_vuelos", "grupo": "Después del viaje", "texto": "Ajustar los vuelos del viaje nuevo", "origen": "Ajustar los vuelos del viaje nuevo" },
+    { "id": "despues_ruta_segundo_viaje", "grupo": "Después del viaje", "texto": "La ruta del segundo viaje: la de siempre (con lo visto) o desde cero", "origen": "Ruta del segundo viaje" }
+  ]
+}

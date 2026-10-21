@@ -113,8 +113,8 @@ debe(D.zones.trastevere.etiqueta_barrio === 'Trastevere' && Object.entries(D.zon
     const m = new RegExp(`--${nombre}:\\s*([^;]+);`).exec(bloque)
     return m ? m[1].trim() : null
   }
-  const raiz = css.slice(css.indexOf(':root {'), css.indexOf('.dark {'))
-  const noche = css.slice(css.indexOf('.dark {'), css.indexOf('/* Los títulos'))
+  // (Tanda 10: la app ya no tiene modo noche, así que solo hay un bloque `:root`; las variables `--barrio-lila-noche*` siguen para las tarjetas oscuras de HOY.)
+  const raiz = css.slice(css.indexOf(':root {'), css.indexOf('/* Los títulos'))
   const rgbDe = (t) => t.split(/\s+/).map(Number)
   const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4 }
   const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
@@ -130,15 +130,14 @@ debe(D.zones.trastevere.etiqueta_barrio === 'Trastevere' && Object.entries(D.zon
   }
   const distancia = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b))
   for (const nombre of ['barrio-lila', 'barrio-lila-soft', 'barrio-lila-borde']) {
-    debe(veces(css, new RegExp(`^\\s*--${nombre}:`, 'gm')) === 2, '8 color', `--${nombre} no está definido exactamente dos veces (día y noche) en index.css`)
+    debe(veces(css, new RegExp(`^\\s*--${nombre}:`, 'gm')) === 1, '8 color', `--${nombre} no está definido exactamente una vez en index.css`)
   }
   const texto = triplete('barrio-lila', raiz)
   const suave = triplete('barrio-lila-soft', raiz)
   const textoNoche = triplete('barrio-lila-noche', raiz)
   const suaveNoche = triplete('barrio-lila-noche-soft', raiz)
-  debe(/^var\(--barrio-lila-noche\)$/.test(triplete('barrio-lila', noche) ?? '') && /^var\(--barrio-lila-noche-soft\)$/.test(triplete('barrio-lila-soft', noche) ?? ''), '8 color', 'la variante de noche no sale de las variables `--barrio-lila-noche*` (hay números repetidos)')
   const tarjeta = rgbDe(triplete('bg-card', raiz))
-  const tarjetaNoche = rgbDe(triplete('bg-card', noche))
+  const tarjetaNoche = [24, 30, 44] // la tarjeta oscura de HOY
   debe(contraste(rgbDe(texto), rgbDe(suave)) >= 4.5 && contraste(rgbDe(texto), tarjeta) >= 4.5, '8 color', `el lila de día no llega a contraste 4,5 (${contraste(rgbDe(texto), rgbDe(suave)).toFixed(2)} sobre su fondo)`)
   debe(contraste(rgbDe(textoNoche), rgbDe(suaveNoche)) >= 4.5 && contraste(rgbDe(textoNoche), tarjetaNoche) >= 4.5, '8 color', 'el lila de noche no llega a contraste 4,5')
   const matizLila = matiz(rgbDe(texto))

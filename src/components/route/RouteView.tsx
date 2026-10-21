@@ -22,6 +22,7 @@ import { SeasonCard } from './SeasonCard'
 import { useDatesChange } from './DatesChangeDialog'
 import { DatesCalendarModal } from './DatesCalendarModal'
 import { RouteOverviewMap } from './RouteOverviewMap'
+import { MapaDeRuta } from './MapaDeRuta'
 import { AddToTripScreen } from './freeDay/AddToTripScreen'
 import { OwnDayScreen } from './freeDay/OwnDayScreen'
 import { UndoToast } from './freeDay/UndoToast'
@@ -214,9 +215,11 @@ export function RouteView() {
           <div className="relative shrink-0 max-md:h-[var(--mobile-map-h)] md:h-auto md:flex-none md:w-[var(--map-w)]">
             {showRouteStyleMap ? (
               <>
-                {/* (Tanda 6k, punto 7: el mapa de RUTA, sin el punto del aeropuerto —el encuadre cuenta solo las paradas de los días—; en la ventana de llegada, sí.) */}
-                {segments.length <= 1 ? (
-                  <StopsMapView markers={buildCombinedDaysMarkers(route.days)} center={cityCenter} />
+                {/* (Tanda 10B: el mapa de RUTA ya no es el de DÍAS: con un solo destino enseña la ciudad y los puntos por donde se llega, sin las paradas.) */}
+                {segments.length <= 1 && cityCenter ? (
+                  <MapaDeRuta route={route} centro={cityCenter} />
+                ) : segments.length <= 1 ? (
+                  <StopsMapView markers={[]} center={cityCenter} />
                 ) : (
                   <RouteOverviewMap segments={segments} days={route.days} />
                 )}

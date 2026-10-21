@@ -58,25 +58,5 @@
   "nombre": "«Arrastra y haz zoom» (tinta al 60 %) sobre el mar",
   "r": 3.69,
   "minimo": 3
- },
- {
-  "nombre": "modo noche: oro pálido sobre el fondo",
-  "r": 11.32,
-  "minimo": 4.5
- },
- {
-  "nombre": "modo noche: oro pálido sobre la tarjeta",
-  "r": 10.24,
-  "minimo": 4.5
- },
- {
-  "nombre": "modo noche: la tinta (texto del botón) sobre el oro pálido",
-  "r": 11.12,
-  "minimo": 4.5
- },
- {
-  "nombre": "modo noche: pestaña de la barra (tinta sobre oro pálido)",
-  "r": 11.12,
-  "minimo": 4.5
  }
 ]

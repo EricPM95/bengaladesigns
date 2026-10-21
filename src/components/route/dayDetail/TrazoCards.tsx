@@ -149,7 +149,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
 
   return (
     <div
-      className={`relative flex min-h-[116px] w-full rounded-[18px] border ${dashed ? 'border-dashed' : ''} ${night ? 'border-white/[.06]' : 'border-text/[.08]'} ${!night && !sunset ? 'bg-white dark:bg-bg-hover' : ''}`}
+      className={`relative flex min-h-[116px] w-full rounded-[18px] border ${dashed ? 'border-dashed' : ''} ${night ? 'border-white/[.06]' : 'border-text/[.08]'} ${!night && !sunset ? 'bg-white' : ''}`}
       style={{
         background: night ? NIGHT_CARD : sunset ? SUNSET_CARD : undefined,
         color: ink,
@@ -265,7 +265,7 @@ export function MealCard({ label, reservedTime, name, sub, iconPath, onOpen, onC
     </>
   )
   return (
-    <div className={`relative flex w-full items-center gap-3 rounded-[18px] border border-[#F1D6C9] bg-[#FCEFE8] dark:border-border dark:bg-bg-hover max-[479px]:gap-2.5 ${small ? 'px-3 py-2.5' : 'px-3.5 py-3.5 max-[479px]:px-3 max-[479px]:py-2.5'}`}>
+    <div className={`relative flex w-full items-center gap-3 rounded-[18px] border border-[#F1D6C9] bg-[#FCEFE8] max-[479px]:gap-2.5 ${small ? 'px-3 py-2.5' : 'px-3.5 py-3.5 max-[479px]:px-3 max-[479px]:py-2.5'}`}>
       {onOpen ? (
         <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3">
           {content}

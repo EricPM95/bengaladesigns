@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { logrosActivos, llamar } from '../../lib/logros'
+import { useSinPasePrueba } from '../../store/useSinPasePrueba'
 
 /**
  * /admin/logros (Tanda 8A, apartado 10): una página solo para Eric (la cuenta de administrador sale de una variable del servidor, LOGROS_ADMIN_EMAILS).
@@ -120,7 +121,12 @@ export function AdminLogros() {
         )}
         {pestana === 'Sorteo' && <Sorteo />}
         {pestana === 'Probador' && <Probador />}
-        {pestana === 'Mis pruebas' && <MisPruebas />}
+        {pestana === 'Mis pruebas' && (
+          <>
+            <VermeSinPase />
+            <MisPruebas />
+          </>
+        )}
         {pestana === 'Destinos pedidos' && <DestinosPedidos />}
       </div>
     </main>
@@ -212,6 +218,39 @@ function DestinosPedidos() {
           </li>
         ))}
       </ul>
+    </section>
+  )
+}
+
+/** «Verme como viajero sin pase» (Tanda 10B): apagado por defecto. Encendido, el servidor trata TU cuenta como la de alguien que no ha comprado el pase. Solo tu cuenta; no toca el pase de verdad ni los cobros. */
+function VermeSinPase() {
+  const [activo, setActivo] = useState<boolean | null>(null)
+  const [aviso, setAviso] = useState<string | null>(null)
+  const poner = useSinPasePrueba((state) => state.poner)
+  useEffect(() => {
+    let vivo = true
+    void llamar<{ ok: boolean; activo: boolean }>('/api/pase/sin-pase').then((r) => vivo && setActivo(Boolean(r?.ok && r.activo)))
+    return () => {
+      vivo = false
+    }
+  }, [])
+  const cambiar = async () => {
+    const nuevo = !activo
+    const r = await llamar<{ ok: boolean; activo?: boolean }>('/api/admin/logros/sin-pase', { cuerpo: { activo: nuevo } })
+    if (r?.ok) {
+      setActivo(nuevo)
+      poner(nuevo)
+      setAviso(nuevo ? 'Encendido: la app te trata como a quien no ha comprado el pase. Vuelve a la app (verás la etiqueta «Sin pase (prueba)»).' : 'Apagado: vuelves a tener tu pase.')
+    } else setAviso('No se ha podido guardar (¿está aplicada la migración 0030?). Todo queda como estaba.')
+  }
+  return (
+    <section data-ver-sin-pase className="mb-5">
+      <p className="text-text/60">Para tus pruebas: la app te trata como a alguien que no ha comprado el pase (lo de pago, cerrado, y los avisos que invitan a comprarlo). Solo afecta a tu cuenta; no toca el pase de verdad ni los cobros.</p>
+      <label className="mt-2 flex items-center gap-3 font-semibold">
+        <input type="checkbox" role="switch" checked={Boolean(activo)} disabled={activo === null} onChange={() => void cambiar()} className="h-5 w-5" />
+        Verme como viajero sin pase
+      </label>
+      {aviso && <p className="mt-2" role="status">{aviso}</p>}
     </section>
   )
 }

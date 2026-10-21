@@ -350,7 +350,6 @@ const triplete = (b, v) => {
   return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : null
 }
 const claro = bloque(':root {')
-const noche = bloque('.dark {')
 const tabla = []
 const medir = (nombre, a, b, minimo, regla = 'contraste') => {
   const r = ratio(a, b)
@@ -359,10 +358,8 @@ const medir = (nombre, a, b, minimo, regla = 'contraste') => {
 }
 {
   const T = (v) => triplete(claro, v)
-  const N = (v) => triplete(noche, v)
   debe(T('bg').join() === hexA('#F6EFE0').join() && T('bg-card').join() === hexA('#FFFDF8').join() && T('text').join() === hexA('#1C2230').join(), 'colores', 'crema #F6EFE0, tarjeta #FFFDF8 y tinta #1C2230 en index.css')
   debe(T('accent').join() === hexA('#8B6620').join() && T('accent-hover').join() === hexA('#6E5018').join() && T('oro').join() === hexA('#B58A2E').join(), 'colores', 'oro oscuro (#8B6620, el #8E6820 de Design oscurecido lo justo para llegar a 4,5 sobre el crema), oro profundo #6E5018 y oro claro #B58A2E en index.css, no pantalla a pantalla')
-  debe(N('accent').join() === hexA('#E9C77A').join(), 'colores', 'en modo noche, el oro es el oro pálido #E9C77A')
   debe(T('frambuesa').join() === '189,57,100' && T('accent-green').join() === '47,125,79' && T('accent-red').join() === '204,39,46' && T('barrio-lila').join() === '67,56,137', 'colores', 'el verde de «Visto», el rojo de los avisos y el lila de los barrios no cambian (y el frambuesa sigue disponible con su nombre)')
   const crema = T('bg')
   const tarjeta = T('bg-card')
@@ -379,10 +376,6 @@ const medir = (nombre, a, b, minimo, regla = 'contraste') => {
   medir('texto del botón de oro (profundo) sobre el degradado de la entrada', hexA('#6E5018'), hexA('#EBD9AE'), 4.5)
   medir('letra pequeña de ORIGEN / DESTINO (tinta al 66 %) sobre la tarjeta', mezcla(hexA('#1C2230'), 0.66, tarjeta), tarjeta, 4.5)
   medir('«Arrastra y haz zoom» (tinta al 60 %) sobre el mar', mezcla(hexA('#1C2230'), 0.6, hexA('#BCD8EC')), hexA('#BCD8EC'), 3, 'contraste')
-  medir('modo noche: oro pálido sobre el fondo', N('accent'), N('bg'), 4.5)
-  medir('modo noche: oro pálido sobre la tarjeta', N('accent'), N('bg-card'), 4.5)
-  medir('modo noche: la tinta (texto del botón) sobre el oro pálido', hexA('#14161C'), N('accent'), 4.5)
-  medir('modo noche: pestaña de la barra (tinta sobre oro pálido)', hexA('#14161C'), hexA('#E9C77A'), 4.5)
   const oroClaro = ratio(T('oro'), crema)
   debe(oroClaro < 4.5 && oroClaro > 2.5, 'contraste', `el oro claro sobre crema da ${oroClaro.toFixed(2)}: por eso solo se usa en líneas, pines, la barra de pasos y los puntos, nunca en texto`)
   fs.mkdirSync('scripts/destino/_salidas', { recursive: true })
@@ -441,25 +434,39 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
   }
   debe(igual, 'sin_cambios', `${f} no ha cambiado (colores de los días y etiquetas de tipo de las paradas)`)
 }
-// La barra de abajo: la A (tinta con la pestaña de marfil) y, de noche, la C.
+// La barra de abajo: la A de Marca JUTRIP 03 (tinta con la pestaña de marfil). Es de lo poco oscuro que lleva la app (junto con la franja «Estás en Roma» de RESERVAS).
 {
   const barra = leer('src/components/layout/BottomBar.tsx')
-  debe(/bg-\[#1C2230\]/.test(barra) && /bg-\[#FBF3E2\] text-\[#8E6820\]/.test(barra) && /dark:bg-\[#1E222C\]/.test(barra) && /dark:bg-\[#E9C77A\] dark:text-\[#14161C\]/.test(barra), 'barra', 'la barra de abajo es la A de Marca JUTRIP 03 (tinta, pestaña de marfil) y, de noche, la C (oro pálido)')
+  debe(/bg-\[#1C2230\]/.test(barra) && /bg-\[#FBF3E2\] text-\[#8E6820\]/.test(barra) && !/dark:/.test(barra), 'barra', 'la barra de abajo es la A de Marca JUTRIP 03 (tinta, pestaña de marfil), sin variante de noche')
 }
 
-// HOY (arreglos de después): la tarjeta de la siguiente parada, clara de día y oscura de noche, con [Visto] en verde y [Cómo llegar] en oro; y de noche las tarjetas de avisos y «Cerca de ti» ya no son blancas.
+// Sin modo noche (decidido por Eric): la app sale siempre en claro, también si alguien lo tenía guardado de antes.
+{
+  const css = leer('src/index.css')
+  debe(!/\.dark\b/.test(css.replace(/\/\*[\s\S]*?\*\//g, '')) && !/@media \(prefers-color-scheme/.test(css), 'claro', 'index.css no tiene reglas de modo noche (ni `.dark` ni `prefers-color-scheme`)')
+  const store = leer('src/store/useRouteStore.ts')
+  debe(!/darkMode|toggleDarkMode/.test(store) && /localStorage\.removeItem\('route-planner-dark-mode'\)/.test(store), 'claro', 'el almacén ya no tiene modo noche y borra el ajuste guardado de antes al abrir')
+  debe(!/dark:/.test(Object.values({ a: leer('src/components/route/dayDetail/TrazoCards.tsx'), b: leer('src/components/layout/BottomBar.tsx') }).join('')) && !/darkMode/.test(leer('tailwind.config.ts')), 'claro', 'ni una variante `dark:` en los componentes ni la clave de Tailwind')
+  debe(!/className=\{darkMode|'dark'/.test(leer('src/components/layout/Layout.tsx')), 'claro', 'el contenedor de la app no pone nunca la clase `dark`')
+  // Con el ajuste guardado de antes («true»), la app abre en claro y lo borra.
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off', antes: "try { window.localStorage.setItem('route-planner-dark-mode', 'true') } catch (e) {}", oscuro: true })
+  for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
+  await app.esp(1500)
+  const estado = await app.evaluar("({ guardado: window.localStorage.getItem('route-planner-dark-mode'), conDark: Boolean(document.querySelector('.dark')), fondo: getComputedStyle(document.body).backgroundColor, texto: getComputedStyle(document.body).color })")
+  debe(estado.guardado === null && estado.conDark === false, 'claro', `con el modo noche guardado de antes y el sistema en oscuro, la app abre sin clase dark y borra el ajuste (${JSON.stringify(estado)})`)
+  debe(estado.fondo === 'rgb(246, 239, 224)' && estado.texto === 'rgb(28, 34, 48)', 'claro', `y el fondo es el crema y la letra la tinta (${estado.fondo} · ${estado.texto})`)
+  app.cerrar()
+}
+
+// HOY: la tarjeta de la siguiente parada, clara (Marca JUTRIP 02 · 09), con [Visto] en verde y [Cómo llegar] en oro.
 {
   const piezas = leer('src/components/route/hoy/piezas.tsx')
-  debe(/export function useClaro/.test(piezas) && /#FBF3E2 0%,#EBD9AE 100%/.test(piezas) && /background: '#E9C77A', color: '#14161C'/.test(piezas), 'hoy', 'la tarjeta de HOY: [Cómo llegar] en el oro de marfil de día y en oro pálido con letra de tinta de noche')
+  debe(!/useClaro/.test(piezas) && /#FBF3E2 0%,#EBD9AE 100%/.test(piezas), 'hoy', 'la tarjeta de HOY: [Cómo llegar] en el degradado de marfil con letra de oro profundo, sin gancho de modo noche')
   for (const f of ['src/components/route/hoy/HoyDurante.tsx', 'src/components/route/hoy/v2/HoyDuranteV2.tsx']) {
     const t = leer(f)
-    debe(/claro \? 'bg-\[#FFFDF8\] text-\[#1C2230\]' : 'bg-\[#1C2230\] text-\[#FFFDF8\]'/.test(t) && /data-tarjeta=\{claro/.test(t), 'hoy', `${f}: la tarjeta de la siguiente parada es clara de día y oscura de noche`)
-    debe(/botonOro\(claro\)/.test(t) && /data-boton-visto/.test(t), 'hoy', `${f}: [Cómo llegar] en oro y [Visto] sigue en su sitio, con lo mismo que hace`)
+    debe(/bg-\[#FFFDF8\] text-\[#1C2230\]/.test(t) && /data-tarjeta="clara"/.test(t) && !/claro/.test(t.replace(/\/\/[^\n]*/g, '')), 'hoy', `${f}: la tarjeta de la siguiente parada es siempre clara`)
+    debe(/botonOro\(\)/.test(t) && /data-boton-visto/.test(t), 'hoy', `${f}: [Cómo llegar] en oro y [Visto] sigue en su sitio, con lo mismo que hace`)
   }
-  const css = leer('src/index.css')
-  debe(/\.dark \.bg-white/.test(css) && css.includes('.dark .bg-\\[\\#FFFDF8\\]'), 'noche', 'de noche, las tarjetas blancas fijas (HOY, RESERVAS, EXPLORAR, DÍAS…) pasan a la tarjeta de noche')
-  debe(css.includes('--fondo-llegada') && leer('src/components/route/dayDetail/StopDetailSheet.tsx').includes("noche ? ' dark' : ''"), 'noche', 'de noche, la barra de llegada y la ficha de la parada siguen el modo noche')
-  debe(leer('src/components/route/ExplorePanel.tsx').includes('bg-bg-card p-0'), 'noche', 'de noche, las tarjetas de EXPLORAR son tarjetas de noche')
   const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1&hoy2=off' })
   for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
   for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
@@ -471,19 +478,15 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
     await app.esp(600)
   }
   const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
-  const mira = async (noche) => {
-    await app.evaluar(`${store}.then((s) => { if (s.darkMode !== ${noche}) s.toggleDarkMode(); s.setActiveDayId(null); s.setMode('today'); return true })`)
-    await app.esp(2500)
-    return app.evaluar("(() => { const t = document.querySelector('[data-hoy-siguiente]'); const c = document.querySelector('[data-avisos-de-cierre]'); const v = document.querySelector('[data-boton-visto]'); return { tarjeta: t?.getAttribute('data-tarjeta'), fondoTarjeta: t ? getComputedStyle(t).backgroundColor : null, fondoAvisos: c ? getComputedStyle(c).backgroundColor : null, letraAvisos: c ? getComputedStyle(c.querySelector('p')).color : null, visto: v ? getComputedStyle(v).backgroundColor : null } })()")
-  }
-  const dia = await mira(false)
-  debe(dia.tarjeta === 'clara' && dia.fondoTarjeta === 'rgb(255, 253, 248)', 'hoy', `de día la tarjeta de la siguiente parada es clara (${dia.fondoTarjeta})`)
-  debe(Boolean(dia.visto) && dia.visto !== 'rgba(0, 0, 0, 0)', 'hoy', `y [Visto] va en verde (${dia.visto})`)
-  const noche = await mira(true)
-  debe(noche.tarjeta === 'oscura' && noche.fondoTarjeta === 'rgb(28, 34, 48)', 'hoy', `de noche, la tarjeta oscura (${noche.fondoTarjeta})`)
-  debe(noche.fondoAvisos !== 'rgb(255, 255, 255)' && noche.fondoAvisos !== 'rgb(255, 253, 248)', 'hoy', `de noche, la tarjeta de los avisos «cierra hoy» no es blanca (${noche.fondoAvisos}, letra ${noche.letraAvisos})`)
+  await app.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('today'); return true })`)
+  await app.esp(2500)
+  const hoy = await app.evaluar("(() => { const t = document.querySelector('[data-hoy-siguiente]'); const c = document.querySelector('[data-avisos-de-cierre]'); const v = document.querySelector('[data-boton-visto]'); return { tarjeta: t?.getAttribute('data-tarjeta'), fondoTarjeta: t ? getComputedStyle(t).backgroundColor : null, fondoAvisos: c ? getComputedStyle(c).backgroundColor : null, visto: v ? getComputedStyle(v).backgroundColor : null } })()")
+  debe(hoy.tarjeta === 'clara' && hoy.fondoTarjeta === 'rgb(255, 253, 248)', 'hoy', `la tarjeta de la siguiente parada es clara (${hoy.fondoTarjeta})`)
+  debe(Boolean(hoy.visto) && hoy.visto !== 'rgba(0, 0, 0, 0)', 'hoy', `y [Visto] va en verde (${hoy.visto})`)
+  debe(hoy.fondoAvisos === 'rgb(255, 255, 255)' || hoy.fondoAvisos === 'rgb(255, 253, 248)', 'hoy', `y los avisos de «cierra hoy» son una tarjeta blanca (${hoy.fondoAvisos})`)
   app.cerrar()
 }
+
 
 console.log(`\nPrueba de JUTRIP: ${comprobaciones} comprobaciones · ${fallos.length} fallos`)
 for (const f of fallos) console.log(`  ✗ [${f.regla}] ${f.texto}`)

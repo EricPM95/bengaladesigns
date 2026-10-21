@@ -52,7 +52,7 @@
   --barrio-lila: 67 56 137;
   --barrio-lila-soft: 228 228 255;
   --barrio-lila-borde: 177 176 239;
-  /* La variante de noche, definida una vez aquí: la usa el modo noche (`.dark`) y las tarjetas oscuras de la app (HOY), que son oscuras también de día. */
+  /* La variante de noche, definida una vez aquí: la usan las tarjetas oscuras de la app (HOY), que son oscuras también de día. */
   --barrio-lila-noche: 199 198 255;
   --barrio-lila-noche-soft: 43 41 75;
   --barrio-lila-noche-borde: 81 77 133;
@@ -64,76 +64,10 @@
   --text-muted: 150 146 139;
   --border: 223 218 210;
   --border-accent: 210 193 162;
-  /* El fondo de las tarjetas de llegada y vuelta (el billete y la barra «+ Vuelo»): un azul muy claro que se funde con la tarjeta; de noche, un azul noche. */
+  /* El fondo de las tarjetas de llegada y vuelta (el billete y la barra «+ Vuelo»): un azul muy claro que se funde con la tarjeta. */
   --fondo-llegada: linear-gradient(100deg, oklch(0.97 0.03 230), #ffffff 60%);
 }
 
-.dark {
-  /* Modo noche: el azul noche del formulario Trazo; el oro pasa a ser el ORO PÁLIDO #E9C77A (Marca JUTRIP 01) y lo demás del modo noche no cambia.
-     --accent #E9C77A -> 233 199 122 · hover #F3D88F -> 243 216 143 · el frambuesa claro de siempre en --frambuesa (oklch(0.70 0.15 8) -> 234 114 141).
-     Con relleno de botón, el texto blanco no llega a 4,5 sobre el oro pálido: en noche el texto de un botón de oro es la tinta (regla de más abajo). */
-  --bg: 16 20 30;
-  --bg-card: 24 30 44;
-  --bg-hover: 34 41 58;
-  --accent: 233 199 122;
-  --accent-hover: 243 216 143;
-  --accent-soft: 66 56 34;
-  --accent-warm: 233 199 122;
-  --accent-gold: 247 172 77;
-  --accent-red: 248 113 113;
-  --accent-lilac: 46 38 64;
-  --oro: 233 199 122;
-  --frambuesa: 234 114 141;
-  --frambuesa-hover: 245 154 161;
-  --frambuesa-soft: 70 48 65;
-  /* Noche: texto oklch(0.85 0.09 285) -> 199 198 255 sobre fondo oklch(0.30 0.06 285) -> 43 41 75 (8,51; sobre la tarjeta de noche 10,27); borde oklch(0.45 0.09 285) -> 81 77 133. */
-  --barrio-lila: var(--barrio-lila-noche);
-  --barrio-lila-soft: var(--barrio-lila-noche-soft);
-  --barrio-lila-borde: var(--barrio-lila-noche-borde);
-  --accent-green: 96 190 135;
-  --accent-green-soft: 28 58 42;
-  --text: 243 238 228;
-  --text-soft: 190 184 172;
-  --text-muted: 140 136 128;
-  --border: 46 52 68;
-  --border-accent: 97 89 71;
-  --fondo-llegada: linear-gradient(100deg, rgb(30 44 70), rgb(var(--bg-card)) 60%);
-}
-
-/* En modo noche, un botón de relleno de oro lleva el texto en tinta (el blanco sobre el oro pálido no se lee). */
-.dark .bg-accent.text-white,
-.dark .bg-accent-hover.text-white {
-  color: #14161c;
-}
-
-/* El modo noche de las tarjetas «fijas» (Tanda 10): lo que se pintó con el blanco o el marfil escritos a mano (HOY: los avisos de «cierra hoy a las 18:30», «Cerca de ti», la lista; RESERVAS, EXPLORAR, DÍAS…)
-   pasa de noche a la tarjeta de noche y su letra de tinta, a la letra clara. Lo que va DENTRO de una tarjeta oscura (el botón [Pon tus fechas], por ejemplo) se queda como estaba. */
-.dark .bg-white,
-.dark .bg-\[\#FFFDF8\] {
-  background-color: rgb(var(--bg-card));
-}
-.dark .bg-\[\#F1EADC\],
-.dark .bg-\[\#F5EFE4\],
-.dark .bg-\[\#FFFEFB\],
-.dark .bg-\[\#F8F3EA\],
-.dark .bg-\[\#F3EEE4\],
-.dark .bg-\[\#EDE4D3\],
-.dark .bg-\[\#E4D9C4\] {
-  background-color: rgb(var(--bg-hover));
-}
-.dark .text-\[\#1C2230\] {
-  color: rgb(var(--text));
-}
-.dark .text-\[\#1C2230\]\/80 {
-  color: rgb(var(--text) / 0.8);
-}
-.dark .bg-\[\#1C2230\] .bg-\[\#FFFDF8\] {
-  background-color: #fffdf8;
-}
-.dark .bg-\[\#1C2230\] .bg-\[\#FFFDF8\] .text-\[\#1C2230\],
-.dark .bg-\[\#1C2230\] .bg-\[\#FFFDF8\].text-\[\#1C2230\] {
-  color: #1c2230;
-}
 
 /* Los títulos van en Instrument Serif, que solo tiene un peso: sin negrita inventada por el navegador. */
 .font-display {
@@ -144,9 +78,6 @@
 /* Los mapas, en tono papel como el diseño (solo el fondo del mapa: los pines no llevan filtro). */
 .mapboxgl-canvas {
   filter: sepia(0.28) saturate(0.7) brightness(1.04) contrast(0.95);
-}
-.dark .mapboxgl-canvas {
-  filter: none;
 }
 
 * {
