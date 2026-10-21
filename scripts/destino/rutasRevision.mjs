@@ -4,6 +4,7 @@
 // las comidas y cenas con su restaurante y los avisos de cada parada— se lee de ahí, no se recalcula. De los datos del motor salen el «por qué» de cada parada, el título del día escrito y los cierres.
 // Solo saca y enseña: no toca el motor ni ningún dato.
 //   API_URL=http://localhost:8787 node scripts/destino/rutasRevision.mjs [--solo=3:A:2026-11-09] [--procesos=4]
+//   Con `--set=largos` saca los viajes largos (docs/dias/RUTAS_REVISION_LARGOS.html y .json): 4 días con el día 4 de excursión y 5 y 6 días con el día 4 en Roma y con excursión (`--solo=5:roma:A:2026-11-09`).
 // Hace falta el servidor de la app (npm run server) y `npm run dev`. Escribe docs/dias/RUTAS_REVISION.json (una fila por parada) y docs/dias/RUTAS_REVISION.html (la página, con los datos dentro).
 import { spawn } from 'node:child_process'
 import fs from 'node:fs'
@@ -15,7 +16,14 @@ import { escribirPagina } from './rutasRevisionPagina.mjs'
 
 const args = process.argv.slice(2)
 const opcion = (n) => args.find((a) => a.startsWith(`--${n}=`))?.split('=')[1] ?? null
-const solo = opcion('solo') // «3:A:2026-11-09»
+const solo = opcion('solo') // «3:A:2026-11-09» (con --set=largos: «5:roma:A:2026-11-09»)
+const LARGOS = opcion('set') === 'largos'
+// `--reusar`: no vuelve a sacar las rutas; rehace las marcas y la página con las ya guardadas (scripts/destino/_rutasRevisionLargosViajes.json).
+const REUSAR = args.includes('--reusar')
+const quitaRepetida = (v) => {
+  for (const d of v.dias) for (const p of d.paradas) p.marcas = (p.marcas ?? []).filter((m) => m !== 'repetida')
+  return v
+}
 const parte = opcion('parte') // «1/4» (lo usan los procesos hijos)
 const PROCESOS = Number(opcion('procesos') ?? 4)
 
@@ -29,32 +37,36 @@ const COMBOS = {
   F: { nombre: 'Free Tour + Naturaleza y Vistas', pos: ['free_tour', 'naturaleza_vistas'] },
 }
 const DIAS = [2, 3, 4]
+// Los viajes largos (Tanda de revisión de largos): con 4 días, el día 4 de excursión; con 5 y 6, el día 4 en Roma y de excursión (el interruptor [Roma | Excursión] del día 4: `answers.diaCuatro`).
+const GRUPOS_LARGOS = [{ n: 4, dia4: 'excursion' }, { n: 5, dia4: 'roma' }, { n: 5, dia4: 'excursion' }, { n: 6, dia4: 'roma' }, { n: 6, dia4: 'excursion' }]
+const clave = (v) => (v.dia4 ? `${v.n}:${v.dia4}:${v.combo}:${v.inicio}` : `${v.n}:${v.combo}:${v.inicio}`)
 const INICIOS = ['2026-11-09', '2026-11-10', '2026-11-11', '2026-11-12', '2026-11-13', '2026-11-14', '2026-11-15']
 const NOMBRE_DIA_SEMANA = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const diaSemana = (iso) => NOMBRE_DIA_SEMANA[new Date(`${iso}T12:00:00Z`).getUTCDay()]
 const suma = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 // Sin vuelos, sin alojamiento y sin monumentos a mano: el contexto de transporte vacío y ningún lugar elegido.
 const CONTEXTO = { archetype: null, is_region: null, transport_option: null, vehicle_type: null, vehicle_ownership: null, accommodation_mode: null, travel_mode: null, pase_dominante: null, vehiculo_altamente_recomendado: false, travel_pass_confirmed: null }
-const respuestasDe = (n, combo, inicio) => {
+const respuestasDe = (n, combo, inicio, dia4 = null) => {
   const pos = ['imprescindibles', ...COMBOS[combo].pos]
-  return { pos, answers: { origin: 'Madrid', days: n + 1, dateRange: { start: inicio, end: suma(inicio, n) }, companion: 'couple', experiencesPositive: pos, experiencesNegative: [], experiences: null, chronotype: 'normal', budgetLevel: 'comfortable', ...(n === 4 ? { diaCuatro: 'roma' } : {}) } }
+  return { pos, answers: { origin: 'Madrid', days: n + 1, dateRange: { start: inicio, end: suma(inicio, n) }, companion: 'couple', experiencesPositive: pos, experiencesNegative: [], experiences: null, chronotype: 'normal', budgetLevel: 'comfortable', ...(dia4 ? { diaCuatro: dia4 } : n === 4 ? { diaCuatro: 'roma' } : {}) } }
 }
 
 const lista = []
-for (const n of DIAS) for (const combo of Object.keys(COMBOS)) for (const inicio of INICIOS) lista.push({ n, combo, inicio })
+if (LARGOS) for (const g of GRUPOS_LARGOS) for (const combo of Object.keys(COMBOS)) for (const inicio of INICIOS) lista.push({ n: g.n, dia4: g.dia4, combo, inicio })
+else for (const n of DIAS) for (const combo of Object.keys(COMBOS)) for (const inicio of INICIOS) lista.push({ n, combo, inicio })
 
 /* ═════════════════════════ El proceso principal: reparte el trabajo y lo junta ═════════════════════════ */
 if (!parte) {
-  const aHacer = solo ? lista.filter((v) => `${v.n}:${v.combo}:${v.inicio}` === solo) : lista
+  const aHacer = solo ? lista.filter((v) => clave(v) === solo) : lista
   const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'rutasRevision-'))
   const hijos = Array.from({ length: Math.min(PROCESOS, aHacer.length) }, (_, i) => i)
   console.log(`Sacando ${aHacer.length} rutas con la generación de la app y abriéndolas en DÍAS (${hijos.length} procesos)…`)
   const t0 = Date.now()
-  await Promise.all(
+  if (!REUSAR) await Promise.all(
     hijos.map(
       (i) =>
         new Promise((ok, no) => {
-          const h = spawn(process.execPath, ['scripts/destino/rutasRevision.mjs', `--parte=${i}/${hijos.length}`, `--salida=${carpeta}`, ...(solo ? [`--solo=${solo}`] : [])], { env: process.env, stdio: ['ignore', 'pipe', 'pipe'] })
+          const h = spawn(process.execPath, ['scripts/destino/rutasRevision.mjs', `--parte=${i}/${hijos.length}`, `--salida=${carpeta}`, ...(solo ? [`--solo=${solo}`] : []), ...(LARGOS ? ['--set=largos'] : [])], { env: process.env, stdio: ['ignore', 'pipe', 'pipe'] })
           h.stdout.on('data', (d) => process.stdout.write(`[${i}] ${d}`))
           h.stderr.on('data', (d) => process.stderr.write(`[${i}!] ${d}`))
           h.on('close', (c) => (c === 0 ? ok() : no(new Error(`el proceso ${i} acabó con ${c}`))))
@@ -62,19 +74,20 @@ if (!parte) {
     ),
   )
   console.log(`Hecho en ${Math.round((Date.now() - t0) / 1000)} s.`)
-  const viajes = hijos.flatMap((i) => JSON.parse(fs.readFileSync(path.join(carpeta, `parte_${i}.json`), 'utf8'))).sort((a, b) => lista.findIndex((x) => x.n === a.n && x.combo === a.combo && x.inicio === a.inicio) - lista.findIndex((x) => x.n === b.n && x.combo === b.combo && x.inicio === b.inicio))
+  const viajes = (REUSAR ? JSON.parse(fs.readFileSync('scripts/destino/_rutasRevisionLargosViajes.json', 'utf8')).viajes.map(quitaRepetida) : hijos.flatMap((i) => JSON.parse(fs.readFileSync(path.join(carpeta, `parte_${i}.json`), 'utf8'))).sort((a, b) => lista.findIndex((x) => clave(x) === clave(a)) - lista.findIndex((x) => clave(x) === clave(b))))
   fs.rmSync(carpeta, { recursive: true, force: true })
 
   /* ───────────── Lo que cambia respecto a la base (A, mismos días y mismo inicio) y las marcas de viaje ───────────── */
   const esParada = (p) => p.tipo === 'parada' || p.tipo === 'noche' || p.tipo === 'free_tour'
   const nombresDe = (v) => v.dias.flatMap((d) => d.paradas.filter(esParada).map((p) => p.nombre_app))
   for (const v of viajes) {
-    const base = viajes.find((b) => b.n === v.n && b.combo === 'A' && b.inicio === v.inicio) ?? null
+    const base = viajes.find((b) => b.n === v.n && (b.dia4 ?? null) === (v.dia4 ?? null) && b.combo === 'A' && b.inicio === v.inicio) ?? null
     const baseNombres = new Set(base ? nombresDe(base) : [])
     const nombres = new Set(nombresDe(v))
     v.sale = base && v !== base ? [...baseNombres].filter((x) => !nombres.has(x)) : []
     // (Repetida = el mismo sitio dos veces en el mismo viaje, ambas de día o ambas de noche: Coliseo de día y «Coliseo (noche)» son dos cosas distintas en la app.)
-    const llave = (p) => `${p.tipo === 'noche' ? 'noche' : 'dia'}|${p.nombre_base ?? p.nombre_app}`
+    // (En los largos, el Reloj de agua del Pincio —una parada del día escrito dentro de Villa Borghese— no cuenta como Villa Borghese repetida: era un falso aviso.)
+    const llave = (p) => `${p.tipo === 'noche' ? 'noche' : 'dia'}|${LARGOS && String(p.titulo_escrito ?? '').toLowerCase().includes('reloj de agua del pincio') ? p.titulo_escrito : (p.nombre_base ?? p.nombre_app)}`
     const conteo = new Map()
     for (const p of v.dias.flatMap((d) => d.paradas.filter(esParada))) conteo.set(llave(p), (conteo.get(llave(p)) ?? 0) + 1)
     for (const d of v.dias) {
@@ -102,13 +115,14 @@ if (!parte) {
     for (const m of en) resumen[m].rutas++
   }
   const filas = []
-  for (const v of viajes) for (const d of v.dias) d.paradas.forEach((p, i) => filas.push({ dias_del_viaje: v.n, combinacion: v.combo, experiencias: v.nombre_combo, inicio: v.inicio, dia_semana_inicio: v.dia_semana_inicio, dia: d.numero, fecha: d.fecha, nombre_del_dia: d.nombre, orden: i + 1, ...p, marcas_dia: d.marcas }))
+  for (const v of viajes) for (const d of v.dias) d.paradas.forEach((p, i) => filas.push({ dias_del_viaje: v.n, ...(v.dia4 ? { dia_4: v.dia4 } : {}), combinacion: v.combo, experiencias: v.nombre_combo, inicio: v.inicio, dia_semana_inicio: v.dia_semana_inicio, dia: d.numero, fecha: d.fecha, nombre_del_dia: d.nombre, orden: i + 1, ...p, marcas_dia: d.marcas }))
   const generado = new Date().toISOString().slice(0, 10)
+  const NOMBRE = LARGOS ? 'RUTAS_REVISION_LARGOS' : 'RUTAS_REVISION'
   if (!solo) {
-    fs.writeFileSync('docs/dias/RUTAS_REVISION.json', JSON.stringify({ generado, fuente: 'generación de la app (runGeneration) abierta en DÍAS dentro de la app; sin vuelos, sin alojamiento, sin monumentos a mano', umbrales: { andando_min: 20, dia_acaba_tarde: '22:45' }, resumen, rutas: viajes.length, filas }))
-    fs.writeFileSync('scripts/destino/_rutasRevisionViajes.json', JSON.stringify({ resumen, viajes, generado }))
-    console.log(`RUTAS_REVISION.html: ${Math.round(escribirPagina({ resumen, viajes, generado }) / 1024)} KB`)
-    console.log(`RUTAS_REVISION.json: ${filas.length} filas · ${viajes.length} rutas`)
+    fs.writeFileSync(`docs/dias/${NOMBRE}.json`, JSON.stringify({ generado, fuente: 'generación de la app (runGeneration) abierta en DÍAS dentro de la app; sin vuelos, sin alojamiento, sin monumentos a mano', umbrales: { andando_min: 20, dia_acaba_tarde: '22:45' }, resumen, rutas: viajes.length, filas }))
+    fs.writeFileSync(LARGOS ? 'scripts/destino/_rutasRevisionLargosViajes.json' : 'scripts/destino/_rutasRevisionViajes.json', JSON.stringify({ resumen, viajes, generado }))
+    console.log(`${NOMBRE}.html: ${Math.round(escribirPagina({ resumen, viajes, generado, largos: LARGOS }) / 1024)} KB`)
+    console.log(`${NOMBRE}.json: ${filas.length} filas · ${viajes.length} rutas`)
     console.log('Marcas:', Object.entries(resumen).map(([m, r]) => `${m} ${r.total} (en ${r.rutas} rutas)`).join(' · '))
     const conAlertas = viajes.filter((v) => v.alertas?.length)
     if (conAlertas.length) console.log(`Rutas donde la pantalla y el motor no cuadran: ${conAlertas.length}`)
@@ -119,7 +133,7 @@ if (!parte) {
 /* ═════════════════════════ Un proceso hijo: sus rutas (motor + pantalla de DÍAS) ═════════════════════════ */
 const [miParte, totalPartes] = parte.split('/').map(Number)
 const salida = opcion('salida')
-const mias = (solo ? lista.filter((v) => `${v.n}:${v.combo}:${v.inicio}` === solo) : lista).filter((_, i) => i % totalPartes === miParte)
+const mias = (solo ? lista.filter((v) => clave(v) === solo) : lista).filter((_, i) => i % totalPartes === miParte)
 
 const { M: B, limpiar } = await prepararSSR('scripts/destino/_rutas126_entrada.ts')
 const App = B.M
@@ -142,8 +156,8 @@ const aMin = (hhmm) => (hhmm && /^\d{1,2}:\d{2}$/.test(hhmm) ? Number(hhmm.split
 const app = await abrirApp()
 
 /** Lo que el motor da de una ruta: la misma generación que hace la app. */
-async function sacarRuta(n, combo, inicio) {
-  const { answers } = respuestasDe(n, combo, inicio)
+async function sacarRuta(n, combo, inicio, dia4 = null) {
+  const { answers } = respuestasDe(n, combo, inicio, dia4)
   answers.experiences = App.deriveLegacyExperienceIds(answers.experiencesPositive)
   let ultimo = null
   const route = await App.runGeneration({ destination: 'Roma', answers, transportContext: CONTEXTO, mustIncludePlaces: [] }, null, async (c) => {
@@ -153,8 +167,8 @@ async function sacarRuta(n, combo, inicio) {
 }
 
 /** La pantalla de DÍAS: crea el mismo viaje DENTRO de la app, abre cada día y lee lo que enseña (el orden de la pantalla, con sus trayectos, comidas y avisos). */
-async function leerDeLaApp(n, combo, inicio) {
-  const { answers } = respuestasDe(n, combo, inicio)
+async function leerDeLaApp(n, combo, inicio, dia4 = null) {
+  const { answers } = respuestasDe(n, combo, inicio, dia4)
   return app.evaluar(`(async () => {
     const orq = await import('/src/lib/routeGenerationOrchestrator.ts')
     const { useRouteStore } = await import('/src/store/useRouteStore.ts')
@@ -291,7 +305,9 @@ const UMBRAL_TARDE = 22 * 60 + 45 // un día que acaba a las 22:45 o más tarde 
 const GENERICAS = new Set(['iglesia', 'basilica', 'plaza', 'piazza', 'palacio', 'museo', 'museos', 'fuente', 'fontana', 'parque', 'calle', 'santa', 'maria', 'paseo', 'terraza', 'mirador', 'puente', 'barrio', 'tiempo', 'libre', 'noche', 'desde', 'junto', 'para', 'sobre', 'entre', 'hasta', 'dentro'])
 const significativas = (t) => new Set(norm(t).split(/[^a-z0-9]+/).filter((w) => w.length >= 4 && !GENERICAS.has(w)))
 /** El título del día escrito no tiene NADA en común con el nombre del sitio (p. ej. «Reloj de agua del Pincio» frente a «Parque de Villa Borghese»). */
+const PARES_FALSOS = [['parque de villa borghese', 'reloj de agua del pincio'], ['basilica de santa maria la mayor', 'santa maria maggiore']]
 const tituloAjeno = (base, titulo) => {
+  if (LARGOS && PARES_FALSOS.some(([a, b]) => norm(base).includes(a) && norm(titulo).includes(b))) return false
   const a = significativas(base)
   const b = significativas(titulo)
   return ![...a].some((w) => b.has(w))
@@ -397,11 +413,11 @@ function filasDeRuta(n, combo, inicio, route, crudo, delaApp) {
 const viajes = []
 const t0 = Date.now()
 for (const [i, v] of mias.entries()) {
-  const { route, crudo } = await sacarRuta(v.n, v.combo, v.inicio)
-  const delaApp = await leerDeLaApp(v.n, v.combo, v.inicio)
+  const { route, crudo } = await sacarRuta(v.n, v.combo, v.inicio, v.dia4 ?? null)
+  const delaApp = await leerDeLaApp(v.n, v.combo, v.inicio, v.dia4 ?? null)
   const { dias, alertas } = filasDeRuta(v.n, v.combo, v.inicio, route, crudo, delaApp)
   viajes.push({ ...v, nombre_combo: COMBOS[v.combo].nombre, dia_semana_inicio: diaSemana(v.inicio), alertas, dias })
-  console.log(`${i + 1}/${mias.length} ${v.n}:${v.combo}:${v.inicio} (${Math.round((Date.now() - t0) / 1000)} s)${alertas.length ? ' · ' + alertas.join(' | ') : ''}`)
+  console.log(`${i + 1}/${mias.length} ${clave(v)} (${Math.round((Date.now() - t0) / 1000)} s)${alertas.length ? ' · ' + alertas.join(' | ') : ''}`)
 }
 fs.writeFileSync(path.join(salida, `parte_${miParte}.json`), JSON.stringify(viajes))
 app.cerrar()

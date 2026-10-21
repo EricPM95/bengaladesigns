@@ -3,14 +3,14 @@
 // Una sola página, sin nada de fuera, que se abre sola en el navegador: los datos van dentro. Solo enseña: no cambia ninguna ruta.
 import fs from 'node:fs'
 
-export function escribirPagina({ resumen, viajes, generado }) {
-  const datos = JSON.stringify({ resumen, viajes, generado }).replace(/</g, '\\u003c')
+export function escribirPagina({ resumen, viajes, generado, largos = false }) {
+  const datos = JSON.stringify({ resumen, viajes, generado, largos }).replace(/</g, '\\u003c')
   const html = `<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rutas de Roma para revisar</title>
+<title>${largos ? 'Viajes largos de Roma para revisar' : 'Rutas de Roma para revisar'}</title>
 <style>
 :root{--fondo:#f5efe4;--tarjeta:#fffdf8;--tinta:#1c2230;--suave:rgba(28,34,48,.6);--linea:rgba(28,34,48,.12);
 --titulo:#7c3aed;--repetida:#ea580c;--cerrada:#dc2626;--andando:#2563eb;--tarde:#92400e;--entra:#16a34a;--entra-fondo:#dcfce7}
@@ -65,9 +65,10 @@ summary{cursor:pointer;font-weight:600}
 </head>
 <body>
 <header>
-<h1>Rutas de Roma, tal cual salen en la app</h1>
+<h1>${largos ? 'Viajes largos de Roma, tal cual salen en la app' : 'Rutas de Roma, tal cual salen en la app'}</h1>
 <div class="selectores">
  <label>Días<select id="dias"></select></label>
+ ${largos ? '<label>Día 4<select id="dia4"></select></label>' : ''}
  <label>Experiencias<select id="combo"></select></label>
  <label>Día de inicio<select id="inicio"></select></label>
 </div>
@@ -86,12 +87,15 @@ var V=D.viajes, R=D.resumen;
 var NOMBRES={titulo:'Nombre ≠ título escrito',repetida:'Parada repetida',cerrada:'Cerrada ese día',andando:'Andando > 20 min',tarde:'Día muy tarde'};
 var ORDEN=['titulo','repetida','cerrada','andando','tarde'];
 var COMBOS={};V.forEach(function(v){COMBOS[v.combo]=v.nombre_combo});
-var elD=document.getElementById('dias'),elC=document.getElementById('combo'),elI=document.getElementById('inicio'),elR=document.getElementById('ruta'),elM=document.getElementById('marcas'),elN=document.getElementById('nota');
-[2,3,4].forEach(function(n){elD.add(new Option(n+' días',n))});
+var LARGOS=!!D.largos;
+var elD=document.getElementById('dias'),elD4=document.getElementById('dia4'),elC=document.getElementById('combo'),elI=document.getElementById('inicio'),elR=document.getElementById('ruta'),elM=document.getElementById('marcas'),elN=document.getElementById('nota');
+(LARGOS?[4,5,6]:[2,3,4]).forEach(function(n){elD.add(new Option(n+' días',n))});
+function llenaDia4(){if(!LARGOS)return;var antes=elD4.value;elD4.innerHTML='';if(elD.value!=='4')elD4.add(new Option('Roma','roma'));elD4.add(new Option('Excursión','excursion'));if(antes&&Array.prototype.some.call(elD4.options,function(o){return o.value===antes}))elD4.value=antes}
+llenaDia4();
 Object.keys(COMBOS).forEach(function(k){elC.add(new Option(k+' · '+COMBOS[k]+(k==='A'?' (la base)':''),k))});
 var iniciosVistos={};V.forEach(function(v){if(!iniciosVistos[v.inicio]){iniciosVistos[v.inicio]=1;var f=v.inicio.split('-');elI.add(new Option(v.dia_semana_inicio+' '+Number(f[2])+' nov',v.inicio))}});
 function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function actual(){return V.find(function(v){return v.n==elD.value&&v.combo===elC.value&&v.inicio===elI.value})}
+function actual(){return V.find(function(v){return v.n==elD.value&&(!LARGOS||v.dia4===elD4.value)&&v.combo===elC.value&&v.inicio===elI.value})}
 function indiceDe(v){return V.indexOf(v)}
 function tieneMarca(v,m){return v.dias.some(function(d){return (m==='tarde'&&d.acaba_tarde)||d.paradas.some(function(p){return (p.marcas||[]).indexOf(m)>=0})})}
 function pintaMarcas(){
@@ -112,9 +116,9 @@ function siguiente(m){
  // Ya no quedan en esta ruta: la siguiente ruta que tenga esa marca.
  var v=actual(),k=indiceDe(v);
  for(var j=1;j<=V.length;j++){var w=V[(k+j)%V.length];var ok=m?tieneMarca(w,m):ORDEN.some(function(x){return tieneMarca(w,x)});
-  if(ok){elD.value=w.n;elC.value=w.combo;elI.value=w.inicio;ultima=null;pinta();var l=marcasDe(m);if(l.length)saltaA(l[0]);return}}}
+  if(ok){elD.value=w.n;llenaDia4();if(LARGOS)elD4.value=w.dia4;elC.value=w.combo;elI.value=w.inicio;ultima=null;pinta();var l=marcasDe(m);if(l.length)saltaA(l[0]);return}}}
 function pinta(){
- var v=actual();location.hash=v.n+'-'+v.combo+'-'+v.inicio;
+ var v=actual();location.hash=v.n+'-'+(LARGOS?v.dia4+'-':'')+v.combo+'-'+v.inicio;
  var h='';
  h+='<div class="fila">';
  v.dias.forEach(function(d){
@@ -147,27 +151,28 @@ function pinta(){
   if((d.deja_fuera||[]).length)h+='<details open><summary>No te dio tiempo</summary><p>'+d.deja_fuera.map(esc).join(', ')+'</p></details>';
   h+='</section>'});
  h+='</div>';
- h+='<div class="sale"><h3>'+(v.combo==='A'?'Es la base (A): contra ella se compara lo demás.':'Lo que sale respecto a la base (A, '+v.n+' días, mismo inicio)')+'</h3>';
+ h+='<div class="sale"><h3>'+(v.combo==='A'?'Es la base (A): contra ella se compara lo demás.':'Lo que sale respecto a la base (A, '+v.n+' días'+(LARGOS?', día 4: '+(v.dia4==='roma'?'Roma':'excursión'):'')+', mismo inicio)')+'</h3>';
  if(v.combo!=='A'){h+=(v.sale&&v.sale.length)?v.sale.map(function(x){return '<span>'+esc(x)+'</span>'}).join(''):'<em>Nada: las mismas paradas, en otro orden o con otras comidas.</em>'}
  h+='</div>';
  elR.innerHTML=h;ultima=null;
  var tot=0;v.dias.forEach(function(d){d.paradas.forEach(function(p){tot+=(p.marcas||[]).length});if(d.acaba_tarde)tot++});
- elN.textContent=v.n+' días · '+v.nombre_combo+' · empieza el '+v.dia_semana_inicio+' · '+tot+' marcas en esta ruta ('+V.length+' rutas en total; datos del '+D.generado+').'}
-[elD,elC,elI].forEach(function(e){e.onchange=function(){pinta()}});
+ elN.textContent=v.n+' días'+(LARGOS?' (día 4: '+(v.dia4==='roma'?'Roma':'excursión')+')':'')+' · '+v.nombre_combo+' · empieza el '+v.dia_semana_inicio+' · '+tot+' marcas en esta ruta ('+V.length+' rutas en total; datos del '+D.generado+').'}
+elD.onchange=function(){llenaDia4();pinta()};[elC,elI].concat(LARGOS?[elD4]:[]).forEach(function(e){e.onchange=function(){pinta()}});
 var h0=(location.hash||'').slice(1).split('-');
-if(h0.length>=5){elD.value=h0[0];elC.value=h0[1];elI.value=h0.slice(2).join('-')}else{elD.value=3;elC.value='A';elI.selectedIndex=0}
+if(LARGOS&&h0.length>=6){elD.value=h0[0];llenaDia4();elD4.value=h0[1];elC.value=h0[2];elI.value=h0.slice(3).join('-')}else if(!LARGOS&&h0.length>=5){elD.value=h0[0];elC.value=h0[1];elI.value=h0.slice(2).join('-')}else{elD.value=LARGOS?5:3;llenaDia4();if(LARGOS)elD4.value='roma';elC.value='A';elI.selectedIndex=0}
 pintaMarcas();pinta();
 })();
 </script>
 </body>
 </html>
 `
-  fs.writeFileSync('docs/dias/RUTAS_REVISION.html', html)
+  fs.writeFileSync(largos ? 'docs/dias/RUTAS_REVISION_LARGOS.html' : 'docs/dias/RUTAS_REVISION.html', html)
   return html.length
 }
 
 if (process.argv[1] && process.argv[1].endsWith('rutasRevisionPagina.mjs')) {
-  const d = JSON.parse(fs.readFileSync('scripts/destino/_rutasRevisionViajes.json', 'utf8'))
-  const bytes = escribirPagina({ resumen: d.resumen, viajes: d.viajes, generado: d.generado ?? new Date().toISOString().slice(0, 10) })
+  const largos = process.argv.includes('--set=largos')
+  const d = JSON.parse(fs.readFileSync(largos ? 'scripts/destino/_rutasRevisionLargosViajes.json' : 'scripts/destino/_rutasRevisionViajes.json', 'utf8'))
+  const bytes = escribirPagina({ resumen: d.resumen, viajes: d.viajes, generado: d.generado ?? new Date().toISOString().slice(0, 10), largos })
   console.log(`docs/dias/RUTAS_REVISION.html escrita (${(bytes / 1024).toFixed(0)} KB)`)
 }
