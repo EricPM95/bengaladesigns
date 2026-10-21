@@ -4,16 +4,33 @@ import { useSyncStore } from '../../../store/useSyncStore'
 import { usePaseEstado } from '../../../lib/paseEstado'
 import { pedirPago } from '../../../lib/pago'
 import { TextoConPase } from '../../cuenta/TextoConPase'
-import { HoyAntes, ListaLoQueTendras } from './HoyAntes'
+import { ListaLoQueTendras } from './HoyAntes'
+import { CabeceraHoy, HoyAntesV2, ojoDeViaje } from './v2/HoyAntesV2'
+import type { EstadoPase } from '../../../lib/paseEstado'
 import { CajaBlanca, TarjetaOscura, botonOro, ojoMono } from './piezas'
 import { Icono } from '../../ui/Icono'
+
+/** El estado de quien no ha comprado el pase: cobro puesto, sin pase (HOY antes del viaje enseña el candado «Pase de Roma» y [Ver el Pase de Roma]). */
+const SIN_PASE: EstadoPase = { cobro: true, conPase: false, puede: false, pruebaGastada: false }
+/** El de quien tiene el pase: lo mismo sin el candado ni el botón. */
+export const CON_PASE: EstadoPase = { cobro: false, conPase: true, puede: true, pruebaGastada: false }
+
+/** HOY antes del viaje, como el diseño (App · HOY 1a con fechas y 1b sin fechas): el encabezado y `HoyAntesV2`. */
+export function HoyAntesDelDiseno({ route, startIso, simulada, pase, onPonFechas }: { route: Route; startIso: string | null; simulada: string | null; pase: EstadoPase; onPonFechas: () => void }) {
+  return (
+    <>
+      <CabeceraHoy ojo={ojoDeViaje(route, startIso)} titulo={`Tu viaje a ${route.destination}`} />
+      <HoyAntesV2 startIso={startIso} simulada={simulada} pase={pase} onPonFechas={onPonFechas} />
+    </>
+  )
+}
 
 /**
  * HOY SIN EL PASE (Tanda 10C; decidido por Eric tras la 10B). La pestaña HOY está siempre en la barra: el viajero gratis ve que existe. Sin el pase enseña lo de antes del viaje («Tu modo Hoy se activa…»,
  * lo que tendrá) y, debajo, la invitación: el día de prueba (uno por cuenta, para siempre; ver docs/dias/GRATIS_Y_PASE.md) y [Ver el Pase de Roma]. Una vez empezado el viaje, no vuelve a decir
  * «se activa el…»: dice que HOY es del pase.
  */
-export function HoySinPase({ route, startIso, fase, onPonFechas }: { route: Route; startIso: string | null; fase: 'before' | 'during' | 'after' | null; onPonFechas: () => void }) {
+export function HoySinPase({ route, startIso, fase, simulada = null, onPonFechas }: { route: Route; startIso: string | null; fase: 'before' | 'during' | 'after' | null; simulada?: string | null; onPonFechas: () => void }) {
   const tripId = useSyncStore((s) => s.activeTripId)
   const pase = usePaseEstado(tripId)
   const setMode = useRouteStore((s) => s.setMode)
@@ -22,7 +39,8 @@ export function HoySinPase({ route, startIso, fase, onPonFechas }: { route: Rout
   return (
     <>
       {antes ? (
-        <HoyAntes route={route} startIso={startIso} onPonFechas={onPonFechas} />
+        // (Tanda 10D: como el diseño, App · HOY 1a y 1b: la cuenta atrás, el panel «Hoy te dará» con sus seis cuadros, «Logros y sellos» y [Ver el Pase de Roma]; y debajo, el día de prueba.)
+        <HoyAntesDelDiseno route={route} startIso={startIso} simulada={simulada} pase={SIN_PASE} onPonFechas={onPonFechas} />
       ) : (
         <>
           <TarjetaOscura>

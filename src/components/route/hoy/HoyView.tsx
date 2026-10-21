@@ -2,8 +2,7 @@ import type { Route } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { getTodayTripStatus } from '../../../lib/todayMode'
 import { pagoActivo } from '../../../lib/pago'
-import { HoyAntes } from './HoyAntes'
-import { HoySinPase } from './HoySinPase'
+import { CON_PASE, HoyAntesDelDiseno, HoySinPase } from './HoySinPase'
 import { HoyDurante } from './HoyDurante'
 import { HoyDespues } from './HoyDespues'
 import { hoyV2Activo } from '../../../lib/hoyV2'
@@ -20,7 +19,7 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
   if (!pagoActivo()) {
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-7 pt-1" data-hoy="sin-pase">
-        <HoySinPase route={route} startIso={estado?.startIso ?? null} fase={estado?.phase ?? null} onPonFechas={onPonFechas} />
+        <HoySinPase route={route} startIso={estado?.startIso ?? null} fase={estado?.phase ?? null} simulada={simulada} onPonFechas={onPonFechas} />
       </div>
     )
   }
@@ -29,7 +28,8 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-7 pt-1" data-hoy={estado?.phase ?? 'antes-sin-fechas'}>
       {!estado || estado.phase === 'before' ? (
-        <HoyAntes route={route} startIso={estado?.startIso ?? null} onPonFechas={onPonFechas} />
+        // (Tanda 10D: con el pase, lo mismo que sin él pero sin el candado «Pase de Roma» ni [Ver el Pase de Roma].)
+        <HoyAntesDelDiseno route={route} startIso={estado?.startIso ?? null} simulada={simulada} pase={CON_PASE} onPonFechas={onPonFechas} />
       ) : estado.phase === 'during' ? (
         <HoyDurante route={route} day={estado.context.day} dateIso={estado.context.dateIso} />
       ) : (

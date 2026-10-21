@@ -98,7 +98,8 @@ for (const boton of ['Baños', 'Fuentes', 'Comer']) debe(hoyPago.split('\n').inc
 debe(/Cómo llegar/.test(hoyPago) && /\bVisto\b/.test(hoyPago) && /No me da tiempo/.test(hoyPago) && /Ubicación/.test(hoyPago), '2 pago HOY', 'se han perdido [Cómo llegar], [Visto], [No me da tiempo] o [Ubicación]')
 const antes = hoyEn(route, { version: 'completa', hoy: '2027-03-01' })
 // (Antes del viaje HOY solo cuenta lo que tendrá, en texto: no están los botones de «Cerca de ti» ni la siguiente parada.)
-debe(!/Cerca de ti/.test(antes) && !antes.split('\n').includes('Baños') && !antes.split('\n').includes('Fuentes') && !/Siguiente parada/.test(antes), '2 pago HOY', 'antes del viaje salen los botones de «Cerca de ti» o la siguiente parada')
+// (Tanda 10D: HOY antes del viaje enseña los seis cuadros de «Hoy te dará», entre ellos «Cerca de ti» y «Siguiente parada», pero como texto, nunca como los botones de «Cerca de ti» ni los de la siguiente parada.)
+debe(!antes.split('\n').includes('Baños') && !antes.split('\n').includes('Fuentes') && !antes.split('\n').includes('Comer') && !antes.split('\n').includes('Cómo llegar') && !antes.split('\n').includes('Visto'), '2 pago HOY', 'antes del viaje salen los botones de «Cerca de ti» o los de la siguiente parada')
 
 // Los botones abren EXPLORAR con ese filtro y un punto de partida: lo que se pide se lee una vez y se vacía.
 const fuenteCerca = fuente('src/components/route/hoy/CercaDeTi.tsx')

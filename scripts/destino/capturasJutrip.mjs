@@ -315,4 +315,40 @@ if (quiero('tanda10c')) {
   await app.captura(png('hoy_sin_pase_despues_del_viaje'))
   app.cerrar()
 }
+if (quiero('tanda10d')) {
+  // Tanda 10D: HOY antes del viaje como el diseño (1a con fechas y 1b sin fechas), sin pase y con pase, enteras (con lo de abajo).
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1' })
+  for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
+  for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
+  await app.evaluar('window.__rutaPrueba().then(() => true)')
+  for (let i = 0; i < 60 && !(await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await app.esp(1000)
+  await app.esp(6000)
+  await cerrarAvisos(app)
+  const hoy = async (nombre) => {
+    await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => { const s = m.useRouteStore.getState(); s.setActiveDayId(null); s.setMode('today'); return true })")
+    await app.esp(3000)
+    await cerrarAvisos(app)
+    await app.captura(png(nombre))
+    await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = e.scrollHeight; return true })()")
+    await app.esp(800)
+    await app.captura(png(nombre + '_abajo'))
+    await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = 0; return true })()")
+  }
+  const simula = (dia) => app.evaluar("import('/src/store/useRouteStore.ts').then((m) => { m.useRouteStore.setState({ dev_simulated_today_iso: " + JSON.stringify(dia) + " }); return true })")
+  const sinPase = (si) => app.evaluar("import('/src/store/useSinPasePrueba.ts').then((m) => { m.useSinPasePrueba.getState().poner(" + si + "); return true })")
+  // Con fechas, sin pase y con pase.
+  await simula('2026-10-01')
+  await sinPase(true)
+  await hoy('hoy_antes_sin_pase_con_fechas')
+  await sinPase(false)
+  await hoy('hoy_antes_con_pase_con_fechas')
+  // Sin fechas (solo el mes): la ruta sin dateRange.
+  await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => { const r = m.useRouteStore.getState().route; m.useRouteStore.setState({ route: { ...r, answers: { ...r.answers, dateRange: null } } }); return true })")
+  await simula(null)
+  await sinPase(true)
+  await hoy('hoy_antes_sin_pase_sin_fechas')
+  await sinPase(false)
+  await hoy('hoy_antes_con_pase_sin_fechas')
+  app.cerrar()
+}
 console.log('listo')

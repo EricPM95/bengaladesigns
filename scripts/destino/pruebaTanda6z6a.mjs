@@ -281,10 +281,11 @@ for (const [clave, route] of Object.entries(rutas)) {
     const html = pintaHtml(HoyView, { route, onPonFechas() {} }, route, { version: 'completa', hoy: m.hoy })
     const texto = aTexto(html)
     if (m.clave === 'antes') {
-      debe(/Tu modo Hoy se activa el miércoles 10 de marzo/.test(texto) && /Ver mi primer día/.test(texto) && /siguiente parada/i.test(texto) && /No me da tiempo/.test(texto) && /Escuchar/.test(texto) && /cerca/.test(texto) && /avisos/i.test(texto), '5 HOY', `${nombre}: no es «Tu modo Hoy se activa el miércoles 10 de marzo» con su lista y [Ver mi primer día] (${plano(texto).slice(0, 400)})`)
+      // (Tanda 10D: HOY antes del viaje, como el diseño 1a: «Tu modo Hoy se activa el mié 10 mar», la cuenta atrás y los seis cuadros de «Hoy te dará».)
+      debe(/Tu modo Hoy se activa el/.test(texto) && /mié 10 mar/.test(texto) && /Hoy te dará/.test(texto) && ['Siguiente parada', 'Escuchar su historia', 'Tu día, paso a paso', 'Cerca de ti', 'Avisos del día', 'Fotos del viaje'].every((t) => texto.includes(t)), '5 HOY', `${nombre}: no es «Tu modo Hoy se activa el mié 10 mar» con la cuenta atrás y sus seis cuadros (${plano(texto).slice(0, 300)})`)
       debe(!/Pon tus fechas/.test(texto), '5 HOY', `${nombre}: con fechas sale [Pon tus fechas]`)
     }
-    if (m.clave === 'sin-fechas') debe(/Pon tus fechas para activar tu modo Hoy/.test(texto) && /^Pon tus fechas$/m.test(texto) && !/Ver mi primer día/.test(texto), '5 HOY', `${nombre}: no es «Pon tus fechas para activar tu modo Hoy» con [Pon tus fechas] (${plano(texto).slice(0, 300)})`)
+    if (m.clave === 'sin-fechas') debe(/Tu modo Hoy se activa/.test(texto) && /el primer día de tu viaje/.test(texto) && /^Pon tus fechas$/m.test(texto) && !/Ver mi primer día/.test(texto), '5 HOY', `${nombre}: no es «Tu modo Hoy se activa el primer día de tu viaje» con [Pon tus fechas] (${plano(texto).slice(0, 300)})`)
     if (m.clave === 'despues') debe(/Tu viaje a/.test(texto) && /Guarda tus recuerdos/.test(texto) && /Subir mis fotos/.test(texto) && /Nuevo viaje/.test(texto) && /A dónde vamos/.test(texto.replace('¿', '')), '5 HOY', `${nombre}: faltan trozos de «después» (${plano(texto).slice(0, 400)})`)
     if (m.clave === 'antes' || m.clave === 'sin-fechas') debe(!/empieza en|Te falta|Útil para el viaje|El tiempo en|Subir mis fotos/.test(texto), '5 HOY', `${nombre}: conserva lo que se fue a RESERVAS (${plano(texto).slice(0, 200)})`)
     if (clave === 'con') debe(!DIA_N.test(texto), '5 HOY', `${nombre}: dice «${texto.match(DIA_N)?.[0]}» con fechas`)

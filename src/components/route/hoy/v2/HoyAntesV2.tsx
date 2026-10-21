@@ -29,7 +29,7 @@ function diasHasta(startIso: string, hoyIso: string): number {
 }
 
 /**
- * HOY antes del viaje (pantallas 1a con fechas y 1b sin fechas, «HOY v2»): la tarjeta oscura con la cuenta atrás (o «Pon tus fechas»), lo que dará HOY y, si hay cobro y no hay pase,
+ * HOY antes del viaje (pantallas 1a con fechas y 1b sin fechas, «HOY v2»; desde la 10D también la HOY de producción, con y sin pase, con los colores de Marca JUTRIP: paneles en tinta y el azul claro del diseño, en oro pálido): la tarjeta oscura con la cuenta atrás (o «Pon tus fechas»), lo que dará HOY y, si hay cobro y no hay pase,
  * la tarjeta del Pase de Roma con [Ver el pase]. Con el cobro apagado, lo mismo sin la insignia del pase ni el botón.
  */
 export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso: string | null; simulada: string | null; pase: EstadoPase; onPonFechas: () => void }) {
@@ -38,21 +38,21 @@ export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso
   return (
     <>
       <div className="relative flex flex-none flex-col gap-1.5 overflow-hidden rounded-[28px] bg-[#1C2230] p-5 text-[#FFFDF8]" style={{ boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
-        <span aria-hidden="true" className="absolute h-[180px] w-[180px] rounded-full" style={{ right: -50, top: -50, background: 'oklch(0.56 0.1 230 / .45)', filter: 'blur(30px)' }} />
+        <span aria-hidden="true" className="absolute h-[180px] w-[180px] rounded-full" style={{ right: -50, top: -50, background: 'rgba(233,199,122,.26)', filter: 'blur(30px)' }} />
         {startIso ? (
           <>
             <span className="relative" style={{ font: "400 21px/1.15 'Instrument Serif',serif", color: 'rgba(255,253,248,.88)' }}>
-              Tu modo Hoy se activa el <em style={{ color: 'oklch(0.82 0.08 230)' }}>{FECHA_CORTA.format(isoToLocalDate(startIso)).replace(/\./g, '').replace(',', '')}</em>
+              Tu modo Hoy se activa el <em style={{ color: '#E9C77A' }}>{FECHA_CORTA.format(isoToLocalDate(startIso)).replace(/\./g, '').replace(',', '')}</em>
             </span>
             <span className="relative flex items-baseline gap-2.5">
               <span style={{ font: "400 88px/.9 'Instrument Serif',serif" }}>{faltan}</span>
-              <em style={{ font: "italic 400 34px/1 'Instrument Serif',serif", color: 'oklch(0.82 0.08 230)' }}>{faltan === 1 ? 'día' : 'días'}</em>
+              <em style={{ font: "italic 400 34px/1 'Instrument Serif',serif", color: '#E9C77A' }}>{faltan === 1 ? 'día' : 'días'}</em>
             </span>
           </>
         ) : (
           <>
             <span className="relative" style={{ font: "400 30px/1.05 'Instrument Serif',serif" }}>
-              Tu modo Hoy se activa <em style={{ color: 'oklch(0.82 0.08 230)' }}>el primer día de tu viaje</em>
+              Tu modo Hoy se activa <em style={{ color: '#E9C77A' }}>el primer día de tu viaje</em>
             </span>
             <span className="relative text-[13px] leading-[1.45] text-[#FFFDF8]/70">Pon tus fechas y lo dejamos listo.</span>
             <button type="button" onClick={onPonFechas} className="relative mt-2 flex h-[46px] items-center gap-2 self-start rounded-full bg-[#FFFDF8] pl-3.5 pr-[18px] text-[14px] font-semibold text-[#1C2230]">
@@ -63,7 +63,7 @@ export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso
         )}
       </div>
 
-      <div className="relative flex flex-none flex-col gap-3.5 overflow-hidden rounded-[28px] px-3.5 pb-3.5 pt-5 text-[#FFFDF8]" style={{ background: 'linear-gradient(165deg,#272E42 0%,#1C2230 60%)', boxShadow: '0 0 0 1px oklch(0.82 0.12 80 / .28),0 24px 44px -24px rgba(28,34,48,.85)' }}>
+      <div className="relative flex flex-none flex-col gap-3.5 overflow-hidden rounded-[28px] px-3.5 pb-3.5 pt-5 text-[#FFFDF8]" style={{ background: 'linear-gradient(165deg,#232A3B 0%,#1C2230 60%)', boxShadow: '0 0 0 1px oklch(0.82 0.12 80 / .28),0 24px 44px -24px rgba(28,34,48,.85)' }}>
         <span aria-hidden="true" className="absolute h-[220px] w-[220px] rounded-full" style={{ right: -60, top: -70, background: 'radial-gradient(circle,oklch(0.82 0.12 80 / .32),transparent 65%)' }} />
         <div className="relative flex flex-col gap-1.5 px-1">
           {verPase && (
@@ -91,7 +91,7 @@ export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso
         </div>
         {logrosActivos() && (
           <div className="relative rounded-[20px] p-[1.5px]" style={{ background: 'linear-gradient(120deg,oklch(0.72 0.13 65),oklch(0.92 0.1 90) 45%,oklch(0.72 0.13 65))' }}>
-            <div className="flex flex-col gap-1.5 rounded-[19px] p-3.5" style={{ background: 'linear-gradient(160deg,#2E2A3A,#1F2433)' }}>
+            <div className="flex flex-col gap-1.5 rounded-[19px] p-3.5" style={{ background: 'linear-gradient(160deg,#252B3B,#1C2230)' }}>
               <span style={{ font: "400 21px/1.05 'Instrument Serif',serif" }}>Logros y sellos</span>
               <span className="text-[12px] leading-[1.45] text-[#FFFDF8]/70">Haz fotos en cada sitio, desbloquea logros secretos y llena tu pasaporte de sellos.</span>
               <span className="mt-0.5 flex gap-[5px]">
