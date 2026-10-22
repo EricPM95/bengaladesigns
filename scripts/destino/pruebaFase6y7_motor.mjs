@@ -177,7 +177,8 @@ if (PARTES.has('3')) {
           if (m < toMin('16:00')) {
             if (m >= toMin('15:00')) cuenta.tarde15++
             else cuenta.mediodia++
-            debe(iMuseos < iPlaza && iPlaza < iBasilica, '3 tarde', `${hoja}: los Museos, la Plaza y la Basílica no van en ese orden`)
+            // (Tanda 11, punto 13: si la Basílica llegaría cerrada detrás de la Plaza, va antes que ella —la plaza no cierra—; los dos van detrás de los Museos.)
+            debe(iMuseos < iPlaza && iMuseos < iBasilica, '3 tarde', `${hoja}: los Museos, la Plaza y la Basílica no van en ese orden`)
           } else {
             cuenta.tarde16++
             debe(iPlaza < iBasilica && iBasilica < iMuseos, '3 tarde', `${hoja}: desde las 16:00 la Plaza y la Basílica tienen que ir antes de los Museos, ya por la tarde`)

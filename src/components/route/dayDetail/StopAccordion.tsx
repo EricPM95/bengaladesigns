@@ -90,14 +90,16 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   // calles (sin horario en los datos) no llevan nada. Por fuera solo se dice si está cerrado. (Un paseo libre no tiene horario: es la calle.)
   // La parada que se queda en su día cerrada (no hay otro día en el viaje; Tanda 7, punto 15) lleva una sola marca, «Cerrado este día», en lugar del «Cerrado hoy» / «Hoy cierra» rojo.
   const cerradoEsteDia = Boolean(stop.closedThisDay)
-  if (horario && !cerradoEsteDia && !stop.isNightExperience && !stop.isFreeWalk && (stop.visitMode !== 'fuera' || horario.cerrado)) meta.push({ icon: 'clock', text: horario.texto, warn: horario.cerrado })
+  // (Tanda 11, punto 4: el mirador que sustituye al Tempietto cerrado no está «cerrado»: es un mirador abierto; sin aviso en rojo.)
+  if (horario && !cerradoEsteDia && !stop.isNightExperience && !stop.isFreeWalk && stop.outsideKind !== 'al_lado' && (stop.visitMode !== 'fuera' || (horario.cerrado && !['cerrado', 'ya_cerrado', 'no_abre'].includes(stop.outsideKind ?? '')))) meta.push({ icon: 'clock', text: horario.texto, warn: horario.cerrado })
   if (cerradoEsteDia) meta.push({ text: 'Cerrado este día', warn: true })
   else if (stop.durationMinutes > 0) meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
   // Por fuera porque cierra: el motivo, en rojo (si cierra ese día ya lo dice «Cerrado hoy», una sola vez). (Por falta de tiempo no es un problema: va en la ficha.)
   if (stop.visitMode === 'fuera' && !cerradoEsteDia) {
     const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre'
-    const short = stop.outsideKind === 'no_abre' && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
-    if (closed && short && !(horario?.cerrado && stop.outsideKind === 'cerrado')) meta.push({ text: short, warn: true })
+    // (Tanda 11, punto 4: UN solo aviso que dice por qué —«Hoy está cerrado: lo ves por fuera», «A esta hora ya ha cerrado»…—; la línea del horario no repite el cierre.)
+    const short = (stop.outsideKind === 'no_abre' || stop.outsideKind === 'cerrado') && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
+    if (closed && short) meta.push({ text: short, warn: true })
   }
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
   if (freeDay) {
@@ -140,7 +142,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
       meta={meta}
       tags={tags}
       barrio={stop.isFreeTour ? null : barrio}
-      edgeTab={<EntradaEdgeTab stop={stop} onOpenEntradas={onOpenEntradas ?? onOpen} />}
+      edgeTab={<EntradaEdgeTab stop={stop} onOpenEntradas={onOpenEntradas ?? onOpen} soloSiReservada={stop.visitMode === 'fuera'} />}
       photoUrl={stop.photoUrl}
       // (Tanda 6f: sin foto —ni propia ni de su barrio— la tarjeta va sin recuadro de foto, nunca con el recuadro vacío.)
       noPhoto={!stop.photoUrl}

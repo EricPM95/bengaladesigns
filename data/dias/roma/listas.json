@@ -1366,15 +1366,15 @@
         },
         {
          "tipo": "parada",
-         "lugar": "Piazza Navona",
-         "min": 45,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
          "lugar": "Iglesia del Gesù",
          "min": 20,
          "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
         },
         {
          "tipo": "parada",
@@ -2190,25 +2190,30 @@
       },
       {
        "tipo": "parada",
-       "lugar": "Piazza Navona",
-       "modo": null,
-       "doc": "Piazza Navona ~45",
-       "min": 45
+       "lugar": "Iglesia del Gesù",
+       "modo": "dentro",
+       "doc": "Iglesia del Gesù, por dentro ~20 (⚠️ por la tarde abre a las 16:30 y cierra a las 19:30; de julio a septiembre, abre a las 17:00). Lo que cierra antes va primero y lo que no cierra (las plazas), al final (decidido el 21-oct-2026): el Gesù está a unos pasos de Torre Argentina y de San Luigi, y va antes de Navona para llegar siempre abierto",
+       "min": 20,
+       "avisos": [
+        "por la tarde abre a las 16:30 y cierra a las 19:30; de julio a septiembre, abre a las 17:00"
+       ],
+       "abre": "16:30",
+       "cierra": "19:30",
+       "notas": [
+        "las plazas",
+        "decidido el 21-oct-2026",
+        "Lo que cierra antes va primero y lo que no cierra , al final : el Gesù está a unos pasos de Torre Argentina y de San Luigi, y va antes de Navona para llegar siempre abierto"
+       ]
       },
       {
        "tipo": "parada",
-       "lugar": "Iglesia del Gesù",
-       "modo": "dentro",
-       "doc": "Iglesia del Gesù, por dentro ~20, de camino a la cena (⚠️ por la tarde abre a las 16:30; de julio a septiembre, a las 17:00). Va al final por su hora de abrir: así no hay esperas. Desde Navona son ~12 min, y la cena está a ~5 min",
-       "min": 20,
-       "avisos": [
-        "por la tarde abre a las 16:30; de julio a septiembre, a las 17:00"
-       ],
-       "abre": "16:30",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~45, de camino a la cena (una plaza: no cierra, va la última)",
+       "min": 45,
        "notas": [
-        ", de camino a la cena",
-        "Va al final por su hora de abrir: así no hay esperas",
-        "Desde Navona son ~12 min, y la cena está a ~5 min"
+        "una plaza: no cierra, va la última",
+        ", de camino a la cena"
        ]
       }
      ],
@@ -2531,15 +2536,15 @@
         },
         {
          "tipo": "parada",
-         "lugar": "Piazza Navona",
-         "min": 45,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
          "lugar": "Iglesia del Gesù",
          "min": 20,
          "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
         },
         {
          "tipo": "parada",
@@ -2644,15 +2649,15 @@
         },
         {
          "tipo": "parada",
-         "lugar": "Piazza Navona",
-         "min": 45,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
          "lugar": "Iglesia del Gesù",
          "min": 20,
          "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
         },
         {
          "tipo": "parada",
@@ -4958,7 +4963,7 @@
    ],
    "pool": {
     "Cúpula de San Pedro": {
-     "doc": "Cúpula:** después de la Basílica ~45.",
+     "doc": "Cúpula:** sustituye a la Basílica por dentro: una sola visita",
      "cuando": [
       {
        "sin_reserva": "Museos Vaticanos y Capilla Sixtina"
@@ -4972,34 +4977,34 @@
      ],
      "ops": {
       "manana": {
-       "insertar": [
-        {
-         "despues_de": "Basílica de San Pedro",
-         "si_hay_ancla": true,
-         "parada": {
-          "tipo": "parada",
-          "lugar": "Cúpula de San Pedro",
-          "min": 45,
-          "modo": "dentro",
-          "protegido": true
-         }
+       "cambiar": {
+        "Basílica de San Pedro": {
+         "tipo": "parada",
+         "lugar": "Cúpula de San Pedro",
+         "min": 105,
+         "modo": "dentro",
+         "protegido": true,
+         "titulo": "Cúpula de San Pedro y Basílica por dentro",
+         "cubre": [
+          "Basílica de San Pedro"
+         ]
         }
-       ]
+       }
       },
       "tarde": {
-       "insertar": [
-        {
-         "despues_de": "Basílica de San Pedro",
-         "si_hay_ancla": true,
-         "parada": {
-          "tipo": "parada",
-          "lugar": "Cúpula de San Pedro",
-          "min": 45,
-          "modo": "dentro",
-          "protegido": true
-         }
+       "cambiar": {
+        "Basílica de San Pedro": {
+         "tipo": "parada",
+         "lugar": "Cúpula de San Pedro",
+         "min": 105,
+         "modo": "dentro",
+         "protegido": true,
+         "titulo": "Cúpula de San Pedro y Basílica por dentro",
+         "cubre": [
+          "Basílica de San Pedro"
+         ]
         }
-       ]
+       }
       }
      }
     },
@@ -5035,7 +5040,7 @@
      }
     },
     "naturaleza_vistas": {
-     "doc": "Naturaleza y Vistas:** la Cúpula.",
+     "doc": "Naturaleza y Vistas:** la Cúpula, en una sola visita con la Basílica por dentro",
      "añade": "Cúpula de San Pedro",
      "cuando": [
       {
@@ -5050,34 +5055,34 @@
      ],
      "ops": {
       "manana": {
-       "insertar": [
-        {
-         "despues_de": "Basílica de San Pedro",
-         "si_hay_ancla": true,
-         "parada": {
-          "tipo": "parada",
-          "lugar": "Cúpula de San Pedro",
-          "min": 45,
-          "modo": "dentro",
-          "protegido": true
-         }
+       "cambiar": {
+        "Basílica de San Pedro": {
+         "tipo": "parada",
+         "lugar": "Cúpula de San Pedro",
+         "min": 105,
+         "modo": "dentro",
+         "protegido": true,
+         "titulo": "Cúpula de San Pedro y Basílica por dentro",
+         "cubre": [
+          "Basílica de San Pedro"
+         ]
         }
-       ]
+       }
       },
       "tarde": {
-       "insertar": [
-        {
-         "despues_de": "Basílica de San Pedro",
-         "si_hay_ancla": true,
-         "parada": {
-          "tipo": "parada",
-          "lugar": "Cúpula de San Pedro",
-          "min": 45,
-          "modo": "dentro",
-          "protegido": true
-         }
+       "cambiar": {
+        "Basílica de San Pedro": {
+         "tipo": "parada",
+         "lugar": "Cúpula de San Pedro",
+         "min": 105,
+         "modo": "dentro",
+         "protegido": true,
+         "titulo": "Cúpula de San Pedro y Basílica por dentro",
+         "cubre": [
+          "Basílica de San Pedro"
+         ]
         }
-       ]
+       }
       }
      }
     },
@@ -9674,15 +9679,15 @@
         },
         {
          "tipo": "parada",
-         "lugar": "Piazza Navona",
-         "min": 45,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
          "lugar": "Iglesia del Gesù",
          "min": 20,
          "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
         },
         {
          "tipo": "parada",
@@ -10162,6 +10167,32 @@
          ]
         }
        ]
+      }
+     }
+    },
+    {
+     "id": "dos_dias_janiculo_de_noche",
+     "doc": "Viaje de 2 días (solo el Free Tour y este día) (Tanda 11, punto 3):** el día va lleno, así que el Janículo pasa a DESPUÉS DE CENAR",
+     "cuando": {
+      "viaje_sin": [
+       "D4"
+      ]
+     },
+     "ops": {
+      "tarde": {
+       "quitar": [
+        "Fontana dell'Acqua Paola",
+        "Mirador del Janículo",
+        "Bajada a Trastevere"
+       ]
+      },
+      "noche": {
+       "lista": [
+        "Mirador del Janículo (noche)"
+       ],
+       "doc": "el Mirador del Janículo con Roma iluminada",
+       "taxi": false,
+       "fija": true
       }
      }
     }
@@ -11914,6 +11945,20 @@
     ]
    },
    "variantes": [
+    {
+     "id": "lunes_sin_caracalla",
+     "doc": "Lunes:** Caracalla cierra: la tarde empieza en el Circo Máximo, sin las Termas",
+     "cuando": {
+      "cerrado": "Termas de Caracalla"
+     },
+     "ops": {
+      "tarde": {
+       "quitar": [
+        "Termas de Caracalla"
+       ]
+      }
+     }
+    },
     {
      "id": "domingo_san_clemente",
      "doc": "Domingo:** San Clemente solo abre por la tarde: va después de comer y el taxi sale de allí.",

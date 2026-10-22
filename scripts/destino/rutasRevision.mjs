@@ -87,7 +87,7 @@ if (!parte) {
     v.sale = base && v !== base ? [...baseNombres].filter((x) => !nombres.has(x)) : []
     // (Repetida = el mismo sitio dos veces en el mismo viaje, ambas de día o ambas de noche: Coliseo de día y «Coliseo (noche)» son dos cosas distintas en la app.)
     // (En los largos, el Reloj de agua del Pincio —una parada del día escrito dentro de Villa Borghese— no cuenta como Villa Borghese repetida: era un falso aviso.)
-    const llave = (p) => `${p.tipo === 'noche' ? 'noche' : 'dia'}|${LARGOS && String(p.titulo_escrito ?? '').toLowerCase().includes('reloj de agua del pincio') ? p.titulo_escrito : (p.nombre_base ?? p.nombre_app)}`
+    const llave = (p) => `${p.tipo === 'noche' ? 'noche' : 'dia'}|${String(p.titulo_escrito ?? '').toLowerCase().includes('reloj de agua del pincio') ? p.titulo_escrito : (p.nombre_base ?? p.nombre_app)}`
     const conteo = new Map()
     for (const p of v.dias.flatMap((d) => d.paradas.filter(esParada))) conteo.set(llave(p), (conteo.get(llave(p)) ?? 0) + 1)
     for (const d of v.dias) {
@@ -96,6 +96,36 @@ if (!parte) {
         if (esParada(p) && (conteo.get(llave(p)) ?? 0) > 1) p.marcas.push('repetida')
       }
       d.marcas = d.acaba_tarde ? ['tarde'] : []
+    }
+  }
+  // «Qué ha cambiado» (Tanda 11): cada ruta contra la misma ruta de la pasada anterior (el JSON de antes de esta pasada), con las etiquetas del selector de la página.
+  {
+    const rutaAntes = LARGOS ? 'scripts/destino/_rutasRevisionLargosViajes.json' : 'scripts/destino/_rutasRevisionViajes.json'
+    let anteriores = new Map()
+    try { anteriores = new Map(JSON.parse(fs.readFileSync(rutaAntes, 'utf8')).viajes.map((v) => [clave(v), v])) } catch { /* sin pasada anterior: todo es nuevo */ }
+    const nombres = (d) => d.paradas.filter((p) => ['parada', 'noche', 'free_tour', 'pausa'].includes(p.tipo)).map((p) => p.nombre_app)
+    const avisosDe = (d) => d.paradas.flatMap((p) => (p.avisos ?? []).map((a) => p.nombre_app + ': ' + a))
+    for (const v of viajes) {
+      const antes = anteriores.get(clave(v))
+      const etiquetas = new Set()
+      const detalle = []
+      if (!antes) { etiquetas.add('nueva'); detalle.push('Ruta nueva en la página') } else {
+        if (v.dias.map((d) => d.nombre).join('|') !== antes.dias.map((d) => d.nombre).join('|')) { etiquetas.add('orden_dias'); detalle.push('El orden o los nombres de los días: ' + antes.dias.map((d) => d.nombre).join(' · ') + ' → ' + v.dias.map((d) => d.nombre).join(' · ')) }
+        v.dias.forEach((d, i) => {
+          const a = antes.dias[i]
+          if (!a) return
+          const nuevos = nombres(d), viejos = nombres(a)
+          const entran = nuevos.filter((n) => !viejos.includes(n)), salen = viejos.filter((n) => !nuevos.includes(n))
+          if (entran.length || salen.length) { etiquetas.add('paradas'); detalle.push('Día ' + d.numero + ': ' + [entran.length ? 'entra ' + entran.join(', ') : '', salen.length ? 'sale ' + salen.join(', ') : ''].filter(Boolean).join(' · ')) }
+          else if (nuevos.join('|') !== viejos.join('|')) { etiquetas.add('orden_paradas'); detalle.push('Día ' + d.numero + ': las mismas paradas, en otro orden') }
+          const avN = avisosDe(d), avV = avisosDe(a)
+          if (avN.join('|') !== avV.join('|')) { etiquetas.add('avisos'); detalle.push('Día ' + d.numero + ': cambian los avisos (' + avV.length + ' → ' + avN.length + ')') }
+          if (d.paradas.some((p) => p.tipo === 'noche') && d.paradas.filter((p) => p.tipo === 'noche').map((p) => p.nombre_app).join('|') !== a.paradas.filter((p) => p.tipo === 'noche').map((p) => p.nombre_app).join('|')) etiquetas.add('noche')
+        })
+        if (etiquetas.size === 0) etiquetas.add('sin_cambios')
+      }
+      v.cambios = [...etiquetas]
+      v.cambios_detalle = detalle
     }
   }
   const MARCAS = ['titulo', 'repetida', 'cerrada', 'andando', 'tarde']
@@ -126,6 +156,18 @@ if (!parte) {
     console.log('Marcas:', Object.entries(resumen).map(([m, r]) => `${m} ${r.total} (en ${r.rutas} rutas)`).join(' · '))
     const conAlertas = viajes.filter((v) => v.alertas?.length)
     if (conAlertas.length) console.log(`Rutas donde la pantalla y el motor no cuadran: ${conAlertas.length}`)
+  } else if (opcion('texto') !== null || args.includes('--texto')) {
+    // (Tanda 11) La ruta en texto, día a día, tal como la enseña la pantalla: `--solo=3:C:2026-11-11 --texto`.
+    for (const v of viajes) {
+      console.log(`== ${v.n} días · ${v.combo} (${v.nombre_combo}) · empieza ${v.dia_semana_inicio} ${v.inicio}${v.alertas?.length ? ` · ALERTAS: ${v.alertas.join(' | ')}` : ''}`)
+      for (const d of v.dias) {
+        console.log(`-- día ${d.numero} · ${d.dia_semana} ${d.fecha} · ${d.nombre} [${d.dia_escrito}]${d.avisos_dia?.length ? ` · avisos del día: ${d.avisos_dia.join(' / ')}` : ''}${d.deja_fuera?.length ? ` · fuera: ${d.deja_fuera.map((x) => x.nombre ?? x).join(', ')}` : ''}`)
+        for (const p of d.paradas) {
+          const lin = [p.tipo === 'parada' ? '·' : p.tipo, p.nombre_app ?? p.nombre, p.minutos != null ? `${p.minutos}'` : '', p.horario ?? '', (p.avisos ?? []).length ? `⚠ ${p.avisos.join(' / ')}` : '', (p.marcas ?? []).length ? `[${p.marcas.join(',')}]` : '', p.trayecto ? `→ ${p.trayecto}` : ''].filter(Boolean).join(' · ')
+          console.log(`   ${lin}${args.includes('--porque') && p.por_que?.length ? `\n        ↳ ${p.por_que.map((x) => (typeof x === 'string' ? x : JSON.stringify(x))).join(' // ')}` : ''}`)
+        }
+      }
+    }
   } else console.log(JSON.stringify(viajes[0], null, 1).slice(0, 7000))
   process.exit(0)
 }
@@ -262,12 +304,13 @@ function leerEntre(lineas) {
 
 const CUANDO = { manana: 'por la mañana', tarde: 'por la tarde', noche: 'de noche' }
 /** «Por qué va ahí»: solo lo que el motor ya sabe, sin inventar. */
-function porQue({ s, c, fila, log, previa, diaEscrito, esNoche }) {
+function porQue({ s, c, fila, log, previa, diaEscrito, esNoche, diaConFreeTour = false }) {
   const razones = []
   const propios = log.filter((l) => l.id === fila?.id || (c && l.lugar === c.name && !/noche/.test(l.que)) || (esNoche && l.que === 'noche' && c && l.id === `noche_${norm(c.name).replace(/[^a-z0-9]+/g, '_').replace(/_noche$/, '')}_noche`))
   for (const l of propios) razones.push(l.causa)
   if (c?.is_free_tour || s.isFreeTour) razones.push('la añade el Free Tour')
-  else if (c?.in_free_tour || s.inFreeTour) razones.push('se ve dentro del Free Tour')
+  // (Tanda 11, punto 7: «dentro del Free Tour» solo en un día que lleva Free Tour; en otro día no hay tour que lo cuente.)
+  else if ((c?.in_free_tour || s.inFreeTour) && diaConFreeTour) razones.push('se ve dentro del Free Tour')
   if (c?.outside_reason) razones.push(c.outside_reason)
   if (c?.why_condition) razones.push(c.why_condition)
   if (c?.hora_tipo === 'reserva') razones.push('va a la hora de su reserva')
@@ -307,7 +350,8 @@ const significativas = (t) => new Set(norm(t).split(/[^a-z0-9]+/).filter((w) => 
 /** El título del día escrito no tiene NADA en común con el nombre del sitio (p. ej. «Reloj de agua del Pincio» frente a «Parque de Villa Borghese»). */
 const PARES_FALSOS = [['parque de villa borghese', 'reloj de agua del pincio'], ['basilica de santa maria la mayor', 'santa maria maggiore']]
 const tituloAjeno = (base, titulo) => {
-  if (LARGOS && PARES_FALSOS.some(([a, b]) => norm(base).includes(a) && norm(titulo).includes(b))) return false
+  // (Tanda 11, punto 5: los dos falsos avisos conocidos —el Parque de Villa Borghese con el Reloj de agua y Santa Maria la Mayor con Maggiore— no se marcan en ninguna de las dos páginas.)
+  if (PARES_FALSOS.some(([a, b]) => norm(base).includes(a) && norm(titulo).includes(b))) return false
   const a = significativas(base)
   const b = significativas(titulo)
   return ![...a].some((w) => b.has(w))
@@ -329,6 +373,7 @@ function filasDeRuta(n, combo, inicio, route, crudo, delaApp) {
     const delMotor = dia.stops.map((s, i) => ({ s, c: alineadas ? crudas[i] : null, fila: alineadas ? titulos[i] : null, previa: i > 0 ? dia.stops[i - 1] : null })).filter((x) => !x.s.passThrough)
     if (pantalla.items.length !== delMotor.length) alertas.push(`día ${dia.dayNumber}: la pantalla enseña ${pantalla.items.length} paradas y el motor ${delMotor.length}`)
     const paradas = []
+    const diaConFreeTour = dia.stops.some((st) => st.isFreeTour)
     let finDia = 0
     pantalla.items.forEach((item, i) => {
       const x = delMotor[i] ?? null
@@ -345,15 +390,19 @@ function filasDeRuta(n, combo, inicio, route, crudo, delaApp) {
       const esNoche = Boolean(s.isNightExperience) || bloque.etiquetas.includes('Experiencia nocturna')
       const marcas = []
       const avisos = [...bloque.avisos]
-      const cerradoHoy = avisos.some((a) => /^Cerrado (hoy|este día)/i.test(a))
+      const miradorPorCierre = s.outsideKind === 'al_lado'
+      const cerradoHoy = !miradorPorCierre && avisos.some((a) => /^Cerrado (hoy|este día)/i.test(a))
       if (cerradoHoy) marcas.push('cerrada')
       const horarioMotor = x ? App.horarioDeParada({ hoursData: horarios.get(norm(s.name)) ?? (s.fullName ? horarios.get(norm(s.fullName)) : null), scheduleText: s.scheduleText, hours: s.hours }, fecha, null) : null
-      if (horarioMotor?.cerrado && !cerradoHoy) {
+      const porFueraCerrado = s.visitMode === 'fuera' && ['cerrado', 'ya_cerrado', 'no_abre'].includes(s.outsideKind)
+      if (horarioMotor?.cerrado && !cerradoHoy && !miradorPorCierre && !porFueraCerrado) {
         avisos.push(`Cerrado hoy (${diaSemana(fecha)})`)
         marcas.push('cerrada')
       }
-      if (x?.c?.outside_reason) avisos.push(`Por fuera: ${x.c.outside_reason}`)
-      if (s.reservation && s.reservation !== 'no') avisos.push(`Reserva: ${s.reservation}`)
+      // (Tanda 11, punto 4: el motivo de «por fuera» ya sale UNA vez en la tarjeta —«A esta hora ya ha cerrado»—; la página no lo repite.)
+      if (x?.c?.outside_reason && !cerradoHoy && !miradorPorCierre && !avisos.some((a) => norm(a).includes(norm(x.c.outside_reason)))) avisos.push(`Por fuera: ${x.c.outside_reason}`)
+      // (Tanda 11, punto 5: una parada que se ve por fuera no pide reserva; la página no la inventa.)
+      if (s.reservation && s.reservation !== 'no' && s.visitMode !== 'fuera') avisos.push(`Reserva: ${s.reservation}`)
       if (x?.c?.reservation_time) avisos.push(`Reserva a las ${x.c.reservation_time}`)
       if (x?.c?.notice) avisos.push(x.c.notice)
       const pago = pagoDe.get(norm(s.name))
@@ -375,7 +424,7 @@ function filasDeRuta(n, combo, inicio, route, crudo, delaApp) {
         titulo_leve: distinto && !tituloAjeno(nombreSitio, tituloEscrito),
         minutos: bloque.minutos,
         horario: bloque.horario,
-        por_que: x ? porQue({ s, c: x.c, fila: x.fila, log, previa: x.previa, diaEscrito, esNoche }) : ['lo pide el día escrito'],
+        por_que: x ? porQue({ s, c: x.c, fila: x.fila, log, previa: x.previa, diaEscrito, esNoche, diaConFreeTour }) : ['lo pide el día escrito'],
         trayecto: null,
         avisos: [...new Set(avisos)],
         marcas,

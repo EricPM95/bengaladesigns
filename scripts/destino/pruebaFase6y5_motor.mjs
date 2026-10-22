@@ -158,7 +158,8 @@ const placeDe = (name) => D.places.find((p) => p.name === name)
 const norm = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 const paradasDe = (plan) => new Set(plan.days.flatMap((day) => [
   ...(day.escritoRows ?? []).filter((r) => (r.tipo === 'parada' || r.tipo === 'tour') && !r.llegada && !r.relleno && r.lugar),
-  ...(day.spareRows ?? []).filter((r) => r.lugar && !r.relleno)].map((r) => r.lugar)))
+  ...(day.spareRows ?? []).filter((r) => r.lugar && !r.relleno)].flatMap((r) => [r.lugar, ...(r.cubre ?? [])])))
+// (Tanda 11: la visita única «Cúpula de San Pedro y Basílica por dentro» cubre la Basílica: lo elegido que una visita cubre también sale.)
 const FORMAS = [
   { clave: '1 día', dias: 1 }, { clave: '2 días', dias: 2 }, { clave: '2 días FT', dias: 2, ft: true }, { clave: '3 días', dias: 3 }, { clave: '3 días FT', dias: 3, ft: true },
   { clave: '4 días', dias: 4, diaCuatro: 'roma' }, { clave: '4 días FT', dias: 4, ft: true, diaCuatro: 'roma' }, { clave: '5 días', dias: 5, diaCuatro: 'roma' }, { clave: '6 días', dias: 6, diaCuatro: 'roma' },

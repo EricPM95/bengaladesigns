@@ -290,8 +290,8 @@ Por la mañana, el Panteón por dentro ~45, Piazza Navona ~45, de camino el Puen
   - *de camino:* Elefantino de Bernini, Santa Maria sopra Minerva
   - San Luigi dei Francesi (los Caravaggio) ~20 (⚠️ abre a las 14:30 y cierra a las 18:30). Va antes que el Panteón por eso.
   - Panteón, por dentro ~45 (el sábado, antes de las 17:00)
-  - Piazza Navona ~45
-  - Iglesia del Gesù, por dentro ~20, de camino a la cena (⚠️ por la tarde abre a las 16:30; de julio a septiembre, a las 17:00). Va al final por su hora de abrir: así no hay esperas. Desde Navona son ~12 min, y la cena está a ~5 min.
+  - Iglesia del Gesù, por dentro ~20 (⚠️ por la tarde abre a las 16:30 y cierra a las 19:30; de julio a septiembre, abre a las 17:00). Lo que cierra antes va primero y lo que no cierra (las plazas), al final (decidido el 21-oct-2026): el Gesù está a unos pasos de Torre Argentina y de San Luigi, y va antes de Navona para llegar siempre abierto.
+  - Piazza Navona ~45, de camino a la cena (una plaza: no cierra, va la última)
 - **Cena:** Armando al Pantheon (o Da Baffetto)
 - **Noche:** Fontana de Trevi y la Plaza de España
   - **Con el Free Tour de las 21:00** (decidido el 9-oct-2026): la noche es el 🎟 Free Tour por Roma, 21:00 ~2 h 30, en lugar de Trevi y la Plaza de España (el tour pasa por allí). Sale de la Plaza de España: de Armando, a pie (~15 min). Lo que el tour recorre y ya se ha visto por la tarde (el Panteón, Navona) se queda: de noche se ve distinto. La cena va antes del tour (sales a las 23:30).
@@ -354,7 +354,7 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
   - **mañana:** Plaza del Campidoglio, Altar de la Patria por dentro y Foro Romano y Palatino (se entra por Via dei Fori Imperiali y se sale junto al Arco);
   - **comida:** en Monti, al lado del Coliseo (La Taverna dei Fori Imperiali o Trattoria Valentino);
   - **después:** «Llegada a…», el Coliseo y el Arco;
-  - **tarde:** Via dei Fori Imperiali ~15, Largo di Torre Argentina, San Luigi dei Francesi (cierra a las 18:30), el Panteón por dentro, Piazza Navona y, al final, el Gesù (abre a las 16:30; en verano, a las 17:00);
+  - **tarde:** Via dei Fori Imperiali ~15, Largo di Torre Argentina, San Luigi dei Francesi (cierra a las 18:30), el Panteón por dentro, el Gesù (abre a las 16:30, cierra a las 19:30; en verano, abre a las 17:00) y, al final, Piazza Navona;
   - **cena y noche:** las de siempre;
   - el Barrio Judío, al final de la tarde (está a 5 min de Torre Argentina).
 - **Por la tarde (a las 15:30 o más tarde):** el día va al revés.
@@ -403,12 +403,12 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
     - **Con los Museos reservados a mediodía (de 12:00 a 14:30) o por la tarde (desde las 15:00):** la mañana sin Museos, la del miércoles (Fontana de Trevi sin gente, Plaza de España, de camino Via dei Coronari, el Puente y el Castillo por fuera), la comida en el Borgo, los Museos a su hora y, al salir, la Plaza y la Basílica. Con los Museos desde las 16:00, la Plaza y la Basílica van antes de los Museos, ya por la tarde (su última entrada es a las 19:15). Lo de Trastevere que no cabe (la Isla Tiberina, Santa Maria in Trastevere, San Pietro in Montorio, la Fontana dell'Acqua Paola y el Janículo) pasa a «Si te sobra tiempo»: con los Museos a las 12:00 cabe todo; a las 12:30 o las 13:00 salen San Pietro in Montorio y la Fontana dell'Acqua Paola; desde las 13:30, toda esa parte, y el día acaba con el paseo por Trastevere.
 
 **Pool:**
-- **Cúpula:** después de la Basílica ~45.
+- **Cúpula:** sustituye a la Basílica por dentro: una sola visita, «Cúpula de San Pedro y Basílica por dentro» ~1 h 45 (se sube primero a la Cúpula y, al bajar, se sale dentro de la Basílica; Tanda 11, 22-oct-2026).
 - **Castillo por dentro:** ~60, en lugar de por fuera.
 
 **Experiencias:**
 - **Arte y Museos:** los Museos con la Pinacoteca ~4 h.
-- **Naturaleza y Vistas:** la Cúpula.
+- **Naturaleza y Vistas:** la Cúpula, en una sola visita con la Basílica por dentro (la subida sale dentro de la Basílica: nunca «Basílica por fuera» y luego la Cúpula).
 - **Mercadillos:** «Plaza de San Pedro y los 100 Presepi».
 
 **Reserva de los Museos a otra hora:** la regla general (la regla 4). La mañana se hace sin los Museos y los Museos van a su hora; después, lo de la tarde en su orden.
@@ -583,6 +583,7 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
   - Paseo por Trastevere ~30
 - **Cena:** Da Enzo al 29 (o Tonnarello, o Checco er Carettiere)
 - **Noche:** Fontana de Trevi (taxi) y la Plaza de España
+- **Viaje de 2 días (solo el Free Tour y este día) (Tanda 11, punto 3):** el día va lleno, así que el Janículo pasa a DESPUÉS DE CENAR: la tarde acaba en Trastevere (sin la Fontana dell'Acqua Paola, el Mirador del Janículo ni la bajada) y la noche es el Mirador del Janículo con Roma iluminada, en lugar de Trevi y la Plaza de España. El Tempietto sigue por la tarde (de noche está cerrado; si se llega tarde, «El mirador de San Pietro in Montorio»). El Gueto se queda.
 
 **Con el Coliseo reservado por la tarde (15:30 en adelante)** (decidido el 9-oct-2026): Trastevere por la mañana y la Roma antigua por la tarde.
 - **mañana:**
@@ -768,7 +769,7 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
   - Pirámide Cestia ~15, de camino a la cena (por fuera; el Cementerio Protestante, al lado, cierra a las 17:00 y no da tiempo)
 - **Cena:** Felice a Testaccio
 - **Noche:** la pareja que toque (regla 13). Suele ser el Panteón y Piazza Navona (taxi, ~10 min).
-- **Lunes:** Caracalla cierra: sale con «Cerrado hoy».
+- **Lunes:** Caracalla cierra: la tarde empieza en el Circo Máximo, sin las Termas (Tanda 11, punto 8: el día tiene su versión de lunes y no cuenta como día malo).
 - **Domingo:** San Clemente solo abre por la tarde: va después de comer y el taxi sale de allí.
 - **Ya no van** el paseo por el Aventino ni el de Testaccio (decidido el 6-oct: sin paseos).
 - **Pool:** la Domus Aurea, 🎟 solo con reserva y de viernes a domingo (el primer domingo de cada mes cierra), por la mañana entre San Pietro in Vincoli y San Clemente.

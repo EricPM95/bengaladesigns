@@ -40,6 +40,8 @@ const luces = P('Luces de Navidad del Tridente', 30, 'fuera', { protegido: false
 const aracoeliCamino = P('Santo Bambino de Aracoeli', 5, 'camino')
 // El miércoles del Vaticano (Tanda 6y7): la mañana sin Museos, al revés, mientras la audiencia del Papa tiene la Plaza de San Pedro (la misma mañana del D0-medio de los miércoles).
 const miercolesManana = [P('Fontana de Trevi', 45, null, { titulo: 'Fontana de Trevi, sin gente' }), P('Plaza de España', 45), ...camino('Via dei Coronari', "Puente Sant'Angelo"), P("Castillo de Sant'Angelo", 30, 'fuera'), ...camino('Via della Conciliazione')]
+// La Cúpula y la Basílica por dentro, UNA sola visita (Tanda 11, puntos 1 y 2): la subida a la Cúpula sale dentro de la Basílica. `cubre`: lo que esta visita ya es (la Basílica cuenta como vista por dentro).
+const CUPULA_Y_BASILICA = P('Cúpula de San Pedro', 105, 'dentro', { protegido: true, titulo: 'Cúpula de San Pedro y Basílica por dentro', cubre: ['Basílica de San Pedro'] })
 const MONTORIO = P('San Pietro in Montorio y el Tempietto', 10, null, { si_cerrado: { cambiar_titulo: 'El mirador de San Pietro in Montorio' } })
 const ACQUA_PAOLA = P("Fontana dell'Acqua Paola", 10)
 const trastevereMiercoles = [P('Isla Tiberina', 20), P('Iglesia de Santa Maria in Trastevere', 25, 'dentro'), MONTORIO, ACQUA_PAOLA, P('Mirador del Janículo', 30)]
@@ -70,7 +72,7 @@ const D1_TRAMOS = [
           ops: {
             manana: { paradas: [P('Plaza del Campidoglio', 30), P('Altar de la Patria', 45, 'dentro', { acortable: true }), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_FORI, salida_en: FORO_LADO_ARCO, no_pasa_detras: true }), P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10)] },
             comida: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
-            tarde: { paradas: [...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30)] },
+            tarde: { paradas: [...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Iglesia del Gesù', 20, 'dentro'), P('Piazza Navona', 45), P('Barrio Judío', 30)] },
           },
         },
         {
@@ -79,7 +81,7 @@ const D1_TRAMOS = [
           ops: {
             manana: { paradas: [P('Plaza del Campidoglio', 30), P('Altar de la Patria', 45, 'dentro', { acortable: true }), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_FORI, salida_en: FORO_LADO_ARCO, no_pasa_detras: true })] },
             comida: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
-            tarde: { paradas: [P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10), ...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30)] },
+            tarde: { paradas: [P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10), ...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Iglesia del Gesù', 20, 'dentro'), P('Piazza Navona', 45), P('Barrio Judío', 30)] },
           },
         },
         // De 15:16 en adelante (Coliseo por la tarde, desde las 15:30): el Foro y el Palatino van ANTES del Coliseo, siempre (Tanda 6z5: la tabla decide, no se cuenta hasta la última entrada del Foro).
@@ -578,12 +580,12 @@ export default {
         },
       ],
       pool: {
-        'Cúpula de San Pedro': { doc: 'Cúpula:** después de la Basílica ~45.', cuando: [{ sin_reserva: MUSEOS }, { reserva: { lugar: MUSEOS, hasta: '14:59' } }], ops: { manana: { insertar: [{ despues_de: 'Basílica de San Pedro', si_hay_ancla: true, parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] }, tarde: { insertar: [{ despues_de: 'Basílica de San Pedro', si_hay_ancla: true, parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] } } },
+        'Cúpula de San Pedro': { doc: 'Cúpula:** sustituye a la Basílica por dentro: una sola visita', cuando: [{ sin_reserva: MUSEOS }, { reserva: { lugar: MUSEOS, hasta: '14:59' } }], ops: { manana: { cambiar: { 'Basílica de San Pedro': CUPULA_Y_BASILICA } }, tarde: { cambiar: { 'Basílica de San Pedro': CUPULA_Y_BASILICA } } } },
         "Castillo de Sant'Angelo": { doc: 'Castillo por dentro:** ~60, en lugar de por fuera.', ops: { tarde: { cambiar: { "Castillo de Sant'Angelo": P("Castillo de Sant'Angelo", 60, 'dentro', { protegido: true }) } } } },
       },
       experiencias: {
         arte_museos: { doc: 'Arte y Museos:** los Museos con la Pinacoteca ~4 h.', ops: { manana: { ajustar: { [MUSEOS]: { min: 240, titulo: 'Museos Vaticanos y Capilla Sixtina, con la Pinacoteca' } } } } },
-        naturaleza_vistas: { doc: 'Naturaleza y Vistas:** la Cúpula.', añade: 'Cúpula de San Pedro', cuando: [{ sin_reserva: MUSEOS }, { reserva: { lugar: MUSEOS, hasta: '14:59' } }], ops: { manana: { insertar: [{ despues_de: 'Basílica de San Pedro', si_hay_ancla: true, parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] }, tarde: { insertar: [{ despues_de: 'Basílica de San Pedro', si_hay_ancla: true, parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] } } },
+        naturaleza_vistas: { doc: 'Naturaleza y Vistas:** la Cúpula, en una sola visita con la Basílica por dentro', añade: 'Cúpula de San Pedro', cuando: [{ sin_reserva: MUSEOS }, { reserva: { lugar: MUSEOS, hasta: '14:59' } }], ops: { manana: { cambiar: { 'Basílica de San Pedro': CUPULA_Y_BASILICA } }, tarde: { cambiar: { 'Basílica de San Pedro': CUPULA_Y_BASILICA } } } },
         mercadillos_navidenos: { clave: 'presepi', doc: 'Mercadillos:** «Plaza de San Pedro y los 100 Presepi».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } } } },
       },
       lluvia_doc: "el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.",
@@ -606,7 +608,7 @@ export default {
 
     // ── La Roma antigua, el Gueto y Trastevere (con Free Tour de mañana) ───────────────────────────────────────────────────
     'D1-FT': {
-      variantes: [...tramosD1FT, ...tramosD1FTconTour],
+      variantes: [...tramosD1FT, ...tramosD1FTconTour, { id: 'dos_dias_janiculo_de_noche', doc: 'Viaje de 2 días (solo el Free Tour y este día) (Tanda 11, punto 3):** el día va lleno, así que el Janículo pasa a DESPUÉS DE CENAR', cuando: { viaje_sin: ['D4'] }, ops: { tarde: { quitar: ["Fontana dell'Acqua Paola", 'Mirador del Janículo', 'Bajada a Trastevere'] }, noche: { lista: ['Mirador del Janículo (noche)'], doc: 'el Mirador del Janículo con Roma iluminada', taxi: false, fija: true } } }],
       reservas: { Coliseo: { normal: { hasta: '10:15' }, mejores: ['9:00', '10:30', '11:30', '12:30', '14:00', '16:00'] } },
       pool: {
         'Museos Capitolinos': { doc: 'Pool:** como el D1, con el Ojo por la tarde. La Galería, 🎟 con su lista de horas del D4, en la mitad del día que deje libre la Roma antigua; la Isla Tiberina y Trastevere se quedan (regla 17: no se quita nada).', cuando: { viaje_sin: ['D6'] }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Museos Capitolinos', 60, 'dentro', { protegido: true }) }] } } },
@@ -727,6 +729,7 @@ export default {
     // ── Las basílicas y el Aventino ──────────────────────────────────────────────────────────────────────────────────────────────
     D5: {
       variantes: [
+        { id: 'lunes_sin_caracalla', doc: 'Lunes:** Caracalla cierra: la tarde empieza en el Circo Máximo, sin las Termas', cuando: { cerrado: 'Termas de Caracalla' }, ops: { tarde: { quitar: ['Termas de Caracalla'] } } },
         { id: 'domingo_san_clemente', doc: 'Domingo:** San Clemente solo abre por la tarde: va después de comer y el taxi sale de allí.', cuando: { dia_semana: ['domingo'] }, ops: { manana: { quitar: ['Basílica de San Clemente'] }, tarde: { insertar: [{ al_principio: true, parada: P('Basílica de San Clemente, con las excavaciones', 40, 'dentro') }] } } },
       ],
       pool: {

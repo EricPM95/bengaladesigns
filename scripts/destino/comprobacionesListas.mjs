@@ -55,7 +55,8 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // 1. El orden (con una hora fija, la comida y —desde la 6y8— la cena van donde las pone la regla de la reserva: no se miden)
     const base = new Map((dia.ordenBase ?? []).map((id, i) => [id, i]))
     // (Un cierre manda sobre el orden escrito —regla 5—: lo que a su hora ya habría cerrado y el motor adelanta a primera hora, con su línea «adelanta» en el registro, no cuenta en el orden.)
-    const adelantadas = new Set(log.filter((l) => l.que === 'adelanta').map((l) => l.id))
+    // (Tanda 11, punto 13: la visita que llegaría cerrada y se pone antes de lo que no cierra, con su línea «orden» en el registro, tampoco cuenta.)
+    const adelantadas = new Set(log.filter((l) => l.que === 'adelanta' || (l.que === 'orden' && /llegaría cuando ya ha cerrado/.test(l.causa ?? ''))).map((l) => l.id))
     const hayFija = rows.some((r) => r.fija && !r.llegada)
     const secuencia = rows.filter((r) => base.has(r.id) && !adelantadas.has(r.id) && !r.llegada && !r.fija && !r.relleno && r.tipo !== 'traslado' && !(hayFija && (r.tipo === 'comida' || r.tipo === 'cena'))).map((r) => base.get(r.id))
     {
@@ -211,10 +212,12 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // 2d. (Tanda 6c, regla 6) Antes de quitar algo de la mañana por la comida, se acorta: ninguna parada pasa a «Si te sobra tiempo» por la comida mientras quede en esa mañana algo por dentro que se pueda ver por fuera.
     if (log.some((l) => l.que === 'sobra' && /la comida iba a caer/.test(l.causa ?? ''))) {
       const diaConHoraFija = rows.some((x) => x.fija && !x.llegada)
+      // (Tanda 11, punto 0: un imprescindible —nivel 1, o la visita única que lo cubre— nunca se acorta ni pasa a por fuera por la comida; Eric, 20-oct.)
+      const esImprescindible = (r) => place(r.lugar)?.level === 1 || (r.cubre ?? []).some((n) => place(n)?.level === 1)
       const protegidaPorReserva = (r) => diaConHoraFija && place(r.lugar)?.level === 1 && !place(r.lugar)?.acortable && !dentroPrev.has(r.lugar)
       // (Con una hora fija solo cuenta lo que va DESPUÉS de su «Llegada a…»: acortar lo de antes no adelanta la comida.)
       const iUltimaLlegada = diaConHoraFija ? rows.map((x) => x.llegada).lastIndexOf(true) : -1
-      const acortable = rows.find((r, k) => k > iUltimaLlegada && r.tipo === 'parada' && r.franja === 'manana' && r.modo === 'dentro' && !r.fija && !r.protegido && !r.llegada && r.hora_tipo == null && (place(r.lugar)?.minutos_fuera ?? 99) < r.min && !protegidaPorReserva(r))
+      const acortable = rows.find((r, k) => k > iUltimaLlegada && r.tipo === 'parada' && r.franja === 'manana' && r.modo === 'dentro' && !r.fija && !r.protegido && !r.llegada && r.hora_tipo == null && (place(r.lugar)?.minutos_fuera ?? 99) < r.min && !protegidaPorReserva(r) && !esImprescindible(r))
       if (acortable) falla('quitar_sin_acortar', dia, `se quita algo de la mañana por la comida y «${acortable.titulo ?? acortable.lugar}» sigue por dentro (${acortable.min} min)`)
     }
     // 2e. (Tanda 6c) Para llenar huecos solo sitios conocidos (del documento o de nivel 1 o 2): nunca uno poco conocido.

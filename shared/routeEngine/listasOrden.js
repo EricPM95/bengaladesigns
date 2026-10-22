@@ -17,6 +17,12 @@ const SPECIAL_HOURS_COST = 400
 // Lo que se pierde si un sitio cae en un día en que cierra, según lo que importa (Tanda 6y10, punto 1a): primero se salvan los de nivel 1 (los imprescindibles), luego los de nivel 2, y lo demás pesa lo de siempre.
 // Con esto, si algo tiene que caer en un día cerrado, es lo de menor importancia («es normal que alguno se pierda alguna vez»); y si dos órdenes pierden lo mismo, gana el de siempre (el que menos mueve los días).
 const PESO_CIERRE_POR_NIVEL = { 1: 10000, 2: 100 }
+// Tanda 11 (puntos 8-11, decidido por Eric el 21-oct): un cierre que el día ya resuelve con su versión de ese día (la Galería Borghese el lunes, Caracalla el lunes) o una parada que se ve por fuera
+// (el Castillo, el Tempietto) pesan POCO: no mueven el día del Vaticano; y el Vaticano no va el último día si hay otro orden que vale (primero los cierres, luego esto, luego la Roma antigua el día 1).
+const COSTE_CIERRE_CON_VERSION = 1
+const COSTE_CIERRE_POR_FUERA = 15
+const COSTE_VATICANO_ULTIMO = 150
+const CIERRA_EL_VATICANO = 'Museos Vaticanos y Capilla Sixtina'
 // Hasta cuántos días libres se prueban TODOS los órdenes (8! = 40.320); con más, se mejora el orden de la tabla cambiando los días de dos en dos.
 const MAX_DIAS_TODOS_LOS_ORDENES = 8
 
@@ -86,6 +92,10 @@ export function ordenarDias(env) {
   const carries = (dia, name) => paradasDe(dia, { sinCamino: true }).some((stop) => stop.lugar === name)
   const carriesTour = (dia) => Boolean(tour) && paradasDelDia(dia).some((stop) => stop.lugar === tour.name)
   const violates = (dia, day) => carriesTour(dia) && noTourOn(day)
+  // (Un día con versión para ese cierre —«cuando: { cerrado: 'Termas de Caracalla' }»— no cuenta como malo ese día.)
+  const resueltosPorVersion = new Set(destData.curated_routes?.cierre_resuelto_por_version ?? [])
+  const versionParaCierre = (dia, name) => resueltosPorVersion.has(name) && (dia.variantes ?? []).some((variante) => [].concat(variante.cuando ?? []).some((cuando) => [].concat(cuando?.cerrado ?? []).includes(name)))
+  const esDelVaticano = (dia) => (dia.fechas_malas?.cerrado ?? []).includes(CIERRA_EL_VATICANO)
   const levelOf = new Map((destData.places ?? []).map((place) => [place.name, place.level ?? 3]))
   /**
    * Lo que le va mal a un día escrito en una fecha (`fechas_malas`: días de la semana, fechas MM-DD y sitios que ese día cierran): 1000 por cada una.
@@ -96,7 +106,7 @@ export function ordenarDias(env) {
     const bad = dia.fechas_malas
     if (!bad || !calendar.hasDates) return { cost: 0, cerrados: [] }
     const hours = hoursOf(day)
-    const cerrados = (bad.cerrado ?? []).filter((name) => closedThatDay(name, day))
+    const cerrados = (bad.cerrado ?? []).filter((name) => closedThatDay(name, day) && !(versionParaCierre(dia, name) && !bad.dias_semana && !bad.fechas))
     const cerradosA = (bad.cerrado_a ?? []).filter(({ lugar, hora }) => env.cerradoA(lugar, hora, day)).map(({ lugar }) => lugar)
     const explicadoPorCierre = cerrados.length > 0
     let cost = (cerrados.length > 0 ? 1000 : 0) + (cerradosA.length > 0 ? 1000 : 0)
@@ -128,6 +138,7 @@ export function ordenarDias(env) {
     for (const id of chosen) {
       const dia = written.days[id]
       const entries = [...new Set(paradasDe(dia).filter((stop) => stop.modo === 'dentro' || stop.hora_tipo).map((stop) => stop.lugar))]
+      const porFuera = [...new Set(paradasDe(dia).filter((stop) => stop.modo === 'fuera').map((stop) => stop.lugar))]
       const whyByDay = []
       fixedWhy.set(id, whyByDay)
       fixedCost.set(id, cityDays.map((day, dayIndex) => {
@@ -138,7 +149,12 @@ export function ordenarDias(env) {
         if (day.halfDayExcursion?.soloTarde) { /* (la tarde de un día de ciudad con excursión de medio día: ese día va donde toca) */ }
         else if (halfId ? halfDayOwner[halfId] !== id : Object.values(halfDayOwner).includes(id)) { cost += 5000; why('día de excursión de medio día') }
         const cierran = new Set()
-        for (const name of entries) if (closedThatDay(name, day)) { cost += EVITAR_COST; cierran.add(name); why(`${name} cerrado`) }
+        for (const name of entries) if (closedThatDay(name, day)) {
+          if (versionParaCierre(dia, name) && !dia.fechas_malas?.dias_semana && !dia.fechas_malas?.fechas) { cost += COSTE_CIERRE_CON_VERSION; why(`${name} cerrado (el día tiene su versión)`); continue }
+          cost += EVITAR_COST; cierran.add(name); why(`${name} cerrado`)
+        }
+        for (const name of porFuera) if (closedThatDay(name, day) && !entries.includes(name)) { cost += COSTE_CIERRE_POR_FUERA; why(`${name} cerrado (se ve por fuera)`) }
+        if (chosen.length > 2 && dayIndex === cityDays.length - 1 && esDelVaticano(dia)) { cost += COSTE_VATICANO_ULTIMO; why('el Vaticano no va el último día') }
         for (const rule of avoidSpecial) if (hoursOf(day).dateIso && matchesDateRange(rule.fecha, rule.hasta, hoursOf(day).dateIso) && rule.lugares.some((name) => carries(dia, name))) { cost += SPECIAL_HOURS_COST; why(`horario especial (${rule.fecha})`) }
         { const bad = badDate(dia, day); if (bad.cost > 0) { cost += bad.cost; why('mala fecha del documento') } for (const name of bad.cerrados) cierran.add(name) }
         // (Cuánto importa lo que cierra: un imprescindible cerrado pesa mucho más que una Galería; ver PESO_CIERRE_POR_NIVEL.)

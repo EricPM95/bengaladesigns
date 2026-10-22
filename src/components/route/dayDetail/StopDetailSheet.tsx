@@ -23,6 +23,7 @@ import { useStopEntradas } from '../reservas/useStopEntradas'
 import { ActividadesDelSitio } from '../reservas/ActividadesDelSitio'
 import { useActividadesCerca } from '../../../lib/civitatis'
 import { Icono } from '../../ui/Icono'
+import { useRouteStore } from '../../../store/useRouteStore'
 import { MeGusta } from '../../ui/MeGusta'
 import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
 import { etiquetaDeHorario } from '../../../lib/etiquetaHorario'
@@ -674,6 +675,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                     {tips.map((tip, index) => (
                       <FichaTip key={index} tipo={tip.tipo === 'practico' ? 'practico' : 'secreto'} texto={tip.texto} />
                     ))}
+                    {/* Tanda 11, C9: sin Naturaleza y Vistas la Cúpula no va como parada; aquí se ofrece, con una sola visita (Cúpula y Basílica por dentro). */}
+                    {stop.name === 'Basílica de San Pedro' && <SubirALaCupula stopId={stop.id} onAdded={onClose} />}
                   </div>
                 )}
               </div>
@@ -699,5 +702,27 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
         </motion.div>
       )}
     </AnimatePresence>
+  )
+}
+
+/** «¿Te quedan fuerzas? Sube a la Cúpula» (Tanda 11, C9): cambia la Basílica por la visita única «Cúpula de San Pedro y Basílica por dentro» (~1 h 45). */
+function SubirALaCupula({ stopId, onAdded }: { stopId: string; onAdded: () => void }) {
+  const dayId = useRouteStore((state) => state.route?.days.find((day) => day.stops.some((candidate) => candidate.id === stopId))?.id ?? null)
+  const replaceStop = useRouteStore((state) => state.replaceStop)
+  if (!dayId) return null
+  return (
+    <div className="flex items-center gap-3 rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
+      <p className="flex-1 text-[13px] leading-[1.5] text-text/80">¿Te quedan fuerzas? Sube a la Cúpula: Roma entera a tus pies.</p>
+      <button
+        type="button"
+        onClick={() => {
+          replaceStop(dayId, stopId, { name: 'Cúpula de San Pedro y Basílica por dentro', fullName: 'Cúpula de San Pedro', durationMinutes: 105 })
+          onAdded()
+        }}
+        className="shrink-0 rounded-full btn-champan px-4 py-2 text-[13px] font-medium"
+      >
+        + Añadir
+      </button>
+    </div>
   )
 }

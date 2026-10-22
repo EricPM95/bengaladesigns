@@ -31,7 +31,7 @@ const catalogo = (await fetchDestinationPlaces('Roma')).places
 const lugar = (nombre) => catalogo.find((p) => p.name === nombre)
 
 // Los nombres de Eric. Es la lista de la prueba: no sale del dato, para que el dato no pueda inventarse uno.
-const DE_ZONA = ['Centro histórico', 'Roma antigua', 'Trastevere', 'Plaza de España', 'Vaticano', 'Villa Borghese', 'Popolo', 'Basílicas y el Aventino', 'Roma desde las alturas']
+const DE_ZONA = ['Centro histórico', 'Roma antigua', 'Trastevere', 'Plaza de España', 'Vaticano', 'Villa Borghese', 'Popolo', 'Basílicas y el Aventino', 'La Vía Appia', 'Roma desde las alturas']
 const FREE_TOUR = 'Free Tour'
 const EXCURSION = 'Excursión desde Roma'
 const LISTA = [...DE_ZONA, EXCURSION, FREE_TOUR]

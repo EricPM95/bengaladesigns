@@ -109,12 +109,16 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
   let siguienteMediaJornada = 0
 
   const days = []
+  // (Tanda 11, C8: un destino puede limitar los días de CIUDAD curados sin contar la excursión: el que pasa de ese número sale en blanco.)
+  const maxCiudad = config.max_auto_dias_ciudad ?? null
+  let diasDeCiudad = 0
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
     // El día siguiente a la excursión es el core day desplazado: ruta nueva, no revisitas. La
     // repetición empieza un día después.
     const esRepeticion = dayNumber > Math.max(coreDays, excursionDay ?? 0) + (excursionDay ? 1 : 0) - (excursionDay && excursionDay > coreDays ? 1 : 0)
     const esExcursion = dayNumber === excursionDay
-    const esBlanco = dayNumber > maxAutoDays && !propios.includes(dayNumber)
+    if (!esExcursion) diasDeCiudad++
+    const esBlanco = (dayNumber > maxAutoDays || (maxCiudad != null && !esExcursion && diasDeCiudad > maxCiudad)) && !propios.includes(dayNumber)
     // Un día en blanco no recibe excursión: está en blanco porque a partir de ahí manda el viajero.
     const mediaJornadaDelDia = esRepeticion && !esBlanco && siguienteMediaJornada < mediaJornada.length ? mediaJornada[siguienteMediaJornada++] : null
     days.push({

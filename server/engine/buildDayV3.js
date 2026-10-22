@@ -466,7 +466,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (source && !visit.place.isFreeTour && !visit.place.isBreak) {
       if (!(source.ticket_info ?? []).some((line) => /de pago|se pagan?\b/i.test(line))) stop.free_access = true
       const tourCfg = destData.default_free_tour
-      if ((tourCfg?.covers ?? []).includes(source.name)) stop.in_free_tour = { name: tourCfg.name, duration_minutes: tourCfg.duration_minutes ?? null, meeting_point: tourCfg.meeting_point ?? null, url: tourCfg.url ?? null }
+      // (Tanda 11, punto 7: «se ve dentro del Free Tour» solo el día que lleva el tour; sin Free Tour ese día no hay tour que lo cuente.)
+      if (tourToday && (tourCfg?.covers ?? []).includes(source.name)) stop.in_free_tour = { name: tourCfg.name, duration_minutes: tourCfg.duration_minutes ?? null, meeting_point: tourCfg.meeting_point ?? null, url: tourCfg.url ?? null }
       // (La ficha, solo con nuestro texto: sin el que escribe la IA bajo demanda.)
       if (source.sin_texto_ia) {
         stop.no_ai_text = true

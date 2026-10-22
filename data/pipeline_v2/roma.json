@@ -2991,7 +2991,7 @@
       "coordinates_checked": true,
       "windows": [
         "09:30-12:45",
-        "14:30-18:15"
+        "14:30-18:30"
       ],
       "by_day": {
         "lun-vie": [
@@ -3744,7 +3744,7 @@
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "roma_antigua",
-      "grupo_dia": "Roma antigua",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8894,
         12.4975
@@ -3963,7 +3963,7 @@
       "duration_minutes": 60,
       "min_max": 90,
       "zone": "aventino",
-      "grupo_dia": "Roma antigua",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8794,
         12.4931
@@ -4929,7 +4929,7 @@
       "megusta_inicial": 0,
       "level": 3,
       "zone": "appia",
-      "grupo_dia": "Roma antigua",
+      "grupo_dia": "La Vía Appia",
       "coordinates": [
         41.8558,
         12.5138
@@ -4967,7 +4967,7 @@
       "megusta_inicial": 0,
       "level": 3,
       "zone": "appia",
-      "grupo_dia": "Roma antigua",
+      "grupo_dia": "La Vía Appia",
       "coordinates": [
         41.8589,
         12.5108
@@ -5180,6 +5180,7 @@
       "visible_desde_calle": false,
       "camino_alternativa": "El mirador de San Pietro in Montorio",
       "name": "San Pietro in Montorio y Tempietto de Bramante",
+      "si_cerrado": { "cambiar_titulo": "El mirador de San Pietro in Montorio" },
       "por_que_recomendamos": "En su patio está el Tempietto de Bramante, un pequeño templo redondo que es una obra maestra del Renacimiento. Según la tradición, aquí murió San Pedro.",
       "megusta_inicial": 52,
       "duration_minutes": 20,
@@ -5649,7 +5650,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "roma_antigua",
-      "grupo_dia": "Roma antigua",
+      "grupo_dia": "La Vía Appia",
       "coordinates": [
         41.8916,
         12.491
@@ -9388,6 +9389,8 @@
     ],
     "_excursion_fechas_no": "Ninguna excursión de día completo en Nochebuena, Navidad, Nochevieja ni Año Nuevo (PROMPT_REPASO_LOCAL_ROMA, 3): el transporte va recortado y se cena en la ciudad. La excursión pasa al día siguiente que valga o, si no, al anterior.",
     "max_auto_days": 6,
+    "max_auto_dias_ciudad": 5,
+    "_max_auto_dias_ciudad": "Tanda 11 (C8): Roma lleva 5 días de CIUDAD curados (sin contar la excursión); el 6.º día de ciudad sale en blanco («Ya has visto lo mejor de Roma»).",
     "size": "grande",
     "category_cap_selected": 4,
     "category_cap_default": 2,
@@ -13870,6 +13873,8 @@
   "curated_routes": {
     "_nota_galeria": "con_galeria si hay pool o Arte, o si el viaje tiene 4 días o más (tope de museos de pago: 1).",
     "_nota": "Las 12 rutas de Roma (2026-09-27): qué días van, por días de ciudad (sin la excursión) y con o sin Free Tour. Una entrada con \"con_galeria\"/\"sin_galeria\" se decide por el pool o Arte (en 3 días el tope de museos de pago no deja la Galería sola). El motor ordena los días como hasta ahora (cierres, joyas primero) y aplica variantes, ritmo, pool y tope de museos.",
+    "cierre_resuelto_por_version": ["Termas de Caracalla"],
+    "_cierre_resuelto_por_version": "Tanda 11 (punto 8, Eric 21-oct): los sitios cuyo cierre el día resuelve con su versión de ese día de la semana (Caracalla el lunes en D5) no cuentan como día malo. La Galería Borghese NO está: sin ella el D4 pierde su centro y vale cambiar de día.",
     "por_dias_ciudad": {
         "1": {
           "sin_free_tour": ["D0"],
@@ -13888,13 +13893,14 @@
           "con_free_tour": ["D3", "D1-FT", "D4", "D5"]
         },
         "5": {
-          "sin_free_tour": ["D1", "D2", "D4", "D5", "D6"],
-          "con_free_tour": ["D3", "D1-FT", "D4", "D5", "D6"]
+          "sin_free_tour": ["D1", "D2", "D4", "D5", "D7"],
+          "con_free_tour": ["D3", "D1-FT", "D4", "D5", "D7"]
         },
         "6": {
-          "sin_free_tour": ["D1", "D2", "D4", "D5", "D6", "D7"],
-          "con_free_tour": ["D3", "D1-FT", "D4", "D5", "D6", "D7"]
+          "sin_free_tour": ["D1", "D2", "D4", "D5", "D7"],
+          "con_free_tour": ["D3", "D1-FT", "D4", "D5", "D7"]
         },
+        "_nota_tanda11": "Tanda 11 (C8, Eric 22-oct-2026): Roma lleva 5 días curados (Roma antigua, Vaticano, Centro y Villa Borghese, Basílicas y el Aventino y la Vía Appia); desde el 6.º día de ciudad, día en blanco («Ya has visto lo mejor de Roma»). Roma desde arriba (D6) se queda en los datos, sin tabla: se ofrece en el día en blanco («¿Te lo organizamos?»).",
         "_nota_tanda3": "Tanda 3 (6-oct-2026), tabla «Qué días lleva cada viaje» del documento: 3 días D1+D2+D4; 3,5 días + DA-medio (medio día de mañana, de vuelta); 4 días + D5; 5 días (4 de ciudad + la excursión) y 6 días (5 de ciudad + la excursión) + D6; con «Prefiero quedarme en Roma» (sin_excursion) la excursión pasa a D6 (5 días) o D7 (6 días). Las claves son los días de CIUDAD (sin la excursión)."
       },
       "excursiones": {
@@ -14705,6 +14711,7 @@
       "Villa Borghese",
       "Popolo",
       "Basílicas y el Aventino",
+      "La Vía Appia",
       "Roma desde las alturas"
     ],
     "free_tour": "Free Tour",

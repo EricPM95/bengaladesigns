@@ -18,12 +18,14 @@ function TicketIcon() {
  * La pestañita de entrada de la tarjeta de DÍAS (Tanda 6n y 6q): en la esquina de abajo a la derecha, en la misma vertical que el «···» de la esquina de arriba y con el mismo hueco hasta el borde. Sin reservar, naranja con el icono de entrada: abre la
  * ficha en su pestaña «Entradas». Reservada, verde con ✓ y la hora: abre la hoja de «Cambiar». Sin entradas en los datos, no sale.
  */
-export function EntradaEdgeTab({ stop, onOpenEntradas }: { stop: { id: string; name: string; isFreeTour?: boolean }; onOpenEntradas: () => void }) {
+export function EntradaEdgeTab({ stop, onOpenEntradas, soloSiReservada = false }: { stop: { id: string; name: string; isFreeTour?: boolean }; onOpenEntradas: () => void; soloSiReservada?: boolean }) {
   const route = useRouteStore((state) => state.route)
   const data = useStopEntradas(stop)
   const [changing, setChanging] = useState(false)
   if (!data || !route) return null
   const reserved = data.reservation != null
+  // (Tanda 11, punto 4: una parada que se ve por fuera no invita a reservar; solo se queda si el viajero ya tiene su entrada.)
+  if (soloSiReservada && !reserved) return null
   return (
     <>
       <button

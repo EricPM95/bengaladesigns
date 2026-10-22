@@ -71,6 +71,7 @@ summary{cursor:pointer;font-weight:600}
  ${largos ? '<label>Día 4<select id="dia4"></select></label>' : ''}
  <label>Experiencias<select id="combo"></select></label>
  <label>Día de inicio<select id="inicio"></select></label>
+ <label>Qué ha cambiado<select id="cambio"></select></label>
 </div>
 <div class="marcas" id="marcas"></div>
 <p class="nota" id="nota"></p>
@@ -88,6 +89,10 @@ var NOMBRES={titulo:'Nombre ≠ título escrito',repetida:'Parada repetida',cerr
 var ORDEN=['titulo','repetida','cerrada','andando','tarde'];
 var COMBOS={};V.forEach(function(v){COMBOS[v.combo]=v.nombre_combo});
 var LARGOS=!!D.largos;
+var CAMBIOS={nueva:'Ruta nueva',orden_dias:'El orden de los días',paradas:'Entran o salen paradas',orden_paradas:'Mismas paradas, otro orden',avisos:'Cambian los avisos',noche:'Cambia la noche',sin_cambios:'Sin cambios'};
+var elCa=document.getElementById('cambio');
+elCa.add(new Option('Todas las rutas ('+V.length+')',''));
+Object.keys(CAMBIOS).forEach(function(k){var n=V.filter(function(v){return (v.cambios||[]).indexOf(k)>=0}).length;if(n)elCa.add(new Option(CAMBIOS[k]+' ('+n+')',k))});
 var elD=document.getElementById('dias'),elD4=document.getElementById('dia4'),elC=document.getElementById('combo'),elI=document.getElementById('inicio'),elR=document.getElementById('ruta'),elM=document.getElementById('marcas'),elN=document.getElementById('nota');
 (LARGOS?[4,5,6]:[2,3,4]).forEach(function(n){elD.add(new Option(n+' días',n))});
 function llenaDia4(){if(!LARGOS)return;var antes=elD4.value;elD4.innerHTML='';if(elD.value!=='4')elD4.add(new Option('Roma','roma'));elD4.add(new Option('Excursión','excursion'));if(antes&&Array.prototype.some.call(elD4.options,function(o){return o.value===antes}))elD4.value=antes}
@@ -120,6 +125,7 @@ function siguiente(m){
 function pinta(){
  var v=actual();location.hash=v.n+'-'+(LARGOS?v.dia4+'-':'')+v.combo+'-'+v.inicio;
  var h='';
+ if((v.cambios||[]).length&&v.cambios[0]!=='sin_cambios'){h+='<div class="avisoDia"><strong>Qué ha cambiado en esta ruta:</strong> '+v.cambios.map(function(k){return esc(CAMBIOS[k]||k)}).join(' · ')+((v.cambios_detalle||[]).length?'<ul class="porque">'+v.cambios_detalle.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul>':'')+'</div>'}
  h+='<div class="fila">';
  v.dias.forEach(function(d){
   var marcasDia=d.acaba_tarde?' data-m="tarde"':'';
@@ -157,6 +163,7 @@ function pinta(){
  elR.innerHTML=h;ultima=null;
  var tot=0;v.dias.forEach(function(d){d.paradas.forEach(function(p){tot+=(p.marcas||[]).length});if(d.acaba_tarde)tot++});
  elN.textContent=v.n+' días'+(LARGOS?' (día 4: '+(v.dia4==='roma'?'Roma':'excursión')+')':'')+' · '+v.nombre_combo+' · empieza el '+v.dia_semana_inicio+' · '+tot+' marcas en esta ruta ('+V.length+' rutas en total; datos del '+D.generado+').'}
+elCa.onchange=function(){var k=elCa.value;if(!k)return;var w=V.find(function(x){return (x.cambios||[]).indexOf(k)>=0&&x!==actual()&&V.indexOf(x)>V.indexOf(actual())})||V.find(function(x){return (x.cambios||[]).indexOf(k)>=0});if(w){elD.value=w.n;llenaDia4();if(LARGOS)elD4.value=w.dia4;elC.value=w.combo;elI.value=w.inicio;pinta()}};
 elD.onchange=function(){llenaDia4();pinta()};[elC,elI].concat(LARGOS?[elD4]:[]).forEach(function(e){e.onchange=function(){pinta()}});
 var h0=(location.hash||'').slice(1).split('-');
 if(LARGOS&&h0.length>=6){elD.value=h0[0];llenaDia4();elD4.value=h0[1];elC.value=h0[2];elI.value=h0.slice(3).join('-')}else if(!LARGOS&&h0.length>=5){elD.value=h0[0];elC.value=h0[1];elI.value=h0.slice(2).join('-')}else{elD.value=LARGOS?5:3;llenaDia4();if(LARGOS)elD4.value='roma';elC.value='A';elI.selectedIndex=0}

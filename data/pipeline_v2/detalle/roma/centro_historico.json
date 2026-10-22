@@ -347,11 +347,11 @@
         "periods": [
           {
             "dates": "Lun–sáb",
-            "hours": "07:30–12:30, 16:00–19:30"
+            "hours": "07:30–12:30, 16:30–19:30"
           },
           {
             "dates": "Dom",
-            "hours": "07:45–13:00, 16:00–20:00"
+            "hours": "07:45–13:30, 16:30–20:00"
           }
         ],
         "notes": "Entrada gratuita. Cierra al mediodía como la mayoría de iglesias romanas."
@@ -399,7 +399,7 @@
         "periods": [
           {
             "dates": "Todo el año",
-            "hours": "10:00–12:30, 15:00–19:00"
+            "hours": "09:30–12:45, 14:30–18:30"
           }
         ],
         "notes": "Entrada gratuita. Cierra al mediodía. Puede cerrar durante misas o ceremonias sin aviso previo."
@@ -452,7 +452,6 @@
           }
         ],
         "closed": [
-          "lunes",
           "1 may",
           "25 dic"
         ]

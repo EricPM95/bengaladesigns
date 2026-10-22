@@ -52,6 +52,9 @@ function perdidaDe(ids, fechas) {
     for (const nombre of entradasDelDia(id)) {
       const place = placeOf(nombre)
       if (!place || !closedOnDay(place, weekdayOf(fechas[i]), fechas[i])) continue
+      // (Tanda 11, punto 8, decidido por Eric el 21-oct: un cierre que el día resuelve con su versión de ese día —Caracalla el lunes en D5, la Galería en D4— no cuenta como perdido.)
+      const malas = written.days[idBase(id)]?.fechas_malas
+      if (!malas?.dias_semana && !malas?.fechas && (D.curated_routes?.cierre_resuelto_por_version ?? []).includes(nombre) && (written.days[idBase(id)]?.variantes ?? []).some((v) => [].concat(v.cuando ?? []).some((c) => [].concat(c?.cerrado ?? []).includes(nombre)))) continue
       if ((place.level ?? 3) === 1) n1++
       else if (place.level === 2) n2++
     }
@@ -160,9 +163,11 @@ for (const v of VIAJES) {
   }
   const dia14 = diaDe(planes.get(14), '2027-03-24')
   const f14 = dia14 && paradas(dia14).find((r) => r.lugar === BASILICA)
-  debe(f14?.modo === 'fuera', 'basilica', `Viaje 14 · día 1: la Basílica, que a su hora ya ha cerrado, tiene que ir por fuera (va ${f14?.modo}, ${f14 && toHHMM(f14.t0)})`)
+  // (Tanda 11, punto 13: antes de dejarla llegar cerrada, el motor la pone antes de lo que no cierra; si así llega abierta va por dentro —el horario ya se comprueba arriba—, y si no, por fuera con su aviso.)
+  const llegaAbierta = f14?.modo === 'dentro'
+  debe(f14?.modo === 'fuera' || llegaAbierta, 'basilica', `Viaje 14 · día 1: la Basílica, que a su hora ya ha cerrado, tiene que ir por fuera o llegar abierta (va ${f14?.modo}, ${f14 && toHHMM(f14.t0)})`)
   const v14 = dia14?.schedule.visits.find((v) => v.place.name === BASILICA)
-  debe(/cerrado/i.test(v14?.place.stopNotice ?? ''), 'basilica', `Viaje 14 · día 1: la Basílica por fuera no lleva su aviso (${v14?.place.stopNotice})`)
+  debe(llegaAbierta || /cerrado/i.test(v14?.place.stopNotice ?? ''), 'basilica', `Viaje 14 · día 1: la Basílica por fuera no lleva su aviso (${v14?.place.stopNotice})`)
   const dia16 = diaDe(planes.get(16), '2027-06-30')
   const f16 = dia16 && paradas(dia16).find((r) => r.lugar === BASILICA)
   debe(f16 && (f16.modo === 'fuera' || f16.t0 >= toMin('12:30')), 'basilica', `Viaje 16 · día 2: la Basílica sale a las ${f16 && toHHMM(f16.t0)} y abre a las 12:30`)
