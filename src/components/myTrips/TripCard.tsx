@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { dayCountryCode } from '../../lib/flagColors'
 import type { SavedTrip } from '../../lib/tripPersistence'
 import { formatCompactDateRangeEs } from '../../lib/dateRange'
@@ -28,37 +27,12 @@ function dateSubtitle(trip: SavedTrip): string {
 
 /**
  * Tarjeta de un viaje guardado en "Mis viajes" — bandera + destino, rango de fechas, papelera
- * discreta en la esquina para borrar (con confirmación inline, mismo patrón que
+ * discreta en la esquina para borrar (Tanda 10F: abre la hoja de eliminar del Perfil; antes, con confirmación inline, mismo patrón que
  * ConfirmDeleteButton.tsx). Sin miniatura de mapa/imagen por ahora (se dejó fuera a propósito, ver
  * el prompt original — no era trivial de generar barato).
  */
 export function TripCard({ trip, onOpen, onDelete }: TripCardProps) {
-  const [confirming, setConfirming] = useState(false)
   const countryCode = dayCountryCode(trip.route.days[0]?.countryCode, trip.route.days[0]?.city)
-
-  if (confirming) {
-    return (
-      <Card className="space-y-3 border-accent-red/30 bg-accent-red/5 p-4">
-        <p className="text-small text-text">¿Seguro que quieres eliminar tu viaje a {trip.route.destination}?</p>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setConfirming(false)}
-            className="flex-1 rounded-lg bg-bg-hover py-1.5 text-small font-medium text-text hover:bg-border"
-          >
-            Cancelar
-          </button>
-          <button
-            type="button"
-            onClick={onDelete}
-            className="flex-1 rounded-lg bg-accent-red py-1.5 text-small font-semibold text-white hover:opacity-90"
-          >
-            Sí, eliminar
-          </button>
-        </div>
-      </Card>
-    )
-  }
 
   return (
     <Card className="relative">
@@ -75,7 +49,7 @@ export function TripCard({ trip, onOpen, onDelete }: TripCardProps) {
         type="button"
         onClick={(event) => {
           event.stopPropagation()
-          setConfirming(true)
+          onDelete()
         }}
         aria-label={`Eliminar viaje a ${trip.route.destination}`}
         title="Eliminar viaje"

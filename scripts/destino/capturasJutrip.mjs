@@ -2,6 +2,7 @@
 // de apertura, el icono, las películas E12 y E13 (un fotograma del principio y uno del final) y la app por dentro, de día y de noche.
 // Hace falta `npm run server` y `npm run dev` (y Internet: el buscador del origen es el de siempre).
 //   API_URL=http://localhost:8787 node scripts/destino/capturasJutrip.mjs [parte ...]      (partes: primera formulario entrar apertura peliculas interior hoy tanda10b tanda10c tanda10d tanda10e)
+import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'
 
@@ -358,14 +359,22 @@ if (quiero('tanda10e')) {
   console.log('· 10E: la apertura en tres momentos')
   {
     // La apertura se pone en un momento exacto de su animación (se paran las animaciones y se lleva cada una a ese instante): así sale igual cada vez.
-    const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=1' })
-    await app.esp(1500)
-    for (const [nombre, ms] of [['01a_apertura_logo_entrando', 800], ['01b_apertura_frase_a_medias', 1650], ['01c_apertura_final', 2950]]) {
-      await app.evaluar(`(() => { for (const a of document.getAnimations()) { a.pause(); a.currentTime = ${ms} } return true })()`)
-      await app.esp(400)
-      await app.captura(n10(nombre))
+    // (Tanda 10F) Antes salían en blanco si la página aún se estaba cargando o el servidor de desarrollo se reiniciaba: se espera a que la apertura exista y tenga sus animaciones, y si una captura sale casi vacía se repite.
+    for (let intento = 0; intento < 4; intento++) {
+      const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=1' })
+      for (let i = 0; i < 60 && !(await app.evaluar("Boolean(document.getElementById('apertura')) && document.getAnimations().length > 20").catch(() => false)); i++) await app.esp(500)
+      await app.esp(500)
+      let bien = true
+      for (const [nombre, ms] of [['01a_apertura_logo_entrando', 800], ['01b_apertura_frase_a_medias', 1650], ['01c_apertura_final', 2950]]) {
+        await app.evaluar(`(() => { for (const a of document.getAnimations()) { a.pause(); a.currentTime = ${ms} } return true })()`)
+        await app.esp(400)
+        await app.captura(n10(nombre))
+        if (fs.statSync(n10(nombre)).size < 4000) bien = false
+      }
+      app.cerrar()
+      if (bien) break
+      console.log('  (una captura de la apertura salió en blanco: se repite)')
     }
-    app.cerrar()
   }
   console.log('· 10E: Entrar y Crear el viaje (primer paso)')
   {

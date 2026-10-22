@@ -13,7 +13,7 @@ const ESTILO_MAPA_VIAJES = 'mapbox://styles/mapbox/streets-v12'
 
 /** El alto del mapa (Tanda 6y4): 286 px, un 30 % más que los 220 de antes. Lo repite `CAJA_MAPA_VIAJES.alto`. */
 const CLASE_MARCO = 'isolate relative h-[286px] flex-none overflow-hidden rounded-[26px] border border-text/[.08]'
-const DORADO = 'oklch(0.8 0.14 70)'
+const DORADO = '#E9C77A'
 
 /** La chincheta del diseño: el punto oscuro con su anillo claro y su latido, y al lado la pastilla «Roma ×5» (el «×N» solo si hay más de un viaje a ese destino). */
 function crearChincheta(chincheta: Chincheta): HTMLButtonElement {

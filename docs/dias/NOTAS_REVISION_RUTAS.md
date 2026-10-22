@@ -58,6 +58,8 @@ Cada punto, con dónde se ve en RUTAS_REVISION.html. Todo toca el motor: muestra
   - con otra fecha: la parada **se mueve al día de su reserva**, por dentro y a su hora;
   - con una fecha en que ese sitio cierra (por ejemplo, un lunes): **se le avisa**, «Ojo: el Castillo de Sant'Angelo cierra los lunes. Revisa la fecha de tu entrada.», **y se guarda igual**. Nunca se le niega nada.
   - Que Code mire qué hace hoy la app en los dos casos y lo diga en el informe.
+- **El mirador no cierra (Claude, 22-oct, revisando los de 2 días con Eric):** en 3 rutas de 2 días, «El mirador de San Pietro in Montorio» sale con «Cerrado este día» y «Por fuera: Hoy cierra»: hereda el horario del Tempietto. Un mirador, una plaza o un sitio al aire libre no cierra: sin avisos de cierre. Que Code mire si pasa con otros.
+- **Revisión de los de 2 días (Eric, 22-oct):** los mismos fallos que en 3 y 4 días: el Gesù cerrado (12 de 21 rutas, punto 13), el Tempietto de noche (punto 3), los tres avisos de cierre juntos (este punto) y San Luigi a las 18:30 (punto 12). Nada nuevo más que lo del mirador.
 
 ## 5. Falsos avisos de la página de revisión (no son fallos de la app)
 - «Parada repetida» (168): son el Parque de Villa Borghese y el Reloj de agua del Pincio, que en la app ya salen como dos paradas distintas. No es un repetido: **está bien así (Eric, 20-oct)**.
@@ -168,7 +170,7 @@ Cada punto, con dónde se ve en RUTAS_REVISION.html. Todo toca el motor: muestra
 ## C2. El último día es el día que se añade · DECIDIDO (Eric, 21-oct)
 - **Por qué (Eric):** los 3 primeros días (Roma antigua, Vaticano, Centro y Villa Borghese) son lo típico e imprescindible; lo que se añade es importante, pero menos. Por eso es lo que se puede recortar el último día.
 - En 4 días, el último es Basílicas y el Aventino (Parte A, punto 9). En 5 y 6 días pasa lo mismo con el día que se añade: Roma desde arriba o la Vía Appia van al final, y también se tienen que poder partir según la hora de vuelta (Parte B).
-- **6 días · DECIDIDO (Eric, 21-oct):** día 5, la Vía Appia; día 6 (el último), Roma desde arriba. La Vía Appia está lejos del centro (hay que ir y volver en transporte) y sus catacumbas tienen cierres propios según el día de la semana: como último día, con vuelo, quedaría muy justo.
+- **6 días · DECIDIDO (Eric, 21-oct):** día 5, la Vía Appia; día 6 (el último), Roma desde arriba (ver C5). La Vía Appia está lejos del centro (hay que ir y volver en transporte) y sus catacumbas tienen cierres propios según el día de la semana: como último día, con vuelo, quedaría muy justo.
 
 ## C3. La excursión en 4 días se queda el día 4 · DECIDIDO (Eric, 21-oct)
 - Se queda como está: con 4 días y excursión, la excursión el día 4. Con vuelos, en la mayoría de los casos no cabrá y desaparecerá, pero lo que interesa es que la gente vea que hay excursiones.
@@ -185,3 +187,42 @@ Página: docs/dias/RUTAS_REVISION_LARGOS.html (210 rutas). Informe: docs/dias/IN
 - **Santa Maria in Aracoeli, «Cerrado este día»** de martes a domingo (126 veces), sin horario: dato equivocado (punto 12).
 - **Muchas nocturnas** (de 5 a 8 por viaje; el Coliseo de día y de noche en todas): a Eric le gustan las nocturnas; mirar si alguna sobra.
 - **Días de 15-17 paradas** («Centro histórico y Villa Borghese» llega a 17).
+
+## C5. El día que se añade en 5 días: la Vía Appia, o Roma desde arriba con Naturaleza y Vistas · DECIDIDO (Eric, 21-oct)
+- **La idea de Eric:** la Vía Appia («La Vía Appia y Trastevere tranquilo», D7) es casi toda nueva (Campo de' Fiori, Plaza Farnese, Ponte Sisto, Villa Farnesina, Santa Cecilia, Piazza in Piscinula, las Catacumbas de San Calixto, la Vía Appia en bici, el Coliseo desde Largo Gaetana Agnesi, Monti); Roma desde arriba (D6) pasa mucho por sitios ya vistos (de paso, 10 min). Por eso va antes.
+- **El orden de los días que se añaden:**
+  - 4 días: Basílicas y el Aventino (D5);
+  - 5 días: + **la Vía Appia (D7)**; con **Naturaleza y Vistas**, + **Roma desde arriba (D6)**, que es justo los miradores (la Cúpula, la terraza del ángel, la de los Capitolinos, la del Altar de la Patria);
+  - 6 días: + los dos: la Vía Appia el día 5 y Roma desde arriba el día 6;
+  - con excursión el día 4, los días que siguen, con la misma regla (5 días: Basílicas y el Aventino; 6 días: + la Vía Appia, o Roma desde arriba con Naturaleza y Vistas).
+- **El día 5 no es el día de irse:** el de vuelta va aparte, sin paradas. Así que la Vía Appia, aunque esté lejos, no choca con la maleta ni con el vuelo (con vuelo, Parte B).
+- **Lo que hay que cuidar (Claude, mirado en los datos):**
+  - **Cierres:** las Catacumbas de San Calixto cierran los miércoles, el 1 de enero, Pascua, el 25 de diciembre y de mediados de enero a mediados de febrero; Villa Farnesina, los domingos (salvo el segundo de cada mes), y solo abre por la mañana (de 9:00 a 14:00). D7 ya tiene su versión de domingo. Si el día de la Vía Appia cae en un día que cierran las Catacumbas, que el motor lo cambie de día con otro de los que se añaden y, si no puede, use Roma desde arriba.
+  - **La luz en invierno:** las Catacumbas abren por la tarde de 14:00 a 17:00 y luego van unas 2 horas de bici por la Vía Appia; en noviembre el sol se pone hacia las 17:00. Que el motor mire la puesta de sol de ese día y, si la bici acabaría de noche, use la versión sin bici (la de «Si llueve»: en taxi hasta la tumba de Cecilia Metela) o ponga la Vía Appia por la mañana (las Catacumbas abren de 9:00 a 12:00). Nunca en bici por la Vía Appia a oscuras.
+
+## C6. 6 días empezando el sábado: el orden de los días que se añaden · lo ha visto Eric (21-oct)
+- **Lo que sale (6 días, día 4 en Roma, todas las combinaciones, sábado 14 nov):** sáb Roma antigua · dom Centro y Villa Borghese · lun Vaticano · **mar Roma desde arriba** (en la app, «Roma antigua y Vaticano») · mié Basílicas y el Aventino · jue la Vía Appia (en la app, «Roma antigua»). Roma desde arriba sale antes que los otros dos días que se añaden.
+- **Los cierres de esa semana:** el Vaticano no puede ir el domingo; las Basílicas, mejor no el lunes (Caracalla, solo por la mañana); Roma desde arriba, no el lunes (el Castillo cierra) y el miércoles con su versión de la audiencia (la Cúpula, al final); la Vía Appia, no el miércoles (las Catacumbas cierran).
+- **Lo que tocaría con las reglas de C5** (Basílicas, luego la Vía Appia, luego Roma desde arriba): mar Basílicas · mié la Vía Appia no puede (las Catacumbas cierran) → **mié Roma desde arriba** (con su versión del miércoles) · **jue la Vía Appia**. Es decir: cuando el cierre no deja el orden de C5, se cambian entre ellos los días que se añaden, nunca con los tres primeros.
+- Que Code lo compruebe en las 6 combinaciones y los 7 días de inicio, y que los días salgan con su nombre (C4).
+
+## C7. Dos visitas de verdad repetidas cuando entra Roma desde arriba · lo ha visto Claude (22-oct)
+- Contado en las 210 rutas, solo lo que se repite con 30 minutos o más (lo de paso, de 10 minutos, está bien):
+  - **El Castillo de Sant'Angelo (120 veces):** el día del Vaticano lo lleva (por fuera, unos 30 min) y Roma desde arriba lo lleva otra vez «hasta la terraza del ángel» (90 min). Propuesta: si el viaje lleva Roma desde arriba, el día del Vaticano solo pasa por el Puente y lo ve de paso (10 min), y se entra una vez, en Roma desde arriba.
+  - **El Altar de la Patria (103 veces):** la Roma antigua lo lleva (45 min) y Roma desde arriba lleva la Terraza del Altar de la Patria (45 min). Propuesta: si el viaje lleva Roma desde arriba, la Roma antigua lo ve de paso (sin subir) y la terraza queda para Roma desde arriba.
+- Lo demás que repite son pasos de 10 minutos: bien así (C4).
+
+## C8. Roma curada hasta 5 días; el 6.º, día en blanco · DECIDIDO (Eric, 22-oct) · SUSTITUYE a C2 (6 días), C5 (Roma desde arriba), C6 y C7
+- **Por qué (Eric):** Roma desde arriba no se puede hacer sin repetir: la Cúpula se sube al ir a la Basílica y el Castillo se ve en el día del Vaticano. Mejor no forzar un día nuevo.
+- **La regla:** Roma lleva **5 días de Roma curados**: Roma antigua, Vaticano, Centro y Villa Borghese, Basílicas y el Aventino, y la Vía Appia. A partir del 6.º día de Roma, **día en blanco**, como ya pasa del 7.º en adelante.
+  - 4 días: los 3 primeros + Basílicas y el Aventino (o la excursión el día 4);
+  - 5 días: + la Vía Appia (con excursión el día 4: + Basílicas y el Aventino);
+  - 6 días: día 6 en blanco (con excursión el día 4: + Basílicas y el Aventino + la Vía Appia; así no queda ninguno en blanco).
+- **Sin la rama de Naturaleza y Vistas:** con Naturaleza y Vistas, la Cúpula ya va en el día del Vaticano (puntos 1 y 2).
+- **Si un cierre no deja la Vía Appia en su día** (las Catacumbas cierran los miércoles…), se cambia con Basílicas y el Aventino, nunca con los tres primeros, para que el día en blanco quede siempre después de los 5 días de Roma (si fuera antes, «Ya has visto lo mejor de Roma» no sería verdad). Solo si tampoco se puede, con el día en blanco.
+- **El día en blanco es el mismo del 7.º en adelante (Eric, 22-oct):** la hoja «Ya has visto lo mejor de Roma» («A partir de aquí, el viaje lo eliges tú: te enseñamos los sitios que aún no has visto para que montes cada día a tu gusto») con [Elegir mis sitios]; debajo, pequeño, «¿Te lo organizamos? Roma desde arriba».
+- **Roma desde arriba (D6) no se borra:** se queda en los datos. Propuesta de Claude para el día en blanco: además de [+ Añadir parada] y la excursión sugerida, «¿Te lo organizamos?» con un día de miradores ya montado (Roma desde arriba) que el viajero elige si quiere, como el «Organízame este día» que ya tiene Design para el día de excursión. Así el día en blanco no queda vacío y no se repite nada sin que él lo pida.
+
+## C9. La Cúpula de San Pedro: parada solo con Naturaleza y Vistas · DECIDIDO (Eric, 22-oct)
+- Con **Naturaleza y Vistas**, la Cúpula va como parada en el día del Vaticano («Cúpula de San Pedro y Basílica por dentro», puntos 1 y 2).
+- **Sin Naturaleza y Vistas**, no va como parada (el día ya va lleno, son más de 500 escalones tras 4 horas de Museos y se paga aparte), pero en la ficha de la Basílica sale un tip con botón: «¿Te quedan fuerzas? Sube a la Cúpula: Roma entera a tus pies» [+ Añadir]. Si la añade, con la regla de una sola visita (Cúpula y Basílica por dentro).

@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { usePerfilUi } from '../../store/usePerfilUi'
+import { useEliminarViaje } from '../../lib/eliminarViaje'
+import { BotonEditarViajes } from '../perfil/BotonEditarViajes'
 import { empezarViajeNuevo } from '../../lib/nuevoViaje'
 import { logrosActivos } from '../../lib/logros'
 import { useNumeroFotos } from '../../lib/useNumeroFotos'
@@ -32,6 +34,8 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
   const albumDe = usePerfilUi((state) => state.albumDe)
   const abrirAlbum = usePerfilUi((state) => state.abrirAlbum)
   const cerrarAlbum = usePerfilUi((state) => state.cerrarAlbum)
+  const editando = usePerfilUi((state) => state.editando)
+  const pedirEliminar = useEliminarViaje((state) => state.pedir)
   const [newTripOpen, setNewTripOpen] = useState(false)
   const [creditosOpen, setCreditosOpen] = useState(false)
 
@@ -58,16 +62,19 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
       <MapaMisViajes chinchetas={chinchetas} cifras={cifras} onElegir={abrirAlbum} />
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between px-1">
-          <h3 className="m-0 uppercase text-text/55" style={ETIQUETA}>
-            Mis viajes
-          </h3>
+          <span className="flex items-baseline gap-3">
+            <h3 className="m-0 uppercase text-text/55" style={ETIQUETA}>
+              Mis viajes
+            </h3>
+            {viajes.length > 0 && <BotonEditarViajes />}
+          </span>
           <span className="text-text/45" style={{ font: "500 11px 'Geist Mono',monospace" }} data-numero-de-viajes>
             {viajes.length}
           </span>
         </div>
         {viajes.length === 0 && <p className="px-1 text-[13px] text-text/60">Aún no tienes viajes guardados en este dispositivo.</p>}
         {viajes.map((viaje) => (
-          <FilaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} abierto={viaje.id === rutaAbierta?.id} onAbrir={() => abrirAlbum(viaje.id)} onAbrirViaje={() => abrirViaje(viaje)} />
+          <FilaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} abierto={viaje.id === rutaAbierta?.id} onAbrir={() => abrirAlbum(viaje.id)} onAbrirViaje={() => abrirViaje(viaje)} editando={editando} onEliminar={() => pedirEliminar(viaje, fotos ? (fotos.get(viaje.id) ?? 0) : null)} />
         ))}
       </div>
     </>
@@ -107,7 +114,7 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
                   onClick={() => setNewTripOpen(true)}
                   className="flex h-[58px] w-full items-center justify-center gap-2.5 rounded-full btn-champan text-[16px] font-semibold shadow-[0_14px_26px_-14px_rgba(28,34,48,.8)] transition-transform active:scale-[.98]"
                 >
-                  <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full text-[#17120a]" style={{ background: 'oklch(0.8 0.14 70)' }}>
+                  <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full text-[#FFFDF8]" style={{ background: '#A67C52' }}>
                     <Icono nombre="anadir" size={13} grosor={2.6} />
                   </span>
                   Nuevo viaje

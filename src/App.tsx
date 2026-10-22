@@ -19,6 +19,7 @@ import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
 import { MomentosHost } from './components/logros/momentos/MomentosHost'
 import { PantallasHost } from './components/logros/pantallas/PantallasHost'
 import { AvisoInstalar } from './components/logros/AvisoInstalar'
+import { EliminarViajeHost } from './components/perfil/EliminarViajeHost'
 import { CampaignLinks } from './components/sync/CampaignLinks'
 import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
 import { FotoVuela } from './components/perfil/FotoVuela'
@@ -109,6 +110,7 @@ function App() {
       <MomentosHost />
       <PantallasHost />
       <AvisoInstalar />
+      <EliminarViajeHost />
       <PrecioVuela />
       <FotoVuela />
       <CampaignLinks />

@@ -8,6 +8,9 @@ interface PerfilUiState {
   abierto: boolean
   /** El viaje cuyo álbum está abierto (su id); null: no hay álbum abierto. */
   albumDe: string | null
+  /** [Editar] en «Mis viajes» (Tanda 10F): cada viaje enseña su papelera. Se apaga al cerrar el Perfil. */
+  editando: boolean
+  alternarEdicion: () => void
   abrir: () => void
   /** Abre el Perfil directamente en el álbum de ese viaje. */
   abrirAlbum: (viajeId: string) => void
@@ -18,8 +21,10 @@ interface PerfilUiState {
 export const usePerfilUi = create<PerfilUiState>((set) => ({
   abierto: false,
   albumDe: null,
+  editando: false,
+  alternarEdicion: () => set((s) => ({ editando: !s.editando })),
   abrir: () => set({ abierto: true }),
   abrirAlbum: (viajeId) => set({ abierto: true, albumDe: viajeId }),
   cerrarAlbum: () => set({ albumDe: null }),
-  cerrar: () => set({ abierto: false, albumDe: null }),
+  cerrar: () => set({ abierto: false, albumDe: null, editando: false }),
 }))

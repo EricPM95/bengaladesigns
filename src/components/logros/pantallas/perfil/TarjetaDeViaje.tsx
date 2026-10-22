@@ -22,15 +22,28 @@ const degradadoDe = (destino: string): string => {
   return DEGRADADOS[h % DEGRADADOS.length]
 }
 
-export function TarjetaDeViaje({ viaje, fotos, enCurso, abierto, onAbrir, onAbrirViaje }: { viaje: ResumenViaje; fotos: number | null; enCurso: boolean; abierto: boolean; onAbrir: () => void; onAbrirViaje: () => void }): ReactNode {
-  const sePuedeAbrir = !abierto && Boolean(viaje.guardado)
+export function TarjetaDeViaje({ viaje, fotos, enCurso, abierto, onAbrir, onAbrirViaje, editando = false, onEliminar }: { viaje: ResumenViaje; fotos: number | null; enCurso: boolean; abierto: boolean; onAbrir: () => void; onAbrirViaje: () => void; editando?: boolean; onEliminar?: () => void }): ReactNode {
+  const sePuedeAbrir = !abierto && Boolean(viaje.guardado) && !editando
+  const esInvitado = Boolean(viaje.guardado?.esInvitado)
   const fin = viaje.inicioIso && viaje.dias > 0 ? new Date(new Date(`${viaje.inicioIso}T12:00:00`).getTime() + (viaje.dias - 1) * 86400000).toISOString().slice(0, 10) : null
   const diaN = enCurso && viaje.inicioIso && fin ? daysBetweenInclusive(viaje.inicioIso, todayIso()) : null
   const fechas = [viaje.cuando, viaje.duracion].filter(Boolean).join(' · ')
   return (
     <div style={{ position: 'relative', flex: 'none', height: enCurso ? 176 : 132, borderRadius: 22, overflow: 'hidden', background: degradadoDe(viaje.destino), color: '#FFFDF8', boxShadow: enCurso ? '0 18px 30px -18px rgba(90,40,20,.7)' : 'none' }}>
       <button type="button" onClick={onAbrir} data-viaje-del-perfil={viaje.id} aria-label={`${viaje.destino}, ${fechas}`} style={{ position: 'absolute', inset: 0, width: '100%', border: 'none', padding: 0, background: 'linear-gradient(180deg,rgba(10,12,20,.1) 20%,rgba(10,12,20,.72))', cursor: 'pointer' }} />
-      {(diaN !== null || abierto) && (
+      {editando && onEliminar && (
+        <button
+          type="button"
+          onClick={onEliminar}
+          data-eliminar-viaje={viaje.id}
+          aria-label={esInvitado ? `Salir del viaje a ${viaje.destino}` : `Eliminar el viaje a ${viaje.destino}`}
+          title={esInvitado ? 'Salir de este viaje' : 'Eliminar viaje'}
+          style={{ position: 'absolute', right: 8, top: 8, width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,253,248,.95)', color: 'rgb(var(--accent-red))', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+        >
+          <Icono nombre={esInvitado ? 'salir' : 'papelera'} size={19} />
+        </button>
+      )}
+      {!editando && (diaN !== null || abierto) && (
         <span style={{ position: 'absolute', right: 12, top: 12, height: 24, padding: '0 9px', borderRadius: 999, ...botonChampan(), display: 'flex', alignItems: 'center', gap: 6, font: "600 11px 'Geist'", pointerEvents: 'none' }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#A67C52' }} />
           {diaN !== null && viaje.dias > 0 ? `Día ${Math.min(diaN, viaje.dias)} de ${viaje.dias}` : 'Abierto'}

@@ -1,6 +1,6 @@
 import type { CifrasDelPerfil } from '../../lib/viajesPerfil'
 
-const DORADO = 'oklch(0.8 0.14 70)'
+const DORADO = '#E9C77A'
 
 function Cifra({ valor, etiqueta, oscura = false }: { valor: number; etiqueta: string; oscura?: boolean }) {
   return (

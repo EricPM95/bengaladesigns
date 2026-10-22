@@ -101,6 +101,9 @@ export function TripSync() {
         if (cancelled) return
         useSyncStore.getState().setTravelerId(id)
 
+        // (Tanda 10F) Si la app se cerró durante el plazo de [Deshacer] de un viaje eliminado, se borra ahora, antes de cargar la lista (así ni sale ni se abre solo).
+        await import('../../lib/eliminarViaje').then((m) => m.procesarPendienteAlAbrir()).catch(() => false)
+        if (cancelled) return
         const trips = await loadAllTrips(id)
         if (cancelled) return
         useSyncStore.getState().setSavedTrips(trips)

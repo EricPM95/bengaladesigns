@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
-import { deleteTrip, type SavedTrip } from '../../lib/tripPersistence'
+import type { SavedTrip } from '../../lib/tripPersistence'
+import { useEliminarViaje } from '../../lib/eliminarViaje'
+import { contarFotos } from '../../lib/fotosViaje'
+import { resumenDeViaje } from '../../lib/viajesPerfil'
 import { Button } from '../ui/Button'
 import { TripCard } from './TripCard'
 
@@ -28,15 +31,10 @@ export function MyTripsScreen() {
     hydrateTrip(trip)
   }
 
-  const handleDelete = async (trip: SavedTrip) => {
-    try {
-      await deleteTrip(trip.id)
-      useSyncStore.getState().removeSavedTrip(trip.id)
-    } catch {
-      // Guardado en la nube ya tiene su propio aviso discreto (SyncStatusBanner) — para un borrado
-      // fallido, lo más simple es dejar la tarjeta tal cual (con su confirmación) para que el
-      // usuario pueda reintentar, en vez de un segundo canal de error superpuesto.
-    }
+  // (Tanda 10F) Eliminar es lo mismo que en el Perfil: la hoja de «¿Eliminar tu viaje a…?», con sus fotos, lo que se borra y lo que se queda, y [Deshacer].
+  const handleDelete = (trip: SavedTrip) => {
+    const viaje = resumenDeViaje(trip.route, trip)
+    void contarFotos([viaje.id]).then((cuentas) => useEliminarViaje.getState().pedir(viaje, cuentas.get(viaje.id) ?? 0))
   }
 
   return (

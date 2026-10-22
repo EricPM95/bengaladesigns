@@ -132,7 +132,7 @@ await M.fetchDestinationExcursions('Roma')
   const iUltimaHora = h.lastIndexOf('21:00')
   const iBoton = h.indexOf('Ver disponibilidad')
   debe(iBoton > iUltimaHora && iUltimaHora > 0, '3 botón', '[Ver disponibilidad] no va debajo de las horas')
-  debe(/<button[^>]*bg-accent[^>]*>Ver disponibilidad<\/button>/.test(h), '3 botón', '[Ver disponibilidad] no es un botón de los nuestros (bg-accent, texto blanco)')
+  debe(/<button[^>]*btn-champan[^>]*>Ver disponibilidad<\/button>/.test(h), '3 botón', '[Ver disponibilidad] no es un botón de los nuestros (champán, Tanda 10E)')
 }
 
 // ── 4. [Ver disponibilidad] ──

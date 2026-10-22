@@ -58,8 +58,8 @@ function MapaHastaLaParada({ desde, hasta }: { desde: Coordinates | null; hasta:
   if (!TOKEN || fallo) return relleno
   // `padding` solo vale con `auto` (con centro y zoom, Mapbox contesta 422).
   const [pines, padding] = desde
-    ? [`pin-s+8E96A8(${lonLat(desde)}),pin-l+B8325F(${lonLat(hasta)})/auto`, 'padding=36&']
-    : [`pin-l+B8325F(${lonLat(hasta)})/${lonLat(hasta)},15`, '']
+    ? [`pin-s+8E96A8(${lonLat(desde)}),pin-l+A67C52(${lonLat(hasta)})/auto`, 'padding=36&']
+    : [`pin-l+A67C52(${lonLat(hasta)})/${lonLat(hasta)},15`, '']
   const url = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/${pines}/600x236@2x?${padding}access_token=${TOKEN}`
   return <img src={url} alt="Mapa hasta la siguiente parada" className="h-[118px] w-full rounded-[21px] object-cover" loading="lazy" onError={() => setFallo(true)} />
 }

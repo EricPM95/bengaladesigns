@@ -87,7 +87,7 @@ function FotoYMapa({ parada, desde, ciudad, dateIso }: { parada: Stop; desde: Co
   let mapa: string | null = null
   if (TOKEN && real && !falloMapa) {
     // Más lejos (zoom 13): se ven nombres, plazas y el río. El aviso va aparte, pequeño, con su «i» (`attribution=false`: el texto sigue disponible al tocarla).
-    const pines = desde ? `pin-s+8E96A8(${lonLat(desde)}),pin-l+B8325F(${lonLat(parada.coordinates)})` : `pin-l+B8325F(${lonLat(parada.coordinates)})`
+    const pines = desde ? `pin-s+8E96A8(${lonLat(desde)}),pin-l+A67C52(${lonLat(parada.coordinates)})` : `pin-l+A67C52(${lonLat(parada.coordinates)})`
     mapa = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/${pines}/${lonLat(parada.coordinates)},13/192x128@2x?attribution=false&access_token=${TOKEN}`
   }
   return (

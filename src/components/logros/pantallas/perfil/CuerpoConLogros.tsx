@@ -3,6 +3,9 @@ import { Chapa } from '../../dibujos'
 import { MapaMisViajes } from '../../../perfil/MapaMisViajes'
 import { agruparViajes } from '../../../perfil/agruparViajes'
 import { Icono } from '../../../ui/Icono'
+import { useEliminarViaje } from '../../../../lib/eliminarViaje'
+import { usePerfilUi } from '../../../../store/usePerfilUi'
+import { BotonEditarViajes } from '../../../perfil/BotonEditarViajes'
 import { plural, type Chincheta, type CifrasDelPerfil, type ResumenViaje } from '../../../../lib/viajesPerfil'
 import { useLogrosPantallas } from '../useLogrosPantallas'
 import { elegirTitulo, pedirPerfil, type PerfilLogros } from './api'
@@ -41,6 +44,8 @@ export interface PropsCuerpoConLogros {
 export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, cifras, fotos, rutaAbiertaId, onAbrirAlbum, onAbrirViaje, perfilInicial = null }: PropsCuerpoConLogros): ReactNode {
   const [perfil, setPerfil] = useState<PerfilLogros | null>(perfilInicial)
   const [eligiendo, setEligiendo] = useState(false)
+  const editando = usePerfilUi((s) => s.editando)
+  const pedirEliminar = useEliminarViaje((s) => s.pedir)
   const pantallas = useLogrosPantallas((s) => s.pila.length)
   const abrir = useLogrosPantallas.getState().abrir
   // Mi nombre y mi foto (cuentas parte 3): «Hola, {nombre}» y la foto en el marco; tocar el círculo los cambia.
@@ -147,7 +152,10 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
 
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between px-1">
-          <h3 className="m-0 font-display text-[24px] leading-none text-text">Mis viajes</h3>
+          <span className="flex items-baseline gap-3">
+            <h3 className="m-0 font-display text-[24px] leading-none text-text">Mis viajes</h3>
+            {viajes.length > 0 && <BotonEditarViajes />}
+          </span>
           <span className="text-text/45" style={{ font: "500 11px 'Geist Mono',monospace" }} data-numero-de-viajes>
             {viajes.length}
           </span>
@@ -159,7 +167,7 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
               {g.titulo}
             </span>
             {g.viajes.map((viaje) => (
-              <TarjetaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} enCurso={g.clave === 'en_curso'} abierto={viaje.id === rutaAbiertaId} onAbrir={() => abrir({ t: 'viaje', tripId: viaje.id })} onAbrirViaje={() => onAbrirViaje(viaje)} />
+              <TarjetaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} enCurso={g.clave === 'en_curso'} abierto={viaje.id === rutaAbiertaId} onAbrir={() => abrir({ t: 'viaje', tripId: viaje.id })} onAbrirViaje={() => onAbrirViaje(viaje)} editando={editando} onEliminar={() => pedirEliminar(viaje, fotos ? (fotos.get(viaje.id) ?? 0) : null)} />
             ))}
           </div>
         ))}

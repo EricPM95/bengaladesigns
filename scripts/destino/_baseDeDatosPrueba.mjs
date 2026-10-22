@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { PGlite } from '@electric-sql/pglite'
 
-export const MIGRACIONES = /^(0001|0002|0003|0012|0018|0020|0021|0023|0024|0025|0026|0027|0028|0030)_/
+export const MIGRACIONES = /^(0001|0002|0003|0012|0018|0020|0021|0023|0024|0025|0026|0027|0028|0030|0031)_/
 
 export async function crearBaseDePrueba({ migraciones = MIGRACIONES, alFallar = (m) => console.log('  ✗', m) } = {}) {
   // (PGlite se cree en un navegador si ve una ventana: se quita la de mentira antes de crearlo.)

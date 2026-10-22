@@ -30,7 +30,7 @@ const ORO_CLARO = '#D8B98E'
 const ORO_OSCURO = '#A67C52'
 const ORO_TEXTO = '#6F4E37'
 const MAR = '#BCD8EC'
-const PIN = '#E8953A'
+const PIN = '#D8B98E'
 const MONO = "'Geist Mono',monospace"
 const SERIF = "'Instrument Serif',serif"
 /** La Europa del principio: el centro del mapa antes de elegir nada (más cerca de Europa, a petición de Eric). */
@@ -342,7 +342,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
                   {!reducir && <animate attributeName="r" values={sel ? '9;17;9' : '6;12;6'} dur={sel ? '2.2s' : '3.4s'} repeatCount="indefinite" />}
                   {!reducir && <animate attributeName="opacity" values={sel ? '.5;0;.5' : '.35;0;.35'} dur={sel ? '2.2s' : '3.4s'} repeatCount="indefinite" />}
                 </circle>
-                <circle r={sel ? 6 : 4.4} fill={sel ? '#F28A1E' : PIN} stroke={TARJETA} strokeWidth={sel ? 2 : 1.6} style={{ filter: 'drop-shadow(0 1px 2px rgba(110,60,10,.45))' }} />
+                <circle r={sel ? 6 : 4.4} fill={sel ? '#A67C52' : PIN} stroke={TARJETA} strokeWidth={sel ? 2 : 1.6} style={{ filter: 'drop-shadow(0 1px 2px rgba(111,78,55,.45))' }} />
                 <text x={sel ? 12 : 9} y={4} fill={sel ? '#7A3F0E' : 'rgba(28,34,48,.78)'} fontSize={sel ? 12.5 : 10} fontWeight={sel ? 600 : 500} style={{ fontFamily: 'Geist,sans-serif', paintOrder: 'stroke', stroke: 'rgba(255,255,255,.75)', strokeWidth: 3 }}>
                   {d.nombre}
                 </text>
@@ -499,7 +499,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
           </span>
         </label>
         <label style={{ height: 62, borderRadius: 18, background: TARJETA, border: `1px solid ${bordeD}`, display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px', cursor: 'text' }}>
-          <span style={{ width: 14, height: 14, flex: 'none', borderRadius: '50%', background: PIN, boxShadow: `0 0 12px ${PIN}` }} />
+          <span style={{ width: 14, height: 14, flex: 'none', borderRadius: '50%', background: ORO_OSCURO, boxShadow: '0 0 12px rgba(166,124,82,.55)' }} />
           <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
             <span style={{ font: `500 9.5px ${MONO}`, letterSpacing: '.14em', color: 'rgba(28,34,48,.66)' }}>DESTINO</span>
             <input

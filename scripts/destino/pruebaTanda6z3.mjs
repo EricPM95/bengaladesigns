@@ -161,10 +161,13 @@ if (acento) {
   const lin = (v) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)
   const lum = (r, g, b) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
   const contraste = (a, b2) => (Math.max(a, b2) + 0.05) / (Math.min(a, b2) + 0.05)
-  const blanco = contraste(lum(r, g, b), 1)
-  debe(blanco >= 4.5, '7 color', `el texto blanco sobre el frambuesa (${r} ${g} ${b}) da ${blanco.toFixed(2)}:1, menos de 4,5:1`)
+  // (Tanda 10E: el oro oscuro #A67C52 ya no lleva texto blanco encima —los botones son champán— ni sirve de texto pequeño; el texto en oro va en --accent-texto, #6F4E37, que sobre el crema tiene que dar 4,5 o más.)
+  const textoOro = /--accent-texto:\s*(\d+)\s+(\d+)\s+(\d+)/.exec(css)
+  const [tr, tg, tb] = (textoOro ?? [0, 0, 0, 0]).slice(1).map(Number)
+  const sobreCrema = contraste(lum(tr, tg, tb), lum(246, 239, 224))
+  debe(Boolean(textoOro) && sobreCrema >= 4.5, '7 color', `el texto en oro (--accent-texto ${tr} ${tg} ${tb}) sobre el crema da ${sobreCrema.toFixed(2)}:1, menos de 4,5:1`)
   // (Tanda 10: el acento de la marca ya no es el frambuesa sino el oro oscuro #8E6820: más rojo que verde y verde que azul. El frambuesa vive en --frambuesa, solo para «falta» y resaltar.)
-  debe(r > 120 && r > g && g > b && b < 70, '7 color', `--accent (${r} ${g} ${b}) no es el oro de la marca`)
+  debe(r > 120 && r > g && g > b && b < 100, '7 color', `--accent (${r} ${g} ${b}) no es el oro de la marca`)
 }
 const terracota = []
 // Quedan fuera los colores que no son «falta» ni «reservar»: los degradados de temporada y de atardecer (TrazoCards, trazoUi), el confeti de las fechas especiales y el color de reserva de una excursión sin color propio y los colores por categoría de los pines (monumentos, restaurantes…).

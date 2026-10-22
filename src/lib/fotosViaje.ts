@@ -281,6 +281,10 @@ export function alCambiarFotos(oyente: () => void): () => void {
 function avisarCambio() {
   oyentes.forEach((oyente) => oyente())
 }
+/** Para quien borra fotos por su cuenta (eliminar un viaje, Tanda 10F): que las listas y el contador de «Mis viajes» se vuelvan a contar. */
+export function avisarCambioDeFotos(): void {
+  avisarCambio()
+}
 
 /**
  * Quien quiere enterarse de CADA foto que se añade (Tanda 6y4: «la foto vuela al Perfil»). A diferencia de `alCambiarFotos` (que avisa también al borrar y que cada pantalla usa para recargar su lista),
@@ -312,6 +316,9 @@ function avisarAnadida(evento: FotoAnadida) {
 /** Cuántas fotos tiene cada viaje (para «155 fotos» de «Mis viajes»): una sola consulta ligera, sin firmar URLs. Sin Supabase o sin la migración: todo a 0. */
 export async function contarFotos(tripIds: string[]): Promise<Map<string, number>> {
   const cuentas = new Map<string, number>(tripIds.map((id) => [id, 0]))
+  // Solo desarrollo (las pruebas y capturas de la 10F): `window.__fotosPrueba = { [idDeRuta]: 155 }` pone las cifras sin servidor.
+  const prueba = import.meta.env?.DEV ? (globalThis as { __fotosPrueba?: Record<string, number> }).__fotosPrueba : undefined
+  if (prueba) return new Map(tripIds.map((id) => [id, prueba[id] ?? 0]))
   if (!supabase || tripIds.length === 0) return cuentas
   try {
     const userId = await bootstrapTraveler().catch(() => null)
