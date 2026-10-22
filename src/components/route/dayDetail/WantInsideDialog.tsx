@@ -97,7 +97,7 @@ export function WantInsideDialog({ route, day, state, onClose, onAccepted }: { r
             Mejor no
           </button>
           {state.phase === 'ready' && (
-            <button type="button" onClick={accept} disabled={saving} className="h-12 flex-1 rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-60">
+            <button type="button" onClick={accept} disabled={saving} className="h-12 flex-1 rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98] disabled:opacity-60">
               Vale
             </button>
           )}

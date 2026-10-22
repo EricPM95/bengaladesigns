@@ -155,7 +155,7 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
         {viajes.length === 0 && perfil.previos.paises === 0 && <p className="px-1 text-[13px] text-text/60">Aún no tienes viajes guardados en este dispositivo.</p>}
         {grupos.map((g) => (
           <div key={g.clave} className="flex flex-col gap-1.5" data-grupo-de-viajes={g.clave}>
-            <span className="px-1.5 pt-1.5 uppercase text-text/55" style={{ ...ETIQUETA_DE_GRUPO, color: g.clave === 'en_curso' ? 'oklch(0.5 0.17 5)' : undefined }}>
+            <span className="px-1.5 pt-1.5 uppercase text-text/55" style={{ ...ETIQUETA_DE_GRUPO, color: g.clave === 'en_curso' ? '#6F4E37' : undefined }}>
               {g.titulo}
             </span>
             {g.viajes.map((viaje) => (

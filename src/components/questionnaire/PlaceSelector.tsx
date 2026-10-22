@@ -78,7 +78,7 @@ export function PlaceSelector({ destinationName, places, loading, failed, select
         )}
         <span
           className={`absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 text-caption font-bold ${
-            selected ? 'border-accent bg-accent text-white' : 'border-white bg-black/30 text-transparent'
+            selected ? 'border-text bg-text text-white' : 'border-white bg-black/30 text-transparent'
           }`}
           aria-hidden="true"
         >

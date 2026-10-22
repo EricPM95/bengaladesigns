@@ -260,7 +260,7 @@ export function SeasonCard({ route }: { route: Route }) {
         </div>
         <div className="relative z-[2] flex flex-col gap-5 px-7 pb-[26px] pt-1.5">
           <p className="m-0 text-center text-[15px] leading-[1.6] text-[rgba(28,34,48,.72)] [text-wrap:pretty]">{note.text}</p>
-          <button type="button" onClick={dismissSeasonNote} className="h-14 rounded-full bg-[#1C2230] text-[16px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98]" autoFocus>
+          <button type="button" onClick={dismissSeasonNote} className="h-14 rounded-full btn-champan text-[16px] font-semibold transition-transform active:scale-[.98]" autoFocus>
             Entendido
           </button>
         </div>

@@ -430,7 +430,7 @@ export function AddStopScreen({
                   <button
                     type="button"
                     onClick={() => addCandidate(selected)}
-                    className="rounded-lg bg-accent px-2.5 py-1.5 text-caption font-semibold text-white transition-colors hover:bg-accent-hover"
+                    className="rounded-lg btn-champan px-2.5 py-1.5 text-caption font-semibold transition-colors "
                   >
                     Añadir {alDia(route, dayNumber)} →
                   </button>

@@ -1,3 +1,4 @@
+import { botonChampan } from '../../lib/marcaBoton'
 import { createPortal } from 'react-dom'
 import { titularDeInvitacion, textoDeInvitacionNoValida, type VistaDeInvitacion } from '../../lib/invitaciones'
 import { formatHeaderDateRangeShortEs } from '../../lib/dateRange'
@@ -49,7 +50,7 @@ export function InvitacionRecibida({ vista, onUnirme, onSeguir, ocupado = false,
         </p>
       )}
       {vista.valida ? (
-        <button type="button" onClick={onUnirme} disabled={ocupado} data-unirme style={{ width: '100%', maxWidth: 420, height: 56, flex: 'none', borderRadius: 999, border: 'none', background: 'oklch(0.8 0.14 70)', color: '#17120a', font: "700 16px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}>
+        <button type="button" onClick={onUnirme} disabled={ocupado} data-unirme style={{ width: '100%', maxWidth: 420, height: 56, flex: 'none', borderRadius: 999, ...botonChampan(true), font: "700 16px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}>
           Unirme
         </button>
       ) : (

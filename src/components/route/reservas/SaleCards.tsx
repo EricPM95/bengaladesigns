@@ -76,7 +76,7 @@ export function SaleCards({ route }: { route: Route }) {
             </p>
             <div className="mt-3 flex gap-2">
               {day && (
-                <button type="button" onClick={() => resolveSale(sale.id, 'accept', excursionFor(sale))} className="h-10 flex-1 rounded-full bg-text text-[14px] font-medium text-bg">
+                <button type="button" onClick={() => resolveSale(sale.id, 'accept', excursionFor(sale))} className="h-10 flex-1 rounded-full btn-champan text-[14px] font-medium ">
                   Sí, ponla
                 </button>
               )}

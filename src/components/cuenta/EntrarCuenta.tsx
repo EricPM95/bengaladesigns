@@ -1,3 +1,4 @@
+import { botonChampan } from '../../lib/marcaBoton'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { entrarConEmail, entrarConGoogle, errorDeEntradaPendiente } from '../../lib/cuentas'
@@ -87,7 +88,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
       style={{ position: 'fixed', inset: 0, zIndex: 90, background: '#FFFFFF', color: '#1C2230', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'max(150px, 18vh) 26px calc(44px + env(safe-area-inset-bottom))', gap: 14, textAlign: 'center', overflowY: 'auto' }}
     >
       <h1 data-nombre-app aria-label={marca.nombre} style={{ margin: 0, lineHeight: 1 }}>
-        <PalabraJutrip tam={34} />
+        <PalabraJutrip tam={46} />
       </h1>
       <p style={{ margin: 0, font: "400 15px/1.45 'Geist'", color: 'rgba(28,34,48,.72)' }}>Guarda tus viajes, tus fotos y tus logros.</p>
       <span style={{ flex: 1, minHeight: 24 }} />
@@ -101,7 +102,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
         onClick={() => void alGoogle()}
         disabled={ocupado}
         data-entrar-google
-        style={{ width: '100%', maxWidth: 420, height: 54, flex: 'none', borderRadius: 999, border: 'none', background: 'linear-gradient(180deg,#FBF3E2 0%,#EBD9AE 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.8),0 8px 14px -8px rgba(110,80,24,.45)', color: '#6E5018', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, font: "600 15px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}
+        style={{ width: '100%', maxWidth: 420, height: 54, flex: 'none', borderRadius: 999, border: 'none', background: 'linear-gradient(180deg,#FBF3E2 0%,#EBD9AE 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.8),0 8px 14px -8px rgba(111,78,55,.45)', color: '#6F4E37', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, font: "600 15px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}
       >
         <span aria-hidden="true" style={{ width: 20, height: 20, borderRadius: '50%', background: 'conic-gradient(#EA4335 0 25%,#FBBC05 0 50%,#34A853 0 75%,#4285F4 0)' }} />
         Continuar con Google
@@ -159,7 +160,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
             target={enlaceDeCorreo(email).startsWith('http') ? '_blank' : undefined}
             rel="noopener noreferrer"
             data-abrir-correo
-            style={{ height: 54, flex: 'none', borderRadius: 999, background: '#1C2230', color: '#FFFDF8', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "600 15px 'Geist'", textDecoration: 'none' }}
+            style={{ height: 54, flex: 'none', borderRadius: 999, ...botonChampan(), display: 'flex', alignItems: 'center', justifyContent: 'center', font: "600 15px 'Geist'", textDecoration: 'none' }}
           >
             Abrir mi correo
           </a>

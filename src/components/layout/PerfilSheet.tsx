@@ -105,7 +105,7 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
                 <button
                   type="button"
                   onClick={() => setNewTripOpen(true)}
-                  className="flex h-[58px] w-full items-center justify-center gap-2.5 rounded-full bg-[#1C2230] text-[16px] font-semibold text-[#FFFDF8] shadow-[0_14px_26px_-14px_rgba(28,34,48,.8)] transition-transform active:scale-[.98]"
+                  className="flex h-[58px] w-full items-center justify-center gap-2.5 rounded-full btn-champan text-[16px] font-semibold shadow-[0_14px_26px_-14px_rgba(28,34,48,.8)] transition-transform active:scale-[.98]"
                 >
                   <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full text-[#17120a]" style={{ background: 'oklch(0.8 0.14 70)' }}>
                     <Icono nombre="anadir" size={13} grosor={2.6} />

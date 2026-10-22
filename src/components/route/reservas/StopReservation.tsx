@@ -78,7 +78,7 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
           <button
             type="button"
             onClick={() => openTicketShop(entrada.url ?? buildActivitySearchUrl(`${entrada.nombre} ${route.destination}`))}
-            className="mt-3 h-11 w-full whitespace-nowrap rounded-full bg-accent text-small font-semibold text-white active:scale-[.97]"
+            className="mt-3 h-11 w-full whitespace-nowrap rounded-full btn-champan text-small font-semibold active:scale-[.97]"
           >
             {stop.isFreeTour ? 'Reservar Free Tour' : 'Reservar'}
           </button>

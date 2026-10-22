@@ -32,7 +32,7 @@ export function DayNameSheet({ title, initialName = '', example, confirmLabel, o
             className="mt-1 h-12 w-full rounded-xl border border-text/15 bg-bg px-3.5 text-[15px] text-text placeholder:text-text-muted"
           />
         </label>
-        <button type="submit" className="mt-5 h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]">
+        <button type="submit" className="mt-5 h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98]">
           {confirmLabel}
         </button>
       </form>
@@ -51,7 +51,7 @@ export function AddDayButton({ onClick, disabled }: { onClick: () => void; disab
       data-edit-tool="1"
       className="flex min-h-[68px] w-full items-center justify-center gap-3 rounded-3xl border-[1.5px] border-dashed border-accent/70 bg-transparent px-4 py-3 text-accent transition-colors hover:bg-accent-soft/60 disabled:cursor-not-allowed disabled:opacity-40"
     >
-      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-[22px] leading-none text-white" aria-hidden="true">
+      <span className="flex h-9 w-9 items-center justify-center rounded-full btn-champan text-[22px] leading-none " aria-hidden="true">
         +
       </span>
       <span className="font-display text-[20px] leading-none">{disabled ? 'Máximo 14 días' : 'Añadir día'}</span>

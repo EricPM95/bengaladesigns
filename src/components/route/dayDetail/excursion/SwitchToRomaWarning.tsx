@@ -20,7 +20,7 @@ export function SwitchToRomaWarning({ excursionName, code, onConfirm, onCancel }
         {codeText}. Si cambias a Roma, tu reserva sigue en pie: si no vas a ir, cancélala desde tu confirmación
       </span>
       <span className="flex gap-2">
-        <button type="button" onClick={onConfirm} className="min-h-[44px] flex-1 rounded-full bg-text px-3 text-[13px] font-semibold text-bg-card">
+        <button type="button" onClick={onConfirm} className="min-h-[44px] flex-1 rounded-full btn-champan px-3 text-[13px] font-semibold ">
           Cambiar a Roma
         </button>
         <button type="button" onClick={onCancel} className="min-h-[44px] flex-1 rounded-full border border-text/20 bg-bg-card px-3 text-[13px] font-semibold text-text">

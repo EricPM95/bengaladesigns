@@ -28,7 +28,7 @@ export function PreparandoViaje({
           <p role="alert" className="text-[14px] text-text">
             {errorMessage ?? 'No se pudo preparar tu viaje.'}
           </p>
-          <button type="button" onClick={onRetry} className="rounded-full bg-accent px-5 py-2 text-[14px] font-semibold text-white">
+          <button type="button" onClick={onRetry} className="rounded-full btn-champan px-5 py-2 text-[14px] font-semibold ">
             Reintentar
           </button>
         </>

@@ -7,7 +7,7 @@ import type { PlanChoice } from './planChoice'
 
 // Las tres líneas de los días llevan los colores de los días de la ruta (el primero, el de «falta»: no cambian con la marca); el oro es solo para el texto y la etiqueta.
 const R = COLOR_ICONO.falta
-const ORO = '#8B6620'
+const ORO = '#A67C52'
 const B = COLOR_ICONO.azul
 const G = COLOR_ICONO.hecho
 const CREMA = '#FFFDF8'
@@ -124,11 +124,11 @@ export function StepElegir({ destinationName, days, picked, onPick }: StepElegir
             transition: 'transform .25s',
           }}
         >
-          <span aria-hidden="true" style={{ position: 'absolute', right: -30, top: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(181,138,46,.35)', filter: 'blur(22px)' }} />
+          <span aria-hidden="true" style={{ position: 'absolute', right: -30, top: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(166,124,82,.35)', filter: 'blur(22px)' }} />
           <span style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
             <span style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
               <span style={{ font: `400 25px/1 ${SERIF}` }}>¡Sí, hazla por mí!</span>
-              <span style={{ height: 20, padding: '0 7px', borderRadius: 999, background: ORO, font: `600 9.5px/20px ${MONO}`, letterSpacing: '.1em' }}>RECOMENDADO</span>
+              <span style={{ height: 20, padding: '0 7px', borderRadius: 999, background: '#E9C77A', color: '#1C2230', font: `600 9.5px/20px ${MONO}`, letterSpacing: '.1em' }}>RECOMENDADO</span>
             </span>
             <span style={{ font: "400 12.5px/1.4 'Geist'", color: 'rgba(255,253,248,.72)', textWrap: 'pretty' }}>Lo hacemos todo: el orden de cada día, los tiempos entre sitios, dónde comer y qué reservar.</span>
           </span>

@@ -55,7 +55,7 @@ export function TarjetaHoyVuelves({ tarjeta, onVerComoIr, onExplorarMonumentos, 
           type="button"
           onClick={onExplorarMonumentos}
           data-hoy-vuelves="explorar-monumentos"
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-text text-[14.5px] font-semibold text-bg transition-transform active:scale-[.98]"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-full btn-champan text-[14.5px] font-semibold transition-transform active:scale-[.98]"
         >
           {tarjeta.explorar.boton}
         </button>

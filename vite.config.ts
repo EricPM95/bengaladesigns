@@ -8,18 +8,18 @@ function marcaEnElHtml(): Plugin {
     name: 'marca-en-el-html',
     async transformIndexHtml(html) {
       const marca = JSON.parse(readFileSync(new URL('./data/marca.json', import.meta.url), 'utf8')) as { nombre: string; lema?: string; descripcion?: string; logo: string | null; color_apertura?: string; color_tema?: string }
-      const { logoJutripHtml } = (await import('./shared/marca/logoJutrip.js')) as { logoJutripHtml: (o: { tam: number; tono: string; id: string; fuente?: number }) => string }
+      const { aperturaInteriorHtml } = (await import('./shared/marca/aperturaJutrip.js')) as { aperturaInteriorHtml: (o: { lema: string }) => string }
       const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
       const hueco =
         '<span style="width:96px;height:96px;border-radius:26px;border:1.5px dashed rgba(28,34,48,.3);display:flex;align-items:center;justify-content:center;font:600 10px Geist Mono,monospace;letter-spacing:.14em;color:rgba(28,34,48,.45)">LOGO</span>'
-      // El logo de la pantalla al abrir: 190 de ancho y la palabra en 64, como Marca JUTRIP 02 · 01.
-      const logo = marca.logo ? logoJutripHtml({ tam: 190, tono: 'claro', id: 'ap', fuente: 64 }) : hueco
+      // La pantalla al abrir entera (el logo, el lema letra a letra y la ruta de puntos), como Marca JUTRIP 02 · 01.
+      const apertura = marca.logo ? aperturaInteriorHtml({ lema: marca.lema ?? marca.descripcion ?? '' }) : hueco
       return html
         .replaceAll('%MARCA_NOMBRE%', esc(marca.nombre))
         .replaceAll('%MARCA_LEMA%', esc(marca.lema ?? marca.descripcion ?? ''))
         .replaceAll('%MARCA_COLOR_TEMA%', marca.color_tema ?? '#F6EFE0')
         .replaceAll('%MARCA_COLOR_APERTURA%', marca.color_apertura ?? '#FBF3E2')
-        .replaceAll('%MARCA_LOGO%', logo)
+        .replaceAll('%MARCA_APERTURA%', apertura)
     },
   }
 }

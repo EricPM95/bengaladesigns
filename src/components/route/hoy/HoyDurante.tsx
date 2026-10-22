@@ -238,7 +238,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
         {siguiente ? (
           <>
             <div className="flex flex-col gap-1.5 px-2">
-              <span style={{ ...ojoMono, color: '#8B6620'}}>Siguiente parada · {numeros.get(siguiente.id)}</span>
+              <span style={{ ...ojoMono, color: '#6F4E37'}}>Siguiente parada · {numeros.get(siguiente.id)}</span>
               <span style={{ font: "400 34px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(siguiente.name)}</span>
               <LineaDeHorario horario={horarioDe(siguiente)} cerradoEsteDia={Boolean(siguiente.closedThisDay)} />
               <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} className="self-start" />
@@ -320,7 +320,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       {ofrecerFoto && !logrosActivos() && (
         <div className="flex flex-none items-center gap-2 rounded-2xl bg-white px-3.5 py-2.5" style={{ border: '1px solid rgba(28,34,48,.08)' }}>
           <span className="min-w-0 flex-1 truncate text-[13px] text-text/70">Visto: {displayStopName(ofrecerFoto.name)}</span>
-          <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={ofrecerFoto.name} etiqueta="Añadir foto" onSubida={() => setOfrecerFoto(null)} className="flex h-10 flex-none items-center gap-1.5 rounded-full bg-accent px-3.5 text-[13px] font-semibold text-white">
+          <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={ofrecerFoto.name} etiqueta="Añadir foto" onSubida={() => setOfrecerFoto(null)} className="flex h-10 flex-none items-center gap-1.5 rounded-full btn-champan px-3.5 text-[13px] font-semibold ">
             <Icono nombre="camara" size={16} />
             Añadir foto
           </BotonFoto>
@@ -372,7 +372,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
               <div key={stop.id} data-saltada={saltada ? 'true' : undefined} className="flex min-h-[50px] items-center gap-3" style={{ borderBottom: indice < paradas.length - 1 ? '1px solid rgba(28,34,48,.07)' : 'none' }}>
                 <span
                   className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full transition-colors"
-                  style={{ background: vista ? VERDE : ahora ? 'rgb(var(--accent))' : 'transparent', border: `1.5px solid ${vista ? VERDE : ahora ? 'rgb(var(--accent))' : saltada ? 'rgb(var(--text) / .15)' : 'rgb(var(--text) / .25)'}`, color: vista || ahora ? '#fff' : saltada ? 'rgb(var(--text) / .4)' : 'rgb(var(--text))', font: "400 15px/1 'Instrument Serif',serif" }}
+                  style={{ background: vista ? VERDE : ahora ? 'rgb(var(--text))' : 'transparent', border: `1.5px solid ${vista ? VERDE : ahora ? 'rgb(var(--text))' : saltada ? 'rgb(var(--text) / .15)' : 'rgb(var(--text) / .25)'}`, color: vista || ahora ? '#fff' : saltada ? 'rgb(var(--text) / .4)' : 'rgb(var(--text))', font: "400 15px/1 'Instrument Serif',serif" }}
                 >
                   {vista ? '✓' : numeros.get(stop.id)}
                 </span>

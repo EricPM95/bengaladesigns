@@ -43,12 +43,12 @@ export function BloqueShell({ bloque, children, className = '' }: { bloque: stri
   )
 }
 
-/** El cuadradito con el icono de la cabecera de un bloque: rosa si falta, verde si está hecho. */
+/** El cuadradito con el icono de la cabecera de un bloque: champán con el icono en oro si falta, verde si está hecho. */
 export function IconoBloque({ nombre, hecho = false }: { nombre: NombreIcono; hecho?: boolean }) {
   return (
     <span
       className="flex h-9 w-9 flex-none items-center justify-center rounded-xl"
-      style={{ background: hecho ? 'oklch(0.55 0.11 150 / .14)' : 'rgb(var(--frambuesa) / .12)', color: hecho ? GR : 'rgb(var(--frambuesa-hover))' }}
+      style={{ background: hecho ? 'oklch(0.55 0.11 150 / .14)' : 'rgb(var(--accent-soft))', color: hecho ? GR : 'rgb(var(--accent))' }}
     >
       <Icono nombre={nombre} size={18} />
     </span>

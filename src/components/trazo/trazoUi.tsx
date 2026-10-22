@@ -1,13 +1,16 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Season } from '../../lib/types'
+import { botonChampan } from '../../lib/marcaBoton'
 
 /** Paleta del formulario (Tanda 10, JUTRIP: «Marca JUTRIP 01 · Colores»): crema, tarjetas, tinta y oro. */
-/** Relleno de acento: botones con texto blanco, fechas y opciones elegidas. Es el ORO OSCURO (#8B6620): el oro claro (#B58A2E) con texto blanco o sobre crema no llega a 4,5 de contraste. */
-export const AMBER = '#8B6620'
+/** Relleno de acento SIN texto pequeño encima (puntos, barras, bordes de lo elegido). Es el ORO OSCURO (#A67C52, Tanda 10E): no llega a 4,5 como letra, así que lo elegido con letra blanca va en tinta (INK) y los botones principales, en champán (`Cta`). */
+export const AMBER = '#A67C52'
 /** El oro claro, solo para lo que no es texto pequeño: la barra de pasos, los puntos, las líneas y los pines. */
-export const ORO_CLARO = '#B58A2E'
-/** Acento en letra: cursivas, etiquetas pequeñas y lo elegido (el oro oscuro, contraste mínimo 4,5 sobre el crema). */
-export const ACCENT = '#8B6620'
+export const ORO_CLARO = '#D8B98E'
+/** Acento en LETRA PEQUEÑA: etiquetas, cifras y enlaces (el oro profundo #6F4E37, 6,5 sobre el crema). */
+export const ACCENT = '#6F4E37'
+/** Acento en TÍTULOS de 18 px o más (cursivas de los títulos, cifras grandes): el oro oscuro #A67C52. */
+export const ACCENT_GRANDE = '#A67C52'
 export const INK = '#1C2230'
 export const INK2 = 'rgba(28,34,48,.7)'
 /** La letra sobre un relleno de acento: blanca. */
@@ -18,8 +21,8 @@ export const THEME = {
   bg: '#F6EFE0',
   bgrgb: '246 239 224',
   land: '#FFFDF8',
-  landS: 'rgba(142,104,32,.35)',
-  route: 'rgba(181,138,46,.85)',
+  landS: 'rgba(166,124,82,.35)',
+  route: 'rgba(216,185,142,.95)',
   dot: 'rgba(28,34,48,.28)',
   dot2: 'rgba(28,34,48,.6)',
   track: 'rgba(28,34,48,.14)',
@@ -64,7 +67,7 @@ export function Title({ children, size = 44 }: { children: ReactNode; size?: num
   return <h1 className="trazo-title" style={{ color: INK, margin: '12px 0 0', font: `400 ${size}px/1.02 ${SERIF}`, letterSpacing: '-.01em', textWrap: 'balance' }}>{children}</h1>
 }
 
-export const Em = ({ children }: { children: ReactNode }) => <em style={{ color: ACCENT }}>{children}</em>
+export const Em = ({ children }: { children: ReactNode }) => <em style={{ color: ACCENT_GRANDE }}>{children}</em>
 
 export const panelStyle: CSSProperties = {
   background: 'rgba(255,255,255,0.88)',
@@ -86,8 +89,7 @@ export function Cta({ children, onClick, enabled = true, light = false, style }:
         flex: 'none',
         border: 'none',
         borderRadius: 999,
-        background: light ? INK : AMBER,
-        color: DARK,
+        ...(light ? { background: INK, color: DARK } : botonChampan()),
         font: "600 16px 'Geist'",
         cursor: enabled ? 'pointer' : 'default',
         opacity: enabled ? 1 : 0.3,
@@ -130,7 +132,7 @@ export function RadioRow({ label, description, active, onClick }: { label: strin
         minHeight: 44,
         border: 'none',
         borderRadius: 14,
-        background: active ? 'rgba(181,138,46,.08)' : 'transparent',
+        background: active ? 'rgba(166,124,82,.08)' : 'transparent',
         color: active ? ACCENT : INK,
         textAlign: 'left',
         cursor: 'pointer',
@@ -169,8 +171,8 @@ export function ConfirmedCard({ label, value, onChange }: { label: string; value
         padding: '12px 14px',
         minHeight: 48,
         borderRadius: 16,
-        background: 'rgba(181,138,46,.1)',
-        border: '1px solid rgba(181,138,46,.35)',
+        background: 'rgba(166,124,82,.1)',
+        border: '1px solid rgba(166,124,82,.35)',
         animation: 'trazo-chipIn .45s cubic-bezier(.2,.8,.2,1) both',
       }}
     >

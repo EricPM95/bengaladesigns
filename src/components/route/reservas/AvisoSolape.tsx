@@ -47,7 +47,7 @@ export function AvisoSolape() {
           setAviso(null)
           setMode('bookings')
         }}
-        className="mt-5 h-12 w-full rounded-full bg-[#1C2230] text-[15px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98]"
+        className="mt-5 h-12 w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98]"
       >
         {aviso.kind === 'cierra' ? 'Ver mi reserva' : 'Ver mis reservas'}
       </button>

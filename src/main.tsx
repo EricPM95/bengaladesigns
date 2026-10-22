@@ -33,7 +33,7 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
-// La pantalla al abrir (I2; Tanda 10, la de JUTRIP) vive en index.html para verse antes de que cargue nada. Sale unos 2 segundos desde que se abre la app y un toque la salta (index.html decide si sale: solo al abrir la app, no en cada recarga).
+// La pantalla al abrir (I2; Tanda 10E, la de JUTRIP) vive en index.html para verse antes de que cargue nada. Sale UNA vez, unos 3 segundos desde que se abre la app, y un toque la salta (index.html decide si sale: solo al abrir la app, no en cada recarga).
 // En desarrollo se quita al momento (si no, taparía las capturas y las pruebas); `?apertura=1` la deja puesta para verla.
 {
   const apertura = document.getElementById('apertura')
@@ -49,8 +49,9 @@ createRoot(document.getElementById('root')!).render(
     else {
       apertura.style.cursor = 'pointer'
       apertura.addEventListener('pointerdown', quitar, { once: true })
-      // Unos 2 segundos desde que se abrió la página (la app ya está pintada por debajo); si cargar tardó más, se quita en cuanto pinta.
-      window.setTimeout(quitar, reducir ? 600 : Math.max(0, 2000 - performance.now()))
+      // Unos 2,5 segundos desde que se abrió la página (la app ya está pintada por debajo; es lo que dura la animación de shared/marca/aperturaJutrip.js); si cargar tardó más, se quita en cuanto pinta.
+      // Con las animaciones reducidas, la pantalla queda quieta con el logo y la frase, un momento para leerla.
+      window.setTimeout(quitar, reducir ? 1500 : Math.max(0, 3000 - performance.now()))
     }
   }
 }

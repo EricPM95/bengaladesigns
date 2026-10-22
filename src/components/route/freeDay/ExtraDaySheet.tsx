@@ -25,7 +25,7 @@ export function ExtraDaySheet({ destination, onChoose, onClose }: { destination:
           </p>
         </div>
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6">
-          <button type="button" onClick={onChoose} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]">
+          <button type="button" onClick={onChoose} className="h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98]">
             Elegir mis sitios
           </button>
         </div>

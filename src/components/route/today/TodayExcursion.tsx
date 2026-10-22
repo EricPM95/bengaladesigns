@@ -21,7 +21,7 @@ export function TodayExcursion({ route, day }: { route: Route; day: DayPlan }) {
         <p className="mt-1.5 font-display text-[26px] leading-[1.1] text-text">
           {page ? (
             <>
-              {page.nameBefore} <em className="text-accent">{page.nameDestination}</em>
+              {page.nameBefore} <em className="text-accent-grande">{page.nameDestination}</em>
               {page.nameAfter}
             </>
           ) : (

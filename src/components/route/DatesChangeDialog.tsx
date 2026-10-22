@@ -103,7 +103,7 @@ export function useDatesChange(route: Route | null) {
                   regenerateRouteForDates(next)
                 }}
                 disabled={saving}
-                className="h-12 flex-1 rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-60"
+                className="h-12 flex-1 rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98] disabled:opacity-60"
               >
                 Sí, ajústala
               </button>

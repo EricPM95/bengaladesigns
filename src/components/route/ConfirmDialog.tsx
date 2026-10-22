@@ -20,7 +20,7 @@ export function ConfirmDialog({ eyebrow, text, detail, confirmLabel, cancelLabel
           <button type="button" onClick={onCancel} className="h-12 flex-1 rounded-full border border-text/15 text-[15px] font-medium text-text transition-colors hover:bg-bg-hover">
             {cancelLabel}
           </button>
-          <button type="button" onClick={onConfirm} className="h-12 flex-1 rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]">
+          <button type="button" onClick={onConfirm} className="h-12 flex-1 rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98]">
             {confirmLabel}
           </button>
         </div>

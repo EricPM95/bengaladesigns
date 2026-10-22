@@ -89,7 +89,7 @@ export function CambiarDiaSheet({ route, excursion, onClose, onDone }: { route: 
           </div>
         </div>
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
-          <button type="button" disabled={!elegida} onClick={() => setAsking(true)} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
+          <button type="button" disabled={!elegida} onClick={() => setAsking(true)} className="h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98] disabled:opacity-40">
             {elegida ? `Cambiar ${elDia(route, elegida.day.dayNumber)} por la excursión` : 'Elige un día'}
           </button>
         </div>

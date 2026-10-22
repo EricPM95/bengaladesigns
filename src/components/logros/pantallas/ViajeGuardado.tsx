@@ -108,7 +108,7 @@ export default function ViajeGuardado({ pantalla }: { pantalla: PantallaDe<'viaj
               ))}
             </div>
             {destinoClave && viaje && (
-              <button type="button" onClick={() => useLogrosPantallas.getState().abrir({ t: 'destino', destino: destinoClave })} className="mx-4 mt-1.5 h-[52px] flex-none rounded-full bg-[#1C2230] text-[14.5px] font-semibold text-[#FFFDF8]">
+              <button type="button" onClick={() => useLogrosPantallas.getState().abrir({ t: 'destino', destino: destinoClave })} className="mx-4 mt-1.5 h-[52px] flex-none rounded-full btn-champan text-[14.5px] font-semibold ">
                 Ver todo {viaje.destino}
               </button>
             )}

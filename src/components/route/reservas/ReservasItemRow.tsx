@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { ReadinessItemKind, ReadinessPriority } from '../../../lib/readiness'
+import { botonChampan } from '../../../lib/marcaBoton'
 import { ReadinessKindIcon } from './ReadinessIcons'
 
 export interface ReservasBookAction {
@@ -25,15 +26,16 @@ interface ReservasItemRowProps {
 }
 
 /** El color del bloque en diagonal de cada tipo y la palabra pequeña de encima del nombre (diseño «Trazo Reservas», pantalla 13). */
+const FALTA = 'rgb(var(--frambuesa))'
 const KIND_STYLE: Record<ReadinessItemKind, { color: string; eyebrow: string }> = {
   // Lo que falta por reservar va en el frambuesa de la app (token `--frambuesa`, un solo sitio); lo ya reservado lo pinta el verde de abajo.
-  transport: { color: 'rgb(var(--frambuesa))', eyebrow: 'Transporte' },
-  accommodation: { color: 'rgb(var(--frambuesa))', eyebrow: 'Alojamiento' },
-  insurance: { color: 'rgb(var(--frambuesa))', eyebrow: 'Imprescindible' },
+  transport: { color: FALTA, eyebrow: 'Transporte' },
+  accommodation: { color: FALTA, eyebrow: 'Alojamiento' },
+  insurance: { color: FALTA, eyebrow: 'Imprescindible' },
   n26: { color: 'oklch(0.45 0.03 250)', eyebrow: 'Pagos sin comisión' },
   'rental-vehicle': { color: 'oklch(0.55 0.12 295)', eyebrow: 'Vehículo' },
   esim: { color: 'oklch(0.56 0.1 220)', eyebrow: 'Datos móviles' },
-  entrada: { color: 'rgb(var(--frambuesa))', eyebrow: 'Entrada' },
+  entrada: { color: FALTA, eyebrow: 'Entrada' },
   excursion: { color: 'oklch(0.56 0.1 220)', eyebrow: 'Excursión' },
 }
 
@@ -86,7 +88,7 @@ export function ReservaCard({
       }}
     >
       <button type="button" onClick={onAdd} aria-label={name} className="relative w-[74px] shrink-0 overflow-hidden text-white" style={{ borderRadius: '17px 0 0 17px' }}>
-        <span aria-hidden="true" className="absolute inset-0" style={{ clipPath: 'polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)', background: style.color }} />
+        <span aria-hidden="true" className="absolute inset-0" style={{ clipPath: 'polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)', background: resolved && style.color === FALTA ? 'oklch(0.55 0.11 150)' : style.color }} />
         <span aria-hidden="true" className="absolute bottom-0 left-0 top-0 flex w-[58px] items-center justify-center">
           <ReadinessKindIcon kind={kind} className="h-[22px] w-[22px]" />
         </span>
@@ -129,7 +131,7 @@ export function ReservaCard({
                   type="button"
                   onClick={bookAction.onGet}
                   className="flex items-center whitespace-nowrap"
-                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid rgb(var(--border-accent))', background: 'rgb(var(--accent-soft))', color: 'rgb(var(--accent-hover))', font: "600 12px 'Geist'" }}
+                  style={{ height: 30, padding: '0 12px', borderRadius: 999, ...botonChampan(), font: "600 12px 'Geist'" }}
                 >
                   {bookAction.label}
                 </button>
@@ -140,7 +142,7 @@ export function ReservaCard({
                   rel="noopener noreferrer"
                   onClick={bookAction.onGet}
                   className="flex items-center whitespace-nowrap"
-                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid rgb(var(--border-accent))', background: 'rgb(var(--accent-soft))', color: 'rgb(var(--accent-hover))', font: "600 12px 'Geist'" }}
+                  style={{ height: 30, padding: '0 12px', borderRadius: 999, ...botonChampan(), font: "600 12px 'Geist'" }}
                 >
                   {bookAction.label}
                 </a>
@@ -149,7 +151,7 @@ export function ReservaCard({
                   type="button"
                   onClick={onAdd}
                   className="whitespace-nowrap"
-                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid rgb(var(--border-accent))', background: 'rgb(var(--accent-soft))', color: 'rgb(var(--accent-hover))', font: "600 12px 'Geist'" }}
+                  style={{ height: 30, padding: '0 12px', borderRadius: 999, ...botonChampan(), font: "600 12px 'Geist'" }}
                 >
                   Añadir +
                 </button>

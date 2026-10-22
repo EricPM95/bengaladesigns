@@ -17,7 +17,7 @@ export function useEnlaceDelFreeTour(destination: string): string {
 export function VerDisponibilidadFreeTour({ destination }: { destination: string }) {
   const href = useEnlaceDelFreeTour(destination)
   return (
-    <button type="button" onClick={() => openTicketShop(href, 'Abriendo…')} className="mt-4 h-12 w-full whitespace-nowrap rounded-full bg-accent text-small font-semibold text-white active:scale-[.97]">
+    <button type="button" onClick={() => openTicketShop(href, 'Abriendo…')} className="mt-4 h-12 w-full whitespace-nowrap rounded-full btn-champan text-small font-semibold active:scale-[.97]">
       Ver disponibilidad
     </button>
   )

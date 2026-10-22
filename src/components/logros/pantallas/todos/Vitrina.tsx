@@ -1,3 +1,4 @@
+import { botonChampan } from '../../../../lib/marcaBoton'
 import { useMemo, useState, type ReactNode } from 'react'
 import { MedallaDeSiete } from '../../dibujos'
 import { useMomentosUI } from '../../momentos/useMomentosUI'
@@ -163,7 +164,7 @@ function PiezaAbierta({ g, abierta, cerrar }: { g: Ganados; abierta: Abierta; ce
       <span style={{ marginTop: 6, font: "500 11.5px 'Geist Mono',monospace", color: 'rgba(255,253,248,.55)', animation: 'vtUp .5s .4s ease both' }}>{cuando}</span>
       <div style={{ flex: 1 }} />
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8, animation: 'vtUp .5s .55s ease both' }}>
-        <button type="button" disabled={!momento} onClick={() => momento && useMomentosUI.getState().abrirCompartir({ tipo: 'logro', momento })} style={{ height: 52, border: 'none', borderRadius: 999, background: 'oklch(0.8 0.14 70)', color: '#17120a', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, font: "700 15px 'Geist'", cursor: 'pointer', opacity: momento ? 1 : 0.5 }}>
+        <button type="button" disabled={!momento} onClick={() => momento && useMomentosUI.getState().abrirCompartir({ tipo: 'logro', momento })} style={{ height: 52, borderRadius: 999, ...botonChampan(true), display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, font: "700 15px 'Geist'", cursor: 'pointer', opacity: momento ? 1 : 0.5 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
           </svg>

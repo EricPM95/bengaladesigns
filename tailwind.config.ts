@@ -9,6 +9,11 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      // Tanda 10E: el oro oscuro (#A67C52) no llega a 4,5 como texto pequeño: `text-accent` pide el oro profundo (--accent-texto, #6F4E37). Los títulos de 18 px o más piden `text-accent-grande` (#A67C52).
+      textColor: {
+        accent: withOpacity('--accent-texto'),
+        'accent-grande': withOpacity('--accent'),
+      },
       colors: {
         bg: withOpacity('--bg'),
         'bg-card': withOpacity('--bg-card'),

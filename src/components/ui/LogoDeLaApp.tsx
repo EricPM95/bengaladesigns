@@ -1,12 +1,12 @@
 import { marca } from '../../lib/marca'
-import { LogoJutrip } from './LogoJutrip'
+import { EstrellaJutrip, LogoJutrip } from './LogoJutrip'
 
 /**
- * El hueco del logo (cuentas parte 3): con `logo` en data/marca.json pinta el logo de JUTRIP (Tanda 10: la estrella con su anillo y su ruta de puntos, y la palabra debajo);
- * sin él, el recuadro de puntos del diseño. Lo usan la pantalla de «te invitan» y los avisos. `size` es el ancho de la estrella.
+ * El hueco del logo (cuentas parte 3): con `logo` en data/marca.json pinta el logo de JUTRIP (Tanda 10E: la palabra en Italiana con su estrella sobre la I; en un hueco pequeño, solo la estrella);
+ * sin él, el recuadro de puntos del diseño. Lo usan la pantalla de «te invitan» y los avisos. `size` es el lado del hueco: la palabra usa la mitad como cuerpo de letra.
  */
 export function LogoDeLaApp({ size = 84, tono = 'claro' }: { size?: number; radius?: number; tono?: 'claro' | 'oscuro' }) {
-  if (marca.logo) return <LogoJutrip tam={size} tono={tono} />
+  if (marca.logo) return size < 60 ? <EstrellaJutrip tam={Math.round(size * 0.8)} /> : <LogoJutrip tam={Math.round(size / 2)} tono={tono} />
   return (
     <span
       data-logo-hueco

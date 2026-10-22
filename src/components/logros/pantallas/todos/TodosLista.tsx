@@ -22,12 +22,12 @@ export function TodosLista({ g, vistaInicial = 'destinos' }: { g: Ganados; vista
   const enVitrina = new Set([...Object.values(g.vitrina.baldas).flatMap((b) => b.huecos)])
   return (
     <main className="vt-oculto" data-todos style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '0 0 calc(env(safe-area-inset-bottom,0px) + 40px)', display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ margin: '0 16px', flex: 'none', borderRadius: 24, background: '#FFFDF8', color: '#1C2230', boxShadow: 'inset 0 0 0 1px rgba(142,104,32,.22)', padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div style={{ margin: '0 16px', flex: 'none', borderRadius: 24, background: '#FFFDF8', color: '#1C2230', boxShadow: 'inset 0 0 0 1px rgba(166,124,82,.22)', padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
         <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
           <span style={{ font: "400 30px/1 'Instrument Serif',serif" }}>
             {g.total} <span style={{ fontSize: 18, color: 'rgba(28,34,48,.6)' }}>{g.total === 1 ? 'logro conseguido' : 'logros conseguidos'}</span>
           </span>
-          {g.titulo && <span style={{ font: "500 13px 'Geist'", color: '#8E6820' }}>{g.titulo.nombre}</span>}
+          {g.titulo && <span style={{ font: "500 13px 'Geist'", color: '#6F4E37' }}>{g.titulo.nombre}</span>}
         </span>
         {titulo && <DibujoDeItem item={titulo} tam={58} />}
       </div>

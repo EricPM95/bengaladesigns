@@ -18,7 +18,7 @@ export function NewTripSheet({ onConfirm, onCancel }: { onConfirm: () => void; o
         </h2>
         <p className="mt-2 text-[13.5px] leading-snug text-text-soft">Tu viaje de ahora se queda guardado: lo tendrás en «Mis viajes», en tu Perfil.</p>
         <div className="mt-5 flex flex-col gap-2.5">
-          <button type="button" onClick={onConfirm} className="h-12 rounded-2xl bg-accent font-semibold text-white transition-colors hover:bg-accent-hover">
+          <button type="button" onClick={onConfirm} className="h-12 rounded-2xl btn-champan font-semibold transition-colors ">
             Crear viaje nuevo
           </button>
           <button type="button" onClick={onCancel} className="h-12 rounded-2xl border border-text/[.12] font-semibold text-text transition-colors hover:bg-bg-hover">

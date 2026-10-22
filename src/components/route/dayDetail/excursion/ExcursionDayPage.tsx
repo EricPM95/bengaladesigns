@@ -191,7 +191,7 @@ export function ExcursionDayPage({
   }
 
   const availabilityClass =
-    'flex min-h-[54px] w-full items-center justify-center rounded-full bg-accent px-4 text-[16px] font-semibold text-white shadow-[0_12px_24px_-12px_rgba(182,78,16,.7)] transition-colors hover:bg-accent-hover'
+    'flex min-h-[54px] w-full items-center justify-center rounded-full btn-champan px-4 text-[16px] font-semibold shadow-[0_12px_24px_-12px_rgba(182,78,16,.7)] transition-colors '
   const tagList = [
     ...(view.duration ? [{ icon: 'reloj' as NombreIcono, text: view.duration }] : []),
     ...view.tags.map((tag) => ({ icon: tagIcon(tag), text: tag.text })),
@@ -231,7 +231,7 @@ export function ExcursionDayPage({
         <div className="flex flex-col gap-3.5 px-4 pb-[18px] pt-4">
           <h3 className="m-0 font-display text-[27px] font-normal leading-[1.1] text-text">
             {view.nameBefore ? `${view.nameBefore} ` : ''}
-            <em className="text-accent">{view.nameDestination}</em>
+            <em className="text-accent-grande">{view.nameDestination}</em>
             {view.nameAfter}
           </h3>
 
@@ -306,7 +306,7 @@ export function ExcursionDayPage({
                   className="h-11 rounded-xl border border-text/[.18] bg-bg-card px-3 text-[14px] font-normal text-text placeholder:text-text/40"
                 />
               </label>
-              <button type="button" onClick={save} disabled={!code.trim()} className="min-h-[44px] rounded-full bg-text text-[14px] font-semibold text-bg-card disabled:opacity-50">
+              <button type="button" onClick={save} disabled={!code.trim()} className="min-h-[44px] rounded-full btn-champan text-[14px] font-semibold disabled:opacity-50">
                 Guardar
               </button>
             </div>
@@ -327,7 +327,7 @@ export function ExcursionDayPage({
             onClick={onAddPlaces}
             className="flex min-h-[68px] w-full items-center justify-center gap-3 rounded-3xl border-[1.5px] border-dashed border-accent/70 bg-transparent px-4 py-3 text-accent transition-colors hover:bg-accent-soft/60"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-[22px] leading-none text-white" aria-hidden="true">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full btn-champan text-[22px] leading-none " aria-hidden="true">
               +
             </span>
             <span className="font-display text-[20px] leading-none">Añadir lugares</span>

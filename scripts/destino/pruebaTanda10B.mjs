@@ -92,7 +92,7 @@ console.log('3. El mapa de RUTA')
   debe(mapa('avion').markers.every((x) => x.iconPath && x.iconPath.length > 20), 'mapa', 'iconos de trazo fino (el dibujo de la familia de iconos de la app)')
   debe(mapa('avion').resaltados.length === 0, 'mapa', 'sin vuelo puesto, ninguno resaltado')
   const elegido = mapa('tren', { puntoLlegadaId: 'tiburtina' })
-  debe(elegido.resaltados.join() === 'llegada:tiburtina' && elegido.markers.find((x) => x.id === 'llegada:tiburtina').bg === '#8B6620', 'mapa', 'con el tren puesto, el punto que va a usar va resaltado (relleno de oro y anillo)')
+  debe(elegido.resaltados.join() === 'llegada:tiburtina' && elegido.markers.find((x) => x.id === 'llegada:tiburtina').bg === '#A67C52', 'mapa', 'con el tren puesto, el punto que va a usar va resaltado (relleno de oro y anillo)')
   debe(mapa('avion', { puntoSalidaId: 'cia', modoVuelta: 'tren' }).resaltados.length === 0 && mapa('avion', { puntoSalidaId: 'cia', modoVuelta: 'avion' }).resaltados.join() === 'llegada:cia', 'mapa', 'el punto de la vuelta solo se resalta si es del mismo medio')
   // Tanda 10C: sin medio elegido, el que se deduce de su origen; si no se puede, el punto donde conecta todo.
   const madrid = { lat: 40.4168, lng: -3.7038 }
@@ -127,7 +127,7 @@ console.log('4. RUTA y DÍAS en la app')
   const poner = (codigo) => app.evaluar("import('/src/store/useRouteStore.ts').then((m) => { const set = m.useRouteStore.setState; const get = m.useRouteStore.getState; " + codigo + "; return true })")
   const medio = (id, punto) => poner('set({ route: { ...get().route, arrivalPointId: ' + JSON.stringify(punto) + ", transportContext: { ...get().route.transportContext, transport_option: { ...get().route.transportContext.transport_option, id: '" + id + "' } } } })")
   const ruta = () => app.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('route'); return true })`)
-  const pines = () => app.evaluar("(() => { const m = Array.from(document.querySelectorAll('.mapboxgl-marker')); return { total: m.length, numerados: m.filter((e) => /^[0-9]+$/.test((e.textContent || '').trim())).length, oro: m.filter((e) => e.firstElementChild && getComputedStyle(e.firstElementChild).backgroundColor === 'rgb(139, 102, 32)').length } })()")
+  const pines = () => app.evaluar("(() => { const m = Array.from(document.querySelectorAll('.mapboxgl-marker')); return { total: m.length, numerados: m.filter((e) => /^[0-9]+$/.test((e.textContent || '').trim())).length, oro: m.filter((e) => e.firstElementChild && getComputedStyle(e.firstElementChild).backgroundColor === 'rgb(166, 124, 82)').length } })()")
   await ruta()
   for (const [id, punto, esperados, oro, nombre] of [['flight', null, 3, 1, 'avión'], ['train', 'tiburtina', 3, 2, 'tren (con Tiburtina puesta)'], ['bus', null, 2, 1, 'autobús'], ['ferry', null, 2, 1, 'ferry'], ['car', null, 1, 1, 'coche']]) {
     await medio(id, punto)

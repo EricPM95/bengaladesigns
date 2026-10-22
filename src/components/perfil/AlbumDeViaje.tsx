@@ -91,7 +91,7 @@ export function AlbumDeViaje({ viaje }: { viaje: ResumenViaje }) {
           stopName={null}
           etiqueta={etiquetaAnadirFoto('anadir')}
           multiple
-          className="inline-flex h-11 items-center gap-2 rounded-full bg-text px-5 text-[14.5px] font-medium text-bg disabled:opacity-60"
+          className="inline-flex h-11 items-center gap-2 rounded-full btn-champan px-5 text-[14.5px] font-medium disabled:opacity-60"
         >
           <Icono nombre="camara" size={18} />
           {etiquetaAnadirFoto('anadir')}

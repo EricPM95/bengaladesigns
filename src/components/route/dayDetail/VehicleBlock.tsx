@@ -52,7 +52,7 @@ export function VehicleBlock({ kind }: VehicleBlockProps) {
             type="button"
             onClick={() => setModalOpen(true)}
             aria-label={copy.title}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-body font-semibold text-white transition-colors hover:bg-accent-hover"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full btn-champan text-body font-semibold transition-colors "
           >
             +
           </button>

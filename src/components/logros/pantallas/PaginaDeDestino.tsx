@@ -138,7 +138,7 @@ function TarjetaDeSello({ s, aqui, pin }: { s: SelloDePagina; aqui: boolean; pin
       <Sello id={s.id} grado={(s.grado ?? 'bronce') as GradoDeSello} tam={72} apagado={!s.grado} animado={false} />
       <span style={{ font: "400 15px/1.1 'Instrument Serif',serif" }}>{`Sello ${conDe(s.nombre)}`}</span>
       <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.08em', color, textTransform: 'uppercase' }}>{s.grado ?? 'Por conseguir'}</span>
-      {aqui && <span style={{ height: 22, padding: '0 9px', borderRadius: 999, background: 'oklch(0.8 0.14 70)', color: '#17120a', font: "700 10.5px/22px 'Geist'" }}>Estás aquí</span>}
+      {aqui && <span style={{ height: 22, padding: '0 9px', borderRadius: 999, background: '#F1E3BF', color: '#6F4E37', font: "700 10.5px/22px 'Geist'" }}>Estás aquí</span>}
       <PinDeVitrina puesto={pin} arriba={8} derecha={8} />
     </div>
   )

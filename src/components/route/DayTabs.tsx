@@ -18,7 +18,7 @@ function DayTab({ day, active, onSelect }: { day: DayPlan; active: boolean; onSe
       type="button"
       onClick={() => onSelect(day.id)}
       className={`shrink-0 rounded-full px-3.5 py-1.5 text-small font-medium transition-colors ${
-        active ? 'bg-accent text-white' : 'bg-bg-hover text-text-soft hover:bg-border'
+        active ? 'bg-text text-white' : 'bg-bg-hover text-text-soft hover:bg-border'
       } ${isOver ? 'ring-2 ring-accent ring-offset-1 ring-offset-bg-card' : ''}`}
     >
       D{day.dayNumber}

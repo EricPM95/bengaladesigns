@@ -1,3 +1,4 @@
+import { botonChampan } from '../../../lib/marcaBoton'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useLogrosPantallas } from '../pantallas/useLogrosPantallas'
@@ -132,7 +133,7 @@ export default function ResumenViaje(): ReactNode {
             {tripId && (
               <button type="button" onClick={estampar} data-estampar-sello style={{ flex: '1 1 100%', height: 52, border: 'none', borderRadius: 999, background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', font: "700 14px 'Geist'", cursor: 'pointer' }}>Estampar mi sello</button>
             )}
-            <button type="button" onClick={() => useMomentosUI.getState().abrirCompartir({ tipo: 'viaje' })} style={{ flex: 1, height: 52, border: 'none', borderRadius: 999, background: '#1C2230', color: '#FFFDF8', font: "700 14px 'Geist'", cursor: 'pointer' }}>Compartir mi viaje</button>
+            <button type="button" onClick={() => useMomentosUI.getState().abrirCompartir({ tipo: 'viaje' })} style={{ flex: 1, height: 52, border: 'none', borderRadius: 999, ...botonChampan(), font: "700 14px 'Geist'", cursor: 'pointer' }}>Compartir mi viaje</button>
             <button type="button" onClick={cerrar} style={{ flex: 1, height: 52, border: '1px solid rgba(28,34,48,.25)', borderRadius: 999, background: 'transparent', color: '#1C2230', font: "600 14px 'Geist'", cursor: 'pointer' }}>Ver mi viaje</button>
           </div>
         </>

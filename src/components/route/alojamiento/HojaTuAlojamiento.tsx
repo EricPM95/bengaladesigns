@@ -34,7 +34,7 @@ export function HojaTuAlojamiento({ ciudad, noches, actual, onGuardar, onElimina
           <input value={nombre} onChange={(event) => setNombre(event.target.value)} maxLength={80} placeholder="Hotel Artemide" autoComplete="off" className={campo} />
         </label>
         <CampoPrecio estado={precio} etiqueta="Precio total (opcional)" ayuda="Toda la estancia, todas las personas." />
-        <button type="submit" disabled={!nombreLimpio} className="mt-1 h-12 w-full rounded-full bg-[#1C2230] text-[15px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98] disabled:opacity-40">
+        <button type="submit" disabled={!nombreLimpio} className="mt-1 h-12 w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40">
           Guardar
         </button>
         {actual && <EliminarTexto texto="Eliminar" onClick={onEliminar} />}

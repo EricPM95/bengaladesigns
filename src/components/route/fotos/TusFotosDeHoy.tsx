@@ -31,7 +31,7 @@ export function TusFotosDeHoy({ day }: { day: DayPlan }) {
           dayNumber={day.dayNumber}
           etiqueta="Añadir una foto suelta de hoy"
           multiple
-          className="flex h-9 flex-none items-center gap-1.5 rounded-full bg-[#1C2230] px-3.5 text-[13px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98]"
+          className="flex h-9 flex-none items-center gap-1.5 rounded-full btn-champan px-3.5 text-[13px] font-semibold transition-transform active:scale-[.98]"
         >
           <Icono nombre="anadir" size={14} grosor={2.2} />
           Foto

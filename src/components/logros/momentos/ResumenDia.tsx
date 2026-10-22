@@ -1,3 +1,4 @@
+import { botonChampan } from '../../../lib/marcaBoton'
 import { useEffect, useState, type ReactNode } from 'react'
 import type { Momento } from '../../../lib/logros'
 import { useSyncStore } from '../../../store/useSyncStore'
@@ -109,7 +110,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
           ))}
           {lineas.map((k, n0) => { const n = n0 + filasSello.length; return (
             <li key={k} style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '14px 4px', borderBottom: '1px solid rgba(28,34,48,.1)', animation: `moUp .5s ${(0.3 + n * 0.08).toFixed(2)}s ease both` }}>
-              <span style={{ font: "400 28px/1 'Instrument Serif',serif", minWidth: 36, color: 'oklch(0.55 0.17 5)' }}>{cuentas[k]}</span>
+              <span style={{ font: "400 28px/1 'Instrument Serif',serif", minWidth: 36, color: '#A67C52' }}>{cuentas[k]}</span>
               <span style={{ font: "500 15px 'Geist'" }}>{fila(k, cuentas[k])}</span>
             </li>
           ) })}
@@ -121,7 +122,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
       </div>
       <div style={{ flex: 1 }} />
       <div style={{ padding: '24px 20px calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <button type="button" onClick={alCerrar} style={{ height: 54, border: 'none', borderRadius: 999, background: '#1C2230', color: '#FFFDF8', font: "700 15px 'Geist'", cursor: 'pointer' }}>Seguir</button>
+        <button type="button" onClick={alCerrar} style={{ height: 54, border: 'none', borderRadius: 999, ...botonChampan(), font: "700 15px 'Geist'", cursor: 'pointer' }}>Seguir</button>
         {acabado && (
           <button
             type="button"

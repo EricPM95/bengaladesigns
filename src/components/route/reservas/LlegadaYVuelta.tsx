@@ -101,7 +101,7 @@ export function HojaHoraLlegada({
         type="button"
         disabled={falta}
         onClick={() => onSave(hora, punto?.id)}
-        className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98] disabled:opacity-40"
+        className="mt-4 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40"
       >
         {falta ? 'Elige primero el punto' : `Guardar · ${hora}`}
       </button>

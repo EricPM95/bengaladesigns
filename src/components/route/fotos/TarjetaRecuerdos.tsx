@@ -1,3 +1,4 @@
+import { botonChampan } from '../../../lib/marcaBoton'
 import { limiteDeFotos, urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
 import { pagoActivo } from '../../../lib/pago'
 import { getTodayTripStatus } from '../../../lib/todayMode'
@@ -82,12 +83,12 @@ export function TarjetaRecuerdos({ route, onSubir }: { route: Route; onSubir?: (
       </span>
       {subirFotos(
         'Subir mis fotos del viaje',
-        'flex h-[50px] w-full items-center justify-center gap-2 rounded-full text-[14.5px] font-semibold text-white transition-transform active:scale-[.98]',
+        'flex h-[50px] w-full items-center justify-center gap-2 rounded-full text-[14.5px] font-semibold transition-transform active:scale-[.98]',
         <>
           <Icono nombre="camara" size={18} />
           Subir mis fotos
         </>,
-        { claseContenedor: 'flex w-full flex-col', style: { background: 'rgb(var(--accent))', boxShadow: '0 12px 22px -12px rgb(var(--accent))' } },
+        { claseContenedor: 'flex w-full flex-col', style: botonChampan() },
       )}
       {fotos.length > 0 && (
         <button

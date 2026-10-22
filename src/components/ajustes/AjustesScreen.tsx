@@ -37,7 +37,7 @@ function Fila({ icono, titulo, sub, color, onClick, interruptor, chevron = false
           <span className="h-[22px] w-[22px] rounded-full bg-white" style={{ boxShadow: '0 1px 3px rgba(0,0,0,.25)' }} />
         </span>
       )}
-      {boton && <span className="flex h-9 flex-none items-center rounded-full bg-[#1C2230] px-3.5 text-[12.5px] font-semibold text-[#FFFDF8]">{boton}</span>}
+      {boton && <span className="flex h-9 flex-none items-center rounded-full btn-champan px-3.5 text-[12.5px] font-semibold ">{boton}</span>}
       {chevron && <Icono nombre="adelante" size={16} grosor={2} className="text-text/45" />}
     </>
   )

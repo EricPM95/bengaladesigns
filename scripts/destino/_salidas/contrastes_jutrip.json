@@ -1,17 +1,27 @@
 [
  {
-  "nombre": "oro oscuro (texto) sobre crema",
-  "r": 4.56,
+  "nombre": "oro oscuro (título grande, 3) sobre crema",
+  "r": 3.26,
+  "minimo": 3
+ },
+ {
+  "nombre": "oro oscuro (título grande, 3) sobre tarjeta",
+  "r": 3.67,
+  "minimo": 3
+ },
+ {
+  "nombre": "oro profundo (TEXTO pequeño) sobre crema",
+  "r": 6.5,
   "minimo": 4.5
  },
  {
-  "nombre": "oro oscuro (texto) sobre tarjeta",
-  "r": 5.14,
+  "nombre": "oro profundo (TEXTO pequeño) sobre tarjeta",
+  "r": 7.32,
   "minimo": 4.5
  },
  {
-  "nombre": "blanco sobre oro oscuro (botón con texto)",
-  "r": 5.22,
+  "nombre": "oro profundo (TEXTO pequeño) sobre champán claro #F1E3BF",
+  "r": 5.84,
   "minimo": 4.5
  },
  {
@@ -30,23 +40,38 @@
   "minimo": 4.5
  },
  {
-  "nombre": "oro oscuro de Design (#8E6820) sobre marfil (pestaña de la barra)",
-  "r": 4.58,
+  "nombre": "letra de la pestaña de la barra (oro profundo) sobre marfil",
+  "r": 6.74,
   "minimo": 4.5
  },
  {
-  "nombre": "oro oscuro, el título grande, sobre el mar de la primera pantalla",
-  "r": 3.53,
+  "nombre": "icono de la pestaña de la barra (#A67C52, un icono, no texto) sobre marfil",
+  "r": 3.38,
   "minimo": 3
  },
  {
-  "nombre": "oro oscuro, el título grande, sobre el crema",
-  "r": 4.56,
+  "nombre": "título grande de la primera pantalla (oro profundo, 18 px o más) sobre el mar",
+  "r": 5.02,
   "minimo": 3
  },
  {
-  "nombre": "texto del botón de oro (profundo) sobre el degradado de la entrada",
+  "nombre": "texto del botón champán (oro profundo) sobre el marfil del degradado",
+  "r": 6.74,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "texto del botón champán (oro profundo) sobre el champán del degradado",
   "r": 5.34,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "letra de oro pálido sobre la tinta (botón sobre panel oscuro)",
+  "r": 9.78,
+  "minimo": 4.5
+ },
+ {
+  "nombre": "el lema de la apertura (oro profundo) sobre el marfil",
+  "r": 6.74,
   "minimo": 4.5
  },
  {

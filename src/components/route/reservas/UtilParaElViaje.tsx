@@ -20,7 +20,6 @@ interface Tarjeta {
   sirve: string
   etiqueta?: string
   icono: NombreIcono
-  color: string
   enlace: string
   /** «Buscar vuelos» (gratis) solo busca: no se compra ni se añade. */
   soloBuscar?: boolean
@@ -69,7 +68,6 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
       sirve: 'Te cubre si te pones malo o se cancela el viaje.',
       etiqueta: '5 % dto.',
       icono: ICONOS.shield,
-      color: 'rgb(var(--accent))',
       enlace: ENLACE_SEGURO,
       articulo: 'lo',
       anadida: Boolean(insurance),
@@ -91,7 +89,6 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
       sirve: paises.length > 1 ? `Internet en el móvil en ${countryDisplayName(countryCode)}.` : 'Internet en el móvil nada más llegar.',
       etiqueta: '5 % dto.',
       icono: ICONOS.sim,
-      color: 'oklch(0.55 0.1 220)',
       enlace: ENLACE_ESIM,
       articulo: 'la' as const,
       anadida: Boolean(esim[countryCode]),
@@ -114,7 +111,6 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
       nombre: 'Tarjeta sin comisiones',
       sirve: 'Paga y saca dinero fuera sin comisiones.',
       icono: ICONOS.card,
-      color: 'oklch(0.42 0.03 250)',
       enlace: ENLACE_TARJETA,
       articulo: 'la',
       anadida: n26,
@@ -137,7 +133,6 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
             nombre: nombreAlquiler,
             sirve: isCamper ? 'Tu camper esperándote al llegar.' : 'Tu coche esperándote al llegar.',
             icono: ICONOS.coche,
-            color: 'oklch(0.5 0.08 160)',
             enlace: alquiler.url,
             articulo: 'lo' as const,
             anadida: Boolean(rental),
@@ -155,7 +150,6 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
             nombre: 'Buscar vuelos',
             sirve: 'Compara precios y fechas de vuelos.',
             icono: ICONOS.avion,
-            color: 'rgb(var(--accent))',
             enlace: 'https://www.skyscanner.net',
             soloBuscar: true,
             articulo: 'lo' as const,
@@ -190,7 +184,7 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
             style={{ borderColor: tarjeta.anadida ? 'oklch(0.55 0.11 150 / .35)' : undefined, background: tarjeta.anadida ? 'oklch(0.97 0.025 150)' : undefined }}
           >
             <span className="flex items-center justify-between gap-1.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[11px] text-white" style={{ background: tarjeta.color }}>
+              <span className="flex h-9 w-9 items-center justify-center rounded-[11px]" style={{ background: 'rgb(var(--accent-soft))', color: 'rgb(var(--accent))' }}>
                 <Icono nombre={tarjeta.icono} size={18} />
               </span>
               {tarjeta.etiqueta && <span className="h-[20px] rounded-full bg-[#F5EFE4] px-2 font-mono text-[10.5px] font-semibold leading-[20px] text-text/70">{tarjeta.etiqueta}</span>}
@@ -219,12 +213,12 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
                 {!(dondeDe(tarjeta) && tarjeta.precio) && <span className="flex-none text-[12px] font-medium underline underline-offset-2">Cambiar</span>}
               </button>
             ) : tarjeta.soloBuscar ? (
-              <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="mt-auto flex h-10 w-full items-center justify-center rounded-full bg-[#1C2230] text-[13.5px] font-semibold text-[#FFFDF8] no-underline">
+              <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="mt-auto flex h-10 w-full items-center justify-center rounded-full btn-champan text-[13.5px] font-semibold no-underline">
                 Buscar
               </a>
             ) : (
               <span className="mt-auto flex gap-2">
-                <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="flex h-10 flex-1 items-center justify-center rounded-full bg-[#1C2230] text-[13.5px] font-semibold text-[#FFFDF8] no-underline">
+                <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="flex h-10 flex-1 items-center justify-center rounded-full btn-champan text-[13.5px] font-semibold no-underline">
                   Comprar
                 </a>
                 <button type="button" onClick={() => gestionar(tarjeta)} className="flex h-10 flex-1 items-center justify-center rounded-full border border-text/20 bg-white text-[13.5px] font-semibold text-text">

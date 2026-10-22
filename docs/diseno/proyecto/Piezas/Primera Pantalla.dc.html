@@ -54,14 +54,12 @@
       </div>
     </sc-if>
 
-    <div style="position:absolute;left:14px;right:14px;bottom:26px;padding:14px;border-radius:28px;background:rgba(255,253,248,.78);border:1px solid rgba(28,34,48,.14);backdrop-filter:blur(14px);display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 40px -16px rgba(0,0,0,.6)">
-      <div style="height:62px;border-radius:18px;background:rgba(28,34,48,.06);border:1px solid {{ oBd }};display:flex;align-items:center;gap:14px;padding:0 16px">
-        <span style="width:14px;height:14px;flex:none;border-radius:50%;border:2px solid #1C2230"></span>
-        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:500 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.55)">ORIGEN</span><input value="{{ oVal }}" onFocus="{{ fo }}" onInput="{{ onOq }}" placeholder="¿Desde qué ciudad sales?" style="width:100%;border:0;background:transparent;color:#1C2230;font:500 17px 'Geist';padding:0"></div>
+    <div style="position:absolute;left:14px;right:14px;bottom:26px;padding:14px;border-radius:28px;background:linear-gradient(180deg,#FFFDF8,#FBF3E2);border:1px solid rgba(181,138,46,.45);display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 40px -18px rgba(110,80,24,.45),inset 0 1px 0 #FFFFFF">
+      <div style="height:62px;border-radius:18px;background:#FFFFFF;border:1px solid {{ oBd }};display:flex;align-items:center;gap:14px;padding:0 16px">
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="display:flex;align-items:center;gap:7px;font:500 9.5px/1 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.55)"><span style="width:8px;height:8px;flex:none;border-radius:50%;border:1.5px solid #8E6820"></span>ORIGEN</span><input value="{{ oVal }}" onFocus="{{ fo }}" onInput="{{ onOq }}" placeholder="¿Desde qué ciudad sales?" style="width:100%;border:0;background:transparent;color:#1C2230;font:500 17px 'Geist';padding:0"></div>
       </div>
-      <div style="height:62px;border-radius:18px;background:rgba(28,34,48,.06);border:1px solid {{ dBd }};display:flex;align-items:center;gap:14px;padding:0 16px">
-        <span style="width:14px;height:14px;flex:none;border-radius:50%;background:#E8953A;box-shadow:0 0 12px #E8953A"></span>
-        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:500 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.55)">DESTINO</span><input value="{{ dVal }}" onFocus="{{ fd }}" onInput="{{ onDq }}" placeholder="Elige uno de nuestros destinos" style="width:100%;border:0;background:transparent;color:#1C2230;font:500 17px 'Geist';padding:0"></div>
+      <div style="height:62px;border-radius:18px;background:#FFFFFF;border:1px solid {{ dBd }};display:flex;align-items:center;gap:14px;padding:0 16px">
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="display:flex;align-items:center;gap:7px;font:500 9.5px/1 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.55)"><span style="width:8px;height:8px;flex:none;border-radius:50%;background:#E8953A;box-shadow:0 0 8px #E8953A"></span>DESTINO</span><input value="{{ dVal }}" onFocus="{{ fd }}" onInput="{{ onDq }}" placeholder="Elige uno de nuestros destinos" style="width:100%;border:0;background:transparent;color:#1C2230;font:500 17px 'Geist';padding:0"></div>
       </div>
       <div style="height:54px;border-radius:18px;display:flex;align-items:center;justify-content:center;font:600 16px 'Geist';background:{{ btnBg }};color:{{ btnFg }}">Trazar ruta</div>
     </div>
@@ -177,7 +175,7 @@ class Component extends DCLogic {
       fo:()=>this.setState({focus:'o',oq:''}),fd:()=>this.setState({focus:'d',dq:''}),
       onOq:e=>this.setState({oq:e.target.value,origin:null}),onDq:e=>this.setState({dq:e.target.value,dest:null,sent:false}),
       oBd:s.focus==='o'?'rgba(28,34,48,.5)':'rgba(28,34,48,.14)',dBd:s.focus==='d'?'#B58A2E':'rgba(28,34,48,.14)',
-      btnBg:ready?'#B58A2E':'rgba(28,34,48,.1)',btnFg:ready?'#FFFDF8':'rgba(28,34,48,.4)',
+      btnBg:ready?'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)':'#F1E8D3',btnFg:ready?'#4A3510':'rgba(28,34,48,.4)',
       presets:[preset('A','Inicio: todos los pines',{}),preset('B','Tocando DESTINO',{focus:'d'}),preset('C','Un destino que no tenemos',{focus:'d',dq:'Tokio'}),preset('D','Destino elegido: Roma',{dest:DE('Roma')}),preset('E','Madrid → Roma',{origin:OR('Madrid'),dest:DE('Roma')}),preset('F','Buenos Aires → Roma',{origin:OR('Buenos Aires'),dest:DE('Roma')}),preset('G','Madrid → Cancún',{origin:OR('Madrid'),dest:DE('Cancún')})],
       t1:()=>this.setState({alt:false}),t2:()=>this.setState({alt:true}),
       t1bg:s.alt?'#FFFDF8':'#1C2230',t1fg:s.alt?'#1C2230':'#FFFDF8',t2bg:s.alt?'#1C2230':'#FFFDF8',t2fg:s.alt?'#FFFDF8':'#1C2230'};

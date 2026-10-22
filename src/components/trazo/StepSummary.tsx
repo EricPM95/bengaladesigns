@@ -6,7 +6,7 @@ import type { GenerationStatus } from '../../lib/useRouteGeneration'
 import { cityCode } from './cityCode'
 import { usesPool } from './planChoice'
 import { textoDeDuracion } from '../../lib/duracionViaje'
-import { ACCENT, AMBER, Cta, GhostButton, INK, MONO, SEASON_FX, SERIF, Title } from './trazoUi'
+import { ACCENT, ACCENT_GRANDE, AMBER, Cta, GhostButton, INK, MONO, SEASON_FX, SERIF, Title } from './trazoUi'
 
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -125,7 +125,7 @@ export function StepSummary({ origin, destination, status, checkpoint, route, er
             <div style={{ width: '100%', borderTop: '1px dashed rgba(28,34,48,.35)' }} />
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ font: `400 50px/1 ${SERIF}`, color: ACCENT }}>{cityCode(destination)}</div>
+            <div style={{ font: `400 50px/1 ${SERIF}`, color: ACCENT_GRANDE }}>{cityCode(destination)}</div>
             <div style={{ marginTop: 4, font: "400 12px 'Geist'", color: 'rgba(28,34,48,.62)' }}>{destination?.name}</div>
           </div>
         </div>

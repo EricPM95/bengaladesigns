@@ -29,7 +29,7 @@ export function PruebaFotos() {
     <main className="mx-auto max-w-md p-6 text-text" data-prueba-fotos>
       <h1 className="font-display text-[26px] leading-tight">Prueba de las fotos</h1>
       <p className="mt-2 text-[14px] leading-snug text-text/70">Elige una foto de tu galería y mira qué datos llegan. No se sube nada: se lee aquí, en tu móvil.</p>
-      <label className="mt-4 flex h-12 cursor-pointer items-center justify-center rounded-full bg-accent text-[15px] font-semibold text-white">
+      <label className="mt-4 flex h-12 cursor-pointer items-center justify-center rounded-full btn-champan text-[15px] font-semibold ">
         Elegir una foto
         <input type="file" accept="image/*" className="hidden" onChange={(e) => void elegir(e.target.files?.[0])} />
       </label>

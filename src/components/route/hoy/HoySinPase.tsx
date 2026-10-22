@@ -61,7 +61,7 @@ export function HoySinPase({ route, startIso, fase, simulada = null, onPonFechas
           </CajaBlanca>
         </>
       )}
-      <div data-hoy-sin-pase className="flex flex-none flex-col gap-3 rounded-[22px] bg-[#FFFDF8] p-[18px]" style={{ border: '1px solid rgba(142,104,32,.22)' }}>
+      <div data-hoy-sin-pase className="flex flex-none flex-col gap-3 rounded-[22px] bg-[#FFFDF8] p-[18px]" style={{ border: '1px solid rgba(166,124,82,.22)' }}>
         <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgb(var(--accent-hover))' }}>Tu día de prueba</span>
         <span style={{ font: "400 24px/1.15 'Instrument Serif',serif", textWrap: 'balance' as never }}>
           <TextoConPase texto={pase.pruebaGastada ? `Ya has usado tu día de prueba. Con el ${nombrePase}, HOY te acompaña todo el viaje.` : `Tienes un día de prueba con HOY, gratis. Con el ${nombrePase}, te acompaña todo el viaje.`} />

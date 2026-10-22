@@ -43,9 +43,9 @@ export function BottomBar() {
               if (pestana.id === 'days' && mode !== 'days') setActiveDayId(null)
               setMode(pestana.id)
             }}
-            className={`relative flex h-14 flex-col items-center justify-center gap-1 rounded-full transition-colors duration-300 ${activa ? 'bg-[#FBF3E2] text-[#8E6820]' : 'text-[rgba(251,243,226,.7)]'}`}
+            className={`relative flex h-14 flex-col items-center justify-center gap-1 rounded-full transition-colors duration-300 ${activa ? 'bg-[#FBF3E2] text-[#6F4E37]' : 'text-[rgba(251,243,226,.7)]'}`}
           >
-            <span className="flex h-[26px] w-[52px] items-center justify-center">
+            <span className={`flex h-[26px] w-[52px] items-center justify-center ${activa ? 'text-[#A67C52]' : ''}`}>
               <Icono nombre={pestana.icono} size={22} />
             </span>
             <span className="text-[11px]" style={{ fontWeight: activa ? 600 : 500 }}>

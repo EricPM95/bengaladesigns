@@ -10,7 +10,7 @@ interface MissingAccommodationBannerProps {
 
 const bannerWrapperClass = 'relative m-3 flex shrink-0 items-center gap-3 overflow-hidden rounded-2xl bg-accent-lilac p-4'
 const dismissButtonClass = 'absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full text-text-soft hover:bg-bg-card/60'
-const ctaClass = 'rounded-full bg-accent px-4 py-2 text-caption font-semibold text-white transition-colors hover:bg-accent-hover'
+const ctaClass = 'rounded-full btn-champan px-4 py-2 text-caption font-semibold transition-colors '
 
 /**
  * Banner destacado en la parte superior de DIAS con la "solución para dormir" pendiente del

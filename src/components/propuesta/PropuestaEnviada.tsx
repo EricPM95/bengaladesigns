@@ -1,3 +1,4 @@
+import { botonChampan } from '../../lib/marcaBoton'
 import { createPortal } from 'react-dom'
 import { textoMandadoA } from '../../lib/propuesta'
 import { Icono } from '../ui/Icono'
@@ -12,7 +13,7 @@ export function PropuestaEnviada({ nombre, onVolver }: { nombre: string; onVolve
         <Icono nombre="hecho" size={38} grosor={2.6} />
       </span>
       <span style={{ font: "400 32px/1.1 'Instrument Serif',serif" }}>{textoMandadoA(nombre)}</span>
-      <button type="button" onClick={onVolver} style={{ marginTop: 20, width: '100%', maxWidth: 420, height: 52, borderRadius: 999, border: 'none', background: '#1C2230', color: '#FFFDF8', font: "600 15px 'Geist'", cursor: 'pointer' }}>
+      <button type="button" onClick={onVolver} style={{ marginTop: 20, width: '100%', maxWidth: 420, height: 52, borderRadius: 999, border: 'none', ...botonChampan(), font: "600 15px 'Geist'", cursor: 'pointer' }}>
         Volver al viaje
       </button>
     </div>,

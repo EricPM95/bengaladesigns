@@ -61,7 +61,8 @@ debe(marca.logo && fs.existsSync(path.join('public', marca.logo)) && fs.existsSy
   const favicon = leer('public/favicon.svg')
   debe(/FBF3E2/.test(favicon) && !/863bff/i.test(favicon), 'iconos', 'el icono de la pestaña es el de P4 (marfil), no el de siempre')
 }
-debe(/Bodoni\+Moda:wght@400;500/.test(leer('index.html')), 'fuente', 'Bodoni Moda, solo en 400 y 500, cargada con las otras fuentes')
+debe(!/Bodoni/i.test(leer('index.html') + leer('shared/marca/logoJutrip.js') + leer('shared/marca/aperturaJutrip.js') + leer('src/components/ui/LogoJutrip.tsx')), 'fuente', 'la Bodoni ya no está en ningún logo (ni en la carga de fuentes): todos los logos son el nuevo, en Italiana')
+debe(/family=Italiana(&|")/.test(leer('index.html')), 'fuente', 'Italiana, la letra del logo nuevo (Tanda 10E), cargada con las otras fuentes')
 // En lo que ve el viajero no queda ningún «Routy» ni «Trazo»: se miran los textos del código (entre comillas o en el JSX) y, abajo, lo que sale en pantalla de verdad.
 {
   const raiz = ['src', 'server', 'shared', 'api', 'public', 'data/marca.json', 'index.html', 'vercel.json']
@@ -168,15 +169,23 @@ const raizDatos = 'data'
   const apertura = await app.evaluar("document.getElementById('apertura')?.innerText ?? ''")
   debe(/JUTRIP|De viajeros, para viajeros/i.test(apertura + (await app.evaluar("document.querySelector('[data-lema]')?.textContent ?? ''"))), 'apertura', 'la pantalla de apertura lleva el lema')
   debe((await app.evaluar("document.querySelector('[data-lema]')?.textContent?.trim()")) === 'De viajeros, para viajeros', 'apertura', 'el lema sale de marca.json: «De viajeros, para viajeros»')
-  debe(await app.evaluar("Boolean(document.querySelector('#apertura [data-logo-jutrip] svg'))"), 'apertura', 'el logo P4 va dibujado con código (la estrella y JUTRIP)')
-  debe((await app.evaluar("getComputedStyle(document.querySelector('#apertura [data-palabra-jutrip]')).fontFamily")).includes('Bodoni Moda'), 'apertura', 'la palabra JUTRIP va en Bodoni Moda')
-  const pesos = await app.evaluar("Array.from(document.querySelectorAll('#apertura [data-palabra-jutrip] span')).map((s) => s.style.fontWeight).join()")
-  debe(pesos === '500,500,500,400,500,400', 'apertura', `la R y la P, más finas (400): ${pesos}`)
+  debe(await app.evaluar("Boolean(document.querySelector('#apertura [data-logo-jutrip] svg'))"), 'apertura', 'el logo nuevo va dibujado con código (la palabra JUTRIP con la estrella sobre la I)')
+  debe((await app.evaluar("getComputedStyle(document.querySelector('#apertura [data-palabra-jutrip]')).fontFamily")).includes('Italiana'), 'apertura', 'la palabra JUTRIP va en Italiana')
+  debe((await app.evaluar("document.querySelector('#apertura [data-palabra-jutrip]').textContent")) === 'JUTRIP', 'apertura', 'la palabra del logo dice JUTRIP, letra a letra')
+  const durs = await app.evaluar("Array.from(document.querySelectorAll('#apertura *')).map((e) => getComputedStyle(e).animationDuration).filter((d) => d && d !== '0s')")
+  debe(durs.length > 20 && durs.every((d) => d.split(',').every((x) => x.trim() === '3s')), 'apertura', `todo el movimiento de la apertura dura 3 s (${[...new Set(durs)].join(' ')})`)
+  const vueltas = await app.evaluar("Array.from(document.querySelectorAll('#apertura *')).map((e) => getComputedStyle(e).animationIterationCount).filter((d) => d && d !== '1')")
+  debe(vueltas.length === 0 && durs.length > 0, 'apertura', 'la apertura sale UNA sola vez (ninguna animación se repite)')
+  const letrasLema = await app.evaluar("document.querySelectorAll('#apertura [data-lema] > span').length")
+  debe(letrasLema === 'De viajeros, para viajeros'.length, 'apertura', `el lema se escribe letra a letra (${letrasLema} letras)`)
+  const css = leer('shared/marca/aperturaJutrip.js')
+  debe(/prefers-reduced-motion: reduce\)\{#apertura \*\{animation:none!important\}\}/.test(css), 'apertura', 'con las animaciones reducidas la pantalla queda quieta, con el logo y la frase')
+  debe(/DURACION = 3[^.0-9]/.test(css) && /3000 - performance\.now\(\)/.test(leer('src/main.tsx')), 'apertura', 'se quita a los 3 segundos de abrirse (la animación y main.tsx dicen lo mismo)')
   await app.evaluar("import('/src/dev/escaparate.ts').then(() => window.__escaparate.abrir('c3-A1'))")
   await app.esp(1500)
   const entrar = await app.evaluar("document.querySelector('[data-entrar]')?.innerText ?? ''")
-  debe(/JUTRIP/.test(entrar) && !/\b(Routy|Trazo)\b/.test(entrar), 'entrar', 'la pantalla de entrar lleva JUTRIP')
-  debe(!(await app.evaluar("Boolean(document.querySelector('[data-entrar] svg') || document.querySelector('[data-entrar] [data-logo-hueco]'))")), 'entrar', 'arriba solo la palabra: sin estrella ni recuadro')
+  debe(/JUTRIP/.test(entrar.replace(/[^A-Za-z]/g, '')) && !/\b(Routy|Trazo)\b/.test(entrar), 'entrar', 'la pantalla de entrar lleva JUTRIP (letra a letra: el innerText parte la palabra al llegar a la estrella de la I)')
+  debe((await app.evaluar("document.querySelectorAll('[data-entrar] svg').length")) === 1 && !(await app.evaluar("Boolean(document.querySelector('[data-entrar] [data-logo-hueco]'))")) && (await app.evaluar("getComputedStyle(document.querySelector('[data-entrar] [data-palabra-jutrip]')).fontFamily")).includes('Italiana'), 'entrar', 'arriba, el logo nuevo: la palabra en Italiana con su estrella sobre la I y nada más (sin recuadro)')
   debe((await app.evaluar("getComputedStyle(document.querySelector('[data-entrar]')).backgroundColor")) === 'rgb(255, 255, 255)', 'entrar', 'el fondo de la pantalla de entrar es blanco (lo pidió Eric)')
   await app.evaluar("(() => { const b = Array.from(document.querySelectorAll('[data-entrar] button')).find((x) => /Privacidad/.test(x.textContent)); b.click(); return true })()")
   await app.esp(800)
@@ -300,6 +309,7 @@ console.log('4. Los 14 emblemas')
   for (const [id, nombre] of [['plaza_de_espana', 'Escalón a escalón'], ['castillo_de_santangelo', 'Tumba de emperador']]) {
     const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1' })
     for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
+    for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
     await app.evaluar('window.__rutaPrueba().then(() => true)')
     await app.esp(6000)
     for (let i = 0; i < 4; i++) {
@@ -359,44 +369,50 @@ const medir = (nombre, a, b, minimo, regla = 'contraste') => {
 {
   const T = (v) => triplete(claro, v)
   debe(T('bg').join() === hexA('#F6EFE0').join() && T('bg-card').join() === hexA('#FFFDF8').join() && T('text').join() === hexA('#1C2230').join(), 'colores', 'crema #F6EFE0, tarjeta #FFFDF8 y tinta #1C2230 en index.css')
-  debe(T('accent').join() === hexA('#8B6620').join() && T('accent-hover').join() === hexA('#6E5018').join() && T('oro').join() === hexA('#B58A2E').join(), 'colores', 'oro oscuro (#8B6620, el #8E6820 de Design oscurecido lo justo para llegar a 4,5 sobre el crema), oro profundo #6E5018 y oro claro #B58A2E en index.css, no pantalla a pantalla')
+  debe(T('accent').join() === hexA('#A67C52').join() && T('accent-hover').join() === hexA('#6F4E37').join() && T('accent-texto').join() === hexA('#6F4E37').join() && T('accent-warm').join() === hexA('#6F4E37').join() && T('oro').join() === hexA('#D8B98E').join() && T('accent-soft').join() === hexA('#F1E3BF').join(), 'colores', 'oro oscuro #A67C52, oro profundo #6F4E37 (también el del texto y el de accent-warm), oro claro #D8B98E y oro suave #F1E3BF en index.css (Marca JUTRIP 01)')
   debe(T('frambuesa').join() === '189,57,100' && T('accent-green').join() === '47,125,79' && T('accent-red').join() === '204,39,46' && T('barrio-lila').join() === '67,56,137', 'colores', 'el verde de «Visto», el rojo de los avisos y el lila de los barrios no cambian (y el frambuesa sigue disponible con su nombre)')
   const crema = T('bg')
   const tarjeta = T('bg-card')
   const blanco = [255, 255, 255]
-  medir('oro oscuro (texto) sobre crema', T('accent'), crema, 4.5)
-  medir('oro oscuro (texto) sobre tarjeta', T('accent'), tarjeta, 4.5)
-  medir('blanco sobre oro oscuro (botón con texto)', blanco, T('accent'), 4.5)
+  // El oro oscuro #A67C52 NO llega a 4,5 como texto pequeño (Tanda 10E): solo títulos de 18 px o más, iconos y líneas. Se mide y se comprueba que de verdad no llega.
+  medir('oro oscuro (título grande, 3) sobre crema', T('accent'), crema, 3)
+  medir('oro oscuro (título grande, 3) sobre tarjeta', T('accent'), tarjeta, 3)
+  debe(ratio(T('accent'), crema) < 4.5 && ratio(blanco, T('accent')) < 4.5, 'contraste', `el oro oscuro no llega a 4,5 sobre el crema (${ratio(T('accent'), crema).toFixed(2)}) ni con letra blanca encima (${ratio(blanco, T('accent')).toFixed(2)}): por eso el texto pequeño va en el oro profundo y los botones, en champán`)
+  medir('oro profundo (TEXTO pequeño) sobre crema', T('accent-texto'), crema, 4.5)
+  medir('oro profundo (TEXTO pequeño) sobre tarjeta', T('accent-texto'), tarjeta, 4.5)
+  medir('oro profundo (TEXTO pequeño) sobre champán claro #F1E3BF', T('accent-texto'), hexA('#F1E3BF'), 4.5)
   medir('oro profundo (texto pequeño) sobre marfil', T('accent-hover'), hexA('#FBF3E2'), 4.5)
   medir('oro profundo sobre crema', T('accent-hover'), crema, 4.5)
   medir('oro profundo sobre oro suave (pastillas)', T('accent-hover'), T('accent-soft'), 4.5)
-  medir('oro oscuro de Design (#8E6820) sobre marfil (pestaña de la barra)', hexA('#8E6820'), hexA('#FBF3E2'), 4.5)
-  medir('oro oscuro, el título grande, sobre el mar de la primera pantalla', hexA('#8B6620'), hexA('#BCD8EC'), 3)
-  medir('oro oscuro, el título grande, sobre el crema', hexA('#8B6620'), crema, 3)
-  medir('texto del botón de oro (profundo) sobre el degradado de la entrada', hexA('#6E5018'), hexA('#EBD9AE'), 4.5)
+  medir('letra de la pestaña de la barra (oro profundo) sobre marfil', hexA('#6F4E37'), hexA('#FBF3E2'), 4.5)
+  medir('icono de la pestaña de la barra (#A67C52, un icono, no texto) sobre marfil', hexA('#A67C52'), hexA('#FBF3E2'), 3)
+  medir('título grande de la primera pantalla (oro profundo, 18 px o más) sobre el mar', hexA('#6F4E37'), hexA('#BCD8EC'), 3)
+  medir('texto del botón champán (oro profundo) sobre el marfil del degradado', hexA('#6F4E37'), hexA('#FBF3E2'), 4.5)
+  medir('texto del botón champán (oro profundo) sobre el champán del degradado', hexA('#6F4E37'), hexA('#EBD9AE'), 4.5)
+  medir('letra de oro pálido sobre la tinta (botón sobre panel oscuro)', hexA('#E9C77A'), hexA('#1C2230'), 4.5)
+  medir('el lema de la apertura (oro profundo) sobre el marfil', hexA('#6F4E37'), hexA('#FBF3E2'), 4.5)
   medir('letra pequeña de ORIGEN / DESTINO (tinta al 66 %) sobre la tarjeta', mezcla(hexA('#1C2230'), 0.66, tarjeta), tarjeta, 4.5)
   medir('«Arrastra y haz zoom» (tinta al 60 %) sobre el mar', mezcla(hexA('#1C2230'), 0.6, hexA('#BCD8EC')), hexA('#BCD8EC'), 3, 'contraste')
   const oroClaro = ratio(T('oro'), crema)
-  debe(oroClaro < 4.5 && oroClaro > 2.5, 'contraste', `el oro claro sobre crema da ${oroClaro.toFixed(2)}: por eso solo se usa en líneas, pines, la barra de pasos y los puntos, nunca en texto`)
+  debe(oroClaro < 2.5 && oroClaro > 1.2, 'contraste', `el oro claro sobre crema da ${oroClaro.toFixed(2)}: por eso solo se usa en líneas, pines, la barra de pasos y los puntos, nunca en texto`)
   fs.mkdirSync('scripts/destino/_salidas', { recursive: true })
   fs.writeFileSync('scripts/destino/_salidas/contrastes_jutrip.json', JSON.stringify(tabla, null, 1))
 }
 // El oro claro no se usa como color de texto en ninguna parte del código de la app (texto = ORO_OSCURO o accent).
 {
   const cuerpo = leer('src/components/trazo/PrimeraPantalla.tsx')
-  debe(!/color:\s*ORO_CLARO|color:\s*'#B58A2E'/.test(cuerpo) && !/color: ORO_CLARO/.test(leer('src/components/trazo/TrazoFlow.tsx')), 'contraste', 'el oro claro no se usa como color de texto en la primera pantalla ni en el formulario')
+  debe(!/color:\s*ORO_CLARO|color:\s*'#D8B98E'/.test(cuerpo) && !/color: ORO_CLARO/.test(leer('src/components/trazo/TrazoFlow.tsx')), 'contraste', 'el oro claro no se usa como color de texto en la primera pantalla ni en el formulario')
 }
 // El frambuesa solo queda donde toca: lo que falta (Falta, el punto de los avisos), resaltar (el corazón de «lo recomiendan», las piezas de la colección principal) y lo de los logros.
 {
   const PERMITIDOS = {
     'src/components/route/reservas/BloqueReservas.tsx': 'Falta',
-    'src/components/route/reservas/ResumenViaje.tsx': 'Falta (lo que falta por reservar)',
     'src/components/route/reservas/ReservasItemRow.tsx': 'Falta (la franja de lo que falta)',
     'src/components/route/reservas/EntradaEdgeTab.tsx': 'Falta (la entrada sin reservar)',
     'src/components/route/reservas/EntradaCard.tsx': 'Falta (la entrada sin reservar)',
     'src/components/route/hoy/piezas.tsx': 'Falta (la franja de la entrada sin reservar)',
-    'src/components/route/dayDetail/ArrivalReturnSheet.tsx': 'Falta (la franja del traslado sin reservar)',
     'src/components/avisos/ListaDeAvisos.tsx': 'el punto de los avisos',
+    'src/components/layout/Header.tsx': 'el punto de los avisos (en la campana de arriba)',
     'src/components/ui/MeGusta.tsx': 'el corazón de «lo recomiendan»',
     'src/lib/iconos.ts': 'COLOR_ICONO.falta',
     'src/lib/exploreStyle.ts': 'el color propio de la tarjeta «Entradas» de EXPLORAR (cada tarjeta tiene el suyo)',
@@ -437,7 +453,7 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
 // La barra de abajo: la A de Marca JUTRIP 03 (tinta con la pestaña de marfil). Es de lo poco oscuro que lleva la app (junto con la franja «Estás en Roma» de RESERVAS).
 {
   const barra = leer('src/components/layout/BottomBar.tsx')
-  debe(/bg-\[#1C2230\]/.test(barra) && /bg-\[#FBF3E2\] text-\[#8E6820\]/.test(barra) && !/dark:/.test(barra), 'barra', 'la barra de abajo es la A de Marca JUTRIP 03 (tinta, pestaña de marfil), sin variante de noche')
+  debe(/bg-\[#1C2230\]/.test(barra) && /bg-\[#FBF3E2\] text-\[#6F4E37\]/.test(barra) && /text-\[#A67C52\]/.test(barra) && !/dark:/.test(barra), 'barra', 'la barra de abajo es la A de Marca JUTRIP 03 (tinta, pestaña de marfil con el icono en #A67C52 y la letra en el oro profundo), sin variante de noche')
 }
 
 // Sin modo noche (decidido por Eric): la app sale siempre en claro, también si alguien lo tenía guardado de antes.
@@ -461,7 +477,7 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
 // HOY: la tarjeta de la siguiente parada, clara (Marca JUTRIP 02 · 09), con [Visto] en verde y [Cómo llegar] en oro.
 {
   const piezas = leer('src/components/route/hoy/piezas.tsx')
-  debe(!/useClaro/.test(piezas) && /#FBF3E2 0%,#EBD9AE 100%/.test(piezas), 'hoy', 'la tarjeta de HOY: [Cómo llegar] en el degradado de marfil con letra de oro profundo, sin gancho de modo noche')
+  debe(!/useClaro/.test(piezas) && /botonChampan\(\)/.test(piezas) && /#FBF3E2 0%,#EBD9AE 100%/.test(leer('src/lib/marcaBoton.ts')) && /color: '#6F4E37'/.test(leer('src/lib/marcaBoton.ts')), 'hoy', 'la tarjeta de HOY: [Cómo llegar] en el degradado de marfil con letra de oro profundo (botonChampan), sin gancho de modo noche')
   for (const f of ['src/components/route/hoy/HoyDurante.tsx', 'src/components/route/hoy/v2/HoyDuranteV2.tsx']) {
     const t = leer(f)
     debe(/bg-\[#FFFDF8\] text-\[#1C2230\]/.test(t) && /data-tarjeta="clara"/.test(t) && !/claro/.test(t.replace(/\/\/[^\n]*/g, '')), 'hoy', `${f}: la tarjeta de la siguiente parada es siempre clara`)

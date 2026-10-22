@@ -241,7 +241,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
                                 <span style={{ position: 'absolute', left: '50%', bottom: -6, transform: 'translateX(-50%)', height: 20, padding: '0 8px', borderRadius: 999, background: '#FFFDF8', border: '1px dashed rgba(28,34,48,.3)', color: 'rgba(28,34,48,.6)', font: "600 10px/18px 'Geist'", whiteSpace: 'nowrap', pointerEvents: 'none' }}>Por conseguir</span>
                               </>
                             )}
-                            {s.nuevo && <span style={{ position: 'absolute', right: -6, top: -4, height: 22, padding: '0 8px', borderRadius: 999, background: 'oklch(0.55 0.17 5)', color: '#FFFFFF', font: "600 10.5px/22px 'Geist'", boxShadow: '0 0 0 2px #F3EBDB' }}>Nuevo</span>}
+                            {s.nuevo && <span style={{ position: 'absolute', right: -6, top: -4, height: 22, padding: '0 8px', borderRadius: 999, background: '#F1E3BF', color: '#6F4E37', font: "600 10.5px/22px 'Geist'", boxShadow: '0 0 0 2px #F3EBDB' }}>Nuevo</span>}
                           </span>
                         )
                       })}

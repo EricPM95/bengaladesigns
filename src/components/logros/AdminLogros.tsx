@@ -148,7 +148,7 @@ function Simulador({ clave }: { clave: string }) {
       <p className="text-text/60">Una línea por paso: fecha;visto o foto;id del sitio;hora (hora de Roma). No toca la base de datos.</p>
       <div className="mt-2 flex gap-2"><input value={inicio} onChange={(e) => setInicio(e.target.value)} className="w-32 rounded border border-text/20 px-2 py-1" /><input value={fin} onChange={(e) => setFin(e.target.value)} className="w-32 rounded border border-text/20 px-2 py-1" /></div>
       <textarea value={texto} onChange={(e) => setTexto(e.target.value)} rows={7} className="mt-2 w-full rounded border border-text/20 p-2 font-mono text-[12.5px]" />
-      <button type="button" onClick={() => void correr()} className="mt-2 rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-white">Simular</button>
+      <button type="button" onClick={() => void correr()} className="mt-2 rounded-full btn-champan px-4 py-2 text-[14px] font-semibold ">Simular</button>
       {salida && <ol className="mt-3 space-y-2">{salida.map((p) => <li key={p.paso}><b>{p.paso}. {p.tipo} · {p.sitio}</b>{p.nuevos.length === 0 ? <span className="text-text/55"> — nada nuevo</span> : <ul className="list-disc pl-5">{p.nuevos.map((m, i) => <li key={i}>{m.tipo}: {m.nombre}</li>)}</ul>}</li>)}</ol>}
     </section>
   )
@@ -165,7 +165,7 @@ function Probador() {
     <section>
       <p className="text-text/60">Dar «Probador» a mano a una cuenta (por su email). No se da solo.</p>
       <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email de la cuenta" className="mt-2 w-full rounded border border-text/20 px-2 py-1.5" />
-      <button type="button" onClick={() => void dar()} className="mt-2 rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-white">Dar Probador</button>
+      <button type="button" onClick={() => void dar()} className="mt-2 rounded-full btn-champan px-4 py-2 text-[14px] font-semibold ">Dar Probador</button>
       {resultado && <p className="mt-2">{resultado}</p>}
     </section>
   )
@@ -181,7 +181,7 @@ function Sorteo() {
       <p className="text-text/60">Entra quien tenga nivel 3 o más y haya acabado al menos un viaje con la app ese año. Solo la regla: sin pantalla de sorteo.</p>
       <div className="mt-2 flex gap-2">
         <input value={anio} onChange={(e) => setAnio(e.target.value)} className="w-24 rounded border border-text/20 px-2 py-1" />
-        <button type="button" onClick={() => void ver()} className="rounded-full bg-accent px-4 py-1.5 text-[14px] font-semibold text-white">Ver quién entra</button>
+        <button type="button" onClick={() => void ver()} className="rounded-full btn-champan px-4 py-1.5 text-[14px] font-semibold ">Ver quién entra</button>
       </div>
       {r?.ok && (
         <div className="mt-3">
@@ -270,12 +270,12 @@ function MisPruebas() {
     <section data-reiniciar-pruebas>
       <p className="text-text/60">Deja a cero lo de pruebas de TU cuenta (la de ahora): el día de prueba de HOY, los logros, la EXP, los pases de prueba y los avisos. No toca tus viajes, tus fotos ni a nadie más.</p>
       {!confirmando ? (
-        <button type="button" onClick={() => setConfirmando(true)} className="mt-2 rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-white">Reiniciar mis pruebas</button>
+        <button type="button" onClick={() => setConfirmando(true)} className="mt-2 rounded-full btn-champan px-4 py-2 text-[14px] font-semibold ">Reiniciar mis pruebas</button>
       ) : (
         <div className="mt-2 rounded-xl border border-text/20 p-3">
           <p className="font-semibold">¿Seguro? Se borra lo de pruebas de tu cuenta y no se puede deshacer.</p>
           <div className="mt-2 flex gap-2">
-            <button type="button" disabled={ocupado} onClick={() => void reiniciar()} className="rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-white">Sí, reiniciar</button>
+            <button type="button" disabled={ocupado} onClick={() => void reiniciar()} className="rounded-full bg-accent-red text-white px-4 py-2 text-[14px] font-semibold ">Sí, reiniciar</button>
             <button type="button" disabled={ocupado} onClick={() => setConfirmando(false)} className="rounded-full border border-text/25 px-4 py-2 text-[14px]">Cancelar</button>
           </div>
         </div>

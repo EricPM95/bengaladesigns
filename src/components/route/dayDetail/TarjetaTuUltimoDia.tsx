@@ -11,12 +11,12 @@ import type { TextosDelUltimoDia } from '../../../lib/ultimoDia'
  */
 export function TarjetaTuUltimoDia({ textos, conPase, onPrincipal, onAnadirLugares }: { textos: TextosDelUltimoDia; conPase: boolean; onPrincipal: () => void; onAnadirLugares: () => void }) {
   return (
-    <div data-tarjeta-ultimo-dia={conPase ? 'con-pase' : 'sin-pase'} className="mt-2 flex flex-col gap-3 rounded-2xl border border-[rgba(142,104,32,.22)] bg-[#FFFDF8] p-4 text-[#1C2230]">
+    <div data-tarjeta-ultimo-dia={conPase ? 'con-pase' : 'sin-pase'} className="mt-2 flex flex-col gap-3 rounded-2xl border border-[rgba(166,124,82,.22)] bg-[#FFFDF8] p-4 text-[#1C2230]">
       <h3 data-ultimo-dia-titulo className="font-display text-[22px] leading-[1.1]">{textos.titulo}</h3>
       <p data-ultimo-dia-texto className="text-[14.5px] leading-[1.45] text-[#1C2230]">
         {textos.partes.map((parte, i) =>
           parte.oro ? (
-            <em key={i} data-pase-resaltado style={{ fontFamily: "'Instrument Serif',serif", fontStyle: 'italic', fontWeight: 400, fontSize: '1.15em', color: '#8E6820' }}>
+            <em key={i} data-pase-resaltado style={{ fontFamily: "'Instrument Serif',serif", fontStyle: 'italic', fontWeight: 400, fontSize: '1.15em', color: '#6F4E37' }}>
               {parte.texto}
             </em>
           ) : (

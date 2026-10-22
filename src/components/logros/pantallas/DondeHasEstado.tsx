@@ -1,3 +1,4 @@
+import { botonChampan } from '../../../lib/marcaBoton'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { flagDots } from '../../../lib/flagColors'
 import { Capa } from './Capa'
@@ -129,7 +130,7 @@ export default function DondeHasEstado({ pantalla: _pantalla }: { pantalla: Pant
         </div>
         <div style={{ flex: 'none', padding: '10px 16px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 10, borderTop: '1px solid rgba(28,34,48,.07)', background: '#F5EFE4' }}>
           {error && <span style={{ textAlign: 'center', font: "500 13px 'Geist'", color: 'oklch(0.52 0.19 25)' }}>No se ha podido guardar. Vuelve a probar.</span>}
-          <button type="button" onClick={() => void terminar()} disabled={guardando} style={{ height: 54, border: 'none', borderRadius: 999, background: '#1C2230', color: '#FFFDF8', font: "600 15px 'Geist'", cursor: 'pointer', opacity: n ? 1 : 0.4 }}>
+          <button type="button" onClick={() => void terminar()} disabled={guardando} style={{ height: 54, border: 'none', borderRadius: 999, ...botonChampan(), font: "600 15px 'Geist'", cursor: 'pointer', opacity: n ? 1 : 0.4 }}>
             {n ? `Listo · ${plural(n, 'país', 'países')}` : 'Listo'}
           </button>
         </div>

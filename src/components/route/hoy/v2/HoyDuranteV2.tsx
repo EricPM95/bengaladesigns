@@ -119,19 +119,19 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
   const onda = ['8px', '14px', '10px', '16px', '7px', '12px', '15px', '9px', '13px', '6px']
   return (
     <div className="flex items-center gap-2">
-      <button type="button" onClick={alPulsar} data-escuchar={estado} className="flex h-[50px] min-w-0 flex-1 items-center justify-center gap-3 rounded-full pl-2 pr-3.5" style={{ background: 'rgba(142,104,32,.1)'}}>
+      <button type="button" onClick={alPulsar} data-escuchar={estado} className="flex h-[50px] min-w-0 flex-1 items-center justify-center gap-3 rounded-full pl-2 pr-3.5" style={{ background: 'rgba(166,124,82,.1)'}}>
         <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full" style={{ background: 'rgb(var(--accent))' }}>
           <Icono nombre={estado === 'hablando' ? 'pausa' : 'seguir'} size={13} relleno grosor={1.6} />
         </span>
         <span className="whitespace-nowrap text-[13.5px] font-semibold">{estado === 'parado' ? 'Escuchar historia' : estado === 'hablando' ? 'Pausar' : 'Seguir escuchando'}</span>
         <span className="flex h-6 items-center gap-[3px]" style={{ opacity: estado === 'hablando' ? 1 : 0.6 }} aria-hidden="true">
           {[...onda, ...onda].map((h, i) => (
-            <span key={i} style={{ width: 2.5, height: h, borderRadius: 2, background: 'linear-gradient(180deg,#B58A2E,#8B6620)', opacity: i >= 10 ? 0.7 : 1 }} />
+            <span key={i} style={{ width: 2.5, height: h, borderRadius: 2, background: 'linear-gradient(180deg,#D8B98E,#6F4E37)', opacity: i >= 10 ? 0.7 : 1 }} />
           ))}
         </span>
       </button>
       {estado !== 'parado' && (
-        <button type="button" onClick={parar} aria-label="Parar" className="flex h-[50px] w-[50px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(142,104,32,.1)'}}>
+        <button type="button" onClick={parar} aria-label="Parar" className="flex h-[50px] w-[50px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(166,124,82,.1)'}}>
           <Icono nombre="cerrar" size={14} />
         </button>
       )}
@@ -469,7 +469,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
             <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" />
             {masVisitas.length > 0 && (
               <div className="flex justify-center">
-                <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: '1.5px dashed rgba(142,104,32,.6)'}}>
+                <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: '1.5px dashed rgba(166,124,82,.6)'}}>
                   <Icono nombre="anadir" size={13} grosor={2.4} />
                   Más visitas
                 </button>
@@ -503,7 +503,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {ofrecerFoto && !logrosActivos() && (
         <div className="flex flex-none items-center gap-2 rounded-2xl bg-white px-3.5 py-2.5" style={{ border: '1px solid rgba(28,34,48,.08)' }}>
           <span className="min-w-0 flex-1 truncate text-[13px] text-text/70">Visto: {displayStopName(ofrecerFoto.name)}</span>
-          <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={ofrecerFoto.name} etiqueta="Añadir foto" onSubida={() => setOfrecerFoto(null)} className="flex h-11 flex-none items-center gap-1.5 rounded-full bg-accent px-3.5 text-[13px] font-semibold text-white">
+          <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={ofrecerFoto.name} etiqueta="Añadir foto" onSubida={() => setOfrecerFoto(null)} className="flex h-11 flex-none items-center gap-1.5 rounded-full btn-champan px-3.5 text-[13px] font-semibold ">
             <Icono nombre="camara" size={16} />
             Añadir foto
           </BotonFoto>

@@ -137,7 +137,7 @@ export function ExcursionBanner({
       <button
         type="button"
         onClick={onSeeAll}
-        className="mt-2.5 w-full rounded-lg bg-accent px-3 py-2 text-small font-semibold text-white transition-colors hover:bg-accent-hover"
+        className="mt-2.5 w-full rounded-lg btn-champan px-3 py-2 text-small font-semibold transition-colors "
       >
         Ver todas las excursiones →
       </button>
@@ -228,7 +228,7 @@ export function ExcursionOptions({
           // Placeholder deliberado: hasta que estén los enlaces de afiliado (del operador) esto no
           // lleva a ninguna parte, y prometer una reserva que no existe sería peor que no ofrecerla.
           disabled
-          className="w-full cursor-not-allowed rounded-xl bg-accent px-3 py-3 text-small font-semibold text-white opacity-70"
+          className="w-full cursor-not-allowed rounded-xl btn-champan px-3 py-3 text-small font-semibold opacity-70"
         >
           <Icono nombre="reservas" size={16} className="mr-1.5 inline-block align-[-3px]" />Reservar {selected.title}
           {formatPrice(selected) ? ` — desde ${formatPrice(selected)}` : ''}
@@ -375,7 +375,7 @@ export function HalfDayExcursionBlock({
               href={excursion.bookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+              className="mt-3 block w-full rounded-xl btn-champan py-2.5 text-center text-small font-semibold transition-opacity hover:opacity-90"
             >
               Ver disponibilidad
             </a>
@@ -447,7 +447,7 @@ export function BlankDayFullExcursion({ excursion, onRemove }: { excursion: Excu
               href={excursion.bookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+              className="mt-3 block w-full rounded-xl btn-champan py-2.5 text-center text-small font-semibold transition-opacity hover:opacity-90"
             >
               Ver disponibilidad
             </a>
@@ -496,7 +496,7 @@ export function FreeAfternoonBlock({
         <button
           type="button"
           onClick={onAddStops}
-          className="w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+          className="w-full rounded-xl btn-champan py-2.5 text-center text-small font-semibold transition-opacity hover:opacity-90"
         >
           Añadir paradas
         </button>
@@ -586,7 +586,7 @@ export function ExcursionDayProposal({
               href={featured.bookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+              className="mt-3 block w-full rounded-xl btn-champan py-2.5 text-center text-small font-semibold transition-opacity hover:opacity-90"
             >
               Ver disponibilidad
             </a>
@@ -615,7 +615,7 @@ export function ExcursionDayProposal({
             <button
               type="button"
               onClick={() => onDecline('route')}
-              className="flex-1 rounded-xl bg-accent py-2 text-caption font-semibold text-white transition-opacity hover:opacity-90"
+              className="flex-1 rounded-xl btn-champan py-2 text-caption font-semibold transition-opacity hover:opacity-90"
             >
               Montadme ruta por {destination}
             </button>

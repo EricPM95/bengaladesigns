@@ -1,7 +1,7 @@
 // Las capturas de la Tanda 10 (JUTRIP), en tamaño móvil (390 x 844), en docs/dias/capturas_jutrip/: la primera pantalla en sus estados A a G, pasos del formulario, la pantalla de entrar, la
 // de apertura, el icono, las películas E12 y E13 (un fotograma del principio y uno del final) y la app por dentro, de día y de noche.
 // Hace falta `npm run server` y `npm run dev` (y Internet: el buscador del origen es el de siempre).
-//   API_URL=http://localhost:8787 node scripts/destino/capturasJutrip.mjs [parte ...]      (partes: primera formulario entrar apertura peliculas interior)
+//   API_URL=http://localhost:8787 node scripts/destino/capturasJutrip.mjs [parte ...]      (partes: primera formulario entrar apertura peliculas interior hoy tanda10b tanda10c tanda10d tanda10e)
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'
 
@@ -350,5 +350,85 @@ if (quiero('tanda10d')) {
   await sinPase(false)
   await hoy('hoy_antes_con_pase_sin_fechas')
   app.cerrar()
+}
+if (quiero('tanda10e')) {
+  // Tanda 10E (la marca nueva en toda la app): la apertura en tres momentos, Entrar, HOY, RUTA, DÍAS con un día abierto, EXPLORAR, RESERVAS (cerrada y con un acordeón abierto), la ficha de una parada, Logros, la hoja del pase
+  // y el primer paso de Crear el viaje. Los nombres van con el número de MARCA_COMPARA.html.
+  const n10 = (n) => png('10e_' + n)
+  console.log('· 10E: la apertura en tres momentos')
+  {
+    // La apertura se pone en un momento exacto de su animación (se paran las animaciones y se lleva cada una a ese instante): así sale igual cada vez.
+    const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=1' })
+    await app.esp(1500)
+    for (const [nombre, ms] of [['01a_apertura_logo_entrando', 800], ['01b_apertura_frase_a_medias', 1650], ['01c_apertura_final', 2950]]) {
+      await app.evaluar(`(() => { for (const a of document.getAnimations()) { a.pause(); a.currentTime = ${ms} } return true })()`)
+      await app.esp(400)
+      await app.captura(n10(nombre))
+    }
+    app.cerrar()
+  }
+  console.log('· 10E: Entrar y Crear el viaje (primer paso)')
+  {
+    const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off' })
+    await esperarApp(app)
+    await app.evaluar("import('/src/dev/escaparate.ts').then(() => window.__escaparate.abrir('c3-A1'))")
+    await app.esp(1500)
+    await app.captura(n10('02_entrar'))
+    app.cerrar()
+    const form = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=0' })
+    await esperarApp(form)
+    await form.esp(1500)
+    await tocar(form, '[data-pin="Roma"]')
+    await origen(form, 'Madrid')
+    await form.esp(2500)
+    await form.captura(n10('12_crear_el_viaje_paso_1'))
+    form.cerrar()
+  }
+  console.log('· 10E: la app por dentro')
+  {
+    const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1' })
+    await esperarApp(app)
+    for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await app.esp(500)
+    await app.evaluar('window.__rutaPrueba().then(() => true)')
+    for (let i = 0; i < 60 && !(await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await app.esp(1000)
+    await app.esp(6000)
+    await cerrarAvisos(app)
+    const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
+    const modo = async (m) => {
+      await app.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('${m}'); return true })`)
+      await app.esp(2500)
+      await cerrarAvisos(app)
+    }
+    await modo('today')
+    await app.captura(n10('03_hoy'))
+    await modo('route')
+    await app.esp(2500)
+    await app.captura(n10('04a_ruta'))
+    await modo('days')
+    await app.captura(n10('04b_dias_cerrado'))
+    await app.evaluar(`${store}.then((s) => { s.setActiveDayId(s.route.days[0].id); return true })`)
+    await app.esp(4000)
+    await app.captura(n10('04_dias_dia_abierto'))
+    await app.evaluar("(() => { const p = document.querySelector('[data-stop-id]'); if (!p) return false; (p.querySelector('button') || p).click(); return true })()")
+    await app.esp(2500)
+    await app.captura(n10('10_ficha_de_una_parada'))
+    await modo('explore')
+    await app.esp(3000)
+    await app.captura(n10('05_explorar'))
+    await modo('bookings')
+    await app.captura(n10('06a_reservas_cerrada'))
+    console.log(await clicTexto(app, '/^Llegada y vuelta/'))
+    await app.esp(1500)
+    await app.captura(n10('06b_reservas_acordeon_abierto'))
+    await modo('today')
+    for (const [id, nombre] of [['T1', '07_logros'], ['c3-P6', '08_la_hoja_del_pase'], ['c3-L-P4', '08b_mis_pases']]) {
+      await app.evaluar(`import('/src/dev/escaparate.ts').then(() => window.__escaparate.abrir('${id}'))`)
+      await app.esp(2500)
+      await app.captura(n10(nombre))
+      await app.evaluar("try { window.__escaparate.limpiar() } catch (e) { /* nada abierto */ } true")
+      await app.esp(500)
+    }
+    app.cerrar()
+  }
 }
 console.log('listo')

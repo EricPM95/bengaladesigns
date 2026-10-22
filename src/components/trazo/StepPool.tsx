@@ -96,7 +96,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
             letterSpacing: '.08em',
             padding: '5px 10px',
             borderRadius: 999,
-            background: atLimit ? AMBER : 'rgba(28,34,48,.08)',
+            background: atLimit ? INK : 'rgba(28,34,48,.08)',
             color: atLimit ? DARK : 'rgba(28,34,48,.75)',
             transition: 'background .3s,color .3s',
           }}
@@ -156,7 +156,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    background: active ? 'linear-gradient(180deg,rgba(181,138,46,.28),rgba(255,255,255,0.94))' : 'linear-gradient(180deg,rgba(255,255,255,0.40),rgba(255,255,255,0.94))',
+                    background: active ? 'linear-gradient(180deg,rgba(166,124,82,.28),rgba(255,255,255,0.94))' : 'linear-gradient(180deg,rgba(255,255,255,0.40),rgba(255,255,255,0.94))',
                     transition: 'background .35s',
                   }}
                 />
@@ -171,7 +171,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
                       alignItems: 'center',
                       justifyContent: 'center',
                       font: `600 11px ${MONO}`,
-                      background: active ? AMBER : 'rgba(255,255,255,0.72)',
+                      background: active ? INK : 'rgba(255,255,255,0.72)',
                       border: active ? 'none' : '1.5px solid rgba(28,34,48,.8)',
                       color: DARK,
                       transition: 'background .3s',
@@ -217,7 +217,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: AMBER,
+                background: INK,
                 color: DARK,
                 font: `600 11px ${MONO}`,
                 border: `2px solid ${AMBER}`,

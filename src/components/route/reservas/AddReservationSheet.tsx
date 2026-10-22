@@ -602,7 +602,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </button>
               </p>
 
-              <button type="button" disabled={!ready || planPending} onClick={() => save()} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98] disabled:opacity-40">
+              <button type="button" disabled={!ready || planPending} onClick={() => save()} className="mt-4 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40">
                 {validTime ? `Guardar · ${fields.time.length === 4 ? `0${fields.time}` : fields.time}` : 'Guardar'}
               </button>
 
@@ -766,7 +766,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
 
         {view === 'form' && (
           <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
-            <button type="button" disabled={!ready || planPending} onClick={() => save()} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
+            <button type="button" disabled={!ready || planPending} onClick={() => save()} className="h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98] disabled:opacity-40">
               {resolvedDay ? `Guardar y ponerla en ${elDia(route, resolvedDay.dayNumber)}` : 'Guardar y ponerla en su día'}
             </button>
           </div>
@@ -780,7 +780,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               {plan.mensaje}
             </h2>
             {plan.motivos.length > 0 && <p className="mt-3 text-[14.5px] leading-snug text-text-soft">{plan.motivos.join(' ')}</p>}
-            <button type="button" onClick={() => save('mover')} className="mt-5 h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]">
+            <button type="button" onClick={() => save('mover')} className="mt-5 h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98]">
               De acuerdo
             </button>
           </div>

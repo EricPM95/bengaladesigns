@@ -64,7 +64,7 @@ export function HojaZona({ zonas, actual, onGuardar, onClose }: { zonas: Destina
         />
         <p className="mt-2 min-h-[18px] text-center text-[12px] text-text/55">{elegida?.sub ?? ''}</p>
       </div>
-      <button type="button" onClick={() => elegida && onGuardar(elegida.id)} className="mt-3 h-12 w-full rounded-full bg-[#1C2230] text-[15px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98]">
+      <button type="button" onClick={() => elegida && onGuardar(elegida.id)} className="mt-3 h-12 w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98]">
         Guardar
       </button>
     </HojaAbajo>
@@ -161,7 +161,7 @@ export function AlojamientoReservas({
                 <button
                   type="button"
                   onClick={() => abrirMapa(segmentDayId)}
-                  className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C2230] text-[14.5px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98]"
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-full btn-champan text-[14.5px] font-semibold transition-transform active:scale-[.98]"
                 >
                   <Icono nombre={ICONOS.lupa} size={15} />
                   Buscar alojamiento

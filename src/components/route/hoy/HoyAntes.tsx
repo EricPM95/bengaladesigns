@@ -71,7 +71,7 @@ export function HoyAntes({ route, startIso, onPonFechas }: { route: Route; start
           Ese día tendrás
         </span>
         <ListaLoQueTendras />
-        <button type="button" onClick={verPrimerDia} className="mt-1 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C2230] text-[14.5px] font-semibold text-[#FFFDF8]">
+        <button type="button" onClick={verPrimerDia} className="mt-1 flex h-12 w-full items-center justify-center gap-2 rounded-full btn-champan text-[14.5px] font-semibold ">
           <Icono nombre="dias" size={17} />
           Ver mi primer día
         </button>

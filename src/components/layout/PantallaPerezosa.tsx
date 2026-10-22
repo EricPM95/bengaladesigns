@@ -33,7 +33,7 @@ function NoSePudoCargar({ onReintentar }: { onReintentar: () => void }) {
   return (
     <div className="flex h-dvh flex-col items-center justify-center gap-4 bg-bg px-8 text-center" role="alert">
       <p className="font-display text-[26px] leading-tight text-text">No se ha podido cargar.</p>
-      <button type="button" onClick={onReintentar} className="h-12 rounded-full bg-[#1C2230] px-7 text-[15px] font-semibold text-[#FFFDF8]">
+      <button type="button" onClick={onReintentar} className="h-12 rounded-full btn-champan px-7 text-[15px] font-semibold ">
         Reintentar
       </button>
     </div>

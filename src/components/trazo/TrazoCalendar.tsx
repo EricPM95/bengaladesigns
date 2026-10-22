@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { DateRange } from '../../lib/types'
 import { isoToLocalDate, tocarDiaDelRango } from '../../lib/dateRange'
 import { textoDeDuracion } from '../../lib/duracionViaje'
-import { AMBER, ACCENT, INK, MONO, SERIF, panelStyle } from './trazoUi'
+import { ACCENT, INK, MONO, SERIF, panelStyle } from './trazoUi'
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -119,7 +119,7 @@ export function TrazoCalendar({ dateRange, onSelect, onPreviewMonth }: TrazoCale
                 height: 42,
                 border: 'none',
                 borderRadius: inRange ? 6 : 12,
-                background: isEdge ? AMBER : inRange ? 'rgba(181,138,46,.16)' : 'transparent',
+                background: isEdge ? INK : inRange ? 'rgba(166,124,82,.16)' : 'transparent',
                 color: isEdge ? '#FFFFFF' : INK,
                 font: `${isEdge ? 600 : 400} 14px 'Geist'`,
                 cursor: disabled ? 'default' : 'pointer',

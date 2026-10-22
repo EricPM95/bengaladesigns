@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;width:390px;height:520px"><canvas ref="{{ cv }}" width="780" height="1040" style="position:absolute;inset:0;width:390px;height:520px"></canvas></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  cv=React.createRef();
+  componentDidMount(){
+    const c=this.cv.current;if(!c)return;const g=c.getContext('2d');g.scale(2,2);
+    const W=390,H=520,OY=34,IH=453,SX=130,SY=212,reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let P=[];const D=Array.from({length:110},()=>({x:Math.random()*W,y:Math.random()*H,v:.1+Math.random()*.35,ph:Math.random()*6.283,s:.6+Math.random()*1.4}));
+    const B=[];let burst=false;
+    const col=(L,b)=>{const m=Math.min(1,L*1.1+b*.5);return 'rgb('+Math.round(150+105*m)+','+Math.round(100+135*m)+','+Math.round(40+150*m*m)+')';};
+    const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+    let t0=performance.now();this.restart=()=>{t0=performance.now();burst=false;B.length=0;};
+    const build=(img)=>{
+      const o=document.createElement('canvas');o.width=390;o.height=IH;const x=o.getContext('2d');x.drawImage(img,40,0,1100,1278,0,0,390,IH);
+      let d;try{d=x.getImageData(0,0,390,IH).data;}catch(e){return;}
+      const lum=(px,py)=>{const i=(Math.max(0,Math.min(IH-1,py))*390+Math.max(0,Math.min(389,px)))*4;return (d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255;};
+      const out=[];
+      for(let py=0;py<IH;py+=2)for(let px=0;px<390;px+=2){
+        const jx=px+Math.random()*2,jy=py+Math.random()*2,L=lum(px,py);
+        const inS=px>80&&px<178&&py>148&&py<300;
+        const e=Math.abs(lum(px+2,py)-L)+Math.abs(lum(px,py+2)-L);
+        let p=Math.pow(Math.max(0,L-.16),1.3)*1.5+e*1.1;if(inS)p=p*1.4+(L>.4?.5:0);
+        if(Math.random()>Math.min(1,p))continue;
+        const ty=jy+OY,tx=jx;const a=Math.random()*6.283,dd=100+Math.random()*260;
+        let dl=(1-ty/H)*3.4+Math.random()*.5,du=1.2+Math.random()*.8;
+        const stat=inS&&ty>180&&ty<340&&px>80&&px<178;
+        if(stat){dl=4.5+(340-ty)/160*1.7+Math.random()*.4;}
+        out.push({tx,ty,L,stat,sx:195+Math.cos(a)*dd*1.3,sy:260+Math.sin(a)*dd,dl,du,ph:Math.random()*6.283,sz:stat?1.5+Math.random()*1.3:1+Math.random()*1.3,sw:(Math.random()-.5)*60});
+        if(out.length>11000)return P=out;
+      }
+      P=out;
+    };
+    const load=(srcs)=>{const im=new Image();im.onload=()=>build(im);im.onerror=()=>{if(srcs.length>1)load(srcs.slice(1));};im.src=srcs[0];};
+    load(['uploads/pasted-1792618028420-0.png','../uploads/pasted-1792618028420-0.png','/uploads/pasted-1792618028420-0.png']);
+    const draw=(now)=>{const t=reduce?20:(now-t0)/1000;g.clearRect(0,0,W,H);g.globalCompositeOperation='lighter';
+      const hb=Math.min(1,Math.max(0,(t-6.9)/.9))*(.5+.12*Math.sin(t*2));
+      const halo=g.createRadialGradient(SX,SY,6,SX,SY,210);halo.addColorStop(0,'rgba(255,240,200,'+hb*.7+')');halo.addColorStop(.35,'rgba(243,216,143,'+hb*.28+')');halo.addColorStop(1,'rgba(243,216,143,0)');g.fillStyle=halo;g.fillRect(0,0,W,H);
+      D.forEach(q=>{q.y-=q.v;if(q.y<-4)q.y=H+4;g.fillStyle='rgba(243,216,143,'+(.22+.3*Math.sin(t*1.5+q.ph))+')';g.fillRect(q.x+Math.sin(t+q.ph)*6,q.y,q.s,q.s);});
+      const sweep=((t-7.6)%3.4)/3.4*(W+140)-70,showSweep=t>7.6;
+      for(let i=0;i<P.length;i++){const p=P[i];const k=Math.min(1,Math.max(0,(t-p.dl)/p.du));const e=ease(k);
+        let x=p.sx+(p.tx-p.sx)*e,y=p.sy+(p.ty-p.sy)*e;x+=Math.sin(t*2+p.ph)*(1-e)*8+p.sw*(1-e)*Math.sin(e*3);
+        if(k>=1){x+=Math.sin(t*3+p.ph)*.18;y+=Math.cos(t*2.6+p.ph)*.18;}
+        let b=k>=1?.1+.08*Math.sin(t*2.4+p.ph):.1;
+        if(p.stat&&k>=1)b+=.25+.12*Math.sin(t*1.8+p.ph);
+        if(showSweep&&k>=1){const dd=Math.abs(x-sweep);if(dd<36)b+=(1-dd/36)*.7;}
+        if(t>6.9&&t<7.7&&k>=1)b+=(1-Math.abs(t-7.25)/.45)*.6;
+        g.globalAlpha=Math.min(1,.15+k*.9);g.fillStyle=col(p.L,Math.min(1,b));const s=p.sz*(k>=1?1+b*.4:1);g.fillRect(x-s/2,y-s/2,s,s);}
+      g.globalAlpha=1;
+      if(t>6.9&&!burst){burst=true;for(let k=0;k<220;k++){const a=Math.PI*2*k/220+Math.random()*.1,v=1.2+Math.random()*3.6;B.push({x:SX,y:SY,vx:Math.cos(a)*v,vy:Math.sin(a)*v-.6,l:1,s:1+Math.random()*2,g:.03});}for(let k=0;k<40;k++){const a=Math.PI*2*k/40;B.push({x:SX,y:SY,vx:Math.cos(a)*5,vy:Math.sin(a)*5,l:1.1,s:1.6,g:0,r:true});}}
+      B.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=.986;if(p.r)p.vy*=.986;p.l-=.0075;if(p.l>0){g.fillStyle='rgba(255,226,150,'+Math.min(1,p.l)+')';g.fillRect(p.x,p.y,p.s,p.s);}});
+      if(t>6.9&&t<8.2){const r=(t-6.9)*250;g.strokeStyle='rgba(255,236,190,'+Math.max(0,1-(t-6.9)/1.3)*.55+')';g.lineWidth=3;g.beginPath();g.arc(SX,SY,r,0,6.283);g.stroke();}
+      this.raf=requestAnimationFrame(draw);};
+    this.raf=requestAnimationFrame(draw);
+  }
+  componentDidUpdate(pr){if(pr.nonce!==this.props.nonce&&this.restart)this.restart();}
+  componentWillUnmount(){cancelAnimationFrame(this.raf);}
+  renderVals(){return{cv:this.cv};}
+}
+</script>
+</body>
+</html>

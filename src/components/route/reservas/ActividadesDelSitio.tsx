@@ -25,7 +25,7 @@ export function ActividadesDelSitio({ lista }: { lista: ActividadCerca[] }) {
           )}
           {actividad.puntoDeEncuentro?.texto && <p className="mt-1 text-[13px] leading-[1.45] text-text/72">Punto de encuentro: {actividad.puntoDeEncuentro.texto}</p>}
           {actividad.url && (
-            <button type="button" onClick={() => openTicketShop(actividad.url)} className="mt-3 h-11 w-full whitespace-nowrap rounded-full bg-accent text-small font-semibold text-white active:scale-[.97]">
+            <button type="button" onClick={() => openTicketShop(actividad.url)} className="mt-3 h-11 w-full whitespace-nowrap rounded-full btn-champan text-small font-semibold active:scale-[.97]">
               Reservar
             </button>
           )}

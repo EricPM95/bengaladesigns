@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { displayStopName } from '../../../lib/format'
+import { botonChampan } from '../../../lib/marcaBoton'
 import { Insignia } from '../dibujos/InsigniaPerezosa'
 import { Trazo, TRAZO } from './trazos'
 import { deSitio, enSitio } from '../../../lib/articulos'
@@ -11,7 +12,8 @@ import type { DestinoDeFoto, Hoja } from './vistoStore'
  * Todas las tarjetas son HOJA desde abajo con su cruz; abajo de las del Visto, «¿No estás aquí? Desmarcar visto».
  */
 const TINTA = '#1C2230'
-const FRAMBUESA = 'oklch(0.55 0.17 5)'
+/** El rojo de los avisos (los errores): no es el frambuesa, que queda para lo que falta y lo que se resalta. */
+const ROJO = 'rgb(var(--accent-red))'
 const SERIF = "'Instrument Serif',serif"
 const MONO = "'Geist Mono',monospace"
 
@@ -61,7 +63,7 @@ function Boton({ icono, texto, onClick, estilo, disabled }: { icono: string; tex
 }
 
 // (Tanda 10) El botón de la cámara, en oro (lo pidió Eric).
-const BTN_CAM: CSSProperties = { background: 'rgb(var(--accent))', color: '#FFFFFF', border: 'none' }
+const BTN_CAM: CSSProperties = { ...botonChampan(), border: 'none' }
 const BTN_GAL: CSSProperties = { background: '#FFFFFF', color: TINTA, border: '1px solid rgba(28,34,48,.16)' }
 const BTN_CAM_ORO: CSSProperties = { background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', border: 'none' }
 const BTN_GAL_OSCURO: CSSProperties = { background: 'transparent', color: '#FFFDF8', border: '1px solid rgba(255,253,248,.3)' }
@@ -133,8 +135,8 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
     titulo = `Parece que no estás ${enSitio(nombre)}. Tu pedazo te espera allí.`
     subtitulo = 'La parada queda como vista.'
     icono = TRAZO.lejos
-    iconoFondo = 'oklch(0.55 0.17 5 / .1)'
-    iconoColor = FRAMBUESA
+    iconoFondo = 'rgb(var(--accent-soft))'
+    iconoColor = 'rgb(var(--accent))'
   } else if (tipo === 'oculto') {
     titulo = '¡Aquí se esconde un Emblema Oculto!'
     subtitulo = `Sube una foto ${enSitio(nombre)} y descúbrelo.`
@@ -176,7 +178,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
           <span className="flex min-w-0 flex-1 flex-col gap-1">
             {oscura && <span style={{ font: `600 10px ${MONO}`, letterSpacing: '.16em', textTransform: 'uppercase', color: 'oklch(0.86 0.12 85)' }}>Emblema Oculto</span>}
             <span style={{ font: `400 22px/1.1 ${SERIF}`, textWrap: 'balance' as never }}>{titulo}</span>
-            {subtitulo && <span style={{ font: "400 13px/1.45 'Geist'", color: acciones.errorUbicacion && tipo === 'sin_ubicacion' ? FRAMBUESA : sub, textWrap: 'pretty' as never }}>{subtitulo}</span>}
+            {subtitulo && <span style={{ font: "400 13px/1.45 'Geist'", color: acciones.errorUbicacion && tipo === 'sin_ubicacion' ? ROJO : sub, textWrap: 'pretty' as never }}>{subtitulo}</span>}
           </span>
         </div>
         {botones && <div className="grid grid-cols-2 gap-2">{botones}</div>}
@@ -235,7 +237,7 @@ export function HojaDePermisos({ onContinuar }: { onContinuar: () => void }) {
           ))}
         </div>
         <span style={{ font: `400 24px/1.15 ${SERIF}`, textWrap: 'pretty' as never }}>Para darte tus logros, necesitamos la cámara y saber dónde estás. Solo mientras usas la app.</span>
-        <button type="button" onClick={onContinuar} className="h-[52px] rounded-full border-0 bg-[#1C2230] text-[#FFFDF8]" style={{ font: "600 15px 'Geist'" }}>
+        <button type="button" onClick={onContinuar} className="h-[52px] rounded-full border-0 btn-champan " style={{ font: "600 15px 'Geist'" }}>
           Continuar
         </button>
       </div>
@@ -273,7 +275,7 @@ export function HojaFotoDentro({ destino, onSeguir, onCerrar }: { destino: Desti
             <span style={{ font: `400 20px/1.2 ${SERIF}`, textWrap: 'pretty' as never }}>{destino.fotoDentro}</span>
           </span>
         </div>
-        <button type="button" onClick={onSeguir} className="flex h-12 items-center justify-center gap-[7px] rounded-full border-0 bg-[#1C2230] text-[#FFFDF8]" style={{ font: "600 13.5px 'Geist'" }}>
+        <button type="button" onClick={onSeguir} className="flex h-12 items-center justify-center gap-[7px] rounded-full border-0 btn-champan " style={{ font: "600 13.5px 'Geist'" }}>
           <Trazo d={TRAZO.cam} tam={16} />
           Abrir la cámara
         </button>
@@ -298,9 +300,9 @@ export function HojaGaleria({ nombreSitio, linea, error, subiendo, onElegir, onC
           </div>
         )}
         {error && (
-          <div role="alert" data-visto="foto-no-vale" className="flex flex-col gap-2.5 rounded-2xl p-3" style={{ background: 'oklch(0.55 0.17 5 / .07)', border: '1px solid oklch(0.55 0.17 5 / .3)' }}>
+          <div role="alert" data-visto="foto-no-vale" className="flex flex-col gap-2.5 rounded-2xl p-3" style={{ background: 'rgb(var(--accent-red) / .07)', border: '1px solid rgb(var(--accent-red) / .3)' }}>
             <div className="flex items-center gap-2.5">
-              <span className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full text-white" style={{ background: FRAMBUESA, font: "700 13px 'Geist'" }}>!</span>
+              <span className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full text-white" style={{ background: ROJO, font: "700 13px 'Geist'" }}>!</span>
               <span className="flex-1" style={{ font: "500 13.5px/1.4 'Geist'", textWrap: 'pretty' as never }}>{error}</span>
             </div>
           </div>

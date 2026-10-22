@@ -49,7 +49,7 @@ export function RouteOverviewMap({ segments, days, arrivalMarkers = [] }: RouteO
       points.forEach((coords, index) => {
         const el = document.createElement('div')
         el.className =
-          'flex h-7 w-7 items-center justify-center rounded-full bg-accent text-caption font-semibold text-white shadow-md ring-2 ring-white'
+          'flex h-7 w-7 items-center justify-center rounded-full btn-champan text-caption font-semibold shadow-md ring-2 ring-white'
         if (points.length > 1) el.textContent = String(index + 1)
         new mapboxgl.Marker({ element: el }).setLngLat([coords.lng, coords.lat]).addTo(map)
       })

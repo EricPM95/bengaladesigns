@@ -138,8 +138,8 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
             setNombre('')
             setImporte('')
           }}
-          className="h-11 whitespace-nowrap rounded-xl px-3.5 text-[13px] font-semibold text-[#FFFDF8] transition-colors"
-          style={{ background: listo ? 'rgb(var(--accent))' : 'rgb(var(--accent) / .4)' }}
+          className="btn-champan h-11 whitespace-nowrap rounded-xl px-3.5 text-[13px] font-semibold transition-opacity"
+          style={{ opacity: listo ? 1 : 0.45 }}
         >
           Añadir
         </button>
@@ -178,7 +178,7 @@ function HojaPersonas({ inicial, onGuardar, onClose }: { inicial: number | null;
           onGuardar(personas)
           onClose()
         }}
-        className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98] disabled:opacity-40"
+        className="mt-4 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40"
       >
         Guardar
       </button>
@@ -211,7 +211,7 @@ function HojaMoneda({ actual, onGuardar, onClose }: { actual: string; onGuardar:
           onGuardar(moneda)
           onClose()
         }}
-        className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98]"
+        className="mt-4 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98]"
       >
         Guardar
       </button>

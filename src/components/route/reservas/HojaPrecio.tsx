@@ -69,7 +69,7 @@ export function HojaPrecio({
           onGuardar(sinPrecio ? null : precio.importe, donde.trim())
           onClose()
         }}
-        className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98]"
+        className="mt-4 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98]"
       >
         {cta}
       </button>

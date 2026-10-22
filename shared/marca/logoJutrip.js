@@ -1,9 +1,8 @@
 /**
- * El logo de JUTRIP (Tanda 10, logo P4 de Design: «Piezas/Logo JUTRIP»), dibujado con código y en UN solo sitio. Lo usan la pantalla de apertura (index.html, por el plugin de vite.config.ts),
- * la pantalla de entrar y los huecos del logo (React, `src/components/ui/LogoJutrip.tsx`) y la imagen del icono (scripts/destino/iconosJutrip.mjs).
- *
- * La estrella con su anillo y la ruta de puntos, en oro con relieve, y debajo JUTRIP en Bodoni Moda 500 con la R y la P más finas (400). Dos tonos: `claro` (sobre marfil o crema) y
- * `oscuro` (sobre tinta o azul noche). Devuelve texto HTML (un `<span>` con el SVG y la palabra): sin React, para poder ponerlo también en el HTML de antes de que cargue la app.
+ * El logo de JUTRIP, dibujado con código y en UN solo sitio. Tanda 10E: la palabra JUTRIP en Italiana con su degradado de oro y la estrella sobre la I («Piezas/Logo JUTRIP» de Design); la estrella con su
+ * anillo y su ruta de puntos (el logo P4) queda solo para el icono de la app (scripts/destino/iconosJutrip.mjs) y el logo pequeño de una línea de la primera pantalla y del formulario (que Design no ha cambiado).
+ * Lo usan la pantalla de apertura (index.html, por el plugin de vite.config.ts), la pantalla de entrar y los huecos del logo (React, `src/components/ui/LogoJutrip.tsx`).
+ * Devuelve texto HTML: sin React, para poder ponerlo también en el HTML de antes de que cargue la app.
  */
 
 const CLARO = { m0: '#C99A44', m1: '#8E6820', m2: '#6E5018', m3: '#5A4010', m4: '#8E6820', ed: '#5A4010', t0: '#C99A44', t1: '#8E6820', t2: '#5A4010' }
@@ -36,43 +35,59 @@ export function estrellaSvg({ ancho = 120, tono = 'claro', id = 'jt' } = {}) {
   )
 }
 
-/** La palabra JUTRIP en Bodoni Moda 500, con la R y la P en 400, en degradado de oro. `tam` es el cuerpo de la letra en px. */
-export function palabraJutripHtml({ tam = 50, tono = 'claro' } = {}) {
-  const c = coloresDelLogo(tono)
+/**
+ * EL LOGO NUEVO (Tanda 10E, «Piezas/Logo JUTRIP» de Design): la palabra JUTRIP en Italiana, con el degradado de oro, las letras que entran una a una (de derecha a izquierda se abren, de izquierda a derecha
+ * entran) y la estrella que salta sobre la I. Sus oros son los del metal (como los de los emblemas): no se pasan al oro de la interfaz.
+ *   · `tam` es el cuerpo de la letra en px (el `fs` de Design: 46 en Entrar, 54 en la apertura).
+ *   · `tono`: «claro» (sobre marfil o crema) u «oscuro» (sobre tinta).
+ *   · `anim`: segundos que dura la entrada de las letras y de la estrella (0, sin movimiento). Con movimiento, el dibujo lleva sus @keyframes (jtL0 a jtL5 y jtStar) y se queda en el estado final.
+ */
+const GRAD = { claro: 'linear-gradient(180deg,#C99A44,#8E6820 55%,#5A4010)', oscuro: 'linear-gradient(180deg,#FFF6DC,#E9C77A 48%,#9A7228)' }
+const ESTRELLA = (id) =>
+  `<defs><linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6DC"/><stop offset=".3" stop-color="#F3D88F"/><stop offset=".55" stop-color="#C99A44"/><stop offset=".8" stop-color="#8E6820"/><stop offset="1" stop-color="#E9C77A"/></linearGradient></defs>` +
+  `<path d="M60 4L71 49L116 60L71 71L60 116L49 71L4 60L49 49Z" fill="url(#${id}g)" stroke="#6E5018" stroke-width="3"/>`
+
+/** Los @keyframes de la entrada del logo: cada letra se abre de izquierda a derecha (la J primero) y la estrella salta sobre la I al final. No se apagan al terminar. */
+export function keyframesDelLogo() {
+  const oculto = 'opacity:0;clip-path:inset(-30% 110% -10% -10%);transform:translateX(-14px)'
+  const visible = 'opacity:1;clip-path:inset(-30% -10% -10% -10%);transform:none'
+  const orden = { J: 0, U: 1, T: 2, R: 3, I: 4, P: 5 }
+  let css = ''
+  for (const l of 'JUTRIP') {
+    const n = orden[l]
+    css += `@keyframes jtL${n}{0%,${6 + 6 * n}%{${oculto}}${20 + 6 * n}%,100%{${visible}}}`
+  }
+  css += '@keyframes jtStar{0%,50%{opacity:0;transform:translateX(-50%) scale(0) rotate(-120deg)}60%{opacity:1;transform:translateX(-50%) scale(1.6) rotate(0)}68%{transform:translateX(-50%) scale(1) rotate(0)}100%{opacity:1;transform:translateX(-50%) scale(1)}}'
+  return css
+}
+
+/** La palabra JUTRIP con su estrella sobre la I. `id` distinto en cada dibujo de la misma página. */
+export function palabraJutripHtml({ tam = 50, tono = 'claro', anim = 0, id = 'jt' } = {}) {
+  const T = Number(anim) || 0
+  const orden = { J: 0, U: 1, T: 2, R: 3, I: 4, P: 5 }
   const letras = 'JUTRIP'
     .split('')
-    .map((l) => `<span style="font-weight:${l === 'R' || l === 'P' ? 400 : 500};font-variation-settings:'opsz' 96">${l}</span>`)
+    .map((c) => {
+      const estrella =
+        c === 'I'
+          ? `<svg viewBox="0 0 120 120" fill="none" aria-hidden="true" style="position:absolute;left:calc(50% - .14em);top:-.2em;width:.26em;height:.26em;transform:translateX(-50%);overflow:visible;animation:${T ? `jtStar ${T}s ease-out 1 both` : 'none'}">${ESTRELLA(id)}</svg>`
+          : ''
+      return `<span style="display:inline-block;position:relative;color:transparent;background:${GRAD[tono === 'oscuro' ? 'oscuro' : 'claro']};-webkit-background-clip:text;background-clip:text;animation:${T ? `jtL${orden[c]} ${T}s cubic-bezier(.25,.6,.3,1) 1 both` : 'none'}">${c}${estrella}</span>`
+    })
     .join('')
+  const sombra = tono === 'oscuro' ? 'none' : 'drop-shadow(0 2px 3px rgba(110,80,24,.25))'
   return (
-    `<span data-palabra-jutrip style="font-family:'Bodoni Moda',serif;font-size:${tam}px;line-height:1.2;letter-spacing:.1em;padding-left:.1em;color:transparent;` +
-    `background:linear-gradient(180deg,${c.t0},${c.t1} 50%,${c.t2});-webkit-background-clip:text;background-clip:text;white-space:nowrap">${letras}</span>`
+    (T ? `<style>${keyframesDelLogo()}</style>` : '') +
+    `<span data-palabra-jutrip data-logo-jutrip style="display:inline-block;font-family:'Italiana',serif;font-size:${tam}px;letter-spacing:.28em;padding-left:.28em;line-height:1.25;white-space:nowrap;filter:${sombra}">${letras}</span>`
   )
 }
 
-/** El logo entero: la estrella y, debajo, la palabra. `tam` es el ancho de la estrella en px (como `size` en Design) y `fuente`, el cuerpo de la palabra (por defecto, el 42 % de `tam`). */
-export function logoJutripHtml({ tam = 120, tono = 'claro', id = 'jt', palabra = true, fuente } = {}) {
-  const hueco = Math.round(tam * 0.06)
-  return (
-    `<span data-logo-jutrip style="display:inline-flex;flex-direction:column;align-items:center;gap:${hueco}px">` +
-    estrellaSvg({ ancho: tam, tono, id }) +
-    (palabra ? palabraJutripHtml({ tam: fuente ?? Math.round(tam * 0.42), tono }) : '') +
-    `</span>`
-  )
+/** Solo la estrella del logo (el `mark="star"` de Design). `tam` en px. */
+export function estrellaJutripHtml({ tam = 22, id = 'jts' } = {}) {
+  return `<svg viewBox="0 0 120 120" fill="none" width="${tam}" height="${tam}" aria-hidden="true" style="display:block;overflow:visible">${ESTRELLA(id)}</svg>`
 }
 
-/** El logo pequeño de una línea (la estrella y JUTRIP al lado), como arriba en la primera pantalla de Design. Las letras T, R y P, en el trazo fino. */
-export function logoPequenoHtml({ tono = 'claro', id = 'jp', tam = 21 } = {}) {
-  const c = coloresDelLogo(tono)
-  const letras = 'JUTRIP'
-    .split('')
-    .map((l) => `<span style="font-weight:${l === 'T' || l === 'R' || l === 'P' ? 400 : 500}">${l}</span>`)
-    .join('')
-  return (
-    `<span data-logo-pequeno style="display:inline-flex;align-items:center;gap:9px">` +
-    `<svg width="${Math.round(tam * 1.24)}" height="${Math.round(tam * 1.05)}" viewBox="0 0 230 190" fill="none" style="overflow:visible;flex:none" aria-hidden="true">` +
-    `<defs><linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6DC"/><stop offset=".3" stop-color="#F3D88F"/><stop offset=".55" stop-color="#C99A44"/><stop offset=".8" stop-color="#8E6820"/><stop offset="1" stop-color="#E9C77A"/></linearGradient></defs>` +
-    `<path d="M115 14L129 82L196 104L129 126L115 194L101 126L34 104L101 82Z" fill="url(#${id}g)" stroke="#6E5018" stroke-width="5" stroke-linejoin="round"/>` +
-    `<circle cx="115" cy="104" r="15" fill="#FFF6DC" stroke="#6E5018" stroke-width="4"/></svg>` +
-    `<span style="font-family:'Bodoni Moda',serif;font-size:${tam}px;line-height:1;letter-spacing:.14em;color:${tono === 'oscuro' ? '#E9C77A' : '#8E6820'}">${letras}</span></span>`
-  )
+/** El logo entero de la app (la palabra con su estrella). Se queda con este nombre porque lo piden el plugin de vite.config.ts y los huecos del logo. */
+export function logoJutripHtml(opciones = {}) {
+  return palabraJutripHtml({ tam: opciones.fuente ?? opciones.tam ?? 50, tono: opciones.tono, anim: opciones.anim, id: opciones.id })
 }

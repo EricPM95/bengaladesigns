@@ -193,7 +193,7 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
                   key={option}
                   type="button"
                   onClick={() => setMeal(option)}
-                  className={`h-11 flex-1 rounded-full border text-[14px] font-medium transition-colors ${meal === option ? 'border-accent bg-accent-soft text-text' : 'border-text/15 text-text hover:bg-bg-hover'}`}
+                  className={`h-11 flex-1 rounded-full border text-[14px] font-medium transition-colors ${meal === option ? 'border-text bg-text text-white' : 'border-text/15 text-text hover:bg-bg-hover'}`}
                 >
                   {option === 'lunch' ? 'Para comer' : 'Para cenar'}
                 </button>
@@ -234,7 +234,7 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
             type="button"
             disabled={!day}
             onClick={confirm}
-            className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40"
+            className="h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98] disabled:opacity-40"
           >
             {day ? `Añadir ${alDia(route, day.dayNumber)}` : 'Ningún día libre para esto'}
           </button>

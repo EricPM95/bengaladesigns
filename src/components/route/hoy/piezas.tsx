@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Icono } from '../../ui/Icono'
 import type { NombreIcono } from '../../../lib/iconos'
+import { botonChampan } from '../../../lib/marcaBoton'
 
 /** Los colores de HOY (diseño «Hoy, según el momento»): tinta, frambuesa (falta), verde (hecho) y azul (el tiempo). */
 export const TINTA = '#1C2230'
@@ -12,13 +13,13 @@ export const AZUL = 'oklch(0.56 0.1 230)'
  * LA TARJETA DE LA SIGUIENTE PARADA (Tanda 10, Marca JUTRIP 02 · 09 «HOY en modo claro»): clara (tarjeta #FFFDF8, filo de oro, letra de tinta, [Visto] en verde y [Cómo llegar] en oro).
  * La app ya no tiene modo noche: solo estos estilos.
  */
-export const SOMBRA_TARJETA_CLARA = '0 14px 28px -16px rgba(28,34,48,.45),inset 0 0 0 1px rgba(142,104,32,.22)'
+export const SOMBRA_TARJETA_CLARA = '0 14px 28px -16px rgba(28,34,48,.45),inset 0 0 0 1px rgba(166,124,82,.22)'
 /** [Cómo llegar]: el degradado de marfil con letra de oro profundo. */
-export const botonOro = () => ({ background: 'linear-gradient(180deg,#FBF3E2 0%,#EBD9AE 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.8),0 8px 14px -8px rgba(110,80,24,.45)', color: '#6E5018' })
+export const botonOro = () => botonChampan()
 /** Los botones de borde (No me da tiempo, Más visitas, Sobre este lugar…): filo de tinta. */
 export const clasesBotonBorde = () => 'border-[1.5px] border-[#1C2230]/30 text-[#1C2230] hover:bg-[#1C2230]/5'
 /** Las pastillas pequeñas de la tarjeta (Ubicación, duración): un velo de oro. */
-export const fondoPastilla = () => 'rgba(142,104,32,.1)'
+export const fondoPastilla = () => 'rgba(166,124,82,.1)'
 
 export const ojoMono = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase' as const }
 
@@ -46,7 +47,7 @@ export function TarjetaOscura({ children, brillo = 'rgba(233,199,122,.32)', abaj
 }
 
 /** El cuadradito con icono y el título de una caja («Te falta por reservar»). */
-export function CabeceraCaja({ icono, titulo, derecha, color = 'rgb(var(--accent))', fondo = 'rgb(var(--accent) / .12)' }: { icono: NombreIcono; titulo: string; derecha?: ReactNode; color?: string; fondo?: string }) {
+export function CabeceraCaja({ icono, titulo, derecha, color = 'rgb(var(--accent))', fondo = '#F1E3BF' }: { icono: NombreIcono; titulo: string; derecha?: ReactNode; color?: string; fondo?: string }) {
   return (
     <div className="flex items-center gap-3">
       <span className="flex h-9 w-9 flex-none items-center justify-center rounded-xl" style={{ background: fondo, color }}>
@@ -71,7 +72,7 @@ export function FilaPorReservar({ icono, nombre, onReservar }: { icono: NombreIc
         {nombre}
       </span>
       <button type="button" onClick={onReservar} className="h-11 flex-none self-center pl-1 pr-2.5" aria-label={`Reservar ${nombre}`}>
-        <span className="flex h-[34px] items-center rounded-full px-3.5 text-[12.5px] font-semibold text-white" style={{ background: 'rgb(var(--accent))', boxShadow: '0 8px 16px -8px rgb(var(--accent))' }}>
+        <span className="btn-champan flex h-[34px] items-center rounded-full px-3.5 text-[12.5px] font-semibold">
           Reservar
         </span>
       </button>

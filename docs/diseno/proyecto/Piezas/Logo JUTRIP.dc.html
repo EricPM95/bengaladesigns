@@ -9,42 +9,35 @@
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet">
+<style>
+@keyframes jtL0{0%,6%{opacity:0;clip-path:inset(-30% 110% -10% -10%);transform:translateX(-14px)}20%{opacity:1;clip-path:inset(-30% -10% -10% -10%);transform:none}93%{opacity:1;clip-path:inset(-30% -10% -10% -10%)}99%,100%{opacity:0;clip-path:inset(-30% -10% -10% -10%)}}
+@keyframes jtL1{0%,12%{opacity:0;clip-path:inset(-30% 110% -10% -10%);transform:translateX(-14px)}26%{opacity:1;clip-path:inset(-30% -10% -10% -10%);transform:none}93%{opacity:1;clip-path:inset(-30% -10% -10% -10%)}99%,100%{opacity:0;clip-path:inset(-30% -10% -10% -10%)}}
+@keyframes jtL2{0%,18%{opacity:0;clip-path:inset(-30% 110% -10% -10%);transform:translateX(-14px)}32%{opacity:1;clip-path:inset(-30% -10% -10% -10%);transform:none}93%{opacity:1;clip-path:inset(-30% -10% -10% -10%)}99%,100%{opacity:0;clip-path:inset(-30% -10% -10% -10%)}}
+@keyframes jtL3{0%,24%{opacity:0;clip-path:inset(-30% 110% -10% -10%);transform:translateX(-14px)}38%{opacity:1;clip-path:inset(-30% -10% -10% -10%);transform:none}93%{opacity:1;clip-path:inset(-30% -10% -10% -10%)}99%,100%{opacity:0;clip-path:inset(-30% -10% -10% -10%)}}
+@keyframes jtL4{0%,30%{opacity:0;clip-path:inset(-30% 110% -10% -10%);transform:translateX(-14px)}44%{opacity:1;clip-path:inset(-30% -10% -10% -10%);transform:none}93%{opacity:1;clip-path:inset(-30% -10% -10% -10%)}99%,100%{opacity:0;clip-path:inset(-30% -10% -10% -10%)}}
+@keyframes jtL5{0%,36%{opacity:0;clip-path:inset(-30% 110% -10% -10%);transform:translateX(-14px)}50%{opacity:1;clip-path:inset(-30% -10% -10% -10%);transform:none}93%{opacity:1;clip-path:inset(-30% -10% -10% -10%)}99%,100%{opacity:0;clip-path:inset(-30% -10% -10% -10%)}}
+@keyframes jtStar{0%,50%{opacity:0;transform:translateX(-50%) scale(0) rotate(-120deg)}60%{opacity:1;transform:translateX(-50%) scale(1.6) rotate(0)}68%{transform:translateX(-50%) scale(1) rotate(0)}93%{opacity:1;transform:translateX(-50%) scale(1)}99%,100%{opacity:0;transform:translateX(-50%) scale(0)}}
+</style>
 </helmet>
-<div style="display:inline-flex;flex-direction:{{ dir }};align-items:center;gap:{{ gap }}px">
-  <svg width="{{ size }}" viewBox="0 0 230 200" fill="none" style="overflow:visible;flex:none">
-    <defs>
-      <linearGradient id="{{ u }}m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ m0 }}"></stop><stop offset=".3" stop-color="{{ m1 }}"></stop><stop offset=".55" stop-color="{{ m2 }}"></stop><stop offset=".8" stop-color="{{ m3 }}"></stop><stop offset="1" stop-color="{{ m4 }}"></stop></linearGradient>
-      <radialGradient id="{{ u }}c" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".5" stop-color="{{ m1 }}"></stop><stop offset="1" stop-color="{{ m3 }}"></stop></radialGradient>
-    </defs>
-    <circle cx="115" cy="104" r="78" stroke="url(#{{ u }}m)" stroke-width="3" opacity=".6"></circle>
-    <circle cx="115" cy="104" r="70" stroke="{{ m2 }}" stroke-width="1" stroke-dasharray="1 6" stroke-linecap="round" opacity=".8"></circle>
-    <path d="M115 14L129 82L196 104L129 126L115 194L101 126L34 104L101 82Z" fill="url(#{{ u }}m)" stroke="{{ ed }}" stroke-width="1.4" stroke-linejoin="round"></path>
-    <path d="M115 14L129 82L115 104L101 82Z" fill="#FFFFFF" opacity=".34"></path>
-    <path d="M196 104L129 126L115 104L129 82Z" fill="#000000" opacity=".1"></path>
-    <path d="M115 194L101 126L115 104L129 126Z" fill="#000000" opacity=".22"></path>
-    <path d="M34 104L101 82L115 104L101 126Z" fill="#FFFFFF" opacity=".12"></path>
-    <circle cx="115" cy="104" r="15" fill="url(#{{ u }}c)" stroke="{{ ed }}" stroke-width="1.6"></circle>
-    <path d="M110 97a9 9 0 0 1 8-3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity=".9"></path>
-    <path d="M30 168Q82 124 148 140T214 80" stroke="url(#{{ u }}m)" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="1 9"></path>
-    <circle cx="30" cy="168" r="6" fill="url(#{{ u }}c)" stroke="{{ ed }}" stroke-width="1.4"></circle>
-    <circle cx="214" cy="80" r="5" stroke="{{ m1 }}" stroke-width="2"></circle>
-  </svg>
-  <sc-if value="{{ showWord }}" hint-placeholder-val="{{ true }}">
-    <span style="font-family:'Bodoni Moda',serif;font-size:{{ fs }}px;line-height:1.2;letter-spacing:.1em;padding-left:.1em;color:transparent;background:linear-gradient(180deg,{{ t0 }},{{ t1 }} 50%,{{ t2 }});-webkit-background-clip:text;background-clip:text;white-space:nowrap"><sc-for list="{{ letters }}" as="q" hint-placeholder-count="6"><span style="font-weight:{{ q.w }};font-variation-settings:'opsz' 96">{{ q.c }}</span></sc-for></span>
-  </sc-if>
-</div>
+<sc-if value="{{ isWord }}" hint-placeholder-val="{{ true }}">
+<span style="display:inline-block;font-family:'Italiana',serif;font-size:{{ fs }}px;letter-spacing:.28em;padding-left:.28em;line-height:1.25;white-space:nowrap;filter:{{ shadow }}"><sc-for list="{{ letters }}" as="q" hint-placeholder-count="6"><span style="display:inline-block;position:relative;color:transparent;background:{{ grad }};-webkit-background-clip:text;background-clip:text;animation:{{ q.an }}">{{ q.c }}<sc-if value="{{ q.isI }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 120 120" fill="none" style="position:absolute;left:calc(50% - .14em);top:-.2em;width:.26em;height:.26em;transform:translateX(-50%);overflow:visible;animation:{{ starAn }}"><defs><linearGradient id="{{ u }}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6DC"></stop><stop offset=".3" stop-color="#F3D88F"></stop><stop offset=".55" stop-color="#C99A44"></stop><stop offset=".8" stop-color="#8E6820"></stop><stop offset="1" stop-color="#E9C77A"></stop></linearGradient></defs><path d="M60 4L71 49L116 60L71 71L60 116L49 71L4 60L49 49Z" fill="url(#{{ u }}g)" stroke="#6E5018" stroke-width="3"></path></svg></sc-if></span></sc-for></span>
+</sc-if>
+<sc-if value="{{ isStar }}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 120 120" fill="none" width="{{ fs }}" height="{{ fs }}" style="display:block;overflow:visible"><defs><linearGradient id="{{ u }}h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6DC"></stop><stop offset=".3" stop-color="#F3D88F"></stop><stop offset=".55" stop-color="#C99A44"></stop><stop offset=".8" stop-color="#8E6820"></stop><stop offset="1" stop-color="#E9C77A"></stop></linearGradient></defs><path d="M60 4L71 49L116 60L71 71L60 116L49 71L4 60L49 49Z" fill="url(#{{ u }}h)" stroke="#6E5018" stroke-width="3"></path></svg>
+</sc-if>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:120,&quot;tsType&quot;:&quot;number&quot;},&quot;tone&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;light&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;fs&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:56,&quot;tsType&quot;:&quot;number&quot;},&quot;tone&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;light&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;anim&quot;:{&quot;editor&quot;:&quot;float&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;},&quot;mark&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;word&quot;,&quot;options&quot;:[&quot;word&quot;,&quot;star&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
-  u='lg'+Math.random().toString(36).slice(2,7);
+  u='jt'+Math.random().toString(36).slice(2,7);
   renderVals(){
-    const p=this.props,dark=p.tone==='dark';
-    const L={m0:'#C99A44',m1:'#8E6820',m2:'#6E5018',m3:'#5A4010',m4:'#8E6820',ed:'#5A4010',t0:'#C99A44',t1:'#8E6820',t2:'#5A4010'};
-    const D={m0:'#FFF6DC',m1:'#F3D88F',m2:'#C99A44',m3:'#8E6820',m4:'#E9C77A',ed:'#6E5018',t0:'#FFF6DC',t1:'#E9C77A',t2:'#9A7228'};
-    const c=dark?D:L;const size=+p.size||120;
-    return{...c,u:this.u,size,fs:+p.fs||Math.round(size*.42),dir:p.dir||'column',gap:+p.gap||Math.round(size*.06),showWord:p.word!=='no',
-      letters:'JUTRIP'.split('').map(x=>({c:x,w:(x==='R'||x==='P')?400:500}))};
+    const p=this.props,dark=p.tone==='dark',T=+p.anim||0,fs=+p.fs||56;
+    const grad=dark?'linear-gradient(180deg,#FFF6DC,#E9C77A 48%,#9A7228)':'linear-gradient(180deg,#C99A44,#8E6820 55%,#5A4010)';
+    const rev={J:0,U:1,T:2,R:3,I:4,P:5};
+    return{u:this.u,fs,grad,isWord:p.mark!=='star',isStar:p.mark==='star',
+      shadow:dark?'none':'drop-shadow(0 2px 3px rgba(110,80,24,.25))',
+      starAn:T?'jtStar '+T+'s ease-out infinite both':'none',
+      letters:'JUTRIP'.split('').map(c=>({c,isI:c==='I',an:T?'jtL'+rev[c]+' '+T+'s cubic-bezier(.25,.6,.3,1) infinite both':'none'}))};
   }
 }
 </script>

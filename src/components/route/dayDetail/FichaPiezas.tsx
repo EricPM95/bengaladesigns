@@ -195,7 +195,7 @@ export function FichaComoLlegar({ direccion, transporte, web, onComoLlegar }: { 
           <span className="flex flex-1 flex-col gap-1">
             <span className="flex items-center gap-2">
               {entrada.linea && (
-                <span className="flex h-[22px] min-w-[22px] items-center justify-center rounded-md bg-accent px-1 text-[12px] font-bold text-white">
+                <span className="flex h-[22px] min-w-[22px] items-center justify-center rounded-md btn-champan px-1 text-[12px] font-bold ">
                   {siglaDeLinea(entrada.linea)}
                 </span>
               )}
@@ -233,7 +233,7 @@ export function FichaComoLlegar({ direccion, transporte, web, onComoLlegar }: { 
         </a>
       )}
       {onComoLlegar ? (
-        <button type="button" onClick={onComoLlegar} className="mx-3.5 mb-3.5 mt-1 flex h-[46px] w-[calc(100%-28px)] items-center justify-center gap-2 rounded-full bg-text text-[14px] font-semibold text-bg">
+        <button type="button" onClick={onComoLlegar} className="mx-3.5 mb-3.5 mt-1 flex h-[46px] w-[calc(100%-28px)] items-center justify-center gap-2 rounded-full btn-champan text-[14px] font-semibold ">
           Cómo llegar
           <Icono nombre="flecha" size={15} grosor={2} />
         </button>

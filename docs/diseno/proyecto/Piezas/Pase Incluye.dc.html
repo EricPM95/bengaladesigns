@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>.pcS{scrollbar-width:none}.pcS::-webkit-scrollbar{display:none}
+@keyframes piDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes piPop{0%{opacity:0;transform:scale(.4)}65%{opacity:1;transform:scale(1.1)}100%{opacity:1;transform:scale(1)}}
+@keyframes piUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes piFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes piTw{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes piSpin{to{transform:rotate(360deg)}}
+@keyframes piDrop{0%{opacity:0;transform:translateY(-8px)}30%{opacity:1}100%{opacity:0;transform:translateY(26px)}}
+@keyframes piWave{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+@keyframes piPulse{0%{opacity:.5;transform:scale(.6)}100%{opacity:0;transform:scale(2.2)}}
+@keyframes piFan1{from{opacity:0;transform:translate(60px,0) rotate(0)}to{opacity:1;transform:translate(0,0) rotate(-9deg)}}
+@keyframes piFan2{from{opacity:0;transform:translate(0,30px) scale(.8)}to{opacity:1;transform:none}}
+@keyframes piFan3{from{opacity:0;transform:translate(-60px,0) rotate(0)}to{opacity:1;transform:translate(0,0) rotate(9deg)}}
+@keyframes piFly{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes piSheen{0%{transform:translateX(-120%) skewX(-18deg)}60%,100%{transform:translateX(260%) skewX(-18deg)}}
+@keyframes piHint{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}</style>
+</helmet>
+<div style="display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start;padding:24px 48px 40px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+<sc-for list="{{ phones }}" as="ph" hint-placeholder-count="2">
+ <div style="display:flex;flex-direction:column;gap:10px">
+  <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6E5018">{{ ph.label }}</span>
+  <div style="position:relative;width:390px;height:844px;flex:none;border-radius:44px;overflow:hidden;background:#F6EFE0;box-shadow:0 0 0 9px #14161C,0 30px 70px -20px rgba(60,40,10,.45)">
+   <div ref="{{ ph.ref }}" onScroll="{{ ph.onScroll }}" class="pcS" style="position:absolute;inset:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory">
+    <sc-for list="{{ ph.pages }}" as="pg" hint-placeholder-count="6">
+     <div style="flex:none;width:390px;height:844px;scroll-snap-align:start;position:relative;background:radial-gradient(ellipse 90% 50% at 50% 24%,#FFFFFF 0%,#FBF3E2 55%,#F1E6CC 100%)">
+      <div style="position:absolute;left:0;right:0;top:50px;height:262px;display:flex;justify-content:center;overflow:visible"><div style="width:390px;height:350px;flex:none;transform:scale(.74);transform-origin:top center">
+       <sc-if value="{{ pg.on }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ pg.s0 }}" hint-placeholder-val="{{ true }}">
+         <svg width="390" height="350" viewBox="0 0 390 350" fill="none" stroke="#B58A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+          <defs><linearGradient id="piG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6DC"></stop><stop offset=".35" stop-color="#F3D88F"></stop><stop offset=".65" stop-color="#C99A44"></stop><stop offset="1" stop-color="#8E6820"></stop></linearGradient></defs>
+          <path d="M30 300Q140 60 360 120" pathLength="1" stroke-dasharray="1" stroke-width="3" style="stroke-dasharray:1 .0;animation:piDraw 2.2s .2s ease-out both" opacity=".5"></path>
+          <circle cx="30" cy="300" r="7" fill="#B58A2E" style="animation:piPop .6s ease-out both"></circle>
+          <circle cx="360" cy="120" r="7" style="animation:piPop .6s 2s ease-out both"></circle>
+          <g style="transform-origin:195px 170px;animation:piPop .9s .3s cubic-bezier(.2,1.4,.4,1) both"><g style="transform-origin:195px 170px;animation:piFloat 5s 1.2s ease-in-out infinite">
+           <circle cx="195" cy="170" r="108" opacity=".35"></circle><circle cx="195" cy="170" r="98" stroke-dasharray="1 7" opacity=".7"></circle>
+           <path d="M195 70L211 148L290 170L211 192L195 270L179 192L100 170L179 148Z" fill="url(#piG)" stroke="#6E5018" stroke-width="1.4"></path>
+           <path d="M195 70L211 148L195 170L179 148Z" fill="#fff" opacity=".35" stroke="none"></path>
+           <circle cx="195" cy="170" r="17" fill="#FFF6DC" stroke="#6E5018"></circle>
+          </g></g>
+          <g fill="#B58A2E" stroke="none"><circle cx="80" cy="90" r="3" style="animation:piTw 2.4s infinite"></circle><circle cx="320" cy="250" r="3" style="animation:piTw 2.4s .8s infinite"></circle><circle cx="300" cy="60" r="2.5" style="animation:piTw 2.4s 1.5s infinite"></circle><circle cx="70" cy="230" r="2.5" style="animation:piTw 2.4s .4s infinite"></circle></g>
+         </svg>
+        </sc-if>
+        <sc-if value="{{ pg.s1 }}" hint-placeholder-val="{{ false }}">
+         <svg width="390" height="350" viewBox="0 0 390 350" fill="none" stroke="#B58A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+          <path d="M40 290Q190 20 350 230" pathLength="1" stroke-dasharray="1" stroke-width="3" style="stroke-dasharray:1 0;animation:piDraw 2.4s .2s ease-out both" opacity=".5"></path>
+          <circle cx="40" cy="290" r="7" fill="#B58A2E" style="animation:piPop .5s ease-out both"></circle>
+          <g style="offset-path:path('M40 290Q190 20 350 230');offset-rotate:auto 90deg;animation:piFly 3s .3s ease-in-out both"><path d="M0 -14L5 -4L18 3L18 6L5 3L3 12L8 15L8 17L0 15L-8 17L-8 15L-3 12L-5 3L-18 6L-18 3L-5 -4Z" fill="#B58A2E" stroke="#6E5018" stroke-width="1"></path></g>
+          <g style="transform-origin:350px 230px;animation:piPop .6s 3s ease-out both"><rect x="318" y="200" width="64" height="56" rx="14" fill="#FFF8E4"></rect><path d="M330 244V222h40v22M330 232h40M336 222v-6h12v6"></path></g>
+          <g style="animation:piUp .6s 1.2s ease-out both"><rect x="40" y="30" width="118" height="54" rx="16" fill="#FFFDF8"></rect><text x="99" y="53" text-anchor="middle" font-family="Geist Mono,monospace" font-size="10" fill="#8E6820" stroke="none" letter-spacing="2">LLEGAS</text><text x="99" y="74" text-anchor="middle" font-family="Instrument Serif,serif" font-size="24" fill="#1C2230" stroke="none">14:20</text></g>
+          <g style="animation:piUp .6s 2s ease-out both"><rect x="214" y="100" width="130" height="46" rx="16" fill="#FFFDF8"></rect><path d="M232 130l6-14l6 14M234 125h8"></path><text x="270" y="128" font-family="Geist,sans-serif" font-size="13" fill="#1C2230" stroke="none" font-weight="600">Tu día se ajusta</text></g>
+         </svg>
+        </sc-if>
+        <sc-if value="{{ pg.s2 }}" hint-placeholder-val="{{ false }}">
+         <svg width="390" height="350" viewBox="0 0 390 350" fill="none" stroke="#B58A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+          <rect x="125" y="14" width="140" height="262" rx="26" fill="#FFFDF8" stroke="#1C2230" stroke-width="2.5"></rect>
+          <path d="M150 220Q190 150 215 190T240 70" pathLength="1" stroke-dasharray="1" style="stroke-dasharray:1 0;animation:piDraw 2s .3s ease-out both" stroke-width="3"></path>
+          <circle cx="150" cy="220" r="6" fill="#B58A2E"></circle>
+          <circle cx="240" cy="70" r="14" fill="#B58A2E" opacity=".25" style="transform-origin:240px 70px;animation:piPulse 1.8s 1.2s infinite"></circle><circle cx="240" cy="70" r="8" fill="#1C2230" stroke="#fff" stroke-width="2.5" style="animation:piPop .5s 1.8s ease-out both"></circle>
+          <g style="animation:piUp .5s 1s ease-out both"><rect x="141" y="230" width="108" height="34" rx="12" fill="#FBF3E2"></rect><circle cx="159" cy="247" r="9" fill="#B58A2E" stroke="none"></circle><path d="M156 243l8 4-8 4z" fill="#fff" stroke="none"></path><g stroke="#B58A2E" stroke-width="3"><path d="M180 247h0" style="transform-origin:180px 247px"></path></g><g stroke="none" fill="#B58A2E"><rect x="178" y="241" width="3" height="12" rx="1.5" style="transform-origin:center;transform-box:fill-box;animation:piWave 1s infinite"></rect><rect x="185" y="241" width="3" height="12" rx="1.5" style="transform-box:fill-box;transform-origin:center;animation:piWave 1s .2s infinite"></rect><rect x="192" y="241" width="3" height="12" rx="1.5" style="transform-box:fill-box;transform-origin:center;animation:piWave 1s .4s infinite"></rect><rect x="199" y="241" width="3" height="12" rx="1.5" style="transform-box:fill-box;transform-origin:center;animation:piWave 1s .1s infinite"></rect><rect x="206" y="241" width="3" height="12" rx="1.5" style="transform-box:fill-box;transform-origin:center;animation:piWave 1s .3s infinite"></rect></g></g>
+          <g style="animation:piUp .6s 1.4s ease-out both"><path d="M300 64a22 22 0 0 0-40 6a18 18 0 0 0 4 36h40a18 18 0 0 0 0-36z" fill="#FFF8E4" transform="translate(30 -10)"></path><g stroke-dasharray="3 6" stroke-width="2.5" style="animation:piDrop 1.2s 1.8s infinite"><path d="M300 100v12" transform="translate(0 0)"></path></g><g stroke-dasharray="3 6" stroke-width="2.5" style="animation:piDrop 1.2s 2.2s infinite"><path d="M316 100v12"></path></g><g stroke-dasharray="3 6" stroke-width="2.5" style="animation:piDrop 1.2s 2.6s infinite"><path d="M332 100v12"></path></g></g>
+          <g style="animation:piPop .6s 2.2s ease-out both"><g style="transform-origin:70px 130px;animation:piTw 1.8s infinite"><path d="M70 100L76 124L100 130L76 136L70 160L64 136L40 130L64 124Z" fill="#E9C77A" stroke="#B58A2E"></path></g></g>
+          <g style="animation:piUp .5s 2.6s ease-out both"><rect x="262" y="190" width="94" height="40" rx="14" fill="#FFFDF8"></rect><path d="M278 210h14M285 203v14"></path><text x="300" y="214" font-family="Geist,sans-serif" font-size="11.5" fill="#1C2230" stroke="none" font-weight="600">¿Qué hago ahora?</text></g>
+         </svg>
+        </sc-if>
+        <sc-if value="{{ pg.s3 }}" hint-placeholder-val="{{ false }}">
+         <svg width="390" height="350" viewBox="0 0 390 350" fill="none" stroke="#B58A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+          <defs><radialGradient id="piM" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#FFF6DC"></stop><stop offset=".4" stop-color="#F3D88F"></stop><stop offset=".75" stop-color="#C99A44"></stop><stop offset="1" stop-color="#8E6820"></stop></radialGradient></defs>
+          <g style="transform-origin:195px 150px;animation:piPop .8s .1s cubic-bezier(.2,1.4,.4,1) both"><circle cx="195" cy="150" r="82" fill="url(#piM)" stroke="#6E5018" stroke-width="2"></circle><circle cx="195" cy="150" r="64" stroke="#6E5018" stroke-width="1.5" opacity=".6"></circle><circle cx="195" cy="150" r="58" stroke="#6E5018" stroke-width="1" stroke-dasharray="1 6" opacity=".7"></circle>
+           <path d="M195 108l12 28l30 3l-23 20l7 30l-26-16l-26 16l7-30l-23-20l30-3z" fill="#FFF6DC" stroke="#6E5018"></path>
+           <g style="overflow:hidden"><rect x="130" y="70" width="40" height="160" fill="#fff" opacity=".4" stroke="none" style="animation:piSheen 3s 1s infinite"></rect></g></g>
+          <g style="transform-origin:80px 250px;animation:piPop .6s 1s ease-out both"><path d="M80 214l28 16v32l-28 16l-28-16v-32z" fill="#FFF8E4"></path><path d="M80 236l8 10l-8 10l-8-10z" fill="#B58A2E" stroke="none"></path></g>
+          <g style="transform-origin:310px 250px;animation:piPop .6s 1.4s ease-out both"><path d="M310 272l-24-38h48z" fill="#FFF8E4"></path><circle cx="310" cy="222" r="7" fill="#B58A2E" stroke="none"></circle></g>
+          <g style="transform-origin:195px 300px;animation:piPop .6s 1.8s ease-out both"><rect x="150" y="280" width="90" height="38" rx="12" fill="#1C2230" stroke="none"></rect><text x="195" y="304" text-anchor="middle" font-family="Geist Mono,monospace" font-size="11" fill="#E9C77A" stroke="none" letter-spacing="2">PASAPORTE</text></g>
+          <g fill="#B58A2E" stroke="none"><circle cx="70" cy="90" r="3" style="animation:piTw 2s infinite"></circle><circle cx="330" cy="100" r="3" style="animation:piTw 2s .7s infinite"></circle><circle cx="300" cy="40" r="2.5" style="animation:piTw 2s 1.3s infinite"></circle></g>
+         </svg>
+        </sc-if>
+        <sc-if value="{{ pg.s4 }}" hint-placeholder-val="{{ false }}">
+         <svg width="390" height="350" viewBox="0 0 390 350" fill="none" stroke="#B58A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+          <g style="transform-origin:112px 170px;animation:piFan1 .9s .2s cubic-bezier(.2,1,.4,1) both"><rect x="62" y="80" width="116" height="150" rx="14" fill="#FFFDF8" stroke="#1C2230" stroke-width="2"></rect><rect x="72" y="90" width="96" height="100" rx="8" fill="#FBF3E2"></rect><path d="M72 170l28-30l22 22l14-14l32 30"></path></g>
+          <g style="transform-origin:278px 170px;animation:piFan3 .9s .5s cubic-bezier(.2,1,.4,1) both"><rect x="212" y="80" width="116" height="150" rx="14" fill="#FFFDF8" stroke="#1C2230" stroke-width="2"></rect><rect x="222" y="90" width="96" height="100" rx="8" fill="#FBF3E2"></rect><path d="M232 108h60M232 124h44M232 140h52"></path></g>
+          <g style="transform-origin:195px 180px;animation:piFan2 .9s .8s cubic-bezier(.2,1,.4,1) both"><rect x="137" y="60" width="116" height="160" rx="14" fill="#FFFDF8" stroke="#1C2230" stroke-width="2.4"></rect><rect x="147" y="70" width="96" height="108" rx="8" fill="#F1E6CC"></rect><circle cx="215" cy="98" r="8" fill="#B58A2E" stroke="none"></circle><path d="M147 160l30-34l24 24l16-16l26 26"></path><text x="195" y="204" text-anchor="middle" font-family="Instrument Serif,serif" font-size="17" fill="#1C2230" stroke="none">Panteón · 9:40</text></g>
+          <g style="transform-origin:195px 275px;animation:piPop .6s 1.5s ease-out both"><rect x="120" y="254" width="150" height="42" rx="21" fill="#1C2230" stroke="none"></rect><path d="M150 281l14-10M164 271l6 6M150 281l6-2" stroke="#E9C77A" stroke-width="2.2"></path><text x="215" y="280" text-anchor="middle" font-family="Geist,sans-serif" font-size="13" fill="#FBF3E2" stroke="none" font-weight="600">Compartir</text></g>
+          <g style="transform-origin:300px 60px;animation:piTw 1.8s 1.6s infinite"><path d="M300 36l6 18l18 6l-18 6l-6 18l-6-18l-18-6l18-6z" fill="#E9C77A"></path></g>
+         </svg>
+        </sc-if>
+        <sc-if value="{{ pg.s5 }}" hint-placeholder-val="{{ false }}">
+         <svg width="390" height="350" viewBox="0 0 390 350" fill="none" stroke="#B58A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+          <circle cx="195" cy="170" r="110" pathLength="1" stroke-dasharray="1 .02" stroke-width="3" style="stroke-dasharray:1 0;animation:piDraw 2.4s .2s ease-out both" opacity=".6"></circle>
+          <circle cx="195" cy="170" r="96" stroke-dasharray="1 8" opacity=".6"></circle>
+          <path d="M290 76l14 4l-4 14" stroke-width="3" style="animation:piPop .5s 2.2s ease-out both"></path>
+          <g style="transform-origin:195px 170px;animation:piSpin 14s linear infinite"><circle cx="195" cy="60" r="9" fill="#B58A2E" stroke="#6E5018"></circle></g>
+          <g style="transform-origin:195px 170px;animation:piPop .8s .4s cubic-bezier(.2,1.4,.4,1) both"><circle cx="195" cy="170" r="52" fill="#FFF8E4"></circle><path d="M195 128l12 28l30 3l-23 20l7 30l-26-16l-26 16l7-30l-23-20l30-3z" fill="#E9C77A" stroke="#8E6820"></path></g>
+          <g style="animation:piUp .6s 1.4s ease-out both"><rect x="60" y="270" width="92" height="38" rx="19" fill="#FFFDF8"></rect><text x="106" y="294" text-anchor="middle" font-family="Geist,sans-serif" font-size="12.5" fill="#1C2230" stroke="none" font-weight="600">Tus logros</text></g>
+          <g style="animation:piUp .6s 1.8s ease-out both"><rect x="244" y="270" width="92" height="38" rx="19" fill="#FFFDF8"></rect><text x="290" y="294" text-anchor="middle" font-family="Geist,sans-serif" font-size="12.5" fill="#1C2230" stroke="none" font-weight="600">HOY y historias</text></g>
+         </svg>
+        </sc-if>
+        <sc-if value="{{ pg.s6 }}" hint-placeholder-val="{{ false }}">
+         <svg width="390" height="350" viewBox="0 0 390 350" fill="none" stroke="#B58A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+          <rect x="40" y="30" width="310" height="250" rx="28" fill="#E6EBD9" stroke="#1C2230" stroke-width="2.4" style="animation:piPop .6s ease-out both;transform-origin:195px 155px"></rect>
+          <path d="M70 250Q140 120 200 190T320 70" pathLength="1" stroke-dasharray="1" stroke-width="3" style="stroke-dasharray:1 0;animation:piDraw 2s .3s ease-out both"></path>
+          <g style="animation:piPop .5s 1s ease-out both;transform-origin:120px 150px"><circle cx="120" cy="150" r="17" fill="#FFFDF8"></circle><path d="M113 158V144M113 148h14M127 144v14"></path></g>
+          <g style="animation:piPop .5s 1.3s ease-out both;transform-origin:230px 215px"><circle cx="230" cy="215" r="17" fill="#FFFDF8"></circle><path d="M222 224q8-18 16 0M230 206v6"></path></g>
+          <g style="animation:piPop .5s 1.6s ease-out both;transform-origin:290px 130px"><circle cx="290" cy="130" r="17" fill="#FFFDF8"></circle><path d="M282 122v10M286 122v10M290 122v10M298 122v12"></path></g>
+          <g style="animation:piUp .6s 2s ease-out both"><path d="M92 74a20 20 0 0 0-36 6a16 16 0 0 0 4 32h34a16 16 0 0 0-2-38z" fill="#FFF8E4"></path><g stroke-dasharray="3 6" stroke-width="2.5"><path d="M70 120v12" style="animation:piDrop 1.2s infinite"></path><path d="M84 120v12" style="animation:piDrop 1.2s .4s infinite"></path></g></g>
+          <g style="transform-origin:330px 60px;animation:piTw 1.8s 2s infinite"><path d="M330 38l5 15l15 5l-15 5l-5 15l-5-15l-15-5l15-5z" fill="#E9C77A"></path></g>
+          <g style="animation:piUp .6s 2.4s ease-out both"><rect x="120" y="296" width="150" height="38" rx="19" fill="#1C2230" stroke="none"></rect><text x="195" y="320" text-anchor="middle" font-family="Geist,sans-serif" font-size="12.5" fill="#FBF3E2" stroke="none" font-weight="600">Algo brilla cerca…</text></g>
+         </svg>
+        </sc-if>
+        <sc-if value="{{ pg.s7 }}" hint-placeholder-val="{{ false }}">
+         <svg width="390" height="350" viewBox="0 0 390 350" fill="none" stroke="#B58A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+          <path d="M110 150L195 90L280 150M110 150L195 230L280 150" pathLength="1" stroke-dasharray="1" stroke-width="3" style="stroke-dasharray:1 0;animation:piDraw 1.6s .6s ease-out both" opacity=".6"></path>
+          <g style="transform-origin:195px 90px;animation:piPop .6s .1s ease-out both"><circle cx="195" cy="90" r="40" fill="#FFF8E4"></circle><circle cx="195" cy="80" r="11"></circle><path d="M174 112q21-26 42 0"></path></g>
+          <g style="transform-origin:110px 150px;animation:piPop .6s .4s ease-out both"><circle cx="110" cy="150" r="34" fill="#FFF8E4"></circle><circle cx="110" cy="142" r="9"></circle><path d="M93 166q17-22 34 0"></path></g>
+          <g style="transform-origin:280px 150px;animation:piPop .6s .7s ease-out both"><circle cx="280" cy="150" r="34" fill="#FFF8E4"></circle><circle cx="280" cy="142" r="9"></circle><path d="M263 166q17-22 34 0"></path></g>
+          <g style="transform-origin:195px 230px;animation:piPop .6s 1s ease-out both"><circle cx="195" cy="230" r="34" fill="#FFF8E4"></circle><circle cx="195" cy="222" r="9"></circle><path d="M178 246q17-22 34 0"></path></g>
+          <g style="animation:piUp .6s 1.8s ease-out both"><rect x="120" y="290" width="150" height="44" rx="22" fill="#1C2230" stroke="none"></rect><text x="195" y="318" text-anchor="middle" font-family="Geist Mono,monospace" font-size="16" fill="#E9C77A" stroke="none" letter-spacing="4">ROMA-4X2</text></g>
+         </svg>
+        </sc-if>
+        <sc-if value="{{ pg.s8 }}" hint-placeholder-val="{{ false }}">
+         <svg width="390" height="350" viewBox="0 0 390 350" fill="none" stroke="#B58A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+          <circle cx="195" cy="165" r="120" stroke-dasharray="2 9" opacity=".6" style="transform-origin:195px 165px;animation:piSpin 40s linear infinite"></circle>
+          <g style="transform-origin:90px 150px;animation:piPop .6s .2s ease-out both"><g style="transform-origin:90px 150px;animation:piFloat 4s infinite"><rect x="50" y="110" width="80" height="80" rx="20" fill="#FFF8E4" stroke-dasharray="4 5"></rect><path d="M90 130v34M76 152l14 14l14-14M70 176h40"></path></g></g>
+          <g style="transform-origin:195px 90px;animation:piPop .6s .6s ease-out both"><g style="transform-origin:195px 90px;animation:piFloat 4s .8s infinite"><rect x="155" y="50" width="80" height="80" rx="20" fill="#FFF8E4" stroke-dasharray="4 5"></rect><path d="M175 72h26l14 14v28h-40zM200 72v16h15M183 104h24"></path></g></g>
+          <g style="transform-origin:300px 150px;animation:piPop .6s 1s ease-out both"><g style="transform-origin:300px 150px;animation:piFloat 4s 1.6s infinite"><rect x="260" y="110" width="80" height="80" rx="20" fill="#FFF8E4" stroke-dasharray="4 5"></rect><circle cx="300" cy="150" r="22"></circle><path d="M278 150h44M300 128c8 10 8 34 0 44M300 128c-8 10-8 34 0 44"></path></g></g>
+          <g style="animation:piUp .6s 1.6s ease-out both"><rect x="105" y="236" width="180" height="44" rx="22" fill="#FFFDF8"></rect><text x="195" y="264" text-anchor="middle" font-family="Geist,sans-serif" font-size="13" fill="#1C2230" stroke="none" font-weight="600">Sin pagar más</text></g>
+          <g fill="#B58A2E" stroke="none"><circle cx="60" cy="60" r="3" style="animation:piTw 2s infinite"></circle><circle cx="330" cy="60" r="3" style="animation:piTw 2s .7s infinite"></circle></g>
+         </svg>
+        </sc-if>
+       </sc-if>
+      </div></div>
+      <div style="position:absolute;left:22px;right:22px;top:322px;display:flex;flex-direction:column;gap:9px">
+       <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.16em;color:#8E6820">{{ pg.eye }}</span>
+       <span style="font:400 33px/1.02 'Instrument Serif',serif;text-wrap:balance">{{ pg.t }}<em style="color:#8E6820">{{ pg.ti }}</em></span>
+       <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;padding-top:6px"><sc-for list="{{ pg.lines }}" as="ln" hint-placeholder-count="6"><div style="min-height:48px;padding:7px 10px 7px 7px;border-radius:16px;background:#FFFDF8;border:1px solid rgba(181,138,46,.28);box-shadow:0 6px 14px -10px rgba(60,40,10,.4),inset 0 1px 0 #fff;display:flex;align-items:center;gap:9px;grid-column:{{ ln.span }}"><span style="width:34px;height:34px;border-radius:11px;flex:none;background:linear-gradient(145deg,#FFF6DC,#F0DDA8 55%,#D9BC6E);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 0 -2px 4px rgba(142,104,32,.25);display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ln.d }}"></path></svg></span><span style="flex:1;font:600 12.5px/1.2 'Geist',sans-serif;color:#1C2230">{{ ln.t }}</span><b style="display:{{ ln.tagD }};height:17px;padding:0 6px;border-radius:999px;background:#1C2230;color:#E9C77A;font:700 8.5px 'Geist Mono',monospace;letter-spacing:.06em;align-items:center">{{ ln.tag }}</b></div></sc-for></div>
+      </div>
+     </div>
+    </sc-for>
+   </div>
+<sc-if value="{{ ph.canPrev }}" hint-placeholder-val="{{ false }}"><span onClick="{{ prev }}" style="position:absolute;left:12px;top:196px;width:42px;height:42px;border-radius:50%;background:rgba(255,253,248,.94);border:1px solid rgba(181,138,46,.55);box-shadow:0 8px 18px -8px rgba(60,40,10,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></span></sc-if><sc-if value="{{ ph.canNext }}" hint-placeholder-val="{{ false }}"><span onClick="{{ next }}" style="position:absolute;right:12px;top:196px;width:42px;height:42px;border-radius:50%;background:rgba(255,253,248,.94);border:1px solid rgba(181,138,46,.55);box-shadow:0 8px 18px -8px rgba(60,40,10,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></span></sc-if>
+   <sc-if value="{{ ph.has }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:18px;right:18px;top:54px;height:40px;border-radius:999px;background:#EAF4EC;border:1px solid rgba(43,127,69,.3);display:flex;align-items:center;justify-content:center;gap:8px;font:600 13.5px 'Geist';color:#2B7F45;z-index:3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2B7F45" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Tu Pase de Roma está activo</div></sc-if>
+   <div style="position:absolute;left:0;right:0;bottom:0;padding:34px 22px 26px;background:linear-gradient(180deg,rgba(246,239,224,0),#F6EFE0 38%);display:flex;flex-direction:column;align-items:center;gap:14px;pointer-events:none">
+    <div style="display:flex;gap:8px;align-items:center"><sc-for list="{{ ph.dots }}" as="d" hint-placeholder-count="6"><span onClick="{{ d.go }}" style="height:7px;width:{{ d.w }}px;border-radius:4px;background:{{ d.c }};transition:all .3s;cursor:pointer;pointer-events:auto"></span></sc-for></div>
+    <sc-if value="{{ ph.buy }}" hint-placeholder-val="{{ true }}"><span style="width:100%;height:54px;border-radius:16px;background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 16px 'Geist';box-shadow:0 10px 20px -12px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55);position:relative;overflow:hidden">Elegir mi pase<span style="position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:piSheen 3.4s 1s infinite"></span></span></sc-if>
+    <sc-if value="{{ ph.hint }}" hint-placeholder-val="{{ false }}"><span style="font:600 12px 'Geist';color:#8E6820;display:flex;align-items:center;gap:6px;animation:piHint 1.6s infinite">Desliza <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8E6820" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></span></sc-if>
+   </div>
+  </div>
+ </div>
+</sc-for>
+<sc-for list="{{ rutas }}" as="rt" hint-placeholder-count="2">
+ <div style="display:flex;flex-direction:column;gap:10px">
+  <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6E5018">{{ rt.label }}</span>
+  <div style="position:relative;width:390px;height:844px;flex:none;border-radius:44px;overflow:hidden;background:#F6EFE0;box-shadow:0 0 0 9px #14161C,0 30px 70px -20px rgba(60,40,10,.45)">
+   <div style="position:absolute;left:0;right:0;top:0;height:300px;background:#E6EBD9"><div style="position:absolute;inset:0;background:repeating-linear-gradient(40deg,rgba(255,255,255,.55) 0 3px,transparent 3px 44px)"></div></div>
+   <span style="position:absolute;left:22px;top:60px;font:400 36px/1 'Instrument Serif',serif">Tu ruta</span>
+   <div style="position:absolute;left:0;right:0;top:210px;bottom:0;border-radius:30px 30px 0 0;background:#F6EFE0;padding:22px 18px;display:flex;flex-direction:column;gap:12px">
+    <sc-for list="{{ rt.cards }}" as="c" hint-placeholder-count="2">
+     <div style="border-radius:24px;background:#FFFDF8;box-shadow:0 8px 18px -10px rgba(28,34,48,.4);padding:14px 16px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden"><span style="position:absolute;left:0;top:0;bottom:0;width:7px;background:{{ c.dot }}"></span><span style="width:44px;height:44px;border-radius:12px;background:{{ c.g }};flex:none"></span>
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font:400 22px/1 'Instrument Serif',serif">{{ c.n }}</span><span style="font:400 12px 'Geist';color:rgba(28,34,48,.6)">{{ c.d }}</span>
+       <span style="align-self:flex-start;height:26px;padding:0 10px;border-radius:999px;background:{{ rt.pb }};color:{{ rt.pf }};border:1px solid rgba(181,138,46,.55);display:inline-flex;align-items:center;gap:5px;font:700 11.5px 'Geist';white-space:nowrap">{{ c.pill }}<span style="display:flex">{{ rt.ico }}</span></span></div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></div>
+    </sc-for>
+   </div>
+  </div>
+ </div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state={a:0,b:0};
+  refs={};
+  PG=[
+    {eye:'TU PASE DE ROMA',t:'No es una guía. ',ti:'Es tu compañero de viaje.',lines:[{d:'M3 8h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z',t:'Se paga una vez por destino',tag:'',tagD:'none',span:'auto'},{d:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',t:'No caduca',tag:'',tagD:'none',span:'auto'},{d:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',t:'Más de 20 ventajas',tag:'',tagD:'none',span:'auto'},{d:'M16 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 20v-1a4 4 0 0 0-3-3.9M16 4.1a3.5 3.5 0 0 1 0 6.8',t:'Pase Dúo y Pase Grupo',tag:'',tagD:'none',span:'auto'}]},
+    {eye:'1 · ANTES DEL VIAJE',t:'Tu primer día, ',ti:'a tu medida',lines:[{d:'M21 15v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8l-8 5v2l8-2.5V18l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-5.5z',t:'Vuelo, tren o autobús',tag:'',tagD:'none',span:'auto'},{d:'M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z',t:'Primer y último día a tu hora',tag:'',tagD:'none',span:'auto'},{d:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',t:'Días según tu llegada y vuelta',tag:'',tagD:'none',span:'auto'},{d:'M3 18V8M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-8v5',t:'Zona de tu alojamiento',tag:'',tagD:'none',span:'auto'},{d:'M5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7 17c6 0 2-8 8-8h2',t:'Cómo llegar a tu alojamiento',tag:'',tagD:'none',span:'auto'},{d:'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',t:'Resumen de tus reservas',tag:'',tagD:'none',span:'auto'}]},
+    {eye:'2 · HOY, TU COMPAÑERO',t:'Cada parada, ',ti:'paso a paso',lines:[{d:'M5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7 17c6 0 2-8 8-8h2',t:'Siguiente parada y cómo llegar',tag:'',tagD:'none',span:'auto'},{d:'M5 12.5l4.5 4.5L19 7',t:'Visto',tag:'',tagD:'none',span:'auto'},{d:'M7 7h13l-4-4M17 17H4l4 4',t:'Cambiar planes',tag:'',tagD:'none',span:'auto'},{d:'M12 17v.01M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z',t:'¿Qué hago ahora?',tag:'',tagD:'none',span:'auto'},{d:'M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z',t:'Estoy aquí',tag:'',tagD:'none',span:'auto'},{d:'M12 5v14M5 12h14',t:'+ Añadir parada',tag:'',tagD:'none',span:'auto'},{d:'M4 12h6M7 9v6M14 8h6M14 12h6M14 16h6',t:'Más visitas',tag:'',tagD:'none',span:'auto'},{d:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',t:'Qué ver aquí',tag:'',tagD:'none',span:'auto'},{d:'M3 10v4M7 7v10M11 4v16M15 8v8M19 10v4',t:'Escucha la historia',tag:'',tagD:'none',span:'auto'}]},
+    {eye:'2 · HOY, TU COMPAÑERO',t:'Atento a ',ti:'tu alrededor',lines:[{d:'M5 8h12v6a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5zM17 10h2a2 2 0 0 1 0 4h-2',t:'Baños, fuentes y dónde comer',tag:'',tagD:'none',span:'auto'},{d:'M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14',t:'Restaurantes en el mapa',tag:'',tagD:'none',span:'auto'},{d:'M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15zM10 21h4',t:'Avisos del día',tag:'',tagD:'none',span:'auto'},{d:'M7 15a4 4 0 0 1 0-8 5 5 0 0 1 9.5 1A3.5 3.5 0 0 1 16 15zM8 18l-1 3M12 18l-1 3M16 18l-1 3',t:'Plan si llueve',tag:'',tagD:'none',span:'auto'},{d:'M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',t:'Puesta de sol y lo de mañana',tag:'',tagD:'none',span:'auto'},{d:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM15 9l-2 5-5 1 2-5z',t:'Modo «a mi aire»',tag:'',tagD:'none',span:'auto'},{d:'M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z',t:'Algo brilla cerca de aquí…',tag:'',tagD:'none',span:'auto'},{d:'M12 21l-6-4V6l6-3 6 3v11zM9 12l2 2 4-4',t:'Reto del día',tag:'',tagD:'none',span:'auto'}]},
+    {eye:'3 · LOS LOGROS',t:'Cada sitio ',ti:'suma',lines:[{d:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7l1.8 3.6 4 .6-2.9 2.8.7 4L12 16l-3.6 2 .7-4L6.2 11.2l4-.6z',t:'Sellos de cada destino',tag:'',tagD:'none',span:'auto'},{d:'M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 3v18M4 7.5l8 4.5 8-4.5',t:'Colecciones',tag:'',tagD:'none',span:'auto'},{d:'M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z',t:'Emblemas secretos',tag:'',tagD:'none',span:'auto'},{d:'M3 20h18M5 20V10M9 20V10M15 20V10M19 20V10M3 9l9-5 9 5z',t:'Maravillas del mundo',tag:'',tagD:'none',span:'auto'},{d:'M12 14a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM8.5 13.5L7 21l5-3 5 3-1.5-7.5',t:'Logros de viajero',tag:'',tagD:'none',span:'auto'},{d:'M6 3h12v18H6zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM9 18h6',t:'Tu pasaporte',tag:'',tagD:'none',span:'auto'},{d:'M12 7v5l3 2M3 12a9 9 0 1 0 3-6.7M3 4v4h4',t:'Lo de ayer también cuenta',tag:'',tagD:'none',span:'auto'}]},
+    {eye:'4 · TUS RECUERDOS',t:'Todo ',ti:'guardado',lines:[{d:'M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z',t:'Guarda un recuerdo',tag:'',tagD:'none',span:'auto'},{d:'M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4',t:'Fotos en tu galería',tag:'',tagD:'none',span:'auto'},{d:'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4',t:'Resumen de cada día',tag:'',tagD:'none',span:'auto'},{d:'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4',t:'Resumen del viaje',tag:'',tagD:'none',span:'auto'},{d:'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4',t:'Imagen para compartir',tag:'',tagD:'none',span:'auto'}]},
+    {eye:'5 · CON LOS TUYOS',t:'Mejor ',ti:'en compañía',lines:[{d:'M16 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 20v-1a4 4 0 0 0-3-3.9M16 4.1a3.5 3.5 0 0 1 0 6.8',t:'Pase Dúo',tag:'',tagD:'none',span:'auto'},{d:'M16 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 20v-1a4 4 0 0 0-3-3.9M16 4.1a3.5 3.5 0 0 1 0 6.8',t:'Pase Grupo',tag:'',tagD:'none',span:'auto'},{d:'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4',t:'Compartes el código',tag:'',tagD:'none',span:'auto'},{d:'M12 14a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM8.5 13.5L7 21l5-3 5 3-1.5-7.5',t:'Cada uno, sus logros',tag:'',tagD:'none',span:'auto'}]},
+    {eye:'6 · Y DESPUÉS',t:'Si vuelves, ',ti:'todo sigue',lines:[{d:'M12 14a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM8.5 13.5L7 21l5-3 5 3-1.5-7.5',t:'Tus logros',tag:'',tagD:'none',span:'auto'},{d:'M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',t:'HOY',tag:'',tagD:'none',span:'auto'},{d:'M3 10v4M7 7v10M11 4v16M15 8v8M19 10v4',t:'Las historias',tag:'',tagD:'none',span:'auto'},{d:'M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3',t:'Todo te espera',tag:'',tagD:'none',span:'auto'}]},
+    {eye:'7 · SIN PAGAR MÁS',t:'El pase ',ti:'sigue creciendo',lines:[{d:'M12 4v12M7 11l5 5 5-5M5 20h14',t:'Descargar el viaje sin cobertura',tag:'PRONTO',tagD:'flex',span:'auto'},{d:'M6 3h9l4 4v14H6zM14 3v5h5M9 14h6M9 17h4',t:'Exportar en PDF',tag:'PRONTO',tagD:'flex',span:'auto'},{d:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18',t:'La vuelta al mundo',tag:'PRONTO',tagD:'flex',span:'auto'}]}];
+  go(key,k){const el=this.refs[key];if(el)el.scrollTo({left:k*(el.clientWidth||390),behavior:'smooth'});}
+  mk(key,label,has){
+    const i=this.state[key],n=this.PG.length;
+    return{label,has,
+      ref:el=>{this.refs[key]=el;},
+      onScroll:e=>{const w=e.target.clientWidth||390,k=Math.round(e.target.scrollLeft/w);if(k!==this.state[key])this.setState({[key]:k});},
+      pages:this.PG.map((p,k)=>({...p,on:k===i,s0:k===0,s1:k===1,s2:k===2,s3:k===4,s4:k===5,s5:k===7,s6:k===3,s7:k===6,s8:k===8})),
+      dots:this.PG.map((_,k)=>({w:k===i?22:7,c:k===i?'#B58A2E':'rgba(28,34,48,.18)',go:()=>this.go(key,k)})),
+      canPrev:i>0,canNext:i<n-1,
+      prev:()=>this.go(key,i-1),next:()=>this.go(key,i+1),
+      buy:!has&&i===n-1,hint:i<n-1};
+  }
+  renderVals(){
+    const E='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke="';
+    const lock=React.createElement('span',{dangerouslySetInnerHTML:{__html:''}});
+    const lk='M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z',ck='M5 12.5l4.5 4.5L19 7';
+    const ico=(d,c)=>React.createElement('svg',{width:12,height:12,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2.4,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d}));
+    const cards=(has)=>[{n:'Roma',d:'4 días · 3 noches',dot:'#2F8AE0',g:'linear-gradient(150deg,oklch(0.7 0.07 40),oklch(0.46 0.06 65))',pill:'Pase de Roma'},{n:'Florencia',d:'3 días · 2 noches',dot:'#F29A1F',g:'linear-gradient(150deg,oklch(0.7 0.07 90),oklch(0.46 0.06 115))',pill:'Pase de Florencia'}];
+    return{
+      phones:[this.mk('a','P0 · El pase, sin pase (desliza)',false),this.mk('b','P0b · El pase, con pase',true)],
+      rutas:[{label:'P0c · RUTA, sin pase',pb:'#FBF3E2',pf:'#6E5018',ico:ico(lk,'#6E5018'),cards:cards()},{label:'P0d · RUTA, con pase',pb:'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)',pf:'#4A3510',ico:ico(ck,'#4A3510'),cards:cards()}]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -76,7 +76,7 @@ export function DateNoticesModal({ route }: { route: Route }) {
           <button
             type="button"
             onClick={isLast ? close : () => goTo(active + 1)}
-            className="h-12 w-full rounded-full bg-text font-sans text-[15px] font-medium text-bg transition-transform active:scale-[.98]"
+            className="h-12 w-full rounded-full btn-champan font-sans text-[15px] font-medium transition-transform active:scale-[.98]"
             autoFocus
           >
             {isLast ? 'Entendido' : 'Siguiente'}

@@ -70,7 +70,7 @@ export function ReservasSoloVer({ route, nombreAdmin, onClose }: { route: Route;
                     <span className="block pl-[22px] text-[12px] text-text/55">{item.reservation ? metaReserva(route, item.reservation) : enTuRuta(route, item.day) || 'Sin reservar'}</span>
                   </div>
                   {!item.reservation && (
-                    <button type="button" onClick={() => setFicha(item)} className="h-8 shrink-0 whitespace-nowrap rounded-full px-3.5 text-[12.5px] font-semibold text-white" style={{ background: 'rgb(var(--accent))' }}>
+                    <button type="button" onClick={() => setFicha(item)} className="btn-champan h-8 shrink-0 whitespace-nowrap rounded-full px-3.5 text-[12.5px] font-semibold">
                       {item.isFreeTour ? 'Reservar Free Tour' : 'Reservar entrada'}
                     </button>
                   )}

@@ -114,7 +114,7 @@ export function ExcursionsPage({ route }: { route: Route }) {
           <div className="flex items-center gap-4">
             {info.rating && (
               <div className="shrink-0 text-center">
-                <p className="font-display text-[44px] leading-none text-accent">{info.rating.percent} %</p>
+                <p className="font-display text-[44px] leading-none text-accent-grande">{info.rating.percent} %</p>
                 <p className="mt-1 font-mono text-[9px] uppercase tracking-[.14em] text-[#F3EEE4]/60">Valoración media</p>
               </div>
             )}
@@ -147,7 +147,7 @@ export function ExcursionsPage({ route }: { route: Route }) {
                         Reservar
                       </a>
                     )}
-                    <button type="button" onClick={() => add(excursion)} className="h-11 flex-1 rounded-full bg-text text-[14.5px] font-medium text-bg transition-transform active:scale-[.98]">
+                    <button type="button" onClick={() => add(excursion)} className="h-11 flex-1 rounded-full btn-champan text-[14.5px] font-medium transition-transform active:scale-[.98]">
                       Añadir a mi viaje
                     </button>
                   </div>

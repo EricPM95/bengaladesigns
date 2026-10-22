@@ -1,3 +1,4 @@
+import { botonChampan } from '../../../lib/marcaBoton'
 import { withCampaign } from '../../../lib/affiliateLinks'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -5,7 +6,6 @@ import { Icono } from '../../ui/Icono'
 
 // El frambuesa de la app: los tokens de `src/index.css` (un solo sitio).
 const ROSE = 'rgb(var(--frambuesa))'
-const ROSE_DEEP = 'rgb(var(--frambuesa-hover))'
 export const GREEN = 'oklch(0.55 0.11 150)'
 const GREEN_INK = 'oklch(0.45 0.11 150)'
 
@@ -116,7 +116,7 @@ export function EntradaCard({
               type="button"
               onClick={buy}
               className="h-8 whitespace-nowrap rounded-full px-3.5 text-white transition-transform active:scale-[.97]"
-              style={{ background: ROSE, boxShadow: `0 8px 16px -8px ${ROSE_DEEP}`, font: "600 12.5px 'Geist'" }}
+              style={{ ...botonChampan(), font: "600 12.5px 'Geist'" }}
             >
               {buyLabel}
             </button>

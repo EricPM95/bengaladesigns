@@ -128,7 +128,7 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
                 transition: 'color .45s,border-color .45s,opacity .4s',
               }}
             >
-              <span style={{ position: 'absolute', inset: 0, background: AMBER, transformOrigin: 'left center', transform: active ? 'scaleX(1)' : 'scaleX(0)', transition: 'transform .65s cubic-bezier(.2,.8,.2,1)' }} />
+              <span style={{ position: 'absolute', inset: 0, background: INK, transformOrigin: 'left center', transform: active ? 'scaleX(1)' : 'scaleX(0)', transition: 'transform .65s cubic-bezier(.2,.8,.2,1)' }} />
               <span style={{ position: 'relative', font: `500 11px ${MONO}`, opacity: 0.7, width: 20 }}>{String(index + 1).padStart(2, '0')}</span>
               <span style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -142,7 +142,7 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
                         font: `500 10px/1 ${MONO}`,
                         letterSpacing: '.08em',
                         textTransform: 'uppercase',
-                        background: active ? 'rgba(255,255,255,.2)' : 'rgba(181,138,46,.22)',
+                        background: active ? 'rgba(255,255,255,.2)' : 'rgba(166,124,82,.22)',
                         color: active ? DARK : INK,
                         transition: 'background .45s,color .45s',
                       }}

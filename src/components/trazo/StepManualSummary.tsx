@@ -3,7 +3,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { cityCode } from './cityCode'
 import { COMPANION, datesLabel, transportModeLabel } from './StepSummary'
 import { textoDeDuracion } from '../../lib/duracionViaje'
-import { ACCENT, Cta, INK, MONO, SEASON_FX, SERIF, Title } from './trazoUi'
+import { ACCENT, ACCENT_GRANDE, Cta, INK, MONO, SEASON_FX, SERIF, Title } from './trazoUi'
 
 interface StepManualSummaryProps {
   origin: Place | null
@@ -46,7 +46,7 @@ export function StepManualSummary({ origin, destination, onStart }: StepManualSu
             <div style={{ width: '100%', borderTop: '1px dashed rgba(28,34,48,.35)' }} />
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ font: `400 50px/1 ${SERIF}`, color: ACCENT }}>{cityCode(destination)}</div>
+            <div style={{ font: `400 50px/1 ${SERIF}`, color: ACCENT_GRANDE }}>{cityCode(destination)}</div>
             <div style={{ marginTop: 4, font: "400 12px 'Geist'", color: 'rgba(28,34,48,.62)' }}>{destination?.name}</div>
           </div>
         </div>

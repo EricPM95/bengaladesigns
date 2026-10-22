@@ -528,7 +528,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                       href={`https://www.google.com/search?q=${encodeURIComponent(`free tour gratis ${city} reserva`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex h-[46px] w-full items-center justify-center gap-2 rounded-full bg-accent text-body font-semibold text-white transition-colors hover:bg-accent-hover"
+                      className="flex h-[46px] w-full items-center justify-center gap-2 rounded-full btn-champan text-body font-semibold transition-colors "
                     >
                       Reservar
                       <Icono nombre="flecha" size={15} grosor={2} />
@@ -574,7 +574,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                           <button
                             type="button"
                             onClick={onWantInside}
-                            className="h-10 rounded-full bg-text px-5 text-[14px] font-medium text-bg transition-transform active:scale-[.98]"
+                            className="h-10 rounded-full btn-champan px-5 text-[14px] font-medium transition-transform active:scale-[.98]"
                           >
                             Quiero entrar
                           </button>
@@ -688,7 +688,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
               <button
                 type="button"
                 onClick={footerAction.onClick}
-                className="w-full rounded-xl bg-accent py-2.5 text-body font-semibold text-white transition-colors hover:bg-accent-hover"
+                className="w-full rounded-xl btn-champan py-2.5 text-body font-semibold transition-colors "
               >
                 {footerAction.label}
               </button>

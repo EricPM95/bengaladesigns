@@ -99,7 +99,7 @@ export function RemoveReservationDialog({ name, onCancel, onConfirm }: { name: s
           <button type="button" onClick={onCancel} className="h-12 flex-1 rounded-full border border-text/15 text-[15px] font-medium text-text transition-colors hover:bg-bg-hover">
             Cancelar
           </button>
-          <button type="button" onClick={onConfirm} className="h-12 flex-1 rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]">
+          <button type="button" onClick={onConfirm} className="h-12 flex-1 rounded-full bg-accent-red text-white text-[15px] font-medium transition-transform active:scale-[.98]">
             Quitar del viaje
           </button>
         </div>

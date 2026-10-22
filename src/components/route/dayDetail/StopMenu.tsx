@@ -234,7 +234,7 @@ function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, free
                   type="button"
                   disabled={!time}
                   onClick={handleSaveTime}
-                  className="w-full rounded-lg bg-accent py-1.5 text-small font-medium text-white hover:bg-accent-hover"
+                  className="w-full rounded-lg btn-champan py-1.5 text-small font-medium "
                 >
                   Guardar
                 </button>

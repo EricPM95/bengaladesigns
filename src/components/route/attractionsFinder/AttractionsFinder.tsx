@@ -255,7 +255,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                             type="button"
                             onClick={() => toggleSelected(entry.stop)}
                             className={`shrink-0 rounded-lg px-2.5 py-1.5 text-caption font-semibold transition-colors ${
-                              selected.has(entry.stop.id) ? 'bg-accent text-white' : 'bg-accent-soft text-accent-hover hover:bg-border'
+                              selected.has(entry.stop.id) ? 'bg-text text-white' : 'bg-accent-soft text-accent-hover hover:bg-border'
                             }`}
                           >
                             {selected.has(entry.stop.id) ? '✓ Incluido' : '+ Incluir'}
@@ -291,7 +291,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                             type="button"
                             onClick={() => pick(result)}
                             className={`shrink-0 rounded-lg px-2.5 py-1.5 text-caption font-semibold transition-colors ${
-                              isSelected ? 'bg-accent text-white' : 'bg-accent-soft text-accent-hover hover:bg-border'
+                              isSelected ? 'bg-text text-white' : 'bg-accent-soft text-accent-hover hover:bg-border'
                             }`}
                           >
                             {isSelected ? '✓ Añadido' : '+ Añadir'}
@@ -308,7 +308,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                 <button
                   type="button"
                   onClick={() => multiSelect.onConfirm([...selected.values()])}
-                  className="w-full rounded-xl bg-accent py-2.5 text-body font-semibold text-white transition-colors hover:bg-accent-hover"
+                  className="w-full rounded-xl btn-champan py-2.5 text-body font-semibold transition-colors "
                 >
                   {multiSelect.confirmLabel ?? `Confirmar (${selectedCount})`}
                 </button>

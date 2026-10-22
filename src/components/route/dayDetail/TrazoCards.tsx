@@ -251,7 +251,7 @@ export function MealCard({ label, reservedTime, name, sub, iconPath, onOpen, onC
   ) : null
   const content = (
     <>
-      <span className={`flex shrink-0 items-center justify-center rounded-full bg-accent text-white ${small ? 'h-8 w-8' : 'h-10 w-10 max-[479px]:h-8 max-[479px]:w-8'}`}>
+      <span className={`flex shrink-0 items-center justify-center rounded-full btn-champan ${small ? 'h-8 w-8' : 'h-10 w-10 max-[479px]:h-8 max-[479px]:w-8'}`}>
         <Icon d={iconPath} size={small ? 15 : 18} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-left">

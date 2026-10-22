@@ -18,7 +18,7 @@ export function ResumenViaje({ fichas, onFicha }: { fichas: FichaResumen[]; onFi
   return (
     <div className="flex flex-col gap-2.5 rounded-[20px] bg-[#FFFDF8] px-3.5 pb-[13px] pt-3.5" style={{ border: '1px solid rgba(28,34,48,.07)' }} data-blk="resumen">
       <span style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>
-        <em style={{ color: todas ? GR : 'rgb(var(--frambuesa-hover))' }}>
+        <em style={{ color: todas ? GR : 'rgb(var(--accent))' }}>
           {listas} de {fichas.length} listo
         </em>
       </span>
@@ -43,7 +43,7 @@ export function ResumenViaje({ fichas, onFicha }: { fichas: FichaResumen[]; onFi
           >
             <span
               className="h-4 w-4 rounded-full text-center text-[9px] font-bold leading-[13px] text-white"
-              style={{ background: ficha.hecho ? GR : 'transparent', border: `1.5px solid ${ficha.hecho ? GR : 'rgb(var(--frambuesa))'}` }}
+              style={{ background: ficha.hecho ? GR : 'transparent', border: `1.5px solid ${ficha.hecho ? GR : 'rgb(var(--oro))'}` }}
               aria-hidden="true"
             >
               {ficha.hecho ? '✓' : ''}

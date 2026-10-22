@@ -57,7 +57,7 @@ function HojaResumenAbierta({ items, destination }: { items: { id: string; texto
           </div>
         ))}
       </div>
-      <button type="button" onClick={cerrar} className="mt-6 h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]">
+      <button type="button" onClick={cerrar} className="mt-6 h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98]">
         De acuerdo
       </button>
       {/* (El aviso «Deshacer» de quitar el vuelo flota encima de la hoja: se le deja sitio para que no tape [De acuerdo].) */}

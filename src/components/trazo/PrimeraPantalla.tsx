@@ -11,6 +11,7 @@ import {
   type DestinoCurado,
 } from '../../lib/destinosCurados'
 import { LogoPequeno } from '../ui/LogoJutrip'
+import { botonChampan } from '../../lib/marcaBoton'
 import { cityCode, countryOf } from './cityCode'
 import { aPantalla, cargarTierraDelMapa, curvaEntre, encuadrar, proyectar, type Camara } from './mapaMundo'
 
@@ -24,8 +25,10 @@ import { aPantalla, cargarTierraDelMapa, curvaEntre, encuadrar, proyectar, type 
 const CREMA = '#F6EFE0'
 const TARJETA = '#FFFDF8'
 const TINTA = '#1C2230'
-const ORO_CLARO = '#B58A2E'
-const ORO_OSCURO = '#8B6620'
+const ORO_CLARO = '#D8B98E'
+/** Tanda 10E: el oro oscuro #A67C52 solo en títulos grandes, bordes y rellenos sin letra pequeña; la letra pequeña va en el oro profundo. */
+const ORO_OSCURO = '#A67C52'
+const ORO_TEXTO = '#6F4E37'
 const MAR = '#BCD8EC'
 const PIN = '#E8953A'
 const MONO = "'Geist Mono',monospace"
@@ -296,8 +299,8 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
     avion = { x: bx, y: by, ang: (Math.atan2(ty, tx) * 180) / Math.PI + 90 }
   }
 
-  const bordeO = foco === 'o' ? ORO_OSCURO : 'rgba(142,104,32,.24)'
-  const bordeD = foco === 'd' ? ORO_OSCURO : 'rgba(142,104,32,.24)'
+  const bordeO = foco === 'o' ? ORO_OSCURO : 'rgba(166,124,82,.24)'
+  const bordeD = foco === 'd' ? ORO_OSCURO : 'rgba(166,124,82,.24)'
   const sugerenciasO = foco === 'o' && oq.trim().length >= 2
 
   return (
@@ -309,7 +312,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
         style={{ position: 'absolute', left: 0, top: 0, width: ancho, height: alto600, touchAction: 'none', cursor: 'grab', background: MAR }}
       >
         <svg width={ancho} height={alto600} viewBox={`0 0 ${ancho} ${alto600}`} style={{ display: 'block' }} role="img" aria-label="Mapa del mundo con nuestros destinos">
-          {tierra && <path d={tierra} fill="#FBF3E2" stroke="rgba(142,104,32,.4)" strokeWidth={0.8} vectorEffect="non-scaling-stroke" transform={`translate(${ancho / 2} ${anclaY}) scale(${k}) translate(${-c.cx} ${-c.cy})`} />}
+          {tierra && <path d={tierra} fill="#FBF3E2" stroke="rgba(166,124,82,.4)" strokeWidth={0.8} vectorEffect="non-scaling-stroke" transform={`translate(${ancho / 2} ${anclaY}) scale(${k}) translate(${-c.cx} ${-c.cy})`} />}
           {pO && pD && pC && (
             <>
               <path d={`M${pO[0]} ${pO[1]}Q${pC[0]} ${pC[1]} ${pD[0]} ${pD[1]}`} fill="none" stroke={ORO_CLARO} strokeWidth={2} strokeDasharray="2 7" strokeLinecap="round" opacity={0.9} data-curva />
@@ -377,7 +380,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
           ))}
         </div>
         <h1 style={{ margin: '6px 0 0', font: `400 38px/1.02 ${SERIF}`, textWrap: 'balance', letterSpacing: 0 }}>
-          ¿De dónde sales y <em style={{ color: ORO_OSCURO }}>a dónde vas?</em>
+          ¿De dónde sales y <em style={{ color: ORO_TEXTO }}>a dónde vas?</em>
         </h1>
       </div>
 
@@ -404,14 +407,14 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
                   placeholder="tu@email.com"
                   aria-label="Tu email"
                   data-aviso-email
-                  style={{ flex: 1, minWidth: 0, height: 44, borderRadius: 12, border: '1px solid rgba(142,104,32,.35)', background: TARJETA, padding: '0 12px', color: TINTA, font: "400 14px 'Geist'", outline: 'none' }}
+                  style={{ flex: 1, minWidth: 0, height: 44, borderRadius: 12, border: '1px solid rgba(166,124,82,.35)', background: TARJETA, padding: '0 12px', color: TINTA, font: "400 14px 'Geist'", outline: 'none' }}
                 />
                 <button
                   type="button"
                   onClick={() => void mandarAviso()}
                   disabled={avisoDeEste?.estado === 'enviando'}
                   data-avisame
-                  style={{ height: 44, padding: '0 16px', borderRadius: 12, border: 0, background: ORO_OSCURO, color: TARJETA, font: "600 14px 'Geist'", cursor: 'pointer', opacity: avisoDeEste?.estado === 'enviando' ? 0.6 : 1 }}
+                  style={{ height: 44, padding: '0 16px', borderRadius: 12, border: 0, ...botonChampan(), font: "600 14px 'Geist'", cursor: 'pointer', opacity: avisoDeEste?.estado === 'enviando' ? 0.6 : 1 }}
                 >
                   Avísame
                 </button>
@@ -438,7 +441,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
               }}
               style={{ minHeight: 46, padding: '0 16px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(28,34,48,.07)', font: "500 15px 'Geist'", cursor: 'pointer' }}
             >
-              <span style={{ font: `500 12px ${MONO}`, letterSpacing: '.06em', color: ORO_OSCURO, width: 34 }}>{cityCode(lugar)}</span>
+              <span style={{ font: `500 12px ${MONO}`, letterSpacing: '.06em', color: ORO_TEXTO, width: 34 }}>{cityCode(lugar)}</span>
               <span style={{ flex: 1 }}>{lugar.name}</span>
               {lugar.countryCode ? (
                 <span role="img" aria-label={countryOf(lugar)} title={countryOf(lugar)} className={`fi fi-${lugar.countryCode.toLowerCase()}`} style={{ width: 28, height: 20, flex: 'none', borderRadius: 4, backgroundSize: 'cover', boxShadow: '0 0 0 1px rgba(28,34,48,.1)' }} />
@@ -452,7 +455,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
         </div>
       )}
 
-      <div style={{ position: 'absolute', left: 14, right: 14, bottom: 'max(26px, env(safe-area-inset-bottom))', padding: 14, borderRadius: 28, background: 'linear-gradient(180deg,rgba(255,253,248,.96),rgba(251,243,226,.94))', border: '1px solid #E4D2A4', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', flexDirection: 'column', gap: 10, boxShadow: '0 20px 40px -16px rgba(110,80,24,.4),inset 0 1px 0 rgba(255,255,255,.8)' }}>
+      <div style={{ position: 'absolute', left: 14, right: 14, bottom: 'max(26px, env(safe-area-inset-bottom))', padding: 14, borderRadius: 28, background: 'linear-gradient(180deg,rgba(255,253,248,.96),rgba(251,243,226,.94))', border: '1px solid #E4D2A4', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', flexDirection: 'column', gap: 10, boxShadow: '0 20px 40px -16px rgba(111,78,55,.4),inset 0 1px 0 rgba(255,255,255,.8)' }}>
         {/* (Tanda 10C: las fotos de los destinos curados van pegadas a la tarjeta de ORIGEN, 8 px por encima, no a una altura fija.) */}
         {foco === 'd' && coinciden.length > 0 && (
           <div className="trazo-noscroll" data-destinos-fila style={{ position: 'absolute', left: -14, right: -14, bottom: '100%', marginBottom: 8, padding: '0 18px', display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
@@ -525,7 +528,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
           data-trazar-ruta
           onClick={listo ? onNext : undefined}
           aria-disabled={!listo}
-          style={{ height: 54, borderRadius: 18, border: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', font: "600 16px 'Geist'", background: listo ? ORO_OSCURO : '#F1E8D4', color: listo ? TARJETA : 'rgba(28,34,48,.5)', cursor: listo ? 'pointer' : 'default' }}
+          style={{ height: 54, borderRadius: 18, border: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', font: "600 16px 'Geist'", ...(listo ? botonChampan() : { background: '#F1E8D4', color: 'rgba(28,34,48,.5)' }), cursor: listo ? 'pointer' : 'default' }}
         >
           Trazar ruta
         </button>

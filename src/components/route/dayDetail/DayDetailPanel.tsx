@@ -1356,7 +1356,7 @@ export function DayDetailPanel({
                 </p>
               )}
               {day.beyondAutoDays ? (
-                <button type="button" onClick={() => setExtraSheet(true)} className="flex h-12 w-full items-center justify-center rounded-2xl bg-text text-[14px] font-medium text-bg transition-transform active:scale-[.98]">
+                <button type="button" onClick={() => setExtraSheet(true)} className="flex h-12 w-full items-center justify-center rounded-2xl btn-champan text-[14px] font-medium transition-transform active:scale-[.98]">
                   Elegir mis sitios
                 </button>
               ) : (
@@ -1571,7 +1571,7 @@ export function DayDetailPanel({
                         setAddStopInitialQuery(rec.name)
                         setInsertAt(realStops.length)
                       }}
-                      className="mt-2 rounded-full bg-accent px-3 py-1.5 text-caption font-semibold text-white transition-colors hover:bg-accent-hover"
+                      className="mt-2 rounded-full btn-champan px-3 py-1.5 text-caption font-semibold transition-colors "
                     >
                       Añadir como parada
                     </button>

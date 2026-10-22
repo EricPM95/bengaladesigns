@@ -3,7 +3,7 @@ import type { DateRange, QuestionnaireAnswers } from '../../lib/types'
 import { seasonOfMonth } from '../../lib/season'
 import { daysBetweenInclusive, isoToLocalDate, localDateToIso } from '../../lib/dateRange'
 import { TrazoCalendar, CALENDAR_MAX_DAYS } from './TrazoCalendar'
-import { ACCENT, AMBER, Cta, Em, GhostButton, INK, MONO, SERIF, SEASON_FX, Sheet, Title } from './trazoUi'
+import { ACCENT, ACCENT_GRANDE, Cta, Em, GhostButton, INK, MONO, SERIF, SEASON_FX, Sheet, Title } from './trazoUi'
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -84,10 +84,10 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
           {/* Se pregunta por las noches; por dentro se guarda igual que siempre: `days` = noches + 1. */}
           <div data-cuantas-noches="1" style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
             {flexNights === 0 ? (
-              <span style={{ font: `400 34px/1 ${SERIF}`, color: ACCENT }}>Solo un día</span>
+              <span style={{ font: `400 34px/1 ${SERIF}`, color: ACCENT_GRANDE }}>Solo un día</span>
             ) : (
               <>
-                <span style={{ font: `400 84px/.8 ${SERIF}`, color: ACCENT }}>{flexNights}</span>
+                <span style={{ font: `400 84px/.8 ${SERIF}`, color: ACCENT_GRANDE }}>{flexNights}</span>
                 <span style={{ font: "400 15px 'Geist'", color: 'rgba(28,34,48,.75)' }}>{flexNights === 1 ? 'noche' : 'noches'}</span>
               </>
             )}
@@ -106,7 +106,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
                   height: 34,
                   border: 'none',
                   borderRadius: sel ? '50%' : 10,
-                  background: sel ? AMBER : under ? 'rgba(181,138,46,.16)' : 'rgba(28,34,48,.04)',
+                  background: sel ? INK : under ? 'rgba(166,124,82,.16)' : 'rgba(28,34,48,.04)',
                   color: sel ? '#FFFFFF' : INK,
                   font: `${sel ? 600 : 400} 14px 'Geist'`,
                   cursor: 'pointer',
@@ -129,7 +129,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
             width: '100%',
             border: 'none',
             borderRadius: 10,
-            background: flexNights === 0 ? AMBER : 'rgba(28,34,48,.04)',
+            background: flexNights === 0 ? INK : 'rgba(28,34,48,.04)',
             color: flexNights === 0 ? '#FFFFFF' : INK,
             font: `${flexNights === 0 ? 600 : 400} 14px 'Geist'`,
             cursor: 'pointer',
@@ -173,8 +173,8 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
                       style={{
                         height: 38,
                         borderRadius: 12,
-                        border: `1px solid ${active ? AMBER : 'rgba(28,34,48,.08)'}`,
-                        background: active ? AMBER : 'rgba(28,34,48,.04)',
+                        border: `1px solid ${active ? INK : 'rgba(28,34,48,.08)'}`,
+                        background: active ? INK : 'rgba(28,34,48,.04)',
                         color: active ? '#FFFFFF' : INK,
                         font: `${active ? 600 : 400} 14px 'Geist'`,
                         cursor: 'pointer',

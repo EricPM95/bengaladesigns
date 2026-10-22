@@ -40,7 +40,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="rounded-xl bg-accent px-5 py-2.5 text-body font-medium text-white transition-colors hover:bg-accent-hover"
+          className="rounded-xl btn-champan px-5 py-2.5 text-body font-medium transition-colors "
         >
           Volver al inicio
         </button>

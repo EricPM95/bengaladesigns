@@ -13,7 +13,7 @@ import { useSyncStore } from '../../store/useSyncStore'
 import { poolSelectionLimit } from '../questionnaire/CuratedPlacesPool'
 import { cityCode } from './cityCode'
 import { DECOR_ROUTES, LIGHTS, P, arcBetween, loadLand } from './worldMap'
-import { ACCENT, AMBER, INK, ORO_CLARO, SEASON_FX, SeasonFx, SERIF, MONO, THEME } from './trazoUi'
+import { ACCENT, ACCENT_GRANDE, AMBER, INK, ORO_CLARO, SEASON_FX, SeasonFx, SERIF, MONO, THEME } from './trazoUi'
 import { PrimeraPantalla } from './PrimeraPantalla'
 import { StepTransport } from './StepTransport'
 import { StepDates } from './StepDates'
@@ -339,7 +339,7 @@ export function TrazoFlow() {
             <span style={{ font: `500 10px/1 ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.62)' }}>{marca.lema}</span>
           </div>
           <h2 style={{ margin: 0, font: `400 50px/1 ${SERIF}`, letterSpacing: '-.01em', textWrap: 'balance' }}>
-            Tu viaje se construye <em style={{ color: ACCENT }}>mientras eliges.</em>
+            Tu viaje se construye <em style={{ color: ACCENT_GRANDE }}>mientras eliges.</em>
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {stepNames.map((name, i) => (
@@ -395,7 +395,7 @@ export function TrazoFlow() {
                 const [x, y] = P(la, lo)
                 return <circle key={`${la},${lo}`} cx={x} cy={y} r={1.1 / view.s} fill={THEME.dot} />
               })}
-              {arc && step === 0 && <path d={arc.full} fill="none" stroke="rgba(181,138,46,.4)" strokeWidth={1} strokeDasharray="2 5" vectorEffect="non-scaling-stroke" />}
+              {arc && step === 0 && <path d={arc.full} fill="none" stroke="rgba(166,124,82,.4)" strokeWidth={1} strokeDasharray="2 5" vectorEffect="non-scaling-stroke" />}
               {arc && arc.part && <path d={arc.part} fill="none" strokeWidth={2} strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ stroke: ACCENT }} />}
               {ends.map((end) => (
                 <g key={`${end.code}-${end.isD}`}>

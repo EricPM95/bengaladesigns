@@ -94,7 +94,7 @@ function OtraOpcion({ opcion, ultimo }: { opcion: FichaOpcion; ultimo: boolean }
 function Traslado({ texto, etiqueta, onReservar, mejor }: { texto: string; etiqueta: string; onReservar?: () => void; mejor?: boolean }) {
   return (
     <div data-ficha-traslado className="flex min-h-[96px] overflow-hidden rounded-[20px] border border-text/[.08] bg-white" style={{ boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 22px -18px rgba(28,34,48,.4)' }}>
-      <span className="flex w-[60px] flex-none items-center bg-accent pl-[13px] text-white" style={{ clipPath: 'polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)' }}>
+      <span className="flex w-[60px] flex-none items-center btn-champan pl-[13px] " style={{ clipPath: 'polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)' }}>
         <Icono nombre="coche" size={22} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-1.5 py-3 pl-1 pr-3.5">
@@ -107,7 +107,7 @@ function Traslado({ texto, etiqueta, onReservar, mejor }: { texto: string; etiqu
         <span className="text-[12px] leading-[1.45] text-text/65">{texto}</span>
         <span className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
           {onReservar && (
-            <button type="button" onClick={onReservar} className="h-8 whitespace-nowrap rounded-full bg-accent px-3.5 text-[12.5px] font-semibold text-white" style={{ boxShadow: '0 8px 16px -8px rgb(var(--accent))' }}>
+            <button type="button" onClick={onReservar} className="h-8 whitespace-nowrap rounded-full btn-champan px-3.5 text-[12.5px] font-semibold " style={{ boxShadow: '0 8px 16px -8px rgb(var(--accent))' }}>
               Reservar traslado
             </button>
           )}
@@ -187,7 +187,7 @@ export function FichaResumen({ ficha, onReservarTraslado, onExplorarRestaurantes
             <Icono nombre="comida" size={20} className="mt-px flex-none text-text/65" />
             <span className="text-[13px] leading-[1.5] text-text">{ficha.comida.texto}</span>
           </span>
-          <button type="button" onClick={onExplorarRestaurantes} className="h-10 self-start rounded-full bg-text px-4 text-[13px] font-semibold text-bg">
+          <button type="button" onClick={onExplorarRestaurantes} className="h-10 self-start rounded-full btn-champan px-4 text-[13px] font-semibold ">
             {ficha.comida.boton}
           </button>
         </div>

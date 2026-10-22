@@ -816,7 +816,7 @@ export function PlaceExplorerScreen({
               {titleMatch ? (
                 <>
                   {titleMatch[1]}
-                  <em className="text-accent">{titleMatch[2]}</em>
+                  <em className="text-accent-grande">{titleMatch[2]}</em>
                 </>
               ) : (
                 title
@@ -1454,7 +1454,7 @@ export function PlaceExplorerScreen({
               type="button"
               disabled={pickMode.selected.length === 0 || pickMode.busy}
               onClick={pickMode.onConfirm}
-              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-accent text-[15px] font-semibold text-white shadow-[0_10px_24px_-10px_rgba(28,34,48,.45)] transition-transform active:scale-[.98] disabled:opacity-45"
+              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full btn-champan text-[15px] font-semibold shadow-[0_10px_24px_-10px_rgba(28,34,48,.45)] transition-transform active:scale-[.98] disabled:opacity-45"
             >
               {pickMode.busy ? (
                 <>

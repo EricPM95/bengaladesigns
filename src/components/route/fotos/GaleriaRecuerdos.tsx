@@ -61,7 +61,7 @@ export function GaleriaRecuerdos() {
           </select>
         )}
         {dia && (
-          <BotonFoto dayId={dia.id} dayNumber={dia.dayNumber} etiqueta="Subir mis fotos" multiple className="inline-flex h-11 items-center rounded-full bg-text px-5 text-[14.5px] font-medium text-bg disabled:opacity-60">
+          <BotonFoto dayId={dia.id} dayNumber={dia.dayNumber} etiqueta="Subir mis fotos" multiple className="inline-flex h-11 items-center rounded-full btn-champan px-5 text-[14.5px] font-medium disabled:opacity-60">
             Subir mis fotos
           </BotonFoto>
         )}

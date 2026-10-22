@@ -13,7 +13,7 @@ import type { Coordinates } from './types'
 /** El icono de cada medio (nombres de `src/lib/iconos.ts`). El coche no lleva puntos. */
 export const ICONO_DEL_MEDIO: Record<ArrivalMode, NombreIcono | null> = { avion: 'avion', tren: 'tren', bus: 'bus', ferry: 'barco', coche: null }
 
-const ORO = '#8B6620'
+const ORO = '#A67C52'
 const MARFIL = '#FFFDF8'
 
 /** A partir de cuántos km el medio que se deduce de su origen es el avión (por debajo no se puede saber si va en tren, autobús o coche). */

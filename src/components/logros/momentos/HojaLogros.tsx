@@ -1,3 +1,4 @@
+import { botonChampan } from '../../../lib/marcaBoton'
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
@@ -86,7 +87,7 @@ export default function HojaLogros(): ReactNode {
         <span style={{ alignSelf: 'center', margin: '10px 0 2px', width: 42, height: 4, flex: 'none', borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
         <div style={{ flex: 'none', display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 10px 10px 20px' }}>
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {etiqueta && <span style={{ ...ETIQUETA, color: 'oklch(0.5 0.17 5)' }}>{etiqueta}</span>}
+            {etiqueta && <span style={{ ...ETIQUETA, color: '#6F4E37' }}>{etiqueta}</span>}
             <span style={{ font: "400 28px/1 'Instrument Serif',serif" }}>{estado?.ciudad ? `Tus logros en ${estado.ciudad}` : 'Tus logros'}</span>
           </span>
           <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ width: 48, height: 48, flex: 'none', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -110,7 +111,7 @@ export default function HojaLogros(): ReactNode {
               <Franja fase={fase} estado={estado} hayViaje={hayViaje} />
               {nuevas.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <span style={{ ...ETIQUETA, padding: '8px 4px 2px', display: 'flex', alignItems: 'center', gap: 8, color: 'oklch(0.48 0.17 5)' }}>
+                  <span style={{ ...ETIQUETA, padding: '8px 4px 2px', display: 'flex', alignItems: 'center', gap: 8, color: '#6F4E37' }}>
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: FRAMBUESA }} />
                     Lo nuevo de hoy
                   </span>
@@ -132,7 +133,7 @@ export default function HojaLogros(): ReactNode {
                     cerrar()
                     useMomentosUI.getState().abrirResumenViaje()
                   }}
-                  style={{ width: '100%', height: 50, marginTop: 4, border: 'none', borderRadius: 999, background: '#1C2230', color: '#FFFDF8', font: "700 14.5px 'Geist'", cursor: 'pointer' }}
+                  style={{ width: '100%', height: 50, marginTop: 4, border: 'none', borderRadius: 999, ...botonChampan(), font: "700 14.5px 'Geist'", cursor: 'pointer' }}
                 >
                   Ver el resumen del viaje
                 </button>
@@ -178,7 +179,7 @@ function Franja({ fase, estado, hayViaje }: { fase: FaseDelViaje; estado: Estado
   const verde = fase === 'antes'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 18, background: verde ? 'oklch(0.96 0.035 150)' : '#F5EFE4', border: `1px solid ${verde ? 'oklch(0.55 0.11 150 / .3)' : 'rgba(28,34,48,.08)'}` }}>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={verde ? 'oklch(0.42 0.09 150)' : 'oklch(0.5 0.17 5)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={verde ? 'oklch(0.42 0.09 150)' : '#A67C52'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden>
         <path d={verde ? ICONOS.ruta : 'M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8z'} />
       </svg>
       <span style={{ flex: 1, font: "500 13.5px/1.35 'Geist'", textWrap: 'pretty' as never }}>{texto}</span>
@@ -205,7 +206,7 @@ function FilaDeColeccion({ c, i, fase, ciudad, abierta, alternar, cerrarHoja }: 
     temporizador.current = window.setTimeout(() => setPieza(null), 2200)
   }
   return (
-    <div data-coleccion={c.id} style={{ borderRadius: 20, background: nuevo ? 'oklch(0.55 0.17 5 / .05)' : '#FFFFFF', border: `1px solid ${nuevo ? 'oklch(0.55 0.17 5 / .3)' : 'rgba(28,34,48,.07)'}`, animation: `moPop .4s ${(0.05 + i * 0.04).toFixed(2)}s ease both` }}>
+    <div data-coleccion={c.id} style={{ borderRadius: 20, background: nuevo ? 'rgba(166,124,82,.08)' : '#FFFFFF', border: `1px solid ${nuevo ? 'rgba(166,124,82,.35)' : 'rgba(28,34,48,.07)'}`, animation: `moPop .4s ${(0.05 + i * 0.04).toFixed(2)}s ease both` }}>
       <div onClick={puedeAbrir ? alternar : undefined} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px 10px 8px', cursor: puedeAbrir ? 'pointer' : 'default', minHeight: 64 }}>
         <span onClick={tocarInsignia} style={{ width: 64, height: 64, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Insignia coleccion={c.id} ganados={ganados} completa={c.completa} tam={64} />
@@ -225,7 +226,7 @@ function FilaDeColeccion({ c, i, fase, ciudad, abierta, alternar, cerrarHoja }: 
               </span>
             ) : (
               <>
-                {marca.texto && <span style={{ height: 22, padding: '0 8px', borderRadius: 999, background: nuevo ? 'oklch(0.55 0.17 5 / .12)' : verdeMarca ? 'oklch(0.96 0.035 150)' : '#F1EADC', color: nuevo ? 'oklch(0.48 0.17 5)' : 'oklch(0.38 0.1 150)', font: "600 11px/22px 'Geist'", whiteSpace: 'nowrap' }}>{marca.texto}</span>}
+                {marca.texto && <span style={{ height: 22, padding: '0 8px', borderRadius: 999, background: nuevo ? '#F1E3BF' : verdeMarca ? 'oklch(0.96 0.035 150)' : '#F1EADC', color: nuevo ? '#6F4E37' : 'oklch(0.38 0.1 150)', font: "600 11px/22px 'Geist'", whiteSpace: 'nowrap' }}>{marca.texto}</span>}
                 {marca.faltaParaOtroViaje && <span style={{ flex: 1, minWidth: 0, font: "500 12px/1.3 'Geist'", color: 'oklch(0.48 0.17 5)' }}>{marca.faltaParaOtroViaje}</span>}
               </>
             )}

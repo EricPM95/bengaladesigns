@@ -1,3 +1,4 @@
+import { botonChampan } from '../../lib/marcaBoton'
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Icono } from './Icono'
@@ -81,11 +82,11 @@ export function Hoja({
   )
 }
 
-/** Los botones de las hojas del diseño: principal (dorado), oscuro y secundario (borde). */
+/** Los botones de las hojas del diseño: principal y oscuro (los dos, en champán desde la Tanda 10E) y secundario (borde). */
 export function BotonHoja({ children, tipo = 'principal', onClick, disabled, datos, enviar = false }: { children: ReactNode; tipo?: 'principal' | 'oscuro' | 'secundario'; onClick?: () => void; disabled?: boolean; datos?: string; enviar?: boolean }) {
   const estilos = {
-    principal: { height: 54, background: 'oklch(0.8 0.14 70)', color: '#17120a', border: 'none', font: "700 15px 'Geist'" },
-    oscuro: { height: 54, background: '#1C2230', color: '#FFFDF8', border: 'none', font: "600 15px 'Geist'" },
+    principal: { height: 54, ...botonChampan(), border: 'none', font: "700 15px 'Geist'" },
+    oscuro: { height: 54, ...botonChampan(), border: 'none', font: "600 15px 'Geist'" },
     secundario: { height: 46, background: 'transparent', color: 'inherit', border: '1px solid rgba(128,128,128,.3)', font: "600 13.5px 'Geist'" },
   }[tipo]
   return (

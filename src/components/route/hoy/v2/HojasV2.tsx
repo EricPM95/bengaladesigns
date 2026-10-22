@@ -59,7 +59,7 @@ export function HojaQueHacemos({ nombre, horaReservada, dias, ahora, onSaltar, o
               {horaReservada ? 'Saltar igual' : 'No me da tiempo'}
             </button>
             {puedeMover && (
-              <button type="button" onClick={() => setPaso('b')} className="flex h-12 items-center justify-center gap-[7px] rounded-full bg-[#1C2230] text-[13.5px] font-semibold text-[#FFFDF8]">
+              <button type="button" onClick={() => setPaso('b')} className="flex h-12 items-center justify-center gap-[7px] rounded-full btn-champan text-[13.5px] font-semibold ">
                 <Icono nombre="dias" size={15} />
                 Pasarla a otro día
               </button>
@@ -106,7 +106,7 @@ export function HojaMasParaTuDia({ visitas, anadidas, onAnadir, onCerrar }: { vi
                   ✓ Añadida
                 </span>
               ) : (
-                <button type="button" onClick={() => onAnadir(v)} className="flex h-11 flex-none items-center gap-1.5 rounded-full bg-[#1C2230] pl-3 pr-3.5 text-[12.5px] font-semibold text-[#FFFDF8]">
+                <button type="button" onClick={() => onAnadir(v)} className="flex h-11 flex-none items-center gap-1.5 rounded-full btn-champan pl-3 pr-3.5 text-[12.5px] font-semibold ">
                   <Icono nombre="anadir" size={12} grosor={2.4} />
                   Añadir
                 </button>

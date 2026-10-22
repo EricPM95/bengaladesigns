@@ -14,12 +14,13 @@
      pestañas y marcas. Cada variable es un triplete RGB "R G B" (sin rgb() ni comas) para que Tailwind pueda aplicar modificadores de opacidad (bg-accent/10, etc.) vía
      rgb(var(--x) / <alpha-value>).
        --bg #F6EFE0 (crema) · --bg-card #FFFDF8 (tarjeta) · --text #1C2230 (tinta) · marfil #FBF3E2 (hojas desde abajo y apertura: se escribe donde se usa)
-       --accent        = oro oscuro  #8B6620 -> 139 102 32 (el #8E6820 de Design, oscurecido lo justo: sobre el crema daba 4,42 y así da 4,56)  (relleno de botones con texto blanco, pestañitas, bordes, «+», texto en oro)
-       --accent-hover  = oro profundo #6E5018 -> 110 80 24  (botón pulsado y TEXTO pequeño en oro sobre fondo suave o marfil)
+       --accent        = oro oscuro  #A67C52 -> 166 124 82  (Tanda 10E: rellenos sin texto pequeño encima, bordes, iconos, líneas y TÍTULOS de 18 px o más; sobre el crema da 3,26: no llega a 4,5)
+       --accent-texto  = oro profundo #6F4E37 -> 111 78 55  (TODO el texto pequeño en oro: lo pide `text-accent` por el tailwind.config.ts; 6,5 sobre el crema)
+       --accent-hover  = oro profundo #6F4E37 -> 111 78 55  (botón pulsado y TEXTO pequeño en oro sobre fondo suave o marfil)
        --accent-warm   = igual que accent-hover (el énfasis: marcador activo, pastillas «warm»)
        --accent-soft   = oro suave #F1E3BF -> 241 227 191   (fondo de pastillas y filas elegidas)
-       --border-accent = el oro oscuro al 40 % sobre la tarjeta -> 210 193 162
-       --oro           = oro claro   #B58A2E -> 181 138 46  (SOLO líneas, pines, iconos grandes, rutas de puntos y brillos: nunca texto pequeño)
+       --border-accent = el oro oscuro al 35 % sobre el crema -> 218 199 174
+       --oro           = oro claro   #D8B98E -> 216 185 142 (SOLO líneas, pines, iconos grandes, rutas de puntos y brillos: nunca texto pequeño)
      Contraste WCAG (luminancia relativa, (L1+0,05)/(L2+0,05)), medido en scripts/destino/pruebaJutrip.mjs:
        blanco sobre accent ........ ≥ 4,5 (botones con texto blanco)
        accent y accent-hover como TEXTO sobre crema y sobre la tarjeta ≥ 4,5 (el texto normal) y ≥ 3 en los títulos grandes
@@ -31,14 +32,15 @@
   --bg: 246 239 224;
   --bg-card: 255 253 248;
   --bg-hover: 238 230 213;
-  --accent: 139 102 32;
-  --accent-hover: 110 80 24;
+  --accent: 166 124 82;
+  --accent-texto: 111 78 55;
+  --accent-hover: 111 78 55;
   --accent-soft: 241 227 191;
-  --accent-warm: 110 80 24;
+  --accent-warm: 111 78 55;
   --accent-gold: 236 150 40;
   --accent-red: 204 39 46;
   --accent-lilac: 236 226 250;
-  --oro: 181 138 46;
+  --oro: 216 185 142;
   --frambuesa: 189 57 100;
   --frambuesa-hover: 172 40 86;
   --frambuesa-soft: 247 229 230;
@@ -63,7 +65,7 @@
   --text-soft: 106 108 114;
   --text-muted: 150 146 139;
   --border: 223 218 210;
-  --border-accent: 210 193 162;
+  --border-accent: 218 199 174;
   /* El fondo de las tarjetas de llegada y vuelta (el billete y la barra «+ Vuelo»): un azul muy claro que se funde con la tarjeta. */
   --fondo-llegada: linear-gradient(100deg, oklch(0.97 0.03 230), #ffffff 60%);
 }
@@ -302,3 +304,20 @@ body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
 /* Quien mira el viaje de otra persona (cuentas parte 3): fuera del modo recomendación las herramientas de editar (asas, «+ Añadir parada», «+ Añadir día», la varita) no se ofrecen.
    PropuestaHost pone `data-solo-ver` en <html> mientras toque. */
 html[data-solo-ver] [data-edit-tool] { display: none !important; }
+
+/* TANDA 10E · EL BOTÓN PRINCIPAL, CHAMPÁN («Marca JUTRIP 02»: Continuar, Comprar, Cómo llegar): degradado del marfil #FBF3E2 al champán #EBD9AE, la letra en el oro profundo #6F4E37, su brillo de arriba
+   y su sombra. Es el estilo de TODOS los botones principales de la app (en React, con inline style, vive igual en `botonChampan()` de src/lib/marcaBoton.ts). Con `.btn-champan` no hace falta `text-white`. */
+.btn-champan {
+  background-image: linear-gradient(180deg, #FBF3E2 0%, #EBD9AE 100%);
+  color: #6F4E37;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 8px 14px -8px rgba(111, 78, 55, 0.45);
+}
+.btn-champan:active:not(:disabled) {
+  background-image: linear-gradient(180deg, #F3E6C6 0%, #E0CB98 100%);
+}
+/* Sobre un panel oscuro (tinta): el borde y la letra en oro pálido, como «Cómo llegar» en 03 · HOY. */
+.btn-champan-oscuro {
+  background-color: transparent;
+  border: 1px solid #E9C77A;
+  color: #E9C77A;
+}

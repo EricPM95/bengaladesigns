@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { botonChampan } from '../../../../lib/marcaBoton'
 import { daysBetweenInclusive, todayIso } from '../../../../lib/dateRange'
 import { textoDeFotos, type ResumenViaje } from '../../../../lib/viajesPerfil'
 import { Icono } from '../../../ui/Icono'
@@ -30,8 +31,8 @@ export function TarjetaDeViaje({ viaje, fotos, enCurso, abierto, onAbrir, onAbri
     <div style={{ position: 'relative', flex: 'none', height: enCurso ? 176 : 132, borderRadius: 22, overflow: 'hidden', background: degradadoDe(viaje.destino), color: '#FFFDF8', boxShadow: enCurso ? '0 18px 30px -18px rgba(90,40,20,.7)' : 'none' }}>
       <button type="button" onClick={onAbrir} data-viaje-del-perfil={viaje.id} aria-label={`${viaje.destino}, ${fechas}`} style={{ position: 'absolute', inset: 0, width: '100%', border: 'none', padding: 0, background: 'linear-gradient(180deg,rgba(10,12,20,.1) 20%,rgba(10,12,20,.72))', cursor: 'pointer' }} />
       {(diaN !== null || abierto) && (
-        <span style={{ position: 'absolute', right: 12, top: 12, height: 24, padding: '0 9px', borderRadius: 999, background: 'oklch(0.55 0.17 5)', display: 'flex', alignItems: 'center', gap: 6, font: "600 11px 'Geist'", pointerEvents: 'none' }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFDF8' }} />
+        <span style={{ position: 'absolute', right: 12, top: 12, height: 24, padding: '0 9px', borderRadius: 999, ...botonChampan(), display: 'flex', alignItems: 'center', gap: 6, font: "600 11px 'Geist'", pointerEvents: 'none' }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#A67C52' }} />
           {diaN !== null && viaje.dias > 0 ? `Día ${Math.min(diaN, viaje.dias)} de ${viaje.dias}` : 'Abierto'}
         </span>
       )}
