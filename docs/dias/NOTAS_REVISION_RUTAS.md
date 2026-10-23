@@ -220,8 +220,8 @@ Página: docs/dias/RUTAS_REVISION_LARGOS.html (210 rutas). Informe: docs/dias/IN
   - 6 días: día 6 en blanco (con excursión el día 4: + Basílicas y el Aventino + la Vía Appia; así no queda ninguno en blanco).
 - **Sin la rama de Naturaleza y Vistas:** con Naturaleza y Vistas, la Cúpula ya va en el día del Vaticano (puntos 1 y 2).
 - **Si un cierre no deja la Vía Appia en su día** (las Catacumbas cierran los miércoles…), se cambia con Basílicas y el Aventino, nunca con los tres primeros, para que el día en blanco quede siempre después de los 5 días de Roma (si fuera antes, «Ya has visto lo mejor de Roma» no sería verdad). Solo si tampoco se puede, con el día en blanco.
-- **El día en blanco es el mismo del 7.º en adelante (Eric, 22-oct):** la hoja «Ya has visto lo mejor de Roma» («A partir de aquí, el viaje lo eliges tú: te enseñamos los sitios que aún no has visto para que montes cada día a tu gusto») con [Elegir mis sitios]; debajo, pequeño, «¿Te lo organizamos? Roma desde arriba».
-- **Roma desde arriba (D6) no se borra:** se queda en los datos. Propuesta de Claude para el día en blanco: además de [+ Añadir parada] y la excursión sugerida, «¿Te lo organizamos?» con un día de miradores ya montado (Roma desde arriba) que el viajero elige si quiere, como el «Organízame este día» que ya tiene Design para el día de excursión. Así el día en blanco no queda vacío y no se repite nada sin que él lo pida.
+- **El día en blanco es el mismo del 7.º en adelante (Eric, 22-oct):** la hoja «Ya has visto lo mejor de Roma» («A partir de aquí, el viaje lo eliges tú: te enseñamos los sitios que aún no has visto para que montes cada día a tu gusto») con [Elegir mis sitios].
+- **Roma desde arriba (D6) no se borra:** se queda en los datos, sin salir. Roma desde arriba no se ofrece en el día en blanco (Eric, 22-oct).
 
 ## C9. La Cúpula de San Pedro: parada solo con Naturaleza y Vistas · DECIDIDO (Eric, 22-oct)
 - Con **Naturaleza y Vistas**, la Cúpula va como parada en el día del Vaticano («Cúpula de San Pedro y Basílica por dentro», puntos 1 y 2).

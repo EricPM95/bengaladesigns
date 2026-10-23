@@ -20,9 +20,12 @@ const PESO_CIERRE_POR_NIVEL = { 1: 10000, 2: 100 }
 // Tanda 11 (puntos 8-11, decidido por Eric el 21-oct): un cierre que el día ya resuelve con su versión de ese día (la Galería Borghese el lunes, Caracalla el lunes) o una parada que se ve por fuera
 // (el Castillo, el Tempietto) pesan POCO: no mueven el día del Vaticano; y el Vaticano no va el último día si hay otro orden que vale (primero los cierres, luego esto, luego la Roma antigua el día 1).
 const COSTE_CIERRE_CON_VERSION = 1
-const COSTE_CIERRE_POR_FUERA = 15
+// (Menos que mover un día un solo sitio de la tabla —1 por día—: un cierre que se ve por fuera nunca decide el orden por sí solo, solo desempata. 11B, 22-oct: con 15 el Vaticano se quedaba en sábado y la Roma antigua y la Galería se movían por el Castillo cerrado el lunes.)
+const COSTE_CIERRE_POR_FUERA = 0.5
 const COSTE_VATICANO_ULTIMO = 150
 const CIERRA_EL_VATICANO = 'Museos Vaticanos y Capilla Sixtina'
+// (11B, C8: los días que se añaden van los últimos; pesa menos que un cierre entero —la Galería el lunes: 1.400— y más que cualquier desplazamiento.)
+const COSTE_ANADIDO_FUERA_DE_SU_SITIO = 500
 // Hasta cuántos días libres se prueban TODOS los órdenes (8! = 40.320); con más, se mejora el orden de la tabla cambiando los días de dos en dos.
 const MAX_DIAS_TODOS_LOS_ORDENES = 8
 
@@ -219,8 +222,11 @@ export function ordenarDias(env) {
     const mejorOrden = (fijosDe, referencia) => {
       const libres = chosen.filter((id) => ![...fijosDe.values()].includes(id))
       const completo = (perm) => { let k = 0; return chosen.map((_, index) => (fijosDe.has(index) ? fijosDe.get(index) : perm[k++])) }
+      const anadidos = new Set(destData.curated_routes?.dias_que_se_anaden ?? [])
+      const kAnadidos = chosen.filter((id) => anadidos.has(id)).length
       const costeDe = (candidate) => {
         let cost = 0
+        if (kAnadidos > 0 && kAnadidos < chosen.length) cost += COSTE_ANADIDO_FUERA_DE_SU_SITIO * candidate.slice(candidate.length - kAnadidos).filter((id) => !anadidos.has(id)).length
         candidate.forEach((id, index) => {
           cost += fixedCost.get(id)[index]
           cost += Math.abs(index - referencia.indexOf(id))

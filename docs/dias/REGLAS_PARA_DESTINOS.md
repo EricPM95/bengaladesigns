@@ -10,7 +10,7 @@ Sacadas de la revisión de rutas de Roma (Eric y Claude, 20-21 oct 2026). Valen 
 ## 2. El orden de los días (días enteros)
 - **El imprescindible más fuerte, el primer día**, para que se vea nada más abrir la ruta (Roma: Roma antigua, con el Coliseo).
 - **El día más rígido, en el medio** (el que es más largo, va con entrada a hora fija y tiene más días malos; Roma: el Vaticano).
-- **Al final, el día que se añade con cada día de viaje**, porque se puede partir y recortar según el vuelo (Roma: 4 días, Basílicas y Aventino; 5, Roma desde arriba; 6, la Vía Appia el penúltimo y Roma desde arriba el último). Lo que se añade después de los 3 primeros días es importante, pero menos: es lo que se recorta.
+- **Al final, el día que se añade con cada día de viaje**, porque se puede partir y recortar según el vuelo (Roma: 4 días, Basílicas y Aventino; 5, la Vía Appia; el 6.º día, en blanco. Roma desde arriba no se ofrece en el día en blanco, Eric, 22-oct). Lo que se añade después de los 3 primeros días es importante, pero menos: es lo que se recorta.
 - **Si las reglas chocan:** primero los cierres; luego, que el día más rígido no vaya el último; luego, el imprescindible fuerte el día 1.
 - **Al elegir el día, se cuentan los cierres de todas las paradas del día**, no solo el de la principal. Pero un cierre que se ve igual por fuera (el Castillo de Sant'Angelo) pesa poco; lo que pesa es lo que se visita por dentro y lo que el viajero ha reservado.
 - **Un día con versión para ese día de la semana** (por ejemplo, «lunes sin Caracalla») no cuenta como día malo.

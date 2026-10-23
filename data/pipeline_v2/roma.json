@@ -6022,6 +6022,10 @@
       ],
       "level": 3,
       "type": "exterior",
+      "schedule": "09:00-18:00",
+      "windows": ["09:00-18:00"],
+      "closed_on": [],
+      "horario_orientativo": "Horario orientativo (11B, 22-oct-2026): las fuentes no coinciden —italia.it: todos los días de 7:00 a 19:00; museionline.info: todos los días de 9:00 a 18:00; turismoroma.it solo trae las misas—. Se pone lo que cumplen las dos: todos los días de 9:00 a 18:00.",
       "tags": [
         "mercadillo_navideno"
       ],
@@ -13873,6 +13877,8 @@
   "curated_routes": {
     "_nota_galeria": "con_galeria si hay pool o Arte, o si el viaje tiene 4 días o más (tope de museos de pago: 1).",
     "_nota": "Las 12 rutas de Roma (2026-09-27): qué días van, por días de ciudad (sin la excursión) y con o sin Free Tour. Una entrada con \"con_galeria\"/\"sin_galeria\" se decide por el pool o Arte (en 3 días el tope de museos de pago no deja la Galería sola). El motor ordena los días como hasta ahora (cierres, joyas primero) y aplica variantes, ritmo, pool y tope de museos.",
+    "dias_que_se_anaden": ["D5", "D7"],
+    "_dias_que_se_anaden": "11B (C8, Eric 21/22-oct): los días que se añaden con cada día de viaje (Basílicas y el Aventino, la Vía Appia) van siempre los últimos; si un cierre no deja la Vía Appia en su día, se cambia con las basílicas, nunca con los tres primeros.",
     "cierre_resuelto_por_version": ["Termas de Caracalla"],
     "_cierre_resuelto_por_version": "Tanda 11 (punto 8, Eric 21-oct): los sitios cuyo cierre el día resuelve con su versión de ese día de la semana (Caracalla el lunes en D5) no cuentan como día malo. La Galería Borghese NO está: sin ella el D4 pierde su centro y vale cambiar de día.",
     "por_dias_ciudad": {

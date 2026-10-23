@@ -8,6 +8,7 @@
 // Hace falta el servidor de la app (npm run server) y `npm run dev`. Escribe docs/dias/RUTAS_REVISION.json (una fila por parada) y docs/dias/RUTAS_REVISION.html (la página, con los datos dentro).
 import { spawn } from 'node:child_process'
 import fs from 'node:fs'
+import { execFileSync } from 'node:child_process'
 import os from 'node:os'
 import path from 'node:path'
 import { prepararSSR } from './_ssr.mjs'
@@ -100,17 +101,41 @@ if (!parte) {
   }
   // «Qué ha cambiado» (Tanda 11): cada ruta contra la misma ruta de la pasada anterior (el JSON de antes de esta pasada), con las etiquetas del selector de la página.
   {
-    const rutaAntes = LARGOS ? 'scripts/destino/_rutasRevisionLargosViajes.json' : 'scripts/destino/_rutasRevisionViajes.json'
+    // (11B: se compara con la página de ANTES de la Tanda 11, sacada de git —126: b7b05999; 210: 1d86c9fb, el último commit antes de la Tanda 11—, no con la pasada anterior.)
+    const COMMIT_ANTES = LARGOS ? '1d86c9fb' : 'b7b05999'
     let anteriores = new Map()
-    try { anteriores = new Map(JSON.parse(fs.readFileSync(rutaAntes, 'utf8')).viajes.map((v) => [clave(v), v])) } catch { /* sin pasada anterior: todo es nuevo */ }
+    try {
+      const filasAntes = JSON.parse(execFileSync('git', ['show', `${COMMIT_ANTES}:docs/dias/${LARGOS ? 'RUTAS_REVISION_LARGOS' : 'RUTAS_REVISION'}.json`], { maxBuffer: 1 << 28, encoding: 'utf8' })).filas
+      for (const f of filasAntes) {
+        const k = clave({ n: f.dias_del_viaje, dia4: f.dia_4, combo: f.combinacion, inicio: f.inicio })
+        if (!anteriores.has(k)) anteriores.set(k, { dias: [] })
+        const ruta = anteriores.get(k)
+        let d = ruta.dias.find((x) => x.numero === f.dia)
+        if (!d) { d = { numero: f.dia, nombre: f.nombre_del_dia, escrito: f.nombre_del_dia, paradas: [] }; ruta.dias.push(d) }
+        d.paradas.push({ tipo: f.tipo, nombre_app: f.nombre_app, avisos: f.avisos ?? [] })
+      }
+    } catch (e) { console.error('No he podido leer la página de antes (' + COMMIT_ANTES + '): todo saldrá como nuevo.', e.message) }
     const nombres = (d) => d.paradas.filter((p) => ['parada', 'noche', 'free_tour', 'pausa'].includes(p.tipo)).map((p) => p.nombre_app)
-    const avisosDe = (d) => d.paradas.flatMap((p) => (p.avisos ?? []).map((a) => p.nombre_app + ': ' + a))
+    // Los avisos se comparan por CLASE, no por texto: lo que cambia es que salga o se vaya un aviso, no cómo está escrito (Reserva…, cierre…, abre…, última entrada…).
+    const quitaAcentos = (t) => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    const claseDe = (a) => {
+      const t = quitaAcentos(a)
+      if (/^reserva/.test(t)) return 'reserva'
+      if (/cerrad|cierra/.test(t)) return 'cierre'
+      if (/^por fuera/.test(t)) return 'por fuera'
+      if (/ultima entrada/.test(t)) return 'última entrada'
+      if (/abre a las|aun no ha abierto|no abre/.test(t)) return 'abre más tarde'
+      if (/gratis|cuesta|tarjeta|se paga/.test(t)) return 'pago'
+      return t.replace(/[^a-z0-9 ]/g, '').slice(0, 40)
+    }
+    const clasesDe = (p) => new Set((p.avisos ?? []).map(claseDe))
     for (const v of viajes) {
       const antes = anteriores.get(clave(v))
       const etiquetas = new Set()
       const detalle = []
       if (!antes) { etiquetas.add('nueva'); detalle.push('Ruta nueva en la página') } else {
-        if (v.dias.map((d) => d.nombre).join('|') !== antes.dias.map((d) => d.nombre).join('|')) { etiquetas.add('orden_dias'); detalle.push('El orden o los nombres de los días: ' + antes.dias.map((d) => d.nombre).join(' · ') + ' → ' + v.dias.map((d) => d.nombre).join(' · ')) }
+        // (El día se identifica por su nombre ESCRITO, no por el título de la app: cambiar cómo se llama un día no es cambiar el orden.)
+        if (v.dias.map((d) => d.nombre_escrito ?? d.nombre).join('|') !== antes.dias.map((d) => d.escrito ?? d.nombre).join('|')) { etiquetas.add('orden_dias'); detalle.push('El orden de los días: ' + antes.dias.map((d) => d.escrito ?? d.nombre).join(' · ') + ' → ' + v.dias.map((d) => d.nombre_escrito ?? d.nombre).join(' · ')) }
         v.dias.forEach((d, i) => {
           const a = antes.dias[i]
           if (!a) return
@@ -118,8 +143,16 @@ if (!parte) {
           const entran = nuevos.filter((n) => !viejos.includes(n)), salen = viejos.filter((n) => !nuevos.includes(n))
           if (entran.length || salen.length) { etiquetas.add('paradas'); detalle.push('Día ' + d.numero + ': ' + [entran.length ? 'entra ' + entran.join(', ') : '', salen.length ? 'sale ' + salen.join(', ') : ''].filter(Boolean).join(' · ')) }
           else if (nuevos.join('|') !== viejos.join('|')) { etiquetas.add('orden_paradas'); detalle.push('Día ' + d.numero + ': las mismas paradas, en otro orden') }
-          const avN = avisosDe(d), avV = avisosDe(a)
-          if (avN.join('|') !== avV.join('|')) { etiquetas.add('avisos'); detalle.push('Día ' + d.numero + ': cambian los avisos (' + avV.length + ' → ' + avN.length + ')') }
+          // (Solo las paradas que están en los dos lados: si la parada entra o sale ya se cuenta arriba.)
+          const cambiosAvisos = []
+          for (const p of d.paradas) {
+            const q = a.paradas.find((x) => x.nombre_app === p.nombre_app && x.tipo === p.tipo)
+            if (!q) continue
+            const nuevosC = clasesDe(p), viejosC = clasesDe(q)
+            const salenC = [...viejosC].filter((c) => !nuevosC.has(c)), entranC = [...nuevosC].filter((c) => !viejosC.has(c))
+            if (salenC.length || entranC.length) cambiosAvisos.push(p.nombre_app + ': ' + [entranC.length ? 'sale un aviso nuevo (' + entranC.join(', ') + ')' : '', salenC.length ? 'se va un aviso (' + salenC.join(', ') + ')' : ''].filter(Boolean).join(' · '))
+          }
+          if (cambiosAvisos.length) { etiquetas.add('avisos'); detalle.push('Día ' + d.numero + ': ' + cambiosAvisos.join(' | ')) }
           if (d.paradas.some((p) => p.tipo === 'noche') && d.paradas.filter((p) => p.tipo === 'noche').map((p) => p.nombre_app).join('|') !== a.paradas.filter((p) => p.tipo === 'noche').map((p) => p.nombre_app).join('|')) etiquetas.add('noche')
         })
         if (etiquetas.size === 0) etiquetas.add('sin_cambios')

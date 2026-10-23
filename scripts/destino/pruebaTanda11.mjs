@@ -197,6 +197,31 @@ debe(!roma.curated_routes.por_dias_ciudad['5'].sin_free_tour.includes('D6') && r
 for (const v of largas.filter((x) => x.n >= 5)) for (const d of v.dias) if (/Vía Appia/.test(d.nombre_escrito ?? '')) debe(/Vía Appia/.test(d.nombre), 'nombres', `${nombreRuta(v)}: el día de la Vía Appia se llama «${d.nombre}»`)
 for (const v of todas) for (const d of v.dias) if (/basílicas y el Aventino/i.test(d.nombre_escrito ?? '')) debe(/^Basílicas y el Aventino$/.test(d.nombre), 'nombres', `${nombreRuta(v)}: el día de las basílicas se llama «${d.nombre}»`)
 
+// ── 11B · la Galería Borghese nunca cae en lunes en los viajes de 3 a 6 días que empiezan en sábado o domingo ─────────────────────────────────
+// (Hay siempre otro orden que cumple las reglas: Roma antigua, Villa Borghese (sábado o domingo), Vaticano en medio —no el último—, Basílicas al final.)
+const semanaDeFecha = (iso) => ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][new Date(`${iso}T12:00:00Z`).getUTCDay()]
+for (const v of todas.filter((x) => x.n >= 3 && ['sábado', 'domingo'].includes(x.dia_semana_inicio))) for (const d of v.dias) {
+  const g = d.paradas.find((p) => p.nombre_app === 'Galería Borghese')
+  if (!g) continue
+  debe(semanaDeFecha(d.fecha) !== 'lunes' && !(g.marcas ?? []).includes('cerrada') && !(g.avisos ?? []).includes('Cerrado este día'), '11B', `${nombreRuta(v)} (empieza el ${v.dia_semana_inicio}): la Galería Borghese cae el ${semanaDeFecha(d.fecha)} ${d.fecha} y está cerrada`)
+}
+{
+  // El ejemplo de Eric: 4 días desde el sábado 14-nov-2026 (A): sábado Roma antigua, domingo Villa Borghese, lunes Vaticano, martes Basílicas.
+  const v = cortas.find((x) => x.n === 4 && x.combo === 'A' && x.inicio === '2026-11-14')
+  const orden = v?.dias.map((d) => d.nombre_escrito).join(' | ')
+  debe(Boolean(v) && /Roma antigua/.test(v.dias[0].nombre_escrito) && /Villa Borghese/.test(v.dias[1].nombre_escrito) && /Vaticano/.test(v.dias[2].nombre_escrito) && /basílicas/i.test(v.dias[3].nombre_escrito), '11B', `4 días A desde el sábado 14: el orden es ${orden}`)
+}
+// Aracoeli: todos los días de 9:00 a 18:00, con su nota de horario orientativo.
+{
+  const a = roma.places.find((p) => p.name === 'Santo Bambino de Aracoeli')
+  debe(a?.schedule === '09:00-18:00' && (a.closed_on ?? []).length === 0 && /orientativo/i.test(a.horario_orientativo ?? ''), '11B', 'Aracoeli: 9:00-18:00 todos los días con la nota «horario orientativo»')
+}
+// Roma desde arriba no se ofrece en el día en blanco.
+{
+  const notas = fs.readFileSync('docs/dias/NOTAS_REVISION_RUTAS.md', 'utf8')
+  debe(!/Te lo organizamos\? Roma desde arriba»\./.test(notas) && /Roma desde arriba no se ofrece en el día en blanco \(Eric, 22-oct\)/.test(notas), '11B', 'NOTAS_REVISION_RUTAS.md aún propone «¿Te lo organizamos?»')
+}
+
 console.log(`${comprobaciones} comprobaciones · ${fallos.length} fallos`)
 const porPunto = new Map()
 for (const f of fallos) porPunto.set(f.punto, (porPunto.get(f.punto) ?? 0) + 1)

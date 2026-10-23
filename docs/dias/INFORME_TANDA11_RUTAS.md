@@ -70,3 +70,53 @@ Hecho sin preguntar a Eric (estaba fuera): donde algo no estaba claro he tomado 
 8. **El día de excursión sale sin nada en la página** (126 rutas); en la app lleva su tarjeta.
 9. **64 rutas con un día que acaba tarde** (22:45 o más).
 10. **Con la Vía Appia el martes y las basílicas el miércoles (6 días desde el sábado)**: es el cambio por el cierre de las Catacumbas del miércoles, pero se ve raro que la Vía Appia vaya antes que las basílicas.
+
+---
+
+# 11B · tres arreglos de la Tanda 11 (22/23-oct-2026)
+
+Prompt guardado tal cual en `docs/dias/PROMPT_TANDA11B.md`.
+
+## 1. La Galería Borghese cerrada en lunes — por qué pasaba
+
+**No era lo que pensaba Claude** (que el motor tratara la Galería como algo «que se ve por fuera»): en el motor la Galería se visita por dentro y su cierre pesa **entero** (1.000 por «mala fecha del documento» + 300 por el cierre + 100 por ser de nivel 2 = 1.400 al ponerla en lunes). Lo comprobé imprimiendo la tabla de costes del orden: D4 en lunes costaba 1.400.
+
+Eran **dos fallos míos de la Tanda 11**, uno detrás de otro:
+
+1. **Las páginas publicadas se sacaron con un motor intermedio.** Para cumplir «un día con versión para ese día de la semana no cuenta como malo» (punto 8) dejé que *cualquier* cierre con versión del día pesara 1: eso incluía la Galería (el D4 tiene una versión «sin Galería» para los lunes). Con esa regla ancha la Galería en lunes costaba 1 y el motor la dejaba caer en lunes en 42 rutas de las 210 (15 de las 126). Las 365 fechas lo pillaron después (`p2_habia_otro_dia`) y limité la exención a **Caracalla** en el D5 (que es lo que decidió Eric), pero **no volví a sacar las páginas**: las que se publicaron seguían con el fallo. Esa es la causa de los «Cerrado este día / No hay otro día de tu viaje en que se pueda ir» que ha visto Eric.
+2. **Tras arreglar eso, el Vaticano seguía en sábado en el ejemplo (4 días desde el sábado 14-nov).** Aquí sí había un peso mal puesto: el Castillo cerrado el lunes (se ve por fuera) pesaba **15**, más que mover un día un puesto (1-2 por día), así que bastaba el Castillo para que el Vaticano no fuese al lunes y la Roma antigua y Villa Borghese se movieran. Eric dijo que un cierre que se ve por fuera «pesa poco»: ahora pesa **0,5** (solo desempata, nunca decide).
+
+## 2. Reglas cambiadas
+
+- `COSTE_CIERRE_POR_FUERA`: 15 → **0,5** (`shared/routeEngine/listasOrden.js`). «Pesa poco» pasa a ser «menos que mover un día un puesto».
+- **La exención por versión es un dato, no una norma general**: `curated_routes.cierre_resuelto_por_version` (hoy solo «Termas de Caracalla»). Un museo, galería o sitio con entrada que se visita por dentro (Galería Borghese, Museos Vaticanos, Catacumbas, Villa Farnesina…) cuenta **siempre como cierre entero** al elegir el orden, aunque al lado haya un parque o una plaza abiertos.
+- **Los días que se añaden van los últimos** (C8): nuevo dato `curated_routes.dias_que_se_anaden` (D5, D7) y coste 500 si uno no está en las últimas posiciones. Hace falta porque, al dejar de caer la Galería en lunes, el motor colocó la Vía Appia en el medio en los viajes de 5 y 6 días con Free Tour desde el sábado; con la regla la Vía Appia y las basílicas son los dos últimos y, si las Catacumbas cierran (miércoles), se cambian entre sí. 500 queda por debajo de un cierre entero (la Galería en lunes, 1.400) y por encima de cualquier desplazamiento.
+
+## 3. Cuántas rutas cambian
+
+- Respecto a las páginas publicadas en la Tanda 11: **27 de las 126** y **69 de las 210** cambian el orden de los días.
+- Galería Borghese cerrada: **15 → 0** (126) y **42 → 0** (210). La marca «cerrada» de las páginas es **0 en las dos**.
+- Siguen con algo cerrado: **ninguna** ruta de las 336 tiene una parada marcada como cerrada. Lo que sigue cerrado «a propósito» y se ve por fuera (el Castillo y el Tempietto los lunes) sale con **un solo aviso** y no cuenta como cierre.
+- Ejemplo de Eric, 4 días A desde el sábado 14-nov: **sábado Roma antigua, domingo Villa Borghese, lunes Vaticano, martes Basílicas** (lo comprueba la prueba nueva).
+
+## 4. ¿Otros sitios como este?
+
+He recorrido todo lo que los días escritos llevan «por fuera» por defecto: el único que cierra un día de la semana es el **Castillo de Sant'Angelo** (lunes), y es el que *debe* pesar poco. El Tempietto cierra los lunes pero va por dentro con su alternativa («El mirador»). Los demás por fuera (Altar de la Patria, Foro, Coliseo, Panteón…) no tienen cierre semanal. La **única excepción** a «cierre entero» es **Caracalla en el D5** (por decisión de Eric en el punto 8, porque el D5 tiene versión de lunes). Si Eric prefiere que Caracalla también cuente entera, se quita de `cierre_resuelto_por_version` y el D5 dejará de caer en lunes cuando haya otro orden.
+
+## 5. «Qué ha cambiado» rehecho
+
+Las dos páginas comparan ahora con la de **antes de la Tanda 11** (126: commit `b7b05999`; 210: `1d86c9fb`, el último antes de la Tanda 11) y no con la pasada anterior. El orden de los días se identifica por el nombre *escrito* del día (cambiar el título que ve el viajero no cuenta) y los avisos se comparan **por clase** (reserva, cierre, por fuera, abre más tarde, pago…): solo cuenta que un aviso salga o se vaya en una parada que está en las dos páginas. Resultado (126 rutas): otro orden de días 122, paradas que entran o salen 104, mismas paradas en otro orden 59, cambia la noche 42, cambian avisos 119 (210 rutas: 210, 198, 59, 102 y 203). Los avisos que cambian son reales, no de formato: se van 117 avisos de «Reserva» en paradas que ahora se ven por fuera, 60 «Por fuera:» repetidos y 15 de pago; salen 23 de cierre nuevos (los de «Hoy está cerrado: lo ves por fuera»).
+
+## 6. Datos y notas
+
+- **Santa Maria in Aracoeli:** puesto lo que cumplen las dos fuentes —**todos los días de 9:00 a 18:00**— con la nota «horario orientativo» en el dato (`horario_orientativo`). (El lugar del motor es el «Santo Bambino de Aracoeli», que solo sale del 24-dic al 6-ene.)
+- **«¿Te lo organizamos? Roma desde arriba»: no se hace.** El día en blanco se queda con «Ya has visto lo mejor de Roma» y [Elegir mis sitios]. Quitada la propuesta de `NOTAS_REVISION_RUTAS.md` (C8) con la línea «Roma desde arriba no se ofrece en el día en blanco (Eric, 22-oct)» y actualizada la regla de `REGLAS_PARA_DESTINOS.md`.
+
+## 7. Pruebas
+
+- Prueba nueva en `pruebaTanda11.mjs` (apartado «11B»): en los viajes de 3 a 6 días que empiezan en sábado o domingo, la Galería nunca cae en lunes ni sale cerrada; el ejemplo de Eric sale en ese orden; Aracoeli 9:00-18:00; la propuesta de Roma desde arriba ya no está en las notas. **Con las páginas de la Tanda 11 fallaba (58 fallos) y con las nuevas pasa.** Total de la prueba: 27.625 comprobaciones, 0 fallos.
+- Batería rápida: 71 pruebas, ninguna en MAL. Muestra de ~60 fechas: 132.613 viajes, 0 fallos.
+- Las 365 fechas (`_correr6y5.mjs procesos=12`): **142.221 comprobaciones, 0 fallos** (el total baja respecto a la Tanda 11, 144.531, porque hay menos paradas cerradas que comprobar).
+- Las dos páginas, de nuevo, con su JSON.
+
+**Lo que aprendí (para no repetirlo):** tras cambiar un peso del orden, las páginas hay que sacarlas *después* del último cambio del motor; en la Tanda 11 las saqué y luego toqué el motor sin volver a sacarlas.
