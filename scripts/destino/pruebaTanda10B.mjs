@@ -164,7 +164,7 @@ console.log('4. RUTA y DÍAS en la app')
   // Compartir el viaje: un icono más (con cuenta y viaje guardado); abre lo de invitar.
   await app.evaluar("import('/src/store/useSyncStore.ts').then((m) => { m.useSyncStore.setState({ activeTripId: 'prueba-viaje' }); return true })")
   await app.esp(1500)
-  const comp = await app.evaluar("(() => { const b = document.querySelector('[data-compartir-viaje]'); const c = b && b.firstElementChild; const r = c && c.getBoundingClientRect(); return b ? { ancho: Math.round(r.width), etiqueta: b.getAttribute('aria-label'), dentroDeLaTarjeta: Boolean(b.closest('.rounded-3xl')) } : null })()")
+  const comp = await app.evaluar("(() => { const b = document.querySelector('[data-compartir-viaje]'); const c = b && b.firstElementChild; const r = c && c.getBoundingClientRect(); return b ? { ancho: Math.round(r.width), etiqueta: b.getAttribute('aria-label'), dentroDeLaTarjeta: Boolean(b.parentElement && b.parentElement.parentElement && b.parentElement.parentElement.querySelector('[data-bandera-destino]')) } : null })()")
   debe(comp !== null && comp.ancho <= 33 && comp.etiqueta === 'Compartir viaje' && comp.dentroDeLaTarjeta === true, 'compartir', `el icono de compartir está en la tarjeta del destino, del mismo tamaño que los demás (${JSON.stringify(comp)})`)
   const pildora = await app.evaluar("Array.from(document.querySelectorAll('button')).some((b) => (b.textContent || '').trim() === 'Compartir viaje')")
   debe(pildora === false, 'compartir', 'ya no hay botón oscuro «Compartir viaje» encima de la tarjeta')

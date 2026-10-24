@@ -90,10 +90,10 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
         return (
           <div key={segment.id}>
             {index > 0 && <DestinationDistanceConnector from={segmentCentroid(segments[index - 1], route.days)} to={segmentCentroid(segment, route.days)} />}
-            <div className="relative flex min-h-20 w-full items-center overflow-hidden rounded-3xl border border-text/10 bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)]">
-            <button type="button" onClick={() => setDetailCity(segment.city)} className="flex h-full min-w-0 flex-1 items-center gap-3.5 pb-9 pl-4 pr-1 pt-3 text-left">
+            <div className="relative flex w-full flex-col overflow-hidden rounded-[28px] border border-text/10 bg-bg-card p-3.5 shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)]">
+            <button type="button" onClick={() => setDetailCity(segment.city)} className="flex w-full min-w-0 items-center gap-3.5 text-left">
               {/* La bandera: sus colores en franjas inclinadas, en un cuadrado de esquinas redondeadas. */}
-              <BanderaDestino countryCode={segment.countryCode} />
+              <BanderaDestino countryCode={segment.countryCode} recta />
               <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span className="truncate font-display text-[24px] leading-[1.05] text-text">{segment.city}</span>
                 {/* Dos líneas: «5 días · 4 noches» y debajo las fechas (junto a la bombilla y el deshacer no caben en una a 375 px). */}
@@ -102,11 +102,15 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
                 </span>
                 {dates && <span className="whitespace-nowrap text-[12px] leading-none text-text/40">{dates}</span>}
               </span>
+              <span aria-hidden="true" className="flex h-full w-[28px] shrink-0 items-center justify-end text-text/45">
+                <Icono nombre="adelante" size={18} />
+              </span>
             </button>
-            {/* La pastilla del pase de este destino (Tanda 10G; P0c sin pase, P0d con pase): bajo el nombre y las fechas, y abre el pase. */}
-            <span className="absolute bottom-2.5 left-[78px]">
+            {/* (Tanda 10G, el diseño P0c y P0d: una línea fina y, debajo, la pastilla del pase a la izquierda y los tres iconos a la derecha.) */}
+            <div aria-hidden="true" className="my-3 h-px bg-text/10" />
+            <div className="flex items-center gap-2">
               <PastillaPase destino={segment.city} />
-            </span>
+              <span className="flex-1" />
             <TipsButton city={segment.city} onOpen={() => setTipsCity(segment.city)} />
             {/* Compartir el viaje (Tanda 10B): el icono de siempre, en la primera tarjeta; abre la hoja de invitar de Cuentas. */}
             {index === 0 && <BotonCompartirViaje />}
@@ -124,9 +128,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
                 <Icono nombre="recuperar" className="h-[16px] w-[16px]" />
               </span>
             </button>
-            <button type="button" onClick={() => setDetailCity(segment.city)} aria-label={segment.city} tabIndex={-1} className="flex h-full w-[34px] shrink-0 items-center justify-center pr-2 text-text/45">
-              <Icono nombre="adelante" size={18} />
-            </button>
+            </div>
             </div>
           </div>
         )

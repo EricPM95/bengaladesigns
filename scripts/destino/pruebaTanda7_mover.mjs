@@ -368,9 +368,11 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
     const base = parada('c1', 'Galería Borghese', '10:00', { categoryLabel: 'Museo', ...stopExtra })
     return html(StopAccordion, { number: 1, stop: shellFromStop(base), onOpen() {}, horario, ...extraProps })
   }
+  // (Tanda 11, punto 4: una parada que va por fuera porque cierra ese día lleva UN solo aviso, «Hoy está cerrado: lo ves por fuera», sin «Cerrado este día» ni «Hoy cierra».)
+  const POR_FUERA_CERRADO = 'Hoy está cerrado: lo ves por fuera'
   const casos = {
-    'por fuera por cierre (el motor), con horario': tarjeta({ visitMode: 'fuera', outsideKind: 'cerrado', outsideReason: 'Hoy cierra' }, hCerrado),
-    'por fuera por cierre (el motor), sin horario': tarjeta({ visitMode: 'fuera', outsideKind: 'cerrado', outsideReason: 'Hoy cierra' }, null),
+    'por fuera por cierre (el motor), con horario': tarjeta({ visitMode: 'fuera', outsideKind: 'cerrado', outsideReason: POR_FUERA_CERRADO }, hCerrado),
+    'por fuera por cierre (el motor), sin horario': tarjeta({ visitMode: 'fuera', outsideKind: 'cerrado', outsideReason: POR_FUERA_CERRADO }, null),
     'con el aviso de fechas y el horario': tarjeta({ hoursWarning: CERRADO_ESTE_DIA }, hCerrado),
     'con el aviso de fechas, sin horario': tarjeta({ hoursWarning: CERRADO_ESTE_DIA }, null),
     'día libre con el aviso': tarjeta({}, hCerrado, { freeDayWarning: CERRADO_ESTE_DIA }),
@@ -379,7 +381,9 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   }
   for (const [nombre, h] of Object.entries(casos)) {
     const t = aTexto(h)
-    debe(veces(t, /Cerrado este día/g) === 1, 'D13 una vez', `${nombre}: la tarjeta dice «Cerrado este día» ${veces(t, /Cerrado este día/g)} veces (${plano(t)})`)
+    const porFuera = /^por fuera por cierre/.test(nombre)
+    if (porFuera) debe(veces(t, /Hoy está cerrado: lo ves por fuera/g) === 1 && !/Cerrado este día/.test(t), 'D13 una vez', `${nombre}: la tarjeta no dice «Hoy está cerrado: lo ves por fuera» una sola vez (${plano(t)})`)
+    else debe(veces(t, /Cerrado este día/g) === 1, 'D13 una vez', `${nombre}: la tarjeta dice «Cerrado este día» ${veces(t, /Cerrado este día/g)} veces (${plano(t)})`)
     debe(!/Hoy cierra|Cerrado hoy/.test(t), 'D13 sin «Hoy cierra»', `${nombre}: la tarjeta dice «Hoy cierra» o «Cerrado hoy» (${plano(t)})`)
   }
   // Lo que cierra a una hora, o no abre todavía, sigue con su aviso (no es «Cerrado este día»).

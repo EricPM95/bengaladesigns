@@ -15,15 +15,15 @@ export function PastillaPase({ destino, conPase = pagoActivo() }: { destino: str
       onClick={abrirPase}
       data-pastilla-pase={conPase ? 'con' : 'sin'}
       aria-label={conPase ? `Tienes el Pase de ${destino}` : `Ver el Pase de ${destino}`}
-      className="flex h-[22px] w-fit items-center gap-1.5 rounded-full pl-1.5 pr-2.5"
+      className="flex h-[30px] w-fit items-center gap-1.5 rounded-full pl-2.5 pr-3.5"
       style={
         conPase
-          ? { background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#3A2A12', border: '1px solid rgba(166,124,82,.35)' }
-          : { background: '#FBF3E2', color: '#6F4E37', border: '1px solid rgba(166,124,82,.35)' }
+          ? { background: 'linear-gradient(100deg,#E6CB8E 0%,#D2AE62 55%,#B38B3A 100%)', color: '#2E2008', border: '1px solid rgba(166,124,82,.45)', boxShadow: '0 1px 2px rgba(111,78,55,.25)' }
+          : { background: '#FCF4E3', color: '#6F4E37', border: '1px solid #E4D2A4' }
       }
     >
-      <Icono nombre={conPase ? 'hecho' : 'candado'} size={12} grosor={2.2} />
-      <span style={{ font: "600 11px 'Geist'", letterSpacing: '.01em', whiteSpace: 'nowrap' }}>Pase de {destino}</span>
+      <Icono nombre={conPase ? 'hecho' : 'candado'} size={13} grosor={2} />
+      <span style={{ font: "700 13px 'Geist'", letterSpacing: '.005em', whiteSpace: 'nowrap' }}>Pase de {destino}</span>
     </button>
   )
 }
