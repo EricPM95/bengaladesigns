@@ -151,23 +151,21 @@ async function main() {
   const ahoraCjs = await empaquetar('ahora', path.resolve('src/lib/cuentas.ts'))
   const antesCjs = hayAntes ? await empaquetar('antes', rutaAntes) : null
 
-  console.log('1. Google ya está unido a otra cuenta (lo de siempre de Eric)')
+  console.log('1. Google ya tiene cuenta (lo de siempre de Eric): UN solo viaje a Google, Tanda 10K')
   {
     const m = montar(ahoraCjs, { sesion: anonima() })
     m.C.vigilarSesion(() => undefined)
     await esperar()
     await m.C.entrarConGoogle()
-    debe(m.sb.llamadas.link === 1 && m.sb.llamadas.signInOAuth === 0, 'google', 'con sesión anónima, la primera vez se vincula (mismo uid)')
-    volverConError(m)
-    m.C.reiniciarVueltaDeEnlace?.()
-    const salio = await m.C.alVolverDelEnlace()
-    debe(salio === true && m.sb.llamadas.signInOAuth === 1 && m.sb.llamadas.link === 1, 'google', 'al volver con identity_already_exists, entra DIRECTAMENTE en esa cuenta (signInWithOAuth) y NO vuelve a vincular')
-    debe(m.loc.hash === '' && m.loc.search === '', 'google', 'la dirección queda limpia (sin el error)')
+    debe(m.sb.llamadas.signInOAuth === 1 && m.sb.llamadas.link === 0, 'google', 'con sesión anónima va DIRECTO a Google (signInWithOAuth), sin vincular antes: un solo viaje')
     const guardada = JSON.parse(m.local.getItem('trazo:cuenta:anonima') ?? 'null')
     debe(guardada?.uid === 'anon1', 'google', 'la sesión anónima de ese navegador queda guardada para pasar lo suyo a la cuenta')
+    // Vuelve de Google ya con la cuenta (sin error en la dirección): no se sale otra vez a Google.
+    m.C.reiniciarVueltaDeEnlace?.()
+    debe((await m.C.alVolverDelEnlace()) === false && m.sb.llamadas.signInOAuth === 1, 'google', 'al volver no se vuelve a salir a Google')
     await entrarCon(m, real())
     const reclamo = m.nav.peticiones.find((p) => p.url.endsWith('/api/cuenta/reclamar'))
-    debe(reclamo && reclamo.metodo === 'POST' && /Bearer tok-eric/.test(reclamo.autorizacion ?? '') && /token-nuevo-de-la-anonima/.test(reclamo.cuerpo ?? ''), 'google', 'al entrar, lo de la sesión anónima pasa a la cuenta (/api/cuenta/reclamar, con el token renovado de la anónima)')
+    debe(reclamo && reclamo.metodo === 'POST' && /Bearer tok-eric/.test(reclamo.autorizacion ?? '') && /token-nuevo-de-la-anonima/.test(reclamo.cuerpo ?? ''), 'google', 'al entrar, lo de la sesión anónima pasa a su cuenta (con su token al día)')
     debe(m.nav.recargas === 1, 'google', `la página recarga UNA sola vez (recargó ${m.nav.recargas})`)
     debe(m.local.getItem('trazo:cuenta:anonima') === null, 'google', 'tras pasarlo, la sesión anónima se olvida')
     await entrarCon(m, real())
@@ -186,49 +184,48 @@ async function main() {
     debe(m.nav.peticiones.some((p) => p.url.endsWith('/api/cuenta/reclamar')) && m.nav.recargas === 1, 'email', 'al abrir el enlace, lo de la anónima pasa a la cuenta y recarga una sola vez')
   }
 
-  console.log('3. Si el segundo intento también falla, se para (nada de recargar otra vez)')
+  console.log('3. Si Google devuelve un error: el aviso, sin bucle y sin segundo viaje')
   {
     const m = montar(ahoraCjs, { sesion: anonima('anon3') })
     m.C.vigilarSesion(() => undefined)
     await esperar()
     await m.C.entrarConGoogle()
-    volverConError(m)
+    volverConError(m, 'access_denied')
     m.C.reiniciarVueltaDeEnlace?.()
-    await m.C.alVolverDelEnlace()
-    const oauth1 = m.sb.llamadas.signInOAuth
-    volverConError(m)
-    m.C.reiniciarVueltaDeEnlace?.()
-    const otraVez = await m.C.alVolverDelEnlace()
-    debe(otraVez === false && m.sb.llamadas.signInOAuth === oauth1 && m.sb.llamadas.link === 1, 'tope', 'si vuelve el mismo error, no se intenta nada más (ni vincular ni entrar)')
+    const salio = await m.C.alVolverDelEnlace()
+    debe(salio === false && m.sb.llamadas.signInOAuth === 1 && m.sb.llamadas.link === 0, 'tope', 'un error al volver NO manda a Google otra vez (ni vincular ni entrar)')
+    debe(m.loc.hash === '' && m.loc.search === '', 'tope', 'la dirección queda limpia (sin el error)')
     debe(m.C.errorDeEntradaPendiente() === 'No hemos podido entrar. Inténtalo de nuevo.', 'tope', 'sale «No hemos podido entrar. Inténtalo de nuevo.»')
     debe(m.C.errorDeEntradaPendiente() === null, 'tope', 'el aviso se enseña una sola vez')
     debe(m.nav.recargas === 0, 'tope', 'y la página no se recarga')
-    // Un error que no es «ya existe» tampoco reintenta.
+    // Un error «ya existe» heredado de una versión vieja tampoco reintenta.
     const m2 = montar(ahoraCjs, { sesion: anonima('anon3b') })
-    volverConError(m2, 'access_denied')
+    volverConError(m2)
     await m2.C.alVolverDelEnlace()
-    debe(m2.sb.llamadas.signInOAuth === 0 && m2.sb.llamadas.link === 0 && m2.C.errorDeEntradaPendiente() !== null, 'tope', 'cancelar en Google (u otro error) no reintenta: avisa y para')
-    // Si entrar con Google falla al lanzarlo, también se para.
+    debe(m2.sb.llamadas.signInOAuth === 0 && m2.sb.llamadas.link === 0 && m2.C.errorDeEntradaPendiente() !== null, 'tope', 'ni siquiera identity_already_exists reintenta: avisa y para')
+    // Si lanzar Google falla, se dice al momento y no se sale.
     const m3 = montar(ahoraCjs, { sesion: anonima('anon3c'), oauthFalla: true })
-    volverConError(m3)
-    const f = await m3.C.alVolverDelEnlace()
-    debe(f === false && m3.C.errorDeEntradaPendiente() !== null && m3.nav.recargas === 0, 'tope', 'si el intento de entrar falla, se para con el aviso')
-    // Y pasados 5 minutos, otro intento ya vale.
+    const f = await m3.C.entrarConGoogle()
+    debe(f.error === 'No hemos podido entrar. Inténtalo de nuevo.' && m3.nav.recargas === 0, 'tope', 'si no se puede lanzar Google, el aviso sale al momento')
+    // Dos toques seguidos (menos de 5 minutos): los dos van a Google, sin freno ni aviso viejo.
     const m4 = montar(ahoraCjs, { sesion: anonima('anon3d') })
-    m4.sesionStorage.setItem('trazo:cuenta:google-reintento', String(Date.now() - 6 * 60 * 1000))
-    volverConError(m4)
-    debe((await m4.C.alVolverDelEnlace()) === true && m4.sb.llamadas.signInOAuth === 1, 'tope', 'pasados 5 minutos, vuelve a valer un intento')
+    m4.sesionStorage.setItem('trazo:cuenta:google-reintento', String(Date.now()))
+    m4.sesionStorage.setItem('trazo:cuenta:error-entrar', 'No hemos podido entrar. Inténtalo de nuevo.')
+    await m4.C.entrarConGoogle()
+    await m4.C.entrarConGoogle()
+    debe(m4.sb.llamadas.signInOAuth === 2 && m4.C.errorDeEntradaPendiente() === null && m4.sesionStorage.getItem('trazo:cuenta:google-reintento') === null, 'tope', 'cada toque en el botón borra el freno y el aviso de antes: dos toques seguidos, dos viajes que valen')
   }
 
-  console.log('4. Una cuenta nueva (Google sin cuenta antes): mismo uid y sin recargar de más')
+  console.log('4. Una cuenta de Google nueva: un solo viaje y lo de la anónima pasa a su cuenta')
   {
     const m = montar(ahoraCjs, { sesion: anonima('anon4') })
     m.C.vigilarSesion(() => undefined)
     await esperar()
     await m.C.entrarConGoogle()
+    debe(m.sb.llamadas.signInOAuth === 1 && m.sb.llamadas.link === 0, 'nueva', 'un solo viaje a Google, sin vincular')
     debe((await m.C.alVolverDelEnlace()) === false, 'nueva', 'si no hay error al volver, no se hace nada más')
-    await entrarCon(m, { ...real('anon4') })
-    debe(!m.nav.peticiones.some((p) => p.url.endsWith('/api/cuenta/reclamar')) && m.nav.recargas === 0, 'nueva', 'el uid es el mismo: no hay nada que pasar y no se recarga')
+    await entrarCon(m, { ...real('google-nueva') })
+    debe(m.nav.peticiones.some((p) => p.url.endsWith('/api/cuenta/reclamar')) && m.nav.recargas === 1, 'nueva', 'lo de la anónima pasa a la cuenta nueva y se recarga una sola vez')
     debe(m.local.getItem('trazo:cuenta:anonima') === null, 'nueva', 'y la sesión guardada se olvida')
   }
 
@@ -273,18 +270,13 @@ async function main() {
     n.C.vigilarSesion(() => undefined)
     await esperar()
     await n.C.entrarConGoogle()
-    // (Solo se vuelve de Google si la página salió hacia Google: en cuanto el código se para, no hay más vueltas.)
-    let vueltas = 0
-    for (; vueltas < 6; vueltas++) {
+    let salidas = 0
+    for (let vuelta = 0; vuelta < 6; vuelta++) {
       volverConError(n)
       n.C.reiniciarVueltaDeEnlace?.()
-      if (!(await n.C.alVolverDelEnlace())) {
-        vueltas++
-        break
-      }
+      if (await n.C.alVolverDelEnlace()) salidas++
     }
-    debe(n.sb.llamadas.link === 1 && n.sb.llamadas.signInOAuth === 1, 'bucle', `con el arreglo, el mismo ir y venir se corta en ${vueltas} vueltas: 1 vinculación y 1 entrada (vinculaciones: ${n.sb.llamadas.link}, entradas: ${n.sb.llamadas.signInOAuth})`)
-    debe(vueltas === 2, 'bucle', 'se corta a la segunda vuelta')
+    debe(n.sb.llamadas.link === 0 && n.sb.llamadas.signInOAuth === 1 && salidas === 0, 'bucle', 'con el código de ahora, el mismo ir y venir no sale a Google ni una vez más: 1 viaje y se acabó')
   }
 
   console.log('8. Archivos')

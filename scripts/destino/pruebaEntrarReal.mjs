@@ -2,8 +2,8 @@
 //   node scripts/destino/pruebaEntrarReal.mjs [--url=http://localhost:5173] [--captura=docs/dias/capturas_entrar]
 // Hace falta `npm run dev` y la clave de Supabase en .env.local. NO inicia sesión en Google (no se puede ni se debe desde aquí): se llega hasta el momento de salir hacia Google, se frena ahí,
 // y se SIMULA lo que Supabase deja en la dirección cuando esa cuenta de Google ya existe (`identity_already_exists`). Se mira, en el navegador de verdad y con la sesión anónima de verdad:
-//   1. [Continuar con Google] vincula la sesión anónima (una llamada a `identities/authorize`) y sale hacia Google.
-//   2. Al volver con `identity_already_exists`, la app entra directamente en esa cuenta (`/auth/v1/authorize`, SIN otra vinculación) y sale hacia Google UNA vez.
+//   1. (Tanda 10K) [Continuar con Google] va DIRECTO a Google (una sola salida, sin vincular antes).
+//   2. Al volver con un error (aunque sea `identity_already_exists`), NO sale otra vez a Google.
 //   3. Si vuelve con el mismo error otra vez, NO hace ninguna llamada más, NO recarga y enseña «No hemos podido entrar. Inténtalo de nuevo.» con su botón.
 // No toca ningún navegador tuyo: lleva su propio Chrome, su propio perfil y su propio puerto, y los borra al acabar.
 import { spawn } from 'node:child_process'
@@ -144,7 +144,7 @@ await espera(6000)
 const vinculos1 = cuantas(/\/auth\/v1\/user\/identities\/authorize/)
 const sesiones = cuantas(/\/auth\/v1\/signup/)
 console.log(`   (sesión anónima creada: ${sesiones} · llamadas a vincular: ${vinculos1} · salidas hacia Google: ${navegaciones.length})`)
-debe(vinculos1 === 1 || navegaciones.length >= 1, 'con la sesión anónima, [Continuar con Google] intenta vincular y sale hacia Google (frenado aquí)', `vinculaciones ${vinculos1}, salidas ${navegaciones.length}`)
+debe(vinculos1 === 0 && navegaciones.filter((u) => /\/auth\/v1\/authorize\?/.test(u)).length === 1, 'con la sesión anónima, [Continuar con Google] NO vincula antes y sale hacia Google UNA sola vez (frenado aquí; Tanda 10K)', `vinculaciones ${vinculos1}, salidas ${navegaciones.length}`)
 
 console.log('2. Vuelve de Google: «esa cuenta ya existe» (identity_already_exists)')
 const err = '#error=server_error&error_code=identity_already_exists&error_description=Identity+is+already+linked+to+another+user'
@@ -155,7 +155,7 @@ await espera(9000)
 const vinculosDespues = cuantas(/\/auth\/v1\/user\/identities\/authorize/)
 debe(vinculosDespues === vinculosAntes, 'NO vuelve a intentar vincular', `vinculaciones: ${vinculosAntes} → ${vinculosDespues}`)
 const salidasHacia = navegaciones.slice(salidasAntes).filter((u) => /\/auth\/v1\/authorize\?/.test(u))
-debe(salidasHacia.length === 1, 'entra directamente en la cuenta que ya existe: UNA sola salida hacia Google (authorize)', `salidas: ${salidasHacia.length}`)
+debe(salidasHacia.length === 0, 'un error al volver NO manda a Google otra vez (Tanda 10K: ya no hay segundo viaje)', `salidas: ${salidasHacia.length}`)
 await foto('2-sale-a-google-una-vez')
 
 console.log('3. Vuelve con el mismo error otra vez: se para')

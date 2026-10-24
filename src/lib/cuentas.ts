@@ -171,18 +171,18 @@ export async function entrarConCodigo(correo: string, codigo: string): Promise<R
 }
 
 /**
- * Entrar con Google. Con sesión anónima y \`vincular\` (lo normal), se vincula (mismo \`uid\`). Si esa cuenta de Google ya existía en otra cuenta, al volver sale
- * \`identity_already_exists\` y \`alVolverDelEnlace\` entra DIRECTAMENTE en ella con \`vincular: false\` (nunca se vuelve a intentar vincular: ahí estaba el bucle).
+ * Entrar con Google (Tanda 10K): UN solo viaje a Google, tenga o no cuenta ya. Se va directo con `signInWithOAuth` (nunca `linkIdentity`, que con una cuenta de Google que ya existe volvía con
+ * `identity_already_exists` y obligaba a un segundo viaje). Si había una sesión anónima en este móvil (un viaje creado sin cuenta…), se guarda ANTES con su token al día; al volver ya con la cuenta,
+ * `completarEntrada` le pasa a esa cuenta todo lo de la anónima (`/api/cuenta/reclamar`), como hace con el email. Cada toque en el botón borra los avisos y frenos de intentos anteriores.
+ * Y la vuelta de Google no pone la pantalla de inicio (la detecta index.html por la dirección; ver `esVueltaDeGoogle`).
  */
-export async function entrarConGoogle({ vincular = true }: { vincular?: boolean } = {}): Promise<Resultado> {
+export async function entrarConGoogle(): Promise<Resultado> {
   if (!supabase) return { error: SIN_NUBE }
   try {
+    escribirSesionStorage(CLAVE_REINTENTO_GOOGLE, null)
+    escribirSesionStorage(CLAVE_ERROR_ENTRAR, null)
     const { data } = await supabase.auth.getSession()
     guardarAnonima(data.session)
-    if (vincular && data.session && esAnonimo(data.session.user)) {
-      const { error } = await supabase.auth.linkIdentity({ provider: 'google', options: { redirectTo: volverA() } })
-      if (!error) return { error: null }
-    }
     const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: volverA() } })
     return error ? { error: MENSAJE_NO_ENTRA } : { error: null }
   } catch {
@@ -190,13 +190,14 @@ export async function entrarConGoogle({ vincular = true }: { vincular?: boolean 
   }
 }
 
+/** Pura: ¿la dirección es la vuelta de Google (el código, la sesión o un error en la dirección o en el hash)? index.html usa la misma regla para no poner la pantalla de inicio. */
+export const esVueltaDeGoogle = (direccion: string): boolean => /(^|[?&#])(code|access_token|error|error_code)=/i.test(direccion)
+
 /** Lo que se dice cuando no se ha podido entrar (la pantalla de entrar lo enseña con su botón; la página NO se recarga). */
 export const MENSAJE_NO_ENTRA = 'No hemos podido entrar. Inténtalo de nuevo.'
 
 const CLAVE_REINTENTO_GOOGLE = 'trazo:cuenta:google-reintento'
 const CLAVE_ERROR_ENTRAR = 'trazo:cuenta:error-entrar'
-/** El único reintento vale 5 minutos: si el viaje de ida y vuelta a Google vuelve a fallar dentro de ese rato, se para. */
-const VENTANA_REINTENTO_MS = 5 * 60 * 1000
 
 /** Pura: ¿lo que dejó el enlace en la dirección es un error de entrar? (\`error=\` o \`error_code=\` en la dirección o en el hash). */
 export const hayErrorDeEntrar = (direccion: string): boolean => /(^|[?&#])error(_code)?=/i.test(direccion)
@@ -229,10 +230,8 @@ export function errorDeEntradaPendiente(): string | null {
 let volviendo: Promise<boolean> | null = null
 
 /**
- * Al volver del enlace de Google. Si esa cuenta de Google ya estaba en otra cuenta, Supabase devuelve \`identity_already_exists\`; entonces se entra EN ESA cuenta
- * (\`signInWithOAuth\`, sin volver a vincular) UNA sola vez, y lo del móvil (la sesión anónima, que se guarda antes con su token al día) se le pasa al volver.
- * NINGÚN BUCLE: si dentro de 5 minutos vuelve otro error (o es otro error cualquiera), se para: se deja el aviso «No hemos podido entrar. Inténtalo de nuevo.» y no se recarga nada.
- * Devuelve true si salió a Google otra vez.
+ * Al volver del enlace de Google con un error en la dirección (Google cancelado, sin conexión…): se limpia la dirección y se deja el aviso «No hemos podido entrar. Inténtalo de nuevo.» para la pantalla
+ * de entrar. SIN reintentos ni segundo viaje a Google (Tanda 10K): quien quiera volver a probar toca el botón otra vez. Devuelve siempre false (nunca sale a Google por su cuenta).
  */
 export function alVolverDelEnlace(): Promise<boolean> {
   if (volviendo) return volviendo
@@ -241,26 +240,10 @@ export function alVolverDelEnlace(): Promise<boolean> {
       const texto = `${window.location.search}&${window.location.hash.replace(/^#/, '')}`
       if (!hayErrorDeEntrar(texto)) return false
       window.history.replaceState(null, '', window.location.pathname)
-      const intentoDe = Number(leerSesionStorage(CLAVE_REINTENTO_GOOGLE) ?? 0)
-      const yaReintentado = Number.isFinite(intentoDe) && intentoDe > 0 && Date.now() - intentoDe < VENTANA_REINTENTO_MS
-      if (!esCuentaYaExistente(texto) || yaReintentado || !supabase) {
-        escribirSesionStorage(CLAVE_REINTENTO_GOOGLE, null)
-        escribirSesionStorage(CLAVE_ERROR_ENTRAR, MENSAJE_NO_ENTRA)
-        return false
-      }
-      escribirSesionStorage(CLAVE_REINTENTO_GOOGLE, String(Date.now()))
-      // La sesión anónima de este navegador sigue puesta: se guarda con su token de ahora (el de antes pudo cambiar) para pasarle lo suyo a la cuenta al entrar.
-      const { data } = await supabase.auth.getSession()
-      guardarAnonima(data.session)
-      const r = await entrarConGoogle({ vincular: false })
-      if (r.error) {
-        escribirSesionStorage(CLAVE_REINTENTO_GOOGLE, null)
-        escribirSesionStorage(CLAVE_ERROR_ENTRAR, MENSAJE_NO_ENTRA)
-        return false
-      }
-      return true
-    } catch {
       escribirSesionStorage(CLAVE_REINTENTO_GOOGLE, null)
+      escribirSesionStorage(CLAVE_ERROR_ENTRAR, MENSAJE_NO_ENTRA)
+      return false
+    } catch {
       escribirSesionStorage(CLAVE_ERROR_ENTRAR, MENSAJE_NO_ENTRA)
       return false
     }

@@ -72,14 +72,17 @@ const debe = (c, regla, texto) => {
     debe(codigoValido('123456') && codigoValido('12345678') && !codigoValido('12345') && !codigoValido('abcdef') && !codigoValido(''), 'sesion', 'el código son de 6 a 8 números')
   }
   const { dondeAbrir } = await import('../../src/lib/dondeAbrir.ts')
+  // (Tanda 10K cambió adónde abre la app: el detalle de cada caso está en pruebaTanda10K.)
+  const sinFechas = () => null
   const viajes = [{ id: 'reciente' }, { id: 'hoy' }, { id: 'viejo' }]
-  debe(dondeAbrir(viajes, () => false).tipo === 'ultimo' && dondeAbrir(viajes, () => false).viaje.id === 'reciente' && dondeAbrir(viajes, () => false).modo === 'route', 'sesion', 'con la sesión abierta, al abrir sale tu ÚLTIMO viaje, en RUTA')
-  const hoy = dondeAbrir(viajes, (v) => v.id === 'hoy')
+  const ultimo = dondeAbrir(viajes, () => false, sinFechas, '2026-10-24')
+  debe(ultimo.tipo === 'ruta' && ultimo.viaje.id === 'reciente' && ultimo.modo === 'route', 'sesion', 'con la sesión abierta y viajes sin fechas, al abrir sale el último que tocaste, en RUTA')
+  const hoy = dondeAbrir(viajes, (v) => v.id === 'hoy', sinFechas, '2026-10-24')
   debe(hoy.tipo === 'hoy' && hoy.viaje.id === 'hoy' && hoy.modo === 'today', 'sesion', 'si hoy es un día del viaje, sale ese viaje en HOY')
-  debe(dondeAbrir([{ id: 'a', generationState: { x: 1 } }, { id: 'b' }], () => true).tipo === 'reanudar', 'sesion', 'un viaje a medias se retoma')
-  debe(dondeAbrir([], () => true).tipo === 'nada', 'sesion', 'sin viajes, la pantalla de destino de siempre')
+  debe(dondeAbrir([{ id: 'a', generationState: { x: 1 } }, { id: 'b' }], () => true, sinFechas, '2026-10-24').tipo === 'reanudar', 'sesion', 'un viaje a medias se retoma')
+  debe(dondeAbrir([], () => true, sinFechas, '2026-10-24').tipo === 'nada', 'sesion', 'sin viajes, la pantalla de destino de siempre')
   const sync = leer('src/components/sync/TripSync.tsx')
-  debe(/dondeAbrir\(/.test(sync) && /setMode\(donde\.modo\)/.test(sync) && /setMode\('today'\)/.test(sync) && !/setScreen\('myTrips'\)/.test(sync), 'sesion', 'TripSync abre el último viaje en RUTA (o HOY) y ya no «Mis viajes»')
+  debe(/dondeAbrir\(/.test(sync) && /setMode\(donde\.modo\)/.test(sync) && /setMode\('today'\)/.test(sync) && /donde\.tipo === 'misViajes'/.test(sync), 'sesion', 'TripSync abre el viaje que toca en RUTA (o HOY), o «Mis viajes» si todos pasaron (Tanda 10K)')
   const puerta = leer('src/components/cuenta/PuertaDeCuenta.tsx')
   debe(/estado\.tipo === 'anonima' \|\| estado\.tipo === 'sin_sesion'\) return <EntrarCuenta/.test(puerta), 'sesion', 'la pantalla de entrar sale solo sin sesión de verdad (anónima o ninguna)')
   debe(/data-codigo-email/.test(leer('src/components/cuenta/EntrarCuenta.tsx')), 'sesion', 'la pantalla de entrar deja escribir el código del email')

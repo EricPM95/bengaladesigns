@@ -28,6 +28,9 @@
         if (almacen.getItem('jutrip:sin-apertura')) {
           almacen.removeItem('jutrip:sin-apertura')
           document.getElementById('apertura').remove()
+        } else if (/(^|[?&#])(code|access_token|error|error_code)=/i.test(window.location.search + '&' + window.location.hash)) {
+          // Tanda 10K: la vuelta de Google (con la sesión, el código o un error en la dirección) tampoco pone la pantalla de inicio: la persona ya la vio al abrir la app y se acaba de ir y volver.
+          document.getElementById('apertura').remove()
         }
       } catch (e) {
         /* sin almacenamiento: sale siempre */

@@ -49,11 +49,11 @@ export function MyTripsScreen() {
       <div className="mx-auto w-full max-w-lg space-y-6">
         <div className="space-y-1 text-center">
           <p className="text-small uppercase tracking-wide text-text-muted">Route Planner</p>
-          <h1 className="font-display text-h1 text-text">Tus viajes</h1>
+          <h1 className="font-display text-h1 text-text">Mis viajes</h1>
         </div>
 
         <Button onClick={handleCreateNew} className="w-full">
-          + Crear nuevo viaje
+          + Crear viaje
         </Button>
 
         <div className="space-y-3">

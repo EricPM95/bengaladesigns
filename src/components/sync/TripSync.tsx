@@ -3,7 +3,8 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { bootstrapTraveler, loadAllTrips, saveTrip, type TripPayload } from '../../lib/tripPersistence'
 import { supabase } from '../../lib/supabaseClient'
-import { getTodayTripContext } from '../../lib/todayMode'
+import { getTodayTripContext, getTodayTripStatus } from '../../lib/todayMode'
+import { todayIso } from '../../lib/dateRange'
 import { demoActivo } from '../../lib/logros'
 import { dondeAbrir } from '../../lib/dondeAbrir'
 
@@ -115,6 +116,11 @@ export function TripSync() {
           const donde = dondeAbrir(
             trips,
             (trip) => !trip.generationState && Boolean(getTodayTripContext(trip.route)),
+            (trip) => {
+              const fase = getTodayTripStatus(trip.route)
+              return fase ? { inicio: fase.startIso, fin: fase.endIso } : null
+            },
+            todayIso(),
           )
           const resumable = donde.tipo === 'reanudar' ? donde.viaje : null
           const todayTrip = donde.tipo === 'hoy' ? donde.viaje : null
@@ -132,12 +138,15 @@ export function TripSync() {
             hydrateTrip(todayTrip)
             // (Tanda 10G: si hoy es un día del viaje, al abrir la app sale HOY, aunque antes estuvieras en otra pestaña.)
             useRouteStore.getState().setMode('today')
-          } else if (donde.tipo === 'ultimo') {
-            // (Tanda 10G: con la sesión abierta, al abrir la app sale tu ÚLTIMO viaje —el guardado más reciente—, siempre en RUTA y sin día elegido. «Mis viajes» se abre desde el Perfil.)
+          } else if (donde.tipo === 'ruta') {
+            // (Tanda 10K: el viaje POR DELANTE más cercano en fecha, en RUTA y sin día elegido; sin fechas cuenta como por delante: el último que tocó.)
             useSyncStore.getState().setActiveTripId(donde.viaje.id)
             hydrateTrip(donde.viaje)
             useRouteStore.getState().setMode(donde.modo)
             useRouteStore.getState().setActiveDayId(null)
+          } else if (donde.tipo === 'misViajes') {
+            // (Tanda 10K: todos sus viajes ya pasaron: «Mis viajes», con [Crear viaje] a la vista.)
+            setScreen('myTrips')
           }
         }
 
