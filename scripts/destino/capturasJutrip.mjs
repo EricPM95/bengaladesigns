@@ -441,3 +441,43 @@ if (quiero('tanda10e')) {
   }
 }
 console.log('listo')
+
+// ── Tanda 10G: el paso 1 con la tarjeta de Roma y su foto, y el paso 1 después de [Trazar ruta] con los transportes (la misma pantalla) ──
+if (partes.has('tanda10g')) {
+  console.log('· tanda 10G: paso 1 con foto y con transportes')
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=0' })
+  await esperarApp(app)
+  await app.esp(1500)
+  await app.evaluar("document.querySelector('[data-campo-destino]').focus()")
+  await app.esp(1500)
+  await app.captura(png('10g_paso1_tarjeta_de_roma_con_foto'))
+  await app.escribir('[data-campo-destino]', 'rom')
+  await app.esp(400)
+  await tocar(app, '[data-destino-card]')
+  await app.esp(1500)
+  await origen(app, 'Barcelona')
+  await app.esp(2000)
+  await app.captura(png('10g_paso1_barcelona_roma'))
+  await tocar(app, '[data-trazar-ruta]')
+  await app.esp(1200)
+  await app.captura(png('10g_paso1_trazando'))
+  await app.esp(5000)
+  await app.captura(png('10g_paso1_despues_de_trazar_con_transportes'))
+  app.cerrar()
+  console.log('listo')
+}
+
+// ── Tanda 10G: la apertura en tres momentos y el final, con «TU APP DE VIAJES» (se para la animación en cada instante, así nunca sale en blanco) ──
+if (partes.has('tanda10g')) {
+  console.log('· tanda 10G: la apertura en tres momentos y el final')
+  const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=1' })
+  await app.esp(1500)
+  for (const [segundos, nombre] of [[0.9, '1_logo'], [2.0, '2_lema_escribiendose'], [2.9, '3_lema_entero'], [3.5, '4_final_con_tu_app_de_viajes']]) {
+    await app.evaluar(`(() => { for (const a of document.getAnimations()) { a.pause(); a.currentTime = ${segundos * 1000} } return true })()`)
+    await app.esp(500)
+    const hay = await app.evaluar("Boolean(document.getElementById('apertura')) && document.getElementById('apertura').getBoundingClientRect().height > 0")
+    if (!hay) throw new Error('La apertura no está puesta: la captura saldría en blanco')
+    await app.captura(png(`10g_apertura_${nombre}`))
+  }
+  app.cerrar()
+}

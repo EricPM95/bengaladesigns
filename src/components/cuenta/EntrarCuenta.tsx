@@ -1,7 +1,7 @@
 import { botonChampan } from '../../lib/marcaBoton'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { entrarConEmail, entrarConGoogle, errorDeEntradaPendiente } from '../../lib/cuentas'
+import { entrarConCodigo, entrarConEmail, entrarConGoogle, errorDeEntradaPendiente } from '../../lib/cuentas'
 import { enlaceDeCorreo, emailResumido, esperaRestante, textoDeEspera } from '../../lib/entrarCuenta'
 import { marca } from '../../lib/marca'
 import { BotonHoja, EnlaceHoja, Hoja } from '../ui/Hoja'
@@ -39,6 +39,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
   const [mensaje, setMensaje] = useState<string | null>(aviso)
   const [ocupado, setOcupado] = useState(false)
   const [privacidad, setPrivacidad] = useState(false)
+  const [codigo, setCodigo] = useState('')
   const [ahora, setAhora] = useState(() => Date.now())
   const [ultimo, setUltimo] = useState<number | null>(() => (pasoInicial === 'enviado' ? Date.now() : leerUltimoEnvio()))
   const restante = esperaRestante(ultimo, ahora)
@@ -169,6 +170,27 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
               {mensaje}
             </p>
           )}
+          {/* Tanda 10G: si el enlace se abre en otro navegador (la app de Gmail, Safari con la app instalada), la sesión se queda allí: con el código del email se entra aquí mismo. */}
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault()
+              setOcupado(true)
+              setMensaje(null)
+              const r = await entrarConCodigo(email, codigo)
+              setOcupado(false)
+              if (r.error) setMensaje(r.error)
+            }}
+            data-codigo-email
+            style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+          >
+            <p style={{ margin: 0, font: "400 12.5px/1.45 'Geist'", color: 'rgba(28,34,48,.62)' }}>¿Se ha abierto el enlace en otro navegador? Escribe aquí el código de números del email.</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input type="text" inputMode="numeric" autoComplete="one-time-code" placeholder="Código" value={codigo} onChange={(e) => setCodigo(e.target.value)} aria-label="Código del email" style={{ flex: 1, height: 46, borderRadius: 14, border: '1.5px solid rgba(28,34,48,.2)', padding: '0 14px', font: "500 16px 'Geist'", color: '#1C2230', background: '#FFFFFF', outline: 'none' }} />
+              <button type="submit" disabled={ocupado || codigo.trim().length < 6} style={{ height: 46, padding: '0 18px', borderRadius: 999, border: '1px solid rgba(28,34,48,.2)', background: '#FFFDF8', font: "600 14px 'Geist'", color: '#1C2230' }}>
+                Entrar
+              </button>
+            </div>
+          </form>
           <EnlaceHoja datos="reenviar" disabled={ocupado || restante > 0} subtitulo={restante > 0 ? textoDeEspera(restante) : undefined} onClick={() => void mandar()}>
             ¿No te llega? Enviar otra vez
           </EnlaceHoja>

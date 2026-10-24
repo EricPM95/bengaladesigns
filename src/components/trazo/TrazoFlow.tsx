@@ -80,6 +80,8 @@ export function TrazoFlow() {
   const [origin, setOrigin] = useState<Place | null>(answers.originPlace ?? null)
   const [dest, setDest] = useState<Place | null>(storeDestinationPlace ?? null)
   const [prog, setProg] = useState(0)
+  /** Tanda 10G: si la carga de los transportes ya acabó (el título de la primera pantalla pasa de «Conectando…» a «¿Cómo quieres llegar…?»). */
+  const [transporteCargado, setTransporteCargado] = useState(false)
   const [previewMonth, setPreviewMonth] = useState<number | null>(null)
   const [land, setLand] = useState('')
   const [curatedPool, setCuratedPool] = useState<PoolPlace[] | null | false>(null)
@@ -433,7 +435,7 @@ export function TrazoFlow() {
           />
 
           {/* Cabecera: atrás, siete segmentos, n/7 y las fichas del viaje. (La primera pantalla lleva la suya, con el logo.) */}
-          {step !== 0 && (
+          {step > 1 && (
           <div style={{ position: 'absolute', left: 0, right: 0, top: 0, zIndex: 6, padding: `${desk ? 26 : 14}px 20px 0`, display: 'flex', flexDirection: 'column', gap: 12, pointerEvents: 'none' }}>
             {resumeTrip && !isSummaryStep(step) && (
               <button
@@ -550,8 +552,8 @@ export function TrazoFlow() {
           )}
 
           <div
-            style={{ position: 'absolute', inset: 0, zIndex: 5, transition: 'opacity .7s ease', opacity: step === 0 ? 1 : 0, pointerEvents: step === 0 ? 'auto' : 'none', visibility: step === 0 ? 'visible' : 'hidden' }}
-            aria-hidden={step !== 0}
+            style={{ position: 'absolute', inset: 0, zIndex: 5, transition: 'opacity .7s ease', opacity: step <= 1 ? 1 : 0, pointerEvents: step <= 1 ? 'auto' : 'none', visibility: step <= 1 ? 'visible' : 'hidden' }}
+            aria-hidden={step > 1}
           >
             <PrimeraPantalla
               origin={origin}
@@ -563,12 +565,18 @@ export function TrazoFlow() {
               alto={H}
               totalPasos={stepNames.length}
               onVolverAMiViaje={resumeTrip && !isSummaryStep(step) ? backToMyTrip : null}
+              // (Tanda 10G: el paso 1 —los transportes— es la MISMA pantalla: el mapa se queda, la línea se dibuja y la tarjeta pasa a ser la distancia y los transportes.)
+              fase={step === 1 ? 'transporte' : 'elegir'}
+              progreso={prog}
+              cargado={transporteCargado}
+              onCambiar={() => go(0)}
+              transporte={
+                maxStep >= 1 ? (
+                  <StepTransport modo="tarjeta" active={step === 1} origin={origin} destination={dest} destinationName={destinationName ?? dest?.name ?? ''} onProgress={onProgress} onCargado={setTransporteCargado} onNext={() => go(2)} />
+                ) : null
+              }
             />
           </div>
-          {screen(
-            1,
-            <StepTransport active={step === 1} origin={origin} destination={dest} destinationName={destinationName ?? dest?.name ?? ''} onProgress={onProgress} onNext={() => go(2)} />,
-          )}
           {screen(
             2,
             <StepDates

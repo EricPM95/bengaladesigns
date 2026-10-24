@@ -19,6 +19,7 @@ import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
 import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId } from '../../lib/exploreStyle'
 import { Icono } from '../ui/Icono'
+import { abrirPase } from '../../lib/pago'
 import type { Coordinates } from '../../lib/types'
 import { useExploreAperturaStore } from '../../store/useExploreAperturaStore'
 import { explorarConBanosYFuentes } from '../../lib/explorarDePago'
@@ -67,7 +68,7 @@ const LEGACY_FALLBACK: Partial<Record<ExploreCardId, 'food' | 'viewpoints' | 'at
  * Una tarjeta de Explorar (diseño «Trazo Reservas», pantalla 12): el cuadro de icono de color, la franja en diagonal con la foto o el degradado,
  * el nombre en Instrument Serif y el contador pequeño.
  */
-function ExploreCard({ id, label, sub, photo, delay, wide, onClick }: { id: ExploreCardId; label: string; sub: string; photo: string | null; delay: number; wide: boolean; onClick: () => void }) {
+function ExploreCard({ id, label, sub, photo, delay, wide, onClick, cerrado = false }: { id: ExploreCardId; label: string; sub: string; photo: string | null; delay: number; wide: boolean; onClick: () => void; cerrado?: boolean }) {
   const style = CARD_STYLE[id]
   const diagonal = 'polygon(34px 0,100% 0,100% 100%,0 100%)'
   const background = photo ? `url("${photo}") center/cover, ${solidOf(style.color)}` : `linear-gradient(135deg,${solidOf(style.shadow)},#EFE7D8)`
@@ -99,6 +100,19 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick }: { id: Expl
   )
   const className = `${wide ? 'col-span-2 ' : ''}relative block h-[132px] overflow-hidden rounded-[20px] border border-text/[0.08] bg-bg-card p-0 text-left text-text transition-transform active:scale-[.98]`
   const cardStyle = { boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)', animation: `explore-pop .45s cubic-bezier(.2,.8,.2,1) ${delay}ms both` } as const
+  // (Tanda 10G: lo del pase, cerrado y a la vista: la tarjeta en gris, con el candado dorado sobre marfil y lo que se ganaría; al tocarla se abre el pase.)
+  if (cerrado) {
+    return (
+      <button type="button" onClick={abrirPase} data-candado={`explorar-${id}`} className={className} style={cardStyle}>
+        <span style={{ filter: 'grayscale(1)', opacity: 0.55 }} className="absolute inset-0">
+          {inner}
+        </span>
+        <span aria-hidden="true" className="absolute right-2.5 top-2.5 flex h-[26px] w-[26px] items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
+          <Icono nombre="candado" size={14} grosor={1.8} />
+        </span>
+      </button>
+    )
+  }
   return (
     <button type="button" onClick={onClick} className={className} style={cardStyle}>
       {inner}
@@ -178,8 +192,9 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   // él y tienen que estar ya en la rejilla. Es una sola petición por destino y sesión (se cachea).
   const { places: curatedPool, excursions, resolved: curatedPoolResolved } = useDestinationPool(city, true)
   const hasCuratedCatalog = curatedPoolResolved && curatedPool.length > 0
-  const hasToilets = banosYFuentes && curatedPool.some((place) => place.kind === 'toilet')
-  const hasFountains = banosYFuentes && curatedPool.some((place) => place.kind === 'fountain')
+  // (Tanda 10G: Baños y Fuentes salen siempre que el destino los tenga; sin el pase, cerradas y con su candado.)
+  const hasToilets = curatedPool.some((place) => place.kind === 'toilet')
+  const hasFountains = curatedPool.some((place) => place.kind === 'fountain')
   const cardPhotos = useCardPhotos(city, curatedPool, excursions)
   const legacyCategory = activeCard ? LEGACY_FALLBACK[activeCard] : undefined
 
@@ -336,6 +351,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
               photo={cardPhotos[card.id] ?? null}
               delay={index * 40}
               wide={false}
+              cerrado={(card.id === 'banos' || card.id === 'fuentes') && !banosYFuentes}
               onClick={() => setActiveCard(card.id)}
             />
           )

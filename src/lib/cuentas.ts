@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from './supabaseClient'
 import { amigoPendiente, canjearInvitacion, codigoDeAmigoDeLaDireccion, codigoDeLaDireccion, guardarAmigoPendiente, guardarInvitacionPendiente, invitacionAceptada, invitacionPendiente, olvidarAmigoPendiente, olvidarInvitacionPendiente, registrarInvitado } from './invitaciones'
+import { recargarSinApertura } from './recargarSinApertura'
+import { codigoValido } from './entrarCuenta'
 
 /**
  * LAS CUENTAS, PARTE 1 (docs/dias/PLAN_CUENTAS.md). Entrar con el email (enlace mágico) o con Google, pasar a la cuenta lo que el móvil tenía, cerrar sesión y
@@ -144,6 +146,27 @@ export async function entrarConEmail(correo: string): Promise<Resultado> {
     return { error: null, aviso: 'Te hemos enviado un enlace. Ábrelo desde este móvil para entrar.' }
   } catch {
     return { error: 'No hemos podido mandar el enlace. Inténtalo de nuevo en un momento.' }
+  }
+}
+
+/**
+ * Entrar con el CÓDIGO del email (Tanda 10G): el mismo email lleva el enlace y un código de números. Si el enlace se abre en OTRO navegador (por ejemplo, dentro de la app de Gmail, o en Safari cuando la app está
+ * instalada en la pantalla de inicio), la sesión se queda allí y no en la app; el código se escribe en la propia app y la sesión queda donde hace falta. Lleva el mismo `uid` que la sesión anónima (se prueba como
+ * cuenta nueva o ya existente, y como cambio de email de la sesión anónima). Necesita que el correo de Supabase incluya `{{ .Token }}` (ver el informe 10G).
+ */
+export async function entrarConCodigo(correo: string, codigo: string): Promise<Resultado> {
+  if (!supabase) return { error: SIN_NUBE }
+  const email = correo.trim().toLowerCase()
+  const token = codigo.replace(/s+/g, '')
+  if (!codigoValido(token)) return { error: 'El código son solo números (los del email).' }
+  try {
+    for (const type of ['email', 'email_change'] as const) {
+      const { error } = await supabase.auth.verifyOtp({ email, token, type })
+      if (!error) return { error: null }
+    }
+    return { error: 'Ese código no vale o ha caducado. Pide otro enlace.' }
+  } catch {
+    return { error: MENSAJE_NO_ENTRA }
   }
 }
 
@@ -298,7 +321,7 @@ function recargarLimpio(ruta: string): void {
   } catch {
     /* sin historial: se recarga igual */
   }
-  window.location.reload()
+  recargarSinApertura()
 }
 
 const CLAVE_AVISO_INVITACION = 'trazo:invitacion:aviso'
@@ -409,6 +432,15 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
     if (data.session && !esAnonimo(data.session.user)) escribirSesionStorage(CLAVE_REINTENTO_GOOGLE, null)
     if (data.session) void completarEntrada(data.session)
   })
+  // (Tanda 10G) Si el enlace del email se abrió en otro navegador, el servidor ya sabe que esta cuenta es de verdad pero esta sesión lo ignora hasta renovarse: al volver a la app (con la sesión anónima) se renueva ahora.
+  const alVolver = () => {
+    if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return
+    void supabase!.auth.getSession().then(({ data: s }) => {
+      if (s.session && esAnonimo(s.session.user)) void supabase!.auth.refreshSession().catch(() => undefined)
+    })
+  }
+  document.addEventListener('visibilitychange', alVolver)
+  window.addEventListener('focus', alVolver)
   const { data } = supabase.auth.onAuthStateChange((_evento, sesion) => {
     alCambiar(estadoDeSesion(sesion))
     // El token de la sesión anónima se mantiene al día (Supabase lo cambia al renovarlo): si luego hay que pasar lo suyo a una cuenta, el guardado sirve.
@@ -417,7 +449,11 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
     // (Sin `await` dentro del aviso: Supabase pide no llamarle desde aquí dentro; se hace en el siguiente turno.)
     if (sesion) setTimeout(() => void completarEntrada(sesion), 0)
   })
-  return () => data.subscription.unsubscribe()
+  return () => {
+    data.subscription.unsubscribe()
+    document.removeEventListener('visibilitychange', alVolver)
+    window.removeEventListener('focus', alVolver)
+  }
 }
 
 /* ------------------------------------------------------------------ */

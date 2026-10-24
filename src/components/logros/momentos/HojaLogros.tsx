@@ -11,6 +11,8 @@ import { bannerAntes, bannerDespues, etiquetaDeFase, faseDelViaje, lineaDeGrado,
 import { piezaDeInsignia } from './hoja/piezaDeInsignia'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
+import { abrirPase, pagoActivo } from '../../../lib/pago'
+import { Candado } from '../../pase/Candado'
 
 const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
 
@@ -69,6 +71,8 @@ export default function HojaLogros(): ReactNode {
   const fase = faseDelViaje(estado?.viaje)
   const etiqueta = estado ? etiquetaDeFase(fase, estado.viaje, estado.ciudad) : null
   const hayViaje = Boolean(estado?.viaje)
+  // Tanda 10G: sin el pase, la vitrina y las colecciones se ven, cerradas (en gris), con lo que ganarías; tocarlas abre el pase. [Visto] no suma sin pase, salvo el día de prueba (lo decide el servidor).
+  const sinPase = !pagoActivo()
 
   const nuevas = estado ? estado.colecciones.filter((c) => c.nuevo_hoy && fase !== 'antes') : []
   const resto = estado ? estado.colecciones.filter((c) => !(c.nuevo_hoy && fase !== 'antes')) : []
@@ -103,6 +107,8 @@ export default function HojaLogros(): ReactNode {
             <p style={{ textAlign: 'center', font: "400 13.5px 'Geist'", color: 'rgba(28,34,48,.6)', margin: '24px 0' }}>{cargado ? 'Todavía no hay logros que enseñar.' : 'Un momento…'}</p>
           ) : (
             <>
+              {sinPase && <Candado datos="logros-sin-pase" texto={`Con el Pase de ${estado.ciudad}, cada sitio que ves suma`} />}
+              <div data-logros-cerrados={sinPase ? '1' : undefined} onClickCapture={sinPase ? (e) => { e.stopPropagation(); e.preventDefault(); abrirPase() } : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 12, ...(sinPase ? { filter: 'grayscale(1)', opacity: 0.55, cursor: 'pointer' } : {}) }}>
               <div style={{ display: 'grid', gridTemplateColumns: estado.sellos.length > 1 ? '1.55fr 1fr' : '1fr', gap: 8 }}>
                 {estado.sellos.map((s, i) => (
                   <TarjetaDeSello key={s.id} sello={s} grande={i === 0} fase={fase} />
@@ -126,6 +132,7 @@ export default function HojaLogros(): ReactNode {
                 ))}
               </div>
               <Secretos fase={fase} estado={estado} verEscena={(id) => setEscena(id)} />
+              </div>
               {fase === 'despues' && (
                 <button
                   type="button"

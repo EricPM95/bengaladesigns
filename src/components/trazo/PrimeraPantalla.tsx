@@ -57,11 +57,20 @@ interface Props {
   onVolverAMiViaje?: (() => void) | null
   /** Solo las pruebas y las capturas: el estado con el que arranca (el campo enfocado y lo escrito). */
   inicial?: InicialPrimeraPantalla
+  /** Tanda 10G: 'elegir' (origen y destino) o 'transporte': el mapa se queda, la línea se dibuja y la tarjeta de abajo pasa a ser la distancia y los transportes (`transporte`), sin cambiar de pantalla. */
+  fase?: 'elegir' | 'transporte'
+  transporte?: React.ReactNode
+  /** Cuánto lleva dibujada la línea (0 a 1) y si la carga de los transportes ya acabó (el título pasa de «Conectando…» a «¿Cómo quieres llegar…?»). */
+  progreso?: number
+  cargado?: boolean
+  /** «Cambiar ruta»: vuelve a elegir origen y destino. */
+  onCambiar?: () => void
 }
 
 const reducirMovimiento = (): boolean => typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
 
-export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, onNext, ancho, alto, totalPasos, onVolverAMiViaje, inicial }: Props) {
+export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, onNext, ancho, alto, totalPasos, onVolverAMiViaje, inicial, fase = 'elegir', transporte, progreso = 0, cargado = false, onCambiar }: Props) {
+  const enTransporte = fase === 'transporte'
   const destinos = useDestinosCurados()
   const lista = useMemo<DestinoCurado[]>(() => destinos ?? [], [destinos])
   const [tierra, setTierra] = useState('')
@@ -106,13 +115,13 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
   const objetivo = useCallback((): Camara => {
     if (usuario.current) return usuario.current
     if (xyO && xyD) {
-      const f = encuadrar(xyO, xyD, ancho, alto)
+      const f = encuadrar(xyO, xyD, ancho, enTransporte ? alto * 0.3 : alto)
       if (cerca.current && f.span > 500) return { cx: xyD[0] - 60, cy: xyD[1] + 10, span: 420 }
       return f
     }
     if (xyD) return { cx: xyD[0], cy: xyD[1] - 10, span: 210 }
     return { cx: EUROPA[0], cy: EUROPA[1], span: 760 }
-  }, [xyO, xyD, ancho, alto])
+  }, [xyO, xyD, ancho, alto, enTransporte])
 
   // Al cambiar origen o destino, se suelta lo que el viajero había arrastrado y la cámara va hacia el encuadre nuevo; con los dos puestos y lejos, a los 3,6 s se acerca al destino.
   const claveDeLugares = `${origin?.coordinates.lat},${origin?.coordinates.lng}|${destination?.coordinates.lat},${destination?.coordinates.lng}`
@@ -315,7 +324,9 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
           {tierra && <path d={tierra} fill="#FBF3E2" stroke="rgba(166,124,82,.4)" strokeWidth={0.8} vectorEffect="non-scaling-stroke" transform={`translate(${ancho / 2} ${anclaY}) scale(${k}) translate(${-c.cx} ${-c.cy})`} />}
           {pO && pD && pC && (
             <>
-              <path d={`M${pO[0]} ${pO[1]}Q${pC[0]} ${pC[1]} ${pD[0]} ${pD[1]}`} fill="none" stroke={ORO_CLARO} strokeWidth={2} strokeDasharray="2 7" strokeLinecap="round" opacity={0.9} data-curva />
+              <path d={`M${pO[0]} ${pO[1]}Q${pC[0]} ${pC[1]} ${pD[0]} ${pD[1]}`} fill="none" stroke={ORO_CLARO} strokeWidth={2} strokeDasharray="2 7" strokeLinecap="round" opacity={enTransporte ? 0.45 : 0.9} data-curva />
+              {/* (Tanda 10G) Al trazar la ruta, la línea de origen a destino se dibuja entera, a la vez que se calculan los transportes. */}
+              {enTransporte && <path d={`M${pO[0]} ${pO[1]}Q${pC[0]} ${pC[1]} ${pD[0]} ${pD[1]}`} pathLength={1} fill="none" stroke={ORO_OSCURO} strokeWidth={2.6} strokeLinecap="round" strokeDasharray={`${Math.max(0.001, Math.min(1, progreso))} 1`} data-linea-trazada />}
               <circle cx={pO[0]} cy={pO[1]} r={7} fill={CREMA} stroke={TINTA} strokeWidth={2.5} />
               {avion && <path d="M0 -10L3 -3L11 2L11 4L3 2L2 7L5 9L5 10L0 9L-5 10L-5 9L-2 7L-3 2L-11 4L-11 2L-3 -3Z" fill={TINTA} transform={`translate(${avion.x} ${avion.y}) rotate(${avion.ang}) scale(1.05)`} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,.5))' }} data-avion />}
             </>
@@ -360,7 +371,17 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
       <span style={{ position: 'absolute', left: 22, top: 'max(30px, calc(env(safe-area-inset-top) + 14px))', zIndex: 3, display: 'flex', alignItems: 'center' }}>
         <LogoPequeno />
       </span>
-      {onVolverAMiViaje && (
+      {enTransporte && onCambiar && (
+        <button
+          type="button"
+          onClick={onCambiar}
+          data-cambiar-ruta
+          style={{ position: 'absolute', right: 20, top: 'max(26px, calc(env(safe-area-inset-top) + 10px))', zIndex: 4, height: 36, padding: '0 14px', borderRadius: 999, border: '1px solid rgba(28,34,48,.14)', background: 'rgba(255,253,248,.9)', color: TINTA, font: "600 13px 'Geist'", cursor: 'pointer' }}
+        >
+          Cambiar ruta
+        </button>
+      )}
+      {onVolverAMiViaje && !enTransporte && (
         <button
           type="button"
           onClick={onVolverAMiViaje}
@@ -379,8 +400,20 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
             <span key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i === 0 ? ORO_CLARO : 'rgba(28,34,48,.16)' }} />
           ))}
         </div>
-        <h1 style={{ margin: '6px 0 0', font: `400 38px/1.02 ${SERIF}`, textWrap: 'balance', letterSpacing: 0 }}>
-          ¿De dónde sales y <em style={{ color: ORO_TEXTO }}>a dónde vas?</em>
+        <h1 data-titulo-paso style={{ margin: '6px 0 0', font: `400 38px/1.02 ${SERIF}`, textWrap: 'balance', letterSpacing: 0 }}>
+          {!enTransporte ? (
+            <>
+              ¿De dónde sales y <em style={{ color: ORO_TEXTO }}>a dónde vas?</em>
+            </>
+          ) : cargado ? (
+            <>
+              ¿Cómo quieres llegar a <em style={{ color: ORO_TEXTO }}>{destination?.name ?? ''}</em>?
+            </>
+          ) : (
+            <>
+              Conectando <em style={{ color: ORO_TEXTO }}>{origin?.name ?? ''}</em> con <em style={{ color: ORO_TEXTO }}>{destination?.name ?? ''}</em>
+            </>
+          )}
         </h1>
       </div>
 
@@ -456,6 +489,10 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
       )}
 
       <div style={{ position: 'absolute', left: 14, right: 14, bottom: 'max(26px, env(safe-area-inset-bottom))', padding: 14, borderRadius: 28, background: 'linear-gradient(180deg,rgba(255,253,248,.96),rgba(251,243,226,.94))', border: '1px solid #E4D2A4', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', flexDirection: 'column', gap: 10, boxShadow: '0 20px 40px -16px rgba(111,78,55,.4),inset 0 1px 0 rgba(255,255,255,.8)' }}>
+        {enTransporte ? (
+          transporte
+        ) : (
+          <>
         {/* (Tanda 10C: las fotos de los destinos curados van pegadas a la tarjeta de ORIGEN, 8 px por encima, no a una altura fija.) */}
         {foco === 'd' && coinciden.length > 0 && (
           <div className="trazo-noscroll" data-destinos-fila style={{ position: 'absolute', left: -14, right: -14, bottom: '100%', marginBottom: 8, padding: '0 18px', display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
@@ -469,8 +506,9 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
                 onKeyDown={(e) => e.key === 'Enter' && elegirDestino(d)}
                 style={{ flex: 'none', width: 76, borderRadius: 14, background: 'rgba(255,253,248,.82)', border: `1px solid ${destination?.name === d.nombre ? ORO_CLARO : 'rgba(28,34,48,.14)'}`, overflow: 'hidden', cursor: 'pointer' }}
               >
-                <div style={{ height: 54, background: `linear-gradient(150deg,oklch(0.55 0.08 ${(i * 37 + 70) % 360}),oklch(0.28 0.05 ${(i * 37 + 100) % 360}))`, position: 'relative' }}>
-                  <span style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.07) 0 2px,transparent 2px 12px)' }} />
+                {/* (Tanda 10G: la tarjeta lleva la foto de portada del destino, de sus datos —en Roma, el Coliseo—; sin ella, las rayas de siempre.) */}
+                <div data-destino-foto={d.portada_pequena ?? undefined} style={{ height: 54, background: d.portada_pequena ? `center / cover no-repeat url(${d.portada_pequena}), #E9DFC8` : `linear-gradient(150deg,oklch(0.55 0.08 ${(i * 37 + 70) % 360}),oklch(0.28 0.05 ${(i * 37 + 100) % 360}))`, position: 'relative' }}>
+                  {!d.portada_pequena && <span style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.07) 0 2px,transparent 2px 12px)' }} />}
                 </div>
                 <div style={{ padding: '7px 8px 8px', font: `400 15px/1 ${SERIF}` }}>{d.nombre}</div>
               </div>
@@ -532,6 +570,8 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
         >
           Trazar ruta
         </button>
+          </>
+        )}
       </div>
 
     </div>

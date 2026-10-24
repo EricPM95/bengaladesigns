@@ -17,6 +17,7 @@ import { Icono } from '../ui/Icono'
 import { BotonHoja, Hoja } from '../ui/Hoja'
 import type { NombreIcono } from '../../lib/iconos'
 import { MisPases } from './MisPases'
+import { recargarSinApertura } from '../../lib/recargarSinApertura'
 
 const ROJO = 'oklch(0.52 0.19 25)'
 
@@ -137,7 +138,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
       return
     }
     guardarAvisoDeInvitacion(r.yaEstaba ? 'Ya estabas en ese viaje.' : 'Has entrado en el viaje como invitado.')
-    window.location.reload()
+    recargarSinApertura()
   }
 
   if (pantalla === 'pases') return <MisPases onVolver={() => abrir('ajustes')} />

@@ -14,7 +14,6 @@ import { fetchHourlyRain, type HourlyRain } from '../lib/rainForecast'
 import { usePruebasUi } from '../store/usePruebasUi'
 import { textoDeDias, textoDeDuracion } from '../lib/duracionViaje'
 import { useReservasFocusStore } from '../store/useReservasFocusStore'
-import { pagoActivo } from '../lib/pago'
 import { elDia } from '../lib/nombreDeDia'
 import { vueltaCambiada } from '../lib/datosDelViajero'
 import { useAvisosVueloStore } from '../store/useAvisosVueloStore'
@@ -106,7 +105,8 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
         })
       }
       // Tanda 7 (de pago): las fechas del viaje cambiaron y la vuelta tenía hora. Se queda en la campana hasta que el viajero abre su vuelta o la cambia (`marcarVueltaVista`); la app no cambia la vuelta.
-      if (pagoActivo() && vueltaCambiada(route)) {
+      // (Tanda 10G: gratis, como guardar el vuelo.)
+      if (vueltaCambiada(route)) {
         const diaDeVuelta = route.days.at(-1)?.dayNumber ?? route.days.length
         items.push({
           id: 'vuelta-fechas',
@@ -123,7 +123,8 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
         })
       }
       // Tanda 7 (de pago): las reservas que no cuadran con la hora de llegada o de vuelta (lo dan los motores). Se quedan hasta que el viajero lo arregla y se van solos; nada se cambia sin que él lo pulse.
-      if (pagoActivo()) {
+      // (Tanda 10G: gratis; en la gratis nada se cambia solo, igual que antes: el aviso solo cuenta.)
+      {
         for (const vuelo of avisosParaLaCampana(avisosVuelo, route)) {
           const acciones: { label: string; run: () => void }[] = []
           for (const boton of vuelo.botones) {

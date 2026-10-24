@@ -35,3 +35,6 @@ export function emailResumido(email: string): string {
   const antes = String(email ?? '').split('@')[0]
   return antes ? `${antes}@…` : ''
 }
+
+/** Pura (Tanda 10G): ¿tiene pinta de código del email? De 6 a 8 números (sin espacios). */
+export const codigoValido = (codigo: string): boolean => /^\d{6,8}$/.test(codigo)

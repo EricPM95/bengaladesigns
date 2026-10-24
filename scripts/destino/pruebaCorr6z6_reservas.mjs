@@ -82,9 +82,9 @@ function todoListo(route, version) {
   const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [])
   enRuta.forEach((item, i) => reservas.push({ id: `rx${i}`, kind: 'entrada', refId: item.isFreeTour ? 'Free Tour' : item.name, name: item.name, placeNames: item.placeNames, dateIso: route.answers.dateRange ? INICIO : null, dayNumber: route.answers.dateRange ? null : 1, time: '10:00' }))
   const listo = { ...route }
-  if (version === 'completa') {
+  {
     const legs = legsOf(route, infoLlegada)
-    listo.accommodationZone = info.zonasAlojamiento[0]?.id ?? null
+    if (version === 'completa') listo.accommodationZone = info.zonasAlojamiento[0]?.id ?? null
     listo.arrivalFlightTime = '09:00'
     listo.departureFlightTime = '19:30'
     listo.arrivalPointId = legs.arrival.points[0]?.id ?? route.arrivalPointId
@@ -99,7 +99,7 @@ const estilosFalta = new Set()
 for (const [clave, route] of Object.entries(rutas)) {
   const lista = clave === 'con' ? momentos : [{ clave: 'sin-fechas', hoy: null }]
   for (const version of ['gratis', 'completa']) {
-    const total = version === 'completa' ? 3 : 2
+    const total = 3 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis)
     for (const m of lista) {
       const nombre = `RESERVAS · ${clave} fechas · ${version} · ${m.clave}`
       const html = pintaHtml(ReservasPanel, { route, onClose() {} }, route, { version, hoy: m.hoy })
@@ -132,9 +132,9 @@ for (const [clave, route] of Object.entries(rutas)) {
         const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [])
         debe(new RegExp(`0 de ${total} listo`).test(claraTexto.replace(/\n/g, ' ')) && !/Tu viaje a/.test(claraTexto), '1b clara', `${nombre}: no dice solo «0 de ${total} listo», sin «Tu viaje a…» delante (${plano(claraTexto)})`)
         const fichas = [...clara.matchAll(/data-ficha="(\w+)"/g)].map((x) => x[1])
-        const esperadas = version === 'completa' ? ['llegada', 'aloj', 'entradas'] : ['aloj', 'entradas']
+        const esperadas = ['llegada', 'aloj', 'entradas']
         debe(fichas.join() === esperadas.join(), '1b clara', `${nombre}: las fichas son ${fichas.join()} y deberían ser ${esperadas.join()}`)
-        debe(new RegExp(`Entradas 0/${enRuta.length}`).test(claraTexto) && (version === 'completa') === /Llegada y vuelta/.test(claraTexto), '1b clara', `${nombre}: fichas con textos mal (${plano(claraTexto)})`)
+        debe(new RegExp(`Entradas 0/${enRuta.length}`).test(claraTexto) && /Llegada y vuelta/.test(claraTexto), '1b clara', `${nombre}: fichas con textos mal (${plano(claraTexto)})`)
         debe((clara.match(/class="h-1 flex-1 rounded/g) ?? []).length === total, '1b clara', `${nombre}: la barra no tiene ${total} tramos`)
         debe((html.match(/data-blk="resumen"/g) ?? []).length === 1 && (texto.match(/\d+ de \d+ listo/g) ?? []).length === 1, '1b clara', `${nombre}: hay más de un resumen`)
       } else {
@@ -174,7 +174,7 @@ debe(estilosFalta.size === 1, '1d falta', `el «Falta» tiene ${estilosFalta.siz
 // 1b/1d. Todo listo: verde con ✓, y el «Falta» pasa a verde con el mismo componente.
 for (const [clave, route] of Object.entries(rutas)) {
   for (const version of ['gratis', 'completa']) {
-    const total = version === 'completa' ? 3 : 2
+    const total = 3 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis)
     const { reservas, hoteles, route: listo } = todoListo(route, version)
     const html = pintaHtml(ReservasPanel, { route: listo, onClose() {} }, listo, { version, hoy: clave === 'con' ? '2027-03-01' : null, reservas, hoteles })
     const clara = html.slice(html.indexOf('data-blk="resumen"'), html.indexOf('data-blk="', html.indexOf('data-blk="resumen"') + 12))

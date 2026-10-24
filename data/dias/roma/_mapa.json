@@ -2,5 +2,7 @@
   "_nota": "Dónde pone la primera pantalla el pin de este destino (Tanda 10). Lo lee server/destinosCurados.js junto con los días escritos (listas.json), los datos del destino (data/pipeline_v2/<clave>.json) y los logros con su pase (data/logros/<clave>.json): un destino aparece en el mapa solo cuando tiene las cuatro cosas. Para añadir un destino nuevo, su carpeta de días lleva su propio _mapa.json. `lat` y `lng`: el centro de la ciudad; `iso`: el país en minúsculas (para la bandera).",
   "lat": 41.9028,
   "lng": 12.4964,
-  "iso": "it"
+  "iso": "it",
+  "portada": "/fotos/roma/dia_coliseo.jpg",
+  "portada_pequena": "/fotos/roma/dia_coliseo_p.jpg"
 }

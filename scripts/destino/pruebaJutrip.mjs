@@ -173,14 +173,14 @@ const raizDatos = 'data'
   debe((await app.evaluar("getComputedStyle(document.querySelector('#apertura [data-palabra-jutrip]')).fontFamily")).includes('Italiana'), 'apertura', 'la palabra JUTRIP va en Italiana')
   debe((await app.evaluar("document.querySelector('#apertura [data-palabra-jutrip]').textContent")) === 'JUTRIP', 'apertura', 'la palabra del logo dice JUTRIP, letra a letra')
   const durs = await app.evaluar("Array.from(document.querySelectorAll('#apertura *')).map((e) => getComputedStyle(e).animationDuration).filter((d) => d && d !== '0s')")
-  debe(durs.length > 20 && durs.every((d) => d.split(',').every((x) => x.trim() === '3s')), 'apertura', `todo el movimiento de la apertura dura 3 s (${[...new Set(durs)].join(' ')})`)
+  debe(durs.length > 20 && durs.every((d) => d.split(',').every((x) => x.trim() === '3.5s')), 'apertura', `todo el movimiento de la apertura dura 3,5 s (${[...new Set(durs)].join(' ')}) (Tanda 10G)`)
   const vueltas = await app.evaluar("Array.from(document.querySelectorAll('#apertura *')).map((e) => getComputedStyle(e).animationIterationCount).filter((d) => d && d !== '1')")
   debe(vueltas.length === 0 && durs.length > 0, 'apertura', 'la apertura sale UNA sola vez (ninguna animación se repite)')
   const letrasLema = await app.evaluar("document.querySelectorAll('#apertura [data-lema] > span').length")
   debe(letrasLema === 'De viajeros, para viajeros'.length, 'apertura', `el lema se escribe letra a letra (${letrasLema} letras)`)
   const css = leer('shared/marca/aperturaJutrip.js')
   debe(/prefers-reduced-motion: reduce\)\{#apertura \*\{animation:none!important\}\}/.test(css), 'apertura', 'con las animaciones reducidas la pantalla queda quieta, con el logo y la frase')
-  debe(/DURACION = 3[^.0-9]/.test(css) && /3000 - performance\.now\(\)/.test(leer('src/main.tsx')), 'apertura', 'se quita a los 3 segundos de abrirse (la animación y main.tsx dicen lo mismo)')
+  debe(/DURACION = 3\.5\b/.test(css) && !/performance\.now\(\)/.test(leer('src/main.tsx')) && /animationend/.test(leer('src/main.tsx')) && !/pointerdown/.test(leer('src/main.tsx')), 'apertura', 'se quita cuando ACABA su animación (3,5 s) y nada la corta: ni el reloj de la página ni un toque (Tanda 10G)')
   await app.evaluar("import('/src/dev/escaparate.ts').then(() => window.__escaparate.abrir('c3-A1'))")
   await app.esp(1500)
   const entrar = await app.evaluar("document.querySelector('[data-entrar]')?.innerText ?? ''")
@@ -192,10 +192,10 @@ const raizDatos = 'data'
   const privacidad = await app.evaluar("document.querySelector('[data-privacidad]')?.innerText ?? ''")
   debe(/JUTRIP/.test(privacidad) && /Avisos de destinos nuevos/.test(privacidad) && /Solo los usamos para avisarte cuando llegue ese destino/.test(privacidad) && !/\b(Routy|Trazo)\b/.test(privacidad), 'privacidad', 'la página de privacidad dice JUTRIP y para qué guardamos el email del aviso de destinos')
   app.cerrar()
-  // Solo al abrir la app: con la marca de «ya abierta» en la pestaña, no sale otra vez (la recarga de después de entrar en la cuenta).
-  const otra = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off', antes: "try { window.sessionStorage.setItem('jutrip:apertura', '1') } catch (e) {}" })
+  // Tanda 10G: sale en CADA apertura; solo la recarga de después de entrar en la cuenta (marca `jutrip:sin-apertura`) la omite.
+  const otra = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off', antes: "try { window.sessionStorage.setItem('jutrip:sin-apertura', '1') } catch (e) {}" })
   await otra.esp(2500)
-  debe(!(await otra.evaluar("Boolean(document.getElementById('apertura'))")), 'apertura', 'la apertura no vuelve a salir en una recarga de dentro (la pestaña ya estaba abierta)')
+  debe(!(await otra.evaluar("Boolean(document.getElementById('apertura'))")), 'apertura', 'la apertura no vuelve a salir en la recarga que hace la app después de entrar en la cuenta')
   otra.cerrar()
 }
 

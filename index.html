@@ -16,17 +16,19 @@
     <title>%MARCA_NOMBRE%</title>
   </head>
   <body>
-    <!-- La pantalla al abrir (I2; Tanda 10E: la de la marca, «02 · 01 · Apertura» de la marca de Design): el marfil con su luz, el logo que entra, la línea que se escribe y la ruta de puntos. Sale UNA vez, unos 2,5 segundos,
-         solo al abrir la app (no en cada recarga de dentro) y un toque la salta; la quita main.tsx. El lema y el logo salen de data/marca.json y de shared/marca/ (plugin de vite.config.ts). -->
+    <!-- La pantalla al abrir (I2; Tanda 10E: la de la marca, «02 · 01 · Apertura» de la marca de Design): el marfil con su luz, el logo que entra, la línea que se escribe y la ruta de puntos. Sale en CADA apertura de la app (Tanda 10G: desde el navegador, desde el icono
+         de la pantalla de inicio y al volver otro día), dura 3,5 segundos, se ve entera y nada la corta (ni un toque); la quita main.tsx cuando ACABA su animación. El lema y el logo salen de data/marca.json y de shared/marca/ (plugin de vite.config.ts). -->
     <div id="apertura" aria-hidden="true" style="position:fixed;inset:0;z-index:2147483000;overflow:hidden;background:radial-gradient(circle at 50% 36%,#FFFFFF,%MARCA_COLOR_APERTURA% 55%,#E7D9BC);color:#1C2230;transition:opacity .35s">
       %MARCA_APERTURA%
     </div>
     <script>
-      // Solo al abrir la app: si esta pestaña ya la abrió (por ejemplo, la recarga de después de entrar en la cuenta), no vuelve a salir.
+      // Sale siempre. Única excepción: la recarga que hace la propia app justo después de entrar en la cuenta o de unirse a un viaje (src/lib/recargarSinApertura.ts deja la marca): para que no salga dos veces seguidas.
       try {
         var almacen = window.sessionStorage
-        if (almacen.getItem('jutrip:apertura')) document.getElementById('apertura').remove()
-        else almacen.setItem('jutrip:apertura', '1')
+        if (almacen.getItem('jutrip:sin-apertura')) {
+          almacen.removeItem('jutrip:sin-apertura')
+          document.getElementById('apertura').remove()
+        }
       } catch (e) {
         /* sin almacenamiento: sale siempre */
       }

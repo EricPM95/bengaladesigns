@@ -85,7 +85,8 @@ function pinta(route, { version, reservas = [] }) {
   return { html, texto: aTexto(html), bloques: bloquesDe(html) }
 }
 
-const PAGO = [/Llegada y vuelta/, /\b\d+ de 3 listo\b/i, /Falta la (ida|vuelta)/, /Eliminar vuelo/, /Aún no lo sé/, /Centro \(Panteón/, /Plaza de España \(/, /¿Ajustamos tu ruta/, /AÑADIR VUELO/i]
+// (Tanda 10G: «Llegada y vuelta» y «x de 3 listo» son GRATIS —guardar el vuelo o el tren es del viajero—; lo de pago es lo que la app hace con ellos y sale cerrado.)
+const PAGO = [/Falta la (ida|vuelta)/, /Eliminar vuelo/, /Aún no lo sé/, /Centro \(Panteón/, /Plaza de España \(/, /¿Ajustamos tu ruta/, /AÑADIR VUELO/i]
 const PROVEEDORES = /Civitatis|Stay22|Booking\.com|GetYourGuide|Viator|Skyscanner|Rentalcars|Holafly|Airalo|Heymondo|N26|Iati|Mapfre/i
 const BANDERAS = /null|undefined|NaN/
 
@@ -144,8 +145,9 @@ for (const dias of [1, 2, 3, 4, 5, 6]) {
         if (version === 'gratis') {
           for (const re of PAGO) debe(!re.test(r.texto), '1 pago en gratis', `${etiqueta}: sale algo de pago (${re})`)
           // (Tanda 6z6: el resumen es el mismo en la gratis, «x de 2 listo» con Alojamiento · Entradas; solo «Llegada y vuelta» es de pago.)
-          debe(!r.bloques.includes('llegada'), '1 pago en gratis', `${etiqueta}: salen los bloques de pago (${r.bloques.join(' · ')})`)
-          debe(/\b\d+ de 2 listo\b/.test(r.texto), '1 resumen en gratis', `${etiqueta}: la gratis no tiene el resumen «x de 2 listo»`)
+          // (Tanda 10G: la gratis lleva «Llegada y vuelta» abierto y el resumen «x de 3 listo».)
+          debe(r.bloques.includes('llegada'), '1 pago en gratis', `${etiqueta}: falta «Llegada y vuelta» en la gratis (${r.bloques.join(' · ')})`)
+          debe(/\b\d+ de 3 listo\b/.test(r.texto), '1 resumen en gratis', `${etiqueta}: la gratis no tiene el resumen «x de 3 listo»`)
         } else {
           debe(r.bloques.includes('llegada'), '1 pago ausente', `${etiqueta}: en la versión de pago no sale «Llegada y vuelta»`)
           debe(r.bloques.includes('resumen') || /Tu viaje a Roma/.test(r.texto), '1 pago ausente', `${etiqueta}: en la versión de pago no sale el resumen`)

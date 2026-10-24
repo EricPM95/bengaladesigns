@@ -4,7 +4,6 @@ import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { HojaZona } from './AlojamientoReservas'
 import { puntoCorto, type ArrivalInfo } from '../../../lib/arrivalReturn'
-import { TarjetaPaseReservas } from '../../pase/TarjetaPaseReservas'
 import { legLine, legOf, legsTag, legWord, type LegKind, type LegState } from '../../../lib/reservasLegs'
 import { shortDateEs } from '../../../lib/bookings'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -15,6 +14,8 @@ import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { HojaPrecio } from './HojaPrecio'
 import { formatoImporte, leerImporte, type Importe } from '../../../lib/dinero'
 import { Icono } from '../../ui/Icono'
+import { Candado } from '../../pase/Candado'
+import { pagoActivo } from '../../../lib/pago'
 
 // (Tanda 7: las 24 horas, de 5 en 5. Una llegada a las 0:30 o un vuelo a las 2:00 son horas de verdad —el motor las trata como «la noche de antes»—; la rueda ya no empieza a las 6:00.)
 const HORAS = Array.from({ length: (24 * 60) / 5 }, (_, i) => {
@@ -354,6 +355,7 @@ export function LlegadaYVuelta({
   const setZona = useRouteStore((state) => state.setAccommodationZone)
   const marcarVueltaVista = useRouteStore((state) => state.marcarVueltaVista)
   const zonaElegida = route.accommodationZone ?? null
+  const pago = pagoActivo()
   // Las hojas del tramo abierto: la rueda de la hora, la de la otra hora (opcional), el precio y la zona.
   const [hoja, setHoja] = useState<{ leg: LegKind; que: 'hora' | 'otraHora' | 'precio' } | 'zona' | null>(null)
   const hojaLeg = hoja && hoja !== 'zona' ? hoja : null
@@ -491,7 +493,7 @@ export function LlegadaYVuelta({
                     onCompania={(texto) => setLegCompania(leg.kind, texto)}
                     onOtraHora={() => setHoja({ leg: leg.kind, que: 'otraHora' })}
                     onOtroPunto={(texto) => setLegOtroPunto(leg.kind, texto)}
-                    zonaPendiente={Boolean(leg.time) && !zonaElegida && zonas.length > 0}
+                    zonaPendiente={pago && Boolean(leg.time) && !zonaElegida && zonas.length > 0}
                     onZona={() => setHoja('zona')}
                     onFechas={onFechas}
                     onEliminar={() => {
@@ -518,7 +520,8 @@ export function LlegadaYVuelta({
         )}
       </BloqueShell>
       {/* P1 (cuentas parte 3): con el vuelo guardado y sin el pase de este destino, debajo del vuelo: «Con el Pase de Roma, tu primer día se ajusta solo». Con el cobro apagado, nada. */}
-      {ida.done && ida.time && ida.mode !== 'coche' && <TarjetaPaseReservas hora={ida.time} destino={route.destination} noun={legWord(ida.mode).noun} />}
+      {/* Tanda 10G: sin el pase, debajo del vuelo guardado, la pieza del candado (la de toda la app): guardar el vuelo es gratis; ajustar el primer y el último día a él, del pase. */}
+      {!pago && (ida.done || vuelta.done) && <Candado className="mt-2.5" datos="llegada-ajuste" texto="Con el pase, ajustamos tu primer y tu último día a tu vuelo" />}
       {hojaLeg?.que === 'hora' && (
         <HojaHoraLlegada
           leg={hojaLeg.leg === 'arrival' ? ida : vuelta}

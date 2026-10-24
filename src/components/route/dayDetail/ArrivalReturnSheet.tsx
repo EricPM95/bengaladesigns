@@ -287,7 +287,8 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                     <p className="text-[13px] text-text/60">{arrival ? medio.textos.llegada_sub : medio.textos.vuelta_sub}</p>
                   </div>
                 </div>
-                {pago && mode !== 'coche' && (
+                {/* (Tanda 10G: guardar el vuelo o el tren es GRATIS: la fila «+ Añadir vuelo» / «Editar» sale en las dos versiones.) */}
+                {mode !== 'coche' && (
                   <div className="flex items-center justify-between gap-3 rounded-2xl border border-text/[.10] bg-bg-card px-3.5 py-2.5">
                     {/* Los datos se cortan si no caben; la hora clave, nunca. */}
                     <p className="flex min-w-0 items-center gap-1.5 font-mono text-[12px] font-medium uppercase tracking-[.05em] text-text/75 max-[479px]:text-[11px] max-[479px]:tracking-[.02em]">

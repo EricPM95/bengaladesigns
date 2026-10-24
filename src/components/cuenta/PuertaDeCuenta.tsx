@@ -5,6 +5,7 @@ import { aceptarInvitacionPendiente, canjearInvitacion, invitacionAceptada, invi
 import { EntrarCuenta } from './EntrarCuenta'
 import { InvitacionRecibida } from './InvitacionRecibida'
 import { useCuenta } from './useCuenta'
+import { recargarSinApertura } from '../../lib/recargarSinApertura'
 
 /**
  * La puerta de la app (cuentas parte 3): con las cuentas encendidas, la cuenta se pide al empezar. Sin cuenta de verdad sale la pantalla de entrar (A1 a A3); no hay «seguir sin
@@ -54,7 +55,7 @@ function PuertaEncendida() {
       return
     }
     guardarAvisoDeInvitacion(r.yaEstaba ? 'Ya estabas en ese viaje.' : 'Has entrado en el viaje como invitado.')
-    window.location.reload()
+    recargarSinApertura()
   }
   const seguir = () => {
     olvidarInvitacionPendiente()

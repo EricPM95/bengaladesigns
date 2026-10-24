@@ -66,9 +66,12 @@ export function HoySinPase({ route, startIso, fase, simulada = null, onPonFechas
         <span style={{ font: "400 24px/1.15 'Instrument Serif',serif", textWrap: 'balance' as never }}>
           <TextoConPase texto={pase.pruebaGastada ? `Ya has usado tu día de prueba. Con el ${nombrePase}, HOY te acompaña todo el viaje.` : `Tienes un día de prueba con HOY, gratis. Con el ${nombrePase}, te acompaña todo el viaje.`} />
         </span>
-        <button type="button" onClick={pedirPago} data-hoy-ver-pase className="flex h-[54px] items-center justify-center rounded-full text-[15px] font-bold" style={botonOro()}>
-          {`Ver el ${nombrePase}`}
-        </button>
+        {/* (Tanda 10G: antes del viaje el [Ver el Pase de Roma] ya está en el panel de arriba: aquí no se repite; durante y después del viaje, este es el único.) */}
+        {!antes && (
+          <button type="button" onClick={pedirPago} data-hoy-ver-pase className="flex h-[54px] items-center justify-center rounded-full text-[15px] font-bold" style={botonOro()}>
+            {`Ver el ${nombrePase}`}
+          </button>
+        )}
       </div>
     </>
   )

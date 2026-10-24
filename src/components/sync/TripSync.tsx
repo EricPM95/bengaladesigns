@@ -5,6 +5,7 @@ import { bootstrapTraveler, loadAllTrips, saveTrip, type TripPayload } from '../
 import { supabase } from '../../lib/supabaseClient'
 import { getTodayTripContext } from '../../lib/todayMode'
 import { demoActivo } from '../../lib/logros'
+import { dondeAbrir } from '../../lib/dondeAbrir'
 
 const SAVE_DEBOUNCE_MS = 1500
 
@@ -111,8 +112,12 @@ export function TripSync() {
         // Si mientras cargaba ya se puso en marcha otro flujo (p. ej. un enlace de viaje
         // compartido, ver decodeTripFromUrl en App.tsx), no lo pisamos con lo guardado.
         if (useRouteStore.getState().screen === 'destination') {
-          const resumable = trips.find((trip) => trip.generationState)
-          const todayTrip = trips.find((trip) => !trip.generationState && getTodayTripContext(trip.route))
+          const donde = dondeAbrir(
+            trips,
+            (trip) => !trip.generationState && Boolean(getTodayTripContext(trip.route)),
+          )
+          const resumable = donde.tipo === 'reanudar' ? donde.viaje : null
+          const todayTrip = donde.tipo === 'hoy' ? donde.viaje : null
 
           if (resumable && resumable.generationState) {
             // Generación a medias — retomarla en vez de abrir la ruta directamente (que aún no
@@ -125,8 +130,14 @@ export function TripSync() {
           } else if (todayTrip) {
             useSyncStore.getState().setActiveTripId(todayTrip.id)
             hydrateTrip(todayTrip)
-          } else if (trips.length > 0) {
-            setScreen('myTrips')
+            // (Tanda 10G: si hoy es un día del viaje, al abrir la app sale HOY, aunque antes estuvieras en otra pestaña.)
+            useRouteStore.getState().setMode('today')
+          } else if (donde.tipo === 'ultimo') {
+            // (Tanda 10G: con la sesión abierta, al abrir la app sale tu ÚLTIMO viaje —el guardado más reciente—, siempre en RUTA y sin día elegido. «Mis viajes» se abre desde el Perfil.)
+            useSyncStore.getState().setActiveTripId(donde.viaje.id)
+            hydrateTrip(donde.viaje)
+            useRouteStore.getState().setMode(donde.modo)
+            useRouteStore.getState().setActiveDayId(null)
           }
         }
 

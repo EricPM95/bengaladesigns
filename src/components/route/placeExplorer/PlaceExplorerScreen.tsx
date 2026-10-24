@@ -29,6 +29,7 @@ import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { CERRADO_ESTE_DIA, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 import { Icono } from '../../ui/Icono'
+import { Candado } from '../../pase/Candado'
 import { explorarConCercania } from '../../../lib/explorarDePago'
 import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
 import { diaCorto } from '../../../lib/nombreDeDia'
@@ -1061,6 +1062,12 @@ export function PlaceExplorerScreen({
                 </button>
               )}
             </label>
+            {/* Tanda 10G: «Cerca de ti» es del pase; sin él sale cerrado, no escondido. */}
+            {!trimmedQuery && !cercaDeMi && (
+              <Candado datos="explorar-cerca-de-ti" texto="Con el pase, ordena los sitios por lo cerca que los tienes de ti">
+                <span style={{ font: "600 14px 'Geist'" }}>Cerca de ti</span>
+              </Candado>
+            )}
             {!trimmedQuery && cercaDeMi && (
               <div className="relative grid grid-cols-2" style={{ height: 42, borderRadius: 14, background: '#EDE4D3', padding: 4 }}>
                 <span

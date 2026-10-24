@@ -3,10 +3,10 @@
  *   · sus días escritos          data/dias/<clave>/listas.json
  *   · los datos del destino      data/pipeline_v2/<clave>.json
  *   · sus logros con el pase     data/logros/<clave>.json
- *   · dónde va su pin            data/dias/<clave>/_mapa.json  ({ lat, lng, iso })
+ *   · dónde va su pin y su foto de portada            data/dias/<clave>/_mapa.json  ({ lat, lng, iso, portada, portada_pequena })
  * Cuando se añade otro destino con sus cuatro cosas, sale solo. Hoy, solo Roma.
  *
- *   GET /api/destinos-curados   { ok, destinos: [{ clave, nombre, pais, iso, lat, lng }] }
+ *   GET /api/destinos-curados   { ok, destinos: [{ clave, nombre, pais, iso, lat, lng, portada, portada_pequena }] }
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -31,7 +31,9 @@ export function leerDestinosCurados(raizData) {
       if (!numero(mapa.lat) || !numero(mapa.lng) || mapa.lat < -90 || mapa.lat > 90 || mapa.lng < -180 || mapa.lng > 180) continue
       const nombre = String(logros.ciudad ?? datos.destination ?? '').trim()
       if (!nombre) continue
-      salida.push({ clave, nombre, pais: String(datos.country ?? logros.pais_defecto ?? '').trim(), iso: String(mapa.iso ?? '').toLowerCase() || null, lat: mapa.lat, lng: mapa.lng })
+      // La foto de portada del destino (Tanda 10G, la tarjeta del primer paso): sale de su `_mapa.json` (`portada`, y `portada_pequena` para las tarjetas), no de una lista del código.
+      const ruta = (v) => (typeof v === 'string' && v.startsWith('/') ? v : null)
+      salida.push({ clave, nombre, pais: String(datos.country ?? logros.pais_defecto ?? '').trim(), iso: String(mapa.iso ?? '').toLowerCase() || null, lat: mapa.lat, lng: mapa.lng, portada: ruta(mapa.portada), portada_pequena: ruta(mapa.portada_pequena) ?? ruta(mapa.portada) })
     } catch {
       /* un archivo roto: ese destino no sale */
     }

@@ -83,7 +83,8 @@ function excursionDeLaVuelta(route: Route, reservas: Reservation[]): VueltaParaM
  * Devuelve `{}` en la gratis, sin ruta, en la ruta a mano (salvo `paraAvisos`) y en coche; cada mitad sin hora se deja fuera.
  */
 export function datosParaMotor(route: Route | null | undefined, reservas: Reservation[], info: ArrivalInfo | null, opciones: { paraAvisos?: boolean } = {}): DatosParaMotor {
-  if (!route || !pagoActivo()) return {}
+  // (Tanda 10G: con `paraAvisos` se manda también en la gratis: el aviso de «tu entrada no cuadra con tu vuelo» es gratis —evita perder una entrada pagada—; lo que no se hace en la gratis es ajustar los días.)
+  if (!route || (!pagoActivo() && !opciones.paraAvisos)) return {}
   const aMano = isManualRoute(route)
   if (aMano && !opciones.paraAvisos) return {}
   const modos = tripModes(route)
@@ -124,7 +125,7 @@ export async function llegadaVueltaActuales(opciones: { soloSiRehace?: boolean; 
   const { useRouteStore } = await import('../store/useRouteStore')
   const { route, reservations, keepBookingsOnNextRoute } = useRouteStore.getState()
   if (!route || (opciones.soloSiRehace && !keepBookingsOnNextRoute)) return {}
-  if (!pagoActivo()) return {}
+  if (!pagoActivo() && !opciones.paraAvisos) return {}
   const info = await fetchArrivalInfo(route.destination).catch(() => null)
   return datosParaMotor(route, reservations, info, { paraAvisos: opciones.paraAvisos })
 }

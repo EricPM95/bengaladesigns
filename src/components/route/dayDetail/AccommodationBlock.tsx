@@ -4,6 +4,7 @@ import { alojamientoCubierto, lineaAlojamiento } from '../../../lib/tuAlojamient
 import { buildDestinationSegments } from '../../../lib/destinationSegments'
 import { pagoActivo } from '../../../lib/pago'
 import { Icono } from '../../ui/Icono'
+import { Candado } from '../../pase/Candado'
 
 interface AccommodationBlockProps {
   city: string
@@ -53,13 +54,16 @@ export function AccommodationBlock({ city, segmentDayId, totalNights }: Accommod
   )
 
   // Tanda 6y4: el aviso solo sale mientras FALTA el alojamiento (la misma regla que la tarjeta «Alojamiento» de RESERVAS). Con el hotel ya añadido, ni aviso ni fila: se ve y se cambia desde RESERVAS.
-  if (cubierto) return null
+  // (Tanda 10G: sin el pase, la zona del alojamiento sale cerrada debajo —y con el alojamiento ya guardado, es lo único que queda—: guardarlo es gratis, que cada día empiece cerca de donde duermes es del pase.)
+  const cerradoDelPase = !pagoActivo() ? <Candado datos="alojamiento-zona" className="my-1" texto="Con el pase, cada día empieza cerca de donde duermes" /> : null
+  if (cubierto) return cerradoDelPase
 
   return (
     <>
       {selectedHotel
         ? fila(true, selectedHotel.name, lineaAlojamiento(selectedHotel, totalNights), 'Ver o cambiar tu alojamiento', () => abrirTuAlojamiento(segmentDayId))
         : fila(false, `Añade alojamiento en ${city}`, '', `Añadir alojamiento en ${city}`, () => abrirMapa(segmentDayId))}
+      {cerradoDelPase}
       <div aria-hidden="true" className="h-px" style={{ background: 'linear-gradient(90deg,transparent,rgba(28,34,48,.12),transparent)' }} />
     </>
   )

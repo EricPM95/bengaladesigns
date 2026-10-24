@@ -125,9 +125,10 @@ async function reservasListas(route, version) {
   enRuta.forEach((item, i) => reservas.push({ id: `rx${i}`, kind: 'entrada', refId: item.isFreeTour ? 'Free Tour' : item.name, name: item.name, placeNames: item.placeNames, dateIso: route.answers.dateRange ? INICIO : null, dayNumber: route.answers.dateRange ? null : 1, time: '10:00' }))
   const hoteles = { d1: hotel }
   const listo = { ...route }
-  if (version === 'completa') {
+  // (Tanda 10G: guardar el vuelo y el punto es gratis; la zona del alojamiento, solo de pago.)
+  {
     const legs = legsOf(route, infoLlegada)
-    listo.accommodationZone = info.zonasAlojamiento[0]?.id ?? null
+    if (version === 'completa') listo.accommodationZone = info.zonasAlojamiento[0]?.id ?? null
     listo.arrivalFlightTime = '09:00'
     listo.departureFlightTime = '19:30'
     listo.arrivalPointId = legs.arrival.points[0]?.id ?? route.arrivalPointId
@@ -143,7 +144,7 @@ for (const [clave, route] of Object.entries(rutas)) {
       const html = pintaHtml(ReservasPanel, { route, onClose() {} }, route, { version, hoy: m.hoy, mode: 'bookings' })
       const texto = aTexto(html)
       const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [])
-      const total = version === 'completa' ? 3 : 2
+      const total = 3 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis)
       if (m.clave === 'despues') {
         debe(!/data-blk="resumen"/.test(html) && !/Antes del viaje|Durante el viaje|empieza en|Estás en|\d de \d listo/.test(texto), '2 tarjeta', `${nombre}: después del viaje sale la tarjeta (${plano(texto).slice(0, 200)})`)
         continue
@@ -152,7 +153,7 @@ for (const [clave, route] of Object.entries(rutas)) {
       debe(new RegExp(`0 de ${total} listo`).test(texto), '2 tarjeta', `${nombre}: no dice «0 de ${total} listo» (${plano(texto).slice(0, 300)})`)
       const entradasHechas = enRuta.filter((item) => item.reservation).length
       debe(new RegExp(`Entradas ${entradasHechas}/${enRuta.length}`).test(texto) && /^Alojamiento$/m.test(texto), '2 tarjeta', `${nombre}: faltan las fichas Alojamiento y Entradas ${entradasHechas}/${enRuta.length} en el resumen`)
-      debe(version === 'completa' ? /^Llegada y vuelta$/m.test(texto.slice(0, texto.indexOf('Presupuesto') > 0 ? texto.indexOf('Presupuesto') : 600)) : !/^Llegada y vuelta$/m.test(texto), '2 tarjeta', `${nombre}: la ficha «Llegada y vuelta» ${version === 'completa' ? 'falta en la de pago' : 'sale en la gratis (es de pago)'}`)
+      debe(/^Llegada y vuelta$/m.test(texto.slice(0, texto.indexOf('Presupuesto') > 0 ? texto.indexOf('Presupuesto') : 600)), '2 tarjeta', `${nombre}: la ficha «Llegada y vuelta» falta (Tanda 10G: sale en las dos versiones)`)
       if (m.clave === 'antes') {
         const dias = Math.round((Date.parse(`${INICIO}T00:00:00Z`) - Date.parse(`${m.hoy}T00:00:00Z`)) / unDia)
         debe(/Tu viaje a Roma empieza en/.test(texto) && new RegExp(`^${dias}$`, 'm').test(texto) && /^días$/m.test(texto), '2 tarjeta', `${nombre}: no dice «Tu viaje a Roma empieza en {${dias}} días» (${plano(texto).slice(0, 300)})`)
@@ -177,7 +178,7 @@ for (const [clave, route] of Object.entries(rutas)) {
   // Todo resuelto: «2 de 2 listo» (gratis) o «3 de 3 listo» (de pago), con todas las fichas en verde.
   for (const version of ['gratis', 'completa']) {
     const { reservas, hoteles, route: listo } = await reservasListas(route, version)
-    const total = version === 'completa' ? 3 : 2
+    const total = 3
     for (const hoy of clave === 'con' ? ['2027-03-01', INICIO] : [null]) {
       const nombre = `RESERVAS · ${clave} fechas · ${version} · todo listo${hoy ? ` · ${hoy}` : ''}`
       const html = pintaHtml(ReservasPanel, { route: listo, onClose() {} }, listo, { version, hoy, mode: 'bookings', reservas, hoteles })
@@ -189,7 +190,7 @@ for (const [clave, route] of Object.entries(rutas)) {
 {
   // Cada ficha baja a su bloque: el panel le pasa a la tarjeta el pedido de bloque; y en la gratis solo hay dos fichas.
   const panel = fs.readFileSync('src/components/route/ReservasPanel.tsx', 'utf8')
-  debe(/<ResumenViaje[^>]*onFicha=\{\(bloque\) => pedir\(bloque\)\}/.test(panel) && /\.\.\.\(pago \? \[\{ bloque: 'llegada'/.test(panel), '2 tarjeta', 'las fichas no bajan a su bloque o la gratis lleva Llegada y vuelta')
+  debe(/<ResumenViaje[^>]*onFicha=\{\(bloque\) => pedir\(bloque\)\}/.test(panel) && /\{ bloque: 'llegada' as const, nombre: 'Llegada y vuelta'/.test(panel) && !/\.\.\.\(pago \? \[\{ bloque: 'llegada'/.test(panel), '2 tarjeta', 'las fichas no bajan a su bloque o «Llegada y vuelta» sigue siendo solo de pago (Tanda 10G: es gratis)')
   debe(!/useFaltaPorReservar|Te faltan/.test(fs.readFileSync('src/components/route/reservas/TarjetaCuentaAtras.tsx', 'utf8')), '2 tarjeta', 'queda la línea «Te faltan n cosas» en la tarjeta')
 }
 {

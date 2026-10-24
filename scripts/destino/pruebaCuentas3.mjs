@@ -495,7 +495,8 @@ console.log('2b. Las pantallas del pase (P1, P6, P7, P8b, P9)')
   debe(/Llegada/.test(p1) && /Tu vuelo llega a las 14:20\. Con el /.test(p1) && /Pase de Roma/.test(p1) && /tu primer día se ajusta solo/.test(p1) && /Ver el pase/.test(p1), 'P1', 'P1: «Tu vuelo llega a las 14:20. Con el Pase de Roma, tu primer día se ajusta solo.» y [Ver el pase]')
   debe(M.pintaP1({ hora: '14:20', destino: 'Roma' }) === '', 'P1', 'con el cobro apagado (todo abierto), P1 no sale')
   const reservas = fs.readFileSync('src/components/route/reservas/LlegadaYVuelta.tsx', 'utf8')
-  debe(reservas.indexOf('</BloqueShell>') < reservas.indexOf('<TarjetaPaseReservas') && /ida\.done && ida\.time/.test(reservas), 'P1', 'P1 está en RESERVAS, justo después del bloque del vuelo (no encima de la ruta) y solo con el vuelo guardado')
+  // (Tanda 10G: la tarjeta P1 la sustituye en RESERVAS la pieza del candado de toda la app —«Con el pase, ajustamos tu primer y tu último día a tu vuelo»—, justo después del bloque del vuelo y solo con un vuelo guardado.)
+  debe(reservas.indexOf('</BloqueShell>') < reservas.indexOf('datos="llegada-ajuste"') && /\(ida\.done \|\| vuelta\.done\)/.test(reservas) && /Con el pase, ajustamos tu primer y tu último día a tu vuelo/.test(reservas), 'P1', 'el candado del ajuste está en RESERVAS, justo después del bloque del vuelo (no encima de la ruta) y solo con el vuelo guardado')
 }
 
 

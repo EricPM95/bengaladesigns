@@ -61,10 +61,15 @@ export function fijarVersion(version: 'gratis' | 'completa'): void {
  * cuando exista la pantalla de pago, solo tiene que escuchar este evento (`trazo:pagar`). Hasta entonces la barra con candado dice que es de la versión completa.
  */
 export const EVENTO_PAGAR = 'trazo:pagar'
-export function pedirPago(): void {
+/**
+ * ABRIR EL PASE (Tanda 10G): la UNA función que usan todos los candados, la pastilla «Pase de Roma» de RUTA y todos los [Ver el Pase de Roma]: abre la hoja de compra («¿Cuántos sois?»). Cuando llegue la película del pase
+ * (Design la está haciendo), solo hay que cambiar ESTA función para que abra primero la película. `pedirPago` es el mismo nombre de antes (no se rompe nada de lo que ya lo llamaba).
+ */
+export function abrirPase(): void {
   try {
     window.dispatchEvent(new CustomEvent(EVENTO_PAGAR))
   } catch {
     /* sin ventana (pruebas en el servidor): nada que avisar */
   }
 }
+export const pedirPago = abrirPase

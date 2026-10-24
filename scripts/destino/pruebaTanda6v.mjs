@@ -253,7 +253,7 @@ for (const [nombre, route] of [['sin horas', route5], ['con horas', { ...route5,
 // (Tanda 7: la hoja «¿Ajustamos tu ruta a tu vuelo?» ya no existe —punto 20—; lo que queda por proteger es que «Llegada y vuelta» solo sale de pago, y que ya no hay hoja.)
 {
   const panel = fs.readFileSync('src/components/route/ReservasPanel.tsx', 'utf8')
-  debe(!/FlightAdjustSheet/.test(panel) && /const llegada = pago && unDestino/.test(panel), '6 gratis', 'ReservasPanel sigue con la hoja del vuelo, o «Llegada y vuelta» no está protegida por el interruptor de pago')
+  debe(!/FlightAdjustSheet/.test(panel) && /const llegada = unDestino/.test(panel) && !/const llegada = pago && unDestino/.test(panel), '6 gratis', 'ReservasPanel sigue con la hoja del vuelo, o «Llegada y vuelta» sigue protegida por el interruptor de pago (Tanda 10G: guardar el vuelo es gratis)')
 }
 
 const resumen = [...porRegla.entries()].map(([r, n]) => `${r}: ${n}`).join(' · ')

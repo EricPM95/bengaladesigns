@@ -82,7 +82,6 @@ export function barTextOf({ kind, mode, point, origin, destino, time, pago, codi
   const originUpper = String(origin ?? '').toUpperCase()
   const desdeA = `${head} · ${llegada ? 'DESDE' : 'A'} ${originUpper}`
   if (mode === 'coche') return { eyebrow: `${head} · EN COCHE`, main: 'La ZTL y dónde aparcar', add: null, pill: null }
-  if (!pago) return { eyebrow: desdeA, main: llegada ? `Cómo llegar a ${destino}` : label.volver, add: null, pill: null }
   if (time) {
     const place = point ? point.corto ?? point.nombre : null
     return {
@@ -93,5 +92,7 @@ export function barTextOf({ kind, mode, point, origin, destino, time, pago, codi
       pill: `✓ ${time}`,
     }
   }
-  return { eyebrow: desdeA, main: llegada ? `Añade tu ${label.palabra} y ajustamos tu día` : `Añade tu ${label.palabra} de vuelta y ajustamos tu día`, add: label.boton, pill: null }
+  // (Tanda 10G: guardar el vuelo o el tren es GRATIS: el botón «+ Vuelo» y la pastilla «✓ 11:20» salen en las dos versiones. Lo del pase es ajustar el día: sin él la frase no lo promete.)
+  const ajuste = pago ? ' y ajustamos tu día' : ''
+  return { eyebrow: desdeA, main: llegada ? `Añade tu ${label.palabra}${ajuste}` : `Añade tu ${label.palabra} de vuelta${ajuste}`, add: label.boton, pill: null }
 }

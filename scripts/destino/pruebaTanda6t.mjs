@@ -5,7 +5,7 @@
 //   1. sale «Fuente» en la ventana (ni en las formas de llegar, ni en los bloques, ni en los Tips) o «Tu primera parada»;
 //   2. sale una hora que calcula la app («En el centro», «libre hacia», «Sal a las», «Libre hasta», «Maleta a las») en la barra, en la ventana o en RESERVAS;
 //   3. la pestaña «Traslados» sale fuera de Fiumicino, Ciampino y Civitavecchia (o no sale en ellos, con enlace en los datos), o sale en tren, autobús o coche;
-//   4. en la versión gratis sale «Añadir» o «+ Vuelo» (la fila de la ventana, el botón de la barra);
+//   4. en la versión gratis la barra promete «ajustamos tu día» (Tanda 10G: guardar el vuelo es gratis, ajustar el día es del pase);
 //   5. con hora, la barra dice «Añade tu …» o lleva el botón «+ Vuelo»;
 //   6. los textos de la barra no son los del encargo (de pago sin hora, con hora, gratis y coche, a la llegada y a la vuelta), o sale «null», «undefined», «NaN» o una llave sin rellenar;
 //   7. los datos: ningún `privado`, el traslado solo en Fiumicino, Ciampino y Civitavecchia y sin «#»; la ventana lleva el texto del traslado de los datos (destino y punto, nada de Roma en el código);
@@ -115,13 +115,17 @@ for (const mode of MODOS) {
       }
       continue
     }
-    // Gratis: sin botón ni pastilla, solo la flecha.
-    for (const time of [null, '11:20']) {
-      const b = barra(kind, mode, 'gratis', time, punto)
-      const esperado = { eyebrow: `${cabeza} · ${llegada ? 'DESDE' : 'A'} ${ORIGEN.toUpperCase()}`, main: llegada ? `Cómo llegar a ${info.ciudad}` : VOLVER[mode] }
-      debe(b.text.eyebrow === esperado.eyebrow && b.text.main === esperado.main && !b.text.add && !b.text.pill, '6 textos', `${et} · gratis: ${b.plano}`)
-      debe(!/\+ (Vuelo|Tren|Autobús|Barco)|Añade|Añadir|✓/.test(b.plano), '4 gratis', `${et} · gratis: sale botón o «Añad…» (${b.plano})`)
-      debe(/›/.test(b.plano), '4 gratis', `${et} · gratis: falta la flecha «›»`)
+    // Gratis (Tanda 10G: guardar el vuelo o el tren es GRATIS): sin hora, «Añade tu vuelo» con su botón, SIN prometer «ajustamos tu día»; con hora, la pastilla «✓ 11:20» como en la de pago.
+    {
+      const b = barra(kind, mode, 'gratis', null, null)
+      const esperado = { eyebrow: `${cabeza} · ${llegada ? 'DESDE' : 'A'} ${ORIGEN.toUpperCase()}`, main: llegada ? `Añade tu ${PALABRA[mode]}` : `Añade tu ${PALABRA[mode]} de vuelta`, add: BOTON[mode] }
+      debe(b.text.eyebrow === esperado.eyebrow && b.text.main === esperado.main && b.text.add === esperado.add && !b.text.pill, '6 textos', `${et} · gratis sin hora: ${b.plano}`)
+      debe(!/ajustamos/.test(b.plano), '4 gratis', `${et} · gratis: promete ajustar el día (${b.plano})`)
+    }
+    {
+      const b = barra(kind, mode, 'gratis', '11:20', punto)
+      const esperado = { eyebrow: `${cabeza} · ${corto.toUpperCase()}`, main: llegada ? `Cómo llegar desde ${corto}` : `Cómo llegar a ${corto}`, pill: '✓ 11:20' }
+      debe(b.text.eyebrow === esperado.eyebrow && b.text.main === esperado.main && b.text.pill === esperado.pill && !b.text.add, '6 textos', `${et} · gratis con hora: ${b.plano}`)
     }
     // De pago, sin hora.
     {
@@ -188,8 +192,7 @@ for (const mode of MODOS) {
           debe(sale === debeSalir, '3 traslados', `${et}: la pestaña «Traslados» ${sale ? 'sale' : 'no sale'} y ${debeSalir ? 'debería' : 'no debería'}`)
           // La fila «Sin vuelo añadido · + Añadir vuelo».
           const fila = /Añadir (vuelo|tren|autobús|ferry)/.test(t)
-          if (version === 'gratis') debe(!/Añadir|Editar|Sin (vuelo|tren|autobús|ferry) añadido/.test(t), '4 gratis', `${et}: sale «Añadir» o la fila de la reserva en la versión gratis`)
-          else if (mode !== 'coche') {
+          if (mode !== 'coche') {
             debe(fila === (time === null), '4 fila', `${et}: la fila «+ Añadir …» ${fila ? 'sale' : 'no sale'} y ${time === null ? 'debería' : 'no debería'}`)
             debe(/Editar/.test(t) === (time !== null), '4 fila', `${et}: «Editar» ${/Editar/.test(t) ? 'sale' : 'no sale'} y ${time !== null ? 'debería' : 'no debería'}`)
           }

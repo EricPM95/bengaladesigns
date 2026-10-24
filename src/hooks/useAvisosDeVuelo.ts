@@ -4,7 +4,6 @@ import { useAvisosVueloStore } from '../store/useAvisosVueloStore'
 import { datosParaMotor } from '../lib/llegadaVuelta'
 import { fetchArrivalInfo } from '../lib/arrivalReturn'
 import { reservasParaMotor } from '../lib/engineReservas'
-import { pagoActivo } from '../lib/pago'
 import type { Reservation } from '../lib/bookings'
 import type { Route } from '../lib/types'
 
@@ -36,7 +35,8 @@ export function useAvisosDeVuelo(): void {
 
   useEffect(() => {
     const { poner, vaciar } = useAvisosVueloStore.getState()
-    if (!clave || !pagoActivo()) {
+    // (Tanda 10G: gratis. Guardar el vuelo es gratis y este aviso evita que el viajero pierda una entrada pagada.)
+    if (!clave) {
       vaciar()
       return
     }

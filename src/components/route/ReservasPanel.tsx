@@ -110,12 +110,13 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   // (Tanda 6y4: la misma regla que el aviso de DÍAS y el «!» de preparación, `alojamientoCubierto`.)
   const alojamientoListo = alojamientoCubierto({ pago, unDestino, selections: accommodationSelections, zona: accommodationZone, segmentDayId: primerTramo?.dayIds[0] })
   const fichas = [
-    ...(pago ? [{ bloque: 'llegada' as const, nombre: 'Llegada y vuelta', hecho: legs.arrival.done && legs.departure.done }] : []),
+    // (Tanda 10G: «Llegada y vuelta» es GRATIS —guardar el vuelo o el tren es del viajero—; lo del pase es lo que la app hace con él, y sale cerrado debajo.)
+    { bloque: 'llegada' as const, nombre: 'Llegada y vuelta', hecho: legs.arrival.done && legs.departure.done },
     { bloque: 'aloj' as const, nombre: 'Alojamiento', hecho: alojamientoListo },
     ...(entradas.length > 0 ? [{ bloque: 'entradas' as const, nombre: `Entradas ${entradas.filter((item) => item.reservation).length}/${entradas.length}`, hecho: entradas.every((item) => item.reservation) }] : []),
   ]
 
-  const llegada = pago && unDestino && (
+  const llegada = unDestino && (
     <>
       <LlegadaYVuelta
         route={route}

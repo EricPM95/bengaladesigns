@@ -30,8 +30,9 @@ export function useTripReadiness() {
   const firstDayId = route.days[0]?.id
   // Con lo de pago encendido, la llegada y la vuelta y la zona del alojamiento de RESERVAS cuentan como el transporte y el alojamiento del primer destino.
   const transportDone = new Set(Object.keys(transportBookings))
-  if (pago && legs.arrival.done && firstDayId) transportDone.add(firstDayId)
-  if (pago && legs.departure.done && lastDayId) transportDone.add(lastDayId)
+  // (Tanda 10G: guardar el vuelo o el tren es gratis, así que cuenta en la gratis también; lo de pago es lo que la app hace con él.)
+  if (legs.arrival.done && firstDayId) transportDone.add(firstDayId)
+  if (legs.departure.done && lastDayId) transportDone.add(lastDayId)
   // Alojamiento (Tanda 6z): de pago y con un solo destino cuenta la zona elegida (el hotel que cuenta el viajero solo informa); con varios destinos, el alojamiento que ha puesto en cada uno.
   // (Tanda 6y4: la misma regla que la tarjeta de RESERVAS y el aviso de DÍAS, `alojamientoCubierto`.)
   const segmentos = buildDestinationSegments(route.days)
@@ -54,8 +55,8 @@ export function useTripReadiness() {
   const bloque = buildEntradasBloque(route, destinationInfo.entradasOrden, destinationInfo.entradas, reservations)
   const entries: EntryRow[] = bloque.enRuta.map((item) => ({ id: item.name, name: item.name, placeNames: item.placeNames, day: item.day, reservation: item.reservation }))
   const excursion = destinationInfo.excursions.length > 0 && hasEnoughDaysForExcursions(route, destinationInfo.fromDays) ? buildExcursionRow(route, reservations) : null
-  // Sin lo de pago no hay dónde poner el vuelo ni la zona del alojamiento: esas dos casillas no cuentan (el alojamiento y el billete se buscan fuera).
-  const items = buildReadinessItems(route, resolved, { entries, excursion }).filter((item) => pago || (item.kind !== 'transport' && item.kind !== 'accommodation'))
+  // (Tanda 10G: el vuelo o el tren y el alojamiento se guardan gratis: sus casillas cuentan en las dos versiones.)
+  const items = buildReadinessItems(route, resolved, { entries, excursion })
   const percent = computeReadinessPercent(items)
 
   return { route, items, percent }

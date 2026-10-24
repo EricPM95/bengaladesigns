@@ -33,7 +33,8 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
-// La pantalla al abrir (I2; Tanda 10E, la de JUTRIP) vive en index.html para verse antes de que cargue nada. Sale UNA vez, unos 3 segundos desde que se abre la app, y un toque la salta (index.html decide si sale: solo al abrir la app, no en cada recarga).
+// La pantalla al abrir (I2; Tanda 10E, la de JUTRIP) vive en index.html para verse antes de que cargue nada. Tanda 10G: sale en CADA apertura (index.html solo la omite en la recarga de después de entrar), dura 3,5 segundos, se ve entera
+// y NADA la corta: ni un toque ni la app. Se quita cuando ACABA su animación, contando desde que empieza de verdad (no desde que se abrió la página): si cargar o la letra Italiana tardan, la animación empieza más tarde y se ve igual de entera.
 // En desarrollo se quita al momento (si no, taparía las capturas y las pruebas); `?apertura=1` la deja puesta para verla.
 {
   const apertura = document.getElementById('apertura')
@@ -47,11 +48,14 @@ createRoot(document.getElementById('root')!).render(
     }
     if (import.meta.env.DEV) quitar()
     else {
-      apertura.style.cursor = 'pointer'
-      apertura.addEventListener('pointerdown', quitar, { once: true })
-      // Unos 2,5 segundos desde que se abrió la página (la app ya está pintada por debajo; es lo que dura la animación de shared/marca/aperturaJutrip.js); si cargar tardó más, se quita en cuanto pinta.
-      // Con las animaciones reducidas, la pantalla queda quieta con el logo y la frase, un momento para leerla.
-      window.setTimeout(quitar, reducir ? 1500 : Math.max(0, 3000 - performance.now()))
+      // Con las animaciones reducidas, la pantalla queda quieta con el logo, el lema y la línea nueva, 1,5 segundos desde ahora.
+      if (reducir) window.setTimeout(quitar, 1500)
+      else {
+        // Lo último que entra es la línea «TU APP DE VIAJES» (`data-fin`): cuando acaba su animación, acaba toda la pantalla. Sin ella (una marca sin logo), 3,5 s.
+        const fin = apertura.querySelector('[data-fin]')
+        if (fin) fin.addEventListener('animationend', quitar, { once: true })
+        else window.setTimeout(quitar, 3500)
+      }
     }
   }
 }

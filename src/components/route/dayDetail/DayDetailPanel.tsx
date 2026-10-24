@@ -57,6 +57,7 @@ import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { ArrivalReturnBar } from './ArrivalReturnBar'
 import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
 import { pagoActivo, pedirPago } from '../../../lib/pago'
+import { Candado } from '../../pase/Candado'
 import { ArrivalReturnSheet } from './ArrivalReturnSheet'
 import { BilleteDeVuelo } from './BilleteDeVuelo'
 import { TarjetaTuUltimoDia } from './TarjetaTuUltimoDia'
@@ -400,8 +401,8 @@ export function DayDetailPanel({
   const arrivalChosen = puntoDeLaMitad(arrivalMedio, route?.arrivalPointId, Boolean(arrivalTime)).point
   const departureChosen = puntoDeLaMitad(departureMedio, route?.departurePointId, Boolean(departureTime)).point
   // El billete (Tanda 7, de pago): con la hora de Roma puesta, en lugar de la barra. En coche no hay billete.
-  const billeteLlegada = pago && route ? billeteDe({ route, kind: 'llegada', mode: modes.arrival, point: arrivalChosen }) : null
-  const billeteVuelta = pago && route ? billeteDe({ route, kind: 'vuelta', mode: modes.departure, point: departureChosen }) : null
+  const billeteLlegada = route ? billeteDe({ route, kind: 'llegada', mode: modes.arrival, point: arrivalChosen }) : null
+  const billeteVuelta = route ? billeteDe({ route, kind: 'vuelta', mode: modes.departure, point: departureChosen }) : null
   // La tarjeta del día de vuelta sin hora (Tanda 10B; antes «Tu último día también cuenta»): con el pase y sin él, en el día de vuelta mientras el viajero no ha puesto la hora de salida. Con la hora puesta ya no sale.
   const tarjetaUltimoDia = Boolean(route) && day.isReturnLeg === true && !departureTime
   // Cómo vuelve: el medio que eligió (null si no eligió ninguno: «tu vuelo o tu tren»).
@@ -1379,8 +1380,10 @@ export function DayDetailPanel({
               {billeteLlegada ? (
                 <BilleteDeVuelo billete={billeteLlegada} onOpen={() => setArrivalSheet('llegada')} />
               ) : (
-                <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={pago ? () => goToBooking('llegada') : undefined} />
+                <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={() => goToBooking('llegada')} />
               )}
+              {/* Tanda 10G: con el vuelo guardado y sin el pase, el ajuste del día sale cerrado (guardarlo es gratis). */}
+              {!pago && arrivalTime && modes.arrival !== 'coche' && <Candado datos="dia-ajuste-llegada" texto="Con el pase, tu día se ajusta a la hora de tu vuelo" />}
             </div>
           )}
 
@@ -1586,8 +1589,9 @@ export function DayDetailPanel({
               {billeteVuelta ? (
                 <BilleteDeVuelo billete={billeteVuelta} onOpen={() => abrirFichaDeVuelta()} />
               ) : (
-                <ArrivalReturnBar mode={modes.departure} text={returnBarText} onOpen={() => abrirFichaDeVuelta()} onAdd={pago ? () => goToBooking('vuelta') : undefined} />
+                <ArrivalReturnBar mode={modes.departure} text={returnBarText} onOpen={() => abrirFichaDeVuelta()} onAdd={() => goToBooking('vuelta')} />
               )}
+              {!pago && departureTime && modes.departure !== 'coche' && <Candado datos="dia-ajuste-vuelta" texto="Con el pase, tu día se ajusta a la hora de tu vuelo" />}
               <p className="pt-4 text-center font-display text-[19px] italic text-text/60">
                 Fin del viaje.{arrivalInfo.despedida ? ` ${arrivalInfo.despedida}` : ''}
               </p>

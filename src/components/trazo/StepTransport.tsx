@@ -17,6 +17,10 @@ interface StepTransportProps {
   destinationName: string
   onProgress: (progress: number) => void
   onNext: () => void
+  /** 'pantalla' (de siempre): su etiqueta, su título y el panel. 'tarjeta' (Tanda 10G): solo el panel y el botón, para ir DENTRO de la tarjeta del primer paso (PrimeraPantalla), con el mapa detrás: el título lo pone esa pantalla. */
+  modo?: 'pantalla' | 'tarjeta'
+  /** Avisa de si la carga ya terminó (el título de arriba pasa de «Conectando…» a «¿Cómo quieres llegar…?»). */
+  onCargado?: (cargado: boolean) => void
 }
 
 /**
@@ -39,7 +43,7 @@ const prefersReducedMotion = () => typeof window !== 'undefined' && Boolean(wind
  * Tiempos con "≈", distancia en km calculada con las coordenadas y nunca precios. Si solo hay una apta,
  * se marca sola. Después, las preguntas de vehículo de cada tipo de destino (vehicleFlow.ts).
  */
-export function StepTransport({ active, origin, destination, destinationName, onProgress, onNext }: StepTransportProps) {
+export function StepTransport({ active, origin, destination, destinationName, onProgress, onNext, modo = 'pantalla', onCargado }: StepTransportProps) {
   const archetype = useRouteStore((state) => state.archetype)
   const archetypeAmbiguous = useRouteStore((state) => state.archetype_ambiguous)
   const classificationFailed = useRouteStore((state) => state.archetype_classification_failed)
@@ -101,6 +105,10 @@ export function StepTransport({ active, origin, destination, destinationName, on
 
   const archetypeKnown = Boolean(archetype)
   const loadDone = prog >= 1 && dataReady && archetypeKnown
+  useEffect(() => {
+    onCargado?.(loadDone)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadDone])
   const rows = useMemo(() => buildTransportRows(error ? null : feasibility, archetype, origin), [feasibility, error, archetype, origin])
   // Sin respuesta (error): avión como red de seguridad, como hasta ahora.
   const effectiveRows: TransportRow[] = useMemo(() => {
@@ -166,11 +174,15 @@ export function StepTransport({ active, origin, destination, destinationName, on
     if (el) setTimeout(() => el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }), 60)
   }, [vehicleType, vehicleOwnership, vehicleResolved, travelMode, transportOption?.id])
 
+  const enTarjeta = modo === 'tarjeta'
   return (
     <>
+      {!enTarjeta && (
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>
         {loadDone ? '02 — Ruta encontrada' : '02 — Calculando ruta…'}
       </div>
+      )}
+      {!enTarjeta && (
       <Title size={40}>
         {loadDone ? (
           <>
@@ -182,8 +194,9 @@ export function StepTransport({ active, origin, destination, destinationName, on
           </>
         )}
       </Title>
-      <div style={{ flex: 1 }} />
-      <div ref={panelRef} className="trazo-noscroll" style={{ ...panelStyle, padding: '18px 18px 12px', minHeight: 0, overflow: 'auto' }}>
+      )}
+      {!enTarjeta && <div style={{ flex: 1 }} />}
+      <div ref={panelRef} data-transportes={enTarjeta ? '' : undefined} className="trazo-noscroll" style={{ ...panelStyle, padding: '18px 18px 12px', minHeight: 0, overflow: 'auto', ...(enTarjeta ? { maxHeight: 'min(46dvh, 360px)', background: 'rgba(255,255,255,.7)', border: '1px solid rgba(166,124,82,.2)' } : {}) }}>
         <div
           style={{
             display: 'flex',
@@ -331,7 +344,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
           </div>
         )}
       </div>
-      <div style={{ minHeight: 86, flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <div style={{ minHeight: enTarjeta ? 0 : 86, flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
         {loadDone && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, animation: reduceMotion ? 'none' : 'trazo-chipIn .6s cubic-bezier(.2,.8,.2,1) .35s both' }}>
             {vehicleType === 'camper' && (

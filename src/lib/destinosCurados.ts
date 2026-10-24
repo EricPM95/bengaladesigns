@@ -13,6 +13,9 @@ export interface DestinoCurado {
   iso: string | null
   lat: number
   lng: number
+  /** La foto de portada del destino (Tanda 10G), de su `_mapa.json`; null si no tiene. `portada_pequena`: la misma, en pequeño, para las tarjetas. */
+  portada?: string | null
+  portada_pequena?: string | null
 }
 
 let lista: Promise<DestinoCurado[]> | null = null

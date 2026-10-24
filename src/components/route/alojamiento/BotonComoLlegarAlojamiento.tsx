@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { enlaceComoLlegarAlojamiento } from '../../../lib/direccionAlojamiento'
 import { pagoActivo } from '../../../lib/pago'
 import { Icono } from '../../ui/Icono'
+import { Candado } from '../../pase/Candado'
 
 interface BotonComoLlegarAlojamientoProps {
   /**
@@ -22,7 +23,9 @@ interface BotonComoLlegarAlojamientoProps {
  */
 export function BotonComoLlegarAlojamiento({ direccion, variante = 'completo', className = '', style }: BotonComoLlegarAlojamientoProps) {
   const enlace = enlaceComoLlegarAlojamiento(direccion)
-  if (!enlace || !pagoActivo()) return null
+  if (!enlace) return null
+  // (Tanda 10G: sin el pase, cerrado y a la vista.)
+  if (!pagoActivo()) return <Candado datos="como-llegar-alojamiento" texto="Con el pase, cada día empieza cerca de donde duermes"><span style={{ font: "500 14px 'Geist'" }}>Cómo llegar a tu alojamiento</span></Candado>
   return (
     <a
       href={enlace}
