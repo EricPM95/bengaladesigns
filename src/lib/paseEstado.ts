@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { llamar, logrosActivos } from './logros'
 import { useLogrosStore } from '../store/useLogrosStore'
+import type { PruebaDelPase } from './diaDePrueba'
 
 /**
  * EL ESTADO DEL PASE PARA HOY (Tanda 8B). Con el cobro apagado (o sin servidor, sin cuenta, sin logros) todo está abierto.
@@ -14,6 +15,8 @@ export interface EstadoPase {
   /** HOY se puede usar (con pase, en el día de prueba o con el cobro apagado). */
   puede: boolean
   pruebaGastada: boolean
+  /** (Tanda 10H) Lo que dice el servidor de la prueba: si está sin usar o gastada, de qué viaje y qué día. Sin él (cobro apagado), no hay prueba que contar. */
+  prueba?: PruebaDelPase
 }
 
 const ABIERTO: EstadoPase = { cobro: false, conPase: false, puede: true, pruebaGastada: false }
@@ -36,7 +39,7 @@ interface RespuestaEstado {
   ok: boolean
   cobro: boolean
   pases: unknown[]
-  prueba: { ya_usada: boolean }
+  prueba: { ya_usada: boolean; estado?: PruebaDelPase['estado']; trip_id?: string | null; fecha?: string | null }
   hoy: { puede: boolean }
 }
 
@@ -48,7 +51,7 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
     let vivo = true
     void llamar<RespuestaEstado>(`/api/pase/estado?trip_id=${encodeURIComponent(tripId)}`).then((r) => {
       if (!vivo || !r?.ok) return
-      setReal({ cobro: r.cobro, conPase: r.pases.length > 0, puede: !r.cobro || r.hoy.puede, pruebaGastada: r.prueba.ya_usada })
+      setReal({ cobro: r.cobro, conPase: r.pases.length > 0, puede: !r.cobro || r.hoy.puede, pruebaGastada: r.prueba.ya_usada, prueba: { estado: r.prueba.estado ?? null, tripId: r.prueba.trip_id ?? null, fecha: r.prueba.fecha ?? null } })
     })
     return () => {
       vivo = false
@@ -60,6 +63,9 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
     const s = useLogrosStore.getState()
     if (!s.pregunta) useLogrosStore.setState({ pregunta: { texto: 'Te queda medio día. ¿Usas hoy tu día de prueba o lo guardas para mañana?', opciones: [{ id: 'hoy', texto: 'Hoy' }, { id: 'manana', texto: 'Mañana' }] } })
   }, [forzado])
+  // Solo en desarrollo (capturas y pruebas): `window.__pruebaDelPase = { cobro, conPase, puede, pruebaGastada, prueba: { estado, tripId, fecha } }` pone el estado entero a mano.
+  const aMano = import.meta.env.DEV ? (window as unknown as { __pruebaDelPase?: EstadoPase }).__pruebaDelPase : undefined
+  if (aMano) return aMano
   if (forzado === 'sin' || forzado === 'pregunta') return { cobro: true, conPase: false, puede: true, pruebaGastada: false }
   if (forzado === 'prueba') return { cobro: true, conPase: false, puede: false, pruebaGastada: true }
   if (forzado === 'con') return { cobro: true, conPase: true, puede: true, pruebaGastada: false }

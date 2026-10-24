@@ -241,14 +241,14 @@ function hoyCon(nombre, version = 'completa') {
     ponerVersion(version)
     return aTexto(renderToStaticMarkup(createElement(HistoriaDeParada, { destino: 'Roma', nombre, clave: 'x' })))
   }
-  debe(/Historia/.test(suelto('Fontana de Trevi', 'completa')) && suelto('Via del Corso', 'completa').trim() === '' && suelto('Fontana de Trevi', 'gratis').trim() === '' && suelto('Coliseo', 'gratis').trim() === '', '5 HOY', '«Historia» no sale con historia y de pago, o sale sin ella o en la gratis')
+  debe(/Historia/.test(suelto('Fontana de Trevi', 'completa')) && suelto('Via del Corso', 'completa').trim() === '' && /Historia/.test(suelto('Fontana de Trevi', 'gratis')) && !/Incluido/.test(suelto('Fontana de Trevi', 'gratis')), '5 HOY', '«Historia» no sale con historia y de pago, o sale sin ella; en la gratis sale cerrada (Tanda 10H)')
   ponerSintesis([{ lang: 'en-US', name: 'Sam' }])
   debe(suelto('Coliseo', 'completa').trim() === '', '5 HOY', '«Historia» sale sin voz en español')
   ponerSintesis([VOZ_ES])
-  // Ya no hay barra con candado en HOY, y el botón pequeño en la gratis no sale.
+  // (Tanda 10H) En la gratis el botón pequeño sale cerrado, con el candado dentro.
   ponerVersion('gratis')
   const pequeno = aTexto(renderToStaticMarkup(createElement(Escuchar, { texto: 'Un texto.', clave: 'x' })))
-  debe(pequeno.trim() === '', '5 HOY', 'el botón pequeño «Escuchar» sale en la gratis')
+  debe(/Escuchar/.test(pequeno), '5 HOY', 'el botón pequeño «Escuchar» sale cerrado en la gratis (Tanda 10H: el mismo botón, con su candado)')
 }
 
 // ═══════════ 6. La rama de HOY gratis (P23) ═══════════

@@ -27,7 +27,16 @@ function versionPedida(): 'gratis' | 'completa' | null {
 }
 
 /** ¿Está encendido lo de pago? La dirección manda (`?version=gratis` / `?version=completa`); si no dice nada, el dato de configuración. */
+/**
+ * EL DÍA DE PRUEBA (Tanda 10H): el día que el viajero sin pase tiene HOY entero, gratis, de 00:00 a 23:59 (hora del destino), HOY lo pinta todo como con el pase. `HoyView` lo enciende mientras enseña ese día y lo apaga al salir.
+ */
+let enDiaDePrueba = false
+export const fijarDiaDePrueba = (activo: boolean): void => {
+  enDiaDePrueba = activo
+}
+
 export function pagoActivo(): boolean {
+  if (enDiaDePrueba) return true
   // «Verme como viajero sin pase» (Tanda 10B, solo pruebas del administrador; lo decide el servidor): lo de pago, cerrado.
   if (sinPasePruebaActivo()) return false
   const pedida = versionPedida()

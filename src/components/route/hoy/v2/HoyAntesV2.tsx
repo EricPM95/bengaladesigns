@@ -2,6 +2,8 @@ import type { Route } from '../../../../lib/types'
 import { addDaysToIso, formatHeaderDateRangeShortEs, formatWeekdayAbbrEs, isoToLocalDate, todayIso } from '../../../../lib/dateRange'
 import { logrosActivos } from '../../../../lib/logros'
 import { pedirPago } from '../../../../lib/pago'
+import { nombreDelPase } from '../../../../lib/nombrePase'
+import { Marca } from '../../../pase/Marca'
 import { Icono } from '../../../ui/Icono'
 import type { NombreIcono } from '../../../../lib/iconos'
 import type { EstadoPase } from '../../../../lib/paseEstado'
@@ -21,7 +23,8 @@ const MEDALLAS = [
   { n: 'Oro', c: 'oklch(0.82 0.12 80)' },
 ]
 
-const FECHA_CORTA = new Intl.DateTimeFormat('es', { weekday: 'short', day: 'numeric', month: 'short' })
+// (Tanda 10H: «Tu modo Hoy se activa el sábado 25», como en la tabla del día de prueba.)
+const FECHA_CORTA = new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric' })
 
 /** Los días que faltan desde hoy (o la fecha simulada) hasta el primer día, contados por fechas de calendario. */
 function diasHasta(startIso: string, hoyIso: string): number {
@@ -32,7 +35,7 @@ function diasHasta(startIso: string, hoyIso: string): number {
  * HOY antes del viaje (pantallas 1a con fechas y 1b sin fechas, «HOY v2»; desde la 10D también la HOY de producción, con y sin pase, con los colores de Marca JUTRIP: paneles en tinta y el azul claro del diseño, en oro pálido): la tarjeta oscura con la cuenta atrás (o «Pon tus fechas»), lo que dará HOY y, si hay cobro y no hay pase,
  * la tarjeta del Pase de Roma con [Ver el pase]. Con el cobro apagado, lo mismo sin la insignia del pase ni el botón.
  */
-export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso: string | null; simulada: string | null; pase: EstadoPase; onPonFechas: () => void }) {
+export function HoyAntesV2({ startIso, simulada, pase, destino, onPonFechas }: { startIso: string | null; simulada: string | null; pase: EstadoPase; destino: string; onPonFechas: () => void }) {
   const verPase = pase.cobro && !pase.conPase
   const faltan = startIso ? Math.max(0, diasHasta(startIso, simulada ?? todayIso())) : 0
   return (
@@ -42,7 +45,7 @@ export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso
         {startIso ? (
           <>
             <span className="relative" style={{ font: "400 21px/1.15 'Instrument Serif',serif", color: 'rgba(255,253,248,.88)' }}>
-              Tu modo Hoy se activa el <em style={{ color: '#E9C77A' }}>{FECHA_CORTA.format(isoToLocalDate(startIso)).replace(/\./g, '').replace(',', '')}</em>
+              Tu modo <Marca oscuro>Hoy</Marca> se activa el <em style={{ color: '#E9C77A' }}>{FECHA_CORTA.format(isoToLocalDate(startIso)).replace(/\./g, '').replace(',', '')}</em>
             </span>
             <span className="relative flex items-baseline gap-2.5">
               <span style={{ font: "400 88px/.9 'Instrument Serif',serif" }}>{faltan}</span>
@@ -52,7 +55,7 @@ export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso
         ) : (
           <>
             <span className="relative" style={{ font: "400 30px/1.05 'Instrument Serif',serif" }}>
-              Tu modo Hoy se activa <em style={{ color: '#E9C77A' }}>el primer día de tu viaje</em>
+              Tu modo <Marca oscuro>Hoy</Marca> se activa <em style={{ color: '#E9C77A' }}>el primer día de tu viaje</em>
             </span>
             <span className="relative text-[13px] leading-[1.45] text-[#FFFDF8]/70">Pon tus fechas y lo dejamos listo.</span>
             <button type="button" onClick={onPonFechas} className="relative mt-2 flex h-[46px] items-center gap-2 self-start rounded-full bg-[#FFFDF8] pl-3.5 pr-[18px] text-[14px] font-semibold text-[#1C2230]">
@@ -69,7 +72,7 @@ export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso
           {verPase && (
             <span className="flex h-[26px] items-center gap-1.5 self-start rounded-full pl-[7px] pr-2.5" style={{ background: 'oklch(0.82 0.12 80 / .14)', border: '1px solid oklch(0.82 0.12 80 / .4)', font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'oklch(0.86 0.12 85)' }}>
               <Icono nombre="candado" size={12} grosor={2.2} />
-              Pase de Roma
+              <Marca oscuro>{nombreDelPase(destino)}</Marca>
             </span>
           )}
           <span style={{ font: "400 30px/1.02 'Instrument Serif',serif", textWrap: 'balance' as never }}>
@@ -107,7 +110,7 @@ export function HoyAntesV2({ startIso, simulada, pase, onPonFechas }: { startIso
         )}
         {verPase && (
           <button type="button" onClick={pedirPago} className="relative flex h-[52px] items-center justify-center gap-2 rounded-full text-[14.5px] font-bold text-[#1C2230]" style={{ background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', boxShadow: '0 12px 24px -12px oklch(0.75 0.13 70)' }}>
-            Ver el Pase de Roma
+            {`Ver el ${nombreDelPase(destino)}`}
             <Icono nombre="flecha" size={15} grosor={2.2} />
           </button>
         )}

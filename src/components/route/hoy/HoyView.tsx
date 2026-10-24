@@ -1,7 +1,13 @@
 import type { Route } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { getTodayTripStatus } from '../../../lib/todayMode'
-import { pagoActivo } from '../../../lib/pago'
+import { useEffect } from 'react'
+import { pagoActivo, fijarDiaDePrueba } from '../../../lib/pago'
+import { useSyncStore } from '../../../store/useSyncStore'
+import { usePaseEstado } from '../../../lib/paseEstado'
+import { filaDeHoySinPase } from '../../../lib/diaDePrueba'
+import { todayIso } from '../../../lib/dateRange'
+import { FranjaDiaDePrueba } from './TarjetaDeLaPrueba'
 import { CON_PASE, HoyAntesDelDiseno, HoySinPase } from './HoySinPase'
 import { HoyDurante } from './HoyDurante'
 import { HoyDespues } from './HoyDespues'
@@ -15,8 +21,20 @@ import { HoyV2 } from './v2/HoyV2'
 export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () => void }) {
   const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
   const estado = getTodayTripStatus(route, simulada ?? undefined)
+  const tripId = useSyncStore((s) => s.activeTripId)
+  const pase = usePaseEstado(tripId)
+  // El día de prueba (Tanda 10H) se apaga al salir de HOY.
+  useEffect(() => () => fijarDiaDePrueba(false), [])
+  fijarDiaDePrueba(false)
+  const completa = pagoActivo()
   // Sin el pase (Tanda 10C): la pestaña está, y enseña lo de antes del viaje y la invitación al pase.
-  if (!pagoActivo()) {
+  const fila = !completa
+    ? filaDeHoySinPase({ fase: estado?.startIso ? (estado.phase ?? null) : null, hoyIso: simulada ?? todayIso(), inicioIso: estado?.startIso ?? null, prueba: pase.prueba ?? { estado: pase.pruebaGastada ? 'gastada' : 'pendiente' }, tripId, destino: route.destination })
+    : null
+  // El día de la prueba (de 00:00 a 23:59, hora del destino): HOY entero y, arriba, la franja. (Se enciende ANTES de pintar lo de dentro: todo lo de pago de HOY sale abierto ese día.)
+  const diaDePrueba = fila?.tipo === 'hoy_es_prueba' && pase.puede
+  if (diaDePrueba) fijarDiaDePrueba(true)
+  if (!completa && !diaDePrueba) {
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-7 pt-1" data-hoy="sin-pase">
         <HoySinPase route={route} startIso={estado?.startIso ?? null} fase={estado?.phase ?? null} simulada={simulada} onPonFechas={onPonFechas} />
@@ -31,7 +49,10 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
         // (Tanda 10D: con el pase, lo mismo que sin él pero sin el candado «Pase de Roma» ni [Ver el Pase de Roma].)
         <HoyAntesDelDiseno route={route} startIso={estado?.startIso ?? null} simulada={simulada} pase={CON_PASE} onPonFechas={onPonFechas} />
       ) : estado.phase === 'during' ? (
-        <HoyDurante route={route} day={estado.context.day} dateIso={estado.context.dateIso} />
+        <>
+          {diaDePrueba && fila ? <FranjaDiaDePrueba fila={fila} /> : null}
+          <HoyDurante route={route} day={estado.context.day} dateIso={estado.context.dateIso} />
+        </>
       ) : (
         <HoyDespues route={route} startIso={estado.startIso} />
       )}

@@ -460,7 +460,7 @@ console.log('2b. Las pantallas del pase (P1, P6, P7, P8b, P9)')
   debe(apagado.pintaPuerta === undefined || M.pintaPagoHost() === '', 'cobro', 'sin hoja abierta, el anfitrión del pase no pinta nada')
   const fuentePago = fs.readFileSync('src/components/pase/PagoHost.tsx', 'utf8')
   debe(/if \(!c\.cobro\) return/.test(fuentePago) && /EVENTO_PAGAR/.test(fuentePago), 'cobro', '[Ver el pase] y [Seguir con HOY] (pedirPago) abren la hoja de compra solo si el servidor dice que se cobra')
-  debe(/pedirPago/.test(fs.readFileSync('src/components/route/hoy/v2/TarjetasPase.tsx', 'utf8')) && /EVENTO_PAGAR = 'trazo:pagar'/.test(fs.readFileSync('src/lib/pago.ts', 'utf8')), 'cobro', 'P3 y la pantalla 12 siguen lanzando el evento, que ahora SÍ escucha PagoHost')
+  debe(/abrirPase/.test(fs.readFileSync('src/components/route/hoy/v2/TarjetasPase.tsx', 'utf8')) && /EVENTO_PAGAR = 'trazo:pagar'/.test(fs.readFileSync('src/lib/pago.ts', 'utf8')), 'cobro', 'P3 y la pantalla 12 siguen lanzando el evento, que ahora SÍ escucha PagoHost')
   const pagoUrl = M.pagoDeLaDireccion
   debe(pagoUrl('?pago=ok&sesion=cs_1')?.sesion === 'cs_1' && pagoUrl('?pago=cancelado')?.resultado === 'cancelado' && pagoUrl('?pago=mentira&sesion=x')?.resultado === 'mentira' && pagoUrl('?otra=1') === null && pagoUrl('?pago=raro') === null, 'cobro', 'al volver del pago, la dirección dice cómo terminó')
 

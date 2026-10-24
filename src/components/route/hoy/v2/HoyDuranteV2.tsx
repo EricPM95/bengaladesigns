@@ -43,6 +43,12 @@ import { ParadaFotoDeParada } from './ParadaFoto'
 import { useFotoDeParada } from './useFotoDeParada'
 import { HojaMasParaTuDia, HojaQueHacemos, HojaSobreEsteLugar } from './HojasV2'
 import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
+import { abrirPase } from '../../../../lib/pago'
+import { nombreDelPase } from '../../../../lib/nombrePase'
+import { Marca } from '../../../pase/Marca'
+import { filaDeHoySinPase } from '../../../../lib/diaDePrueba'
+import { useSyncStore } from '../../../../store/useSyncStore'
+import { FranjaDiaDePrueba, TarjetaDeLaPrueba } from '../TarjetaDeLaPrueba'
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined
 const METROS_POR_MINUTO = 80
@@ -114,7 +120,34 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
   const audio = useAudioDeHistoria({ destino, nombre: parada.name })
   const texto = textoHistoria(ficha)
   const { hayVoz, estado, escuchar, pausar, seguir, parar } = useEscuchar(texto, `${parada.id}:historia`, audio)
-  if (accesoHistoria(ficha) === 'ninguno' || !hayVoz || texto.trim().length === 0) return null
+  const [pidioPase, setPidioPase] = useState(false)
+  const acceso = accesoHistoria(ficha)
+  if (acceso === 'ninguno' || texto.trim().length === 0) return null
+  // (Tanda 10H: sin el pase, el MISMO botón, con el candado dorado en el extremo derecho, dentro, sobre marfil; al tocarlo, «Incluido con el Pase de Roma» y se abre el pase.)
+  if (acceso === 'candado') {
+    return (
+      <div className="flex items-center gap-2">
+        <button type="button" onClick={() => { setPidioPase(true); abrirPase() }} data-escuchar="candado" className="flex h-[50px] min-w-0 flex-1 items-center justify-center gap-3 rounded-full pl-2 pr-2" style={{ background: 'rgba(166,124,82,.1)' }}>
+          <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full" style={{ background: 'rgb(var(--accent))' }}>
+            <Icono nombre="seguir" size={13} relleno grosor={1.6} />
+          </span>
+          <span className="min-w-0 flex-1 whitespace-nowrap text-left text-[13.5px] font-semibold">
+            {pidioPase ? (
+              <span data-escuchar-incluido>
+                Incluido con el <Marca>{nombreDelPase(destino)}</Marca>
+              </span>
+            ) : (
+              'Escuchar historia'
+            )}
+          </span>
+          <span aria-hidden="true" data-candado-dentro className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
+            <Icono nombre="candado" size={14} grosor={1.8} />
+          </span>
+        </button>
+      </div>
+    )
+  }
+  if (!hayVoz) return null
   const alPulsar = estado === 'parado' ? escuchar : estado === 'hablando' ? pausar : seguir
   const onda = ['8px', '14px', '10px', '16px', '7px', '12px', '15px', '9px', '13px', '6px']
   return (
@@ -281,6 +314,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
   // ── El pase: con cobro y sin pase, el día de llegada es la tarjeta P3 y, si la prueba ya se gastó, solo la tarjeta de la 12 ──
   const sinPase = pase.cobro && !pase.conPase
+  // (Tanda 10H) Lo que toca decir de la prueba hoy (la tabla de src/lib/diaDePrueba.ts): el destino, el día y el pase salen de los datos.
+  const fila = sinPase ? filaDeHoySinPase({ fase: 'during', hoyIso: dateIso, inicioIso: route.answers.dateRange?.start ?? null, prueba: pase.prueba ?? { estado: pase.pruebaGastada ? 'gastada' : 'pendiente' }, tripId: useSyncStore.getState().activeTripId, destino: route.destination }) : null
   const diasRestantes = route.days
     .filter((c) => !c.isReturnLeg && c.dayNumber > day.dayNumber)
     .map((c) => {
@@ -296,11 +331,12 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       </>
     )
   }
-  if (sinPase && esLlegada) {
+  if (sinPase && esLlegada && !pase.puede) {
     return (
       <>
         {cabecera}
-        <TarjetaP3 etiqueta={`Hoy · ${ojo}`} />
+        {fila?.tipo === 'manana_es_prueba' && <TarjetaDeLaPrueba fila={fila} destino={route.destination} />}
+        <TarjetaP3 etiqueta={`Hoy · ${ojo}`} destino={route.destination} />
       </>
     )
   }
@@ -308,7 +344,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     return (
       <>
         {cabecera}
-        <TarjetaDiaDePrueba dias={diasRestantes} />
+        <TarjetaDiaDePrueba dias={diasRestantes} fila={fila} destino={route.destination} />
       </>
     )
   }
@@ -325,6 +361,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
   const alertas = (
     <>
+      {/* El día de prueba (Tanda 10H): la franja de arriba. */}
+      {sinPase && pase.puede && fila?.tipo === 'hoy_es_prueba' && <FranjaDiaDePrueba fila={fila} />}
       {cierres.map((a) => (
         <div key={a.id} className="flex min-h-14 flex-none items-center gap-3 rounded-[18px] py-[9px] pl-3 pr-2.5" style={{ background: 'rgb(var(--accent-red) / .07)', border: '1px solid rgb(var(--accent-red) / .25)' }} data-avisos-de-cierre>
           <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] text-white" style={{ background: 'rgb(var(--accent-red))' }}>
@@ -513,7 +551,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         </div>
       )}
 
-      {mostrarPrueba && <TarjetaDiaDePrueba dias={diasRestantes} />}
+      {mostrarPrueba && <TarjetaDiaDePrueba dias={diasRestantes} fila={fila} destino={route.destination} />}
 
       {/* La lista del día, con «Parada con foto» */}
       {!sinParadasDeVuelta && paradas.length > 0 && (

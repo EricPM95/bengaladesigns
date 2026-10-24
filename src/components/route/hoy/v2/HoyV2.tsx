@@ -9,6 +9,9 @@ import { HoyDespuesV2 } from './HoyDespuesV2'
 import { CabeceraHoy, HoyAntesV2, ojoDeViaje } from './HoyAntesV2'
 import { HoyDuranteV2 } from './HoyDuranteV2'
 import { HojaPregunta } from './HojasV2'
+import { filaDeHoySinPase } from '../../../../lib/diaDePrueba'
+import { todayIso } from '../../../../lib/dateRange'
+import { TarjetaDeLaPrueba } from '../TarjetaDeLaPrueba'
 
 /** HOY, versión 2 (Tanda 8B). Lo elige HoyView cuando `hoyV2Activo()`. Antes, durante o después, y la pregunta de las 12:00 del día de prueba cuando el servidor la pide. */
 export function HoyV2({ route, onPonFechas }: { route: Route; onPonFechas: () => void }) {
@@ -17,6 +20,9 @@ export function HoyV2({ route, onPonFechas }: { route: Route; onPonFechas: () =>
   const pregunta = useLogrosStore((s) => s.pregunta)
   const pase = usePaseEstado(tripId)
   const estado = getTodayTripStatus(route, simulada ?? undefined)
+  // (Tanda 10H) Sin el pase, lo que toca decir de la prueba según el momento (src/lib/diaDePrueba.ts).
+  const sinPase = pase.cobro && !pase.conPase
+  const fila = sinPase ? filaDeHoySinPase({ fase: estado?.startIso ? (estado.phase ?? null) : null, hoyIso: simulada ?? todayIso(), inicioIso: estado?.startIso ?? null, prueba: pase.prueba ?? { estado: pase.pruebaGastada ? 'gastada' : 'pendiente' }, tripId, destino: route.destination }) : null
 
   const responder = async (r: 'hoy' | 'manana') => {
     const store = useLogrosStore.getState()
@@ -31,12 +37,16 @@ export function HoyV2({ route, onPonFechas }: { route: Route; onPonFechas: () =>
       {!estado || estado.phase === 'before' ? (
         <>
           <CabeceraHoy ojo={ojoDeViaje(route, estado?.startIso ?? null)} titulo={`Tu viaje a ${route.destination}`} />
-          <HoyAntesV2 startIso={estado?.startIso ?? null} simulada={simulada} pase={pase} onPonFechas={onPonFechas} />
+          <HoyAntesV2 startIso={estado?.startIso ?? null} simulada={simulada} pase={pase} destino={route.destination} onPonFechas={onPonFechas} />
+          {fila && <TarjetaDeLaPrueba fila={fila} destino={route.destination} />}
         </>
       ) : estado.phase === 'during' ? (
         <HoyDuranteV2 route={route} day={estado.context.day} dateIso={estado.context.dateIso} pase={pase} />
       ) : (
-        <HoyDespuesV2 route={route} startIso={estado.startIso} />
+        <>
+          <HoyDespuesV2 route={route} startIso={estado.startIso} />
+          {fila?.tipo === 'viaje_terminado' && <TarjetaDeLaPrueba fila={fila} destino={route.destination} enOscuro />}
+        </>
       )}
       {pregunta && estado?.phase === 'during' && <HojaPregunta texto={pregunta.texto} onResponder={responder} />}
     </div>

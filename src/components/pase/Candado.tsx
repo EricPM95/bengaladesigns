@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { abrirPase } from '../../lib/pago'
 import { Icono } from '../ui/Icono'
+import { TextoConPase } from '../cuenta/TextoConPase'
 
 /**
  * LA PIEZA DE «CERRADO» DE TODA LA APP (Tanda 10G, la versión gratis; Eric, 23-oct): quien no tiene el pase ve TODO lo que el pase le daría, cerrado y con su invitación, nunca escondido.
@@ -40,7 +41,7 @@ export function Candado({
           {insignia}
           <div className="flex flex-col gap-1">
             {titulo && <span style={{ font: "400 21px/1.12 'Instrument Serif',serif", textWrap: 'balance' as never }}>{titulo}</span>}
-            <span style={{ font: "400 13px/1.45 'Geist'", color: 'rgba(28,34,48,.68)' }}>{texto}</span>
+            <span style={{ font: "400 13px/1.45 'Geist'", color: 'rgba(28,34,48,.68)' }}><TextoConPase texto={texto} /></span>
           </div>
         </div>
         <button type="button" onClick={abrirPase} className="h-[48px] rounded-full text-[14.5px] font-bold text-[#17120a]" style={{ background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)' }}>
@@ -60,7 +61,7 @@ export function Candado({
       {insignia}
       <span className="flex min-w-0 flex-1 flex-col gap-1">
         {children && <span style={{ opacity: 0.5, filter: 'grayscale(1)' }}>{children}</span>}
-        <span style={{ font: "500 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.62)' }}>{texto}</span>
+        <span style={{ font: "500 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.62)' }}><TextoConPase texto={texto} /></span>
       </span>
     </button>
   )
