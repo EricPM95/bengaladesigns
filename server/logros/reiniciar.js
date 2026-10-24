@@ -13,6 +13,41 @@ export const TABLAS_DE_PRUEBAS = [
   { tabla: 'passes', columna: 'comprador_id', que: 'los pases comprados (con sus plazas)' },
 ]
 
+/**
+ * EMPEZAR DE CERO (Tanda 10J). Deja la cuenta de administrador como recién creada: la base de datos lo hace en UNA transacción con `public.empezar_de_cero(uid)` (migración 0032; cada borrado
+ * lleva `columna = uid`), y aquí se borran los archivos de las fotos del viaje y la marca de «ya vi la película del pase» de los datos de la persona. El `uid` sale de la sesión; no hay forma de
+ * pasar otra cuenta. NO borra la cuenta, ni toca nada de Stripe, ni nada de otra cuenta.
+ *
+ * Orden: 1) se listan los archivos (si falla, no se ha borrado nada); 2) la transacción de la base de datos (si falla, no se ha borrado nada); 3) los archivos y la marca de la película.
+ * Si 3 falla a medias, la base ya está a cero: se avisa en `avisos` (un archivo suelto en un almacén privado no enseña nada a nadie).
+ * `archivosDe` se pasa de fuera (server/cuentas.js) para que las pruebas lo cambien.
+ */
+export async function empezarDeCero(admin, usuario, { archivosDe, bucket = 'fotos-viaje' } = {}) {
+  const uid = usuario?.id
+  if (!admin || !uid || typeof uid !== 'string') return { ok: false, borrados: {}, error: 'Falta la cuenta.' }
+  let archivos = []
+  try {
+    archivos = archivosDe ? await archivosDe(admin, uid, bucket) : []
+  } catch {
+    return { ok: false, borrados: {}, error: 'No se han podido leer tus fotos. No se ha borrado nada; vuelve a probar.' }
+  }
+  const { data, error } = await admin.rpc('empezar_de_cero', { p_uid: uid })
+  if (error) {
+    const falta = /empezar_de_cero|PGRST202|42883/.test(`${error.code ?? ''} ${error.message ?? ''}`)
+    return { ok: false, borrados: {}, error: falta ? 'Falta aplicar la migración 0032 en Supabase. No se ha borrado nada.' : 'No se ha podido borrar. No se ha borrado nada; vuelve a probar.' }
+  }
+  const avisos = []
+  for (let i = 0; i < archivos.length; i += 100) {
+    const { error: errorArchivos } = await admin.storage.from(bucket).remove(archivos.slice(i, i + 100))
+    if (errorArchivos) avisos.push('Algunos archivos de fotos no se han podido borrar del almacén.')
+  }
+  const meta = usuario.user_metadata ?? {}
+  // `null` quita la marca tanto si el servicio de cuentas mezcla los datos como si los reemplaza (la app solo la da por buena si vale exactamente `true`).
+  const { error: errorMeta } = await admin.auth.admin.updateUserById(uid, { user_metadata: { ...meta, pelicula_pase_vista: null } })
+  if (errorMeta) avisos.push('No se ha podido quitar la marca de la película del pase.')
+  return { ok: true, borrados: data?.borrados ?? {}, traspasado: data?.traspasado ?? null, archivos: archivos.length, avisos }
+}
+
 /** Devuelve { ok, borrados: { tabla: n }, error? }. Si algo falla, lo dice y para (no sigue con lo demás). */
 export async function reiniciarMisPruebas(admin, uid) {
   if (!admin || !uid || typeof uid !== 'string') return { ok: false, borrados: {}, error: 'Falta la cuenta.' }

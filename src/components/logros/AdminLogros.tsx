@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { logrosActivos, llamar } from '../../lib/logros'
 import { useSinPasePrueba } from '../../store/useSinPasePrueba'
+import { empezarDeCero, puedeEmpezarDeCero } from '../../lib/empezarDeCero'
 
 /**
  * /admin/logros (Tanda 8A, apartado 10): una página solo para Eric (la cuenta de administrador sale de una variable del servidor, LOGROS_ADMIN_EMAILS).
@@ -124,6 +125,7 @@ export function AdminLogros() {
         {pestana === 'Mis pruebas' && (
           <>
             <VermeSinPase />
+            <EmpezarDeCero />
             <MisPruebas />
           </>
         )}
@@ -251,6 +253,49 @@ function VermeSinPase() {
         Verme como viajero sin pase
       </label>
       {aviso && <p className="mt-2" role="status">{aviso}</p>}
+    </section>
+  )
+}
+
+/** [Empezar de cero] (Tanda 10J): deja TU cuenta como recién creada (viajes, reservas, fotos, logros, EXP, día de prueba, pases) y vuelve a la pantalla de inicio. El botón solo existe si el servidor dice que eres administrador. */
+function EmpezarDeCero() {
+  const [puede, setPuede] = useState(false)
+  const [confirmando, setConfirmando] = useState(false)
+  const [ocupado, setOcupado] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    let vivo = true
+    void puedeEmpezarDeCero().then((p) => vivo && setPuede(p))
+    return () => {
+      vivo = false
+    }
+  }, [])
+  if (!puede) return null
+  const borrar = async () => {
+    setOcupado(true)
+    setError(null)
+    const fallo = await empezarDeCero()
+    if (fallo) {
+      setOcupado(false)
+      setConfirmando(false)
+      setError(fallo)
+    }
+  }
+  return (
+    <section data-empezar-de-cero className="mb-5">
+      <p className="text-text/60">Deja TU cuenta como recién creada: borra tus viajes, reservas, fotos, logros, experiencia, el día de prueba y los pases, y lo que guarda este móvil. La cuenta se queda. Cierra la sesión y vuelve al inicio.</p>
+      {!confirmando ? (
+        <button type="button" data-empezar-de-cero-boton onClick={() => setConfirmando(true)} className="mt-2 rounded-full btn-champan px-4 py-2 text-[14px] font-semibold ">Empezar de cero</button>
+      ) : (
+        <div data-empezar-de-cero-dialogo role="alertdialog" aria-label="Empezar de cero" className="mt-2 rounded-xl border border-text/20 p-3">
+          <p className="font-semibold">Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia, el día de prueba y los pases. La cuenta se queda. ¿Seguro?</p>
+          <div className="mt-2 flex gap-2">
+            <button type="button" data-empezar-de-cero-si disabled={ocupado} onClick={() => void borrar()} className="rounded-full bg-accent-red text-white px-4 py-2 text-[14px] font-semibold ">Sí, empezar de cero</button>
+            <button type="button" data-empezar-de-cero-no disabled={ocupado} onClick={() => setConfirmando(false)} className="rounded-full border border-text/25 px-4 py-2 text-[14px]">Cancelar</button>
+          </div>
+        </div>
+      )}
+      {error && <p className="mt-2 text-accent-red" role="alert">{error}</p>}
     </section>
   )
 }

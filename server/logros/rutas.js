@@ -22,16 +22,18 @@
  *   POST /api/pase/prueba/responder { trip_id, respuesta: 'hoy'|'manana' }   la respuesta a «Te queda medio día…»
  *   GET  /api/pase/precios · POST /api/pase/precio { plan, personas }   los precios (data/pase/precios.json); paga todo el que compra
  *   GET  /api/pase/sin-pase           si «Verme como viajero sin pase» está encendido (solo el administrador lo ve encendido)
+ *   GET  /api/admin/empezar-de-cero/puede   si esta cuenta ve el botón [Empezar de cero] (solo el administrador; lo decide el servidor)
+ *   POST /api/admin/empezar-de-cero  { confirmar:true }   deja la cuenta de administrador como recién creada (Tanda 10J; solo su cuenta)
  *   /api/admin/logros/*           solo para la cuenta de administrador (LOGROS_ADMIN_EMAILS en el servidor)
  */
 
-import { quienEs } from '../cuentas.js'
+import { quienEs, archivosDe } from '../cuentas.js'
 import { cargarCatalogo, validarDatos } from './datos.js'
 import { simular } from './servicio.js'
 import { logrosYVisibilidad, llevarAVitrina } from './vistas.js'
 import { enviarAvisosPendientes, pushActivo } from './avisos.js'
 import { registrarPantallas } from './pantallas/index.js'
-import { reiniciarMisPruebas } from './reiniciar.js'
+import { reiniciarMisPruebas, empezarDeCero } from './reiniciar.js'
 
 export function logrosActivos(env = process.env) {
   const on = (v) => String(v ?? '').toLowerCase() === 'true'
@@ -172,6 +174,13 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
   app.post('/api/admin/logros/reiniciar-mis-pruebas', conAdmin(async (req, res, usuario) => {
     if (req.body?.confirmar !== true) return res.status(400).json({ ok: false, error: 'Falta confirmar.' })
     const r = await reiniciarMisPruebas(admin, usuario.id)
+    res.status(r.ok ? 200 : 500).json(r)
+  }))
+  // EMPEZAR DE CERO (Tanda 10J): solo el administrador y solo su propia cuenta (el `uid` sale de la sesión; un `user_id` en el cuerpo se ignora). Pide confirmar. No borra la cuenta ni toca Stripe.
+  app.get('/api/admin/empezar-de-cero/puede', conUsuario(async (_req, res, usuario) => res.json({ ok: true, puede: esAdmin(usuario, env) })))
+  app.post('/api/admin/empezar-de-cero', conAdmin(async (req, res, usuario) => {
+    if (req.body?.confirmar !== true) return res.status(400).json({ ok: false, error: 'Falta confirmar.' })
+    const r = await empezarDeCero(admin, usuario, { archivosDe })
     res.status(r.ok ? 200 : 500).json(r)
   }))
   // «Verme como viajero sin pase»: el `uid` sale de la sesión (si el cuerpo trae otro, se ignora) y solo con la cuenta de administrador.
