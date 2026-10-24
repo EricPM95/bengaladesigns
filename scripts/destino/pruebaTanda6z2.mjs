@@ -131,7 +131,9 @@ console.log('Stay22 y código')
   const url = M.mapaAlojamientoUrl({ embed: 'https://www.stay22.com/embed/abc' }, { answers: { dateRange: { start: '2026-10-13', end: '2026-10-17' } } }, 'app-1', 'MXN')
   ok(new URL(url).searchParams.get('currency') === 'MXN', 'el mapa de Stay22 lleva currency= con la moneda del viajero')
   const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? recorrer(path.join(dir, e.name)) : [path.join(dir, e.name)]))
-  for (const archivo of recorrer('src').filter((f) => /\.(ts|tsx)$/.test(f))) {
+  // (Tanda 10I: quedan fuera dos sitios del Pase, ambos en euros fijos —el cobro es siempre en EUR, no pasa por la moneda del viajero—: `precioPelicula.ts` (el UNICO formateador «8,00 €» de la hoja
+  // «¿Cuántos sois?», con los precios del servidor) y `pelicula/gen/` (el código generado tal cual desde Design, que no se edita a mano).)
+  for (const archivo of recorrer('src').filter((f) => /\.(ts|tsx)$/.test(f) && !/precioPelicula\.ts$/.test(f) && !/pase[\\/]pelicula[\\/]gen[\\/]/.test(f))) {
     const lineasCodigo = fs.readFileSync(archivo, 'utf8').split(/\r?\n/)
     lineasCodigo.forEach((linea, i) => {
       if (!linea.includes('€')) return

@@ -26,6 +26,9 @@ const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore
       if (!/[Pp]ase de (Roma|París|Londres)/.test(l)) return
       if (/^\s*(\/\/|\*|\/\*|\{\/\*)/.test(l) || /(\/\/|\/\*\*?)\s.*[Pp]ase de (Roma|París|Londres)/.test(l)) return // comentarios
       if (f.includes(`${path.sep}dev${path.sep}`)) return // datos de la ruta de pruebas
+      // La película del pase (Tanda 10I): `pelicula/gen/` es el código de Design tal cual (no se edita a mano) y `pelicula/adaptar.ts` lo lleva a cada destino: ahí «Pase de Roma» es el TEXTO ORIGINAL
+      // de Design que se busca para cambiarlo por el nombre del pase del destino; no es un nombre escrito para mostrar.
+      if (f.includes(`${path.sep}pelicula${path.sep}gen${path.sep}`) || f.endsWith(`${path.sep}pelicula${path.sep}adaptar.ts`)) return
       sueltos.push(`${f}:${i + 1}: ${l.trim().slice(0, 120)}`)
     })
   }
@@ -191,8 +194,13 @@ await e.esp(3500)
   debe(/Incluido con el Pase de Roma/.test(incl ?? ''), 'escuchar', `al tocarlo dice «Incluido con el Pase de Roma» (${incl})`)
   const oroIncl = await e.evaluar("getComputedStyle(document.querySelector('[data-escuchar-incluido] [data-marca]')).color")
   debe(COLORES_ORO.includes(oroIncl), 'oro', `«Pase de Roma» del botón va en oro (${oroIncl})`)
-  const hoja = await e.evaluar("import('/src/store/usePagoStore.ts').then((m) => m.usePagoStore.getState().hoja != null)")
-  debe(hoja === true, 'escuchar', 'y se abre el pase (abrirPase)')
+  // (Tanda 10I: abrirPase() ya no abre la hoja de compra suelta: lo escucha PeliculaHost y abre la película del pase, que se baja al abrirse.)
+  let pelicula = false
+  for (let i = 0; i < 10 && !pelicula; i++) {
+    pelicula = await e.evaluar("Boolean(document.querySelector('[data-pelicula]'))")
+    if (!pelicula) await e.esp(500)
+  }
+  debe(pelicula === true, 'escuchar', 'y se abre el pase (abrirPase abre la película del pase)')
 }
 e.cerrar()
 {

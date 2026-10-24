@@ -497,7 +497,7 @@ console.log('7. Las claves no salen del servidor y el motor no se toca')
   const tocadosMotor = []
   for (const carpetaMotor of ['shared/routeEngine', 'server/engine']) for (const f of fs.readdirSync(carpetaMotor)) if (/civitatis/i.test(f)) tocadosMotor.push(f)
   debe(tocadosMotor.length === 0, 'motor', 'no hay nada de la API dentro del motor de rutas')
-  const marca = fuenteCliente.filter(([ruta, t]) => /civitatis/i.test(t) && !/lib[\\/]civitatis\.ts$|affiliateLinks|CampaignLinks|mapGeneratedRoute|mockDayDetail|vehicleRentalLinks|privacidad|types\.ts|enlaceDeTraslados|StopReservation|StopDetailSheet|DestinationDetailModal|PlaceExplorerScreen|destinationExcursions|DatosDeLaActividad|ActividadesDelSitio|AddReservationSheet|ArrivalReturnSheet/.test(ruta))
+  const marca = fuenteCliente.filter(([ruta, t]) => /civitatis/i.test(t) && !/lib[\\/]civitatis\.ts$|affiliateLinks|CampaignLinks|mapGeneratedRoute|mockDayDetail|vehicleRentalLinks|empezarDeCero|privacidad|types\.ts|enlaceDeTraslados|StopReservation|StopDetailSheet|DestinationDetailModal|PlaceExplorerScreen|destinationExcursions|DatosDeLaActividad|ActividadesDelSitio|AddReservationSheet|ArrivalReturnSheet/.test(ruta))
   debe(marca.length === 0, 'marca', `ficheros nuevos del móvil que nombran a la empresa: ${marca.map(([r]) => r).join(', ')}`)
   const pantallas = fs.readFileSync('src/components/route/reservas/DatosDeLaActividad.tsx', 'utf8') + fs.readFileSync('src/components/route/reservas/ActividadesDelSitio.tsx', 'utf8')
   debe(!/Civitatis|GetYourGuide/.test(pantallas.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')), 'marca', 'las pantallas nuevas no nombran a la empresa en ningún texto')

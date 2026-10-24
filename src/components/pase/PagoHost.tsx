@@ -1,27 +1,25 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { cuentasActivas } from '../../lib/cuentas'
-import { EVENTO_PAGAR } from '../../lib/pago'
 import { formatShortDateEs } from '../../lib/dateRange'
 import { configDelPase, estadoDelPago, misPases, olvidarConfigDelPase, pagoDeLaDireccion } from '../../lib/pagoPase'
 import { guardarViajeAparte } from '../../lib/tripPersistence'
 import { parejasQueSePisan } from '../../lib/viajesQueSePisan'
 import { llamarServidor } from '../../lib/servidor'
-import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { usePagoStore } from '../../store/usePagoStore'
 import { TextoConPase } from '../cuenta/TextoConPase'
 import { BotonHoja, Hoja } from '../ui/Hoja'
 
 // Las hojas de comprar, invitar y de los dos viajes se bajan cuando se abren (cuentas 3B, punto 2).
-const HojaDeCompra = lazy(() => import('./HojaDeCompra').then((m) => ({ default: m.HojaDeCompra })))
+// (Tanda 10I: la hoja «¿Cuántos sois?» es la de la película del pase; `abrir({ tipo: 'compra' })` abre la película en el final con la hoja ya abierta.)
+const PeliculaPase = lazy(() => import('./PeliculaPase').then((m) => ({ default: m.PeliculaPase })))
 const HojaDosViajes = lazy(() => import('./HojaDosViajes').then((m) => ({ default: m.HojaDosViajes })))
 const HojaInvitar = lazy(() => import('./HojaInvitar').then((m) => ({ default: m.HojaInvitar })))
 const enCarga = (hoja: ReactNode) => <Suspense fallback={null}>{hoja}</Suspense>
 
 /**
  * EL ANFITRIÓN DE LAS HOJAS DEL PASE (cuentas parte 3, punto 2). Siempre montado; con las cuentas apagadas no hace nada.
- *   · Escucha `pedirPago()` ([Ver el pase] de P1, P3 y la pantalla 12, [Seguir con HOY]…): abre la hoja de compra (P6) SOLO si el servidor dice que se cobra. Sin cobro (sin interruptor o sin
- *     claves), no sale nada y todo sigue abierto.
+ *   · `abrirPase()` ya no pasa por aquí (Tanda 10I): lo escucha PeliculaHost y abre la película del pase, que lleva dentro la hoja «¿Cuántos sois?».
  *   · Al volver de la página de pago (`?pago=ok&sesion=…`) espera a que llegue el aviso del servicio de pago (el pase lo crea solo el servidor) y enseña P7 (compartir el pase) o «Ya tienes tu pase».
  *   · `?pago=mentira` es la página de pruebas del pago de mentira (solo existe fuera de producción).
  */
@@ -52,20 +50,6 @@ function PagoHostEncendido() {
     else if (p.resultado === 'cancelado') setAviso('No se ha hecho ningún cobro.')
   }, [abrir])
 
-  useEffect(() => {
-    const alPedir = () => {
-      void configDelPase().then((c) => {
-        if (!c.cobro) return // sin cobro, todo abierto: no hay hoja de compra
-        const destino = useRouteStore.getState().route?.destination ?? null
-        if (!destino) return
-        if (c.destinos && !c.destinos.some((d) => d.toLowerCase() === destino.toLowerCase())) return
-        abrir({ tipo: 'compra', destino, tripId: useSyncStore.getState().activeTripId })
-      })
-    }
-    window.addEventListener(EVENTO_PAGAR, alPedir)
-    return () => window.removeEventListener(EVENTO_PAGAR, alPedir)
-  }, [abrir])
-
   usePreguntaDelPrimerDia()
 
   if (aviso && !hoja) {
@@ -78,7 +62,7 @@ function PagoHostEncendido() {
     )
   }
   if (!hoja) return null
-  if (hoja.tipo === 'compra') return enCarga(<HojaDeCompra destino={hoja.destino} tripId={hoja.tripId} onCerrar={cerrar} />)
+  if (hoja.tipo === 'compra') return enCarga(<PeliculaPase destino={hoja.destino} tripId={hoja.tripId} desde="compra" onCerrar={cerrar} />)
   if (hoja.tipo === 'invitar') return enCarga(<HojaInvitar modo={hoja.modo} destino={hoja.destino} tripId={hoja.tripId} pase={hoja.pase} codigoInicial={hoja.codigoInicial} onCerrar={cerrar} />)
   if (hoja.tipo === 'volviendo') return <VolviendoDelPago sesion={hoja.sesion} />
   if (hoja.tipo === 'mentira') return <PagoDeMentira sesion={hoja.sesion} />

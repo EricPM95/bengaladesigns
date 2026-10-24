@@ -2,30 +2,26 @@ import type { Route } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { isoToLocalDate } from '../../../lib/dateRange'
 import { Icono } from '../../ui/Icono'
-import type { NombreIcono } from '../../../lib/iconos'
+import { filasDeHoy } from '../../../lib/listaDeHoy'
+import { IconoDeLista } from '../../pase/IconoDeLista'
 import { CajaBlanca, ojoMono, TarjetaOscura } from './piezas'
 
 const FECHA_LARGA = new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long' })
 
-/** Lo que tendrá el modo Hoy cuando se active (lista corta; solo de pago, como todo HOY). */
-const LO_QUE_TENDRAS: { icono: NombreIcono; texto: string }[] = [
-  { icono: 'ubicacion', texto: 'Tu siguiente parada y cómo llegar' },
-  { icono: 'reloj', texto: '«No me da tiempo», para saltar lo que no llegues a ver' },
-  { icono: 'info', texto: 'Escuchar lo que ves' },
-  { icono: 'localizar', texto: 'Lo que tienes cerca' },
-  { icono: 'avisos', texto: 'Los avisos del día' },
-]
-
 /** La lista corta de lo que tendrá HOY (también la usa HOY sin el pase, Tanda 10C). */
 export function ListaLoQueTendras() {
+  // (Tanda 10I: sale de la lista del pase —la del final de la película—, no escrita aparte: los mismos nombres, líneas e iconos.)
   return (
-    <ul className="flex flex-col gap-1">
-      {LO_QUE_TENDRAS.map((fila) => (
-        <li key={fila.texto} className="flex min-h-[44px] items-center gap-3 rounded-[14px] px-1.5 py-1">
+    <ul className="flex flex-col gap-1" data-lista-hoy>
+      {filasDeHoy().map((fila) => (
+        <li key={fila.titulo} className="flex min-h-[44px] items-center gap-3 rounded-[14px] px-1.5 py-1">
           <span className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-[#1C2230] text-[#FFFDF8]">
-            <Icono nombre={fila.icono} size={18} />
+            <IconoDeLista icono={fila.icono} size={18} color="#FFFDF8" grosor={1.7} />
           </span>
-          <span className="min-w-0 flex-1 text-[14px] leading-[1.3]">{fila.texto}</span>
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="text-[14px] font-semibold leading-[1.25]">{fila.titulo}</span>
+            <span className="text-[12px] leading-[1.3] text-text/60">{fila.linea}</span>
+          </span>
         </li>
       ))}
     </ul>

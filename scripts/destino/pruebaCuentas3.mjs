@@ -41,6 +41,7 @@ export async function empaquetar(nombre, entorno = {}, entrada = 'scripts/destin
     format: 'cjs',
     jsx: 'automatic',
     logLevel: 'error',
+    loader: { '.svg': 'dataurl', '.png': 'dataurl', '.jpg': 'dataurl', '.jpeg': 'dataurl', '.webp': 'dataurl', '.css': 'empty', '.woff2': 'dataurl' },
     define: { 'import.meta.env': JSON.stringify({ DEV: false, MODE: 'test', ...entorno }) },
     plugins: [
       {
@@ -449,17 +450,21 @@ console.log('2b. Las pantallas del pase (P1, P6, P7, P8b, P9)')
   debe(M.limitesDelGrupo(planes).desde === 3 && M.limitesDelGrupo(planes).hasta === 50, 'P6', 'el máximo del Grupo sale de un dato (data/pase/precios.json: 50)')
   debe(M.totalDe(planes, 'grupo', 2) === null && M.totalDe(planes, 'grupo', 51) === null && M.totalDe(planes, 'grupo', 3) === 14.97 && M.totalDe(planes, 'duo', 2) === 10.99, 'P6', 'el total del Grupo solo vale de 3 a 50 personas')
   debe(M.eur(10.99) === '10,99 €' && M.eur(5.5) === '5,50 €', 'P6', 'los euros se escriben con coma')
-  const compra = M.pintaCompra({ destino: 'Roma', tripId: null, configInicial: { ok: true, cobro: true, modo: 'stripe', precios: { planes } } })
-  debe(/Pase de Roma/.test(compra) && /¿Cuántos sois\?/.test(compra) && /Se paga una vez y no caduca/.test(compra), 'P6', 'P6 dice «Pase de Roma», «¿Cuántos sois?» y «Se paga una vez y no caduca»')
-  debe(/Comprar · 19,96 €/.test(compra) && /4 personas/.test(compra) && /Una persona menos/.test(compra) && /Una persona más/.test(compra), 'P6', 'P6 trae [Comprar · total] y [−] / [+] del Grupo')
-  debe(/data-linea-legal[^>]*>Texto pendiente</.test(compra) && compra.indexOf('data-linea-legal') < compra.indexOf('data-boton-hoja="comprar"'), 'P6', 'antes de [Comprar] hay un hueco para la línea legal del gestor, con «Texto pendiente»')
-  debe(!/stripe/i.test(compra) && !new RegExp(M.marca.nombre, 'i').test(compra), 'P6', 'la hoja de compra no nombra al servicio de pago ni a la app')
-  const compraSin = M.pintaCompra({ destino: 'Roma', tripId: null, configInicial: { ok: true, cobro: false, modo: null } })
-  debe(/Cargando los precios/.test(compraSin) && !/Comprar ·/.test(compraSin), 'P6', 'sin precios del servidor no se puede comprar nada')
+  // (Tanda 10I: la hoja «¿Cuántos sois?» es la de la película del pase (src/components/pase/PeliculaPase.tsx); sus precios y textos salen de precioPelicula.ts.)
+  const cuantos = M.hojaCuantosSois(planes, 4)
+  const peli = fs.readFileSync('src/components/pase/PeliculaPase.tsx', 'utf8')
+  const adaptado = fs.readFileSync('src/components/pase/pelicula/adaptar.ts', 'utf8')
+  debe(cuantos.comprarTxt === 'Comprar · 19,96 €' && cuantos.personasTxt === '4 personas' && cuantos.filas.length === 3 && cuantos.hasta === 50, 'P6', 'P6 trae [Comprar · total] y las personas del Grupo (con [−] y [+] de la película)')
+  debe(/lineaLegal: textos\.linea_legal_compra/.test(peli) && /data-linea-legal/.test(adaptado) && adaptado.indexOf('data-linea-legal') < adaptado.indexOf("onClick: '{{ comprar }}'"), 'P6', 'antes de [Comprar] hay un hueco para la línea legal del gestor (data/pase/textos.json, «Texto pendiente»)')
+  debe(!/stripe/i.test(peli) && !new RegExp(M.marca.nombre, 'i').test(peli), 'P6', 'la hoja de compra no nombra al servicio de pago ni a la app')
+  debe(M.hojaCuantosSois([], 4).comprarTxt === 'Comprar' && M.hojaCuantosSois([], 4).filas.length === 0, 'P6', 'sin precios del servidor no se puede comprar nada')
   // La hoja de compra no sale sin cobro: el anfitrión no pinta nada y la compra solo se abre si el servidor dice que se cobra.
   debe(apagado.pintaPuerta === undefined || M.pintaPagoHost() === '', 'cobro', 'sin hoja abierta, el anfitrión del pase no pinta nada')
   const fuentePago = fs.readFileSync('src/components/pase/PagoHost.tsx', 'utf8')
-  debe(/if \(!c\.cobro\) return/.test(fuentePago) && /EVENTO_PAGAR/.test(fuentePago), 'cobro', '[Ver el pase] y [Seguir con HOY] (pedirPago) abren la hoja de compra solo si el servidor dice que se cobra')
+  // (Tanda 10I: pedirPago/abrirPase ya no los escucha PagoHost sino PeliculaHost, que abre la película con la hoja «¿Cuántos sois?» dentro; PagoHost sigue guardando con `config.cobro` lo del aviso P9,
+  // y los botones que llaman a abrirPase solo salen con `pase.cobro`; sin precios del servidor la hoja no deja comprar nada.)
+  const fuentePelicula = fs.readFileSync('src/components/pase/PeliculaHost.tsx', 'utf8')
+  debe(/EVENTO_PAGAR/.test(fuentePelicula) && !/EVENTO_PAGAR/.test(fuentePago) && /if \(!config\.cobro \|\| !vivo\) return/.test(fuentePago), 'cobro', '[Ver el pase] y [Seguir con HOY] (pedirPago) los escucha la película (PeliculaHost), no PagoHost; el aviso P9 de PagoHost solo va si el servidor dice que se cobra')
   debe(/abrirPase/.test(fs.readFileSync('src/components/route/hoy/v2/TarjetasPase.tsx', 'utf8')) && /EVENTO_PAGAR = 'trazo:pagar'/.test(fs.readFileSync('src/lib/pago.ts', 'utf8')), 'cobro', 'P3 y la pantalla 12 siguen lanzando el evento, que ahora SÍ escucha PagoHost')
   const pagoUrl = M.pagoDeLaDireccion
   debe(pagoUrl('?pago=ok&sesion=cs_1')?.sesion === 'cs_1' && pagoUrl('?pago=cancelado')?.resultado === 'cancelado' && pagoUrl('?pago=mentira&sesion=x')?.resultado === 'mentira' && pagoUrl('?otra=1') === null && pagoUrl('?pago=raro') === null, 'cobro', 'al volver del pago, la dirección dice cómo terminó')
@@ -1084,7 +1089,7 @@ console.log('8. Cuentas 3B: peso, invitado, R2 corta, sin nombre, fotos privadas
   // ── 2. El peso al abrir: las hojas se bajan cuando se abren ──
   const perezosas = [
     ['src/components/ajustes/AjustesHosts.tsx', ['AjustesScreen', 'EditarPerfil', 'HojaComoTeLlamas']],
-    ['src/components/pase/PagoHost.tsx', ['HojaDeCompra', 'HojaDosViajes', 'HojaInvitar']],
+    ['src/components/pase/PagoHost.tsx', ['PeliculaPase', 'HojaDosViajes', 'HojaInvitar']],
     ['src/components/propuesta/PropuestaHost.tsx', ['HojaRecomendacion', 'HojaVerPropuesta', 'PropuestaEnviada']],
     ['src/components/propuesta/BarraDePropuesta.tsx', ['HojaVerPropuesta']],
   ]
@@ -1102,7 +1107,7 @@ console.log('8. Cuentas 3B: peso, invitado, R2 corta, sin nombre, fotos privadas
     const gz = urls.reduce((s, u) => s + zlib.gzipSync(fs.readFileSync('dist' + u)).length, 0)
     debe(gz < 340 * 1024, 'peso', `al abrir, la descarga pesa menos de 340 KB comprimida (ahora ${(gz / 1024).toFixed(1)} KB)`)
     const nombres = fs.readdirSync('dist/assets').filter((n) => n.endsWith('.js'))
-    for (const parte of ['AjustesScreen', 'HojaDeCompra', 'HojaInvitar', 'HojaVerPropuesta', 'HojaRecomendacion', 'HojaComoTeLlamas']) debe(nombres.some((n) => n.startsWith(parte)), 'peso', `${parte} va en su propio archivo`)
+    for (const parte of ['AjustesScreen', 'PeliculaPase', 'HojaInvitar', 'HojaVerPropuesta', 'HojaRecomendacion', 'HojaComoTeLlamas']) debe(nombres.some((n) => n.startsWith(parte)), 'peso', `${parte} va en su propio archivo`)
     debe(!/Todavía no tienes ningún pase/.test(entrada) && !/¿Cómo te llamas\?/.test(entrada) && !/Un momento, estamos confirmando el pago/.test(entrada), 'peso', 'al abrir no entran ni Mis pases, ni «¿Cómo te llamas?», ni la espera del pago')
     // Lo de desarrollo no llega a producción.
     const todos = nombres.map((n) => leer('dist/assets/' + n)).join('\n')

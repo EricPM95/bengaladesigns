@@ -133,6 +133,8 @@ async function conViaje(version) {
   const a = await abrirApp('http://localhost:5173', { ruta: `/?cuentas=off&logros=on&logrosDemo=1&version=${version}` })
   for (let i = 0; i < 120 && !(await a.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await a.esp(500)
   for (let i = 0; i < 60 && !(await a.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await a.esp(500)
+  // (Tanda 10I: abrirPase() abre la película del pase; con la película ya vista sale directa al final, con su ✕, y así la prueba la puede cerrar.)
+  await a.evaluar("(() => { localStorage.setItem('trazo:pelicula-pase-vista', '1'); return true })()")
   await a.evaluar('window.__rutaPrueba().then(() => true)')
   for (let i = 0; i < 60 && !(await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await a.esp(1000)
   await a.esp(5000)
@@ -148,7 +150,18 @@ const modo = async (a, m) => {
   await a.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('${m}'); return true })`)
   await a.esp(2500)
 }
-const hayPago = (a) => a.evaluar("import('/src/store/usePagoStore.ts').then((m) => m.usePagoStore.getState().hoja != null)")
+// «Se abre el pase» = se abre la película del pase (Tanda 10I; antes, la hoja de compra suelta). Se espera a que se baje.
+const hayPago = async (a) => {
+  for (let i = 0; i < 12; i++) {
+    if (await a.evaluar("Boolean(document.querySelector('[data-pelicula]'))")) return true
+    await a.esp(500)
+  }
+  return false
+}
+const cerrarPago = async (a) => {
+  await a.evaluar("(() => { const c = document.querySelector('[data-pelicula-cerrar]'); if (c) c.click(); return true })()")
+  await a.esp(800)
+}
 
 {
   const g = await conViaje('gratis')
@@ -162,7 +175,7 @@ const hayPago = (a) => a.evaluar("import('/src/store/usePagoStore.ts').then((m) 
   await g.evaluar("document.querySelector('[data-pastilla-pase]').click()")
   await g.esp(1500)
   debe(await hayPago(g), 'gratis', 'al tocar la pastilla se abre el pase (la hoja de compra)')
-  await g.evaluar("import('/src/store/usePagoStore.ts').then((m) => { m.usePagoStore.getState().cerrar(); return true })")
+  await cerrarPago(g)
   // RESERVAS: «Llegada y vuelta» abierto y gratis, «0 de 3».
   await modo(g, 'bookings')
   const reservas = await g.evaluar('document.body.innerText')
@@ -187,7 +200,7 @@ const hayPago = (a) => a.evaluar("import('/src/store/usePagoStore.ts').then((m) 
   await g.evaluar("(() => { const c = document.querySelector('[data-candado=\"llegada-ajuste\"]'); if (c) c.click(); return true })()")
   await g.esp(1200)
   debe(await hayPago(g), 'gratis', 'al tocar un candado se abre el pase')
-  await g.evaluar("import('/src/store/usePagoStore.ts').then((m) => { m.usePagoStore.getState().cerrar(); return true })")
+  await cerrarPago(g)
   // DÍAS: la barra de llegada con [+ Vuelo] abierto y el ajuste cerrado.
   await g.evaluar(`${store}.then((s) => { s.setActiveDayId(s.route.days[0].id); s.setMode('days'); return true })`)
   await g.esp(4000)

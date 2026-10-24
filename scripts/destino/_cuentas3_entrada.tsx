@@ -11,7 +11,7 @@ import { InvitacionRecibida, lineaDelViaje } from '../../src/components/cuenta/I
 import { PuertaDeCuenta } from '../../src/components/cuenta/PuertaDeCuenta'
 import { PrivacidadScreen } from '../../src/components/cuenta/PrivacidadScreen'
 import { TextoConPase } from '../../src/components/cuenta/TextoConPase'
-import { HojaDeCompra } from '../../src/components/pase/HojaDeCompra'
+import { hojaCuantosSois } from '../../src/lib/precioPelicula'
 import { HojaInvitar } from '../../src/components/pase/HojaInvitar'
 import { HojaDosViajes } from '../../src/components/pase/HojaDosViajes'
 import { TarjetaPaseReservas } from '../../src/components/pase/TarjetaPaseReservas'
@@ -77,7 +77,7 @@ export const M = {
   pagoDeLaDireccion,
   parejasQueSePisan,
   rangoEnPalabras,
-  pintaCompra: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(HojaDeCompra, { onCerrar: () => undefined, ...props } as never)),
+  hojaCuantosSois,
   pintaInvitar: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(HojaInvitar, { onCerrar: () => undefined, ...props } as never)),
   pintaDosViajes: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(HojaDosViajes, { elegir: async () => null, onCerrar: () => undefined, ...props } as never)),
   pintaP1: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(TarjetaPaseReservas, props as never)),

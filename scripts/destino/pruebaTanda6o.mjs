@@ -113,7 +113,9 @@ for (const file of cliente) {
   const texto = fs.readFileSync(file, 'utf8')
   const f = file.replaceAll('\\', '/')
   if (/window\.open\(/.test(texto) && f !== 'src/components/route/reservas/EntradaCard.tsx') fail('window_open_sin_sellar', f)
-  if (/location\.(assign|replace)\(|location\.href\s*=/.test(texto) && !/shareUrl/.test(f)) fail('location_sin_sellar', f)
+  // (Tanda 10I: `location.replace('/')` —recargar la propia app en la raíz, como hace «Empezar de cero»— no abre ningún enlace ajeno: no hay nada que sellar.)
+  const sinRecargaPropia = texto.replace(/(?:window\.)?location\.replace\(\s*'\/'\s*\)/g, '')
+  if (/location\.(assign|replace)\(|location\.href\s*=/.test(sinRecargaPropia) && !/shareUrl/.test(f)) fail('location_sin_sellar', f)
 }
 const entradaCard = fs.readFileSync('src/components/route/reservas/EntradaCard.tsx', 'utf8')
 if (!/window\.open\(withCampaign\(/.test(entradaCard)) fail('open_ticket_shop_sin_sellar', 'EntradaCard.tsx')

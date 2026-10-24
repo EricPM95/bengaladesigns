@@ -425,7 +425,8 @@ const medir = (nombre, a, b, minimo, regla = 'contraste') => {
     if (!/\.(tsx?|css)$/.test(p)) return
     const norm = p.split(path.sep).join('/')
     // Los logros llevan sus propios colores (medallas, sellos, emblemas, películas y sus pantallas), y lo de desarrollo no se ve.
-    if (/^src\/(dev|components\/logros)\//.test(norm)) return
+    // La película del pase y su insignia (Tanda 10I) están generadas tal cual desde Design (`pelicula/gen/`): llevan su frambuesa de dibujo y no se editan a mano.
+    if (/^src\/(dev|components\/logros|components\/pase\/pelicula\/gen)\//.test(norm)) return
     const t = leer(p).replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:'"`])\/\/.*$/gm, '$1')
     if (/frambuesa|FRAMBUESA|oklch\(0\.(4[0-9]?|5[0-9]?|6[0-9]?) 0\.1[3-8] (5|8|10)\b|189 57 100|#BD3964/i.test(t)) encontrados.add(norm)
   }

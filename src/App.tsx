@@ -9,6 +9,7 @@ import { decodeTripFromUrl } from './lib/shareUrl'
 import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
 import { PagoHost } from './components/pase/PagoHost'
+import { PeliculaHost } from './components/pase/PeliculaHost'
 import { SinPasePrueba } from './components/pase/SinPasePrueba'
 import { useSinPasePrueba } from './store/useSinPasePrueba'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
@@ -101,6 +102,7 @@ function App() {
       <TripSync />
       <PuertaDeCuenta />
       <PagoHost />
+      <PeliculaHost />
       <SinPasePrueba />
       <PropuestaHost />
       <AvisosHost />

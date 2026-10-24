@@ -130,7 +130,11 @@ debe(/useExploreAperturaStore/.test(fuenteExplorar) && /\.tomar\(\)/.test(fuente
   debe(pintaEscuchar([VOZ_EN]).trim() === '', '3 escuchar', 'sin voz en español sale el botón «Escuchar»')
   debe(pintaEscuchar([]).trim() === '', '3 escuchar', 'sin ninguna voz sale el botón «Escuchar»')
   debe(pintaEscuchar(null).trim() === '', '3 escuchar', 'sin síntesis de voz en el navegador sale el botón «Escuchar»')
-  debe(pintaEscuchar([VOZ_ES], 'gratis').trim() === '', '3 escuchar', 'en la gratis sale el botón «Escuchar»')
+  // (Tanda 10H: en la gratis el botón sale CERRADO —con el candado dentro y «Incluido con el Pase» al tocarlo—, nunca activo: no suena nada, solo invita a abrir el pase.)
+  ponerVersion('gratis')
+  ponerSintesis(sintesisSimulada([VOZ_ES]))
+  const escucharGratis = renderToStaticMarkup(createElement(Escuchar, { texto, clave: 'p1' }))
+  debe(/data-escuchar="candado"/.test(escucharGratis) && /data-candado-dentro/.test(escucharGratis) && /aria-label="[^"]*incluido con el/i.test(escucharGratis) && !/data-escuchar="(parado|hablando|pausa)"/.test(escucharGratis), '3 escuchar', 'en la gratis el botón «Escuchar» no sale cerrado con su candado dentro (o sale activo)')
   debe(aTexto(renderToStaticMarkup(createElement(Escuchar, { texto: '   ', clave: 'p1' }))).trim() === '', '3 escuchar', 'sin texto que leer sale el botón «Escuchar»')
   // 3b. Elegir la voz y comprobar que hay una.
   debe(elegirVoz([VOZ_MX, VOZ_EN, VOZ_ES]) === VOZ_ES, '3 voz', 'con es-MX y es-ES no se elige es-ES')
