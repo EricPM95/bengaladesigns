@@ -981,6 +981,19 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
     const e = await conCobro.estadoDelPase(p.uid, p.trip)
     debe(e.pases.length === 1 && e.hoy.puede === true, 'prueba_servicio', 'el estado del pase dice que HOY se puede usar')
   }
+
+  // Tanda 10H: «las fotos que hagas el sábado también suman»: un día que NO es el de la prueba, sin pase no suma; con el pase comprado después, la foto de ese día subida más tarde SÍ suma.
+  {
+    const p = await persona('prueba10h@correo.es')
+    reloj = new Date('2026-10-11T20:00:00Z')
+    const foto = (recibido) => conCobro.foto(p.uid, { trip_id: p.trip, sitio: 'panteon', origen: 'galeria', tomada_en: '2026-10-11T11:00:00', con_camara: true, ubicacion: null, recibido_en: recibido })
+    const antes = await foto('2026-10-11T20:00:00Z')
+    debe(antes.valida === true && antes.cuenta === false && antes.motivo === 'sin_pase', 'foto_del_sabado', 'un día que no es el de la prueba, sin pase la foto no suma (' + antes.motivo + ')')
+    await S("insert into public.passes (destino, comprador_id, tipo, usos_max, codigo) values ('Roma', $1, 'uno', 1, 'PASE-PRUEBA-10H')", [p.uid])
+    reloj = new Date('2026-10-12T09:00:00Z')
+    const despues = await foto('2026-10-12T09:00:00Z')
+    debe(despues.valida === true && despues.cuenta === true && despues.nuevos.some((x) => x.tipo === 'emblema' && x.id === 'panteon'), 'foto_del_sabado', 'con el pase, la foto de ese día subida al día siguiente suma (da el emblema del Panteón): «Lo de ayer también cuenta» es verdad')
+  }
   debe(conCobro.precioDe('duo').total === 10.99 && conCobro.precioDe('grupo', 4).total === 19.96 && conCobro.precioDe('raro').ok === false, 'precios', 'el servicio da el precio de cada plan')
   reloj = new Date('2026-10-12T12:00:00Z')
 
