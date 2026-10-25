@@ -5,7 +5,9 @@ import os from 'node:os'
 import path from 'node:path'
 
 /** `opciones`: `ancho`/`alto` (por defecto 390 x 844), `ruta` (lo que va tras el origen, por defecto `/?cuentas=off`), `oscuro` (modo noche del sistema) y `antes` (un texto de JavaScript que se pone antes de que cargue la página). */
-export async function abrirApp(base = 'http://localhost:5173', opciones = {}) {
+export async function abrirApp(baseIn = 'http://localhost:5173', opciones = {}) {
+  // (Tanda 10M: la batería arranca su propio Vite y lo dice en APP_URL; así ninguna prueba depende de un Vite abierto desde hace horas.)
+  const base = process.env.APP_URL || baseIn
   const CHROME = ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'].find((f) => fs.existsSync(f))
   if (!CHROME) throw new Error('No encuentro Chrome.')
   const puerto = 9300 + Math.floor(Math.random() * 600)

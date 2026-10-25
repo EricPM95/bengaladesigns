@@ -3,6 +3,7 @@ import type { NombreIcono } from '../../lib/iconos'
 import { useNoticesStore } from '../../store/useNoticesStore'
 import type { AppNotice } from '../../hooks/useAppNotices'
 import { Icono } from '../ui/Icono'
+import { DateNoticeSmallIcon } from '../route/DateNoticeIcons'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { ListaDeAvisos } from '../avisos/ListaDeAvisos'
 import { abrirAviso } from '../avisos/abrirAviso'
@@ -34,6 +35,10 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
     onClose()
   }
   const nada = items.length === 0 && avisosDeLaCuenta.length === 0
+  // (Tanda 10M: los avisos de la cuenta sin leer van arriba; los ya leídos, al final. Los de la app ya vienen ordenados: sin leer primero.)
+  const avisosNuevos = avisosDeLaCuenta.filter((aviso) => !aviso.leido && !aviso.etiqueta)
+  const avisosLeidos = avisosDeLaCuenta.filter((aviso) => aviso.leido || aviso.etiqueta)
+  const itemsEnOrden = items
   // La foto de quien hace lo que cuenta el aviso (si es de este viaje y la tiene puesta).
   const gente = useViajeCompartido((state) => state.gente)
   const enlacesDeFotos = useFotosDePerfil(gente.map((p) => p.foto))
@@ -64,9 +69,39 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
         </h2>
 
         <div className="mt-4 flex min-h-0 flex-col gap-2.5 overflow-y-auto pb-1">
-          {avisosDeLaCuenta.length > 0 && <ListaDeAvisos avisos={avisosDeLaCuenta} resaltado={resaltado} onTocar={(aviso) => void abrirAviso(aviso)} fotoDe={fotoDeLaPersona} />}
+          {/* (Tanda 10M: los nuevos, siempre arriba: primero los avisos de la cuenta sin leer, luego los de la app sin leer, y abajo los leídos.) */}
+          {avisosNuevos.length > 0 && <ListaDeAvisos avisos={avisosNuevos} resaltado={resaltado} onTocar={(aviso) => void abrirAviso(aviso)} fotoDe={fotoDeLaPersona} />}
           {nada && <p className="py-4 text-[14px] text-text-soft">No tienes avisos. Cuando haya algo que mirar, saldrá aquí.</p>}
-          {items.map((item) => {
+          {itemsEnOrden.map((item) => {
+            if (item.fecha) {
+              const fecha = item.fecha
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  data-aviso-fecha={fecha.id}
+                  data-aviso-fecha-estado={item.read ? 'leido' : 'nuevo'}
+                  onClick={() => {
+                    item.onOpen?.()
+                    onClose()
+                  }}
+                  className={`flex w-full items-start gap-3 rounded-2xl border border-text/[.12] px-3.5 py-3 text-left transition-colors hover:bg-bg-hover ${item.read ? 'opacity-70' : 'bg-[oklch(0.8_0.14_70/.14)]'}`}
+                >
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
+                    <DateNoticeSmallIcon icon={fecha.icon} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-text/50" style={{ font: "500 10px 'Geist Mono',monospace", letterSpacing: '.1em', textTransform: 'uppercase' }}>
+                      {item.read ? 'Fecha especial · leído' : 'Fecha especial · nuevo'}
+                    </span>
+                    <span data-aviso-fecha-frase className={`mt-0.5 block text-[15px] leading-snug text-text ${item.read ? 'font-normal' : 'font-semibold'}`}>
+                      {item.title}
+                    </span>
+                  </span>
+                  {!item.read && <span aria-label="Sin leer" className="mt-2 h-[9px] w-[9px] shrink-0 rounded-full bg-frambuesa" />}
+                </button>
+              )
+            }
             const style = KIND_STYLE[item.kind]
             return (
               <div key={item.id} className={`rounded-2xl border border-text/[.12] px-3.5 py-3 transition-opacity ${item.read ? 'opacity-55' : ''}`}>
@@ -120,6 +155,7 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
               </div>
             )
           })}
+          {avisosLeidos.length > 0 && <ListaDeAvisos avisos={avisosLeidos} resaltado={resaltado} onTocar={(aviso) => void abrirAviso(aviso)} fotoDe={fotoDeLaPersona} />}
           {readable.length > 1 && (
             <button type="button" onClick={() => readable.forEach(read)} className="self-center py-1 text-caption font-semibold text-text-soft underline underline-offset-2">
               Marcar todos como leídos

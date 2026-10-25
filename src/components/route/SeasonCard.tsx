@@ -1,17 +1,19 @@
 import { useEffect, useRef } from 'react'
 import type { Route } from '../../lib/types'
+import { cardSeasonOfNote, type CardSeason } from '../../lib/seasonCard'
 import { useRouteStore } from '../../store/useRouteStore'
 
 /**
- * La tarjeta de temporada (PROMPT_TARJETA_TEMPORADA, INVARIANTES 415): todos los viajes, al abrir la ruta por primera vez,
- * empiezan con ella; después salen los avisos de fechas (DateNoticesModal.tsx). Copia el diseño de
- * docs/diseno/tarjeta_temporada/Navidad Modal.dc.html: 390 px, la escena de la época arriba (el cielo, la silueta del
- * destino y lo que cae, que se desvanece antes del texto), «Hemos preparado tu viaje para estas fechas», el título, el texto
- * del motor (server/engine/seasonNote.js: solo lo que la ruta hace) y «Entendido». En Navidad, la 1a («Noche en Roma»).
- * Con «reducir movimiento», no cae nada. Se cierra con «Entendido» y no vuelve a salir en ese viaje.
+ * Las tarjetas especiales (PROMPT_TARJETA_TEMPORADA, INVARIANTES 415; Tanda 10M): Navidad, Semana Santa y el cumpleaños de la ciudad. Una sola
+ * por viaje y con un solo texto (el del motor, `route.seasonNote`). Al abrir la ruta por primera vez salen antes que los avisos de fechas
+ * (DateNoticesModal.tsx). Copian el diseño de docs/diseno/tarjeta_temporada/Navidad Modal.dc.html: 390 px, la escena arriba (el cielo, la
+ * silueta del destino y su detalle; lo que cae o sube se desvanece antes del texto), «Hemos preparado tu viaje para estas fechas», el título,
+ * el texto y «Entendido».
+ *   · Navidad: la noche azul, la silueta de Roma con ventanas y la guirnalda de luces.
+ *   · Semana Santa: el amanecer (cielo de malva a rosa y oro), la cúpula y la columnata de San Pedro con el sol saliendo detrás.
+ *   · El cumpleaños de Roma: la luz dorada de la tarde, el Coliseo con sus arcos encendidos y una guirnalda de banderines.
+ * Con «reducir movimiento», no se mueve nada. Se cierra con «Entendido» y no vuelve a salir en ese viaje.
  */
-
-type CardSeason = 'primavera' | 'verano' | 'otono' | 'invierno' | 'navidad'
 
 interface Scene {
   sky: string
@@ -23,54 +25,10 @@ interface Scene {
   title: string
   titleShadow?: string
   titleSize: number
-  fx: { n: number; type?: 'petal' | 'leaf' | 'mote'; col?: string; cols?: string[]; speed?: number; drift?: number }
+  fx: { n: number; type?: 'mote'; col?: string; cols?: string[]; speed?: number; drift?: number }
 }
 
 const SCENES: Record<CardSeason, Scene> = {
-  primavera: {
-    sky: 'linear-gradient(180deg,#F3C9D2 0%,#F8DCD8 50%,#FBE9DE 80%,#FFFDF8 100%)',
-    glow: 'radial-gradient(circle,rgba(255,255,255,.7),transparent 65%)',
-    glowTop: 70,
-    glowSize: 280,
-    skyline: '#C99AA8',
-    eyebrow: '#8E3F5A',
-    title: '#4A2233',
-    titleSize: 48,
-    fx: { n: 34, type: 'petal', cols: ['#F6B8C8', '#FAD3DC', '#FFFFFF', '#EFA3B7'], speed: 0.7, drift: 0.7 },
-  },
-  verano: {
-    sky: 'linear-gradient(180deg,#F7B267 0%,#FAC98A 45%,#FDE3BD 80%,#FFFDF8 100%)',
-    glow: 'radial-gradient(circle,oklch(0.97 0.08 90) 0 22%,oklch(0.92 0.12 80 / .55) 30%,transparent 66%)',
-    glowTop: 70,
-    glowSize: 280,
-    skyline: '#C46A3E',
-    eyebrow: '#7A3514',
-    title: '#3E1C0C',
-    titleSize: 56,
-    fx: { n: 40, type: 'mote', cols: ['#FFF4C8', '#FFE08A', '#FFFFFF'] },
-  },
-  otono: {
-    sky: 'linear-gradient(180deg,#4A2C24 0%,#8E4A2C 42%,#D08A4E 72%,#FFFDF8 100%)',
-    glow: 'radial-gradient(circle,oklch(0.85 0.13 65 / .45),transparent 65%)',
-    glowTop: 70,
-    glowSize: 280,
-    skyline: '#3A2018',
-    eyebrow: 'rgba(255,228,196,.85)',
-    title: '#FFF1DE',
-    titleSize: 56,
-    fx: { n: 26, type: 'leaf', cols: ['#D9772F', '#B8451F', '#E6A93A', '#8E3A1C'], speed: 0.8, drift: 0.9 },
-  },
-  invierno: {
-    sky: 'linear-gradient(180deg,#A9BCCF 0%,#C9D6E2 45%,#E6ECF1 78%,#FFFDF8 100%)',
-    glow: 'radial-gradient(circle,rgba(255,255,255,.75),transparent 62%)',
-    glowTop: 70,
-    glowSize: 280,
-    skyline: '#7F93A8',
-    eyebrow: '#3E5670',
-    title: '#1F2E42',
-    titleSize: 56,
-    fx: { n: 110, col: '#ffffff', speed: 0.8 },
-  },
   navidad: {
     sky: 'linear-gradient(180deg,#0E1A33 0%,#1D3050 55%,#3C4F6E 82%,#FFFDF8 100%)',
     glow: 'radial-gradient(circle,oklch(0.85 0.12 75 / .38),transparent 65%)',
@@ -83,29 +41,179 @@ const SCENES: Record<CardSeason, Scene> = {
     titleSize: 56,
     fx: { n: 90, col: '#ffffff' },
   },
+  semana_santa: {
+    sky: 'linear-gradient(180deg,#4B3F7A 0%,#B9729B 32%,#F0A08E 58%,#FACB9C 80%,#FFFDF8 100%)',
+    glow: 'radial-gradient(circle,oklch(0.93 0.1 85 / .85) 0 18%,oklch(0.85 0.13 60 / .45) 34%,transparent 66%)',
+    glowTop: 78,
+    glowSize: 300,
+    skyline: '#3C2A4C',
+    eyebrow: 'rgba(255,240,222,.9)',
+    title: '#FFF6E6',
+    titleShadow: '0 2px 20px rgba(80,30,70,.4)',
+    titleSize: 56,
+    fx: { n: 34, type: 'mote', cols: ['#FFE9C2', '#FFD08A', '#FFC0B5', '#FFFFFF'] },
+  },
+  cumpleanos: {
+    sky: 'linear-gradient(180deg,#6E3552 0%,#D2694D 30%,#F2A24F 56%,#FBD58A 80%,#FFFDF8 100%)',
+    glow: 'radial-gradient(circle,oklch(0.95 0.1 90 / .8) 0 16%,oklch(0.86 0.14 70 / .45) 34%,transparent 66%)',
+    glowTop: 72,
+    glowSize: 300,
+    skyline: '#4E2330',
+    eyebrow: 'rgba(255,240,214,.92)',
+    title: '#FFF6E6',
+    titleShadow: '0 2px 20px rgba(90,30,30,.4)',
+    titleSize: 56,
+    fx: { n: 40, type: 'mote', cols: ['#FFF0B8', '#FFD36B', '#FFB25E', '#FFFFFF'] },
+  },
 }
 
 const SKYLINE =
   'M0 120V92h26v-8h14v8h20V70h8v-6h6v6h8v22h30V78h40V60l6-4v-8h4v8l6 4v18h24c0-34 16-52 34-58v-8h3v-6h2v6h3v8c18 6 34 24 34 58h30V84h16v-6h10v6h18V96H400V120z'
-const NAME: Record<CardSeason, string> = { primavera: 'Primavera', verano: 'Verano', otono: 'Otoño', invierno: 'Invierno', navidad: 'Navidad' }
-/** Las ventanas encendidas y la guirnalda de la Navidad (1a). */
+const NAME: Record<CardSeason, string> = { navidad: 'Navidad', semana_santa: 'Semana Santa', cumpleanos: 'El cumpleaños' }
+/** Las ventanas encendidas y la guirnalda de la Navidad. */
 const WINDOWS = Array.from({ length: 14 }, (_, i) => ({ mb: [4, 18, 8, 28, 12, 2, 34, 22, 6, 16, 26, 10, 3, 14][i], d: 2 + ((i * 7) % 5) * 0.6 }))
 const BULBS = Array.from({ length: 12 }, (_, i) => {
   const x = i / 11
   const y = 4 + Math.sin(x * Math.PI * 1.9 + 0.3) * 10 + 10 * (1 - Math.abs(x - 0.5) * 2) * 0.6
   return { x: x * 96 + 2, y, d: 1.4 + ((i * 5) % 4) * 0.5 }
 })
+/** Las últimas estrellas del amanecer (Semana Santa). */
+const STARS = [
+  [6, 12, 2.4],
+  [14, 36, 3.1],
+  [26, 20, 2.0],
+  [40, 8, 3.4],
+  [63, 14, 2.6],
+  [78, 30, 2.2],
+  [88, 10, 3.0],
+  [95, 26, 2.5],
+].map(([x, y, d]) => ({ x, y, d }))
+/** Los banderines del cumpleaños: una guirnalda que cuelga arriba, de lado a lado. */
+const FLAG_COLORS = ['#FFD36B', '#E0623F', '#FFF2D6', '#F29BB0', '#7FB7A4']
+const FLAGS = Array.from({ length: 14 }, (_, i) => {
+  const t = (i + 0.5) / 14
+  const x = (1 - t) ** 2 * -10 + 2 * (1 - t) * t * 195 + t ** 2 * 400
+  const y = (1 - t) ** 2 * 6 + 2 * (1 - t) * t * 52 + t ** 2 * 6
+  return { x, y, c: FLAG_COLORS[i % FLAG_COLORS.length] }
+})
+/** El Coliseo: el muro (su perfil roto a la derecha) y las filas de arcos, que se encienden. */
+const COLISEO_WALL = 'M40 104V54H250L262 64L280 76L300 88L312 98V104Z'
+const COLISEO_TOPE: [number, number][] = [
+  [250, 54],
+  [262, 64],
+  [280, 76],
+  [300, 88],
+  [312, 98],
+]
+const topeEn = (x: number) => {
+  if (x <= 250) return 54
+  for (let i = 1; i < COLISEO_TOPE.length; i++) if (x <= COLISEO_TOPE[i][0]) return COLISEO_TOPE[i][1]
+  return 98
+}
+const ARCOS = (() => {
+  const salida: { x: number; y: number; h: number; d: number }[] = []
+  const filas = [
+    { y: 60, h: 10 },
+    { y: 75, h: 10 },
+    { y: 90, h: 10 },
+  ]
+  filas.forEach((fila, r) => {
+    for (let k = 0; k < 15; k++) {
+      const x = 48 + k * 14
+      if (x + 8 > 308) continue
+      if (fila.y < topeEn(x + 8) + 3) continue
+      salida.push({ x, y: fila.y, h: fila.h, d: 1.6 + ((k * 3 + r * 5) % 7) * 0.45 })
+    }
+  })
+  return salida
+})()
 /** Lo que cae se desvanece antes de llegar al texto (la escena mide 300 px). */
 const FADE_Y = 330
 
-function cardSeasonOf(route: Route): CardSeason {
-  const note = route.seasonNote
-  if (note?.icon === 'navidad' || note?.season === 'navidad') return 'navidad'
-  const season = note?.season
-  return season === 'primavera' || season === 'verano' || season === 'otono' || season === 'invierno' ? season : 'primavera'
+function SvgBase({ children }: { children: React.ReactNode }) {
+  return (
+    <svg viewBox="0 0 390 120" preserveAspectRatio="none" className="absolute bottom-[34px] left-[-2px] h-[120px] w-[calc(100%+4px)]" aria-hidden="true">
+      {children}
+    </svg>
+  )
 }
 
-/** Lo que cae (pétalos, motas de sol, hojas o nieve), en un canvas encima de la tarjeta. Nada con «reducir movimiento». */
+/** San Pedro: la cúpula con su linterna y su cruz, la fachada y las dos columnatas, con unas casas bajas. */
+function SkylineSanPedro({ fill }: { fill: string }) {
+  const columnas = Array.from({ length: 10 }, (_, i) => i)
+  return (
+    <SvgBase>
+      <g fill={fill}>
+        <rect x="0" y="104" width="390" height="16" />
+        <rect x="6" y="94" width="26" height="12" />
+        <rect x="36" y="89" width="16" height="17" />
+        <rect x="334" y="96" width="16" height="10" />
+        <rect x="354" y="91" width="22" height="15" />
+        <rect x="56" y="82" width="78" height="4" />
+        <rect x="256" y="82" width="78" height="4" />
+        {columnas.map((i) => (
+          <rect key={`l${i}`} x={58 + i * 8} y="86" width="3" height="20" />
+        ))}
+        {columnas.map((i) => (
+          <rect key={`r${i}`} x={258 + i * 8} y="86" width="3" height="20" />
+        ))}
+        <rect x="136" y="84" width="118" height="22" />
+        <rect x="150" y="76" width="90" height="8" />
+        <rect x="165" y="62" width="60" height="14" />
+        <path d="M163 64C163 36 227 36 227 64Z" />
+        <rect x="192" y="32" width="6" height="12" />
+        <path d="M190 33h10l-5-7z" />
+        <rect x="194" y="12" width="2" height="14" />
+        <rect x="191" y="16" width="8" height="2" />
+      </g>
+      {[172, 184, 196, 208].map((x, i) => (
+        <rect key={x} x={x} y="66" width="3" height="6" rx="1" fill="oklch(0.88 0.12 80)" className="season-card-glow" style={{ filter: 'drop-shadow(0 0 3px oklch(0.88 0.12 80))', animationDuration: `${2 + i * 0.5}s` }} />
+      ))}
+    </SvgBase>
+  )
+}
+
+/** El Coliseo: el muro roto a la derecha, tres filas de arcos encendidos y unas columnas sueltas delante. */
+function SkylineColiseo({ fill }: { fill: string }) {
+  return (
+    <SvgBase>
+      <g fill={fill}>
+        <rect x="0" y="104" width="390" height="16" />
+        <path d={COLISEO_WALL} />
+        <rect x="8" y="88" width="3.5" height="16" />
+        <rect x="18" y="80" width="3.5" height="24" />
+        <rect x="16" y="78" width="8" height="3" />
+        <rect x="334" y="82" width="4" height="22" />
+        <rect x="331" y="80" width="10" height="3" />
+        <rect x="350" y="90" width="3.5" height="14" />
+        <rect x="364" y="94" width="14" height="10" />
+      </g>
+      {ARCOS.map((arco, i) => (
+        <path
+          key={i}
+          d={`M${arco.x} ${arco.y + arco.h}V${arco.y + 4}a4 4 0 0 1 8 0V${arco.y + arco.h}Z`}
+          fill="oklch(0.88 0.13 78)"
+          className="season-card-glow"
+          style={{ animationDuration: `${arco.d}s` }}
+        />
+      ))}
+    </SvgBase>
+  )
+}
+
+/** La guirnalda de banderines del cumpleaños. */
+function Banderines() {
+  return (
+    <svg viewBox="0 0 390 70" preserveAspectRatio="none" className="absolute inset-x-0 top-[6px] h-[70px] w-full overflow-visible" aria-hidden="true">
+      <path d="M-10 6 Q 195 52 400 6" fill="none" stroke="rgba(255,240,210,.55)" strokeWidth="1" />
+      {FLAGS.map((flag, i) => (
+        <path key={i} d={`M${flag.x - 7} ${flag.y}L${flag.x + 7} ${flag.y}L${flag.x} ${flag.y + 15}Z`} fill={flag.c} opacity=".92" className="season-card-glow" style={{ animationDuration: `${3 + (i % 4) * 0.7}s` }} />
+      ))}
+    </svg>
+  )
+}
+
+/** Lo que sube o cae (motas de luz o nieve), en un canvas encima de la tarjeta. Nada con «reducir movimiento». */
 function useFalling(canvasRef: React.RefObject<HTMLCanvasElement>, fx: Scene['fx'], active: boolean) {
   useEffect(() => {
     const canvas = canvasRef.current
@@ -164,13 +272,7 @@ function useFalling(canvasRef: React.RefObject<HTMLCanvasElement>, fx: Scene['fx
         ctx.translate(q.x, q.y)
         ctx.rotate(q.r)
         ctx.beginPath()
-        if (fx.type === 'petal') ctx.ellipse(0, 0, q.s * 2.2, q.s * 1.3, 0, 0, 6.28)
-        else if (fx.type === 'leaf') {
-          const L = q.s * 3.4
-          ctx.moveTo(-L, 0)
-          ctx.quadraticCurveTo(0, -L * 0.7, L, 0)
-          ctx.quadraticCurveTo(0, L * 0.7, -L, 0)
-        } else if (fx.type === 'mote') {
+        if (fx.type === 'mote') {
           ctx.shadowColor = q.c
           ctx.shadowBlur = 8
           ctx.arc(0, 0, q.s * 0.9, 0, 6.28)
@@ -191,12 +293,12 @@ function useFalling(canvasRef: React.RefObject<HTMLCanvasElement>, fx: Scene['fx
 export function SeasonCard({ route }: { route: Route }) {
   const dismissSeasonNote = useRouteStore((state) => state.dismissSeasonNote)
   const note = route.seasonNote
-  // (Tanda 10L: solo la de Navidad; las tarjetas de estación que traigan los viajes ya guardados no salen.)
-  const open = Boolean(note?.text) && note?.season === 'navidad' && !route.seasonNoteDismissed
-  const season = cardSeasonOf(route)
-  const scene = SCENES[season]
+  // (Tanda 10M: tres tarjetas —Navidad, Semana Santa y el cumpleaños—; una `season` de las de antes no saca ninguna.)
+  const season = cardSeasonOfNote(note)
+  const open = season !== null && !route.seasonNoteDismissed
+  const scene = SCENES[season ?? 'navidad']
   const city = route.destination.split(',')[0].trim()
-  const title = note?.title ?? `${NAME[season]} en ${city}`
+  const title = note?.title ?? (season === 'cumpleanos' ? `El cumpleaños de ${city}` : `${NAME[season ?? 'navidad']} en ${city}`)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   useFalling(canvasRef, scene.fx, open)
 
@@ -209,9 +311,9 @@ export function SeasonCard({ route }: { route: Route }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [open, dismissSeasonNote])
 
-  if (!open || !note) return null
+  if (!open || !note || !season) return null
   return (
-    <div className="fixed inset-0 z-[85] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="season-card-title">
+    <div className="fixed inset-0 z-[85] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="season-card-title" data-tarjeta-especial={season}>
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={dismissSeasonNote} />
       <div className="trazo-notice-panel relative w-full max-w-[390px] overflow-hidden rounded-[30px] bg-[#FFFDF8] shadow-[0_30px_70px_-30px_rgba(40,25,5,.45)]">
         <div className="relative h-[300px]" style={{ background: scene.sky }}>
@@ -219,10 +321,22 @@ export function SeasonCard({ route }: { route: Route }) {
             className="absolute left-1/2 rounded-full"
             style={{ top: scene.glowTop, width: scene.glowSize, height: scene.glowSize, marginLeft: -scene.glowSize / 2, background: scene.glow }}
           />
-          <svg viewBox="0 0 390 120" preserveAspectRatio="none" className="absolute bottom-[34px] left-[-2px] h-[120px] w-[calc(100%+4px)]" aria-hidden="true">
-            <path d={SKYLINE} fill={scene.skyline} />
-          </svg>
+          {season === 'semana_santa' && (
+            <div className="absolute inset-x-0 top-0 h-14" aria-hidden="true">
+              {STARS.map((star, i) => (
+                <span key={i} className="season-card-glow absolute rounded-full bg-white" style={{ left: `${star.x}%`, top: star.y, width: 2, height: 2, boxShadow: '0 0 4px 1px rgba(255,255,255,.7)', animationDuration: `${star.d}s` }} />
+              ))}
+            </div>
+          )}
+          {season === 'navidad' && (
+            <svg viewBox="0 0 390 120" preserveAspectRatio="none" className="absolute bottom-[34px] left-[-2px] h-[120px] w-[calc(100%+4px)]" aria-hidden="true">
+              <path d={SKYLINE} fill={scene.skyline} />
+            </svg>
+          )}
+          {season === 'semana_santa' && <SkylineSanPedro fill={scene.skyline} />}
+          {season === 'cumpleanos' && <SkylineColiseo fill={scene.skyline} />}
           <div className="absolute inset-x-0 bottom-0 h-10" style={{ background: `linear-gradient(180deg,${scene.skyline} 0%,#FFFDF8 100%)` }} />
+          {season === 'cumpleanos' && <Banderines />}
           {season === 'navidad' && (
             <>
               <div className="absolute inset-x-0 bottom-[36px] flex h-[70px] items-end justify-around px-[18px] pb-3" aria-hidden="true">
@@ -254,13 +368,13 @@ export function SeasonCard({ route }: { route: Route }) {
           <h2
             id="season-card-title"
             className="absolute inset-x-0 top-[88px] whitespace-nowrap text-center font-display italic leading-none"
-            style={{ fontSize: title.length > 18 ? Math.min(scene.titleSize, 48) : scene.titleSize, color: scene.title, textShadow: scene.titleShadow }}
+            style={{ fontSize: title.length > 18 ? Math.min(48, Math.floor(340 / (title.length * 0.4))) : scene.titleSize, color: scene.title, textShadow: scene.titleShadow }}
           >
             {title}
           </h2>
         </div>
         <div className="relative z-[2] flex flex-col gap-5 px-7 pb-[26px] pt-1.5">
-          <p className="m-0 text-center text-[15px] leading-[1.6] text-[rgba(28,34,48,.72)] [text-wrap:pretty]">{note.text}</p>
+          <p data-tarjeta-texto className="m-0 text-center text-[15px] leading-[1.6] text-[rgba(28,34,48,.72)] [text-wrap:pretty]">{note.text}</p>
           <button type="button" onClick={dismissSeasonNote} className="h-14 rounded-full btn-champan text-[16px] font-semibold transition-transform active:scale-[.98]" autoFocus>
             Entendido
           </button>

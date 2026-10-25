@@ -775,7 +775,7 @@ console.log('4. La campanita de Avisos (los textos, la lista y el permiso)')
   const header = fs.readFileSync('src/components/layout/Header.tsx', 'utf8')
   debe(/useAvisosStore/.test(header) && /sinLeerLocales \+ sinLeerDeLaCuenta/.test(header), 'AV1', 'el puntito de la campanita cuenta lo no leído de la cuenta y los avisos de siempre')
   const notices = fs.readFileSync('src/components/layout/NoticesSheet.tsx', 'utf8')
-  debe(/<ListaDeAvisos/.test(notices) && /items\.map/.test(notices), 'AV2', 'los avisos de siempre siguen saliendo en la misma campanita, junto a los de la cuenta')
+  debe(/<ListaDeAvisos/.test(notices) && /itemsEnOrden\.map/.test(notices), 'AV2', 'los avisos de siempre siguen saliendo en la misma campanita, junto a los de la cuenta')
   debe(/<Header /.test(fs.readFileSync('src/components/route/RouteView.tsx', 'utf8')) && !/<Header /.test(fs.readFileSync('src/components/route/hoy/HoyView.tsx', 'utf8')), 'AV4', 'AV4: la campanita de HOY es la misma de la cabecera de RUTA y DÍAS (una sola, en el mismo sitio)')
 }
 

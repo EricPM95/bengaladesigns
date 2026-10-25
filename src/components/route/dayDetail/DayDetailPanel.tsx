@@ -1225,8 +1225,7 @@ export function DayDetailPanel({
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
             decisión que haya que tomar. */}
         {showsRoute && day.dayNotice && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.dayNotice}</p>}
-        {/* Tanda 6: la puesta de sol, solo como dato. */}
-        {showsRoute && day.sunsetText && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.sunsetText}</p>}
+        {/* (Tanda 10M: «Hoy el sol se pone a las…» ya no sale en la cabecera del día de DÍAS; la puesta de sol queda para HOY.) */}
         {/* "Volver al día original" va en el menú "···" del día (PROMPT_UI, Parte 2). */}
         {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
         {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}

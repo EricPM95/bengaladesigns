@@ -1,36 +1,51 @@
 /**
- * Avisos de fechas especiales (PROMPT_AVISO_FECHAS.md): lo que el viajero ve en una ventana al entrar en su ruta
- * por primera vez si su viaje cae en un festivo, un día de cierre o una fecha con algo especial.
+ * Avisos de fechas especiales (PROMPT_AVISO_FECHAS.md; rehechos en la Tanda 10M, 2026-10-25): lo que el viajero ve al abrir su
+ * ruta si su viaje cae en un festivo, un día de cierre o una fecha con algo especial. Se guardan además en la campana de la app.
  *
- * Dos tipos, en la misma lista (`date_notices`, una tarjeta por día):
- *   - Automáticos: lo que el motor YA ha hecho por un cierre (día movido, por fuera, cerrado todo el viaje,
- *     horario especial, la variante del día de la semana que trae `aviso_fecha`). Solo joyas, imprescindibles y
- *     lo del pool: lo pequeño que no cambia la ruta no se cuenta.
- *   - Curados: `fechas_especiales` del JSON del destino (solo las que no llevan `verificar: true`).
- * Si el mismo día hay de los dos, van en la misma tarjeta: primero lo que hemos hecho, luego lo que hay que ver.
- * Todo aviso acaba con lo que hemos hecho ("Hemos puesto…"): así lo escriben las plantillas de aquí y así se
- * curan los textos del JSON.
+ * UN aviso por fecha, en dos partes (`que_pasa` y `hecho`; `texts[0]` las lleva juntas):
+ *   1. Qué pasa ese día, siempre igual: lo que cierra o cambia, esté o no en su ruta (información por si quiere añadir algo).
+ *   2. La frase de lo que hemos hecho, la misma para todos (`fechas_especiales.frases.hecho`), que solo sale si ese día cierra
+ *      o cambia algo. Única excepción (ahí la frase sería mentira): un sitio de `closed_notices.sitios_que_no_se_quitan` que se
+ *      queda en un día que cierra («En tu viaje no hay otro día para…: se queda en su día y decides tú»); y si un sitio cerrado se
+ *      enseña por fuera, el aviso de siempre («…te lo enseñamos por fuera, merece la pena igual»).
+ *
+ * Tipos de tarjeta (`kind`):
+ *   - 'curado': una entrada de `fechas_especiales` (sale si la fecha cae en el viaje, aunque nada de su ruta cierre).
+ *   - 'auto':   los cierres de la semana (el domingo cierran los Museos Vaticanos, el lunes la Galería Borghese…), siempre que el
+ *               sitio esté en su ruta; un festivo de `closed_notices.festivos` sin entrada propia; un horario especial; la
+ *               variante del día de la semana con `aviso_fecha`.
+ * Cada tarjeta lleva además `cierran` (los nombres de todos los lugares que cierran o cambian esa fecha) y `campana` (la frase corta de la campana).
+ * No cambia cómo se reparten los días: solo cuenta lo que ya hay.
  */
 
-import { closedReason, dayOfMonth } from '../../shared/routeEngine/closedNotices.js'
-import { closedOnDay, specialHoursOn } from '../../shared/routeEngine/openingHours.js'
+import { closedOutsideNotice, closedReason, dayOfMonth } from '../../shared/routeEngine/closedNotices.js'
+import { closedOnDay, specialHoursOn, withinMonthDays } from '../../shared/routeEngine/openingHours.js'
 import { specialDateMatches, specialDatesOfMonth } from '../../shared/routeEngine/specialDates.js'
 import { holidayTransitRule } from '../../shared/routeEngine/holidayTransit.js'
-import { withinMonthDays } from '../../shared/routeEngine/openingHours.js'
 import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
 
-const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
-/** Sin la última frase de lo que hemos hecho ("Hemos puesto…"): cuando no es verdad. */
 const RESTAURANTES_TEXT = 'Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.'
+/** Las frases por defecto (cada destino pone las suyas en `fechas_especiales.frases`). */
+const FRASES = {
+  hecho: 'Hemos preparado tu ruta para que disfrutes de todo lo que está abierto y tengas una experiencia fantástica.',
+  se_queda: 'En tu viaje no hay otro día para {sitio}: {se_quedan} en su día y decides tú.',
+  semanal: 'Los {dias} {cierra} {lugares}.',
+  festivo: 'Es festivo y {cierra} {lugares}.',
+}
+/** Sin la última frase de lo que hemos hecho ("Hemos puesto…"): para el aviso sin fechas. */
 const withoutPromise = (text) => String(text ?? '').replace(/\s*Hemos [^.]*\.\s*$/, '')
 const weekdayOf = (dateIso) => WEEKDAYS[new Date(`${String(dateIso).slice(0, 10)}T12:00:00Z`).getUTCDay()]
 const dayNumberOf = (dateIso) => Number(String(dateIso).slice(8, 10))
 const capital = (text) => (text ? text.charAt(0).toUpperCase() + text.slice(1) : text)
+const stripArticle = (text) => String(text ?? '').replace(/^(el|la|los|las)\s+/i, '')
+const fill = (text, values) => String(text).replace(/\{(\w+)\}/g, (match, key) => values[key] ?? match)
 /** "domingo 26 de septiembre" */
 const longDate = (dateIso) => `${weekdayOf(dateIso)} ${dayOfMonth(dateIso)}`
-/** "los domingos", "los lunes", "los sábados" */
-const pluralWeekday = (weekday) => `los ${/s$/.test(weekday) ? weekday : `${weekday}s`}`
+/** "domingos", "lunes", "sábados" */
+const pluralWeekday = (weekday) => (/s$/.test(weekday) ? weekday : `${weekday}s`)
+/** "sábado 25" */
+const shortDate = (dateIso) => `${weekdayOf(dateIso)} ${dayNumberOf(dateIso)}`
 
 /** El lugar con su artículo, sin la segunda mitad de los nombres dobles ("los Museos Vaticanos", no "… y Capilla Sixtina"). */
 function shortNamed(place) {
@@ -46,14 +61,13 @@ function grammar(place) {
     named,
     bare: named.replace(/^(el|la|los|las)\s+/i, ''),
     plural,
-    pronoun: { el: 'lo', la: 'la', los: 'los', las: 'las' }[article],
     cierra: plural ? 'cierran' : 'cierra',
-    abre: plural ? 'abren' : 'abre',
     cerrado: { el: 'cerrado', la: 'cerrada', los: 'cerrados', las: 'cerradas' }[article],
+    abre: plural ? 'abren' : 'abre',
   }
 }
 
-/** Lo mismo para varios lugares a la vez ("el Coliseo y el Panteón cierran… para que no los pierdas"). */
+/** Lo mismo para varios lugares a la vez. */
 function grammarOf(places) {
   if (places.length === 1) return grammar(places[0])
   const all = places.map(grammar)
@@ -62,88 +76,46 @@ function grammarOf(places) {
     named: joinSpanish(all.map((g) => g.named)),
     bare: joinSpanish(all.map((g) => g.bare)),
     plural: true,
-    pronoun: feminine ? 'las' : 'los',
     cierra: 'cierran',
-    abre: 'abren',
     cerrado: feminine ? 'cerradas' : 'cerrados',
+    abre: 'abren',
   }
 }
 
 /** La primera letra en minúscula, salvo que la frase empiece por un nombre propio (el del destino). */
 const lowerFirst = (text, keep) => (keep && String(text).startsWith(keep) ? text : String(text).charAt(0).toLowerCase() + String(text).slice(1))
 
-/** "sábado 25" */
-const shortDate = (dateIso) => `${weekdayOf(dateIso)} ${dayNumberOf(dateIso)}`
-
-/** El nombre del festivo de ese día ("Navidad", "el Lunes de Pascua"), de `closed_notices.festivos`. */
-function holidayName(destData, place, dateIso) {
-  const reason = closedReason(place, { dateIso, weekday: weekdayOf(dateIso) })
-  if (reason?.kind !== 'festivo') return null
-  return destData.destination_config?.closed_notices?.festivos?.[reason.token] ?? null
-}
-
-/** "Los domingos los Museos Vaticanos cierran." / "El 25 de diciembre el Coliseo cierra por Navidad." */
-function closureSentence(destData, placeOrPlaces, dateIso) {
-  const places = Array.isArray(placeOrPlaces) ? placeOrPlaces : [placeOrPlaces]
-  const place = places[0]
-  const g = grammarOf(places)
-  const reason = closedReason(place, { dateIso, weekday: weekdayOf(dateIso) })
-  if (reason?.kind === 'semanal') return `${capital(pluralWeekday(reason.weekday))} ${g.named} ${g.cierra}.`
-  const name = holidayName(destData, place, dateIso)
-  return `El ${dayOfMonth(dateIso)} ${g.named} ${g.cierra}${name ? ` por ${name}` : ''}.`
-}
-
 /** El nombre corto de una fecha curada para la etiqueta del día: "Todos los Santos", "Ferragosto". */
 const tagOf = (entry) => String(entry.titulo ?? '').split(' · ').at(-1)
 
 /**
+ * La frase corta de la campana de la app.
+ *   Con cierres y un día especial (`label`): «1 de enero · Año Nuevo: el Coliseo, el Foro y 2 lugares más cierran.»
+ *   Con cierres sin día especial:            «Coliseo, Panteón y 2 lugares más cierran el 25 de diciembre.»
+ *   Sin cierres (solo cambios de horario o información): el título del aviso.
+ */
+function campanaText({ dateIso, label, closing, changing, title, weekly }) {
+  const main = closing.length > 0 ? closing : changing
+  if (main.length === 0) return title
+  const names = main.map((place) => (label ? shortNamed(place) : grammar(place).bare))
+  const rest = names.length - 2
+  const items = rest > 0 ? [...names.slice(0, 2), `${rest} ${rest === 1 ? 'lugar' : 'lugares'} más`] : names
+  const phrase = joinSpanish(items)
+  const plural = main.length > 1 || grammar(main[0]).plural
+  const verb = closing.length > 0 ? (plural ? 'cierran' : 'cierra') : plural ? 'cambian' : 'cambia'
+  const tail = closing.length > 0 ? '' : ' su horario'
+  if (label) return `${label}: ${phrase} ${verb}${tail}.`
+  return `${capital(phrase)} ${verb}${tail} el ${weekly ? longDate(dateIso) : dayOfMonth(dateIso)}.`
+}
+
+/**
  * @param {object} destData
- * @param {object} trip     la salida del planificador (días con `hours` y `schedule`, `dateMoves`, `unplacedEssentials`…)
- * @param {object} options  { poolNames }
- * @returns {object[]} tarjetas { id, day_number, date_iso, icon, title, tag, texts, kind }
+ * @param {object} trip     la salida del planificador (días con `hours` y `schedule`…)
+ * @param {object} options  { poolNames, tripDates }  `tripDates`: todas las fechas del viaje (también el día de vuelta)
+ * @returns {object[]} tarjetas { id, day_number, date_iso, icon, title, tag, texts, kind, que_pasa, hecho, cierran, campana }
  */
 export function dateNoticesFor(destData, trip, options = {}) {
-  const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
-  /** Lo que el viaje lleva un día: sus paradas (con lo que recorre el Free Tour) y sus nocturnas, con su hora. */
-  const carriedOn = (day) => {
-    const tourCfg = destData.default_free_tour ?? null
-    const list = []
-    for (const visit of day?.schedule?.visits ?? []) {
-      list.push({ name: visit.place.name, start: visit.start })
-      if (tourCfg && visit.place.name === tourCfg.name) for (const name of tourCfg.covers ?? []) list.push({ name, start: visit.start })
-    }
-    for (const night of trip.nightsByDay?.get(day?.dayNumber) ?? []) list.push({ name: night.name, start: 21 * 60 })
-    return list
-  }
-  /** ¿Se cumple en ESTE viaje la condición de una opción de `hecho`? (ver `_formato.hecho` en el JSON del destino) */
-  const holds = (cond, day) => {
-    if (!cond) return true
-    const today = carriedOn(day)
-    const others = (trip.days ?? []).filter((other) => other !== day).flatMap(carriedOn)
-    if (cond.hoy) {
-      const hits = today.filter((item) => cond.hoy.includes(item.name))
-      if (hits.length === 0) return false
-      if (cond.antes_de && !hits.every((item) => item.start < toMin(cond.antes_de))) return false
-      if (cond.despues_de && !hits.every((item) => item.start >= toMin(cond.despues_de))) return false
-    }
-    if (cond.otro_dia && (today.some((item) => cond.otro_dia.includes(item.name)) || !others.some((item) => cond.otro_dia.includes(item.name)))) return false
-    if (cond.en_viaje && ![...today, ...others].some((item) => cond.en_viaje.includes(item.name))) return false
-    if (cond.empieza_tarde && !(day?.curatedDay?.variantes ?? []).some((label) => /^empieza:\d/.test(label))) return false
-    return true
-  }
-  /**
-   * El texto curado de una fecha: qué cambia ese día (`contexto`) y qué hemos hecho (`hecho`: de cada grupo, la primera
-   * opción que se cumple en este viaje). Así ningún aviso promete lo que la ruta no hace. Sin `hecho`, su texto tal cual.
-   */
-  const curatedText = (entry, dateIso) => {
-    if (!entry.hecho) return entry.contexto ?? entry.texto
-    const day = (trip.days ?? []).find((candidate) => candidate.hours?.dateIso === dateIso) ?? null
-    const chosen = entry.hecho.map((group) => group.find((option) => holds(option.si, day))).filter(Boolean)
-    // (`sin_aviso`: un festivo en el que la ruta no cambia nada no se cuenta; con aviso de restaurantes, solo el contexto.)
-    if (chosen.some((option) => option.sin_aviso) && !entry.aviso_restaurantes) return null
-    return [entry.contexto, ...chosen.map((option) => option.texto)].filter(Boolean).join(' ')
-  }
-  /** Las fechas en las que un texto semanal no vale (`excepto: "papa.sin_audiencia"`: el verano sin audiencias). */
+  /** ¿Se cumple en esta fecha una regla de `inException` ("papa.sin_audiencia": el verano sin audiencias)? */
   const inException = (key, dateIso) => {
     if (!key || !dateIso) return false
     const ranges = String(key).split('.').reduce((node, part) => node?.[part], destData.destination_config) ?? []
@@ -151,16 +123,18 @@ export function dateNoticesFor(destData, trip, options = {}) {
     return ranges.some((range) => withinMonthDays(md, range.desde, range.hasta))
   }
   const calendar = { hasDates: trip.calendar?.hasDates ?? (trip.days ?? []).some((day) => day.hours?.weekday), month: trip.calendar?.month ?? options.month ?? null }
-  const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
-  const joyas = new Set([...(destData.joyas ?? []), ...(destData.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name)])
+  const places = destData.places ?? []
+  const placeByName = new Map(places.map((place) => [place.name, place]))
+  const joyas = new Set([...(destData.joyas ?? []), ...places.filter((place) => place.tier === 'joya').map((place) => place.name)])
   const poolNames = new Set(options.poolNames ?? [])
   const matters = (name) => {
     const place = placeByName.get(name)
     return Boolean(place) && (place.level === 1 || joyas.has(name) || poolNames.has(name))
   }
-  // Todas salen: `verificar: true` ya no las esconde, las cuenta con prudencia ("es posible que…", "compruébalo en la
+  // Todas salen: `verificar: true` no las esconde, las cuenta con prudencia ("es posible que…", "compruébalo en la
   // web oficial"), que es como está escrito su texto (decisión del usuario, 2026-09-27).
   const specials = destData.fechas_especiales?.fechas ?? []
+  const frases = { ...FRASES, ...(destData.fechas_especiales?.frases ?? {}) }
   const days = (trip.days ?? []).filter((day) => day.hours?.dateIso)
 
   // ── Sin fechas (solo el mes): solo lo de temporada y las fechas fijas del mes, con "Si tu viaje coincide…" ──
@@ -176,198 +150,232 @@ export function dateNoticesFor(destData, trip, options = {}) {
       // Sin fechas la ruta no se ajusta a esa fecha: fuera la frase de "hemos ajustado / hemos puesto…" (no es verdad).
       texts: [entry.tipo === 'temporada' ? entry.texto : `Si tu viaje coincide con ${label}: ${lowerFirst(withoutPromise(entry.contexto ?? entry.texto), destData.destination)}`],
       kind: 'curado',
+      que_pasa: null,
+      hecho: null,
+      cierran: [],
+      campana: entry.titulo,
     }))
   }
 
-  /** Por día (fecha): lo automático y lo curado, para juntarlo en una tarjeta. */
-  const byDate = new Map()
-  const slot = (dateIso) => {
-    if (!byDate.has(dateIso)) byDate.set(dateIso, { auto: [], curated: null })
-    return byDate.get(dateIso)
-  }
-  /** `tag`: la etiqueta del día; `subject`: de qué va, para el título ("Domingo 26 de septiembre · Museos Vaticanos"). */
-  // (`dates`: los días de los que habla, para el título: «Domingo 6 y martes 8 · Museos Vaticanos cerrados».)
-  const addAuto = (dateIso, text, tag, subject, icon = 'cierre', dates = [dateIso], kind = 'otro') => {
-    const entry = slot(dateIso)
-    if (!entry.auto.some((item) => item.text === text)) entry.auto.push({ text, tag, subject, icon, dates, kind })
-  }
-
-  // 1. Día movido: lo que otro día del viaje cierra (o no debe ir) está en este. Un aviso por lugar, en el primer
-  // día que no podía ir, con todos esos días juntos.
-  // Los lugares con los mismos días bloqueados y el mismo día puesto van en una sola frase ("El 25 de diciembre el
-  // Coliseo y el Panteón cierran por Navidad…").
-  const movesByName = new Map()
-  for (const move of trip.dateMoves ?? []) {
-    if (!matters(move.name)) continue
-    movesByName.set(move.name, [...(movesByName.get(move.name) ?? []), move])
-  }
-  const moveGroups = new Map()
-  for (const [name, moves] of movesByName) {
-    const place = placeByName.get(name)
-    const blocked = [...new Set(moves.map((move) => move.blockedDateIso))].sort()
-    const closed = blocked.filter((iso) => closedOnDay(place, weekdayOf(iso), iso))
-    const key = `${closed.join(',') || `no_en:${blocked.join(',')}`}>${moves[0].placedDateIso}`
-    if (!moveGroups.has(key)) moveGroups.set(key, { places: [], blocked, closed, placedIso: moves[0].placedDateIso })
-    moveGroups.get(key).places.push(place)
-  }
-  for (const { places, blocked, closed, placedIso } of moveGroups.values()) {
-    const g = grammarOf(places)
-    const sameMonth = (iso) => iso.slice(0, 7) === placedIso.slice(0, 7)
-    const done = `Hemos puesto tu visita el ${sameMonth(blocked[0]) ? shortDate(placedIso) : longDate(placedIso)} para que no ${g.pronoun} pierdas.`
-    let text
-    if (closed.length === 1) text = `${closureSentence(destData, places, closed[0])} ${done}`
-    else if (closed.length > 1) {
-      // (Si todos los días son la misma fiesta, una vez al final: «el sábado 14, el domingo 15 y el lunes 16, por
-      // Ferragosto», no «Ferragosto» detrás de cada día.)
-      const names = closed.map((iso) => holidayName(destData, places[0], iso))
-      const oneHoliday = names[0] && names.every((name) => name === names[0])
-      const fechas = joinSpanish(closed.map((iso, at) => `el ${shortDate(iso)}${!oneHoliday && names[at] ? `, ${names[at]}` : ''}`)) + (oneHoliday ? `, por ${names[0]}` : '')
-      text = `${capital(g.named)} ${g.cierra} ${fechas}. ${done}`
-    } else {
-      // No cierra, pero el día no debe ir (`no_en`): el último domingo de mes los Museos Vaticanos abren solo por la
-      // mañana y con muchísima gente.
-      text = `El último ${weekdayOf(blocked[0])} de mes ${g.named} ${g.abre} solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el ${shortDate(placedIso)}.`
-    }
-    addAuto(closed[0] ?? blocked[0], text, closed.length ? `${capital(g.bare)} ${g.cerrado}` : 'Último domingo de mes', g.bare, 'cierre', closed.length ? closed : blocked.slice(0, 1), 'movido')
-  }
-
-  // 2. Por fuera: un imprescindible cerrado ese día que se enseña desde fuera.
-  for (const day of days) {
-    const iso = day.hours.dateIso
-    for (const visit of day.schedule?.visits ?? []) {
-      const place = placeByName.get(visit.place.name)
-      if (!place || !matters(place.name) || !closedOnDay(place, day.hours.weekday ?? weekdayOf(iso), iso)) continue
-      const g = grammar(place)
-      addAuto(iso, `${closureSentence(destData, place, iso)} Lo ves por fuera, sin perder tiempo.`, `${capital(g.bare)} ${g.cerrado}`, g.bare)
-    }
-  }
-
-  // 3. Cerrado todo el viaje: no hay forma de verlo por dentro.
-  const closedAll = [
-    ...(trip.unplacedEssentials ?? []).filter((item) => item.reason === 'closed_every_day').map((item) => item.name),
-    ...(trip.unplacedPool ?? []).filter((item) => item.reason === 'closed_every_day').map((item) => item.name),
-  ]
-  for (const name of [...new Set(closedAll)]) {
-    const place = placeByName.get(name)
-    if (!place) continue
-    const g = grammar(place)
-    const closedDays = days.filter((day) => closedOnDay(place, day.hours.weekday ?? weekdayOf(day.hours.dateIso), day.hours.dateIso)).map((day) => day.hours.dateIso)
-    if (closedDays.length === 0) continue
-    const sameMonth = closedDays.every((iso) => iso.slice(5, 7) === closedDays[0].slice(5, 7))
-    const fechas = sameMonth
-      ? `${joinSpanish(closedDays.map((iso) => `el ${dayNumberOf(iso)}`))} de ${MONTHS[Number(closedDays[0].slice(5, 7)) - 1]}`
-      : joinSpanish(closedDays.map((iso) => `el ${dayOfMonth(iso)}`))
-    const names = [...new Set(closedDays.map((iso) => holidayName(destData, place, iso)).filter(Boolean).map((text) => text.replace(/^(el|la|los|las)\s+/i, '')))]
-    const why = names.length === 1 ? ` (${names[0]})` : ''
-    addAuto(closedDays[0], `${capital(g.named)} ${g.cierra} ${fechas}${why}, que son los días de tu viaje. ${capital(g.pronoun)} hemos dejado en «No te dio tiempo» por si cambias de fechas.`, `${capital(g.bare)} ${g.cerrado}`, g.bare, 'cierre', closedDays)
-  }
-
-  // 4. Horario especial (`fechas_especiales[].horario_especial` confirmado): la visita va dentro de ese horario.
-  for (const day of days) {
-    const iso = day.hours.dateIso
-    for (const visit of day.schedule?.visits ?? []) {
-      const place = placeByName.get(visit.place.name)
-      const special = place ? specialHoursOn(place, iso) : null
-      if (!special || !matters(place.name)) continue
-      const g = grammar(place)
-      addAuto(iso, `El ${dayOfMonth(iso)} ${g.named} ${g.abre} con horario especial (${special.windows.join(', ')}). Hemos puesto tu visita dentro de ese horario.`, 'Horario especial', g.bare, 'luz', [iso], 'horario')
-    }
-  }
-
-  // 5. La variante del día de la semana que cambia algo de un imprescindible (`aviso_fecha`: la audiencia de los
-  // miércoles, el Panteón del sábado).
-  for (const day of days) {
-    const cfg = day.curatedDay ? (destData.curated_days ?? []).find((candidate) => candidate.id === day.curatedDay.id) : null
-    for (const name of day.curatedDay?.variantes ?? []) {
-      const notice = cfg?.variantes?.[name]?.aviso_fecha
-      if (notice?.texto && !inException(notice.excepto, day.hours.dateIso)) addAuto(day.hours.dateIso, notice.texto, notice.etiqueta ?? 'Aviso', notice.etiqueta ?? 'Aviso', notice.icono ?? 'cierre')
-    }
-  }
-
-  // 6. Curados: la tarjeta va en el primer día del viaje que cae en su fecha. Con rango (Navidad, del 24 al 26), lo
-  // automático de los demás días del rango se junta en su tarjeta: es la misma ocasión.
-  // Lo que el viaje ve, cualquier día: las paradas, las nocturnas y lo que recorre el Free Tour.
+  const dayByDate = new Map(days.map((day) => [day.hours.dateIso, day]))
+  const tripDates = [...new Set((options.tripDates?.length ? options.tripDates : days.map((day) => day.hours.dateIso)).map((iso) => String(iso).slice(0, 10)))].sort()
+  const dayNumberOfDate = (iso) => dayByDate.get(iso)?.dayNumber ?? (tripDates.includes(iso) ? tripDates.indexOf(iso) + 1 : null)
+  const visitsOn = (iso) => dayByDate.get(iso)?.schedule?.visits ?? []
   const tour = destData.default_free_tour ?? null
-  const tripNames = new Set()
+
+  // Lo que el viaje ve de verdad (entra o pasa a verlo cerrado por fuera): las paradas, lo que recorre el Free Tour y las nocturnas.
+  const routeNames = new Set()
   for (const day of trip.days ?? []) {
     for (const visit of day.schedule?.visits ?? []) {
-      tripNames.add(visit.place.name)
-      if (tour && visit.place.name === tour.name) for (const name of tour.covers ?? []) tripNames.add(name)
+      const p = visit.place
+      if (p.passThrough || (p.visitOutside && p.outsideKind !== 'cerrado')) continue
+      routeNames.add(p.name)
+      if (tour && p.name === tour.name) for (const name of tour.covers ?? []) routeNames.add(name)
     }
-    for (const night of trip.nightsByDay?.get(day.dayNumber) ?? []) tripNames.add(night.name)
+    for (const night of trip.nightsByDay?.get(day.dayNumber) ?? []) routeNames.add(night.name)
   }
-  const namedPlaces = (destData.places ?? []).filter((place) => (place.level ?? 3) <= 2)
-  // (Un aviso curado que nombra un lugar que no está en el viaje, ningún día, no sale: decisión del usuario, 2026-09-29.)
-  const namesAbsent = (entry) => {
-    const text = [entry.contexto ?? entry.texto, entry.titulo].filter(Boolean).join(' ')
-    return namedPlaces.some((place) => (text.includes(place.name) || (place.short_name && text.includes(place.short_name))) && !tripNames.has(place.name))
-  }
-  for (const entry of specials) {
-    // (Con `hecho`, el aviso ya dice si el día no pasa por ese sitio: «tu ruta de hoy no pasa por San Pedro».)
-    if (!entry.hecho && namesAbsent(entry)) continue
-    // `requiere_lugares`: solo si ese día el viaje lleva alguno de esos lugares (el Coliseo el primer domingo de mes).
-    // (De día o de noche: el mercadillo de Navona va en el día que pasa por la plaza, también en su nocturna.)
-    const carriesPlaces = (day) => !entry.requiere_lugares || (day.schedule?.visits ?? []).some((visit) => entry.requiere_lugares.includes(visit.place.name) && !visit.place.visitOutside) || (trip.nightsByDay?.get(day.dayNumber) ?? []).some((night) => entry.requiere_lugares.includes(night.name))
-    const inRange = days.filter((day) => specialDateMatches(entry, day.hours.dateIso) && carriesPlaces(day)).map((day) => day.hours.dateIso)
-    if (inRange.length === 0) continue
-    const target = slot(inRange[0])
-    if (target.curated) continue
-    target.curated = entry
-    // (`sin_juntar`: un aviso de varios días que no se lleva lo de los otros días: la semana de Ferragosto, del 13 al 16,
-    // no se queda con el «Panteón cerrado» del 15.)
-    for (const iso of entry.sin_juntar ? [] : inRange.slice(1)) {
-      const other = byDate.get(iso)
-      if (!other || other.curated) continue
-      for (const item of other.auto) if (!target.auto.some((known) => known.text === item.text)) target.auto.push(item)
-      byDate.delete(iso)
+  // Un lugar «de nombre» (el viajero lo conoce): los de nivel 1 y 2, y todo lo que lleva su ruta.
+  const named = (place) => (place.level ?? 3) <= 2 || routeNames.has(place.name)
+  const byLevel = (a, b) => (a.level ?? 3) - (b.level ?? 3)
+
+  /** Los lugares que cierran y los que cambian de horario en esa fecha (`entry`: su `horario_especial`, aunque aún no se aplique). */
+  const affected = (iso, entry = null) => {
+    const weekday = weekdayOf(iso)
+    const closing = places.filter((place) => named(place) && closedOnDay(place, weekday, iso)).sort(byLevel)
+    const changing = places.filter((place) => named(place) && !closing.includes(place) && specialHoursOn(place, iso)).sort(byLevel)
+    for (const name of Object.keys(entry?.horario_especial?.lugares ?? {})) {
+      const place = placeByName.get(name)
+      if (place && !closing.includes(place) && !changing.includes(place)) changing.push(place)
     }
+    return { closing, changing }
+  }
+  /** Los lugares con su artículo, hasta 4 ("el Coliseo, el Foro, el Panteón y más" si hay más). */
+  const listText = (list) => {
+    const all = list.map(shortNamed)
+    return joinSpanish(all.length > 4 ? [...all.slice(0, 3), 'más'] : all)
   }
 
-  // Un aviso, un tema (PROMPT_UI_REPASO 1): cada cierre en su tarjeta, con sus días y lo cerrado en el título («Domingo 6 y
-  // martes 8 · Museos Vaticanos cerrados»), y cada fecha curada en la suya («Domingo 6 · El Coliseo, gratis»). Primero
-  // lo que cambia la ruta, después lo informativo. Antes iban juntos en una tarjeta con el título del curado.
-  const dayOfDate = new Map(days.map((day) => [day.hours.dateIso, day.dayNumber]))
+  /** La parte de lo que hemos hecho: la frase de todos; si un sitio que no se quita se queda en un día que cierra, su excepción; y si se enseña por fuera, el aviso de siempre. */
+  const hechoFor = (iso) => {
+    const weekday = weekdayOf(iso)
+    const stays = []
+    const outside = []
+    for (const visit of visitsOn(iso)) {
+      const place = placeByName.get(visit.place.name)
+      if (!place) continue
+      if (visit.place.closedThisDay) stays.push(place)
+      else if (visit.place.visitOutside && visit.place.outsideKind === 'cerrado' && closedOnDay(place, weekday, iso)) outside.push(place)
+    }
+    const parts = []
+    if (stays.length > 0) {
+      const g = grammarOf(stays)
+      parts.push(fill(frases.se_queda, { sitio: g.named, se_quedan: g.plural ? 'se quedan' : 'se queda' }))
+    }
+    for (const place of outside) {
+      const text = closedOutsideNotice(destData, place, { dateIso: iso, weekday })
+      if (text) parts.push(text)
+    }
+    return parts.length > 0 ? parts.join(' ') : frases.hecho
+  }
+
   /** «Domingo 6 y martes 8» (con el mes si cambia). */
   const datesTitle = (isos) => {
     const sorted = [...new Set(isos)].sort()
     const sameMonth = sorted.every((iso) => iso.slice(0, 7) === sorted[0].slice(0, 7))
     return capital(joinSpanish(sorted.map((iso) => (sameMonth ? shortDate(iso) : longDate(iso)))))
   }
-  const routeCards = []
-  const infoCards = []
-  for (const [iso, { auto, curated }] of [...byDate.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-    // Un aviso, un tema: el día movido o el horario especial que el aviso curado de ese día ya cuenta no sale aparte.
-    const covered = (item) => Boolean(curated?.cubre) && curatedText(curated, iso) != null && (item.kind === 'movido' || item.kind === 'horario') && curated.cubre.includes(item.subject)
-    for (const item of auto) {
-      if (covered(item)) continue
-      routeCards.push({
-        id: `${iso}:${item.tag}`,
-        day_number: dayOfDate.get(iso) ?? null,
-        date_iso: iso,
-        icon: item.icon ?? 'cierre',
-        title: `${datesTitle(item.dates ?? [iso])} · ${item.tag}`,
-        tag: item.tag,
-        texts: [item.text],
-        kind: 'auto',
-      })
+
+  const cards = []
+  const closureDates = new Set()
+  const makeCard = ({ iso, id, icon, title, tag, kind, quePasa, hecho = null, extraTexts = [], closing = [], changing = [], label = null, weekly = false }) => ({
+    id,
+    day_number: dayNumberOfDate(iso),
+    date_iso: iso,
+    icon,
+    title,
+    tag,
+    texts: [[quePasa, hecho].filter(Boolean).join(' '), ...extraTexts].filter(Boolean),
+    kind,
+    que_pasa: quePasa,
+    hecho,
+    cierran: [...closing, ...changing].map((place) => place.name),
+    campana: campanaText({ dateIso: iso, label, closing, changing, title, weekly }),
+  })
+
+  // 1. Curados: una entrada de `fechas_especiales` por fecha del viaje que cae en ella (con rango, solo la primera fecha). Salen aunque nada de la ruta cierre.
+  for (const entry of specials) {
+    // `requiere_lugares`: solo si ese día el viaje lleva alguno de esos lugares (el Coliseo el primer domingo de mes).
+    // (De día o de noche: el mercadillo de Navona va en el día que pasa por la plaza, también en su nocturna.)
+    const carriesPlaces = (iso) => {
+      if (!entry.requiere_lugares) return true
+      const day = dayByDate.get(iso)
+      return (day?.schedule?.visits ?? []).some((visit) => entry.requiere_lugares.includes(visit.place.name) && !visit.place.visitOutside) || (trip.nightsByDay?.get(day?.dayNumber) ?? []).some((night) => entry.requiere_lugares.includes(night.name))
     }
-    if (curated && curatedText(curated, iso) != null) {
-      infoCards.push({
-        id: `${iso}:${curated.id}`,
-        day_number: dayOfDate.get(iso) ?? null,
-        date_iso: iso,
-        icon: curated.icono ?? 'fiesta',
-        // (`titulo_con_fecha`: las fechas que se repiten, el primer domingo de mes, llevan el día real delante.)
-        title: curated.titulo_con_fecha ? `${datesTitle([iso])} · ${curated.titulo_con_fecha}` : curated.titulo,
-        tag: tagOf(curated),
-        // (`aviso_restaurantes`: Navidad y Ferragosto, muchos restaurantes cierran; una frase aparte, fuera de las 35 palabras.)
-        // (Y el transporte recortado de ese festivo, otra frase aparte: «El 24 de diciembre el bus, el tranvía y el metro paran a las 21:00».)
-        texts: [curatedText(curated, iso), ...(holidayTransitRule(destData, iso)?.texto ? [holidayTransitRule(destData, iso).texto] : []), ...(curated.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])].filter(Boolean),
+    let dates = tripDates.filter((iso) => specialDateMatches(entry, iso) && carriesPlaces(iso))
+    if (entry.hasta) dates = dates.slice(0, 1)
+    for (const iso of dates) {
+      // `otro_dia`: el aviso solo sale si el viaje lleva esos lugares OTRO día; {dia} = «el viernes 6» (el último domingo de mes: «te los hemos puesto el viernes 6»).
+      let dia = ''
+      if (entry.otro_dia) {
+        const other = tripDates.find((date) => date !== iso && visitsOn(date).some((visit) => entry.otro_dia.includes(visit.place.name) && !visit.place.visitOutside && !visit.place.closedThisDay))
+        if (!other) continue
+        dia = `el ${other.slice(0, 7) === iso.slice(0, 7) ? shortDate(other) : longDate(other)}`
+      }
+      // (Un aviso solo informativo no cuenta cierres: el último domingo no habla de la Villa Farnesina.)
+      const { closing, changing } = entry.sin_frase ? { closing: [], changing: [] } : affected(iso, entry)
+      const affects = closing.length + changing.length > 0
+      const title = entry.titulo_con_fecha ? `${datesTitle([iso])} · ${entry.titulo_con_fecha}` : entry.titulo
+      const transit = holidayTransitRule(destData, iso)?.texto
+      if (affects) closureDates.add(iso)
+      cards.push(makeCard({
+        iso,
+        id: `${iso}:${entry.id}`,
+        icon: entry.icono ?? 'fiesta',
+        title,
+        tag: tagOf(entry),
         kind: 'curado',
-      })
+        quePasa: fill(entry.contexto ?? entry.texto, { dia }),
+        hecho: !entry.sin_frase && affects ? hechoFor(iso) : null,
+        // (`aviso_restaurantes`: Navidad y Ferragosto, muchos restaurantes cierran; y el transporte recortado de ese festivo: frases aparte, fuera de las 35 palabras.)
+        extraTexts: [...(transit ? [transit] : []), ...(entry.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])],
+        closing,
+        changing,
+        label: title,
+      }))
     }
   }
-  return [...routeCards, ...infoCards]
+
+  // 2. Los festivos sin entrada propia (`closed_notices.festivos`) y los cierres de cada semana. Un aviso por fecha.
+  const festivos = destData.destination_config?.closed_notices?.festivos ?? {}
+  for (const iso of tripDates) {
+    if (closureDates.has(iso)) continue
+    const weekday = weekdayOf(iso)
+    const reasonOf = (place) => closedReason(place, { dateIso: iso, weekday })
+    // 2a. Festivo: algún lugar de nombre cierra por fecha (y es de los grandes o está en la ruta).
+    const festive = places.filter((place) => named(place) && reasonOf(place)?.kind === 'festivo')
+    if (festive.some((place) => place.level === 1 || routeNames.has(place.name))) {
+      const { closing, changing } = affected(iso)
+      const name = festivos[reasonOf(festive[0]).token]
+      const tagName = name ? capital(stripArticle(name)) : dayOfMonth(iso)
+      const title = name ? `${dayOfMonth(iso)} · ${tagName}` : dayOfMonth(iso)
+      closureDates.add(iso)
+      cards.push(makeCard({
+        iso,
+        id: `${iso}:festivo`,
+        icon: 'fiesta',
+        title,
+        tag: tagName,
+        kind: 'auto',
+        quePasa: fill(frases.festivo, { cierra: closing.length > 1 || grammar(closing[0]).plural ? 'cierran' : 'cierra', lugares: listText(closing) }),
+        hecho: hechoFor(iso),
+        closing,
+        changing,
+        label: title,
+      }))
+      continue
+    }
+    // 2b. Cierre de la semana: un lugar de su ruta que ese día de la semana cierra (aunque la ruta lo esquive). Nombrando el sitio, nunca «los museos».
+    const weekly = places.filter((place) => named(place) && routeNames.has(place.name) && reasonOf(place)?.kind === 'semanal').sort(byLevel)
+    if (weekly.length > 0) {
+      const g = grammarOf(weekly)
+      const { closing, changing } = affected(iso)
+      const tag = `${capital(g.bare)} ${g.cerrado}`
+      closureDates.add(iso)
+      cards.push(makeCard({
+        iso,
+        id: `${iso}:${tag}`,
+        icon: 'cierre',
+        title: `${datesTitle([iso])} · ${tag}`,
+        tag,
+        kind: 'auto',
+        quePasa: fill(frases.semanal, { dias: pluralWeekday(weekday), cierra: g.cierra, lugares: g.named }),
+        hecho: hechoFor(iso),
+        closing,
+        changing,
+        weekly: true,
+      }))
+    }
+  }
+
+  // 3. Horario especial de un lugar de la ruta que ningún aviso de ese día ha contado.
+  for (const iso of tripDates) {
+    if (closureDates.has(iso)) continue
+    for (const visit of visitsOn(iso)) {
+      const place = placeByName.get(visit.place.name)
+      const special = place ? specialHoursOn(place, iso) : null
+      if (!special || !matters(place.name)) continue
+      const g = grammar(place)
+      const tag = 'Horario especial'
+      cards.push(makeCard({
+        iso,
+        id: `${iso}:${tag}`,
+        icon: 'luz',
+        title: `${datesTitle([iso])} · ${tag}`,
+        tag,
+        kind: 'auto',
+        quePasa: `El ${dayOfMonth(iso)} ${g.named} ${g.abre} con horario especial (${special.windows.join(', ')}).`,
+        hecho: 'Hemos puesto tu visita dentro de ese horario.',
+        changing: [place],
+      }))
+    }
+  }
+
+  // 4. La variante del día de la semana que cambia algo de un imprescindible (`aviso_fecha`: la audiencia de los miércoles, el Panteón del sábado).
+  for (const day of days) {
+    const cfg = day.curatedDay ? (destData.curated_days ?? []).find((candidate) => candidate.id === day.curatedDay.id) : null
+    for (const name of day.curatedDay?.variantes ?? []) {
+      const notice = cfg?.variantes?.[name]?.aviso_fecha
+      if (!notice?.texto || inException(notice.excepto, day.hours.dateIso)) continue
+      const tag = notice.etiqueta ?? 'Aviso'
+      const iso = day.hours.dateIso
+      if (cards.some((card) => card.id === `${iso}:${tag}`)) continue
+      cards.push(makeCard({ iso, id: `${iso}:${tag}`, icon: notice.icono ?? 'cierre', title: `${datesTitle([iso])} · ${tag}`, tag, kind: 'auto', quePasa: notice.texto }))
+    }
+  }
+
+  // Primero lo que cierra o cambia la ruta, después lo informativo; cada grupo por fecha.
+  const important = (card) => card.kind === 'auto' || card.cierran.length > 0
+  return [...cards.filter(important), ...cards.filter((card) => !important(card))].sort((a, b) => Number(!important(a)) - Number(!important(b)) || a.date_iso.localeCompare(b.date_iso))
 }
 
 /**

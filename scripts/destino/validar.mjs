@@ -402,7 +402,11 @@ const section = (title) => {
     const palabras = String(entry.texto ?? '').split(/\s+/).filter(Boolean).length
     if (palabras > 35) s.red.push(`${id}: el texto tiene ${palabras} palabras (35 como mucho)`)
     if (PRECIO_VISIBLE.test(entry.texto ?? '')) s.red.push(`${id}: el texto lleva una cifra o un precio`)
-    if (!/\b[Hh]emos\b[^.]*\.\s*$/.test(String(entry.texto ?? '').trim())) s.warn.push(`${id}: el texto no acaba con lo que hemos hecho ("Hemos…")`)
+    // (Tanda 10M: UN aviso por fecha: `contexto` = qué pasa ese día y, salvo en los informativos (`sin_frase`), la frase de todos al final.)
+    if (!entry.sin_frase && !/\b[Hh]emos\b[^.]*\.\s*$/.test(String(entry.texto ?? '').trim())) s.warn.push(`${id}: el texto no acaba con lo que hemos hecho ("Hemos…")`)
+    if (!entry.sin_frase && D.fechas_especiales?.frases?.hecho && !String(entry.texto ?? '').endsWith(D.fechas_especiales.frases.hecho)) s.warn.push(`${id}: el texto no acaba con la frase de todos (fechas_especiales.frases.hecho)`)
+    if (entry.hecho || entry.cubre) s.red.push(`${id}: lleva \`hecho\`/\`cubre\` (ya no existen: un solo aviso por fecha)`)
+    if (entry.otro_dia && !/\{dia\}/.test(entry.texto ?? '')) s.red.push(`${id}: lleva \`otro_dia\` y su texto no tiene {dia}`)
     const horario = entry.horario_especial
     if (horario) {
       if (!entry.fuente) s.red.push(`${id}: horario_especial sin fuente`)

@@ -174,7 +174,7 @@ const clic = async (a, x, y) => {
   debe(await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-pelicula]')?.innerText ?? '')", 12), 'segunda', 'con la lista del pase y [Elegir mi pase] a la vista')
   // Nada de fuera mientras se ve: ni letras, ni imágenes, ni mapas.
   const nuevas = a.peticiones.slice(antes)
-  const deFuera = nuevas.filter((u) => !/^(http:\/\/localhost:(5173|8787)|http:\/\/127\.0\.0\.1:(5173|8787)|data:|blob:)/.test(u) && !/supabase\.co\/auth\//.test(u)) // (lo único que sale es guardar en la cuenta que ya la vio)
+  const deFuera = nuevas.filter((u) => !/^(http:\/\/localhost:(5173|5199|8787)|http:\/\/127\.0\.0\.1:(5173|5199|8787)|data:|blob:)/.test(u) && !/supabase\.co\/auth\//.test(u)) // (lo único que sale es guardar en la cuenta que ya la vio)
   debe(deFuera.length === 0, 'fuera', `mientras se ve la película no se pide nada de fuera de la app (${deFuera.slice(0, 3).join(' ') || 'nada'})`)
   debe(nuevas.some((u) => /\/pelicula\/assets\/marco-nivel1\.png/.test(u)) && nuevas.some((u) => /geist-latin-wght-normal\.woff2/.test(u)), 'fuera', 'las imágenes y las letras salen de la app')
   const rotas = await a.evaluar("performance.getEntriesByType('resource').filter((e) => /\\/pelicula\\/assets\\//.test(e.name) && e.responseStatus >= 400).map((e) => e.name)")

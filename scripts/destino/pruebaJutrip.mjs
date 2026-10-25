@@ -415,6 +415,7 @@ const medir = (nombre, a, b, minimo, regla = 'contraste') => {
     'src/components/route/hoy/piezas.tsx': 'Falta (la franja de la entrada sin reservar)',
     'src/components/avisos/ListaDeAvisos.tsx': 'el punto de los avisos',
     'src/components/layout/Header.tsx': 'el punto de los avisos (en la campana de arriba)',
+    'src/components/layout/NoticesSheet.tsx': 'el punto de «sin leer» de los avisos de la campana (Tanda 10M: también los avisos de fecha)',
     'src/components/ui/MeGusta.tsx': 'el corazón de «lo recomiendan»',
     'src/lib/iconos.ts': 'COLOR_ICONO.falta',
     'src/lib/exploreStyle.ts': 'el color propio de la tarjeta «Entradas» de EXPLORAR (cada tarjeta tiene el suyo)',

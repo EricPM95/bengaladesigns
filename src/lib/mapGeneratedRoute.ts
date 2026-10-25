@@ -251,7 +251,7 @@ export interface GeneratedDay {
   /** Nota de temporada (Route.seasonNote), solo en el primer día de ciudad. */
   season_note?: { season: string; text: string; icon?: string; title?: string } | null
   /** Motor v3, solo en el primer día de ciudad: los avisos de fechas especiales — Route.dateNotices. */
-  date_notices?: { id: string; day_number: number | null; date_iso: string | null; icon: string; title: string; tag: string; texts: string[]; kind: 'auto' | 'curado' | 'mixto' }[] | null
+  date_notices?: { id: string; day_number: number | null; date_iso: string | null; icon: string; title: string; tag: string; texts: string[]; kind: 'auto' | 'curado' | 'mixto'; cierran?: string[]; campana?: string }[] | null
   /** Motor v3: minutos andando de la última visita a la cena — ver DayPlan.dinnerWalkMinutes. */
   dinner_walk_minutes?: number | null
   /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
@@ -1042,6 +1042,8 @@ export function mapGeneratedRouteToRoute(
       tag: notice.tag,
       texts: notice.texts,
       kind: notice.kind,
+      ...(Array.isArray(notice.cierran) ? { cierran: notice.cierran } : {}),
+      ...(notice.campana ? { campana: notice.campana } : {}),
     })),
   }
 }

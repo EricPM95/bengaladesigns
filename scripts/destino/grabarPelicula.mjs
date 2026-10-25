@@ -118,7 +118,7 @@ while (Date.now() - t0 < 230_000) {
   }
 }
 const vista = await a.evaluar("localStorage.getItem('trazo:pelicula-pase-vista')")
-const deFuera = a.peticiones.slice(antes).filter((u) => !/^(http:\/\/localhost:(5173|8787)|http:\/\/127\.0\.0\.1:(5173|8787)|data:|blob:)/.test(u) && !/supabase\.co\/auth\//.test(u))
+const deFuera = a.peticiones.slice(antes).filter((u) => !/^(http:\/\/localhost:(5173|5199|8787)|http:\/\/127\.0\.0\.1:(5173|5199|8787)|data:|blob:)/.test(u) && !/supabase\.co\/auth\//.test(u))
 const rotas = await a.evaluar("performance.getEntriesByType('resource').filter((e) => e.responseStatus >= 400).map((e) => e.name)")
 if (deFuera.length) throw new Error('La película ha pedido cosas de fuera: ' + deFuera.slice(0, 3).join(' '))
 if (rotas.length) throw new Error('Algo se ha pedido y no está: ' + rotas.slice(0, 3).join(' '))

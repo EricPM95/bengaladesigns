@@ -19,6 +19,8 @@ import { vueltaCambiada } from '../lib/datosDelViajero'
 import { useAvisosVueloStore } from '../store/useAvisosVueloStore'
 import { avisosParaLaCampana, bloqueDeReservasDelAviso, diaDelAviso } from '../lib/avisosDeVuelo'
 import { pasarDiaARoma } from '../lib/pasarDiaARoma'
+import { avisosDeFechaLeidos, fraseCampana } from '../lib/dateNotices'
+import type { DateNotice } from '../lib/types'
 
 export interface AppNotice {
   id: string
@@ -36,6 +38,9 @@ export interface AppNotice {
   read: boolean
   /** Se puede marcar como leído (info y amigos). */
   canMarkRead: boolean
+  /** Tanda 10M: un aviso de fecha (la campana lo pinta con su icono y, al tocarlo, abre su tarjeta con `onOpen`). */
+  fecha?: DateNotice
+  onOpen?: () => void
   /** Lo que hace «marcar como leído» además de guardarlo (p. ej. el aviso de contexto se cierra en el viaje). */
   onRead?: () => void
 }
@@ -153,6 +158,26 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
       // Ruta a mano (Tanda 6y2): una reserva cuyo sitio no está en el día de su fecha. Avisa y ofrece el botón; no mueve nada sola.
       for (const fuera of reservasFueraDeSuDia(route, reservations, nombresCortos)) {
         items.push({ id: fuera.id, kind: 'warning', title: 'Tu reserva no está en su día', text: fuera.text, run: () => void aplicarAvisoFueraDeDia(fuera), actionLabel: fuera.actionLabel, read: false, canMarkRead: false })
+      }
+      // Tanda 10M: cada fecha con avisos entra en la campana con su frase corta; al tocarla se abre su tarjeta. Leído = ya abierto (o visto en la ventana al abrir la ruta): deja de contar pero se queda siempre en la lista.
+      {
+        const leidos = avisosDeFechaLeidos(route)
+        for (const aviso of route.dateNotices ?? []) {
+          items.push({
+            id: `fecha:${aviso.id}`,
+            kind: 'info',
+            title: fraseCampana(aviso),
+            text: '',
+            fecha: aviso,
+            onOpen: () => {
+              const store = useRouteStore.getState()
+              store.markDateNoticeRead(aviso.id)
+              store.setOpenDateNoticeId(aviso.id)
+            },
+            read: leidos.has(aviso.id),
+            canMarkRead: false,
+          })
+        }
       }
       if (route.contextBanner) {
         items.push({

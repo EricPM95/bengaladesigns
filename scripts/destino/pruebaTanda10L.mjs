@@ -3,7 +3,7 @@
 // Usa el motor de verdad (buildDayBlockV3, igual que revision20.mjs), sin red ni servidor. No hace falta la muestra de 60 fechas: solo cambian textos, no el reparto de los días.
 import fs from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
-import { christmasNoteKey, seasonNoteFor } from '../../server/engine/seasonNote.js'
+import { seasonNoteFor } from '../../server/engine/seasonNote.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { closedOnDay, isLastSundayOfMonth } from '../../shared/routeEngine/openingHours.js'
 import { specialDateMatches } from '../../shared/routeEngine/specialDates.js'
@@ -27,6 +27,7 @@ console.log('1. Ninguna fecha del año saca ya la tarjeta de una estación')
   const raras = []
   const vistas = new Set()
   let navidad = 0
+  const permitidas = new Set(['navidad', 'semana_santa', 'cumpleanos_ciudad']) // (Tanda 10M: las tres tarjetas especiales; ninguna estación.)
   // Un viaje de 2 días empezando cada día de un año entero (y de otro, para pillar Pascua y los bisiestos).
   for (const [desde, hasta] of [['2026-11-01', '2027-12-31']]) {
     for (let iso = desde; iso <= hasta; iso = sumar(iso, 1)) {
@@ -34,18 +35,18 @@ console.log('1. Ninguna fecha del año saca ya la tarjeta de una estación')
       const nota = d1?.season_note ?? null
       if (nota) {
         vistas.add(nota.season)
-        if (nota.season !== 'navidad') raras.push(`${iso}: ${nota.season}`)
-        else navidad++
-        if (/anochece|atardece|\{|hora/i.test(nota.text)) raras.push(`${iso}: el texto de Navidad habla de la hora (${nota.text.slice(0, 60)})`)
+        if (!permitidas.has(nota.season)) raras.push(`${iso}: ${nota.season}`)
+        if (nota.season === 'navidad') navidad++
+        if (/anochece|atardece|{|hora/i.test(nota.text)) raras.push(`${iso}: el texto de ${nota.season} habla de la hora (${nota.text.slice(0, 60)})`)
       }
     }
   }
   debe(raras.length === 0, 'estaciones', `en 14 meses de fechas, ninguna saca la tarjeta de primavera, verano, otoño o invierno (${raras.slice(0, 3).join(' | ') || 'ninguna'})`)
-  debe([...vistas].every((v) => v === 'navidad') && navidad > 20, 'estaciones', `las únicas tarjetas que salen son las de Navidad (${navidad} fechas de salida en esos meses)`)
+  debe([...vistas].every((v) => permitidas.has(v)) && navidad > 20, 'estaciones', `las únicas tarjetas que salen son las especiales (${[...vistas].join(', ')}; ${navidad} fechas de salida de Navidad en esos meses)`)
   // Sin fechas, solo con el mes o la estación del formulario: tampoco.
-  const sinFechas = seasonNoteFor(D, { calendar: { hasDates: false, season: 'verano' }, days: [] }, { hasNight: true })
+  const sinFechas = seasonNoteFor(D, { calendar: { hasDates: false, season: 'verano' }, days: [] }, {})
   debe(sinFechas === null, 'estaciones', 'sin fechas (solo el mes o la estación del formulario) no sale ninguna tarjeta')
-  const SinDatos = seasonNoteFor({ destination: 'X' }, { calendar: { hasDates: true }, days: [{ hours: { dateIso: '2026-07-10' }, schedule: { visits: [] } }] }, { hasNight: true })
+  const SinDatos = seasonNoteFor({ destination: 'X' }, { calendar: { hasDates: true }, days: [{ hours: { dateIso: '2026-07-10' }, schedule: { visits: [] } }] }, {})
   debe(SinDatos === null, 'estaciones', 'un día de verano con fechas: nada')
 }
 
@@ -54,26 +55,19 @@ console.log('2. La de Navidad se queda, sin la hora del atardecer')
 {
   const textos = D.destination_config.nota_temporada
   const claves = Object.keys(textos).filter((k) => !k.startsWith('_'))
-  debe(claves.length === 6, 'navidad', `Roma lleva sus 6 textos de Navidad (${claves.join(', ')})`)
-  debe(claves.every((k) => !/anochece|atardece|hora_atardecer|\{hora/i.test(textos[k])), 'navidad', 'ninguno habla de cuándo anochece ni lleva la hora del atardecer')
-  debe(claves.every((k) => /Navidad/.test(textos[k])), 'navidad', 'todos hablan de la Navidad')
-  debe(textos.navidad_mercadillo === '¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, también iluminado.', 'navidad', 'el texto con mercadillo y noche es el que pidió Eric (palabra por palabra)')
-  debe(/también iluminados?\.$/.test(textos.navidad) && /también de noche\.$/.test(textos.navidad_luces), 'navidad', 'las demás variantes con noche acaban en «también iluminados» / «también de noche»')
-  // En el viaje de verdad: Navidad con mercadillo (la nocturna de Navona), con árboles, con solo luces y sin noche.
+  debe(JSON.stringify(claves) === JSON.stringify(['navidad', 'semana_santa', 'cumpleanos_ciudad']), 'navidad', `Roma lleva sus 3 tarjetas, un solo texto cada una, sin variantes (${claves.join(', ')})`)
+  debe(claves.every((k) => typeof textos[k].texto === 'string' && !/anochece|atardece|hora_atardecer|{hora/i.test(textos[k].texto)), 'navidad', 'ninguna habla de cuándo anochece ni lleva la hora del atardecer')
+  debe(textos.navidad.texto === '¡Vas a vivir {destino} en Navidad! Uno de los momentos más bonitos del año para recorrerla. Te hemos preparado la mejor ruta para que disfrutes cada rincón de la ciudad.', 'navidad', 'el texto de Navidad es el que pidió Eric (palabra por palabra)')
+  // En el viaje de verdad: antes de los árboles, con árboles, con mercadillo, sin noche… el mismo texto.
   const casos = []
   for (const inicio of ['2026-11-27', '2026-12-04', '2026-12-10', '2026-12-18', '2026-12-26', '2027-01-02']) {
     const d1 = await dia(inicio, 3, 1)
     if (d1?.season_note) casos.push({ inicio, nota: d1.season_note })
   }
-  debe(casos.length >= 5 && casos.every((c) => c.nota.season === 'navidad' && /^(¡Vas a vivir Roma en Navidad!|Roma ya se viste de Navidad)/.test(c.nota.text) && !/anochece|atardece|\{/.test(c.nota.text)), 'navidad', `en Navidad sale la de Navidad, sin la hora del atardecer (${casos.map((c) => c.inicio).join(', ')})`)
-  debe(casos.every((c) => c.nota.text.includes('Roma') && !c.nota.text.includes('{destino}')), 'navidad', 'con el nombre del destino puesto')
-  // Las claves de verdad, con los datos del viaje (el texto lo elige christmasNoteKey).
-  const viaje = (dias) => ({ calendar: { hasDates: true }, days: dias.map((iso, i) => ({ dayNumber: i + 1, hours: { dateIso: iso }, schedule: { visits: [] } })), nightsByDay: new Map() })
-  const clave = (dias, hasNight) => christmasNoteKey(D, viaje(dias), hasNight)?.key ?? null
-  debe(clave(['2026-11-28', '2026-11-29'], true) === 'navidad_luces' && clave(['2026-11-28', '2026-11-29'], false) === 'navidad_luces_sin_noche', 'navidad', 'antes de que monten los árboles: solo luces (con y sin noche)')
-  debe(clave(['2026-12-10', '2026-12-11'], true) === 'navidad' && clave(['2026-12-10', '2026-12-11'], false) === 'navidad_sin_noche', 'navidad', 'con árboles: «navidad» (con y sin noche)')
+  debe(casos.length >= 5 && casos.every((c) => c.nota.season === 'navidad' && c.nota.text.startsWith('¡Vas a vivir Roma en Navidad!') && !/anochece|atardece|{/.test(c.nota.text)), 'navidad', `en Navidad sale la de Navidad, sin la hora del atardecer (${casos.map((c) => c.inicio).join(', ')})`)
+  debe(new Set(casos.map((c) => c.nota.text)).size === 1 && casos.every((c) => c.nota.text.includes('Roma') && !c.nota.text.includes('{destino}')), 'navidad', 'un solo texto para todos los viajes, con el nombre del destino puesto')
   const ruta = fs.readFileSync('src/components/route/SeasonCard.tsx', 'utf8')
-  debe(/note\?\.season === 'navidad'/.test(ruta), 'navidad', 'la tarjeta de la app solo sale con la de Navidad (los viajes guardados con una tarjeta de estación ya no la enseñan)')
+  debe(/navidad/.test(ruta), 'navidad', 'la tarjeta de la app conoce la de Navidad')
 }
 
 /* ───────────────────────── 3. El último domingo de mes en los Vaticanos ───────────────────────── */
@@ -101,7 +95,7 @@ console.log('3. El último domingo de mes, los Museos Vaticanos abren')
       const avisos = d?.date_notices ?? []
       for (const a of avisos) {
         const todo = `${a.title} ${a.texts.join(' ')}`
-        if (/domingos? los Museos Vaticanos cierran|Museos Vaticanos cerrados/i.test(todo) && /29/.test(a.title ?? '')) cerradoRaro.push(`${inicio} día ${n}: ${a.title}`)
+        if (/domingos? cierran los Museos Vaticanos|Museos Vaticanos cerrados/i.test(todo) && /29/.test(a.title ?? '')) cerradoRaro.push(`${inicio} día ${n}: ${a.title}`)
         if (a.title === 'Domingo 29 · Los Museos Vaticanos abren gratis') conAviso++
       }
       if (sumar(inicio, n - 1) === '2026-11-29') sinCierre++
@@ -111,7 +105,7 @@ console.log('3. El último domingo de mes, los Museos Vaticanos abren')
   debe(sinCierre === 3 && conAviso >= 1, 'ultimo', `ese domingo sí sale el aviso propio («Los Museos Vaticanos abren gratis»: ${conAviso} veces en 3 viajes)`)
   // Un domingo normal sigue con su cierre de siempre.
   const normal = await dia('2026-11-22', 2, 1)
-  debe((normal?.date_notices ?? []).some((a) => /Museos Vaticanos cerrados/.test(a.title) && /domingos los Museos Vaticanos cierran/.test(a.texts.join(' '))), 'ultimo', 'un domingo normal sigue con «Los domingos los Museos Vaticanos cierran»')
+  debe((normal?.date_notices ?? []).some((a) => /Museos Vaticanos cerrados/.test(a.title) && /Los domingos cierran los Museos Vaticanos/.test(a.texts.join(' '))), 'ultimo', 'un domingo normal sigue con «Los domingos cierran los Museos Vaticanos»')
   // El aviso propio no sale si el viaje no lleva el Vaticano (sin_aviso).
   const sinVat = await buildDayBlockV3(D, 2, false, 1, null, '2026-11-29', [], [], { city: 'Roma', scheduler: 'v3', month: null })
   void sinVat

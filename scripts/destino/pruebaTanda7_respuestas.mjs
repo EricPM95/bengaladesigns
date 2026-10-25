@@ -58,7 +58,7 @@ const recorrer = (carpeta, salida = []) => {
   const texto = [entrada.texto, entrada.contexto, JSON.stringify(entrada.hecho)].join(' ')
   debe(!/horario corto|abren con horario/i.test(texto), '1 texto', 'el texto de Año Nuevo todavía habla de un horario corto')
   debe(/Coliseo/.test(entrada.contexto) && /Foro/.test(entrada.contexto) && /cierran/.test(entrada.contexto), '1 texto', `el contexto de Año Nuevo debe decir que el Coliseo y el Foro cierran (${entrada.contexto})`)
-  debe(`${entrada.contexto} ${entrada.hecho.flat().map((o) => o.texto).sort((a, b) => b.length - a.length)[0]}`.split(/\s+/).length <= 35, '1 texto', 'el aviso de Año Nuevo pasa de 35 palabras')
+  debe(`${entrada.contexto} ${D.fechas_especiales.frases.hecho}`.split(/\s+/).length <= 35, '1 texto', 'el aviso de Año Nuevo pasa de 35 palabras')
   // En ningún dato queda el horario corto del Coliseo (ni sus textos).
   for (const ruta of [...recorrer('data/pipeline_v2'), ...recorrer('data/dias'), ...recorrer('src'), ...recorrer('shared'), ...recorrer('server')]) {
     const t = leer(ruta)
@@ -73,7 +73,8 @@ const recorrer = (carpeta, salida = []) => {
     debe(Boolean(ano), '1 viajes', `Viaje ${n}: falta el aviso de Año Nuevo`)
     const t = (ano?.texts ?? []).join(' ')
     debe(/Coliseo/.test(t) && /cierran/.test(t) && !/horario corto/.test(t), '1 viajes', `Viaje ${n}: el aviso de Año Nuevo no dice que el Coliseo y el Foro cierran (${t.slice(0, 120)})`)
-    debe((ano?.texts?.[0] ?? '').split(/\s+/).length <= 35, '1 viajes', `Viaje ${n}: el aviso de Año Nuevo pasa de 35 palabras`)
+    // (35 palabras con la frase de todos; si un sitio se queda en su día o se enseña por fuera, los textos de siempre de Eric van enteros.)
+    debe(ano?.hecho !== D.fechas_especiales.frases.hecho || (ano?.texts?.[0] ?? '').split(/\s+/).length <= 35, '1 viajes', `Viaje ${n}: el aviso de Año Nuevo pasa de 35 palabras`)
     const dia = plan.days.find((d) => d.hours?.dateIso === '2027-01-01')
     const conTiempo = (dia?.escritoRows ?? []).filter((r) => (r.lugar === 'Coliseo' || r.lugar === 'Foro Romano y Palatino') && r.min > 0 && !r.cerrado_este_dia)
     debe(conTiempo.length === 0, '1 viajes', `Viaje ${n}: el 1 de enero el Coliseo o el Foro salen con tiempo (${conTiempo.map((r) => r.lugar).join(', ')})`)

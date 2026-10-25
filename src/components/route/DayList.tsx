@@ -4,11 +4,6 @@ import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import type { DayPlan, Route } from '../../lib/types'
 import { addDaysToIso } from '../../lib/dateRange'
-import type { DateNotice } from '../../lib/types'
-
-/** Una fecha especial va con su FECHA, no con el número del día: si se borra el día 1, la audiencia del miércoles sigue en el miércoles. */
-const noticeIsForDay = (notice: DateNotice, dayNumber: number, dateIso: string | null) =>
-  notice.dateIso && dateIso ? notice.dateIso === dateIso : notice.dayNumber === dayNumber
 import { dayColor, dayColorIndex } from '../../lib/dayColors'
 import { closedWeekdaysFromSchedule, weekdayNameEs } from '../../lib/stopHoursTag'
 import { SortableDay } from './SortableDay'
@@ -23,7 +18,6 @@ import { MenuInvitadoDia } from '../propuesta/MenusDelInvitado'
 import { EtiquetaRecomendacion } from '../propuesta/EtiquetaRecomendacion'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ConfirmDialog } from './ConfirmDialog'
-import { DateNoticeTag } from './DateNoticesModal'
 import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
 import { AddDayChooser } from './freeDay/AddDayChooser'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
@@ -31,7 +25,7 @@ import { useExcursionsStore } from '../../store/useExcursionsStore'
 import { isDayPinned } from '../../lib/bookings'
 import { etiquetaDeViaje, nombrePropioDelDia, useNombreDeDias } from '../../lib/tituloDelDia'
 import { SaleCards } from './reservas/SaleCards'
-import { diaCorto, diaProsa, elDia, fechaDelDia, fichaDelDia } from '../../lib/nombreDeDia'
+import { diaCorto, diaProsa, elDia, fichaDelDia } from '../../lib/nombreDeDia'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { DayCardSwitch } from './DayCardSwitch'
@@ -210,7 +204,6 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       <SortableContext items={route.days.map((day) => day.id)} strategy={verticalListSortingStrategy}>
       {route.days.map((day, index) => {
         const travel = computeDayTravelInfo(route, index)
-        const dateIso = fechaDelDia(route, day.dayNumber)
         const ficha = fichaDelDia(route, day.dayNumber)
         const expanded = activeDayId === day.id
         // El título del día sale de lo que se ve ese día (tanda 6y7, src/lib/tituloDelDia.ts): «Centro histórico», «Free Tour y Trastevere»… El día de viaje lleva además su trayecto, pequeño, junto a «Día de viaje».
@@ -312,14 +305,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3); en el día 4 con interruptor, con sus horas y la reserva. */}
                 {enExcursion && !travel && <ExcursionCardMeta excursion={viewedExcursion(day)} reservedName={excursionReservationOf(route, reservations, day)?.name.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '') ?? null} />}
                 {day.dayType === 'excursion' && !enExcursion && !travel && <p className="text-[12.5px] font-medium text-accent">Día de excursión</p>}
-                {/* Fechas especiales de este día ("Todos los Santos"): al tocarla vuelve a salir su tarjeta. */}
-                {(route.dateNotices ?? []).some((notice) => noticeIsForDay(notice, day.dayNumber, dateIso)) && (
-                  <span className="mt-1 flex flex-wrap gap-1.5">
-                    {(route.dateNotices ?? []).filter((notice) => noticeIsForDay(notice, day.dayNumber, dateIso)).map((notice) => (
-                      <DateNoticeTag key={notice.id} notice={notice} />
-                    ))}
-                  </span>
-                )}
+                {/* (Tanda 10M: ya no hay aquí las pastillas de los avisos de fechas —«Panteón cerrado», «Año Nuevo»…—: van a la campana de arriba.) */}
                 {/* (Ya no hay aquí la línea de lo reservado con su hora, «Coliseo · 10:00» con candado: la hora está en la pestañita verde de la parada. Tanda 6z3.) */}
                 {/* (Ya no hay aquí el contador «17 paradas»: Tanda 6y4.) */}
               </div>

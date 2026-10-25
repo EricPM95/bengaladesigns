@@ -234,6 +234,12 @@ export async function buildDayBlockV3(...args) {
   return day
 }
 
+/** Todas las fechas del viaje (también el día de vuelta): de la de salida, tantos días como tenga el viaje. Sin fechas, vacío. */
+function tripDatesOf(startIso, totalDays) {
+  if (!startIso) return []
+  return Array.from({ length: Math.max(1, Math.floor(Number(totalDays) || 1)) }, (_, i) => new Date(Date.parse(`${String(startIso).slice(0, 10)}T12:00:00Z`) + i * 86400000).toISOString().slice(0, 10))
+}
+
 async function buildDayBlockV3Inner(
   destData,
   totalDays,
@@ -286,7 +292,7 @@ async function buildDayBlockV3Inner(
       tripDay.noTour = true
       tripDay.noTourText = tourOnlyAt.aviso_un_dia ?? null
     }
-    const day = buildCityDayV3(destData, trip, tripDay, { ...options })
+    const day = buildCityDayV3(destData, trip, tripDay, { ...options, tripDates: tripDatesOf(dateRangeStartIso, totalDays) })
     day.not_included = [...trip.notIncluded.map((item) => ({ name: item.name, reason: item.reason, suggestion: item.reason === 'No te dio tiempo' ? 'Alarga el viaje medio día' : null })), ...(day.night_dropped ?? []).map((name) => ({ name, reason: 'No te dio tiempo', suggestion: 'Alarga el viaje medio día' }))]
     delete day.night_dropped
     day.night_hint = tripDay.nightHint ?? null
@@ -332,7 +338,7 @@ async function buildDayBlockV3Inner(
   // El día de vuelta con horas (Tanda 7): el último día del viaje, solo con una vuelta de pago. Sin paradas (solo el traslado) es un día vacío con su tarjeta; con ellas, un día de ciudad como los demás.
   if (!dayPlan && isV3 && plan.vuelta && dayNumber === totalDays) {
     const { diaPlan, interno: _interno, ...visible } = plan.vuelta
-    const day = diaPlan ? buildCityDayV3(destData, { ...plan, days: [...plan.days, diaPlan] }, diaPlan, { ...options, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [] }) : { ...buildManualDayV2(dayNumber), title: 'Día de viaje' }
+    const day = diaPlan ? buildCityDayV3(destData, { ...plan, days: [...plan.days, diaPlan] }, diaPlan, { ...options, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [], tripDates: tripDatesOf(dateRangeStartIso, totalDays) }) : { ...buildManualDayV2(dayNumber), title: 'Día de viaje' }
     day.is_return_leg = true
     day.return_day = visible
     return day
@@ -364,7 +370,7 @@ async function buildDayBlockV3Inner(
   }
 
   if (isV3) {
-    const cityDay = buildCityDayV3(destData, plan, dayPlan, { ...options, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [] })
+    const cityDay = buildCityDayV3(destData, plan, dayPlan, { ...options, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [], tripDates: tripDatesOf(dateRangeStartIso, totalDays) })
     if (propio && dayPlan.curatedDay?.id === propio.id) cityDay.own_day = true
     // (El día 4 en Roma: lleva el interruptor, para pasar a la excursión.)
     if (dayPlan.interruptor) attachInterruptor(cityDay, { destData, destKey, dayNumber, totalDays, dateRangeStartIso, mediaJornada: options.mediaJornada, mode: 'roma' })
@@ -712,7 +718,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // La nota de temporada (decisión del usuario, 2026-09-28), una vez y con el primer día de ciudad. Si sale, el banner
   // de invierno no (diría lo mismo).
   if (tripDay.dayNumber === firstCityDay) {
-    const note = seasonNoteFor(destData, trip, { hasNight: [...nights.values()].some((list) => list.length > 0), dateNotices: day.date_notices })
+    const note = seasonNoteFor(destData, trip, { tripDates: options.tripDates })
     if (note) {
       day.season_note = note
       const month = Number.isInteger(trip.calendar?.month) ? trip.calendar.month + 1 : null

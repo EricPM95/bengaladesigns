@@ -64,6 +64,8 @@ import { recuperarDestino } from '../lib/recuperarDestino'
 import { indiceTrasParada, ordenTrasMover, resolverRecomendacion, type DiaPosible, type Recomendacion } from '../lib/aplicarRecomendacion'
 import { CERRADO_ESTE_DIA } from '../lib/placeHoursOnDate'
 import { camposDelViajero, sellarVueltaAlAbrir } from '../lib/datosDelViajero'
+import { avisosDeFechaLeidos, dateNoticesKey } from '../lib/dateNotices'
+import { cardSeasonOfNote } from '../lib/seasonCard'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
 function deriveAccommodationMode(vehicleType: VehicleType | null): AccommodationMode {
@@ -357,6 +359,8 @@ interface RouteStoreState {
   dismissSeasonNote: () => void
   /** La ventana de fechas especiales ya se vio con estos avisos (DateNoticesModal.tsx): se guarda con la ruta. */
   markDateNoticesSeen: (key: string) => void
+  /** Tanda 10M: un aviso de fecha abierto desde la campana se da por leído (Route.dateNoticesRead). */
+  markDateNoticeRead: (id: string) => void
   /** "Quiero entrar" (WantInsideDialog.tsx): el día rehecho por el motor y la parada que ahora va por dentro. */
   replaceDayWithInside: (dayId: string, day: DayPlan, insideName: string) => void
   /** El día rehecho por el motor con las reservas del viajero (misma ruta original, sin nombre «por dentro»). */
@@ -809,7 +813,21 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => (state.route ? { route: { ...state.route, contextBannerDismissed: true } } : state)),
   dismissSeasonNote: () => set((state) => (state.route ? { route: { ...state.route, seasonNoteDismissed: true } } : state)),
 
-  markDateNoticesSeen: (key) => set((state) => (state.route ? { route: { ...state.route, dateNoticesSeenKey: key } } : state)),
+  // (Tanda 10M: lo que el viajero ve en la ventana al abrir la ruta entra en la campana ya como leído.)
+  markDateNoticesSeen: (key) =>
+    set((state) => {
+      if (!state.route) return state
+      const leidos = new Set([...avisosDeFechaLeidos(state.route), ...(state.route.dateNotices ?? []).map((notice) => notice.id)])
+      return { route: { ...state.route, dateNoticesSeenKey: key, dateNoticesRead: [...leidos] } }
+    }),
+  // Un aviso de fecha abierto desde la campana: deja de contar y se queda en la lista.
+  markDateNoticeRead: (id) =>
+    set((state) => {
+      if (!state.route) return state
+      const leidos = avisosDeFechaLeidos(state.route)
+      if (leidos.has(id)) return state
+      return { route: { ...state.route, dateNoticesRead: [...leidos, id] } }
+    }),
 
   // Rehecho por el motor: lo nuevo pasa a ser la ruta original de ese día (sin copia de antes).
   replaceDayWithInside: (dayId, day, insideName) =>
@@ -1043,7 +1061,19 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       // Cada día con su color, y la copia de la ruta tal como se crea ("Volver a mi ruta original").
       const colored = withDayColors(rebuilt)
       // (Tanda 7: al rehacer el viaje se queda lo que el viajero puso en RESERVAS —horas, puntos, casillas del billete, zona y dirección—, que el motor no trae.)
-      const route = { ...colored, ...(state.keepBookingsOnNextRoute ? camposDelViajero(state.route) : {}), editedManually: false, originalRoute: originalRouteOf(colored) }
+      // (Tanda 10M: al cambiar las fechas, los avisos de fecha que ya estaban leídos y siguen tocando se quedan leídos; los nuevos entran como nuevos en la campana, sin volver a sacar la ventana; los que ya no tocan se van solos, porque la lista sale de la ruta nueva. La tarjeta especial cerrada no vuelve a salir si es la misma.)
+      const avisosHeredados = (() => {
+        if (!state.keepBookingsOnNextRoute || !state.route) return {}
+        const nuevos = colored.dateNotices ?? []
+        const leidos = avisosDeFechaLeidos(state.route)
+        const mismaTarjeta = cardSeasonOfNote(colored.seasonNote) === cardSeasonOfNote(state.route.seasonNote)
+        return {
+          dateNoticesRead: nuevos.map((notice) => notice.id).filter((id) => leidos.has(id)),
+          dateNoticesSeenKey: dateNoticesKey(nuevos),
+          ...(mismaTarjeta && state.route.seasonNoteDismissed ? { seasonNoteDismissed: true } : {}),
+        }
+      })()
+      const route = { ...colored, ...avisosHeredados, ...(state.keepBookingsOnNextRoute ? camposDelViajero(state.route) : {}), editedManually: false, originalRoute: originalRouteOf(colored) }
       return {
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))

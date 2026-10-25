@@ -1,10 +1,8 @@
 {
-  "_que_es": "Nota de temporada de un destino nuevo (decisión del usuario, 2026-09-28): va en destination_config.nota_temporada. No es un aviso de cuidado: cuenta que la ruta está pensada para su época. Cada destino, sus textos (el calor de Roma no vale para Ámsterdam). Lo que promete tiene que ser verdad en el viaje (la auditoría lo comprueba).",
-  "_reserva": "Si el destino no trae textos, el motor usa: Tu ruta está pensada para disfrutar {destino} en {época}.",
-  "_variables": "{hora_atardecer}: la del viaje, al cuarto de hora. Sin fechas, el motor antepone \"Si viajas en {mes}, …\".",
-  "invierno": "Tu ruta está pensada para disfrutar {destino} en invierno.",
-  "invierno_sin_noche": "Tu ruta está pensada para disfrutar {destino} en invierno.",
-  "primavera_otono": "Tu ruta está pensada para disfrutar {destino} en {época}.",
-  "verano": "Tu ruta está pensada para disfrutar {destino} en verano.",
-  "verano_sin_manana": "Tu ruta está pensada para disfrutar {destino} en verano."
+  "_que_es": "Tarjetas especiales de un destino nuevo (Tanda 10M, 2026-10-25): van en destination_config.nota_temporada. Solo felicitan al viajero por la época en que va. Una sola tarjeta por viaje y un solo texto por tarjeta (sin variantes). Cada destino, las suyas: sin la clave, esa tarjeta no sale.",
+  "_reglas": "navidad: algún día del viaje cae en destination_config.temporada_navidad. semana_santa: del Domingo de Ramos (Pascua-7) al Lunes de Pascua (Pascua+1), calculado como los avisos. cumpleanos_ciudad: algún día del viaje es `fecha` (MM-DD). Si el viaje cae en dos, solo la de Semana Santa. {destino} sale del dato del destino. Los textos no dan horas ni detalles que cambien cada año; la fuente y la fecha de comprobación van en _fuentes.",
+  "navidad": { "icono": "navidad", "titulo": "Navidad en {destino}", "texto": "¡Vas a vivir {destino} en Navidad! ..." },
+  "semana_santa": { "icono": "semana_santa", "titulo": "Semana Santa en {destino}", "texto": "¡Vas a vivir {destino} en Semana Santa! ..." },
+  "cumpleanos_ciudad": { "icono": "cumpleanos", "titulo": "El cumpleaños de {destino}", "fecha": "MM-DD", "texto": "¡Estás en {destino} el día de su cumpleaños! ..." },
+  "_fuentes": { "comprobado": "AAAA-MM-DD", "navidad": "web oficial", "semana_santa": "web oficial", "cumpleanos_ciudad": "web oficial" }
 }

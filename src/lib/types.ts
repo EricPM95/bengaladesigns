@@ -963,13 +963,15 @@ export interface Route {
   contextBannerDismissed?: boolean
   /** Nota de temporada (decisión del usuario, 2026-09-28): arriba de la ruta, con el efecto de temporada; se cierra. */
   /** (`icon: 'navidad'`: la nota navideña, en lugar de la de invierno.) */
-  /** La tarjeta de temporada (PROMPT_TARJETA_TEMPORADA): `season` primavera, verano, otono, invierno o navidad; `title`, «Primavera en Roma». */
+  /** La tarjeta especial (Tanda 10M): `season` navidad, semana_santa o cumpleanos (también `cumpleanos_ciudad`); `title`, «Semana Santa en Roma»; un solo `text`. */
   seasonNote?: { season: string; text: string; icon?: string; title?: string } | null
   seasonNoteDismissed?: boolean
   /** Motor v3: avisos de fechas especiales (festivos, cierres, eventos) — DateNoticesModal.tsx. */
   dateNotices?: DateNotice[]
   /** La firma de los avisos que el viajero ya vio (dateNoticesKey): si la ruta se regenera y cambian, vuelven a salir. */
   dateNoticesSeenKey?: string | null
+  /** Tanda 10M: los avisos de fechas que el viajero ya leyó (los ids): los que vio en la ventana al abrir la ruta y los que abrió desde la campana. Dejan de contar pero se quedan en la lista. */
+  dateNoticesRead?: string[]
   /** "Quiero entrar": las paradas que el viajero ha pedido ver por dentro (el motor las pone por dentro y obligatorias). */
   insideNames?: string[]
   /** El viajero ha cambiado la ruta a mano (añadir, quitar, mover, cambiar horas…): antes de rehacerla por fechas se pregunta. */
@@ -996,4 +998,8 @@ export interface DateNotice {
   tag: string
   texts: string[]
   kind: 'auto' | 'curado' | 'mixto'
+  /** Tanda 10M: los sitios que cierran o cambian ese día (nombres). Puede faltar en rutas de antes. */
+  cierran?: string[]
+  /** Tanda 10M: la frase corta de la campana («Coliseo, Panteón y 2 lugares más cierran el 25 de diciembre.»). Puede faltar: se saca del título. */
+  campana?: string
 }
