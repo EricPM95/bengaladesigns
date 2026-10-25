@@ -9741,12 +9741,12 @@
       "Ponte Sisto": "el Ponte Sisto"
     },
     "nota_temporada": {
-      "_nota": "La tarjeta de temporada (PROMPT_TARJETA_TEMPORADA, INVARIANTES 415): primavera, verano, otoño e invierno con los textos generales de server/engine/seasonNote.js (SEASON_CARD_TEXTS); aquí, los de Navidad de Roma.",
-      "navidad_mercadillo": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las {hora_atardecer}, también iluminado.",
+      "_nota": "La tarjeta de temporada (PROMPT_TARJETA_TEMPORADA, INVARIANTES 415): desde la Tanda 10L solo queda la de Navidad (las de primavera, verano, otoño e invierno se quitaron); aquí, los textos navideños de Roma, sin la hora del atardecer.",
+      "navidad_mercadillo": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, también iluminado.",
       "navidad_mercadillo_sin_noche": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo.",
-      "navidad": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces y las plazas estrenan árbol y belén. Hemos preparado tu ruta para que pases por los sitios más bonitos, y como anochece sobre las {hora_atardecer}, también los verás iluminados.",
+      "navidad": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces y las plazas estrenan árbol y belén. Hemos preparado tu ruta para que pases por los sitios más bonitos, también iluminados.",
       "navidad_sin_noche": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces y las plazas estrenan árbol y belén. Hemos preparado tu ruta para que pases por los sitios más bonitos.",
-      "navidad_luces": "{destino} ya se viste de Navidad: las calles estrenan luces. Hemos preparado tu ruta para que las veas, y como anochece sobre las {hora_atardecer}, las disfrutarás de sobra.",
+      "navidad_luces": "{destino} ya se viste de Navidad: las calles estrenan luces. Hemos preparado tu ruta para que las veas, también de noche.",
       "navidad_luces_sin_noche": "{destino} ya se viste de Navidad: las calles estrenan luces. Hemos preparado tu ruta para que las veas."
     },
     "night_view_texts": {
@@ -14631,6 +14631,48 @@
         "fuente": "galleriaborghese.cultura.gov.it/visita/info-biglietti («disponibili 10 giorni prima della data», «prenotazione, che è obbligatoria», «i biglietti last minute non sono disponibili»)",
         "comprobado": "2026-09-30"
       },
+        {
+          "id": "ultimo_domingo_vaticanos",
+          "fecha": "ultimo_domingo",
+          "excepto": [
+            "easter",
+            "06-29",
+            "12-25",
+            "12-26",
+            "12-31"
+          ],
+          "tipo": "evento",
+          "icono": "entrada",
+          "titulo": "Último domingo de mes · Los Museos Vaticanos abren gratis",
+          "titulo_con_fecha": "Los Museos Vaticanos abren gratis",
+          "texto": "Último domingo de mes: los Museos Vaticanos abren gratis por la mañana y hay mucha cola. Tu visita al Vaticano sigue en su día, sin esas colas.",
+          "contexto": "Último domingo de mes: los Museos Vaticanos abren gratis por la mañana y hay mucha cola.",
+          "hecho": [
+            [
+              {
+                "si": {
+                  "hoy": [
+                    "Museos Vaticanos y Capilla Sixtina"
+                  ]
+                },
+                "texto": "Hemos dejado tu visita por la mañana."
+              },
+              {
+                "si": {
+                  "en_viaje": [
+                    "Museos Vaticanos y Capilla Sixtina"
+                  ]
+                },
+                "texto": "Tu visita al Vaticano sigue en su día, sin esas colas."
+              },
+              {
+                "sin_aviso": true
+              }
+            ]
+          ],
+          "fuente": "museivaticani.va/content/museivaticani/it/info/orari-musei-vaticani.html: «Ultima domenica del mese, H. 9.00 - 14.00 (ultimo ingresso h. 12.30), Ingresso gratuito», «purché non coincida con la Santa Pasqua»; no se aplica el 29 de junio ni el 25, 26 y 31 de diciembre (hours_audit del lugar en este mismo JSON)",
+          "comprobado": "2026-10-25"
+        },
       {
         "id": "mercadillo_navona",
         "fecha": "12-01",

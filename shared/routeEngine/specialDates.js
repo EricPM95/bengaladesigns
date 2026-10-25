@@ -2,11 +2,11 @@
  * Fechas especiales del destino (`fechas_especiales` del JSON, PROMPT_AVISO_FECHAS.md): festivos, eventos y
  * temporadas que se cuentan al viajero, y sus horarios especiales.
  *
- *   { id, fecha: "MM-DD" | "easter" | "easter±N", hasta?: "MM-DD", tipo, icono, titulo, texto,
+ *   { id, fecha: "MM-DD" | "easter" | "easter±N" | "primer_domingo" | "ultimo_domingo" (con `excepto`), hasta?: "MM-DD", tipo, icono, titulo, texto,
  *     verificar?: true, horario_especial?: { confirmado, lugares: { <lugar>: { windows, last_entry? } } } }
  */
 
-import { matchesDateRange } from './openingHours.js'
+import { isLastSundayOfMonth, matchesDateRange, matchesDateToken } from './openingHours.js'
 
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 const FIXED = /^(\d{2})-(\d{2})$/
@@ -18,6 +18,11 @@ export function specialDateMatches(entry, dateIso) {
     if (!dateIso) return false
     const date = new Date(`${String(dateIso).slice(0, 10)}T12:00:00Z`)
     return date.getUTCDay() === 0 && date.getUTCDate() <= 7
+  }
+  // "ultimo_domingo": el último domingo de cada mes (los Museos Vaticanos abren gratis, Tanda 10L), menos las fechas de `excepto` (Pascua, 29 de junio, 25, 26 y 31 de diciembre: ese día siguen cerrados).
+  if (entry?.fecha === 'ultimo_domingo') {
+    if (!dateIso || !isLastSundayOfMonth(dateIso)) return false
+    return !(entry.excepto ?? []).some((token) => matchesDateToken(token, dateIso))
   }
   return matchesDateRange(entry?.fecha, entry?.hasta, dateIso)
 }

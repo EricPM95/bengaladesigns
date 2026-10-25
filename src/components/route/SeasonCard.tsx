@@ -191,7 +191,8 @@ function useFalling(canvasRef: React.RefObject<HTMLCanvasElement>, fx: Scene['fx
 export function SeasonCard({ route }: { route: Route }) {
   const dismissSeasonNote = useRouteStore((state) => state.dismissSeasonNote)
   const note = route.seasonNote
-  const open = Boolean(note?.text) && !route.seasonNoteDismissed
+  // (Tanda 10L: solo la de Navidad; las tarjetas de estación que traigan los viajes ya guardados no salen.)
+  const open = Boolean(note?.text) && note?.season === 'navidad' && !route.seasonNoteDismissed
   const season = cardSeasonOf(route)
   const scene = SCENES[season]
   const city = route.destination.split(',')[0].trim()

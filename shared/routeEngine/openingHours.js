@@ -365,7 +365,7 @@ export function closedOnDate(place, dateIso) {
 }
 
 /** ¿Es el último domingo de su mes? */
-function isLastSundayOfMonth(dateIso) {
+export function isLastSundayOfMonth(dateIso) {
   const t = Date.parse(`${String(dateIso).slice(0, 10)}T12:00:00Z`)
   if (!Number.isFinite(t)) return false
   const date = new Date(t)
