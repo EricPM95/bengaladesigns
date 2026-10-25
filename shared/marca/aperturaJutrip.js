@@ -1,40 +1,21 @@
 /**
  * LA PANTALLA DE APERTURA (Tanda 10E, «Marca JUTRIP 02 · 01 · Apertura» de Design), en HTML y CSS sin React para que se vea antes de que cargue nada. La monta index.html por el plugin de
  * vite.config.ts. Sale UNA sola vez (en Design se repite para enseñarla) y dura 3,5 segundos (`DURACION`; Tanda 10G): el fondo de marfil con su luz, el brillo detrás, el logo que entra de borroso a
- * nítido, el destello que lo cruza, las chispas, la línea de debajo que se escribe letra a letra y la ruta de puntos de abajo con su pin.
- * La línea es el lema de la marca (de data/marca.json), más larga que la de Design: se escribe más deprisa para que quepa. Con las animaciones reducidas queda quieta, con el logo y la frase.
+ * nítido, el destello que lo cruza, las chispas, el lema de debajo, que entra suave al final, y la ruta de puntos de abajo con su pin.
+ * La línea es el lema de la marca (de data/marca.json) y entra suave al final (Tanda 10L; ya no se escribe letra a letra y ya no hay una segunda línea «Tu app de viajes»). Con las animaciones reducidas queda quieta, con el logo y la frase.
  * Todo se queda en su estado final al acabar (nada se apaga): luego main.tsx funde la pantalla entera.
  */
 import { keyframesDelLogo, palabraJutripHtml } from './logoJutrip.js'
 
 export const DURACION = 3.5
-/** La línea de debajo del lema (Tanda 10G, «Marca JUTRIP 02 · 01»): en mayúsculas espaciadas y en el oro profundo; entra suave cuando el lema acaba. */
-export const ETIQUETA = 'Tu app de viajes'
-
 const CURVA = 'cubic-bezier(.3,.7,.2,1)'
 const anim = (nombre, extra = '') => `animation:${nombre} ${DURACION}s ${CURVA} 1 both${extra}`
-
-/** Las letras del lema, una a una: empiezan al 20 % y acaban al 76 % de la duración (Tanda 10G: con 3,5 s sigue cabiendo todo, y la línea nueva entra después), con un fundido de 3,2 % cada una. */
-function letrasDelLema(lema) {
-  const letras = Array.from(lema)
-  const paso = 56 / letras.length
-  let css = ''
-  const spans = letras
-    .map((c, i) => {
-      const a = (20 + paso * i).toFixed(2)
-      const b = (20 + paso * i + 3.2).toFixed(2)
-      css += `@keyframes apL${i}{0%,${a}%{opacity:0;transform:translateX(-10px) scale(.8)}${b}%,100%{opacity:1;transform:none}}`
-      return `<span style="display:inline-block;white-space:pre;animation:apL${i} ${DURACION}s ease-out 1 both">${c === '<' ? '&lt;' : c === '&' ? '&amp;' : c}</span>`
-    })
-    .join('')
-  return { css, spans }
-}
 
 const CHISPA = (color, lado) => `<svg viewBox="0 0 24 24" width="${lado}" height="${lado}"><path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z" fill="${color}"/></svg>`
 
 /** El interior de la pantalla de apertura (lo de dentro del `#apertura` de index.html). */
 export function aperturaInteriorHtml({ lema = '' } = {}) {
-  const { css, spans } = letrasDelLema(lema)
+  const texto = String(lema).replace(/&/g, '&amp;').replace(/</g, '&lt;')
   const keyframes =
     keyframesDelLogo() +
     '@keyframes apGlow{0%{opacity:0;transform:scale(.7)}22%,100%{opacity:1;transform:scale(1)}}' +
@@ -44,7 +25,6 @@ export function aperturaInteriorHtml({ lema = '' } = {}) {
     '@keyframes apPin{0%,34%{opacity:0;transform:scale(0)}40%{opacity:1;transform:scale(1.6)}46%,100%{opacity:1;transform:scale(1)}}' +
     '@keyframes apTag{0%,80%{opacity:0;transform:translateY(6px)}94%,100%{opacity:1;transform:none}}' +
     '@keyframes apSpark{0%,26%{opacity:0;transform:scale(0)}32%{opacity:1;transform:scale(1)}40%,100%{opacity:0;transform:scale(.4)}}' +
-    css +
     // Con las animaciones reducidas, la pantalla queda quieta con todo puesto (las chispas y el destello solo existen en movimiento).
     '@media (prefers-reduced-motion: reduce){#apertura *{animation:none!important}}'
   return (
@@ -57,9 +37,9 @@ export function aperturaInteriorHtml({ lema = '' } = {}) {
     `<span style="position:absolute;left:36px;top:34px;width:12px;height:12px;opacity:0;${anim('apSpark')}">${CHISPA('#FFF6DC', 12)}</span>` +
     `<span style="position:absolute;right:30px;top:80px;width:16px;height:16px;opacity:0;${anim('apSpark', ';animation-delay:.1s')}">${CHISPA('#E9C77A', 16)}</span>` +
     `</div>` +
-    `<span data-lema style="font:500 11px 'Geist Mono',monospace;letter-spacing:.34em;padding-left:.34em;color:#6F4E37;text-transform:uppercase;text-align:center;display:flex;justify-content:center;flex-wrap:wrap;max-width:92vw">${spans}</span>` +
-    // La línea nueva (10G): la última cosa que entra; main.tsx quita la pantalla cuando ACABA su animación (`data-fin`), nunca antes.
-    `<span data-fin style="font:500 10px 'Geist Mono',monospace;letter-spacing:.32em;padding-left:.32em;color:#A67C52;text-transform:uppercase;text-align:center;margin-top:-6px;${anim('apTag')}">${ETIQUETA}</span>` +
+    // El lema (Tanda 10L): ya no se escribe letra a letra; entra con la animación suave que tenía la línea «Tu app de viajes» (que se ha quitado) y es la última cosa en entrar: main.tsx quita la pantalla
+    // cuando ACABA su animación (`data-fin`), nunca antes.
+    `<span data-lema data-fin style="font:500 11px 'Geist Mono',monospace;letter-spacing:.34em;padding-left:.34em;color:#6F4E37;text-transform:uppercase;text-align:center;display:flex;justify-content:center;flex-wrap:wrap;max-width:92vw;${anim('apTag')}">${texto}</span>` +
     `</div>` +
     `<svg width="390" height="120" viewBox="0 0 390 120" style="position:absolute;left:50%;bottom:60px;transform:translateX(-50%);max-width:100vw;overflow:visible" fill="none">` +
     `<g style="${anim('apRoute')}"><path d="M20 90Q120 20 210 70T370 30" stroke="#D8B98E" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="1 9"/><circle cx="20" cy="90" r="5" fill="#D8B98E"/></g>` +

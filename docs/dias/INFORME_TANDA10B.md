@@ -260,3 +260,7 @@ Prompt guardado tal cual en `docs/dias/PROMPT_TANDA10G.md`. No se ha tocado el m
 5. Repite con una cuenta de Google que no hayas usado nunca (cuenta nueva): un solo viaje, dentro, y el viaje creado antes sigue ahí.
 6. Cancela en la ventana de Google: vuelves a la pantalla de entrar con «No hemos podido entrar. Inténtalo de nuevo.», sin pantalla de inicio; vuelve a tocar el botón y entra.
 7. Para lo de adónde abre: con sesión, recarga la app con (a) un viaje que incluya hoy → HOY; (b) solo viajes futuros → RUTA del más cercano; (c) solo pasados → «Mis viajes»; (d) sin viajes → «Crear viaje».
+
+## 10L. La pantalla de inicio sin «TU APP DE VIAJES»
+
+Petición de Eric (25-oct): en la pantalla de inicio de 3,5 s, fuera el texto «TU APP DE VIAJES» y el lema «De viajeros, para viajeros» pasa a tener la animación que tenía esa línea. Hecho en `shared/marca/aperturaJutrip.js`: se quita la línea (y `ETIQUETA`) y el lema ya no se escribe letra a letra; entra suave desde abajo con la animación `apTag` (del 80 % al 94 % de los 3,5 s, es lo último en entrar) y conserva su aspecto (mayúsculas espaciadas, oro profundo). `main.tsx` sigue quitando la pantalla cuando acaba la animación del lema (`data-fin`). Prueba: `pruebaTanda10G` (77 comprobaciones, apartado de la apertura actualizado) y capturas nuevas `10g_apertura_*` (`capturasJutrip.mjs tanda10g`).

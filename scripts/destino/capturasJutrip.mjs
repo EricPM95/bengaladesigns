@@ -467,12 +467,12 @@ if (partes.has('tanda10g')) {
   console.log('listo')
 }
 
-// ── Tanda 10G: la apertura en tres momentos y el final, con «TU APP DE VIAJES» (se para la animación en cada instante, así nunca sale en blanco) ──
+// ── Tanda 10G/10L: la apertura en tres momentos y el final, con el lema entrando suave (ya sin «TU APP DE VIAJES»; se para la animación en cada instante, así nunca sale en blanco) ──
 if (partes.has('tanda10g')) {
   console.log('· tanda 10G: la apertura en tres momentos y el final')
   const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&apertura=1' })
   await app.esp(1500)
-  for (const [segundos, nombre] of [[0.9, '1_logo'], [2.0, '2_lema_escribiendose'], [2.9, '3_lema_entero'], [3.5, '4_final_con_tu_app_de_viajes']]) {
+  for (const [segundos, nombre] of [[0.9, '1_logo'], [2.0, '2_logo_entero'], [3.0, '3_lema_entrando'], [3.5, '4_final_con_el_lema']]) {
     await app.evaluar(`(() => { for (const a of document.getAnimations()) { a.pause(); a.currentTime = ${segundos * 1000} } return true })()`)
     await app.esp(500)
     const hay = await app.evaluar("Boolean(document.getElementById('apertura')) && document.getElementById('apertura').getBoundingClientRect().height > 0")

@@ -51,7 +51,7 @@ createRoot(document.getElementById('root')!).render(
       // Con las animaciones reducidas, la pantalla queda quieta con el logo, el lema y la línea nueva, 1,5 segundos desde ahora.
       if (reducir) window.setTimeout(quitar, 1500)
       else {
-        // Lo último que entra es la línea «TU APP DE VIAJES» (`data-fin`): cuando acaba su animación, acaba toda la pantalla. Sin ella (una marca sin logo), 3,5 s.
+        // Lo último que entra es el lema (`data-fin`): cuando acaba su animación, acaba toda la pantalla. Sin ella (una marca sin logo), 3,5 s.
         const fin = apertura.querySelector('[data-fin]')
         if (fin) fin.addEventListener('animationend', quitar, { once: true })
         else window.setTimeout(quitar, 3500)

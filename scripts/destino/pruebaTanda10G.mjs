@@ -39,23 +39,25 @@ const debe = (c, regla, texto) => {
     debe(!/window\.location\.reload\(\)/.test(leer(f)) && /recargarSinApertura\(\)/.test(leer(f)), 'apertura', `${f}: la recarga de después de entrar o unirse usa recargarSinApertura`)
   }
 
-  const { aperturaInteriorHtml, DURACION, ETIQUETA } = await import('../../shared/marca/aperturaJutrip.js')
+  const apertura = await import('../../shared/marca/aperturaJutrip.js')
+  const { aperturaInteriorHtml, DURACION } = apertura
   const interior = aperturaInteriorHtml({ lema: 'De viajeros, para viajeros' })
   debe(DURACION === 3.5, 'apertura', 'dura 3,5 segundos')
-  debe(/TU APP DE VIAJES/i.test(ETIQUETA) && interior.includes(ETIQUETA) && /text-transform:uppercase/.test(interior.split(ETIQUETA)[0].split('<span data-fin').pop()), 'apertura', 'lleva la línea nueva «TU APP DE VIAJES», en mayúsculas espaciadas')
-  debe(/data-fin[^>]*color:#A67C52/.test(interior), 'apertura', 'la línea nueva va en el oro profundo')
+  // (Tanda 10L: se quitó la línea «TU APP DE VIAJES» y el lema ya no se escribe letra a letra: entra con la animación suave que tenía esa línea.)
+  debe(!/tu app de viajes/i.test(interior) && !('ETIQUETA' in apertura), 'apertura', 'ya no lleva la línea «TU APP DE VIAJES»')
+  debe(!/apL\d/.test(interior), 'apertura', 'el lema ya no se escribe letra a letra')
+  const lema = interior.match(/<span data-lema data-fin style="([^"]*)">([^<]*)<\/span>/)
+  debe(Boolean(lema) && lema[2] === 'De viajeros, para viajeros' && /animation:apTag 3\.5s/.test(lema[1]), 'apertura', 'el lema «De viajeros, para viajeros» entra con la animación suave (apTag) que tenía «TU APP DE VIAJES»')
+  debe(Boolean(lema) && /text-transform:uppercase/.test(lema[1]) && /color:#6F4E37/.test(lema[1]), 'apertura', 'y se ve como siempre: mayúsculas espaciadas, en el oro profundo')
   const duraciones = [...interior.matchAll(/animation:[^;"]*? (\d+(?:\.\d+)?)s /g)].map((m) => Number(m[1]))
-  debe(duraciones.length > 20 && duraciones.every((d) => d === 3.5), 'apertura', `todas las animaciones duran 3,5 s (${[...new Set(duraciones)].join(' ')}): la última en acabar es la línea nueva`)
-  // La línea nueva entra DESPUÉS de que el lema se haya escrito entero.
-  const finLema = Math.max(...[...interior.matchAll(/@keyframes apL\d+\{0%,([\d.]+)%\{[^}]*\}([\d.]+)%,100%/g)].map((m) => Number(m[2])))
-  const inicioEtiqueta = Number(interior.match(/@keyframes apTag\{0%,([\d.]+)%/)[1])
-  debe(finLema > 0 && inicioEtiqueta >= finLema, 'apertura', `la línea nueva entra después del lema (el lema acaba al ${finLema} %, la línea empieza al ${inicioEtiqueta} %)`)
-  const finEtiqueta = Number(interior.match(/@keyframes apTag\{[^}]*\}([\d.]+)%,100%/)[1])
-  debe(finEtiqueta <= 100 && finEtiqueta > inicioEtiqueta, 'apertura', 'y se ve entera antes de que acabe')
-  debe(/prefers-reduced-motion: reduce\)\{#apertura \*\{animation:none!important\}\}/.test(interior), 'apertura', 'con las animaciones reducidas queda quieta, con el logo, el lema y la línea nueva')
+  debe(duraciones.length > 6 && duraciones.every((d) => d === 3.5), 'apertura', `todas las animaciones duran 3,5 s (${[...new Set(duraciones)].join(' ')}): la última en acabar es el lema`)
+  const inicioLema = Number(interior.match(/@keyframes apTag\{0%,([\d.]+)%/)[1])
+  const finLema = Number(interior.match(/@keyframes apTag\{[^}]*\}([\d.]+)%,100%/)[1])
+  debe(inicioLema >= 60 && finLema <= 100 && finLema > inicioLema, 'apertura', `el lema entra al final (del ${inicioLema} % al ${finLema} %) y se ve entero antes de que acabe`)
+  debe(/prefers-reduced-motion: reduce\)\{#apertura \*\{animation:none!important\}\}/.test(interior), 'apertura', 'con las animaciones reducidas queda quieta, con el logo y el lema')
   const principal = leer('src/main.tsx')
   debe(!/pointerdown/.test(principal) && !/performance\.now\(\)/.test(principal), 'apertura', 'nada la corta: ni un toque ni el reloj de la página (se quitaba a los 3 s desde que se abría)')
-  debe(/animationend/.test(principal) && /\[data-fin\]/.test(principal), 'apertura', 'se quita cuando acaba la animación de la línea nueva (contando desde que empieza de verdad)')
+  debe(/animationend/.test(principal) && /\[data-fin\]/.test(principal), 'apertura', 'se quita cuando acaba la animación del lema (contando desde que empieza de verdad)')
   debe(/reducir\) window\.setTimeout\(quitar, 1500\)/.test(principal), 'apertura', 'con las animaciones reducidas, 1,5 segundos')
 }
 
