@@ -111,6 +111,27 @@ debe(valoracionSobre10(9.64) === 9.64 && valoracionSobre10(8.867924528) === 8.86
   debe(opciones[0].description === 'Texto nuestro intacto', 'la descripción de la excursión no se toca')
 }
 
+/* 4. (10O2) La API cae y lo guardado tiene más de 4 horas: no se enseña, salen nuestros datos de roma.json */
+console.log('4. Sin datos de más de 4 h')
+{
+  let t = 9_000_000
+  let cae = false
+  const bruto = { id: 7, title: 'Ostia', minimumPrice: 25, score: 9.64, reviews: 1234, url: 'https://www.civitatis.com/es/roma/ostia/' }
+  const cliente = { entorno: 'sandbox', tieneClaves: true, pedir: async () => (cae ? { ok: false, motivo: 'caida' } : { ok: true, datos: bruto }) }
+  const svc = crearServicioCivitatis({ activa: true, cliente, cache: crearCache({ ahora: () => t }), ahora: () => t })
+  const nuestras = [{ id: 'ostia_antica', name: 'Excursión a Ostia Antica', description: 'Texto nuestro', rating: 4.8, review_count: 278, provisional_pricing: false }]
+  const antes = await svc.enriquecerExcursiones('roma', nuestras)
+  debe(antes.enriquecidas === 1, 'con la API viva se enriquece')
+  cae = true
+  t += 5 * 3600 * 1000
+  const despues = await svc.enriquecerExcursiones('roma', nuestras)
+  debe(despues.enriquecidas === 0 && despues.opciones[0].rating === 4.8 && despues.opciones[0].rating_max === undefined && despues.opciones[0].description === 'Texto nuestro', 'con la API caída y lo guardado de más de 4 h salen nuestros datos de roma.json, sin nada de lo caducado')
+  const act = await svc.actividad(7)
+  debe(act.ok === false, 'y la ficha de una actividad guardada de hace más de 4 h tampoco sale')
+  const codigo2 = fs.readFileSync(new URL('../../server/civitatis/cache.js', import.meta.url), 'utf8')
+  debe(/ahora\(\) - guardadoEn <= TTL_MAXIMO_SEGUNDOS \* 1000/.test(codigo2), 'cache.js solo sirve lo viejo si tiene 4 h o menos')
+}
+
 console.log(`\nPrueba 10O de la API de consulta: ${n} comprobaciones · ${fallos.length} fallos`)
 for (const f of fallos) console.log(`  FALLO ${f}`)
 if (fallos.length > 0) process.exitCode = 1

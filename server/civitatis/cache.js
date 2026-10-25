@@ -4,7 +4,8 @@
  * (4 horas como mucho: tope duro, ver TTL_MAXIMO_SEGUNDOS).
  *
  *   · Primero memoria, luego Supabase, luego la API. Lo que llega de la API se guarda en las dos.
- *   · Si la API falla pero hay algo guardado (aunque ya caducado), se usa eso, marcado `viejo: true`: mejor un dato de hace un rato que ninguno. Si no hay nada, se devuelve el fallo.
+ *   · Si la API falla pero hay algo guardado que ya caducó, se usa eso (marcado `viejo: true`) SOLO si lo guardado tiene 4 horas o menos (Tanda 10O2: lo que pidió el proveedor es no guardar más de 4 horas, y enseñar algo
+ *     más viejo es guardarlo). Si tiene más, o no hay nada, se devuelve el fallo y la app hace lo de hoy, con los datos de roma.json.
  *   · `fresco: true` se salta la caché (por ejemplo, al abrir el selector de hora: las plazas tienen que estar al día), pero lo que llega sí se guarda.
  *   · Dos peticiones iguales a la vez comparten la misma respuesta.
  * Sin Supabase (o sin la tabla), todo sigue funcionando solo con la memoria.
@@ -86,10 +87,11 @@ export function crearCache({ admin = null, ahora = () => Date.now() } = {}) {
             void escribirBase(clave, respuesta.datos, caduca)
             return { ok: true, datos: respuesta.datos, origen: 'api' }
           }
-          // La API ha fallado: lo viejo, si hay.
+          // La API ha fallado: lo viejo, si hay y si tiene 4 horas o menos desde que se guardó (se guardó en `caduca - ttl`).
           const viejoEnMemoria = memoria.get(clave)
           const viejo = viejoEnMemoria ?? (await leerBase(clave))
-          if (viejo) {
+          const guardadoEn = viejo ? viejo.caduca - ttlConTope(ttlSegundos) * 1000 : 0
+          if (viejo && ahora() - guardadoEn <= TTL_MAXIMO_SEGUNDOS * 1000) {
             estadisticas.viejos++
             return { ok: true, datos: viejo.valor, viejo: true, origen: 'viejo' }
           }

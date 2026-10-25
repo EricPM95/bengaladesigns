@@ -288,7 +288,24 @@ console.log('4. El servicio: la caché, la API caída y lo que se monta')
   caer = true
   r4.avanzar((AJUSTES.ttl_segundos.actividad + 10) * 1000)
   const viejo = await svc4.actividad(3834)
-  debe(viejo.ok === true && viejo.viejo === true && viejo.datos.id === 3834, 'api_caida', 'si la API cae pero hay algo guardado (aunque caducado), se usa eso, marcado como viejo')
+  // (Tanda 10O2: lo guardado de MÁS de 4 horas no se enseña ni con la API caída: el proveedor pidió no guardar más de 4 horas.)
+  debe(viejo.ok === false && viejo.motivo === 'no_disponible', 'api_caida', 'si la API cae y lo guardado tiene más de 4 horas, no se enseña: el fallo claro y la app hace lo de hoy')
+  {
+    // Con 4 horas o menos (el calendario guarda 1 h y se pide caducado a la hora y poco), sí se usa lo guardado, marcado como viejo.
+    let caer2 = false
+    const s5 = servidorFalso()
+    const r5 = reloj()
+    const c5 = nuevoCliente({ ...s5, llamar: async (u, o) => { if (caer2 && !String(u).includes('/auth')) throw new Error('caída'); return s5.llamar(u, o) } }, r5)
+    const svc5 = crearServicioCivitatis({ activa: true, cliente: c5, cache: crearCache({ ahora: r5.ahora }), ahora: r5.ahora })
+    await svc5.horasLibres(3834, hoy)
+    caer2 = true
+    r5.avanzar((AJUSTES.ttl_segundos.calendario + 600) * 1000)
+    const reciente = await svc5.horasLibres(3834, hoy)
+    debe(reciente.ok === true && reciente.viejo === true, 'api_caida', 'si la API cae y lo guardado tiene menos de 4 horas (aunque ya caducado), se usa eso, marcado como viejo')
+    r5.avanzar(4 * 3600 * 1000)
+    const muyViejo = await svc5.horasLibres(3834, hoy)
+    debe(muyViejo.ok === false, 'api_caida', 'y pasadas las 4 horas, ya no')
+  }
   const nada = await svc4.actividad(84)
   debe(nada.ok === false && nada.motivo === 'no_disponible', 'api_caida', 'si la API cae y no hay nada guardado, el fallo claro')
   void fallo

@@ -12,7 +12,7 @@ const CARPETA = 'public/fotos/roma'
 const H = (grupo, sitio, archivo, lugares, extra = {}) => ({ grupo, sitio, archivo, lugares, cuando: archivo.startsWith('noche_') ? 'noche' : 'dia', ...extra })
 export const HUECOS = [
   // Roma desde arriba (D6, 5 y 6 días)
-  H('Día «Roma desde arriba» (5 y 6 días)', 'Terraza del Altar de la Patria (la del ascensor panorámico)', 'dia_terraza_altar_patria.jpg', ['Terraza del Altar de la Patria'], { estrella: true, sin_foto_hasta_llegar: true, nota: 'La del Altar que ya hay es la del edificio.' }),
+  H('Día «Roma desde arriba» (5 y 6 días)', 'Terraza del Altar de la Patria (la del ascensor panorámico)', 'dia_terraza_altar_patria.jpg', ['Terraza del Altar de la Patria'], { estrella: true, sin_foto_hasta_llegar: true, nota: 'La del Altar que ya hay es la del edificio. Tanda 10O2: la foto es de Eric (su autor).', autor: 'Eric', fuente: 'propia', credito: { autor: 'Eric', licencia: '', enlace: '' } }),
   H('Día «Roma desde arriba» (5 y 6 días)', "Castillo de Sant'Angelo por dentro (la terraza del ángel)", 'dia_castillo_sant_angelo_dentro.jpg', [], { estrella: true, nota: 'Tanda 10O: el Castillo ya lleva la foto de fuera (dia_castillo_sant_angelo_fuera.jpg); esta, por dentro, sin uso.' }),
   H('Día «Roma desde arriba» (5 y 6 días)', 'Museos Capitolinos (el Marco Aurelio o la Loba)', 'dia_museos_capitolinos.jpg', ['Museos Capitolinos'], { estrella: true }),
   H('Día «Roma desde arriba» (5 y 6 días)', 'Plaza del Campidoglio, de día', 'dia_plaza_campidoglio.jpg', ['Plaza del Campidoglio'], { estrella: true }),

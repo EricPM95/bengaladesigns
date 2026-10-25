@@ -71,6 +71,7 @@ debe(regCastillo?.credito?.autor && /commons\.wikimedia\.org/.test(regCastillo.c
 debe(!fotos.huecos.some((h) => h.archivo === 'dia_castillo_sant_angelo_dentro.jpg' && (h.lugares ?? []).length > 0), 'castillo', 'la de dentro ya no la usa ninguna ficha')
 const fTerraza = await foto('Terraza del Altar de la Patria')
 debe(/dia_terraza_altar_patria/.test(JSON.stringify(fTerraza)), 'terraza', 'la Terraza lleva su foto (las vistas desde arriba)')
+debe(fTerraza.photo_credit?.autor === 'Eric', 'terraza', 'y la foto de la Terraza lleva a Eric como su autor (10O2)')
 
 /* ───────────────────────── 2. Lo que se ve en el código ───────────────────────── */
 {
@@ -246,6 +247,8 @@ const tarjeta = (nombre) => `(() => { const b = Array.from(document.querySelecto
   await a.esp(1500)
   const hojaAnadir = await a.evaluar("document.querySelector('[role=dialog]')?.innerText ?? ''")
   debe(!/\bHora\b/.test(hojaAnadir) && !document_vacio(hojaAnadir), 'sin_hora', 'la hoja de añadir no pide la hora')
+  debe(!/Minutos|Cuánto tiempo quieres visitarlo/.test(hojaAnadir) && (await a.evaluar("document.querySelectorAll('[role=dialog] input[type=number]').length")) === 0, 'sin_minutos', 'ni la casilla de minutos «¿Cuánto tiempo quieres visitarlo?» (10O2)')
+  await a.captura(path.join(SALIDA, '10o2_hoja_anadir.jpg'))
   const etiquetas = hojaAnadir.split('\n').filter((l) => /·/.test(l) && /^(Lun|Mar|Mié|Jue|Vie|Sáb|Dom) /.test(l))
   debe(etiquetas.length >= 3 && etiquetas.every((l) => /^(Lun|Mar|Mié|Jue|Vie|Sáb|Dom) \d{1,2} (Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic) · \S/.test(l)), 'dias', `cada día de la hoja va como «Jue 26 Nov · Roma antigua…» (${etiquetas[0]})`)
   // Un día en que cierra: el lunes (la Galería Borghese cierra los lunes).

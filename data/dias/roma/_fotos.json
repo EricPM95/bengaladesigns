@@ -1283,6 +1283,23 @@
         "licencia": "CC BY-SA 3.0",
         "enlace": "https://commons.wikimedia.org/wiki/File:0_Pont_et_ch%C3%A2teau_Sant%27Angelo_-_Rome_(1).JPG"
       }
+    },
+    {
+      "archivo": "dia_terraza_altar_patria.jpg",
+      "lugares": [
+        "Terraza del Altar de la Patria"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "propia",
+      "autor": "Eric",
+      "enlace": "",
+      "nota": "Tanda 10O2: la foto es de Eric (su autor). Registrada aqui (antes solo como hueco) para que lleve su credito.",
+      "credito": {
+        "autor": "Eric",
+        "licencia": "",
+        "enlace": ""
+      }
     }
   ],
   "notas_revision": {
@@ -1363,8 +1380,15 @@
       "sitio": "Terraza del Altar de la Patria (la del ascensor panorámico)",
       "grupo": "Día «Roma desde arriba» (5 y 6 días)",
       "estrella": true,
-      "nota": "La del Altar que ya hay es la del edificio.",
-      "sin_foto_hasta_llegar": true
+      "nota": "La del Altar que ya hay es la del edificio. · Tanda 10O2: la foto es de Eric (su autor).",
+      "sin_foto_hasta_llegar": true,
+      "credito": {
+        "autor": "Eric",
+        "licencia": "",
+        "enlace": ""
+      },
+      "autor": "Eric",
+      "fuente": "propia"
     },
     {
       "archivo": "dia_castillo_sant_angelo_dentro.jpg",

@@ -17,6 +17,7 @@ const CAPTURAS = [
   ['10o_ficha_terraza.jpg', 'La ficha de la Terraza del Altar de la Patria, con su horario (09:30–19:30, última subida a las 19:00) y [+ Añadir].'],
   ['10o_entradas_castillo.jpg', 'Entradas: el Castillo de Sant’Angelo, ahora con la foto de fuera y el puente delante.'],
   ['10o_excursiones.jpg', 'Excursiones: cada una con su foto, su nombre, la duración y el precio «desde».'],
+  ['10o2_hoja_anadir.jpg', '10O2 · la hoja de añadir un sitio, sin la casilla de minutos (solo el día; el tiempo de cada sitio es su `duration_minutes` de roma.json).'],
   ['10o_anadir_cierra.jpg', 'Añadir un sitio: ya no se pide la hora. Si ese día cierra, la hoja lo dice y propone el siguiente día en que abre; los días van como «Sáb 17 Oct · Vaticano y Trastevere».'],
 ]
 const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Repaso 10O · EXPLORAR</title>

@@ -80,12 +80,13 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
   }, [place, route.destination])
 
   const draft: Stop | null = useMemo(() => (place && !isRestaurant ? stopFromPlace(place, photo ?? placeholderPhoto(place.name)) : null), [place, isRestaurant, photo])
-  const [minutes, setMinutes] = useState(draft?.durationMinutes ?? 60)
+  // (Tanda 10O2: ya no se pregunta cuánto se tarda en verlo: el tiempo de cada sitio es su `duration_minutes` de roma.json, que la app usa por dentro.)
+  const minutes = Math.max(5, draft?.durationMinutes ?? 60)
 
   // Dónde lo pone la app ese día y si ese día cierra (Tanda 10O).
   const dateIso = day ? fechaDelDia(route, day.dayNumber) : null
-  const colocacion = useMemo(() => (day && draft && place && !isRestaurant ? mejorHuecoEnElDia(day, draft, place, dateIso, Math.max(5, minutes)) : null), [day, draft, place, isRestaurant, dateIso, minutes])
-  const otroDia = useMemo(() => (colocacion?.cierra && day && draft && place ? otroDiaAbierto(route, day, draft, place, Math.max(5, minutes)) : null), [colocacion, day, draft, place, route, minutes])
+  const colocacion = useMemo(() => (day && draft && place && !isRestaurant ? mejorHuecoEnElDia(day, draft, place, dateIso, minutes) : null), [day, draft, place, isRestaurant, dateIso, minutes])
+  const otroDia = useMemo(() => (colocacion?.cierra && day && draft && place ? otroDiaAbierto(route, day, draft, place, minutes) : null), [colocacion, day, draft, place, route, minutes])
   const warnings: string[] = []
   // Cierra ese día y no hay otro día mejor: se dice y se puede añadir igual.
   if (colocacion?.cierra && !otroDia && place && day) warnings.push(`${ElDia(route, day.dayNumber)} ${elSitio(place.name)} cierra.`)
@@ -112,7 +113,7 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
   /** Lo añade a ese día en su mejor hueco: entre las paradas, donde menos hay que andar de más y con el sitio abierto (Tanda 10O). */
   const anadirAlDia = (destino: DayPlan) => {
     if (!draft || !place) return
-    const stop = { ...draft, durationMinutes: Math.max(5, minutes), addedByUser: true }
+    const stop = { ...draft, durationMinutes: minutes, addedByUser: true }
     if (isFreeDay(destino)) addPlaceToDay(destino.id, stop, null)
     else insertStopAt(destino.id, mejorHuecoEnElDia(destino, stop, place, fechaDelDia(route, destino.dayNumber), stop.durationMinutes).hueco.indice, stop)
     onAdded({ dayId: destino.id, stopId: stop.id })
@@ -165,16 +166,6 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
                   {option === 'lunch' ? 'Para comer' : 'Para cenar'}
                 </button>
               ))}
-            </div>
-          )}
-
-          {draft && day && (
-            <div className="mt-5 space-y-4">
-              <label className="block">
-                <span className="block text-[14px] font-semibold text-text">Minutos</span>
-                <span className="mt-0.5 block text-[12.5px] text-text-muted">¿Cuánto tiempo quieres visitarlo?</span>
-                <input type="number" inputMode="numeric" min={5} step={5} value={minutes} onChange={(event) => setMinutes(Number(event.target.value) || 0)} className="mt-1.5 h-12 w-full rounded-xl border border-text/15 bg-bg px-3.5 text-[15px] text-text" />
-              </label>
             </div>
           )}
 

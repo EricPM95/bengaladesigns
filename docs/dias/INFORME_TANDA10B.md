@@ -541,3 +541,14 @@ TODO (87): sin filtros, lugares y miradores juntos
 
 FUERA DE LA LISTA (8): Lungotevere; Fontana dell'Acqua Paola; Terraza de Largo Gaetana Agnesi; Mirador de San Pietro in Montorio; Porta Pinciana; Jardines del Pincio; Mercadillo de Navidad de Piazza Navona; Luces de Navidad del Tridente
 ```
+
+
+## 10O2 · Lo que quedaba de EXPLORAR
+
+Prompt guardado en `docs/dias/PROMPT_TANDA10O2.md`. No se ha tocado el motor de rutas (la muestra de 60 sigue igual). La prueba es `pruebaTanda10O` (ahora 126 comprobaciones, 0 fallos); captura nueva `10o2_hoja_anadir.jpg` en `docs/dias/REPASO_10O.html`.
+
+- **Fuera la casilla «Minutos»** de la hoja de añadir un sitio. La hoja queda solo con el día. El tiempo de visita es el `duration_minutes` de cada sitio en roma.json, que la app ya llevaba en su parada (`durationMinutes`) y usa para colocarlo y para mirar si cierra antes de acabar la visita. **Nada dependía de la casilla**: era un estado local de la hoja (valor inicial = el del sitio) que solo se usaba en esa hoja; el resto de la app no la lee. Un restaurante o una excursión no la usaban.
+- **La API no enseña datos de más de 4 horas**: si la API falla, `cache.js` solo usa lo guardado si lo guardado tiene 4 horas o menos desde que se guardó (aunque su vida normal ya haya acabado: el calendario guarda 1 h). Con más de 4 horas, o sin nada, devuelve el fallo y la app hace lo de hoy con roma.json (las excursiones siguen provisionales, las entradas son las nuestras). Probado en `pruebaTanda10O_api.mjs` (sección 4) y en `pruebaCivitatis1.mjs` (la antigua esperaba lo contrario: actualizada).
+- **La foto de la Terraza del Altar de la Patria** es de Eric: registrada en `_fotos.json` con él como autor (sale «Foto: Eric»), y también en el generador de huecos.
+- El orden de las listas y la foto de la Cúpula se quedan como estaban.
+- **Batería**: ver el resultado en la respuesta; los fallos que solo salen al correr con las demás (`pruebaJutrip` por un fichero temporal que otra prueba borra a la vez, `pruebaRevisionLargos` con los títulos vacíos bajo carga) pasan solos y se arreglan más adelante, como se pidió.
