@@ -1,7 +1,7 @@
 /**
  * La caché de las respuestas de la API de consulta (parte 1): en memoria y en Supabase (tabla `civitatis_cache`, migración 0022, sin aplicar), como las fotos de Unsplash.
  * Para no pedir lo mismo cada vez, no acercarnos al límite de peticiones y que la app vaya rápida. Cuánto vive cada cosa está en `data/civitatis/ajustes.json › ttl_segundos`
- * (provisional: esperamos a que nos digan cuánto se puede guardar).
+ * (4 horas como mucho: tope duro, ver TTL_MAXIMO_SEGUNDOS).
  *
  *   · Primero memoria, luego Supabase, luego la API. Lo que llega de la API se guarda en las dos.
  *   · Si la API falla pero hay algo guardado (aunque ya caducado), se usa eso, marcado `viejo: true`: mejor un dato de hace un rato que ninguno. Si no hay nada, se devuelve el fallo.
@@ -9,6 +9,16 @@
  *   · Dos peticiones iguales a la vez comparten la misma respuesta.
  * Sin Supabase (o sin la tabla), todo sigue funcionando solo con la memoria.
  */
+
+/**
+ * TOPE DURO: nada se guarda más de 4 horas (14400 s), pase lo que pase en `ajustes.json`. Lo pidió el proveedor de la API el 19-oct-2026.
+ * Un valor mayor (o raro) se recorta aquí; el calendario (3600 s) queda por debajo y no se toca.
+ */
+export const TTL_MAXIMO_SEGUNDOS = 14400
+export const ttlConTope = (ttlSegundos) => {
+  const n = Number(ttlSegundos)
+  return Number.isFinite(n) ? Math.min(Math.max(0, n), TTL_MAXIMO_SEGUNDOS) : TTL_MAXIMO_SEGUNDOS
+}
 
 export function crearCache({ admin = null, ahora = () => Date.now() } = {}) {
   const memoria = new Map() // clave → { valor, caduca }
@@ -71,7 +81,7 @@ export function crearCache({ admin = null, ahora = () => Date.now() } = {}) {
           estadisticas.fallos++
           const respuesta = await cargar()
           if (respuesta?.ok) {
-            const caduca = ahora() + Math.max(0, ttlSegundos) * 1000
+            const caduca = ahora() + ttlConTope(ttlSegundos) * 1000
             memoria.set(clave, { valor: respuesta.datos, caduca })
             void escribirBase(clave, respuesta.datos, caduca)
             return { ok: true, datos: respuesta.datos, origen: 'api' }

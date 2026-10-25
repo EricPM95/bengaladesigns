@@ -42,18 +42,19 @@ import { audioVigente } from '../shared/audio/historiasAudio.js'
 import { periodosParaFicha } from '../shared/routeEngine/horarioDeLaFecha.js'
 import { cambioDelDia } from './cambio.js'
 import { registrarRutasTiempo } from './tiempo.js'
-import { registrarRutasCuentas } from './cuentas.js'
+import { registrarRutasCuentas, quienEs as quienEsCuenta, tokenDe as tokenDeCuenta } from './cuentas.js'
 import { registrarRutasAvisosDestino } from './avisosDestino.js'
 import { registrarRutasDestinosCurados } from './destinosCurados.js'
 import { crearServicioAvisos, registrarRutasAvisos } from './avisos.js'
-import { crearClienteCivitatis, civitatisActiva } from './civitatis/cliente.js'
+import { crearClienteCivitatis, modoDeCivitatis } from './civitatis/cliente.js'
+import { crearPermisoAdminCivitatis } from './civitatis/permiso.js'
 import { crearCache as crearCacheCivitatis } from './civitatis/cache.js'
 import { crearServicioCivitatis, AJUSTES as AJUSTES_CIVITATIS } from './civitatis/servicio.js'
 import { registrarRutasCivitatis } from './civitatis/rutas.js'
 import { cargarDatos as cargarDatosLogros, cargarCatalogo as cargarCatalogoLogros } from './logros/datos.js'
 import { crearServicioLogros } from './logros/servicio.js'
 import { repoSupabase } from './logros/repo.js'
-import { registrarRutasLogros, logrosActivos } from './logros/rutas.js'
+import { registrarRutasLogros, logrosActivos, esAdmin as esAdminLogros } from './logros/rutas.js'
 import { cobroListo, crearServicioPagos, modoDePago, pasarelaDeMentira, pasarelaStripe, registrarRutasPagos } from './pagos.js'
 import { precioTienda } from '../shared/dinero/formato.js'
 import { compareInside } from './engine/insideSwitch.js'
@@ -4198,10 +4199,14 @@ app.post('/api/destination-places', (req, res) => {
     res.json({ found: false, places: [] })
     return
   }
-  const places = (data.places ?? [])
+  // Tanda 10O: `lugares_solo_lista` son sitios que solo salen en EXPLORAR (la Terraza del Altar de la Patria): el motor de rutas lee `places` y nunca los ve.
+  const places = [...(data.places ?? []), ...(data.lugares_solo_lista ?? [])]
     .filter((place) => Array.isArray(place.coordinates) && place.coordinates.length === 2)
     .map((place) => ({
       kind: 'place',
+      // Tanda 10O: fuera de la lista de EXPLORAR (solo de la lista: la ruta, la ficha y los textos los siguen usando) y al final de ella (lo que casi nadie conoce).
+      fuera_de_lista: place.fuera_de_lista === true,
+      al_final_de_lista: place.al_final_de_lista === true,
       name: place.name,
       coordinates: { lat: place.coordinates[0], lng: place.coordinates[1] },
       filter_category: place.filter_category ?? null,
@@ -4356,6 +4361,8 @@ app.post('/api/destination-places', (req, res) => {
           type: null,
           tags: [],
           level: null,
+          // Tanda 10O: sus «me gusta» de partida, como los de cualquier sitio (para que salga el primero).
+          likes_initial: Number.isFinite(ft.megusta_inicial) ? ft.megusta_inicial : 0,
           schedule: null,
           search_aliases: ['free tour', 'tour gratis', 'tour gratuito', 'visita guiada'],
           requires_ticket: true,
@@ -4566,9 +4573,10 @@ registrarRutasDestinosCurados(app, join(__dirname, '../data'))
 registrarRutasAvisosDestino(app, { admin: salesAdmin })
 // La campanita de avisos (cuentas parte 3): lista, leídos, avisos con fecha (nunca de noche), aviso al móvil (con PUSH_ACTIVO) y la tarea programada de Vercel (con CRON_SECRET).
 if (salesAdmin) registrarRutasAvisos(app, { admin: salesAdmin, servicio: crearServicioAvisos({ admin: salesAdmin, destinos: cargarDatosLogros().destinos }) })
-// La API de consulta (parte 1, sandbox): apagada salvo CIVITATIS_API_ACTIVA=true. Todo pasa por aquí; el móvil nunca ve el usuario, la contraseña ni el token. La caché usa Supabase si está la clave (tabla `civitatis_cache`, migración 0022).
+// La API de consulta (parte 1, sandbox): apagada salvo CIVITATIS_API_ACTIVA=true (para todos) o =admin (solo los emails de LOGROS_ADMIN_EMAILS, decidido aquí por petición, Tanda 10O). Todo pasa por aquí; el móvil nunca ve el usuario, la contraseña ni el token. La caché usa Supabase si está la clave (tabla `civitatis_cache`, migración 0022).
 const civitatis = crearServicioCivitatis({
-  activa: civitatisActiva(),
+  activa: modoDeCivitatis() !== 'nadie',
+  permitida: modoDeCivitatis() === 'admin' ? crearPermisoAdminCivitatis({ admin: salesAdmin, quienEs: quienEsCuenta, esAdmin: esAdminLogros, tokenDe: tokenDeCuenta }) : undefined,
   cliente: crearClienteCivitatis({ peticionesPorSegundo: AJUSTES_CIVITATIS.peticiones_por_segundo }),
   cache: crearCacheCivitatis({ admin: salesAdmin }),
 })
@@ -4602,7 +4610,7 @@ app.post('/api/destination-excursions', async (req, res) => {
   const data = destination ? findPipelineV2Data(destination) : null
   let options = data?.excursions?.options ?? []
   // La API de consulta (parte 1): solo si el servidor la tiene encendida Y la app la pide (`civitatis: true`, su interruptor). Si falla, se queda lo de hoy.
-  const conCivitatis = civitatis.activa && req.body?.civitatis === true
+  const conCivitatis = req.body?.civitatis === true && (await civitatis.permitida(req))
   if (conCivitatis) {
     try {
       options = (await civitatis.enriquecerExcursiones(destination, options)).opciones

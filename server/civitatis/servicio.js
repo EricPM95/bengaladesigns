@@ -7,7 +7,7 @@
 
 import fs from 'node:fs'
 import { crearClienteCivitatis } from './cliente.js'
-import { crearCache } from './cache.js'
+import { crearCache, ttlConTope } from './cache.js'
 import { fichaDeActividad, fichaCorta, horasParaLaApp, precioMinimoDelCalendario, diasConHoras, horasLibresDelDia, enlaceDeActividad, tieneHorasFijas } from './mapeo.js'
 
 const leerJson = (ruta) => JSON.parse(fs.readFileSync(new URL(ruta, import.meta.url), 'utf8'))
@@ -38,10 +38,20 @@ export function crearServicioCivitatis(opciones = {}) {
   const cache = opciones.cache ?? crearCache()
   const ajustes = opciones.ajustes ?? AJUSTES
   const ahora = opciones.ahora ?? (() => Date.now())
-  const ttl = (que) => ajustes.ttl_segundos?.[que] ?? 3600
+  const ttl = (que) => ttlConTope(ajustes.ttl_segundos?.[que] ?? 3600) // (tope duro de 4 h: lo pidió el proveedor el 19-oct)
   const lang = ajustes.idioma ?? 'es'
   const moneda = ajustes.moneda ?? 'EUR'
   const apagada = { ok: false, motivo: 'apagada' }
+  /** ¿Puede ESTA petición usar la API? Por defecto, lo que diga `activa`; con la API solo para admin, el servidor mira el email del usuario (ver permiso.js). Nunca lanza. */
+  const permitida = async (req) => {
+    if (!activa) return false
+    if (!opciones.permitida) return true
+    try {
+      return (await opciones.permitida(req)) === true
+    } catch {
+      return false
+    }
+  }
   const opcionesDePrecio = { maximoCreible: ajustes.precio_maximo_creible_eur ?? 2000 }
 
   const pedirCacheado = (clave, que, ruta, peticion, fresco = false) => cache.obtener(clave, ttl(que), () => cliente.pedir(ruta, peticion), { fresco })
@@ -181,5 +191,5 @@ export function crearServicioCivitatis(opciones = {}) {
     return { opciones: opciones2, enriquecidas }
   }
 
-  return { activa, actividad, calendario, horasLibres, horasEnRango, freeTourHoras, cercaDe, traslados, resolver, enriquecerEntradas, enriquecerExcursiones, cliente, cache, ajustes, horasLibresDelDia }
+  return { activa, permitida, actividad, calendario, horasLibres, horasEnRango, freeTourHoras, cercaDe, traslados, resolver, enriquecerEntradas, enriquecerExcursiones, cliente, cache, ajustes, horasLibresDelDia }
 }

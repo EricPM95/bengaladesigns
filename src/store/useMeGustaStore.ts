@@ -87,6 +87,8 @@ export const useMeGustaStore = create<MeGustaState>((set, get) => ({
       const catalogo = await fetchDestinationPlaces(destino)
       const inicial: Record<string, number> = {}
       for (const sitio of catalogo.places) if (sitio.kind === 'place' || sitio.kind === 'restaurant') inicial[sitio.name] = sitio.likes_initial ?? 0
+      // Tanda 10O: el Free Tour viaja aparte del catálogo y lleva sus «me gusta» de partida como cualquier sitio.
+      if (catalogo.freeTourEntry) inicial[catalogo.freeTourEntry.name] = catalogo.freeTourEntry.likes_initial ?? 0
       // Si el catálogo no ha llegado (sin servidor), no se guarda nada: el corazón no sale hasta que haya datos y se vuelve a pedir.
       if (Object.keys(inicial).length === 0) return
       const previa = get().cuentas[clave]

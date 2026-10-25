@@ -35,10 +35,10 @@ export function sinMarca(texto) {
 
 const listaSinMarca = (lista) => (Array.isArray(lista) ? lista.map(sinMarca).filter(Boolean) : [])
 
-/** La nota de la actividad, TAL COMO LA DA la web (de 0 a 10, con un decimal): «9,6/10». No se divide ni se cambia de escala. Sin nota válida, null. */
+/** La nota de la actividad, TAL COMO LA DA la API (de 0 a 10): ni se redondea, ni se divide, ni se cambia de escala (el proveedor lo pidió). Sin nota válida, null. */
 export function valoracionSobre10(score) {
   const n = Number(score)
-  return Number.isFinite(n) && n > 0 && n <= 10 ? Math.round(n * 10) / 10 : null
+  return Number.isFinite(n) && n > 0 && n <= 10 ? n : null
 }
 
 /**

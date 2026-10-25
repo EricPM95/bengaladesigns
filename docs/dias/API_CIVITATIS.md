@@ -89,3 +89,8 @@ Las credenciales del sandbox NO van aquí: Eric las pone en Vercel y en el .env.
 - El «412 lo recomiendan» del Coliseo (`megusta_inicial`, aproximado a las redes de Eric) se queda como está.
 - La contraseña del sandbox se queda como está.
 - «Reservar» va directo a Civitatis (no pasa por el selector). Encima del botón, una etiqueta verde con la hora recomendada: «Te recomendamos reservar a las 11:00» (la hora libre que mejor encaja con su ruta), más «· Últimas 3 plazas» si quedan 10 o menos. Si ese día no queda nada: «Ese día no quedan plazas» y el otro día del viaje que sí tiene. Sin fechas o sin la API, no sale nada.
+
+## Tanda 10O (25-oct): caché a 4 horas, encendida solo para admin, datos tal cual
+- **Caché:** `catalogo`, `actividad`, `traslados`, `cerca` y `resolver` a 14400 s (4 h) en `data/civitatis/ajustes.json`; el calendario, 3600 s. El código recorta cualquier valor mayor a 14400 (`TTL_MAXIMO_SEGUNDOS` en `server/civitatis/cache.js`): lo pidió el proveedor el 19-oct.
+- **Interruptor del servidor** `CIVITATIS_API_ACTIVA`: `true` = para todos; `admin` = solo para los emails de `LOGROS_ADMIN_EMAILS` (el servidor mira el token de la sesión en cada petición, `server/civitatis/permiso.js`); vacío o `false` = para nadie. El de la app (`VITE_CIVITATIS_ACTIVA=true`) solo hace que la app pregunte; la decisión es del servidor.
+- **Tal como vienen:** la nota (0–10) y el nº de opiniones pasan sin redondear ni reescribir; la app no resume ninguna descripción de la API (las descripciones de las excursiones salen de roma.json).

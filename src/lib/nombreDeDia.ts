@@ -97,3 +97,17 @@ export function diaTitulo(fuente: FuenteDeFechas, dayNumber: number): string {
   const texto = diaProsa(fuente, dayNumber)
   return texto.charAt(0).toUpperCase() + texto.slice(1)
 }
+
+const SEMANA_TITULO = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+const MES_TITULO = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+
+/** «Jue 26 Nov» para una fecha ISO (Tanda 10O: el día de la semana y el mes con la primera letra en mayúscula). */
+export function fechaConMes(dateIso: string): string {
+  return `${SEMANA_TITULO[diaDeLaSemana(dateIso)]} ${Number(dateIso.slice(8, 10))} ${MES_TITULO[Number(dateIso.slice(5, 7)) - 1]}`
+}
+
+/** «Jue 26 Nov» de un día del viaje; sin fechas, «Día 3». Es lo que va delante del nombre del día en las hojas para elegir día. */
+export function diaConFecha(fuente: FuenteDeFechas, dayNumber: number): string {
+  const iso = fechaDelDia(fuente, dayNumber)
+  return iso ? fechaConMes(iso) : `Día ${dayNumber}`
+}

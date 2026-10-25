@@ -271,11 +271,14 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     set({ time: first && pickupItems.includes(first) ? first : '07:00' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view])
-  // La hora de partida de la rueda: la de la reserva que ya hay, o la más cercana a las 10:00; si esa hora no está entre las del sitio, la más cercana.
+  // La hora de partida de la rueda (Tanda 10O): la de la reserva que ya hay; si no, la hora a la que la ruta llega a ese sitio ese día (si el sitio ya está en la ruta), y si no está, las 9:00; la rueda
+  // se queda en la hora más cercana de las del sitio (así, si abre más tarde de las 9:00, parte de la hora de apertura).
   useEffect(() => {
     if (isFreeTour || isExcursion || view !== 'hora') return
     const asMin = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
-    const wanted = validTime ? asMin(fields.time) : 10 * 60
+    const enLaRuta = resolvedDay?.stops.find((stop) => !stop.isNightExperience && target.placeNames.includes(stop.name))
+    const llegada = enLaRuta && /^\d{1,2}:\d{2}$/.test(enLaRuta.time ?? '') ? asMin(enLaRuta.time) : NaN
+    const wanted = validTime ? asMin(fields.time) : Number.isNaN(llegada) ? 9 * 60 : llegada
     const nearest = wheelItems.reduce((best, item) => (Math.abs(asMin(item) - wanted) < Math.abs(asMin(best) - wanted) ? item : best), wheelItems[0])
     const current = validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : ''
     if (nearest !== current) set({ time: nearest })

@@ -29,12 +29,13 @@ import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { CERRADO_ESTE_DIA, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 import { Icono } from '../../ui/Icono'
-import { Candado } from '../../pase/Candado'
+import { BotonHoja, Hoja } from '../../ui/Hoja'
+import { TextoConPase } from '../../cuenta/TextoConPase'
+import { abrirPase } from '../../../lib/pago'
 import { explorarConCercania } from '../../../lib/explorarDePago'
 import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
 import { diaCorto } from '../../../lib/nombreDeDia'
 
-const EXCURSION_CHIP = PLACE_FILTER_CHIPS.find((chip) => chip.id === 'excursiones') ?? null
 
 /** Por encima de esta distancia el "a N min a pie" deja de tener sentido (el viajero todavía no está
     en la ciudad) y se muestra la distancia en kilómetros. */
@@ -249,49 +250,51 @@ function LocationIcon() {
  * Precio y valoración son PLACEHOLDER del JSON del destino hasta integrar Civitatis/GYG — por eso
  * el precio va como "desde" y nunca como tarifa cerrada.
  */
-function ExcursionResultCard({ excursion, open, onToggle, onAdd }: { excursion: Excursion; open: boolean; onToggle: () => void; onAdd?: () => void }) {
+function ExcursionResultCard({ excursion, destination, open, onToggle, onAdd }: { excursion: Excursion; destination: string; open: boolean; onToggle: () => void; onAdd?: () => void }) {
+  // Tanda 10O: la tarjeta es la de las demás listas (foto, nombre en la letra de los títulos, y debajo la duración y el precio «desde»). Un dato que no llega no deja huecos ni «undefined»:
+  // sin foto, el degradado de la categoría con su icono; sin duración o sin precio, esa parte no sale; sin nota, no hay nota.
+  const color = solidOf(CARD_STYLE.excursiones.color)
+  const comoLugar = { kind: 'place', name: excursion.title, photo_name: excursion.photoName ?? null, wikipedia_title: null } as unknown as DestinationPlace
+  const duracion = excursion.durationLabel?.trim() || (excursion.durationHours ? `${excursion.durationHours} h` : '')
+  const precio = excursion.priceLabel?.trim() ?? ''
+  const nota =
+    excursion.rating !== undefined && Number.isFinite(excursion.rating)
+      ? `${excursion.ratingMax === 10 ? `${excursion.rating.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/10` : `★ ${excursion.rating.toFixed(1)}`}${excursion.reviewCount ? ` (${excursion.reviewCount.toLocaleString('es-ES')})` : ''}`
+      : ''
+  const datos = [duracion, precio ? `desde ${precio}` : '', nota].filter(Boolean)
   return (
-    <div className={`rounded-xl border transition-colors ${open ? 'border-accent bg-accent-soft' : 'border-border'}`}>
-      <div className="flex items-center gap-2 pr-2.5">
-      <button type="button" onClick={onToggle} aria-expanded={open} className="flex min-w-0 flex-1 items-center gap-3 p-2.5 text-left">
-        <span
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xl"
-          style={{ backgroundColor: EXCURSION_CHIP?.activeBg ?? '#E0F2F1' }}
-          aria-hidden="true"
-        >
-          <Icono nombre="excursion" size={20} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-small font-semibold text-text">{excursion.title}</span>
-          <span className="flex flex-wrap items-center gap-x-1.5 text-caption text-text-soft">
-            <span className="shrink-0">{excursion.durationLabel}</span>
-            {excursion.priceLabel && (
-              <>
-                <span>·</span>
-                <span className="shrink-0">desde {excursion.priceLabel}</span>
-              </>
-            )}
-            {excursion.rating !== undefined && (
-              <>
-                <span>·</span>
-                <span className="shrink-0">
-                  {excursion.ratingMax === 10 ? `${excursion.rating.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/10` : `★ ${excursion.rating.toFixed(1)}`}
-                  {excursion.reviewCount ? ` (${excursion.reviewCount.toLocaleString('es-ES')})` : ''}
-                </span>
-              </>
+    <div data-excursion-tarjeta={excursion.id} className="shrink-0">
+      <div
+        className="relative flex h-[88px] bg-white transition-[border-color,box-shadow]"
+        style={{ borderRadius: 18, border: `1px solid ${open ? color : 'rgba(28,34,48,.08)'}`, boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)' }}
+      >
+        <button type="button" onClick={onToggle} aria-expanded={open} className="flex min-w-0 flex-1 text-left">
+          <PlacePhotoPanel place={comoLugar} city={destination} color={color} icon="excursion" />
+          <span className="flex min-w-0 flex-1 flex-col justify-center gap-1" style={{ padding: '10px 0 10px 18px' }}>
+            <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
+              {excursion.title}
+            </span>
+            {datos.length > 0 && (
+              <span className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-text/60" style={{ font: "400 11.5px 'Geist'" }}>
+                {datos.map((dato, i) => (
+                  <span key={dato} className="flex items-center gap-1.5">
+                    {i > 0 && <span>·</span>}
+                    <span className="shrink-0">{dato}</span>
+                  </span>
+                ))}
+              </span>
             )}
           </span>
-        </span>
-      </button>
-      {onAdd && (
-        <button type="button" onClick={onAdd} className="shrink-0 rounded-full border border-accent px-2.5 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
-          + Añadir
         </button>
-      )}
+        {onAdd && (
+          <button type="button" onClick={onAdd} className="my-auto mr-2.5 shrink-0 rounded-full border border-accent px-2.5 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
+            + Añadir
+          </button>
+        )}
       </div>
 
       {open && (
-        <div className="space-y-2 px-2.5 pb-2.5">
+        <div className="space-y-2 px-2.5 pb-1 pt-2.5">
           {excursion.description && <p className="text-caption leading-relaxed text-text-soft">{excursion.description}</p>}
           {excursion.bookUrl && (
             <a
@@ -368,8 +371,10 @@ export function PlaceExplorerScreen({
   const { freeTourEntry } = useDestinationPool(destination, open)
   const places = useMemo(() => {
     // Elegir varios (Tanda 6y2, pregunta 9): solo salen los sitios que se pueden marcar (las atracciones). Fuera restaurantes, baños, fuentes y el Free Tour (que no se marca: es una reserva); en EXPLORAR normal siguen.
-    if (picking || cambiando) return allPlaces.filter((place) => place.kind === 'place')
-    const base = toiletsEnabled ? allPlaces : allPlaces.filter((place) => place.kind !== 'toilet')
+    // (Tanda 10O: lo que está marcado `fuera_de_lista` no sale en ninguna lista ni mapa de aquí; la ruta, la ficha y los textos lo siguen usando.)
+    const delCatalogo = allPlaces.filter((place) => !place.fuera_de_lista)
+    if (picking || cambiando) return delCatalogo.filter((place) => place.kind === 'place')
+    const base = toiletsEnabled ? delCatalogo : delCatalogo.filter((place) => place.kind !== 'toilet')
     return freeTourEntry ? [...base, freeTourEntry] : base
   }, [allPlaces, toiletsEnabled, freeTourEntry, picking, cambiando])
   const mainZone = (label: string | null | undefined) => String(label ?? '').split('/')[0].trim()
@@ -385,6 +390,8 @@ export function PlaceExplorerScreen({
   const [activeSubCategory, setActiveSubCategory] = useState<RestaurantSubCategory | null>(null)
   const [query, setQuery] = useState(initialQuery ?? '')
   const [tab, setTab] = useState<BottomTab>('recommended')
+  /** Tanda 10O: sin el pase, «Cerca de ti» no cambia de pestaña: abre esta hoja. */
+  const [hojaCerca, setHojaCerca] = useState(false)
   /** La cuenta única de «me gusta» (Tanda 6y10): los de partida de cada sitio más los de los viajeros, la misma que enseña la ficha. El orden de «Recomendados» usa la SUMA. */
   const cuentaMeGusta = useMeGustaStore((state) => state.cuentas[claveDeDestino(destination)])
   const likesTotales = useMemo(() => totalesDe(cuentaMeGusta), [cuentaMeGusta])
@@ -601,6 +608,8 @@ export function PlaceExplorerScreen({
       if (zoneDiff !== 0) return zoneDiff
       const likeDiff = (likesTotales.get(b.name) ?? 0) - (likesTotales.get(a.name) ?? 0)
       if (likeDiff !== 0) return likeDiff
+      // Tanda 10O: lo que casi nadie conoce, al final de entre los que no tienen «me gusta».
+      if (Boolean(a.al_final_de_lista) !== Boolean(b.al_final_de_lista)) return a.al_final_de_lista ? 1 : -1
       const levelDiff = (a.level ?? 9) - (b.level ?? 9)
       if (levelDiff !== 0) return levelDiff
       // Sin nivel curado (los restaurantes) manda el orden del JSON, que es editorial; el alfabético
@@ -1062,14 +1071,9 @@ export function PlaceExplorerScreen({
                 </button>
               )}
             </label>
-            {/* Tanda 10G: «Cerca de ti» es del pase; sin él sale cerrado, no escondido. */}
-            {!trimmedQuery && !cercaDeMi && (
-              <Candado datos="explorar-cerca-de-ti" texto="Con el pase, ordena los sitios por lo cerca que los tienes de ti">
-                <span style={{ font: "600 14px 'Geist'" }}>Cerca de ti</span>
-              </Candado>
-            )}
-            {!trimmedQuery && cercaDeMi && (
-              <div className="relative grid grid-cols-2" style={{ height: 42, borderRadius: 14, background: '#EDE4D3', padding: 4 }}>
+            {/* Tanda 10O: las dos pestañas, para todos. Sin el pase, «Cerca de ti» lleva el candado dorado pequeño y abre su hoja. */}
+            {!trimmedQuery && (
+              <div data-pestanas-explorar className="relative grid grid-cols-2" style={{ height: 42, borderRadius: 14, background: '#EDE4D3', padding: 4 }}>
                 <span
                   aria-hidden="true"
                   className="absolute"
@@ -1094,11 +1098,17 @@ export function PlaceExplorerScreen({
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setTab(item.id)}
-                    className="relative"
+                    onClick={() => (item.id === 'nearby' && !cercaDeMi ? setHojaCerca(true) : setTab(item.id))}
+                    data-pestana={item.id}
+                    className="relative flex items-center justify-center gap-1.5"
                     style={{ border: 'none', background: 'transparent', font: `${tab === item.id ? 600 : 500} 14px 'Geist'`, color: tab === item.id ? warm : 'rgba(28,34,48,.55)' }}
                   >
                     {item.label}
+                    {item.id === 'nearby' && !cercaDeMi && (
+                      <span aria-hidden="true" data-candado="explorar-cerca-de-ti" className="flex h-[18px] w-[18px] flex-none items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
+                        <Icono nombre="candado" size={10} grosor={2} />
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -1157,6 +1167,7 @@ export function PlaceExplorerScreen({
                   <ExcursionResultCard
                     key={excursion.id}
                     excursion={excursion}
+                    destination={destination}
                     open={selectedExcursion?.id === excursion.id}
                     onToggle={() => setSelectedExcursion((prev) => (prev?.id === excursion.id ? null : excursion))}
                     onAdd={onQuickAddExcursion && !pickMode ? () => onQuickAddExcursion(excursion) : undefined}
@@ -1473,6 +1484,23 @@ export function PlaceExplorerScreen({
               )}
             </button>
           </div>
+        )}
+        {hojaCerca && (
+          <Hoja onCerrar={() => setHojaCerca(false)} titulo="Cerca de ti" datos="explorar-cerca-de-ti" z={120}>
+            <span style={{ font: "400 14.5px/1.5 'Geist'", opacity: 0.8 }}>
+              <TextoConPase texto={`Encuentra los mejores sitios cerca de ti, sin perder tiempo. Disponible con el Pase de ${destination}.`} />
+            </span>
+            <BotonHoja
+              tipo="oscuro"
+              datos="ver-el-pase"
+              onClick={() => {
+                setHojaCerca(false)
+                abrirPase()
+              }}
+            >
+              Ver el Pase de {destination}
+            </BotonHoja>
+          </Hoja>
         )}
       </motion.div>
     </AnimatePresence>,

@@ -307,3 +307,237 @@ La regla de Eric (25-oct, tras ver `AVISOS_REVISION.html`): **la ruta, limpia; l
 **8. La batería, estable.** `bateriaParalela.mjs` ahora arranca SU PROPIO Vite recién nacido en otro puerto (APP_URL, que `abrirApp` respeta; `sinvite=1` usa el de siempre) y cierra todo al acabar: el Vite abierto muchas horas acumulaba módulos duplicados por el HMR (`route` null) y era la causa de los fallos de 10B/10G. Las pruebas que abren Chrome (las que usan `abrirApp`) corren de 2 en 2 (`navegador=2`) a la vez que las de Node (`conc`); `pruebaFase6y5_motor` (siempre agota su tiempo; Tanda 12) solo entra con `motor=1`. Importante: mientras la batería corre no debe haber otras cosas con Chrome (en la primera pasada, regenerar la página de avisos a la vez provocó fallos por carga).
 
 **9. Pruebas.** `pruebaTanda10M.mjs` junta `pruebaTanda10M_motor.mjs` (46: tarjetas —Navidad, Semana Santa, 21 de abril, Pascua+21 de abril, otra fecha—, un aviso por fecha con la frase, la excepción, cierres de la semana, último domingo, campos de la campana), `pruebaTanda10M_app.mjs` (70: las tres tarjetas, la ventana, DÍAS sin pastillas ni «el sol se pone», la campana) y la huella de 60 viajes. Pruebas viejas actualizadas a las reglas nuevas, sin debilitarlas: 10L, Cuentas3 (la lista de la campana), Jutrip (el punto de «sin leer» de la campana), Tanda7_respuestas, 6z6f.
+
+
+## 10O · EXPLORAR
+
+Prompt guardado en `docs/dias/PROMPT_TANDA10O.md`. Prueba: `scripts/destino/pruebaTanda10O.mjs` (datos y app, API, muestra de 60 viajes). Capturas en `docs/dias/capturas_jutrip/10o_*.jpg` y página `docs/dias/REPASO_10O.html` (a tamaño de móvil, con las listas).
+
+**No se ha tocado el motor de rutas.** Todo lo de la tanda vive en la lista de EXPLORAR (el servidor del catálogo `/api/destination-places` y la app). La muestra de 60 viajes sale exactamente igual que antes. Por eso no hace falta la de 365.
+
+### 1.1 Las dos pestañas
+- Fuera la tarjeta cerrada «Cerca de ti». Vuelve el interruptor de dos partes **[Recomendados] [Cerca de ti]** debajo de «Buscar en Roma…», para todos (con y sin pase, dueño e invitado: la pantalla no distingue) y en todas las listas (Lugares, Restaurantes, Entradas, Excursiones…).
+- Sin pase: candado dorado pequeño junto a «Cerca de ti»; al tocarla sale la hoja (tirador, ✕, título «Cerca de ti», el texto con «Pase de Roma» en oro con `Marca` y [Ver el Pase de Roma] → `abrirPase()`). No cambia de pestaña. Con pase, ordena por cercanía como antes.
+
+### 1.2 Listas de Lugares y Miradores
+- **Free Tour**: `default_free_tour.megusta_inicial = 978` en roma.json; el servidor lo manda como `likes_initial` y el almacén de «me gusta» lo cuenta como el de cualquier sitio.
+- **Fuera de la lista** (campo nuevo `fuera_de_lista: true` en `places`; el catálogo los sigue mandando y la app solo los quita de la lista, del mapa y de los contadores): Luces de Navidad del Tridente, Lungotevere, Mercadillo de Navidad de Piazza Navona, Terraza del Largo Gaetana Agnesi, Porta Pinciana, Mirador de San Pietro in Montorio, Fontana dell'Acqua Paola y Jardines del Pincio. Siguen en `places`: el motor y los textos de la ruta (Navidad, paseo hasta Trastevere, Janículo, Pincio) no cambian; lo demuestra la muestra de 60.
+- **Al final** (campo `al_final_de_lista: true`; en el orden va detrás de los «me gusta» y delante del nivel, así que si un viajero les da «me gusta» suben): Plaza del Quirinal, Quartiere Coppedè, Santo Bambino de Aracoeli, Via dei Coronari, Via del Babuino, Via di Ripetta, Via Margutta y Via Veneto.
+- **Suben**: Plaza Venecia 97, Puente Sant'Angelo 96, Via dei Fori Imperiali 95, Via della Conciliazione 94, Via Appia Antica 90, Teatro de Marcelo 86 y Via Condotti 83, en ese orden, sin empates. **Decisión a revisar:** entre la Cúpula (95) y Villa Borghese (81) solo hay 13 números y los nueve sitios que ya estaban ahí ocupaban 9, así que no cabían siete más. Para que quepan sin cambiar el orden de nadie he subido los cuatro de arriba: Cúpula de San Pedro 95→99, Trastevere 96→100, Castillo de Sant'Angelo 98→101 y Galería Borghese 99→102. Es más de «uno o dos», dime si prefieres otra cosa. En la lista sin filtros los siete quedan entre los puestos 18 y 31 (Villa Borghese pasa del 25 al 33 porque entran siete sitios más y la Terraza).
+- **Terraza del Altar de la Patria**: sitio nuevo en Miradores, **sin pasar por `places`** (array nuevo `lugares_solo_lista` en roma.json que solo lee el servidor del catálogo): el motor no la ve y la ruta no cambia. 98 «me gusta» (justo detrás de la Cúpula), horario 09:30–19:30, última subida 19:00, de pago, su texto y su foto (la de las vistas desde arriba que ya estaba en `public/fotos/roma/dia_terraza_altar_patria.jpg`). **Pendiente:** esa foto no lleva crédito y no he podido confirmar su autor ni su licencia (no es un fichero que pueda localizar en Commons con seguridad: las dos candidatas son «Victor Emanuel II Rome 2011 7/8.jpg»). Hay que mirar de dónde salió o cambiarla.
+- La ficha de la Terraza, como la de cualquier sitio sin ficha ampliada, pide su texto a la IA (con caché) al abrirse.
+- Listas completas, con su puesto, al final de este apartado.
+
+### 1.3 Entradas, Excursiones y Hoteles
+- **Castillo de Sant'Angelo por fuera**: `dia_castillo_sant_angelo_fuera.jpg` (+ `_p` y miniatura), Wikimedia Commons, autor Jean-Pol GRANDMONT, CC BY-SA 3.0 (pide crédito, ya apuntado en `_fotos.json`), «0 Pont et château Sant'Angelo - Rome (1).JPG» (30-9-2011), con el puente y el Tíber. La de dentro se queda en el repositorio, sin uso. Ojo: el nombre de la foto es el del Castillo, así que sale por fuera en TODAS las fichas y tarjetas (también en el día «Roma desde arriba»).
+- **Por qué Excursiones salía fea** (no era la consulta ni la caché): (1) la tarjeta no pintaba foto (solo un cuadrito con icono) aunque el catálogo trae el nombre con el que buscarla; (2) `mapExcursionsByDay` oculta la nota y las opiniones cuando el precio es provisional (5 de las 7 lo son: es lo correcto, no se enseñan notas inventadas); (3) con la API apagada solo 2 de las 7 se enriquecen. Ahora la tarjeta es la de las demás listas (foto, nombre en la letra de los títulos, duración y «desde X €»); un dato que no llega se omite, sin huecos ni «undefined» y sin el nombre del proveedor.
+- **La API solo para admin**: `CIVITATIS_API_ACTIVA=admin` (`true` = para todos, vacío o `false` = nadie). El servidor mira el token de sesión de Supabase, saca el email y lo compara con `LOGROS_ADMIN_EMAILS` (excluye sesiones anónimas); sin sesión, sin clave de servicio o ante cualquier fallo, apagada. **Lo que tiene que poner Eric en Vercel** (sin claves en este documento): `CIVITATIS_API_ACTIVA=admin`, `CIVITATIS_API_ENV=sandbox`, `VITE_CIVITATIS_ACTIVA=true` (solo hace que la app pregunte; decide el servidor; pide un nuevo build) y volver a desplegar. Tienen que seguir puestas `CIVITATIS_API_USER`, `CIVITATIS_API_PASSWORD`, `LOGROS_ADMIN_EMAILS` y `SUPABASE_SERVICE_ROLE_KEY`. El cliente manda ahora `Authorization` a `/api/destination-excursions` y `/api/civitatis/*`. Limitación: la app guarda la respuesta por destino durante la sesión; si Eric entra en su cuenta después de abrir la app, hay que recargar.
+- **Caché**: catálogo, actividad, traslados, cerca y resolver a 14400 s (4 h); calendario, 3600 s. Tope duro de 4 h también en el código (`cache.js`, con la fecha del 19-oct). Si la API falla se sirve lo caducado marcado como viejo, también de más de 4 h: dime si el proveedor lo cuenta como «guardar» y lo quito.
+- **Descripciones y valoraciones tal como vienen**: la API no aporta descripciones (las de las excursiones salen de roma.json, intactas). La nota se redondeaba a un decimal en el servidor y ya no; en pantalla la tarjeta sigue enseñando un decimal (formato del cliente), dime si el proveedor quiere ver todos.
+- **Las cinco excursiones sin resolver**: `POST /search` devuelve 400 con las cinco formas de cuerpo que probé (hay que preguntar al proveedor el cuerpo correcto). Por las actividades de los destinos cercanos, ninguna sale «desde Roma». Candidatas con salida desde otras ciudades: Pompeya y Sorrento → 115374 y 158234 (Nápoles); Costa Amalfitana → 30945 (Nápoles), 11020 (Positano), 172603 (Pompeya); Nápoles y Pompeya en tren → 158222 (en Florencia) y 158244 (Nápoles), sin confirmar; Florencia en tren y Tívoli → sin coincidencias. Script listo: `scripts/destino/civitatisBuscarCinco.mjs`.
+- **Hoteles** vuelve como tarjeta (foto del Hotel Eden de Roma, de Wikipedia, como Baños y Fuentes), antes de Baños y Fuentes, para todos; abre `useAlojamientoUi.getState().abrirMapa()`.
+
+### 1.4 Añadir un sitio sin pedir la hora
+- Dónde lo ponía antes: en EXPLORAR, la hoja pedía día y hora (8:45 era la hora de la primera parada del día: la sugerida salía de ahí) y lo metía por hora (`withStopAt`). En DÍAS el «+» ya era posicional (entra en el hueco que se toca) y no pedía hora; no se ha tocado.
+- Ahora: se elige solo el día (los minutos se quedan) y `mejorHuecoEnElDia` (`src/lib/mejorHueco.ts`) lo coloca entre las paradas donde **menos hay que andar de más** (línea recta: ir de la anterior al sitio y del sitio a la siguiente, menos ir de una a otra) y **con el sitio abierto** (el mismo cálculo de horarios de siempre: `placeHoursOnDate`, la apertura y el cierre). Nunca el primero si el día ya tiene paradas; nunca después de las nocturnas. La hora la calcula el almacén desde la parada de delante (`insertStopAt`); las de detrás no se mueven (decisión del 28-sep). En un día libre, al final, como antes.
+- Si ese día cierra (o no hay hueco en que esté abierto): «El lunes 19 la Galería Borghese cierra. ¿Lo ponemos el sábado 17?» con [Ponerlo el sábado 17] y [Dejarlo el lunes 19 igual]. El día propuesto es el primero de los siguientes (luego los anteriores) en que abre y no tiene excursión de día entero ni lo tiene ya. Sin otro día posible, solo el aviso «El lunes 19 la Galería Borghese cierra.» y el botón de siempre. El artículo del sitio sale de la tabla de artículos de Roma.
+- **No hace falta tocar el motor**: todo es del lado de la app (`insertStopAt` ya existía).
+- La ruedita de una entrada (RESERVAS) parte de la hora a la que la ruta llega a ese sitio ese día (si ya está), si no de las 9:00, y se queda en la hora más cercana de las del sitio (si abre más tarde, la de apertura). Los minutos se quedan.
+- Invitado: la hoja pasa por `alAnadir` de siempre (modo recomendación sobre una copia); no cambia el viaje del dueño.
+
+### 1.5 Los días
+- Hoja de añadir, «Mover a» y las hojas de excursión: «Sáb 17 Oct · Vaticano y Trastevere» (`diaConFecha` en `nombreDeDia.ts`; sin fechas, «Día 3 · …»). En «Mover a» la fecha va en negrita y el nombre del día detrás.
+
+### Dudas para Eric
+1. ¿Vale subir los cuatro de arriba (Cúpula, Trastevere, Castillo, Galería) para que quepan los siete?
+2. ¿De dónde sale la foto de la Terraza (autor y licencia)? Sin eso va sin crédito.
+3. ¿Quieres que «Dejarlo igual» y el «+» de EXPLORAR pregunten también los minutos o los quito (hoy se quedan)?
+4. ¿La caché caducada de la API (servida si falla) cuenta como «guardar» para el proveedor?
+
+### Listas completas (puesto, «me gusta» de partida, sitio)
+
+```
+Free Tour: Free Tour por Roma → 978
+
+LUGARES (81)
+  1   412  Coliseo
+  2   391  Fontana de Trevi
+  3   368  Museos Vaticanos y Capilla Sixtina
+  4   347  Basílica de San Pedro
+  5   326  Panteón
+  6   305  Plaza de España
+  7   199  Piazza Navona
+  8   184  Foro Romano y Palatino
+  9   169  Plaza de San Pedro
+ 10   154  Altar de la Patria
+ 11   139  Arco de Constantino
+ 12   102  Galería Borghese
+ 13   101  Castillo de Sant'Angelo
+ 14   100  Trastevere
+ 15    97  Plaza Venecia
+ 16    96  Puente Sant'Angelo
+ 17    95  Via dei Fori Imperiali
+ 18    94  Via della Conciliazione
+ 19    93  Museos Capitolinos
+ 20    92  Plaza del Campidoglio
+ 21    91  Boca de la Verdad
+ 22    90  Via Appia Antica
+ 23    89  Basílica de San Juan de Letrán
+ 24    88  Basílica de Santa María la Mayor
+ 25    87  Termas de Caracalla
+ 26    86  Teatro de Marcelo
+ 27    85  Circo Máximo
+ 28    84  Campo de' Fiori
+ 29    83  Via Condotti
+ 30    82  Isla Tiberina
+ 31    81  Parque de Villa Borghese
+ 32    77  Barrio Judío
+ 33    76  Cripta de los Capuchinos
+ 34    74  Basílica de San Clemente
+ 35    73  Domus Aurea
+ 36    71  Piazza del Popolo
+ 37    70  Trinità dei Monti
+ 38    69  Iglesia de San Pietro in Vincoli
+ 39    67  Ara Pacis
+ 40    66  Iglesia de Santa Maria in Trastevere
+ 41    65  Santa Maria del Popolo
+ 42    63  Iglesia de San Luigi dei Francesi
+ 43    62  Iglesia del Gesù
+ 44    60  Mercados de Trajano
+ 45    59  Monti
+ 46    58  Testaccio
+ 47    56  Largo di Torre Argentina
+ 48    55  Villa Farnesina
+ 49    52  San Pietro in Montorio y Tempietto de Bramante
+ 50     0  100 Presepi in Vaticano
+ 51     0  Basílica de Santa Cecilia in Trastevere
+ 52     0  Bioparque de Roma
+ 53     0  Borgo Pio
+ 54     0  Catacumbas de San Calixto
+ 55     0  Cementerio Protestante
+ 56     0  Colle Oppio
+ 57     0  Columna de Trajano
+ 58     0  Elefantino de Bernini
+ 59     0  Fuente de las Tortugas
+ 60     0  Fuente del Tritón
+ 61     0  Galería Nacional de Arte Moderno
+ 62     0  Iglesia de San Ignacio de Loyola
+ 63     0  Iglesia de Santa Maria della Vittoria
+ 64     0  Iglesia de Santa Maria sopra Minerva
+ 65     0  Mercado de Testaccio
+ 66     0  Palazzo Doria Pamphilj
+ 67     0  Piazza Colonna
+ 68     0  Pirámide Cestia
+ 69     0  Plaza Farnese
+ 70     0  Plaza Trilussa
+ 71     0  Ponte Sisto
+ 72     0  Templo de Adriano
+ 73     0  Via del Corso
+ 74     0  Plaza del Quirinal  (al final)
+ 75     0  Quartiere Coppedè  (al final)
+ 76     0  Santo Bambino de Aracoeli  (al final)
+ 77     0  Via dei Coronari  (al final)
+ 78     0  Via del Babuino  (al final)
+ 79     0  Via di Ripetta  (al final)
+ 80     0  Via Margutta  (al final)
+ 81     0  Via Veneto  (al final)
+
+MIRADORES (6)
+  1    99  Cúpula de San Pedro
+  2    98  Terraza del Altar de la Patria
+  3    80  Mirador del Janículo
+  4    78  Terraza del Pincio
+  5    53  Jardín de los Naranjos
+  6     0  Ojo de la Cerradura del Aventino
+
+TODO (87): sin filtros, lugares y miradores juntos
+  1   412  Coliseo
+  2   391  Fontana de Trevi
+  3   368  Museos Vaticanos y Capilla Sixtina
+  4   347  Basílica de San Pedro
+  5   326  Panteón
+  6   305  Plaza de España
+  7   199  Piazza Navona
+  8   184  Foro Romano y Palatino
+  9   169  Plaza de San Pedro
+ 10   154  Altar de la Patria
+ 11   139  Arco de Constantino
+ 12   102  Galería Borghese
+ 13   101  Castillo de Sant'Angelo
+ 14   100  Trastevere
+ 15    99  Cúpula de San Pedro
+ 16    98  Terraza del Altar de la Patria
+ 17    97  Plaza Venecia
+ 18    96  Puente Sant'Angelo
+ 19    95  Via dei Fori Imperiali
+ 20    94  Via della Conciliazione
+ 21    93  Museos Capitolinos
+ 22    92  Plaza del Campidoglio
+ 23    91  Boca de la Verdad
+ 24    90  Via Appia Antica
+ 25    89  Basílica de San Juan de Letrán
+ 26    88  Basílica de Santa María la Mayor
+ 27    87  Termas de Caracalla
+ 28    86  Teatro de Marcelo
+ 29    85  Circo Máximo
+ 30    84  Campo de' Fiori
+ 31    83  Via Condotti
+ 32    82  Isla Tiberina
+ 33    81  Parque de Villa Borghese
+ 34    80  Mirador del Janículo
+ 35    78  Terraza del Pincio
+ 36    77  Barrio Judío
+ 37    76  Cripta de los Capuchinos
+ 38    74  Basílica de San Clemente
+ 39    73  Domus Aurea
+ 40    71  Piazza del Popolo
+ 41    70  Trinità dei Monti
+ 42    69  Iglesia de San Pietro in Vincoli
+ 43    67  Ara Pacis
+ 44    66  Iglesia de Santa Maria in Trastevere
+ 45    65  Santa Maria del Popolo
+ 46    63  Iglesia de San Luigi dei Francesi
+ 47    62  Iglesia del Gesù
+ 48    60  Mercados de Trajano
+ 49    59  Monti
+ 50    58  Testaccio
+ 51    56  Largo di Torre Argentina
+ 52    55  Villa Farnesina
+ 53    53  Jardín de los Naranjos
+ 54    52  San Pietro in Montorio y Tempietto de Bramante
+ 55     0  100 Presepi in Vaticano
+ 56     0  Basílica de Santa Cecilia in Trastevere
+ 57     0  Bioparque de Roma
+ 58     0  Borgo Pio
+ 59     0  Catacumbas de San Calixto
+ 60     0  Cementerio Protestante
+ 61     0  Colle Oppio
+ 62     0  Columna de Trajano
+ 63     0  Elefantino de Bernini
+ 64     0  Fuente de las Tortugas
+ 65     0  Fuente del Tritón
+ 66     0  Galería Nacional de Arte Moderno
+ 67     0  Iglesia de San Ignacio de Loyola
+ 68     0  Iglesia de Santa Maria della Vittoria
+ 69     0  Iglesia de Santa Maria sopra Minerva
+ 70     0  Mercado de Testaccio
+ 71     0  Ojo de la Cerradura del Aventino
+ 72     0  Palazzo Doria Pamphilj
+ 73     0  Piazza Colonna
+ 74     0  Pirámide Cestia
+ 75     0  Plaza Farnese
+ 76     0  Plaza Trilussa
+ 77     0  Ponte Sisto
+ 78     0  Templo de Adriano
+ 79     0  Via del Corso
+ 80     0  Plaza del Quirinal  (al final)
+ 81     0  Quartiere Coppedè  (al final)
+ 82     0  Santo Bambino de Aracoeli  (al final)
+ 83     0  Via dei Coronari  (al final)
+ 84     0  Via del Babuino  (al final)
+ 85     0  Via di Ripetta  (al final)
+ 86     0  Via Margutta  (al final)
+ 87     0  Via Veneto  (al final)
+
+FUERA DE LA LISTA (8): Lungotevere; Fontana dell'Acqua Paola; Terraza de Largo Gaetana Agnesi; Mirador de San Pietro in Montorio; Porta Pinciana; Jardines del Pincio; Mercadillo de Navidad de Piazza Navona; Luces de Navidad del Tridente
+```

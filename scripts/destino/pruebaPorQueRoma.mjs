@@ -71,7 +71,8 @@ if (url) {
     const r = await fetch(`${url}/api/destination-places`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination: 'Roma' }) })
     const cuerpo = await r.json()
     const lugares = (cuerpo.places ?? []).filter((p) => p.kind === 'place')
-    debe(lugares.length === 94 && lugares.every((p) => typeof p.por_que_recomendamos === 'string' && p.por_que_recomendamos.length > 20), 'servidor', `el servidor da los 94 textos: ${lugares.filter((p) => p.por_que_recomendamos).length}/${lugares.length}`)
+    // (Tanda 10O: 94 de `places` más la Terraza del Altar de la Patria, que solo sale en la lista de EXPLORAR: `lugares_solo_lista`.)
+    debe(lugares.length === 95 && lugares.every((p) => typeof p.por_que_recomendamos === 'string' && p.por_que_recomendamos.length > 20), 'servidor', `el servidor da los 95 textos (94 sitios + la Terraza): ${lugares.filter((p) => p.por_que_recomendamos).length}/${lugares.length}`)
     debe(lugares.find((p) => p.name === 'Coliseo')?.por_que_recomendamos === doc.get('Coliseo'), 'servidor', 'el del Coliseo llega tal cual')
   } catch (e) {
     debe(false, 'servidor', `no responde: ${e.message}`)

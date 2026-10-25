@@ -1,12 +1,12 @@
 {
-  "_que_es": "Los ajustes de la API de consulta (parte 1, sandbox). Todo se cambia aquí, sin tocar código. Los tiempos de guardado (ttl_segundos) son provisionales: estamos esperando a que nos diga cuánto podemos guardar lo que da la API (pregunta 3 de docs/dias/API_CIVITATIS.md). Mientras tanto, cortos.",
+  "_que_es": "Los ajustes de la API de consulta (parte 1, sandbox). Todo se cambia aquí, sin tocar código. Los tiempos de guardado (ttl_segundos) NO pueden pasar de 14400 s (4 horas): lo pidió el proveedor el 19-oct-2026; el código recorta cualquier valor mayor (server/civitatis/cache.js). El calendario (precios y plazas) se queda en 1 hora.",
   "ttl_segundos": {
-    "catalogo": 86400,
-    "actividad": 86400,
+    "catalogo": 14400,
+    "actividad": 14400,
     "calendario": 3600,
-    "traslados": 86400,
-    "resolver": 604800,
-    "cerca": 86400
+    "traslados": 14400,
+    "resolver": 14400,
+    "cerca": 14400
   },
   "peticiones_por_segundo": 8,
   "plazas": {

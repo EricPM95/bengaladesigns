@@ -3,15 +3,12 @@ import { createPortal } from 'react-dom'
 import type { DayPlan, Excursion, Route, Stop } from '../../../lib/types'
 import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
-import { addDaysToIso } from '../../../lib/dateRange'
-import { minutesToTime, parseTimeToMinutes } from '../../../lib/time'
-import { closedWeekdaysFromSchedule, formatDaySessions, nextOpenMinutes, parseClosingMinutes } from '../../../lib/stopHoursTag'
-import { hasFullDayExcursion, isEmptyDay, isFreeDay, suggestedTimeFor } from '../../../lib/freeDays'
-import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
+import { hasFullDayExcursion, isEmptyDay, isFreeDay } from '../../../lib/freeDays'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { alDia, elDia, tieneFechas, tuDia } from '../../../lib/nombreDeDia'
+import { alDia, diaConFecha, ElDia, elDia, fechaDelDia, tieneFechas, tuDia } from '../../../lib/nombreDeDia'
 import { tituloSimpleDelDia } from '../../../lib/tituloDelDia'
-import { TimeField } from '../../ui/TimeField'
+import { elSitio } from '../../../lib/articulos'
+import { mejorHuecoEnElDia, otroDiaAbierto } from '../../../lib/mejorHueco'
 import { placeholderPhoto, stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
 import { Icono } from '../../ui/Icono'
 import { ExcursionSinHueco } from '../excursions/ExcursionSinHueco'
@@ -34,22 +31,12 @@ interface AddToDaySheetProps {
   onAdded: (result: AddedResult) => void
 }
 
-const WEEKDAY = new Intl.DateTimeFormat('es-ES', { weekday: 'short' })
-const MONTH = new Intl.DateTimeFormat('es-ES', { month: 'short' })
-
-/** "sáb 17 oct" */
-function shortDate(dateIso: string): string {
-  const date = new Date(`${dateIso}T00:00:00`)
-  return `${WEEKDAY.format(date).replace('.', '')} ${date.getDate()} ${MONTH.format(date).replace('.', '')}`
-}
-
 /** El nombre del día (tanda 6y7: el mismo que en DÍAS y HOY, ver src/lib/tituloDelDia.ts). */
 export const dayName = (route: Route, day: DayPlan): string => tituloSimpleDelDia(route, day)
 
-/** "sáb 17 oct · Compras"; sin fechas, "Día 3 · Compras" (con fechas el día se llama por su fecha: tanda 6z3, punto 5). */
+/** «Jue 26 Nov · Roma antigua y Centro histórico»; sin fechas, «Día 3 · Compras» (Tanda 10O: el día de la semana y el mes con mayúscula; con fechas el día se llama por su fecha: tanda 6z3, punto 5). */
 export function dayOptionLabel(route: Route, day: DayPlan): string {
-  const start = route.answers.dateRange?.start
-  return [start ? shortDate(addDaysToIso(start, day.dayNumber - 1)) : `Día ${day.dayNumber}`, dayName(route, day)].filter(Boolean).join(' · ')
+  return [diaConFecha(route, day.dayNumber), dayName(route, day)].filter(Boolean).join(' · ')
 }
 
 /** Por qué no se puede elegir ese día (null = se puede). */
@@ -61,11 +48,12 @@ function blockedReason(route: Route, item: AddItem, day: DayPlan): string | null
 }
 
 /**
- * La ventana de "+ Añadir" (decisión del usuario, 2026-09-28): a qué día, con la hora y los minutos ya sugeridos, y
- * solo los avisos que pasan (cerrado a esa hora, se pisa con otra parada, reserva). Se puede añadir igual.
+ * La ventana de "+ Añadir" (decisión del usuario, 2026-09-28): a qué día y cuántos minutos. Desde la Tanda 10O ya no pide la hora: la app lo coloca ese día donde mejor encaje (donde menos
+ * hay que andar de más, y con el sitio abierto: `mejorHuecoEnElDia`). Si ese día cierra, lo dice en la misma hoja y propone el siguiente en que abre. Nunca se niega nada.
  */
 export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: AddToDaySheetProps) {
   const addPlaceToDay = useRouteStore((state) => state.addPlaceToDay)
+  const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const setMealRestaurant = useRouteStore((state) => state.setMealRestaurant)
   const addExcursionToDay = useRouteStore((state) => state.addExcursionToDay)
 
@@ -92,43 +80,15 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
   }, [place, route.destination])
 
   const draft: Stop | null = useMemo(() => (place && !isRestaurant ? stopFromPlace(place, photo ?? placeholderPhoto(place.name)) : null), [place, isRestaurant, photo])
-  const suggested = day && draft ? suggestedTimeFor(day, draft) : '09:30'
-  const [time, setTime] = useState(suggested)
   const [minutes, setMinutes] = useState(draft?.durationMinutes ?? 60)
-  // Día libre (decisión del usuario, 2026-09-28): solo paradas, sin hora; la pone el viajero después si quiere.
-  const freeDay = Boolean(day && isFreeDay(day))
-  // Al cambiar de día, la hora sugerida es la de ese día.
-  useEffect(() => {
-    setTime(suggested)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dayId])
 
-  const dateIso = day && route.answers.dateRange ? addDaysToIso(route.answers.dateRange.start, day.dayNumber - 1) : null
+  // Dónde lo pone la app ese día y si ese día cierra (Tanda 10O).
+  const dateIso = day ? fechaDelDia(route, day.dayNumber) : null
+  const colocacion = useMemo(() => (day && draft && place && !isRestaurant ? mejorHuecoEnElDia(day, draft, place, dateIso, Math.max(5, minutes)) : null), [day, draft, place, isRestaurant, dateIso, minutes])
+  const otroDia = useMemo(() => (colocacion?.cierra && day && draft && place ? otroDiaAbierto(route, day, draft, place, Math.max(5, minutes)) : null), [colocacion, day, draft, place, route, minutes])
   const warnings: string[] = []
-  // En un día libre, solo el dato del sitio: si ese día cierra.
-  if (freeDay && place && dateIso && placeHoursOnDate(place.hours_data, dateIso)?.closed) warnings.push('Ese día está cerrado.')
-  if (!freeDay && draft && place && day) {
-    const start = parseTimeToMinutes(time)
-    // Con fechas, el horario de ese día y de esa época (el mismo cálculo que el motor); sin fechas, el general.
-    const onDate = dateIso ? placeHoursOnDate(place.hours_data, dateIso) : null
-    const schedule = onDate ? onDate.schedule : place.schedule
-    const sessions = formatDaySessions(schedule)
-    const closedToday = onDate ? onDate.closed : dateIso ? closedWeekdaysFromSchedule(schedule).includes(new Date(`${dateIso}T00:00:00`).getDay()) : false
-    const closing = parseClosingMinutes(schedule)
-    if (closedToday) warnings.push('Ese día está cerrado.')
-    else if (!Number.isNaN(start) && sessions && (nextOpenMinutes(schedule, start) !== start || (closing !== null && start + minutes > closing))) {
-      warnings.push(`A esa hora está cerrado: abre de ${sessions.replace(/–/g, ' a ').replace(/\b0(\d):/g, '$1:')}.`)
-    }
-    const end = start + minutes
-    const clash = day.stops.find((stop) => {
-      const other = parseTimeToMinutes(stop.time)
-      return !stop.isNightExperience && !Number.isNaN(other) && start < other + stop.durationMinutes && other < end
-    })
-    if (clash) {
-      const from = parseTimeToMinutes(clash.time)
-      warnings.push(`Se pisa con ${clash.name} (${clash.time}–${minutesToTime(from + clash.durationMinutes)}).`)
-    }
-  }
+  // Cierra ese día y no hay otro día mejor: se dice y se puede añadir igual.
+  if (colocacion?.cierra && !otroDia && place && day) warnings.push(`${ElDia(route, day.dayNumber)} ${elSitio(place.name)} cierra.`)
   const bookingNote = place && !isRestaurant ? (place.booking_note ?? (place.reservation ? 'Se entra con reserva.' : null)) : null
 
   const name = item.kind === 'excursion' ? item.excursion.title : item.place.name
@@ -146,9 +106,16 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
       return
     }
     if (!draft) return
-    const stop = { ...draft, durationMinutes: Math.max(5, minutes) }
-    addPlaceToDay(day.id, stop, freeDay ? null : time)
-    onAdded({ dayId: day.id, stopId: stop.id })
+    anadirAlDia(day)
+  }
+
+  /** Lo añade a ese día en su mejor hueco: entre las paradas, donde menos hay que andar de más y con el sitio abierto (Tanda 10O). */
+  const anadirAlDia = (destino: DayPlan) => {
+    if (!draft || !place) return
+    const stop = { ...draft, durationMinutes: Math.max(5, minutes), addedByUser: true }
+    if (isFreeDay(destino)) addPlaceToDay(destino.id, stop, null)
+    else insertStopAt(destino.id, mejorHuecoEnElDia(destino, stop, place, fechaDelDia(route, destino.dayNumber), stop.durationMinutes).hueco.indice, stop)
+    onAdded({ dayId: destino.id, stopId: stop.id })
   }
 
   return createPortal(
@@ -203,17 +170,25 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
 
           {draft && day && (
             <div className="mt-5 space-y-4">
-              {!freeDay && (
-                <div className="block">
-                  <span className="block text-[14px] font-semibold text-text">Hora</span>
-                  <TimeField value={time} onChange={setTime} title="Hora de la parada" className="mt-1.5 flex h-12 w-full items-center justify-between rounded-xl border border-text/15 bg-bg px-3.5 text-left text-[15px] text-text" />
-                </div>
-              )}
               <label className="block">
                 <span className="block text-[14px] font-semibold text-text">Minutos</span>
                 <span className="mt-0.5 block text-[12.5px] text-text-muted">¿Cuánto tiempo quieres visitarlo?</span>
                 <input type="number" inputMode="numeric" min={5} step={5} value={minutes} onChange={(event) => setMinutes(Number(event.target.value) || 0)} className="mt-1.5 h-12 w-full rounded-xl border border-text/15 bg-bg px-3.5 text-[15px] text-text" />
               </label>
+            </div>
+          )}
+
+          {colocacion?.cierra && otroDia && place && day && (
+            <div data-aviso-cierra="1" className="mt-3 space-y-2 rounded-2xl border border-text/[.12] bg-bg p-3.5">
+              <p className="text-[13.5px] leading-snug text-text">
+                {ElDia(route, day.dayNumber)} {elSitio(place.name)} cierra. ¿Lo ponemos {elDia(route, otroDia.day.dayNumber)}?
+              </p>
+              <button type="button" data-poner-otro-dia="1" onClick={() => anadirAlDia(otroDia.day)} className="h-11 w-full rounded-full btn-champan text-[14px] font-medium transition-transform active:scale-[.98]">
+                Ponerlo {elDia(route, otroDia.day.dayNumber)}
+              </button>
+              <button type="button" data-dejarlo-igual="1" onClick={confirm} className="h-11 w-full rounded-full border border-text/15 text-[14px] font-medium text-text transition-colors hover:bg-bg-hover">
+                Dejarlo {elDia(route, day.dayNumber)} igual
+              </button>
             </div>
           )}
 
@@ -230,14 +205,16 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
         </div>
 
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
-          <button
-            type="button"
-            disabled={!day}
-            onClick={confirm}
-            className="h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98] disabled:opacity-40"
-          >
-            {day ? `Añadir ${alDia(route, day.dayNumber)}` : 'Ningún día libre para esto'}
-          </button>
+          {!(colocacion?.cierra && otroDia) && (
+            <button
+              type="button"
+              disabled={!day}
+              onClick={confirm}
+              className="h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98] disabled:opacity-40"
+            >
+              {day ? `Añadir ${alDia(route, day.dayNumber)}` : 'Ningún día libre para esto'}
+            </button>
+          )}
           {/* Una excursión que no cabe en ningún día (Tanda 6y10): debajo, las dos salidas, cada una con su «Deshacer». */}
           {item.kind === 'excursion' && !firstFree && <ExcursionSinHueco route={route} excursion={item.excursion} onClose={onClose} />}
         </div>

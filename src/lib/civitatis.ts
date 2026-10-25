@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { supabase } from './supabaseClient'
 
 /**
  * LA API DE CONSULTA EN LA APP (parte 1, sandbox). Todo detrás de un interruptor, apagado en producción: con él apagado la app es la de hoy (nuestros datos y nuestros enlaces).
@@ -7,6 +8,21 @@ import { useEffect, useState } from 'react'
  */
 
 const CLAVE_INTERRUPTOR = 'trazo:civitatis'
+
+/**
+ * Las cabeceras para hablar con NUESTRO servidor sobre la API de consulta. Con la API encendida solo para el administrador (`CIVITATIS_API_ACTIVA=admin`), el servidor decide por el email de la sesión
+ * (`Authorization: Bearer …`); sin sesión, o si algo falla, solo el tipo de contenido (el servidor contesta «apagada» y la app hace lo de hoy). Nunca lanza.
+ */
+export async function cabecerasConSesion(): Promise<Record<string, string>> {
+  const base: Record<string, string> = { 'Content-Type': 'application/json' }
+  try {
+    const token = (await supabase?.auth.getSession())?.data.session?.access_token
+    if (token) base.Authorization = `Bearer ${token}`
+  } catch {
+    /* sin sesión: el servidor decide */
+  }
+  return base
+}
 
 /** Pura: ¿está encendida la API en la app? Apagada salvo `VITE_CIVITATIS_ACTIVA=true`; en desarrollo también vale `?civitatis=on` (y `?civitatis=off`). */
 export function calcularCivitatisActiva(datos: { entorno?: string | undefined; desarrollo: boolean; parametro?: string | null; guardado?: string | null }): boolean {
@@ -88,7 +104,8 @@ export function useHorasLibres(lugar: string | null, fecha: string | null, desti
     if (!activo || !lugar || !fecha || !clave) return undefined
     let cancelado = false
     const consulta = new URLSearchParams({ lugar, fecha, destino, fresco: '1' })
-    fetch(`/api/civitatis/horas?${consulta.toString()}`)
+    cabecerasConSesion()
+      .then((headers) => fetch(`/api/civitatis/horas?${consulta.toString()}`, { headers }))
       .then((r) => (r.ok ? r.json() : null))
       .then((cuerpo: { ok?: boolean; datos?: HorasDelDia } | null) => {
         if (cancelado) return
@@ -112,7 +129,8 @@ export function useHorasDelFreeTour(desde: string | null, hasta: string | null, 
   useEffect(() => {
     if (!activo || !desde || !hasta || !clave) return undefined
     let cancelado = false
-    fetch(`/api/civitatis/free-tour?${new URLSearchParams({ desde, hasta, destino, fresco: '1' }).toString()}`)
+    cabecerasConSesion()
+      .then((headers) => fetch(`/api/civitatis/free-tour?${new URLSearchParams({ desde, hasta, destino, fresco: '1' }).toString()}`, { headers }))
       .then((r) => (r.ok ? r.json() : null))
       .then((cuerpo: { ok?: boolean; datos?: { dias?: Record<string, HoraLibre[]> } } | null) => {
         if (!cancelado) setResultado({ clave, dias: cuerpo?.ok && cuerpo.datos?.dias ? cuerpo.datos.dias : null })
@@ -146,7 +164,8 @@ export function useActividadesCerca(lat: number | null | undefined, lng: number 
   useEffect(() => {
     if (!encendido) return undefined
     let cancelado = false
-    fetch('/api/civitatis/cerca', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lat, lng }) })
+    cabecerasConSesion()
+      .then((headers) => fetch('/api/civitatis/cerca', { method: 'POST', headers, body: JSON.stringify({ lat, lng }) }))
       .then((r) => (r.ok ? r.json() : null))
       .then((cuerpo: { ok?: boolean; datos?: ActividadCerca[] } | null) => {
         if (!cancelado) setResultado({ clave, lista: cuerpo?.ok && Array.isArray(cuerpo.datos) ? cuerpo.datos : [] })
@@ -234,7 +253,8 @@ export function useHorasEnRango(lugar: string | null, desde: string | null, hast
   useEffect(() => {
     if (!activo || !lugar || !desde || !hasta || !clave) return undefined
     let cancelado = false
-    fetch(`/api/civitatis/horas-rango?${new URLSearchParams({ lugar, desde, hasta, destino, fresco: '1' }).toString()}`)
+    cabecerasConSesion()
+      .then((headers) => fetch(`/api/civitatis/horas-rango?${new URLSearchParams({ lugar, desde, hasta, destino, fresco: '1' }).toString()}`, { headers }))
       .then((r) => (r.ok ? r.json() : null))
       .then((cuerpo: { ok?: boolean; datos?: HorasEnRango } | null) => {
         if (!cancelado) setResultado({ clave, datos: cuerpo?.ok && cuerpo.datos?.dias ? cuerpo.datos : null })

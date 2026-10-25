@@ -1266,6 +1266,23 @@
         "licencia": "Licencia de Unsplash",
         "enlace": "https://unsplash.com/photos/a-tall-tower-with-a-clock-on-the-top-of-it-RBYZloqbUl4?utm_source=viajes_bengala&utm_medium=referral"
       }
+    },
+    {
+      "archivo": "dia_castillo_sant_angelo_fuera.jpg",
+      "lugares": [
+        "Castillo de Sant'Angelo"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
+      "autor": "Jean-Pol GRANDMONT",
+      "enlace": "https://commons.wikimedia.org/wiki/File:0_Pont_et_ch%C3%A2teau_Sant%27Angelo_-_Rome_(1).JPG",
+      "nota": "Tanda 10O: el Castillo por fuera, con el Puente Sant'Angelo delante y el Tíber (de día, luz de primera hora). Wikimedia Commons, «0 Pont et château Sant'Angelo - Rome (1).JPG», 30-09-2011, CC BY-SA 3.0, pide crédito.",
+      "credito": {
+        "autor": "Jean-Pol GRANDMONT",
+        "licencia": "CC BY-SA 3.0",
+        "enlace": "https://commons.wikimedia.org/wiki/File:0_Pont_et_ch%C3%A2teau_Sant%27Angelo_-_Rome_(1).JPG"
+      }
     }
   ],
   "notas_revision": {
@@ -1351,13 +1368,12 @@
     },
     {
       "archivo": "dia_castillo_sant_angelo_dentro.jpg",
-      "lugares": [
-        "Castillo de Sant'Angelo"
-      ],
+      "lugares": [],
       "cuando": "dia",
       "sitio": "Castillo de Sant'Angelo por dentro (la terraza del ángel)",
       "grupo": "Día «Roma desde arriba» (5 y 6 días)",
-      "estrella": true
+      "estrella": true,
+      "nota": "Tanda 10O: ya no sale en Entradas ni en ninguna ficha del Castillo (la foto del Castillo es la de fuera, con el puente); se queda aquí por si se quiere para la visita por dentro."
     },
     {
       "archivo": "dia_museos_capitolinos.jpg",

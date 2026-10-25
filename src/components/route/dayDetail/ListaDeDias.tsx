@@ -1,5 +1,5 @@
 import { useRouteStore } from '../../../store/useRouteStore'
-import { diaProsa, diaTitulo, fichaDelDia } from '../../../lib/nombreDeDia'
+import { diaConFecha, diaProsa, fichaDelDia } from '../../../lib/nombreDeDia'
 import { esDiaDeExcursion, tituloSimpleDelDia, useNombreDeDias } from '../../../lib/tituloDelDia'
 import type { Route } from '../../../lib/types'
 import { Icono } from '../../ui/Icono'
@@ -65,10 +65,13 @@ function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora }: { route: Route; d
               )}
             </span>
             <span className={`flex min-w-0 flex-1 flex-col gap-0.5 ${excursion ? 'opacity-60' : ''}`}>
-              <span className="text-[13.5px] font-semibold">{diaTitulo(route, dia.dayNumber)}</span>
-              <span className="flex items-center gap-[5px] text-[12px] leading-[1.3] text-text/60">
-                {excursion && <Icono nombre="montana" size={12} className="shrink-0" />}
-                <span className="min-w-0">{titulo}</span>
+              {/* Tanda 10O: «Jue 26 Nov · Roma antigua y Centro histórico» (la fecha en negrita, el nombre del día detrás). */}
+              <span data-dia-etiqueta="1" className="flex items-start gap-[5px] text-[13.5px] leading-[1.3]">
+                {excursion && <Icono nombre="montana" size={12} className="mt-[3px] shrink-0" />}
+                <span className="min-w-0">
+                  <span className="font-semibold">{diaConFecha(route, dia.dayNumber)}</span>
+                  {titulo && <span className="text-text/60"> · {titulo}</span>}
+                </span>
               </span>
             </span>
             {excursion ? (

@@ -264,6 +264,11 @@ debe(/useExploreAperturaStore/.test(fuenteExplorar) && /\.tomar\(\)/.test(fuente
 
 // ── EXPLORAR: gratis y de pago ──
 {
+  const renderConHtml = (version) => {
+    ponerVersion(version)
+    useRouteStore.setState({ ...estadoBase, route, mode: 'explore' })
+    return renderToStaticMarkup(createElement(PlaceExplorerScreen, { open: true, destination: 'Roma', places: catalogo.places, toiletsEnabled: explorarConBanosYFuentes(), excursions: catalogo.excursions, title: 'Explorar Roma', route, initialFilters: ['atracciones'], onClose() {} }))
+  }
   const pintaExplorar = (version) => {
     ponerVersion(version)
     useRouteStore.setState({ ...estadoBase, route, mode: 'explore' })
@@ -276,8 +281,9 @@ debe(/useExploreAperturaStore/.test(fuenteExplorar) && /\.tomar\(\)/.test(fuente
   debe(catalogo.places.some((p) => p.kind === 'toilet') && catalogo.places.some((p) => p.kind === 'fountain'), 'datos', 'el catálogo de Roma no trae baños y fuentes')
   const gratis = pintaExplorar('gratis')
   // (Tanda 10G: lo del pase se ve CERRADO, no escondido: «Cerca de ti» sale como el candado «Con el pase, ordena…»; el selector abierto «Recomendados / Cerca de ti» y «Cerca de mí», no.)
-  for (const palabra of ['Recomendados', 'Cerca de mí']) debe(!gratis.includes(palabra), '1 gratis EXPLORAR', `EXPLORAR gratis enseña «${palabra}» abierto (${plano(gratis).slice(0, 250)})`)
-  debe(/Con el pase, ordena los sitios por lo cerca que los tienes de ti/.test(gratis), '1 gratis EXPLORAR', 'EXPLORAR gratis no enseña «Cerca de ti» cerrado, con su invitación')
+  // (Tanda 10O: las dos pestañas «Recomendados» y «Cerca de ti» salen para todos; sin pase, «Cerca de ti» lleva el candado y abre su hoja. «Cerca de mí» sigue siendo de pago.)
+  debe(!gratis.includes('Cerca de mí'), '1 gratis EXPLORAR', `EXPLORAR gratis enseña «Cerca de mí» abierto (${plano(gratis).slice(0, 250)})`)
+  debe(/Recomendados/.test(gratis) && /Cerca de ti/.test(gratis) && /data-candado="explorar-cerca-de-ti"/.test(renderConHtml('gratis')) && !/Con el pase, ordena los sitios por lo cerca que los tienes de ti/.test(gratis), '1 gratis EXPLORAR', 'EXPLORAR gratis enseña las dos pestañas, con el candado en «Cerca de ti» y sin la tarjeta cerrada de antes (Tanda 10O)')
   debe(/Atracciones/.test(gratis) && /Restaurantes/.test(gratis), '1 gratis EXPLORAR', 'EXPLORAR gratis ha perdido sus filtros de siempre')
   const pago = pintaExplorar('completa')
   debe(/Recomendados/.test(pago) && /Cerca de ti/.test(pago), '2 pago EXPLORAR', `EXPLORAR de pago no tiene los dos órdenes (${plano(pago).slice(0, 250)})`)

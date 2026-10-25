@@ -36,6 +36,15 @@ export function civitatisActiva(valor = process.env.CIVITATIS_API_ACTIVA) {
   return String(valor ?? '').trim().toLowerCase() === 'true'
 }
 
+/**
+ * Quién puede usar la API en la app: `CIVITATIS_API_ACTIVA=true` → 'todos'; `=admin` → 'admin' (solo los emails de LOGROS_ADMIN_EMAILS, lo decide el servidor por petición);
+ * cualquier otra cosa (vacío, false…) → 'nadie'.
+ */
+export function modoDeCivitatis(valor = process.env.CIVITATIS_API_ACTIVA) {
+  const v = String(valor ?? '').trim().toLowerCase()
+  return v === 'true' ? 'todos' : v === 'admin' ? 'admin' : 'nadie'
+}
+
 const dormir = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /**

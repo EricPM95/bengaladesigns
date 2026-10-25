@@ -17,7 +17,7 @@ import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { FreeTourSheet, freeTourAvailable } from './reservas/FreeTourSheet'
 import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
-import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId } from '../../lib/exploreStyle'
+import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId, type TarjetaDeExplorar } from '../../lib/exploreStyle'
 import { Icono } from '../ui/Icono'
 import { abrirPase } from '../../lib/pago'
 import type { Coordinates } from '../../lib/types'
@@ -42,12 +42,14 @@ interface ExplorePanelProps {
  * donde busque. Los hoteles no son una tarjeta (3-oct-2026): el botón «Hoteles» de la fila de filtros abre el mapa de alojamientos (Tanda 6z). Baños y Fuentes solo salen si el destino
  * tiene su descarga de OpenStreetMap.
  */
-const EXPLORE_CARDS: { id: ExploreCardId; label: string }[] = [
+const EXPLORE_CARDS: { id: TarjetaDeExplorar; label: string }[] = [
   { id: 'atracciones', label: 'Atracciones' },
   { id: 'miradores', label: 'Miradores' },
   { id: 'restaurantes', label: 'Restaurantes' },
   { id: 'entradas', label: 'Entradas' },
   { id: 'excursiones', label: 'Excursiones' },
+  // Tanda 10O: «Hoteles» vuelve a la pantalla, antes de Baños y Fuentes; abre el mapa de alojamientos (para todos, con pase y sin pase).
+  { id: 'hoteles', label: 'Hoteles' },
   // Nueva (3-oct-2026): los baños públicos de OpenStreetMap, solo si el destino los tiene descargados.
   { id: 'banos', label: 'Baños' },
   { id: 'fuentes', label: 'Fuentes' },
@@ -58,7 +60,7 @@ const EXPLORE_CARDS: { id: ExploreCardId; label: string }[] = [
  * en los buscadores de siempre (Mapbox para comer y miradores, AttractionsFinder para atracciones).
  * Las tarjetas que no tienen equivalente sin catálogo (entradas, excursiones) no se pintan.
  */
-const LEGACY_FALLBACK: Partial<Record<ExploreCardId, 'food' | 'viewpoints' | 'attractions'>> = {
+const LEGACY_FALLBACK: Partial<Record<TarjetaDeExplorar, 'food' | 'viewpoints' | 'attractions'>> = {
   restaurantes: 'food',
   miradores: 'viewpoints',
   atracciones: 'attractions',
@@ -68,7 +70,7 @@ const LEGACY_FALLBACK: Partial<Record<ExploreCardId, 'food' | 'viewpoints' | 'at
  * Una tarjeta de Explorar (diseño «Trazo Reservas», pantalla 12): el cuadro de icono de color, la franja en diagonal con la foto o el degradado,
  * el nombre en Instrument Serif y el contador pequeño.
  */
-function ExploreCard({ id, label, sub, photo, delay, wide, onClick, cerrado = false }: { id: ExploreCardId; label: string; sub: string; photo: string | null; delay: number; wide: boolean; onClick: () => void; cerrado?: boolean }) {
+function ExploreCard({ id, label, sub, photo, delay, wide, onClick, cerrado = false }: { id: TarjetaDeExplorar; label: string; sub: string; photo: string | null; delay: number; wide: boolean; onClick: () => void; cerrado?: boolean }) {
   const style = CARD_STYLE[id]
   const diagonal = 'polygon(34px 0,100% 0,100% 100%,0 100%)'
   const background = photo ? `url("${photo}") center/cover, ${solidOf(style.color)}` : `linear-gradient(135deg,${solidOf(style.shadow)},#EFE7D8)`
@@ -121,13 +123,13 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick, cerrado = fa
 }
 
 /** La foto de cada tarjeta: la de un lugar representativo del propio catálogo del destino (el de menor nivel de la categoría), con el mismo servicio de fotos de siempre. */
-function useCardPhotos(city: string, pool: DestinationPlace[], excursions: Excursion[]): Partial<Record<ExploreCardId, string>> {
-  const [photos, setPhotos] = useState<Partial<Record<ExploreCardId, string>>>({})
+function useCardPhotos(city: string, pool: DestinationPlace[], excursions: Excursion[]): Partial<Record<TarjetaDeExplorar, string>> {
+  const [photos, setPhotos] = useState<Partial<Record<TarjetaDeExplorar, string>>>({})
   const poolKey = pool.length
   useEffect(() => {
     let cancelled = false
     const best = (filter: (place: DestinationPlace) => boolean) => pool.filter((place) => place.kind === 'place' && filter(place)).sort((a, b) => (a.level ?? 9) - (b.level ?? 9))[0] ?? null
-    const pick: [ExploreCardId, string | null, string | null | undefined][] = []
+    const pick: [TarjetaDeExplorar, string | null, string | null | undefined][] = []
     const attractionCategories: (string | null)[] = categoriesForFilters(['atracciones'])
     const attraction = best((place) => attractionCategories.includes(place.filter_category))
     const viewpoint = best((place) => place.filter_category === 'miradores')
@@ -136,6 +138,8 @@ function useCardPhotos(city: string, pool: DestinationPlace[], excursions: Excur
     // Restaurantes, baños y fuentes no tienen un monumento que fotografiar: una foto del artículo de Wikipedia de lo que son.
     pick.push(['restaurantes', 'Trattoria', 'Trattoria'], ['banos', 'Baños públicos', 'es:Baño público'], ['fuentes', 'Nasoni de Roma', 'en:Nasone'])
     pick.push(['excursiones', excursions[0]?.photoName ?? excursions[0]?.title ?? null, null])
+    // Tanda 10O: la tarjeta de Hoteles lleva una foto de un hotel de la ciudad, con el mismo servicio de fotos de siempre.
+    pick.push(['hoteles', 'Hotel Eden', 'en:Hotel Eden'])
     for (const [id, name, wiki] of pick) {
       if (!name) continue
       fetchPlacePhoto(name, city, wiki).then((url) => {
@@ -238,14 +242,17 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   }
 
   /** Cuántos elementos hay detrás de cada tarjeta. */
-  const countFor = (id: ExploreCardId): number | null => {
+  const countFor = (id: TarjetaDeExplorar): number | null => {
+    if (id === 'hoteles') return null
     if (id === 'excursiones') return excursions.length
-    if (id === 'entradas') return curatedPool.filter((place) => place.requires_ticket && !isOsmPoint(place)).length
+    // (Tanda 10O: lo que está fuera de la lista de EXPLORAR tampoco cuenta.)
+    if (id === 'entradas') return curatedPool.filter((place) => place.requires_ticket && !isOsmPoint(place) && !place.fuera_de_lista).length
     const categories = categoriesForFilters([id])
-    return curatedPool.filter((place) => place.filter_category !== null && categories.includes(place.filter_category)).length
+    return curatedPool.filter((place) => place.filter_category !== null && categories.includes(place.filter_category) && !place.fuera_de_lista).length
   }
 
-  const countLabel = (id: ExploreCardId): string => {
+  const countLabel = (id: TarjetaDeExplorar): string => {
+    if (id === 'hoteles') return 'Dónde dormir'
     const count = countFor(id)
     if (count === null) return ''
     if (id === 'excursiones') return `${count} ${count === 1 ? 'opción' : 'opciones'}`
@@ -352,7 +359,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
               delay={index * 40}
               wide={false}
               cerrado={(card.id === 'banos' || card.id === 'fuentes') && !banosYFuentes}
-              onClick={() => setActiveCard(card.id)}
+              onClick={() => (card.id === 'hoteles' ? useAlojamientoUi.getState().abrirMapa() : setActiveCard(card.id))}
             />
           )
         })}

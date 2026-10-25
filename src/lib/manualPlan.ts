@@ -33,6 +33,8 @@ export function compareManualExplorer(a: DestinationPlace, b: DestinationPlace, 
   if (Boolean(a.solo_entradas) !== Boolean(b.solo_entradas)) return a.solo_entradas ? -1 : 1
   const likeDiff = (likeCounts.get(b.name) ?? 0) - (likeCounts.get(a.name) ?? 0)
   if (likeDiff !== 0) return likeDiff
+  // Tanda 10O: lo que casi nadie conoce, al final de entre los que no tienen «me gusta».
+  if (Boolean(a.al_final_de_lista) !== Boolean(b.al_final_de_lista)) return a.al_final_de_lista ? 1 : -1
   const groupDiff = manualGroup(a) - manualGroup(b)
   if (groupDiff !== 0) return groupDiff
   if (manualGroup(a) === 1) {

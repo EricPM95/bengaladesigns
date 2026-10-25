@@ -9,7 +9,7 @@ import type { Excursion, StopEntrada } from './types'
 import { mapExcursionList, type GeneratedExcursion } from './mapGeneratedRoute'
 import type { EssentialEntry } from './bookings'
 import type { GruposDelDestino } from './tituloDelDia'
-import { civitatisActiva } from './civitatis'
+import { civitatisActiva, cabecerasConSesion } from './civitatis'
 
 export interface DestinationExcursions {
   /** Desde cuántos días de viaje sale el botón; null = este destino no tiene excursiones. */
@@ -82,7 +82,8 @@ export function fetchDestinationExcursions(destination: string): Promise<Destina
   if (cached) return Promise.resolve(cached)
   const running = inFlight.get(key)
   if (running) return running
-  const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination, ...(conCivitatis ? { civitatis: true } : {}) }) })
+  const job = (conCivitatis ? cabecerasConSesion() : Promise.resolve({ 'Content-Type': 'application/json' }))
+    .then((headers) => fetch('/api/destination-excursions', { method: 'POST', headers, body: JSON.stringify({ destination, ...(conCivitatis ? { civitatis: true } : {}) }) }))
     .then((response) => (response.ok ? response.json() : null))
     .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; entradas_orden?: { arriba: string[]; mas: string[] }; nombres_cortos?: Record<string, string>; zonas_alojamiento?: DestinationExcursions['zonasAlojamiento']; mapa_alojamiento?: DestinationExcursions['mapaAlojamiento']; moneda?: string | null; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating']; etiquetas_por_sitio?: Record<string, string>; sin_entrada_por_sitio?: Record<string, SinEntrada>; grupos_dia?: GruposDelDestino | null; sitios_grandes?: SitioGrande[]; importancia_por_sitio?: Record<string, 'imprescindible' | 'nivel1'> } | null) => {
       const result: DestinationExcursions = data?.found

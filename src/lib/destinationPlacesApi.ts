@@ -29,6 +29,10 @@ export interface DestinationPlace {
   level: number | null
   /** Los «me gusta» de partida del sitio (las redes de Eric, aproximado por debajo del real; Tanda 6y10): una cifra fija de los datos. La cuenta que se enseña es esta MÁS los de los viajeros (`useMeGustaStore`). */
   likes_initial?: number
+  /** Tanda 10O: no sale en la lista de EXPLORAR (la ruta, la ficha y los textos lo siguen usando). */
+  fuera_de_lista?: boolean
+  /** Tanda 10O: sale al final de la lista (lo que casi nadie conoce), detrás de todo lo que tenga «me gusta». */
+  al_final_de_lista?: boolean
   /** «Por qué te lo recomendamos»: el texto nuestro del sitio (escrito a mano, sin IA); null o ausente si no lo tiene. */
   por_que_recomendamos?: string | null
   /** Su puesto en la lista a mano del destino (`pool_lista`; 0 = el primero), SIN tener en cuenta su nivel (el nivel va aparte en `level`); null si no está. Lo usa el orden de la ruta a mano (manualPlan.ts). */

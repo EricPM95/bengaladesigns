@@ -97,9 +97,15 @@ debe(D.restaurants.length > 0 && D.restaurants.every((r) => Number.isInteger(r.m
 const rango = (nivel) => (nivel === 1 ? [100, 199] : nivel === 2 ? [50, 99] : [0, 0])
 // (Tanda 7, Eric 13-oct: los seis primeros llevan cifras fijas, de 305 a 412, fuera de 100–199: la excepción escrita.)
 const SEIS_FIJOS = new Map(FIJAS)
+// (Tanda 10O, Eric 25-oct: la lista de EXPLORAR sube siete sitios de nivel 3 entre la Cúpula y Villa Borghese y mueve cuatro de arriba para que quepan: cifras fijas, fuera de su rango por nivel.)
+const DE_LA_10O = new Map([['Plaza Venecia', 97], ["Puente Sant'Angelo", 96], ['Via dei Fori Imperiali', 95], ['Via della Conciliazione', 94], ['Via Appia Antica', 90], ['Teatro de Marcelo', 86], ['Via Condotti', 83], ["Castillo de Sant'Angelo", 101], ['Galería Borghese', 102], ['Trastevere', 100], ['Cúpula de San Pedro', 99]])
 for (const p of D.places) {
   if (SEIS_FIJOS.has(p.name)) {
     debe(p.megusta_inicial === SEIS_FIJOS.get(p.name), '4 rango', `${p.name} debe tener ${SEIS_FIJOS.get(p.name)} y tiene ${p.megusta_inicial}`)
+    continue
+  }
+  if (DE_LA_10O.has(p.name)) {
+    debe(p.megusta_inicial === DE_LA_10O.get(p.name), '4 rango', `${p.name} debe tener ${DE_LA_10O.get(p.name)} (Tanda 10O) y tiene ${p.megusta_inicial}`)
     continue
   }
   const [min, max] = rango(p.level)
@@ -124,7 +130,7 @@ debe(JSON.stringify(conCifra.map((r) => r.name).sort()) === JSON.stringify(esper
 // Fijos: el script con semilla da lo mismo dos veces y lo que hay guardado.
 const otraVez = calcular()
 debe(JSON.stringify(calculo.lugares) === JSON.stringify(otraVez.lugares) && JSON.stringify(calculo.restaurantes) === JSON.stringify(otraVez.restaurantes), '4 fijos', 'el script da cifras distintas dos veces')
-debe(calculo.lugares.every((l) => D.places.find((p) => p.name === l.nombre)?.megusta_inicial === l.cifra) && calculo.restaurantes.every((r) => D.restaurants.find((x) => x.name === r.nombre)?.megusta_inicial === r.cifra), '4 fijos', 'lo guardado en roma.json no es lo que da el script con su semilla')
+debe(calculo.lugares.every((l) => DE_LA_10O.has(l.nombre) || D.places.find((p) => p.name === l.nombre)?.megusta_inicial === l.cifra) && calculo.restaurantes.every((r) => D.restaurants.find((x) => x.name === r.nombre)?.megusta_inicial === r.cifra), '4 fijos', 'lo guardado en roma.json no es lo que da el script con su semilla')
 debe(cifraPorNivel('Coliseo', 1) === cifraPorNivel('Coliseo', 1) && cifraPorNivel('X', 3) === 0, '4 fijos', 'cifraPorNivel no es fija')
 debe(!/Math\.random/.test(leer('scripts/destino/megustaInicial6y10.mjs')), '4 fijos', 'el script usa Math.random')
 
@@ -142,7 +148,7 @@ debe(!/Math\.random/.test(leer('scripts/destino/megustaInicial6y10.mjs')), '4 fi
 // ═══════════ La cuenta: se carga una vez ═══════════
 await useMeGustaStore.getState().cargar('Roma')
 const cuenta = () => useMeGustaStore.getState().cuentas.roma
-debe(Boolean(cuenta()?.cargada) && Object.keys(cuenta().inicial).length === D.places.length + D.restaurants.filter((r) => Number.isFinite(r.coordinates?.lat)).length, '6 cuenta', 'la cuenta de Roma no trae todos los sitios del catálogo')
+debe(Boolean(cuenta()?.cargada) && Object.keys(cuenta().inicial).length === D.places.length + (D.lugares_solo_lista?.length ?? 0) + (D.default_free_tour?.name ? 1 : 0) + D.restaurants.filter((r) => Number.isFinite(r.coordinates?.lat)).length, '6 cuenta', 'la cuenta de Roma no trae todos los sitios del catálogo')
 for (const p of D.places) debe(totalDe(cuenta(), p.name) === p.megusta_inicial, '6 cuenta', `${p.name}: la cuenta sin viajeros no es su cifra de partida`)
 
 // ═══════════ A. La ficha ═══════════

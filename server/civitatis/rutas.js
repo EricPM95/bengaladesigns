@@ -19,11 +19,10 @@ import { datosDelDestino } from './servicio.js'
 const esFecha = (f) => /^\d{4}-\d{2}-\d{2}$/.test(String(f ?? ''))
 
 export function registrarRutasCivitatis(app, servicio) {
-  const { activa } = servicio
   const fresco = (req) => String(req.query?.fresco ?? '') === '1'
 
-  app.get('/api/civitatis/estado', (_req, res) => {
-    res.json({ activa, entorno: servicio.cliente.entorno, hayClaves: servicio.cliente.tieneClaves })
+  app.get('/api/civitatis/estado', async (req, res) => {
+    res.json({ activa: await servicio.permitida(req), entorno: servicio.cliente.entorno, hayClaves: servicio.cliente.tieneClaves })
   })
 
   app.get('/api/civitatis/horas', async (req, res) => {
@@ -32,7 +31,7 @@ export function registrarRutasCivitatis(app, servicio) {
       const fecha = String(req.query?.fecha ?? '')
       const destino = String(req.query?.destino ?? 'Roma')
       const id = datosDelDestino(destino)?.horas?.[lugar]
-      if (!activa) return res.json({ ok: false, motivo: 'apagada' })
+      if (!(await servicio.permitida(req))) return res.json({ ok: false, motivo: 'apagada' })
       if (!id) return res.json({ ok: false, motivo: 'sin_actividad' })
       if (!esFecha(fecha)) return res.json({ ok: false, motivo: 'fechas_malas' })
       res.json(await servicio.horasLibres(id, fecha, { fresco: fresco(req) }))
@@ -48,7 +47,7 @@ export function registrarRutasCivitatis(app, servicio) {
       const hasta = String(req.query?.hasta ?? '')
       const destino = String(req.query?.destino ?? 'Roma')
       const id = datosDelDestino(destino)?.horas?.[lugar]
-      if (!activa) return res.json({ ok: false, motivo: 'apagada' })
+      if (!(await servicio.permitida(req))) return res.json({ ok: false, motivo: 'apagada' })
       if (!id) return res.json({ ok: false, motivo: 'sin_actividad' })
       res.json(await servicio.horasEnRango(id, desde, hasta, { fresco: fresco(req) }))
     } catch {
@@ -62,7 +61,7 @@ export function registrarRutasCivitatis(app, servicio) {
       const hasta = String(req.query?.hasta ?? '')
       const destino = String(req.query?.destino ?? 'Roma')
       const id = datosDelDestino(destino)?.free_tour
-      if (!activa) return res.json({ ok: false, motivo: 'apagada' })
+      if (!(await servicio.permitida(req))) return res.json({ ok: false, motivo: 'apagada' })
       if (!id) return res.json({ ok: false, motivo: 'sin_actividad' })
       if (!esFecha(desde) || !esFecha(hasta) || desde > hasta) return res.json({ ok: false, motivo: 'fechas_malas' })
       res.json(await servicio.freeTourHoras(id, desde, hasta, { fresco: fresco(req) }))
@@ -73,7 +72,7 @@ export function registrarRutasCivitatis(app, servicio) {
 
   app.post('/api/civitatis/cerca', async (req, res) => {
     try {
-      if (!activa) return res.json({ ok: false, motivo: 'apagada' })
+      if (!(await servicio.permitida(req))) return res.json({ ok: false, motivo: 'apagada' })
       res.json(await servicio.cercaDe(req.body?.lat, req.body?.lng, Number(req.body?.distancia) > 0 ? Number(req.body.distancia) : 0.3))
     } catch {
       res.json({ ok: false, motivo: 'no_disponible' })
@@ -83,7 +82,7 @@ export function registrarRutasCivitatis(app, servicio) {
   app.get('/api/civitatis/traslados', async (req, res) => {
     try {
       const datos = datosDelDestino(String(req.query?.destino ?? 'Roma'))
-      if (!activa) return res.json({ ok: false, motivo: 'apagada' })
+      if (!(await servicio.permitida(req))) return res.json({ ok: false, motivo: 'apagada' })
       if (!datos) return res.json({ ok: false, motivo: 'sin_actividad' })
       res.json(await servicio.traslados(datos.destino.id))
     } catch {

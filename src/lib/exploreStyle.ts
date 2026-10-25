@@ -46,12 +46,15 @@ export const CATEGORY_STYLE: Record<PlaceFilterCategory, { color: string; icon: 
 
 /** Las tarjetas de Explorar y las pastillas de filtro: su color, su sombra y su icono. */
 export type ExploreCardId = PlaceFilterId
-export const CARD_STYLE: Record<ExploreCardId, { color: string; shadow: string; icon: ExploreIconName }> = {
+/** Tanda 10O: las tarjetas de la pantalla de EXPLORAR son los filtros más «Hoteles», que no filtra: abre la pantalla de alojamientos. */
+export type TarjetaDeExplorar = ExploreCardId | 'hoteles'
+export const CARD_STYLE: Record<TarjetaDeExplorar, { color: string; shadow: string; icon: ExploreIconName }> = {
   atracciones: { color: 'oklch(0.62 0.14 45)', shadow: 'oklch(0.62 0.14 45)', icon: 'museum' },
   miradores: { color: 'linear-gradient(135deg,oklch(0.76 0.15 65),oklch(0.6 0.18 20))', shadow: 'oklch(0.66 0.17 38)', icon: 'camera' },
   restaurantes: { color: 'oklch(0.7 0.15 65)', shadow: 'oklch(0.7 0.15 65)', icon: 'fork' },
   entradas: { color: 'oklch(0.6 0.18 10)', shadow: 'oklch(0.6 0.18 10)', icon: 'ticket' },
   excursiones: { color: 'oklch(0.56 0.1 220)', shadow: 'oklch(0.56 0.1 220)', icon: 'excursion' },
+  hoteles: { color: 'oklch(0.55 0.1 285)', shadow: 'oklch(0.55 0.1 285)', icon: 'hotel' },
   banos: { color: 'oklch(0.52 0.05 235)', shadow: 'oklch(0.52 0.05 235)', icon: 'toilet' },
   fuentes: { color: 'oklch(0.6 0.12 235)', shadow: 'oklch(0.6 0.12 235)', icon: 'drop' },
 }
