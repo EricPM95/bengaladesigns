@@ -983,7 +983,7 @@ console.log('6. La foto y el nombre del perfil')
   debe(M.useMiPerfil.getState().nombre === null && M.useMiPerfil.getState().fotoGoogle === null, 'nombre', 'con el email: sin nombre («Viajero») y sin foto (la inicial)')
   M.useMiPerfil.setState({ uid: null, nombre: null, fotoPath: null, fotoGoogle: null })
   // Foto: pequeña y propia.
-  debe(M.OBJETIVO_BYTES_FOTO_PERFIL <= 50 * 1024 && M.PASOS_DE_FOTO_DE_PERFIL[0].lado <= 256 && M.PASOS_DE_FOTO_DE_PERFIL.every((p, i, a) => i === 0 || p.lado <= a[i - 1].lado && p.calidad <= a[i - 1].calidad), 'foto', 'la foto es pequeña (unos pocos KB, un cuadrado de 256 px o menos) y cada intento es más pequeño que el anterior')
+  debe(M.OBJETIVO_BYTES_FOTO_PERFIL <= 50 * 1024 && M.PASOS_DE_FOTO_DE_PERFIL[0].lado <= 384 && M.PASOS_DE_FOTO_DE_PERFIL.every((p, i, a) => i === 0 || p.lado <= a[i - 1].lado && p.calidad <= a[i - 1].calidad), 'foto', 'la foto es pequeña (unos pocos KB, la foto entera con su lado largo de 384 px o menos (Tanda 10N3: ya no se recorta a un cuadrado)) y cada intento es más pequeño que el anterior')
   debe(M.rutaNuevaDeFoto('uid-1', 1700000000000) === 'uid-1/foto-1700000000000.jpg', 'foto', 'cada foto nueva tiene su nombre (nadie ve una foto vieja en la caché), dentro de la carpeta de la persona')
   debe(M.fotoParaMostrar('uid/foto.jpg', 'https://g/a.jpg') === null || String(M.fotoParaMostrar(null, 'https://g/a.jpg')) === 'https://g/a.jpg', 'foto', 'sin foto propia, la de Google')
   debe(M.fotoParaMostrar(null, null) === null, 'foto', 'sin foto, la inicial')

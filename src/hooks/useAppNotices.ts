@@ -23,6 +23,10 @@ import { avisosDeFechaLeidos, fraseCampana } from '../lib/dateNotices'
 import type { DateNotice } from '../lib/types'
 import { useEntradasDelGrupo } from './useEntradasDelGrupo'
 import { useReservasGrupoUi } from '../store/useReservasGrupoUi'
+import { useAvisosStore } from '../store/useAvisosStore'
+import { proponerCambioDeReserva } from '../lib/reservasGrupo'
+import { etiquetaDelCambio } from '../lib/cambiarDiaPorReserva'
+import { usePermisosDelViaje } from './usePermisosDelViaje'
 import { diaDeLaReservaEnPalabras, entradasQueNoCuadran, sitioCorto } from '../lib/reservasGrupo'
 import { textoDelAviso } from '../../shared/avisos/textos.js'
 
@@ -69,6 +73,9 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
   const nombresCortos = useDestinationExcursions(route?.destination).nombresCortos
   // Tanda 10N §8: las entradas que el dueño compra para varias personas (y la propia del invitado que no cuadra con la ruta) llegan a la campana de quien mira el viaje.
   const grupo = useEntradasDelGrupo()
+  const { rol } = usePermisosDelViaje()
+  // (Tanda 10N3 §3: si la base de datos ya creó el aviso de esa entrada —está en la lista de la cuenta—, el móvil no lo calcula otra vez.)
+  const avisosDelServidor = useAvisosStore((state) => state.avisos)
   const datosDeHorario = useDatosDeHorario(route?.destination)
   const syncStatus = useSyncStore((state) => state.status)
   const avisosVuelo = useAvisosVueloStore((state) => state.avisos)
@@ -189,6 +196,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
       if (grupo.esInvitado && grupo.compartido) {
         for (const reserva of reservations) {
           if (reserva.kind !== 'entrada' || !reserva.paraQuien) continue
+          if (avisosDelServidor.some((a) => a.tipo === 'reserva_grupo' && (a.payload as { reserva_id?: string }).reserva_id === reserva.id && (a.payload as { caso?: string }).caso !== 'no_cuadra')) continue
           const incluido = grupo.meIncluye(reserva)
           const id = `reserva-grupo:${reserva.id}`
           const propia = grupo.mias.some((mia) => mia.kind === reserva.kind && mia.refId === reserva.refId)
@@ -210,12 +218,16 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
         }
         // «Tu entrada del Coliseo es el viernes 27, y en la ruta está el jueves 26»: cuenta mientras no cuadre.
         for (const aviso of entradasQueNoCuadran(route, grupo.mias, nombresCortos)) {
+          if (avisosDelServidor.some((a) => a.tipo === 'reserva_grupo' && (a.payload as { reserva_id?: string; caso?: string }).reserva_id === aviso.cambio.reservaId && (a.payload as { caso?: string }).caso === 'no_cuadra')) continue
           items.push({
             id: aviso.id,
             kind: 'warning',
             title: 'Tu entrada no cuadra con la ruta',
             text: aviso.texto,
-            acciones: [{ label: 'Ver mi reserva', run: () => { useRouteStore.getState().setMode('bookings'); useReservasFocusStore.getState().pedir('entradas') } }],
+            acciones: [
+              { label: 'Ver mi reserva', run: () => { useRouteStore.getState().setMode('bookings'); useReservasFocusStore.getState().pedir('entradas') } },
+              { label: etiquetaDelCambio(rol, aviso.cambio.aDia), run: () => void proponerCambioDeReserva({ reservaId: aviso.cambio.reservaId, sitio: aviso.cambio.sitio, diaDeLaReserva: aviso.cambio.aDia, diaDeLaRuta: aviso.cambio.deDia }) },
+            ],
             read: false,
             canMarkRead: false,
           })
@@ -247,5 +259,5 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
     const order: Record<NoticeKind, number> = { error: 0, warning: 1, friend: 2, info: 3 }
     items.sort((a, b) => Number(a.read) - Number(b.read) || order[a.kind] - order[b.kind])
     return { items, unreadCount: items.filter((item) => !item.read).length }
-  }, [route, reservations, grupo.esInvitado, grupo.compartido, grupo.mias, grupo.gente, grupo.yoId, grupo.nombreAdmin, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias, avisosVuelo])
+  }, [route, reservations, grupo.esInvitado, grupo.compartido, grupo.mias, grupo.gente, grupo.yoId, grupo.nombreAdmin, rol, avisosDelServidor, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias, avisosVuelo])
 }

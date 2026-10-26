@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
@@ -22,7 +23,13 @@ export function AlojamientoHost() {
   const cerrarHoja = useAlojamientoUi((state) => state.cerrarHoja)
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
   const info = useDestinationExcursions(route?.destination)
-  const { esInvitado, nombreAdmin } = usePermisosDelViaje()
+  const { esAdmin, nombreAdmin } = usePermisosDelViaje()
+  // Tanda 10N3 §2.7: guardar el alojamiento es solo del administrador. Quien mira (puede editar o solo recomienda) busca en el mapa y ya: no hay «mandarle la idea». Si algún botón le abre la hoja, se cierra con la línea de siempre.
+  useEffect(() => {
+    if (esAdmin || !hoja) return
+    cerrarHoja()
+    useAddFlowStore.setState({ toast: { message: `Esto lo cambia ${nombreAdmin || 'el dueño del viaje'}`, previous: null, id: Date.now() } })
+  }, [esAdmin, hoja, cerrarHoja, nombreAdmin])
   if (!route || (!mapa && !hoja)) return null
 
   const estancias = estanciasDelViaje(route)
@@ -32,21 +39,19 @@ export function AlojamientoHost() {
 
   return (
     <>
-      {mapa && <PantallaAlojamiento route={route} ciudad={ciudadMapa} mapa={info.mapaAlojamiento} onTengo={() => abrirTuAlojamiento(mapa.segmentDayId)} onClose={cerrarMapa} />}
+      {mapa && <PantallaAlojamiento route={route} ciudad={ciudadMapa} mapa={info.mapaAlojamiento} onTengo={esAdmin ? () => abrirTuAlojamiento(mapa.segmentDayId) : undefined} onClose={cerrarMapa} />}
       {hoja && estanciaHoja && (
         <HojaTuAlojamiento
           ciudad={estanciaHoja.city}
           noches={estanciaHoja.noches}
           actual={selections[estanciaHoja.segmentDayId] ?? null}
           onGuardar={(hotel) => {
-            // Tanda 10N §8: guardar el alojamiento en el viaje es solo del dueño; quien mira puede buscar, pero no lo guarda.
-            if (esInvitado) useAddFlowStore.setState({ toast: { message: `El alojamiento lo guarda ${nombreAdmin || 'el dueño del viaje'}`, previous: null, id: Date.now() } })
-            else setHotel(estanciaHoja.segmentDayId, hotel)
+            setHotel(estanciaHoja.segmentDayId, hotel)
             cerrarHoja()
             cerrarMapa()
           }}
           onEliminar={() => {
-            if (esInvitado) {
+            if (!esAdmin) {
               cerrarHoja()
               return
             }

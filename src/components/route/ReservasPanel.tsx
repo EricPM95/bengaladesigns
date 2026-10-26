@@ -25,6 +25,7 @@ import { Icono } from '../ui/Icono'
 import { diasDelViaje, textoDeDuracion } from '../../lib/duracionViaje'
 import { useEntradasDelGrupo, useReservasParaMi } from '../../hooks/useEntradasDelGrupo'
 import { ZonaGris } from './reservas/ZonaGris'
+import { EspacioParaElLapiz } from '../propuesta/BotonDePropuesta'
 
 interface ReservasPanelProps {
   route: Route
@@ -209,6 +210,8 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
                 <UtilParaElViaje route={route} pago={pago} />
               </div>
             </div>
+            {/* (Tanda 10N3) El lápiz de la propuesta no tapa lo último de RESERVAS. */}
+            <EspacioParaElLapiz />
           </div>
         </div>
 

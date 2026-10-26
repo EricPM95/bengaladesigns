@@ -11,7 +11,7 @@ import { Icono } from '../../ui/Icono'
  * El mapa de alojamientos a pantalla completa (Tanda 6z), sin tirador: arriba una barra con «Alojamiento en {destino}» y la ✕; el mapa de Stay22 (el del destino, con las fechas del viaje y el código de campaña) llena el resto,
  * y debajo, fuera del mapa, el enlace «¿Ya tienes alojamiento? Añádelo» que abre «Tu alojamiento». Es lo único a lo que llevan los botones de hoteles de la app.
  */
-export function PantallaAlojamiento({ route, ciudad, mapa, onTengo, onClose }: { route: Route; ciudad: string; mapa: DestinationExcursions['mapaAlojamiento']; onTengo: () => void; onClose: () => void }) {
+export function PantallaAlojamiento({ route, ciudad, mapa, onTengo, onClose }: { route: Route; ciudad: string; mapa: DestinationExcursions['mapaAlojamiento']; onTengo?: () => void; onClose: () => void }) {
   const campaignCode = useRouteStore((state) => state.campaignCode)
   const url = useMemo(() => (mapa ? mapaAlojamientoUrl(mapa, route, campaignCode, monedaDelViajero(route)) : null), [mapa, route, campaignCode])
   useEffect(() => {
@@ -45,11 +45,14 @@ export function PantallaAlojamiento({ route, ciudad, mapa, onTengo, onClose }: {
           <div className="flex h-full items-center justify-center px-6 text-center text-[13px] text-text/60">Todavía no tenemos el mapa de alojamientos de este destino.</div>
         )}
       </div>
-      <div className="flex shrink-0 justify-center px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
-        <button type="button" onClick={onTengo} className="px-2 py-1.5 text-text underline underline-offset-[3px]" style={{ font: "italic 400 17px 'Instrument Serif',serif" }}>
-          ¿Ya tienes alojamiento? Añádelo
-        </button>
-      </div>
+      {/* (Tanda 10N3 §2.7) Quien mira el viaje de otra persona solo mira: sin «Añádelo» (ni «mandarle la idea» al dueño). */}
+      {onTengo && (
+        <div className="flex shrink-0 justify-center px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
+          <button type="button" data-ya-tengo-alojamiento onClick={onTengo} className="px-2 py-1.5 text-text underline underline-offset-[3px]" style={{ font: "italic 400 17px 'Instrument Serif',serif" }}>
+            ¿Ya tienes alojamiento? Añádelo
+          </button>
+        </div>
+      )}
     </div>,
     document.body,
   )

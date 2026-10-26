@@ -303,7 +303,7 @@ console.log('4. El código: nada escrito a mano')
   const pag = fs.readFileSync('src/components/logros/pantallas/sorteo/PaginaDelSorteo.tsx', 'utf8')
   debe(/edicion\.bases_url\s*&&/.test(pag), 'codigo', '[Bases legales] solo sale si hay enlace')
   const cuerpo = fs.readFileSync('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx', 'utf8')
-  const orden = ['<NivelYBarra', '<BilleteDelSorteo', 'data-vitrina-del-perfil', '<TarjetaPasaporte', 'data-numero-de-viajes'].map((k) => cuerpo.indexOf(k))
+  const orden = ['<NivelYBarra', '<BilleteDelSorteo', 'data-vitrina-del-perfil', '<TarjetaPasaporte', '{misViajes}'].map((k) => (k === '{misViajes}' ? cuerpo.lastIndexOf(k) : cuerpo.indexOf(k)))
   debe(orden.every((x, i) => x > 0 && (i === 0 || x > orden[i - 1])), 'perfil', 'el orden del perfil en el código: EXP, billete, Mi vitrina, Mi pasaporte y Mis viajes')
   debe(!/MapaMisViajes/.test(sinComentarios(cuerpo)), 'perfil', 'el mapa suelto (MapaMisViajes) ya no está en el perfil con logros')
 }

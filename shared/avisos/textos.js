@@ -15,6 +15,9 @@ export function rangoEnPalabras(inicio, fin) {
 
 import { formatoImporte } from '../dinero/formato.js'
 
+/** «el Coliseo» → «del Coliseo»; «Panteón» → «de Panteón». */
+export const conDe = (sitio) => String(sitio ?? '').replace(/^el /i, 'del ').replace(/^(la|las|los) /i, (m) => `de ${m}`).replace(/^(?!del |de la |de las |de los )/i, 'de ')
+
 /** El nombre de pila, o '' si la persona aún no ha puesto uno. */
 const nombreDe = (n) => (n && String(n).trim() ? String(n).trim() : '')
 
@@ -43,6 +46,20 @@ function diaEnPalabras(iso) {
  * (Tanda 10N §10) Lo que cambió en el viaje, en lenguaje normal: «ha quitado 2 días», «ha añadido Fontana di Trevi al sábado 28», «ha cambiado las fechas». `plural`: sin nombre de quien lo hace
  * («han quitado 2 días»). Varios cambios seguidos se juntan en uno: «ha quitado 2 días y ha añadido Fontana di Trevi al sábado 28».
  */
+let TABLA_DE_ARTICULOS = {}
+/** (10N3 §2.2) La tabla nombre del sitio → 'el' | 'la' | 'los' | 'las' | '' (data/logros/articulos.json, todos los destinos juntos). La pone el servidor al arrancar; sin ella, los nombres salen sin artículo. */
+export function ponerTablaDeArticulos(tabla) {
+  TABLA_DE_ARTICULOS = tabla ?? {}
+}
+const normaSitio = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s*\((noche|por fuera)\)\s*$/i, '').trim().toLowerCase()
+/** «la Fontana de Trevi», «el Coliseo»; sin artículo en la tabla (o sin tabla): «Piazza Navona». */
+export function sitioConArticulo(nombre) {
+  const limpio = String(nombre ?? '').replace(/\s*\((noche|por fuera)\)\s*$/i, '').trim()
+  const clave = normaSitio(limpio)
+  for (const [k, v] of Object.entries(TABLA_DE_ARTICULOS)) if (normaSitio(k) === clave) return v ? `${v} ${limpio}` : limpio
+  return limpio
+}
+
 export function queCambioEnElViaje(p, plural = false) {
   const v = (singular, pluralForma) => (plural ? pluralForma : singular)
   const partes = []
@@ -54,10 +71,10 @@ export function queCambioEnElViaje(p, plural = false) {
   if (anadidas.length > 0) {
     const primera = anadidas[0]
     const cuando = diaEnPalabras(primera.fecha) ? ` al ${diaEnPalabras(primera.fecha)}` : Number.isInteger(primera.dia_n) ? ` al día ${primera.dia_n}` : ''
-    partes.push(`${v('ha añadido', 'han añadido')} ${primera.nombre}${cuando}${anadidas.length > 1 ? ` y ${anadidas.length - 1 === 1 ? 'otro sitio' : `otros ${anadidas.length - 1} sitios`}` : ''}`)
+    partes.push(`${v('ha añadido', 'han añadido')} ${sitioConArticulo(primera.nombre)}${cuando}${anadidas.length > 1 ? ` y ${anadidas.length - 1 === 1 ? 'otro sitio' : `otros ${anadidas.length - 1} sitios`}` : ''}`)
   }
   const quitadas = Array.isArray(p.quitadas) ? p.quitadas : []
-  if (quitadas.length > 0 && quitados === 0) partes.push(`${v('ha quitado', 'han quitado')} ${quitadas.length === 1 ? quitadas[0].nombre : `${quitadas.length} sitios`}`)
+  if (quitadas.length > 0 && quitados === 0) partes.push(`${v('ha quitado', 'han quitado')} ${quitadas.length === 1 ? sitioConArticulo(quitadas[0].nombre) : `${quitadas.length} sitios`}`)
   if (p.fechas) partes.push(`${v('ha cambiado', 'han cambiado')} las fechas`)
   if (partes.length === 0 && ((Number(p.movidas) || 0) > 0 || p.reordenado)) partes.push(`${v('ha movido', 'han movido')} paradas`)
   if (partes.length === 0) return ''
@@ -116,6 +133,8 @@ export function textoDelAviso(aviso) {
       return p.resultado === 'aceptado' ? `${nombreDe(p.admin) ? `${nombreDe(p.admin)} ha aceptado` : 'Han aceptado'} tu gasto` : `${nombreDe(p.admin) ? `${nombreDe(p.admin)} ha preferido` : 'Han preferido'} no sumar tu gasto`
     // Tanda 10N §8 (la entrada que el dueño compra para varios): «Eric ha reservado el Coliseo para ti: jueves 26, 8:00.» · «Eric ha reservado el Coliseo el jueves 26 a las 8:00.»
     case 'reserva_grupo': {
+      // «Tu entrada del Coliseo es el viernes 27, y en la ruta está el jueves 26.» (la del invitado que no cuadra con la ruta; la crea la base de datos o la calcula el móvil)
+      if (p.caso === 'no_cuadra') return `Tu entrada ${conDe(p.sitio)} es el ${p.dia_reserva}, y en la ruta está el ${p.dia_ruta}.`
       const quien = nombreDe(p.quien) || 'El dueño'
       const [h, m] = String(p.hora ?? '').split(':')
       const hora = m === undefined ? String(p.hora ?? '') : `${Number(h)}:${m}`

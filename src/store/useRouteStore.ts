@@ -523,6 +523,8 @@ interface RouteStoreState {
   /** El presupuesto del viaje (Tanda 6z2): los gastos sueltos («Extras»), la moneda del viajero y el precio de cada billete de llegada y de vuelta. Lo demás (entradas, alojamiento…) guarda su precio con cada cosa. */
   addGastoExtra: (extra: GastoExtra) => void
   removeGastoExtra: (id: string) => void
+  /** (Tanda 10N3) «¿Entre quién?» de una línea que entra sola en las cuentas del grupo (alojamiento, coche); `null` la deja entre todos. */
+  setCuentasEntre: (clave: string, ids: string[] | null) => void
   setMonedaViajero: (moneda: string | null) => void
   setPersonas: (personas: number | null) => void
   setLegPrecio: (kind: 'arrival' | 'departure', precio: Importe | null) => void
@@ -1690,6 +1692,15 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   addGastoExtra: (extra) => set((state) => (state.route ? { route: { ...state.route, gastosExtras: [...(state.route.gastosExtras ?? []), extra] } } : state)),
 
   removeGastoExtra: (id) => set((state) => (state.route ? { route: { ...state.route, gastosExtras: (state.route.gastosExtras ?? []).filter((extra) => extra.id !== id) } } : state)),
+
+  setCuentasEntre: (clave, ids) =>
+    set((state) => {
+      if (!state.route) return state
+      const resto = { ...(state.route.cuentasEntre ?? {}) }
+      if (ids && ids.length > 0) resto[clave] = ids
+      else delete resto[clave]
+      return { route: { ...state.route, cuentasEntre: Object.keys(resto).length > 0 ? resto : undefined } }
+    }),
 
   setPersonas: (personas) => set((state) => (state.route ? { route: { ...state.route, personas } } : state)),
 

@@ -18,9 +18,16 @@ import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { quienEs, tokenDe } from './cuentas.js'
-import { detalleDelAviso, quienDelAviso, textoDelAviso, textoDelPush } from '../shared/avisos/textos.js'
+import { detalleDelAviso, ponerTablaDeArticulos, quienDelAviso, textoDelAviso, textoDelPush } from '../shared/avisos/textos.js'
 
 const AQUI = dirname(fileURLToPath(import.meta.url))
+// (Tanda 10N3 §2.2) Los avisos que nombran un sitio («ha añadido la Fontana de Trevi al sábado 28») llevan su artículo, de la misma tabla que los logros.
+try {
+  const tablas = JSON.parse(readFileSync(join(AQUI, '..', 'data', 'logros', 'articulos.json'), 'utf8'))
+  ponerTablaDeArticulos(Object.assign({}, ...Object.entries(tablas).filter(([k]) => !k.startsWith('_')).map(([, v]) => v)))
+} catch {
+  /* sin tabla: los nombres salen sin artículo */
+}
 const verdadero = (v) => String(v ?? '').toLowerCase() === 'true'
 
 export const pushEncendido = (env = process.env) => verdadero(env.PUSH_ACTIVO)

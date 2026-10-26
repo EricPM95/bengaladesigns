@@ -5,6 +5,8 @@ import { esInvitadoFingido, useModoInvitado } from '../../hooks/useModoInvitado'
 import { usePuedeCambiarLaRuta } from '../../hooks/usePuedeCambiarLaRuta'
 import { useLaPropuesta } from '../../hooks/useLaPropuesta'
 import { esUnaPropuesta } from '../../lib/propuesta'
+import { aplicarCambioDeReservaConAviso } from '../../lib/cambiarDiaPorReserva'
+import type { CambioDeReservaPropuesto } from '../../lib/reservasGrupo'
 import { esElDiaAntes } from '../../lib/viajeEmpezado'
 import { llamarServidor } from '../../lib/servidor'
 import { usePropuestaStore } from '../../store/usePropuestaStore'
@@ -65,6 +67,16 @@ function Encendido() {
     else document.documentElement.removeAttribute('data-solo-ver')
     return () => document.documentElement.removeAttribute('data-solo-ver')
   }, [soloRecomienda, enViaje])
+
+  // (Tanda 10N3 §2.8) [Proponer el cambio] / [Moverlo al viernes 27] del aviso «Tu entrada del Coliseo es el viernes 27, y en la ruta está el jueves 26»: mueve esa parada al día de la entrada.
+  useEffect(() => {
+    const alPedirlo = (e: Event) => {
+      e.preventDefault()
+      aplicarCambioDeReservaConAviso((e as CustomEvent<CambioDeReservaPropuesto>).detail)
+    }
+    window.addEventListener('trazo:proponer-cambio-reserva', alPedirlo)
+    return () => window.removeEventListener('trazo:proponer-cambio-reserva', alPedirlo)
+  }, [])
 
   // El día antes del viaje, con cambios sin enviar: un aviso en su campana (una sola vez al día).
   useEffect(() => {

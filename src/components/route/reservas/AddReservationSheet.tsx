@@ -151,7 +151,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const [readError, setReadError] = useState<string | null>(null)
   const [read, setRead] = useState(false)
   // Los datos del Free Tour del destino (Tanda 6y2): en una ruta a mano, la reserva del Free Tour crea su parada con ellos.
-  const { sitiosGrandes: fichasSitiosGrandes, entradasPorSitio } = useDestinationExcursions(route.destination)
+  const { sitiosGrandes: fichasSitiosGrandes, entradasPorSitio, nombresCortos } = useDestinationExcursions(route.destination)
   // Tanda 10N §8: quién mira (el dueño o quien está en su viaje) y si el viaje es de varias personas.
   const grupo = useEntradasDelGrupo()
   const esInvitado = grupo.esInvitado
@@ -339,6 +339,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       excursionData: target.excursion ?? null,
       precio: target.refId === 'Free Tour' ? null : precio.importe,
       ...(paraQuienVisible ? { paraQuien: marcados } : {}),
+      // (El nombre corto con artículo —«el Coliseo»— viaja con la reserva: así el aviso que crea la base de datos lo dice bien.)
+      shortName: nombresCortos?.[target.refId] ?? existing?.shortName ?? null,
     }
   }
   useEffect(() => {

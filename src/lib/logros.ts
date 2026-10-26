@@ -126,6 +126,9 @@ async function cabeceras(): Promise<Record<string, string> | null> {
 export async function llamar<T = unknown>(ruta: string, opciones: { metodo?: string; cuerpo?: unknown } = {}): Promise<T | null> {
   if (import.meta.env.DEV && demoActivo()) {
     const demo = await import('./logrosDemo')
+    // Solo desarrollo (Tanda 10N3): `window.__retrasoDemo = { '/api/logros/perfil': 3000 }` retrasa la respuesta de esa ruta, para ver cómo se ve el Perfil mientras llegan los datos.
+    const retraso = (window as unknown as { __retrasoDemo?: Record<string, number> }).__retrasoDemo?.[ruta]
+    if (retraso) await new Promise((r) => setTimeout(r, retraso))
     return (await demo.responder(ruta, opciones)) as T | null
   }
   try {

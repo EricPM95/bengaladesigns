@@ -30,16 +30,36 @@ function escribir(tripId: string | null, lista: Reservation[]) {
   }
 }
 
+/** Lo que se guardó en este móvil y aún no está en la nube (sin conexión o sin sesión): al abrir con cuenta se sube, en vez de bajar lo de la nube encima. */
+const claveDePendiente = (tripId: string | null): string => `${CLAVE}:pendiente:${tripId ?? 'local'}`
+const marcarPendiente = (tripId: string | null, si: boolean) => {
+  try {
+    if (si) window.localStorage.setItem(claveDePendiente(tripId), '1')
+    else window.localStorage.removeItem(claveDePendiente(tripId))
+  } catch {
+    // sin almacenamiento
+  }
+}
+const hayPendiente = (tripId: string | null): boolean => {
+  try {
+    return window.localStorage.getItem(claveDePendiente(tripId)) === '1'
+  } catch {
+    return false
+  }
+}
+
 async function guardarEnLaNube(tripId: string | null, lista: Reservation[]) {
   if (!supabase || !tripId) return
+  marcarPendiente(tripId, true)
   try {
     const { data } = await supabase.auth.getUser()
     const uid = data.user?.id
     if (!uid) return
     const { error } = await supabase.from('reservas_invitado').upsert({ trip_id: tripId, user_id: uid, reservas: lista, actualizado_en: new Date().toISOString() })
     if (error) console.warn('[misReservas] no se pudo guardar en la nube (¿falta la migración 0038?):', error.message)
+    else marcarPendiente(tripId, false)
   } catch {
-    // La nube es un extra.
+    // La nube es un extra: queda pendiente y se sube al abrir con cuenta.
   }
 }
 
@@ -62,13 +82,20 @@ export const useMisReservas = create<MisReservasState>((set, get) => ({
       const { data: usuario } = await supabase.auth.getUser()
       if (!usuario.user) return
       const { data, error } = await supabase.from('reservas_invitado').select('reservas').eq('trip_id', tripId).eq('user_id', usuario.user.id).maybeSingle()
-      if (error || !data || !Array.isArray(data.reservas)) return
+      if (error) return
       if (get().tripId !== tripId) return
-      // (Gana lo que ya hay en el móvil con el mismo id; lo que solo está en la nube se suma.)
-      const propias = get().lista
-      const juntas = [...propias, ...(data.reservas as Reservation[]).filter((r) => !propias.some((p) => p.id === r.id))]
-      set({ lista: juntas })
-      escribir(tripId, juntas)
+      if (hayPendiente(tripId)) {
+        void guardarEnLaNube(tripId, get().lista)
+        return
+      }
+      // La nube manda (lo que se quitó en otro móvil no vuelve). Sin fila en la nube, lo que hay en este móvil se sube.
+      if (!data || !Array.isArray(data.reservas)) {
+        if (get().lista.length > 0) void guardarEnLaNube(tripId, get().lista)
+        return
+      }
+      const lista = data.reservas as Reservation[]
+      set({ lista })
+      escribir(tripId, lista)
     } catch {
       // Sin nube: las del móvil.
     }

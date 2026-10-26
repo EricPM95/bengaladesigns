@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { resolverRecomendacion, vistaPrevia, type Recomendacion } from '../../lib/aplicarRecomendacion'
 import { cuentasActivas } from '../../lib/cuentas'
 import type { Route } from '../../lib/types'
-import { useModoInvitado } from '../../hooks/useModoInvitado'
+import { usePermisosDelViaje } from '../../hooks/usePermisosDelViaje'
 import { useR2Store } from '../../store/useR2Store'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useViajeCompartido } from '../../store/useViajeCompartido'
@@ -31,9 +31,10 @@ export function EtiquetaRecomendacion({ dayId }: { dayId: string }) {
 function Etiqueta({ dayId }: { dayId: string }) {
   const route = useRouteStore((s) => s.route)
   const recs = useViajeCompartido((s) => s.recomendaciones)
-  const { esInvitado } = useModoInvitado()
+  // (Tanda 10N3 §1) La ven quienes deciden: el administrador y quien «Puede editar».
+  const { puedeEditar } = usePermisosDelViaje()
   const abrir = useR2Store((s) => s.abrir)
-  const mapa = useMemo(() => (route && !esInvitado ? diasConRecomendacion(route, recs) : new Map<string, Recomendacion[]>()), [route, recs, esInvitado])
+  const mapa = useMemo(() => (route && puedeEditar ? diasConRecomendacion(route, recs) : new Map<string, Recomendacion[]>()), [route, recs, puedeEditar])
   const delDia = mapa.get(dayId)
   if (!delDia || delDia.length === 0) return null
   return (

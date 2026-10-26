@@ -11,6 +11,8 @@ import { useNumeroFotos } from '../../lib/useNumeroFotos'
 import { chinchetasDeViajes, cifrasDelPerfil, viajePorId, viajesDelPerfil, type ResumenViaje } from '../../lib/viajesPerfil'
 import { Icono } from '../ui/Icono'
 import { Creditos } from '../perfil/Creditos'
+import { PerfilEsqueleto } from '../perfil/PerfilEsqueleto'
+import { useMiNombreYFoto } from '../../store/useMiPerfil'
 import { CabeceraDeSiempre } from '../perfil/CabeceraDeSiempre'
 import { FichaDeViaje } from '../perfil/FichaDeViaje'
 import { FilaDeViaje } from '../perfil/FilaDeViaje'
@@ -45,6 +47,7 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
   const fotos = useNumeroFotos(useMemo(() => viajes.map((v) => v.id), [viajes]))
   const ficha = viajePorId(viajes, albumDe)
   const hydrateTrip = useRouteStore((state) => state.hydrateTrip)
+  const yo = useMiNombreYFoto()
 
   // (Tanda 6y5) [Abrir este viaje]: carga el viaje guardado en la app y cierra el Perfil.
   const abrirViaje = (viaje: ResumenViaje) => {
@@ -55,7 +58,7 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
     hydrateTrip(viaje.guardado)
   }
 
-  // El Perfil de siempre (con los logros apagados es el único; con ellos encendidos es el de mientras llegan los datos o si no hay cuenta).
+  // El Perfil de siempre: el ÚNICO que hay con los logros apagados (hoy, en producción, siguen apagados). Con los logros encendidos NO sale nunca, ni un instante (Tanda 10N3, §3b.2): mientras llegan los datos se ve el nuevo vacío.
   const cuerpoDeSiempre = (
     <>
       <CabeceraDeSiempre />
@@ -98,8 +101,8 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
               </header>
               <div className="flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto px-4 pb-5 pt-0.5" style={{ scrollbarWidth: 'none' }}>
                 {logrosActivos() ? (
-                  <Suspense fallback={cuerpoDeSiempre}>
-                    <CuerpoConLogros cuerpoDeSiempre={cuerpoDeSiempre} viajes={viajes} chinchetas={chinchetas} cifras={cifras} fotos={fotos} rutaAbiertaId={rutaAbierta?.id ?? null} onAbrirAlbum={abrirAlbum} onAbrirViaje={abrirViaje} />
+                  <Suspense fallback={<PerfilEsqueleto nombre={yo.tieneNombre ? yo.nombre : null} />}>
+                    <CuerpoConLogros viajes={viajes} chinchetas={chinchetas} cifras={cifras} fotos={fotos} rutaAbiertaId={rutaAbierta?.id ?? null} onAbrirAlbum={abrirAlbum} onAbrirViaje={abrirViaje} />
                   </Suspense>
                 ) : (
                   cuerpoDeSiempre

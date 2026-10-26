@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { Recomendacion } from '../lib/aplicarRecomendacion'
 import { listarRecomendaciones } from '../lib/recomendacionesViaje'
 import { supabase } from '../lib/supabaseClient'
+import { leerEncuadre, type Encuadre } from '../lib/encuadreFoto'
 import { useSyncStore } from './useSyncStore'
 
 /**
@@ -15,6 +16,8 @@ export interface Persona {
   /** La inicial de su email (solo la letra), para el círculo mientras no tenga nombre. */
   inicial?: string | null
   foto: string | null
+  /** El encuadre de su foto (Tanda 10N3, migración 0044); sin él, centrada. */
+  encuadre?: Encuadre | null
   esAdmin: boolean
   /** Tanda 10N: Administrador / Puede editar / Solo recomendar. Sin la migración 0036 todo el mundo que no es admin cuenta como «recomendar». */
   permiso?: Permiso
@@ -53,11 +56,12 @@ async function gentePorRpc(tripId: string): Promise<Persona[]> {
   try {
     const { data, error } = await supabase!.rpc('gente_del_viaje', { p_trip: tripId })
     if (error || !Array.isArray(data)) return []
-    return (data as { id: string; nombre: string | null; inicial?: string | null; foto: string | null; es_admin: boolean; permiso?: string | null; es_yo?: boolean }[]).map((p) => ({
+    return (data as { id: string; nombre: string | null; inicial?: string | null; foto: string | null; encuadre?: unknown; es_admin: boolean; permiso?: string | null; es_yo?: boolean }[]).map((p) => ({
       id: p.id,
       nombre: p.nombre,
       inicial: p.inicial ?? null,
       foto: p.foto,
+      encuadre: leerEncuadre(p.encuadre),
       esAdmin: p.es_admin,
       permiso: p.es_admin ? 'admin' : p.permiso === 'editar' ? 'editar' : 'recomendar',
       esYo: p.es_yo === true,

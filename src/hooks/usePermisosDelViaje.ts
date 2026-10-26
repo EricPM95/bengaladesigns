@@ -1,5 +1,5 @@
 import { useViajeCompartido, type Permiso } from '../store/useViajeCompartido'
-import { useModoInvitado } from './useModoInvitado'
+import { permisoDe, permisoFingido, useModoInvitado } from './useModoInvitado'
 
 /**
  * LOS PERMISOS DEL VIAJE ABIERTO (tanda 10N, apartado 4a). Una sola fuente para toda la app:
@@ -19,23 +19,11 @@ export interface PermisosDelViaje {
   nombreAdmin: string
 }
 
-export function permisoFingido(): Permiso | null {
-  if (!import.meta.env.DEV) return null
-  try {
-    const v = window.sessionStorage.getItem('trazo:permiso')
-    return v === 'editar' || v === 'recomendar' ? v : null
-  } catch {
-    return null
-  }
-}
+export { permisoFingido }
 
 export function usePermisosDelViaje(): PermisosDelViaje {
   const { esInvitado, nombreAdmin } = useModoInvitado()
   const gente = useViajeCompartido((s) => s.gente)
-  let rol: Permiso = 'admin'
-  if (esInvitado) {
-    const yo = gente.find((p) => p.esYo)
-    rol = permisoFingido() ?? (yo?.permiso && yo.permiso !== 'admin' ? yo.permiso : 'recomendar')
-  }
+  const rol: Permiso = permisoDe(esInvitado, gente)
   return { rol, esAdmin: rol === 'admin', puedeEditar: rol !== 'recomendar', soloRecomienda: rol === 'recomendar', esInvitado, nombreAdmin }
 }

@@ -1,0 +1,66 @@
+[
+  {
+    "apartado": "§1 · «Puede editar» en la pantalla",
+    "punto": "Quien puede editar toca la ruta como el administrador: DÍAS, EXPLORAR, añadir, mover, quitar y las rayitas de los días, sin lápiz ni propuesta",
+    "estado": "hecho",
+    "nota": "Ya funcionaba en la ruta desde la 10N (usePuedeCambiarLaRuta); lo que seguía mal era useModoInvitado.soloVer, que lo trataba como invitado: ahora solo vale para quien solo recomienda. Comprobado en la prueba (reordenar, quitar, mover a otro día, puntitos y rayitas, EXPLORAR, sin lápiz).",
+    "donde": "Cuenta «Puede editar»: pestañas DÍAS (··· de la parada y rayitas de los días) y EXPLORAR (añadir un sitio); no sale el lápiz",
+    "captura": "10n3_editar_editor_explorar.jpg"
+  },
+  {
+    "apartado": "§1 · «Puede editar» en la pantalla",
+    "punto": "Acepta o rechaza propuestas y gastos desde la campana",
+    "estado": "medias",
+    "nota": "Hecho en la app (la hoja «Ana te propone N cambios» con [Aceptar]/[Rechazar] y la etiqueta dorada del día ahora salen también para quien puede editar; los gastos ya los decidía puedeEditar). Falta APLICAR la migración 0045: sin ella el aviso de la propuesta en la campana sigue llegando solo al dueño. La parte de base de datos no se ha probado contra Supabase.",
+    "donde": "Cuenta «Puede editar», con una propuesta pendiente de un invitado: campana, o etiqueta «1 recomendación» en la tarjeta del día en RUTA",
+    "captura": "10n3_editar_editor_decide_propuesta.jpg"
+  },
+  {
+    "apartado": "§1 · «Puede editar» en la pantalla",
+    "punto": "No ve el botón de las fechas (apagado), ni RESERVAS de llegada y vuelta ni el alojamiento (en gris)",
+    "estado": "hecho",
+    "nota": "El botón de fechas de la cabecera del mapa sale apagado y el calendario no se abre desde ningún sitio (también para quien solo recomienda). Llegada, vuelta y alojamiento en gris como antes.",
+    "donde": "Cuenta «Puede editar»: RUTA (arriba, destino y fechas, sin responder al toque) y RESERVAS (Llegada y vuelta, Alojamiento)",
+    "captura": "10n3_editar_editor_ruta_fechas_fijas.jpg"
+  },
+  {
+    "apartado": "§1 · «Puede editar» en la pantalla",
+    "punto": "No puede invitar, quitar, cambiar permisos ni borrar el viaje",
+    "estado": "hecho",
+    "nota": "En «Personas del viaje» solo tiene [Salir del viaje]; en «Mis viajes» el viaje ajeno es «Salir de este viaje», no borrar.",
+    "donde": "Cuenta «Puede editar»: RUTA › caras de las personas del viaje; Perfil › Mis viajes",
+    "captura": "10n3_editar_editor_personas.jpg"
+  },
+  {
+    "apartado": "§2 · Duda 7",
+    "punto": "Alojamiento del invitado: [Buscar alojamiento] para mirar, sin «mandarle la idea» al dueño",
+    "estado": "hecho",
+    "nota": "En el mapa de alojamientos ya no sale «¿Ya tienes alojamiento? Añádelo» para quien no es el dueño; si algo le abre la hoja «Tu alojamiento», se cierra con «Esto lo cambia Eric». El aviso «El alojamiento lo guarda Eric» se ha quitado.",
+    "donde": "Cuenta «solo recomendar» o «puede editar»: RESERVAS › Alojamiento › [Buscar alojamiento]",
+    "captura": "10n3_editar_invitado_mapa_alojamiento.jpg"
+  },
+  {
+    "apartado": "§2 · Duda 8",
+    "punto": "[Proponer el cambio] (solo recomienda) y [Moverlo al viernes 27] (puede editar) en el aviso «Tu entrada del Coliseo es el viernes 27…»",
+    "estado": "hecho",
+    "nota": "PropuestaHost escucha trazo:proponer-cambio-reserva: mueve la parada al día de la entrada (propuesta de quien recomienda: un cambio más y el lápiz sube; editor: directo con Deshacer). Probado con el evento; el aviso real del servidor depende de la migración 0042 (D1), no probado contra Supabase.",
+    "donde": "Campana, aviso «Tu entrada del Coliseo es el … y en la ruta está el …» (solo recomendar: [Proponer el cambio]; puede editar: [Moverlo al …])",
+    "captura": "10n3_editar_proponer_cambio_coliseo.jpg"
+  },
+  {
+    "apartado": "§3 · Lo demás que quedó a medias",
+    "punto": "«Eric ha cambiado el viaje.» y la propuesta a medias marcada cuando el dueño quita lo que el invitado había propuesto",
+    "estado": "medias",
+    "nota": "Ya estaba enchufado (CompartidoHost pinta la línea tras Realtime/refresco; hydrateTrip → alLlegarElViaje marca «ya no está en la ruta» con su ✕). Probado el marcado en la pantalla; la línea con Realtime real no se ha visto con dos móviles en esta prueba.",
+    "donde": "Cuenta «solo recomendar» con un cambio sin enviar (p. ej. quitar el Panteón) y el dueño quitándolo: lápiz › lista",
+    "captura": "10n3_editar_propuesta_a_medias_marcada.jpg"
+  },
+  {
+    "apartado": "§3 · Lo demás que quedó a medias",
+    "punto": "El lápiz no tapa la última parada ni el botón de los logros en 390 px con un día largo",
+    "estado": "hecho",
+    "nota": "En DÍAS (día de 18 paradas) y EXPLORAR ya había hueco. En RESERVAS el lápiz tapaba los últimos botones («Comprar»/«Añadir»): arreglado con el mismo hueco al final.",
+    "donde": "Cuenta «solo recomendar» con algún cambio hecho: DÍAS (abrir un día largo, bajar al final) y RESERVAS (bajar al final)",
+    "captura": "10n3_editar_lapiz_dia_largo_final.jpg"
+  }
+]

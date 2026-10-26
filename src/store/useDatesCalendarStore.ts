@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { miPermisoAhora } from '../hooks/useModoInvitado'
 
 /**
  * El calendario de fechas de dentro de la app (Tanda 6y4): UNA sola puerta para abrirlo, desde donde sea (la cabecera del mapa, «Pon tus fechas» de HOY,
@@ -13,6 +14,10 @@ interface DatesCalendarState {
 
 export const useDatesCalendarStore = create<DatesCalendarState>((set) => ({
   open: false,
-  request: () => set({ open: true }),
+  // (Tanda 10N3 §1) Las fechas del viaje las cambia solo el administrador: para quien «Puede editar» o «Solo recomienda» el calendario no se abre desde ningún sitio.
+  request: () => {
+    if (miPermisoAhora() !== 'admin') return
+    set({ open: true })
+  },
   close: () => set({ open: false }),
 }))

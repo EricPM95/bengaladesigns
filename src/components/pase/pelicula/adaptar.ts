@@ -136,6 +136,7 @@ function ajustarAlMovil(ast: Nodo[]) {
     const dentro = h.c![0] as Nodo
     if (dentro.a?.style?.startsWith('position:absolute;inset:0')) dentro.a = { ...dentro.a, style: dentro.a.style.replace('position:absolute;inset:0', 'position:absolute;top:0;bottom:0;left:var(--dx,0px);width:390px') }
   }
+  ajustarTextosYEscena0(movil)
   // [Ver] / [Saltar] y el ✕ del final: la barra de arriba deja sitio al ✕ (si no, [Ver] se pone encima).
   recorre(movil, (n) => {
     if (n.a?.style?.startsWith('position:absolute;left:18px;right:18px;top:66px;display:flex;justify-content:flex-end')) n.a = { ...n.a, style: n.a.style.replace('right:18px', 'right:{{ barR }}px'), 'data-barra-superior': '1' }
@@ -144,6 +145,78 @@ function ajustarAlMovil(ast: Nodo[]) {
     if (n.a?.onClick === '{{ skip }}') n.a = { ...n.a, 'data-pelicula-saltar': '1', role: 'button' }
   })
   // Las zonas de toque (atrás / adelante) tapan el final: en el final no hay nada que pasar y la lista tiene que dejarse tocar y mover.
+}
+
+/**
+ * LA APERTURA MÁS GRANDE Y CON LOS TEXTOS MÁS ARRIBA (Tanda 10N3, 3b.1). Design pone los textos de abajo en `top:650px` (de 844) y el mapa y las tarjetas de la escena 0 en 342 de ancho: en un móvil de 390 x 664 (con la barra de Safari)
+ * los textos quedaban cortados por abajo y el mapa y las tarjetas con mucho hueco a los lados. Aquí:
+ *   · los textos de abajo (escenas 0, 1, 3, 4, 5, 6) salen de `tTop` (lo calcula PeliculaPase según el alto que hay: pegados a la última tarjeta, con una separación clara, y sin bajar del borde de abajo) en vez de `650px`;
+ *   · la escena 0 ocupa todo el ancho del escenario: el mapa, las filas de llegada/salida y las tarjetas de las paradas se ensanchan a `wm` (ancho - 28, un margen de 14 a cada lado); lo que no se puede estirar sin deformarse
+ *     (la ruta con sus pines, el desgarro y las tiras de colores) se queda de su tamaño, centrado en el mapa. El 342 de ancho no se toca en ninguna otra escena.
+ */
+function ajustarTextosYEscena0(movil: Nodo) {
+  recorre(movil, (n) => {
+    const st = n.a?.style
+    if (!st) return
+    if (st.includes('top:650px;height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;')) {
+      n.a = { ...n.a, 'data-texto-abajo': '1', style: st.replace('top:650px;height:190px;', 'top:{{ tTop }}px;height:auto;').replace('justify-content:center;', 'justify-content:flex-start;') }
+    }
+    // El hueco de las frases que van cambiando (84): tres líneas caben en 66.
+    if (st === 'position:relative;width:100%;height:84px') n.a = { ...n.a, style: 'position:relative;width:100%;height:66px' }
+  })
+  // La escena 3 (el emblema secreto): centrada como las demás (antes se quedaba pegada a la izquierda), el emblema 32 más arriba para que su borde de abajo no toque el texto, y el aviso de abajo pegado al texto.
+  const eff = movil.c!.find((h) => esNodo(h) && h.i === '{{ effS }}') as Nodo | undefined
+  if (eff) {
+    const d = eff.c![0] as Nodo
+    d.a = { ...d.a, style: d.a!.style.replace('position:absolute;inset:0', 'position:absolute;top:0;bottom:0;left:var(--dx,0px);width:390px') }
+    recorre(d, (n) => {
+      const st = n.a?.style
+      if (!st) return
+      if (st === 'position:absolute;left:0;right:0;top:100px') n.a = { ...n.a, style: 'position:absolute;left:0;right:0;top:68px' }
+      else if (st.startsWith('position:absolute;left:173px;top:452px;')) n.a = { ...n.a, style: st.replace('top:452px;', 'top:420px;') }
+      else if (st.startsWith('position:absolute;left:36px;right:36px;top:762px;')) n.a = { ...n.a, style: st.replace('top:762px;', 'top:{{ tToast }}px;') }
+    })
+  }
+  // Las escenas 1 (HOY) y 5 (el pasaporte) llegan hasta y = 630 (el texto empieza en 608): se recogen un 7 % y 16 hacia arriba, todo junto, sin deformar nada.
+  for (const id of ['{{ s1 }}', '{{ s5 }}']) {
+    const esc = movil.c!.find((h) => esNodo(h) && h.i === id) as Nodo | undefined
+    const d = esc?.c?.[0] as Nodo | undefined
+    if (!d?.c) continue
+    const texto = (h: Nodo | string) => esNodo(h) && h.a?.['data-texto-abajo'] === '1'
+    d.c = [{ t: 'div', a: { 'data-visual-recogido': '1', style: 'position:absolute;inset:0;transform-origin:50% 0;transform:translateY(-16px) scale(0.93)' }, c: d.c.filter((h) => !texto(h)) }, ...d.c.filter(texto)]
+  }
+  const s0 = movil.c!.find((h) => esNodo(h) && h.i === '{{ s0 }}') as Nodo | undefined
+  if (!s0) return
+  const dentro = s0.c![0] as Nodo
+  dentro.a = { ...dentro.a, style: dentro.a!.style.replace(/position:absolute;top:0;bottom:0;left:var\(--dx,0px\);width:390px/, 'position:absolute;top:0;bottom:0;left:0;width:{{ W }}px') }
+  const mapa = (n: Nodo) => n.t === 'div' && Boolean(n.a?.style?.startsWith('position:absolute;left:24px;top:108px;width:342px;height:190px;overflow:hidden'))
+  recorre(dentro, (n) => {
+    const st = n.a?.style
+    if (!st) return
+    if (n.t === 'div' && /^position:absolute;left:24px;top:\d+px;width:342px;/.test(st)) {
+      n.a = { ...n.a, style: st.replace('left:24px;', 'left:14px;').replace('width:342px;', 'width:{{ wm }}px;') }
+      if (mapa(n)) {
+        // El mapa: el fondo se estira; la ruta y sus pines (342 x 190) quedan centrados, y los botones [+ Vuelo] y [+ Alojamiento] siguen pegados a la derecha.
+        const fondo: (Nodo | string)[] = []
+        const dentroDelMapa: (Nodo | string)[] = []
+        const botones: (Nodo | string)[] = []
+        for (const h of n.c ?? []) {
+          const hs = esNodo(h) ? (h.a?.style ?? '') : ''
+          if (esNodo(h) && h.t === 'span' && /^position:absolute;inset:0;background:/.test(hs)) fondo.push(h)
+          else if (esNodo(h) && /^position:absolute;right:(12|96)px;top:12px;height:30px;/.test(hs)) botones.push(h)
+          else dentroDelMapa.push(h)
+        }
+        n.c = [...fondo, { t: 'div', a: { style: 'position:absolute;left:{{ mi }}px;top:0;width:342px;height:190px' }, c: dentroDelMapa }, ...botones]
+      }
+      return
+    }
+    // El desgarro (svg de 342 x 42) y las tiras de colores: de su tamaño, centrados en el ancho de ahora.
+    if ((n.t === 'svg' || n.t === 'span') && /^position:absolute;left:(-?[\d.]+)px;top:\d+px;/.test(st) && (n.t === 'svg' || st.includes('clip-path'))) {
+      const m = /^position:absolute;left:(-?[\d.]+)px;/.exec(st)!
+      const desde = Number(m[1])
+      if (desde >= 24 && desde <= 340) n.a = { ...n.a, style: st.replace(`left:${m[1]}px;`, `left:calc({{ xc }}px + ${(desde - 24).toFixed(1)}px);`) }
+    }
+  })
 }
 
 /**

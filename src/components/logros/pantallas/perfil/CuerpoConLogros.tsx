@@ -5,6 +5,7 @@ import { Icono } from '../../../ui/Icono'
 import { useEliminarViaje } from '../../../../lib/eliminarViaje'
 import { usePerfilUi } from '../../../../store/usePerfilUi'
 import { BotonEditarViajes } from '../../../perfil/BotonEditarViajes'
+import { PerfilEsqueleto } from '../../../perfil/PerfilEsqueleto'
 import { plural, type Chincheta, type CifrasDelPerfil, type ResumenViaje } from '../../../../lib/viajesPerfil'
 import { BilleteDelSorteo } from '../sorteo/Billete'
 import { TarjetaPasaporte } from './TarjetaPasaporte'
@@ -27,10 +28,12 @@ const DORADO = '#F3D59A'
  * EL PERFIL CON SUS LOGROS (P1 y P1b de Design): lo que sustituye al «Hola, viajero» de siempre y a la lista de viajes cuando los logros están encendidos Y hay datos del servidor. De arriba abajo:
  * el marco de rango con la foto (la inicial, si no hay foto), «Hola, viajero», «Nivel 8 · Explorador» y el título que se elige al tocarlo; la barra de EXP; el billete del sorteo (10P); Mi vitrina; Mi pasaporte (la tarjeta con su mapa; el mapa de países suelto ya no sale: manda el pasaporte);
  * Mis viajes (en curso, próximo, ya hechos y los de antes de la app) y «Añadir un viaje que ya hiciste».
- * Mientras llegan los datos —o si no hay cuenta, o no hay servidor— se enseña `cuerpoDeSiempre`: el Perfil EXACTAMENTE como era. Este archivo se baja solo cuando el Perfil se abre con los logros encendidos.
+ * Mientras llegan los datos —o si no hay cuenta, o no hay servidor— se enseña el MISMO perfil vacío (`PerfilEsqueleto`: los huecos de cada tarjeta en gris claro) con «Mis viajes» de este móvil debajo; el Perfil viejo
+ * (`cuerpoDeSiempre`) no sale NUNCA con los logros encendidos (Tanda 10N3, §3b.2). Este archivo se baja solo cuando el Perfil se abre con los logros encendidos.
  */
 export interface PropsCuerpoConLogros {
-  cuerpoDeSiempre: ReactNode
+  /** Ya no se usa aquí (Tanda 10N3): con los logros encendidos el Perfil viejo no sale nunca. Se deja para no romper a quien lo pasa. */
+  cuerpoDeSiempre?: ReactNode
   viajes: ResumenViaje[]
   chinchetas: Chincheta[]
   cifras: CifrasDelPerfil
@@ -42,7 +45,7 @@ export interface PropsCuerpoConLogros {
   perfilInicial?: PerfilLogros | null
 }
 
-export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, fotos, rutaAbiertaId, onAbrirViaje, perfilInicial = null }: PropsCuerpoConLogros): ReactNode {
+export default function CuerpoConLogros({ viajes, fotos, rutaAbiertaId, onAbrirViaje, perfilInicial = null }: PropsCuerpoConLogros): ReactNode {
   const [perfil, setPerfil] = useState<PerfilLogros | null>(perfilInicial)
   const [eligiendo, setEligiendo] = useState(false)
   const editando = usePerfilUi((s) => s.editando)
@@ -76,14 +79,67 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, fotos, rutaAb
     [perfil],
   )
 
-  if (!perfil) return cuerpoDeSiempre
+  // «Mis viajes» (con 70 px de aire sobre él: 18 del hueco de siempre + 52): sale igual con y sin los datos del servidor.
+  const misViajes = (
+    <div className="flex flex-col gap-2" style={{ marginTop: 52 }} data-mis-viajes>
+      <div className="flex items-baseline justify-between px-1">
+        <span className="flex items-baseline gap-3">
+          <h3 className="m-0 font-display text-[24px] leading-none text-text">Mis viajes</h3>
+          {viajes.length > 0 && <BotonEditarViajes />}
+        </span>
+        <span className="text-text/45" style={{ font: "500 11px 'Geist Mono',monospace" }} data-numero-de-viajes>
+          {viajes.length}
+        </span>
+      </div>
+      {viajes.length === 0 && (perfil?.previos.paises ?? 0) === 0 && <p className="px-1 text-[13px] text-text/60">Aún no tienes viajes guardados en este dispositivo.</p>}
+      {grupos.map((g) => (
+        <div key={g.clave} className="flex flex-col gap-1.5" data-grupo-de-viajes={g.clave}>
+          <span className="px-1.5 pt-1.5 uppercase text-text/55" style={{ ...ETIQUETA_DE_GRUPO, color: g.clave === 'en_curso' ? '#6F4E37' : undefined }}>
+            {g.titulo}
+          </span>
+          {g.viajes.map((viaje) => (
+            <TarjetaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} enCurso={g.clave === 'en_curso'} abierto={viaje.id === rutaAbiertaId} onAbrir={() => abrir({ t: 'viaje', tripId: viaje.id })} onAbrirViaje={() => onAbrirViaje(viaje)} editando={editando} onEliminar={() => pedirEliminar(viaje, fotos ? (fotos.get(viaje.id) ?? 0) : null)} />
+          ))}
+        </div>
+      ))}
+      {perfil && perfil.previos.paises > 0 && (
+        <div className="flex flex-col gap-1.5" data-grupo-de-viajes="antes">
+          <span className="px-1.5 pt-1.5 uppercase text-text/55" style={ETIQUETA_DE_GRUPO}>
+            Antes de la app
+          </span>
+          <button type="button" onClick={() => abrir({ t: 'previos' })} data-viajes-de-antes className="relative h-[132px] w-full flex-none overflow-hidden rounded-[22px] text-left text-[#FFFDF8]" style={{ background: 'linear-gradient(160deg,#D6E4EA,#7EA6B8 55%,#3A5866)' }}>
+            <span aria-hidden="true" className="absolute inset-0" style={{ background: 'linear-gradient(180deg,rgba(10,12,20,.1) 20%,rgba(10,12,20,.72))' }} />
+            <span className="absolute bottom-3 left-3.5 flex flex-col gap-[3px]">
+              <span className="font-display text-[24px] leading-none">{plural(perfil.previos.paises, 'país', 'países')}</span>
+              <span className="font-display text-[13px] italic text-[#FFFDF8]/80">Viaje de antes de usar la app</span>
+            </span>
+          </button>
+        </div>
+      )}
+      <button type="button" onClick={() => abrir({ t: 'previos' })} data-anadir-viaje-previo className="mt-1 flex min-h-[52px] items-center justify-center gap-2 rounded-[18px] border-[1.5px] border-dashed border-text/25 bg-transparent text-[14px] font-semibold text-text">
+        <Icono nombre="anadir" size={15} grosor={2.2} />
+        Añadir un viaje que ya hiciste
+      </button>
+    </div>
+
+  )
+
+  // Mientras llegan los datos: el perfil nuevo vacío y, debajo, los viajes de este móvil. Nunca el Perfil viejo.
+  if (!perfil) {
+    return (
+      <>
+        <PerfilEsqueleto nombre={yo.tieneNombre ? yo.nombre : null} titulo={false} />
+        {misViajes}
+      </>
+    )
+  }
   const { exp } = perfil
   return (
     <>
       <div className="relative flex items-center gap-3.5 px-1" data-cabecera-con-marco>
         <button type="button" onClick={() => editarPerfil(true)} aria-label="Cambiar mi foto y mi nombre" data-editar-perfil className="flex-none rounded-full">
         <MarcoDeRango rango={exp.rango_ix} estrellas={exp.estrellas} leyenda={exp.leyenda_estrellas} tam={104} etiqueta={`Marco ${exp.rango}, nivel ${exp.estrellas} de 5`}>
-          <InicialEnMarco letra={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={104} foto={yo.foto} />
+          <InicialEnMarco letra={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={104} foto={yo.foto} encuadre={yo.encuadre} />
         </MarcoDeRango>
         </button>
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -140,46 +196,7 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, fotos, rutaAb
       {/* (10P, 1.8) Un solo «Mi pasaporte»: lo visitado, con su mapa en el círculo. El mapa de países suelto de «Mis viajes» (que contaba el viaje planeado) ya no sale aquí. */}
       <TarjetaPasaporte pasaporte={perfil.pasaporte} onAbrir={() => abrir({ t: 'pasaporte' })} />
 
-      <div className="flex flex-col gap-2">
-        <div className="flex items-baseline justify-between px-1">
-          <span className="flex items-baseline gap-3">
-            <h3 className="m-0 font-display text-[24px] leading-none text-text">Mis viajes</h3>
-            {viajes.length > 0 && <BotonEditarViajes />}
-          </span>
-          <span className="text-text/45" style={{ font: "500 11px 'Geist Mono',monospace" }} data-numero-de-viajes>
-            {viajes.length}
-          </span>
-        </div>
-        {viajes.length === 0 && perfil.previos.paises === 0 && <p className="px-1 text-[13px] text-text/60">Aún no tienes viajes guardados en este dispositivo.</p>}
-        {grupos.map((g) => (
-          <div key={g.clave} className="flex flex-col gap-1.5" data-grupo-de-viajes={g.clave}>
-            <span className="px-1.5 pt-1.5 uppercase text-text/55" style={{ ...ETIQUETA_DE_GRUPO, color: g.clave === 'en_curso' ? '#6F4E37' : undefined }}>
-              {g.titulo}
-            </span>
-            {g.viajes.map((viaje) => (
-              <TarjetaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} enCurso={g.clave === 'en_curso'} abierto={viaje.id === rutaAbiertaId} onAbrir={() => abrir({ t: 'viaje', tripId: viaje.id })} onAbrirViaje={() => onAbrirViaje(viaje)} editando={editando} onEliminar={() => pedirEliminar(viaje, fotos ? (fotos.get(viaje.id) ?? 0) : null)} />
-            ))}
-          </div>
-        ))}
-        {perfil.previos.paises > 0 && (
-          <div className="flex flex-col gap-1.5" data-grupo-de-viajes="antes">
-            <span className="px-1.5 pt-1.5 uppercase text-text/55" style={ETIQUETA_DE_GRUPO}>
-              Antes de la app
-            </span>
-            <button type="button" onClick={() => abrir({ t: 'previos' })} data-viajes-de-antes className="relative h-[132px] w-full flex-none overflow-hidden rounded-[22px] text-left text-[#FFFDF8]" style={{ background: 'linear-gradient(160deg,#D6E4EA,#7EA6B8 55%,#3A5866)' }}>
-              <span aria-hidden="true" className="absolute inset-0" style={{ background: 'linear-gradient(180deg,rgba(10,12,20,.1) 20%,rgba(10,12,20,.72))' }} />
-              <span className="absolute bottom-3 left-3.5 flex flex-col gap-[3px]">
-                <span className="font-display text-[24px] leading-none">{plural(perfil.previos.paises, 'país', 'países')}</span>
-                <span className="font-display text-[13px] italic text-[#FFFDF8]/80">Viaje de antes de usar la app</span>
-              </span>
-            </button>
-          </div>
-        )}
-        <button type="button" onClick={() => abrir({ t: 'previos' })} data-anadir-viaje-previo className="mt-1 flex min-h-[52px] items-center justify-center gap-2 rounded-[18px] border-[1.5px] border-dashed border-text/25 bg-transparent text-[14px] font-semibold text-text">
-          <Icono nombre="anadir" size={15} grosor={2.2} />
-          Añadir un viaje que ya hiciste
-        </button>
-      </div>
+      {misViajes}
 
       {eligiendo && <ElegirTitulo titulos={perfil.titulos} elegido={perfil.titulo?.clave ?? null} onElegir={(c) => void elegir(c)} onCerrar={() => setEligiendo(false)} />}
     </>

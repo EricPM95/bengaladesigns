@@ -18,6 +18,7 @@ import { useGastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { nombresEnFrase } from '../../../lib/gastosCompartidos'
 import { ExtrasCompartidos } from './ExtrasCompartidos'
 import { PantallaCuentas, TarjetaCuentas } from './PantallaCuentas'
+import { deCentimos, porPersonaDelPresupuesto } from '../../../lib/cuentasGrupo'
 
 /** El color y el icono de cada bloque (la barra de la tarjeta oscura, el cuadradito de cada bloque y los puntos de debajo). */
 const ESTILO: Record<BloqueId, { color: string; fondo: string; tinta: string; icono: NombreIcono }> = {
@@ -262,7 +263,11 @@ export function PantallaPresupuesto() {
   const extras = presupuesto.bloques.find((bloque) => bloque.id === 'extras') ?? null
   const bloquesSinExtras = presupuesto.bloques.filter((bloque) => bloque.id !== 'extras')
   const simbolo = formatoImporte({ amount: 0, currency: moneda }).split(' ')[1]
-  const porPersona = personas ? { amount: Math.round((total.amount / personas) * 100) / 100, currency: moneda } : null
+  const porPersonaTodos = personas ? { amount: Math.round((total.amount / personas) * 100) / 100, currency: moneda } : null
+  // (Tanda 10N3) Con «¿Para quién es?» y «¿Entre quién?»: una reserva para 2 de 4 cuenta solo entre esos 2. Si no todo es entre todos, sale «tu parte» en vez del «por persona» único.
+  const parte = gv.compartido ? porPersonaDelPresupuesto({ presupuesto, gastos: gv.gastos, reservas: reservations, entreDe: route.cuentasEntre, adminId: gv.personas.find((p) => p.esAdmin)?.id ?? null, todos: gv.personas.map((p) => p.id), yoId: gv.yoId }) : null
+  const porPersona = parte ? deCentimos(parte.centimos, moneda) : porPersonaTodos
+  const etiquetaPorPersona = parte?.tuParte ? 'tu parte' : 'por persona'
 
   // La hoja que se abre al tocar una línea: la de siempre de cada cosa.
   const lineaDe = (id: string) => presupuesto.bloques.flatMap((bloque) => bloque.lineas).find((linea) => linea.id === id)
@@ -348,10 +353,11 @@ export function PantallaPresupuesto() {
                   type="button"
                   onClick={() => (porPersona ? setVerPorPersona((valor) => !valor) : setHojaPersonas(true))}
                   aria-label={verPorPersona ? 'Ocultar precio por persona' : 'Ver precio por persona'}
+                  data-por-persona={parte?.tuParte ? 'tu-parte' : 'por-persona'}
                   className="mb-1 flex h-[30px] flex-none items-center gap-[7px] rounded-full bg-[#FFFDF8]/10 px-2.5 text-[#FFFDF8] hover:bg-[#FFFDF8]/20"
                 >
                   <span className="whitespace-nowrap text-[12px] font-medium">
-                    <span style={{ font: "600 12px 'Geist Mono',monospace", letterSpacing: verPorPersona && porPersona ? 0 : '.08em' }}>{verPorPersona && porPersona ? formatoImporte(porPersona) : `${simbolo} •••`}</span> por persona
+                    <span style={{ font: "600 12px 'Geist Mono',monospace", letterSpacing: verPorPersona && porPersona ? 0 : '.08em' }}>{verPorPersona && porPersona ? formatoImporte(porPersona) : `${simbolo} •••`}</span> {etiquetaPorPersona}
                   </span>
                   <span className="opacity-75">
                     <Icono nombre={verPorPersona ? 'ojo' : 'ojoCerrado'} size={14} />

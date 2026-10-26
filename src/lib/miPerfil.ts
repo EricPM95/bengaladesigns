@@ -1,4 +1,5 @@
 import { quitarMetadatosJpeg } from './fotosViaje'
+import { leerEncuadre, esCentrado, type Encuadre } from './encuadreFoto'
 import { supabase } from './supabaseClient'
 
 /**
@@ -11,14 +12,14 @@ import { supabase } from './supabaseClient'
 
 export const BUCKET_PERFILES = 'perfiles'
 /** La foto no pasa de esto (unos pocos KB). */
-export const OBJETIVO_BYTES_FOTO_PERFIL = 40 * 1024
-/** El primer intento y los siguientes si pesa demasiado: lado en píxeles y calidad del JPEG. */
+export const OBJETIVO_BYTES_FOTO_PERFIL = 48 * 1024
+/** El primer intento y los siguientes si pesa demasiado: lado MÁS LARGO en píxeles y calidad del JPEG. (Tanda 10N3: la foto ya no se recorta a un cuadrado; se guarda entera y el encuadre decide qué parte se ve.) */
 export const PASOS_DE_FOTO_DE_PERFIL: { lado: number; calidad: number }[] = [
-  { lado: 256, calidad: 0.72 },
-  { lado: 256, calidad: 0.6 },
-  { lado: 224, calidad: 0.55 },
-  { lado: 192, calidad: 0.5 },
-  { lado: 160, calidad: 0.45 },
+  { lado: 384, calidad: 0.72 },
+  { lado: 384, calidad: 0.6 },
+  { lado: 320, calidad: 0.55 },
+  { lado: 256, calidad: 0.5 },
+  { lado: 192, calidad: 0.45 },
   { lado: 128, calidad: 0.4 },
 ]
 
@@ -84,16 +85,16 @@ export function fotoParaMostrar(urlDeLaSubida: string | null | undefined, fotoGo
 
 async function aJpeg(archivo: Blob, lado: number, calidad: number): Promise<Blob | null> {
   const bitmap = await createImageBitmap(archivo)
-  const escala = Math.min(1, lado / Math.min(bitmap.width, bitmap.height))
-  // Un cuadrado recortado del centro (así el círculo no deforma).
-  const ladoFuente = Math.min(bitmap.width, bitmap.height)
-  const salida = Math.max(16, Math.round(ladoFuente * escala))
+  // La foto entera, con su forma (Tanda 10N3); solo se achica hasta que su lado más largo sea `lado`.
+  const escala = Math.min(1, lado / Math.max(bitmap.width, bitmap.height))
+  const ancho = Math.max(16, Math.round(bitmap.width * escala))
+  const alto = Math.max(16, Math.round(bitmap.height * escala))
   const lienzo = document.createElement('canvas')
-  lienzo.width = salida
-  lienzo.height = salida
+  lienzo.width = ancho
+  lienzo.height = alto
   const ctx = lienzo.getContext('2d')
   if (!ctx) return null
-  ctx.drawImage(bitmap, (bitmap.width - ladoFuente) / 2, (bitmap.height - ladoFuente) / 2, ladoFuente, ladoFuente, 0, 0, salida, salida)
+  ctx.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height, 0, 0, ancho, alto)
   bitmap.close?.()
   return new Promise((ok) => lienzo.toBlob((b) => ok(b), 'image/jpeg', calidad))
 }
@@ -118,13 +119,53 @@ export async function reducirFotoDePerfil(archivo: Blob): Promise<Blob | null> {
 export interface DatosDelPerfil {
   nombre: string | null
   fotoPath: string | null
+  /** El encuadre de la foto (10N3); null sin él o sin la migración 0044. */
+  encuadre: Encuadre | null
+  /** Las portadas de «Mis viajes» elegidas (10N3), tal como se guardaron; null sin ellas o sin la migración 0044. */
+  portadas: unknown
 }
 
 export async function cargarMiPerfil(uid: string): Promise<DatosDelPerfil | null> {
   if (!supabase) return null
-  const { data, error } = await supabase.from('travelers').select('nombre, foto_path').eq('id', uid).maybeSingle()
+  // Con la migración 0044 (foto_encuadre y portadas); sin ella, las columnas de siempre: ni la foto ni el nombre se pierden.
+  let r = await supabase.from('travelers').select('nombre, foto_path, foto_encuadre, portadas').eq('id', uid).maybeSingle()
+  if (r.error) r = (await supabase.from('travelers').select('nombre, foto_path').eq('id', uid).maybeSingle()) as unknown as typeof r
+  const { data, error } = r
   if (error || !data) return null
-  return { nombre: (data as { nombre: string | null }).nombre ?? null, fotoPath: (data as { foto_path: string | null }).foto_path ?? null }
+  const fila = data as unknown as { nombre: string | null; foto_path: string | null; foto_encuadre?: unknown; portadas?: unknown }
+  return { nombre: fila.nombre ?? null, fotoPath: fila.foto_path ?? null, encuadre: leerEncuadre(fila.foto_encuadre), portadas: fila.portadas ?? null }
+}
+
+const CLAVE_ENCUADRE = 'trazo:foto-encuadre'
+
+/** El encuadre guardado en este móvil (la copia de seguridad: vale sin cuenta y mientras no esté la migración 0044). */
+export function leerEncuadreLocal(uid: string | null): Encuadre | null {
+  try {
+    return leerEncuadre(window.localStorage.getItem(`${CLAVE_ENCUADRE}:${uid ?? 'local'}`))
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Guarda el encuadre de la foto: SIEMPRE en este móvil y, con cuenta, en la nube (travelers.foto_encuadre, migración 0044). Devuelve 'nube' si quedó en la cuenta, 'local' si solo en el móvil
+ * (sin cuenta o sin la migración) o 'error' si ni eso se pudo. Un encuadre centrado se borra.
+ */
+export async function guardarMiEncuadre(uid: string | null, encuadre: Encuadre | null): Promise<'nube' | 'local' | 'error'> {
+  const valor = encuadre && !esCentrado(encuadre) ? encuadre : null
+  let local = true
+  try {
+    const clave = `${CLAVE_ENCUADRE}:${uid ?? 'local'}`
+    if (valor) window.localStorage.setItem(clave, JSON.stringify(valor))
+    else window.localStorage.removeItem(clave)
+  } catch {
+    local = false
+  }
+  if (uid && supabase) {
+    const { error } = await supabase.from('travelers').update({ foto_encuadre: valor }).eq('id', uid)
+    if (!error) return 'nube'
+  }
+  return local ? 'local' : 'error'
 }
 
 export async function guardarMiNombre(uid: string, nombre: string): Promise<string | null> {

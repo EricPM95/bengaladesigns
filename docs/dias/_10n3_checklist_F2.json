@@ -1,0 +1,66 @@
+[
+  {
+    "apartado": "§3b · El perfil",
+    "punto": "2. El perfil viejo se cuela al abrir el perfil: que no salga nunca; mientras llegan los datos, el perfil nuevo vacío; quitar el viejo del código si ya no se usa",
+    "estado": "hecho",
+    "nota": "Con los logros encendidos el perfil viejo ya no sale NUNCA: mientras llegan los datos (o si no llegan) se ve el perfil nuevo vacío (huecos gris claro, «Hola, Eric» ya puesto) con «Mis viajes» de este móvil debajo. La prueba mira cada 60 ms con la respuesta retrasada 3,5 s y con la respuesta que no llega: 0 muestras con el viejo. NO he borrado PerfilSheet/CabeceraDeSiempre/FilaDeViaje/MapaMisViajes: con los logros APAGADOS (hoy es el caso de producción, VITE_LOGROS_ACTIVOS sin poner) siguen siendo el único perfil que existe; borrarlo dejaría a todos sin perfil.",
+    "donde": "Perfil (círculo de arriba a la derecha) con una cuenta con los logros encendidos: debe verse el esqueleto gris un instante y luego el perfil con EXP, billete, vitrina y pasaporte, sin mapa grande ni «1 país · 1 lugar».",
+    "captura": "10n3_perfil_01_abriendo.jpg"
+  },
+  {
+    "apartado": "§3b · El perfil",
+    "punto": "3. La tarjeta de «Mi pasaporte»: la esquina de la hoja lleva dos sellos estampados (redondo azul y cuadrado verde de Roma, como P1); sin sellos del viajero dos de muestra; con los suyos los dos últimos; el círculo del mapa se pinta con lo visitado",
+    "estado": "hecho",
+    "nota": "Sin sellos: el redondo azul y el cuadrado verde de Roma (decoración, con fechas de muestra). Con uno solo: el suyo y uno de muestra. Con dos o más: los dos últimos que ha ganado. El mapa del círculo ya se pintaba con paises_iso (comprobado: 6 países pintados con el demo, 1 con solo Italia); no he tocado esa parte. Ojo: la tarjeta lee el servidor (perfil.pasaporte); la prueba lo ha comprobado con los logros de mentira, no con Supabase real.",
+    "donde": "Perfil › tarjeta granate «Mi pasaporte», esquina inferior derecha. Con una cuenta sin viajes hechos: dos sellos de muestra; con sellos ganados: los dos últimos.",
+    "captura": "10n3_perfil_02_pasaporte_sin_sellos.jpg"
+  },
+  {
+    "apartado": "§3b · El perfil",
+    "punto": "4. La foto del perfil dentro del emblema: al tocarla ajustarla al círculo (mover con el dedo, pinch, [Guardar]) y cambiarla por otra; lo ajustado se guarda en la cuenta y se ve igual en todos los sitios",
+    "estado": "medias",
+    "nota": "Hecho y probado: al tocar el emblema se abre «Tu perfil» con la foto en un círculo grande (un dedo mueve, dos dedos acercan, barra de zoom y rueda como alternativa), [Hacer una foto] / [Elegir de la galería] para cambiarla, y [Guardar] aplica el encuadre. La foto ya no se recorta a un cuadrado al subirla (se guarda entera, lado largo 384 px); el encuadre (x, y, zoom) se guarda aparte. Un único componente (FotoEncuadrada) lo pinta en el emblema, Avatar, caras de «Personas del viaje»/cabecera de viaje y la hoja de ajustar: la prueba comprueba que los cuatro dan la misma posición relativa. FALTA/NO COMPROBADO: (1) el guardado en la CUENTA y que los demás lo vean exige aplicar la migración 0044 (sin ella se guarda solo en este móvil y no falla); (2) no probado contra Supabase real; (3) las fotos ya subidas antes son cuadradas (solo se pueden mover/acercar, no alejar más allá del cuadrado); (4) los avatares cuadrados redondeados de la campana (AvisoDeEntrada/AvisoDeGasto/ListaDeAvisos) NO los he tocado porque los edita otro agente: siguen con la foto centrada.",
+    "donde": "Perfil › tocar el círculo con tu foto (arriba a la izquierda) › mover y pellizcar › Guardar. Después mira Perfil, y con un viaje compartido «Personas del viaje». Con una cuenta con foto propia o de Google.",
+    "captura": "10n3_perfil_03_foto_ajustada_en_el_emblema.jpg"
+  },
+  {
+    "apartado": "§3b · El perfil",
+    "punto": "5. «Mis viajes» más separado de «Mi pasaporte»: unos 70 px de margen",
+    "estado": "hecho",
+    "nota": "Medido en la pantalla: 70 px entre el borde de abajo de la tarjeta del pasaporte y el título «Mis viajes» (18 del hueco de siempre + 52).",
+    "donde": "Perfil, bajando hasta la tarjeta granate: debajo, un hueco claro antes de «Mis viajes».",
+    "captura": "10n3_perfil_02_pasaporte_sin_sellos.jpg"
+  },
+  {
+    "apartado": "§3b · El perfil",
+    "punto": "6a. Portada por defecto: una foto bonita del destino (Roma una de Roma, París una de París), con licencia libre y crédito; la misma para todos los viajes a ese sitio",
+    "estado": "medias",
+    "nota": "Roma: el Coliseo de día (public/fotos/roma/dia_coliseo_p.jpg, David Libeert, Unsplash) con su crédito en letra pequeña en la tarjeta. Es la única ciudad con fotos propias en public/fotos/, así que París y cualquier otro destino piden su foto al servidor de fotos de la app (Unsplash/Wikipedia con su crédito) y, si no hay, queda el degradado de siempre. Eso último NO lo he podido comprobar (no hay servidor de fotos con clave en la prueba).",
+    "donde": "Perfil › Mis viajes: la tarjeta de un viaje a Roma con la foto del Coliseo; un viaje a otro sitio con su foto o el degradado.",
+    "captura": "10n3_perfil_04_mis_viajes_portada_destino.jpg"
+  },
+  {
+    "apartado": "§3b · El perfil",
+    "punto": "6b. El viajero puede cambiar la portada: «Cambiar portada» con dos opciones (una de sus fotos del viaje o una de su galería) y volver a la del destino",
+    "estado": "medias",
+    "nota": "Cada tarjeta lleva un botón «Cambiar portada» (arriba a la izquierda) que abre una hoja con: Una foto de tu viaje (cuadrícula con las fotos de sus paradas), Una foto de mi galería, y Volver a la del destino. Hecho exactamente como un botón en la tarjeta, no al tocar la tarjeta entera (tocar la tarjeta sigue abriendo el viaje/álbum, como antes). Se guarda por persona y viaje en este móvil y, con la migración 0044, en la cuenta (travelers.portadas). Probado con fotos de mentira de las paradas (sin Supabase real); la subida de la foto de galería al almacén perfiles solo se usa con la cuenta encendida y NO la he probado contra Supabase (sin cuenta se guarda la foto pequeña en el móvil).",
+    "donde": "Perfil › Mis viajes › «Cambiar portada» en la tarjeta de un viaje. Con una cuenta con fotos hechas en las paradas del viaje.",
+    "captura": "10n3_perfil_06_cambiar_portada.jpg"
+  },
+  {
+    "apartado": "§3b · El perfil",
+    "punto": "6c. Al acabar el viaje, si tiene fotos suyas y no ha elegido portada, sale sola la primera de sus fotos (y la puede cambiar)",
+    "estado": "hecho",
+    "nota": "Viaje ya hecho, sin portada elegida y con fotos suyas: sale la primera (día más bajo, la más antigua). La puede cambiar, y si elige «la del destino» no se le vuelve a cambiar. Un viaje hecho sin fotos suyas se queda con la del destino. Probado con fotos de mentira.",
+    "donde": "Perfil › Mis viajes › «Ya hechos»: un viaje acabado con fotos tuyas en sus paradas, sin haber tocado «Cambiar portada».",
+    "captura": "10n3_perfil_05_mis_viajes_portada_viajero.jpg"
+  },
+  {
+    "apartado": "§3b · El perfil",
+    "punto": "7. Fuera la etiqueta «Abierto» de la tarjeta del viaje en «Mis viajes» (y decir qué quería decir)",
+    "estado": "hecho",
+    "nota": "Quitada de la tarjeta de «Mis viajes» del perfil nuevo. Lo que quería decir: «este es el viaje que tienes cargado ahora mismo en la app (el que ves en RUTA/DÍAS/HOY)»; salía en cualquier viaje que coincidiera con la ruta abierta, aunque no fuera el de hoy, y por eso no se entendía con «Próximo/En curso/Ya hechos» encima. Se mantiene «Día 2 de 5» en el viaje en curso. Sigue existiendo en el perfil VIEJO (FilaDeViaje, solo con los logros apagados): lo he dejado porque su prueba antigua (pruebaFase6y4_perfil) lo exige; dime si también quieres quitarlo ahí.",
+    "donde": "Perfil › Mis viajes: ninguna tarjeta dice «Abierto».",
+    "captura": "10n3_perfil_05_mis_viajes_portada_viajero.jpg"
+  }
+]

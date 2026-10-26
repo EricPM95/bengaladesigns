@@ -27,7 +27,7 @@ export function conectarViaje(nube: ClienteTiempoReal, tripId: string, uid: stri
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'trips', filter: `id=eq.${tripId}` }, () => escuchas.alViaje())
     .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_members', filter: `trip_id=eq.${tripId}` }, () => escuchas.alGente())
   if (uid) {
-    canal = canal.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'avisos', filter: `user_id=eq.${uid}` }, (carga: { new?: Record<string, unknown> }) => {
+    canal = canal.on('postgres_changes', { event: '*', schema: 'public', table: 'avisos', filter: `user_id=eq.${uid}` }, (carga: { new?: Record<string, unknown> }) => {
       const fila = carga.new ?? {}
       escuchas.alAviso({ tipo: String(fila.tipo ?? ''), payload: (fila.payload ?? {}) as Record<string, unknown> })
     })

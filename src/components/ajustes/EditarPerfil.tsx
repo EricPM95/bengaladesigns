@@ -3,13 +3,18 @@ import { inicialDeNombre } from '../../lib/miPerfil'
 import { useMiNombreYFoto, useMiPerfil } from '../../store/useMiPerfil'
 import { BotonHoja, Hoja } from '../ui/Hoja'
 import { Avatar } from './Avatar'
+import { AjustarFoto } from './AjustarFoto'
+import { mismoEncuadre, type Encuadre } from '../../lib/encuadreFoto'
 
 /**
  * EDITAR MI PERFIL (cuentas parte 3, punto 6; sin pantalla de Design, hecho con las piezas que ya hay): al tocar el círculo del Perfil, la hoja con la foto (hacer una foto o elegirla de la
  * galería; pequeña, sin datos escondidos, en la nube y se borra con la cuenta) y el nombre. Si entra con Google, su foto y su nombre de Google hasta que ponga otros. Sin foto, la inicial.
  */
 export function EditarPerfil({ onCerrar }: { onCerrar: () => void }) {
-  const { nombre, tieneNombre, foto } = useMiNombreYFoto()
+  const { nombre, tieneNombre, foto, encuadre: encuadreGuardado } = useMiNombreYFoto()
+  const cambiarEncuadre = useMiPerfil((s) => s.cambiarEncuadre)
+  // (Tanda 10N3) El encuadre que se está ajustando; se guarda con [Guardar].
+  const [encuadre, setEncuadre] = useState<Encuadre | null>(encuadreGuardado)
   const fotoPropia = useMiPerfil((s) => s.fotoPath)
   const cambiarNombre = useMiPerfil((s) => s.cambiarNombre)
   const cambiarFoto = useMiPerfil((s) => s.cambiarFoto)
@@ -24,13 +29,25 @@ export function EditarPerfil({ onCerrar }: { onCerrar: () => void }) {
     if (!archivo) return
     setOcupado(true)
     setError(null)
-    setError(await cambiarFoto(archivo))
+    const fallo = await cambiarFoto(archivo)
+    setError(fallo)
+    // Una foto nueva empieza centrada.
+    if (!fallo) setEncuadre(null)
     setOcupado(false)
   }
   const guardar = async () => {
     setOcupado(true)
     setError(null)
-    const e = texto.trim() ? await cambiarNombre(texto) : null
+    // (10N3) El nombre solo se guarda si ha cambiado: ajustar la foto no tiene por qué tocarlo.
+    const e = texto.trim() && texto.trim() !== (tieneNombre ? nombre : '') ? await cambiarNombre(texto) : null
+    // La foto ajustada se guarda en la cuenta (y en este móvil); si la nube no la admite (aún sin la migración 0044), queda en este móvil.
+    if (!e && foto && !mismoEncuadre(encuadre, encuadreGuardado)) {
+      if ((await cambiarEncuadre(encuadre)) === 'error') {
+        setOcupado(false)
+        setError('No se ha podido guardar el ajuste de la foto. Inténtalo de nuevo.')
+        return
+      }
+    }
     setOcupado(false)
     if (e) setError(e)
     else onCerrar()
@@ -38,8 +55,14 @@ export function EditarPerfil({ onCerrar }: { onCerrar: () => void }) {
 
   return (
     <Hoja onCerrar={onCerrar} titulo="Tu perfil" datos="editar-perfil" z={92}>
+      {foto && (
+        <>
+          <AjustarFoto src={foto} encuadre={encuadre} onCambio={setEncuadre} />
+          <p className="m-0 text-center text-[12.5px] text-text/60">Mueve la foto con el dedo y acércala con dos dedos. Se verá así en todas partes.</p>
+        </>
+      )}
       <div className="flex items-center gap-4">
-        <Avatar foto={foto} inicial={inicialDeNombre(tieneNombre ? nombre : null)} tam={84} />
+        {!foto && <Avatar foto={foto} inicial={inicialDeNombre(tieneNombre ? nombre : null)} tam={84} />}
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <button type="button" disabled={ocupado} onClick={() => camara.current?.click()} data-hacer-foto className="h-11 rounded-full border border-text/20 text-[13.5px] font-semibold">
             Hacer una foto

@@ -27,7 +27,11 @@ async function abrir({ invitado, permiso = 'recomendar', simulada = '2026-10-10'
   const app = await abrirApp(APP, { ruta: RUTA, antes })
   for (let i = 0; i < 300 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
   for (let i = 0; i < 240 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'").catch(() => false)); i++) await app.esp(500)
-  await app.evaluar('window.__rutaPrueba().then(() => true)')
+  for (let intento = 0; intento < 8; intento++) {
+    const ok = await app.evaluar('window.__rutaPrueba().then(() => true, (e) => String(e && e.message))').catch((e) => String(e))
+    if (ok === true) break
+    await app.esp(1500)
+  }
   for (let i = 0; i < 90 && !(await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await app.esp(1000)
   await app.esp(2500)
   for (let i = 0; i < 6; i++) {

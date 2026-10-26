@@ -40,6 +40,10 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
   // «¿Entre quién?» (Tanda 10N2): todas las personas marcadas por defecto; un gasto de antes (sin lista) también es entre todos.
   const todosIds = gv.personas.map((p) => p.id)
   const [entre, setEntre] = useState<string[]>(editar && editar.entre.length > 0 ? editar.entre : todosIds)
+  // (Tanda 10N3) El administrador edita también los gastos de quien ya salió del viaje: esa persona sale en las pastillas, con su nombre, para poder cambiar quién pagó y entre quién.
+  const exMiembros = useGastosCompartidos((st) => st.exMiembros)
+  const idsDeSalidas = editar ? [...new Set([...editar.pagadoPor, ...editar.entre])].filter((id) => !todosIds.includes(id)) : []
+  const lista = [...gv.personas, ...idsDeSalidas.map((id) => ({ id, nombre: exMiembros.find((e) => e.id === id)?.nombre ?? null, foto: null, esAdmin: false }))]
   const [enCurso, setEnCurso] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const monedaDelCampo = monedaElegida ?? moneda
@@ -115,7 +119,7 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
               ¿Quién lo ha pagado?
             </span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {gv.personas.map((p) => (
+              {lista.map((p) => (
                 <PastillaElegir key={p.id} elegida={pagadoPor.includes(p.id)} onClick={() => alternar(p.id)} marca datos={`pago-${p.id}`} icono={pagadoPor.includes(p.id) ? undefined : <InicialDePersona nombre={nombreDe(p)} esAdmin={p.esAdmin} />}>
                   {nombreDe(p) || 'Alguien'}
                 </PastillaElegir>
@@ -127,10 +131,10 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
           <div className="flex flex-col gap-2" data-gasto-entre-quien>
             <span className="flex items-center justify-between text-text/55" style={ojoStyle}>
               <span>¿Entre quién?</span>
-              <span data-gasto-entre-cuantos>{entre.length} de {todosIds.length}</span>
+              <span data-gasto-entre-cuantos>{entre.length} de {lista.length}</span>
             </span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {gv.personas.map((p) => (
+              {lista.map((p) => (
                 <PastillaElegir key={p.id} elegida={entre.includes(p.id)} onClick={() => alternarEntre(p.id)} marca datos={`entre-${p.id}`} icono={entre.includes(p.id) ? undefined : <InicialDePersona nombre={nombreDe(p)} esAdmin={p.esAdmin} />}>
                   {nombreDe(p) || 'Alguien'}
                 </PastillaElegir>
@@ -138,7 +142,7 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
             </div>
             <div data-gasto-cada-uno className="flex items-center gap-2.5 rounded-[14px] bg-[#F3E6C6]/70 px-3.5 py-3 text-[13px] font-medium text-[#6F4E37]">
               <Icono nombre="compartido" size={16} />
-              <span>{cuantoToca ? `${entre.length < todosIds.length ? `${entre.length} de ${todosIds.length} · ` : ''}${cuantoToca} cada uno` : 'Escribe el importe para ver lo que toca a cada uno'}</span>
+              <span>{cuantoToca ? `${entre.length < lista.length ? `${entre.length} de ${lista.length} · ` : ''}${cuantoToca} cada uno` : 'Escribe el importe para ver lo que toca a cada uno'}</span>
             </div>
           </div>
         )}

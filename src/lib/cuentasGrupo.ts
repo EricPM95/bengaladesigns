@@ -3,6 +3,8 @@ import { convertir, leerImporte } from './dinero'
 import type { GastoCompartido } from './gastosCompartidos'
 import { sumaAlGrupo } from './gastosCompartidos'
 import type { Reservation } from './bookings'
+import type { Presupuesto } from './presupuesto'
+import { lineaCuenta } from './presupuesto'
 
 /**
  * LAS CUENTAS DEL GRUPO, QUIÉN LE DEBE A QUIÉN (Tanda 10N2; diseño `Piezas/Cuentas Grupo`). Funciones puras, sin React ni red. Todo en CÉNTIMOS enteros (nunca decimales de coma flotante), en la moneda del viajero.
@@ -16,7 +18,9 @@ import type { Reservation } from './bookings'
 export interface Aportacion {
   id: string
   nombre: string
-  origen: 'gasto' | 'reserva'
+  origen: 'gasto' | 'reserva' | 'alojamiento' | 'coche'
+  /** Clave de la línea del presupuesto (alojamiento y coche), para cambiar su «¿Entre quién?». */
+  clave?: string
   centimos: number
   /** Quién lo pagó (ids). */
   pagan: string[]
@@ -156,7 +160,15 @@ export function calcularCuentas(entrada: { aportaciones: Aportacion[]; pagos: Pa
  * Lo que cuenta del presupuesto para las cuentas: los gastos [Para todos] aceptados y las entradas del dueño reservadas para varios (las paga el dueño y se reparten entre las marcadas; sin `paraQuien`, es
  * «solo para mí» y no cuenta). Lo que está en una moneda sin cambio a la del viajero se deja fuera (no se inventa un número).
  */
-export function aportacionesDelViaje(entrada: { gastos: GastoCompartido[]; reservas: readonly Reservation[]; adminId: string | null; todos: string[]; moneda: string; cambio: Cambio | null }): Aportacion[] {
+export interface LineaQueEntraSola {
+  /** `aloj-…` o `coche`: la clave de la línea del presupuesto. */
+  clave: string
+  nombre: string
+  precio: Importe
+  tipo: 'alojamiento' | 'coche'
+}
+
+export function aportacionesDelViaje(entrada: { gastos: GastoCompartido[]; reservas: readonly Reservation[]; adminId: string | null; todos: string[]; moneda: string; cambio: Cambio | null; entran?: readonly LineaQueEntraSola[]; entreDe?: Record<string, string[]> | null }): Aportacion[] {
   const salida: Aportacion[] = []
   const aMoneda = (importe: Importe | null): number | null => {
     if (!importe) return null
@@ -170,6 +182,13 @@ export function aportacionesDelViaje(entrada: { gastos: GastoCompartido[]; reser
     salida.push({ id: `gasto-${g.id}`, nombre: g.nombre, origen: 'gasto', centimos: c, pagan: g.pagadoPor.length > 0 ? g.pagadoPor : [g.autorId], entre: g.entre && g.entre.length > 0 ? g.entre : entrada.todos })
   }
   if (entrada.adminId) {
+    // (Tanda 10N3) El alojamiento y el coche que el administrador pone en RESERVAS entran solos: los pagó él y se reparten entre todos (o entre quienes marque). Los billetes de avión NO: cada uno paga el suyo.
+    for (const l of entrada.entran ?? []) {
+      const c = aMoneda(l.precio)
+      if (c === null || c <= 0) continue
+      const marcadas = (entrada.entreDe?.[l.clave] ?? []).filter(Boolean)
+      salida.push({ id: `${l.tipo}-${l.clave}`, clave: l.clave, nombre: l.nombre, origen: l.tipo, centimos: c, pagan: [entrada.adminId], entre: marcadas.length > 0 ? marcadas : entrada.todos })
+    }
     for (const r of entrada.reservas) {
       if (!r.paraQuien || r.paraQuien.length === 0) continue
       const c = aMoneda(leerImporte(r.precio))
@@ -178,4 +197,76 @@ export function aportacionesDelViaje(entrada: { gastos: GastoCompartido[]; reser
     }
   }
   return salida
+}
+
+const sinAcentos = (t: string): string => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
+const PALABRAS: Record<'alojamiento' | 'coche', RegExp> = { alojamiento: /hotel|aloja|airbnb|apartamento|hostal|booking/, coche: /coche|alquiler|rent|vehiculo|furgo|autocaravana/ }
+
+export interface PosibleDuplicado {
+  /** Lo que entró solo desde RESERVAS. */
+  linea: string
+  /** El gasto [Para todos] que parece lo mismo. */
+  gasto: string
+  centimos: number
+}
+
+/**
+ * (Tanda 10N3) Que no se cuente nada dos veces: si el alojamiento o el coche que entran solos ya están apuntados como un gasto [Para todos] (mismo importe y mismo concepto: el nombre se parece o dice «hotel» /
+ * «coche»…), se avisa. Se sigue contando todo: quien lo apuntó decide cuál quitar.
+ */
+export function posiblesDuplicados(aportaciones: readonly Aportacion[]): PosibleDuplicado[] {
+  const salida: PosibleDuplicado[] = []
+  const gastos = aportaciones.filter((a) => a.origen === 'gasto')
+  for (const a of aportaciones) {
+    if (a.origen !== 'alojamiento' && a.origen !== 'coche') continue
+    const n = sinAcentos(a.nombre)
+    const igual = gastos.find((g) => {
+      if (g.centimos !== a.centimos) return false
+      const m = sinAcentos(g.nombre)
+      return m.includes(n) || n.includes(m) || PALABRAS[a.origen as 'alojamiento' | 'coche'].test(m)
+    })
+    if (igual) salida.push({ linea: a.nombre, gasto: igual.nombre, centimos: a.centimos })
+  }
+  return salida
+}
+
+/**
+ * (Tanda 10N3) Lo que le toca a UNA persona de lo que ve el presupuesto, para el «por persona»: lo de todos entre N; lo que va «entre quién» (un gasto con lista, una entrada reservada para 2 de 4, el alojamiento entre unos
+ * pocos) solo a los marcados. `null` en las líneas que no se cuentan.
+ */
+export function parteDeUnaPersona(lineas: { centimos: number; entre: readonly string[] | null }[], personaId: string, todos: readonly string[]): number {
+  let total = 0
+  for (const l of lineas) {
+    const entre = l.entre && l.entre.length > 0 ? l.entre : todos
+    if (!entre.includes(personaId)) continue
+    total += Math.floor(l.centimos / entre.length)
+  }
+  return total
+}
+
+/**
+ * (Tanda 10N3) El «por persona» del presupuesto de un viaje compartido, con «¿Para quién es?» y «¿Entre quién?»: una entrada reservada para 2 de 4 cuenta solo entre esos 2; un gasto con lista, solo entre los marcados;
+ * el alojamiento y el coche, entre todos o entre quienes marque el administrador; una reserva sin «¿Para quién es?» es solo del administrador; lo demás (billetes, seguro, eSIM, traslados), entre todos.
+ * Si TODO es entre todos, es el total entre las personas (como siempre). Si no, no hay un «por persona» único: sale la parte de quien mira (`tuParte`).
+ */
+export function porPersonaDelPresupuesto(e: { presupuesto: Presupuesto; gastos: readonly GastoCompartido[]; reservas: readonly Reservation[]; entreDe: Record<string, string[]> | null | undefined; adminId: string | null; todos: string[]; yoId: string | null }): { centimos: number; tuParte: boolean } {
+  const lineas: { centimos: number; entre: string[] | null }[] = []
+  let total = 0
+  for (const b of e.presupuesto.bloques) {
+    for (const l of b.lineas) {
+      if (!lineaCuenta(l) || !l.enMonedaViajero) continue
+      const centimos = aCentimos(l.enMonedaViajero)
+      total += centimos
+      let entre: string[] | null = null
+      if (l.compartido?.gastoId) entre = e.gastos.find((g) => g.id === l.compartido!.gastoId)?.entre ?? null
+      else if (l.abrir.tipo === 'reserva') {
+        const r = e.reservas.find((x) => x.id === (l.abrir as { reservationId: string }).reservationId)
+        entre = r?.paraQuien && r.paraQuien.length > 0 ? r.paraQuien : e.adminId ? [e.adminId] : null
+      } else if (l.abrir.tipo === 'alojamiento' || l.abrir.tipo === 'coche') entre = e.entreDe?.[l.id] ?? null
+      lineas.push({ centimos, entre: entre && entre.length > 0 ? entre : null })
+    }
+  }
+  const todoEntreTodos = lineas.every((l) => l.entre === null || e.todos.every((id) => l.entre!.includes(id)))
+  if (todoEntreTodos || !e.yoId) return { centimos: e.todos.length > 0 ? Math.round(total / e.todos.length) : total, tuParte: false }
+  return { centimos: parteDeUnaPersona(lineas, e.yoId, e.todos), tuParte: true }
 }

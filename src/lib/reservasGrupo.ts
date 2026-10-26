@@ -58,7 +58,7 @@ const conDe = (s: string): string => s.replace(/^(el) /i, 'del ').replace(/^(la|
 /** «Eric va el jueves 26 a las 8:00»: la línea de la pestaña Entradas de la ficha. */
 export const textoQuienVa = (quien: string, route: Route, reserva: Reservation): string => `${quien || 'El dueño'} va el ${diaDeLaReservaEnPalabras(route, reserva)} a las ${horaCorta(reserva.time)}`
 
-const esDeLaReserva = (stop: Stop, reserva: Reservation): boolean => !stop.passThrough && (reserva.refId === 'Free Tour' ? Boolean(stop.isFreeTour) : !stop.isFreeTour && reserva.placeNames.includes(stop.name))
+export const esDeLaReserva = (stop: Stop, reserva: Reservation): boolean => !stop.passThrough && (reserva.refId === 'Free Tour' ? Boolean(stop.isFreeTour) : !stop.isFreeTour && reserva.placeNames.includes(stop.name))
 
 export interface EntradaNoCuadra {
   id: string
@@ -95,4 +95,28 @@ export function entradasQueNoCuadran(route: Route, mias: readonly Reservation[],
     })
   }
   return avisos
+}
+
+/** Lo que lleva el aviso «Tu entrada del Coliseo es el viernes 27, y en la ruta está el jueves 26» para poder proponer el cambio (Tanda 10N3 §3). */
+export interface CambioDeReservaPropuesto {
+  reservaId: string
+  /** «el Coliseo». */
+  sitio: string
+  /** El día de la reserva del invitado («viernes 27»): el día al que quiere pasar la parada. */
+  diaDeLaReserva: string
+  /** El día en que la ruta tiene ahora ese sitio («jueves 26»). */
+  diaDeLaRuta: string
+  /** La fecha de su reserva (aaaa-mm-dd), si el viaje tiene fechas. */
+  dateIso?: string | null
+}
+
+/**
+ * [Proponer el cambio] del aviso de una entrada que no cuadra. GANCHO para la propuesta (Tanda 10N3, E1): este módulo solo lanza el evento `trazo:proponer-cambio-reserva` con los datos del aviso
+ * (`detail: CambioDeReservaPropuesto`); quien arma la propuesta (pasar la parada de `diaDeLaRuta` a `diaDeLaReserva`) escucha ese evento. Devuelve false si nadie lo atiende.
+ */
+export function proponerCambioDeReserva(cambio: CambioDeReservaPropuesto): boolean {
+  if (typeof window === 'undefined') return false
+  const evento = new CustomEvent('trazo:proponer-cambio-reserva', { detail: cambio, cancelable: true })
+  window.dispatchEvent(evento)
+  return evento.defaultPrevented
 }

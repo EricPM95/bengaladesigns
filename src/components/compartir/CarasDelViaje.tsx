@@ -1,4 +1,5 @@
 import { useFotosDePerfil } from '../../hooks/useFotosDePerfil'
+import { FotoEncuadrada } from '../ui/FotoEncuadrada'
 import { inicialDe, type Persona } from '../../store/useViajeCompartido'
 
 const TONOS: { fondo: string; texto: string }[] = [
@@ -24,13 +25,15 @@ export function CaraDePersona({ persona, tam = 28, tono = 0, foto = null, borde 
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: foto ? `center / cover no-repeat url(${foto})` : t.fondo,
+        position: 'relative',
+        overflow: 'hidden',
+        background: t.fondo,
         color: t.texto,
         font: `600 ${Math.round(tam * 0.43)}px/1 'Geist'`,
         boxShadow: `0 0 0 2px ${borde}`,
       }}
     >
-      {foto ? '' : inicialDe(persona)}
+      {foto ? <FotoEncuadrada src={foto} encuadre={persona.encuadre ?? null} datos="cara" /> : inicialDe(persona)}
     </span>
   )
 }

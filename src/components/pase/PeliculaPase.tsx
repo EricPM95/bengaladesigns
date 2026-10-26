@@ -24,8 +24,12 @@ const PIEZA = 'Piezas/Pase Pelicula'
 const ANCHO = 390
 const ALTO = 844
 /** El alto mínimo (en unidades de Design) que se deja a las escenas: de 844 se pueden recortar hasta 44 por abajo, donde no hay nada. */
-const ALTO_MINIMO = 800
+const ALTO_MINIMO = 780
 const ANCHO_MAXIMO = 480
+/** Los textos de abajo de cada escena (Tanda 10N3): dónde empiezan (justo bajo lo de arriba, que acaba en 580), lo que miden y el aire que se deja bajo ellos. */
+const TEXTO_TOP = 608
+const TEXTO_ALTO = 140
+const TEXTO_PIE = 32
 const IMAGENES = ['marco-nivel1', 'marco-nivel2', 'marco-nivel3', 'hueco-1', 'hueco-2', 'hueco-3']
 
 export function PeliculaPase({ destino, tripId, desde, onCerrar, configInicial = null }: { destino: string; tripId: string | null; desde: 'principio' | 'final' | 'compra'; onCerrar: () => void; configInicial?: ConfigPase | null }) {
@@ -77,6 +81,8 @@ export function PeliculaPase({ destino, tripId, desde, onCerrar, configInicial =
     for (const i of IMAGENES) new Image().src = `/pelicula/assets/${i}.png`
   }, [])
 
+  // Solo para las pruebas (Tanda 10N3): `window.__pruebaPeliculaEscena = n` deja la película parada en la escena n, sin avanzar sola.
+  const escenaDePrueba = typeof (window as any).__pruebaPeliculaEscena === 'number' ? ((window as any).__pruebaPeliculaEscena as number) : null
   const plantilla = useMemo(() => plantillaDeLaPelicula(destino), [destino])
   const css = useMemo(() => cssDe(PIEZA), [])
   const bloques = useMemo(() => bloquesDeLaLista(), [])
@@ -148,6 +154,12 @@ export function PeliculaPase({ destino, tripId, desde, onCerrar, configInicial =
       W: dim.W,
       H: dim.H,
       dx: (dim.W - ANCHO) / 2,
+      // Tanda 10N3 (3b.1): la escena 0 a todo el ancho (margen de 14 a cada lado), la ruta del mapa centrada, y los textos de abajo pegados a lo de arriba sin bajar del borde (se ven enteros con la barra de Safari).
+      wm: dim.W - 28,
+      mi: (dim.W - 28 - 342) / 2,
+      xc: (dim.W - 342) / 2,
+      tToast: Math.round(Math.min(TEXTO_TOP + Math.max(0, dim.H - ALTO_MINIMO) * 0.35, dim.H - TEXTO_ALTO - TEXTO_PIE)) + 96,
+      tTop: Math.round(Math.min(TEXTO_TOP + Math.max(0, dim.H - ALTO_MINIMO) * 0.35, dim.H - TEXTO_ALTO - TEXTO_PIE)),
       barR: fin ? 62 : 18,
       tap: !fin && !logic.state.sheet,
       nTxt: hoja.personasTxt,
@@ -175,7 +187,7 @@ export function PeliculaPase({ destino, tripId, desde, onCerrar, configInicial =
       <style>{css}</style>
       {letrasListas && (
         <div data-escenario style={{ position: 'absolute', top: 0, left: dim.left, width: dim.W, height: dim.H, transform: `scale(${dim.escala})`, transformOrigin: '0 0' }}>
-          <DCPieza __nombre={PIEZA} __plantilla={plantilla} __sobre={sobre} scene={desde === 'principio' ? 0 : 7} sheet={desde === 'compra' ? 'buy' : ''} auto="si" pase={pase.conPase ? 'con' : 'sin'} />
+          <DCPieza __nombre={PIEZA} __plantilla={plantilla} __sobre={sobre} scene={escenaDePrueba ?? (desde === 'principio' ? 0 : 7)} sheet={desde === 'compra' ? 'buy' : ''} auto={escenaDePrueba != null ? 'no' : 'si'} pase={pase.conPase ? 'con' : 'sin'} />
         </div>
       )}
       {error && (

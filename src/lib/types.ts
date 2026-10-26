@@ -922,6 +922,8 @@ export interface Route {
   personas?: number | null
   /** Los gastos sueltos del presupuesto («Extras»). */
   gastosExtras?: GastoExtra[]
+  /** (Tanda 10N3) «¿Entre quién?» del alojamiento y el coche que entran solos en las cuentas del grupo: clave de la línea del presupuesto (`aloj-…`, `coche`) → ids de las personas. Sin clave: entre todos. Solo lo cambia el administrador. */
+  cuentasEntre?: Record<string, string[]>
   /** Hora de llegada a Roma "HH:MM", puesta por el viajero en RESERVAS (de pago): la lee el motor (`body.llegada`). null/undefined = sin registrar. */
   arrivalFlightTime?: string | null
   /** Hora de salida de Roma "HH:MM", puesta por el viajero en RESERVAS (de pago): la lee el motor (`body.vuelta`). null/undefined = sin registrar. */

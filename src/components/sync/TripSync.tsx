@@ -9,6 +9,8 @@ import { demoActivo } from '../../lib/logros'
 import { dondeAbrir } from '../../lib/dondeAbrir'
 import { olvidarViajeAAbrir, viajeAAbrir } from '../../lib/invitaciones'
 import { esEcoRemoto } from '../../lib/viajeEnDirecto'
+import { cuentasActivas } from '../../lib/cuentas'
+import { limpiarPropuestasHuerfanas } from '../../lib/propuestasHuerfanas'
 
 const SAVE_DEBOUNCE_MS = 1500
 
@@ -113,6 +115,8 @@ export function TripSync() {
         const trips = await loadAllTrips(id)
         if (cancelled) return
         useSyncStore.getState().setSavedTrips(trips)
+        // (Tanda 10N3 §2.3) La propuesta sin enviar de un viaje que ya no se ve (te quitaron, o saliste) se borra de este móvil.
+        if (cuentasActivas()) limpiarPropuestasHuerfanas(trips.map((trip) => trip.id))
 
         // (Tanda 10N §5) Quien acaba de unirse a un viaje, o vuelve a abrir un enlace del que ya es parte, va DIRECTO a ese viaje.
         const pedido = viajeAAbrir()

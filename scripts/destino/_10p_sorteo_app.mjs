@@ -3,7 +3,7 @@
 import { abrirApp } from './_enLaApp.mjs'
 
 export async function abrirConPerfil({ ancho = 390, alto = 844, nombre = 'Eric', antes = undefined } = {}) {
-  const app = await abrirApp('http://localhost:5183', { ancho, alto, ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0', antes })
+  const app = await abrirApp('http://localhost:5173', { ancho, alto, ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0', antes })
   for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
   for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'").catch(() => false)); i++) await app.esp(500)
   await app.evaluar('window.__rutaPrueba().then(() => true)')

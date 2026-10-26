@@ -5,6 +5,9 @@ import { deCentimos } from '../../../lib/cuentasGrupo'
 import { useCuentasDelGrupo } from '../../../hooks/useCuentasDelGrupo'
 import { useGastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
+import { useRouteStore } from '../../../store/useRouteStore'
+import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
+import { PastillaElegir } from '../../ui/Elegir'
 import { Icono } from '../../ui/Icono'
 import { CaraDePersona } from '../../compartir/CarasDelViaje'
 
@@ -65,7 +68,13 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
   const deshacerPago = useGastosCompartidos((s) => s.deshacerPago)
   const [error, setError] = useState<string | null>(null)
   const [enCurso, setEnCurso] = useState<string | null>(null)
+  const [cambiando, setCambiando] = useState<string | null>(null)
   const { cuentas, moneda } = c
+  // (Tanda 10N3) Lo que entra solo desde RESERVAS (alojamiento y coche) y quién puede cambiar su «¿Entre quién?»: el administrador.
+  const adminId = c.personas.find((x) => x.esAdmin)?.id ?? null
+  const soyAdmin = Boolean(adminId) && gv.yoId === adminId
+  const entranSolas = c.aportaciones.filter((a) => a.origen === 'alojamiento' || a.origen === 'coche')
+  const cambiandoLinea = entranSolas.find((a) => a.clave === cambiando) ?? null
   const puede = (deudorId: string, acreedorId: string) => c.puedeMarcarPagos && (gv.yoId === deudorId || gv.yoId === acreedorId || gv.puedeDecidir)
   const quienes = cuentas.personas.length
 
@@ -108,6 +117,19 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
             {cuentas.porPersona !== null && <span className="text-[12.5px] text-[#FFFDF8]/80">{dinero(cuentas.porPersona, moneda)} por persona</span>}
           </div>
 
+          {c.duplicados.length > 0 && (
+            <div data-aviso-duplicado role="status" className="flex flex-none flex-col gap-1 rounded-[14px] px-3.5 py-3" style={{ background: '#FFF6DC', border: '1px solid rgba(201,154,68,.5)' }}>
+              <span className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: '#6F4E37' }}>
+                <Icono nombre="alerta" size={15} /> Puede que algo esté contado dos veces
+              </span>
+              {c.duplicados.map((d) => (
+                <span key={d.linea} className="text-[12.5px] leading-[1.4] text-text/70">
+                  «{d.linea}» ({dinero(d.centimos, moneda)}) ya entra solo desde RESERVAS y también está apuntado como gasto del grupo: «{d.gasto}». Quita uno de los dos.
+                </span>
+              ))}
+            </div>
+          )}
+
           {!cuentas.hayGastos && (
             <div className="flex flex-none flex-col gap-0.5 rounded-[14px] border border-dashed border-text/[.18] px-3.5 py-3.5">
               <span className="text-[13px] font-medium">Todavía no hay gastos del grupo</span>
@@ -134,6 +156,30 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
               </div>
             )
           })}
+
+          {entranSolas.length > 0 && (
+            <>
+              <span className="mt-2 text-text/55" style={ojoStyle}>
+                Entra solo desde RESERVAS
+              </span>
+              {entranSolas.map((a) => (
+                <div key={a.id} data-entra-sola={a.clave} className="flex flex-none items-center gap-3 rounded-[16px] bg-[#FFFDF8] px-3.5 py-3" style={{ border: '1px solid rgba(28,34,48,.07)' }}>
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span className="truncate text-[14px] font-semibold">{a.nombre}</span>
+                    <span className="text-[11.5px] text-text/55">
+                      {c.nombreDe(a.pagan[0])} lo pagó · entre {a.entre.length} de {c.personas.filter((x) => !x.salio).length}
+                    </span>
+                  </span>
+                  <span style={{ font: `600 13px ${MONO}` }}>{dinero(a.centimos, moneda)}</span>
+                  {soyAdmin && (
+                    <button type="button" data-cambiar-entre onClick={() => setCambiando(a.clave ?? null)} className="h-9 flex-none rounded-[10px] border border-text/[.14] px-2.5 text-[12px] font-semibold">
+                      Entre quién
+                    </button>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
 
           {cuentas.hayGastos && (cuentas.pagados.length > 0 || cuentas.pendientes.length > 0) && (
             <span className="mt-2 text-text/55" style={ojo}>
@@ -190,8 +236,48 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
           )}
         </div>
       </div>
+      {cambiandoLinea && <HojaEntreAlojamiento linea={cambiandoLinea} onClose={() => setCambiando(null)} personas={c.personas.filter((x) => !x.salio)} />}
     </div>,
     document.body,
+  )
+}
+
+/** «¿Entre quién?» del alojamiento o el coche que entran solos (solo el administrador lo cambia; se guarda con el viaje). */
+function HojaEntreAlojamiento({ linea, personas, onClose }: { linea: { clave?: string; nombre: string; entre: string[] }; personas: { id: string; nombre: string | null }[]; onClose: () => void }) {
+  const setCuentasEntre = useRouteStore((st) => st.setCuentasEntre)
+  const todos = personas.map((x) => x.id)
+  const [marcadas, setMarcadas] = useState<string[]>(linea.entre.filter((id) => todos.includes(id)))
+  const alternar = (id: string) => setMarcadas((m) => (m.includes(id) ? (m.length > 1 ? m.filter((x) => x !== id) : m) : [...m, id]))
+  return (
+    <HojaAbajo titleId="hoja-entre-alojamiento" onClose={onClose} capa={120}>
+      <h2 id="hoja-entre-alojamiento" className="max-w-[calc(100%-3rem)] font-display text-[24px] leading-[1.05] text-text">
+        {linea.nombre}
+      </h2>
+      <span className="mt-4 flex items-center justify-between text-text/55" style={ojoStyle}>
+        <span>¿Entre quién?</span>
+        <span>
+          {marcadas.length} de {todos.length}
+        </span>
+      </span>
+      <div className="mt-2" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {personas.map((x) => (
+          <PastillaElegir key={x.id} elegida={marcadas.includes(x.id)} onClick={() => alternar(x.id)} marca datos={`entre-aloj-${x.id}`}>
+            {x.nombre || 'Alguien'}
+          </PastillaElegir>
+        ))}
+      </div>
+      <button
+        type="button"
+        data-guardar-entre
+        onClick={() => {
+          if (linea.clave) setCuentasEntre(linea.clave, marcadas.length === todos.length ? null : marcadas)
+          onClose()
+        }}
+        className="btn-champan mt-5 h-[54px] w-full rounded-full text-[15px] font-semibold"
+      >
+        Guardar
+      </button>
+    </HojaAbajo>
   )
 }
 

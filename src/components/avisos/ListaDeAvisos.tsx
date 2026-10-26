@@ -3,6 +3,7 @@ import { haceCuanto, type AvisoDeCuenta } from '../../lib/avisos'
 import { Icono } from '../ui/Icono'
 import { Avatar } from '../ajustes/Avatar'
 import { AvisoDeGasto } from './AvisoDeGasto'
+import { AvisoDeEntrada } from './AvisoDeEntrada'
 
 const ICONO: Partial<Record<AvisoDeCuenta['tipo'], NombreIcono>> = { d10: 'avion', resumen: 'estrella', sorpresas: 'gema', sorteo: 'pase', amigo_viaje: 'compartido' }
 
@@ -16,6 +17,8 @@ export function ListaDeAvisos({ avisos, resaltado = null, onTocar, ahora = Date.
       {avisos.map((a) => {
         // (Tanda 10N, apartado 9) «Ana quiere añadir al presupuesto»: el gasto va dentro y [Rechazar] [Aceptar] en el mismo aviso.
         if (a.tipo === 'gasto_pendiente') return <AvisoDeGasto key={a.id} aviso={a} ahora={ahora} foto={fotoDe?.(a) ?? null} resaltado={resaltado === a.id} />
+        // (Tanda 10N3 §3) «Eric ha reservado el Coliseo…» y «Tu entrada no cuadra…»: los crea la base de datos; cada uno con sus botones.
+        if (a.tipo === 'reserva_grupo') return <AvisoDeEntrada key={a.id} aviso={a} ahora={ahora} foto={fotoDe?.(a) ?? null} resaltado={resaltado === a.id} />
         const sinLeer = !a.leido && !a.etiqueta
         const tocable = (a.tipo === 'recomendacion' && !a.etiqueta) || a.tipo === 'd10' || a.tipo === 'sorteo' || a.tipo === 'gasto_resuelto' || a.tipo === 'pago_marcado'
         const clase = a.tipo === 'recomendacion' || a.tipo === 'unido' || a.tipo === 'sorteo' ? 'dorado' : a.tipo === 'aceptada' || a.tipo === 'rechazada' || a.tipo === 'gasto_resuelto' ? 'oscuro' : 'claro'

@@ -69,13 +69,20 @@ const GENTE = [
 ]
 /** Quién soy: 'eric' (dueño) o 'ana' / 'luis' (invitados); [] = viaje sin compartir. */
 const ponerGente = (a, yo) =>
-  a.evaluar(`(() => {
+  a.evaluar(`(async () => {
     const yo = ${JSON.stringify(yo)}
     const g = ${JSON.stringify(GENTE)}.map((p) => ({ ...p, esYo: p.id === 'p-' + yo }))
     sessionStorage.removeItem('trazo:invitado')
     sessionStorage.removeItem('trazo:permiso')
     if (yo && yo !== 'eric') { sessionStorage.setItem('trazo:invitado', '1'); sessionStorage.setItem('trazo:permiso', 'recomendar') }
-    window.__viaje.getState().poner({ gente: yo ? g : [] })
+    // (Vite recarga módulos si otro edita a la vez: se pone en la tienda de la ventana y en la que importa la app ahora.)
+    const urls = [...new Set(performance.getEntriesByType('resource').map((e) => e.name).filter((n) => n.includes('store/useViajeCompartido.ts')))]
+    const tiendas = [window.__viaje]
+    for (const u of urls) tiendas.push((await import(/* @vite-ignore */ u)).useViajeCompartido)
+    for (const st of new Set(tiendas)) {
+      st.setState({ cargar: async () => {} })
+      st.getState().poner({ gente: yo ? g : [] })
+    }
     return true
   })()`)
 const irAReservas = async (a) => {
@@ -90,6 +97,14 @@ const abrirBloque = async (a, bloque) => {
   for (let n = 0; n < 40; n++) {
     const hecho = await a.evaluar(`(() => { const b = document.querySelector('[data-blk="${bloque}"]'); const cab = b && b.firstElementChild; if (!cab) return false; if (b.children.length < 2) cab.click(); return true })()`)
     if (hecho) return true
+    await a.esp(500)
+  }
+  return false
+}
+const esperarAnadela = async (a) => {
+  for (let n = 0; n < 40; n++) {
+    const hay = await a.evaluar(`(() => { const bloque = document.querySelector('[data-blk="entradas"]'); if (!bloque) return false; return Array.from(bloque.querySelectorAll('button')).some((x) => /Añádela/.test(x.textContent || '') && /Coliseo/.test(x.closest('[class*="min-h-"]')?.textContent || '')) })()`)
+    if (hay) return true
     await a.esp(500)
   }
   return false
@@ -120,6 +135,7 @@ try {
     return c ? (tarjeta(c)?.textContent || '').slice(0, 80) : null
   })()`)
   debe(Boolean(filaColiseo), 'app', `en RESERVAS aparece la entrada del Coliseo (${filaColiseo})`)
+  await esperarAnadela(a)
   await a.evaluar(`(() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).filter((x) => /Añádela/.test(x.textContent || '')).find((x) => /Coliseo/.test(x.closest('[class*="min-h-"]')?.textContent || '')); b.click(); return true })()`)
   await a.esp(1500)
   const sinCompartir = await a.evaluar(`(() => {
@@ -139,6 +155,7 @@ try {
   /* — Dueño, viaje compartido (4 personas): «¿Para quién es?» — */
   await ponerGente(a, 'eric')
   await a.esp(800)
+  await esperarAnadela(a)
   await a.evaluar(`(() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).filter((x) => /Añádela/.test(x.textContent || '')).find((x) => /Coliseo/.test(x.closest('[class*="min-h-"]')?.textContent || '')); b.click(); return true })()`)
   await a.esp(1500)
   const pq = () =>

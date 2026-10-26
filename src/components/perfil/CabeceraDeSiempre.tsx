@@ -24,7 +24,7 @@ export function CabeceraDeSiempre() {
         <>
           <button type="button" onClick={() => editarPerfil(true)} aria-label="Cambiar mi foto y mi nombre" data-editar-perfil className="flex h-11 w-[52px] flex-none items-center justify-center">
             <span style={{ boxShadow: '0 0 0 3px rgb(var(--bg)),0 0 0 4.5px rgb(var(--accent))', borderRadius: '50%', display: 'flex' }}>
-              <Avatar foto={yo.foto} inicial={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={52} />
+              <Avatar foto={yo.foto} inicial={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={52} encuadre={yo.encuadre} />
             </span>
           </button>
           <button type="button" aria-label="Ajustes" data-ajustes onClick={() => abrirAjustes()} className="flex h-11 w-11 flex-none items-center justify-center rounded-full text-text/70">

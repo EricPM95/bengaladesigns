@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient'
+import { olvidarPropuestaDe } from './propuestasHuerfanas'
 import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
 import { useViajeCompartido, type Permiso } from '../store/useViajeCompartido'
@@ -66,6 +67,7 @@ export async function salirDelViaje(tripId: string): Promise<string | null> {
  * «Ya no formas parte del viaje» (te han quitado con el viaje abierto). No toca la nube.
  */
 export function dejarDeVerElViaje(tripId: string): void {
+  olvidarPropuestaDe(tripId)
   const sync = useSyncStore.getState()
   const quedan = (sync.savedTrips ?? []).filter((t) => t.id !== tripId)
   if (sync.savedTrips) sync.setSavedTrips(quedan)
