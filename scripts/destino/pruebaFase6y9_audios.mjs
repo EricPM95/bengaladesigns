@@ -136,7 +136,9 @@ const crear = (audioRuta, { audioFalla = false, sintesis = nuevaSintesis() } = {
 
   // 5. El candado: en la gratis, con audio, la barra sigue con candado; la libre (Coliseo) suena.
   ponerVersion('gratis')
+  M.useHistoriaDePrueba.getState().poner({ roma: { sitio: 'otro sitio', nombre: 'Otro' } }) // (Tanda 10P: la de prueba de Roma ya se gastó en otro sitio)
   const gratisCandado = renderToStaticMarkup(createElement(Escuchar, { barra: true, texto: 'Una historia.', clave: 'a', sitio: { destino: 'Roma', nombre: 'Con Audio' } }))
+  M.useHistoriaDePrueba.getState().poner({ roma: { sitio: 'con audio', nombre: 'Con Audio' } })
   const gratisLibre = renderToStaticMarkup(createElement(Escuchar, { barra: true, libre: true, texto: 'Una historia.', clave: 'a', sitio: { destino: 'Roma', nombre: 'Con Audio' } }))
   debe(gratisCandado.includes('data-escuchar="candado"') && !gratisCandado.includes('<audio'), '5 candado', 'en la gratis, la historia con audio debe seguir con candado')
   debe(gratisLibre.includes('data-escuchar="parado"'), '5 candado', 'en la gratis, la historia marcada libre (Coliseo) debe sonar')

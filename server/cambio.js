@@ -10,6 +10,10 @@ import { join } from 'node:path'
 const URL_BCE = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'
 const ARCHIVO = join(tmpdir(), 'trazo-cambio-bce.json')
 const UNA_HORA = 60 * 60 * 1000
+// Monedas que el BCE NO publica y que el viajero de habla hispana necesita (el pase en su moneda, Tanda 10P): se piden, una vez al día junto con lo del BCE, a un complemento gratuito sin clave
+// (@fawazahmed0/currency-api, servido por jsdelivr). Solo se completan las que faltan; si el complemento no responde, simplemente no salen (nunca se inventa un cambio).
+const URL_COMPLEMENTO = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json'
+const COMPLEMENTO = ['COP', 'CLP', 'ARS', 'PEN', 'UYU', 'BOB', 'PYG', 'CRC', 'DOP', 'GTQ']
 
 let guardado = null
 let ultimoIntento = 0
@@ -47,6 +51,19 @@ export async function cambioDelDia(pedir = fetch) {
     if (!respuesta.ok) throw new Error(`BCE ${respuesta.status}`)
     const leido = leerXmlBce(await respuesta.text())
     if (!leido) throw new Error('XML del BCE sin tasas')
+    // (complemento: solo las que el BCE no trae; con un fallo se sigue con lo del BCE)
+    try {
+      const r2 = await pedir(URL_COMPLEMENTO, { signal: AbortSignal.timeout(8000) })
+      if (r2.ok) {
+        const j = await r2.json()
+        for (const m of COMPLEMENTO) {
+          const tasa = Number(j?.eur?.[m.toLowerCase()])
+          if (leido.tasas[m] === undefined && Number.isFinite(tasa) && tasa > 0) leido.tasas[m] = tasa
+        }
+      }
+    } catch {
+      /* sin complemento */
+    }
     guardado = { ...leido, pedidoEn: Date.now() }
     try {
       writeFileSync(ARCHIVO, JSON.stringify(guardado))

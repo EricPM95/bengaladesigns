@@ -4572,7 +4572,8 @@ registrarRutasCuentas(app, salesAdmin)
 registrarRutasDestinosCurados(app, join(__dirname, '../data'))
 registrarRutasAvisosDestino(app, { admin: salesAdmin })
 // La campanita de avisos (cuentas parte 3): lista, leídos, avisos con fecha (nunca de noche), aviso al móvil (con PUSH_ACTIVO) y la tarea programada de Vercel (con CRON_SECRET).
-if (salesAdmin) registrarRutasAvisos(app, { admin: salesAdmin, servicio: crearServicioAvisos({ admin: salesAdmin, destinos: cargarDatosLogros().destinos }) })
+const servicioAvisos = salesAdmin ? crearServicioAvisos({ admin: salesAdmin, destinos: cargarDatosLogros().destinos }) : null
+if (salesAdmin) registrarRutasAvisos(app, { admin: salesAdmin, servicio: servicioAvisos })
 // La API de consulta (parte 1, sandbox): apagada salvo CIVITATIS_API_ACTIVA=true (para todos) o =admin (solo los emails de LOGROS_ADMIN_EMAILS, decidido aquí por petición, Tanda 10O). Todo pasa por aquí; el móvil nunca ve el usuario, la contraseña ni el token. La caché usa Supabase si está la clave (tabla `civitatis_cache`, migración 0022).
 const civitatis = crearServicioCivitatis({
   activa: modoDeCivitatis() !== 'nadie',
@@ -4591,7 +4592,10 @@ if (logrosActivos() && salesAdmin) {
   const datosLogros = cargarDatosLogros()
   const catalogosLogros = Object.fromEntries(Object.keys(datosLogros.destinos).map((clave) => [clave, cargarCatalogoLogros(clave)]))
   const repoLogros = repoSupabase(salesAdmin, { destinosConPionero: Object.values(datosLogros.destinos).filter((d) => d.pionero?.activo).map((d) => d.clave) })
-  registrarRutasLogros(app, { admin: salesAdmin, repo: repoLogros, servicio: crearServicioLogros({ repo: repoLogros, datos: datosLogros, catalogos: catalogosLogros, cobro: cobroListo() }) })
+  const servicioLogros = crearServicioLogros({ repo: repoLogros, datos: datosLogros, catalogos: catalogosLogros, cobro: cobroListo() })
+  registrarRutasLogros(app, { admin: salesAdmin, repo: repoLogros, servicio: servicioLogros })
+  // (Tanda 10P) Antes de leer la campanita se mira el sorteo y las invitaciones de esa cuenta: el aviso dorado («¡Ya estás en el sorteo de 2027!») sale el día que se entra, aunque no se abra el Perfil.
+  servicioAvisos?.alListar((uid) => servicioLogros.sorteoDeCuenta(uid))
 }
 
 // El cobro del pase (cuentas parte 3): solo con PASES_COBRO_ACTIVO=true Y con algo con qué cobrar (las claves de Stripe, o el pago de mentira en desarrollo). Si no, todo abierto, como hoy,

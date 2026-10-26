@@ -3,7 +3,7 @@ import { haceCuanto, type AvisoDeCuenta } from '../../lib/avisos'
 import { Icono } from '../ui/Icono'
 import { Avatar } from '../ajustes/Avatar'
 
-const ICONO: Partial<Record<AvisoDeCuenta['tipo'], NombreIcono>> = { d10: 'avion', resumen: 'estrella', sorpresas: 'gema' }
+const ICONO: Partial<Record<AvisoDeCuenta['tipo'], NombreIcono>> = { d10: 'avion', resumen: 'estrella', sorpresas: 'gema', sorteo: 'pase', amigo_viaje: 'compartido' }
 
 /**
  * LA LISTA DE AVISOS DE LA CUENTA (AV2 a AV5, cuentas parte 3): lo más nuevo arriba y lo no leído destacado (letra más fuerte, fondo dorado suave y un puntito). Cada aviso lleva la inicial de
@@ -14,9 +14,11 @@ export function ListaDeAvisos({ avisos, resaltado = null, onTocar, ahora = Date.
     <div data-lista-avisos className="flex flex-col gap-1.5">
       {avisos.map((a) => {
         const sinLeer = !a.leido && !a.etiqueta
-        const tocable = (a.tipo === 'recomendacion' && !a.etiqueta) || a.tipo === 'd10'
-        const clase = a.tipo === 'recomendacion' || a.tipo === 'unido' ? 'dorado' : a.tipo === 'aceptada' || a.tipo === 'rechazada' ? 'oscuro' : 'claro'
-        const fondoIcono = clase === 'dorado' ? '#F3D59A' : clase === 'oscuro' ? '#1C2230' : '#F1EADC'
+        const tocable = (a.tipo === 'recomendacion' && !a.etiqueta) || a.tipo === 'd10' || a.tipo === 'sorteo'
+        const clase = a.tipo === 'recomendacion' || a.tipo === 'unido' || a.tipo === 'sorteo' ? 'dorado' : a.tipo === 'aceptada' || a.tipo === 'rechazada' ? 'oscuro' : 'claro'
+        // (10P) El aviso del sorteo es el especial dorado del diseño (`Piezas/Sorteo Perfil`): fondo claro, borde dorado y su sombra, y el icono del billete en dorado.
+        const especial = a.tipo === 'sorteo'
+        const fondoIcono = especial ? 'linear-gradient(145deg,#FFF6DC,#E9C77A 45%,#C99A44)' : clase === 'dorado' ? '#F3D59A' : clase === 'oscuro' ? '#1C2230' : '#F1EADC'
         const colorIcono = clase === 'oscuro' ? '#FFFDF8' : '#1C2230'
         const icono = ICONO[a.tipo]
         return (
@@ -29,7 +31,7 @@ export function ListaDeAvisos({ avisos, resaltado = null, onTocar, ahora = Date.
             data-sin-leer={sinLeer ? '1' : undefined}
             onClick={tocable ? () => onTocar(a) : undefined}
             onKeyDown={tocable ? (e) => (e.key === 'Enter' || e.key === ' ') && onTocar(a) : undefined}
-            style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12, borderRadius: 16, minHeight: 44, background: sinLeer ? 'oklch(0.8 0.14 70 / .14)' : 'transparent', outline: resaltado === a.id ? '2px solid oklch(0.8 0.14 70)' : 'none', cursor: tocable ? 'pointer' : 'default' }}
+            style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12, borderRadius: 16, minHeight: 44, background: especial ? '#FFFDF8' : sinLeer ? 'oklch(0.8 0.14 70 / .14)' : 'transparent', border: especial ? '1.5px solid #B58A2E' : undefined, boxShadow: especial && sinLeer ? '0 10px 20px -12px rgba(181,138,46,.8)' : undefined, outline: resaltado === a.id ? '2px solid oklch(0.8 0.14 70)' : 'none', cursor: tocable ? 'pointer' : 'default' }}
           >
             {a.quien ? (
               <Avatar foto={fotoDe?.(a) ?? null} inicial={(a.quien[0] ?? '·').toUpperCase()} tam={38} radio={12} fondo={fondoIcono} color={colorIcono} />

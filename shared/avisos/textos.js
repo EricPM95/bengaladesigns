@@ -47,6 +47,11 @@ export function textoDelAviso(aviso) {
       return 'Tu resumen del viaje está listo'
     case 'sorpresas':
       return p.texto ?? `Te quedan ${p.dias ?? 3} días para reclamar tus sorpresas`
+    // Tanda 10P: el aviso dorado del día que se entra en el sorteo (una sola vez) y el de quien invita cuando su amigo completa su primer viaje con HOY.
+    case 'sorteo':
+      return `¡Ya estás en el sorteo de ${p.anio}!`
+    case 'amigo_viaje':
+      return `${nombreDe(p.nombre) || 'Un amigo'} ha hecho su primer viaje con HOY: +${p.exp} EXP`
     default:
       return 'Tienes un aviso'
   }

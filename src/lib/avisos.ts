@@ -4,7 +4,7 @@ import { llamarServidor } from './servidor'
  * LA CAMPANITA DE AVISOS, EN LA APP (cuentas parte 3, punto 4). La lista sale del servidor (`GET /api/avisos`): lo más nuevo arriba, con lo leído y lo no leído. Los avisos que ya enseñaba
  * la campana (errores de guardado, más días que fechas, reservas que no cuadran, lluvia…) siguen saliendo igual: se calculan en el móvil (useAppNotices.ts) y van debajo.
  */
-export type TipoDeAviso = 'recomendacion' | 'aceptada' | 'rechazada' | 'unido' | 'd10' | 'resumen' | 'sorpresas'
+export type TipoDeAviso = 'recomendacion' | 'aceptada' | 'rechazada' | 'unido' | 'd10' | 'resumen' | 'sorpresas' | 'sorteo' | 'amigo_viaje'
 
 export interface AvisoDeCuenta {
   id: string

@@ -1441,37 +1441,37 @@ console.log('5. Tanda 8C1: la Versión 1, los escalones del Dashboard, la EXP, l
   debe((await servicio.expDe(invitador.uid)).exp === expAntes, 'invitaciones', 'crear la cuenta no da EXP al que invita')
   for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon'].entries()) await V(invitado, s, dia(1 + (i > 1 ? 1 : 0), `${String(9 + i).padStart(2, "0")}:00`))
   await servicio.expDe(invitado.uid)
-  debe((await servicio.expDe(invitador.uid)).exp === expAntes, 'invitaciones', 'ni con 4 paradas vistas (el viaje no es de 5)')
+  debe((await servicio.expDe(invitador.uid)).exp === expAntes, 'invitaciones', 'ni con HOY 2 de los 5 días del viaje (menos de la mitad)')
   await V(invitado, 'piazza_navona', dia(3, '09:00'))
   reloj = new Date('2026-10-20T12:00:00Z')
   const sinAcabar = await servicio.expDe(invitador.uid)
   await servicio.expDe(invitado.uid)
   const conInv = await servicio.expDe(invitador.uid)
-  debe(sinAcabar.exp === expAntes && conInv.exp === expAntes + 100, 'invitaciones', `100 EXP al que invita cuando su amigo acaba su primer viaje con la app (no antes): ${expAntes} → ${conInv.exp}`)
+  debe(sinAcabar.exp === expAntes && conInv.exp === expAntes + 200, 'invitaciones', `(10P) 200 EXP al que invita cuando su amigo completa su primer viaje con HOY, la mitad de los días o más (3 de 5; no antes): ${expAntes} → ${conInv.exp}`)
   await servicio.expDe(invitado.uid)
   debe((await servicio.expDe(invitador.uid)).exp === conInv.exp, 'invitaciones', 'y solo una vez')
   const referidos12 = Array.from({ length: 12 }, (_, i) => ({ invitado: `u${i}`, viaje_acabado_en: `2026-0${1 + (i % 9)}-15T10:00:00Z` }))
   const r12 = E.calcularExp({ datos, items: new Map(), hechos: [], viajes: {}, ahora: new Date('2026-12-31'), referidos: referidos12 })
-  debe(r12.total === 1000 && E.invitacionesQueCuentan(referidos12, 2026, datos.exp) === 10, 'invitaciones', 'como mucho 10 amigos al año: 12 amigos que acaban su viaje dan 1.000 EXP, no 1.200')
-  const dosAnios = [...referidos12.slice(0, 10), { invitado: 'x', viaje_acabado_en: '2027-02-01T10:00:00Z' }]
-  debe(E.calcularExp({ datos, items: new Map(), hechos: [], viajes: {}, ahora: new Date('2027-12-31'), referidos: dosAnios }).total === 1100, 'invitaciones', 'el tope es por año: el año siguiente vuelve a contar')
+  debe(r12.total === 1000 && E.invitacionesQueCuentan(referidos12, 2026, datos.exp) === 5, 'invitaciones', '(10P) como mucho 5 amigos al año: 12 amigos que completan su viaje dan 1.000 EXP (5 x 200), no 2.400')
+  const dosAnios = [...referidos12.slice(0, 5), { invitado: 'x', viaje_acabado_en: '2027-02-01T10:00:00Z' }]
+  debe(E.calcularExp({ datos, items: new Map(), hechos: [], viajes: {}, ahora: new Date('2027-12-31'), referidos: dosAnios }).total === 1200, 'invitaciones', 'el tope es por año: el año siguiente vuelve a contar')
   debe(E.calcularExp({ datos, items: new Map(), hechos: [], viajes: {}, ahora: new Date('2026-12-31'), referidos: [{ invitado: 'z', viaje_acabado_en: null }] }).total === 0, 'invitaciones', 'un amigo que todavía no ha acabado su viaje no da nada')
 
   // El sorteo
-  const S1 = (exp, viajes) => E.entraEnElSorteo({ exp, viajesAcabadosDelAnio: viajes, tabla: datos.exp })
+  const S1 = (exp, viajes) => E.entraEnElSorteo({ entradas: [], expActual: exp, viajes: Array.from({ length: viajes }, (_, i) => ({ trip_id: `t${i}`, fin: '2026-10-14', dias: 5, dias_con_hoy: 3, cumple: true })), ahora: new Date('2026-10-20T12:00:00Z'), anio: 2027, tabla: datos.exp }).entra
   debe(S1(1400, 1) === true && S1(1500, 2) === true && S1(1400, 0) === false && S1(1399, 1) === false && S1(500, 3) === false, 'sorteo', 'nivel 3 con un viaje acabado este año, sí; nivel 3 sin viaje este año, no; nivel 2, no')
   const nivel3ConViaje = await persona('sor-si@correo.es')
-  for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon', 'piazza_navona'].entries()) await V(nivel3ConViaje, s, dia(1 + (i > 2 ? 1 : 0), `${String(9 + i).padStart(2, "0")}:00`))
+  for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon', 'piazza_navona'].entries()) await V(nivel3ConViaje, s, dia(1 + (i % 3), `${String(9 + i).padStart(2, "0")}:00`))
   await repoPG.guardarPerfil(nivel3ConViaje.uid, { exp_max: 1500 })
   const nivel3SinViaje = await persona('sor-sin-viaje@correo.es')
   await repoPG.guardarPerfil(nivel3SinViaje.uid, { exp_max: 1500 })
   const nivel2 = await persona('sor-nivel2@correo.es')
   for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon', 'piazza_navona'].entries()) await V(nivel2, s, dia(1 + (i > 2 ? 1 : 0), `${String(9 + i).padStart(2, "0")}:00`))
-  const so = await servicio.sorteoDe(2026, [nivel3ConViaje.uid, nivel3SinViaje.uid, nivel2.uid])
+  const so = await servicio.sorteoDe(2027, [nivel3ConViaje.uid, nivel3SinViaje.uid, nivel2.uid])
   const ids = so.lista.map((x) => x.user_id)
-  debe(ids.includes(nivel3ConViaje.uid) && !ids.includes(nivel3SinViaje.uid), 'sorteo', 'nivel 3 con un viaje acabado este año: entra · nivel 3 sin viaje este año: no entra')
+  debe(ids.includes(nivel3ConViaje.uid) && !ids.includes(nivel3SinViaje.uid), 'sorteo', '(10P) nivel 3 con un viaje acabado con HOY la mitad de los días (3 de 5): entra · nivel 3 sin viaje: no entra')
   debe(!ids.includes(nivel2.uid) || (await servicio.expDe(nivel2.uid)).nivel >= 3, 'sorteo', 'nivel 2: no entra')
-  debe((await servicio.sorteoDe(2027, [nivel3ConViaje.uid])).entran === 0, 'sorteo', 'el año siguiente, sin viaje acabado ese año, ya no entra')
+  debe((await servicio.sorteoDe(2028, [nivel3ConViaje.uid])).entran === 0, 'sorteo', 'el año siguiente, sin viaje acabado en esa ventana (1 sep a 31 ago), ya no entra')
   const mont = {}
   registrarRutasLogros({ get: (r, h) => (mont[`GET ${r}`] = h), post: (r, h) => (mont[`POST ${r}`] = h), put: (r, h) => (mont[`PUT ${r}`] = h) }, { admin: { auth: { getUser: async (t) => (t === 'a' ? { data: { user: { id: nivel3ConViaje.uid, email: 'eric@ejemplo.es', is_anonymous: false } } } : t === 'u' ? { data: { user: { id: nivel3ConViaje.uid, email: 'x@y.z', is_anonymous: false } } } : { error: { message: 'no' } }) } }, servicio, repo: repoPG, env: { LOGROS_ACTIVOS: 'true', CUENTAS_ACTIVAS: 'true', LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es' }, ahora: () => reloj })
   const call = async (ruta, token, query = {}) => {
@@ -1481,7 +1481,7 @@ console.log('5. Tanda 8C1: la Versión 1, los escalones del Dashboard, la EXP, l
     await mont[ruta]({ headers: { authorization: `Bearer ${token}` }, get: () => `Bearer ${token}`, body: {}, query }, res)
     return { estado, cuerpo }
   }
-  const adm = await call('GET /api/admin/logros/sorteo', 'a', { anio: '2026' })
+  const adm = await call('GET /api/admin/logros/sorteo', 'a', { anio: '2027' })
   debe(adm.estado === 200 && adm.cuerpo.entran >= 1 && adm.cuerpo.lista.every((x) => !('email' in x) && !('nombre' in x)) && (await call('GET /api/admin/logros/sorteo', 'u')).estado === 403, 'sorteo', 'el panel de Eric cuenta cuántos entran este año y da la lista (solo ids, sin nombres ni correos); una cuenta normal no entra (403)')
   const mi = await call('GET /api/logros/exp', 'u')
   debe(mi.estado === 200 && mi.cuerpo.ok && mi.cuerpo.nivel >= 1 && 'falta' in mi.cuerpo, 'exp', 'GET /api/logros/exp manda la EXP, el nivel, el rango y lo que falta')

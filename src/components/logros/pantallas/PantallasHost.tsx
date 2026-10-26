@@ -17,6 +17,7 @@ const cargadores: { [T in Pantalla['t']]: Cargador<T> } = {
   viaje: () => import('./ViajeGuardado'),
   previos: () => import('./DondeHasEstado'),
   pasaporte: () => import('./PasaporteScreen'),
+  sorteo: () => import('./sorteo/PaginaDelSorteo'),
 }
 const perezosas = Object.fromEntries(Object.entries(cargadores).map(([t, c]) => [t, lazy(c as () => Promise<{ default: ComponentType<{ pantalla: Pantalla }> }>)])) as unknown as Record<Pantalla['t'], ComponentType<{ pantalla: Pantalla }>>
 

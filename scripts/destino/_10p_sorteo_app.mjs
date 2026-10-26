@@ -1,0 +1,27 @@
+// Ayudante de pruebaTanda10P_sorteo.mjs y de sus capturas: abre la app (Vite propio en APP_URL, por defecto el 5183) con el viaje de pruebas y los logros de mentira (?logrosDemo=1),
+// cierra las ventanas de bienvenida y abre el Perfil. Todo con el viajero de ejemplo de src/lib/logrosDemo_perfil.ts.
+import { abrirApp } from './_enLaApp.mjs'
+
+export async function abrirConPerfil({ ancho = 390, alto = 844, nombre = 'Eric', antes = undefined } = {}) {
+  const app = await abrirApp('http://localhost:5183', { ancho, alto, ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0', antes })
+  for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)
+  for (let i = 0; i < 60 && !(await app.evaluar("typeof window.__rutaPrueba === 'function'").catch(() => false)); i++) await app.esp(500)
+  await app.evaluar('window.__rutaPrueba().then(() => true)')
+  for (let i = 0; i < 90 && !(await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await app.esp(1000)
+  await app.esp(3000)
+  const cerrarVentanas = async () => {
+    for (let i = 0; i < 6; i++) {
+      const h = await app.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Siguiente|Entendido|Vale|Cerrar)$/.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()")
+      if (!h) break
+      await app.esp(700)
+    }
+  }
+  await cerrarVentanas()
+  if (nombre) await app.evaluar(`window.__miPerfil.getState().poner({ nombre: ${JSON.stringify(nombre)} }); true`)
+  const texto = (selector) => app.evaluar(`(() => { const e = document.querySelector(${JSON.stringify(selector)}); return e ? e.innerText.split(String.fromCharCode(10)).join(' | ') : null })()`)
+  const abrirElPerfil = async () => {
+    await app.evaluar("import('/src/store/usePerfilUi.ts').then((m) => { m.usePerfilUi.getState().abrir(); return true })")
+    await app.esp(2500)
+  }
+  return { app, texto, cerrarVentanas, abrirElPerfil }
+}

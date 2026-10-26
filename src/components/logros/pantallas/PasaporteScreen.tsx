@@ -6,6 +6,8 @@ import { Capa } from './Capa'
 import { Globo, type Marca, type Objetivo, type Relleno } from './mundo/Globo'
 import { pedirPasaporte, type PaginaDePasaporte, type RespuestaPasaporte, type SelloDePagina } from './mundo/api'
 import { zoomParaPais } from './mundo/proyeccion'
+import { mapaDeVisitados } from './mundo/mapaDeVisitados'
+import { useMiNombreYFoto } from '../../../store/useMiPerfil'
 import { reducirMovimiento, sinTildes, usePaisesYTierra, type Pais } from './mundo/paises'
 import { SelloPasaporte } from './mundo/SelloPasaporte'
 import { aspectoDeSello, fechaDeSello } from './mundo/selloDatos'
@@ -68,6 +70,9 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
   const [golpe, setGolpe] = useState(0)
   const sembrado = useRef(false)
   const reducido = reducirMovimiento()
+  // (10P, 1.8) «Pasaporte de {nombre}» y un mapa MUCHO más grande: ocupa casi todo el ancho del móvil (346 px en un iPhone de 390; el del diseño P2) en vez de los 254 de antes.
+  const yo = useMiNombreYFoto()
+  const lado = Math.max(220, Math.min(346, (typeof window !== 'undefined' ? window.innerWidth : 390) - 44))
 
   useEffect(() => {
     let vivo = true
@@ -123,7 +128,9 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
     const c = paginas[i].iso ? porIso.get(paginas[i].iso as string) : undefined
     setIdx(i)
     setSub(s)
-    if (c) setInicial({ lat: c.lat, lng: c.lng, z: zoomParaPais(c.p === 1) })
+    // Al abrirlo sin pedir nada, el mapa se centra en los países VISITADOS (sin ninguno, en Europa); si piden un país o un sello, en ese.
+    if (!pedida) setInicial(mapaDeVisitados(catalogo, paginas.filter((p) => p.estado !== 'por_conseguir' && p.iso).map((p) => p.iso as string)).inicial)
+    else if (c) setInicial({ lat: c.lat, lng: c.lng, z: zoomParaPais(c.p === 1) })
     else setInicial({ lat: 36, lng: 8, z: 1 })
   }, [catalogo, paginas, porIso, pantalla.pagina])
 
@@ -180,12 +187,15 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
                 </svg>
               </span>
             </button>
-            <span style={{ font: "300 11px/1 'Geist'", letterSpacing: '.34em', textTransform: 'uppercase', marginTop: 16 }}>Pasaporte</span>
-            <div style={{ position: 'relative', marginTop: 18, width: 268, height: 268, borderRadius: '50%', padding: 7, background: 'conic-gradient(from 200deg,#F6E3A8,#B8903E,#F3D59A,#8E6A26,#F6E3A8)', boxShadow: '0 10px 24px -10px rgba(0,0,0,.6)' }}>
+            <span data-titulo-pasaporte style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, marginTop: 8 }}>
+              <span style={{ font: "300 11px/1 'Geist'", letterSpacing: '.34em', textTransform: 'uppercase' }}>Pasaporte</span>{' '}
+              {yo.tieneNombre && <span style={{ font: "italic 400 24px/1 'Instrument Serif',serif", color: '#FFF1D6' }}>de {yo.nombre}</span>}
+            </span>
+            <div data-mapa-grande style={{ position: 'relative', marginTop: 14, width: lado + 18, height: lado + 18, borderRadius: '50%', padding: 9, background: 'conic-gradient(from 200deg,#F6E3A8,#B8903E,#F3D59A,#8E6A26,#F6E3A8)', boxShadow: '0 10px 24px -10px rgba(0,0,0,.6)' }}>
               {inicial ? (
-                <Globo tierra={tierra} rellenos={rellenos} marcas={marcas} objetivo={objetivo} inicial={inicial} estilo="papel" lado={254} zoomMax={9} onPais={alPais} onMarca={(c) => ir(Number(c))} etiqueta="El globo de tu pasaporte" />
+                <Globo tierra={tierra} rellenos={rellenos} marcas={marcas} objetivo={objetivo} inicial={inicial} estilo="papel" lado={lado} zoomMax={9} onPais={alPais} onMarca={(c) => ir(Number(c))} etiqueta="El globo de tu pasaporte" />
               ) : (
-                <div style={{ width: 254, height: 254, borderRadius: '50%', background: '#F7F1E4' }} />
+                <div style={{ width: lado, height: lado, borderRadius: '50%', background: '#F7F1E4' }} />
               )}
             </div>
             {numeros && (

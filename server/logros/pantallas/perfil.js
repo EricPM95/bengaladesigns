@@ -12,7 +12,8 @@
 import { GLOBAL, clave } from '../motor.js'
 import { nivelDeExp } from '../exp.js'
 import { logrosVisibles, pasaporte } from '../vistas.js'
-import { catalogoDePaises, paisesConocidos, recuerdosDe } from './previos.js'
+import { viajesAcabados } from '../exp.js'
+import { catalogoDePaises, paginasDelPasaporte, paisesConocidos, recuerdosDe, resumenDePasaporte } from './previos.js'
 
 /** Los emblemas cuyo dibujo lleva una hora: no salen en ningún resumen. */
 const EMBLEMAS_CON_HORA = new Set(['madrugador', 'nocturno'])
@@ -108,7 +109,16 @@ export function registrar(app, ctx) {
     '/api/logros/perfil',
     conUsuario(async (_req, res, u) => {
       const [exp, c, perfil] = await Promise.all([servicio.expDe(u.id), servicio.cargar(u.id), repo.perfilDe(u.id)])
-      return res.json(construirPerfil({ datos, items: servicio.aItems(c.logros), exp, guardada: perfil.vitrina, previos: perfil.previos ?? { paises: [], dias: 0 }, ahora: ahora(), catalogo }))
+      const previos = perfil.previos ?? { paises: [], dias: 0 }
+      const json = construirPerfil({ datos, items: servicio.aItems(c.logros), exp, guardada: perfil.vitrina, previos, ahora: ahora(), catalogo })
+      // (10P, 1.8) El pasaporte sale de UN solo sitio —el mismo que `/api/logros/pasaporte2`—: países, ciudades, días viajando, sellos y el mapa de lo visitado, nunca el viaje planeado.
+      const base = await servicio.pasaporteDe(u.id)
+      const acabados = viajesAcabados({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() })
+      const paginas = paginasDelPasaporte({ datos, base, previos, catalogo, hechos: c.hechos, viajes: c.viajes, acabados })
+      json.pasaporte = resumenDePasaporte({ base, paginas })
+      // (10P, 1.6) El billete del sorteo.
+      json.sorteo = await servicio.sorteoDeCuenta(u.id, c)
+      return res.json(json)
     }),
   )
 }

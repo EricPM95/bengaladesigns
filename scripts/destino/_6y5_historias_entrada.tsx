@@ -15,8 +15,9 @@ import { numberedStopsOf } from '../../src/lib/stopKind'
 import { accesoHistoria, textoHistoria } from '../../src/lib/historia'
 import { fetchPlaceDetail, toStopDescription, toStopTips } from '../../src/lib/placeDetailApi'
 import { EVENTO_PAGAR, pedirPago } from '../../src/lib/pago'
+import { useHistoriaDePrueba } from '../../src/lib/historiaDePrueba'
 
 export {
   createElement, renderToStaticMarkup, HoyView, HistoriaDeParada, Escuchar, StopDetailSheet, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, fetchDestinationPlaces,
-  cargaDatosDeHorario, numberedStopsOf, accesoHistoria, textoHistoria, fetchPlaceDetail, toStopDescription, toStopTips, EVENTO_PAGAR, pedirPago,
+  cargaDatosDeHorario, numberedStopsOf, accesoHistoria, textoHistoria, fetchPlaceDetail, toStopDescription, toStopTips, EVENTO_PAGAR, pedirPago, useHistoriaDePrueba,
 }

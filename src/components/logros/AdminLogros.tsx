@@ -173,22 +173,33 @@ function Probador() {
   )
 }
 
-/** El sorteo del año (8C1, solo la regla): cuántas cuentas entran y la lista (solo el id de cada cuenta: sin nombres ni correos). Provisional. */
+/**
+ * El sorteo del año (Tanda 10P): cuántas cuentas entran y la lista (solo el id de cada cuenta: sin nombres ni correos). La regla: nivel mínimo y al menos un viaje acabado usando HOY la mitad de los días o más
+ * (redondeando hacia arriba), con el cierre del 31 de agosto. Los datos del sorteo (año, destino, premio, fechas, cierre y enlace de las bases) se cambian en `data/logros/exp.json › sorteo`.
+ */
 function Sorteo() {
-  const [anio, setAnio] = useState(String(new Date().getFullYear()))
-  const [r, setR] = useState<{ ok: boolean; anio: number; cuentas: number; entran: number; lista: { user_id: string; exp: number; nivel: number; viajes_acabados: number }[]; regla: { nivel_minimo: number; viajes_acabados_minimos_al_anio: number } } | null>(null)
-  const ver = async () => setR(await llamar('/api/admin/logros/sorteo?anio=' + encodeURIComponent(anio)))
+  const [anio, setAnio] = useState('')
+  const [r, setR] = useState<{ ok: boolean; anio: number; edicion?: { anio: number; destino: string | null; premio: string; cierre: string }; cuentas: number; entran: number; lista: { user_id: string; exp: number; nivel: number; viajes_con_hoy: number }[]; regla: { nivel_minimo: number; viajes_con_hoy_minimos: number } } | null>(null)
+  // Sin año, el servidor enseña la edición que está en marcha.
+  const ver = async () => setR(await llamar('/api/admin/logros/sorteo' + (anio ? '?anio=' + encodeURIComponent(anio) : '')))
   return (
     <section data-admin-sorteo>
-      <p className="text-text/60">Entra quien tenga nivel 3 o más y haya acabado al menos un viaje con la app ese año. Solo la regla: sin pantalla de sorteo.</p>
+      <p className="text-text/60">Entra quien tenga el nivel mínimo o más y haya acabado al menos un viaje usando HOY la mitad de los días o más (a cualquier destino), hasta el cierre del 31 de agosto. Déjalo vacío para ver la edición en marcha.</p>
       <div className="mt-2 flex gap-2">
-        <input value={anio} onChange={(e) => setAnio(e.target.value)} className="w-24 rounded border border-text/20 px-2 py-1" />
+        <input value={anio} placeholder="Año" onChange={(e) => setAnio(e.target.value)} className="w-24 rounded border border-text/20 px-2 py-1" />
         <button type="button" onClick={() => void ver()} className="rounded-full btn-champan px-4 py-1.5 text-[14px] font-semibold ">Ver quién entra</button>
       </div>
       {r?.ok && (
         <div className="mt-3">
-          <p><b>{r.entran}</b> de {r.cuentas} cuentas entran en {r.anio} (nivel {r.regla.nivel_minimo}+ y {r.regla.viajes_acabados_minimos_al_anio}+ viaje acabado).</p>
-          <ul className="mt-2 space-y-0.5 font-mono text-[12.5px]">{r.lista.map((x) => <li key={x.user_id}>{x.user_id.slice(0, 8)} · nivel {x.nivel} · {x.exp} EXP · {x.viajes_acabados} viaje(s)</li>)}</ul>
+          <p>
+            <b>{r.entran}</b> de {r.cuentas} cuentas entran en {r.anio} (nivel {r.regla.nivel_minimo}+ y {r.regla.viajes_con_hoy_minimos}+ viaje acabado con HOY la mitad de los días o más).
+          </p>
+          {r.edicion && (
+            <p className="text-text/60">
+              {r.edicion.premio} · cierra el {r.edicion.cierre}
+            </p>
+          )}
+          <ul className="mt-2 space-y-0.5 font-mono text-[12.5px]">{r.lista.map((x) => <li key={x.user_id}>{x.user_id.slice(0, 8)} · nivel {x.nivel} · {x.exp} EXP · {x.viajes_con_hoy} viaje(s) con HOY</li>)}</ul>
         </div>
       )}
     </section>

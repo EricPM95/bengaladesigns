@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { Icono } from '../../ui/Icono'
 import { abrirPase, pagoActivo } from '../../../lib/pago'
 import { nombreDelPase } from '../../../lib/nombrePase'
-import { Marca } from '../../pase/Marca'
+import { Marca, ORO_PALIDO, ORO_PEQUENO } from '../../pase/Marca'
+import { accesoDePrueba, useHistoriaDePrueba } from '../../../lib/historiaDePrueba'
+import { useGastarHistoriaAl3s } from '../../../lib/useGastarHistoria'
 import { useEscuchar } from '../../../lib/useEscuchar'
 import { useAudioDeHistoria } from '../../../lib/escucharAudio'
 
@@ -20,11 +22,17 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
   const audio = useAudioDeHistoria(sitio)
   const { hayVoz, estado, progreso, escuchar, pausar, seguir, parar } = useEscuchar(texto, clave, audio)
   const [pidioPago, setPidioPago] = useState(false)
+  // Tanda 10P: la historia (con `sitio`) sin pase: la de prueba del destino es la que el viajero elija («Gratis · 0/1»); se gasta a los 3 s y esa se queda suya; las demás, con candado.
+  const mapaDePrueba = useHistoriaDePrueba((s) => s.mapa)
+  const conPase = pagoActivo()
+  const pruebaDelSitio = sitio && !conPase ? accesoDePrueba(mapaDePrueba, sitio.destino, sitio.nombre) : null
+  const enPrueba = pruebaDelSitio === 'abierta'
+  useGastarHistoriaAl3s(sitio?.destino, sitio?.nombre, estado, enPrueba)
   // (sin voz en español no hay nada que escuchar: ni el botón ni su candado)
   if (texto.trim().length === 0 || !hayVoz) return null
   // `libre`: la historia que suena gratis para todos (la muestra). El resto es de pago (Tanda 10H): sin el pase, el MISMO botón de siempre, con su diseño, y el candado dorado en el extremo derecho, dentro del botón, sobre marfil
   // (como los demás cerrados). Al tocarlo dice «Incluido con el Pase de Roma» y abre el pase (`abrirPase`, la única función). Sin voz en el aparato no hace falta: no suena nada, solo invita.
-  const permitido = pagoActivo() || libre
+  const permitido = conPase || (sitio ? pruebaDelSitio !== 'cerrada' : libre)
   const nombreDelPaseDelSitio = nombreDelPase(sitio?.destino ?? destino ?? '')
   const candadoDentro = (
     <span aria-hidden="true" data-candado-dentro className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
@@ -54,7 +62,9 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
                 Incluido con el <Marca oscuro>{nombreDelPaseDelSitio}</Marca>
               </span>
             ) : (
-              <span className="h-[3px] overflow-hidden rounded-[3px]" style={{ background: 'rgba(255,253,248,.18)' }} />
+              <span data-escuchar-todas className="font-mono text-[11px] font-medium leading-none text-[#FFFDF8]/70">
+                Todas las historias, con el <Marca oscuro>{nombreDelPaseDelSitio}</Marca>
+              </span>
             )}
           </span>
           {candadoDentro}
@@ -103,9 +113,15 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
             <span className="font-display text-[17px] leading-none">Escuchar historia</span>
             {estadoTexto && <span className="font-mono text-[11px] font-medium text-[#FFFDF8]/60">{estadoTexto}</span>}
           </span>
-          <span className="h-[3px] overflow-hidden rounded-[3px]" style={{ background: 'rgba(255,253,248,.18)' }}>
-            <span className="block h-full transition-[width] duration-[900ms] ease-linear" style={{ width: `${Math.round(progreso * 100)}%`, background: 'oklch(0.8 0.14 70)' }} />
-          </span>
+          {enPrueba && estado === 'parado' ? (
+            <span data-escuchar-prueba className="font-mono text-[11px] font-medium leading-none text-[#FFFDF8]/70">
+              <span style={{ color: ORO_PALIDO, fontWeight: 600 }}>Gratis</span>, tu historia de prueba · 0/1
+            </span>
+          ) : (
+            <span className="h-[3px] overflow-hidden rounded-[3px]" style={{ background: 'rgba(255,253,248,.18)' }}>
+              <span className="block h-full transition-[width] duration-[900ms] ease-linear" style={{ width: `${Math.round(progreso * 100)}%`, background: 'oklch(0.8 0.14 70)' }} />
+            </span>
+          )}
         </span>
         {estado !== 'parado' && (
           <button type="button" onClick={parar} aria-label="Parar" className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-[#FFFDF8]/80 hover:bg-[#FFFDF8]/10">
@@ -125,6 +141,11 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
         <button type="button" onClick={escuchar} className={claseBoton} style={fondo}>
           <Icono nombre="altavoz" size={15} />
           {nombreBoton}
+          {enPrueba && (
+            <span data-escuchar-prueba className="text-[11px] font-medium opacity-80">
+              · <span style={{ color: oscuro ? ORO_PALIDO : ORO_PEQUENO, fontWeight: 600 }}>Gratis</span> · 0/1
+            </span>
+          )}
         </button>
       ) : (
         <>

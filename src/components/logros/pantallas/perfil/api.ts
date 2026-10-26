@@ -1,5 +1,6 @@
 import { llamar } from '../../../../lib/logros'
 import type { ResumenDeExp } from '../../momentos/api'
+import type { EstadoDelSorteo } from '../sorteo/api'
 
 export type { ResumenDeExp }
 
@@ -31,7 +32,13 @@ export interface PerfilLogros {
   titulo: TituloDeViajero | null
   titulos: TituloDeViajero[]
   vitrina: { logros: number; recientes: PiezaReciente[] }
-  pasaporte: { paises: number; ciudades: number; sellos: number }
+  /**
+   * Lo VISITADO, del mismo sitio que el pasaporte por dentro (server/logros/pantallas/previos.js › resumenDePasaporte): los mismos países y ciudades dentro y fuera. `paises_iso` pinta y centra el
+   * mapa de la tarjeta; `sellos_recientes` son los dos últimos sellos de viaje, que asoman a la derecha. `dias_viajando` solo se enseña dentro del pasaporte.
+   */
+  pasaporte: { paises: number; ciudades: number; sellos: number; dias_viajando?: number; paises_iso?: string[]; sellos_recientes?: { ciudad: string; fecha: string; destino: string }[] }
+  /** El billete del sorteo (Tanda 10P, 1.6). Si el servidor no lo manda, el billete no sale. */
+  sorteo?: EstadoDelSorteo
   /** Los países que marcó en «¿Dónde has estado ya?»: los viajes de antes de la app. */
   previos: { paises: number }
 }

@@ -102,6 +102,23 @@ export function paginasDelPasaporte({ datos, base, previos, catalogo, hechos, vi
   return paginas
 }
 
+/**
+ * UN SOLO SITIO para lo que cuenta el pasaporte (Tanda 10P, 1.8): los países, las ciudades, los días viajando y los sellos. Lo usan el pasaporte (`/api/logros/pasaporte2`) y la tarjeta «Mi pasaporte» del Perfil
+ * (`/api/logros/perfil`), así que dentro y fuera salen siempre los mismos números. Cuenta lo VISITADO (con la app y los de «¿Dónde has estado ya?»), nunca el viaje planeado.
+ * `paises_iso`: los países visitados (para centrar y pintar el mapa); `sellos_recientes`: los dos últimos sellos de viaje, para que asomen en la tarjeta.
+ */
+export function resumenDePasaporte({ base, paginas }) {
+  const sellos = paginas.reduce((n, p) => n + p.sellos.filter((s) => !s.vacio).length + (p.estado === 'recuerdo' ? 1 : 0), 0)
+  const reales = paginas.flatMap((p) => p.sellos.filter((s) => !s.vacio && s.fecha).map((s) => ({ ciudad: s.ciudad, fecha: s.fecha, destino: s.destino })))
+  reales.sort((a, b) => String(b.fecha).localeCompare(String(a.fecha)))
+  return {
+    ...base.numeros,
+    sellos,
+    paises_iso: paginas.filter((p) => p.estado !== 'por_conseguir' && p.iso).map((p) => p.iso),
+    sellos_recientes: reales.slice(0, 2),
+  }
+}
+
 export function registrar(app, ctx) {
   const { conUsuario, servicio, repo, datos } = ctx
   const ahora = () => (typeof ctx.ahora === 'function' ? ctx.ahora() : (ctx.ahora ?? new Date()))
@@ -130,8 +147,8 @@ export function registrar(app, ctx) {
       const previos = c.perfil?.previos ?? { paises: [], dias: 0 }
       const acabados = viajesAcabados({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() })
       const paginas = paginasDelPasaporte({ datos, base, previos, catalogo, hechos: c.hechos, viajes: c.viajes, acabados })
-      const sellos = paginas.reduce((n, p) => n + p.sellos.filter((s) => !s.vacio).length + (p.estado === 'recuerdo' ? 1 : 0), 0)
-      return res.json({ ok: true, ...base, numeros: { ...base.numeros, sellos }, paginas })
+      const { paises_iso: _i, sellos_recientes: _s, ...numeros } = resumenDePasaporte({ base, paginas })
+      return res.json({ ok: true, ...base, numeros, paginas })
     }),
   )
 }

@@ -24,6 +24,9 @@ import { useHorarioDeParadas, type HorarioDeParada } from '../../../../lib/horar
 import { textoResumenDeParada, useEscuchar } from '../../../../lib/useEscuchar'
 import { useAudioDeHistoria } from '../../../../lib/escucharAudio'
 import { accesoHistoria, textoHistoria, useFichaDeSitio } from '../../../../lib/historia'
+import { useHistoriaDePrueba } from '../../../../lib/historiaDePrueba'
+import { fraseDeAtardecer, tarjetaDeManana, tocaLoDeManana } from '../../../../lib/puestaDeSolYManana'
+import { useGastarHistoriaAl3s } from '../../../../lib/useGastarHistoria'
 import { useExploreAperturaStore } from '../../../../store/useExploreAperturaStore'
 import type { EstadoPase } from '../../../../lib/paseEstado'
 import { Icono } from '../../../ui/Icono'
@@ -121,7 +124,10 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
   const texto = textoHistoria(ficha)
   const { hayVoz, estado, escuchar, pausar, seguir, parar } = useEscuchar(texto, `${parada.id}:historia`, audio)
   const [pidioPase, setPidioPase] = useState(false)
-  const acceso = accesoHistoria(ficha)
+  // Tanda 10P: la historia de prueba del destino es la que el viajero elija (una por destino, guardada en la cuenta); el día de prueba de HOY no la gasta (allí `pagoActivo()` es verdadero).
+  useHistoriaDePrueba((s) => s.mapa)
+  const acceso = accesoHistoria(ficha, pagoActivo(), { destino, nombre: parada.name })
+  useGastarHistoriaAl3s(destino, parada.name, estado, acceso === 'prueba')
   if (acceso === 'ninguno' || texto.trim().length === 0) return null
   // (Tanda 10H: sin el pase, el MISMO botón, con el candado dorado en el extremo derecho, dentro, sobre marfil; al tocarlo, «Incluido con el Pase de Roma» y se abre el pase.)
   if (acceso === 'candado') {
@@ -131,13 +137,16 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
           <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full" style={{ background: 'rgb(var(--accent))' }}>
             <Icono nombre="seguir" size={13} relleno grosor={1.6} />
           </span>
-          <span className="min-w-0 flex-1 whitespace-nowrap text-left text-[13.5px] font-semibold">
+          <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-left">
+            <span className="whitespace-nowrap text-[13.5px] font-semibold">Escuchar historia</span>
             {pidioPase ? (
-              <span data-escuchar-incluido>
+              <span data-escuchar-incluido className="text-[11px] font-medium">
                 Incluido con el <Marca>{nombreDelPase(destino)}</Marca>
               </span>
             ) : (
-              'Escuchar historia'
+              <span data-escuchar-todas className="text-[11px] font-medium text-[#1C2230]/65">
+                Todas las historias, con el <Marca>{nombreDelPase(destino)}</Marca>
+              </span>
             )}
           </span>
           <span aria-hidden="true" data-candado-dentro className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
@@ -156,7 +165,16 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
         <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full" style={{ background: 'rgb(var(--accent))' }}>
           <Icono nombre={estado === 'hablando' ? 'pausa' : 'seguir'} size={13} relleno grosor={1.6} />
         </span>
-        <span className="whitespace-nowrap text-[13.5px] font-semibold">{estado === 'parado' ? 'Escuchar historia' : estado === 'hablando' ? 'Pausar' : 'Seguir escuchando'}</span>
+        {acceso === 'prueba' && estado === 'parado' ? (
+          <span className="flex flex-col items-start gap-0.5 text-left">
+            <span className="whitespace-nowrap text-[13.5px] font-semibold">Escuchar historia</span>
+            <span data-escuchar-prueba className="whitespace-nowrap text-[11px] font-medium text-[#1C2230]/65">
+              <Marca>Gratis</Marca>, tu historia de prueba · 0/1
+            </span>
+          </span>
+        ) : (
+          <span className="whitespace-nowrap text-[13.5px] font-semibold">{estado === 'parado' ? 'Escuchar historia' : estado === 'hablando' ? 'Pausar' : 'Seguir escuchando'}</span>
+        )}
         <span className="flex h-6 items-center gap-[3px]" style={{ opacity: estado === 'hablando' ? 1 : 0.6 }} aria-hidden="true">
           {[...onda, ...onda].map((h, i) => (
             <span key={i} style={{ width: 2.5, height: h, borderRadius: 2, background: 'linear-gradient(180deg,#D8B98E,#6F4E37)', opacity: i >= 10 ? 0.7 : 1 }} />
@@ -285,6 +303,24 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       : null
   const origenCerca = ubicacion ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null)
 
+  // Tanda 10P (1.3): la puesta de sol y lo de mañana (con el pase y en el día de prueba; sin pase, como antes).
+  const conPaseOPrueba = pagoActivo()
+  const fraseAtardecer = conPaseOPrueba
+    ? fraseDeAtardecer({
+        day,
+        siguiente,
+        pendientes: vigentes.filter((s) => !s.checkedInAt),
+        otrosMiradores: [...route.days.filter((d) => d.id !== day.id).flatMap((d) => [...numberedStopsOf(d), ...(d.spareStops ?? [])]), ...(day.spareStops ?? [])],
+        desde: anterior,
+        ahoraMin: new Date().getHours() * 60 + new Date().getMinutes(),
+      })
+    : null
+  const horaDeCena = day.meals.find((m) => m.mealTime === 'dinner')?.time
+  const ahoraLocal = new Date()
+  const manana =
+    conPaseOPrueba && !day.isReturnLeg && tocaLoDeManana({ paradasDeHoy: paradas.length, quedanPendientes: Boolean(siguiente), cenaMin: horaDeCena ? parseTimeToMinutes(horaDeCena) : null, ahoraMin: ahoraLocal.getHours() * 60 + ahoraLocal.getMinutes() })
+      ? tarjetaDeManana({ route, day, reservations, nombreDelDia: (d) => nombreDelDia(route, d, info.gruposDia).titulo, nombreCorto: (r) => info.nombresCortos[r.refId] ?? null })
+      : null
   const reservaSiguiente = siguiente ? reservaDe(siguiente) : null
   const horaReservada = reservaSiguiente?.time ?? siguiente?.reservationTime ?? null
   const saltar = (stop: Stop) => {
@@ -458,6 +494,16 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
       {alertas}
 
+      {/* Tanda 10P: la puesta de sol, con la hora real del día */}
+      {fraseAtardecer && (
+        <div data-hoy-atardecer={fraseAtardecer.tipo} className="flex min-h-14 flex-none items-center gap-3 rounded-[18px] py-[9px] pl-3 pr-3" style={{ background: 'oklch(0.96 0.04 70)', border: '1px solid oklch(0.64 0.14 60 / .3)' }}>
+          <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px]" style={{ background: 'oklch(0.8 0.14 70)', color: '#17120a' }}>
+            <Icono nombre="hoy" size={17} grosor={1.8} />
+          </span>
+          <span className="min-w-0 flex-1 text-[13px] font-medium leading-[1.35]" style={{ color: 'oklch(0.32 0.07 60)' }}>{fraseAtardecer.texto}</span>
+        </div>
+      )}
+
       {/* 2: la siguiente parada, en grande */}
       {!sinParadasDeVuelta && siguiente && (
         <div className="flex flex-none flex-col gap-3 rounded-[28px] px-2 pb-3 pt-2 bg-[#FFFDF8] text-[#1C2230]" style={{ boxShadow: SOMBRA_TARJETA_CLARA }} data-hoy-siguiente data-tarjeta="clara">
@@ -535,6 +581,14 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
               Más visitas
             </button>
           )}
+        </div>
+      )}
+
+      {/* Tanda 10P: lo de mañana (después de la última parada o a la hora de la cena; el último día, nada) */}
+      {manana && (
+        <div data-hoy-manana className="flex flex-none flex-col gap-1 rounded-[18px] px-3.5 py-3" style={{ background: 'oklch(0.95 0.025 230)', border: '1px solid oklch(0.56 0.1 230 / .2)' }}>
+          <span className="text-[13.5px] font-semibold leading-[1.35]" style={{ color: 'oklch(0.3 0.06 240)' }}>{manana.texto}</span>
+          {manana.reserva && <span data-hoy-manana-reserva className="text-[12.5px] leading-[1.35]" style={{ color: 'oklch(0.3 0.06 240 / .85)' }}>{manana.reserva}</span>}
         </div>
       )}
 

@@ -1,5 +1,5 @@
 import { plantilla as plantillaDeDesign } from './gen/Pase_Pelicula'
-import { LISTA_DEL_PASE } from '../../../lib/listaDelPase'
+import { FILAS_OCULTAS, LISTA_DEL_PASE, TEXTOS_DE_LINEA, partesDeLinea } from '../../../lib/listaAjustada'
 import { nombreDelPase } from '../../../lib/nombrePase'
 
 /**
@@ -84,6 +84,10 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
   // El ✕ del final (Design no lo tiene: era una página de escritorio). Fino y claro, sin relleno. En el final [Saltar] ya no sirve y deja su sitio al ✕.
   const movil = ast[0].c![0] as Nodo
   movil.c = movil.c!.map((h) => (esNodo(h) && h.t === 'div' && textoDe(h).trim() === 'Saltar' ? { i: '{{ !s7 }}', c: [h] } : h))
+  // (en el diseño de ahora [Saltar] es un span dentro de la barra de arriba, junto a [Ver])
+  recorre(movil, (n) => {
+    if (n.i !== '{{ !s7 }}' && n.c?.some((h) => esNodo(h) && h.a?.onClick === '{{ skip }}')) n.c = n.c.map((h) => (esNodo(h) && h.a?.onClick === '{{ skip }}' ? { i: '{{ !s7 }}', c: [h] } : h))
+  })
   movil.c!.push({
     i: '{{ s7 }}',
     c: [
@@ -107,9 +111,86 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
     ],
   })
 
+  ajustarAlMovil(ast)
+  ajustarLaLista(ast)
+
   cache.set(destino, ast)
   return ast
 }
 
 /** Los bloques de «Todo lo que incluye»: los grupos de la lista del final, con el nombre y la línea de cada fila. */
-export const bloquesDeLaLista = () => LISTA_DEL_PASE.map((g) => ({ t: g.titulo, items: g.items.map((i) => ({ titulo: i.titulo, linea: i.linea })) }))
+export const bloquesDeLaLista = () => LISTA_DEL_PASE.map((g) => ({ t: g.titulo, items: g.items.map((i) => ({ titulo: i.titulo, linea: i.linea, partes: partesDeLinea(i.linea).map((p) => ({ t: p.t, dm: p.marca ? '1' : undefined, estilo: p.marca ? 'color:#6F4E37;font-weight:600' : '' })) })) }))
+
+/**
+ * A TODO EL ANCHO DEL MÓVIL (Tanda 10P, 1.2). Design hace la película en 390 x 844 fijos. Aquí el escenario tiene el ancho y el alto REALES del móvil (`W` x `H`, ya divididos por la escala): las escenas 0-6 siguen siendo de 390 centradas
+ * (`--dx`) sobre el mismo fondo oscuro, sin marcos negros, y el final (escena 7) se estira a todo el escenario: la lista llena el alto y la parte fija de abajo va pegada al borde de abajo.
+ */
+function ajustarAlMovil(ast: Nodo[]) {
+  const caja = ast[0]
+  caja.a = { ...caja.a, style: caja.a!.style.replace('width:390px', 'width:{{ W }}px') }
+  const movil = caja.c![0] as Nodo
+  movil.a = { ...movil.a, style: movil.a!.style.replace('width:390px;height:844px;border-radius:44px', 'width:{{ W }}px;height:{{ H }}px;--dx:{{ dx }}px;border-radius:0') }
+  // Las escenas 0-6: 390 de ancho, centradas.
+  for (const h of movil.c!) {
+    if (!esNodo(h) || !h.i || !/^{{ s[0-6] }}$/.test(h.i)) continue
+    const dentro = h.c![0] as Nodo
+    if (dentro.a?.style?.startsWith('position:absolute;inset:0')) dentro.a = { ...dentro.a, style: dentro.a.style.replace('position:absolute;inset:0', 'position:absolute;top:0;bottom:0;left:var(--dx,0px);width:390px') }
+  }
+  // [Ver] / [Saltar] y el ✕ del final: la barra de arriba deja sitio al ✕ (si no, [Ver] se pone encima).
+  recorre(movil, (n) => {
+    if (n.a?.style?.startsWith('position:absolute;left:18px;right:18px;top:66px;display:flex;justify-content:flex-end')) n.a = { ...n.a, style: n.a.style.replace('right:18px', 'right:{{ barR }}px'), 'data-barra-superior': '1' }
+    if (n.a?.['data-pelicula-cerrar']) n.a = { ...n.a, style: n.a.style.replace('top:60px', 'top:63px') }
+    if (n.a?.onClick === '{{ again }}') n.a = { ...n.a, 'data-pelicula-ver': '1', role: 'button' }
+    if (n.a?.onClick === '{{ skip }}') n.a = { ...n.a, 'data-pelicula-saltar': '1', role: 'button' }
+  })
+  // Las zonas de toque (atrás / adelante) tapan el final: en el final no hay nada que pasar y la lista tiene que dejarse tocar y mover.
+}
+
+/**
+ * LA LISTA DEL FINAL (Tanda 10P, 1.2 y 1.4). Con scroll de verdad en el móvil (se mueve con el dedo, sin que lo tape la parte fija de abajo) y SIN las filas que aún no existen (data/pase/lista_ajustes.json). La línea de
+ * «Invita a un amigo» y la «Todo lo que incluye» llevan «HOY» en oro.
+ */
+function ajustarLaLista(ast: Nodo[]) {
+  const movil = ast[0].c![0] as Nodo
+  const final = movil.c!.find((h) => esNodo(h) && h.i === '{{ s7 }}') as Nodo
+  const fondo = final.c![0] as Nodo
+  fondo.c!.forEach((h, k) => {
+    if (!esNodo(h) || !h.a?.style) return
+    const st = h.a.style
+    if (h.a.ref === '{{ listRef }}') {
+      // El alto es el que quede: de 196 px hasta abajo. Debajo, sitio de sobra para que la última fila suba por encima de la parte fija.
+      h.a = { ...h.a, 'data-lista-pase': '1', style: st.replace('top:196px;height:496px', 'top:196px;bottom:0').replace('padding:6px 6px 40px', 'padding:6px 6px 270px') + ';touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch' }
+      h.c = (h.c ?? []).filter((fila) => {
+        if (!esNodo(fila)) return true
+        const par = buscaPar(fila)
+        return !(par && FILAS_OCULTAS.includes(textoDe(par.c![0])))
+      })
+      for (const fila of h.c) {
+        if (!esNodo(fila)) continue
+        const par = buscaPar(fila)
+        const nuevo = par && TEXTOS_DE_LINEA[textoDe(par.c![0])]
+        if (par && nuevo) {
+          const molde = (par.c![1] as Nodo).a!
+          par.c![1] = { t: 'span', a: molde, c: partesDeLinea(nuevo).map((p) => (p.marca ? { t: 'span', a: { 'data-marca': '1', style: 'color:#F3D88F;font-weight:700' }, c: [p.t] } : p.t)) }
+        }
+      }
+    }
+    // El degradado de abajo no se come los toques; la parte fija de abajo sí los recibe (los botones) pero se queda por encima de la lista.
+    if (st.startsWith('position:absolute;left:0;right:0;bottom:0;height:290px')) h.a = { ...h.a, style: st + ';pointer-events:none' }
+    void k
+  })
+  // «Todo lo que incluye»: la línea con «HOY» en oro (la hoja es clara: el oro profundo).
+  recorre(ast[0], (n) => {
+    if (n.t === 'span' && n.c?.length === 1 && n.c[0] === '{{ k.linea }}') {
+      n.c = [{ f: '{{ k.partes }}', as: 'pt', c: [{ t: 'span', a: { 'data-marca': '{{ pt.dm }}', style: '{{ pt.estilo }}' }, c: ['{{ pt.t }}'] }] }]
+    }
+  })
+}
+/** El par «título + línea» de una fila de la lista del final (dos spans seguidos), o null (los títulos de grupo no lo tienen). */
+function buscaPar(fila: Nodo): Nodo | null {
+  let res: Nodo | null = null
+  recorre(fila, (n) => {
+    if (!res && n.t === 'span' && (n.c ?? []).length === 2 && (n.c ?? []).every((x) => esNodo(x) && x.t === 'span')) res = n
+  })
+  return res
+}

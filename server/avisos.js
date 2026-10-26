@@ -107,12 +107,20 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
     return creados
   }
 
+  /** (Tanda 10P) Lo que se mira justo antes de leer la campanita de una persona (el servicio de logros lo pone: si ya cumple el sorteo, su aviso dorado se crea ahora). Sin logros, nada. */
+  let antesDeListar = null
+
   /** La lista de la campanita de una persona: prepara lo que ya toca y devuelve los avisos con su texto. */
   async function listar(uid) {
     try {
       await prepararDeUsuario(uid)
     } catch (error) {
       log.warn?.('[avisos] no se pudieron preparar los avisos con fecha:', error.message)
+    }
+    try {
+      await antesDeListar?.(uid)
+    } catch (error) {
+      log.warn?.('[avisos] no se pudo mirar lo de los logros:', error.message)
     }
     const avisos = (await rpc('avisos_de', { p_uid: uid })) ?? []
     const lista = avisos.map((a) => ({
@@ -189,7 +197,7 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
     return { ok: true, personas: personas.length, creados, ...push }
   }
 
-  return { prepararDeUsuario, listar, marcarLeidos, enviarPush, tareaProgramada, clavePublica: () => (pushEncendido(env) && env.VAPID_PUBLIC_KEY ? env.VAPID_PUBLIC_KEY : null) }
+  return { alListar: (fn) => { antesDeListar = fn }, prepararDeUsuario, listar, marcarLeidos, enviarPush, tareaProgramada, clavePublica: () => (pushEncendido(env) && env.VAPID_PUBLIC_KEY ? env.VAPID_PUBLIC_KEY : null) }
 }
 
 export function registrarRutasAvisos(app, { admin, servicio, env = process.env }) {

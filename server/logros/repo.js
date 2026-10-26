@@ -133,6 +133,25 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
     async marcarInvitacionCumplida(invitadoId, cuando) {
       ok(await admin.from('logro_referidos').update({ viaje_acabado_en: cuando }).eq('invitado_id', invitadoId).is('viaje_acabado_en', null), 'marcarInvitacionCumplida')
     },
+    /** El nombre de pila de una cuenta (`travelers.nombre`), o null si no ha puesto uno. Solo para el texto de un aviso («Ana ha hecho su primer viaje con HOY»). */
+    async nombreDe(userId) {
+      const r = await admin.from('travelers').select('nombre').eq('id', userId).maybeSingle()
+      if (r.error) return null
+      const n = String(r.data?.nombre ?? '').trim().split(/\s+/)[0]
+      return n || null
+    },
+    /**
+     * Un aviso en la campana de la cuenta (tabla `avisos`, función `crear_aviso` de la 0026): UNA sola vez por `clave`. Devuelve true si se ha creado ahora, false si ya estaba y null si no se ha podido
+     * (por ejemplo, antes de aplicar la 0034, que añade los tipos `sorteo` y `amigo_viaje`: nunca rompe nada, solo se queda sin aviso).
+     */
+    async crearAvisoCampana(userId, tipo, clave, payload = {}) {
+      const { data, error } = await admin.rpc('crear_aviso', { p_uid: userId, p_tipo: tipo, p_clave: clave, p_payload: payload })
+      if (error) {
+        console.warn('[logros] no se ha podido crear el aviso de la campana (¿falta la migración 0034?):', error.message)
+        return null
+      }
+      return data === true
+    },
     /** Las cuentas con algún hecho (para el sorteo): sus ids. */
     async cuentasConHechos() {
       const filas = ok(await admin.from('logro_hechos').select('user_id').is('deshecho_en', null), 'cuentasConHechos')

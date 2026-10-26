@@ -356,7 +356,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   const hasTips = tips.length > 0
   // «Escuchar historia» (Tanda 6y5): la historia del sitio, de NUESTRA ficha (campo `historia`). No se escribe en ninguna pestaña: solo se escucha. Sin historia, ni barra ni botón.
   const textoDeLaHistoria = stop && !stop.isFreeTour ? textoHistoria(curated) : ''
-  const accesoDeLaHistoria = stop && !stop.isFreeTour ? accesoHistoria(curated) : 'ninguno'
+  const accesoDeLaHistoria = stop && !stop.isFreeTour ? accesoHistoria(curated, undefined, { destino: city, nombre: stop.name }) : 'ninguno'
 
   // Todas las paradas llevan las mismas pestañas, por dentro o por fuera (PROMPT_PENDIENTE E): lo que aún no hay
   // sale con su texto de "todavía no". El Free Tour sigue con las suyas.

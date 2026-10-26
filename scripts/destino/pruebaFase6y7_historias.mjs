@@ -187,8 +187,12 @@ ponerSintesis([VOZ_ES])
   // Un sitio que no existe en los datos (sin ficha): nada.
   debe(!barra(hoja('Un sitio cualquiera', 'completa')), '4 ficha', 'un sitio sin ficha enseña la barra')
   // Gratis: el Coliseo suena (barra normal, sin candado); los demás con historia, con candado; los demás, nada.
+  // (Tanda 10P: la historia de prueba es la que el viajero elija. Sin gastar, TODAS salen abiertas con «Gratis · 0/1»; gastada la del Coliseo, las demás con candado.)
+  M.useHistoriaDePrueba.getState().poner({})
   const coliseoGratis = hoja('Coliseo', 'gratis')
-  debe(barra(coliseoGratis) && /data-escuchar="parado"/.test(coliseoGratis) && !/data-escuchar="candado"/.test(coliseoGratis) && /Escuchar historia/.test(aTexto(coliseoGratis)), '4 gratis', 'en la gratis, la historia del Coliseo no suena')
+  debe(barra(coliseoGratis) && /data-escuchar="parado"/.test(coliseoGratis) && !/data-escuchar="candado"/.test(coliseoGratis) && /Escuchar historia/.test(aTexto(coliseoGratis)) && /0[/]1/.test(aTexto(coliseoGratis)), '4 gratis', 'en la gratis, sin gastar, la historia no suena abierta con 0/1')
+  debe(/0[/]1/.test(aTexto(hoja('Galería Borghese', 'gratis'))), '4 gratis', 'cualquier sitio con historia sale abierto antes de gastar la de prueba')
+  M.useHistoriaDePrueba.getState().poner({ roma: { sitio: 'coliseo', nombre: 'Coliseo' } })
   for (const nombre of LOS_31.filter((n) => n !== GRATIS)) {
     const html = hoja(nombre, 'gratis')
     debe(barra(html) && /data-escuchar="candado"/.test(html) && !/data-escuchar="parado"/.test(html) && /Escuchar historia/.test(aTexto(html)) && /<svg/.test(html.slice(html.indexOf('data-escuchar="candado"'))), '4 gratis', `${nombre}: en la gratis no sale la barra con el candado`)

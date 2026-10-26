@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Chapa } from '../../dibujos'
-import { MapaMisViajes } from '../../../perfil/MapaMisViajes'
 import { agruparViajes } from '../../../perfil/agruparViajes'
 import { Icono } from '../../../ui/Icono'
 import { useEliminarViaje } from '../../../../lib/eliminarViaje'
 import { usePerfilUi } from '../../../../store/usePerfilUi'
 import { BotonEditarViajes } from '../../../perfil/BotonEditarViajes'
 import { plural, type Chincheta, type CifrasDelPerfil, type ResumenViaje } from '../../../../lib/viajesPerfil'
+import { BilleteDelSorteo } from '../sorteo/Billete'
+import { TarjetaPasaporte } from './TarjetaPasaporte'
 import { useLogrosPantallas } from '../useLogrosPantallas'
 import { elegirTitulo, pedirPerfil, type PerfilLogros } from './api'
 import { ElegirTitulo } from './ElegirTitulo'
@@ -24,7 +25,7 @@ const DORADO = '#F3D59A'
 
 /**
  * EL PERFIL CON SUS LOGROS (P1 y P1b de Design): lo que sustituye al «Hola, viajero» de siempre y a la lista de viajes cuando los logros están encendidos Y hay datos del servidor. De arriba abajo:
- * el marco de rango con la foto (la inicial, si no hay foto), «Hola, viajero», «Nivel 8 · Explorador» y el título que se elige al tocarlo; la barra de EXP; Mi vitrina; Mi pasaporte; el mapa de mis viajes;
+ * el marco de rango con la foto (la inicial, si no hay foto), «Hola, viajero», «Nivel 8 · Explorador» y el título que se elige al tocarlo; la barra de EXP; el billete del sorteo (10P); Mi vitrina; Mi pasaporte (la tarjeta con su mapa; el mapa de países suelto ya no sale: manda el pasaporte);
  * Mis viajes (en curso, próximo, ya hechos y los de antes de la app) y «Añadir un viaje que ya hiciste».
  * Mientras llegan los datos —o si no hay cuenta, o no hay servidor— se enseña `cuerpoDeSiempre`: el Perfil EXACTAMENTE como era. Este archivo se baja solo cuando el Perfil se abre con los logros encendidos.
  */
@@ -41,7 +42,7 @@ export interface PropsCuerpoConLogros {
   perfilInicial?: PerfilLogros | null
 }
 
-export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, cifras, fotos, rutaAbiertaId, onAbrirAlbum, onAbrirViaje, perfilInicial = null }: PropsCuerpoConLogros): ReactNode {
+export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, fotos, rutaAbiertaId, onAbrirViaje, perfilInicial = null }: PropsCuerpoConLogros): ReactNode {
   const [perfil, setPerfil] = useState<PerfilLogros | null>(perfilInicial)
   const [eligiendo, setEligiendo] = useState(false)
   const editando = usePerfilUi((s) => s.editando)
@@ -109,6 +110,8 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
 
       <NivelYBarra exp={exp} />
 
+      {perfil.sorteo && <BilleteDelSorteo sorteo={perfil.sorteo} onAbrir={() => abrir({ t: 'sorteo' })} />}
+
       <section className="relative flex flex-none flex-col overflow-hidden rounded-[26px] px-[18px] py-3.5 text-[#FFFDF8]" style={{ background: 'radial-gradient(circle at 50% 0%,#1E2648 0%,#0B0E1C 70%)', minHeight: 200 }} aria-label="Mi vitrina" data-vitrina-del-perfil>
         <span className="flex items-baseline justify-between">
           <span className="font-display text-[26px] leading-none">Mi vitrina</span>
@@ -134,21 +137,8 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
         </div>
       </section>
 
-      <button type="button" onClick={() => abrir({ t: 'pasaporte' })} data-abrir-pasaporte className="flex min-h-[64px] flex-none items-center gap-3 rounded-[20px] px-3.5 py-3 text-left" style={{ background: 'linear-gradient(150deg,#6E1C2E,#3E0E18)', color: DORADO, boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.3)' }}>
-        <Icono nombre="mapa" size={28} grosor={1.4} />
-        <span className="flex flex-1 flex-col gap-0.5">
-          <span className="font-display text-[20px] leading-none">Mi pasaporte</span>
-          <span data-numeros-pasaporte style={{ font: "500 11px 'Geist Mono',monospace", color: 'rgba(243,213,154,.7)' }}>
-            {plural(perfil.pasaporte.paises, 'país', 'países')} · {plural(perfil.pasaporte.ciudades, 'ciudad', 'ciudades')}
-          </span>
-        </span>
-        <span className="flex h-[30px] flex-none items-center gap-1 whitespace-nowrap rounded-full border pl-3 pr-2 text-[12px] font-semibold" style={{ borderColor: 'rgba(243,213,154,.45)', background: 'rgba(243,213,154,.12)' }}>
-          Abrir
-          <Icono nombre="adelante" size={15} grosor={2.4} />
-        </span>
-      </button>
-
-      <MapaMisViajes chinchetas={chinchetas} cifras={cifras} onElegir={onAbrirAlbum} />
+      {/* (10P, 1.8) Un solo «Mi pasaporte»: lo visitado, con su mapa en el círculo. El mapa de países suelto de «Mis viajes» (que contaba el viaje planeado) ya no sale aquí. */}
+      <TarjetaPasaporte pasaporte={perfil.pasaporte} onAbrir={() => abrir({ t: 'pasaporte' })} />
 
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between px-1">

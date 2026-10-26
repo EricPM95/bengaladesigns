@@ -16,7 +16,7 @@
     "por_defecto": { "bronce": 50, "plata": 75, "oro": 125, "diamante": 200 },
     "vaticano": { "plata": 50, "oro": 75, "diamante": 125 }
   },
-  "invitacion": { "exp": 100, "maximo_al_anio": 10, "_nota": "100 EXP al que invita cuando el amigo invitado acaba su primer viaje con la app (no al crear la cuenta). Como mucho 10 amigos al año." },
+  "invitacion": { "exp": 200, "maximo_al_anio": 5, "_nota": "Tanda 10P (1.5): 200 EXP al que invita cuando el amigo invitado (cuenta nueva) completa su primer viaje CON HOY: viaje acabado y HOY usado la mitad de los días o más, redondeando hacia arriba (1 de 2, 2 de 4, 3 de 5…; usar HOY un día = al menos un Visto ese día). Como mucho 5 amigos al año por persona. No da nada al crear la cuenta." },
 
   "escalera": [25, 50, 75, 125, 175, 250, 350, 450, 600],
   "viajero": {
@@ -74,5 +74,21 @@
     "estrella_cada": 3000
   },
 
-  "sorteo": { "nivel_minimo": 3, "viajes_acabados_minimos_al_anio": 1 }
+  "sorteo": {
+    "_nota": "Tanda 10P (1.6). REGLA: entra quien tenga el nivel `nivel_minimo` o más y haya ACABADO al menos `viajes_con_hoy_minimos` viaje usando HOY la mitad de los días o más (redondeando hacia arriba; usar HOY un día = al menos un Visto ese día), a cualquier destino. Se cierra el `cierre_mes_dia` (31 de agosto): para la edición `primer_anio` cuentan todos los viajes acabados y el nivel conseguido hasta ese cierre; para las siguientes, los viajes acabados del 1 de septiembre al 31 de agosto (y el nivel conseguido hasta el cierre). LOS DATOS DEL SORTEO ESTÁN EN `edicion` (cámbialos aquí: año, destino, premio, fechas, cierre, fin del sorteo y enlace de las bases). `bases_url` vacío = las bases todavía no están y el botón [Bases legales] NO sale. Después del cierre y hasta el sorteo, quien está dentro sigue viendo «Estás dentro»; a los demás el billete ya les cuenta para el del año siguiente (`siguiente`: sin destino hasta que se ponga el dato). Pasado el sorteo (`fecha_sorteo`), todos pasan al del año siguiente.",
+    "nivel_minimo": 3,
+    "viajes_con_hoy_minimos": 1,
+    "primer_anio": 2027,
+    "cierre_mes_dia": "08-31",
+    "edicion": {
+      "anio": 2027,
+      "destino": "Roma",
+      "premio": "Un viaje a Roma para dos personas",
+      "fechas": "del 8 al 10 de octubre de 2027",
+      "cierre": "2027-08-31",
+      "fecha_sorteo": "2027-10-10",
+      "bases_url": ""
+    },
+    "siguiente": { "destino": null, "premio": "Un viaje al destino del año" }
+  }
 }

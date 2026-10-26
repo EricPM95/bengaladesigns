@@ -12,7 +12,7 @@
 import { libreDeLlegada } from '../../shared/routeEngine/llegadaDia1.js'
 import { datosDeVuelta } from '../../shared/routeEngine/vueltaDia.js'
 import { GLOBAL, avanceViajero, calcular, clave, diferencia, diasEntre, logroActivo, parteLocal, sumarDias } from './motor.js'
-import { calcularExp, entraEnElSorteo, expDeMomento, expFinal, resumenDeExp, viajesAcabados } from './exp.js'
+import { calcularExp, edicionDeAnio, entradaEnEdicion, estadoDelSorteo, expDeMomento, expFinal, invitacionDaExp, resumenDeExp, viajesConHoy } from './exp.js'
 import { coordenadasDeSitio, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
 import { armarMomentos } from './momentos.js'
@@ -172,17 +172,35 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
   }
 
   /**
-   * Si esta persona fue invitada y ya ha acabado su primer viaje con la app, lo apunta (en ese momento el que la invitó gana sus 100 EXP, con el tope anual).
-   * Crear la cuenta NO cuenta; solo acabar el primer viaje (el mismo «viaje acabado» de la EXP: 5 paradas vistas o más y el último día ya pasado).
+   * Si esta persona fue invitada y ya ha completado su primer viaje CON HOY (el viaje ha terminado y usó HOY la mitad de los días o más: `viajesConHoy`, la misma regla que el sorteo), lo apunta; en ese
+   * momento el que la invitó gana sus 200 EXP (con el tope de `maximo_al_anio` amigos al año, `invitacionDaExp`) y le sale un aviso en la campana: «Ana ha hecho su primer viaje con HOY: +200 EXP».
+   * Crear la cuenta NO cuenta. Idempotente: la fila se marca una sola vez y el aviso lleva una clave única por amigo.
    */
   async function resolverInvitacion(invitadoId, c) {
     if (!repo.invitadorDe) return { ok: true, cumplida: false }
     const fila = await repo.invitadorDe(invitadoId)
     if (!fila || fila.viaje_acabado_en) return { ok: true, cumplida: Boolean(fila?.viaje_acabado_en) }
-    const acabados = viajesAcabados({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() }).sort((a, b) => a.fin.localeCompare(b.fin))
-    if (acabados.length === 0) return { ok: true, cumplida: false }
-    await repo.marcarInvitacionCumplida(invitadoId, `${acabados[0].fin}T23:59:59Z`)
+    const buenos = viajesConHoy({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() }).filter((v) => v.cumple)
+    if (buenos.length === 0) return { ok: true, cumplida: false }
+    await repo.marcarInvitacionCumplida(invitadoId, `${buenos[0].fin}T23:59:59Z`)
+    await avisarInvitacion(fila.invitador_id, invitadoId)
     return { ok: true, cumplida: true }
+  }
+
+  /** El aviso de la campana de quien invita (una sola vez por amigo, y solo si ese amigo da EXP: del sexto del año en adelante no hay ni EXP ni aviso). */
+  async function avisarInvitacion(invitadorId, invitadoId) {
+    if (!repo.crearAvisoCampana || !repo.referidosDe) return false
+    const referidos = await repo.referidosDe(invitadorId)
+    if (!invitacionDaExp(referidos, invitadoId, datos.exp)) return false
+    const nombre = repo.nombreDe ? await repo.nombreDe(invitadoId) : null
+    return repo.crearAvisoCampana(invitadorId, 'amigo_viaje', `amigo:${invitadoId}`, { nombre, exp: datos.exp.invitacion.exp, invitado_id: invitadoId })
+  }
+  const resolverSinRomper = async (userId, c) => {
+    try {
+      await resolverInvitacion(userId, c)
+    } catch (error) {
+      console.warn('[logros] no se ha podido mirar la invitación:', error.message)
+    }
   }
 
   /** Lo calculado ahora (de los hechos y lo ganado): total, por año y cada EXP con su fecha. */
@@ -195,22 +213,46 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const guardada = c.perfil?.exp_max ?? 0
     const total = expFinal(calculado.total, guardada)
     if (total > guardada) await guardarMaximo(userId, total)
-    await resolverInvitacion(userId, c)
+    await resolverSinRomper(userId, c)
+    // (10P) Quien ya cumple el sorteo recibe su aviso dorado ahora, aunque no abra la página del sorteo.
+    await sorteoDeCuenta(userId, c).catch((error) => console.warn('[logros] sorteo:', error.message))
     return { ok: true, ...resumenDeExp(total, datos.exp), por_anio: calculado.por_anio, calculada: calculado.total, guardada_antes: guardada }
   }
 
-  /** El sorteo de un año (solo la regla): quién entra, entre las cuentas dadas. Sin nombres ni correos: solo el id de cada cuenta. */
+  /** Lo que hace falta para decidir el sorteo de una cuenta ya cargada: cada EXP con su fecha, la EXP de ahora (nunca baja) y los viajes acabados con los días de HOY. */
+  function datosDelSorteo(c) {
+    const calculado = expCalculada(c, calcularCon(c), c.hechos)
+    return { entradas: calculado.entradas, expActual: expFinal(calculado.total, c.perfil?.exp_max ?? 0), viajes: viajesConHoy({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() }) }
+  }
+
+  /**
+   * El billete y la página del sorteo de una cuenta (1.6): la edición, el estado (sin_nivel · falta_viaje · dentro), lo que le falta y sus dos condiciones. El día que entra, su aviso dorado en la
+   * campana («¡Ya estás en el sorteo de 2027!»): UNA sola vez (la clave del aviso es el año).
+   */
+  async function sorteoDeCuenta(userId, c = null) {
+    const cuenta = c ?? (await cargar(userId))
+    const estado = estadoDelSorteo({ tabla: datos.exp, ...datosDelSorteo(cuenta), ahora: ahora() })
+    if (estado.estado === 'dentro' && repo.crearAvisoCampana) {
+      try {
+        // (Una sola vez: la base de datos no repite un aviso con la misma clave. Sin la 0034 aplicada no se puede crear: no rompe nada y se vuelve a intentar la próxima vez.)
+        await repo.crearAvisoCampana(userId, 'sorteo', `sorteo:${estado.edicion.anio}`, { anio: estado.edicion.anio })
+      } catch (error) {
+        console.warn('[logros] no se ha podido crear el aviso del sorteo:', error.message)
+      }
+    }
+    return estado
+  }
+
+  /** El sorteo de un año (el panel de Eric): quién entra, entre las cuentas dadas. Sin nombres ni correos: solo el id de cada cuenta. */
   async function sorteoDe(anio, userIds) {
+    const hoy = ahora().toISOString().slice(0, 10)
+    const edicion = edicionDeAnio(datos.exp, anio)
     const lista = []
     for (const id of userIds) {
-      const c = await cargar(id)
-      const items = calcularCon(c)
-      const total = expFinal(expCalculada(c, items, c.hechos).total, c.perfil?.exp_max ?? 0)
-      const acabados = viajesAcabados({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() }).filter((v) => v.fin.slice(0, 4) === String(anio)).length
-      const entra = entraEnElSorteo({ exp: total, viajesAcabadosDelAnio: acabados, tabla: datos.exp })
-      lista.push({ user_id: id, exp: total, nivel: resumenDeExp(total, datos.exp).nivel, viajes_acabados: acabados, entra })
+      const r = entradaEnEdicion({ tabla: datos.exp, edicion, hoy, ...datosDelSorteo(await cargar(id)) })
+      lista.push({ user_id: id, exp: r.exp, nivel: r.nivel, viajes_con_hoy: r.viajes_ok, entra: r.entra })
     }
-    return { ok: true, anio: Number(anio), cuentas: lista.length, entran: lista.filter((x) => x.entra).length, lista: lista.filter((x) => x.entra) }
+    return { ok: true, anio: Number(anio), edicion: { anio: Number(edicion.anio), destino: edicion.destino ?? null, premio: edicion.premio, cierre: edicion.cierre }, cuentas: lista.length, entran: lista.filter((x) => x.entra).length, lista: lista.filter((x) => x.entra) }
   }
 
   /** Lo que tiene un sitio por ganar (sin decir qué emblema): para que la tarjeta del Visto sepa cuál enseñar. Solo se LEE; no cambia nada. */
@@ -420,6 +462,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const c = await cargar(userId)
     const viaje = c.viajes[tripId]
     if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas' }
+    await resolverSinRomper(userId, c)
     const itemsMapa = aItems(c.logros)
     const hoy = hoyEn(viaje.destino)
     const est = estadoDestino({ datos, destino: viaje.destino, items: itemsMapa, viaje, hoy })
@@ -526,7 +569,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return repo.encolarAvisos(puestos)
   }
 
-  return { aItems, cargar, expDe, sorteoDe, registrarInvitacion, resolverInvitacion, visto, foto, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
+  return { aItems, cargar, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
 }
 
 /** El instante (ISO, UTC) en que son las `hhmm` de esa fecha en la hora del destino. */

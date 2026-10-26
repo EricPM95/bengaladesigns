@@ -176,6 +176,8 @@ g.cerrar()
 // 2c. [Escuchar historia] sin pase, en la ficha.
 const e = await conViaje('gratis')
 for (let i = 0; i < 30 && !(await e.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await e.esp(1000)
+// (Tanda 10P: la historia de prueba es la que el viajero elija; para ver el botón CERRADO, ya se ha gastado la de Roma en otro sitio.)
+await e.evaluar("import('/src/lib/historiaDePrueba.ts').then((m) => { m.useHistoriaDePrueba.getState().poner({ roma: { sitio: 'otro sitio', nombre: 'Otro sitio' } }); return true })")
 await modo(e, 'days', 0)
 await e.evaluar("(() => { const p = document.querySelector('[data-stop-id]'); if (!p) return false; (p.querySelector('button') || p).click(); return true })()")
 await e.esp(3500)

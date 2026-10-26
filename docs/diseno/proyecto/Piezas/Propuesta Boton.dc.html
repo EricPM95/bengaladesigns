@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}@keyframes pbPop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}</style>
+</helmet>
+<div style="display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start;padding:24px 48px 40px;font-family:'Geist',sans-serif;color:#1C2230">
+<sc-for list="{{ phones }}" as="p" hint-placeholder-count="4">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6E5018">{{ p.label }}</span>
+    <div style="position:relative;width:390px;height:844px;flex:none;border-radius:44px;overflow:hidden;background:#F6EFE0;box-shadow:0 0 0 9px #14161C,0 30px 70px -20px rgba(60,40,10,.45)">
+      <div style="position:absolute;left:0;right:0;top:0;height:290px;background:#E6EBD9"><span style="position:absolute;inset:0;background:repeating-linear-gradient(40deg,rgba(255,255,255,.55) 0 3px,transparent 3px 44px)"></span></div>
+      <div style="position:absolute;left:22px;right:22px;top:56px;display:flex;justify-content:space-between;align-items:flex-start"><div style="display:flex;flex-direction:column;gap:3px"><span style="font:400 36px/1 'Instrument Serif',serif">Roma</span><span style="font:500 10.5px 'Geist Mono',monospace;color:rgba(28,34,48,.6)">Viaje de Eric · 26 – 29 nov</span></div><span style="width:46px;height:46px;border-radius:50%;background:#1C2230;border:2px solid #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FBF3E2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"></path></svg></span></div>
+      <div style="position:absolute;left:0;right:0;top:200px;bottom:0;border-radius:30px 30px 0 0;background:#F6EFE0;box-shadow:0 -10px 30px -10px rgba(0,0,0,.2);padding:26px 18px 0">
+        <div style="border-radius:24px;background:#FFFDF8;box-shadow:0 8px 18px -10px rgba(28,34,48,.35);padding:16px;display:flex;flex-direction:column;gap:14px"><div style="display:flex;align-items:center;gap:14px"><span style="width:62px;height:62px;border-radius:14px;flex:none;background:linear-gradient(90deg,#2E9B52 0 33%,#FFFDF8 33% 66%,#C9373A 66%);border:1px solid rgba(28,34,48,.1)"></span><div style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font:400 26px/1 'Instrument Serif',serif">Roma</span><span style="font:400 12px 'Geist';color:rgba(28,34,48,.55)">4 días · 3 noches<br>26 nov – 29 nov</span></div></div><span style="align-self:flex-start;height:30px;padding:0 14px;border-radius:999px;background:#F1E3BF;color:#6E5018;display:flex;align-items:center;font:600 12px 'Geist'">Pase de Roma</span></div>
+      </div>
+      <div style="position:absolute;left:12px;right:12px;bottom:12px"><dc-import name="Piezas/Barra JUTRIP" tone="tinta" act="1" hint-size="100%,64px"></dc-import></div>
+      <span style="position:absolute;right:16px;bottom:90px;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#FFFFFF,#FBF3E2 60%,#E7D9BC);border:1.5px solid #B58A2E;box-shadow:0 8px 16px -6px rgba(28,34,48,.45);display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 20V9a7 4 0 0 1 14 0v11M9 20v-6a3 3 0 0 1 6 0v6M5 13h14"></path></svg></span>
+      <sc-if value="{{ p.compact }}" hint-placeholder-val="{{ true }}">
+        <span style="position:absolute;right:16px;bottom:158px;width:56px;height:56px;border-radius:50%;background:#1C2230;border:1.5px solid #B58A2E;box-shadow:0 10px 20px -8px rgba(28,34,48,.6);display:flex;align-items:center;justify-content:center;animation:pbPop .5s ease-out both"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#FBF3E2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"></path></svg><span style="position:absolute;right:-6px;top:-6px;min-width:24px;height:24px;padding:0 6px;border-radius:999px;background:linear-gradient(135deg,#F3D88F,#B58A2E);color:#1C2230;border:2px solid #F6EFE0;display:flex;align-items:center;justify-content:center;font:700 13px 'Geist'">{{ p.n }}</span></span>
+      </sc-if>
+      <sc-if value="{{ p.wide }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;right:16px;bottom:158px;height:56px;border-radius:999px;background:#1C2230;border:1.5px solid #B58A2E;box-shadow:0 10px 20px -8px rgba(28,34,48,.6);display:flex;align-items:center;gap:10px;padding:0 6px 0 8px;animation:pbPop .5s ease-out both"><span style="position:relative;width:40px;height:40px;border-radius:50%;background:rgba(251,243,226,.1);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FBF3E2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"></path></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span style="font:600 9px 'Geist Mono',monospace;letter-spacing:.14em;color:#E9C77A">TU PROPUESTA</span><span style="font:600 14px 'Geist';color:#FBF3E2;white-space:nowrap"><b style="color:#F3D88F;font-weight:700">{{ p.n }}</b> {{ p.word }}</span></span><span style="height:44px;padding:0 16px;border-radius:999px;background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510;display:flex;align-items:center;font:700 13.5px 'Geist';white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.55)">Enviar a Eric</span></div>
+      </sc-if>
+    </div>
+  </div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    const mk=(label,compact,n)=>({label,compact,wide:!compact,n,word:n===1?'cambio':'cambios'});
+    return{phones:[mk('A · Compacta · 1 cambio',true,1),mk('A · Compacta · 4 cambios',true,4),mk('B · Con texto · 1 cambio',false,1),mk('B · Con texto · 4 cambios',false,4)]};
+  }
+}
+</script>
+</body>
+</html>

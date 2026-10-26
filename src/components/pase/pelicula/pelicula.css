@@ -13,3 +13,9 @@
 [data-pelicula] { position: fixed; inset: 0; z-index: 95; background: #14161c; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: manipulation; }
 [data-pelicula] .pfr { border-radius: 0 !important; box-shadow: none !important; }
 [data-pelicula] .sc-host { display: block; }
+
+/* Tanda 10P: la película a todo el ancho. El escenario se coloca con position:absolute (lo hace PeliculaPase) y el fondo es el de la película. */
+[data-pelicula] { background: radial-gradient(ellipse 90% 60% at 50% 0%, #2a3250, #14161c 70%) #14161c; display: block; touch-action: pan-y; }
+[data-pelicula] .pfr { user-select: none; }
+/* Ya vista: el final sale MONTADO, sin repetir las animaciones de entrada (cada una acaba en su estado final al instante). */
+[data-pelicula][data-montada='1'] .pfr *, [data-pelicula][data-montada='1'] .pfr { animation-duration: 0.001s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }

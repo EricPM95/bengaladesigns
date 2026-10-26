@@ -18,10 +18,12 @@ import { BotonHoja, Hoja } from '../ui/Hoja'
 import type { NombreIcono } from '../../lib/iconos'
 import { MisPases } from './MisPases'
 import { recargarSinApertura } from '../../lib/recargarSinApertura'
+import listaAjustes from '../../../data/pase/lista_ajustes.json'
+import { TextoConPase } from '../cuenta/TextoConPase'
 
 const ROJO = 'oklch(0.52 0.19 25)'
 
-function Fila({ icono, titulo, sub, color, onClick, interruptor, chevron = false, boton, datos }: { icono: NombreIcono; titulo: string; sub?: string; color?: string; onClick?: () => void; interruptor?: { activo: boolean; cambiar: () => void }; chevron?: boolean; boton?: string; datos?: string }) {
+function Fila({ icono, titulo, sub, color, onClick, interruptor, chevron = false, boton, datos }: { icono: NombreIcono; titulo: string; sub?: ReactNode; color?: string; onClick?: () => void; interruptor?: { activo: boolean; cambiar: () => void }; chevron?: boolean; boton?: string; datos?: string }) {
   const contenido: ReactNode = (
     <>
       <span aria-hidden="true" className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-[#F1EADC] text-[#1C2230]">
@@ -186,7 +188,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
           />
         </Grupo>
         <Grupo>
-          <Fila icono="compartido" titulo="Invitar a un amigo" boton="Compartir el enlace" onClick={() => void invitarAmigo()} datos="invitar-amigo" />
+          <Fila icono="compartido" titulo="Invitar a un amigo" sub={<TextoConPase texto={listaAjustes.textos['Invita a un amigo']} />} boton="Compartir el enlace" onClick={() => void invitarAmigo()} datos="invitar-amigo" />
           <Fila icono="candado" titulo="Privacidad y condiciones" chevron onClick={() => setPrivacidad(true)} datos="privacidad" />
         </Grupo>
         {mensaje && (

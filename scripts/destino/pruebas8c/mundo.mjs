@@ -139,7 +139,7 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   debe(expDe.length > 100 && !/previos/.test(expDe), 'sin_exp', 'expDe (la EXP de la cuenta) no mira los países de antes')
   const sorteo = servicio.slice(servicio.indexOf('async function sorteoDe'), servicio.indexOf('async function sorteoDe') + 1200)
   debe(sorteo.length > 100 && !/previos/.test(sorteo), 'sin_sorteo', 'sorteoDe no mira los países de antes')
-  debe(exp.entraEnElSorteo({ exp: 0, viajesAcabadosDelAnio: 0, tabla: datos.exp }) === false, 'sin_sorteo', 'con 0 EXP y 0 viajes acabados no se entra en el sorteo, por muchos países de antes que haya')
+  debe(exp.entraEnElSorteo({ entradas: [], expActual: 0, viajes: [], ahora: new Date('2026-10-20T12:00:00Z'), anio: 2027, tabla: datos.exp }).entra === false, 'sin_sorteo', 'con 0 EXP y 0 viajes con HOY no se entra en el sorteo, por muchos países de antes que haya')
   const ganado = motor.calcular({ datos, hechos: [], viajes: {}, cuenta: null, ahora, pionero: null, probador: null })
   debe(ganado.size === 0 && ![...ganado.values()].some((it) => it.logro === 'pais'), 'sin_logros', 'sin viajes con la app no se gana ni un país ni ningún logro (los países de antes no entran en el motor)')
   const viejo = vistas.pasaporte({ datos, items: new Map(), previos: { paises: ['España', 'Portugal'], dias: 30 }, ahora })

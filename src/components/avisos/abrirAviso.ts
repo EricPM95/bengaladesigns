@@ -1,4 +1,5 @@
 import type { AvisoDeCuenta } from '../../lib/avisos'
+import { useLogrosPantallas } from '../logros/pantallas/useLogrosPantallas'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { usePagoStore } from '../../store/usePagoStore'
 import { useR2Store } from '../../store/useR2Store'
@@ -31,6 +32,13 @@ export async function abrirAviso(aviso: AvisoDeCuenta): Promise<string | null> {
     avisos.cerrar()
     useR2Store.getState().abrir(rec)
     void avisos.marcarLeidos([aviso.id])
+    return null
+  }
+  // (Tanda 10P) El aviso dorado del sorteo abre la página del sorteo.
+  if (aviso.tipo === 'sorteo') {
+    void avisos.marcarLeidos([aviso.id])
+    avisos.cerrar()
+    useLogrosPantallas.getState().abrir({ t: 'sorteo' })
     return null
   }
   if (aviso.tipo === 'd10') {

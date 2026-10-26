@@ -1,0 +1,8 @@
+/* El sorteo anual (Tanda 10P, 1.6): las claves de animación de `Piezas/Sorteo Perfil` del diseño, tal cual (con el prefijo so). Con «reducir movimiento» no se mueve nada. */
+@keyframes soSpin { to { transform: rotate(360deg) } }
+@keyframes soTw { 0%, 100% { opacity: .15; transform: scale(.5) } 50% { opacity: 1; transform: scale(1.1) } }
+@keyframes soShine { 0% { transform: translateX(-140%) skewX(-18deg) } 55%, 100% { transform: translateX(260%) skewX(-18deg) } }
+@keyframes soPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(233, 199, 122, 0) } 50% { box-shadow: 0 0 22px 3px rgba(233, 199, 122, .55) } }
+@media (prefers-reduced-motion: reduce) {
+  [data-sorteo] *, [data-billete-sorteo], [data-billete-sorteo] * { animation: none !important }
+}

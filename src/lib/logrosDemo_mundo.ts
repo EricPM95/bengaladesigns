@@ -47,6 +47,13 @@ export function numerosDelPasaporte(): { paises: number; ciudades: number; dias_
   return { paises: todos.size, ciudades: new Set(reales.map((s) => s.destino)).size, dias_viajando: estado.dias + 41, sellos: reales.length + recuerdos().length, previos: conocidos().length }
 }
 
+/** (10P) Lo visitado del viajero de ejemplo, para el mapa de la tarjeta «Mi pasaporte» (los códigos de los países) y los dos últimos sellos: lo mismo que el servidor manda en `perfil.pasaporte`. */
+export function mapaDelPasaporte(): { paises_iso: string[]; sellos_recientes: { ciudad: string; fecha: string; destino: string }[] } {
+  const iso = [...VISITADOS.map((v) => porNombre.get(v.pais)?.i), ...conocidos().map((p) => p.i)].filter((x): x is string => Boolean(x))
+  const reales = VISITADOS.flatMap((v) => v.sellos.filter((s) => !s.vacio && s.fecha)).sort((a, b) => String(b.fecha).localeCompare(String(a.fecha)))
+  return { paises_iso: [...new Set(iso)], sellos_recientes: reales.slice(0, 2).map((s) => ({ ciudad: s.ciudad, fecha: s.fecha as string, destino: s.destino })) }
+}
+
 function paginas() {
   const ficha = (n: string) => ({ iso: porNombre.get(n)?.i ?? null, continente: porNombre.get(n)?.c ?? null })
   return [

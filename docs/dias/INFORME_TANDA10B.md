@@ -552,3 +552,159 @@ Prompt guardado en `docs/dias/PROMPT_TANDA10O2.md`. No se ha tocado el motor de 
 - **La foto de la Terraza del Altar de la Patria** es de Eric: registrada en `_fotos.json` con él como autor (sale «Foto: Eric»), y también en el generador de huecos.
 - El orden de las listas y la foto de la Cúpula se quedan como estaban.
 - **Batería**: ver el resultado en la respuesta; los fallos que solo salen al correr con las demás (`pruebaJutrip` por un fichero temporal que otra prueba borra a la vez, `pruebaRevisionLargos` con los títulos vacíos bajo carga) pasan solos y se arreglan más adelante, como se pidió.
+
+
+## 10P · El pase, la moneda, el sorteo y el perfil
+
+Prompt en `docs/dias/PROMPT_TANDA10P.md`. Prueba: `scripts/destino/pruebaTanda10P.mjs` (tres partes: `_pase` 3524, `_hoy` 39 y `_sorteo` 62 comprobaciones; **3625 · 0 fallos**). Capturas en `docs/dias/capturas_jutrip/10p_*.jpg` y la página `docs/dias/REPASO_10P.html` (con la lista de comprobación con casillas arriba del todo). **No se ha tocado el motor de rutas** (no hace falta la muestra de 60). Trabajo repartido en tres agentes (película/lista/moneda, historia de prueba/HOY, sorteo/EXP/perfil) e integrado aquí.
+
+### Lo que Eric tiene que hacer (a mano)
+1. **Aplicar dos migraciones** en el editor SQL de Supabase (están SIN aplicar): `supabase/migrations/0033_historia_de_prueba.sql` (la historia de prueba en la cuenta; hasta entonces vive en el móvil) y `0034_avisos_sorteo_y_amigo.sql` (sin ella, la EXP del amigo y el sorteo funcionan pero los dos avisos de la campana no salen).
+2. **Stripe:** panel › Ajustes › Pagos › **Adaptive Pricing** › activarlo (primero en modo prueba, luego en real). Sirve para los pagos de una vez de Checkout y Payment Links, en más de 150 países (entre ellos México, Colombia, Chile, Perú, España y Portugal; Argentina no). El cliente paga un 2-4 % de conversión dentro del cambio y a JUTRIP le llega en euros. No hay que cambiar código. No se ha probado un pago real.
+3. **HOY v2** solo se ve con `?hoy2=on` en desarrollo: confirmar que producción tiene `VITE_HOY_V2` en true; y que el motor manda siempre `sunsetText` (hora del sol) en producción.
+
+### Decisiones y límites a revisar
+- **Moneda del pase:** el cambio de Stripe no se puede pedir antes de pagar; se aplica el plan B de Eric (cambio del día + 4 % redondeando hacia arriba), de ahí 160 MXN y no 140. El cambio sale del BCE (`/api/cambio`, como mucho una vez al día, guardado 12 h). El BCE no publica COP, CLP, ARS, PEN, UYU, BOB, PYG, CRC, DOP ni GTQ: se añadió una segunda fuente gratuita (currency-api vía jsdelivr) solo para esas; si no te convence, se quitan COP y CLP. La moneda que se elige en el pase no cambia la del presupuesto.
+- **Historia de prueba:** el móvil escribe directo en la tabla con RLS (como los [Visto]), sin endpoint de servidor. El Coliseo ya no es la historia gratis fija.
+- **Sorteo «a cualquier destino»:** hoy solo cuentan los viajes de destinos con datos de logros (Roma). Un viaje con HOY en París no cuenta todavía. Lo probado se hizo con PGlite y las migraciones reales, no contra Supabase real.
+- **Atardecer sin mirador en la ruta:** solo mira los miradores que ya están en la ruta; para buscar entre todos del destino habría que ampliar la API de lugares.
+- **Perfil:** mientras llega la respuesta del servidor se ve un instante el perfil de siempre (menos de 1 s).
+- Pendiente de `data/pase/textos.json`: «Texto pendiente» (`linea_legal_compra`) sale sobre [Comprar]; es de antes y falta rellenarlo.
+- Filas de la lista del pase que siguen sin existir: «¿Qué hago ahora?», «Estoy aquí» y «Funciona sin internet».
+- **Batería:** en la batería completa fallaron `pruebaJutrip`, `pruebaTanda10F` y `pruebaRevisionLargos` (las conocidas, solo con las demás) y, esta vez, también `pruebaEntrarReal`, `pruebaTanda10P_sorteo` y los dos envoltorios `pruebaTanda10O` y `pruebaTanda10P` (estos agotaron los 1500 s con la batería entera). Todas pasan solas con 0 fallos. Se arreglan más adelante, como se pidió.
+
+### Lista de comprobación (el repaso final de la app)
+Cada punto del prompt, en el mismo orden. La misma lista, con casillas, está arriba del todo de `docs/dias/REPASO_10P.html`.
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10P.md y en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Design al día (docs/diseno/proyecto/, sin uploads/): Pase Moneda y Sorteo Perfil nuevas; Pase Pelicula, Logros Pantallas, Perfil, App Pase y cuenta, App Ruta y dias, Reservas v4, Presupuesto y Propuesta Boton/Cambios El zip de la carpeta se llama «NUEVA TANDA.zip» (no «NUEVA_TANDA_1.zip»); «PRESUPUESTO.zip» tiene lo mismo en estas piezas. Dejé fuera las capturas de pantalla (screenshots/) y el .thumbnail del zip.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Reservas v4 («¿Para quién es?») y Presupuesto (cartera de Extras): no tocarlos ahora (van en la 10N) Solo se copió su diseño; el código de la app no se ha tocado.  
+  *Dónde:* No es de móvil.
+
+**1.1 · La historia de prueba**
+
+- ✅ Hecho — La historia de prueba es la del sitio que el viajero elija (no la fija del Coliseo)  
+  *Dónde:* DÍAS › abrir cualquier parada con historia › barra de abajo (sin pase).  *Captura:* `10p_hoy_historia_prueba.jpg`
+- ✅ Hecho — Antes de usarla, en todos los sitios con historia: «Escuchar historia · Gratis, tu historia de prueba · 0/1» («Gratis» en oro)  
+  *Dónde:* DÍAS › parada › barra de abajo; y HOY (con ?hoy2=on en desarrollo) › botón «Escuchar historia» (sin pase).  *Captura:* `10p_hoy_historia_prueba.jpg`
+- ✅ Hecho — Se gasta a los 3 segundos de escucharla y esa historia se queda suya, para todo el viaje A 1,4 s no se gasta; a 4 s sí.  
+  *Dónde:* Toca ▶ en una parada y espera más de 3 s; vuelve a abrirla: sigue abierta (sin pase).
+- ✅ Hecho — Las demás, después: el mismo botón con el candado dorado a la derecha y «Todas las historias, con el Pase de Roma»  
+  *Dónde:* Abre otra parada distinta de la que escuchaste (sin pase).  *Captura:* `10p_hoy_historia_cerrada.jpg`
+- ⚠️ A medias — Una por destino, guardada en la cuenta (no solo en el móvil) Hecho, pero la tabla `historia_de_prueba` (migración 0033) está SIN APLICAR: hasta entonces vive en el móvil y se sube sola cuando exista la tabla. El móvil escribe directo con RLS (como los [Visto]), sin endpoint de servidor: dime si prefieres endpoint.  
+  *Dónde:* Aplica 0033 en el editor SQL de Supabase; luego, en otro móvil con la misma cuenta, la misma historia sale gastada.
+- ✅ Hecho — El día de prueba de HOY no la gasta  
+  *Dónde:* HOY › «Tu día de prueba» › escucha una historia más de 3 s: no cambia el 0/1 (con pase).
+
+**1.2 · La película en el móvil**
+
+- ✅ Hecho — Que ocupe toda la pantalla, sin márgenes negros a los lados y sin deformarse Medido a 390, 430 y 360 de ancho en Chrome emulando móvil; no en un iPhone real.  
+  *Dónde:* RUTA › pastilla «Pase de Roma» (sin pase).  *Captura:* `10p_pase_01_final_390x664.jpg`
+- ✅ Hecho — En el final se puede bajar: la lista hace scroll y la parte fija de abajo («Se paga una vez y no caduca», [Elegir mi pase]…) siempre a la vista Dos causas: las zonas de toque y el degradado tapaban la lista.  
+  *Dónde:* Película › final › baja la lista con el dedo (sin pase; en el iPhone).  *Captura:* `10p_pase_02_final_430x932.jpg`
+- ✅ Hecho — Botón [Ver] arriba, junto a [Saltar] (o junto al ✕ en el final), para verla otra vez desde el principio En el final va junto al ✕; [Saltar] ya no se ve en el final.  
+  *Dónde:* Final de la película › [Ver] arriba (sin pase).  *Captura:* `10p_pase_05_ver_otra_vez_empieza.jpg`
+- ✅ Hecho — Cuando ya se ha visto, el final sale ya montado (sin repetir la animación de unos 5 s al tocar [Elegir mi pase] o cualquier botón del pase) Medido: a los 0,5 s no queda ninguna animación sin acabar.  
+  *Dónde:* Abre el pase una segunda vez › sale directo con «Pase de Roma», la lista y [Elegir mi pase] (sin pase).  *Captura:* `10p_pase_06_final_EUR.jpg`
+
+**1.3 · La puesta de sol y lo de mañana en HOY**
+
+- ⚠️ A medias — El atardecer: si la siguiente parada es un mirador del atardecer, «Al Janículo para el atardecer: el sol se pone a las 17:02» (con el icono del sol) Hecho y probado, pero la hora sale de `sunsetText` del motor y en la ruta de pruebas de desarrollo llega vacío (la prueba lo pone a mano): confirma que en producción llega siempre. Y HOY v2 solo se ve con `?hoy2=on` (o VITE_HOY_V2 en producción): confírmalo.  
+  *Dónde:* HOY, en un día con mirador del atardecer como siguiente parada (con pase o día de prueba).  *Captura:* `10p_hoy_atardecer.jpg`
+- ⚠️ A medias — Sin mirador en la ruta y con uno cerca a media tarde: «Hoy el sol se pone a las 17:02 · el Janículo está a 15 min» Solo mira miradores que ya estén en la ruta (otros días o «si te sobra tiempo»): el catálogo del destino no expone el mirador del atardecer al cliente. Para buscar entre todos habría que ampliar la API de lugares.  
+  *Dónde:* HOY a media tarde sin mirador pendiente (con pase).
+- ✅ Hecho — Lo de mañana: al acabar el día o desde la hora de la cena, «Mañana: Vaticano y Trastevere · empiezas a las 9:00», y la reserva con hora del día siguiente si la hay  
+  *Dónde:* HOY al acabar las paradas del día (con pase).  *Captura:* `10p_hoy_manana.jpg`
+- ✅ Hecho — El último día del viaje, nada Tampoco en el día de vuelta.  
+  *Dónde:* HOY en el último día (con pase).
+- ✅ Hecho — Con el pase (y el día de prueba); sin pase, como ahora  
+  *Dónde:* HOY (sin pase: sin la puesta de sol ni lo de mañana).
+
+**1.4 · La lista del pase**
+
+- ✅ Hecho — Fuera de la lista (final de la película, «Todo lo que incluye» y «Con el pase tendrás» de HOY): «Modo "a mi aire"» y «El reto del día» Mediante `data/pase/lista_ajustes.json` (si Design cambia la lista y se regenera, los ajustes se siguen aplicando).  
+  *Dónde:* Final de la película › [Ver todo lo que incluye]; y HOY › «Con el pase tendrás» (sin pase).  *Captura:* `10p_pase_11_todo_lo_que_incluye.jpg`
+- ⚠️ A medias — Se quedan «¿Qué hago ahora?», «Estoy aquí», «Funciona sin internet» y «La puesta de sol y lo de mañana»; apuntar cuáles faltan todavía Siguen SIN existir: «¿Qué hago ahora?», «Estoy aquí» y «Funciona sin internet» (el service worker no guarda nada). «La puesta de sol y lo de mañana» existe (1.3), con los límites de arriba.  
+  *Dónde:* No hay dónde mirarlas: están por hacer antes del lanzamiento.
+- ⚠️ A medias — «Invita a un amigo · Gana 200 EXP cuando haga su primer viaje con HOY» («HOY» con Marca), también en una línea en la hoja de invitar a un amigo La fila está en el final de la película, en «Todo lo que incluye» y en Ajustes › «Invitar a un amigo». `HojaInvitar.tsx` es la hoja de invitar a un viaje/pase, no la de amigo: si la quieres ahí también es una línea más.  
+  *Dónde:* Ajustes › «Invitar a un amigo» (con o sin pase).  *Captura:* `10p_pase_04_invita_a_un_amigo.jpg`
+
+**1.5 · +200 EXP por invitar**
+
+- ✅ Hecho — +200 EXP a quien invita cuando el amigo (cuenta nueva) completa su primer viaje con HOY: viaje terminado y HOY usado al menos la mitad de los días (hacia arriba; un día con HOY = al menos un [Visto] ese día) Una sola función compartida con el sorteo; idempotente. Probado con PGlite y las migraciones reales, no contra la base de Supabase real.  
+  *Dónde:* Perfil › barra de EXP, cuando un amigo haya terminado un viaje así.
+- ✅ Hecho — Como mucho 5 amigos al año por persona El sexto no da EXP ni aviso.  
+  *Dónde:* No hay pantalla: se ve en la EXP.
+- ⚠️ A medias — Aviso en la campana de quien invita: «Ana ha hecho su primer viaje con HOY: +200 EXP» Hecho, pero hace falta aplicar la migración 0034 (amplía los tipos de aviso). Sin ella, la EXP funciona y el aviso no sale.  
+  *Dónde:* Campana (arriba a la derecha) con la cuenta de quien invitó.
+- ✅ Hecho — Cuenta para el nivel y para el sorteo, como cualquier otra experiencia  
+  *Dónde:* Perfil › EXP y billete del sorteo.
+
+**1.6 · El sorteo**
+
+- ✅ Hecho — El billete dorado en el perfil, debajo de la tarjeta de EXP, con sus tres estados («Te faltan 340 EXP para el nivel 3» con barrita real; «Ya tienes el nivel. Haz un viaje con HOY activado y entras.»; [✓ Estás dentro]) Para verlos en desarrollo: en la consola `__demoSorteo.poner("sin_nivel"|"falta_viaje"|"dentro")`.  
+  *Dónde:* Perfil (foto de arriba a la derecha) › bajo la barra de EXP.  *Captura:* `10p_perfil_1_billete_sin_nivel.jpg`
+- ✅ Hecho — Al tocarlo, la página del sorteo (foto, premio, cuándo se sortea, quién entra, «Cómo se entra» con ✓, [Bases legales] y botón con su estado) La foto es la del Coliseo, que ya estaba en la app; la del diseño era un hueco.  
+  *Dónde:* Perfil › tocar el billete dorado.  *Captura:* `10p_sorteo_1_pagina_sin_nivel.jpg`
+- ⚠️ A medias — Aviso dorado de la campana el día que entra: «¡Ya estás en el sorteo de 2027!», una sola vez Hecho y probado (una sola vez), pero necesita la migración 0034.  
+  *Dónde:* Campana, el día en que la cuenta cumple las dos condiciones.  *Captura:* `10p_sorteo_5_campana.jpg`
+- ⚠️ A medias — Regla nueva en exp.json: nivel 3 o más + un viaje acabado con HOY la mitad de los días o más, a cualquier destino La regla está hecha. «A cualquier destino» solo es cierto para destinos con datos de logros (hoy solo Roma): un viaje con HOY en París no cuenta todavía.  
+  *Dónde:* Admin: `/?admin=logros` › pestaña «Sorteo».
+- ✅ Hecho — Se cierra el 31 de agosto (2027: viajes y nivel hasta el 31-ago-2027; después, del 1-sep al 31-ago) Probado: un viaje acabado el 1-sep-2027 ya no cuenta para 2027.  
+  *Dónde:* Admin › «Sorteo».
+- ✅ Hecho — Datos del sorteo en un sitio y fáciles de cambiar: año 2027, Roma, «Un viaje a Roma para dos personas», fechas «del 8 al 10 de octubre de 2027», cierre 31-ago-2027, enlace de bases `data/logros/exp.json › sorteo.edicion`. Añadí `fecha_sorteo` (2027-10-10) para saber cuándo pasar al año siguiente.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Mientras no haya enlace de las bases, el botón [Bases legales] no sale `bases_url` vacío; probado también con enlace.  
+  *Dónde:* Perfil › billete › página del sorteo.  *Captura:* `10p_sorteo_4_pagina_con_bases.jpg`
+- ✅ Hecho — Después del cierre y hasta el sorteo: «Estás dentro» para quien está dentro; a los demás el billete les cuenta para el año siguiente («Un viaje al destino del año»)  
+  *Dónde:* Perfil › billete.
+- ✅ Hecho — Para todos los que tengan los logros encendidos  
+  *Dónde:* Perfil (con los logros encendidos).
+- ⚠️ A medias — Comprobado de punta a punta con cuentas de prueba (la EXP sube, el nivel se ve, tres estados, menos de la mitad de los días no cuenta, 1-sep-2027 no cuenta, aviso una vez, el admin cuenta a esa cuenta) Comprobado con PGlite y las migraciones reales, NO contra Supabase real (falta la clave de servicio). Falta: la migración 0034 aplicada y una prueba real con una cuenta de verdad.  
+  *Dónde:* Perfil y `/?admin=logros`.
+
+**1.7 · El precio en la moneda del viajero**
+
+- ✅ Hecho — En «¿Cuántos sois?»: pastilla de la moneda («MXN ⌄») junto a la ✕; precio grande en su moneda («≈ …») y pequeño en euros; tachado y «Ahorras ≈ …»; «≈ … cada uno»; [Comprar · ≈ …]; en euros, todo como ahora  
+  *Dónde:* RUTA › pastilla del pase › [Elegir mi pase] (sin pase).  *Captura:* `10p_pase_07_compra_MXN.jpg`
+- ✅ Hecho — El final de la película con «≈ … MXN» grande y «6,99 €» pequeño; la hoja «Moneda» desde abajo con la elegida con borde de oro  
+  *Dónde:* Final de la película › pastilla de moneda (sin pase).  *Captura:* `10p_pase_10_hoja_moneda.jpg`
+- ✅ Hecho — La moneda: la que ya tiene en la app (presupuesto) o, si no, la de su país; se puede cambiar ahí mismo La que se elige en el pase se recuerda en el móvil y NO cambia la del presupuesto: dime si debería.  
+  *Dónde:* RUTA › presupuesto › Moneda; luego el pase (sin pase).
+- ✅ Hecho — Cifras redondeadas y que cuadren (tachado − precio = ahorro); euros siempre los de precios.json Redondeo de 10 en 10 en pesos mexicanos, de 100 en 100 en COP/CLP. Probado con más de 3000 combinaciones.  
+  *Dónde:* [Elegir mi pase] en MXN, USD y COP (sin pase).  *Captura:* `10p_pase_09_compra_COP.jpg`
+- ✅ Hecho — Que nunca pague más de lo que vio: primero el cambio de Stripe si se puede pedir; si no, el cambio del día + 4 % redondeando hacia arriba Stripe no deja pedir el cambio antes de pagar: se aplica el plan B. Por eso el pase sale en 160 MXN y no en 140 (el 4 % más el redondeo hacia arriba). Si te parece caro, se baja el margen.  
+  *Dónde:* [Elegir mi pase] en MXN (sin pase).  *Captura:* `10p_pase_07_final_MXN.jpg`
+- ⚠️ A medias — De dónde sale el cambio del día y cada cuánto se actualiza Del Banco Central Europeo (`/api/cambio`, como mucho una vez al día, guardado 12 h). El BCE NO publica COP, CLP, ARS, PEN, UYU, BOB, PYG, CRC, DOP ni GTQ: añadí una segunda fuente gratuita (currency-api vía jsdelivr) solo para esas. Confírmame que te vale; si no, se quitan COP y CLP.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Adaptive Pricing de Stripe: comprobar que sirve para pagos de una vez y en qué países, y qué tiene que tocar Eric Sirve para pagos de una vez de Checkout y Payment Links (más de 150 países, entre ellos MX, CO, CL, PE, ES, PT; ARG no). Eric: panel de Stripe › Ajustes › Pagos › Adaptive Pricing › activarlo (primero en modo prueba, luego en real). No hay que cambiar código. No se probó un pago real.  
+  *Dónde:* Panel de Stripe (no es de móvil).
+
+**1.8 · El perfil y el pasaporte**
+
+- ✅ Hecho — Países, ciudades y mapa salen de un solo sitio (el pasaporte, lo visitado), en el perfil y dentro Una sola función en el servidor para las dos pantallas.  
+  *Dónde:* Perfil y Perfil › Mi pasaporte: mismas cifras.  *Captura:* `10p_perfil_4_pasaporte_tarjeta.jpg`
+- ✅ Hecho — Perfil (P1): fuera el mapa suelto bajo «Mi pasaporte»; tarjeta con el círculo del mapa a la izquierda, sellos a la derecha y solo «N países · N ciudades» Mientras llega la respuesta del servidor se ve un instante el perfil de siempre (menos de un segundo).  
+  *Dónde:* Perfil › bajar a la tarjeta burdeos.  *Captura:* `10p_perfil_4_pasaporte_tarjeta.jpg`
+- ✅ Hecho — Pasaporte (P2): «Pasaporte de {nombre}», círculo del mapa mucho más grande, «N países · N ciudades · N días viajando», mapa centrado en lo visitado (sin nada, en Europa) El círculo mide 364 px en un móvil de 390 (antes 268).  
+  *Dónde:* Perfil › tocar «Mi pasaporte».  *Captura:* `10p_perfil_5_pasaporte_dentro.jpg`
+- ✅ Hecho — Orden del perfil: EXP, el billete del sorteo, Mi vitrina, Mi pasaporte y Mis viajes  
+  *Dónde:* Perfil, de arriba abajo.  *Captura:* `10p_perfil_3_billete_dentro.jpg`
+
+**2 · La prueba**
+
+- ✅ Hecho — Prueba nueva pruebaTanda10P (película/lista/moneda, historia/HOY, sorteo/perfil) Ver las cifras en el informe.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La batería rápida y pruebaJutrip (si algo falla solo al correr con las demás y solo pasa solo, se dice) En la batería completa fallaron pruebaJutrip, pruebaTanda10F y pruebaRevisionLargos (las conocidas, solo con las demás), más pruebaEntrarReal y pruebaTanda10P_sorteo (carga) y los dos envoltorios pruebaTanda10O y pruebaTanda10P, que agotaron su tiempo con la batería entera. Todas pasan solas con 0 fallos (10P: 3625 comprobaciones; 10O: 126).  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Capturas en docs/dias/capturas_jutrip/ y esta página a tamaño de móvil  
+  *Dónde:* Esta página.
+
+**3 · El informe**
+
+- ✅ Hecho — Apartado «10P» en docs/dias/INFORME_TANDA10B.md con esta lista al final  
+  *Dónde:* No es de móvil.

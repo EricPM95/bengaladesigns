@@ -410,7 +410,7 @@ a:hover{color:oklch(0.55 0.17 5)}
                     </sc-for>
                   </div>
                 </sc-if>
-                <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
                   <sc-if value="{{ sh.hasWl }}" hint-placeholder-val="{{ false }}"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5);text-align:center">{{ sh.wl }}</span></sc-if>
                   <div style="position:relative;height:200px;flex:none;border-radius:18px;background:#F5EFE4;overflow:hidden">
                     <span style="position:absolute;left:12px;right:12px;top:80px;height:40px;border-radius:12px;background:#fff;box-shadow:0 2px 8px -3px rgba(28,34,48,.2)"></span>
@@ -421,6 +421,19 @@ a:hover{color:oklch(0.55 0.17 5)}
                     </div>
                   </div>
                 </div>
+                <sc-if value="{{ sh.hasChips }}" hint-placeholder-val="{{ false }}">
+                  <span style="text-align:center;font:400 12.5px 'Geist';color:rgba(28,34,48,.6);margin-top:-4px">Recuerda revisar la disponibilidad antes de añadirlo a tu ruta.</span>
+                  <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;padding-top:18px;border-top:1px solid rgba(28,34,48,.1)">
+                    <span style="display:flex;align-items:baseline;gap:8px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">¿Para quién es?</span><span style="font:600 12px 'Geist';color:#8E6820">{{ sh.pCount }}</span></span>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px">
+                      <sc-for list="{{ sh.people }}" as="p" hint-placeholder-count="4"><button onClick="{{ p.pick }}" style="height:42px;padding:0 15px;border-radius:999px;border:1.5px solid {{ p.bd }};background:{{ p.bg }};color:{{ p.fg }};display:flex;align-items:center;gap:6px;font:600 13.5px 'Geist';cursor:pointer;transition:background .25s,color .25s"><span style="display:{{ p.tick }};align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span>{{ p.n }}</button></sc-for>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px;padding-top:18px;border-top:1px solid rgba(28,34,48,.1)">
+                    <span style="font:600 14px 'Geist';color:#1C2230">Precio <span style="font-weight:400;color:rgba(28,34,48,.5)">(opcional)</span></span>
+                    <div style="display:flex;gap:10px"><input placeholder="0" inputmode="decimal" style="flex:1;min-width:0;height:50px;border-radius:15px;border:1px solid rgba(28,34,48,.14);background:#FFFFFF;padding:0 16px;font:400 16px 'Geist';outline:none"><span style="width:98px;height:50px;border-radius:15px;border:1px solid rgba(28,34,48,.14);background:#F5EFE4;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font:600 14px 'Geist'">EUR<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l5-5 5 5M7 15l5 5 5-5"></path></svg></span></div>
+                  </div>
+                </sc-if>
                 <button onClick="{{ fromEmail }}" style="align-self:center;margin-top:-4px;border:none;background:transparent;padding:4px 8px;display:flex;align-items:center;gap:6px;font:500 12px 'Geist';color:rgba(28,34,48,.65);cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></svg><span style="text-decoration:underline;text-underline-offset:2px">Rellenar desde el email o el PDF</span></button>
                 <button onClick="{{ saveSheet }}" style="height:54px;flex:none;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 15px 'Geist';cursor:pointer">Guardar · {{ sh.selT }}</button>
                 <sc-if value="{{ sh.hasDel }}" hint-placeholder-val="{{ false }}">
@@ -505,7 +518,7 @@ const legDone=(L,m)=>m==='coche'||(!!L.st&&!!L.t);
 
 class Component extends DCLogic {
   constructor(p){super(p);this.state={preset:'medias',om:'avion',rm:'avion',excRoute:true,...legs('medias','avion','avion'),...rest('medias'),
-    open:{},legOpen:{},showAll:false,sheet:null,toast:null,dplan:'full'};
+    open:{},legOpen:{},showAll:false,sheet:null,toast:null,dplan:'full',who:{Eric:true}};
     this.wheelRef=React.createRef();this.sc={};this.rf={};}
   componentWillUnmount(){clearTimeout(this.tt);}
   toast(fid,txt){this.setState({toast:{fid,txt}});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),2200);}
@@ -599,7 +612,7 @@ class Component extends DCLogic {
     else{const[k,id]=W.target.split(':');
       if(k==='tk'){const it=TK.find(t=>t.id===id);eye=it.ft?'Free Tour · elige día y hora':'Entrada · elige día y hora';title=it.n;wl=it.ft?'Hora de inicio':'Hora de entrada';route=it.d;cl=it.cl||[];}
       else{const e=EXC.find(x=>x.id===id);eye='Añadir una excursión · 2 de 2';title=e.full;wl='Hora de recogida';route=s.excRoute&&id==='pompeya'?3:null;}}
-    return{...sh,time:true,eye,title,sub,hasSub:!!sub,wl,hasWl:!!wl,hasChips:!leg,hasDel:!!W.edit,selT:list[sel],
+    return{...sh,time:true,eye,title,sub,hasSub:!!sub,wl,hasWl:!!wl,hasChips:!leg,people:['Eric','Ana','Luis','Marta'].map(n=>{const a=!!s.who[n];return{n,a,bd:a?INK:'rgba(28,34,48,.12)',bg:a?INK:'#FFFFFF',fg:a?'#FFFDF8':INK,tick:a?'inline-flex':'none',pick:()=>this.setState(st=>({who:{...st.who,[n]:!st.who[n]}}))};}),pCount:Object.values(s.who).filter(Boolean).length+' de 4',hasDel:!!W.edit,selT:list[sel],
       chips:leg?[]:DAYS.map(D=>{const a=W.day===D.d,c=cl.includes(D.d),r=route===D.d;
         return{n:`${D.w} ${D.n}`,tag:c?'Cerrado':r?'En tu ruta':'',hasTag:c||r,bd:a?INK:'rgba(28,34,48,.12)',bg:a?INK:c?'#F1EADC':'#FFFFFF',fg:a?'#FFFDF8':INK,op:c?'.5':'1',td:c?'line-through':'none',cur:c?'not-allowed':'pointer',
           pick:()=>{if(c||a)return;const nl=listFor(W.target,D.d);const i=nearest(nl,list[sel]);this.setState(st=>({sheet:{...st.sheet,day:D.d,sel:i}}));this.scrollWheel(i);}};}),

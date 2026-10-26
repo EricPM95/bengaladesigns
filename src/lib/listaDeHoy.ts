@@ -1,4 +1,4 @@
-import { LISTA_DEL_PASE, type ItemDeLista } from './listaDelPase'
+import { LISTA_DEL_PASE, type ItemDeLista } from './listaAjustada'
 
 /**
  * LO QUE HOY SIN PASE ENSEÑA EN «CON EL PASE TENDRÁS» (Tanda 10I): la parte de la lista del final de la película (`LISTA_DEL_PASE`, la misma de «Todo lo que incluye») que corresponde a HOY, sacada de ella

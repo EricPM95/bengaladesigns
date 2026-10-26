@@ -62,11 +62,11 @@ const ORO = ['rgb(111, 78, 55)', 'rgb(166, 124, 82)', 'rgb(233, 199, 122)']
   debe(!/jsdelivr|unpkg|googleapis/.test(ficheros.map(leer).join('\n').replace(/\/\/ GENERADO[^\n]*/g, '').replace(/^\s*(\*|\/\/)[^\n]*$/gm, '')), 'fuera', 'ni jsdelivr, ni unpkg, ni googleapis')
 
   // La lista del final es UNA: la película, «Todo lo que incluye» y HOY la sacan del mismo sitio.
-  const lista = leer('src/lib/listaDelPase.ts')
+  const lista = leer('src/lib/listaDelPase.ts') // (la de Design, entera: la ajustada va encima, Tanda 10P)
   const nItems = (lista.match(/"titulo"/g) ?? []).length
   debe(nItems === 34, 'lista', `la lista del pase lleva 6 grupos y 28 filas (${nItems} títulos)`)
   const lh = leer('src/lib/listaDeHoy.ts')
-  debe(/LISTA_DEL_PASE/.test(lh) && /filasDeHoy\(\)/.test(leer('src/components/route/hoy/HoyAntes.tsx')), 'lista', 'HOY sin pase saca «Con el pase tendrás» de la lista del pase')
+  debe(/LISTA_DEL_PASE/.test(lh) && /listaAjustada/.test(lh) && /filasDeHoy\(\)/.test(leer('src/components/route/hoy/HoyAntes.tsx')), 'lista', 'HOY sin pase saca «Con el pase tendrás» de la lista del pase')
   debe(!/No me da tiempo\b/.test(leer('src/components/route/hoy/HoyAntes.tsx').replace(/^\s*(\/\/|\*|\/\*).*$/gm, '')), 'lista', 'ya no queda la lista vieja escrita en HOY («No me da tiempo»…)')
   debe(!fs.existsSync('src/components/pase/HojaDeCompra.tsx'), 'hoja', 'la hoja de compra de antes ya no existe: la sustituye «¿Cuántos sois?» de la película')
   debe(/abrirPase\(\): void/.test(leer('src/lib/pago.ts')) && /EVENTO_PAGAR/.test(leer('src/components/pase/PeliculaHost.tsx')) && !/EVENTO_PAGAR/.test(leer('src/components/pase/PagoHost.tsx').replace(/^\s*(\/\/|\*|\/\*).*$/gm, '')), 'abrir', 'abrirPase() lo escucha la película, no PagoHost')
@@ -174,7 +174,7 @@ const clic = async (a, x, y) => {
   debe(await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-pelicula]')?.innerText ?? '')", 12), 'segunda', 'con la lista del pase y [Elegir mi pase] a la vista')
   // Nada de fuera mientras se ve: ni letras, ni imágenes, ni mapas.
   const nuevas = a.peticiones.slice(antes)
-  const deFuera = nuevas.filter((u) => !/^(http:\/\/localhost:(5173|5199|8787)|http:\/\/127\.0\.0\.1:(5173|5199|8787)|data:|blob:)/.test(u) && !/supabase\.co\/auth\//.test(u)) // (lo único que sale es guardar en la cuenta que ya la vio)
+  const deFuera = nuevas.filter((u) => !/^(http:\/\/localhost:(5173|5181|5199|8787|8851)|http:\/\/127\.0\.0\.1:(5173|5181|5199|8787|8851)|data:|blob:)/.test(u) && !/supabase\.co\/auth\//.test(u)) // (lo único que sale es guardar en la cuenta que ya la vio)
   debe(deFuera.length === 0, 'fuera', `mientras se ve la película no se pide nada de fuera de la app (${deFuera.slice(0, 3).join(' ') || 'nada'})`)
   debe(nuevas.some((u) => /\/pelicula\/assets\/marco-nivel1\.png/.test(u)) && nuevas.some((u) => /geist-latin-wght-normal\.woff2/.test(u)), 'fuera', 'las imágenes y las letras salen de la app')
   const rotas = await a.evaluar("performance.getEntriesByType('resource').filter((e) => /\\/pelicula\\/assets\\//.test(e.name) && e.responseStatus >= 400).map((e) => e.name)")
@@ -245,11 +245,14 @@ const clic = async (a, x, y) => {
   })()`)
   await a.captura(png('07_todo_incluye'))
   debe(Array.isArray(hoja) && hoja.length === 6, 'todo', `la hoja lleva los 6 grupos de la lista (${hoja?.length})`)
-  const lista = await a.evaluar("import('/src/lib/listaDelPase.ts').then((m) => m.LISTA_DEL_PASE.map((g) => ({ cab: g.titulo, filas: g.items.map((i) => [i.titulo, i.linea].filter(Boolean)) })))")
+  const lista = await a.evaluar("import('/src/lib/listaAjustada.ts').then((m) => m.LISTA_DEL_PASE.map((g) => ({ cab: g.titulo, filas: g.items.map((i) => [i.titulo, i.linea].filter(Boolean)) })))")
+  // (Tanda 10P: «HOY» sale en oro, en su propio trozo de texto: se junta con la línea para comparar)
+  const juntar = (filas) => filas.map((fl) => (fl.length === 3 && fl[2] === 'HOY' ? [fl[0], `${fl[1]} HOY`] : fl))
+  for (const g of hoja) g.filas = juntar(g.filas)
   debe(JSON.stringify(hoja) === JSON.stringify(lista), 'todo', 'y es la misma lista: los mismos nombres, las mismas líneas y el mismo orden que LISTA_DEL_PASE')
   // La del final de la película (la que se ve en pantalla) lleva los mismos nombres en el mismo orden.
   const deLista = lista.flatMap((g) => [g.cab, ...g.filas.map((f) => f.join(' ‖ '))])
-  debe(Array.isArray(final) && JSON.stringify(final.map((x) => x.replace(/^‖ /, ''))) === JSON.stringify(deLista.map((x) => x)), 'todo', `el final de la película y la hoja son la misma lista (${final?.length} filas)`)
+  debe(Array.isArray(final) && JSON.stringify(final.map((x) => x.replace(/^‖ /, '').replace(/ con ‖ HOY$/, ' con HOY').replace(/^Invita a un amigo ‖ HOY$/, 'Invita a un amigo ‖ Gana 200 EXP cuando haga su primer viaje con HOY'))) === JSON.stringify(deLista.map((x) => x)), 'todo', `el final de la película y la hoja son la misma lista (${final?.length} filas)`)
   a.cerrar()
 }
 
@@ -316,7 +319,7 @@ const clic = async (a, x, y) => {
   const esperadas = await a.evaluar("import('/src/lib/listaDeHoy.ts').then((m) => m.filasDeHoy().map((i) => [i.titulo, i.linea]))")
   debe(hoy && JSON.stringify(hoy.filas) === JSON.stringify(esperadas) && esperadas.length === 5, 'hoy', `con los nombres y las líneas de la lista del pase (${JSON.stringify(hoy?.filas?.map((f) => f[0]))})`)
   debe(hoy && hoy.iconos === 5, 'hoy', 'con sus iconos (los de la lista del pase)')
-  const lista = await a.evaluar("import('/src/lib/listaDelPase.ts').then((m) => m.LISTA_DEL_PASE.flatMap((g) => g.items).map((i) => i.titulo))")
+  const lista = await a.evaluar("import('/src/lib/listaAjustada.ts').then((m) => m.LISTA_DEL_PASE.flatMap((g) => g.items).map((i) => i.titulo))")
   debe(esperadas.every((f) => lista.includes(f[0])), 'hoy', 'todas están en la lista del final de la película')
   const posiciones = esperadas.map((f) => lista.indexOf(f[0]))
   debe(posiciones.every((p, i) => i === 0 || p > posiciones[i - 1]), 'hoy', 'y en el mismo orden que en la película')
