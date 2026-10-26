@@ -1,5 +1,7 @@
 import type { GastoCompartido } from '../lib/gastosCompartidos'
 import type { Backend, NuevoGasto } from '../lib/gastosCompartidosRed'
+import type { PagoMarcado } from '../lib/cuentasGrupo'
+import { aCentimos } from '../lib/cuentasGrupo'
 import { vistaDeGasto } from '../lib/gastosCompartidos'
 import type { AvisoDeCuenta } from '../lib/avisos'
 import { textoDelAviso, detalleDelAviso, quienDelAviso } from '../../shared/avisos/textos.js'
@@ -13,11 +15,12 @@ import { useViajeCompartido, type Permiso, type Persona } from '../store/useViaj
  * recargar: `window.__gastosFalsos.usar('ana')` te pone como Ana (invitada, «Solo recomendar»), `usar('eric')` como el administrador, `usar('luis')` como quien puede editar. Sirve para las capturas y la prueba de las pantallas;
  * la verdad de las reglas la comprueba la prueba contra la base de datos real (PGlite con la 0037).
  */
-type Uid = 'eric' | 'ana' | 'luis'
+type Uid = 'eric' | 'ana' | 'luis' | 'marta'
 const GENTE: { id: Uid; nombre: string; permiso: Permiso }[] = [
   { id: 'eric', nombre: 'Eric', permiso: 'admin' },
   { id: 'ana', nombre: 'Ana', permiso: 'recomendar' },
   { id: 'luis', nombre: 'Luis', permiso: 'editar' },
+  { id: 'marta', nombre: 'Marta', permiso: 'recomendar' },
 ]
 const TRIP = 'demo-viaje'
 
@@ -27,13 +30,13 @@ interface Fila extends GastoCompartido {
 interface AvisoFalso {
   id: string
   uid: Uid
-  tipo: 'gasto_pendiente' | 'gasto_resuelto'
+  tipo: 'gasto_pendiente' | 'gasto_resuelto' | 'pago_marcado'
   payload: Record<string, unknown>
   creado: string
   leido: boolean
 }
 
-const bd: { gastos: Fila[]; avisos: AvisoFalso[]; yo: Uid; n: number; miembros: Uid[] } = { gastos: [], avisos: [], yo: 'eric', n: 0, miembros: ['eric', 'ana'] }
+const bd: { gastos: Fila[]; avisos: AvisoFalso[]; pagos: (PagoMarcado & { importe: { amount: number; currency: string } })[]; ex: { id: string; nombre: string | null }[]; yo: Uid; n: number; miembros: Uid[] } = { gastos: [], avisos: [], pagos: [], ex: [], yo: 'eric', n: 0, miembros: ['eric', 'ana'] }
 const permisoDe = (uid: Uid): Permiso => GENTE.find((g) => g.id === uid)!.permiso
 const decide = (uid: Uid) => permisoDe(uid) === 'admin' || permisoDe(uid) === 'editar'
 const nombre = (uid: string) => GENTE.find((g) => g.id === uid)?.nombre ?? null
@@ -66,12 +69,12 @@ const refrescarAvisos = () => useAvisosStore.getState().poner(avisosDe(bd.yo))
 
 const backend: Backend = {
   yo: async () => bd.yo,
-  cargar: async () => ({ gastos: bd.gastos.filter((g) => visible(g, bd.yo)).map((g) => ({ ...g })), disponible: true }),
+  cargar: async () => ({ gastos: bd.gastos.filter((g) => visible(g, bd.yo)).map((g) => ({ ...g })), pagos: bd.pagos.map((p) => ({ ...p })), exMiembros: bd.ex.map((e) => ({ ...e })), disponible: true, cuentas: true }),
   anadir: async (g: NuevoGasto) => {
     const uid = bd.yo
     const permitido = (g.ambito === 'mio' && g.estado === 'aceptado' && g.pagadoPor.length === 0) || (g.ambito === 'grupo' && g.estado === 'aceptado' && decide(uid)) || (g.ambito === 'grupo' && g.estado === 'pendiente')
     if (!permitido) return 'No se ha podido guardar el gasto (la regla de seguridad lo impide).'
-    const fila: Fila = { id: `g${++bd.n}`, tripId: TRIP, autorId: uid, nombre: g.nombre, precio: g.precio, ambito: g.ambito, estado: g.estado, pagadoPor: g.ambito === 'mio' ? [] : g.pagadoPor, decididoPor: null, decididoEn: null, creadoEn: ahora() }
+    const fila: Fila = { id: `g${++bd.n}`, tripId: TRIP, autorId: uid, nombre: g.nombre, precio: g.precio, ambito: g.ambito, estado: g.estado, pagadoPor: g.ambito === 'mio' ? [] : g.pagadoPor, entre: g.ambito === 'mio' ? [] : (g.entre ?? []), decididoPor: null, decididoEn: null, creadoEn: ahora() }
     bd.gastos.push(fila)
     if (fila.ambito === 'grupo' && fila.estado === 'pendiente') {
       for (const u of bd.miembros) {
@@ -79,6 +82,31 @@ const backend: Backend = {
       }
     }
     refrescarAvisos()
+    return null
+  },
+  editar: async (id, c) => {
+    const fila = bd.gastos.find((g) => g.id === id)
+    if (!fila || !(fila.autorId === bd.yo || decide(bd.yo))) return 'No se han podido guardar los cambios (la regla de seguridad lo impide).'
+    fila.nombre = c.nombre
+    fila.precio = c.precio
+    fila.pagadoPor = c.pagadoPor
+    fila.entre = c.entre
+    return null
+  },
+  marcarPago: async (p) => {
+    if (!(p.deudorId === bd.yo || p.acreedorId === bd.yo || decide(bd.yo))) return 'No se ha podido marcar el pago (la regla de seguridad lo impide).'
+    const id = `p${++bd.n}`
+    bd.pagos.push({ id, deudorId: p.deudorId, acreedorId: p.acreedorId, centimos: aCentimos(p.importe), marcadoPor: bd.yo, importe: p.importe })
+    for (const para of [p.deudorId, p.acreedorId] as Uid[]) {
+      if (para === bd.yo || !bd.miembros.includes(para)) continue
+      bd.avisos.push({ id: `a${++bd.n}`, uid: para, tipo: 'pago_marcado', creado: ahora(), leido: false, payload: { trip_id: TRIP, pago_id: id, actor_id: bd.yo, actor: nombre(bd.yo), deudor_id: p.deudorId, deudor: nombre(p.deudorId), acreedor_id: p.acreedorId, acreedor: nombre(p.acreedorId), importe: p.importe, para: para === p.deudorId ? 'deudor' : 'acreedor' } })
+    }
+    refrescarAvisos()
+    return null
+  },
+  deshacerPago: async (id) => {
+    const i = bd.pagos.findIndex((x) => x.id === id)
+    if (i >= 0) bd.pagos.splice(i, 1)
     return null
   },
   decidir: async (id, estado) => {
@@ -129,8 +157,25 @@ async function usar(yo: Uid, miembros?: Uid[]) {
   refrescarAvisos()
 }
 
+/** Alguien sale del viaje (o lo quitan): deja su nombre para las cuentas, como hace la base de datos. */
+async function salir(uid: Uid) {
+  bd.ex.push({ id: uid, nombre: nombre(uid) })
+  bd.miembros = bd.miembros.filter((m) => m !== uid)
+  ponerGente(bd.yo)
+  await useGastosCompartidos.getState().recargar()
+}
+
+/** Alguien entra al viaje. */
+async function entrar(uid: Uid) {
+  if (!bd.miembros.includes(uid)) bd.miembros.push(uid)
+  ponerGente(bd.yo)
+  await useGastosCompartidos.getState().recargar()
+}
+
 function reiniciar() {
   bd.gastos = []
+  bd.pagos = []
+  bd.ex = []
   bd.avisos = []
   bd.n = 0
   bd.miembros = ['eric', 'ana']
@@ -139,7 +184,7 @@ function reiniciar() {
 /** Gastos de partida del diseño (`Presupuesto Compartido` 01): Taxi (pagó Eric), Supermercado (pagó Ana), Souvenirs (solo Ana) y Regalo para casa (solo Eric). */
 function sembrarComoElDiseno() {
   const eur = (amount: number) => ({ amount, currency: 'EUR' })
-  const base = (id: string, autorId: Uid, nombreG: string, amount: number, ambito: 'grupo' | 'mio', pagadoPor: string[]): Fila => ({ id, tripId: TRIP, autorId, nombre: nombreG, precio: eur(amount), ambito, estado: 'aceptado', pagadoPor, decididoPor: null, decididoEn: null, creadoEn: ahora() })
+  const base = (id: string, autorId: Uid, nombreG: string, amount: number, ambito: 'grupo' | 'mio', pagadoPor: string[]): Fila => ({ id, tripId: TRIP, autorId, nombre: nombreG, precio: eur(amount), ambito, estado: 'aceptado', pagadoPor, entre: [], decididoPor: null, decididoEn: null, creadoEn: ahora() })
   bd.gastos.push(base('s1', 'eric', 'Taxi al aeropuerto', 50, 'grupo', ['eric']), base('s2', 'ana', 'Supermercado', 30, 'grupo', ['ana']), base('s3', 'ana', 'Souvenirs', 25, 'mio', []), base('s4', 'eric', 'Regalo para casa', 40, 'mio', []))
 }
 
@@ -153,4 +198,4 @@ async function decidirComo(uid: Uid, id: string, estado: 'aceptado' | 'rechazado
   return r
 }
 
-if (typeof window !== 'undefined') (window as unknown as { __gastosFalsos: unknown }).__gastosFalsos = { usar, reiniciar, sembrarComoElDiseno, decidirComo, bd, vistaDeGasto }
+if (typeof window !== 'undefined') (window as unknown as { __gastosFalsos: unknown }).__gastosFalsos = { usar, reiniciar, sembrarComoElDiseno, decidirComo, salir, entrar, backend, bd, vistaDeGasto }

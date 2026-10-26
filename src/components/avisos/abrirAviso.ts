@@ -60,7 +60,7 @@ export async function abrirAviso(aviso: AvisoDeCuenta): Promise<string | null> {
     return null
   }
   // (Tanda 10N, apartado 9) «Eric ha aceptado tu gasto»: al tocarlo se abre el presupuesto (el gasto ya suma, o se queda solo para ti).
-  if (aviso.tipo === 'gasto_resuelto') {
+  if (aviso.tipo === 'gasto_resuelto' || aviso.tipo === 'pago_marcado') {
     void avisos.marcarLeidos([aviso.id])
     avisos.cerrar()
     usePresupuestoUi.getState().abrir()

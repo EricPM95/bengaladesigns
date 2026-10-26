@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
 import { Icono } from '../../ui/Icono'
 import { InterruptorElegir, PastillaElegir } from '../../ui/Elegir'
-import { importeDeTexto, simboloDe } from '../../../lib/dinero'
-import { estadoInicial, type AmbitoGasto } from '../../../lib/gastosCompartidos'
+import { formatoImporte, importeDeTexto, simboloDe, textoDeImporte } from '../../../lib/dinero'
+import { estadoInicial, type AmbitoGasto, type GastoCompartido } from '../../../lib/gastosCompartidos'
+import { aCentimos, cadaUno, deCentimos } from '../../../lib/cuentasGrupo'
 import type { GastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
 import { useMonedas } from '../../../lib/useMoneda'
@@ -27,14 +28,18 @@ export function InicialDePersona({ nombre, esAdmin, tam = 20 }: { nombre: string
  * «AÑADIR GASTO» de un viaje compartido (Tanda 10N, apartado 9; `Piezas/Presupuesto Compartido` 03, 04 y 05): nombre, precio, [Para todos] [Para mí], una línea que dice qué pasa (se lo enviamos al administrador /
  * entra directo / solo lo ves tú) y, en [Para todos], «¿Quién lo ha pagado?» con una pastilla por persona (quien lo añade, ya marcada). El botón dice [Enviar a Eric] si el gasto espera su respuesta y [Añadir gasto] si entra directo.
  */
-export function HojaAnadirGasto({ gv, moneda, onClose }: { gv: GastosDelViaje; moneda: string; onClose: () => void }) {
+export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDelViaje; moneda: string; onClose: () => void; editar?: GastoCompartido }) {
   const anadir = useGastosCompartidos((s) => s.anadir)
+  const editarGasto = useGastosCompartidos((s) => s.editar)
   const { opciones } = useMonedas()
-  const [nombre, setNombre] = useState('')
-  const [importe, setImporte] = useState('')
-  const [monedaElegida, setMoneda] = useState<string | null>(null)
+  const [nombre, setNombre] = useState(editar?.nombre ?? '')
+  const [importe, setImporte] = useState(editar ? textoDeImporte(editar.precio) : '')
+  const [monedaElegida, setMoneda] = useState<string | null>(editar?.precio.currency ?? null)
   const [ambito, setAmbito] = useState<AmbitoGasto>('grupo')
-  const [pagadoPor, setPagadoPor] = useState<string[]>(gv.yoId ? [gv.yoId] : [])
+  const [pagadoPor, setPagadoPor] = useState<string[]>(editar ? editar.pagadoPor : gv.yoId ? [gv.yoId] : [])
+  // «¿Entre quién?» (Tanda 10N2): todas las personas marcadas por defecto; un gasto de antes (sin lista) también es entre todos.
+  const todosIds = gv.personas.map((p) => p.id)
+  const [entre, setEntre] = useState<string[]>(editar && editar.entre.length > 0 ? editar.entre : todosIds)
   const [enCurso, setEnCurso] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const monedaDelCampo = monedaElegida ?? moneda
@@ -44,15 +49,23 @@ export function HojaAnadirGasto({ gv, moneda, onClose }: { gv: GastosDelViaje; m
   const admin = gv.nombreAdmin || 'el administrador'
 
   const info = ambito === 'mio' ? { icono: 'ojoCerrado' as const, texto: 'Solo lo ves tú' } : espera ? { icono: 'flecha' as const, texto: `Se lo enviamos a ${admin}` } : { icono: 'hecho' as const, texto: 'Entra directo en el presupuesto' }
-  const boton = espera ? `Enviar a ${admin}` : 'Añadir gasto'
+  const boton = editar ? 'Guardar cambios' : espera ? `Enviar a ${admin}` : 'Añadir gasto'
+  const quedan = entre.length
+  const cuantoToca = precio && quedan > 0 ? formatoImporte(deCentimos(cadaUno(aCentimos(precio), quedan), precio.currency)) : null
 
   const alternar = (id: string) => setPagadoPor((actuales) => (actuales.includes(id) ? (actuales.length > 1 ? actuales.filter((x) => x !== id) : actuales) : [...actuales, id]))
+
+  const alternarEntre = (id: string) => setEntre((actuales) => (actuales.includes(id) ? (actuales.length > 1 ? actuales.filter((x) => x !== id) : actuales) : [...actuales, id]))
+  // Marcar a todos = lista completa (así quien entre después al viaje no se cuela en un gasto ya hecho).
+  const entreFinal = todosIds.every((id) => entre.includes(id)) && entre.length === todosIds.length ? todosIds : entre.filter((id) => todosIds.includes(id) || editar?.entre.includes(id))
 
   const enviar = async () => {
     if (!listo || !precio || enCurso) return
     setEnCurso(true)
     setError(null)
-    const fallo = await anadir({ nombre: nombre.trim(), precio, ambito, estado: estadoInicial(ambito, gv.puedeDecidir), pagadoPor: ambito === 'mio' ? [] : pagadoPor })
+    const fallo = editar
+      ? await editarGasto(editar.id, { nombre: nombre.trim(), precio, pagadoPor, entre: entreFinal })
+      : await anadir({ nombre: nombre.trim(), precio, ambito, estado: estadoInicial(ambito, gv.puedeDecidir), pagadoPor: ambito === 'mio' ? [] : pagadoPor, entre: ambito === 'mio' ? [] : entreFinal })
     setEnCurso(false)
     if (fallo) setError(fallo)
     else onClose()
@@ -61,7 +74,7 @@ export function HojaAnadirGasto({ gv, moneda, onClose }: { gv: GastosDelViaje; m
   return (
     <HojaAbajo titleId="hoja-anadir-gasto" onClose={onClose} capa={100}>
       <h2 id="hoja-anadir-gasto" className="max-w-[calc(100%-3rem)] font-display text-[28px] leading-[1.05] text-text">
-        Añadir gasto
+        {editar ? 'Editar gasto' : 'Añadir gasto'}
       </h2>
       <div className="mt-4 flex flex-col gap-3">
         <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} placeholder="Cena el primer día" aria-label="Nombre del gasto" data-gasto-nombre className={CAMPO} />
@@ -78,6 +91,7 @@ export function HojaAnadirGasto({ gv, moneda, onClose }: { gv: GastosDelViaje; m
             </select>
           </label>
         </div>
+        {!editar && (
         <InterruptorElegir
           valor={ambito}
           onCambio={(id) => setAmbito(id as AmbitoGasto)}
@@ -88,10 +102,13 @@ export function HojaAnadirGasto({ gv, moneda, onClose }: { gv: GastosDelViaje; m
             { id: 'mio', texto: 'Para mí', icono: <Icono nombre="candado" size={16} /> },
           ]}
         />
-        <div data-gasto-info className="flex items-center gap-2.5 rounded-[14px] bg-[#F3E6C6]/70 px-3.5 py-3 text-[13px] font-medium text-[#6F4E37]">
-          <Icono nombre={info.icono} size={16} />
-          <span>{info.texto}</span>
-        </div>
+        )}
+        {!editar && (
+          <div data-gasto-info className="flex items-center gap-2.5 rounded-[14px] bg-[#F3E6C6]/70 px-3.5 py-3 text-[13px] font-medium text-[#6F4E37]">
+            <Icono nombre={info.icono} size={16} />
+            <span>{info.texto}</span>
+          </div>
+        )}
         {ambito === 'grupo' && (
           <div className="flex flex-col gap-2" data-gasto-quien-pago>
             <span className="text-text/55" style={ojoStyle}>
@@ -103,6 +120,25 @@ export function HojaAnadirGasto({ gv, moneda, onClose }: { gv: GastosDelViaje; m
                   {nombreDe(p) || 'Alguien'}
                 </PastillaElegir>
               ))}
+            </div>
+          </div>
+        )}
+        {ambito === 'grupo' && (
+          <div className="flex flex-col gap-2" data-gasto-entre-quien>
+            <span className="flex items-center justify-between text-text/55" style={ojoStyle}>
+              <span>¿Entre quién?</span>
+              <span data-gasto-entre-cuantos>{entre.length} de {todosIds.length}</span>
+            </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {gv.personas.map((p) => (
+                <PastillaElegir key={p.id} elegida={entre.includes(p.id)} onClick={() => alternarEntre(p.id)} marca datos={`entre-${p.id}`} icono={entre.includes(p.id) ? undefined : <InicialDePersona nombre={nombreDe(p)} esAdmin={p.esAdmin} />}>
+                  {nombreDe(p) || 'Alguien'}
+                </PastillaElegir>
+              ))}
+            </div>
+            <div data-gasto-cada-uno className="flex items-center gap-2.5 rounded-[14px] bg-[#F3E6C6]/70 px-3.5 py-3 text-[13px] font-medium text-[#6F4E37]">
+              <Icono nombre="compartido" size={16} />
+              <span>{cuantoToca ? `${entre.length < todosIds.length ? `${entre.length} de ${todosIds.length} · ` : ''}${cuantoToca} cada uno` : 'Escribe el importe para ver lo que toca a cada uno'}</span>
             </div>
           </div>
         )}

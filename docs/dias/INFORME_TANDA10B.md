@@ -1071,3 +1071,103 @@ Cada punto del prompt, en el mismo orden. La misma lista, con casillas, está ar
 
 - ✅ Hecho — Apartado «10N» en docs/dias/INFORME_TANDA10B.md, con lo que no se ha podido hacer igual que en Design, y esta lista al final  
   *Dónde:* No es de móvil.
+
+
+## 10N2 · Las cuentas del grupo (quién le debe a quién)
+
+Prompt en `docs/dias/PROMPT_TANDA10N2.md`. Prueba: `scripts/destino/pruebaTanda10N2.mjs` (cinco partes: la cuenta pura, PGlite con la 0040 y cinco cuentas, las pantallas en SSR, el código y la pantalla real a tamaño de móvil con un servidor de mentira; **133 · 0 fallos**). Capturas `docs/dias/capturas_jutrip/10n2_*.jpg` (12) y la página `docs/dias/REPASO_10N2.html`, con la lista de comprobación con casillas arriba del todo. **No se ha tocado el motor de rutas.** Hecha por el mismo agente que el presupuesto compartido de la 10N.
+
+### Lo que Eric tiene que hacer
+Aplicar `supabase/migrations/0040_cuentas_del_grupo.sql` en el editor SQL de Supabase (SIN APLICAR; va después de la 0036 y la 0037, y de toda la cadena 0035-0039 de la 10N). Crea `trip_gastos.entre`, las tablas `trip_pagos` y `trip_ex_miembros`, el aviso `pago_marcado`, añade los pagos a Realtime y vuelve a crear `empezar_de_cero`. Sin ella: las cuentas se calculan igual (gastos entre todos), pero no hay botón [Ya está pagado] y quien salió del viaje saldría como «Alguien».
+
+### Decisiones y diferencias con Design
+- El «a partes iguales» es en la moneda del viajero (euros por defecto): lo que está en otra moneda se pasa con el cambio del día; sin cambio no cuenta (no se inventa un número).
+- «Para quedar en paz» usa el reparto voraz (el que más debe paga al que más le deben): como mucho n−1 pagos. En el ejemplo de Design da Marta 60 €, Luis 15 € y Ana 15 € a Eric. Los céntimos que sobran al repartir (100 € entre 3), a quien pagó, así cuadra al céntimo.
+- En la tarjeta del presupuesto la primera deuda es la mayor (Marta 60 € a Eric), no «Ana 15 €» como el ejemplo del prompt.
+- Las líneas pagadas salen arriba con «✓ Pagado» y «Deshacer» debajo (Design no dibuja el deshacer). El saldo = pagado − le toca + enviado − recibido, que reproduce la pantalla 05 de Design (Eric +75, Ana 0 € ✓).
+- Si no todos tienen lo mismo (alguien desmarcado), no se pone «a partes iguales» ni «por persona».
+- «Estáis en paz» solo con al menos un gasto contado; sin gastos dice «Todavía no hay gastos del grupo».
+- El aviso del pago, a deudor y acreedor: si lo marca un tercero (administrador o quien puede editar), les llega a los dos con el texto adaptado.
+- Tocar un gasto del grupo en Extras lo abre para editarlo; los pendientes y los [Para mí] no se editan desde ahí.
+
+### Lo que no está hecho igual o está a medias
+- Lo reservado para varios cuenta solo en las entradas del dueño con «¿Para quién es?» (las paga el administrador). Billetes, alojamiento, seguro y coche no entran. Probado con datos, no en pantalla con una reserva real.
+- El directo (Realtime por la red real) y el aviso al móvil no se han podido probar sin la 0040 aplicada; la pantalla y la base de datos se probaron con servidor de mentira y PGlite.
+
+### Dudas para Eric
+1. ¿Las cuentas deben incluir también billetes, alojamiento y coche, o solo gastos y entradas para varios?
+2. ¿Se queda «Deshacer» bajo «✓ Pagado», aunque Design no lo dibuje?
+3. Quien salió del viaje ya no puede marcar pagos (no ve nada): lo marca el administrador. ¿Vale?
+
+### Lista de comprobación (el repaso final de la app)
+Cada punto del prompt, en el mismo orden. La misma lista, con casillas, está arriba del todo de `docs/dias/REPASO_10N2.html`.
+
+**§0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10N2.md y en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Design: Piezas/Cuentas Grupo (ya puesta al día con DESIGN_26OCT.zip en la 10N)  
+  *Dónde:* No es de móvil.
+
+**§1 · ¿Entre quién?**
+
+- ✅ Hecho — En la hoja de añadir un gasto [Para todos], debajo de «¿Quién lo ha pagado?», «¿Entre quién?» con una pastilla por persona, todas marcadas por defecto y «4 de 4» a la derecha, con el estilo de elegir  
+  *Dónde:* Presupuesto (cartera) > Extras > [+ Añadir gasto] > [Para todos]. Cualquier permiso (administrador, puede editar o solo recomienda).  *Captura:* `10n2_02_entre_los_4.jpg`
+- ✅ Hecho — Debajo, la línea «30 € cada uno», que cambia al desmarcar a alguien («3 de 4 · 40 € cada uno») Sin importe escrito, la línea pide escribirlo.  
+  *Dónde:* Misma hoja: escribe un importe y toca una pastilla de «¿Entre quién?» para desmarcarla.  *Captura:* `10n2_03_entre_3_luis_desmarcado.jpg`
+- ✅ Hecho — A partes iguales y en euros entre los marcados; los céntimos que sobren (100 € entre 3) al que lo pagó, para que las cuentas cuadren al céntimo Se cuenta en la moneda del viajero (euros por defecto): lo que está en otra moneda se pasa con el cambio del día; sin cambio no cuenta. Probado: 100 € entre 3 = 33,33 + 33,33 + 33,34 y la suma de saldos es 0.  
+  *Dónde:* Cuentas del grupo (presupuesto > tarjeta «Cuentas del grupo»): «Ha pagado… · Le toca…».  *Captura:* `10n2_04_cuentas_del_grupo.jpg`
+- ⚠️ A medias — Lo reservado para varios en RESERVAS («¿Para quién es?») cuenta igual: lo pagó quien lo añadió y se reparte entre los marcados Hecho para las entradas del dueño con `paraQuien` (las paga el administrador, que es quien las guarda en el viaje). Billetes, alojamiento, seguro y coche no entran en las cuentas (no tienen «¿Para quién?»). Probado con datos, no en pantalla con una reserva real.  
+  *Dónde:* RESERVAS > añadir una entrada con precio y marcar a dos personas; luego Presupuesto > Cuentas del grupo (con la cuenta del administrador).
+- ✅ Hecho — Los gastos [Para mí] no cuentan en las cuentas del grupo; los «Pendiente de…» tampoco, hasta que se aceptan Tampoco cuentan los rechazados.  
+  *Dónde:* Presupuesto > Cuentas del grupo: añade un [Para mí] o uno pendiente y mira que el total no cambia.
+- ✅ Hecho — Se puede editar un gasto [Para todos] después (quién lo pagó, entre quién, el importe): quien lo añadió, el administrador y los que pueden editar Se toca el gasto en Extras. En la base de datos lo hacen solo esas tres personas (probado con 4 cuentas).  
+  *Dónde:* Presupuesto > Extras > tocar un gasto del grupo (administrador, puede editar, o quien lo añadió).  *Captura:* `10n2_09_editar_gasto.jpg`
+
+**§2 · La pantalla «Cuentas del grupo»**
+
+- ✅ Hecho — 01 · Debajo de «Del grupo», la tarjeta «Cuentas del grupo» con las caras y la primera deuda («Ana le debe 15 € a Eric») o «Estáis en paz»; solo en viaje compartido La primera deuda es la mayor. Si no hay gastos, dice «Todavía no hay gastos del grupo».  
+  *Dónde:* Presupuesto (cartera de arriba), con un viaje que tenga al menos otra persona. Cualquier permiso.  *Captura:* `10n2_01_presupuesto_tarjeta.jpg`
+- ✅ Hecho — 04 · «4 personas · a partes iguales», arriba «Total del grupo 600 € · 150 € por persona»  
+  *Dónde:* Presupuesto > tocar la tarjeta «Cuentas del grupo».  *Captura:* `10n2_04_cuentas_del_grupo.jpg`
+- ✅ Hecho — 04 · Cada persona con «Ha pagado 240 € · Le toca 150 €» y su saldo en verde con «+», en rojo con «−» o «0 € ✓»  
+  *Dónde:* Misma pantalla.  *Captura:* `10n2_04_cuentas_del_grupo.jpg`
+- ✅ Hecho — 04 · «Para quedar en paz»: lo mínimo de pagos para dejar a todos a cero, cada uno con [Ya está pagado] Reparto voraz (el que más debe paga al que más le deben): con n personas, como mucho n−1 pagos.  
+  *Dónde:* Misma pantalla, abajo.  *Captura:* `10n2_04_cuentas_del_grupo.jpg`
+- ✅ Hecho — Si no todos tienen lo mismo (¿Entre quién?), «Le toca» es lo de cada uno y arriba solo el total (sin «por persona») Tampoco pone «a partes iguales» en ese caso.  
+  *Dónde:* Añade un gasto [Para todos] desmarcando a alguien en «¿Entre quién?» y abre Cuentas del grupo.
+- ✅ Hecho — 05 · Al tocar [Ya está pagado]: la línea en verde con «✓ Pagado» y cambian los saldos  
+  *Dónde:* Cuentas del grupo > [Ya está pagado] en una línea.  *Captura:* `10n2_05_ana_ya_ha_pagado.jpg`
+- ✅ Hecho — 05 · Lo puede tocar quien paga, quien cobra, el administrador o los que pueden editar Un «solo recomienda» que no es parte del pago no ve el botón; y la base de datos también lo impide.  
+  *Dónde:* Con la cuenta de Ana (solo recomienda) ve solo su línea con botón; con el administrador, las tres.  *Captura:* `10n2_11_cuentas_vistas_por_ana.jpg`
+- ✅ Hecho — 05 · Al otro le llega a la campana «Eric ha marcado como pagados los 15 € que le debías.» Aviso nuevo `pago_marcado` (el servidor y el móvil usan el mismo texto). Si lo marca una tercera persona, les llega a los dos; el texto cambia («Luis ha marcado como pagados los 20 € que le debías a Eric.»).  
+  *Dónde:* Con la cuenta de Ana: campana de arriba tras marcar Eric el pago.  *Captura:* `10n2_08_campana_de_ana.jpg`
+- ✅ Hecho — 05 · Se puede deshacer Con «Deshacer» bajo «✓ Pagado» (quien paga, quien cobra, el administrador y quien puede editar).  
+  *Dónde:* Cuentas del grupo > «Deshacer» en una línea pagada.  *Captura:* `10n2_05_ana_ya_ha_pagado.jpg`
+- ✅ Hecho — 06 · Todos en paz: todos a «0 € ✓» y la tarjeta verde «Estáis en paz» La tarjeta del presupuesto también pasa a verde con «Estáis en paz».  
+  *Dónde:* Marca los tres pagos en Cuentas del grupo.  *Captura:* `10n2_06_todos_en_paz.jpg`
+- ✅ Hecho — Lo ve todo el grupo, con cualquier permiso  
+  *Dónde:* Con la cuenta de Ana (solo recomienda): Presupuesto > Cuentas del grupo.  *Captura:* `10n2_11_cuentas_vistas_por_ana.jpg`
+- ⚠️ A medias — En directo: si alguien añade un gasto o marca un pago, a los demás les cambia sin recargar Realtime de Supabase sobre gastos y pagos, más lectura cada 20 s y al volver a la app. Probado con un servidor de mentira que avisa del cambio; Realtime por la red real solo se verá con la 0040 aplicada.  
+  *Dónde:* Dos móviles: uno con Cuentas del grupo abierta; el otro marca un pago.
+- ✅ Hecho — Si alguien sale del viaje o lo quitan, sus gastos y lo que le tocaba se quedan en las cuentas, con su nombre Un disparador guarda su nombre al salir o al quitarlo (`trip_ex_miembros`); en las cuentas sale con «Ya no está en el viaje». Si no puso ni le toca nada, no sale. Sin la 0040 saldría como «Alguien».  
+  *Dónde:* Administrador: quita a alguien en Personas del viaje y abre Cuentas del grupo.  *Captura:* `10n2_10_quien_sale_sigue.jpg`
+- ✅ Hecho — Sin compartir, ni la tarjeta ni la pantalla Tampoco con la 0037 sin aplicar. Con la 0040 sin aplicar, las cuentas se ven (gastos entre todos) pero sin botón de marcar pagos.  
+  *Dónde:* Dueño sin invitados: Presupuesto.  *Captura:* `10n2_12_sin_compartir.jpg`
+
+**§3 · La prueba**
+
+- ✅ Hecho — Prueba nueva pruebaTanda10N2 133 comprobaciones · 0 fallos (cuenta pura, PGlite con la 0040, pantallas en SSR, código y pantalla real a tamaño de móvil).  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La batería rápida y pruebaJutrip (si algo falla solo al correr con las demás y solo pasa solo, se dice) La prueba 10N2 pasó en la batería completa. Fallaron (por carga o por la pantalla de ruta rápida, no por la tanda) pruebaJutrip, pruebaRevisionLargos, pruebaTanda10B, 10G, 10H, 10I, 10M_app, 10N_presupuesto, 10P_sorteo y los envoltorios 10P y 10N; repetidas solas pasan todas con 0 fallos (10P: 3625; 10N: 418). Se arreglan más adelante, como se pidió.  
+  *Dónde:* No es de móvil.
+
+**§3 · Capturas**
+
+- ✅ Hecho — Capturas en docs/dias/capturas_jutrip/ y esta página a tamaño de móvil  
+  *Dónde:* Esta página.
+
+**§4 · El informe**
+
+- ✅ Hecho — Apartado «10N2» en docs/dias/INFORME_TANDA10B.md, con lo que no se ha podido hacer igual que en Design, y esta lista al final  
+  *Dónde:* No es de móvil.

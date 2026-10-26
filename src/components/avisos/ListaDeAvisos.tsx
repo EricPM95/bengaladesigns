@@ -17,7 +17,7 @@ export function ListaDeAvisos({ avisos, resaltado = null, onTocar, ahora = Date.
         // (Tanda 10N, apartado 9) «Ana quiere añadir al presupuesto»: el gasto va dentro y [Rechazar] [Aceptar] en el mismo aviso.
         if (a.tipo === 'gasto_pendiente') return <AvisoDeGasto key={a.id} aviso={a} ahora={ahora} foto={fotoDe?.(a) ?? null} resaltado={resaltado === a.id} />
         const sinLeer = !a.leido && !a.etiqueta
-        const tocable = (a.tipo === 'recomendacion' && !a.etiqueta) || a.tipo === 'd10' || a.tipo === 'sorteo' || a.tipo === 'gasto_resuelto'
+        const tocable = (a.tipo === 'recomendacion' && !a.etiqueta) || a.tipo === 'd10' || a.tipo === 'sorteo' || a.tipo === 'gasto_resuelto' || a.tipo === 'pago_marcado'
         const clase = a.tipo === 'recomendacion' || a.tipo === 'unido' || a.tipo === 'sorteo' ? 'dorado' : a.tipo === 'aceptada' || a.tipo === 'rechazada' || a.tipo === 'gasto_resuelto' ? 'oscuro' : 'claro'
         // (10P) El aviso del sorteo es el especial dorado del diseño (`Piezas/Sorteo Perfil`): fondo claro, borde dorado y su sombra, y el icono del billete en dorado.
         const especial = a.tipo === 'sorteo'

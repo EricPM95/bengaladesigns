@@ -105,6 +105,13 @@ export function textoDelAviso(aviso) {
     // Tanda 10N (apartado 9, el presupuesto compartido): «Ana quiere añadir al presupuesto» (a quien decide, con el gasto dentro) y, a quien lo añadió, lo que han decidido.
     case 'gasto_pendiente':
       return nombreDe(p.autor) ? `${nombreDe(p.autor)} quiere añadir al presupuesto` : 'Quieren añadir un gasto al presupuesto'
+    // Tanda 10N2 (cuentas del grupo): «Eric ha marcado como pagados los 15 € que le debías.» (el otro, siempre en su campana).
+    case 'pago_marcado': {
+      const quien = nombreDe(p.actor) || 'Alguien'
+      const x = p.importe && Number.isFinite(Number(p.importe.amount)) ? formatoImporte({ amount: Number(p.importe.amount), currency: p.importe.currency }) : ''
+      if (p.para === 'acreedor') return p.actor_id && p.actor_id === p.deudor_id ? `${quien} ha marcado como pagados los ${x} que te debía.` : `${quien} ha marcado como pagados los ${x} que ${nombreDe(p.deudor) || 'alguien'} te debía.`
+      return p.actor_id && p.actor_id === p.acreedor_id ? `${quien} ha marcado como pagados los ${x} que le debías.` : `${quien} ha marcado como pagados los ${x} que le debías a ${nombreDe(p.acreedor) || 'alguien'}.`
+    }
     case 'gasto_resuelto':
       return p.resultado === 'aceptado' ? `${nombreDe(p.admin) ? `${nombreDe(p.admin)} ha aceptado` : 'Han aceptado'} tu gasto` : `${nombreDe(p.admin) ? `${nombreDe(p.admin)} ha preferido` : 'Han preferido'} no sumar tu gasto`
     // Tanda 10N §8 (la entrada que el dueño compra para varios): «Eric ha reservado el Coliseo para ti: jueves 26, 8:00.» · «Eric ha reservado el Coliseo el jueves 26 a las 8:00.»
@@ -155,6 +162,7 @@ export function quienDelAviso(aviso) {
   if (aviso.tipo === 'recomendacion') return de(p.autor)
   if (aviso.tipo === 'aceptada' || aviso.tipo === 'rechazada' || aviso.tipo === 'gasto_resuelto') return de(p.admin)
   if (aviso.tipo === 'gasto_pendiente') return de(p.autor)
+  if (aviso.tipo === 'pago_marcado') return de(p.actor)
   if (aviso.tipo === 'unido') return de(p.nombre)
   if (aviso.tipo === 'reserva_grupo') return de(p.quien)
   if (aviso.tipo === 'permiso') return de(p.admin)

@@ -17,6 +17,7 @@ import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
 import { useGastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { nombresEnFrase } from '../../../lib/gastosCompartidos'
 import { ExtrasCompartidos } from './ExtrasCompartidos'
+import { PantallaCuentas, TarjetaCuentas } from './PantallaCuentas'
 
 /** El color y el icono de cada bloque (la barra de la tarjeta oscura, el cuadradito de cada bloque y los puntos de debajo). */
 const ESTILO: Record<BloqueId, { color: string; fondo: string; tinta: string; icono: NombreIcono }> = {
@@ -249,6 +250,7 @@ export function PantallaPresupuesto() {
   const [hoja, setHoja] = useState<AbrirLinea | null>(null)
   const [hojaPersonas, setHojaPersonas] = useState(false)
   const [hojaMoneda, setHojaMoneda] = useState(false)
+  const [cuentasAbiertas, setCuentasAbiertas] = useState(false)
   // (Tanda 10N, apartado 9) En un viaje compartido: «Del grupo», el «por persona» solo de lo del grupo, los nombres de la gente y los Extras con [Para todos] / [Para mí].
   const gv = useGastosDelViaje()
   if (!abierto || !route || !presupuesto) return null
@@ -376,6 +378,9 @@ export function PantallaPresupuesto() {
             )}
           </div>
 
+          {/* (Tanda 10N2) Cuentas del grupo: debajo de «Del grupo», solo en un viaje compartido. */}
+          {gv.compartido && <TarjetaCuentas onAbrir={() => setCuentasAbiertas(true)} />}
+
           {!hayGastos && (
             <div className="flex flex-none flex-col gap-0.5 rounded-[14px] border border-dashed border-text/[.18] px-3.5 py-3.5">
               <span className="text-[13px] font-medium">Todavía no hay gastos</span>
@@ -434,6 +439,7 @@ export function PantallaPresupuesto() {
       </div>
 
       {hojaAbierta()}
+      {cuentasAbiertas && gv.compartido && <PantallaCuentas onCerrar={() => setCuentasAbiertas(false)} />}
       {hojaPersonas && <HojaPersonas inicial={personas} onGuardar={setPersonas} onClose={() => setHojaPersonas(false)} />}
       {hojaMoneda && <HojaMoneda actual={moneda} onGuardar={setMonedaViajero} onClose={() => setHojaMoneda(false)} />}
     </div>,

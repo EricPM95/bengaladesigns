@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { GastoCompartido } from '../lib/gastosCompartidos'
-import { backendSupabase, type Backend, type NuevoGasto } from '../lib/gastosCompartidosRed'
+import type { PagoMarcado } from '../lib/cuentasGrupo'
+import { backendSupabase, type Backend, type CambiosDeGasto, type ExMiembro, type NuevoGasto } from '../lib/gastosCompartidosRed'
 import type { Importe } from '../lib/dinero'
 import { useAvisosStore } from './useAvisosStore'
 
@@ -22,6 +23,11 @@ interface GastosState {
   tripId: string | null
   yoId: string | null
   gastos: GastoCompartido[]
+  /** Los «Ya está pagado» (Tanda 10N2) y quien salió del viaje (su nombre, para las cuentas). */
+  pagos: PagoMarcado[]
+  exMiembros: ExMiembro[]
+  /** ¿Existe la migración 0040 (¿Entre quién?, pagos)? */
+  cuentas: boolean
   disponible: boolean | null
   franja: FranjaDeGasto | null
   /** El gasto que se marca en verde un momento (el que acaban de aceptar). */
@@ -30,9 +36,12 @@ interface GastosState {
   recargar: () => Promise<void>
   anadir: (g: Omit<NuevoGasto, 'tripId'>) => Promise<string | null>
   decidir: (id: string, estado: 'aceptado' | 'rechazado') => Promise<string | null>
+  editar: (id: string, cambios: CambiosDeGasto) => Promise<string | null>
+  marcarPago: (p: { deudorId: string; acreedorId: string; importe: { amount: number; currency: string } }) => Promise<string | null>
+  deshacerPago: (id: string) => Promise<string | null>
   quitar: (id: string) => Promise<string | null>
   cerrarFranja: () => void
-  poner: (datos: Partial<Pick<GastosState, 'tripId' | 'yoId' | 'gastos' | 'disponible'>>) => void
+  poner: (datos: Partial<Pick<GastosState, 'tripId' | 'yoId' | 'gastos' | 'disponible' | 'pagos' | 'exMiembros' | 'cuentas'>>) => void
 }
 
 let backend: Backend = backendSupabase
@@ -49,19 +58,22 @@ export const useGastosCompartidos = create<GastosState>((set, get) => ({
   tripId: null,
   yoId: null,
   gastos: [],
+  pagos: [],
+  exMiembros: [],
+  cuentas: false,
   disponible: null,
   franja: null,
   resaltado: null,
   cargar: async (tripId) => {
     if (!tripId) {
-      set({ tripId: null, gastos: [], disponible: null, franja: null, resaltado: null })
+      set({ tripId: null, gastos: [], pagos: [], exMiembros: [], cuentas: false, disponible: null, franja: null, resaltado: null })
       return
     }
-    if (get().tripId !== tripId) set({ tripId, gastos: [], disponible: null, franja: null, resaltado: null })
+    if (get().tripId !== tripId) set({ tripId, gastos: [], pagos: [], exMiembros: [], cuentas: false, disponible: null, franja: null, resaltado: null })
     const yo = get().yoId ?? (await backend.yo())
     const r = await backend.cargar(tripId)
     if (get().tripId !== tripId) return // (mientras tanto se abrió otro viaje)
-    set({ yoId: yo, gastos: r.gastos, disponible: r.disponible })
+    set({ yoId: yo, gastos: r.gastos, pagos: r.pagos, exMiembros: r.exMiembros, cuentas: r.cuentas, disponible: r.disponible })
   },
   recargar: async () => {
     const { tripId, gastos: antes, yoId } = get()
@@ -70,7 +82,7 @@ export const useGastosCompartidos = create<GastosState>((set, get) => ({
     if (get().tripId !== tripId) return
     // ¿Alguno de MIS gastos pendientes lo han decidido? → la franja de arriba y el verde de un momento.
     const decidido = r.gastos.find((g) => g.autorId === yoId && g.ambito === 'grupo' && g.estado !== 'pendiente' && antes.some((a) => a.id === g.id && a.estado === 'pendiente'))
-    set({ gastos: r.gastos, disponible: r.disponible })
+    set({ gastos: r.gastos, pagos: r.pagos, exMiembros: r.exMiembros, cuentas: r.cuentas, disponible: r.disponible })
     if (decidido) {
       set({ franja: { n: ++contadorFranja, resultado: decidido.estado === 'aceptado' ? 'aceptado' : 'rechazado', nombre: decidido.nombre, precio: decidido.precio, gastoId: decidido.id } })
       if (decidido.estado === 'aceptado') {
@@ -93,6 +105,23 @@ export const useGastosCompartidos = create<GastosState>((set, get) => ({
     const error = await backend.decidir(id, estado)
     await get().recargar()
     void useAvisosStore.getState().cargar()
+    return error
+  },
+  editar: async (id, cambios) => {
+    const error = await backend.editar(id, cambios)
+    if (!error) await get().recargar()
+    return error
+  },
+  marcarPago: async (p) => {
+    const { tripId } = get()
+    if (!tripId) return 'No hay un viaje abierto.'
+    const error = await backend.marcarPago({ ...p, tripId })
+    if (!error) await get().recargar()
+    return error
+  },
+  deshacerPago: async (id) => {
+    const error = await backend.deshacerPago(id)
+    if (!error) await get().recargar()
     return error
   },
   quitar: async (id) => {

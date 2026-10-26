@@ -22,6 +22,8 @@ export interface GastoCompartido {
   estado: EstadoGasto
   /** Quién lo pagó (ids de las personas del viaje). Vacío en los «Para mí». */
   pagadoPor: string[]
+  /** Entre quién se reparte (Tanda 10N2). Vacío: entre todos los del viaje. */
+  entre: string[]
   decididoPor: string | null
   creadoEn: string
 }

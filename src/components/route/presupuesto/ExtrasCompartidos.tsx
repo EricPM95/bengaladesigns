@@ -24,6 +24,10 @@ export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: 
   const quitar = useGastosCompartidos((s) => s.quitar)
   const removeGastoExtra = useRouteStore((s) => s.removeGastoExtra)
   const [hoja, setHoja] = useState(false)
+  const todos = useGastosCompartidos((s) => s.gastos)
+  // (Tanda 10N2) Editar un gasto del grupo (quién lo pagó, entre quién, el importe): quien lo añadió, el administrador y quien puede editar.
+  const [editando, setEditando] = useState<string | null>(null)
+  const gastoEditando = todos.find((g) => g.id === editando) ?? null
   const [error, setError] = useState<string | null>(null)
   const lineas = bloque?.lineas ?? []
   const admin = gv.nombreAdmin || 'el administrador'
@@ -33,6 +37,10 @@ export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: 
     if (!c) return false
     if (c.gastoId === null) return !gv.esInvitado // un extra anterior a compartir: del administrador
     return c.autorId === gv.yoId || (c.vista === 'grupo' && gv.puedeDecidir)
+  }
+  const puedeEditar = (l: LineaPresupuesto) => {
+    const c = l.compartido
+    return Boolean(c && c.gastoId && c.vista === 'grupo' && (c.autorId === gv.yoId || gv.puedeDecidir))
   }
   const quitarLinea = async (l: LineaPresupuesto) => {
     const c = l.compartido
@@ -50,7 +58,7 @@ export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: 
     <div className="flex flex-none flex-col gap-2.5 rounded-[22px] bg-[#FFFDF8] p-3.5" style={{ border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35)' }} data-blk="extras" data-extras-compartidos>
       {cabecera}
       {lineas.map((l) => (
-        <FilaDeGasto key={l.id} linea={l} gv={gv} moneda={moneda} admin={admin} verde={resaltado !== null && l.compartido?.gastoId === resaltado} onQuitar={puedeQuitar(l) ? () => void quitarLinea(l) : undefined} />
+        <FilaDeGasto key={l.id} linea={l} gv={gv} moneda={moneda} admin={admin} verde={resaltado !== null && l.compartido?.gastoId === resaltado} onQuitar={puedeQuitar(l) ? () => void quitarLinea(l) : undefined} onEditar={puedeEditar(l) ? () => setEditando(l.compartido!.gastoId) : undefined} />
       ))}
       {error && (
         <p role="alert" className="text-[12.5px] text-accent-red">
@@ -62,11 +70,12 @@ export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: 
         Añadir gasto
       </button>
       {hoja && <HojaAnadirGasto gv={gv} moneda={moneda} onClose={() => setHoja(false)} />}
+      {gastoEditando && <HojaAnadirGasto gv={gv} moneda={moneda} editar={gastoEditando} onClose={() => setEditando(null)} />}
     </div>
   )
 }
 
-function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar }: { linea: LineaPresupuesto; gv: GastosDelViaje; moneda: string; admin: string; verde: boolean; onQuitar?: () => void }) {
+function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar, onEditar }: { linea: LineaPresupuesto; gv: GastosDelViaje; moneda: string; admin: string; verde: boolean; onQuitar?: () => void; onEditar?: () => void }) {
   const vista = linea.compartido?.vista ?? 'grupo'
   const cuenta = vista === 'grupo'
   const quienes = (linea.compartido?.pagadoPor ?? []).map((id) => ({ id, persona: gv.personas.find((p) => p.id === id) }))
@@ -80,7 +89,7 @@ function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar }: { linea: Lin
         : { background: '#F8F3EA', border: '1.5px solid transparent' }
   const icono = vista === 'pendiente' ? 'reloj' : cuenta ? 'presupuesto' : 'ojoCerrado'
   return (
-    <div className="flex min-h-[52px] items-center gap-2.5 rounded-[14px] py-1.5 pl-1.5 pr-1" style={fila} data-gasto-vista={vista} data-gasto-fila={linea.nombre}>
+    <div className="flex min-h-[52px] items-center gap-2.5 rounded-[14px] py-1.5 pl-1.5 pr-1" style={{ ...fila, cursor: onEditar ? 'pointer' : undefined }} data-gasto-vista={vista} data-gasto-fila={linea.nombre} data-gasto-editable={onEditar ? '1' : undefined} onClick={onEditar} role={onEditar ? 'button' : undefined} aria-label={onEditar ? `Editar ${linea.nombre}` : undefined}>
       <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px]" style={{ background: vista === 'pendiente' ? '#F3D59A' : cuenta ? AZUL_EXTRAS.fondo : '#EDE4D3', color: vista === 'pendiente' ? '#8A6420' : cuenta ? AZUL_EXTRAS.tinta : 'rgba(28,34,48,.5)' }}>
         <Icono nombre={icono} size={15} />
       </span>
@@ -108,7 +117,7 @@ function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar }: { linea: Lin
         )}
       </span>
       {onQuitar ? (
-        <button type="button" aria-label={`Quitar ${linea.nombre}`} onClick={onQuitar} className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-text/45 hover:bg-[#EDE4D3]">
+        <button type="button" aria-label={`Quitar ${linea.nombre}`} onClick={(e) => { e.stopPropagation(); onQuitar() }} className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-text/45 hover:bg-[#EDE4D3]">
           <Icono nombre="cerrar" size={13} />
         </button>
       ) : (
