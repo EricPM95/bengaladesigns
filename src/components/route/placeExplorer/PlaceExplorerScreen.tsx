@@ -35,6 +35,7 @@ import { abrirPase } from '../../../lib/pago'
 import { explorarConCercania } from '../../../lib/explorarDePago'
 import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
 import { diaCorto } from '../../../lib/nombreDeDia'
+import { InterruptorElegir } from '../../ui/Elegir'
 
 
 /** Por encima de esta distancia el "a N min a pie" deja de tener sentido (el viajero todavía no está
@@ -1073,45 +1074,26 @@ export function PlaceExplorerScreen({
             </label>
             {/* Tanda 10O: las dos pestañas, para todos. Sin el pase, «Cerca de ti» lleva el candado dorado pequeño y abre su hoja. */}
             {!trimmedQuery && (
-              <div data-pestanas-explorar className="relative grid grid-cols-2" style={{ height: 42, borderRadius: 14, background: '#EDE4D3', padding: 4 }}>
-                <span
-                  aria-hidden="true"
-                  className="absolute"
-                  style={{
-                    top: 4,
-                    bottom: 4,
-                    left: 4,
-                    width: 'calc(50% - 4px)',
-                    borderRadius: 10,
-                    background: '#FFFDF8',
-                    boxShadow: '0 2px 6px -2px rgba(28,34,48,.2)',
-                    transform: tab === 'nearby' ? 'translateX(100%)' : 'none',
-                    transition: 'transform .4s cubic-bezier(.2,.8,.2,1)',
-                  }}
-                />
-                {(
-                  [
-                    { id: 'recommended', label: 'Recomendados' },
-                    { id: 'nearby', label: 'Cerca de ti' },
-                  ] as const
-                ).map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => (item.id === 'nearby' && !cercaDeMi ? setHojaCerca(true) : setTab(item.id))}
-                    data-pestana={item.id}
-                    className="relative flex items-center justify-center gap-1.5"
-                    style={{ border: 'none', background: 'transparent', font: `${tab === item.id ? 600 : 500} 14px 'Geist'`, color: tab === item.id ? warm : 'rgba(28,34,48,.55)' }}
-                  >
-                    {item.label}
-                    {item.id === 'nearby' && !cercaDeMi && (
+              /* (Tanda 10N §11) El estilo de elegir una cosa u otra de toda la app: lo elegido en el azul oscuro de la marca, lo no elegido en blanco con borde fino. */
+              <InterruptorElegir
+                valor={tab}
+                compacto
+                atributos={{ 'data-pestanas-explorar': '' }}
+                onCambio={(id) => (id === 'nearby' && !cercaDeMi ? setHojaCerca(true) : setTab(id as 'recommended' | 'nearby'))}
+                opciones={[
+                  { id: 'recommended', texto: 'Recomendados', atributos: { 'data-pestana': 'recommended' } },
+                  {
+                    id: 'nearby',
+                    texto: 'Cerca de ti',
+                    atributos: { 'data-pestana': 'nearby' },
+                    extra: !cercaDeMi ? (
                       <span aria-hidden="true" data-candado="explorar-cerca-de-ti" className="flex h-[18px] w-[18px] flex-none items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
                         <Icono nombre="candado" size={10} grosor={2} />
                       </span>
-                    )}
-                  </button>
-                ))}
-              </div>
+                    ) : null,
+                  },
+                ]}
+              />
             )}
           </div>
 

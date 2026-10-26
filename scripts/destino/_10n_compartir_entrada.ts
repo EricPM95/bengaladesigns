@@ -1,0 +1,5 @@
+export { PLAZAS_SIN_PASE, invitacionReutilizable, normalizarCodigo, codigoDeLaDireccion, titularDeInvitacion } from '../../src/lib/invitaciones'
+export { conectarViaje, accionPorAviso } from '../../src/lib/compartidoTiempoReal'
+export { cambiosEntreRutas } from '../../src/lib/viajeEnDirecto'
+export { canonico } from '../../src/lib/tripPersistence'
+export { textoDelPermiso, lineaDelPermiso } from '../../src/lib/personasViaje'

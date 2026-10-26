@@ -21,6 +21,13 @@ import { AVISO_DISPONIBILIDAD, horasDeLaRueda, useHorarioDeEntrada } from '../..
 import { FREE_TOUR_HOURS } from '../../../lib/freeTourHoras'
 import { avisoDeLaHora, civitatisActiva, ruedaConHorasLibres, useHorasLibres } from '../../../lib/civitatis'
 import { llegadaVueltaDe } from '../../../lib/llegadaVuelta'
+import { PastillaElegir } from '../../ui/Elegir'
+import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
+import { useMisReservas } from '../../../store/useMisReservas'
+import { openTicketShop } from './EntradaCard'
+import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
+import { cuantosDeCuantos, diaDeLaReservaEnPalabras, horaCorta } from '../../../lib/reservasGrupo'
+import { inicialDe, nombreDe } from '../../../store/useViajeCompartido'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -35,6 +42,11 @@ export interface ReservationTarget {
   existing?: Reservation | null
   /** «Añadir una excursión · 2 de 2»: viene de elegir la excursión en la hoja de «¿Qué excursión tienes?». */
   paso2?: boolean
+  /**
+   * Tanda 10N §8: la entrada que el dueño ya tiene para este sitio, vista por quien quiere ir con él. 'comprar' ([Reservar la mía a la misma hora]): el día y la hora ya vienen elegidos y el botón abre la compra;
+   * 'tengo' ([Ya la tengo]): la hoja de siempre para apuntar la que ya le han comprado, partiendo del día y la hora del dueño.
+   */
+  igualQue?: { reserva: Reservation; quien: string; modo: 'comprar' | 'tengo' } | null
   /** Cómo se abre el selector de hora. 'tengo' (por defecto: «¿Ya la tienes? Añádela», «Cambiar»): cualquier hora, sin filtros ni avisos. 'reservar': solo las horas libres del calendario, con sus plazas (solo con la API de consulta encendida). */
   modo?: 'tengo' | 'reservar'
 }
@@ -139,7 +151,14 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const [readError, setReadError] = useState<string | null>(null)
   const [read, setRead] = useState(false)
   // Los datos del Free Tour del destino (Tanda 6y2): en una ruta a mano, la reserva del Free Tour crea su parada con ellos.
-  const { sitiosGrandes: fichasSitiosGrandes } = useDestinationExcursions(route.destination)
+  const { sitiosGrandes: fichasSitiosGrandes, entradasPorSitio } = useDestinationExcursions(route.destination)
+  // Tanda 10N §8: quién mira (el dueño o quien está en su viaje) y si el viaje es de varias personas.
+  const grupo = useEntradasDelGrupo()
+  const esInvitado = grupo.esInvitado
+  const igual = target.igualQue ?? null
+  const [compraAbierta, setCompraAbierta] = useState(false)
+  // («Reservar la mía a la misma hora»: la rueda parte de la hora del dueño; mientras la lista de horas se acomoda, los saltos de la rueda no la cambian. Los gestos de después, sí.)
+  const ultimoCambioDeRueda = useRef(0)
   const sitiosGrandes = fichasSitiosGrandes.map((sitio) => sitio.nombre)
   const { freeTourEntry } = useDestinationPool(route.destination, target.refId === 'Free Tour' && isManualRoute(route))
   const hasDates = Boolean(route.answers.dateRange)
@@ -154,9 +173,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const precio = usePrecioEditable(existing?.precio)
   const [fields, setFields] = useState<Fields>(() => ({
     ...EMPTY,
-    dateIso: existing?.dateIso ?? (hasDates && startDay ? (dateOfDay(route, startDay) ?? '') : ''),
-    dayNumber: existing?.dayNumber != null ? String(existing.dayNumber) : !hasDates && startDay ? String(startDay.dayNumber) : '',
-    time: existing?.time ?? '',
+    dateIso: existing?.dateIso ?? igual?.reserva.dateIso ?? (hasDates && startDay ? (dateOfDay(route, startDay) ?? '') : ''),
+    dayNumber: existing?.dayNumber != null ? String(existing.dayNumber) : igual?.reserva.dayNumber != null ? String(igual.reserva.dayNumber) : !hasDates && startDay ? String(startDay.dayNumber) : '',
+    time: existing?.time ?? igual?.reserva.time ?? '',
     returnTime: existing?.returnTime ?? '',
     meetingPoint: existing?.meetingPoint ?? '',
     locator: existing?.locator ?? '',
@@ -171,7 +190,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // El día de la reserva: el de su fecha; sin fechas en el viaje, el que se elige.
   const resolvedDay = hasDates ? (fields.dateIso ? dayOnDate(route, fields.dateIso) : null) : (days.find((day) => String(day.dayNumber) === fields.dayNumber) ?? null)
   const outside = hasDates && Boolean(fields.dateIso) && !resolvedDay
-  const moved = Boolean(resolvedDay && target.currentDayId && resolvedDay.id !== target.currentDayId)
+  const moved = Boolean(resolvedDay && target.currentDayId && resolvedDay.id !== target.currentDayId) && !esInvitado
   const validTime = /^\d{1,2}:\d{2}$/.test(fields.time)
   const ready = Boolean(resolvedDay && validTime)
   const bigPlace = target.placeNames.find((name) => sitiosGrandes.includes(name)) ?? null
@@ -252,7 +271,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const horasDelDia = horasApi.estado === 'ok' ? horasApi.datos : null
   const filtrando = horasDelDia != null && horasDelDia.horas.length > 0 && modoReservar
   const wheelItems = useMemo(() => {
-    const propia = existing && /^\d{1,2}:\d{2}$/.test(existing.time) ? (existing.time.length === 4 ? `0${existing.time}` : existing.time) : null
+    const horaDePartida = existing?.time ?? igual?.reserva.time ?? null
+    const propia = horaDePartida && /^\d{1,2}:\d{2}$/.test(horaDePartida) ? (horaDePartida.length === 4 ? `0${horaDePartida}` : horaDePartida) : null
     const base = horasDeLaRueda(entryHours, propia)
     return filtrando ? ruedaConHorasLibres(base, horasDelDia, propia) : base
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -278,7 +298,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     const asMin = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
     const enLaRuta = resolvedDay?.stops.find((stop) => !stop.isNightExperience && target.placeNames.includes(stop.name))
     const llegada = enLaRuta && /^\d{1,2}:\d{2}$/.test(enLaRuta.time ?? '') ? asMin(enLaRuta.time) : NaN
-    const wanted = validTime ? asMin(fields.time) : Number.isNaN(llegada) ? 9 * 60 : llegada
+    // (Con la hora del dueño de partida —«Reservar la mía a la misma hora»— la rueda se queda en ella aunque llegue después la lista de horas.)
+    ultimoCambioDeRueda.current = Date.now()
+    const wanted = igual?.reserva.time ? asMin(igual.reserva.time) : validTime ? asMin(fields.time) : Number.isNaN(llegada) ? 9 * 60 : llegada
     const nearest = wheelItems.reduce((best, item) => (Math.abs(asMin(item) - wanted) < Math.abs(asMin(best) - wanted) ? item : best), wheelItems[0])
     const current = validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : ''
     if (nearest !== current) set({ time: nearest })
@@ -289,7 +311,16 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // La respuesta del servidor para esta hora y este día aún no ha llegado: no se guarda hasta entonces (la hoja de «mover el día» y la regla 17 salen con ella).
   const [planDoneKey, setPlanDoneKey] = useState<string | null>(null)
   // (En una ruta a mano no se pregunta qué día se mueve: ninguno se mueve, la reserva se queda en el día y a la hora del viajero. Tanda 6y.)
-  const planKey = resolvedDay && bigPlace && !isExcursion && validTime && !isManualRoute(route) ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
+  const planKey = resolvedDay && bigPlace && !isExcursion && validTime && !isManualRoute(route) && !esInvitado ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
+  // «¿Para quién es?» (Tanda 10N §8): solo el dueño y solo en un viaje compartido. El dueño va siempre marcado; una reserva de antes de compartir cuenta como «solo para mí».
+  const paraQuienVisible = grupo.compartido && !esInvitado
+  const personasDelViaje = useMemo(() => [...grupo.gente].sort((a, b) => Number(b.esAdmin) - Number(a.esAdmin)), [grupo.gente])
+  const adminId = personasDelViaje.find((p) => p.esAdmin)?.id ?? null
+  const [marcados, setMarcados] = useState<string[]>(() => {
+    const antes = (existing?.paraQuien ?? []).filter((id) => personasDelViaje.some((p) => p.id === id))
+    return [...new Set([...(adminId ? [adminId] : []), ...antes])]
+  })
+  const alternarPersona = (id: string) => setMarcados((previous) => (previous.includes(id) ? previous.filter((other) => other !== id) : [...previous, id]))
   const draftReservation = (): Reservation | null => {
     if (!resolvedDay) return null
     return {
@@ -307,6 +338,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       excursionId: target.excursion?.id ?? null,
       excursionData: target.excursion ?? null,
       precio: target.refId === 'Free Tour' ? null : precio.importe,
+      ...(paraQuienVisible ? { paraQuien: marcados } : {}),
     }
   }
   useEffect(() => {
@@ -411,6 +443,14 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   /** Guardar: la hora que elige el viajero se queda, siempre (Tanda 6v: la app nunca propone otra hora; el día usa la lista escrita de esa hora y, si no la hay, manda la reserva, sin preguntar). Antes, la hoja que explica qué día se mueve; si no se puede mover, la reserva se guarda en su día con un aviso (y en la campana). */
   const save = (stage: 'inicio' | 'mover' = 'inicio') => {
     if (!resolvedDay || !ready) return
+    // Tanda 10N §8: la entrada de quien está en el viaje de otra persona es SUYA: va a su lista, no toca la ruta del dueño ni sus reservas.
+    if (esInvitado) {
+      const propia = draftReservation()
+      if (!propia) return
+      useMisReservas.getState().anadir(propia)
+      onClose()
+      return
+    }
     const blocked = plan?.cambia ? blockedDay() : null
     if (plan?.cambia && blocked == null && stage !== 'mover') {
       setConfirming(true)
@@ -452,7 +492,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const deleteReservation = () => {
     if (!existing) return
     try {
-      removeReservationWithUndo(existing.id)
+      if (esInvitado) useMisReservas.getState().quitar(existing.id)
+      else removeReservationWithUndo(existing.id)
     } catch (error) {
       console.error('[AddReservationSheet] no se pudo eliminar', error)
     }
@@ -484,9 +525,15 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               <h2 id="add-reservation-heading" className="mt-1.5 font-display text-[24px] leading-[1.05] text-text">
                 {target.name}
               </h2>
+              {igual && (
+                <p className="mt-2 text-[13.5px] leading-snug text-text/70" data-igual-que>
+                  {igual.quien || 'El dueño'} va el {diaDeLaReservaEnPalabras(route, igual.reserva)} a las {horaCorta(igual.reserva.time)}.{' '}
+                  {igual.modo === 'comprar' ? 'Compra la tuya para ese día y esa hora: ya los tienes elegidos.' : 'Apunta aquí la que ya tienes.'}
+                </p>
+              )}
 
               {/* Los días del viaje, en fichas que se deslizan de lado: el día que tiene en la ruta ya va marcado («En tu ruta»); un sitio cerrado ese día sale apagado. */}
-              <div className="-mx-6 mt-3.5 flex gap-1.5 overflow-x-auto px-6 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Día de tu reserva">
+              <div className="-mx-6 mt-5 flex gap-1.5 overflow-x-auto px-6 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Día de tu reserva">
                 {chipDays.map((day) => {
                   const selected = resolvedDay?.id === day.id
                   const closed = isClosedDay(day)
@@ -515,7 +562,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   )
                 })}
               </div>
-              <p className="mt-3 text-center text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
+              <p className="mt-7 text-center text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
                 {isExcursion ? 'Hora de recogida' : isFreeTour ? 'Hora de inicio' : 'Hora de entrada'}
               </p>
 
@@ -534,7 +581,10 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                     ))}
                   </div>
                 ) : (
-                  <TimeListWheel items={rueda} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : rueda[0]} onChange={(hhmm) => set({ time: hhmm })} label={isExcursion ? 'Hora de recogida' : 'Hora de la entrada'} />
+                  <TimeListWheel items={rueda} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : rueda[0]} onChange={(hhmm) => {
+                    if (igual && Date.now() - ultimoCambioDeRueda.current < 1500) return
+                    set({ time: hhmm })
+                  }} label={isExcursion ? 'Hora de recogida' : 'Hora de la entrada'} />
                 )}
               </div>
 
@@ -569,9 +619,28 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </p>
               )}
 
+              {/* Tanda 10N §8: «¿Para quién es?» — solo el dueño y solo en un viaje compartido; una pastilla por persona (la marcada, en oscuro con su ✓); si no caben, bajan a otra fila. Sin compartir, el formulario es el de siempre. */}
+              {paraQuienVisible && (
+                <div className="mt-7" data-para-quien>
+                  <p className="flex items-baseline gap-2 text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
+                    ¿Para quién es?
+                    <span data-para-quien-cuenta className="text-text/70" style={{ letterSpacing: '.04em', textTransform: 'none' }}>
+                      · {cuantosDeCuantos(marcados.length, personasDelViaje.length)}
+                    </span>
+                  </p>
+                  <div className="mt-2.5 flex flex-wrap gap-2">
+                    {personasDelViaje.map((p) => (
+                      <PastillaElegir key={p.id} datos="para-quien" marca elegida={marcados.includes(p.id)} onClick={p.esAdmin ? undefined : () => alternarPersona(p.id)}>
+                        {nombreDe(p) || inicialDe(p)}
+                      </PastillaElegir>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {!isFreeTour && (
-                <div className="mt-4">
-                  <CampoPrecio estado={precio} ayuda="Lo que pagaste en total, todas las personas." />
+                <div className="mt-7">
+                  <CampoPrecio estado={precio} />
                 </div>
               )}
 
@@ -605,9 +674,31 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </button>
               </p>
 
-              <button type="button" disabled={!ready || planPending} onClick={() => save()} className="mt-4 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40">
-                {validTime ? `Guardar · ${fields.time.length === 4 ? `0${fields.time}` : fields.time}` : 'Guardar'}
-              </button>
+              {(() => {
+                // [Reservar la mía a la misma hora]: primero se abre la compra (con el día y la hora ya elegidos aquí); cuando la tiene, se guarda.
+                const comprando = igual?.modo === 'comprar' && !compraAbierta
+                const hora = fields.time.length === 4 ? `0${fields.time}` : fields.time
+                const urlDeCompra = entradasPorSitio?.[isFreeTour ? 'Free Tour' : (target.placeNames[0] ?? '')]?.[0]?.url ?? buildActivitySearchUrl(`${target.name} ${route.destination}`)
+                return (
+                  <button
+                    type="button"
+                    disabled={!ready || planPending}
+                    data-guardar-reserva={comprando ? 'comprar' : 'guardar'}
+                    onClick={() => {
+                      if (comprando) {
+                        openTicketShop(urlDeCompra)
+                        setCompraAbierta(true)
+                      } else save()
+                    }}
+                    className="mt-7 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40"
+                  >
+                    {comprando ? `Abrir la compra · ${validTime ? hora : 'elige la hora'}` : validTime ? `Guardar · ${hora}` : 'Guardar'}
+                  </button>
+                )
+              })()}
+              {igual?.modo === 'comprar' && compraAbierta && (
+                <p className="mt-2 text-center text-[12.5px] leading-snug text-text/60">Cuando tengas tu entrada, guárdala aquí.</p>
+              )}
 
 
               {target.existing && (

@@ -600,6 +600,9 @@ try {
   /* sin almacenamiento: no hay nada que borrar */
 }
 
+/** (Tanda 10N) Quien quiera enterarse de que ha llegado un viaje (`hydrateTrip`): la propuesta de quien solo recomienda lo usa para ajustarse a la ruta nueva del administrador. */
+export const alHidratarViaje: { fn: (() => void) | null } = { fn: null }
+
 export const useRouteStore = create<RouteStoreState>((set, get) => ({
   screen: 'destination',
   destination: null,
@@ -1097,7 +1100,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       }
     }),
 
-  hydrateTrip: (payload) =>
+  hydrateTrip: (payload) => {
     set({
       screen: 'route',
       // Abrir otro viaje corta un rehacer a medias.
@@ -1123,7 +1126,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       wishlist: payload.wishlist,
       mode: payload.uiState.mode,
       activeDayId: payload.uiState.activeDayId,
-    }),
+    })
+    // (Tanda 10N) Ha llegado un viaje: la propuesta de quien solo recomienda se ajusta a la ruta nueva del administrador.
+    alHidratarViaje.fn?.()
+  },
 
   setRouteDateRange: (dateRange) =>
     set((state) => {

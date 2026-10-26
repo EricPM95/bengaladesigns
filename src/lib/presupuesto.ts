@@ -6,6 +6,7 @@ import { precioDeAlojamiento } from './tuAlojamiento'
 import { convertir, leerImporte, precioGuardado, sumar, type Cambio, type Importe } from './dinero'
 import { buildDestinationSegments } from './destinationSegments'
 import { countryDisplayName } from './readiness'
+import { vistaDeGasto, type GastoCompartido, type VistaDeGasto } from './gastosCompartidos'
 
 /**
  * El presupuesto del viaje (Tanda 6z2): UN solo cálculo, puro, con lo que el viajero ha puesto con su precio. Nunca un número inventado: lo que no tiene precio no sale (no es un gasto de 0)
@@ -33,7 +34,12 @@ export interface LineaPresupuesto {
   /** Pasado a la moneda del viajero con el cambio del día; null si no hay cambio de esa moneda. */
   enMonedaViajero: Importe | null
   abrir: AbrirLinea
+  /** Solo en los Extras de un viaje compartido (Tanda 10N, apartado 9): de quién es el gasto y cómo se ve (del grupo, pendiente, «solo para ti» o rechazado). Solo suma al total lo del grupo. */
+  compartido?: { gastoId: string | null; vista: VistaDeGasto; autorId: string | null; pagadoPor: string[] }
 }
+
+/** ¿Esta línea suma al total? Todo suma, salvo lo que en un viaje compartido es solo de una persona (los [Para mí], los pendientes y los rechazados): eso no cuenta para el grupo. */
+export const lineaCuenta = (linea: Pick<LineaPresupuesto, 'compartido'>): boolean => !linea.compartido || linea.compartido.vista === 'grupo'
 
 export type BloqueId = 'transporte' | 'ruta' | 'util' | 'extras'
 
@@ -67,6 +73,8 @@ export interface EntradaPresupuesto {
   cambio: Cambio | null
   /** Lo de pago (los billetes de llegada y vuelta) solo cuenta con la versión de pago. */
   pago: boolean
+  /** Viaje compartido (Tanda 10N, apartado 9): los Extras salen de los gastos compartidos que veo (no de la ruta). `extrasDeLaRutaMios`: los de la ruta (anteriores a compartir) son del administrador: «solo para ti». */
+  compartido?: { gastos: GastoCompartido[]; extrasDeLaRutaMios: boolean }
 }
 
 const TITULOS: Record<BloqueId, string> = { transporte: 'Transporte y alojamiento', ruta: 'Ruta', util: 'Útil para el viaje', extras: 'Extras' }
@@ -111,7 +119,13 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
     ...Object.entries(entrada.esimPrecios).map(([pais, precio]) => linea(`esim-${pais}`, `eSIM de ${countryDisplayName(pais)}`, leerImporte(precio), { tipo: 'esim', pais })),
   ])
 
-  const extras = sinNulos((route.gastosExtras ?? []).map((extra) => linea(`extra-${extra.id}`, extra.nombre, leerImporte(extra.precio), { tipo: 'extra', id: extra.id })))
+  const deLaRuta = sinNulos((route.gastosExtras ?? []).map((extra) => linea(`extra-${extra.id}`, extra.nombre, leerImporte(extra.precio), { tipo: 'extra', id: extra.id })))
+  const extras: LineaPresupuesto[] = entrada.compartido
+    ? [
+        ...(entrada.compartido.extrasDeLaRutaMios ? deLaRuta.map((l): LineaPresupuesto => ({ ...l, compartido: { gastoId: null, vista: 'mio', autorId: null, pagadoPor: [] } })) : []),
+        ...entrada.compartido.gastos.map((g): LineaPresupuesto => ({ id: `gasto-${g.id}`, nombre: g.nombre, precio: g.precio, enMonedaViajero: convertir(g.precio, moneda, cambio), abrir: { tipo: 'extra', id: g.id }, compartido: { gastoId: g.id, vista: vistaDeGasto(g), autorId: g.autorId, pagadoPor: g.pagadoPor } })),
+      ]
+    : deLaRuta
 
   const bloques: BloquePresupuesto[] = (
     [
@@ -122,9 +136,9 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
     ] as { id: BloqueId; lineas: LineaPresupuesto[] }[]
   )
     .filter((bloque) => bloque.lineas.length > 0)
-    .map((bloque) => ({ ...bloque, titulo: TITULOS[bloque.id], suma: sumar(bloque.lineas.flatMap((l) => (l.enMonedaViajero ? [l.enMonedaViajero] : [])), moneda) }))
+    .map((bloque) => ({ ...bloque, titulo: TITULOS[bloque.id], suma: sumar(bloque.lineas.flatMap((l) => (lineaCuenta(l) && l.enMonedaViajero ? [l.enMonedaViajero] : [])), moneda) }))
 
-  const todas = bloques.flatMap((bloque) => bloque.lineas)
+  const todas = bloques.flatMap((bloque) => bloque.lineas).filter(lineaCuenta)
   return {
     moneda,
     bloques,

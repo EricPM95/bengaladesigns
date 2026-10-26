@@ -30,7 +30,13 @@ export interface VistaDeInvitacion {
   fin?: string | null
   /** (0026) La invitación va con un pase: entrar no cuesta nada. */
   con_pase?: boolean
+  /** (0036, Tanda 10N) Quien la abre ya está en ese viaje (o lo administra): no se le enseña «Eric te invita…», va directo al viaje `trip_id`. */
+  ya_dentro?: boolean
+  trip_id?: string | null
 }
+
+/** Cuántas personas pueden entrar con el código de un viaje SIN Pase Dúo o Grupo (Tanda 10N: «Invita hasta 10 personas con este código.»). */
+export const PLAZAS_SIN_PASE = 10
 
 const CLAVE_PENDIENTE = 'trazo:invitacion'
 const CLAVE_ACEPTADA = 'trazo:invitacion:aceptada'
@@ -87,6 +93,7 @@ export function guardarInvitacionPendiente(codigo: string): void {
   } catch {
     /* sin almacenamiento: tendrá que escribir el código a mano */
   }
+  avisarCambioDeInvitacion()
 }
 export function invitacionPendiente(): string | null {
   try {
@@ -101,6 +108,17 @@ export function olvidarInvitacionPendiente(): void {
     window.localStorage.removeItem(CLAVE_ACEPTADA)
   } catch {
     /* nada que quitar */
+  }
+  avisarCambioDeInvitacion()
+}
+
+/** (10N §5) Quien pinta «Crear viaje» se entera de que una invitación entra o sale de marcha. */
+export const EVENTO_INVITACION = 'trazo:invitacion'
+function avisarCambioDeInvitacion(): void {
+  try {
+    window.dispatchEvent(new Event(EVENTO_INVITACION))
+  } catch {
+    /* sin ventana (pruebas): nadie escucha */
   }
 }
 
@@ -117,6 +135,31 @@ export async function crearInvitacion(tripId: string, opciones: { passId?: strin
   if (error || !data) return { invitacion: null, error: mensajeDe(error, 'No se ha podido crear la invitación. Inténtalo de nuevo.') }
   const d = data as { id: string; codigo: string; trip_id: string; pass_id: string | null; usos_max: number }
   return { invitacion: { id: d.id, codigo: d.codigo, tripId: d.trip_id, passId: d.pass_id, usosMax: d.usos_max }, error: null }
+}
+
+/** Pura: ¿esta invitación sirve todavía para dar su código otra vez? (ni anulada ni gastada, y del mismo pase si lo hay). */
+export function invitacionReutilizable(i: Pick<Invitacion, 'anulada' | 'usosMax' | 'usosUsados' | 'passId'>, passId: string | null): boolean {
+  return !i.anulada && i.usosUsados < i.usosMax && (i.passId ?? null) === (passId ?? null)
+}
+
+const enCurso = new Map<string, Promise<{ invitacion: Pick<Invitacion, 'id' | 'codigo' | 'tripId' | 'passId' | 'usosMax'> | null; error: string | null }>>()
+
+/**
+ * (Tanda 10N §4) EL MISMO CÓDIGO PARA EL MISMO VIAJE: reutiliza la invitación vigente del viaje y solo crea otra si la de antes se gastó o se anuló. Los códigos ya creados siguen valiendo.
+ * Dos aperturas casi a la vez comparten la misma petición (así no salen dos códigos).
+ */
+export function invitacionDelViaje(tripId: string, opciones: { passId?: string | null; usos?: number } = {}) {
+  const clave = `${tripId}:${opciones.passId ?? ''}`
+  const previa = enCurso.get(clave)
+  if (previa) return previa
+  const peticion = (async () => {
+    const existentes = await listarInvitaciones(tripId)
+    const buena = existentes.find((i) => invitacionReutilizable(i, opciones.passId ?? null))
+    if (buena) return { invitacion: { id: buena.id, codigo: buena.codigo, tripId: buena.tripId, passId: buena.passId, usosMax: buena.usosMax }, error: null }
+    return crearInvitacion(tripId, opciones)
+  })().finally(() => enCurso.delete(clave))
+  enCurso.set(clave, peticion)
+  return peticion
 }
 
 export async function anularInvitacion(id: string): Promise<string | null> {
@@ -161,7 +204,70 @@ export async function canjearInvitacion(codigo: string): Promise<{ tripId: strin
   if (error || !data) return { tripId: null, yaEstaba: false, error: mensajeDe(error, 'No se ha podido entrar en el viaje. Inténtalo de nuevo.') }
   const d = data as { trip_id: string; ya_estaba: boolean }
   olvidarInvitacionPendiente()
+  recordarCanjeada(codigo)
+  pedirAbrirViaje(d.trip_id)
   return { tripId: d.trip_id, yaEstaba: d.ya_estaba, error: null }
+}
+
+/* ------------------------------------------------------------------ */
+/* Abrir un enlace de invitación sin pasar por «Crear viaje» (10N §5)  */
+/* ------------------------------------------------------------------ */
+
+const CLAVE_CANJEADAS = 'trazo:invitaciones:canjeadas'
+const CLAVE_ABRIR_VIAJE = 'trazo:abrir-viaje'
+
+/** Los códigos que esta persona ya ha canjeado en este móvil: volver a abrir uno de ellos va directo al viaje, sin la pantalla de la invitación. */
+export function codigosCanjeados(): string[] {
+  try {
+    const v = JSON.parse(window.localStorage.getItem(CLAVE_CANJEADAS) ?? '[]') as unknown
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
+export function recordarCanjeada(codigo: string): void {
+  try {
+    const todos = new Set(codigosCanjeados())
+    todos.add(normalizarCodigo(codigo))
+    window.localStorage.setItem(CLAVE_CANJEADAS, JSON.stringify([...todos].slice(-30)))
+  } catch {
+    /* sin almacenamiento: se preguntará al servidor */
+  }
+}
+export const yaCanjeada = (codigo: string): boolean => codigosCanjeados().includes(normalizarCodigo(codigo))
+
+/** El viaje al que ir directo en cuanto se carguen los viajes (al unirse, o al volver a abrir un enlace del que ya se es parte). Se lee una sola vez. */
+export function pedirAbrirViaje(tripId: string | null | undefined): void {
+  if (!tripId) return
+  try {
+    window.sessionStorage.setItem(CLAVE_ABRIR_VIAJE, tripId)
+  } catch {
+    /* sin almacenamiento: se abre el viaje de siempre */
+  }
+  avisarCambioDeInvitacion()
+}
+export function viajeAAbrir(): string | null {
+  try {
+    return window.sessionStorage.getItem(CLAVE_ABRIR_VIAJE)
+  } catch {
+    return null
+  }
+}
+export function olvidarViajeAAbrir(): void {
+  try {
+    window.sessionStorage.removeItem(CLAVE_ABRIR_VIAJE)
+  } catch {
+    /* nada que quitar */
+  }
+  avisarCambioDeInvitacion()
+}
+
+/**
+ * ¿Hay una invitación en marcha? (enlace abierto sin aceptar, o aceptada y a punto de entrar en el viaje). Mientras sea así, «Crear viaje» (la pantalla de origen y destino) NO se pinta:
+ * ni al abrir el enlace, antes de «Eric te invita…», ni al tocar [Unirme], antes de entrar en el viaje.
+ */
+export function invitacionEnMarcha(busqueda: string = typeof window !== 'undefined' ? window.location.search : ''): boolean {
+  return invitacionPendiente() !== null || viajeAAbrir() !== null || codigoDeLaDireccion(busqueda) !== null
 }
 
 /* ------------------------------------------------------------------ */

@@ -7,6 +7,8 @@ import { getTodayTripContext, getTodayTripStatus } from '../../lib/todayMode'
 import { todayIso } from '../../lib/dateRange'
 import { demoActivo } from '../../lib/logros'
 import { dondeAbrir } from '../../lib/dondeAbrir'
+import { olvidarViajeAAbrir, viajeAAbrir } from '../../lib/invitaciones'
+import { esEcoRemoto } from '../../lib/viajeEnDirecto'
 
 const SAVE_DEBOUNCE_MS = 1500
 
@@ -40,6 +42,8 @@ async function attemptSave(travelerId: string) {
   if (demoActivo()) return
   const payload = buildTripPayload()
   if (!payload) return
+  // (Tanda 10N §10) Lo que acaba de llegar en directo de otra persona del viaje no se vuelve a guardar como si fuera nuestro.
+  if (esEcoRemoto(payload.route)) return
   useSyncStore.getState().setStatus('saving')
   try {
     const tripId = useSyncStore.getState().activeTripId
@@ -110,6 +114,11 @@ export function TripSync() {
         if (cancelled) return
         useSyncStore.getState().setSavedTrips(trips)
 
+        // (Tanda 10N §5) Quien acaba de unirse a un viaje, o vuelve a abrir un enlace del que ya es parte, va DIRECTO a ese viaje.
+        const pedido = viajeAAbrir()
+        const delEnlace = pedido ? (trips.find((trip) => trip.id === pedido && !trip.generationState) ?? null) : null
+        if (pedido) olvidarViajeAAbrir()
+
         // Si mientras cargaba ya se puso en marcha otro flujo (p. ej. un enlace de viaje
         // compartido, ver decodeTripFromUrl en App.tsx), no lo pisamos con lo guardado.
         if (useRouteStore.getState().screen === 'destination') {
@@ -125,7 +134,12 @@ export function TripSync() {
           const resumable = donde.tipo === 'reanudar' ? donde.viaje : null
           const todayTrip = donde.tipo === 'hoy' ? donde.viaje : null
 
-          if (resumable && resumable.generationState) {
+          if (delEnlace) {
+            useSyncStore.getState().setActiveTripId(delEnlace.id)
+            hydrateTrip(delEnlace)
+            useRouteStore.getState().setMode('route')
+            useRouteStore.getState().setActiveDayId(null)
+          } else if (resumable && resumable.generationState) {
             // Generación a medias — retomarla en vez de abrir la ruta directamente (que aún no
             // existe completa). PreparandoViajeContainer (App.tsx) consume pendingResume y continúa
             // exactamente donde se dejó, sin repetir llamadas ya hechas.
@@ -154,6 +168,7 @@ export function TripSync() {
         useSyncStore.getState().setStatus('idle')
       } catch (err) {
         if (cancelled) return
+        olvidarViajeAAbrir()
         useSyncStore.getState().setError(err instanceof Error ? err.message : 'No se pudo conectar con el guardado en la nube.')
         // La carga inicial falló, pero seguimos permitiendo guardar en memoria hacia adelante —
         // reintentos posteriores (reconexión) pueden aún recuperar el guardado en la nube.

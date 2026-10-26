@@ -1,3 +1,4 @@
+import { InterruptorElegir } from '../../ui/Elegir'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -456,24 +457,17 @@ export function AddStopScreen({
         {/* Panel inferior */}
         <div className="flex-1 overflow-y-auto bg-bg-card">
           <div className="mx-auto w-full max-w-lg px-4 pb-6 pt-2">
-            <div className="mb-3 flex gap-1 rounded-xl bg-bg-hover p-1">
-              {(
-                [
-                  { id: 'nearby', label: 'Cerca de ti' },
-                  { id: 'recommended', label: 'Recomendados' },
-                ] as const
-              ).map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setBottomTab(item.id)}
-                  className={`flex-1 rounded-lg py-1.5 text-caption font-semibold transition-colors ${
-                    bottomTab === item.id ? 'bg-bg-card text-accent shadow-sm' : 'text-text-soft hover:text-text'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
+            {/* (Tanda 10N §11) El estilo de elegir una cosa u otra de toda la app. */}
+            <div className="mb-3">
+              <InterruptorElegir
+                valor={bottomTab}
+                compacto
+                onCambio={(id) => setBottomTab(id as 'nearby' | 'recommended')}
+                opciones={[
+                  { id: 'nearby', texto: 'Cerca de ti' },
+                  { id: 'recommended', texto: 'Recomendados' },
+                ]}
+              />
             </div>
 
             {bottomTab === 'recommended' && (

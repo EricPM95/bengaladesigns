@@ -1,0 +1,119 @@
+import { useState, type ReactNode, type CSSProperties } from 'react'
+import { formatoImporte } from '../../../lib/dinero'
+import { textoDeQuienPago } from '../../../lib/gastosCompartidos'
+import type { BloquePresupuesto, LineaPresupuesto } from '../../../lib/presupuesto'
+import type { GastosDelViaje } from '../../../hooks/useGastosDelViaje'
+import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
+import { useRouteStore } from '../../../store/useRouteStore'
+import { Icono } from '../../ui/Icono'
+import { HojaAnadirGasto, InicialDePersona } from './HojaAnadirGasto'
+
+const AZUL_EXTRAS = { fondo: 'oklch(0.55 0.1 220 / .14)', tinta: 'oklch(0.45 0.1 220)' }
+const MONO = "'Geist Mono',monospace"
+
+/**
+ * LOS «EXTRAS» DE UN VIAJE COMPARTIDO (Tanda 10N, apartado 9; `Piezas/Presupuesto Compartido` 01, 02, 09 y 10). Cada gasto con su cartera en nuestro azul de Extras y, debajo, quién lo pagó:
+ *   · del grupo: «Pagó Eric · Para todos» (con la inicial de quien pagó);
+ *   · el mío esperando respuesta: en amarillo, con «Pendiente de Eric»;
+ *   · solo mío: el ojo tachado y «Solo para ti» (no suma al grupo);
+ *   · el que me han rechazado: «Eric prefirió no sumarlo · ahora solo para ti».
+ * El que acaban de aceptar se marca en verde un momento. Debajo, [+ Añadir gasto].
+ */
+export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: ReactNode; bloque: BloquePresupuesto | null; gv: GastosDelViaje; moneda: string }) {
+  const resaltado = useGastosCompartidos((s) => s.resaltado)
+  const quitar = useGastosCompartidos((s) => s.quitar)
+  const removeGastoExtra = useRouteStore((s) => s.removeGastoExtra)
+  const [hoja, setHoja] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const lineas = bloque?.lineas ?? []
+  const admin = gv.nombreAdmin || 'el administrador'
+
+  const puedeQuitar = (l: LineaPresupuesto) => {
+    const c = l.compartido
+    if (!c) return false
+    if (c.gastoId === null) return !gv.esInvitado // un extra anterior a compartir: del administrador
+    return c.autorId === gv.yoId || (c.vista === 'grupo' && gv.puedeDecidir)
+  }
+  const quitarLinea = async (l: LineaPresupuesto) => {
+    const c = l.compartido
+    if (!c) return
+    setError(null)
+    if (c.gastoId === null) {
+      removeGastoExtra(l.id.replace(/^extra-/, ''))
+      return
+    }
+    const fallo = await quitar(c.gastoId)
+    if (fallo) setError(fallo)
+  }
+
+  return (
+    <div className="flex flex-none flex-col gap-2.5 rounded-[22px] bg-[#FFFDF8] p-3.5" style={{ border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35)' }} data-blk="extras" data-extras-compartidos>
+      {cabecera}
+      {lineas.map((l) => (
+        <FilaDeGasto key={l.id} linea={l} gv={gv} moneda={moneda} admin={admin} verde={resaltado !== null && l.compartido?.gastoId === resaltado} onQuitar={puedeQuitar(l) ? () => void quitarLinea(l) : undefined} />
+      ))}
+      {error && (
+        <p role="alert" className="text-[12.5px] text-accent-red">
+          {error}
+        </p>
+      )}
+      <button type="button" onClick={() => setHoja(true)} data-anadir-gasto className="flex h-12 w-full items-center justify-center gap-2 rounded-[14px] text-[14px] font-semibold" style={{ border: '1.5px dashed rgba(181,138,46,.55)', color: '#8A6420', background: 'transparent' }}>
+        <Icono nombre="anadir" size={16} />
+        Añadir gasto
+      </button>
+      {hoja && <HojaAnadirGasto gv={gv} moneda={moneda} onClose={() => setHoja(false)} />}
+    </div>
+  )
+}
+
+function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar }: { linea: LineaPresupuesto; gv: GastosDelViaje; moneda: string; admin: string; verde: boolean; onQuitar?: () => void }) {
+  const vista = linea.compartido?.vista ?? 'grupo'
+  const cuenta = vista === 'grupo'
+  const quienes = (linea.compartido?.pagadoPor ?? []).map((id) => ({ id, persona: gv.personas.find((p) => p.id === id) }))
+  const nombres = quienes.map((q) => gv.nombreDe(q.id))
+  const primera = quienes[0]?.persona
+  const fila: CSSProperties =
+    vista === 'pendiente'
+      ? { background: '#FFF6DC', border: '1.5px dashed rgba(201,154,68,.7)' }
+      : verde
+        ? { background: 'oklch(0.96 0.035 150)', border: '1.5px solid oklch(0.72 0.1 150)', transition: 'background .4s,border-color .4s' }
+        : { background: '#F8F3EA', border: '1.5px solid transparent' }
+  const icono = vista === 'pendiente' ? 'reloj' : cuenta ? 'presupuesto' : 'ojoCerrado'
+  return (
+    <div className="flex min-h-[52px] items-center gap-2.5 rounded-[14px] py-1.5 pl-1.5 pr-1" style={fila} data-gasto-vista={vista} data-gasto-fila={linea.nombre}>
+      <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px]" style={{ background: vista === 'pendiente' ? '#F3D59A' : cuenta ? AZUL_EXTRAS.fondo : '#EDE4D3', color: vista === 'pendiente' ? '#8A6420' : cuenta ? AZUL_EXTRAS.tinta : 'rgba(28,34,48,.5)' }}>
+        <Icono nombre={icono} size={15} />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+        <span className="truncate text-[13.5px] font-medium leading-[1.2]">{linea.nombre}</span>
+        {vista === 'pendiente' ? (
+          <span data-pendiente className="inline-flex w-fit items-center rounded-full bg-[#F3D59A] px-2 py-[1px] text-[11px] font-semibold text-[#6F4E37]">
+            Pendiente de {admin}
+          </span>
+        ) : vista === 'grupo' ? (
+          <span className="flex items-center gap-1.5 text-[11px] text-text/55">
+            {primera && <InicialDePersona nombre={nombres[0] ?? ''} esAdmin={primera.esAdmin} tam={14} />}
+            {textoDeQuienPago(nombres) || 'Del grupo'} · Para todos
+          </span>
+        ) : (
+          <span className="text-[11px] text-text/55">{vista === 'rechazado' ? `${admin} prefirió no sumarlo · ahora solo para ti` : 'Solo para ti'}</span>
+        )}
+      </span>
+      <span className="flex flex-none flex-col items-end gap-px" style={{ opacity: cuenta ? 1 : 0.5 }}>
+        <span style={{ font: `600 13px ${MONO}` }}>{formatoImporte(linea.precio)}</span>
+        {linea.precio.currency !== moneda && (
+          <span className="text-text/55" style={{ font: `500 11px ${MONO}` }}>
+            {linea.enMonedaViajero ? `≈ ${formatoImporte(linea.enMonedaViajero)}` : `Sin cambio para ${linea.precio.currency}`}
+          </span>
+        )}
+      </span>
+      {onQuitar ? (
+        <button type="button" aria-label={`Quitar ${linea.nombre}`} onClick={onQuitar} className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-text/45 hover:bg-[#EDE4D3]">
+          <Icono nombre="cerrar" size={13} />
+        </button>
+      ) : (
+        <span className="w-2 flex-none" />
+      )}
+    </div>
+  )
+}

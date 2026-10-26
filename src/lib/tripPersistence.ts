@@ -8,6 +8,7 @@ import type { GenerationResumeState } from './routeGenerationOrchestrator'
 import { supabase } from './supabaseClient'
 import { CENTRAL_MONTH } from './season'
 import { cuentasActivas } from './cuentas'
+import { useViajeCompartido } from '../store/useViajeCompartido'
 
 /**
  * Viajes guardados antes de pedir el mes (Estaciones, Parte 1): solo traen temporada. Se les asigna
@@ -138,20 +139,51 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
   if (error) throw error
   const data = (filas ?? []) as unknown as { id: string; traveler_id?: string; guardado_en?: string | null; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }[]
 
-  return (data ?? []).map((row) => {
-    const generationState = row.generation_state as GenerationResumeState | null
-    return {
-      id: row.id as string,
-      route: withCurrentFreeTourName(withTripMonth(row.route as Route)),
-      bookings: withCurrentFreeTourName(row.bookings as TripBookings),
-      wishlist: (row.wishlist ?? []) as WishlistItem[],
-      uiState: row.ui_state as TripUiState,
-      generationState: generationState && generationState.phase !== 'done' ? generationState : null,
-      ...(conInvitados && row.traveler_id && row.traveler_id !== travelerId ? { esInvitado: true } : {}),
-      ...(conInvitados && row.guardado_en ? { guardadoEn: row.guardado_en } : {}),
-    }
-  })
+  // (Tanda 10N §10) Lo que se cargó es la «línea base»: un viaje igual en la nube no es un cambio de otra persona.
+  for (const row of data) rutaVista.set(row.id, canonico(row.route))
+  return (data ?? []).map((row) => filaAViaje(row, travelerId, conInvitados))
 }
+
+type FilaDeViaje = { id: string; traveler_id?: string; guardado_en?: string | null; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }
+
+function filaAViaje(row: FilaDeViaje, travelerId: string, conInvitados: boolean): SavedTrip {
+  const generationState = row.generation_state as GenerationResumeState | null
+  return {
+    id: row.id as string,
+    route: withCurrentFreeTourName(withTripMonth(row.route as Route)),
+    bookings: withCurrentFreeTourName(row.bookings as TripBookings),
+    wishlist: (row.wishlist ?? []) as WishlistItem[],
+    uiState: row.ui_state as TripUiState,
+    generationState: generationState && generationState.phase !== 'done' ? generationState : null,
+    ...(conInvitados && row.traveler_id && row.traveler_id !== travelerId ? { esInvitado: true } : {}),
+    ...(conInvitados && row.guardado_en ? { guardadoEn: row.guardado_en } : {}),
+  }
+}
+
+/**
+ * (Tanda 10N §10) UN viaje, tal como está ahora en la nube: lo que llega en directo cuando otra persona del viaje lo cambia. `null` si ya no se puede ver (te han quitado, o se borró);
+ * `undefined` si no se pudo preguntar (sin conexión: se sigue con lo que hay).
+ */
+export async function loadOneTrip(travelerId: string, tripId: string): Promise<{ viaje: SavedTrip; canonica: string } | null | undefined> {
+  if (!supabase) return undefined
+  const { data, error } = await supabase.from('trips').select('id, traveler_id, guardado_en, route, bookings, wishlist, ui_state, generation_state').eq('id', tripId).maybeSingle()
+  if (error) return undefined
+  if (!data) return null
+  const fila = data as unknown as FilaDeViaje
+  return { viaje: filaAViaje(fila, travelerId, cuentasActivas()), canonica: canonico(fila.route) }
+}
+
+/** El mismo texto para la misma ruta aunque las claves vengan en otro orden (la base de datos las reordena): así se reconoce el eco del propio guardado. */
+export function canonico(valor: unknown): string {
+  const ordenar = (v: unknown): unknown => (Array.isArray(v) ? v.map(ordenar) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v as object).sort().map((k) => [k, ordenar((v as Record<string, unknown>)[k])])) : v)
+  return JSON.stringify(ordenar(valor))
+}
+
+/** El `route` que esta pestaña guardó la última vez, tal cual (para no tratar como «cambio de otra persona» el eco de nuestro propio guardado). */
+const ultimoGuardado = new Map<string, string>()
+/** La ruta de la nube (en forma canónica) que esta pestaña cargó o puso por última vez, por viaje. */
+export const rutaVista = new Map<string, string>()
+export const rutaGuardadaAqui = (tripId: string): string | undefined => ultimoGuardado.get(tripId)
 
 /**
  * Guarda un viaje — `tripId` null significa que todavía no existe como fila (primer guardado de un
@@ -173,6 +205,13 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
 
   if (tripId) {
     if (cuentasActivas()) {
+      ultimoGuardado.set(tripId, canonico(payload.route))
+      // (Tanda 10N §4a) Quien tiene «Puede editar» guarda la ruta y la lista de deseos (NO el vuelo, el alojamiento ni las fechas, que son del administrador).
+      if (permisoDeEsteViaje() === 'editar') {
+        const { error } = await supabase.from('trips').update({ route: payload.route, wishlist: payload.wishlist, updated_at: row.updated_at }).eq('id', tripId).select('id')
+        if (error) throw error
+        return tripId
+      }
       // Solo el administrador cambia el viaje: si es de otra persona (esta está invitada), la base de datos no toca nada y aquí tampoco se avisa de un fallo.
       const { error } = await supabase.from('trips').update(row).eq('id', tripId).eq('traveler_id', travelerId).select('id')
       if (error) throw error
@@ -235,4 +274,10 @@ export async function deleteTrip(tripId: string): Promise<void> {
   if (!supabase) return
   const { error } = await supabase.from('trips').delete().eq('id', tripId)
   if (error) throw error
+}
+
+/** Mi permiso en el viaje abierto (lo dice `gente_del_viaje`): solo `editar` cambia lo que se guarda. Sin lista de gente cargada, nada especial. */
+function permisoDeEsteViaje(): 'editar' | null {
+  const yo = useViajeCompartido.getState().gente.find((p) => p.esYo)
+  return yo?.permiso === 'editar' ? 'editar' : null
 }

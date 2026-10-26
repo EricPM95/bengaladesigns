@@ -82,7 +82,7 @@ import { StopConnector } from './StopConnector'
 import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { CambioParada } from '../../propuesta/CambioParada'
-import { useParejasDeLaPropuesta } from '../../../hooks/useParejasDeLaPropuesta'
+import { useParejasDeLaPropuesta, useMarcasDePropuesta } from '../../../hooks/useParejasDeLaPropuesta'
 import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
@@ -296,6 +296,7 @@ export function DayDetailPanel({
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
   // Modo recomendación (cuentas parte 3): las paradas cambiadas por otra se pintan como una pareja.
   const parejasDePropuesta = useParejasDeLaPropuesta(day.id)
+  const marcasDePropuesta = useMarcasDePropuesta(day.id)
   const focusStopId = useAddFlowStore((state) => state.focusStopId)
   const setFocusStopId = useAddFlowStore((state) => state.setFocusStopId)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -1130,7 +1131,7 @@ export function DayDetailPanel({
         // el trayecto. Un paseo quitado no deja ni rastro. (Fuera de la tarjeta: el asa, centrada en ella.)
         gap={walkDismissed || omitGap ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
       >
-        <div data-stop-id={realStop?.id ?? stop.id}>
+        <div data-stop-id={realStop?.id ?? stop.id} data-propuesta={realStop ? marcasDePropuesta.get(realStop.id) : undefined}>
           {realStop?.isZoneWalk ? (
             walkDismissed ? null : (
               <ZoneWalkCard stop={stop} startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)} onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))} />

@@ -23,7 +23,7 @@ const debe = (cond, regla, texto) => {
 }
 
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_6z3_hoy_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
-const { createElement, renderToStaticMarkup, BottomBar, PESTANAS, Header, HoyView, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, subtituloDelViaje } = M
+const { createElement, renderToStaticMarkup, BottomBar, PESTANAS, Header, HoyView, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, subtituloDelViaje, MapDestinationHeader, filasDeHoy } = M
 const D = findPipelineV2Data('Roma')
 await fetchArrivalInfo('Roma')
 await fetchDestinationExcursions('Roma')
@@ -91,8 +91,15 @@ for (const fechas of [true, false]) {
       debe(botones === esperadas.length, '1 barra', `${nombre}: la barra tiene ${botones} botones y debería tener ${esperadas.length}`)
       // La cabecera
       const cabecera = aTexto(pinta(Header, { onTips() {}, onOpenDates() {} }, route, { version, hoy }))
-      debe(cabecera.includes('Roma'), '3 cabecera', `${nombre}: la cabecera no dice el destino`)
-      debe(fechas ? /13|10 – 12 mar|10/.test(cabecera) && /2 personas/.test(cabecera) : /octubre · 2 personas/.test(cabecera), '3 cabecera', `${nombre}: la línea de debajo del destino no es la esperada (${plano(cabecera)})`)
+      // (Tanda 10N §2: la cabecera, la misma en todas las pestañas, lleva el logo de JUTRIP a la izquierda y la cartera, la campana y el perfil a la derecha; ya no dice el destino ni «fechas · personas».
+      //  El destino y la fecha salen en la tarjeta del mapa de RUTA (MapDestinationHeader): con fechas el rango, sin ellas «Añadir fechas».)
+      const cabHtml = pinta(Header, { onTips() {}, onOpenDates() {} }, route, { version, hoy })
+      debe(/data-cabecera-logo="1"/.test(cabHtml) && /aria-label="JUTRIP"/.test(cabHtml) && /<svg|<img/.test(cabHtml.slice(cabHtml.indexOf('data-cabecera-logo'), cabHtml.indexOf('data-cartera'))), '3 cabecera', `${nombre}: la cabecera no lleva el logo de JUTRIP`)
+      debe(/aria-label="Presupuesto"/.test(cabHtml) && /aria-label="Avisos/.test(cabHtml) && /aria-label="Perfil y mis viajes"/.test(cabHtml) && cabHtml.indexOf('data-cabecera-logo') < cabHtml.indexOf('aria-label="Presupuesto"') && cabHtml.indexOf('aria-label="Presupuesto"') < cabHtml.indexOf('aria-label="Avisos') && cabHtml.indexOf('aria-label="Avisos') < cabHtml.indexOf('aria-label="Perfil'), '3 cabecera', `${nombre}: la cabecera no lleva cartera, campana y perfil a la derecha del logo, en ese orden`)
+      debe(!cabecera.includes('Roma') && !/personas?\b/.test(cabecera), '3 cabecera', `${nombre}: la cabecera todavía dice el destino o las personas (${plano(cabecera)})`)
+      const tarjetaRuta = aTexto(pinta(MapDestinationHeader, { destination: route.destination, dateRange: route.answers.dateRange }, route, { version, hoy }))
+      debe(tarjetaRuta.includes('Roma'), '3 cabecera', `${nombre}: la tarjeta del mapa de RUTA no dice el destino`)
+      debe(fechas ? /1[0-2]/.test(tarjetaRuta) && /mar/i.test(tarjetaRuta) : /Añadir fechas/.test(tarjetaRuta), '3 cabecera', `${nombre}: la tarjeta de RUTA no dice las fechas (o «Añadir fechas» sin ellas) (${plano(tarjetaRuta)})`)
       if (fechas) debe(!DIA_N.test(cabecera), '3 «Día n» con fechas', `${nombre}: la cabecera dice «${cabecera.match(DIA_N)?.[0]}»`)
       // HOY
       for (const reservas of [[], [reserva]]) {
@@ -111,7 +118,9 @@ for (const fechas of [true, false]) {
         vistas.push({ detalle, texto, fechas, version, esperada })
         // (Tanda 6z6: la cuenta atrás, «Te falta por reservar», «Útil para el viaje» y el tiempo ya no están en HOY: están arriba de RESERVAS.)
         // (Tanda 10D: HOY antes del viaje es el del diseño, App · HOY 1a y 1b: la cuenta atrás grande, «Durante el viaje, Hoy te dará» con sus seis cuadros y, con fechas, sin [Ver mi primer día].)
-        const SEIS = ['Siguiente parada', 'Escuchar su historia', 'Tu día, paso a paso', 'Cerca de ti', 'Avisos del día', 'Fotos del viaje']
+        // (Tanda 10N §3: la tarjeta «Durante el viaje, Hoy te dará» pinta filasDeHoy(), la misma lista que el final de la película: sus títulos y líneas, no seis fijos.)
+        const SEIS = filasDeHoy().flatMap((f) => [f.titulo, f.linea])
+        debe(SEIS.length > 0 && filasDeHoy().length === 5, '2 momento', 'filasDeHoy() ya no devuelve las 5 tarjetas de HOY')
         if (esperada === 'before') debe(/Tu modo\s+Hoy\s+se activa el/.test(texto) && /Hoy te dará/.test(texto) && SEIS.every((t) => texto.includes(t)) && /\bd[ií]as?\b/.test(texto) && !/empieza en|Te falta por reservar|Útil para el viaje|El tiempo en/.test(texto), '2 momento', `${detalle}: «antes» no es «Tu modo Hoy se activa el…» con la cuenta atrás y los seis cuadros, o conserva lo que se fue a RESERVAS (${plano(texto).slice(0, 300)})`)
         if (esperada === 'before') debe(!/Pon tus fechas/.test(texto), '2 momento', `${detalle}: con fechas sale [Pon tus fechas]`)
         if (esperada === 'antes-sin-fechas') debe(/Tu modo\s+Hoy\s+se activa/.test(texto) && /el primer día de tu viaje/.test(texto) && /^Pon tus fechas$/m.test(texto) && SEIS.every((t) => texto.includes(t)) && !/Antes del viaje/.test(texto) && !/empieza en/.test(texto), '2 momento', `${detalle}: sin fechas no es «Tu modo Hoy se activa el primer día de tu viaje» con [Pon tus fechas] y los seis cuadros (${plano(texto).slice(0, 300)})`)

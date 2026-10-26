@@ -24,7 +24,7 @@ const { M, ponerVersion } = await prepararSSR('scripts/destino/_6z6a_entrada.tsx
 const {
   createElement, renderToStaticMarkup, BottomBar, PESTANAS, DayList, ReservasPanel, HoyView, PanelDePruebas, usePruebasUi, useRouteStore, modoVisible, diaDeHoy, diaQueSeAbreAlEntrar,
   esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba,
-  mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions,
+  mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, filasDeHoy,
 } = M
 const D = findPipelineV2Data('Roma')
 const infoLlegada = await fetchArrivalInfo('Roma')
@@ -283,7 +283,7 @@ for (const [clave, route] of Object.entries(rutas)) {
     const texto = aTexto(html)
     if (m.clave === 'antes') {
       // (Tanda 10D: HOY antes del viaje, como el diseño 1a: «Tu modo Hoy se activa el mié 10 mar», la cuenta atrás y los seis cuadros de «Hoy te dará».)
-      debe(/Tu modo\s+Hoy\s+se activa el/.test(texto) && /miércoles 10/.test(texto) && /Hoy te dará/.test(texto) && ['Siguiente parada', 'Escuchar su historia', 'Tu día, paso a paso', 'Cerca de ti', 'Avisos del día', 'Fotos del viaje'].every((t) => texto.includes(t)), '5 HOY', `${nombre}: no es «Tu modo Hoy se activa el mié 10 mar» con la cuenta atrás y sus seis cuadros (${plano(texto).slice(0, 300)})`)
+      debe(/Tu modo\s+Hoy\s+se activa el/.test(texto) && /miércoles 10/.test(texto) && /Hoy te dará/.test(texto) && filasDeHoy().length === 5 && filasDeHoy().every((f) => texto.includes(f.titulo) && texto.includes(f.linea)), '5 HOY', `${nombre}: no es «Tu modo Hoy se activa el mié 10 mar» con la cuenta atrás y las tarjetas de filasDeHoy() (Tanda 10N §3) (${plano(texto).slice(0, 300)})`)
       debe(!/Pon tus fechas/.test(texto), '5 HOY', `${nombre}: con fechas sale [Pon tus fechas]`)
     }
     if (m.clave === 'sin-fechas') debe(/Tu modo\s+Hoy\s+se activa/.test(texto) && /el primer día de tu viaje/.test(texto) && /^Pon tus fechas$/m.test(texto) && !/Ver mi primer día/.test(texto), '5 HOY', `${nombre}: no es «Tu modo Hoy se activa el primer día de tu viaje» con [Pon tus fechas] (${plano(texto).slice(0, 300)})`)

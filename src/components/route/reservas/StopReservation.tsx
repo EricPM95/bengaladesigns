@@ -14,6 +14,8 @@ import { openTicketShop } from './EntradaCard'
 import { LockIcon, ReservedDetails } from './ReservedMarks'
 import { useStopEntradas } from './useStopEntradas'
 import { FichaSinEntrada, FichaTuEntrada } from '../dayDetail/FichaPiezas'
+import { textoQuienVa } from '../../../lib/reservasGrupo'
+import { botonChampan } from '../../../lib/marcaBoton'
 
 /** La parada de la ruta con ese id (null si no está en ningún día). */
 function useRouteStop(stopId: string | null | undefined) {
@@ -46,6 +48,8 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
   const found = useRouteStop(stop.id)
   const data = useStopEntradas(stop)
   const [sheet, setSheet] = useState(false)
+  // Tanda 10N §8: la entrada del dueño vista por quien quiere ir con él: [Reservar la mía a la misma hora] (compra con su día y su hora) o [Ya la tengo].
+  const [igualModo, setIgualModo] = useState<'comprar' | 'tengo' | null>(null)
   // La hora recomendada (API de consulta, solo encendida): se pide el calendario de los días del viaje al abrir la pestaña (sin la caché: las plazas, al día). Con la entrada ya reservada, no sale.
   const [apertura] = useState(() => String(Date.now()))
   const fechasDelViaje = route && route.answers.dateRange ? route.days.map((day) => dateOfDay(route, day)).filter((iso): iso is string => Boolean(iso)) : []
@@ -55,9 +59,28 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
   const recomendada = recomendarHora(horasDelViaje, fechaDeLaParada, found?.stop.time ?? null, fechasDelViaje)
   if (sinEntrada) return <FichaSinEntrada bloque={sinEntrada} />
   if (!route || !data) return null
-  const { reservation } = data
+  const { reservation, delGrupo, cubiertaPorElDueno, compartido, nombreAdmin } = data
+  const delDueno = delGrupo ?? (cubiertaPorElDueno ? reservation : null)
   return (
     <div className="space-y-3">
+      {compartido && delDueno && (
+        <div className="rounded-[16px] bg-bg-hover px-3.5 py-3" data-quien-va>
+          <p className="text-[13.5px] font-medium leading-snug text-text">{textoQuienVa(nombreAdmin, route, delDueno)}</p>
+          {delGrupo && (
+            <>
+              <button type="button" data-reservar-la-mia onClick={() => setIgualModo('comprar')} className="mt-2.5 h-11 w-full whitespace-nowrap rounded-full text-small font-semibold active:scale-[.97]" style={botonChampan()}>
+                Reservar la mía a la misma hora
+              </button>
+              <p className="mt-2 text-center text-small text-text-soft">
+                ¿Ya la tienes?{' '}
+                <button type="button" data-ya-la-tengo onClick={() => setIgualModo('tengo')} className="font-semibold text-text underline underline-offset-2">
+                  Ya la tengo
+                </button>
+              </p>
+            </>
+          )}
+        </div>
+      )}
       {data.entradas.map((entrada) => (
         <div key={entrada.nombre} className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
           <div className="flex items-baseline justify-between gap-2.5">
@@ -94,13 +117,15 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
               <LockIcon className="h-3 w-3" />
               Fijada
             </span>
-            <button type="button" onClick={() => setSheet(true)} className="text-small font-semibold text-text underline underline-offset-2">
-              Cambiar
-            </button>
+            {!cubiertaPorElDueno && (
+              <button type="button" onClick={() => setSheet(true)} className="text-small font-semibold text-text underline underline-offset-2">
+                Cambiar
+              </button>
+            )}
           </div>
         </FichaTuEntrada>
       ) : (
-        data.inTrip && (
+        data.inTrip && !delGrupo && (
           <p className="text-center text-small text-text-soft">
             ¿Ya la tienes?{' '}
             <button type="button" onClick={() => setSheet(true)} className="font-semibold text-text underline underline-offset-2">
@@ -110,6 +135,7 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
         )
       )}
       {sheet && <AddReservationSheet route={route} target={data.target} onClose={() => setSheet(false)} />}
+      {igualModo && delGrupo && <AddReservationSheet route={route} target={{ ...data.target, igualQue: { reserva: delGrupo, quien: nombreAdmin, modo: igualModo } }} onClose={() => setIgualModo(null)} />}
     </div>
   )
 }

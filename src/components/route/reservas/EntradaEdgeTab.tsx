@@ -24,10 +24,24 @@ export function EntradaEdgeTab({ stop, onOpenEntradas, soloSiReservada = false }
   const [changing, setChanging] = useState(false)
   if (!data || !route) return null
   const reserved = data.reservation != null
+  // Tanda 10N §8: en un viaje de varias personas la etiqueta de la parada es corta, sin textos largos: «Reservada ✓» (verde) para quien está incluido y «Comprar entrada» (frambuesa) para quien no lo está pero el dueño ya tiene la suya. El detalle va en la ficha y en la campana.
+  const etiquetaCorta = data.compartido && (reserved || data.delGrupo != null)
   // (Tanda 11, punto 4: una parada que se ve por fuera no invita a reservar; solo se queda si el viajero ya tiene su entrada.)
   if (soloSiReservada && !reserved) return null
   return (
     <>
+      {etiquetaCorta ? (
+        <button
+          type="button"
+          data-etiqueta-entrada={reserved ? 'reservada' : 'comprar'}
+          onClick={reserved && !data.cubiertaPorElDueno ? () => setChanging(true) : onOpenEntradas}
+          aria-label={reserved ? 'Reservada ✓' : 'Comprar entrada'}
+          className="absolute bottom-2 right-[5px] z-20 flex h-[26px] items-center justify-center whitespace-nowrap rounded-full px-2.5 text-white shadow-sm"
+          style={{ background: reserved ? GREEN : FALTA, font: "600 10.5px 'Geist'" }}
+        >
+          {reserved ? 'Reservada ✓' : 'Comprar entrada'}
+        </button>
+      ) : (
       <button
         type="button"
         onClick={reserved ? () => setChanging(true) : onOpenEntradas}
@@ -44,6 +58,7 @@ export function EntradaEdgeTab({ stop, onOpenEntradas, soloSiReservada = false }
           <TicketIcon />
         )}
       </button>
+      )}
       {changing && <AddReservationSheet route={route} target={data.target} onClose={() => setChanging(false)} />}
     </>
   )

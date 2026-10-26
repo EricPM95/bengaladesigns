@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { MenuHoja, OpcionHoja } from '../../ui/MenuHoja'
 
 /** Las acciones de un día libre (decisión del usuario, 2026-09-28). */
 export interface FreeDayMenuActions {
@@ -16,70 +16,47 @@ interface DayMenuProps {
   /** "Eliminar día": en todos los días, también el de llegada y el de vuelta (PROMPT_UI, Parte 1). */
   onDelete: (() => void) | null
   freeDay?: FreeDayMenuActions
+  /** El nombre del día que se toca, arriba de la hoja («Jueves 26 · Roma antigua y Centro histórico»). */
+  titulo?: string
 }
-
-/** Menú oscuro del diseño "Trazo Itinerario". */
-const menuItemClass = 'flex h-[42px] w-full items-center gap-2.5 rounded-[10px] px-3 text-left text-[14px] font-medium text-[#F3EEE4] hover:bg-[#F3EEE4]/[.08] disabled:cursor-not-allowed disabled:opacity-40'
 
 /**
  * Menú "···" de CABECERA de un día completo (a diferencia de StopMenu.tsx, que es por parada): en un día libre, añadir lugares, cambiar el nombre y moverlo; y en todos, "Eliminar día".
+ * (Tanda 10N §6c: sale desde abajo, como hoja baja con el nombre del día arriba —`MenuHoja`—, no como cuadro flotante.)
  */
-export function DayMenu({ onDelete, freeDay, onRestoreDay, onBackToProposed }: DayMenuProps) {
-  const [open, setOpen] = useState(false)
-
-  const close = () => setOpen(false)
-  const item = (label: string, action: (() => void) | null | undefined, options: { danger?: boolean } = {}) =>
+export function DayMenu({ onDelete, freeDay, onRestoreDay, onBackToProposed, titulo = 'Este día' }: DayMenuProps) {
+  const item = (cerrar: () => void, label: string, action: (() => void) | null | undefined, options: { danger?: boolean } = {}) =>
     action === undefined ? null : (
-      <button
+      <OpcionHoja
         key={label}
-        type="button"
-        disabled={action === null}
+        peligro={options.danger}
+        deshabilitada={action === null}
         onClick={() => {
-          close()
+          cerrar()
           action?.()
         }}
-        className={menuItemClass}
       >
-        {options.danger ? <span className="text-[oklch(0.75_0.15_25)]">{label}</span> : label}
-      </button>
+        {label}
+      </OpcionHoja>
     )
 
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation()
-          setOpen((value) => !value)
-        }}
-        title="Más opciones del día"
-        aria-label="Más opciones del día"
-        className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-[14px] font-bold leading-none tracking-[1px] text-text/60 hover:bg-bg-hover"
-      >
-        ···
-      </button>
-
-      {open && (
+    <MenuHoja etiquetaBoton="Más opciones del día" etiqueta="Día" titulo={titulo} tam={38} datos="dia">
+      {(cerrar) => (
         <>
-          <div className="fixed inset-0 z-20" onClick={(event) => (event.stopPropagation(), close())} />
-          <div
-            onClick={(event) => event.stopPropagation()}
-            className="absolute right-0 top-[44px] z-30 flex min-w-[220px] flex-col rounded-2xl bg-[#1C2230] p-1.5 shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
-          >
-            {freeDay && (
-              <>
-                {item('Añadir lugares', freeDay.onAddPlaces)}
-                {item('Cambiar el nombre', freeDay.onRename)}
-                {item('Mover el día antes', freeDay.onMoveBefore)}
-                {item('Mover el día después', freeDay.onMoveAfter)}
-              </>
-            )}
-            {onBackToProposed && item('Volver al día propuesto', onBackToProposed)}
-            {onRestoreDay && item('Recuperar este día', onRestoreDay)}
-            {item('Eliminar día', onDelete, { danger: true })}
-          </div>
+          {freeDay && (
+            <>
+              {item(cerrar, 'Añadir lugares', freeDay.onAddPlaces)}
+              {item(cerrar, 'Cambiar el nombre', freeDay.onRename)}
+              {item(cerrar, 'Mover el día antes', freeDay.onMoveBefore)}
+              {item(cerrar, 'Mover el día después', freeDay.onMoveAfter)}
+            </>
+          )}
+          {onBackToProposed && item(cerrar, 'Volver al día propuesto', onBackToProposed)}
+          {onRestoreDay && item(cerrar, 'Recuperar este día', onRestoreDay)}
+          {item(cerrar, 'Eliminar día', onDelete, { danger: true })}
         </>
       )}
-    </div>
+    </MenuHoja>
   )
 }

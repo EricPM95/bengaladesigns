@@ -6,6 +6,7 @@ import { addDaysToIso } from '../../../lib/dateRange'
 import { alDia } from '../../../lib/nombreDeDia'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { normalizeName } from '../../../lib/routeStopsIndex'
+import { usePropuestaStore } from '../../../store/usePropuestaStore'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { AddStopScreen } from '../addStop/AddStopScreen'
@@ -106,7 +107,10 @@ export function AddToTripScreen({ route }: { route: Route }) {
 export function confirmAddedStaying(result: AddedResult): void {
   const actual = useRouteStore.getState().route
   const target = actual?.days.find((candidate) => candidate.id === result.dayId)
-  useAddFlowStore.setState({ toast: target ? { message: `Añadido ${alDia(actual, target.dayNumber)} ✓`, previous: null, id: Date.now() } : null })
+  // (Tanda 10N: para quien solo recomienda es un cambio de su propuesta, con su [Deshacer], que lo quita de la propuesta.)
+  const enPropuesta = usePropuestaStore.getState().activa
+  const sinLoNuevo = enPropuesta && actual && result.stopId ? { ...actual, days: actual.days.map((d) => (d.id === result.dayId ? { ...d, stops: d.stops.filter((s) => s.id !== result.stopId) } : d)) } : null
+  useAddFlowStore.setState({ toast: target ? { message: `Añadido ${alDia(actual, target.dayNumber)} ✓`, previous: sinLoNuevo, id: Date.now() } : null })
 }
 
 /** Vuelta al día: pestaña Días con el día abierto, desplazado hasta lo nuevo, y el aviso con "Deshacer". */

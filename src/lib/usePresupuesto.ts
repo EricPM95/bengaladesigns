@@ -4,6 +4,10 @@ import { pagoActivo } from './pago'
 import { construirPresupuesto, type Presupuesto } from './presupuesto'
 import { monedaDelViajero, useCambio } from './useMoneda'
 import type { Cambio } from './dinero'
+import { gastosQueVeo } from './gastosCompartidos'
+import { useGastosCompartidos } from '../store/useGastosCompartidos'
+import { useViajeCompartido } from '../store/useViajeCompartido'
+import { useGastosDelViaje } from '../hooks/useGastosDelViaje'
 
 /** El presupuesto del estado de ahora (sin React): para el PDF y para quien lo necesite fuera de una pantalla. */
 export function presupuestoDeEstado(cambio: Cambio | null): Presupuesto | null {
@@ -20,7 +24,15 @@ export function presupuestoDeEstado(cambio: Cambio | null): Presupuesto | null {
     moneda: monedaDelViajero(state.route),
     cambio,
     pago: pagoActivo(),
+    compartido: compartidoDeEstado(),
   })
+}
+
+/** (Tanda 10N, apartado 9) Los gastos compartidos de ahora, sin React: solo si el viaje ya tiene más gente y la tabla existe. Para el PDF. */
+function compartidoDeEstado() {
+  const g = useGastosCompartidos.getState()
+  if (g.disponible === false || useViajeCompartido.getState().gente.length < 2) return undefined
+  return { gastos: gastosQueVeo(g.gastos, g.yoId), extrasDeLaRutaMios: true }
 }
 
 /** El presupuesto del viaje (Tanda 6z2), siempre al día con lo que el viajero ha puesto; null sin ruta. */
@@ -34,12 +46,14 @@ export function usePresupuesto(): { presupuesto: Presupuesto | null; cambio: Cam
   const esimPrecios = useRouteStore((state) => state.esimPrecios)
   const cambio = useCambio()
   const pago = pagoActivo()
+  // (Tanda 10N, apartado 9) En un viaje compartido, los Extras son los gastos compartidos que veo; lo de la ruta, anterior a compartir, es solo del administrador.
+  const { compartido, gastos: gastosCompartidos, esInvitado } = useGastosDelViaje()
   const presupuesto = useMemo(
     () =>
       route
-        ? construirPresupuesto({ route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, moneda: monedaDelViajero(route), cambio, pago })
+        ? construirPresupuesto({ route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, moneda: monedaDelViajero(route), cambio, pago, compartido: compartido ? { gastos: gastosCompartidos, extrasDeLaRutaMios: !esInvitado } : undefined })
         : null,
-    [route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, cambio, pago],
+    [route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, cambio, pago, compartido, gastosCompartidos, esInvitado],
   )
   return { presupuesto, cambio }
 }

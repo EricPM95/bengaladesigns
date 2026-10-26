@@ -146,8 +146,9 @@ for (const [clave, route] of Object.entries(rutas)) {
       debe(!/\d+\s*%/.test(aTexto(cabecera)) && !/Ver resumen de tu viaje listo/.test(html), '1c sin %', `${nombre}: queda el % en la cabecera (${plano(aTexto(cabecera))})`)
 
       // 2b. La cartera en la cabecera de RESERVAS.
-      debe(/data-cartera="1"/.test(cabecera) && /aria-label="Presupuesto"/.test(cabecera) && (html.match(/data-cartera/g) ?? []).length === 1, '2b cartera', `${nombre}: la cabecera de RESERVAS no tiene su cartera (una sola)`)
-      debe(cabecera.indexOf('aria-label="Cerrar"') < cabecera.indexOf('data-cartera'), '2b cartera', `${nombre}: la cartera no está a la derecha del ✕`)
+      // Tanda 10N §2: la cartera vive UNA sola vez en la cabecera común (logo a la izquierda; cartera, campana y perfil a la derecha); RESERVAS ya no tiene cabecera propia con cartera: su fila ✕ + «Reservas» queda debajo.
+      debe((html.match(/data-cartera/g) ?? []).length === 0 && !/aria-label="Presupuesto"/.test(html), '2b cartera', `${nombre}: RESERVAS pinta su propia cartera (debe ser solo la de la cabecera común)`)
+      debe(cabecera.includes('aria-label="Cerrar"'), '2b cartera', `${nombre}: la fila de RESERVAS no tiene su ✕`)
       // 2a. Sin la fila «Presupuesto».
       debe(!/data-blk="presupuesto"/.test(html) && !/^Presupuesto$/m.test(texto), '2a sin fila', `${nombre}: queda la fila «Presupuesto» en RESERVAS`)
 
@@ -217,8 +218,9 @@ for (const [clave, route] of Object.entries(rutas)) {
   debe(!fs.existsSync('src/components/route/presupuesto/FilaPresupuesto.tsx') && !/FilaPresupuesto/.test(panelSrc), '2a sin fila', 'queda FilaPresupuesto')
   const cartera = leer('src/components/presupuesto/BotonCartera.tsx')
   debe(/usePresupuestoUi\(\(state\) => state\.abrir\)/.test(cartera) && /onClick=\{abrir\}/.test(cartera) && /aria-label="Presupuesto"/.test(cartera) && /data-cartera/.test(cartera) && /nombre="presupuesto"/.test(cartera), '2b cartera', 'BotonCartera no abre el presupuesto con aria-label y data-cartera, o no usa el icono «presupuesto»')
-  debe(/<BotonCartera \/>/.test(leer('src/components/layout/Header.tsx')) && /<BotonCartera \/>/.test(panelSrc), '2b cartera', 'la cabecera de arriba o la de RESERVAS no usan BotonCartera')
-  const otros = archivos('src').filter((f) => (/usePresupuestoUi/.test(leer(f)) || /aria-label="Presupuesto"|data-cartera=/.test(leer(f))) && !/BotonCartera\.tsx$|PantallaPresupuesto\.tsx$|usePresupuestoUi\.ts$|src\/components\/presupuesto\/|precioVuela/i.test(f.replace(/\\/g, '/')))
+  const cabComun = leer('src/components/layout/Header.tsx')
+  debe((cabComun.match(/<BotonCartera \/>/g) ?? []).length === 1 && cabComun.indexOf('data-cabecera-logo') < cabComun.indexOf('<BotonCartera />') && !/BotonCartera/.test(panelSrc.replace(/\/\*[\s\S]*?\*\//g, '')), '2b cartera', 'la cartera no está UNA sola vez en la cabecera común (a la derecha del logo) o RESERVAS vuelve a tener la suya')
+  const otros = archivos('src').filter((f) => (/usePresupuestoUi/.test(leer(f)) || /aria-label="Presupuesto"|data-cartera=/.test(leer(f))) && !/BotonCartera\.tsx$|avisos\/abrirAviso\.ts$|PantallaPresupuesto\.tsx$|usePresupuestoUi\.ts$|src\/components\/presupuesto\/|precioVuela/i.test(f.replace(/\\/g, '/')))
   debe(otros.length === 0, '2a sin otros botones', `otro sitio abre el presupuesto o tiene su propia cartera: ${otros.join(', ')}`)
   usePresupuestoUi.setState({ abierto: false })
   usePresupuestoUi.getState().abrir()

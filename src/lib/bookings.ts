@@ -39,6 +39,8 @@ export interface Reservation {
   /** Tanda 6j: una reserva que cae en un día de excursión: se guarda en Reservas con este aviso y la ruta no cambia (el sitio no se pone en ese día). */
   noMueve?: boolean
   aviso?: string | null
+  /** Tanda 10N §8: en un viaje compartido, a quién cubre la entrada (ids de `Persona`; el dueño siempre dentro). Sin él (las de antes de compartir): «solo para mí», solo el dueño. */
+  paraQuien?: string[] | null
 }
 
 /**

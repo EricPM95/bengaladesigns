@@ -4,7 +4,7 @@ import { llamarServidor } from './servidor'
  * LA CAMPANITA DE AVISOS, EN LA APP (cuentas parte 3, punto 4). La lista sale del servidor (`GET /api/avisos`): lo más nuevo arriba, con lo leído y lo no leído. Los avisos que ya enseñaba
  * la campana (errores de guardado, más días que fechas, reservas que no cuadran, lluvia…) siguen saliendo igual: se calculan en el móvil (useAppNotices.ts) y van debajo.
  */
-export type TipoDeAviso = 'recomendacion' | 'aceptada' | 'rechazada' | 'unido' | 'd10' | 'resumen' | 'sorpresas' | 'sorteo' | 'amigo_viaje'
+export type TipoDeAviso = 'recomendacion' | 'aceptada' | 'rechazada' | 'unido' | 'd10' | 'resumen' | 'sorpresas' | 'sorteo' | 'amigo_viaje' | 'reserva_grupo' | 'gasto_pendiente' | 'gasto_resuelto' | 'permiso' | 'quitado' | 'viaje_cambiado'
 
 export interface AvisoDeCuenta {
   id: string
@@ -18,11 +18,13 @@ export interface AvisoDeCuenta {
   payload: Record<string, unknown>
   /** «Aceptada» / «No aceptada» cuando la recomendación ya está contestada (AV3). */
   etiqueta: string | null
+  /** La segunda línea del aviso (los de gasto: «Cena día 1 · 30 € · ya suma en el grupo»); null en los demás. */
+  detalle?: string | null
 }
 
 export async function cargarAvisos(): Promise<{ avisos: AvisoDeCuenta[]; sinLeer: number } | null> {
   const r = await llamarServidor<{ ok: boolean; avisos: AvisoDeCuenta[]; sin_leer: number }>('/api/avisos')
-  if (!r.datos?.ok) return null
+  if (!r.datos?.ok || !Array.isArray(r.datos.avisos)) return null
   return { avisos: r.datos.avisos, sinLeer: r.datos.sin_leer }
 }
 

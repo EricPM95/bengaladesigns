@@ -1,15 +1,15 @@
 import { useState, type ReactNode } from 'react'
 import { buildGoogleMapsUrlFromHere } from '../../lib/mapsLinks'
-import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { Icono } from '../ui/Icono'
+import { HojaDelMenu } from '../ui/MenuHoja'
 import type { NombreIcono } from '../../lib/iconos'
 
 /**
- * LOS MENÚS «···» DE QUIEN MIRA EL VIAJE DE OTRA PERSONA (RW1 y RW2, cuentas parte 3). Fuera del modo recomendación una persona invitada solo mira: el menú de una parada ofrece [Ver la
- * ficha], [Cómo llegar] y [Recomendar un cambio]; el de un día, [Ver el día en el mapa] y [Recomendar cambios en este día]. [Recomendar…] entra en el modo recomendación (RM), donde las
- * herramientas de siempre vuelven, sobre una copia: nada cambia de verdad hasta enviar.
+ * EL MENÚ «···» DE UNA PARADA PARA QUIEN SOLO RECOMIENDA, DURANTE EL VIAJE (Tanda 10N, apartado 6): desde el primer día del viaje ya no propone cambios, así que su menú solo deja [Ver la ficha] y [Cómo llegar].
+ * (Antes del viaje cambia la ruta directamente, con el menú de siempre, y todo va a su propuesta. Ya no hay «Recomendar un cambio» ni «Recomendar cambios en este día».)
  */
-function Menu({ etiqueta, children, tam = 28 }: { etiqueta: string; children: (cerrar: () => void) => ReactNode; tam?: number }) {
+/** (Tanda 10N §6c) Sale desde abajo, como hoja baja con el nombre arriba (`HojaDelMenu`), no como cuadro flotante. */
+function Menu({ etiqueta, titulo, tipo, children, tam = 28 }: { etiqueta: string; titulo: string; tipo: string; children: (cerrar: () => void) => ReactNode; tam?: number }) {
   const [abierto, setAbierto] = useState(false)
   return (
     <div className="relative">
@@ -28,19 +28,16 @@ function Menu({ etiqueta, children, tam = 28 }: { etiqueta: string; children: (c
         ···
       </button>
       {abierto && (
-        <>
-          <div className="fixed inset-0 z-20" onClick={(e) => (e.stopPropagation(), setAbierto(false))} />
-          <div onClick={(e) => e.stopPropagation()} className="absolute right-0 top-[34px] z-30 flex w-[262px] flex-col rounded-[18px] bg-[#FFFDF8] p-1.5 text-text" style={{ boxShadow: '0 0 0 1px rgba(28,34,48,.08),0 18px 34px -14px rgba(28,34,48,.5)' }}>
-            {children(() => setAbierto(false))}
-          </div>
-        </>
+        <HojaDelMenu etiqueta={tipo} titulo={titulo} onCerrar={() => setAbierto(false)}>
+          {children(() => setAbierto(false))}
+        </HojaDelMenu>
       )}
     </div>
   )
 }
 
 function Opcion({ icono, texto, destacada = false, onClick, href }: { icono: NombreIcono; texto: string; destacada?: boolean; onClick?: () => void; href?: string }) {
-  const estilo = { minHeight: 44, padding: '0 12px', borderRadius: 12, background: destacada ? 'oklch(0.8 0.14 70 / .18)' : 'transparent', font: destacada ? "600 14px 'Geist'" : "500 14px 'Geist'", display: 'flex', alignItems: 'center', gap: 10, color: '#1C2230', textDecoration: 'none', border: 'none', textAlign: 'left' as const, cursor: 'pointer', width: '100%' }
+  const estilo = { minHeight: 52, padding: '0 4px', borderRadius: 0, borderBottom: '1px solid rgba(28,34,48,.08)', background: destacada ? 'oklch(0.8 0.14 70 / .18)' : 'transparent', font: destacada ? "600 14px 'Geist'" : "500 14px 'Geist'", display: 'flex', alignItems: 'center', gap: 10, color: '#1C2230', textDecoration: 'none', border: 'none', textAlign: 'left' as const, cursor: 'pointer', width: '100%' }
   const contenido = (
     <>
       <Icono nombre={icono} size={16} grosor={1.8} />
@@ -60,9 +57,8 @@ function Opcion({ icono, texto, destacada = false, onClick, href }: { icono: Nom
 
 /** RW1: el menú de una parada. */
 export function MenuInvitadoParada({ nombre, ciudad, onVerFicha }: { nombre: string; ciudad: string; onVerFicha: () => void }) {
-  const empezar = usePropuestaStore((s) => s.empezar)
   return (
-    <Menu etiqueta="Opciones de la parada">
+    <Menu etiqueta="Opciones de la parada" titulo={nombre} tipo="Parada">
       {(cerrar) => (
         <>
           <Opcion
@@ -74,45 +70,6 @@ export function MenuInvitadoParada({ nombre, ciudad, onVerFicha }: { nombre: str
             }}
           />
           <Opcion icono="mapa" texto="Cómo llegar" href={buildGoogleMapsUrlFromHere(`${nombre}, ${ciudad}`)} onClick={cerrar} />
-          <Opcion
-            icono="recomendar"
-            texto="Recomendar un cambio"
-            destacada
-            onClick={() => {
-              cerrar()
-              empezar('parada')
-            }}
-          />
-        </>
-      )}
-    </Menu>
-  )
-}
-
-/** RW2: el menú de la cabecera de un día. */
-export function MenuInvitadoDia({ onVerEnMapa }: { onVerEnMapa: () => void }) {
-  const empezar = usePropuestaStore((s) => s.empezar)
-  return (
-    <Menu etiqueta="Más opciones del día" tam={38}>
-      {(cerrar) => (
-        <>
-          <Opcion
-            icono="mapa"
-            texto="Ver el día en el mapa"
-            onClick={() => {
-              cerrar()
-              onVerEnMapa()
-            }}
-          />
-          <Opcion
-            icono="recomendar"
-            texto="Recomendar cambios en este día"
-            destacada
-            onClick={() => {
-              cerrar()
-              empezar('dia')
-            }}
-          />
         </>
       )}
     </Menu>

@@ -14,13 +14,16 @@ import { rangoDelViaje } from '../ReservasPanel'
 import { AddReservationSheet, type ReservationTarget } from '../reservas/AddReservationSheet'
 import { HojaPrecio } from '../reservas/HojaPrecio'
 import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
+import { useGastosDelViaje } from '../../../hooks/useGastosDelViaje'
+import { nombresEnFrase } from '../../../lib/gastosCompartidos'
+import { ExtrasCompartidos } from './ExtrasCompartidos'
 
 /** El color y el icono de cada bloque (la barra de la tarjeta oscura, el cuadradito de cada bloque y los puntos de debajo). */
 const ESTILO: Record<BloqueId, { color: string; fondo: string; tinta: string; icono: NombreIcono }> = {
   transporte: { color: 'oklch(0.72 0.12 75)', fondo: 'oklch(0.72 0.12 75 / .16)', tinta: 'oklch(0.5 0.11 70)', icono: 'avion' },
   ruta: { color: 'rgb(var(--accent))', fondo: 'rgb(var(--accent) / .12)', tinta: 'rgb(var(--accent-hover))', icono: 'ruta' },
   util: { color: 'oklch(0.66 0.1 160)', fondo: 'oklch(0.6 0.1 160 / .14)', tinta: 'oklch(0.42 0.1 160)', icono: 'maleta' },
-  extras: { color: 'oklch(0.65 0.1 220)', fondo: 'oklch(0.55 0.1 220 / .14)', tinta: 'oklch(0.45 0.1 220)', icono: 'extras' },
+  extras: { color: 'oklch(0.65 0.1 220)', fondo: 'oklch(0.55 0.1 220 / .14)', tinta: 'oklch(0.45 0.1 220)', icono: 'presupuesto' },
 }
 /** El icono de cada línea según lo que es (el billete, el hotel, la entrada…). */
 function iconoDeLinea(abrir: AbrirLinea, bloque: BloqueId): NombreIcono {
@@ -246,10 +249,12 @@ export function PantallaPresupuesto() {
   const [hoja, setHoja] = useState<AbrirLinea | null>(null)
   const [hojaPersonas, setHojaPersonas] = useState(false)
   const [hojaMoneda, setHojaMoneda] = useState(false)
+  // (Tanda 10N, apartado 9) En un viaje compartido: «Del grupo», el «por persona» solo de lo del grupo, los nombres de la gente y los Extras con [Para todos] / [Para mí].
+  const gv = useGastosDelViaje()
   if (!abierto || !route || !presupuesto) return null
 
   const moneda = monedaDelViajero(route)
-  const personas = personasDelViaje(route)
+  const personas = gv.compartido ? gv.personas.length : personasDelViaje(route)
   const total = presupuesto.total
   const hayGastos = presupuesto.bloques.length > 0
   const extras = presupuesto.bloques.find((bloque) => bloque.id === 'extras') ?? null
@@ -307,7 +312,9 @@ export function PantallaPresupuesto() {
           </span>
           <span className="text-text/55" style={{ font: "500 11px/1.35 'Geist Mono',monospace", letterSpacing: '.06em' }}>
             {route.destination} · {rangoDelViaje(route)} ·{' '}
-            {personas ? (
+            {gv.compartido ? (
+              <span data-presupuesto-de>{gv.esInvitado ? `de ${gv.nombreAdmin || nombresEnFrase(gv.personas.map((p) => p.nombre ?? ''))}` : gv.frase}</span>
+            ) : personas ? (
               <>
                 {personas} {personas === 1 ? 'persona' : 'personas'}
               </>
@@ -327,7 +334,7 @@ export function PantallaPresupuesto() {
             <div className="relative flex items-end justify-between gap-3">
               <span className="flex min-w-0 flex-col gap-1.5">
                 <span className="text-[#FFFDF8]/60" style={ojoStyle}>
-                  Total del viaje
+                  {gv.compartido ? 'Del grupo' : 'Total del viaje'}
                 </span>
                 {/* El total se achica si es largo (489,23 €) para no partirse en dos líneas junto al «por persona». */}
                 <span className="whitespace-nowrap" style={{ font: `400 ${formatoImporte(total).length <= 7 ? 54 : formatoImporte(total).length <= 9 ? 44 : 36}px/.95 'Instrument Serif',serif` }}>
@@ -380,12 +387,16 @@ export function PantallaPresupuesto() {
             <div key={bloque.id} className="flex flex-none flex-col gap-2.5 rounded-[22px] bg-[#FFFDF8] p-3.5" style={caja} data-blk={bloque.id}>
               <CabeceraBloque id={bloque.id} titulo={bloque.titulo} suma={formatoImporte(bloque.suma)} />
               {bloque.lineas.map((linea) => (
-                <Linea key={linea.id} linea={linea} bloque={bloque.id} moneda={moneda} onClick={linea.abrir.tipo === 'extra' ? undefined : () => setHoja(linea.abrir)} />
+                <Linea key={linea.id} linea={linea} bloque={bloque.id} moneda={moneda} onClick={linea.abrir.tipo === 'extra' || gv.esInvitado ? undefined : () => setHoja(linea.abrir)} />
               ))}
             </div>
           ))}
 
-          <Extras bloque={extras} moneda={moneda} route={route} />
+          {gv.compartido ? (
+            <ExtrasCompartidos cabecera={<CabeceraBloque id="extras" titulo="Extras" suma={extras ? formatoImporte(extras.suma) : null} />} bloque={extras} gv={gv} moneda={moneda} />
+          ) : (
+            <Extras bloque={extras} moneda={moneda} route={route} />
+          )}
 
           <div className="flex flex-none items-baseline justify-between border-t border-text/[.12] px-1.5 pt-1.5">
             <span className="pt-3 text-text/60" style={ojoStyle}>

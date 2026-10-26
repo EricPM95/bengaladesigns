@@ -1,4 +1,6 @@
 import { abrirPase, pagoActivo } from '../../lib/pago'
+import { usePaseEstado } from '../../lib/paseEstado'
+import { useSyncStore } from '../../store/useSyncStore'
 import { Icono } from '../ui/Icono'
 
 /**
@@ -8,7 +10,10 @@ import { Icono } from '../ui/Icono'
  * Al tocarla se abre `abrirPase()` (la misma función de todos los candados y de [Ver el Pase de Roma]). Con varios destinos, cada tarjeta lleva la suya («Pase de Florencia»…): el nombre sale de los datos del tramo.
  * `conPase` solo lo usan las capturas y la prueba (por defecto, la versión que se está viendo, `pagoActivo()`).
  */
-export function PastillaPase({ destino, conPase = pagoActivo() }: { destino: string; conPase?: boolean }) {
+export function PastillaPase({ destino, conPase: aMano }: { destino: string; conPase?: boolean }) {
+  // (Tanda 10N §3) La misma fuente que HOY: el estado del pase que da el servidor (`usePaseEstado`), y `pagoActivo()` ya cuenta el «sin pase» de las pruebas. Así RUTA y HOY dicen lo mismo.
+  const pase = usePaseEstado(useSyncStore((s) => s.activeTripId))
+  const conPase = aMano ?? (pagoActivo() && !(pase.cobro && !pase.conPase))
   return (
     <button
       type="button"
@@ -23,7 +28,7 @@ export function PastillaPase({ destino, conPase = pagoActivo() }: { destino: str
       }
     >
       <Icono nombre={conPase ? 'hecho' : 'candado'} size={13} grosor={2} />
-      <span style={{ font: "700 13px 'Geist'", letterSpacing: '.005em', whiteSpace: 'nowrap' }}>Pase de {destino}</span>
+      <span style={{ font: "700 13px 'Geist'", letterSpacing: '.005em', whiteSpace: 'nowrap' }}>Pase {destino}</span>
     </button>
   )
 }

@@ -13,7 +13,6 @@ import { legsOf, type LegKind } from '../../lib/reservasLegs'
 import { pagoActivo } from '../../lib/pago'
 import { getTodayTripStatus } from '../../lib/todayMode'
 import { DestinationReservasAccordion } from './reservas/DestinationReservasAccordion'
-import { BotonCartera } from '../presupuesto/BotonCartera'
 import { LlegadaYVuelta } from './reservas/LlegadaYVuelta'
 import { AlojamientoReservas } from './reservas/AlojamientoReservas'
 import { alojamientoCubierto } from '../../lib/tuAlojamiento'
@@ -24,6 +23,8 @@ import { ExcursionesReservas } from './reservas/ExcursionesReservas'
 import { UtilParaElViaje } from './reservas/UtilParaElViaje'
 import { Icono } from '../ui/Icono'
 import { diasDelViaje, textoDeDuracion } from '../../lib/duracionViaje'
+import { useEntradasDelGrupo, useReservasParaMi } from '../../hooks/useEntradasDelGrupo'
+import { ZonaGris } from './reservas/ZonaGris'
 
 interface ReservasPanelProps {
   route: Route
@@ -53,7 +54,9 @@ export function rangoDelViaje(route: Route): string {
  */
 export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanelProps) {
   const pago = pagoActivo()
-  const reservations = useRouteStore((state) => state.reservations)
+  // Tanda 10N §8: quien mira el viaje de otra persona ve ESTA MISMA pantalla; lo que comparte el grupo (llegada, vuelta, alojamiento) sale en gris y sin tocar; las entradas, cada uno las suyas.
+  const grupo = useEntradasDelGrupo()
+  const reservations = useReservasParaMi()
   const accommodationZone = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
   const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
@@ -93,6 +96,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
 
   /** «¿Llegas o te vas otro día? Cambia las fechas del viaje»: el cambio de fechas que ya existe (el calendario de la cabecera del mapa, en Días). */
   const abrirFechas = () => {
+    if (grupo.esInvitado) return // las fechas del viaje las cambia el dueño
     useDatesCalendarStore.getState().request()
   }
 
@@ -117,7 +121,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   ]
 
   const llegada = unDestino && (
-    <>
+    <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
       <LlegadaYVuelta
         route={route}
         info={arrivalInfo}
@@ -130,7 +134,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
         onCambioDeVuelo={cambioDeVuelo}
         onFechas={abrirFechas}
       />
-    </>
+    </ZonaGris>
   )
 
   return (
@@ -155,7 +159,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
               {route.origin} → {route.destination} · {rangoDelViaje(route)}
             </span>
           </span>
-          <BotonCartera />
+          {/* (Tanda 10N §2: la cartera, la campana y el perfil están ya en la cabecera de arriba, la misma de todas las pestañas.) */}
         </div>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-10 pt-2 md:px-8">
@@ -168,9 +172,11 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
               <div className="flex min-w-0 flex-col gap-3.5">
                 {llegada}
                 {unDestino ? (
-                  <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} onCambioDeVuelo={cambioDeVuelo} />
+                  <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
+                    <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} onCambioDeVuelo={cambioDeVuelo} />
+                  </ZonaGris>
                 ) : (
-                  <div className="flex flex-col gap-2.5">
+                  <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin} className="flex flex-col gap-2.5">
                     <span className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
                       Destinos
                     </span>
@@ -185,7 +191,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
                         onToggle={() => setOpenCity((current) => (current === segment.id ? null : segment.id))}
                       />
                     ))}
-                  </div>
+                  </ZonaGris>
                 )}
               </div>
               <div className="flex min-w-0 flex-col gap-3.5">

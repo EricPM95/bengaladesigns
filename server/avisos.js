@@ -18,7 +18,7 @@ import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { quienEs, tokenDe } from './cuentas.js'
-import { quienDelAviso, textoDelAviso, textoDelPush } from '../shared/avisos/textos.js'
+import { detalleDelAviso, quienDelAviso, textoDelAviso, textoDelPush } from '../shared/avisos/textos.js'
 
 const AQUI = dirname(fileURLToPath(import.meta.url))
 const verdadero = (v) => String(v ?? '').toLowerCase() === 'true'
@@ -123,6 +123,22 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
       log.warn?.('[avisos] no se pudo mirar lo de los logros:', error.message)
     }
     const avisos = (await rpc('avisos_de', { p_uid: uid })) ?? []
+    // (Tanda 10N, apartado 9) Los avisos «quiere añadir al presupuesto» llevan los botones dentro: cómo está hoy cada gasto (pendiente, aceptado, rechazado o retirado). Sin la migración 0037, todos quedan como pendientes.
+    const estadoDeGasto = new Map()
+    const idsDeGasto = avisos.filter((a) => a.tipo === 'gasto_pendiente' && a.payload?.gasto_id).map((a) => a.payload.gasto_id)
+    if (idsDeGasto.length > 0) {
+      try {
+        for (const g of (await rpc('gastos_de_avisos', { p_ids: idsDeGasto })) ?? []) estadoDeGasto.set(g.id, g.estado)
+      } catch (error) {
+        log.warn?.('[avisos] no se pudo mirar el estado de los gastos:', error.message)
+        for (const id of idsDeGasto) estadoDeGasto.set(id, 'pendiente')
+      }
+    }
+    const etiquetaDeGasto = (a) => {
+      if (a.tipo !== 'gasto_pendiente') return null
+      const estado = estadoDeGasto.get(a.payload?.gasto_id) ?? 'retirado'
+      return estado === 'pendiente' ? null : estado === 'aceptado' ? 'Aceptado' : estado === 'rechazado' ? 'Rechazado' : 'Retirado'
+    }
     const lista = avisos.map((a) => ({
       id: a.id,
       tipo: a.tipo,
@@ -130,9 +146,10 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
       quien: quienDelAviso(a),
       creado_en: a.creado_en,
       leido: a.leido,
-      payload: a.payload,
+      payload: a.tipo === 'gasto_pendiente' ? { ...a.payload, gasto_estado: estadoDeGasto.get(a.payload?.gasto_id) ?? 'retirado' } : a.payload,
+      detalle: detalleDelAviso(a),
       // AV3: una recomendación ya contestada queda «Aceptada» o «No aceptada» (la contesta el administrador desde R2).
-      etiqueta: a.tipo === 'recomendacion' && a.estado_rec && a.estado_rec !== 'pendiente' ? (a.estado_rec === 'aceptada' ? 'Aceptada' : 'No aceptada') : null,
+      etiqueta: a.tipo === 'recomendacion' && a.estado_rec && a.estado_rec !== 'pendiente' ? (a.estado_rec === 'aceptada' ? 'Aceptada' : 'No aceptada') : etiquetaDeGasto(a),
     }))
     return { ok: true, avisos: lista, sin_leer: lista.filter((a) => !a.leido && !a.etiqueta).length }
   }
@@ -197,7 +214,9 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
     return { ok: true, personas: personas.length, creados, ...push }
   }
 
-  return { alListar: (fn) => { antesDeListar = fn }, prepararDeUsuario, listar, marcarLeidos, enviarPush, tareaProgramada, clavePublica: () => (pushEncendido(env) && env.VAPID_PUBLIC_KEY ? env.VAPID_PUBLIC_KEY : null) }
+  const crearAviso = async (uid, tipo, claveDelAviso, payload) => Boolean(await rpc('crear_aviso', { p_uid: uid, p_tipo: tipo, p_clave: claveDelAviso, p_payload: payload }))
+
+  return { crearAviso, alListar: (fn) => { antesDeListar = fn }, prepararDeUsuario, listar, marcarLeidos, enviarPush, tareaProgramada, clavePublica: () => (pushEncendido(env) && env.VAPID_PUBLIC_KEY ? env.VAPID_PUBLIC_KEY : null) }
 }
 
 export function registrarRutasAvisos(app, { admin, servicio, env = process.env }) {
@@ -215,6 +234,20 @@ export function registrarRutasAvisos(app, { admin, servicio, env = process.env }
   }
   app.get('/api/avisos', conUsuario(async (_req, res, u) => res.json(await servicio.listar(u.id))))
   app.post('/api/avisos/leidos', conUsuario(async (req, res, u) => res.json(await servicio.marcarLeidos(u.id, Array.isArray(req.body?.ids) ? req.body.ids.map(String) : null))))
+  // Tanda 10N: el día antes del viaje, la app avisa de que quien solo recomienda tiene cambios sin enviar. Se comprueba que está en ese viaje y el aviso sale una sola vez al día.
+  app.post('/api/avisos/sin-enviar', conUsuario(async (req, res, u) => {
+    const tripId = String(req.body?.tripId ?? '')
+    const n = Math.min(99, Math.max(0, Math.floor(Number(req.body?.n) || 0)))
+    if (!tripId || n === 0) return res.status(400).json({ ok: false })
+    const { data: miembro } = await admin.from('trip_members').select('user_id').eq('trip_id', tripId).eq('user_id', u.id).maybeSingle()
+    if (!miembro) return res.status(403).json({ ok: false })
+    const { data: viaje } = await admin.from('trips').select('traveler_id, route').eq('id', tripId).maybeSingle()
+    const { data: dueno } = viaje ? await admin.from('travelers').select('nombre').eq('id', viaje.traveler_id).maybeSingle() : { data: null }
+    const nombre = String(dueno?.nombre ?? '').trim().split(' ')[0] || null
+    const hoy = new Date().toISOString().slice(0, 10)
+    const hecho = await servicio.crearAviso(u.id, 'sin_enviar', `sin_enviar:${tripId}:${hoy}`, { trip_id: tripId, n, admin: nombre, destino: viaje?.route?.destination ?? null })
+    res.json({ ok: true, creado: hecho })
+  }))
   app.get('/api/avisos/push/clave', (_req, res) => {
     const clave = servicio.clavePublica()
     res.json({ ok: Boolean(clave), clave })

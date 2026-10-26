@@ -136,7 +136,7 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   const menuSrc = sinComentarios(SRC('src/components/route/dayDetail/StopMenu.tsx'))
   const saltarSrc = sinComentarios(SRC('src/components/route/hoy/saltar.tsx'))
   const hoySrc = sinComentarios(SRC('src/components/route/hoy/HoyDurante.tsx'))
-  debe(/<ListaDeDias[^>]*ahora=/.test(menuSrc) && /<ListaDeDias[^>]*ahora=/.test(saltarSrc) && /ahora=\{day\.dayNumber\}/.test(hoySrc), 'A4 una lista', 'el menú de DÍAS y la hoja de HOY no pasan el «Ahora:» a la misma lista')
+  debe(/<MoverADia[^>]*ahora=/.test(menuSrc) && /<ListaDeDias[^>]*ahora=/.test(saltarSrc) && /ahora=\{day\.dayNumber\}/.test(hoySrc), 'A4 una lista', 'el menú de DÍAS y la hoja de HOY no pasan el «Ahora:» a la misma lista')
   debe(!/filaClassName|lightItemClass/.test(menuSrc + saltarSrc + sinComentarios(SRC('src/components/route/dayDetail/ListaDeDias.tsx'))), 'A4 una lista', 'quedan estilos de fila a medida del menú o de la hoja')
   debe(/moverParadaAOtroDia/.test(menuSrc) && /moverParadaAOtroDia/.test(hoySrc), 'A5 una acción', 'el menú de DÍAS y HOY no mueven con la misma función `moverParadaAOtroDia`')
 }

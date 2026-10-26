@@ -162,6 +162,7 @@ export function AlojamientoReservas({
                 <button
                   type="button"
                   onClick={() => abrirMapa(segmentDayId)}
+                  data-activo-invitado
                   className="flex h-12 w-full items-center justify-center gap-2 rounded-full btn-champan text-[14.5px] font-semibold transition-transform active:scale-[.98]"
                 >
                   <Icono nombre={ICONOS.lupa} size={15} />

@@ -31,7 +31,23 @@ export async function empezarDeCero(admin, usuario, { archivosDe, bucket = 'foto
   } catch {
     return { ok: false, borrados: {}, error: 'No se han podido leer tus fotos. No se ha borrado nada; vuelve a probar.' }
   }
+  // (Tanda 10N §3) «Verme como viajero sin pase» es un ajuste de las pruebas, no algo de la cuenta: [Empezar de cero] no lo toca. La 0032 ya no borra su fila; si la función de la base de datos es la vieja
+  // (migración sin volver a aplicar), la fila se vuelve a poner aquí tal como estaba.
+  let sinPaseAntes = null
+  try {
+    const previo = await admin.from('admin_sin_pase').select('activo').eq('user_id', uid).maybeSingle()
+    if (!previo.error && previo.data) sinPaseAntes = Boolean(previo.data.activo)
+  } catch {
+    /* sin la tabla (0030 sin aplicar): nada que guardar */
+  }
   const { data, error } = await admin.rpc('empezar_de_cero', { p_uid: uid })
+  if (sinPaseAntes !== null) {
+    try {
+      await admin.from('admin_sin_pase').upsert({ user_id: uid, activo: sinPaseAntes, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
+    } catch {
+      /* no se pudo volver a poner: el administrador lo enciende otra vez desde /?admin=logros */
+    }
+  }
   if (error) {
     const falta = /empezar_de_cero|PGRST202|42883/.test(`${error.code ?? ''} ${error.message ?? ''}`)
     return { ok: false, borrados: {}, error: falta ? 'Falta aplicar la migración 0032 en Supabase. No se ha borrado nada.' : 'No se ha podido borrar. No se ha borrado nada; vuelve a probar.' }

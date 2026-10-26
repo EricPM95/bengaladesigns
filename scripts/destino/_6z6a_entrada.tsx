@@ -18,9 +18,10 @@ import { esEntornoDePrueba } from '../../src/lib/recomendaciones'
 import { mapSingleGeneratedDay } from '../../src/lib/mapGeneratedRoute'
 import { fetchArrivalInfo } from '../../src/lib/arrivalReturn'
 import { fetchDestinationExcursions } from '../../src/lib/destinationExcursions'
+import { filasDeHoy } from '../../src/lib/listaDeHoy'
 
 export {
   createElement, renderToStaticMarkup, BottomBar, PESTANAS, DayList, ReservasPanel, HoyView, PanelDePruebas, usePruebasUi, useRouteStore, modoVisible, diaDeHoy, diaQueSeAbreAlEntrar,
   esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba,
-  mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions,
+  mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, filasDeHoy,
 }

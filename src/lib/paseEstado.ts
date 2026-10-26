@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { llamar, logrosActivos } from './logros'
+import { fijarServidorDiceSinPase } from './pago'
 import { useLogrosStore } from '../store/useLogrosStore'
 import type { PruebaDelPase } from './diaDePrueba'
 
@@ -51,6 +52,7 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
     let vivo = true
     void llamar<RespuestaEstado>(`/api/pase/estado?trip_id=${encodeURIComponent(tripId)}`).then((r) => {
       if (!vivo || !r?.ok) return
+      fijarServidorDiceSinPase(r.cobro && r.pases.length === 0)
       setReal({ cobro: r.cobro, conPase: r.pases.length > 0, puede: !r.cobro || r.hoy.puede, pruebaGastada: r.prueba.ya_usada, prueba: { estado: r.prueba.estado ?? null, tripId: r.prueba.trip_id ?? null, fecha: r.prueba.fecha ?? null } })
     })
     return () => {

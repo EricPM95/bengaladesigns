@@ -13,8 +13,8 @@ import { seedStopsFromTemplate } from '../../lib/mockDayDetail'
 import { useRouteStore } from '../../store/useRouteStore'
 import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
-import { useModoInvitado } from '../../hooks/useModoInvitado'
-import { MenuInvitadoDia } from '../propuesta/MenusDelInvitado'
+import { usePermisosDelViaje } from '../../hooks/usePermisosDelViaje'
+import { EspacioParaElLapiz } from '../propuesta/BotonDePropuesta'
 import { EtiquetaRecomendacion } from '../propuesta/EtiquetaRecomendacion'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ConfirmDialog } from './ConfirmDialog'
@@ -91,8 +91,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const deleteDay = useRouteStore((state) => state.deleteDay)
   const restoreOriginalDay = useRouteStore((state) => state.restoreOriginalDay)
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
-  // Quien mira el viaje de otra persona: su menú del día es el de RW2 (ver el día en el mapa, recomendar cambios).
-  const { soloVer } = useModoInvitado()
+  // Tanda 10N §6b: quien solo recomienda no tiene los tres puntitos del día ni las rayitas para arrastrar días (no mueve días enteros; sí propone mover paradas).
+  const { soloRecomienda } = usePermisosDelViaje()
   /** La ventana del nombre: crear un día o cambiar el de uno libre. */
   const [nameSheet, setNameSheet] = useState<{ dayId: string | null } | null>(null)
   // «+ Añadir día»: primero qué quieres hacer, si el destino tiene excursiones (PARA_CODE_EXCURSIONES, 5).
@@ -221,7 +221,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const colorIndex = dayColorIndex(day, nonReturnIndex.get(day.id) ?? index)
 
         return (
-          <SortableDay key={day.id} id={day.id} disabled={!isMovableDay(day, index) || isDayPinned(route, reservations, day)}>
+          <SortableDay key={day.id} id={day.id} disabled={soloRecomienda || !isMovableDay(day, index) || isDayPinned(route, reservations, day)}>
             {(dragHandle) => (
           <div
             data-day-id={day.id}
@@ -311,10 +311,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               </div>
 
               <span onClick={(event) => event.stopPropagation()}>
-                {soloVer ? (
-                  <MenuInvitadoDia onVerEnMapa={() => (expanded ? undefined : toggle())} />
-                ) : (
+                {soloRecomienda ? null : (
                 <DayMenu
+                  titulo={[diaProsa(route, day.dayNumber).replace(/^./, (c) => c.toUpperCase()), title].filter(Boolean).join(' · ')}
                   // «Recuperar este día»: solo en los días con cambios; nunca en uno del viajero (no hay ruta nuestra que recuperar) ni en uno fijado por una reserva.
                   onBackToProposed={day.interruptor && day.ownDay ? () => void volverAlDiaPropuesto(day.id) : undefined}
                   onRestoreDay={!isFreeDay(day) && !day.userAdded && !isDayPinned(route, reservations, day) && day.originalSnapshot ? () => setAskRestore({ dayId: day.id, dayNumber: day.dayNumber }) : undefined}
@@ -372,6 +371,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       {/* Un día fuera: al final de la lista, solo si el viaje no lleva ya una excursión (PROMPT_UI, Parte 2). */}
       {/* "+ Añadir día" (decisión del usuario, 2026-09-28): debajo del último día; hasta 14 días por viaje. */}
       <AddDayButton onClick={() => (excursionInfo.excursions.length > 0 ? setChooserOpen(true) : setNameSheet({ dayId: null }))} disabled={!canAddDay(route)} />
+      <EspacioParaElLapiz />
       {/* El aviso de «más días que fechas» ahora sale en la campana de la cabecera (useAppNotices.ts). */}
       {chooserOpen && (
         <AddDayChooser

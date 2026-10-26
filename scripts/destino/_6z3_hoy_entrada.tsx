@@ -8,6 +8,8 @@ import { useRouteStore } from '../../src/store/useRouteStore'
 import { mapSingleGeneratedDay } from '../../src/lib/mapGeneratedRoute'
 import { fetchArrivalInfo } from '../../src/lib/arrivalReturn'
 import { fetchDestinationExcursions } from '../../src/lib/destinationExcursions'
+import { MapDestinationHeader } from '../../src/components/route/MapDestinationHeader'
+import { filasDeHoy } from '../../src/lib/listaDeHoy'
 import { subtituloDelViaje } from '../../src/lib/resumenViaje'
 
-export { createElement, renderToStaticMarkup, BottomBar, PESTANAS, Header, HoyView, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, subtituloDelViaje }
+export { createElement, renderToStaticMarkup, BottomBar, PESTANAS, Header, HoyView, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, subtituloDelViaje, MapDestinationHeader, filasDeHoy }

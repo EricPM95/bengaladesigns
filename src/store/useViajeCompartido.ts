@@ -16,7 +16,13 @@ export interface Persona {
   inicial?: string | null
   foto: string | null
   esAdmin: boolean
+  /** Tanda 10N: Administrador / Puede editar / Solo recomendar. Sin la migración 0036 todo el mundo que no es admin cuenta como «recomendar». */
+  permiso?: Permiso
+  /** Si esta persona soy yo (lo dice el servidor). */
+  esYo?: boolean
 }
+
+export type Permiso = 'admin' | 'editar' | 'recomendar'
 
 interface ViajeCompartidoState {
   tripId: string | null
@@ -47,7 +53,15 @@ async function gentePorRpc(tripId: string): Promise<Persona[]> {
   try {
     const { data, error } = await supabase!.rpc('gente_del_viaje', { p_trip: tripId })
     if (error || !Array.isArray(data)) return []
-    return (data as { id: string; nombre: string | null; inicial?: string | null; foto: string | null; es_admin: boolean }[]).map((p) => ({ id: p.id, nombre: p.nombre, inicial: p.inicial ?? null, foto: p.foto, esAdmin: p.es_admin }))
+    return (data as { id: string; nombre: string | null; inicial?: string | null; foto: string | null; es_admin: boolean; permiso?: string | null; es_yo?: boolean }[]).map((p) => ({
+      id: p.id,
+      nombre: p.nombre,
+      inicial: p.inicial ?? null,
+      foto: p.foto,
+      esAdmin: p.es_admin,
+      permiso: p.es_admin ? 'admin' : p.permiso === 'editar' ? 'editar' : 'recomendar',
+      esYo: p.es_yo === true,
+    }))
   } catch {
     return []
   }

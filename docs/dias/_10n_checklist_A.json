@@ -1,0 +1,138 @@
+[
+  {
+    "apartado": "§1 · Crear el viaje",
+    "punto": "Foto del Castillo de Sant'Angelo en «Elige lo que siempre soñaste ver»: castillo y puente, licencia libre, fuente apuntada",
+    "estado": "hecho",
+    "nota": "Ya la dejó la Tanda 10O (dia_castillo_sant_angelo_fuera.jpg, 1600 px y _p 640 px, Jean-Pol GRANDMONT, CC BY-SA 3.0, crédito en _fotos.json). El servidor la sirve para el Castillo; no hubo que descargar otra. Si el móvil de Eric aún enseña la terraza es caché del navegador (24 h, poolphoto:v2) o la versión desplegada antes de la 10O.",
+    "donde": "Formulario › paso «Elige lo que siempre soñaste ver en Roma» › baldosa «Castillo de Sant'Angelo» (cuenta cualquiera, con o sin pase; borra los datos del sitio si sigue la vieja)",
+    "captura": null
+  },
+  {
+    "apartado": "§2 · La cabecera",
+    "punto": "Fuera «Roma / 26 – 29 nov · 2 personas»; en su lugar el logo de JUTRIP (Italiana con la estrella sobre la I)",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "Cualquier pestaña, arriba a la izquierda (dueño o invitado, con o sin pase)",
+    "captura": "10n_cabecera_ruta.jpg"
+  },
+  {
+    "apartado": "§2 · La cabecera",
+    "punto": "La misma cabecera en todas las pestañas: logo, cartera, campana y perfil; «Sin pase (prueba)» sigue donde está",
+    "estado": "hecho",
+    "nota": "RESERVAS tenía su propia cabecera (✕ + «Reservas» + cartera): ahora lleva la cabecera común y su fila ✕ + «Reservas» queda debajo sin la cartera.",
+    "donde": "RUTA, DÍAS, EXPLORAR, HOY y RESERVAS: arriba. Con «Verme como viajero sin pase» encendido (cuenta admin) sale la etiqueta arriba al centro",
+    "captura": "10n_cabecera_hoy_antes.jpg"
+  },
+  {
+    "apartado": "§2 · La cabecera",
+    "punto": "Decir dónde más se ve el número de personas del viaje",
+    "estado": "hecho",
+    "nota": "Se sigue viendo en: Presupuesto (el «por persona»), hoja del alojamiento, formulario de reservas (precio por persona), HojaPrecio y la compra del pase (¿Cuántos sois? Dúo/Grupo, precioPelicula/pagoPase). El dato es personasDelViaje(route) en src/lib/useMoneda.ts; también se ve al escoger compañía en el formulario. En el código ya no hay ningún sitio de la cabecera que lo pinte (subtituloDelViaje quedó sin usar).",
+    "donde": "RESERVAS › Presupuesto (cartera), RUTA › Pase de Roma › ¿Cuántos sois?",
+    "captura": null
+  },
+  {
+    "apartado": "§2 · La cabecera",
+    "punto": "El invitado ve «Viaje de Eric» en la tarjeta del destino de RUTA, debajo de «Roma»",
+    "estado": "hecho",
+    "nota": "Lo pone la tarjeta del destino de RUTA (trabajo de la parte de compartir): «Viaje de Eric» debajo de «Roma» para quien no es el dueño.",
+    "donde": "RUTA, con la cuenta de un invitado (Puede editar o Solo recomendar), con o sin pase.",
+    "captura": "10n_compartir_08_tarjeta_del_invitado.jpg"
+  },
+  {
+    "apartado": "§3 · Modo sin pase y [Empezar de cero]",
+    "punto": "[Empezar de cero] no apaga «Verme como viajero sin pase» (no borra admin_sin_pase)",
+    "estado": "hecho",
+    "nota": "Se quitó la tabla de la lista de la migración 0032 (hay que volver a pegar la 0032 en Supabase para que la base deje de borrarla) y, mientras no se haga, server/logros/reiniciar.js lee la fila antes y la devuelve después. pruebaTanda10J actualizada (admin_sin_pase pasa a «se queda»).",
+    "donde": "Perfil › Ajustes › [Empezar de cero] con la cuenta de Eric, teniendo «sin pase» encendido en /?admin=logros: al volver, la etiqueta «Sin pase (prueba)» sigue",
+    "captura": null
+  },
+  {
+    "apartado": "§3 · Modo sin pase y [Empezar de cero]",
+    "punto": "RUTA (pastilla «✓ Pase de Roma») y HOY (tarjeta con candado) dicen lo mismo; de dónde sale el pase; con «sin pase» no sale en ningún sitio",
+    "estado": "hecho",
+    "nota": "Causa: la pastilla de RUTA miraba pagoActivo() (el interruptor de pruebas PAGO_ACTIVO=true, no el pase real) y HOY miraba al servidor (/api/pase/estado): con la cuenta sin pase real, RUTA decía «con» y HOY «sin». No viene del Probador. Ahora pagoActivo() también obedece al servidor (cobro encendido y sin pase = sin pase) y la pastilla usa usePaseEstado, igual que HOY. Con «sin pase» encendido siempre sale «sin».",
+    "donde": "RUTA › pastilla del pase junto al destino y HOY (antes del viaje): cuenta de Eric tras [Empezar de cero], y con «sin pase» encendido",
+    "captura": "10n_cabecera_pastilla_sin_pase.jpg"
+  },
+  {
+    "apartado": "§3 · Modo sin pase y [Empezar de cero]",
+    "punto": "Tarjeta «Durante el viaje, Hoy te dará» sale de la misma lista que el final de la película; cualquier otra lista del pase escrita aparte, a la misma",
+    "estado": "hecho",
+    "nota": "HoyAntesV2 usaba una lista escrita a mano (VISTA_PREVIA); ahora pinta filasDeHoy() (listaDeHoy → listaAjustada), con 5 tarjetas y la última a todo el ancho. Búsqueda de otras listas del pase escritas aparte: no queda ninguna (HoyAntes/ListaLoQueTendras, «Todo lo que incluye» y la película ya salían de la misma).",
+    "donde": "HOY antes del viaje (viaje con fechas futuras, sin pase o con pase)",
+    "captura": "10n_cabecera_hoy_antes.jpg"
+  },
+  {
+    "apartado": "§6c · Menús de tres puntitos desde abajo",
+    "punto": "Menús del día y de la parada, la confirmación y «Mover a» salen como la hoja (tirador, ✕, se cierran deslizando o tocando fuera)",
+    "estado": "hecho",
+    "nota": "Nuevas piezas: ui/MenuHoja.tsx (MenuHoja, HojaDelMenu, OpcionHoja), Hoja con prop baja y cierre deslizando por el tirador (vale para todas las hojas), ConfirmDialog reescrito sobre Hoja (lo usan también «Recuperar este día», fechas, excursiones). Estilo: la hoja clara de siempre (no el cuadro oscuro de antes).",
+    "donde": "DÍAS › «···» de un día o de una parada (dueño o con permiso de edición)",
+    "captura": "10n_cabecera_menu_parada.jpg"
+  },
+  {
+    "apartado": "§6c · Menús de tres puntitos desde abajo",
+    "punto": "Arriba, el nombre de lo que se toca; hoja baja; opciones una debajo de otra",
+    "estado": "hecho",
+    "nota": "El día muestra «Sábado 17 · título del día»; la parada, su nombre. La hoja baja ocupa menos de la mitad de la pantalla (comprobado en la prueba).",
+    "donde": "DÍAS › «···» de un día",
+    "captura": "10n_cabecera_menu_dia.jpg"
+  },
+  {
+    "apartado": "§6c · Menús de tres puntitos desde abajo",
+    "punto": "«Mover a» con una ruedita (como la hora del iPhone), «Ahora: jueves 26» arriba y [Mover aquí] debajo",
+    "estado": "hecho",
+    "nota": "Nuevo dayDetail/MoverADia.tsx sobre TimeListWheel (tipo lista). Los días de excursión entera y el de vuelta no salen en la rueda. La lista antigua ListaDeDias se queda solo en HOY («Pasarla a otro día»).",
+    "donde": "DÍAS › «···» de una parada › Mover a otro día",
+    "captura": "10n_cabecera_mover_a.jpg"
+  },
+  {
+    "apartado": "§6c · Menús de tres puntitos desde abajo",
+    "punto": "Confirmación «¿Seguro que quieres eliminar…?» como hoja",
+    "estado": "hecho",
+    "nota": "Día: «¿Eliminar el …?» con ConfirmDialog; parada: «¿Seguro que quieres eliminar «X»?» [Cancelar] [Sí, eliminar].",
+    "donde": "DÍAS › «···» de un día (que no sea el de llegada) › Eliminar día",
+    "captura": "10n_cabecera_confirmar_dia.jpg"
+  },
+  {
+    "apartado": "§6c · Menús de tres puntitos desde abajo",
+    "punto": "En toda la app, cualquier otro menú de tres puntitos que salga en medio de la pantalla",
+    "estado": "hecho",
+    "nota": "Revisado: solo existían los de DÍAS (día y parada, también BreakCard/TrazoCards que usan el mismo StopMenu) y el del invitado (MenusDelInvitado.tsx, convertido; C lo ha reducido/retirado por su parte).",
+    "donde": "DÍAS",
+    "captura": null
+  },
+  {
+    "apartado": "§7 · «Cambiar hora»",
+    "punto": "Quitar «Cambiar hora» de las opciones de cada parada, para todos",
+    "estado": "hecho",
+    "nota": "También se quitaron «Poner hora» y «Quitar hora» de los días libres (misma razón: la app ya no enseña horas).",
+    "donde": "DÍAS › «···» de una parada",
+    "captura": "10n_cabecera_menu_parada.jpg"
+  },
+  {
+    "apartado": "§11 · Elegir una cosa u otra",
+    "punto": "Componente compartido: lo elegido en azul oscuro #1C2230 con texto claro e icono en oro; lo no elegido en blanco con borde fino",
+    "estado": "hecho",
+    "nota": "ui/Elegir.tsx: InterruptorElegir y PastillaElegir (API documentada en el fichero; D1 y D2 ya lo usan).",
+    "donde": "EXPLORAR, Reservas, presupuesto",
+    "captura": "10n_cabecera_elegir_explorar.jpg"
+  },
+  {
+    "apartado": "§11 · Elegir una cosa u otra",
+    "punto": "[Recomendados] [Cerca de ti] de EXPLORAR con este estilo; pruebas actualizadas",
+    "estado": "hecho",
+    "nota": "También el mismo par en «Añadir parada» (AddStopScreen) y el [Roma | Excursión] del día con excursión (DayInterruptorSwitch). pruebaTanda10O_datos actualizada. Dejados como estaban: pestañas de la ficha (ya en oscuro), selectores del formulario (ya en tinta), y listas de una fila (Moneda, título, días a cambiar).",
+    "donde": "EXPLORAR › Atracciones (arriba); DÍAS › + Añadir parada; día 4 con excursión",
+    "captura": "10n_cabecera_elegir_explorar.jpg"
+  },
+  {
+    "apartado": "§11 · Elegir una cosa u otra",
+    "punto": "«¿Para quién es?» de Reservas y «¿Quién lo ha pagado?» del presupuesto",
+    "estado": "hecho",
+    "nota": "Las dos usan las pastillas de Elegir.tsx (azul oscuro con ✓ en oro).",
+    "donde": "RESERVAS › añadir entrada (viaje compartido); presupuesto › añadir gasto",
+    "captura": null
+  }
+]

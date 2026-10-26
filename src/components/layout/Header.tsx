@@ -2,12 +2,11 @@ import { useAvisosStore } from '../../store/useAvisosStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { BotonCartera } from '../presupuesto/BotonCartera'
 import { useAppNotices } from '../../hooks/useAppNotices'
-import { subtituloDelViaje } from '../../lib/resumenViaje'
 import { Icono } from '../ui/Icono'
+import { LogoPequeno } from '../ui/LogoJutrip'
 import { NoticesSheet } from './NoticesSheet'
 import { PerfilSheet } from './PerfilSheet'
 import { usePerfilUi } from '../../store/usePerfilUi'
-import { useModoInvitado } from '../../hooks/useModoInvitado'
 
 /** Botón redondo de la cabecera (diseño «La cabecera»): 44 px de toque, sin fondo, la tinta de siempre. */
 const BOTON = 'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text transition-colors hover:bg-text/[.06]'
@@ -35,18 +34,13 @@ export function Header({ onOpenDates }: HeaderProps) {
   const perfilAbierto = usePerfilUi((state) => state.abierto)
   const abrirPerfil = usePerfilUi((state) => state.abrir)
   const cerrarPerfil = usePerfilUi((state) => state.cerrar)
-  // R1: quien mira el viaje de otra persona lo ve escrito en la cabecera («Viaje de Elena · 16 – 19 oct»).
-  const { esInvitado, nombreAdmin } = useModoInvitado()
   if (!route) return null
 
   return (
     <header className="relative z-20 flex shrink-0 items-center gap-1 bg-bg pb-2.5 pl-5 pr-2.5 pt-1">
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="truncate font-display text-[30px] leading-none text-text">{route.destination}</span>
-        <span className="truncate text-text/55" style={{ font: "500 11px 'Geist Mono',monospace", letterSpacing: '.06em' }}>
-          {esInvitado ? `Viaje de ${nombreAdmin} · ` : ''}
-          {subtituloDelViaje(route)}
-        </span>
+      {/* Tanda 10N §2: el logo de JUTRIP (la palabra en Italiana con la estrella sobre la I) en lugar de «Roma / fechas · personas». */}
+      <span data-cabecera-logo="1" aria-label="JUTRIP" className="flex min-w-0 flex-1 items-center">
+        <LogoPequeno tam={26} />
       </span>
       <BotonCartera />
       <button type="button" onClick={() => setNoticesOpen(true)} aria-label={unreadCount > 0 ? `Avisos (${unreadCount} nuevos)` : 'Avisos'} title="Avisos" className={BOTON}>

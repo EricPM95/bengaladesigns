@@ -21,6 +21,10 @@ import { avisosParaLaCampana, bloqueDeReservasDelAviso, diaDelAviso } from '../l
 import { pasarDiaARoma } from '../lib/pasarDiaARoma'
 import { avisosDeFechaLeidos, fraseCampana } from '../lib/dateNotices'
 import type { DateNotice } from '../lib/types'
+import { useEntradasDelGrupo } from './useEntradasDelGrupo'
+import { useReservasGrupoUi } from '../store/useReservasGrupoUi'
+import { diaDeLaReservaEnPalabras, entradasQueNoCuadran, sitioCorto } from '../lib/reservasGrupo'
+import { textoDelAviso } from '../../shared/avisos/textos.js'
 
 export interface AppNotice {
   id: string
@@ -63,6 +67,8 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
   const dismissContextBanner = useRouteStore((state) => state.dismissContextBanner)
   // Los nombres cortos de las reservas (datos del destino) para el aviso «coinciden».
   const nombresCortos = useDestinationExcursions(route?.destination).nombresCortos
+  // Tanda 10N §8: las entradas que el dueño compra para varias personas (y la propia del invitado que no cuadra con la ruta) llegan a la campana de quien mira el viaje.
+  const grupo = useEntradasDelGrupo()
   const datosDeHorario = useDatosDeHorario(route?.destination)
   const syncStatus = useSyncStore((state) => state.status)
   const avisosVuelo = useAvisosVueloStore((state) => state.avisos)
@@ -179,6 +185,42 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
           })
         }
       }
+      // Tanda 10N §8 · «Eric ha reservado el Coliseo para ti: jueves 26, 8:00.» (incluido) / «…el jueves 26 a las 8:00.» con [Reservar la mía a la misma hora] y [Ya la tengo]. Leído = deja de contar y se queda en la lista.
+      if (grupo.esInvitado && grupo.compartido) {
+        for (const reserva of reservations) {
+          if (reserva.kind !== 'entrada' || !reserva.paraQuien) continue
+          const incluido = grupo.meIncluye(reserva)
+          const id = `reserva-grupo:${reserva.id}`
+          const propia = grupo.mias.some((mia) => mia.kind === reserva.kind && mia.refId === reserva.refId)
+          const abrir = (accion: 'misma-hora' | 'ya-la-tengo') => () => {
+            useNoticesStore.getState().markRead(id)
+            useRouteStore.getState().setMode('bookings')
+            useReservasFocusStore.getState().pedir('entradas')
+            useReservasGrupoUi.getState().pedir({ accion, reservaId: reserva.id })
+          }
+          items.push({
+            id,
+            kind: 'info',
+            title: textoDelAviso({ tipo: 'reserva_grupo', payload: { quien: grupo.nombreAdmin, sitio: sitioCorto(reserva, nombresCortos), dia: diaDeLaReservaEnPalabras(route, reserva), hora: reserva.time, incluido } }),
+            text: '',
+            acciones: incluido || propia ? undefined : [{ label: 'Reservar la mía a la misma hora', run: abrir('misma-hora') }, { label: 'Ya la tengo', run: abrir('ya-la-tengo') }],
+            read: readIds.includes(id),
+            canMarkRead: true,
+          })
+        }
+        // «Tu entrada del Coliseo es el viernes 27, y en la ruta está el jueves 26»: cuenta mientras no cuadre.
+        for (const aviso of entradasQueNoCuadran(route, grupo.mias, nombresCortos)) {
+          items.push({
+            id: aviso.id,
+            kind: 'warning',
+            title: 'Tu entrada no cuadra con la ruta',
+            text: aviso.texto,
+            acciones: [{ label: 'Ver mi reserva', run: () => { useRouteStore.getState().setMode('bookings'); useReservasFocusStore.getState().pedir('entradas') } }],
+            read: false,
+            canMarkRead: false,
+          })
+        }
+      }
       if (route.contextBanner) {
         items.push({
           id: `context:${route.createdAt}`,
@@ -205,5 +247,5 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
     const order: Record<NoticeKind, number> = { error: 0, warning: 1, friend: 2, info: 3 }
     items.sort((a, b) => Number(a.read) - Number(b.read) || order[a.kind] - order[b.kind])
     return { items, unreadCount: items.filter((item) => !item.read).length }
-  }, [route, reservations, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias, avisosVuelo])
+  }, [route, reservations, grupo.esInvitado, grupo.compartido, grupo.mias, grupo.gente, grupo.yoId, grupo.nombreAdmin, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias, avisosVuelo])
 }

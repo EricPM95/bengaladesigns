@@ -24,15 +24,15 @@
 </helmet>
 <div style="position:relative;width:{{ W }};height:{{ W }};flex:none">
  <div style="position:absolute;left:0;top:0;width:160px;height:160px;transform:scale({{ k }});transform-origin:0 0">
-  <div style="position:absolute;inset:0;perspective:700px;animation:ehIn 1.5s {{ d }} cubic-bezier(.2,.8,.2,1) both;filter:drop-shadow(0 0 22px rgba(220,210,255,.45)) drop-shadow(0 18px 20px rgba(0,0,0,.55))">
+  <div style="position:absolute;inset:0;perspective:700px;animation:ehIn 1.5s {{ d }} cubic-bezier(.2,.8,.2,1) both;filter:drop-shadow(0 0 18px rgba(220,210,255,.4)) drop-shadow(0 6px 6px rgba(0,0,0,.45)) drop-shadow(0 22px 22px rgba(0,0,0,.5))">
    <div style="position:absolute;inset:0;transform-style:preserve-3d;animation:ehTilt 7s {{ d2 }} ease-in-out infinite">
-    <sc-for list="{{ edge }}" as="z" hint-placeholder-count="10"><span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ({{ z.z }});background:{{ z.bg }}"></span></sc-for>
-    <span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};background:linear-gradient(135deg,#FFFFFF,#A9B2BF 26%,#F7F8FA 50%,#8E98A7 76%,#EEF1F6)"></span>
+    <sc-for list="{{ edge }}" as="z" hint-placeholder-count="16"><span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ({{ z.z }});background:{{ z.bg }}"></span></sc-for>
+    <span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};background:linear-gradient(135deg,#FFFFFF,#A9B2BF 26%,#F7F8FA 50%,#8E98A7 76%,#EEF1F6)"></span><span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ(.3px);background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.65) 0 1.2deg,rgba(40,50,70,.35) 1.2deg 2.4deg);mix-blend-mode:multiply;opacity:.55"></span><span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ(.45px);background:conic-gradient(from 210deg,rgba(255,255,255,.0),rgba(255,255,255,.85) 8%,rgba(255,255,255,0) 22%,rgba(255,255,255,0) 50%,rgba(255,255,255,.7) 58%,rgba(255,255,255,0) 72%)"></span>
     <span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ(.6px) scale(.955);background:linear-gradient(315deg,#FFFFFF,#9AA4B2 40%,#5E6878)"></span>
     <span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ(1.2px) scale(.905);background:linear-gradient(135deg,#3A4256,#9AA4B2)"></span>
     <span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ(1.8px) scale(.89);overflow:hidden;background:radial-gradient(circle at 30% 24%,rgba(255,255,255,.75),transparent 42%),repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.2) 0 1px,transparent 1px 4px),conic-gradient(from 20deg,#FFC9E0,#C9E4FF,#CFF7D8,#FFF0B8,#E2CCFF,#FFC9E0);animation:ehHue 7s linear infinite">
      <span style="position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.4) 0 1.5px,transparent 1.5px 6px);mix-blend-mode:soft-light"></span>
-     <span style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,transparent 55%,rgba(40,55,110,.3) 100%)"></span>
+     <span style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,transparent 55%,rgba(40,55,110,.3) 100%)"></span><span style="position:absolute;inset:0;mix-blend-mode:overlay;opacity:.5;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .55  0 0 0 .9 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>&quot;)"></span>
      <span style="position:absolute;top:-30%;bottom:-30%;left:0;width:28%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);animation:ehSheen 3.4s {{ d2 }} ease-in-out infinite"></span>
     </span>
     <span style="position:absolute;inset:0;transform:translateZ(9px)">
@@ -45,8 +45,8 @@
        <linearGradient id="{{ u }}pi" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset="1" stop-color="#97A1B2"></stop></linearGradient>
        <linearGradient id="{{ u }}cs" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1E2848" stop-opacity="0"></stop><stop offset=".5" stop-color="#1E2848" stop-opacity=".04"></stop><stop offset="1" stop-color="#1E2848" stop-opacity=".42"></stop></linearGradient>
        <filter id="{{ u }}em" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur in="SourceAlpha" stdDeviation="1.1" result="b"></feGaussianBlur>
-        <feSpecularLighting in="b" surfaceScale="3" specularConstant=".85" specularExponent="20" lighting-color="#FFFFFF" result="s"><feDistantLight azimuth="225" elevation="42"></feDistantLight></feSpecularLighting>
+        <feGaussianBlur in="SourceAlpha" stdDeviation="1.3" result="b"></feGaussianBlur>
+        <feSpecularLighting in="b" surfaceScale="4.5" specularConstant="1" specularExponent="26" lighting-color="#FFFFFF" result="s"><feDistantLight azimuth="225" elevation="42"></feDistantLight></feSpecularLighting>
         <feComposite in="s" in2="SourceAlpha" operator="in" result="s2"></feComposite>
         <feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".55" k4="0" result="lit"></feComposite>
         <feDropShadow in="lit" dx="1.6" dy="2.4" stdDeviation="1.3" flood-color="#1E2848" flood-opacity=".55"></feDropShadow>
@@ -70,30 +70,13 @@
       </sc-if>
 
       <sc-if value="{{ isFund }}" hint-placeholder-val="{{ false }}">
-       <g filter="url(#{{ u }}em)">
-        <circle cx="100" cy="88" r="52" fill="none" stroke="url(#{{ u }}sv)" stroke-width="3"></circle>
-        <circle cx="100" cy="88" r="46" fill="none" stroke="url(#{{ u }}sd)" stroke-width="1" stroke-dasharray="1.5 3"></circle>
-        <sc-for list="{{ facets }}" as="f" hint-placeholder-count="0"><path d="{{ f.d }}" fill="{{ f.f }}"></path></sc-for>
-        <circle cx="100" cy="88" r="9" fill="url(#{{ u }}sv)"></circle>
-        <circle cx="100" cy="88" r="3.5" fill="#3A4670"></circle>
-       </g>
+       <g filter="url(#{{ u }}em)"><circle cx="100" cy="88" r="52" fill="none" stroke="url(#{{ u }}sv)" stroke-width="2.4"></circle><circle cx="100" cy="88" r="47" fill="none" stroke="url(#{{ u }}sd)" stroke-width="1" stroke-dasharray="1.5 3"></circle><g transform="translate(100 88) scale(.4) translate(-115 -104)"><path d="M115 14L129 82L196 104L129 126L115 194L101 126L34 104L101 82Z" fill="url(#{{ u }}sv)" stroke="#3A4670" stroke-width="3" stroke-linejoin="round"></path><path d="M115 14L129 82L115 104L101 82Z" fill="#FFFFFF" opacity=".5"></path><path d="M196 104L129 126L115 104L129 82Z" fill="url(#{{ u }}sd)" opacity=".55"></path><path d="M115 194L101 126L115 104L129 126Z" fill="url(#{{ u }}sd)" opacity=".85"></path><path d="M34 104L101 82L115 104L101 126Z" fill="#FFFFFF" opacity=".25"></path><circle cx="115" cy="104" r="15" fill="#FFFFFF" stroke="#3A4670" stroke-width="3"></circle></g><path d="M52 118Q80 100 112 108T150 66" fill="none" stroke="#3A4670" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="1.5 4.5"></path><circle cx="52" cy="118" r="2.6" fill="#3A4670"></circle></g>
        <text x="100" y="154" text-anchor="middle" font-family="Geist Mono" font-weight="700" fill="#1A2244" stroke="#FFFFFF" stroke-width="2.6" stroke-linejoin="round" paint-order="stroke" font-size="10" letter-spacing="2.6">VIAJERO</text>
        <text x="100" y="171" text-anchor="middle" font-family="Instrument Serif" font-size="17" letter-spacing="2" fill="url(#{{ u }}sv)" filter="url(#{{ u }}em)">FUNDADOR</text>
       </sc-if>
 
       <sc-if value="{{ isPion }}" hint-placeholder-val="{{ false }}">
-       <g filter="url(#{{ u }}em)" transform="translate(10 4) scale(.9)">
-        <path d="M30 128L72 70L110 128Z" fill="url(#{{ u }}sd)" opacity=".85"></path>
-        <path d="M40 128L100 48L100 128Z" fill="url(#{{ u }}sv)"></path>
-        <path d="M100 48L160 128L100 128Z" fill="url(#{{ u }}sd)"></path>
-        <path d="M100 48L86 67L93 63L100 71L106 62L114 67Z" fill="#FFFFFF"></path>
-        <path d="M72 70L64 81L70 79L75 84L80 79Z" fill="#F4F6FA"></path>
-        <path d="M54 128L70 112L62 100L80 90L74 78L92 64L98 52" fill="none" stroke="#3A4670" stroke-width="1.8" stroke-dasharray="2.5 3.5" stroke-linecap="round"></path>
-        <path d="M100 48V18" stroke="url(#{{ u }}sd)" stroke-width="2.2" stroke-linecap="round"></path>
-        <g style="transform-origin:100px 20px;animation:ehFlag 2.4s ease-in-out infinite"><path d="M100 18Q112 15 124 21Q112 25 100 32Z" fill="url(#{{ u }}sv)"></path></g>
-        <path d="M24 128H176" stroke="url(#{{ u }}sv)" stroke-width="2.4" stroke-linecap="round"></path>
-       </g>
-       <text x="100" y="146" text-anchor="middle" font-family="Instrument Serif" font-size="17" letter-spacing="2" fill="url(#{{ u }}sv)" filter="url(#{{ u }}em)">PIONERO</text>
+       <g filter="url(#{{ u }}em)"><circle cx="100" cy="76" r="56" fill="none" stroke="url(#{{ u }}sv)" stroke-width="2.4"></circle><circle cx="100" cy="76" r="51" fill="none" stroke="url(#{{ u }}sd)" stroke-width="1" stroke-dasharray="1.5 3"></circle><path d="M62 120Q56 96 76 86T104 56" fill="none" stroke="#3A4670" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="1.5 4.5"></path><g transform="translate(82 92) rotate(-14) scale(1 1)"><ellipse cx="0" cy="0" rx="10.5" ry="14.5" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="0" cy="22" rx="7.2" ry="8.6" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="-8.5" cy="-17" rx="3.1" ry="3.9" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="-2.6" cy="-20.5" rx="3" ry="3.8" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="3.4" cy="-20" rx="2.8" ry="3.5" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="8.8" cy="-16.8" rx="2.5" ry="3.1" fill="url(#{{ u }}sv)"></ellipse><path d="M-6 -3Q0 -8 6 -3M-6 3Q0 -2 6 3M-4.5 9Q0 5 4.5 9" fill="none" stroke="#3A4670" stroke-width="1.1" stroke-linecap="round" opacity=".55"></path></g><g transform="translate(118 64) rotate(16) scale(-1 1)"><ellipse cx="0" cy="0" rx="10.5" ry="14.5" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="0" cy="22" rx="7.2" ry="8.6" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="-8.5" cy="-17" rx="3.1" ry="3.9" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="-2.6" cy="-20.5" rx="3" ry="3.8" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="3.4" cy="-20" rx="2.8" ry="3.5" fill="url(#{{ u }}sv)"></ellipse><ellipse cx="8.8" cy="-16.8" rx="2.5" ry="3.1" fill="url(#{{ u }}sv)"></ellipse><path d="M-6 -3Q0 -8 6 -3M-6 3Q0 -2 6 3M-4.5 9Q0 5 4.5 9" fill="none" stroke="#3A4670" stroke-width="1.1" stroke-linecap="round" opacity=".55"></path></g><path d="M100 14L102 21L109 23L102 25L100 32L98 25L91 23L98 21Z" fill="#FFFFFF"></path></g><text x="100" y="146" text-anchor="middle" font-family="Instrument Serif" font-size="17" letter-spacing="2" fill="url(#{{ u }}sv)" filter="url(#{{ u }}em)">PIONERO</text>
        <text x="100" y="160" text-anchor="middle" font-family="Geist Mono" font-weight="700" fill="#1A2244" stroke="#FFFFFF" stroke-width="2.6" stroke-linejoin="round" paint-order="stroke" font-size="8.4" letter-spacing="1" textLength="92" lengthAdjust="spacingAndGlyphs">LOS PRIMEROS 100</text>
       </sc-if>
 
@@ -101,14 +84,14 @@
        <g filter="url(#{{ u }}em)">
         <circle cx="100" cy="84" r="50" fill="none" stroke="url(#{{ u }}sv)" stroke-width="3"></circle>
         <circle cx="100" cy="84" r="44" fill="none" stroke="url(#{{ u }}sd)" stroke-width="1" stroke-dasharray="1.5 3"></circle>
-        <text x="100" y="96" text-anchor="middle" font-family="Instrument Serif" font-size="34" letter-spacing="1" textLength="78" lengthAdjust="spacingAndGlyphs" fill="url(#{{ u }}sv)">ROUTY</text>
+        <text x="100" y="93" text-anchor="middle" font-family="Instrument Serif" font-size="27" letter-spacing="2" textLength="76" lengthAdjust="spacingAndGlyphs" fill="url(#{{ u }}sv)">JUTRIP</text>
        </g>
        <text x="100" y="154" text-anchor="middle" font-family="Instrument Serif" font-size="17" letter-spacing="2" fill="url(#{{ u }}sv)" filter="url(#{{ u }}em)">PROBADOR</text>
        <text x="100" y="167" text-anchor="middle" font-family="Geist Mono" font-weight="700" fill="#1A2244" stroke="#FFFFFF" stroke-width="2.6" stroke-linejoin="round" paint-order="stroke" font-size="8.4" letter-spacing="1" textLength="92" lengthAdjust="spacingAndGlyphs">ANTES QUE NADIE</text>
       </sc-if>
      </svg>
     </span>
-    <span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ(10px);overflow:hidden;pointer-events:none"><span style="position:absolute;inset:-10%;background:radial-gradient(ellipse 60% 40% at 32% 22%,rgba(255,255,255,.7),transparent 60%);animation:ehGlint 7s {{ d2 }} ease-in-out infinite"></span></span>
+    <span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ(11px) scale(.89);overflow:hidden;pointer-events:none;background:linear-gradient(158deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.14) 34%,rgba(255,255,255,0) 35%),radial-gradient(ellipse 70% 40% at 50% 112%,rgba(255,255,255,.22),transparent 70%)"></span><span style="position:absolute;inset:0;clip-path:{{ clip }};border-radius:{{ rad }};transform:translateZ(10px);overflow:hidden;pointer-events:none"><span style="position:absolute;inset:-10%;background:radial-gradient(ellipse 60% 40% at 32% 22%,rgba(255,255,255,.7),transparent 60%);animation:ehGlint 7s {{ d2 }} ease-in-out infinite"></span></span>
    </div>
   </div>
   <sc-for list="{{ sp }}" as="p" hint-placeholder-count="4"><span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:{{ p.s }};height:{{ p.s }};background:#FFFFFF;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:ehTw 2.6s {{ p.d }} ease-in-out infinite"></span></sc-for>
@@ -159,7 +142,7 @@ class Component extends DCLogic {
     const SH={fundador:[OCT,'0'],pionero:[SHIELD,'0'],roma:['none','50%'],probador:[HEX,'0']}[kind]||['none','50%'];
     const base={u,W:sz+'px',k:sz/160,clip:SH[0],rad:SH[1],d:d.toFixed(2)+'s',d2:(d+1.6).toFixed(2)+'s',
       isRoma:kind==='roma',isFund:kind==='fundador',isPion:kind==='pionero',isProb:kind==='probador',
-      edge:Array.from({length:10},(_,j)=>({z:(-(j+1)*1.4).toFixed(1)+'px',bg:j<1?'linear-gradient(135deg,#E9EDF3,#8E98A7)':'linear-gradient(135deg,#B9C1CC,#4E5868 70%,#3A4252)'})),
+      edge:Array.from({length:16},(_,j)=>({z:(-(j+1)*.9).toFixed(1)+'px',bg:j<2?'linear-gradient(135deg,#F4F6FA,#9AA4B4)':(j%4<2?'linear-gradient(135deg,#C6CDD8,#5A6476 62%,#434B5C)':'linear-gradient(135deg,#9BA5B5,#3E4757 62%,#2E3544)')})),
       sp:[['4%','6%','14px',0],['84%','12%','10px',.8],['78%','82%','12px',1.5],['10%','76%','8px',2.1]].map(([x,y,s,dd])=>({x,y,s,d:(d+dd).toFixed(2)+'s'})),
       outline:'M0 0',inner:'M0 0',innerHoles:[],plinth:'M0 0',holes:[],pils:[],corn:[],facets:[],gear:'M0 0'};
     if(kind==='roma')Object.assign(base,colosseum(u));

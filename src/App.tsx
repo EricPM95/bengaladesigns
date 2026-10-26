@@ -8,12 +8,15 @@ import { Layout } from './components/layout/Layout'
 import { decodeTripFromUrl } from './lib/shareUrl'
 import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
+import { useInvitacionEnMarcha } from './hooks/useInvitacionEnMarcha'
+import { CompartidoHost } from './components/compartir/CompartidoHost'
 import { PagoHost } from './components/pase/PagoHost'
 import { PeliculaHost } from './components/pase/PeliculaHost'
 import { SinPasePrueba } from './components/pase/SinPasePrueba'
 import { useSinPasePrueba } from './store/useSinPasePrueba'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
 import { AvisosHost } from './components/avisos/AvisosHost'
+import { GastosCompartidosHost } from './components/presupuesto/GastosCompartidosHost'
 import { AjustesHosts } from './components/ajustes/AjustesHosts'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
@@ -60,6 +63,7 @@ function PreparandoViajeContainer() {
 function App() {
   // (Con «Verme como viajero sin pase» encendido, todo lo de pago se vuelve a pintar cerrado.)
   useSinPasePrueba((state) => state.activo)
+  const invitacionEnMarcha = useInvitacionEnMarcha()
   const screen = useRouteStore((state) => state.screen)
   const setDestination = useRouteStore((state) => state.setDestination)
   const setArchetype = useRouteStore((state) => state.setArchetype)
@@ -101,11 +105,13 @@ function App() {
     <Layout>
       <TripSync />
       <PuertaDeCuenta />
+      <CompartidoHost />
       <PagoHost />
       <PeliculaHost />
       <SinPasePrueba />
       <PropuestaHost />
       <AvisosHost />
+      <GastosCompartidosHost />
       <AjustesHosts />
       <VistosPorPersona />
       <LogrosPorVisto />
@@ -121,7 +127,8 @@ function App() {
       <AvisosDeVueloWatcher />
       <AnimatePresence mode="wait">
         {/* Formulario de creación de viaje (diseño "Trazo App"): sustituye a LandingScreen + Questionnaire. */}
-        {(screen === 'destination' || screen === 'questionnaire') && <TrazoFlow key="trazo" />}
+        {/* (Tanda 10N §5: con un enlace de invitación en marcha NO sale «Crear viaje», ni al abrirlo ni al tocar [Unirme].) */}
+        {(screen === 'destination' || screen === 'questionnaire') && !invitacionEnMarcha && <TrazoFlow key="trazo" />}
         {screen === 'myTrips' && (
           <Suspense key="myTrips" fallback={<Cargando />}>
             <MyTripsScreen />

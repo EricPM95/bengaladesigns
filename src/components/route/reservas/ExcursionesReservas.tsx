@@ -4,7 +4,7 @@ import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildExcursionRow, dayOfReservation, hasEnoughDaysForExcursions, type Reservation } from '../../../lib/bookings'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
-import { useRouteStore } from '../../../store/useRouteStore'
+import { useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
 import { ICONOS, LineaReservada } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
@@ -60,7 +60,8 @@ function HojaQueExcursion({ excursions, onPick, onClose }: { excursions: Excursi
  * Las añadidas, en una línea verde con «Cambiar». Viajes de menos días que `excursiones_desde_dias`: no sale.
  */
 export function ExcursionesReservas({ route, info }: { route: Route; info: DestinationExcursions }) {
-  const reservations = useRouteStore((state) => state.reservations)
+  // (Tanda 10N §8: las excursiones también son de cada uno; quien mira el viaje de otra persona ve las suyas.)
+  const reservations = useReservasParaMi()
   const openExcursions = useExcursionsStore((state) => state.openPage)
   const [lista, setLista] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)

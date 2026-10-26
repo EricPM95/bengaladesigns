@@ -1,7 +1,8 @@
 import type { Stop } from './types'
 import { useRouteStore } from '../store/useRouteStore'
 import { cambiarConDeshacer } from '../store/useAddFlowStore'
-import { alDia } from './nombreDeDia'
+import { alDia, fechaDelDia } from './nombreDeDia'
+import { indiceDeDestino } from './propuesta'
 
 /** Lo único que se queda del hueco de la parada que se cambia: su sitio en el día (su hora y su franja). */
 const DEL_HUECO = new Set<string>(['time', 'franja'])
@@ -43,6 +44,18 @@ export function moverParadaAOtroDia(stopId: string, deDiaId: string, aDiaId: str
   const { route, moveStopToDay } = useRouteStore.getState()
   if (!route) return false
   const destino = route.days.find((day) => day.id === aDiaId)
-  cambiarConDeshacer(destino ? `Movida ${alDia(route, destino.dayNumber)}` : 'Movida', () => moveStopToDay(stopId, deDiaId, aDiaId))
+  const parada = route.days.find((day) => day.id === deDiaId)?.stops.find((s) => s.id === stopId)
+  // Tanda 10N: no va al final del día, sino donde menos hay que andar de más entre las paradas de al lado (la lógica de «+ Añadir», `mejorHuecoEnElDia`), nunca en medio de nada.
+  const indice = destino && parada ? indiceDeDestino(destino, parada, undefined, fechaDelDia(route, destino.dayNumber)) : null
+  cambiarConDeshacer(destino ? `Movida ${alDia(route, destino.dayNumber)}` : 'Movida', () => {
+    moveStopToDay(stopId, deDiaId, aDiaId)
+    if (indice === null) return
+    const state = useRouteStore.getState()
+    const dia = state.route?.days.find((day) => day.id === aDiaId)
+    if (!dia?.stops.some((s) => s.id === stopId)) return
+    const orden = dia.stops.filter((s) => s.id !== stopId).map((s) => s.id)
+    orden.splice(Math.min(indice, orden.length), 0, stopId)
+    state.reorderStops(aDiaId, orden)
+  })
   return true
 }

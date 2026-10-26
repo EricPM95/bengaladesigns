@@ -384,6 +384,9 @@ export function completarEntrada(sesion: Session): Promise<void> {
         else if (!resultado.yaEstaba) {
           guardarAvisoDeInvitacion('Has entrado en el viaje como invitado.')
           entroEnUnViaje = true
+        } else if (resultado.tripId) {
+          // (Tanda 10N §5) Ya estaba dentro: directo a ese viaje, sin la pantalla de la invitación.
+          entroEnUnViaje = true
         }
       }
       // El enlace personal para invitar a la app (sin viaje).

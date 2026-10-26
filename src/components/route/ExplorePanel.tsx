@@ -12,8 +12,8 @@ import { AddToDaySheet, type AddItem } from './freeDay/AddToDaySheet'
 import { confirmAddedStaying } from './freeDay/AddToTripScreen'
 import { useDestinationPool } from '../../lib/useDestinationPool'
 import { useAlojamientoUi } from '../../store/useAlojamientoUi'
-import { useModoInvitado } from '../../hooks/useModoInvitado'
-import { usePropuestaStore } from '../../store/usePropuestaStore'
+import { usePuedeCambiarLaRuta } from '../../hooks/usePuedeCambiarLaRuta'
+import { EspacioParaElLapiz } from '../propuesta/BotonDePropuesta'
 import { FreeTourSheet, freeTourAvailable } from './reservas/FreeTourSheet'
 import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
@@ -167,13 +167,9 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const [results, setResults] = useState<NearbyPlaceResult[] | null>(null)
   /** "+ Añadir" desde Explorar (decisión del usuario, 2026-09-28): la ventana pregunta a qué día. */
   const [addItem, setAddItem] = useState<AddItem | null>(null)
-  // Quien mira el viaje de otra persona no lo cambia: «Añadir a mi ruta» entra en el modo recomendación (cuentas parte 3B) y sigue con el sitio ya puesto, sobre una copia.
-  const { soloVer } = useModoInvitado()
-  const empezarRecomendacion = usePropuestaStore((s) => s.empezar)
-  const alAnadir = <T,>(abrir: (x: T) => void) => (x: T) => {
-    if (soloVer) empezarRecomendacion('ruta')
-    abrir(x)
-  }
+  // Tanda 10N: quien solo recomienda añade directamente (el cambio va a su propuesta); durante el viaje ya no puede añadir.
+  const { puede: puedeCambiar } = usePuedeCambiarLaRuta()
+  const alAnadir = <T,>(abrir: (x: T) => void) => (puedeCambiar ? abrir : undefined) as (x: T) => void
   const [freeTourOpen, setFreeTourOpen] = useState(false)
   /** Desde dónde se ordena por cercanía cuando EXPLORAR se abre desde HOY («Cerca de ti»). */
   const [origenApertura, setOrigenApertura] = useState<Coordinates | null>(null)
@@ -375,6 +371,8 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
           onClose={backToCards}
         />
       )}
+
+      <EspacioParaElLapiz />
 
       <DayPositionPicker route={route} stop={pendingStop} onClose={() => setPendingStop(null)} onInserted={() => setPendingStop(null)} />
     </div>

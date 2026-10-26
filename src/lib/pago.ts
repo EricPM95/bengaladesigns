@@ -40,7 +40,14 @@ export function pagoActivo(): boolean {
   // «Verme como viajero sin pase» (Tanda 10B, solo pruebas del administrador; lo decide el servidor): lo de pago, cerrado.
   if (sinPasePruebaActivo()) return false
   const pedida = versionPedida()
-  return pedida === null ? PAGO_ACTIVO : pedida === 'completa'
+  // (Tanda 10N §3) Sin una versión pedida en la dirección, manda el pase de verdad: si el servidor dice «cobro encendido y esta cuenta sin pase», no hay pase (lo mismo que dice HOY).
+  return pedida === null ? PAGO_ACTIVO && !servidorDiceSinPase : pedida === 'completa'
+}
+
+/** (Tanda 10N §3) Lo que dijo el servidor del pase (`usePaseEstado`): verdadero si el cobro está encendido y la cuenta no tiene pase. RUTA, HOY y todos los candados leen lo mismo a través de `pagoActivo()`. */
+let servidorDiceSinPase = false
+export const fijarServidorDiceSinPase = (sinPase: boolean): void => {
+  servidorDiceSinPase = sinPase
 }
 
 /** Quita un parámetro de la dirección sin recargar (si no, `?version=gratis` mandaría siempre sobre lo que se elige en el panel de pruebas). */

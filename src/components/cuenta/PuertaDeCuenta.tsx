@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { guardarAvisoDeInvitacion, cuentasActivas } from '../../lib/cuentas'
 import { usePedirNombre } from '../../store/usePedirNombre'
-import { aceptarInvitacionPendiente, canjearInvitacion, invitacionAceptada, invitacionPendiente, olvidarInvitacionPendiente, verInvitacion, type VistaDeInvitacion } from '../../lib/invitaciones'
+import { aceptarInvitacionPendiente, canjearInvitacion, invitacionAceptada, invitacionPendiente, olvidarInvitacionPendiente, olvidarViajeAAbrir, pedirAbrirViaje, verInvitacion, type VistaDeInvitacion } from '../../lib/invitaciones'
+import { abrirViajeGuardado } from '../../lib/abrirViaje'
 import { EntrarCuenta } from './EntrarCuenta'
 import { InvitacionRecibida } from './InvitacionRecibida'
 import { useCuenta } from './useCuenta'
@@ -26,12 +27,28 @@ function PuertaEncendida() {
   const [error, setError] = useState<string | null>(null)
   const haySesion = estado.tipo === 'anonima' || estado.tipo === 'cuenta'
 
+  // (Tanda 10N §5) Quien ya es parte de ese viaje no vuelve a ver «Eric te invita…»: directo al viaje (sin recargar si ya está cargado; si no, con una recarga que lo abre).
+  const irAlViaje = (tripId: string | null | undefined) => {
+    olvidarInvitacionPendiente()
+    setCodigo(null)
+    setVista(null)
+    if (!tripId) return
+    if (abrirViajeGuardado(tripId)) {
+      olvidarViajeAAbrir()
+      return
+    }
+    pedirAbrirViaje(tripId)
+    recargarSinApertura()
+  }
+
   // La invitación pendiente se mira en cuanto hay sesión (la función de la base de datos pide una, aunque sea anónima).
   useEffect(() => {
     if (!codigo || aceptada || !haySesion) return undefined
     let vivo = true
     void verInvitacion(codigo).then((v) => {
-      if (vivo) setVista(v)
+      if (!vivo) return
+      if (v.ya_dentro && v.trip_id) irAlViaje(v.trip_id)
+      else setVista(v)
     })
     return () => {
       vivo = false

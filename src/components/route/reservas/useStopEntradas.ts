@@ -4,6 +4,7 @@ import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import type { StopEntrada } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import type { ReservationTarget } from './AddReservationSheet'
+import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
 
 /** La clave del Free Tour en `_entradas.json` y el `refId` de su reserva. */
 export const FREE_TOUR_KEY = 'Free Tour'
@@ -18,6 +19,13 @@ export interface StopEntradas {
   shownTime: string | null
   /** Lo que se abre en la hoja de la hora («Añádela» o «Cambiar»). */
   target: ReservationTarget
+  /** Tanda 10N §8: la entrada que el dueño tiene para este sitio y que NO cubre a quien mira (su «Comprar entrada» lleva el día y la hora del dueño). */
+  delGrupo: Reservation | null
+  /** Quien mira ve la reserva del dueño porque le cubre («Reservada ✓» sin «Cambiar»: no es suya para cambiarla). */
+  cubiertaPorElDueno: boolean
+  /** Viaje de varias personas: la etiqueta de la parada es la corta («Reservada ✓» / «Comprar entrada»). */
+  compartido: boolean
+  nombreAdmin: string
 }
 
 /**
@@ -29,12 +37,19 @@ export function useStopEntradas(stop: { id: string; name: string; isFreeTour?: b
   const route = useRouteStore((state) => state.route)
   const reservations = useRouteStore((state) => state.reservations)
   const info = useDestinationExcursions(route?.destination)
+  const grupo = useEntradasDelGrupo()
   if (!stop || !route) return null
   const entradas = info.entradasPorSitio[stop.isFreeTour ? FREE_TOUR_KEY : stop.name]
   if (!entradas?.length) return null
   // En el viaje: la parada con ese id, o una con ese nombre (la ficha de EXPLORAR no tiene el id de la ruta). Lo «de paso» no es una visita.
   const day = route.days.find((candidate) => candidate.stops.some((item) => item.id === stop.id || (!item.passThrough && !item.isFreeTour === !stop.isFreeTour && item.name === stop.name))) ?? null
-  const reservation = reservations.find((item) => item.kind === 'entrada' && (stop.isFreeTour ? item.refId === FREE_TOUR_KEY : item.placeNames.includes(stop.name))) ?? null
+  const cubre = (item: Reservation) => item.kind === 'entrada' && (stop.isFreeTour ? item.refId === FREE_TOUR_KEY : item.placeNames.includes(stop.name))
+  const delDueno = reservations.find(cubre) ?? null
+  // Tanda 10N §8: quien mira el viaje de otra persona tiene SUS entradas (las que compra) y las del dueño que le cubren; la del dueño que no le cubre le sale «Comprar entrada».
+  const propia = grupo.esInvitado ? (grupo.mias.find(cubre) ?? null) : null
+  const cubiertaPorElDueno = grupo.esInvitado && !propia && delDueno != null && grupo.meIncluye(delDueno)
+  const reservation = grupo.esInvitado ? (propia ?? (cubiertaPorElDueno ? delDueno : null)) : delDueno
+  const delGrupo = grupo.esInvitado && !propia && !cubiertaPorElDueno ? delDueno : null
   const base = reservation
     ? { refId: reservation.refId, name: reservation.name, placeNames: reservation.placeNames }
     : stop.isFreeTour
@@ -45,6 +60,10 @@ export function useStopEntradas(stop: { id: string; name: string; isFreeTour?: b
     inTrip: day != null,
     reservation,
     shownTime: reservation && (stop.isFreeTour || reservation.placeNames[0] === stop.name) ? reservation.time : null,
-    target: { kind: 'entrada', ...base, currentDayId: day?.id ?? null, existing: reservation },
+    target: { kind: 'entrada', ...base, currentDayId: day?.id ?? null, existing: cubiertaPorElDueno ? null : reservation },
+    delGrupo,
+    cubiertaPorElDueno,
+    compartido: grupo.compartido,
+    nombreAdmin: grupo.nombreAdmin,
   }
 }

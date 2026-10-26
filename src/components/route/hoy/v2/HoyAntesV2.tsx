@@ -5,17 +5,11 @@ import { pedirPago } from '../../../../lib/pago'
 import { nombreDelPase } from '../../../../lib/nombrePase'
 import { Marca } from '../../../pase/Marca'
 import { Icono } from '../../../ui/Icono'
-import type { NombreIcono } from '../../../../lib/iconos'
+import { filasDeHoy } from '../../../../lib/listaDeHoy'
+import { IconoDeLista } from '../../../pase/IconoDeLista'
 import type { EstadoPase } from '../../../../lib/paseEstado'
 
-const VISTA_PREVIA: { icono: NombreIcono; t: string; s: string }[] = [
-  { icono: 'mapa', t: 'Siguiente parada', s: 'Y cómo llegar, paso a paso' },
-  { icono: 'altavoz', t: 'Escuchar su historia', s: 'Escucha la historia de lo que ves' },
-  { icono: 'hecho', t: 'Tu día, paso a paso', s: 'Visto, No me da tiempo y Más visitas' },
-  { icono: 'banos', t: 'Cerca de ti', s: 'Baños, fuentes y dónde comer' },
-  { icono: 'avisos', t: 'Avisos del día', s: 'Cierres, lluvia y tus entradas' },
-  { icono: 'camara', t: 'Fotos del viaje', s: 'Tus recuerdos, día a día' },
-]
+// (Tanda 10N §3: «Hoy te dará» sale de la MISMA lista que el final de la película —listaDeHoy → listaAjustada—, no escrita aparte.)
 
 const MEDALLAS = [
   { n: 'Bronce', c: '#C08A5A' },
@@ -80,14 +74,14 @@ export function HoyAntesV2({ startIso, simulada, pase, destino, onPonFechas }: {
           </span>
         </div>
         <div className="relative grid grid-cols-2 gap-2">
-          {VISTA_PREVIA.map((v) => (
-            <div key={v.t} className="flex min-h-[108px] flex-col gap-2 rounded-[18px] p-3" style={{ background: 'rgba(255,253,248,.06)', border: '1px solid rgba(255,253,248,.08)' }}>
+          {filasDeHoy().map((v) => (
+            <div key={v.titulo} data-hoy-te-dara={v.titulo} className="flex min-h-[108px] flex-col gap-2 rounded-[18px] p-3 [&:last-child:nth-child(odd)]:col-span-2" style={{ background: 'rgba(255,253,248,.06)', border: '1px solid rgba(255,253,248,.08)' }}>
               <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[11px]" style={{ background: 'rgba(255,253,248,.1)' }}>
-                <Icono nombre={v.icono} size={17} />
+                <IconoDeLista icono={v.icono} size={17} color="#FFFDF8" grosor={1.7} />
               </span>
               <span className="flex flex-col gap-0.5">
-                <span className="text-[13px] font-semibold leading-tight">{v.t}</span>
-                <span className="text-[11.5px] leading-[1.35] text-[#FFFDF8]/60">{v.s}</span>
+                <span className="text-[13px] font-semibold leading-tight">{v.titulo}</span>
+                <span className="text-[11.5px] leading-[1.35] text-[#FFFDF8]/60">{v.linea}</span>
               </span>
             </div>
           ))}

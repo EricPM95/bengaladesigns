@@ -30,6 +30,8 @@ export interface Recomendacion {
   payload: Record<string, unknown>
   estado: EstadoDeRecomendacion
   creadaEn: string
+  /** Tanda 10N: lo que se ha decidido de cada cambio de una propuesta (id del cambio → aceptado | rechazado). Sin la migración 0039, siempre vacío. */
+  decisiones?: Record<string, 'aceptado' | 'rechazado'>
 }
 
 /** Lo que hay que hacer con la ruta de ahora, ya resuelto. */

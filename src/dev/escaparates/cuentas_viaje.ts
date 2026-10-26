@@ -211,7 +211,7 @@ const lista: Escaparate[] = [
     abrir: async () => {
       await prepararViaje('invitado')
       await abrirDia(2)
-      usePropuestaStore.getState().empezar('parada')
+      await usePropuestaStore.getState().activar('demo-viaje', useRouteStore.getState().route!)
       cambiarEnLaCopia(2, 3, 'Trastevere')
       quitarEnLaCopia(3, 2)
       await espera(1000)
@@ -225,7 +225,7 @@ const lista: Escaparate[] = [
     abrir: async () => {
       await prepararViaje('invitado')
       await abrirDia(2)
-      usePropuestaStore.getState().empezar('parada')
+      await usePropuestaStore.getState().activar('demo-viaje', useRouteStore.getState().route!)
       cambiarEnLaCopia(2, 3, 'Trastevere')
       quitarEnLaCopia(3, 2)
       await espera(500)

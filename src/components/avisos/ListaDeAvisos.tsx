@@ -2,6 +2,7 @@ import type { NombreIcono } from '../../lib/iconos'
 import { haceCuanto, type AvisoDeCuenta } from '../../lib/avisos'
 import { Icono } from '../ui/Icono'
 import { Avatar } from '../ajustes/Avatar'
+import { AvisoDeGasto } from './AvisoDeGasto'
 
 const ICONO: Partial<Record<AvisoDeCuenta['tipo'], NombreIcono>> = { d10: 'avion', resumen: 'estrella', sorpresas: 'gema', sorteo: 'pase', amigo_viaje: 'compartido' }
 
@@ -13,9 +14,11 @@ export function ListaDeAvisos({ avisos, resaltado = null, onTocar, ahora = Date.
   return (
     <div data-lista-avisos className="flex flex-col gap-1.5">
       {avisos.map((a) => {
+        // (Tanda 10N, apartado 9) «Ana quiere añadir al presupuesto»: el gasto va dentro y [Rechazar] [Aceptar] en el mismo aviso.
+        if (a.tipo === 'gasto_pendiente') return <AvisoDeGasto key={a.id} aviso={a} ahora={ahora} foto={fotoDe?.(a) ?? null} resaltado={resaltado === a.id} />
         const sinLeer = !a.leido && !a.etiqueta
-        const tocable = (a.tipo === 'recomendacion' && !a.etiqueta) || a.tipo === 'd10' || a.tipo === 'sorteo'
-        const clase = a.tipo === 'recomendacion' || a.tipo === 'unido' || a.tipo === 'sorteo' ? 'dorado' : a.tipo === 'aceptada' || a.tipo === 'rechazada' ? 'oscuro' : 'claro'
+        const tocable = (a.tipo === 'recomendacion' && !a.etiqueta) || a.tipo === 'd10' || a.tipo === 'sorteo' || a.tipo === 'gasto_resuelto'
+        const clase = a.tipo === 'recomendacion' || a.tipo === 'unido' || a.tipo === 'sorteo' ? 'dorado' : a.tipo === 'aceptada' || a.tipo === 'rechazada' || a.tipo === 'gasto_resuelto' ? 'oscuro' : 'claro'
         // (10P) El aviso del sorteo es el especial dorado del diseño (`Piezas/Sorteo Perfil`): fondo claro, borde dorado y su sombra, y el icono del billete en dorado.
         const especial = a.tipo === 'sorteo'
         const fondoIcono = especial ? 'linear-gradient(145deg,#FFF6DC,#E9C77A 45%,#C99A44)' : clase === 'dorado' ? '#F3D59A' : clase === 'oscuro' ? '#1C2230' : '#F1EADC'
@@ -42,6 +45,11 @@ export function ListaDeAvisos({ avisos, resaltado = null, onTocar, ahora = Date.
             )}
             <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
               <span style={{ font: sinLeer ? "600 14px/1.35 'Geist'" : "500 14px/1.35 'Geist'", textWrap: 'pretty' }}>{a.texto}</span>
+              {a.detalle && (
+                <span data-aviso-detalle style={{ font: "500 12px/1.35 'Geist'", color: 'rgba(28,34,48,.6)' }}>
+                  {a.detalle}
+                </span>
+              )}
               <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ font: "500 11px 'Geist'", color: 'rgba(28,34,48,.5)' }}>{haceCuanto(a.creado_en, ahora)}</span>
                 {a.etiqueta && (

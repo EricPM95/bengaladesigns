@@ -79,11 +79,11 @@ const S = (sql, params = []) => servidor(() => q(sql, params))
 /** El inventario: TODA tabla con datos de una cuenta y la columna que dice de quién es. Lo que se borra. */
 const INVENTARIO = [
   ['stop_visits', 'user_id'], ['trip_photo_meta', 'user_id'], ['trip_photos', 'user_id'], ['logro_hechos', 'user_id'], ['achievements', 'user_id'], ['logro_avisos', 'user_id'], ['logro_perfil', 'user_id'],
-  ['push_suscripciones', 'user_id'], ['hoy_prueba', 'user_id'], ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_destino', 'user_id'], ['place_likes', 'user_id'], ['admin_sin_pase', 'user_id'],
+  ['push_suscripciones', 'user_id'], ['hoy_prueba', 'user_id'], ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
   ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
 ]
 /** Lo que se queda (de la cuenta). */
-const SE_QUEDA = [['travelers', 'id'], ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id']]
+const SE_QUEDA = [['travelers', 'id'], ['admin_sin_pase', 'user_id'] /* Tanda 10N: «sin pase» es un ajuste de las pruebas, no se borra */, ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id']]
 
 const usuario = async (email) => (await q('insert into auth.users (email, is_anonymous) values ($1, false) returning id', [email]))[0].id
 let contador = 0
@@ -418,7 +418,7 @@ console.log('3. El código')
   debe(!/req\.body\??\.(user|uid)/.test(bloque) && /usuario/.test(bloque) && /empezarDeCero\(admin, usuario/.test(bloque), 'uid', 'la ruta nunca lee la cuenta de lo que manda el móvil: usa la de la sesión')
   debe(/conAdmin\(async \(req, res, usuario\)/.test(bloque) && /esAdmin\(usuario, env\)/.test(bloque), 'admin', 'el servidor decide con LOGROS_ADMIN_EMAILS (esAdmin) en las dos rutas')
   debe(!/@[a-z0-9-]+\.(com|es|org)/i.test(reiniciar + bloque), 'admin', 'ningún email escrito en el código')
-  debe(!/from\('/.test(reiniciar), 'filtro', 'el servicio no hace consultas sueltas a tablas: todo pasa por la función de la base de datos')
+  debe(!/from\('(?!admin_sin_pase')/.test(reiniciar), 'filtro', 'el servicio no hace consultas sueltas a tablas: todo pasa por la función de la base de datos')
   const motor = ['server/logros/reiniciar.js', 'src/lib/empezarDeCero.ts', 'supabase/migrations/0032_empezar_de_cero.sql'].map((f) => fs.readFileSync(f, 'utf8')).join('\n')
   debe(!/routeEngine|server\/engine|shared\//.test(motor), 'motor', 'no toca el motor de rutas')
   // El inventario de la prueba es el de la migración

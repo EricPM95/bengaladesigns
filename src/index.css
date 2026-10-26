@@ -321,3 +321,7 @@ html[data-solo-ver] [data-edit-tool] { display: none !important; }
   border: 1px solid #E9C77A;
   color: #E9C77A;
 }
+
+/* Tanda 10N: lo que quien solo recomienda ha añadido o movido es de su PROPUESTA, no de la ruta de verdad: borde de puntos y la etiqueta «Propuesta». */
+[data-propuesta] { position: relative; border-radius: 24px; outline: 2px dotted #B58A2E; outline-offset: 2px; }
+[data-propuesta]::after { content: 'Propuesta'; position: absolute; right: 12px; top: -9px; padding: 2px 9px; border-radius: 999px; background: #B58A2E; color: #fff; font: 700 10.5px 'Geist', sans-serif; letter-spacing: .04em; pointer-events: none; z-index: 2; }

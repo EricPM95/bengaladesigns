@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { titularDeInvitacion, textoDeInvitacionNoValida, type VistaDeInvitacion } from '../../lib/invitaciones'
 import { formatHeaderDateRangeShortEs } from '../../lib/dateRange'
 import { TextoConPase } from './TextoConPase'
+import { LogoPequeno } from '../ui/LogoJutrip'
 
 /** «Roma · 16 – 19 oct 2026»: el destino y las fechas, en una línea. Sin fechas, solo el destino. */
 export function lineaDelViaje(v: Pick<VistaDeInvitacion, 'destino' | 'inicio' | 'fin'>): string {
@@ -23,8 +24,12 @@ export function InvitacionRecibida({ vista, onUnirme, onSeguir, ocupado = false,
       aria-modal="true"
       aria-label="Te invitan a un viaje"
       data-invitacion-recibida
-      style={{ position: 'fixed', inset: 0, zIndex: 91, background: 'radial-gradient(120% 70% at 50% 10%,#3A3550 0%,#141826 70%)', color: '#FFFDF8', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'max(170px, 20vh) 26px calc(44px + env(safe-area-inset-bottom))', gap: 16, textAlign: 'center', overflowY: 'auto' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 91, background: 'radial-gradient(120% 70% at 50% 10%,#3A3550 0%,#141826 70%)', color: '#FFFDF8', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'max(150px, 18vh) 26px calc(44px + env(safe-area-inset-bottom))', gap: 16, textAlign: 'center', overflowY: 'auto' }}
     >
+      {/* (Tanda 10N §5) El logo de JUTRIP, pequeño, arriba del todo y en el centro. */}
+      <span data-logo-invitacion style={{ position: 'absolute', top: 'calc(22px + env(safe-area-inset-top))', left: 0, right: 0, display: 'flex', justifyContent: 'center' }}>
+        <LogoPequeno tono="oscuro" tam={22} />
+      </span>
       {vista.valida ? (
         <>
           <span aria-hidden="true" style={{ width: 84, height: 84, borderRadius: '50%', background: '#F3D59A', color: '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "400 40px/1 'Instrument Serif',serif", boxShadow: '0 0 0 4px rgba(243,213,154,.25)' }}>

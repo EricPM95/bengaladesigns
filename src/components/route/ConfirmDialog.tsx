@@ -1,4 +1,4 @@
-import { createPortal } from 'react-dom'
+import { Hoja } from '../ui/Hoja'
 import { elDia } from '../../lib/nombreDeDia'
 import type { Route } from '../../lib/types'
 
@@ -7,16 +7,12 @@ import type { Route } from '../../lib/types'
  * original, regenerar un día con cambios. El mismo panel que "Quiero entrar" y las fechas (diseño Trazo), en el body.
  */
 export function ConfirmDialog({ eyebrow, text, detail, confirmLabel, cancelLabel = 'Mejor no', alto = false, onConfirm, onCancel }: { eyebrow: string; text: string; detail?: string; confirmLabel: string; cancelLabel?: string; /** Por encima de otra hoja abierta (Tanda 6y10: «Cambiar un día por la excursión» pregunta desde dentro de una hoja). */ alto?: boolean; onConfirm: () => void; onCancel: () => void }) {
-  return createPortal(
-    <div className={`fixed inset-0 ${alto ? 'z-[100]' : 'z-[80]'} flex items-end justify-center md:items-center`} role="dialog" aria-modal="true" aria-labelledby="confirm-heading">
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onCancel} />
-      <div className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[420px] md:rounded-[28px]">
-        <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent">{eyebrow}</p>
-        <h2 id="confirm-heading" className="mt-2 font-display text-[24px] leading-[1.15] text-text">
-          {text}
-        </h2>
-        {detail && <p className="mt-2 text-[14.5px] leading-snug text-text-soft">{detail}</p>}
-        <div className="mt-5 flex gap-2">
+  // (Tanda 10N §6c) Todas las preguntas salen desde abajo con la pieza `Hoja` (tirador, ✕, se cierra deslizando o tocando fuera), BAJA: el nombre de lo que se toca arriba y los dos botones.
+  return (
+    <span onClick={(event) => event.stopPropagation()} data-confirmar="1">
+      <Hoja baja etiqueta={eyebrow} titulo={text} onCerrar={onCancel} z={alto ? 100 : 80} datos="confirmar">
+        {detail && <p style={{ margin: 0, font: "400 14.5px/1.4 'Geist'", color: 'rgba(28,34,48,.7)' }}>{detail}</p>}
+        <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
           <button type="button" onClick={onCancel} className="h-12 flex-1 rounded-full border border-text/15 text-[15px] font-medium text-text transition-colors hover:bg-bg-hover">
             {cancelLabel}
           </button>
@@ -24,9 +20,8 @@ export function ConfirmDialog({ eyebrow, text, detail, confirmLabel, cancelLabel
             {confirmLabel}
           </button>
         </div>
-      </div>
-    </div>,
-    document.body,
+      </Hoja>
+    </span>
   )
 }
 

@@ -2,7 +2,9 @@ import type { AvisoDeCuenta } from '../../lib/avisos'
 import { useLogrosPantallas } from '../logros/pantallas/useLogrosPantallas'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { usePagoStore } from '../../store/usePagoStore'
+import { usePresupuestoUi } from '../../store/usePresupuestoUi'
 import { useR2Store } from '../../store/useR2Store'
+import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { useViajeCompartido } from '../../store/useViajeCompartido'
@@ -34,11 +36,49 @@ export async function abrirAviso(aviso: AvisoDeCuenta): Promise<string | null> {
     void avisos.marcarLeidos([aviso.id])
     return null
   }
+  // (Tanda 10N, apartado 6) «Eric ha aceptado 3 de tus 5 cambios»: al tocarlo, su propuesta con cuáles sí y cuáles no.
+  if ((aviso.tipo === 'aceptada' || aviso.tipo === 'rechazada') && p.rec_id) {
+    const tripId = String(p.trip_id ?? '')
+    await useViajeCompartido.getState().cargar(tripId)
+    void avisos.marcarLeidos([aviso.id])
+    avisos.cerrar()
+    usePropuestaStore.getState().abrirHoja({ modo: 'enviada', recId: String(p.rec_id) })
+    return null
+  }
+  // (Tanda 10N) «Tienes 2 cambios sin enviar»: abre la propuesta.
+  if (String(aviso.tipo) === 'sin_enviar') {
+    void avisos.marcarLeidos([aviso.id])
+    avisos.cerrar()
+    usePropuestaStore.getState().abrirHoja({ modo: 'mia' })
+    return null
+  }
   // (Tanda 10P) El aviso dorado del sorteo abre la página del sorteo.
   if (aviso.tipo === 'sorteo') {
     void avisos.marcarLeidos([aviso.id])
     avisos.cerrar()
     useLogrosPantallas.getState().abrir({ t: 'sorteo' })
+    return null
+  }
+  // (Tanda 10N, apartado 9) «Eric ha aceptado tu gasto»: al tocarlo se abre el presupuesto (el gasto ya suma, o se queda solo para ti).
+  if (aviso.tipo === 'gasto_resuelto') {
+    void avisos.marcarLeidos([aviso.id])
+    avisos.cerrar()
+    usePresupuestoUi.getState().abrir()
+    return null
+  }
+  // (Tanda 10N §10) «Eric ha cambiado el viaje»: al tocarlo, a la ruta ya cambiada. «Ya no formas parte…» y el cambio de permiso solo se dan por leídos.
+  if (aviso.tipo === 'viaje_cambiado') {
+    void avisos.marcarLeidos([aviso.id])
+    avisos.cerrar()
+    const tripId = String(p.trip_id ?? '')
+    const sync = useSyncStore.getState()
+    if (sync.activeTripId !== tripId) {
+      const { abrirViajeGuardado } = await import('../../lib/abrirViaje')
+      if (!abrirViajeGuardado(tripId)) return 'No encontramos ese viaje.'
+    }
+    const { refrescarViajeActivo } = await import('../../lib/viajeEnDirecto')
+    await refrescarViajeActivo()
+    useRouteStore.getState().setMode('route')
     return null
   }
   if (aviso.tipo === 'd10') {

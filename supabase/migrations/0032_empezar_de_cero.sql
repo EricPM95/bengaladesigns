@@ -9,9 +9,9 @@
 --   1. `preparar_borrado(uid)` (la misma regla que al borrar una cuenta): un viaje con invitados pasa a administrarlo el invitado que entró primero; un pase con otras personas se queda con ellas.
 --      Así NUNCA se borra nada de otra cuenta. (Solo si la cuenta usaba el pase de OTRA persona, a esa persona le baja una plaza: lo mismo que ya pasa al borrar una cuenta.)
 --   2. Se borran las filas de la cuenta, siempre con `columna = uid` (nunca por un filtro amplio): vistos, fotos y sus anotaciones, hechos / logros / avisos / EXP, suscripción a los avisos, día de
---      prueba, invitaciones que hizo a amigos (lo suyo como INVITADOR), campanita, «avísame cuando llegue», «me gusta», el interruptor «sin pase», recomendaciones e invitaciones de viaje que creó,
+--      prueba, invitaciones que hizo a amigos (lo suyo como INVITADOR), campanita, «avísame cuando llegue», «me gusta», recomendaciones e invitaciones de viaje que creó,
 --      su sitio en viajes y pases de otros, los pases que compró y los viajes que son suyos (con sus reservas, entradas, vuelos y alojamientos, que viven dentro de la fila del viaje).
---   3. NO se tocan: la cuenta, `travelers`, `invitaciones_app` (su enlace para invitar), `logro_referidos` donde ella es la INVITADA (es el registro de quien la invitó), `pagos_registro`
+--   3. NO se tocan (Tanda 10N): el interruptor «sin pase» (`admin_sin_pase`: es un ajuste de las pruebas, no algo de la cuenta), la cuenta, `travelers`, `invitaciones_app` (su enlace para invitar), `logro_referidos` donde ella es la INVITADA (es el registro de quien la invitó), `pagos_registro`
 --      (el registro de los cobros: no cuelga de ninguna cuenta y no se borra nunca), nada de Stripe, ni nada de otra cuenta.
 -- Los archivos de las fotos (Storage) no se pueden borrar desde SQL: los borra el servidor.
 
@@ -45,7 +45,6 @@ begin
       ('avisos', 'user_id'),
       ('avisos_destino', 'user_id'),
       ('place_likes', 'user_id'),
-      ('admin_sin_pase', 'user_id'),
       ('trip_recommendations', 'author_id'),
       ('trip_invitations', 'creada_por'),
       ('trip_members', 'user_id'),

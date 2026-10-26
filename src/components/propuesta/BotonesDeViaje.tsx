@@ -2,43 +2,19 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { cuentasActivas } from '../../lib/cuentas'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
+import { botonChampan } from '../../lib/marcaBoton'
+import { useViajeCompartido } from '../../store/useViajeCompartido'
+import { usePersonasStore } from '../../store/usePersonasStore'
+import { CarasDelViaje } from '../compartir/CarasDelViaje'
 import { useCuenta } from '../cuenta/useCuenta'
 import { Icono } from '../ui/Icono'
 import { usePagoStore } from '../../store/usePagoStore'
-import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { misPases } from '../../lib/pagoPase'
 import { pedirPermisoUnaVez } from '../../lib/permisoAvisos'
 import { usePedirNombre } from '../../store/usePedirNombre'
 import { EntrarCuenta } from '../cuenta/EntrarCuenta'
-
-/**
- * LOS BOTONES DE RUTA (RS1 y RW3, cuentas parte 3): arriba de la pestaña RUTA, a la derecha.
- *   · El administrador (con su cuenta y su viaje guardado): [Compartir viaje] (Tanda 10B: ya no es un botón oscuro encima de la tarjeta, sino un icono más dentro de la tarjeta del destino, `BotonCompartirViaje`).
- *     Abre la hoja del enlace y el código (RS2); con un Pase Dúo o Grupo, la misma hoja que P7 y el invitado entra con su plaza.
- *   · Quien mira el viaje de otra persona: [Recomendar otra ruta] (dorado). Entra en el modo recomendación sobre la ruta entera.
- * Con las cuentas apagadas no sale ninguno: la app es la de hoy.
- */
-export function BotonesDeViaje() {
-  if (!cuentasActivas()) return null
-  return <BotonesEncendidos />
-}
-
-function BotonesEncendidos() {
-  const { esInvitado, propuestaActiva } = useModoInvitado()
-  const route = useRouteStore((s) => s.route)
-  const empezar = usePropuestaStore((s) => s.empezar)
-  if (!route || !esInvitado || propuestaActiva) return null
-  return (
-    <div className="flex justify-end px-0.5 pb-1">
-      <button type="button" data-recomendar-ruta onClick={() => empezar('ruta')} className="flex h-11 items-center gap-[7px] rounded-full pl-[11px] pr-3.5 text-[13px] font-semibold text-[#17120a]" style={{ background: 'oklch(0.8 0.14 70)' }}>
-        <Icono nombre="ruta" size={15} grosor={2} />
-        Recomendar otra ruta
-      </button>
-    </div>
-  )
-}
 
 /**
  * [Compartir viaje] como icono de la tarjeta del destino (RUTA): mismo tamaño y estilo que la bombilla y la varita. SIEMPRE a la vista (Tanda 10C; en la 10B solo salía con cuenta y viaje guardado, y por eso no se veía).
@@ -55,10 +31,11 @@ function IconoCompartir({ cuenta, activo, tripId = null }: { cuenta: 'cuenta' | 
   const route = useRouteStore((s) => s.route)
   const abrir = usePagoStore((s) => s.abrir)
   const { esInvitado } = useModoInvitado()
+  const gente = useViajeCompartido((s) => s.gente)
+  const abrirPersonas = usePersonasStore((s) => s.abrir)
   const [ocupado, setOcupado] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
   const [entrando, setEntrando] = useState(false)
-  if (esInvitado) return null
   const decir = (texto: string) => {
     setAviso(texto)
     window.setTimeout(() => setAviso(null), 3200)
@@ -87,12 +64,26 @@ function IconoCompartir({ cuenta, activo, tripId = null }: { cuenta: 'cuenta' | 
     setOcupado(false)
     abrir({ tipo: 'invitar', modo: pase ? 'pase' : 'viaje', destino: route.destination, tripId, pase })
   }
+  // (Tanda 10N §4a) Ya compartido —o invitado—: las caras de las personas con el número y la flechita; al tocarlas, «Personas del viaje». Nunca [Compartir] para un invitado: invitar es del administrador.
+  const compartido = gente.length > 1 || (esInvitado && gente.length > 0)
+  if (compartido) {
+    return (
+      <button type="button" data-caras-del-viaje-boton onClick={abrirPersonas} aria-label={`Personas del viaje: ${gente.length}`} title="Personas del viaje" className="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-text/[.14] bg-bg-card pl-1.5 pr-2.5 text-text">
+        <CarasDelViaje personas={gente} max={4} tam={24} borde="#FFFDF8" />
+        <span data-numero-de-personas className="text-[13px] font-semibold">
+          {gente.length}
+        </span>
+        <Icono nombre="adelante" size={12} />
+      </button>
+    )
+  }
+  if (esInvitado) return null
   return (
     <>
-      <button type="button" data-compartir-viaje disabled={ocupado} onClick={() => void compartir()} title="Compartir viaje" aria-label="Compartir viaje" className="group flex h-9 w-9 shrink-0 items-center justify-center disabled:opacity-60">
-        <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 group-hover:bg-bg-hover">
-          <Icono nombre="compartirViaje" className="h-[16px] w-[16px]" />
-        </span>
+      {/* (Tanda 10N §4a) Sin compartir: el botón [Compartir] en champán, con su texto, junto a la pastilla del pase (fuera el icono suelto). */}
+      <button type="button" data-compartir-viaje disabled={ocupado} onClick={() => void compartir()} title="Compartir viaje" aria-label="Compartir viaje" className="flex h-[34px] shrink-0 items-center gap-1.5 rounded-full px-3.5 disabled:opacity-60" style={{ ...botonChampan(), border: 'none', font: "700 13px 'Geist'" }}>
+        <Icono nombre="compartirViaje" size={14} grosor={2} />
+        Compartir
       </button>
       {aviso && createPortal(
         <div role="status" data-aviso-compartir className="fixed inset-x-4 bottom-28 z-[60] rounded-2xl bg-[#1C2230] px-4 py-3 text-center text-[13.5px] font-medium text-[#FFFDF8] shadow-lg">

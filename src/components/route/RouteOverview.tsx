@@ -15,8 +15,9 @@ import { withUndo } from '../../store/useAddFlowStore'
 import { Icono } from '../ui/Icono'
 import { BanderaDestino } from '../ui/BanderaDestino'
 import { TarjetaRecuerdosEnRuta } from './fotos/TarjetaRecuerdos'
-import { BotonCompartirViaje, BotonesDeViaje } from '../propuesta/BotonesDeViaje'
+import { BotonCompartirViaje } from '../propuesta/BotonesDeViaje'
 import { textoDeDuracion } from '../../lib/duracionViaje'
+import { useModoInvitado } from '../../hooks/useModoInvitado'
 
 interface RouteOverviewProps {
   route: Route
@@ -50,6 +51,8 @@ function TipsButton({ city, onOpen }: { city: string; onOpen: () => void }) {
  * la distancia. Tocar una tarjeta abre la ventana del destino, con sus hoteles y sus actividades.
  */
 export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps) {
+  // (Tanda 10N §2) El invitado sigue viendo que el viaje es de otra persona: «Viaje de Eric», debajo del destino.
+  const { esInvitado, nombreAdmin } = useModoInvitado()
   const [detailCity, setDetailCity] = useState<string | null>(null)
   // «Recuperar mi ruta» (la varita de la tarjeta del destino): la pregunta antes de volver a la ruta que preparamos.
   const [askRestoreCity, setAskRestoreCity] = useState<string | null>(null)
@@ -72,8 +75,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
 
   return (
     <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-6 pt-4">
-      {/* RS1 y RW3 (cuentas parte 3): [Compartir viaje] para quien administra el viaje, [Recomendar otra ruta] para quien lo mira. */}
-      <BotonesDeViaje />
+      {/* (Tanda 10N: ya no hay [Recomendar otra ruta]: quien solo recomienda cambia la ruta directamente y cada cambio va a su propuesta, con el lápiz flotante.) */}
       <TarjetaRecuerdosEnRuta route={route} />
       {segments.map((segment, index) => {
         const segmentDays = route.days.filter((day) => segment.dayIds.includes(day.id) && !day.isReturnLeg)
@@ -96,6 +98,11 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
               <BanderaDestino countryCode={segment.countryCode} recta />
               <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span className="truncate font-display text-[24px] leading-[1.05] text-text">{segment.city}</span>
+                {esInvitado && nombreAdmin && (
+                  <span data-viaje-de className="truncate text-[12px] font-medium text-text/55">
+                    Viaje de {nombreAdmin}
+                  </span>
+                )}
                 {/* Dos líneas: «5 días · 4 noches» y debajo las fechas (junto a la bombilla y el deshacer no caben en una a 375 px). */}
                 <span data-duracion-del-viaje="1" className="whitespace-nowrap text-[12px] text-text/55">
                   {duracion}
@@ -110,10 +117,10 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
             <div aria-hidden="true" className="my-3 h-px bg-text/10" />
             <div className="flex items-center gap-2">
               <PastillaPase destino={segment.city} />
+            {/* (Tanda 10N §4a) Junto a la pastilla del pase: [Compartir] o, ya compartido, las caras con el número. Bombilla y flecha, juntas a la derecha. */}
+            {index === 0 && <BotonCompartirViaje />}
               <span className="flex-1" />
             <TipsButton city={segment.city} onOpen={() => setTipsCity(segment.city)} />
-            {/* Compartir el viaje (Tanda 10B): el icono de siempre, en la primera tarjeta; abre la hoja de invitar de Cuentas. */}
-            {index === 0 && <BotonCompartirViaje />}
             {/* La flecha de volver a la ruta de antes SIEMPRE a la vista (Tanda 10C): apagada si no hay una ruta anterior que recuperar o si no hay nada cambiado. */}
             <button
               type="button"

@@ -36,11 +36,10 @@ import { CambioParada } from '../../src/components/propuesta/CambioParada'
 import { HojaVerPropuesta, FilaDeCambio } from '../../src/components/propuesta/HojaVerPropuesta'
 import { HojaRecomendacion, BloqueDeDia, plegarLineas } from '../../src/components/propuesta/HojaRecomendacion'
 import { HojaComoTeLlamas } from '../../src/components/ajustes/HojaComoTeLlamas'
-import { ReservasSoloVer } from '../../src/components/route/ReservasSoloVer'
 import { hayQuePedirNombre } from '../../src/store/usePedirNombre'
 import { esEntornoDePrueba } from '../../src/lib/recomendaciones'
 import { PropuestaEnviada } from '../../src/components/propuesta/PropuestaEnviada'
-import { MenuInvitadoParada, MenuInvitadoDia } from '../../src/components/propuesta/MenusDelInvitado'
+import { MenuInvitadoParada } from '../../src/components/propuesta/MenusDelInvitado'
 import { diasConRecomendacion } from '../../src/components/propuesta/EtiquetaRecomendacion'
 import { useRouteStore } from '../../src/store/useRouteStore'
 import { usePropuestaStore } from '../../src/store/usePropuestaStore'
@@ -98,7 +97,6 @@ export const M = {
   hayQuePedirNombre,
   esEntornoDePrueba,
   pintaComoTeLlamas: () => renderToStaticMarkup(createElement(HojaComoTeLlamas)),
-  pintaReservasSoloVer: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(ReservasSoloVer, { onClose: () => undefined, ...props } as never)),
   pintaListaPlegada: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(BloqueDeDia, props as never)),
   textoDelCambio,
   sinCambios,
@@ -115,7 +113,6 @@ export const M = {
   pintaR2: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(HojaRecomendacion, { onCerrar: () => undefined, ...props } as never)),
   pintaEnviada: (nombre: string) => renderToStaticMarkup(createElement(PropuestaEnviada, { nombre, onVolver: () => undefined })),
   pintaMenuParada: () => renderToStaticMarkup(createElement(MenuInvitadoParada, { nombre: 'Coliseo', ciudad: 'Roma', onVerFicha: () => undefined })),
-  pintaMenuDia: () => renderToStaticMarkup(createElement(MenuInvitadoDia, { onVerEnMapa: () => undefined })),
   haceCuanto,
   avisoDeLaDireccion,
   tocaPedirPermiso,

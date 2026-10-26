@@ -77,7 +77,7 @@ debe(fTerraza.photo_credit?.autor === 'Eric', 'terraza', 'y la foto de la Terraz
 {
   const ex = sinComentarios(leer('src/components/route/placeExplorer/PlaceExplorerScreen.tsx'))
   debe(!/Con el pase, ordena los sitios por lo cerca que los tienes de ti/.test(ex), 'pestanas', 'la tarjeta cerrada de «Cerca de ti» ya no está en la lista')
-  debe(/data-pestanas-explorar/.test(ex) && /!trimmedQuery && \(\s*<div data-pestanas-explorar/.test(ex), 'pestanas', 'las dos pestañas salen para todos (no dependen del pase, del dueño ni del invitado)')
+  debe(/data-pestanas-explorar/.test(ex) && /!trimmedQuery && \(\s*(\/\*[^]*?\*\/)?\s*<InterruptorElegir/.test(ex), 'pestanas', 'las dos pestañas salen para todos (no dependen del pase, del dueño ni del invitado)')
   debe(!/soloVer|modoInvitado/.test(ex), 'pestanas', 'la pantalla de EXPLORAR no distingue al invitado: las pestañas son iguales para el dueño y el invitado')
   debe(/Encuentra los mejores sitios cerca de ti, sin perder tiempo\. Disponible con el Pase de \$\{destination\}\./.test(ex), 'pestanas', 'el texto de la hoja, con el nombre del destino del dato')
   debe(/abrirPase\(\)/.test(ex) && /Ver el Pase de \{destination\}/.test(ex), 'pestanas', '[Ver el Pase de Roma] abre el pase')
@@ -154,7 +154,7 @@ const tarjeta = (nombre) => `(() => { const b = Array.from(document.querySelecto
   const hoja = await a.evaluar("(() => { const h = document.querySelector('[data-hoja=\"explorar-cerca-de-ti\"]'); if (!h) return null; return { texto: h.innerText.replace(/\\s+/g, ' ').trim(), marca: Array.from(h.querySelectorAll('[data-marca]')).map((m) => m.textContent), cerrar: Boolean(h.querySelector('[aria-label=\"Cerrar\"]')), boton: h.querySelector('[data-boton-hoja=\"ver-el-pase\"]')?.textContent ?? null } })()")
   debe(hoja && /^Cerca de ti Encuentra los mejores sitios cerca de ti, sin perder tiempo\. Disponible con el Pase de Roma\. Ver el Pase de Roma$/.test(hoja.texto), 'pestanas', `sin pase, «Cerca de ti» abre la hoja con su texto (${hoja?.texto})`)
   debe(hoja?.marca?.includes('Pase de Roma') && hoja?.cerrar && hoja?.boton === 'Ver el Pase de Roma', 'pestanas', 'con «Pase de Roma» en oro (Marca), la ✕ y [Ver el Pase de Roma]')
-  debe(await a.evaluar("document.querySelector('[data-pestana=\"recommended\"]').style.color !== ''"), 'pestanas', 'y la pestaña de «Recomendados» sigue elegida (no cambia de pestaña)')
+  debe(await a.evaluar("document.querySelector('[data-pestana=\"recommended\"]').getAttribute('data-elegida') === '1'"), 'pestanas', 'y la pestaña de «Recomendados» sigue elegida (no cambia de pestaña)')
   await a.captura(path.join(SALIDA, '10o_hoja_cerca_de_ti.jpg'))
   await a.evaluar("document.querySelector('[data-hoja=\"explorar-cerca-de-ti\"] [aria-label=\"Cerrar\"]').click(); true")
   await a.esp(600)
@@ -196,7 +196,7 @@ const tarjeta = (nombre) => `(() => { const b = Array.from(document.querySelecto
   await a.evaluar("document.querySelector('[data-pestana=\"nearby\"]').click(); true")
   await a.esp(1000)
   debe((await a.evaluar("document.querySelector('[data-hoja=\"explorar-cerca-de-ti\"]')")) === null, 'pestanas', 'con pase, «Cerca de ti» no abre la hoja: cambia de pestaña y ordena por cercanía')
-  debe(await a.evaluar("document.querySelector('[data-pestanas-explorar] span[aria-hidden]').style.transform.includes('100%')"), 'pestanas', 'y el interruptor se mueve a «Cerca de ti»')
+  debe(await a.evaluar("document.querySelector('[data-pestana=\"nearby\"]').getAttribute('data-elegida') === '1'"), 'pestanas', 'y el interruptor se mueve a «Cerca de ti»')
   await a.captura(path.join(SALIDA, '10o_pestanas_con_pase.jpg'))
   a.cerrar()
 }

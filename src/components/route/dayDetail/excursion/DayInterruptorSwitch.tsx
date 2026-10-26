@@ -4,7 +4,7 @@ import { Icono } from '../../../ui/Icono'
 /**
  * El interruptor [Roma | Excursión] del día 4 (Tanda 6g, diseño «2a · Interruptor»).
  * Va en la tarjeta del día, debajo del título, y se ve aunque la tarjeta esté plegada: por eso el clic no sube a la tarjeta.
- * El elegido va en blanco con sombra; en «Excursión» lleva un circulito con la foto de la excursión elegida (o su color).
+ * (Tanda 10N §11) El elegido va en el azul oscuro de la marca con el texto claro y el icono en oro; el no elegido, en blanco con su borde fino. Antes: el elegido en blanco con sombra; en «Excursión» lleva un circulito con la foto de la excursión elegida (o su color).
  */
 interface DayInterruptorSwitchProps {
   mode: 'roma' | 'excursion'
@@ -32,11 +32,12 @@ export function DayInterruptorSwitch({ mode, onChange, excursionColor, excursion
         onClick={() => {
           if (!active) onChange(target)
         }}
-        className={`flex min-h-[44px] flex-1 items-center justify-center gap-[7px] rounded-full text-[13.5px] font-semibold transition-colors disabled:cursor-wait ${
-          active ? 'bg-bg-card text-text shadow-[0_1px_3px_rgba(28,34,48,.18)]' : 'bg-transparent text-text/60'
+        data-elegida={active ? '1' : '0'}
+        className={`flex min-h-[44px] flex-1 items-center justify-center gap-[7px] rounded-full border text-[13.5px] font-semibold transition-colors disabled:cursor-wait ${
+          active ? 'border-[#1C2230] bg-[#1C2230] text-[#FBF3E2]' : 'border-text/[.14] bg-[#FFFDF8] text-text'
         }`}
       >
-        {lead}
+        <span className={active ? 'text-[#F3D88F]' : 'text-text/60'}>{lead}</span>
         {label}
       </button>
     )
@@ -44,7 +45,7 @@ export function DayInterruptorSwitch({ mode, onChange, excursionColor, excursion
 
   return (
     <div onClick={(e) => e.stopPropagation()} className="flex flex-col gap-1.5">
-      <div role="group" aria-label="Qué hacer este día" aria-busy={busy} className={`flex gap-1 rounded-full bg-bg-hover p-1 ${busy ? 'opacity-70' : ''}`}>
+      <div role="group" aria-label="Qué hacer este día" aria-busy={busy} className={`flex gap-2 ${busy ? 'opacity-70' : ''}`}>
         {option('roma', 'Roma', <HouseIcon />)}
         {option(
           'excursion',

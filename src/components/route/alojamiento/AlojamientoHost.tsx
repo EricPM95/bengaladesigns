@@ -5,6 +5,8 @@ import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { estanciasDelViaje } from '../../../lib/tuAlojamiento'
 import { PantallaAlojamiento } from './PantallaAlojamiento'
 import { HojaTuAlojamiento } from './HojaTuAlojamiento'
+import { useAddFlowStore } from '../../../store/useAddFlowStore'
+import { usePermisosDelViaje } from '../../../hooks/usePermisosDelViaje'
 
 /**
  * Lo que abren todos los botones de alojamiento de la app (Tanda 6z): la pantalla del mapa y la hoja «Tu alojamiento». Se monta una sola vez con la ruta; quien quiere abrirlas lo pide
@@ -20,6 +22,7 @@ export function AlojamientoHost() {
   const cerrarHoja = useAlojamientoUi((state) => state.cerrarHoja)
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
   const info = useDestinationExcursions(route?.destination)
+  const { esInvitado, nombreAdmin } = usePermisosDelViaje()
   if (!route || (!mapa && !hoja)) return null
 
   const estancias = estanciasDelViaje(route)
@@ -36,11 +39,17 @@ export function AlojamientoHost() {
           noches={estanciaHoja.noches}
           actual={selections[estanciaHoja.segmentDayId] ?? null}
           onGuardar={(hotel) => {
-            setHotel(estanciaHoja.segmentDayId, hotel)
+            // Tanda 10N §8: guardar el alojamiento en el viaje es solo del dueño; quien mira puede buscar, pero no lo guarda.
+            if (esInvitado) useAddFlowStore.setState({ toast: { message: `El alojamiento lo guarda ${nombreAdmin || 'el dueño del viaje'}`, previous: null, id: Date.now() } })
+            else setHotel(estanciaHoja.segmentDayId, hotel)
             cerrarHoja()
             cerrarMapa()
           }}
           onEliminar={() => {
+            if (esInvitado) {
+              cerrarHoja()
+              return
+            }
             quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(estanciaHoja.segmentDayId, null))
             cerrarHoja()
           }}
