@@ -109,10 +109,12 @@ async function viaje(dias, { fechas }) {
 }
 
 const estadoBase = { screen: 'route', mode: 'days', reservations: [], accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {} }
+let ultimoHtml = ''
 function pinta(componente, props, route, reservas = []) {
   ponerVersion('completa')
   useRouteStore.setState({ ...estadoBase, route, reservations: reservas })
   const html = renderToStaticMarkup(createElement(componente, props))
+  ultimoHtml = html
   return aTexto(html)
 }
 
@@ -154,7 +156,8 @@ for (const fechas of [true, false]) {
   // Con el día abierto, la hora de lo reservado sale UNA sola vez, en la pestañita verde de la parada.
   {
     const texto = pinta(DayList, { route, activeDayId: diaReserva.id, onSelectDay() {}, showAllDaysOnMap: false }, route, [reserva])
-    debe((texto.match(/16:40/g) ?? []).length === 1, '5 reservado', `DÍAS · ${etiquetaViaje} · día ${diaReserva.dayNumber} abierto: la hora de lo reservado (16:40) no sale una sola vez en la parada`)
+    // Tanda 10N4 (§4d): la parada ya no lleva la hora ni «Reservada ✓»: solo el botón redondo verde de la entrada.
+    debe((texto.match(/16:40/g) ?? []).length === 0 && /data-boton-entrada="tengo"/.test(ultimoHtml), '5 reservado', `DÍAS · ${etiquetaViaje} · día ${diaReserva.dayNumber} abierto: la parada reservada no lleva solo el botón verde (sin hora)`)
   }
 
   // RESERVAS, con una reservada.

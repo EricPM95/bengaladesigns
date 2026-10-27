@@ -112,7 +112,7 @@ const edi = await abrir({ permiso: 'editar' })
   debe(p.invitar === false && p.quitar === false && p.cambiar === false && p.filas === 0 && p.salir === true, '1', `en «Personas del viaje» no puede invitar, quitar ni cambiar permisos; solo [Salir del viaje] (${JSON.stringify(p)})`)
   await app.captura(jpg('editor_personas'))
   // 1g. Borrar el viaje: para quien no es el dueño es «Salir».
-  const fila = leer('src/components/perfil/FilaDeViaje.tsx')
+  const fila = leer('src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx')
   debe(/esInvitado \? `Salir del viaje a/.test(fila) && /esInvitado \? 'salir' : 'papelera'/.test(fila), '1', 'en «Mis viajes» el viaje de otra persona no se borra: es «Salir de este viaje»')
   cierra(edi)
 }
@@ -248,7 +248,7 @@ const medias = await abrir({ permiso: 'recomendar' })
 {
   const { app, ev } = medias
   const host = leer('src/components/compartir/CompartidoHost.tsx')
-  debe(/refrescarViajeActivo/.test(host) && /conectarViaje/.test(host) && /data-linea-viaje-cambiado/.test(host), '3', 'CompartidoHost está enchufado: Realtime + refresco, y pinta la línea «Eric ha cambiado el viaje.»')
+  debe(/refrescarViajeActivo/.test(host) && /conectarViaje/.test(host) && /useFranjaStore/.test(host) && /decir\('Han cambiado el viaje'/.test(host) && !/data-linea-viaje-cambiado/.test(host), '3', 'CompartidoHost está enchufado: Realtime + refresco, y la línea «Han cambiado el viaje» sale en la franja de avisos (Tanda 10N4 §4b: una sola pieza, ya no una pastilla aparte); el aviso con nombre («Eric ha cambiado el viaje») lo da la campana')
   debe(/alHidratarViaje\.fn = /.test(leer('src/store/usePropuestaStore.ts')) && /alHidratarViaje/.test(leer('src/store/useRouteStore.ts')), '3', 'la propuesta se ajusta sola cuando llega la ruta nueva del dueño (hydrateTrip → alLlegarElViaje)')
   // El invitado propone quitar el Panteón; el dueño lo quita antes. Se simula que llega la ruta nueva del dueño.
   await ev(`st().removeStop('day-3', 'stop-3-panteon'); return 1`)

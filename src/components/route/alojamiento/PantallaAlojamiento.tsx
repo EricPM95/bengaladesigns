@@ -22,7 +22,7 @@ export function PantallaAlojamiento({ route, ciudad, mapa, onTengo, onClose }: {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
   return createPortal(
-    <div className="map-cover-overlay fixed inset-0 z-[100] flex flex-col bg-bg" role="dialog" aria-modal="true" aria-labelledby="pantalla-alojamiento">
+    <div className="map-cover-overlay fixed inset-0 z-[90] flex flex-col bg-bg" role="dialog" aria-modal="true" aria-labelledby="pantalla-alojamiento" data-flotantes>
       <div className="flex shrink-0 items-center gap-3 px-4 pb-2.5 pt-[max(1rem,env(safe-area-inset-top))] md:px-8">
         <button
           type="button"

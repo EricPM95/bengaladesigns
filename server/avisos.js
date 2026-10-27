@@ -18,7 +18,7 @@ import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { quienEs, tokenDe } from './cuentas.js'
-import { detalleDelAviso, ponerTablaDeArticulos, quienDelAviso, textoDelAviso, textoDelPush } from '../shared/avisos/textos.js'
+import { detalleDelAviso, franjaDelAviso, ponerTablaDeArticulos, quienDelAviso, textoDelAviso, textoDelPush } from '../shared/avisos/textos.js'
 
 const AQUI = dirname(fileURLToPath(import.meta.url))
 // (Tanda 10N3 §2.2) Los avisos que nombran un sitio («ha añadido la Fontana de Trevi al sábado 28») llevan su artículo, de la misma tabla que los logros.
@@ -129,7 +129,32 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
     } catch (error) {
       log.warn?.('[avisos] no se pudo mirar lo de los logros:', error.message)
     }
-    const avisos = (await rpc('avisos_de', { p_uid: uid })) ?? []
+    const todos = (await rpc('avisos_de', { p_uid: uid })) ?? []
+    // (Tanda 10N4 §2) «Mañana empieza tu viaje a Roma» salía aunque las fechas del viaje ya fueran otras: el aviso de los 10 días se crea UNA vez (con las fechas de ese momento) y se quedaba para siempre.
+    // Ahora solo vale si ese viaje sigue existiendo, sigue empezando el mismo día, y de verdad faltan de 1 a 10 días (en la hora del destino); y su «mañana» / «en N días» se cuenta con la fecha de hoy.
+    const instanteDeHoy = ahora()
+    let viajesDeAhora = null
+    const vigenteD10 = async (a) => {
+      try {
+        viajesDeAhora ??= (await rpc('viajes_para_avisos', { p_uid: uid })) ?? []
+      } catch {
+        return a
+      }
+      const v = viajesDeAhora.find((x) => x.id === a.payload?.trip_id)
+      if (!v || !v.inicio || v.inicio !== a.payload?.inicio) return null
+      const faltan = dias(partesLocales(instanteDeHoy, v.zona || zonaDelDestino(v.destino)).fecha, v.inicio)
+      if (faltan < 1 || faltan > 10) return null
+      return { ...a, payload: { ...a.payload, dias: faltan, fin: v.fin ?? a.payload.fin } }
+    }
+    const avisos = []
+    for (const a of todos) {
+      if (a.tipo !== 'd10') {
+        avisos.push(a)
+        continue
+      }
+      const vigente = await vigenteD10(a)
+      if (vigente) avisos.push(vigente)
+    }
     // (Tanda 10N, apartado 9) Los avisos «quiere añadir al presupuesto» llevan los botones dentro: cómo está hoy cada gasto (pendiente, aceptado, rechazado o retirado). Sin la migración 0037, todos quedan como pendientes.
     const estadoDeGasto = new Map()
     const idsDeGasto = avisos.filter((a) => a.tipo === 'gasto_pendiente' && a.payload?.gasto_id).map((a) => a.payload.gasto_id)
@@ -150,6 +175,7 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
       id: a.id,
       tipo: a.tipo,
       texto: textoDelAviso(a),
+      franja: franjaDelAviso(a),
       quien: quienDelAviso(a),
       creado_en: a.creado_en,
       leido: a.leido,
@@ -164,6 +190,27 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
   async function marcarLeidos(uid, ids) {
     const n = await rpc('marcar_avisos_leidos', { p_uid: uid, p_ids: ids && ids.length ? ids : null })
     return { ok: true, marcados: n }
+  }
+
+  // (Tanda 10N4 §2) «Marcar como no leído» y «Eliminar» / «Deshacer» (migración 0046). Sin ella, la app lo recuerda en el propio móvil: aquí se responde que no hay y no pasa nada.
+  async function marcarNoLeidos(uid, ids) {
+    if (!ids?.length) return { ok: true, marcados: 0 }
+    try {
+      return { ok: true, marcados: await rpc('marcar_avisos_no_leidos', { p_uid: uid, p_ids: ids }) }
+    } catch (error) {
+      log.warn?.('[avisos] sin la migración 0046 (no leído):', error.message)
+      return { ok: false, sin_migracion: true }
+    }
+  }
+
+  async function ocultar(uid, ids, ocultarlos) {
+    if (!ids?.length) return { ok: true, ocultados: 0 }
+    try {
+      return { ok: true, ocultados: await rpc('ocultar_avisos', { p_uid: uid, p_ids: ids, p_ocultar: ocultarlos !== false }) }
+    } catch (error) {
+      log.warn?.('[avisos] sin la migración 0046 (eliminar):', error.message)
+      return { ok: false, sin_migracion: true }
+    }
   }
 
   /**
@@ -223,7 +270,7 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
 
   const crearAviso = async (uid, tipo, claveDelAviso, payload) => Boolean(await rpc('crear_aviso', { p_uid: uid, p_tipo: tipo, p_clave: claveDelAviso, p_payload: payload }))
 
-  return { crearAviso, alListar: (fn) => { antesDeListar = fn }, prepararDeUsuario, listar, marcarLeidos, enviarPush, tareaProgramada, clavePublica: () => (pushEncendido(env) && env.VAPID_PUBLIC_KEY ? env.VAPID_PUBLIC_KEY : null) }
+  return { crearAviso, alListar: (fn) => { antesDeListar = fn }, prepararDeUsuario, listar, marcarLeidos, marcarNoLeidos, ocultar, enviarPush, tareaProgramada, clavePublica: () => (pushEncendido(env) && env.VAPID_PUBLIC_KEY ? env.VAPID_PUBLIC_KEY : null) }
 }
 
 export function registrarRutasAvisos(app, { admin, servicio, env = process.env }) {
@@ -241,6 +288,8 @@ export function registrarRutasAvisos(app, { admin, servicio, env = process.env }
   }
   app.get('/api/avisos', conUsuario(async (_req, res, u) => res.json(await servicio.listar(u.id))))
   app.post('/api/avisos/leidos', conUsuario(async (req, res, u) => res.json(await servicio.marcarLeidos(u.id, Array.isArray(req.body?.ids) ? req.body.ids.map(String) : null))))
+  app.post('/api/avisos/no-leidos', conUsuario(async (req, res, u) => res.json(await servicio.marcarNoLeidos(u.id, Array.isArray(req.body?.ids) ? req.body.ids.map(String) : []))))
+  app.post('/api/avisos/ocultar', conUsuario(async (req, res, u) => res.json(await servicio.ocultar(u.id, Array.isArray(req.body?.ids) ? req.body.ids.map(String) : [], req.body?.ocultar !== false))))
   // Tanda 10N: el día antes del viaje, la app avisa de que quien solo recomienda tiene cambios sin enviar. Se comprueba que está en ese viaje y el aviso sale una sola vez al día.
   app.post('/api/avisos/sin-enviar', conUsuario(async (req, res, u) => {
     const tripId = String(req.body?.tripId ?? '')

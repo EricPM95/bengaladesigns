@@ -11,11 +11,12 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { AddReservationSheet } from './AddReservationSheet'
 import { DatosDeLaActividad } from './DatosDeLaActividad'
 import { openTicketShop } from './EntradaCard'
-import { LockIcon, ReservedDetails } from './ReservedMarks'
+import { ReservedDetails } from './ReservedMarks'
+import { EntradaDelGrupo, TuEntrada } from './CajasEntrada'
 import { useStopEntradas } from './useStopEntradas'
-import { FichaSinEntrada, FichaTuEntrada } from '../dayDetail/FichaPiezas'
-import { textoQuienVa } from '../../../lib/reservasGrupo'
-import { botonChampan } from '../../../lib/marcaBoton'
+import { FichaSinEntrada } from '../dayDetail/FichaPiezas'
+import { diaDeLaReservaEnPalabras, horaCorta } from '../../../lib/reservasGrupo'
+import { displayStopName } from '../../../lib/format'
 
 /** La parada de la ruta con ese id (null si no está en ningún día). */
 function useRouteStop(stopId: string | null | undefined) {
@@ -60,25 +61,13 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
   if (sinEntrada) return <FichaSinEntrada bloque={sinEntrada} />
   if (!route || !data) return null
   const { reservation, delGrupo, cubiertaPorElDueno, compartido, nombreAdmin } = data
-  const delDueno = delGrupo ?? (cubiertaPorElDueno ? reservation : null)
   return (
-    <div className="space-y-3">
-      {compartido && delDueno && (
-        <div className="rounded-[16px] bg-bg-hover px-3.5 py-3" data-quien-va>
-          <p className="text-[13.5px] font-medium leading-snug text-text">{textoQuienVa(nombreAdmin, route, delDueno)}</p>
-          {delGrupo && (
-            <>
-              <button type="button" data-reservar-la-mia onClick={() => setIgualModo('comprar')} className="mt-2.5 h-11 w-full whitespace-nowrap rounded-full text-small font-semibold active:scale-[.97]" style={botonChampan()}>
-                Reservar la mía a la misma hora
-              </button>
-              <p className="mt-2 text-center text-small text-text-soft">
-                ¿Ya la tienes?{' '}
-                <button type="button" data-ya-la-tengo onClick={() => setIgualModo('tengo')} className="font-semibold text-text underline underline-offset-2">
-                  Ya la tengo
-                </button>
-              </p>
-            </>
-          )}
+    // `contents`: la pestaña la monta la ficha como una columna y lo tuyo (los dos recuadros de arriba) lleva `order-first`, así que sale ARRIBA DEL TODO, encima de cualquier otra cosa de la pestaña (Tanda 10N4).
+    <div className="contents">
+      {/* 03 · otro del grupo la tiene y tú no: azul oscuro con dorado. */}
+      {compartido && delGrupo && (
+        <div className="order-first">
+          <EntradaDelGrupo quien={nombreAdmin || 'El dueño'} cuando={`${diaDeLaReservaEnPalabras(route, delGrupo)} · ${horaCorta(delGrupo.time)}`} onReservar={() => setIgualModo('comprar')} onYaLaTengo={() => setIgualModo('tengo')} />
         </div>
       )}
       {data.entradas.map((entrada) => (
@@ -108,22 +97,23 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
         </div>
       ))}
       {reservation ? (
-        // (La línea de «llega antes» es de la entrada, que se pasa en el primer sitio de la reserva: el Foro, que va en la misma entrada que el Coliseo, lleva el ✓ y la hora, no esa línea.)
-        <FichaTuEntrada hora={reservation.time} nota={stop.isFreeTour || reservation.placeNames[0] === stop.name ? notaDeLlegadaSinHora(found?.stop.arrivalNote, found?.stop.arrivalMinutes) : null}>
-          {/* Lo que el viajero apuntó (punto de encuentro, n.º de reserva): sin repetir la hora. */}
-          <ReservedDetails reservation={reservation} timeLabel={null} />
-          <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full border border-text/20 bg-bg-card px-2.5 py-1 text-[12px] font-semibold text-text-soft">
-              <LockIcon className="h-3 w-3" />
-              Fijada
-            </span>
-            {!cubiertaPorElDueno && (
-              <button type="button" onClick={() => setSheet(true)} className="text-small font-semibold text-text underline underline-offset-2">
-                Cambiar
-              </button>
-            )}
-          </div>
-        </FichaTuEntrada>
+        // 04 · ya tienes la tuya: el recuadro VERDE, arriba del todo. (La nota de «llega antes» es de la entrada, que se pasa en el primer sitio de la reserva: el Foro, que va en la misma entrada que el Coliseo, lleva el ✓ y la hora, no esa línea.)
+        <div className="order-first">
+          <TuEntrada
+            hora={horaCorta(reservation.time)}
+            sitio={[displayStopName(stop.name), diaDeLaReservaEnPalabras(route, reservation)].filter(Boolean).join(' · ')}
+            onCambiarHora={cubiertaPorElDueno ? null : () => setSheet(true)}
+            // [Ver entrada]: queda puesto; lo que abre (la entrada guardada) es de la Tanda 10T (`Piezas/Ver Entrada`).
+            onVerEntrada={() => undefined}
+          >
+            {(() => {
+              const nota = stop.isFreeTour || reservation.placeNames[0] === stop.name ? notaDeLlegadaSinHora(found?.stop.arrivalNote, found?.stop.arrivalMinutes) : null
+              return nota ? <p className="relative text-[12.5px] leading-[1.45]" style={{ color: 'rgba(28,34,48,.7)' }}>{nota}</p> : null
+            })()}
+            {/* Lo que el viajero apuntó (punto de encuentro, n.º de reserva): sin repetir la hora. */}
+            <ReservedDetails reservation={reservation} timeLabel={null} />
+          </TuEntrada>
+        </div>
       ) : (
         data.inTrip && !delGrupo && (
           <p className="text-center text-small text-text-soft">

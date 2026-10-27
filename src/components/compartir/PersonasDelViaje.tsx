@@ -9,18 +9,19 @@ import { usePersonasStore } from '../../store/usePersonasStore'
 import { inicialDe, nombreDe, useViajeCompartido, type Permiso, type Persona } from '../../store/useViajeCompartido'
 import { BotonHoja, Hoja } from '../ui/Hoja'
 import { Icono } from '../ui/Icono'
+import { HojaOpciones, ICONOS_OPCION, OpcionTarjeta } from '../ui/HojaOpciones'
 import { CaraDePersona } from './CarasDelViaje'
 import { abrirHojaInvitar } from './abrirInvitar'
 
-/** La etiqueta de cada permiso (Administrador en azul oscuro, Puede editar en dorado claro, Solo recomendar en gris). */
+/** La etiqueta de cada permiso (Administrador en azul oscuro, Editar en dorado claro, Recomendar en gris), como en `Piezas/Hojas Opciones` 03. */
 export function EtiquetaPermiso({ permiso }: { permiso: Permiso }) {
   const estilo = {
     admin: { background: '#1C2230', color: '#F3D59A' },
-    editar: { background: '#F6E7C4', color: '#6B4E0E' },
+    editar: { background: '#F3E3B2', color: '#6E5018' },
     recomendar: { background: '#ECEBE7', color: 'rgba(28,34,48,.62)' },
   }[permiso]
   return (
-    <span data-etiqueta-permiso={permiso} style={{ ...estilo, height: 24, padding: '0 10px', borderRadius: 999, display: 'inline-flex', alignItems: 'center', font: "600 11.5px 'Geist'", whiteSpace: 'nowrap' }}>
+    <span data-etiqueta-permiso={permiso} style={{ ...estilo, height: 30, padding: '0 13px', borderRadius: 999, display: 'inline-flex', alignItems: 'center', font: "600 13px 'Geist'", whiteSpace: 'nowrap', flex: 'none' }}>
       {textoDelPermiso[permiso]}
     </span>
   )
@@ -30,7 +31,7 @@ const nombreOInicial = (p: Persona) => nombreDe(p) || inicialDe(p)
 
 /**
  * «PERSONAS DEL VIAJE» (Tanda 10N §4a, pantallas 02 a 05 de `Piezas/Viaje Compartido`).
- *   · El administrador (02): cada persona con su permiso; al tocar a alguien, su fila se abre con [Cambiar permiso] y [Quitar del viaje]; abajo [+ Invitar a alguien].
+ *   · El administrador (02): cada persona con su permiso; al tocar a alguien sale su hoja con «Cambiar permiso» y «Quitar del viaje»; abajo «Añadir a alguien · Con un enlace o un código» (Tanda 10N4).
  *     [Cambiar permiso] abre «Permiso de Ana» (03); [Quitar del viaje], «¿Quitar a Luis del viaje a Roma?» (04) con la plaza del pase que vuelve.
  *   · Un invitado (05): la misma lista, sin botones, con «· Tú» en su fila y abajo [Salir del viaje] (con su confirmación). El administrador no puede salir.
  */
@@ -60,6 +61,7 @@ function PersonasAbiertas() {
   const rango = route.answers.dateRange ? formatHeaderDateRangeShortEs(route.answers.dateRange.start, route.answers.dateRange.end).toUpperCase() : null
   const etiqueta = [route.destination.toUpperCase(), rango, `${gente.length} PERSONA${gente.length === 1 ? '' : 'S'}`].filter(Boolean).join(' · ')
   const permisoDe = (p: Persona): Permiso => (p.esAdmin ? 'admin' : (p.permiso ?? 'recomendar'))
+  const personaAbierta = gente.find((p) => p.id === abierto) ?? null
   const invitar = () => {
     cerrar()
     void abrirHojaInvitar(route, tripId)
@@ -67,62 +69,64 @@ function PersonasAbiertas() {
 
   return (
     <>
-      <Hoja onCerrar={cerrar} titulo="Personas del viaje" etiqueta={etiqueta} datos="personas-del-viaje" z={93}>
-        <div role="list" style={{ display: 'flex', flexDirection: 'column' }}>
-          {gente.map((p, i) => {
-            const mio = p.esYo === true
-            const puedeTocar = esAdmin && !mio
-            const desplegada = abierto === p.id && puedeTocar
-            return (
-              <div key={p.id} role="listitem" data-persona-fila={p.id} style={{ borderTop: i === 0 ? 'none' : '1px solid rgba(28,34,48,.08)', padding: '10px 0' }}>
+      {/* (Tanda 10N4 §3) «Hojas Opciones» 03: la lista de personas, cada una con su permiso; al tocar a alguien sale SU hoja (04) con «Cambiar permiso» y «Quitar del viaje»; abajo «Añadir a alguien». */}
+      <HojaOpciones
+        onCerrar={cerrar}
+        titulo="Personas del viaje"
+        etiqueta={etiqueta}
+        datos="personas-del-viaje"
+        z={93}
+        cabecera={
+          <div role="list" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {gente.map((p, i) => {
+              const mio = p.esYo === true
+              const puedeTocar = esAdmin && !mio
+              return (
                 <button
+                  key={p.id}
                   type="button"
+                  role="listitem"
+                  data-persona-fila={p.id}
                   disabled={!puedeTocar}
-                  onClick={() => setAbierto(desplegada ? null : p.id)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', border: 'none', background: 'transparent', padding: 0, textAlign: 'left', cursor: puedeTocar ? 'pointer' : 'default', color: '#1C2230' }}
+                  onClick={() => setAbierto(p.id)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 13, width: '100%', padding: '8px 10px', borderRadius: 20, border: '1px solid transparent', background: 'transparent', textAlign: 'left', cursor: puedeTocar ? 'pointer' : 'default', color: '#1C2230' }}
                 >
-                  <CaraDePersona persona={p} tam={38} tono={i} foto={p.foto ? (fotos[p.foto] ?? null) : null} borde="#FFFDF8" />
-                  <span style={{ flex: 1, minWidth: 0, font: "600 15.5px 'Geist'" }}>
+                  <CaraDePersona persona={p} tam={52} tono={i} foto={p.foto ? (fotos[p.foto] ?? null) : null} borde="#FDFBF4" />
+                  <span style={{ flex: 1, minWidth: 0, font: "600 17px 'Geist'" }}>
                     {nombreOInicial(p)}
-                    {mio && <span style={{ fontWeight: 400, color: 'rgba(28,34,48,.55)' }}> · Tú</span>}
+                    {mio && <span style={{ fontWeight: 400, color: 'rgba(28,34,48,.5)' }}> · Tú</span>}
                   </span>
                   <EtiquetaPermiso permiso={permisoDe(p)} />
-                  {puedeTocar && <Icono nombre="adelante" size={14} />}
+                  {puedeTocar && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.4)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  )}
                 </button>
-                {desplegada && (
-                  <div data-fila-abierta style={{ display: 'flex', gap: 8, margin: '10px 0 0 50px' }}>
-                    <button type="button" data-cambiar-permiso onClick={() => setCambiando(p)} style={botonFila(false)}>
-                      Cambiar permiso
-                    </button>
-                    <button type="button" data-quitar-del-viaje onClick={() => setQuitando(p)} style={botonFila(true)}>
-                      Quitar del viaje
-                    </button>
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        }
+      >
         {error && (
           <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>
             {error}
           </p>
         )}
         {esAdmin ? (
-          <button type="button" data-invitar-a-alguien onClick={invitar} style={{ height: 50, borderRadius: 999, border: '1px dashed rgba(28,34,48,.3)', background: 'transparent', font: "600 14.5px 'Geist'", color: '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer' }}>
-            <span aria-hidden="true" style={{ fontSize: 20, lineHeight: 1, marginTop: -2 }}>
-              +
-            </span>
-            Invitar a alguien
-          </button>
+          <OpcionTarjeta discontinua icono={ICONOS_OPCION.mas} titulo="Añadir a alguien" linea="Con un enlace o un código" onClick={invitar} atributos={{ 'data-invitar-a-alguien': '' }} />
         ) : (
-          rol !== 'admin' && (
-            <button type="button" data-salir-del-viaje onClick={() => setSaliendo(true)} style={{ height: 50, borderRadius: 999, border: '1px solid rgba(180,40,40,.35)', background: 'transparent', font: "600 14.5px 'Geist'", color: 'rgb(var(--accent-red))', cursor: 'pointer' }}>
-              Salir del viaje
-            </button>
-          )
+          rol !== 'admin' && <OpcionTarjeta peligro icono={ICONOS_OPCION.salir} titulo="Salir del viaje" linea="Dejas de ver el viaje. Lo que ganaste se queda contigo" onClick={() => setSaliendo(true)} atributos={{ 'data-salir-del-viaje': '' }} />
         )}
-      </Hoja>
+      </HojaOpciones>
+
+      {/* 04 · Al tocar a una persona. */}
+      {abierto && personaAbierta && esAdmin && (
+        <HojaOpciones onCerrar={() => setAbierto(null)} etiqueta={`Personas del viaje · ${textoDelPermiso[permisoDe(personaAbierta)]}`} titulo={nombreOInicial(personaAbierta)} datos="persona-del-viaje" z={94}>
+          <OpcionTarjeta tono="arena" icono={ICONOS_OPCION.llave} titulo="Cambiar permiso" linea="Editar o Recomendar" flecha onClick={() => setCambiando(personaAbierta)} atributos={{ 'data-cambiar-permiso': '' }} />
+          <OpcionTarjeta peligro icono={ICONOS_OPCION.salir} titulo="Quitar del viaje" linea="Pierde el acceso y su plaza del pase vuelve a ti" onClick={() => setQuitando(personaAbierta)} atributos={{ 'data-quitar-del-viaje': '' }} />
+        </HojaOpciones>
+      )}
 
       {cambiando && (
         <HojaPermiso
@@ -174,19 +178,7 @@ function PersonasAbiertas() {
   )
 }
 
-const botonFila = (peligro: boolean) =>
-  ({
-    height: 38,
-    padding: '0 14px',
-    borderRadius: 999,
-    border: `1px solid ${peligro ? 'rgba(180,40,40,.35)' : 'rgba(28,34,48,.2)'}`,
-    background: 'transparent',
-    color: peligro ? 'rgb(var(--accent-red))' : '#1C2230',
-    font: "600 13px 'Geist'",
-    cursor: 'pointer',
-  }) as const
-
-/** 03 · «Permiso de Ana»: los tres permisos, cada uno con su línea; «Administrador» en gris con el candado y «Solo Eric»; el elegido en azul oscuro con su ✓; [Guardar permiso]. */
+/** «Permiso de Ana» con el formato de tarjetas (Tanda 10N4 §3 y §4): «Administrador» en gris con el candado y «Solo Eric»; «Editar · Cambia la ruta.» y «Recomendar · Propone cambios.», la elegida con el estilo de elegir (azul oscuro); [Guardar permiso]. */
 export function HojaPermiso({ persona, alCerrar, alGuardar, nombreAdmin = 'el administrador' }: { persona: Persona; alCerrar: () => void; alGuardar: (permiso: Exclude<Permiso, 'admin'>) => Promise<string | null>; nombreAdmin?: string }) {
   const actual: Exclude<Permiso, 'admin'> = persona.permiso === 'editar' ? 'editar' : 'recomendar'
   const [elegido, setElegido] = useState<Exclude<Permiso, 'admin'>>(actual)
@@ -200,45 +192,39 @@ export function HojaPermiso({ persona, alCerrar, alGuardar, nombreAdmin = 'el ad
     setOcupado(false)
     if (fallo) setError(fallo)
   }
-  const opcion = (permiso: Exclude<Permiso, 'admin'>) => {
+  const opcion = (permiso: Exclude<Permiso, 'admin'>, tono: 'arena' | 'azul', icono: string) => {
     const marcado = elegido === permiso
     return (
-      <button
+      <OpcionTarjeta
         key={permiso}
-        type="button"
-        data-opcion-permiso={permiso}
-        aria-pressed={marcado}
+        tono={tono}
+        icono={icono}
+        titulo={textoDelPermiso[permiso]}
+        linea={lineaDelPermiso[permiso]}
+        elegida={marcado}
         onClick={() => setElegido(permiso)}
-        style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', padding: '13px 14px', borderRadius: 16, border: marcado ? '1px solid #1C2230' : '1px solid rgba(28,34,48,.14)', background: marcado ? '#1C2230' : '#fff', color: marcado ? '#FFFDF8' : '#1C2230', cursor: 'pointer' }}
-      >
-        <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <span style={{ font: "600 15px 'Geist'" }}>{textoDelPermiso[permiso]}</span>
-          <span style={{ font: "400 12.5px/1.4 'Geist'", opacity: marcado ? 0.8 : 0.6 }}>{lineaDelPermiso[permiso]}</span>
-        </span>
-        {marcado && (
-          <span style={{ color: '#F3D59A', display: 'flex' }}>
-            <Icono nombre="hecho" size={18} grosor={2.4} />
-          </span>
-        )}
-      </button>
+        atributos={{ 'data-opcion-permiso': permiso }}
+        derecha={
+          marcado ? (
+            <span style={{ color: '#F3D59A', display: 'flex' }}>
+              <Icono nombre="hecho" size={18} grosor={2.4} />
+            </span>
+          ) : undefined
+        }
+      />
     )
   }
   return (
-    <Hoja onCerrar={alCerrar} titulo={`Permiso de ${nombreOInicial(persona)}`} datos="permiso-de" z={95}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div data-opcion-permiso="admin" aria-disabled="true" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 16, border: '1px solid rgba(28,34,48,.08)', background: 'rgba(28,34,48,.04)', color: 'rgba(28,34,48,.45)' }}>
-          <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <span style={{ font: "600 15px 'Geist'" }}>{textoDelPermiso.admin}</span>
-            <span style={{ font: "400 12.5px/1.4 'Geist'" }}>{lineaDelPermiso.admin}</span>
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 5, font: "600 10px 'Geist Mono',monospace", letterSpacing: '.08em', textTransform: 'uppercase' }}>
-            <Icono nombre="candado" size={13} />
-            Solo {solo}
-          </span>
-        </div>
-        {opcion('editar')}
-        {opcion('recomendar')}
-      </div>
+    <HojaOpciones onCerrar={alCerrar} etiqueta="Personas del viaje" titulo={`Permiso de ${nombreOInicial(persona)}`} datos="permiso-de" z={95}>
+      <OpcionTarjeta
+        deshabilitada
+        icono={ICONOS_OPCION.candado}
+        titulo={textoDelPermiso.admin}
+        atributos={{ 'data-opcion-permiso': 'admin', 'aria-disabled': 'true' }}
+        derecha={<span style={{ font: "600 12px 'Geist'", color: 'rgba(28,34,48,.7)', whiteSpace: 'nowrap' }}>Solo {solo}</span>}
+      />
+      {opcion('editar', 'arena', 'M4 20l4-1 11-11-3-3L5 16zM14 6l3 3')}
+      {opcion('recomendar', 'azul', 'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z')}
       {error && (
         <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>
           {error}
@@ -247,7 +233,7 @@ export function HojaPermiso({ persona, alCerrar, alGuardar, nombreAdmin = 'el ad
       <BotonHoja tipo="principal" onClick={() => void guardar()} disabled={ocupado || elegido === actual} datos="guardar-permiso">
         Guardar permiso
       </BotonHoja>
-    </Hoja>
+    </HojaOpciones>
   )
 }
 

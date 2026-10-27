@@ -5,6 +5,7 @@ import type { StopEntrada } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import type { ReservationTarget } from './AddReservationSheet'
 import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
+import { idsIncluidos } from '../../../lib/reservasGrupo'
 
 /** La clave del Free Tour en `_entradas.json` y el `refId` de su reserva. */
 export const FREE_TOUR_KEY = 'Free Tour'
@@ -26,6 +27,8 @@ export interface StopEntradas {
   /** Viaje de varias personas: la etiqueta de la parada es la corta («Reservada ✓» / «Comprar entrada»). */
   compartido: boolean
   nombreAdmin: string
+  /** Tanda 10N4: cuántas personas del viaje tienen ya la entrada que tú no tienes (el numerito del botón de la parada). 0 si nadie, o si la tienes tú. */
+  cuantosLaTienen: number
 }
 
 /**
@@ -65,5 +68,6 @@ export function useStopEntradas(stop: { id: string; name: string; isFreeTour?: b
     cubiertaPorElDueno,
     compartido: grupo.compartido,
     nombreAdmin: grupo.nombreAdmin,
+    cuantosLaTienen: delGrupo ? idsIncluidos(delGrupo, grupo.gente).length : 0,
   }
 }

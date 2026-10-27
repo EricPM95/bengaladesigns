@@ -32,10 +32,9 @@ const require = createRequire(import.meta.url)
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_6z6b_entrada.tsx', {
   piezasFalsas: [
     { filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' },
-    { filtro: /perfil\/MapaMisViajes$/, exporta: 'MapaMisViajes' },
   ],
 })
-const { createElement, renderToStaticMarkup, PerfilSheet, RouteOverview, TarjetaRecuerdos, TarjetaRecuerdosEnRuta, ultimasTresFotos, verTarjetaRecuerdosEnRuta, BotonFotoParada, etiquetaAnadirFoto, limiteDeFotos, modoDeFoto, agruparFotos, plural, cifrasDelPerfil, textoDeFotos, chinchetasDeViajes, resumenDeViaje, viajePorId, viajesDelPerfil, PROYECCION_MAPA_VIAJES, usePerfilUi, useRouteStore, useSyncStore } = M
+const { createElement, renderToStaticMarkup, PerfilSheet, CuerpoConLogros, RouteOverview, TarjetaRecuerdos, TarjetaRecuerdosEnRuta, ultimasTresFotos, verTarjetaRecuerdosEnRuta, BotonFotoParada, etiquetaAnadirFoto, limiteDeFotos, modoDeFoto, agruparFotos, plural, cifrasDelPerfil, textoDeFotos, resumenDeViaje, viajePorId, viajesDelPerfil, usePerfilUi, useRouteStore, useSyncStore } = M
 const consolaError = console.error
 console.error = (...a) => (/useLayoutEffect|Warning:/.test(String(a[0])) ? undefined : consolaError(...a))
 const aTexto = (html) => html.replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, '\n').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s*\n\s*/g, '\n')
@@ -201,7 +200,7 @@ debe(etiquetaAnadirFoto('anadir') === 'Añadir fotos', 'A2', `etiqueta de pago: 
 
 // La regla, en un solo sitio: las pantallas de fotos no deciden por su cuenta.
 const leer = (f) => fs.readFileSync(f, 'utf8')
-const pantallasDeFotos = ['src/components/perfil/AlbumDeViaje.tsx', 'src/components/perfil/FichaDeViaje.tsx', 'src/components/perfil/MapaMisViajes.tsx', 'src/components/route/fotos/BotonFoto.tsx', 'src/components/route/fotos/BotonFotoParada.tsx', 'src/components/layout/PerfilSheet.tsx']
+const pantallasDeFotos = ['src/components/perfil/AlbumDeViaje.tsx', 'src/components/perfil/FichaDeViaje.tsx', 'src/components/route/fotos/BotonFoto.tsx', 'src/components/route/fotos/BotonFotoParada.tsx', 'src/components/layout/PerfilSheet.tsx']
 for (const f of pantallasDeFotos) debe(!/pagoActivo/.test(leer(f)), 'A4', `${f} decide por su cuenta con pagoActivo (la regla es limiteDeFotos en fotosViaje.ts)`)
 
 /* ---------------- B. El Perfil ---------------- */
@@ -223,7 +222,9 @@ function pintaPerfil({ version, albumDe = null, rutaAbierta = null }) {
     }
   }
   try {
-    return aTexto(renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {} })))
+    const cascara = renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {} }))
+    const cuerpo = albumDe ? '' : renderToStaticMarkup(createElement(CuerpoConLogros, { viajes: viajesDelPerfil(GUARDADOS, rutaAbierta, HOY), fotos: null, rutaAbiertaId: rutaAbierta?.id ?? null, onAbrirAlbum() {}, onAbrirViaje() {} }))
+    return aTexto(cuerpo + cascara)
   } finally {
     globalThis.Date = RelojReal
   }
@@ -244,30 +245,13 @@ for (const v of lista) debe(textoPerfil.includes(v.destino) && (!v.cuando || tex
   debe(pos('r1') < pos('r2') && pos('r2') < pos('r3') && pos('r5') < pos('r1'), 'B5', 'el Perfil no pinta los viajes en orden')
 }
 debe(/Nuevo viaje/.test(textoPerfil) && !/Tips del viaje/.test(textoPerfil), 'B5', 'falta [Nuevo viaje] en el Perfil, o sigue ahí [Tips del viaje] (ahora es la bombilla de RUTA)')
-debe(!/Próximos/.test(textoPerfil) && !/Ya hechos/.test(textoPerfil), 'B5', '6y4: el diseño del Perfil no lleva los rótulos «Próximos» / «Ya hechos»')
+debe(/Próximo/.test(textoPerfil) && /Ya hechos/.test(textoPerfil), 'B5', '10N4: el Perfil único (el de Design) agrupa los viajes con «Próximo» / «Ya hechos»')
 debe(/Mis viajes/.test(textoPerfil), 'B5', 'falta el rótulo «Mis viajes»')
 
-// Las chinchetas
-const chinchetas = chinchetasDeViajes(lista)
-debe(chinchetas.length === 5, 'B6', `chinchetas: ${chinchetas.length}, una por destino debería dar 5 (Lisboa, Roma ×2 viajes, Florencia, Sevilla, Madrid)`)
-const deR2 = chinchetas.filter((c) => ['Roma', 'Florencia'].includes(c.ciudad))
-debe(deR2.length === 2, 'B6', `un viaje a Roma y Florencia debería dar dos chinchetas (${deR2.map((c) => c.ciudad)})`)
-debe(chinchetas.find((c) => c.ciudad === 'Roma').viajes === 2 && chinchetas.find((c) => c.ciudad === 'Florencia').viajes === 1, 'B6', '6y4: «Roma ×2» (dos viajes a Roma) y Florencia ×1')
-debe(new Set(chinchetas.map((c) => c.id)).size === chinchetas.length, 'B6', 'hay chinchetas con el mismo id')
-const florencia = deR2.find((c) => c.ciudad === 'Florencia')
-debe(florencia && Math.abs(florencia.coordenadas.lat - 43.77) < 0.1 && Math.abs(florencia.coordenadas.lng - 11.25) < 0.1, 'B6', 'la chincheta de Florencia no está en Florencia')
-debe(chinchetas.find((c) => c.ciudad === 'Madrid').fase === 'hecho', 'B6', 'la chincheta de un viaje hecho no lo dice')
+// (Tanda 10N4: las chinchetas y el mapa de mis viajes se quitaron con el Perfil viejo; el pasaporte local cuenta países y ciudades.)
 // Un destino sin paradas con sitio real (0,0) no pone chincheta en el golfo de Guinea.
 const sinSitio = ruta({ id: 'r6', destino: 'Oporto', dias: [dia('r6d1', 1, 'Oporto', [parada('z', 'Ribeira', 0, 0)])] })
-debe(resumenDeViaje(sinSitio, null, hoy).destinos.length === 0, 'B6', 'una parada sin sitio real (0,0) pone una chincheta')
-// El mapa: globo de Mapbox y se destruye
-const codigoMapa = leer('src/components/perfil/MapaMisViajes.tsx')
-debe(PROYECCION_MAPA_VIAJES === 'globe', 'B6', `la proyección del mapa de mis viajes es «${PROYECCION_MAPA_VIAJES}», no «globe»`)
-debe(/new mapboxgl\.Map\(/.test(codigoMapa) && /projection:\s*PROYECCION_MAPA_VIAJES/.test(codigoMapa) && /VITE_MAPBOX_TOKEN/.test(codigoMapa), 'B6', 'MapaMisViajes no crea un mapa de Mapbox con la proyección globo y el token')
-debe(/return \(\) => \{[\s\S]*mapa\.remove\(\)/.test(codigoMapa), 'B6', 'MapaMisViajes no destruye el mapa al desmontarse (mapa.remove())')
-debe(/<MapaMisViajes chinchetas=\{chinchetas\} cifras=\{cifras\} onElegir=\{abrirAlbum\}/.test(leer('src/components/layout/PerfilSheet.tsx')), 'B6', 'el Perfil no monta el mapa con las chinchetas y abre la ficha al tocar una')
-debe(/ficha \? \(/.test(leer('src/components/layout/PerfilSheet.tsx')) && /MapaMisViajes/.test(leer('src/components/layout/PerfilSheet.tsx')), 'B6', 'el mapa debe desmontarse mientras se ve una ficha')
-
+debe(resumenDeViaje(sinSitio, null, hoy).destinos.length === 0, 'B6', 'una parada sin sitio real (0,0) cuenta como destino')
 // La ficha
 const FichaR1 = (version) => pintaPerfil({ version, albumDe: 'r1' })
 for (const version of ['gratis', 'completa']) {
@@ -339,7 +323,7 @@ debe(renderToStaticMarkup(createElement(BotonFotoParada, { stopName: 'Coliseo', 
 debe(/'Cambiar foto'/.test(leer('src/components/route/fotos/BotonFotoParada.tsx')) && /modoDeFoto\(/.test(leer('src/components/route/fotos/BotonFotoParada.tsx')), 'C9', 'el botón de parada no cambia a «Cambiar foto» según modoDeFoto')
 
 /* ---------------- 10. Emojis ---------------- */
-const nuevos = ['src/lib/viajesPerfil.ts', 'src/store/usePerfilUi.ts', 'src/components/perfil/MapaMisViajes.tsx', 'src/components/perfil/FichaDeViaje.tsx', 'src/components/perfil/AlbumDeViaje.tsx', 'src/components/route/fotos/TarjetaRecuerdos.tsx', 'src/components/route/fotos/BotonFotoParada.tsx', 'src/components/layout/PerfilSheet.tsx']
+const nuevos = ['src/lib/viajesPerfil.ts', 'src/store/usePerfilUi.ts', 'src/components/perfil/FichaDeViaje.tsx', 'src/components/perfil/AlbumDeViaje.tsx', 'src/components/route/fotos/TarjetaRecuerdos.tsx', 'src/components/route/fotos/BotonFotoParada.tsx', 'src/components/layout/PerfilSheet.tsx']
 const SIGNOS = /[✓✔✕✗★♥❤↔↕→←↑↓…©]/gu
 for (const f of nuevos) {
   const sueltos = (leer(f).replace(SIGNOS, '').match(/\p{Extended_Pictographic}/gu) ?? []).length

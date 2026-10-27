@@ -89,7 +89,7 @@ export function AvisoDeEntrada({ aviso, ahora, foto, resaltado }: { aviso: Aviso
           </span>
         )}
       </span>
-      {sinLeer && <span aria-label="Sin leer" style={{ width: 9, height: 9, flex: 'none', marginTop: 6, borderRadius: '50%', background: 'rgb(var(--frambuesa))' }} />}
+      {sinLeer && <span aria-label="Sin leer" data-punto-aviso style={{ width: 10, height: 10, flex: 'none', marginTop: 6, borderRadius: '50%', background: '#B58A2E' }} />}
     </div>
   )
 }

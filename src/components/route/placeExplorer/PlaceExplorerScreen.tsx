@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates, Excursion, Route, Stop } from '../../../lib/types'
 import { isOsmPoint, type DestinationPlace } from '../../../lib/destinationPlacesApi'
@@ -359,6 +360,8 @@ export function PlaceExplorerScreen({
   cambiarParada,
   onClose,
 }: PlaceExplorerScreenProps) {
+  // (Tanda 10N4 §0b) El hueco al final de la lista para que el lápiz y los logros no tapen el último sitio.
+  const huecoAlFinal = useHuecoAlFinal(40)
   /** Ruta a mano (Tanda 6y): la lista va en el orden de la ruta a mano y lo que ya está en otro día lleva «En tu día 2». */
   const manualOrder = isManualRoute(route)
   /** Solo las atracciones se pueden marcar en el modo elegir varios. */
@@ -1097,7 +1100,7 @@ export function PlaceExplorerScreen({
             )}
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto" style={{ padding: pickMode ? '12px 16px 110px' : '12px 16px 40px', scrollbarWidth: 'none' }}>
+          <div className="min-h-0 flex-1 overflow-y-auto" style={{ padding: pickMode ? '12px 16px 110px' : `12px 16px ${huecoAlFinal}px`, scrollbarWidth: 'none' }}>
             {!trimmedQuery && tab === 'nearby' && geoStatus === 'asking' && (
               <p className="flex items-center justify-center gap-2 py-8 text-small text-text-soft">
                 <Spinner className="text-accent" />
@@ -1449,7 +1452,7 @@ export function PlaceExplorerScreen({
 
         {/* Barra fija del modo elegir varios: por encima de la zona segura. */}
         {pickMode && (
-          <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-bg via-bg to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6">
+          <div data-evitar-flotantes className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-bg via-bg to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6">
             <button
               type="button"
               disabled={pickMode.selected.length === 0 || pickMode.busy}

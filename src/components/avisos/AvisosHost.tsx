@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { avisoDeLaDireccion } from '../../lib/avisos'
 import { cuentasActivas } from '../../lib/cuentas'
 import { demoActivo } from '../../lib/logros'
+import { prepararAudioAlPrimerToque } from '../../lib/sonidos'
+import { FranjaDeAviso } from './FranjaDeAviso'
 import { guardarMiZona, pedirPermisoUnaVez, prepararPermisoDeAvisos } from '../../lib/permisoAvisos'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { useMiPerfil } from '../../store/useMiPerfil'
@@ -83,5 +85,10 @@ function Encendido() {
     return () => window.removeEventListener('pointerup', alToque, true)
   }, [real, inicio])
 
-  return null
+  // (10N4 §4b) La franja de aviso nuevo, siempre lista; y el audio preparado en el primer toque (en el iPhone la web solo suena si la persona ya tocó la pantalla).
+  useEffect(() => {
+    prepararAudioAlPrimerToque()
+  }, [])
+
+  return <FranjaDeAviso />
 }

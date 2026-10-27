@@ -14,3 +14,11 @@ export const elSitio = (nombre: string): string => {
   const art = articuloDe(roma, limpio)
   return art ? `${art} ${limpio}` : limpio
 }
+
+/** ¿El sitio va en plural («los Museos Capitolinos», «las Termas de Caracalla»)? Para la concordancia del verbo: «cierran» / «cierra». */
+export const sitioEnPlural = (nombre: string): boolean => {
+  const art = articuloDe(roma, limpiarNombre(nombre))
+  return art === 'los' || art === 'las'
+}
+/** «cierran los Museos Capitolinos» · «cierra la Galería Borghese» (con su artículo y el verbo en plural cuando toca). */
+export const cierraElSitio = (nombre: string): string => `${sitioEnPlural(nombre) ? 'cierran' : 'cierra'} ${elSitio(nombre)}`

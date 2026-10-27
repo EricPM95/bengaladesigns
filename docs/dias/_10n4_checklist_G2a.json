@@ -1,0 +1,101 @@
+[
+  {
+    "apartado": "§2 · La campana",
+    "punto": "Hacerla exactamente igual que Design «Avisos Gestion» (01 normal con [Seleccionar], 02 seleccionando, 03 después de eliminar): letras, tamaños, colores, iconos, fondo dorado claro del elegido",
+    "estado": "hecho",
+    "nota": "Medidas, colores y letras copiados de la pieza (tarjeta de 20 px, icono de 42 px, puntito dorado de 10 px, circulito de 24 px, franja oscura de 54 px). Dos diferencias: el icono de «Fecha especial» es un calendario dibujado en trazo fino (Design pone el carácter ▦) y no hay grabador de arriba porque es pantalla completa.",
+    "donde": "Campana (arriba a la derecha) › Seleccionar › elegir avisos › Eliminar. Con cualquier cuenta con avisos.",
+    "captura": "10n4_campana_01_normal.jpg",
+    "captura_design": "10n4_design_avisos_gestion.jpg"
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "Cambio 1 de Eric: la campana es a pantalla completa; arriba «TUS AVISOS», «Avisos» grande y [Seleccionar]; se cierra como hoy",
+    "estado": "hecho",
+    "nota": "Ocupa toda la pantalla; la ✕ de al lado de [Seleccionar] la cierra (en Seleccionar solo sale [Cancelar], como en Design).",
+    "donde": "Toca la campana de la cabecera de RUTA; cierra con la ✕.",
+    "captura": "10n4_campana_01_normal.jpg",
+    "captura_design": "10n4_design_avisos_gestion.jpg"
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "Cambio 2 de Eric: [Marcar leído] y [Eliminar] como hoja desde abajo con dos tarjetas («Marcar como leído» y, la última y en rojo, «Eliminar»), formato de Hojas Opciones; sube al elegir el primero, se queda sin tapar la lista y baja al no quedar ninguno o con [Cancelar]",
+    "estado": "hecho",
+    "nota": "Usa las tarjetas de HojaOpciones (OpcionTarjeta) dentro de una hoja que no oscurece ni bloquea la lista (si no, no se podría seguir eligiendo). La hoja no lleva el rótulo grande ni la ✕ de las demás hojas, porque arriba ya está «2 seleccionados» y [Cancelar]; así es pequeña. La lista deja 280 px de hueco abajo.",
+    "donde": "Campana › Seleccionar › toca un aviso: sube la hoja; toca [Cancelar] o quita la selección: baja.",
+    "captura": "10n4_campana_02_seleccionando.jpg",
+    "captura_design": "10n4_design_avisos_gestion.jpg"
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "Los textos de la pieza son de ejemplo; los de verdad, con artículo también en los de cierre («Los Museos Vaticanos y la Villa Farnesina cierran…»). El aviso de que cierran museos es INFORMACIÓN (la «i»); «Fecha especial» y el calendario, para «Mañana empieza tu viaje» y parecidos",
+    "estado": "hecho",
+    "nota": "Lo resuelve la parte de la franja y los textos: «Sobre tu ruta» solo sale si sus días coinciden con los de la ruta abierta, y «Mañana empieza tu viaje» solo el día de verdad antes (ver «§4b2» y «de dónde salían» en el informe).",
+    "donde": "Campana: los avisos de fechas del viaje (cierres) con la «i» y «INFORMACIÓN».",
+    "captura": "10n4_campana_01_normal.jpg",
+    "captura_design": "10n4_design_avisos_gestion.jpg"
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "Fuera la etiqueta «Leído» («Fecha especial · Leído», «Información · Leído»): nuevos en negrita con el puntito dorado, leídos en gris",
+    "estado": "hecho",
+    "nota": "Ya solo sale el tipo («INFORMACIÓN», «FECHA ESPECIAL», «AVISO»). Nuevo: negrita 600 y puntito dorado; leído: 400 en gris.",
+    "donde": "Campana: compara un aviso nuevo y uno leído.",
+    "captura": "10n4_campana_01_normal.jpg",
+    "captura_design": "10n4_design_avisos_gestion.jpg"
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "Cambia lo de la 10M: abrir la campana YA NO marca todo como leído; cada aviso sigue nuevo hasta que el viajero lo abre o lo marca",
+    "estado": "hecho",
+    "nota": "Quitado el «al cerrar, todo leído». También fuera «Marcar todos como leídos» y el botón «Marcar como leído» de cada aviso (ahora es con Seleccionar).",
+    "donde": "Abre la campana con avisos nuevos y ciérrala: el punto de la campana de la cabecera sigue ahí.",
+    "captura": "10n4_campana_01_normal.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "Normal (01): tocar un aviso lo abre (propuesta, gasto, día que ha cambiado…) y lo marca leído; los que llevan botones dentro ([Aceptar] [Rechazar]…) los siguen llevando",
+    "estado": "hecho",
+    "nota": "Tocar abre lo de siempre (abrirAviso) y los avisos que no abrían nada ahora se dan por leídos al tocarlos. En los avisos con botones (gasto pendiente, entrada) tocar fuera de los botones lo da por leído. Los avisos de arreglar (error, «Revisa tu vuelta») no se marcan: cuentan hasta que se arreglan.",
+    "donde": "Campana › toca «Eric ha cambiado el viaje…» (abre la ruta) o «Ana quiere añadir al presupuesto» (con [Rechazar] [Aceptar]).",
+    "captura": "10n4_campana_01b_botones.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "[Seleccionar] (02): circulito a la izquierda de cada aviso, al tocar se elige (fondo dorado claro y ✓ oscuro), «2 seleccionados» y «Seleccionar todos», [Seleccionar] pasa a [Cancelar], hoja abajo y, si todos los elegidos ya están leídos, «Marcar como no leído»",
+    "estado": "hecho",
+    "nota": "Los avisos de arreglar (errores y avisos del viaje) no llevan circulito porque no se eliminan ni se marcan: se arreglan. «Marcar como no leído» funciona también en la cuenta (guardado en el servidor con la migración 0046 y siempre en el móvil).",
+    "donde": "Campana › Seleccionar; elige leídos solos para ver «Marcar como no leído».",
+    "captura": "10n4_campana_02_seleccionando.jpg",
+    "captura_design": "10n4_design_avisos_gestion.jpg"
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "Eliminar (03): sin preguntar, los quita de su campana, franja oscura «2 avisos eliminados» con [Deshacer] unos segundos, y la campana vuelve a la normal",
+    "estado": "hecho",
+    "nota": "La franja dura 6 s. [Deshacer] devuelve los avisos. Lo eliminado se recuerda al cerrar y abrir (en el móvil siempre; en el servidor con la migración 0046, SIN aplicar: hay que aplicarla para que también valga en otro móvil).",
+    "donde": "Campana › Seleccionar › elige 2 › Eliminar; prueba [Deshacer] antes de que se vaya la franja.",
+    "captura": "10n4_campana_03_eliminados.jpg",
+    "captura_design": "10n4_design_avisos_gestion.jpg"
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "El aviso «Sobre tu ruta» («2 días en Roma dan para mucho…»): cada aviso tiene que ser del viaje que está abierto; mira de qué viaje sale ese texto",
+    "estado": "hecho",
+    "nota": "Lo resuelve la parte de la franja y los textos: «Sobre tu ruta» solo sale si sus días coinciden con los de la ruta abierta, y «Mañana empieza tu viaje» solo el día de verdad antes (ver «§4b2» y «de dónde salían» en el informe).",
+    "donde": "Campana en el viaje del 11 al 15 de noviembre: «Sobre tu ruta» debe hablar de 5 días.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "§2 · La campana",
+    "punto": "«Mañana empieza tu viaje a Roma · ahora» salió el 26-oct con un viaje del 11 al 15 de noviembre: mira por qué y que solo salga el día antes, en la hora del destino",
+    "estado": "hecho",
+    "nota": "Lo resuelve la parte de la franja y los textos: «Sobre tu ruta» solo sale si sus días coinciden con los de la ruta abierta, y «Mañana empieza tu viaje» solo el día de verdad antes (ver «§4b2» y «de dónde salían» en el informe).",
+    "donde": "Campana con un viaje que empieza dentro de más de un día: no debe salir.",
+    "captura": null,
+    "captura_design": null
+  }
+]

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { createPortal } from 'react-dom'
 import { formatoImporte } from '../../../lib/dinero'
 import { deCentimos } from '../../../lib/cuentasGrupo'
@@ -62,6 +63,7 @@ const conSigno = (centimos: number, moneda: string) => (centimos > 0 ? `+${diner
  * quien puede editar. En directo (la lee `GastosCompartidosHost`).
  */
 export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
+  const huecoAlFinal = useHuecoAlFinal(32) // (Tanda 10N4 §0b) hueco para el lápiz y los logros
   const c = useCuentasDelGrupo()
   const gv = useGastosDelViaje()
   const marcarPago = useGastosCompartidos((s) => s.marcarPago)
@@ -94,7 +96,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
   }
 
   return createPortal(
-    <div className="map-cover-overlay fixed inset-0 z-[85] flex flex-col bg-bg" role="dialog" aria-modal="true" aria-labelledby="titulo-cuentas" data-pantalla-cuentas>
+    <div className="map-cover-overlay fixed inset-0 z-[85] flex flex-col bg-bg" role="dialog" aria-modal="true" aria-labelledby="titulo-cuentas" data-pantalla-cuentas data-flotantes>
       <div className="flex flex-none flex-col gap-2 px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))] md:px-8">
         <button type="button" onClick={onCerrar} aria-label="Atrás" className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#FFFDF8] text-text shadow-[0_1px_2px_rgba(28,34,48,.08)]">
           <Icono nombre="atras" size={18} />
@@ -108,7 +110,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-8 pt-2 md:px-8">
+      <div className="flex-1 overflow-y-auto px-4 pb-8 pt-2 md:px-8" style={{ paddingBottom: huecoAlFinal }}>
         <div className="mx-auto flex w-full max-w-lg flex-col gap-2.5">
           <div data-cuentas-total className="flex flex-none items-center justify-between gap-3 rounded-[16px] bg-[#1C2230] px-4 py-3 text-[#FFFDF8]">
             <span className="text-[14px] font-semibold">

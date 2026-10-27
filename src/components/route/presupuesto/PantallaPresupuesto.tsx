@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { createPortal } from 'react-dom'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { usePresupuestoUi } from '../../../store/usePresupuestoUi'
@@ -163,6 +164,27 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
   )
 }
 
+/**
+ * (Tanda 10N4) La pastilla del reparto en la tarjeta oscura. Cuando algo es solo para parte del grupo (una entrada reservada para 2 de 4): «Tu parte · 31 €», con la mayúscula, el punto medio y el importe
+ * detrás, escrito con el formateador de la moneda (nunca un «€» a mano). Para todo el grupo: «31 € por persona». `importe` es el texto ya formateado o null si está escondido (ojo cerrado: «€ •••»).
+ */
+export function EtiquetaPorPersona({ tuParte, importe, simbolo }: { tuParte: boolean; importe: string | null; simbolo: string }) {
+  const cifra = (
+    <span data-importe-por-persona style={{ font: "600 12px 'Geist Mono',monospace", letterSpacing: importe ? 0 : '.08em' }}>
+      {importe ?? `${simbolo} •••`}
+    </span>
+  )
+  return tuParte ? (
+    <span data-etiqueta-reparto="tu-parte">
+      Tu parte · {cifra}
+    </span>
+  ) : (
+    <span data-etiqueta-reparto="por-persona">
+      {cifra} por persona
+    </span>
+  )
+}
+
 /** «¿Cuántas personas viajáis?»: solo para sacar el «por persona» del presupuesto. */
 function HojaPersonas({ inicial, onGuardar, onClose }: { inicial: number | null; onGuardar: (personas: number | null) => void; onClose: () => void }) {
   const [texto, setTexto] = useState(inicial ? String(inicial) : '')
@@ -230,6 +252,7 @@ function HojaMoneda({ actual, onGuardar, onClose }: { actual: string; onGuardar:
  * cambio del día (del Banco Central Europeo); sin cambio, sale aparte sin sumar. Las líneas se tocan para cambiar su precio (en el presupuesto no se reserva nada).
  */
 export function PantallaPresupuesto() {
+  const huecoAlFinal = useHuecoAlFinal(32) // (Tanda 10N4 §0b) hueco para el lápiz y los logros
   const abierto = usePresupuestoUi((state) => state.abierto)
   const cerrar = usePresupuestoUi((state) => state.cerrar)
   const route = useRouteStore((state) => state.route)
@@ -267,7 +290,6 @@ export function PantallaPresupuesto() {
   // (Tanda 10N3) Con «¿Para quién es?» y «¿Entre quién?»: una reserva para 2 de 4 cuenta solo entre esos 2. Si no todo es entre todos, sale «tu parte» en vez del «por persona» único.
   const parte = gv.compartido ? porPersonaDelPresupuesto({ presupuesto, gastos: gv.gastos, reservas: reservations, entreDe: route.cuentasEntre, adminId: gv.personas.find((p) => p.esAdmin)?.id ?? null, todos: gv.personas.map((p) => p.id), yoId: gv.yoId }) : null
   const porPersona = parte ? deCentimos(parte.centimos, moneda) : porPersonaTodos
-  const etiquetaPorPersona = parte?.tuParte ? 'tu parte' : 'por persona'
 
   // La hoja que se abre al tocar una línea: la de siempre de cada cosa.
   const lineaDe = (id: string) => presupuesto.bloques.flatMap((bloque) => bloque.lineas).find((linea) => linea.id === id)
@@ -308,7 +330,7 @@ export function PantallaPresupuesto() {
   const fechaCambio = cambio?.fecha ? new Date(`${cambio.fecha}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' }) : null
 
   return createPortal(
-    <div className="map-cover-overlay fixed inset-0 z-[80] flex flex-col bg-bg" role="dialog" aria-modal="true" aria-labelledby="titulo-presupuesto">
+    <div className="map-cover-overlay fixed inset-0 z-[80] flex flex-col bg-bg" role="dialog" aria-modal="true" aria-labelledby="titulo-presupuesto" data-flotantes>
       <div className="flex flex-none items-center gap-3 px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))] md:px-8">
         <button type="button" onClick={cerrar} aria-label="Atrás" className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#FFFDF8] text-text shadow-[0_1px_2px_rgba(28,34,48,.08)]">
           <Icono nombre="atras" size={18} />
@@ -334,7 +356,7 @@ export function PantallaPresupuesto() {
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-8 pt-1.5 md:px-8">
+      <div className="flex-1 overflow-y-auto px-4 pb-8 pt-1.5 md:px-8" style={{ paddingBottom: huecoAlFinal }}>
         <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5">
           <div className="relative flex flex-none flex-col gap-3.5 overflow-hidden rounded-[26px] bg-[#1C2230] px-[18px] pb-4 pt-[18px] text-[#FFFDF8]">
             <span aria-hidden="true" className="absolute -right-10 -top-[50px] h-40 w-40 rounded-full" style={{ background: 'rgba(233,199,122,.3)', filter: 'blur(28px)' }} />
@@ -357,7 +379,7 @@ export function PantallaPresupuesto() {
                   className="mb-1 flex h-[30px] flex-none items-center gap-[7px] rounded-full bg-[#FFFDF8]/10 px-2.5 text-[#FFFDF8] hover:bg-[#FFFDF8]/20"
                 >
                   <span className="whitespace-nowrap text-[12px] font-medium">
-                    <span style={{ font: "600 12px 'Geist Mono',monospace", letterSpacing: verPorPersona && porPersona ? 0 : '.08em' }}>{verPorPersona && porPersona ? formatoImporte(porPersona) : `${simbolo} •••`}</span> {etiquetaPorPersona}
+                    <EtiquetaPorPersona tuParte={Boolean(parte?.tuParte)} importe={verPorPersona && porPersona ? formatoImporte(porPersona) : null} simbolo={simbolo} />
                   </span>
                   <span className="opacity-75">
                     <Icono nombre={verPorPersona ? 'ojo' : 'ojoCerrado'} size={14} />

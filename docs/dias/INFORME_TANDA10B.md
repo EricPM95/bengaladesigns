@@ -1395,3 +1395,262 @@ Cada punto del prompt, en el mismo orden. La misma lista, con casillas, está ar
 
 - ✅ Hecho — Apartado «10N3» en docs/dias/INFORME_TANDA10B.md, con esta lista al final  
   *Dónde:* No es de móvil.
+
+
+
+## 10N4 · Pequeños arreglos del repaso de Eric con dos teléfonos
+
+Prompt en `docs/dias/PROMPT_TANDA10N4.md`. Prueba: `scripts/destino/pruebaTanda10N4.mjs` (seis partes: lápiz y logros 51, campana 55, franja 130, menús 65, entradas 48 y perfil 32). Capturas en `docs/dias/capturas_jutrip/10n4_*.jpg` (las de Design, al lado, con el prefijo `10n4_design_`) y página `docs/dias/REPASO_10N4.html`, con la lista de comprobación con casillas arriba del todo y cada captura de la app al lado de la de Design. **No se ha tocado el motor de rutas.** Design al día con `APP RUTAS.zip` (sin `uploads/` ni `screenshots/`): `Avisos Gestion`, `Avisos Franja`, `Hojas Opciones`, `Ficha Cabecera` y `Parada Entrada` (de esta tanda) y, copiados pero SIN hacer (son de la 10T), `Entradas Horas`, `Ver Entrada` y `Entradas Pestana`. Hecha con seis agentes y revisada aquí.
+
+### Lo que Eric tiene que hacer
+Aplicar `supabase/migrations/0046_avisos_gestion.sql` en el editor SQL de Supabase (SIN APLICAR): la columna `oculto_en`, las funciones de «Marcar como no leído» y «Eliminar», y que `avisos_de` no devuelva los eliminados. Sin ella todo funciona igual, pero lo eliminado y lo no leído se recuerdan solo en ese móvil.
+
+### Tus dudas de la 10N3, respondidas
+- Las fechas del viaje bloqueadas también para quien solo recomienda: así estaba; se comprobó en la prueba.
+- **Perfil viejo fuera del todo**, y con él «Abierto»: un solo perfil para todos. Quien tiene los logros apagados ve el perfil nuevo sin EXP, vitrina ni billete, con su pasaporte (países y ciudades de sus viajes), «Mis viajes» con portadas y sus ajustes. Se borraron `CabeceraDeSiempre`, `FilaDeViaje` (la única «Abierto»), `MapaMisViajes` y `CifrasDelMapa`, y el bloque del globo de `viajesPerfil.ts`. `PerfilSheet.tsx` queda como cáscara (cabecera, Créditos, [Nuevo viaje], álbum) porque `Header` la usa. **Pruebas antiguas cambiadas** (hacían referencia al perfil viejo, su mapa o «Abierto»): `pruebaFase6y4_perfil`, `pruebaCorr6z6_perfil`, `pruebaTanda6z6b`, `pruebaFase6y5_pantallas`, `pruebaFase6y7_pantallas`, `pruebaFase6z6c`, `pruebaTanda10F`, `pruebaCuentas3`, `pruebaTanda10P_sorteo`, `pruebaTanda7_mover` (una entrada que apuntaba a un fichero borrado) y `pruebas8c/*`.
+- **«Tu parte · 31,00 €»** cuando una reserva es solo para parte del grupo (con el ojo cerrado, «Tu parte · € •••»); para todo el grupo, «31,00 € por persona».
+- El Free Tour del invitado va en la 10N5: no se ha tocado.
+
+### El lápiz y los logros (§0b)
+La causa: las pantallas completas (EXPLORAR z-90, presupuesto z-80, cuentas z-85, alojamiento z-100, fichas z-50) tapaban los botones, que estaban en z 40 y 41, y el botón de logros solo salía en RUTA, DÍAS y HOY y el lápiz solo con `screen === 'route'`. Ahora un observador del DOM (`src/components/flotantes/flotantes.ts`) los deja encima de todo y solo los baja por debajo de una hoja que sale desde abajo mientras está abierta (vuelven al cerrarla), y los sube para no tapar los botones de abajo; el hueco al final de las listas (150 px, 220 con el lápiz) está en EXPLORAR, la ficha, el presupuesto y las cuentas. No he comprobado una a una otras pantallas con barra de abajo propia (añadir parada, excursiones, alojamiento): una hoja nueva que no use `role="dialog"` no escondería los botones.
+
+### La pastilla del pase (§1)
+Causa: `usePaseEstado` arrancaba en «cobro apagado, todo abierto», así que la pastilla se pintaba «comprada» hasta que llegaba `/api/pase/estado`. Ahora hay un estado «sabido»: mientras no se sabe, la pastilla va vacía (mismo tamaño) y HOY no pinta ni «con pase» ni «sin pase». **No tocado:** los candados leen `pagoActivo()`, que no es reactivo y empieza abierto hasta que llega la respuesta; cambiarlo sin un repintado global podría dejar un candado cerrado a quien sí tiene pase. Decide tú si lo quieres.
+
+### Una sola letra (§1b)
+Se cambió `font-dmsans` por `font-sans` (Geist) en `DurationSelector`, `CompanionSelector`, `CuratedPlacesPool` y `ExperienceCategorySelector`, y `.rdp-root` ahora usa Geist; se quitaron de `index.css` los dos `@import` de Google Fonts (Plus Jakarta Sans, Playfair Display, DM Sans) y `playfair`/`dmsans` de `tailwind.config.ts`. El calendario que se ve de verdad es el de `DateField`; `DurationSelector` no lo usa ninguna pantalla. **Otra letra que quedaba:** Helvetica Neue, la de Mapbox, en los números de las paradas del mapa y en la atribución (RUTA, DÍAS, EXPLORAR): arreglada con `body .mapboxgl-map` en `index.css`. No medido por pantalla: Perfil, Ajustes, Pasaporte ni las películas del pase.
+
+### La campana (§2), como en Design
+`src/components/layout/NoticesSheet.tsx` a pantalla completa («TUS AVISOS», «Avisos» y [Seleccionar]), filas como en Design (nuevo en negrita con el puntito dorado, leído en gris, **sin la etiqueta «Leído»**), el circulito, «N seleccionados», «Seleccionar todos», la hoja con las dos tarjetas (formato de «Hojas Opciones», sube al elegir el primero y se queda mientras eliges, con 280 px de hueco abajo, «Marcar como no leído» si todos están leídos) y «Eliminar» sin preguntar, con la franja «2 avisos eliminados» y [Deshacer] 6 s. **Abrir la campana ya no marca nada como leído** (cambia lo de la 10M). Los avisos con botones los siguen llevando. Los avisos de fecha que solo cuentan qué cierra salen como «Información» con la «i».
+**Lo que no se pudo hacer igual que Design:** la hoja no lleva el rótulo grande ni la ✕ de las demás hojas de opciones (arriba ya están «N seleccionados» y [Cancelar]) y no oscurece la lista porque hay que seguir eligiendo; el icono de «Fecha especial» es un calendario dibujado en trazo fino (Design pone el carácter ▦); los avisos de arreglar (errores, «Revisa tu vuelta») no tienen circulito: no se eliminan, se arreglan; en modo Seleccionar los botones de dentro de los avisos se apagan.
+
+### De dónde salían los dos avisos raros
+- **«Sobre tu ruta» («2 días en Roma dan para mucho…»)** era `route.contextBanner`, que el motor escribe una sola vez al crear la ruta con los días de ese momento: si luego cambian los días, el texto queda desfasado. Ahora solo se enseña si el número de días que dice coincide con los de la ruta abierta.
+- **«Mañana empieza tu viaje a Roma · ahora»** era el aviso `d10`, que el servidor crea una vez por viaje con las fechas de ese momento y no revisaba. Ahora el servidor lo oculta si el viaje cambió de fecha o ya no existe, y cuenta «Mañana» o «En N días» con la fecha de hoy en la hora del destino. No puedo ver la base de datos de Eric: no sé si vino de un viaje de pruebas o de un cambio de fechas; el arreglo cubre las dos cosas.
+- Pendiente: los avisos de la cuenta de **otros viajes** no se filtran todavía por «viaje abierto» en la campana (anotado en el checklist).
+
+### La franja y el sonido (§4b), como en Design 11
+`src/components/avisos/FranjaDeAviso.tsx` + `useFranjaStore.ts`: sale con CUALQUIER aviso nuevo que llega con la app abierta (no el primero que se carga ni los de más de 20 minutos, leídos o eliminados), siempre además de la campana, con título corto y detalle, la inicial de quien lo hizo en la moneda dorada o el icono de la app (calendario para «Mañana empieza», «i» para información, estrella para el sorteo, ticket para la entrada que no cuadra), varios a la vez en una sola («3 avisos nuevos», las monedas, los nombres y [Ver]), tocarla abre y marca leído, deslizarla hacia arriba la quita, **un solo sonido por tanda** (separación de 2,5 s) y sin sonido si el ajuste «Sonido de los momentos» está apagado. **El sonido (`public/sonidos/aviso.wav`) es provisional, generado por mí con un script**; el del iPhone y su permiso solo se pueden comprobar en el aparato. La franja del grupo (permisos, propuestas, gastos, cambios del viaje) usa ya esta misma pieza. **No igual que Design:** la posición superior es 12 px en un navegador normal y `safe-area-inset-top` + 4 px en iPhone (Design usa 44 px dentro de un marco con la barra dibujada; no comprobado en un iPhone real); el calendario de Design lleva una cruz dentro (usado tal cual); Design no tiene ticket (dibujado fino en el mismo estilo).
+
+### Los textos de todos los avisos (§4b2)
+La lista entera, con el ANTES y el DESPUÉS, está en **`docs/dias/_10n4_textos_avisos.md`** (para que Eric los revise). Cambios principales: «Laura te ha recomendado un cambio en el día 2», «Ana te ha mandado una propuesta de 5 cambios para el viaje a Roma», «Eric ha añadido la Fontana de Trevi al sábado 28» (sin el «ha cambiado el viaje:» de delante), «Eric ha reservado el Coliseo para ti el jueves 26 a las 8:00.», «Te queda 1 día…», «Los Museos Vaticanos y la Villa Farnesina cierran el domingo 15 de noviembre.» (el artículo y el plural se resuelven al enseñarlo: el motor no se toca). Los textos de los disparadores SQL no cambiaron (no escriben texto, solo datos): no hay migración de textos.
+
+### Los menús de opciones (§3 y §4), como en Design
+El componente compartido `src/components/ui/HojaOpciones.tsx` (`HojaOpciones` + `OpcionTarjeta`): hoja con tirador y ✕, etiqueta pequeña y nombre grande (radio 32, fondo #FDFBF4, título 32 px, como Design), tarjetas blancas con icono de color suave, línea gris, «›» si lleva a otra pantalla, la que no se puede en gris con el porqué y la de quitar siempre la última en rojo. **Menús cambiados:** (1) la parada, (2) la parada para quien solo recomienda durante el viaje («Ver la ficha» y «Cómo llegar»), (3) el día (llegada, con excursión y vuelta), (4) «Personas del viaje», al tocar a una persona, la hoja del permiso y «Salir del viaje» del invitado, (5) «Cambiar portada», (6) «+ Añadir día · ¿Qué quieres hacer este día?», (7) «Abrir ruta en…». Los «tres puntitos» de RESERVAS, de un gasto, de la tarjeta de «Mis viajes» y del perfil **no existen como menús** en el código actual (son botones directos o filas que abren su pantalla): no había nada que convertir. Los diálogos de confirmación («¿Eliminar…?», «¿Quitar a Luis…?») siguen como hojas de confirmación. **Opciones extra de la parada que se quedan** (mismo formato, antes de «Quitar parada»): «Devolverla a la ruta» (si se saltó) y «Desmarcar visto»; si está reservada, el menú es solo «Quitar del viaje»; en días libres no sale «Cambiar parada». **Menú del día:** «Añadir lugares» en todos los días; «Añadir una excursión» activa solo si el día lleva interruptor (en gris con «No cabe en el día de llegada / de vuelta / este día» si no; si ya está en Excursión, «Volver a Roma»); también «Cambiar el nombre», «Mover el día antes/después», «Volver al día propuesto» y «Recuperar este día» cuando procede (esas líneas son mías, Design no las trae); «Eliminar día» siempre la última, en rojo. **Permisos con nombres cortos** (fuente única `src/lib/personasViaje.ts`): «Administrador» (candado y «Solo Eric»), «Editar · Cambia la ruta.», «Recomendar · Propone cambios.»; no queda ninguna cadena visible con «Puede editar» o «Solo recomendar»; los avisos no se tocaron.
+**Desviaciones:** la 04 de Design usa los nombres viejos de los permisos; se usaron los del §4. «Mover antes/después» llevan «›» como en Design aunque no abran pantalla (sin él en gris). «Quitar parada» en días no libres dice «Sale de tu ruta. Se confirma antes» (no «Puedes deshacerlo») porque ahí hay confirmación y no deshacer. Los iconos de «Editar» (lápiz) y «Recomendar» (bombilla) son míos. «Mover a otro día» mantiene la ruedita dentro de la hoja. «Añadir una excursión» activa se probó inyectando un interruptor (el cambio real contra el servidor no).
+
+### «Cierra» al añadir y las entradas en la ficha y en DÍAS (§4c y §4d)
+- **Aviso de cierre:** un solo `<p>` rojo, sin botones, debajo de la lista, cuando el día elegido cierra (también el preseleccionado): «El lunes 19 cierra la Galería Borghese.» con concordancia («cierran los Museos Capitolinos», «cierran las Termas…», «cierra Trastevere»: `cierraElSitio`, `elSitio` y `sitioEnPlural` en `src/lib/articulos.ts`). La lista de días, sin marcas.
+- **La cabecera de la ficha:** foto 118 con la cámara de 40, nombre a 33 px, pastillas de 30 px, y el corazón de 56 px con solo el número (se llena en frambuesa, sube y se quita).
+- **La pestaña Entradas:** lo tuyo arriba del todo: caja azul oscuro con dorado cuando otro del grupo la tiene y tú no («Eric la tiene para el … · hora», [Reservar la mía a la misma hora], «Ya la tengo») y caja verde «Tu entrada» con la hora en grande, [Cambiar hora] y [Ver entrada]; fuera «Fijada».
+- **El botón de la parada en DÍAS:** botón redondo sin palabras, también para el dueño: frambuesa si falta (con un numerito de cuántos del viaje la tienen), verde con ✓ blanco si ya la tienes (también si te cubre la del dueño); al tocarlo, la ficha en Entradas; fuera «Comprar entrada» y «Reservada ✓»; las etiquetas dejan sitio al botón y bajan de línea (ya no son nowrap: una muy larga se parte en dos dentro de su pastilla).
+- **No igual que Design / a medias:** los tres colores están solo en el botón de DÍAS y en la pestaña Entradas de la ficha; **no se tocaron** las filas de RESERVAS, el Free Tour ni las excursiones, que siguen con su verde y frambuesa de antes. [Ver entrada] está puesto pero no hace nada (su pantalla es de la 10T). En `Parada Entrada` 01 y 02 los colores están cruzados respecto a sus títulos: se siguió el texto del prompt. El Design de «Tu entrada» no lleva la nota de llegada ni el punto de encuentro: se dejaron debajo de los botones en gris pequeño. A quien le cubre la entrada del dueño no le sale [Cambiar hora]. **Efecto:** la hora de la entrada (y la del Free Tour) ya no sale en la tarjeta de DÍAS, solo en la ficha.
+
+### Dudas para Eric
+1. ¿Quito en el modo con logros apagados la cáscara `PerfilSheet.tsx` o la dejo (la usa la cabecera)?
+2. ¿Los candados del pase deben esperar también a saber el estado (hoy leen `pagoActivo()`, que empieza abierto)?
+3. ¿Quieres los tres colores (frambuesa / verde / azul y dorado) también en las filas de RESERVAS, el Free Tour y las excursiones?
+4. ¿Dejo «Cambiar el nombre» y «Mover el día antes/después» en el menú del día con mis líneas, o los quito por no estar en Design?
+5. ¿Prefieres otro sonido de campanita? El actual es provisional (un tono corto y suave generado por script).
+
+### Lista de comprobación (el repaso final de la app)
+Cada punto del prompt, en el mismo orden. La misma lista, con casillas y cada captura al lado de la de Design, está arriba del todo de `docs/dias/REPASO_10N4.html`.
+
+### Lista de comprobación de la 10N4 (punto por punto)
+
+**§0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10N4.md y en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Design al día con APP RUTAS.zip (sin uploads/ ni screenshots/): Avisos Gestion, Avisos Franja, Hojas Opciones, Ficha Cabecera, Parada Entrada, y copiados (sin hacer aquí, son de la 10T) Entradas Horas, Ver Entrada y Entradas Pestana  
+  *Dónde:* No es de móvil.
+
+**§0a · Tus dudas de la 10N3**
+
+- ✅ Hecho — 1. Las fechas del viaje, bloqueadas también para quien solo recomienda (solo las cambia el administrador) Ya estaba así (useDatesCalendarStore: si el permiso no es 'admin', el calendario no se abre). Solo comprobado, con una prueba de código.  
+  *Dónde:* Con la cuenta invitada (bengala.ingresos) en un viaje de Eric con permiso «Solo recomienda» o «Puede editar»: tocar las fechas en RUTA no abre el calendario.
+- ✅ Hecho — 2. El perfil viejo, fuera del todo: un solo perfil para todos; con los logros apagados, el nuevo sin EXP, vitrina ni billete (con pasaporte, viajes y ajustes) Borrados CabeceraDeSiempre, FilaDeViaje, MapaMisViajes, CifrasDelMapa y el código del mapa/chinchetas de viajesPerfil.ts. PerfilSheet queda solo como cáscara (cabecera, Créditos, Nuevo viaje, álbum). Sin logros no se pide nada a /api/logros; su pasaporte cuenta países y ciudades de los viajes guardados y no abre el de los logros.  
+  *Dónde:* Perfil (círculo de arriba a la derecha) con los logros apagados (producción): Hola + foto + ajustes, Mi pasaporte, Mis viajes con portadas. Con logros=on se ve el de siempre.  *Captura:* `10n4_perfil_logros_apagados.jpg`
+- ✅ Hecho — 3. «Tu parte · 31 €» en lugar de «por persona» cuando una reserva es solo para parte del grupo; para todo el grupo, «por persona» Nuevo componente EtiquetaPorPersona en PantallaPresupuesto: «Tu parte · 31,00 €» (importe con formatoImporte, nunca un € escrito a mano) o «€ •••» con el ojo cerrado; para todo el grupo «31,00 € por persona». Sin captura de la pastilla: se comprueba con el código de verdad.  
+  *Dónde:* Presupuesto (cartera) de un viaje compartido, con una entrada reservada para 2 de 4: la pastilla de la tarjeta oscura; tocar el ojo para ver el importe.
+- ✅ Hecho — 4. Fuera «Abierto» (la pastilla del viaje abierto en Mis viajes) Desaparece con FilaDeViaje; la tarjeta nueva ya no lo escribía. Pruebas antiguas que lo pedían (pruebaFase6y4_perfil y las del mapa/fila) cambiadas para comprobar el perfil nuevo.  
+  *Dónde:* Perfil > Mis viajes, con cualquier cuenta: ninguna tarjeta dice «Abierto».  *Captura:* `10n4_perfil_logros_encendidos.jpg`
+
+**§0b · El lápiz y los logros**
+
+- ✅ Hecho — El lápiz de la propuesta y el botón de los logros son flotantes y se ven en todas las pantallas: RUTA, DÍAS, EXPLORAR (también a pantalla completa, con lista y mapa), las fichas, RESERVAS, el presupuesto, HOY  
+  *Dónde:* Con la cuenta que solo recomienda (invitada): haz un cambio en la ruta y recorre RUTA, DÍAS, EXPLORAR (abre una tarjeta a pantalla completa), la ficha de un sitio, RESERVAS, el presupuesto y HOY: el lápiz (con el numerito) y el botón de los logros salen siempre. El administrador ve solo el de los logros.  *Captura:* `10n4_flotantes_explorar_completo.jpg`
+- ✅ Hecho — Error grave de la prueba de Eric: el invitado que añade un sitio desde EXPLORAR no veía el lápiz hasta cerrarlo todo y volver a la ruta  
+  *Dónde:* Cuenta invitada (recomendar): EXPLORAR > una tarjeta > [+] de un sitio > elegir día. Al cerrar la hoja, el lápiz con el numerito está ya encima de la pantalla completa de EXPLORAR, sin salir a la ruta. Causa: las pantallas completas (z-index 50 a 90) tapaban los botones, que estaban en 40 y 41.  *Captura:* `10n4_flotantes_ficha.jpg`
+- ✅ Hecho — Solo se quedan debajo de una hoja que sale desde abajo mientras está abierta, y vuelven al cerrarse Comprobado con la hoja de «¿A qué día lo añadimos?», la de la propuesta y la de los logros. Detecta por rol de diálogo (role=dialog, alertdialog, data-hoja y el Modal); una hoja nueva que no use ninguno de esos no los esconde.  
+  *Dónde:* En EXPLORAR, toca [+] en un sitio: la hoja sube y los dos botones quedan debajo; ciérrala y vuelven. Igual al tocar el lápiz o el botón de los logros.  *Captura:* `10n4_flotantes_explorar_hoja.jpg`
+- ⚠️ A medias — Nunca tapan el último elemento de una lista (hueco al final) ni los botones de abajo Hueco al final puesto y medido en la lista de EXPLORAR, la ficha, el presupuesto y las cuentas (150 px con logros, 220 con el lápiz); DÍAS, EXPLORAR en tarjetas y RESERVAS ya lo tenían. Los botones de abajo se esquivan (los botones suben) en HOY, el pie de la ficha ([Cambiar por este], [Añadir]), la barra de elegir varios y la barra de «Escuchar historia». No he revisado una a una las demás pantallas con barra propia (añadir parada, excursiones, alojamiento, otras fichas): se marcan con data-evitar-flotantes.  
+  *Dónde:* Baja hasta el final de la lista de EXPLORAR, de una ficha y del presupuesto: el último elemento queda por encima de los botones. En la ficha, los botones suben por encima de la barra «Escuchar historia».  *Captura:* `10n4_flotantes_presupuesto.jpg`
+
+**§1 · La pastilla del pase**
+
+- ✅ Hecho — La pastilla «Pase Roma» ya no sale medio segundo como comprada al cargar la ruta: mientras no se sabe, va sin estado, nunca «comprado» por adelantado Causa: usePaseEstado arrancaba en «cobro apagado, todo abierto» y la pastilla se pintaba con el pase hasta que llegaba /api/pase/estado. Ahora arranca en «sin saber» y la pastilla deja su sitio vacío. Probado con la respuesta retrasada 2,5 s y muestreo cada 30 ms, con y sin pase: solo pasa de cargando al estado real.  
+  *Dónde:* RUTA, tarjeta del destino, al abrir un viaje con la cuenta sin pase (y con pase): la pastilla aparece ya en su estado, sin «comprada» un instante.  *Captura:* `10n4_flotantes_pase_sin.jpg`
+- ⚠️ A medias — Lo mismo en cualquier otro sitio que enseñe el pase (HOY, el perfil, los candados) HOY hecho: no se pinta ni «con pase» ni «sin pase» hasta saberlo (probado). El perfil no lee el estado del pase (no hay nada que arreglar). Los candados leen pagoActivo(), que no es reactivo y empieza abierto hasta que llega la respuesta: no lo he tocado porque, sin un aviso de repintado global, un candado podría quedarse cerrado a quien sí tiene pase. Queda para decidirlo.  
+  *Dónde:* Pestaña HOY de un viaje sin pase: al abrirla no sale un instante lo del viaje con pase.  *Captura:* `10n4_flotantes_hoy_sin_pase.jpg`
+
+**§1b · Una sola letra**
+
+- ✅ Hecho — El calendario para elegir las fechas (DurationSelector y .rdp-root) usa las mismas letras que el resto, como en Design font-dmsans sustituido por font-sans (Geist) en DurationSelector, CompanionSelector, CuratedPlacesPool y ExperienceCategorySelector; .rdp-root ahora Geist. DurationSelector no se usa hoy en ninguna pantalla (el calendario que se ve es el de DateField, con .rdp-root).  
+  *Dónde:* Crear viaje > elegir fechas: el calendario con Geist, como el resto.
+- ✅ Hecho — Quitar de index.css y tailwind.config.ts lo que ya no se use (Plus Jakarta Sans, Playfair Display, DM Sans) para que cargue menos Fuera los dos @import de Google Fonts de index.css (Plus Jakarta Sans, Playfair Display y DM Sans: tres familias menos que bajar) y fontFamily playfair/dmsans de tailwind.config.ts. index.html ya solo cargaba Geist, Geist Mono, Instrument Serif e Italiana. Comprobado con grep que nada de src las usa.  
+  *Dónde:* No se ve; la app arranca bajando menos letras.
+- ✅ Hecho — Buscar si queda alguna otra pantalla con otra letra (fuera del logo, Italiana) y decirlo Medido en RUTA, DÍAS, RESERVAS, HOY y EXPLORAR: solo quedaba Helvetica Neue, la de Mapbox, en los números de las paradas del mapa (43 en DÍAS) y en la atribución del mapa. Arreglado con una regla en index.css. No he medido Perfil, Ajustes, Pasaporte ni las películas del pase por pantalla (por código no queda otra letra en src).  
+  *Dónde:* DÍAS: los números de las paradas del mapa ya van en Geist.
+
+**§2 · La campana**
+
+- ✅ Hecho — Hacerla exactamente igual que Design «Avisos Gestion» (01 normal con [Seleccionar], 02 seleccionando, 03 después de eliminar): letras, tamaños, colores, iconos, fondo dorado claro del elegido Medidas, colores y letras copiados de la pieza (tarjeta de 20 px, icono de 42 px, puntito dorado de 10 px, circulito de 24 px, franja oscura de 54 px). Dos diferencias: el icono de «Fecha especial» es un calendario dibujado en trazo fino (Design pone el carácter ▦) y no hay grabador de arriba porque es pantalla completa.  
+  *Dónde:* Campana (arriba a la derecha) › Seleccionar › elegir avisos › Eliminar. Con cualquier cuenta con avisos.  *Captura:* `10n4_campana_01_normal.jpg`
+- ✅ Hecho — Cambio 1 de Eric: la campana es a pantalla completa; arriba «TUS AVISOS», «Avisos» grande y [Seleccionar]; se cierra como hoy Ocupa toda la pantalla; la ✕ de al lado de [Seleccionar] la cierra (en Seleccionar solo sale [Cancelar], como en Design).  
+  *Dónde:* Toca la campana de la cabecera de RUTA; cierra con la ✕.  *Captura:* `10n4_campana_01_normal.jpg`
+- ✅ Hecho — Cambio 2 de Eric: [Marcar leído] y [Eliminar] como hoja desde abajo con dos tarjetas («Marcar como leído» y, la última y en rojo, «Eliminar»), formato de Hojas Opciones; sube al elegir el primero, se queda sin tapar la lista y baja al no quedar ninguno o con [Cancelar] Usa las tarjetas de HojaOpciones (OpcionTarjeta) dentro de una hoja que no oscurece ni bloquea la lista (si no, no se podría seguir eligiendo). La hoja no lleva el rótulo grande ni la ✕ de las demás hojas, porque arriba ya está «2 seleccionados» y [Cancelar]; así es pequeña. La lista deja 280 px de hueco abajo.  
+  *Dónde:* Campana › Seleccionar › toca un aviso: sube la hoja; toca [Cancelar] o quita la selección: baja.  *Captura:* `10n4_campana_02_seleccionando.jpg`
+- ✅ Hecho — Los textos de la pieza son de ejemplo; los de verdad, con artículo también en los de cierre («Los Museos Vaticanos y la Villa Farnesina cierran…»). El aviso de que cierran museos es INFORMACIÓN (la «i»); «Fecha especial» y el calendario, para «Mañana empieza tu viaje» y parecidos Lo resuelve la parte de la franja y los textos: «Sobre tu ruta» solo sale si sus días coinciden con los de la ruta abierta, y «Mañana empieza tu viaje» solo el día de verdad antes (ver «§4b2» y «de dónde salían» en el informe).  
+  *Dónde:* Campana: los avisos de fechas del viaje (cierres) con la «i» y «INFORMACIÓN».  *Captura:* `10n4_campana_01_normal.jpg`
+- ✅ Hecho — Fuera la etiqueta «Leído» («Fecha especial · Leído», «Información · Leído»): nuevos en negrita con el puntito dorado, leídos en gris Ya solo sale el tipo («INFORMACIÓN», «FECHA ESPECIAL», «AVISO»). Nuevo: negrita 600 y puntito dorado; leído: 400 en gris.  
+  *Dónde:* Campana: compara un aviso nuevo y uno leído.  *Captura:* `10n4_campana_01_normal.jpg`
+- ✅ Hecho — Cambia lo de la 10M: abrir la campana YA NO marca todo como leído; cada aviso sigue nuevo hasta que el viajero lo abre o lo marca Quitado el «al cerrar, todo leído». También fuera «Marcar todos como leídos» y el botón «Marcar como leído» de cada aviso (ahora es con Seleccionar).  
+  *Dónde:* Abre la campana con avisos nuevos y ciérrala: el punto de la campana de la cabecera sigue ahí.  *Captura:* `10n4_campana_01_normal.jpg`
+- ✅ Hecho — Normal (01): tocar un aviso lo abre (propuesta, gasto, día que ha cambiado…) y lo marca leído; los que llevan botones dentro ([Aceptar] [Rechazar]…) los siguen llevando Tocar abre lo de siempre (abrirAviso) y los avisos que no abrían nada ahora se dan por leídos al tocarlos. En los avisos con botones (gasto pendiente, entrada) tocar fuera de los botones lo da por leído. Los avisos de arreglar (error, «Revisa tu vuelta») no se marcan: cuentan hasta que se arreglan.  
+  *Dónde:* Campana › toca «Eric ha cambiado el viaje…» (abre la ruta) o «Ana quiere añadir al presupuesto» (con [Rechazar] [Aceptar]).  *Captura:* `10n4_campana_01b_botones.jpg`
+- ✅ Hecho — [Seleccionar] (02): circulito a la izquierda de cada aviso, al tocar se elige (fondo dorado claro y ✓ oscuro), «2 seleccionados» y «Seleccionar todos», [Seleccionar] pasa a [Cancelar], hoja abajo y, si todos los elegidos ya están leídos, «Marcar como no leído» Los avisos de arreglar (errores y avisos del viaje) no llevan circulito porque no se eliminan ni se marcan: se arreglan. «Marcar como no leído» funciona también en la cuenta (guardado en el servidor con la migración 0046 y siempre en el móvil).  
+  *Dónde:* Campana › Seleccionar; elige leídos solos para ver «Marcar como no leído».  *Captura:* `10n4_campana_02_seleccionando.jpg`
+- ✅ Hecho — Eliminar (03): sin preguntar, los quita de su campana, franja oscura «2 avisos eliminados» con [Deshacer] unos segundos, y la campana vuelve a la normal La franja dura 6 s. [Deshacer] devuelve los avisos. Lo eliminado se recuerda al cerrar y abrir (en el móvil siempre; en el servidor con la migración 0046, SIN aplicar: hay que aplicarla para que también valga en otro móvil).  
+  *Dónde:* Campana › Seleccionar › elige 2 › Eliminar; prueba [Deshacer] antes de que se vaya la franja.  *Captura:* `10n4_campana_03_eliminados.jpg`
+- ✅ Hecho — El aviso «Sobre tu ruta» («2 días en Roma dan para mucho…»): cada aviso tiene que ser del viaje que está abierto; mira de qué viaje sale ese texto Lo resuelve la parte de la franja y los textos: «Sobre tu ruta» solo sale si sus días coinciden con los de la ruta abierta, y «Mañana empieza tu viaje» solo el día de verdad antes (ver «§4b2» y «de dónde salían» en el informe).  
+  *Dónde:* Campana en el viaje del 11 al 15 de noviembre: «Sobre tu ruta» debe hablar de 5 días.
+- ✅ Hecho — «Mañana empieza tu viaje a Roma · ahora» salió el 26-oct con un viaje del 11 al 15 de noviembre: mira por qué y que solo salga el día antes, en la hora del destino Lo resuelve la parte de la franja y los textos: «Sobre tu ruta» solo sale si sus días coinciden con los de la ruta abierta, y «Mañana empieza tu viaje» solo el día de verdad antes (ver «§4b2» y «de dónde salían» en el informe).  
+  *Dónde:* Campana con un viaje que empieza dentro de más de un día: no debe salir.
+- ⚠️ A medias — Textos de cierre con artículo: «Los Museos Vaticanos y la Villa Farnesina cierran el domingo 15 de noviembre.» (información, la «i») Artículos y plural hechos al enseñarlos (el motor no se toca). La «i» en lugar del calendario en la fila de la campana es de la campana (G2a); en la franja ya va así.  
+  *Dónde:* Campana con un viaje que tenga cierres
+- ✅ Hecho — «Sobre tu ruta» («2 días en Roma…») saliendo en un viaje de 5 días: de qué viaje sale y arreglarlo Salía del texto guardado en la ruta al crearla (route.contextBanner), que no se actualiza si cambian los días. Ahora solo sale si coincide con los días del viaje. Los avisos de la cuenta de otros viajes no se filtran por viaje abierto (queda por decidir).  
+  *Dónde:* Viaje de 5 días creado antes con 2 días, o al cambiar fechas
+- ✅ Hecho — «Mañana empieza tu viaje a Roma · ahora» salió hoy con el viaje del 11 al 15 de nov: por qué y que solo salga el día antes El aviso de los 10 días se crea una vez con las fechas de ese momento y nunca se revisaba. Ahora el servidor lo oculta si el viaje cambió de fecha o no existe y cuenta el «Mañana»/«En N días» con la fecha de hoy en la hora del destino. No puedo ver la base de datos de Eric para saber el viaje exacto.  
+  *Dónde:* Campana el 26-oct con el viaje del 11 al 15 de nov: no debe salir
+
+**§3 · Los menús de opciones**
+
+- ✅ Hecho — Menú de una parada (01) igual que Design: PARADA + nombre, tarjetas con icono de color, línea gris, «›», Quitar parada la última en rojo Orden de Design. Extras que se quedan antes de Quitar: «Devolverla a la ruta» (parada saltada), «Desmarcar visto», «Quitar del viaje» (parada reservada, sustituye al resto). En días libres no sale «Cambiar parada». «Mover antes/después» llevan «›» como en Design aunque no abran pantalla.  
+  *Dónde:* DÍAS > abrir un día > «···» de una parada (administrador o Editar)  *Captura:* `10n4_menus_01_parada.jpg`
+- ✅ Hecho — «Mover antes» en gris diciendo por qué («Ya es la primera del día»); lo mismo con «Mover después» en la última  
+  *Dónde:* «···» de la primera parada de un día  *Captura:* `10n4_menus_01_parada.jpg`
+- ✅ Hecho — «Mover a otro día» abre la ruedita de días dentro de la misma hoja La ruedita es un selector, no una lista de opciones: se queda como estaba dentro de la hoja nueva.  
+  *Dónde:* «···» de una parada > Mover a otro día  *Captura:* `10n4_menus_01b_mover_a.jpg`
+- ✅ Hecho — Menú de un día (02): Añadir lugares, Añadir una excursión y Eliminar día (la última, roja) Además, si procede: Cambiar el nombre y Mover el día antes/después (días libres), Volver al día propuesto y Recuperar este día; todos con el mismo formato antes de Eliminar día. Los textos de líneas de nombres/mover son míos (Design no los trae).  
+  *Dónde:* DÍAS > «···» de la cabecera de un día (administrador o Editar)  *Captura:* `10n4_menus_02_dia_llegada.jpg`
+- ✅ Hecho — «Añadir lugares» abre EXPLORAR/añadir para ese día (en todos los días) Usa openAddFlow(dia), la misma pantalla de añadir de los días libres.  
+  *Dónde:* DÍAS > «···» de un día > Añadir lugares
+- ✅ Hecho — «Añadir una excursión» hace lo mismo que el interruptor [Roma | Excursión] y solo donde cabe (no llegada ni vuelta); si no, en gris con el porqué «Cabe» = el día lleva interruptor. En gris: «No cabe en el día de llegada / de vuelta / No cabe una excursión este día». Si el día ya está en Excursión la tarjeta pasa a «Volver a Roma». En el viaje de pruebas ningún día lleva interruptor: la opción activa se probó inyectando uno y comprobando que pide 'excursion' como el interruptor (no se probó el cambio real contra el servidor).  
+  *Dónde:* DÍAS > «···» de un día; probar en el día con interruptor [Roma | Excursión]  *Captura:* `10n4_menus_02_dia_con_excursion.jpg`
+- ✅ Hecho — «Personas del viaje» (03): lista con permisos, «Añadir a alguien · Con un enlace o un código» en vez de «+ Invitar a alguien» El invitado ve la lista y, abajo, «Salir del viaje» como tarjeta roja.  
+  *Dónde:* RUTA > caras del viaje (administrador); como invitado, la misma pantalla  *Captura:* `10n4_menus_03_personas.jpg`
+- ✅ Hecho — Al tocar a una persona (04): su hoja con «Cambiar permiso · Editar o Recomendar» y «Quitar del viaje» en rojo Usa «Editar o Recomendar» (no los nombres viejos de Design).  
+  *Dónde:* RUTA > caras del viaje > tocar a otra persona (administrador)  *Captura:* `10n4_menus_04_persona.jpg`
+- ✅ Hecho — Hoja del permiso con tarjetas: Administrador gris con candado y «Solo Eric», Editar, Recomendar; la elegida en azul oscuro Design no trae esta pantalla: iconos (lápiz, bombilla) y composición son míos sobre el mismo formato.  
+  *Dónde:* Personas del viaje > persona > Cambiar permiso  *Captura:* `10n4_menus_05_permiso.jpg`
+- ✅ Hecho — Menú de parada de quien solo recomienda durante el viaje (Ver la ficha, Cómo llegar) con el mismo formato Probado por código y por el render; sin captura propia.  
+  *Dónde:* DÍAS con cuenta Recomendar, durante el viaje > «···» de una parada
+- ✅ Hecho — «Cambiar portada» con tarjetas Tres tarjetas: Una foto de tu viaje (despliega la cuadrícula debajo), Una foto de mi galería, Volver a la del destino.  
+  *Dónde:* Perfil > Mis viajes > «Cambiar portada» de la tarjeta  *Captura:* `10n4_menus_07_cambiar_portada.jpg`
+- ✅ Hecho — Otros menús de la app con el mismo formato: «+ Añadir día» (qué quieres hacer) y «Abrir ruta en…» Los «tres puntitos» de RESERVAS, de un gasto, de la tarjeta de «Mis viajes» y del perfil NO existen como menús en el código actual (son botones directos o filas que abren su pantalla), así que no hay nada que convertir. Los diálogos de confirmación («¿Eliminar…?», «¿Quitar a Luis…?») siguen como hojas de confirmación, no son menús de opciones.  
+  *Dónde:* DÍAS > «+ Añadir día»; conectores de una parada > Abrir ruta en…  *Captura:* `10n4_menus_03_anadir_dia.jpg`
+
+**§4 · Los permisos con nombres cortos**
+
+- ✅ Hecho — «Administrador» sin texto debajo, en gris con candado y «Solo {nombre del administrador}» a la derecha  
+  *Dónde:* Personas del viaje > persona > Cambiar permiso  *Captura:* `10n4_menus_05_permiso.jpg`
+- ✅ Hecho — «Editar» (antes «Puede editar») con «Cambia la ruta.» y «Recomendar» (antes «Solo recomendar») con «Propone cambios.» Cambiado en textoDelPermiso/lineaDelPermiso (fuente única): etiquetas de la lista, hoja del permiso y demás. No quedan cadenas visibles con los nombres viejos en src ni server.  
+  *Dónde:* Personas del viaje (lista y hoja del permiso)  *Captura:* `10n4_menus_03_personas.jpg`
+- ✅ Hecho — Fuera las frases largas de lo que puede y no puede hacer; los avisos siguen en lenguaje normal Los textos de los avisos no se tocaron.  
+  *Dónde:* Hoja del permiso  *Captura:* `10n4_menus_05_permiso.jpg`
+
+**§4b · La franja de aviso nuevo**
+
+- ✅ Hecho — Cualquier aviso nuevo con la app abierta (permisos, propuestas, gastos, cambios, entradas, sorteo…) saca la franja arriba y se queda en la campana Detecta avisos nuevos en cada carga de la lista (Realtime, cada minuto, al volver). Probado con 11 tipos.  
+  *Dónde:* Con dos móviles: Eric cambia un permiso o añade un sitio y mira el otro móvil (cuenta invitada)  *Captura:* `10n4_franja_permiso.jpg`
+- ✅ Hecho — Sonido corto y suave de campanita, el mismo para todos; respeta «Sonido de los momentos»; sin vibración; no falla si el iPhone no deja public/sonidos/aviso.wav (provisional, generado). El audio se prepara en el primer toque. En iPhone real hay que comprobarlo: no se puede probar aquí.  
+  *Dónde:* Ajustes > Sonido de los momentos activado/apagado, y esperar un aviso con el móvil ya tocado
+- ✅ Hecho — Varios a la vez: una sola franja «3 avisos nuevos» y un solo sonido Se juntan los que llegan casi a la vez (1,5 s); uno que llega después sustituye a la franja anterior.  
+  *Dónde:* Hacer 3 cambios seguidos desde el otro móvil  *Captura:* `10n4_franja_varios.jpg`
+- ✅ Hecho — Franja como Design 11: oscura, moneda dorada, título en negrita y detalle debajo Medidas, colores, letras y sombra copiados de la pieza. Diferencia: en una web normal baja 12 px (en el iPhone con barra, lo que mida la zona segura).  
+  *Dónde:* Cualquier pantalla de la app  *Captura:* `10n4_franja_sitio.jpg`
+- ✅ Hecho — Icono: inicial/foto de la persona; si avisa la app, su icono dorado (calendario fechas especiales, «i» información, estrella sorteo, ticket entradas) Cruce de la pieza corregido como pedía el prompt. El calendario es el de Design (lleva una cruz). El ticket no está en Design: dibujado fino en el mismo estilo.  
+  *Dónde:* Aviso «Mañana empieza tu viaje», sorteo, entrada que no cuadra  *Captura:* `10n4_franja_fecha.jpg`
+- ✅ Hecho — Varios a la vez: monedas apiladas, «3 avisos nuevos», nombres debajo y [Ver] que abre la campana  
+  *Dónde:* Tres avisos de golpe y tocar la franja  *Captura:* `10n4_franja_varios.jpg`
+- ✅ Hecho — Al tocar la franja abre lo que sea y marca leído; deslizada hacia arriba se va antes Los avisos con botones (gasto pendiente, entrada del dueño) abren la campana en ese aviso sin darlo por leído. Usa abrirAviso.ts.  
+  *Dónde:* Tocar y deslizar una franja
+- ⚠️ A medias — No tapa la barra de arriba del iPhone (hora y batería) Usa env(safe-area-inset-top)+4 px; comprobado a 390 px en el navegador, no en un iPhone real.  
+  *Dónde:* iPhone, con la app instalada en la pantalla de inicio
+- ✅ Hecho — Una misma pieza para todos los avisos (también el «Eric ha aceptado tu gasto» y las líneas «Ya no formas parte…»), franja y campana a la vez con un solo sonido GastosCompartidosHost y CompartidoHost usan ahora la misma franja; se quitó la pastilla vieja. Duplicados evitados por clave.  
+  *Dónde:* Aceptar/rechazar un gasto del otro móvil; quitar a alguien del viaje  *Captura:* `10n4_franja_gasto_ok.jpg`
+
+**§4b2 · Los textos de los avisos**
+
+- ✅ Hecho — Una sola regla de textos para campana, franja y móvil: frases cortas, artículo, plural, día bien dicho, lo que decidió la persona shared/avisos/textos.js; la franja también viene del servidor (con artículos) y se arma en el móvil si falta. Lista antes/después en docs/dias/_10n4_textos_avisos.md. Sin migración 0047 (ningún SQL escribe texto).  
+  *Dónde:* Campana de cualquier cuenta
+- ✅ Hecho — Repaso uno a uno de todos los textos existentes con antes y después Ver _10n4_textos_avisos.md. Los textos de reservas/lluvia/vuelos calculados en el móvil se revisaron y se dejaron salvo el de «entrada no cuadra» (ahora con artículo).  
+  *Dónde:* docs/dias/_10n4_textos_avisos.md
+
+**§4c · Añadir un sitio: el aviso de que cierra**
+
+- ✅ Hecho — Fuera el recuadro con [Ponerlo el …] y [Dejarlo … igual]: solo un aviso en rojo, sin botones, debajo de la lista Se muestra cuando el día elegido cierra (también si es el que venía preseleccionado).  
+  *Dónde:* EXPLORAR > Añadir (+) a un sitio > tocar un día que cierra (p. ej. la Galería Borghese un lunes). Administrador o invitado.  *Captura:* `10n4_cierra_aviso.jpg`
+- ✅ Hecho — Texto «El miércoles 11 cierran los Museos Capitolinos.»; el viajero elige otro día o lo deja; nunca se le niega nada [Añadir …] sigue activo con el día que cierra.  
+  *Dónde:* Misma hoja; pulsar [Añadir al lunes 19].  *Captura:* `10n4_cierra_aviso.jpg`
+- ✅ Hecho — La lista de días igual para todos: sin etiquetas ni marcas en el que cierra Se mantienen los motivos de bloqueo que no son de cierre (ya lo tienes ese día, excursión de día entero).  
+  *Dónde:* Misma hoja, lista de días.  *Captura:* `10n4_cierra_aviso.jpg`
+- ✅ Hecho — Concordancia: «cierran los Museos Capitolinos», «cierra la Galería Borghese» cierraElSitio() en src/lib/articulos.ts (plural por el artículo de la tabla).  
+  *Dónde:* Misma hoja con un sitio en plural (Museos Capitolinos, Termas de Caracalla).  *Captura:* `10n4_cierra_aviso.jpg`
+
+**§4d · Las entradas en la ficha y en DÍAS**
+
+- ⚠️ A medias — Regla de los tres colores: frambuesa te falta, verde ya lo tienes, azul oscuro con dorado otro del grupo la tiene Aplicado en el botón de la parada de DÍAS y en la pestaña Entradas de la ficha. No tocados: filas de RESERVAS, Free Tour y excursiones (siguen con su verde/frambuesa de antes).  
+  *Dónde:* DÍAS (botón de la parada) y ficha > Entradas; administrador y invitado.  *Captura:* `10n4_entradas_dias_grupo.jpg`
+- ✅ Hecho — Cabecera de la ficha: foto 118 con cámara, nombre, pastillas y a la derecha el corazón con el número Pestañas y tirador ajustados a Design (50 px, 15 px).  
+  *Dónde:* Abrir la ficha de cualquier sitio del catálogo.  *Captura:* `10n4_entradas_cabecera_01.jpg`
+- ✅ Hecho — El corazón se llena en frambuesa y sube a 94; al volver a tocarlo se quita Misma cuenta única de «me gusta» (useMeGustaStore).  
+  *Dónde:* Ficha de un sitio > tocar el corazón.  *Captura:* `10n4_entradas_cabecera_02.jpg`
+- ✅ Hecho — Pestaña Entradas con lo tuyo arriba del todo, visible sin scroll  
+  *Dónde:* Ficha > Entradas, con cualquier cuenta.  *Captura:* `10n4_entradas_ficha_del_grupo.jpg`
+- ✅ Hecho — 03: recuadro azul oscuro con dorado «Eric la tiene para el jueves 12 · 11:45», [Reservar la mía a la misma hora] y «¿Ya la tienes? Ya la tengo» Solo sale al invitado que no está incluido en la entrada del dueño.  
+  *Dónde:* Cuenta invitada no incluida > ficha > Entradas.  *Captura:* `10n4_entradas_ficha_del_grupo.jpg`
+- ⚠️ A medias — 04: recuadro verde con ✓, «Tu entrada», hora en grande, «Sitio · día», [Cambiar hora] y [Ver entrada]; fuera «Fijada» [Ver entrada] queda puesto pero no hace nada: su pantalla es de la 10T. A quien le cubre la entrada del dueño no le sale [Cambiar hora].  
+  *Dónde:* Administrador con entrada reservada > ficha > Entradas.  *Captura:* `10n4_entradas_ficha_tu_entrada.jpg`
+- ✅ Hecho — Debajo, las entradas para comprar como hasta ahora  
+  *Dónde:* Ficha > Entradas.  *Captura:* `10n4_entradas_ficha_sin_entrada.jpg`
+- ✅ Hecho — Tarjeta de DÍAS: fuera «Comprar entrada» y la pastilla «Reservada ✓»; botón redondo con icono de entrada abajo a la derecha Sin palabras, también para el dueño. Efecto colateral: la hora de la entrada ya no sale en la tarjeta (solo en la ficha).  
+  *Dónde:* DÍAS > tarjeta de una parada con entradas.  *Captura:* `10n4_entradas_dias_falta.jpg`
+- ✅ Hecho — Frambuesa si no la tienes, con numerito cuando otros del grupo la tienen El número es cuántas personas cubre la entrada del dueño.  
+  *Dónde:* Invitado no incluido > DÍAS.  *Captura:* `10n4_entradas_dias_grupo.jpg`
+- ✅ Hecho — Verde con ✓ blanco arriba a la derecha si ya tienes la tuya En Design las piezas 01 y 02 tienen los colores cruzados respecto a sus títulos; seguido el texto del prompt.  
+  *Dónde:* Administrador con entrada, o invitado incluido > DÍAS.  *Captura:* `10n4_entradas_dias_tengo.jpg`
+- ✅ Hecho — Al tocar el botón, la ficha abierta en la pestaña Entradas  
+  *Dónde:* DÍAS > botón de la entrada.  *Captura:* `10n4_entradas_ficha_tu_entrada.jpg`
+- ✅ Hecho — Las etiquetas nunca pasan por debajo del botón: si no caben, bajan de línea Las etiquetas ya no son nowrap: una muy larga se parte en dos líneas dentro de su pastilla.  
+  *Dónde:* DÍAS > paradas con 3 o más etiquetas.  *Captura:* `10n4_entradas_dias_etiquetas_largas.jpg`
+
+**§5 · La prueba**
+
+- ✅ Hecho — Prueba nueva pruebaTanda10N4 (lápiz y logros, campana, franja, menús, entradas y perfil) Prueba de la Tanda 10N4: 381 comprobaciones, 0 fallos. Con 10N 418/0, 10N3 474/1 (el aviso en directo de Ana, solo bajo carga; suelto 47/0), 10P 3625/0, 10O 129/0, pruebaJutrip 129/0.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La batería rápida y pruebaJutrip (si algo falla solo al correr con las demás y solo pasa solo, se dice y se arregla en la 10S) Bateria completa: 22 MAL, todos por expectativas antiguas ya actualizadas (sin regresiones); sueltas pasan con 0 fallos. Lo que falle solo con otras pruebas a la vez y pase suelto va a la 10S.  
+  *Dónde:* No es de móvil.
+
+**§5 · Capturas**
+
+- ✅ Hecho — Capturas en docs/dias/capturas_jutrip/ y esta página a tamaño de móvil, cada una al lado de la de Design  
+  *Dónde:* Esta página.
+
+**§6 · El informe**
+
+- ✅ Hecho — Apartado «10N4» en docs/dias/INFORME_TANDA10B.md (con de dónde salían «Sobre tu ruta» y «Mañana empieza tu viaje», la lista de menús cambiados y la lista de textos de avisos) y esta lista al final  
+  *Dónde:* No es de móvil.
+
+**Pruebas:** 

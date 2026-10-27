@@ -224,7 +224,8 @@ console.log('2. El administrador decide cambio a cambio')
   // lo que le llega al invitado
   const T = await ev(`const t = await import('/shared/avisos/textos.js'); return JSON.stringify([t.textoDelAviso({ tipo: 'recomendacion', payload: { autor: 'Ana', n_cambios: 5, destino: 'Roma' } }), t.textoDelAviso({ tipo: 'aceptada', payload: { admin: 'Eric', n_total: 5, n_aceptados: 3 } }), t.textoDelAviso({ tipo: 'sin_enviar', payload: { n: 2, admin: 'Eric' } })])`)
   const [t1, t2, t3] = JSON.parse(T)
-  debe(t1 === 'Ana te propone 5 cambios en tu viaje a Roma', 'campana', `campana del dueño: «${t1}»`)
+  // Tanda 10N4 (§4b2): lo que ha decidido la persona, en una frase: «Ana te ha mandado una propuesta de 5 cambios para el viaje a Roma».
+  debe(t1 === 'Ana te ha mandado una propuesta de 5 cambios para el viaje a Roma', 'campana', `campana del dueño: «${t1}»`)
   debe(t2 === 'Eric ha aceptado 3 de tus 5 cambios', 'campana', `lo que le llega al invitado: «${t2}»`)
   debe(t3 === 'Tienes 2 cambios sin enviar a Eric. Envíalos hoy, que mañana empieza el viaje.', 'campana', `el aviso del día antes: «${t3}»`)
   cierra(dueno)

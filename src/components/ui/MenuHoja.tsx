@@ -1,13 +1,13 @@
 import { useState, type ReactNode } from 'react'
-import { Hoja } from './Hoja'
+import { HojaOpciones } from './HojaOpciones'
 
 /**
- * LOS MENÚS DE TRES PUNTITOS, DESDE ABAJO (Tanda 10N §6c, Eric 25-oct): el botón «···» y, al tocarlo, una HOJA BAJA (la pieza `Hoja`: tirador, ✕, se cierra deslizando o tocando fuera) con el nombre de lo que
- * se toca arriba y las opciones una debajo de otra, como en el iPhone. Nada de cuadritos flotantes encima del día o de la parada.
+ * LOS MENÚS DE TRES PUNTITOS, DESDE ABAJO (Tanda 10N §6c, Eric 25-oct; formato de Design en la 10N4 §3): el botón «···» y, al tocarlo, la hoja de opciones (`HojaOpciones`: tirador, ✕, la etiqueta pequeña, el nombre
+ * grande y las opciones como TARJETAS con su icono, su línea y su «›»).
  *
  * USO
  *   <MenuHoja etiquetaBoton="Opciones de la parada" etiqueta="Parada" titulo="Iglesia del Gesù">
- *     {(cerrar) => (<><OpcionHoja onClick={() => { cerrar(); … }}>Cambiar parada</OpcionHoja><OpcionHoja peligro onClick={…}>Quitar parada</OpcionHoja></>)}
+ *     {(cerrar) => (<><OpcionTarjeta tono="arena" icono={ICONOS_OPCION.cambiar} titulo="Cambiar parada" linea="Elige otro sitio para este hueco" flecha onClick={() => { cerrar(); … }} /></>)}
  *   </MenuHoja>
  *   `tam`: el lado del botón (28 en una parada, 38 en un día). `datos`: data-menu-hoja del botón, para las pruebas.
  *   Para una hoja con vistas (menú → confirmación → «Mover a»), usa `HojaDelMenu` directamente con el estado en el padre.
@@ -62,52 +62,14 @@ export function BotonPuntitos({ etiqueta, tam = 28, datos, onClick }: { etiqueta
 }
 
 /**
- * La hoja baja de un menú. El portal sigue a sus padres en el árbol de React, y el menú vive dentro de tarjetas que se abren al tocarlas: aquí se corta el toque para que no llegue a ellas.
- * `z`: por encima de otra hoja, si hace falta.
+ * La hoja de un menú (Tanda 10N4 §3: el formato de «Hojas Opciones» de Design, `HojaOpciones`). Los hijos son `OpcionTarjeta`. `z`: por encima de otra hoja, si hace falta.
  */
-export function HojaDelMenu({ etiqueta, titulo, onCerrar, children, z }: { etiqueta?: string; titulo: ReactNode; onCerrar: () => void; children: ReactNode; z?: number }) {
+export function HojaDelMenu({ etiqueta, titulo, onCerrar, children, z, cabecera, datos }: { etiqueta?: string; titulo: ReactNode; onCerrar: () => void; children: ReactNode; z?: number; cabecera?: ReactNode; datos?: string }) {
   return (
-    <span onClick={(event) => event.stopPropagation()} data-hoja-menu="1">
-      <Hoja baja etiqueta={etiqueta} titulo={titulo} onCerrar={onCerrar} z={z} datos="menu">
-        <div className="-mx-1 flex flex-col">{children}</div>
-      </Hoja>
+    <span data-hoja-menu="1">
+      <HojaOpciones etiqueta={etiqueta} titulo={titulo} onCerrar={onCerrar} z={z} cabecera={cabecera} datos={datos ?? 'menu'}>
+        {children}
+      </HojaOpciones>
     </span>
-  )
-}
-
-/** Una opción de la hoja: una fila de 52 px, una debajo de otra, con su raya fina. `peligro`: en rojo (Eliminar, Quitar). */
-export function OpcionHoja({ children, onClick, peligro = false, deshabilitada = false, icono, href, datos }: { children: ReactNode; onClick?: () => void; peligro?: boolean; deshabilitada?: boolean; icono?: ReactNode; href?: string; datos?: string }) {
-  const estilo = {
-    minHeight: 52,
-    width: '100%',
-    padding: '0 4px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    textAlign: 'left' as const,
-    font: "500 15.5px 'Geist'",
-    color: peligro ? 'oklch(0.55 0.19 25)' : '#1C2230',
-    background: 'transparent',
-    border: 'none',
-    borderBottom: '1px solid rgba(28,34,48,.08)',
-    opacity: deshabilitada ? 0.4 : 1,
-    cursor: deshabilitada ? 'default' : 'pointer',
-  }
-  const contenido = (
-    <>
-      {icono && <span aria-hidden="true" style={{ flex: 'none', display: 'inline-flex', color: peligro ? 'inherit' : 'rgba(28,34,48,.6)' }}>{icono}</span>}
-      <span style={{ flex: 1, minWidth: 0 }}>{children}</span>
-    </>
-  )
-  if (href && !deshabilitada)
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" onClick={onClick} data-opcion-hoja={datos ?? ''} style={estilo}>
-        {contenido}
-      </a>
-    )
-  return (
-    <button type="button" disabled={deshabilitada} onClick={onClick} data-opcion-hoja={datos ?? ''} style={estilo}>
-      {contenido}
-    </button>
   )
 }

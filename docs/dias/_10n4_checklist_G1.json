@@ -1,0 +1,83 @@
+[
+  {
+    "apartado": "§0b · El lápiz y los logros",
+    "punto": "El lápiz de la propuesta y el botón de los logros son flotantes y se ven en todas las pantallas: RUTA, DÍAS, EXPLORAR (también a pantalla completa, con lista y mapa), las fichas, RESERVAS, el presupuesto, HOY",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "Con la cuenta que solo recomienda (invitada): haz un cambio en la ruta y recorre RUTA, DÍAS, EXPLORAR (abre una tarjeta a pantalla completa), la ficha de un sitio, RESERVAS, el presupuesto y HOY: el lápiz (con el numerito) y el botón de los logros salen siempre. El administrador ve solo el de los logros.",
+    "captura": "10n4_flotantes_explorar_completo.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "§0b · El lápiz y los logros",
+    "punto": "Error grave de la prueba de Eric: el invitado que añade un sitio desde EXPLORAR no veía el lápiz hasta cerrarlo todo y volver a la ruta",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "Cuenta invitada (recomendar): EXPLORAR > una tarjeta > [+] de un sitio > elegir día. Al cerrar la hoja, el lápiz con el numerito está ya encima de la pantalla completa de EXPLORAR, sin salir a la ruta. Causa: las pantallas completas (z-index 50 a 90) tapaban los botones, que estaban en 40 y 41.",
+    "captura": "10n4_flotantes_ficha.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "§0b · El lápiz y los logros",
+    "punto": "Solo se quedan debajo de una hoja que sale desde abajo mientras está abierta, y vuelven al cerrarse",
+    "estado": "hecho",
+    "nota": "Comprobado con la hoja de «¿A qué día lo añadimos?», la de la propuesta y la de los logros. Detecta por rol de diálogo (role=dialog, alertdialog, data-hoja y el Modal); una hoja nueva que no use ninguno de esos no los esconde.",
+    "donde": "En EXPLORAR, toca [+] en un sitio: la hoja sube y los dos botones quedan debajo; ciérrala y vuelven. Igual al tocar el lápiz o el botón de los logros.",
+    "captura": "10n4_flotantes_explorar_hoja.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "§0b · El lápiz y los logros",
+    "punto": "Nunca tapan el último elemento de una lista (hueco al final) ni los botones de abajo",
+    "estado": "medias",
+    "nota": "Hueco al final puesto y medido en la lista de EXPLORAR, la ficha, el presupuesto y las cuentas (150 px con logros, 220 con el lápiz); DÍAS, EXPLORAR en tarjetas y RESERVAS ya lo tenían. Los botones de abajo se esquivan (los botones suben) en HOY, el pie de la ficha ([Cambiar por este], [Añadir]), la barra de elegir varios y la barra de «Escuchar historia». No he revisado una a una las demás pantallas con barra propia (añadir parada, excursiones, alojamiento, otras fichas): se marcan con data-evitar-flotantes.",
+    "donde": "Baja hasta el final de la lista de EXPLORAR, de una ficha y del presupuesto: el último elemento queda por encima de los botones. En la ficha, los botones suben por encima de la barra «Escuchar historia».",
+    "captura": "10n4_flotantes_presupuesto.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "§1 · La pastilla del pase",
+    "punto": "La pastilla «Pase Roma» ya no sale medio segundo como comprada al cargar la ruta: mientras no se sabe, va sin estado, nunca «comprado» por adelantado",
+    "estado": "hecho",
+    "nota": "Causa: usePaseEstado arrancaba en «cobro apagado, todo abierto» y la pastilla se pintaba con el pase hasta que llegaba /api/pase/estado. Ahora arranca en «sin saber» y la pastilla deja su sitio vacío. Probado con la respuesta retrasada 2,5 s y muestreo cada 30 ms, con y sin pase: solo pasa de cargando al estado real.",
+    "donde": "RUTA, tarjeta del destino, al abrir un viaje con la cuenta sin pase (y con pase): la pastilla aparece ya en su estado, sin «comprada» un instante.",
+    "captura": "10n4_flotantes_pase_sin.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "§1 · La pastilla del pase",
+    "punto": "Lo mismo en cualquier otro sitio que enseñe el pase (HOY, el perfil, los candados)",
+    "estado": "medias",
+    "nota": "HOY hecho: no se pinta ni «con pase» ni «sin pase» hasta saberlo (probado). El perfil no lee el estado del pase (no hay nada que arreglar). Los candados leen pagoActivo(), que no es reactivo y empieza abierto hasta que llega la respuesta: no lo he tocado porque, sin un aviso de repintado global, un candado podría quedarse cerrado a quien sí tiene pase. Queda para decidirlo.",
+    "donde": "Pestaña HOY de un viaje sin pase: al abrirla no sale un instante lo del viaje con pase.",
+    "captura": "10n4_flotantes_hoy_sin_pase.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "§1b · Una sola letra",
+    "punto": "El calendario para elegir las fechas (DurationSelector y .rdp-root) usa las mismas letras que el resto, como en Design",
+    "estado": "hecho",
+    "nota": "font-dmsans sustituido por font-sans (Geist) en DurationSelector, CompanionSelector, CuratedPlacesPool y ExperienceCategorySelector; .rdp-root ahora Geist. DurationSelector no se usa hoy en ninguna pantalla (el calendario que se ve es el de DateField, con .rdp-root).",
+    "donde": "Crear viaje > elegir fechas: el calendario con Geist, como el resto.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "§1b · Una sola letra",
+    "punto": "Quitar de index.css y tailwind.config.ts lo que ya no se use (Plus Jakarta Sans, Playfair Display, DM Sans) para que cargue menos",
+    "estado": "hecho",
+    "nota": "Fuera los dos @import de Google Fonts de index.css (Plus Jakarta Sans, Playfair Display y DM Sans: tres familias menos que bajar) y fontFamily playfair/dmsans de tailwind.config.ts. index.html ya solo cargaba Geist, Geist Mono, Instrument Serif e Italiana. Comprobado con grep que nada de src las usa.",
+    "donde": "No se ve; la app arranca bajando menos letras.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "§1b · Una sola letra",
+    "punto": "Buscar si queda alguna otra pantalla con otra letra (fuera del logo, Italiana) y decirlo",
+    "estado": "hecho",
+    "nota": "Medido en RUTA, DÍAS, RESERVAS, HOY y EXPLORAR: solo quedaba Helvetica Neue, la de Mapbox, en los números de las paradas del mapa (43 en DÍAS) y en la atribución del mapa. Arreglado con una regla en index.css. No he medido Perfil, Ajustes, Pasaporte ni las películas del pase por pantalla (por código no queda otra letra en src).",
+    "donde": "DÍAS: los números de las paradas del mapa ya van en Geist.",
+    "captura": null,
+    "captura_design": null
+  }
+]

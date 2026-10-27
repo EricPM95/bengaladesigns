@@ -6,7 +6,7 @@ import { CERRADO_ESTE_DIA } from '../../../lib/placeHoursOnDate'
 import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
-import { EntradaEdgeTab } from '../reservas/EntradaEdgeTab'
+import { EntradaEdgeTab, useBotonEntrada } from '../reservas/EntradaEdgeTab'
 import { OnTheWayCard, TrazoCard, type CardMeta } from './TrazoCards'
 import { useEtiquetaBarrio } from '../../ui/EtiquetaBarrio'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -53,6 +53,8 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   const freeDay = freeDayWarning !== undefined
   // La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos del destino.
   const barrio = useEtiquetaBarrio(useRouteStore((state) => state.route?.destination), stop.name)
+  // El botón redondo de la entrada (Tanda 10N4): frambuesa si te falta, verde con ✓ si la tienes. Sin palabras; las etiquetas de la tarjeta le dejan su sitio.
+  const botonEntrada = useBotonEntrada(stop, stop.visitMode === 'fuera')
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
@@ -142,7 +144,8 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
       meta={meta}
       tags={tags}
       barrio={stop.isFreeTour ? null : barrio}
-      edgeTab={<EntradaEdgeTab stop={stop} onOpenEntradas={onOpenEntradas ?? onOpen} soloSiReservada={stop.visitMode === 'fuera'} />}
+      edgeTab={<EntradaEdgeTab estado={botonEntrada} onOpenEntradas={onOpenEntradas ?? onOpen} />}
+      conBotonEntrada={botonEntrada != null}
       photoUrl={stop.photoUrl}
       // (Tanda 6f: sin foto —ni propia ni de su barrio— la tarjeta va sin recuadro de foto, nunca con el recuadro vacío.)
       noPhoto={!stop.photoUrl}

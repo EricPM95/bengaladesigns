@@ -79,7 +79,7 @@ debe(new Set(Object.values(huellas)).size === 3, 'tarjetas', 'cada tarjeta tiene
 
 /* ───────────────────────── 3. La ventana de avisos, DÍAS y la campana, con datos de ejemplo ───────────────────────── */
 const AVISOS = [
-  { id: 'a-15ago', dayNumber: 1, dateIso: '2026-10-17', icon: 'cierre', title: '15 de agosto · Ferragosto', tag: 'Panteón cerrado', texts: ['Es festivo y cierran los Museos Vaticanos y muchos comercios.', 'Hemos preparado tu ruta para que disfrutes de todo lo que está abierto y tengas una experiencia fantástica.'], kind: 'auto', cierran: ['Museos Vaticanos', 'Foro Romano', 'Coliseo', 'Panteón'], campana: 'Museos Vaticanos, Foro Romano y 2 lugares más cierran el 15 de agosto.' },
+  { id: 'a-15ago', dayNumber: 1, dateIso: '2026-10-17', icon: 'cierre', title: '15 de agosto · Ferragosto', tag: 'Panteón cerrado', texts: ['Es festivo y cierran los Museos Vaticanos y muchos comercios.', 'Hemos preparado tu ruta para que disfrutes de todo lo que está abierto y tengas una experiencia fantástica.'], kind: 'auto', cierran: ['Museos Vaticanos', 'Foro Romano', 'Coliseo', 'Panteón'], campana: 'Los Museos Vaticanos, el Foro Romano y 2 lugares más cierran el 15 de agosto.' },
   { id: 'b-domingo3', dayNumber: 2, dateIso: '2026-10-18', icon: 'entrada', title: 'Domingo 3 · Borghese gratis', tag: 'Horario especial', texts: ['La Galería Borghese es gratis el primer domingo de mes, con reserva.', 'Hemos preparado tu ruta para que disfrutes de todo lo que está abierto y tengas una experiencia fantástica.'], kind: 'curado', cierran: [], campana: 'Domingo 3 · La Galería Borghese, gratis' },
   { id: 'c-ano', dayNumber: 3, dateIso: '2026-10-19', icon: 'fiesta', title: '1 de enero · Año Nuevo', tag: 'Año Nuevo', texts: ['Año Nuevo: muchos restaurantes cierran y el transporte va reducido.', 'Hemos preparado tu ruta para que disfrutes de todo lo que está abierto y tengas una experiencia fantástica.'], kind: 'mixto', cierran: ['Coliseo', 'Foro Romano'], campana: '1 de enero · Año Nuevo: el Coliseo y el Foro Romano cierran' },
 ]
@@ -179,7 +179,7 @@ await a.esp(900)
   await abrirCampana(a)
   const c = await campana(a)
   debe(c.filas.length === 3 && c.filas.every((f) => f.estado === 'leido'), 'campana', `los 3 avisos están en la campana ya como leídos (${JSON.stringify(c.filas.map((f) => f.estado))})`)
-  debe(c.filas.map((f) => f.frase).join('|') === AVISOS.map((n) => n.campana).join('|'), 'campana', 'cada aviso entra con su frase corta (`campana`)')
+  debe(c.filas.map((f) => f.frase).join('|') === AVISOS.map((n) => n.campana).join('|'), 'campana', `cada aviso entra con su frase corta (campana) ${JSON.stringify(c.filas.map((f) => f.frase))}`)
   debe(c.cuenta - c.fijos === 0, 'campana', `el numerito de la campana no cuenta lo ya visto (${c.etiqueta}; otros: ${JSON.stringify(c.otros)})`)
   await a.captura(path.join(SALIDA, 'campana_leidos.jpg'))
   await cerrarCampana(a)

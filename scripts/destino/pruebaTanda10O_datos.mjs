@@ -255,16 +255,23 @@ const tarjeta = (nombre) => `(() => { const b = Array.from(document.querySelecto
   await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('[role=dialog] button')).find((x) => /^Lun /.test((x.textContent || '').trim())); b?.click(); return Boolean(b) })()")
   await a.esp(900)
   const aviso = await a.evaluar("document.querySelector('[data-aviso-cierra]')?.innerText.replace(/\\s+/g, ' ').trim() ?? null")
-  debe(aviso && /^El lunes \d+ la Galería Borghese cierra\. ¿Lo ponemos el \S+ \d+\? Ponerlo el \S+ \d+ ?Dejarlo el lunes \d+ igual$/.test(aviso), 'cierra', `el aviso de cierre con sus dos botones (${aviso})`)
+  // Tanda 10N4: solo un aviso en rojo, SIN botones («El lunes 12 cierra la Galería Borghese.»), debajo de la lista; la lista no lleva marcas en el día que cierra.
+  debe(aviso && /^El lunes \d+ cierra la Galería Borghese\.$/.test(aviso), 'cierra', `el aviso de cierre, corto y con su artículo (${aviso})`)
+  const sinBotones = await a.evaluar("(() => { const p = document.querySelector('[data-aviso-cierra]'); const hoja = document.querySelector('[role=dialog]'); return { botonesDentro: p ? p.querySelectorAll('button').length : -1, ponerOtro: document.querySelectorAll('[data-poner-otro-dia], [data-dejarlo-igual]').length, rojo: p ? getComputedStyle(p).color : null, debajoDeLaLista: p ? p.getBoundingClientRect().top >= Array.from(hoja.querySelectorAll('button')).filter((b) => /^Lun /.test((b.textContent || '').trim()))[0].getBoundingClientRect().bottom : false, lunes: Array.from(hoja.querySelectorAll('button')).find((b) => /^Lun /.test((b.textContent || '').trim()))?.innerText.replace(/\\s+/g, ' ') } })()")
+  debe(sinBotones.botonesDentro === 0 && sinBotones.ponerOtro === 0, 'cierra', 'el aviso de cierre no lleva botones (ni [Ponerlo el …] ni [Dejarlo … igual])')
+  debe(/^rgb\(/.test(sinBotones.rojo ?? '') && sinBotones.debajoDeLaLista, 'cierra', `en rojo (${sinBotones.rojo}) y debajo de la lista de días`)
+  debe(sinBotones.lunes && !/cierra|cerrad/i.test(sinBotones.lunes), 'cierra', `y el día que cierra sale en la lista sin etiqueta ni marca (${sinBotones.lunes})`)
   await a.captura(path.join(SALIDA, '10o_anadir_cierra.jpg'))
-  // «Ponerlo el sábado»: va a ese día, en su mejor hueco (entre dos paradas, no el primero), y no al lunes.
+  await a.captura(path.join(SALIDA, '10n4_cierra_aviso.jpg'))
+  // Nunca se niega nada: [Añadir …] sigue activo con ese día y lo añade a ese día.
   const antes = await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState().route.days.map((d) => d.stops.map((s) => s.name)))")
-  await a.evaluar("document.querySelector('[data-poner-otro-dia]').click(); true")
+  const anadir = await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('[role=dialog] button')).find((x) => /^Añadir /.test((x.textContent || '').trim())); return b ? { activo: !b.disabled } : null })()")
+  debe(anadir && anadir.activo, 'cierra', 'con el día que cierra elegido, [Añadir …] sigue activo (nunca se niega nada)')
+  await a.evaluar("Array.from(document.querySelectorAll('[role=dialog] button')).find((x) => /^Añadir /.test((x.textContent || '').trim())).click(); true")
   await a.esp(900)
   const despues = await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState().route.days.map((d) => ({ n: d.dayNumber, stops: d.stops.map((s) => s.name + (s.addedByUser ? '*' : '')) })))")
   const dondeEsta = despues.find((d) => d.stops.includes('Galería Borghese*'))
-  debe(dondeEsta && dondeEsta.n !== 3 && dondeEsta.stops.indexOf('Galería Borghese*') > 0, 'cierra', `«Ponerlo el …» lo pone en ese otro día (día ${dondeEsta?.n}), entre sus paradas`)
-  debe(despues.find((d) => d.n === 3)?.stops.every((s) => !s.startsWith('Galería Borghese*')), 'cierra', 'y el lunes se queda como estaba')
+  debe(dondeEsta && dondeEsta.n === 3, 'cierra', `y lo añade a ESE día aunque cierre (día ${dondeEsta?.n})`)
   void antes
   // Un sitio que abre ese día: se añade sin avisos, en su mejor hueco (el de menos camino de más entre los abiertos).
   const huecoOk = await a.evaluar(`import('/src/lib/mejorHueco.ts').then((h) => import('/src/store/useRouteStore.ts').then((m) => {

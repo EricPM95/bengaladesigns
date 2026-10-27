@@ -101,8 +101,8 @@ export function CompanionSelector({
               }`}
             >
               <Icono nombre={option.icon} size={26} className="shrink-0" />
-              <span className={`font-dmsans text-body font-semibold ${active ? 'text-onb-accent-hover' : 'text-onb-text'}`}>{option.title}</span>
-              <span className="font-dmsans text-small text-onb-text-soft">{option.description}</span>
+              <span className={`font-sans text-body font-semibold ${active ? 'text-onb-accent-hover' : 'text-onb-text'}`}>{option.title}</span>
+              <span className="font-sans text-small text-onb-text-soft">{option.description}</span>
             </button>
           )
         })}

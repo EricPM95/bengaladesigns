@@ -335,7 +335,6 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   recorre('src')
   const PERMITIDOS = [
     'src/lib/duracionViaje.ts', // la función
-    'src/components/perfil/CifrasDelMapa.tsx', // la cifra del mapa: «5 días» viajados, no la duración de un viaje
     'src/components/route/reservas/TarjetaCuentaAtras.tsx', // la cuenta atrás: «faltan 12 días»
     'src/components/destination/RouteSearch.tsx', // «Se suele hacer en 3-5 días»: una sugerencia, no un viaje
     'src/components/questionnaire/DurationSelector.tsx', // el selector viejo: ninguna pantalla lo usa

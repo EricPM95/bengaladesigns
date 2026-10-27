@@ -18,9 +18,12 @@ export interface EstadoPase {
   pruebaGastada: boolean
   /** (Tanda 10H) Lo que dice el servidor de la prueba: si está sin usar o gastada, de qué viaje y qué día. Sin él (cobro apagado), no hay prueba que contar. */
   prueba?: PruebaDelPase
+  /** (Tanda 10N4 §1) ¿Se sabe ya lo del pase? Falso solo mientras llega `/api/pase/estado`: entonces el resto de campos son de relleno y NADA debe pintarse como «comprado» ni como «bloqueado». */
+  sabido?: boolean
 }
 
-const ABIERTO: EstadoPase = { cobro: false, conPase: false, puede: true, pruebaGastada: false }
+const ABIERTO: EstadoPase = { cobro: false, conPase: false, puede: true, pruebaGastada: false, sabido: true }
+const DESCONOCIDO: EstadoPase = { cobro: false, conPase: false, puede: true, pruebaGastada: false, sabido: false }
 const CLAVE = 'trazo:pase'
 
 export function paseForzado(): 'sin' | 'prueba' | 'con' | 'pregunta' | null {
@@ -46,18 +49,28 @@ interface RespuestaEstado {
 
 export function usePaseEstado(tripId: string | null): EstadoPase {
   const forzado = paseForzado()
-  const [real, setReal] = useState<EstadoPase>(ABIERTO)
+  // (Tanda 10N4 §1) Antes arrancaba en ABIERTO («cobro apagado, todo abierto») y la pastilla salía «comprada» hasta que llegaba la respuesta. Ahora, si hay que preguntar al servidor, arranca en DESCONOCIDO.
+  const [real, setReal] = useState<EstadoPase>(() => (!forzado && tripId && logrosActivos() ? DESCONOCIDO : ABIERTO))
   useEffect(() => {
     if (forzado || !tripId || !logrosActivos()) return undefined
     let vivo = true
     void llamar<RespuestaEstado>(`/api/pase/estado?trip_id=${encodeURIComponent(tripId)}`).then((r) => {
-      if (!vivo || !r?.ok) return
+      if (!vivo) return
+      if (!r?.ok) {
+        // Sin respuesta (sin servidor o sin sesión): como siempre, todo abierto.
+        setReal(ABIERTO)
+        return
+      }
       fijarServidorDiceSinPase(r.cobro && r.pases.length === 0)
-      setReal({ cobro: r.cobro, conPase: r.pases.length > 0, puede: !r.cobro || r.hoy.puede, pruebaGastada: r.prueba.ya_usada, prueba: { estado: r.prueba.estado ?? null, tripId: r.prueba.trip_id ?? null, fecha: r.prueba.fecha ?? null } })
+      setReal({ cobro: r.cobro, conPase: r.pases.length > 0, puede: !r.cobro || r.hoy.puede, pruebaGastada: r.prueba.ya_usada, sabido: true, prueba: { estado: r.prueba.estado ?? null, tripId: r.prueba.trip_id ?? null, fecha: r.prueba.fecha ?? null } })
     })
     return () => {
       vivo = false
     }
+  }, [forzado, tripId])
+  // Si el viaje abierto cambia, hasta que conteste el servidor por el nuevo no se sabe.
+  useEffect(() => {
+    if (!forzado && tripId && logrosActivos()) setReal((r) => (r.sabido === false ? r : { ...r, sabido: false }))
   }, [forzado, tripId])
   // La pregunta de las 12:00 de prueba, una sola vez por carga.
   useEffect(() => {

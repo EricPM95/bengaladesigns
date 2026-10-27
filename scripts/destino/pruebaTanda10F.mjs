@@ -186,7 +186,6 @@ console.log('B. La app en un Chrome')
 {
   const src = {
     perfil: leer('src/components/layout/PerfilSheet.tsx'),
-    fila: leer('src/components/perfil/FilaDeViaje.tsx'),
     tarjeta: leer('src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx'),
     cuerpo: leer('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx'),
     host: leer('src/components/perfil/EliminarViajeHost.tsx'),
@@ -196,8 +195,8 @@ console.log('B. La app en un Chrome')
   }
   debe(!/window\.confirm|\bconfirm\(|\balert\(/.test(Object.values(src).join('\n')), 'hoja', 'no hay ninguna ventana del navegador (confirm/alert): es una hoja de abajo')
   debe(/Hoja,|<Hoja /.test(src.host) && /EliminarViajeHost/.test(src.app), 'hoja', 'la hoja es la de siempre (`Hoja`) y está montada una vez en App.tsx')
-  debe(/BotonEditarViajes/.test(src.perfil) && /BotonEditarViajes/.test(src.cuerpo), 'editar', '[Editar] está en el Perfil de siempre y en el Perfil con logros')
-  debe(/editando/.test(src.fila) && /editando/.test(src.tarjeta), 'editar', 'las dos filas (la de siempre y la tarjeta con foto) enseñan la papelera en modo editar')
+  debe(/BotonEditarViajes/.test(src.cuerpo), 'editar', '[Editar] está en el Perfil (único desde la 10N4)')
+  debe(/editando/.test(src.tarjeta), 'editar', 'la tarjeta con foto enseña la papelera en modo editar')
   debe(/useEliminarViaje/.test(src.antigua) && !/deleteTrip|confirming/.test(src.antigua), 'antigua', 'la pantalla antigua «Mis viajes» usa la misma hoja y el mismo camino (sin su confirmación propia)')
   debe(/rgb\(var\(--accent-red\)\)/.test(src.host) && /Eliminar viaje/.test(src.host) && /Salir de este viaje/.test(src.host) && /Cancelar/.test(src.host), 'hoja', '[Eliminar viaje] en el rojo de los avisos importantes, [Salir de este viaje] y [Cancelar]')
 }

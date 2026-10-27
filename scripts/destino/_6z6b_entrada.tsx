@@ -3,12 +3,13 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { PerfilSheet } from '../../src/components/layout/PerfilSheet'
+import CuerpoConLogros from '../../src/components/logros/pantallas/perfil/CuerpoConLogros'
 import { RouteOverview } from '../../src/components/route/RouteOverview'
 import { TarjetaRecuerdos, TarjetaRecuerdosEnRuta, ultimasTresFotos, verTarjetaRecuerdosEnRuta } from '../../src/components/route/fotos/TarjetaRecuerdos'
 import { BotonFotoParada } from '../../src/components/route/fotos/BotonFotoParada'
 import { etiquetaAnadirFoto } from '../../src/components/perfil/AlbumDeViaje'
 import { limiteDeFotos, modoDeFoto, fotosDelSitio } from '../../src/lib/fotosViaje'
-import { agruparFotos, plural, cifrasDelPerfil, textoDeFotos, chinchetasDeViajes, ordenarViajes, resumenDeViaje, viajePorId, viajesDelPerfil, PROYECCION_MAPA_VIAJES } from '../../src/lib/viajesPerfil'
+import { agruparFotos, plural, cifrasDelPerfil, textoDeFotos, ordenarViajes, resumenDeViaje, viajePorId, viajesDelPerfil } from '../../src/lib/viajesPerfil'
 import { usePerfilUi } from '../../src/store/usePerfilUi'
 import { useRouteStore } from '../../src/store/useRouteStore'
 import { useSyncStore } from '../../src/store/useSyncStore'
@@ -17,6 +18,7 @@ export {
   createElement,
   renderToStaticMarkup,
   PerfilSheet,
+  CuerpoConLogros,
   RouteOverview,
   TarjetaRecuerdos,
   TarjetaRecuerdosEnRuta,
@@ -31,12 +33,10 @@ export {
   plural,
   cifrasDelPerfil,
   textoDeFotos,
-  chinchetasDeViajes,
   ordenarViajes,
   resumenDeViaje,
   viajePorId,
   viajesDelPerfil,
-  PROYECCION_MAPA_VIAJES,
   usePerfilUi,
   useRouteStore,
   useSyncStore,

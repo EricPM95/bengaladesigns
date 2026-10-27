@@ -8,11 +8,12 @@ import { useViajeCompartido, type Permiso } from '../store/useViajeCompartido'
  * LAS PERSONAS DEL VIAJE (Tanda 10N §4a): cambiar el permiso de alguien, quitarlo y salir. Todo pasa por funciones de la base de datos (migración 0036), que son las que comprueban quién puede qué.
  * Sin la 0036 aplicada cada llamada devuelve un aviso en palabras sencillas y no cambia nada.
  */
-export const textoDelPermiso: Record<Permiso, string> = { admin: 'Administrador', editar: 'Puede editar', recomendar: 'Solo recomendar' }
+// (Tanda 10N4 §4) Nombres cortos: «Administrador» (sin texto debajo), «Editar» y «Recomendar», cada uno con una línea corta. Fuera las frases largas de lo que puede y no puede hacer.
+export const textoDelPermiso: Record<Permiso, string> = { admin: 'Administrador', editar: 'Editar', recomendar: 'Recomendar' }
 export const lineaDelPermiso: Record<Permiso, string> = {
-  admin: 'Todo, y es el único que invita, quita gente y cambia permisos.',
-  editar: 'Toca la ruta y acepta propuestas. No invita ni cambia fechas, vuelo o alojamiento.',
-  recomendar: 'Propone cambios y otros los aceptan.',
+  admin: '',
+  editar: 'Cambia la ruta.',
+  recomendar: 'Propone cambios.',
 }
 
 const SIN_LA_0036 = 'Esto necesita la actualización del servidor (migración 0036). Todavía no está aplicada.'

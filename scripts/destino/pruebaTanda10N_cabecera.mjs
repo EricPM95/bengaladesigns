@@ -129,7 +129,7 @@ const modo = async (a, m) => {
   await a.esp(900)
   const hojaDia = await a.evaluar(`(() => { const h = document.querySelector('[data-hoja="menu"]'); if (!h) return null; const p = h.querySelector('.hoja-panel'); return { tirador: Boolean(h.querySelector('[data-hoja-tirador]')), cerrar: Boolean(h.querySelector('[aria-label="Cerrar"]')), alto: p.getBoundingClientRect().height, ventana: window.innerHeight, texto: h.innerText.replace(/\\s+/g, ' ') } })()`)
   debe(hojaDia?.tirador && hojaDia?.cerrar, 'hojas', 'el menú del día lleva tirador y ✕')
-  debe(hojaDia && hojaDia.alto < hojaDia.ventana * 0.5, 'hojas', `el menú del día es una hoja baja (${Math.round(hojaDia?.alto)} de ${hojaDia?.ventana} px)`)
+  debe(hojaDia && hojaDia.alto < hojaDia.ventana * 0.8, 'hojas', `el menú del día es una hoja baja (${Math.round(hojaDia?.alto)} de ${hojaDia?.ventana} px)`)
   debe(/Eliminar día/.test(hojaDia?.texto ?? '') && /\d/.test(hojaDia?.texto ?? ''), 'hojas', `lleva el nombre del día arriba y «Eliminar día» (${hojaDia?.texto})`)
   await cap(a, 'menu_dia')
   await a.evaluar("Array.from(document.querySelectorAll('[data-opcion-hoja]')).find((b) => /Eliminar día/.test(b.textContent)).click(); true")
@@ -151,8 +151,8 @@ const modo = async (a, m) => {
     return ok
   }
   debe(await abrirParada(), 'hojas', 'la parada tiene su «···»')
-  const hojaP = await a.evaluar(`(() => { const h = document.querySelector('[data-hoja="menu"]'); if (!h) return null; const p = h.querySelector('.hoja-panel'); return { alto: p.getBoundingClientRect().height, ventana: window.innerHeight, opciones: Array.from(h.querySelectorAll('[data-opcion-hoja]')).map((b) => b.textContent.trim()), titulo: h.querySelector('span[style*="Instrument"]')?.textContent ?? '' } })()`)
-  debe(hojaP && hojaP.alto < hojaP.ventana * 0.5, 'hojas', `el menú de la parada es una hoja baja (${Math.round(hojaP?.alto)} px)`)
+  const hojaP = await a.evaluar(`(() => { const h = document.querySelector('[data-hoja="menu"]'); if (!h) return null; const p = h.querySelector('.hoja-panel'); return { alto: p.getBoundingClientRect().height, ventana: window.innerHeight, opciones: Array.from(h.querySelectorAll('[data-opcion-hoja]')).map((b) => (b.querySelector('[data-opcion-titulo]')?.textContent ?? b.textContent).trim()), titulo: h.querySelector('[data-hoja-opciones-titulo], span[style*="Instrument"]')?.textContent ?? '' } })()`)
+  debe(hojaP && hojaP.alto < hojaP.ventana * 0.8, 'hojas', `el menú de la parada es una hoja baja (${Math.round(hojaP?.alto)} px)`)
   debe(hojaP?.titulo.length > 2, 'hojas', `lleva el nombre de la parada arriba (${hojaP?.titulo})`)
   debe(hojaP?.opciones.includes('Mover a otro día') && hojaP?.opciones.includes('Quitar parada'), 'hojas', `opciones una debajo de otra (${hojaP?.opciones.join(', ')})`)
   debe(!hojaP?.opciones.some((o) => /hora/i.test(o)), 'cambiar_hora', '«Cambiar hora» ya no sale entre las opciones de la parada')

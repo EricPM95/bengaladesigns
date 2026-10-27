@@ -29,6 +29,7 @@ import { diaCorto, diaProsa, elDia, fichaDelDia } from '../../lib/nombreDeDia'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { DayCardSwitch } from './DayCardSwitch'
+import { useInterruptorUiStore } from '../../store/useInterruptorUiStore'
 import { logrosActivos } from '../../lib/logros'
 import { ExcursionCardMeta } from './dayDetail/excursion/ExcursionCardMeta'
 import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '../../lib/dayInterruptor'
@@ -318,6 +319,14 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                   onBackToProposed={day.interruptor && day.ownDay ? () => void volverAlDiaPropuesto(day.id) : undefined}
                   onRestoreDay={!isFreeDay(day) && !day.userAdded && !isDayPinned(route, reservations, day) && day.originalSnapshot ? () => setAskRestore({ dayId: day.id, dayNumber: day.dayNumber }) : undefined}
                   onDelete={isDayPinned(route, reservations, day) ? null : () => setRemoveDayId(day.id)}
+                  onAddPlaces={() => openAddFlow(day.id)}
+                  // (Tanda 10N4 §3) «Añadir una excursión» hace lo mismo que el interruptor [Roma | Excursión]: solo cabe donde el día lleva interruptor (no en el de llegada ni en el de vuelta).
+                  excursion={{
+                    cabe: Boolean(day.interruptor),
+                    modo: day.interruptor?.mode ?? 'roma',
+                    motivo: index === 0 ? 'No cabe en el día de llegada' : day.isReturnLeg || index === lastContentIndex ? 'No cabe en el día de vuelta' : 'No cabe una excursión este día',
+                    onCambiar: () => void useInterruptorUiStore.getState().pedir(day.id, day.interruptor?.mode === 'excursion' ? 'roma' : 'excursion'),
+                  }}
                   freeDay={
                     isFreeDay(day) || day.userAdded
                       ? {

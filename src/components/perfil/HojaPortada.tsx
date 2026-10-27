@@ -2,13 +2,10 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { urlParaMostrar, type FotoViaje } from '../../lib/fotosViaje'
 import { fotosParaPortada, subirPortadaDeGaleria } from '../../lib/portadaViaje'
 import { usePortadas } from '../../store/usePortadas'
-import { Hoja } from '../ui/Hoja'
-import { Icono } from '../ui/Icono'
-
-const FILA = 'flex min-h-[52px] w-full items-center gap-3 rounded-[16px] border border-text/12 bg-white px-4 text-left text-[15px] font-semibold text-text disabled:opacity-45'
+import { HojaOpciones, ICONOS_OPCION, OpcionTarjeta } from '../ui/HojaOpciones'
 
 /**
- * CAMBIAR LA PORTADA DE UN VIAJE (Tanda 10N3, §3b.6): una hoja baja con tres cosas: una foto de SUS FOTOS DEL VIAJE (las de sus paradas), una de su GALERÍA, o volver a la foto del destino.
+ * CAMBIAR LA PORTADA DE UN VIAJE (Tanda 10N3, §3b.6; con el formato de tarjetas de las opciones desde la 10N4 §3): una hoja con tres cosas: una foto de SUS FOTOS DEL VIAJE (las de sus paradas), una de su GALERÍA, o volver a la foto del destino.
  * Lo elegido se guarda en `usePortadas` (la cuenta y este móvil) y la tarjeta lo muestra al momento.
  */
 export function HojaPortada({ tripId, destino, onCerrar }: { tripId: string; destino: string; onCerrar: () => void }): ReactNode {
@@ -43,12 +40,8 @@ export function HojaPortada({ tripId, destino, onCerrar }: { tripId: string; des
   }
 
   return (
-    <Hoja onCerrar={onCerrar} titulo="Cambiar portada" etiqueta={destino.toUpperCase()} datos="cambiar-portada" z={94}>
-      <button type="button" data-portada-viaje-fotos disabled={ocupado} onClick={() => setViendoFotos((v) => !v)} className={FILA}>
-        <Icono nombre="camara" size={20} />
-        <span className="flex-1">Una foto de tu viaje</span>
-        <Icono nombre={viendoFotos ? 'arriba' : 'abajo'} size={14} className="text-text/55" />
-      </button>
+    <HojaOpciones onCerrar={onCerrar} titulo="Cambiar portada" etiqueta={destino} datos="cambiar-portada" z={94}>
+      <OpcionTarjeta tono="azul" icono={ICONOS_OPCION.camara} titulo="Una foto de tu viaje" linea="De las fotos de tus paradas" flecha={!viendoFotos} deshabilitada={ocupado} onClick={() => setViendoFotos((v) => !v)} atributos={{ 'data-portada-viaje-fotos': '' }} />
       {viendoFotos &&
         (fotos === null ? (
           <p className="m-0 px-1 text-[13px] text-text/60">Buscando tus fotos…</p>
@@ -67,20 +60,14 @@ export function HojaPortada({ tripId, destino, onCerrar }: { tripId: string; des
             ))}
           </ul>
         ))}
-      <button type="button" data-portada-galeria disabled={ocupado} onClick={() => galeria.current?.click()} className={FILA}>
-        <Icono nombre="anadir" size={20} />
-        <span className="flex-1">{ocupado ? 'Subiendo la foto…' : 'Una foto de mi galería'}</span>
-      </button>
+      <OpcionTarjeta tono="salvia" icono={ICONOS_OPCION.galeria} titulo={ocupado ? 'Subiendo la foto…' : 'Una foto de mi galería'} linea="Elige una del móvil" deshabilitada={ocupado} onClick={() => galeria.current?.click()} atributos={{ 'data-portada-galeria': '' }} />
       <input ref={galeria} type="file" accept="image/*" hidden onChange={(e) => void alElegirArchivo(e.target.files?.[0])} />
-      <button type="button" data-portada-destino disabled={ocupado || actual?.f === 'destino'} onClick={() => void poner({ f: 'destino' })} className={FILA}>
-        <Icono nombre="atras" size={20} />
-        <span className="flex-1">Volver a la del destino</span>
-      </button>
+      <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.volver} titulo="Volver a la del destino" linea={actual?.f === 'destino' ? 'Ya tienes la del destino' : 'La foto de siempre del sitio'} deshabilitada={ocupado || actual?.f === 'destino'} onClick={() => void poner({ f: 'destino' })} atributos={{ 'data-portada-destino': '' }} />
       {error && (
         <p role="alert" className="m-0 text-[13px]" style={{ color: 'rgb(var(--accent-red))' }}>
           {error}
         </p>
       )}
-    </Hoja>
+    </HojaOpciones>
   )
 }

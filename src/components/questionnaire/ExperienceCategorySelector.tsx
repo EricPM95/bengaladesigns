@@ -83,7 +83,7 @@ export function ExperienceCategorySelector({
 
   return (
     <div className="space-y-4">
-      <p className="font-dmsans text-small text-onb-text-soft">
+      <p className="font-sans text-small text-onb-text-soft">
         Elige las <span className="font-semibold text-onb-text">3</span> que más te apetezcan. Lo esencial del destino entra en tu ruta de todas formas.
       </p>
 
@@ -112,7 +112,7 @@ export function ExperienceCategorySelector({
                   layout
                   initial={{ scale: 0.6, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-onb-accent font-dmsans text-caption font-bold text-white"
+                  className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-onb-accent font-sans text-caption font-bold text-white"
                 >
                   {order}
                 </motion.span>
@@ -120,12 +120,12 @@ export function ExperienceCategorySelector({
               <span className="leading-none" aria-hidden="true">
                 <Icono nombre={category.icon} size={26} />
               </span>
-              <span className={`font-dmsans text-small font-semibold leading-tight ${isSelected ? 'text-onb-accent-hover' : 'text-onb-text'}`}>
+              <span className={`font-sans text-small font-semibold leading-tight ${isSelected ? 'text-onb-accent-hover' : 'text-onb-text'}`}>
                 {category.title}
               </span>
-              <span className="font-dmsans text-caption leading-tight text-onb-text-muted">{category.description}</span>
+              <span className="font-sans text-caption leading-tight text-onb-text-muted">{category.description}</span>
               {windows[category.id] && statusOf(category.id).notice && (
-                <span className="font-dmsans text-caption leading-tight text-accent-red">{statusOf(category.id).notice}</span>
+                <span className="font-sans text-caption leading-tight text-accent-red">{statusOf(category.id).notice}</span>
               )}
             </motion.button>
           )
@@ -137,7 +137,7 @@ export function ExperienceCategorySelector({
         type="button"
         onClick={onConfirm}
         disabled={!complete}
-        className="w-full rounded-onb-full bg-onb-accent py-3.5 font-dmsans text-body font-semibold text-white transition-colors hover:bg-onb-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-onb-full bg-onb-accent py-3.5 font-sans text-body font-semibold text-white transition-colors hover:bg-onb-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
       >
         {complete ? 'Continuar →' : `Elige ${MAX_POSITIVE_CATEGORIES - selected.length} más`}
       </button>

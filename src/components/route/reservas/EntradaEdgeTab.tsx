@@ -1,65 +1,75 @@
-import { useState } from 'react'
-import { useRouteStore } from '../../../store/useRouteStore'
-import { AddReservationSheet } from './AddReservationSheet'
-import { GREEN } from './EntradaCard'
 import { useStopEntradas } from './useStopEntradas'
-import { Icono } from '../../ui/Icono'
 
-/** Sin reservar, el frambuesa de la app (`--accent`: «falta»). */
-const FALTA = 'rgb(var(--frambuesa))'
+/** Los tres colores de la entrada (Tanda 10N4, «Parada Entrada»): frambuesa = te falta · verde = ya la tienes. (El azul oscuro con dorado —otro del grupo la tiene— vive en la ficha: `EntradaDelGrupo`.) */
+export const FONDO_ENTRADA = {
+  falta: { fondo: 'linear-gradient(145deg, oklch(0.62 0.18 5), oklch(0.48 0.16 5))', sombra: '0 8px 14px -8px oklch(0.45 0.16 5), inset 0 1px 0 rgba(255,255,255,.35)', borde: 'oklch(0.55 0.17 5)' },
+  tengo: { fondo: 'linear-gradient(145deg, #3FA066, #2B7F45)', sombra: '0 8px 14px -8px #2B7F45, inset 0 1px 0 rgba(255,255,255,.35)', borde: '#2B7F45' },
+} as const
 
-function TicketIcon() {
+/** El icono de la entrada de Design (el ticket con el corte), tal cual. */
+export function TicketDesign({ size = 21, color = '#fff', grosor = 1.8 }: { size?: number; color?: string; grosor?: number }) {
   return (
-    <Icono nombre="reservas" size={15} />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={grosor} strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
+      <path d="M3 9a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2zM14 7v10" />
+    </svg>
   )
 }
 
+export interface BotonEntradaEstado {
+  /** 'falta' (frambuesa: no la tienes), 'tengo' (verde con ✓: la tienes tú o te cubre la del dueño). */
+  estado: 'falta' | 'tengo'
+  /** Cuántos del viaje la tienen ya y tú no (el numerito del botón frambuesa); 0 = sin numerito. */
+  cuantos: number
+}
+
 /**
- * La pestañita de entrada de la tarjeta de DÍAS (Tanda 6n y 6q): en la esquina de abajo a la derecha, en la misma vertical que el «···» de la esquina de arriba y con el mismo hueco hasta el borde. Sin reservar, naranja con el icono de entrada: abre la
- * ficha en su pestaña «Entradas». Reservada, verde con ✓ y la hora: abre la hoja de «Cambiar». Sin entradas en los datos, no sale.
+ * Qué botón de entrada lleva una parada de DÍAS (null = ninguno: los datos no dan entradas de ese sitio, o es una parada «por fuera» sin entrada tuya).
+ * La tarjeta lo usa también para no poner las etiquetas por debajo del botón.
  */
-export function EntradaEdgeTab({ stop, onOpenEntradas, soloSiReservada = false }: { stop: { id: string; name: string; isFreeTour?: boolean }; onOpenEntradas: () => void; soloSiReservada?: boolean }) {
-  const route = useRouteStore((state) => state.route)
+export function useBotonEntrada(stop: { id: string; name: string; isFreeTour?: boolean }, soloSiReservada = false): BotonEntradaEstado | null {
   const data = useStopEntradas(stop)
-  const [changing, setChanging] = useState(false)
-  if (!data || !route) return null
-  const reserved = data.reservation != null
-  // Tanda 10N §8: en un viaje de varias personas la etiqueta de la parada es corta, sin textos largos: «Reservada ✓» (verde) para quien está incluido y «Comprar entrada» (frambuesa) para quien no lo está pero el dueño ya tiene la suya. El detalle va en la ficha y en la campana.
-  const etiquetaCorta = data.compartido && (reserved || data.delGrupo != null)
+  if (!data) return null
+  const tengo = data.reservation != null
   // (Tanda 11, punto 4: una parada que se ve por fuera no invita a reservar; solo se queda si el viajero ya tiene su entrada.)
-  if (soloSiReservada && !reserved) return null
+  if (soloSiReservada && !tengo) return null
+  return { estado: tengo ? 'tengo' : 'falta', cuantos: tengo ? 0 : data.cuantosLaTienen }
+}
+
+/**
+ * EL BOTÓN DE LA ENTRADA EN LA TARJETA DE DÍAS (Tanda 10N4, `Piezas/Parada Entrada`): redondo (40 px, esquinas de 13), abajo a la derecha (a 12 px), con el icono de la entrada y NUNCA con palabras.
+ *   - frambuesa: no tienes entrada; con un numerito arriba a la derecha cuando alguien del grupo ya la tiene (cuántos);
+ *   - verde con un ✓ (en un circulito blanco, en el mismo sitio que el numerito): ya tienes la tuya (también si te cubre la del dueño).
+ * Al tocarlo, la ficha abierta en su pestaña «Entradas» (allí están [Cambiar hora] y [Ver entrada]). La tarjeta deja libre su sitio: las etiquetas no pasan por debajo (ver `TrazoCard`).
+ */
+export function EntradaEdgeTab({ estado, onOpenEntradas }: { estado: BotonEntradaEstado | null; onOpenEntradas: () => void }) {
+  if (!estado) return null
+  const tengo = estado.estado === 'tengo'
+  const color = FONDO_ENTRADA[estado.estado]
   return (
-    <>
-      {etiquetaCorta ? (
-        <button
-          type="button"
-          data-etiqueta-entrada={reserved ? 'reservada' : 'comprar'}
-          onClick={reserved && !data.cubiertaPorElDueno ? () => setChanging(true) : onOpenEntradas}
-          aria-label={reserved ? 'Reservada ✓' : 'Comprar entrada'}
-          className="absolute bottom-2 right-[5px] z-20 flex h-[26px] items-center justify-center whitespace-nowrap rounded-full px-2.5 text-white shadow-sm"
-          style={{ background: reserved ? GREEN : FALTA, font: "600 10.5px 'Geist'" }}
+    <button
+      type="button"
+      data-boton-entrada={tengo ? 'tengo' : estado.cuantos > 0 ? 'grupo' : 'falta'}
+      data-cuantos={estado.cuantos || undefined}
+      onClick={onOpenEntradas}
+      aria-label={tengo ? 'Tu entrada está reservada. Ver las entradas' : estado.cuantos > 0 ? `Ver las entradas (${estado.cuantos} del viaje ya la tienen)` : 'Ver las entradas'}
+      className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-[13px] active:scale-95"
+      style={{ background: color.fondo, boxShadow: color.sombra }}
+    >
+      <TicketDesign />
+      {(tengo || estado.cuantos > 0) && (
+        <span
+          className="absolute -right-[7px] -top-[7px] flex h-5 w-5 items-center justify-center rounded-full"
+          style={{ background: '#FFFDF8', border: `1.5px solid ${color.borde}`, color: color.borde, font: "700 11px/1 'Geist'" }}
         >
-          {reserved ? 'Reservada ✓' : 'Comprar entrada'}
-        </button>
-      ) : (
-      <button
-        type="button"
-        onClick={reserved ? () => setChanging(true) : onOpenEntradas}
-        aria-label={reserved ? `Entrada reservada${data.shownTime ? ` a las ${data.shownTime}` : ''}. Cambiar` : 'Ver las entradas'}
-        className="absolute bottom-2 right-[5px] z-20 flex w-[34px] flex-col items-center justify-center gap-0.5 rounded-xl py-2 text-white shadow-sm"
-        style={{ background: reserved ? GREEN : FALTA }}
-      >
-        {reserved ? (
-          <>
-            <Icono nombre="hecho" className="h-4 w-4" grosor={3} />
-            {data.shownTime && <span style={{ font: "600 9.5px 'Geist Mono',monospace" }}>{data.shownTime}</span>}
-          </>
-        ) : (
-          <TicketIcon />
-        )}
-      </button>
+          {tengo ? (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2B7F45" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12.5l4.5 4.5L19 7" />
+            </svg>
+          ) : (
+            estado.cuantos
+          )}
+        </span>
       )}
-      {changing && <AddReservationSheet route={route} target={data.target} onClose={() => setChanging(false)} />}
-    </>
+    </button>
   )
 }

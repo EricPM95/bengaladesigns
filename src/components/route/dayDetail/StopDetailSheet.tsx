@@ -1,4 +1,5 @@
 import { useEffect, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
@@ -88,9 +89,9 @@ interface StopDetailSheetProps {
 
 /** Una píldora de las etiquetas pequeñas de debajo del nombre (diseño «Ficha Lugar»): `oscura` (la duración), `verde` (acceso libre / abierto), `roja` (requiere reserva / cerrado) o de contorno (el tipo). */
 function Pildora({ tono = 'contorno', datos, children }: { tono?: 'oscura' | 'roja' | 'contorno'; datos: 'horario' | 'tiempo'; children: ReactNode }) {
-  const estilo = tono === 'oscura' ? 'bg-text text-bg' : tono === 'roja' ? 'border border-accent-red/30 bg-accent-red/10 text-accent-red' : 'border border-text/[.14] text-text/75'
+  const estilo = tono === 'oscura' ? 'bg-[#1C2230] text-white' : tono === 'roja' ? 'border border-accent-red/30 bg-accent-red/10 text-accent-red' : 'border border-[rgba(28,34,48,.25)] text-text'
   return (
-    <span data-etiqueta-ficha={datos} className={`flex h-[26px] items-center gap-[5px] rounded-full px-[9px] text-[11.5px] ${tono === 'contorno' ? 'font-medium' : 'font-semibold'} ${estilo}`}>
+    <span data-etiqueta-ficha={datos} className={`flex h-[30px] items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${estilo}`}>
       {children}
     </span>
   )
@@ -115,6 +116,7 @@ function lineasDe(texto: string | null | undefined): string[] {
  * «Horario» y «Cómo llegar»; abajo, la barra «Escuchar historia» (solo en los sitios con historia; de pago). Cada sección sale solo si nuestros datos la traen (las piezas viven en `FichaPiezas.tsx`).
  */
 export function StopDetailSheet({ stop, initialTab = null, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside }: StopDetailSheetProps) {
+  const huecoAlFinal = useHuecoAlFinal(32) // (Tanda 10N4 §0b) hueco para el lápiz y los logros
   const [tab, setTab] = useState<Tab>(initialTab ?? 'resumen')
   // Prompt 5: la foto real del lugar y su procedencia. Unsplash exige atribución visible allí donde
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
@@ -426,54 +428,57 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
               (20 px) subía 28 px sobre el mapa y el mapa quedaba pintado 8 px por debajo de él, entre el tirador y el título. */}
           <div className="relative z-[5] -mt-7 flex min-h-0 flex-1 flex-col rounded-t-[28px] bg-bg shadow-[0_-12px_30px_-14px_rgba(28,34,48,.4)]" data-ficha-panel>
             <div onPointerDown={handleDragStart} className="flex shrink-0 cursor-row-resize touch-none items-center justify-center pb-1 pt-3">
-              <span className="h-1 w-[42px] rounded bg-text/20" />
+              <span className="h-1 w-11 rounded-sm bg-[rgba(28,34,48,.25)]" />
             </div>
 
             <div className="flex-1 overflow-y-auto">
-              <div className={`mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pt-3 ${conBarraEscuchar ? 'pb-[110px]' : 'pb-8'}`}>
-                {/* Cabecera: la foto con la cámara en su esquina, el nombre y las etiquetas pequeñas. */}
-                <div className="flex items-start gap-3.5 px-0.5">
-                  <div className="relative h-[84px] w-[84px] flex-none">
-                    <span
-                      className="absolute inset-0 overflow-hidden rounded-[20px] bg-bg-hover [clip-path:polygon(0_0,100%_0,100%_calc(100%-18px),calc(100%-22px)_100%,0_100%)]"
-                      style={{ backgroundImage: 'repeating-linear-gradient(135deg, rgb(var(--bg-hover)) 0 8px, rgb(var(--border) / .55) 8px 16px)' }}
-                    >
+              <div className={`mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pt-2.5 ${conBarraEscuchar ? 'pb-[110px]' : 'pb-8'}`} style={{ paddingBottom: conBarraEscuchar ? Math.max(110, huecoAlFinal) : huecoAlFinal }}>
+                {/* Cabecera (Tanda 10N4, `Piezas/Ficha Cabecera`): la foto de 118 con la cámara de 40 en su esquina; a su derecha el nombre en grande con el CORAZÓN y su número (93), y debajo las dos pastillas (horario y duración). */}
+                <div className="flex items-start gap-3.5 px-0.5" data-ficha-cabecera>
+                  <div className="relative h-[118px] w-[118px] flex-none">
+                    <span className="absolute inset-0 overflow-hidden rounded-[22px] bg-bg-hover" style={{ backgroundImage: 'repeating-linear-gradient(135deg, rgb(var(--bg-hover)) 0 8px, rgb(var(--border) / .55) 8px 16px)' }}>
                       {(photo?.small ?? stop.photoUrl) && <img src={photo?.small ?? stop.photoUrl} alt="" className="h-full w-full object-cover" />}
                     </span>
                     {/* Sin foto (la del servidor es «none» o está rechazada): el recuadro neutro, nunca una imagen rota ni vacía. */}
                     {dayNumber !== null && !footerAction && (
                       <span className="absolute -bottom-1.5 -right-1.5 z-[2] [&_[role=alert]]:absolute [&_[role=alert]]:left-[-70px] [&_[role=alert]]:top-[calc(100%+4px)] [&_[role=alert]]:z-10 [&_[role=alert]]:w-[200px] [&_[role=alert]]:rounded-lg [&_[role=alert]]:bg-bg-card [&_[role=alert]]:p-1.5 [&_[role=alert]]:shadow">
-                        <BotonFotoParada stopName={stop.name} dayNumber={dayNumber} esquina />
+                        <BotonFotoParada stopName={stop.name} dayNumber={dayNumber} esquina grande />
                       </span>
                     )}
                   </div>
-                  <div className="flex min-w-0 flex-1 flex-col gap-[9px] pt-0.5">
-                    <h1 className="flex items-start gap-1.5 font-display text-[27px] leading-[1.04] text-text [text-wrap:balance]">
-                      {stop.isFreeTour && <FreeTourIcon className="mt-1.5 text-accent" />}
-                      {stop.isNightExperience && <MoonIcon className="mt-1.5 text-[#5B6BC0]" />}
-                      <span>{stop.nightViewTitle ?? displayStopName(stop.name)}</span>
-                    </h1>
-                    <div className="flex flex-wrap items-center gap-[5px]">
+                  <div className="flex min-w-0 flex-1 flex-col gap-3">
+                    <div className="flex items-start gap-2.5">
+                      <h1 className="flex flex-1 items-start gap-1.5 pt-0.5 font-display text-[33px] leading-[1.02] text-text [text-wrap:balance]">
+                        {stop.isFreeTour && <FreeTourIcon className="mt-1.5 text-accent" />}
+                        {stop.isNightExperience && <MoonIcon className="mt-1.5 text-[#5B6BC0]" />}
+                        <span>{stop.nightViewTitle ?? displayStopName(stop.name)}</span>
+                      </h1>
+                      {/* El corazón de «me gusta» con su número: la misma cuenta que el de EXPLORAR (src/store/useMeGustaStore.ts). Solo en los sitios del catálogo del destino. */}
+                      {!stop.isFreeTour && !stop.isBreak && !stop.isFreeWalk && <MeGusta destino={city} nombre={stop.name} variante="cabecera" />}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
                       {/* (Tanda 6y10) Debajo del nombre, SOLO dos etiquetas: el reloj con el horario de ese día (sin texto; «Cerrado» si ese día no abre) y el reloj de arena con el tiempo que recomendamos.
                           El tipo («Monumento»), la reserva, el acceso libre y el barrio no salen aquí: viven fuera de la ficha (listas y tarjetas). */}
                       {etiquetaReloj && (
                         <Pildora tono={horario?.cerrado ? 'roja' : 'contorno'} datos="horario">
-                          <Icono nombre="reloj" size={12} grosor={2} />
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
+                            <path d="M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z" />
+                          </svg>
                           {etiquetaReloj}
                         </Pildora>
                       )}
                       {stop.durationMinutes > 0 && (
                         <Pildora tono="oscura" datos="tiempo">
-                          <Icono nombre="arena" size={12} grosor={2} />
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
+                            <path d="M7 3h10M7 21h10M8 3c0 5 8 5 8 9s-8 4-8 9M16 3c0 5-8 5-8 9s8 4 8 9" />
+                          </svg>
                           {formatDuration(stop.durationMinutes)}
                         </Pildora>
                       )}
                     </div>
-                    {/* El corazón de «me gusta»: la misma cuenta que el de EXPLORAR (src/store/useMeGustaStore.ts). Solo en los sitios del catálogo del destino. */}
-                    {!stop.isFreeTour && !stop.isBreak && !stop.isFreeWalk && <MeGusta destino={city} nombre={stop.name} variante="ficha" />}
                   </div>
                 </div>
-  
+
                 {/* Prompt 5: atribución de Unsplash. Obligatoria donde se muestra la foto, con los UTM
                     que exigen sus condiciones. Las de Wikipedia llevan autor y licencia (Tanda 6z6f) solo si hay crédito completo (las de
                     dominio público, nada) y las nuestras (`propia`) no la llevan nunca (Tanda 6z6e). Una sola pieza, `FotoCredito` (Tanda 6y2),
@@ -633,7 +638,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                 )}
   
                 {activeTab === 'tickets' && (
-                  <div className="space-y-3">
+                  <div className="flex flex-col gap-3">
                     {/* El Free Tour que recorre este sitio. */}
                     {stop.inFreeTour && (
                       <div className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
@@ -687,7 +692,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
           {conBarraEscuchar && <Escuchar barra libre={curated?.historia_gratis === true} abajo={Boolean(footerAction)} texto={textoDeLaHistoria} clave={stop.id} sitio={{ destino: city, nombre: stop.name }} />}
 
           {footerAction && (
-            <div className="shrink-0 border-t border-border bg-bg-card px-4 py-3">
+            <div data-evitar-flotantes className="shrink-0 border-t border-border bg-bg-card px-4 py-3">
               <button
                 type="button"
                 onClick={footerAction.onClick}

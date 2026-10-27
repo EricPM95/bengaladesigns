@@ -12,7 +12,7 @@ const importar = (f) => import(pathToFileURL(ruta(f)).href)
 
 export default async function ({ debe, leer, archivos, sinComentarios }) {
   const carpeta = 'src/components/logros/pantallas/perfil'
-  const ficheros = ['src/components/layout/PerfilSheet.tsx', 'src/components/logros/pantallas/ViajeGuardado.tsx', 'server/logros/pantallas/perfil.js', 'src/lib/logrosDemo_perfil.ts', 'src/dev/escaparates/perfil.ts', 'scripts/destino/marcos8c.mjs', 'src/components/perfil/CabeceraDeSiempre.tsx', 'src/components/perfil/agruparViajes.ts']
+  const ficheros = ['src/components/layout/PerfilSheet.tsx', 'src/components/logros/pantallas/ViajeGuardado.tsx', 'server/logros/pantallas/perfil.js', 'src/lib/logrosDemo_perfil.ts', 'src/dev/escaparates/perfil.ts', 'scripts/destino/marcos8c.mjs', 'src/components/perfil/agruparViajes.ts']
   for (const f of ficheros) debe(fs.existsSync(ruta(f)), 'archivos', `existe ${f}`)
   const propios = archivos(ruta(carpeta), /\.(ts|tsx)$/)
   for (const n of ['MarcoDeRango', 'NivelYBarra', 'ExpGanada', 'SubeDeNivel', 'CambioDeRango', 'CuerpoConLogros', 'ElegirTitulo', 'index']) debe(propios.some((f) => path.basename(f).startsWith(n + '.')), 'archivos', `existe ${n} en pantallas/perfil`)
@@ -35,8 +35,8 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   const hoja = sinComentarios(leer(ruta('src/components/layout/PerfilSheet.tsx')))
   debe(/lazy\(\(\) => import\('\.\.\/logros\/pantallas\/perfil\/CuerpoConLogros'\)\)/.test(hoja), 'lazy', 'el Perfil con logros se baja con import() (no entra en el paquete al abrir la app)')
   debe(!/pantallas\/perfil\/(MarcoDeRango|NivelYBarra|ExpGanada)/.test(hoja.replace(/import\('\.\.\/logros\/pantallas\/perfil\/CuerpoConLogros'\)/, '')), 'lazy', 'PerfilSheet no importa a mano nada de pantallas/perfil salvo el cuerpo perezoso')
-  debe(/logrosActivos\(\)/.test(hoja), 'apagado', 'el cuerpo con logros solo se monta con logrosActivos()')
-  debe(/cuerpoDeSiempre\s*\n?\s*\)}/.test(hoja) || /\) : \(\s*cuerpoDeSiempre/.test(hoja), 'apagado', 'con los logros apagados se pinta el cuerpo de siempre')
+  debe(!/logrosActivos\(\)/.test(hoja) && /logrosActivos\(\)/.test(sinComentarios(leer(ruta(carpeta, 'CuerpoConLogros.tsx')))), 'apagado', '(10N4) la rama de los logros vive dentro del cuerpo único: PerfilSheet ya no decide entre dos perfiles')
+  debe(!/cuerpoDeSiempre/.test(hoja), 'apagado', '(10N4) con los logros apagados NO queda el cuerpo de siempre: es el mismo perfil nuevo sin lo de los logros')
   const host = leer(ruta('src/components/logros/pantallas/PantallasHost.tsx'))
   debe(/import\('\.\/ViajeGuardado'\)/.test(host), 'lazy', 'ViajeGuardado se carga con import() desde PantallasHost')
 

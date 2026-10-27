@@ -29,6 +29,7 @@ import { etiquetaDelCambio } from '../lib/cambiarDiaPorReserva'
 import { usePermisosDelViaje } from './usePermisosDelViaje'
 import { diaDeLaReservaEnPalabras, entradasQueNoCuadran, sitioCorto } from '../lib/reservasGrupo'
 import { textoDelAviso } from '../../shared/avisos/textos.js'
+import { bannerDeContextoVigente } from '../lib/contextBannerVigente'
 
 export interface AppNotice {
   id: string
@@ -80,6 +81,8 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
   const syncStatus = useSyncStore((state) => state.status)
   const avisosVuelo = useAvisosVueloStore((state) => state.avisos)
   const readIds = useNoticesStore((state) => state.readIds)
+  const hiddenIds = useNoticesStore((state) => state.hiddenIds)
+  const unreadIds = useNoticesStore((state) => state.unreadIds)
   const pushed = useNoticesStore((state) => state.pushed)
   // La lluvia: se mira solo hoy y mañana (el día y su víspera). `repintado` y la lluvia de prueba son del panel de pruebas (solo local y vistas previas).
   const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
@@ -233,12 +236,14 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
           })
         }
       }
-      if (route.contextBanner) {
+      // (10N4 §2) Solo si sigue siendo de ESTE viaje: un texto de «2 días en Roma» no se queda en un viaje de 5.
+      const bannerDeContexto = bannerDeContextoVigente(route)
+      if (bannerDeContexto) {
         items.push({
           id: `context:${route.createdAt}`,
           kind: 'info',
           title: 'Sobre tu ruta',
-          text: route.contextBanner,
+          text: bannerDeContexto,
           read: Boolean(route.contextBannerDismissed),
           canMarkRead: true,
           onRead: dismissContextBanner,
@@ -255,9 +260,14 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
       items.push({ id: notice.id, kind: notice.kind, title: notice.title, text: notice.text, read: !persistent && readIds.includes(notice.id), canMarkRead: !persistent })
     }
 
+    // (Tanda 10N4 §2) Lo eliminado desde «Gestionar los avisos» no sale (solo lo que se puede marcar como leído: los errores y los avisos del viaje se arreglan, no se eliminan)
+    // y lo que el viajero dejó como «no leído» vuelve a contar como nuevo.
+    const aMostrar = items
+      .filter((item) => !(hiddenIds.includes(item.id) && (item.canMarkRead || item.fecha)))
+      .map((item) => (item.read && unreadIds.includes(item.id) && (item.canMarkRead || item.fecha) ? { ...item, read: false } : item))
     // Primero los errores, luego los avisos del viaje, luego lo demás; dentro de cada grupo, los sin leer antes.
     const order: Record<NoticeKind, number> = { error: 0, warning: 1, friend: 2, info: 3 }
-    items.sort((a, b) => Number(a.read) - Number(b.read) || order[a.kind] - order[b.kind])
-    return { items, unreadCount: items.filter((item) => !item.read).length }
-  }, [route, reservations, grupo.esInvitado, grupo.compartido, grupo.mias, grupo.gente, grupo.yoId, grupo.nombreAdmin, rol, avisosDelServidor, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias, avisosVuelo])
+    aMostrar.sort((a, b) => Number(a.read) - Number(b.read) || order[a.kind] - order[b.kind])
+    return { items: aMostrar, unreadCount: aMostrar.filter((item) => !item.read).length }
+  }, [hiddenIds, unreadIds, route, reservations, grupo.esInvitado, grupo.compartido, grupo.mias, grupo.gente, grupo.yoId, grupo.nombreAdmin, rol, avisosDelServidor, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias, avisosVuelo])
 }

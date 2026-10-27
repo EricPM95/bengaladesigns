@@ -1,7 +1,9 @@
 import { createPortal } from 'react-dom'
 import { useLaPropuesta } from '../../hooks/useLaPropuesta'
 import { usePropuestaStore } from '../../store/usePropuestaStore'
+import { logrosActivos } from '../../lib/logros'
 import { useRouteStore } from '../../store/useRouteStore'
+import { SOBRE_LOS_LOGROS as SUBE, useFlotantes, useLapizALaVista } from '../flotantes/flotantes'
 
 /**
  * EL LÁPIZ FLOTANTE DE LA PROPUESTA (Tanda 10N, apartado 6; «Propuesta Botón · A»): un círculo azul noche con el lápiz y, encima, el numerito de cambios en oro, justo ENCIMA del botón de los logros.
@@ -11,8 +13,7 @@ import { useRouteStore } from '../../store/useRouteStore'
  * No tapa el botón de los logros (va encima) ni la última parada de una lista (DÍAS y EXPLORAR dejan espacio: `EspacioParaElLapiz`).
  */
 export const ALTO_DEL_LAPIZ = 56
-/** Lo que sube el lápiz sobre el botón de los logros (58 px de botón + 12 de aire). */
-const SOBRE_LOS_LOGROS = 70
+const SOBRE_LOS_LOGROS = SUBE
 
 export function useLapizVisible(): { visible: boolean; n: number; enEsperaN: number } {
   const { activa, n, enEsperaN } = useLaPropuesta()
@@ -24,6 +25,9 @@ export function BotonDePropuesta() {
   const { visible, n, enEsperaN } = useLapizVisible()
   const modo = useRouteStore((s) => s.mode)
   const abrirHoja = usePropuestaStore((s) => s.abrirHoja)
+  // (Tanda 10N4 §0b) En todas las pantallas; solo debajo de una hoja abierta, y sube con el botón de los logros para no tapar los botones de abajo (flotantes.ts).
+  const { debajo, alto } = useFlotantes()
+  useLapizALaVista(visible)
   if (!visible) return null
   const cuantos = n > 0 ? n : enEsperaN
   return createPortal(
@@ -37,7 +41,7 @@ export function BotonDePropuesta() {
       style={{
         position: 'fixed',
         right: 15,
-        bottom: `calc(env(safe-area-inset-bottom,0px) + ${(modo === 'today' ? 120 : 88) + SOBRE_LOS_LOGROS}px)`,
+        bottom: alto !== null ? `${alto + SOBRE_LOS_LOGROS}px` : `calc(env(safe-area-inset-bottom,0px) + ${(modo === 'today' ? 120 : 88) + SOBRE_LOS_LOGROS}px)`,
         width: ALTO_DEL_LAPIZ,
         height: ALTO_DEL_LAPIZ,
         padding: 0,
@@ -49,7 +53,7 @@ export function BotonDePropuesta() {
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer',
-        zIndex: 41,
+        zIndex: debajo ? 31 : 100,
       }}
     >
       <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#FBF3E2" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -79,6 +83,16 @@ export function BotonDePropuesta() {
     </button>,
     document.body,
   )
+}
+
+/**
+ * (Tanda 10N4 §0b) El hueco al final (px) de cualquier lista o pantalla que se desplaza, para que los botones flotantes no tapen el último elemento: `minimo` si no hay botones;
+ * 150 con el botón de los logros y 220 si además está el lápiz. Las pantallas que no son DÍAS/EXPLORAR/RESERVAS lo usan como `paddingBottom`.
+ */
+export function useHuecoAlFinal(minimo = 40): number {
+  const { visible } = useLapizVisible()
+  if (!logrosActivos()) return visible ? Math.max(minimo, 150) : minimo
+  return Math.max(minimo, visible ? 220 : 150)
 }
 
 /** El hueco que se deja al final de DÍAS y EXPLORAR cuando el lápiz está a la vista, para que no tape la última parada ni la última tarjeta. */

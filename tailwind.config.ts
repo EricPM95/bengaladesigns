@@ -61,10 +61,6 @@ export default {
         display: ['"Instrument Serif"', 'Georgia', 'serif'],
         sans: ['Geist', 'system-ui', 'sans-serif'],
         mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
-        // Solo para el formulario de creación de ruta rediseñado (ver index.css) — nunca usadas
-        // fuera de esas pantallas, el resto de la app se queda con Plus Jakarta Sans.
-        playfair: ['"Playfair Display"', 'Georgia', 'serif'],
-        dmsans: ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         hero: ['48px', { lineHeight: '1.1' }],

@@ -1,0 +1,38 @@
+[
+  {
+    "apartado": "§0a · Tus dudas de la 10N3",
+    "punto": "1. Las fechas del viaje, bloqueadas también para quien solo recomienda (solo las cambia el administrador)",
+    "estado": "hecho",
+    "nota": "Ya estaba así (useDatesCalendarStore: si el permiso no es 'admin', el calendario no se abre). Solo comprobado, con una prueba de código.",
+    "donde": "Con la cuenta invitada (bengala.ingresos) en un viaje de Eric con permiso «Solo recomienda» o «Puede editar»: tocar las fechas en RUTA no abre el calendario.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "§0a · Tus dudas de la 10N3",
+    "punto": "2. El perfil viejo, fuera del todo: un solo perfil para todos; con los logros apagados, el nuevo sin EXP, vitrina ni billete (con pasaporte, viajes y ajustes)",
+    "estado": "hecho",
+    "nota": "Borrados CabeceraDeSiempre, FilaDeViaje, MapaMisViajes, CifrasDelMapa y el código del mapa/chinchetas de viajesPerfil.ts. PerfilSheet queda solo como cáscara (cabecera, Créditos, Nuevo viaje, álbum). Sin logros no se pide nada a /api/logros; su pasaporte cuenta países y ciudades de los viajes guardados y no abre el de los logros.",
+    "donde": "Perfil (círculo de arriba a la derecha) con los logros apagados (producción): Hola + foto + ajustes, Mi pasaporte, Mis viajes con portadas. Con logros=on se ve el de siempre.",
+    "captura": "10n4_perfil_logros_apagados.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "§0a · Tus dudas de la 10N3",
+    "punto": "3. «Tu parte · 31 €» en lugar de «por persona» cuando una reserva es solo para parte del grupo; para todo el grupo, «por persona»",
+    "estado": "hecho",
+    "nota": "Nuevo componente EtiquetaPorPersona en PantallaPresupuesto: «Tu parte · 31,00 €» (importe con formatoImporte, nunca un € escrito a mano) o «€ •••» con el ojo cerrado; para todo el grupo «31,00 € por persona». Sin captura de la pastilla: se comprueba con el código de verdad.",
+    "donde": "Presupuesto (cartera) de un viaje compartido, con una entrada reservada para 2 de 4: la pastilla de la tarjeta oscura; tocar el ojo para ver el importe.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "§0a · Tus dudas de la 10N3",
+    "punto": "4. Fuera «Abierto» (la pastilla del viaje abierto en Mis viajes)",
+    "estado": "hecho",
+    "nota": "Desaparece con FilaDeViaje; la tarjeta nueva ya no lo escribía. Pruebas antiguas que lo pedían (pruebaFase6y4_perfil y las del mapa/fila) cambiadas para comprobar el perfil nuevo.",
+    "donde": "Perfil > Mis viajes, con cualquier cuenta: ninguna tarjeta dice «Abierto».",
+    "captura": "10n4_perfil_logros_encendidos.jpg",
+    "captura_design": null
+  }
+]

@@ -87,8 +87,9 @@ export function textoDelAviso(aviso) {
   switch (aviso.tipo) {
     case 'recomendacion':
       // Tanda 10N: una propuesta de cambios sueltos (migración 0039 pone `n_cambios`): «Ana te propone 5 cambios en tu viaje a Roma».
-      if (Number.isInteger(p.n_cambios) && p.n_cambios > 0) return `${nombreDe(p.autor) ? `${nombreDe(p.autor)} te propone` : 'Te proponen'} ${p.n_cambios} ${p.n_cambios === 1 ? 'cambio' : 'cambios'} en tu viaje${p.destino ? ` a ${p.destino}` : ''}`
-      return titularDeRecomendacion(p.autor, p.tipo_rec, p.dia)
+      if (Number.isInteger(p.n_cambios) && p.n_cambios > 0) return `${nombreDe(p.autor) ? `${nombreDe(p.autor)} te ha mandado` : 'Te han mandado'} una propuesta de ${p.n_cambios} ${p.n_cambios === 1 ? 'cambio' : 'cambios'}${p.destino ? ` para el viaje a ${p.destino}` : ''}`
+      // (10N4) En la campana, en pasado como el resto («Laura te ha recomendado…»); el título de la hoja R2 sigue en presente («te recomienda»).
+      return titularDeRecomendacion(p.autor, p.tipo_rec, p.dia).replace(/te recomienda /, 'te ha recomendado ').replace(/^Te recomiendan /, 'Te han recomendado ')
     case 'aceptada': {
       // Tanda 10N: «Eric ha aceptado 3 de tus 5 cambios».
       if (Number.isInteger(p.n_total) && p.n_total > 0) {
@@ -105,15 +106,15 @@ export function textoDelAviso(aviso) {
       return `${nombreDe(p.admin) ? `${nombreDe(p.admin)} ha preferido` : 'Han preferido'} dejar ${Number.isInteger(p.dia) && p.dia > 0 ? `el día ${p.dia}` : 'tu ruta'} como estaba`
     // Tanda 10N: el día antes del viaje, a quien tiene cambios sin enviar.
     case 'sin_enviar':
-      return `Tienes ${p.n} ${p.n === 1 ? 'cambio' : 'cambios'} sin enviar${nombreDe(p.admin) ? ` a ${nombreDe(p.admin)}` : ''}. Envíalos hoy, que mañana empieza el viaje.`
+      return `Tienes ${p.n} ${p.n === 1 ? 'cambio' : 'cambios'} sin enviar${nombreDe(p.admin) ? ` a ${nombreDe(p.admin)}` : ''}. ${p.n === 1 ? 'Envíalo' : 'Envíalos'} hoy, que mañana empieza el viaje.`
     case 'unido':
       return nombreDe(p.nombre) ? `${nombreDe(p.nombre)} se ha unido a tu viaje` : 'Alguien se ha unido a tu viaje'
     case 'd10':
       return p.dias === 1 ? `Mañana empieza tu viaje a ${p.destino}` : `En ${p.dias ?? 10} días empieza tu viaje a ${p.destino}`
     case 'resumen':
-      return 'Tu resumen del viaje está listo'
+      return p.destino ? `Tu resumen del viaje a ${p.destino} está listo` : 'Tu resumen del viaje está listo'
     case 'sorpresas':
-      return p.texto ?? `Te quedan ${p.dias ?? 3} días para reclamar tus sorpresas`
+      return p.texto ?? (Number(p.dias) === 1 ? 'Te queda 1 día para reclamar tus sorpresas' : `Te quedan ${p.dias ?? 3} días para reclamar tus sorpresas`)
     // Tanda 10P: el aviso dorado del día que se entra en el sorteo (una sola vez) y el de quien invita cuando su amigo completa su primer viaje con HOY.
     case 'sorteo':
       return `¡Ya estás en el sorteo de ${p.anio}!`
@@ -134,24 +135,26 @@ export function textoDelAviso(aviso) {
     // Tanda 10N §8 (la entrada que el dueño compra para varios): «Eric ha reservado el Coliseo para ti: jueves 26, 8:00.» · «Eric ha reservado el Coliseo el jueves 26 a las 8:00.»
     case 'reserva_grupo': {
       // «Tu entrada del Coliseo es el viernes 27, y en la ruta está el jueves 26.» (la del invitado que no cuadra con la ruta; la crea la base de datos o la calcula el móvil)
-      if (p.caso === 'no_cuadra') return `Tu entrada ${conDe(p.sitio)} es el ${p.dia_reserva}, y en la ruta está el ${p.dia_ruta}.`
+      if (p.caso === 'no_cuadra') return `Tu entrada ${conDe(sitioConArticulo(p.sitio))} es el ${p.dia_reserva}, y en la ruta está el ${p.dia_ruta}.`
       const quien = nombreDe(p.quien) || 'El dueño'
       const [h, m] = String(p.hora ?? '').split(':')
       const hora = m === undefined ? String(p.hora ?? '') : `${Number(h)}:${m}`
-      return p.incluido ? `${quien} ha reservado ${p.sitio} para ti: ${p.dia}, ${hora}.` : `${quien} ha reservado ${p.sitio} el ${p.dia} a las ${hora}.`
+      const sitio = sitioConArticulo(p.sitio)
+      return p.incluido ? `${quien} ha reservado ${sitio} para ti el ${p.dia} a las ${hora}.` : `${quien} ha reservado ${sitio} el ${p.dia} a las ${hora}.`
     }
     // Tanda 10N §4a: a quien le cambian el permiso, a quien quitan del viaje, y los cambios del viaje que hacen el dueño o quien puede editar (§10).
     case 'permiso': {
       const quien = nombreDe(p.admin)
       if (p.permiso === 'editar') return quien ? `${quien} te ha dado permiso para editar el viaje a ${p.destino}` : `Te han dado permiso para editar el viaje a ${p.destino}`
-      return quien ? `${quien} ha cambiado tu permiso en el viaje a ${p.destino}: ahora puedes recomendar cambios` : `Ahora puedes recomendar cambios en el viaje a ${p.destino}`
+      return quien ? `${quien} ha cambiado tu permiso: ahora puedes recomendar cambios en el viaje a ${p.destino}` : `Ahora puedes recomendar cambios en el viaje a ${p.destino}`
     }
     case 'quitado':
       return `Ya no formas parte del viaje a ${p.destino}`
     case 'viaje_cambiado': {
+      // (10N4 §4b2) Lo que ha decidido la persona, dicho como lo diría ella: «Eric ha añadido la Fontana di Trevi al sábado 28». Sin lista de lo que la app ha movido por detrás.
       const quien = nombreDe(p.quien)
       const que = queCambioEnElViaje(p, !quien)
-      return quien ? `${quien} ha cambiado el viaje${que ? `: ${que}` : ''}` : `Han cambiado el viaje${que ? `: ${que}` : ''}`
+      return que ? `${quien ? '' : 'Han '}${quien ? `${quien} ` : ''}${que}`.replace(/^Han han /, 'Han ') : quien ? `${quien} ha cambiado el viaje` : 'Han cambiado el viaje'
     }
     default:
       return 'Tienes un aviso'
@@ -187,4 +190,113 @@ export function quienDelAviso(aviso) {
   if (aviso.tipo === 'permiso') return de(p.admin)
   if (aviso.tipo === 'viaje_cambiado') return de(p.quien)
   return null
+}
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------ */
+/* (Tanda 10N4 §4b) LA FRANJA DE AVISO NUEVO: el título corto («Eric ha añadido un sitio») y el detalle («Fontana di Trevi · sábado 14») de cada aviso, y su icono.       */
+/* `icono`: 'persona' (la inicial o la foto de quien lo hizo, en la moneda dorada) · 'calendario' (fechas especiales: «Mañana empieza tu viaje») · 'info' (información:   */
+/* «cierran los Museos Vaticanos», «ya no formas parte…») · 'estrella' (el sorteo y los logros) · 'ticket' (las entradas que avisa la app). Pura, sin React ni red.         */
+/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------ */
+
+const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+
+/** «26 – 29 nov» (mismo mes) o «28 oct – 2 nov». Vacío si las fechas no valen. */
+export function rangoCorto(inicio, fin) {
+  const a = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(inicio ?? ''))
+  const b = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(fin ?? ''))
+  if (!a) return ''
+  const [da, ma] = [Number(a[3]), Number(a[2])]
+  if (!b) return `${da} ${MESES_CORTOS[ma - 1]}`
+  const [db, mb] = [Number(b[3]), Number(b[2])]
+  return ma === mb ? (da === db ? `${da} ${MESES_CORTOS[ma - 1]}` : `${da} – ${db} ${MESES_CORTOS[ma - 1]}`) : `${da} ${MESES_CORTOS[ma - 1]} – ${db} ${MESES_CORTOS[mb - 1]}`
+}
+
+const nombreSinMarca = (n) => String(n ?? '').replace(/\s*\((noche|por fuera)\)\s*$/i, '').trim()
+const con = (quien, haHecho, sinNombre) => (nombreDe(quien) ? `${nombreDe(quien)} ${haHecho}` : sinNombre)
+const dineroDe = (precio) => (precio && Number.isFinite(Number(precio.amount)) ? formatoImporte({ amount: Number(precio.amount), currency: precio.currency }) : '')
+const mayuscula = (t) => String(t ?? '').replace(/^./, (c) => c.toUpperCase())
+
+/** Lo que cuenta un «viaje_cambiado» para la franja: { verbo («ha añadido un sitio»), detalle }. */
+function franjaDeCambioDelViaje(p) {
+  const anadidas = Array.isArray(p.anadidas) ? p.anadidas : []
+  const quitadas = Array.isArray(p.quitadas) ? p.quitadas : []
+  const quitados = Number(p.dias_quitados) || 0
+  const anadidos = Number(p.dias_anadidos) || 0
+  const tipos = [anadidas.length > 0, quitadas.length > 0 && quitados === 0, quitados > 0, anadidos > 0, Boolean(p.fechas)].filter(Boolean).length
+  const viaje = p.destino ? `Viaje a ${p.destino}` : ''
+  if (tipos === 1) {
+    if (anadidas.length === 1) {
+      const dia = diaEnPalabras(anadidas[0].fecha) || (Number.isInteger(anadidas[0].dia_n) ? `día ${anadidas[0].dia_n}` : '')
+      return { verbo: 'ha añadido un sitio', detalle: [nombreSinMarca(anadidas[0].nombre), dia].filter(Boolean).join(' · ') }
+    }
+    if (anadidas.length > 1) return { verbo: `ha añadido ${anadidas.length} sitios`, detalle: `${nombreSinMarca(anadidas[0].nombre)} y ${anadidas.length - 1 === 1 ? 'otro más' : `${anadidas.length - 1} más`}` }
+    if (quitadas.length > 0 && quitados === 0) return quitadas.length === 1 ? { verbo: 'ha quitado un sitio', detalle: nombreSinMarca(quitadas[0].nombre) } : { verbo: `ha quitado ${quitadas.length} sitios`, detalle: viaje }
+    if (quitados > 0) return { verbo: `ha quitado ${quitados === 1 ? '1 día' : `${quitados} días`}`, detalle: viaje }
+    if (anadidos > 0) return { verbo: `ha añadido ${anadidos === 1 ? '1 día' : `${anadidos} días`}`, detalle: viaje }
+    if (p.fechas) return { verbo: 'ha cambiado las fechas', detalle: viaje }
+  }
+  return { verbo: 'ha cambiado el viaje', detalle: tipos > 1 ? `${tipos} cambios` : viaje }
+}
+
+/** { titulo, detalle, icono } de un aviso de la campanita para la franja de arriba (Design 11). `detalle` puede ir vacío. */
+export function franjaDelAviso(aviso) {
+  const p = aviso.payload ?? {}
+  const quien = quienDelAviso(aviso)
+  const persona = (titulo, detalle = '') => ({ titulo, detalle, icono: quien ? 'persona' : 'info' })
+  switch (aviso.tipo) {
+    case 'recomendacion': {
+      const nombre = nombreDe(p.autor)
+      if (Number.isInteger(p.n_cambios) && p.n_cambios > 0) return persona(con(p.autor, 'te ha mandado una propuesta', 'Te han mandado una propuesta'), `${p.n_cambios} ${p.n_cambios === 1 ? 'cambio' : 'cambios'}`)
+      const que = p.tipo_rec === 'cambio' ? 'un cambio' : p.tipo_rec === 'dia' ? 'cambios' : 'otra ruta'
+      return persona(nombre ? `${nombre} te ha recomendado ${que}` : `Te han recomendado ${que}`, Number.isInteger(p.dia) && p.dia > 0 ? `En el día ${p.dia}` : '')
+    }
+    case 'aceptada': {
+      const n = Number(p.n_aceptados) || 0
+      const total = Number(p.n_total) || 0
+      const detalle = total > 0 ? (n >= total ? (total === 1 ? 'Tu cambio' : `Tus ${total} cambios`) : `${n} de tus ${total} cambios`) : p.tipo_rec === 'ruta' ? 'Tu ruta' : p.tipo_rec === 'dia' ? 'Tus cambios' : 'Tu cambio'
+      return persona(con(p.admin, 'ha aceptado tu propuesta', 'Han aceptado tu propuesta'), detalle)
+    }
+    case 'rechazada': {
+      const total = Number(p.n_total) || 0
+      return persona(con(p.admin, 'no ha aceptado tu propuesta', 'No han aceptado tu propuesta'), total > 1 ? `Ninguno de tus ${total} cambios` : total === 1 ? 'Tu cambio' : '')
+    }
+    case 'sin_enviar':
+      return { titulo: `Tienes ${p.n === 1 ? 'un cambio' : `${p.n} cambios`} sin enviar`, detalle: 'Envíalos hoy, que mañana empieza el viaje', icono: 'calendario' }
+    case 'unido':
+      return persona(nombreDe(p.nombre) ? `${nombreDe(p.nombre)} se ha unido al viaje` : 'Alguien se ha unido al viaje', p.destino ? `Viaje a ${p.destino}` : '')
+    case 'd10':
+      return { titulo: p.dias === 1 ? 'Mañana empieza tu viaje' : `Tu viaje empieza en ${p.dias ?? 10} días`, detalle: [p.destino, rangoCorto(p.inicio, p.fin)].filter(Boolean).join(' · '), icono: 'calendario' }
+    case 'resumen':
+      return { titulo: 'Tu resumen del viaje está listo', detalle: p.destino ?? '', icono: 'estrella' }
+    case 'sorpresas':
+      return { titulo: Number(p.dias) === 1 ? 'Te queda 1 día para tus sorpresas' : `Te quedan ${p.dias ?? 3} días para tus sorpresas`, detalle: p.destino ?? '', icono: 'estrella' }
+    case 'sorteo':
+      return { titulo: 'Ya tienes tu billete', detalle: p.anio ? `Para el sorteo de ${p.anio}` : 'Para el sorteo', icono: 'estrella' }
+    case 'amigo_viaje':
+      return persona(`${nombreDe(p.nombre) || 'Un amigo'} ha hecho su primer viaje`, `Has ganado ${p.exp} EXP`)
+    case 'gasto_pendiente':
+      return persona(con(p.autor, 'ha añadido un gasto', 'Han añadido un gasto'), [p.nombre, dineroDe(p.precio)].filter(Boolean).join(' · '))
+    case 'gasto_resuelto':
+      return persona(p.resultado === 'aceptado' ? con(p.admin, 'ha aceptado tu gasto', 'Han aceptado tu gasto') : con(p.admin, 'ha preferido no sumar tu gasto', 'Han preferido no sumar tu gasto'), detalleDelAviso(aviso) ?? '')
+    case 'pago_marcado':
+      return persona(con(p.actor, 'ha marcado un pago', 'Han marcado un pago'), dineroDe(p.importe))
+    case 'reserva_grupo': {
+      if (p.caso === 'no_cuadra') return { titulo: 'Tu entrada no cuadra con la ruta', detalle: `${mayuscula(sitioConArticulo(p.sitio))} · ${p.dia_reserva}`, icono: 'ticket' }
+      const [h, m] = String(p.hora ?? '').split(':')
+      const hora = m === undefined ? String(p.hora ?? '') : `${Number(h)}:${m}`
+      return persona(`${nombreDe(p.quien) || 'El dueño'} ha reservado ${sitioConArticulo(p.sitio)}${p.incluido ? ' para ti' : ''}`, [mayuscula(p.dia), hora].filter(Boolean).join(' · '))
+    }
+    case 'permiso':
+      return p.permiso === 'editar'
+        ? persona(con(p.admin, 'te ha dado permiso', 'Te han dado permiso'), `Para editar el viaje a ${p.destino}`)
+        : persona(con(p.admin, 'ha cambiado tu permiso', 'Han cambiado tu permiso'), `Ahora puedes recomendar cambios en el viaje a ${p.destino}`)
+    case 'quitado':
+      return { titulo: 'Ya no formas parte del viaje', detalle: p.destino ? `Viaje a ${p.destino}` : '', icono: 'info' }
+    case 'viaje_cambiado': {
+      const { verbo, detalle } = franjaDeCambioDelViaje(p)
+      return persona(nombreDe(p.quien) ? `${nombreDe(p.quien)} ${verbo}` : `Han ${verbo.replace(/^ha /, '')}`, detalle)
+    }
+    default:
+      return { titulo: 'Tienes un aviso', detalle: '', icono: 'info' }
+  }
 }

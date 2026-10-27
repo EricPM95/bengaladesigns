@@ -48,6 +48,7 @@ export function TripTipsSheet({ open, destination, onClose }: TripTipsSheetProps
           role="dialog"
           aria-modal="true"
           aria-labelledby="trip-tips-title"
+          data-flotantes
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}

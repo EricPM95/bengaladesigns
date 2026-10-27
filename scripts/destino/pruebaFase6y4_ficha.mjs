@@ -200,17 +200,19 @@ const horas = (texto) => veces(texto, /10:30/g)
     pinta(StopDetailSheet, { stop: shellFromStop(stop), city: 'Roma', dayNumber: 1, dateIso: INICIO, dayStops: [], isAnchor: false, onClose() {}, ...extra }, rutaX, { version, reservas, mode: 'days' })
   const fichaEntradas = plano(aTexto(hoja(coliseoRuta, { initialTab: 'tickets' })))
   debe(horas(fichaEntradas) === 1, '6 ficha', `la ficha del Coliseo enseña la hora ${horas(fichaEntradas)} veces: ${fichaEntradas.slice(0, 600)}`)
-  debe(/Tu entrada: 10:30/.test(fichaEntradas), '6 ficha', 'la ficha no dice «Tu entrada: 10:30»')
+  debe(/TU ENTRADA\s*10:30/.test(fichaEntradas), '6 ficha', 'la ficha no dice «Tu entrada» con la hora 10:30 en grande (Tanda 10N4)')
   debe(/Llega unos 30 minutos antes: /.test(fichaEntradas) && !/Llega a las|Ya tienes entrada|Entrada 10:30|Entrada\s+10:30/.test(fichaEntradas), '6 ficha', `la ficha no dice «Llega unos 30 minutos antes» o conserva textos viejos (${fichaEntradas.slice(0, 600)})`)
-  debe(/Fijada/.test(fichaEntradas) && /Cambiar/.test(fichaEntradas), '6 ficha', 'la ficha de la entrada reservada ha perdido «Fijada» o [Cambiar]')
+  debe(!/Fijada/.test(fichaEntradas) && /Cambiar hora/.test(fichaEntradas) && /Ver entrada/.test(fichaEntradas), '6 ficha', 'la ficha de la entrada reservada lleva «Fijada» o le falta [Cambiar hora] o [Ver entrada] (Tanda 10N4)')
   const foroRuta = ruta.days[0].stops.find((s) => s.name === 'Foro Romano y Palatino')
   if (foroRuta) {
     const fichaForo = plano(aTexto(hoja(foroRuta, { initialTab: 'tickets' })))
     debe(horas(fichaForo) === 1 && !/Llega unos \d+ minutos antes/.test(fichaForo), '6 ficha', `la ficha del Foro (misma entrada que el Coliseo) enseña la hora ${horas(fichaForo)} veces o la línea de llegar antes: ${fichaForo.slice(0, 400)}`)
   }
   // DÍAS: la hora, una vez en la pantalla.
-  const dias = plano(aTexto(pinta(DayList, { route: ruta, activeDayId: 'd1', onSelectDay() {}, showAllDaysOnMap: false }, ruta, { mode: 'days', reservas: [reserva] })))
-  debe(horas(dias) === 1, '6 DÍAS', `DÍAS enseña la hora de la entrada ${horas(dias)} veces`)
+  const diasHtml = pinta(DayList, { route: ruta, activeDayId: 'd1', onSelectDay() {}, showAllDaysOnMap: false }, ruta, { mode: 'days', reservas: [reserva] })
+  const dias = plano(aTexto(diasHtml))
+  // (Tanda 10N4: la tarjeta de DÍAS ya no lleva palabras de la entrada —ni la hora—: solo el botón redondo verde con ✓.)
+  debe(horas(dias) === 0 && /data-boton-entrada="tengo"/.test(diasHtml), '6 DÍAS', `DÍAS enseña la hora de la entrada ${horas(dias)} veces o no lleva el botón verde de la entrada`)
   debe(!/Llega a las|Ya tienes entrada|Entrada a las/.test(dias), '6 DÍAS', 'DÍAS conserva textos viejos de la entrada')
   // HOY: gratis (la píldora de la lista) y de pago (la caja «Tu entrada a…»): una vez cada uno.
   // (Desde la 6z6, HOY es solo de pago: la pestaña de la gratis no se pinta —su rama del código se queda, pero no se alcanza—. En la gratis, como mucho una vez.)
@@ -237,11 +239,11 @@ const hojaSimple = (stop, { version = 'completa', extra = {}, voces } = {}) => {
   const html = hojaSimple(coliseoCat)
   const texto = plano(aTexto(html))
   // Cabecera: la foto, el nombre, las etiquetas pequeñas y las pestañas.
-  const iFoto = html.indexOf('h-[84px] w-[84px]')
+  const iFoto = html.indexOf('h-[118px] w-[118px]') // (Tanda 10N4, «Ficha Cabecera»: la foto de 118 px)
   const iNombre = html.indexOf('<h1')
-  debe(iFoto >= 0 && iNombre > iFoto && /<img[^>]+coliseo\.jpg/.test(html.slice(iFoto, iNombre)), 'A1 cabecera', 'la ficha no pone la foto de 84 px antes del nombre')
+  debe(iFoto >= 0 && iNombre > iFoto && /<img[^>]+coliseo\.jpg/.test(html.slice(iFoto, iNombre)), 'A1 cabecera', 'la ficha no pone la foto de 118 px antes del nombre')
   debe(/>Coliseo</.test(html.slice(iNombre, iNombre + 400)) || /Coliseo/.test(texto), 'A1 cabecera', 'la ficha no lleva el nombre del lugar')
-  debe(/font-display[^"]*text-\[27px\]/.test(html), 'A1 cabecera', 'el nombre no va en serif de 27 px')
+  debe(/font-display[^"]*text-\[33px\]/.test(html), 'A1 cabecera', 'el nombre no va en serif de 33 px (Tanda 10N4)')
   debe(/min/.test(texto) || /h\b/.test(texto), 'A1 etiquetas', 'no sale la duración')
   debe(/data-ficha-pestanas/.test(html) && /Resumen/.test(texto) && /Entradas/.test(texto) && /Tips/.test(texto), 'A1 pestañas', 'faltan las tres pestañas con su bolita')
   // La cámara: UNA, en la esquina de la foto (dentro de la caja de 84 px, después de la foto), con el aspecto del diseño (32 px redonda).
@@ -249,7 +251,7 @@ const hojaSimple = (stop, { version = 'completa', extra = {}, voces } = {}) => {
   const iCam = html.indexOf('aria-label="Añadir foto"')
   debe(iCam > iFoto && iCam < iNombre, 'A2 cámara', 'el botón de la cámara no está dentro de la caja de la foto (antes del nombre)')
   const botonCam = html.slice(html.lastIndexOf('<button', iCam), html.indexOf('</button>', iCam) + 9)
-  debe(/h-8/.test(botonCam) && /rounded-full/.test(botonCam) && /M4 8h3l1\.8/.test(botonCam) && !/Añadir foto<\/button>/.test(botonCam), 'A2 cámara', `la cámara no es el botón redondo de 32 px solo con el icono (${botonCam.slice(0, 200)})`)
+  debe(/h-10 w-10/.test(botonCam) && /rounded-full/.test(botonCam) && /M4 8h3l2-3h6/.test(botonCam) && !/Añadir foto<\/button>/.test(botonCam), 'A2 cámara', `la cámara no es el botón redondo de 40 px solo con el icono (Tanda 10N4) (${botonCam.slice(0, 200)})`)
   debe(/-bottom-1\.5 -right-1\.5/.test(html.slice(html.lastIndexOf('<span', iCam - 200), iCam)) || /-bottom-1\.5 -right-1\.5/.test(html.slice(iFoto, iCam)), 'A2 cámara', 'la cámara no está pegada a la esquina de abajo a la derecha de la foto')
   // Misma subida de siempre: el botón de la esquina es el `BotonFoto` (que llama a `subirFoto`).
   const fuenteBoton = leer('src/components/route/fotos/BotonFotoParada.tsx')

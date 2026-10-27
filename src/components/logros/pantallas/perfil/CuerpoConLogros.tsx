@@ -6,7 +6,9 @@ import { useEliminarViaje } from '../../../../lib/eliminarViaje'
 import { usePerfilUi } from '../../../../store/usePerfilUi'
 import { BotonEditarViajes } from '../../../perfil/BotonEditarViajes'
 import { PerfilEsqueleto } from '../../../perfil/PerfilEsqueleto'
-import { plural, type Chincheta, type CifrasDelPerfil, type ResumenViaje } from '../../../../lib/viajesPerfil'
+import { plural, cifrasDelPerfil, type ResumenViaje } from '../../../../lib/viajesPerfil'
+import { logrosActivos } from '../../../../lib/logros'
+import { Avatar } from '../../../ajustes/Avatar'
 import { BilleteDelSorteo } from '../sorteo/Billete'
 import { TarjetaPasaporte } from './TarjetaPasaporte'
 import { useLogrosPantallas } from '../useLogrosPantallas'
@@ -28,15 +30,11 @@ const DORADO = '#F3D59A'
  * EL PERFIL CON SUS LOGROS (P1 y P1b de Design): lo que sustituye al «Hola, viajero» de siempre y a la lista de viajes cuando los logros están encendidos Y hay datos del servidor. De arriba abajo:
  * el marco de rango con la foto (la inicial, si no hay foto), «Hola, viajero», «Nivel 8 · Explorador» y el título que se elige al tocarlo; la barra de EXP; el billete del sorteo (10P); Mi vitrina; Mi pasaporte (la tarjeta con su mapa; el mapa de países suelto ya no sale: manda el pasaporte);
  * Mis viajes (en curso, próximo, ya hechos y los de antes de la app) y «Añadir un viaje que ya hiciste».
- * Mientras llegan los datos —o si no hay cuenta, o no hay servidor— se enseña el MISMO perfil vacío (`PerfilEsqueleto`: los huecos de cada tarjeta en gris claro) con «Mis viajes» de este móvil debajo; el Perfil viejo
- * (`cuerpoDeSiempre`) no sale NUNCA con los logros encendidos (Tanda 10N3, §3b.2). Este archivo se baja solo cuando el Perfil se abre con los logros encendidos.
+ * Mientras llegan los datos —o si no hay cuenta, o no hay servidor— se enseña el MISMO perfil vacío (`PerfilEsqueleto`: los huecos de cada tarjeta en gris claro) con «Mis viajes» de este móvil debajo.
+ * Tanda 10N4: es el ÚNICO Perfil de la app. Con los logros apagados es este mismo sin lo de los logros (sin EXP, ni vitrina, ni billete, ni título; con su foto, sus ajustes, su pasaporte de este móvil y sus viajes) y no pide nada de logros al servidor.
  */
 export interface PropsCuerpoConLogros {
-  /** Ya no se usa aquí (Tanda 10N3): con los logros encendidos el Perfil viejo no sale nunca. Se deja para no romper a quien lo pasa. */
-  cuerpoDeSiempre?: ReactNode
   viajes: ResumenViaje[]
-  chinchetas: Chincheta[]
-  cifras: CifrasDelPerfil
   fotos: Map<string, number> | null
   rutaAbiertaId: string | null
   onAbrirAlbum: (id: string) => void
@@ -45,7 +43,9 @@ export interface PropsCuerpoConLogros {
   perfilInicial?: PerfilLogros | null
 }
 
-export default function CuerpoConLogros({ viajes, fotos, rutaAbiertaId, onAbrirViaje, perfilInicial = null }: PropsCuerpoConLogros): ReactNode {
+export default function CuerpoConLogros({ viajes, fotos, rutaAbiertaId, onAbrirAlbum, onAbrirViaje, perfilInicial = null }: PropsCuerpoConLogros): ReactNode {
+  // (Tanda 10N4) UN solo Perfil: con los logros apagados es este mismo, sin lo de los logros (ni EXP, ni vitrina, ni billete, ni título) y sin pedir NADA de logros al servidor.
+  const conLogros = logrosActivos()
   const [perfil, setPerfil] = useState<PerfilLogros | null>(perfilInicial)
   const [eligiendo, setEligiendo] = useState(false)
   const editando = usePerfilUi((s) => s.editando)
@@ -59,13 +59,19 @@ export default function CuerpoConLogros({ viajes, fotos, rutaAbiertaId, onAbrirV
 
   // Al abrir el Perfil y cada vez que se vuelve de una pantalla de logros (por si ha cambiado el título o la vitrina).
   useEffect(() => {
-    if (perfilInicial || pantallas > 0) return
+    if (!conLogros || perfilInicial || pantallas > 0) return
     let vivo = true
     void pedirPerfil().then((p) => vivo && p && setPerfil(p))
     return () => {
       vivo = false
     }
-  }, [pantallas, perfilInicial])
+  }, [conLogros, pantallas, perfilInicial])
+
+  // El pasaporte de este móvil (sin logros): lo que cuentan los viajes guardados; no abre el pasaporte por dentro, que es de los logros.
+  const pasaporteLocal = useMemo(() => {
+    const c = cifrasDelPerfil(viajes)
+    return { paises: c.paises, ciudades: c.lugares, sellos: 0, paises_iso: [...new Set(viajes.flatMap((v) => v.paises))] }
+  }, [viajes])
 
   const grupos = useMemo(() => agruparViajes(viajes), [viajes])
   const elegir = useCallback(
@@ -98,7 +104,7 @@ export default function CuerpoConLogros({ viajes, fotos, rutaAbiertaId, onAbrirV
             {g.titulo}
           </span>
           {g.viajes.map((viaje) => (
-            <TarjetaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} enCurso={g.clave === 'en_curso'} abierto={viaje.id === rutaAbiertaId} onAbrir={() => abrir({ t: 'viaje', tripId: viaje.id })} onAbrirViaje={() => onAbrirViaje(viaje)} editando={editando} onEliminar={() => pedirEliminar(viaje, fotos ? (fotos.get(viaje.id) ?? 0) : null)} />
+            <TarjetaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} enCurso={g.clave === 'en_curso'} abierto={viaje.id === rutaAbiertaId} onAbrir={() => (conLogros ? abrir({ t: 'viaje', tripId: viaje.id }) : onAbrirAlbum(viaje.id))} onAbrirViaje={() => onAbrirViaje(viaje)} editando={editando} onEliminar={() => pedirEliminar(viaje, fotos ? (fotos.get(viaje.id) ?? 0) : null)} />
           ))}
         </div>
       ))}
@@ -116,15 +122,37 @@ export default function CuerpoConLogros({ viajes, fotos, rutaAbiertaId, onAbrirV
           </button>
         </div>
       )}
-      <button type="button" onClick={() => abrir({ t: 'previos' })} data-anadir-viaje-previo className="mt-1 flex min-h-[52px] items-center justify-center gap-2 rounded-[18px] border-[1.5px] border-dashed border-text/25 bg-transparent text-[14px] font-semibold text-text">
-        <Icono nombre="anadir" size={15} grosor={2.2} />
-        Añadir un viaje que ya hiciste
-      </button>
+      {conLogros && (
+        <button type="button" onClick={() => abrir({ t: 'previos' })} data-anadir-viaje-previo className="mt-1 flex min-h-[52px] items-center justify-center gap-2 rounded-[18px] border-[1.5px] border-dashed border-text/25 bg-transparent text-[14px] font-semibold text-text">
+          <Icono nombre="anadir" size={15} grosor={2.2} />
+          Añadir un viaje que ya hiciste
+        </button>
+      )}
     </div>
-
   )
 
-  // Mientras llegan los datos: el perfil nuevo vacío y, debajo, los viajes de este móvil. Nunca el Perfil viejo.
+  // Sin logros (Tanda 10N4): el mismo Perfil, sin EXP, vitrina, título ni billete. Su foto con el nombre, sus ajustes, su pasaporte de este móvil y sus viajes.
+  if (!conLogros) {
+    return (
+      <>
+        <div className="relative flex items-center gap-3.5 px-1" data-cabecera-sin-logros>
+          <button type="button" onClick={() => editarPerfil(true)} aria-label="Cambiar mi foto y mi nombre" data-editar-perfil className="flex-none rounded-full" style={{ boxShadow: '0 0 0 3px rgb(var(--bg)),0 0 0 4.5px rgb(var(--accent))' }}>
+            <Avatar foto={yo.foto} inicial={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={104} encuadre={yo.encuadre} />
+          </button>
+          <h2 className="m-0 min-w-0 flex-1 font-display text-[34px] leading-none tracking-[-.01em] text-text">
+            Hola, <em>{yo.nombre}</em>
+          </h2>
+          <button type="button" aria-label="Ajustes" data-ajustes onClick={() => abrirAjustes()} className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-text/70">
+            <Icono nombre="ajustes" size={22} />
+          </button>
+        </div>
+        <TarjetaPasaporte pasaporte={pasaporteLocal} />
+        {misViajes}
+      </>
+    )
+  }
+
+  // Mientras llegan los datos: el perfil nuevo vacío y, debajo, los viajes de este móvil.
   if (!perfil) {
     return (
       <>

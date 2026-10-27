@@ -14,6 +14,8 @@ export function PastillaPase({ destino, conPase: aMano }: { destino: string; con
   // (Tanda 10N §3) La misma fuente que HOY: el estado del pase que da el servidor (`usePaseEstado`), y `pagoActivo()` ya cuenta el «sin pase» de las pruebas. Así RUTA y HOY dicen lo mismo.
   const pase = usePaseEstado(useSyncStore((s) => s.activeTripId))
   const conPase = aMano ?? (pagoActivo() && !(pase.cobro && !pase.conPase))
+  // (Tanda 10N4 §1) Mientras no se sabe lo del pase, ni «comprado» ni «bloqueado»: el sitio reservado, sin pintar (así la tarjeta no salta cuando llega la respuesta).
+  if (aMano === undefined && pase.sabido === false) return <div data-pastilla-pase="cargando" aria-hidden className="h-[30px] w-[118px]" />
   return (
     <button
       type="button"

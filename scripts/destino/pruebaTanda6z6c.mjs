@@ -311,7 +311,8 @@ debe(/useExploreAperturaStore/.test(fuenteExplorar) && /\.tomar\(\)/.test(fuente
   debe((htmlSaltada.match(/Devolverla a la ruta/g) ?? []).length === 1, '6 devolver', 'sale «Devolverla a la ruta» más veces que paradas saltadas')
   debe(!hoyPago.includes('Devolverla a la ruta'), '6 devolver', 'sale «Devolverla a la ruta» sin ninguna parada saltada')
   const menu = fuente('src/components/route/dayDetail/StopMenu.tsx')
-  debe(/stop\.saltada && \([\s\S]*?setStopSaltada\(dayId, stop\.id, false\)[\s\S]*?Devolverla a la ruta/.test(menu), '6 devolver', 'el menú «···» de una parada saltada no tiene «Devolverla a la ruta» que la deja no saltada')
+  // Tanda 10N4 (§3): el menú «···» es una hoja (HojaDelMenu) con OpcionTarjeta: el título va en `titulo="…"` después del onClick no, antes; se comprueba la opción de la hoja y su acción.
+  debe(/view === 'menu' && stop\.saltada && \([\s\S]*?titulo="Devolverla a la ruta"[\s\S]*?setStopSaltada\(dayId, stop\.id, false\)/.test(menu), '6 devolver', 'el menú «···» de una parada saltada no tiene «Devolverla a la ruta» que la deja no saltada')
   debe(/devolverALaRuta\(stop\)/.test(fuente('src/components/route/hoy/HoyDurante.tsx')) && /setStopSaltada\(day\.id, stop\.id, false\)/.test(fuente('src/components/route/hoy/HoyDurante.tsx')), '6 devolver', 'el botón de la lista de HOY no usa setStopSaltada(…, false)')
   // La acción del almacén (la que usan los dos): la parada vuelve a ser la siguiente, no saltada, sin tocar el resto.
   useRouteStore.getState().setStopSaltada('d1', paradas[0].id, false)

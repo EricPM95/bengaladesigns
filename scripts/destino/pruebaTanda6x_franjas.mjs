@@ -94,7 +94,7 @@ for (const fechas of [true, false]) {
       const reservas = conReservas ? [reserva] : []
       for (const activeDayId of [null, ...route.days.map((d) => d.id)]) {
         const nombre = `${fechas ? 'con fechas' : 'sin fechas'} · ${version} · ${conReservas ? 'con reserva' : 'sin reserva'} · ${activeDayId ? `día ${activeDayId.slice(1)} abierto` : 'lista cerrada'}`
-        const { texto } = pinta(route, version, reservas, activeDayId)
+        const { texto, html } = pinta(route, version, reservas, activeDayId)
         paginas++
         const m = texto.match(FRANJA_CON_HORA) ?? texto.match(RANGO_CON_FRANJA)
         debe(!m, '1 hora de franja', `${nombre}: sale «${m?.[0]}» (${plano(texto.slice(Math.max(0, (m?.index ?? 0) - 40), (m?.index ?? 0) + 80))})`)
@@ -104,9 +104,10 @@ for (const fechas of [true, false]) {
         }
         // La hora de la reserva del viajero sigue a la vista UNA sola vez: en la pestañita verde de la parada, con el día de la reserva abierto (tanda 6z3: la cabecera cerrada ya no repite «Coliseo · 16:40»).
         if (conReservas && activeDayId === diaReserva.id) {
-          const ok = (texto.match(/16:40/g) ?? []).length === 1
+          // Tanda 10N4 (§4d): la tarjeta ya no lleva la hora: solo el botón verde de la entrada, y la hora no sale en ninguna parte de DÍAS.
+          const ok = (texto.match(/16:40/g) ?? []).length === 0 && /data-boton-entrada="tengo"/.test(html)
           reservadas.push(ok)
-          debe(ok, '2 reserva', `${nombre}: la hora de la reserva del viajero (16:40) no sale una sola vez (${plano(texto.slice(0, 300))})`)
+          debe(ok, '2 reserva', `${nombre}: la parada reservada (16:40) no lleva solo el botón verde (sin hora) (${plano(texto.slice(0, 300))})`)
         }
         if (conReservas && !activeDayId) debe(!/16:40/.test(texto), '2 reserva', `${nombre}: la cabecera cerrada vuelve a llevar la hora de lo reservado (16:40)`)
       }

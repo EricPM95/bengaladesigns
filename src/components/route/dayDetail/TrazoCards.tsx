@@ -58,6 +58,8 @@ interface TrazoCardProps {
   action?: ReactNode
   /** La pestañita de entrada pegada al borde derecho, a media altura (Tanda 6n: EntradaEdgeTab). */
   edgeTab?: ReactNode
+  /** Tanda 10N4: la tarjeta lleva el botón redondo de la entrada abajo a la derecha: las filas de abajo (horario, etiquetas) le dejan su sitio y bajan a otra línea si no caben, nunca por debajo del botón. */
+  conBotonEntrada?: boolean
   /** El número en el color del día (PROMPT_UI, Parte 2): relleno claro, número fuerte y borde blanco. */
   numberColors?: { bg: string; text: string }
 }
@@ -67,7 +69,7 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
-export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], tags = [], barrio = null, photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, edgeTab }: TrazoCardProps) {
+export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], tags = [], barrio = null, photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, edgeTab, conBotonEntrada = false }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const hasPhoto = Boolean(photoUrl) && !noPhoto
   const night = variant === 'night'
@@ -114,7 +116,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
           </span>
         )}
         {meta.length > 0 && (
-          <span className="flex flex-wrap items-center gap-x-[9px] gap-y-0.5">
+          <span className={`flex flex-wrap items-center gap-x-[9px] gap-y-0.5 ${conBotonEntrada ? 'pr-[22px]' : ''}`}>
             {meta.map((item, index) => (
               <span
                 key={`${item.text}-${index}`}
@@ -128,11 +130,11 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
           </span>
         )}
         {(tags.length > 0 || barrio) && (
-          <span className="mt-0.5 flex flex-wrap gap-1">
+          <span className={`mt-0.5 flex flex-wrap gap-1 ${conBotonEntrada ? 'pr-[22px]' : ''}`} data-etiquetas-tarjeta>
             {tags.map((tag) => (
               <span
                 key={tag.label}
-                className="inline-flex min-h-[19px] shrink-0 items-center whitespace-nowrap rounded-full px-2 py-[2px] text-[10.5px] font-medium"
+                className="inline-flex min-h-[19px] max-w-full shrink-0 items-center rounded-full px-2 py-[2px] text-[10.5px] font-medium"
                 style={tag.green ? { background: 'rgb(var(--accent-green-soft))', color: 'rgb(var(--accent-green))' } : night ? { background: 'rgba(200,190,255,.16)', color: 'oklch(0.88 0.07 285)' } : { background: KIND_STYLE[tag.kind].soft, color: KIND_STYLE[tag.kind].ink }}
               >
                 {tag.label}

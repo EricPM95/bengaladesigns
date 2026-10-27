@@ -11,6 +11,7 @@ import type { Reservation } from './bookings'
 import { dayOfReservation } from './bookings'
 import { shortOf } from './reservationOverlaps'
 import { diaProsa } from './nombreDeDia'
+import { elSitio } from './articulos'
 import type { Route, Stop } from './types'
 
 /** ¿Es un viaje compartido? El dueño y, al menos, otra persona. Sin eso, nada de «¿Para quién es?» ni de avisos de grupo. */
@@ -90,7 +91,7 @@ export function entradasQueNoCuadran(route: Route, mias: readonly Reservation[],
     const deDia = diaProsa(route, aqui.dayNumber)
     avisos.push({
       id: `entrada-no-cuadra:${mia.id}`,
-      texto: `Tu entrada ${conDe(sitio)} es el ${suyoTexto}, y en la ruta está el ${deDia}.`,
+      texto: `Tu entrada ${conDe(elSitio(sitio))} es el ${suyoTexto}, y en la ruta está el ${deDia}.`,
       cambio: { reservaId: mia.id, sitio, deDia, aDia: suyoTexto },
     })
   }

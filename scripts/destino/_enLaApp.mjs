@@ -7,12 +7,12 @@ import path from 'node:path'
 /** `opciones`: `ancho`/`alto` (por defecto 390 x 844), `ruta` (lo que va tras el origen, por defecto `/?cuentas=off`), `oscuro` (modo noche del sistema) y `antes` (un texto de JavaScript que se pone antes de que cargue la página). */
 export async function abrirApp(baseIn = 'http://localhost:5173', opciones = {}) {
   // (Tanda 10M: la batería arranca su propio Vite y lo dice en APP_URL; así ninguna prueba depende de un Vite abierto desde hace horas.)
-  const base = process.env.APP_URL || baseIn
+  const base = opciones.baseFija ? baseIn : process.env.APP_URL || baseIn
   const CHROME = ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'].find((f) => fs.existsSync(f))
   if (!CHROME) throw new Error('No encuentro Chrome.')
   const puerto = 9300 + Math.floor(Math.random() * 600)
   const perfil = fs.mkdtempSync(path.join(os.tmpdir(), 'enLaApp-'))
-  const chrome = spawn(CHROME, [`--remote-debugging-port=${puerto}`, `--user-data-dir=${perfil}`, '--headless=new', '--no-first-run', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', 'about:blank'], { stdio: 'ignore' })
+  const chrome = spawn(CHROME, [`--remote-debugging-port=${puerto}`, `--user-data-dir=${perfil}`, '--headless=new', '--mute-audio', '--no-first-run', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', 'about:blank'], { stdio: 'ignore' })
   const esp = (ms) => new Promise((r) => setTimeout(r, ms))
   let url
   for (let i = 0; i < 80 && !url; i++) {
@@ -57,6 +57,11 @@ export async function abrirApp(baseIn = 'http://localhost:5173', opciones = {}) 
   await cdp('Page.navigate', { url: `${base}${opciones.ruta ?? '/?cuentas=off'}` })
   for (let i = 0; i < 240; i++) {
     await esp(500)
+    // (Tanda 10N4: una página que no es la app —una pieza de Design servida aparte— no tiene #root: se espera un rato fijo y se sigue.)
+    if (opciones.sinEsperarRoot) {
+      if (i >= (opciones.esperaFija ?? 8)) break
+      continue
+    }
     try {
       if (await evaluar("Boolean(document.getElementById('root') && document.getElementById('root').children.length > 0)")) break
     } catch {

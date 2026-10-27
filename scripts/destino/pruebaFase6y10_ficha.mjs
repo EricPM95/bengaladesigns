@@ -172,9 +172,9 @@ for (const [nombre, stop] of [['Coliseo', coliseo], ['Fontana de Trevi', trevi],
   debe(tags.filter((t) => t.tipo === 'tiempo').length === 1 && tags.filter((t) => t.tipo === 'horario').length <= 1 && tags.length <= 2, '1 ficha', `${nombre}: debajo del nombre no hay solo el reloj y el reloj de arena (${JSON.stringify(tags.map((t) => t.texto))})`)
   debe(!QUITADAS.test(plano(aTexto(cab))), '1 ficha', `${nombre}: debajo del nombre sale una etiqueta de las quitadas (${plano(aTexto(cab)).slice(0, 200)})`)
   debe(!/data-etiqueta-barrio/.test(html), '8 trastevere', `${nombre}: la ficha lleva la etiqueta de barrio`)
-  // Los iconos: el reloj y el reloj de arena, finos y sin emojis.
+  // Los iconos: el reloj y el reloj de arena, finos y sin emojis (el de arena es el de «Ficha Cabecera», Tanda 10N4).
   const tiempo = tags.find((t) => t.tipo === 'tiempo')
-  debe(Boolean(tiempo) && /M6 3h12M6 21h12/.test(tiempo.html) && /\d+\s*(min|h)/.test(tiempo.texto), '1 ficha', `${nombre}: el tiempo no lleva el reloj de arena con su duración (${tiempo?.texto})`)
+  debe(Boolean(tiempo) && /M7 3h10M7 21h10/.test(tiempo.html) && /\d+\s*(min|h)/.test(tiempo.texto), '1 ficha', `${nombre}: el tiempo no lleva el reloj de arena con su duración (${tiempo?.texto})`)
   const reloj = tags.find((t) => t.tipo === 'horario')
   if (reloj) debe(/M12 7v5l3 2/.test(reloj.html), '1 ficha', `${nombre}: el horario no lleva el reloj`)
   debe(!/[\u{1F300}-\u{1FAFF}☀-➿⌚-⏿⌛⧗]/u.test(cab), '1 ficha', `${nombre}: la cabecera de la ficha lleva un emoji`)
@@ -208,22 +208,21 @@ for (const [nombre, stop] of [['Coliseo', coliseo], ['Fontana de Trevi', trevi],
 // El corazón de la ficha.
 {
   const html = hoja(coliseo)
-  const ficha = html.match(/<button[^>]*data-megusta="ficha"[^>]*>[\s\S]*?<\/button>/)?.[0] ?? ''
+  const ficha = html.match(/<button[^>]*data-megusta="cabecera"[^>]*>[\s\S]*?<\/button>/)?.[0] ?? ''
   const inicial = lugar('Coliseo').likes_initial
   debe(ficha.length > 0, '3 corazón', 'la ficha del Coliseo no lleva el botón del corazón')
-  debe(plano(aTexto(ficha)) === `${inicial} lo recomiendan`, '3 corazón', `el botón no dice «${inicial} lo recomiendan» (${plano(aTexto(ficha))})`)
-  debe(/aria-pressed="false"/.test(ficha) && /aria-label="Me gusta Coliseo"/.test(ficha) && /M12 20s-7\.5-4\.5/.test(ficha), '3 corazón', 'el botón del corazón no es un botón con su estado y su icono')
+  debe(plano(aTexto(ficha)) === `${inicial}`, '3 corazón', `el corazón de la cabecera no dice solo «${inicial}» (Tanda 10N4) (${plano(aTexto(ficha))})`)
+  debe(/aria-pressed="false"/.test(ficha) && /aria-label="Me gusta Coliseo"/.test(ficha) && /M12 21s-8-5\.2/.test(ficha), '3 corazón', 'el botón del corazón no es un botón con su estado y su icono')
   debe(!/viajeros/i.test(aTexto(html)), '3 corazón', 'la ficha dice «viajeros»')
-  // Va DEBAJO de las etiquetas (después de la última, antes de las pestañas).
-  const iUltima = html.lastIndexOf('data-etiqueta-ficha')
-  debe(html.indexOf('data-megusta="ficha"') > iUltima && html.indexOf('data-megusta="ficha"') < html.indexOf('data-ficha-pestanas'), '3 corazón', 'el corazón no está debajo de las etiquetas')
+  // (Tanda 10N4: el corazón va a la derecha del nombre, en la cabecera de la ficha, con solo el número.)
+  debe(html.indexOf('data-megusta="cabecera"') > html.indexOf('data-ficha-cabecera') && html.indexOf('data-megusta="cabecera"') < html.indexOf('data-ficha-pestanas'), '3 corazón', 'el corazón no está en la cabecera, a la derecha del nombre (Tanda 10N4)')
   // La animación respeta «reducir movimiento».
   debe(/motion-reduce:transition-none/.test(ficha), '3 corazón', 'el corazón no respeta «reducir movimiento»')
   // Sin un sitio del catálogo (un POI cualquiera, el Free Tour), sin corazón.
-  debe(!/data-megusta="ficha"/.test(hoja({ ...coliseo, name: 'Una cafetería cualquiera' })), '3 corazón', 'un sitio que no es del catálogo lleva corazón')
-  debe(!/data-megusta="ficha"/.test(hoja({ ...coliseo, isFreeTour: true })), '3 corazón', 'el Free Tour lleva corazón')
+  debe(!/data-megusta="cabecera"/.test(hoja({ ...coliseo, name: 'Una cafetería cualquiera' })), '3 corazón', 'un sitio que no es del catálogo lleva corazón')
+  debe(!/data-megusta="cabecera"/.test(hoja({ ...coliseo, isFreeTour: true })), '3 corazón', 'el Free Tour lleva corazón')
   // La parada de noche cuenta en su sitio («Coliseo (noche)» = Coliseo).
-  debe(/data-megusta="ficha"/.test(hoja({ ...coliseo, name: 'Coliseo (noche)' })), '3 corazón', 'la parada de noche del Coliseo no lleva el corazón del Coliseo')
+  debe(/data-megusta="cabecera"/.test(hoja({ ...coliseo, name: 'Coliseo (noche)' })), '3 corazón', 'la parada de noche del Coliseo no lleva el corazón del Coliseo')
 }
 // El texto sin número (menos de 20): «Sé el primero…» / «Ya lo han recomendado».
 debe(textoRecomendacion(0) === 'Sé el primero en recomendarlo' && textoRecomendacion(7) === 'Ya lo han recomendado' && textoRecomendacion(164) === '164 lo recomiendan' && textoRecomendacion(1240) === '1.240 lo recomiendan', '3 corazón', 'textoRecomendacion no da los textos esperados')
@@ -242,8 +241,8 @@ const tarjetasDe = (html) =>
   }))
 const explorador = (lugares) => pinta(PlaceExplorerScreen, { open: true, destination: 'Roma', places: lugares, excursions: [], title: 'Explorar', route: ruta, onClose() {} }, ruta, { mode: 'explore' })
 const cifraFicha = (stop, opciones) => {
-  const b = hoja(stop, opciones).match(/<button[^>]*data-megusta="ficha"[^>]*>[\s\S]*?<\/button>/)?.[0] ?? ''
-  const m = /<strong[^>]*>([\d.]+)<\/strong>/.exec(b)
+  const b = hoja(stop, opciones).match(/<button[^>]*data-megusta="cabecera"[^>]*>[\s\S]*?<\/button>/)?.[0] ?? ''
+  const m = /data-megusta-numero[^>]*>([\d.]+)</.exec(b)
   return { numero: m ? Number(m[1].replace('.', '')) : null, marcado: /aria-pressed="true"/.test(b), texto: plano(aTexto(b)) }
 }
 const cifraTarjeta = (nombre) => tarjetasDe(explorador(catalogo.filter((p) => p.name === nombre && p.kind === 'place'))).find((t) => t.nombre === nombre)

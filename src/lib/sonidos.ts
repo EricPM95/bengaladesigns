@@ -98,6 +98,12 @@ async function cargar(momento: string): Promise<AudioBuffer | null> {
 /** Hace sonar un momento. Llamarla dentro del toque del dedo (el primer toque desbloquea el audio). Nunca lanza. */
 export async function sonar(momento: string): Promise<void> {
   if (!sonidoActivado()) return
+  // (Tanda 10N4) Para las pruebas: cada vez que de verdad se pide un sonido, queda apuntado.
+  try {
+    ;((window as unknown as { __sonidosPedidos?: string[] }).__sonidosPedidos ??= []).push(momento)
+  } catch {
+    /* nada */
+  }
   const ctx = contextoDeAudio()
   if (!ctx) return
   try {
@@ -130,4 +136,26 @@ export function reproducirMomentos(tipos: string[]) {
   if (!s) return
   void sonar(s)
   vibrar(s)
+}
+
+let escuchandoElToque = false
+/**
+ * (Tanda 10N4 §4b) En el iPhone la web solo puede sonar si la persona ya ha tocado la pantalla alguna vez desde que abrió la app: en el primer toque se prepara el audio (se crea y se reanuda),
+ * para que el aviso que llegue después pueda sonar. Si el navegador no deja, no pasa nada. Se llama una vez al montar el anfitrión de avisos.
+ */
+export function prepararAudioAlPrimerToque() {
+  if (escuchandoElToque || typeof window === 'undefined') return
+  escuchandoElToque = true
+  const alToque = () => {
+    window.removeEventListener('pointerdown', alToque, true)
+    window.removeEventListener('touchend', alToque, true)
+    try {
+      const ctx = contextoDeAudio()
+      if (ctx && ctx.state === 'suspended') void ctx.resume().catch(() => undefined)
+    } catch {
+      /* sin audio */
+    }
+  }
+  window.addEventListener('pointerdown', alToque, true)
+  window.addEventListener('touchend', alToque, true)
 }

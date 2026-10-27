@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}.agS::-webkit-scrollbar{display:none}</style>
+</helmet>
+<div style="display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start;padding:24px 48px 40px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+<sc-for list="{{ boards }}" as="b" hint-placeholder-count="3">
+ <div style="width:390px;display:flex;flex-direction:column;gap:12px">
+  <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6E5018">{{ b.cap }}</span>
+  <div style="position:relative;width:390px;height:844px;flex:none;border-radius:44px;overflow:hidden;background:#8E8A80;box-shadow:0 0 0 9px #14161C,0 30px 70px -20px rgba(60,40,10,.45)">
+   <div style="position:absolute;inset:0;background:linear-gradient(180deg,#B9B3A6,#8E8A80)"></div>
+   <div style="position:absolute;left:0;right:0;top:88px;bottom:0;border-radius:32px 32px 0 0;background:#FFFDF8;display:flex;flex-direction:column;overflow:hidden">
+    <span style="display:block;width:44px;height:4px;border-radius:2px;background:rgba(28,34,48,.25);margin:10px auto 0;flex:none"></span>
+    <div style="flex:none;padding:14px 20px 8px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+     <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.18em;color:#6F4E37">{{ b.eye }}</span><span style="font:400 34px/1.05 'Instrument Serif',serif">{{ b.title }}</span></div>
+     <div style="display:flex;align-items:center;gap:8px;padding-top:4px">
+      <sc-if value="{{ b.selMode }}" hint-placeholder-val="{{ false }}"><span onClick="{{ b.cancel }}" style="height:36px;padding:0 15px;border-radius:999px;background:#1C2230;color:#FBF3E2;display:flex;align-items:center;font:600 13.5px 'Geist';cursor:pointer">Cancelar</span></sc-if>
+      <sc-if value="{{ b.normal }}" hint-placeholder-val="{{ true }}"><span onClick="{{ b.startSel }}" style="height:36px;padding:0 15px;border-radius:999px;border:1px solid rgba(181,138,46,.6);background:#FBF3E2;color:#6E5018;display:flex;align-items:center;gap:6px;font:600 13.5px 'Geist';cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l3 3 5-6"></path></svg>Seleccionar</span><span style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#1C2230"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></sc-if>
+     </div>
+    </div>
+    <sc-if value="{{ b.selMode }}" hint-placeholder-val="{{ false }}"><div style="flex:none;padding:0 20px 10px;display:flex;align-items:center;justify-content:space-between"><span style="font:600 14px 'Geist'">{{ b.count }}</span><span onClick="{{ b.all }}" style="font:600 13.5px 'Geist';color:#6E5018;text-decoration:underline;text-underline-offset:3px;cursor:pointer">{{ b.allTxt }}</span></div></sc-if>
+    <div class="agS" style="flex:1;min-height:0;overflow-y:auto;padding:4px 14px 120px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none">
+     <sc-if value="{{ b.empty }}" hint-placeholder-val="{{ false }}"><div style="margin:70px 30px 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px"><span style="width:56px;height:56px;border-radius:50%;background:#FBF3E2;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15zM10 21h4"></path></svg></span><span style="font:400 24px/1.1 'Instrument Serif',serif">No tienes avisos</span></div></sc-if>
+     <sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="5">
+      <div onClick="{{ r.tap }}" style="position:relative;display:flex;gap:12px;align-items:flex-start;padding:13px 12px;border-radius:20px;background:{{ r.bg }};border:1px solid {{ r.bd }};cursor:pointer">
+       <sc-if value="{{ b.selMode }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;flex:none;border-radius:50%;margin-top:9px;display:flex;align-items:center;justify-content:center;background:{{ r.cb }};border:2px solid {{ r.cbd }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FBF3E2" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:{{ r.cv }}"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span></sc-if>
+       <span style="width:42px;height:42px;flex:none;border-radius:13px;background:{{ r.ib }};display:flex;align-items:center;justify-content:center;font:400 22px/1 'Instrument Serif',serif;color:#1C2230">{{ r.av }}</span>
+       <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+        <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.5);display:{{ r.kd }}">{{ r.kind }}</span>
+        <span style="font:{{ r.f }};color:{{ r.fc }}">{{ r.t }}</span>
+        <span style="font:400 12.5px 'Geist';color:rgba(28,34,48,.5)">{{ r.w }}</span>
+       </div>
+       <span style="display:{{ r.dotD }};width:10px;height:10px;border-radius:50%;background:#B58A2E;flex:none;margin-top:6px"></span>
+      </div>
+     </sc-for>
+    </div>
+    <sc-if value="{{ b.selMode }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:14px;right:14px;bottom:26px;display:flex;gap:10px;padding:10px;border-radius:24px;background:#1C2230;box-shadow:0 18px 30px -14px rgba(14,21,48,.8)"><span onClick="{{ b.markRead }}" style="flex:1.25;height:50px;border-radius:15px;background:{{ b.btnBg }};color:{{ b.btnFg }};display:flex;align-items:center;justify-content:center;gap:7px;font:700 14.5px 'Geist';cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13l4 4 7-9M11 17l1 .6L22 7"></path></svg>Marcar leído</span><span onClick="{{ b.del }}" style="flex:1;height:50px;border-radius:15px;border:1.5px solid {{ b.delBd }};color:{{ b.delFg }};display:flex;align-items:center;justify-content:center;gap:7px;font:700 14.5px 'Geist';cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"></path></svg>Eliminar</span></div></sc-if>
+    <sc-if value="{{ b.toastOn }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:14px;right:14px;bottom:26px;height:54px;border-radius:18px;background:#1C2230;color:#FBF3E2;display:flex;align-items:center;padding:0 16px;font:500 14px 'Geist';box-shadow:0 18px 30px -14px rgba(14,21,48,.8)"><span style="flex:1">{{ b.toast }}</span><b onClick="{{ b.undo }}" style="color:#E9C77A;font-weight:700;cursor:pointer">Deshacer</b></div></sc-if>
+   </div>
+  </div>
+ </div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const BASE=[
+ {id:1,kind:'FECHA ESPECIAL',av:'▦',t:'Museos Vaticanos y Villa Farnesina cierran el domingo 15 de noviembre.',w:'hace 2 h',read:true},
+ {id:2,kind:'INFORMACIÓN',av:'i',t:'Sobre tu ruta: en invierno Roma madruga y cierra pronto. Hemos ajustado tu ruta para aprovechar cada hora de luz.',w:'hace 3 h',read:true},
+ {id:3,kind:'',av:'E',t:'Eric te ha dado permiso para editar el viaje a Roma.',w:'hace 5 min',read:false},
+ {id:4,kind:'',av:'E',t:'Eric ha añadido la Fontana di Trevi al sábado 14.',w:'hace 9 min',read:false},
+ {id:5,kind:'',av:'A',t:'Ana ha añadido un gasto: Cena en Trastevere · 84 €.',w:'hace 13 min',read:false}];
+const INIT={A:{mode:'n',sel:[],del:[],read:[],toast:''},B:{mode:'s',sel:[3,5],del:[],read:[],toast:''},C:{mode:'n',sel:[],del:[2,3],read:[],toast:'2 avisos eliminados'}};
+const CAP={A:'01 · Normal, con «Seleccionar»',B:'02 · Seleccionando (2 elegidos)',C:'03 · Después de eliminar'};
+class Component extends DCLogic {
+  state={b:JSON.parse(JSON.stringify(INIT))};
+  upd(id,fn){this.setState(s=>({b:{...s.b,[id]:fn({...s.b[id]})}}));}
+  renderVals(){
+    const boards=['A','B','C'].map(id=>{const st=this.state.b[id];const sel=st.mode==='s';
+      const vis=BASE.filter(n=>!st.del.includes(n.id));
+      const rows=vis.map(n=>{const isRead=n.read||st.read.includes(n.id),on=st.sel.includes(n.id);
+        return{av:n.av,kind:n.kind,kd:n.kind?'block':'none',t:n.t,w:n.w,
+          f:isRead?"400 14px/1.35 'Geist'":"600 14.5px/1.35 'Geist'",fc:isRead?'rgba(28,34,48,.62)':'#1C2230',
+          bg:on?'#FBF3E2':isRead?'#FFFDF8':'#FFFFFF',bd:on?'#B58A2E':isRead?'rgba(28,34,48,.1)':'rgba(181,138,46,.35)',
+          ib:isRead?'#F1EADC':'#F3E2B0',dotD:!isRead&&!sel?'block':'none',
+          cb:on?'#1C2230':'transparent',cbd:on?'#1C2230':'rgba(28,34,48,.3)',cv:on?1:0,
+          tap:()=>{if(sel)this.upd(id,s=>({...s,sel:s.sel.includes(n.id)?s.sel.filter(x=>x!==n.id):[...s.sel,n.id]}));else this.upd(id,s=>({...s,read:s.read.includes(n.id)?s.read:[...s.read,n.id]}));}};});
+      const k=st.sel.length,has=k>0;
+      return{cap:CAP[id],eye:'TUS AVISOS',title:'Avisos',selMode:sel,normal:!sel,rows,empty:vis.length===0,
+        count:k===0?'Elige uno o más avisos':k===1?'1 seleccionado':k+' seleccionados',
+        allTxt:k===vis.length&&k>0?'Quitar selección':'Seleccionar todos',
+        btnBg:has?'#E9C77A':'rgba(233,199,122,.28)',btnFg:has?'#1C2230':'rgba(251,243,226,.5)',delBd:has?'#F29A9A':'rgba(251,243,226,.2)',delFg:has?'#F6B4B4':'rgba(251,243,226,.4)',
+        toastOn:!!st.toast&&!sel,toast:st.toast,
+        startSel:()=>this.upd(id,s=>({...s,mode:'s',sel:[],toast:''})),cancel:()=>this.upd(id,s=>({...s,mode:'n',sel:[]})),
+        all:()=>this.upd(id,s=>({...s,sel:s.sel.length===vis.length?[]:vis.map(n=>n.id)})),
+        markRead:()=>{if(has)this.upd(id,s=>({...s,mode:'n',read:[...new Set([...s.read,...s.sel])],sel:[],toast:''}));},
+        del:()=>{if(has)this.upd(id,s=>({...s,mode:'n',del:[...s.del,...s.sel],sel:[],toast:s.sel.length===1?'1 aviso eliminado':s.sel.length+' avisos eliminados',last:s.sel}));},
+        undo:()=>this.upd(id,s=>({...s,del:s.last?s.del.filter(x=>!s.last.includes(x)):(id==='C'?[]:s.del),toast:'',last:null}))};});
+    return{boards};
+  }
+}
+</script>
+</body>
+</html>

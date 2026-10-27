@@ -17,11 +17,11 @@ export function FichaPestanas<T extends string>({ pestanas, activa, onPick }: { 
   const indice = Math.max(0, pestanas.findIndex((pestana) => pestana.id === activa))
   return (
     <div data-ficha-pestanas className="sticky top-0 z-[4] -mx-4 bg-bg px-4 py-2">
-      <div className="relative grid h-11 rounded-full bg-bg-hover p-1" style={{ gridTemplateColumns: `repeat(${pestanas.length}, 1fr)` }}>
+      <div className="relative grid h-[50px] rounded-full bg-[rgba(28,34,48,.07)] p-[5px]" style={{ gridTemplateColumns: `repeat(${pestanas.length}, 1fr)` }}>
         <span
           aria-hidden="true"
-          className="absolute bottom-1 left-1 top-1 rounded-full bg-text transition-transform duration-[400ms] ease-[cubic-bezier(.2,.8,.2,1)]"
-          style={{ width: `calc((100% - 8px) / ${pestanas.length})`, transform: `translateX(${indice * 100}%)` }}
+          className="absolute bottom-[5px] left-[5px] top-[5px] rounded-full bg-text transition-transform duration-[400ms] ease-[cubic-bezier(.2,.8,.2,1)]"
+          style={{ width: `calc((100% - 10px) / ${pestanas.length})`, transform: `translateX(${indice * 100}%)` }}
         />
         {pestanas.map((pestana) => (
           <button
@@ -29,7 +29,7 @@ export function FichaPestanas<T extends string>({ pestanas, activa, onPick }: { 
             type="button"
             onClick={() => onPick(pestana.id)}
             aria-pressed={activa === pestana.id}
-            className={`relative rounded-full text-[13.5px] font-semibold transition-colors duration-300 ${activa === pestana.id ? 'text-bg' : 'text-text/65'}`}
+            className={`relative rounded-full text-[15px] font-semibold transition-colors duration-300 ${activa === pestana.id ? 'text-[#FBF3E2]' : 'text-text/65'}`}
           >
             {pestana.label}
           </button>

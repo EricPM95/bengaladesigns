@@ -141,7 +141,7 @@ console.log('Restos')
 {
   for (const f of ['reservas/TripReadinessQuickPanel.tsx', 'reservas/ReadinessBreakdownRow.tsx', 'reservas/N26Row.tsx', 'reservas/EsimRow.tsx']) ok(!fs.existsSync(`src/components/route/${f}`), `6a sigue existiendo ${f}`)
   const globo = leer('src/lib/viajesPerfil.ts')
-  ok(/FRACCION_ANCHO_GLOBO/.test(globo) && !/AIRE_GLOBO_PX/.test(globo), '6b el globo no sigue el ancho de la caja')
+  ok(!/FRACCION_ANCHO_GLOBO|AIRE_GLOBO_PX/.test(globo), '6b (10N4) el globo del Perfil viejo ya no existe')
 }
 
 console.log(`\n6z6c: ${comprobaciones} comprobaciones, ${fallos} fallos.`)

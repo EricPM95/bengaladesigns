@@ -1,4 +1,9 @@
 import { llamarServidor } from './servidor'
+import { franjaDelAviso, ponerTablaDeArticulos } from '../../shared/avisos/textos.js'
+import tablasDeArticulos from '../../data/logros/articulos.json'
+
+// (10N4 §4b2) Los textos de los avisos que se arman en el móvil también llevan el artículo de los sitios («ha reservado el Coliseo»), con la misma tabla que usa el servidor.
+ponerTablaDeArticulos(Object.assign({}, ...Object.entries(tablasDeArticulos as Record<string, unknown>).filter(([k]) => !k.startsWith('_')).map(([, v]) => v)))
 
 /**
  * LA CAMPANITA DE AVISOS, EN LA APP (cuentas parte 3, punto 4). La lista sale del servidor (`GET /api/avisos`): lo más nuevo arriba, con lo leído y lo no leído. Los avisos que ya enseñaba
@@ -20,6 +25,19 @@ export interface AvisoDeCuenta {
   etiqueta: string | null
   /** La segunda línea del aviso (los de gasto: «Cena día 1 · 30 € · ya suma en el grupo»); null en los demás. */
   detalle?: string | null
+  /** (10N4) Lo que dice la franja de arriba: título corto, detalle e icono. Lo escribe el servidor (con los artículos de los sitios); sin él, se arma en el móvil. */
+  franja?: DatosDeFranja
+}
+
+export interface DatosDeFranja {
+  titulo: string
+  detalle: string
+  icono: 'persona' | 'calendario' | 'info' | 'estrella' | 'ticket'
+}
+
+/** La franja de un aviso: la que trae del servidor o, si no la trae, la que se arma aquí. */
+export function franjaDe(aviso: AvisoDeCuenta): DatosDeFranja {
+  return aviso.franja ?? (franjaDelAviso({ tipo: aviso.tipo, payload: aviso.payload }) as DatosDeFranja)
 }
 
 export async function cargarAvisos(): Promise<{ avisos: AvisoDeCuenta[]; sinLeer: number } | null> {
@@ -30,6 +48,16 @@ export async function cargarAvisos(): Promise<{ avisos: AvisoDeCuenta[]; sinLeer
 
 export async function marcarAvisosLeidos(ids: string[] | null): Promise<void> {
   await llamarServidor('/api/avisos/leidos', { metodo: 'POST', cuerpo: { ids: ids ?? [] } })
+}
+
+/** (Tanda 10N4 §2) «Marcar como no leído» (migración 0046; sin ella el móvil lo recuerda por su cuenta). */
+export async function marcarAvisosNoLeidos(ids: string[]): Promise<void> {
+  await llamarServidor('/api/avisos/no-leidos', { metodo: 'POST', cuerpo: { ids } })
+}
+
+/** (Tanda 10N4 §2) «Eliminar» (ocultar = true) y «Deshacer» (false). */
+export async function ocultarAvisos(ids: string[], ocultar: boolean): Promise<void> {
+  await llamarServidor('/api/avisos/ocultar', { metodo: 'POST', cuerpo: { ids, ocultar } })
 }
 
 /** «ahora», «hace 5 min», «hace 1 h», «ayer», «6 oct»: cuánto hace de un aviso. Pura. */

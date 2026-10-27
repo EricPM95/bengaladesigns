@@ -34,7 +34,8 @@ fs.mkdirSync(SALIDA, { recursive: true })
   const textos = await import('../../shared/avisos/textos.js')
   const dentro = textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { quien: 'Eric', sitio: 'el Coliseo', dia: 'jueves 26', hora: '08:00', incluido: true } })
   const fuera = textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { quien: 'Eric', sitio: 'el Coliseo', dia: 'jueves 26', hora: '08:00', incluido: false } })
-  debe(dentro === 'Eric ha reservado el Coliseo para ti: jueves 26, 8:00.', 'avisos', `aviso del incluido: «${dentro}»`)
+  // Tanda 10N4 (§4b2): frase entera, sin dos puntos ni coma.
+  debe(dentro === 'Eric ha reservado el Coliseo para ti el jueves 26 a las 8:00.', 'avisos', `aviso del incluido: «${dentro}»`)
   debe(fuera === 'Eric ha reservado el Coliseo el jueves 26 a las 8:00.', 'avisos', `aviso del no incluido: «${fuera}»`)
 }
 
@@ -289,11 +290,11 @@ try {
   })()`)
   void etq
   const etiquetaAna = await etiquetaDeLaParada(a)
-  debe(etiquetaAna === 'reservada:Reservada ✓', 'dias', `en DÍAS, Ana ve la etiqueta corta «Reservada ✓» en el Coliseo (${etiquetaAna})`)
+  debe(etiquetaAna === 'tengo', 'dias', `en DÍAS, Ana ve el botón de la entrada en verde con ✓, sin palabras (Tanda 10N4) (${etiquetaAna})`)
   await a.captura(path.join(SALIDA, '10n_reservas_dias_etiqueta_incluida.jpg'))
   // La campana de Ana
   const campanaAna = await leerCampana(a)
-  debe(campanaAna.some((t) => t === `Eric ha reservado el Coliseo para ti: ${diaOwner}, ${horaOwner}.`), 'campana', `la campana de Ana: «Eric ha reservado el Coliseo para ti: ${diaOwner}, ${horaOwner}.» (${JSON.stringify(campanaAna)})`)
+  debe(campanaAna.some((t) => t === `Eric ha reservado el Coliseo para ti el ${diaOwner} a las ${horaOwner}.`), 'campana', `la campana de Ana: «Eric ha reservado el Coliseo para ti el ${diaOwner} a las ${horaOwner}.» (${JSON.stringify(campanaAna)})`)
   const botonesAna = await a.evaluar(`Array.from(document.querySelectorAll('[role="dialog"] button')).map((b) => (b.textContent || '').trim())`)
   debe(!botonesAna.includes('Reservar la mía a la misma hora') && !botonesAna.includes('Ya la tengo'), 'campana', 'al incluido no le salen los botones de comprar la suya')
   await cerrarCampana(a)
@@ -302,11 +303,11 @@ try {
   await ponerGente(a, 'luis')
   await a.esp(1500)
   const etiquetaLuis = await etiquetaDeLaParada(a)
-  debe(etiquetaLuis === 'comprar:Comprar entrada', 'dias', `en DÍAS, Luis (no incluido) ve «Comprar entrada» en el Coliseo (${etiquetaLuis})`)
-  const colorLuis = await a.evaluar(`getComputedStyle(document.querySelector('[data-etiqueta-entrada="comprar"]')).backgroundColor`)
+  debe(etiquetaLuis === 'grupo', 'dias', `en DÍAS, Luis (no incluido) ve el botón de la entrada en frambuesa con el numerito de cuántos la tienen (Tanda 10N4) (${etiquetaLuis})`)
+  const colorLuis = await a.evaluar(`getComputedStyle(document.querySelector('[data-boton-entrada="grupo"]')).backgroundImage`)
   const colorAna = 'rgb(65, 134, 87)'
   void colorAna
-  debe(/^rgb\((?!.*(65, 134, 87))/.test(colorLuis), 'dias', `y en frambuesa (${colorLuis})`)
+  debe(!/63, 160, 102/.test(colorLuis) && /oklch|rgb/.test(colorLuis), 'dias', `y en frambuesa (${colorLuis})`)
   await a.captura(path.join(SALIDA, '10n_reservas_dias_etiqueta_no_incluido.jpg'))
   const campanaLuis = await leerCampana(a)
   debe(campanaLuis.some((t) => t === `Eric ha reservado el Coliseo el ${diaOwner} a las ${horaOwner}.`), 'campana', `la campana de Luis: «Eric ha reservado el Coliseo el ${diaOwner} a las ${horaOwner}.» (${JSON.stringify(campanaLuis)})`)
@@ -320,7 +321,7 @@ try {
     const { useNoticesStore } = await import('/src/store/useNoticesStore.ts')
     const id = Array.from(window.__ruta.getState().reservations).map((r) => 'reserva-grupo:' + r.id).find((x) => x)
     const antes = useNoticesStore.getState().readIds.includes(id)
-    const marcar = Array.from(document.querySelectorAll('[role="dialog"] button')).find((b) => /Marcar como leído/.test(b.textContent || ''))
+    const marcar = document.querySelector('[role="dialog"] [data-fila-aviso^="a:reserva-grupo"]') // (10N4: tocar el aviso lo da por leído; ya no hay botón «Marcar como leído» por aviso)
     marcar?.click()
     await new Promise((r) => setTimeout(r, 400))
     const despues = useNoticesStore.getState().readIds.includes(id)
@@ -368,7 +369,7 @@ try {
   debe(lineaLuis && /Cambiar/.test(lineaLuis) && !/Eric la ha reservado/.test(lineaLuis), 'misma_hora', `Luis ve ahora SU entrada del Coliseo como reservada, con Cambiar (${lineaLuis})`)
   await a.captura(path.join(SALIDA, '10n_reservas_invitado_la_suya.jpg'))
   const etiquetaLuis2 = await (async () => { await irA(a, 'days'); return etiquetaDeLaParada(a) })()
-  debe(etiquetaLuis2 === 'reservada:Reservada ✓', 'dias', `con la suya comprada, Luis pasa a ver «Reservada ✓» (${etiquetaLuis2})`)
+  debe(etiquetaLuis2 === 'tengo', 'dias', `con la suya comprada, Luis pasa a ver el botón verde con ✓ (${etiquetaLuis2})`)
 
   /* — La de Luis no cuadra con la ruta — */
   await a.evaluar(`(async () => {
@@ -388,7 +389,7 @@ try {
   debe(noCuadra && /^Tu entrada del Coliseo es el .+, y en la ruta está el .+\.$/.test(noCuadra) && noCuadra.includes(diaOwner), 'no_cuadra', `si la entrada del invitado cae otro día, se le avisa en RESERVAS (${noCuadra})`)
   await a.captura(path.join(SALIDA, '10n_reservas_invitado_no_cuadra.jpg'))
   const campanaNoCuadra = await leerCampana(a)
-  debe(campanaNoCuadra.some((t) => /^Tu entrada del Coliseo es el .+, y en la ruta está el .+\.$/.test(t)), 'no_cuadra', `y en la campana (${JSON.stringify(campanaNoCuadra.slice(0, 3))})`)
+  debe(campanaNoCuadra.some((t) => /^Tu entrada del Coliseo es el .+, y en la ruta está el .+\.$/.test(t)), 'no_cuadra', `y en la campana (${JSON.stringify(campanaNoCuadra)})`)
   await cerrarCampana(a)
 
   /* — El dueño no ve las entradas del invitado — */
@@ -412,7 +413,7 @@ async function etiquetaDeLaParada(a) {
   await a.evaluar("window.__ruta.getState().setMode('days'); true")
   await a.esp(1200)
   for (let i = 0; i < 25; i++) {
-    const t = await a.evaluar(`(() => { const e = document.querySelector('[data-etiqueta-entrada]'); return e ? e.dataset.etiquetaEntrada + ':' + e.textContent.trim() : null })()`)
+    const t = await a.evaluar(`(() => { const e = document.querySelector('[data-boton-entrada]'); return e ? e.dataset.botonEntrada : null })()`)
     if (t) return t
     // Abre la pestaña DÍAS y el día de la reserva
     await a.evaluar(`(() => {
@@ -437,7 +438,7 @@ async function etiquetaDeLaParada(a) {
 async function leerCampana(a) {
   await a.evaluar(`(() => { const b = document.querySelector('button[aria-label^="Avisos"]'); b?.click(); return Boolean(b) })()`)
   await a.esp(1200)
-  return a.evaluar(`Array.from(document.querySelectorAll('[role="dialog"] .font-display, [role="dialog"] p')).map((e) => (e.textContent || '').trim())`)
+  return a.evaluar(`Array.from(document.querySelectorAll('[role="dialog"] [data-aviso-texto], [role="dialog"] [data-aviso-texto] + span, [role="dialog"] .font-display, [role="dialog"] p')).map((e) => (e.textContent || '').trim())`)
 }
 async function cerrarCampana(a) {
   await a.evaluar(`document.querySelector('[role="dialog"][aria-labelledby="notices-heading"] button[aria-label="Cerrar"]')?.click(); true`)

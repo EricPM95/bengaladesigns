@@ -107,13 +107,13 @@ export function DurationSelector({ days, dateRange, month, onChange }: DurationS
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-3 rounded-onb-md border border-onb-accent/40 bg-onb-accent-light px-4 py-3">
           <div>
-            <p className="flex items-center gap-1.5 font-dmsans text-body font-medium text-onb-text">
+            <p className="flex items-center gap-1.5 font-sans text-body font-medium text-onb-text">
               <Icono nombre="dias" size={18} className="shrink-0" />
               {formatRangeEs(dateRange)}
             </p>
-            <p className="font-dmsans text-small text-onb-text-soft">{days} días exactos</p>
+            <p className="font-sans text-small text-onb-text-soft">{days} días exactos</p>
           </div>
-          <button type="button" onClick={clearDateRange} className="shrink-0 font-dmsans text-caption font-medium text-onb-accent hover:text-onb-accent-hover">
+          <button type="button" onClick={clearDateRange} className="shrink-0 font-sans text-caption font-medium text-onb-accent hover:text-onb-accent-hover">
             Quitar fechas
           </button>
         </div>
@@ -131,7 +131,7 @@ export function DurationSelector({ days, dateRange, month, onChange }: DurationS
               key={option}
               type="button"
               onClick={() => selectQuickDays(option)}
-              className={`rounded-onb-sm border py-2.5 text-center font-dmsans text-body font-medium transition-colors ${
+              className={`rounded-onb-sm border py-2.5 text-center font-sans text-body font-medium transition-colors ${
                 active ? 'border-onb-accent bg-onb-accent-light text-onb-accent-hover' : 'border-onb-border bg-onb-card text-onb-text hover:border-onb-accent/50'
               }`}
             >
@@ -142,7 +142,7 @@ export function DurationSelector({ days, dateRange, month, onChange }: DurationS
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="font-dmsans text-small text-onb-text-soft">Otro:</span>
+        <span className="font-sans text-small text-onb-text-soft">Otro:</span>
         <input
           type="number"
           inputMode="numeric"
@@ -152,9 +152,9 @@ export function DurationSelector({ days, dateRange, month, onChange }: DurationS
           onChange={(event) => handleCustomDaysInput(event.target.value)}
           onBlur={handleCustomDaysBlur}
           placeholder="9"
-          className="w-16 rounded-onb-sm border border-onb-border bg-onb-card px-3 py-2 font-dmsans text-body text-onb-text focus:border-onb-accent focus:outline-none"
+          className="w-16 rounded-onb-sm border border-onb-border bg-onb-card px-3 py-2 font-sans text-body text-onb-text focus:border-onb-accent focus:outline-none"
         />
-        <span className="font-dmsans text-caption text-onb-text-muted">días (máx. {MAX_DAYS})</span>
+        <span className="font-sans text-caption text-onb-text-muted">días (máx. {MAX_DAYS})</span>
       </div>
 
       <button
@@ -166,7 +166,7 @@ export function DurationSelector({ days, dateRange, month, onChange }: DurationS
             return next
           })
         }
-        className="flex items-center gap-2 font-dmsans text-caption font-medium text-onb-accent hover:text-onb-accent-hover"
+        className="flex items-center gap-2 font-sans text-caption font-medium text-onb-accent hover:text-onb-accent-hover"
       >
         <Icono nombre="dias" size={24} className="shrink-0" />
         {showCalendar ? 'Ocultar fechas exactas' : '¿Ya tienes fecha para tu viaje?'}
@@ -187,22 +187,22 @@ export function DurationSelector({ days, dateRange, month, onChange }: DurationS
               showOutsideDays
             />
           </div>
-          <p className="font-dmsans text-caption text-onb-text-soft">
+          <p className="font-sans text-caption text-onb-text-soft">
             Con fechas exactas, cruzamos el itinerario con estacionalidad, clima, festivos, cierres y eventos especiales.
           </p>
-          {dateError && <p className="font-dmsans text-caption text-red-500">{dateError}</p>}
+          {dateError && <p className="font-sans text-caption text-red-500">{dateError}</p>}
         </div>
       )}
 
       {days !== undefined && !seasonHidden && (
         <div className="space-y-2 pt-1">
-          <p className="font-dmsans text-caption font-semibold uppercase tracking-wide text-onb-text-muted">¿Qué mes viajas?</p>
+          <p className="font-sans text-caption font-semibold uppercase tracking-wide text-onb-text-muted">¿Qué mes viajas?</p>
           {/* 12 meses en 4 filas por temporada (Estaciones, Parte 1): el mes decide horarios y
               puesta de sol; la temporada se deduce. Obligatorio sin fechas. */}
           <div className="space-y-1.5">
             {MONTH_ROWS.map((row) => (
               <div key={row.season} className="grid grid-cols-[6.5rem_repeat(3,1fr)] items-center gap-2">
-                <span className="font-dmsans text-caption text-onb-text-soft">{SEASON_META[row.season].label}</span>
+                <span className="font-sans text-caption text-onb-text-soft">{SEASON_META[row.season].label}</span>
                 {row.months.map((value) => {
                   const active = month === value
                   return (
@@ -210,7 +210,7 @@ export function DurationSelector({ days, dateRange, month, onChange }: DurationS
                       key={value}
                       type="button"
                       onClick={() => onChange({ month: value, season: seasonOfMonth(value) })}
-                      className={`rounded-onb-sm border py-2 text-center font-dmsans text-body transition-colors ${
+                      className={`rounded-onb-sm border py-2 text-center font-sans text-body transition-colors ${
                         active ? 'border-onb-accent bg-onb-accent-light text-onb-accent-hover' : 'border-onb-border bg-onb-card text-onb-text hover:border-onb-accent/50'
                       }`}
                     >

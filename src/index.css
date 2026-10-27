@@ -1,8 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-/* Solo para el formulario de creación de ruta rediseñado (Questionnaire.tsx y pantallas nuevas de
-   onboarding) — deliberadamente NO sustituye a Plus Jakarta Sans, que sigue siendo la tipografía del
-   resto de la app (RUTA/DIAS/RESERVAS/EXPLORAR), fuera del alcance de este rediseño. */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 @import 'flag-icons/css/flag-icons.min.css';
 
 @tailwind base;
@@ -121,7 +116,15 @@ body {
   --rdp-accent-color: rgb(var(--accent));
   --rdp-accent-background-color: rgb(var(--accent-soft));
   --rdp-today-color: rgb(var(--accent));
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  /* (Tanda 10N4) La letra de Design, como el resto de la app. */
+  font-family: 'Geist', system-ui, sans-serif;
+}
+
+/* (Tanda 10N4) Mapbox GL pone «Helvetica Neue» en el mapa entero: los números de las paradas y la atribución salían con otra letra. Una sola letra, la de Design. */
+body .mapboxgl-map,
+body .mapboxgl-ctrl,
+body .mapboxgl-popup {
+  font-family: 'Geist', system-ui, sans-serif;
 }
 
 /* Popup de un pin del mapa (StopsMapView.tsx) — quita el chrome por defecto de Mapbox (padding,
@@ -325,3 +328,16 @@ html[data-solo-ver] [data-edit-tool] { display: none !important; }
 /* Tanda 10N: lo que quien solo recomienda ha añadido o movido es de su PROPUESTA, no de la ruta de verdad: borde de puntos y la etiqueta «Propuesta». */
 [data-propuesta] { position: relative; border-radius: 24px; outline: 2px dotted #B58A2E; outline-offset: 2px; }
 [data-propuesta]::after { content: 'Propuesta'; position: absolute; right: 12px; top: -9px; padding: 2px 9px; border-radius: 999px; background: #B58A2E; color: #fff; font: 700 10.5px 'Geist', sans-serif; letter-spacing: .04em; pointer-events: none; z-index: 2; }
+
+/* Tanda 10N4 (`Piezas/Ficha Cabecera`): el corazón con su número de la cabecera de la ficha. Sin marcar, crema con borde dorado; marcado (lo recomiendas tú), relleno de frambuesa. */
+.megusta-cabecera {
+  background: rgba(255, 253, 248, .85);
+  border: 1px solid rgba(181, 138, 46, .4);
+  box-shadow: 0 8px 16px -10px rgba(110, 40, 60, .55);
+  color: rgb(var(--frambuesa));
+}
+.megusta-cabecera[aria-pressed='true'] {
+  background: rgb(var(--frambuesa));
+  border-color: rgb(var(--frambuesa-hover));
+  color: #fff;
+}

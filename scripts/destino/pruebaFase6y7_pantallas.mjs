@@ -157,25 +157,8 @@ console.log('4. Escuchar historia')
   debe(!/Voz del m/i.test(leer('src/components/route/dayDetail/FichaPiezas.tsx')), '4 sin voz del móvil', 'FichaPiezas aún lo nombra')
 }
 
-// ── 5. El mapa del Perfil ──
-console.log('5. El mapa del Perfil')
-{
-  const m = leer('src/components/perfil/MapaMisViajes.tsx')
-  const codigo = sinComentarios(m)
-  // El contenedor de Mapbox NO es el elemento que se estira con `absolute` (mapbox-gl.css le pone position: relative y anula el absolute).
-  const iRef = codigo.indexOf('ref={contenedor}')
-  const etiqueta = codigo.slice(codigo.lastIndexOf('<div', iRef), codigo.indexOf('/>', iRef) + 2)
-  debe(iRef > 0 && !/\babsolute\b/.test(etiqueta) && /h-full w-full/.test(etiqueta), '5 contenedor', `el contenedor del mapa usa absolute o no llena su recuadro: ${etiqueta}`)
-  debe(/role="region" aria-label="Mapa de mis viajes" className="isolate absolute inset-0"/.test(codigo), '5 recuadro', 'el recuadro que se estira no es el que rodea al contenedor')
-  debe(/h-\[286px\]/.test(codigo), '5 alto', 'el recuadro no mide 286 px de alto')
-  // Se ajusta al montar, al cargar, al cambiar la caja y al girar; y se deshace al cerrar.
-  debe(/const ajustar = \(\) => mapa\.resize\(\)/.test(codigo) && /^\s*ajustar\(\)\s*$/m.test(codigo), '5 resize', 'no se ajusta nada más montar')
-  debe(/mapa\.once\('load', ajustar\)/.test(codigo), '5 resize', 'no se ajusta al cargar el mapa')
-  debe(/new ResizeObserver\(ajustar\)/.test(codigo) && /observador\.observe\(elemento\)/.test(codigo) && /observador\.disconnect\(\)/.test(codigo), '5 resize', 'no se ajusta al cambiar la caja de tamaño (o no se suelta el observador)')
-  debe(/addEventListener\('orientationchange', ajustar\)/.test(codigo) && /removeEventListener\('orientationchange', ajustar\)/.test(codigo), '5 resize', 'no se ajusta al girar el móvil (o no se suelta el escuchador)')
-  // Y se pide el tamaño real de la caja al crear el mapa (el zoom del globo sale de él).
-  debe(/zoomGloboEntero\(elemento\.clientWidth/.test(codigo), '5 zoom', 'el zoom del globo no sale del tamaño real de la caja')
-}
+// ── 5. El mapa del Perfil: quitado en la 10N4 (el mapa suelto del Perfil viejo ya no existe; manda «Mi pasaporte») ──
+debe(!fs.existsSync('src/components/perfil/MapaMisViajes.tsx'), '5 mapa', 'el mapa suelto del Perfil viejo sigue existiendo')
 
 // ── 10 (pool). El pool con 1 día no sale ──
 console.log('10. El pool con 1 día')

@@ -203,7 +203,7 @@ console.log('3. Las pantallas (react-dom/server)')
     const res = { id: 'r1', kind: 'entrada', refId: 'coliseo', name: 'Coliseo', placeNames: [], time: '09:00', precio: eur(60), paraQuien: ['eric', 'ana'], dateIso: '2027-08-11' }
     poner({ reservations: [res] })
     const html = pinta(PantallaPresupuesto)
-    debe(/data-por-persona="tu-parte"/.test(html) && /tu parte/.test(aTexto(html)), '3', 'con una entrada para 2 de 4, el presupuesto dice «tu parte» en vez de «por persona»')
+    debe(/data-por-persona="tu-parte"/.test(html) && /Tu parte/.test(aTexto(html)), '3', 'con una entrada para 2 de 4, el presupuesto dice «tu parte» en vez de «por persona»')
     poner({ reservations: [{ ...res, paraQuien: TODOS }] })
     const h2 = pinta(PantallaPresupuesto)
     debe(/data-por-persona="por-persona"/.test(h2) && /por persona/.test(aTexto(h2)), '3', 'con una entrada para los 4, sigue el «por persona» de siempre')

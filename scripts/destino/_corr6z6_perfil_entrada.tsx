@@ -2,7 +2,8 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { PerfilSheet } from '../../src/components/layout/PerfilSheet'
-import { CAJA_MAPA_VIAJES, PROYECCION_MAPA_VIAJES, TEXTOS_MAPA_VIAJES, centroDelGlobo, chinchetasDeViajes, diametroGlobo, viajesDelPerfil, zoomGloboEntero } from '../../src/lib/viajesPerfil'
+import CuerpoConLogros from '../../src/components/logros/pantallas/perfil/CuerpoConLogros'
+import { viajesDelPerfil } from '../../src/lib/viajesPerfil'
 import { usePerfilUi } from '../../src/store/usePerfilUi'
 import { useRouteStore } from '../../src/store/useRouteStore'
 import { useSyncStore } from '../../src/store/useSyncStore'
@@ -11,14 +12,8 @@ export {
   createElement,
   renderToStaticMarkup,
   PerfilSheet,
-  CAJA_MAPA_VIAJES,
-  PROYECCION_MAPA_VIAJES,
-  TEXTOS_MAPA_VIAJES,
-  centroDelGlobo,
-  chinchetasDeViajes,
-  diametroGlobo,
+  CuerpoConLogros,
   viajesDelPerfil,
-  zoomGloboEntero,
   usePerfilUi,
   useRouteStore,
   useSyncStore,

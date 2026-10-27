@@ -51,7 +51,7 @@ export function AvisoDeGasto({ aviso, ahora, foto, resaltado }: { aviso: AvisoDe
           <span style={{ font: sinLeer ? "600 14px/1.35 'Geist'" : "500 14px/1.35 'Geist'", textWrap: 'pretty' }}>{aviso.texto}</span>
           <span style={{ font: "500 11px 'Geist'", color: 'rgba(28,34,48,.5)' }}>{haceCuanto(aviso.creado_en, ahora)}</span>
         </span>
-        {sinLeer && <span aria-label="Sin leer" style={{ width: 9, height: 9, flex: 'none', marginTop: 6, borderRadius: '50%', background: 'rgb(var(--frambuesa))' }} />}
+        {sinLeer && <span aria-label="Sin leer" data-punto-aviso style={{ width: 10, height: 10, flex: 'none', marginTop: 6, borderRadius: '50%', background: '#B58A2E' }} />}
       </div>
       <div data-gasto-dentro style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 14, background: 'rgba(255,253,248,.7)' }}>
         <span aria-hidden="true" style={{ width: 32, height: 32, flex: 'none', borderRadius: 10, background: 'oklch(0.55 0.1 220 / .14)', color: 'oklch(0.45 0.1 220)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

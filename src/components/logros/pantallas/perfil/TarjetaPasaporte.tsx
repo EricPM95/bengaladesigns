@@ -31,7 +31,7 @@ export function sellosDeLaEsquina(recientes: { ciudad: string; fecha: string }[]
   return [...suyos, ...relleno].slice(0, 2)
 }
 
-export function TarjetaPasaporte({ pasaporte, onAbrir }: { pasaporte: PerfilLogros['pasaporte']; onAbrir: () => void }): ReactNode {
+export function TarjetaPasaporte({ pasaporte, onAbrir }: { pasaporte: PerfilLogros['pasaporte']; onAbrir?: () => void }): ReactNode {
   const { paises, tierra } = usePaisesYTierra()
   const vista = useMemo(() => mapaDeVisitados(paises, pasaporte.paises_iso ?? []), [paises, pasaporte.paises_iso])
   const sellos = sellosDeLaEsquina(pasaporte.sellos_recientes)
@@ -39,6 +39,7 @@ export function TarjetaPasaporte({ pasaporte, onAbrir }: { pasaporte: PerfilLogr
     <button
       type="button"
       onClick={onAbrir}
+      disabled={!onAbrir}
       data-abrir-pasaporte
       aria-label="Mi pasaporte"
       className="relative flex flex-none items-center gap-3.5 overflow-hidden rounded-[24px] border-0 text-left"

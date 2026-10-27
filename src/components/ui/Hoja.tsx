@@ -94,7 +94,7 @@ export function Hoja({
 /**
  * (Tanda 10N §6c) Cerrar una hoja deslizándola hacia abajo: se agarra por el tirador, baja con el dedo y, pasados 90 px (o con un tirón rápido), se cierra; si no, vuelve a su sitio.
  */
-function useArrastreParaCerrar(onCerrar?: () => void) {
+export function useArrastreParaCerrar(onCerrar?: () => void) {
   const [dy, setDy] = useState(0)
   const [arrastrando, setArrastrando] = useState(false)
   const inicio = useRef<{ y: number; t: number } | null>(null)

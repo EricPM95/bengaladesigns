@@ -2,9 +2,8 @@
 //   node scripts/destino/pruebaCorr6z6_perfil.mjs        (con el servidor de la app encendido en http://localhost:8787)
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
 //   P1. el Perfil no es una pantalla completa (fixed inset-0, con cabecera «Perfil» y la ✕), o sube desde abajo como hoja (HojaAbajo / items-end / rounded-t), o no deja relleno de abajo para la barra;
-//   P2. el mapa de mis viajes no mide 286 px (6y4: era 220; hoy 220 × 1,3), no usa `cooperativeGestures: true` con el aviso en español («Usa dos dedos para mover el mapa»), o depende de algo solo-local (import.meta.env.DEV);
-//   P3. el globo no es `globe` (también en style.load) o su zoom no deja la esfera ENTERA en la caja de 335×220 (ni centrado en la media de las chinchetas);
-//   P4. con 0, 1 o 6 viajes el Perfil falla, no lista todos los viajes, o el globo con 0 chinchetas no dice «Aún no tienes viajes»;
+//   (P2 y P3, el mapa de mis viajes y su globo, se quitaron en la 10N4: el mapa suelto ya no existe)
+//   P4. con 0, 1 o 6 viajes el Perfil falla o no lista todos los viajes;
 //   P5. tocar una chincheta no abre la ficha; la ficha y el álbum no son pantalla completa con [‹ Volver] en la cabecera; falta lo de antes ([Nuevo viaje], Próximos/Ya hechos, [Añadir foto], «Una foto por parada»);
 //   P6. «Tips del viaje» sigue en el Perfil (o `onTips` en Header/PerfilSheet);
 //   P7. no hay UNA bombilla en RUTA (gratis y de pago, no duplicada en DÍAS) con aria-label «Tips del viaje» que abra los tips;
@@ -23,10 +22,9 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_corr6z6_perfil_entrada.tsx', {
   piezasFalsas: [
     { filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' },
-    { filtro: /perfil\/MapaMisViajes$/, exporta: 'MapaMisViajes' },
   ],
 })
-const { createElement, renderToStaticMarkup, PerfilSheet, CAJA_MAPA_VIAJES, PROYECCION_MAPA_VIAJES, TEXTOS_MAPA_VIAJES, centroDelGlobo, chinchetasDeViajes, diametroGlobo, viajesDelPerfil, zoomGloboEntero, usePerfilUi, useRouteStore, useSyncStore } = M
+const { createElement, renderToStaticMarkup, PerfilSheet, CuerpoConLogros, viajesDelPerfil, usePerfilUi, useRouteStore, useSyncStore } = M
 const consolaError = console.error
 console.error = (...a) => (/useLayoutEffect|Warning:/.test(String(a[0])) ? undefined : consolaError(...a))
 const aTexto = (html) => html.replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, '\n').replace(/&amp;/g, '&').replace(/\s*\n\s*/g, '\n')
@@ -77,41 +75,7 @@ debe(relleno && Number(relleno[1]) >= 1.5, 'P1', `6y4: el pie del Perfil ([+ Nue
 debe(/overflow-y-auto/.test(html1), 'P1', 'el Perfil no se puede bajar (falta overflow-y-auto en su contenido)')
 debe(/createPortal\(/.test(fuentePerfil), 'P1', 'el Perfil no se pinta en el body (la barra de abajo, de z-30, lo taparía desde dentro de la cabecera)')
 
-/* ---------------- P2. El mapa bajo, de dos dedos ---------------- */
-const fuenteMapa = leer('src/components/perfil/MapaMisViajes.tsx')
-debe(/h-\[286px\]/.test(fuenteMapa) && !/h-\[220px\]/.test(fuenteMapa), 'P2', '6y4: el mapa de mis viajes no mide 286 px de alto (un 30 % más que los 220 de antes)')
-debe(CAJA_MAPA_VIAJES.alto === 286 && Math.round(220 * 1.3) === 286 && CAJA_MAPA_VIAJES.ancho === 343, 'P2', `la caja de cálculo del globo no es 343×286 (${CAJA_MAPA_VIAJES.ancho}×${CAJA_MAPA_VIAJES.alto})`)
-debe(/cooperativeGestures:\s*true/.test(fuenteMapa), 'P2', 'el mapa no usa cooperativeGestures: true (con un dedo se mueve el mapa en vez de bajar la página)')
-debe(/locale:\s*\{\s*\.\.\.TEXTOS_MAPA_VIAJES/.test(fuenteMapa), 'P2', 'el mapa no pasa los textos en español a Mapbox (locale)')
-debe(TEXTOS_MAPA_VIAJES['TouchPanBlocker.Message'] === 'Usa dos dedos para mover el mapa', 'P2', `aviso de dos dedos: «${TEXTOS_MAPA_VIAJES['TouchPanBlocker.Message']}»`)
-debe(Boolean(TEXTOS_MAPA_VIAJES['ScrollZoomBlocker.CtrlMessage']) && Boolean(TEXTOS_MAPA_VIAJES['ScrollZoomBlocker.CmdMessage']) && Object.values(TEXTOS_MAPA_VIAJES).every((t) => /^Usa /.test(t)), 'P2', 'faltan los avisos de la rueda (Ctrl y Cmd) en español')
-debe(!/import\.meta\.env\.DEV|import\.meta\.env\.MODE|import\.meta\.env\.PROD/.test(fuenteMapa), 'P2', 'el mapa depende de algo solo-local (import.meta.env.DEV/MODE/PROD): en producción se vería distinto')
-debe(/style:\s*ESTILO_MAPA_VIAJES/.test(fuenteMapa) && /ESTILO_MAPA_VIAJES = 'mapbox:\/\/styles\/mapbox\/streets-v12'/.test(fuenteMapa) && /VITE_MAPBOX_TOKEN/.test(fuenteMapa), 'P2', 'el mapa no usa el mismo estilo explícito y el token VITE_MAPBOX_TOKEN')
-debe(/abrir este viaje/.test(fuenteMapa) && /alElegir\.current\(chincheta\.viajeId\)/.test(fuenteMapa), 'P2', 'tocar una chincheta no llama a abrir la ficha de su viaje')
-debe(/mapa\.remove\(\)/.test(fuenteMapa), 'P2', 'el mapa no se destruye al cerrar')
-
-/* ---------------- P3. El globo entero ---------------- */
-debe(PROYECCION_MAPA_VIAJES === 'globe' && /projection:\s*PROYECCION_MAPA_VIAJES/.test(fuenteMapa) && /setProjection\(PROYECCION_MAPA_VIAJES\)/.test(fuenteMapa), 'P3', 'la proyección globe no está pedida al crear el mapa y otra vez en style.load')
-debe(/setFog\(/.test(fuenteMapa), 'P3', 'falta la niebla suave (fog) del globo')
-const z = zoomGloboEntero(CAJA_MAPA_VIAJES.ancho, CAJA_MAPA_VIAJES.alto)
-const d = diametroGlobo(z)
-// 6z6c: la bola llena el ANCHO del mapa (se corta un poco arriba y abajo) y los lados siguen curvos.
-debe(d <= CAJA_MAPA_VIAJES.ancho - 2 * 5, 'P3', `a zoom ${z.toFixed(2)} la esfera mide ${d.toFixed(0)} px y no deja ver la curva de los lados en ${CAJA_MAPA_VIAJES.ancho}`)
-debe(d >= CAJA_MAPA_VIAJES.ancho * 0.88, 'P3', `a zoom ${z.toFixed(2)} la esfera mide ${d.toFixed(0)} px: no llena el ancho de ${CAJA_MAPA_VIAJES.ancho}`)
-debe(d > CAJA_MAPA_VIAJES.alto, 'P3', `la esfera (${d.toFixed(0)} px) debería ser más alta que la caja de ${CAJA_MAPA_VIAJES.alto} (se corta arriba y abajo)`)
-debe(z >= -1 && z <= 1.3, 'P3', `zoom ${z.toFixed(2)} fuera del rango razonable para el globo`)
-debe(zoomGloboEntero(200, 220) < zoomGloboEntero(335, 220) && zoomGloboEntero(335, 220) === zoomGloboEntero(335, 400), 'P3', 'el zoom debería seguir el ANCHO de la caja')
-debe(/zoom:\s*zoomEntero/.test(fuenteMapa) && !/fitBounds/.test(fuenteMapa), 'P3', 'el mapa no usa el zoom de la esfera entera (o se acerca con fitBounds)')
-debe(/center:\s*\[centro\.lng,\s*centro\.lat\]/.test(fuenteMapa) && /centroDelGlobo\(chinchetas\)/.test(fuenteMapa), 'P3', 'el globo no se centra en la media de las chinchetas')
-{
-  const c0 = centroDelGlobo([])
-  debe(Number.isFinite(c0.lat) && Number.isFinite(c0.lng), 'P3', 'el centro sin chinchetas no es un punto')
-  const pin = (lat, lng) => ({ id: 'x', viajeId: 'x', ciudad: 'x', coordenadas: { lat, lng }, fase: 'proximo' })
-  const c1 = centroDelGlobo([pin(41.9, 12.49)])
-  debe(Math.abs(c1.lat - 41.9) < 0.01 && Math.abs(c1.lng - 12.49) < 0.01, 'P3', `una sola chincheta debería centrar en ella (${c1.lat}, ${c1.lng})`)
-  const cm = centroDelGlobo([pin(10, 179), pin(10, -179)])
-  debe(Math.abs(Math.abs(cm.lng) - 180) < 1, 'P3', `dos chinchetas a un lado y otro de la línea de fecha deberían centrar junto a ella, no en el lado contrario (${cm.lng})`)
-}
+/* P2 y P3 (el mapa de mis viajes y su globo): quitados en la 10N4, el mapa suelto ya no existe (manda el pasaporte). */
 
 /* ---------------- P4. Con 0, 1 y 6 viajes ---------------- */
 for (const n of [0, 1, 6]) {
@@ -123,20 +87,16 @@ for (const n of [0, 1, 6]) {
     continue
   }
   const lista = viajesDelPerfil(TODOS.slice(0, n), null, '2026-10-10')
-  const pines = chinchetasDeViajes(lista)
-  const c = centroDelGlobo(pines)
-  debe(Number.isFinite(c.lat) && Number.isFinite(c.lng), 'P4', `con ${n} viajes el centro del globo no es un punto`)
-  debe(pines.length === [0, 1, 6][[0, 1, 6].indexOf(n)], 'P4', `con ${n} viajes debería haber ${[0, 1, 6][[0, 1, 6].indexOf(n)]} chinchetas (una por destino; Roma de dos viajes = una con ×2) y hay ${pines.length}`)
-  const t = aTexto(html)
+  // El cuerpo del Perfil (único desde la 10N4) llega por un `lazy`: la cáscara del servidor solo enseña el esqueleto, así que la lista se mira pintando el cuerpo.
+  const t = aTexto(renderToStaticMarkup(createElement(CuerpoConLogros, { viajes: lista, fotos: null, rutaAbiertaId: null, onAbrirAlbum() {}, onAbrirViaje() {} })))
   for (const v of lista) debe(t.includes(v.destino) && t.includes(v.cuando), 'P4', `con ${n} viajes, la lista no tiene «${v.rotulo}»`)
   debe(lista.length === n, 'P4', `el Perfil con ${n} viajes cuenta ${lista.length}`)
   if (n === 0) debe(/Aún no tienes viajes/.test(t), 'P4', 'con 0 viajes falta el texto «Aún no tienes viajes»')
   else debe(!/Aún no tienes viajes/.test(t), 'P4', `con ${n} viajes sale «Aún no tienes viajes»`)
-  debe(/aria-label="Perfil"/.test(html) && /Nuevo viaje/.test(t), 'P4', `con ${n} viajes el Perfil no pinta su cabecera o [Nuevo viaje]`)
+  debe(/aria-label="Perfil"/.test(html) && /Nuevo viaje/.test(aTexto(html)), 'P4', `con ${n} viajes el Perfil no pinta su cabecera o [Nuevo viaje]`)
 }
-debe(/chinchetas\.length === 0 &&[\s\S]{0,300}Aún no tienes viajes/.test(fuenteMapa), 'P4', 'el mapa con 0 chinchetas no dice «Aún no tienes viajes»')
 {
-  const t6 = aTexto(pinta({ n: 6 }))
+  const t6 = aTexto(renderToStaticMarkup(createElement(CuerpoConLogros, { viajes: viajesDelPerfil(TODOS, null, '2026-10-10'), fotos: null, rutaAbiertaId: null, onAbrirAlbum() {}, onAbrirViaje() {} })).replace(/data-grupo-de-viajes[^>]*>[\s\S]*?<\/span>/g, ''))
   debe(!/Próximos/.test(t6) && !/Ya hechos/.test(t6), 'P5', '6y4: el diseño no lleva «Próximos» / «Ya hechos» en la lista')
 }
 
@@ -153,7 +113,7 @@ for (const version of ['gratis', 'completa']) {
 }
 const fuenteFicha = leer('src/components/perfil/FichaDeViaje.tsx')
 debe(/onClick=\{onVolver\}/.test(fuenteFicha) && /cerrarAlbum/.test(fuentePerfil), 'P5', '[‹ Volver] no vuelve a la lista (cerrarAlbum)')
-debe(/onElegir=\{abrirAlbum\}/.test(fuentePerfil), 'P5', 'tocar una chincheta no abre la ficha (abrirAlbum)')
+debe(/onAbrirAlbum=\{abrirAlbum\}/.test(fuentePerfil), 'P5', 'tocar un viaje no abre la ficha (abrirAlbum)')
 const fuenteAlbum = leer('src/components/perfil/AlbumDeViaje.tsx')
 debe(/Eliminar/.test(fuenteAlbum) && /etiquetaAnadirFoto/.test(fuenteAlbum), 'P5', 'el álbum perdió [Añadir fotos] o «Eliminar»')
 // Con el Perfil cerrado no pinta nada
@@ -184,13 +144,13 @@ debe(/\btips:\s*'/.test(leer('src/lib/iconos.ts')), 'P7', 'el icono «tips» (la
 debe(/ESCAPE|Escape/.test(leer('src/components/route/TripTipsSheet.tsx')) || /onClose/.test(leer('src/components/route/TripTipsSheet.tsx')), 'P7', 'los tips no se pueden cerrar')
 
 /* ---------------- P8. Emojis ---------------- */
-for (const f of ['src/components/layout/PerfilSheet.tsx', 'src/components/perfil/FichaDeViaje.tsx', 'src/components/perfil/MapaMisViajes.tsx', 'src/lib/viajesPerfil.ts', 'src/components/route/RouteView.tsx', 'src/components/layout/Header.tsx']) {
+for (const f of ['src/components/layout/PerfilSheet.tsx', 'src/components/perfil/FichaDeViaje.tsx', 'src/lib/viajesPerfil.ts', 'src/components/route/RouteView.tsx', 'src/components/layout/Header.tsx']) {
   const s = leer(f)
   const m = s.match(/\p{Extended_Pictographic}/gu)
   debe(!m, 'P8', `${f} tiene emojis: ${m}`)
 }
 
-console.log(`\nPerfil 6z6b-3 (zoom del globo ${z.toFixed(3)}, esfera de ${d.toFixed(0)} px en la caja de ${CAJA_MAPA_VIAJES.ancho}×${CAJA_MAPA_VIAJES.alto}):`)
+console.log(`\nPerfil 6z6b-3 (al día con la 10N4: sin mapa suelto):`)
 if (fallos.length === 0) {
   console.log(`${comprobaciones} comprobaciones, 0 fallos.`)
   process.exit(0)

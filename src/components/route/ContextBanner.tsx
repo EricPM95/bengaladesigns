@@ -1,5 +1,6 @@
 import type { Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
+import { bannerDeContextoVigente } from '../../lib/contextBannerVigente'
 
 interface ContextBannerProps {
   route: Route
@@ -13,7 +14,8 @@ interface ContextBannerProps {
  */
 export function ContextBanner({ route }: ContextBannerProps) {
   const dismissContextBanner = useRouteStore((state) => state.dismissContextBanner)
-  if (!route.contextBanner || route.contextBannerDismissed) return null
+  const texto = bannerDeContextoVigente(route)
+  if (!texto || route.contextBannerDismissed) return null
   return (
     <div className="relative rounded-2xl border border-border bg-bg-card px-4 py-3 pr-9">
       <button
@@ -24,7 +26,7 @@ export function ContextBanner({ route }: ContextBannerProps) {
       >
         ×
       </button>
-      <p className="text-small leading-relaxed text-text-soft">{route.contextBanner}</p>
+      <p className="text-small leading-relaxed text-text-soft">{texto}</p>
     </div>
   )
 }

@@ -54,11 +54,11 @@ export function CuratedPlacesPool({ destination, places, selectedNames, limit, o
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-dmsans text-small text-onb-text-soft">
+        <p className="font-sans text-small text-onb-text-soft">
           {atLimit ? 'Ya tienes tu lista — estos entran seguro en tu ruta' : 'Marca los que te apetezcan: esos entran seguro, el resto los elegimos nosotros'}
         </p>
         <span
-          className={`shrink-0 rounded-onb-full px-2.5 py-1 font-dmsans text-caption font-semibold tabular-nums ${
+          className={`shrink-0 rounded-onb-full px-2.5 py-1 font-sans text-caption font-semibold tabular-nums ${
             atLimit ? 'bg-onb-accent text-white' : 'bg-onb-card text-onb-text-soft'
           }`}
         >
@@ -97,8 +97,8 @@ export function CuratedPlacesPool({ destination, places, selectedNames, limit, o
                 className="h-24 w-full object-cover"
               />
               <div className={`space-y-0.5 p-2 ${selected ? 'bg-onb-accent-light' : 'bg-onb-card'}`}>
-                <p className="line-clamp-2 font-dmsans text-caption font-medium text-onb-text">{place.name}</p>
-                <p className="line-clamp-1 font-dmsans text-caption text-onb-text-muted">
+                <p className="line-clamp-2 font-sans text-caption font-medium text-onb-text">{place.name}</p>
+                <p className="line-clamp-1 font-sans text-caption text-onb-text-muted">
                   {[place.category, place.duration_min ? `~${place.duration_min}min` : null].filter(Boolean).join(' · ')}
                 </p>
               </div>

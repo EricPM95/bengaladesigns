@@ -4,7 +4,8 @@ import { MenuInvitadoParada } from '../../propuesta/MenusDelInvitado'
 import { useState } from 'react'
 import type { Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { HojaDelMenu, OpcionHoja } from '../../ui/MenuHoja'
+import { HojaDelMenu } from '../../ui/MenuHoja'
+import { ICONOS_OPCION, OpcionTarjeta } from '../../ui/HojaOpciones'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { MoverADia } from './MoverADia'
 import { CambiarParada } from './CambiarParada'
@@ -25,9 +26,6 @@ interface StopMenuProps {
   /** Abre la ficha de la parada (el menú de quien mira el viaje de otra persona lo ofrece). */
   onVerFicha?: () => void
 }
-
-/** (Tanda 10N §6c) El estilo de una fila de la hoja, para las piezas de fuera que pintan la suya (DesmarcarDelMenu). */
-const FILA_DEL_MENU = 'flex min-h-[52px] w-full items-center border-b border-text/[.08] px-1 text-left text-[15.5px] font-medium text-text disabled:opacity-40'
 
 type MenuView = 'menu' | 'remove' | 'move-day'
 
@@ -121,80 +119,68 @@ function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, free
         <HojaDelMenu etiqueta={eligiendoDia ? 'Mover a otro día' : 'Parada'} titulo={stop.name} onCerrar={close}>
           {/* Una parada que se saltó en HOY («No me da tiempo»): vuelve a la ruta como no saltada (Tanda 6z6). */}
           {view === 'menu' && stop.saltada && (
-            <OpcionHoja
+            <OpcionTarjeta
+              tono="salvia"
+              icono={ICONOS_OPCION.volver}
+              titulo="Devolverla a la ruta"
+              linea="Vuelve a ser una parada normal del día"
               onClick={() => {
                 setStopSaltada(dayId, stop.id, false)
                 close()
               }}
-            >
-              Devolverla a la ruta
-            </OpcionHoja>
+            />
           )}
 
           {/* 8b2: «Desmarcar visto» mientras no haya foto (con los logros apagados no pinta nada). */}
-          {view === 'menu' && <DesmarcarDelMenu dayId={dayId} stop={stop} className={FILA_DEL_MENU} onHecho={close} />}
+          {view === 'menu' && <DesmarcarDelMenu dayId={dayId} stop={stop} onHecho={close} />}
 
           {view === 'menu' && stop.reservedId && (
-            <>
-              <p style={{ margin: 0, padding: '2px 4px 6px', font: "400 12.5px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Reservada · fijada</p>
-              <OpcionHoja
-                peligro
-                onClick={() => {
-                  setRemovingReservation(true)
-                  close()
-                }}
-              >
-                Quitar del viaje
-              </OpcionHoja>
-            </>
+            <OpcionTarjeta
+              peligro
+              icono={ICONOS_OPCION.papelera}
+              titulo="Quitar del viaje"
+              linea="Reservada y fijada: se quita también la reserva"
+              onClick={() => {
+                setRemovingReservation(true)
+                close()
+              }}
+            />
           )}
 
-          {view === 'menu' && !stop.reservedId && freeDay && (
+          {/* El orden de Design (Hojas Opciones 01): Cambiar parada, Mover a otro día, Mover antes, Mover después y, la última, Quitar parada. En un día libre no hay «Cambiar parada». */}
+          {view === 'menu' && !stop.reservedId && (
             <>
-              <OpcionHoja onClick={() => setView('move-day')} deshabilitada={otherDays.length === 0}>
-                Mover a otro día
-              </OpcionHoja>
-              <OpcionHoja onClick={() => handleReorder('before')} deshabilitada={index === 0}>
-                Subir
-              </OpcionHoja>
-              <OpcionHoja onClick={() => handleReorder('after')} deshabilitada={index === realStops.length - 1}>
-                Bajar
-              </OpcionHoja>
-              <OpcionHoja
+              {!freeDay && (
+                <OpcionTarjeta
+                  tono="arena"
+                  icono={ICONOS_OPCION.cambiar}
+                  titulo="Cambiar parada"
+                  linea="Elige otro sitio para este hueco"
+                  flecha
+                  onClick={() => {
+                    setOpen(false)
+                    setPickerOpen(true)
+                  }}
+                />
+              )}
+              <OpcionTarjeta tono="azul" icono={ICONOS_OPCION.calendario} titulo="Mover a otro día" linea={otherDays.length === 0 ? 'No hay otro día al que pasarla' : 'Pásala a otro día del viaje'} flecha={otherDays.length > 0} deshabilitada={otherDays.length === 0} onClick={() => setView('move-day')} />
+              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.arriba} titulo="Mover antes" linea={index === 0 ? 'Ya es la primera del día' : 'Una posición antes'} flecha={index !== 0} deshabilitada={index === 0} onClick={() => handleReorder('before')} />
+              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.abajo} titulo="Mover después" linea={index === realStops.length - 1 ? 'Ya es la última del día' : 'Una posición más tarde'} flecha={index !== realStops.length - 1} deshabilitada={index === realStops.length - 1} onClick={() => handleReorder('after')} />
+              <OpcionTarjeta
                 peligro
+                icono={ICONOS_OPCION.papelera}
+                titulo="Quitar parada"
+                linea={freeDay ? 'Sale de tu ruta. Puedes deshacerlo' : 'Sale de tu ruta. Se confirma antes'}
                 onClick={() => {
+                  if (!freeDay) {
+                    setView('remove')
+                    return
+                  }
                   ensureSeeded()
                   undoable(`Quitada del día: ${stop.name}`, () => removeStop(dayId, stop.id))
                   close()
                 }}
-              >
-                Quitar del día
-              </OpcionHoja>
-            </>
-          )}
-
-          {view === 'menu' && !stop.reservedId && !freeDay && (
-            <>
-              <OpcionHoja
-                onClick={() => {
-                  setOpen(false)
-                  setPickerOpen(true)
-                }}
-              >
-                Cambiar parada
-              </OpcionHoja>
-              <OpcionHoja peligro onClick={() => setView('remove')}>
-                Quitar parada
-              </OpcionHoja>
-              <OpcionHoja onClick={() => setView('move-day')} deshabilitada={otherDays.length === 0}>
-                Mover a otro día
-              </OpcionHoja>
-              <OpcionHoja onClick={() => handleReorder('before')} deshabilitada={index === 0}>
-                Mover antes
-              </OpcionHoja>
-              <OpcionHoja onClick={() => handleReorder('after')} deshabilitada={index === realStops.length - 1}>
-                Mover después
-              </OpcionHoja>
+              />
             </>
           )}
 

@@ -1,4 +1,5 @@
 import type { DateNotice, DateNoticeIcon } from './types'
+import { placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
 
 /** Los iconos ilustrados que existen (DateNoticeIcons.tsx); uno desconocido del JSON cae a 'fiesta'. */
 export const DATE_NOTICE_ICONS: DateNoticeIcon[] = ['fiesta', 'religioso', 'fuegos', 'luz', 'navidad', 'bandera', 'musica', 'calma', 'cierre', 'entrada']
@@ -22,10 +23,23 @@ function listaDeNombres(nombres: string[]): string {
  * «Coliseo, Panteón y 2 lugares más cierran (25 de diciembre)»; sin nada que cierre, el título del aviso.
  */
 export function fraseCampana(notice: DateNotice): string {
-  if (notice.campana && notice.campana.trim()) return notice.campana.trim()
+  if (notice.campana && notice.campana.trim()) return conArticulos(notice.campana.trim())
   const cierran = (notice.cierran ?? []).filter(Boolean)
-  if (cierran.length > 0) return `${listaDeNombres(cierran)} ${cierran.length === 1 ? 'cierra' : 'cierran'}${notice.tag ? ` · ${notice.tag}` : ''}.`
+  if (cierran.length > 0) return conArticulos(`${listaDeNombres(cierran)} ${cierran.length === 1 ? 'cierra' : 'cierran'}${notice.tag ? ` · ${notice.tag}` : ''}.`)
   return notice.title
+}
+
+/**
+ * (Tanda 10N4 §2, §4b2) El motor escribe «Museos Vaticanos y Villa Farnesina cierran el domingo 15 de noviembre.» sin artículos. Aquí se dice como lo diría una persona: «Los Museos Vaticanos y la Villa Farnesina
+ * cierran el domingo 15 de noviembre.» (el motor no se toca: solo se arregla al enseñarlo). Las frases que ya llevan artículo o un día especial delante («1 de enero · Año Nuevo: el Coliseo…») se dejan como están.
+ */
+export function conArticulos(frase: string): string {
+  const m = /^(.+?) (cierra|cierran|cambia|cambian)( su horario)? (el .+)$/.exec(frase)
+  if (!m || /:/.test(m[1]) || /^(el|la|los|las)\s/i.test(m[1])) return frase
+  const partes = m[1].split(/, | y /)
+  const lista = partes.map((nombre, i) => (/\d+ lugar(es)? más/.test(nombre) ? nombre : i === 0 ? placeWithArticle({ name: nombre }).replace(/^./, (c) => c.toUpperCase()) : placeWithArticle({ name: nombre })))
+  const texto = lista.length <= 1 ? lista.join('') : `${lista.slice(0, -1).join(', ')} y ${lista[lista.length - 1]}`
+  return `${texto} ${m[2]}${m[3] ?? ''} ${m[4]}`
 }
 
 /**

@@ -102,7 +102,7 @@ for (const fechas of [true, false]) {
   debe(llamadasAlMotor.length === 0, '1 free tour', `${nombre}: añadir el Free Tour llama al motor (${llamadasAlMotor.join(', ')})`)
   // Sale en DÍAS (con su nombre y su hora) y en RESERVAS como «En tu ruta», reservado.
   const diasHtml = plano(aTexto(renderToStaticMarkup(createElement(DayList, { route: despues, activeDayId: 'd2', onSelectDay() {}, showAllDaysOnMap: false }))))
-  debe(diasHtml.includes(FT) && diasHtml.includes('12:00'), '1 free tour', `${nombre}: DÍAS no enseña el Free Tour con su hora`)
+  debe(diasHtml.includes(FT) /* Tanda 10N4: la hora ya no sale en la tarjeta de DÍAS (solo el botón redondo de la entrada, sin palabras): la dice la ficha */, '1 free tour', `${nombre}: DÍAS no enseña el Free Tour con su hora`)
   const bloque = buildEntradasBloque(despues, info.entradasOrden, info.entradas, [r1])
   const ftDespues = bloque.enRuta.find((item) => item.name === FT)
   debe(ftDespues && ftDespues.inRoute && ftDespues.reservation?.id === 'r-ft' && ftDespues.day?.dayNumber === 2, '1 reservas', `${nombre}: en RESERVAS el Free Tour no sale «En tu ruta», reservado y en su día`)

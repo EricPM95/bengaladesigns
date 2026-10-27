@@ -93,7 +93,7 @@ export function ExcursionsPage({ route }: { route: Route }) {
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-[90] flex flex-col bg-bg" role="dialog" aria-modal="true" aria-labelledby="excursions-heading">
+    <div className="fixed inset-0 z-[90] flex flex-col bg-bg" role="dialog" aria-modal="true" aria-labelledby="excursions-heading" data-flotantes>
       <div className="relative shrink-0 px-5 pb-3 pt-[max(1.25rem,env(safe-area-inset-top))]">
         <button
           type="button"

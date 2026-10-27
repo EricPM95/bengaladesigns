@@ -11,6 +11,7 @@
     "maravilla": "/sonidos/maravilla.wav",
     "patrimonio": "/sonidos/patrimonio.wav",
     "viajero": "/sonidos/viajero.wav",
-    "dia_completo": "/sonidos/dia_completo.wav"
+    "dia_completo": "/sonidos/dia_completo.wav",
+    "aviso": "/sonidos/aviso.wav"
   }
 }

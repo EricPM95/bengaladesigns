@@ -1,10 +1,9 @@
-// La prueba de la Tanda 6y4, punto 15: el Perfil con el diseño nuevo y «la foto vuela al Perfil».
+// La prueba de la Tanda 6y4, punto 15: el Perfil y «la foto vuela al Perfil». Al día con la 10N4: hay UN solo Perfil (el nuevo); con los logros apagados es el mismo sin lo de los logros (antes comprobaba el viejo, con su mapa y su pastilla de «viaje abierto»).
 //   node scripts/destino/pruebaFase6y4_perfil.mjs        (con el servidor de la app encendido; por defecto http://localhost:8787, o API_URL=...)
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
-//   A. el Perfil no es como el diseño: cabecera «PERFIL» y ✕, «Hola, <em>viajero</em>» con su círculo, el mapa, «Mis viajes» con su número, cada viaje con su fecha, sus fotos y «Abierto»,
-//      «Créditos» y [+ Nuevo viaje] al final del todo, o todavía sale «Pronto podrás guardar tus viajes en tu cuenta» (con 0, 1 y 6 viajes);
-//   B. la bandera de cada viaje no es la de la tarjeta del destino de RUTA (mismo componente, mismo dibujo) o sigue la franja cortada del diseño;
-//   C. el mapa no mide 286 px (220 × 1,3), no lleva la chincheta «Roma ×N» (una por destino) o las cifras «1 país · 4 lugares · 14 días» no salen de los viajes de verdad;
+//   A. el Perfil sin logros no es el nuevo sin lo de los logros: cabecera «PERFIL» y ✕, «Hola, <em>Viajero</em>», su pasaporte de este móvil, «Mis viajes» con su número, cada viaje con su fecha y sus fotos,
+//      «Créditos» y [+ Nuevo viaje] al final del todo, queda código del Perfil viejo, o sale EXP / vitrina / billete (con 0, 1 y 6 viajes);
+//   C. las cifras («1 país · 4 lugares · 14 días») no salen de los viajes de verdad;
 //   D. el álbum de un viaje lleva filtros, selectores o títulos por día o por lugar; no junta TODAS las fotos en una cuadrícula; la gratis lleva [Añadir fotos] o la de pago no;
 //   E. la foto no vuela al Perfil: no se dispara una vez por foto añadida (ni al cargar ni al borrar), con «reducir movimiento» hace algo más que el saltito, o con el botón tapado no espera.
 import fs from 'node:fs'
@@ -26,10 +25,9 @@ const require = createRequire(import.meta.url)
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_6y4_perfil_entrada.tsx', {
   piezasFalsas: [
     { filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' },
-    { filtro: /perfil\/MapaMisViajes$/, exporta: 'MapaMisViajes' },
   ],
 })
-const { createElement, renderToStaticMarkup, PerfilSheet, RouteOverview, FilaDeViaje, CifrasDelMapa, CuadriculaDeFotos, ordenDelAlbum, diaParaFotoSuelta, TarjetaRecuerdos, flagStripesGradient, chinchetasDeViajes, cifrasDelPerfil, resumenDeViaje, textoDeFotos, viajesDelPerfil, CAJA_MAPA_VIAJES, fotoVuela, usePerfilUi, useRouteStore, useSyncStore } = M
+const { createElement, renderToStaticMarkup, PerfilSheet, CuerpoConLogros, TarjetaDeViaje, CuadriculaDeFotos, ordenDelAlbum, diaParaFotoSuelta, TarjetaRecuerdos, cifrasDelPerfil, resumenDeViaje, textoDeFotos, viajesDelPerfil, fotoVuela, usePerfilUi, useRouteStore, useSyncStore } = M
 const consolaError = console.error
 console.error = (...a) => (/useLayoutEffect|Warning:/.test(String(a[0])) ? undefined : consolaError(...a))
 const aTexto = (html) => html.replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, '\n').replace(/&amp;/g, '&').replace(/\s*\n\s*/g, '\n')
@@ -66,106 +64,80 @@ function pinta({ n, albumDe = null, version = 'gratis', open = true, guardados =
   return renderToStaticMarkup(createElement(PerfilSheet, { open, onClose() {} }))
 }
 
-/* ---------------- A. El Perfil como el diseño ---------------- */
+/* ---------------- A. El Perfil (Tanda 10N4: UN solo Perfil, el nuevo; con los logros apagados, sin lo de los logros) ---------------- */
 const fuentePerfil = leer('src/components/layout/PerfilSheet.tsx')
+const fuenteCuerpo = leer('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx')
+const pintaCuerpo = (n, fotos = null) => {
+  const viajes = viajesDelPerfil(TODOS.slice(0, n), null, '2031-01-01')
+  return renderToStaticMarkup(createElement(CuerpoConLogros, { viajes, fotos, rutaAbiertaId: null, onAbrirAlbum() {}, onAbrirViaje() {} }))
+}
 for (const n of [0, 1, 6]) {
   let html = ''
+  let marco = ''
   try {
-    html = pinta({ n })
+    ponerVersion('gratis')
+    html = pintaCuerpo(n, new Map(TODOS.slice(0, n).map((g) => [g.route.id, 3])))
+    marco = pinta({ n })
   } catch (error) {
     debe(false, 'A', `con ${n} viajes el Perfil falla: ${error.message}`)
     continue
   }
   const t = aTexto(html)
-  debe(/<h1[^>]*>Perfil<\/h1>/.test(html) && /uppercase/.test(html.match(/<h1[^>]*>/)[0]), 'A', `con ${n} viajes: falta la cabecera «PERFIL» (en mayúsculas pequeñas, como el diseño)`)
-  debe(/aria-label="Cerrar el Perfil"/.test(html), 'A', `con ${n} viajes: falta la ✕ para cerrar`)
-  debe(/Hola, <em>viajero<\/em>/.test(html), 'A', `con ${n} viajes: falta «Hola, <em>viajero</em>»`)
-  debe(/rounded-full[^>]*>V<\/span>/.test(html), 'A', `con ${n} viajes: falta el círculo con la V al lado del saludo`)
+  // La cáscara de la pantalla: «PERFIL» y la ✕, «Créditos» y [+ Nuevo viaje] al final del todo.
+  debe(/<h1[^>]*>Perfil<\/h1>/.test(marco) && /uppercase/.test(marco.match(/<h1[^>]*>/)[0]), 'A', `con ${n} viajes: falta la cabecera «PERFIL» (en mayúsculas pequeñas, como el diseño)`)
+  debe(/aria-label="Cerrar el Perfil"/.test(marco), 'A', `con ${n} viajes: falta la ✕ para cerrar`)
+  const iCred = marco.indexOf('>Créditos<')
+  const iNuevo = marco.indexOf('Nuevo viaje')
+  debe(iCred > marco.indexOf('Perfil') && iNuevo > iCred && marco.indexOf('<button', iNuevo) === -1, 'A', `con ${n} viajes: «Créditos» y [+ Nuevo viaje] no están al final del todo, en ese orden`)
+  debe(/h-\[58px\][^>]*>[\s\S]*?Nuevo viaje/.test(marco), 'A', `con ${n} viajes: [+ Nuevo viaje] no es el botón grande de 58 px del diseño`)
+  // El cuerpo SIN logros: el perfil nuevo sin EXP, vitrina ni billete.
+  debe(/data-cabecera-sin-logros/.test(html) && /Hola, <em>Viajero<\/em>/.test(html), 'A', `con ${n} viajes y sin logros: falta «Hola, <em>Viajero</em>» en la cabecera del perfil nuevo`)
+  debe(/data-editar-perfil/.test(html) && /data-ajustes/.test(html), 'A', `con ${n} viajes y sin logros: faltan la foto que se toca y los Ajustes`)
+  debe(!/data-vitrina-del-perfil|data-nivel-y-rango|data-titulo-del-perfil|data-cabecera-con-marco|Mi vitrina|Nivel \d|billete|sorteo|data-abrir-vitrina|data-anadir-viaje-previo|data-viajes-de-antes/i.test(html), 'A', `con ${n} viajes y sin logros: sale algo de los logros (EXP, vitrina, billete, título o «Añadir un viaje que ya hiciste»)`)
+  debe(/data-abrir-pasaporte/.test(html) && /disabled/.test(html.match(/<button[^>]*data-abrir-pasaporte[^>]*>/)?.[0] ?? html.match(/<button[^>]*disabled[^>]*data-abrir-pasaporte[^>]*>/)?.[0] ?? ''), 'A', `con ${n} viajes y sin logros: falta «Mi pasaporte» (de este móvil, sin abrir el de los logros)`)
+  const c = cifrasDelPerfil(viajesDelPerfil(TODOS.slice(0, n), null, '2031-01-01'))
+  debe(new RegExp(`${c.paises} ${c.paises === 1 ? 'país' : 'países'} · ${c.lugares} ${c.lugares === 1 ? 'ciudad' : 'ciudades'}`).test(t.replace(/\n/g, ' ')), 'A', `con ${n} viajes: el pasaporte no dice «${c.paises} países · ${c.lugares} ciudades» de los viajes guardados`)
   debe(/Mis viajes/.test(t) && new RegExp(`data-numero-de-viajes[^>]*>${n}<`).test(html), 'A', `con ${n} viajes: «Mis viajes» no lleva su número (${n})`)
   debe(!/Pronto podrás/.test(html) && !/Pronto podrás/.test(fuentePerfil), 'A', `con ${n} viajes: sigue «Pronto podrás guardar tus viajes en tu cuenta»`)
+  debe(!/>Abierto</.test(html), 'A', `con ${n} viajes: sale la pastilla «Abierto», que ya no existe`)
   const filas = html.match(/data-viaje-del-perfil="/g) ?? []
-  debe(filas.length === n, 'A', `con ${n} viajes se pintan ${filas.length} filas`)
+  debe(filas.length === n, 'A', `con ${n} viajes se pintan ${filas.length} tarjetas`)
   const lista = viajesDelPerfil(TODOS.slice(0, n), null, '2031-01-01')
-  for (const v of lista) debe(t.includes(v.destino) && t.includes(v.cuando) && t.includes(`${v.dias} ${v.dias === 1 ? 'día' : 'días'}`), 'A', `con ${n} viajes: la fila de «${v.rotulo}» no lleva el destino, su fecha y sus días`)
+  for (const v of lista) debe(t.includes(v.destino) && t.includes(v.cuando) && t.includes(`${v.dias} ${v.dias === 1 ? 'día' : 'días'}`) && t.includes('3 fotos'), 'A', `con ${n} viajes: la tarjeta de «${v.rotulo}» no lleva el destino, su fecha, sus días y sus fotos`)
   if (n === 0) debe(/Aún no tienes viajes/.test(t), 'A', 'con 0 viajes falta «Aún no tienes viajes guardados…»')
-  // Al final del todo: «Créditos» tras la lista y [+ Nuevo viaje] el último.
-  const iCred = html.indexOf('>Créditos<')
-  const iNuevo = html.indexOf('Nuevo viaje')
-  debe(iCred > html.indexOf('Mis viajes') && iNuevo > iCred && html.lastIndexOf('<button') === html.lastIndexOf('<button', iNuevo) && html.indexOf('<button', iNuevo) === -1, 'A', `con ${n} viajes: «Créditos» y [+ Nuevo viaje] no están al final del todo, en ese orden`)
-  debe(/h-\[58px\][^>]*>[\s\S]*?Nuevo viaje/.test(html), 'A', `con ${n} viajes: [+ Nuevo viaje] no es el botón grande de 58 px del diseño`)
-  debe(!/Próximos|Ya hechos/.test(t), 'A', `con ${n} viajes: salen los rótulos «Próximos» / «Ya hechos», que el diseño no lleva`)
 }
-debe(/createPortal\(/.test(fuentePerfil) && /MapaMisViajes chinchetas=\{chinchetas\} cifras=\{cifras\}/.test(fuentePerfil), 'A', 'el Perfil no monta el mapa con sus chinchetas y sus cifras')
+// Un solo Perfil: el código del viejo ya no existe.
+debe(!/cuerpoDeSiempre|CabeceraDeSiempre|FilaDeViaje|MapaMisViajes|logrosActivos/.test(fuentePerfil), 'A', 'PerfilSheet todavía lleva código del Perfil viejo (cuerpoDeSiempre, CabeceraDeSiempre, FilaDeViaje, MapaMisViajes o una rama por logrosActivos)')
+for (const f of ['CabeceraDeSiempre', 'FilaDeViaje', 'MapaMisViajes', 'CifrasDelMapa']) debe(!fs.existsSync(`src/components/perfil/${f}.tsx`), 'A', `${f}.tsx sigue existiendo (es del Perfil viejo)`)
+debe(!/'Abierto'|>Abierto</.test(leer('src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx').replace(/\/\*[\s\S]*?\*\//g, '')), 'A', 'la tarjeta del viaje todavía escribe «Abierto»')
+debe(/createPortal\(/.test(fuentePerfil) && /<CuerpoConLogros /.test(fuentePerfil), 'A', 'el Perfil no pinta el cuerpo único (CuerpoConLogros)')
+debe(/if \(!conLogros \|\| perfilInicial/.test(fuenteCuerpo) && /logrosActivos\(\)/.test(fuenteCuerpo), 'A', 'sin logros el perfil pediría datos de logros al servidor (el efecto no se salta con los logros apagados)')
 
-/* ---------------- A2. La fila de cada viaje: fecha, fotos y «Abierto» ---------------- */
+/* ---------------- A2. La tarjeta de cada viaje: fotos y fecha ---------------- */
 {
   const v1 = resumenDeViaje(TODOS[0].route, TODOS[0], '2031-01-01')
-  const fila = (fotos, abierto = false) => renderToStaticMarkup(createElement(FilaDeViaje, { viaje: v1, fotos, abierto, onAbrir() {} }))
-  debe(/155 fotos/.test(aTexto(fila(155))), 'A', 'la fila no dice «155 fotos»')
-  debe(/Sin fotos/.test(aTexto(fila(0))) && /1 foto(?!s)/.test(aTexto(fila(1))), 'A', 'la fila no dice «Sin fotos» / «1 foto»')
-  debe(!/data-fotos-del-viaje/.test(fila(null)), 'A', 'mientras se cuentan las fotos, la fila enseña un «Sin fotos» falso')
-  debe(/>Abierto</.test(fila(3, true)) && !/>Abierto</.test(fila(3, false)), 'A', 'la pastilla «Abierto» no sale solo en el viaje abierto')
-  debe(aTexto(fila(3)).includes('13 – 14 oct 2031') && aTexto(fila(3)).includes('2 días'), 'A', 'la fila no lleva su fecha («13 – 14 oct 2031 · 2 días»)')
+  const fila = (fotos, abierto = false) => renderToStaticMarkup(createElement(TarjetaDeViaje, { viaje: v1, fotos, enCurso: false, abierto, onAbrir() {}, onAbrirViaje() {} }))
+  debe(/155 fotos/.test(aTexto(fila(155))), 'A', 'la tarjeta no dice «155 fotos»')
+  debe(/Sin fotos/.test(aTexto(fila(0))) && /1 foto(?!s)/.test(aTexto(fila(1))), 'A', 'la tarjeta no dice «Sin fotos» / «1 foto»')
+  debe(!/data-fotos-del-viaje/.test(fila(null)), 'A', 'mientras se cuentan las fotos, la tarjeta enseña un «Sin fotos» falso')
+  debe(!/>Abierto</.test(fila(3, true)) && !/>Abierto</.test(fila(3, false)), 'A', 'la pastilla «Abierto» no debería existir')
+  debe(aTexto(fila(3)).includes('13 – 14 oct 2031') && aTexto(fila(3)).includes('2 días'), 'A', 'la tarjeta no lleva su fecha («13 – 14 oct 2031 · 2 días»)')
   debe(textoDeFotos(0) === 'Sin fotos' && textoDeFotos(1) === '1 foto' && textoDeFotos(155) === '155 fotos', 'A', 'textoDeFotos')
 }
 
-/* ---------------- B. La bandera es la de RUTA ---------------- */
+/* ---------------- C. Las cifras del pasaporte local (países y ciudades de los viajes guardados) ---------------- */
 {
-  const estiloBandera = (html) => [...html.matchAll(/<span[^>]*data-bandera-destino[^>]*style="([^"]*)"/g)].map((m) => m[1])
-  const rutaRoma = TODOS[0].route
-  useRouteStore.setState({ ...estadoBase, route: rutaRoma })
-  const enRuta = estiloBandera(renderToStaticMarkup(createElement(RouteOverview, { route: rutaRoma })))
-  const enPerfil = estiloBandera(pinta({ n: 1 }))
-  const esperado = flagStripesGradient('it').replace('106deg', '90deg').replace(/ /g, '')
-  debe(enRuta.length === 1 && enPerfil.length === 1, 'B', `las banderas pintadas: RUTA ${enRuta.length}, Perfil ${enPerfil.length}`)
-  debe(enRuta[0] && enPerfil[0] && enRuta[0].replace(/ /g, '') === enPerfil[0].replace(/ /g, '') && enPerfil[0].replace(/ /g, '').includes(esperado.replace('linear-gradient', '').slice(0, 12)), 'B', `la bandera del Perfil (${enPerfil[0]}) no es igual a la de la tarjeta de RUTA (${enRuta[0]})`)
-  debe(/^background:linear-gradient\(90deg/.test(enPerfil[0] ?? ''), 'B', 'la bandera del Perfil no lleva las franjas derechas (Tanda 10G) de RUTA')
-  const html = pinta({ n: 6 })
-  debe(!/clip-path/.test(html) && !/calc\(100% - 14px\)/.test(html), 'B', 'sigue la franja cortada (clip-path) del diseño en lugar de la bandera de RUTA')
-  debe(/BanderaDestino/.test(leer('src/components/route/RouteOverview.tsx')) && /BanderaDestino/.test(leer('src/components/perfil/FilaDeViaje.tsx')), 'B', 'RUTA y el Perfil no usan el mismo componente BanderaDestino')
-  // Cada viaje con la bandera de SU país.
-  const colores = estiloBandera(html)
-  debe(colores.length === 6 && new Set(colores).size === 5, 'B', `6 viajes: 5 países distintos (Italia dos veces) debería dar 5 banderas distintas y hay ${new Set(colores).size} (de ${colores.length})`)
-}
-
-/* ---------------- C. El mapa: 286 px, chincheta «Roma ×N» y cifras de los viajes de verdad ---------------- */
-{
-  const fuenteMapa = leer('src/components/perfil/MapaMisViajes.tsx')
-  debe(CAJA_MAPA_VIAJES.alto === 286 && Math.round(220 * 1.3) === 286, 'C', `el mapa debería medir 220 × 1,3 = 286 px y la caja dice ${CAJA_MAPA_VIAJES.alto}`)
-  debe(/h-\[286px\]/.test(fuenteMapa) && !/h-\[220px\]/.test(fuenteMapa), 'C', 'el marco del mapa no mide 286 px')
-  debe(/rounded-\[26px\]/.test(fuenteMapa), 'C', 'el marco del mapa no tiene las esquinas del diseño (26 px)')
-  debe(/mapboxgl\.Map\(/.test(fuenteMapa) && /PROYECCION_MAPA_VIAJES/.test(fuenteMapa), 'C', 'el mapa ya no es nuestro globo de Mapbox')
-  debe(/chincheta\.viajes > 1/.test(fuenteMapa) && /`×\$\{chincheta\.viajes\}`/.test(fuenteMapa) && /pastilla/.test(fuenteMapa), 'C', 'la chincheta no lleva la pastilla «Roma ×N» (el ×N con más de un viaje)')
-  debe(/<CifrasDelMapa cifras=\{cifras\}/.test(fuenteMapa), 'C', 'el mapa no lleva sus cifras dentro del marco')
-
-  // Cinco viajes a Roma = UNA chincheta «Roma ×5»; un viaje a Roma y Florencia aporta a Roma y a Florencia.
   const cincoRoma = [1, 2, 3, 4, 5].map((n) => guardado(ruta(`r${n}`, 'Roma', [['Roma', 'it', 41.9, 12.49], ['Roma', 'it', 41.89, 12.48]], [`2031-0${n}-10`, `2031-0${n}-11`]), n))
   const viajesRoma = viajesDelPerfil(cincoRoma, null, '2031-01-01')
-  const pinesRoma = chinchetasDeViajes(viajesRoma)
-  debe(pinesRoma.length === 1 && pinesRoma[0].ciudad === 'Roma' && pinesRoma[0].viajes === 5, 'C', `cinco viajes a Roma deberían ser UNA chincheta «Roma ×5» (hay ${pinesRoma.length}: ${pinesRoma.map((p) => `${p.ciudad} ×${p.viajes}`)})`)
-  const pines6 = chinchetasDeViajes(viajesDelPerfil(TODOS, null, '2031-01-01'))
-  debe(pines6.length === 6 && pines6.find((p) => p.ciudad === 'Roma')?.viajes === 2 && pines6.find((p) => p.ciudad === 'Florencia')?.viajes === 1, 'C', `6 viajes: Roma ×2, Florencia ×1 y 4 más: ${pines6.map((p) => `${p.ciudad} ×${p.viajes}`)}`)
-  // Un viaje que pasa dos veces por la misma ciudad cuenta una vez.
-  const dosVeces = guardado(ruta('z', 'Roma', [['Roma', 'it', 41.9, 12.49], ['Tívoli', 'it', 41.96, 12.8], ['Roma', 'it', 41.89, 12.48]], ['2031-01-01', '2031-01-03']), 9)
-  debe(chinchetasDeViajes(viajesDelPerfil([dosVeces], null, '2031-01-01')).find((p) => p.ciudad === 'Roma')?.viajes === 1, 'C', 'un viaje que pasa dos veces por Roma cuenta como dos viajes en «Roma ×N»')
-
-  // Las cifras: países, lugares y días de los viajes guardados.
   const c5 = cifrasDelPerfil(viajesRoma)
   debe(c5.paises === 1 && c5.lugares === 1 && c5.dias === 10, 'C', `5 viajes de 2 días a Roma: «1 país · 1 lugar · 10 días» y sale ${c5.paises} · ${c5.lugares} · ${c5.dias}`)
   const c6 = cifrasDelPerfil(viajesDelPerfil(TODOS, null, '2031-01-01'))
   debe(c6.paises === 5 && c6.lugares === 6 && c6.dias === 12, 'C', `6 viajes (IT, IT, ES, US, JP, PT; Roma, Florencia, Madrid, Nueva York, Tokio, Lisboa; 2 días cada uno): 5 · 6 · 12 y sale ${c6.paises} · ${c6.lugares} · ${c6.dias}`)
   const c0 = cifrasDelPerfil([])
   debe(c0.paises === 0 && c0.lugares === 0 && c0.dias === 0, 'C', 'sin viajes, las cifras deberían ser 0 · 0 · 0')
-  // Un viaje con día de vuelta suelto no suma ese día.
   const conVuelta = ruta('w', 'Roma', [['Roma', 'it', 41.9, 12.49], ['Roma', 'it', 41.89, 12.48]], ['2031-01-01', '2031-01-02'])
   conVuelta.days.push({ ...dia('wd3', 3, 'Madrid', 'es', []), isReturnLeg: true })
   debe(cifrasDelPerfil(viajesDelPerfil([guardado(conVuelta, 8)], null, '2031-01-01')).dias === 2, 'C', 'el día suelto de la vuelta cuenta en las cifras')
-  // Cómo se pintan.
-  const uno = aTexto(renderToStaticMarkup(createElement(CifrasDelMapa, { cifras: { paises: 1, lugares: 1, dias: 1 } }))).replace(/\n/g, ' ')
-  debe(/1 país 1 lugar 1 día/.test(uno), 'C', `las cifras en singular: «${uno}»`)
-  const varias = aTexto(renderToStaticMarkup(createElement(CifrasDelMapa, { cifras: { paises: 2, lugares: 4, dias: 14 } }))).replace(/\n/g, ' ')
-  debe(/2 países 4 lugares 14 días/.test(varias), 'C', `las cifras en plural: «${varias}»`)
-  debe(/bg-\[#1C2230\][^>]*>[\s\S]*?país/.test(renderToStaticMarkup(createElement(CifrasDelMapa, { cifras: { paises: 1, lugares: 1, dias: 1 } }))), 'C', 'la primera cifra (países) no es la pastilla oscura del diseño')
 }
 
 /* ---------------- D. El álbum de un viaje: sin filtros ni títulos, todas las fotos juntas ---------------- */
@@ -490,12 +462,12 @@ debe(/createPortal\(/.test(fuentePerfil) && /MapaMisViajes chinchetas=\{chinchet
 }
 
 /* ---------------- Emojis ---------------- */
-for (const p of ['src/components/layout/PerfilSheet.tsx', 'src/components/perfil/FilaDeViaje.tsx', 'src/components/perfil/CifrasDelMapa.tsx', 'src/components/perfil/MapaMisViajes.tsx', 'src/components/perfil/AlbumDeViaje.tsx', 'src/components/perfil/FichaDeViaje.tsx', 'src/components/perfil/FotoVuela.tsx', 'src/components/ui/BanderaDestino.tsx', 'src/lib/fotoVuela.ts']) {
+for (const p of ['src/components/layout/PerfilSheet.tsx', 'src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx', 'src/components/perfil/AlbumDeViaje.tsx', 'src/components/perfil/FichaDeViaje.tsx', 'src/components/perfil/FotoVuela.tsx', 'src/components/ui/BanderaDestino.tsx', 'src/lib/fotoVuela.ts']) {
   const sueltos = (leer(p).replace(/[✓✔✕✗★♥❤↔↕→←↑↓…©×‹]/gu, '').match(/\p{Extended_Pictographic}/gu) ?? []).length
   debe(sueltos === 0, 'Emojis', `${p} lleva ${sueltos} emoji(s)`)
 }
 
-console.log(`\nPerfil 6y4 (punto 15): mapa de ${CAJA_MAPA_VIAJES.alto} px, ${comprobaciones} comprobaciones`)
+console.log(`\nPerfil 6y4 (punto 15, al día con la 10N4): ${comprobaciones} comprobaciones`)
 if (fallos.length === 0) {
   console.log(`${comprobaciones} comprobaciones, 0 fallos.`)
   process.exit(0)

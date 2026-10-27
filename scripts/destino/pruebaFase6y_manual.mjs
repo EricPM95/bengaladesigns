@@ -73,7 +73,8 @@ const poner = (route, versionPago, { hasta = route.days.length } = {}) => {
   })
   return useRouteStore.getState().route
 }
-const pintaDias = (route, abierto) => aTexto(renderToStaticMarkup(createElement(DayList, { route, activeDayId: abierto, onSelectDay() {}, showAllDaysOnMap: false })))
+let ultimoHtmlDias = ''
+const pintaDias = (route, abierto) => aTexto((ultimoHtmlDias = renderToStaticMarkup(createElement(DayList, { route, activeDayId: abierto, onSelectDay() {}, showAllDaysOnMap: false }))))
 const nombresDe = (route) => route.days.map((d) => d.stops.map((s) => s.name))
 const MALOS = [/Te falta/i, /Si te sobra tiempo/i, /Segunda visita/i, /Buscar lugares/i, /Tienes algo ya reservado/i, /sugerencia para este hueco/i, /También te puede interesar/i]
 const FRANJA_CON_HORA = /(Mañana|Tarde|Noche|Comida|Cena)\s*(?:[·\-–—:]|desde|a las|de)?\s*(?:desde\s*)?\d{1,2}[:.]\d{2}/i
@@ -148,7 +149,9 @@ for (const dias of [2, 3, 4, 5]) {
         debe(coliseo.time === '10:00' && coliseo.reservedId === 'r-coliseo', '3 reservas', `${nombre}: el Coliseo no se queda a las 10:00 (${coliseo.time})`)
         debe(despues.days.every((d) => d.stops.every((s) => s === coliseo || s.name === 'Coliseo' || !s.time)), '3 reservas', `${nombre}: otra parada ha cogido hora`)
         const tReserva = pintaDias(despues, despues.days[diaColiseo].id)
-        debe(/10:00/.test(tReserva), '3 reservas', `${nombre}: la hora de la reserva no se ve`)
+        // Tanda 10N4 (§4d, Parada Entrada): la tarjeta ya no lleva la hora ni palabras («Reservada ✓»): solo el botón redondo VERDE de la entrada (data-boton-entrada="tengo"). La hora vive en la pestaña Entradas de la ficha.
+        debe(/data-boton-entrada="tengo"/.test(ultimoHtmlDias), '3 reservas', `${nombre}: la parada reservada no lleva el botón verde de la entrada`)
+        debe(!/10:00/.test(tReserva), '3 reservas', `${nombre}: la tarjeta vuelve a llevar la hora de la reserva (el prompt 10N4 pide solo el botón)`)
         debe(!FRANJA_CON_HORA.test(tReserva), '3 horas', `${nombre}: con reserva sale una franja con hora`)
         // Una reserva en un día que no lleva el sitio: no se trae de otro día.
         const otro = (diaColiseo + 1) % dias

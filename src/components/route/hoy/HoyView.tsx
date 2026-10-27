@@ -26,6 +26,8 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
   // El día de prueba (Tanda 10H) se apaga al salir de HOY.
   useEffect(() => () => fijarDiaDePrueba(false), [])
   fijarDiaDePrueba(false)
+  // (Tanda 10N4 §1) Mientras no se sabe lo del pase, HOY no se pinta ni «con pase» ni «sin pase» (sin parpadeo).
+  if (pase.sabido === false) return <div className="min-h-0 flex-1" data-hoy="cargando" />
   const completa = pagoActivo()
   // Sin el pase (Tanda 10C): la pestaña está, y enseña lo de antes del viaje y la invitación al pase.
   const fila = !completa
