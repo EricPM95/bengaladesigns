@@ -1,8 +1,21 @@
 {
-  "_nota": "Ajustes que se aplican ENCIMA de la lista del pase de Design (Tanda 10P). Si Design cambia la lista y se regenera (node scripts/destino/generarPelicula.mjs), estos ajustes se siguen aplicando: lo leen src/lib/listaAjustada.ts (HOY, «Todo lo que incluye») y src/components/pase/pelicula/adaptar.ts (el final de la película). 'ocultas': filas que NO salen mientras la función no exista (se vuelven a mostrar quitándolas de aquí cuando existan). 'textos': la línea de una fila, si no es la de Design. En las líneas, «HOY» sale en oro (Marca).",
-  "ocultas": ["Modo «a mi aire»", "El reto del día"],
+  "_nota": "Ajustes que se aplican ENCIMA de la lista del pase de Design (Tanda 10P). Si Design cambia la lista y se regenera (node scripts/destino/generarPelicula.mjs), estos ajustes se siguen aplicando: lo leen src/lib/listaAjustada.ts (HOY, «Todo lo que incluye») y src/components/pase/pelicula/adaptar.ts (el final de la película). 'ocultas': filas que NO salen mientras la función no exista (se vuelven a mostrar quitándolas de aquí cuando existan). 'textos': la línea de una fila, si no es la de Design. En las líneas, «HOY» sale en oro (Marca). 'titulos': el nombre de una fila, si no es el de Design (clave = el nombre de Design; Tanda 10N6 1h).",
+  "ocultas": [
+    "Modo «a mi aire»",
+    "El reto del día"
+  ],
   "textos": {
-    "Invita a un amigo": "Gana 200 EXP cuando haga su primer viaje con HOY"
+    "Invita a un amigo": "Gana 200 EXP cuando haga su primer viaje con HOY",
+    "Tus fotos de cada sitio": "En cada sitio y en tu álbum.",
+    "La historia de cada sitio": "De cada sitio, como una audioguía en tu móvil."
   },
-  "prometidas_sin_hacer": ["«¿Qué hago ahora?»", "«Estoy aquí»", "Funciona sin internet", "La puesta de sol y lo de mañana"]
+  "prometidas_sin_hacer": [
+    "«¿Qué hago ahora?»",
+    "«Estoy aquí»",
+    "Funciona sin internet"
+  ],
+  "titulos": {
+    "Tus fotos de cada sitio": "Todas las fotos que quieras",
+    "La historia de cada sitio": "Todas las historias"
+  }
 }

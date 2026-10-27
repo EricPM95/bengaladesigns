@@ -43,7 +43,7 @@ const TODOS = PER.map((p) => p.id)
   const sinAloj = aportacionesDelViaje({ ...base, conAlojamientoPropio: new Set(['luis', 'marta']) })
   debe(sinAloj.find((a) => a.clave === 'aloj-d1').entre.join() === 'eric,ana' && sinAloj.find((a) => a.clave === 'llegada').entre.join() === TODOS.join(), '6c-5', 'si Luis y Marta ponen SU alojamiento, salen del reparto del alojamiento (y solo de ese)')
   const todosPropios = aportacionesDelViaje({ ...base, entreDe: { llegada: ['eric', 'ana'] }, conVueloPropio: new Set(['ana']) })
-  debe(todosPropios.find((a) => a.clave === 'llegada').entre.join() === 'eric', '6c-5', 'si todos los demás ponen el suyo, el vuelo se queda en el administrador (lo pagó él)')
+  debe(todosPropios.find((a) => a.clave === 'llegada') === undefined, '6c-5', 'si todos los demás ponen el suyo, el vuelo se queda en el administrador (lo pagó él) y, al ser solo suyo, es personal: no cuenta en las cuentas del grupo (10N6 §1k)')
   const c = calcularCuentas({ aportaciones: conAna, pagos: [], personas: PER })
   const ana = c.personas.find((p) => p.id === 'ana')
   // vuelos 600 entre eric/luis/marta = 200 cada uno; hotel 400 entre 4 = 100 cada uno.
@@ -85,18 +85,18 @@ console.log('1b. Los nombres de las personas (regla global)')
   // Los avisos nuevos de 6c
   debe(textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'vuelo_propio', quien: 'ANA' } }) === 'Ana ha puesto su propio vuelo.', '6c-3', 'aviso al administrador: «Ana ha puesto su propio vuelo.»')
   debe(textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'alojamiento_propio', quien: 'Ana' } }) === 'Ana ha puesto su propio alojamiento.', '6c-3', '…y el del alojamiento')
-  debe(textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'vuelo_cambiado', quien: 'Eric', para: 'todos' } }) === 'Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.', '6c-2', 'aviso a cada persona: «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.»')
-  debe(textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'alojamiento_cambiado', quien: 'Eric', para: 'ti' } }) === 'Eric ha puesto el alojamiento para ti. Se ha cambiado el tuyo.', '6c-2', '…y el del alojamiento, para ti')
+  debe(textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'vuelo_cambiado', quien: 'Eric', para: 'todos', suyo_cambiado: true } }) === 'Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.', '6c-2', 'aviso a cada persona: «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.»')
+  debe(textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'alojamiento_cambiado', quien: 'Eric', para: 'ti', suyo_cambiado: true } }) === 'Eric ha puesto el alojamiento para ti. Se ha cambiado el tuyo.', '6c-2', '…y el del alojamiento, para ti')
   const f = textos.franjaDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'vuelo_propio', quien: 'Ana', detalle: 'Llegada a Roma · martes 10' } })
   debe(f.titulo === 'Ana ha puesto su propio vuelo.' && f.detalle === 'Llegada a Roma · martes 10' && f.icono === 'persona', '6c-3', 'la franja del administrador, como Design 05: «Ana ha puesto su propio vuelo.» / «Llegada a Roma · martes 10»')
-  const g = textos.franjaDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'vuelo_cambiado', quien: 'Eric', para: 'todos' } })
+  const g = textos.franjaDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'vuelo_cambiado', quien: 'Eric', para: 'todos', suyo_cambiado: true } })
   debe(g.titulo === 'Eric ha puesto el vuelo para todos.' && g.detalle === 'Se ha cambiado el tuyo.', '6c-2', 'la franja de Ana, como Design 04: «Eric ha puesto el vuelo para todos.» / «Se ha cambiado el tuyo.»')
 }
 
 /* ═══════════════ 2. La base de datos ═══════════════ */
 console.log('2. La base de datos (PGlite, migraciones reales hasta la 0049)')
 {
-  const MIGRACIONES = /^(0001|0002|0003|0012|0018|0020|0021|0023|0024|0025|0026|0027|0028|0030|0031|0034|0035|0036|0038|0042|0048|0049)_/
+  const MIGRACIONES = /^(0001|0002|0003|0012|0018|0020|0021|0023|0024|0025|0026|0027|0028|0030|0031|0034|0035|0036|0038|0042|0048|0049|0053)_/
   const bd = await crearBaseDePrueba({ migraciones: MIGRACIONES, alFallar: (m) => debe(false, 'migracion', m) })
   const { q, como, servidor, nuevoUsuario } = bd
   debe(bd.aplicadas.includes('0049_lo_suyo_de_cada_uno.sql') && bd.aplicadas.includes('0048_avisos_borrado.sql'), 'migracion', 'la 0048 y la 0049 se aplican sin un error')
@@ -162,7 +162,7 @@ console.log('2. La base de datos (PGlite, migraciones reales hasta la 0049)')
   await como(eric, () => q("update public.trips set route = $2::jsonb where id = $1", [viaje, ruta({ arrivalFlightTime: '12:00', arrivalPointId: 'fiumicino', departureFlightTime: '18:05', cuentasEntre: { llegada: [eric, ana], vuelta: [eric, ana] } })]))
   const nuevoAna = (await avisosDe(ana)).filter((a) => a.payload.caso === 'vuelo_cambiado')
   const nuevoLuis = (await avisosDe(luis)).filter((a) => a.payload.caso === 'vuelo_cambiado')
-  debe(nuevoAna.length === 2 && nuevoAna[1].payload.para === 'ti', '6c-2', 'para dos (Eric y Ana): a Ana le llega «para ti»')
+  debe(nuevoAna.length === 1 && nuevoAna[0].payload.para === 'ti', '6c-2', 'para dos (Eric y Ana): a Ana le llega «para ti» (10N6: varios cambios seguidos se juntan en un solo aviso, con lo último que quedó)')
   debe(nuevoLuis.length === 1, '6c-2', 'Luis, que no está en ese «¿Para quién es?», no recibe aviso nuevo')
   const lLuis = await como(luis, () => q('select vuelo from public.lo_suyo_del_viaje where trip_id = $1', [viaje]))
   debe(lLuis[0].vuelo !== null, '6c-2', 'y su vuelo propio NO se toca (el del administrador no es para él)')

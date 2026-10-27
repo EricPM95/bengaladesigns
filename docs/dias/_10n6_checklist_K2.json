@@ -1,0 +1,164 @@
+[
+  {
+    "apartado": "1g",
+    "punto": "Una sola pieza del aviso del pase para toda la app y todos los destinos (hoja desde abajo, tarjeta azul oscuro con dorado, título «Desbloquéalo con el Pase {destino}», línea 1 pequeña, línea 2 en negrita, botón dorado)",
+    "estado": "hecho",
+    "nota": "src/components/pase/AvisoPase.tsx + src/lib/avisoPase.ts (abrirAvisoPase(clave,{destino})); montado en App.tsx",
+    "donde": "Sin pase: toca «Escuchar historia» con la de prueba gastada, «Baños»/«Fuentes» en EXPLORAR o la pestaña «Cerca de ti\"",
+    "captura": "docs/dias/capturas_jutrip/10n6_aviso_segunda_foto.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_pase_estilo_04.jpg"
+  },
+  {
+    "apartado": "1g",
+    "punto": "El botón [Ver el Pase {destino}] lleva a la película, o a su final si ya la vio",
+    "estado": "hecho",
+    "nota": "Usa abrirPase(), que ya decide principio/final",
+    "donde": "Toca [Ver el Pase Roma] del aviso",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1g",
+    "punto": "«Escuchar historia» después de la de prueba: «Ya has escuchado tu historia de prueba.» / «Escucha todas las historias de tu viaje.»",
+    "estado": "hecho",
+    "nota": "Escuchar.tsx (HOY v1) y HoyDuranteV2.tsx; la línea cambiante «Incluido con…» ya no se usa",
+    "donde": "HOY, ficha de un sitio con historia, sin pase y con la de prueba ya gastada",
+    "captura": "docs/dias/capturas_jutrip/10n6_aviso_escuchar_historia.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_pase_estilo_04.jpg"
+  },
+  {
+    "apartado": "1g",
+    "punto": "Segunda foto de un sitio: «Sin pase, guardas 1 foto por sitio.» / «Guarda todas las que quieras y crea tus recuerdos.»",
+    "estado": "medias",
+    "nota": "La clave segunda_foto y su texto están listos y probados; quien la llama es K3 (recuerdos en la ficha)",
+    "donde": "Ficha de un sitio, al guardar una segunda foto sin pase",
+    "captura": "docs/dias/capturas_jutrip/10n6_aviso_segunda_foto.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_pase_estilo_04.jpg"
+  },
+  {
+    "apartado": "1g",
+    "punto": "«Cerca de ti», «Baños» y «Fuentes» en EXPLORAR abren el aviso (con sus dos líneas, siempre verdad)",
+    "estado": "hecho",
+    "nota": "Cerca de ti: PlaceExplorerScreen (se quita la hoja suelta de la 10O); Baños/Fuentes: ExplorePanel",
+    "donde": "EXPLORAR sin pase",
+    "captura": "docs/dias/capturas_jutrip/10n6_aviso_explorar_banos.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_pase_estilo_04.jpg"
+  },
+  {
+    "apartado": "1g",
+    "punto": "Lo de HOY bloqueado por el pase que no se explica en su sitio",
+    "estado": "hecho",
+    "nota": "Solo «Escuchar historia» lo es: el resto de HOY (tarjetas «Con el pase tendrás», «Ver el Pase de Roma») ya se explica en su sitio y va a la película. Clave «hoy» y «generico» listas por si hace falta",
+    "donde": "HOY sin pase",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1g",
+    "punto": "La caja pequeña de la zona del alojamiento no lleva este aviso: su [Ver] va directo a la película/final",
+    "estado": "hecho",
+    "nota": "Candado.tsx sigue con abrirPase()",
+    "donde": "RESERVAS > Alojamiento sin pase",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1g",
+    "punto": "Con pase (comprado o plaza de grupo) el aviso no sale nunca",
+    "estado": "hecho",
+    "nota": "abrirAvisoPase no hace nada con pagoActivo(), y el host lo comprueba otra vez",
+    "donde": "Con pase, tocar lo mismo no abre el aviso",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1g",
+    "punto": "Textos en UN archivo, por destino",
+    "estado": "hecho",
+    "nota": "src/lib/avisoPaseTextos.ts (AVISO_PASE_TEXTOS y AVISO_PASE_TEXTOS_POR_DESTINO)",
+    "donde": "—",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1g",
+    "punto": "Lista de TODOS los sitios con su línea 1 / línea 2 y la regla de aviso pequeño o película",
+    "estado": "hecho",
+    "nota": "En el informe final",
+    "donde": "—",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1h",
+    "punto": "Lista del pase: «Todas las fotos que quieras · En cada sitio y en tu álbum.»",
+    "estado": "hecho",
+    "nota": "data/pase/lista_ajustes.json (nuevo campo titulos); lo aplican listaAjustada.ts y el final de la película (adaptar.ts)",
+    "donde": "Final de la película, «Todo lo que incluye» y HOY «Con el pase tendrás»",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1h",
+    "punto": "Lista del pase: «Todas las historias · De cada sitio, como una audioguía en tu móvil.»",
+    "estado": "hecho",
+    "nota": "Ídem",
+    "donde": "Ídem (HOY sin pase, tarjeta «Con el pase tendrás»)",
+    "captura": "docs/dias/capturas_jutrip/10n6_aviso_segunda_foto.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1h",
+    "punto": "«Empiezas cerca de donde duermes…» ya no existe (o corregida)",
+    "estado": "hecho",
+    "nota": "No existe: la fila es «Adaptamos tu ruta a tu alojamiento · El primer día, y como mucho el último, según tu zona.» No la he tocado",
+    "donde": "Final de la película",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1h",
+    "punto": "Quitar «La puesta de sol y lo de mañana» de prometidas_sin_hacer",
+    "estado": "hecho",
+    "nota": "Quitada de data/pase/lista_ajustes.json",
+    "donde": "—",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1i",
+    "punto": "Música de la película preparada y funcionando sin el archivo (sin error ni petición rota)",
+    "estado": "hecho",
+    "nota": "src/lib/peliculaMusica.ts comprueba con HEAD (y que sea audio) antes de montar nada. public/sonidos/pelicula_pase.mp3 NO está: lo pone Eric",
+    "donde": "Abre la película: sin música y sin botón de silencio",
+    "captura": "docs/dias/capturas_jutrip/10n6_pelicula_sin_musica.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1i",
+    "punto": "Suena al tocar [Ver], volumen bajo, fundidos, bucle sin cortes, sigue al cambiar de escena y con [Saltar], baja y para al cerrar, para al salir de la app",
+    "estado": "medias",
+    "nota": "Todo hecho y probado con un archivo de mentira (audio simulado); falta oírla con la pista de verdad",
+    "donde": "Película del pase, con la pista puesta",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1i",
+    "punto": "Botón de silencio pequeño, altavoz fino gris, en la línea del título y [Saltar]; recuerda lo elegido; respeta «Sonido de los momentos»",
+    "estado": "hecho",
+    "nota": "Solo sale si hay archivo; el título se aparta para no pisarlo",
+    "donde": "Arriba a la derecha de la película, a la izquierda de [Saltar]",
+    "captura": "docs/dias/capturas_jutrip/10n6_pelicula_boton_silencio.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1i",
+    "punto": "Comprimir a ~96 kbps y bajar sin retrasar el principio",
+    "estado": "medias",
+    "nota": "scripts/destino/comprimirMusicaPelicula.sh (hace falta ffmpeg, que aquí no hay); la descarga empieza al abrir la película y no bloquea nada (si no puede sonar, la película sigue en silencio)",
+    "donde": "—",
+    "captura": null,
+    "captura_design": null
+  }
+]

@@ -417,9 +417,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       {askRestore && (
         <ConfirmDialog
           eyebrow={diaCorto(route, askRestore.dayNumber)}
-          text="¿Recuperar este día?"
+          text={`¿Recuperamos ${elDia(route, askRestore.dayNumber)} como te lo preparamos?`}
           detail="Quedará tal como te lo preparamos y se perderán los cambios que has hecho en él. Lo que tienes reservado se queda en su día y a su hora."
-          confirmLabel="Recuperar"
+          confirmLabel="Sí, recuperar"
           cancelLabel="Cancelar"
           onCancel={() => setAskRestore(null)}
           onConfirm={() => {
@@ -432,8 +432,10 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       {removeDay && (
         <ConfirmDialog
           eyebrow={`${diaCorto(route, removeDay.dayNumber)} · ${nombreDe(removeDay).titulo}`}
-          text={`¿Eliminar ${elDia(route, removeDay.dayNumber)}? Puedes recuperarlo con «Volver a mi ruta original».`}
-          confirmLabel="Eliminar"
+          text={`¿Quitamos ${elDia(route, removeDay.dayNumber)} de tu viaje?`}
+          detail="Puedes recuperarlo con «Volver a mi ruta original» o con [Deshacer]."
+          peligro
+          confirmLabel="Sí, quitar"
           cancelLabel="Cancelar"
           onCancel={() => setRemoveDayId(null)}
           onConfirm={() => {

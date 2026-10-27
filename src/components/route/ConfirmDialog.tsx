@@ -6,7 +6,7 @@ import type { Route } from '../../lib/types'
  * Una pregunta antes de algo que no se deshace (retocar la ruta, decisión del usuario 2026-09-28): volver a la ruta
  * original, regenerar un día con cambios. El mismo panel que "Quiero entrar" y las fechas (diseño Trazo), en el body.
  */
-export function ConfirmDialog({ eyebrow, text, detail, confirmLabel, cancelLabel = 'Mejor no', alto = false, onConfirm, onCancel }: { eyebrow: string; text: string; detail?: string; confirmLabel: string; cancelLabel?: string; /** Por encima de otra hoja abierta (Tanda 6y10: «Cambiar un día por la excursión» pregunta desde dentro de una hoja). */ alto?: boolean; onConfirm: () => void; onCancel: () => void }) {
+export function ConfirmDialog({ eyebrow, text, detail, confirmLabel, cancelLabel = 'Mejor no', alto = false, peligro = false, onConfirm, onCancel }: { eyebrow: string; text: string; detail?: string; confirmLabel: string; cancelLabel?: string; /** Por encima de otra hoja abierta (Tanda 6y10: «Cambiar un día por la excursión» pregunta desde dentro de una hoja). */ alto?: boolean; /** (10N6, 1b) El botón de confirmar en rojo: la confirmación es de algo que se quita o se pierde. */ peligro?: boolean; onConfirm: () => void; onCancel: () => void }) {
   // (Tanda 10N §6c) Todas las preguntas salen desde abajo con la pieza `Hoja` (tirador, ✕, se cierra deslizando o tocando fuera), BAJA: el nombre de lo que se toca arriba y los dos botones.
   return (
     <span onClick={(event) => event.stopPropagation()} data-confirmar="1">
@@ -16,7 +16,7 @@ export function ConfirmDialog({ eyebrow, text, detail, confirmLabel, cancelLabel
           <button type="button" onClick={onCancel} className="h-12 flex-1 rounded-full border border-text/15 text-[15px] font-medium text-text transition-colors hover:bg-bg-hover">
             {cancelLabel}
           </button>
-          <button type="button" onClick={onConfirm} className="h-12 flex-1 rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98]">
+          <button type="button" onClick={onConfirm} data-confirmar-si="1" data-peligro={peligro ? '1' : undefined} className={`h-12 flex-1 rounded-full text-[15px] font-medium transition-transform active:scale-[.98] ${peligro ? 'bg-accent-red text-white' : 'btn-champan'}`}>
             {confirmLabel}
           </button>
         </div>

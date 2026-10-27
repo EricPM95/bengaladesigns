@@ -1,0 +1,182 @@
+[
+  {
+    "apartado": "1j",
+    "punto": "Sin gastos: el mismo bloque «Ruta» (tarjeta blanca con su icono y el título), vacío y sin importe a la derecha",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "RUTA › Presupuesto (el icono de la cartera), en un viaje sin ninguna reserva con precio",
+    "captura": "docs/dias/capturas_jutrip/10n6_presupuesto_vacio.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_presupuesto_vacio.jpg"
+  },
+  {
+    "apartado": "1j",
+    "punto": "Dentro, una sola línea pequeña en gris: «Aquí se irán añadiendo todos los gastos de tu ruta.»",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "Presupuesto sin gastos",
+    "captura": "docs/dias/capturas_jutrip/10n6_presupuesto_vacio.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_presupuesto_vacio.jpg"
+  },
+  {
+    "apartado": "1j",
+    "punto": "Fuera el recuadro de rayas «Todavía no hay gastos»",
+    "estado": "hecho",
+    "nota": "La tarjeta «Cuentas del grupo» sigue diciendo «Todavía no hay gastos del grupo» (es otra cosa, de la 10N2).",
+    "donde": "Presupuesto sin gastos",
+    "captura": "docs/dias/capturas_jutrip/10n6_presupuesto_vacio.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_presupuesto_vacio.jpg"
+  },
+  {
+    "apartado": "1j",
+    "punto": "Debajo, «Extras» con [+ Añadir gasto]; la pantalla es igual con gastos y sin ellos",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "Presupuesto sin gastos, bajando",
+    "captura": "docs/dias/capturas_jutrip/10n6_presupuesto_vacio.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_presupuesto_vacio.jpg"
+  },
+  {
+    "apartado": "1k",
+    "punto": "Una reserva o gasto solo para quien lo paga NO cuenta en «Del grupo» del presupuesto",
+    "estado": "hecho",
+    "nota": "Coliseo 100 € solo para Eric + Panteón 60 € para Eric y Ana: «Del grupo» dice 60 €.",
+    "donde": "Presupuesto de un viaje con gente",
+    "captura": "docs/dias/capturas_jutrip/10n6_presupuesto_solo_tu.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1k",
+    "punto": "…ni en «Cuentas del grupo» (ni total, ni pagado, ni le toca)",
+    "estado": "hecho",
+    "nota": "«Total del grupo 60 €»; Eric pagó 60 € y le tocan 30 €; la suma de saldos es 0.",
+    "donde": "Presupuesto › Cuentas del grupo",
+    "captura": "docs/dias/capturas_jutrip/10n6_cuentas_sin_lo_personal.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1k",
+    "punto": "Sí sale en el presupuesto de esa persona, con el candado y «Solo tú»",
+    "estado": "hecho",
+    "nota": "En gris tenue, debajo de su día. No suma en el bloque.",
+    "donde": "Presupuesto de Eric",
+    "captura": "docs/dias/capturas_jutrip/10n6_presupuesto_solo_tu.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1k",
+    "punto": "Cuenta en «Tu parte»",
+    "estado": "hecho",
+    "nota": "Tu parte = su parte de lo del grupo + lo personal (100 €). Los [Para mí] de Extras siguen sin contar en «Tu parte», como antes (duda abierta en el informe).",
+    "donde": "Presupuesto › pastilla «Tu parte» con el ojo",
+    "captura": "docs/dias/capturas_jutrip/10n6_presupuesto_solo_tu.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1k",
+    "punto": "Los demás del viaje no lo ven en sus cuentas ni en su presupuesto",
+    "estado": "hecho",
+    "nota": "Un invitado no ve las reservas personales del administrador; las cuentas sí las dejan fuera.",
+    "donde": "Presupuesto como invitado",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1k",
+    "punto": "Si es para otro o para varios, sí es del grupo (Eric paga la entrada solo de Ana: Ana le debe 100 €)",
+    "estado": "hecho",
+    "nota": "Probado en la prueba pura.",
+    "donde": "Presupuesto › Cuentas del grupo",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1k",
+    "punto": "Lo mismo con alojamiento, coche y vuelos de la 10N5",
+    "estado": "hecho",
+    "nota": "Si «¿Para quién es?» es solo el administrador (o todos los demás tienen el suyo), es personal. Se calcula con la misma función en presupuesto y cuentas.",
+    "donde": "Presupuesto › Transporte y alojamiento",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1k",
+    "punto": "Nada se cuenta dos veces y las cuentas cuadran al céntimo",
+    "estado": "hecho",
+    "nota": "Las líneas que un invitado no ve (`ocultas`) siguen entrando en las cuentas; suma de saldos 0.",
+    "donde": "Cuentas del grupo",
+    "captura": "docs/dias/capturas_jutrip/10n6_cuentas_sin_lo_personal.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1l",
+    "punto": "A cada marcado le sale como suya: aviso «X ha reservado el Coliseo para ti · jueves 12 · 9:15», botón verde con ✓ en DÍAS, «Tu entrada» en verde en la ficha y la entrada en su RESERVAS",
+    "estado": "hecho",
+    "nota": "También cuando compra un invitado (antes no).",
+    "donde": "DÍAS › Coliseo › botón de la entrada; ficha › Entradas; RESERVAS › Entradas y Free Tour",
+    "captura": "docs/dias/capturas_jutrip/10n6_entradas_b_luis_tu_entrada.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_entradas_design_ficha_cabecera.jpg"
+  },
+  {
+    "apartado": "1l",
+    "punto": "A los no marcados: aviso con [Reservar la mía a la misma hora] y [Ya la tengo]; en la ficha, en azul con dorado, quién la tiene",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "DÍAS › Coliseo › botón azul con dorado; campana",
+    "captura": "docs/dias/capturas_jutrip/10n6_entradas_a_eric_ficha_ana_y_luis.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_entradas_design_ficha_cabecera.jpg"
+  },
+  {
+    "apartado": "1l",
+    "punto": "Que funcione igual si la compra un invitado (Ana compra para ella y Eric: a Eric le sale como suya)",
+    "estado": "hecho",
+    "nota": "HOY NO FUNCIONABA con invitados: solo avisaba el administrador (0042) y solo se veían las entradas del administrador. Ahora: migración 0053 (aviso del invitado) + las entradas de los demás se leen de entradas_del_grupo. Necesita aplicar la 0053 para el aviso; el resto va sin ella.",
+    "donde": "Entra como Ana, reserva el Coliseo para ella y Eric; mira como Eric",
+    "captura": "docs/dias/capturas_jutrip/10n6_entradas_f_eric_tu_entrada_de_ana.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1l",
+    "punto": "Plural con nombres: «Eric y Ana la tienen para el jueves 12 · 9:15»; «Eric y Ana han reservado el Coliseo · jueves 12 · 9:15. ¿Reservas la tuya a la misma hora?»; más de dos: «Eric, Ana y Laura…»",
+    "estado": "hecho",
+    "nota": "Ficha, RESERVAS, campana y franja.",
+    "donde": "Ficha › Entradas",
+    "captura": "docs/dias/capturas_jutrip/10n6_entradas_e_luis_eric_y_ana.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1l",
+    "punto": "Dos horas distintas para el mismo sitio: «Eric la tiene a las 9:15 · Ana a las 11:00»",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "Ficha › Entradas",
+    "captura": "docs/dias/capturas_jutrip/10n6_entradas_d_luis_dos_horas.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "0a",
+    "punto": "0a-6: «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.» solo a quien tenía su propio vuelo/alojamiento; a los demás, sin «Se ha cambiado el tuyo»",
+    "estado": "hecho",
+    "nota": "Migración 0053 (reemplaza la función de la 0049 sin editarla). Sin aplicarla, sigue como antes.",
+    "donde": "Campana de Ana (con su vuelo) y de Laura (sin él)",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "0a",
+    "punto": "0a-8: el presupuesto de un invitado enseña lo suyo (su vuelo y alojamiento si tiene los suyos, o los del administrador si va en ellos; nunca los del administrador si no va)",
+    "estado": "hecho",
+    "nota": "También enseña solo las entradas del administrador que le incluyen.",
+    "donde": "Presupuesto como invitado › Transporte y alojamiento",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "0a",
+    "punto": "0a-10: varios cambios seguidos del vuelo/alojamiento del administrador se juntan en un solo aviso (15 min, sin leer), con lo último que quedó",
+    "estado": "hecho",
+    "nota": "Migración 0053.",
+    "donde": "Campana",
+    "captura": "",
+    "captura_design": ""
+  }
+]

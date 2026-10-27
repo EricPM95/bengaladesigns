@@ -1,5 +1,5 @@
 import { plantilla as plantillaDeDesign } from './gen/Pase_Pelicula'
-import { FILAS_OCULTAS, LISTA_DEL_PASE, TEXTOS_DE_LINEA, partesDeLinea } from '../../../lib/listaAjustada'
+import { FILAS_OCULTAS, LISTA_DEL_PASE, TEXTOS_DE_LINEA, TITULOS_NUEVOS, partesDeLinea } from '../../../lib/listaAjustada'
 import { nombreDelPase } from '../../../lib/nombrePase'
 
 /**
@@ -133,7 +133,7 @@ function ajustarLaCabecera(ast: Nodo[], destino: string) {
     if (!esNodo(h) || h.t !== 'div' || !h.a?.style?.startsWith('position:absolute;left:0;right:0;top:16px;text-align:center')) return h
     const titulo: Nodo = {
       ...h,
-      a: { ...h.a, 'data-pelicula-titulo': '1', style: h.a.style.replace('top:16px;', 'top:66px;height:32px;display:flex;align-items:center;justify-content:center;white-space:nowrap;') },
+      a: { ...h.a, 'data-pelicula-titulo': '1', style: h.a.style.replace('top:16px;', 'top:66px;height:32px;display:flex;align-items:center;justify-content:center;white-space:nowrap;box-sizing:border-box;padding-right:{{ tPadR }}px;') },
       // (dentro de un span: en un contenedor flex el espacio de «tu » se perdería)
       c: [{ t: 'span', c: (h.c ?? []).map((x) => (esNodo(x) && x.t === 'em' ? { ...x, c: [`Pase ${destino}`] } : x)) }],
     }
@@ -177,6 +177,31 @@ function ajustarAlMovil(ast: Nodo[]) {
     if (n.a?.['data-pelicula-cerrar']) n.a = { ...n.a, style: n.a.style.replace('top:60px', 'top:63px') }
     if (n.a?.onClick === '{{ again }}') n.a = { ...n.a, 'data-pelicula-ver': '1', role: 'button' }
     if (n.a?.onClick === '{{ skip }}') n.a = { ...n.a, 'data-pelicula-saltar': '1', role: 'button' }
+  })
+  // (Tanda 10N6 §1i) El botón de silencio de la música, pequeño, en la misma línea que el título y [Saltar] (a su izquierda): solo si hay música. Altavoz fino y gris, sin relleno.
+  recorre(movil, (n) => {
+    if (!n.a?.['data-barra-superior'] || !n.c) return
+    const icono = (c: Nodo[]): Nodo => ({ t: 'svg', a: { width: '17', height: '17', viewBox: '0 0 24 24', fill: 'none', stroke: 'rgba(251,243,226,.8)', strokeWidth: '1.7', strokeLinecap: 'round', strokeLinejoin: 'round', style: 'flex:none' }, c })
+    const ruta = (d: string): Nodo => ({ t: 'path', a: { d }, c: [] })
+    const altavoz = 'M11 5L6 9H3v6h3l5 4V5z'
+    n.c.unshift({
+      i: '{{ !s7 }}',
+      c: [
+        {
+          i: '{{ hayMusica }}',
+          c: [
+            {
+              t: 'span',
+              a: { onClick: '{{ silenciar }}', role: 'button', 'aria-label': '{{ silTxt }}', 'data-pelicula-musica': '1', style: 'width:34px;height:34px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:rgba(20,22,28,.5);border:1px solid rgba(251,243,226,.3);cursor:pointer' },
+              c: [
+                { i: '{{ musicaOn }}', c: [icono([ruta(altavoz), ruta('M15.5 8.5a5 5 0 0 1 0 7'), ruta('M18.5 5.5a9 9 0 0 1 0 13')])] },
+                { i: '{{ musicaOff }}', c: [icono([ruta(altavoz), ruta('M16 9l5 6M21 9l-5 6')])] },
+              ],
+            },
+          ],
+        },
+      ],
+    })
   })
   // Las zonas de toque (atrás / adelante) tapan el final: en el final no hay nada que pasar y la lista tiene que dejarse tocar y mover.
 }
@@ -312,7 +337,9 @@ function ajustarLaLista(ast: Nodo[]) {
       for (const fila of h.c) {
         if (!esNodo(fila)) continue
         const par = buscaPar(fila)
+        const tituloNuevo = par && TITULOS_NUEVOS[textoDe(par.c![0])]
         const nuevo = par && TEXTOS_DE_LINEA[textoDe(par.c![0])]
+        if (par && tituloNuevo) par.c![0] = { t: 'span', a: (par.c![0] as Nodo).a, c: [tituloNuevo] }
         if (par && nuevo) {
           const molde = (par.c![1] as Nodo).a!
           par.c![1] = { t: 'span', a: molde, c: partesDeLinea(nuevo).map((p) => (p.marca ? { t: 'span', a: { 'data-marca': '1', style: 'color:#F3D88F;font-weight:700' }, c: [p.t] } : p.t)) }

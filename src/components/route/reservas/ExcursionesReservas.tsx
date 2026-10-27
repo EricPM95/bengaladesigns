@@ -101,6 +101,7 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
               key={reserva.id}
               nombre={nombreCorto(excursion, reserva.name)}
               meta={sinCero(metaReserva(route, reserva, 'recogida '))}
+              nota={reserva.noMueve ? 'Ya no está en tu ruta' : undefined}
               onChange={() => setTarget({ kind: 'excursion', refId: reserva.refId, name: reserva.name, placeNames: [], excursion, currentDayId: dayOfReservation(route, reserva)?.id ?? null, existing: reserva })}
             />
           )

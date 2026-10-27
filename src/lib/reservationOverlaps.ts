@@ -79,7 +79,7 @@ const seCruzan = (a: Interval, b: Interval): boolean => a.start < b.end && b.sta
  */
 export function reservationOverlaps(route: Route, reservations: Reservation[], shortNames?: Record<string, string>): ReservationOverlap[] {
   const entries = reservations
-    .filter((reservation) => reservation.kind === 'entrada')
+    .filter((reservation) => reservation.kind === 'entrada' && !reservation.fueraDeRuta)
     .map((reservation) => {
       const day = dayOfReservation(route, reservation)
       const start = toMinutes(reservation.time)

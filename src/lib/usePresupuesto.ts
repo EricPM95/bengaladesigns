@@ -8,6 +8,9 @@ import { gastosQueVeo } from './gastosCompartidos'
 import { useGastosCompartidos } from '../store/useGastosCompartidos'
 import { useViajeCompartido } from '../store/useViajeCompartido'
 import { useGastosDelViaje } from '../hooks/useGastosDelViaje'
+import { useLoSuyo } from '../store/useLoSuyo'
+import { useMisReservas } from '../store/useMisReservas'
+import { idsConLoSuyo } from './loSuyo'
 
 /** El presupuesto del estado de ahora (sin React): para el PDF y para quien lo necesite fuera de una pantalla. */
 export function presupuestoDeEstado(cambio: Cambio | null): Presupuesto | null {
@@ -47,13 +50,20 @@ export function usePresupuesto(): { presupuesto: Presupuesto | null; cambio: Cam
   const cambio = useCambio()
   const pago = usePagoActivo()
   // (Tanda 10N, apartado 9) En un viaje compartido, los Extras son los gastos compartidos que veo; lo de la ruta, anterior a compartir, es solo del administrador.
-  const { compartido, gastos: gastosCompartidos, esInvitado } = useGastosDelViaje()
+  const { compartido, gastos: gastosCompartidos, esInvitado, personas, yoId } = useGastosDelViaje()
+  // (Tanda 10N6 §1k y 0a-8) Quién es quién y lo suyo de cada uno: el presupuesto de cada persona enseña lo suyo, y lo personal no es del grupo.
+  const grupoLoSuyo = useLoSuyo((s) => s.grupo)
+  const entradasInv = useLoSuyo((s) => s.entradas)
+  const miLoSuyo = useLoSuyo((s) => s.mio)
+  const misReservas = useMisReservas((s) => s.lista)
+  const adminId = personas.find((p) => p.esAdmin)?.id ?? null
+  const todosIds = useMemo(() => personas.map((p) => p.id), [personas])
   const presupuesto = useMemo(
     () =>
       route
-        ? construirPresupuesto({ route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, moneda: monedaDelViajero(route), cambio, pago, compartido: compartido ? { gastos: gastosCompartidos, extrasDeLaRutaMios: !esInvitado } : undefined })
+        ? construirPresupuesto({ route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, moneda: monedaDelViajero(route), cambio, pago, compartido: compartido ? { gastos: gastosCompartidos, extrasDeLaRutaMios: !esInvitado, reparto: { yoId, adminId, esInvitado, todos: todosIds, entreDe: route.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), reservasPropias: esInvitado ? misReservas : [], entradasDeInvitados: entradasInv, loSuyo: miLoSuyo } } : undefined })
         : null,
-    [route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, cambio, pago, compartido, gastosCompartidos, esInvitado],
+    [route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, cambio, pago, compartido, gastosCompartidos, esInvitado, yoId, adminId, todosIds, grupoLoSuyo, entradasInv, miLoSuyo, misReservas],
   )
   return { presupuesto, cambio }
 }

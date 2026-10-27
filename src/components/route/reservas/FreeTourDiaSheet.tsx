@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Route } from '../../../lib/types'
-import { aplicarFreeTour } from '../../../lib/rebuildDay'
 import { alDia } from '../../../lib/nombreDeDia'
 import { anadirFreeTourEnDia, diaSugeridoParaFreeTour, planearFreeTour, viajeConFreeTour } from '../../../lib/freeTourEnDia'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -10,7 +9,7 @@ import { Icono } from '../../ui/Icono'
 
 /**
  * (Tanda 10N5, apartado 1) «¿A qué día lo añadimos?» para el Free Tour, la MISMA hoja que el resto de sitios (`AddToDaySheet`): los días del viaje, el primero donde encaja ya marcado. Un día que no se
- * puede rehacer sin avisar (cosas puestas a mano, una entrada con hora…) sale sin elegir y con su motivo debajo. Sin hora: el Free Tour queda a la hora de nuestro día escrito. El lo hace igual el
+ * puede rehacer sin avisar (cosas puestas a mano, una entrada con hora…) sale sin elegir y con su motivo debajo. Sin hora: el Free Tour queda a la hora de nuestro día escrito. (10N6) Aquí ya no se quita el Free Tour: se quita como cualquier parada (sus tres puntitos, «Quitar parada»). Lo hace igual el
  * administrador, quien edita y quien solo recomienda (a este le sale en su propuesta como un solo cambio).
  */
 export function FreeTourDiaSheet({ route, onClose }: { route: Route; onClose: () => void }) {
@@ -31,14 +30,6 @@ export function FreeTourDiaSheet({ route, onClose }: { route: Route; onClose: ()
     setBusy(false)
     if (r.ok === false) setError(r.texto)
     else onClose()
-  }
-  const quitar = async () => {
-    setBusy(true)
-    setError(null)
-    const ok = await aplicarFreeTour(null)
-    setBusy(false)
-    if (ok) onClose()
-    else setError('No se han podido rehacer todos los días. Prueba otra vez.')
   }
 
   return createPortal(
@@ -88,11 +79,6 @@ export function FreeTourDiaSheet({ route, onClose }: { route: Route; onClose: ()
           <button type="button" disabled={!elegido || busy} onClick={anadir} data-free-tour-anadir="1" className="h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98] disabled:opacity-40">
             {busy ? 'Rehaciendo tus días…' : elegido ? `${yaLoTiene ? 'Pasar' : 'Añadir'} ${alDia(route, elegido.dayNumber)}` : 'Ningún día encaja'}
           </button>
-          {yaLoTiene && (
-            <button type="button" disabled={busy} onClick={quitar} className="mt-2 h-11 w-full rounded-2xl text-caption font-semibold text-text-soft underline underline-offset-2 hover:text-text disabled:opacity-50">
-              Quitar el Free Tour
-            </button>
-          )}
         </div>
       </div>
     </div>,

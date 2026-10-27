@@ -90,7 +90,7 @@ export function RemoveReservationDialog({ name, onCancel, onConfirm }: { name: s
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onCancel} />
       <div className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[420px] md:rounded-[28px]">
         <h2 id="remove-reservation-heading" className="font-display text-[24px] leading-[1.15] text-text">
-          ¿Quitar {name} de tu viaje?
+          ¿Quitamos {name} de tu viaje?
         </h2>
         <p className="mt-4 rounded-2xl border border-accent-gold/50 bg-accent-gold/15 px-4 py-3 text-[14.5px] leading-snug text-text">
           Quitarla de tu viaje no cancela tu reserva. <strong>Cancela primero tu reserva</strong> y después quítala aquí.
@@ -100,7 +100,7 @@ export function RemoveReservationDialog({ name, onCancel, onConfirm }: { name: s
             Cancelar
           </button>
           <button type="button" onClick={onConfirm} className="h-12 flex-1 rounded-full bg-accent-red text-white text-[15px] font-medium transition-transform active:scale-[.98]">
-            Quitar del viaje
+            Sí, quitar
           </button>
         </div>
       </div>

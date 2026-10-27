@@ -135,7 +135,7 @@ const modo = async (a, m) => {
   await a.evaluar("Array.from(document.querySelectorAll('[data-opcion-hoja]')).find((b) => /Eliminar día/.test(b.textContent)).click(); true")
   await a.esp(900)
   const conf = await a.evaluar(`(() => { const h = document.querySelector('[data-hoja="confirmar"]'); return h ? { tirador: Boolean(h.querySelector('[data-hoja-tirador]')), cerrar: Boolean(h.querySelector('[aria-label="Cerrar"]')), texto: h.innerText.replace(/\\s+/g, ' ') } : null })()`)
-  debe(conf?.tirador && conf?.cerrar && /Eliminar/.test(conf?.texto ?? ''), 'hojas', `«¿Eliminar…?» sale como hoja (${conf?.texto})`)
+  debe(conf?.tirador && conf?.cerrar && /Eliminar|Quitamos/.test(conf?.texto ?? ''), 'hojas', `«¿Eliminar…?» sale como hoja (${conf?.texto})`)
   await cap(a, 'confirmar_dia')
   await a.evaluar("document.querySelector('[data-hoja=\"confirmar\"] [aria-label=\"Cerrar\"]').click(); true")
   await a.esp(600)

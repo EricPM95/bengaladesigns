@@ -20,7 +20,7 @@ export function ConfirmDeleteButton({ itemLabel, onConfirm }: ConfirmDeleteButto
   if (confirming) {
     return (
       <div className="space-y-2 rounded-xl border border-accent-red/30 bg-accent-red/5 p-3">
-        <p className="text-small text-text">¿Seguro que quieres eliminar {itemLabel}?</p>
+        <p className="text-small text-text">¿Quitamos {itemLabel}?</p>
         <div className="flex gap-2">
           <button
             type="button"
@@ -34,7 +34,7 @@ export function ConfirmDeleteButton({ itemLabel, onConfirm }: ConfirmDeleteButto
             onClick={onConfirm}
             className="flex-1 rounded-lg bg-accent-red py-1.5 text-small font-semibold text-white hover:opacity-90"
           >
-            Sí, eliminar
+            Sí, quitar
           </button>
         </div>
       </div>

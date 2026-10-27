@@ -8,12 +8,14 @@ import { isManualRoute } from '../../../lib/manualPlan'
 import { aplicarAvisoFueraDeDia, reservasFueraDeSuDia, type ReservaFueraDeDia } from '../../../lib/reservaFueraDeDia'
 import { BloqueShell, EstadoBloque, FlechaBloque, GR, ICONOS, IconoBloque, LineaReservada, tituloBloqueStyle } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
+import { FueraDeRutaFila } from './FueraDeRutaFila'
 import { FichaEntrada } from './FichaEntrada'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 import { Icono } from '../../ui/Icono'
 import { useEntradasDelGrupo, useReservasParaMi, reservaDelDuenoDe } from '../../../hooks/useEntradasDelGrupo'
 import { useReservasGrupoUi } from '../../../store/useReservasGrupoUi'
-import { entradasQueNoCuadran, idsIncluidos, textoQuienVa } from '../../../lib/reservasGrupo'
+import { entradasQueNoCuadran, idsIncluidos } from '../../../lib/reservasGrupo'
+import { frase, textoLaTienen } from '../../../lib/entradasDelGrupo'
 import { nombreDe } from '../../../store/useViajeCompartido'
 import type { Reservation } from '../../../lib/bookings'
 
@@ -71,15 +73,21 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
   const { enRuta, masEntradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
   const pedido = useReservasGrupoUi((state) => state.pedido)
   const limpiarPedido = useReservasGrupoUi((state) => state.limpiar)
-  const delDuenoDe = (item: BloqueEntrada) => (grupo.esInvitado && !item.reservation ? reservaDelDuenoDe(grupo.reservasDelDueno, item) : null)
+  // (Tanda 10N6 §1l) Las entradas de los demás —del dueño o de un invitado, da igual— se miran igual: la que me cubre sale como mía (verde), las que no me cubren, en azul con dorado y con quién las tiene.
+  const deOtrosDe = (item: BloqueEntrada) => (grupo.compartido && !item.reservation ? grupo.deOtros.filter((x) => reservaDelDuenoDe([x.reserva], item)) : [])
+  const delDuenoDe = (item: BloqueEntrada) => deOtrosDe(item)[0]?.reserva ?? null
+  const quienesDe = (item: BloqueEntrada) => frase([...new Set(deOtrosDe(item).flatMap((x) => grupo.nombresDe(x)))])
+  const textoDe = (item: BloqueEntrada) => textoLaTienen(route, deOtrosDe(item).map((x) => ({ nombres: grupo.nombresDe(x), reserva: x.reserva })))
+  const esMia = (id: string) => (grupo.esInvitado ? grupo.mias.some((m) => m.id === id) : grupo.reservasDelDueno.some((m) => m.id === id))
+  const compradorDe = (id: string) => nombreDe(grupo.gente.find((p) => p.id === grupo.deOtros.find((x) => x.reserva.id === id)?.compradorId)) || grupo.nombreAdmin || 'El dueño'
   // Los botones de la campana («Reservar la mía a la misma hora», «Ya la tengo») piden abrir la entrada de la reserva del dueño.
   useEffect(() => {
     if (!pedido) return
-    const reserva = grupo.reservasDelDueno.find((r) => r.id === pedido.reservaId)
+    const reserva = grupo.deOtros.find((x) => x.reserva.id === pedido.reservaId)?.reserva ?? grupo.reservasDelDueno.find((r) => r.id === pedido.reservaId)
     const item = reserva ? [...enRuta, ...masEntradas].find((candidato) => reservaDelDuenoDe([reserva], candidato)) : null
     limpiarPedido()
     if (!reserva || !item) return
-    setTarget({ kind: 'entrada', refId: item.isFreeTour ? 'Free Tour' : item.name, name: item.name, placeNames: item.placeNames, currentDayId: item.day?.id ?? null, igualQue: { reserva, quien: grupo.nombreAdmin, modo: pedido.accion === 'misma-hora' ? 'comprar' : 'tengo' } })
+    setTarget({ kind: 'entrada', refId: item.isFreeTour ? 'Free Tour' : item.name, name: item.name, placeNames: item.placeNames, currentDayId: item.day?.id ?? null, igualQue: { reserva, quien: compradorDe(reserva.id), modo: pedido.accion === 'misma-hora' ? 'comprar' : 'tengo' } })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pedido])
   if (enRuta.length === 0 && masEntradas.length === 0) return null
@@ -140,11 +148,12 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                   item.reservation ? (
                     <div key={item.name} className="flex flex-col gap-2" data-entrada-fila={item.name}>
                       {/* (La del dueño que le cubre a quien mira: no es suya para cambiarla, sin «Cambiar».) */}
-                      {grupo.esInvitado && !grupo.mias.some((m) => m.id === item.reservation!.id) ? (
-                        <LineaReservada nombre={item.name} meta={metaReserva(route, item.reservation)} nota={`${grupo.nombreAdmin || 'El dueño'} la ha reservado para ti`} />
+                      {!esMia(item.reservation!.id) ? (
+                        <LineaReservada nombre={item.name} meta={metaReserva(route, item.reservation)} nota={`${compradorDe(item.reservation!.id)} la ha reservado para ti`} />
                       ) : (
                         <LineaReservada nombre={item.name} meta={metaReserva(route, item.reservation)} nota={grupo.compartido && !grupo.esInvitado ? paraQuienTexto(item.reservation) : undefined} onChange={() => setTarget({ ...targetOf(item), existing: item.reservation })} />
                       )}
+                      {item.reservation.fueraDeRuta && <FueraDeRutaFila reservaId={item.reservation.id} esFreeTour={item.isFreeTour} />}
                       {avisoDe(item.reservation.id) && <AvisoFueraDeDiaTarjeta aviso={avisoDe(item.reservation.id)!} />}
                       {noCuadran.filter((aviso) => aviso.cambio.reservaId === item.reservation!.id).map((aviso) => (
                         <p key={aviso.id} data-entrada-no-cuadra className="rounded-[14px] px-3.5 py-2.5 text-[12.5px] leading-snug text-text" style={{ background: 'color-mix(in srgb, rgb(var(--accent-gold)) 14%, transparent)' }}>
@@ -160,10 +169,10 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                       name={item.name}
                       delGrupo
                       buyLabel="Reservar la mía a la misma hora"
-                      onBuy={() => setTarget({ ...targetOf(item), igualQue: { reserva: delDuenoDe(item)!, quien: grupo.nombreAdmin, modo: 'comprar' } })}
+                      onBuy={() => setTarget({ ...targetOf(item), igualQue: { reserva: delDuenoDe(item)!, quien: quienesDe(item), modo: 'comprar' } })}
                       reservedTime={null}
-                      notes={[{ text: textoQuienVa(grupo.nombreAdmin, route, delDuenoDe(item)!) }]}
-                      onAdd={() => setTarget({ ...targetOf(item), igualQue: { reserva: delDuenoDe(item)!, quien: grupo.nombreAdmin, modo: 'tengo' } })}
+                      notes={[{ text: textoDe(item) }]}
+                      onAdd={() => setTarget({ ...targetOf(item), igualQue: { reserva: delDuenoDe(item)!, quien: quienesDe(item), modo: 'tengo' } })}
                       onChange={() => setTarget(targetOf(item))}
                     />
                   ) : (

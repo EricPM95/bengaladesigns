@@ -98,9 +98,10 @@ export function CambiarDiaSheet({ route, excursion, onClose, onDone }: { route: 
         <ConfirmDialog
           alto
           eyebrow="Tu viaje"
-          text="¿Estás seguro?"
+          text={`¿Cambiamos ${elDia(route, elegida.day.dayNumber)} por la excursión?`}
           detail={textoDeConfirmar(route, elegida.day, excursion, elegida.perdida)}
-          confirmLabel="Cambiar"
+          peligro
+          confirmLabel="Sí, cambiar"
           cancelLabel="Cancelar"
           onCancel={() => setAsking(false)}
           onConfirm={() => {

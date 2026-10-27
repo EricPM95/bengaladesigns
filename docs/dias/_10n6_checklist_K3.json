@@ -1,0 +1,191 @@
+[
+  {
+    "apartado": "1d",
+    "punto": "«Cerca de ti» es del pase: sin pase, en azul oscuro con el candado dorado; con pase, como una opción más",
+    "estado": "hecho",
+    "nota": "Ya estaba así desde la 10N5 (pestaña bloqueada de InterruptorElegir). Comprobado de nuevo en la app: sin pase azul oscuro con anillo dorado y candado; con pase sin candado y sin dorado.",
+    "donde": "EXPLORAR > abre cualquier tarjeta (p. ej. Restaurantes) > selector «Recomendados | Cerca de ti» debajo del buscador",
+    "captura": "docs/dias/capturas_jutrip/10n6_explorar_pestanas_sin_pase.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1d",
+    "punto": "«Recomendados» es gratis: en claro, con el marfil, el blanco y el dorado de la app",
+    "estado": "hecho",
+    "nota": "Sin pase, «Recomendados» (la elegida) va en degradado blanco-marfil con borde dorado #D2B67A y letra oscura.",
+    "donde": "EXPLORAR > abre una tarjeta > «Recomendados» (sin pase)",
+    "captura": "docs/dias/capturas_jutrip/10n6_explorar_pestanas_sin_pase.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1d",
+    "punto": "La regla: si en un grupo de opciones una es del pase (azul con candado), la elegida gratis va en claro con dorado; si no hay ninguna del pase, el estilo de elegir de siempre (oscuro)",
+    "estado": "hecho",
+    "nota": "Hecho en InterruptorElegir (src/components/ui/Elegir.tsx): si alguna opción es `bloqueada`, la elegida que no lo es se pinta en claro con dorado (data-clara-dorado). Con pase, o en cualquier otro grupo sin opción del pase, sigue el azul oscuro. Hoy solo EXPLORAR tiene un grupo con una opción del pase.",
+    "donde": "EXPLORAR sin pase (claro con dorado) y con pase (oscuro de siempre)",
+    "captura": "docs/dias/capturas_jutrip/10n6_explorar_pestanas_con_pase.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1e",
+    "punto": "«Cambiar parada» abre EXPLORAR como siempre (la lista con su mapa)",
+    "estado": "hecho",
+    "nota": "Ya era el explorador compartido (PlaceExplorerScreen). Se queda con «Atracciones» y «Miradores» puestos al abrir (se pueden cambiar) y solo con sitios para visitar (sin restaurantes, baños ni excursiones).",
+    "donde": "DÍAS > tres puntitos de una parada > Cambiar parada",
+    "captura": "docs/dias/capturas_jutrip/10n6_cambiar_parada_explorar.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1e",
+    "punto": "Arriba una franja «Elige el sitio que cambia por el {parada}» con la ✕ para cancelar",
+    "estado": "hecho",
+    "nota": "Sustituye a la pregunta suelta «¿Por cuál quieres cambiar…?». Lleva el artículo del sitio (tabla de artículos) y la ✕ cierra sin cambiar nada.",
+    "donde": "DÍAS > tres puntitos > Cambiar parada > franja debajo del título",
+    "captura": "docs/dias/capturas_jutrip/10n6_cambiar_parada_explorar.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1e",
+    "punto": "El + de cada sitio, con el icono de cambiar (⇄): al tocarlo se cambia la parada, con el aviso de siempre y [Deshacer]",
+    "estado": "hecho",
+    "nota": "Ya estaba (⇄ fino sin relleno). Probado: cambia la parada en su día y hora, vuelve a DÍAS con el aviso y [Deshacer] la devuelve.",
+    "donde": "Cambiar parada > ⇄ a la derecha de cada tarjeta",
+    "captura": "docs/dias/capturas_jutrip/10n6_cambiar_parada_aviso.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1e",
+    "punto": "El corazón, igual que siempre (suma o quita el like)",
+    "estado": "hecho",
+    "nota": "Cada fila lleva su corazón con su número (MeGusta de tarjeta), el mismo de EXPLORAR.",
+    "donde": "Cambiar parada > corazón de cada tarjeta",
+    "captura": "docs/dias/capturas_jutrip/10n6_cambiar_parada_explorar.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1e",
+    "punto": "Al tocar el resto de la fila se ve la información del sitio (como en EXPLORAR) con el botón «Cambiar por este»",
+    "estado": "hecho",
+    "nota": "La ficha de siempre (Resumen, Entradas, Tips) con la barra de abajo «Cambiar por este» (antes «Cambiar por este →»).",
+    "donde": "Cambiar parada > tocar el nombre o la foto de un sitio",
+    "captura": "docs/dias/capturas_jutrip/10n6_cambiar_parada_informacion.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1e",
+    "punto": "Los sitios que ya están en la ruta, con su «En ruta»",
+    "estado": "hecho",
+    "nota": "Antes decían «Ya en tu viaje»; ahora «✓ En ruta», como en EXPLORAR. Sin ⇄ en esos.",
+    "donde": "Cambiar parada > sitios que ya están en alguno de los días",
+    "captura": "docs/dias/capturas_jutrip/10n6_cambiar_parada_explorar.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1f",
+    "punto": "Bloque «Tus recuerdos» de la propuesta A entre la cabecera de la ficha y las pestañas, exactamente como en Design",
+    "estado": "hecho",
+    "nota": "Componente nuevo TusRecuerdos (src/components/route/fotos/TusRecuerdos.tsx): tarjeta marfil con borde dorado, icono o hasta 3 miniaturas solapadas y botón dorado. Medidas y colores de Recuerdos Ficha A.",
+    "donde": "DÍAS > tocar una parada > ficha, debajo del nombre y las pastillas",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_sin_fotos.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_recuerdos_sin_fotos.jpg"
+  },
+  {
+    "apartado": "1f",
+    "punto": "Sin fotos: «Tus recuerdos» y debajo «Guarda tus fotos. Las verás también en tu álbum.», con el botón dorado [+ Añadir]",
+    "estado": "hecho",
+    "nota": "Con los textos de Eric, no los de Design.",
+    "donde": "Ficha de una parada sin fotos",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_sin_fotos.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_recuerdos_sin_fotos.jpg"
+  },
+  {
+    "apartado": "1f",
+    "punto": "Con fotos: las miniaturas, «Tus recuerdos» y debajo «3 fotos · También en tu álbum», con [Ver]",
+    "estado": "hecho",
+    "nota": "«1 foto» en singular. Probado con 1 foto (sin pase) y con 3 (con pase).",
+    "donde": "Ficha de una parada con fotos guardadas",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_tres_fotos_con_pase.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_recuerdos_con_fotos.jpg"
+  },
+  {
+    "apartado": "1f",
+    "punto": "La propuesta B (la barra oscura «Mis fotos» bajo la foto) no se usa",
+    "estado": "hecho",
+    "nota": "No existe en el código (la prueba lo comprueba).",
+    "donde": "Ficha de cualquier parada",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_sin_fotos.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1f",
+    "punto": "Fuera la cámara de encima de la foto (BotonFotoParada)",
+    "estado": "hecho",
+    "nota": "La ficha ya no la monta. El fichero BotonFotoParada.tsx sigue en el repo sin usarse en la app (lo importan pruebas antiguas); se puede borrar en la 10S.",
+    "donde": "Ficha de cualquier parada: la foto de 118 px sin botón en la esquina",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_sin_fotos.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_recuerdos_sin_fotos.jpg"
+  },
+  {
+    "apartado": "1f",
+    "punto": "Sale siempre, también antes del viaje",
+    "estado": "hecho",
+    "nota": "Sale en cualquier ficha cuando hay ruta abierta, también la que se abre desde EXPLORAR (sin día): ahí las fotos van al día de la ruta donde ya está ese sitio o, si no está, al día 1. Si Eric prefiere otra cosa para sitios que no están en la ruta, se cambia en una línea.",
+    "donde": "EXPLORAR > tocar un sitio > ficha",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_ficha_explorar.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1f",
+    "punto": "Al tocarlo, la hoja «Tus recuerdos» con las tarjetas «Hacer una foto · Con la cámara de la app» y «Elegir de la galería · Solo fotos de tu viaje», y debajo «Tus fotos · 3»",
+    "estado": "hecho",
+    "nota": "Hoja con el formato de tarjetas de la 10N4 (HojaOpciones), con su › como en Design. Las fotos se tocan para verlas en grande.",
+    "donde": "Ficha > [+ Añadir] o [Ver]",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_hoja_tres_fotos_con_pase.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_recuerdos_hoja.jpg"
+  },
+  {
+    "apartado": "1f",
+    "punto": "Las fotos van a la misma parada de ese día y al álbum del viaje, sin cambiar nada por dentro",
+    "estado": "hecho",
+    "nota": "Usa subirFoto de fotosViaje.ts tal cual. Probado contra Supabase real (se borran al acabar): día 1, parada correcta, aparecen en el álbum.",
+    "donde": "Subir una foto y abrir Perfil > el viaje > álbum",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_hoja_tres_fotos_con_pase.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1f",
+    "punto": "Sin pase, una foto por sitio: con una, su miniatura y «1 foto · También en tu álbum» con [Ver]; en la hoja, «Cambiar la foto» en lugar de «Hacer una foto». Con pase, todas las que quiera",
+    "estado": "hecho",
+    "nota": "«Cambiar la foto» abre el selector del móvil (cámara o galería) y sustituye a la vieja (sigue habiendo 1).",
+    "donde": "Ficha de una parada, sin pase, con una foto guardada",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_hoja_una_foto_sin_pase.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1f",
+    "punto": "Al intentar guardar más de una sin pase, el aviso del pase con «Sin pase, guardas 1 foto por sitio.» y «Guarda todas las que quieras y crea tus recuerdos.»; [Ver] lleva a lo que enseña el pase; si no quiere el pase, puede cambiar su foto por la nueva",
+    "estado": "hecho",
+    "nota": "Con una foto y sin pase, «Elegir de la galería» abre el aviso (abrirAvisoPase('segunda_foto'), del agente K2) en lugar del selector; si elige varias a la vez, se guarda la primera y sale el aviso. [Ver el Pase Roma] es de K2. Para cambiarla está «Cambiar la foto».",
+    "donde": "Ficha sin pase con una foto > [Ver] > Elegir de la galería",
+    "captura": "docs/dias/capturas_jutrip/10n6_recuerdos_aviso_pase_segunda_foto.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n6_design_pase_estilo_04.jpg"
+  },
+  {
+    "apartado": "1f",
+    "punto": "Si las fotos sirven para algún logro (como «Visto con fotos»), que siga funcionando igual; decir para qué se usan hoy",
+    "estado": "hecho",
+    "nota": "No se ha tocado nada de eso. Hoy las fotos de las paradas (tabla trip_photos, bucket fotos-viaje) sirven para: el álbum de cada viaje en el Perfil, la portada del viaje, «Tus fotos de hoy» en HOY, la tarjeta de recuerdos en RUTA y «Después del viaje», el efecto de la foto que vuela al álbum, el borrado del viaje y las miniaturas de V8. El logro «Visto con fotos» va aparte: usa su propio flujo (VistoFlujo, cámara de la app con validación del servidor) y solo añade la foto al álbum con subirFoto; lo de la ficha no entra en ese flujo.",
+    "donde": "Perfil > viaje > álbum; HOY > Tus fotos de hoy",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "0a",
+    "punto": "El marco de la foto del perfil, a 118 px como en Design (comprobar que no tapa nada)",
+    "estado": "hecho",
+    "nota": "CuerpoConLogros (con marco de rango, sin logros) y el esqueleto de carga pasan de 104 a 118. A 390 px de ancho el nombre queda entero a la derecha y dentro de la pantalla.",
+    "donde": "Perfil (la cabecera)",
+    "captura": "docs/dias/capturas_jutrip/10n6_perfil_marco_118.jpg",
+    "captura_design": ""
+  }
+]

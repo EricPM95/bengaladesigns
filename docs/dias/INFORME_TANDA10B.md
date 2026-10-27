@@ -1947,3 +1947,285 @@ Cada punto del prompt, en el mismo orden. La misma lista, con casillas y cada ca
   *Dónde:* No es de móvil.
 
 **Pruebas:** Prueba de la Tanda 10N5: 493 comprobaciones, 0 fallos (Free Tour 57, SQL del aviso 12, unirse 53, perfil 47, pase 217, cada uno 60+15, gastos 11+3, avisos 18). pruebaJutrip 129/0.
+
+---
+
+## 10N6 — Más arreglos del repaso de Eric (27-oct)
+
+**Estado:** hecho y probado. Prueba nueva `pruebaTanda10N6` (confirmaciones, aviso del pase, EXPLORAR, recuerdos, perfil a 118 px, cuentas y entradas). No se ha tocado el motor de rutas, así que no hace falta la muestra de 60 fechas. Design al día con el `RETOQUES.zip` nuevo (`Recuerdos Ficha`, `Pase Estilo` 04, `Cuentas Modo` copiada para la 10N7; `Pase Premium` no se usa).
+
+### Migración que tienes que aplicar (a mano, en el editor SQL de Supabase)
+- `0053_entradas_de_invitados_y_avisos_de_lo_suyo.sql` — idempotente, va después de la 0042 y la 0049. Sin ella: no llega el aviso de una entrada reservada por un invitado, y los avisos de «lo suyo» siguen como antes («Se ha cambiado el tuyo» siempre y un aviso por cada cambio). Todo lo demás (ficha, DÍAS, RESERVAS, presupuesto, cuentas) funciona sin ella.
+- Siguen sin aplicar las de la 10N5: `0047`, `0048`, `0049`, `0051` (la 0050 no existe, es un salto de numeración).
+
+### Respuestas a tus dudas de la 10N5 (apartado 0a)
+- D1-FT/D3: se queda como está (el día elegido pasa a D3). El botón de DÍAS en azul oscuro con dorado: se queda. Marco de la foto del perfil: ahora a 118 px. ✈ de «Lo de cada uno»: se queda. Vuelo propio y alojamiento propio en viajes de varios destinos: en gris, como está. Sin D2/D3 el Free Tour no se añade y se dice por qué: bien. Sonido: el que hay. Escena del pasaporte: pendiente de que me digas el segundo exacto.
+- Aviso «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.»: ahora solo a quien tenía su propio vuelo o alojamiento (campo `suyo_cambiado`); a los demás marcados, «Eric ha puesto el vuelo para todos.».
+- Varios cambios seguidos del vuelo o alojamiento del administrador: se juntan en un solo aviso (15 minutos, sin leer), con lo último que quedó.
+- Presupuesto de un invitado: enseña lo suyo (su vuelo y alojamiento si los tiene, o los del administrador si va en ellos); nunca los del administrador si no va en ellos.
+
+### Qué se ha hecho
+- **Free Tour (§1):** la hoja vieja «¿A qué hora lo quieres?» ya no sale desde ningún sitio. Ya no salía desde la 10N5 en RESERVAS, «+ Añadir parada», EXPLORAR y la ficha (no faltaba quitarla de ninguno); solo quedaba el envoltorio `FreeTourSheet.tsx`, que reparte entre «¿A qué día lo añadimos?» y la hoja de la ruta a mano. Fuera «Quitar el Free Tour» de esa hoja: se quita como cualquier parada (tres puntitos, «Quitar parada», la última, en rojo). Sin reserva, vuelve a D2/D1 sin preguntar y con aviso «Free Tour quitado de tu ruta» y [Deshacer]. La ruta a mano sigue como hoy.
+- **Elegir y confirmar (§1b):** tarjetas para elegir, confirmación solo cuando se pierde algo, con pregunta con artículo y botón rojo (`ConfirmDialog` admite ahora `peligro`). Quitar una parada normal ya no pregunta: avisa «Quitada de tu ruta: …» con [Deshacer], y su tarjeta dice «Sale de tu ruta. Puedes deshacerlo». «Personas del viaje»: «¿Quitamos a Ana del viaje?» · «Dejará de verlo y su plaza del pase vuelve a ti.» · [Cancelar] [Sí, quitar].
+  - Confirmaciones que quedan en la app: parada con entrada o Free Tour reservado (3 botones); eliminar un día («¿Quitamos el sábado 17 de tu viaje?»); acortar fechas en ruta a mano; cambiar un día por la excursión; recuperar un día o la ruta («Sí, recuperar», sin rojo porque no quita); quitar una reserva; quitar vuelo, alojamiento o seguro; quitar una excursión reservada; quitar a una persona; quitar una foto («¿Quitamos esta foto?»); salir de un viaje; eliminar un viaje; borrar la cuenta (estas tres, sin cambio de texto). Capturas: parada con entrada, Free Tour, eliminar día y parada normal quitada; las demás sin captura.
+- **Quitar una parada con entrada (§1c):** salen todas las opciones y las imposibles en gris con el porqué («Cambiar parada · Tienes entrada para el Coliseo», «Mover a otro día · Tienes entrada para el lunes 19 a las 9:15»). «Quitar parada», la última, en rojo: «Sale de tu ruta. Tienes su entrada: te preguntamos qué hacer con ella.» Confirmación: «¿Quitamos el Coliseo de tu ruta?» · [Quitar solo de la ruta] · [Quitar también la entrada] (rojo) · [Cancelar]. Si se quita solo de la ruta, la entrada se queda en RESERVAS con «Ya no está en tu ruta» y [Volver a ponerla en su día] (marca nueva `fueraDeRuta`, el motor no la recibe). Probado: «solo», «también», [Cancelar] y [Deshacer].
+- **«Cerca de ti» y «Recomendados» (§1d):** «Cerca de ti» sin pase en azul oscuro con candado dorado (10N5); la regla nueva está en `Elegir.tsx`: si una opción del grupo es del pase, la elegida gratis va en claro con dorado. Hoy solo EXPLORAR tiene un grupo así.
+- **«Cambiar parada» (§1e):** EXPLORAR de siempre con franja «Elige el sitio que cambia por el {artículo} {parada}» y ✕, el ⇄ de cada sitio, el corazón, y tocar la fila abre la información con «Cambiar por este». Los que ya están, «✓ En ruta».
+- **Tus recuerdos (§1f):** propuesta A de Design, con tus textos, entre la cabecera y las pestañas de la ficha (`TusRecuerdos.tsx`). Fuera la cámara de encima de la foto (`BotonFotoParada.tsx` queda sin usar, borrable en la 10S). Hoja «Tus recuerdos» con `HojaOpciones`. Sin pase, una foto por sitio con «Cambiar la foto»; la segunda abre el aviso del pase. Las fotos van a la misma parada y día y al álbum del viaje (`subirFoto`, sin cambios por dentro).
+  - **Para qué se usan hoy las fotos de las paradas:** tabla `trip_photos` y bucket privado `fotos-viaje`: álbum del viaje en el perfil, portada del viaje, «Tus fotos de hoy» en HOY, tarjeta de recuerdos en RUTA y «Después del viaje», efecto de la foto que vuela al álbum, borrado del viaje y miniaturas de logros. El logro «Visto con fotos» va por su propio flujo (`VistoFlujo`, con cámara de la app validada en el servidor) y no se ha tocado.
+- **El aviso del pase (§1g):** una sola pieza para toda la app y todos los destinos (`abrirAvisoPase`, `AvisoPase.tsx`, textos en un solo archivo, `src/lib/avisoPaseTextos.ts`, con hueco para textos por destino). Si ya tiene pase no sale nunca.
+
+  | Dónde sale (aviso pequeño) | Línea 1 | Línea 2 |
+  |---|---|---|
+  | Segunda foto en un sitio, sin pase | «Sin pase, guardas 1 foto por sitio.» | «Guarda todas las que quieras y crea tus recuerdos.» |
+  | «Escuchar historia» tras la de prueba (HOY v1 y v2) | «Ya has escuchado tu historia de prueba.» | «Escucha todas las historias de tu viaje.» |
+  | Pestaña «Cerca de ti» de EXPLORAR | «Tu ruta ya te dice qué hay en cada parada.» | «Descubre lo que tienes cerca de ti, allí donde estés.» |
+  | Baños (EXPLORAR) | «Tu ruta ya te dice qué ver y dónde comer.» | «Encuentra los baños más cercanos en cada momento.» |
+  | Fuentes (EXPLORAR) | «Tu ruta ya te dice qué ver y dónde comer.» | «Encuentra las fuentes de agua más cercanas.» |
+  | HOY (preparada, sin llamador) | «Solo tienes HOY abierto el día de prueba.» | «Tu día, ajustado en directo a donde estás y a la hora que es.» |
+  | Genérica (preparada, sin llamador) | «Esto no está en la versión gratis.» | «Desbloquea todo lo que el pase añade a tu viaje.» |
+
+  **Revisa que sean verdad** los textos de «Cerca de ti», «Baños» y «Fuentes», «HOY» y la genérica: son míos (de K2) y prometen cercanía; no me consta que el pase lo haga tal cual. Los de la segunda foto y «Escuchar historia» son los que aprobaste.
+  - **Llevan directo a la película del pase** (sin aviso pequeño; si ya la vio, al final): la pastilla «Pase Roma» de RUTA; las cajas pequeñas (zona del alojamiento en RESERVAS y en DÍAS, «Cómo llegar a tu alojamiento», Llegada y vuelta, ajustes de llegada y de vuelta en DÍAS, Logros); las tarjetas «Con el pase tendrás» de HOY y su «Ver el Pase de Roma»; «Tu último día»; y tocar los logros cerrados.
+  - **La regla:** si lo que se toca es una función concreta que el pase desbloquea y no se explica en su sitio, aviso pequeño; si se toca algo cuyo fin es ver el pase, o que ya se explica solo, película.
+- **Lista del pase (§1h):** `data/pase/lista_ajustes.json` tiene un campo nuevo `titulos` (cambia el nombre de la fila además de su línea): «Todas las fotos que quieras · En cada sitio y en tu álbum.» y «Todas las historias · De cada sitio, como una audioguía en tu móvil.». «Empiezas cerca de donde duermes» ya no existe (la fila es «Adaptamos tu ruta a tu alojamiento · El primer día, y como mucho el último, según tu zona.»). «La puesta de sol y lo de mañana» fuera de `prometidas_sin_hacer`; por eso la lista final de la película tiene ahora una fila más.
+- **Música de la película (§1i):** `public/sonidos/pelicula_pase.mp3` **no está**: queda todo preparado (`src/lib/peliculaMusica.ts`) y la película funciona igual sin el archivo, sin errores. Con el archivo: empieza al tocar [Ver], volumen 0,22 con fundidos de 1,6 s, bucle, sigue al saltar de escena y con [Saltar], baja y se para al cerrar, se para al salir de la app, respeta «Sonido de los momentos», botón de silencio (altavoz fino gris) a la izquierda de [Saltar] que recuerda lo elegido. **Falta oírla con tu pista y comprimirla** a ~96 kbps con `scripts/destino/comprimirMusicaPelicula.sh` (no hay `ffmpeg` aquí; sin probar).
+- **Presupuesto sin gastos (§1j):** el mismo bloque «Ruta» (tarjeta blanca con su icono), vacío y sin importe, con «Aquí se irán añadiendo todos los gastos de tu ruta.»; fuera el recuadro de rayas; debajo «Extras» con [+ Añadir gasto].
+- **Lo que es solo para ti (§1k):** una reserva o un gasto solo para quien lo paga es personal: no cuenta en «Del grupo» ni en «Cuentas del grupo», sale en su presupuesto con candado y «Solo tú», y cuenta en «Tu parte». Si es para otro o para varios, es del grupo. Lo mismo con alojamiento, coche y vuelos. Presupuesto y cuentas usan ahora la misma función (`entreDeLoDelAdmin`), así que cuadran.
+- **Entradas para varios (§1l):** **no funcionaba con invitados** (solo avisaba el administrador, y la ficha, DÍAS y RESERVAS solo miraban sus reservas). Ahora sí: módulo `entradasDelGrupo.ts`. A cada marcado le sale como suya (botón verde con ✓ en DÍAS, «Tu entrada» en la ficha, entrada en su RESERVAS); a los demás, botón azul con dorado y la ficha dice quién la tiene. Textos: «Eric y Ana la tienen para el jueves 12 · 9:15», «Eric, Ana y Laura la tienen…», «Eric la tiene a las 9:15 · Ana a las 11:00»; avisos «X ha reservado el Coliseo para ti · jueves 12 · 9:15» y «Eric y Ana han reservado el Coliseo · jueves 12 · 9:15. ¿Reservas la tuya a la misma hora?».
+
+### Pruebas
+- Prueba nueva `pruebaTanda10N6`: confirmar 61, aviso del pase 49, explorar 23, recuerdos 29, perfil 118 px 4, cuentas 65, entradas 12.
+- Batería completa: 139 pruebas; a la primera pasada buena quedaron 32 en MAL (una pasada anterior se descartó porque los servidores se habían caído). El triaje de dos agentes: **ninguna regresión real**. Expectativas antiguas que la 10N6 cambió a propósito (se actualizaron): `pruebaFase6y4_perfil` (un tercer sitio sube fotos), `pruebaTanda10B` («Hoy te dará» con los títulos nuevos), `pruebaTanda10G` y `10O_datos` (los bloqueados abren el aviso pequeño), `pruebaTanda10H` («Escuchar historia» abre el aviso), `pruebaTanda10N_cabecera` («¿Quitamos el sábado…?»), `pruebaTanda10N4_entradas` (el botón de «Tus recuerdos» en lugar de la cámara). El resto, fallos solo bajo carga que pasan sueltas con 0 fallos (hay que espaciar las pruebas de navegador; eso va a la 10S).
+- **`pruebaTanda10N6_recuerdos`:** pasa 29/0 con el Vite sin vigilar ficheros (`scripts/destino/_vite_estable.config.mjs`, el que usaron los agentes), pero con el Vite de desarrollo normal (recargas en caliente) falla siempre las mismas 3 comprobaciones de la sección «Con pase» («se guardan las 3», «van a la parada y al álbum», «tres miniaturas»). Comprobado a mano con un script aparte en ese mismo Vite: con pase, subir 3 fotos a la vez las guarda las 3 en unos 5 s (`listarFotos` = 3, sin error), así que `TusRecuerdos.tsx` y `subirFoto` funcionan. Es el mismo problema de módulos duplicados por las recargas en caliente que ya hizo que la batería arranque su propio Vite (10M); queda para la 10S. En el móvil: ficha de un sitio con pase → Tus recuerdos → Elegir de la galería → 3 fotos.
+- `pruebaTanda10N3_real` falla 2 comprobaciones suelta («el DUEÑO recibe en directo el cambio del viaje que hace Luis» y «el aviso viaje_cambiado de la campana», con 0 eventos Realtime). No es de esta tanda: parece de entorno (Realtime sin activar en `trips`/`avisos` del Supabase real, o migraciones 0041-0051 sin aplicar). Míralo cuando apliques las migraciones.
+- `pruebaTanda10N_compartir` necesita dos cuentas reales de Supabase y no se pudo pasar completa en local.
+- `pruebaTanda7_mover` da 5 fallos (filas «Mié 10 Mar», día de excursión, A5 mover, «{n} días» en `fechas.ts` y `HoyAntesV2.tsx`) que K3 dice no ser de su parte; revisar en la 10S.
+
+### Dudas para ti
+1. **Excursión (1c, «lo mismo con excursión»): a medias.** No es una parada con «···»; su reserva se quita desde su tarjeta (ya preguntaba) y «Pasar este día a Roma» ya la dejaba en RESERVAS. Ahora esa línea dice «Ya no está en tu ruta», pero sin botón de volver a ponerla. ¿Lo quieres?
+2. «Ya en tu viaje» → «✓ En ruta» en «Cambiar parada» (como EXPLORAR); el prompt decía «como hoy».
+3. Ficha abierta desde EXPLORAR (sin día): «Tus recuerdos» sale igual y las fotos van al día de la ruta donde ya está el sitio o, si no está, al día 1.
+4. «Cambiar parada» sigue abriendo con «Atracciones» y «Miradores» puestos (se pueden quitar). Si «como siempre» quiere decir sin filtros, es quitar `initialFilters` en `CambiarParada.tsx`.
+5. «Tus recuerdos» no sale en las pausas (`isBreak`); sí en el Free Tour.
+6. Los gastos [Para mí] de Extras siguen sin contar en «Tu parte» (así lo exigía `pruebaTanda10N_presupuesto`). Solo cuentan los personales de reservas, alojamiento, coche y vuelos. Si quieres que también cuenten, es una condición en `porPersonaDelPresupuesto`.
+7. Una entrada «solo para quien la paga» solo cambia el dinero: se ve y avisa igual, para que los demás reserven la suya a la misma hora (lo necesita «Eric la tiene a las 9:15 · Ana a las 11:00»).
+8. Un invitado ve en «Del grupo» solo lo que lo incluye, no el total del grupo (por la respuesta 8). El total completo sigue en «Cuentas del grupo».
+9. Quitar un Free Tour sin reserva rehace los días con el motor (tarda unos segundos); si el servidor falla, no cambia nada y avisa.
+10. Los textos de los avisos pequeños nuevos (tabla de arriba): revísalos, sobre todo «Cerca de ti», «Baños» y «Fuentes».
+11. La música: pásame `pelicula_pase.mp3` cuando la tengas.
+12. Lo que no se ha visto con dos cuentas reales (aceptar la propuesta del Free Tour, el aviso de entrada de un invitado, «Quitar a una persona» con su confirmación) lo pruebas tú con tus dos móviles después de aplicar las migraciones.
+
+
+### Lista de comprobación de la 10N6 (punto por punto)
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10N6.md y en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Design al día con RETOQUES.zip (sin uploads/ ni screenshots/): Recuerdos Ficha, Pase Estilo, Cuentas Modo (copiada, es de la 10N7); Pase Premium no se usa  
+  *Dónde:* No es de móvil.
+- ⚠️ A medias — La música (1i) la deja Eric en public/sonidos/pelicula_pase.mp3: si no está, queda preparado y se dice en el informe El archivo no está todavía. Todo queda preparado y la película funciona igual sin él.  
+  *Dónde:* Cuando pongas el mp3, abre la película del pase.
+
+**0a**
+
+- ✅ Hecho — El marco de la foto del perfil, a 118 px como en Design (comprobar que no tapa nada) CuerpoConLogros (con marco de rango, sin logros) y el esqueleto de carga pasan de 104 a 118. A 390 px de ancho el nombre queda entero a la derecha y dentro de la pantalla.  
+  *Dónde:* Perfil (la cabecera)  *Captura:* `docs/dias/capturas_jutrip/10n6_perfil_marco_118.jpg`
+- ✅ Hecho — 0a-6: «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.» solo a quien tenía su propio vuelo/alojamiento; a los demás, sin «Se ha cambiado el tuyo» Migración 0053 (reemplaza la función de la 0049 sin editarla). Sin aplicarla, sigue como antes.  
+  *Dónde:* Campana de Ana (con su vuelo) y de Laura (sin él)
+- ✅ Hecho — 0a-8: el presupuesto de un invitado enseña lo suyo (su vuelo y alojamiento si tiene los suyos, o los del administrador si va en ellos; nunca los del administrador si no va) También enseña solo las entradas del administrador que le incluyen.  
+  *Dónde:* Presupuesto como invitado › Transporte y alojamiento
+- ✅ Hecho — 0a-10: varios cambios seguidos del vuelo/alojamiento del administrador se juntan en un solo aviso (15 min, sin leer), con lo último que quedó Migración 0053.  
+  *Dónde:* Campana
+
+**1**
+
+- ✅ Hecho — Fuera la hoja vieja «¿A qué hora lo quieres?» del Free Tour, desde ningún sitio (RESERVAS, «+ Añadir parada», EXPLORAR, la ficha) La hoja de la hora ya había desaparecido en la 10N5 de los cuatro sitios (todos llevaban ya a FreeTourDiaSheet). Quedaba el envoltorio FreeTourSheet.tsx, que solo elige entre «¿A qué día lo añadimos?» (ruta nuestra) y la hoja de reserva (ruta a mano). Prueba: EXPLORAR · Entradas · + del Free Tour abre «¿A qué día lo añadimos?» y su texto no contiene «A qué hora», «Mañana», «Mediodía».  
+  *Dónde:* EXPLORAR > Entradas > Free Tour > + (también ficha del Free Tour y DIAS > + Añadir parada > Entradas). Cuenta con pase o sin él, da igual  *Captura:* `docs/dias/capturas_jutrip/10n6_freetour_hoja.jpg`
+- ✅ Hecho — «Quitar el Free Tour» fuera de esa hoja: se quita como cualquier parada (tres puntitos, «Quitar parada», la última, en rojo, con [Deshacer]) Se ha quitado el enlace «Quitar el Free Tour» de FreeTourDiaSheet (ahora, si ya lo tiene, la hoja dice «¿A qué día lo pasamos?» y solo mueve). «Quitar parada» sobre la parada del Free Tour en una ruta nuestra rehace los días a como estaban (D3→D2, D1-FT→D1) sin preguntar, con aviso «Free Tour quitado de tu ruta» y [Deshacer]. En ruta a mano, quita su parada (y su reserva si elige «también»). La fila de RESERVAS del Free Tour no tiene menú propio (solo [Cambiar] que abre la hoja de la reserva con «Eliminar reserva»), así que no hay menú de tarjetas que cambiar ahí.  
+  *Dónde:* DIAS > día con Free Tour > «···» del Free Tour > Quitar parada (la última, rojo)  *Captura:* `docs/dias/capturas_jutrip/10n6_freetour_menu.jpg`
+- ✅ Hecho — Las rutas a mano (sin días escritos) siguen como hoy: el Free Tour como una reserva más, con su día y su hora No se ha tocado esa rama (FreeTourComoReserva). Solo comprobado por código (la prueba corre con la ruta del motor).  
+  *Dónde:* Ruta a mano > RESERVAS > Entradas y Free Tour > Free Tour
+
+**1b**
+
+- ✅ Hecho — Las tarjetas (HojaOpciones) son para elegir entre varias opciones; la confirmación (hoja con dos botones) es para confirmar una sola decisión Se respetan las dos piezas. Quitar a una persona: tarjetas «Cambiar permiso / Quitar del viaje» y luego la confirmación. Parada con entrada: tarjetas y luego confirmación de tres botones.  
+  *Dónde:* DIAS > «···» de una parada; Perfil/Compartir > Personas del viaje  *Captura:* `docs/dias/capturas_jutrip/10n6_entrada_menu.jpg`
+- ✅ Hecho — Confirmación solo cuando se pierde algo (parada con entrada/reserva, eliminar un día, quitar a una persona, borrar un viaje). Quitar una parada normal: sin pregunta y con [Deshacer] («Sale de tu ruta. Puedes deshacerlo»; fuera «Se confirma antes») Quitar parada normal ya no pregunta: la quita, avisa «Quitada de tu ruta: Arco de Constantino» y [Deshacer] la devuelve. La tarjeta dice «Sale de tu ruta. Puedes deshacerlo».  
+  *Dónde:* DIAS > «···» de una parada normal > Quitar parada  *Captura:* `docs/dias/capturas_jutrip/10n6_parada_normal_quitada.jpg`
+- ✅ Hecho — La confirmación, más cercana y con el botón rojo: pregunta con artículo, una línea con lo que pasa, [Cancelar] [Sí, quitar]; fuera las comillas ConfirmDialog tiene ahora «peligro» (botón rojo). Textos nuevos: «¿Quitamos el sábado 17 de tu viaje?», «¿Quitamos esos días de tu viaje?» (acortar fechas, ruta a mano), «¿Cambiamos el martes por la excursión?», «¿Quitamos tu reserva de X?», «¿Quitamos el seguro de viaje?» (ConfirmDeleteButton), «¿Quitamos este vuelo?», «¿Quitamos {excursión} de tu viaje?», «¿Quitamos esta foto?». Quedan sin botón rojo las de «Recuperar» (no quitan, vuelven a como estaba) con «Sí, recuperar».  
+  *Dónde:* DIAS > «···» del día > Eliminar día; RESERVAS > una reserva > Eliminar  *Captura:* `docs/dias/capturas_jutrip/10n6_eliminar_dia.jpg`
+- ✅ Hecho — Ejemplo «Personas del viaje»: tarjetas «Cambiar permiso», «Quitar del viaje»; «Quitar del viaje» abre «¿Quitamos a Ana del viaje?» · «Dejará de verlo y su plaza del pase vuelve a ti.» · [Cancelar] [Sí, quitar] HojaQuitar reescrita: título «¿Quitamos a {nombre} del viaje?», línea «Dejará de verlo y su plaza del pase vuelve a ti.» (sin plaza, «Dejará de verlo. Lo que ya ha ganado se lo queda.»), y [Cancelar] [Sí, quitar] en rojo lado a lado. Mantiene el recuadro de la plaza del pase. Sin captura: necesita dos cuentas (Supabase); comprobado por código y por pruebaTanda10N_compartir (actualizada).  
+  *Dónde:* Perfil > Personas del viaje (administrador) > tocar a una persona > Quitar del viaje
+- ✅ Hecho — Repasar todas las confirmaciones de la app, ponerlas así y listarlas con su captura Lista en el informe final. Se quedan: parada con entrada/Free Tour reservado, eliminar día, recuperar día/ruta, cambiar un día por la excursión, acortar fechas a mano, quitar reserva (hoja y fichas de transporte/alojamiento/seguro…), quitar excursión reservada, quitar a una persona, salir de un viaje, eliminar un viaje, borrar la cuenta, borrar foto. Pasan a [Deshacer] sin pregunta: quitar una parada normal y quitar el Free Tour sin reserva. «Eliminar un viaje» y «Borrar tu cuenta» no se tocaron (ya tienen su hoja propia).  
+  *Dónde:* Ver informe
+
+**1c**
+
+- ✅ Hecho — Parada con entrada: que salgan todas las opciones, y las imposibles en gris diciendo por qué (Mover a otro día · «Tienes entrada para el jueves 26 a las 8:00», Cambiar parada · «Tienes entrada para el Coliseo»…) Cambiar parada y Mover a otro día, en gris con los textos pedidos; Mover antes y Mover después también en gris («Su hora la fija tu entrada de las 9:15»). Antes solo salía «Quitar del viaje».  
+  *Dónde:* DIAS > día con entrada reservada > «···» del Coliseo  *Captura:* `docs/dias/capturas_jutrip/10n6_entrada_menu.jpg`
+- ✅ Hecho — «Quitar parada», la última, en rojo, con la línea «Sale de tu ruta. Tienes su entrada: te preguntamos qué hacer con ella.» Exactamente ese texto.  
+  *Dónde:* Igual que el punto anterior  *Captura:* `docs/dias/capturas_jutrip/10n6_entrada_menu.jpg`
+- ✅ Hecho — Al tocarla, la confirmación: «¿Quitamos el Coliseo de tu ruta?» · «Tienes su entrada para el jueves 26 a las 8:00.» · [Quitar solo de la ruta] · [Quitar también la entrada] (rojo) · [Cancelar]; nunca se borra la entrada sin que lo elija Hoja baja con los tres botones; «Quitar solo de la ruta» es el destacado y lleva debajo «La entrada se queda en RESERVAS.»; [Cancelar] no toca nada. Probado: «solo» deja la reserva, «también» la borra, y [Deshacer] devuelve parada y entrada en los dos casos.  
+  *Dónde:* DIAS > «···» del Coliseo > Quitar parada  *Captura:* `docs/dias/capturas_jutrip/10n6_entrada_confirmacion.jpg`
+- ✅ Hecho — Si se quita solo de la ruta, la entrada sigue en RESERVAS con «Ya no está en tu ruta» y la opción de volver a ponerla en su día Reserva con marca nueva fueraDeRuta: el motor no la recibe (no fija ni mueve días) y no sale en avisos de choque de horas, día completo ni HOY. En RESERVAS, bajo su línea verde: «Ya no está en tu ruta» + [Volver a ponerla en su día]: devuelve la parada a su día y hora, fijada con la entrada (si el sitio ya está ese día porque se rehízo el viaje, no se duplica). Con [Deshacer].  
+  *Dónde:* RESERVAS > Entradas y Free Tour > (desplegar) > fila del Coliseo  *Captura:* `docs/dias/capturas_jutrip/10n6_entrada_ya_no_esta_en_tu_ruta.jpg`
+- ⚠️ A medias — Lo mismo con cualquier parada que tenga una reserva (Free Tour, excursión) Free Tour reservado: hecho (misma confirmación; «solo de la ruta» deja la reserva fuera de la ruta, probado). Excursión: la excursión no es una parada con su «···»; su reserva se quita desde la tarjeta (ya con confirmación) y el día se quita con «Pasar este día a Roma» (que ya dejaba la reserva en RESERVAS con noMueve); ahora esa reserva dice «Ya no está en tu ruta» en su línea, pero sin botón de volver a ponerla (eso sigue siendo cambiar el día a excursión). Duda al informe.  
+  *Dónde:* DIAS > día con Free Tour reservado > «···» del Free Tour > Quitar parada; RESERVAS > Excursiones  *Captura:* `docs/dias/capturas_jutrip/10n6_freetour_confirmacion.jpg`
+
+**1d**
+
+- ✅ Hecho — «Cerca de ti» es del pase: sin pase, en azul oscuro con el candado dorado; con pase, como una opción más Ya estaba así desde la 10N5 (pestaña bloqueada de InterruptorElegir). Comprobado de nuevo en la app: sin pase azul oscuro con anillo dorado y candado; con pase sin candado y sin dorado.  
+  *Dónde:* EXPLORAR > abre cualquier tarjeta (p. ej. Restaurantes) > selector «Recomendados | Cerca de ti» debajo del buscador  *Captura:* `docs/dias/capturas_jutrip/10n6_explorar_pestanas_sin_pase.jpg`
+- ✅ Hecho — «Recomendados» es gratis: en claro, con el marfil, el blanco y el dorado de la app Sin pase, «Recomendados» (la elegida) va en degradado blanco-marfil con borde dorado #D2B67A y letra oscura.  
+  *Dónde:* EXPLORAR > abre una tarjeta > «Recomendados» (sin pase)  *Captura:* `docs/dias/capturas_jutrip/10n6_explorar_pestanas_sin_pase.jpg`
+- ✅ Hecho — La regla: si en un grupo de opciones una es del pase (azul con candado), la elegida gratis va en claro con dorado; si no hay ninguna del pase, el estilo de elegir de siempre (oscuro) Hecho en InterruptorElegir (src/components/ui/Elegir.tsx): si alguna opción es `bloqueada`, la elegida que no lo es se pinta en claro con dorado (data-clara-dorado). Con pase, o en cualquier otro grupo sin opción del pase, sigue el azul oscuro. Hoy solo EXPLORAR tiene un grupo con una opción del pase.  
+  *Dónde:* EXPLORAR sin pase (claro con dorado) y con pase (oscuro de siempre)  *Captura:* `docs/dias/capturas_jutrip/10n6_explorar_pestanas_con_pase.jpg`
+
+**1e**
+
+- ✅ Hecho — «Cambiar parada» abre EXPLORAR como siempre (la lista con su mapa) Ya era el explorador compartido (PlaceExplorerScreen). Se queda con «Atracciones» y «Miradores» puestos al abrir (se pueden cambiar) y solo con sitios para visitar (sin restaurantes, baños ni excursiones).  
+  *Dónde:* DÍAS > tres puntitos de una parada > Cambiar parada  *Captura:* `docs/dias/capturas_jutrip/10n6_cambiar_parada_explorar.jpg`
+- ✅ Hecho — Arriba una franja «Elige el sitio que cambia por el {parada}» con la ✕ para cancelar Sustituye a la pregunta suelta «¿Por cuál quieres cambiar…?». Lleva el artículo del sitio (tabla de artículos) y la ✕ cierra sin cambiar nada.  
+  *Dónde:* DÍAS > tres puntitos > Cambiar parada > franja debajo del título  *Captura:* `docs/dias/capturas_jutrip/10n6_cambiar_parada_explorar.jpg`
+- ✅ Hecho — El + de cada sitio, con el icono de cambiar (⇄): al tocarlo se cambia la parada, con el aviso de siempre y [Deshacer] Ya estaba (⇄ fino sin relleno). Probado: cambia la parada en su día y hora, vuelve a DÍAS con el aviso y [Deshacer] la devuelve.  
+  *Dónde:* Cambiar parada > ⇄ a la derecha de cada tarjeta  *Captura:* `docs/dias/capturas_jutrip/10n6_cambiar_parada_aviso.jpg`
+- ✅ Hecho — El corazón, igual que siempre (suma o quita el like) Cada fila lleva su corazón con su número (MeGusta de tarjeta), el mismo de EXPLORAR.  
+  *Dónde:* Cambiar parada > corazón de cada tarjeta  *Captura:* `docs/dias/capturas_jutrip/10n6_cambiar_parada_explorar.jpg`
+- ✅ Hecho — Al tocar el resto de la fila se ve la información del sitio (como en EXPLORAR) con el botón «Cambiar por este» La ficha de siempre (Resumen, Entradas, Tips) con la barra de abajo «Cambiar por este» (antes «Cambiar por este →»).  
+  *Dónde:* Cambiar parada > tocar el nombre o la foto de un sitio  *Captura:* `docs/dias/capturas_jutrip/10n6_cambiar_parada_informacion.jpg`
+- ✅ Hecho — Los sitios que ya están en la ruta, con su «En ruta» Antes decían «Ya en tu viaje»; ahora «✓ En ruta», como en EXPLORAR. Sin ⇄ en esos.  
+  *Dónde:* Cambiar parada > sitios que ya están en alguno de los días  *Captura:* `docs/dias/capturas_jutrip/10n6_cambiar_parada_explorar.jpg`
+
+**1f**
+
+- ✅ Hecho — Bloque «Tus recuerdos» de la propuesta A entre la cabecera de la ficha y las pestañas, exactamente como en Design Componente nuevo TusRecuerdos (src/components/route/fotos/TusRecuerdos.tsx): tarjeta marfil con borde dorado, icono o hasta 3 miniaturas solapadas y botón dorado. Medidas y colores de Recuerdos Ficha A.  
+  *Dónde:* DÍAS > tocar una parada > ficha, debajo del nombre y las pastillas  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_sin_fotos.jpg`
+- ✅ Hecho — Sin fotos: «Tus recuerdos» y debajo «Guarda tus fotos. Las verás también en tu álbum.», con el botón dorado [+ Añadir] Con los textos de Eric, no los de Design.  
+  *Dónde:* Ficha de una parada sin fotos  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_sin_fotos.jpg`
+- ✅ Hecho — Con fotos: las miniaturas, «Tus recuerdos» y debajo «3 fotos · También en tu álbum», con [Ver] «1 foto» en singular. Probado con 1 foto (sin pase) y con 3 (con pase).  
+  *Dónde:* Ficha de una parada con fotos guardadas  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_tres_fotos_con_pase.jpg`
+- ✅ Hecho — La propuesta B (la barra oscura «Mis fotos» bajo la foto) no se usa No existe en el código (la prueba lo comprueba).  
+  *Dónde:* Ficha de cualquier parada  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_sin_fotos.jpg`
+- ✅ Hecho — Fuera la cámara de encima de la foto (BotonFotoParada) La ficha ya no la monta. El fichero BotonFotoParada.tsx sigue en el repo sin usarse en la app (lo importan pruebas antiguas); se puede borrar en la 10S.  
+  *Dónde:* Ficha de cualquier parada: la foto de 118 px sin botón en la esquina  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_sin_fotos.jpg`
+- ✅ Hecho — Sale siempre, también antes del viaje Sale en cualquier ficha cuando hay ruta abierta, también la que se abre desde EXPLORAR (sin día): ahí las fotos van al día de la ruta donde ya está ese sitio o, si no está, al día 1. Si Eric prefiere otra cosa para sitios que no están en la ruta, se cambia en una línea.  
+  *Dónde:* EXPLORAR > tocar un sitio > ficha  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_ficha_explorar.jpg`
+- ✅ Hecho — Al tocarlo, la hoja «Tus recuerdos» con las tarjetas «Hacer una foto · Con la cámara de la app» y «Elegir de la galería · Solo fotos de tu viaje», y debajo «Tus fotos · 3» Hoja con el formato de tarjetas de la 10N4 (HojaOpciones), con su › como en Design. Las fotos se tocan para verlas en grande.  
+  *Dónde:* Ficha > [+ Añadir] o [Ver]  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_hoja_tres_fotos_con_pase.jpg`
+- ✅ Hecho — Las fotos van a la misma parada de ese día y al álbum del viaje, sin cambiar nada por dentro Usa subirFoto de fotosViaje.ts tal cual. Probado contra Supabase real (se borran al acabar): día 1, parada correcta, aparecen en el álbum.  
+  *Dónde:* Subir una foto y abrir Perfil > el viaje > álbum  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_hoja_tres_fotos_con_pase.jpg`
+- ✅ Hecho — Sin pase, una foto por sitio: con una, su miniatura y «1 foto · También en tu álbum» con [Ver]; en la hoja, «Cambiar la foto» en lugar de «Hacer una foto». Con pase, todas las que quiera «Cambiar la foto» abre el selector del móvil (cámara o galería) y sustituye a la vieja (sigue habiendo 1).  
+  *Dónde:* Ficha de una parada, sin pase, con una foto guardada  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_hoja_una_foto_sin_pase.jpg`
+- ✅ Hecho — Al intentar guardar más de una sin pase, el aviso del pase con «Sin pase, guardas 1 foto por sitio.» y «Guarda todas las que quieras y crea tus recuerdos.»; [Ver] lleva a lo que enseña el pase; si no quiere el pase, puede cambiar su foto por la nueva Con una foto y sin pase, «Elegir de la galería» abre el aviso (abrirAvisoPase('segunda_foto'), del agente K2) en lugar del selector; si elige varias a la vez, se guarda la primera y sale el aviso. [Ver el Pase Roma] es de K2. Para cambiarla está «Cambiar la foto».  
+  *Dónde:* Ficha sin pase con una foto > [Ver] > Elegir de la galería  *Captura:* `docs/dias/capturas_jutrip/10n6_recuerdos_aviso_pase_segunda_foto.jpg`
+- ✅ Hecho — Si las fotos sirven para algún logro (como «Visto con fotos»), que siga funcionando igual; decir para qué se usan hoy No se ha tocado nada de eso. Hoy las fotos de las paradas (tabla trip_photos, bucket fotos-viaje) sirven para: el álbum de cada viaje en el Perfil, la portada del viaje, «Tus fotos de hoy» en HOY, la tarjeta de recuerdos en RUTA y «Después del viaje», el efecto de la foto que vuela al álbum, el borrado del viaje y las miniaturas de V8. El logro «Visto con fotos» va aparte: usa su propio flujo (VistoFlujo, cámara de la app con validación del servidor) y solo añade la foto al álbum con subirFoto; lo de la ficha no entra en ese flujo.  
+  *Dónde:* Perfil > viaje > álbum; HOY > Tus fotos de hoy
+
+**1g**
+
+- ✅ Hecho — Una sola pieza del aviso del pase para toda la app y todos los destinos (hoja desde abajo, tarjeta azul oscuro con dorado, título «Desbloquéalo con el Pase {destino}», línea 1 pequeña, línea 2 en negrita, botón dorado) src/components/pase/AvisoPase.tsx + src/lib/avisoPase.ts (abrirAvisoPase(clave,{destino})); montado en App.tsx  
+  *Dónde:* Sin pase: toca «Escuchar historia» con la de prueba gastada, «Baños»/«Fuentes» en EXPLORAR o la pestaña «Cerca de ti"  *Captura:* `docs/dias/capturas_jutrip/10n6_aviso_segunda_foto.jpg`
+- ✅ Hecho — El botón [Ver el Pase {destino}] lleva a la película, o a su final si ya la vio Usa abrirPase(), que ya decide principio/final  
+  *Dónde:* Toca [Ver el Pase Roma] del aviso
+- ✅ Hecho — «Escuchar historia» después de la de prueba: «Ya has escuchado tu historia de prueba.» / «Escucha todas las historias de tu viaje.» Escuchar.tsx (HOY v1) y HoyDuranteV2.tsx; la línea cambiante «Incluido con…» ya no se usa  
+  *Dónde:* HOY, ficha de un sitio con historia, sin pase y con la de prueba ya gastada  *Captura:* `docs/dias/capturas_jutrip/10n6_aviso_escuchar_historia.jpg`
+- ⚠️ A medias — Segunda foto de un sitio: «Sin pase, guardas 1 foto por sitio.» / «Guarda todas las que quieras y crea tus recuerdos.» La clave segunda_foto y su texto están listos y probados; quien la llama es K3 (recuerdos en la ficha)  
+  *Dónde:* Ficha de un sitio, al guardar una segunda foto sin pase  *Captura:* `docs/dias/capturas_jutrip/10n6_aviso_segunda_foto.jpg`
+- ✅ Hecho — «Cerca de ti», «Baños» y «Fuentes» en EXPLORAR abren el aviso (con sus dos líneas, siempre verdad) Cerca de ti: PlaceExplorerScreen (se quita la hoja suelta de la 10O); Baños/Fuentes: ExplorePanel  
+  *Dónde:* EXPLORAR sin pase  *Captura:* `docs/dias/capturas_jutrip/10n6_aviso_explorar_banos.jpg`
+- ✅ Hecho — Lo de HOY bloqueado por el pase que no se explica en su sitio Solo «Escuchar historia» lo es: el resto de HOY (tarjetas «Con el pase tendrás», «Ver el Pase de Roma») ya se explica en su sitio y va a la película. Clave «hoy» y «generico» listas por si hace falta  
+  *Dónde:* HOY sin pase
+- ✅ Hecho — La caja pequeña de la zona del alojamiento no lleva este aviso: su [Ver] va directo a la película/final Candado.tsx sigue con abrirPase()  
+  *Dónde:* RESERVAS > Alojamiento sin pase
+- ✅ Hecho — Con pase (comprado o plaza de grupo) el aviso no sale nunca abrirAvisoPase no hace nada con pagoActivo(), y el host lo comprueba otra vez  
+  *Dónde:* Con pase, tocar lo mismo no abre el aviso
+- ✅ Hecho — Textos en UN archivo, por destino src/lib/avisoPaseTextos.ts (AVISO_PASE_TEXTOS y AVISO_PASE_TEXTOS_POR_DESTINO)  
+  *Dónde:* —
+- ✅ Hecho — Lista de TODOS los sitios con su línea 1 / línea 2 y la regla de aviso pequeño o película En el informe final  
+  *Dónde:* —
+
+**1h**
+
+- ✅ Hecho — Lista del pase: «Todas las fotos que quieras · En cada sitio y en tu álbum.» data/pase/lista_ajustes.json (nuevo campo titulos); lo aplican listaAjustada.ts y el final de la película (adaptar.ts)  
+  *Dónde:* Final de la película, «Todo lo que incluye» y HOY «Con el pase tendrás»
+- ✅ Hecho — Lista del pase: «Todas las historias · De cada sitio, como una audioguía en tu móvil.» Ídem  
+  *Dónde:* Ídem (HOY sin pase, tarjeta «Con el pase tendrás»)  *Captura:* `docs/dias/capturas_jutrip/10n6_aviso_segunda_foto.jpg`
+- ✅ Hecho — «Empiezas cerca de donde duermes…» ya no existe (o corregida) No existe: la fila es «Adaptamos tu ruta a tu alojamiento · El primer día, y como mucho el último, según tu zona.» No la he tocado  
+  *Dónde:* Final de la película
+- ✅ Hecho — Quitar «La puesta de sol y lo de mañana» de prometidas_sin_hacer Quitada de data/pase/lista_ajustes.json  
+  *Dónde:* —
+
+**1i**
+
+- ✅ Hecho — Música de la película preparada y funcionando sin el archivo (sin error ni petición rota) src/lib/peliculaMusica.ts comprueba con HEAD (y que sea audio) antes de montar nada. public/sonidos/pelicula_pase.mp3 NO está: lo pone Eric  
+  *Dónde:* Abre la película: sin música y sin botón de silencio  *Captura:* `docs/dias/capturas_jutrip/10n6_pelicula_sin_musica.jpg`
+- ⚠️ A medias — Suena al tocar [Ver], volumen bajo, fundidos, bucle sin cortes, sigue al cambiar de escena y con [Saltar], baja y para al cerrar, para al salir de la app Todo hecho y probado con un archivo de mentira (audio simulado); falta oírla con la pista de verdad  
+  *Dónde:* Película del pase, con la pista puesta
+- ✅ Hecho — Botón de silencio pequeño, altavoz fino gris, en la línea del título y [Saltar]; recuerda lo elegido; respeta «Sonido de los momentos» Solo sale si hay archivo; el título se aparta para no pisarlo  
+  *Dónde:* Arriba a la derecha de la película, a la izquierda de [Saltar]  *Captura:* `docs/dias/capturas_jutrip/10n6_pelicula_boton_silencio.jpg`
+- ⚠️ A medias — Comprimir a ~96 kbps y bajar sin retrasar el principio scripts/destino/comprimirMusicaPelicula.sh (hace falta ffmpeg, que aquí no hay); la descarga empieza al abrir la película y no bloquea nada (si no puede sonar, la película sigue en silencio)  
+  *Dónde:* —
+
+**1j**
+
+- ✅ Hecho — Sin gastos: el mismo bloque «Ruta» (tarjeta blanca con su icono y el título), vacío y sin importe a la derecha  
+  *Dónde:* RUTA › Presupuesto (el icono de la cartera), en un viaje sin ninguna reserva con precio  *Captura:* `docs/dias/capturas_jutrip/10n6_presupuesto_vacio.jpg`
+- ✅ Hecho — Dentro, una sola línea pequeña en gris: «Aquí se irán añadiendo todos los gastos de tu ruta.»  
+  *Dónde:* Presupuesto sin gastos  *Captura:* `docs/dias/capturas_jutrip/10n6_presupuesto_vacio.jpg`
+- ✅ Hecho — Fuera el recuadro de rayas «Todavía no hay gastos» La tarjeta «Cuentas del grupo» sigue diciendo «Todavía no hay gastos del grupo» (es otra cosa, de la 10N2).  
+  *Dónde:* Presupuesto sin gastos  *Captura:* `docs/dias/capturas_jutrip/10n6_presupuesto_vacio.jpg`
+- ✅ Hecho — Debajo, «Extras» con [+ Añadir gasto]; la pantalla es igual con gastos y sin ellos  
+  *Dónde:* Presupuesto sin gastos, bajando  *Captura:* `docs/dias/capturas_jutrip/10n6_presupuesto_vacio.jpg`
+
+**1k**
+
+- ✅ Hecho — Una reserva o gasto solo para quien lo paga NO cuenta en «Del grupo» del presupuesto Coliseo 100 € solo para Eric + Panteón 60 € para Eric y Ana: «Del grupo» dice 60 €.  
+  *Dónde:* Presupuesto de un viaje con gente  *Captura:* `docs/dias/capturas_jutrip/10n6_presupuesto_solo_tu.jpg`
+- ✅ Hecho — …ni en «Cuentas del grupo» (ni total, ni pagado, ni le toca) «Total del grupo 60 €»; Eric pagó 60 € y le tocan 30 €; la suma de saldos es 0.  
+  *Dónde:* Presupuesto › Cuentas del grupo  *Captura:* `docs/dias/capturas_jutrip/10n6_cuentas_sin_lo_personal.jpg`
+- ✅ Hecho — Sí sale en el presupuesto de esa persona, con el candado y «Solo tú» En gris tenue, debajo de su día. No suma en el bloque.  
+  *Dónde:* Presupuesto de Eric  *Captura:* `docs/dias/capturas_jutrip/10n6_presupuesto_solo_tu.jpg`
+- ✅ Hecho — Cuenta en «Tu parte» Tu parte = su parte de lo del grupo + lo personal (100 €). Los [Para mí] de Extras siguen sin contar en «Tu parte», como antes (duda abierta en el informe).  
+  *Dónde:* Presupuesto › pastilla «Tu parte» con el ojo  *Captura:* `docs/dias/capturas_jutrip/10n6_presupuesto_solo_tu.jpg`
+- ✅ Hecho — Los demás del viaje no lo ven en sus cuentas ni en su presupuesto Un invitado no ve las reservas personales del administrador; las cuentas sí las dejan fuera.  
+  *Dónde:* Presupuesto como invitado
+- ✅ Hecho — Si es para otro o para varios, sí es del grupo (Eric paga la entrada solo de Ana: Ana le debe 100 €) Probado en la prueba pura.  
+  *Dónde:* Presupuesto › Cuentas del grupo
+- ✅ Hecho — Lo mismo con alojamiento, coche y vuelos de la 10N5 Si «¿Para quién es?» es solo el administrador (o todos los demás tienen el suyo), es personal. Se calcula con la misma función en presupuesto y cuentas.  
+  *Dónde:* Presupuesto › Transporte y alojamiento
+- ✅ Hecho — Nada se cuenta dos veces y las cuentas cuadran al céntimo Las líneas que un invitado no ve (`ocultas`) siguen entrando en las cuentas; suma de saldos 0.  
+  *Dónde:* Cuentas del grupo  *Captura:* `docs/dias/capturas_jutrip/10n6_cuentas_sin_lo_personal.jpg`
+
+**1l**
+
+- ✅ Hecho — A cada marcado le sale como suya: aviso «X ha reservado el Coliseo para ti · jueves 12 · 9:15», botón verde con ✓ en DÍAS, «Tu entrada» en verde en la ficha y la entrada en su RESERVAS También cuando compra un invitado (antes no).  
+  *Dónde:* DÍAS › Coliseo › botón de la entrada; ficha › Entradas; RESERVAS › Entradas y Free Tour  *Captura:* `docs/dias/capturas_jutrip/10n6_entradas_b_luis_tu_entrada.jpg`
+- ✅ Hecho — A los no marcados: aviso con [Reservar la mía a la misma hora] y [Ya la tengo]; en la ficha, en azul con dorado, quién la tiene  
+  *Dónde:* DÍAS › Coliseo › botón azul con dorado; campana  *Captura:* `docs/dias/capturas_jutrip/10n6_entradas_a_eric_ficha_ana_y_luis.jpg`
+- ✅ Hecho — Que funcione igual si la compra un invitado (Ana compra para ella y Eric: a Eric le sale como suya) HOY NO FUNCIONABA con invitados: solo avisaba el administrador (0042) y solo se veían las entradas del administrador. Ahora: migración 0053 (aviso del invitado) + las entradas de los demás se leen de entradas_del_grupo. Necesita aplicar la 0053 para el aviso; el resto va sin ella.  
+  *Dónde:* Entra como Ana, reserva el Coliseo para ella y Eric; mira como Eric  *Captura:* `docs/dias/capturas_jutrip/10n6_entradas_f_eric_tu_entrada_de_ana.jpg`
+- ✅ Hecho — Plural con nombres: «Eric y Ana la tienen para el jueves 12 · 9:15»; «Eric y Ana han reservado el Coliseo · jueves 12 · 9:15. ¿Reservas la tuya a la misma hora?»; más de dos: «Eric, Ana y Laura…» Ficha, RESERVAS, campana y franja.  
+  *Dónde:* Ficha › Entradas  *Captura:* `docs/dias/capturas_jutrip/10n6_entradas_e_luis_eric_y_ana.jpg`
+- ✅ Hecho — Dos horas distintas para el mismo sitio: «Eric la tiene a las 9:15 · Ana a las 11:00»  
+  *Dónde:* Ficha › Entradas  *Captura:* `docs/dias/capturas_jutrip/10n6_entradas_d_luis_dos_horas.jpg`
+
+**2 · La prueba**
+
+- ✅ Hecho — Prueba nueva pruebaTanda10N6 (confirmaciones, aviso del pase, EXPLORAR y recuerdos, cuentas y entradas para varios) Prueba de la Tanda 10N6: 7 partes (confirmar 61, aviso del pase 49, explorar 23, recuerdos 29, perfil 118 px 4, cuentas 65, entradas 12) = 243 comprobaciones, 0 fallos, con el Vite sin vigilar ficheros (`scripts/destino/_vite_estable.config.mjs`). Con el Vite de desarrollo normal (recargas en caliente), `pruebaTanda10N6_recuerdos` falla 3 comprobaciones de la sección «Con pase» (ver el informe). pruebaJutrip 129/0.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La batería rápida y pruebaJutrip (si algo falla solo al correr con las demás y pasa solo, se dice y se arregla en la 10S) Bateria completa: 32 MAL en la pasada buena; el triaje de dos agentes no hallo regresiones reales: expectativas antiguas actualizadas y flakes de carga que pasan sueltos con 0 fallos. Pendiente: recuerdos con pase (ver informe) y pruebaTanda10N3_real (Realtime, no es de esta tanda).  
+  *Dónde:* No es de móvil.
+
+**2 · Capturas**
+
+- ✅ Hecho — Capturas en docs/dias/capturas_jutrip/ y esta página a tamaño de móvil, cada una al lado de la de Design  
+  *Dónde:* Esta página.
+
+**3 · El informe**
+
+- ✅ Hecho — Apartado «10N6» en docs/dias/INFORME_TANDA10B.md y esta lista al final  
+  *Dónde:* No es de móvil.
+
+**Pruebas:** Prueba de la Tanda 10N6: 7 partes (confirmar 61, aviso del pase 49, explorar 23, recuerdos 29, perfil 118 px 4, cuentas 65, entradas 12) = 243 comprobaciones, 0 fallos, con el Vite sin vigilar ficheros (`scripts/destino/_vite_estable.config.mjs`). Con el Vite de desarrollo normal (recargas en caliente), `pruebaTanda10N6_recuerdos` falla 3 comprobaciones de la sección «Con pase» (ver el informe). pruebaJutrip 129/0.

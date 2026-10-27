@@ -13,6 +13,7 @@ import { useInvitacionEnMarcha } from './hooks/useInvitacionEnMarcha'
 import { CompartidoHost } from './components/compartir/CompartidoHost'
 import { PagoHost } from './components/pase/PagoHost'
 import { PeliculaHost } from './components/pase/PeliculaHost'
+import { AvisoPaseHost } from './components/pase/AvisoPase'
 import { SinPasePrueba } from './components/pase/SinPasePrueba'
 import { useSinPasePrueba } from './store/useSinPasePrueba'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
@@ -110,6 +111,7 @@ function App() {
       <CompartidoHost />
       <PagoHost />
       <PeliculaHost />
+      <AvisoPaseHost />
       <SinPasePrueba />
       <PropuestaHost />
       <AvisosHost />

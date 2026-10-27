@@ -177,7 +177,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
         <div style={{ padding: '0 20px' }} data-cabecera-sin-logros>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6 }}>
             <button type="button" onClick={() => editarPerfil(true)} aria-label="Cambiar mi foto y mi nombre" data-editar-perfil className="flex-none rounded-full" style={{ boxShadow: '0 0 0 3px rgb(var(--bg)),0 0 0 4.5px rgb(var(--accent))' }}>
-              <Avatar foto={yo.foto} inicial={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={104} encuadre={yo.encuadre} />
+              <Avatar foto={yo.foto} inicial={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={118} encuadre={yo.encuadre} />
             </button>
             <h2 style={{ margin: 0, minWidth: 0, flex: 1, font: "400 34px/1 'Instrument Serif',serif", overflowWrap: 'anywhere' }}>
               Hola, <em>{nombre}</em>
@@ -209,8 +209,8 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
       <div style={{ padding: '0 20px' }} data-cabecera-con-marco>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6 }}>
           <button type="button" onClick={() => editarPerfil(true)} aria-label="Cambiar mi foto y mi nombre" data-editar-perfil className="flex-none rounded-full">
-            <MarcoDeRango rango={exp.rango_ix} estrellas={exp.estrellas} leyenda={exp.leyenda_estrellas} tam={104} etiqueta={`Marco ${exp.rango}, nivel ${exp.estrellas} de 5`}>
-              <InicialEnMarco letra={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={104} foto={yo.foto} encuadre={yo.encuadre} />
+            <MarcoDeRango rango={exp.rango_ix} estrellas={exp.estrellas} leyenda={exp.leyenda_estrellas} tam={118} etiqueta={`Marco ${exp.rango}, nivel ${exp.estrellas} de 5`}>
+              <InicialEnMarco letra={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={118} foto={yo.foto} encuadre={yo.encuadre} />
             </MarcoDeRango>
           </button>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>

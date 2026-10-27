@@ -291,13 +291,13 @@ function MitadAbierta({
       {leg.done && leg.mode !== 'coche' && (
         seguro ? (
           <div className="flex flex-col gap-2.5 border-t border-text/10 pt-3 text-center">
-            <p className="text-[14px] leading-snug text-text">¿Seguro que quieres eliminar este {palabras.noun}?</p>
+            <p className="text-[14px] leading-snug text-text">¿Quitamos este {palabras.noun}?</p>
             <div className="flex gap-2">
               <button type="button" onClick={() => setSeguro(false)} className="h-11 flex-1 rounded-full border border-text/15 text-[14.5px] font-medium text-text hover:bg-bg-hover">
                 Cancelar
               </button>
               <button type="button" onClick={onEliminar} className="h-11 flex-1 rounded-full bg-accent-red text-[14.5px] font-semibold text-white active:scale-[.98]">
-                Eliminar
+                Sí, quitar
               </button>
             </div>
           </div>

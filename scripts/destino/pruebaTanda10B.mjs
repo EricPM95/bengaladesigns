@@ -14,6 +14,8 @@ const debe = (cond, regla, texto) => {
 const leer = (f) => fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n')
 // (Tanda 10N §3: «Hoy te dará» pinta filasDeHoy(): los títulos de TITULOS_DE_HOY, la lista compartida con el final de la película.)
 const titulosDeHoy = [...(leer('src/lib/listaDeHoy.ts').match(/TITULOS_DE_HOY[^=]*=\s*\[([^\]]*)\]/)?.[1] ?? '').matchAll(/'([^']+)'/g)].map((x) => x[1])
+// (10N6 §1h) La lista del pase enseña los títulos nuevos de data/pase/lista_ajustes.json.
+const titulosNuevos = JSON.parse(leer("data/pase/lista_ajustes.json")).titulos ?? {}
 const sinComentarios = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
 
 const { M } = await prepararSSR('scripts/destino/_10b_entrada.tsx')
@@ -211,7 +213,7 @@ console.log('4. RUTA y DÍAS en la app')
   await app.evaluar("import('/src/store/useRouteStore.ts').then((m) => { m.useRouteStore.setState({ dev_simulated_today_iso: '2026-10-14' }); window.__pruebaDelPase = { cobro: true, conPase: false, puede: true, pruebaGastada: false, prueba: { estado: 'pendiente', fecha: '2026-10-18', tripId: null } }; return true })")
   await app.esp(2500)
   const dis = await app.evaluar("(() => { const t = document.body.innerText; const hoy = document.querySelector('[data-hoy]'); const oro = Array.from(document.querySelectorAll('em')).filter((e) => /sáb|días|primer día/.test(e.textContent || '')).map((e) => getComputedStyle(e).color); const tinta = Array.from(document.querySelectorAll('[data-hoy] div')).some((d) => getComputedStyle(d).backgroundColor === 'rgb(28, 34, 48)'); return { t, oro, tinta, ordenPrueba: hoy ? hoy.innerHTML.indexOf('data-hoy-sin-pase') > hoy.innerHTML.indexOf('Hoy te dará') : false } })()")
-  debe(/Tu modo Hoy se activa el/.test(dis.t) && /\d+\s+días?/.test(dis.t) && /Hoy te dará/.test(dis.t) && titulosDeHoy.length === 5 && titulosDeHoy.every((x) => dis.t.includes(x)) && /Logros y sellos/.test(dis.t) && /Bronce/.test(dis.t) && /Plata/.test(dis.t) && /Oro/.test(dis.t) && (dis.t.match(/Ver el Pase de Roma/g) ?? []).length === 1, 'hoy10d', 'sin pase, antes del viaje: la cuenta atrás, «Hoy te dará» con sus seis cuadros, «Logros y sellos» con las tres medallas y [Ver el Pase de Roma]')
+  debe(/Tu modo Hoy se activa el/.test(dis.t) && /\d+\s+días?/.test(dis.t) && /Hoy te dará/.test(dis.t) && titulosDeHoy.length === 5 && titulosDeHoy.every((x) => dis.t.includes(titulosNuevos[x] ?? x)) && /Logros y sellos/.test(dis.t) && /Bronce/.test(dis.t) && /Plata/.test(dis.t) && /Oro/.test(dis.t) && (dis.t.match(/Ver el Pase de Roma/g) ?? []).length === 1, 'hoy10d', 'sin pase, antes del viaje: la cuenta atrás, «Hoy te dará» con sus seis cuadros, «Logros y sellos» con las tres medallas y [Ver el Pase de Roma]')
   debe(dis.ordenPrueba === true && !/Ese día tendrás/.test(dis.t), 'hoy10d', 'y debajo de todo eso, el día de prueba (no la lista sencilla «Ese día tendrás»)')
   debe(dis.tinta === true && dis.oro.length >= 2 && dis.oro.every((c) => c === 'rgb(233, 199, 122)'), 'hoy10d', `paneles en tinta y el azul claro del diseño, en oro pálido (${dis.oro.join(' · ')})`)
   const fuenteAntes = leer('src/components/route/hoy/v2/HoyAntesV2.tsx')

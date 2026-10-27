@@ -66,8 +66,15 @@ function Linea({ linea, bloque, moneda, onClick }: { linea: LineaPresupuesto; bl
       <span className="flex min-w-0 flex-1 flex-col gap-px">
         <span className="text-[13px] font-medium leading-[1.25]">{linea.nombre}</span>
         {linea.sub && <span className="text-[11px] text-text/55">{linea.sub}</span>}
+        {/* (Tanda 10N6 §1k) Lo que es solo para quien lo paga: el candado y «Solo tú». No cuenta en «Del grupo». */}
+        {linea.personal && (
+          <span data-solo-tu className="mt-0.5 inline-flex items-center gap-1 text-[11px] text-text/55">
+            <Icono nombre="candado" size={11} />
+            Solo tú
+          </span>
+        )}
       </span>
-      <span className="flex flex-none flex-col items-end gap-px">
+      <span className="flex flex-none flex-col items-end gap-px" style={{ opacity: linea.personal ? 0.6 : 1 }}>
         <span style={{ font: "600 13px 'Geist Mono',monospace" }}>{formatoImporte(linea.precio)}</span>
         {otraMoneda && (
           <span className="text-[11px] text-text/55" style={{ font: "500 11px 'Geist Mono',monospace" }}>
@@ -415,10 +422,13 @@ export function PantallaPresupuesto() {
           {/* (Tanda 10N2) Cuentas del grupo: debajo de «Del grupo», solo en un viaje compartido. */}
           {gv.compartido && <TarjetaCuentas onAbrir={() => setCuentasAbiertas(true)} />}
 
+          {/* (Tanda 10N6 §1j) Sin gastos: el MISMO bloque «Ruta» de siempre, vacío (sin importe) y con su línea; fuera el recuadro de rayas. Debajo, «Extras». */}
           {!hayGastos && (
-            <div className="flex flex-none flex-col gap-0.5 rounded-[14px] border border-dashed border-text/[.18] px-3.5 py-3.5">
-              <span className="text-[13px] font-medium">Todavía no hay gastos</span>
-              <span className="text-[12px] leading-[1.4] text-text/60">Aparecerán aquí cuando añadas tus reservas con su precio. Y puedes apuntar tus extras.</span>
+            <div className="flex flex-none flex-col gap-2.5 rounded-[22px] bg-[#FFFDF8] p-3.5" style={caja} data-blk="ruta" data-bloque-vacio>
+              <CabeceraBloque id="ruta" titulo="Ruta" suma={null} />
+              <span data-linea-vacia className="px-1 pb-1.5 pt-1 text-[14px] leading-[1.45] text-text/[.58]">
+                Aquí se irán añadiendo todos los gastos de tu ruta.
+              </span>
             </div>
           )}
 

@@ -289,7 +289,7 @@ console.log('5. El código')
     debe(!/Civitatis|Booking.com|Stay22|GetYourGuide|Viator/i.test(codigo), '5 sin empresas', `${f} nombra una empresa`)
   }
   const sheetSrc = leer('src/components/route/excursions/ExcursionSinHueco.tsx')
-  debe(/¿Estás seguro\?/.test(sheetSrc) && /ConfirmDialog/.test(sheetSrc) && /textoDeConfirmar/.test(sheetSrc), '5 estás seguro', 'la hoja no usa el «¿Estás seguro?» de siempre con el texto de lo que se pierde')
+  debe(/¿Cambiamos .*por la excursión\?/.test(sheetSrc) && /ConfirmDialog/.test(sheetSrc) && /textoDeConfirmar/.test(sheetSrc), '5 estás seguro', 'la hoja no usa el «¿Estás seguro?» de siempre con el texto de lo que se pierde')
   debe(/cambiarConDeshacer/.test(leer('src/store/excursionSinHuecoActions.ts')) && /cambiarConDeshacer/.test(leer('src/store/useAddFlowStore.ts')), '5 deshacer', 'no se usa la pieza de Deshacer de siempre')
   debe(/quitarConDeshacer\(message: string, change: \(\) => void\): void \{\s*cambiarConDeshacer/.test(leer('src/store/useAddFlowStore.ts')), '5 deshacer', 'quitarConDeshacer y cambiarConDeshacer no comparten la misma pieza')
   const emoji = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u

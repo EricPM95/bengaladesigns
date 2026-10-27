@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { Icono } from '../../ui/Icono'
-import { abrirPase, pagoActivo } from '../../../lib/pago'
+import { pagoActivo } from '../../../lib/pago'
+import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { nombreDelPase } from '../../../lib/nombrePase'
 import { Marca, ORO_PALIDO, ORO_PEQUENO } from '../../pase/Marca'
 import { accesoDePrueba, useHistoriaDePrueba } from '../../../lib/historiaDePrueba'
@@ -21,7 +21,7 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
   // `sitio` (solo la historia): si ese sitio tiene su audio guardado, suena ese; si no, la voz del aparato. Lo decide useEscuchar.
   const audio = useAudioDeHistoria(sitio)
   const { hayVoz, estado, progreso, escuchar, pausar, seguir, parar } = useEscuchar(texto, clave, audio)
-  const [pidioPago, setPidioPago] = useState(false)
+  const pidioPago = false // (Tanda 10N6 §1g) el aviso del pase ya lo explica; la línea cambiante «Incluido con…» ya no se usa.
   // Tanda 10P: la historia (con `sitio`) sin pase: la de prueba del destino es la que el viajero elija («Gratis · 0/1»); se gasta a los 3 s y esa se queda suya; las demás, con candado.
   const mapaDePrueba = useHistoriaDePrueba((s) => s.mapa)
   const conPase = pagoActivo()
@@ -40,8 +40,8 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
     </span>
   )
   const alTocarCerrado = () => {
-    setPidioPago(true)
-    abrirPase()
+    // (Tanda 10N6 §1g) Sin pase y con la historia de prueba ya gastada: el aviso pequeño del pase (el [Ver] lleva a la película).
+    abrirAvisoPase('escuchar_historia', { destino: sitio?.destino ?? destino ?? undefined })
   }
   if (!permitido && barra) {
     return (

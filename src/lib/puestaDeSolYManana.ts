@@ -112,7 +112,7 @@ export function tarjetaDeManana(p: {
   const primera = numberedStopsOf(manana).find((s) => !s.saltada && s.time)
   const empieza = primera?.time ? horaCorta(primera.time) : null
   const entradas = p.reservations
-    .filter((r) => r.kind === 'entrada' && r.time && dayOfReservation(p.route, r)?.id === manana.id)
+    .filter((r) => r.kind === 'entrada' && !r.fueraDeRuta && r.time && dayOfReservation(p.route, r)?.id === manana.id)
     .sort((a, b) => parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time))
   const e = entradas[0]
   const quien = e ? (p.nombreCorto?.(e) ?? displayStopName(e.placeNames[0] ?? e.name)) : null

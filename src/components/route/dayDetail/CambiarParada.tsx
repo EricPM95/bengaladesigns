@@ -4,6 +4,8 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { diaCorto, fechaDelDia } from '../../../lib/nombreDeDia'
 import { cambiarParadaPorOtra } from '../../../lib/cambiarParada'
+import { elSitio } from '../../../lib/articulos'
+import { displayStopName } from '../../../lib/format'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { AddStopScreen } from '../addStop/AddStopScreen'
 
@@ -11,7 +13,7 @@ import { AddStopScreen } from '../addStop/AddStopScreen'
 export const FILTROS_DE_CAMBIAR_PARADA = ['atracciones', 'miradores'] as const
 
 /** La pregunta de arriba. */
-export const preguntaDeCambiarParada = (nombre: string) => `¿Por cuál quieres cambiar ${nombre}?`
+export const preguntaDeCambiarParada = (nombre: string) => `Elige el sitio que cambia por ${elSitio(displayStopName(nombre))}`
 
 /**
  * «Cambiar parada» del menú «···» de una parada de DÍAS (Tanda 7, punto 16): abre EXPLORAR (el explorador de lugares compartido, `PlaceExplorerScreen`) con «Atracciones» y «Miradores» puestos y arriba la

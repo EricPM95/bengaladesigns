@@ -228,7 +228,7 @@ const cerrarPago = async (a) => {
   debe(cerradas.join() === 'explorar-banos,explorar-fuentes', 'gratis', `EXPLORAR: Baños y Fuentes salen cerrados, no escondidos (${cerradas.join()})`)
   await g.evaluar("document.querySelector('[data-candado=\"explorar-banos\"]').click()")
   await g.esp(1200)
-  debe(await hayPago(g), 'gratis', 'y al tocarlos se abre el pase')
+  debe(await g.evaluar("Boolean(document.querySelector('[data-aviso-pase]'))"), 'gratis', 'y al tocarlos sale el aviso pequeño del pase (10N6), con [Ver el Pase] que lleva al pase')
   g.cerrar()
 }
 {
@@ -253,7 +253,7 @@ const cerrarPago = async (a) => {
   const pago = leer('src/lib/pago.ts')
   debe(/export function abrirPase\(\)/.test(pago) && /export const pedirPago = abrirPase/.test(pago), 'pase', 'hay UNA función para abrir el pase (abrirPase) y pedirPago es la misma')
   for (const f of ['src/components/pase/Candado.tsx', 'src/components/pase/PastillaPase.tsx']) debe(/abrirPase/.test(leer(f)) && !/usePagoStore/.test(leer(f)), 'pase', `${f} abre el pase con abrirPase`)
-  debe(/abrirPase/.test(leer('src/components/route/ExplorePanel.tsx')), 'pase', 'las tarjetas cerradas de EXPLORAR también')
+  debe(/abrirAvisoPase/.test(leer('src/components/route/ExplorePanel.tsx')), 'pase', 'las tarjetas cerradas de EXPLORAR también')
   debe(/data-hoy-ver-pase/.test(leer('src/components/route/hoy/TarjetaDeLaPrueba.tsx')) && /fila\.verElPase/.test(leer('src/components/route/hoy/TarjetaDeLaPrueba.tsx')) && /tipo: 'prueba_otro_dia'[\s\S]{0,400}verElPase: false/.test(leer('src/lib/diaDePrueba.ts')), 'pase', 'HOY antes del viaje: el [Ver el Pase de Roma] de la tarjeta del día de prueba ya no se repite')
 }
 

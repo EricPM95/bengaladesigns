@@ -15,6 +15,7 @@ import { usePruebasUi } from '../store/usePruebasUi'
 import { textoDeDias, textoDeDuracion } from '../lib/duracionViaje'
 import { useReservasFocusStore } from '../store/useReservasFocusStore'
 import { elDia } from '../lib/nombreDeDia'
+import { nombreDe } from '../store/useViajeCompartido'
 import { vueltaCambiada } from '../lib/datosDelViajero'
 import { useAvisosVueloStore } from '../store/useAvisosVueloStore'
 import { avisosParaLaCampana, bloqueDeReservasDelAviso, diaDelAviso } from '../lib/avisosDeVuelo'
@@ -212,7 +213,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
           items.push({
             id,
             kind: 'info',
-            title: textoDelAviso({ tipo: 'reserva_grupo', payload: { quien: grupo.nombreAdmin, sitio: sitioCorto(reserva, nombresCortos), dia: diaDeLaReservaEnPalabras(route, reserva), hora: reserva.time, incluido } }),
+            title: textoDelAviso({ tipo: 'reserva_grupo', payload: { quien: grupo.nombreAdmin, tienen: (reserva.paraQuien ?? []).map((id) => nombreDe(grupo.gente.find((p) => p.id === id)) || 'Alguien'), sitio: sitioCorto(reserva, nombresCortos), dia: diaDeLaReservaEnPalabras(route, reserva), hora: reserva.time, incluido } }),
             text: '',
             acciones: incluido || propia ? undefined : [{ label: 'Reservar la mía a la misma hora', run: abrir('misma-hora') }, { label: 'Ya la tengo', run: abrir('ya-la-tengo') }],
             read: readIds.includes(id),

@@ -312,8 +312,8 @@ debe(/abrirAlbum\(route\.id\)/.test(codigoTarjeta), 'C9', '[Subir mis fotos] no 
 // Una sola línea en RUTA y en la ficha de parada
 const lineasEn = (f, re) => leer(f).split('\n').filter((l) => re.test(l))
 debe(lineasEn('src/components/route/RouteOverview.tsx', /<TarjetaRecuerdosEnRuta /).length === 1, 'C9', 'RUTA no monta la tarjeta con una sola línea')
-const enFicha = lineasEn('src/components/route/dayDetail/StopDetailSheet.tsx', /<BotonFotoParada /)
-debe(enFicha.length === 1, 'C9', `la ficha de parada no monta el botón de foto con una sola línea (${enFicha.length})`)
+const enFicha = lineasEn('src/components/route/dayDetail/StopDetailSheet.tsx', /<TusRecuerdos /) // (Tanda 10N6: la cámara de encima de la foto se cambió por «Tus recuerdos»)
+debe(enFicha.length === 1, 'C9', `la ficha de parada no monta «Tus recuerdos» con una sola línea (${enFicha.length})`)
 // El botón de la ficha de parada: «Añadir foto» con el icono de cámara
 ponerVersion('gratis')
 useRouteStore.setState({ ...estadoBase, route: R1 })

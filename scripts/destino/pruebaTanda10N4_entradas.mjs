@@ -197,7 +197,7 @@ const entradasAbiertas = (a) =>
       const foto = c.firstElementChild.getBoundingClientRect()
       const h1 = c.querySelector('h1')
       const corazon = c.querySelector('[data-megusta="cabecera"]')
-      const camara = c.querySelector('button[aria-label*="foto" i]')
+      const camara = document.querySelector('[data-recuerdos-abrir]')
       const cs = camara ? camara.getBoundingClientRect() : null
       const pildoras = Array.from(c.querySelectorAll('[data-etiqueta-ficha]')).map((p) => ({ alto: Math.round(p.getBoundingClientRect().height), texto: p.innerText.trim(), fuente: getComputedStyle(p).fontSize }))
       return {
@@ -213,7 +213,7 @@ const entradasAbiertas = (a) =>
     debe(cab && cab.foto === '118x118', 'cabecera', `la foto de 118 x 118 (${cab?.foto})`)
     debe(cab && cab.h1.fuente === '33px', 'cabecera', `el nombre en 33 px (${cab?.h1.fuente})`)
     debe(cab && cab.pildoras.length >= 1 && cab.pildoras.every((p) => p.alto === 30 && p.fuente === '13px'), 'cabecera', `las pastillas de 30 px de alto y 13 px de letra (${JSON.stringify(cab?.pildoras)})`)
-    debe(cab && cab.camara && cab.camara.ancho >= 40 && cab.camara.alto >= 40, 'cabecera', `la cámara de 40 px en la esquina de la foto (${JSON.stringify(cab?.camara)})`)
+    debe(cab && cab.camara && cab.camara.ancho >= 38 && cab.camara.alto >= 38, 'cabecera', `(10N6: la cámara de la foto se sustituyó por el bloque «Tus recuerdos») el botón de «Tus recuerdos» de al menos 38 px (${JSON.stringify(cab?.camara)})`)
     debe(cab && !cab.lo_recomiendan, 'cabecera', 'ya no dice «lo recomiendan»')
     if (cab?.corazon) {
       debe(cab.corazon.ancho === 56 && cab.derechaDelNombre && /^\d/.test(cab.corazon.numero ?? ''), 'cabecera', `el corazón de 56 px a la derecha del nombre con su número (${JSON.stringify(cab.corazon)})`)
@@ -276,7 +276,7 @@ const entradasAbiertas = (a) =>
     await abrirFichaEntradas(a, 'Coliseo')
     e = await entradasAbiertas(a)
     debe(e && e.tipoCaja === 'entrada-del-grupo' && e.esLaPrimera, 'entradas', `otro del grupo la tiene: el recuadro azul oscuro es lo primero (${e?.primerosTextos?.[0]})`)
-    debe(e && /^Eric la tiene para el .+ · 11:45 Reservar la mía a la misma hora ¿Ya la tienes\? Ya la tengo$/.test(e.texto ?? ''), 'entradas', `«Eric la tiene para el … · 11:45», [Reservar la mía a la misma hora] y «¿Ya la tienes? Ya la tengo» (${e?.texto})`)
+    debe(e && /^Eric( y Ana)? (la tiene|la tienen) para el .+ · 11:45 Reservar la mía a la misma hora ¿Ya la tienes\? Ya la tengo$/.test(e.texto ?? ''), 'entradas', `«Eric y Ana la tienen para el … · 11:45» (10N6: plural con los nombres), [Reservar la mía a la misma hora] y «¿Ya la tienes? Ya la tengo» (${e?.texto})`)
     debe(e && /28, 34, 48/.test(e.fondo ?? '') && /233, 199, 122/.test(e.colorDorado ?? ''), 'colores', `azul oscuro con el día y la hora en dorado (${e?.fondo} · ${e?.colorDorado})`)
     debe(e && e.topCaja !== null && e.topCaja < 40 && e.bajoElPliegue === false, 'entradas', `y se ve nada más entrar (a ${e?.topCaja} px de las pestañas)`)
     await a.captura(path.join(SALIDA, '10n4_entradas_ficha_del_grupo.jpg'))

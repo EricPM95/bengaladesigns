@@ -53,7 +53,7 @@ export function useCuentasDelGrupo(): CuentasDelGrupo {
     ]
     // (Tanda 10N3) El alojamiento y el coche del administrador entran solos (los billetes de avión, no: cada uno paga el suyo).
     const entran: LineaQueEntraSola[] = []
-    for (const l of (presupuesto?.bloques ?? []).flatMap((b) => b.lineas)) {
+    for (const l of [...(presupuesto?.bloques ?? []).flatMap((b) => b.lineas), ...(presupuesto?.ocultas ?? [])]) {
       if (l.abrir.tipo === 'alojamiento') entran.push({ clave: l.id, nombre: l.nombre, precio: l.precio, tipo: 'alojamiento' })
       else if (l.abrir.tipo === 'coche') entran.push({ clave: l.id, nombre: l.nombre, precio: l.precio, tipo: 'coche' })
       // (Tanda 10N5 §6c) Los vuelos del administrador ahora SÍ entran (cambia lo de la 10N3): se reparten entre para quién son, sin quien ha puesto el suyo.

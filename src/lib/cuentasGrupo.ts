@@ -5,7 +5,7 @@ import { sumaAlGrupo } from './gastosCompartidos'
 import type { Reservation } from './bookings'
 import type { Presupuesto } from './presupuesto'
 import { lineaCuenta } from './presupuesto'
-import { entreEfectivo } from './loSuyo'
+import { entreDeLoDelAdmin, esSoloDe, reservaEsPersonal } from './loSuyo'
 
 /**
  * LAS CUENTAS DEL GRUPO, QUIÉN LE DEBE A QUIÉN (Tanda 10N2; diseño `Piezas/Cuentas Grupo`). Funciones puras, sin React ni red. Todo en CÉNTIMOS enteros (nunca decimales de coma flotante), en la moneda del viajero.
@@ -180,21 +180,24 @@ export function aportacionesDelViaje(entrada: { gastos: GastoCompartido[]; reser
     if (!sumaAlGrupo(g)) continue
     const c = aMoneda(g.precio)
     if (c === null || c <= 0) continue
-    salida.push({ id: `gasto-${g.id}`, nombre: g.nombre, origen: 'gasto', centimos: c, pagan: g.pagadoPor.length > 0 ? g.pagadoPor : [g.autorId], entre: g.entre && g.entre.length > 0 ? g.entre : entrada.todos })
+    const pagan = g.pagadoPor.length > 0 ? g.pagadoPor : [g.autorId]
+    // (Tanda 10N6 §1k) Un gasto solo para quien lo paga es personal: no es del grupo.
+    if (g.entre?.length === 1 && pagan.length === 1 && g.entre[0] === pagan[0]) continue
+    salida.push({ id: `gasto-${g.id}`, nombre: g.nombre, origen: 'gasto', centimos: c, pagan, entre: g.entre && g.entre.length > 0 ? g.entre : entrada.todos })
   }
   if (entrada.adminId) {
     // (Tanda 10N3) El alojamiento y el coche que el administrador pone en RESERVAS entran solos: los pagó él y se reparten entre todos (o entre quienes marque). Los billetes de avión NO: cada uno paga el suyo.
     for (const l of entrada.entran ?? []) {
       const c = aMoneda(l.precio)
       if (c === null || c <= 0) continue
-      const marcadas = (entrada.entreDe?.[l.clave] ?? (l.tipo === 'vuelo' ? entrada.entreDe?.llegada ?? entrada.entreDe?.vuelta : undefined) ?? []).filter(Boolean)
       // (Tanda 10N5 §6c) Quien ha puesto SU vuelo o SU alojamiento sale del reparto del administrador (lo suyo es suyo y no se reparte); si no queda nadie, es del administrador.
-      const propios = l.tipo === 'vuelo' ? entrada.conVueloPropio : l.tipo === 'alojamiento' ? entrada.conAlojamientoPropio : undefined
-      const entre = propios && propios.size > 0 ? entreEfectivo(marcadas, entrada.todos, propios, entrada.adminId) : marcadas.length > 0 ? marcadas : entrada.todos
+      const entre = entreDeLoDelAdmin({ tipo: l.tipo, clave: l.clave, entreDe: entrada.entreDe, todos: entrada.todos, adminId: entrada.adminId, conVueloPropio: entrada.conVueloPropio, conAlojamientoPropio: entrada.conAlojamientoPropio })
+      // (Tanda 10N6 §1k) Lo que es solo para quien lo paga es personal: no es del grupo ni cuenta en las cuentas.
+      if (esSoloDe(entre, entrada.adminId)) continue
       salida.push({ id: `${l.tipo}-${l.clave}`, clave: l.clave, nombre: l.nombre, origen: l.tipo, centimos: c, pagan: [entrada.adminId], entre })
     }
     for (const r of entrada.reservas) {
-      if (!r.paraQuien || r.paraQuien.length === 0) continue
+      if (reservaEsPersonal(r.paraQuien, entrada.adminId)) continue
       const c = aMoneda(leerImporte(r.precio))
       if (c === null || c <= 0) continue
       salida.push({ id: `reserva-${r.id}`, nombre: r.name, origen: 'reserva', centimos: c, pagan: [entrada.adminId], entre: r.paraQuien })
@@ -203,7 +206,7 @@ export function aportacionesDelViaje(entrada: { gastos: GastoCompartido[]; reser
   // (Tanda 10N5 §6c) Las entradas que ha reservado cualquier invitado para varias personas: las pagó quien reservó y se reparten entre su «¿Para quién es?». Las que son solo para él no cuentan.
   for (const grupo of entrada.entradasDeInvitados ?? []) {
     for (const r of grupo.reservas) {
-      if (r.kind !== 'entrada' || !r.paraQuien || r.paraQuien.length < 2) continue
+      if (r.kind !== 'entrada' || reservaEsPersonal(r.paraQuien, grupo.userId)) continue
       const c = aMoneda(leerImporte(r.precio))
       if (c === null || c <= 0 || salida.some((a) => a.id === `reserva-${r.id}`)) continue
       salida.push({ id: `reserva-${r.id}`, nombre: r.name, origen: 'reserva', centimos: c, pagan: [grupo.userId], entre: r.paraQuien })
@@ -266,9 +269,16 @@ export function parteDeUnaPersona(lineas: { centimos: number; entre: readonly st
 export function porPersonaDelPresupuesto(e: { presupuesto: Presupuesto; gastos: readonly GastoCompartido[]; reservas: readonly Reservation[]; entreDe: Record<string, string[]> | null | undefined; adminId: string | null; todos: string[]; yoId: string | null; conVueloPropio?: ReadonlySet<string>; conAlojamientoPropio?: ReadonlySet<string> }): { centimos: number; tuParte: boolean } {
   const lineas: { centimos: number; entre: string[] | null }[] = []
   let total = 0
+  // (Tanda 10N6 §1k) Lo personal (reservas, alojamiento, coche, vuelos solo para quien los paga, y los [Para mí]) no suma al grupo pero SÍ a «Tu parte» de esa persona (solo lo suyo llega aquí).
+  let personales = 0
   for (const b of e.presupuesto.bloques) {
     for (const l of b.lineas) {
-      if (!lineaCuenta(l) || !l.enMonedaViajero) continue
+      if (!lineaCuenta(l)) {
+        // (Solo lo personal de reservas, alojamiento, coche y vuelos: los [Para mí] de Extras, los pendientes y los rechazados siguen como antes, sin contar aquí.)
+        if (l.enMonedaViajero && l.personal) personales += aCentimos(l.enMonedaViajero)
+        continue
+      }
+      if (!l.enMonedaViajero) continue
       const centimos = aCentimos(l.enMonedaViajero)
       total += centimos
       let entre: string[] | null = null
@@ -277,17 +287,15 @@ export function porPersonaDelPresupuesto(e: { presupuesto: Presupuesto; gastos: 
         const r = e.reservas.find((x) => x.id === (l.abrir as { reservationId: string }).reservationId)
         entre = r?.paraQuien && r.paraQuien.length > 0 ? r.paraQuien : e.adminId ? [e.adminId] : null
       } else if (l.abrir.tipo === 'alojamiento' || l.abrir.tipo === 'coche') {
-        entre = e.entreDe?.[l.id] ?? null
-        if (l.abrir.tipo === 'alojamiento' && e.conAlojamientoPropio && e.conAlojamientoPropio.size > 0) entre = entreEfectivo(entre, e.todos, e.conAlojamientoPropio, e.adminId)
+        entre = entreDeLoDelAdmin({ tipo: l.abrir.tipo, clave: l.id, entreDe: e.entreDe, todos: e.todos, adminId: e.adminId, conAlojamientoPropio: e.conAlojamientoPropio })
       } else if (l.abrir.tipo === 'llegada' || l.abrir.tipo === 'vuelta') {
         // (Tanda 10N5) Los vuelos del administrador se reparten entre para quien son, sin quien ha puesto el suyo.
-        entre = e.entreDe?.[l.id] ?? e.entreDe?.llegada ?? null
-        if (e.conVueloPropio && e.conVueloPropio.size > 0) entre = entreEfectivo(entre, e.todos, e.conVueloPropio, e.adminId)
-      }
+        entre = entreDeLoDelAdmin({ tipo: 'vuelo', clave: l.id, entreDe: e.entreDe, todos: e.todos, adminId: e.adminId, conVueloPropio: e.conVueloPropio })
+      } else if (l.entre && l.entre.length > 0) entre = [...l.entre]
       lineas.push({ centimos, entre: entre && entre.length > 0 ? entre : null })
     }
   }
   const todoEntreTodos = lineas.every((l) => l.entre === null || e.todos.every((id) => l.entre!.includes(id)))
-  if (todoEntreTodos || !e.yoId) return { centimos: e.todos.length > 0 ? Math.round(total / e.todos.length) : total, tuParte: false }
-  return { centimos: parteDeUnaPersona(lineas, e.yoId, e.todos), tuParte: true }
+  if ((todoEntreTodos && personales === 0) || !e.yoId) return { centimos: e.todos.length > 0 ? Math.round(total / e.todos.length) : total, tuParte: false }
+  return { centimos: parteDeUnaPersona(lineas, e.yoId, e.todos) + personales, tuParte: true }
 }

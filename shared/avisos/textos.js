@@ -185,12 +185,14 @@ export function textoDelAviso(aviso) {
       if (p.caso === 'no_cuadra') return `Tu entrada ${conDe(sitioConArticulo(p.sitio))} es el ${p.dia_reserva}, y en la ruta está el ${p.dia_ruta}.`
       // (Tanda 10N5 §6c) Lo de cada uno: «Ana ha puesto su propio vuelo.» (al administrador) · «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.» (a quien el administrador le cambia el suyo).
       if (p.caso === 'vuelo_propio' || p.caso === 'alojamiento_propio') return `${nombreDe(p.quien) || 'Alguien'} ha puesto su propio ${p.caso === 'vuelo_propio' ? 'vuelo' : 'alojamiento'}.`
-      if (p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') return `${nombreDe(p.quien) || 'El administrador'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} ${PARA_DE_LO_SUYO[p.para] ?? 'para todos'}. Se ha cambiado el tuyo.`
-      const quien = nombreDe(p.quien) || 'El dueño'
+      if (p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') return `${nombreDe(p.quien) || 'El administrador'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} ${PARA_DE_LO_SUYO[p.para] ?? 'para todos'}.${p.suyo_cambiado === true ? SUYO_CAMBIADO : ''}`
+      const { quien, verbo } = quienesReservan(p)
       const [h, m] = String(p.hora ?? '').split(':')
       const hora = m === undefined ? String(p.hora ?? '') : `${Number(h)}:${m}`
       const sitio = sitioConArticulo(p.sitio)
-      return p.incluido ? `${quien} ha reservado ${sitio} para ti el ${p.dia} a las ${hora}.` : `${quien} ha reservado ${sitio} el ${p.dia} a las ${hora}.`
+      // (10N6 §1l) «Eric ha reservado el Coliseo para ti · jueves 12 · 9:15» · «Eric y Ana han reservado el Coliseo · jueves 12 · 9:15. ¿Reservas la tuya a la misma hora?»
+      const cuando = [p.dia, hora].filter(Boolean).join(' · ')
+      return p.incluido ? `${nombreDe(p.quien) || 'El dueño'} ha reservado ${sitio} para ti · ${cuando}` : `${quien} ${verbo} ${sitio} · ${cuando}. ¿Reservas la tuya a la misma hora?`
     }
     // Tanda 10N §4a: a quien le cambian el permiso, a quien quitan del viaje, y los cambios del viaje que hacen el dueño o quien puede editar (§10).
     case 'permiso': {
@@ -265,6 +267,18 @@ const nombreSinMarca = (n) => String(n ?? '').replace(/\s*\((noche|por fuera)\)\
 const con = (quien, haHecho, sinNombre) => (nombreDe(quien) ? `${nombreDe(quien)} ${haHecho}` : sinNombre)
 /** (10N5 §6c) «para todos» · «para ti» · «para algunos»: a quién le ha puesto el administrador su vuelo o su alojamiento. */
 const PARA_DE_LO_SUYO = { todos: 'para todos', ti: 'para ti', algunos: 'para algunos' }
+/** (10N6 §1l) «Eric», «Eric y Ana», «Eric, Ana y Laura» (los nombres de quienes tienen la entrada, que la base de datos guarda en `tienen`). */
+const unirNombres = (lista) => {
+  const n = (Array.isArray(lista) ? lista : []).map((x) => nombreDe(x)).filter(Boolean)
+  return n.length <= 1 ? (n[0] ?? '') : `${n.slice(0, -1).join(', ')} y ${n[n.length - 1]}`
+}
+/** (10N6 §1l) Quién(es) y el verbo de «han reservado»: con más de uno que la tienen, en plural y con los nombres; si no, solo quien la reservó. */
+const quienesReservan = (p) => {
+  const varios = Array.isArray(p.tienen) && p.tienen.filter(Boolean).length > 1
+  return varios ? { quien: unirNombres(p.tienen), verbo: 'han reservado' } : { quien: nombreDe(p.quien) || 'El dueño', verbo: 'ha reservado' }
+}
+/** (10N6 0a-6) «Se ha cambiado el tuyo.» solo a quien tenía su propio vuelo o alojamiento. */
+const SUYO_CAMBIADO = ' Se ha cambiado el tuyo.'
 const dineroDe = (precio) => (precio && Number.isFinite(Number(precio.amount)) ? formatoImporte({ amount: Number(precio.amount), currency: precio.currency }) : '')
 const mayuscula = (t) => String(t ?? '').replace(/^./, (c) => c.toUpperCase())
 
@@ -360,11 +374,14 @@ export function franjaDelAviso(aviso) {
       return persona(con(p.actor, 'ha marcado un pago', 'Han marcado un pago'), dineroDe(p.importe))
     case 'reserva_grupo': {
       if (p.caso === 'vuelo_propio' || p.caso === 'alojamiento_propio') return persona(`${nombreDe(p.quien) || 'Alguien'} ha puesto su propio ${p.caso === 'vuelo_propio' ? 'vuelo' : 'alojamiento'}.`, p.detalle ?? '')
-      if (p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') return persona(`${nombreDe(p.quien) || 'El administrador'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} ${PARA_DE_LO_SUYO[p.para] ?? 'para todos'}.`, 'Se ha cambiado el tuyo.')
+      if (p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') return persona(`${nombreDe(p.quien) || 'El administrador'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} ${PARA_DE_LO_SUYO[p.para] ?? 'para todos'}.`, p.suyo_cambiado === true ? 'Se ha cambiado el tuyo.' : '')
       if (p.caso === 'no_cuadra') return { titulo: 'Tu entrada no cuadra con la ruta', detalle: `${mayuscula(sitioConArticulo(p.sitio))} · ${p.dia_reserva}`, icono: 'ticket' }
       const [h, m] = String(p.hora ?? '').split(':')
       const hora = m === undefined ? String(p.hora ?? '') : `${Number(h)}:${m}`
-      return persona(`${nombreDe(p.quien) || 'El dueño'} ha reservado ${sitioConArticulo(p.sitio)}${p.incluido ? ' para ti' : ''}`, [mayuscula(p.dia), hora].filter(Boolean).join(' · '))
+      {
+        const { quien, verbo } = p.incluido ? { quien: nombreDe(p.quien) || 'El dueño', verbo: 'ha reservado' } : quienesReservan(p)
+        return persona(`${quien} ${verbo} ${sitioConArticulo(p.sitio)}${p.incluido ? ' para ti' : ''}`, [mayuscula(p.dia), hora].filter(Boolean).join(' · '))
+      }
     }
     case 'permiso':
       return p.permiso === 'editar'

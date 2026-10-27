@@ -97,3 +97,22 @@ export function lineasDeMiVuelo(v: MiVuelo, dia: { ida: string; vuelta: string }
 
 /** «Te alojas en Trastevere» / «Te alojas en Hotel Artemide». */
 export const lineaDeMiAlojamiento = (a: MiAlojamiento): string => `Te alojas en ${a.zona || a.name}`
+
+/**
+ * (Tanda 10N6 §1k) LO QUE ES SOLO PARA QUIEN LO PAGA ES PERSONAL. Una reserva o un gasto solo para quien lo paga no es del grupo: no cuenta en «Del grupo» ni en «Cuentas del grupo» y sale en el presupuesto de esa
+ * persona (con el candado y «Solo tú»), contando en «Tu parte». Si es para otro o para varios, sí es del grupo.
+ */
+export const esSoloDe = (entre: readonly string[] | null | undefined, personaId: string | null | undefined): boolean => Boolean(personaId) && Boolean(entre) && entre!.length === 1 && entre![0] === personaId
+
+/** Una reserva (entrada, excursión…) de `pagaId`: ¿es personal? Sin «¿Para quién es?» también (las de antes de compartir el viaje son «solo para mí»). */
+export const reservaEsPersonal = (paraQuien: readonly string[] | null | undefined, pagaId: string | null | undefined): boolean => !paraQuien || paraQuien.length === 0 || esSoloDe(paraQuien, pagaId)
+
+/**
+ * Entre quién se reparte lo que el administrador pone en RESERVAS (alojamiento, coche, vuelo): los que marcó (o todos), sin quien ha puesto lo suyo; si no queda nadie, es suyo. Una sola función para el
+ * presupuesto y las cuentas: así cuadran siempre. `clave`: la de la línea (`aloj-…`, `coche`, `llegada`, `vuelta`).
+ */
+export function entreDeLoDelAdmin(e: { tipo: 'alojamiento' | 'coche' | 'vuelo'; clave: string; entreDe?: Record<string, string[]> | null; todos: readonly string[]; adminId: string | null; conVueloPropio?: ReadonlySet<string>; conAlojamientoPropio?: ReadonlySet<string> }): string[] {
+  const marcadas = (e.entreDe?.[e.clave] ?? (e.tipo === 'vuelo' ? (e.entreDe?.llegada ?? e.entreDe?.vuelta) : undefined) ?? []).filter(Boolean)
+  const propios = e.tipo === 'vuelo' ? e.conVueloPropio : e.tipo === 'alojamiento' ? e.conAlojamientoPropio : undefined
+  return propios && propios.size > 0 ? entreEfectivo(marcadas, e.todos, propios, e.adminId) : marcadas.length > 0 ? marcadas : [...e.todos]
+}

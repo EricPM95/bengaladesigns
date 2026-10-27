@@ -11,7 +11,7 @@ import { TicketDesign } from './EntradaEdgeTab'
 const ORO = '#E9C77A'
 const CREMA = '#FBF3E2'
 
-export function EntradaDelGrupo({ quien, cuando, onReservar, onYaLaTengo }: { quien: string; cuando: string; onReservar: () => void; onYaLaTengo: () => void }) {
+export function EntradaDelGrupo({ quien, cuando, plural = false, texto, onReservar, onYaLaTengo }: { quien: string; cuando: string; plural?: boolean; /** Dos horas distintas: «Eric la tiene a las 9:15 · Ana a las 11:00» (sin el «para el …» dorado). */ texto?: string; onReservar: () => void; onYaLaTengo: () => void }) {
   return (
     <div data-ficha-seccion="entrada-del-grupo" data-quien-va className="flex flex-col gap-3 rounded-[20px] px-4 py-3.5" style={{ background: '#1C2230', color: CREMA }}>
       <div className="flex items-center justify-center gap-[9px]">
@@ -19,7 +19,13 @@ export function EntradaDelGrupo({ quien, cuando, onReservar, onYaLaTengo }: { qu
           <path d="M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z" />
         </svg>
         <span className="font-display text-[21px] leading-[1.1]">
-          {quien} la tiene para el <b data-cuando style={{ fontWeight: 400, color: ORO }}>{cuando}</b>
+          {texto ? (
+            <span data-cuando>{texto}</span>
+          ) : (
+            <>
+              {quien} {plural ? 'la tienen' : 'la tiene'} para el <b data-cuando style={{ fontWeight: 400, color: ORO }}>{cuando}</b>
+            </>
+          )}
         </span>
       </div>
       <button type="button" data-reservar-la-mia onClick={onReservar} className="flex h-12 items-center justify-center rounded-[14px] text-[15px] font-bold active:scale-[.98]" style={{ background: ORO, color: '#1C2230' }}>

@@ -105,7 +105,7 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
   // La ventana: el diálogo de siempre con ese texto, sin «Tus reservas se quedan…».
   const html = renderToStaticMarkup(createElement(ManualShrinkDialog, { notice: aviso, onConfirm() {}, onCancel() {} }))
   const lineas = aTexto(html).split('\n')
-  debe(lineas.includes('¿Estás seguro?') && lineas.includes(esperado) && lineas.includes('Eliminar') && lineas.includes('Cancelar') && !/se quedan en RESERVAS/.test(html), '1 aviso', `la ventana no es el «¿Estás seguro?» con las reservas nombradas: ${lineas.join(' | ')}`)
+  debe(lineas.includes('¿Quitamos esos días de tu viaje?') && lineas.includes(esperado) && lineas.includes('Sí, quitar') && lineas.includes('Cancelar') && !/se quedan en RESERVAS/.test(html), '1 aviso', `la ventana no es el «¿Estás seguro?» con las reservas nombradas: ${lineas.join(' | ')}`)
   // «Cancelar»: no cambia nada (el aviso solo se calcula; las fechas se guardan al confirmar).
   debe(JSON.stringify(ahora()) === antesRuta && JSON.stringify(tienda().reservations) === antesReservas, '1 cancelar', 'preparar el aviso (o «Cancelar») cambia la ruta o las reservas')
   const ventana = sinComentarios(leer('src/components/route/DatesChangeDialog.tsx'))
@@ -278,8 +278,8 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
   debe((util.match(/\.quitar\b/g) ?? []).length === 1 && /quitarConDeshacer\([^)]*tarjeta\.quitar\)/.test(util) && /onQuitar=\{abierta\.anadida \? \(\) => quitarTarjeta\(abierta\)/.test(util) && !/tarjeta\.quitar\(\)/.test(util), '2 un solo camino', 'las tarjetas de «Útil para el viaje» quitan sin pasar por quitarConDeshacer')
   const lib = []
   for (const archivo of archivos('src/lib')) if (/\bremoveReservation\(/.test(sinComentarios(leer(archivo)))) lib.push(archivo)
-  debe(lib.join() === 'src/lib/dayInterruptor.ts', '2 un solo camino', `otro código quita reservas sin aviso: ${lib}`)
-  debe(/removeReservationWithUndo/.test(leer('src/components/route/dayDetail/StopMenu.tsx')) && /removeReservationWithUndo/.test(leer('src/components/route/reservas/AddReservationSheet.tsx')), '2 un solo camino', 'StopMenu o AddReservationSheet ya no usan removeReservationWithUndo')
+  debe(lib.join() === 'src/lib/dayInterruptor.ts,src/lib/quitarConEntrada.ts', '2 un solo camino', `otro código quita reservas sin aviso: ${lib}`)
+  debe(/quitarParadaConEntrada/.test(leer('src/components/route/dayDetail/StopMenu.tsx')) && /removeReservationWithUndo/.test(leer('src/components/route/reservas/AddReservationSheet.tsx')), '2 un solo camino', 'StopMenu o AddReservationSheet ya no usan removeReservationWithUndo')
 }
 
 // ═══════════ 3. La foto del Free Tour: la Plaza de España ═══════════

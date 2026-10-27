@@ -6,12 +6,15 @@ import type { Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { HojaDelMenu } from '../../ui/MenuHoja'
 import { ICONOS_OPCION, OpcionTarjeta } from '../../ui/HojaOpciones'
-import { ConfirmDialog } from '../ConfirmDialog'
 import { MoverADia } from './MoverADia'
 import { CambiarParada } from './CambiarParada'
-import { removeReservationWithUndo, withUndo } from '../../../store/useAddFlowStore'
+import { withUndo } from '../../../store/useAddFlowStore'
 import { moverParadaAOtroDia } from '../../../lib/cambiarParada'
-import { RemoveReservationDialog } from '../reservas/ReservedMarks'
+import { cuandoEsLaEntrada, quitarFreeTourSinReserva, quitarParadaConEntrada, reservaDeLaParada } from '../../../lib/quitarConEntrada'
+import { isManualRoute } from '../../../lib/manualPlan'
+import { horaCorta } from '../../../lib/reservasGrupo'
+import { elSitio } from '../../../lib/articulos'
+import { QuitarConEntradaDialog } from './QuitarConEntradaDialog'
 
 interface StopMenuProps {
   dayId: string
@@ -27,7 +30,7 @@ interface StopMenuProps {
   onVerFicha?: () => void
 }
 
-type MenuView = 'menu' | 'remove' | 'move-day'
+type MenuView = 'menu' | 'move-day'
 
 /**
  * Menú "..." por parada — Cambiar / Quitar / Mover a otro día / Mover antes / Mover después, todo gratuito (sin restricción de plan). (Tanda 10N §7: ya no hay «Cambiar hora»: la app no enseña horas
@@ -51,8 +54,10 @@ function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, free
   const removeStop = useRouteStore((state) => state.removeStop)
   const reorderStops = useRouteStore((state) => state.reorderStops)
   const setStopSaltada = useRouteStore((state) => state.setStopSaltada)
-  // Una parada reservada está fijada: solo se quita con «Quitar del viaje» (PARA_CODE_RESERVAS, 6).
-  const [removingReservation, setRemovingReservation] = useState(false)
+  // (10N6, 1c) Una parada con su entrada (o el Free Tour reservado): sale con todas las opciones; las que no se pueden, en gris con el porqué; y al quitarla se pregunta qué hacer con la entrada.
+  const reservations = useRouteStore((state) => state.reservations)
+  const reserva = reservaDeLaParada(stop, reservations)
+  const [preguntando, setPreguntando] = useState(false)
 
   /** No-op si el día ya tiene paradas reales — `realStops` ya es esa misma lista en ese caso. */
   const ensureSeeded = () => seedDayStops(dayId, realStops)
@@ -100,22 +105,7 @@ function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, free
         ···
       </button>
 
-      {open && view === 'remove' && (
-        <ConfirmDialog
-          eyebrow={stop.name}
-          text={`¿Seguro que quieres eliminar "${stop.name}"?`}
-          confirmLabel="Sí, eliminar"
-          cancelLabel="Cancelar"
-          onCancel={close}
-          onConfirm={() => {
-            ensureSeeded()
-            removeStop(dayId, stop.id)
-            close()
-          }}
-        />
-      )}
-
-      {open && view !== 'remove' && (
+      {open && (
         <HojaDelMenu etiqueta={eligiendoDia ? 'Mover a otro día' : 'Parada'} titulo={stop.name} onCerrar={close}>
           {/* Una parada que se saltó en HOY («No me da tiempo»): vuelve a la ruta como no saltada (Tanda 6z6). */}
           {view === 'menu' && stop.saltada && (
@@ -134,50 +124,53 @@ function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, free
           {/* 8b2: «Desmarcar visto» mientras no haya foto (con los logros apagados no pinta nada). */}
           {view === 'menu' && <DesmarcarDelMenu dayId={dayId} stop={stop} onHecho={close} />}
 
-          {view === 'menu' && stop.reservedId && (
-            <OpcionTarjeta
-              peligro
-              icono={ICONOS_OPCION.papelera}
-              titulo="Quitar del viaje"
-              linea="Reservada y fijada: se quita también la reserva"
-              onClick={() => {
-                setRemovingReservation(true)
-                close()
-              }}
-            />
-          )}
-
-          {/* El orden de Design (Hojas Opciones 01): Cambiar parada, Mover a otro día, Mover antes, Mover después y, la última, Quitar parada. En un día libre no hay «Cambiar parada». */}
-          {view === 'menu' && !stop.reservedId && (
+          {/* El orden de Design (Hojas Opciones 01): Cambiar parada, Mover a otro día, Mover antes, Mover después y, la última, Quitar parada. En un día libre no hay «Cambiar parada». Con entrada, las que no se pueden, en gris con el porqué (10N6, 1c). */}
+          {view === 'menu' && (
             <>
               {!freeDay && (
                 <OpcionTarjeta
                   tono="arena"
                   icono={ICONOS_OPCION.cambiar}
                   titulo="Cambiar parada"
-                  linea="Elige otro sitio para este hueco"
-                  flecha
+                  linea={reserva ? `Tienes entrada para ${stop.isFreeTour ? 'el Free Tour' : elSitio(stop.name)}` : 'Elige otro sitio para este hueco'}
+                  flecha={!reserva}
+                  deshabilitada={Boolean(reserva)}
                   onClick={() => {
                     setOpen(false)
                     setPickerOpen(true)
                   }}
                 />
               )}
-              <OpcionTarjeta tono="azul" icono={ICONOS_OPCION.calendario} titulo="Mover a otro día" linea={otherDays.length === 0 ? 'No hay otro día al que pasarla' : 'Pásala a otro día del viaje'} flecha={otherDays.length > 0} deshabilitada={otherDays.length === 0} onClick={() => setView('move-day')} />
-              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.arriba} titulo="Mover antes" linea={index === 0 ? 'Ya es la primera del día' : 'Una posición antes'} flecha={index !== 0} deshabilitada={index === 0} onClick={() => handleReorder('before')} />
-              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.abajo} titulo="Mover después" linea={index === realStops.length - 1 ? 'Ya es la última del día' : 'Una posición más tarde'} flecha={index !== realStops.length - 1} deshabilitada={index === realStops.length - 1} onClick={() => handleReorder('after')} />
+              <OpcionTarjeta
+                tono="azul"
+                icono={ICONOS_OPCION.calendario}
+                titulo="Mover a otro día"
+                linea={reserva && route ? `Tienes entrada para ${cuandoEsLaEntrada(route, reserva)}` : otherDays.length === 0 ? 'No hay otro día al que pasarla' : 'Pásala a otro día del viaje'}
+                flecha={!reserva && otherDays.length > 0}
+                deshabilitada={Boolean(reserva) || otherDays.length === 0}
+                onClick={() => setView('move-day')}
+              />
+              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.arriba} titulo="Mover antes" linea={reserva ? `Su hora la fija tu entrada de las ${horaCorta(reserva.time)}` : index === 0 ? 'Ya es la primera del día' : 'Una posición antes'} flecha={!reserva && index !== 0} deshabilitada={Boolean(reserva) || index === 0} onClick={() => handleReorder('before')} />
+              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.abajo} titulo="Mover después" linea={reserva ? `Su hora la fija tu entrada de las ${horaCorta(reserva.time)}` : index === realStops.length - 1 ? 'Ya es la última del día' : 'Una posición más tarde'} flecha={!reserva && index !== realStops.length - 1} deshabilitada={Boolean(reserva) || index === realStops.length - 1} onClick={() => handleReorder('after')} />
               <OpcionTarjeta
                 peligro
                 icono={ICONOS_OPCION.papelera}
                 titulo="Quitar parada"
-                linea={freeDay ? 'Sale de tu ruta. Puedes deshacerlo' : 'Sale de tu ruta. Se confirma antes'}
+                linea={reserva ? 'Sale de tu ruta. Tienes su entrada: te preguntamos qué hacer con ella.' : 'Sale de tu ruta. Puedes deshacerlo'}
                 onClick={() => {
-                  if (!freeDay) {
-                    setView('remove')
+                  if (reserva) {
+                    setOpen(false)
+                    setPreguntando(true)
+                    return
+                  }
+                  // (10N6, 1b) Quitar una parada normal: sin pregunta y con [Deshacer].
+                  if (stop.isFreeTour && route && !isManualRoute(route)) {
+                    void quitarFreeTourSinReserva()
+                    close()
                     return
                   }
                   ensureSeeded()
-                  undoable(`Quitada del día: ${stop.name}`, () => removeStop(dayId, stop.id))
+                  withUndo(freeDay ? `Quitada del día: ${stop.name}` : `Quitada de tu ruta: ${stop.name}`, () => removeStop(dayId, stop.id))
                   close()
                 }}
               />
@@ -200,13 +193,19 @@ function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, free
           close()
         }}
       />
-      {removingReservation && stop.reservedId && (
-        <RemoveReservationDialog
-          name={stop.name}
-          onCancel={() => setRemovingReservation(false)}
-          onConfirm={() => {
-            removeReservationWithUndo(stop.reservedId as string)
-            setRemovingReservation(false)
+      {preguntando && reserva && route && (
+        <QuitarConEntradaDialog
+          route={route}
+          stop={stop}
+          reserva={reserva}
+          onCancelar={() => {
+            setPreguntando(false)
+            close()
+          }}
+          onElegir={(modo) => {
+            setPreguntando(false)
+            close()
+            void quitarParadaConEntrada(dayId, stop, reserva, modo)
           }}
         />
       )}

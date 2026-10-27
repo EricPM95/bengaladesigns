@@ -11,6 +11,7 @@ import { usePersonasStore } from '../../store/usePersonasStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { useViajeCompartido } from '../../store/useViajeCompartido'
 import { useCuenta } from '../cuenta/useCuenta'
+import { useLoSuyoDelViaje } from '../../hooks/useLoSuyoDelViaje'
 
 const PersonasDelViaje = lazy(() => import('./PersonasDelViaje').then((m) => ({ default: m.PersonasDelViaje })))
 
@@ -34,6 +35,8 @@ function Encendido() {
   const tripId = useSyncStore((s) => s.activeTripId)
   const real = cuenta.tipo === 'cuenta' && !demoActivo()
   const uid = cuenta.tipo === 'cuenta' ? cuenta.uid : null
+  // (Tanda 10N6 §1l) Una sola carga de las entradas de los demás y de lo suyo de cada uno, para DÍAS, la ficha y RESERVAS.
+  useLoSuyoDelViaje()
   const abierta = usePersonasStore((s) => s.abierta)
   const cerrarPersonas = usePersonasStore((s) => s.cerrar)
 

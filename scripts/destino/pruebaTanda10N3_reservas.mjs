@@ -55,9 +55,9 @@ const aMarta = await avisosDe(marta)
 const aEric = await avisosDe(eric)
 debe(aEric.length === 0, 'dueno', 'el dueño no recibe aviso de su propia entrada')
 debe(aAna.length === 1 && aAna[0].payload.caso === 'incluido' && aAna[0].payload.incluido === true, 'incluido', 'Ana (marcada) recibe su aviso «incluido»')
-debe(textoDe(aAna[0]) === 'Eric ha reservado el Coliseo para ti el jueves 26 a las 8:00.', 'incluido', `el texto de Ana: «${textoDe(aAna[0])}»`)
+debe(textoDe(aAna[0]) === 'Eric ha reservado el Coliseo para ti · jueves 26 · 8:00', 'incluido', `el texto de Ana: «${textoDe(aAna[0])}»`)
 debe(aLuis.length === 1 && aLuis[0].payload.caso === 'no_incluido' && aMarta.length === 1 && aMarta[0].payload.caso === 'no_incluido', 'no_incluido', 'Luis y Marta (sin marcar) reciben su aviso «no incluido»')
-debe(textoDe(aLuis[0]) === 'Eric ha reservado el Coliseo el jueves 26 a las 8:00.', 'no_incluido', `el texto de Luis: «${textoDe(aLuis[0])}»`)
+debe(textoDe(aLuis[0]) === 'Eric ha reservado el Coliseo · jueves 26 · 8:00. ¿Reservas la tuya a la misma hora?', 'no_incluido', `el texto de Luis: «${textoDe(aLuis[0])}»`)
 debe(aLuis[0].payload.reserva_id === 'res-1' && aLuis[0].payload.trip_id === viaje && aLuis[0].payload.date_iso === '2026-11-26', 'no_incluido', 'el aviso lleva la reserva, el viaje y la fecha (para [Reservar la mía a la misma hora])')
 debe(aLuis[0].leido_en === null, 'campana', 'llega sin leer (cuenta en la campana)')
 const sinAvisos = await avisosDe(ajeno)
@@ -68,13 +68,13 @@ debe((await avisosDe(luis)).length === 1 && (await avisosDe(ana)).length === 1, 
 // Si el dueño cambia la hora, avisa de nuevo (es otra cosa).
 await guardar([reserva({ time: '09:30' })])
 const luis2 = await avisosDe(luis)
-debe(luis2.length === 2 && textoDe(luis2[1]) === 'Eric ha reservado el Coliseo el jueves 26 a las 9:30.', 'cambio', 'si el dueño cambia la hora, llega el aviso nuevo con la hora nueva')
+debe(luis2.length === 2 && textoDe(luis2[1]) === 'Eric ha reservado el Coliseo · jueves 26 · 9:30. ¿Reservas la tuya a la misma hora?', 'cambio', 'si el dueño cambia la hora, llega el aviso nuevo con la hora nueva')
 // Sin fechas en el viaje: «día 2».
 const viajeSin = await como(eric, async () => (await q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [eric, JSON.stringify({ id: 'r2', destination: 'Roma', answers: {}, days: [dia(1, [['s1', 'Coliseo']])] })]))[0].id)
 await servidor(() => q('insert into public.trip_members (trip_id, user_id, invited_by) values ($1, $2, $3)', [viajeSin, luis, eric]))
 await como(eric, () => q('update public.trips set bookings = $2::jsonb where id = $1', [viajeSin, JSON.stringify({ reservations: [reserva({ id: 'res-9', dateIso: null, dayNumber: 2, paraQuien: [eric] })] })]))
 const sinFechas = (await avisosDe(luis)).find((a) => a.payload.trip_id === viajeSin)
-debe(sinFechas && textoDe(sinFechas) === 'Eric ha reservado el Coliseo el día 2 a las 8:00.', 'sin_fechas', `sin fechas en el viaje: «${sinFechas && textoDe(sinFechas)}»`)
+debe(sinFechas && textoDe(sinFechas) === 'Eric ha reservado el Coliseo · día 2 · 8:00. ¿Reservas la tuya a la misma hora?', 'sin_fechas', `sin fechas en el viaje: «${sinFechas && textoDe(sinFechas)}»`)
 
 // «Tu entrada no cuadra»: Luis guarda la suya el viernes 27 y la ruta tiene el Coliseo el jueves 26.
 await como(luis, () => q("insert into public.reservas_invitado (trip_id, user_id, reservas) values ($1, $2, $3::jsonb)", [viaje, luis, JSON.stringify([reserva({ id: 'res-luis', dateIso: '2026-11-27', paraQuien: undefined })])]))

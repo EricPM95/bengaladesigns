@@ -192,10 +192,12 @@ await e.esp(3500)
   await sacar(e, '11_escuchar_cerrado', '[Escuchar historia] sin pase', 'El mismo botón de siempre, con el candado dorado en el extremo derecho, dentro, sobre marfil. Se quitó «Con la versión completa».')
   await e.evaluar("(() => { const b = document.querySelector('[data-escuchar=\"candado\"] button'); if (b) b.click(); return true })()")
   await e.esp(1500)
-  const incl = await e.evaluar("document.querySelector('[data-escuchar-incluido]')?.innerText ?? null")
-  debe(/Incluido con el Pase de Roma/.test(incl ?? ''), 'escuchar', `al tocarlo dice «Incluido con el Pase de Roma» (${incl})`)
-  const oroIncl = await e.evaluar("getComputedStyle(document.querySelector('[data-escuchar-incluido] [data-marca]')).color")
-  debe(COLORES_ORO.includes(oroIncl), 'oro', `«Pase de Roma» del botón va en oro (${oroIncl})`)
+  // (Tanda 10N6 §1g) Ya no se pinta «Incluido con el Pase» en el botón: sale el aviso pequeño del pase (escuchar_historia) y su [Ver el Pase] abre la película.
+  const aviso = await e.evaluar("document.querySelector('[data-aviso-pase=\"escuchar_historia\"]')?.innerText ?? null")
+  debe(/Desbloquéalo con el Pase/.test(aviso ?? "") && /Escucha todas las historias de tu viaje/.test(aviso ?? ""), 'escuchar', `al tocarlo sale el aviso pequeño del pase (${aviso})`)
+  const oroIncl = await e.evaluar("getComputedStyle(document.querySelector('[data-aviso-pase-titulo] em')).color")
+  debe(COLORES_ORO.includes(oroIncl) || oroIncl === 'rgb(243, 216, 143)', 'oro', `«Pase Roma» del aviso va en oro (${oroIncl})`)
+  await e.evaluar("document.querySelector('[data-aviso-pase-ver]').click(); true")
   // (Tanda 10I: abrirPase() ya no abre la hoja de compra suelta: lo escucha PeliculaHost y abre la película del pase, que se baja al abrirse.)
   let pelicula = false
   for (let i = 0; i < 10 && !pelicula; i++) {

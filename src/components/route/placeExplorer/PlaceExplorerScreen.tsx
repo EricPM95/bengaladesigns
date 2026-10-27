@@ -30,9 +30,7 @@ import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { CERRADO_ESTE_DIA, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 import { Icono } from '../../ui/Icono'
-import { BotonHoja, Hoja } from '../../ui/Hoja'
-import { TextoConPase } from '../../cuenta/TextoConPase'
-import { abrirPase } from '../../../lib/pago'
+import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { usePasePintable } from '../../../lib/pago'
 import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
 import { diaCorto } from '../../../lib/nombreDeDia'
@@ -395,7 +393,6 @@ export function PlaceExplorerScreen({
   const [query, setQuery] = useState(initialQuery ?? '')
   const [tab, setTab] = useState<BottomTab>('recommended')
   /** Tanda 10O: sin el pase, «Cerca de ti» no cambia de pestaña: abre esta hoja. */
-  const [hojaCerca, setHojaCerca] = useState(false)
   /** La cuenta única de «me gusta» (Tanda 6y10): los de partida de cada sitio más los de los viajeros, la misma que enseña la ficha. El orden de «Recomendados» usa la SUMA. */
   const cuentaMeGusta = useMeGustaStore((state) => state.cuentas[claveDeDestino(destination)])
   const likesTotales = useMemo(() => totalesDe(cuentaMeGusta), [cuentaMeGusta])
@@ -853,9 +850,18 @@ export function PlaceExplorerScreen({
 
         {pickMode?.hint && <p className="shrink-0 px-4 pb-2 text-center text-small text-text-soft">{pickMode.hint}</p>}
         {cambiarParada && (
-          <p data-pregunta-cambiar-parada="1" className="shrink-0 px-4 pb-2.5 text-center font-display text-text" style={{ fontSize: 21, lineHeight: 1.15 }}>
-            {cambiarParada.pregunta}
-          </p>
+          /* (Tanda 10N6 §1e) Una franja arriba: «Elige el sitio que cambia por el Arco de Constantino», con la ✕ para cancelar (vuelve a DÍAS sin cambiar nada). */
+          <div className="shrink-0 px-4 pb-2.5">
+            <div data-pregunta-cambiar-parada="1" className="flex items-center gap-2.5 rounded-2xl py-2 pl-3.5 pr-2" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.45)' }}>
+              <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full" style={{ background: '#F3E3B2', color: '#6E5018' }}>
+                <Icono nombre="intercambiar" size={14} />
+              </span>
+              <span className="min-w-0 flex-1 text-[14px] font-semibold leading-snug text-text">{cambiarParada.pregunta}</span>
+              <button type="button" onClick={onClose} aria-label="Cancelar el cambio" data-cancelar-cambio="1" className="flex h-9 w-9 flex-none items-center justify-center rounded-full" style={{ background: 'rgba(28,34,48,.08)', color: '#1C2230' }}>
+                <Icono nombre="cerrar" size={16} />
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}
@@ -1084,7 +1090,7 @@ export function PlaceExplorerScreen({
                 valor={tab}
                 compacto
                 atributos={{ 'data-pestanas-explorar': '' }}
-                onCambio={(id) => (id === 'nearby' && estadoPase === 'pendiente' ? undefined : id === 'nearby' && !cercaDeMi ? setHojaCerca(true) : setTab(id as 'recommended' | 'nearby'))}
+                onCambio={(id) => (id === 'nearby' && estadoPase === 'pendiente' ? undefined : id === 'nearby' && !cercaDeMi ? abrirAvisoPase('cerca_de_ti', { destino: destination }) : setTab(id as 'recommended' | 'nearby'))}
                 opciones={[
                   { id: 'recommended', texto: 'Recomendados', atributos: { 'data-pestana': 'recommended' } },
                   {
@@ -1233,7 +1239,7 @@ export function PlaceExplorerScreen({
                             {visitable && alreadyInRoute && (
                               <span className="rounded-full px-1.5 py-0.5 text-caption font-semibold" style={{ background: 'oklch(0.96 0.035 150)', color: 'oklch(0.45 0.11 150)' }}>
                                 {/* Ruta a mano: con su día, «En tu día 2» (con fechas, «En tu lun 13»). «Cambiar parada»: «Ya en tu viaje». */}
-                                {cambiando ? 'Ya en tu viaje' : manualOrder && !place.solo_entradas ? (inRouteDayTag(place.name) ?? '✓ En ruta') : '✓ En ruta'}
+                                {cambiando ? '✓ En ruta' : manualOrder && !place.solo_entradas ? (inRouteDayTag(place.name) ?? '✓ En ruta') : '✓ En ruta'}
                               </span>
                             )}
                             {isRecommended(place) && <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">Recomendado</span>}
@@ -1444,7 +1450,7 @@ export function PlaceExplorerScreen({
               { id: `pool-${selected.name}`, name: selected.name, coordinates: selected.coordinates, photoUrl: selectedPhoto ?? undefined },
             ]}
             isAnchor={false}
-            footerAction={cambiarParada ? (isNameAlreadyInRoute(selected.name, stopEntries) ? undefined : { label: 'Cambiar por este →', onClick: () => elegirCambio(selected) }) : selected.solo_entradas ? ((onAddFreeTour ?? onFreeTour) && !pickMode ? { label: '+ Añadir', onClick: (onAddFreeTour ?? onFreeTour)! } : undefined) : pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir ${alDia(route, dayNumber)} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
+            footerAction={cambiarParada ? (isNameAlreadyInRoute(selected.name, stopEntries) ? undefined : { label: 'Cambiar por este', onClick: () => elegirCambio(selected) }) : selected.solo_entradas ? ((onAddFreeTour ?? onFreeTour) && !pickMode ? { label: '+ Añadir', onClick: (onAddFreeTour ?? onFreeTour)! } : undefined) : pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir ${alDia(route, dayNumber)} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
             onClose={() => setSelected(null)}
           />
         )}
@@ -1468,23 +1474,6 @@ export function PlaceExplorerScreen({
               )}
             </button>
           </div>
-        )}
-        {hojaCerca && (
-          <Hoja onCerrar={() => setHojaCerca(false)} titulo="Cerca de ti" datos="explorar-cerca-de-ti" z={120}>
-            <span style={{ font: "400 14.5px/1.5 'Geist'", opacity: 0.8 }}>
-              <TextoConPase texto={`Encuentra los mejores sitios cerca de ti, sin perder tiempo. Disponible con el Pase de ${destination}.`} />
-            </span>
-            <BotonHoja
-              tipo="oscuro"
-              datos="ver-el-pase"
-              onClick={() => {
-                setHojaCerca(false)
-                abrirPase()
-              }}
-            >
-              Ver el Pase de {destination}
-            </BotonHoja>
-          </Hoja>
         )}
       </motion.div>
     </AnimatePresence>,

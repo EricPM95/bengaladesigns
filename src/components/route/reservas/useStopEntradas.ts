@@ -5,7 +5,7 @@ import type { StopEntrada } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import type { ReservationTarget } from './AddReservationSheet'
 import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
-import { idsIncluidos } from '../../../lib/reservasGrupo'
+import { cubreElSitio, porCuando, cuantosLaTienen as contar, meCubre, quienesLaTienen, textoLaTienen } from '../../../lib/entradasDelGrupo'
 
 /** La clave del Free Tour en `_entradas.json` y el `refId` de su reserva. */
 export const FREE_TOUR_KEY = 'Free Tour'
@@ -29,6 +29,12 @@ export interface StopEntradas {
   nombreAdmin: string
   /** Tanda 10N4: cuántas personas del viaje tienen ya la entrada que tú no tienes (el numerito del botón de la parada). 0 si nadie, o si la tienes tú. */
   cuantosLaTienen: number
+  /** (10N6 §1l) Lo mismo en palabras, en plural y con los nombres: «Eric y Ana la tienen para el jueves 12 · 9:15» o «Eric la tiene a las 9:15 · Ana a las 11:00». Vacío si no la tiene nadie más. */
+  textoLaTienen: string
+  /** (10N6 §1l) Lo mismo por separado (quiénes, día y hora): una sola fila = una sola hora. */
+  laTienen: { nombres: string[]; dia: string; hora: string }[]
+  /** (10N6 §1l) Quién reservó la que me cubre (o la del grupo): para «a la misma hora que …». */
+  quienLaTiene: string
 }
 
 /**
@@ -46,13 +52,18 @@ export function useStopEntradas(stop: { id: string; name: string; isFreeTour?: b
   if (!entradas?.length) return null
   // En el viaje: la parada con ese id, o una con ese nombre (la ficha de EXPLORAR no tiene el id de la ruta). Lo «de paso» no es una visita.
   const day = route.days.find((candidate) => candidate.stops.some((item) => item.id === stop.id || (!item.passThrough && !item.isFreeTour === !stop.isFreeTour && item.name === stop.name))) ?? null
-  const cubre = (item: Reservation) => item.kind === 'entrada' && (stop.isFreeTour ? item.refId === FREE_TOUR_KEY : item.placeNames.includes(stop.name))
-  const delDueno = reservations.find(cubre) ?? null
-  // Tanda 10N §8: quien mira el viaje de otra persona tiene SUS entradas (las que compra) y las del dueño que le cubren; la del dueño que no le cubre le sale «Comprar entrada».
-  const propia = grupo.esInvitado ? (grupo.mias.find(cubre) ?? null) : null
-  const cubiertaPorElDueno = grupo.esInvitado && !propia && delDueno != null && grupo.meIncluye(delDueno)
-  const reservation = grupo.esInvitado ? (propia ?? (cubiertaPorElDueno ? delDueno : null)) : delDueno
-  const delGrupo = grupo.esInvitado && !propia && !cubiertaPorElDueno ? delDueno : null
+  const cubre = (item: Reservation) => cubreElSitio(item, stop)
+  // (10N6 §1l) Las entradas se miran igual lo compre quien lo compre: la mía (la que reservé yo), la que me cubre (otro la reservó también para mí) y las de otros que no me cubren (azul con dorado).
+  const delOtros = grupo.deOtros.filter((x) => cubre(x.reserva))
+  const propia = grupo.esInvitado ? (grupo.mias.find(cubre) ?? null) : (reservations.find(cubre) ?? null)
+  const cubiertaPor = !propia ? (delOtros.find((x) => meCubre(x, grupo.yoId)) ?? null) : null
+  const cubiertaPorElDueno = cubiertaPor != null
+  const reservation = propia ?? cubiertaPor?.reserva ?? null
+  const sinMia = !propia && !cubiertaPor
+  const noMeCubren = sinMia ? delOtros : []
+  const delGrupo = noMeCubren[0]?.reserva ?? null
+  const quienLaTiene = cubiertaPor ?? noMeCubren[0] ?? null
+  const paraTexto = noMeCubren.map((x) => ({ nombres: grupo.nombresDe(x), reserva: x.reserva }))
   const base = reservation
     ? { refId: reservation.refId, name: reservation.name, placeNames: reservation.placeNames }
     : stop.isFreeTour
@@ -68,6 +79,9 @@ export function useStopEntradas(stop: { id: string; name: string; isFreeTour?: b
     cubiertaPorElDueno,
     compartido: grupo.compartido,
     nombreAdmin: grupo.nombreAdmin,
-    cuantosLaTienen: delGrupo ? idsIncluidos(delGrupo, grupo.gente).length : 0,
+    cuantosLaTienen: contar(noMeCubren.map((x) => ({ nombres: quienesLaTienen(x) }))),
+    laTienen: route ? porCuando(route, paraTexto) : [],
+    textoLaTienen: route && paraTexto.length > 0 ? textoLaTienen(route, paraTexto) : '',
+    quienLaTiene: quienLaTiene ? grupo.nombresDe(quienLaTiene).join(', ') : '',
   }
 }

@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom'
 import textos from '../../../data/pase/textos.json'
 import { configDelPase, crearPagoDelPase, irAPagar, type ConfigPase } from '../../lib/pagoPase'
 import { marcarPeliculaVista } from '../../lib/peliculaVista'
+import { crearMusicaDeLaPelicula, hayMusicaDeLaPelicula, musicaSilenciada } from '../../lib/peliculaMusica'
+import { sonidoActivado } from '../../lib/sonidos'
 import { usePaseEstado } from '../../lib/paseEstado'
 import { nombreDeMoneda } from '../../lib/dinero'
 import { guardarMoneda, monedaGuardada, monedaUsable } from '../../lib/precioMoneda'
@@ -46,6 +48,29 @@ export function PeliculaPase({ destino, tripId, desde, onCerrar, configInicial =
   const pase = usePaseEstado(tripId)
   const marcada = useRef(false)
   const ocupado = useRef(false)
+
+  // (Tanda 10N6 §1i) La música de fondo: solo si Eric ha puesto el archivo (si no, no hay audio, ni botón, ni petición rota) y el ajuste «Sonido de los momentos» está encendido.
+  const musica = useRef<ReturnType<typeof crearMusicaDeLaPelicula> | null>(null)
+  const [hayMusica, setHayMusica] = useState(false)
+  const [silenciada, setSilenciada] = useState(musicaSilenciada)
+  useEffect(() => {
+    const m = crearMusicaDeLaPelicula()
+    musica.current = m
+    let vivo = true
+    void hayMusicaDeLaPelicula().then((hay) => vivo && setHayMusica(hay && sonidoActivado()))
+    // La película empieza al tocar [Ver] (ese toque deja sonar al móvil); si se abre directa al final, la música espera a «Verla otra vez».
+    if (desde === 'principio') m.empezar()
+    return () => {
+      vivo = false
+      m.parar()
+      window.setTimeout(() => m.soltar(), 900)
+    }
+  }, [desde])
+  const silenciar = () => {
+    const nueva = !silenciada
+    setSilenciada(nueva)
+    musica.current?.silenciar(nueva)
+  }
 
   useEffect(() => {
     if (configInicial) return undefined
@@ -176,12 +201,21 @@ export function PeliculaPase({ destino, tripId, desde, onCerrar, configInicial =
       lineaLegal: textos.linea_legal_compra || '',
       comprar: () => void comprar(hoja.plan, hoja.personas),
       cerrarApp: onCerrar,
+      hayMusica,
+      // el título se aparta del botón de silencio (que va a la izquierda de [Saltar]) para no pisarse
+      tPadR: hayMusica ? 96 : 0,
+      musicaOn: hayMusica && !silenciada,
+      musicaOff: hayMusica && silenciada,
+      silenciar,
+      silTxt: silenciada ? 'Poner la música' : 'Quitar la música',
       // «Verla otra vez» (con el pase): la película entera desde el principio.
       again: () => {
+        musica.current?.empezar()
         setMontada(false)
         logic.setState({ i: -1, p: 0, eff: false, b4: false, gone: false, hold: false, sheet: '' }, () => window.setTimeout(() => logic.setState({ i: 0, p: 0 }), 60))
       },
       replay: () => {
+        musica.current?.empezar()
         setMontada(false)
         logic.setState({ i: -1, p: 0, hold: false, sheet: '' }, () => window.setTimeout(() => logic.setState({ i: 0, p: 0 }), 40))
       },

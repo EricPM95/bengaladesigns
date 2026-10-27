@@ -17,6 +17,7 @@ import { useStopEntradas } from './useStopEntradas'
 import { FichaSinEntrada } from '../dayDetail/FichaPiezas'
 import { diaDeLaReservaEnPalabras, horaCorta } from '../../../lib/reservasGrupo'
 import { displayStopName } from '../../../lib/format'
+import { frase } from '../../../lib/entradasDelGrupo'
 
 /** La parada de la ruta con ese id (null si no está en ningún día). */
 function useRouteStop(stopId: string | null | undefined) {
@@ -60,14 +61,14 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
   const recomendada = recomendarHora(horasDelViaje, fechaDeLaParada, found?.stop.time ?? null, fechasDelViaje)
   if (sinEntrada) return <FichaSinEntrada bloque={sinEntrada} />
   if (!route || !data) return null
-  const { reservation, delGrupo, cubiertaPorElDueno, compartido, nombreAdmin } = data
+  const { reservation, delGrupo, cubiertaPorElDueno, compartido, nombreAdmin, laTienen, quienLaTiene } = data
   return (
     // `contents`: la pestaña la monta la ficha como una columna y lo tuyo (los dos recuadros de arriba) lleva `order-first`, así que sale ARRIBA DEL TODO, encima de cualquier otra cosa de la pestaña (Tanda 10N4).
     <div className="contents">
       {/* 03 · otro del grupo la tiene y tú no: azul oscuro con dorado. */}
       {compartido && delGrupo && (
         <div className="order-first">
-          <EntradaDelGrupo quien={nombreAdmin || 'El dueño'} cuando={`${diaDeLaReservaEnPalabras(route, delGrupo)} · ${horaCorta(delGrupo.time)}`} onReservar={() => setIgualModo('comprar')} onYaLaTengo={() => setIgualModo('tengo')} />
+          <EntradaDelGrupo quien={laTienen.length === 1 ? frase(laTienen[0].nombres) : quienLaTiene || nombreAdmin || 'El dueño'} plural={laTienen.length === 1 && laTienen[0].nombres.length > 1} cuando={laTienen.length === 1 ? `${laTienen[0].dia} · ${laTienen[0].hora}` : `${diaDeLaReservaEnPalabras(route, delGrupo)} · ${horaCorta(delGrupo.time)}`} texto={laTienen.length > 1 ? data.textoLaTienen : undefined} onReservar={() => setIgualModo('comprar')} onYaLaTengo={() => setIgualModo('tengo')} />
         </div>
       )}
       {data.entradas.map((entrada) => (
@@ -125,7 +126,7 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
         )
       )}
       {sheet && <AddReservationSheet route={route} target={data.target} onClose={() => setSheet(false)} />}
-      {igualModo && delGrupo && <AddReservationSheet route={route} target={{ ...data.target, igualQue: { reserva: delGrupo, quien: nombreAdmin, modo: igualModo } }} onClose={() => setIgualModo(null)} />}
+      {igualModo && delGrupo && <AddReservationSheet route={route} target={{ ...data.target, igualQue: { reserva: delGrupo, quien: quienLaTiene || nombreAdmin, modo: igualModo } }} onClose={() => setIgualModo(null)} />}
     </div>
   )
 }

@@ -41,6 +41,10 @@ export interface Reservation {
   aviso?: string | null
   /** Tanda 10N §8: en un viaje compartido, a quién cubre la entrada (ids de `Persona`; el dueño siempre dentro). Sin él (las de antes de compartir): «solo para mí», solo el dueño. */
   paraQuien?: string[] | null
+  /** (Tanda 10N6, 1c) El viajero quitó la parada de su ruta pero se quedó con la entrada: sigue en RESERVAS («Ya no está en tu ruta») y no vuelve a fijar ni a mover nada hasta que la ponga de nuevo en su día. */
+  fueraDeRuta?: boolean
+  /** (10N6, 1c) La parada tal como estaba al quitarla de la ruta, para devolverla a su día con «Volver a ponerla en su día». */
+  paradaQuitada?: Stop | null
 }
 
 /**
@@ -220,6 +224,7 @@ export function newCampaignCode(): string {
  * saliendo en Reservas.
  */
 export function placeReservedEntrance(route: Route, reservation: Reservation): Route {
+  if (reservation.fueraDeRuta) return route
   // Ruta a mano (Tanda 6y): la reserva no trae la parada de otro día ni ordena el día por hora; la parada se queda donde la puso el viajero (manualPlan.ts).
   if (isManualRoute(route)) return reservedEntranceInPlace(route, reservation)
   const target = dayOfReservation(route, reservation)
@@ -268,7 +273,7 @@ export function placeReservedEntrance(route: Route, reservation: Reservation): R
  * como la puso el viajero.
  */
 export function reservedEntranceInPlace(route: Route, reservation: Reservation): Route {
-  if (reservation.kind !== 'entrada') return route
+  if (reservation.kind !== 'entrada' || reservation.fueraDeRuta) return route
   const target = dayOfReservation(route, reservation)
   if (!target) return route
   const index = target.stops.findIndex((stop) => reservation.placeNames.includes(stop.name))

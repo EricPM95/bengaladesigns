@@ -189,7 +189,7 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   debe(/PlaceExplorerScreen/.test(cambiarSrc) && /cambiarParada=\{/.test(cambiarSrc) && /initialFilters=\{\[\.\.\.FILTROS_DE_CAMBIAR_PARADA\]\}/.test(cambiarSrc) && /cambiarParadaPorOtra/.test(cambiarSrc), 'B6 explorador', '«Cambiar parada» no abre el explorador compartido con sus filtros y el cambio compartido')
   debe(/yaCambiada\.current/.test(cambiarSrc), 'B9 un solo cambio', 'un segundo toque en el ⇄ (mientras llega la foto) puede dejar un «Deshacer» que devuelva un viaje ya cambiado')
   debe(JSON.stringify(FILTROS_DE_CAMBIAR_PARADA) === JSON.stringify(['atracciones', 'miradores']), 'B6 filtros', `los filtros no son Atracciones (monumentos) y Miradores (${JSON.stringify(FILTROS_DE_CAMBIAR_PARADA)})`)
-  debe(preguntaDeCambiarParada('Coliseo') === '¿Por cuál quieres cambiar Coliseo?', 'B6 pregunta', `la pregunta no es «¿Por cuál quieres cambiar Coliseo?» (${preguntaDeCambiarParada('Coliseo')})`)
+  debe(preguntaDeCambiarParada('Coliseo') === 'Elige el sitio que cambia por el Coliseo', 'B6 pregunta', `la franja no es «Elige el sitio que cambia por el Coliseo» (${preguntaDeCambiarParada('Coliseo')}) (Tanda 10N6)`)
   // Nadie más usa el buscador viejo.
   const archivos = []
   const recorre = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) recorre(p); else if (/\.(ts|tsx)$/.test(e.name)) archivos.push(p) } }
@@ -204,7 +204,7 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   const props = { open: true, destination: 'Roma', places: catalogo, title: 'Cambiar parada — jue 11', route, dayNumber: 2, dateIso: sumaDias(INICIO, 1), initialFilters: [...FILTROS_DE_CAMBIAR_PARADA], onClose() {} }
   const h = html(PlaceExplorerScreen, { ...props, cambiarParada: { pregunta: preguntaDeCambiarParada(noms[3]), onElegir() {} } })
   const t = aTexto(h)
-  debe(t.includes(`¿Por cuál quieres cambiar ${noms[3]}?`) && h.includes('data-pregunta-cambiar-parada="1"'), 'B6 pregunta', 'la pantalla no lleva la pregunta arriba')
+  debe(t.includes('Elige el sitio que cambia por') && t.includes(noms[3]) && h.includes('data-pregunta-cambiar-parada="1"') && h.includes('data-cancelar-cambio="1"'), 'B6 pregunta', 'la pantalla no lleva la pregunta arriba')
   const chipsActivos = [...h.matchAll(/data-active="true"[^>]*>(?:(?!<\/button>)[\s\S])*<\/button>/g)].map((m) => aTexto(m[0]))
   debe(chipsActivos.length === 2 && chipsActivos.some((c) => /Atracciones/.test(c)) && chipsActivos.some((c) => /Miradores/.test(c)), 'B6 filtros', `los filtros activos no son «Atracciones» y «Miradores» (${JSON.stringify(chipsActivos)})`)
   debe(!/Restaurantes|Excursiones/.test(aTexto(h.slice(0, h.indexOf('Buscar') > 0 ? h.indexOf('Buscar') : h.length))), 'B7 chips', 'en «Cambiar parada» salen los chips de Restaurantes o Excursiones')
@@ -212,8 +212,8 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   debe(botones.length >= 5, 'B7 ⇄', `salen muy pocos ⇄ (${botones.length})`)
   debe(botones.every((n) => !enViaje.has(n)), 'B7 ya en el viaje', `un sitio que ya está en el viaje lleva el ⇄: ${botones.filter((n) => enViaje.has(n)).join(', ')}`)
   const tarjetasDelViaje = [...enViaje].filter((n) => lugares.some((p) => p.name === n))
-  debe(veces(t, /Ya en tu viaje/g) >= Math.min(tarjetasDelViaje.length, 3), 'B7 ya en el viaje', `los sitios que ya están en el viaje no dicen «Ya en tu viaje» (${veces(t, /Ya en tu viaje/g)})`)
-  debe(!/aria-label="Añadir /.test(h) && !/✓ En ruta/.test(t), 'B7 sin «+»', 'en «Cambiar parada» queda un «+ Añadir» o «✓ En ruta»')
+  debe(veces(t, /✓ En ruta/g) >= Math.min(tarjetasDelViaje.length, 3), 'B7 ya en el viaje', `los sitios que ya están en el viaje no dicen «✓ En ruta» (${veces(t, /✓ En ruta/g)}) (Tanda 10N6)`)
+  debe(!/aria-label="Añadir /.test(h) && !/\+ Añadir/.test(t), 'B7 sin «+»', 'en «Cambiar parada» queda un «+ Añadir»')
   debe(h.includes(ICONOS.intercambiar) && !/>\+<\/span>/.test(h), 'B7 ⇄', 'el botón de la esquina no es el icono de intercambiar')
   const botonSwap = h.split('<button').find((b) => b.includes('data-cambiar-por=')) ?? ''
   debe(/<svg[^>]*fill="none"[^>]*stroke="currentColor"/.test(botonSwap) && /stroke-width="1\.7"/.test(botonSwap) && !/fill="currentColor"/.test(botonSwap), 'B7 ⇄', 'el ⇄ no es un icono fino sin relleno')

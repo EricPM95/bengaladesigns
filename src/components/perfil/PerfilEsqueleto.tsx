@@ -18,7 +18,7 @@ export function PerfilEsqueleto({ nombre = null, titulo = true }: { nombre?: str
   return (
     <div data-perfil-cargando="1" aria-busy="true" style={{ padding: '0 20px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6 }}>
-        <Hueco w={104} h={104} r="50%" />
+        <Hueco w={118} h={118} r="50%" />
         <div style={{ display: 'flex', minWidth: 0, flex: 1, flexDirection: 'column', gap: 10 }}>
           {visible ? (
             <h2 style={{ margin: 0, font: "400 34px/1 'Instrument Serif',serif", overflowWrap: 'anywhere' }}>

@@ -238,7 +238,7 @@ export function HojaPermiso({ persona, alCerrar, alGuardar, nombreAdmin = 'el ad
 }
 
 /** 04 · «¿Quitar a Luis del viaje a Roma?»: si tenía plaza del pase, el recuadro con su plaza vacía y «Vuelve a ti»; [Quitar a Luis] en rojo y [Cancelar]. */
-export function HojaQuitar({ persona, tripId, destino, personasDelPase, alCerrar, alQuitar }: { persona: Persona; tripId: string; destino: string; personasDelPase: Persona[]; alCerrar: () => void; alQuitar: () => Promise<string | null> }) {
+export function HojaQuitar({ persona, tripId, destino: _destino, personasDelPase, alCerrar, alQuitar }: { persona: Persona; tripId: string; destino: string; personasDelPase: Persona[]; alCerrar: () => void; alQuitar: () => Promise<string | null> }) {
   const [info, setInfo] = useState<InfoQuitar | null>(null)
   const [ocupado, setOcupado] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -258,8 +258,8 @@ export function HojaQuitar({ persona, tripId, destino, personasDelPase, alCerrar
     if (fallo) setError(fallo)
   }
   return (
-    <Hoja onCerrar={alCerrar} titulo={`¿Quitar a ${nombre} del viaje a ${destino}?`} datos="quitar-del-viaje" z={95}>
-      <span style={{ font: "400 13.5px/1.5 'Geist'", color: 'rgba(28,34,48,.65)' }}>Dejará de ver el viaje enseguida. Lo que ya ha ganado se lo queda.</span>
+    <Hoja onCerrar={alCerrar} titulo={`¿Quitamos a ${nombre} del viaje?`} datos="quitar-del-viaje" z={95}>
+      <span style={{ font: "400 13.5px/1.5 'Geist'", color: 'rgba(28,34,48,.65)' }}>{plaza ? 'Dejará de verlo y su plaza del pase vuelve a ti.' : 'Dejará de verlo. Lo que ya ha ganado se lo queda.'}</span>
       {plaza && (
         <div data-plaza-del-pase style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, background: '#F5EFE4' }}>
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -283,12 +283,14 @@ export function HojaQuitar({ persona, tripId, destino, personasDelPase, alCerrar
           {error}
         </p>
       )}
-      <button type="button" data-confirmar-quitar disabled={ocupado} onClick={() => void quitar()} style={{ height: 54, borderRadius: 999, border: 'none', background: 'rgb(var(--accent-red))', color: '#fff', font: "700 15px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}>
-        Quitar a {nombre}
-      </button>
-      <BotonHoja tipo="secundario" onClick={alCerrar} datos="cancelar-quitar">
-        Cancelar
-      </BotonHoja>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button type="button" data-cancelar-quitar data-boton-hoja="cancelar-quitar" onClick={alCerrar} style={{ flex: 1, height: 54, borderRadius: 999, border: '1px solid rgba(28,34,48,.15)', background: 'transparent', color: '#1C2230', font: "600 15px 'Geist'", cursor: 'pointer' }}>
+          Cancelar
+        </button>
+        <button type="button" data-confirmar-quitar disabled={ocupado} onClick={() => void quitar()} style={{ flex: 1, height: 54, borderRadius: 999, border: 'none', background: 'rgb(var(--accent-red))', color: '#fff', font: "700 15px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}>
+          Sí, quitar
+        </button>
+      </div>
     </Hoja>
   )
 }

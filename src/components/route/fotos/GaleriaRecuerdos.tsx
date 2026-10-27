@@ -91,7 +91,7 @@ export function GaleriaRecuerdos() {
                       {urlParaMostrar(foto) ? <img onClick={() => setGrande(foto)} src={urlParaMostrar(foto)} alt={foto.stopName ?? `Foto del ${rotuloDia(foto.dayNumber, inicio)}`} loading="lazy" className="aspect-square w-full cursor-zoom-in object-cover" /> : <div className="aspect-square w-full" />}
                       {confirmando === foto.id ? (
                         <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-bg-card/95 px-2.5 py-2 text-[12.5px] text-text">
-                          <span>¿Eliminar esta foto?</span>
+                          <span>¿Quitamos esta foto?</span>
                           <span className="flex gap-3">
                             <button type="button" onClick={() => void eliminar(foto)} disabled={borrando === foto.id} className="font-medium text-text underline underline-offset-2">
                               {borrando === foto.id ? 'Eliminando…' : 'Sí'}

@@ -29,7 +29,7 @@ import { MeGusta } from '../../ui/MeGusta'
 import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
 import { etiquetaDeHorario } from '../../../lib/etiquetaHorario'
 import { FotoCredito } from '../../ui/FotoCredito'
-import { BotonFotoParada } from '../fotos/BotonFotoParada'
+import { TusRecuerdos } from '../fotos/TusRecuerdos'
 import { Escuchar } from '../hoy/Escuchar'
 import { accesoHistoria, textoHistoria } from '../../../lib/historia'
 import { FichaComoLlegar, FichaHorario, FichaPestanas, FichaPorElCamino, FichaQueVeras, FichaTip, type FilaHorario } from './FichaPiezas'
@@ -439,12 +439,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                     <span className="absolute inset-0 overflow-hidden rounded-[22px] bg-bg-hover" style={{ backgroundImage: 'repeating-linear-gradient(135deg, rgb(var(--bg-hover)) 0 8px, rgb(var(--border) / .55) 8px 16px)' }}>
                       {(photo?.small ?? stop.photoUrl) && <img src={photo?.small ?? stop.photoUrl} alt="" className="h-full w-full object-cover" />}
                     </span>
-                    {/* Sin foto (la del servidor es «none» o está rechazada): el recuadro neutro, nunca una imagen rota ni vacía. */}
-                    {dayNumber !== null && !footerAction && (
-                      <span className="absolute -bottom-1.5 -right-1.5 z-[2] [&_[role=alert]]:absolute [&_[role=alert]]:left-[-70px] [&_[role=alert]]:top-[calc(100%+4px)] [&_[role=alert]]:z-10 [&_[role=alert]]:w-[200px] [&_[role=alert]]:rounded-lg [&_[role=alert]]:bg-bg-card [&_[role=alert]]:p-1.5 [&_[role=alert]]:shadow">
-                        <BotonFotoParada stopName={stop.name} dayNumber={dayNumber} esquina grande />
-                      </span>
-                    )}
+                    {/* (Tanda 10N6 §1f) Fuera la cámara de la esquina de la foto: las fotos del sitio van en «Tus recuerdos», entre la cabecera y las pestañas. */}
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col gap-3">
                     <div className="flex items-start gap-2.5">
@@ -484,6 +479,9 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                     dominio público, nada) y las nuestras (`propia`) no la llevan nunca (Tanda 6z6e). Una sola pieza, `FotoCredito` (Tanda 6y2),
                     la misma que usa la esquina de las fotos grandes. */}
                 <FotoCredito photo={photo} className="px-1 text-caption text-text-muted" />
+
+                {/* (Tanda 10N6 §1f, `Piezas/Recuerdos Ficha` A) Tus recuerdos de este sitio: sale siempre, también antes del viaje; no en los sitios que no son una parada de verdad. */}
+                {!stop.isBreak && <TusRecuerdos stopName={stop.name} dayNumber={dayNumber} />}
   
                 <FichaPestanas<Tab>
                   pestanas={([{ id: 'resumen', label: 'Resumen' }, { id: 'tickets', label: 'Entradas' }, { id: 'tips', label: 'Tips' }] as const).filter((item) => visibleTabs.includes(item.id)).map((item) => ({ id: item.id as Tab, label: item.label }))}

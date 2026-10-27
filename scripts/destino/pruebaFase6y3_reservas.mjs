@@ -184,8 +184,8 @@ for (const fechas of [true, false]) {
   const menu = fs.readFileSync('src/components/route/dayDetail/StopMenu.tsx', 'utf8')
   const hoja = fs.readFileSync('src/components/route/reservas/AddReservationSheet.tsx', 'utf8')
   const marcas = fs.readFileSync('src/components/route/reservas/ReservedMarks.tsx', 'utf8')
-  debe(/removeReservationWithUndo\(stop\.reservedId as string\)/.test(menu) && /<RemoveReservationDialog/.test(menu), '2 cableado', 'el menú de la parada no quita con el aviso (o perdió la ventana «no cancela tu reserva»)')
-  debe(/removeReservationWithUndo\(existing\.id\)/.test(hoja) && /¿Estás seguro de que quieres eliminar tu reserva\?/.test(hoja), '2 cableado', '«Eliminar reserva» no quita con el aviso (o perdió su confirmación)')
+  debe(/quitarParadaConEntrada\(dayId, stop, reserva, modo\)/.test(menu) && /<QuitarConEntradaDialog/.test(menu), '2 cableado', 'el menú de la parada no quita con el aviso (o perdió la ventana «no cancela tu reserva»)')
+  debe(/removeReservationWithUndo\(existing\.id\)/.test(hoja) && /¿Quitamos tu reserva de /.test(hoja), '2 cableado', '«Eliminar reserva» no quita con el aviso (o perdió su confirmación)')
   debe(/Quitarla de tu viaje no cancela tu reserva/.test(marcas), '2 cableado', 'la ventana «no cancela tu reserva» ya no está')
 }
 

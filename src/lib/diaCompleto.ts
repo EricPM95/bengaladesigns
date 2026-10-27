@@ -43,7 +43,7 @@ export function minutosDelDia(day: DayPlan, soloLoQueHay = false): number {
 
 /** ¿Es un día completo? Solo cuenta un día con reserva (el viajero ya ha puesto una hora), y solo si lo que ocupa pasa de lo que cabe. */
 export function esDiaCompleto(route: Route, day: DayPlan, reservations: Reservation[]): boolean {
-  const conReserva = reservations.some((reserva) => reserva.kind === 'entrada' && dayOfReservation(route, reserva)?.id === day.id)
+  const conReserva = reservations.some((reserva) => reserva.kind === 'entrada' && !reserva.fueraDeRuta && dayOfReservation(route, reserva)?.id === day.id)
   return conReserva && minutosDelDia(day, isManualRoute(route)) > MINUTOS_DEL_DIA
 }
 

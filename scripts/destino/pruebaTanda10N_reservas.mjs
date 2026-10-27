@@ -35,8 +35,8 @@ fs.mkdirSync(SALIDA, { recursive: true })
   const dentro = textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { quien: 'Eric', sitio: 'el Coliseo', dia: 'jueves 26', hora: '08:00', incluido: true } })
   const fuera = textos.textoDelAviso({ tipo: 'reserva_grupo', payload: { quien: 'Eric', sitio: 'el Coliseo', dia: 'jueves 26', hora: '08:00', incluido: false } })
   // Tanda 10N4 (§4b2): frase entera, sin dos puntos ni coma.
-  debe(dentro === 'Eric ha reservado el Coliseo para ti el jueves 26 a las 8:00.', 'avisos', `aviso del incluido: «${dentro}»`)
-  debe(fuera === 'Eric ha reservado el Coliseo el jueves 26 a las 8:00.', 'avisos', `aviso del no incluido: «${fuera}»`)
+  debe(dentro === 'Eric ha reservado el Coliseo para ti · jueves 26 · 8:00', 'avisos', `aviso del incluido: «${dentro}»`)
+  debe(fuera === 'Eric ha reservado el Coliseo · jueves 26 · 8:00. ¿Reservas la tuya a la misma hora?', 'avisos', `aviso del no incluido: «${fuera}»`)
 }
 
 /* ───────────────────────── 2. La app ───────────────────────── */
@@ -260,7 +260,7 @@ try {
   await a.captura(path.join(SALIDA, '10n_reservas_dias_etiqueta_incluida.jpg'))
   // La campana de Ana
   const campanaAna = await leerCampana(a)
-  debe(campanaAna.some((t) => t === `Eric ha reservado el Coliseo para ti el ${diaOwner} a las ${horaOwner}.`), 'campana', `la campana de Ana: «Eric ha reservado el Coliseo para ti el ${diaOwner} a las ${horaOwner}.» (${JSON.stringify(campanaAna)})`)
+  debe(campanaAna.some((t) => t === `Eric ha reservado el Coliseo para ti · ${diaOwner} · ${horaOwner}`), 'campana', `la campana de Ana: «Eric ha reservado el Coliseo para ti el ${diaOwner} a las ${horaOwner}.» (${JSON.stringify(campanaAna)})`)
   const botonesAna = await a.evaluar(`Array.from(document.querySelectorAll('[role="dialog"] button')).map((b) => (b.textContent || '').trim())`)
   debe(!botonesAna.includes('Reservar la mía a la misma hora') && !botonesAna.includes('Ya la tengo'), 'campana', 'al incluido no le salen los botones de comprar la suya')
   await cerrarCampana(a)
@@ -276,7 +276,7 @@ try {
   debe(!/63, 160, 102/.test(colorLuis) && /oklch|rgb/.test(colorLuis), 'dias', `y en frambuesa (${colorLuis})`)
   await a.captura(path.join(SALIDA, '10n_reservas_dias_etiqueta_no_incluido.jpg'))
   const campanaLuis = await leerCampana(a)
-  debe(campanaLuis.some((t) => t === `Eric ha reservado el Coliseo el ${diaOwner} a las ${horaOwner}.`), 'campana', `la campana de Luis: «Eric ha reservado el Coliseo el ${diaOwner} a las ${horaOwner}.» (${JSON.stringify(campanaLuis)})`)
+  debe(campanaLuis.some((t) => t === `Eric y Ana han reservado el Coliseo · ${diaOwner} · ${horaOwner}. ¿Reservas la tuya a la misma hora?`), 'campana', `la campana de Luis (10N6, plural con los nombres): «Eric y Ana han reservado el Coliseo · ${diaOwner} · ${horaOwner}. ¿Reservas la tuya a la misma hora?» (${JSON.stringify(campanaLuis)})`)
   const botonesLuis = await a.evaluar(`Array.from(document.querySelectorAll('[role="dialog"] button')).map((b) => (b.textContent || '').trim())`)
   debe(botonesLuis.includes('Reservar la mía a la misma hora') && botonesLuis.includes('Ya la tengo'), 'campana', 'y lleva [Reservar la mía a la misma hora] y [Ya la tengo]')
   await a.captura(path.join(SALIDA, '10n_reservas_campana_no_incluido.jpg'))
@@ -291,7 +291,7 @@ try {
     marcar?.click()
     await new Promise((r) => setTimeout(r, 400))
     const despues = useNoticesStore.getState().readIds.includes(id)
-    const sigue = /ha reservado el Coliseo/.test(document.querySelector('[role="dialog"]')?.textContent || '')
+    const sigue = /ha(n)? reservado el Coliseo/.test(document.querySelector('[role="dialog"]')?.textContent || '')
     return { antes, despues, sigue }
   })()`)
   debe(leido.antes === false && leido.despues === true && leido.sigue === true, 'campana', 'al leerlo deja de contar (queda en leídos) y se queda en la lista')
@@ -302,7 +302,7 @@ try {
   await abrirBloque(a, 'entradas')
   await a.esp(1000)
   const filaLuis = await a.evaluar(`(() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).find((x) => /Reservar la mía a la misma hora/.test(x.textContent || '')); const t = b?.closest('[class*="min-h-"]')?.textContent ?? null; return t })()`)
-  debe(filaLuis && /Coliseo/.test(filaLuis) && new RegExp(`Eric va el ${diaOwner} a las ${horaOwner}`).test(filaLuis), 'misma_hora', `en RESERVAS, la tarjeta del Coliseo de Luis dice «Eric va el ${diaOwner} a las ${horaOwner}» con [Reservar la mía a la misma hora] (${filaLuis})`)
+  debe(filaLuis && /Coliseo/.test(filaLuis) && new RegExp(`Eric y Ana la tienen para el ${diaOwner} · ${horaOwner}`).test(filaLuis), 'misma_hora', `en RESERVAS, la tarjeta del Coliseo de Luis dice «Eric y Ana la tienen para el ${diaOwner} · ${horaOwner}» (10N6, plural y con los nombres) con [Reservar la mía a la misma hora] (${filaLuis})`)
   await a.captura(path.join(SALIDA, '10n_reservas_invitado_misma_hora_tarjeta.jpg'))
   await a.evaluar(botonConTexto('/Reservar la mía a la misma hora/', `document.querySelector('[data-blk="entradas"]')`))
   await a.esp(1800)
@@ -314,7 +314,7 @@ try {
     const g = hoja.querySelector('[data-guardar-reserva]')
     return { igual: hoja.querySelector('[data-igual-que]')?.textContent ?? null, dia: marcado?.textContent ?? null, boton: g?.textContent ?? null, paraQuien: Boolean(hoja.querySelector('[data-para-quien]')), modo: g?.dataset.guardarReserva }
   })()`)
-  debe(abierta && new RegExp(`Eric va el ${diaOwner} a las ${horaOwner}`).test(abierta.igual ?? ''), 'misma_hora', `la compra se abre diciendo lo del dueño (${abierta?.igual})`)
+  debe(abierta && new RegExp(`Eric y Ana van el ${diaOwner} a las ${horaOwner}`).test(abierta.igual ?? ''), 'misma_hora', `la compra se abre diciendo lo del dueño (${abierta?.igual})`)
   debe(abierta && new RegExp(`Abrir la compra · 0?${horaOwner}`).test(abierta.boton ?? '') && abierta.modo === 'comprar', 'misma_hora', `con la hora ya elegida (${abierta?.boton})`)
   const numDiaOwner = diaOwner.split(' ')[1]
   debe(abierta && new RegExp(`(^|\\D)${numDiaOwner}(\\D|$)`).test(abierta.dia ?? ''), 'misma_hora', `y el día ya elegido (${abierta?.dia} · el del dueño es el ${diaOwner})`)

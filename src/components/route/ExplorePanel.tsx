@@ -19,7 +19,8 @@ import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
 import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId, type TarjetaDeExplorar } from '../../lib/exploreStyle'
 import { Icono } from '../ui/Icono'
-import { abrirPase, usePasePintable } from '../../lib/pago'
+import { usePasePintable } from '../../lib/pago'
+import { abrirAvisoPase } from '../../lib/avisoPase'
 import { AZUL_PASE, ORO_PASE, SOMBRA_PASE, CandadoDeDesign } from '../pase/Candado'
 import type { Coordinates } from '../../lib/types'
 import { useExploreAperturaStore } from '../../store/useExploreAperturaStore'
@@ -106,7 +107,7 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick, cerrado = fa
   // (Tanda 10N5 §6b: lo pequeño bloqueado por el pase, en azul oscuro con el candado dorado —los colores de la caja de `Pase Estilo` 01—, solo con el nombre y el candado.)
   if (cerrado) {
     return (
-      <button type="button" onClick={abrirPase} data-candado={`explorar-${id}`} data-bloqueado-pase="1" className={className} style={{ ...cardStyle, background: AZUL_PASE, boxShadow: SOMBRA_PASE, border: 'none' }}>
+      <button type="button" onClick={() => abrirAvisoPase(id === 'banos' || id === 'fuentes' ? id : 'generico')} data-candado={`explorar-${id}`} data-bloqueado-pase="1" className={className} style={{ ...cardStyle, background: AZUL_PASE, boxShadow: SOMBRA_PASE, border: 'none' }}>
         <span className="absolute bottom-3 left-4 right-4 flex flex-col gap-[3px]">
           <span className="font-display" style={{ fontSize: 21, lineHeight: 1, color: '#FBF3E2' }}>
             {label}

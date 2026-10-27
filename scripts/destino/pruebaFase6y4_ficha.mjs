@@ -246,27 +246,18 @@ const hojaSimple = (stop, { version = 'completa', extra = {}, voces } = {}) => {
   debe(/font-display[^"]*text-\[33px\]/.test(html), 'A1 cabecera', 'el nombre no va en serif de 33 px (Tanda 10N4)')
   debe(/min/.test(texto) || /h\b/.test(texto), 'A1 etiquetas', 'no sale la duración')
   debe(/data-ficha-pestanas/.test(html) && /Resumen/.test(texto) && /Entradas/.test(texto) && /Tips/.test(texto), 'A1 pestañas', 'faltan las tres pestañas con su bolita')
-  // La cámara: UNA, en la esquina de la foto (dentro de la caja de 84 px, después de la foto), con el aspecto del diseño (32 px redonda).
-  debe(veces(html, /aria-label="Añadir foto"/g) === 1, 'A2 cámara', `la ficha lleva ${veces(html, /aria-label="Añadir foto"/g)} botones «Añadir foto» (debe ser 1)`)
-  const iCam = html.indexOf('aria-label="Añadir foto"')
-  debe(iCam > iFoto && iCam < iNombre, 'A2 cámara', 'el botón de la cámara no está dentro de la caja de la foto (antes del nombre)')
-  const botonCam = html.slice(html.lastIndexOf('<button', iCam), html.indexOf('</button>', iCam) + 9)
-  debe(/h-10 w-10/.test(botonCam) && /rounded-full/.test(botonCam) && /M4 8h3l2-3h6/.test(botonCam) && !/Añadir foto<\/button>/.test(botonCam), 'A2 cámara', `la cámara no es el botón redondo de 40 px solo con el icono (Tanda 10N4) (${botonCam.slice(0, 200)})`)
-  debe(/-bottom-1\.5 -right-1\.5/.test(html.slice(html.lastIndexOf('<span', iCam - 200), iCam)) || /-bottom-1\.5 -right-1\.5/.test(html.slice(iFoto, iCam)), 'A2 cámara', 'la cámara no está pegada a la esquina de abajo a la derecha de la foto')
-  // Misma subida de siempre: el botón de la esquina es el `BotonFoto` (que llama a `subirFoto`).
-  const fuenteBoton = leer('src/components/route/fotos/BotonFotoParada.tsx')
-  debe(/<BotonFoto[\s\S]*esquina|if \(esquina\)[\s\S]*<BotonFoto /.test(fuenteBoton) && /subirFoto\(/.test(leer('src/components/route/fotos/BotonFoto.tsx')), 'A2 cámara', 'la cámara de la esquina no sube con `BotonFoto`/`subirFoto`')
+  // (Tanda 10N6 §1f) Fuera la cámara de encima de la foto: las fotos van en «Tus recuerdos» (entre la cabecera y las pestañas), que sale siempre.
+  debe(veces(html, /aria-label="(Añadir|Cambiar) foto"/g) === 0, 'A2 recuerdos', 'la ficha aún lleva la cámara encima de la foto')
+  debe(veces(html, /data-tus-recuerdos/g) === 1 && /Tus recuerdos/.test(texto), 'A2 recuerdos', 'la ficha no lleva el bloque «Tus recuerdos»')
   const fuenteFicha = leer('src/components/route/dayDetail/StopDetailSheet.tsx')
-  debe(fuenteFicha.split('\n').filter((l) => /<BotonFotoParada /.test(l)).length === 1 && /<BotonFotoParada [^>]*esquina/.test(fuenteFicha), 'A2 cámara', 'la ficha no monta la cámara con una sola línea y `esquina`')
+  debe(fuenteFicha.split(String.fromCharCode(10)).filter((l) => /<TusRecuerdos /.test(l)).length === 1 && !/<BotonFotoParada /.test(fuenteFicha), 'A2 recuerdos', 'la ficha no monta «Tus recuerdos» con una sola línea o conserva la cámara')
+  debe(/subirFoto\(/.test(leer('src/components/route/fotos/TusRecuerdos.tsx')), 'A2 recuerdos', '«Tus recuerdos» no sube con `subirFoto`')
   // Gratis: una foto por parada (la segunda pasa a «Cambiar foto»); de pago, sin límite.
   ponerVersion('gratis')
-  debe(limiteDeFotos().porParada === 1 && modoDeFoto([{ dayNumber: 1, stopName: 'Coliseo' }], 1, 'Coliseo') === 'cambiar' && modoDeFoto([], 1, 'Coliseo') === 'anadir', 'A2 cámara', 'gratis: no es una foto por parada')
+  debe(limiteDeFotos().porParada === 1 && modoDeFoto([{ dayNumber: 1, stopName: 'Coliseo' }], 1, 'Coliseo') === 'cambiar' && modoDeFoto([], 1, 'Coliseo') === 'anadir', 'A2 recuerdos', 'gratis: no es una foto por parada')
   ponerVersion('completa')
-  debe(limiteDeFotos().porParada === null && modoDeFoto([{ dayNumber: 1, stopName: 'Coliseo' }, { dayNumber: 1, stopName: 'Coliseo' }], 1, 'Coliseo') === 'anadir', 'A2 cámara', 'de pago: hay límite de fotos por parada')
-  for (const version of ['gratis', 'completa']) debe(veces(hojaSimple(coliseoCat, { version }), /aria-label="(Añadir|Cambiar) foto"/g) === 1, 'A2 cámara', `${version}: la cámara no sale (una vez) en la ficha`)
-  // Sin día (EXPLORAR) o con botón fijo (Añadir parada): sin cámara, como antes.
-  debe(veces(hojaSimple(coliseoCat, { extra: { dayNumber: null } }), /aria-label="(Añadir|Cambiar) foto"/g) === 0, 'A2 cámara', 'la ficha sin día (EXPLORAR) lleva cámara')
-  debe(veces(hojaSimple(coliseoCat, { extra: { footerAction: { label: 'Añadir', onClick() {} } } }), /aria-label="(Añadir|Cambiar) foto"/g) === 0, 'A2 cámara', 'la ficha de «Añadir parada» lleva cámara')
+  debe(limiteDeFotos().porParada === null && modoDeFoto([{ dayNumber: 1, stopName: 'Coliseo' }, { dayNumber: 1, stopName: 'Coliseo' }], 1, 'Coliseo') === 'anadir', 'A2 recuerdos', 'de pago: hay límite de fotos por parada')
+  for (const version of ['gratis', 'completa']) debe(veces(hojaSimple(coliseoCat, { version }), /aria-label="(Añadir|Cambiar) foto"/g) === 0, 'A2 recuerdos', `${version}: sale la cámara vieja en la ficha`)
   // «Escuchar la historia»: solo de pago y con voz en español.
   // (Tanda 6y5: la barra es «Escuchar historia» y solo sale en los sitios con historia en su ficha; el detalle de las 31 historias lo prueba pruebaFase6y5_historias.mjs.
   //  Aquí, con la ficha real del Coliseo en la memoria de la app, y con un sitio sin historia.)

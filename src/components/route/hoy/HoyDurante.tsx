@@ -121,7 +121,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   const anterior = siguiente ? paradas[paradas.indexOf(siguiente) - 1] : undefined
   // (La reserva de una parada: la que la propia parada lleva ligada o, si no, la entrada de hoy que cubre ese sitio, la misma con la que sale «Tu entrada a… · 11:00» en la lista.)
   const reservaDe = (stop: Stop) => reservations.find((reserva) => reserva.id === stop.reservedId) ?? entradasDeHoy.find((reserva) => reserva.placeNames.includes(stop.name)) ?? null
-  const entradasDeHoy = reservations.filter((reserva) => dayOfReservation(route, reserva)?.id === day.id && reserva.kind === 'entrada')
+  const entradasDeHoy = reservations.filter((reserva) => dayOfReservation(route, reserva)?.id === day.id && reserva.kind === 'entrada' && !reserva.fueraDeRuta)
 
   const pedirUbicacion = () => {
     if (!('geolocation' in navigator)) return setUbicacionEstado('no')

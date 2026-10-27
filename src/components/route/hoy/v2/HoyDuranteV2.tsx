@@ -46,7 +46,7 @@ import { ParadaFotoDeParada } from './ParadaFoto'
 import { useFotoDeParada } from './useFotoDeParada'
 import { HojaMasParaTuDia, HojaQueHacemos, HojaSobreEsteLugar } from './HojasV2'
 import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
-import { abrirPase } from '../../../../lib/pago'
+import { abrirAvisoPase } from '../../../../lib/avisoPase'
 import { nombreDelPase } from '../../../../lib/nombrePase'
 import { Marca } from '../../../pase/Marca'
 import { filaDeHoySinPase } from '../../../../lib/diaDePrueba'
@@ -123,7 +123,7 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
   const audio = useAudioDeHistoria({ destino, nombre: parada.name })
   const texto = textoHistoria(ficha)
   const { hayVoz, estado, escuchar, pausar, seguir, parar } = useEscuchar(texto, `${parada.id}:historia`, audio)
-  const [pidioPase, setPidioPase] = useState(false)
+  const pidioPase = false // (Tanda 10N6 §1g) el aviso del pase ya lo explica; la línea cambiante «Incluido con…» ya no se usa.
   // Tanda 10P: la historia de prueba del destino es la que el viajero elija (una por destino, guardada en la cuenta); el día de prueba de HOY no la gasta (allí `pagoActivo()` es verdadero).
   useHistoriaDePrueba((s) => s.mapa)
   const acceso = accesoHistoria(ficha, pagoActivo(), { destino, nombre: parada.name })
@@ -133,7 +133,7 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
   if (acceso === 'candado') {
     return (
       <div className="flex items-center gap-2">
-        <button type="button" onClick={() => { setPidioPase(true); abrirPase() }} data-escuchar="candado" className="flex h-[50px] min-w-0 flex-1 items-center justify-center gap-3 rounded-full pl-2 pr-2" style={{ background: 'rgba(166,124,82,.1)' }}>
+        <button type="button" onClick={() => abrirAvisoPase('escuchar_historia', { destino })} data-escuchar="candado" className="flex h-[50px] min-w-0 flex-1 items-center justify-center gap-3 rounded-full pl-2 pr-2" style={{ background: 'rgba(166,124,82,.1)' }}>
           <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full" style={{ background: 'rgb(var(--accent))' }}>
             <Icono nombre="seguir" size={13} relleno grosor={1.6} />
           </span>
@@ -269,7 +269,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const vistas = vigentes.filter((s) => s.checkedInAt).length
   const siguiente = vigentes.find((s) => !s.checkedInAt) ?? null
   const anterior = siguiente ? paradas[paradas.indexOf(siguiente) - 1] : undefined
-  const entradasDeHoy = reservations.filter((r) => dayOfReservation(route, r)?.id === day.id && r.kind === 'entrada')
+  const entradasDeHoy = reservations.filter((r) => dayOfReservation(route, r)?.id === day.id && r.kind === 'entrada' && !r.fueraDeRuta)
   const reservaDe = (stop: Stop) => reservations.find((r) => r.id === stop.reservedId) ?? entradasDeHoy.find((r) => r.placeNames.includes(stop.name)) ?? null
   const esLlegada = esDiaDeLlegada(route, day)
   const esVuelta = Boolean(day.isReturnLeg)

@@ -36,7 +36,7 @@ async function keptClosures(route: Route, dateRange: DateRange | undefined): Pro
 
 /** El «¿Estás seguro?» de acortar el viaje en una ruta a mano (Tanda 6y3): el mismo diálogo de siempre al eliminar, que dice qué días se quitan. */
 export function ManualShrinkDialog({ notice, onConfirm, onCancel }: { notice: ManualShrinkNotice; onConfirm: () => void; onCancel: () => void }) {
-  return <ConfirmDialog eyebrow="Tus fechas" text="¿Estás seguro?" detail={notice.text} confirmLabel="Eliminar" cancelLabel="Cancelar" onCancel={onCancel} onConfirm={onConfirm} />
+  return <ConfirmDialog eyebrow="Tus fechas" text="¿Quitamos esos días de tu viaje?" detail={notice.text} peligro confirmLabel="Sí, quitar" cancelLabel="Cancelar" onCancel={onCancel} onConfirm={onConfirm} />
 }
 
 export function useDatesChange(route: Route | null) {

@@ -9,5 +9,5 @@ export const TITULOS_DE_HOY: readonly string[] = ['Tu siguiente parada', 'Cambia
 export function filasDeHoy(lista = LISTA_DEL_PASE): ItemDeLista[] {
   const todas = lista.flatMap((g) => g.items)
   // En el orden de la lista del pase (no en el de TITULOS_DE_HOY).
-  return todas.filter((i) => TITULOS_DE_HOY.includes(i.titulo))
+  return todas.filter((i) => TITULOS_DE_HOY.includes(i.tituloDesign ?? i.titulo))
 }

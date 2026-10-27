@@ -48,7 +48,7 @@ export function reservasFueraDeSuDia(route: Route, reservations: Reservation[], 
   if (!isManualRoute(route)) return []
   const avisos: ReservaFueraDeDia[] = []
   for (const reservation of reservations) {
-    if (reservation.kind !== 'entrada') continue
+    if (reservation.kind !== 'entrada' || reservation.fueraDeRuta) continue
     const target = dayOfReservation(route, reservation)
     // (Fuera del viaje, el día de llegada/vuelta o un día de excursión: no hay a dónde pasarlo; la reserva se queda en RESERVAS.)
     if (!target || target.isReturnLeg || target.dayType === 'excursion') continue

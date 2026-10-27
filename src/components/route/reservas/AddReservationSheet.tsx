@@ -531,7 +531,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               </h2>
               {igual && (
                 <p className="mt-2 text-[13.5px] leading-snug text-text/70" data-igual-que>
-                  {igual.quien || 'El dueño'} va el {diaDeLaReservaEnPalabras(route, igual.reserva)} a las {horaCorta(igual.reserva.time)}.{' '}
+                  {igual.quien || 'El dueño'} {/ y |,/.test(igual.quien) ? 'van' : 'va'} el {diaDeLaReservaEnPalabras(route, igual.reserva)} a las {horaCorta(igual.reserva.time)}.{' '}
                   {igual.modo === 'comprar' ? 'Compra la tuya para ese día y esa hora: ya los tienes elegidos.' : 'Apunta aquí la que ya tienes.'}
                 </p>
               )}
@@ -709,13 +709,13 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 <div className="mt-5 border-t border-text/10 pt-4 text-center">
                   {confirmDelete ? (
                     <div>
-                      <p className="text-[14.5px] leading-snug text-text">¿Estás seguro de que quieres eliminar tu reserva?</p>
+                      <p className="text-[14.5px] leading-snug text-text">¿Quitamos tu reserva de {target.name}?</p>
                       <div className="mt-3 flex gap-2">
                         <button type="button" onClick={() => setConfirmDelete(false)} className="h-11 flex-1 rounded-full border border-text/15 text-[14.5px] font-medium text-text hover:bg-bg-hover">
                           Cancelar
                         </button>
                         <button type="button" onClick={deleteReservation} className="h-11 flex-1 rounded-full bg-accent-red text-[14.5px] font-semibold text-white active:scale-[.98]">
-                          Eliminar
+                          Sí, quitar
                         </button>
                       </div>
                     </div>

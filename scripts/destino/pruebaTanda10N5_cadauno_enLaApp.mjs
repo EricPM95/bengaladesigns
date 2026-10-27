@@ -152,7 +152,7 @@ try {
     const t = await import('/shared/avisos/textos.js').catch(() => null)
     const m = await import('/src/store/useFranjaStore.ts').catch(() => null)
     if (!t || !m) return null
-    const f = t.franjaDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'vuelo_cambiado', quien: 'ERIC', para: 'todos' } })
+    const f = t.franjaDelAviso({ tipo: 'reserva_grupo', payload: { caso: 'vuelo_cambiado', quien: 'ERIC', para: 'todos', suyo_cambiado: true } })
     m.useFranjaStore.getState().mostrar([{ id: 'fr-1', clave: 'fr-1', titulo: f.titulo, detalle: f.detalle, icono: f.icono, quien: 'E' }])
     return f
   })()`)

@@ -47,7 +47,7 @@ export function CuadriculaDeFotos({ fotos, conMargen = false }: { fotos: FotoVia
               {urlParaMostrar(foto) ? <img onClick={() => setGrande(foto)} src={urlParaMostrar(foto)} alt={foto.stopName ?? 'Foto del viaje'} loading="lazy" className="aspect-square w-full cursor-zoom-in object-cover" /> : <div className="aspect-square w-full" />}
               {confirmando === foto.id ? (
                 <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-bg-card/95 px-2 py-1.5 text-[11.5px] leading-tight text-text">
-                  <span>¿Eliminar esta foto?</span>
+                  <span>¿Quitamos esta foto?</span>
                   <span className="flex gap-3">
                     <button type="button" onClick={() => void eliminar(foto)} disabled={borrando === foto.id} className="font-medium text-text underline underline-offset-2">
                       {borrando === foto.id ? 'Eliminando…' : 'Sí'}

@@ -47,7 +47,7 @@ export function porQueProtegido(route: Route, reservations: Reservation[], day: 
   if (day.userAdded || day.ownDay) return `${nombre} es un día tuyo`
   if (day.originalSnapshot) return `${nombre} tiene cosas puestas por ti`
   if (isDayPinned(route, reservations, day)) return `${nombre} tiene una excursión reservada`
-  if (reservations.some((reservation) => reservation.kind === 'entrada' && Boolean(reservation.time) && dayOfReservation(route, reservation)?.id === day.id)) return `${nombre} tiene una entrada reservada con hora`
+  if (reservations.some((reservation) => reservation.kind === 'entrada' && !reservation.fueraDeRuta && Boolean(reservation.time) && dayOfReservation(route, reservation)?.id === day.id)) return `${nombre} tiene una entrada reservada con hora`
   return null
 }
 
