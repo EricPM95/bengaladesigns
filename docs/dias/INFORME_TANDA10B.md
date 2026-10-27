@@ -1654,3 +1654,296 @@ Cada punto del prompt, en el mismo orden. La misma lista, con casillas y cada ca
   *Dónde:* No es de móvil.
 
 **Pruebas:** 
+
+---
+
+## 10N5 — Más arreglos del repaso de Eric con dos teléfonos
+
+**Estado:** hecho y probado. Prueba nueva `pruebaTanda10N5`: 493 comprobaciones, 0 fallos. No se ha tocado el motor de rutas (`server/engine/**`, `shared/routeEngine/**`), así que no hace falta la muestra de 60 fechas. Design al día con `RETOQUES.zip` (sin `Pase Premium` ni el resto de `Pase Estilo`).
+
+### Migraciones que tienes que aplicar (a mano, en el editor SQL de Supabase, en este orden)
+1. `0047_limite_intentos_codigo.sql` — límite de intentos del código de invitación en el servidor (6 fallos en 15 min). Sin ella el límite solo está en el móvil y se salta borrando datos del navegador.
+2. `0048_avisos_borrado.sql` — `purgar_avisos()`: borra los eliminados a los 30 días y todos los de más de un año, y guarda la clave para que no se puedan recrear.
+3. `0049_lo_suyo_de_cada_uno.sql` — vuelo y alojamiento de cada uno (tabla con RLS, dos funciones y dos disparadores con sus avisos).
+4. `0051_aviso_cambio_viaje_claro.sql` — el aviso de «ha cambiado el viaje» dice lo que de verdad ha pasado. Hasta que la apliques, a los otros móviles sigue llegando el aviso viejo.
+(No existe la 0050: es un salto de numeración, no falta nada.)
+
+### Qué se ha hecho
+- **Free Tour (§1):** se añade eligiendo el día desde EXPLORAR, su ficha y «+ Añadir parada»; hoja nueva «¿A qué día lo añadimos?» (`FreeTourDiaSheet`). Quien solo recomienda: un solo cambio en su propuesta. Los días con reserva con hora, cosas a mano o excursión no se mueven sin avisar (salen apagados con el motivo).
+- **Avisos de cambios (§2, §2b):** una línea con lo que pasó. Antes → después:
+  - «VIAJES ha cambiado el viaje: ha añadido Coliseo al miércoles 11 y otros 5 sitios y ha quitado 6 sitios» → «Viajes ha añadido el Free Tour al miércoles 11 y se han reorganizado 2 días.»
+  - Mover: «Viajes ha movido el Coliseo al jueves 12 y 2 sitios más.» · Quitar: «Viajes ha quitado la Iglesia del Gesù.»
+  - Interruptor: «…ha cambiado el sábado 14 a día de excursión (Pompeya y Sorrento).» / «…a un día en Roma.»
+  - Recuperar: «Eric ha vuelto a la ruta inicial.» / «Eric ha recuperado el sábado 14 como estaba.»
+  - «Ha cambiado las fechas» salía con las mismas fechas porque el disparador de la 0036 sumaba cambios seguidos; la 0051 compara contra el estado de antes del primer cambio.
+  - Al tocar el aviso se abre DÍAS en el primer día cambiado, con «Nueva» / «Movida» en las paradas.
+- **Unirse (§3):** hoja con el código (`HojaUnirse`), en la primera pantalla («¿Te han invitado? Únete con un código»), en el [+] del perfil y en Ajustes. Con cuenta: se une y abre ese viaje (el anterior queda en Mis viajes) con la franja «Te has unido al viaje a Roma de Eric». Sin cuenta: «Entra o crea tu cuenta para unirte» y al entrar se une solo.
+- **Perfil (§4):** orden nuevo (cabecera con EXP, «Mis viajes» de lado con «Ver todos», vitrina, pasaporte, sorteo abajo), fuera «PERFIL», [+] flotante con tres tarjetas. **Se abre al momento:** antes ~1,9 s hasta ver «Hola» y el nivel; ahora ~0,5 s la primera vez y ~75 ms con lo último guardado (medido en desarrollo con 4G simulada y CPU 4× más lenta, no en un iPhone real). Causa: el código del perfil se bajaba al tocarlo y luego esperaba al servidor.
+- **Película (§5):** escenas a todo el ancho, título «Todo lo que incluye tu Pase Roma» en la línea de [Saltar], rayitas tocables que reinician la escena, texto de la cuarta escena sin pisarse; comprobado con detector automático en 390×664, 375×667 y 390×844 (0 fallos). Pasaporte: la escena quedaba quieta 3,2 s tras la vuelta al mundo (ahora ~0,7 s).
+- **[Guardar] (§6):** solo «Guardar».
+- **Pase (§6b):** caja pequeña `Pase Estilo` 01 en RESERVAS (Alojamiento y Llegada/vuelta), DÍAS (zona y ajustes de llegada/vuelta), «Cómo llegar a tu alojamiento» y Logros; Baños, Fuentes y «Cerca de ti» en azul oscuro con candado dorado.
+  - Textos «cada día empieza cerca del alojamiento» → «Con el Pase Roma, adaptamos tu ruta a tu alojamiento.» (RESERVAS, DÍAS, lista de lo que incluye: «Adaptamos tu ruta a tu alojamiento / El primer día, y como mucho el último, según tu zona.», película: «Tu ruta se adapta a tu alojamiento»). No había nada parecido en `roma.json`.
+- **Candados y tres colores (§0):** los candados no se pintan hasta saber si hay pase (`pagoPendiente()`) y se repintan solos. Tres colores en `EntradaCard` (RESERVAS: entradas y Free Tour), `ExcursionesReservas` y `EntradaEdgeTab` (el botón de DÍAS).
+- **Cada uno (§6c):** cada persona puede poner su vuelo y su alojamiento; si el administrador lo pone para todos o algunos, se cambia el de esas personas con su aviso; cada uno puede volver a poner el suyo (aviso al administrador). Las cuentas ahora incluyen los vuelos y las entradas que reserva cualquiera para varios, sin contar nada dos veces.
+- **Añadir gasto (§6d):** «¿Quién ha pagado?» (quien añade, el primero y marcado) y «¿Para quién es?», con espacio entre bloques.
+- **Avisos borrados (§6e):** el borrado diario lo hace la tarea de Vercel que ya corre cada día a las 9:00 (`/api/cron/avisos`), no `pg_cron`: así no hay que activar nada en Supabase.
+- **Nombres:** `nombreVisible` (primera letra en mayúscula) en campana, franja, personas del viaje, gastos, cuentas, RESERVAS, perfil («Hola, Viajes») y en los avisos y pushes del servidor.
+
+### Pruebas
+- Prueba nueva `pruebaTanda10N5`: 493 comprobaciones, 0 fallos (Free Tour 57, SQL del aviso 12, unirse 53, perfil 47, pase 217, cada uno 60+15, gastos 11+3, avisos 18).
+- Batería completa: 131 pruebas, 39 en MAL a la primera. Triadas por dos agentes: unas 20 eran expectativas antiguas que la 10N5 cambió a propósito (perfil, cajas del pase, Free Tour por día, RESERVAS del invitado, nombres…) y se actualizaron; 3 eran regresiones de texto pequeñas ya arregladas en el código («Pasarlo» → «Pasar», «El día N» escrito a mano, un comentario con el candado); el resto, flakes bajo carga (arranque en frío de Vite, límite de altas anónimas de Supabase) que **pasan sueltas con 0 fallos**. Si algo falla solo con otras pruebas y pasa suelto, va a la 10S.
+- `pruebaJutrip`: ver la línea de resultado de la lista final.
+
+### Dudas para ti
+1. **D1-FT frente a D3:** en `roma.json` el Free Tour de las 10:00 está en `D3`, no en `D1-FT` (que es la Roma antigua sin lo que cubre el tour). Hago: el día elegido pasa a ser D3, D1 pasa a D1-FT en su sitio y el que estaba en el elegido va al sitio de D3, sin tocar el motor. Si querías de verdad D1-FT en el día elegido, esa jornada quedaría sin Free Tour.
+2. **El botón de DÍAS (`EntradaEdgeTab`)** ahora es azul oscuro con dorado cuando otros del grupo ya tienen la entrada; antes era frambuesa con numerito y Design «Parada Entrada» no tenía ese tercer color. ¿Lo dejo así o lo vuelvo a frambuesa?
+3. **Escena del pasaporte:** medí 3,2 s quietos tras la vuelta al mundo, no 7. Si hablabas de otro momento (el mapa plano de Japón, segundos 10-14), dime el instante exacto.
+4. **Marco de la foto del perfil:** 104 px como dice el prompt («del mismo tamaño que hoy»); Design lo dibuja a 118.
+5. **Signo ✈ en texto** en «Lo de cada uno» («✈ Ida · mar 10 · 13:40 · Ciampino»): lo permití en dos pruebas porque el código dice que es «como en el diseño». Si quieres «sin emoji de transporte», hay que quitarlo de `LoDeCadaUno.tsx` y `loSuyo.ts`.
+6. **Aviso «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.»:** va a todas las personas marcadas, tuvieran vuelo propio o no. Si prefieres solo a quien lo tenía, es una línea en el disparador.
+7. **Entradas que reserva Ana para varios:** entran en las cuentas, pero a los incluidos no les salen como «Reservada ✓» ni reciben aviso de esa entrada (no estaba en el encargo).
+8. **Presupuesto de un invitado:** sigue mostrando las líneas del vuelo del administrador, no las propias.
+9. **Vuelo y alojamiento propios** solo existen en viajes de un destino; los de varios destinos siguen en gris.
+10. **Cada cambio distinto del vuelo del administrador** (hora, punto, «para quién») manda su aviso: editar la hora y luego el punto manda dos.
+11. **Sin crear D1-FT sin D2/D3:** si el viaje no tiene D2/D3, el Free Tour no se añade y se dice por qué.
+12. **Aceptar la propuesta del Free Tour entre dos cuentas reales** y **tocar el aviso con «Nueva/Movida» con un aviso real** están probados a nivel de lógica, no vistos en pantalla; el **flujo de entrar con cuenta real para unirse** tampoco se ha probado de punta a punta; ni el interruptor de excursión ni el cambio de fechas en pantalla (el viaje de pruebas no tiene día de excursión).
+13. **Sonido del aviso:** el que ya hay (como dijiste).
+
+
+### Lista de comprobación de la 10N5 (punto por punto)
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10N5.md y en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Design al día con RETOQUES.zip (sin uploads/ ni screenshots/); Pase Premium y el resto de Pase Estilo no se usan  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Tus dudas de la 10N4 respondidas: PerfilSheet como cáscara, candados, tres colores, «Cambiar el nombre» y «Mover el día» en el menú, sonido Candados y colores: ver la lista de H3 y el informe.  
+  *Dónde:* Ver cada punto.
+
+**0 · Regla global**
+
+- ✅ Hecho — Los nombres de las personas, siempre con la primera letra de cada palabra en mayúscula y el resto en minúscula («Viajes», «José Luis»), en todos los sitios donde salgan; solo al enseñarlos (se guardan como los escribió la persona) Un solo sitio (`nombreVisible`) aplicado donde se pinta o se compone un nombre: nombreDe (store del viaje compartido: campana, franja, personas del viaje, gastos, RESERVAS, propuestas), nombreDeLaPersona, nombreParaMostrar (perfil «Hola, Viajes», Compartir), los textos de avisos del servidor (shared/avisos/textos.js: texto, franja y quién), las cuentas del grupo (nombres de quien salió incluidos), las pastillas de «Añadir gasto», el aviso de gasto («pagó …»), la cabecera del presupuesto invitado y las pastillas de «Para quién es» del alojamiento. Probado con «VIAJES», «ERIC», «ana maría», «josé luis».  
+  *Dónde:* Cualquier pestaña · con la cuenta de Eric guardada como «VIAJES»: campana (icono de arriba), franja de aviso nuevo, RUTA > Personas del viaje, RESERVAS > Entradas > Para quién es, cartera > Cuentas del grupo, perfil «Hola, Viajes»  *Captura:* `docs/dias/capturas_jutrip/10n5_cadauno_04_eric_quien_va.jpg`
+- ⚠️ A medias — Espacio claro entre bloques distintos en las pantallas que se tocan y en las hojas de añadir (gasto, reserva, parada) Hecho en la hoja de añadir/editar gasto (gap-5 entre nombre+importe, [Para todos|Para mí], «¿Quién ha pagado?» y «¿Para quién es?») y en las hojas nuevas de lo de cada uno (Tu vuelo, En este vuelo, mi alojamiento: bloques separados). La hoja de añadir reserva ya separa sus bloques con mt-7 y no la he cambiado; la hoja de añadir parada es de la zona del Free Tour (H1), no la he tocado.  
+  *Dónde:* RESERVAS (o cartera) > Añadir gasto; RESERVAS > Entradas > Añádela  *Captura:* `docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg`
+
+**0.2**
+
+- ✅ Hecho — Candados sin pintar mientras no se sabe si hay pase pagoActivo() es falso y pagoPendiente() verdadero hasta que contesta /api/pase/estado; Candado, Baños/Fuentes y «Cerca de ti» no se pintan (probado con la respuesta retrasada 7 s, sin y con pase).  
+  *Dónde:* RESERVAS › Alojamiento con ?version sin pedir y la respuesta del pase lenta (solo pruebas); en producción, al abrir un viaje con cuenta  *Captura:* `10n5_pendiente_sin_sin_pintar.jpg`
+- ✅ Hecho — Se repintan solos al llegar la respuesta (pagoActivo() avisa) usePagoActivo/usePasePintable (useSyncExternalStore) en los sitios que pintan candados; la caja aparece sola sin pase.  
+  *Dónde:* RESERVAS › Alojamiento, sin tocar nada  *Captura:* `10n5_pendiente_sin_repintado.jpg`
+- ✅ Hecho — Nunca candado cerrado con pase ni abierto sin él Con pase: 0 cajas en todo el tiempo. Sin pase: 0 abiertos mientras no se sabe. Candado devuelve null si el estado no es «sin».  
+  *Dónde:* RESERVAS y EXPLORAR con pase  *Captura:* `10n5_con_pase_explorar.jpg`
+
+**0.3**
+
+- ⚠️ A medias — Tres colores (frambuesa / verde / azul oscuro con dorado) en RESERVAS, Free Tour y excursiones Hecho en EntradaCard (RESERVAS entradas y Free Tour), botón de DÍAS (EntradaEdgeTab) y tarjeta de excursión (ExcursionesReservas). Excursión sin captura: la ruta de prueba no tiene día de excursión. Ojo: el botón de DÍAS con otros que la tienen pasa de frambuesa con numerito a azul oscuro con numerito (Design Parada Entrada no lo tenía).  
+  *Dónde:* Invitado (Luis) › DÍAS › Coliseo; RESERVAS › Entradas y Free Tour  *Captura:* `10n5_colores_reservas_entradas.jpg`
+
+**1**
+
+- ✅ Hecho — El Free Tour se añade como cualquier sitio desde EXPLORAR: sale la hoja «¿A qué día lo añadimos?» con los días del viaje, el primero que le encaje ya marcado FreeTourDiaSheet (misma hoja que AddToDaySheet). Probado en la app con pruebaTanda10N5_freetour.mjs: el «+» de la tarjeta del Free Tour abre la hoja con los 3 días y el primero marcado. «El primero que encaje» = el primer día del viaje (o el siguiente si la llegada del día 1 es a las 14:00 o más) cuyo cambio se puede hacer sin tocar nada tuyo.  
+  *Dónde:* RUTA > EXPLORAR > tarjeta «Entradas» > Free Tour por Roma > «+». Cualquier cuenta (administrador, editor o quien solo recomienda).  *Captura:* `docs/dias/capturas_jutrip/10n5_freetour_hoja_explorar.jpg`
+- ✅ Hecho — Lo mismo desde la ficha del Free Tour (su «+ Añadir» de abajo) La ficha usa el mismo onAddFreeTour: abre la misma hoja. Comprobado en la prueba.  
+  *Dónde:* EXPLORAR > Entradas > tocar la tarjeta del Free Tour > «+ Añadir» (abajo).  *Captura:* `docs/dias/capturas_jutrip/10n5_freetour_hoja_ficha.jpg`
+- ✅ Hecho — Y desde «+ Añadir parada» de un día en DÍAS (hoy sale en esa lista pero no deja añadirlo: que deje) Faltaba pasarle onAddFreeTour al explorador de «Añadir parada» en DayDetailPanel.tsx (sin él la tarjeta del Free Tour salía sin «+»). Ahora abre la misma hoja de días.  
+  *Dónde:* DÍAS > abrir un día > «+ Añadir parada» > filtro Entradas > Free Tour > «+».  *Captura:* `docs/dias/capturas_jutrip/10n5_freetour_hoja_anadir_parada.jpg`
+- ⚠️ A medias — El día elegido pasa a ser nuestro día escrito con Free Tour (D1-FT de roma.json) y el día que estaba ahí pasa al sitio que deja, como con las rayitas OJO, DIFERENCIA CON EL PROMPT: D1-FT NO lleva el Free Tour (lo medí con el motor: D1-FT es la Roma antigua SIN lo que cubre el tour). El Free Tour (10:00, y el Vaticano por la tarde) vive en el día escrito D3. En Roma el Free Tour son una pareja: D2 -> D3 (con el Free Tour) y D1 -> D1-FT. Lo hago así: el día elegido pasa a ser D3, D1 pasa a D1-FT en su sitio y el día que estaba en el elegido pasa al sitio donde estaba D3 (solo se rehacen los días que cambian). Si Eric quería literalmente D1-FT en el día elegido, hay que decidirlo: pasaría a ser un día sin Free Tour.  
+  *Dónde:* Después de añadirlo: DÍAS, el día elegido empieza con el Free Tour de las 10:00; Ruta, los días en el nuevo orden.  *Captura:* `docs/dias/capturas_jutrip/10n5_freetour_anadido.jpg`
+- ✅ Hecho — Qué hago si el viaje no tiene D1 (o D2/D3), o si el día elegido o el que se mueve tiene una reserva con hora o cosas a mano Decisión documentada en src/lib/freeTourEnDia.ts: sin día escrito donde encajar el Free Tour sin quitar otro, no se toca nada y se dice «Este viaje no tiene un día donde encaje». Un día que se rehace con cosas a mano, día propio o añadido, excursión, entrada reservada con hora o excursión fijada NO se mueve: sale apagado en la hoja con «… no lo movemos sin avisar. Elige otro día.» Todo o nada: si el servidor no devuelve todos los días, no cambia ninguno.  
+  *Dónde:* Cambia a mano un día (quita una parada) y abre la hoja del Free Tour: los días afectados salen apagados con su motivo.  *Captura:* `docs/dias/capturas_jutrip/10n5_freetour_dia_protegido.jpg`
+- ✅ Hecho — Sin elegir hora: el Free Tour queda en la hora y el sitio que tiene en nuestro día escrito (arrastrable dentro del día) La hoja ya no pregunta la hora (la de las 10:00 del día escrito). Arrastrar la parada dentro del día es lo de siempre; su hora de salida se elige al reservarlo.  
+  *Dónde:* DÍAS > el día del Free Tour: abre con el Free Tour de las 10:00.  *Captura:* `docs/dias/capturas_jutrip/10n5_freetour_anadido.jpg`
+- ✅ Hecho — El aviso al añadirlo: «Añadido el Free Tour · jueves 12» con [Deshacer], que deja el viaje como estaba Probado: sale «Añadido el Free Tour · domingo 18» y Deshacer devuelve los días de antes y quita la experiencia free_tour.  
+  *Dónde:* Tras añadirlo, el aviso oscuro de abajo con «Deshacer».  *Captura:* `docs/dias/capturas_jutrip/10n5_freetour_anadido.jpg`
+- ✅ Hecho — Quién puede: el administrador y quien puede editar, directo El cambio se aplica directo a la ruta (sin diferencia de permiso en la pantalla). Para quien edita, el guardado del viaje es el de siempre. Comprobado con la cuenta de pruebas (administrador); la del editor usa el mismo código.  
+  *Dónde:* Cuenta administrador o con «Puede editar»: EXPLORAR > Entradas > Free Tour > «+».
+- ⚠️ A medias — Quien solo recomienda: su propuesta lleva UN solo cambio «Añadir el Free Tour al jueves 12»; al aceptarlo se hace lo de arriba Probado a nivel de lógica (cambiosDeLaPropuesta da un único cambio free_tour con ese texto, el paquete que se manda lleva 1 cambio, y [Deshacer este cambio] devuelve los días de antes). Aceptarlo llama a aplicarFreeTourPropuesto (propuestaDueno.ts) con la misma pieza de «+ Añadir»; no he podido probar el aceptar de verdad con dos cuentas reales. Falta mirarlo en dos móviles.  
+  *Dónde:* Cuenta que solo recomienda: añadir el Free Tour; abrir «Tu propuesta» (1 cambio). Cuenta administradora: el aviso de la propuesta > Aceptar.
+- ✅ Hecho — Nunca después de la cena ni fuera de su franja Ya no se usa la franja «noche» (la que lo ponía tras la cena): el Free Tour queda en el día D3 a las 10:00. Comprobado: no es la última parada del día y su hora es de mañana.  
+  *Dónde:* DÍAS > día del Free Tour: primera hora de la mañana, nunca debajo de «Noche».  *Captura:* `docs/dias/capturas_jutrip/10n5_freetour_anadido.jpg`
+- ✅ Hecho — Si para esto hay que tocar el motor, dímelo antes No he tocado el motor (server/engine, shared/routeEngine). Uso /api/rebuild-day con force_order, la misma pieza que «Eliminar reserva». No hace falta la muestra de 60 fechas.  
+  *Dónde:* —
+
+**2**
+
+- ⚠️ A medias — Añadir un sitio y que la app reorganice: «Viajes ha añadido el Free Tour al miércoles 11 y se han reorganizado 2 días.» Texto y apunte desde el móvil hechos y probados (la ruta lleva ruta.ultimoCambio = acción free_tour). El aviso real al otro móvil lo copia el disparador de la migración 0051 (SIN aplicar): hasta entonces llega el aviso de antes, ya sin lo de «ha quitado 6 sitios» pero sin la frase del Free Tour.  
+  *Dónde:* Cuenta invitada: añadir el Free Tour; cuenta administradora: campana (necesita la 0051 aplicada).
+- ⚠️ A medias — Mover sitios: «Viajes ha movido el Coliseo al jueves 12.» (y «…y 2 sitios más») Texto probado con la lista de sitios movidos. El disparador de la 0051 los compara por nombre y deja la lista; sin aplicar la 0051 el aviso trae solo cuántos se movieron.  
+  *Dónde:* Cuenta invitada: mover el Coliseo a otro día; cuenta administradora: campana.
+- ✅ Hecho — Quitar: «Viajes ha quitado la Iglesia del Gesù.» Texto probado; los quitados salen por nombre.  
+  *Dónde:* Cuenta invitada: quitar una parada; cuenta administradora: campana.
+- ⚠️ A medias — Nunca «ha quitado N sitios» cuando solo se han movido de día Hecho en dos sitios: el texto junta lo «quitado» y «añadido» con el mismo nombre como «movido» (también en avisos viejos), y el disparador de la 0051 compara por nombre en vez de por id. Probado el texto; el disparador sin aplicar.  
+  *Dónde:* Cuenta administradora: campana tras mover sitios con la cuenta invitada.
+- ⚠️ A medias — El interruptor [Roma | Excursión]: «Viajes ha cambiado el sábado 14 a día de excursión (Pompeya y Sorrento).» / «…a un día en Roma.» cambiarInterruptor apunta la acción en el primer paso que cambia la ruta (dayInterruptor.ts) y el texto está probado. No he ejercitado el interruptor en la app (el viaje de pruebas de 4 días no tiene día de excursión). Necesita la 0051.  
+  *Dónde:* RUTA/DÍAS: un viaje de 5 días con el día 4 en [Roma | Excursión]; cambiarlo y mirar la campana de la otra cuenta.
+- ⚠️ A medias — Cambios grandes de golpe (cambiar las fechas, rehacer la ruta): una línea con lo que decidió la persona Cambiar las fechas apunta «ha cambiado las fechas del viaje (del 12 al 16 de noviembre).» y, si las fechas son las mismas, «ha rehecho la ruta.». Probados los textos; no ejercitado el cambio de fechas en la app. Necesita la 0051.  
+  *Dónde:* RUTA > fechas del viaje > cambiarlas; campana de la otra cuenta.
+- ⚠️ A medias — Al tocar el aviso, lleva a los días que han cambiado con lo nuevo marcado («Movida», «Nueva») Hecho: abrirAviso abre DÍAS en el primer día cambiado y las paradas llevan la etiqueta «Nueva» (verde) o «Movida» durante 2 minutos (useCambiosMarcados + StopAccordion). Probada la lógica de qué marcar; no lo he visto en pantalla con un aviso real (necesita la 0051).  
+  *Dónde:* Campana > aviso de cambio del viaje: se abre DÍAS en el día cambiado, con las etiquetas.
+
+**2b**
+
+- ⚠️ A medias — «Recuperar mi ruta»: «Eric ha vuelto a la ruta inicial.» restoreOriginalRoute apunta la acción y el texto está probado. Necesita la 0051.  
+  *Dónde:* RUTA > flecha de «Recuperar mi ruta»; campana de la otra cuenta.  *Captura:* `docs/dias/capturas_jutrip/10n5_recuperar_ruta.jpg`
+- ⚠️ A medias — «Recuperar este día»: «Eric ha recuperado el sábado 14 como estaba.» restoreOriginalDay apunta la acción y el texto está probado en la app. Necesita la 0051.  
+  *Dónde:* DÍAS > «···» del día > Recuperar este día; campana de la otra cuenta.
+- ⚠️ A medias — Por qué decía «ha cambiado las fechas» con las mismas fechas, y que nunca pase si no cambian CAUSA: el disparador de la 0036 junta los cambios seguidos (15 min) SUMANDO: un cambio quitó un día (acabó el 14) y otro lo devolvió (acabó el 15); «fechas» se quedaba en verdadero y los días salían «quitado 1, añadido 1». Arreglo en la 0051: lo de antes del primer cambio manda y se compara con lo de ahora (días, inicio y fin); además «Recuperar» ya es una línea con su acción. El texto nunca dice «ha cambiado las fechas» si antes y ahora son iguales (probado). La 0051 está probada en PGlite (Postgres real con la 0036 debajo: scripts/destino/pruebaTanda10N5_aviso_sql.mjs, 12 comprobaciones, 0 fallos) pero SIN APLICAR en Supabase.  
+  *Dónde:* Cuenta administradora: Recuperar mi ruta; campana de la otra cuenta (necesita aplicar la 0051).
+
+**3**
+
+- ✅ Hecho — Al unirse (enlace, código o aviso) se abre ese viaje directamente; el anterior sigue en Mis viajes Código: abre el viaje sin recargar (trae la lista de viajes de nuevo). Enlace/aviso: ya abría tras recargar (TripSync); con la hoja nueva se ve la franja. Probado con Supabase simulado en la página, no contra el real.  
+  *Dónde:* Cuenta de verdad: Perfil > [+] > Unirme con un código; luego Perfil > Mis viajes para ver el anterior  *Captura:* `docs/dias/capturas_jutrip/10n5_union_03_dentro.jpg`
+- ✅ Hecho — Hueco para escribir el código (hoja Unirse Codigo 01, exactamente igual) 8 huecos 34x58, guion tras el 4.º, mayúsculas y sin espacios/guiones, [Unirme] dorado 54 px; la hoja sube con el teclado.  
+  *Dónde:* Primera pantalla (sin viaje) o Perfil > [+]  *Captura:* `docs/dias/capturas_jutrip/10n5_union_01_hoja.jpg`
+- ✅ Hecho — Dos sitios con la misma hoja: primera pantalla y [+] del perfil También el «Tengo un código de invitación» de Ajustes abre la misma hoja (se quitó la antigua).  
+  *Dónde:* Primera pantalla (debajo de ORIGEN/DESTINO) y Perfil > [+]  *Captura:* `docs/dias/capturas_jutrip/10n5_union_04_primera_pantalla.jpg`
+- ✅ Hecho — Franja «Te has unido al viaje a Roma de Eric · Ahora lo ves igual que él» Nombre con nombreVisible. Sin nombre de quien invita, no se inventa. En el flujo sin cuenta (tras recargar) también sale.  
+  *Dónde:* Tras unirse, arriba del viaje abierto  *Captura:* `docs/dias/capturas_jutrip/10n5_union_03_dentro.jpg`
+- ⚠️ A medias — Sin cuenta: «Entra o crea tu cuenta para unirte» y al entrar se une solo Guarda código aceptado, la puerta lo detecta y muestra el texto; al entrar canjea solo (código ya existente). Probado el guardado y por código; el flujo de entrar con cuenta real no se ha probado de punta a punta.  
+  *Dónde:* Sin cuenta: Primera pantalla > Únete con un código > Unirme
+- ✅ Hecho — Código que no vale: «Ese código no es de ningún viaje…» Huecos en rojo y [Unirme] apagado hasta cambiar el código.  
+  *Dónde:* Primera pantalla (sin viaje) o Perfil > [+]  *Captura:* `docs/dias/capturas_jutrip/10n5_union_02_no_vale.jpg`
+- ✅ Hecho — Si ya está en ese viaje, lo abre y ya Sin gastar uso (no canjea).  
+  *Dónde:* Perfil > [+] > Unirme con un código (con un código de un viaje propio)
+- ⚠️ A medias — Límite de intentos seguidos Móvil: 6 fallos en 15 min (probado). Servidor: migración 0047 escrita y SIN APLICAR; hasta aplicarla el límite solo está en el móvil.  
+  *Dónde:* Escribir 6 códigos malos seguidos
+
+**4**
+
+- ✅ Hecho — Cabecera única: foto con marco, Hola, Nivel, EXP en pequeño, ajustes arriba a la derecha Marco a 104 px (como hoy, según el prompt; Design dibuja 118). Se mantiene el chip de título solo si hay títulos.  
+  *Dónde:* Perfil (círculo arriba a la derecha)  *Captura:* `docs/dias/capturas_jutrip/10n5_perfil_01_abrir.jpg`
+- ✅ Hecho — Mis viajes en fila de lado, siguiente asoma, en curso/próximo primero, Ver todos (N), antes de la app al final Tarjeta de Perfil Orden (330 px); «Editar» sigue junto al título. Se siguió Perfil Orden en vez del layout grande de Mis Viajes Tarjeta (misma etiqueta/portada/cámara/botón).  
+  *Dónde:* Perfil > Mis viajes  *Captura:* `docs/dias/capturas_jutrip/10n5_perfil_02_entero.jpg`
+- ✅ Hecho — Tarjeta: portada, etiqueta, nombre, fechas y días, solo icono de cámara, Abrir este viaje; fuera Sin fotos Hecho: botón con borde, sin relleno (como Design 04).  
+  *Dónde:* Perfil > Mis viajes  *Captura:* `docs/dias/capturas_jutrip/10n5_perfil_01_abrir.jpg`
+- ✅ Hecho — Mi vitrina y Mi pasaporte sin tocar, después de los viajes Código intacto, solo envueltos con margen 20.  
+  *Dónde:* Perfil > bajar  *Captura:* `docs/dias/capturas_jutrip/10n5_perfil_02_entero.jpg`
+- ✅ Hecho — Billete del sorteo abajo del todo Después del pasaporte.  
+  *Dónde:* Perfil > bajar hasta el final  *Captura:* `docs/dias/capturas_jutrip/10n5_perfil_02_entero.jpg`
+- ✅ Hecho — Fuera la palabra PERFIL; arriba solo ajustes y ✕  
+  *Dónde:* Perfil  *Captura:* `docs/dias/capturas_jutrip/10n5_perfil_01_abrir.jpg`
+- ✅ Hecho — [+] flotante con hoja «¿Qué quieres hacer?» y tres tarjetas; sustituye Nuevo viaje y el botón del final; no tapa la última tarjeta Sin logros salen solo 2 tarjetas (viaje previo es de los logros).  
+  *Dónde:* Perfil > [+]  *Captura:* `docs/dias/capturas_jutrip/10n5_perfil_03_hoja_mas.jpg`
+- ✅ Hecho — Ver todos: lista por grupos  
+  *Dónde:* Perfil > Ver todos (N)  *Captura:* `docs/dias/capturas_jutrip/10n5_perfil_05_ver_todos.jpg`
+- ✅ Hecho — Quitar los 70 px entre pasaporte y Mis viajes  
+  *Dónde:* Perfil
+- ✅ Hecho — Datos de Design de ejemplo: usar los reales  
+  *Dónde:* Perfil
+- ✅ Hecho — Con logros apagados: perfil sin EXP, vitrina ni sorteo  
+  *Dónde:* Perfil con ?logros=off  *Captura:* `docs/dias/capturas_jutrip/10n5_perfil_sin_logros.jpg`
+- ✅ Hecho — Que se abra al momento (código precargado, última foto guardada, datos por detrás sin parpadeo) Medido en dev con 4G simulada (9 Mbit, 170 ms), CPU x4, servidor de logros a 500 ms: antes 1946 ms hasta ver Hola/nivel; después 509 ms la primera vez y 70-78 ms con lo guardado. Dev, no producción.  
+  *Dónde:* Perfil (círculo)
+
+**5**
+
+- ⚠️ A medias — Todas las escenas a todo el ancho como la primera Escenas 1,4,5,6 pasan a columna centrada dentro de un escenario de lado a lado, sin recuadro; el resplandor de la 6 llega a los bordes; el cielo de la 3 se funde por los 4 lados. El teléfono de HOY, el pasaporte y el globo conservan su proporción (no se ensanchan como el mapa de la 0).  
+  *Dónde:* Película del pase (candado/pastilla › Ver el Pase), 390x664 y 375x667  *Captura:* `10n5_pelicula_e3_secretos_390x664.jpg`
+- ✅ Hecho — Título pequeño «Todo lo que incluye tu Pase {destino}» en la línea de [Saltar], centrado En las escenas 0-6 (no en el final, donde van [Ver] y ✕). Medido: misma línea (±4 px), centrado, sin tocar [Saltar].  
+  *Dónde:* Película, todas las escenas  *Captura:* `10n5_pelicula_e0_tu_viaje_390x664.jpg`
+- ✅ Hecho — Adaptada escena por escena (390x664 y 375x667): nada pisado ni cortado Arreglada la escena 4 (tarjetas pisaban «Viaja, Juega…»). Prueba automática de pisados/cortes en 6 escenas x 3 tamaños y la escena 4 a 5 tiempos.  
+  *Dónde:* Película, escena 4 «Cada sitio que ves, suma»  *Captura:* `10n5_pelicula_e4_suma_t19_375x667.jpg`
+- ✅ Hecho — Rayitas tocables que reinician la escena 7 rayitas con zona de 22 px; irALaEscena.  
+  *Dónde:* Película, tocar una rayita  *Captura:* `10n5_pelicula_e5_pasaporte_390x664.jpg`
+- ⚠️ A medias — Pasaporte sin el rato parado La vuelta al mundo acaba en el segundo 40,6 y la escena duraba 43,8 (3,2 s quieta): ahora 41,3. Si el rato de 7 s que ve Eric es otro momento (p. ej. la mapa plano de Japón de 10 a 14 s), necesito el instante exacto.  
+  *Dónde:* Película, escena del pasaporte  *Captura:* `10n5_e5_t30.jpg`
+
+**6**
+
+- ✅ Hecho — [Guardar] solo «Guardar» AddReservationSheet y la hoja de hora de vuelo; tests antiguos actualizados.  
+  *Dónde:* RESERVAS › añadir reserva
+
+**6b**
+
+- ✅ Hecho — Caja pequeña (Pase Estilo 01) en todos los sitios que piden el pase (menos HOY) Candado.tsx rehecho: RESERVAS alojamiento y llegada/vuelta, DÍAS (zona, ajuste llegada/vuelta), cómo llegar al alojamiento, Logros. Último día de DÍAS: el botón principal en azul oscuro con candado dorado. TarjetaPaseReservas no se usa en ningún sitio.  
+  *Dónde:* RESERVAS › Alojamiento; DÍAS › día 1; Logros  *Captura:* `10n5_caja_reservas_alojamiento.jpg`
+- ✅ Hecho — Lo pequeño bloqueado en azul oscuro con candado dorado Tarjetas Baños y Fuentes de EXPLORAR y pestaña «Cerca de ti» del explorador de lugares.  
+  *Dónde:* EXPLORAR; explorador › Cerca de ti  *Captura:* `10n5_bloqueado_cerca_de_ti.jpg`
+- ✅ Hecho — Textos verdad sobre el alojamiento Tres cajas y la lista cambiadas; la película y la lista vienen ya corregidas en Design (RETOQUES). Nada en roma.json ni en el motor.  
+  *Dónde:* RESERVAS, película, lista de lo que incluye  *Captura:* `10n5_caja_reservas_alojamiento.jpg`
+
+**6c · Vuelo y alojamiento de cada uno**
+
+- ✅ Hecho — Cada uno puede poner su vuelo y su alojamiento (también quien solo recomienda): es suyo, no cambia la ruta de nadie Quien no es el administrador (editar o recomendar) ve «Tengo otro vuelo · Pon el tuyo» y «Me alojo en otro sitio · Pon el tuyo»; la hoja de su vuelo (Ida / Vuelta, hora, punto, precio) y la de su alojamiento. Se guarda en su móvil y, con la migración 0049, en `lo_suyo_del_viaje` (solo lo ve ella, RLS). La ruta no lo mira.  
+  *Dónde:* RESERVAS · con la cuenta de Ana (invitada) · fila «Tengo otro vuelo» > elegir hora > Guardar; fila «Me alojo en otro sitio» > escribir nombre > Guardar  *Captura:* `docs/dias/capturas_jutrip/10n5_cadauno_03_ana_lo_suyo.jpg`
+- ✅ Hecho — Si el administrador pone uno «para todos / para algunos», se cambia el de esas personas y a cada una le llega «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.» El administrador marca «¿Para quién es?» en «En este vuelo» / «En este alojamiento» (se guarda con el viaje, `cuentasEntre`). Un disparador de la base de datos (0049) borra lo de las personas marcadas y les manda el aviso (para todos / para ti / para algunos; vuelo y alojamiento por separado). Probado en PGlite con las migraciones reales. A todas las marcadas les llega aviso, tuvieran el suyo o no (duda abajo).  
+  *Dónde:* RESERVAS · con la cuenta de Eric (administrador) · bajo «Llegada y vuelta» tocar «En este vuelo» > marcar personas > Guardar; el aviso lo ve Ana en la campana y la franja  *Captura:* `docs/dias/capturas_jutrip/10n5_cadauno_05a_aviso_a_ana.jpg`
+- ✅ Hecho — Cada uno puede volver a poner el suyo cuando quiera («Tengo otro vuelo · Pon el tuyo», «Me alojo en otro sitio · Pon el tuyo»): sale solo del «¿Para quién es?» del administrador y al administrador le llega «Ana ha puesto su propio vuelo.» Sin pedírselo a nadie. Al administrador le llega el aviso (con «Llegada a Roma · martes 10» o «Se aloja en …»), una vez por cada cambio distinto. El administrador ve «Otro vuelo · Ana tiene su propio vuelo» (con los avatares de quienes tienen otro) y «En este vuelo» sin ella.  
+  *Dónde:* RESERVAS · Ana: «Tengo otro vuelo» > Guardar · Eric: campana / franja «Ana ha puesto su propio vuelo.» y, en RESERVAS, filas «En este vuelo» y «Otro vuelo»  *Captura:* `docs/dias/capturas_jutrip/10n5_cadauno_05_aviso_a_eric.jpg`
+- ✅ Hecho — La ruta sigue al vuelo y al alojamiento del administrador (primer y último día, y la zona), como hoy; lo de cada uno es para él, en su RESERVAS No he tocado el motor ni lo que lee la ruta: lo de cada uno vive aparte (`lo_suyo_del_viaje`) y la ruta solo mira `arrivalFlightTime`, `departureFlightTime` y la zona del viaje.  
+  *Dónde:* RUTA / DÍAS · el primer y el último día siguen al vuelo de Eric aunque Ana tenga otro
+- ✅ Hecho — Cuentas: el vuelo y el alojamiento del administrador se reparten entre «para quién es»; los vuelos ahora SÍ entran; lo de cada uno es suyo y no se reparte; si alguien pone el suyo, sale del reparto y las cuentas se ajustan solas; nada se cuenta dos veces `aportacionesDelViaje` incluye ida y vuelta del administrador (tipo `vuelo`) y el alojamiento, entre sus «¿Para quién es?» sin quien tiene lo suyo (si no queda nadie, del administrador). «Por persona» del presupuesto igual. Los posibles duplicados (gasto «Billete de avión» de igual importe) se avisan como en la 10N3. Se actualizaron las pruebas viejas de la 10N3 que decían «los billetes no entran».  
+  *Dónde:* Cartera (presupuesto) > Cuentas del grupo · «Entra solo desde RESERVAS» con Ida, Vuelta y Alojamiento; cada línea con «Para quién es»
+
+**6c · Entradas de cualquiera en las cuentas**
+
+- ✅ Hecho — Las entradas que reserva cualquiera para varios entran en las cuentas (la pagó quien reservó, se reparte entre su «¿Para quién es?»); las solo-para-ella no cuentan; nada se cuenta dos veces Quien reserva en el viaje de otra persona ahora ve «¿Para quién es?» en la hoja de la reserva (él siempre marcado). Una RPC (`entradas_del_grupo`, 0049) las enseña a los del viaje y las cuentas las suman (pagó el invitado). Las de una sola persona, las excursiones y las sin precio no cuentan; la misma reserva dos veces cuenta una; un gasto igual se avisa como posible duplicado. Lo que NO he hecho: que las personas incluidas vean esa entrada de Ana como «Reservada ✓» en su RESERVAS (duda abajo).  
+  *Dónde:* RESERVAS · con la cuenta de Ana > Entradas > Añádela > ¿Para quién es? (marcar a otros) > Guardar; cartera > Cuentas del grupo
+
+**6c · Pantallas de Design**
+
+- ⚠️ A medias — Pantallas 01 y 02: Ana con el vuelo y el alojamiento de Eric, siempre «Lo ha puesto Eric · …» (también en la 01) Hecho con los textos, colores, medidas y tipografías de Design. Pastilla «Lo ha puesto Eric · para todos» (o «para Eric y para ti» / «para 3 de 4»). Cuando el texto no cabe junto al título, la pastilla pasa a dos líneas, igual que en la captura de la pieza de Design a 390; en un móvil real con Geist puede caber en una.  
+  *Dónde:* RESERVAS · cuenta de Ana (invitada con «Recomendar» o «Editar»), viaje compartido  *Captura:* `docs/dias/capturas_jutrip/10n5_cadauno_01_ana_vuelo_de_eric.jpg`
+- ✅ Hecho — Pantalla 03: Ana con lo suyo («Tuyo» y [Cambiar]) Chip verde «Tuyo», líneas «✈ Ida · mar 10 · 13:40 · Ciampino» y «Te alojas en Trastevere», enlace [Cambiar] subrayado dorado.  
+  *Dónde:* RESERVAS · cuenta de Ana · tras guardar su vuelo y su alojamiento  *Captura:* `docs/dias/capturas_jutrip/10n5_cadauno_03_ana_lo_suyo.jpg`
+- ⚠️ A medias — Pantalla 04: Eric con quién va en su vuelo («Tú, Laura y Marcos») y quién tiene otro («Ana tiene su propio vuelo») Las dos filas (En este vuelo con avatares, Otro vuelo con avatar) y la hoja «¿Para quién es?» están. Diferencia: en Design la pastilla «Para todos» va dentro de la cabecera de la tarjeta «Llegada y vuelta»; yo no he tocado esa cabecera (es el bloque de siempre del administrador) y el «para quién» se ve en la fila «En este vuelo». Lo dejo como duda.  
+  *Dónde:* RESERVAS · cuenta de Eric (administrador), viaje compartido, vuelo ya puesto  *Captura:* `docs/dias/capturas_jutrip/10n5_cadauno_04_eric_quien_va.jpg`
+- ✅ Hecho — Pantalla 05: los avisos («Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.» a Ana · «Ana ha puesto su propio vuelo.» a Eric) Franja de aviso nuevo con título y detalle como Design («Llegada a Roma · martes 10»); en la campana, la frase entera de una línea.  
+  *Dónde:* Cualquier pestaña · franja de arriba al llegar el aviso, y campana > lista  *Captura:* `docs/dias/capturas_jutrip/10n5_cadauno_05_aviso_a_eric.jpg`
+
+**6c · Migración**
+
+- ✅ Hecho — Si hace falta migración, escribirla y decir cuál aplicar 0049_lo_suyo_de_cada_uno.sql (idempotente, va después de 0035, 0038 y 0042). Sin aplicarla todo funciona en el propio móvil, pero el administrador no ve quién tiene lo suyo, las cuentas no lo saben y no llegan los avisos.  
+  *Dónde:* SQL editor de Supabase: pegar la 0049 entera
+
+**6d · Añadir gasto**
+
+- ✅ Hecho — «¿Quién lo ha pagado?» pasa a «¿Quién ha pagado?» y «¿Entre quién?» a «¿Para quién es?», en todos los sitios (añadir y editar un gasto, las cuentas del grupo…) Cambiado en la hoja de añadir/editar, en las cuentas (botón del alojamiento y su hoja) y en los comentarios. Pruebas viejas de la 10N, 10N2 y 10N3 actualizadas a los textos nuevos.  
+  *Dónde:* Cartera (presupuesto) > Añadir gasto (en un viaje compartido, [Para todos])  *Captura:* `docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg`
+- ✅ Hecho — Quién ha pagado, por defecto: quien añade el gasto, el primero de la lista y ya marcado; los demás detrás y sin marcar (se pueden marcar si pagaron a medias); al editar se queda lo que ya tenía Antes ya salía marcado solo quien añade, pero iba detrás del administrador; ahora va el primero. Probado con Ana (invitada) y con Eric (administrador) y al editar un gasto de Luis y Eric.  
+  *Dónde:* Cartera > Añadir gasto · [Para todos] · «¿Quién ha pagado?»  *Captura:* `docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg`
+- ✅ Hecho — La línea de abajo, como está («12,50 € cada uno») No se ha tocado.  
+  *Dónde:* Cartera > Añadir gasto · escribir un importe  *Captura:* `docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg`
+- ✅ Hecho — Con espacio entre los bloques: «¿Quién ha pagado?» y sus nombres separados de lo de arriba y de lo de abajo; lo mismo «¿Para quién es?» Los bloques de la hoja van con separación grande (de 12 a 20 px).  
+  *Dónde:* Cartera > Añadir gasto  *Captura:* `docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg`
+
+**6e · Avisos borrados de verdad**
+
+- ✅ Hecho — Los avisos ocultos (Eliminar) se borran del todo a los 30 días `purgar_avisos()` (migración 0048). Probado en PGlite: eliminado hace 10 días se queda, hace 31 o 40 se borra.  
+  *Dónde:* No se ve en el móvil: solo desaparecen de la base de datos (campana > Gestionar > Eliminar, y 30 días después)
+- ✅ Hecho — Los avisos de más de un año (leídos o no) también se borran solos Misma función. Probado con un aviso de hace 400 días sin eliminar.  
+  *Dónde:* No se ve en el móvil
+- ✅ Hecho — Que lo haga el servidor solo, una vez al día (pg_cron o servidor de la app: decidir y justificar) Servidor de la app: la tarea de Vercel que ya corre cada día a las 9:00 (`/api/cron/avisos`, con CRON_SECRET) llama a `purgar_avisos` al empezar. Motivo: ya existe y no hay que activar la extensión pg_cron en Supabase ni añadir nada que mantener; si falta la 0048 solo lo apunta en el registro y los avisos siguen funcionando.  
+  *Dónde:* Vercel > Cron > /api/cron/avisos (respuesta con `limpieza: { borrados, claves_olvidadas }`)
+- ✅ Hecho — Al borrarlos, que no vuelvan a salir (la «clave» de no repetir): «Mañana empieza tu viaje» de un viaje que ya pasó Antes de borrar se apunta la clave (no el contenido) en `avisos_borrados` y un disparador rechaza cualquier aviso nuevo con esa clave; las claves se olvidan a los 2 años. Probado: el aviso borrado no se puede recrear con `crear_aviso`; otra persona con la misma clave no se ve afectada.  
+  *Dónde:* No se ve en el móvil
+- ✅ Hecho — [Deshacer] sigue funcionando como hoy (unos segundos después de eliminar) No se ha tocado la campana ni la 0046; comprobado que `ocultar_avisos(false)` devuelve el aviso.  
+  *Dónde:* Campana > Gestionar > Eliminar > [Deshacer]
+
+**6e · Migración**
+
+- ✅ Hecho — Si hace falta migración, escribirla y decir cuál aplicar 0048_avisos_borrado.sql (idempotente, después de la 0046).  
+  *Dónde:* SQL editor de Supabase: pegar la 0048 entera
+
+**7 · La prueba**
+
+- ✅ Hecho — Prueba nueva pruebaTanda10N5 (Free Tour, avisos, unirse, perfil, pase y película, cada uno, gastos, avisos borrados) Prueba de la Tanda 10N5: 493 comprobaciones, 0 fallos (Free Tour 57, SQL del aviso 12, unirse 53, perfil 47, pase 217, cada uno 60+15, gastos 11+3, avisos 18). pruebaJutrip 129/0.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La batería completa y pruebaJutrip (la muestra de 60 fechas no hace falta: no se ha tocado el motor) Bateria completa: 39 de 131 en MAL a la primera, por expectativas antiguas ya actualizadas, 3 regresiones de texto arregladas y flakes de carga; todas pasan sueltas con 0 fallos. Lo que solo falla con otras a la vez va a la 10S.  
+  *Dónde:* No es de móvil.
+
+**7 · Capturas**
+
+- ✅ Hecho — Capturas en docs/dias/capturas_jutrip/ y esta página a tamaño de móvil, cada una al lado de la de Design  
+  *Dónde:* Esta página.
+
+**8 · El informe**
+
+- ✅ Hecho — Apartado «10N5» en docs/dias/INFORME_TANDA10B.md y esta lista al final  
+  *Dónde:* No es de móvil.
+
+**Pruebas:** Prueba de la Tanda 10N5: 493 comprobaciones, 0 fallos (Free Tour 57, SQL del aviso 12, unirse 53, perfil 47, pase 217, cada uno 60+15, gastos 11+3, avisos 18). pruebaJutrip 129/0.

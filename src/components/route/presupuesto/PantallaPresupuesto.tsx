@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import { nombreVisible } from '../../../lib/nombrePersona'
+import { useLoSuyoDelViaje } from '../../../hooks/useLoSuyoDelViaje'
+import { useLoSuyo } from '../../../store/useLoSuyo'
+import { idsConLoSuyo } from '../../../lib/loSuyo'
 import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { createPortal } from 'react-dom'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -277,6 +281,8 @@ export function PantallaPresupuesto() {
   const [cuentasAbiertas, setCuentasAbiertas] = useState(false)
   // (Tanda 10N, apartado 9) En un viaje compartido: «Del grupo», el «por persona» solo de lo del grupo, los nombres de la gente y los Extras con [Para todos] / [Para mí].
   const gv = useGastosDelViaje()
+  useLoSuyoDelViaje()
+  const grupoLoSuyo = useLoSuyo((s) => s.grupo)
   if (!abierto || !route || !presupuesto) return null
 
   const moneda = monedaDelViajero(route)
@@ -288,7 +294,7 @@ export function PantallaPresupuesto() {
   const simbolo = formatoImporte({ amount: 0, currency: moneda }).split(' ')[1]
   const porPersonaTodos = personas ? { amount: Math.round((total.amount / personas) * 100) / 100, currency: moneda } : null
   // (Tanda 10N3) Con «¿Para quién es?» y «¿Entre quién?»: una reserva para 2 de 4 cuenta solo entre esos 2. Si no todo es entre todos, sale «tu parte» en vez del «por persona» único.
-  const parte = gv.compartido ? porPersonaDelPresupuesto({ presupuesto, gastos: gv.gastos, reservas: reservations, entreDe: route.cuentasEntre, adminId: gv.personas.find((p) => p.esAdmin)?.id ?? null, todos: gv.personas.map((p) => p.id), yoId: gv.yoId }) : null
+  const parte = gv.compartido ? porPersonaDelPresupuesto({ presupuesto, gastos: gv.gastos, reservas: reservations, entreDe: route.cuentasEntre, adminId: gv.personas.find((p) => p.esAdmin)?.id ?? null, todos: gv.personas.map((p) => p.id), yoId: gv.yoId, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento') }) : null
   const porPersona = parte ? deCentimos(parte.centimos, moneda) : porPersonaTodos
 
   // La hoja que se abre al tocar una línea: la de siempre de cada cosa.
@@ -342,7 +348,7 @@ export function PantallaPresupuesto() {
           <span className="text-text/55" style={{ font: "500 11px/1.35 'Geist Mono',monospace", letterSpacing: '.06em' }}>
             {route.destination} · {rangoDelViaje(route)} ·{' '}
             {gv.compartido ? (
-              <span data-presupuesto-de>{gv.esInvitado ? `de ${gv.nombreAdmin || nombresEnFrase(gv.personas.map((p) => p.nombre ?? ''))}` : gv.frase}</span>
+              <span data-presupuesto-de>{gv.esInvitado ? `de ${gv.nombreAdmin || nombresEnFrase(gv.personas.map((p) => nombreVisible(p.nombre)))}` : gv.frase}</span>
             ) : personas ? (
               <>
                 {personas} {personas === 1 ? 'persona' : 'personas'}

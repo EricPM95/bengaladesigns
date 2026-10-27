@@ -27,7 +27,16 @@ const quitarTildes = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').t
 
 type EstadoPase = 'sin' | 'prueba' | 'con'
 const demo = {
-  pase: 'con' as EstadoPase,
+  // (Tanda 10N5: las pruebas piden el estado del pase desde el principio con `sessionStorage['trazo:demo-pase'] = 'sin' | 'prueba' | 'con'`.)
+  pase: ((): EstadoPase => {
+    try {
+      const v = window.sessionStorage.getItem('trazo:demo-pase')
+      if (v === 'sin' || v === 'prueba' || v === 'con') return v
+    } catch {
+      /* sin almacenamiento */
+    }
+    return 'con'
+  })(),
   hora: null as string | null,
   preguntaHecha: false,
   foto: null as null | 'valida' | 'no_camara' | 'otra_fecha' | 'otro_sitio' | 'sin_cobertura',

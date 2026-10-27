@@ -8,6 +8,9 @@ import { Icono } from '../../ui/Icono'
 const ROSE = 'rgb(var(--frambuesa))'
 export const GREEN = 'oklch(0.55 0.11 150)'
 const GREEN_INK = 'oklch(0.45 0.11 150)'
+/** Otro del grupo la tiene (Tanda 10N5): el azul oscuro de la marca y su dorado. */
+const AZUL_GRUPO = 'linear-gradient(135deg,#1C2230,#252F55 60%,#1C2230)'
+const ORO_GRUPO = '#E9C77A'
 
 function TicketIcon() {
   return (
@@ -38,6 +41,7 @@ export function EntradaCard({
   onAdd,
   onChange,
   notes = [],
+  delGrupo = false,
 }: {
   /** La etiqueta de arriba: «Entrada», «Free Tour» o «Excursión». */
   eyebrow?: string
@@ -56,28 +60,31 @@ export function EntradaCard({
   /** «Cambiar»: la misma hoja, con la reserva y «Eliminar reserva». */
   onChange?: () => void
   notes?: { text: string; warn?: boolean }[]
+  /** (Tanda 10N5) Los tres colores: otro del grupo ya la tiene y a ti te queda elegir la tuya → azul oscuro con dorado (en vez del frambuesa de «te falta»). */
+  delGrupo?: boolean
 }) {
   const reserved = reservedTime != null
-  const accent = reserved ? GREEN : ROSE
+  const accent = reserved ? GREEN : delGrupo ? AZUL_GRUPO : ROSE
   const buy = () => (onBuy ? onBuy() : openTicketShop(buyHref))
   return (
     <div
+      data-entrada-color={reserved ? 'verde' : delGrupo ? 'grupo' : 'falta'}
       className="relative flex min-h-[112px] w-full bg-white"
       style={{
         borderRadius: 18,
-        border: `1px solid ${reserved ? 'oklch(0.55 0.11 150 / .4)' : 'rgba(28,34,48,.08)'}`,
+        border: `1px solid ${reserved ? 'oklch(0.55 0.11 150 / .4)' : delGrupo ? 'rgba(233,199,122,.55)' : 'rgba(28,34,48,.08)'}`,
         boxShadow: '0 1px 2px rgba(28,34,48,.05),0 12px 26px -18px rgba(28,34,48,.4)',
       }}
     >
       <div className="relative w-[74px] shrink-0 overflow-hidden text-white" style={{ borderRadius: '17px 0 0 17px' }}>
         <span aria-hidden="true" className="absolute inset-0" style={{ clipPath: 'polygon(0 0,100% 0,calc(100% - 22px) 100%,0 100%)', background: accent, transition: 'background .35s' }} />
-        <span aria-hidden="true" className="absolute bottom-0 left-0 top-0 flex w-[58px] items-center justify-center">
+        <span aria-hidden="true" className="absolute bottom-0 left-0 top-0 flex w-[58px] items-center justify-center" style={delGrupo && !reserved ? { color: '#F3D88F' } : undefined}>
           <TicketIcon />
         </span>
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-[5px] py-3 pl-2.5 pr-3.5">
         <span className="flex items-center gap-1.5 text-text/50" style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
-          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full" style={{ background: reserved ? GREEN : 'rgba(28,34,48,.35)' }} />
+          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full" style={{ background: reserved ? GREEN : delGrupo ? ORO_GRUPO : 'rgba(28,34,48,.35)' }} />
           {eyebrow}
           {when && (
             <>
@@ -116,7 +123,7 @@ export function EntradaCard({
               type="button"
               onClick={buy}
               className="h-8 whitespace-nowrap rounded-full px-3.5 text-white transition-transform active:scale-[.97]"
-              style={{ ...botonChampan(), font: "600 12.5px 'Geist'" }}
+              style={delGrupo ? { background: '#1C2230', color: '#F3D88F', boxShadow: 'inset 0 0 0 1.2px rgba(233,199,122,.6)', font: "600 12.5px 'Geist'" } : { ...botonChampan(), font: "600 12.5px 'Geist'" }}
             >
               {buyLabel}
             </button>

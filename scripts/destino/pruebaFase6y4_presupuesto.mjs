@@ -115,8 +115,8 @@ console.log('11. Aviso del alojamiento')
   debe(/Añade alojamiento/.test(bloque()), '11', 'gratis, la zona no cuenta (no existe): el aviso debería salir')
   poner('gratis', rutaMano())
   useRouteStore.setState({ accommodationSelections: { d1: { name: 'Mi hotel', precio: null } } })
-  // (Tanda 10G: gratis con el hotel puesto, el aviso «Añade alojamiento» no sale; solo queda el candado de la zona del alojamiento, lo del pase.)
-  debe(!/Añade alojamiento/.test(bloque()) && /Con el pase, cada día empieza cerca de donde duermes/.test(bloque()), '11', `gratis con hotel: el aviso sigue saliendo o falta el candado de la zona (${plano(bloque())})`)
+  // (Tanda 10G: gratis con el hotel puesto, el aviso «Añade alojamiento» no sale; solo queda la caja del pase de la zona del alojamiento; Tanda 10N5: «¿En qué zona te alojas?» / «Con el Pase Roma, adaptamos tu ruta a tu alojamiento.»)
+  debe(!/Añade alojamiento/.test(bloque()) && /¿En qué zona te alojas?/.test(plano(bloque())) && /adaptamos tu ruta a tu alojamiento/.test(plano(bloque())), '11', `gratis con hotel: el aviso sigue saliendo o falta el candado de la zona (${plano(bloque())})`)
   // una sola regla
   const c = M.alojamientoCubierto
   debe(c({ pago: false, unDestino: true, selections: {}, zona: 'x', segmentDayId: 'd1' }) === false && c({ pago: true, unDestino: true, selections: {}, zona: 'x', segmentDayId: 'd1' }) === true && c({ pago: true, unDestino: false, selections: {}, zona: 'x', segmentDayId: 'd1' }) === false && c({ pago: false, unDestino: false, selections: { d1: {} }, zona: null, segmentDayId: 'd1' }) === true, '11', 'alojamientoCubierto no da lo esperado')

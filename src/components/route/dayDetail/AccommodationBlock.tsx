@@ -2,7 +2,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { alojamientoCubierto, lineaAlojamiento } from '../../../lib/tuAlojamiento'
 import { buildDestinationSegments } from '../../../lib/destinationSegments'
-import { pagoActivo } from '../../../lib/pago'
+import { usePagoActivo } from '../../../lib/pago'
 import { Icono } from '../../ui/Icono'
 import { Candado } from '../../pase/Candado'
 
@@ -26,7 +26,8 @@ export function AccommodationBlock({ city, segmentDayId, totalNights }: Accommod
   const selectedHotel = useRouteStore((state) => state.accommodationSelections[segmentDayId])
   const selections = useRouteStore((state) => state.accommodationSelections)
   const route = useRouteStore((state) => state.route)
-  const cubierto = alojamientoCubierto({ pago: pagoActivo(), unDestino: buildDestinationSegments(route?.days ?? []).length <= 1, selections, zona: route?.accommodationZone, segmentDayId })
+  const pago = usePagoActivo()
+  const cubierto = alojamientoCubierto({ pago, unDestino: buildDestinationSegments(route?.days ?? []).length <= 1, selections, zona: route?.accommodationZone, segmentDayId })
   const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
 
@@ -55,7 +56,7 @@ export function AccommodationBlock({ city, segmentDayId, totalNights }: Accommod
 
   // Tanda 6y4: el aviso solo sale mientras FALTA el alojamiento (la misma regla que la tarjeta «Alojamiento» de RESERVAS). Con el hotel ya añadido, ni aviso ni fila: se ve y se cambia desde RESERVAS.
   // (Tanda 10G: sin el pase, la zona del alojamiento sale cerrada debajo —y con el alojamiento ya guardado, es lo único que queda—: guardarlo es gratis, que cada día empiece cerca de donde duermes es del pase.)
-  const cerradoDelPase = !pagoActivo() ? <Candado datos="alojamiento-zona" className="my-1" texto="Con el pase, cada día empieza cerca de donde duermes" /> : null
+  const cerradoDelPase = !pago ? <Candado datos="alojamiento-zona" className="my-1" titulo="¿En qué zona te alojas?" texto="Con el {pase}, adaptamos tu ruta a tu alojamiento." /> : null
   if (cubierto) return cerradoDelPase
 
   return (

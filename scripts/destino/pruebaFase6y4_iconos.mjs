@@ -80,7 +80,9 @@ for (const archivo of archivos) {
   // (8C1) Los iconos del Dashboard de Design (logros de viajero) son suyos: el avión de «Gran viaje» es de un logro, no de un medio de transporte.
   if (nombre.endsWith('dibujos/iconosDashboard.ts')) continue
   for (const viejo of VIEJOS) debe(!texto.includes(viejo), '4 viejo', `${nombre}: aún lleva un trazo de transporte antiguo`)
-  debe(!EMOJI_TRANSPORTE.test(texto), '4 emoji', `${nombre}: lleva un emoji de transporte`)
+  // Las líneas de vuelo de «Lo de cada uno» («✈ Ida · mar 10 · 13:40 · Ciampino») llevan el ✈ como signo de texto, tal cual el diseño (decisión de diseño de las cuentas, no un icono): solo ese signo y solo en esos dos ficheros.
+  const textoSinGlifoDeVuelo = /(loSuyo\.ts|LoDeCadaUno\.tsx)$/.test(nombre) ? texto.replace(/✈/g, '') : texto
+  debe(!EMOJI_TRANSPORTE.test(textoSinGlifoDeVuelo), '4 emoji', `${nombre}: lleva un emoji de transporte`)
   // Un <svg> suelto (fuera de iconos.ts y de Icono.tsx) con un avión/tren/bus/coche: nombre de componente o de variable.
   if (!/lib\/iconos\.ts$|ui\/Icono\.tsx$/.test(nombre)) {
     const sueltos = [...texto.matchAll(/<svg[\s\S]{0,400}?<\/svg>/g)].map((m) => m[0])

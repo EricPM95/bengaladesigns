@@ -9,6 +9,7 @@ import type { GastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
 import { useMonedas } from '../../../lib/useMoneda'
 import { nombreDe } from '../../../store/useViajeCompartido'
+import { nombreVisible } from '../../../lib/nombrePersona'
 
 const CAMPO = 'h-[52px] min-w-0 rounded-[16px] border border-text/[.12] bg-[#FFFDF8] px-4 text-[15px] outline-none focus:border-text/40'
 
@@ -26,7 +27,7 @@ export function InicialDePersona({ nombre, esAdmin, tam = 20 }: { nombre: string
 
 /**
  * «AÑADIR GASTO» de un viaje compartido (Tanda 10N, apartado 9; `Piezas/Presupuesto Compartido` 03, 04 y 05): nombre, precio, [Para todos] [Para mí], una línea que dice qué pasa (se lo enviamos al administrador /
- * entra directo / solo lo ves tú) y, en [Para todos], «¿Quién lo ha pagado?» con una pastilla por persona (quien lo añade, ya marcada). El botón dice [Enviar a Eric] si el gasto espera su respuesta y [Añadir gasto] si entra directo.
+ * entra directo / solo lo ves tú) y, en [Para todos], «¿Quién ha pagado?» con una pastilla por persona (quien lo añade, ya marcada). El botón dice [Enviar a Eric] si el gasto espera su respuesta y [Añadir gasto] si entra directo.
  */
 export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDelViaje; moneda: string; onClose: () => void; editar?: GastoCompartido }) {
   const anadir = useGastosCompartidos((s) => s.anadir)
@@ -43,14 +44,16 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
   // (Tanda 10N3) El administrador edita también los gastos de quien ya salió del viaje: esa persona sale en las pastillas, con su nombre, para poder cambiar quién pagó y entre quién.
   const exMiembros = useGastosCompartidos((st) => st.exMiembros)
   const idsDeSalidas = editar ? [...new Set([...editar.pagadoPor, ...editar.entre])].filter((id) => !todosIds.includes(id)) : []
-  const lista = [...gv.personas, ...idsDeSalidas.map((id) => ({ id, nombre: exMiembros.find((e) => e.id === id)?.nombre ?? null, foto: null, esAdmin: false }))]
+  // (Tanda 10N5 §6d) Quien añade el gasto, el primero de la lista (y ya marcado en «¿Quién ha pagado?»); los demás, detrás.
+  const personasConYoPrimero = [...gv.personas].sort((a, b) => Number(b.id === gv.yoId) - Number(a.id === gv.yoId))
+  const lista = [...personasConYoPrimero, ...idsDeSalidas.map((id) => ({ id, nombre: exMiembros.find((e) => e.id === id)?.nombre ?? null, foto: null, esAdmin: false }))]
   const [enCurso, setEnCurso] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const monedaDelCampo = monedaElegida ?? moneda
   const precio = importeDeTexto(importe, monedaDelCampo)
   const listo = Boolean(nombre.trim()) && precio !== null && (ambito === 'mio' || pagadoPor.length > 0)
   const espera = ambito === 'grupo' && !gv.puedeDecidir
-  const admin = gv.nombreAdmin || 'el administrador'
+  const admin = nombreVisible(gv.nombreAdmin) || 'el administrador'
 
   const info = ambito === 'mio' ? { icono: 'ojoCerrado' as const, texto: 'Solo lo ves tú' } : espera ? { icono: 'flecha' as const, texto: `Se lo enviamos a ${admin}` } : { icono: 'hecho' as const, texto: 'Entra directo en el presupuesto' }
   const boton = editar ? 'Guardar cambios' : espera ? `Enviar a ${admin}` : 'Añadir gasto'
@@ -80,7 +83,7 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
       <h2 id="hoja-anadir-gasto" className="max-w-[calc(100%-3rem)] font-display text-[28px] leading-[1.05] text-text">
         {editar ? 'Editar gasto' : 'Añadir gasto'}
       </h2>
-      <div className="mt-4 flex flex-col gap-3">
+      <div className="mt-4 flex flex-col gap-5">
         <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} placeholder="Cena el primer día" aria-label="Nombre del gasto" data-gasto-nombre className={CAMPO} />
         <div className="grid gap-2" style={{ gridTemplateColumns: 'minmax(0,1fr) auto' }}>
           <input value={importe} onChange={(e) => setImporte(e.target.value)} inputMode="decimal" placeholder="30" aria-label="Importe" data-gasto-importe className={CAMPO} style={{ fontFamily: "'Geist Mono',monospace" }} />
@@ -116,12 +119,12 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
         {ambito === 'grupo' && (
           <div className="flex flex-col gap-2" data-gasto-quien-pago>
             <span className="text-text/55" style={ojoStyle}>
-              ¿Quién lo ha pagado?
+              ¿Quién ha pagado?
             </span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {lista.map((p) => (
-                <PastillaElegir key={p.id} elegida={pagadoPor.includes(p.id)} onClick={() => alternar(p.id)} marca datos={`pago-${p.id}`} icono={pagadoPor.includes(p.id) ? undefined : <InicialDePersona nombre={nombreDe(p)} esAdmin={p.esAdmin} />}>
-                  {nombreDe(p) || 'Alguien'}
+                <PastillaElegir key={p.id} elegida={pagadoPor.includes(p.id)} onClick={() => alternar(p.id)} marca datos={`pago-${p.id}`} icono={pagadoPor.includes(p.id) ? undefined : <InicialDePersona nombre={nombreVisible(nombreDe(p))} esAdmin={p.esAdmin} />}>
+                  {nombreVisible(nombreDe(p)) || 'Alguien'}
                 </PastillaElegir>
               ))}
             </div>
@@ -130,13 +133,13 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
         {ambito === 'grupo' && (
           <div className="flex flex-col gap-2" data-gasto-entre-quien>
             <span className="flex items-center justify-between text-text/55" style={ojoStyle}>
-              <span>¿Entre quién?</span>
+              <span>¿Para quién es?</span>
               <span data-gasto-entre-cuantos>{entre.length} de {lista.length}</span>
             </span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {lista.map((p) => (
-                <PastillaElegir key={p.id} elegida={entre.includes(p.id)} onClick={() => alternarEntre(p.id)} marca datos={`entre-${p.id}`} icono={entre.includes(p.id) ? undefined : <InicialDePersona nombre={nombreDe(p)} esAdmin={p.esAdmin} />}>
-                  {nombreDe(p) || 'Alguien'}
+                <PastillaElegir key={p.id} elegida={entre.includes(p.id)} onClick={() => alternarEntre(p.id)} marca datos={`entre-${p.id}`} icono={entre.includes(p.id) ? undefined : <InicialDePersona nombre={nombreVisible(nombreDe(p))} esAdmin={p.esAdmin} />}>
+                  {nombreVisible(nombreDe(p)) || 'Alguien'}
                 </PastillaElegir>
               ))}
             </div>

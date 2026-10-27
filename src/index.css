@@ -184,6 +184,16 @@ body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
   }
 }
 
+/* Tanda 10N5 (6b): el brillo que pasa por la caja del pase (`Piezas/Pase Estilo` 01, `psS`). */
+@keyframes pase-brillo {
+  0% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  55%,
+  100% {
+    transform: translateX(260%) skewX(-18deg);
+  }
+}
 /* Diseño "Trazo Explorar": las tarjetas entran con un pequeño salto, y el punto azul de «dónde estás» late. */
 @keyframes explore-pop {
   from {

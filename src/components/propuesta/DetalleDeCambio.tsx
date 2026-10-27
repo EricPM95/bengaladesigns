@@ -11,6 +11,7 @@ const TIPOS: Record<CambioPropuesto['tipo'], string> = {
   anadir: 'AÑADIR UNA PARADA',
   cambiar: 'CAMBIAR UNA PARADA POR OTRA',
   dia_nuevo: 'UN DÍA NUEVO',
+  free_tour: 'AÑADIR EL FREE TOUR',
 }
 const ETIQUETA_MARCA: Record<Exclude<MarcaDeParada, null>, string> = { movida: 'Movida', sale: 'Sale', entra: 'Entra', nueva: 'Nueva' }
 

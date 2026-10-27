@@ -33,7 +33,7 @@ import { Icono } from '../../ui/Icono'
 import { BotonHoja, Hoja } from '../../ui/Hoja'
 import { TextoConPase } from '../../cuenta/TextoConPase'
 import { abrirPase } from '../../../lib/pago'
-import { explorarConCercania } from '../../../lib/explorarDePago'
+import { usePasePintable } from '../../../lib/pago'
 import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
 import { diaCorto } from '../../../lib/nombreDeDia'
 import { InterruptorElegir } from '../../ui/Elegir'
@@ -422,7 +422,9 @@ export function PlaceExplorerScreen({
   const initialFiltersKey = initialFilters.join(',')
   const initialOriginKey = initialOrigin ? `${initialOrigin.lat},${initialOrigin.lng}` : ''
   /** «Cerca de ti» (ordenar por cercanía) es de pago: en la gratis EXPLORAR ordena solo por «Recomendados» (la regla, en `explorarDePago.ts`). */
-  const cercaDeMi = explorarConCercania()
+  // (Tanda 10N5 §0.2) «Cerca de ti» con pase / sin pase / sin pintar mientras no se sabe; se repinta sola al llegar la respuesta.
+  const estadoPase = usePasePintable()
+  const cercaDeMi = estadoPase === 'con'
 
   // EXPLORAR entra con un filtro ya puesto, y en móvil los chips no caben: "Restaurantes" es el
   // cuarto y se queda fuera de la pantalla, así que se veían tres chips apagados y una lista
@@ -1082,18 +1084,15 @@ export function PlaceExplorerScreen({
                 valor={tab}
                 compacto
                 atributos={{ 'data-pestanas-explorar': '' }}
-                onCambio={(id) => (id === 'nearby' && !cercaDeMi ? setHojaCerca(true) : setTab(id as 'recommended' | 'nearby'))}
+                onCambio={(id) => (id === 'nearby' && estadoPase === 'pendiente' ? undefined : id === 'nearby' && !cercaDeMi ? setHojaCerca(true) : setTab(id as 'recommended' | 'nearby'))}
                 opciones={[
                   { id: 'recommended', texto: 'Recomendados', atributos: { 'data-pestana': 'recommended' } },
                   {
                     id: 'nearby',
                     texto: 'Cerca de ti',
-                    atributos: { 'data-pestana': 'nearby' },
-                    extra: !cercaDeMi ? (
-                      <span aria-hidden="true" data-candado="explorar-cerca-de-ti" className="flex h-[18px] w-[18px] flex-none items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
-                        <Icono nombre="candado" size={10} grosor={2} />
-                      </span>
-                    ) : null,
+                    atributos: { 'data-pestana': 'nearby', ...(estadoPase === 'sin' ? { 'data-candado': 'explorar-cerca-de-ti' } : {}) },
+                    // (Tanda 10N5 §6b) Bloqueada por el pase: azul oscuro con el candado dorado. Mientras no se sabe si hay pase, la pestaña no se pinta.
+                    bloqueada: estadoPase === 'sin',
                   },
                 ]}
               />

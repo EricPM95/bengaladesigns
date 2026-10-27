@@ -61,7 +61,8 @@ try {
   debe(parseFloat(puro.estilo.width) === 200 && parseFloat(puro.estilo.left) === -50 && parseFloat(puro.estiloCentrado.width) === 100, 'encuadre', 'con zoom 2 la imagen mide el doble del círculo y queda centrada')
 
   // 2.2 El perfil al abrirse NUNCA enseña el viejo (respuesta retrasada).
-  await E(`window.__retrasoDemo = { '/api/logros/perfil': 3500 }; true`)
+  // 10N5: con lo último guardado en el móvil el Perfil sale entero al instante (sin esqueleto): para ver el esqueleto hay que partir de un móvil sin nada guardado.
+  await E(`localStorage.removeItem('trazo:perfil:ultimo:v1'); window.__retrasoDemo = { '/api/logros/perfil': 3500 }; true`)
   await E(`import('/src/store/usePerfilUi.ts').then((m) => { window.__perfilUi = m.usePerfilUi; m.usePerfilUi.getState().abrir(); return true })`)
   await E(`(() => {
     window.__muestras = []
@@ -90,7 +91,7 @@ try {
   debe(vistas.some((m) => m.esqueleto && !m.nuevo), 'viejo', 'mientras llegan los datos se ve el perfil nuevo vacío (huecos grises)')
   debe(vistas.at(-1).nuevo && !vistas.at(-1).esqueleto, 'viejo', 'al llegar los datos sale el perfil nuevo con ellos')
   // Y con el servidor caído (la respuesta nunca llega): tampoco el viejo.
-  await E(`window.__perfilUi.getState().cerrar(); window.__retrasoDemo = { '/api/logros/perfil': 600000 }; true`)
+  await E(`window.__perfilUi.getState().cerrar(); localStorage.removeItem('trazo:perfil:ultimo:v1'); window.__retrasoDemo = { '/api/logros/perfil': 600000 }; true`)
   await esp(400)
   await E(`window.__perfilUi.getState().abrir(); true`)
   await esp(1500)
@@ -146,14 +147,17 @@ try {
   await esp(400)
   await E(`window.__perfilUi.getState().abrir(); true`)
   await esp(2500)
-  const dist = await E(`(() => { const p = document.querySelector('[data-abrir-pasaporte]').getBoundingClientRect(); const t = document.querySelector('[data-mis-viajes] h3').getBoundingClientRect(); return t.top - p.bottom })()`)
-  debe(dist >= 68 && dist <= 72, 'separacion', `entre la tarjeta del pasaporte y el título «Mis viajes» hay ${dist.toFixed(1)} px (deben ser unos 70)`)
+  const dist = await E(`(() => { const p = document.querySelector('[data-abrir-pasaporte]').getBoundingClientRect(); const t = document.querySelector('[data-mis-viajes] h3').getBoundingClientRect(); return p.top - t.bottom })()`)
+  // 10N5 (orden nuevo): «Mis viajes» va ARRIBA, antes de la vitrina y del pasaporte; ya no hay 70 px entre el pasaporte y el título.
+  debe(dist > 0, 'separacion', `«Mis viajes» debe ir por encima de la tarjeta del pasaporte (distancia título→pasaporte ${dist.toFixed(1)} px)`)
 
   // 2.5 Sin «Abierto».
   const abiertoTexto = await E(`/\\bAbierto\\b/.test(document.querySelector('[role="dialog"][aria-label="Perfil"]').innerText)`)
   debe(!abiertoTexto, 'abierto', 'ninguna tarjeta de «Mis viajes» dice «Abierto»')
   const grupos = await E(`Array.from(document.querySelectorAll('[data-grupo-de-viajes]')).map((g) => g.getAttribute('data-grupo-de-viajes'))`)
-  debe(grupos.length >= 1, 'abierto', `siguen los títulos de grupo (${grupos.join(', ')})`)
+  // 10N5: ya no hay títulos de grupo; cada tarjeta lleva su etiqueta («Próximo», «En curso», «Ya hecho»).
+  const etiquetas = await E(`document.querySelectorAll('[data-tarjeta-de-viaje] [data-etiqueta-de-viaje], [data-etiqueta-de-viaje]').length`)
+  debe(grupos.length === 0 && etiquetas >= 1, 'abierto', `no deben quedar títulos de grupo (${grupos.join(', ')}) y cada tarjeta lleva su etiqueta (${etiquetas})`)
 
   // 2.6 La portada del destino por defecto.
   const tripId = await E(`import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState().route.id)`)

@@ -21,7 +21,7 @@ fs.mkdirSync(SALIDA, { recursive: true })
 {
   const hoja = sinComentarios(leer('src/components/route/reservas/AddReservationSheet.tsx'))
   debe(!/Lo que pagaste en total/.test(hoja), 'formulario', 'fuera «Lo que pagaste en total, todas las personas.» del formulario de la entrada')
-  debe(/¿Para quién es\?/.test(hoja) && /paraQuienVisible/.test(hoja) && /grupo\.compartido && !esInvitado/.test(hoja), 'formulario', '«¿Para quién es?» solo en un viaje compartido y solo para el dueño')
+  debe(/¿Para quién es\?/.test(hoja) && /paraQuienVisible/.test(hoja) && /paraQuienVisible = grupo\.compartido\s*$/m.test(hoja), 'formulario', '«¿Para quién es?» solo en un viaje compartido (10N5: lo ve también quien no es el dueño, para sus entradas)')
   debe(/btn-champan/.test(hoja.slice(hoja.indexOf('data-guardar-reserva') - 200, hoja.indexOf('data-guardar-reserva') + 900)), 'formulario', 'el botón [Guardar · …] del formulario es champán (btn-champan)')
   debe(/PastillaElegir/.test(hoja), 'formulario', 'las pastillas de «¿Para quién es?» son las de «Elegir» (azul oscuro con su ✓)')
   const panel = sinComentarios(leer('src/components/route/ReservasPanel.tsx'))
@@ -229,49 +229,15 @@ try {
   await a.esp(1500)
   await irAReservas(a)
   await a.esp(1200)
+  // (Tanda 10N5 §6c) Ya no hay zona en gris para Llegada y Alojamiento: el invitado de un viaje compartido ve «lo de cada uno» (su vuelo y su alojamiento, con «Lo ha puesto Eric · …» o «Falta»/«Tuyo») y los pone él.
   const gris = await a.evaluar(`(() => {
     const zonas = Array.from(document.querySelectorAll('[data-solo-lectura]'))
     const bloques = zonas.map((z) => z.querySelector('[data-blk]')?.dataset.blk)
-    const cab = document.querySelector('[data-blk="llegada"]')?.firstElementChild
-    return { bloques, titulo: Array.from(document.querySelectorAll('span')).some((s) => /^Reservas$/.test((s.textContent || '').trim())), llegadaVisible: Boolean(cab), solo: /Aquí solo se mira/.test(document.body.textContent || ''), entradas: Boolean(document.querySelector('[data-blk="entradas"]')) }
+    return { bloques, cadaUno: Boolean(document.querySelector('[data-lo-de-cada-uno]')), vuelo: Boolean(document.querySelector('[data-tarjeta-vuelo]')), aloj: Boolean(document.querySelector('[data-tarjeta-aloj]')), titulo: Array.from(document.querySelectorAll('span')).some((s) => /^Reservas$/.test((s.textContent || '').trim())), solo: /Aquí solo se mira/.test(document.body.textContent || ''), entradas: Boolean(document.querySelector('[data-blk="entradas"]')) }
   })()`)
-  debe(gris.bloques.includes('llegada') && gris.bloques.includes('aloj'), 'gris', `Llegada y vuelta y Alojamiento van en zona gris (${gris.bloques.join(',')})`)
+  debe(!gris.bloques.includes('llegada') && !gris.bloques.includes('aloj') && gris.vuelo && gris.aloj, 'cada_uno', `10N5 §6c: Llegada y Alojamiento ya no van en zona gris: el invitado ve las tarjetas de su vuelo y su alojamiento (${JSON.stringify(gris)})`)
   debe(gris.titulo && gris.entradas && !gris.solo, 'misma_pantalla', 'el invitado ve la misma pantalla Reservas (con su bloque de Entradas) y sin «Aquí solo se mira»')
-  await abrirBloque(a, 'llegada')
-  await abrirBloque(a, 'aloj')
-  await a.esp(900)
-  const tocar = await a.evaluar(`(async () => {
-    const zona = document.querySelector('[data-blk="llegada"]').closest('[data-solo-lectura]')
-    const botones = Array.from(zona.querySelectorAll('button')).filter((b) => !b.hasAttribute('data-activo-invitado'))
-    const inputs = Array.from(zona.querySelectorAll('input'))
-    const opacidades = botones.map((b) => Number(getComputedStyle(b).opacity))
-    const antes = document.querySelectorAll('[role="dialog"]').length
-    const rueda = botones.find((b) => /Elige la hora|Llega|Sale/.test(b.textContent || ''))
-    rueda?.click()
-    await new Promise((r) => setTimeout(r, 500))
-    const despues = document.querySelectorAll('[role="dialog"]').length
-    const linea = zona.querySelector('[data-esto-lo-cambia]')?.textContent ?? null
-    return { nBotones: botones.length, nInputs: inputs.length, gris: opacidades.every((o) => o <= 0.6), inputsLectura: inputs.every((i) => i.readOnly), antes, despues, linea }
-  })()`)
-  debe(tocar.nBotones > 0 && tocar.gris, 'gris', `los botones de Llegada y vuelta están en gris (${tocar.nBotones} botones)`)
-  debe(tocar.nInputs === 0 || tocar.inputsLectura, 'gris', 'las casillas de escribir son de solo lectura')
-  debe(tocar.antes === tocar.despues, 'gris', 'al tocar un campo o botón de editar no se abre ninguna hoja')
-  debe(tocar.linea === 'Esto lo cambia Eric', 'gris', `y sale la línea corta «Esto lo cambia Eric» (${tocar.linea})`)
-  const aloj = await a.evaluar(`(() => {
-    const zona = document.querySelector('[data-blk="aloj"]').closest('[data-solo-lectura]')
-    const buscar = Array.from(zona.querySelectorAll('button')).find((b) => /Buscar alojamiento/.test(b.textContent || ''))
-    const otros = Array.from(zona.querySelectorAll('button')).filter((b) => !b.hasAttribute('data-activo-invitado') && !/Buscar alojamiento/.test(b.textContent || ''))
-    return { buscarActivo: Boolean(buscar) && buscar.hasAttribute('data-activo-invitado') && Number(getComputedStyle(buscar).opacity) === 1, otrosGris: otros.every((b) => Number(getComputedStyle(b).opacity) <= 0.6), hayOtros: otros.length }
-  })()`)
-  debe(aloj.buscarActivo, 'alojamiento', 'sin alojamiento del dueño, [Buscar alojamiento] sale activo para el invitado')
-  debe(aloj.hayOtros === 0 || aloj.otrosGris, 'alojamiento', 'y lo demás del Alojamiento sale en gris')
   await a.captura(path.join(SALIDA, '10n_reservas_invitado_gris.jpg'))
-  // El alojamiento del dueño puesto: en gris con su dato.
-  await a.evaluar(`(async () => { const { useRouteStore } = await import('/src/store/useRouteStore.ts'); const r = useRouteStore.getState().route; const seg = r.days[0].id; useRouteStore.getState().setAccommodationHotel(seg, { id: 'h1', name: 'Hotel Artemide', price: null }); return true })()`)
-  await a.esp(900)
-  const conHotel = await a.evaluar(`(() => { const zona = document.querySelector('[data-blk="aloj"]').closest('[data-solo-lectura]'); const b = Array.from(zona.querySelectorAll('button')); return { dato: /Hotel Artemide/.test(zona.textContent || ''), buscar: b.some((x) => /Buscar alojamiento/.test(x.textContent || '')), todosGris: b.every((x) => Number(getComputedStyle(x).opacity) <= 0.6) } })()`)
-  debe(conHotel.dato && !conHotel.buscar && conHotel.todosGris, 'alojamiento', 'con el alojamiento del dueño puesto: sale el dato y todo en gris (sin [Buscar alojamiento])')
-  await a.evaluar(`(async () => { const { useRouteStore } = await import('/src/store/useRouteStore.ts'); const r = useRouteStore.getState().route; useRouteStore.getState().setAccommodationHotel(r.days[0].id, null); return true })()`)
 
   await abrirBloque(a, 'entradas')
   await a.esp(1000)
@@ -352,7 +318,7 @@ try {
   debe(abierta && new RegExp(`Abrir la compra · 0?${horaOwner}`).test(abierta.boton ?? '') && abierta.modo === 'comprar', 'misma_hora', `con la hora ya elegida (${abierta?.boton})`)
   const numDiaOwner = diaOwner.split(' ')[1]
   debe(abierta && new RegExp(`(^|\\D)${numDiaOwner}(\\D|$)`).test(abierta.dia ?? ''), 'misma_hora', `y el día ya elegido (${abierta?.dia} · el del dueño es el ${diaOwner})`)
-  debe(abierta && abierta.paraQuien === false, 'misma_hora', 'quien compra la suya no ve «¿Para quién es?»')
+  debe(abierta && abierta.paraQuien === true, 'misma_hora', '(10N5) quien compra la suya también ve «¿Para quién es?» (la reserva es suya y decide para quién)')
   await a.captura(path.join(SALIDA, '10n_reservas_invitado_misma_hora_compra.jpg'))
   // Abrir la compra y guardarla: es suya, no cambia las reservas del dueño.
   await a.evaluar(`(() => { window.open = () => null; return true })()`)

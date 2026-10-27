@@ -14,12 +14,14 @@ export function rangoEnPalabras(inicio, fin) {
 }
 
 import { formatoImporte } from '../dinero/formato.js'
+import { elDiaDicho, limpiarListas, rangoDelViaje } from './cambioViaje.js'
+import { nombreVisible } from '../nombres/nombreVisible.js'
 
 /** «el Coliseo» → «del Coliseo»; «Panteón» → «de Panteón». */
 export const conDe = (sitio) => String(sitio ?? '').replace(/^el /i, 'del ').replace(/^(la|las|los) /i, (m) => `de ${m}`).replace(/^(?!del |de la |de las |de los )/i, 'de ')
 
 /** El nombre de pila, o '' si la persona aún no ha puesto uno. */
-const nombreDe = (n) => (n && String(n).trim() ? String(n).trim() : '')
+const nombreDe = (n) => (n && String(n).trim() ? nombreVisible(String(n)) : '')
 
 /** El lugar de la recomendación: «en el día 2» (con el número del día) o nada. */
 const enElDia = (dia) => (Number.isInteger(dia) && dia > 0 ? ` en el día ${dia}` : '')
@@ -60,23 +62,68 @@ export function sitioConArticulo(nombre) {
   return limpio
 }
 
+/** «el Free Tour» (el nombre del Free Tour del destino empieza siempre por «Free Tour»), o el sitio con su artículo. */
+const sitioDicho = (nombre) => (/^free tour/i.test(String(nombre ?? '').trim()) ? 'el Free Tour' : sitioConArticulo(nombre))
+const sitiosMas = (n) => (n === 1 ? 'otro sitio' : `otros ${n} sitios`)
+
+/**
+ * (10N5 §2 y §2b) Una línea con lo que de verdad ha pasado, sin punto final y sin el nombre: «ha añadido el Free Tour al miércoles 11 y se han reorganizado 2 días», «ha movido el Coliseo al jueves 12 y 2 sitios más»,
+ * «ha cambiado el sábado 14 a día de excursión (Pompeya y Sorrento)», «ha vuelto a la ruta inicial». Un cambio con nombre propio (`cambio.accion`, lo apunta el móvil de quien lo hace) manda sobre la lista de lo que se movió.
+ * `plural`: sin nombre de quien lo hace («han añadido…»).
+ */
 export function queCambioEnElViaje(p, plural = false) {
   const v = (singular, pluralForma) => (plural ? pluralForma : singular)
+  const c = p.cambio && typeof p.cambio === 'object' ? p.cambio : null
+  const a = c?.accion
+  if (a && typeof a === 'object') {
+    const dia = elDiaDicho(a)
+    if (a.tipo === 'free_tour') {
+      const n = Number(a.reorganizados) || 0
+      const resto = n > 0 ? ` y se ${n === 1 ? 'ha reorganizado 1 día' : `han reorganizado ${n} días`}` : ''
+      return `${v('ha añadido', 'han añadido')} el Free Tour al ${diaEnPalabras(a.fecha) || (Number.isInteger(a.dia_n) ? `día ${a.dia_n}` : 'viaje')}${resto}`
+    }
+    if (a.tipo === 'excursion') {
+      if (a.a === 'excursion') return `${v('ha cambiado', 'han cambiado')} ${dia} a día de excursión${a.excursion ? ` (${a.excursion})` : ''}`
+      return `${v('ha cambiado', 'han cambiado')} ${dia} a un día en ${a.ciudad || 'la ciudad'}`
+    }
+    if (a.tipo === 'recuperar_ruta') return v('ha vuelto a la ruta inicial', 'han vuelto a la ruta inicial')
+    if (a.tipo === 'recuperar_dia') return `${v('ha recuperado', 'han recuperado')} ${dia} como estaba`
+    // (Nunca «ha cambiado las fechas» si las fechas son las mismas: rehacer la ruta con las mismas fechas es «ha rehecho la ruta».)
+    if (a.tipo === 'fechas' && !(c.fechas && JSON.stringify(c.fechas.antes) !== JSON.stringify(c.fechas.despues))) return v('ha rehecho la ruta', 'han rehecho la ruta')
+    if (a.tipo === 'fechas') {
+      const f = c.fechas?.despues ? rangoDelViaje(c.fechas.despues.inicio, c.fechas.despues.fin) : ''
+      return `${v('ha cambiado', 'han cambiado')} las fechas del viaje${f ? ` (${f})` : ''}`
+    }
+    if (a.tipo === 'rehacer') return v('ha rehecho la ruta', 'han rehecho la ruta')
+  }
+  const base = c ?? p
   const partes = []
-  const quitados = Number(p.dias_quitados) || 0
-  const anadidos = Number(p.dias_anadidos) || 0
+  // (Un aviso de antes puede traer «quitó 1 día» y «añadió 1 día» sumados: quitar un día y volver a ponerlo es nada, se cuenta la diferencia.)
+  const diasQ = c ? Math.max((Number(c.dias_antes) || 0) - (Number(c.dias_despues) || 0), 0) : Number(p.dias_quitados) || 0
+  const diasA = c ? Math.max((Number(c.dias_despues) || 0) - (Number(c.dias_antes) || 0), 0) : Number(p.dias_anadidos) || 0
+  const quitados = Math.max(diasQ - diasA, 0)
+  const anadidos = Math.max(diasA - diasQ, 0)
   if (quitados > 0) partes.push(`${v('ha quitado', 'han quitado')} ${quitados === 1 ? '1 día' : `${quitados} días`}`)
   if (anadidos > 0) partes.push(`${v('ha añadido', 'han añadido')} ${anadidos === 1 ? '1 día' : `${anadidos} días`}`)
-  const anadidas = Array.isArray(p.anadidas) ? p.anadidas : []
-  if (anadidas.length > 0) {
-    const primera = anadidas[0]
+  const L = limpiarListas(base)
+  if (L.anadidas.length > 0) {
+    const primera = L.anadidas[0]
     const cuando = diaEnPalabras(primera.fecha) ? ` al ${diaEnPalabras(primera.fecha)}` : Number.isInteger(primera.dia_n) ? ` al día ${primera.dia_n}` : ''
-    partes.push(`${v('ha añadido', 'han añadido')} ${sitioConArticulo(primera.nombre)}${cuando}${anadidas.length > 1 ? ` y ${anadidas.length - 1 === 1 ? 'otro sitio' : `otros ${anadidas.length - 1} sitios`}` : ''}`)
+    partes.push(`${v('ha añadido', 'han añadido')} ${sitioDicho(primera.nombre)}${cuando}${L.nAnadidas > 1 ? ` y ${sitiosMas(L.nAnadidas - 1)}` : ''}`)
   }
-  const quitadas = Array.isArray(p.quitadas) ? p.quitadas : []
-  if (quitadas.length > 0 && quitados === 0) partes.push(`${v('ha quitado', 'han quitado')} ${quitadas.length === 1 ? sitioConArticulo(quitadas[0].nombre) : `${quitadas.length} sitios`}`)
-  if (p.fechas) partes.push(`${v('ha cambiado', 'han cambiado')} las fechas`)
-  if (partes.length === 0 && ((Number(p.movidas) || 0) > 0 || p.reordenado)) partes.push(`${v('ha movido', 'han movido')} paradas`)
+  // Quitar un día se lleva sus sitios: no se cuentan aparte.
+  if (L.quitadas.length > 0 && quitados === 0) partes.push(`${v('ha quitado', 'han quitado')} ${L.nQuitadas === 1 ? sitioDicho(L.quitadas[0].nombre) : `${L.nQuitadas} sitios`}`)
+  if (L.movidas.length > 0 && L.anadidas.length === 0) {
+    const primera = L.movidas[0]
+    const cuando = diaEnPalabras(primera.fecha) ? ` al ${diaEnPalabras(primera.fecha)}` : Number.isInteger(primera.dia_n) ? ` al día ${primera.dia_n}` : ''
+    partes.push(`${v('ha movido', 'han movido')} ${sitioDicho(primera.nombre)}${cuando}${L.nMovidas > 1 ? ` y ${L.nMovidas - 1 === 1 ? '1 sitio más' : `${L.nMovidas - 1} sitios más`}` : ''}`)
+  }
+  // (Aviso de un móvil o disparador anterior: solo sabe CUÁNTAS paradas cambiaron de día.)
+  if (!c && L.movidas.length === 0 && L.anadidas.length === 0 && L.quitadas.length === 0 && Number(p.movidas) > 0) partes.push(`${v('ha movido', 'han movido')} ${Number(p.movidas) === 1 ? '1 sitio' : `${Number(p.movidas)} sitios`}`)
+  const fechas = c ? Boolean(c.fechas && JSON.stringify(c.fechas.antes) !== JSON.stringify(c.fechas.despues)) : Boolean(p.fechas)
+  if (fechas) partes.push(`${v('ha cambiado', 'han cambiado')} las fechas`)
+  const huboOrden = c ? Number(c.reordenados) > 0 : (Number(p.movidas) || 0) > 0 || p.reordenado
+  if (partes.length === 0 && huboOrden) partes.push(`${v('ha cambiado', 'han cambiado')} el orden de las paradas`)
   if (partes.length === 0) return ''
   return partes.length === 1 ? partes[0] : `${partes.slice(0, -1).join(', ')} y ${partes[partes.length - 1]}`
 }
@@ -136,6 +183,9 @@ export function textoDelAviso(aviso) {
     case 'reserva_grupo': {
       // «Tu entrada del Coliseo es el viernes 27, y en la ruta está el jueves 26.» (la del invitado que no cuadra con la ruta; la crea la base de datos o la calcula el móvil)
       if (p.caso === 'no_cuadra') return `Tu entrada ${conDe(sitioConArticulo(p.sitio))} es el ${p.dia_reserva}, y en la ruta está el ${p.dia_ruta}.`
+      // (Tanda 10N5 §6c) Lo de cada uno: «Ana ha puesto su propio vuelo.» (al administrador) · «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.» (a quien el administrador le cambia el suyo).
+      if (p.caso === 'vuelo_propio' || p.caso === 'alojamiento_propio') return `${nombreDe(p.quien) || 'Alguien'} ha puesto su propio ${p.caso === 'vuelo_propio' ? 'vuelo' : 'alojamiento'}.`
+      if (p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') return `${nombreDe(p.quien) || 'El administrador'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} ${PARA_DE_LO_SUYO[p.para] ?? 'para todos'}. Se ha cambiado el tuyo.`
       const quien = nombreDe(p.quien) || 'El dueño'
       const [h, m] = String(p.hora ?? '').split(':')
       const hora = m === undefined ? String(p.hora ?? '') : `${Number(h)}:${m}`
@@ -154,7 +204,7 @@ export function textoDelAviso(aviso) {
       // (10N4 §4b2) Lo que ha decidido la persona, dicho como lo diría ella: «Eric ha añadido la Fontana di Trevi al sábado 28». Sin lista de lo que la app ha movido por detrás.
       const quien = nombreDe(p.quien)
       const que = queCambioEnElViaje(p, !quien)
-      return que ? `${quien ? '' : 'Han '}${quien ? `${quien} ` : ''}${que}`.replace(/^Han han /, 'Han ') : quien ? `${quien} ha cambiado el viaje` : 'Han cambiado el viaje'
+      return que ? `${quien ? '' : 'Han '}${quien ? `${quien} ` : ''}${que}.`.replace(/^Han han /, 'Han ') : quien ? `${quien} ha cambiado el viaje.` : 'Han cambiado el viaje.'
     }
     default:
       return 'Tienes un aviso'
@@ -213,13 +263,41 @@ export function rangoCorto(inicio, fin) {
 
 const nombreSinMarca = (n) => String(n ?? '').replace(/\s*\((noche|por fuera)\)\s*$/i, '').trim()
 const con = (quien, haHecho, sinNombre) => (nombreDe(quien) ? `${nombreDe(quien)} ${haHecho}` : sinNombre)
+/** (10N5 §6c) «para todos» · «para ti» · «para algunos»: a quién le ha puesto el administrador su vuelo o su alojamiento. */
+const PARA_DE_LO_SUYO = { todos: 'para todos', ti: 'para ti', algunos: 'para algunos' }
 const dineroDe = (precio) => (precio && Number.isFinite(Number(precio.amount)) ? formatoImporte({ amount: Number(precio.amount), currency: precio.currency }) : '')
 const mayuscula = (t) => String(t ?? '').replace(/^./, (c) => c.toUpperCase())
 
 /** Lo que cuenta un «viaje_cambiado» para la franja: { verbo («ha añadido un sitio»), detalle }. */
 function franjaDeCambioDelViaje(p) {
-  const anadidas = Array.isArray(p.anadidas) ? p.anadidas : []
-  const quitadas = Array.isArray(p.quitadas) ? p.quitadas : []
+  // (10N5) Un cambio con nombre propio (añadir el Free Tour, pasar un día a excursión, recuperar…) se dice como es.
+  const ac = p.cambio?.accion
+  if (ac && typeof ac === 'object') {
+    const dia = diaEnPalabras(ac.fecha) || (Number.isInteger(ac.dia_n) ? `día ${ac.dia_n}` : '')
+    const viaje = p.destino ? `Viaje a ${p.destino}` : ''
+    const n = Number(ac.reorganizados) || 0
+    if (ac.tipo === 'free_tour') return { verbo: 'ha añadido el Free Tour', detalle: mayuscula([dia, n > 0 ? (n === 1 ? 'se ha reorganizado 1 día' : `se han reorganizado ${n} días`) : ''].filter(Boolean).join(' · ')) }
+    if (ac.tipo === 'excursion') return { verbo: `ha cambiado ${elDiaDicho(ac)}`, detalle: ac.a === 'excursion' ? ['A día de excursión', ac.excursion].filter(Boolean).join(' · ') : `A un día en ${ac.ciudad || 'la ciudad'}` }
+    if (ac.tipo === 'recuperar_ruta') return { verbo: 'ha vuelto a la ruta inicial', detalle: viaje }
+    if (ac.tipo === 'recuperar_dia') return { verbo: `ha recuperado ${elDiaDicho(ac)}`, detalle: 'Como estaba' }
+    if (ac.tipo === 'fechas') return p.cambio.fechas && JSON.stringify(p.cambio.fechas.antes) !== JSON.stringify(p.cambio.fechas.despues) ? { verbo: 'ha cambiado las fechas', detalle: viaje } : { verbo: 'ha rehecho la ruta', detalle: viaje }
+    if (ac.tipo === 'rehacer') return { verbo: 'ha rehecho la ruta', detalle: viaje }
+  }
+  const dato = p.cambio ?? p
+  const L = limpiarListas(dato)
+  const anadidas = L.anadidas
+  const quitadas = L.quitadas
+  if (p.cambio && !(p.dias_quitados || p.dias_anadidos)) {
+    const dq = Math.max((Number(p.cambio.dias_antes) || 0) - (Number(p.cambio.dias_despues) || 0), 0)
+    const da = Math.max((Number(p.cambio.dias_despues) || 0) - (Number(p.cambio.dias_antes) || 0), 0)
+    p = { ...p, dias_quitados: dq, dias_anadidos: da, fechas: Boolean(p.cambio.fechas && JSON.stringify(p.cambio.fechas.antes) !== JSON.stringify(p.cambio.fechas.despues)) }
+  }
+  if (L.movidas.length > 0 && anadidas.length === 0 && quitadas.length === 0 && !p.dias_quitados && !p.dias_anadidos && !p.fechas) {
+    return L.nMovidas === 1
+      ? { verbo: 'ha movido un sitio', detalle: [nombreSinMarca(L.movidas[0].nombre), diaEnPalabras(L.movidas[0].fecha) || (Number.isInteger(L.movidas[0].dia_n) ? `día ${L.movidas[0].dia_n}` : '')].filter(Boolean).join(' · ') }
+      : { verbo: `ha movido ${L.nMovidas} sitios`, detalle: `${nombreSinMarca(L.movidas[0].nombre)} y ${L.nMovidas - 1 === 1 ? 'otro más' : `${L.nMovidas - 1} más`}` }
+  }
+
   const quitados = Number(p.dias_quitados) || 0
   const anadidos = Number(p.dias_anadidos) || 0
   const tipos = [anadidas.length > 0, quitadas.length > 0 && quitados === 0, quitados > 0, anadidos > 0, Boolean(p.fechas)].filter(Boolean).length
@@ -281,6 +359,8 @@ export function franjaDelAviso(aviso) {
     case 'pago_marcado':
       return persona(con(p.actor, 'ha marcado un pago', 'Han marcado un pago'), dineroDe(p.importe))
     case 'reserva_grupo': {
+      if (p.caso === 'vuelo_propio' || p.caso === 'alojamiento_propio') return persona(`${nombreDe(p.quien) || 'Alguien'} ha puesto su propio ${p.caso === 'vuelo_propio' ? 'vuelo' : 'alojamiento'}.`, p.detalle ?? '')
+      if (p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') return persona(`${nombreDe(p.quien) || 'El administrador'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} ${PARA_DE_LO_SUYO[p.para] ?? 'para todos'}.`, 'Se ha cambiado el tuyo.')
       if (p.caso === 'no_cuadra') return { titulo: 'Tu entrada no cuadra con la ruta', detalle: `${mayuscula(sitioConArticulo(p.sitio))} · ${p.dia_reserva}`, icono: 'ticket' }
       const [h, m] = String(p.hora ?? '').split(':')
       const hora = m === undefined ? String(p.hora ?? '') : `${Number(h)}:${m}`

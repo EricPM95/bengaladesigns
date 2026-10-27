@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { EVENTO_PAGAR } from '../../lib/pago'
 import { peliculaYaVista } from '../../lib/peliculaVista'
+import { usePaseEstado } from '../../lib/paseEstado'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 
@@ -12,6 +13,8 @@ const PeliculaPase = lazy(() => import('./PeliculaPase').then((m) => ({ default:
  * La película se baja cuando se abre (el cargador es pequeño).
  */
 export function PeliculaHost() {
+  // (Tanda 10N5 §0.2) El guardián del pase: siempre montado, pregunta al servidor si el viaje abierto tiene pase para que TODA la app (candados, cajas, RESERVAS, DÍAS…) lo sepa aunque no esté RUTA ni HOY a la vista.
+  usePaseEstado(useSyncStore((st) => st.activeTripId))
   const [abierta, setAbierta] = useState<{ destino: string; tripId: string | null; desde: 'principio' | 'final' } | null>(null)
 
   useEffect(() => {

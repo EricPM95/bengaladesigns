@@ -166,6 +166,12 @@ export function PeliculaPase({ destino, tripId, desde, onCerrar, configInicial =
       buyTxt: hoja.comprarTxt,
       plus: () => logic.setState({ n: Math.min(hoja.hasta, n + 1) }),
       minus: () => logic.setState({ n: Math.max(1, n - 1) }),
+      // Las rayitas de arriba se tocan (Tanda 10N5): cada una lleva a su escena y la vuelve a poner desde el principio; la última, al final.
+      segs: [0, 1, 3, 4, 5, 6, 7].map((k) => ({
+        k,
+        w: k < logic.state.i ? 100 : k === logic.state.i ? Math.round((logic.auto ? logic.state.p : 1) * 100) : 0,
+        ir: () => irALaEscena(logic, k),
+      })),
       blocks: bloques,
       lineaLegal: textos.linea_legal_compra || '',
       comprar: () => void comprar(hoja.plan, hoja.personas),
@@ -198,6 +204,17 @@ export function PeliculaPase({ destino, tripId, desde, onCerrar, configInicial =
     </div>,
     document.body,
   )
+}
+
+/** (Tanda 10N5) Ir a una escena y ponerla desde el principio, como al tocar la rayita de una historia: con la escena puesta a cero y todo lo que dependía de la escena (el secreto, la colección) vuelto a empezar. */
+function irALaEscena(logic: any, k: number) {
+  window.clearTimeout(logic.sf)
+  logic.held = false
+  if (k === 7) {
+    logic.renderVals().skip()
+    return
+  }
+  logic.setState({ i: -1, p: 0, hold: false, sheet: '', eff: false, b4: false, gone: false }, () => window.setTimeout(() => logic.setState({ i: k, p: 0 }), 40))
 }
 
 /**

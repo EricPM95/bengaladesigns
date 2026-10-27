@@ -56,7 +56,7 @@ import { COMIDA_HASTA_MIN } from '../../../../shared/routeEngine/comida.js'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { ArrivalReturnBar } from './ArrivalReturnBar'
 import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
-import { pagoActivo, pedirPago } from '../../../lib/pago'
+import { usePagoActivo, pedirPago } from '../../../lib/pago'
 import { Candado } from '../../pase/Candado'
 import { ArrivalReturnSheet } from './ArrivalReturnSheet'
 import { BilleteDeVuelo } from './BilleteDeVuelo'
@@ -396,7 +396,7 @@ export function DayDetailPanel({
   const arrivalTime = route?.arrivalFlightTime ?? null
   const departureTime = route?.departureFlightTime ?? null
   // La barra (Tanda 6t): el punto es el elegido en RESERVAS (no el primero de la lista) y ninguna hora la calcula la app. Las horas de arriba (centro, salir) solo montan el día por dentro.
-  const pago = pagoActivo()
+  const pago = usePagoActivo()
   const destinoNombre = arrivalInfo.ciudad || route?.destination || day.city
   // (Tanda 7: con hora y sin punto elegido —un viaje de antes—, el del traslado más largo de ese medio.)
   const arrivalChosen = puntoDeLaMitad(arrivalMedio, route?.arrivalPointId, Boolean(arrivalTime)).point
@@ -1383,7 +1383,7 @@ export function DayDetailPanel({
                 <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={() => goToBooking('llegada')} />
               )}
               {/* Tanda 10G: con el vuelo guardado y sin el pase, el ajuste del día sale cerrado (guardarlo es gratis). */}
-              {!pago && arrivalTime && modes.arrival !== 'coche' && <Candado datos="dia-ajuste-llegada" texto="Con el pase, tu día se ajusta a la hora de tu vuelo" />}
+              {!pago && arrivalTime && modes.arrival !== 'coche' && <Candado datos="dia-ajuste-llegada" titulo="Tu día de llegada" texto="Con el {pase}, tu día se ajusta a la hora de tu vuelo." />}
             </div>
           )}
 
@@ -1591,7 +1591,7 @@ export function DayDetailPanel({
               ) : (
                 <ArrivalReturnBar mode={modes.departure} text={returnBarText} onOpen={() => abrirFichaDeVuelta()} onAdd={() => goToBooking('vuelta')} />
               )}
-              {!pago && departureTime && modes.departure !== 'coche' && <Candado datos="dia-ajuste-vuelta" texto="Con el pase, tu día se ajusta a la hora de tu vuelo" />}
+              {!pago && departureTime && modes.departure !== 'coche' && <Candado datos="dia-ajuste-vuelta" titulo="Tu día de vuelta" texto="Con el {pase}, tu día se ajusta a la hora de tu vuelo." />}
               <p className="pt-4 text-center font-display text-[19px] italic text-text/60">
                 Fin del viaje.{arrivalInfo.despedida ? ` ${arrivalInfo.despedida}` : ''}
               </p>
@@ -1639,6 +1639,8 @@ export function DayDetailPanel({
               subtitle={addStopSubtitle}
               route={route}
               dayMarkers={dayMarkers}
+              // (10N5) El Free Tour sale en esta lista y ahora también se puede añadir: abre «¿A qué día lo añadimos?».
+              onAddFreeTour={freeTourAvailable(route) && !day.isReturnLeg ? () => setFreeTourOpen(true) : undefined}
               dayNumber={day.dayNumber}
               dateIso={dateIso}
               initialQuery={addStopInitialQuery}

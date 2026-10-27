@@ -4,7 +4,7 @@ import { buildEntradasBloque, buildExcursionRow, hasEnoughDaysForExcursions, typ
 import { useDestinationExcursions } from '../lib/destinationExcursions'
 import { useArrivalInfo } from '../lib/arrivalReturn'
 import { legsOf } from '../lib/reservasLegs'
-import { pagoActivo } from '../lib/pago'
+import { usePagoActivo } from '../lib/pago'
 import { buildDestinationSegments } from '../lib/destinationSegments'
 import { alojamientoCubierto } from '../lib/tuAlojamiento'
 
@@ -22,9 +22,9 @@ export function useTripReadiness() {
   const destinationInfo = useDestinationExcursions(route?.destination)
   const arrivalInfo = useArrivalInfo(route?.destination ?? '', route?.days[0]?.city ?? '', route?.origin ?? '')
 
+  const pago = usePagoActivo()
   if (!route) return null
 
-  const pago = pagoActivo()
   const legs = legsOf(route, arrivalInfo)
   const lastDayId = route.days[route.days.length - 1]?.id
   const firstDayId = route.days[0]?.id

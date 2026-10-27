@@ -110,6 +110,11 @@ while (cola.length) {
     if (!js.includes(a)) throw new Error('Design ha cambiado el reloj de la película: revisa el cambio de rendimiento en generarPelicula.mjs')
     js = js.replace(a, b)
     if (!js.includes('go(i){if(i===2)')) throw new Error('Design ha cambiado go(i) de la película')
+    // Tanda 10N5 (apartado 5): la escena del pasaporte (la quinta de las siete: DURS[5]) dura 43,8 s, pero la vuelta al mundo (Pase Globo: T0 15,3 + 24 tramos de 1,0 + 1,3) acaba en el segundo 40,6 y después no se mueve nada.
+    // Eric: «la escena se queda unos 7 segundos parada; que siga en cuanto acaba la vuelta». Se corta a 0,7 s después de llegar al último país.
+    const durs = 'const DURS=[17000,47900,6000,29100,23100,43800,8700,0];'
+    if (!js.includes(durs)) throw new Error('Design ha cambiado las duraciones de las escenas (DURS): revisa el corte de la escena del pasaporte en generarPelicula.mjs')
+    js = js.replace(durs, 'const DURS=[17000,47900,6000,29100,23100,41300,8700,0];')
     js = js.replace('go(i){if(i===2)', 'go(i){this._pp=null;if(i===2)')
   }
   if (/https?:\/\//.test(js.replace(/\/\/.*$/gm, '')) && /jsdelivr|unpkg|googleapis/.test(js)) throw new Error(`${nombre}: todavía carga algo de fuera`)

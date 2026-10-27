@@ -981,6 +981,8 @@ export interface Route {
   /** La ruta tal como se le dio al crear el viaje (días, orden, paradas, horas y restaurantes, y sus respuestas): "Volver a
       mi ruta original" la recupera sin recalcular nada. Se guarda al crearla y no cambia al editar (PROMPT_UI, Parte 1). */
   originalRoute?: { days: DayPlan[]; answers: Route['answers'] } | null
+  /** (Tanda 10N5) Lo que acaba de hacer quien guarda el viaje, para el aviso de los demás («ha añadido el Free Tour al miércoles 11 y se han reorganizado 2 días»). Lo apunta `anotarCambio` y lo copia el disparador de la base de datos al aviso; no lo lee nada más. */
+  ultimoCambio?: Record<string, unknown> | null
   /** Lo que el viajero marcó del pool al generarla: para rehacerla igual (fechas, "Quiero entrar") aunque se abra otro día. */
   mustIncludePlaces?: string[]
 }

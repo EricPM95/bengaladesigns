@@ -4,7 +4,8 @@ import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildExcursionRow, dayOfReservation, hasEnoughDaysForExcursions, type Reservation } from '../../../lib/bookings'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
-import { useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
+import { useEntradasDelGrupo, useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
+import { textoQuienVa } from '../../../lib/reservasGrupo'
 import { ICONOS, LineaReservada } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
@@ -62,6 +63,7 @@ function HojaQueExcursion({ excursions, onPick, onClose }: { excursions: Excursi
 export function ExcursionesReservas({ route, info }: { route: Route; info: DestinationExcursions }) {
   // (Tanda 10N §8: las excursiones también son de cada uno; quien mira el viaje de otra persona ve las suyas.)
   const reservations = useReservasParaMi()
+  const grupo = useEntradasDelGrupo()
   const openExcursions = useExcursionsStore((state) => state.openPage)
   const [lista, setLista] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
@@ -72,6 +74,8 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
   const añadidas = reservations.filter((item) => item.kind === 'excursion')
   const excursionDe = (reserva: Reservation): Excursion | null => reserva.excursionData ?? info.excursions.find((item) => item.id === reserva.refId) ?? null
   const sinReservar = hayDiaDeExcursion && !fila.reservation
+  // (Tanda 10N5, los tres colores) Otro del grupo ya reservó esta excursión y a ti te queda elegir la tuya → azul oscuro con dorado.
+  const delGrupo = sinReservar && fila.excursion && grupo.esInvitado ? (grupo.reservasDelDueno.find((r) => r.kind === 'excursion' && r.refId === fila.excursion!.id) ?? null) : null
 
   return (
     <>
@@ -81,7 +85,9 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
             eyebrow="Excursión"
             when={enTuRuta(route, fila.day)}
             name={fila.excursion.title}
-            buyLabel="Reservar excursión"
+            delGrupo={Boolean(delGrupo)}
+            notes={delGrupo ? [{ text: textoQuienVa(grupo.nombreAdmin, route, delGrupo) }] : []}
+            buyLabel={delGrupo ? 'Reservar la mía' : 'Reservar excursión'}
             buyHref={fila.excursion.page?.affiliateUrl ?? fila.excursion.bookUrl ?? buildActivitySearchUrl(`${fila.excursion.title} ${route.destination}`)}
             reservedTime={null}
             onAdd={() => setTarget({ kind: 'excursion', refId: fila.excursion!.id, name: fila.excursion!.title, placeNames: [], excursion: fila.excursion, currentDayId: fila.day!.id })}

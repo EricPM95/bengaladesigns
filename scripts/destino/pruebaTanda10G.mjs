@@ -35,7 +35,7 @@ const debe = (c, regla, texto) => {
   debe(abrirConAlmacen(trasEntrar) === true, 'apertura', 'la siguiente apertura sale')
   const recarga = leer('src/lib/recargarSinApertura.ts')
   debe(/jutrip:sin-apertura/.test(recarga) && /location\.reload/.test(recarga), 'apertura', 'recargarSinApertura deja la marca y recarga')
-  for (const f of ['src/lib/cuentas.ts', 'src/components/cuenta/PuertaDeCuenta.tsx', 'src/components/ajustes/AjustesScreen.tsx']) {
+  for (const f of ['src/lib/cuentas.ts', 'src/components/cuenta/PuertaDeCuenta.tsx', 'src/lib/unirseConCodigo.ts']) {
     debe(!/window\.location\.reload\(\)/.test(leer(f)) && /recargarSinApertura\(\)/.test(leer(f)), 'apertura', `${f}: la recarga de después de entrar o unirse usa recargarSinApertura`)
   }
 
@@ -218,7 +218,7 @@ const cerrarPago = async (a) => {
   await g.evaluar('window.__momentos.hoja()')
   await g.esp(3000)
   debe(await g.evaluar("Boolean(document.querySelector('[data-logros-cerrados]')) && Boolean(document.querySelector('[data-candado=\"logros-sin-pase\"]'))"), 'gratis', 'Logros: sin pase, la vitrina y las colecciones salen cerradas, con su candado')
-  debe(/Con el Pase de Roma, cada sitio que ves suma/.test(await g.evaluar('document.body.innerText')), 'gratis', 'y dicen «Con el Pase de Roma, cada sitio que ves suma»')
+  debe(/Con el Pase Roma, cada sitio que ves suma/.test(await g.evaluar('document.body.innerText')), 'gratis', 'y dicen «Con el Pase Roma, cada sitio que ves suma»')
   await g.evaluar('window.__momentos.cerrar()')
   await g.esp(800)
   // EXPLORAR: Baños y Fuentes, en gris con su candado.

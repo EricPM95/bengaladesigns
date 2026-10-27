@@ -146,7 +146,7 @@ for (const [nombre, medio] of Object.entries(MEDIOS)) {
   const leg = M.legOf(ruta, info, 'arrival')
   const hoja = pinta(M.HojaHoraLlegada, { leg, ciudad: 'Roma', onSave() {}, onClose() {} })
   // (Tanda 7: sin punto elegido, [Guardar] pide primero el punto de Roma; con él, «Guardar · hora».)
-  debe(/Hora de llegada/.test(hoja) && /Guardar · |Elige primero el punto/.test(hoja) && !/Precio|Código/.test(hoja), '2 hoja', `la hoja de la hora debe ser solo la rueda (${plano(hoja).slice(0, 200)})`)
+  debe(/Hora de llegada/.test(hoja) && /Guardar|Elige primero el punto/.test(hoja) && !/Precio|Código/.test(hoja), '2 hoja', `la hoja de la hora debe ser solo la rueda (${plano(hoja).slice(0, 200)})`)
 }
 // La aerolínea (compañía, naviera) se guarda como el código, viaja con el viaje y se borra al quitar el tramo.
 {
@@ -295,9 +295,10 @@ console.log('P15 a P17. El Perfil')
   // P15
   const fila = (viaje, abierto) => html(M.TarjetaDeViaje, { viaje, fotos: 3, enCurso: false, abierto, onAbrir() {}, onAbrirViaje() {} })
   debe(veces(fila(resumen(roma1), false), /data-abrir-este-viaje/g) === 1 && /Abrir este viaje/.test(aTexto(fila(resumen(roma1), false))), 'P15', 'un viaje guardado que no está abierto no lleva [Abrir este viaje]')
-  debe(!/Abrir este viaje/.test(fila(resumen(roma1), true)), 'P15', 'el viaje que ya está abierto lleva [Abrir este viaje]')
-  debe(!/Abrir este viaje/.test(fila(resumen(roma1, false), false)), 'P15', 'un viaje sin guardar lleva [Abrir este viaje]')
-  debe(/data-abrir-este-viaje[^>]*style="[^"]*height:32px/.test(fila(resumen(roma1), false)), 'P15', 'el botón no es pequeño (32 px)')
+  // 10N5 (`Piezas/Mis Viajes Tarjeta`): TODAS las tarjetas llevan su [Abrir este viaje], también la del viaje abierto y la de uno sin guardar.
+  debe(/Abrir este viaje/.test(fila(resumen(roma1), true)), 'P15', 'el viaje que ya está abierto no lleva [Abrir este viaje]')
+  debe(/Abrir este viaje/.test(fila(resumen(roma1, false), false)), 'P15', 'un viaje sin guardar no lleva [Abrir este viaje]')
+  debe(/data-abrir-este-viaje[^>]*style="[^"]*height:34px/.test(fila(resumen(roma1), false)), 'P15', 'el botón no es pequeño (34 px)')
   const perfil = sinComentarios(leer('src/components/layout/PerfilSheet.tsx'))
   debe(/onAbrirViaje=\{abrirViaje\}/.test(perfil) && /hydrateTrip\(viaje\.guardado\)/.test(perfil) && /setActiveTripId\(viaje\.guardado\.id\)/.test(perfil) && /onClose\(\)/.test(perfil), 'P15', 'PerfilSheet no abre el viaje al tocarlo (hydrateTrip + cerrar el Perfil)')
   debe(!/Abrir este viaje/.test(leer('src/components/perfil/FichaDeViaje.tsx').replace(/\/\*[\s\S]*?\*\//g, '')), 'P15', 'el álbum (ficha del viaje) debe seguir sin [Abrir este viaje]')

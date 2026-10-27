@@ -239,13 +239,13 @@ debe(rot.r5 === 'Lisboa · octubre · 3 días · 2 noches', 'B5', `rótulo de un
 debe(rot.r3 === 'Madrid · 1 – 3 may 2026 · 3 días · 2 noches', 'B5', `rótulo de Madrid: «${rot.r3}»`)
 const textoPerfil = pintaPerfil({ version: 'completa' })
 // 6y4: cada viaje se pinta en dos líneas (el destino y «fecha · N días»), no en un rótulo suelto.
-for (const v of lista) debe(textoPerfil.includes(v.destino) && (!v.cuando || textoPerfil.includes(v.cuando)) && textoPerfil.includes(v.duracion), 'B5', `el Perfil no lista el viaje «${v.rotulo}» (${plano(textoPerfil).slice(0, 400)})`)
+for (const v of lista) debe(textoPerfil.includes(v.destino) && (!v.cuando || textoPerfil.includes(v.cuando)) && textoPerfil.includes(`${v.dias} ${v.dias === 1 ? 'día' : 'días'}`), 'B5', `el Perfil no lista el viaje «${v.rotulo}» (${plano(textoPerfil).slice(0, 400)})`)
 {
   const pos = (id) => textoPerfil.indexOf(lista.find((v) => v.id === id).cuando)
   debe(pos('r1') < pos('r2') && pos('r2') < pos('r3') && pos('r5') < pos('r1'), 'B5', 'el Perfil no pinta los viajes en orden')
 }
-debe(/Nuevo viaje/.test(textoPerfil) && !/Tips del viaje/.test(textoPerfil), 'B5', 'falta [Nuevo viaje] en el Perfil, o sigue ahí [Tips del viaje] (ahora es la bombilla de RUTA)')
-debe(/Próximo/.test(textoPerfil) && /Ya hechos/.test(textoPerfil), 'B5', '10N4: el Perfil único (el de Design) agrupa los viajes con «Próximo» / «Ya hechos»')
+debe(/data-anadir-viaje/.test(fs.readFileSync('src/components/layout/PerfilSheet.tsx', 'utf8')) && !/Tips del viaje/.test(textoPerfil), 'B5', 'falta el [+] Añadir un viaje (10N5) en el Perfil, o sigue ahí [Tips del viaje] (ahora es la bombilla de RUTA)')
+debe(/Próximo/.test(textoPerfil) && /Ya hecho/.test(textoPerfil), 'B5', '10N5: cada tarjeta del Perfil lleva su etiqueta «Próximo» / «Ya hecho»')
 debe(/Mis viajes/.test(textoPerfil), 'B5', 'falta el rótulo «Mis viajes»')
 
 // (Tanda 10N4: las chinchetas y el mapa de mis viajes se quitaron con el Perfil viejo; el pasaporte local cuenta países y ciudades.)

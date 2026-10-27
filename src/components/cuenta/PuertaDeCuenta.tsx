@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { guardarAvisoDeInvitacion, cuentasActivas } from '../../lib/cuentas'
 import { usePedirNombre } from '../../store/usePedirNombre'
-import { aceptarInvitacionPendiente, canjearInvitacion, invitacionAceptada, invitacionPendiente, olvidarInvitacionPendiente, olvidarViajeAAbrir, pedirAbrirViaje, verInvitacion, type VistaDeInvitacion } from '../../lib/invitaciones'
+import { EVENTO_INVITACION, aceptarInvitacionPendiente, canjearInvitacion, invitacionAceptada, invitacionPendiente, olvidarInvitacionPendiente, olvidarViajeAAbrir, pedirAbrirViaje, verInvitacion, type VistaDeInvitacion } from '../../lib/invitaciones'
 import { abrirViajeGuardado } from '../../lib/abrirViaje'
 import { EntrarCuenta } from './EntrarCuenta'
 import { InvitacionRecibida } from './InvitacionRecibida'
@@ -40,6 +40,16 @@ function PuertaEncendida() {
     pedirAbrirViaje(tripId)
     recargarSinApertura()
   }
+
+  // (Tanda 10N5) Un código escrito a mano (la hoja «Escribe el código») deja la invitación aceptada: la puerta se entera y pide la cuenta.
+  useEffect(() => {
+    const mirar = () => {
+      setCodigo(invitacionPendiente())
+      setAceptada(invitacionAceptada())
+    }
+    window.addEventListener(EVENTO_INVITACION, mirar)
+    return () => window.removeEventListener(EVENTO_INVITACION, mirar)
+  }, [])
 
   // La invitación pendiente se mira en cuanto hay sesión (la función de la base de datos pide una, aunque sea anónima).
   useEffect(() => {
@@ -82,6 +92,6 @@ function PuertaEncendida() {
 
   if (codigo && !aceptada && vista) return <InvitacionRecibida vista={vista} onUnirme={() => void unirme()} onSeguir={seguir} ocupado={ocupado} error={error} />
   if (codigo && !aceptada && haySesion) return null // (mirando la invitación: no se enseña nada a medias)
-  if (estado.tipo === 'anonima' || estado.tipo === 'sin_sesion') return <EntrarCuenta />
+  if (estado.tipo === 'anonima' || estado.tipo === 'sin_sesion') return <EntrarCuenta paraUnirte={Boolean(codigo && aceptada)} />
   return null
 }

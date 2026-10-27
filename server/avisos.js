@@ -253,6 +253,13 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
 
   /** La tarea programada: prepara los avisos con fecha de todas las personas a las que toca mirar y manda los pendientes. */
   async function tareaProgramada(instante = ahora()) {
+    // (Tanda 10N5 §6e) Una vez al día: los avisos eliminados hace más de 30 días y los de más de un año se borran de verdad (sin la migración 0048 no pasa nada).
+    let limpieza = null
+    try {
+      limpieza = await rpc('purgar_avisos', { p_ahora: instante.toISOString() })
+    } catch (error) {
+      log.warn?.('[avisos] sin la migración 0048 (borrado de avisos viejos):', error.message)
+    }
     const desde = partesLocales(new Date(instante.getTime() - 86400000), ZONA_POR_DEFECTO).fecha
     const hasta = partesLocales(new Date(instante.getTime() + 12 * 86400000), ZONA_POR_DEFECTO).fecha
     const personas = (await rpc('usuarios_para_avisos', { p_desde: desde, p_hasta: hasta })) ?? []
@@ -265,7 +272,7 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
       }
     }
     const push = await enviarPush({ instante })
-    return { ok: true, personas: personas.length, creados, ...push }
+    return { ok: true, personas: personas.length, creados, ...(limpieza ? { limpieza } : {}), ...push }
   }
 
   const crearAviso = async (uid, tipo, claveDelAviso, payload) => Boolean(await rpc('crear_aviso', { p_uid: uid, p_tipo: tipo, p_clave: claveDelAviso, p_payload: payload }))

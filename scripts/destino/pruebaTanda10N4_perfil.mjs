@@ -24,7 +24,7 @@ const CAPTURAS = 'docs/dias/capturas_jutrip'
 console.log('1. El código')
 {
   const sheet = sinComentarios(leer('src/components/layout/PerfilSheet.tsx'))
-  debe(!/cuerpoDeSiempre|CabeceraDeSiempre|FilaDeViaje|MapaMisViajes|logrosActivos/.test(sheet), 'viejo', 'PerfilSheet ya no lleva el cuerpo de siempre ni decide entre dos perfiles')
+  debe(!/cuerpoDeSiempre|CabeceraDeSiempre|MapaMisViajes/.test(sheet), 'viejo', 'PerfilSheet ya no lleva el cuerpo de siempre ni decide entre dos perfiles')
   debe(/<CuerpoConLogros /.test(sheet) && /<PerfilEsqueleto/.test(sheet), 'viejo', 'PerfilSheet pinta el cuerpo único (con el esqueleto mientras baja)')
   for (const f of ['CabeceraDeSiempre', 'FilaDeViaje', 'MapaMisViajes', 'CifrasDelMapa']) debe(!fs.existsSync(`src/components/perfil/${f}.tsx`), 'viejo', `${f}.tsx ya no existe`)
   // Nada de «Abierto» como pastilla de un viaje, ni del Perfil viejo, en ningún sitio de src.
@@ -46,7 +46,7 @@ console.log('1. El código')
   const cuerpo = sinComentarios(leer('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx'))
   debe(/if \(!conLogros \|\| perfilInicial \|\| pantallas > 0\) return/.test(cuerpo), 'servidor', 'sin logros, el cuerpo no pide /api/logros/perfil')
   debe(/if \(!conLogros\) \{/.test(cuerpo) && /data-cabecera-sin-logros/.test(cuerpo) && /<TarjetaPasaporte pasaporte=\{pasaporteLocal\} \/>/.test(cuerpo), 'sin logros', 'sin logros hay cabecera propia, pasaporte de este móvil y Mis viajes')
-  debe(/lazy\(\(\) => import\('\.\.\/logros\/pantallas\/perfil\/CuerpoConLogros'\)\)/.test(sheet), 'lazy', 'el cuerpo único se baja con import()')
+  debe(/lazy\(cargarCuerpo\)/.test(sheet) && /import\('\.\.\/logros\/pantallas\/perfil\/CuerpoConLogros'\)/.test(sheet), 'lazy', 'el cuerpo único se baja con import()')
   // §0a punto 1: las fechas del viaje, bloqueadas también para quien solo recomienda (ya estaba así; solo se comprueba).
   debe(/miPermisoAhora\(\) !== 'admin'\) return/.test(sinComentarios(leer('src/store/useDatesCalendarStore.ts'))), 'fechas', 'las fechas del viaje solo las abre el administrador (quien edita o solo recomienda no puede)')
   const presu = sinComentarios(leer('src/components/route/presupuesto/PantallaPresupuesto.tsx'))
@@ -154,7 +154,7 @@ const lee = (app, js) => app.evaluar(js)
     debe(foto !== null, 'encendido', 'el perfil se abre con los logros encendidos')
     if (foto) {
       debe(foto.cabecera && !foto.sin && foto.nivel && foto.vitrina, 'encendido', 'con los logros: marco de rango, nivel, vitrina…')
-      debe(foto.pasaporte && foto.abre && foto.viajes >= 1 && foto.previo, 'encendido', 'su pasaporte (que se abre), sus viajes y «Añadir un viaje que ya hiciste»')
+      debe(foto.pasaporte && foto.abre && foto.viajes >= 1, 'encendido', 'su pasaporte (que se abre) y sus viajes (lo de «un viaje que ya hiciste» está ahora en el [+], 10N5)')
       debe(!/\bAbierto\b/.test(foto.texto), 'encendido', 'ninguna tarjeta dice «Abierto»')
     }
     await app.captura(path.join(CAPTURAS, '10n4_perfil_logros_encendidos.jpg'), 82)

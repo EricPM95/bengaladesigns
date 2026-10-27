@@ -304,8 +304,8 @@ console.log('4. El código: nada escrito a mano')
   debe(/edicion\.bases_url\s*&&/.test(pag), 'codigo', '[Bases legales] solo sale si hay enlace')
   const cuerpoEntero = fs.readFileSync('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx', 'utf8')
   const cuerpo = cuerpoEntero.slice(cuerpoEntero.indexOf('const { exp } = perfil')) // (10N4) antes de esa línea va la rama sin logros
-  const orden = ['<NivelYBarra', '<BilleteDelSorteo', 'data-vitrina-del-perfil', '<TarjetaPasaporte', '{misViajes}'].map((k) => (k === '{misViajes}' ? cuerpo.lastIndexOf(k) : cuerpo.indexOf(k)))
-  debe(orden.every((x, i) => x > 0 && (i === 0 || x > orden[i - 1])), 'perfil', 'el orden del perfil en el código: EXP, billete, Mi vitrina, Mi pasaporte y Mis viajes')
+  const orden = ['<ExpEnPequeno', '{misViajes}', 'data-vitrina-del-perfil', '<TarjetaPasaporte', '<BilleteDelSorteo'].map((k) => (k === '{misViajes}' ? cuerpo.lastIndexOf(k) : cuerpo.indexOf(k)))
+  debe(orden.every((x, i) => x > 0 && (i === 0 || x > orden[i - 1])), 'perfil', 'el orden del perfil en el código (10N5 §4): EXP en la cabecera, Mis viajes, Mi vitrina, Mi pasaporte y el billete abajo del todo')
   debe(!/MapaMisViajes/.test(sinComentarios(cuerpo)), 'perfil', 'el mapa suelto (MapaMisViajes) ya no está en el perfil con logros')
 }
 
@@ -347,8 +347,8 @@ if (!hayApp) {
   await app.captura(`${carpeta}/10p_perfil_3_billete_dentro.jpg`)
 
   // El orden del perfil y lo que ya no está.
-  const orden = await ev(`(() => { const d = document.querySelector('[role=dialog][aria-label=Perfil]'); const y = (s) => d.querySelector(s)?.getBoundingClientRect().top ?? -1; return { exp: y('[data-nivel-y-barra]'), billete: y('[data-billete-sorteo]'), vitrina: y('[data-vitrina-del-perfil]'), pasaporte: y('[data-abrir-pasaporte]'), viajes: y('[data-numero-de-viajes]'), mapa: d.querySelector('[data-cifras-del-mapa]') ? 1 : 0, canvas: d.querySelectorAll('canvas.mapboxgl-canvas').length } })()`)
-  debe(orden.exp > 0 && orden.exp < orden.billete && orden.billete < orden.vitrina && orden.vitrina < orden.pasaporte && orden.pasaporte < orden.viajes, 'perfil', `el orden en pantalla: EXP, billete, Mi vitrina, Mi pasaporte y Mis viajes (${JSON.stringify(orden)})`)
+  const orden = await ev(`(() => { const d = document.querySelector('[role=dialog][aria-label=Perfil]'); const y = (s) => d.querySelector(s)?.getBoundingClientRect().top ?? -1; return { exp: y('[data-exp-pequena]'), billete: y('[data-billete-sorteo]'), vitrina: y('[data-vitrina-del-perfil]'), pasaporte: y('[data-abrir-pasaporte]'), viajes: y('[data-numero-de-viajes]'), mapa: d.querySelector('[data-cifras-del-mapa]') ? 1 : 0, canvas: d.querySelectorAll('canvas.mapboxgl-canvas').length } })()`)
+  debe(orden.exp > 0 && orden.exp < orden.viajes && orden.viajes < orden.vitrina && orden.vitrina < orden.pasaporte && orden.pasaporte < orden.billete, 'perfil', `el orden en pantalla (10N5 §4): EXP, Mis viajes, Mi vitrina, Mi pasaporte y el billete (${JSON.stringify(orden)})`)
   debe(orden.mapa === 0 && orden.canvas === 0, 'perfil', 'fuera el mapa de países suelto debajo de «Mi pasaporte» (ni sus cifras «lugares · días», ni su mapa de Mapbox)')
   const tarjeta = await ev("(() => { const t = document.querySelector('[data-abrir-pasaporte]'); return { texto: t.innerText.split(String.fromCharCode(10)).join(' | '), numeros: t.querySelector('[data-numeros-pasaporte]')?.textContent ?? '', mapa: Boolean(t.querySelector('[data-mapa-pasaporte] svg')), sellos: t.querySelectorAll('[data-sello-asomando]').length, alto: Math.round(t.getBoundingClientRect().height) } })()")
   debe(/^\d+ países? · \d+ ciudad(es)?$/.test(tarjeta.numeros) && !/días viajando/.test(tarjeta.texto) && tarjeta.texto.includes('Mi pasaporte'), 'perfil', `la tarjeta del pasaporte lleva solo países y ciudades, sin «días viajando»: «${tarjeta.numeros}»`)
@@ -402,8 +402,8 @@ if (!hayApp) {
   await app.esp(600)
   await ev(`window.__avisos.getState().poner([{ id: 'aviso-sorteo', tipo: 'sorteo', texto: '¡Ya estás en el sorteo de 2027!', quien: null, creado_en: new Date().toISOString(), leido: false, payload: { anio: 2027 }, etiqueta: null }, { id: 'aviso-amigo', tipo: 'amigo_viaje', texto: 'Ana ha hecho su primer viaje con HOY: +200 EXP', quien: null, creado_en: new Date(Date.now() - 3600000).toISOString(), leido: false, payload: { nombre: 'Ana', exp: 200 }, etiqueta: null }]); window.__avisos.getState().abrir(); true`)
   await app.esp(1200)
-  const camp = await ev("(() => { const l = document.querySelector('[data-aviso-tipo=sorteo]'); const a = document.querySelector('[data-aviso-tipo=amigo_viaje]'); return { sorteo: l ? l.innerText.split(String.fromCharCode(10)).join(' | ') : null, borde: l ? getComputedStyle(l).borderTopStyle + ' ' + getComputedStyle(l).borderTopColor : null, amigo: a ? a.innerText.split(String.fromCharCode(10)).join(' | ') : null } })()")
-  debe(/¡Ya estás en el sorteo de 2027!/.test(camp.sorteo ?? '') && camp.borde === 'solid rgb(181, 138, 46)', 'campana', `el aviso dorado especial en la campana: «${camp.sorteo}»`)
+  const camp = await ev("(() => { const l = document.querySelector('[data-aviso-tipo=sorteo]'); const a = document.querySelector('[data-aviso-tipo=amigo_viaje]'); return { sorteo: l ? l.innerText.split(String.fromCharCode(10)).join(' | ') : null, borde: l ? (Array.from(l.querySelectorAll('*')).some((e) => /linear-gradient[(]145deg/.test(getComputedStyle(e).backgroundImage)) ? 'oro' : 'sin oro') : null, amigo: a ? a.innerText.split(String.fromCharCode(10)).join(' | ') : null } })()")
+  debe(/¡Ya estás en el sorteo de 2027!/.test(camp.sorteo ?? '') && camp.borde === 'oro', 'campana', `el aviso especial del sorteo en la campana (desde 10N4 sin borde dorado: lleva su icono dorado): «${camp.sorteo}»`)
   debe(/Ana ha hecho su primer viaje con HOY: \+200 EXP/.test(camp.amigo ?? ''), 'campana', `el aviso de quien invita: «${camp.amigo}»`)
   await app.captura(`${carpeta}/10p_sorteo_5_campana.jpg`)
   await ev("document.querySelector('[data-aviso-tipo=sorteo]').click(); true")

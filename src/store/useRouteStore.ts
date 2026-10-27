@@ -61,6 +61,8 @@ import {
 import { withManualDayNames } from '../lib/manualRoute'
 import { bookingsAfterRemovingDays, planManualResize, resizeManualRoute, reservationsOfDays } from '../lib/manualDuration'
 import { recuperarDestino } from '../lib/recuperarDestino'
+import { conUltimoCambio } from '../lib/accionDeCambio'
+import { fechaDelDia } from '../lib/nombreDeDia'
 import { indiceTrasParada, ordenTrasMover, resolverRecomendacion, type DiaPosible, type Recomendacion } from '../lib/aplicarRecomendacion'
 import { CERRADO_ESTE_DIA } from '../lib/placeHoursOnDate'
 import { camposDelViajero, sellarVueltaAlAbrir } from '../lib/datosDelViajero'
@@ -880,7 +882,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       // (Con su número y su color de ahora: si el día se movió, se queda donde está.)
       const days = state.route.days.map((day) => (day.id === dayId && day.originalSnapshot ? { ...day.originalSnapshot, id: day.id, dayNumber: day.dayNumber, colorIndex: day.colorIndex, originalSnapshot: null } : day))
       // (Lo reservado se queda en su sitio y a su hora aunque se recupere el día.)
-      return { route: reapplyReservations({ ...state.route, days, editedManually: days.some((day) => Boolean(day.originalSnapshot)) }, state.reservations) }
+      // (10N5) El aviso de los demás: «Eric ha recuperado el sábado 14 como estaba.»
+      const recuperado = reapplyReservations({ ...state.route, days, editedManually: days.some((day) => Boolean(day.originalSnapshot)) }, state.reservations)
+      return { route: target?.originalSnapshot ? conUltimoCambio(state.route, recuperado, { tipo: 'recuperar_dia', dia_n: target.dayNumber, fecha: fechaDelDia(state.route, target.dayNumber) }) : recuperado }
     }),
   setDayUntimed: (dayId, untimed) =>
     set((state) =>
@@ -917,9 +921,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       removedIds.push(...removed.map((reservation) => reservation.id))
       const remaining = state.reservations.filter((reservation) => !removedIds.includes(reservation.id))
       const withoutHandEdits = (next: Route): Route => ({ ...next, days: next.days.map((day) => (day.originalSnapshot ? { ...day, originalSnapshot: null } : day)).map((day) => ({ ...day, stops: day.stops.map((stop) => (stop.reservedId && removedIds.includes(stop.reservedId) ? { ...stop, reservedId: null } : stop)) })), editedManually: false })
-      if (city) return { route: withDayColors(reapplyReservations(withoutHandEdits(recuperarDestino(route, city)), remaining)), reservations: remaining, activeDayId: null }
+      // (10N5) El aviso de los demás es de una línea: «Eric ha vuelto a la ruta inicial.», no la lista de lo que se movió.
+      if (city) return { route: conUltimoCambio(route, withDayColors(reapplyReservations(withoutHandEdits(recuperarDestino(route, city)), remaining)), { tipo: 'recuperar_ruta' }), reservations: remaining, activeDayId: null }
       const copy = JSON.parse(JSON.stringify(original)) as NonNullable<Route['originalRoute']>
-      return { route: reapplyReservations(withoutHandEdits({ ...route, days: copy.days, answers: copy.answers }), remaining), reservations: remaining, activeDayId: null }
+      return { route: conUltimoCambio(route, reapplyReservations(withoutHandEdits({ ...route, days: copy.days, answers: copy.answers }), remaining), { tipo: 'recuperar_ruta' }), reservations: remaining, activeDayId: null }
     })
     if (removedIds.length > 0) {
       void import('./useNoticesStore').then(({ useNoticesStore }) => {
@@ -1078,7 +1083,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           ...(mismaTarjeta && state.route.seasonNoteDismissed ? { seasonNoteDismissed: true } : {}),
         }
       })()
-      const route = { ...colored, ...avisosHeredados, ...(state.keepBookingsOnNextRoute ? camposDelViajero(state.route) : {}), editedManually: false, originalRoute: originalRouteOf(colored) }
+      // (10N5) Cambiar las fechas rehace la ruta: el aviso de los demás dice «ha cambiado las fechas del viaje (del 11 al 15 de noviembre)», no la lista de lo que se movió.
+      const route = conUltimoCambio(state.route, { ...colored, ...avisosHeredados, ...(state.keepBookingsOnNextRoute ? camposDelViajero(state.route) : {}), editedManually: false, originalRoute: originalRouteOf(colored) }, state.keepBookingsOnNextRoute && state.route ? { tipo: 'fechas' } : null)
       return {
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))

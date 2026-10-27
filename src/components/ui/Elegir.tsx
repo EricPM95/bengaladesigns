@@ -16,7 +16,7 @@ import type { ReactNode } from 'react'
  *   `alto` (por defecto 54) y `compacto` (alto 40, letra de 13 px) para sitios estrechos. `deshabilitado` apaga todo.
  *
  *   <PastillaElegir elegida={marcada} onClick={alternar} icono={<Icono .../>} marca>Eric</PastillaElegir>
- *   Una pastilla elegible suelta (varias a la vez, p. ej. «¿Quién lo ha pagado?» o «¿Para quién es?»). `marca`: pinta un ✓ dorado delante cuando está elegida.
+ *   Una pastilla elegible suelta (varias a la vez, p. ej. «¿Quién ha pagado?» o «¿Para quién es?»). `marca`: pinta un ✓ dorado delante cuando está elegida.
  *   `datos` pone data-elegir-pastilla. Para varias en fila: <div style={{display:'flex',flexWrap:'wrap',gap:8}}>…</div>.
  */
 
@@ -31,6 +31,8 @@ export interface OpcionElegir {
   deshabilitada?: boolean
   /** Algo detrás del texto (un candado pequeño…). */
   extra?: ReactNode
+  /** (Tanda 10N5 §6b) Bloqueada por el pase: azul oscuro con anillo dorado y el candado dorado delante (los colores de la caja de `Pase Estilo` 01). Al tocarla, lo que haga `onCambio` (abrir el pase). */
+  bloqueada?: boolean
   /** Atributos data-* de ese botón (para las pruebas): `{ 'data-pestana': 'nearby' }`. */
   atributos?: Record<string, string>
 }
@@ -83,14 +85,20 @@ export function InterruptorElegir({
               justifyContent: 'center',
               gap: compacto ? 6 : 9,
               font: `600 ${compacto ? 13 : 15}px 'Geist'`,
-              background: elegida ? AZUL : '#FFFDF8',
-              color: elegida ? CLARO : AZUL,
-              border: `1px solid ${elegida ? AZUL : 'rgba(28,34,48,.14)'}`,
+              background: o.bloqueada ? 'linear-gradient(135deg,#1C2230,#252F55 60%,#1C2230)' : elegida ? AZUL : '#FFFDF8',
+              color: elegida || o.bloqueada ? CLARO : AZUL,
+              border: o.bloqueada ? '1px solid transparent' : `1px solid ${elegida ? AZUL : 'rgba(28,34,48,.14)'}`,
+              boxShadow: o.bloqueada ? 'inset 0 0 0 1.3px rgba(233,199,122,.55)' : undefined,
               cursor: apagada ? 'default' : 'pointer',
               opacity: apagada && !elegida ? 0.5 : 1,
               transition: 'background .15s,color .15s',
             }}
           >
+            {o.bloqueada && (
+              <svg data-bloqueado-pase="1" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
+                <path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z" />
+              </svg>
+            )}
             {o.icono && <span aria-hidden="true" style={{ flex: 'none', display: 'inline-flex', color: elegida ? ORO : 'rgba(28,34,48,.6)' }}>{o.icono}</span>}
             <span style={{ minWidth: 0 }}>{o.texto}</span>
             {o.extra}

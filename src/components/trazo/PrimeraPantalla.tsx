@@ -11,6 +11,7 @@ import {
   type DestinoCurado,
 } from '../../lib/destinosCurados'
 import { LogoPequeno } from '../ui/LogoJutrip'
+import { useUnirseUi } from '../../store/useUnirseUi'
 import { botonChampan } from '../../lib/marcaBoton'
 import { cityCode, countryOf } from './cityCode'
 import { aPantalla, cargarTierraDelMapa, curvaEntre, encuadrar, proyectar, type Camara } from './mapaMundo'
@@ -418,7 +419,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
       </div>
 
       {noHay && (
-        <div data-aviso-destino style={{ position: 'absolute', left: 18, right: 18, bottom: 296, padding: 16, borderRadius: 20, background: 'rgba(255,253,248,.96)', border: '1px solid #E4D2A4', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div data-aviso-destino style={{ position: 'absolute', left: 18, right: 18, bottom: 332, padding: 16, borderRadius: 20, background: 'rgba(255,253,248,.96)', border: '1px solid #E4D2A4', display: 'flex', flexDirection: 'column', gap: 10 }}>
           {avisoDeEste?.estado === 'hecho' ? (
             <span data-aviso-hecho style={{ font: `400 22px/1.1 ${SERIF}` }}>
               ¡Hecho! Te escribimos en cuanto llegue <em style={{ color: ORO_OSCURO }}>{escribioDestino}</em>.
@@ -463,7 +464,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
       )}
 
       {sugerenciasO && (
-        <div data-sugerencias-origen style={{ position: 'absolute', left: 18, right: 18, bottom: 296, borderRadius: 18, background: 'rgba(255,253,248,.95)', border: '1px solid #E4D2A4', overflow: 'hidden', maxHeight: '38%', overflowY: 'auto' }}>
+        <div data-sugerencias-origen style={{ position: 'absolute', left: 18, right: 18, bottom: 332, borderRadius: 18, background: 'rgba(255,253,248,.95)', border: '1px solid #E4D2A4', overflow: 'hidden', maxHeight: '38%', overflowY: 'auto' }}>
           {resultados.map((lugar) => (
             <div
               key={`${lugar.fullName}-${lugar.coordinates.lat}`}
@@ -488,7 +489,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
         </div>
       )}
 
-      <div style={{ position: 'absolute', left: 14, right: 14, bottom: 'max(26px, env(safe-area-inset-bottom))', padding: 14, borderRadius: 28, background: 'linear-gradient(180deg,rgba(255,253,248,.96),rgba(251,243,226,.94))', border: '1px solid #E4D2A4', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', flexDirection: 'column', gap: 10, boxShadow: '0 20px 40px -16px rgba(111,78,55,.4),inset 0 1px 0 rgba(255,255,255,.8)' }}>
+      <div style={{ position: 'absolute', left: 14, right: 14, bottom: enTransporte ? 'max(26px, env(safe-area-inset-bottom))' : 'max(66px, calc(env(safe-area-inset-bottom) + 40px))', padding: 14, borderRadius: 28, background: 'linear-gradient(180deg,rgba(255,253,248,.96),rgba(251,243,226,.94))', border: '1px solid #E4D2A4', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', flexDirection: 'column', gap: 10, boxShadow: '0 20px 40px -16px rgba(111,78,55,.4),inset 0 1px 0 rgba(255,255,255,.8)' }}>
         {enTransporte ? (
           transporte
         ) : (
@@ -573,6 +574,21 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
           </>
         )}
       </div>
+
+      {/* (Tanda 10N5, `Piezas/Unirse Codigo` 04) Debajo de la caja, en pequeño y siempre visible: donde llega el amigo que abre la app por primera vez con un código. */}
+      {!enTransporte && (
+        <button
+          type="button"
+          data-unirme-con-codigo
+          onClick={() => useUnirseUi.getState().abrir()}
+          style={{ position: 'absolute', left: 0, right: 0, bottom: 'max(26px, env(safe-area-inset-bottom))', margin: '0 auto', width: 'fit-content', minHeight: 36, display: 'flex', alignItems: 'center', gap: 6, border: 0, background: 'transparent', padding: 0, font: "500 13.5px 'Geist'", color: TINTA, textShadow: '0 1px 0 rgba(255,255,255,.6)', cursor: 'pointer' }}
+        >
+          ¿Te han invitado? <u style={{ fontWeight: 700, color: '#6E5018', textUnderlineOffset: 3 }}>Únete con un código</u>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      )}
 
     </div>
   )

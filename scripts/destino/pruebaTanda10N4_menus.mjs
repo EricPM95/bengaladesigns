@@ -226,7 +226,7 @@ const LEER_HOJA = (datos) => `(() => {
     await ev("document.querySelector('[data-persona-fila=\"v\"]').click(); true")
     await a.esp(900)
     const pe = await ev(LEER_HOJA('persona-del-viaje'))
-    debe(pe && /PERSONAS DEL VIAJE · EDITAR/i.test(pe.etiqueta) && pe.titulo === 'VIAJES', '04', `arriba «PERSONAS DEL VIAJE · EDITAR» y «VIAJES» (${pe?.etiqueta} · ${pe?.titulo})`)
+    debe(pe && /PERSONAS DEL VIAJE · EDITAR/i.test(pe.etiqueta) && pe.titulo === 'Viajes', '04', `arriba «PERSONAS DEL VIAJE · EDITAR» y «VIAJES» (${pe?.etiqueta} · ${pe?.titulo})`)
     debe(pe && pe.tarjetas.map((t) => t.titulo).join('|') === 'Cambiar permiso|Quitar del viaje', '04', `«Cambiar permiso» y «Quitar del viaje» (${pe?.tarjetas.map((t) => t.titulo).join(', ')})`)
     const cp = pe?.tarjetas[0]
     debe(cp?.linea === 'Editar o Recomendar' && cp?.flecha, '04', `«Cambiar permiso · Editar o Recomendar» con «›» (${cp?.linea})`)
@@ -238,7 +238,7 @@ const LEER_HOJA = (datos) => `(() => {
     await clic('[data-cambiar-permiso]')
     await a.esp(900)
     const pm = await ev(LEER_HOJA('permiso-de'))
-    debe(pm && /^Permiso de VIAJES$/.test(pm.titulo), 'permiso', `«Permiso de VIAJES» (${pm?.titulo})`)
+    debe(pm && /^Permiso de Viajes$/.test(pm.titulo), 'permiso', `«Permiso de VIAJES» (${pm?.titulo})`)
     const adm = pm?.tarjetas.find((t) => t.titulo === 'Administrador')
     debe(adm?.deshabilitada && adm.linea === '', 'permiso', 'Administrador en gris y sin texto debajo')
     debe(await ev("(() => { const a = document.querySelector('[data-hoja-opciones=\"permiso-de\"] [data-opcion-permiso=\"admin\"]'); return Boolean(a && /Solo Eric/.test(a.innerText) && a.querySelector('svg')) })()"), 'permiso', 'con el candado y «Solo Eric» a la derecha')

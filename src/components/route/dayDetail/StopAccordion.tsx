@@ -10,6 +10,7 @@ import { EntradaEdgeTab, useBotonEntrada } from '../reservas/EntradaEdgeTab'
 import { OnTheWayCard, TrazoCard, type CardMeta } from './TrazoCards'
 import { useEtiquetaBarrio } from '../../ui/EtiquetaBarrio'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { normaDeParada, useCambiosMarcados } from '../../../store/useCambiosMarcados'
 
 interface StopAccordionProps {
   /** El número de su pin en el mapa (ver stopNumbersOf) — null en lo que no lleva número. */
@@ -55,6 +56,8 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   const barrio = useEtiquetaBarrio(useRouteStore((state) => state.route?.destination), stop.name)
   // El botón redondo de la entrada (Tanda 10N4): frambuesa si te falta, verde con ✓ si la tienes. Sin palabras; las etiquetas de la tarjeta le dejan su sitio.
   const botonEntrada = useBotonEntrada(stop, stop.visitMode === 'fuera')
+  // (10N5) Al abrir un aviso de «ha cambiado el viaje», lo que cambió sale marcado: «Movida» o «Nueva».
+  const marcaDeCambio = useCambiosMarcados((state) => state.marcas[normaDeParada(stop.name)])
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
@@ -132,6 +135,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   // Una entrada reservada: las dos marcas (PARA_CODE_RESERVAS, 6).
   // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
   if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })
+  if (marcaDeCambio) tags.unshift({ label: marcaDeCambio === 'nueva' ? 'Nueva' : 'Movida', kind, green: marcaDeCambio === 'nueva' })
 
   return (
     <TrazoCard

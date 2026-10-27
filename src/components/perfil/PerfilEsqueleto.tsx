@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { nombreVisible } from '../../lib/nombrePersona'
 
 const GRIS = 'rgba(28,34,48,.07)'
 
@@ -8,31 +9,32 @@ function Hueco({ w, h, r = 12, style }: { w: number | string; h: number; r?: num
 }
 
 /**
- * EL PERFIL NUEVO VACÍO (Tanda 10N3, §3b.2): lo que se ve mientras llegan los datos del Perfil con logros. Tiene la misma forma que el de verdad (el círculo del marco, «Hola, …», la barra de EXP,
- * la vitrina y el pasaporte), con los huecos de cada tarjeta en gris claro. Sustituye al «Perfil de siempre» que se colaba un instante: con los logros encendidos el Perfil viejo no sale NUNCA.
- * `nombre`: el nombre ya conocido (sale en el «Hola»); `conViajes`: si abajo va la lista de viajes de este móvil (no) o un hueco con el título «Mis viajes» (sí).
+ * EL PERFIL NUEVO VACÍO (Tanda 10N3, §3b.2; con el orden de la 10N5): lo que se ve mientras llega el código del Perfil o sus datos y NO hay nada guardado de la última vez (la primera vez en este móvil). Tiene la misma forma que el
+ * de verdad: el círculo del marco, «Hola, …», el nivel y la barra de EXP en pequeño, con los huecos en gris claro. Con lo último que se vio guardado en el móvil esto no sale: sale el Perfil entero al instante.
+ * `nombre`: el nombre ya conocido (sale en el «Hola»); `titulo`: si abajo va un hueco con el título «Mis viajes» (sí) o los viajes de este móvil ya pintados (no).
  */
 export function PerfilEsqueleto({ nombre = null, titulo = true }: { nombre?: string | null; titulo?: boolean }): ReactNode {
+  const visible = nombre ? nombreVisible(nombre) || nombre : null
   return (
-    <div data-perfil-cargando="1" aria-busy="true" className="flex flex-col gap-[18px]">
-      <div className="flex items-center gap-3.5 px-1">
+    <div data-perfil-cargando="1" aria-busy="true" style={{ padding: '0 20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6 }}>
         <Hueco w={104} h={104} r="50%" />
-        <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-          {nombre ? (
-            <h2 className="m-0 font-display text-[34px] leading-none tracking-[-.01em] text-text">
-              Hola, <em>{nombre}</em>
+        <div style={{ display: 'flex', minWidth: 0, flex: 1, flexDirection: 'column', gap: 10 }}>
+          {visible ? (
+            <h2 style={{ margin: 0, font: "400 34px/1 'Instrument Serif',serif", overflowWrap: 'anywhere' }}>
+              Hola, <em>{visible}</em>
             </h2>
           ) : (
             <Hueco w="70%" h={30} r={10} />
           )}
           <Hueco w="52%" h={14} r={7} />
-          <Hueco w="44%" h={30} r={999} />
         </div>
       </div>
-      <Hueco w="100%" h={44} r={14} />
-      <Hueco w="100%" h={200} r={26} />
-      <Hueco w="100%" h={132} r={24} />
-      {titulo && <Hueco w={120} h={24} r={8} style={{ marginTop: 52 }} />}
+      <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
+        <Hueco w="100%" h={6} r={3} />
+        <Hueco w="60%" h={12} r={6} />
+      </div>
+      {titulo && <Hueco w={140} h={30} r={8} style={{ marginTop: 38 }} />}
     </div>
   )
 }

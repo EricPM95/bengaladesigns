@@ -4,6 +4,7 @@ import { listarRecomendaciones } from '../lib/recomendacionesViaje'
 import { supabase } from '../lib/supabaseClient'
 import { leerEncuadre, type Encuadre } from '../lib/encuadreFoto'
 import { useSyncStore } from './useSyncStore'
+import { nombreVisible } from '../lib/nombrePersona'
 
 /**
  * LO SOCIAL DEL VIAJE ABIERTO (cuentas parte 3): quién está en el viaje (el administrador y sus invitados, con el nombre de pila y la foto) y las recomendaciones que hay.
@@ -72,7 +73,8 @@ async function gentePorRpc(tripId: string): Promise<Persona[]> {
 }
 
 /** El nombre que se enseña: el de pila, o '' mientras no se haya puesto uno (las pantallas no inventan «Viajero»: «Enviar», «Te recomiendan…»). */
-export const nombreDe = (p: Pick<Persona, 'nombre'> | null | undefined): string => p?.nombre?.trim() || ''
+// (Tanda 10N5) Siempre con la primera letra de cada palabra en mayúscula («VIAJES» → «Viajes»): solo al enseñarlo, el nombre se guarda como lo escribió la persona.
+export const nombreDe = (p: Pick<Persona, 'nombre'> | null | undefined): string => nombreVisible(p?.nombre)
 
 /** La inicial para el círculo cuando no hay foto: la del nombre o, sin nombre, la de su email. */
 export const inicialDe = (p: Pick<Persona, 'nombre' | 'inicial'> | null | undefined): string => (nombreDe(p)[0] ?? p?.inicial?.trim()?.[0] ?? '·').toUpperCase()

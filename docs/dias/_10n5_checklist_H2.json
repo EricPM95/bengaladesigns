@@ -1,0 +1,182 @@
+[
+ {
+  "apartado": "3",
+  "punto": "Al unirse (enlace, código o aviso) se abre ese viaje directamente; el anterior sigue en Mis viajes",
+  "estado": "hecho",
+  "nota": "Código: abre el viaje sin recargar (trae la lista de viajes de nuevo). Enlace/aviso: ya abría tras recargar (TripSync); con la hoja nueva se ve la franja. Probado con Supabase simulado en la página, no contra el real.",
+  "donde": "Cuenta de verdad: Perfil > [+] > Unirme con un código; luego Perfil > Mis viajes para ver el anterior",
+  "captura": "docs/dias/capturas_jutrip/10n5_union_03_dentro.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_union_03_dentro_design.jpg"
+ },
+ {
+  "apartado": "3",
+  "punto": "Hueco para escribir el código (hoja Unirse Codigo 01, exactamente igual)",
+  "estado": "hecho",
+  "nota": "8 huecos 34x58, guion tras el 4.º, mayúsculas y sin espacios/guiones, [Unirme] dorado 54 px; la hoja sube con el teclado.",
+  "donde": "Primera pantalla (sin viaje) o Perfil > [+]",
+  "captura": "docs/dias/capturas_jutrip/10n5_union_01_hoja.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_union_01_hoja_design.jpg"
+ },
+ {
+  "apartado": "3",
+  "punto": "Dos sitios con la misma hoja: primera pantalla y [+] del perfil",
+  "estado": "hecho",
+  "nota": "También el «Tengo un código de invitación» de Ajustes abre la misma hoja (se quitó la antigua).",
+  "donde": "Primera pantalla (debajo de ORIGEN/DESTINO) y Perfil > [+]",
+  "captura": "docs/dias/capturas_jutrip/10n5_union_04_primera_pantalla.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_union_04_primera_pantalla_design.jpg"
+ },
+ {
+  "apartado": "3",
+  "punto": "Franja «Te has unido al viaje a Roma de Eric · Ahora lo ves igual que él»",
+  "estado": "hecho",
+  "nota": "Nombre con nombreVisible. Sin nombre de quien invita, no se inventa. En el flujo sin cuenta (tras recargar) también sale.",
+  "donde": "Tras unirse, arriba del viaje abierto",
+  "captura": "docs/dias/capturas_jutrip/10n5_union_03_dentro.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_union_03_dentro_design.jpg"
+ },
+ {
+  "apartado": "3",
+  "punto": "Sin cuenta: «Entra o crea tu cuenta para unirte» y al entrar se une solo",
+  "estado": "medias",
+  "nota": "Guarda código aceptado, la puerta lo detecta y muestra el texto; al entrar canjea solo (código ya existente). Probado el guardado y por código; el flujo de entrar con cuenta real no se ha probado de punta a punta.",
+  "donde": "Sin cuenta: Primera pantalla > Únete con un código > Unirme",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "3",
+  "punto": "Código que no vale: «Ese código no es de ningún viaje…»",
+  "estado": "hecho",
+  "nota": "Huecos en rojo y [Unirme] apagado hasta cambiar el código.",
+  "donde": "Primera pantalla (sin viaje) o Perfil > [+]",
+  "captura": "docs/dias/capturas_jutrip/10n5_union_02_no_vale.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_union_02_no_vale_design.jpg"
+ },
+ {
+  "apartado": "3",
+  "punto": "Si ya está en ese viaje, lo abre y ya",
+  "estado": "hecho",
+  "nota": "Sin gastar uso (no canjea).",
+  "donde": "Perfil > [+] > Unirme con un código (con un código de un viaje propio)",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "3",
+  "punto": "Límite de intentos seguidos",
+  "estado": "medias",
+  "nota": "Móvil: 6 fallos en 15 min (probado). Servidor: migración 0047 escrita y SIN APLICAR; hasta aplicarla el límite solo está en el móvil.",
+  "donde": "Escribir 6 códigos malos seguidos",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "4",
+  "punto": "Cabecera única: foto con marco, Hola, Nivel, EXP en pequeño, ajustes arriba a la derecha",
+  "estado": "hecho",
+  "nota": "Marco a 104 px (como hoy, según el prompt; Design dibuja 118). Se mantiene el chip de título solo si hay títulos.",
+  "donde": "Perfil (círculo arriba a la derecha)",
+  "captura": "docs/dias/capturas_jutrip/10n5_perfil_01_abrir.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_perfil_01_abrir_design.jpg"
+ },
+ {
+  "apartado": "4",
+  "punto": "Mis viajes en fila de lado, siguiente asoma, en curso/próximo primero, Ver todos (N), antes de la app al final",
+  "estado": "hecho",
+  "nota": "Tarjeta de Perfil Orden (330 px); «Editar» sigue junto al título. Se siguió Perfil Orden en vez del layout grande de Mis Viajes Tarjeta (misma etiqueta/portada/cámara/botón).",
+  "donde": "Perfil > Mis viajes",
+  "captura": "docs/dias/capturas_jutrip/10n5_perfil_02_entero.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_perfil_02_entero_design.jpg"
+ },
+ {
+  "apartado": "4",
+  "punto": "Tarjeta: portada, etiqueta, nombre, fechas y días, solo icono de cámara, Abrir este viaje; fuera Sin fotos",
+  "estado": "hecho",
+  "nota": "Hecho: botón con borde, sin relleno (como Design 04).",
+  "donde": "Perfil > Mis viajes",
+  "captura": "docs/dias/capturas_jutrip/10n5_perfil_01_abrir.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_perfil_01_abrir_design.jpg"
+ },
+ {
+  "apartado": "4",
+  "punto": "Mi vitrina y Mi pasaporte sin tocar, después de los viajes",
+  "estado": "hecho",
+  "nota": "Código intacto, solo envueltos con margen 20.",
+  "donde": "Perfil > bajar",
+  "captura": "docs/dias/capturas_jutrip/10n5_perfil_02_entero.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_perfil_02_entero_design.jpg"
+ },
+ {
+  "apartado": "4",
+  "punto": "Billete del sorteo abajo del todo",
+  "estado": "hecho",
+  "nota": "Después del pasaporte.",
+  "donde": "Perfil > bajar hasta el final",
+  "captura": "docs/dias/capturas_jutrip/10n5_perfil_02_entero.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_perfil_02_entero_design.jpg"
+ },
+ {
+  "apartado": "4",
+  "punto": "Fuera la palabra PERFIL; arriba solo ajustes y ✕",
+  "estado": "hecho",
+  "nota": "",
+  "donde": "Perfil",
+  "captura": "docs/dias/capturas_jutrip/10n5_perfil_01_abrir.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_perfil_01_abrir_design.jpg"
+ },
+ {
+  "apartado": "4",
+  "punto": "[+] flotante con hoja «¿Qué quieres hacer?» y tres tarjetas; sustituye Nuevo viaje y el botón del final; no tapa la última tarjeta",
+  "estado": "hecho",
+  "nota": "Sin logros salen solo 2 tarjetas (viaje previo es de los logros).",
+  "donde": "Perfil > [+]",
+  "captura": "docs/dias/capturas_jutrip/10n5_perfil_03_hoja_mas.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_perfil_03_hoja_mas_design.jpg"
+ },
+ {
+  "apartado": "4",
+  "punto": "Ver todos: lista por grupos",
+  "estado": "hecho",
+  "nota": "",
+  "donde": "Perfil > Ver todos (N)",
+  "captura": "docs/dias/capturas_jutrip/10n5_perfil_05_ver_todos.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n5_perfil_05_ver_todos_design.jpg"
+ },
+ {
+  "apartado": "4",
+  "punto": "Quitar los 70 px entre pasaporte y Mis viajes",
+  "estado": "hecho",
+  "nota": "",
+  "donde": "Perfil",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "4",
+  "punto": "Datos de Design de ejemplo: usar los reales",
+  "estado": "hecho",
+  "nota": "",
+  "donde": "Perfil",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "4",
+  "punto": "Con logros apagados: perfil sin EXP, vitrina ni sorteo",
+  "estado": "hecho",
+  "nota": "",
+  "donde": "Perfil con ?logros=off",
+  "captura": "docs/dias/capturas_jutrip/10n5_perfil_sin_logros.jpg",
+  "captura_design": null
+ },
+ {
+  "apartado": "4",
+  "punto": "Que se abra al momento (código precargado, última foto guardada, datos por detrás sin parpadeo)",
+  "estado": "hecho",
+  "nota": "Medido en dev con 4G simulada (9 Mbit, 170 ms), CPU x4, servidor de logros a 500 ms: antes 1946 ms hasta ver Hola/nivel; después 509 ms la primera vez y 70-78 ms con lo guardado. Dev, no producción.",
+  "donde": "Perfil (círculo)",
+  "captura": null,
+  "captura_design": null
+ }
+]

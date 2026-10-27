@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useRouteStore } from '../store/useRouteStore'
-import { pagoActivo } from './pago'
+import { pagoActivo, usePagoActivo } from './pago'
 import { construirPresupuesto, type Presupuesto } from './presupuesto'
 import { monedaDelViajero, useCambio } from './useMoneda'
 import type { Cambio } from './dinero'
@@ -45,7 +45,7 @@ export function usePresupuesto(): { presupuesto: Presupuesto | null; cambio: Cam
   const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
   const esimPrecios = useRouteStore((state) => state.esimPrecios)
   const cambio = useCambio()
-  const pago = pagoActivo()
+  const pago = usePagoActivo()
   // (Tanda 10N, apartado 9) En un viaje compartido, los Extras son los gastos compartidos que veo; lo de la ruta, anterior a compartir, es solo del administrador.
   const { compartido, gastos: gastosCompartidos, esInvitado } = useGastosDelViaje()
   const presupuesto = useMemo(

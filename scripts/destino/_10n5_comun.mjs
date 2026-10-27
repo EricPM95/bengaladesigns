@@ -1,0 +1,55 @@
+// Ayudante de las pruebas de la Tanda 10N5 (agente H3: película del pase, candados, cajas del pase, tres colores).
+// Abre la app con el viaje de prueba (/?cuentas=off&logros=on&logrosDemo=1&version=<pago|gratis>&apertura=0) en un Chrome sin ventana a un tamaño de móvil.
+import fs from 'node:fs'
+import path from 'node:path'
+import { abrirApp } from './_enLaApp.mjs'
+
+export const BASE = process.env.APP_URL ?? 'http://localhost:5173'
+export const SALIDA = path.resolve('docs/dias/capturas_jutrip')
+fs.mkdirSync(SALIDA, { recursive: true })
+export const foto = (n) => path.join(SALIDA, `10n5_${n}.jpg`)
+export const esp = (ms) => new Promise((r) => setTimeout(r, ms))
+export const leer = (f) => fs.readFileSync(f, 'utf8')
+
+/** Un viaje de prueba abierto. `version`: 'gratis' (sin pase) | 'pago' (con pase). `vista`: la película ya vista (el final directo). `extraAntes`: JavaScript antes de cargar. */
+export async function conViaje(o = {}) {
+  // (Otros agentes editan el mismo árbol: si la página se recarga o falla a mitad de crear el viaje, se vuelve a intentar.)
+  let ultimo
+  for (let i = 0; i < 3; i++) {
+    try {
+      return await conViaje1(o)
+    } catch (e) {
+      ultimo = e
+    }
+  }
+  throw ultimo
+}
+async function conViaje1({ ancho = 390, alto = 664, version = 'gratis', vista = true, extraAntes = '', ruta } = {}) {
+  const antes = `${vista ? "try{localStorage.setItem('trazo:pelicula-pase-vista','1')}catch(e){};" : ''}try{localStorage.setItem('trazo:moneda-pase','EUR')}catch(e){}; ${version === 'gratis' ? 'window.__pruebaDelPase = { cobro: true, conPase: false, puede: true, pruebaGastada: false };' : ''} ${extraAntes}`
+  const a = await abrirApp(BASE, { ancho, alto, ruta: ruta ?? `/?cuentas=off&logros=on&logrosDemo=1&version=${version}&apertura=0`, antes })
+  for (let i = 0; i < 120 && !(await a.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await a.esp(500)
+  for (let i = 0; i < 60 && !(await a.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await a.esp(500)
+  await a.evaluar('window.__rutaPrueba().then(() => true)')
+  for (let i = 0; i < 60 && !(await a.evaluar(modulo('/src/store/useRouteStore.ts') + '.then((m) => Boolean(m.useRouteStore.getState().route))')); i++) await a.esp(1000)
+  await a.esp(3500)
+  for (let i = 0; i < 4; i++) {
+    const hecho = await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Entendido|Vale|Cerrar|Siguiente|Genial|Ya lo sé)$/.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()")
+    if (!hecho) break
+    await a.esp(600)
+  }
+  return a
+}
+/** Importa un módulo de la app DESDE LA MISMA dirección que usa la página (con Vite abierto mientras otros editan, las direcciones llevan «?t=…»: sin esto saldría una copia distinta del almacén). */
+export const modulo = (ruta) => `(async () => { const n = performance.getEntriesByType('resource').map((r) => r.name).find((x) => x.includes(${JSON.stringify(ruta)})); return import(n || ${JSON.stringify(ruta)}) })()`
+export const abrirPase = (a) => a.evaluar("window.dispatchEvent(new CustomEvent('trazo:pagar')); true")
+export const cuando = async (a, js, veces = 40) => {
+  for (let i = 0; i < veces; i++) {
+    if (await a.evaluar(js).catch(() => false)) return true
+    await a.esp(250)
+  }
+  return false
+}
+export const clicEn = async (a, x, y) => {
+  for (const type of ['mousePressed', 'mouseReleased']) await a.cdp('Input.dispatchMouseEvent', { type, x, y, button: 'left', clickCount: 1 })
+  await esp(500)
+}

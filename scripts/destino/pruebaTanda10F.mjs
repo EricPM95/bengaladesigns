@@ -231,7 +231,7 @@ await app.esp(500)
 debe((await texto('[data-editar-viajes]')) === 'Hecho', 'editar', '[Editar] pasa a [Hecho]')
 const papeleras = await app.evaluar("Array.from(document.querySelectorAll('[data-eliminar-viaje]')).map((e) => e.getAttribute('data-eliminar-viaje') + '|' + e.getAttribute('aria-label')).join('\\n')")
 debe(papeleras.split('\n').length === 4 && papeleras.includes(`${ids.hecho}|Eliminar el viaje a Florencia`) && papeleras.includes(`${ids.compartido}|Salir del viaje a Nápoles`), 'editar', `cada viaje enseña su botón a la derecha (la papelera; «Salir» en el de otra persona): ${papeleras.replace(/\n/g, ' · ')}`)
-debe(!(await hay('[data-abrir-este-viaje]')), 'editar', 'en modo editar no sale [Abrir este viaje]')
+debe(!(await hay('[data-abrir-este-viaje]:not([disabled])')), 'editar', 'en modo editar [Abrir este viaje] no se puede pulsar (desde la 10N5 sale atenuado y desactivado, como en Design)')
 await app.evaluar("document.querySelector('[data-eliminar-viaje]')?.scrollIntoView({ block: 'center' }); true")
 await captura('2_modo_editar')
 

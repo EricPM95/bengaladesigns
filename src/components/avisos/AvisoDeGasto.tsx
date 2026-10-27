@@ -5,6 +5,7 @@ import { useAvisosStore } from '../../store/useAvisosStore'
 import { useGastosCompartidos } from '../../store/useGastosCompartidos'
 import { Avatar } from '../ajustes/Avatar'
 import { Icono } from '../ui/Icono'
+import { nombreVisible } from '../../lib/nombrePersona'
 
 /**
  * EL AVISO «ANA QUIERE AÑADIR AL PRESUPUESTO» (Tanda 10N, apartado 9; `Piezas/Presupuesto Compartido` 06, 07 y 08): en la campanita de quien decide (el administrador y quien puede editar), con el gasto DENTRO
@@ -59,7 +60,7 @@ export function AvisoDeGasto({ aviso, ahora, foto, resaltado }: { aviso: AvisoDe
         </span>
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
           <span style={{ font: "600 13.5px/1.25 'Geist'" }}>{p.nombre}</span>
-          <span style={{ font: "500 11px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Para todos{p.pago ? ` · pagó ${p.pago}` : ''}</span>
+          <span style={{ font: "500 11px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Para todos{p.pago ? ` · pagó ${nombreVisible(p.pago)}` : ''}</span>
         </span>
         {precio && <span style={{ font: "600 14px 'Geist Mono',monospace" }}>{formatoImporte(precio)}</span>}
       </div>

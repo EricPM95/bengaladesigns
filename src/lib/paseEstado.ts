@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { llamar, logrosActivos } from './logros'
-import { fijarServidorDiceSinPase } from './pago'
+import { fijarPaseDesconocido, fijarServidorDiceSinPase } from './pago'
+import { useSyncStore } from '../store/useSyncStore'
 import { useLogrosStore } from '../store/useLogrosStore'
 import type { PruebaDelPase } from './diaDePrueba'
 
@@ -47,6 +48,21 @@ interface RespuestaEstado {
   hoy: { puede: boolean }
 }
 
+/**
+ * (Tanda 10N5 §0.2) En cuanto la app abre un viaje y hay que preguntar al servidor si tiene pase, `pagoActivo()` pasa a «pendiente» (candados sin pintar, ni cerrados ni abiertos) SIN esperar a que
+ * se pinte ninguna pantalla; al llegar la respuesta (`fijarServidorDiceSinPase`) todo se repinta solo.
+ */
+{
+  let visto: string | null = null
+  const mirar = (tripId: string | null) => {
+    if (tripId === visto) return
+    visto = tripId
+    if (tripId && !paseForzado() && logrosActivos()) fijarPaseDesconocido(tripId)
+  }
+  mirar(useSyncStore.getState().activeTripId)
+  useSyncStore.subscribe((st) => mirar(st.activeTripId))
+}
+
 export function usePaseEstado(tripId: string | null): EstadoPase {
   const forzado = paseForzado()
   // (Tanda 10N4 §1) Antes arrancaba en ABIERTO («cobro apagado, todo abierto») y la pastilla salía «comprada» hasta que llegaba la respuesta. Ahora, si hay que preguntar al servidor, arranca en DESCONOCIDO.
@@ -57,11 +73,12 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
     void llamar<RespuestaEstado>(`/api/pase/estado?trip_id=${encodeURIComponent(tripId)}`).then((r) => {
       if (!vivo) return
       if (!r?.ok) {
-        // Sin respuesta (sin servidor o sin sesión): como siempre, todo abierto.
+        // Sin respuesta (sin servidor o sin sesión): como siempre, todo abierto. (Y ya se sabe: los candados dejan de esperar.)
+        fijarServidorDiceSinPase(false, tripId)
         setReal(ABIERTO)
         return
       }
-      fijarServidorDiceSinPase(r.cobro && r.pases.length === 0)
+      fijarServidorDiceSinPase(r.cobro && r.pases.length === 0, tripId)
       setReal({ cobro: r.cobro, conPase: r.pases.length > 0, puede: !r.cobro || r.hoy.puede, pruebaGastada: r.prueba.ya_usada, sabido: true, prueba: { estado: r.prueba.estado ?? null, tripId: r.prueba.trip_id ?? null, fecha: r.prueba.fecha ?? null } })
     })
     return () => {
@@ -70,7 +87,14 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
   }, [forzado, tripId])
   // Si el viaje abierto cambia, hasta que conteste el servidor por el nuevo no se sabe.
   useEffect(() => {
-    if (!forzado && tripId && logrosActivos()) setReal((r) => (r.sabido === false ? r : { ...r, sabido: false }))
+    if (!forzado && tripId && logrosActivos()) {
+      fijarPaseDesconocido(tripId)
+      setReal((r) => (r.sabido === false ? r : { ...r, sabido: false }))
+    }
+  }, [forzado, tripId])
+  // (Tanda 10N5) Con un estado forzado (`?pase=sin|con…`, solo en desarrollo) los candados dicen lo mismo que RUTA y HOY.
+  useEffect(() => {
+    if (forzado) fijarServidorDiceSinPase(forzado !== 'con', tripId)
   }, [forzado, tripId])
   // La pregunta de las 12:00 de prueba, una sola vez por carga.
   useEffect(() => {

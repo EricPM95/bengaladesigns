@@ -15,7 +15,7 @@ export const COLORES_DE_CAMBIO = {
 
 const ICONOS = { oro: 'M7 7h13l-4-4M17 17H4l4 4', rojo: 'M5 12h14', verde: 'M12 5v14M5 12h14', dia: 'M5 12h14M13 6l6 6-6 6' } as const
 
-export const colorDelCambio = (tipo: CambioPropuesto['tipo']): keyof typeof COLORES_DE_CAMBIO => (tipo === 'quitar' ? 'rojo' : tipo === 'anadir' || tipo === 'dia_nuevo' ? 'verde' : 'oro')
+export const colorDelCambio = (tipo: CambioPropuesto['tipo']): keyof typeof COLORES_DE_CAMBIO => (tipo === 'quitar' ? 'rojo' : tipo === 'anadir' || tipo === 'dia_nuevo' || tipo === 'free_tour' ? 'verde' : 'oro')
 
 export type DecisionDeFila = 'aceptado' | 'rechazado' | null
 

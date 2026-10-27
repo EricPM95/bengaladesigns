@@ -173,9 +173,7 @@ export function AlojamientoReservas({
             {hotel && <EliminarTexto texto="Eliminar" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}
             {/* Tanda 10G: guardar el alojamiento es gratis; la zona (y [Cómo llegar a tu alojamiento]) es lo que la app hace con él: sin el pase, cerrada y a la vista. */}
             {!pago && (
-              <Candado datos="alojamiento-zona" texto="Con el pase, cada día empieza cerca de donde duermes">
-                <span style={{ font: "500 14px 'Geist'" }}>¿En qué zona te alojas?</span>
-              </Candado>
+              <Candado datos="alojamiento-zona" titulo="¿En qué zona te alojas?" texto="Con el {pase}, adaptamos tu ruta a tu alojamiento." />
             )}
             {pago && (
               <div className="flex flex-col gap-2.5">

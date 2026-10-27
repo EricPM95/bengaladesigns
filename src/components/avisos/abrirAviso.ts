@@ -8,6 +8,8 @@ import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { useViajeCompartido } from '../../store/useViajeCompartido'
+import { normaDeParada, useCambiosMarcados } from '../../store/useCambiosMarcados'
+import { marcasDelAviso } from '../../../shared/avisos/cambioViaje.js'
 
 /**
  * Lo que pasa al tocar un aviso de la campanita (cuentas parte 3):
@@ -78,6 +80,19 @@ export async function abrirAviso(aviso: AvisoDeCuenta): Promise<string | null> {
     }
     const { refrescarViajeActivo } = await import('../../lib/viajeEnDirecto')
     await refrescarViajeActivo()
+    // (10N5) A los días que han cambiado, con lo nuevo marcado («Movida», «Nueva»): se abre DÍAS en el primero de ellos.
+    const { marcas, dias } = marcasDelAviso(p)
+    const ruta = useRouteStore.getState().route
+    if (ruta && dias.length > 0) {
+      const dia = ruta.days.find((d) => !d.isReturnLeg && d.dayNumber === dias[0])
+      const marcasFinales: Record<string, 'nueva' | 'movida'> = { ...marcas }
+      const ft = ruta.days.flatMap((d) => d.stops).find((s) => s.isFreeTour)
+      if (ft && marcas[normaDeParada('Free Tour')]) marcasFinales[normaDeParada(ft.name)] = 'nueva'
+      useCambiosMarcados.getState().poner(tripId, marcasFinales, dias)
+      useRouteStore.getState().setMode('days')
+      if (dia) useRouteStore.getState().setActiveDayId(dia.id)
+      return null
+    }
     useRouteStore.getState().setMode('route')
     return null
   }

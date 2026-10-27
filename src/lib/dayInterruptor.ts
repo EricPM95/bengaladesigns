@@ -15,7 +15,8 @@ import { enrichRoutePhotos } from './placePhoto'
 import { reservasParaMotor } from './engineReservas'
 import { dateOfDay, dayOfReservation, reapplyReservations, type Reservation } from './bookings'
 import { withDayColors } from './freeDays'
-import { elDia } from './nombreDeDia'
+import { elDia, fechaDelDia } from './nombreDeDia'
+import { conAccion, conUltimoCambio } from './accionDeCambio'
 import { rehacerDiasSinTocar } from './rebuildDay'
 import { llegadaVueltaDe } from './llegadaVuelta'
 import { useRouteStore } from '../store/useRouteStore'
@@ -93,7 +94,8 @@ function ponerDias(cityDays: DayPlan[], answersPatch: Partial<QuestionnaireAnswe
     if (!state.route) return state
     const tail = state.route.days.filter((day) => day.isReturnLeg)
     const days = [...cityDays.map((day, index) => (day.dayNumber === index + 1 ? day : { ...day, dayNumber: index + 1 })), ...tail]
-    return { route: reapplyReservations(withDayColors({ ...state.route, answers: { ...state.route.answers, ...answersPatch }, days }), state.reservations) }
+    // (10N5) El primer paso que cambia la ruta lleva apuntado lo que ha decidido la persona («ha cambiado el sábado 14 a día de excursión»): los demás no ven la lista de lo que se movió.
+    return { route: conUltimoCambio(state.route, reapplyReservations(withDayColors({ ...state.route, answers: { ...state.route.answers, ...answersPatch }, days }), state.reservations)) }
   })
 }
 
@@ -102,6 +104,14 @@ function ponerDias(cityDays: DayPlan[], answersPatch: Partial<QuestionnaireAnswe
  * El aviso de «Tienes reservada la excursión…» al pasar a Roma con la excursión confirmada lo pone la pantalla antes de llamar aquí.
  */
 export async function cambiarInterruptor(dayId: string, target: 'roma' | 'excursion'): Promise<CambioInterruptor> {
+  const route = useRouteStore.getState().route
+  const day = route?.days.find((other) => other.id === dayId)
+  if (!route || !day || !day.interruptor || (day.interruptor.mode === target && !day.ownDay)) return cambiarInterruptorSinAviso(dayId, target)
+  const elegida = day.excursions?.find((e) => e.id === (day.interruptor?.excursionId ?? day.selectedExcursionId)) ?? day.excursions?.[0] ?? day.interruptor.other?.excursions?.[0] ?? null
+  return conAccion({ tipo: 'excursion', dia_n: day.dayNumber, fecha: fechaDelDia(route, day.dayNumber), a: target, excursion: elegida?.title ?? null, ciudad: day.city || route.destination }, () => cambiarInterruptorSinAviso(dayId, target))
+}
+
+async function cambiarInterruptorSinAviso(dayId: string, target: 'roma' | 'excursion'): Promise<CambioInterruptor> {
   const { route, reservations } = useRouteStore.getState()
   const day = route?.days.find((other) => other.id === dayId)
   const sw = day?.interruptor

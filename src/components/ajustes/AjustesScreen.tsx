@@ -1,10 +1,10 @@
+import { useUnirseUi } from '../../store/useUnirseUi'
 import { useEffect, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { textoDeComoEntra, textoDeMisPases } from '../../lib/ajustes'
-import { borrarMiCuenta, cerrarSesion, guardarAvisoDeInvitacion } from '../../lib/cuentas'
+import { borrarMiCuenta, cerrarSesion } from '../../lib/cuentas'
 import { compartirEnlace } from '../../lib/compartirEnlace'
-import { usePedirNombre } from '../../store/usePedirNombre'
-import { aceptarInvitacionPendiente, canjearInvitacion, enlaceDeAmigo, miCodigoDeAmigo, normalizarCodigo } from '../../lib/invitaciones'
+import { enlaceDeAmigo, miCodigoDeAmigo } from '../../lib/invitaciones'
 import { marca } from '../../lib/marca'
 import { apagarAvisosDelMovil, avisosDelMovilEncendidos, encenderAvisosDelMovil } from '../../lib/permisoAvisos'
 import { misPases, type PaseMio } from '../../lib/pagoPase'
@@ -14,10 +14,8 @@ import { useMomentosUI } from '../logros/momentos/useMomentosUI'
 import { PrivacidadScreen } from '../cuenta/PrivacidadScreen'
 import { useCuenta } from '../cuenta/useCuenta'
 import { Icono } from '../ui/Icono'
-import { BotonHoja, Hoja } from '../ui/Hoja'
 import type { NombreIcono } from '../../lib/iconos'
 import { MisPases } from './MisPases'
-import { recargarSinApertura } from '../../lib/recargarSinApertura'
 import listaAjustes from '../../../data/pase/lista_ajustes.json'
 import { TextoConPase } from '../cuenta/TextoConPase'
 
@@ -81,7 +79,6 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
   const [sonido, setSonido] = useState(() => sonidoActivado())
   const [avisosMovil, setAvisosMovil] = useState(avisosInicial)
   const [privacidad, setPrivacidad] = useState(false)
-  const [codigo, setCodigo] = useState<string | null>(null)
   const [borrando, setBorrando] = useState(borrandoInicial)
   const [errorBorrar, setErrorBorrar] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
@@ -127,22 +124,6 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
     setOcupado(false)
     if (e) setErrorBorrar(e)
   }
-  const unirmeConCodigo = async () => {
-    if (!codigo) return
-    setOcupado(true)
-    aceptarInvitacionPendiente()
-    // Sin nombre puesto: «¿Cómo te llamas?», una sola vez, antes de entrar en el viaje o el pase.
-    await usePedirNombre.getState().pedir()
-    const r = await canjearInvitacion(codigo)
-    setOcupado(false)
-    if (r.error) {
-      setMensaje(r.error)
-      return
-    }
-    guardarAvisoDeInvitacion(r.yaEstaba ? 'Ya estabas en ese viaje.' : 'Has entrado en el viaje como invitado.')
-    recargarSinApertura()
-  }
-
   if (pantalla === 'pases') return <MisPases onVolver={() => abrir('ajustes')} />
 
   return createPortal(
@@ -157,7 +138,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
         <Grupo titulo="Mi cuenta">
           <Fila icono="correo" titulo={email ?? 'Tu cuenta'} sub={textoDeComoEntra(proveedor)} datos="cuenta" />
           <Fila icono="salir" titulo="Cerrar sesión" chevron onClick={() => void cerrarSesion()} datos="cerrar-sesion" />
-          <Fila icono="llave" titulo="Tengo un código de invitación" chevron onClick={() => setCodigo('')} datos="codigo" />
+          <Fila icono="llave" titulo="Tengo un código de invitación" chevron onClick={() => useUnirseUi.getState().abrir()} datos="codigo" />
         </Grupo>
         <Grupo titulo="Mis pases">
           <Fila icono="pase" titulo="Mis pases" sub={textoDeMisPases(pases)} chevron onClick={() => abrir('pases')} datos="mis-pases" />
@@ -201,26 +182,6 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
         </button>
       </main>
       {privacidad && <PrivacidadScreen onVolver={() => setPrivacidad(false)} />}
-      {codigo !== null && (
-        <Hoja onCerrar={() => setCodigo(null)} titulo="¿Te han dado un código?" datos="codigo-de-invitacion" z={90}>
-          <input
-            value={codigo}
-            onChange={(e) => setCodigo(normalizarCodigo(e.target.value))}
-            placeholder="CÓDIGO"
-            aria-label="Código de invitación"
-            autoFocus
-            className="h-[52px] rounded-[14px] border-[1.5px] border-text/20 bg-white px-3.5 text-[16px] uppercase tracking-[.25em] outline-none"
-          />
-          {mensaje && (
-            <p role="alert" className="m-0 text-[13px]" style={{ color: 'rgb(var(--accent-red))' }}>
-              {mensaje}
-            </p>
-          )}
-          <BotonHoja tipo="oscuro" disabled={ocupado || codigo.length < 6} onClick={() => void unirmeConCodigo()}>
-            Unirme
-          </BotonHoja>
-        </Hoja>
-      )}
       {borrando && (
         <div className="fixed inset-0 z-[90]" role="alertdialog" aria-modal="true" aria-label="Borrar la cuenta" data-borrar-dialogo>
           <div className="hoja-fondo absolute inset-0" style={{ background: 'rgba(28,34,48,.5)' }} onClick={() => setBorrando(false)} />

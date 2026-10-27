@@ -112,6 +112,7 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
   })
 
   ajustarAlMovil(ast)
+  ajustarLaCabecera(ast, destino)
   ajustarLaLista(ast)
 
   cache.set(destino, ast)
@@ -120,6 +121,38 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
 
 /** Los bloques de «Todo lo que incluye»: los grupos de la lista del final, con el nombre y la línea de cada fila. */
 export const bloquesDeLaLista = () => LISTA_DEL_PASE.map((g) => ({ t: g.titulo, items: g.items.map((i) => ({ titulo: i.titulo, linea: i.linea, partes: partesDeLinea(i.linea).map((p) => ({ t: p.t, dm: p.marca ? '1' : undefined, estilo: p.marca ? 'color:#6F4E37;font-weight:600' : '' })) })) }))
+
+/**
+ * LA CABECERA DE TODAS LAS ESCENAS (Tanda 10N5, apartado 5).
+ *   · El título pequeño de Design («Todo lo que incluye tu Pase Roma», encima de las rayitas) va en la MISMA línea que [Saltar], centrado en medio (Eric, 26-oct), con el destino del pase; en el final no sale (allí van [Ver] y ✕).
+ *   · Las rayitas de arriba (una por escena) se pueden tocar: llevan a esa escena y la vuelven a poner desde el principio, como las historias de Instagram. La zona de toque es más alta que la rayita (22 px) y la rayita se ve igual (3 px, a la misma altura).
+ */
+function ajustarLaCabecera(ast: Nodo[], destino: string) {
+  const movil = ast[0].c![0] as Nodo
+  movil.c = movil.c!.map((h) => {
+    if (!esNodo(h) || h.t !== 'div' || !h.a?.style?.startsWith('position:absolute;left:0;right:0;top:16px;text-align:center')) return h
+    const titulo: Nodo = {
+      ...h,
+      a: { ...h.a, 'data-pelicula-titulo': '1', style: h.a.style.replace('top:16px;', 'top:66px;height:32px;display:flex;align-items:center;justify-content:center;white-space:nowrap;') },
+      // (dentro de un span: en un contenedor flex el espacio de «tu » se perdería)
+      c: [{ t: 'span', c: (h.c ?? []).map((x) => (esNodo(x) && x.t === 'em' ? { ...x, c: [`Pase ${destino}`] } : x)) }],
+    }
+    return { i: '{{ !s7 }}', c: [titulo] }
+  })
+  recorre(movil, (n) => {
+    if (!n.a?.style?.startsWith('position:absolute;left:14px;right:14px;top:50px;display:flex;gap:4px')) return
+    n.a = { ...n.a, 'data-rayitas': '1', style: n.a.style.replace('top:50px;', 'top:41px;') }
+    const para = (n.c ?? [])[0] as Nodo
+    const barra = (para.c ?? [])[0] as Nodo
+    para.c = [
+      {
+        t: 'span',
+        a: { onClick: '{{ g.ir }}', role: 'button', 'data-raya': '{{ g.k }}', 'aria-label': 'Ir a esta escena', style: 'flex:1;height:22px;display:flex;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent' },
+        c: [{ ...barra, a: { ...barra.a, style: barra.a!.style.replace('flex:1;', 'flex:1;width:100%;') } }],
+      },
+    ]
+  })
+}
 
 /**
  * A TODO EL ANCHO DEL MÓVIL (Tanda 10P, 1.2). Design hace la película en 390 x 844 fijos. Aquí el escenario tiene el ancho y el alto REALES del móvil (`W` x `H`, ya divididos por la escala): las escenas 0-6 siguen siendo de 390 centradas
@@ -137,6 +170,7 @@ function ajustarAlMovil(ast: Nodo[]) {
     if (dentro.a?.style?.startsWith('position:absolute;inset:0')) dentro.a = { ...dentro.a, style: dentro.a.style.replace('position:absolute;inset:0', 'position:absolute;top:0;bottom:0;left:var(--dx,0px);width:390px') }
   }
   ajustarTextosYEscena0(movil)
+  centrarLasEscenas(movil)
   // [Ver] / [Saltar] y el ✕ del final: la barra de arriba deja sitio al ✕ (si no, [Ver] se pone encima).
   recorre(movil, (n) => {
     if (n.a?.style?.startsWith('position:absolute;left:18px;right:18px;top:66px;display:flex;justify-content:flex-end')) n.a = { ...n.a, style: n.a.style.replace('right:18px', 'right:{{ barR }}px'), 'data-barra-superior': '1' }
@@ -183,7 +217,7 @@ function ajustarTextosYEscena0(movil: Nodo) {
     const d = esc?.c?.[0] as Nodo | undefined
     if (!d?.c) continue
     const texto = (h: Nodo | string) => esNodo(h) && h.a?.['data-texto-abajo'] === '1'
-    d.c = [{ t: 'div', a: { 'data-visual-recogido': '1', style: 'position:absolute;inset:0;transform-origin:50% 0;transform:translateY(-16px) scale(0.93)' }, c: d.c.filter((h) => !texto(h)) }, ...d.c.filter(texto)]
+    d.c = [{ t: 'div', a: { 'data-visual-recogido': '1', style: 'position:absolute;inset:0;transform-origin:50% 0;transform:translateY(' + (id === '{{ s1 }}' ? '4px' : '-16px') + ') scale(0.93)' }, c: d.c.filter((h) => !texto(h)) }, ...d.c.filter(texto)]
   }
   const s0 = movil.c!.find((h) => esNodo(h) && h.i === '{{ s0 }}') as Nodo | undefined
   if (!s0) return
@@ -217,6 +251,43 @@ function ajustarTextosYEscena0(movil: Nodo) {
       if (desde >= 24 && desde <= 340) n.a = { ...n.a, style: st.replace(`left:${m[1]}px;`, `left:calc({{ xc }}px + ${(desde - 24).toFixed(1)}px);`) }
     }
   })
+}
+
+/**
+ * TODAS LAS ESCENAS, DE LADO A LADO (Tanda 10N5, apartado 5). Las escenas 1, 4, 5 y 6 seguían siendo una columna de 390 con su propio fondo: en un móvil de poca altura (donde el escenario se ensancha) se veían como una caja más
+ * estrecha que la primera, con los bordes a la vista. Ahora la escena ocupa TODO el escenario y su contenido de Design (390 de ancho) va en una columna centrada dentro; lo que es fondo (el resplandor de la escena 6) se extiende hasta los bordes
+ * y la escena 3 (el cielo de estrellas, una pieza de Design de 390) se funde con el fondo por los cuatro lados en vez de acabar en un recuadro.
+ */
+function centrarLasEscenas(movil: Nodo) {
+  for (const id of ['{{ s1 }}', '{{ s4 }}', '{{ s5 }}', '{{ s6 }}']) {
+    const esc = movil.c!.find((h) => esNodo(h) && h.i === id) as Nodo | undefined
+    const d = esc?.c?.[0] as Nodo | undefined
+    if (!d?.a?.style) continue
+    if (d.a.style.includes('left:var(--dx,0px);width:390px')) d.a = { ...d.a, style: d.a.style.replace('left:var(--dx,0px);width:390px', 'left:0;width:{{ W }}px') }
+    d.c = [{ t: 'div', a: { 'data-columna-escena': '1', style: 'position:absolute;top:0;bottom:0;left:var(--dx,0px);width:390px' }, c: d.c ?? [] }]
+  }
+  // La escena 4, ya con las tarjetas (la pieza «Pase Escena 4b», de 390 x 844 a pantalla completa): se baja bajo la línea de [Saltar] y se recoge para que su última tarjeta acabe ANTES del texto de abajo (en un móvil de 375 x 667 se pisaban).
+  recorre(movil, (n) => {
+    if (n.a?.style === 'position:absolute;inset:0;z-index:20' && (n.c ?? []).some((h) => esNodo(h) && h.imp === 'Piezas/Pase Escena 4b')) n.a = { ...n.a, 'data-escena-4b': '1', style: n.a.style + ';transform-origin:50% 0;transform:translateY(96px) scale(.8)' }
+  })
+  // El resplandor de la escena 6: de borde a borde.
+  recorre(movil, (n) => {
+    if (n.a?.style?.startsWith('position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,#3A3224,transparent 70%)')) n.a = { ...n.a, style: n.a.style.replace('position:absolute;inset:0;', 'position:absolute;top:0;bottom:0;left:calc(-1 * var(--dx,0px));right:calc(-1 * var(--dx,0px));') }
+  })
+  // La escena 3: el cielo de estrellas se funde con el fondo por los cuatro lados.
+  const eff = movil.c!.find((h) => esNodo(h) && h.i === '{{ effS }}') as Nodo | undefined
+  if (eff) {
+    recorre(eff, (n) => {
+      if (n.a?.style === 'position:absolute;left:0;right:0;top:68px') {
+        n.a = {
+          ...n.a,
+          'data-cielo-escena': '1',
+          style:
+            'position:absolute;left:0;right:0;top:68px;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 11%,#000 89%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 7%,#000 90%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent 0,#000 11%,#000 89%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 7%,#000 90%,transparent 100%);mask-composite:intersect',
+        }
+      }
+    })
+  }
 }
 
 /**

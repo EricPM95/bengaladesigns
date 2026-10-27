@@ -200,6 +200,9 @@ const SIGNOS_TEXTO = new Set(['✓', '✔', '✕', '✗', '✖', '★', '☆', '
 const EXCEPCIONES_EMOJI = [
   { archivo: /dev[\\/]DevQuickRouteScreen\.tsx$/, emoji: '🧪' },
   { archivo: /trazo[\\/]StepRoute\.tsx$/, emoji: '🧪' }, // ídem, en el formulario nuevo
+  // Las líneas de vuelo de «Lo de cada uno» («✈ Ida · mar 10 · 13:40 · Ciampino»): el ✈ es un signo de texto del diseño de las cuentas.
+  { archivo: /lib[\\/]loSuyo\.ts$/, emoji: '✈' },
+  { archivo: /reservas[\\/]LoDeCadaUno\.tsx$/, emoji: '✈' },
 ]
 function todosLosArchivos(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? todosLosArchivos(path.join(dir, e.name)) : /\.(tsx?|jsx?|css|html|json)$/.test(e.name) ? [path.join(dir, e.name)] : []))

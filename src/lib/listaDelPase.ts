@@ -47,8 +47,8 @@ export const LISTA_DEL_PASE: GrupoDeLista[] = [
     }
    },
    {
-    "titulo": "Empiezas cerca de donde duermes",
-    "linea": "Cada día sale desde tu zona.",
+    "titulo": "Adaptamos tu ruta a tu alojamiento",
+    "linea": "El primer día, y como mucho el último, según tu zona.",
     "icono": {
      "t": "svg",
      "a": {

@@ -125,14 +125,10 @@ await M.fetchDestinationExcursions('Roma')
   const h = html(M.FreeTourSheet, { route: ruta, onClose() {} })
   const t = aTexto(h)
   const lineas = t.split('\n')
-  for (const hora of FREE_TOUR_HOURS) debe(lineas.includes(hora), '3 horas pintadas', `la hoja del Free Tour no enseña ${hora}`)
-  debe(lineas.includes('Después de comer') && lineas.includes('Por la tarde'), '3 nombres pintados', 'la hoja no enseña «Después de comer» y «Por la tarde»')
-  debe(plano(t).includes('Lo ponemos al principio de tu viaje: es cuando más vale la pena, porque te ayuda a situarte. Recuerda revisar la disponibilidad antes de añadirlo a tu ruta.'), '3 texto de arriba', 'el texto de arriba de la hoja no es el nuevo')
-  debe(!/se rehace con el Free Tour/.test(t), '3 texto viejo', 'la hoja aún enseña «Tu ruta se rehace con el Free Tour…»')
-  const iUltimaHora = h.lastIndexOf('21:00')
-  const iBoton = h.indexOf('Ver disponibilidad')
-  debe(iBoton > iUltimaHora && iUltimaHora > 0, '3 botón', '[Ver disponibilidad] no va debajo de las horas')
-  debe(/<button[^>]*btn-champan[^>]*>Ver disponibilidad<\/button>/.test(h), '3 botón', '[Ver disponibilidad] no es un botón de los nuestros (champán, Tanda 10E)')
+  // Tanda 10N5: la hoja del Free Tour de una ruta con días escritos pregunta el DÍA («¿A qué día lo añadimos?»), no la hora: el Free Tour queda a la hora de nuestro día escrito.
+  // Las horas y [Ver disponibilidad] siguen en la hoja de reserva de la ruta a mano (parte 2 de esta prueba).
+  debe(/¿A qué día lo añadimos?/.test(t), '3 pregunta del día', 'la hoja del Free Tour no pregunta «¿A qué día lo añadimos?»')
+  for (const hora of FREE_TOUR_HOURS) debe(!lineas.includes(hora), '3 sin horas', `la hoja del Free Tour por días vuelve a enseñar la hora ${hora}`)
 }
 
 // ── 4. [Ver disponibilidad] ──

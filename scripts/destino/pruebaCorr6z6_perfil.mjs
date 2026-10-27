@@ -66,12 +66,14 @@ const fuentePerfil = leer('src/components/layout/PerfilSheet.tsx')
 const html1 = pinta({ n: 6 })
 const texto1 = aTexto(html1)
 debe(/role="dialog"[^>]*aria-label="Perfil"/.test(html1) && /class="fixed inset-0 /.test(html1), 'P1', 'el Perfil no es una pantalla completa (role="dialog" aria-label="Perfil" con fixed inset-0)')
-debe(/<h1[^>]*>Perfil<\/h1>/.test(html1), 'P1', 'falta la cabecera «Perfil»')
+// 10N5: la cabecera ya no lleva un «Perfil» escrito: lleva los ajustes y la ✕ (el diálogo se llama «Perfil» por aria-label).
+debe(/<header/.test(html1) && /aria-label="Cerrar el Perfil"/.test(html1), 'P1', 'falta la cabecera del Perfil (con la ✕)')
 debe(/aria-label="Cerrar el Perfil"/.test(html1), 'P1', 'falta la ✕ para cerrar el Perfil')
 debe(!/HojaAbajo|items-end|rounded-t-|max-h-\[88vh\]/.test(html1) && !/HojaAbajo|AnimatePresence|rounded-t-\[/.test(fuentePerfil), 'P1', 'el Perfil sigue siendo una hoja que sube desde abajo')
-const relleno = html1.match(/pb-\[calc\((\d+(?:\.\d+)?)rem\+env\(safe-area-inset-bottom\)\)\]/)
+// 10N5: el relleno de abajo es fijo (pb-[150px]) para que el [+] flotante no tape lo último.
+const relleno = html1.match(/pb-\[(\d+)px\]/)
 // La barra de abajo mide h-14 (3,5 rem) + su relleno de arriba y de abajo: 5 rem es el mínimo para que lo último de la lista quede por encima.
-debe(relleno && Number(relleno[1]) >= 1.5, 'P1', `6y4: el pie del Perfil ([+ Nuevo viaje]) no deja relleno de abajo con la zona segura (${relleno ? relleno[0] : 'sin relleno'})`)
+debe(relleno && Number(relleno[1]) >= 100, 'P1', `10N5: el pie del Perfil ([+] flotante) no deja relleno de abajo (${relleno ? relleno[0] : 'sin relleno'})`)
 debe(/overflow-y-auto/.test(html1), 'P1', 'el Perfil no se puede bajar (falta overflow-y-auto en su contenido)')
 debe(/createPortal\(/.test(fuentePerfil), 'P1', 'el Perfil no se pinta en el body (la barra de abajo, de z-30, lo taparía desde dentro de la cabecera)')
 
@@ -93,7 +95,7 @@ for (const n of [0, 1, 6]) {
   debe(lista.length === n, 'P4', `el Perfil con ${n} viajes cuenta ${lista.length}`)
   if (n === 0) debe(/Aún no tienes viajes/.test(t), 'P4', 'con 0 viajes falta el texto «Aún no tienes viajes»')
   else debe(!/Aún no tienes viajes/.test(t), 'P4', `con ${n} viajes sale «Aún no tienes viajes»`)
-  debe(/aria-label="Perfil"/.test(html) && /Nuevo viaje/.test(aTexto(html)), 'P4', `con ${n} viajes el Perfil no pinta su cabecera o [Nuevo viaje]`)
+  debe(/aria-label="Perfil"/.test(html) && /aria-label="Añadir un viaje"/.test(html), 'P4', `con ${n} viajes el Perfil no pinta su diálogo o el [+] Añadir un viaje (10N5)`)
 }
 {
   const t6 = aTexto(renderToStaticMarkup(createElement(CuerpoConLogros, { viajes: viajesDelPerfil(TODOS, null, '2026-10-10'), fotos: null, rutaAbiertaId: null, onAbrirAlbum() {}, onAbrirViaje() {} })).replace(/data-grupo-de-viajes[^>]*>[\s\S]*?<\/span>/g, ''))

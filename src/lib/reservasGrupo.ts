@@ -12,6 +12,7 @@ import { dayOfReservation } from './bookings'
 import { shortOf } from './reservationOverlaps'
 import { diaProsa } from './nombreDeDia'
 import { elSitio } from './articulos'
+import { nombreVisible } from './nombrePersona'
 import type { Route, Stop } from './types'
 
 /** ¿Es un viaje compartido? El dueño y, al menos, otra persona. Sin eso, nada de «¿Para quién es?» ni de avisos de grupo. */
@@ -41,7 +42,7 @@ export const horaCorta = (hhmm: string): string => {
 }
 
 /** El nombre de pila de una persona, o 'El dueño' si no tiene uno puesto (las pantallas no inventan un nombre). */
-export const nombreDeLaPersona = (p: Pick<Persona, 'nombre'> | null | undefined): string => p?.nombre?.trim() || ''
+export const nombreDeLaPersona = (p: Pick<Persona, 'nombre'> | null | undefined): string => nombreVisible(p?.nombre)
 
 /** El día de una reserva en prosa: «jueves 26» (con fechas) o «día 2» (sin ellas). */
 export function diaDeLaReservaEnPalabras(route: Route, reserva: Reservation): string {

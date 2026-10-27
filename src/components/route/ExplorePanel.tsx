@@ -19,10 +19,10 @@ import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
 import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId, type TarjetaDeExplorar } from '../../lib/exploreStyle'
 import { Icono } from '../ui/Icono'
-import { abrirPase } from '../../lib/pago'
+import { abrirPase, usePasePintable } from '../../lib/pago'
+import { AZUL_PASE, ORO_PASE, SOMBRA_PASE, CandadoDeDesign } from '../pase/Candado'
 import type { Coordinates } from '../../lib/types'
 import { useExploreAperturaStore } from '../../store/useExploreAperturaStore'
-import { explorarConBanosYFuentes } from '../../lib/explorarDePago'
 
 interface ExplorePanelProps {
   route: Route
@@ -103,14 +103,17 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick, cerrado = fa
   const className = `${wide ? 'col-span-2 ' : ''}relative block h-[132px] overflow-hidden rounded-[20px] border border-text/[0.08] bg-bg-card p-0 text-left text-text transition-transform active:scale-[.98]`
   const cardStyle = { boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)', animation: `explore-pop .45s cubic-bezier(.2,.8,.2,1) ${delay}ms both` } as const
   // (Tanda 10G: lo del pase, cerrado y a la vista: la tarjeta en gris, con el candado dorado sobre marfil y lo que se ganaría; al tocarla se abre el pase.)
+  // (Tanda 10N5 §6b: lo pequeño bloqueado por el pase, en azul oscuro con el candado dorado —los colores de la caja de `Pase Estilo` 01—, solo con el nombre y el candado.)
   if (cerrado) {
     return (
-      <button type="button" onClick={abrirPase} data-candado={`explorar-${id}`} className={className} style={cardStyle}>
-        <span style={{ filter: 'grayscale(1)', opacity: 0.55 }} className="absolute inset-0">
-          {inner}
+      <button type="button" onClick={abrirPase} data-candado={`explorar-${id}`} data-bloqueado-pase="1" className={className} style={{ ...cardStyle, background: AZUL_PASE, boxShadow: SOMBRA_PASE, border: 'none' }}>
+        <span className="absolute bottom-3 left-4 right-4 flex flex-col gap-[3px]">
+          <span className="font-display" style={{ fontSize: 21, lineHeight: 1, color: '#FBF3E2' }}>
+            {label}
+          </span>
         </span>
-        <span aria-hidden="true" className="absolute right-2.5 top-2.5 flex h-[26px] w-[26px] items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
-          <Icono nombre="candado" size={14} grosor={1.8} />
+        <span aria-hidden="true" className="absolute right-3 top-3 flex h-[30px] w-[30px] items-center justify-center rounded-full" style={{ background: ORO_PASE }}>
+          <CandadoDeDesign size={15} />
         </span>
       </button>
     )
@@ -175,7 +178,9 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const [origenApertura, setOrigenApertura] = useState<Coordinates | null>(null)
   /** EXPLORAR se abre directamente en «Cerca de mí» (la tarjeta «Hoy vuelves a casa», Tanda 7). */
   const [aperturaCerca, setAperturaCerca] = useState(false)
-  const banosYFuentes = explorarConBanosYFuentes()
+  // (Tanda 10N5 §0.2) Mientras no se sabe si hay pase, Baños y Fuentes no se pintan (ni cerradas ni abiertas); al llegar la respuesta se repintan solas.
+  const estadoPase = usePasePintable()
+  const banosYFuentes = estadoPase === 'con'
   // «Cerca de ti» de HOY deja aquí lo que pide (filtro + punto de partida): se lee y se vacía al abrir.
   const pedido = useExploreAperturaStore((state) => state.pedido)
   useEffect(() => {
@@ -320,7 +325,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   }
 
   const visibleCards = hasCuratedCatalog
-    ? EXPLORE_CARDS.filter((card) => (card.id !== 'excursiones' || excursions.length > 0) && (card.id !== 'banos' || hasToilets) && (card.id !== 'fuentes' || hasFountains))
+    ? EXPLORE_CARDS.filter((card) => (card.id !== 'excursiones' || excursions.length > 0) && (card.id !== 'banos' || (hasToilets && estadoPase !== 'pendiente')) && (card.id !== 'fuentes' || (hasFountains && estadoPase !== 'pendiente')))
     : EXPLORE_CARDS.filter((card) => LEGACY_FALLBACK[card.id] !== undefined)
 
   return (

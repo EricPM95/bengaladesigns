@@ -6,6 +6,10 @@ import { useRouteStore } from '../store/useRouteStore'
 import { useGastosCompartidos } from '../store/useGastosCompartidos'
 import type { Persona } from '../store/useViajeCompartido'
 import { useGastosDelViaje } from './useGastosDelViaje'
+import { useLoSuyoDelViaje } from './useLoSuyoDelViaje'
+import { useLoSuyo } from '../store/useLoSuyo'
+import { idsConLoSuyo } from '../lib/loSuyo'
+import { nombreVisible } from '../lib/nombrePersona'
 
 /**
  * LAS CUENTAS DEL GRUPO DEL VIAJE ABIERTO (Tanda 10N2). Solo en un viaje compartido (`compartido`): los gastos [Para todos] aceptados y las entradas del dueño reservadas para varios, repartidos entre los marcados.
@@ -37,20 +41,25 @@ export function useCuentasDelGrupo(): CuentasDelGrupo {
   const { presupuesto } = usePresupuesto()
   const moneda = monedaDelViajero(route)
   const admin = gv.personas.find((p) => p.esAdmin)?.id ?? null
+  useLoSuyoDelViaje()
+  const grupoLoSuyo = useLoSuyo((s) => s.grupo)
+  const entradasInv = useLoSuyo((s) => s.entradas)
 
   return useMemo(() => {
     const ids = gv.personas.map((p) => p.id)
     const conNombre = [
-      ...gv.personas.map((p) => ({ id: p.id, nombre: p.nombre?.trim() || '' })),
-      ...exMiembros.filter((e) => !ids.includes(e.id)).map((e) => ({ id: e.id, nombre: e.nombre?.trim() || '' })),
+      ...gv.personas.map((p) => ({ id: p.id, nombre: nombreVisible(p.nombre) })),
+      ...exMiembros.filter((e) => !ids.includes(e.id)).map((e) => ({ id: e.id, nombre: nombreVisible(e.nombre) })),
     ]
     // (Tanda 10N3) El alojamiento y el coche del administrador entran solos (los billetes de avión, no: cada uno paga el suyo).
     const entran: LineaQueEntraSola[] = []
     for (const l of (presupuesto?.bloques ?? []).flatMap((b) => b.lineas)) {
       if (l.abrir.tipo === 'alojamiento') entran.push({ clave: l.id, nombre: l.nombre, precio: l.precio, tipo: 'alojamiento' })
       else if (l.abrir.tipo === 'coche') entran.push({ clave: l.id, nombre: l.nombre, precio: l.precio, tipo: 'coche' })
+      // (Tanda 10N5 §6c) Los vuelos del administrador ahora SÍ entran (cambia lo de la 10N3): se reparten entre para quién son, sin quien ha puesto el suyo.
+      else if (l.abrir.tipo === 'llegada' || l.abrir.tipo === 'vuelta') entran.push({ clave: l.id, nombre: l.nombre, precio: l.precio, tipo: 'vuelo' })
     }
-    const aportaciones = aportacionesDelViaje({ gastos: gv.gastos, reservas: reservations, adminId: admin, todos: ids, moneda, cambio, entran, entreDe: route?.cuentasEntre ?? null })
+    const aportaciones = aportacionesDelViaje({ gastos: gv.gastos, reservas: reservations, adminId: admin, todos: ids, moneda, cambio, entran, entreDe: route?.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), entradasDeInvitados: entradasInv })
     const cuentas = compartidoVacio(gv.compartido) ?? calcularCuentas({ aportaciones, pagos, personas: conNombre, todos: ids })
     // (Alguien que ya no está y no aparece en ningún gasto no sale; si sale con algo, lleva su nombre o «Alguien».)
     const personas = cuentas.personas.map((c) => {
@@ -58,7 +67,7 @@ export function useCuentasDelGrupo(): CuentasDelGrupo {
       return viva ? { ...viva, salio: false } : ({ id: c.id, nombre: c.nombre || null, foto: null, esAdmin: false, salio: true } as Persona & { salio: boolean })
     })
     return { compartido: gv.compartido, moneda, cuentas, personas, puedeMarcarPagos: cuentasOk, nombreDe: (id: string) => cuentas.personas.find((p) => p.id === id)?.nombre || gv.nombreDe(id), aportaciones, duplicados: posiblesDuplicados(aportaciones) }
-  }, [gv, reservations, admin, moneda, cambio, pagos, exMiembros, cuentasOk, presupuesto, route?.cuentasEntre])
+  }, [gv, reservations, admin, moneda, cambio, pagos, exMiembros, cuentasOk, presupuesto, route?.cuentasEntre, grupoLoSuyo, entradasInv])
 }
 
 /** Sin viaje compartido no se calcula nada. */

@@ -23,7 +23,7 @@ import {
   type ArrivalTip,
 } from '../../../lib/arrivalReturn'
 import { openTicketShop } from '../reservas/EntradaCard'
-import { pagoActivo } from '../../../lib/pago'
+import { usePagoActivo } from '../../../lib/pago'
 import { useEnlaceDeTraslados } from '../../../lib/enlaceDeTraslados'
 import { ARRIVAL_PETROL, ModeIcon } from './ArrivalReturnBar'
 import { Icono } from '../../ui/Icono'
@@ -172,7 +172,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
   const { open, kind, route, mode, info, medio, origin, dateIso, time, pointId, onEditBooking, onClose, onExplorarRestaurantes } = props
   const [tab, setTab] = useState<Tab>('resumen')
 
-  const pago = pagoActivo()
+  const pago = usePagoActivo()
   const [verOtro, setVerOtro] = useState(false)
   const points = medio?.puntos ?? []
   // (Tanda 7: con la hora puesta y sin punto elegido —un viaje de antes—, el del traslado más largo de ese medio.)

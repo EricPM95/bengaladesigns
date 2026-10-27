@@ -1,0 +1,209 @@
+[
+  {
+    "apartado": "0 · Regla global",
+    "punto": "Los nombres de las personas, siempre con la primera letra de cada palabra en mayúscula y el resto en minúscula («Viajes», «José Luis»), en todos los sitios donde salgan; solo al enseñarlos (se guardan como los escribió la persona)",
+    "estado": "hecho",
+    "nota": "Un solo sitio (`nombreVisible`) aplicado donde se pinta o se compone un nombre: nombreDe (store del viaje compartido: campana, franja, personas del viaje, gastos, RESERVAS, propuestas), nombreDeLaPersona, nombreParaMostrar (perfil «Hola, Viajes», Compartir), los textos de avisos del servidor (shared/avisos/textos.js: texto, franja y quién), las cuentas del grupo (nombres de quien salió incluidos), las pastillas de «Añadir gasto», el aviso de gasto («pagó …»), la cabecera del presupuesto invitado y las pastillas de «Para quién es» del alojamiento. Probado con «VIAJES», «ERIC», «ana maría», «josé luis».",
+    "donde": "Cualquier pestaña · con la cuenta de Eric guardada como «VIAJES»: campana (icono de arriba), franja de aviso nuevo, RUTA > Personas del viaje, RESERVAS > Entradas > Para quién es, cartera > Cuentas del grupo, perfil «Hola, Viajes»",
+    "captura": "docs/dias/capturas_jutrip/10n5_cadauno_04_eric_quien_va.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "0 · Regla global",
+    "punto": "Espacio claro entre bloques distintos en las pantallas que se tocan y en las hojas de añadir (gasto, reserva, parada)",
+    "estado": "medias",
+    "nota": "Hecho en la hoja de añadir/editar gasto (gap-5 entre nombre+importe, [Para todos|Para mí], «¿Quién ha pagado?» y «¿Para quién es?») y en las hojas nuevas de lo de cada uno (Tu vuelo, En este vuelo, mi alojamiento: bloques separados). La hoja de añadir reserva ya separa sus bloques con mt-7 y no la he cambiado; la hoja de añadir parada es de la zona del Free Tour (H1), no la he tocado.",
+    "donde": "RESERVAS (o cartera) > Añadir gasto; RESERVAS > Entradas > Añádela",
+    "captura": "docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_gastos_hoja.jpg"
+  },
+  {
+    "apartado": "6c · Vuelo y alojamiento de cada uno",
+    "punto": "Cada uno puede poner su vuelo y su alojamiento (también quien solo recomienda): es suyo, no cambia la ruta de nadie",
+    "estado": "hecho",
+    "nota": "Quien no es el administrador (editar o recomendar) ve «Tengo otro vuelo · Pon el tuyo» y «Me alojo en otro sitio · Pon el tuyo»; la hoja de su vuelo (Ida / Vuelta, hora, punto, precio) y la de su alojamiento. Se guarda en su móvil y, con la migración 0049, en `lo_suyo_del_viaje` (solo lo ve ella, RLS). La ruta no lo mira.",
+    "donde": "RESERVAS · con la cuenta de Ana (invitada) · fila «Tengo otro vuelo» > elegir hora > Guardar; fila «Me alojo en otro sitio» > escribir nombre > Guardar",
+    "captura": "docs/dias/capturas_jutrip/10n5_cadauno_03_ana_lo_suyo.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_cadauno_03.jpg"
+  },
+  {
+    "apartado": "6c · Vuelo y alojamiento de cada uno",
+    "punto": "Si el administrador pone uno «para todos / para algunos», se cambia el de esas personas y a cada una le llega «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.»",
+    "estado": "hecho",
+    "nota": "El administrador marca «¿Para quién es?» en «En este vuelo» / «En este alojamiento» (se guarda con el viaje, `cuentasEntre`). Un disparador de la base de datos (0049) borra lo de las personas marcadas y les manda el aviso (para todos / para ti / para algunos; vuelo y alojamiento por separado). Probado en PGlite con las migraciones reales. A todas las marcadas les llega aviso, tuvieran el suyo o no (duda abajo).",
+    "donde": "RESERVAS · con la cuenta de Eric (administrador) · bajo «Llegada y vuelta» tocar «En este vuelo» > marcar personas > Guardar; el aviso lo ve Ana en la campana y la franja",
+    "captura": "docs/dias/capturas_jutrip/10n5_cadauno_05a_aviso_a_ana.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_cadauno_04.jpg"
+  },
+  {
+    "apartado": "6c · Vuelo y alojamiento de cada uno",
+    "punto": "Cada uno puede volver a poner el suyo cuando quiera («Tengo otro vuelo · Pon el tuyo», «Me alojo en otro sitio · Pon el tuyo»): sale solo del «¿Para quién es?» del administrador y al administrador le llega «Ana ha puesto su propio vuelo.»",
+    "estado": "hecho",
+    "nota": "Sin pedírselo a nadie. Al administrador le llega el aviso (con «Llegada a Roma · martes 10» o «Se aloja en …»), una vez por cada cambio distinto. El administrador ve «Otro vuelo · Ana tiene su propio vuelo» (con los avatares de quienes tienen otro) y «En este vuelo» sin ella.",
+    "donde": "RESERVAS · Ana: «Tengo otro vuelo» > Guardar · Eric: campana / franja «Ana ha puesto su propio vuelo.» y, en RESERVAS, filas «En este vuelo» y «Otro vuelo»",
+    "captura": "docs/dias/capturas_jutrip/10n5_cadauno_05_aviso_a_eric.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_cadauno_05.jpg"
+  },
+  {
+    "apartado": "6c · Vuelo y alojamiento de cada uno",
+    "punto": "La ruta sigue al vuelo y al alojamiento del administrador (primer y último día, y la zona), como hoy; lo de cada uno es para él, en su RESERVAS",
+    "estado": "hecho",
+    "nota": "No he tocado el motor ni lo que lee la ruta: lo de cada uno vive aparte (`lo_suyo_del_viaje`) y la ruta solo mira `arrivalFlightTime`, `departureFlightTime` y la zona del viaje.",
+    "donde": "RUTA / DÍAS · el primer y el último día siguen al vuelo de Eric aunque Ana tenga otro",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "6c · Vuelo y alojamiento de cada uno",
+    "punto": "Cuentas: el vuelo y el alojamiento del administrador se reparten entre «para quién es»; los vuelos ahora SÍ entran; lo de cada uno es suyo y no se reparte; si alguien pone el suyo, sale del reparto y las cuentas se ajustan solas; nada se cuenta dos veces",
+    "estado": "hecho",
+    "nota": "`aportacionesDelViaje` incluye ida y vuelta del administrador (tipo `vuelo`) y el alojamiento, entre sus «¿Para quién es?» sin quien tiene lo suyo (si no queda nadie, del administrador). «Por persona» del presupuesto igual. Los posibles duplicados (gasto «Billete de avión» de igual importe) se avisan como en la 10N3. Se actualizaron las pruebas viejas de la 10N3 que decían «los billetes no entran».",
+    "donde": "Cartera (presupuesto) > Cuentas del grupo · «Entra solo desde RESERVAS» con Ida, Vuelta y Alojamiento; cada línea con «Para quién es»",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "6c · Entradas de cualquiera en las cuentas",
+    "punto": "Las entradas que reserva cualquiera para varios entran en las cuentas (la pagó quien reservó, se reparte entre su «¿Para quién es?»); las solo-para-ella no cuentan; nada se cuenta dos veces",
+    "estado": "hecho",
+    "nota": "Quien reserva en el viaje de otra persona ahora ve «¿Para quién es?» en la hoja de la reserva (él siempre marcado). Una RPC (`entradas_del_grupo`, 0049) las enseña a los del viaje y las cuentas las suman (pagó el invitado). Las de una sola persona, las excursiones y las sin precio no cuentan; la misma reserva dos veces cuenta una; un gasto igual se avisa como posible duplicado. Lo que NO he hecho: que las personas incluidas vean esa entrada de Ana como «Reservada ✓» en su RESERVAS (duda abajo).",
+    "donde": "RESERVAS · con la cuenta de Ana > Entradas > Añádela > ¿Para quién es? (marcar a otros) > Guardar; cartera > Cuentas del grupo",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "6c · Pantallas de Design",
+    "punto": "Pantallas 01 y 02: Ana con el vuelo y el alojamiento de Eric, siempre «Lo ha puesto Eric · …» (también en la 01)",
+    "estado": "medias",
+    "nota": "Hecho con los textos, colores, medidas y tipografías de Design. Pastilla «Lo ha puesto Eric · para todos» (o «para Eric y para ti» / «para 3 de 4»). Cuando el texto no cabe junto al título, la pastilla pasa a dos líneas, igual que en la captura de la pieza de Design a 390; en un móvil real con Geist puede caber en una.",
+    "donde": "RESERVAS · cuenta de Ana (invitada con «Recomendar» o «Editar»), viaje compartido",
+    "captura": "docs/dias/capturas_jutrip/10n5_cadauno_01_ana_vuelo_de_eric.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_cadauno_01.jpg"
+  },
+  {
+    "apartado": "6c · Pantallas de Design",
+    "punto": "Pantalla 03: Ana con lo suyo («Tuyo» y [Cambiar])",
+    "estado": "hecho",
+    "nota": "Chip verde «Tuyo», líneas «✈ Ida · mar 10 · 13:40 · Ciampino» y «Te alojas en Trastevere», enlace [Cambiar] subrayado dorado.",
+    "donde": "RESERVAS · cuenta de Ana · tras guardar su vuelo y su alojamiento",
+    "captura": "docs/dias/capturas_jutrip/10n5_cadauno_03_ana_lo_suyo.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_cadauno_03.jpg"
+  },
+  {
+    "apartado": "6c · Pantallas de Design",
+    "punto": "Pantalla 04: Eric con quién va en su vuelo («Tú, Laura y Marcos») y quién tiene otro («Ana tiene su propio vuelo»)",
+    "estado": "medias",
+    "nota": "Las dos filas (En este vuelo con avatares, Otro vuelo con avatar) y la hoja «¿Para quién es?» están. Diferencia: en Design la pastilla «Para todos» va dentro de la cabecera de la tarjeta «Llegada y vuelta»; yo no he tocado esa cabecera (es el bloque de siempre del administrador) y el «para quién» se ve en la fila «En este vuelo». Lo dejo como duda.",
+    "donde": "RESERVAS · cuenta de Eric (administrador), viaje compartido, vuelo ya puesto",
+    "captura": "docs/dias/capturas_jutrip/10n5_cadauno_04_eric_quien_va.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_cadauno_04.jpg"
+  },
+  {
+    "apartado": "6c · Pantallas de Design",
+    "punto": "Pantalla 05: los avisos («Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.» a Ana · «Ana ha puesto su propio vuelo.» a Eric)",
+    "estado": "hecho",
+    "nota": "Franja de aviso nuevo con título y detalle como Design («Llegada a Roma · martes 10»); en la campana, la frase entera de una línea.",
+    "donde": "Cualquier pestaña · franja de arriba al llegar el aviso, y campana > lista",
+    "captura": "docs/dias/capturas_jutrip/10n5_cadauno_05_aviso_a_eric.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_cadauno_05.jpg"
+  },
+  {
+    "apartado": "6c · Migración",
+    "punto": "Si hace falta migración, escribirla y decir cuál aplicar",
+    "estado": "hecho",
+    "nota": "0049_lo_suyo_de_cada_uno.sql (idempotente, va después de 0035, 0038 y 0042). Sin aplicarla todo funciona en el propio móvil, pero el administrador no ve quién tiene lo suyo, las cuentas no lo saben y no llegan los avisos.",
+    "donde": "SQL editor de Supabase: pegar la 0049 entera",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "6d · Añadir gasto",
+    "punto": "«¿Quién lo ha pagado?» pasa a «¿Quién ha pagado?» y «¿Entre quién?» a «¿Para quién es?», en todos los sitios (añadir y editar un gasto, las cuentas del grupo…)",
+    "estado": "hecho",
+    "nota": "Cambiado en la hoja de añadir/editar, en las cuentas (botón del alojamiento y su hoja) y en los comentarios. Pruebas viejas de la 10N, 10N2 y 10N3 actualizadas a los textos nuevos.",
+    "donde": "Cartera (presupuesto) > Añadir gasto (en un viaje compartido, [Para todos])",
+    "captura": "docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_gastos_hoja.jpg"
+  },
+  {
+    "apartado": "6d · Añadir gasto",
+    "punto": "Quién ha pagado, por defecto: quien añade el gasto, el primero de la lista y ya marcado; los demás detrás y sin marcar (se pueden marcar si pagaron a medias); al editar se queda lo que ya tenía",
+    "estado": "hecho",
+    "nota": "Antes ya salía marcado solo quien añade, pero iba detrás del administrador; ahora va el primero. Probado con Ana (invitada) y con Eric (administrador) y al editar un gasto de Luis y Eric.",
+    "donde": "Cartera > Añadir gasto · [Para todos] · «¿Quién ha pagado?»",
+    "captura": "docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_gastos_hoja.jpg"
+  },
+  {
+    "apartado": "6d · Añadir gasto",
+    "punto": "La línea de abajo, como está («12,50 € cada uno»)",
+    "estado": "hecho",
+    "nota": "No se ha tocado.",
+    "donde": "Cartera > Añadir gasto · escribir un importe",
+    "captura": "docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_gastos_hoja.jpg"
+  },
+  {
+    "apartado": "6d · Añadir gasto",
+    "punto": "Con espacio entre los bloques: «¿Quién ha pagado?» y sus nombres separados de lo de arriba y de lo de abajo; lo mismo «¿Para quién es?»",
+    "estado": "hecho",
+    "nota": "Los bloques de la hoja van con separación grande (de 12 a 20 px).",
+    "donde": "Cartera > Añadir gasto",
+    "captura": "docs/dias/capturas_jutrip/10n5_gastos_hoja_ana.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n5_design_gastos_hoja.jpg"
+  },
+  {
+    "apartado": "6e · Avisos borrados de verdad",
+    "punto": "Los avisos ocultos (Eliminar) se borran del todo a los 30 días",
+    "estado": "hecho",
+    "nota": "`purgar_avisos()` (migración 0048). Probado en PGlite: eliminado hace 10 días se queda, hace 31 o 40 se borra.",
+    "donde": "No se ve en el móvil: solo desaparecen de la base de datos (campana > Gestionar > Eliminar, y 30 días después)",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "6e · Avisos borrados de verdad",
+    "punto": "Los avisos de más de un año (leídos o no) también se borran solos",
+    "estado": "hecho",
+    "nota": "Misma función. Probado con un aviso de hace 400 días sin eliminar.",
+    "donde": "No se ve en el móvil",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "6e · Avisos borrados de verdad",
+    "punto": "Que lo haga el servidor solo, una vez al día (pg_cron o servidor de la app: decidir y justificar)",
+    "estado": "hecho",
+    "nota": "Servidor de la app: la tarea de Vercel que ya corre cada día a las 9:00 (`/api/cron/avisos`, con CRON_SECRET) llama a `purgar_avisos` al empezar. Motivo: ya existe y no hay que activar la extensión pg_cron en Supabase ni añadir nada que mantener; si falta la 0048 solo lo apunta en el registro y los avisos siguen funcionando.",
+    "donde": "Vercel > Cron > /api/cron/avisos (respuesta con `limpieza: { borrados, claves_olvidadas }`)",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "6e · Avisos borrados de verdad",
+    "punto": "Al borrarlos, que no vuelvan a salir (la «clave» de no repetir): «Mañana empieza tu viaje» de un viaje que ya pasó",
+    "estado": "hecho",
+    "nota": "Antes de borrar se apunta la clave (no el contenido) en `avisos_borrados` y un disparador rechaza cualquier aviso nuevo con esa clave; las claves se olvidan a los 2 años. Probado: el aviso borrado no se puede recrear con `crear_aviso`; otra persona con la misma clave no se ve afectada.",
+    "donde": "No se ve en el móvil",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "6e · Avisos borrados de verdad",
+    "punto": "[Deshacer] sigue funcionando como hoy (unos segundos después de eliminar)",
+    "estado": "hecho",
+    "nota": "No se ha tocado la campana ni la 0046; comprobado que `ocultar_avisos(false)` devuelve el aviso.",
+    "donde": "Campana > Gestionar > Eliminar > [Deshacer]",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "6e · Migración",
+    "punto": "Si hace falta migración, escribirla y decir cuál aplicar",
+    "estado": "hecho",
+    "nota": "0048_avisos_borrado.sql (idempotente, después de la 0046).",
+    "donde": "SQL editor de Supabase: pegar la 0048 entera",
+    "captura": null,
+    "captura_design": null
+  }
+]

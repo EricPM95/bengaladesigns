@@ -6,6 +6,7 @@
  * Sin dependencias de la app: el cliente de Supabase entra por parámetro, así la prueba lo cambia por uno de mentira. Necesita la migración 0036 (pone las tres tablas en la publicación de Realtime);
  * sin ella el canal se conecta igual pero no llega nada, y la app sigue con el refresco al volver y cada poco.
  */
+import { textoDelAviso } from '../../shared/avisos/textos.js'
 /* eslint-disable @typescript-eslint/no-explicit-any -- el canal de Supabase tiene muchas sobrecargas; aquí solo se usa `postgres_changes` y la prueba lo cambia por uno de mentira */
 export interface ClienteTiempoReal {
   channel(nombre: string): any
@@ -50,8 +51,8 @@ export function accionPorAviso(aviso: { tipo: string; payload: Record<string, un
   const p = aviso.payload
   if (!tripId || String(p.trip_id ?? '') !== tripId) return { accion: 'ninguna', linea: null }
   if (aviso.tipo === 'viaje_cambiado') {
-    const quien = typeof p.quien === 'string' && p.quien.trim() ? p.quien.trim() : ''
-    return { accion: 'refrescar', linea: quien ? `${quien} ha cambiado el viaje.` : 'Han cambiado el viaje.' }
+    // (10N5) La línea de arriba dice lo que ha pasado, igual que la campana: «Eric ha añadido el Free Tour al miércoles 11 y se han reorganizado 2 días.»
+    return { accion: 'refrescar', linea: textoDelAviso({ tipo: 'viaje_cambiado', payload: p }) }
   }
   if (aviso.tipo === 'quitado') return { accion: 'quitado', linea: `Ya no formas parte del viaje a ${String(p.destino ?? '')}.`.replace(' a .', '.') }
   if (aviso.tipo === 'permiso') return { accion: 'gente', linea: null }

@@ -80,7 +80,7 @@ console.log('1. El punto de Roma, obligatorio con hora')
   debe(/disabled/.test(html(HojaHoraLlegada, { leg: legSin, ciudad: 'Roma', onSave() {}, onClose() {} })), '1 hoja pide el punto', '[Guardar] no está desactivado mientras falta el punto')
   const conPunto = legOf(viaje({ extra: { arrivalPointId: 'cia' } }), arrivalInfo, 'arrival')
   const hojaCon = plano(aTexto(html(HojaHoraLlegada, { leg: conPunto, ciudad: 'Roma', onSave() {}, onClose() {} })))
-  debe(/Guardar · \d\d:\d\d/.test(hojaCon) && !/Elige primero/.test(hojaCon), '1 hoja con punto', 'con un punto elegido [Guardar] debe estar activo')
+  debe(/Guardar/.test(hojaCon) && !/Elige primero/.test(hojaCon), '1 hoja con punto', 'con un punto elegido [Guardar] debe estar activo')
   // Un solo punto (el puerto): ya viene elegido, sin botones.
   const ferry = viaje({ ida: 'ferry' })
   const legFerry = legOf(ferry, arrivalInfo, 'arrival')

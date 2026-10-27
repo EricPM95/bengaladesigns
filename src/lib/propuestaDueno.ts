@@ -87,6 +87,18 @@ export function aplicarCambioReal(c: CambioPropuesto): ResultadoDeAplicar {
   return { ok: false, nota: 'No entiendo ese cambio.' }
 }
 
+/** Aceptar el cambio del Free Tour: busca el día por su número (los días rehechos conservan su sitio) y lo pone con la misma pieza que «+ Añadir». */
+export async function aplicarFreeTourPropuesto(c: CambioPropuesto): Promise<ResultadoDeAplicar> {
+  const { anadirFreeTourEnDia, viajeConFreeTour } = await import('./freeTourEnDia')
+  const ruta = useRouteStore.getState().route
+  if (!ruta) return { ok: false, nota: 'No hay ninguna ruta abierta.' }
+  if (viajeConFreeTour(ruta)) return { ok: true, nota: 'El viaje ya lleva el Free Tour.' }
+  const dia = ruta.days.find((d) => !d.isReturnLeg && d.dayNumber === c.dayNumber)
+  if (!dia) return { ok: false, nota: 'Ese día ya no existe en tu viaje.' }
+  const r = await anadirFreeTourEnDia(dia.id)
+  return r.ok === false ? { ok: false, nota: r.texto } : { ok: true }
+}
+
 /** Lo ya decidido de una propuesta, mezclando lo que sabe esta app y lo que dice el servidor (si dos deciden a la vez, vale el primero). */
 async function decididoAhora(rec: Recomendacion): Promise<Record<string, Decision>> {
   const remoto = await puente.leerDecisiones(rec.id).catch(() => null)
@@ -106,7 +118,8 @@ export async function decidirCambio(rec: Recomendacion, cambio: CambioPropuesto,
   if (previas[cambio.id]) return { estado: 'ya_decidido', decisiones: previas }
   let nota: string | undefined
   if (decision === 'aceptado') {
-    const r = aplicarCambioReal(cambio)
+    // (10N5) Aceptar «Añadir el Free Tour al jueves 12»: se hace lo mismo que si lo añadiera el administrador (el día elegido pasa a nuestro día con Free Tour, «Deshacer» incluido).
+    const r = cambio.tipo === 'free_tour' ? await aplicarFreeTourPropuesto(cambio) : aplicarCambioReal(cambio)
     if (!r.ok) return { estado: 'error', mensaje: r.nota ?? 'No se ha podido poner ese cambio.' }
     nota = r.nota
   }

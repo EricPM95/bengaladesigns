@@ -8,6 +8,7 @@ import { Layout } from './components/layout/Layout'
 import { decodeTripFromUrl } from './lib/shareUrl'
 import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
+import { UnirseHost } from './components/cuenta/HojaUnirse'
 import { useInvitacionEnMarcha } from './hooks/useInvitacionEnMarcha'
 import { CompartidoHost } from './components/compartir/CompartidoHost'
 import { PagoHost } from './components/pase/PagoHost'
@@ -105,6 +106,7 @@ function App() {
     <Layout>
       <TripSync />
       <PuertaDeCuenta />
+      <UnirseHost />
       <CompartidoHost />
       <PagoHost />
       <PeliculaHost />

@@ -1,0 +1,191 @@
+[
+  {
+    "apartado": "1",
+    "punto": "El Free Tour se añade como cualquier sitio desde EXPLORAR: sale la hoja «¿A qué día lo añadimos?» con los días del viaje, el primero que le encaje ya marcado",
+    "estado": "hecho",
+    "nota": "FreeTourDiaSheet (misma hoja que AddToDaySheet). Probado en la app con pruebaTanda10N5_freetour.mjs: el «+» de la tarjeta del Free Tour abre la hoja con los 3 días y el primero marcado. «El primero que encaje» = el primer día del viaje (o el siguiente si la llegada del día 1 es a las 14:00 o más) cuyo cambio se puede hacer sin tocar nada tuyo.",
+    "donde": "RUTA > EXPLORAR > tarjeta «Entradas» > Free Tour por Roma > «+». Cualquier cuenta (administrador, editor o quien solo recomienda).",
+    "captura": "docs/dias/capturas_jutrip/10n5_freetour_hoja_explorar.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "Lo mismo desde la ficha del Free Tour (su «+ Añadir» de abajo)",
+    "estado": "hecho",
+    "nota": "La ficha usa el mismo onAddFreeTour: abre la misma hoja. Comprobado en la prueba.",
+    "donde": "EXPLORAR > Entradas > tocar la tarjeta del Free Tour > «+ Añadir» (abajo).",
+    "captura": "docs/dias/capturas_jutrip/10n5_freetour_hoja_ficha.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "Y desde «+ Añadir parada» de un día en DÍAS (hoy sale en esa lista pero no deja añadirlo: que deje)",
+    "estado": "hecho",
+    "nota": "Faltaba pasarle onAddFreeTour al explorador de «Añadir parada» en DayDetailPanel.tsx (sin él la tarjeta del Free Tour salía sin «+»). Ahora abre la misma hoja de días.",
+    "donde": "DÍAS > abrir un día > «+ Añadir parada» > filtro Entradas > Free Tour > «+».",
+    "captura": "docs/dias/capturas_jutrip/10n5_freetour_hoja_anadir_parada.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "El día elegido pasa a ser nuestro día escrito con Free Tour (D1-FT de roma.json) y el día que estaba ahí pasa al sitio que deja, como con las rayitas",
+    "estado": "medias",
+    "nota": "OJO, DIFERENCIA CON EL PROMPT: D1-FT NO lleva el Free Tour (lo medí con el motor: D1-FT es la Roma antigua SIN lo que cubre el tour). El Free Tour (10:00, y el Vaticano por la tarde) vive en el día escrito D3. En Roma el Free Tour son una pareja: D2 -> D3 (con el Free Tour) y D1 -> D1-FT. Lo hago así: el día elegido pasa a ser D3, D1 pasa a D1-FT en su sitio y el día que estaba en el elegido pasa al sitio donde estaba D3 (solo se rehacen los días que cambian). Si Eric quería literalmente D1-FT en el día elegido, hay que decidirlo: pasaría a ser un día sin Free Tour.",
+    "donde": "Después de añadirlo: DÍAS, el día elegido empieza con el Free Tour de las 10:00; Ruta, los días en el nuevo orden.",
+    "captura": "docs/dias/capturas_jutrip/10n5_freetour_anadido.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "Qué hago si el viaje no tiene D1 (o D2/D3), o si el día elegido o el que se mueve tiene una reserva con hora o cosas a mano",
+    "estado": "hecho",
+    "nota": "Decisión documentada en src/lib/freeTourEnDia.ts: sin día escrito donde encajar el Free Tour sin quitar otro, no se toca nada y se dice «Este viaje no tiene un día donde encaje». Un día que se rehace con cosas a mano, día propio o añadido, excursión, entrada reservada con hora o excursión fijada NO se mueve: sale apagado en la hoja con «… no lo movemos sin avisar. Elige otro día.» Todo o nada: si el servidor no devuelve todos los días, no cambia ninguno.",
+    "donde": "Cambia a mano un día (quita una parada) y abre la hoja del Free Tour: los días afectados salen apagados con su motivo.",
+    "captura": "docs/dias/capturas_jutrip/10n5_freetour_dia_protegido.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "Sin elegir hora: el Free Tour queda en la hora y el sitio que tiene en nuestro día escrito (arrastrable dentro del día)",
+    "estado": "hecho",
+    "nota": "La hoja ya no pregunta la hora (la de las 10:00 del día escrito). Arrastrar la parada dentro del día es lo de siempre; su hora de salida se elige al reservarlo.",
+    "donde": "DÍAS > el día del Free Tour: abre con el Free Tour de las 10:00.",
+    "captura": "docs/dias/capturas_jutrip/10n5_freetour_anadido.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "El aviso al añadirlo: «Añadido el Free Tour · jueves 12» con [Deshacer], que deja el viaje como estaba",
+    "estado": "hecho",
+    "nota": "Probado: sale «Añadido el Free Tour · domingo 18» y Deshacer devuelve los días de antes y quita la experiencia free_tour.",
+    "donde": "Tras añadirlo, el aviso oscuro de abajo con «Deshacer».",
+    "captura": "docs/dias/capturas_jutrip/10n5_freetour_anadido.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "Quién puede: el administrador y quien puede editar, directo",
+    "estado": "hecho",
+    "nota": "El cambio se aplica directo a la ruta (sin diferencia de permiso en la pantalla). Para quien edita, el guardado del viaje es el de siempre. Comprobado con la cuenta de pruebas (administrador); la del editor usa el mismo código.",
+    "donde": "Cuenta administrador o con «Puede editar»: EXPLORAR > Entradas > Free Tour > «+».",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "Quien solo recomienda: su propuesta lleva UN solo cambio «Añadir el Free Tour al jueves 12»; al aceptarlo se hace lo de arriba",
+    "estado": "medias",
+    "nota": "Probado a nivel de lógica (cambiosDeLaPropuesta da un único cambio free_tour con ese texto, el paquete que se manda lleva 1 cambio, y [Deshacer este cambio] devuelve los días de antes). Aceptarlo llama a aplicarFreeTourPropuesto (propuestaDueno.ts) con la misma pieza de «+ Añadir»; no he podido probar el aceptar de verdad con dos cuentas reales. Falta mirarlo en dos móviles.",
+    "donde": "Cuenta que solo recomienda: añadir el Free Tour; abrir «Tu propuesta» (1 cambio). Cuenta administradora: el aviso de la propuesta > Aceptar.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "Nunca después de la cena ni fuera de su franja",
+    "estado": "hecho",
+    "nota": "Ya no se usa la franja «noche» (la que lo ponía tras la cena): el Free Tour queda en el día D3 a las 10:00. Comprobado: no es la última parada del día y su hora es de mañana.",
+    "donde": "DÍAS > día del Free Tour: primera hora de la mañana, nunca debajo de «Noche».",
+    "captura": "docs/dias/capturas_jutrip/10n5_freetour_anadido.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "1",
+    "punto": "Si para esto hay que tocar el motor, dímelo antes",
+    "estado": "hecho",
+    "nota": "No he tocado el motor (server/engine, shared/routeEngine). Uso /api/rebuild-day con force_order, la misma pieza que «Eliminar reserva». No hace falta la muestra de 60 fechas.",
+    "donde": "—",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2",
+    "punto": "Añadir un sitio y que la app reorganice: «Viajes ha añadido el Free Tour al miércoles 11 y se han reorganizado 2 días.»",
+    "estado": "medias",
+    "nota": "Texto y apunte desde el móvil hechos y probados (la ruta lleva ruta.ultimoCambio = acción free_tour). El aviso real al otro móvil lo copia el disparador de la migración 0051 (SIN aplicar): hasta entonces llega el aviso de antes, ya sin lo de «ha quitado 6 sitios» pero sin la frase del Free Tour.",
+    "donde": "Cuenta invitada: añadir el Free Tour; cuenta administradora: campana (necesita la 0051 aplicada).",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2",
+    "punto": "Mover sitios: «Viajes ha movido el Coliseo al jueves 12.» (y «…y 2 sitios más»)",
+    "estado": "medias",
+    "nota": "Texto probado con la lista de sitios movidos. El disparador de la 0051 los compara por nombre y deja la lista; sin aplicar la 0051 el aviso trae solo cuántos se movieron.",
+    "donde": "Cuenta invitada: mover el Coliseo a otro día; cuenta administradora: campana.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2",
+    "punto": "Quitar: «Viajes ha quitado la Iglesia del Gesù.»",
+    "estado": "hecho",
+    "nota": "Texto probado; los quitados salen por nombre.",
+    "donde": "Cuenta invitada: quitar una parada; cuenta administradora: campana.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2",
+    "punto": "Nunca «ha quitado N sitios» cuando solo se han movido de día",
+    "estado": "medias",
+    "nota": "Hecho en dos sitios: el texto junta lo «quitado» y «añadido» con el mismo nombre como «movido» (también en avisos viejos), y el disparador de la 0051 compara por nombre en vez de por id. Probado el texto; el disparador sin aplicar.",
+    "donde": "Cuenta administradora: campana tras mover sitios con la cuenta invitada.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2",
+    "punto": "El interruptor [Roma | Excursión]: «Viajes ha cambiado el sábado 14 a día de excursión (Pompeya y Sorrento).» / «…a un día en Roma.»",
+    "estado": "medias",
+    "nota": "cambiarInterruptor apunta la acción en el primer paso que cambia la ruta (dayInterruptor.ts) y el texto está probado. No he ejercitado el interruptor en la app (el viaje de pruebas de 4 días no tiene día de excursión). Necesita la 0051.",
+    "donde": "RUTA/DÍAS: un viaje de 5 días con el día 4 en [Roma | Excursión]; cambiarlo y mirar la campana de la otra cuenta.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2",
+    "punto": "Cambios grandes de golpe (cambiar las fechas, rehacer la ruta): una línea con lo que decidió la persona",
+    "estado": "medias",
+    "nota": "Cambiar las fechas apunta «ha cambiado las fechas del viaje (del 12 al 16 de noviembre).» y, si las fechas son las mismas, «ha rehecho la ruta.». Probados los textos; no ejercitado el cambio de fechas en la app. Necesita la 0051.",
+    "donde": "RUTA > fechas del viaje > cambiarlas; campana de la otra cuenta.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2",
+    "punto": "Al tocar el aviso, lleva a los días que han cambiado con lo nuevo marcado («Movida», «Nueva»)",
+    "estado": "medias",
+    "nota": "Hecho: abrirAviso abre DÍAS en el primer día cambiado y las paradas llevan la etiqueta «Nueva» (verde) o «Movida» durante 2 minutos (useCambiosMarcados + StopAccordion). Probada la lógica de qué marcar; no lo he visto en pantalla con un aviso real (necesita la 0051).",
+    "donde": "Campana > aviso de cambio del viaje: se abre DÍAS en el día cambiado, con las etiquetas.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2b",
+    "punto": "«Recuperar mi ruta»: «Eric ha vuelto a la ruta inicial.»",
+    "estado": "medias",
+    "nota": "restoreOriginalRoute apunta la acción y el texto está probado. Necesita la 0051.",
+    "donde": "RUTA > flecha de «Recuperar mi ruta»; campana de la otra cuenta.",
+    "captura": "docs/dias/capturas_jutrip/10n5_recuperar_ruta.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "2b",
+    "punto": "«Recuperar este día»: «Eric ha recuperado el sábado 14 como estaba.»",
+    "estado": "medias",
+    "nota": "restoreOriginalDay apunta la acción y el texto está probado en la app. Necesita la 0051.",
+    "donde": "DÍAS > «···» del día > Recuperar este día; campana de la otra cuenta.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2b",
+    "punto": "Por qué decía «ha cambiado las fechas» con las mismas fechas, y que nunca pase si no cambian",
+    "estado": "medias",
+    "nota": "CAUSA: el disparador de la 0036 junta los cambios seguidos (15 min) SUMANDO: un cambio quitó un día (acabó el 14) y otro lo devolvió (acabó el 15); «fechas» se quedaba en verdadero y los días salían «quitado 1, añadido 1». Arreglo en la 0051: lo de antes del primer cambio manda y se compara con lo de ahora (días, inicio y fin); además «Recuperar» ya es una línea con su acción. El texto nunca dice «ha cambiado las fechas» si antes y ahora son iguales (probado). La 0051 está probada en PGlite (Postgres real con la 0036 debajo: scripts/destino/pruebaTanda10N5_aviso_sql.mjs, 12 comprobaciones, 0 fallos) pero SIN APLICAR en Supabase.",
+    "donde": "Cuenta administradora: Recuperar mi ruta; campana de la otra cuenta (necesita aplicar la 0051).",
+    "captura": null,
+    "captura_design": null
+  }
+]

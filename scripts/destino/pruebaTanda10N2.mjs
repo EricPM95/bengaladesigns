@@ -324,10 +324,10 @@ console.log('3. Las pantallas (react-dom/server)')
       return { html, t: plano(aTexto(html)) }
     }
     const h = hoja('eric', false)
-    debe(/¿Entre quién\?/i.test(h.t) && /4 de 4/.test(h.t), '02', '«¿Entre quién?» y «4 de 4»')
+    debe(/¿Para quién es\?/i.test(h.t) && /4 de 4/.test(h.t), '02', '«¿Para quién es?» y «4 de 4»')
     debe(['eric', 'ana', 'luis', 'marta'].every((id) => new RegExp(`data-elegir-pastilla="entre-${id}"[^>]*data-elegida="1"|data-elegida="1"[^>]*data-elegir-pastilla="entre-${id}"`).test(h.html)), '02', 'una pastilla por persona, todas marcadas por defecto (con el estilo de elegir)')
     debe(/Escribe el importe/.test(h.t) && /data-gasto-cada-uno/.test(h.html), '02', 'debajo, la línea de «… € cada uno» (sin importe pide escribirlo)')
-    debe(h.html.indexOf('data-gasto-quien-pago') < h.html.indexOf('data-gasto-entre-quien'), '02', '«¿Entre quién?» va debajo de «¿Quién lo ha pagado?»')
+    debe(h.html.indexOf('data-gasto-quien-pago') < h.html.indexOf('data-gasto-entre-quien'), '02', '«¿Para quién es?» va debajo de «¿Quién ha pagado?»')
     const e = hoja('eric', false, { editar: G('g1', 'eric', 'Cena día 1', 120, ['eric'], ['eric', 'ana', 'marta']) })
     debe(/Editar gasto/.test(e.t) && /Guardar cambios/.test(e.t) && /3 de 4/.test(e.t) && /3 de 4 · 40 € cada uno/.test(e.t), '03', 'al editar: «Editar gasto», [Guardar cambios], «3 de 4 · 40 € cada uno»')
     debe(!/Se lo enviamos|Entra directo/.test(e.t) && !/data-elegir="gasto-ambito"/.test(e.html), '03', 'al editar no se pregunta [Para todos] / [Para mí]')

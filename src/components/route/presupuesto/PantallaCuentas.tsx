@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { nombreVisible } from '../../../lib/nombrePersona'
 import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { createPortal } from 'react-dom'
 import { formatoImporte } from '../../../lib/dinero'
@@ -72,7 +73,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
   const [enCurso, setEnCurso] = useState<string | null>(null)
   const [cambiando, setCambiando] = useState<string | null>(null)
   const { cuentas, moneda } = c
-  // (Tanda 10N3) Lo que entra solo desde RESERVAS (alojamiento y coche) y quién puede cambiar su «¿Entre quién?»: el administrador.
+  // (Tanda 10N3) Lo que entra solo desde RESERVAS (alojamiento y coche) y quién puede cambiar su «¿Para quién es?»: el administrador.
   const adminId = c.personas.find((x) => x.esAdmin)?.id ?? null
   const soyAdmin = Boolean(adminId) && gv.yoId === adminId
   const entranSolas = c.aportaciones.filter((a) => a.origen === 'alojamiento' || a.origen === 'coche')
@@ -141,7 +142,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
 
           {cuentas.personas.map((p) => {
             const persona = c.personas.find((x) => x.id === p.id)!
-            const nombre = p.nombre || 'Alguien'
+            const nombre = nombreVisible(p.nombre) || 'Alguien'
             const tono = p.saldo > 0 ? { fondo: 'oklch(0.96 0.035 150)', color: 'oklch(0.36 0.09 150)' } : p.saldo < 0 ? { fondo: 'oklch(0.95 0.03 25)', color: 'oklch(0.45 0.16 25)' } : { fondo: '#EDE8DE', color: 'rgba(28,34,48,.6)' }
             return (
               <div key={p.id} data-cuentas-persona={p.id} className="flex flex-none items-center gap-3 rounded-[18px] bg-[#FFFDF8] px-3.5 py-3" style={{ border: '1px solid rgba(28,34,48,.07)' }}>
@@ -175,7 +176,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
                   <span style={{ font: `600 13px ${MONO}` }}>{dinero(a.centimos, moneda)}</span>
                   {soyAdmin && (
                     <button type="button" data-cambiar-entre onClick={() => setCambiando(a.clave ?? null)} className="h-9 flex-none rounded-[10px] border border-text/[.14] px-2.5 text-[12px] font-semibold">
-                      Entre quién
+                      Para quién es
                     </button>
                   )}
                 </div>
@@ -244,7 +245,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
   )
 }
 
-/** «¿Entre quién?» del alojamiento o el coche que entran solos (solo el administrador lo cambia; se guarda con el viaje). */
+/** «¿Para quién es?» del alojamiento o el coche que entran solos (solo el administrador lo cambia; se guarda con el viaje). */
 function HojaEntreAlojamiento({ linea, personas, onClose }: { linea: { clave?: string; nombre: string; entre: string[] }; personas: { id: string; nombre: string | null }[]; onClose: () => void }) {
   const setCuentasEntre = useRouteStore((st) => st.setCuentasEntre)
   const todos = personas.map((x) => x.id)
@@ -256,7 +257,7 @@ function HojaEntreAlojamiento({ linea, personas, onClose }: { linea: { clave?: s
         {linea.nombre}
       </h2>
       <span className="mt-4 flex items-center justify-between text-text/55" style={ojoStyle}>
-        <span>¿Entre quién?</span>
+        <span>¿Para quién es?</span>
         <span>
           {marcadas.length} de {todos.length}
         </span>
@@ -264,7 +265,7 @@ function HojaEntreAlojamiento({ linea, personas, onClose }: { linea: { clave?: s
       <div className="mt-2" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         {personas.map((x) => (
           <PastillaElegir key={x.id} elegida={marcadas.includes(x.id)} onClick={() => alternar(x.id)} marca datos={`entre-aloj-${x.id}`}>
-            {x.nombre || 'Alguien'}
+            {nombreVisible(x.nombre) || 'Alguien'}
           </PastillaElegir>
         ))}
       </div>

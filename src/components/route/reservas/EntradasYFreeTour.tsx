@@ -158,6 +158,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                       eyebrow={etiquetaDe(item)}
                       when={enTuRuta(route, item.day)}
                       name={item.name}
+                      delGrupo
                       buyLabel="Reservar la mía a la misma hora"
                       onBuy={() => setTarget({ ...targetOf(item), igualQue: { reserva: delDuenoDe(item)!, quien: grupo.nombreAdmin, modo: 'comprar' } })}
                       reservedTime={null}

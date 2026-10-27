@@ -99,7 +99,7 @@ export function lineasDelDia(antes: string[], despues: string[]): Linea<string>[
 /* Los cambios de una propuesta                                        */
 /* ------------------------------------------------------------------ */
 
-export type TipoDeCambio = 'cambiar' | 'quitar' | 'anadir' | 'mover' | 'mover_dia' | 'dia_nuevo'
+export type TipoDeCambio = 'cambiar' | 'quitar' | 'anadir' | 'mover' | 'mover_dia' | 'dia_nuevo' | 'free_tour'
 
 export interface CambioPropuesto {
   /** Estable mientras no cambie lo que hay en el día: sirve de clave en la lista. */
@@ -172,6 +172,8 @@ export function textoDeUnCambio(d: DatosDeTexto): { texto: string; sub?: string;
   if (d.tipo === 'quitar') return { etiqueta, texto: `Quitar ${elSitio(nombre(d.antes))}` }
   if (d.tipo === 'cambiar') return { etiqueta, texto: `Cambiar ${elSitio(nombre(d.antes))} por ${elSitio(nombre(d.despues))}` }
   if (d.tipo === 'dia_nuevo') return { etiqueta: 'Día nuevo', texto: `Añadir un día: ${d.dayTitle ?? ''}`.trim() }
+  // (10N5) El Free Tour, un solo cambio: «Añadir el Free Tour al jueves 12» (los días que la app reorganiza por detrás no se cuentan aparte).
+  if (d.tipo === 'free_tour') return { etiqueta, texto: `Añadir el Free Tour ${alDia(d.route, d.dayNumber)}` }
   if (d.tipo === 'anadir') return { etiqueta, texto: `Añadir ${elSitio(nombre(d.despues))}${previa ? `, después ${deSitio(previa.name)}` : ', al principio del día'}` }
   if (d.tipo === 'mover_dia') {
     const desde = d.desdeDayNumber != null ? delDia(d.route, d.desdeDayNumber) : 'de su día'
@@ -215,10 +217,21 @@ export function cambiosDeLaPropuesta(base: Route, actual: Route): CambioPropuest
     }
     return undefined
   }
+  // (10N5) Añadir el Free Tour rehace varios días: es UN cambio y los días rehechos (otro día escrito en su sitio) no se cuentan parada a parada.
+  const ft = tieneFreeTour(actual) && !tieneFreeTour(base)
+  const diaFt = ft ? actual.days.find((d) => d.stops.some((s) => s.isFreeTour)) : undefined
+  const rehecho = (dia: DayPlan, original: DayPlan) => ft && Boolean(original.curatedId) && original.curatedId !== dia.curatedId
   for (const dia of [...actual.days].sort(porNumero)) {
     if (!esDeRuta(dia)) continue
     const original = base.days.find((d) => d.id === dia.id)
     const comun = { dayId: dia.id, dayNumber: dia.dayNumber, dayTitle: dia.title }
+    if (original && rehecho(dia, original)) {
+      if (diaFt && dia.id === diaFt.id) {
+        const t = textoDeUnCambio({ tipo: 'free_tour', route: actual, dayNumber: dia.dayNumber })
+        salida.push({ ...comun, id: 'free_tour', tipo: 'free_tour', despues: diaFt.stops.find((s) => s.isFreeTour), ...t })
+      }
+      continue
+    }
     if (!original) {
       const t = textoDeUnCambio({ tipo: 'dia_nuevo', route: actual, dayNumber: dia.dayNumber, dayTitle: dia.title })
       salida.push({ ...comun, id: `dia:${dia.id}`, tipo: 'dia_nuevo', dia, ...t })
@@ -248,6 +261,9 @@ export function cambiosDeLaPropuesta(base: Route, actual: Route): CambioPropuest
   }
   return salida
 }
+
+/** ¿La ruta lleva el Free Tour? (alguna parada o la experiencia que lo pide) */
+const tieneFreeTour = (r: Pick<Route, 'days' | 'answers'>): boolean => r.days.some((d) => d.stops.some((s) => s.isFreeTour)) || (r.answers.experiencesPositive ?? []).includes('free_tour')
 
 /** Cuántos días distintos tocan los cambios. */
 export const diasQueCambian = (cambios: CambioPropuesto[]): string[] => [...new Set(cambios.map((c) => c.dayId))]
@@ -291,6 +307,7 @@ export function aplicarCambioPuro(ruta: Route, c: CambioPropuesto): { ruta: Rout
   const fecha = (d: DayPlan) => fechaDelDia(ruta, d.dayNumber)
   const poner = (dias: DayPlan[]): Route => ({ ...ruta, days: ruta.days.map((d) => dias.find((x) => x.id === d.id) ?? d) })
   const no = (motivo: string) => ({ ruta, motivo })
+  if (c.tipo === 'free_tour') return no('El Free Tour se añade de verdad al aceptar el cambio.')
   if (c.tipo === 'dia_nuevo') {
     if (!c.dia) return no('El día no viene en el cambio.')
     if (dia(c.dia.id)) return no('Ese día ya está en el viaje.')
@@ -423,6 +440,10 @@ export function detalleDelCambio(sobre: Route, c: CambioPropuesto): DiaDelDetall
     const s = sobre.days.find((d) => d.id === origenId)?.stops.find((x) => x.id === c.despues!.id) ?? c.despues
     return [dia(origenId, {}, { [c.despues.id]: 'sale' }, [s]), dia(c.dayId, {}, { [c.despues.id]: 'entra' })]
   }
+  if (c.tipo === 'free_tour') {
+    const a = antes(c.dayId)
+    return [{ etiqueta: a ? etiquetaDelDia(sobre, a.dayNumber) : c.etiqueta, antes: aDetalle(a?.stops ?? [], {}), ahora: c.despues ? aDetalle([c.despues], { [c.despues.id]: 'nueva' }) : [] }]
+  }
   if (c.tipo === 'dia_nuevo' && c.dia) return [{ etiqueta: 'Día nuevo', antes: [], ahora: aDetalle(c.dia.stops, Object.fromEntries(c.dia.stops.map((s) => [s.id, 'nueva' as const]))) }]
   return []
 }
@@ -453,6 +474,14 @@ export const textoDeKm = (km: number): string => `${km.toFixed(1).replace('.', '
 
 /** El [Deshacer] de un cambio: devuelve la copia sin ese cambio (y solo ese). */
 export function deshacerCambio(actual: Route, base: Route, cambio: CambioPropuesto): Route {
+  // (10N5) Quitar el Free Tour de la propuesta: los días que rehízo vuelven a como estaban y la ruta deja de pedirlo.
+  if (cambio.tipo === 'free_tour') {
+    const days = actual.days.map((d) => {
+      const o = base.days.find((x) => x.id === d.id)
+      return o && o.curatedId && o.curatedId !== d.curatedId ? o : d
+    })
+    return { ...actual, days, answers: { ...actual.answers, experiencesPositive: base.answers.experiencesPositive, freeTourDespues: base.answers.freeTourDespues } }
+  }
   if (cambio.tipo === 'dia_nuevo') return { ...actual, days: actual.days.filter((d) => d.id !== cambio.dayId) }
   const original = base.days.find((d) => d.id === cambio.dayId)
   if (cambio.tipo === 'mover_dia' && cambio.despues) {
@@ -581,7 +610,7 @@ export function mensajeDePropuesta(mensaje: string): string {
 export const textoDeCuantos = (n: number): string => `${n} ${n === 1 ? 'cambio' : 'cambios'}`
 
 /** El verbo de cada cambio en la lista de RV: «cambiar», «quitar», «añadir», «mover». */
-export const verboDelCambio = (t: TipoDeCambio): string => ({ cambiar: 'cambiar', quitar: 'quitar', anadir: 'añadir', mover: 'mover', mover_dia: 'mover', dia_nuevo: 'día nuevo' })[t]
+export const verboDelCambio = (t: TipoDeCambio): string => ({ cambiar: 'cambiar', quitar: 'quitar', anadir: 'añadir', mover: 'mover', mover_dia: 'mover', dia_nuevo: 'día nuevo', free_tour: 'añadir' })[t]
 
 /** El texto de un cambio para la lista de RV: «Castillo de Sant’Angelo → Trastevere», «Termas de Caracalla». */
 export function textoDelCambio(c: Pick<CambioPropuesto, 'tipo' | 'antes' | 'despues' | 'dayTitle'>): string {

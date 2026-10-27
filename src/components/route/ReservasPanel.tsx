@@ -10,7 +10,7 @@ import { buildEntradasBloque, hasEnoughDaysForExcursions } from '../../lib/booki
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useArrivalInfo } from '../../lib/arrivalReturn'
 import { legsOf, type LegKind } from '../../lib/reservasLegs'
-import { pagoActivo } from '../../lib/pago'
+import { usePagoActivo } from '../../lib/pago'
 import { getTodayTripStatus } from '../../lib/todayMode'
 import { DestinationReservasAccordion } from './reservas/DestinationReservasAccordion'
 import { LlegadaYVuelta } from './reservas/LlegadaYVuelta'
@@ -25,6 +25,9 @@ import { Icono } from '../ui/Icono'
 import { diasDelViaje, textoDeDuracion } from '../../lib/duracionViaje'
 import { useEntradasDelGrupo, useReservasParaMi } from '../../hooks/useEntradasDelGrupo'
 import { ZonaGris } from './reservas/ZonaGris'
+import { LoDeCadaUnoParaElInvitado, QuienVaEnLoDelAdmin } from './reservas/LoDeCadaUno'
+import { useLoSuyoDelViaje } from '../../hooks/useLoSuyoDelViaje'
+import { claveDelAlojamiento } from '../../lib/loSuyo'
 import { EspacioParaElLapiz } from '../propuesta/BotonDePropuesta'
 
 interface ReservasPanelProps {
@@ -54,9 +57,10 @@ export function rangoDelViaje(route: Route): string {
  * destinos conservan además el acordeón de cada destino. El % de «viaje listo» (useTripReadiness.ts) ya no sale en esta cabecera; solo queda el «!» de Reservas en la barra de abajo.
  */
 export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanelProps) {
-  const pago = pagoActivo()
+  const pago = usePagoActivo()
   // Tanda 10N §8: quien mira el viaje de otra persona ve ESTA MISMA pantalla; lo que comparte el grupo (llegada, vuelta, alojamiento) sale en gris y sin tocar; las entradas, cada uno las suyas.
   const grupo = useEntradasDelGrupo()
+  useLoSuyoDelViaje()
   const reservations = useReservasParaMi()
   const accommodationZone = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
@@ -121,7 +125,10 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
     ...(entradas.length > 0 ? [{ bloque: 'entradas' as const, nombre: `Entradas ${entradas.filter((item) => item.reservation).length}/${entradas.length}`, hecho: entradas.every((item) => item.reservation) }] : []),
   ]
 
-  const llegada = unDestino && (
+  const adminId = grupo.gente.find((p) => p.esAdmin)?.id ?? null
+  const conSuyo = unDestino && grupo.esInvitado && grupo.compartido
+  // (Tanda 10N5 §6c) Quien no es el administrador pone SU vuelo y SU alojamiento; el administrador, en un viaje compartido, ve a quién cubren los suyos.
+  const llegada = unDestino && !conSuyo && (
     <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
       <LlegadaYVuelta
         route={route}
@@ -135,6 +142,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
         onCambioDeVuelo={cambioDeVuelo}
         onFechas={abrirFechas}
       />
+      {grupo.esAdmin && grupo.compartido && <QuienVaEnLoDelAdmin route={route} gente={grupo.gente} que="vuelo" hecho={legs.arrival.done || legs.departure.done} claves={['llegada', 'vuelta']} adminId={adminId} />}
     </ZonaGris>
   )
 
@@ -172,9 +180,12 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               <div className="flex min-w-0 flex-col gap-3.5">
                 {llegada}
-                {unDestino ? (
+                {conSuyo ? (
+                  <LoDeCadaUnoParaElInvitado route={route} info={info} arrivalInfo={arrivalInfo} gente={grupo.gente} yoId={grupo.yoId} />
+                ) : unDestino ? (
                   <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
                     <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} onCambioDeVuelo={cambioDeVuelo} />
+                    {grupo.esAdmin && grupo.compartido && <QuienVaEnLoDelAdmin route={route} gente={grupo.gente} que="alojamiento" hecho={Object.keys(accommodationSelections).length > 0} claves={[claveDelAlojamiento(route, accommodationSelections) ?? 'aloj-0']} adminId={adminId} />}
                   </ZonaGris>
                 ) : (
                   <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin} className="flex flex-col gap-2.5">

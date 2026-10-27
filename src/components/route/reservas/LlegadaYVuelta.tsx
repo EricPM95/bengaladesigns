@@ -15,7 +15,7 @@ import { HojaPrecio } from './HojaPrecio'
 import { formatoImporte, leerImporte, type Importe } from '../../../lib/dinero'
 import { Icono } from '../../ui/Icono'
 import { Candado } from '../../pase/Candado'
-import { pagoActivo } from '../../../lib/pago'
+import { usePagoActivo } from '../../../lib/pago'
 
 // (Tanda 7: las 24 horas, de 5 en 5. Una llegada a las 0:30 o un vuelo a las 2:00 son horas de verdad —el motor las trata como «la noche de antes»—; la rueda ya no empieza a las 6:00.)
 const HORAS = Array.from({ length: (24 * 60) / 5 }, (_, i) => {
@@ -104,7 +104,7 @@ export function HojaHoraLlegada({
         onClick={() => onSave(hora, punto?.id)}
         className="mt-4 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40"
       >
-        {falta ? 'Elige primero el punto' : `Guardar · ${hora}`}
+        {falta ? 'Elige primero el punto' : 'Guardar'}
       </button>
       {otra && inicial && onBorrar && (
         <button type="button" onClick={onBorrar} className="mt-2 w-full py-2 text-center text-[13px] font-semibold text-text/60 underline underline-offset-2">
@@ -355,7 +355,7 @@ export function LlegadaYVuelta({
   const setZona = useRouteStore((state) => state.setAccommodationZone)
   const marcarVueltaVista = useRouteStore((state) => state.marcarVueltaVista)
   const zonaElegida = route.accommodationZone ?? null
-  const pago = pagoActivo()
+  const pago = usePagoActivo()
   // Las hojas del tramo abierto: la rueda de la hora, la de la otra hora (opcional), el precio y la zona.
   const [hoja, setHoja] = useState<{ leg: LegKind; que: 'hora' | 'otraHora' | 'precio' } | 'zona' | null>(null)
   const hojaLeg = hoja && hoja !== 'zona' ? hoja : null
@@ -521,7 +521,7 @@ export function LlegadaYVuelta({
       </BloqueShell>
       {/* P1 (cuentas parte 3): con el vuelo guardado y sin el pase de este destino, debajo del vuelo: «Con el Pase de Roma, tu primer día se ajusta solo». Con el cobro apagado, nada. */}
       {/* Tanda 10G: sin el pase, debajo del vuelo guardado, la pieza del candado (la de toda la app): guardar el vuelo es gratis; ajustar el primer y el último día a él, del pase. */}
-      {!pago && (ida.done || vuelta.done) && <Candado className="mt-2.5" datos="llegada-ajuste" texto="Con el pase, ajustamos tu primer y tu último día a tu vuelo" />}
+      {!pago && (ida.done || vuelta.done) && <Candado className="mt-2.5" datos="llegada-ajuste" titulo="Tu primer y tu último día" texto="Con el {pase}, ajustamos tu primer y tu último día a tu vuelo." />}
       {hojaLeg?.que === 'hora' && (
         <HojaHoraLlegada
           leg={hojaLeg.leg === 'arrival' ? ida : vuelta}

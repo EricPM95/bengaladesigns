@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from './supabaseClient'
-import { amigoPendiente, canjearInvitacion, codigoDeAmigoDeLaDireccion, codigoDeLaDireccion, guardarAmigoPendiente, guardarInvitacionPendiente, invitacionAceptada, invitacionPendiente, olvidarAmigoPendiente, olvidarInvitacionPendiente, registrarInvitado } from './invitaciones'
+import { amigoPendiente, canjearInvitacion, codigoDeAmigoDeLaDireccion, codigoDeLaDireccion, guardarAmigoPendiente, guardarInvitacionPendiente, invitacionAceptada, invitacionPendiente, olvidarAmigoPendiente, olvidarInvitacionPendiente, registrarInvitado, verInvitacion } from './invitaciones'
+import { guardarFranjaDeUnion } from './franjaDeUnion'
 import { recargarSinApertura } from './recargarSinApertura'
 import { codigoValido } from './entrarCuenta'
 
@@ -368,6 +369,8 @@ export function completarEntrada(sesion: Session): Promise<void> {
       let entroEnUnViaje = false
       const codigo = invitacionPendiente()
       if (codigo && invitacionAceptada()) {
+        // (Tanda 10N5) Para la franja «Te has unido al viaje a Roma de Eric»: antes de canjear se mira quién invita y a qué destino.
+        const antes = await verInvitacion(codigo).catch(() => null)
         const resultado = await canjearInvitacion(codigo)
         olvidarInvitacionPendiente()
         // Entrar por un enlace o un código de viaje o de pase cuenta como invitación SI con eso se creó una cuenta nueva (lo decide el servidor).
@@ -383,6 +386,7 @@ export function completarEntrada(sesion: Session): Promise<void> {
         if (resultado.error) guardarAvisoDeInvitacion(resultado.error)
         else if (!resultado.yaEstaba) {
           guardarAvisoDeInvitacion('Has entrado en el viaje como invitado.')
+          guardarFranjaDeUnion({ destino: antes?.destino ?? null, invitador: antes?.invitador ?? null, yaEstaba: false })
           entroEnUnViaje = true
         } else if (resultado.tripId) {
           // (Tanda 10N §5) Ya estaba dentro: directo a ese viaje, sin la pantalla de la invitación.
@@ -466,6 +470,11 @@ export async function cerrarSesion(): Promise<void> {
     await supabase?.auth.signOut()
   } finally {
     olvidarAnonima()
+    try {
+      window.localStorage.removeItem('trazo:perfil:ultimo:v1') // (Tanda 10N5) lo último que se vio del Perfil es de la cuenta que sale
+    } catch {
+      /* nada que quitar */
+    }
     recargarLimpio('/')
   }
 }

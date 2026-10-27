@@ -33,7 +33,7 @@ const guardarUltimoEnvio = (ms: number) => {
  *   A2: la hoja con el email. A3: «Te hemos enviado un enlace…», [Abrir mi correo] y «¿No te llega? Enviar otra vez» (no deja pedir otro hasta pasado un minuto).
  * `pasoInicial`/`emailInicial` solo los usan las capturas y la prueba.
  */
-export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso = null }: { pasoInicial?: Paso; emailInicial?: string; aviso?: string | null }) {
+export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso = null, paraUnirte = false }: { pasoInicial?: Paso; emailInicial?: string; aviso?: string | null; paraUnirte?: boolean }) {
   const [paso, setPaso] = useState<Paso>(pasoInicial)
   const [email, setEmail] = useState(emailInicial)
   const [mensaje, setMensaje] = useState<string | null>(aviso)
@@ -91,7 +91,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
       <h1 data-nombre-app aria-label={marca.nombre} style={{ margin: 0, lineHeight: 1 }}>
         <PalabraJutrip tam={46} />
       </h1>
-      <p style={{ margin: 0, font: "400 15px/1.45 'Geist'", color: 'rgba(28,34,48,.72)' }}>Guarda tus viajes, tus fotos y tus logros.</p>
+      <p style={{ margin: 0, font: "400 15px/1.45 'Geist'", color: 'rgba(28,34,48,.72)' }} data-entrar-para-unirte={paraUnirte ? "1" : undefined}>{paraUnirte ? "Entra o crea tu cuenta para unirte." : "Guarda tus viajes, tus fotos y tus logros."}</p>
       <span style={{ flex: 1, minHeight: 24 }} />
       {mensaje && paso === 'inicio' && (
         <p role="alert" data-mensaje-entrar style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>

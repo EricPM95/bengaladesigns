@@ -1,6 +1,7 @@
 import { quitarMetadatosJpeg } from './fotosViaje'
 import { leerEncuadre, esCentrado, type Encuadre } from './encuadreFoto'
 import { supabase } from './supabaseClient'
+import { nombreVisible } from './nombrePersona'
 
 /**
  * LA FOTO Y EL NOMBRE DEL PERFIL (cuentas parte 3, punto 6).
@@ -24,7 +25,7 @@ export const PASOS_DE_FOTO_DE_PERFIL: { lado: number; calidad: number }[] = [
 ]
 
 /** «Viajero» mientras no haya un nombre puesto. */
-export const nombreParaMostrar = (nombre: string | null | undefined): string => nombre?.trim() || 'Viajero'
+export const nombreParaMostrar = (nombre: string | null | undefined): string => nombreVisible(nombre) || 'Viajero'
 
 /** El nombre de pila de un nombre completo: «Laura García» → «Laura». Sin nombre, null. */
 export function nombreDePila(completo: string | null | undefined): string | null {

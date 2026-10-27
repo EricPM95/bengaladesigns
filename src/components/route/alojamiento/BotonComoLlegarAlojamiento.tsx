@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import { enlaceComoLlegarAlojamiento } from '../../../lib/direccionAlojamiento'
-import { pagoActivo } from '../../../lib/pago'
+import { usePagoActivo } from '../../../lib/pago'
 import { Icono } from '../../ui/Icono'
 import { Candado } from '../../pase/Candado'
 
@@ -23,9 +23,10 @@ interface BotonComoLlegarAlojamientoProps {
  */
 export function BotonComoLlegarAlojamiento({ direccion, variante = 'completo', className = '', style }: BotonComoLlegarAlojamientoProps) {
   const enlace = enlaceComoLlegarAlojamiento(direccion)
+  const pago = usePagoActivo()
   if (!enlace) return null
-  // (Tanda 10G: sin el pase, cerrado y a la vista.)
-  if (!pagoActivo()) return <Candado datos="como-llegar-alojamiento" texto="Con el pase, cada día empieza cerca de donde duermes"><span style={{ font: "500 14px 'Geist'" }}>Cómo llegar a tu alojamiento</span></Candado>
+  // (Tanda 10G: sin el pase, cerrado y a la vista; Tanda 10N5: con la caja pequeña del pase, y sin pintar hasta saber si hay pase.)
+  if (!pago) return <Candado datos="como-llegar-alojamiento" titulo="Cómo llegar a tu alojamiento" texto="Con el {pase}, adaptamos tu ruta a tu alojamiento." />
   return (
     <a
       href={enlace}

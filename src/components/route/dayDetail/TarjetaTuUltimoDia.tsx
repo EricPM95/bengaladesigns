@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import { botonOro, clasesBotonBorde } from '../hoy/piezas'
 import type { TextosDelUltimoDia } from '../../../lib/ultimoDia'
+import { AZUL_PASE, CandadoDeDesign, SOMBRA_PASE } from '../../pase/Candado'
 
 /**
  * LA TARJETA DEL DÍA DE VUELTA SIN HORA (Tanda 10B; antes «Tu último día también cuenta», Tanda 7). Dentro del acordeón del día de vuelta de DÍAS, mientras el viajero no ha puesto la hora de su vuelta
@@ -29,8 +30,10 @@ export function TarjetaTuUltimoDia({ textos, conPase, onPrincipal, onAnadirLugar
         onClick={onPrincipal}
         data-ultimo-dia="principal"
         className="flex h-12 w-full items-center justify-center gap-2 rounded-full text-[14.5px] font-semibold transition-transform active:scale-[.98]"
-        style={botonOro()}
+        // (Tanda 10N5 §6b) Bloqueado por el pase: azul oscuro con el candado dorado, los colores de la caja del pase; con el pase, el botón de oro de siempre.
+        style={conPase ? botonOro() : { background: AZUL_PASE, boxShadow: SOMBRA_PASE, color: '#FBF3E2' }}
       >
+        {!conPase && <CandadoDeDesign size={15} color="#F3D88F" />}
         {textos.botonPrincipal}
       </button>
       <button

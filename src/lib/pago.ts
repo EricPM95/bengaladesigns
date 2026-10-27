@@ -1,4 +1,5 @@
-import { sinPasePruebaActivo } from '../store/useSinPasePrueba'
+import { useSyncExternalStore } from 'react'
+import { sinPasePruebaActivo, useSinPasePrueba } from '../store/useSinPasePrueba'
 
 /**
  * El interruptor de pago (Tanda 6s): UN solo sitio para toda la app. Todo lo que es de pago va detrás de `pagoActivo()`; con él apagado no sale
@@ -40,14 +41,68 @@ export function pagoActivo(): boolean {
   // «Verme como viajero sin pase» (Tanda 10B, solo pruebas del administrador; lo decide el servidor): lo de pago, cerrado.
   if (sinPasePruebaActivo()) return false
   const pedida = versionPedida()
+  // (Tanda 10N5 §0.2) Mientras no se sabe si hay pase, lo de pago NO está abierto (y los candados no se pintan: `pagoPendiente()`); en cuanto llega la respuesta, todo se repinta solo.
+  if (pedida === null && !paseSabido) return false
   // (Tanda 10N §3) Sin una versión pedida en la dirección, manda el pase de verdad: si el servidor dice «cobro encendido y esta cuenta sin pase», no hay pase (lo mismo que dice HOY).
   return pedida === null ? PAGO_ACTIVO && !servidorDiceSinPase : pedida === 'completa'
 }
 
+/**
+ * (Tanda 10N5 §0.2) ¿Todavía no se sabe si hay pase? Verdadero solo mientras llega la respuesta del servidor (`/api/pase/estado`): entonces NI el candado cerrado NI lo abierto: sin pintar.
+ * Nunca es verdadero con `?version=` pedida, en el día de prueba ni con el «verme sin pase» de las pruebas (esos casos ya lo saben).
+ */
+export function pagoPendiente(): boolean {
+  if (enDiaDePrueba || sinPasePruebaActivo()) return false
+  return versionPedida() === null && !paseSabido
+}
+
+/** (Tanda 10N5 §0.2) `pagoActivo()` avisa cuando cambia: quien pinta candados se suscribe (`usePagoActivo`) y se repinta solo al llegar la respuesta del pase. */
+let paseSabido = true
+let viajeSabido: string | null = null
+const oyentes = new Set<() => void>()
+const avisar = () => oyentes.forEach((f) => f())
+export const suscribirPago = (f: () => void): (() => void) => {
+  oyentes.add(f)
+  return () => {
+    oyentes.delete(f)
+  }
+}
+/** El servidor aún no ha dicho nada de este viaje: todo lo del pase queda sin pintar. */
+export const fijarPaseDesconocido = (tripId: string | null): void => {
+  // (Ya se sabe lo de ESTE viaje —otro componente lo preguntó antes—: no se vuelve a borrar nada por cada pantalla que lo pregunta.)
+  if (!paseSabido || (tripId != null && tripId === viajeSabido)) return
+  paseSabido = false
+  avisar()
+}
+/** El estado del pase como texto (`con` | `sin` | `pendiente`): cambia cuando cambia cualquier cosa de la que depende `pagoActivo()`. */
+export function estadoDelPaseParaPintar(): 'con' | 'sin' | 'pendiente' {
+  return pagoPendiente() ? 'pendiente' : pagoActivo() ? 'con' : 'sin'
+}
+const suscribirTodo = (f: () => void): (() => void) => {
+  const a = suscribirPago(f)
+  const b = useSinPasePrueba.subscribe(f)
+  return () => {
+    a()
+    b()
+  }
+}
+/** El hook de lo que se pinta según el pase: devuelve `pagoActivo()` y repinta al cambiar el pase. */
+export function usePagoActivo(): boolean {
+  return useSyncExternalStore(suscribirTodo, pagoActivo, pagoActivo)
+}
+/** El hook de lo que decide entre «cerrado» y «abierto»: `'pendiente'` = sin pintar ni una cosa ni la otra. */
+export function usePasePintable(): 'con' | 'sin' | 'pendiente' {
+  return useSyncExternalStore(suscribirTodo, estadoDelPaseParaPintar, estadoDelPaseParaPintar)
+}
+
 /** (Tanda 10N §3) Lo que dijo el servidor del pase (`usePaseEstado`): verdadero si el cobro está encendido y la cuenta no tiene pase. RUTA, HOY y todos los candados leen lo mismo a través de `pagoActivo()`. */
 let servidorDiceSinPase = false
-export const fijarServidorDiceSinPase = (sinPase: boolean): void => {
+export const fijarServidorDiceSinPase = (sinPase: boolean, tripId: string | null = null): void => {
+  viajeSabido = tripId
+  const igual = servidorDiceSinPase === sinPase && paseSabido
   servidorDiceSinPase = sinPase
+  paseSabido = true
+  if (!igual) avisar()
 }
 
 /** Quita un parámetro de la dirección sin recargar (si no, `?version=gratis` mandaría siempre sobre lo que se elige en el panel de pruebas). */

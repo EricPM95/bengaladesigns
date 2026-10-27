@@ -84,30 +84,31 @@ for (const n of [0, 1, 6]) {
   }
   const t = aTexto(html)
   // La cáscara de la pantalla: «PERFIL» y la ✕, «Créditos» y [+ Nuevo viaje] al final del todo.
-  debe(/<h1[^>]*>Perfil<\/h1>/.test(marco) && /uppercase/.test(marco.match(/<h1[^>]*>/)[0]), 'A', `con ${n} viajes: falta la cabecera «PERFIL» (en mayúsculas pequeñas, como el diseño)`)
+  // 10N5: sin título «PERFIL»; la cabecera lleva solo los Ajustes y la ✕.
+  debe(/<header/.test(marco) && /data-ajustes/.test(marco), 'A', `con ${n} viajes: falta la cabecera con los Ajustes`)
   debe(/aria-label="Cerrar el Perfil"/.test(marco), 'A', `con ${n} viajes: falta la ✕ para cerrar`)
   const iCred = marco.indexOf('>Créditos<')
-  const iNuevo = marco.indexOf('Nuevo viaje')
-  debe(iCred > marco.indexOf('Perfil') && iNuevo > iCred && marco.indexOf('<button', iNuevo) === -1, 'A', `con ${n} viajes: «Créditos» y [+ Nuevo viaje] no están al final del todo, en ese orden`)
-  debe(/h-\[58px\][^>]*>[\s\S]*?Nuevo viaje/.test(marco), 'A', `con ${n} viajes: [+ Nuevo viaje] no es el botón grande de 58 px del diseño`)
+  const iNuevo = marco.indexOf('data-anadir-viaje')
+  debe(iCred > 0 && iNuevo > iCred && marco.indexOf('<button', iNuevo) === -1, 'A', `con ${n} viajes: «Créditos» y el [+] flotante no están al final del todo, en ese orden`)
+  debe(/width:64px;height:64px/.test(marco.slice(iNuevo - 300, iNuevo + 800)), 'A', `con ${n} viajes: el [+] flotante no es el círculo de 64 px del diseño (10N5)`)
   // El cuerpo SIN logros: el perfil nuevo sin EXP, vitrina ni billete.
   debe(/data-cabecera-sin-logros/.test(html) && /Hola, <em>Viajero<\/em>/.test(html), 'A', `con ${n} viajes y sin logros: falta «Hola, <em>Viajero</em>» en la cabecera del perfil nuevo`)
-  debe(/data-editar-perfil/.test(html) && /data-ajustes/.test(html), 'A', `con ${n} viajes y sin logros: faltan la foto que se toca y los Ajustes`)
+  debe(/data-editar-perfil/.test(html) && /data-ajustes/.test(marco), 'A', `con ${n} viajes y sin logros: faltan la foto que se toca y los Ajustes`)
   debe(!/data-vitrina-del-perfil|data-nivel-y-rango|data-titulo-del-perfil|data-cabecera-con-marco|Mi vitrina|Nivel \d|billete|sorteo|data-abrir-vitrina|data-anadir-viaje-previo|data-viajes-de-antes/i.test(html), 'A', `con ${n} viajes y sin logros: sale algo de los logros (EXP, vitrina, billete, título o «Añadir un viaje que ya hiciste»)`)
   debe(/data-abrir-pasaporte/.test(html) && /disabled/.test(html.match(/<button[^>]*data-abrir-pasaporte[^>]*>/)?.[0] ?? html.match(/<button[^>]*disabled[^>]*data-abrir-pasaporte[^>]*>/)?.[0] ?? ''), 'A', `con ${n} viajes y sin logros: falta «Mi pasaporte» (de este móvil, sin abrir el de los logros)`)
   const c = cifrasDelPerfil(viajesDelPerfil(TODOS.slice(0, n), null, '2031-01-01'))
   debe(new RegExp(`${c.paises} ${c.paises === 1 ? 'país' : 'países'} · ${c.lugares} ${c.lugares === 1 ? 'ciudad' : 'ciudades'}`).test(t.replace(/\n/g, ' ')), 'A', `con ${n} viajes: el pasaporte no dice «${c.paises} países · ${c.lugares} ciudades» de los viajes guardados`)
-  debe(/Mis viajes/.test(t) && new RegExp(`data-numero-de-viajes[^>]*>${n}<`).test(html), 'A', `con ${n} viajes: «Mis viajes» no lleva su número (${n})`)
+  debe(/Mis viajes/.test(t) && (n === 0 || new RegExp(`data-numero-de-viajes[^>]*>Ver todos \\(${n}\\)<`).test(html)), 'A', `con ${n} viajes: «Mis viajes» no lleva su número (${n})`)
   debe(!/Pronto podrás/.test(html) && !/Pronto podrás/.test(fuentePerfil), 'A', `con ${n} viajes: sigue «Pronto podrás guardar tus viajes en tu cuenta»`)
   debe(!/>Abierto</.test(html), 'A', `con ${n} viajes: sale la pastilla «Abierto», que ya no existe`)
   const filas = html.match(/data-viaje-del-perfil="/g) ?? []
   debe(filas.length === n, 'A', `con ${n} viajes se pintan ${filas.length} tarjetas`)
   const lista = viajesDelPerfil(TODOS.slice(0, n), null, '2031-01-01')
-  for (const v of lista) debe(t.includes(v.destino) && t.includes(v.cuando) && t.includes(`${v.dias} ${v.dias === 1 ? 'día' : 'días'}`) && t.includes('3 fotos'), 'A', `con ${n} viajes: la tarjeta de «${v.rotulo}» no lleva el destino, su fecha, sus días y sus fotos`)
+  for (const v of lista) debe(t.includes(v.destino) && t.includes(v.cuando) && t.includes(`${v.dias} ${v.dias === 1 ? 'día' : 'días'}`) && !/\d fotos/.test(t), 'A', `con ${n} viajes: la tarjeta de «${v.rotulo}» no lleva el destino y su fecha (sin pastilla de fotos desde la 10N5)`)
   if (n === 0) debe(/Aún no tienes viajes/.test(t), 'A', 'con 0 viajes falta «Aún no tienes viajes guardados…»')
 }
 // Un solo Perfil: el código del viejo ya no existe.
-debe(!/cuerpoDeSiempre|CabeceraDeSiempre|FilaDeViaje|MapaMisViajes|logrosActivos/.test(fuentePerfil), 'A', 'PerfilSheet todavía lleva código del Perfil viejo (cuerpoDeSiempre, CabeceraDeSiempre, FilaDeViaje, MapaMisViajes o una rama por logrosActivos)')
+debe(!/cuerpoDeSiempre|CabeceraDeSiempre|FilaDeViaje|MapaMisViajes/.test(fuentePerfil), 'A', 'PerfilSheet todavía lleva código del Perfil viejo (cuerpoDeSiempre, CabeceraDeSiempre, FilaDeViaje, MapaMisViajes o una rama por logrosActivos)')
 for (const f of ['CabeceraDeSiempre', 'FilaDeViaje', 'MapaMisViajes', 'CifrasDelMapa']) debe(!fs.existsSync(`src/components/perfil/${f}.tsx`), 'A', `${f}.tsx sigue existiendo (es del Perfil viejo)`)
 debe(!/'Abierto'|>Abierto</.test(leer('src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx').replace(/\/\*[\s\S]*?\*\//g, '')), 'A', 'la tarjeta del viaje todavía escribe «Abierto»')
 debe(/createPortal\(/.test(fuentePerfil) && /<CuerpoConLogros /.test(fuentePerfil), 'A', 'el Perfil no pinta el cuerpo único (CuerpoConLogros)')
@@ -117,8 +118,8 @@ debe(/if \(!conLogros \|\| perfilInicial/.test(fuenteCuerpo) && /logrosActivos\(
 {
   const v1 = resumenDeViaje(TODOS[0].route, TODOS[0], '2031-01-01')
   const fila = (fotos, abierto = false) => renderToStaticMarkup(createElement(TarjetaDeViaje, { viaje: v1, fotos, enCurso: false, abierto, onAbrir() {}, onAbrirViaje() {} }))
-  debe(/155 fotos/.test(aTexto(fila(155))), 'A', 'la tarjeta no dice «155 fotos»')
-  debe(/Sin fotos/.test(aTexto(fila(0))) && /1 foto(?!s)/.test(aTexto(fila(1))), 'A', 'la tarjeta no dice «Sin fotos» / «1 foto»')
+  // 10N5: fuera la pastilla de las fotos de la tarjeta.
+  debe(!/\d+ fotos?/.test(aTexto(fila(155))) && !/Sin fotos/.test(aTexto(fila(0))), 'A', 'la tarjeta todavía lleva la pastilla de fotos (10N5: fuera)')
   debe(!/data-fotos-del-viaje/.test(fila(null)), 'A', 'mientras se cuentan las fotos, la tarjeta enseña un «Sin fotos» falso')
   debe(!/>Abierto</.test(fila(3, true)) && !/>Abierto</.test(fila(3, false)), 'A', 'la pastilla «Abierto» no debería existir')
   debe(aTexto(fila(3)).includes('13 – 14 oct 2031') && aTexto(fila(3)).includes('2 días'), 'A', 'la tarjeta no lleva su fecha («13 – 14 oct 2031 · 2 días»)')

@@ -7,7 +7,7 @@ import { usePermisosDelViaje } from './usePermisosDelViaje'
 
 /**
  * EL PRESUPUESTO DE ESTE VIAJE, ¿ES COMPARTIDO? (Tanda 10N, apartado 9). Lo es cuando soy invitada o el viaje ya tiene más gente que yo, y la tabla de gastos existe (migración 0037).
- * Si no, el presupuesto se queda como siempre: sin [Para todos] / [Para mí] y sin «¿Quién lo ha pagado?».
+ * Si no, el presupuesto se queda como siempre: sin [Para todos] / [Para mí] y sin «¿Quién ha pagado?».
  */
 export interface GastosDelViaje {
   compartido: boolean

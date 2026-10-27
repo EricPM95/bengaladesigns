@@ -313,12 +313,14 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // (En una ruta a mano no se pregunta qué día se mueve: ninguno se mueve, la reserva se queda en el día y a la hora del viajero. Tanda 6y.)
   const planKey = resolvedDay && bigPlace && !isExcursion && validTime && !isManualRoute(route) && !esInvitado ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
   // «¿Para quién es?» (Tanda 10N §8): solo el dueño y solo en un viaje compartido. El dueño va siempre marcado; una reserva de antes de compartir cuenta como «solo para mí».
-  const paraQuienVisible = grupo.compartido && !esInvitado
+  // (Tanda 10N5 §6c) También quien reserva en un viaje de otra persona dice para quién es: la pagó él y, si es para varios, entra en las cuentas del grupo. Siempre va marcado quien reserva.
+  const paraQuienVisible = grupo.compartido
   const personasDelViaje = useMemo(() => [...grupo.gente].sort((a, b) => Number(b.esAdmin) - Number(a.esAdmin)), [grupo.gente])
   const adminId = personasDelViaje.find((p) => p.esAdmin)?.id ?? null
+  const quienReservaId = esInvitado ? grupo.yoId : adminId
   const [marcados, setMarcados] = useState<string[]>(() => {
     const antes = (existing?.paraQuien ?? []).filter((id) => personasDelViaje.some((p) => p.id === id))
-    return [...new Set([...(adminId ? [adminId] : []), ...antes])]
+    return [...new Set([...(quienReservaId ? [quienReservaId] : []), ...antes])]
   })
   const alternarPersona = (id: string) => setMarcados((previous) => (previous.includes(id) ? previous.filter((other) => other !== id) : [...previous, id]))
   const draftReservation = (): Reservation | null => {
@@ -632,7 +634,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   </p>
                   <div className="mt-2.5 flex flex-wrap gap-2">
                     {personasDelViaje.map((p) => (
-                      <PastillaElegir key={p.id} datos="para-quien" marca elegida={marcados.includes(p.id)} onClick={p.esAdmin ? undefined : () => alternarPersona(p.id)}>
+                      <PastillaElegir key={p.id} datos="para-quien" marca elegida={marcados.includes(p.id)} onClick={p.id === quienReservaId ? undefined : () => alternarPersona(p.id)}>
                         {nombreDe(p) || inicialDe(p)}
                       </PastillaElegir>
                     ))}
@@ -694,7 +696,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                     }}
                     className="mt-7 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40"
                   >
-                    {comprando ? `Abrir la compra · ${validTime ? hora : 'elige la hora'}` : validTime ? `Guardar · ${hora}` : 'Guardar'}
+                    {comprando ? `Abrir la compra · ${validTime ? hora : 'elige la hora'}` : 'Guardar'}
                   </button>
                 )
               })()}

@@ -1,17 +1,11 @@
-import { useState } from 'react'
-import { createPortal } from 'react-dom'
 import type { Route } from '../../../lib/types'
-import { aplicarFreeTour } from '../../../lib/rebuildDay'
-import { Icono } from '../../ui/Icono'
 import { isManualRoute } from '../../../lib/manualPlan'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { FREE_TOUR_REF } from '../../../lib/freeTourManual'
 import { AddReservationSheet } from './AddReservationSheet'
 
-import { FREE_TOUR_FRANJAS as FRANJAS } from '../../../lib/freeTourHoras'
-import { AVISO_DISPONIBILIDAD } from '../../../lib/horarioDeEntrada'
-import { VerDisponibilidadFreeTour } from './VerDisponibilidad'
+import { FreeTourDiaSheet } from './FreeTourDiaSheet'
 
 /** ¿La ruta ya lleva un Free Tour? Sirve para enseñar «Añadido» y ofrecer quitarlo. */
 export function routeHasFreeTour(route: Route): boolean {
@@ -26,11 +20,11 @@ export function freeTourAvailable(route: Route): boolean {
 }
 
 /**
- * «Free Tour» desde RESERVAS y desde «+ Añadir parada»: pregunta la hora y rehace los días con las reglas de siempre.
- * Misma hoja de abajo que la de reservas (AddReservationSheet).
+ * «Free Tour» desde EXPLORAR, su ficha y «+ Añadir parada»: (10N5) pregunta el DÍA («¿A qué día lo añadimos?», `FreeTourDiaSheet`), no la hora; el Free Tour queda a la hora de nuestro día escrito.
+ * En una ruta a mano, la hoja de reservas de siempre (AddReservationSheet).
  */
 export function FreeTourSheet({ route, onClose }: { route: Route; onClose: () => void }) {
-  return isManualRoute(route) ? <FreeTourComoReserva route={route} onClose={onClose} /> : <FreeTourConMotor route={route} onClose={onClose} />
+  return isManualRoute(route) ? <FreeTourComoReserva route={route} onClose={onClose} /> : <FreeTourDiaSheet route={route} onClose={onClose} />
 }
 
 /**
@@ -45,63 +39,4 @@ function FreeTourComoReserva({ route, onClose }: { route: Route; onClose: () => 
   const existing = reservations.find((item) => item.kind === 'entrada' && item.refId === FREE_TOUR_REF) ?? null
   const currentDay = route.days.find((day) => day.stops.some((stop) => stop.isFreeTour)) ?? null
   return <AddReservationSheet route={route} target={{ kind: 'entrada', refId: FREE_TOUR_REF, name: nombre, placeNames: [nombre], currentDayId: currentDay?.id ?? null, existing }} onClose={onClose} />
-}
-
-function FreeTourConMotor({ route, onClose }: { route: Route; onClose: () => void }) {
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState(false)
-  const added = routeHasFreeTour(route)
-  const run = async (choice: { franja: 'manana' | 'tarde' | 'noche'; hora: string } | null) => {
-    setBusy(true)
-    setError(false)
-    const ok = await aplicarFreeTour(choice)
-    setBusy(false)
-    if (ok) onClose()
-    else setError(true)
-  }
-  return createPortal(
-    <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="free-tour-heading">
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={busy ? undefined : onClose} />
-      <div className="trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[28px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
-        <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
-          <span className="h-1 w-[42px] rounded-full bg-text/20" />
-        </div>
-        <button type="button" onClick={onClose} disabled={busy} aria-label="Cerrar" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
-          <Icono nombre="cerrar" className="h-5 w-5" />
-        </button>
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-4">
-          <p className="max-w-[calc(100%-2.5rem)] font-mono text-[10.5px] font-medium uppercase tracking-[.12em] text-accent">Free Tour</p>
-          <h2 id="free-tour-heading" className="mt-1.5 font-display text-[26px] leading-[1.15] text-text">
-            ¿A qué hora lo quieres?
-          </h2>
-          <p className="mt-2 text-caption text-text-soft">
-            Lo ponemos al principio de tu viaje: es cuando más vale la pena, porque te ayuda a situarte. {AVISO_DISPONIBILIDAD}
-          </p>
-          <div className="mt-4 flex flex-col gap-2">
-            {FRANJAS.map((franja) => (
-              <button
-                key={`${franja.id}-${franja.hora}`}
-                type="button"
-                disabled={busy}
-                onClick={() => run({ franja: franja.id, hora: franja.hora })}
-                className="flex h-12 items-center justify-between rounded-2xl border border-text/15 bg-bg px-4 text-left text-[15px] text-text hover:bg-bg-hover disabled:opacity-50"
-              >
-                <span>{franja.label}</span>
-                <span className="font-mono text-[12px] text-text-muted">{franja.hora}</span>
-              </button>
-            ))}
-            {added && (
-              <button type="button" disabled={busy} onClick={() => run(null)} className="mt-1 h-11 rounded-2xl text-caption font-semibold text-text-soft underline underline-offset-2 hover:text-text disabled:opacity-50">
-                Quitar el Free Tour
-              </button>
-            )}
-          </div>
-          <VerDisponibilidadFreeTour destination={route.destination} />
-          {busy && <p className="mt-3 text-caption text-text-muted">Rehaciendo tus días…</p>}
-          {error && <p className="mt-3 text-caption text-accent-red">No se han podido rehacer todos los días. Prueba otra vez.</p>}
-        </div>
-      </div>
-    </div>,
-    document.body,
-  )
 }

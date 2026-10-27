@@ -125,7 +125,7 @@ function avisarCambioDeInvitacion(): void {
 const mensajeDe = (error: { message?: string } | null | undefined, porDefecto: string): string => {
   const texto = error?.message ?? ''
   // Los mensajes que escribe la base de datos ya están en palabras sencillas.
-  return /^(Hace falta|Primero crea|Solo el administrador|Esa invitación|Ya no quedan|Ese pase|Demasiadas|No se pudo crear)/.test(texto) ? texto : porDefecto
+  return /^(Hace falta|Primero crea|Solo el administrador|Esa invitación|Ya no quedan|Ese pase|Demasiad|No se pudo crear)/.test(texto) ? texto : porDefecto
 }
 
 /** El administrador crea una invitación. `passId`: con un pase suyo (Dúo o de grupo). `usos`: cuántas personas pueden entrar (sin pase). */
@@ -202,6 +202,8 @@ export async function canjearInvitacion(codigo: string): Promise<{ tripId: strin
   if (!supabase) return { tripId: null, yaEstaba: false, error: SIN_NUBE }
   const { data, error } = await supabase.rpc('canjear_invitacion', { p_codigo: normalizarCodigo(codigo) })
   if (error || !data) return { tripId: null, yaEstaba: false, error: mensajeDe(error, 'No se ha podido entrar en el viaje. Inténtalo de nuevo.') }
+  // (0047) El código que no existe ya no hace «raise» en la base de datos (así queda apuntado el fallo): llega como { error: 'no_existe' }.
+  if ((data as { error?: string }).error === 'no_existe') return { tripId: null, yaEstaba: false, error: 'Esa invitación no existe.' }
   const d = data as { trip_id: string; ya_estaba: boolean }
   olvidarInvitacionPendiente()
   recordarCanjeada(codigo)
