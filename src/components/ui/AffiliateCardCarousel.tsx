@@ -1,4 +1,5 @@
-import { precioTienda } from '../../lib/dinero'
+import { precioTiendaEnVista } from '../../lib/moneda'
+import { useMonedaViajero } from '../../lib/moneda'
 export interface AffiliateCard {
   id: string
   name: string
@@ -15,6 +16,7 @@ interface AffiliateCardCarouselProps {
 
 /** Carrusel horizontal de tarjetas foto+nombre+precio — mismo formato ya usado en PurchaseSection.tsx (entradas/tours de un día), reutilizado aquí para hoteles y actividades en la ficha de destino de RUTA. */
 export function AffiliateCardCarousel({ cards, priceSuffix = '' }: AffiliateCardCarouselProps) {
+  useMonedaViajero() // (Tanda 10N8) el precio sale en la moneda del viajero y se repinta al cambiarla
   return (
     <div className="flex gap-3 overflow-x-auto pb-1">
       {cards.map((card) => (
@@ -22,7 +24,7 @@ export function AffiliateCardCarousel({ cards, priceSuffix = '' }: AffiliateCard
           <img src={card.photoUrl} alt="" className="h-24 w-full object-cover" />
           <div className="space-y-0.5 p-2">
             <p className="line-clamp-2 text-caption font-medium text-text">{card.name}</p>
-            {card.price != null && <p className="text-small font-semibold text-text">{card.price === 0 ? 'Gratis' : `${precioTienda(card.price)}${priceSuffix}`}</p>}
+            {card.price != null && <p className="text-small font-semibold text-text">{card.price === 0 ? 'Gratis' : `${precioTiendaEnVista(card.price)}${priceSuffix}`}</p>}
           </div>
         </div>
       ))}

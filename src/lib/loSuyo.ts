@@ -17,14 +17,22 @@ export interface MiTramo {
   /** Lo que ha pagado ella (no se reparte). */
   precio?: Importe | null
   codigo?: string | null
+  /** (Tanda 10N8 §7c) El día del tramo (yyyy-mm-dd), si se eligió. */
+  fecha?: string | null
 }
 
-export interface MiVuelo {
+/** (Tanda 10N8 §7c) Cualquiera puede poner un vuelo o un alojamiento para varios: quién lo puso y para quién es. Sin esto, es de quien lo tiene. */
+export interface DeQuienEs {
+  puestoPor?: string | null
+  para?: string[] | null
+}
+
+export interface MiVuelo extends DeQuienEs {
   ida: MiTramo | null
   vuelta: MiTramo | null
 }
 
-export interface MiAlojamiento {
+export interface MiAlojamiento extends DeQuienEs {
   name: string
   /** La zona (texto libre: «Trastevere»). */
   zona?: string | null
@@ -47,14 +55,18 @@ export function leerLoSuyo(crudo: unknown): LoSuyoDeCadaUno {
   const tramo = (t: unknown): MiTramo | null => {
     const x = t as Partial<MiTramo> | null
     if (!x || typeof x.hora !== 'string' || !/^\d{1,2}:\d{2}$/.test(x.hora)) return null
-    return { hora: x.hora, punto: typeof x.punto === 'string' && x.punto.trim() ? x.punto.trim() : null, precio: leerImporte(x.precio) ?? null, codigo: typeof x.codigo === 'string' && x.codigo.trim() ? x.codigo.trim() : null }
+    return { hora: x.hora, punto: typeof x.punto === 'string' && x.punto.trim() ? x.punto.trim() : null, precio: leerImporte(x.precio) ?? null, codigo: typeof x.codigo === 'string' && x.codigo.trim() ? x.codigo.trim() : null, fecha: typeof x.fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.fecha) ? x.fecha : null }
+  }
+  const de = (x: unknown): DeQuienEs => {
+    const d = (x && typeof x === 'object' ? x : {}) as { puestoPor?: unknown; para?: unknown }
+    return { puestoPor: typeof d.puestoPor === 'string' ? d.puestoPor : null, para: Array.isArray(d.para) ? d.para.filter((i): i is string => typeof i === 'string') : null }
   }
   const v = o.vuelo as { ida?: unknown; vuelta?: unknown } | null | undefined
   const ida = v ? tramo(v.ida) : null
   const vuelta = v ? tramo(v.vuelta) : null
   const a = o.alojamiento as Partial<MiAlojamiento> | null | undefined
-  const alojamiento = a && typeof a.name === 'string' && a.name.trim() ? { name: a.name.trim(), zona: typeof a.zona === 'string' && a.zona.trim() ? a.zona.trim() : null, precio: leerImporte(a.precio) ?? null } : null
-  return { vuelo: ida || vuelta ? { ida, vuelta } : null, alojamiento }
+  const alojamiento = a && typeof a.name === 'string' && a.name.trim() ? { name: a.name.trim(), zona: typeof a.zona === 'string' && a.zona.trim() ? a.zona.trim() : null, precio: leerImporte(a.precio) ?? null, ...de(a) } : null
+  return { vuelo: ida || vuelta ? { ida, vuelta, ...de(v) } : null, alojamiento }
 }
 
 /** Las claves de `cuentasEntre` del vuelo del administrador. */
@@ -124,3 +136,21 @@ export function entreDeLoDelAdmin(e: { tipo: 'alojamiento' | 'coche' | 'vuelo'; 
 export type ModoDeLasCuentas = 'solo' | 'conjunta' | 'cada_uno'
 export const reservaEsPersonalSegunModo = (modo: ModoDeLasCuentas | null | undefined, paraQuien: readonly string[] | null | undefined, pagaId: string | null | undefined): boolean =>
   modo === 'conjunta' ? esSoloDe(paraQuien, pagaId) : reservaEsPersonal(paraQuien, pagaId)
+
+
+/**
+ * (Tanda 10N8 §7b y 7c) LA PASTILLA «Lo ha puesto Eric · para Eric y para ti», SIEMPRE DESDE QUIEN MIRA. `ids`: para quién es; `puestoPor`: quién lo puso.
+ * Si lo puse yo: «Lo has puesto tú · para ti y Luis».
+ */
+export function textoLoHaPuesto(e: { ids: readonly string[]; puestoPor: string | null; yoId: string | null; nombreDe: (id: string) => string; total: number }): { quien: string; para: string } {
+  const { ids, puestoPor, yoId, nombreDe, total } = e
+  const lo = puestoPor && puestoPor === yoId ? 'Lo has puesto tú' : `Lo ha puesto ${nombreDe(puestoPor ?? '') || 'el administrador'}`
+  if (total > 0 && ids.length >= total) return { quien: lo, para: 'para todos' }
+  const yo = Boolean(yoId) && ids.includes(yoId as string)
+  const otros = ids.filter((i) => i !== yoId).map((i) => nombreDe(i) || 'Alguien')
+  if (!yo) return { quien: lo, para: `para ${otros.join(', ')}` }
+  if (otros.length === 0) return { quien: lo, para: 'solo para ti' }
+  if (puestoPor && puestoPor !== yoId && otros.length === 1) return { quien: lo, para: `para ${otros[0]} y para ti` }
+  if (otros.length === 1) return { quien: lo, para: `para ti y ${otros[0]}` }
+  return { quien: lo, para: `para ti, ${otros.slice(0, -1).join(', ')} y ${otros[otros.length - 1]}` }
+}

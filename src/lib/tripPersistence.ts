@@ -9,6 +9,8 @@ import { supabase } from './supabaseClient'
 import { CENTRAL_MONTH } from './season'
 import { cuentasActivas } from './cuentas'
 import { useViajeCompartido } from '../store/useViajeCompartido'
+import { useSyncStore } from '../store/useSyncStore'
+import { recordarBase, sellarRuta } from './sellarCambio'
 
 /**
  * Viajes guardados antes de pedir el mes (Estaciones, Parte 1): solo traen temporada. Se les asigna
@@ -140,8 +142,13 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
   const data = (filas ?? []) as unknown as { id: string; traveler_id?: string; guardado_en?: string | null; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }[]
 
   // (Tanda 10N §10) Lo que se cargó es la «línea base»: un viaje igual en la nube no es un cambio de otra persona.
-  for (const row of data) rutaVista.set(row.id, canonico(row.route))
-  return (data ?? []).map((row) => filaAViaje(row, travelerId, conInvitados))
+  for (const row of data) {
+    rutaVista.set(row.id, canonico(row.route))
+  }
+  const viajes = (data ?? []).map((row) => filaAViaje(row, travelerId, conInvitados))
+  // (10N8 §4) La ruta con la que se compara el siguiente guardado es la que se pone en pantalla (con los nombres ya al día), no la cruda de la nube.
+  for (const v of viajes) recordarBase(v.id, v.route)
+  return viajes
 }
 
 type FilaDeViaje = { id: string; traveler_id?: string; guardado_en?: string | null; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }
@@ -170,7 +177,9 @@ export async function loadOneTrip(travelerId: string, tripId: string): Promise<{
   if (error) return undefined
   if (!data) return null
   const fila = data as unknown as FilaDeViaje
-  return { viaje: filaAViaje(fila, travelerId, cuentasActivas()), canonica: canonico(fila.route) }
+  const viaje = filaAViaje(fila, travelerId, cuentasActivas())
+  recordarBase(tripId, viaje.route)
+  return { viaje, canonica: canonico(fila.route) }
 }
 
 /** El mismo texto para la misma ruta aunque las claves vengan en otro orden (la base de datos las reordena): así se reconoce el eco del propio guardado. */
@@ -181,6 +190,14 @@ export function canonico(valor: unknown): string {
 
 /** El `route` que esta pestaña guardó la última vez, tal cual (para no tratar como «cambio de otra persona» el eco de nuestro propio guardado). */
 const ultimoGuardado = new Map<string, string>()
+/** (10N8 §4) Los últimos guardados de esta pestaña: con dos guardados seguidos, el eco del PRIMERO llega cuando ya se ha guardado el segundo. Antes solo se recordaba el último y ese eco parecía un cambio de otra persona (aviso «Han cambiado el viaje» para quien lo había cambiado, y la ruta viva se pisaba con la del primer guardado). */
+const recientes = new Map<string, string[]>()
+function recordarGuardado(tripId: string, canonica: string): void {
+  ultimoGuardado.set(tripId, canonica)
+  recientes.set(tripId, [...(recientes.get(tripId) ?? []), canonica].slice(-8))
+}
+/** ¿Esta ruta de la nube es una de las que guardó esta pestaña hace un momento? */
+export const fueGuardadaAqui = (tripId: string, canonica: string): boolean => (recientes.get(tripId) ?? []).includes(canonica)
 /** La ruta de la nube (en forma canónica) que esta pestaña cargó o puso por última vez, por viaje. */
 export const rutaVista = new Map<string, string>()
 export const rutaGuardadaAqui = (tripId: string): string | undefined => ultimoGuardado.get(tripId)
@@ -205,16 +222,21 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
 
   if (tripId) {
     if (cuentasActivas()) {
-      ultimoGuardado.set(tripId, canonico(payload.route))
+      // (Tanda 10N8 §4) La ruta sale con lo que ha pasado (`ultimoCambio`): de ahí sale el aviso nuevo de los demás.
+      const respaldo = useSyncStore.getState().savedTrips?.find((v) => v.id === tripId)?.route ?? null
+      const ruta = sellarRuta(tripId, payload.route, respaldo)
+      recordarGuardado(tripId, canonico(ruta))
       // (Tanda 10N §4a) Quien tiene «Puede editar» guarda la ruta y la lista de deseos (NO el vuelo, el alojamiento ni las fechas, que son del administrador).
       if (permisoDeEsteViaje() === 'editar') {
-        const { error } = await supabase.from('trips').update({ route: payload.route, wishlist: payload.wishlist, updated_at: row.updated_at }).eq('id', tripId).select('id')
+        const { error } = await supabase.from('trips').update({ route: ruta, wishlist: payload.wishlist, updated_at: row.updated_at }).eq('id', tripId).select('id')
         if (error) throw error
+        recordarBase(tripId, ruta)
         return tripId
       }
       // Solo el administrador cambia el viaje: si es de otra persona (esta está invitada), la base de datos no toca nada y aquí tampoco se avisa de un fallo.
-      const { error } = await supabase.from('trips').update(row).eq('id', tripId).eq('traveler_id', travelerId).select('id')
+      const { error } = await supabase.from('trips').update({ ...row, route: ruta }).eq('id', tripId).eq('traveler_id', travelerId).select('id')
       if (error) throw error
+      recordarBase(tripId, ruta)
       return tripId
     }
     const { error } = await supabase.from('trips').update(row).eq('id', tripId)

@@ -1,0 +1,154 @@
+[
+ {
+  "apartado": "0a",
+  "punto": "1 Excursión quitada: [Volver a ponerla en la ruta] con Hoja Dia y confirmación",
+  "estado": "medias",
+  "nota": "Hecho en código (VolverExcursionARuta + ConfirmDialog «¿Pasamos el jueves 12 a la excursión?»), sin probar en pantalla",
+  "donde": "RESERVAS > Excursiones, línea «Ya no está en tu ruta»",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "0a",
+  "punto": "4 Cambiar parada sin filtros",
+  "estado": "hecho",
+  "nota": "initialFilters fuera; visto en pantalla (N5): sin filtros activos al abrir, título «Cambiar X», ⇄ en todos",
+  "donde": "DÍAS > ··· > Cambiar parada",
+  "captura": "docs/dias/capturas_jutrip/10n8_n1_cambiar_parada.jpg",
+  "captura_design": null
+ },
+ {
+  "apartado": "0a",
+  "punto": "9 Quitar Free Tour sin reserva al momento",
+  "estado": "hecho",
+  "nota": "removeStop + apaga la experiencia; probado",
+  "donde": "DÍAS > ··· del Free Tour > Quitar parada",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "3",
+  "punto": "a Añadir Free Tour de primera por la mañana con Hoja Dia",
+  "estado": "hecho",
+  "nota": "Probado (pruebaTanda10N8_paradas y pruebaTanda10N5_freetour, 0 fallos): solo cambia el día elegido; Free Tour de primera parada",
+  "donde": "EXPLORAR/ficha/+ Añadir parada > Free Tour",
+  "captura": "docs/dias/capturas_jutrip/10n8_n1_hoja_dia_02_anadir_freetour.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_hoja_dia_02_anadir_freetour.jpg"
+ },
+ {
+  "apartado": "3",
+  "punto": "b Mover a otro día igual",
+  "estado": "hecho",
+  "nota": "Probado",
+  "donde": "DÍAS > ··· > Mover a otro día",
+  "captura": "docs/dias/capturas_jutrip/10n6_n8_hoja_dia_mover.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_hoja_dia_01_mover_freetour.jpg"
+ },
+ {
+  "apartado": "3",
+  "punto": "c Una sola vez, ✓ En ruta sin +",
+  "estado": "hecho",
+  "nota": "Probado (pruebaTanda10N5_freetour 53/0): una sola vez en la ruta",
+  "donde": "EXPLORAR > Entradas",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "3",
+  "punto": "d Quitar como cualquier parada",
+  "estado": "hecho",
+  "nota": "Probado quitar y Deshacer",
+  "donde": "DÍAS > ··· > Quitar parada",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "3",
+  "punto": "e D3 se queda",
+  "estado": "hecho",
+  "nota": "No se rehace ningún día",
+  "donde": "DÍAS día D3",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "3",
+  "punto": "f La franja no viaja; Free Tour primero; sin pase primero; con pase mejor hueco; lleva a la parada y la marca",
+  "estado": "medias",
+  "nota": "dondeQueda/sinSuFranja y llevarALaParada hechos; la marca visual no capturada. Hoy la app ya colocaba en el mejor hueco para todos; ahora solo con pase",
+  "donde": "DÍAS",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "3",
+  "punto": "g Bloqueo de días solo para interruptor y orden de días",
+  "estado": "hecho",
+  "nota": "Al añadir un sitio nunca se bloquea ningún día por entradas (visto en pantalla, N5)",
+  "donde": "Hoja Dia",
+  "captura": "docs/dias/capturas_jutrip/10n8_n1_hoja_dia_03_anadir_sitio.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_hoja_dia_03_anadir_sitio.jpg"
+ },
+ {
+  "apartado": "3",
+  "punto": "h Propuesta: un solo cambio",
+  "estado": "hecho",
+  "nota": "Probado en pruebaTanda10N5_freetour (sección 5): un solo cambio «Añadir el Free Tour al domingo 18»; el aviso al otro dice «Eric ha añadido el Free Tour al domingo 18.»",
+  "donde": "Cuenta que solo recomienda",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "3",
+  "punto": "i Hoja Dia exacta en todos los sitios",
+  "estado": "medias",
+  "nota": "Hoja Dia vista en pantalla en 01, 02 y 03 junto a Design. Diferencia: el Design 02 todavía enseña un día en gris «tiene entradas con hora: no lo movemos» (el prompt de la 10N8 manda no bloquear, y la app no lo bloquea). Sigue sin cambiar el desplegable de AddReservationSheet (día+hora)",
+  "donde": "varias",
+  "captura": "docs/dias/capturas_jutrip/10n8_n1_hoja_dia_02_anadir_freetour.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_hoja_dia_02_anadir_freetour.jpg"
+ },
+ {
+  "apartado": "3",
+  "punto": "j Fuera «Quitar el Free Tour»",
+  "estado": "hecho",
+  "nota": "No quedaba ninguno en el texto de la app (ya retirado en 10N6)",
+  "donde": "",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "8b",
+  "punto": "a Confirmación de quitar con entrada sin Cancelar",
+  "estado": "hecho",
+  "nota": "Probado (pruebaTanda10N6_confirmar 61/0): dos botones, sin [Cancelar] ni línea de RESERVAS. No hay pieza de Design de esta confirmación: la referencia es la de «Eliminar día», que tampoco lleva [Cancelar]",
+  "donde": "DÍAS > ··· parada con entrada > Quitar parada",
+  "captura": "docs/dias/capturas_jutrip/10n6_n8_quitar_con_entrada.jpg",
+  "captura_design": null
+ },
+ {
+  "apartado": "8b",
+  "punto": "Regla: confirmaciones con ✕ y sin Cancelar",
+  "estado": "medias",
+  "nota": "ConfirmDialog ya no pinta Cancelar; las Hoja llevan ✕ salvo PagoHost mientras espera. Quedan sin Cancelar otras hojas propias no revisadas una a una",
+  "donde": "",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "8b",
+  "punto": "b Mover antes/después activos con entrada",
+  "estado": "hecho",
+  "nota": "Probado (pruebaTanda10N6_confirmar): Mover después activo y sin aviso de horas; Mover antes activo salvo en la primera parada",
+  "donde": "DÍAS > ··· parada con entrada",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "8b",
+  "punto": "c Cambiar parada: título, sin franja, ⇄ en todos, + en En ruta, repetidos",
+  "estado": "medias",
+  "nota": "Visto en pantalla (N5): título «Cambiar Via Veneto», sin franja, ⇄ en todos incluidos los «✓ En ruta». Sin auditoría completa de sitios repetidos (mapa con dos números, recuerdos, likes, logros)",
+  "captura": "docs/dias/capturas_jutrip/10n8_n1_cambiar_parada.jpg",
+  "captura_design": null
+ }
+]

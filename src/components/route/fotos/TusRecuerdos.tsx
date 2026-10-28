@@ -165,7 +165,7 @@ export function TusRecuerdos({ stopName, dayNumber }: { stopName: string; dayNum
         </HojaOpciones>
       )}
       <input ref={camara} type="file" accept="image/*" capture="environment" onChange={alElegir} className="hidden" data-recuerdos-entrada="camara" />
-      <input ref={galeria} type="file" accept="image/*" multiple={!sinPase} onChange={alElegir} className="hidden" data-recuerdos-entrada="galeria" />
+      <input ref={galeria} type="file" accept="image/*" multiple onChange={alElegir} className="hidden" data-recuerdos-entrada="galeria" />
       <input ref={cambiar} type="file" accept="image/*" onChange={alElegir} className="hidden" data-recuerdos-entrada="cambiar" />
       <FotoEnGrande foto={grande} onCerrar={() => setGrande(null)} />
     </>

@@ -176,9 +176,15 @@ export function aportacionesDelViaje(entrada: { gastos: GastoCompartido[]; reser
     const c = convertir(importe, entrada.moneda, entrada.cambio)
     return c ? aCentimos(c) : null
   }
+  // (Tanda 10N8 §0b-7) Un gasto con su foto del cambio se pasa a euros con el cambio DEL DÍA EN QUE SE APUNTÓ (no el de hoy); de euros a la moneda de quien mira, con el de hoy.
+  const aMonedaDelGasto = (g: GastoCompartido): number | null => {
+    const tasa = g.cambio?.tasas?.[g.precio.currency]
+    if (!tasa || g.precio.currency === 'EUR') return aMoneda(g.precio)
+    return aMoneda({ amount: g.precio.amount / tasa, currency: 'EUR' })
+  }
   for (const g of entrada.gastos) {
     if (!sumaAlGrupo(g)) continue
-    const c = aMoneda(g.precio)
+    const c = aMonedaDelGasto(g)
     if (c === null || c <= 0) continue
     const pagan = g.pagadoPor.length > 0 ? g.pagadoPor : [g.autorId]
     // (Tanda 10N6 §1k) Un gasto solo para quien lo paga es personal: no es del grupo.
@@ -295,6 +301,8 @@ export function porPersonaDelPresupuesto(e: { presupuesto: Presupuesto; gastos: 
       lineas.push({ centimos, entre: entre && entre.length > 0 ? entre : null })
     }
   }
+  // (Tanda 10N8 §0a-6 y 8b-d) Lo «Solo tú» (reservas, vuelos… y los gastos [Para mí] de Extras) está en su bloque «Lo tuyo»: es dinero que paga esta persona y SÍ cuenta en «Tu parte» (no en lo del grupo).
+  for (const l of e.presupuesto.loTuyo ?? []) if (l.enMonedaViajero) personales += aCentimos(l.enMonedaViajero)
   const todoEntreTodos = lineas.every((l) => l.entre === null || e.todos.every((id) => l.entre!.includes(id)))
   if ((todoEntreTodos && personales === 0) || !e.yoId) return { centimos: e.todos.length > 0 ? Math.round(total / e.todos.length) : total, tuParte: false }
   return { centimos: parteDeUnaPersona(lineas, e.yoId, e.todos) + personales, tuParte: true }

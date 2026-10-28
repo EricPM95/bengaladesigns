@@ -105,6 +105,23 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claveAMirar, lluviaDePrueba, repintado])
 
+  // (Tanda 10N8 §2) Al unirse a un viaje, solo los avisos de DESDE que te uniste: lo que ya traía el viaje (las fechas especiales, las entradas ya reservadas, el texto de «Sobre tu ruta») no entra en la campana de quien llega.
+  // La primera vez que esta cuenta ve este viaje como invitada se apuntan esos avisos como ya vistos y escondidos; los que lleguen después salen con normalidad.
+  const idDeViaje = useSyncStore((state) => state.activeTripId)
+  useEffect(() => {
+    if (!route || !grupo.esInvitado || !grupo.yoId || !idDeViaje) return
+    const clave = `trazo:desde-que-me-uni:${grupo.yoId}:${idDeViaje}`
+    try {
+      if (window.localStorage.getItem(clave)) return
+      window.localStorage.setItem(clave, String(Date.now()))
+    } catch {
+      return
+    }
+    const ids = [...(route.dateNotices ?? []).map((a) => `fecha:${a.id}`), ...reservations.filter((r) => r.kind === 'entrada' && r.paraQuien).map((r) => `reserva-grupo:${r.id}`), `context:${route.createdAt}`]
+    useNoticesStore.getState().hide(ids)
+    useNoticesStore.getState().markAllRead(ids)
+  }, [route, reservations, grupo.esInvitado, grupo.yoId, idDeViaje])
+
   return useMemo(() => {
     const items: AppNotice[] = []
 

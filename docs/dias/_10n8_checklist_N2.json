@@ -1,0 +1,182 @@
+[
+ {
+  "apartado": "0a",
+  "punto": "La 0053 (vuelo y alojamiento del administrador) junta ~2 min y cada cambio vuelve a salir como nuevo",
+  "estado": "hecho",
+  "nota": "Migración nueva 0059 (dejar_aviso_de_lo_suyo borra el anterior y crea uno nuevo, 2 min). Sin aplicar.",
+  "donde": "Aplicar 0059. Con dos móviles: el administrador cambia su vuelo dos veces seguidas; el invitado ve franja y oye sonido en cada una (RESERVAS / campana). Cuenta: invitado.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "0b",
+  "punto": "La 0054 («ha cambiado las cuentas») igual",
+  "estado": "hecho",
+  "nota": "0059 la pasa a 2 min (ya borraba y creaba uno nuevo). Probado en PGlite.",
+  "donde": "Aplicar 0059. Administrador cambia el modo de cuentas dos veces; el invitado recibe un solo aviso, nuevo.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "1",
+  "punto": "Mis viajes: un solo viaje a todo el ancho",
+  "estado": "hecho",
+  "nota": "Hecho en código y comprobado en pantalla (N6, 390x844): sin logros, un viaje = tarjeta de 350 px sobre 350 útiles. Con los logros de demostración sale además la tarjeta «Antes de la app», que cuenta como segunda tarjeta y deja las dos al 60 % (así lo dice la regla del código; dime si «Antes de la app» no debe contar).",
+  "donde": "Perfil > Mis viajes con un viaje. Cuenta con un solo viaje.",
+  "captura": "docs/dias/capturas_jutrip/10n8_perfil_un_viaje.jpg (y 10n8_perfil_un_viaje_con_antes.jpg)",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_perfil_orden.jpg · docs/dias/capturas_jutrip/10n8_design_mis_viajes.jpg"
+ },
+ {
+  "apartado": "1",
+  "punto": "Mis viajes: con más de uno, cada tarjeta al 60 %",
+  "estado": "hecho",
+  "nota": "Comprobado en pantalla: 3 viajes de prueba + «Antes de la app», cada tarjeta 210 px de 350 (60 %) y la siguiente asoma. DIFERENCIA con Design (Mis Viajes Tarjeta): Design pinta la tarjeta con chips «4 días · 3 noches · 10 paradas», «En 12 días» y un botón dorado grande «Abrir este viaje ›»; la app mantiene la tarjeta de antes (fechas y días en una línea, botón con borde). Decisión de diseño: dime si se cambia.",
+  "donde": "Perfil con 2 o más viajes: la siguiente tarjeta asoma.",
+  "captura": "docs/dias/capturas_jutrip/10n8_perfil_varios_viajes.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_perfil_varios.jpg · docs/dias/capturas_jutrip/10n8_design_mis_viajes_hecho.jpg"
+ },
+ {
+  "apartado": "1",
+  "punto": "Tarjeta del [+] «Añade un viaje que ya hiciste» con su texto nuevo",
+  "estado": "hecho",
+  "nota": "Comprobado en pantalla: «Añade un viaje que ya hiciste» y «¿Viajaste antes de tener JUTRIP?…».",
+  "donde": "Perfil > [+].",
+  "captura": "docs/dias/capturas_jutrip/10n8_perfil_mas.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_perfil_mas.jpg"
+ },
+ {
+  "apartado": "1b",
+  "punto": "Ajustes: Mi cuenta = correo, Moneda, código de invitación",
+  "estado": "hecho",
+  "nota": "Comprobado en pantalla: filas en orden cuenta, moneda, codigo, mis-pases… Moneda ya no está en «La app».",
+  "donde": "Perfil > engranaje > Ajustes.",
+  "captura": "docs/dias/capturas_jutrip/10n8_ajustes_orden.jpg",
+  "captura_design": "sin pieza de Design de Ajustes"
+ },
+ {
+  "apartado": "1b",
+  "punto": "Ajustes: Mis pases, La app, Invitar, Privacidad; Cerrar sesión al final, sola",
+  "estado": "hecho",
+  "nota": "Comprobado en pantalla: «Cerrar sesión» es la última fila y está sola en su bloque; «Borrar mi cuenta» sigue debajo como enlace rojo (dime si debe ir antes).",
+  "donde": "Ajustes, bajar hasta el final.",
+  "captura": "docs/dias/capturas_jutrip/10n8_ajustes_orden.jpg",
+  "captura_design": "sin pieza de Design de Ajustes"
+ },
+ {
+  "apartado": "2",
+  "punto": "Al unirse: solo los avisos de desde que te uniste",
+  "estado": "medias",
+  "nota": "Los avisos de la cuenta nunca existen antes de unirse; lo que salía eran los derivados del viaje (fechas especiales, entradas ya reservadas, Sobre tu ruta). Ahora se esconden la primera vez que la cuenta ve el viaje como invitada. No probado con dos cuentas reales.",
+  "donde": "Unirse con un código con una cuenta nueva; abrir la campana: debe estar vacía de lo anterior.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "2",
+  "punto": "Al salir o quitarte, sus avisos desaparecen (menos «Ya no formas parte…»)",
+  "estado": "hecho",
+  "nota": "Migración 0058 (sacar_del_viaje oculta los avisos del viaje). Probado en PGlite. Sin aplicar.",
+  "donde": "Aplicar 0058. Invitado sale del viaje: campana sin avisos de ese viaje.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "2",
+  "punto": "Código que no vale: solo «Este código no existe.»",
+  "estado": "hecho",
+  "nota": "Comprobado en pantalla con un código falso (ZZZZ-9999): sale solo «Este código no existe.». DIFERENCIA con Design (Unirse Codigo 02), que aún dice «Ese código no es de ningún viaje. Revísalo con quien te lo ha pasado.»: la app sigue el prompt de Eric.",
+  "donde": "Unirme con un código > escribir uno falso.",
+  "captura": "docs/dias/capturas_jutrip/10n8_unirse_codigo_no_existe.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_unirse_codigo_no_vale.jpg · docs/dias/capturas_jutrip/10n8_design_unirse_codigo.jpg"
+ },
+ {
+  "apartado": "2",
+  "punto": "Sonido de los avisos igual para todos",
+  "estado": "medias",
+  "nota": "Dos causas: (1) los avisos que se juntaban en uno ya existente no eran nuevos y no sonaban (solo sonaba el del interruptor de excursión, que siempre era aviso propio); (2) iPhone: el audio se desbloqueaba solo con el primer pointerdown; ahora cada toque lo reanuda y precarga el sonido. Si el iPhone está en silencio o sin tocar la pantalla, puede seguir sin sonar.",
+  "donde": "Dos móviles: cambiar algo desde el administrador y mirar el del invitado con el ajuste «Sonido de los momentos» encendido.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "2",
+  "punto": "Lápiz y logros siempre por encima en EXPLORAR (categorías, lista, mapa, pantalla completa)",
+  "estado": "medias",
+  "nota": "No reproducido (N6): en Roma, 390x844, con pase, el botón de los logros se ve en las tarjetas de EXPLORAR y, en cada categoría (Atracciones, Miradores, Restaurantes, Entradas, Baños, Fuentes), en la lista, con el mapa, al volver a la lista, tras abrir una ficha y cerrarla, y con el mapa oculto: 0 fallos. Miradores sí existe (6 lugares). El código solo lo esconde (z-index 30, debajo de una pantalla entera) si hay abierta una hoja: rol dialog sin data-flotantes, alertdialog, data-hoja o .map-cover-overlay.items-end. Si Eric lo ve de verdad, necesito el paso exacto (¿con una ficha u hoja abierta? ¿en el iPhone?).",
+  "donde": "EXPLORAR > Miradores y el resto de categorías.",
+  "captura": "docs/dias/capturas_jutrip/10n8_flotantes_miradores.jpg (y 10n8_flotantes_explorar/atracciones/restaurantes/entradas/banos/fuentes.jpg)",
+  "captura_design": "sin pieza de Design"
+ },
+ {
+  "apartado": "2b",
+  "punto": "Pastilla del pase sin pase: azul oscuro con candado dorado",
+  "estado": "hecho",
+  "nota": "Comprobado en pantalla: «Pase Roma» con candado, fondo azul oscuro, 30 px de alto. Coincide con Design (Pase Estilo 02).",
+  "donde": "RUTA, tarjeta del viaje, cuenta sin pase.",
+  "captura": "docs/dias/capturas_jutrip/10n8_pastilla_sin_pase.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_pase_estilo_pastilla_sin.jpg"
+ },
+ {
+  "apartado": "2b",
+  "punto": "Pastilla con pase: dorado con ✓",
+  "estado": "hecho",
+  "nota": "Comprobado en pantalla: «Pase Roma» con ✓ sobre oro.",
+  "donde": "RUTA, cuenta con pase.",
+  "captura": "docs/dias/capturas_jutrip/10n8_pastilla_con_pase.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_pase_estilo_pastilla_con.jpg"
+ },
+ {
+  "apartado": "2b",
+  "punto": "Que no salte al cargar: hueco gris claro sin texto, mismo tamaño",
+  "estado": "medias",
+  "nota": "Hueco gris claro de 118x30 sin texto en el código (PastillaPase). NO he podido verlo en pantalla: el viaje de pruebas no tiene id de viaje del servidor y el estado «esperando» no se puede forzar con el componente ya montado. Ojo: la pastilla real mide 116 px con «Pase Roma» y más con nombres largos («Pase Florencia»), así que el hueco fijo de 118 no siempre es del mismo ancho. Sitios con candados que esperan el pase: sin revisar uno a uno.",
+  "donde": "Abrir la app y entrar en RUTA mirando la tarjeta.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "4",
+  "punto": "Llegan: quitar un día, cambiar el orden de los días, añadir restaurante, añadir sitios",
+  "estado": "hecho",
+  "nota": "Causa: sin ultimoCambio se juntaban con el aviso anterior (mismo id, sin franja ni sonido) y un restaurante ni se veía. Ahora cada guardado lleva lo que ha pasado (sellarCambio.ts) y la 0058 crea un aviso nuevo. Probado en PGlite. Sin aplicar.",
+  "donde": "Aplicar 0058. Administrador quita el sábado 14; invitado ve franja y sonido.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "4",
+  "punto": "Frases exactas (quitado el sábado 14, orden de los días, Da Enzo, el Panteón y 2 sitios más)",
+  "estado": "hecho",
+  "nota": "Probadas en pruebaTanda10N8_avisos.",
+  "donde": "Campana del invitado.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "4",
+  "punto": "Juntar ~2 minutos y cada cambio vuelve a marcar nuevo",
+  "estado": "hecho",
+  "nota": "0058.",
+  "donde": "Dos cambios seguidos del administrador: un solo aviso, nuevo.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "4",
+  "punto": "Que lleguen en segundos (también el del interruptor)",
+  "estado": "medias",
+  "nota": "No he podido medir entre dos móviles. Cadena: guardado a 1,5 s, disparador inmediato, Realtime + 0,6 s de espera = unos 2 a 4 s. El del interruptor depende de que termine de rehacer los días antes de guardar.",
+  "donde": "Dos móviles con cronómetro.",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "4",
+  "punto": "Nadie recibe avisos de lo que hizo él mismo",
+  "estado": "hecho",
+  "nota": "El disparador ya lo evitaba; el «i Han cambiado el viaje» propio era el eco del propio guardado (solo se recordaba el último guardado; con dos guardados seguidos el eco del primero parecía de otra persona y pisaba la ruta). Ahora se reconocen los últimos 8.",
+  "donde": "Administrador y un invitado que edita: editar rápido varias veces y no debe salir «Han cambiado el viaje».",
+  "captura": null,
+  "captura_design": null
+ }
+]

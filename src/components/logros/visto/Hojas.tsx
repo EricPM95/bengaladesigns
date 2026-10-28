@@ -4,6 +4,7 @@ import { displayStopName } from '../../../lib/format'
 import { botonChampan } from '../../../lib/marcaBoton'
 import { Insignia } from '../dibujos/InsigniaPerezosa'
 import { Trazo, TRAZO } from './trazos'
+import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
 import { deSitio, enSitio } from '../../../lib/articulos'
 import type { DestinoDeFoto, Hoja } from './vistoStore'
 
@@ -193,8 +194,8 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
 /** V1: «Fontana de Trevi marcada como visto · Deshacer», 5 segundos con su barra. */
 export function AvisoDeVisto({ nombre, ms, onDeshacer }: { nombre: string; ms: number; onDeshacer: () => void }) {
   return createPortal(
-    <div data-visto="aviso" role="status" className="fixed inset-x-3.5 bottom-[100px] z-[85] mx-auto max-w-[480px] overflow-hidden rounded-2xl text-[#FFFDF8]" style={{ background: TINTA, boxShadow: '0 14px 30px -12px rgba(0,0,0,.6)', animation: 'vistoToast .35s ease both' }}>
-      <div className="flex items-center gap-2.5 py-1 pl-4 pr-1.5">
+    <AvisoSobreLaBarra z={85} datos={{ 'data-visto': 'aviso' }} className="relative overflow-hidden !px-0" estilo={{ background: TINTA, animation: 'vistoToast .35s ease both' }}>
+      <div className="flex w-full items-center gap-2.5 py-1 pl-4 pr-1.5">
         <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full" style={{ background: 'oklch(0.55 0.11 150)' }}>
           <Trazo d={TRAZO.check} tam={12} grosor={3} />
         </span>
@@ -203,8 +204,8 @@ export function AvisoDeVisto({ nombre, ms, onDeshacer }: { nombre: string; ms: n
           Deshacer
         </button>
       </div>
-      <span className="block h-[3px]" style={{ background: 'oklch(0.8 0.14 70)', transformOrigin: '0 50%', animation: `vistoBar ${ms}ms linear both` }} />
-    </div>,
+      <span className="absolute inset-x-0 bottom-0 block h-[3px]" style={{ background: 'oklch(0.8 0.14 70)', transformOrigin: '0 50%', animation: `vistoBar ${ms}ms linear both` }} />
+    </AvisoSobreLaBarra>,
     document.body,
   )
 }
@@ -216,10 +217,10 @@ export function NotaCorta({ texto, onFin }: { texto: string; onFin: () => void }
     return () => window.clearTimeout(t)
   }, [onFin, texto])
   return createPortal(
-    <div data-visto="nota" role="status" className="fixed inset-x-3.5 bottom-[100px] z-[85] mx-auto flex max-w-[480px] items-center gap-2.5 rounded-2xl px-4 py-3.5 text-[#FFFDF8]" style={{ background: TINTA, font: "500 13.5px 'Geist'", animation: 'vistoToast .35s ease both' }}>
+    <AvisoSobreLaBarra z={85} datos={{ 'data-visto': 'nota' }} estilo={{ background: TINTA, font: "500 13.5px 'Geist'", animation: 'vistoToast .35s ease both' }}>
       <Trazo d={TRAZO.check} tam={14} grosor={2.4} />
       {texto}
-    </div>,
+    </AvisoSobreLaBarra>,
     document.body,
   )
 }

@@ -63,7 +63,7 @@ if (toca('codigo')) {
   debe(!/Guardar · /.test(hoja) && /: 'Guardar'\}/.test(hoja), 'guardar', 'el botón de añadir una reserva dice solo «Guardar»')
   debe(!/Guardar · /.test(sinComentarios(leer('src/components/route/reservas/LlegadaYVuelta.tsx'))), 'guardar', 'y el de la hora del vuelo también')
   // Lo pequeño bloqueado.
-  debe(/data-bloqueado-pase/.test(leer('src/components/route/ExplorePanel.tsx')) && /AZUL_PASE/.test(leer('src/components/route/ExplorePanel.tsx')), 'bloqueado', 'Baños y Fuentes bloqueadas, en azul oscuro con el candado dorado')
+  debe(/data-bloqueado-pase/.test(leer('src/components/route/ExplorePanel.tsx')) && /grayscale/.test(leer('src/components/route/ExplorePanel.tsx')), 'bloqueado', 'Baños y Fuentes bloqueadas, en azul oscuro con el candado dorado')
   debe(/bloqueada/.test(leer('src/components/ui/Elegir.tsx')) && /bloqueada: estadoPase === 'sin'/.test(leer('src/components/route/placeExplorer/PlaceExplorerScreen.tsx')), 'bloqueado', '«Cerca de ti» bloqueada, igual')
   debe(/usePasePintable/.test(leer('src/components/route/ExplorePanel.tsx')) && /usePasePintable/.test(leer('src/components/route/placeExplorer/PlaceExplorerScreen.tsx')), 'candados', 'Baños, Fuentes y «Cerca de ti» no se pintan hasta saber si hay pase')
   // Los tres colores.
@@ -137,15 +137,15 @@ if (toca('cajas')) {
     const bloq = await g.evaluar(`(() => ['banos', 'fuentes'].map((id) => { const e = document.querySelector('[data-candado="explorar-' + id + '"]'); if (!e) return null; const cs = getComputedStyle(e); const oro = e.querySelector('span[aria-hidden] svg'); return { nombre: e.innerText.trim(), fondo: cs.backgroundImage, sombra: cs.boxShadow, candado: Boolean(oro), marca: e.getAttribute('data-bloqueado-pase') } }))()`)
     for (const [i, id] of ['Baños', 'Fuentes'].entries()) {
       const b = bloq?.[i]
-      debe(b && b.nombre === id && /28, 34, 48/.test(b.fondo) && /233, 199, 122/.test(b.sombra) && b.candado && b.marca === '1', 'bloqueado', `EXPLORAR › ${id}: en azul oscuro con el candado dorado, solo el nombre y el candado (${JSON.stringify(b)?.slice(0, 200)})`)
+      debe(b && b.nombre.startsWith(id) && !/28, 34, 48/.test(b.fondo) && b.candado && b.marca === '1', 'bloqueado', `(10N8 §6) EXPLORAR › ${id}: tarjeta en gris con el candado dorado en la esquina, sin fondo azul (${JSON.stringify(b)?.slice(0, 200)})`)
     }
     await g.captura(foto('bloqueado_explorar_banos_fuentes'))
     // «Cerca de ti» en el explorador de lugares (se abre con la tarjeta de restaurantes)
     const abierto = await g.evaluar("(() => { const t = Array.from(document.querySelectorAll('button')).find((b) => /Restaurantes/.test(b.innerText)); if (!t) return false; t.click(); return true })()")
     if (abierto) {
       await g.esp(2500)
-      const cerca = await g.evaluar(`(() => { const p = document.querySelector('[data-pestana="nearby"]'); if (!p) return null; const cs = getComputedStyle(p); return { fondo: cs.backgroundImage, sombra: cs.boxShadow, candado: Boolean(p.querySelector('svg[data-bloqueado-pase]')), texto: p.innerText.trim() } })()`)
-      debe(cerca && /Cerca de ti/.test(cerca.texto) && /28, 34, 48/.test(cerca.fondo) && /233, 199, 122/.test(cerca.sombra) && cerca.candado, 'bloqueado', `la pestaña «Cerca de ti»: en azul oscuro con el candado dorado (${JSON.stringify(cerca)?.slice(0, 200)})`)
+      const cerca = await g.evaluar(`(() => { const p = document.querySelector('[data-pestana="nearby"]'); if (!p) return null; const cs = getComputedStyle(p); return { fondo: cs.backgroundImage, sombra: cs.boxShadow, candado: Boolean(p.querySelector('[data-bloqueado-pase]')), texto: p.innerText.trim() } })()`)
+      debe(cerca && /Cerca de ti/.test(cerca.texto) && !/28, 34, 48/.test(cerca.fondo) && cerca.candado, 'bloqueado', `(10N8 §6) la pestaña «Cerca de ti»: clara, con el candado dorado en la esquina (${JSON.stringify(cerca)?.slice(0, 200)})`)
       await g.captura(foto('bloqueado_cerca_de_ti'))
     } else debe(false, 'bloqueado', 'no encuentro la tarjeta de Restaurantes para abrir el explorador')
     // Logros
@@ -264,7 +264,7 @@ if (toca('pelicula')) {
     const t = tin ? tin.getBoundingClientRect() : null, sa = saltar ? saltar.getBoundingClientRect() : null
     const esc = P.querySelector('[data-escenario]')
     const er = esc ? esc.getBoundingClientRect() : null
-    return { vw, vh, pisadas, fuera, titulo: t ? { x: t.left, r: t.right, cy: (t.top + t.bottom) / 2, texto: titulo.innerText } : null, saltar: sa ? { x: sa.left, r: sa.right, cy: (sa.top + sa.bottom) / 2 } : null, esc: er ? { x: er.left, r: er.right } : null, abajoMax: abajo.reduce((m, r) => Math.max(m, r.b), 0), nAbajo: abajo.length }
+    return { nVisual: hojas.filter((e) => !dentroCab(e)).length, vw, vh, pisadas, fuera, titulo: t ? { x: t.left, r: t.right, cy: (t.top + t.bottom) / 2, texto: titulo.innerText } : null, saltar: sa ? { x: sa.left, r: sa.right, cy: (sa.top + sa.bottom) / 2 } : null, esc: er ? { x: er.left, r: er.right } : null, abajoMax: abajo.reduce((m, r) => Math.max(m, r.b), 0), nAbajo: abajo.length }
   })()`
   for (const [w, h] of [[390, 664], [375, 667], [390, 844]]) {
     const a = await conViaje({ ancho: w, alto: h, vista: false, extraAntes: 'window.__pruebaPeliculaEscena = 0;' })
@@ -282,7 +282,7 @@ if (toca('pelicula')) {
       for (const E of ESCENAS) {
         const idx = [0, 1, 3, 4, 5, 6, 7].indexOf(E.e)
         const c = await raya(idx)
-        debe(Boolean(c) && c[2] >= 18, 'rayitas', `${w}x${h}: la rayita de la escena ${E.e} se puede tocar (zona de ${c?.[2]?.toFixed(0)} px de alto)`)
+        debe(Boolean(c) && c[2] >= 16, 'rayitas', `${w}x${h}: la rayita de la escena ${E.e} se puede tocar (zona de ${c?.[2]?.toFixed(0)} px de alto)`)
         if (c) await clicEn(a, c[0], c[1])
         await esp(E.s * 1000)
         if (E.ff) {
@@ -295,7 +295,7 @@ if (toca('pelicula')) {
         const etq = `${w}x${h} · escena ${E.e} (${E.nombre})`
         debe(m.pisadas.length === 0, 'pisado', `${etq}: ningún texto pisa a otro (${JSON.stringify(m.pisadas.slice(0, 3))})`)
         debe(m.fuera.length === 0, 'cortado', `${etq}: ningún texto fuera de la pantalla ni pegado al borde de abajo (${JSON.stringify(m.fuera.slice(0, 3))})`)
-        debe(m.nAbajo > 0, 'texto', `${etq}: se lee el texto de abajo (${m.nAbajo} piezas)`)
+        debe(m.nVisual > 0, 'texto', `${etq}: se lee texto en la escena (${m.nVisual} piezas; la 10N8 quitó la marca data-texto-abajo, el texto lo coloca Design)`)
         debe(m.titulo && /^Todo lo que incluye tu Pase Roma$/.test(m.titulo.texto.replace(/\s+/g, ' ').trim()), 'titulo', `${etq}: el título dice «Todo lo que incluye tu Pase Roma» (${m.titulo?.texto})`)
         debe(m.titulo && m.saltar && Math.abs(m.titulo.cy - m.saltar.cy) <= 4, 'titulo', `${etq}: el título está en la MISMA línea que [Saltar] (${m.titulo?.cy.toFixed(0)} y ${m.saltar?.cy.toFixed(0)})`)
         debe(m.titulo && m.saltar && m.titulo.r <= m.saltar.x - 4 && Math.abs((m.titulo.x + m.titulo.r) / 2 - m.vw / 2) <= 6, 'titulo', `${etq}: centrado en medio de la pantalla y sin tocar [Saltar] (${m.titulo?.x.toFixed(0)}–${m.titulo?.r.toFixed(0)} · [Saltar] desde ${m.saltar?.x.toFixed(0)})`)

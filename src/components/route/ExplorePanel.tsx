@@ -21,7 +21,7 @@ import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId, type TarjetaDe
 import { Icono } from '../ui/Icono'
 import { usePasePintable } from '../../lib/pago'
 import { abrirAvisoPase } from '../../lib/avisoPase'
-import { AZUL_PASE, ORO_PASE, SOMBRA_PASE, CandadoDeDesign } from '../pase/Candado'
+import { ORO_PASE, CandadoDeDesign } from '../pase/Candado'
 import type { Coordinates } from '../../lib/types'
 import { useExploreAperturaStore } from '../../store/useExploreAperturaStore'
 
@@ -104,14 +104,12 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick, cerrado = fa
   const className = `${wide ? 'col-span-2 ' : ''}relative block h-[132px] overflow-hidden rounded-[20px] border border-text/[0.08] bg-bg-card p-0 text-left text-text transition-transform active:scale-[.98]`
   const cardStyle = { boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)', animation: `explore-pop .45s cubic-bezier(.2,.8,.2,1) ${delay}ms both` } as const
   // (Tanda 10G: lo del pase, cerrado y a la vista: la tarjeta en gris, con el candado dorado sobre marfil y lo que se ganaría; al tocarla se abre el pase.)
-  // (Tanda 10N5 §6b: lo pequeño bloqueado por el pase, en azul oscuro con el candado dorado —los colores de la caja de `Pase Estilo` 01—, solo con el nombre y el candado.)
+  // (Tanda 10N8 §6: como antes de la 10N5 —la tarjeta en gris, con su foto si la tenía— y el candado dorado en la esquina de arriba a la derecha; fuera el fondo azul oscuro. En EXPLORAR lo del pase va con el candado en la esquina; la caja azul con dorado es para las cajas que explican algo.)
   if (cerrado) {
     return (
-      <button type="button" onClick={() => abrirAvisoPase(id === 'banos' || id === 'fuentes' ? id : 'generico')} data-candado={`explorar-${id}`} data-bloqueado-pase="1" className={className} style={{ ...cardStyle, background: AZUL_PASE, boxShadow: SOMBRA_PASE, border: 'none' }}>
-        <span className="absolute bottom-3 left-4 right-4 flex flex-col gap-[3px]">
-          <span className="font-display" style={{ fontSize: 21, lineHeight: 1, color: '#FBF3E2' }}>
-            {label}
-          </span>
+      <button type="button" onClick={() => abrirAvisoPase(id === 'banos' || id === 'fuentes' ? id : 'generico')} data-candado={`explorar-${id}`} data-bloqueado-pase="1" className={className} style={cardStyle}>
+        <span style={{ filter: 'grayscale(1)', opacity: 0.55 }} className="absolute inset-0">
+          {inner}
         </span>
         <span aria-hidden="true" className="absolute right-3 top-3 flex h-[30px] w-[30px] items-center justify-center rounded-full" style={{ background: ORO_PASE }}>
           <CandadoDeDesign size={15} />

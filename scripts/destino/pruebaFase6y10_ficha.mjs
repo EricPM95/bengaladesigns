@@ -157,7 +157,7 @@ const estadoSinFechas = (route) => ({ ...route, answers: { ...route.answers, dat
 const hoja = (stop, { dateIso = INICIO, route = ruta, version = 'completa', extra = {} } = {}) =>
   pinta(StopDetailSheet, { stop: shellFromStop(stop), city: 'Roma', dayNumber: 1, dateIso, dayStops: [], isAnchor: false, onClose() {}, ...extra }, route, { version })
 const cabecera = (html) => html.slice(html.indexOf('<h1'), html.indexOf('data-ficha-pestanas'))
-const QUITADAS = /Monumento|Fuente|Mirador|Ruinas|Reserva obligatoria|Requiere reserva|Acceso libre|Abierto|Abre a las|Abre |Trastevere|Experiencia nocturna/
+const QUITADAS = /Monumento|Fuente|Mirador|Ruinas|Reserva obligatoria|Requiere reserva|Acceso libre|Abierto(?! 24 h)|Abre a las|Abre |Trastevere|Experiencia nocturna/
 const etiquetasDe = (html) => [...html.matchAll(/<span data-etiqueta-ficha="(horario|tiempo)"[^>]*>(.*?)<\/span>/g)].map((m) => ({ tipo: m[1], texto: plano(aTexto(m[2])), html: m[0] }))
 const coliseo = stopFromPlace(lugar('Coliseo'), 'https://foto/coliseo.jpg')
 const trevi = stopFromPlace(lugar('Fontana de Trevi'), 'https://foto/trevi.jpg')
@@ -200,7 +200,7 @@ for (const [nombre, stop] of [['Coliseo', coliseo], ['Fontana de Trevi', trevi],
   debe(/^\d{2}:\d{2}–\d{2}:\d{2}$/.test(reloj(museos, { dateIso: INICIO }) ?? ''), '2 horario', 'los Museos un miércoles no llevan su horario')
   debe(reloj(museos, { dateIso: INICIO }) === esperadoReloj('Museos Vaticanos y Capilla Sixtina', INICIO), '2 horario', 'el reloj de los Museos no es el de los datos ese día')
   // Sin horario en los datos (una fuente), solo el reloj de arena.
-  debe(reloj(trevi) === null && etiquetasDe(hoja(trevi)).length === 1, '2 horario', 'la Fontana de Trevi (sin horario) lleva reloj')
+  debe(reloj(trevi) === 'Abierto 24 h' && etiquetasDe(hoja(trevi)).length === 2, '2 horario', 'la Fontana de Trevi (sin horario, abierto_24h) no lleva solo «Abierto 24 h» y el reloj de arena (10N8 §8b-g)')
   // Los dos relojes son los de la tarjeta de DÍAS: el mismo horario que enseña «Abre 8:30 – 18:30» (la tarjeta lo pinta con la misma función).
   const h = horarioDeParada({ hoursData: datosDeHorario.get(normalizaNombre('Coliseo')) }, INICIO)
   debe(h && conFecha === `${h.abre.padStart(5, '0')}–${h.cierra.padStart(5, '0')}`, '2 horario', 'el reloj de la ficha no coincide con el horario de la tarjeta de DÍAS')

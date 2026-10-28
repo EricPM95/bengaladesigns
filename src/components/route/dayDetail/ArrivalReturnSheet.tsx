@@ -269,7 +269,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                 type="button"
                 onClick={onClose}
                 aria-label="Cerrar"
-                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-bg-card/95 text-[18px] text-text shadow-md hover:bg-bg-card"
+                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-[18px] text-text shadow-md hover:bg-bg-card"
               >
                 <Icono nombre="cerrar" size={14} />
               </button>

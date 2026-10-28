@@ -82,9 +82,8 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
   })
 
   // El ✕ del final (Design no lo tiene: era una página de escritorio). Fino y claro, sin relleno. En el final [Saltar] ya no sirve y deja su sitio al ✕.
-  const movil = ast[0].c![0] as Nodo
-  movil.c = movil.c!.map((h) => (esNodo(h) && h.t === 'div' && textoDe(h).trim() === 'Saltar' ? { i: '{{ !s7 }}', c: [h] } : h))
-  // (en el diseño de ahora [Saltar] es un span dentro de la barra de arriba, junto a [Ver])
+  const movil = palcoDe(ast)
+  // ([Saltar] es un span dentro de la barra de arriba, junto a [Ver])
   recorre(movil, (n) => {
     if (n.i !== '{{ !s7 }}' && n.c?.some((h) => esNodo(h) && h.a?.onClick === '{{ skip }}')) n.c = n.c.map((h) => (esNodo(h) && h.a?.onClick === '{{ skip }}' ? { i: '{{ !s7 }}', c: [h] } : h))
   })
@@ -119,6 +118,17 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
   return ast
 }
 
+/**
+ * (Tanda 10N8, apartado 5) El escenario de Design: desde `Pase Pelicula Movil` la pieza se hace a pantalla completa (`pantalla="si"`): el fondo llena la pantalla entera y las escenas (390 x 844) van dentro de un
+ * palco centrado y escalado a lo que cabe, SIN recuadros ni marcos. Aquí ya no se estira nada a mano: se deja tal cual lo dibuja Design y solo se cambia lo que tiene que ser de la app. El palco es el hijo del fondo.
+ */
+function palcoDe(ast: Nodo[]): Nodo {
+  const fondo = ast[0].c![0] as Nodo
+  const palco = (fondo.c ?? []).find((h) => esNodo(h) && h.a?.style === '{{ stBox }}') as Nodo | undefined
+  if (!palco) throw new Error('Design ha cambiado el palco de la película ({{ stBox }}): revisa adaptar.ts')
+  return palco
+}
+
 /** Los bloques de «Todo lo que incluye»: los grupos de la lista del final, con el nombre y la línea de cada fila. */
 export const bloquesDeLaLista = () => LISTA_DEL_PASE.map((g) => ({ t: g.titulo, items: g.items.map((i) => ({ titulo: i.titulo, linea: i.linea, partes: partesDeLinea(i.linea).map((p) => ({ t: p.t, dm: p.marca ? '1' : undefined, estilo: p.marca ? 'color:#6F4E37;font-weight:600' : '' })) })) }))
 
@@ -128,7 +138,7 @@ export const bloquesDeLaLista = () => LISTA_DEL_PASE.map((g) => ({ t: g.titulo, 
  *   · Las rayitas de arriba (una por escena) se pueden tocar: llevan a esa escena y la vuelven a poner desde el principio, como las historias de Instagram. La zona de toque es más alta que la rayita (22 px) y la rayita se ve igual (3 px, a la misma altura).
  */
 function ajustarLaCabecera(ast: Nodo[], destino: string) {
-  const movil = ast[0].c![0] as Nodo
+  const movil = palcoDe(ast)
   movil.c = movil.c!.map((h) => {
     if (!esNodo(h) || h.t !== 'div' || !h.a?.style?.startsWith('position:absolute;left:0;right:0;top:16px;text-align:center')) return h
     const titulo: Nodo = {
@@ -154,23 +164,9 @@ function ajustarLaCabecera(ast: Nodo[], destino: string) {
   })
 }
 
-/**
- * A TODO EL ANCHO DEL MÓVIL (Tanda 10P, 1.2). Design hace la película en 390 x 844 fijos. Aquí el escenario tiene el ancho y el alto REALES del móvil (`W` x `H`, ya divididos por la escala): las escenas 0-6 siguen siendo de 390 centradas
- * (`--dx`) sobre el mismo fondo oscuro, sin marcos negros, y el final (escena 7) se estira a todo el escenario: la lista llena el alto y la parte fija de abajo va pegada al borde de abajo.
- */
+/** LOS BOTONES DE ARRIBA ([Ver], [Saltar], el ✕ del final y el silencio de la música): se marcan para las pruebas y la barra deja sitio al ✕. La medida de la pantalla la lleva Design (`pantalla="si"`). */
 function ajustarAlMovil(ast: Nodo[]) {
-  const caja = ast[0]
-  caja.a = { ...caja.a, style: caja.a!.style.replace('width:390px', 'width:{{ W }}px') }
-  const movil = caja.c![0] as Nodo
-  movil.a = { ...movil.a, style: movil.a!.style.replace('width:390px;height:844px;border-radius:44px', 'width:{{ W }}px;height:{{ H }}px;--dx:{{ dx }}px;border-radius:0') }
-  // Las escenas 0-6: 390 de ancho, centradas.
-  for (const h of movil.c!) {
-    if (!esNodo(h) || !h.i || !/^{{ s[0-6] }}$/.test(h.i)) continue
-    const dentro = h.c![0] as Nodo
-    if (dentro.a?.style?.startsWith('position:absolute;inset:0')) dentro.a = { ...dentro.a, style: dentro.a.style.replace('position:absolute;inset:0', 'position:absolute;top:0;bottom:0;left:var(--dx,0px);width:390px') }
-  }
-  ajustarTextosYEscena0(movil)
-  centrarLasEscenas(movil)
+  const movil = palcoDe(ast)
   // [Ver] / [Saltar] y el ✕ del final: la barra de arriba deja sitio al ✕ (si no, [Ver] se pone encima).
   recorre(movil, (n) => {
     if (n.a?.style?.startsWith('position:absolute;left:18px;right:18px;top:66px;display:flex;justify-content:flex-end')) n.a = { ...n.a, style: n.a.style.replace('right:18px', 'right:{{ barR }}px'), 'data-barra-superior': '1' }
@@ -207,120 +203,11 @@ function ajustarAlMovil(ast: Nodo[]) {
 }
 
 /**
- * LA APERTURA MÁS GRANDE Y CON LOS TEXTOS MÁS ARRIBA (Tanda 10N3, 3b.1). Design pone los textos de abajo en `top:650px` (de 844) y el mapa y las tarjetas de la escena 0 en 342 de ancho: en un móvil de 390 x 664 (con la barra de Safari)
- * los textos quedaban cortados por abajo y el mapa y las tarjetas con mucho hueco a los lados. Aquí:
- *   · los textos de abajo (escenas 0, 1, 3, 4, 5, 6) salen de `tTop` (lo calcula PeliculaPase según el alto que hay: pegados a la última tarjeta, con una separación clara, y sin bajar del borde de abajo) en vez de `650px`;
- *   · la escena 0 ocupa todo el ancho del escenario: el mapa, las filas de llegada/salida y las tarjetas de las paradas se ensanchan a `wm` (ancho - 28, un margen de 14 a cada lado); lo que no se puede estirar sin deformarse
- *     (la ruta con sus pines, el desgarro y las tiras de colores) se queda de su tamaño, centrado en el mapa. El 342 de ancho no se toca en ninguna otra escena.
- */
-function ajustarTextosYEscena0(movil: Nodo) {
-  recorre(movil, (n) => {
-    const st = n.a?.style
-    if (!st) return
-    if (st.includes('top:650px;height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;')) {
-      n.a = { ...n.a, 'data-texto-abajo': '1', style: st.replace('top:650px;height:190px;', 'top:{{ tTop }}px;height:auto;').replace('justify-content:center;', 'justify-content:flex-start;') }
-    }
-    // El hueco de las frases que van cambiando (84): tres líneas caben en 66.
-    if (st === 'position:relative;width:100%;height:84px') n.a = { ...n.a, style: 'position:relative;width:100%;height:66px' }
-  })
-  // La escena 3 (el emblema secreto): centrada como las demás (antes se quedaba pegada a la izquierda), el emblema 32 más arriba para que su borde de abajo no toque el texto, y el aviso de abajo pegado al texto.
-  const eff = movil.c!.find((h) => esNodo(h) && h.i === '{{ effS }}') as Nodo | undefined
-  if (eff) {
-    const d = eff.c![0] as Nodo
-    d.a = { ...d.a, style: d.a!.style.replace('position:absolute;inset:0', 'position:absolute;top:0;bottom:0;left:var(--dx,0px);width:390px') }
-    recorre(d, (n) => {
-      const st = n.a?.style
-      if (!st) return
-      if (st === 'position:absolute;left:0;right:0;top:100px') n.a = { ...n.a, style: 'position:absolute;left:0;right:0;top:68px' }
-      else if (st.startsWith('position:absolute;left:173px;top:452px;')) n.a = { ...n.a, style: st.replace('top:452px;', 'top:420px;') }
-      else if (st.startsWith('position:absolute;left:36px;right:36px;top:762px;')) n.a = { ...n.a, style: st.replace('top:762px;', 'top:{{ tToast }}px;') }
-    })
-  }
-  // Las escenas 1 (HOY) y 5 (el pasaporte) llegan hasta y = 630 (el texto empieza en 608): se recogen un 7 % y 16 hacia arriba, todo junto, sin deformar nada.
-  for (const id of ['{{ s1 }}', '{{ s5 }}']) {
-    const esc = movil.c!.find((h) => esNodo(h) && h.i === id) as Nodo | undefined
-    const d = esc?.c?.[0] as Nodo | undefined
-    if (!d?.c) continue
-    const texto = (h: Nodo | string) => esNodo(h) && h.a?.['data-texto-abajo'] === '1'
-    d.c = [{ t: 'div', a: { 'data-visual-recogido': '1', style: 'position:absolute;inset:0;transform-origin:50% 0;transform:translateY(' + (id === '{{ s1 }}' ? '4px' : '-16px') + ') scale(0.93)' }, c: d.c.filter((h) => !texto(h)) }, ...d.c.filter(texto)]
-  }
-  const s0 = movil.c!.find((h) => esNodo(h) && h.i === '{{ s0 }}') as Nodo | undefined
-  if (!s0) return
-  const dentro = s0.c![0] as Nodo
-  dentro.a = { ...dentro.a, style: dentro.a!.style.replace(/position:absolute;top:0;bottom:0;left:var\(--dx,0px\);width:390px/, 'position:absolute;top:0;bottom:0;left:0;width:{{ W }}px') }
-  const mapa = (n: Nodo) => n.t === 'div' && Boolean(n.a?.style?.startsWith('position:absolute;left:24px;top:108px;width:342px;height:190px;overflow:hidden'))
-  recorre(dentro, (n) => {
-    const st = n.a?.style
-    if (!st) return
-    if (n.t === 'div' && /^position:absolute;left:24px;top:\d+px;width:342px;/.test(st)) {
-      n.a = { ...n.a, style: st.replace('left:24px;', 'left:14px;').replace('width:342px;', 'width:{{ wm }}px;') }
-      if (mapa(n)) {
-        // El mapa: el fondo se estira; la ruta y sus pines (342 x 190) quedan centrados, y los botones [+ Vuelo] y [+ Alojamiento] siguen pegados a la derecha.
-        const fondo: (Nodo | string)[] = []
-        const dentroDelMapa: (Nodo | string)[] = []
-        const botones: (Nodo | string)[] = []
-        for (const h of n.c ?? []) {
-          const hs = esNodo(h) ? (h.a?.style ?? '') : ''
-          if (esNodo(h) && h.t === 'span' && /^position:absolute;inset:0;background:/.test(hs)) fondo.push(h)
-          else if (esNodo(h) && /^position:absolute;right:(12|96)px;top:12px;height:30px;/.test(hs)) botones.push(h)
-          else dentroDelMapa.push(h)
-        }
-        n.c = [...fondo, { t: 'div', a: { style: 'position:absolute;left:{{ mi }}px;top:0;width:342px;height:190px' }, c: dentroDelMapa }, ...botones]
-      }
-      return
-    }
-    // El desgarro (svg de 342 x 42) y las tiras de colores: de su tamaño, centrados en el ancho de ahora.
-    if ((n.t === 'svg' || n.t === 'span') && /^position:absolute;left:(-?[\d.]+)px;top:\d+px;/.test(st) && (n.t === 'svg' || st.includes('clip-path'))) {
-      const m = /^position:absolute;left:(-?[\d.]+)px;/.exec(st)!
-      const desde = Number(m[1])
-      if (desde >= 24 && desde <= 340) n.a = { ...n.a, style: st.replace(`left:${m[1]}px;`, `left:calc({{ xc }}px + ${(desde - 24).toFixed(1)}px);`) }
-    }
-  })
-}
-
-/**
- * TODAS LAS ESCENAS, DE LADO A LADO (Tanda 10N5, apartado 5). Las escenas 1, 4, 5 y 6 seguían siendo una columna de 390 con su propio fondo: en un móvil de poca altura (donde el escenario se ensancha) se veían como una caja más
- * estrecha que la primera, con los bordes a la vista. Ahora la escena ocupa TODO el escenario y su contenido de Design (390 de ancho) va en una columna centrada dentro; lo que es fondo (el resplandor de la escena 6) se extiende hasta los bordes
- * y la escena 3 (el cielo de estrellas, una pieza de Design de 390) se funde con el fondo por los cuatro lados en vez de acabar en un recuadro.
- */
-function centrarLasEscenas(movil: Nodo) {
-  for (const id of ['{{ s1 }}', '{{ s4 }}', '{{ s5 }}', '{{ s6 }}']) {
-    const esc = movil.c!.find((h) => esNodo(h) && h.i === id) as Nodo | undefined
-    const d = esc?.c?.[0] as Nodo | undefined
-    if (!d?.a?.style) continue
-    if (d.a.style.includes('left:var(--dx,0px);width:390px')) d.a = { ...d.a, style: d.a.style.replace('left:var(--dx,0px);width:390px', 'left:0;width:{{ W }}px') }
-    d.c = [{ t: 'div', a: { 'data-columna-escena': '1', style: 'position:absolute;top:0;bottom:0;left:var(--dx,0px);width:390px' }, c: d.c ?? [] }]
-  }
-  // La escena 4, ya con las tarjetas (la pieza «Pase Escena 4b», de 390 x 844 a pantalla completa): se baja bajo la línea de [Saltar] y se recoge para que su última tarjeta acabe ANTES del texto de abajo (en un móvil de 375 x 667 se pisaban).
-  recorre(movil, (n) => {
-    if (n.a?.style === 'position:absolute;inset:0;z-index:20' && (n.c ?? []).some((h) => esNodo(h) && h.imp === 'Piezas/Pase Escena 4b')) n.a = { ...n.a, 'data-escena-4b': '1', style: n.a.style + ';transform-origin:50% 0;transform:translateY(96px) scale(.8)' }
-  })
-  // El resplandor de la escena 6: de borde a borde.
-  recorre(movil, (n) => {
-    if (n.a?.style?.startsWith('position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,#3A3224,transparent 70%)')) n.a = { ...n.a, style: n.a.style.replace('position:absolute;inset:0;', 'position:absolute;top:0;bottom:0;left:calc(-1 * var(--dx,0px));right:calc(-1 * var(--dx,0px));') }
-  })
-  // La escena 3: el cielo de estrellas se funde con el fondo por los cuatro lados.
-  const eff = movil.c!.find((h) => esNodo(h) && h.i === '{{ effS }}') as Nodo | undefined
-  if (eff) {
-    recorre(eff, (n) => {
-      if (n.a?.style === 'position:absolute;left:0;right:0;top:68px') {
-        n.a = {
-          ...n.a,
-          'data-cielo-escena': '1',
-          style:
-            'position:absolute;left:0;right:0;top:68px;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 11%,#000 89%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 7%,#000 90%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent 0,#000 11%,#000 89%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 7%,#000 90%,transparent 100%);mask-composite:intersect',
-        }
-      }
-    })
-  }
-}
-
-/**
  * LA LISTA DEL FINAL (Tanda 10P, 1.2 y 1.4). Con scroll de verdad en el móvil (se mueve con el dedo, sin que lo tape la parte fija de abajo) y SIN las filas que aún no existen (data/pase/lista_ajustes.json). La línea de
  * «Invita a un amigo» y la «Todo lo que incluye» llevan «HOY» en oro.
  */
 function ajustarLaLista(ast: Nodo[]) {
-  const movil = ast[0].c![0] as Nodo
+  const movil = palcoDe(ast)
   const final = movil.c!.find((h) => esNodo(h) && h.i === '{{ s7 }}') as Nodo
   const fondo = final.c![0] as Nodo
   fondo.c!.forEach((h, k) => {

@@ -113,6 +113,8 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
   )
 
   const antes = conLogros ? (perfil?.previos.paises ?? 0) : 0
+  // (Tanda 10N8 §1) Con una sola tarjeta, a todo el ancho; con más, el 60 % para que se vea la siguiente y se entienda que se desliza.
+  const anchoDeTarjeta = enFila.length + (antes > 0 ? 1 : 0) <= 1 ? '100%' : '60%'
   const eliminar = (viaje: ResumenViaje) => pedirEliminar(viaje, fotos ? (fotos.get(viaje.id) ?? 0) : null)
   const abrirDentro = (viaje: ResumenViaje) => (conLogros ? abrir({ t: 'viaje', tripId: viaje.id }) : onAbrirAlbum(viaje.id))
 
@@ -135,12 +137,12 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
       </div>
       {viajes.length === 0 && antes === 0 && <p style={{ margin: '12px 20px 0', font: "400 13px 'Geist'", color: 'rgba(28,34,48,.6)' }}>Aún no tienes viajes guardados en este dispositivo.</p>}
       {(viajes.length > 0 || antes > 0) && (
-        <div data-fila-de-viajes className="trazo-noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollPaddingLeft: 20, padding: '12px 20px 6px 20px', scrollbarWidth: 'none' }}>
+        <div data-fila-de-viajes data-ancho-tarjeta={anchoDeTarjeta} className="trazo-noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollPaddingLeft: 20, padding: '12px 20px 6px 20px', scrollbarWidth: 'none' }}>
           {enFila.map(({ viaje, etiqueta }) => (
-            <TarjetaDeViaje key={viaje.id} viaje={viaje} etiqueta={etiqueta} onAbrir={() => abrirDentro(viaje)} onAbrirViaje={() => onAbrirViaje(viaje)} editando={editando} onEliminar={() => eliminar(viaje)} />
+            <TarjetaDeViaje key={viaje.id} viaje={viaje} etiqueta={etiqueta} onAbrir={() => abrirDentro(viaje)} onAbrirViaje={() => onAbrirViaje(viaje)} editando={editando} onEliminar={() => eliminar(viaje)} ancho={anchoDeTarjeta} />
           ))}
           {antes > 0 && (
-            <button type="button" onClick={() => abrir({ t: 'previos' })} data-viajes-de-antes style={{ flex: 'none', width: 330, minHeight: 190, scrollSnapAlign: 'start', borderRadius: 26, background: '#F1E8D6', border: '1.5px dashed rgba(28,34,48,.25)', padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 10, boxSizing: 'border-box', textAlign: 'left', color: '#1C2230', cursor: 'pointer' }}>
+            <button type="button" onClick={() => abrir({ t: 'previos' })} data-viajes-de-antes style={{ flex: 'none', width: anchoDeTarjeta, minHeight: 190, scrollSnapAlign: 'start', borderRadius: 26, background: '#F1E8D6', border: '1.5px dashed rgba(28,34,48,.25)', padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 10, boxSizing: 'border-box', textAlign: 'left', color: '#1C2230', cursor: 'pointer' }}>
               <span style={{ width: 42, height: 42, borderRadius: 13, background: '#FFFDF8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6E5018' }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
                   <path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" />

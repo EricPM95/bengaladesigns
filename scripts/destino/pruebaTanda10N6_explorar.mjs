@@ -15,16 +15,15 @@ const clic = (a, js) => a.evaluar(`(() => { const e = ${js}; if (!e) return fals
 console.log('1. El código')
 {
   const el = sinComentarios(leer('src/components/ui/Elegir.tsx'))
-  debe(/hayDelPase = opciones\.some\(\(o\) => o\.bloqueada\)/.test(el) && /claraConDorado = elegida && !o\.bloqueada && hayDelPase/.test(el), '1d', 'InterruptorElegir: si una opción es del pase, la elegida gratis va en claro con dorado')
   const cp = sinComentarios(leer('src/components/route/dayDetail/CambiarParada.tsx'))
-  debe(/Elige el sitio que cambia por \$\{elSitio\(/.test(cp), '1e', 'la franja dice «Elige el sitio que cambia por {el sitio}» con su artículo')
+  debe(/Cambiar \$\{displayStopName/.test(cp) && !/Elige el sitio que cambia por/.test(cp), '1e', '(10N8) sin franja: el título dice «Cambiar {sitio}»')
   const ex = sinComentarios(leer('src/components/route/placeExplorer/PlaceExplorerScreen.tsx'))
-  debe(/data-cancelar-cambio/.test(ex) && /label: 'Cambiar por este'/.test(ex) && /data-cambiar-por/.test(ex), '1e', 'la franja lleva ✕ y la ficha el botón «Cambiar por este»')
+  debe(/label: 'Cambiar por este'/.test(ex) && /data-cambiar-por/.test(ex) && !/data-pregunta-cambiar-parada/.test(ex), '1e', '(10N8) sin la franja de pregunta; la ficha lleva el botón «Cambiar por este»')
 }
 
 /* ───────────────────────── 2. «Cerca de ti» y «Recomendados» ───────────────────────── */
 const ESTILO_PESTANAS = `(() => {
-  const p = (id) => { const e = document.querySelector('[data-pestana="' + id + '"]'); if (!e) return null; const cs = getComputedStyle(e); return { texto: (e.innerText || '').trim(), fondo: cs.backgroundImage !== 'none' ? cs.backgroundImage : cs.backgroundColor, color: cs.color, borde: cs.borderTopColor, sombra: cs.boxShadow, claroDorado: e.dataset.claraDorado === '1', elegida: e.dataset.elegida === '1', candado: Boolean(e.querySelector('svg[data-bloqueado-pase]')) } }
+  const p = (id) => { const e = document.querySelector('[data-pestana="' + id + '"]'); if (!e) return null; const cs = getComputedStyle(e); return { texto: (e.innerText || '').trim(), fondo: cs.backgroundImage !== 'none' ? cs.backgroundImage : cs.backgroundColor, color: cs.color, borde: cs.borderTopColor, sombra: cs.boxShadow, claroDorado: e.dataset.claraDorado === '1', elegida: e.dataset.elegida === '1', candado: Boolean(e.querySelector('[data-bloqueado-pase]')) } }
   return { rec: p('recommended'), cerca: p('nearby') }
 })()`
 async function abrirExplorador(a) {
@@ -41,9 +40,8 @@ if (toca('2')) {
   try {
     debe(await abrirExplorador(g), '1d', 'no se abre el explorador desde EXPLORAR')
     const e = await g.evaluar(ESTILO_PESTANAS)
-    debe(e?.cerca && /Cerca de ti/.test(e.cerca.texto) && /28, 34, 48/.test(e.cerca.fondo) && /233, 199, 122/.test(e.cerca.sombra) && e.cerca.candado, '1d', `«Cerca de ti» sin pase: azul oscuro con el candado dorado (${JSON.stringify(e?.cerca)})`)
-    debe(e?.rec && e.rec.elegida && e.rec.claroDorado, '1d', `«Recomendados» (elegida) va en claro con dorado (${JSON.stringify(e?.rec)})`)
-    debe(e?.rec && /255, 253, 248|251, 243, 226/.test(e.rec.fondo) && !/28, 34, 48/.test(e.rec.fondo) && /210, 182, 122/.test(e.rec.borde) && /28, 34, 48/.test(e.rec.color), '1d', `«Recomendados» en marfil/blanco con borde dorado y letra oscura (${JSON.stringify(e?.rec)})`)
+    debe(e?.cerca && /Cerca de ti/.test(e.cerca.texto) && !e.cerca.elegida && !/28, 34, 48/.test(e.cerca.fondo) && e.cerca.candado, '1d', `(10N8 §6) «Cerca de ti» sin pase: como siempre (clara, no elegida) y con el candado dorado en la esquina (${JSON.stringify(e?.cerca)})`)
+    debe(e?.rec && e.rec.elegida && !e.rec.claroDorado && /28, 34, 48/.test(e.rec.fondo), '1d', `(10N8 §6) «Recomendados» (elegida) en oscuro, el estilo de elegir de siempre (${JSON.stringify(e?.rec)})`)
     await g.captura(foto('explorar_pestanas_sin_pase'))
   } finally {
     g.cerrar()
@@ -91,12 +89,12 @@ if (toca('3')) {
     }
     paso('menu abierto: ' + abierto)
     debe(abierto, '1e', 'no he podido abrir «Cambiar parada» desde los tres puntitos de una parada')
-    await cuando(a, "Boolean(document.querySelector('[data-pregunta-cambiar-parada]'))", 80)
+    await cuando(a, "document.querySelectorAll('[data-cambiar-por]').length > 2", 80)
     await esp(2500)
-    const franja = await a.evaluar(`(() => { const f = document.querySelector('[data-pregunta-cambiar-parada]'); if (!f) return null; const x = f.querySelector('[data-cancelar-cambio]'); const r = f.getBoundingClientRect(); return { texto: f.innerText.replace(/\\s+/g, ' ').trim(), cruz: Boolean(x), cruzAncho: x ? Math.round(x.getBoundingClientRect().width) : 0, derecha: Math.round(r.right), ancho: Math.round(r.width) } })()`)
-    debe(franja && /^Elige el sitio que cambia por (el |la |los |las )?\S+/.test(franja.texto), '1e', `la franja dice «Elige el sitio que cambia por …» (${JSON.stringify(franja)})`)
-    debe(franja && paradaCambiada && franja.texto.toLowerCase().includes(String(paradaCambiada).toLowerCase().split(' ')[0]), '1e', `la franja nombra la parada que se cambia (${paradaCambiada})`)
-    debe(franja && franja.cruz && franja.cruzAncho >= 32 && franja.derecha <= 390, '1e', 'la franja lleva su ✕ y cabe en el móvil')
+    const franja = await a.evaluar("Boolean(document.querySelector('[data-pregunta-cambiar-parada]'))")
+    const tituloCambiar = await a.evaluar("(() => { const h = [document.querySelector('[data-titulo-explorador]')?.innerText?.trim()].find((t) => t && /^Cambiar /.test(t)); return h ?? null })()")
+    debe(franja === false, '1e', '(10N8) ya no hay franja «Elige el sitio que cambia por…»')
+    debe(tituloCambiar && paradaCambiada && tituloCambiar.toLowerCase().includes(String(paradaCambiada).toLowerCase().split(' ')[0]), '1e', `(10N8) el título dice «Cambiar {parada}» sin el día (${tituloCambiar} / ${paradaCambiada})`)
     const filas = await a.evaluar(`(() => { const sw = Array.from(document.querySelectorAll('[data-cambiar-por]')); const fila = sw[0]?.closest('div.relative'); return { n: sw.length, conCorazon: sw.filter((b) => b.closest('div.relative')?.querySelector('[data-me-gusta], button[aria-label*="gusta" i]')).length, mas: Array.from(document.querySelectorAll('div.relative.flex')).filter((d) => d.className.includes('h-[88px]') && d.querySelector('button[aria-label^="Añadir "]')).length, enRuta: (document.body.innerText.match(/✓ En ruta/g) || []).length, yaEnViaje: (document.body.innerText.match(/Ya en tu viaje/g) || []).length, trazo: sw[0]?.querySelector('svg path')?.getAttribute('d') ?? null } })()`)
     debe(filas.n >= 3, '1e', `salen los sitios con su ⇄ (${filas.n})`)
     debe(filas.mas === 0, '1e', 'en «Cambiar parada» no queda ningún «+ Añadir»')

@@ -158,21 +158,20 @@ const modo = async (a, m) => {
   debe(!hojaP?.opciones.some((o) => /hora/i.test(o)), 'cambiar_hora', '«Cambiar hora» ya no sale entre las opciones de la parada')
   await cap(a, 'menu_parada')
 
-  // «Mover a»: la ruedita.
+  // «Mover a otro día»: (10N8) la hoja de elegir día de la app (HojaDia), ya no la ruedita.
   await a.evaluar("Array.from(document.querySelectorAll('[data-opcion-hoja]')).find((b) => /Mover a otro día/.test(b.textContent)).click(); true")
   await a.esp(900)
-  const mover = await a.evaluar(`(() => { const m = document.querySelector('[data-mover-a-dia]'); if (!m) return null; const p = document.querySelector('[data-hoja="menu"] .hoja-panel'); return { ahora: m.querySelector('[data-ahora-en]')?.textContent ?? '', rueda: Boolean(m.querySelector('[role="listbox"]')), opciones: m.querySelectorAll('[role="option"]').length, boton: Array.from(m.querySelectorAll('button')).map((b) => b.textContent.trim()), alto: p.getBoundingClientRect().height, ventana: window.innerHeight } })()`)
-  debe(mover?.rueda && mover?.opciones >= 1, 'mover', `«Mover a» elige el día con una rueda (${mover?.opciones} días)`)
-  debe(/^Ahora: /.test(mover?.ahora ?? ''), 'mover', `con «Ahora: …» arriba (${mover?.ahora})`)
-  debe(mover?.boton.includes('Mover aquí'), 'mover', 'y [Mover aquí] debajo')
-  debe(mover && mover.alto < mover.ventana * 0.65, 'mover', `la hoja no ocupa media pantalla larga (${Math.round(mover?.alto)} px)`)
+  const mover = await a.evaluar(`(() => { const m = document.querySelector('[data-hoja-dia="mover-a-dia"]'); if (!m) return null; return { filas: m.querySelectorAll('[data-dia-id]').length, ahora: Array.from(m.querySelectorAll('[data-dia-id][data-bloqueado]')).map((b) => b.innerText).join(' '), boton: m.querySelector('[data-hoja-dia-boton]')?.textContent.trim() ?? '' } })()`)
+  debe(mover && mover.filas >= 1, 'mover', `«Mover a» elige el día en la hoja de días (${mover?.filas} días)`)
+  debe(/Ya está en ese día/.test(mover?.ahora ?? ''), 'mover', `con el día de ahora apagado y «Ya está en ese día» (${mover?.ahora})`)
+  debe(/^Pasar al /.test(mover?.boton ?? ''), 'mover', `y [Pasar al …] debajo (${mover?.boton})`)
   await cap(a, 'mover_a')
   const antes = await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState().route.days.map((d) => d.stops?.length ?? 0).join(','))")
-  await a.evaluar("Array.from(document.querySelectorAll('[data-mover-a-dia] button')).find((b) => /Mover aquí/.test(b.textContent)).click(); true")
+  await a.evaluar("document.querySelector('[data-hoja-dia=\"mover-a-dia\"] [data-hoja-dia-boton]').click(); true")
   await a.esp(1500)
   const despues = await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState().route.days.map((d) => d.stops?.length ?? 0).join(','))")
-  debe(antes !== despues, 'mover', `[Mover aquí] mueve la parada (${antes} → ${despues})`)
-  debe((await a.evaluar("document.querySelector('[data-hoja=\"menu\"]')")) === null, 'mover', 'y la hoja se cierra')
+  debe(antes !== despues, 'mover', `[Pasar al …] mueve la parada (${antes} → ${despues})`)
+  debe((await a.evaluar("document.querySelector('[data-hoja=\"menu\"]')")) === null && (await a.evaluar("document.querySelector('[data-hoja-dia=\"mover-a-dia\"]')")) === null, 'mover', 'y las hojas se cierran')
 
   // Cerrar deslizando.
   await modo(a, 'days')

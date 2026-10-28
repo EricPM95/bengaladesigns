@@ -11,6 +11,7 @@ import { useGastosDelViaje } from '../hooks/useGastosDelViaje'
 import { useLoSuyo } from '../store/useLoSuyo'
 import { useMisReservas } from '../store/useMisReservas'
 import { idsConLoSuyo } from './loSuyo'
+import { modoDeCuentas } from './modoCuentas'
 import { useModoCuentas } from './modoCuentas'
 
 /** El presupuesto del estado de ahora (sin React): para el PDF y para quien lo necesite fuera de una pantalla. */
@@ -36,7 +37,16 @@ export function presupuestoDeEstado(cambio: Cambio | null): Presupuesto | null {
 function compartidoDeEstado() {
   const g = useGastosCompartidos.getState()
   if (g.disponible === false || useViajeCompartido.getState().gente.length < 2) return undefined
-  return { gastos: gastosQueVeo(g.gastos, g.yoId), extrasDeLaRutaMios: true }
+  // (Tanda 10N8 §0b-6) Con quién se reparte y quién mira: así el PDF de quien tiene algo «Solo tú» lleva «Lo tuyo», y el de los demás no.
+  const gente = useViajeCompartido.getState().gente
+  const yo = gente.find((p) => p.esYo)?.id ?? g.yoId ?? null
+  const lo = useLoSuyo.getState()
+  const esInvitado = Boolean(yo) && !gente.find((p) => p.id === yo)?.esAdmin
+  return {
+    gastos: gastosQueVeo(g.gastos, g.yoId),
+    extrasDeLaRutaMios: !esInvitado,
+    reparto: { yoId: yo, adminId: gente.find((p) => p.esAdmin)?.id ?? null, modo: modoDeCuentas(), esInvitado, todos: gente.map((p) => p.id), entreDe: useRouteStore.getState().route?.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(lo.grupo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(lo.grupo, 'alojamiento'), reservasPropias: esInvitado ? useMisReservas.getState().lista : [], entradasDeInvitados: lo.entradas, loSuyo: lo.mio },
+  }
 }
 
 /** El presupuesto del viaje (Tanda 6z2), siempre al día con lo que el viajero ha puesto; null sin ruta. */

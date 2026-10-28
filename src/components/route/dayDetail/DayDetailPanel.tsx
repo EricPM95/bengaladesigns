@@ -307,6 +307,9 @@ export function DayDetailPanel({
     if (!target) return
     const timer = window.setTimeout(() => {
       target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // (10N8, 3f) La parada que llega (añadida o pasada de otro día) se marca un momento para que el viajero vea dónde ha quedado.
+      target.setAttribute('data-parada-marcada', '1')
+      window.setTimeout(() => target.removeAttribute('data-parada-marcada'), 2200)
       setFocusStopId(null)
     }, 350)
     return () => window.clearTimeout(timer)

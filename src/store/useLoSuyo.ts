@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient'
 import type { Reservation } from '../lib/bookings'
 import { leerLoSuyo, type LoSuyoDeCadaUno, type MiAlojamiento, type MiVuelo, type QuienTieneLoSuyo, VACIO } from '../lib/loSuyo'
 import { useSyncStore } from './useSyncStore'
+import { fusionarPrivadasDelAdmin } from '../lib/reservasPrivadasAdmin'
 
 /**
  * EL VUELO Y EL ALOJAMIENTO DE CADA UNO, del viaje abierto (Tanda 10N5 §6c). Lo MÍO (`mio`) vive en el propio móvil (`localStorage`) y, si la migración 0049 está aplicada, también en `lo_suyo_del_viaje`
@@ -73,6 +74,8 @@ interface LoSuyoState {
   poner: (datos: Partial<LoSuyoDeCadaUno>) => void
   ponerVuelo: (vuelo: MiVuelo | null) => void
   ponerAlojamiento: (alojamiento: MiAlojamiento | null) => void
+  /** (Tanda 10N8 §7c) Pone un vuelo o un alojamiento PARA VARIAS PERSONAS (quien lo pone va siempre en la lista). Un solo guardado y un solo aviso a cada una; sin la migración 0061 queda solo en lo mío. */
+  ponerPara: (datos: { vuelo?: MiVuelo | null; alojamiento?: MiAlojamiento | null }, para: string[], yoId: string, detalle: string) => Promise<void>
   /** Solo pruebas y desarrollo: pone lo del grupo sin pasar por el servidor. */
   ponerGrupo: (datos: { grupo?: QuienTieneLoSuyo; entradas?: EntradasDeUnInvitado[] }) => void
 }
@@ -89,6 +92,8 @@ export const useLoSuyo = create<LoSuyoState>((set, get) => ({
       const { data: usuario } = await supabase.auth.getUser()
       if (!usuario.user) return
       const uid = usuario.user.id
+      // (Tanda 10N8 §0b-2) El administrador recupera sus reservas «Solo para mí», guardadas aparte.
+      void fusionarPrivadasDelAdmin(tripId)
       const [{ data: fila, error }, quien, entradas] = await Promise.all([
         supabase.from('lo_suyo_del_viaje').select('vuelo, alojamiento').eq('trip_id', tripId).eq('user_id', uid).maybeSingle(),
         supabase.rpc('lo_suyo_del_grupo', { p_trip: tripId }),
@@ -128,6 +133,29 @@ export const useLoSuyo = create<LoSuyoState>((set, get) => ({
     escribirLocal(tripId, mio)
     void guardarEnLaNube(tripId, mio)
     // Yo me incluyo en «quién tiene lo suyo» al momento (el administrador y las cuentas lo ven con la siguiente carga).
+  },
+  ponerPara: async (datos, para, yoId, detalle) => {
+    const tripId = get().tripId ?? useSyncStore.getState().activeTripId
+    const ids = [...new Set([yoId, ...para])]
+    const marca = { puestoPor: yoId, para: ids }
+    const conMarca = {
+      ...(datos.vuelo !== undefined ? { vuelo: datos.vuelo ? { ...datos.vuelo, ...marca } : null } : {}),
+      ...(datos.alojamiento !== undefined ? { alojamiento: datos.alojamiento ? { ...datos.alojamiento, ...marca } : null } : {}),
+    }
+    const mio = { ...get().mio, ...conMarca }
+    set({ mio, tripId })
+    escribirLocal(tripId, mio)
+    if (!supabase || !tripId) return
+    marcarPendiente(tripId, true)
+    try {
+      const { error } = await supabase.rpc('poner_lo_suyo_para', { p_trip: tripId, p_vuelo: conMarca.vuelo ?? null, p_alojamiento: conMarca.alojamiento ?? null, p_para: ids, p_detalle: detalle.slice(0, 200) })
+      if (error) {
+        console.warn('[loSuyo] no se pudo guardar para varios (¿falta la migración 0061?):', error.message)
+        void guardarEnLaNube(tripId, mio)
+      } else marcarPendiente(tripId, false)
+    } catch {
+      // Queda pendiente: se sube al abrir con cuenta.
+    }
   },
   ponerVuelo: (vuelo) => get().poner({ vuelo }),
   ponerAlojamiento: (alojamiento) => get().poner({ alojamiento }),

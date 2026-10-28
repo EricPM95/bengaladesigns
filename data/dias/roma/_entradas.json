@@ -168,6 +168,14 @@
         "desde": null,
         "url": "https://www.civitatis.com/es/roma/free-tour-roma/?aid=5206&cmp=Routy"
       }
+    ],
+    "Basílica de San Clemente": [
+      {
+        "nombre": "Excavaciones de San Clemente",
+        "incluye": "Las excavaciones bajo la basílica (la entrada a la basílica es libre).",
+        "desde": 10,
+        "url": null
+      }
     ]
   }
 }

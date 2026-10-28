@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { ORO_PASE, CandadoDeDesign } from '../pase/Candado'
 
 /**
  * ELEGIR UNA COSA U OTRA: el mismo estilo en toda la app (Tanda 10N §11, «Presupuesto Compartido» 03-05).
@@ -31,7 +32,7 @@ export interface OpcionElegir {
   deshabilitada?: boolean
   /** Algo detrás del texto (un candado pequeño…). */
   extra?: ReactNode
-  /** (Tanda 10N5 §6b) Bloqueada por el pase: azul oscuro con anillo dorado y el candado dorado delante (los colores de la caja de `Pase Estilo` 01). Al tocarla, lo que haga `onCambio` (abrir el pase). */
+  /** (Tanda 10N8 §6, cambia la 10N5 §6b y la 10N6 §1d) Bloqueada por el pase: se ve como todas (la elegida en oscuro, la otra en claro) y lleva el candado dorado en su esquina de arriba a la derecha. Al tocarla, lo que haga `onCambio` (abrir el aviso del pase). */
   bloqueada?: boolean
   /** Atributos data-* de ese botón (para las pruebas): `{ 'data-pestana': 'nearby' }`. */
   atributos?: Record<string, string>
@@ -60,14 +61,11 @@ export function InterruptorElegir({
   atributos?: Record<string, string>
 }) {
   const h = compacto ? 40 : alto
-  // (Tanda 10N6 §1d) Si una de las opciones es del pase (azul con candado), la elegida que es gratis va EN CLARO con dorado (marfil y blanco), para que no se confundan las dos.
-  const hayDelPase = opciones.some((o) => o.bloqueada)
   return (
     <div data-elegir={datos ?? ''} {...atributos} role="radiogroup" aria-label={etiqueta} style={{ display: 'flex', gap: 8 }}>
       {opciones.map((o) => {
         const elegida = o.id === valor
         const apagada = deshabilitado || o.deshabilitada
-        const claraConDorado = elegida && !o.bloqueada && hayDelPase
         return (
           <button
             key={o.id}
@@ -75,13 +73,13 @@ export function InterruptorElegir({
             role="radio"
             aria-checked={elegida}
             data-elegida={elegida ? '1' : '0'}
-            data-clara-dorado={claraConDorado ? '1' : undefined}
             disabled={apagada}
             onClick={() => onCambio(o.id)}
             {...o.atributos}
             style={{
               flex: 1,
               minWidth: 0,
+              position: 'relative',
               height: h,
               borderRadius: compacto ? 14 : 16,
               display: 'flex',
@@ -89,21 +87,20 @@ export function InterruptorElegir({
               justifyContent: 'center',
               gap: compacto ? 6 : 9,
               font: `600 ${compacto ? 13 : 15}px 'Geist'`,
-              background: o.bloqueada ? 'linear-gradient(135deg,#1C2230,#252F55 60%,#1C2230)' : claraConDorado ? 'linear-gradient(135deg,#FFFDF8,#FBF3E2)' : elegida ? AZUL : '#FFFDF8',
-              color: (elegida && !claraConDorado) || o.bloqueada ? CLARO : AZUL,
-              border: o.bloqueada ? '1px solid transparent' : claraConDorado ? '1.5px solid #D2B67A' : `1px solid ${elegida ? AZUL : 'rgba(28,34,48,.14)'}`,
-              boxShadow: o.bloqueada ? 'inset 0 0 0 1.3px rgba(233,199,122,.55)' : claraConDorado ? '0 4px 10px -6px rgba(181,138,46,.6)' : undefined,
+              background: elegida ? AZUL : '#FFFDF8',
+              color: elegida ? CLARO : AZUL,
+              border: `1px solid ${elegida ? AZUL : 'rgba(28,34,48,.14)'}`,
               cursor: apagada ? 'default' : 'pointer',
               opacity: apagada && !elegida ? 0.5 : 1,
               transition: 'background .15s,color .15s',
             }}
           >
             {o.bloqueada && (
-              <svg data-bloqueado-pase="1" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
-                <path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z" />
-              </svg>
+              <span data-bloqueado-pase="1" aria-hidden="true" style={{ position: 'absolute', top: -7, right: -5, width: 22, height: 22, borderRadius: '50%', background: ORO_PASE, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px -2px rgba(110,80,24,.6)' }}>
+                <CandadoDeDesign size={12} />
+              </span>
             )}
-            {o.icono && <span aria-hidden="true" style={{ flex: 'none', display: 'inline-flex', color: elegida && !claraConDorado ? ORO : claraConDorado ? '#B58A2E' : 'rgba(28,34,48,.6)' }}>{o.icono}</span>}
+            {o.icono && <span aria-hidden="true" style={{ flex: 'none', display: 'inline-flex', color: elegida ? ORO : 'rgba(28,34,48,.6)' }}>{o.icono}</span>}
             <span style={{ minWidth: 0 }}>{o.texto}</span>
             {o.extra}
           </button>

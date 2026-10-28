@@ -101,7 +101,7 @@ ponerVersion('completa')
     const html = renderToStaticMarkup(createElement(ManualShrinkDialog, { notice: aviso, onConfirm() {}, onCancel() {} }))
     const lineas = aTexto(html).split('\n')
     debe(lineas.includes('¿Quitamos esos días de tu viaje?')&& lineas.includes('Se quitarán el vie 12 y el sáb 13, con sus paradas.'), '2 aviso', `la ventana no dice «¿Estás seguro?» y qué días se quitan: ${lineas.join(' | ')}`)
-    debe(lineas.includes('Sí, quitar') && lineas.includes('Cancelar') && (html.match(/<button/g) ?? []).length === 3 && (html.match(/aria-label="Cerrar"/g) ?? []).length === 1, '2 aviso', 'la ventana no tiene exactamente [Eliminar] y [Cancelar] (más el ✕ de la hoja, Tanda 10N §6c)')
+    debe(lineas.includes('Sí, quitar') && !lineas.includes('Cancelar') && (html.match(/<button/g) ?? []).length === 2 && (html.match(/aria-label="Cerrar"/g) ?? []).length === 1, '2 aviso', 'la ventana no tiene exactamente [Sí, quitar] y la ✕ de la hoja, sin [Cancelar] (Tanda 10N8)')
     debe(lineas.filter((l) => l === '¿Quitamos esos días de tu viaje?').length === 1 && !/Qué hago con|Pasarl[ao]s? a otro d/.test(html), '2 aviso', 'sale más de una pregunta o la vieja «¿Qué hago con ellas?»')
     debe(/role="dialog"/.test(html) && /data-hoja="confirmar"/.test(html) && /data-confirmar="1"/.test(html) && /aria-label="¿Quitamos esos días de tu viaje\?"/.test(html), '2 aviso', 'no es el diálogo de confirmación de siempre (ConfirmDialog, ahora una hoja desde abajo: Tanda 10N §6c)')
   }

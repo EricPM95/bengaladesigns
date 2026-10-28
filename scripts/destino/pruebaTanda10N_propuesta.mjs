@@ -292,7 +292,7 @@ console.log('4. Durante el viaje, Free Tour y permisos')
   const antesN = await ft.ev('return L.cambiosDeLaPropuesta(base(), route()).length')
   await ft.app.evaluar("(() => { const m = Array.from(document.querySelectorAll('button')).filter((b) => b.textContent.trim() === '+' || /^\\+ ?Añadir$/.test(b.textContent.trim())); m[1]?.click() ?? m[0]?.click(); return m.length })()")
   await ft.app.esp(1200)
-  const hojaDia = await ft.app.evaluar("Boolean(document.querySelector('#add-to-day-heading'))")
+  const hojaDia = await ft.app.evaluar("Boolean(document.querySelector('#add-to-day-heading, [data-hoja-dia=\"add-to-day\"]'))")
   if (hojaDia) {
     await ft.app.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^Añadir (al|a la|el) /.test(x.textContent.trim())); b?.click(); return !!b })()")
     await ft.app.esp(1000)

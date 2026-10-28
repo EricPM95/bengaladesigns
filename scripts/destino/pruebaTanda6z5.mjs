@@ -243,7 +243,9 @@ const hoyFuente = fs.readFileSync('src/components/route/hoy/saltar.tsx', 'utf8')
 // (Tanda 10N §6c: el menú de DÍAS elige el día con la rueda `MoverADia`; la hoja de HOY sigue con `ListaDeDias`. Las dos sacan los días con los mismos ayudantes —nombreDeDia y tituloDelDia— y excluyen igual la excursión entera.)
 const moverFuente = fs.readFileSync('src/components/route/dayDetail/MoverADia.tsx', 'utf8')
 const listaFuente = fs.readFileSync('src/components/route/dayDetail/ListaDeDias.tsx', 'utf8')
-const mismosAyudantes = ['diaConFecha', 'diaProsa', 'esDiaDeExcursion', 'tituloSimpleDelDia', 'useNombreDeDias'].every((n) => moverFuente.includes(n) && listaFuente.includes(n))
+// (10N8, 3i) MoverADia pinta la HojaDia (filasDeDias saca fecha y título con fichaDelDia y tituloSimpleDelDia); las dos excluyen igual la excursión entera.
+const hojaDiaFuente = fs.readFileSync('src/components/ui/HojaDia.tsx', 'utf8')
+const mismosAyudantes = moverFuente.includes('filasDeDias') && moverFuente.includes('esDiaDeExcursion') && listaFuente.includes('esDiaDeExcursion') && hojaDiaFuente.includes('tituloSimpleDelDia') && listaFuente.includes('tituloSimpleDelDia')
 debe(/<MoverADia /.test(menuFuente) && /ListaDeDias/.test(hoyFuente) && !/diaCorto/.test(menuFuente) && mismosAyudantes, 'B9 hoja', 'el menú de DÍAS (MoverADia) y la hoja de HOY (ListaDeDias) no comparten la misma lista de días')
 
 // ── C. Una reserva que cae con el sitio cerrado ese día: AVISA, no prohíbe ni toca nada (Tanda 6z5, 4b) ──

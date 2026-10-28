@@ -398,7 +398,7 @@ export function AddStopScreen({
 
           {filterWarning && (
             <div className="pointer-events-none absolute inset-x-0 top-12 flex justify-center px-3">
-              <span className="rounded-full bg-bg-card px-3 py-1 text-caption font-medium text-text-soft shadow-md">
+              <span className="rounded-full border-[1.5px] border-accent bg-bg-card px-3 py-1 text-caption font-medium text-text-soft shadow-md">
                 Desactiva un filtro para ver mejor el mapa
               </span>
             </div>

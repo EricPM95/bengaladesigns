@@ -342,7 +342,7 @@ debe(freeTourAvailable(viajes[0].ruta) === true, '5 Free Tour', 'el Free Tour no
   const esperados = ['src/dev/rutaDePrueba.ts', 'src/components/dev/DevQuickRouteScreen.tsx', 'src/components/route/placeExplorer/PlaceExplorerScreen.tsx', 'src/components/route/reservas/FreeTourSheet.tsx', 'src/components/trazo/StepExperiences.tsx', 'src/components/trazo/StepSummary.tsx', 'src/components/trazo/TrazoFlow.tsx', 'src/lib/experienceCategoryBank.ts', 'src/lib/manualRoute.ts', 'src/lib/routeGenerationOrchestrator.ts', 'src/lib/types.ts', 'src/store/useRouteStore.ts', 'src/lib/freeTourEnDia.ts', 'src/lib/propuesta.ts']
   const nuevos = lectores.filter((l) => !esperados.includes(l))
   debe(nuevos.length === 0, 'auditoría', `hay sitios del cliente que leen las experiencias y no están en la lista de la auditoría (revisa que sin ellas funcionen): ${nuevos}`)
-  for (const l of ['src/components/route/placeExplorer/PlaceExplorerScreen.tsx', 'src/components/route/reservas/FreeTourSheet.tsx', 'src/store/useRouteStore.ts'])
+  for (const l of ['src/components/route/placeExplorer/PlaceExplorerScreen.tsx', 'src/store/useRouteStore.ts'])
     debe(/experiencesPositive\s*\?\?\s*(\[\]|\['imprescindibles'\])|\(.*experiencesPositive \?\? \[\]\)|experiencesPositive \?\? \[\]/.test(fuente(l)), 'auditoría', `${l} lee las experiencias sin un valor por defecto`)
 }
 

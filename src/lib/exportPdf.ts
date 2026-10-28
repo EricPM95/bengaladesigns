@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf'
 import { presupuestoDeEstado } from './usePresupuesto'
+import { modoDeCuentas } from './modoCuentas'
 import { cambioActual } from './useMoneda'
 import { formatoImporte, precioTienda } from './dinero'
 import type { Route } from './types'
@@ -90,7 +91,16 @@ export function exportRouteToPdf(route: Route) {
   ensureSpace(12)
   // (Tanda 6z2) Solo lo que el viajero puso con su precio, en su moneda; sin gastos, la línea no sale.
   const presupuesto = presupuestoDeEstado(cambioActual())
-  if (presupuesto && presupuesto.bloques.length > 0) writeLine(`Presupuesto: ${formatoImporte(presupuesto.total)}`, { size: 13, bold: true, gap: 2 })
+  if (presupuesto && (presupuesto.bloques.length > 0 || presupuesto.loTuyo.length > 0)) {
+    // (Tanda 10N8 §0b-6) Lleva el modo: «Tu viaje» (solo), «Cuenta conjunta», «Del grupo» (cada uno lo suyo) y, solo si esta persona tiene algo «Solo tú», «Lo tuyo» y el total explicado.
+    const modo = modoDeCuentas()
+    const etiqueta = modo === 'conjunta' ? 'Cuenta conjunta' : modo === 'cada_uno' ? 'Del grupo' : 'Tu viaje'
+    writeLine(`Presupuesto · ${etiqueta}: ${formatoImporte(presupuesto.total)}`, { size: 13, bold: true, gap: 2 })
+    if (presupuesto.loTuyo.length > 0) {
+      writeLine(`Lo tuyo (solo lo ves tú): ${formatoImporte(presupuesto.sumaLoTuyo)}`, { size: 11, gap: 1 })
+      writeLine(`${etiqueta} ${formatoImporte(presupuesto.total)} · Lo tuyo ${formatoImporte(presupuesto.sumaLoTuyo)} · Total ${formatoImporte(presupuesto.totalConLoTuyo)}`, { size: 11, gap: 2 })
+    }
+  }
 
   doc.save(`${route.destination.toLowerCase().replace(/\s+/g, '-')}-route-planner.pdf`)
 }

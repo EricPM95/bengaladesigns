@@ -235,7 +235,7 @@ try {
   const gris = await a.evaluar(`(() => {
     const zonas = Array.from(document.querySelectorAll('[data-solo-lectura]'))
     const bloques = zonas.map((z) => z.querySelector('[data-blk]')?.dataset.blk)
-    return { bloques, cadaUno: Boolean(document.querySelector('[data-lo-de-cada-uno]')), vuelo: Boolean(document.querySelector('[data-tarjeta-vuelo]')), aloj: Boolean(document.querySelector('[data-tarjeta-aloj]')), titulo: Array.from(document.querySelectorAll('span')).some((s) => /^Reservas$/.test((s.textContent || '').trim())), solo: /Aquí solo se mira/.test(document.body.textContent || ''), entradas: Boolean(document.querySelector('[data-blk="entradas"]')) }
+    return { bloques, cadaUno: Boolean(document.querySelector('[data-lo-de-cada-uno]')), vuelo: Boolean(document.querySelector('[data-tarjeta-vuelo], [data-falta-tarjeta="vuelo"]')), aloj: Boolean(document.querySelector('[data-tarjeta-aloj], [data-falta-tarjeta="alojamiento"]')), titulo: Array.from(document.querySelectorAll('span')).some((s) => /^Reservas$/.test((s.textContent || '').trim())), solo: /Aquí solo se mira/.test(document.body.textContent || ''), entradas: Boolean(document.querySelector('[data-blk="entradas"]')) }
   })()`)
   debe(!gris.bloques.includes('llegada') && !gris.bloques.includes('aloj') && gris.vuelo && gris.aloj, 'cada_uno', `10N5 §6c: Llegada y Alojamiento ya no van en zona gris: el invitado ve las tarjetas de su vuelo y su alojamiento (${JSON.stringify(gris)})`)
   debe(gris.titulo && gris.entradas && !gris.solo, 'misma_pantalla', 'el invitado ve la misma pantalla Reservas (con su bloque de Entradas) y sin «Aquí solo se mira»')
@@ -317,7 +317,7 @@ try {
     return { igual: hoja.querySelector('[data-igual-que]')?.textContent ?? null, dia: marcado?.textContent ?? null, boton: g?.textContent ?? null, paraQuien: Boolean(hoja.querySelector('[data-para-quien]')), modo: g?.dataset.guardarReserva }
   })()`)
   debe(abierta && new RegExp(`Eric y Ana van el ${diaOwner} a las ${horaOwner}`).test(abierta.igual ?? ''), 'misma_hora', `la compra se abre diciendo lo del dueño (${abierta?.igual})`)
-  debe(abierta && new RegExp(`Abrir la compra · 0?${horaOwner}`).test(abierta.boton ?? '') && abierta.modo === 'comprar', 'misma_hora', `con la hora ya elegida (${abierta?.boton})`)
+  debe(abierta && new RegExp(`Comprar a las 0?${horaOwner}`).test(abierta.boton ?? '') && abierta.modo === 'comprar', 'misma_hora', `con la hora ya elegida (${abierta?.boton})`)
   const numDiaOwner = diaOwner.split(' ')[1]
   debe(abierta && new RegExp(`(^|\\D)${numDiaOwner}(\\D|$)`).test(abierta.dia ?? ''), 'misma_hora', `y el día ya elegido (${abierta?.dia} · el del dueño es el ${diaOwner})`)
   debe(abierta && abierta.paraQuien === true, 'misma_hora', '(10N5) quien compra la suya también ve «¿Para quién es?» (la reserva es suya y decide para quién)')
@@ -326,9 +326,12 @@ try {
   await a.evaluar(`(() => { window.open = () => null; return true })()`)
   await a.evaluar(`document.querySelector('[data-guardar-reserva]').click(); true`)
   await a.esp(800)
-  const trasAbrir = await a.evaluar(`document.querySelector('[data-guardar-reserva]')?.dataset.guardarReserva ?? null`)
-  debe(trasAbrir === 'guardar', 'misma_hora', 'tras abrir la compra, el botón pasa a [Guardar · hora] para apuntar la suya')
-  await a.evaluar(`document.querySelector('[data-guardar-reserva]').click(); true`)
+  // (10N8, §8) Tras abrir la compra la hoja sigue siendo la misma: al volver a la app pregunta «¿Has comprado la entrada…?» y [Sí, guardarla] la apunta.
+  await a.evaluar(`document.dispatchEvent(new Event('visibilitychange')); window.dispatchEvent(new Event('focus')); true`)
+  await a.esp(800)
+  const trasAbrir = await a.evaluar(`document.querySelector('[data-pregunta-compra]') ? 'guardar' : null`)
+  debe(trasAbrir === 'guardar', 'misma_hora', '(10N8) al volver de abrir la compra sale «¿Has comprado la entrada…?»')
+  await a.evaluar(`document.querySelector('[data-compra-si]').click(); true`)
   await a.esp(1200)
   const propias = await a.evaluar(`(async () => { const { useMisReservas } = await import('/src/store/useMisReservas.ts'); return { mias: useMisReservas.getState().lista.map((r) => ({ refId: r.refId, dateIso: r.dateIso, time: r.time, paraQuien: r.paraQuien })), dueno: window.__ruta.getState().reservations.length } })()`)
   debe(propias.mias.length === 1 && /Coliseo/.test(propias.mias[0].refId) && propias.mias[0].time === ownerRes.time && propias.mias[0].dateIso === ownerRes.dateIso, 'misma_hora', `la entrada de Luis queda en SU lista con el mismo día y hora (${JSON.stringify(propias.mias)})`)

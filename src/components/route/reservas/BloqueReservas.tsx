@@ -106,7 +106,7 @@ export function EliminarTexto({ onClick, texto }: { onClick: () => void; texto: 
 }
 
 /** Una reservada, en una línea verde: «✓ Coliseo, Foro y Palatino · 11 oct · 10:00 · Cambiar». */
-export function LineaReservada({ nombre, meta, onChange, nota }: { nombre: string; meta: string; onChange?: () => void; nota?: string }) {
+export function LineaReservada({ nombre, meta, onChange, nota, accion }: { nombre: string; meta: string; onChange?: () => void; nota?: string; /** (10N8) Un botón bajo la nota (p. ej. «Volver a ponerla en la ruta»). */ accion?: ReactNode }) {
   return (
     <div className="flex min-h-[46px] items-center gap-[9px] rounded-[14px] py-1.5 pl-3 pr-1.5" style={{ background: VERDE_SUAVE, border: `1px solid ${VERDE_LINEA}` }}>
       <span className="h-5 w-5 flex-none rounded-full text-center text-[10px] font-bold leading-5 text-white" style={{ background: GR }}>
@@ -120,6 +120,7 @@ export function LineaReservada({ nombre, meta, onChange, nota }: { nombre: strin
             {nota}
           </span>
         )}
+        {accion && <span className="block">{accion}</span>}
       </span>
       {onChange && <CambiarBoton onClick={onChange} />}
     </div>

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Route } from './types'
 import { usePropuestaStore } from '../store/usePropuestaStore'
-import { loadOneTrip, rutaGuardadaAqui, rutaVista } from './tripPersistence'
+import { fueGuardadaAqui, loadOneTrip, rutaGuardadaAqui, rutaVista } from './tripPersistence'
 import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
 
@@ -87,7 +87,8 @@ export function refrescarViajeActivo(): Promise<ResultadoRefresco> {
     if (r === undefined) return 'sin_datos'
     if (r === null) return 'fuera'
     if (useSyncStore.getState().activeTripId !== tripId) return 'sin_datos'
-    if (r.canonica === rutaGuardadaAqui(tripId) || r.canonica === rutaVista.get(tripId)) return 'igual'
+    // (10N8 §4) El eco de CUALQUIERA de los últimos guardados de esta pestaña es nuestro, no de otra persona: antes solo se miraba el último y, con dos guardados seguidos, el eco del primero salía como «Han cambiado el viaje» (y pisaba la ruta viva con la vieja).
+    if (r.canonica === rutaGuardadaAqui(tripId) || fueGuardadaAqui(tripId, r.canonica) || r.canonica === rutaVista.get(tripId)) return 'igual'
     const ruta = useRouteStore.getState()
     // (Tanda 10N, apartado 6: quien solo recomienda lleva SUS cambios puestos en su ruta; lo que cambió el administrador se compara con la ruta del administrador que tenía, `base`, no con la suya.)
     const propuesta = usePropuestaStore.getState()

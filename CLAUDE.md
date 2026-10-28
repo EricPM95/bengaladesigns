@@ -11,5 +11,17 @@ El ordenador de Eric se quedó sin memoria por procesos que se dejaron abiertos 
 6. **Para no saturar el procesador:** las baterías y los servidores de pruebas se lanzan (o se pasan enseguida) a prioridad baja (`BelowNormal`; los procesos hijos, incluidos los Chrome de prueba, la heredan). Las baterías se lanzan con `navegador=1` y SIN los «wrappers» (`pruebaTanda10N*.mjs`, `10P`, `10O`, `10M`: cada uno ya corre sus partes, que están también sueltas en la batería y duplicarían los Chromes). Nunca más de un Chrome de prueba a la vez.
 7. **Si falta un servidor para la siguiente tarea, se arranca entonces**, no antes: no dejar servidores encendidos «por si acaso».
 
+## Nota de estado en la rama «estado» (Eric, 28-oct) — DESACTIVADA
+**Eric la desactivó el 28-oct («ya estoy en casa»): no actualizar ni subir la nota a la rama `estado` salvo que Eric vuelva a pedirlo.** Se deja el script y la explicación por si hace falta otra vez.
+
+La conexión de Claude con el PC de Eric no funciona, así que Eric sigue cada tanda desde GitHub. Mientras haga una tanda, **cada ~30 minutos** actualizo la nota `docs/dias/_estado_<tanda>.md` y la subo a la rama **`estado`**, solo con ese archivo:
+
+`node scripts/destino/_estado.mjs <tanda> "<qué estoy haciendo>" "<qué falta>"`
+
+- La nota lleva arriba la hora de la última actualización, qué estoy haciendo, qué falta y cuántos procesos de node y de Chrome de prueba hay abiertos (los cuenta el propio script).
+- El script no toca `main`, ni la carpeta de trabajo, ni el índice de git (usa un índice temporal), y sube sin `--force`: cada nota es un commit nuevo encima del anterior.
+- `docs/dias/_estado_*.md` está en `.git/info/exclude`: la nota nunca entra en el commit de la tanda. A `main` solo se hace push al final de la tanda (prueba en 0 fallos, `git status` limpio, nada privado, sin `--force`).
+- Al terminar la tanda, última nota con el resultado final.
+
 ## Tandas de Eric
 Los avisos de tandas anteriores (prompt guardado en `docs/dias/PROMPT_TANDA<id>.md`, informe en `docs/dias/INFORME_TANDA10B.md`, repaso en `docs/dias/REPASO_<id>.html`, push a `main` sin `--force`, reiniciar el api-server al final) están en cada prompt de tanda; no se repiten aquí.

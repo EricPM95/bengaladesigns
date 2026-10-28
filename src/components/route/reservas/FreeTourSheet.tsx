@@ -6,10 +6,11 @@ import { FREE_TOUR_REF } from '../../../lib/freeTourManual'
 import { AddReservationSheet } from './AddReservationSheet'
 
 import { FreeTourDiaSheet } from './FreeTourDiaSheet'
+import { viajeConFreeTour } from '../../../lib/freeTourEnDia'
 
-/** ¿La ruta ya lleva un Free Tour? Sirve para enseñar «Añadido» y ofrecer quitarlo. */
+/** ¿La ruta ya lleva un Free Tour? (10N8) Solo una parada del Free Tour en algún día: entonces «✓ En ruta» y sin «+». */
 export function routeHasFreeTour(route: Route): boolean {
-  return route.days.some((day) => day.stops.some((stop) => stop.isFreeTour)) || Boolean(route.answers.freeTourDespues) || (route.answers.experiencesPositive ?? []).includes('free_tour')
+  return viajeConFreeTour(route)
 }
 
 /** El Free Tour solo se ofrece en destinos con días escritos y con al menos 2 días de ciudad (el de 1 día no lo lleva). */

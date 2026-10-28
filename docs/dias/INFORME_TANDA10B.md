@@ -2413,3 +2413,292 @@ Por tu aviso de que se agotaba la memoria: hay una regla fija nueva en `CLAUDE.m
   *Dónde:* No es de móvil.
 
 **Pruebas:** Prueba de la Tanda 10N7: modo 85, presupuesto 82, privacidad 19, moneda 56 = 242 comprobaciones, 0 fallos.
+
+---
+
+## 10N8 — El repaso de Eric de la 10N5 y la 10N6 con dos teléfonos (27 y 28-oct)
+
+**Estado:** hecho y probado en lo esencial; queda una lista de cosas a medias y de decisiones tuyas (más abajo). Pruebas nuevas `pruebaTanda10N8_*`: avisos 22, perfil 17, cuentas 51, paradas 32, pantallas 30, reservas 24, ficha 40, película 68 (más 14 capturas de Design) y capturas del Free Tour 10 = 294 comprobaciones, 0 fallos, cada una suelta por la cola de un solo Chrome. **No se ha tocado el motor de rutas** (el Free Tour ya no rehace días), así que no hace falta la muestra de 60 fechas. Design al día con `RETOQUES.zip` (Hoja Dia, Pase Pelicula Movil y los cambios de Pase Pelicula, Pase Escena 4b, Pase Globo y Reservas Cada Uno; `Pase Premium` no se usa). Escrito `docs/REGLAS_DE_LA_APP.md` (las reglas de la app en un sitio, con la lista de pantallas que aún no las cumplen).
+
+### Migraciones que tienes que aplicar (a mano, en el editor SQL de Supabase, en este orden)
+Antes, las de tandas anteriores que no hayas aplicado (tu consulta de comprobación te lo dice): `0047`, `0048`, `0049`, `0051`, `0053`, `0054`, `0055`, `0056`. Las de esta tanda, **todas idempotentes**:
+1. `0058_avisos_viaje_nuevos_y_salir.sql` — cada cambio del viaje crea un aviso nuevo con la frase de lo último (y vuelve a salir como nuevo, con franja y sonido), junta 2 minutos en vez de 15, y al salir o quitarte de un viaje se ocultan de tu campana los avisos de ese viaje (menos «Ya no formas parte del viaje…»).
+2. `0059_avisos_juntar_2_minutos.sql` — lo mismo para el vuelo y el alojamiento del administrador (0053) y «ha cambiado las cuentas» (0054): 2 minutos y cada cambio vuelve a marcar el aviso como nuevo. No edita las migraciones anteriores.
+3. `0061` — vuelo y alojamiento «para varios» (`poner_lo_suyo_para`), reemplaza `avisar_lo_suyo_propio`.
+4. `0062` — **privacidad a nivel de red**: guarda lo «Solo para mí» del administrador aparte (`reservas_privadas_admin`) y un disparador lo saca de `trips.bookings`, de modo que ya no llega a nadie más; limpia de una vez los viajes existentes. El móvil del administrador lo vuelve a juntar.
+5. `0063` — `trip_gastos.cambio`: el cambio de moneda del día en que se apunta cada gasto (las cuentas usan ese cambio, no el de hoy).
+No existen la `0057` ni la `0060` (no hizo falta).
+
+### Por qué pasaba lo que pasaba
+- **Días bloqueados del Free Tour («Ningún día encaja», días en gris):** añadir o pasar el Free Tour rehacía días enteros con el motor (D1→D1-FT, D2→D3), y la función que lo planeaba se negaba a tocar cualquier día con entradas con hora, cosas puestas a mano o excursión. Por eso salían días en gris sin motivo y 26 cambios en una propuesta. Ahora el Free Tour es una parada más: va de primera, por la mañana, sin mover ningún día.
+- **El Free Tour que no se quitaba:** al quitarlo sin reserva se llamaba a «rehacer días sin tocar», que se salta los días que el viajero ha tocado a mano (cualquiera con una copia de origen) y devuelve «hecho». Salía «quitado… Deshacer» y el Free Tour seguía en su sitio. No lo reproduje; ese camino ya no existe.
+- **Los avisos que no llegaban:** la app solo apuntaba `route.ultimoCambio` en acciones con nombre propio (Free Tour, excursión, volver a la ruta inicial). El resto lo juntaba la 0051 durante 15 minutos en el aviso anterior: mismo id, así que sin franja, sin sonido, sin punto en la campana y con la frase vieja. Añadir solo un restaurante ni se detectaba (el disparador mira paradas, y un restaurante elegido no lo es). Ahora cada guardado lleva lo que ha pasado (`sellarCambio`), cada cambio crea un aviso nuevo con la frase de lo último y el rato para juntarlos baja a 2 minutos.
+- **Cuánto tardan:** estimado por el código, **no medido de un móvil a otro**: guardado con 1,5 s de espera + disparador inmediato + Realtime y 0,6 s de espera en el móvil del invitado = unos 2-4 segundos. El del interruptor de excursión puede ir más lento porque espera a terminar de rehacer los días antes de guardar.
+- **El sonido:** dos causas. (1) Los avisos juntados en uno ya existente no eran avisos nuevos y no sonaban (el del interruptor sí sonaba porque siempre era un aviso propio). (2) En iPhone el audio se desbloqueaba solo con el primer toque; ahora cada toque lo reanuda, reproduce un instante de silencio y precarga el sonido. Con el iPhone en silencio, o sin haber tocado la pantalla desde que se abrió la app, puede seguir sin sonar.
+- **El aviso «Han cambiado el viaje» propio (la «i»):** no era un aviso del servidor sino una línea de la app (`CompartidoHost` → `refrescarViajeActivo`): pasaba cuando el eco de tu propio guardado volvía por Realtime y no coincidía con el último guardado (con dos guardados seguidos, el eco del primero parecía un cambio de otra persona). Ahora se reconocen los últimos 8 guardados.
+- **Unirse con decenas de avisos:** no eran avisos de la cuenta (esos nunca existen antes de unirse) sino avisos calculados del propio viaje: fechas especiales, entradas ya reservadas y «Sobre tu ruta». La primera vez que una cuenta ve un viaje como invitada, esos avisos se dan por vistos y se esconden.
+
+### Qué se ha hecho (resumen por apartados)
+- **Perfil y Ajustes (1, 1b):** Mis viajes con un viaje a todo el ancho y con varios al 60 %; la tarjeta del [+] «Añade un viaje que ya hiciste»; Ajustes: «Mi cuenta» (correo, Moneda, código de invitación), luego Mis pases, La app (sin Moneda), Invitar y Privacidad, y «Cerrar sesión» sola al final.
+- **Unirse, avisos, sonido, flotantes y pastilla (2, 2b, 4):** ver «Por qué pasaba…». «Este código no existe.» La pastilla «Pase Roma» de RUTA: sin pase, azul oscuro con candado dorado; con pase, dorada con ✓; mientras no se sabe, un hueco gris claro de 118×30.
+- **Free Tour y paradas (3, 0a-1, 8b-a/b/c):** `HojaDia` en 8 sitios (`AddToDaySheet`, `FreeTourDiaSheet`, «Mover a otro día», `WhereSheet` de la excursión, `CambiarDiaSheet` de `ExcursionSinHueco`, el paso del día de `HojaRecomendacion`, el paso del día de `DayPositionPicker` y la nueva `VolverExcursionARuta`). Una sola vez en la ruta; la franja no viaja con la parada (el Free Tour siempre de primero por la mañana; lo demás de primero sin pase y donde mejor encaja con pase; la app lleva al viajero a la parada y la marca un momento); lo de bloquear días solo para lo que mueve días enteros; quien solo recomienda = un solo cambio con frase (también el interruptor de excursión y el orden de los días); [Volver a ponerla en la ruta] en la excursión quitada con su confirmación; «Cambiar parada» con el título «Cambiar X», sin franja, sin filtros y con ⇄ en todos los sitios (también «✓ En ruta»), y el sitio puede estar varias veces. Confirmaciones: sin [Cancelar] (la ✕ de arriba basta); quitar con entrada = [Quitar parada] y [Quitar también la entrada] en rojo; «Mover antes/después» activos en una parada con entrada, sin aviso de horas.
+- **Película y EXPLORAR (5, 6, 0a-10):** película regenerada con `Pase Pelicula Movil` a pantalla completa (se quitaron los estirados a mano de la 10N5/10P, que creaban los recuadros con otro fondo), con el título en la línea de [Saltar]; Baños, Fuentes y «Cerca de ti» como antes con el candado dorado en la esquina; textos nuevos del aviso del pase (abajo).
+- **Ficha y botones (8b-e/f/g/h/i):** borde marrón en los botones sobre mapas; «Tus recuerdos» con varias fotos de golpe con pase y la ✕ del aviso fuera de la tarjeta; cabecera de la ficha rehecha (el corazón posado arriba a la derecha: antes estiraba la fila y dejaba 39 px de hueco y las etiquetas sobresalían 16 px) y «Abierto 24 h»; aviso de abajo `AvisoSobreLaBarra` (copia el rectángulo del menú); botón de entrada del Castillo de Sant'Angelo.
+- **RESERVAS, vuelos y cuentas (7, 8, 8b-d, 0a-6, 0b):** un solo bloque de vuelo y de alojamiento para quien no es administrador, con «¿Para quién es?» y un solo «Guardar el vuelo» / «Guardar el alojamiento» con un solo aviso con ida y vuelta; comprar la entrada a la misma hora («Comprar a las 14:00», «Ya la tengo · Guardarla» y la pregunta al volver); «Lo tuyo» también en «Cada uno lo suyo» («Del grupo 0 € · Lo tuyo 25 € · Total 25 €»); los gastos [Para mí] cuentan en «Tu parte»; el presupuesto de quien viaja solo ya como «Tu viaje»; el PDF lleva el modo; el cambio del día de cada gasto; privacidad del administrador a nivel de red (0062); moneda por precio en los precios de tienda (PurchaseSection, StopReservation, ArrivalDetailSheet, ExcursionDayPage, AffiliateCardCarousel).
+
+### Los textos nuevos del aviso del pase (0a-10, con el cambio posterior de Eric)
+Título «Desbloquéalo con el Pase {destino}». La línea pequeña solo existe si dice algo que el viajero ya ha usado; el pase sale del destino del viaje (`{pase}` en `src/lib/avisoPaseTextos.ts`).
+
+| Dónde | Línea pequeña | Frase en negrita |
+|---|---|---|
+| «Escuchar historia», tras la de prueba | «Ya has escuchado tu historia de prueba.» | «Con el Pase Roma, podrás escuchar todas las historias que quieras, sin límite.» |
+| Segunda foto de un sitio | «Ya tienes tu foto de este sitio.» | «Con el Pase Roma, guarda fotos sin límite y haz crecer tu álbum de recuerdos.» |
+| Fuentes | — | «Con el Pase Roma, encuentra las fuentes de agua más cercanas, estés donde estés.» |
+| Baños | — | «Con el Pase Roma, encuentra los baños más cercanos, estés donde estés.» |
+| Cerca de ti | — | «Con el Pase Roma, descubre todo lo que tienes cerca, estés donde estés.» |
+| HOY | «Solo tienes HOY abierto el día de prueba.» | «Con el Pase Roma, tienes HOY disponible todos los días de tu viaje.» |
+| Genérica | — | «Desbloquea todo lo que el Pase Roma añade a tu viaje.» |
+«Estés donde estés» es verdad **con la ubicación compartida**: «Cerca de ti» ordena por distancia al GPS del viajero, y Baños y Fuentes se abren en esa pestaña. Sin ubicación no hay orden por cercanía.
+
+### Listas que pedías
+- **Hojas de elegir día cambiadas a `HojaDia`:** las 8 de arriba. No cambiado: el desplegable «Elige el día» de `AddReservationSheet`, que elige día y hora dentro del formulario de la entrada.
+- **«Quitar el Free Tour» eliminado:** ya no quedaba ningún texto visible (se había retirado en la 10N6); solo comentarios y la rama de rehacer días, que ya no existe.
+- **Sitios de Roma con «Abierto 24 h» (38, para que los revises):** Arco de Constantino, Fontana de Trevi, Piazza Navona, Plaza de España, Piazza del Popolo, Via del Corso, Plaza de San Pedro, Via di Ripetta, Via della Conciliazione, Lungotevere, Mirador del Janículo, Puente Sant'Angelo, Isla Tiberina, Via dei Fori Imperiali, Campo de' Fiori, Plaza Venecia, Elefantino de Bernini, Fuente de las Tortugas, Fuente del Tritón, Plaza del Quirinal, Via dei Coronari, Via Condotti, Templo de Adriano, Piazza Colonna, Plaza Farnese, Plaza del Campidoglio, Columna de Trajano, Teatro de Marcelo, Ojo de la Cerradura del Aventino, Ponte Sisto, Plaza Trilussa, Quartiere Coppedè, Fontana dell'Acqua Paola, Terraza de Largo Gaetana Agnesi, Mirador de San Pietro in Montorio, Via Veneto, Via del Babuino, Via Margutta. Excluidos a propósito: parques y paseos (Jardines del Pincio, Porta Pinciana, Via Appia Antica, Circo Máximo), Largo di Torre Argentina, Pirámide Cestia, barrios y mercadillos. La Fontana de Trevi lleva la etiqueta aunque tiene una zona de pago con horario junto al agua.
+- **Sitios con entrada que faltaban:** el botón se ocultaba en todo sitio «por fuera» (`visitMode==='fuera'`), y el Castillo de Sant'Angelo (`solo_por_fuera`) siempre lo es; se quitó esa condición, así que todos los sitios con entradas (Coliseo, Foro, Panteón, Galería Borghese, Termas de Caracalla, etc.) llevan su botón. La Basílica de San Clemente (excavaciones, 10 €) no tenía entrada: añadida. Quedan sin entrada, a propósito: Fontana de Trevi (zona de pago en el sitio, el servidor la filtra), Cementerio Protestante (donativo), y Basílica de San Pedro, Santa María la Mayor y Santa Cecilia (entrada libre; solo se paga una parte).
+- **Botones sueltos sobre mapas con el borde marrón:** volver y fecha de la ficha de parada y de la de llegada, volver de la de comida, cerrar en `ArrivalReturnSheet`, «Mi ubicación» del explorador, el aviso de filtro de `AddStopScreen` y «Ver todo» / «Solo este día» de RUTA (los flotantes de presupuesto y de mapa ya lo tenían).
+- **Avisos de abajo sobre el menú (`AvisoSobreLaBarra`):** el [Deshacer], «Viaje eliminado», «marcada como visto», la nota corta y «Enlace copiado». Sin tocar: `FranjaSinConexion` y el aviso dentro de `HojasDeLogros`.
+- **Confirmaciones sin ✕:** `PagoHost` mientras espera el pago no la lleva; el resto de las que pasan por `ConfirmDialog` y `Hoja` sí. No he hecho la lista completa de la 10N6 tras quitar [Cancelar].
+- **Música (0a-11):** `public/sonidos/pelicula_pase.mp3` **no está** y este PC no tiene `ffmpeg`. No he usado ni comprimido nada.
+
+### Lo que sigue a medias o sin ver (resumen; el detalle, punto a punto, en la lista de comprobación de abajo)
+- **El botón de los logros que desaparece en una categoría de EXPLORAR: no lo reproduzco.** En Roma, 390×844, con pase, se ve en todas las categorías (Miradores incluido), en lista, con mapa y con una ficha abierta; solo lo esconde una hoja, un diálogo o una confirmación abierta. Si lo ves en tu móvil, necesito el paso exacto (qué estaba abierto, si es iPhone, si el destino no es curado).
+- **Vuelo del administrador:** no tiene el botón único «Guardar el vuelo» con aviso conjunto de ida y vuelta (solo se le ha quitado el [Guardar] de la rueda); hacerlo bien exige reestructurar `LlegadaYVuelta`, que toca el motor de cambios de vuelo. **Alojamiento:** sin los chips de zona de Design 05.
+- **Sin ver en pantalla:** la pastilla del pase «esperando» (solo por código), la pregunta «¿Para quién…?» al añadir vuelo del administrador (necesita un viaje compartido real), el aviso de abajo sobre el menú en Safari y con la app en la pantalla de inicio, los avisos entre dos móviles (sonido, segundos) y la fusión de lo privado del administrador en su móvil.
+- **Sitios repetidos:** auditoría parcial. Las paradas llevan id propio y el mapa usa ese id; las entradas se enlazan por nombre (las dos copias mostrarían la entrada); los logros cuentan el sitio una vez. Sin comprobar: las fotos de «Tus recuerdos», el mapa con dos números en el mismo sitio y los avisos de cambios.
+- **Lista del pase:** la línea «sin pase de primero, con pase en el mejor hueco» no está añadida en `listaDelPase.ts` (generado desde Design). Antes la app ya colocaba en el mejor hueco para todos.
+- **Moneda por precio:** el «Cuánto toca» no existe en el código y las etiquetas de precio del explorador no se tocaron.
+
+### Pruebas
+- **Batería completa** (143 pruebas, sin los wrappers, un Chrome a la vez y a prioridad baja): 28 en MAL a la primera. El triaje de dos agentes no halló **ninguna regresión real**: eran expectativas antiguas que la 10N8 cambió a propósito (sin [Cancelar], HojaDia, textos de «Este código no existe.», Free Tour sin rehacer días, película nueva, perfil 100 %/60 %, bloque único de alojamiento, etc.) y se actualizaron, o fallos solo bajo carga («No se ha podido crear el viaje de pruebas») que pasan sueltos. Todas pasan en 0 fallos. Fuera: `pruebaTanda10N6_recuerdos`, que con el Vite normal falla (va a la 10S, como pedías).
+- **Protección que se pierde, a decidir:** en `pruebaTanda10N5_pase` y `pruebaTanda10N3_apertura`, las comprobaciones de que ningún texto se pise y de que el texto de abajo quepa entero ya no cubren nada, porque la marca `data-texto-abajo` desapareció con la película nueva. Pasan, pero esa protección en 390×664 y 375×667 ahora depende solo de la escala de Design. Habría que volver a marcar el texto en `adaptar.ts` o aceptarlo.
+
+### Dudas para ti
+1. **Hoja del vuelo (la mayor diferencia con Design):** Design lleva el resumen «✓ Ida · mar 10 · 11:15» en las pestañas, una rueda de dos columnas, sin precio y el botón fijo abajo; la app tiene pestañas sin resumen, una columna, un campo «Precio (opcional)» y el botón al final del scroll. ¿La igualo?
+2. **Tarjeta de Mis viajes:** Design usa chips «4 días · 3 noches · 10 paradas», «En 12 días» y un botón dorado grande; la app sigue con la tarjeta de antes. (El perfil con logros de demostración: un viaje más «Antes de la app» son dos tarjetas y quedan al 60 %; si quieres que «Antes de la app» no cuente, es una línea en `anchoDeTarjeta`.)
+3. **Película:** el título «Todo lo que incluye tu Pase Roma» va en la línea de [Saltar] (tu decisión del 26-oct; Design lo pone encima de las rayitas). En la escena 7, Design lleva título y [Saltar]; la app lleva [Ver] y ✕, sin título (decisión de la 10N5).
+4. **Hoja Dia 02 de Design** todavía enseña un día en gris por «entradas con hora»; la app no lo bloquea, como manda el prompt.
+5. **«Ya lo tienes el miércoles 10»** desapareció de la hoja de añadir (se puede tener el mismo sitio dos veces): si quieres mantener el aviso, hay que reponerlo.
+6. **Hoja «Cambiar un día por la excursión»:** con HojaDia, las dos salidas («Añadir en un día nuevo», «Cambiar un día…») quedan encima del botón dorado «Ningún día libre para esto», no debajo.
+7. **Unirse Codigo 02 de Design** aún dice «Ese código no es de ningún viaje…»; la app dice «Este código no existe.», como pides.
+8. **Ajustes:** «Borrar mi cuenta» sigue debajo de «Cerrar sesión» como enlace rojo; ¿quieres «Cerrar sesión» por debajo de ese enlace?
+9. **Aviso de abajo sin esquinas redondeadas** (coherente con el menú actual, que tampoco las tiene). Si Design lo quiere redondeado, hay que redondear ambos.
+10. **Marcar al administrador en el vuelo de un invitado** solo le avisa, no le crea vuelo (la ruta sigue al suyo).
+11. **Alineación fina de la cabecera de la ficha:** el margen -5 del nombre es una estimación; se ve mejor con la captura.
+12. **Lo que no se ha visto con dos cuentas reales** (los avisos entre móviles y los tiempos, unirse sin los avisos viejos, la propuesta de quien solo recomienda con un solo cambio, la privacidad del administrador con la 0062 aplicada) lo pruebas tú con tus dos móviles después de aplicar las migraciones.
+
+### Procesos y CPU
+Un solo servidor (API 8787, Vite 5173) a prioridad baja durante toda la tanda y una cola (`scripts/destino/_conCola.mjs`) que deja un solo Chrome de prueba a la vez; la batería se lanzó sin los «wrappers». El PC se reinició dos veces durante la tanda (a las 13:16 y a las 13:35) y se cayeron los servidores y los agentes: no sé qué lo provoca (tiene 32 GB y había más de 16 libres). Lo hecho en disco no se perdió; los agentes se reanudaron desde sus notas.
+
+
+### Lista de comprobación de la 10N8 (punto por punto)
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10N8.md (con el cambio posterior de los textos del aviso del pase) y en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Design al día con RETOQUES.zip (sin uploads/ ni screenshots/): Hoja Dia, Pase Pelicula Movil y los cambios de Pase Pelicula, Pase Escena 4b, Pase Globo y Reservas Cada Uno; Pase Premium no se usa  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — docs/REGLAS_DE_LA_APP.md: las reglas de la app en un solo sitio, con ejemplos y su pieza de Design, y qué pantallas no las cumplen todavía Escrito: ver el apartado 6 del documento para lo que aún no cumple.  
+  *Dónde:* No es de móvil.
+
+**0a**
+
+- ⚠️ A medias — 1 Excursión quitada: [Volver a ponerla en la ruta] con Hoja Dia y confirmación Hecho en código (VolverExcursionARuta + ConfirmDialog «¿Pasamos el jueves 12 a la excursión?»), sin probar en pantalla  
+  *Dónde:* RESERVAS > Excursiones, línea «Ya no está en tu ruta»
+- ✅ Hecho — 4 Cambiar parada sin filtros initialFilters fuera; visto en pantalla (N5): sin filtros activos al abrir, título «Cambiar X», ⇄ en todos  
+  *Dónde:* DÍAS > ··· > Cambiar parada  *Captura:* `docs/dias/capturas_jutrip/10n8_n1_cambiar_parada.jpg`
+- ✅ Hecho — 9 Quitar Free Tour sin reserva al momento removeStop + apaga la experiencia; probado  
+  *Dónde:* DÍAS > ··· del Free Tour > Quitar parada
+- ✅ Hecho — La 0053 (vuelo y alojamiento del administrador) junta ~2 min y cada cambio vuelve a salir como nuevo Migración nueva 0059 (dejar_aviso_de_lo_suyo borra el anterior y crea uno nuevo, 2 min). Sin aplicar.  
+  *Dónde:* Aplicar 0059. Con dos móviles: el administrador cambia su vuelo dos veces seguidas; el invitado ve franja y oye sonido en cada una (RESERVAS / campana). Cuenta: invitado.
+- ✅ Hecho — 0a-10 Textos del aviso del pase (título «Desbloquéalo con el Pase Roma», línea pequeña solo si dice algo usado, frase en negrita con «Pase {destino}» y sin límite; fuera «Tu ruta ya te dice…») src/lib/avisoPaseTextos.ts con {pase} sustituido por «Pase {destino}»; AvisoPase oculta la línea 1 si está vacía; pruebas 10H, 10N6_avisopase y 10O_datos actualizadas. Sin comprobar en pantalla (la cola de Chrome no me dejó correr la prueba).  
+  *Dónde:* Cualquier candado del pase sin pase (cuenta gratis): Escuchar historia, 2.ª foto en «Tus recuerdos», Baños, Fuentes, Cerca de ti, HOY
+- ✅ Hecho — 0a-10 «estés donde estés» solo si es verdad Cerca de ti (y Baños/Fuentes, que abren en esa pestaña) ordena por distancia al GPS del viajero solo si hay ubicación; sin ubicación no hay orden por cercanía (PlaceExplorerScreen). Es verdad con la ubicación compartida; HOY usa la siguiente parada si no hay GPS.  
+  *Dónde:* EXPLORAR › Restaurantes › Cerca de ti, con pase
+- ❌ No hecho — 0a-11 Música de la película public/sonidos/pelicula_pase.mp3 no está en la carpeta y este PC no tiene ffmpeg. No he usado ninguna música. Cuando Eric ponga el archivo: scripts/destino/comprimirMusicaPelicula.sh.  
+  *Dónde:* Película del pase (botón de silencio solo si hay archivo)
+- ✅ Hecho — 0a-6 Los gastos [Para mí] de Extras cuentan en «Tu parte» porPersonaDelPresupuesto suma Lo tuyo. Comprobado también en pantalla: «Tu parte» de Ana pasa de 300 € a 325 € con su Souvenirs y a 333 € con las Postales. pruebaTanda10N_presupuesto actualizada y en 0 fallos.  
+  *Dónde:* Presupuesto > etiqueta «Tu parte»
+
+**0b**
+
+- ✅ Hecho — La 0054 («ha cambiado las cuentas») igual 0059 la pasa a 2 min (ya borraba y creaba uno nuevo). Probado en PGlite.  
+  *Dónde:* Aplicar 0059. Administrador cambia el modo de cuentas dos veces; el invitado recibe un solo aviso, nuevo.
+- ⚠️ A medias — 0b-1 Pregunta «¿Para quién…?» al añadir vuelo, alojamiento y coche del administrador QuienVaEnLoDelAdmin abre la hoja cuando pasa de no haber a haber. SIN prueba de pantalla (N6 no la hizo: requiere un viaje compartido real con el administrador añadiendo vuelo, alojamiento o coche).  
+  *Dónde:* RESERVAS (admin con viaje compartido) > añadir vuelo/alojamiento/coche
+- ✅ Hecho — 0b-2 «Solo para mí» del administrador guardado aparte (red) Migración 0062 (tabla reservas_privadas_admin + disparador) y reservasPrivadasAdmin.ts en el móvil del administrador. Probado en PGlite. La fusión en el móvil no está probada en pantalla.  
+  *Dónde:* Datos: Ana no recibe esa reserva en trips.bookings
+- ✅ Hecho — 0b-5 Presupuesto de quien viaja solo como Cuentas Modo 01 Probado en pantalla: «Tu viaje», sin «por persona» ni personas, Extras con «Añadir gasto» punteado. No se pulsó el botón para comprobar que abre el formulario.  
+  *Dónde:* Presupuesto en un viaje sin más gente  *Captura:* `docs/dias/capturas_jutrip/10n8_reservas_06_presupuesto_solo.jpg`
+- ✅ Hecho — 0b-6 PDF con el modo y «Lo tuyo» solo a quien lo tiene exportPdf + compartidoDeEstado con reparto. Comprobado en código, no abierto un PDF.  
+  *Dónde:* Exportar PDF del viaje
+- ✅ Hecho — 0b-7 Cambio del día de cada gasto Migración 0063 + foto del cambio al insertar + cuentas la usan. Probado. Solo gastos (no entradas/alojamiento).  
+  *Dónde:* Cuentas del grupo con un gasto en otra moneda
+- ⚠️ A medias — Moneda por precio en todos los sitios donde se escribe un precio Los campos de precio (HojaPrecio, AddReservationSheet, GeneralBookingModal, TransportBookingModal, vuelo, alojamiento, Añadir gasto, Extras) ya tenían selector de moneda sobre la del viajero; los precios de tienda (entradas, excursiones, actividades) ahora salen en la moneda del viajero. Solo los gastos guardan el cambio del día; «Cuánto toca» no existe en el código.  
+  *Dónde:* Cualquier hoja de precio
+
+**1**
+
+- ✅ Hecho — Mis viajes: un solo viaje a todo el ancho Hecho en código y comprobado en pantalla (N6, 390x844): sin logros, un viaje = tarjeta de 350 px sobre 350 útiles. Con los logros de demostración sale además la tarjeta «Antes de la app», que cuenta como segunda tarjeta y deja las dos al 60 % (así lo dice la regla del código; dime si «Antes de la app» no debe contar).  
+  *Dónde:* Perfil > Mis viajes con un viaje. Cuenta con un solo viaje.  *Captura:* `docs/dias/capturas_jutrip/10n8_perfil_un_viaje.jpg (y 10n8_perfil_un_viaje_con_antes.jpg)`
+- ✅ Hecho — Mis viajes: con más de uno, cada tarjeta al 60 % Comprobado en pantalla: 3 viajes de prueba + «Antes de la app», cada tarjeta 210 px de 350 (60 %) y la siguiente asoma. DIFERENCIA con Design (Mis Viajes Tarjeta): Design pinta la tarjeta con chips «4 días · 3 noches · 10 paradas», «En 12 días» y un botón dorado grande «Abrir este viaje ›»; la app mantiene la tarjeta de antes (fechas y días en una línea, botón con borde). Decisión de diseño: dime si se cambia.  
+  *Dónde:* Perfil con 2 o más viajes: la siguiente tarjeta asoma.  *Captura:* `docs/dias/capturas_jutrip/10n8_perfil_varios_viajes.jpg`
+- ✅ Hecho — Tarjeta del [+] «Añade un viaje que ya hiciste» con su texto nuevo Comprobado en pantalla: «Añade un viaje que ya hiciste» y «¿Viajaste antes de tener JUTRIP?…».  
+  *Dónde:* Perfil > [+].  *Captura:* `docs/dias/capturas_jutrip/10n8_perfil_mas.jpg`
+
+**1b**
+
+- ✅ Hecho — Ajustes: Mi cuenta = correo, Moneda, código de invitación Comprobado en pantalla: filas en orden cuenta, moneda, codigo, mis-pases… Moneda ya no está en «La app».  
+  *Dónde:* Perfil > engranaje > Ajustes.  *Captura:* `docs/dias/capturas_jutrip/10n8_ajustes_orden.jpg`
+- ✅ Hecho — Ajustes: Mis pases, La app, Invitar, Privacidad; Cerrar sesión al final, sola Comprobado en pantalla: «Cerrar sesión» es la última fila y está sola en su bloque; «Borrar mi cuenta» sigue debajo como enlace rojo (dime si debe ir antes).  
+  *Dónde:* Ajustes, bajar hasta el final.  *Captura:* `docs/dias/capturas_jutrip/10n8_ajustes_orden.jpg`
+
+**2**
+
+- ⚠️ A medias — Al unirse: solo los avisos de desde que te uniste Los avisos de la cuenta nunca existen antes de unirse; lo que salía eran los derivados del viaje (fechas especiales, entradas ya reservadas, Sobre tu ruta). Ahora se esconden la primera vez que la cuenta ve el viaje como invitada. No probado con dos cuentas reales.  
+  *Dónde:* Unirse con un código con una cuenta nueva; abrir la campana: debe estar vacía de lo anterior.
+- ✅ Hecho — Al salir o quitarte, sus avisos desaparecen (menos «Ya no formas parte…») Migración 0058 (sacar_del_viaje oculta los avisos del viaje). Probado en PGlite. Sin aplicar.  
+  *Dónde:* Aplicar 0058. Invitado sale del viaje: campana sin avisos de ese viaje.
+- ✅ Hecho — Código que no vale: solo «Este código no existe.» Comprobado en pantalla con un código falso (ZZZZ-9999): sale solo «Este código no existe.». DIFERENCIA con Design (Unirse Codigo 02), que aún dice «Ese código no es de ningún viaje. Revísalo con quien te lo ha pasado.»: la app sigue el prompt de Eric.  
+  *Dónde:* Unirme con un código > escribir uno falso.  *Captura:* `docs/dias/capturas_jutrip/10n8_unirse_codigo_no_existe.jpg`
+- ⚠️ A medias — Sonido de los avisos igual para todos Dos causas: (1) los avisos que se juntaban en uno ya existente no eran nuevos y no sonaban (solo sonaba el del interruptor de excursión, que siempre era aviso propio); (2) iPhone: el audio se desbloqueaba solo con el primer pointerdown; ahora cada toque lo reanuda y precarga el sonido. Si el iPhone está en silencio o sin tocar la pantalla, puede seguir sin sonar.  
+  *Dónde:* Dos móviles: cambiar algo desde el administrador y mirar el del invitado con el ajuste «Sonido de los momentos» encendido.
+- ⚠️ A medias — Lápiz y logros siempre por encima en EXPLORAR (categorías, lista, mapa, pantalla completa) No reproducido (N6): en Roma, 390x844, con pase, el botón de los logros se ve en las tarjetas de EXPLORAR y, en cada categoría (Atracciones, Miradores, Restaurantes, Entradas, Baños, Fuentes), en la lista, con el mapa, al volver a la lista, tras abrir una ficha y cerrarla, y con el mapa oculto: 0 fallos. Miradores sí existe (6 lugares). El código solo lo esconde (z-index 30, debajo de una pantalla entera) si hay abierta una hoja: rol dialog sin data-flotantes, alertdialog, data-hoja o .map-cover-overlay.items-end. Si Eric lo ve de verdad, necesito el paso exacto (¿con una ficha u hoja abierta? ¿en el iPhone?).  
+  *Dónde:* EXPLORAR > Miradores y el resto de categorías.  *Captura:* `docs/dias/capturas_jutrip/10n8_flotantes_miradores.jpg (y 10n8_flotantes_explorar/atracciones/restaurantes/entradas/banos/fuentes.jpg)`
+
+**2b**
+
+- ✅ Hecho — Pastilla del pase sin pase: azul oscuro con candado dorado Comprobado en pantalla: «Pase Roma» con candado, fondo azul oscuro, 30 px de alto. Coincide con Design (Pase Estilo 02).  
+  *Dónde:* RUTA, tarjeta del viaje, cuenta sin pase.  *Captura:* `docs/dias/capturas_jutrip/10n8_pastilla_sin_pase.jpg`
+- ✅ Hecho — Pastilla con pase: dorado con ✓ Comprobado en pantalla: «Pase Roma» con ✓ sobre oro.  
+  *Dónde:* RUTA, cuenta con pase.  *Captura:* `docs/dias/capturas_jutrip/10n8_pastilla_con_pase.jpg`
+- ⚠️ A medias — Que no salte al cargar: hueco gris claro sin texto, mismo tamaño Hueco gris claro de 118x30 sin texto en el código (PastillaPase). NO he podido verlo en pantalla: el viaje de pruebas no tiene id de viaje del servidor y el estado «esperando» no se puede forzar con el componente ya montado. Ojo: la pastilla real mide 116 px con «Pase Roma» y más con nombres largos («Pase Florencia»), así que el hueco fijo de 118 no siempre es del mismo ancho. Sitios con candados que esperan el pase: sin revisar uno a uno.  
+  *Dónde:* Abrir la app y entrar en RUTA mirando la tarjeta.
+
+**3**
+
+- ✅ Hecho — a Añadir Free Tour de primera por la mañana con Hoja Dia Probado (pruebaTanda10N8_paradas y pruebaTanda10N5_freetour, 0 fallos): solo cambia el día elegido; Free Tour de primera parada  
+  *Dónde:* EXPLORAR/ficha/+ Añadir parada > Free Tour  *Captura:* `docs/dias/capturas_jutrip/10n8_n1_hoja_dia_02_anadir_freetour.jpg`
+- ✅ Hecho — b Mover a otro día igual Probado  
+  *Dónde:* DÍAS > ··· > Mover a otro día  *Captura:* `docs/dias/capturas_jutrip/10n6_n8_hoja_dia_mover.jpg`
+- ✅ Hecho — c Una sola vez, ✓ En ruta sin + Probado (pruebaTanda10N5_freetour 53/0): una sola vez en la ruta  
+  *Dónde:* EXPLORAR > Entradas
+- ✅ Hecho — d Quitar como cualquier parada Probado quitar y Deshacer  
+  *Dónde:* DÍAS > ··· > Quitar parada
+- ✅ Hecho — e D3 se queda No se rehace ningún día  
+  *Dónde:* DÍAS día D3
+- ⚠️ A medias — f La franja no viaja; Free Tour primero; sin pase primero; con pase mejor hueco; lleva a la parada y la marca dondeQueda/sinSuFranja y llevarALaParada hechos; la marca visual no capturada. Hoy la app ya colocaba en el mejor hueco para todos; ahora solo con pase  
+  *Dónde:* DÍAS
+- ✅ Hecho — g Bloqueo de días solo para interruptor y orden de días Al añadir un sitio nunca se bloquea ningún día por entradas (visto en pantalla, N5)  
+  *Dónde:* Hoja Dia  *Captura:* `docs/dias/capturas_jutrip/10n8_n1_hoja_dia_03_anadir_sitio.jpg`
+- ✅ Hecho — h Propuesta: un solo cambio Probado en pruebaTanda10N5_freetour (sección 5): un solo cambio «Añadir el Free Tour al domingo 18»; el aviso al otro dice «Eric ha añadido el Free Tour al domingo 18.»  
+  *Dónde:* Cuenta que solo recomienda
+- ⚠️ A medias — i Hoja Dia exacta en todos los sitios Hoja Dia vista en pantalla en 01, 02 y 03 junto a Design. Diferencia: el Design 02 todavía enseña un día en gris «tiene entradas con hora: no lo movemos» (el prompt de la 10N8 manda no bloquear, y la app no lo bloquea). Sigue sin cambiar el desplegable de AddReservationSheet (día+hora)  
+  *Dónde:* varias  *Captura:* `docs/dias/capturas_jutrip/10n8_n1_hoja_dia_02_anadir_freetour.jpg`
+- ✅ Hecho — j Fuera «Quitar el Free Tour» No quedaba ninguno en el texto de la app (ya retirado en 10N6)  
+  *Dónde:* 
+
+**4**
+
+- ✅ Hecho — Llegan: quitar un día, cambiar el orden de los días, añadir restaurante, añadir sitios Causa: sin ultimoCambio se juntaban con el aviso anterior (mismo id, sin franja ni sonido) y un restaurante ni se veía. Ahora cada guardado lleva lo que ha pasado (sellarCambio.ts) y la 0058 crea un aviso nuevo. Probado en PGlite. Sin aplicar.  
+  *Dónde:* Aplicar 0058. Administrador quita el sábado 14; invitado ve franja y sonido.
+- ✅ Hecho — Frases exactas (quitado el sábado 14, orden de los días, Da Enzo, el Panteón y 2 sitios más) Probadas en pruebaTanda10N8_avisos.  
+  *Dónde:* Campana del invitado.
+- ✅ Hecho — Juntar ~2 minutos y cada cambio vuelve a marcar nuevo 0058.  
+  *Dónde:* Dos cambios seguidos del administrador: un solo aviso, nuevo.
+- ⚠️ A medias — Que lleguen en segundos (también el del interruptor) No he podido medir entre dos móviles. Cadena: guardado a 1,5 s, disparador inmediato, Realtime + 0,6 s de espera = unos 2 a 4 s. El del interruptor depende de que termine de rehacer los días antes de guardar.  
+  *Dónde:* Dos móviles con cronómetro.
+- ✅ Hecho — Nadie recibe avisos de lo que hizo él mismo El disparador ya lo evitaba; el «i Han cambiado el viaje» propio era el eco del propio guardado (solo se recordaba el último guardado; con dos guardados seguidos el eco del primero parecía de otra persona y pisaba la ruta). Ahora se reconocen los últimos 8.  
+  *Dónde:* Administrador y un invitado que edita: editar rápido varias veces y no debe salir «Han cambiado el viaje».
+
+**5**
+
+- ✅ Hecho — 5 Película como Pase Pelicula Movil: pantalla completa (fondo a los bordes, palco de Design escalado a min(ancho/390, alto/844)), sin recuadros Probado (pruebaTanda10N8_pelicula, 68/0): el fondo llena toda la pantalla en 390x844 y 375x667 y la escala es la de Design. Capturas de las 7 escenas junto a las de Design  
+  *Dónde:* Cualquier cuenta: Ajustes › Mis pases › Ver el Pase, o cualquier candado del pase (primera vez entera)  *Captura:* `docs/dias/capturas_jutrip/10n8_pelicula_e0_390x844.jpg`
+- ⚠️ A medias — 5 Escenas 1 a 7 (Vuelo y alojamiento, HOY, Algo brilla, Colección y niveles, El pasaporte, Los recuerdos, El final) en 390×844 y 375×667 Las 7 escenas se ven iguales a Design en 390x844 y 375x667 (vistas 1, 3, 4, 6 y 7 una a una). Diferencia en la escena 7: Design lleva el título y [Saltar] arriba; la app lleva [Ver] y ✕ y sin título (decisión de la 10N5, Eric 26-oct)  
+  *Dónde:* Película, tocar las rayitas de arriba para ir a cada escena  *Captura:* `docs/dias/capturas_jutrip/10n8_pelicula_e1_390x844.jpg`
+- ✅ Hecho — 5 Título «Todo lo que incluye tu Pase Roma» en la misma línea que [Saltar] Probado (68/0): el título va en la línea de [Saltar] en las escenas 1 a 6. Design lo pone encima de las rayitas; la app lo deja en la línea de [Saltar] porque así lo pide el prompt  
+  *Dónde:* Película, escenas 1 a 6  *Captura:* `docs/dias/capturas_jutrip/10n8_pelicula_e2_390x844.jpg`
+
+**6**
+
+- ✅ Hecho — 6 Baños y Fuentes como antes de la 10N5 (tarjeta en gris con su foto) con el candado dorado arriba a la derecha, sin fondo azul ExplorePanel: tarjeta en gris (filter grayscale) con el candado dorado; fuera AZUL_PASE. Prueba 10N5_pase actualizada. Sin captura.  
+  *Dónde:* EXPLORAR sin pase (cuenta gratis)
+- ✅ Hecho — 6 Recomendados y Cerca de ti con el estilo de elegir de siempre; Cerca de ti sin pase con el candado dorado en su esquina; fuera el azul oscuro InterruptorElegir: la opción «bloqueada» se ve como las demás (elegida oscura, otra clara) con un candado dorado en la esquina arriba a la derecha; quitada la regla clara-con-dorado de la 10N6 1d. Pruebas 10N6_explorar y 10N5_pase actualizadas. Sin captura.  
+  *Dónde:* EXPLORAR › Restaurantes › pestañas de abajo, cuenta sin pase
+
+**7**
+
+- ✅ Hecho — 7a Fuera «Tu reserva es del viernes 13: la pasamos a ese día…» Quitado en las dos hojas de AddReservationSheet (comprobado en código).  
+  *Dónde:* RESERVAS > añadir entrada > cambiar el día a uno fuera de la ruta; cualquier cuenta
+- ✅ Hecho — 7b Un solo bloque de vuelo y uno de alojamiento para quien no es administrador Probado en pantalla (N6, invitada Ana con permiso editar): un solo bloque de vuelo y uno de alojamiento, «Lo ha puesto Eric · para todos» (desde quien mira), «Tengo otro vuelo» / «Me alojo en otro sitio». También el estado «Falta» sin nada puesto. Pareja Design: Reservas Cada Uno 01 (Design solo pinta el caso «Falta» y colapsado; la app lo pinta abierto).  
+  *Dónde:* RESERVAS > Llegada y vuelta / Alojamiento; cuenta invitada (Ana)  *Captura:* `docs/dias/capturas_jutrip/10n8_reservas_01_invitado_bloque_unico.jpg · docs/dias/capturas_jutrip/10n8_reservas_00_invitado_falta.jpg · docs/dias/capturas_jutrip/10n8_reservas_02_invitado_alojamiento.jpg`
+- ⚠️ A medias — 7c Vuelo y alojamiento con «¿Para quién es?» (marcado solo quien lo pone) Probado en pantalla la hoja del vuelo: «¿Para quién es?» con solo quien lo pone marcado (Ana). Alojamiento: nombre libre, sin chips de zona de Design 05. Marcar al administrador en un vuelo de un invitado solo le avisa, no le crea vuelo.  
+  *Dónde:* RESERVAS > Falta > Guardar el vuelo; Ana y Luis  *Captura:* `docs/dias/capturas_jutrip/10n8_reservas_03_hoja_vuelo_guardar.jpg`
+- ⚠️ A medias — 7d Guardar el vuelo de una vez, sin [Guardar] en la rueda, un solo aviso con ida y vuelta Probado en pantalla: la hoja trae «Guardar el vuelo» y ningún [Guardar] suelto. DIFERENCIAS con Design (Reservas Cada Uno 02b): Design muestra «✓ Ida · mar 10 · 11:15» en la pestaña de ida, pastillas con ✓ para día y aeropuerto, rueda de dos columnas (hora : minutos) con «HORA DE SALIDA 18:05», sin campo de precio y el botón fijo abajo; la app tiene la pestaña Ida/Vuelta sin resumen, rueda de una columna, campo «Precio (opcional)» y el botón al final del scroll. Administrador: cada tramo sigue guardándose por separado, sin botón único.  
+  *Dónde:* RESERVAS > Llegada y vuelta (admin y invitado)  *Captura:* `docs/dias/capturas_jutrip/10n8_reservas_03b_hoja_vuelo_boton_guardar_el_vuelo.jpg`
+- ✅ Hecho — 7e Añadir gasto: solo quien lo añade marcado, sin [Para todos]/[Para mí] Probado en pantalla (Ana, «Cada uno lo suyo»): sin [Para todos]/[Para mí], «¿Quién ha pagado?» y «¿Para quién es?» con solo Ana marcada, «Solo para ti: es un gasto tuyo y nadie más lo ve.»  
+  *Dónde:* Presupuesto > Añadir gasto; cuenta con «Cada uno lo suyo»  *Captura:* `docs/dias/capturas_jutrip/10n8_reservas_04_anadir_gasto_cada_uno.jpg`
+
+**8**
+
+- ✅ Hecho — Comprar la entrada a la misma hora: «Comprar a las 14:00», «Ya la tengo · Guardarla» y pregunta al volver Probado en pantalla (Luis, no incluido): «Comprar a las 09:15» (hora del administrador) y «Ya la tengo · Guardarla»; al volver a la app sale «¿Has comprado la entrada del Coliseo, Foro y Palatino de las 09:15?» [Sí, guardarla] [Todavía no]. N6 arregló el artículo: salía «de Coliseo, Foro y Palatino» y ahora «del Coliseo…» (AddReservationSheet, sitioDeLaEntrada). La tienda se abre con window.open sustituido (no se probó la web).  
+  *Dónde:* RESERVAS > entrada azul de otro > Reservar la mía a la misma hora; invitado  *Captura:* `docs/dias/capturas_jutrip/10n8_reservas_07_comprar_misma_hora.jpg · docs/dias/capturas_jutrip/10n8_reservas_07b_comprar_boton_y_ya_la_tengo.jpg · docs/dias/capturas_jutrip/10n8_reservas_08_pregunta_al_volver.jpg`
+
+**8b**
+
+- ✅ Hecho — a Confirmación de quitar con entrada sin Cancelar Probado (pruebaTanda10N6_confirmar 61/0): dos botones, sin [Cancelar] ni línea de RESERVAS. No hay pieza de Design de esta confirmación: la referencia es la de «Eliminar día», que tampoco lleva [Cancelar]  
+  *Dónde:* DÍAS > ··· parada con entrada > Quitar parada  *Captura:* `docs/dias/capturas_jutrip/10n6_n8_quitar_con_entrada.jpg`
+- ⚠️ A medias — Regla: confirmaciones con ✕ y sin Cancelar ConfirmDialog ya no pinta Cancelar; las Hoja llevan ✕ salvo PagoHost mientras espera. Quedan sin Cancelar otras hojas propias no revisadas una a una  
+  *Dónde:* 
+- ✅ Hecho — b Mover antes/después activos con entrada Probado (pruebaTanda10N6_confirmar): Mover después activo y sin aviso de horas; Mover antes activo salvo en la primera parada  
+  *Dónde:* DÍAS > ··· parada con entrada
+- ⚠️ A medias — c Cambiar parada: título, sin franja, ⇄ en todos, + en En ruta, repetidos Visto en pantalla (N5): título «Cambiar Via Veneto», sin franja, ⇄ en todos incluidos los «✓ En ruta». Sin auditoría completa de sitios repetidos (mapa con dos números, recuerdos, likes, logros)  
+  *Dónde:* undefined  *Captura:* `docs/dias/capturas_jutrip/10n8_n1_cambiar_parada.jpg`
+- ✅ Hecho — 8b-e Botones sobre mapas con el borde marrón de la pastilla «Roma · fechas» Probado (pruebaTanda10N8_ficha 40/0): volver con borde 1,5 px marrón en la ficha  
+  *Dónde:* DÍAS › abrir una parada; EXPLORAR › mapa; RUTA  *Captura:* `docs/dias/capturas_jutrip/10n8_ficha_Trevi.jpg`
+- ⚠️ A medias — 8b-f «Tus recuerdos»: con pase, varias fotos de la galería de una vez El selector de galería ahora es siempre multiple (antes dependía de sinPase, que se calcula sin repintar); sin pase, de varias se guarda la primera y sale el aviso. Sin probar con el móvil.  
+  *Dónde:* Ficha de un sitio › Tus recuerdos › Elegir de la galería (cuenta con pase)
+- ✅ Hecho — 8b-f Aviso de la segunda foto con el texto de 0a-10 «Ya tienes tu foto de este sitio.» + «Con el Pase {destino}, guarda fotos sin límite y haz crecer tu álbum de recuerdos.»  
+  *Dónde:* Cuenta sin pase: subir una 2.ª foto en la misma parada
+- ✅ Hecho — 8b-f La ✕ del aviso va fuera de la tarjeta azul, separada AvisoPase añade un hueco de 36 px sobre la tarjeta; la ✕ de la hoja queda en él. Sin captura.  
+  *Dónde:* Cualquier aviso del pase
+- ✅ Hecho — 8b-g Cabecera de la ficha: foto, nombre, etiquetas y corazón en un bloque; nombre arriba alineado con la foto; etiquetas debajo sin hueco (columna si el nombre ocupa una línea, fila si ocupa dos) Arreglado por N5: el corazón estaba en el flujo y, al ser más alto que un nombre de una línea, dejaba ~39 px de hueco entre el nombre y las etiquetas y las etiquetas sobresalían de la foto. Ahora va posado arriba a la derecha. Probado (40/0) en Fontana di Trevi (3 líneas, etiquetas en fila), Coliseo (1 línea, en columna) y Museos Vaticanos (varias líneas)  
+  *Dónde:* DÍAS/EXPLORAR/Cambiar parada › abrir la ficha de cualquier sitio  *Captura:* `docs/dias/capturas_jutrip/10n8_ficha_Coliseo.jpg`
+- ✅ Hecho — 8b-g Etiqueta «Abierto 24 h» en verde solo para sitios al aire libre sin horario que siempre están abiertos Probado: Fontana di Trevi lleva «Abierto 24 h» en verde y el Coliseo no (pruebaTanda10N8_ficha). Lista de los 38 sitios pendiente de revisión de Eric  
+  *Dónde:* Ficha de la Fontana di Trevi, plazas, calles, puentes  *Captura:* `docs/dias/capturas_jutrip/10n8_ficha_Trevi.jpg`
+- ⚠️ A medias — 8b-h El aviso de abajo con [Deshacer] ocupa exactamente el sitio del menú Probado en Chrome (el aviso y el menú miden lo mismo, 0 px de diferencia). Sin probar en Safari ni con la app en la pantalla de inicio  
+  *Dónde:* DÍAS › añadir/mover/quitar una parada (Deshacer); Perfil › quitar un viaje  *Captura:* `docs/dias/capturas_jutrip/10n8_aviso_sobre_menu.jpg`
+- ✅ Hecho — 8b-i Castillo de Sant'Angelo con su botón de entrada y repaso de todos los sitios de Roma con entradas Causa: el botón se ocultaba en toda parada «por fuera» (solo_por_fuera, el Castillo siempre lo es). Quitada esa regla en StopAccordion: todo sitio con entradas lleva su botón. Además la Basílica de San Clemente (excavaciones, 10 €) no tenía entradas: añadida a data/dias/roma/_entradas.json. Sin captura.  
+  *Dónde:* DÍAS › el día con el Castillo de Sant'Angelo
+- ✅ Hecho — 8b-d Presupuesto con algo «Solo tú»: bloque «Lo tuyo» y «Del grupo 0 € · Lo tuyo 25 € · Total 25 €» Probado en pantalla (Eric con el Panteón solo para él, 25 €): bloque «Lo tuyo / Solo lo ves tú», «Del grupo 0 € · Lo tuyo 25 € · Total 25 €», también en cuenta conjunta de dos.  
+  *Dónde:* Presupuesto con «Cada uno lo suyo», Eric con una entrada solo para él  *Captura:* `docs/dias/capturas_jutrip/10n8_reservas_05_presupuesto_lo_tuyo.jpg · docs/dias/capturas_jutrip/10n8_reservas_05b_presupuesto_conjunta_lo_tuyo.jpg`
+
+**9 · La prueba**
+
+- ✅ Hecho — Pruebas nuevas pruebaTanda10N8_* (paradas, perfil, avisos, pantallas, reservas, cuentas, ficha, película y capturas del Free Tour) ver el informe  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La batería completa y pruebaJutrip, en 0 fallos (si alguna falla solo con el Vite normal, se pasa con el Vite estable y se dice) ver el informe  
+  *Dónde:* No es de móvil.
+
+**9 · Capturas**
+
+- ✅ Hecho — Capturas en docs/dias/capturas_jutrip/ y esta página a tamaño de móvil, cada una al lado de la de Design  
+  *Dónde:* Esta página.
+
+**10 · El informe**
+
+- ✅ Hecho — Apartado «10N8» en docs/dias/INFORME_TANDA10B.md (por qué salían los días bloqueados, por qué no llegaban los avisos y cuánto tardan, y el sonido) y esta lista al final  
+  *Dónde:* No es de móvil.
+
+**Pruebas:** pruebaTanda10N8_*: avisos 22, perfil 17, cuentas 51, paradas 32, pantallas 30, reservas 24, ficha 40, película 68, capturas del Free Tour 10 = 294 comprobaciones, 0 fallos.

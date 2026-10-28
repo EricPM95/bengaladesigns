@@ -105,7 +105,7 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
   // La ventana: el diálogo de siempre con ese texto, sin «Tus reservas se quedan…».
   const html = renderToStaticMarkup(createElement(ManualShrinkDialog, { notice: aviso, onConfirm() {}, onCancel() {} }))
   const lineas = aTexto(html).split('\n')
-  debe(lineas.includes('¿Quitamos esos días de tu viaje?') && lineas.includes(esperado) && lineas.includes('Sí, quitar') && lineas.includes('Cancelar') && !/se quedan en RESERVAS/.test(html), '1 aviso', `la ventana no es el «¿Estás seguro?» con las reservas nombradas: ${lineas.join(' | ')}`)
+  debe(lineas.includes('¿Quitamos esos días de tu viaje?') && lineas.includes(esperado) && lineas.includes('Sí, quitar') && !lineas.includes('Cancelar') && !/se quedan en RESERVAS/.test(html), '1 aviso', `la ventana no es el «¿Estás seguro?» con las reservas nombradas: ${lineas.join(' | ')}`)
   // «Cancelar»: no cambia nada (el aviso solo se calcula; las fechas se guardan al confirmar).
   debe(JSON.stringify(ahora()) === antesRuta && JSON.stringify(tienda().reservations) === antesReservas, '1 cancelar', 'preparar el aviso (o «Cancelar») cambia la ruta o las reservas')
   const ventana = sinComentarios(leer('src/components/route/DatesChangeDialog.tsx'))

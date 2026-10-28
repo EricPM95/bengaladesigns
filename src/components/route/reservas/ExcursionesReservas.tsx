@@ -13,6 +13,7 @@ import { AddReservationSheet, type ReservationTarget } from './AddReservationShe
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { enTuRuta, metaReserva } from './EntradasYFreeTour'
 import { Icono } from '../../ui/Icono'
+import { VolverExcursionARuta } from './VolverExcursionARuta'
 
 const sinCero = (hora: string) => hora.replace(/^0(\d:)/, '$1')
 
@@ -104,6 +105,7 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
               nombre={nombreCorto(excursion, reserva.name)}
               meta={sinCero(metaReserva(route, reserva, 'recogida '))}
               nota={reserva.noMueve ? 'Ya no está en tu ruta' : undefined}
+              accion={reserva.noMueve ? <VolverExcursionARuta route={route} reserva={reserva} excursion={excursion} /> : undefined}
               onChange={() => setTarget({ kind: 'excursion', refId: reserva.refId, name: reserva.name, placeNames: [], excursion, currentDayId: dayOfReservation(route, reserva)?.id ?? null, existing: reserva })}
             />
           )

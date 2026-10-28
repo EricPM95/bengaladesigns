@@ -237,7 +237,7 @@ export function RouteView() {
                 <button
                   type="button"
                   onClick={() => setShowAllDaysOnMap((prev) => !prev)}
-                  className="absolute bottom-8 left-3 z-10 rounded-full border border-text/10 bg-bg-card/90 px-3 py-1.5 text-[12px] font-medium text-text/60 shadow-sm backdrop-blur-sm transition-colors hover:text-text"
+                  className="absolute bottom-8 left-3 z-10 rounded-full border-[1.5px] border-accent bg-bg-card px-3 py-1.5 text-[12px] font-medium text-text/60 shadow-sm backdrop-blur-sm transition-colors hover:text-text"
                 >
                   {showAllDaysOnMap ? 'Solo este día' : 'Ver todo'}
                 </button>

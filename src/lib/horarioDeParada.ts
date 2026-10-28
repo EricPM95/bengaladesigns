@@ -192,3 +192,12 @@ export function useHorarioDeParadas(destino: string, fechaIso: string | null): (
     return horarioDeParada({ hoursData, scheduleText: parada.scheduleText, hours: parada.hours }, fechaIso, mes)
   }
 }
+
+/**
+ * (Tanda 10N8 §8b-g) «Abierto 24 h»: SOLO los sitios al aire libre que de verdad están siempre abiertos y no tienen horario (una plaza, una calle, una fuente, un puente, un mirador sin puerta). Lo marca el dato del sitio
+ * (`abierto_24h` en los datos del destino, a mano: muchos parques cierran de noche y NO lo llevan). Un sitio con horario no lo lleva nunca.
+ */
+export function useAbierto24h(destino: string | undefined): (nombre: string) => boolean {
+  const datos = useDatosDeHorario(destino)
+  return (nombre) => datos.get(normaliza(nombre))?.abierto_24h === true
+}

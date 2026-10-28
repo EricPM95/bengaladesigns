@@ -1,0 +1,146 @@
+[
+ {
+  "apartado": "0a",
+  "punto": "0a-10 Textos del aviso del pase (título «Desbloquéalo con el Pase Roma», línea pequeña solo si dice algo usado, frase en negrita con «Pase {destino}» y sin límite; fuera «Tu ruta ya te dice…»)",
+  "estado": "hecho",
+  "nota": "src/lib/avisoPaseTextos.ts con {pase} sustituido por «Pase {destino}»; AvisoPase oculta la línea 1 si está vacía; pruebas 10H, 10N6_avisopase y 10O_datos actualizadas. Sin comprobar en pantalla (la cola de Chrome no me dejó correr la prueba).",
+  "donde": "Cualquier candado del pase sin pase (cuenta gratis): Escuchar historia, 2.ª foto en «Tus recuerdos», Baños, Fuentes, Cerca de ti, HOY",
+  "captura": "",
+  "captura_design": "docs/diseno/proyecto/Piezas/Pase Estilo.dc.html"
+ },
+ {
+  "apartado": "0a",
+  "punto": "0a-10 «estés donde estés» solo si es verdad",
+  "estado": "hecho",
+  "nota": "Cerca de ti (y Baños/Fuentes, que abren en esa pestaña) ordena por distancia al GPS del viajero solo si hay ubicación; sin ubicación no hay orden por cercanía (PlaceExplorerScreen). Es verdad con la ubicación compartida; HOY usa la siguiente parada si no hay GPS.",
+  "donde": "EXPLORAR › Restaurantes › Cerca de ti, con pase",
+  "captura": "",
+  "captura_design": ""
+ },
+ {
+  "apartado": "0a",
+  "punto": "0a-11 Música de la película",
+  "estado": "no",
+  "nota": "public/sonidos/pelicula_pase.mp3 no está en la carpeta y este PC no tiene ffmpeg. No he usado ninguna música. Cuando Eric ponga el archivo: scripts/destino/comprimirMusicaPelicula.sh.",
+  "donde": "Película del pase (botón de silencio solo si hay archivo)",
+  "captura": "",
+  "captura_design": ""
+ },
+ {
+  "apartado": "5",
+  "punto": "5 Película como Pase Pelicula Movil: pantalla completa (fondo a los bordes, palco de Design escalado a min(ancho/390, alto/844)), sin recuadros",
+  "estado": "hecho",
+  "nota": "Probado (pruebaTanda10N8_pelicula, 68/0): el fondo llena toda la pantalla en 390x844 y 375x667 y la escala es la de Design. Capturas de las 7 escenas junto a las de Design",
+  "donde": "Cualquier cuenta: Ajustes › Mis pases › Ver el Pase, o cualquier candado del pase (primera vez entera)",
+  "captura": "docs/dias/capturas_jutrip/10n8_pelicula_e0_390x844.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_pelicula_e0_390x844.jpg"
+ },
+ {
+  "apartado": "5",
+  "punto": "5 Escenas 1 a 7 (Vuelo y alojamiento, HOY, Algo brilla, Colección y niveles, El pasaporte, Los recuerdos, El final) en 390×844 y 375×667",
+  "estado": "medias",
+  "nota": "Las 7 escenas se ven iguales a Design en 390x844 y 375x667 (vistas 1, 3, 4, 6 y 7 una a una). Diferencia en la escena 7: Design lleva el título y [Saltar] arriba; la app lleva [Ver] y ✕ y sin título (decisión de la 10N5, Eric 26-oct)",
+  "donde": "Película, tocar las rayitas de arriba para ir a cada escena",
+  "captura": "docs/dias/capturas_jutrip/10n8_pelicula_e1_390x844.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_pelicula_e1_390x844.jpg"
+ },
+ {
+  "apartado": "5",
+  "punto": "5 Título «Todo lo que incluye tu Pase Roma» en la misma línea que [Saltar]",
+  "estado": "hecho",
+  "nota": "Probado (68/0): el título va en la línea de [Saltar] en las escenas 1 a 6. Design lo pone encima de las rayitas; la app lo deja en la línea de [Saltar] porque así lo pide el prompt",
+  "donde": "Película, escenas 1 a 6",
+  "captura": "docs/dias/capturas_jutrip/10n8_pelicula_e2_390x844.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_pelicula_e2_390x844.jpg"
+ },
+ {
+  "apartado": "6",
+  "punto": "6 Baños y Fuentes como antes de la 10N5 (tarjeta en gris con su foto) con el candado dorado arriba a la derecha, sin fondo azul",
+  "estado": "hecho",
+  "nota": "ExplorePanel: tarjeta en gris (filter grayscale) con el candado dorado; fuera AZUL_PASE. Prueba 10N5_pase actualizada. Sin captura.",
+  "donde": "EXPLORAR sin pase (cuenta gratis)",
+  "captura": "",
+  "captura_design": "docs/diseno/proyecto/App Explorar y fichas.dc.html"
+ },
+ {
+  "apartado": "6",
+  "punto": "6 Recomendados y Cerca de ti con el estilo de elegir de siempre; Cerca de ti sin pase con el candado dorado en su esquina; fuera el azul oscuro",
+  "estado": "hecho",
+  "nota": "InterruptorElegir: la opción «bloqueada» se ve como las demás (elegida oscura, otra clara) con un candado dorado en la esquina arriba a la derecha; quitada la regla clara-con-dorado de la 10N6 1d. Pruebas 10N6_explorar y 10N5_pase actualizadas. Sin captura.",
+  "donde": "EXPLORAR › Restaurantes › pestañas de abajo, cuenta sin pase",
+  "captura": "",
+  "captura_design": ""
+ },
+ {
+  "apartado": "8b",
+  "punto": "8b-e Botones sobre mapas con el borde marrón de la pastilla «Roma · fechas»",
+  "estado": "hecho",
+  "nota": "Probado (pruebaTanda10N8_ficha 40/0): volver con borde 1,5 px marrón en la ficha",
+  "donde": "DÍAS › abrir una parada; EXPLORAR › mapa; RUTA",
+  "captura": "docs/dias/capturas_jutrip/10n8_ficha_Trevi.jpg",
+  "captura_design": ""
+ },
+ {
+  "apartado": "8b",
+  "punto": "8b-f «Tus recuerdos»: con pase, varias fotos de la galería de una vez",
+  "estado": "medias",
+  "nota": "El selector de galería ahora es siempre multiple (antes dependía de sinPase, que se calcula sin repintar); sin pase, de varias se guarda la primera y sale el aviso. Sin probar con el móvil.",
+  "donde": "Ficha de un sitio › Tus recuerdos › Elegir de la galería (cuenta con pase)",
+  "captura": "",
+  "captura_design": "docs/diseno/proyecto/Piezas/Recuerdos Ficha.dc.html"
+ },
+ {
+  "apartado": "8b",
+  "punto": "8b-f Aviso de la segunda foto con el texto de 0a-10",
+  "estado": "hecho",
+  "nota": "«Ya tienes tu foto de este sitio.» + «Con el Pase {destino}, guarda fotos sin límite y haz crecer tu álbum de recuerdos.»",
+  "donde": "Cuenta sin pase: subir una 2.ª foto en la misma parada",
+  "captura": "",
+  "captura_design": ""
+ },
+ {
+  "apartado": "8b",
+  "punto": "8b-f La ✕ del aviso va fuera de la tarjeta azul, separada",
+  "estado": "hecho",
+  "nota": "AvisoPase añade un hueco de 36 px sobre la tarjeta; la ✕ de la hoja queda en él. Sin captura.",
+  "donde": "Cualquier aviso del pase",
+  "captura": "",
+  "captura_design": ""
+ },
+ {
+  "apartado": "8b",
+  "punto": "8b-g Cabecera de la ficha: foto, nombre, etiquetas y corazón en un bloque; nombre arriba alineado con la foto; etiquetas debajo sin hueco (columna si el nombre ocupa una línea, fila si ocupa dos)",
+  "estado": "hecho",
+  "nota": "Arreglado por N5: el corazón estaba en el flujo y, al ser más alto que un nombre de una línea, dejaba ~39 px de hueco entre el nombre y las etiquetas y las etiquetas sobresalían de la foto. Ahora va posado arriba a la derecha. Probado (40/0) en Fontana di Trevi (3 líneas, etiquetas en fila), Coliseo (1 línea, en columna) y Museos Vaticanos (varias líneas)",
+  "donde": "DÍAS/EXPLORAR/Cambiar parada › abrir la ficha de cualquier sitio",
+  "captura": "docs/dias/capturas_jutrip/10n8_ficha_Coliseo.jpg",
+  "captura_design": "docs/diseno/proyecto/Piezas/Ficha Cabecera.dc.html"
+ },
+ {
+  "apartado": "8b",
+  "punto": "8b-g Etiqueta «Abierto 24 h» en verde solo para sitios al aire libre sin horario que siempre están abiertos",
+  "estado": "hecho",
+  "nota": "Probado: Fontana di Trevi lleva «Abierto 24 h» en verde y el Coliseo no (pruebaTanda10N8_ficha). Lista de los 38 sitios pendiente de revisión de Eric",
+  "donde": "Ficha de la Fontana di Trevi, plazas, calles, puentes",
+  "captura": "docs/dias/capturas_jutrip/10n8_ficha_Trevi.jpg",
+  "captura_design": ""
+ },
+ {
+  "apartado": "8b",
+  "punto": "8b-h El aviso de abajo con [Deshacer] ocupa exactamente el sitio del menú",
+  "estado": "medias",
+  "nota": "Probado en Chrome (el aviso y el menú miden lo mismo, 0 px de diferencia). Sin probar en Safari ni con la app en la pantalla de inicio",
+  "donde": "DÍAS › añadir/mover/quitar una parada (Deshacer); Perfil › quitar un viaje",
+  "captura": "docs/dias/capturas_jutrip/10n8_aviso_sobre_menu.jpg",
+  "captura_design": ""
+ },
+ {
+  "apartado": "8b",
+  "punto": "8b-i Castillo de Sant'Angelo con su botón de entrada y repaso de todos los sitios de Roma con entradas",
+  "estado": "hecho",
+  "nota": "Causa: el botón se ocultaba en toda parada «por fuera» (solo_por_fuera, el Castillo siempre lo es). Quitada esa regla en StopAccordion: todo sitio con entradas lleva su botón. Además la Basílica de San Clemente (excavaciones, 10 €) no tenía entradas: añadida a data/dias/roma/_entradas.json. Sin captura.",
+  "donde": "DÍAS › el día con el Castillo de Sant'Angelo",
+  "captura": "",
+  "captura_design": "docs/diseno/proyecto/Piezas/Parada Entrada.dc.html"
+ }
+]

@@ -1,7 +1,8 @@
 import type { DayPlan } from './types'
 import type { Recomendacion } from './aplicarRecomendacion'
 import { fechaDelDia } from './nombreDeDia'
-import { indiceDeDestino, cambiosDeUnaPropuesta, type CambioPropuesto } from './propuesta'
+import { indiceDeDestino, cambiosDeUnaPropuesta, ordenarDias, type CambioPropuesto } from './propuesta'
+import { moverParadaAOtroDia, ponerParadaEnElDia } from './cambiarParada'
 import { paradaQueSustituye } from './cambiarParada'
 import { puente } from './recomendacionesViaje'
 import { useRouteStore } from '../store/useRouteStore'
@@ -39,10 +40,26 @@ export function aplicarCambioReal(c: CambioPropuesto): ResultadoDeAplicar {
     s.removeStop(d.id, c.antes!.id)
     return { ok: true }
   }
+  if (c.tipo === 'orden_dias') {
+    if (!c.orden) return { ok: false, nota: 'El orden de los días no viene en el cambio.' }
+    s.reorderDays(ordenarDias(s.route.days, c.orden).filter((d) => !d.isReturnLeg).map((d) => d.id))
+    return { ok: true }
+  }
+  if (c.tipo === 'excursion_dia') {
+    const d = diaDe(c.dayId)
+    if (!d || !c.dia) return { ok: false, nota: 'Ese día ya no existe en tu viaje.' }
+    s.replaceDayExact(d.id, { ...c.dia, dayNumber: d.dayNumber })
+    return { ok: true }
+  }
   if (c.tipo === 'anadir') {
     const d = diaDe(c.dayId)
     if (!d || !c.despues) return { ok: false, nota: 'Ese día ya no existe en tu viaje.' }
-    if (d.stops.some((x) => x.name === c.despues!.name)) return { ok: true, nota: 'Esa parada ya está en ese día.' }
+    if (c.despues.isFreeTour) {
+      // (10N8) El Free Tour es una parada más y va una sola vez: de primero por la mañana del día.
+      if (s.route.days.some((x) => x.stops.some((y) => y.isFreeTour))) return { ok: true, nota: 'El viaje ya lleva el Free Tour.' }
+      ponerParadaEnElDia(d.id, { ...c.despues, addedByUser: true })
+      return { ok: true }
+    }
     s.insertStopAt(d.id, indiceDeDestino(d, c.despues, c.despuesDeId, fecha(d)), { ...c.despues, addedByUser: true })
     return { ok: true }
   }
@@ -50,7 +67,6 @@ export function aplicarCambioReal(c: CambioPropuesto): ResultadoDeAplicar {
     const d = diaDe(c.dayId) ?? dondeEsta(c.antes?.id)
     const vieja = d?.stops.find((x) => x.id === c.antes?.id)
     if (!d || !vieja || !c.despues) return { ok: false, nota: 'La parada que querían cambiar ya no está.' }
-    if (d.stops.some((x) => x.name === c.despues!.name)) return { ok: true, nota: 'Esa parada ya está en ese día.' }
     s.replaceStop(d.id, vieja.id, paradaQueSustituye(vieja, { ...c.despues, addedByUser: true }))
     return { ok: true }
   }
@@ -71,6 +87,11 @@ export function aplicarCambioReal(c: CambioPropuesto): ResultadoDeAplicar {
     if (!origen || !stop) return { ok: true, nota: 'Esa parada ya no está en tu ruta.' }
     if (!destino) return { ok: false, nota: 'El día al que la llevaban ya no existe en tu viaje.' }
     if (origen.id === destino.id) return aplicarCambioReal({ ...c, tipo: 'mover' })
+    if (stop.isFreeTour) {
+      // (10N8) El Free Tour pasa a otro día de primero por la mañana, como cuando lo pasa el propio viajero.
+      moverParadaAOtroDia(stop.id, origen.id, destino.id)
+      return { ok: true }
+    }
     const idx = indiceDeDestino(destino, stop, c.despuesDeId, fecha(destino))
     s.moveStopToDay(stop.id, origen.id, destino.id)
     const ahora = diaDe(destino.id)

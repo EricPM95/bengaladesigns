@@ -126,6 +126,8 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
   const precio = importeDeTexto(importe, monedaDelCampo)
   const listo = Boolean(nombre.trim()) && precio !== null
   const lineas = bloque?.lineas ?? []
+  // (Tanda 10N8 §0b-5; `Cuentas Modo` 01) Viajando solo: el bloque termina en «Añadir gasto» (punteado), que abre el formulario.
+  const [formAbierto, setFormAbierto] = useState(false)
   return (
     <div className="flex flex-none flex-col gap-2.5 rounded-[22px] bg-[#FFFDF8] p-3.5" style={caja} data-blk="extras">
       <CabeceraBloque id="extras" titulo="Extras" suma={bloque ? formatoImporte(bloque.suma) : null} />
@@ -148,7 +150,13 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
           </div>
         )
       })}
-      <div className="grid gap-1.5" style={{ gridTemplateColumns: 'minmax(0,1fr) 84px auto' }}>
+      {!formAbierto && (
+        <button type="button" onClick={() => setFormAbierto(true)} data-anadir-gasto className="flex h-12 w-full items-center justify-center gap-2 rounded-[14px] text-[14px] font-semibold" style={{ border: '1.5px dashed rgba(181,138,46,.55)', color: '#8A6420', background: 'transparent' }}>
+          <Icono nombre="anadir" size={16} />
+          Añadir gasto
+        </button>
+      )}
+      {formAbierto && <><div className="grid gap-1.5" style={{ gridTemplateColumns: 'minmax(0,1fr) 84px auto' }}>
         <input value={nombre} onChange={(event) => setNombre(event.target.value)} maxLength={60} placeholder="Cena el primer día" aria-label="Nombre del gasto" className="h-11 min-w-0 rounded-xl border border-text/[.12] bg-[#F5EFE4] px-3 text-[14px] outline-none" />
         <input value={importe} onChange={(event) => setImporte(event.target.value)} inputMode="decimal" placeholder="38" aria-label="Importe" className="h-11 min-w-0 rounded-xl border border-text/[.12] bg-[#F5EFE4] px-3 text-[14px] outline-none" style={{ fontFamily: "'Geist Mono',monospace" }} />
         <button
@@ -159,6 +167,7 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
             addGastoExtra({ id: `extra-${Date.now()}`, nombre: nombre.trim(), precio })
             setNombre('')
             setImporte('')
+            setFormAbierto(false)
           }}
           className="btn-champan h-11 whitespace-nowrap rounded-xl px-3.5 text-[13px] font-semibold transition-opacity"
           style={{ opacity: listo ? 1 : 0.45 }}
@@ -175,7 +184,7 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
             </option>
           ))}
         </select>
-      </label>
+      </label></>}
     </div>
   )
 }
@@ -270,7 +279,7 @@ export function PantallaPresupuesto() {
   const total = presupuesto.total
   const hayGastos = presupuesto.bloques.length > 0
   // (Tanda 10N7) Solo quien tiene algo «Solo para mí» ve el desglose «De los dos · Lo tuyo · Total»; los demás, solo lo común.
-  const conLoTuyo = modoCuentas.modo === 'conjunta' && presupuesto.loTuyo.length > 0
+  const conLoTuyo = gv.compartido && presupuesto.loTuyo.length > 0
   const extras = presupuesto.bloques.find((bloque) => bloque.id === 'extras') ?? null
   const bloquesSinExtras = presupuesto.bloques.filter((bloque) => bloque.id !== 'extras')
   const simbolo = formatoImporte({ amount: 0, currency: moneda }).split(' ')[1]
@@ -330,18 +339,10 @@ export function PantallaPresupuesto() {
           <span className="text-text/55" style={{ font: "500 11px/1.35 'Geist Mono',monospace", letterSpacing: '.06em' }}>
             {route.destination} · {rangoDelViaje(route)}
             {/* (Tanda 10N7) En la cuenta conjunta los nombres ya van en la etiqueta de la tarjeta oscura. */}
-            {modoCuentas.modo !== 'conjunta' && ' · '}
+            {modoCuentas.modo !== 'conjunta' && gv.compartido && ' · '}
             {modoCuentas.modo === 'conjunta' ? null : gv.compartido ? (
               <span data-presupuesto-de>{gv.esInvitado ? `de ${gv.nombreAdmin || nombresEnFrase(gv.personas.map((p) => nombreVisible(p.nombre)))}` : gv.frase}</span>
-            ) : personas ? (
-              <>
-                {personas} {personas === 1 ? 'persona' : 'personas'}
-              </>
-            ) : (
-              <button type="button" onClick={() => setHojaPersonas(true)} className="underline underline-offset-2">
-                Cambiar personas
-              </button>
-            )}
+            ) : null}
           </span>
         </span>
         <BotonModoCuentas />
@@ -358,7 +359,7 @@ export function PantallaPresupuesto() {
                   <EtiquetaCuentaConjunta />
                 ) : (
                   <span className="text-[#FFFDF8]/60" style={ojoStyle}>
-                    {gv.compartido ? 'Del grupo' : 'Total del viaje'}
+                    {gv.compartido ? 'Del grupo' : 'Tu viaje'}
                   </span>
                 )}
                 {/* El total se achica si es largo (489,23 €) para no partirse en dos líneas junto al «por persona». */}
@@ -366,7 +367,7 @@ export function PantallaPresupuesto() {
                   {formatoImporte(total)}
                 </span>
               </span>
-              {modoCuentas.modo !== 'conjunta' && (porPersona || personas === null) ? (
+              {modoCuentas.modo !== 'conjunta' && gv.compartido && (porPersona || personas === null) ? (
                 <button
                   type="button"
                   onClick={() => (porPersona ? setVerPorPersona((valor) => !valor) : setHojaPersonas(true))}
@@ -432,7 +433,7 @@ export function PantallaPresupuesto() {
           )}
 
           {/* (Tanda 10N7 §1b) Lo «Solo para mí» de la cuenta conjunta: un bloque propio, abajo, después de «Extras». Solo sale si esta persona tiene algo suyo. */}
-          {modoCuentas.modo === 'conjunta' && <LoTuyo lineas={presupuesto.loTuyo} suma={presupuesto.sumaLoTuyo} moneda={moneda} onAbrir={gv.esInvitado ? undefined : setHoja} />}
+          {gv.compartido && <LoTuyo lineas={presupuesto.loTuyo} suma={presupuesto.sumaLoTuyo} moneda={moneda} onAbrir={gv.esInvitado ? undefined : setHoja} />}
 
           <div className="flex flex-none items-baseline justify-between border-t border-text/[.12] px-1.5 pt-1.5">
             <span className="pt-3 text-text/60" style={ojoStyle}>
@@ -444,7 +445,7 @@ export function PantallaPresupuesto() {
           </div>
           {conLoTuyo && (
             <span data-total-explicado className="px-1.5 text-[11.5px] leading-[1.4] text-text/55">
-              {gv.personas.length > 2 ? 'De todos' : 'De los dos'} {formatoImporte(total)} · Lo tuyo {formatoImporte(presupuesto.sumaLoTuyo)} · Total {formatoImporte(presupuesto.totalConLoTuyo)}
+              {modoCuentas.modo !== 'conjunta' ? 'Del grupo' : gv.personas.length > 2 ? 'De todos' : 'De los dos'} {formatoImporte(total)} · Lo tuyo {formatoImporte(presupuesto.sumaLoTuyo)} · Total {formatoImporte(presupuesto.totalConLoTuyo)}
             </span>
           )}
           <div className="flex flex-col gap-1 px-1.5 text-[11.5px] leading-[1.4] text-text/55">

@@ -108,12 +108,13 @@ interface PlaceExplorerScreenProps {
     hint?: string
   }
   /**
-   * «Cambiar parada» (Tanda 7, punto 16): la pantalla sale con su pregunta arriba («¿Por cuál quieres cambiar {parada}?») y el botón de la esquina de cada tarjeta deja de ser el «+» y es el icono de intercambiar.
+   * «Cambiar parada» (Tanda 7, punto 16): la pantalla sale con el título «Cambiar {parada}» (10N8: ya no hay franja de pregunta debajo) y el botón de la esquina de cada tarjeta deja de ser el «+» y es el icono de intercambiar.
    * Al tocarlo, `onElegir` recibe el sitio ya hecho parada (quien llama lo pone en el día y a la hora de la parada que se cambia). Lo que ya está en el viaje sale con «Ya en tu viaje» y sin el icono. Solo se ven lugares
    * (no restaurantes, excursiones ni baños). Los filtros los cambia el viajero; sin esta prop, la pantalla es la de siempre, con su «+».
    */
   cambiarParada?: {
-    pregunta: string
+    /** (10N8, 8b-c) El nombre de lo que se cambia, para el título «Cambiar Coliseo» (sin artículo ni día). */
+    nombre: string
     onElegir: (stop: Stop) => void
   }
   onClose: () => void
@@ -144,7 +145,7 @@ export function placeholderPhoto(_name: string): string {
 export function stopFromPlace(place: DestinationPlace, photoUrl: string): Stop {
   const chip = findPlaceCategoryChip(place.filter_category)
   return {
-    id: `stop-pool-${normalize(place.name).replace(/\s+/g, '-')}-${Date.now()}`,
+    id: `stop-pool-${normalize(place.name).replace(/\s+/g, '-')}-${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
     // Hora de relleno: la posición real en el día se la da el store al insertarla, que es quien
     // recalcula SOLO el tramo con la parada anterior y redondea al cuarto más cercano (ver
     // timeForStopAfter en useRouteStore.ts). Desde aquí no sabemos dónde va a caer.
@@ -825,7 +826,7 @@ export function PlaceExplorerScreen({
             <Icono nombre="cerrar" size={18} />
           </button>
           <div className="flex min-w-0 flex-col items-center gap-[3px]">
-            <span className="max-w-full truncate font-display text-text" style={{ fontSize: 28, lineHeight: 1 }}>
+            <span className={cambiarParada ? 'line-clamp-2 max-w-full text-center font-display text-text' : 'max-w-full truncate font-display text-text'} data-titulo-explorador="1" style={cambiarParada ? { fontSize: 23, lineHeight: 1.08 } : { fontSize: 28, lineHeight: 1 }}>
               {titleMatch ? (
                 <>
                   {titleMatch[1]}
@@ -849,20 +850,6 @@ export function PlaceExplorerScreen({
         </header>
 
         {pickMode?.hint && <p className="shrink-0 px-4 pb-2 text-center text-small text-text-soft">{pickMode.hint}</p>}
-        {cambiarParada && (
-          /* (Tanda 10N6 §1e) Una franja arriba: «Elige el sitio que cambia por el Arco de Constantino», con la ✕ para cancelar (vuelve a DÍAS sin cambiar nada). */
-          <div className="shrink-0 px-4 pb-2.5">
-            <div data-pregunta-cambiar-parada="1" className="flex items-center gap-2.5 rounded-2xl py-2 pl-3.5 pr-2" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.45)' }}>
-              <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full" style={{ background: '#F3E3B2', color: '#6E5018' }}>
-                <Icono nombre="intercambiar" size={14} />
-              </span>
-              <span className="min-w-0 flex-1 text-[14px] font-semibold leading-snug text-text">{cambiarParada.pregunta}</span>
-              <button type="button" onClick={onClose} aria-label="Cancelar el cambio" data-cancelar-cambio="1" className="flex h-9 w-9 flex-none items-center justify-center rounded-full" style={{ background: 'rgba(28,34,48,.08)', color: '#1C2230' }}>
-                <Icono nombre="cerrar" size={16} />
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}
         <div className="flex shrink-0 items-center gap-1.5 px-4 pb-3">
@@ -1032,7 +1019,7 @@ export function PlaceExplorerScreen({
             aria-label="Mi ubicación"
             title="Mi ubicación"
             className="absolute right-3.5 z-[5] flex h-[42px] w-[42px] items-center justify-center rounded-full text-text"
-            style={{ bottom: 36, background: '#FFFDF8', boxShadow: '0 8px 20px -8px rgba(28,34,48,.4)' }}
+            style={{ bottom: 36, background: '#FFFDF8', border: '1.5px solid rgb(var(--accent))', boxShadow: '0 8px 20px -8px rgba(28,34,48,.4)' }}
           >
             <Icono nombre="localizar" size={18} />
           </button>
@@ -1202,9 +1189,8 @@ export function PlaceExplorerScreen({
                 const picked = pickable(place) && pickedNames.has(place.name)
                 // La tarjeta nueva (Tanda 6z) es la de los lugares que se visitan; restaurantes, baños y fuentes siguen como estaban.
                 const visitable = place.kind === 'place'
-                // «Añadir parada» de un día: el lugar ya está en ESE día (el «+» pasa a un ✓ apagado); en otro día el «+» sigue.
-                const dayHere = onQuickPick && dayNumber ? route?.days.find((candidate) => candidate.dayNumber === dayNumber) : undefined
-                const inThisDay = Boolean(dayHere) && !place.solo_entradas && isNameAlreadyInRoute(place.name, stopEntries.filter((entry) => entry.dayId === dayHere?.id))
+                // (10N8) Un sitio se puede tener dos veces o más (también el mismo día): el «+» sale siempre, también en los «✓ En ruta». Solo el Free Tour va una sola vez.
+                const freeTourYaEstaba = Boolean(place.solo_entradas) && alreadyInRoute
                 const plusAction = place.solo_entradas ? (onAddFreeTour ?? onFreeTour) : onQuickPick ? () => addDirect(place) : onQuickAdd ? () => onQuickAdd(place) : undefined
                 return (
                   <div
@@ -1317,28 +1303,20 @@ export function PlaceExplorerScreen({
                             </span>
                           </button>
                         ) : cambiando ? (
-                          alreadyInRoute ? (
-                            <span className="h-11 w-11" />
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => elegirCambio(place)}
-                              data-cambiar-por={place.name}
-                              aria-label={`Cambiar por ${place.name}`}
-                              title="Cambiar por este"
-                              className="flex h-11 w-11 items-center justify-center"
-                            >
-                              <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ border: `1.5px solid ${warm}`, color: 'rgb(var(--accent-hover))' }}>
-                                <Icono nombre="intercambiar" size={15} />
-                              </span>
-                            </button>
-                          )
-                        ) : inThisDay ? (
-                          <span className="flex h-11 w-11 items-center justify-center" aria-label={`${place.name} ya está en este día`} title="Ya está en este día">
-                            <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ border: '1.5px solid rgba(28,34,48,.18)', color: 'rgba(28,34,48,.3)' }}>
-                              <Icono nombre="hecho" size={15} grosor={2.4} />
+                          <button
+                            type="button"
+                            onClick={() => elegirCambio(place)}
+                            data-cambiar-por={place.name}
+                            aria-label={`Cambiar por ${place.name}`}
+                            title="Cambiar por este"
+                            className="flex h-11 w-11 items-center justify-center"
+                          >
+                            <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ border: `1.5px solid ${warm}`, color: 'rgb(var(--accent-hover))' }}>
+                              <Icono nombre="intercambiar" size={15} />
                             </span>
-                          </span>
+                          </button>
+                        ) : freeTourYaEstaba ? (
+                          <span className="h-11 w-11" />
                         ) : plusAction && !pickMode ? (
                           <button type="button" onClick={plusAction} aria-label={`Añadir ${place.name}`} className="flex h-11 w-11 items-center justify-center">
                             <span className="flex h-7 w-7 items-center justify-center rounded-full text-[18px] font-medium leading-none" style={{ border: `1.5px solid ${warm}`, color: 'rgb(var(--accent-hover))' }}>
@@ -1372,7 +1350,7 @@ export function PlaceExplorerScreen({
                               )}
                             </span>
                           </button>
-                        ) : (place.solo_entradas ? onFreeTour : onQuickAdd) && !pickMode ? (
+                        ) : (place.solo_entradas ? onFreeTour : onQuickAdd) && !pickMode && !(place.solo_entradas && alreadyInRoute) ? (
                           <button
                             type="button"
                             onClick={() => (place.solo_entradas ? onFreeTour?.() : onQuickAdd?.(place))}
@@ -1450,7 +1428,7 @@ export function PlaceExplorerScreen({
               { id: `pool-${selected.name}`, name: selected.name, coordinates: selected.coordinates, photoUrl: selectedPhoto ?? undefined },
             ]}
             isAnchor={false}
-            footerAction={cambiarParada ? (isNameAlreadyInRoute(selected.name, stopEntries) ? undefined : { label: 'Cambiar por este', onClick: () => elegirCambio(selected) }) : selected.solo_entradas ? ((onAddFreeTour ?? onFreeTour) && !pickMode ? { label: '+ Añadir', onClick: (onAddFreeTour ?? onFreeTour)! } : undefined) : pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir ${alDia(route, dayNumber)} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
+            footerAction={cambiarParada ? { label: 'Cambiar por este', onClick: () => elegirCambio(selected) } : selected.solo_entradas ? ((onAddFreeTour ?? onFreeTour) && !pickMode && !(route && routeHasFreeTour(route)) ? { label: '+ Añadir', onClick: (onAddFreeTour ?? onFreeTour)! } : undefined) : pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir ${alDia(route, dayNumber)} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
             onClose={() => setSelected(null)}
           />
         )}

@@ -35,7 +35,7 @@ const ESTILO_ETIQUETA: Record<EtiquetaDeViaje, { background: string; color: stri
 /** «26 – 29 nov 2026 · 4 días». */
 export const fechasYDias = (v: Pick<ResumenViaje, 'cuando' | 'dias'>): string => [v.cuando, v.dias > 0 ? plural(v.dias, 'día', 'días') : ''].filter(Boolean).join(' · ')
 
-export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editando = false, onEliminar }: { viaje: ResumenViaje; etiqueta: EtiquetaDeViaje; onAbrir: () => void; onAbrirViaje: () => void; editando?: boolean; onEliminar?: () => void }): ReactNode {
+export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editando = false, onEliminar, ancho = '60%' }: { viaje: ResumenViaje; etiqueta: EtiquetaDeViaje; onAbrir: () => void; onAbrirViaje: () => void; editando?: boolean; onEliminar?: () => void; ancho?: string }): ReactNode {
   const esInvitado = Boolean(viaje.guardado?.esInvitado)
   // La portada: la que eligió; si no, la primera foto suya al acabar el viaje; y si no, la del destino (o el degradado de siempre).
   const portada = usePortadaDeViaje(viaje.id, viaje.destino, viaje.fase === 'hecho')
@@ -43,7 +43,7 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editand
   const hecho = etiqueta === 'hecho'
   const fechas = fechasYDias(viaje)
   return (
-    <div data-tarjeta-de-viaje={viaje.id} data-etiqueta-de-viaje={etiqueta} data-portada-origen={portada.url ? portada.origen : 'degradado'} style={{ flex: 'none', width: 330, scrollSnapAlign: 'start', borderRadius: 26, overflow: 'hidden', background: '#FFFDF8', boxShadow: '0 12px 24px -14px rgba(28,34,48,.5)' }}>
+    <div data-tarjeta-de-viaje={viaje.id} data-etiqueta-de-viaje={etiqueta} data-portada-origen={portada.url ? portada.origen : 'degradado'} style={{ flex: 'none', width: ancho, scrollSnapAlign: 'start', borderRadius: 26, overflow: 'hidden', background: '#FFFDF8', boxShadow: '0 12px 24px -14px rgba(28,34,48,.5)' }}>
       <div style={{ position: 'relative' }}>
         <div style={{ width: '100%', height: 142, background: degradadoDeViaje(viaje.destino), position: 'relative', overflow: 'hidden' }}>
           {portada.url ? (

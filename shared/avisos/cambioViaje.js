@@ -26,6 +26,12 @@ function paradasDe(ruta) {
       if (s.isZoneWalk || s.isBreak || !s.name) continue
       salida.push({ nombre: quitarMarca(s.name), clave: norma(s.name), dia_n: dia.dayNumber, dia_id: dia.id, fecha: sumarDias(ruta?.answers?.dateRange?.start, (dia.dayNumber ?? 1) - 1) })
     }
+    // (10N8 §4) El restaurante que el viajero ha elegido para una comida o cena cuenta como un sitio más: «Eric ha añadido Da Enzo al jueves 12.»
+    for (const m of dia.meals ?? []) {
+      const r = m?.chosenRestaurant
+      if (!r || !r.name) continue
+      salida.push({ nombre: quitarMarca(r.name), clave: norma(r.name), dia_n: dia.dayNumber, dia_id: dia.id, fecha: sumarDias(ruta?.answers?.dateRange?.start, (dia.dayNumber ?? 1) - 1) })
+    }
   }
   return salida
 }
@@ -69,7 +75,16 @@ export function resumirCambio(antes, despues) {
   }
   const ia = antes?.answers?.dateRange
   const id = despues?.answers?.dateRange
-  const fechasCambian = Boolean(ia && id && (String(ia.start).slice(0, 10) !== String(id.start).slice(0, 10) || String(ia.end).slice(0, 10) !== String(id.end).slice(0, 10)))
+  // (10N8 §4) Los días que ya no están (con su fecha de ANTES: «el sábado 14») y si los mismos días han cambiado de orden.
+  const diasA = (antes?.days ?? []).filter((x) => !x.isReturnLeg)
+  const diasD = (despues?.days ?? []).filter((x) => !x.isReturnLeg)
+  const idsD = new Set(diasD.map((x) => x.id))
+  const diasQuitadosLista = diasA.filter((x) => !idsD.has(x.id)).map((x) => ({ dia_n: x.dayNumber, fecha: sumarDias(ia?.start, (x.dayNumber ?? 1) - 1) }))
+  const ordenDias = diasA.length > 1 && diasA.length === diasD.length && diasA.every((x) => idsD.has(x.id)) && diasA.some((x, i) => x.id !== diasD[i].id)
+  const mismoInicio = Boolean(ia && id && String(ia.start).slice(0, 10) === String(id.start).slice(0, 10))
+  const mismosDias = diasA.length === diasD.length
+  // (Al quitar o añadir un día el final del viaje cambia solo: eso no es «cambiar las fechas».)
+  const fechasCambian = Boolean(ia && id && (!mismoInicio || (String(ia.end).slice(0, 10) !== String(id.end).slice(0, 10) && mismosDias)))
   return {
     movidas,
     anadidas,
@@ -78,12 +93,14 @@ export function resumirCambio(antes, despues) {
     dias_cambiados: diasCambiados,
     dias_antes: (antes?.days ?? []).filter((x) => !x.isReturnLeg).length,
     dias_despues: (despues?.days ?? []).filter((x) => !x.isReturnLeg).length,
+    dias_quitados_lista: diasQuitadosLista,
+    orden_dias: ordenDias,
     ...(fechasCambian ? { fechas: { antes: { inicio: String(ia.start).slice(0, 10), fin: String(ia.end).slice(0, 10) }, despues: { inicio: String(id.start).slice(0, 10), fin: String(id.end).slice(0, 10) } } } : {}),
   }
 }
 
 /** ¿Es el mismo contenido? (nada que avisar). */
-export const sinCambios = (r) => !r.movidas.length && !r.anadidas.length && !r.quitadas.length && !r.reordenados && !r.fechas && r.dias_antes === r.dias_despues && !r.dias_cambiados.length
+export const sinCambios = (r) => !r.orden_dias && !(r.dias_quitados_lista ?? []).length && !r.movidas.length && !r.anadidas.length && !r.quitadas.length && !r.reordenados && !r.fechas && r.dias_antes === r.dias_despues && !r.dias_cambiados.length
 
 /**
  * El `ultimoCambio` que se apunta en la ruta antes de guardarla: el resumen y, si lo que ha pasado tiene nombre propio (añadir el Free Tour, cambiar un día a excursión, recuperar la ruta…), su `accion`.
@@ -105,6 +122,8 @@ export function ultimoCambioDe(antes, despues, accion = null) {
     dias_cambiados: limite(r.dias_cambiados, 14),
     dias_antes: r.dias_antes,
     dias_despues: r.dias_despues,
+    dias_quitados_lista: limite(r.dias_quitados_lista, 6),
+    orden_dias: r.orden_dias,
     ...(r.fechas ? { fechas: r.fechas } : {}),
   }
 }

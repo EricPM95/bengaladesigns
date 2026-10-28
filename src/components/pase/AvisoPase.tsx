@@ -35,6 +35,8 @@ export function AvisoPase({ clave, destino, onCerrar }: { clave: string; destino
   const nombre = destino ? `Pase ${destino}` : 'Pase'
   return (
     <Hoja onCerrar={onCerrar} z={140} datos="aviso-pase" etiqueta={undefined}>
+      {/* (Tanda 10N8 §8b-f) La ✕ de la hoja iba montada sobre el borde de la tarjeta azul: este hueco la deja fuera, separada. */}
+      <span aria-hidden="true" data-aviso-pase-hueco-x="1" style={{ display: 'block', height: 36, flex: 'none' }} />
       <div
         data-aviso-pase={clave}
         className="relative flex flex-col items-center overflow-hidden text-center"
@@ -45,7 +47,9 @@ export function AvisoPase({ clave, destino, onCerrar }: { clave: string; destino
           Desbloquéalo con el <em style={{ color: '#F3D88F' }}>{nombre}</em>
         </span>
         <span className="relative flex flex-col" style={{ gap: 5 }}>
-          <span data-aviso-pase-linea1="1" style={{ font: "400 14px/1.35 'Geist'", color: 'rgba(251,243,226,.7)' }}>{t.linea1}</span>
+          {t.linea1 && (
+            <span data-aviso-pase-linea1="1" style={{ font: "400 14px/1.35 'Geist'", color: 'rgba(251,243,226,.7)' }}>{t.linea1}</span>
+          )}
           <span data-aviso-pase-linea2="1" style={{ font: "600 16.5px/1.3 'Geist'", color: '#FBF3E2' }}>{t.linea2}</span>
         </span>
         <button

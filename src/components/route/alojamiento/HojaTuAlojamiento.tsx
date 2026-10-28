@@ -9,7 +9,7 @@ import { usePrecioEditable } from '../../../lib/useMoneda'
  * La hoja «Tu alojamiento» (Tanda 6z): dos campos, el nombre (texto libre) y el precio total (opcional, en euros). Sin dirección, sin búsqueda ni mapa; las noches son las del viaje y no se preguntan.
  * Con uno ya puesto salen sus datos y [Eliminar]. Lo escrito no sale a ninguna web.
  */
-export function HojaTuAlojamiento({ ciudad, noches, actual, onGuardar, onEliminar, onClose }: { ciudad: string; noches: number; actual: TuAlojamiento | null; onGuardar: (hotel: TuAlojamiento) => void; onEliminar: () => void; onClose: () => void }) {
+export function HojaTuAlojamiento({ ciudad, noches, actual, onGuardar, onEliminar, onClose, extra, textoGuardar = 'Guardar' }: { ciudad: string; noches: number; actual: TuAlojamiento | null; onGuardar: (hotel: TuAlojamiento) => void; onEliminar: () => void; onClose: () => void; /** (10N8 §7c) «¿Para quién es?» y lo que vaya antes del botón. */ extra?: import('react').ReactNode; textoGuardar?: string }) {
   const [nombre, setNombre] = useState(actual?.name ?? '')
   const precio = usePrecioEditable(precioDeAlojamiento(actual))
   const nombreLimpio = nombre.trim()
@@ -34,8 +34,9 @@ export function HojaTuAlojamiento({ ciudad, noches, actual, onGuardar, onElimina
           <input value={nombre} onChange={(event) => setNombre(event.target.value)} maxLength={80} placeholder="Hotel Artemide" autoComplete="off" className={campo} />
         </label>
         <CampoPrecio estado={precio} etiqueta="Precio total (opcional)" ayuda="Toda la estancia, todas las personas." />
-        <button type="submit" disabled={!nombreLimpio} className="mt-1 h-12 w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40">
-          Guardar
+        {extra}
+        <button type="submit" disabled={!nombreLimpio} data-guardar-alojamiento className="mt-1 h-12 w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40">
+          {textoGuardar}
         </button>
         {actual && <EliminarTexto texto="Eliminar" onClick={onEliminar} />}
       </form>

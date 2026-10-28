@@ -215,7 +215,7 @@ try {
   await abrirPres()
   let t = await pres()
   debe(!(await hay('[data-boton-modo-cuentas]')) && !(await hay('[data-pregunta-modo-cuentas]')) && !(await hay('[data-etiqueta-cuenta-conjunta]')) && !(await hay('[data-tarjeta-cuentas]')), '1a', 'viajando solo: ni botón de cuentas, ni pregunta, ni etiqueta de cuenta conjunta, ni «Cuentas del grupo»')
-  debe(/Total del viaje/i.test(t) && !/Cuentas del grupo|Del grupo|Cuenta conjunta|Para quién|Para todos|Para mí/i.test(t), '1a', `presupuesto normal sin nombres ni [Para todos] / [Para mí] (${t.slice(0, 110)})`)
+  debe(/Tu viaje/i.test(t) && !/Cuentas del grupo|Del grupo|Cuenta conjunta|Para quién|Para todos|Para mí|por persona/i.test(t), '1a', `(10N8, 0b-5) «Tu viaje», sin nombres ni [Para todos] / [Para mí] (${t.slice(0, 110)})`)
   await a.captura(foto('01_solo'))
   await cerrarPres()
 
@@ -292,9 +292,9 @@ try {
   debe(await hay('[data-confirmar-si][data-peligro="1"]'), '2', 'el botón de confirmar va en rojo (se pierden las deudas)')
   await a.captura(foto('06c_confirmar_conjunta'))
   debe((await ruta()).modo === null, '2', 'mientras no confirma, nada cambia')
-  await ev("(() => { const b = Array.from(document.querySelectorAll('[data-hoja=\"confirmar\"] button')).find((x) => /Mejor no/.test(x.textContent)); b?.click(); return true })()")
+  await ev("(() => { const b = document.querySelector('[data-hoja=\"confirmar\"] button[aria-label=\"Cerrar\"]'); b?.click(); return true })()") // (10N8) la ✕ cierra: ya no hay [Mejor no]
   await a.esp(400)
-  debe((await ruta()).modo === null && !(await hay('[data-hoja="confirmar"]')), '2', '«Mejor no» no cambia nada')
+  debe((await ruta()).modo === null && !(await hay('[data-hoja="confirmar"]')), '2', 'cerrar la confirmación con la ✕ no cambia nada')
   await clic('[data-opcion-hoja="modo-conjunta"]')
   await a.esp(500)
   await clic('[data-confirmar-si]')

@@ -192,7 +192,8 @@ console.log('2. La base de datos (PGlite, migraciones reales hasta la 0049)')
 console.log('3. Lo que hay en el código')
 {
   const ui = sinComentarios(leer('src/components/route/reservas/LoDeCadaUno.tsx'))
-  debe(/Lo ha puesto \{nombre\} · \{para\}/.test(ui) && !/>\s*\{nombre\} · para/.test(ui), '6c-design', 'siempre «Lo ha puesto Eric · …», también en la 01')
+  // (10N8, 7b) El texto sale de textoLoHaPuesto (src/lib/loSuyo.ts): «Lo ha puesto Eric» + «para Eric y para ti», siempre desde quien mira, en una sola pastilla.
+  debe(/textoLoHaPuesto/.test(ui) && /Lo ha puesto /.test(sinComentarios(leer('src/lib/loSuyo.ts'))) && !/>\s*\{nombre\} · para/.test(ui), '6c-design', 'siempre «Lo ha puesto Eric · …», también en la 01')
   debe(/Tengo otro vuelo/.test(ui) && /Me alojo en otro sitio/.test(ui) && /Pon el tuyo/.test(ui) && /Tuyo/.test(ui) && /Cambiar/.test(ui) && /En este vuelo/.test(ui) && /tiene su propio/.test(ui), '6c-design', 'los textos de Design: «Tengo otro vuelo», «Me alojo en otro sitio», «Pon el tuyo», «Tuyo», «Cambiar», «En este vuelo», «Ana tiene su propio vuelo»')
   const panel = sinComentarios(leer('src/components/route/ReservasPanel.tsx'))
   debe(/LoDeCadaUnoParaElInvitado/.test(panel) && /QuienVaEnLoDelAdmin/.test(panel), '6c-1', 'RESERVAS enseña lo de cada uno al invitado y a quién cubre al administrador')

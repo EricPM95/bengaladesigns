@@ -269,7 +269,9 @@ for (const [moneda, orden] of [['EUR', '06'], ['MXN', '07'], ['USD', '08'], ['CO
   await a.captura(foto(`${orden}_compra_${moneda}`))
   if (moneda === 'MXN') {
     // La hoja «Moneda»: la elegida con borde de oro, y se puede cambiar.
-    await clicEn(a, 310, 245)
+    // (10N8) La hoja del pase cambió de sitio: se toca la pastilla de la moneda (la redonda con el código de la moneda) por el DOM, no por un punto fijo.
+    await a.evaluar("(() => { const p = Array.from(document.querySelectorAll('[data-pelicula] span')).find((x) => x.style.borderRadius === '999px' && /^[A-Z]{3}\\b/.test(x.innerText.trim()) && x.style.fontFamily !== 'x' && x.getBoundingClientRect().width < 120); p?.click(); return Boolean(p) })()")
+    await esp(700)
     const hm = await a.evaluar(`(() => {
       const filas = Array.from(document.querySelectorAll('[data-pelicula] div')).filter((d) => d.style.borderRadius === '16px' && /^[A-Z]{3}\\s/.test(d.innerText.trim()))
       return { titulo: /Moneda/.test(document.querySelector('[data-pelicula]').innerText), n: filas.length, oro: filas.filter((d) => d.style.border.includes('2px') ).map((d) => d.innerText.trim().split(String.fromCharCode(10))[0]), tieneCOP: filas.some((d) => d.innerText.startsWith('COP')), tieneEUR: filas.some((d) => d.innerText.startsWith('EUR')) }

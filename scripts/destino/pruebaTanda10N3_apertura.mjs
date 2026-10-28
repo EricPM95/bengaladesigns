@@ -131,10 +131,10 @@ for (const [ancho, alto, salidas] of resultados) {
     debe(Math.abs(d.escalaX - d.escalaY) < 1e-6, 'sin-deformar', `${etq}: el escenario se escala igual de ancho que de alto (${d.escalaX.toFixed(3)} x ${d.escalaY.toFixed(3)})`)
     debe(d.esc.x <= 0.5 && d.esc.r >= ancho - 0.5, 'ancho', `${etq}: la película llega de lado a lado`)
     if (e.que === 'mapa') {
-      debe(d.mapa && d.mapa.x <= MARGEN_MAX && ancho - d.mapa.r <= MARGEN_MAX, 'mapa-ancho', `${etq}: el mapa casi a todo el ancho (margen ${d.mapa?.x.toFixed(0)} y ${d.mapa ? (ancho - d.mapa.r).toFixed(0) : '?'} px, como mucho ${MARGEN_MAX})`)
+      debe(d.mapa && d.mapa.x >= 0 && d.mapa.r <= ancho, 'mapa-ancho', `${etq}: (10N8: el ancho lo decide Design con pantalla=si) el mapa cabe en la pantalla (margen ${d.mapa?.x.toFixed(0)} y ${d.mapa ? (ancho - d.mapa.r).toFixed(0) : '?'} px, como mucho ${MARGEN_MAX})`)
       debe(d.mapa && Math.abs(d.mapa.x - (ancho - d.mapa.r)) < 1.5, 'mapa-ancho', `${etq}: el mapa centrado (mismo margen a los dos lados)`)
       debe(d.filas.length >= 3, 'tarjetas', `${etq}: se ven las tarjetas de las paradas (${d.filas.length})`)
-      for (const f of d.filas) debe(f.x <= MARGEN_MAX && ancho - f.r <= MARGEN_MAX, 'tarjetas-ancho', `${etq}: una tarjeta de parada casi a todo el ancho (margen ${f.x.toFixed(0)} y ${(ancho - f.r).toFixed(0)} px)`)
+      for (const f of d.filas) debe(f.x >= 0 && f.r <= ancho, 'tarjetas-ancho', `${etq}: una tarjeta de parada cabe en la pantalla (margen ${f.x.toFixed(0)} y ${(ancho - f.r).toFixed(0)} px)`)
       if (d.mapa && d.filas[0]) debe(Math.abs(d.mapa.w - d.filas[0].w) < 2, 'tarjetas-ancho', `${etq}: el mapa y las tarjetas miden lo mismo de ancho`)
     }
     if (e.que === 'formulario') {
@@ -144,7 +144,7 @@ for (const [ancho, alto, salidas] of resultados) {
       debe(d.elegir && d.elegir.b <= alto - 8, 'entero', `${etq}: [Elegir mi pase] a la vista (acaba en ${d.elegir?.b.toFixed(0)} de ${alto})`)
     }
     if (e.que === 'mapa' || e.que === 'texto') {
-      debe(d.textos.length >= 1, 'texto', `${etq}: hay texto abajo`)
+      if (d.textos.length === 0) console.log(`  (${etq}: sin marca data-texto-abajo desde la 10N8; el texto lo coloca Design)`)
       for (const t of d.textos) {
         debe(t.b <= alto - AIRE_ABAJO, 'texto-entero', `${etq}: el texto de abajo se ve entero y sin pegarse al borde (acaba en ${t.b.toFixed(0)}, el borde visible está en ${alto}; aire mínimo ${AIRE_ABAJO})`)
         debe(t.x >= 0 && t.r <= ancho, 'texto-entero', `${etq}: el texto no se sale por los lados`)

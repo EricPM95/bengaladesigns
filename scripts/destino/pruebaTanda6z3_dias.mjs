@@ -180,10 +180,11 @@ for (const fechas of [true, false]) {
     paginas += 4
     for (const [nombre, texto] of [['AddToDaySheet', hoja], ['AddDayChooser', chooser], ['WhereSheet', donde], ['DayPositionPicker', posicion]]) {
       if (fechas) debe(!DIA_N.test(texto), '1 «Día n» con fechas', `${nombre} · ${etiquetaViaje}: sale «${texto.match(DIA_N)?.[0]}» (${plano(texto.slice(Math.max(0, (texto.match(DIA_N)?.index ?? 0) - 50), (texto.match(DIA_N)?.index ?? 0) + 70))})`)
-      else if (nombre !== 'WhereSheet' || texto) debe(/Día \d/.test(texto), '3 sin fechas', `${nombre} · ${etiquetaViaje}: ya no dice «Día n»`)
+      else if (nombre !== 'WhereSheet' || texto) debe(/Día \d|DÍA\s+\d/.test(texto), '3 sin fechas', `${nombre} · ${etiquetaViaje}: ya no dice «Día n»`)
     }
     // «Ya lo tienes el jueves 11» / «En tu día 1»: el sitio que ya está en el día 1.
-    debe(fechas ? /Ya lo tienes el miércoles 10/.test(hoja) : /En tu día 1/.test(hoja), fechas ? '1 «Día n» con fechas' : '3 sin fechas', `AddToDaySheet · ${etiquetaViaje}: el aviso del sitio que ya está en el día 1 no es el esperado (${plano(hoja).slice(0, 300)})`)
+    // (10N8, 3i) La hoja de elegir día (HojaDia) ya no dice «Ya lo tienes…»: se puede tener el mismo sitio dos veces. Basta con que lleve los días con su fecha (JUE · 11) o su «DÍA n».
+    debe(fechas ? /MIÉ\s+10/.test(hoja) && /Añadir al jueves 11/.test(hoja) : /DÍA\s+1/.test(hoja) && /Añadir al día 2/.test(hoja), fechas ? '1 «Día n» con fechas' : '3 sin fechas', `AddToDaySheet · ${etiquetaViaje}: la hoja no lista los días con su fecha / «DÍA n» (${plano(hoja).slice(0, 300)})`)
   }
 }
 

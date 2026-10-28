@@ -59,13 +59,19 @@ export function HojaHoraLlegada({
   const punto = leg.points.find((candidate) => candidate.id === puntoId) ?? null
   const pideEl = !otra && leg.hasButtons
   const falta = pideEl && !punto
+  // (Tanda 10N8 §7d) La rueda NO tiene [Guardar]: al cerrarla (✕ o tocando fuera) la hora queda puesta, si se ha tocado y ya está el punto.
+  const [tocada, setTocada] = useState(false)
+  const cerrar = () => {
+    if (tocada && !falta) onSave(hora, punto?.id)
+    else onClose()
+  }
   const lugar = otra ? (leg.otroPunto ?? 'tu punto de origen') : punto ? puntoCorto(punto) : ciudad
   const fecha = leg.dateIso ? capitalizar(shortDateEs(leg.dateIso)) : `Día ${leg.dayNumber}`
   // (La ida llega a Roma y sale del otro lado; la vuelta sale de Roma y llega al otro lado.)
   const llega = otra ? leg.kind === 'departure' : leg.kind === 'arrival'
   const etiqueta = llega ? 'Hora de llegada' : 'Hora de salida'
   return (
-    <HojaAbajo titleId="hoja-hora-leg" onClose={onClose}>
+    <HojaAbajo titleId="hoja-hora-leg" onClose={cerrar}>
       <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={ojoStyle}>
         {etiqueta}
         {otra ? ' · opcional' : ''}
@@ -84,7 +90,7 @@ export function HojaHoraLlegada({
                 <button
                   key={candidate.id}
                   type="button"
-                  onClick={() => setPuntoId(candidate.id)}
+                  onClick={() => { setTocada(true); setPuntoId(candidate.id) }}
                   aria-pressed={activo}
                   className="h-10 rounded-xl text-[13.5px] font-semibold transition-colors"
                   style={{ border: `1.5px solid ${activo ? INK : 'transparent'}`, background: activo ? INK : '#F5EFE4', color: activo ? '#FFFDF8' : INK }}
@@ -97,16 +103,9 @@ export function HojaHoraLlegada({
         </div>
       )}
       <div className="mt-3.5">
-        <TimeListWheel items={HORAS} value={hora} onChange={setHora} label={etiqueta} />
+        <TimeListWheel items={HORAS} value={hora} onChange={(h) => { setTocada(true); setHora(h) }} label={etiqueta} />
       </div>
-      <button
-        type="button"
-        disabled={falta}
-        onClick={() => onSave(hora, punto?.id)}
-        className="mt-4 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40"
-      >
-        {falta ? 'Elige primero el punto' : 'Guardar'}
-      </button>
+      {falta && <p className="mt-3 text-center text-[12.5px] text-text/60">Elige primero el punto</p>}
       {otra && inicial && onBorrar && (
         <button type="button" onClick={onBorrar} className="mt-2 w-full py-2 text-center text-[13px] font-semibold text-text/60 underline underline-offset-2">
           Quitar la hora

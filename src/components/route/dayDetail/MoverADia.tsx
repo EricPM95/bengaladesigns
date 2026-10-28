@@ -1,59 +1,36 @@
 import { useMemo, useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { diaConFecha, diaProsa } from '../../../lib/nombreDeDia'
-import { esDiaDeExcursion, tituloSimpleDelDia, useNombreDeDias } from '../../../lib/tituloDelDia'
-import { BotonHoja } from '../../ui/Hoja'
-import { TimeListWheel } from '../../ui/TimeListWheel'
-import type { Route } from '../../../lib/types'
-
-interface DiaDeLaRueda {
-  id: string
-  dayNumber: number
-  city: string
-}
+import { alDia, ElDia } from '../../../lib/nombreDeDia'
+import { esDiaDeExcursion } from '../../../lib/tituloDelDia'
+import { HojaDia, filasDeDias } from '../../ui/HojaDia'
+import type { Stop } from '../../../lib/types'
 
 /**
- * «MOVER A OTRO DÍA» CON UNA RUEDITA (Tanda 10N §6c, Eric 25-oct): el contenido de la hoja baja de «Mover a». Arriba «Ahora: jueves 26»; en medio la rueda de días (se desliza arriba y abajo y el elegido queda en el
- * centro, como la hora del iPhone: `TimeListWheel`), y debajo [Mover aquí]. Así la hoja no crece aunque el viaje tenga muchos días. Los días de excursión entera y el de vuelta no salen (no se mueven paradas a ellos).
- * Se pinta DENTRO de una hoja (`HojaDelMenu`), que pone el nombre de la parada arriba.
+ * «MOVER A OTRO DÍA» (Tanda 10N8, 3i): la hoja de elegir día de toda la app (`HojaDia`, `Piezas/Hoja Dia`). Antes era una ruedita dentro del menú de la parada. Salen todos los días del viaje: el de ahora y el de
+ * una excursión entera, apagados con su porqué; los demás se pueden elegir (al mover una parada nunca se bloquea un día porque tenga entradas o cosas tuyas: solo se mueve esa parada).
+ * El botón dice qué pasa: «Pasar al miércoles 11».
  */
-export function MoverADia({ dias, ahora, onMover }: { dias: DiaDeLaRueda[]; ahora?: number; onMover: (dayId: string) => void }) {
+export function MoverADia({ stop, dayId, onMover, onCerrar }: { stop: Stop; dayId: string; onMover: (dayId: string) => void; onCerrar: () => void }) {
   const route = useRouteStore((state) => state.route)
+  const dias = useMemo(() => (route ? route.days.filter((day) => !day.isReturnLeg) : []), [route])
+  const [elegido, setElegido] = useState<string | null>(null)
   if (!route) return null
-  return <Rueda route={route} dias={dias} ahora={ahora} onMover={onMover} />
-}
-
-function Rueda({ route, dias, ahora, onMover }: { route: Route; dias: DiaDeLaRueda[]; ahora?: number; onMover: (dayId: string) => void }) {
-  const nombreDe = useNombreDeDias(route)
-  const opciones = useMemo(
-    () =>
-      dias
-        .map((dia) => ({ dia, day: route.days.find((candidate) => candidate.id === dia.id) }))
-        .filter(({ day }) => day && !day.isReturnLeg && !esDiaDeExcursion(day))
-        .map(({ dia, day }) => {
-          const titulo = day ? nombreDe(day).titulo || tituloSimpleDelDia(route, day) : dia.city
-          return { id: dia.id, texto: titulo ? `${diaConFecha(route, dia.dayNumber)} · ${titulo}` : diaConFecha(route, dia.dayNumber) }
-        }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [route, dias, nombreDe],
-  )
-  const [elegido, setElegido] = useState(opciones[0]?.texto ?? '')
-  const actual = opciones.find((o) => o.texto === elegido) ?? opciones[0]
+  const filas = filasDeDias(route, dias, (day) => (day.id === dayId ? (stop.isFreeTour ? 'El Free Tour ya está en ese día.' : 'Ya está en ese día.') : esDiaDeExcursion(day) ? `${ElDia(route, day.dayNumber)} es el día de tu excursión.` : null))
+  const primero = filas.find((fila) => !fila.bloqueo)?.id ?? null
+  const idElegido = elegido ?? primero
+  const dia = dias.find((day) => day.id === idElegido) ?? null
   return (
-    <div data-mover-a-dia="1" className="flex flex-col gap-3">
-      {ahora !== undefined && (
-        <span data-ahora-en="1" style={{ font: "500 13px 'Geist'", color: 'rgba(28,34,48,.6)' }}>
-          Ahora: {diaProsa(route, ahora)}
-        </span>
-      )}
-      {opciones.length === 0 ? (
-        <p style={{ margin: 0, font: "400 14px 'Geist'", color: 'rgba(28,34,48,.6)' }}>No hay otro día al que moverla.</p>
-      ) : (
-        <TimeListWheel items={opciones.map((o) => o.texto)} value={actual?.texto ?? ''} onChange={setElegido} label="Día al que mover la parada" tipo="lista" />
-      )}
-      <BotonHoja datos="mover-aqui" disabled={!actual} onClick={() => actual && onMover(actual.id)}>
-        Mover aquí
-      </BotonHoja>
-    </div>
+    <HojaDia
+      etiqueta={stop.isFreeTour ? 'Free Tour' : stop.name}
+      titulo={stop.isFreeTour ? '¿A qué día lo pasamos?' : '¿A qué día la pasamos?'}
+      filas={filas}
+      elegido={idElegido}
+      onElegir={setElegido}
+      boton={dia ? `Pasar ${alDia(route, dia.dayNumber)}` : 'Elige un día'}
+      onConfirmar={() => dia && onMover(dia.id)}
+      onCerrar={onCerrar}
+      z={100}
+      datos="mover-a-dia"
+    />
   )
 }

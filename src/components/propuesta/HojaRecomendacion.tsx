@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { resolverRecomendacion, vistaPrevia, type CambioDeUnDia, type DiaPosible, type Recomendacion } from '../../lib/aplicarRecomendacion'
 import { etiquetaDeDia, lineasDelDia, titularDeRecomendacion, type Linea } from '../../lib/propuesta'
-import { ElDia, elDia } from '../../lib/nombreDeDia'
+import { ElDia, alDia, elDia } from '../../lib/nombreDeDia'
+import { HojaDia, filasDeDias } from '../ui/HojaDia'
 import { mandarAvisosPendientes } from '../../lib/permisoAvisos'
 import { aceptarRecomendacion, rechazarRecomendacion } from '../../lib/recomendacionesViaje'
 import type { Route } from '../../lib/types'
@@ -105,6 +106,7 @@ export function HojaRecomendacion({ rec, route, onCerrar, alResponder, diasInici
   const nombre = nombreDelAutor ?? nombreDe(autor)
   const [dias, setDias] = useState<DiaPosible[] | null>(diasIniciales)
   const [diaElegido, setDiaElegido] = useState<string | null>(null)
+  const [sel, setSel] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
   const [mensaje, setMensaje] = useState<string | null>(null)
 
@@ -122,10 +124,10 @@ export function HojaRecomendacion({ rec, route, onCerrar, alResponder, diasInici
     ? `${diaDeLaRec ? ElDia(route, diaDeLaRec.dayNumber) : 'Ese día'} ya no está en tu viaje. ¿En qué día lo pones?`
     : titularDeRecomendacion(nombre, rec.tipo, rec.tipo === 'dia' && diaDeLaRec ? elDia(route, diaDeLaRec.dayNumber) : null)
 
-  const aceptar = async () => {
+  const aceptar = async (dia: string | null = diaElegido) => {
     setOcupado(true)
     setMensaje(null)
-    const r = await aceptarRecomendacion(rec, diaElegido)
+    const r = await aceptarRecomendacion(rec, dia)
     setOcupado(false)
     if (r.estado === 'necesita_dia') {
       setDias(r.diasPosibles)
@@ -150,29 +152,33 @@ export function HojaRecomendacion({ rec, route, onCerrar, alResponder, diasInici
     onCerrar()
   }
 
+  // (10N8, 3i) «¿En qué día lo pones?»: la hoja de elegir día de la app (`HojaDia`), no una lista propia.
+  if (pideDia) {
+    const delViaje = diasPosibles.map((d) => route.days.find((x) => x.id === d.id)).filter((x): x is Route['days'][number] => Boolean(x))
+    const elegido = delViaje.find((d) => d.id === sel) ?? null
+    return (
+      <HojaDia
+        etiqueta={`Recomendación de ${nombre}`}
+        titulo="¿En qué día lo pones?"
+        filas={filasDeDias(route, delViaje)}
+        elegido={sel}
+        onElegir={setSel}
+        boton={elegido ? `Aceptar ${alDia(route, elegido.dayNumber)}` : 'Elige un día'}
+        onConfirmar={() => {
+          setDiaElegido(sel)
+          void aceptar(sel)
+        }}
+        onCerrar={onCerrar}
+        ocupado={ocupado}
+        error={mensaje}
+        z={96}
+        datos="R2d"
+      />
+    )
+  }
+
   return (
-    <Hoja onCerrar={onCerrar} etiqueta={`Recomendación de ${nombre}`} titulo={titulo} datos={pideDia ? 'R2d' : `R2-${rec.tipo}`} z={96}>
-      {pideDia && (
-        <div role="radiogroup" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {diasPosibles.map((d) => {
-            const activo = diaElegido === d.id
-            return (
-              <button
-                key={d.id}
-                type="button"
-                role="radio"
-                aria-checked={activo}
-                data-elegir-dia={d.id}
-                onClick={() => setDiaElegido(d.id)}
-                style={{ minHeight: 48, textAlign: 'left', padding: '12px 14px', borderRadius: 16, background: activo ? 'oklch(0.8 0.14 70 / .14)' : '#FFFFFF', border: `1.5px solid ${activo ? 'oklch(0.8 0.14 70)' : 'rgba(28,34,48,.12)'}`, font: "600 14px 'Geist'", color: '#1C2230', cursor: 'pointer' }}
-              >
-                {etiquetaDeDia(route, d.dayNumber)}
-              </button>
-            )
-          })}
-        </div>
-      )}
-      {pideDia && rec.tipo !== 'ruta' && <PropuestaDelDia rec={rec} />}
+    <Hoja onCerrar={onCerrar} etiqueta={`Recomendación de ${nombre}`} titulo={titulo} datos={`R2-${rec.tipo}`} z={96}>
       {!pideDia && cambios.map((c) => <BloqueDeDia key={c.dayId} route={route} c={c} />)}
       {!pideDia && nada && (
         <p data-nada-que-cambiar style={{ margin: 0, font: "500 13.5px/1.4 'Geist'", color: 'rgba(28,34,48,.65)' }}>
@@ -191,25 +197,6 @@ export function HojaRecomendacion({ rec, route, onCerrar, alResponder, diasInici
         No, gracias
       </BotonHoja>
     </Hoja>
-  )
-}
-
-/** R2d: lo que propone, para ver qué día elegir. */
-function PropuestaDelDia({ rec }: { rec: Recomendacion }) {
-  const day = (rec.payload as { day?: { stops?: { name: string }[] }; stop?: { name: string } }).day
-  const stop = (rec.payload as { stop?: { name: string } }).stop
-  const nombres = day?.stops?.map((s) => s.name) ?? (stop ? [stop.name] : [])
-  if (nombres.length === 0) return null
-  return (
-    <div style={{ borderRadius: 16, background: '#F5EFE4', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 7 }}>
-      <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Lo que propone</span>
-      {nombres.map((n, i) => (
-        <span key={`${n}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 8, font: "500 13.5px/1.3 'Geist'" }}>
-          <span style={{ width: 18, height: 18, flex: 'none', borderRadius: '50%', background: 'rgba(28,34,48,.2)' }} />
-          {n}
-        </span>
-      ))}
-    </div>
   )
 }
 

@@ -64,7 +64,6 @@ export function sitioConArticulo(nombre) {
 
 /** «el Free Tour» (el nombre del Free Tour del destino empieza siempre por «Free Tour»), o el sitio con su artículo. */
 const sitioDicho = (nombre) => (/^free tour/i.test(String(nombre ?? '').trim()) ? 'el Free Tour' : sitioConArticulo(nombre))
-const sitiosMas = (n) => (n === 1 ? 'otro sitio' : `otros ${n} sitios`)
 
 /**
  * (10N5 §2 y §2b) Una línea con lo que de verdad ha pasado, sin punto final y sin el nombre: «ha añadido el Free Tour al miércoles 11 y se han reorganizado 2 días», «ha movido el Coliseo al jueves 12 y 2 sitios más»,
@@ -96,6 +95,8 @@ export function queCambioEnElViaje(p, plural = false) {
     }
     if (a.tipo === 'rehacer') return v('ha rehecho la ruta', 'han rehecho la ruta')
   }
+  // (10N8 §4) Cambiar el orden de los días: «ha cambiado el orden de los días».
+  if (c?.orden_dias) return `${v('ha cambiado', 'han cambiado')} el orden de los días`
   const base = c ?? p
   const partes = []
   // (Un aviso de antes puede traer «quitó 1 día» y «añadió 1 día» sumados: quitar un día y volver a ponerlo es nada, se cuenta la diferencia.)
@@ -103,17 +104,22 @@ export function queCambioEnElViaje(p, plural = false) {
   const diasA = c ? Math.max((Number(c.dias_despues) || 0) - (Number(c.dias_antes) || 0), 0) : Number(p.dias_anadidos) || 0
   const quitados = Math.max(diasQ - diasA, 0)
   const anadidos = Math.max(diasA - diasQ, 0)
-  if (quitados > 0) partes.push(`${v('ha quitado', 'han quitado')} ${quitados === 1 ? '1 día' : `${quitados} días`}`)
+  const listaQuitados = Array.isArray(c?.dias_quitados_lista) ? c.dias_quitados_lista : []
+  // (10N8 §4) Un día quitado se dice con su fecha: «ha quitado el sábado 14».
+  if (quitados > 0) partes.push(`${v('ha quitado', 'han quitado')} ${quitados === 1 && listaQuitados.length === 1 ? elDiaDicho(listaQuitados[0]) : quitados === 1 ? '1 día' : `${quitados} días`}`)
   if (anadidos > 0) partes.push(`${v('ha añadido', 'han añadido')} ${anadidos === 1 ? '1 día' : `${anadidos} días`}`)
   const L = limpiarListas(base)
   if (L.anadidas.length > 0) {
     const primera = L.anadidas[0]
     const cuando = diaEnPalabras(primera.fecha) ? ` al ${diaEnPalabras(primera.fecha)}` : Number.isInteger(primera.dia_n) ? ` al día ${primera.dia_n}` : ''
-    partes.push(`${v('ha añadido', 'han añadido')} ${sitioDicho(primera.nombre)}${cuando}${L.nAnadidas > 1 ? ` y ${sitiosMas(L.nAnadidas - 1)}` : ''}`)
+    // (10N8 §4) «ha añadido el Panteón y 2 sitios más al jueves 12» (todos en el mismo día); si son de días distintos, «ha añadido el Panteón al jueves 12 y 2 sitios más».
+    const mismoDia = L.anadidas.every((x) => (x.fecha ?? x.dia_n) === (primera.fecha ?? primera.dia_n))
+    const mas = L.nAnadidas - 1 === 1 ? '1 sitio más' : `${L.nAnadidas - 1} sitios más`
+    partes.push(L.nAnadidas > 1 ? (mismoDia ? `${v('ha añadido', 'han añadido')} ${sitioDicho(primera.nombre)} y ${mas}${cuando}` : `${v('ha añadido', 'han añadido')} ${sitioDicho(primera.nombre)}${cuando} y ${mas}`) : `${v('ha añadido', 'han añadido')} ${sitioDicho(primera.nombre)}${cuando}`)
   }
   // Quitar un día se lleva sus sitios: no se cuentan aparte.
   if (L.quitadas.length > 0 && quitados === 0) partes.push(`${v('ha quitado', 'han quitado')} ${L.nQuitadas === 1 ? sitioDicho(L.quitadas[0].nombre) : `${L.nQuitadas} sitios`}`)
-  if (L.movidas.length > 0 && L.anadidas.length === 0) {
+  if (L.movidas.length > 0 && L.anadidas.length === 0 && quitados === 0 && anadidos === 0) {
     const primera = L.movidas[0]
     const cuando = diaEnPalabras(primera.fecha) ? ` al ${diaEnPalabras(primera.fecha)}` : Number.isInteger(primera.dia_n) ? ` al día ${primera.dia_n}` : ''
     partes.push(`${v('ha movido', 'han movido')} ${sitioDicho(primera.nombre)}${cuando}${L.nMovidas > 1 ? ` y ${L.nMovidas - 1 === 1 ? '1 sitio más' : `${L.nMovidas - 1} sitios más`}` : ''}`)
@@ -121,7 +127,7 @@ export function queCambioEnElViaje(p, plural = false) {
   // (Aviso de un móvil o disparador anterior: solo sabe CUÁNTAS paradas cambiaron de día.)
   if (!c && L.movidas.length === 0 && L.anadidas.length === 0 && L.quitadas.length === 0 && Number(p.movidas) > 0) partes.push(`${v('ha movido', 'han movido')} ${Number(p.movidas) === 1 ? '1 sitio' : `${Number(p.movidas)} sitios`}`)
   const fechas = c ? Boolean(c.fechas && JSON.stringify(c.fechas.antes) !== JSON.stringify(c.fechas.despues)) : Boolean(p.fechas)
-  if (fechas) partes.push(`${v('ha cambiado', 'han cambiado')} las fechas`)
+  if (fechas && !((quitados > 0 || anadidos > 0) && c && c.fechas && c.fechas.antes?.inicio === c.fechas.despues?.inicio)) partes.push(`${v('ha cambiado', 'han cambiado')} las fechas`)
   const huboOrden = c ? Number(c.reordenados) > 0 : (Number(p.movidas) || 0) > 0 || p.reordenado
   if (partes.length === 0 && huboOrden) partes.push(`${v('ha cambiado', 'han cambiado')} el orden de las paradas`)
   if (partes.length === 0) return ''
@@ -193,6 +199,8 @@ export function textoDelAviso(aviso) {
       if (p.caso === 'no_cuadra') return `Tu entrada ${conDe(sitioConArticulo(p.sitio))} es el ${p.dia_reserva}, y en la ruta está el ${p.dia_ruta}.`
       // (Tanda 10N5 §6c) Lo de cada uno: «Ana ha puesto su propio vuelo.» (al administrador) · «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.» (a quien el administrador le cambia el suyo).
       if (p.caso === 'vuelo_propio' || p.caso === 'alojamiento_propio') return `${nombreDe(p.quien) || 'Alguien'} ha puesto su propio ${p.caso === 'vuelo_propio' ? 'vuelo' : 'alojamiento'}.`
+      // (Tanda 10N8 §7d) Un vuelo o alojamiento puesto por un invitado para varios: ida y vuelta juntas, en un solo aviso, con los nombres vistos desde quien lo lee.
+      if ((p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') && p.para_txt) return `${nombreDe(p.quien) || 'Alguien'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} para ${p.para_txt}${p.detalle ? `: ${p.detalle}` : ''}.${p.suyo_cambiado === true ? SUYO_CAMBIADO : ''}`
       if (p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') return `${nombreDe(p.quien) || 'El administrador'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} ${PARA_DE_LO_SUYO[p.para] ?? 'para todos'}.${p.suyo_cambiado === true ? SUYO_CAMBIADO : ''}`
       const { quien, verbo } = quienesReservan(p)
       const [h, m] = String(p.hora ?? '').split(':')
@@ -306,6 +314,10 @@ function franjaDeCambioDelViaje(p) {
     if (ac.tipo === 'fechas') return p.cambio.fechas && JSON.stringify(p.cambio.fechas.antes) !== JSON.stringify(p.cambio.fechas.despues) ? { verbo: 'ha cambiado las fechas', detalle: viaje } : { verbo: 'ha rehecho la ruta', detalle: viaje }
     if (ac.tipo === 'rehacer') return { verbo: 'ha rehecho la ruta', detalle: viaje }
   }
+  // (10N8 §4) El orden de los días y un día quitado con su fecha.
+  if (p.cambio?.orden_dias) return { verbo: 'ha cambiado el orden de los días', detalle: p.destino ? `Viaje a ${p.destino}` : '' }
+  const unDiaQuitado = Array.isArray(p.cambio?.dias_quitados_lista) && p.cambio.dias_quitados_lista.length === 1 && Math.max((Number(p.cambio.dias_antes) || 0) - (Number(p.cambio.dias_despues) || 0), 0) === 1
+  if (unDiaQuitado && !(p.cambio.anadidas ?? []).length) return { verbo: `ha quitado ${elDiaDicho(p.cambio.dias_quitados_lista[0])}`, detalle: p.destino ? `Viaje a ${p.destino}` : '' }
   const dato = p.cambio ?? p
   const L = limpiarListas(dato)
   const anadidas = L.anadidas
@@ -387,6 +399,7 @@ export function franjaDelAviso(aviso) {
       return persona(con(p.actor, 'ha marcado un pago', 'Han marcado un pago'), dineroDe(p.importe))
     case 'reserva_grupo': {
       if (p.caso === 'vuelo_propio' || p.caso === 'alojamiento_propio') return persona(`${nombreDe(p.quien) || 'Alguien'} ha puesto su propio ${p.caso === 'vuelo_propio' ? 'vuelo' : 'alojamiento'}.`, p.detalle ?? '')
+      if ((p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') && p.para_txt) return persona(`${nombreDe(p.quien) || 'Alguien'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} para ${p.para_txt}.`, [p.detalle, p.suyo_cambiado === true ? 'Se ha cambiado el tuyo.' : ''].filter(Boolean).join(' · '))
       if (p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') return persona(`${nombreDe(p.quien) || 'El administrador'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} ${PARA_DE_LO_SUYO[p.para] ?? 'para todos'}.`, p.suyo_cambiado === true ? 'Se ha cambiado el tuyo.' : '')
       if (p.caso === 'no_cuadra') return { titulo: 'Tu entrada no cuadra con la ruta', detalle: `${mayuscula(sitioConArticulo(p.sitio))} · ${p.dia_reserva}`, icono: 'ticket' }
       const [h, m] = String(p.hora ?? '').split(':')

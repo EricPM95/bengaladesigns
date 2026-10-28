@@ -1,5 +1,6 @@
 import type { PlacePurchaseInfo } from '../../../lib/mockDayDetail'
-import { precioTienda } from '../../../lib/dinero'
+import { precioTiendaEnVista } from '../../../lib/moneda'
+import { useMonedaViajero } from '../../../lib/moneda'
 import { Button } from '../../ui/Button'
 import { AffiliateCardCarousel } from '../../ui/AffiliateCardCarousel'
 import { TextLink } from './TextLink'
@@ -18,6 +19,7 @@ interface PurchaseSectionProps {
  *   oficial — sin botón, no hay monetización posible en ese caso.
  */
 export function PurchaseSection({ purchase }: PurchaseSectionProps) {
+  useMonedaViajero() // (Tanda 10N8) el precio sale en la moneda del viajero y se repinta al cambiarla
   if (!purchase.afiliacion_disponible) {
     const officialTicket = purchase.entradas[0]
     return (
@@ -29,7 +31,7 @@ export function PurchaseSection({ purchase }: PurchaseSectionProps) {
               <p className="font-medium text-text">{officialTicket.nombre}</p>
               {officialTicket.nota && <p className="text-caption text-text-muted">{officialTicket.nota}</p>}
             </div>
-            <span className="shrink-0 font-semibold text-text">{officialTicket.precio === 0 ? 'Gratis' : precioTienda(officialTicket.precio)}</span>
+            <span className="shrink-0 font-semibold text-text">{officialTicket.precio === 0 ? 'Gratis' : precioTiendaEnVista(officialTicket.precio)}</span>
           </div>
         )}
         <TextLink href="#">Comprar en la web oficial</TextLink>

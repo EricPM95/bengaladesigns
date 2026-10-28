@@ -157,8 +157,8 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
             <OpcionTarjeta
               tono="salvia"
               icono="M6 3h12v18H6zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM9 18h6"
-              titulo="Añadir un viaje que ya hiciste"
-              linea="De antes de usar la app, para tu pasaporte"
+              titulo="Añade un viaje que ya hiciste"
+              linea="¿Viajaste antes de tener JUTRIP? Añade tu destino y rellena tu mapa y tu pasaporte."
               flecha
               datos="viaje-previo"
               onClick={() => {

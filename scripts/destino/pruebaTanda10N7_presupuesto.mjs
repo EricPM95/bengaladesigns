@@ -91,8 +91,9 @@ const ids = (p) => lineasDe(p).map((l) => l.id).join()
   debe(pr.loTuyo.length === 1 && pr.loTuyo[0].id === 'gasto-mio' && pr.sumaLoTuyo.amount === 12, '2b-3', '…y su «Solo para mí» no espera a nadie: es suyo')
   // 1c · «Cada uno lo suyo»: todo sigue como en la 10N6 (lo personal dentro de sus bloques, con «Solo tú»)
   const pc = construirPresupuesto(base(rs, 'cada_uno', 'eric', {}, gs))
-  debe(pc.loTuyo.length === 0 && pc.sumaLoTuyo.amount === 0 && pc.totalConLoTuyo.amount === pc.total.amount, '1c', 'en «Cada uno lo suyo» no hay bloque «Lo tuyo»')
-  debe(lineasDe(pc).filter((l) => l.personal).map((l) => l.id).includes('reserva-r2') && lineasDe(pc).filter((l) => l.personal).map((l) => l.id).includes('reserva-r3'), '1c', 'lo personal (también lo de antes de compartir) sigue en su bloque con el candado, como en la 10N6')
+  // (10N8, 8b-d) También en «Cada uno lo suyo» lo solo tuyo sale en «Lo tuyo» y no suma en lo del grupo.
+  debe(pc.loTuyo.length > 0 && pc.totalConLoTuyo.amount === pc.total.amount + pc.sumaLoTuyo.amount, '1c', '(10N8) en «Cada uno lo suyo» también hay bloque «Lo tuyo» y el total lo suma')
+  debe([...lineasDe(pc), ...pc.loTuyo].filter((l) => l.personal).map((l) => l.id).includes('reserva-r2') && [...lineasDe(pc), ...pc.loTuyo].filter((l) => l.personal).map((l) => l.id).includes('reserva-r3'), '1c', '(10N8) lo personal (también lo de antes de compartir) sigue con el candado, ahora en «Lo tuyo»')
   // El modo manda en quién es personal
   debe(reservaEsPersonalSegunModo('conjunta', undefined, 'eric') === false && reservaEsPersonalSegunModo('conjunta', ['eric'], 'eric') === true && reservaEsPersonalSegunModo('conjunta', ['eric', 'ana'], 'eric') === false, '1b', 'reservaEsPersonalSegunModo (conjunta): sin lista es común; solo quien paga es personal')
   debe(reservaEsPersonalSegunModo('cada_uno', undefined, 'eric') === true && reservaEsPersonalSegunModo(undefined, ['ana'], 'eric') === false, '1c', 'reservaEsPersonalSegunModo (cada uno): como siempre')
@@ -168,9 +169,9 @@ else {
     await preparar({ yo: null, modo: null, reservas: RESERVAS().map((r) => ({ ...r, paraQuien: undefined })) })
     await abrirPresupuesto()
     const solo = await texto()
-    debe(!/Cuentas del grupo|Cuenta conjunta|Del grupo|Para quién|Lo tuyo/i.test(solo) && /Total del viaje/i.test(solo), '1a', `viajando solo, el presupuesto de siempre (sin nombres, sin cuentas del grupo) (${solo.slice(0, 160)})`)
+    debe(!/Cuentas del grupo|Cuenta conjunta|Del grupo|Para quién|Lo tuyo/i.test(solo) && /Tu viaje/i.test(solo), '1a', `viajando solo, el presupuesto de siempre (sin nombres, sin cuentas del grupo) (${solo.slice(0, 160)})`)
     await ev("(() => document.querySelector('[data-blk=\"extras\"]')?.scrollIntoView({ block: 'center' }))()")
-    debe(!(await ev("Boolean(document.querySelector('[data-anadir-gasto]'))")) && (await ev("Boolean(document.querySelector('[aria-label=\"Nombre del gasto\"]'))")), '2b-4', 'viajando solo, los Extras no preguntan nada: nombre, importe y Añadir')
+    debe((await ev("Boolean(document.querySelector('[data-anadir-gasto]'))")) || (await ev("Boolean(document.querySelector('[aria-label=\"Nombre del gasto\"]'))")), '2b-4', '(10N8, 0b-5) viajando solo, los Extras traen «Añadir gasto» (punteado) o el formulario, sin preguntar nada más')
     await a.captura(foto('m2_01_solo'))
     await cerrarPresupuesto()
 

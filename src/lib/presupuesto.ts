@@ -223,7 +223,8 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
     : deLaRuta
 
   // (Tanda 10N7 §1b) En una cuenta conjunta lo «solo para mí» sale de sus bloques y va aparte, en «Lo tuyo»: cada uno el suyo, y nunca suma en lo común.
-  const esDeLoTuyo = (l: LineaPresupuesto) => conjunta && (l.personal === true || l.compartido?.vista === 'mio')
+  // (Tanda 10N8 §8b-d) Igual en «Cada uno lo suyo»: lo «Solo tú» va en su bloque, no dentro de «Ruta». Viajando solo (sin reparto), todo suma en su bloque como siempre.
+  const esDeLoTuyo = (l: LineaPresupuesto) => Boolean(rep) && (l.personal === true || l.compartido?.vista === 'mio')
   const loTuyo = [...transporte, ...ruta, ...util, ...extras].filter(esDeLoTuyo)
   const bloques: BloquePresupuesto[] = (
     [

@@ -218,7 +218,7 @@ console.log('3b. Vistos de cada persona, invitaciones y recomendaciones aplicada
     debe(M.normalizarCodigo(' ab-cd 23 45 ') === 'ABCD2345', 'invitar_texto', 'el código se escribe como sea y se normaliza')
     debe(M.enlaceDeInvitacion('https://bengaladesigns.vercel.app/', 'abcd2345') === 'https://bengaladesigns.vercel.app/?invitacion=ABCD2345', 'invitar_texto', 'el enlace lleva el código')
     debe(M.codigoDeLaDireccion('?invitacion=abcd2345&x=1') === 'ABCD2345' && M.codigoDeLaDireccion('?otra=1') === null && M.codigoDeLaDireccion('?invitacion=ab') === null, 'invitar_texto', 'el código sale de la dirección y un código absurdo no vale')
-    debe(/anulado/.test(M.textoDeInvitacionNoValida('anulada')) && /plazas/.test(M.textoDeInvitacionNoValida('sin_usos')) && /Revisa/.test(M.textoDeInvitacionNoValida('no_existe')), 'invitar_texto', 'cada motivo se explica en palabras sencillas')
+    debe(/anulado/.test(M.textoDeInvitacionNoValida('anulada')) && /plazas/.test(M.textoDeInvitacionNoValida('sin_usos')) && /Este código no existe./.test(M.textoDeInvitacionNoValida('no_existe')), 'invitar_texto', 'cada motivo se explica en palabras sencillas')
   }
 
   // Siempre se puede aceptar (Tanda 8A2: fuera «ya no encaja»): sustituye a lo que hay ahora; si el día ya no existe, hay que elegir otro

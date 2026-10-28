@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient'
-import { convertir, leerImporte, type Importe } from './dinero'
+import { convertir, leerImporte, type Cambio, type Importe } from './dinero'
 import type { AmbitoGasto, EstadoGasto, GastoCompartido } from './gastosCompartidos'
 import type { PagoMarcado } from './cuentasGrupo'
 import { aCentimos } from './cuentasGrupo'
@@ -59,13 +59,26 @@ export interface Backend {
   escuchar: (tripId: string, alCambiar: () => void) => () => void
 }
 
-type Fila = { id: string; trip_id: string; autor_id: string; nombre: string; precio: unknown; ambito: AmbitoGasto; estado: EstadoGasto; pagado_por: string[] | null; entre?: string[] | null; decidido_por: string | null; created_at: string }
+type Fila = { id: string; trip_id: string; autor_id: string; nombre: string; precio: unknown; ambito: AmbitoGasto; estado: EstadoGasto; pagado_por: string[] | null; entre?: string[] | null; decidido_por: string | null; created_at: string; cambio?: unknown }
 const COLUMNAS = 'id, trip_id, autor_id, nombre, precio, ambito, estado, pagado_por, decidido_por, created_at'
+
+/** (10N8 §0b-7) La foto del cambio del día para la moneda del gasto: {fecha, tasas:{MXN: 21.5}}. Sin cambio o en euros, nada. */
+export function fotoDelCambio(precio: Importe, cambio: Cambio | null | undefined): Cambio | null {
+  const tasa = cambio?.tasas?.[precio.currency]
+  return precio.currency !== 'EUR' && cambio && tasa > 0 ? { fecha: cambio.fecha, tasas: { [precio.currency]: tasa } } : null
+}
+const leerFotoDelCambio = (c: unknown): Cambio | null => {
+  const x = c as { fecha?: unknown; tasas?: unknown } | null
+  if (!x || typeof x.fecha !== 'string' || !x.tasas || typeof x.tasas !== 'object') return null
+  const tasas: Record<string, number> = {}
+  for (const [k, v] of Object.entries(x.tasas as Record<string, unknown>)) if (typeof v === 'number' && v > 0) tasas[k] = v
+  return Object.keys(tasas).length > 0 ? { fecha: x.fecha, tasas } : null
+}
 
 export function deFila(f: Fila): GastoCompartido | null {
   const precio = leerImporte(f.precio)
   if (!precio) return null
-  return { id: f.id, tripId: f.trip_id, autorId: f.autor_id, nombre: f.nombre, precio, ambito: f.ambito, estado: f.estado, pagadoPor: f.pagado_por ?? [], entre: f.entre ?? [], decididoPor: f.decidido_por, creadoEn: f.created_at }
+  return { id: f.id, tripId: f.trip_id, autorId: f.autor_id, nombre: f.nombre, precio, ambito: f.ambito, estado: f.estado, pagadoPor: f.pagado_por ?? [], entre: f.entre ?? [], decididoPor: f.decidido_por, creadoEn: f.created_at, cambio: leerFotoDelCambio(f.cambio) }
 }
 
 const MENSAJE_ERROR = 'No se ha podido guardar el gasto. Inténtalo de nuevo.'
@@ -88,7 +101,9 @@ export const backendSupabase: Backend = {
     try {
       // Con la 0040: también `entre`. Sin ella, esa columna no existe y se vuelve a pedir lo de la 0037.
       let cuentas = true
-      let r: { data: unknown; error: unknown } = await supabase.from('trip_gastos').select(`${COLUMNAS}, entre`).eq('trip_id', tripId).order('created_at', { ascending: true })
+      // (10N8) Con la 0063: también `cambio` (la foto del cambio del día de cada gasto).
+      let r: { data: unknown; error: unknown } = await supabase.from('trip_gastos').select(`${COLUMNAS}, entre, cambio`).eq('trip_id', tripId).order('created_at', { ascending: true })
+      if (r.error) r = await supabase.from('trip_gastos').select(`${COLUMNAS}, entre`).eq('trip_id', tripId).order('created_at', { ascending: true })
       if (r.error) {
         cuentas = false
         r = await supabase.from('trip_gastos').select(COLUMNAS).eq('trip_id', tripId).order('created_at', { ascending: true })
@@ -116,7 +131,10 @@ export const backendSupabase: Backend = {
   anadir: async (g) => {
     if (!supabase) return 'El presupuesto compartido necesita conexión con el servidor; ahora mismo no está disponible.'
     const fila = { trip_id: g.tripId, nombre: g.nombre, precio: g.precio, ambito: g.ambito, estado: g.estado, pagado_por: g.ambito === 'mio' ? [] : g.pagadoPor }
-    let { error } = await supabase.from('trip_gastos').insert({ ...fila, entre: g.ambito === 'mio' ? [] : (g.entre ?? []) })
+    const foto = fotoDelCambio(g.precio, cambioActual())
+    let { error } = foto ? await supabase.from('trip_gastos').insert({ ...fila, entre: g.ambito === 'mio' ? [] : (g.entre ?? []), cambio: foto }) : { error: { message: 'sin foto' } }
+    // Sin la 0063 no existe la columna `cambio` (o el gasto es en euros): se guarda sin ella.
+    if (error) ({ error } = await supabase.from('trip_gastos').insert({ ...fila, entre: g.ambito === 'mio' ? [] : (g.entre ?? []) }))
     // Sin la 0040 no existe la columna `entre`: se guarda como en la 10N (entre todos).
     if (error) ({ error } = await supabase.from('trip_gastos').insert(fila))
     return error ? MENSAJE_ERROR : null

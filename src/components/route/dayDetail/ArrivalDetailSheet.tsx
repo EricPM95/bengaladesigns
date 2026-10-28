@@ -1,6 +1,5 @@
-import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
+import { precioEnVista, precioTiendaEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { precioTienda } from '../../../lib/dinero'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
 import type { ArrivalDepartureDetail } from '../../../lib/mockDayDetail'
@@ -157,12 +156,12 @@ export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, trans
               onClick={onClose}
               aria-label="Volver"
               title="Volver"
-              className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
+              className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
             >
               ←
             </button>
 
-            <span className="absolute right-4 top-4 z-10 rounded-full bg-bg-card px-3 py-1.5 text-caption font-semibold text-text shadow-md">
+            <span className="absolute right-4 top-4 z-10 rounded-full border-[1.5px] border-accent bg-bg-card px-3 py-1.5 text-caption font-semibold text-text shadow-md">
               {dayPillLabel}
             </span>
           </div>
@@ -247,7 +246,7 @@ export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, trans
                               {option.stopName && <span className="text-text-muted"> · {option.stopName}</span>}
                             </p>
                             <p className="text-caption font-medium text-text-soft">
-                              {option.durationLabel} · {option.price === 0 ? 'Gratis' : precioTienda(option.price, option.affiliateTicket?.moneda)}
+                              {option.durationLabel} · {option.price === 0 ? 'Gratis' : precioTiendaEnVista(option.price, option.affiliateTicket?.moneda)}
                             </p>
                           </div>
                           {option.affiliateTicket && (

@@ -194,7 +194,7 @@ await e.esp(3500)
   await e.esp(1500)
   // (Tanda 10N6 §1g) Ya no se pinta «Incluido con el Pase» en el botón: sale el aviso pequeño del pase (escuchar_historia) y su [Ver el Pase] abre la película.
   const aviso = await e.evaluar("document.querySelector('[data-aviso-pase=\"escuchar_historia\"]')?.innerText ?? null")
-  debe(/Desbloquéalo con el Pase/.test(aviso ?? "") && /Escucha todas las historias de tu viaje/.test(aviso ?? ""), 'escuchar', `al tocarlo sale el aviso pequeño del pase (${aviso})`)
+  debe(/Desbloquéalo con el Pase/.test(aviso ?? "") && /podrás escuchar todas las historias que quieras, sin límite/.test(aviso ?? ""), 'escuchar', `al tocarlo sale el aviso pequeño del pase (${aviso})`)
   const oroIncl = await e.evaluar("getComputedStyle(document.querySelector('[data-aviso-pase-titulo] em')).color")
   debe(COLORES_ORO.includes(oroIncl) || oroIncl === 'rgb(243, 216, 143)', 'oro', `«Pase Roma» del aviso va en oro (${oroIncl})`)
   await e.evaluar("document.querySelector('[data-aviso-pase-ver]').click(); true")

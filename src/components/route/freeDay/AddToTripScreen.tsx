@@ -8,6 +8,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { normalizeName } from '../../../lib/routeStopsIndex'
 import { usePropuestaStore } from '../../../store/usePropuestaStore'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
+import { llevarALaParada } from '../../../lib/cambiarParada'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { AddStopScreen } from '../addStop/AddStopScreen'
 import { FreeTourSheet, freeTourAvailable } from '../reservas/FreeTourSheet'
@@ -111,6 +112,8 @@ export function confirmAddedStaying(result: AddedResult): void {
   const enPropuesta = usePropuestaStore.getState().activa
   const sinLoNuevo = enPropuesta && actual && result.stopId ? { ...actual, days: actual.days.map((d) => (d.id === result.dayId ? { ...d, stops: d.stops.filter((s) => s.id !== result.stopId) } : d)) } : null
   useAddFlowStore.setState({ toast: target ? { message: `Añadido ${alDia(actual, target.dayNumber)} ✓`, previous: sinLoNuevo, id: Date.now() } : null })
+  // (10N8, 3f) Al acabar de añadir, la app lleva al viajero hasta la parada nueva (baja hasta ella y la marca un momento) para que vea dónde ha quedado.
+  if (target && result.stopId) llevarALaParada(result.dayId, result.stopId)
 }
 
 /** Vuelta al día: pestaña Días con el día abierto, desplazado hasta lo nuevo, y el aviso con "Deshacer". */

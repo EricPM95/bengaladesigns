@@ -5,6 +5,7 @@ import { ordenTrasMover, type TipoDeRecomendacion } from './aplicarRecomendacion
 import { elSitio, deSitio } from './articulos'
 import { mejorHuecoEnElDia } from './mejorHueco'
 import { isFreeDay } from './freeDays'
+import { esDiaDeExcursion } from './tituloDelDia'
 
 /**
  * LA PROPUESTA (cuentas parte 3, punto 3; rehecha en la Tanda 10N). Parte PURA, sin pantalla ni red, para poder probarla sola.
@@ -99,7 +100,7 @@ export function lineasDelDia(antes: string[], despues: string[]): Linea<string>[
 /* Los cambios de una propuesta                                        */
 /* ------------------------------------------------------------------ */
 
-export type TipoDeCambio = 'cambiar' | 'quitar' | 'anadir' | 'mover' | 'mover_dia' | 'dia_nuevo' | 'free_tour'
+export type TipoDeCambio = 'cambiar' | 'quitar' | 'anadir' | 'mover' | 'mover_dia' | 'dia_nuevo' | 'free_tour' | 'orden_dias' | 'excursion_dia'
 
 export interface CambioPropuesto {
   /** Estable mientras no cambie lo que hay en el día: sirve de clave en la lista. */
@@ -113,8 +114,10 @@ export interface CambioPropuesto {
   antes?: Stop
   /** La parada de ahora (cambiar, añadir, mover, mover_dia). */
   despues?: Stop
-  /** El día nuevo (solo `dia_nuevo`). */
+  /** El día nuevo (`dia_nuevo`) o el día tal como queda de golpe (`excursion_dia`). */
   dia?: DayPlan
+  /** (10N8, 3h) `orden_dias`: los ids de los días en el orden nuevo. */
+  orden?: string[]
   /** Añadir, mover y mover_dia: la parada que queda justo delante en el día de destino (null = la primera del día). Sirve para colocarlo «justo donde decía». */
   despuesDeId?: string | null
   /** Mover a otro día: de dónde sale. */
@@ -174,6 +177,12 @@ export function textoDeUnCambio(d: DatosDeTexto): { texto: string; sub?: string;
   if (d.tipo === 'dia_nuevo') return { etiqueta: 'Día nuevo', texto: `Añadir un día: ${d.dayTitle ?? ''}`.trim() }
   // (10N5) El Free Tour, un solo cambio: «Añadir el Free Tour al jueves 12» (los días que la app reorganiza por detrás no se cuentan aparte).
   if (d.tipo === 'free_tour') return { etiqueta, texto: `Añadir el Free Tour ${alDia(d.route, d.dayNumber)}` }
+  // (10N8, 3h) Un cambio que mueve muchas cosas de golpe es UN cambio con su frase: el orden de los días, pasar un día a la excursión (o de vuelta a la ciudad).
+  if (d.tipo === 'orden_dias') return { etiqueta: 'Días', texto: 'Cambiar el orden de los días' }
+  if (d.tipo === 'excursion_dia') return { etiqueta, texto: d.dayTitle ?? `Pasar ${alDia(d.route, d.dayNumber)} a la excursión` }
+  // El Free Tour es una parada más (10N8): «Añadir el Free Tour al jueves 12», «Pasar el Free Tour al jueves 12».
+  if (d.tipo === 'anadir' && d.despues?.isFreeTour) return { etiqueta, texto: `Añadir el Free Tour ${alDia(d.route, d.dayNumber)}` }
+  if (d.tipo === 'mover_dia' && d.despues?.isFreeTour) return { etiqueta, texto: `Pasar el Free Tour ${alDia(d.route, d.dayNumber)}` }
   if (d.tipo === 'anadir') return { etiqueta, texto: `Añadir ${elSitio(nombre(d.despues))}${previa ? `, después ${deSitio(previa.name)}` : ', al principio del día'}` }
   if (d.tipo === 'mover_dia') {
     const desde = d.desdeDayNumber != null ? delDia(d.route, d.desdeDayNumber) : 'de su día'
@@ -217,19 +226,25 @@ export function cambiosDeLaPropuesta(base: Route, actual: Route): CambioPropuest
     }
     return undefined
   }
-  // (10N5) Añadir el Free Tour rehace varios días: es UN cambio y los días rehechos (otro día escrito en su sitio) no se cuentan parada a parada.
-  const ft = tieneFreeTour(actual) && !tieneFreeTour(base)
-  const diaFt = ft ? actual.days.find((d) => d.stops.some((s) => s.isFreeTour)) : undefined
-  const rehecho = (dia: DayPlan, original: DayPlan) => ft && Boolean(original.curatedId) && original.curatedId !== dia.curatedId
+  // (10N8, 3h) El orden de los días: UN cambio (las paradas siguen en su día, así que no salen como cambios aparte).
+  const comunesBase = base.days.filter(esDeRuta).sort(porNumero).map((d) => d.id)
+  const comunesActual = actual.days.filter(esDeRuta).sort(porNumero).map((d) => d.id)
+  const ordenBase = comunesBase.filter((id) => comunesActual.includes(id))
+  const ordenActual = comunesActual.filter((id) => comunesBase.includes(id))
+  if (ordenBase.some((id, i) => id !== ordenActual[i])) {
+    const primero = actual.days.find((d) => d.id === ordenActual.find((id, i) => id !== ordenBase[i]))
+    const t = textoDeUnCambio({ tipo: 'orden_dias', route: actual, dayNumber: primero?.dayNumber ?? 1 })
+    salida.push({ id: 'orden_dias', tipo: 'orden_dias', dayId: primero?.id ?? '', dayNumber: primero?.dayNumber ?? 1, dayTitle: '', orden: comunesActual, ...t })
+  }
   for (const dia of [...actual.days].sort(porNumero)) {
     if (!esDeRuta(dia)) continue
     const original = base.days.find((d) => d.id === dia.id)
     const comun = { dayId: dia.id, dayNumber: dia.dayNumber, dayTitle: dia.title }
-    if (original && rehecho(dia, original)) {
-      if (diaFt && dia.id === diaFt.id) {
-        const t = textoDeUnCambio({ tipo: 'free_tour', route: actual, dayNumber: dia.dayNumber })
-        salida.push({ ...comun, id: 'free_tour', tipo: 'free_tour', despues: diaFt.stops.find((s) => s.isFreeTour), ...t })
-      }
+    // (10N8, 3h) Pasar un día a la excursión (o de vuelta a la ciudad) cambia todas sus paradas de golpe: UN cambio con su frase.
+    if (original && esDiaDeExcursion(original) !== esDiaDeExcursion(dia)) {
+      const texto = esDiaDeExcursion(dia) ? `Pasar ${alDia(actual, dia.dayNumber)} a la excursión` : `Pasar ${alDia(actual, dia.dayNumber)} a ${original.city || actual.destination}`
+      const t = textoDeUnCambio({ tipo: 'excursion_dia', route: actual, dayNumber: dia.dayNumber, dayTitle: texto })
+      salida.push({ ...comun, id: `excursion_dia:${dia.id}`, tipo: 'excursion_dia', dia, ...t })
       continue
     }
     if (!original) {
@@ -261,9 +276,6 @@ export function cambiosDeLaPropuesta(base: Route, actual: Route): CambioPropuest
   }
   return salida
 }
-
-/** ¿La ruta lleva el Free Tour? (alguna parada o la experiencia que lo pide) */
-const tieneFreeTour = (r: Pick<Route, 'days' | 'answers'>): boolean => r.days.some((d) => d.stops.some((s) => s.isFreeTour)) || (r.answers.experiencesPositive ?? []).includes('free_tour')
 
 /** Cuántos días distintos tocan los cambios. */
 export const diasQueCambian = (cambios: CambioPropuesto[]): string[] => [...new Set(cambios.map((c) => c.dayId))]
@@ -308,6 +320,11 @@ export function aplicarCambioPuro(ruta: Route, c: CambioPropuesto): { ruta: Rout
   const poner = (dias: DayPlan[]): Route => ({ ...ruta, days: ruta.days.map((d) => dias.find((x) => x.id === d.id) ?? d) })
   const no = (motivo: string) => ({ ruta, motivo })
   if (c.tipo === 'free_tour') return no('El Free Tour se añade de verdad al aceptar el cambio.')
+  if (c.tipo === 'orden_dias') return c.orden ? { ruta: { ...ruta, days: ordenarDias(ruta.days, c.orden) }, motivo: null } : no('El orden de los días no viene en el cambio.')
+  if (c.tipo === 'excursion_dia') {
+    if (!c.dia || !dia(c.dayId)) return no('Ese día ya no está en el viaje.')
+    return { ruta: poner([{ ...c.dia, dayNumber: dia(c.dayId)!.dayNumber }]), motivo: null }
+  }
   if (c.tipo === 'dia_nuevo') {
     if (!c.dia) return no('El día no viene en el cambio.')
     if (dia(c.dia.id)) return no('Ese día ya está en el viaje.')
@@ -323,14 +340,13 @@ export function aplicarCambioPuro(ruta: Route, c: CambioPropuesto): { ruta: Rout
   if (c.tipo === 'anadir') {
     const d = dia(c.dayId)
     if (!d || !c.despues) return no('Ese día ya no está en el viaje.')
-    if (d.stops.some((s) => s.id === c.despues!.id || s.name === c.despues!.name)) return no('Esa parada ya está en ese día.')
+    if (d.stops.some((s) => s.id === c.despues!.id)) return no('Esa parada ya está en ese día.')
     return { ruta: poner([conParada(d, c.despues, indiceDeDestino(d, c.despues, c.despuesDeId, fecha(d)))]), motivo: null }
   }
   if (c.tipo === 'cambiar') {
     const d = dia(c.dayId) ?? dondeEsta(c.antes?.id)
     if (!d || !c.antes || !c.despues) return no('Ese día ya no está en el viaje.')
     if (!d.stops.some((s) => s.id === c.antes!.id)) return no('La parada que querías cambiar ya no está.')
-    if (d.stops.some((s) => s.name === c.despues!.name)) return no('Esa parada ya está en ese día.')
     return { ruta: poner([{ ...d, stops: d.stops.map((s) => (s.id === c.antes!.id ? { ...c.despues!, time: s.time } : s)) }]), motivo: null }
   }
   if (c.tipo === 'mover') {
@@ -444,6 +460,8 @@ export function detalleDelCambio(sobre: Route, c: CambioPropuesto): DiaDelDetall
     const a = antes(c.dayId)
     return [{ etiqueta: a ? etiquetaDelDia(sobre, a.dayNumber) : c.etiqueta, antes: aDetalle(a?.stops ?? [], {}), ahora: c.despues ? aDetalle([c.despues], { [c.despues.id]: 'nueva' }) : [] }]
   }
+  if (c.tipo === 'orden_dias' && c.orden) return c.orden.map((id) => sobre.days.find((d) => d.id === id)).filter((d): d is DayPlan => Boolean(d)).map((d, i) => ({ etiqueta: `Día ${i + 1}`, antes: [], ahora: [{ id: d.id, nombre: d.title, marca: null, coordinates: d.stops[0]?.coordinates ?? { lat: 0, lng: 0 } }] }))
+  if (c.tipo === 'excursion_dia' && c.dia) return [{ etiqueta: etiquetaDelDia(sobre, c.dayNumber), antes: aDetalle(antes(c.dayId)?.stops ?? [], {}), ahora: aDetalle(c.dia.stops, Object.fromEntries(c.dia.stops.map((x) => [x.id, 'nueva' as const]))) }]
   if (c.tipo === 'dia_nuevo' && c.dia) return [{ etiqueta: 'Día nuevo', antes: [], ahora: aDetalle(c.dia.stops, Object.fromEntries(c.dia.stops.map((s) => [s.id, 'nueva' as const]))) }]
   return []
 }
@@ -468,6 +486,13 @@ export function kilometrosDelRecorrido(paradas: Pick<ParadaDelDetalle, 'coordina
 /** «3,1 km». */
 export const textoDeKm = (km: number): string => `${km.toFixed(1).replace('.', ',')} km`
 
+/** Los días de ruta en el orden de `ids` (los que no vienen, detrás) con su número repartido por posición; el de la vuelta, siempre al final. */
+export function ordenarDias(days: DayPlan[], ids: string[]): DayPlan[] {
+  const deRuta = days.filter(esDeRuta)
+  const ordenados = [...ids.map((id) => deRuta.find((d) => d.id === id)).filter((d): d is DayPlan => Boolean(d)), ...deRuta.filter((d) => !ids.includes(d.id))]
+  return [...ordenados.map((d, i) => ({ ...d, dayNumber: i + 1 })), ...days.filter((d) => !esDeRuta(d))]
+}
+
 /* ------------------------------------------------------------------ */
 /* Deshacer                                                            */
 /* ------------------------------------------------------------------ */
@@ -483,6 +508,12 @@ export function deshacerCambio(actual: Route, base: Route, cambio: CambioPropues
     return { ...actual, days, answers: { ...actual.answers, experiencesPositive: base.answers.experiencesPositive, freeTourDespues: base.answers.freeTourDespues } }
   }
   if (cambio.tipo === 'dia_nuevo') return { ...actual, days: actual.days.filter((d) => d.id !== cambio.dayId) }
+  // (10N8, 3h) Los cambios de golpe vuelven de golpe: el orden de los días de la ruta del administrador, o el día tal como estaba.
+  if (cambio.tipo === 'orden_dias') return { ...actual, days: ordenarDias(actual.days, base.days.filter(esDeRuta).sort(porNumero).map((d) => d.id)) }
+  if (cambio.tipo === 'excursion_dia') {
+    const antes = base.days.find((d) => d.id === cambio.dayId)
+    return antes ? { ...actual, days: actual.days.map((d) => (d.id === cambio.dayId ? { ...antes, dayNumber: d.dayNumber } : d)) } : actual
+  }
   const original = base.days.find((d) => d.id === cambio.dayId)
   if (cambio.tipo === 'mover_dia' && cambio.despues) {
     const id = cambio.despues.id
@@ -610,12 +641,14 @@ export function mensajeDePropuesta(mensaje: string): string {
 export const textoDeCuantos = (n: number): string => `${n} ${n === 1 ? 'cambio' : 'cambios'}`
 
 /** El verbo de cada cambio en la lista de RV: «cambiar», «quitar», «añadir», «mover». */
-export const verboDelCambio = (t: TipoDeCambio): string => ({ cambiar: 'cambiar', quitar: 'quitar', anadir: 'añadir', mover: 'mover', mover_dia: 'mover', dia_nuevo: 'día nuevo', free_tour: 'añadir' })[t]
+export const verboDelCambio = (t: TipoDeCambio): string => ({ cambiar: 'cambiar', quitar: 'quitar', anadir: 'añadir', mover: 'mover', mover_dia: 'mover', dia_nuevo: 'día nuevo', free_tour: 'añadir', orden_dias: 'cambiar', excursion_dia: 'pasar' })[t]
 
 /** El texto de un cambio para la lista de RV: «Castillo de Sant’Angelo → Trastevere», «Termas de Caracalla». */
 export function textoDelCambio(c: Pick<CambioPropuesto, 'tipo' | 'antes' | 'despues' | 'dayTitle'>): string {
   if (c.tipo === 'cambiar') return `${c.antes?.name ?? ''} → ${c.despues?.name ?? ''}`
   if (c.tipo === 'dia_nuevo') return c.dayTitle
+  if (c.tipo === 'orden_dias') return 'El orden de los días'
+  if (c.tipo === 'excursion_dia') return c.dayTitle || 'Un día entero'
   return (c.antes ?? c.despues)?.name ?? ''
 }
 

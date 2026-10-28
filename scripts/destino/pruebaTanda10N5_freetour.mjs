@@ -24,11 +24,10 @@ console.log('1. El código')
   const hoja = sinComentarios(leer('src/components/route/reservas/FreeTourSheet.tsx'))
   debe(/FreeTourDiaSheet/.test(hoja) && !/FRANJAS|¿A qué hora lo quieres\?/.test(hoja), 'ap1', 'EXPLORAR, su ficha y «+ Añadir parada» abren la hoja de elegir el DÍA (ya no la de la hora)')
   const dia = sinComentarios(leer('src/components/route/reservas/FreeTourDiaSheet.tsx'))
-  debe(/¿A qué día lo añadimos\?/.test(dia) && /btn-champan/.test(dia), 'ap1', 'la hoja dice «¿A qué día lo añadimos?» con el botón de siempre')
+  debe(/¿A qué día lo añadimos\?/.test(dia) && /HojaDia/.test(dia), 'ap1', 'la hoja dice «¿A qué día lo añadimos?» con el botón de siempre')
   const panel = sinComentarios(leer('src/components/route/dayDetail/DayDetailPanel.tsx'))
   debe(/onAddFreeTour=\{freeTourAvailable\(route\)/.test(panel), 'ap1', '«+ Añadir parada» de DÍAS deja añadir el Free Tour (le pasa onAddFreeTour al explorador)')
   const motor = leer('src/lib/freeTourEnDia.ts')
-  debe(/force_order/.test(motor) && /\/api\/rebuild-day/.test(motor), 'ap1', 'se hace con los datos y días escritos de siempre (rebuild-day con force_order), sin tocar el motor')
   debe(!/server\/engine|shared\/routeEngine/.test(sinComentarios(motor)), 'ap1', 'sin importar nada del motor')
   const sql = leer('supabase/migrations/0051_aviso_cambio_viaje_claro.sql')
   debe(/ultimoCambio/.test(sql) && /dias_antes/.test(sql) && /lower\(o\.nombre\) = lower\(a\.nombre\)/.test(sql), 'ap2', 'el disparador copia lo que ha hecho la persona, compara las paradas por nombre y mira los días y las fechas contra lo de ANTES del primer cambio')
@@ -109,7 +108,7 @@ const preparar = async (a) => {
 }
 const ids = (a) => a.evaluar("import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState().route.days.filter((d) => !d.isReturnLeg).map((d) => d.curatedId))")
 const clic = (a, texto, dentro = 'document') => a.evaluar(`(() => { const b = Array.from(${dentro}.querySelectorAll('button')).find((x) => (x.textContent || '').trim().includes(${JSON.stringify(texto)}) && x.offsetParent !== null); if (!b) return false; b.scrollIntoView({ block: 'center' }); b.click(); return true })()`)
-const hayHoja = (a) => a.evaluar("Boolean(document.querySelector('[data-free-tour-dia-sheet]'))")
+const hayHoja = (a) => a.evaluar("Boolean(document.querySelector('[data-hoja-dia]'))")
 
 {
   const a = await abrirApp(APP, { ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0' })
@@ -134,10 +133,10 @@ const hayHoja = (a) => a.evaluar("Boolean(document.querySelector('[data-free-tou
     debe(entradas && sumar && (await hayHoja(a)), 'ap1', `EXPLORAR · Entradas · el «+» del Free Tour abre «¿A qué día lo añadimos?» (entradas ${entradas}, + ${sumar})`)
     if (await hayHoja(a)) {
       const hoja = await a.evaluar(`(() => {
-        const h = document.querySelector('[data-free-tour-dia-sheet]')
-        const filas = Array.from(h.querySelectorAll('[data-dia-id]')).map((b) => ({ texto: b.textContent.trim().slice(0, 60), activo: /border-accent/.test(b.className) && !/border-text/.test(b.className), bloqueado: b.hasAttribute('data-bloqueado') }))
-        const titulo = h.querySelector('h2')?.textContent
-        const boton = h.querySelector('[data-free-tour-anadir]')?.textContent
+        const h = document.querySelector('[data-hoja-dia]')
+        const filas = Array.from(h.querySelectorAll('[data-dia-id]')).map((b) => ({ texto: b.textContent.trim().slice(0, 60), activo: b.getAttribute('aria-pressed') === 'true', bloqueado: b.hasAttribute('data-bloqueado') }))
+        const titulo = h.querySelector('[data-hoja-dia-titulo]')?.textContent
+        const boton = h.querySelector('[data-hoja-dia-boton]')?.textContent
         return { filas, titulo, boton }
       })()`)
       debe(hoja.titulo === '¿A qué día lo añadimos?' && hoja.filas.length === 3, 'ap1', `la hoja: «${hoja.titulo}» con los ${hoja.filas.length} días del viaje`)
@@ -145,32 +144,33 @@ const hayHoja = (a) => a.evaluar("Boolean(document.querySelector('[data-free-tou
       debe(/^Añadir /.test(hoja.boton ?? ''), 'ap1', `el botón: «${hoja.boton}»`)
       await a.captura(path.join(SALIDA, '10n5_freetour_hoja_explorar.jpg'))
       // elegir el segundo día y añadir
-      await a.evaluar("(() => { const b = document.querySelectorAll('[data-free-tour-dia-sheet] [data-dia-id]')[1]; b.click(); return true })()")
+      await a.evaluar("(() => { const b = document.querySelectorAll('[data-hoja-dia] [data-dia-id]')[1]; b.click(); return true })()")
       await a.esp(400)
-      await a.evaluar("document.querySelector('[data-free-tour-anadir]').click(); true")
+      const rutaAntes = await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => JSON.stringify(m.useRouteStore.getState().route))")
+      await a.evaluar("document.querySelector('[data-hoja-dia-boton]').click(); true")
       for (let i = 0; i < 40 && (await hayHoja(a)); i++) await a.esp(500)
       const despues = await ids(a)
-      debe(despues.join() === 'D4,D3,D1-FT', 'ap1', `el día elegido pasa a ser nuestro día con Free Tour (D3), la pareja D1 pasa a D1-FT y el que estaba ahí pasa al sitio que deja: ${despues.join()}`)
+      debe(despues.join() === original.join(), 'ap1', `(10N8) ningún día se rehace ni cambia de día escrito: ${despues.join()}`)
+      debe(!/force_order|rebuild-day/.test(sinComentarios(leer('src/lib/freeTourEnDia.ts'))), 'ap1', '(10N8) el Free Tour es una parada más: no rehace ningún día con el motor')
       const ft = await a.evaluar(`import('/src/store/useRouteStore.ts').then((m) => {
         const r = m.useRouteStore.getState().route
         const d = r.days.find((x) => x.stops.some((s) => s.isFreeTour))
         if (!d) return null
         const paradas = d.stops.filter((s) => !s.isZoneWalk)
         const i = paradas.findIndex((s) => s.isFreeTour)
-        return { dia: d.dayNumber, curatedId: d.curatedId, hora: paradas[i].time, antesCena: i < paradas.length - 1 || true, ultima: i === paradas.length - 1, nombre: paradas[i].name, total: paradas.length, toast: null }
+        return { dia: d.dayNumber, curatedId: d.curatedId, hora: paradas[i].time, primera: i === 0, ultima: i === paradas.length - 1, nombre: paradas[i].name, total: paradas.length, toast: null }
       })`)
-      debe(ft && ft.dia === 2 && ft.curatedId === 'D3', 'ap1', `el Free Tour está en el día 2 (${JSON.stringify(ft)})`)
-      debe(ft && !ft.ultima && /^(0[89]|1[0-2]):\d\d$/.test(ft.hora || '10:00'), 'ap1', `y no al final del día ni de noche: su hora es la del día escrito (${ft?.hora ?? 'sin hora puesta'})`)
+      debe(ft && ft.dia === 2 && ft.curatedId === 'D4' && ft.primera, 'ap1', `el Free Tour está en el día 2 (${JSON.stringify(ft)})`)
       const toast = await a.evaluar("import('/src/store/useAddFlowStore.ts').then((m) => m.useAddFlowStore.getState().toast?.message ?? null)")
       debe(toast === 'Añadido el Free Tour · domingo 18', 'ap1', `el aviso de abajo: «${toast}»`)
       await a.esp(500)
       await a.captura(path.join(SALIDA, '10n5_freetour_anadido.jpg'))
-      const ultimo = await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState().route.ultimoCambio)")
-      debe(ultimo?.accion?.tipo === 'free_tour' && ultimo.accion.dia_n === 2 && ultimo.accion.reorganizados === 2, 'ap2', `la ruta apunta lo que ha hecho: ${JSON.stringify(ultimo?.accion)}`)
-      const frase = textos.textoDelAviso({ tipo: 'viaje_cambiado', payload: { quien: 'Eric', cambio: ultimo } })
-      debe(frase === 'Eric ha añadido el Free Tour al domingo 18 y se han reorganizado 2 días.', 'ap2', `y el aviso que le llega al otro dice: «${frase}»`)
-      const quitado = textos.textoDelAviso({ tipo: 'viaje_cambiado', payload: { quien: 'Eric', cambio: ultimo } })
-      debe(!/quitado|sitios/.test(quitado), 'ap2', 'sin «ha quitado N sitios»')
+      // (10N8) El Free Tour ya no rehace días: no apunta una acción propia; el aviso sale de comparar la ruta de antes con la de ahora, con el Free Tour como única parada nueva.
+      const rutaDespues = await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => JSON.stringify(m.useRouteStore.getState().route))")
+      const resumen = cv.resumirCambio(JSON.parse(rutaAntes), JSON.parse(rutaDespues))
+      const frase = textos.textoDelAviso({ tipo: 'viaje_cambiado', payload: { quien: 'Eric', destino: 'Roma', cambio: resumen } })
+      console.log('aviso al otro:', frase)
+      debe(/Free Tour/.test(frase) && !/quitado|reorganizado/.test(frase), 'ap2', `el aviso que le llega al otro habla del Free Tour y no de sitios quitados ni días reorganizados: «${frase}»`)
 
       /* — Deshacer — */
       const hecho = await a.evaluar("import('/src/store/useAddFlowStore.ts').then((m) => { m.useAddFlowStore.getState().undo(); return true })")
@@ -183,6 +183,8 @@ const hayHoja = (a) => a.evaluar("Boolean(document.querySelector('[data-free-tou
     /* — Desde su ficha — */
     await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => { m.useRouteStore.getState().setMode('route'); m.useRouteStore.getState().setMode('explore'); return true })")
     await a.esp(1200)
+    await clic(a, 'Entradas')
+    await a.esp(2000)
     // (la ficha: tocar la tarjeta del Free Tour y su «+ Añadir» de abajo)
     const abierta = await a.evaluar(`(() => {
       const tit = Array.from(document.querySelectorAll('span, p, h3')).find((x) => /^Free Tour/.test((x.textContent || '').trim()) && x.children.length === 0)
@@ -195,7 +197,7 @@ const hayHoja = (a) => a.evaluar("Boolean(document.querySelector('[data-free-tou
     debe(abierta && pie && (await hayHoja(a)), 'ap1', `desde la ficha del Free Tour: su «+ Añadir» abre la misma hoja (ficha ${abierta}, pie ${pie})`)
     if (await hayHoja(a)) {
       await a.captura(path.join(SALIDA, '10n5_freetour_hoja_ficha.jpg'))
-      await a.evaluar("document.querySelector('[data-free-tour-dia-sheet] button[aria-label=\"Cerrar\"]').click(); true")
+      await a.evaluar("document.querySelector('[data-hoja-dia] button[aria-label=\"Cerrar\"]').click(); true")
       await a.esp(500)
     }
 
@@ -242,9 +244,8 @@ console.log('4. Lo puesto a mano no se mueve sin avisar')
       m.useRouteStore.setState({ route: { ...s.route, days: s.route.days.map((x) => (x.id === d.id ? { ...x, originalSnapshot: JSON.parse(JSON.stringify(x)) } : x)) } })
       return true
     })`)
-    const planes = await a.evaluar(`Promise.all([import('/src/lib/freeTourEnDia.ts'), import('/src/store/useRouteStore.ts')]).then(([f, m]) => { const s = m.useRouteStore.getState(); return s.route.days.filter((d) => !d.isReturnLeg).map((d) => f.planearFreeTour(s.route, s.reservations, d.id)) })`)
-    debe(marcado && planes.every((p) => p.ok === false && p.motivo === 'protegido'), 'ap1', `con el día 3 tocado a mano, ningún día lo mueve sin avisar (cada fila sale sin elegir y dice por qué): ${planes.map((p) => p.motivo).join()}`)
-    debe(planes.every((p) => /cosas puestas por ti/.test(p.texto)), 'ap1', `con su motivo: «${planes[0]?.texto}»`)
+    const bloqueos = await a.evaluar(`Promise.all([import('/src/lib/freeTourEnDia.ts'), import('/src/store/useRouteStore.ts')]).then(([f, m]) => { const r = m.useRouteStore.getState().route; return r.days.filter((d) => !d.isReturnLeg).map((d) => f.bloqueoParaElFreeTour(r, d)) })`)
+    debe(marcado && bloqueos.every((b) => b === null), 'ap1', `(10N8) con el día 3 tocado a mano, ningún día sale bloqueado: ${JSON.stringify(bloqueos)}`)
     // La hoja: filas bloqueadas con el motivo debajo
     await a.evaluar("Promise.all([import('/src/store/useRouteStore.ts'), import('/src/components/route/reservas/FreeTourSheet.tsx')]).then(() => true)")
     await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => { m.useRouteStore.getState().setMode('explore'); return true })")
@@ -259,10 +260,10 @@ console.log('4. Lo puesto a mano no se mueve sin avisar')
     })()`)
     await a.esp(1200)
     if (await hayHoja(a)) {
-      const filas = await a.evaluar("Array.from(document.querySelectorAll('[data-free-tour-dia-sheet] [data-dia-id]')).map((b) => ({ bloqueado: b.hasAttribute('data-bloqueado'), texto: b.textContent.trim() }))")
-      debe(filas.length === 3 && filas.every((f) => f.bloqueado && /no lo movemos sin avisar/.test(f.texto)), 'ap1', 'en la hoja, esos días salen apagados con «no lo movemos sin avisar. Elige otro día.»')
-      const boton = await a.evaluar("document.querySelector('[data-free-tour-anadir]').textContent")
-      debe(/Ningún día encaja/.test(boton), 'ap1', `y el botón no deja añadir (${boton})`)
+      const filas = await a.evaluar("Array.from(document.querySelectorAll('[data-hoja-dia] [data-dia-id]')).map((b) => ({ bloqueado: b.hasAttribute('data-bloqueado'), texto: b.textContent.trim() }))")
+      debe(filas.length === 3 && filas.every((f) => !f.bloqueado), 'ap1', '(10N8) en la hoja ningún día sale apagado')
+      const boton = await a.evaluar("document.querySelector('[data-hoja-dia-boton]').textContent")
+      debe(/^Añadir /.test(boton), 'ap1', `y el botón deja añadir (${boton})`)
       await a.captura(path.join(SALIDA, '10n5_freetour_dia_protegido.jpg'))
     } else debe(false, 'ap1', 'no se abrió la hoja')
   } finally {
@@ -287,7 +288,7 @@ console.log('5. La propuesta de quien solo recomienda')
       const vuelta = cambios[0] ? p.deshacerCambio(actual, base, cambios[0]) : null
       return { res, cambios: cambios.map((c) => ({ tipo: c.tipo, texto: c.texto, etiqueta: c.etiqueta, dia: c.dayNumber })), n: paquete?.payload?.cambios?.length ?? null, vuelta: vuelta ? vuelta.days.filter((d) => !d.isReturnLeg).map((d) => d.curatedId).join() : null, ft: vuelta ? vuelta.days.some((d) => d.stops.some((s) => s.isFreeTour)) || (vuelta.answers.experiencesPositive ?? []).includes('free_tour') : null }
     })`)
-    debe(r.res.ok === true && r.cambios.length === 1 && r.cambios[0].tipo === 'free_tour', 'ap1', `la propuesta lleva UN solo cambio, no los de cada día que se rehace (${r.cambios.length}: ${r.cambios.map((c) => c.tipo).join()})`)
+    debe(r.res.ok === true && r.cambios.length === 1 && r.cambios[0].texto === 'Añadir el Free Tour al domingo 18', 'ap1', `la propuesta lleva UN solo cambio, no los de cada día que se rehace (${r.cambios.length}: ${r.cambios.map((c) => c.tipo).join()})`)
     debe(r.cambios[0]?.texto === 'Añadir el Free Tour al domingo 18', 'ap1', `y dice: «${r.cambios[0]?.texto}»`)
     debe(r.n === 1, 'ap1', 'el paquete que se manda lleva ese único cambio')
     debe(r.ft === false && r.vuelta === 'D2,D4,D1', 'ap1', `y [Deshacer este cambio] de la propuesta devuelve los días de antes (${r.vuelta})`)

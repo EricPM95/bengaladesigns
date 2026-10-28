@@ -59,7 +59,7 @@ export function codigoDeLaDireccion(busqueda: string): string | null {
 export function textoDeInvitacionNoValida(motivo: MotivoNoValida | undefined): string {
   if (motivo === 'anulada') return 'Esa invitación se ha anulado.'
   if (motivo === 'sin_usos') return 'Ya no quedan plazas en esa invitación.'
-  return 'No encontramos esa invitación. Revisa el código.'
+  return 'Este código no existe.'
 }
 
 /** Pura: el titular de «lo que ve quien recibe el enlace» (P7b): «Laura te invita a su Pase de Roma» (con pase) o «Laura te invita a su viaje a Roma». */

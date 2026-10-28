@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { dateOfDay } from '../../../lib/bookings'
 import { recomendarHora, useHorasEnRango } from '../../../lib/civitatis'
 import { Icono } from '../../ui/Icono'
-import { precioTienda } from '../../../lib/dinero'
+import { precioTiendaEnVista } from '../../../lib/moneda'
+import { useMonedaViajero } from '../../../lib/moneda'
 import type { Reservation } from '../../../lib/bookings'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import type { SinEntrada } from '../../../lib/destinationExcursions'
@@ -46,6 +47,7 @@ export function useStopReservation(stopId: string | null | undefined): Reservati
  * `sinEntrada` (Tanda 6y4): un sitio que no vende entrada pero cobra por acercarse (la tasa de la Fontana de Trevi) lleva «No necesitas entrada» con lo que diga el dato, y NO lleva [Reservar] ni «Añádela».
  */
 export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: string; name: string; isFreeTour?: boolean }; sinEntrada?: SinEntrada | null }) {
+  useMonedaViajero() // (Tanda 10N8) el precio sale en la moneda del viajero y se repinta al cambiarla
   const route = useRouteStore((state) => state.route)
   const found = useRouteStop(stop.id)
   const data = useStopEntradas(stop)
@@ -75,7 +77,7 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
         <div key={entrada.nombre} className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
           <div className="flex items-baseline justify-between gap-2.5">
             <p className="font-display text-[19px] leading-[1.1] text-text">{entrada.nombre}</p>
-            {entrada.civitatis?.gratis ? <span className="font-display text-[22px] leading-none text-text">Gratis</span> : entrada.desde != null && <span className="font-display text-[22px] leading-none text-text">{`Desde ${precioTienda(entrada.desde)}`}</span>}
+            {entrada.civitatis?.gratis ? <span className="font-display text-[22px] leading-none text-text">Gratis</span> : entrada.desde != null && <span className="font-display text-[22px] leading-none text-text">{`Desde ${precioTiendaEnVista(entrada.desde)}`}</span>}
           </div>
           {/* (Con la API de consulta encendida, los datos reales de la actividad; sin ella, la línea de siempre.) */}
           {entrada.civitatis ? <DatosDeLaActividad datos={entrada.civitatis} /> : entrada.incluye && <p className="mt-1.5 text-[13px] leading-[1.5] text-text/72">{entrada.incluye}</p>}

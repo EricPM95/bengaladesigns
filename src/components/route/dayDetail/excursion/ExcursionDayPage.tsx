@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { precioTienda } from '../../../../lib/dinero'
+import { precioTiendaEnVista } from '../../../../lib/moneda'
 import type { Excursion } from '../../../../lib/types'
 import { hoursLabel } from './hoursLabel'
 import { Icono } from '../../../ui/Icono'
@@ -86,7 +86,7 @@ function toView(excursion: Excursion): View {
     duration: hoursLabel(excursion.durationHours) ?? excursion.durationLabel ?? null,
     returnTime: null,
     halfDay: excursion.length === 'half-day',
-    priceLabel: excursion.priceLabel ?? (excursion.price ? precioTienda(excursion.price) : ''),
+    priceLabel: excursion.priceLabel ?? (excursion.price ? precioTiendaEnVista(excursion.price) : ''),
     affiliateUrl: excursion.bookUrl ?? null,
     tags: [],
     stops: [],

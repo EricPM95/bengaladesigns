@@ -35,7 +35,7 @@ const sinComentarios = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/
 
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_7_mover_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
 const {
-  createElement, renderToStaticMarkup, ListaDeDias, ETIQUETA_DIA_DE_EXCURSION, StopAccordion, HojaPasarAOtroDia, HoyDespues, FILTROS_DE_CAMBIAR_PARADA, preguntaDeCambiarParada, PlaceExplorerScreen, stopFromPlace, TrazoCalendar, TripCard,
+  createElement, renderToStaticMarkup, ListaDeDias, ETIQUETA_DIA_DE_EXCURSION, StopAccordion, HojaPasarAOtroDia, HoyDespues, FILTROS_DE_CAMBIAR_PARADA, tituloDeCambiarParada, PlaceExplorerScreen, stopFromPlace, TrazoCalendar, TripCard,
   rangoDelViaje, resumenDeViaje, useRouteStore, useAddFlowStore, moverParadaAOtroDia, cambiarParadaPorOtra, mensajeDeCambiarParada, textoDeDuracion, textoDeDias, textoDeNoches, diasDelViaje, ICONOS, CERRADO_ESTE_DIA, shellFromStop,
   fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, cargaDatosDeHorario, horarioDeParada,
 } = M
@@ -107,14 +107,14 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   debe(/MOVER A|Mover a/i.test(t) && /Ahora: jueves 11/.test(t), 'A1 cabecera', `falta «Mover a» y «Ahora: jueves 11» (${plano(t).slice(0, 200)})`)
   const fila = (id) => h.split('<button').find((b) => b.includes(`data-dia-de-la-lista="${id}"`)) ?? ''
   const d1 = aTexto(fila('d1'))
-  debe(/MIÉ/.test(d1) && /\n10\n/.test(`\n${d1}\n`) && /Miércoles 10/.test(d1) && /Mi día 1/.test(d1), 'A1 fila', `el día 1 no lleva «MIÉ», «10», «Miércoles 10» y su título (${plano(d1)})`)
+  debe(/MIÉ/.test(d1) && /\n10\n/.test(`\n${d1}\n`) && /Mié 10 Mar/.test(d1) && /Mi día 1/.test(d1), 'A1 fila', `el día 1 no lleva «MIÉ», «10», «Miércoles 10» y su título (${plano(d1)})`)
   const d3 = aTexto(fila('d3'))
-  debe(/VIE/.test(d3) && /Viernes 12/.test(d3) && /Mi día 3/.test(d3), 'A1 fila', `el día 3 no lleva «VIE», «Viernes 12» y su título (${plano(d3)})`)
+  debe(/VIE/.test(d3) && /Vie 12 Mar/.test(d3) && /Mi día 3/.test(d3), 'A1 fila', `el día 3 no lleva «VIE», «Viernes 12» y su título (${plano(d3)})`)
   // La excursión entera: gris, su icono, «Día de excursión», sin poder elegirse.
   const d4h = fila('d4')
   const d4 = aTexto(d4h)
   debe(d4h.includes('disabled=""') && d4h.includes('data-excursion="1"') && d4h.includes('aria-disabled="true"'), 'A2 excursión', 'el día de excursión se puede elegir (falta disabled)')
-  debe(/Día de excursión/.test(d4) && d4h.includes(ICONOS.montana) && /opacity-50|opacity-60/.test(d4h) && /Sábado 13/.test(d4), 'A2 excursión', `el día de excursión no sale en gris con su icono y «Día de excursión» (${plano(d4)})`)
+  debe(/Día de excursión/.test(d4) && d4h.includes(ICONOS.montana) && /opacity-50|opacity-60/.test(d4h) && /Sáb 13 Mar/.test(d4), 'A2 excursión', `el día de excursión no sale en gris con su icono y «Día de excursión» (${plano(d4)})`)
   debe(!fila('d3').includes('disabled=""') && !fila('d1').includes('disabled=""'), 'A2 excursión', 'un día normal sale sin poder elegirse')
   debe(veces(h, /data-excursion="1"/g) === 1, 'A2 excursión', 'sale más de una fila de excursión')
   debe(fila('vuelta') === '' && !/vuelta|Lunes 15/i.test(t), 'A2 vuelta', `el día de vuelta sale en la lista (${plano(t)})`)
@@ -136,7 +136,7 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   const menuSrc = sinComentarios(SRC('src/components/route/dayDetail/StopMenu.tsx'))
   const saltarSrc = sinComentarios(SRC('src/components/route/hoy/saltar.tsx'))
   const hoySrc = sinComentarios(SRC('src/components/route/hoy/HoyDurante.tsx'))
-  debe(/<MoverADia[^>]*ahora=/.test(menuSrc) && /<ListaDeDias[^>]*ahora=/.test(saltarSrc) && /ahora=\{day\.dayNumber\}/.test(hoySrc), 'A4 una lista', 'el menú de DÍAS y la hoja de HOY no pasan el «Ahora:» a la misma lista')
+  debe(/<MoverADia/.test(menuSrc) && /<ListaDeDias[^>]*ahora=/.test(saltarSrc) && /ahora=\{day\.dayNumber\}/.test(hoySrc), 'A4 una lista', 'el menú de DÍAS y la hoja de HOY no pasan el «Ahora:» a la misma lista')
   debe(!/filaClassName|lightItemClass/.test(menuSrc + saltarSrc + sinComentarios(SRC('src/components/route/dayDetail/ListaDeDias.tsx'))), 'A4 una lista', 'quedan estilos de fila a medida del menú o de la hoja')
   debe(/moverParadaAOtroDia/.test(menuSrc) && /moverParadaAOtroDia/.test(hoySrc), 'A5 una acción', 'el menú de DÍAS y HOY no mueven con la misma función `moverParadaAOtroDia`')
 }
@@ -147,13 +147,13 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   const antes = copia(ahora())
   const contar = (r) => r.days.flatMap((d) => d.stops).length
   const nombresAntes = antes.days.flatMap((d) => d.stops.map((s) => s.name)).sort()
-  const ok = moverParadaAOtroDia('s2-2', 'd2', 'd3')
+  const ok = moverParadaAOtroDia('s2-2', 'd2', 'd3', { conPase: false })
   const r = ahora()
   const d2 = r.days.find((d) => d.id === 'd2')
   const d3 = r.days.find((d) => d.id === 'd3')
   debe(ok === true && !d2.stops.some((s) => s.id === 's2-2') && d3.stops.some((s) => s.id === 's2-2'), 'A5 mover', 'la parada no pasó del día 2 al día 3')
   debe(contar(r) === contar(antes) && JSON.stringify(r.days.flatMap((d) => d.stops.map((s) => s.name)).sort()) === JSON.stringify(nombresAntes), 'A5 mover', 'al mover se quitó o se repitió una parada')
-  debe(d2.stops.length === 1 && d3.stops.length === 3 && d3.stops[2].id === 's2-2', 'A5 mover', 'la parada no llegó al final del día nuevo (el sitio de siempre) o el día de origen perdió otra')
+  debe(d2.stops.length === 1 && d3.stops.length === 3 && d3.stops[0].id === 's2-2', 'A5 mover', '(10N8, 3f) sin pase la parada movida llega de PRIMERA al día nuevo, o el día de origen perdió otra (' + d2.stops.length + ' en el 2, día 3: ' + d3.stops.map((s) => s.id).join() + ')')
   const horaNueva = d3.stops.find((s) => s.id === 's2-2').time
   debe(/^\d{2}:\d{2}$/.test(horaNueva) && horaNueva !== '', 'A5 mover', `la parada movida no trae hora en su día nuevo (${horaNueva})`)
   const aviso = toast()
@@ -186,10 +186,9 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   const cambiarSrc = sinComentarios(SRC('src/components/route/dayDetail/CambiarParada.tsx'))
   debe(!/PlaceFinderPanel/.test(menuSrc) && /<CambiarParada/.test(menuSrc), 'B6 menú', 'el menú «···» sigue usando PlaceFinderPanel o no abre `CambiarParada`')
   debe(!fs.existsSync('src/components/route/placeFinder/PlaceFinderPanel.tsx') && !fs.existsSync('src/lib/poolEntries.ts'), 'E14 viejo', 'PlaceFinderPanel o poolEntries siguen en el código')
-  debe(/PlaceExplorerScreen/.test(cambiarSrc) && /cambiarParada=\{/.test(cambiarSrc) && /initialFilters=\{\[\.\.\.FILTROS_DE_CAMBIAR_PARADA\]\}/.test(cambiarSrc) && /cambiarParadaPorOtra/.test(cambiarSrc), 'B6 explorador', '«Cambiar parada» no abre el explorador compartido con sus filtros y el cambio compartido')
+  debe(/PlaceExplorerScreen/.test(cambiarSrc) && /cambiarParada={/.test(cambiarSrc) && !/initialFilters/.test(cambiarSrc) && /cambiarParadaPorOtra/.test(cambiarSrc), 'B6 explorador', '(10N8) «Cambiar parada» abre el explorador compartido SIN filtros puestos y con el cambio compartido')
   debe(/yaCambiada\.current/.test(cambiarSrc), 'B9 un solo cambio', 'un segundo toque en el ⇄ (mientras llega la foto) puede dejar un «Deshacer» que devuelva un viaje ya cambiado')
-  debe(JSON.stringify(FILTROS_DE_CAMBIAR_PARADA) === JSON.stringify(['atracciones', 'miradores']), 'B6 filtros', `los filtros no son Atracciones (monumentos) y Miradores (${JSON.stringify(FILTROS_DE_CAMBIAR_PARADA)})`)
-  debe(preguntaDeCambiarParada('Coliseo') === 'Elige el sitio que cambia por el Coliseo', 'B6 pregunta', `la franja no es «Elige el sitio que cambia por el Coliseo» (${preguntaDeCambiarParada('Coliseo')}) (Tanda 10N6)`)
+  debe(tituloDeCambiarParada('Coliseo') === 'Cambiar Coliseo' && tituloDeCambiarParada('Via dei Fori Imperiali') === 'Cambiar Via dei Fori Imperiali', 'B6 título', '(10N8) el título es «Cambiar {sitio}», sin artículo ni día')
   // Nadie más usa el buscador viejo.
   const archivos = []
   const recorre = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) recorre(p); else if (/\.(ts|tsx)$/.test(e.name)) archivos.push(p) } }
@@ -201,16 +200,14 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   const route = rutaDe()
   estado(route)
   const enViaje = new Set([noms[0], noms[1], noms[2], noms[3], noms[4], noms[5], noms[6], noms[7]])
-  const props = { open: true, destination: 'Roma', places: catalogo, title: 'Cambiar parada — jue 11', route, dayNumber: 2, dateIso: sumaDias(INICIO, 1), initialFilters: [...FILTROS_DE_CAMBIAR_PARADA], onClose() {} }
-  const h = html(PlaceExplorerScreen, { ...props, cambiarParada: { pregunta: preguntaDeCambiarParada(noms[3]), onElegir() {} } })
+  const props = { open: true, destination: 'Roma', places: catalogo, title: 'Cambiar ' + noms[3], route, dayNumber: 2, dateIso: sumaDias(INICIO, 1), initialFilters: [], onClose() {} }
+  const h = html(PlaceExplorerScreen, { ...props, cambiarParada: { nombre: noms[3], onElegir() {} } })
   const t = aTexto(h)
-  debe(t.includes('Elige el sitio que cambia por') && t.includes(noms[3]) && h.includes('data-pregunta-cambiar-parada="1"') && h.includes('data-cancelar-cambio="1"'), 'B6 pregunta', 'la pantalla no lleva la pregunta arriba')
-  const chipsActivos = [...h.matchAll(/data-active="true"[^>]*>(?:(?!<\/button>)[\s\S])*<\/button>/g)].map((m) => aTexto(m[0]))
-  debe(chipsActivos.length === 2 && chipsActivos.some((c) => /Atracciones/.test(c)) && chipsActivos.some((c) => /Miradores/.test(c)), 'B6 filtros', `los filtros activos no son «Atracciones» y «Miradores» (${JSON.stringify(chipsActivos)})`)
+  debe(t.includes('Cambiar ' + noms[3]) && !t.includes('Elige el sitio que cambia por') && !h.includes('data-pregunta-cambiar-parada'), 'B6 título', '(10N8) la pantalla lleva el título «Cambiar {sitio}» y ninguna franja de pregunta')
   debe(!/Restaurantes|Excursiones/.test(aTexto(h.slice(0, h.indexOf('Buscar') > 0 ? h.indexOf('Buscar') : h.length))), 'B7 chips', 'en «Cambiar parada» salen los chips de Restaurantes o Excursiones')
   const botones = [...h.matchAll(/data-cambiar-por="([^"]*)"/g)].map((m) => m[1].replace(/&#x27;/g, "'").replace(/&amp;/g, '&'))
   debe(botones.length >= 5, 'B7 ⇄', `salen muy pocos ⇄ (${botones.length})`)
-  debe(botones.every((n) => !enViaje.has(n)), 'B7 ya en el viaje', `un sitio que ya está en el viaje lleva el ⇄: ${botones.filter((n) => enViaje.has(n)).join(', ')}`)
+  debe(botones.some((n) => enViaje.has(n)), 'B7 ya en el viaje', '(10N8) los sitios que ya están en el viaje también llevan el ⇄ (se puede repetir un sitio)')
   const tarjetasDelViaje = [...enViaje].filter((n) => lugares.some((p) => p.name === n))
   debe(veces(t, /✓ En ruta/g) >= Math.min(tarjetasDelViaje.length, 3), 'B7 ya en el viaje', `los sitios que ya están en el viaje no dicen «✓ En ruta» (${veces(t, /✓ En ruta/g)}) (Tanda 10N6)`)
   debe(!/aria-label="Añadir /.test(h) && !/\+ Añadir/.test(t), 'B7 sin «+»', 'en «Cambiar parada» queda un «+ Añadir»')
@@ -340,6 +337,8 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
     'src/components/questionnaire/DurationSelector.tsx', // el selector viejo: ninguna pantalla lo usa
     'src/components/route/dayDetail/ExcursionDayPage.tsx', // «el 25% de tus {dias} días»
     'src/components/route/freeDay/DayNameSheet.tsx', // «Máximo 14 días»
+    'src/components/logros/visto/fechas.ts', // «Te quedan 10 días para reclamar»: plazo, no duración del viaje
+    'src/components/route/hoy/v2/HoyAntesV2.tsx', // la cuenta atrás de HOY: «faltan N días»
   ].map((p) => p.replace(/\//g, path.sep))
   const sueltos = []
   for (const f of archivos) {

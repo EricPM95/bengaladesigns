@@ -136,8 +136,9 @@ const LEER_HOJA = (datos) => `(() => {
     // «Mover a otro día» sigue con su ruedita dentro de la misma hoja.
     await ev("Array.from(document.querySelectorAll('[data-opcion-hoja]')).find((b) => /Mover a otro día/.test(b.textContent)).click(); true")
     await a.esp(900)
-    debe(await ev("Boolean(document.querySelector('[data-mover-a-dia]'))"), '01', '«Mover a otro día» abre la ruedita de días')
+    debe(await ev("Boolean(document.querySelector('[data-hoja-dia]'))"), '01', '«Mover a otro día» abre la hoja de elegir día (10N8)')
     await cap('01b_mover_a')
+    await ev("document.querySelectorAll('[data-hoja-dia] [aria-label=Cerrar]').forEach((b) => b.click()); true")
     await ev("Array.from(document.querySelectorAll('[data-hoja-opciones] [data-hoja-cerrar]')).forEach((b) => b.click()); true")
     await a.esp(500)
 

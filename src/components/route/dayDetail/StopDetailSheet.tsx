@@ -1,4 +1,4 @@
-import { useEffect, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
@@ -26,7 +26,7 @@ import { useActividadesCerca } from '../../../lib/civitatis'
 import { Icono } from '../../ui/Icono'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { MeGusta } from '../../ui/MeGusta'
-import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
+import { useAbierto24h, useHorarioDeParadas } from '../../../lib/horarioDeParada'
 import { etiquetaDeHorario } from '../../../lib/etiquetaHorario'
 import { FotoCredito } from '../../ui/FotoCredito'
 import { TusRecuerdos } from '../fotos/TusRecuerdos'
@@ -88,8 +88,8 @@ interface StopDetailSheetProps {
 }
 
 /** Una píldora de las etiquetas pequeñas de debajo del nombre (diseño «Ficha Lugar»): `oscura` (la duración), `verde` (acceso libre / abierto), `roja` (requiere reserva / cerrado) o de contorno (el tipo). */
-function Pildora({ tono = 'contorno', datos, children }: { tono?: 'oscura' | 'roja' | 'contorno'; datos: 'horario' | 'tiempo'; children: ReactNode }) {
-  const estilo = tono === 'oscura' ? 'bg-[#1C2230] text-white' : tono === 'roja' ? 'border border-accent-red/30 bg-accent-red/10 text-accent-red' : 'border border-[rgba(28,34,48,.25)] text-text'
+function Pildora({ tono = 'contorno', datos, children }: { tono?: 'oscura' | 'roja' | 'verde' | 'contorno'; datos: 'horario' | 'tiempo'; children: ReactNode }) {
+  const estilo = tono === 'oscura' ? 'bg-[#1C2230] text-white' : tono === 'roja' ? 'border border-accent-red/30 bg-accent-red/10 text-accent-red' : tono === 'verde' ? 'border border-[#2B7F45]/30 bg-[#2B7F45]/10 text-[#2B7F45]' : 'border border-[rgba(28,34,48,.25)] text-text'
   return (
     <span data-etiqueta-ficha={datos} className={`flex h-[30px] items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${estilo}`}>
       {children}
@@ -327,6 +327,21 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   const horarioDe = useHorarioDeParadas(city, dateIso)
   const horario = stop && !stop.isFreeWalk && !stop.isBreak ? horarioDe({ name: stop.name, scheduleText: stop.scheduleText, hours: stop.hours }) : null
   const etiquetaReloj = etiquetaDeHorario(horario)
+  // (Tanda 10N8 §8b-g) «Abierto 24 h» en verde: solo si el dato del sitio lo dice y no tiene horario.
+  const esAbierto24h = useAbierto24h(city)
+  const abierto24h = Boolean(stop) && !etiquetaReloj && !stop?.isFreeTour && !stop?.isBreak && !stop?.isFreeWalk && esAbierto24h(stop?.name ?? '')
+  // (Tanda 10N8 §8b-g) Si el nombre ocupa una línea, las etiquetas van una debajo de otra; si ocupa dos o más, en una sola fila.
+  const nombreRef = useRef<HTMLHeadingElement | null>(null)
+  const [nombreEnVarias, setNombreEnVarias] = useState(false)
+  useLayoutEffect(() => {
+    const el = nombreRef.current
+    if (!el) return undefined
+    const medir = () => setNombreEnVarias(el.getBoundingClientRect().height > 33 * 1.02 * 1.5)
+    medir()
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(medir) : null
+    ro?.observe(el)
+    return () => ro?.disconnect()
+  }, [stop?.name, stop?.nightViewTitle])
   // El horario auditado (texto largo con días, épocas y festivos) manda sobre el de la ficha curada.
   const hoursDetail = stop?.hoursCard || description?.hoursDetail || null
   // Solo los lugares con afiliación de tours (ver mockDayDetail.ts) tienen sentido con
@@ -412,13 +427,13 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
               onClick={onClose}
               aria-label="Volver"
               title="Volver"
-              className="absolute left-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-bg-card text-text shadow-[0_8px_18px_-10px_rgba(28,34,48,.5)] transition-colors hover:bg-bg-hover"
+              className="absolute left-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-text shadow-[0_8px_18px_-10px_rgba(28,34,48,.5)] transition-colors hover:bg-bg-hover"
             >
               <Icono nombre="flecha" size={18} grosor={2} className="rotate-180" />
             </button>
 
             {dayPillLabel && (
-              <span className="absolute right-4 top-4 z-10 flex h-8 items-center rounded-full bg-bg-card px-[13px] text-[12.5px] font-semibold text-text shadow-[0_8px_18px_-10px_rgba(28,34,48,.5)]">
+              <span className="absolute right-4 top-4 z-10 flex h-8 items-center rounded-full border-[1.5px] border-accent bg-bg-card px-[13px] text-[12.5px] font-semibold text-text shadow-[0_8px_18px_-10px_rgba(28,34,48,.5)]">
                 {dayPillLabel}
               </span>
             )}
@@ -441,17 +456,22 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                     </span>
                     {/* (Tanda 10N6 §1f) Fuera la cámara de la esquina de la foto: las fotos del sitio van en «Tus recuerdos», entre la cabecera y las pestañas. */}
                   </div>
-                  <div className="flex min-w-0 flex-1 flex-col gap-3">
-                    <div className="flex items-start gap-2.5">
-                      <h1 className="flex flex-1 items-start gap-1.5 pt-0.5 font-display text-[33px] leading-[1.02] text-text [text-wrap:balance]">
+                  <div className="flex min-w-0 flex-1 flex-col gap-1.5" data-ficha-texto>
+                    {/* (10N8 N5) El corazón va POSADO arriba a la derecha, fuera del flujo: antes, al ser más alto que un nombre de una línea, estiraba la fila y dejaba ~39 px de hueco entre el nombre y las etiquetas. */}
+                    <div className="relative" style={{ marginTop: -5 }}>
+                      <h1 ref={nombreRef} className="flex items-start gap-1.5 pr-[78px] font-display text-[33px] leading-[1.02] text-text [text-wrap:balance]">
                         {stop.isFreeTour && <FreeTourIcon className="mt-1.5 text-accent" />}
                         {stop.isNightExperience && <MoonIcon className="mt-1.5 text-[#5B6BC0]" />}
                         <span>{stop.nightViewTitle ?? displayStopName(stop.name)}</span>
                       </h1>
                       {/* El corazón de «me gusta» con su número: la misma cuenta que el de EXPLORAR (src/store/useMeGustaStore.ts). Solo en los sitios del catálogo del destino. */}
-                      {!stop.isFreeTour && !stop.isBreak && !stop.isFreeWalk && <MeGusta destino={city} nombre={stop.name} variante="cabecera" />}
+                      {!stop.isFreeTour && !stop.isBreak && !stop.isFreeWalk && (
+                        <div className="absolute right-0 top-0">
+                          <MeGusta destino={city} nombre={stop.name} variante="cabecera" />
+                        </div>
+                      )}
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className={`flex gap-1.5 ${nombreEnVarias ? 'flex-row flex-wrap items-center' : 'flex-col items-start'}`} data-ficha-etiquetas={nombreEnVarias ? 'fila' : 'columna'}>
                       {/* (Tanda 6y10) Debajo del nombre, SOLO dos etiquetas: el reloj con el horario de ese día (sin texto; «Cerrado» si ese día no abre) y el reloj de arena con el tiempo que recomendamos.
                           El tipo («Monumento»), la reserva, el acceso libre y el barrio no salen aquí: viven fuera de la ficha (listas y tarjetas). */}
                       {etiquetaReloj && (
@@ -460,6 +480,14 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                             <path d="M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z" />
                           </svg>
                           {etiquetaReloj}
+                        </Pildora>
+                      )}
+                      {abierto24h && (
+                        <Pildora tono="verde" datos="horario">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
+                            <path d="M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z" />
+                          </svg>
+                          Abierto 24 h
                         </Pildora>
                       )}
                       {stop.durationMinutes > 0 && (

@@ -11,34 +11,35 @@ export interface TextoAviso {
   linea2: string
 }
 
+/** (Tanda 10N8, 0a-10) `{pase}` se sustituye por el nombre del pase del destino, escrito igual que en el título y el botón («Pase Roma», «Pase Lanzarote»). `linea1` solo existe si dice algo que el viajero YA ha usado. */
 export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
   segunda_foto: {
-    linea1: 'Sin pase, guardas 1 foto por sitio.',
-    linea2: 'Guarda todas las que quieras y crea tus recuerdos.',
+    linea1: 'Ya tienes tu foto de este sitio.',
+    linea2: 'Con el {pase}, guarda fotos sin límite y haz crecer tu álbum de recuerdos.',
   },
   escuchar_historia: {
     linea1: 'Ya has escuchado tu historia de prueba.',
-    linea2: 'Escucha todas las historias de tu viaje.',
+    linea2: 'Con el {pase}, podrás escuchar todas las historias que quieras, sin límite.',
   },
   cerca_de_ti: {
-    linea1: 'Tu ruta ya te dice qué hay en cada parada.',
-    linea2: 'Descubre lo que tienes cerca de ti, allí donde estés.',
+    linea1: '',
+    linea2: 'Con el {pase}, descubre todo lo que tienes cerca, estés donde estés.',
   },
   banos: {
-    linea1: 'Tu ruta ya te dice qué ver y dónde comer.',
-    linea2: 'Encuentra los baños más cercanos en cada momento.',
+    linea1: '',
+    linea2: 'Con el {pase}, encuentra los baños más cercanos, estés donde estés.',
   },
   fuentes: {
-    linea1: 'Tu ruta ya te dice qué ver y dónde comer.',
-    linea2: 'Encuentra las fuentes de agua más cercanas.',
+    linea1: '',
+    linea2: 'Con el {pase}, encuentra las fuentes de agua más cercanas, estés donde estés.',
   },
   hoy: {
     linea1: 'Solo tienes HOY abierto el día de prueba.',
-    linea2: 'Tu día, ajustado en directo a donde estás y a la hora que es.',
+    linea2: 'Con el {pase}, tienes HOY disponible todos los días de tu viaje.',
   },
   generico: {
-    linea1: 'Esto no está en la versión gratis.',
-    linea2: 'Desbloquea todo lo que el pase añade a tu viaje.',
+    linea1: '',
+    linea2: 'Desbloquea todo lo que el {pase} añade a tu viaje.',
   },
 }
 
@@ -47,5 +48,7 @@ export const AVISO_PASE_TEXTOS_POR_DESTINO: Record<string, Record<string, TextoA
 
 export function textoDelAviso(clave: string, destino?: string): TextoAviso {
   const propio = destino ? AVISO_PASE_TEXTOS_POR_DESTINO[destino]?.[clave] : undefined
-  return propio ?? AVISO_PASE_TEXTOS[clave] ?? AVISO_PASE_TEXTOS.generico
+  const t = propio ?? AVISO_PASE_TEXTOS[clave] ?? AVISO_PASE_TEXTOS.generico
+  const pase = destino ? `Pase ${destino}` : 'Pase'
+  return { linea1: t.linea1, linea2: t.linea2.replace(/{pase}/g, pase) }
 }

@@ -25,6 +25,8 @@ console.error = (...a) => (/useLayoutEffect|Warning:/.test(String(a[0])) ? undef
 const aTexto = (html) => html.replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, '\n').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s*\n\s*/g, '\n')
 const plano = (t) => t.replace(/\n/g, ' | ')
 const html = (componente, props) => renderToStaticMarkup(createElement(componente, props))
+// (10N8) La hoja de elegir día (HojaDia) marca al recomendado con «Recomendado: …» en su fila: el id del día de esa fila.
+const filaRecomendada = (h) => h.match(/data-dia-id="(d\d+)"(?:(?!data-dia-id)[\s\S])*?Recomendado:/)?.[1]
 
 const sumaDias = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const INICIO = '2027-03-10'
@@ -79,7 +81,8 @@ console.log('1. Las dos opciones salen solo cuando no cabe')
   debe(/Este día ya tiene cosas/.test(t), '1 se queda', 'los días ya no dicen «Este día ya tiene cosas»')
   debe(/Añadir en un día nuevo/.test(t), '1 opción nueva', 'falta «Añadir en un día nuevo» cuando no cabe')
   debe(/Cambiar un día por la excursión/.test(t), '1 opción cambiar', 'falta «Cambiar un día por la excursión» cuando no cabe')
-  debe(t.indexOf('Ningún día libre para esto') < t.indexOf('Añadir en un día nuevo'), '1 debajo', 'las dos opciones no van DEBAJO del «no cabe»')
+  // (10N8) La hoja de elegir día (HojaDia) pone las salidas encima del botón dorado, que es el «Ningún día libre para esto»: ya no van debajo, pero sí en la misma hoja.
+  debe(t.indexOf('Añadir en un día nuevo') < t.indexOf('Ningún día libre para esto'), '1 debajo', 'las dos opciones no están en la hoja junto al «no cabe»')
 
   const conHueco = rutaDe('Ciudadfalsa', DIAS_X)
   conHueco.days[3].stops = []
@@ -200,21 +203,21 @@ function recomendadoDeReferencia(ruta, reservas, importancia, excursion) {
   const pantalla = html(CambiarDiaSheet, { route: ruta, excursion: EXC, onClose() {}, onDone() {} })
   const tp = plano(aTexto(pantalla))
   debe(/¿Qué día cambiamos\?/.test(tp), '3 pantalla', 'falta el título de la hoja')
-  debe(/Recomendado/.test(tp) && pantalla.indexOf('data-recomendado') < pantalla.indexOf('data-dia="d2"'), '3 pantalla', 'el recomendado no va arriba')
+  debe(/Recomendado/.test(tp) && filaRecomendada(pantalla) === 'd4' && pantalla.indexOf('data-dia-id="d4"') < pantalla.indexOf('data-dia-id="d2"'), '3 pantalla', 'el recomendado no va arriba')
   debe(!/Roma/.test(tp), '4 sin Roma', 'sale «Roma» en un destino de mentira')
   debe(!/Tienes una reserva este día/.test(pantalla), '3 pantalla', 'sin reservas sale «Tienes una reserva este día»')
   // Con una reserva ese día.
   estado(ruta, { reservations: reservas })
   const pr = html(CambiarDiaSheet, { route: ahora(), excursion: EXC, onClose() {}, onDone() {} })
-  const botonReservado = pr.match(/<button[^>]*data-reservado="si"[^>]*>[\s\S]*?<\/button>/)?.[0] ?? ''
-  debe(/disabled=""/.test(botonReservado) && /opacity-50/.test(botonReservado) && /Tienes una reserva este día/.test(botonReservado) && /data-dia="d4"/.test(botonReservado), '3 reserva gris', 'el día con reserva no sale en gris, sin poder elegirse, con «Tienes una reserva este día»')
-  debe((pr.match(/data-reservado="si"/g) ?? []).length === 1, '3 reserva gris', 'hay más de un día en gris')
-  const botonRecomendado = pr.match(/<button[^>]*data-recomendado="si"[^>]*>/)?.[0] ?? ''
-  debe(!/disabled=""/.test(botonRecomendado) && /data-dia="d5"|data-dia="d2"|data-dia="d3"/.test(botonRecomendado), '3 reserva gris', 'el recomendado es un día que no se puede elegir')
+  const botonReservado = pr.match(/<button[^>]*data-bloqueado="1"[^>]*>[\s\S]*?<\/button>/)?.[0] ?? ''
+  debe(/disabled=""/.test(botonReservado) && /Tienes una reserva este día/.test(botonReservado) && /data-dia-id="d4"/.test(botonReservado), '3 reserva gris', 'el día con reserva no sale en gris, sin poder elegirse, con «Tienes una reserva este día»')
+  debe((pr.match(/data-bloqueado="1"/g) ?? []).length === 1, '3 reserva gris', 'hay más de un día en gris')
+  const botonRecomendado = pr.match(new RegExp(`<button[^>]*data-dia-id="${filaRecomendada(pr)}"[^>]*>`))?.[0] ?? ''
+  debe(!/disabled=""/.test(botonRecomendado) && /data-dia-id="d5"|data-dia-id="d2"|data-dia-id="d3"/.test(botonRecomendado), '3 reserva gris', 'el recomendado es un día que no se puede elegir')
   debe(/Cambiar el (martes|miércoles|jueves|viernes|sábado|domingo|lunes) \d+ por la excursión/.test(plano(aTexto(pr))), '3 pantalla', 'el botón de abajo no dice qué día cambia')
 
   // Cada día con su título (el de la lista de días); sin datos del destino, el de siempre.
-  for (const id of ['d2', 'd3', 'd4', 'd5']) debe(new RegExp(`data-dia="${id}"[\\s\\S]*?Día ${id.slice(1)}`).test(pantalla), '3 títulos', `el día ${id} no sale con su título`)
+  for (const id of ['d2', 'd3', 'd4', 'd5']) debe(new RegExp(`data-dia-id="${id}"[\\s\\S]*?Día ${id.slice(1)}`).test(pantalla), '3 títulos', `el día ${id} no sale con su título`)
 
   // El «¿Estás seguro?» nombra lo que se pierde (con los imprescindibles delante) y el día que cambia.
   const textoD2 = textoDeConfirmar(ruta, ruta.days[1], EXC, perdidaDeCambiar(ruta, ruta.days[1], EXC, IMPORTANCIA_X))
@@ -272,10 +275,9 @@ console.log('4. Otro destino y datos reales')
   const rutaR = rutaDe('Roma', [['Plaza A'], ['Coliseo', 'Foro Romano y Palatino', 'Plaza B'], ['Plaza C', 'Plaza D'], ['Plaza E'], ['Plaza F']])
   estado(rutaR)
   const hoja = html(CambiarDiaSheet, { route: rutaR, excursion: EXC, onClose() {}, onDone() {} })
-  debe((hoja.match(/>Imprescindibles</g) ?? []).length === 1 && /Coliseo, Foro Romano y Palatino/.test(hoja), '4 marcados', 'el día con el Coliseo y el Foro no sale marcado como imprescindibles (y solo ese)')
-  const recomendado = hoja.match(/data-recomendado="si"[^>]*data-dia|data-dia="(d\d)"[^>]*data-recomendado="si"/)
-  const idRec = (hoja.match(/<button[^>]*data-dia="(d\d)"[^>]*data-recomendado="si"/) ?? hoja.match(/<button[^>]*data-recomendado="si"[^>]*data-dia="(d\d)"/) ?? [])[1]
-  debe(Boolean(recomendado) || Boolean(idRec), '4 marcados', 'no hay recomendado')
+  debe((hoja.match(/Imprescindibles: /g) ?? []).length === 1 && /Imprescindibles: Coliseo, Foro Romano y Palatino/.test(hoja), '4 marcados', 'el día con el Coliseo y el Foro no sale marcado como imprescindibles (y solo ese)')
+  const idRec = filaRecomendada(hoja)
+  debe(Boolean(idRec), '4 marcados', 'no hay recomendado')
   debe(idRec !== 'd2', '4 marcados', 'se recomienda el día que pierde los imprescindibles')
 }
 

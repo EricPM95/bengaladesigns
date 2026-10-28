@@ -142,7 +142,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
       <main className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto px-4 pb-10 pt-0.5" style={{ scrollbarWidth: 'none' }}>
         <Grupo titulo="Mi cuenta">
           <Fila icono="correo" titulo={email ?? 'Tu cuenta'} sub={textoDeComoEntra(proveedor)} datos="cuenta" />
-          <Fila icono="salir" titulo="Cerrar sesión" chevron onClick={() => void cerrarSesion()} datos="cerrar-sesion" />
+          <Fila icono="presupuesto" titulo="Moneda" sub={monedaConNombre(monedaViajero)} chevron onClick={() => setHojaMoneda(true)} datos="moneda" />
           <Fila icono="llave" titulo="Tengo un código de invitación" chevron onClick={() => useUnirseUi.getState().abrir()} datos="codigo" />
         </Grupo>
         <Grupo titulo="Mis pases">
@@ -161,7 +161,6 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
             }}
             datos="sonido"
           />
-          <Fila icono="presupuesto" titulo="Moneda" sub={monedaConNombre(monedaViajero)} chevron onClick={() => setHojaMoneda(true)} datos="moneda" />
           <Fila icono="avisos" titulo="Avisos en el móvil" sub="El resumen del viaje y «en 10 días empieza tu viaje»" interruptor={{ activo: avisosMovil, cambiar: () => void cambiarAvisos() }} datos="avisos-movil" />
           <Fila
             icono="seguir"
@@ -177,6 +176,10 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
         <Grupo>
           <Fila icono="compartido" titulo="Invitar a un amigo" sub={<TextoConPase texto={listaAjustes.textos['Invita a un amigo']} />} boton="Compartir el enlace" onClick={() => void invitarAmigo()} datos="invitar-amigo" />
           <Fila icono="candado" titulo="Privacidad y condiciones" chevron onClick={() => setPrivacidad(true)} datos="privacidad" />
+        </Grupo>
+        {/* (Tanda 10N8 §1b) «Cerrar sesión», al final de todo, sola en su bloque. */}
+        <Grupo>
+          <Fila icono="salir" titulo="Cerrar sesión" chevron onClick={() => void cerrarSesion()} datos="cerrar-sesion" />
         </Grupo>
         {mensaje && (
           <p role="status" data-mensaje-ajustes className="m-0 px-1.5 text-[13px] text-text/70">

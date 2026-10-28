@@ -55,7 +55,8 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   // La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos del destino.
   const barrio = useEtiquetaBarrio(useRouteStore((state) => state.route?.destination), stop.name)
   // El botón redondo de la entrada (Tanda 10N4): frambuesa si te falta, verde con ✓ si la tienes. Sin palabras; las etiquetas de la tarjeta le dejan su sitio.
-  const botonEntrada = useBotonEntrada(stop, stop.visitMode === 'fuera')
+  // (Tanda 10N8 §8b-i) Todo sitio con entradas para comprar lleva su botón, también si se ve por fuera (el Castillo de Sant'Angelo se visita siempre «por fuera» en la ruta y no lo tenía, y se puede reservar).
+  const botonEntrada = useBotonEntrada(stop)
   // (10N5) Al abrir un aviso de «ha cambiado el viaje», lo que cambió sale marcado: «Movida» o «Nueva».
   const marcaDeCambio = useCambiosMarcados((state) => state.marcas[normaDeParada(stop.name)])
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.

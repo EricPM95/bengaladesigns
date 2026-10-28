@@ -3,6 +3,7 @@ import type { Route, Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { resolveDisplayStops, seedStopsFromTemplate } from '../../../lib/mockDayDetail'
 import { Modal } from '../../ui/Modal'
+import { HojaDia, filasDeDias } from '../../ui/HojaDia'
 import { delDia, diaCorto } from '../../../lib/nombreDeDia'
 import { tituloSimpleDelDia } from '../../../lib/tituloDelDia'
 
@@ -21,6 +22,7 @@ interface DayPositionPickerProps {
  */
 export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPositionPickerProps) {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null)
+  const [elegido, setElegido] = useState<string | null>(null)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
 
@@ -38,6 +40,23 @@ export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPosit
     insertStopAt(selectedDay.id, index, stop)
     setSelectedDayId(null)
     onInserted()
+  }
+
+  // (10N8, 3i) El primer paso, «¿A qué día?», es la hoja de elegir día de la app (`HojaDia`); el segundo, el punto del día, sigue como estaba.
+  if (stop && !selectedDay) {
+    return (
+      <HojaDia
+        etiqueta={stop.name}
+        titulo="¿A qué día lo añadimos?"
+        filas={filasDeDias(route, route.days.filter((day) => !day.isReturnLeg))}
+        elegido={elegido}
+        onElegir={setElegido}
+        boton={elegido ? 'Siguiente: elegir el punto' : 'Elige un día'}
+        onConfirmar={() => setSelectedDayId(elegido)}
+        onCerrar={handleClose}
+        datos="day-position-picker"
+      />
+    )
   }
 
   return (

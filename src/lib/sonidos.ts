@@ -140,22 +140,32 @@ export function reproducirMomentos(tipos: string[]) {
 
 let escuchandoElToque = false
 /**
- * (Tanda 10N4 §4b) En el iPhone la web solo puede sonar si la persona ya ha tocado la pantalla alguna vez desde que abrió la app: en el primer toque se prepara el audio (se crea y se reanuda),
- * para que el aviso que llegue después pueda sonar. Si el navegador no deja, no pasa nada. Se llama una vez al montar el anfitrión de avisos.
+ * (Tanda 10N4 §4b, 10N8 §2) En el iPhone la web solo puede sonar si la persona ya ha tocado la pantalla alguna vez desde que abrió la app. Lo que se vio en la 10N8: el audio se «desbloqueaba» solo en el PRIMER
+ * toque y con `pointerdown`, y en Safari el desbloqueo vale con `touchend` / `click` (no con `pointerdown`); además, al volver de segundo plano iOS deja el audio en «interrupted» y solo otro toque lo reanuda.
+ * Ahora cada toque (`touchend`, `click`, `pointerup`, `keydown`) comprueba que el audio esté sonando y, si no, lo reanuda y reproduce un instante de silencio (la forma de desbloquearlo en iOS), y el sonido del aviso se
+ * deja ya descargado para que suene al momento cuando llegue. Se llama una vez al montar el anfitrión de avisos. Si el navegador no deja, no pasa nada.
  */
 export function prepararAudioAlPrimerToque() {
   if (escuchandoElToque || typeof window === 'undefined') return
   escuchandoElToque = true
   const alToque = () => {
-    window.removeEventListener('pointerdown', alToque, true)
-    window.removeEventListener('touchend', alToque, true)
     try {
       const ctx = contextoDeAudio()
-      if (ctx && ctx.state === 'suspended') void ctx.resume().catch(() => undefined)
+      if (!ctx) return
+      if (ctx.state !== 'running') {
+        void ctx.resume().catch(() => undefined)
+        // Un instante de silencio: en iOS es lo que termina de desbloquear el audio.
+        const vacio = ctx.createBuffer(1, 1, 22050)
+        const fuente = ctx.createBufferSource()
+        fuente.buffer = vacio
+        fuente.connect(ctx.destination)
+        fuente.start(0)
+      }
+      // El sonido del aviso, ya listo.
+      if (!buffers.has('aviso')) void cargar('aviso')
     } catch {
       /* sin audio */
     }
   }
-  window.addEventListener('pointerdown', alToque, true)
-  window.addEventListener('touchend', alToque, true)
+  for (const evento of ['touchend', 'click', 'pointerup', 'keydown']) window.addEventListener(evento, alToque, { capture: true, passive: true })
 }

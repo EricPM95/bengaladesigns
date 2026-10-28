@@ -35,7 +35,7 @@ const reserva = (id, nombre, precio, paraQuien, extra = {}) => ({ id, kind: 'ent
 const entradaBase = (reservations, cuentasEntre, extra = {}) => ({ route: { ...ruta, cuentasEntre }, reservations, accommodationSelections: { d1: { name: 'Hotel Roma', precio: eur(400) } }, transportBookings: {}, insuranceBooking: null, rentalVehicleBooking: null, esimPrecios: {}, moneda: 'EUR', cambio: null, pago: true, ...extra })
 const reparto = (yoId, extra = {}) => ({ yoId, adminId: 'eric', esInvitado: yoId !== 'eric', todos: TODOS, entreDe: null, ...extra })
 const compartido = (rep) => ({ gastos: [], extrasDeLaRutaMios: rep.yoId === 'eric', reparto: rep })
-const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas)
+const lineasDe = (p) => [...p.bloques.flatMap((b) => b.lineas), ...(p.loTuyo ?? [])] // (10N8) lo «Solo tú» está en su bloque «Lo tuyo»
 const ids = (p) => lineasDe(p).map((l) => l.id).join()
 {
   // 1k · Eric añade el Coliseo 100 € solo para él, y el Foro 60 € para él y Ana.
@@ -280,7 +280,7 @@ else {
     await a.esp(1500)
     const t1 = await textoPresu()
     debe(/Coliseo, Foro y Palatino[^|]*Solo tú/.test(t1) && /Del grupo\s*60/i.test(t1), '1k', `en el presupuesto de Eric: el Coliseo con «Solo tú» y «Del grupo» = 60 € (${t1.slice(0, 260)})`)
-    debe(await ev("Boolean(document.querySelector('[data-solo-tu] svg'))"), '1k', 'con el icono del candado')
+    debe(await ev("Boolean(document.querySelector('[data-solo-tu]')?.parentElement?.parentElement?.parentElement?.querySelector('svg'))"), '1k', 'con el icono del candado (en la pastilla o, en «Lo tuyo» de la 10N7, en el recuadro de la fila)')
     await a.captura(foto('presupuesto_solo_tu'))
     // Cuentas del grupo
     await ev("(() => { const b = Array.from(document.querySelectorAll('[aria-labelledby=\"titulo-presupuesto\"] button')).find((x) => /Cuentas del grupo/.test(x.textContent || '')); b?.click(); return true })()")

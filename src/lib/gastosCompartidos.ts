@@ -1,4 +1,4 @@
-import type { Importe } from './dinero'
+import type { Cambio, Importe } from './dinero'
 
 /**
  * LOS GASTOS DE UN VIAJE COMPARTIDO (Tanda 10N, apartado 9; diseño `Piezas/Presupuesto Compartido`). Los «Extras» de un viaje con gente viven en la tabla `trip_gastos` (migración 0037), no dentro de la ruta,
@@ -26,6 +26,8 @@ export interface GastoCompartido {
   entre: string[]
   decididoPor: string | null
   creadoEn: string
+  /** (Tanda 10N8 §0b-7) El cambio del día en que se apuntó (solo la moneda del gasto). Las cuentas usan este, no el de hoy. */
+  cambio?: Cambio | null
 }
 
 /** Cómo se ve un gasto desde mi lugar: del grupo (ya suma), pendiente de que lo acepten (lo mío), solo mío o rechazado (mío desde que lo rechazaron). */

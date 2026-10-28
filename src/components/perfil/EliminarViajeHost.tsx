@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { guardarTodasMisFotos, useEliminarViaje, type DatosDeLaHoja } from '../../lib/eliminarViaje'
 import { textoDeFotos } from '../../lib/viajesPerfil'
 import { Hoja, BotonHoja } from '../ui/Hoja'
+import { AvisoSobreLaBarra } from '../ui/AvisoSobreLaBarra'
 
 /** «Ana», «Ana y Luis», «Ana, Luis y Marta». */
 export function listaDeNombres(nombres: string[]): string {
@@ -106,16 +107,16 @@ function AvisoViajeEliminado() {
   }, [aviso, cerrarAviso])
   if (!aviso) return null
   return createPortal(
-    <div className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-[96] flex justify-center px-4">
-      <div data-aviso-viaje-eliminado role="status" className="pointer-events-auto flex w-full max-w-[420px] items-center gap-3 rounded-2xl bg-text px-4 py-3 text-bg shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]">
+    <AvisoSobreLaBarra z={96} datos={{ 'data-aviso-viaje-eliminado': '' }}>
+      <>
         <p className="min-w-0 flex-1 text-[14px] font-medium">{aviso.texto}</p>
         {aviso.deshacer && (
           <button type="button" onClick={deshacer} data-deshacer-eliminar className="shrink-0 text-[14px] font-semibold" style={{ color: '#E9C77A' }}>
             Deshacer
           </button>
         )}
-      </div>
-    </div>,
+      </>
+    </AvisoSobreLaBarra>,
     document.body,
   )
 }

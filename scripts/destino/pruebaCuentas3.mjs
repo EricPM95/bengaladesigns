@@ -60,7 +60,7 @@ const almacen = () => {
   const mapa = new Map()
   return { getItem: (k) => mapa.get(k) ?? null, setItem: (k, v) => mapa.set(k, String(v)), removeItem: (k) => mapa.delete(k), key: (i) => [...mapa.keys()][i] ?? null, get length() { return mapa.size } }
 }
-globalThis.window = { location: { search: '', hash: '', pathname: '/', origin: 'http://localhost', href: 'http://localhost/' }, sessionStorage: almacen(), localStorage: almacen(), addEventListener() {}, removeEventListener() {}, setInterval, clearInterval }
+globalThis.window = { location: { search: '', hash: '', pathname: '/', origin: 'http://localhost', href: 'http://localhost/' }, sessionStorage: almacen(), localStorage: almacen(), addEventListener() {}, removeEventListener() {}, setInterval, clearInterval, setTimeout, clearTimeout }
 globalThis.document = { body: {}, createElement: () => ({}), documentElement: { style: {}, classList: { toggle() {}, add() {}, remove() {} } }, addEventListener() {}, removeEventListener() {} }
 globalThis.localStorage = globalThis.window.localStorage
 globalThis.sessionStorage = globalThis.window.sessionStorage
@@ -641,7 +641,7 @@ console.log('3. Recomendar cambios: la propuesta, la pareja, R2 y el modo recome
   const h2c = M.pintaR2({ nombreDelAutor: "Laura", rec: rec(rr.tipo, rr.payload), route: base })
   debe(/Laura te recomienda otra ruta/.test(h2c) && (h2c.match(/data-dia-que-cambia/g) ?? []).length === 2 && /data-linea="entra"/.test(h2c), 'R2c', 'R2c: «otra ruta», solo los dos días que cambian, con lo que entra en verde')
   const h2d = M.pintaR2({ nombreDelAutor: "Laura", rec: rec('dia', { accion: 'sustituir', dayId: 'dX', day: dia('dX', 4, [st('q1', 'Trastevere'), st('q2', 'Castillo')]) }), route: base })
-  debe(/¿En qué día lo pones\?/.test(h2d) && /data-elegir-dia="d1"/.test(h2d) && /Lo que propone/.test(h2d) && /disabled/.test(h2d.slice(h2d.indexOf('data-boton-hoja="aceptar"') - 200, h2d.indexOf('data-boton-hoja="aceptar"') + 50)), 'R2d', 'R2d: «¿En qué día lo pones?», los días a elegir, lo que propone y [Aceptar] apagado hasta elegir')
+  debe(/¿En qué día lo pones\?/.test(h2d) && /data-dia-id="d1"/.test(h2d) && /data-hoja="R2d"/.test(h2d) && /Recomendación de Laura/.test(h2d) && /Elige un día/.test(h2d), 'R2d', '(10N8, 3i) R2d: «¿En qué día lo pones?» con la hoja de elegir día de la app (HojaDia), los días a elegir y el botón apagado («Elige un día») hasta elegir')
   const hQuitar = M.pintaR2({ nombreDelAutor: "Laura", rec: rec('cambio', { dayId: 'd9', accion: 'quitar', stopId: 'zzz' }), route: base })
   debe(/Puedes aceptarla igualmente/.test(hQuitar), 'R2', 'lo que ya está hecho se acepta sin cambiar nada y lo dice')
 

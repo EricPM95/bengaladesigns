@@ -1,0 +1,128 @@
+[
+ {
+  "apartado": "7",
+  "punto": "7a Fuera «Tu reserva es del viernes 13: la pasamos a ese día…»",
+  "estado": "hecho",
+  "nota": "Quitado en las dos hojas de AddReservationSheet (comprobado en código).",
+  "donde": "RESERVAS > añadir entrada > cambiar el día a uno fuera de la ruta; cualquier cuenta",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "7",
+  "punto": "7b Un solo bloque de vuelo y uno de alojamiento para quien no es administrador",
+  "estado": "hecho",
+  "nota": "Probado en pantalla (N6, invitada Ana con permiso editar): un solo bloque de vuelo y uno de alojamiento, «Lo ha puesto Eric · para todos» (desde quien mira), «Tengo otro vuelo» / «Me alojo en otro sitio». También el estado «Falta» sin nada puesto. Pareja Design: Reservas Cada Uno 01 (Design solo pinta el caso «Falta» y colapsado; la app lo pinta abierto).",
+  "donde": "RESERVAS > Llegada y vuelta / Alojamiento; cuenta invitada (Ana)",
+  "captura": "docs/dias/capturas_jutrip/10n8_reservas_01_invitado_bloque_unico.jpg · docs/dias/capturas_jutrip/10n8_reservas_00_invitado_falta.jpg · docs/dias/capturas_jutrip/10n8_reservas_02_invitado_alojamiento.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_reservas_01.jpg"
+ },
+ {
+  "apartado": "7",
+  "punto": "7c Vuelo y alojamiento con «¿Para quién es?» (marcado solo quien lo pone)",
+  "estado": "medias",
+  "nota": "Probado en pantalla la hoja del vuelo: «¿Para quién es?» con solo quien lo pone marcado (Ana). Alojamiento: nombre libre, sin chips de zona de Design 05. Marcar al administrador en un vuelo de un invitado solo le avisa, no le crea vuelo.",
+  "donde": "RESERVAS > Falta > Guardar el vuelo; Ana y Luis",
+  "captura": "docs/dias/capturas_jutrip/10n8_reservas_03_hoja_vuelo_guardar.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_reservas_02b.jpg · docs/dias/capturas_jutrip/10n8_design_reservas_05.jpg"
+ },
+ {
+  "apartado": "7",
+  "punto": "7d Guardar el vuelo de una vez, sin [Guardar] en la rueda, un solo aviso con ida y vuelta",
+  "estado": "medias",
+  "nota": "Probado en pantalla: la hoja trae «Guardar el vuelo» y ningún [Guardar] suelto. DIFERENCIAS con Design (Reservas Cada Uno 02b): Design muestra «✓ Ida · mar 10 · 11:15» en la pestaña de ida, pastillas con ✓ para día y aeropuerto, rueda de dos columnas (hora : minutos) con «HORA DE SALIDA 18:05», sin campo de precio y el botón fijo abajo; la app tiene la pestaña Ida/Vuelta sin resumen, rueda de una columna, campo «Precio (opcional)» y el botón al final del scroll. Administrador: cada tramo sigue guardándose por separado, sin botón único.",
+  "donde": "RESERVAS > Llegada y vuelta (admin y invitado)",
+  "captura": "docs/dias/capturas_jutrip/10n8_reservas_03b_hoja_vuelo_boton_guardar_el_vuelo.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_reservas_02b.jpg"
+ },
+ {
+  "apartado": "7",
+  "punto": "7e Añadir gasto: solo quien lo añade marcado, sin [Para todos]/[Para mí]",
+  "estado": "hecho",
+  "nota": "Probado en pantalla (Ana, «Cada uno lo suyo»): sin [Para todos]/[Para mí], «¿Quién ha pagado?» y «¿Para quién es?» con solo Ana marcada, «Solo para ti: es un gasto tuyo y nadie más lo ve.»",
+  "donde": "Presupuesto > Añadir gasto; cuenta con «Cada uno lo suyo»",
+  "captura": "docs/dias/capturas_jutrip/10n8_reservas_04_anadir_gasto_cada_uno.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_cuentas_05.jpg"
+ },
+ {
+  "apartado": "8",
+  "punto": "Comprar la entrada a la misma hora: «Comprar a las 14:00», «Ya la tengo · Guardarla» y pregunta al volver",
+  "estado": "hecho",
+  "nota": "Probado en pantalla (Luis, no incluido): «Comprar a las 09:15» (hora del administrador) y «Ya la tengo · Guardarla»; al volver a la app sale «¿Has comprado la entrada del Coliseo, Foro y Palatino de las 09:15?» [Sí, guardarla] [Todavía no]. N6 arregló el artículo: salía «de Coliseo, Foro y Palatino» y ahora «del Coliseo…» (AddReservationSheet, sitioDeLaEntrada). La tienda se abre con window.open sustituido (no se probó la web).",
+  "donde": "RESERVAS > entrada azul de otro > Reservar la mía a la misma hora; invitado",
+  "captura": "docs/dias/capturas_jutrip/10n8_reservas_07_comprar_misma_hora.jpg · docs/dias/capturas_jutrip/10n8_reservas_07b_comprar_boton_y_ya_la_tengo.jpg · docs/dias/capturas_jutrip/10n8_reservas_08_pregunta_al_volver.jpg",
+  "captura_design": "sin pieza de Design"
+ },
+ {
+  "apartado": "8b",
+  "punto": "8b-d Presupuesto con algo «Solo tú»: bloque «Lo tuyo» y «Del grupo 0 € · Lo tuyo 25 € · Total 25 €»",
+  "estado": "hecho",
+  "nota": "Probado en pantalla (Eric con el Panteón solo para él, 25 €): bloque «Lo tuyo / Solo lo ves tú», «Del grupo 0 € · Lo tuyo 25 € · Total 25 €», también en cuenta conjunta de dos.",
+  "donde": "Presupuesto con «Cada uno lo suyo», Eric con una entrada solo para él",
+  "captura": "docs/dias/capturas_jutrip/10n8_reservas_05_presupuesto_lo_tuyo.jpg · docs/dias/capturas_jutrip/10n8_reservas_05b_presupuesto_conjunta_lo_tuyo.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_cuentas_02b.jpg"
+ },
+ {
+  "apartado": "0a",
+  "punto": "0a-6 Los gastos [Para mí] de Extras cuentan en «Tu parte»",
+  "estado": "hecho",
+  "nota": "porPersonaDelPresupuesto suma Lo tuyo. Comprobado también en pantalla: «Tu parte» de Ana pasa de 300 € a 325 € con su Souvenirs y a 333 € con las Postales. pruebaTanda10N_presupuesto actualizada y en 0 fallos.",
+  "donde": "Presupuesto > etiqueta «Tu parte»",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "0b",
+  "punto": "0b-1 Pregunta «¿Para quién…?» al añadir vuelo, alojamiento y coche del administrador",
+  "estado": "medias",
+  "nota": "QuienVaEnLoDelAdmin abre la hoja cuando pasa de no haber a haber. SIN prueba de pantalla (N6 no la hizo: requiere un viaje compartido real con el administrador añadiendo vuelo, alojamiento o coche).",
+  "donde": "RESERVAS (admin con viaje compartido) > añadir vuelo/alojamiento/coche",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "0b",
+  "punto": "0b-2 «Solo para mí» del administrador guardado aparte (red)",
+  "estado": "hecho",
+  "nota": "Migración 0062 (tabla reservas_privadas_admin + disparador) y reservasPrivadasAdmin.ts en el móvil del administrador. Probado en PGlite. La fusión en el móvil no está probada en pantalla.",
+  "donde": "Datos: Ana no recibe esa reserva en trips.bookings",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "0b",
+  "punto": "0b-5 Presupuesto de quien viaja solo como Cuentas Modo 01",
+  "estado": "hecho",
+  "nota": "Probado en pantalla: «Tu viaje», sin «por persona» ni personas, Extras con «Añadir gasto» punteado. No se pulsó el botón para comprobar que abre el formulario.",
+  "donde": "Presupuesto en un viaje sin más gente",
+  "captura": "docs/dias/capturas_jutrip/10n8_reservas_06_presupuesto_solo.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n8_design_cuentas_01.jpg"
+ },
+ {
+  "apartado": "0b",
+  "punto": "0b-6 PDF con el modo y «Lo tuyo» solo a quien lo tiene",
+  "estado": "hecho",
+  "nota": "exportPdf + compartidoDeEstado con reparto. Comprobado en código, no abierto un PDF.",
+  "donde": "Exportar PDF del viaje",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "0b",
+  "punto": "0b-7 Cambio del día de cada gasto",
+  "estado": "hecho",
+  "nota": "Migración 0063 + foto del cambio al insertar + cuentas la usan. Probado. Solo gastos (no entradas/alojamiento).",
+  "donde": "Cuentas del grupo con un gasto en otra moneda",
+  "captura": null,
+  "captura_design": null
+ },
+ {
+  "apartado": "0b",
+  "punto": "Moneda por precio en todos los sitios donde se escribe un precio",
+  "estado": "medias",
+  "nota": "Los campos de precio (HojaPrecio, AddReservationSheet, GeneralBookingModal, TransportBookingModal, vuelo, alojamiento, Añadir gasto, Extras) ya tenían selector de moneda sobre la del viajero; los precios de tienda (entradas, excursiones, actividades) ahora salen en la moneda del viajero. Solo los gastos guardan el cambio del día; «Cuánto toca» no existe en el código.",
+  "donde": "Cualquier hoja de precio",
+  "captura": null,
+  "captura_design": null
+ }
+]

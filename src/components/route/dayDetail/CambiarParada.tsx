@@ -2,22 +2,17 @@ import { useEffect, useRef } from 'react'
 import type { Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
-import { diaCorto, fechaDelDia } from '../../../lib/nombreDeDia'
+import { fechaDelDia } from '../../../lib/nombreDeDia'
 import { cambiarParadaPorOtra } from '../../../lib/cambiarParada'
-import { elSitio } from '../../../lib/articulos'
 import { displayStopName } from '../../../lib/format'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { AddStopScreen } from '../addStop/AddStopScreen'
 
-/** Los filtros con los que abre «Cambiar parada»: los monumentos (el filtro «Atracciones» de EXPLORAR) y los miradores. El viajero puede cambiarlos. */
-export const FILTROS_DE_CAMBIAR_PARADA = ['atracciones', 'miradores'] as const
-
-/** La pregunta de arriba. */
-export const preguntaDeCambiarParada = (nombre: string) => `Elige el sitio que cambia por ${elSitio(displayStopName(nombre))}`
+/** (10N8, 8b-c) El título de «Cambiar parada»: «Cambiar Via dei Fori Imperiali», «Cambiar Coliseo» (sin artículo y sin el día; si no cabe, en dos líneas). */
+export const tituloDeCambiarParada = (nombre: string) => `Cambiar ${displayStopName(nombre)}`
 
 /**
- * «Cambiar parada» del menú «···» de una parada de DÍAS (Tanda 7, punto 16): abre EXPLORAR (el explorador de lugares compartido, `PlaceExplorerScreen`) con «Atracciones» y «Miradores» puestos y arriba la
- * pregunta «¿Por cuál quieres cambiar {parada}?». El botón de cada tarjeta es ⇄; al tocarlo, ese sitio ocupa el lugar de la parada, en su día y a su hora, con [Deshacer] (`cambiarConDeshacer`), y se vuelve a DÍAS.
+ * «Cambiar parada» del menú «···» de una parada de DÍAS (Tanda 7, punto 16): abre EXPLORAR (el explorador de lugares compartido, `PlaceExplorerScreen`) SIN filtros puestos (10N8: como se abre EXPLORAR siempre) y con el título «Cambiar {parada}». El botón de cada tarjeta es ⇄; al tocarlo, ese sitio ocupa el lugar de la parada, en su día y a su hora, con [Deshacer] (`cambiarConDeshacer`), y se vuelve a DÍAS.
  * Un destino sin catálogo propio (sin explorador de lugares) usa el buscador de siempre de «Añadir parada», con el mismo resultado.
  */
 export function CambiarParada({ open, dayId, stop, city, sembrar, onClose }: { open: boolean; dayId: string; stop: Stop; city: string; sembrar: () => void; onClose: () => void }) {
@@ -61,12 +56,11 @@ export function CambiarParada({ open, dayId, stop, city, sembrar, onClose }: { o
       open
       destination={city}
       places={pool.places}
-      title={`Cambiar parada — ${diaCorto(route, day.dayNumber)}`}
+      title={tituloDeCambiarParada(stop.name)}
       route={route}
       dayNumber={day.dayNumber}
       dateIso={fechaDelDia(route, day.dayNumber)}
-      initialFilters={[...FILTROS_DE_CAMBIAR_PARADA]}
-      cambiarParada={{ pregunta: preguntaDeCambiarParada(stop.name), onElegir: cambiar }}
+      cambiarParada={{ nombre: stop.name, onElegir: cambiar }}
       onClose={onClose}
     />
   )

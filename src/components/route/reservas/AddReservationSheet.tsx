@@ -1,5 +1,6 @@
 import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { conDe, sitioConArticulo } from '../../../../shared/avisos/textos.js'
 import type { Excursion, Route } from '../../../lib/types'
 import { dateOfDay, dayLineOf, dayOfReservation, dayOnDate, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
 import { alDia, ElDia, elDia } from '../../../lib/nombreDeDia'
@@ -29,6 +30,17 @@ import { diaDeLaReservaEnPalabras, horaCorta } from '../../../lib/reservasGrupo'
 import { nombreDe } from '../../../store/useViajeCompartido'
 import { useModoCuentas } from '../../../lib/modoCuentas'
 import { ParaQuienConjunta, ParaQuienConNombres, preguntaDeReserva } from '../presupuesto/ParaQuien'
+
+/** (10N8, N6) El nombre de la entrada con su artículo: «el Coliseo, Foro y Palatino» (la tabla de artículos solo conoce «Coliseo»: si el nombre entero no está, se usa el artículo del primer sitio que cubre). */
+function sitioDeLaEntrada(target: { name: string; placeNames: string[] }): string {
+  const con = sitioConArticulo(target.name)
+  if (con !== target.name) return con
+  for (const sitio of target.placeNames) {
+    const s = sitioConArticulo(sitio)
+    if (s !== sitio) return `${s.slice(0, s.length - sitio.length)}${target.name}`
+  }
+  return target.name
+}
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -77,13 +89,6 @@ const MAX_FILE_BYTES = 3_500_000
 
 const inputClass = 'mt-1 h-11 w-full rounded-xl border border-text/15 bg-bg px-3 text-[15px] text-text placeholder:text-text-muted'
 
-/** «Viernes 16 oct». Con una fecha que no sirve, vacío (nunca rompe la pantalla). */
-function longWeekday(dateIso: string): string {
-  const date = new Date(`${dateIso}T00:00:00`)
-  if (!dateIso || Number.isNaN(date.getTime())) return ''
-  const text = new Intl.DateTimeFormat('es-ES', { weekday: 'long' }).format(date)
-  return text.charAt(0).toUpperCase() + text.slice(1)
-}
 
 async function fileToBase64(file: File): Promise<{ media_type: string; data: string }> {
   const asDataUrl = (blob: Blob) =>
@@ -158,6 +163,20 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const esInvitado = grupo.esInvitado
   const igual = target.igualQue ?? null
   const [compraAbierta, setCompraAbierta] = useState(false)
+  // (Tanda 10N8 §8) Al volver a la app tras abrir la compra: «¿Has comprado la entrada del Coliseo de las 14:00?» · [Sí, guardarla] · [Todavía no].
+  const [preguntaCompra, setPreguntaCompra] = useState(false)
+  useEffect(() => {
+    if (!compraAbierta) return
+    const alVolver = () => {
+      if (document.visibilityState === 'visible') setPreguntaCompra(true)
+    }
+    document.addEventListener('visibilitychange', alVolver)
+    window.addEventListener('focus', alVolver)
+    return () => {
+      document.removeEventListener('visibilitychange', alVolver)
+      window.removeEventListener('focus', alVolver)
+    }
+  }, [compraAbierta])
   // («Reservar la mía a la misma hora»: la rueda parte de la hora del dueño; mientras la lista de horas se acomoda, los saltos de la rueda no la cambian. Los gestos de después, sí.)
   const ultimoCambioDeRueda = useRef(0)
   const sitiosGrandes = fichasSitiosGrandes.map((sitio) => sitio.nombre)
@@ -191,7 +210,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // El día de la reserva: el de su fecha; sin fechas en el viaje, el que se elige.
   const resolvedDay = hasDates ? (fields.dateIso ? dayOnDate(route, fields.dateIso) : null) : (days.find((day) => String(day.dayNumber) === fields.dayNumber) ?? null)
   const outside = hasDates && Boolean(fields.dateIso) && !resolvedDay
-  const moved = Boolean(resolvedDay && target.currentDayId && resolvedDay.id !== target.currentDayId) && !esInvitado
   const validTime = /^\d{1,2}:\d{2}$/.test(fields.time)
   const ready = Boolean(resolvedDay && validTime)
   const bigPlace = target.placeNames.find((name) => sitiosGrandes.includes(name)) ?? null
@@ -667,11 +685,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   {ElDia(route, resolvedDay.dayNumber)} tienes la excursión: la reserva se guarda en Reservas con el aviso y tu ruta no cambia.
                 </p>
               )}
-              {moved && hasDates && resolvedDay && !outside && longWeekday(fields.dateIso) && (
-                <p className="mt-2 text-[13px] leading-snug text-text">
-                  Tu reserva es del {longWeekday(fields.dateIso).toLowerCase()} {Number(fields.dateIso.slice(8, 10))}: la pasamos a ese día de tu viaje.
-                </p>
-              )}
 
               <p className="mt-1 text-center">
                 <button
@@ -688,29 +701,46 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               </p>
 
               {(() => {
-                // [Reservar la mía a la misma hora]: primero se abre la compra (con el día y la hora ya elegidos aquí); cuando la tiene, se guarda.
-                const comprando = igual?.modo === 'comprar' && !compraAbierta
+                // [Reservar la mía a la misma hora] (Tanda 10N8 §8): «Comprar a las 14:00» abre la web; «Ya la tengo · Guardarla» la guarda en RESERVAS con ese día y esa hora, sin abrir la web.
+                const comprando = igual?.modo === 'comprar'
                 const hora = fields.time.length === 4 ? `0${fields.time}` : fields.time
                 const urlDeCompra = entradasPorSitio?.[isFreeTour ? 'Free Tour' : (target.placeNames[0] ?? '')]?.[0]?.url ?? buildActivitySearchUrl(`${target.name} ${route.destination}`)
                 return (
-                  <button
-                    type="button"
-                    disabled={!ready || planPending}
-                    data-guardar-reserva={comprando ? 'comprar' : 'guardar'}
-                    onClick={() => {
-                      if (comprando) {
-                        openTicketShop(urlDeCompra)
-                        setCompraAbierta(true)
-                      } else save()
-                    }}
-                    className="mt-7 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40"
-                  >
-                    {comprando ? `Abrir la compra · ${validTime ? hora : 'elige la hora'}` : 'Guardar'}
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      disabled={!ready || planPending}
+                      data-guardar-reserva={comprando ? 'comprar' : 'guardar'}
+                      onClick={() => {
+                        if (comprando) {
+                          openTicketShop(urlDeCompra)
+                          setCompraAbierta(true)
+                        } else save()
+                      }}
+                      className="mt-7 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40"
+                    >
+                      {comprando ? `Comprar a las ${validTime ? hora : '…'}` : 'Guardar'}
+                    </button>
+                    {comprando && (
+                      <button type="button" disabled={!ready || planPending} data-ya-la-tengo-guardarla onClick={() => save()} className="mt-3 w-full py-2 text-center text-[14px] font-semibold text-text underline underline-offset-2 disabled:opacity-40">
+                        Ya la tengo · Guardarla
+                      </button>
+                    )}
+                  </>
                 )
               })()}
-              {igual?.modo === 'comprar' && compraAbierta && (
-                <p className="mt-2 text-center text-[12.5px] leading-snug text-text/60">Cuando tengas tu entrada, guárdala aquí.</p>
+              {igual?.modo === 'comprar' && compraAbierta && preguntaCompra && (
+                <div data-pregunta-compra className="mt-3 rounded-[18px] bg-[#F3E6C6]/70 p-3.5 text-center">
+                  <p className="text-[14.5px] font-semibold leading-snug text-text">¿Has comprado la entrada {conDe(sitioDeLaEntrada(target))} de las {fields.time.length === 4 ? `0${fields.time}` : fields.time}?</p>
+                  <div className="mt-3 flex gap-2">
+                    <button type="button" data-compra-si onClick={() => save()} className="h-11 flex-1 rounded-full btn-champan text-[14.5px] font-semibold">
+                      Sí, guardarla
+                    </button>
+                    <button type="button" data-compra-no onClick={() => setPreguntaCompra(false)} className="h-11 flex-1 rounded-full border border-text/15 text-[14.5px] font-medium text-text">
+                      Todavía no
+                    </button>
+                  </div>
+                </div>
               )}
 
 
@@ -829,11 +859,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               {plan?.sinMover?.motivo === 'excursion' && !outside && resolvedDay && (
                 <p className="mt-1.5 text-[13px] leading-snug text-text">
                   {ElDia(route, resolvedDay.dayNumber)} tienes la excursión: la reserva se guarda en Reservas con el aviso y tu ruta no cambia.
-                </p>
-              )}
-              {moved && hasDates && resolvedDay && !outside && longWeekday(fields.dateIso) && (
-                <p className="mt-1.5 text-[13px] leading-snug text-text">
-                  Tu reserva es del {longWeekday(fields.dateIso).toLowerCase()} {Number(fields.dateIso.slice(8, 10))}: la pasamos a ese día de tu viaje.
                 </p>
               )}
               <div className="mt-3 flex gap-2">

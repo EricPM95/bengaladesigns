@@ -141,7 +141,7 @@ for (let i = 0; i < 120 && !(await ev(a, `Boolean(${R}.getState().route)`)); i++
 await a.esp(2500)
 debe(await ev(a, `Boolean(${R}.getState().route)`), 'viaje', 'el viaje de prueba está abierto')
 // El viaje de prueba empieza sin avisos de fechas ni tarjeta que estorben.
-await poner(a, { dateNotices: [], dateNoticesRead: undefined, dateNoticesSeenKey: null, seasonNote: null, seasonNoteDismissed: false })
+await poner(a, { dateNotices: [], dateNoticesRead: undefined, dateNoticesSeenKey: null, seasonNote: null, seasonNoteDismissed: false, contextBannerDismissed: true })
 await a.esp(600)
 
 /* 3a. Tarjeta especial primero y, al cerrarla, la ventana de avisos en el centro */

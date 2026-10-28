@@ -5,7 +5,7 @@ import { ListaDeDias, ETIQUETA_DIA_DE_EXCURSION } from '../../src/components/rou
 import { StopAccordion } from '../../src/components/route/dayDetail/StopAccordion'
 import { HojaPasarAOtroDia } from '../../src/components/route/hoy/saltar'
 import { HoyDespues } from '../../src/components/route/hoy/HoyDespues'
-import { FILTROS_DE_CAMBIAR_PARADA, preguntaDeCambiarParada } from '../../src/components/route/dayDetail/CambiarParada'
+import { FILTROS_DE_CAMBIAR_PARADA, tituloDeCambiarParada } from '../../src/components/route/dayDetail/CambiarParada'
 import { PlaceExplorerScreen, stopFromPlace } from '../../src/components/route/placeExplorer/PlaceExplorerScreen'
 import { TrazoCalendar } from '../../src/components/trazo/TrazoCalendar'
 import { TripCard } from '../../src/components/myTrips/TripCard'
@@ -32,7 +32,7 @@ export {
   HojaPasarAOtroDia,
   HoyDespues,
   FILTROS_DE_CAMBIAR_PARADA,
-  preguntaDeCambiarParada,
+  tituloDeCambiarParada,
   PlaceExplorerScreen,
   stopFromPlace,
   TrazoCalendar,

@@ -16,7 +16,7 @@ import { guardarFranjaDeUnion, type FranjaDeUnion } from './franjaDeUnion'
  * 4. Con cuenta: se canjea y se ABRE ese viaje directamente (el que había abierto sigue en «Mis viajes»); sale la franja «Te has unido al viaje a Roma de Eric».
  */
 
-export const TEXTO_CODIGO_NO_VALE = 'Ese código no es de ningún viaje. Revísalo con quien te lo ha pasado.'
+export const TEXTO_CODIGO_NO_VALE = 'Este código no existe.'
 export const TEXTO_DEMASIADOS_INTENTOS = 'Demasiados intentos. Espera unos minutos y vuelve a probar.'
 export const MAX_FALLOS = 6
 export const VENTANA_FALLOS_MS = 15 * 60 * 1000
