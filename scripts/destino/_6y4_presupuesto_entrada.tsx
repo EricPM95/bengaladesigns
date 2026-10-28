@@ -1,5 +1,6 @@
 // Entrada que empaqueta la prueba de la 6y4, parte del presupuesto (scripts/destino/pruebaFase6y4_presupuesto.mjs): pinta en el servidor las piezas que cambian y trae el almacén de verdad.
 import { createElement } from 'react'
+import { ponerMonedaLocal } from '../../src/lib/moneda'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { DayList } from '../../src/components/route/DayList'
 import { PantallaPresupuesto } from '../../src/components/route/presupuesto/PantallaPresupuesto'
@@ -26,5 +27,5 @@ import * as PrecioVuela from '../../src/lib/precioVuela'
 export {
   createElement, renderToStaticMarkup, DayList, PantallaPresupuesto, UtilParaElViaje, AccommodationBlock, HojaPrecio, HojaHoraLlegada, LlegadaYVuelta, TransportBookingModal, PlaceExplorerScreen, stopFromPlace,
   useRouteStore, usePresupuestoUi, fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, legOf, legLine, barTextOf, construirPresupuesto, alojamientoCubierto, nombreDeMoneda,
-  monedaConNombre, monedaDelViajero, pagoActivo, PrecioVuela,
+  monedaConNombre, monedaDelViajero, pagoActivo, PrecioVuela, ponerMonedaLocal,
 }

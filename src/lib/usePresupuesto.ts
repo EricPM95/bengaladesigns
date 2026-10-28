@@ -11,6 +11,7 @@ import { useGastosDelViaje } from '../hooks/useGastosDelViaje'
 import { useLoSuyo } from '../store/useLoSuyo'
 import { useMisReservas } from '../store/useMisReservas'
 import { idsConLoSuyo } from './loSuyo'
+import { useModoCuentas } from './modoCuentas'
 
 /** El presupuesto del estado de ahora (sin React): para el PDF y para quien lo necesite fuera de una pantalla. */
 export function presupuestoDeEstado(cambio: Cambio | null): Presupuesto | null {
@@ -56,14 +57,15 @@ export function usePresupuesto(): { presupuesto: Presupuesto | null; cambio: Cam
   const entradasInv = useLoSuyo((s) => s.entradas)
   const miLoSuyo = useLoSuyo((s) => s.mio)
   const misReservas = useMisReservas((s) => s.lista)
+  const { modo } = useModoCuentas()
   const adminId = personas.find((p) => p.esAdmin)?.id ?? null
   const todosIds = useMemo(() => personas.map((p) => p.id), [personas])
   const presupuesto = useMemo(
     () =>
       route
-        ? construirPresupuesto({ route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, moneda: monedaDelViajero(route), cambio, pago, compartido: compartido ? { gastos: gastosCompartidos, extrasDeLaRutaMios: !esInvitado, reparto: { yoId, adminId, esInvitado, todos: todosIds, entreDe: route.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), reservasPropias: esInvitado ? misReservas : [], entradasDeInvitados: entradasInv, loSuyo: miLoSuyo } } : undefined })
+        ? construirPresupuesto({ route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, moneda: monedaDelViajero(route), cambio, pago, compartido: compartido ? { gastos: gastosCompartidos, extrasDeLaRutaMios: !esInvitado, reparto: { yoId, adminId, modo, esInvitado, todos: todosIds, entreDe: route.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), reservasPropias: esInvitado ? misReservas : [], entradasDeInvitados: entradasInv, loSuyo: miLoSuyo } } : undefined })
         : null,
-    [route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, cambio, pago, compartido, gastosCompartidos, esInvitado, yoId, adminId, todosIds, grupoLoSuyo, entradasInv, miLoSuyo, misReservas],
+    [route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, cambio, pago, modo, compartido, gastosCompartidos, esInvitado, yoId, adminId, todosIds, grupoLoSuyo, entradasInv, miLoSuyo, misReservas],
   )
   return { presupuesto, cambio }
 }

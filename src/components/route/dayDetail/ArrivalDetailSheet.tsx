@@ -1,5 +1,6 @@
+import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { formatoImporte, precioTienda } from '../../../lib/dinero'
+import { precioTienda } from '../../../lib/dinero'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
 import type { ArrivalDepartureDetail } from '../../../lib/mockDayDetail'
@@ -40,7 +41,7 @@ function PlaneIcon() {
 }
 
 function formatPrice(precio: number, moneda: string): string {
-  return formatoImporte({ amount: precio, currency: moneda })
+  return precioEnVista({ amount: precio, currency: moneda })
 }
 
 /**
@@ -53,6 +54,7 @@ function formatPrice(precio: number, moneda: string): string {
  * web que las anclas (anchorTipsApi.ts, kind:'airport'), una fila más en la misma tabla Supabase.
  */
 export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, transportModeId, onClose }: ArrivalDetailSheetProps) {
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const [tab, setTab] = useState<Tab>('resumen')
   const [airportIndex, setAirportIndex] = useState(0)
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)

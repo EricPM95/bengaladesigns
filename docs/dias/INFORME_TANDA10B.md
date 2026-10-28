@@ -2229,3 +2229,187 @@ Cada punto del prompt, en el mismo orden. La misma lista, con casillas y cada ca
   *Dónde:* No es de móvil.
 
 **Pruebas:** Prueba de la Tanda 10N6: 7 partes (confirmar 61, aviso del pase 49, explorar 23, recuerdos 29, perfil 118 px 4, cuentas 65, entradas 12) = 243 comprobaciones, 0 fallos, con el Vite sin vigilar ficheros (`scripts/destino/_vite_estable.config.mjs`). Con el Vite de desarrollo normal (recargas en caliente), `pruebaTanda10N6_recuerdos` falla 3 comprobaciones de la sección «Con pase» (ver el informe). pruebaJutrip 129/0.
+
+---
+
+## 10N7 — Las cuentas según cómo viajáis (27-oct)
+
+**Estado:** hecho y probado. Prueba nueva `pruebaTanda10N7`: modo 85, presupuesto 82, privacidad 19, moneda 56 = 242 comprobaciones, 0 fallos. No se ha tocado el motor de rutas, así que no hace falta la muestra de 60 fechas. Design al día con `RETOQUES.zip`: la pieza es `Piezas/Cuentas Modo` (manda la 02a; en «Cada uno lo suyo» la tarjeta de arriba pone «Del grupo»).
+
+### Migraciones que tienes que aplicar (a mano, en el editor SQL de Supabase, en este orden)
+Antes, las que siguen sin aplicar de las tandas anteriores: `0047`, `0048`, `0049`, `0051` (10N5) y `0053` (10N6). La 0050 no existe (salto de numeración).
+1. `0054_modo_de_cuentas.sql` — añade el tipo de aviso `cuentas_modo`, la pregunta en el aviso de «se ha unido» y el aviso de cambio de modo. Redefine el constraint `avisos_tipo_check` con todos los tipos hasta la 0040 más `cuentas_modo`. **Sin ella el modo funciona igual, pero no llegan esos dos avisos.** El modo se guarda dentro de la ruta del viaje (`route.modoCuentas`, `modoElegidoCon`, `nombreCuenta`), no en una columna nueva.
+2. `0055_solo_para_mi_privado.sql` — hace que lo «Solo para mí» no avise y no lo vea nadie más, tampoco el administrador (`avisar_reservas_grupo`, `avisar_entrada_de_invitado`, `entradas_del_grupo`, `lo_suyo_del_grupo`, `avisar_lo_suyo_propio`). Va después de la 0053. **Sin ella, eso solo se garantiza en la pantalla, no en el servidor.**
+3. `0056_moneda_del_viajero.sql` — añade `travelers.moneda` (3 letras). Sin ella la moneda queda solo en el móvil y no da error.
+
+### Qué se ha hecho
+- **Tres formas de llevar las cuentas (§1):** cada viaje tiene un `modo_cuentas` (`solo`, `conjunta`, `cada_uno`).
+  - **Solo (1a):** con una sola persona el modo es «solo». No sale el botón de modo.
+  - **Cuenta conjunta (1b):** la tarjeta oscura de arriba lleva «CUENTA CONJUNTA · ERIC Y ANA» con lápiz (solo a quien puede editar) para cambiarle el nombre, que se guarda en el viaje y lo ven todos. Sin «por persona», sin «Cuentas del grupo» y sin los nombres en la cabecera. «Ruta» y «Extras» son de la cuenta conjunta y suman en el importe de arriba. Al añadir algo, sin nombres: «Para los dos» (o «Para todos» con más de dos), marcada, y «Solo para mí» con «Solo lo ves tú.». «Solo para mí» no cuenta en el total común y sale en el bloque propio de abajo, **«Lo tuyo · Solo lo ves tú»** (con candado, solo si hay algo, cada uno el suyo). Total desglosado: «De los dos 180 € · Lo tuyo 40 € · Total 220 €» (solo para quien tiene algo suyo).
+  - **Cada uno lo suyo (1c):** los nombres y «Cuentas del grupo» con quién le debe a quién. En «Añadir gasto» ya no hay [Para todos] / [Para mí]: «¿Quién ha pagado?» y «¿Para quién es?» con los nombres, marcado solo quien lo añade. En las reservas la pregunta cambia según lo que se añade («¿Para quién has comprado la entrada?», «…el vuelo?», «¿Para quién has reservado el alojamiento?», «…la excursión?», «…el coche?»), con la línea pequeña debajo: «Solo para ti: es un gasto tuyo y nadie más lo ve.» / «Para 2 personas: entra en las cuentas del grupo.» / «Para Ana: entra en las cuentas del grupo.».
+- **Elegir y cambiar (§2):** por defecto, pareja o familia → cuenta conjunta; amigos → cada uno lo suyo; solo → solo. Un botón redondo dorado en la cabecera del presupuesto («¿Cómo lleváis las cuentas?», hoja de tarjetas «Todo juntos» / «Cada uno lo suyo»); solo el administrador la cambia, los demás la ven sin tocarla. Con gastos ya apuntados, antes la confirmación (botón rojo): «¿Cambiamos a cuenta conjunta?» · «Las deudas de las cuentas del grupo dejan de contar.» o «¿Cambiamos a cada uno lo suyo?» · «Lo apuntado contará como pagado por quien lo apuntó, a partes iguales entre todos.». Sin gastos se cambia directo. El modo no toca los gastos, así que lo «Solo para mí» sigue personal y los saldos suman 0 antes y después (al céntimo). Avisos: «Ana se ha unido a tu viaje. ¿Cómo lleváis las cuentas?» al administrador (abre la misma hoja) cuando entra la primera persona a un viaje solo, y otra vez cuando se une un tercero a una cuenta conjunta; y «Eric ha cambiado las cuentas a cuenta conjunta.» / «…a cada uno lo suyo.» a todos menos a quien lo cambia. Mientras no se elige tras unirse alguien a un viaje solo, «Cada uno lo suyo» y la pregunta arriba del presupuesto.
+- **Lo que faltaba atar (§2b):**
+  1. Lo «Solo para mí» no lo ve nadie más, tampoco el administrador (migración 0055; la app tampoco lo enseña). Sin avisos, sin cuentas, sin totales, sin RESERVAS de los demás. Lo que se oculta es el dinero, no el sitio: la parada sale en la ruta de todos.
+  2. Una cuenta conjunta a la que se une un tercero: el aviso otra vez (ver arriba).
+  3. Quien solo recomienda: en cuenta conjunta su «Para los dos» queda pendiente («Enviar a Eric») hasta que el administrador o quien puede editar lo acepta; su «Solo para mí» entra directo.
+  4. «Extras» a mano: la app no pregunta nada al comprar el pase. «Ruta» lleva lo de la ruta y «Extras» lo demás; al añadir en «Extras» se pregunta lo mismo que en una reserva (en cada uno lo suyo, «¿Quién ha pagado?» y «¿Para quién es?»; en cuenta conjunta, «Para los dos» / «Solo para mí»; viajando solo, nada).
+  5. **Moneda:** por defecto euros (ya no sale de la ciudad de origen). Se elige en «Moneda» del presupuesto y en Ajustes › La app › «Moneda»: las dos filas abren la misma hoja y cambiar una cambia la otra. Se guarda en el móvil y, con cuenta, en `travelers.moneda`. Los precios se enseñan en tu moneda con el cambio del día y «≈» («≈ 2.078 MXN · 100 €»), y donde lo que se paga está en otra moneda se ve siempre el original. Las cuentas del grupo se calculan siempre en euros y cada uno las ve convertidas; lo que no tiene cambio sale aparte en «Fuera de las cuentas, sin cambio a tu moneda», sin entrar en el total.
+     - **Ya aplicada en:** presupuesto (líneas y Extras), cuentas del grupo, RESERVAS (alojamiento, seguro, coche, transporte, «Útil para el viaje», llegada y vuelta, entradas), bloque de vehículo y ficha de llegada en DÍAS, excursiones y actividades, aviso y franja de gasto, y el pase.
+     - **Por enlazar (a medias):** los campos donde se escribe el precio (`HojaPrecio`, `AddReservationSheet`, `GeneralBookingModal`), el «Cuánto toca» de añadir gasto y las etiquetas de precio del explorador de lugares.
+
+### Procesos y CPU (aparte de la tanda)
+Por tu aviso de que se agotaba la memoria: hay una regla fija nueva en `CLAUDE.md` (un solo servidor, Chrome de prueba cerrados al acabar, baterías a prioridad baja y sin los «wrappers»). En esta tanda: al empezar había 26 procesos de Node (≈9,8 GB) y 12 de esbuild; cerré los de los agentes ya terminados y los míos, y los agentes cerraron los suyos al acabar. Una primera batería lanzó 12 Chromes a la vez (los «wrappers» duplicaban los de las pruebas sueltas): la paré y la relancé sin ellos, con un solo navegador a la vez y todo en prioridad baja.
+
+### Pruebas
+- Prueba nueva `pruebaTanda10N7`: 242 comprobaciones, 0 fallos.
+- Batería completa: 134 pruebas (sin los «wrappers», que duplican Chromes; sus partes están sueltas en la batería), 8 en MAL a la primera. Triaje: ver más abajo.
+
+### Dudas para ti
+1. **Vuelo, alojamiento y coche del administrador (a medias):** la pregunta nueva («¿Para quién has comprado el vuelo?», Para los dos / Solo para mí) está en sus filas «En este vuelo/alojamiento/coche» de RESERVAS, no en el instante exacto de añadirlos. Su valor por defecto sigue siendo «todos» (no «solo quien añade») para no mover las cuentas que ya existen. Solo probado en lógica y en código, no en pantalla.
+2. **Privacidad a nivel de red:** las reservas del administrador viajan en `trips.bookings` y los miembros pueden leer ese JSON (precio incluido); la app no lo enseña, pero a nivel de red llega. Cerrarlo del todo exige guardar lo «Solo para mí» del administrador aparte (como `reservas_invitado`). ¿Lo hacemos?
+3. **Diseño 07 (cambio de modo mientras no se elige):** Design pinta «Tu viaje» sin «Cuentas del grupo»; he seguido el prompt («Cada uno lo suyo» con su tarjeta). ¿Prefieres Design?
+4. **Diseño 08:** todavía dibuja el interruptor [Para todos | Solo para mí] en «Añadir gasto · Cada uno lo suyo»; he seguido el prompt (sin interruptor).
+5. **Viaje solo (1a) a medias:** el presupuesto de quien viaja solo sigue con el diseño viejo («Total del viaje», «por persona»); el rediseño «Tu viaje» de Design 01 no está hecho.
+6. **El PDF del presupuesto** no recibe el modo, así que «Lo tuyo» no sale en el PDF.
+7. **Cambio del día en las cuentas:** usan el cambio de hoy para todos los gastos, no el del día de cada gasto; guardar el del día de cada uno exigiría una columna nueva.
+8. **Recargo del pase:** el +4 % del pago solo está en el pase (10P); los ejemplos del prompt salen sin ese recargo (con 100 € a 20,78 MXN/€ sale 2.078).
+9. **Tarjeta oscura del presupuesto con importes largos** (por ejemplo en pesos): «2.078 MXN» puede solaparse con el texto de al lado; ya estaba así, queda para la 10S.
+10. **Lo que no se ha visto con dos cuentas reales:** los avisos «Ana se ha unido…» y de cambio de modo, y la privacidad con la 0055 aplicada, los pruebas tú con tus dos móviles después de aplicar las migraciones.
+
+### Triaje de la batería (8 en MAL de 134 a la primera, más `pruebaTanda10N2` y `pruebaTanda10N3_cuentas`, que la batería no incluía)
+**Ninguna regresión real en el código.** Solo se editaron pruebas. Todas pasan sueltas:
+- Expectativas antiguas que la 10N7 cambió a propósito (actualizadas): `pruebaTanda10N_reservas` 48/0, `pruebaTanda10N_presupuesto` 148/0, `pruebaTanda10N5_gastos` 11/0, `pruebaTanda10N5_cadauno_enLaApp` 15/0, `pruebaTanda10N2` 133/0 (por defecto, un gasto en «Cada uno lo suyo» nace «Solo para ti»; ya no existen [Para todos] / [Para mí] ni la línea «… cada uno»; con 3 o 4 personas el viaje de prueba «couple» sale como cuenta conjunta, así que esas pruebas fuerzan el modo con `window.__modoCuentas.poner('cada_uno')`).
+- Error de la propia prueba: `pruebaTanda10N5_gastos_enLaApp` 3/0 (una expresión regular dentro de una cadena de JavaScript borraba todas las «s» del texto).
+- Ya estaban bien o fueron fallos de carga que pasan sueltas: `pruebaTanda10N3_cuentas` 63/0 y `pruebaTanda10I` 91/0.
+- **`pruebaEntrarReal` era una regresión real de esta tanda, ya arreglada.** Falló 3 veces seguidas («la sesión anónima de este navegador sigue guardada»). El triaje lo atribuyó al límite de altas anónimas de Supabase, pero lo comprobé quitando una sola línea de esta tanda (`void cargarMonedaDeLaCuenta(uid)` en `useMiPerfil.cargar`, de M3, la carga de la moneda de la cuenta): sin ella pasaba 11/0. Esa consulta a `travelers` se cruzaba con el inicio de sesión. Ahora se hace 4 segundos después de cargar el perfil y pasa 11/0, y `pruebaTanda10N7_moneda` sigue en 56/0. **No he diagnosticado del todo por qué se cruzaba**: el retraso lo arregla, pero es una solución de tiempos, no de causa; queda anotado para la 10S.
+- **`pruebaTanda10N3_real` sigue fallando 2 comprobaciones de Realtime** («el DUEÑO recibe en directo el cambio del viaje que hace Luis», «el aviso viaje_cambiado de la campana»: 0 eventos). Ya fallaba igual en el triaje de la 10N6 y no se ha tocado nada de eso en esta tanda: parece de entorno (Realtime sin activar en las tablas `trips` y `avisos` del Supabase real, o migraciones sin aplicar). Míralo cuando apliques las migraciones. (Hace unas horas fallaba por «Request rate limit reached»: eso era el límite de altas anónimas, otra causa.)
+- Esta tanda no cambia nada en `server/engine` ni en `shared/routeEngine`.
+
+### Lista de comprobación de la 10N7 (punto por punto)
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10N7.md y en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Design al día con RETOQUES.zip (sin uploads/ ni screenshots/): la pieza es Piezas/Cuentas Modo (manda la 02a; en «Cada uno lo suyo» la tarjeta de arriba pone «Del grupo»)  
+  *Dónde:* No es de móvil.
+
+**1a**
+
+- ⚠️ A medias — Viajas solo (el viaje no tiene a nadie más): el presupuesto normal, sin nombres, sin «¿Para quién…?», sin «Cuentas del grupo» y sin [Para todos] / [Para mí] — la decisión de modo Hecho lo mío: con una sola persona el modo es «solo» (modoDeCuentas / useModoCuentas) y el presupuesto no enseña botón de cuentas, pregunta, etiqueta de cuenta conjunta ni «Cuentas del grupo» (probado). Falta lo de M2: el rediseño del presupuesto solo como Design 01 («Tu viaje», bloques, «Añadir gasto» punteado); hoy sale la tarjeta «Total del viaje» y el «por persona» de siempre.  
+  *Dónde:* RUTA > cartera de arriba > Presupuesto, con un viaje en el que estás tú solo (cuenta administrador, sin invitados)  *Captura:* `docs/dias/capturas_jutrip/10n7_01_solo.jpg`
+
+**1b**
+
+- ✅ Hecho — Modo por viaje (modo_cuentas: solo | conjunta | cada_uno) guardado en el viaje, con migración 0054 Se guarda dentro de la ruta del viaje (route.modoCuentas, modoElegidoCon, nombreCuenta), igual que «¿Entre quién?»: viaja con el viaje compartido y en directo. La migración 0054 (idempotente, SIN APLICAR) añade el tipo de aviso cuentas_modo, la pregunta en «se ha unido» y el aviso de cambio. Sin aplicarla el modo funciona igual; solo faltan esos dos avisos.  
+  *Dónde:* Supabase > SQL editor > pegar supabase/migrations/0054_modo_de_cuentas.sql
+- ✅ Hecho — Etiqueta «Cuenta conjunta · Eric y Ana» dentro de la tarjeta oscura de arriba, en lugar de «De los dos», sin bloque suelto y sin «por persona» Con los nombres con nombreVisible (Eric, Ana y Luis…). En cuenta conjunta desaparecen «Del grupo», el «por persona» y la tarjeta «Cuentas del grupo». El nombre de la cabecera ya no repite los nombres. El importe común y los bloques «Ruta» y «Extras» como Design (todo sumado, «Lo tuyo») es el rediseño de M2.  
+  *Dónde:* RUTA > cartera > Presupuesto, viaje en pareja o familia con Ana ya dentro (cuenta del administrador)  *Captura:* `docs/dias/capturas_jutrip/10n7_02a_conjunta.jpg`
+- ✅ Hecho — Lápiz a la derecha para cambiarle el nombre a la cuenta («Nuestro viaje a Roma»): se guarda en el viaje, lo ven todos, lo cambia quien pueda editar El lápiz abre «Nombre de la cuenta» (Hoja, Guardar). El nombre sale como «NUESTRO VIAJE A ROMA · ERIC Y ANA». Quien solo recomienda ve el nombre y no el lápiz; quien puede editar sí lo tiene. Se ve en tiempo real porque va con la ruta del viaje. Vaciar el campo vuelve a «Cuenta conjunta».  
+  *Dónde:* Presupuesto > lápiz dorado junto a «CUENTA CONJUNTA · ERIC Y ANA» > escribir > Guardar. Mirarlo luego con la cuenta de Ana (Recomendar: sin lápiz) y con la de quien tiene Editar (con lápiz)  *Captura:* `docs/dias/capturas_jutrip/10n7_03_nombre.jpg`
+- ✅ Hecho — En cuenta conjunta, «Cuentas del grupo» (quién le debe a quién) no sale: sin deudas TarjetaCuentas solo se pinta en «Cada uno lo suyo». Los gastos no se tocan al cambiar de forma: lo apuntado cuenta pagado por quien lo apuntó y repartido entre todos, así que al volver a «Cada uno lo suyo» las cuentas salen igual, al céntimo (probado con 100,01 / 33,33 / 7,07 entre 3).  
+  *Dónde:* Presupuesto de un viaje con cuenta conjunta: no hay tarjeta «Cuentas del grupo». Con «Cada uno lo suyo» sí  *Captura:* `docs/dias/capturas_jutrip/10n7_02c_conjunta_tres.jpg`
+- ✅ Hecho — «Cada uno lo suyo»: la tarjeta de arriba pone «Del grupo» (como Design 05) Con amigos (o tras elegirlo) la tarjeta oscura sigue con «Del grupo», «por persona» y debajo la tarjeta «Cuentas del grupo». Lo de las preguntas «¿Para quién has comprado…?» y las tres líneas pequeñas es de M2.  
+  *Dónde:* Presupuesto de un viaje de amigos (o con «Cada uno lo suyo» elegido)  *Captura:* `docs/dias/capturas_jutrip/10n7_05_cada_uno.jpg`
+- ✅ Hecho — Tarjeta oscura con «Cuenta conjunta · Eric y Ana» + lápiz y el importe común (etiqueta/lápiz de M1) Montado el presupuesto; la etiqueta y el lápiz los pone CuentaModo.tsx de M1  
+  *Dónde:* Presupuesto > tarjeta de arriba (viaje con pareja, como Eric)  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_02a_conjunta_eric_sin_lo_suyo.jpg`
+- ✅ Hecho — Sin «por persona» y sin «Cuentas del grupo» en la cuenta conjunta  
+  *Dónde:* Presupuesto, cuenta conjunta  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_02a_conjunta_eric_sin_lo_suyo.jpg`
+- ✅ Hecho — «Ruta» y «Extras» son de la cuenta conjunta y suman arriba Lo de antes de compartir (sin «para quién») también es común  
+  *Dónde:* Presupuesto  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_02a_conjunta_eric_sin_lo_suyo.jpg`
+- ✅ Hecho — Bloque «Lo tuyo · Solo lo ves tú» con candado, abajo tras «Extras», solo si hay algo, cada uno el suyo  
+  *Dónde:* Presupuesto > añadir gasto «Solo para mí»; ver con Eric y con Ana  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_02b_conjunta_eric_con_lo_suyo.jpg`
+- ✅ Hecho — Total explicado «De los dos 180 € · Lo tuyo 40 € · Total 220 €» solo para quien tiene algo suyo Con más de dos: «De todos»  
+  *Dónde:* Presupuesto, pie  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_02b_conjunta_eric_con_lo_suyo.jpg`
+- ✅ Hecho — Al añadir (gasto, entrada, excursión): «Para los dos»/«Para todos» marcada y «Solo para mí» con «Solo lo ves tú.», sin nombres Entrada/excursión en AddReservationSheet; gasto en HojaAnadirGasto  
+  *Dónde:* Presupuesto > Añadir gasto; tocar una entrada  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_04b_gasto_solo_para_mi.jpg`
+- ⚠️ A medias — Alojamiento, vuelo y coche del administrador: misma pregunta Está en las filas «En este vuelo/alojamiento/coche» de RESERVAS (hoja de «para quién»), no en el momento exacto de añadirlo  
+  *Dónde:* RESERVAS > fila «En este…» (admin, viaje compartido)
+- ✅ Hecho — «Solo para mí» solo lo ve quien lo añade, no cuenta en el total común, sale con candado y «Solo tú», sin aviso Avisos: migración 0055  
+  *Dónde:* Presupuesto con Eric y con Ana  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_02c_conjunta_ana.jpg`
+- ✅ Hecho — La reserva sigue en la ruta de todos (se oculta el dinero, no el sitio) No se toca la ruta  
+  *Dónde:* DIAS
+
+**1c**
+
+- ✅ Hecho — «Añadir gasto» sin [Para todos]/[Para mí]; los nombres de «¿Para quién es?», marcado solo quien lo añade Design 08 aún muestra el interruptor; se sigue el prompt  
+  *Dónde:* Presupuesto (amigos) > Añadir gasto  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_05_gasto_cada_uno_solo_tu.jpg`
+- ✅ Hecho — Pregunta de la reserva según lo que se añade (entrada, vuelo, alojamiento, excursión, coche) Entrada y excursión en la hoja; vuelo/alojamiento/coche en las hojas de RESERVAS y cuentas  
+  *Dónde:* Presupuesto > tocar Coliseo  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_05b_reserva_cada_uno.jpg`
+- ✅ Hecho — Línea pequeña: Solo para ti / Para 2 personas / Para Ana  
+  *Dónde:* Añadir gasto (amigos)  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_05b_gasto_cada_uno_dos.jpg`
+
+**2**
+
+- ✅ Hecho — Por defecto, según «¿Con quién viajas?»: pareja o familia → cuenta conjunta; amigos → cada uno lo suyo; solo → solo Sin elegir, el modo sale de la respuesta del cuestionario (no se escribe nada en el viaje). Familia: conjunta mientras no entren más personas de las del cuestionario. Un viaje solo que recibe a alguien: cada uno lo suyo y se pregunta (ver «Un viaje que era solo»).  
+  *Dónde:* Crear un viaje con cada respuesta y abrir el presupuesto con otra persona dentro
+- ✅ Hecho — Botón «¿Cómo lleváis las cuentas?» siempre a mano en el presupuesto, con la hoja de tarjetas «Todo juntos» / «Cada uno lo suyo»; la elegida con el estilo de elegir Botón redondo arriba a la derecha de la cabecera (dos anillos, borde dorado) como Design 06. La hoja es una HojaOpciones de tarjetas con la elegida en azul oscuro con ✓ dorado. No sale viajando solo (no hay nada que repartir).  
+  *Dónde:* Presupuesto > círculo dorado de arriba a la derecha  *Captura:* `docs/dias/capturas_jutrip/10n7_06b_hoja_modo.jpg`
+- ✅ Hecho — Solo el administrador la cambia (los demás la ven, sin tocarla) Con la cuenta de quien no es administrador, las tarjetas salen en gris y no hacen nada, con «Solo la cambia el administrador.». setModoCuentas también lo comprueba.  
+  *Dónde:* Presupuesto > círculo dorado, con la cuenta de Luis (Editar) o Ana (Recomendar)
+- ✅ Hecho — Un viaje que era solo y se une alguien: aviso «Ana se ha unido a tu viaje. ¿Cómo lleváis las cuentas?» que abre la misma hoja; mientras no elija, «Cada uno lo suyo» y, arriba del presupuesto, la misma pregunta Aviso con la migración 0054: «Ana se ha unido a tu viaje. ¿Cómo lleváis las cuentas?» (franja con la pregunta debajo; tocarlo abre la hoja). Arriba del presupuesto sale la pregunta con «Todo juntos» / «Cada uno lo suyo» hasta que elige. Diferencia con Design 07: mientras no elige seguimos con «Cada uno lo suyo» como pide el prompt (Design pinta «Tu viaje» y sin «Cuentas del grupo»).  
+  *Dónde:* Con la cuenta del administrador de un viaje de una persona: entra Ana con el código; campana/franja y Presupuesto  *Captura:* `docs/dias/capturas_jutrip/10n7_07_se_une.jpg`
+- ✅ Hecho — Si se cambia con gastos ya apuntados, antes la confirmación: «¿Cambiamos a cuenta conjunta?» (rojo) / «¿Cambiamos a cada uno lo suyo?», con sus líneas; sin gastos, directo ConfirmDialog con las dos frases exactas del prompt; la de «cuenta conjunta» con botón rojo (se pierden las deudas), la otra no. «Mejor no» no cambia nada. Sin gastos apuntados no se pregunta.  
+  *Dónde:* Presupuesto con algún gasto del grupo apuntado > círculo dorado > elegir la otra forma  *Captura:* `docs/dias/capturas_jutrip/10n7_06c_confirmar_conjunta.jpg`
+- ✅ Hecho — Lo «Solo para mí» sigue personal tras cambiar; las cuentas cuadran al céntimo El modo no reescribe ni mueve gastos: los «Solo para mí» (ámbito mío) siguen sin entrar en las cuentas y la suma de saldos es 0 antes y después. Probado en puro y en la app.  
+  *Dónde:* Presupuesto > cambiar de forma > Cuentas del grupo: Total y saldos igual que antes
+- ✅ Hecho — A todos los del viaje les llega «Eric ha cambiado las cuentas a cuenta conjunta.» / «…a cada uno lo suyo.» (campana y franja) Aviso cuentas_modo (migración 0054): a todos menos a quien lo cambia; solo avisa si el modo cambia de verdad (elegir lo que ya salía por defecto no avisa); varios cambios sin leer se quedan en el último. Textos y franja en shared/avisos/textos.js; la app lo recoge en directo (accionPorAviso). Probado con la base de datos real (PGlite).  
+  *Dónde:* Con la cuenta de Ana: Eric cambia la forma; sale la franja de arriba y el aviso en la campana
+
+**2b**
+
+- ✅ Hecho — 2b-2 · Una cuenta conjunta a la que se une alguien nuevo: al administrador le llega otra vez «Luis se ha unido a tu viaje. ¿Cómo lleváis las cuentas?» con la misma hoja; mientras no elija, sigue como estaba Entra la tercera persona (o más) y el aviso lleva la pregunta; la cuenta sigue conjunta y arriba del presupuesto vuelve la pregunta hasta que contesta (aunque diga lo mismo). Con «Cada uno lo suyo» no se pregunta al entrar más gente.  
+  *Dónde:* Viaje en pareja con cuenta conjunta: entra una tercera persona; con la cuenta del administrador, campana y Presupuesto  *Captura:* `docs/dias/capturas_jutrip/10n7_02c_conjunta_tres.jpg`
+
+**2b-1**
+
+- ⚠️ A medias — Lo «Solo para mí» no lo ve nadie, tampoco el administrador (cuentas, totales, avisos, campana, RESERVAS) Pantalla, avisos, RPC y gastos cerrados (0055, sin aplicar). Límite: el JSON de reservas del administrador (trips.bookings) llega a los miembros; la app no lo enseña  
+  *Dónde:* Presupuesto con Ana vs Eric  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_02c_conjunta_ana.jpg`
+
+**2b-3**
+
+- ✅ Hecho — Quien solo recomienda: su gasto «Para los dos» queda pendiente; su «Solo para mí», directo  
+  *Dónde:* Presupuesto como Ana (recomendar)  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_recomienda_pendiente.jpg`
+
+**2b-4**
+
+- ✅ Hecho — «Ruta» lo de la ruta, «Extras» lo demás; al añadir en Extras mismas preguntas; solo: nada; el pase no pregunta La app no pregunta nada al comprar el pase (no hay flujo que lo apunte)  
+  *Dónde:* Presupuesto > Extras > Añadir gasto  *Captura:* `docs/dias/capturas_jutrip/10n7_m2_05_gasto_cada_uno_solo_tu.jpg`
+
+**2b**
+
+- ✅ Hecho — 5a · Moneda por defecto: euros Sin nada elegido, todo se enseña en euros (antes salía de la ciudad de origen del formulario; ya no).  
+  *Dónde:* Presupuesto > fila «Moneda» abajo del todo: dice «€ Euro». Cualquier cuenta nueva.  *Captura:* `docs/dias/capturas_jutrip/10n7_moneda_01_presupuesto_euros.jpg`
+- ✅ Hecho — 5b · Cada viajero la elige en dos sitios sincronizados: «Moneda» del presupuesto y Ajustes del perfil Los dos abren la misma hoja de tarjetas (HojaOpciones, la elegida con el estilo de elegir) y llaman a la misma función: cambiar en uno cambia el otro al instante. Design solo dibuja la fila del presupuesto; la de Ajustes sigue el estilo de las demás filas de Ajustes.  
+  *Dónde:* Presupuesto > «Moneda»; Perfil > Ajustes > «La app» > «Moneda». Cambia en uno y mira el otro.  *Captura:* `docs/dias/capturas_jutrip/10n7_moneda_02_hoja_moneda.jpg; 10n7_moneda_04_ajustes_moneda.jpg; 10n7_moneda_05_ajustes_hoja.jpg`
+- ⚠️ A medias — 5c · Se guarda en su cuenta Se guarda siempre en el móvil (vale sin sesión y sin conexión) y, con cuenta, en travelers.moneda al cambiarla y se trae al entrar. Falta que Eric aplique a mano la migración 0056; mientras no esté, queda solo en el móvil (sin error). No se ha probado contra la base real.  
+  *Dónde:* Cambia la moneda con una cuenta, cierra sesión y entra en otro móvil: debería salir la misma (tras aplicar la 0056).
+- ⚠️ A medias — 5d · Esa moneda se usa para enseñar los precios en toda la app (presupuesto, cuentas, RESERVAS, entradas, excursiones, el pase) con el cambio del día Aplicado en: presupuesto (líneas y extras), Cuentas del grupo, RESERVAS (alojamiento, seguro, coche, transporte, útil para el viaje, llegada y vuelta), entradas reservadas, vehículo y llegada de DIAS, excursiones, actividades de un sitio, aviso de un gasto, franja de gasto y el pase (empieza en tu moneda; su selector propio sigue). Sin aplicar aún (precio escrito por el usuario en su moneda o texto ya formateado): campos de precio al añadir (HojaPrecio, AddReservationSheet, GeneralBookingModal), «cuánto toca» de HojaAnadirGasto, y las etiquetas de precio de excursión ya formateadas (priceLabel) en el explorador.  
+  *Dónde:* Pon la moneda en pesos y recorre Presupuesto, RESERVAS, DIAS (excursiones) y Cuentas: los precios salen «≈ … MXN».  *Captura:* `docs/dias/capturas_jutrip/10n7_moneda_03_presupuesto_pesos.jpg`
+- ✅ Hecho — 5e · Cada precio se guarda en la moneda en que se apuntó; en otra moneda se enseña convertido con «≈» y, en pequeño, el original («≈ 2.150 MXN · 100 €») Nada se reescribe: cada precio guarda su {importe, moneda}. Formato central formatearPrecio / precioEnVista en src/lib/monedaFormato.ts y moneda.ts. Cambio del día del servidor (/api/cambio), pedido una vez y guardado; sin cambio se enseña el original sin romper. El «+4 %» de Stripe solo se usa en el pase (10P), no aquí: las cifras de ejemplo del prompt (2.150) salen sin ese recargo.  
+  *Dónde:* Presupuesto > Extras: «Cena en Trastevere» 100 € con moneda pesos: «≈ 2.078 MXN» y «100 €» debajo.  *Captura:* `docs/dias/capturas_jutrip/10n7_moneda_03_presupuesto_pesos.jpg`
+- ✅ Hecho — 5f · Donde lo que se paga de verdad está en otra moneda (RESERVAS, entradas, excursiones) siempre se ve el original En RESERVAS, entradas y excursiones el texto lleva siempre convertido y original juntos («≈ 215 MXN · 20 €»); en el presupuesto, el original va debajo del convertido.  
+  *Dónde:* RESERVAS > Entradas / Alojamiento / Transporte con precio; DIAS > excursión con precio «desde».
+- ⚠️ A medias — 5g · Las cuentas del grupo, todas en una misma base (euros, con el cambio del día) y cada uno las ve en su moneda con «≈» si hay cambio Las cuentas se calculan en euros (al céntimo, probado con euros y pesos) y se enseñan convertidas con «≈» + una línea «Las cuentas se llevan en euros…». Aproximación: se usa el cambio del día de HOY para todos los gastos (el cambio del día de cada gasto no se guarda con el gasto; haría falta una columna nueva). «Ya está pagado» se guarda ahora en euros (los pagos antiguos en otra moneda se pasan al cargarlos). PantallaCuentas solo se tocó en los puntos de formato.  
+  *Dónde:* Presupuesto > Cuentas del grupo (viaje compartido, «Cada uno lo suyo»), con tu moneda distinta de euros.
+- ✅ Hecho — 5h · Un gasto en una moneda sin cambio no se queda fuera sin avisar: sale con su moneda y «Sin cambio a tu moneda» y se cuenta aparte En Cuentas del grupo sale un bloque «Fuera de las cuentas, sin cambio a tu moneda» con cada gasto y su moneda original; no entra en el total. En el presupuesto, las líneas sin cambio dicen «Sin cambio a tu moneda» y su original. Lo personal de otro nunca sale. Probado en lo puro; no comprobado en pantalla con un viaje compartido real.  
+  *Dónde:* Cuentas del grupo con un gasto en una moneda rara (sin cambio del día).
+
+**3 · La prueba**
+
+- ✅ Hecho — Prueba nueva pruebaTanda10N7 (modo de cuentas, presupuesto, privacidad y moneda) Prueba de la Tanda 10N7: modo 85, presupuesto 82, privacidad 19, moneda 56 = 242 comprobaciones, 0 fallos.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La batería completa y pruebaJutrip, en 0 fallos (si alguna falla solo con el Vite normal, se pasa con el Vite estable y se dice) Bateria completa (134 pruebas, sin wrappers, un Chrome a la vez): 8 en MAL a la primera; triaje sin regresiones reales: expectativas antiguas actualizadas y todas pasan sueltas con 0 fallos, salvo pruebaTanda10N3_real (Realtime, ya fallaba en la 10N6). pruebaEntrarReal era una regresion real de esta tanda y esta arreglada (ver informe).  
+  *Dónde:* No es de móvil.
+
+**3 · Capturas**
+
+- ✅ Hecho — Capturas en docs/dias/capturas_jutrip/ y esta página a tamaño de móvil, cada una al lado de la de Design  
+  *Dónde:* Esta página.
+
+**4 · El informe**
+
+- ✅ Hecho — Apartado «10N7» en docs/dias/INFORME_TANDA10B.md (con las migraciones a aplicar) y esta lista al final  
+  *Dónde:* No es de móvil.
+
+**Pruebas:** Prueba de la Tanda 10N7: modo 85, presupuesto 82, privacidad 19, moneda 56 = 242 comprobaciones, 0 fallos.

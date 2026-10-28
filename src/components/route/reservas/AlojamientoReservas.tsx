@@ -1,3 +1,4 @@
+import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
@@ -5,7 +6,6 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { estanciasDelViaje, nochesTexto, precioDeAlojamiento, zonaDeAlojamientoElegida } from '../../../lib/tuAlojamiento'
-import { formatoImporte } from '../../../lib/dinero'
 import { BloqueShell, CambiarBoton, EliminarTexto, EstadoBloque, FlechaBloque, ICONOS, INK, IconoBloque, tituloBloqueStyle } from './BloqueReservas'
 import { Icono } from '../../ui/Icono'
 import { Candado } from '../../pase/Candado'
@@ -96,6 +96,7 @@ export function AlojamientoReservas({
   /** El enganche de la Tanda 7 (`src/lib/cambioDeVuelo.ts`): se llama al elegir o cambiar la zona. */
   onCambioDeVuelo?: EnCambioDeVuelo
 }) {
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const zona = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const setZona = useRouteStore((state) => state.setAccommodationZone)
   const direccion = useRouteStore((state) => state.route?.accommodationAddress ?? null)
@@ -144,7 +145,7 @@ export function AlojamientoReservas({
                 <span className="min-w-0 flex-1 text-[13.5px] leading-[1.4]">
                   <span className="block truncate text-[15px] font-medium">{hotel.name}</span>
                   {noches > 0 && <span className="block text-text/65">{nochesTexto(noches)}</span>}
-                  {precio !== null && <span className="block text-text/65">{formatoImporte(precio)}</span>}
+                  {precio !== null && <span className="block text-text/65">{precioEnVista(precio)}</span>}
                 </span>
                 <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />
               </div>

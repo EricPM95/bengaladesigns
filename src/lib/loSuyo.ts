@@ -116,3 +116,11 @@ export function entreDeLoDelAdmin(e: { tipo: 'alojamiento' | 'coche' | 'vuelo'; 
   const propios = e.tipo === 'vuelo' ? e.conVueloPropio : e.tipo === 'alojamiento' ? e.conAlojamientoPropio : undefined
   return propios && propios.size > 0 ? entreEfectivo(marcadas, e.todos, propios, e.adminId) : marcadas.length > 0 ? marcadas : [...e.todos]
 }
+
+/**
+ * (Tanda 10N7 §1b) «Solo para mí» de la cuenta conjunta. En una cuenta conjunta lo común es TODO lo que no es «solo para mí»: una reserva sin «¿Para quién es?» (las de antes de que se uniera nadie) también es de los dos.
+ * Solo es personal lo que dice «solo para mí» (la lista es solo quien lo paga). En «Cada uno lo suyo» y viajando solo sigue la regla de la 10N6 (`reservaEsPersonal`).
+ */
+export type ModoDeLasCuentas = 'solo' | 'conjunta' | 'cada_uno'
+export const reservaEsPersonalSegunModo = (modo: ModoDeLasCuentas | null | undefined, paraQuien: readonly string[] | null | undefined, pagaId: string | null | undefined): boolean =>
+  modo === 'conjunta' ? esSoloDe(paraQuien, pagaId) : reservaEsPersonal(paraQuien, pagaId)

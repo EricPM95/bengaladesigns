@@ -64,6 +64,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   const reservations = useReservasParaMi()
   const accommodationZone = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
+  const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
   const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
   /** Después del viaje ya no queda nada por reservar: ni la tarjeta oscura (se esconde sola) ni la clara salen. */
   const viajeAcabado = getTodayTripStatus(route, simulada ?? undefined)?.phase === 'after'
@@ -219,6 +220,8 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
               )}
               <div className={hayExcursiones ? 'contents' : 'md:col-span-2'}>
                 <UtilParaElViaje route={route} pago={pago} />
+                {/* (Tanda 10N7) El coche del administrador también dice «¿Para quién has reservado el coche?» (cuenta conjunta: «Para los dos» / «Solo para mí»). */}
+                {grupo.esAdmin && grupo.compartido && <QuienVaEnLoDelAdmin route={route} gente={grupo.gente} que="coche" hecho={Boolean(rentalVehicleBooking)} claves={['coche']} adminId={adminId} />}
               </div>
             </div>
             {/* (Tanda 10N3) El lápiz de la propuesta no tapa lo último de RESERVAS. */}

@@ -1,3 +1,4 @@
+import { precioEnVista } from '../../../lib/moneda'
 import { useEffect, useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
@@ -12,7 +13,7 @@ import { TimeListWheel } from '../../ui/TimeListWheel'
 import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, EstadoBloque, GR, INK, IconoBloque, VERDE_LINEA, VERDE_SUAVE, iconoDeMedio, tituloBloqueStyle } from './BloqueReservas'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { HojaPrecio } from './HojaPrecio'
-import { formatoImporte, leerImporte, type Importe } from '../../../lib/dinero'
+import { leerImporte, type Importe } from '../../../lib/dinero'
 import { Icono } from '../../ui/Icono'
 import { Candado } from '../../pase/Candado'
 import { usePagoActivo } from '../../../lib/pago'
@@ -255,7 +256,7 @@ function MitadAbierta({
       <div className="flex flex-col gap-1.5">
         <div className="grid grid-cols-2 gap-1.5">
           <CasillaToque etiqueta={esIda ? 'Llega' : 'Sale'} valor={leg.time} vacio="Elige la hora" icono="reloj" onClick={onTime} />
-          <CasillaToque etiqueta="Precio" valor={precio ? formatoImporte(precio) : null} vacio="Añadir" icono="anadir" onClick={onPrecio} />
+          <CasillaToque etiqueta="Precio" valor={precio ? precioEnVista(precio) : null} vacio="Añadir" icono="anadir" onClick={onPrecio} />
           <CasillaTexto key={`ref-${leg.mode}`} etiqueta={palabras.refLabel} valor={leg.codigo ?? ''} ejemplo="AB 1234" mayusculas onGuardar={onCodigo} />
           <CasillaTexto key={`cia-${leg.mode}`} etiqueta={palabras.companiaLabel} valor={leg.compania ?? ''} ejemplo="Opcional" onGuardar={onCompania} />
         </div>

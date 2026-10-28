@@ -21,13 +21,14 @@ import { AVISO_DISPONIBILIDAD, horasDeLaRueda, useHorarioDeEntrada } from '../..
 import { FREE_TOUR_HOURS } from '../../../lib/freeTourHoras'
 import { avisoDeLaHora, civitatisActiva, ruedaConHorasLibres, useHorasLibres } from '../../../lib/civitatis'
 import { llegadaVueltaDe } from '../../../lib/llegadaVuelta'
-import { PastillaElegir } from '../../ui/Elegir'
 import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
 import { useMisReservas } from '../../../store/useMisReservas'
 import { openTicketShop } from './EntradaCard'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
-import { cuantosDeCuantos, diaDeLaReservaEnPalabras, horaCorta } from '../../../lib/reservasGrupo'
-import { inicialDe, nombreDe } from '../../../store/useViajeCompartido'
+import { diaDeLaReservaEnPalabras, horaCorta } from '../../../lib/reservasGrupo'
+import { nombreDe } from '../../../store/useViajeCompartido'
+import { useModoCuentas } from '../../../lib/modoCuentas'
+import { ParaQuienConjunta, ParaQuienConNombres, preguntaDeReserva } from '../presupuesto/ParaQuien'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -318,8 +319,11 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const personasDelViaje = useMemo(() => [...grupo.gente].sort((a, b) => Number(b.esAdmin) - Number(a.esAdmin)), [grupo.gente])
   const adminId = personasDelViaje.find((p) => p.esAdmin)?.id ?? null
   const quienReservaId = esInvitado ? grupo.yoId : adminId
+  // (Tanda 10N7) Cómo se llevan las cuentas: en la conjunta, «Para los dos / Para todos» (marcada) o «Solo para mí»; en «Cada uno lo suyo», los nombres con solo quien reserva marcado.
+  const { modo: modoCuentas } = useModoCuentas()
   const [marcados, setMarcados] = useState<string[]>(() => {
     const antes = (existing?.paraQuien ?? []).filter((id) => personasDelViaje.some((p) => p.id === id))
+    if (modoCuentas === 'conjunta') return antes.length === 1 && antes[0] === quienReservaId ? antes : personasDelViaje.map((p) => p.id)
     return [...new Set([...(quienReservaId ? [quienReservaId] : []), ...antes])]
   })
   const alternarPersona = (id: string) => setMarcados((previous) => (previous.includes(id) ? previous.filter((other) => other !== id) : [...previous, id]))
@@ -626,19 +630,24 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               {/* Tanda 10N §8: «¿Para quién es?» — solo el dueño y solo en un viaje compartido; una pastilla por persona (la marcada, en oscuro con su ✓); si no caben, bajan a otra fila. Sin compartir, el formulario es el de siempre. */}
               {paraQuienVisible && (
                 <div className="mt-7" data-para-quien>
-                  <p className="flex items-baseline gap-2 text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
-                    ¿Para quién es?
-                    <span data-para-quien-cuenta className="text-text/70" style={{ letterSpacing: '.04em', textTransform: 'none' }}>
-                      · {cuantosDeCuantos(marcados.length, personasDelViaje.length)}
-                    </span>
-                  </p>
-                  <div className="mt-2.5 flex flex-wrap gap-2">
-                    {personasDelViaje.map((p) => (
-                      <PastillaElegir key={p.id} datos="para-quien" marca elegida={marcados.includes(p.id)} onClick={p.id === quienReservaId ? undefined : () => alternarPersona(p.id)}>
-                        {nombreDe(p) || inicialDe(p)}
-                      </PastillaElegir>
-                    ))}
-                  </div>
+                  {modoCuentas === 'conjunta' ? (
+                    <ParaQuienConjunta
+                      valor={marcados.length === 1 && marcados[0] === quienReservaId ? 'mio' : 'todos'}
+                      onCambio={(v) => setMarcados(v === 'mio' ? (quienReservaId ? [quienReservaId] : []) : personasDelViaje.map((p) => p.id))}
+                      personas={personasDelViaje.length}
+                    />
+                  ) : (
+                    <ParaQuienConNombres
+                      pregunta={isFreeTour ? '¿Para quién es?' : preguntaDeReserva(target.kind === 'excursion' ? 'excursion' : 'entrada')}
+                      personas={personasDelViaje.map((p) => ({ id: p.id, nombre: nombreDe(p), esAdmin: p.esAdmin }))}
+                      marcados={marcados}
+                      onAlternar={(id) => (id === quienReservaId ? undefined : alternarPersona(id))}
+                      yoId={quienReservaId}
+                      nombreDe={(id) => nombreDe(personasDelViaje.find((p) => p.id === id)) || 'Alguien'}
+                      datos="para-quien"
+                      datosPorId={false}
+                    />
+                  )}
                 </div>
               )}
 

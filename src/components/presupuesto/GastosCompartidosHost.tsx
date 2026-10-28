@@ -1,9 +1,9 @@
+import { precioEnVista, useMonedaViajero } from '../../lib/moneda'
 import { useEffect } from 'react'
 import { useGastosCompartidos, backendDeGastos } from '../../store/useGastosCompartidos'
 import { useViajeCompartido, nombreDe } from '../../store/useViajeCompartido'
 import { useSyncStore } from '../../store/useSyncStore'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
-import { formatoImporte } from '../../lib/dinero'
 import { useFranjaStore } from '../../store/useFranjaStore'
 
 const CADA_MS = 20_000
@@ -47,6 +47,7 @@ export function GastosCompartidosHost() {
  * lleva la misma clave (`gasto:ID`).
  */
 function FranjaDeGasto() {
+  useMonedaViajero() // (10N7)
   const franja = useGastosCompartidos((s) => s.franja)
   const cerrar = useGastosCompartidos((s) => s.cerrarFranja)
   const gasto = useGastosCompartidos((s) => s.gastos.find((g) => g.id === s.franja?.gastoId) ?? null)
@@ -58,7 +59,7 @@ function FranjaDeGasto() {
     const decisor = gente.find((p) => p.id === gasto?.decididoPor) ?? gente.find((p) => p.esAdmin)
     const quien = nombreDe(decisor)
     const titulo = aceptado ? `${quien ? `${quien} ha aceptado` : 'Han aceptado'} tu gasto` : `${quien ? `${quien} ha preferido` : 'Han preferido'} no sumar tu gasto`
-    const detalle = `${franja.nombre} · ${formatoImporte(franja.precio)} · ${aceptado ? 'ya suma en el grupo' : 'se queda solo para ti'}`
+    const detalle = `${franja.nombre} · ${precioEnVista(franja.precio)} · ${aceptado ? 'ya suma en el grupo' : 'se queda solo para ti'}`
     useFranjaStore.getState().mostrar([{ id: `gasto-franja:${franja.gastoId}:${franja.n}`, clave: `gasto:${franja.gastoId}`, titulo, detalle, icono: quien ? 'persona' : 'info', quien: quien || null }])
     cerrar()
     // eslint-disable-next-line react-hooks/exhaustive-deps

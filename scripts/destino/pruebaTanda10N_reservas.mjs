@@ -23,7 +23,7 @@ fs.mkdirSync(SALIDA, { recursive: true })
   debe(!/Lo que pagaste en total/.test(hoja), 'formulario', 'fuera «Lo que pagaste en total, todas las personas.» del formulario de la entrada')
   debe(/¿Para quién es\?/.test(hoja) && /paraQuienVisible/.test(hoja) && /paraQuienVisible = grupo\.compartido\s*$/m.test(hoja), 'formulario', '«¿Para quién es?» solo en un viaje compartido (10N5: lo ve también quien no es el dueño, para sus entradas)')
   debe(/btn-champan/.test(hoja.slice(hoja.indexOf('data-guardar-reserva') - 200, hoja.indexOf('data-guardar-reserva') + 900)), 'formulario', 'el botón [Guardar · …] del formulario es champán (btn-champan)')
-  debe(/PastillaElegir/.test(hoja), 'formulario', 'las pastillas de «¿Para quién es?» son las de «Elegir» (azul oscuro con su ✓)')
+  debe(/ParaQuienConNombres/.test(hoja) && /PastillaElegir/.test(sinComentarios(leer('src/components/route/presupuesto/ParaQuien.tsx'))), 'formulario', 'las pastillas de «¿Para quién es?» son las de «Elegir» (azul oscuro con su ✓)')
   const panel = sinComentarios(leer('src/components/route/ReservasPanel.tsx'))
   debe(/<ZonaGris activo=\{grupo\.esInvitado\}/.test(panel) && !/ReservasSoloVer/.test(panel), 'misma_pantalla', 'RESERVAS del invitado es la misma pantalla (ReservasPanel) con Llegada y Alojamiento en una ZonaGris')
   debe(!fs.existsSync('src/components/route/ReservasSoloVer.tsx'), 'misma_pantalla', 'la pantalla pobre «ReservasSoloVer» ya no existe')
@@ -84,6 +84,8 @@ const ponerGente = (a, yo) =>
       st.setState({ cargar: async () => {} })
       st.getState().poner({ gente: yo ? g : [] })
     }
+    // (10N7) Con 3-4 personas en un viaje «couple» saldría cuenta conjunta: esta prueba mira «Cada uno lo suyo».
+    if (yo) window.__modoCuentas?.poner('cada_uno', 4)
     return true
   })()`)
 const irAReservas = async (a) => {
@@ -179,7 +181,7 @@ try {
       }
     })()`)
   let est = await pq()
-  debe(est && est.nombres.join('|') === '✓Eric|Ana|Luis|Marta'.replace('✓', '') && est.cuenta === '· 1 de 4', 'para_quien', `cuatro pastillas, el dueño marcado y «1 de 4» (${JSON.stringify(est)})`)
+  debe(est && est.nombres.join('|') === '✓Eric|Ana|Luis|Marta'.replace('✓', '') && est.cuenta === '1 de 4', 'para_quien', `cuatro pastillas, el dueño marcado y «1 de 4» (${JSON.stringify(est)})`)
   debe(est && est.marcadas.join('|') === 'Eric', 'para_quien', 'el dueño sale ya marcado')
   debe(est && /28, 34, 48/.test(est.fondoMarcada), 'para_quien', `la pastilla marcada va en azul oscuro (${est?.fondoMarcada})`)
   debe(est && est.despuesDeLaDisponibilidad && est.antesDelPrecio, 'para_quien', 'va después de «Recuerda revisar la disponibilidad…» y antes del precio')
@@ -187,7 +189,7 @@ try {
   await a.evaluar(`(() => { const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); Array.from(hoja.querySelectorAll('[data-elegir-pastilla]')).find((p) => /Ana/.test(p.textContent)).click(); return true })()`)
   await a.esp(400)
   est = await pq()
-  debe(est && est.cuenta === '· 2 de 4' && est.marcadas.join('|') === 'Eric|Ana', 'para_quien', `marcar a Ana: «2 de 4» (${est?.cuenta})`)
+  debe(est && est.cuenta === '2 de 4' && est.marcadas.join('|') === 'Eric|Ana', 'para_quien', `marcar a Ana: «2 de 4» (${est?.cuenta})`)
   // el dueño no se puede desmarcar
   await a.evaluar(`(() => { const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); Array.from(hoja.querySelectorAll('[data-elegir-pastilla]')).find((p) => /Eric/.test(p.textContent)).click(); return true })()`)
   est = await pq()

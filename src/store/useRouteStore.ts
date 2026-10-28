@@ -527,6 +527,9 @@ interface RouteStoreState {
   removeGastoExtra: (id: string) => void
   /** (Tanda 10N3) «¿Entre quién?» de una línea que entra sola en las cuentas del grupo (alojamiento, coche); `null` la deja entre todos. */
   setCuentasEntre: (clave: string, ids: string[] | null) => void
+  /** (Tanda 10N7) Cómo se llevan las cuentas y con cuánta gente se eligió; el nombre de la cuenta conjunta. */
+  setModoCuentasRuta: (modo: 'solo' | 'conjunta' | 'cada_uno', conCuantos: number) => void
+  setNombreCuenta: (nombre: string | null) => void
   setMonedaViajero: (moneda: string | null) => void
   setPersonas: (personas: number | null) => void
   setLegPrecio: (kind: 'arrival' | 'departure', precio: Importe | null) => void
@@ -1706,6 +1709,15 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (ids && ids.length > 0) resto[clave] = ids
       else delete resto[clave]
       return { route: { ...state.route, cuentasEntre: Object.keys(resto).length > 0 ? resto : undefined } }
+    }),
+
+  setModoCuentasRuta: (modo, conCuantos) => set((state) => (state.route ? { route: { ...state.route, modoCuentas: modo, modoElegidoCon: conCuantos } } : state)),
+
+  setNombreCuenta: (nombre) =>
+    set((state) => {
+      if (!state.route) return state
+      const limpio = (nombre ?? '').trim().slice(0, 40)
+      return { route: { ...state.route, nombreCuenta: limpio || undefined } }
     }),
 
   setPersonas: (personas) => set((state) => (state.route ? { route: { ...state.route, personas } } : state)),

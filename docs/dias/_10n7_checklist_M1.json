@@ -1,0 +1,128 @@
+[
+  {
+    "apartado": "1a",
+    "punto": "Viajas solo (el viaje no tiene a nadie más): el presupuesto normal, sin nombres, sin «¿Para quién…?», sin «Cuentas del grupo» y sin [Para todos] / [Para mí] — la decisión de modo",
+    "estado": "medias",
+    "nota": "Hecho lo mío: con una sola persona el modo es «solo» (modoDeCuentas / useModoCuentas) y el presupuesto no enseña botón de cuentas, pregunta, etiqueta de cuenta conjunta ni «Cuentas del grupo» (probado). Falta lo de M2: el rediseño del presupuesto solo como Design 01 («Tu viaje», bloques, «Añadir gasto» punteado); hoy sale la tarjeta «Total del viaje» y el «por persona» de siempre.",
+    "donde": "RUTA > cartera de arriba > Presupuesto, con un viaje en el que estás tú solo (cuenta administrador, sin invitados)",
+    "captura": "docs/dias/capturas_jutrip/10n7_01_solo.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n7_design_01_solo.jpg"
+  },
+  {
+    "apartado": "1b",
+    "punto": "Modo por viaje (modo_cuentas: solo | conjunta | cada_uno) guardado en el viaje, con migración 0054",
+    "estado": "hecho",
+    "nota": "Se guarda dentro de la ruta del viaje (route.modoCuentas, modoElegidoCon, nombreCuenta), igual que «¿Entre quién?»: viaja con el viaje compartido y en directo. La migración 0054 (idempotente, SIN APLICAR) añade el tipo de aviso cuentas_modo, la pregunta en «se ha unido» y el aviso de cambio. Sin aplicarla el modo funciona igual; solo faltan esos dos avisos.",
+    "donde": "Supabase > SQL editor > pegar supabase/migrations/0054_modo_de_cuentas.sql",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "1b",
+    "punto": "Etiqueta «Cuenta conjunta · Eric y Ana» dentro de la tarjeta oscura de arriba, en lugar de «De los dos», sin bloque suelto y sin «por persona»",
+    "estado": "hecho",
+    "nota": "Con los nombres con nombreVisible (Eric, Ana y Luis…). En cuenta conjunta desaparecen «Del grupo», el «por persona» y la tarjeta «Cuentas del grupo». El nombre de la cabecera ya no repite los nombres. El importe común y los bloques «Ruta» y «Extras» como Design (todo sumado, «Lo tuyo») es el rediseño de M2.",
+    "donde": "RUTA > cartera > Presupuesto, viaje en pareja o familia con Ana ya dentro (cuenta del administrador)",
+    "captura": "docs/dias/capturas_jutrip/10n7_02a_conjunta.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n7_design_02a_conjunta.jpg"
+  },
+  {
+    "apartado": "1b",
+    "punto": "Lápiz a la derecha para cambiarle el nombre a la cuenta («Nuestro viaje a Roma»): se guarda en el viaje, lo ven todos, lo cambia quien pueda editar",
+    "estado": "hecho",
+    "nota": "El lápiz abre «Nombre de la cuenta» (Hoja, Guardar). El nombre sale como «NUESTRO VIAJE A ROMA · ERIC Y ANA». Quien solo recomienda ve el nombre y no el lápiz; quien puede editar sí lo tiene. Se ve en tiempo real porque va con la ruta del viaje. Vaciar el campo vuelve a «Cuenta conjunta».",
+    "donde": "Presupuesto > lápiz dorado junto a «CUENTA CONJUNTA · ERIC Y ANA» > escribir > Guardar. Mirarlo luego con la cuenta de Ana (Recomendar: sin lápiz) y con la de quien tiene Editar (con lápiz)",
+    "captura": "docs/dias/capturas_jutrip/10n7_03_nombre.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n7_design_03_nombre.jpg"
+  },
+  {
+    "apartado": "1b",
+    "punto": "En cuenta conjunta, «Cuentas del grupo» (quién le debe a quién) no sale: sin deudas",
+    "estado": "hecho",
+    "nota": "TarjetaCuentas solo se pinta en «Cada uno lo suyo». Los gastos no se tocan al cambiar de forma: lo apuntado cuenta pagado por quien lo apuntó y repartido entre todos, así que al volver a «Cada uno lo suyo» las cuentas salen igual, al céntimo (probado con 100,01 / 33,33 / 7,07 entre 3).",
+    "donde": "Presupuesto de un viaje con cuenta conjunta: no hay tarjeta «Cuentas del grupo». Con «Cada uno lo suyo» sí",
+    "captura": "docs/dias/capturas_jutrip/10n7_02c_conjunta_tres.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n7_design_02a_conjunta.jpg"
+  },
+  {
+    "apartado": "1b",
+    "punto": "«Cada uno lo suyo»: la tarjeta de arriba pone «Del grupo» (como Design 05)",
+    "estado": "hecho",
+    "nota": "Con amigos (o tras elegirlo) la tarjeta oscura sigue con «Del grupo», «por persona» y debajo la tarjeta «Cuentas del grupo». Lo de las preguntas «¿Para quién has comprado…?» y las tres líneas pequeñas es de M2.",
+    "donde": "Presupuesto de un viaje de amigos (o con «Cada uno lo suyo» elegido)",
+    "captura": "docs/dias/capturas_jutrip/10n7_05_cada_uno.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n7_design_05_cada_uno.jpg"
+  },
+  {
+    "apartado": "2",
+    "punto": "Por defecto, según «¿Con quién viajas?»: pareja o familia → cuenta conjunta; amigos → cada uno lo suyo; solo → solo",
+    "estado": "hecho",
+    "nota": "Sin elegir, el modo sale de la respuesta del cuestionario (no se escribe nada en el viaje). Familia: conjunta mientras no entren más personas de las del cuestionario. Un viaje solo que recibe a alguien: cada uno lo suyo y se pregunta (ver «Un viaje que era solo»).",
+    "donde": "Crear un viaje con cada respuesta y abrir el presupuesto con otra persona dentro",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "2",
+    "punto": "Botón «¿Cómo lleváis las cuentas?» siempre a mano en el presupuesto, con la hoja de tarjetas «Todo juntos» / «Cada uno lo suyo»; la elegida con el estilo de elegir",
+    "estado": "hecho",
+    "nota": "Botón redondo arriba a la derecha de la cabecera (dos anillos, borde dorado) como Design 06. La hoja es una HojaOpciones de tarjetas con la elegida en azul oscuro con ✓ dorado. No sale viajando solo (no hay nada que repartir).",
+    "donde": "Presupuesto > círculo dorado de arriba a la derecha",
+    "captura": "docs/dias/capturas_jutrip/10n7_06b_hoja_modo.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n7_design_06b_hoja_modo.jpg"
+  },
+  {
+    "apartado": "2",
+    "punto": "Solo el administrador la cambia (los demás la ven, sin tocarla)",
+    "estado": "hecho",
+    "nota": "Con la cuenta de quien no es administrador, las tarjetas salen en gris y no hacen nada, con «Solo la cambia el administrador.». setModoCuentas también lo comprueba.",
+    "donde": "Presupuesto > círculo dorado, con la cuenta de Luis (Editar) o Ana (Recomendar)",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "2",
+    "punto": "Un viaje que era solo y se une alguien: aviso «Ana se ha unido a tu viaje. ¿Cómo lleváis las cuentas?» que abre la misma hoja; mientras no elija, «Cada uno lo suyo» y, arriba del presupuesto, la misma pregunta",
+    "estado": "hecho",
+    "nota": "Aviso con la migración 0054: «Ana se ha unido a tu viaje. ¿Cómo lleváis las cuentas?» (franja con la pregunta debajo; tocarlo abre la hoja). Arriba del presupuesto sale la pregunta con «Todo juntos» / «Cada uno lo suyo» hasta que elige. Diferencia con Design 07: mientras no elige seguimos con «Cada uno lo suyo» como pide el prompt (Design pinta «Tu viaje» y sin «Cuentas del grupo»).",
+    "donde": "Con la cuenta del administrador de un viaje de una persona: entra Ana con el código; campana/franja y Presupuesto",
+    "captura": "docs/dias/capturas_jutrip/10n7_07_se_une.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n7_design_07_se_une.jpg"
+  },
+  {
+    "apartado": "2",
+    "punto": "Si se cambia con gastos ya apuntados, antes la confirmación: «¿Cambiamos a cuenta conjunta?» (rojo) / «¿Cambiamos a cada uno lo suyo?», con sus líneas; sin gastos, directo",
+    "estado": "hecho",
+    "nota": "ConfirmDialog con las dos frases exactas del prompt; la de «cuenta conjunta» con botón rojo (se pierden las deudas), la otra no. «Mejor no» no cambia nada. Sin gastos apuntados no se pregunta.",
+    "donde": "Presupuesto con algún gasto del grupo apuntado > círculo dorado > elegir la otra forma",
+    "captura": "docs/dias/capturas_jutrip/10n7_06c_confirmar_conjunta.jpg",
+    "captura_design": ""
+  },
+  {
+    "apartado": "2",
+    "punto": "Lo «Solo para mí» sigue personal tras cambiar; las cuentas cuadran al céntimo",
+    "estado": "hecho",
+    "nota": "El modo no reescribe ni mueve gastos: los «Solo para mí» (ámbito mío) siguen sin entrar en las cuentas y la suma de saldos es 0 antes y después. Probado en puro y en la app.",
+    "donde": "Presupuesto > cambiar de forma > Cuentas del grupo: Total y saldos igual que antes",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "2",
+    "punto": "A todos los del viaje les llega «Eric ha cambiado las cuentas a cuenta conjunta.» / «…a cada uno lo suyo.» (campana y franja)",
+    "estado": "hecho",
+    "nota": "Aviso cuentas_modo (migración 0054): a todos menos a quien lo cambia; solo avisa si el modo cambia de verdad (elegir lo que ya salía por defecto no avisa); varios cambios sin leer se quedan en el último. Textos y franja en shared/avisos/textos.js; la app lo recoge en directo (accionPorAviso). Probado con la base de datos real (PGlite).",
+    "donde": "Con la cuenta de Ana: Eric cambia la forma; sale la franja de arriba y el aviso en la campana",
+    "captura": "",
+    "captura_design": ""
+  },
+  {
+    "apartado": "2b",
+    "punto": "2b-2 · Una cuenta conjunta a la que se une alguien nuevo: al administrador le llega otra vez «Luis se ha unido a tu viaje. ¿Cómo lleváis las cuentas?» con la misma hoja; mientras no elija, sigue como estaba",
+    "estado": "hecho",
+    "nota": "Entra la tercera persona (o más) y el aviso lleva la pregunta; la cuenta sigue conjunta y arriba del presupuesto vuelve la pregunta hasta que contesta (aunque diga lo mismo). Con «Cada uno lo suyo» no se pregunta al entrar más gente.",
+    "donde": "Viaje en pareja con cuenta conjunta: entra una tercera persona; con la cuenta del administrador, campana y Presupuesto",
+    "captura": "docs/dias/capturas_jutrip/10n7_02c_conjunta_tres.jpg",
+    "captura_design": "docs/dias/capturas_jutrip/10n7_design_07_se_une.jpg"
+  }
+]

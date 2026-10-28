@@ -10,6 +10,7 @@ import { nombreDeMoneda } from '../../lib/dinero'
 import { guardarMoneda, monedaGuardada, monedaUsable } from '../../lib/precioMoneda'
 import { hojaCuantosSois } from '../../lib/precioPelicula'
 import { monedaDelViajero, useCambio } from '../../lib/useMoneda'
+import { monedaElegida } from '../../lib/moneda'
 import { useRouteStore } from '../../store/useRouteStore'
 import { DCPieza, cssDe } from './pelicula/dc'
 import { bloquesDeLaLista, plantillaDeLaPelicula } from './pelicula/adaptar'
@@ -42,7 +43,7 @@ export function PeliculaPase({ destino, tripId, desde, onCerrar, configInicial =
   const [montada, setMontada] = useState(desde !== 'principio')
   const route = useRouteStore((st) => st.route)
   const cambio = useCambio()
-  const [codigoMoneda, setCodigoMoneda] = useState<string>(() => monedaGuardada() ?? monedaDelViajero(route))
+  const [codigoMoneda, setCodigoMoneda] = useState<string>(() => monedaElegida() ?? monedaGuardada() ?? monedaDelViajero(route))
   const moneda = monedaUsable(codigoMoneda, cambio?.tasas)
   const [letrasListas, setLetrasListas] = useState(false)
   const pase = usePaseEstado(tripId)

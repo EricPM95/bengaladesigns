@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
 import { aportacionesDelViaje, calcularCuentas, posiblesDuplicados, type Aportacion, type Cuentas, type LineaQueEntraSola, type PosibleDuplicado } from '../lib/cuentasGrupo'
 import { usePresupuesto } from '../lib/usePresupuesto'
-import { monedaDelViajero, useCambio } from '../lib/useMoneda'
+import { useCambio } from '../lib/useMoneda'
+import { MONEDA_BASE, formatearCentimosBase, useMonedaViajero } from '../lib/moneda'
+import { aportacionesSinCambio, type SinCambio } from '../lib/cuentasMoneda'
 import { useRouteStore } from '../store/useRouteStore'
 import { useGastosCompartidos } from '../store/useGastosCompartidos'
 import type { Persona } from '../store/useViajeCompartido'
@@ -17,7 +19,15 @@ import { nombreVisible } from '../lib/nombrePersona'
  */
 export interface CuentasDelGrupo {
   compartido: boolean
+  /** (10N7) La BASE de las cuentas: siempre el euro, con el cambio del día. Lo que se enseña lo pasa `texto` a la moneda de quien mira. */
   moneda: string
+  /** (10N7) Céntimos de la base → texto en la moneda del viajero («≈ 322 MXN»; en euros si es la suya o no hay cambio). */
+  texto: (centimos: number) => string
+  /** (10N7) La moneda con la que mira esta persona, y si lo que enseña es aproximado («≈»). */
+  monedaVista: string
+  aproximado: boolean
+  /** (10N7) Lo que cuenta pero está en una moneda sin cambio: no entra en las cuentas en euros, sale aparte con su moneda. */
+  sinCambio: SinCambio[]
   cuentas: Cuentas
   /** Las personas que salen en las cuentas (las del viaje y quien salió con algo pendiente); `salio` marca a quien ya no está. */
   personas: (Persona & { salio: boolean })[]
@@ -39,7 +49,8 @@ export function useCuentasDelGrupo(): CuentasDelGrupo {
   const cuentasOk = useGastosCompartidos((s) => s.cuentas)
   const cambio = useCambio()
   const { presupuesto } = usePresupuesto()
-  const moneda = monedaDelViajero(route)
+  const moneda = MONEDA_BASE
+  const vista = useMonedaViajero()
   const admin = gv.personas.find((p) => p.esAdmin)?.id ?? null
   useLoSuyoDelViaje()
   const grupoLoSuyo = useLoSuyo((s) => s.grupo)
@@ -59,15 +70,17 @@ export function useCuentasDelGrupo(): CuentasDelGrupo {
       // (Tanda 10N5 §6c) Los vuelos del administrador ahora SÍ entran (cambia lo de la 10N3): se reparten entre para quién son, sin quien ha puesto el suyo.
       else if (l.abrir.tipo === 'llegada' || l.abrir.tipo === 'vuelta') entran.push({ clave: l.id, nombre: l.nombre, precio: l.precio, tipo: 'vuelo' })
     }
-    const aportaciones = aportacionesDelViaje({ gastos: gv.gastos, reservas: reservations, adminId: admin, todos: ids, moneda, cambio, entran, entreDe: route?.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), entradasDeInvitados: entradasInv })
+    const entradaAportaciones = { gastos: gv.gastos, reservas: reservations, adminId: admin, todos: ids, cambio, entran, entreDe: route?.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), entradasDeInvitados: entradasInv }
+    const aportaciones = aportacionesDelViaje({ ...entradaAportaciones, moneda })
+    const sinCambio = aportacionesSinCambio(entradaAportaciones)
     const cuentas = compartidoVacio(gv.compartido) ?? calcularCuentas({ aportaciones, pagos, personas: conNombre, todos: ids })
     // (Alguien que ya no está y no aparece en ningún gasto no sale; si sale con algo, lleva su nombre o «Alguien».)
     const personas = cuentas.personas.map((c) => {
       const viva = gv.personas.find((p) => p.id === c.id)
       return viva ? { ...viva, salio: false } : ({ id: c.id, nombre: c.nombre || null, foto: null, esAdmin: false, salio: true } as Persona & { salio: boolean })
     })
-    return { compartido: gv.compartido, moneda, cuentas, personas, puedeMarcarPagos: cuentasOk, nombreDe: (id: string) => cuentas.personas.find((p) => p.id === id)?.nombre || gv.nombreDe(id), aportaciones, duplicados: posiblesDuplicados(aportaciones) }
-  }, [gv, reservations, admin, moneda, cambio, pagos, exMiembros, cuentasOk, presupuesto, route?.cuentasEntre, grupoLoSuyo, entradasInv])
+    return { compartido: gv.compartido, moneda, texto: (c: number) => formatearCentimosBase(c, { codigo: vista.moneda, cambio: vista.cambio }), monedaVista: vista.moneda, aproximado: vista.moneda !== MONEDA_BASE && Boolean(vista.cambio?.tasas?.[vista.moneda]), sinCambio, cuentas, personas, puedeMarcarPagos: cuentasOk, nombreDe: (id: string) => cuentas.personas.find((p) => p.id === id)?.nombre || gv.nombreDe(id), aportaciones, duplicados: posiblesDuplicados(aportaciones) }
+  }, [gv, reservations, admin, moneda, cambio, pagos, exMiembros, cuentasOk, presupuesto, route?.cuentasEntre, grupoLoSuyo, entradasInv, vista.moneda, vista.cambio])
 }
 
 /** Sin viaje compartido no se calcula nada. */

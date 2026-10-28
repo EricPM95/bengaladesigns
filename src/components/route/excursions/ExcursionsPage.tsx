@@ -1,5 +1,5 @@
+import { precioTiendaEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { useEffect, useState } from 'react'
-import { precioTienda } from '../../../lib/dinero'
 import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
@@ -21,7 +21,7 @@ function detailLine(excursion: Excursion): string {
 
 function priceText(excursion: Excursion): string | null {
   if (excursion.priceLabel) return `desde ${excursion.priceLabel}`
-  return excursion.price > 0 ? `desde ${precioTienda(excursion.price)}` : null
+  return excursion.price > 0 ? `desde ${precioTiendaEnVista(excursion.price)}` : null
 }
 
 /**
@@ -62,6 +62,7 @@ function ExcursionPhoto({ excursion, destination }: { excursion: Excursion; dest
  * excursión directa en un día nuevo).
  */
 export function ExcursionsPage({ route }: { route: Route }) {
+  useMonedaViajero() // (10N7)
   const page = useExcursionsStore((state) => state.page)
   const picking = useExcursionsStore((state) => state.picking)
   const pick = useExcursionsStore((state) => state.pick)

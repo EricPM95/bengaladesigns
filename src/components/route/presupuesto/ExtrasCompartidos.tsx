@@ -7,6 +7,7 @@ import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { Icono } from '../../ui/Icono'
 import { HojaAnadirGasto, InicialDePersona } from './HojaAnadirGasto'
+import { useModoCuentas } from '../../../lib/modoCuentas'
 
 const AZUL_EXTRAS = { fondo: 'oklch(0.55 0.1 220 / .14)', tinta: 'oklch(0.45 0.1 220)' }
 const MONO = "'Geist Mono',monospace"
@@ -77,6 +78,8 @@ export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: 
 
 function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar, onEditar }: { linea: LineaPresupuesto; gv: GastosDelViaje; moneda: string; admin: string; verde: boolean; onQuitar?: () => void; onEditar?: () => void }) {
   const vista = linea.compartido?.vista ?? 'grupo'
+  // (Tanda 10N7) En una cuenta conjunta no hay «quién pagó» ni deudas: el dinero es de los dos.
+  const conjunta = useModoCuentas().modo === 'conjunta'
   const cuenta = vista === 'grupo'
   const quienes = (linea.compartido?.pagadoPor ?? []).map((id) => ({ id, persona: gv.personas.find((p) => p.id === id) }))
   const nombres = quienes.map((q) => gv.nombreDe(q.id))
@@ -101,18 +104,18 @@ function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar, onEditar }: { 
           </span>
         ) : vista === 'grupo' ? (
           <span className="flex items-center gap-1.5 text-[11px] text-text/55">
-            {primera && <InicialDePersona nombre={nombres[0] ?? ''} esAdmin={primera.esAdmin} tam={14} />}
-            {textoDeQuienPago(nombres) || 'Del grupo'} · Para todos
+            {!conjunta && primera && <InicialDePersona nombre={nombres[0] ?? ''} esAdmin={primera.esAdmin} tam={14} />}
+            {conjunta ? (gv.personas.length > 2 ? 'Para todos' : 'Para los dos') : `${textoDeQuienPago(nombres) || 'Del grupo'} · Para todos`}
           </span>
         ) : (
           <span className="text-[11px] text-text/55">{vista === 'rechazado' ? `${admin} prefirió no sumarlo · ahora solo para ti` : 'Solo para ti'}</span>
         )}
       </span>
       <span className="flex flex-none flex-col items-end gap-px" style={{ opacity: cuenta ? 1 : 0.5 }}>
-        <span style={{ font: `600 13px ${MONO}` }}>{formatoImporte(linea.precio)}</span>
+        <span style={{ font: `600 13px ${MONO}` }}>{linea.enMonedaViajero && linea.precio.currency !== moneda ? `≈ ${formatoImporte(linea.enMonedaViajero)}` : formatoImporte(linea.precio)}</span>
         {linea.precio.currency !== moneda && (
           <span className="text-text/55" style={{ font: `500 11px ${MONO}` }}>
-            {linea.enMonedaViajero ? `≈ ${formatoImporte(linea.enMonedaViajero)}` : `Sin cambio para ${linea.precio.currency}`}
+            {linea.enMonedaViajero ? formatoImporte(linea.precio) : 'Sin cambio a tu moneda'}
           </span>
         )}
       </span>

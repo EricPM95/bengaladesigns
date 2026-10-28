@@ -1,5 +1,6 @@
+import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { useState } from 'react'
-import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
+import { precioGuardado, type Importe } from '../../../lib/dinero'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { GeneralBookingModal } from '../reservas/GeneralBookingModal'
@@ -22,6 +23,7 @@ const COPY = {
  * añadirlo aquí o en RESERVAS es la misma acción, mismo dato.
  */
 export function VehicleBlock({ kind }: VehicleBlockProps) {
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const booking = useRouteStore((state) => state.rentalVehicleBooking)
   const setRentalVehicleBooking = useRouteStore((state) => state.setRentalVehicleBooking)
   const [modalOpen, setModalOpen] = useState(false)
@@ -35,7 +37,7 @@ export function VehicleBlock({ kind }: VehicleBlockProps) {
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-body"><Icono nombre={copy.icon} size={20} /></span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-small font-medium text-text">{booking.provider}</p>
-            <p className="text-caption text-text-soft">Necesaria para todo tu viaje{precioGuardado(booking) ? ` · ${formatoImporte(precioGuardado(booking) as Importe)}` : ''}</p>
+            <p className="text-caption text-text-soft">Necesaria para todo tu viaje{precioGuardado(booking) ? ` · ${precioEnVista(precioGuardado(booking) as Importe)}` : ''}</p>
           </div>
           <button type="button" onClick={() => setModalOpen(true)} className="shrink-0 text-caption font-medium text-accent-hover underline">
             Cambiar

@@ -19,6 +19,7 @@ import { useSinPasePrueba } from './store/useSinPasePrueba'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
 import { AvisosHost } from './components/avisos/AvisosHost'
 import { GastosCompartidosHost } from './components/presupuesto/GastosCompartidosHost'
+import { ModoCuentasHost } from './components/route/presupuesto/CuentaModo'
 import { AjustesHosts } from './components/ajustes/AjustesHosts'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
@@ -116,6 +117,7 @@ function App() {
       <PropuestaHost />
       <AvisosHost />
       <GastosCompartidosHost />
+      <ModoCuentasHost />
       <AjustesHosts />
       <VistosPorPersona />
       <LogrosPorVisto />

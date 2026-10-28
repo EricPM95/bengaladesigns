@@ -1,4 +1,4 @@
-import { precioTienda } from '../../../lib/dinero'
+import { precioTiendaEnVista, useMonedaViajero } from '../../../lib/moneda'
 import type { ActividadCerca } from '../../../lib/civitatis'
 import { openTicketShop } from './EntradaCard'
 
@@ -8,6 +8,7 @@ import { openTicketShop } from './EntradaCard'
  * Sin nombrar a la empresa; el botón abre el enlace con nuestro código de afiliado y la campaña del viaje (openTicketShop).
  */
 export function ActividadesDelSitio({ lista }: { lista: ActividadCerca[] }) {
+  useMonedaViajero() // (10N7)
   if (lista.length === 0) return null
   return (
     <div className="space-y-3" data-actividades-del-sitio>
@@ -15,7 +16,7 @@ export function ActividadesDelSitio({ lista }: { lista: ActividadCerca[] }) {
         <div key={actividad.id} className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
           <div className="flex items-baseline justify-between gap-2.5">
             <p className="font-display text-[19px] leading-[1.1] text-text">{actividad.nombre}</p>
-            {actividad.gratis ? <span className="font-display text-[22px] leading-none text-text">Gratis</span> : actividad.desde != null && <span className="font-display text-[22px] leading-none text-text">{`Desde ${precioTienda(actividad.desde)}`}</span>}
+            {actividad.gratis ? <span className="font-display text-[22px] leading-none text-text">Gratis</span> : actividad.desde != null && <span className="font-display text-[22px] leading-none text-text">{`Desde ${precioTiendaEnVista(actividad.desde)}`}</span>}
           </div>
           {(actividad.valoracion != null || actividad.opiniones != null) && (
             <p className="mt-1.5 text-[13px] text-text/72">

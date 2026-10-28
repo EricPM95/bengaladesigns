@@ -3,6 +3,7 @@ import { useFotoDePerfil } from '../hooks/useFotosDePerfil'
 import { cargarMiPerfil, fotoParaMostrar, guardarMiEncuadre, guardarMiNombre, leerEncuadreLocal, nombreDePila, nombreParaMostrar, quitarMiFoto, subirMiFoto } from '../lib/miPerfil'
 import type { Encuadre } from '../lib/encuadreFoto'
 import { usePortadas } from './usePortadas'
+import { cargarMonedaDeLaCuenta } from '../lib/moneda'
 
 /**
  * MI PERFIL (cuentas parte 3, punto 6): mi nombre y mi foto, para pintarlos donde toque (el Perfil, «Hola, …», el pie de Compartir). `nombre` es el que puse (o el de Google la primera
@@ -38,6 +39,7 @@ export const useMiPerfil = create<MiPerfilState>((set, get) => ({
     return guardarMiEncuadre(uid, encuadre)
   },
   cargar: async (uid, deGoogle) => {
+    window.setTimeout(() => void cargarMonedaDeLaCuenta(uid), 4000) // (10N7) la moneda de la cuenta, un poco después del perfil (así no se cruza con el inicio de sesión)
     const datos = await cargarMiPerfil(uid)
     let nombre = datos?.nombre ?? null
     // La primera vez, el nombre de pila de Google (si entra con Google); con el email, «Viajero» hasta que ponga uno.

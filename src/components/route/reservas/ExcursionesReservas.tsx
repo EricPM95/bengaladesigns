@@ -1,3 +1,4 @@
+import { useMonedaViajero } from '../../../lib/moneda'
 import { useState } from 'react'
 import type { Excursion, Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
@@ -61,6 +62,7 @@ function HojaQueExcursion({ excursions, onPick, onClose }: { excursions: Excursi
  * Las añadidas, en una línea verde con «Cambiar». Viajes de menos días que `excursiones_desde_dias`: no sale.
  */
 export function ExcursionesReservas({ route, info }: { route: Route; info: DestinationExcursions }) {
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   // (Tanda 10N §8: las excursiones también son de cada uno; quien mira el viaje de otra persona ve las suyas.)
   const reservations = useReservasParaMi()
   const grupo = useEntradasDelGrupo()

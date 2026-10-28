@@ -9,7 +9,7 @@ ponerTablaDeArticulos(Object.assign({}, ...Object.entries(tablasDeArticulos as R
  * LA CAMPANITA DE AVISOS, EN LA APP (cuentas parte 3, punto 4). La lista sale del servidor (`GET /api/avisos`): lo más nuevo arriba, con lo leído y lo no leído. Los avisos que ya enseñaba
  * la campana (errores de guardado, más días que fechas, reservas que no cuadran, lluvia…) siguen saliendo igual: se calculan en el móvil (useAppNotices.ts) y van debajo.
  */
-export type TipoDeAviso = 'recomendacion' | 'aceptada' | 'rechazada' | 'unido' | 'd10' | 'resumen' | 'sorpresas' | 'sorteo' | 'amigo_viaje' | 'reserva_grupo' | 'gasto_pendiente' | 'gasto_resuelto' | 'pago_marcado' | 'permiso' | 'quitado' | 'viaje_cambiado'
+export type TipoDeAviso = 'recomendacion' | 'aceptada' | 'rechazada' | 'unido' | 'd10' | 'resumen' | 'sorpresas' | 'sorteo' | 'amigo_viaje' | 'reserva_grupo' | 'gasto_pendiente' | 'gasto_resuelto' | 'pago_marcado' | 'permiso' | 'quitado' | 'viaje_cambiado' | 'cuentas_modo'
 
 export interface AvisoDeCuenta {
   id: string

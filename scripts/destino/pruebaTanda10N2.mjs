@@ -214,7 +214,7 @@ console.log('3. Las pantallas (react-dom/server)')
   const route = {
     id: 'p10n2', destination: 'Roma', country: 'Italia', origin: 'Madrid', createdAt: '2027-01-01', intensity: 1, budget: { items: [], total: 0 }, planMode: 'manual',
     days: [1, 2, 3].map((n, i) => ({ id: `d${n}`, dayNumber: n, city: 'Roma', countryCode: 'it', title: '', curatedTitle: '', stops: [], meals: [], excursions: [], dayType: 'manual', colorIndex: i })),
-    answers: { dateRange: { start: '2027-08-10', end: '2027-08-14' }, days: 3, companion: 'couple' },
+    answers: { dateRange: { start: '2027-08-10', end: '2027-08-14' }, days: 3, companion: 'group' },
     transportContext: { transport_option: { id: 'flight' }, archetype: null },
   }
   const G = (id, autorId, nombre, amount, pagadoPor, entre = [], extra = {}) => ({ id, tripId: 't1', autorId, nombre, precio: eur(amount), ambito: 'grupo', estado: 'aceptado', pagadoPor, entre, decididoPor: null, creadoEn: '2026-10-26T10:00:00Z', ...extra })
@@ -324,15 +324,15 @@ console.log('3. Las pantallas (react-dom/server)')
       return { html, t: plano(aTexto(html)) }
     }
     const h = hoja('eric', false)
-    debe(/¿Para quién es\?/i.test(h.t) && /4 de 4/.test(h.t), '02', '«¿Para quién es?» y «4 de 4»')
-    debe(['eric', 'ana', 'luis', 'marta'].every((id) => new RegExp(`data-elegir-pastilla="entre-${id}"[^>]*data-elegida="1"|data-elegida="1"[^>]*data-elegir-pastilla="entre-${id}"`).test(h.html)), '02', 'una pastilla por persona, todas marcadas por defecto (con el estilo de elegir)')
-    debe(/Escribe el importe/.test(h.t) && /data-gasto-cada-uno/.test(h.html), '02', 'debajo, la línea de «… € cada uno» (sin importe pide escribirlo)')
+    debe(/¿Para quién es\?/i.test(h.t) && /1 de 4/.test(h.t), '02', '(10N7) «¿Para quién es?» y «1 de 4»: por defecto solo marcado quien lo añade')
+    debe(['eric', 'ana', 'luis', 'marta'].every((id) => new RegExp('data-elegir-pastilla="entre-' + id + '"').test(h.html)) && new RegExp('data-elegir-pastilla="entre-eric"[^>]*data-elegida="1"|data-elegida="1"[^>]*data-elegir-pastilla="entre-eric"').test(h.html) && !new RegExp('data-elegir-pastilla="entre-ana"[^>]*data-elegida="1"').test(h.html), '02', '(10N7) una pastilla por persona, solo quien lo añade (Eric) marcada por defecto')
+    debe(/Solo para ti/.test(h.t) && /data-linea-para-quien/.test(h.html), '02', '(10N7) debajo, la línea pequeña «Solo para ti: …» (ya no hay «… € cada uno»)')
     debe(h.html.indexOf('data-gasto-quien-pago') < h.html.indexOf('data-gasto-entre-quien'), '02', '«¿Para quién es?» va debajo de «¿Quién ha pagado?»')
     const e = hoja('eric', false, { editar: G('g1', 'eric', 'Cena día 1', 120, ['eric'], ['eric', 'ana', 'marta']) })
-    debe(/Editar gasto/.test(e.t) && /Guardar cambios/.test(e.t) && /3 de 4/.test(e.t) && /3 de 4 · 40 € cada uno/.test(e.t), '03', 'al editar: «Editar gasto», [Guardar cambios], «3 de 4 · 40 € cada uno»')
+    debe(/Editar gasto/.test(e.t) && /Guardar cambios/.test(e.t) && /3 de 4/.test(e.t) && /Para 3 personas/.test(e.t), '03', '(10N7) al editar: «Editar gasto», [Guardar cambios], «3 de 4» y «Para 3 personas»')
     debe(!/Se lo enviamos|Entra directo/.test(e.t) && !/data-elegir="gasto-ambito"/.test(e.html), '03', 'al editar no se pregunta [Para todos] / [Para mí]')
     const src = sinComentarios(leer('src/components/route/presupuesto/HojaAnadirGasto.tsx'))
-    debe(/ambito === 'mio' \? \[\] : entreFinal/.test(src) && /\{ambito === 'grupo' && \(\s*<div className="flex flex-col gap-2" data-gasto-entre-quien>/.test(src), '04', 'un [Para mí] no lleva «¿Entre quién?»')
+    debe(/soloMio \|\| conjunta \? \[\] : entreFinal/.test(src) && /\{!conjunta && \(\s*<div data-gasto-entre-quien>/.test(src), '04', '(10N7) lo «Solo para ti» y la cuenta conjunta no llevan «¿Para quién es?» con nombres')
   }
 
   console.log('3f. El aviso de la campana')
@@ -353,7 +353,7 @@ console.log('4. El código')
   debe(/escuchar\(tripId/.test(host) && /setInterval/.test(host), 'directo', 'el anfitrión sigue leyendo en directo, cada poco y al volver a la app')
   for (const f of ['src/lib/cuentasGrupo.ts', 'src/hooks/useCuentasDelGrupo.ts', 'src/components/route/presupuesto/PantallaCuentas.tsx']) debe(!/€/.test(sinComentarios(leer(f))), '€', `${f}: ningún «€» escrito a mano`)
   const pantalla = sinComentarios(leer('src/components/route/presupuesto/PantallaPresupuesto.tsx'))
-  debe(/gv\.compartido && <TarjetaCuentas/.test(pantalla) && /cuentasAbiertas && gv\.compartido && <PantallaCuentas/.test(pantalla), 'sin-compartir', 'la tarjeta y la pantalla solo existen en un viaje compartido')
+  debe(/gv\.compartido && modoCuentas\.modo !== 'conjunta' && <TarjetaCuentas/.test(pantalla) && /cuentasAbiertas && gv\.compartido && <PantallaCuentas/.test(pantalla), 'sin-compartir', '(10N7) la tarjeta y la pantalla solo existen en un viaje compartido (y la tarjeta no en cuenta conjunta)')
 }
 
 /* ═══════════════ 5. La pantalla de verdad (móvil, con un servidor de mentira en memoria) ═══════════════ */
@@ -371,7 +371,7 @@ console.log('5. La pantalla de verdad (hace falta Vite; sin él se salta)')
   if (!arriba) console.log('  (sin Vite: se salta la parte de la pantalla)')
   else {
     const { abrirApp } = await import('./_enLaApp.mjs')
-    const a = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0' })
+    const a = await abrirApp(process.env.APP_URL ?? 'http://localhost:5173', { ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0' })
     const ev = async (js) => {
       try {
         return await a.evaluar(js)
@@ -412,7 +412,7 @@ console.log('5. La pantalla de verdad (hace falta Vite; sin él se salta)')
         await a.esp(300)
       }
       // El viaje del diseño: Eric pagó 240 €, Ana 135 €, Luis 135 € y Marta 90 € (600 € entre cuatro, a 150 €).
-      await ev(`(async () => { ${FAL}.reiniciar(); await ${FAL}.usar('eric', ['eric', 'ana', 'luis', 'marta']); const b = ${FAL}.bd; for (const [id, autor, n, a] of [['c1', 'eric', 'Cena día 1', 240], ['c2', 'ana', 'Entradas Coliseo', 135], ['c3', 'luis', 'Comida Trastevere', 135], ['c4', 'marta', 'Taxi', 90]]) b.gastos.push({ id, tripId: 'demo-viaje', autorId: autor, nombre: n, precio: { amount: a, currency: 'EUR' }, ambito: 'grupo', estado: 'aceptado', pagadoPor: [autor], entre: [], decididoPor: null, decididoEn: null, creadoEn: new Date().toISOString() }); await window.__gastos.getState().recargar(); return true })()`)
+      await ev(`(async () => { ${FAL}.reiniciar(); window.__modoCuentas?.poner('cada_uno'); await ${FAL}.usar('eric', ['eric', 'ana', 'luis', 'marta']); const b = ${FAL}.bd; for (const [id, autor, n, a] of [['c1', 'eric', 'Cena día 1', 240], ['c2', 'ana', 'Entradas Coliseo', 135], ['c3', 'luis', 'Comida Trastevere', 135], ['c4', 'marta', 'Taxi', 90]]) b.gastos.push({ id, tripId: 'demo-viaje', autorId: autor, nombre: n, precio: { amount: a, currency: 'EUR' }, ambito: 'grupo', estado: 'aceptado', pagadoPor: [autor], entre: [], decididoPor: null, decididoEn: null, creadoEn: new Date().toISOString() }); await window.__gastos.getState().recargar(); return true })()`)
       await a.esp(500)
 
       // 01 · la tarjeta en el presupuesto
@@ -425,13 +425,16 @@ console.log('5. La pantalla de verdad (hace falta Vite; sin él se salta)')
       await clic('[data-anadir-gasto]')
       await nombreCampo('Cena día 2', '120')
       t = await texto()
-      debe(/4 de 4/i.test(t) && /30 € cada uno/.test(t), '02', 'pantalla: «¿Entre quién?» con «4 de 4» y «30 € cada uno»')
+      await ev("(() => { document.querySelectorAll('[data-elegir-pastilla^=\"entre-\"]').forEach((p) => { if (p.dataset.elegida !== '1') p.click() }); return true })()")
+      await a.esp(300)
+      t = await texto()
+      debe(/4 de 4/i.test(t), '02', '(10N7) pantalla: «¿Para quién es?» marcando a los 4: «4 de 4»')
       await ev("(() => { document.querySelector('[data-gasto-entre-quien]')?.scrollIntoView({ block: 'center' }); return true })()")
       await a.esp(300)
       await a.captura(f('02_entre_los_4'))
       await clic('[data-elegir-pastilla="entre-luis"]')
       t = await texto()
-      debe(/3 de 4/.test(t) && /3 de 4 · 40 € cada uno/.test(t), '03', 'pantalla: desmarcas a Luis y sale «3 de 4 · 40 € cada uno»')
+      debe(/3 de 4/.test(t) && /Para 3 personas/.test(t), '03', '(10N7) pantalla: desmarcas a Luis y sale «3 de 4» y «Para 3 personas»')
       await a.captura(f('03_entre_3_luis_desmarcado'))
       await clic('[data-elegir-pastilla="entre-luis"]')
       await clic('[data-gasto-enviar]')
@@ -524,7 +527,7 @@ console.log('5. La pantalla de verdad (hace falta Vite; sin él se salta)')
       await cerrarPresupuesto()
 
       // Con cualquier permiso: Ana (solo recomienda) ve las cuentas y marca solo lo suyo.
-      await ev(`(async () => { ${FAL}.reiniciar(); await ${FAL}.usar('ana', ['eric', 'ana', 'luis', 'marta']); const b = ${FAL}.bd; for (const [id, autor, n, a] of [['c1', 'eric', 'Cena día 1', 240], ['c2', 'ana', 'Entradas Coliseo', 135], ['c3', 'luis', 'Comida Trastevere', 135], ['c4', 'marta', 'Taxi', 90]]) b.gastos.push({ id, tripId: 'demo-viaje', autorId: autor, nombre: n, precio: { amount: a, currency: 'EUR' }, ambito: 'grupo', estado: 'aceptado', pagadoPor: [autor], entre: [], decididoPor: null, decididoEn: null, creadoEn: new Date().toISOString() }); await window.__gastos.getState().recargar(); return true })()`)
+      await ev(`(async () => { ${FAL}.reiniciar(); window.__modoCuentas?.poner('cada_uno'); await ${FAL}.usar('ana', ['eric', 'ana', 'luis', 'marta']); const b = ${FAL}.bd; for (const [id, autor, n, a] of [['c1', 'eric', 'Cena día 1', 240], ['c2', 'ana', 'Entradas Coliseo', 135], ['c3', 'luis', 'Comida Trastevere', 135], ['c4', 'marta', 'Taxi', 90]]) b.gastos.push({ id, tripId: 'demo-viaje', autorId: autor, nombre: n, precio: { amount: a, currency: 'EUR' }, ambito: 'grupo', estado: 'aceptado', pagadoPor: [autor], entre: [], decididoPor: null, decididoEn: null, creadoEn: new Date().toISOString() }); await window.__gastos.getState().recargar(); return true })()`)
       await abrirPresupuesto()
       await clic('[data-tarjeta-cuentas]')
       await a.esp(500)

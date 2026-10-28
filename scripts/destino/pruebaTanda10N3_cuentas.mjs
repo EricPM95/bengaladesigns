@@ -59,7 +59,7 @@ console.log('1. La cuenta (pura)')
   debe(dos.length === 3, '2b-1', 'se avisa pero se sigue contando todo (quien lo apuntó decide cuál quitar)')
 
   // El «por persona» con «¿Para quién es?».
-  const ruta = { id: 'r', destination: 'Roma', origin: 'Madrid', answers: { dateRange: { start: '2027-08-10', end: '2027-08-14' }, companion: 'couple' }, days: [1, 2, 3].map((n) => ({ id: `d${n}`, dayNumber: n, city: 'Roma', stops: [], meals: [], excursions: [] })), arrivalPrecio: eur(300), departurePrecio: eur(220) }
+  const ruta = { id: 'r', destination: 'Roma', origin: 'Madrid', answers: { dateRange: { start: '2027-08-10', end: '2027-08-14' }, companion: 'group' }, days: [1, 2, 3].map((n) => ({ id: `d${n}`, dayNumber: n, city: 'Roma', stops: [], meals: [], excursions: [] })), arrivalPrecio: eur(300), departurePrecio: eur(220) }
   const res = (id, precio, paraQuien) => ({ id, kind: 'entrada', refId: id, name: id, placeNames: [], time: '09:00', precio, paraQuien, dateIso: '2027-08-11' })
   const mk = (reservations, extra = {}) => construirPresupuesto({ route: ruta, reservations, accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, rentalVehicleBooking: null, esimPrecios: {}, moneda: 'EUR', cambio: null, pago: true, ...extra })
   const rr = [res('Coliseo', eur(60), ['eric', 'ana'])]
@@ -135,7 +135,7 @@ console.log('3. Las pantallas (react-dom/server)')
   const route = {
     id: 'p10n3', destination: 'Roma', country: 'Italia', origin: 'Madrid', createdAt: '2027-01-01', intensity: 1, budget: { items: [], total: 0 }, planMode: 'manual',
     days: [1, 2, 3].map((n, i) => ({ id: `d${n}`, dayNumber: n, city: 'Roma', countryCode: 'it', title: '', curatedTitle: '', stops: [], meals: [], excursions: [], dayType: 'manual', colorIndex: i })),
-    answers: { dateRange: { start: '2027-08-10', end: '2027-08-14' }, days: 3, companion: 'couple' },
+    answers: { dateRange: { start: '2027-08-10', end: '2027-08-14' }, days: 3, companion: 'group' },
     transportContext: { transport_option: { id: 'flight' }, archetype: null },
     arrivalPrecio: eur(300), departurePrecio: eur(220),
   }
@@ -239,7 +239,7 @@ console.log('5. La pantalla de verdad (hace falta Vite; sin él se salta)')
   if (!arriba) console.log('  (sin Vite: se salta la parte de la pantalla)')
   else {
     const { abrirApp } = await import('./_enLaApp.mjs')
-    const a = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0' })
+    const a = await abrirApp(process.env.APP_URL ?? 'http://localhost:5173', { ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0' })
     const ev = async (js) => {
       try {
         return await a.evaluar(js)
@@ -279,7 +279,7 @@ console.log('5. La pantalla de verdad (hace falta Vite; sin él se salta)')
         await a.esp(400)
       }
       // Hotel (400 €) y coche (200 €) puestos por el administrador en RESERVAS, y el viaje con cuatro personas.
-      await ev(`(async () => { ${FAL}.reiniciar(); await ${FAL}.usar('eric', ['eric', 'ana', 'luis', 'marta']); window.__ruta.setState({ accommodationSelections: { [window.__ruta.getState().route.days[0].id]: { name: 'Hotel Roma', precio: { amount: 400, currency: 'EUR' } } }, rentalVehicleBooking: { provider: 'Hertz', precio: { amount: 200, currency: 'EUR' } } }); return true })()`)
+      await ev(`(async () => { ${FAL}.reiniciar(); window.__modoCuentas?.poner('cada_uno'); await ${FAL}.usar('eric', ['eric', 'ana', 'luis', 'marta']); window.__ruta.setState({ accommodationSelections: { [window.__ruta.getState().route.days[0].id]: { name: 'Hotel Roma', precio: { amount: 400, currency: 'EUR' } } }, rentalVehicleBooking: { provider: 'Hertz', precio: { amount: 200, currency: 'EUR' } } }); return true })()`)
       await a.esp(600)
       await abrirPresupuesto()
       let t = await texto()
@@ -345,7 +345,7 @@ console.log('5. La pantalla de verdad (hace falta Vite; sin él se salta)')
       await cerrarCuentas()
 
       // El «por persona» con «¿Para quién es?».
-      await ev(`(async () => { ${FAL}.reiniciar(); await ${FAL}.usar('eric', ['eric', 'ana', 'luis', 'marta']); window.__ruta.setState({ accommodationSelections: {}, rentalVehicleBooking: null, reservations: [{ id: 'r1', kind: 'entrada', refId: 'coliseo', name: 'Coliseo', placeNames: [], time: '09:00', precio: { amount: 60, currency: 'EUR' }, paraQuien: ['eric', 'ana'], dateIso: '2026-10-18' }] }); return true })()`)
+      await ev(`(async () => { ${FAL}.reiniciar(); window.__modoCuentas?.poner('cada_uno'); await ${FAL}.usar('eric', ['eric', 'ana', 'luis', 'marta']); window.__ruta.setState({ accommodationSelections: {}, rentalVehicleBooking: null, reservations: [{ id: 'r1', kind: 'entrada', refId: 'coliseo', name: 'Coliseo', placeNames: [], time: '09:00', precio: { amount: 60, currency: 'EUR' }, paraQuien: ['eric', 'ana'], dateIso: '2026-10-18' }] }); return true })()`)
       await a.esp(500)
       t = await texto()
       await ev("(() => { document.querySelector('[aria-label=\"Ver precio por persona\"]')?.click(); return true })()")

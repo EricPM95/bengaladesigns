@@ -1,3 +1,4 @@
+import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import type { Route } from '../../../lib/types'
 import { buildDestinationSegments } from '../../../lib/destinationSegments'
 import { countryDisplayName } from '../../../lib/readiness'
@@ -7,7 +8,7 @@ import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { ENLACE_ESIM, ENLACE_SEGURO, ENLACE_TARJETA } from '../../../lib/enlacesUtil'
 import { GR, ICONOS } from './BloqueReservas'
 import { HojaPrecio } from './HojaPrecio'
-import { formatoImporte, leerImporte, precioGuardado, type Importe } from '../../../lib/dinero'
+import { leerImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { Icono } from '../../ui/Icono'
 import type { NombreIcono } from '../../../lib/iconos'
@@ -40,6 +41,7 @@ interface Tarjeta {
  * «✓ Lo tienes» (con su precio) en vez de los botones; al tocarla se cambia o se elimina. Igual en la gratis y en la de pago. Nunca el nombre de un proveedor en los textos.
  */
 export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }) {
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const dateRange = route.answers.dateRange
   const insurance = useRouteStore((state) => state.insuranceBooking)
   const setInsuranceBooking = useRouteStore((state) => state.setInsuranceBooking)
@@ -207,7 +209,7 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
                 <span className="min-w-0 flex-1 truncate">
                   Lo tienes
                   {dondeDe(tarjeta) && <span className="font-medium"> · {dondeDe(tarjeta)}</span>}
-                  {tarjeta.precio && <span className="font-medium"> · {formatoImporte(tarjeta.precio)}</span>}
+                  {tarjeta.precio && <span className="font-medium"> · {precioEnVista(tarjeta.precio)}</span>}
                 </span>
                 {/* Con el lugar y el precio juntos («Lo tienes · Mi banco · 30 €») no cabe la palabra «Cambiar» en 220 px: la tarjeta entera sigue siendo el botón. */}
                 {!(dondeDe(tarjeta) && tarjeta.precio) && <span className="flex-none text-[12px] font-medium underline underline-offset-2">Cambiar</span>}

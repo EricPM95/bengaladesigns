@@ -1,0 +1,137 @@
+[
+ {
+  "apartado": "1b",
+  "punto": "Tarjeta oscura con «Cuenta conjunta · Eric y Ana» + lápiz y el importe común (etiqueta/lápiz de M1)",
+  "estado": "hecho",
+  "nota": "Montado el presupuesto; la etiqueta y el lápiz los pone CuentaModo.tsx de M1",
+  "donde": "Presupuesto > tarjeta de arriba (viaje con pareja, como Eric)",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_02a_conjunta_eric_sin_lo_suyo.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_02a.jpg"
+ },
+ {
+  "apartado": "1b",
+  "punto": "Sin «por persona» y sin «Cuentas del grupo» en la cuenta conjunta",
+  "estado": "hecho",
+  "nota": "",
+  "donde": "Presupuesto, cuenta conjunta",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_02a_conjunta_eric_sin_lo_suyo.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_02a.jpg"
+ },
+ {
+  "apartado": "1b",
+  "punto": "«Ruta» y «Extras» son de la cuenta conjunta y suman arriba",
+  "estado": "hecho",
+  "nota": "Lo de antes de compartir (sin «para quién») también es común",
+  "donde": "Presupuesto",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_02a_conjunta_eric_sin_lo_suyo.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_02a.jpg"
+ },
+ {
+  "apartado": "1b",
+  "punto": "Bloque «Lo tuyo · Solo lo ves tú» con candado, abajo tras «Extras», solo si hay algo, cada uno el suyo",
+  "estado": "hecho",
+  "nota": "",
+  "donde": "Presupuesto > añadir gasto «Solo para mí»; ver con Eric y con Ana",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_02b_conjunta_eric_con_lo_suyo.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_02b.jpg"
+ },
+ {
+  "apartado": "1b",
+  "punto": "Total explicado «De los dos 180 € · Lo tuyo 40 € · Total 220 €» solo para quien tiene algo suyo",
+  "estado": "hecho",
+  "nota": "Con más de dos: «De todos»",
+  "donde": "Presupuesto, pie",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_02b_conjunta_eric_con_lo_suyo.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_02b.jpg"
+ },
+ {
+  "apartado": "1b",
+  "punto": "Al añadir (gasto, entrada, excursión): «Para los dos»/«Para todos» marcada y «Solo para mí» con «Solo lo ves tú.», sin nombres",
+  "estado": "hecho",
+  "nota": "Entrada/excursión en AddReservationSheet; gasto en HojaAnadirGasto",
+  "donde": "Presupuesto > Añadir gasto; tocar una entrada",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_04b_gasto_solo_para_mi.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_04b.jpg"
+ },
+ {
+  "apartado": "1b",
+  "punto": "Alojamiento, vuelo y coche del administrador: misma pregunta",
+  "estado": "medias",
+  "nota": "Está en las filas «En este vuelo/alojamiento/coche» de RESERVAS (hoja de «para quién»), no en el momento exacto de añadirlo",
+  "donde": "RESERVAS > fila «En este…» (admin, viaje compartido)",
+  "captura": "",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_04.jpg"
+ },
+ {
+  "apartado": "1b",
+  "punto": "«Solo para mí» solo lo ve quien lo añade, no cuenta en el total común, sale con candado y «Solo tú», sin aviso",
+  "estado": "hecho",
+  "nota": "Avisos: migración 0055",
+  "donde": "Presupuesto con Eric y con Ana",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_02c_conjunta_ana.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_02c.jpg"
+ },
+ {
+  "apartado": "1b",
+  "punto": "La reserva sigue en la ruta de todos (se oculta el dinero, no el sitio)",
+  "estado": "hecho",
+  "nota": "No se toca la ruta",
+  "donde": "DIAS",
+  "captura": "",
+  "captura_design": ""
+ },
+ {
+  "apartado": "1c",
+  "punto": "«Añadir gasto» sin [Para todos]/[Para mí]; los nombres de «¿Para quién es?», marcado solo quien lo añade",
+  "estado": "hecho",
+  "nota": "Design 08 aún muestra el interruptor; se sigue el prompt",
+  "donde": "Presupuesto (amigos) > Añadir gasto",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_05_gasto_cada_uno_solo_tu.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_08.jpg"
+ },
+ {
+  "apartado": "1c",
+  "punto": "Pregunta de la reserva según lo que se añade (entrada, vuelo, alojamiento, excursión, coche)",
+  "estado": "hecho",
+  "nota": "Entrada y excursión en la hoja; vuelo/alojamiento/coche en las hojas de RESERVAS y cuentas",
+  "donde": "Presupuesto > tocar Coliseo",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_05b_reserva_cada_uno.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_05b.jpg"
+ },
+ {
+  "apartado": "1c",
+  "punto": "Línea pequeña: Solo para ti / Para 2 personas / Para Ana",
+  "estado": "hecho",
+  "nota": "",
+  "donde": "Añadir gasto (amigos)",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_05b_gasto_cada_uno_dos.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_05b.jpg"
+ },
+ {
+  "apartado": "2b-1",
+  "punto": "Lo «Solo para mí» no lo ve nadie, tampoco el administrador (cuentas, totales, avisos, campana, RESERVAS)",
+  "estado": "medias",
+  "nota": "Pantalla, avisos, RPC y gastos cerrados (0055, sin aplicar). Límite: el JSON de reservas del administrador (trips.bookings) llega a los miembros; la app no lo enseña",
+  "donde": "Presupuesto con Ana vs Eric",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_02c_conjunta_ana.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_02c.jpg"
+ },
+ {
+  "apartado": "2b-3",
+  "punto": "Quien solo recomienda: su gasto «Para los dos» queda pendiente; su «Solo para mí», directo",
+  "estado": "hecho",
+  "nota": "",
+  "donde": "Presupuesto como Ana (recomendar)",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_recomienda_pendiente.jpg",
+  "captura_design": ""
+ },
+ {
+  "apartado": "2b-4",
+  "punto": "«Ruta» lo de la ruta, «Extras» lo demás; al añadir en Extras mismas preguntas; solo: nada; el pase no pregunta",
+  "estado": "hecho",
+  "nota": "La app no pregunta nada al comprar el pase (no hay flujo que lo apunte)",
+  "donde": "Presupuesto > Extras > Añadir gasto",
+  "captura": "docs/dias/capturas_jutrip/10n7_m2_05_gasto_cada_uno_solo_tu.jpg",
+  "captura_design": "docs/dias/capturas_jutrip/10n7_design_cuentas_08.jpg"
+ }
+]

@@ -1,5 +1,5 @@
+import { precioTiendaEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { enlaceAlPuntoDeEncuentro } from '../../../lib/civitatis'
-import { precioTienda } from '../../../lib/dinero'
 import type { DatosDeActividad } from '../../../lib/types'
 
 /**
@@ -8,9 +8,10 @@ import type { DatosDeActividad } from '../../../lib/types'
  * línea nombra a la empresa. Provisional hasta que Design dibuje la suya.
  */
 
-const euros = (n: number) => precioTienda(n)
+const euros = (n: number) => precioTiendaEnVista(n)
 
 export function DatosDeLaActividad({ datos }: { datos: DatosDeActividad }) {
+  useMonedaViajero() // (10N7)
   const enlaceMapa = enlaceAlPuntoDeEncuentro(datos.puntoDeEncuentro)
   const filas: { etiqueta: string; texto: string }[] = [
     datos.duracion ? { etiqueta: 'Duración', texto: datos.duracion } : null,

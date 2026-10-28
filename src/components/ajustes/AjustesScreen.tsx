@@ -18,6 +18,9 @@ import type { NombreIcono } from '../../lib/iconos'
 import { MisPases } from './MisPases'
 import listaAjustes from '../../../data/pase/lista_ajustes.json'
 import { TextoConPase } from '../cuenta/TextoConPase'
+import { HojaMonedaViajero } from '../moneda/HojaMonedaViajero'
+import { useMonedaViajero } from '../../lib/moneda'
+import { monedaConNombre } from '../../lib/dinero'
 
 const ROJO = 'oklch(0.52 0.19 25)'
 
@@ -79,6 +82,8 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
   const [sonido, setSonido] = useState(() => sonidoActivado())
   const [avisosMovil, setAvisosMovil] = useState(avisosInicial)
   const [privacidad, setPrivacidad] = useState(false)
+  const [hojaMoneda, setHojaMoneda] = useState(false)
+  const { moneda: monedaViajero } = useMonedaViajero()
   const [borrando, setBorrando] = useState(borrandoInicial)
   const [errorBorrar, setErrorBorrar] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
@@ -156,6 +161,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
             }}
             datos="sonido"
           />
+          <Fila icono="presupuesto" titulo="Moneda" sub={monedaConNombre(monedaViajero)} chevron onClick={() => setHojaMoneda(true)} datos="moneda" />
           <Fila icono="avisos" titulo="Avisos en el móvil" sub="El resumen del viaje y «en 10 días empieza tu viaje»" interruptor={{ activo: avisosMovil, cambiar: () => void cambiarAvisos() }} datos="avisos-movil" />
           <Fila
             icono="seguir"
@@ -182,6 +188,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
         </button>
       </main>
       {privacidad && <PrivacidadScreen onVolver={() => setPrivacidad(false)} />}
+      {hojaMoneda && <HojaMonedaViajero etiqueta="Ajustes" onCerrar={() => setHojaMoneda(false)} z={90} />}
       {borrando && (
         <div className="fixed inset-0 z-[90]" role="alertdialog" aria-modal="true" aria-label="Borrar la cuenta" data-borrar-dialogo>
           <div className="hoja-fondo absolute inset-0" style={{ background: 'rgba(28,34,48,.5)' }} onClick={() => setBorrando(false)} />

@@ -1,4 +1,5 @@
-import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
+import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
+import { precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
@@ -7,6 +8,7 @@ import { ReservasItemRow } from './ReservasItemRow'
 import { GeneralBookingModal } from './GeneralBookingModal'
 
 export function RentalVehicleRow() {
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const booking = useRouteStore((state) => state.rentalVehicleBooking)
   const setRentalVehicleBooking = useRouteStore((state) => state.setRentalVehicleBooking)
   const route = useRouteStore((state) => state.route)
@@ -22,7 +24,7 @@ export function RentalVehicleRow() {
         kind="rental-vehicle"
         label="Vehículo de alquiler"
         resolved={Boolean(booking)}
-        subtitle={booking ? [booking.provider, precioGuardado(booking) ? formatoImporte(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
+        subtitle={booking ? [booking.provider, precioGuardado(booking) ? precioEnVista(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
         priority={priority}
         onClick={() => setOpen(true)}
         bookAction={{

@@ -1,0 +1,74 @@
+[
+  {
+    "apartado": "2b",
+    "punto": "5a · Moneda por defecto: euros",
+    "estado": "hecho",
+    "nota": "Sin nada elegido, todo se enseña en euros (antes salía de la ciudad de origen del formulario; ya no).",
+    "donde": "Presupuesto > fila «Moneda» abajo del todo: dice «€ Euro». Cualquier cuenta nueva.",
+    "captura": "docs/dias/capturas_jutrip/10n7_moneda_01_presupuesto_euros.jpg",
+    "captura_design": "docs/diseno/proyecto/Piezas/Cuentas Modo.dc.html (fila «Moneda · € Euro»)"
+  },
+  {
+    "apartado": "2b",
+    "punto": "5b · Cada viajero la elige en dos sitios sincronizados: «Moneda» del presupuesto y Ajustes del perfil",
+    "estado": "hecho",
+    "nota": "Los dos abren la misma hoja de tarjetas (HojaOpciones, la elegida con el estilo de elegir) y llaman a la misma función: cambiar en uno cambia el otro al instante. Design solo dibuja la fila del presupuesto; la de Ajustes sigue el estilo de las demás filas de Ajustes.",
+    "donde": "Presupuesto > «Moneda»; Perfil > Ajustes > «La app» > «Moneda». Cambia en uno y mira el otro.",
+    "captura": "docs/dias/capturas_jutrip/10n7_moneda_02_hoja_moneda.jpg; 10n7_moneda_04_ajustes_moneda.jpg; 10n7_moneda_05_ajustes_hoja.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "2b",
+    "punto": "5c · Se guarda en su cuenta",
+    "estado": "medias",
+    "nota": "Se guarda siempre en el móvil (vale sin sesión y sin conexión) y, con cuenta, en travelers.moneda al cambiarla y se trae al entrar. Falta que Eric aplique a mano la migración 0056; mientras no esté, queda solo en el móvil (sin error). No se ha probado contra la base real.",
+    "donde": "Cambia la moneda con una cuenta, cierra sesión y entra en otro móvil: debería salir la misma (tras aplicar la 0056).",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2b",
+    "punto": "5d · Esa moneda se usa para enseñar los precios en toda la app (presupuesto, cuentas, RESERVAS, entradas, excursiones, el pase) con el cambio del día",
+    "estado": "medias",
+    "nota": "Aplicado en: presupuesto (líneas y extras), Cuentas del grupo, RESERVAS (alojamiento, seguro, coche, transporte, útil para el viaje, llegada y vuelta), entradas reservadas, vehículo y llegada de DIAS, excursiones, actividades de un sitio, aviso de un gasto, franja de gasto y el pase (empieza en tu moneda; su selector propio sigue). Sin aplicar aún (precio escrito por el usuario en su moneda o texto ya formateado): campos de precio al añadir (HojaPrecio, AddReservationSheet, GeneralBookingModal), «cuánto toca» de HojaAnadirGasto, y las etiquetas de precio de excursión ya formateadas (priceLabel) en el explorador.",
+    "donde": "Pon la moneda en pesos y recorre Presupuesto, RESERVAS, DIAS (excursiones) y Cuentas: los precios salen «≈ … MXN».",
+    "captura": "docs/dias/capturas_jutrip/10n7_moneda_03_presupuesto_pesos.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "2b",
+    "punto": "5e · Cada precio se guarda en la moneda en que se apuntó; en otra moneda se enseña convertido con «≈» y, en pequeño, el original («≈ 2.150 MXN · 100 €»)",
+    "estado": "hecho",
+    "nota": "Nada se reescribe: cada precio guarda su {importe, moneda}. Formato central formatearPrecio / precioEnVista en src/lib/monedaFormato.ts y moneda.ts. Cambio del día del servidor (/api/cambio), pedido una vez y guardado; sin cambio se enseña el original sin romper. El «+4 %» de Stripe solo se usa en el pase (10P), no aquí: las cifras de ejemplo del prompt (2.150) salen sin ese recargo.",
+    "donde": "Presupuesto > Extras: «Cena en Trastevere» 100 € con moneda pesos: «≈ 2.078 MXN» y «100 €» debajo.",
+    "captura": "docs/dias/capturas_jutrip/10n7_moneda_03_presupuesto_pesos.jpg",
+    "captura_design": null
+  },
+  {
+    "apartado": "2b",
+    "punto": "5f · Donde lo que se paga de verdad está en otra moneda (RESERVAS, entradas, excursiones) siempre se ve el original",
+    "estado": "hecho",
+    "nota": "En RESERVAS, entradas y excursiones el texto lleva siempre convertido y original juntos («≈ 215 MXN · 20 €»); en el presupuesto, el original va debajo del convertido.",
+    "donde": "RESERVAS > Entradas / Alojamiento / Transporte con precio; DIAS > excursión con precio «desde».",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2b",
+    "punto": "5g · Las cuentas del grupo, todas en una misma base (euros, con el cambio del día) y cada uno las ve en su moneda con «≈» si hay cambio",
+    "estado": "medias",
+    "nota": "Las cuentas se calculan en euros (al céntimo, probado con euros y pesos) y se enseñan convertidas con «≈» + una línea «Las cuentas se llevan en euros…». Aproximación: se usa el cambio del día de HOY para todos los gastos (el cambio del día de cada gasto no se guarda con el gasto; haría falta una columna nueva). «Ya está pagado» se guarda ahora en euros (los pagos antiguos en otra moneda se pasan al cargarlos). PantallaCuentas solo se tocó en los puntos de formato.",
+    "donde": "Presupuesto > Cuentas del grupo (viaje compartido, «Cada uno lo suyo»), con tu moneda distinta de euros.",
+    "captura": null,
+    "captura_design": null
+  },
+  {
+    "apartado": "2b",
+    "punto": "5h · Un gasto en una moneda sin cambio no se queda fuera sin avisar: sale con su moneda y «Sin cambio a tu moneda» y se cuenta aparte",
+    "estado": "hecho",
+    "nota": "En Cuentas del grupo sale un bloque «Fuera de las cuentas, sin cambio a tu moneda» con cada gasto y su moneda original; no entra en el total. En el presupuesto, las líneas sin cambio dicen «Sin cambio a tu moneda» y su original. Lo personal de otro nunca sale. Probado en lo puro; no comprobado en pantalla con un viaje compartido real.",
+    "donde": "Cuentas del grupo con un gasto en una moneda rara (sin cambio del día).",
+    "captura": null,
+    "captura_design": null
+  }
+]

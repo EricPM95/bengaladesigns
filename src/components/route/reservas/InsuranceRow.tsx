@@ -1,4 +1,5 @@
-import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
+import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
+import { precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
@@ -6,6 +7,7 @@ import { ReservasItemRow } from './ReservasItemRow'
 import { GeneralBookingModal } from './GeneralBookingModal'
 
 export function InsuranceRow() {
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const booking = useRouteStore((state) => state.insuranceBooking)
   const setInsuranceBooking = useRouteStore((state) => state.setInsuranceBooking)
   const [open, setOpen] = useState(false)
@@ -16,7 +18,7 @@ export function InsuranceRow() {
         kind="insurance"
         label="Seguro de viaje"
         resolved={Boolean(booking)}
-        subtitle={booking ? [booking.provider, precioGuardado(booking) ? formatoImporte(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
+        subtitle={booking ? [booking.provider, precioGuardado(booking) ? precioEnVista(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
         priority="red"
         onClick={() => setOpen(true)}
         bookAction={{

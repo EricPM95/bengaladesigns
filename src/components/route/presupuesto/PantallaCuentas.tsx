@@ -6,11 +6,12 @@ import { formatoImporte } from '../../../lib/dinero'
 import { deCentimos } from '../../../lib/cuentasGrupo'
 import { useCuentasDelGrupo } from '../../../hooks/useCuentasDelGrupo'
 import { useGastosDelViaje } from '../../../hooks/useGastosDelViaje'
+import { useModoCuentas } from '../../../lib/modoCuentas'
 import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
-import { PastillaElegir } from '../../ui/Elegir'
 import { Icono } from '../../ui/Icono'
+import { ParaQuienConNombres, preguntaDeReserva } from './ParaQuien'
 import { CaraDePersona } from '../../compartir/CarasDelViaje'
 
 const MONO = "'Geist Mono',monospace"
@@ -22,9 +23,11 @@ const ojo = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', t
  */
 export function TarjetaCuentas({ onAbrir }: { onAbrir: () => void }) {
   const c = useCuentasDelGrupo()
-  if (!c.compartido) return null
+  const { modo } = useModoCuentas()
+  // (Tanda 10N7) «Cuentas del grupo» (con quién le debe a quién) solo en «Cada uno lo suyo»: en la cuenta conjunta no hay deudas y viajando solo no hay grupo.
+  if (!c.compartido || modo !== 'cada_uno') return null
   const primera = c.cuentas.pendientes[0]
-  const texto = !c.cuentas.hayGastos ? 'Todavía no hay gastos del grupo' : primera ? `${c.nombreDe(primera.deudorId)} le debe ${formatoImporte(deCentimos(primera.centimos, c.moneda))} a ${c.nombreDe(primera.acreedorId)}` : 'Estáis en paz'
+  const texto = !c.cuentas.hayGastos ? 'Todavía no hay gastos del grupo' : primera ? `${c.nombreDe(primera.deudorId)} le debe ${c.texto(primera.centimos)} a ${c.nombreDe(primera.acreedorId)}` : 'Estáis en paz'
   const paz = c.cuentas.enPaz
   return (
     <button
@@ -55,8 +58,8 @@ export function TarjetaCuentas({ onAbrir }: { onAbrir: () => void }) {
   )
 }
 
-const dinero = (centimos: number, moneda: string) => formatoImporte(deCentimos(centimos, moneda))
-const conSigno = (centimos: number, moneda: string) => (centimos > 0 ? `+${dinero(centimos, moneda)}` : centimos < 0 ? `−${dinero(-centimos, moneda)}` : `${dinero(0, moneda)} ✓`)
+const dinero = (centimos: number, texto: (centimos: number) => string) => texto(centimos)
+const conSigno = (centimos: number, texto: (centimos: number) => string) => (centimos > 0 ? `+${dinero(centimos, texto)}` : centimos < 0 ? `−${dinero(-centimos, texto)}` : `${dinero(0, texto)} ✓`)
 
 /**
  * LA PANTALLA «CUENTAS DEL GRUPO» (Tanda 10N2, `Piezas/Cuentas Grupo` 04, 05 y 06): el total, cada persona con lo que ha pagado, lo que le toca y su saldo (verde con «+», rojo con «−», «0 € ✓»), y «Para quedar en paz»,
@@ -115,11 +118,13 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
         <div className="mx-auto flex w-full max-w-lg flex-col gap-2.5">
           <div data-cuentas-total className="flex flex-none items-center justify-between gap-3 rounded-[16px] bg-[#1C2230] px-4 py-3 text-[#FFFDF8]">
             <span className="text-[14px] font-semibold">
-              Total del grupo <span style={{ color: '#E9C77A' }}>{dinero(cuentas.total, moneda)}</span>
+              Total del grupo <span style={{ color: '#E9C77A' }}>{dinero(cuentas.total, c.texto)}</span>
             </span>
-            {cuentas.porPersona !== null && <span className="text-[12.5px] text-[#FFFDF8]/80">{dinero(cuentas.porPersona, moneda)} por persona</span>}
+            {cuentas.porPersona !== null && <span className="text-[12.5px] text-[#FFFDF8]/80">{dinero(cuentas.porPersona, c.texto)} por persona</span>}
           </div>
 
+          {c.aproximado && <span data-cuentas-aproximado className="px-1 text-[11.5px] leading-[1.4] text-text/55">Las cuentas se llevan en euros; aquí las ves en {c.monedaVista} con el cambio del día (≈).</span>}
+          {c.sinCambio.length > 0 && (<div data-cuentas-sin-cambio role="status" className="flex flex-none flex-col gap-1 rounded-[14px] border border-text/[.12] bg-[#FFFDF8] px-3.5 py-3"><span className="text-[13px] font-semibold text-text">Fuera de las cuentas, sin cambio a tu moneda</span>{c.sinCambio.map((x) => (<span key={x.id} className="text-[12.5px] leading-[1.4] text-text/70">{x.nombre} · {formatoImporte(x.precio)} · Sin cambio a tu moneda, se cuenta aparte</span>))}</div>)}
           {c.duplicados.length > 0 && (
             <div data-aviso-duplicado role="status" className="flex flex-none flex-col gap-1 rounded-[14px] px-3.5 py-3" style={{ background: '#FFF6DC', border: '1px solid rgba(201,154,68,.5)' }}>
               <span className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: '#6F4E37' }}>
@@ -127,7 +132,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
               </span>
               {c.duplicados.map((d) => (
                 <span key={d.linea} className="text-[12.5px] leading-[1.4] text-text/70">
-                  «{d.linea}» ({dinero(d.centimos, moneda)}) ya entra solo desde RESERVAS y también está apuntado como gasto del grupo: «{d.gasto}». Quita uno de los dos.
+                  «{d.linea}» ({dinero(d.centimos, c.texto)}) ya entra solo desde RESERVAS y también está apuntado como gasto del grupo: «{d.gasto}». Quita uno de los dos.
                 </span>
               ))}
             </div>
@@ -150,11 +155,11 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="text-[15px] font-semibold leading-[1.2]">{nombre}</span>
                   <span className="text-[11.5px] leading-[1.35] text-text/55">
-                    {persona.salio && 'Ya no está en el viaje · '}Ha pagado {dinero(p.pagado + p.enviado, moneda)} · Le toca {dinero(p.toca, moneda)}
+                    {persona.salio && 'Ya no está en el viaje · '}Ha pagado {dinero(p.pagado + p.enviado, c.texto)} · Le toca {dinero(p.toca, c.texto)}
                   </span>
                 </span>
                 <span data-saldo={p.saldo} className="flex-none rounded-full px-3 py-1 text-[13px] font-semibold" style={{ background: tono.fondo, color: tono.color, font: `600 13px ${MONO}` }}>
-                  {conSigno(p.saldo, moneda)}
+                  {conSigno(p.saldo, c.texto)}
                 </span>
               </div>
             )
@@ -173,7 +178,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
                       {c.nombreDe(a.pagan[0])} lo pagó · entre {a.entre.length} de {c.personas.filter((x) => !x.salio).length}
                     </span>
                   </span>
-                  <span style={{ font: `600 13px ${MONO}` }}>{dinero(a.centimos, moneda)}</span>
+                  <span style={{ font: `600 13px ${MONO}` }}>{dinero(a.centimos, c.texto)}</span>
                   {soyAdmin && (
                     <button type="button" data-cambiar-entre onClick={() => setCambiando(a.clave ?? null)} className="h-9 flex-none rounded-[10px] border border-text/[.14] px-2.5 text-[12px] font-semibold">
                       Para quién es
@@ -194,7 +199,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
             <div key={pg.id} data-pago-linea="pagado" className="flex flex-none items-center gap-2.5 rounded-[16px] px-3 py-2.5" style={{ background: 'oklch(0.96 0.035 150)' }}>
               <Flecha deudor={c.nombreDe(pg.deudorId)} acreedor={c.nombreDe(pg.acreedorId)} />
               <span className="min-w-0 flex-1 text-[13.5px] font-medium leading-[1.25]">
-                {c.nombreDe(pg.deudorId)} le debía {dinero(pg.centimos, moneda)} a {c.nombreDe(pg.acreedorId)}
+                {c.nombreDe(pg.deudorId)} le debía {dinero(pg.centimos, c.texto)} a {c.nombreDe(pg.acreedorId)}
               </span>
               <span className="flex flex-none flex-col items-end gap-0.5">
                 <span className="flex items-center gap-1 text-[12.5px] font-semibold" style={{ color: 'oklch(0.36 0.09 150)' }}>
@@ -213,7 +218,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
             <div key={`${x.deudorId}>${x.acreedorId}`} data-pago-linea="pendiente" className="flex flex-none items-center gap-2.5 rounded-[16px] px-3 py-2.5" style={{ background: '#FFF6DC' }}>
               <Flecha deudor={c.nombreDe(x.deudorId)} acreedor={c.nombreDe(x.acreedorId)} />
               <span className="min-w-0 flex-1 text-[13.5px] font-medium leading-[1.25]">
-                {c.nombreDe(x.deudorId)} le debe {dinero(x.centimos, moneda)} a {c.nombreDe(x.acreedorId)}
+                {c.nombreDe(x.deudorId)} le debe {dinero(x.centimos, c.texto)} a {c.nombreDe(x.acreedorId)}
               </span>
               {puede(x.deudorId, x.acreedorId) && (
                 <button type="button" data-ya-pagado disabled={enCurso === `${x.deudorId}>${x.acreedorId}`} onClick={() => void marcar(x.deudorId, x.acreedorId, x.centimos)} className="btn-champan h-10 flex-none rounded-[12px] px-3 text-[12.5px] font-semibold">
@@ -239,14 +244,14 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
           )}
         </div>
       </div>
-      {cambiandoLinea && <HojaEntreAlojamiento linea={cambiandoLinea} onClose={() => setCambiando(null)} personas={c.personas.filter((x) => !x.salio)} />}
+      {cambiandoLinea && <HojaEntreAlojamiento linea={cambiandoLinea} onClose={() => setCambiando(null)} personas={c.personas.filter((x) => !x.salio)} yoId={gv.yoId} />}
     </div>,
     document.body,
   )
 }
 
 /** «¿Para quién es?» del alojamiento o el coche que entran solos (solo el administrador lo cambia; se guarda con el viaje). */
-function HojaEntreAlojamiento({ linea, personas, onClose }: { linea: { clave?: string; nombre: string; entre: string[] }; personas: { id: string; nombre: string | null }[]; onClose: () => void }) {
+function HojaEntreAlojamiento({ linea, personas, yoId, onClose }: { linea: { clave?: string; nombre: string; entre: string[] }; personas: { id: string; nombre: string | null }[]; yoId: string | null; onClose: () => void }) {
   const setCuentasEntre = useRouteStore((st) => st.setCuentasEntre)
   const todos = personas.map((x) => x.id)
   const [marcadas, setMarcadas] = useState<string[]>(linea.entre.filter((id) => todos.includes(id)))
@@ -256,18 +261,16 @@ function HojaEntreAlojamiento({ linea, personas, onClose }: { linea: { clave?: s
       <h2 id="hoja-entre-alojamiento" className="max-w-[calc(100%-3rem)] font-display text-[24px] leading-[1.05] text-text">
         {linea.nombre}
       </h2>
-      <span className="mt-4 flex items-center justify-between text-text/55" style={ojoStyle}>
-        <span>¿Para quién es?</span>
-        <span>
-          {marcadas.length} de {todos.length}
-        </span>
-      </span>
-      <div className="mt-2" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-        {personas.map((x) => (
-          <PastillaElegir key={x.id} elegida={marcadas.includes(x.id)} onClick={() => alternar(x.id)} marca datos={`entre-aloj-${x.id}`}>
-            {nombreVisible(x.nombre) || 'Alguien'}
-          </PastillaElegir>
-        ))}
+      <div className="mt-4">
+        <ParaQuienConNombres
+          pregunta={preguntaDeReserva(linea.clave === 'coche' ? 'coche' : 'alojamiento')}
+          personas={personas.map((x) => ({ id: x.id, nombre: x.nombre ?? '', esAdmin: false }))}
+          marcados={marcadas}
+          onAlternar={alternar}
+          yoId={yoId}
+          nombreDe={(id) => nombreVisible(personas.find((x) => x.id === id)?.nombre) || 'Alguien'}
+          datos="entre-aloj"
+        />
       </div>
       <button
         type="button"

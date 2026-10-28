@@ -22,7 +22,12 @@ import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
 import { useGastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { nombresEnFrase } from '../../../lib/gastosCompartidos'
 import { ExtrasCompartidos } from './ExtrasCompartidos'
+import { HojaMonedaViajero } from '../../moneda/HojaMonedaViajero'
+import { useMonedaViajero } from '../../../lib/moneda'
 import { PantallaCuentas, TarjetaCuentas } from './PantallaCuentas'
+import { LoTuyo } from './LoTuyo'
+import { BotonModoCuentas, EtiquetaCuentaConjunta, PreguntaModoCuentas } from './CuentaModo'
+import { useModoCuentas } from '../../../lib/modoCuentas'
 import { deCentimos, porPersonaDelPresupuesto } from '../../../lib/cuentasGrupo'
 
 /** El color y el icono de cada bloque (la barra de la tarjeta oscura, el cuadradito de cada bloque y los puntos de debajo). */
@@ -75,10 +80,10 @@ function Linea({ linea, bloque, moneda, onClick }: { linea: LineaPresupuesto; bl
         )}
       </span>
       <span className="flex flex-none flex-col items-end gap-px" style={{ opacity: linea.personal ? 0.6 : 1 }}>
-        <span style={{ font: "600 13px 'Geist Mono',monospace" }}>{formatoImporte(linea.precio)}</span>
+        <span style={{ font: "600 13px 'Geist Mono',monospace" }}>{linea.enMonedaViajero && linea.precio.currency !== moneda ? `≈ ${formatoImporte(linea.enMonedaViajero)}` : formatoImporte(linea.precio)}</span>
         {otraMoneda && (
           <span className="text-[11px] text-text/55" style={{ font: "500 11px 'Geist Mono',monospace" }}>
-            {linea.enMonedaViajero ? `≈ ${formatoImporte(linea.enMonedaViajero)}` : `Sin cambio para ${linea.precio.currency}`}
+            {linea.enMonedaViajero ? formatoImporte(linea.precio) : 'Sin cambio a tu moneda'}
           </span>
         )}
       </span>
@@ -130,10 +135,10 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
           <div key={linea.id} className="flex min-h-[44px] items-center gap-2.5 rounded-[14px] bg-[#F8F3EA] py-1 pl-3 pr-1">
             <span className="min-w-0 flex-1 truncate text-[13px] font-medium">{linea.nombre}</span>
             <span className="flex flex-none flex-col items-end gap-px">
-              <span style={{ font: "600 13px 'Geist Mono',monospace" }}>{formatoImporte(linea.precio)}</span>
+              <span style={{ font: "600 13px 'Geist Mono',monospace" }}>{linea.enMonedaViajero && linea.precio.currency !== moneda ? `≈ ${formatoImporte(linea.enMonedaViajero)}` : formatoImporte(linea.precio)}</span>
               {linea.precio.currency !== moneda && (
                 <span style={{ font: "500 11px 'Geist Mono',monospace" }} className="text-text/55">
-                  {linea.enMonedaViajero ? `≈ ${formatoImporte(linea.enMonedaViajero)}` : `Sin cambio para ${linea.precio.currency}`}
+                  {linea.enMonedaViajero ? formatoImporte(linea.precio) : 'Sin cambio a tu moneda'}
                 </span>
               )}
             </span>
@@ -224,39 +229,6 @@ function HojaPersonas({ inicial, onGuardar, onClose }: { inicial: number | null;
   )
 }
 
-/** La hoja de la moneda del viajero (se abre desde la fila «Moneda» de abajo del todo). */
-function HojaMoneda({ actual, onGuardar, onClose }: { actual: string; onGuardar: (moneda: string) => void; onClose: () => void }) {
-  const { opciones } = useMonedas()
-  const [moneda, setMoneda] = useState(actual)
-  return (
-    <HojaAbajo titleId="hoja-moneda" onClose={onClose} capa={100}>
-      <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={ojoStyle}>
-        Presupuesto
-      </p>
-      <h2 id="hoja-moneda" className="mt-1.5 font-display text-[24px] leading-[1.05] text-text">
-        Tu moneda
-      </h2>
-      <select value={moneda} onChange={(event) => setMoneda(event.target.value)} aria-label="Tu moneda" className="mt-4 h-12 w-full rounded-[14px] border border-text/15 bg-white px-3 text-[15px]">
-        {[...new Set([actual, ...opciones.map((opcion) => opcion.codigo)])].map((codigo) => (
-          <option key={codigo} value={codigo}>
-            {monedaConNombre(codigo)}
-          </option>
-        ))}
-      </select>
-      <button
-        type="button"
-        onClick={() => {
-          onGuardar(moneda)
-          onClose()
-        }}
-        className="mt-4 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98]"
-      >
-        Guardar
-      </button>
-    </HojaAbajo>
-  )
-}
-
 /**
  * La pantalla del presupuesto (Tanda 6z2, diseño `docs/diseno/presupuesto/Presupuesto.dc.html`): la tarjeta oscura con el total del viaje (y el «por persona» escondido con el ojo) y la barra de colores, los bloques
  * (Transporte y alojamiento, Ruta, Útil para el viaje y Extras) y el total otra vez. Solo suma lo que el viajero puso con su precio: nunca un número inventado. Lo que está en otra moneda se pasa a la del viajero con el
@@ -277,7 +249,7 @@ export function PantallaPresupuesto() {
   const setInsuranceBooking = useRouteStore((state) => state.setInsuranceBooking)
   const setRentalVehicleBooking = useRouteStore((state) => state.setRentalVehicleBooking)
   const setEsimPrecio = useRouteStore((state) => state.setEsimPrecio)
-  const setMonedaViajero = useRouteStore((state) => state.setMonedaViajero)
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda, también desde Ajustes
   const setPersonas = useRouteStore((state) => state.setPersonas)
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
   const { presupuesto, cambio } = usePresupuesto()
@@ -288,6 +260,7 @@ export function PantallaPresupuesto() {
   const [cuentasAbiertas, setCuentasAbiertas] = useState(false)
   // (Tanda 10N, apartado 9) En un viaje compartido: «Del grupo», el «por persona» solo de lo del grupo, los nombres de la gente y los Extras con [Para todos] / [Para mí].
   const gv = useGastosDelViaje()
+  const modoCuentas = useModoCuentas() // (Tanda 10N7) solo / cuenta conjunta / cada uno lo suyo
   useLoSuyoDelViaje()
   const grupoLoSuyo = useLoSuyo((s) => s.grupo)
   if (!abierto || !route || !presupuesto) return null
@@ -296,6 +269,8 @@ export function PantallaPresupuesto() {
   const personas = gv.compartido ? gv.personas.length : personasDelViaje(route)
   const total = presupuesto.total
   const hayGastos = presupuesto.bloques.length > 0
+  // (Tanda 10N7) Solo quien tiene algo «Solo para mí» ve el desglose «De los dos · Lo tuyo · Total»; los demás, solo lo común.
+  const conLoTuyo = modoCuentas.modo === 'conjunta' && presupuesto.loTuyo.length > 0
   const extras = presupuesto.bloques.find((bloque) => bloque.id === 'extras') ?? null
   const bloquesSinExtras = presupuesto.bloques.filter((bloque) => bloque.id !== 'extras')
   const simbolo = formatoImporte({ amount: 0, currency: moneda }).split(' ')[1]
@@ -353,8 +328,10 @@ export function PantallaPresupuesto() {
             Presupuesto
           </span>
           <span className="text-text/55" style={{ font: "500 11px/1.35 'Geist Mono',monospace", letterSpacing: '.06em' }}>
-            {route.destination} · {rangoDelViaje(route)} ·{' '}
-            {gv.compartido ? (
+            {route.destination} · {rangoDelViaje(route)}
+            {/* (Tanda 10N7) En la cuenta conjunta los nombres ya van en la etiqueta de la tarjeta oscura. */}
+            {modoCuentas.modo !== 'conjunta' && ' · '}
+            {modoCuentas.modo === 'conjunta' ? null : gv.compartido ? (
               <span data-presupuesto-de>{gv.esInvitado ? `de ${gv.nombreAdmin || nombresEnFrase(gv.personas.map((p) => nombreVisible(p.nombre)))}` : gv.frase}</span>
             ) : personas ? (
               <>
@@ -367,23 +344,29 @@ export function PantallaPresupuesto() {
             )}
           </span>
         </span>
+        <BotonModoCuentas />
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-8 pt-1.5 md:px-8" style={{ paddingBottom: huecoAlFinal }}>
         <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5">
+          <PreguntaModoCuentas />
           <div className="relative flex flex-none flex-col gap-3.5 overflow-hidden rounded-[26px] bg-[#1C2230] px-[18px] pb-4 pt-[18px] text-[#FFFDF8]">
             <span aria-hidden="true" className="absolute -right-10 -top-[50px] h-40 w-40 rounded-full" style={{ background: 'rgba(233,199,122,.3)', filter: 'blur(28px)' }} />
             <div className="relative flex items-end justify-between gap-3">
               <span className="flex min-w-0 flex-col gap-1.5">
-                <span className="text-[#FFFDF8]/60" style={ojoStyle}>
-                  {gv.compartido ? 'Del grupo' : 'Total del viaje'}
-                </span>
+                {modoCuentas.modo === 'conjunta' ? (
+                  <EtiquetaCuentaConjunta />
+                ) : (
+                  <span className="text-[#FFFDF8]/60" style={ojoStyle}>
+                    {gv.compartido ? 'Del grupo' : 'Total del viaje'}
+                  </span>
+                )}
                 {/* El total se achica si es largo (489,23 €) para no partirse en dos líneas junto al «por persona». */}
                 <span className="whitespace-nowrap" style={{ font: `400 ${formatoImporte(total).length <= 7 ? 54 : formatoImporte(total).length <= 9 ? 44 : 36}px/.95 'Instrument Serif',serif` }}>
                   {formatoImporte(total)}
                 </span>
               </span>
-              {porPersona || personas === null ? (
+              {modoCuentas.modo !== 'conjunta' && (porPersona || personas === null) ? (
                 <button
                   type="button"
                   onClick={() => (porPersona ? setVerPorPersona((valor) => !valor) : setHojaPersonas(true))}
@@ -420,7 +403,8 @@ export function PantallaPresupuesto() {
           </div>
 
           {/* (Tanda 10N2) Cuentas del grupo: debajo de «Del grupo», solo en un viaje compartido. */}
-          {gv.compartido && <TarjetaCuentas onAbrir={() => setCuentasAbiertas(true)} />}
+          {/* (Tanda 10N7) En la cuenta conjunta no hay deudas ni «Cuentas del grupo»: el dinero es común. */}
+          {gv.compartido && modoCuentas.modo !== 'conjunta' && <TarjetaCuentas onAbrir={() => setCuentasAbiertas(true)} />}
 
           {/* (Tanda 10N6 §1j) Sin gastos: el MISMO bloque «Ruta» de siempre, vacío (sin importe) y con su línea; fuera el recuadro de rayas. Debajo, «Extras». */}
           {!hayGastos && (
@@ -447,14 +431,22 @@ export function PantallaPresupuesto() {
             <Extras bloque={extras} moneda={moneda} route={route} />
           )}
 
+          {/* (Tanda 10N7 §1b) Lo «Solo para mí» de la cuenta conjunta: un bloque propio, abajo, después de «Extras». Solo sale si esta persona tiene algo suyo. */}
+          {modoCuentas.modo === 'conjunta' && <LoTuyo lineas={presupuesto.loTuyo} suma={presupuesto.sumaLoTuyo} moneda={moneda} onAbrir={gv.esInvitado ? undefined : setHoja} />}
+
           <div className="flex flex-none items-baseline justify-between border-t border-text/[.12] px-1.5 pt-1.5">
             <span className="pt-3 text-text/60" style={ojoStyle}>
               Total
             </span>
-            <span className="pt-2.5" style={{ font: "400 30px/1 'Instrument Serif',serif" }}>
-              {formatoImporte(total)}
+            <span data-total-final className="pt-2.5" style={{ font: "400 30px/1 'Instrument Serif',serif" }}>
+              {formatoImporte(conLoTuyo ? presupuesto.totalConLoTuyo : total)}
             </span>
           </div>
+          {conLoTuyo && (
+            <span data-total-explicado className="px-1.5 text-[11.5px] leading-[1.4] text-text/55">
+              {gv.personas.length > 2 ? 'De todos' : 'De los dos'} {formatoImporte(total)} · Lo tuyo {formatoImporte(presupuesto.sumaLoTuyo)} · Total {formatoImporte(presupuesto.totalConLoTuyo)}
+            </span>
+          )}
           <div className="flex flex-col gap-1 px-1.5 text-[11.5px] leading-[1.4] text-text/55">
             {presupuesto.hayConversion && fechaCambio && <span>Cambio aproximado del {fechaCambio}.</span>}
             {presupuesto.sinCambio.length > 0 && (
@@ -485,7 +477,7 @@ export function PantallaPresupuesto() {
       {hojaAbierta()}
       {cuentasAbiertas && gv.compartido && <PantallaCuentas onCerrar={() => setCuentasAbiertas(false)} />}
       {hojaPersonas && <HojaPersonas inicial={personas} onGuardar={setPersonas} onClose={() => setHojaPersonas(false)} />}
-      {hojaMoneda && <HojaMoneda actual={moneda} onGuardar={setMonedaViajero} onClose={() => setHojaMoneda(false)} />}
+      {hojaMoneda && <HojaMonedaViajero etiqueta="Presupuesto" onCerrar={() => setHojaMoneda(false)} />}
     </div>,
     document.body,
   )

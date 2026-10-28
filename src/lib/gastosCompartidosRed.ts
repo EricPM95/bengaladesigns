@@ -1,8 +1,12 @@
 import { supabase } from './supabaseClient'
-import { leerImporte, type Importe } from './dinero'
+import { convertir, leerImporte, type Importe } from './dinero'
 import type { AmbitoGasto, EstadoGasto, GastoCompartido } from './gastosCompartidos'
 import type { PagoMarcado } from './cuentasGrupo'
 import { aCentimos } from './cuentasGrupo'
+import { cambioActual } from './useMoneda'
+
+/** (10N7) Las cuentas se llevan en euros: un pago marcado en otra moneda (los de antes de la 10N7) se pasa con el cambio del día; sin cambio, tal cual. */
+const aBaseDeCuentas = (i: Importe): Importe => (i.currency === 'EUR' ? i : (convertir(i, 'EUR', cambioActual()) ?? i))
 
 /**
  * La parte con red de los gastos compartidos (Tanda 10N, apartado 9) y de las cuentas del grupo (Tanda 10N2): Supabase detrás de un `Backend` que se puede cambiar. La parte pura está en gastosCompartidos.ts
@@ -99,7 +103,7 @@ export const backendSupabase: Backend = {
         else
           pagos = ((p.data ?? []) as FilaPago[]).flatMap((x) => {
             const importe = leerImporte(x.importe)
-            return importe ? [{ id: x.id, deudorId: x.deudor_id, acreedorId: x.acreedor_id, centimos: aCentimos(importe), marcadoPor: x.marcado_por }] : []
+            return importe ? [{ id: x.id, deudorId: x.deudor_id, acreedorId: x.acreedor_id, centimos: aCentimos(aBaseDeCuentas(importe)), marcadoPor: x.marcado_por }] : []
           })
         const e = await supabase.from('trip_ex_miembros').select('user_id, nombre').eq('trip_id', tripId)
         if (!e.error) exMiembros = ((e.data ?? []) as { user_id: string; nombre: string | null }[]).map((x) => ({ id: x.user_id, nombre: x.nombre }))

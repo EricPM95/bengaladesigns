@@ -154,8 +154,16 @@ export function textoDelAviso(aviso) {
     // Tanda 10N: el día antes del viaje, a quien tiene cambios sin enviar.
     case 'sin_enviar':
       return `Tienes ${p.n} ${p.n === 1 ? 'cambio' : 'cambios'} sin enviar${nombreDe(p.admin) ? ` a ${nombreDe(p.admin)}` : ''}. ${p.n === 1 ? 'Envíalo' : 'Envíalos'} hoy, que mañana empieza el viaje.`
-    case 'unido':
-      return nombreDe(p.nombre) ? `${nombreDe(p.nombre)} se ha unido a tu viaje` : 'Alguien se ha unido a tu viaje'
+    case 'unido': {
+      // (Tanda 10N7 §2 y §2b-2) Si entra la primera persona a un viaje solo, o un tercero a una cuenta conjunta, al administrador se le pregunta cómo llevan las cuentas.
+      const base = nombreDe(p.nombre) ? `${nombreDe(p.nombre)} se ha unido a tu viaje` : 'Alguien se ha unido a tu viaje'
+      return p.pregunta_cuentas === true ? `${base}. ¿Cómo lleváis las cuentas?` : base
+    }
+    // (Tanda 10N7 §2) A todos los del viaje: «Eric ha cambiado las cuentas a cuenta conjunta.» / «…a cada uno lo suyo.»
+    case 'cuentas_modo': {
+      const a = p.modo === 'conjunta' ? 'cuenta conjunta' : 'cada uno lo suyo'
+      return nombreDe(p.quien) ? `${nombreDe(p.quien)} ha cambiado las cuentas a ${a}.` : `Han cambiado las cuentas a ${a}.`
+    }
     case 'd10':
       return p.dias === 1 ? `Mañana empieza tu viaje a ${p.destino}` : `En ${p.dias ?? 10} días empieza tu viaje a ${p.destino}`
     case 'resumen':
@@ -238,6 +246,7 @@ export function quienDelAviso(aviso) {
   if (aviso.tipo === 'gasto_pendiente') return de(p.autor)
   if (aviso.tipo === 'pago_marcado') return de(p.actor)
   if (aviso.tipo === 'unido') return de(p.nombre)
+  if (aviso.tipo === 'cuentas_modo') return de(p.quien)
   if (aviso.tipo === 'reserva_grupo') return de(p.quien)
   if (aviso.tipo === 'permiso') return de(p.admin)
   if (aviso.tipo === 'viaje_cambiado') return de(p.quien)
@@ -355,7 +364,11 @@ export function franjaDelAviso(aviso) {
     case 'sin_enviar':
       return { titulo: `Tienes ${p.n === 1 ? 'un cambio' : `${p.n} cambios`} sin enviar`, detalle: 'Envíalos hoy, que mañana empieza el viaje', icono: 'calendario' }
     case 'unido':
+      // (10N7) Con la pregunta de las cuentas, como en Design 07: «Ana se ha unido a tu viaje» y debajo «¿Cómo lleváis las cuentas?».
+      if (p.pregunta_cuentas === true) return persona(nombreDe(p.nombre) ? `${nombreDe(p.nombre)} se ha unido a tu viaje` : 'Alguien se ha unido a tu viaje', '¿Cómo lleváis las cuentas?')
       return persona(nombreDe(p.nombre) ? `${nombreDe(p.nombre)} se ha unido al viaje` : 'Alguien se ha unido al viaje', p.destino ? `Viaje a ${p.destino}` : '')
+    case 'cuentas_modo':
+      return persona(nombreDe(p.quien) ? `${nombreDe(p.quien)} ha cambiado las cuentas` : 'Han cambiado las cuentas', p.modo === 'conjunta' ? 'Ahora, cuenta conjunta' : 'Ahora, cada uno lo suyo')
     case 'd10':
       return { titulo: p.dias === 1 ? 'Mañana empieza tu viaje' : `Tu viaje empieza en ${p.dias ?? 10} días`, detalle: [p.destino, rangoCorto(p.inicio, p.fin)].filter(Boolean).join(' · '), icono: 'calendario' }
     case 'resumen':

@@ -56,5 +56,7 @@ export function accionPorAviso(aviso: { tipo: string; payload: Record<string, un
   }
   if (aviso.tipo === 'quitado') return { accion: 'quitado', linea: `Ya no formas parte del viaje a ${String(p.destino ?? '')}.`.replace(' a .', '.') }
   if (aviso.tipo === 'permiso') return { accion: 'gente', linea: null }
+  // (10N7) «Eric ha cambiado las cuentas a cuenta conjunta.»: se vuelve a pedir el viaje (lleva el modo) y se dice arriba.
+  if (aviso.tipo === 'cuentas_modo') return { accion: 'refrescar', linea: textoDelAviso({ tipo: 'cuentas_modo', payload: p }) }
   return { accion: 'ninguna', linea: null }
 }

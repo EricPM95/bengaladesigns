@@ -9,11 +9,12 @@ import { nombreDe, inicialDe, type Persona } from '../../../store/useViajeCompar
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useLoSuyo } from '../../../store/useLoSuyo'
 import { Icono } from '../../ui/Icono'
-import { PastillaElegir } from '../../ui/Elegir'
 import { TimeListWheel } from '../../ui/TimeListWheel'
 import { CampoPrecio } from '../../ui/CampoPrecio'
 import { usePrecioEditable } from '../../../lib/useMoneda'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
+import { useModoCuentas } from '../../../lib/modoCuentas'
+import { ParaQuienConjunta, ParaQuienConNombres, preguntaDeReserva, type QueSeAnade } from '../presupuesto/ParaQuien'
 import { HojaTuAlojamiento } from '../alojamiento/HojaTuAlojamiento'
 import { estanciasDelViaje, precioDeAlojamiento } from '../../../lib/tuAlojamiento'
 
@@ -173,29 +174,37 @@ function HojaMiVuelo({ actual, ciudad, onGuardar, onQuitar, onClose }: { actual:
   )
 }
 
-/** «¿Para quién es?» del vuelo o el alojamiento del administrador: él siempre va marcado. Se guarda con el viaje (`cuentasEntre`) y de ahí sale el reparto de las cuentas. */
-export function HojaParaQuienEsLoDelAdmin({ titulo, gente, marcadas, adminId, onGuardar, onClose }: { titulo: string; gente: Persona[]; marcadas: string[]; adminId: string | null; onGuardar: (ids: string[]) => void; onClose: () => void }) {
+/**
+ * «¿Para quién…?» del vuelo, el alojamiento o el coche del administrador: él siempre va marcado. Se guarda con el viaje (`cuentasEntre`) y de ahí sale el reparto de las cuentas.
+ * (Tanda 10N7) Cuenta conjunta: «Para los dos / Para todos» o «Solo para mí», sin nombres. Cada uno lo suyo: la pregunta de lo que es («¿Para quién has comprado el vuelo?»), los nombres y la línea pequeña.
+ */
+export function HojaParaQuienEsLoDelAdmin({ titulo, tipo, gente, marcadas, adminId, onGuardar, onClose }: { titulo: string; tipo?: QueSeAnade; gente: Persona[]; marcadas: string[]; adminId: string | null; onGuardar: (ids: string[]) => void; onClose: () => void }) {
+  const { modo } = useModoCuentas()
   const [ids, setIds] = useState<string[]>(() => [...new Set([...(adminId ? [adminId] : []), ...marcadas])])
   const alternar = (id: string) => setIds((previo) => (previo.includes(id) ? previo.filter((x) => x !== id) : [...previo, id]))
+  const todos = gente.map((p) => p.id)
+  const soloMio = ids.length === 1 && ids[0] === adminId && gente.length > 1
   return (
     <HojaAbajo titleId="hoja-para-quien-lo-suyo" onClose={onClose} capa={110}>
       <h2 id="hoja-para-quien-lo-suyo" className="max-w-[calc(100%-3rem)] font-display text-[26px] leading-none text-text">
         {titulo}
       </h2>
-      <p className="mt-5 flex items-baseline gap-2 text-text/50" style={ojoStyle}>
-        ¿Para quién es?
-        <span className="text-text/70" style={{ letterSpacing: '.04em', textTransform: 'none' }}>
-          · {ids.length} de {gente.length}
-        </span>
-      </p>
-      <div className="mt-3 flex flex-wrap gap-2" data-para-quien-lo-suyo>
-        {gente.map((p) => (
-          <PastillaElegir key={p.id} datos={`lo-suyo-${p.id}`} marca elegida={ids.includes(p.id)} onClick={p.esAdmin ? undefined : () => alternar(p.id)}>
-            {nombreDe(p) || inicialDe(p)}
-          </PastillaElegir>
-        ))}
+      <div className="mt-5" data-para-quien-lo-suyo>
+        {modo === 'conjunta' ? (
+          <ParaQuienConjunta valor={soloMio ? 'mio' : 'todos'} onCambio={(v) => setIds(v === 'mio' ? (adminId ? [adminId] : []) : todos)} personas={gente.length} pregunta={tipo ? preguntaDeReserva(tipo) : '¿Para quién es?'} datos="lo-suyo-conjunta" />
+        ) : (
+          <ParaQuienConNombres
+            pregunta={tipo ? preguntaDeReserva(tipo) : '¿Para quién es?'}
+            personas={gente.map((p) => ({ id: p.id, nombre: nombreDe(p), esAdmin: p.esAdmin }))}
+            marcados={ids}
+            onAlternar={(id) => (id === adminId ? undefined : alternar(id))}
+            yoId={adminId}
+            nombreDe={(id) => nombreDe(gente.find((p) => p.id === id)) || 'Alguien'}
+            datos="lo-suyo"
+          />
+        )}
       </div>
-      <p className="mt-4 text-[12.5px] leading-snug text-text/60">Quien tenga otro, lo suyo se cambia por este. Cada uno puede volver a poner el suyo.</p>
+      {tipo !== 'coche' && modo !== 'conjunta' && <p className="mt-4 text-[12.5px] leading-snug text-text/60">Quien tenga otro, lo suyo se cambia por este. Cada uno puede volver a poner el suyo.</p>}
       <button type="button" data-guardar-lo-suyo onClick={() => onGuardar(ids)} className="mt-6 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold">
         Guardar
       </button>
@@ -325,29 +334,32 @@ export function LoDeCadaUnoParaElInvitado({ route, info, arrivalInfo, gente, yoI
 }
 
 /** Debajo de «Llegada y vuelta» y «Alojamiento» del ADMINISTRADOR, en un viaje compartido: a quién cubre («En este vuelo · Tú, Laura y Marcos») y quién tiene otro («Ana tiene su propio vuelo»). */
-export function QuienVaEnLoDelAdmin({ route, gente, que, hecho, claves, adminId }: { route: Route; gente: Persona[]; que: 'vuelo' | 'alojamiento'; hecho: boolean; claves: string[]; adminId: string | null }) {
+export function QuienVaEnLoDelAdmin({ route, gente, que, hecho, claves, adminId }: { route: Route; gente: Persona[]; que: 'vuelo' | 'alojamiento' | 'coche'; hecho: boolean; claves: string[]; adminId: string | null }) {
   const grupo = useLoSuyo((s) => s.grupo)
   const setCuentasEntre = useRouteStore((s) => s.setCuentasEntre)
   const [abierta, setAbierta] = useState(false)
+  const { modo } = useModoCuentas()
   if (!hecho || gente.length < 2) return null
   const todos = gente.map((p) => p.id)
   const declarado = claves.map((c) => route.cuentasEntre?.[c]).find((x) => x && x.length > 0) ?? null
-  const propios = idsConLoSuyo(grupo, que)
+  const propios = que === 'coche' ? new Set<string>() : idsConLoSuyo(grupo, que)
   const efectivo = entreEfectivo(declarado, todos, propios, adminId)
   const quienes = gente.filter((p) => efectivo.includes(p.id))
-  const otros = gente.filter((p) => propios.has(p.id) && !p.esAdmin)
+  // (10N7) En una cuenta conjunta lo suyo de cada uno es «Solo para mí»: el administrador no ve quién lo tiene.
+  const otros = modo === 'conjunta' ? [] : gente.filter((p) => propios.has(p.id) && !p.esAdmin)
   const nombres = (ps: Persona[]) => {
     const n = ps.map((p) => (p.esYo ? 'Tú' : nombreDe(p) || 'Alguien'))
     return n.length <= 1 ? (n[0] ?? '') : `${n.slice(0, -1).join(', ')} y ${n[n.length - 1]}`
   }
+  const titulo = que === 'vuelo' ? 'En este vuelo' : que === 'alojamiento' ? 'En este alojamiento' : 'En este coche'
   const nombreOtros = otros.length === 1 ? `${nombreDe(otros[0]) || 'Alguien'} tiene su propio ${que}` : `${nombres(otros)} tienen el suyo`
   return (
     <div className="mt-2.5 flex flex-col gap-2.5" data-lo-de-cada-uno="admin" data-que={que}>
       <button type="button" onClick={() => setAbierta(true)} data-en-este-lo-suyo={que} style={FILA}>
         <IconoCuadrado nombre="compartido" grande />
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <span style={{ font: "400 23px/1.1 'Instrument Serif',serif" }}>{que === 'vuelo' ? 'En este vuelo' : 'En este alojamiento'}</span>
-          <span style={{ font: "400 14px/1.3 'Geist'", color: 'rgba(28,34,48,.58)' }}>{nombres(quienes)}</span>
+          <span style={{ font: "400 23px/1.1 'Instrument Serif',serif" }}>{titulo}</span>
+          <span style={{ font: "400 14px/1.3 'Geist'", color: 'rgba(28,34,48,.58)' }}>{modo === 'conjunta' ? (quienes.length === 1 && quienes[0].esAdmin ? 'Solo para ti' : gente.length > 2 ? 'Todos' : 'Los dos') : nombres(quienes)}</span>
         </span>
         <Avatares gente={quienes} />
       </button>
@@ -363,7 +375,8 @@ export function QuienVaEnLoDelAdmin({ route, gente, que, hecho, claves, adminId 
       )}
       {abierta && (
         <HojaParaQuienEsLoDelAdmin
-          titulo={que === 'vuelo' ? 'En este vuelo' : 'En este alojamiento'}
+          titulo={titulo}
+          tipo={que === 'vuelo' ? 'vuelo' : que === 'alojamiento' ? 'alojamiento' : 'coche'}
           gente={gente}
           marcadas={declarado ?? todos}
           adminId={adminId}

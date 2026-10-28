@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { formatoImporte, leerImporte, type Importe } from '../../../lib/dinero'
+import { leerImporte, type Importe } from '../../../lib/dinero'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
@@ -15,6 +15,7 @@ import { Icono } from '../../ui/Icono'
 import { useEntradasDelGrupo, useReservasParaMi, reservaDelDuenoDe } from '../../../hooks/useEntradasDelGrupo'
 import { useReservasGrupoUi } from '../../../store/useReservasGrupoUi'
 import { entradasQueNoCuadran, idsIncluidos } from '../../../lib/reservasGrupo'
+import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { frase, textoLaTienen } from '../../../lib/entradasDelGrupo'
 import { nombreDe } from '../../../store/useViajeCompartido'
 import type { Reservation } from '../../../lib/bookings'
@@ -26,7 +27,7 @@ export function metaReserva(route: Route, reservation: { dateIso: string | null;
   const fecha = reservation.dateIso && route.answers.dateRange ? `${Number(reservation.dateIso.slice(8, 10))} ${MES.format(new Date(`${reservation.dateIso}T12:00:00`)).replace('.', '')}` : `Día ${reservation.dayNumber ?? ''}`.trim()
   // (Tanda 6z2) El precio, al final, si el viajero lo puso: «11 ago · 10:00 · 54 €». Sin precio, como siempre.
   const precio = leerImporte(reservation.precio)
-  return `${fecha} · ${prefijoHora}${reservation.time}${precio ? ` · ${formatoImporte(precio)}` : ''}`
+  return `${fecha} · ${prefijoHora}${reservation.time}${precio ? ` · ${precioEnVista(precio)}` : ''}`
 }
 
 /** El aviso de una reserva fuera de su día, bajo su línea verde: el texto y el botón que lo arregla (Tanda 6y2). */
@@ -64,6 +65,7 @@ export function enTuRuta(route: Route, day: { dayNumber: number; id: string } | 
  * Una reservada, una línea verde con «Cambiar».
  */
 export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: Route; info: DestinationExcursions; abierto: boolean; onToggle: () => void }) {
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   // Tanda 10N §8: quien mira el viaje de otra persona ve las entradas como su propia lista: las que ha comprado él, las que el dueño compró también para él, y de las demás, el día y la hora del dueño.
   const grupo = useEntradasDelGrupo()
   const reservations = useReservasParaMi()

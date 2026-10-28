@@ -56,6 +56,7 @@ try {
       const tiendas = [window.__viaje]
       for (const u of urls) tiendas.push((await import(/* @vite-ignore */ u)).useViajeCompartido)
       for (const st of new Set(tiendas)) { st.setState({ cargar: async () => {} }); st.getState().poner({ gente: yo ? g : [] }) }
+      if (yo) window.__modoCuentas?.poner('cada_uno', 4) // (10N7) viaje «couple» con 4 personas saldría cuenta conjunta
       return true
     })()`)
   const loSuyo = async (js) => {
@@ -131,7 +132,7 @@ try {
   await clic('[data-en-este-lo-suyo="vuelo"]')
   await a.esp(800)
   const hojaPara = await hoja()
-  debe(/¿Para quién es\?/i.test(hojaPara ?? '') && /1 de 4|4 de 4/.test(hojaPara ?? ''), '6c-design-04', `«En este vuelo» abre «¿Para quién es?» (${(hojaPara ?? '').slice(0, 90)})`)
+  debe(/¿Para quién (es|has comprado el vuelo)\?/i.test(hojaPara ?? '') && /1 de 4|4 de 4/.test(hojaPara ?? ''), '6c-design-04', `«En este vuelo» abre «¿Para quién es?» (${(hojaPara ?? '').slice(0, 90)})`)
   await a.captura(path.join(SALIDA, '10n5_cadauno_04b_para_quien.jpg'))
   // Marca solo a Ana además de Eric y guarda
   await ev("Array.from(document.querySelectorAll('[role=\"dialog\"] [data-elegir-pastilla]')).find((p) => /Laura/.test(p.textContent)).click(); true")

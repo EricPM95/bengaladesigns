@@ -1,6 +1,7 @@
+import { precioEnVista, useMonedaViajero } from '../../lib/moneda'
 import { useState } from 'react'
 import { haceCuanto, type AvisoDeCuenta } from '../../lib/avisos'
-import { formatoImporte, leerImporte } from '../../lib/dinero'
+import { leerImporte } from '../../lib/dinero'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { useGastosCompartidos } from '../../store/useGastosCompartidos'
 import { Avatar } from '../ajustes/Avatar'
@@ -13,6 +14,7 @@ import { nombreVisible } from '../../lib/nombrePersona'
  * Si ya lo decidió otra persona (vale lo que decida el primero), se ve ya decidido, sin botones.
  */
 export function AvisoDeGasto({ aviso, ahora, foto, resaltado }: { aviso: AvisoDeCuenta; ahora: number; foto: string | null; resaltado: boolean }) {
+  useMonedaViajero() // (10N7)
   const p = aviso.payload as { gasto_id?: string; nombre?: string; precio?: unknown; pago?: string; gasto_estado?: string }
   const [local, setLocal] = useState<'aceptado' | 'rechazado' | null>(null)
   const [enCurso, setEnCurso] = useState(false)
@@ -62,7 +64,7 @@ export function AvisoDeGasto({ aviso, ahora, foto, resaltado }: { aviso: AvisoDe
           <span style={{ font: "600 13.5px/1.25 'Geist'" }}>{p.nombre}</span>
           <span style={{ font: "500 11px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Para todos{p.pago ? ` · pagó ${nombreVisible(p.pago)}` : ''}</span>
         </span>
-        {precio && <span style={{ font: "600 14px 'Geist Mono',monospace" }}>{formatoImporte(precio)}</span>}
+        {precio && <span style={{ font: "600 14px 'Geist Mono',monospace" }}>{precioEnVista(precio)}</span>}
       </div>
       {estado === 'pendiente' ? (
         <>

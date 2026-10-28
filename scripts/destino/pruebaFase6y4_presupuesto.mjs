@@ -54,10 +54,12 @@ console.log('8. La moneda, sin «tuya»')
   debe(!/tuya|· destino/i.test(t), '8', `el selector de moneda de la hoja del precio aún dice «tuya» o «destino»: ${plano(t).slice(0, 200)}`)
   debe(/\bEUR\b/.test(t), '8', 'el selector no ofrece EUR')
   // el selector de moneda de la ruta con otra moneda de origen
-  poner('completa', rutaMano(3, { monedaViajero: 'CZK' }))
+  M.ponerMonedaLocal('CZK') // (10N7) la moneda es del viajero, no del viaje
+  poner('completa', rutaMano(3))
   const t2 = pinta(M.HojaPrecio, { titulo: 'Seguro de viaje', inicial: null, onGuardar() {}, onClose() {} })
   debe(!/tuya|· destino/i.test(t2), '8', 'con CZK, el selector dice «tuya» o «destino»')
   debe(/CZK/.test(t2), '8', 'con CZK el selector no la ofrece')
+  M.ponerMonedaLocal(null)
   const codigo = fs.readFileSync('src/lib/useMoneda.ts', 'utf8')
   debe(!/tuya/.test(codigo), '8', 'useMoneda.ts aún escribe «tuya»')
 }
@@ -74,7 +76,8 @@ console.log('9. La fila «Moneda»')
   debe(/data-fila-moneda/.test(renderToStaticMarkup(createElement(M.PantallaPresupuesto, {}))), '9', 'la fila no lleva su marca (abre el selector)')
   debe(M.nombreDeMoneda('EUR') === 'Euro' && M.nombreDeMoneda('CZK') === 'Corona checa' && M.nombreDeMoneda('USD') === 'Dólar estadounidense', '9', `nombres: ${M.nombreDeMoneda('EUR')}, ${M.nombreDeMoneda('CZK')}, ${M.nombreDeMoneda('USD')}`)
   debe(M.monedaConNombre('EUR') === '€ Euro' && M.monedaConNombre('CZK') === 'Kč Corona checa', '9', `símbolo + nombre: ${M.monedaConNombre('EUR')}, ${M.monedaConNombre('CZK')}`)
-  poner('completa', rutaMano(3, { monedaViajero: 'CZK' }))
+  M.ponerMonedaLocal('CZK') // (10N7) la moneda es del viajero, no del viaje
+  poner('completa', rutaMano(3))
   usePresupuestoUi.setState({ abierto: true })
   debe(/Moneda\nKč Corona checa/.test(pinta(M.PantallaPresupuesto, {})), '9', 'con CZK la fila no dice «Kč Corona checa»')
   usePresupuestoUi.setState({ abierto: false })

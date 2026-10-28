@@ -924,6 +924,12 @@ export interface Route {
   gastosExtras?: GastoExtra[]
   /** (Tanda 10N3) «¿Entre quién?» del alojamiento y el coche que entran solos en las cuentas del grupo: clave de la línea del presupuesto (`aloj-…`, `coche`) → ids de las personas. Sin clave: entre todos. Solo lo cambia el administrador. */
   cuentasEntre?: Record<string, string[]>
+  /** (Tanda 10N7) Cómo se llevan las cuentas, elegido por el administrador: 'conjunta' | 'cada_uno' ('solo' se deduce de que no hay nadie más). Sin él, sale por «¿Con quién viajas?». Lo lee `src/lib/modoCuentas.ts`. */
+  modoCuentas?: 'solo' | 'conjunta' | 'cada_uno'
+  /** (Tanda 10N7) Cuántas personas había en el viaje cuando el administrador eligió el modo: si luego entra alguien más, se le vuelve a preguntar. */
+  modoElegidoCon?: number
+  /** (Tanda 10N7) El nombre de la cuenta conjunta («Nuestro viaje a Roma»); sin él, «Cuenta conjunta». Lo ve y lo cambia quien puede editar. */
+  nombreCuenta?: string
   /** Hora de llegada a Roma "HH:MM", puesta por el viajero en RESERVAS (de pago): la lee el motor (`body.llegada`). null/undefined = sin registrar. */
   arrivalFlightTime?: string | null
   /** Hora de salida de Roma "HH:MM", puesta por el viajero en RESERVAS (de pago): la lee el motor (`body.vuelta`). null/undefined = sin registrar. */

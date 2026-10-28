@@ -1,4 +1,5 @@
-import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
+import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
+import { precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
@@ -11,6 +12,7 @@ interface TransportRowProps {
 }
 
 export function TransportRow({ dayId, label }: TransportRowProps) {
+  useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const booking = useRouteStore((state) => state.transportBookings[dayId])
   const setTransportBooking = useRouteStore((state) => state.setTransportBooking)
   const [open, setOpen] = useState(false)
@@ -21,7 +23,7 @@ export function TransportRow({ dayId, label }: TransportRowProps) {
         kind="transport"
         label={label}
         resolved={Boolean(booking)}
-        subtitle={booking ? [booking.operator, booking.codigo?.trim() ? booking.codigo.trim().toUpperCase() : null, precioGuardado(booking) ? formatoImporte(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
+        subtitle={booking ? [booking.operator, booking.codigo?.trim() ? booking.codigo.trim().toUpperCase() : null, precioGuardado(booking) ? precioEnVista(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
         priority="yellow"
         onClick={() => setOpen(true)}
         bookAction={{

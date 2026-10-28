@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useRouteStore } from '../store/useRouteStore'
 import { useDestinationExcursions } from './destinationExcursions'
-import { importeDeTexto, monedaDePais, textoDeImporte, type Cambio, type Importe } from './dinero'
+import { importeDeTexto, textoDeImporte, type Cambio, type Importe } from './dinero'
 import type { Route } from './types'
+import { monedaDeVista } from './moneda'
 
-/** La moneda del viajero: la que eligió, y si no, la del país de su ciudad de origen del formulario; «EUR» si no se sabe ninguna. */
-export function monedaDelViajero(route: Route | null | undefined): string {
-  return route?.monedaViajero ?? monedaDePais(route?.answers.originPlace?.countryCode) ?? 'EUR'
+/** La moneda del viajero (Tanda 10N7): la que eligió en el presupuesto o en Ajustes (es de la persona, no del viaje); si no eligió ninguna, el euro. `route` solo se conserva por compatibilidad. */
+export function monedaDelViajero(_route?: Route | null): string {
+  return monedaDeVista()
 }
 
 /** Cuántas personas viajan (de «¿Con quién viajas?»); null si el formulario no lo dice. */

@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
+import { HojaAbajo } from '../reservas/HojaAbajo'
 import { Icono } from '../../ui/Icono'
-import { InterruptorElegir, PastillaElegir } from '../../ui/Elegir'
-import { formatoImporte, importeDeTexto, simboloDe, textoDeImporte } from '../../../lib/dinero'
+import { PastillaElegir } from '../../ui/Elegir'
+import { useModoCuentas } from '../../../lib/modoCuentas'
+import { ParaQuienConjunta, ParaQuienConNombres } from './ParaQuien'
+import { importeDeTexto, simboloDe, textoDeImporte } from '../../../lib/dinero'
 import { estadoInicial, type AmbitoGasto, type GastoCompartido } from '../../../lib/gastosCompartidos'
-import { aCentimos, cadaUno, deCentimos } from '../../../lib/cuentasGrupo'
 import type { GastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
 import { useMonedas } from '../../../lib/useMoneda'
@@ -36,11 +37,14 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
   const [nombre, setNombre] = useState(editar?.nombre ?? '')
   const [importe, setImporte] = useState(editar ? textoDeImporte(editar.precio) : '')
   const [monedaElegida, setMoneda] = useState<string | null>(editar?.precio.currency ?? null)
+  // (Tanda 10N7) Cómo se llevan las cuentas: en la conjunta, «Para los dos» / «Solo para mí»; en «Cada uno lo suyo», solo los nombres (sin [Para todos] / [Para mí]): quien lo añade sale marcado en «¿Para quién es?».
+  const { modo } = useModoCuentas()
+  const conjunta = modo === 'conjunta'
   const [ambito, setAmbito] = useState<AmbitoGasto>('grupo')
   const [pagadoPor, setPagadoPor] = useState<string[]>(editar ? editar.pagadoPor : gv.yoId ? [gv.yoId] : [])
   // «¿Entre quién?» (Tanda 10N2): todas las personas marcadas por defecto; un gasto de antes (sin lista) también es entre todos.
   const todosIds = gv.personas.map((p) => p.id)
-  const [entre, setEntre] = useState<string[]>(editar && editar.entre.length > 0 ? editar.entre : todosIds)
+  const [entre, setEntre] = useState<string[]>(editar && editar.entre.length > 0 ? editar.entre : editar || conjunta || !gv.yoId ? todosIds : [gv.yoId])
   // (Tanda 10N3) El administrador edita también los gastos de quien ya salió del viaje: esa persona sale en las pastillas, con su nombre, para poder cambiar quién pagó y entre quién.
   const exMiembros = useGastosCompartidos((st) => st.exMiembros)
   const idsDeSalidas = editar ? [...new Set([...editar.pagadoPor, ...editar.entre])].filter((id) => !todosIds.includes(id)) : []
@@ -51,14 +55,14 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
   const [error, setError] = useState<string | null>(null)
   const monedaDelCampo = monedaElegida ?? moneda
   const precio = importeDeTexto(importe, monedaDelCampo)
-  const listo = Boolean(nombre.trim()) && precio !== null && (ambito === 'mio' || pagadoPor.length > 0)
-  const espera = ambito === 'grupo' && !gv.puedeDecidir
+  // Solo para quien lo paga: en la conjunta, «Solo para mí»; en «Cada uno lo suyo», cuando solo marca a quien lo añade y lo paga él (lo demás es un gasto del grupo).
+  const soloMio = !editar && (conjunta ? ambito === 'mio' : Boolean(gv.yoId) && entre.length === 1 && entre[0] === gv.yoId && pagadoPor.length === 1 && pagadoPor[0] === gv.yoId)
+  const ambitoFinal: AmbitoGasto = soloMio ? 'mio' : 'grupo'
+  const listo = Boolean(nombre.trim()) && precio !== null && (soloMio || pagadoPor.length > 0)
+  const espera = !soloMio && !gv.puedeDecidir && !editar
   const admin = nombreVisible(gv.nombreAdmin) || 'el administrador'
 
-  const info = ambito === 'mio' ? { icono: 'ojoCerrado' as const, texto: 'Solo lo ves tú' } : espera ? { icono: 'flecha' as const, texto: `Se lo enviamos a ${admin}` } : { icono: 'hecho' as const, texto: 'Entra directo en el presupuesto' }
   const boton = editar ? 'Guardar cambios' : espera ? `Enviar a ${admin}` : 'Añadir gasto'
-  const quedan = entre.length
-  const cuantoToca = precio && quedan > 0 ? formatoImporte(deCentimos(cadaUno(aCentimos(precio), quedan), precio.currency)) : null
 
   const alternar = (id: string) => setPagadoPor((actuales) => (actuales.includes(id) ? (actuales.length > 1 ? actuales.filter((x) => x !== id) : actuales) : [...actuales, id]))
 
@@ -72,7 +76,7 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
     setError(null)
     const fallo = editar
       ? await editarGasto(editar.id, { nombre: nombre.trim(), precio, pagadoPor, entre: entreFinal })
-      : await anadir({ nombre: nombre.trim(), precio, ambito, estado: estadoInicial(ambito, gv.puedeDecidir), pagadoPor: ambito === 'mio' ? [] : pagadoPor, entre: ambito === 'mio' ? [] : entreFinal })
+      : await anadir({ nombre: nombre.trim(), precio, ambito: ambitoFinal, estado: estadoInicial(ambitoFinal, gv.puedeDecidir), pagadoPor: soloMio ? [] : conjunta ? (gv.yoId ? [gv.yoId] : pagadoPor) : pagadoPor, entre: soloMio || conjunta ? [] : entreFinal })
     setEnCurso(false)
     if (fallo) setError(fallo)
     else onClose()
@@ -98,55 +102,36 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
             </select>
           </label>
         </div>
-        {!editar && (
-        <InterruptorElegir
-          valor={ambito}
-          onCambio={(id) => setAmbito(id as AmbitoGasto)}
-          datos="gasto-ambito"
-          etiqueta="¿Para quién es el gasto?"
-          opciones={[
-            { id: 'grupo', texto: 'Para todos', icono: <Icono nombre="compartido" size={17} /> },
-            { id: 'mio', texto: 'Para mí', icono: <Icono nombre="candado" size={16} /> },
-          ]}
-        />
-        )}
-        {!editar && (
+        {conjunta && !editar && <ParaQuienConjunta valor={ambito === 'mio' ? 'mio' : 'todos'} onCambio={(v) => setAmbito(v === 'mio' ? 'mio' : 'grupo')} personas={gv.personas.length} datos="gasto-ambito" />}
+        {espera && (
           <div data-gasto-info className="flex items-center gap-2.5 rounded-[14px] bg-[#F3E6C6]/70 px-3.5 py-3 text-[13px] font-medium text-[#6F4E37]">
-            <Icono nombre={info.icono} size={16} />
-            <span>{info.texto}</span>
+            <Icono nombre="flecha" size={16} />
+            <span>Se lo enviamos a {admin}</span>
           </div>
         )}
-        {ambito === 'grupo' && (
+        {!conjunta && (
           <div className="flex flex-col gap-2" data-gasto-quien-pago>
-            <span className="text-text/55" style={ojoStyle}>
-              ¿Quién ha pagado?
-            </span>
+            <span className="text-[15px] font-semibold text-text">¿Quién ha pagado?</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {lista.map((p) => (
-                <PastillaElegir key={p.id} elegida={pagadoPor.includes(p.id)} onClick={() => alternar(p.id)} marca datos={`pago-${p.id}`} icono={pagadoPor.includes(p.id) ? undefined : <InicialDePersona nombre={nombreVisible(nombreDe(p))} esAdmin={p.esAdmin} />}>
+                <PastillaElegir key={p.id} elegida={pagadoPor.includes(p.id)} onClick={() => alternar(p.id)} marca datos={`pago-${p.id}`} icono={undefined}>
                   {nombreVisible(nombreDe(p)) || 'Alguien'}
                 </PastillaElegir>
               ))}
             </div>
           </div>
         )}
-        {ambito === 'grupo' && (
-          <div className="flex flex-col gap-2" data-gasto-entre-quien>
-            <span className="flex items-center justify-between text-text/55" style={ojoStyle}>
-              <span>¿Para quién es?</span>
-              <span data-gasto-entre-cuantos>{entre.length} de {lista.length}</span>
-            </span>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {lista.map((p) => (
-                <PastillaElegir key={p.id} elegida={entre.includes(p.id)} onClick={() => alternarEntre(p.id)} marca datos={`entre-${p.id}`} icono={entre.includes(p.id) ? undefined : <InicialDePersona nombre={nombreVisible(nombreDe(p))} esAdmin={p.esAdmin} />}>
-                  {nombreVisible(nombreDe(p)) || 'Alguien'}
-                </PastillaElegir>
-              ))}
-            </div>
-            <div data-gasto-cada-uno className="flex items-center gap-2.5 rounded-[14px] bg-[#F3E6C6]/70 px-3.5 py-3 text-[13px] font-medium text-[#6F4E37]">
-              <Icono nombre="compartido" size={16} />
-              <span>{cuantoToca ? `${entre.length < lista.length ? `${entre.length} de ${lista.length} · ` : ''}${cuantoToca} cada uno` : 'Escribe el importe para ver lo que toca a cada uno'}</span>
-            </div>
+        {!conjunta && (
+          <div data-gasto-entre-quien>
+            <ParaQuienConNombres
+              pregunta="¿Para quién es?"
+              personas={lista.map((p) => ({ id: p.id, nombre: nombreDe(p), esAdmin: p.esAdmin }))}
+              marcados={entre}
+              onAlternar={alternarEntre}
+              yoId={gv.yoId}
+              nombreDe={(id) => gv.nombreDe(id)}
+              datos="entre"
+            />
           </div>
         )}
         {error && (

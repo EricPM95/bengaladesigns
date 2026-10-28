@@ -243,7 +243,7 @@ else {
     }
     // (El servidor de mentira del presupuesto compartido pone a la gente: eric / ana / luis. Con yo = null, un viaje sin compartir.)
     await ev("import('/src/dev/gastosFalsos.ts').then(() => true)").catch(() => false)
-    const ponerGente = (yo) => (yo ? ev(`window.__gastosFalsos.reiniciar(); window.__gastosFalsos.usar(${JSON.stringify(yo)}, ['eric', 'ana', 'luis']).then(() => true)`) : ev('window.__gastosFalsos.reiniciar(); true'))
+    const ponerGente = (yo) => (yo ? ev(`window.__gastosFalsos.reiniciar(); window.__modoCuentas?.poner('cada_uno'); window.__gastosFalsos.usar(${JSON.stringify(yo)}, ['eric', 'ana', 'luis']).then(() => true)`) : ev("window.__gastosFalsos.reiniciar(); window.__modoCuentas?.poner('cada_uno'); true"))
     const tienda = (modulo, nombre, js) =>
       ev(`(async () => {
         const urls = [...new Set(performance.getEntriesByType('resource').map((e) => e.name).filter((n) => n.includes(${JSON.stringify(modulo)})))]

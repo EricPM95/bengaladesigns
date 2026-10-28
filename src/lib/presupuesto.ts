@@ -7,7 +7,7 @@ import { convertir, leerImporte, precioGuardado, sumar, type Cambio, type Import
 import { buildDestinationSegments } from './destinationSegments'
 import { countryDisplayName } from './readiness'
 import { vistaDeGasto, type GastoCompartido, type VistaDeGasto } from './gastosCompartidos'
-import { entreDeLoDelAdmin, esSoloDe, reservaEsPersonal, type LoSuyoDeCadaUno } from './loSuyo'
+import { entreDeLoDelAdmin, esSoloDe, reservaEsPersonalSegunModo, type LoSuyoDeCadaUno, type ModoDeLasCuentas } from './loSuyo'
 
 /**
  * El presupuesto del viaje (Tanda 6z2): UN solo cálculo, puro, con lo que el viajero ha puesto con su precio. Nunca un número inventado: lo que no tiene precio no sale (no es un gasto de 0)
@@ -66,6 +66,12 @@ export interface Presupuesto {
   hayConversion: boolean
   /** (Tanda 10N6 §1k) Lo del grupo que esta persona no ve en su presupuesto (el vuelo del administrador si no va en él…): no suma aquí, pero las cuentas del grupo lo necesitan. */
   ocultas: LineaPresupuesto[]
+  /** (Tanda 10N7 §1b) Solo en una cuenta conjunta: lo «Solo para mí» de quien mira (reservas, vuelos, alojamiento, gastos). Va aparte, en «Lo tuyo»; no suma en `total` (lo común). */
+  loTuyo: LineaPresupuesto[]
+  /** La suma de `loTuyo` en la moneda del viajero. */
+  sumaLoTuyo: Importe
+  /** Lo común más lo tuyo («De los dos 180 € · Lo tuyo 40 € · Total 220 €»). Sin lo tuyo, es igual que `total`. */
+  totalConLoTuyo: Importe
 }
 
 /**
@@ -75,6 +81,8 @@ export interface Presupuesto {
 export interface RepartoDelViaje {
   yoId: string | null
   adminId: string | null
+  /** (Tanda 10N7) Cómo se llevan las cuentas: en la conjunta, lo común es todo menos lo «solo para mí», que sale aparte en «Lo tuyo». */
+  modo?: ModoDeLasCuentas
   esInvitado: boolean
   todos: string[]
   entreDe?: Record<string, string[]> | null
@@ -123,6 +131,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
   const rep = entrada.compartido?.reparto
   const ocultas: LineaPresupuesto[] = []
   const soyAdmin = Boolean(rep && rep.adminId && rep.yoId === rep.adminId)
+  const conjunta = rep?.modo === 'conjunta'
   const mio = (l: LineaPresupuesto, entre: string[]): LineaPresupuesto => ({ ...l, entre, personal: true, compartido: { gastoId: null, vista: 'mio', autorId: rep?.yoId ?? null, pagadoPor: [] } })
   /** Lo que pone el administrador, con su «entre quién»: personal (solo suyo), del grupo, o escondido a quien no va en ello. */
   const delAdmin = (l: LineaPresupuesto | null, entre: string[] | null): LineaPresupuesto | null => {
@@ -169,7 +178,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
     .map((reserva) => {
       const l = lineaDeReserva(reserva)
       // Las del administrador: personal si es solo para él (o de antes de compartir); del grupo, entre los marcados.
-      return { reserva, l: rep && l ? delAdmin(l, reservaEsPersonal(reserva.paraQuien, rep.adminId) && rep.adminId ? [rep.adminId] : (reserva.paraQuien ?? null)) : l }
+      return { reserva, l: rep && l ? delAdmin(l, reservaEsPersonalSegunModo(rep.modo, reserva.paraQuien, rep.adminId) && rep.adminId ? [rep.adminId] : conjunta ? null : (reserva.paraQuien ?? null)) : l }
     })
   if (rep) {
     // Las que compra el invitado: las suyas (personal si es solo para él) y las de los demás invitados que le incluyen (o, para el administrador, todas las del grupo).
@@ -177,15 +186,15 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
       if (reserva.refId === 'Free Tour' || candidatas.some((c) => c.reserva.id === reserva.id)) continue
       const l = lineaDeReserva(reserva)
       if (!l) continue
-      candidatas.push({ reserva, l: reservaEsPersonal(reserva.paraQuien, rep.yoId) ? mio(l, rep.yoId ? [rep.yoId] : []) : { ...l, entre: reserva.paraQuien ?? [] } })
+      candidatas.push({ reserva, l: reservaEsPersonalSegunModo(rep.modo, reserva.paraQuien, rep.yoId) ? mio(l, rep.yoId ? [rep.yoId] : []) : { ...l, entre: conjunta ? rep.todos : (reserva.paraQuien ?? []) } })
     }
     for (const grupo of rep.entradasDeInvitados ?? []) {
       if (grupo.userId === rep.yoId) continue
       for (const reserva of grupo.reservas) {
-        if (reserva.kind !== 'entrada' || reserva.refId === 'Free Tour' || reservaEsPersonal(reserva.paraQuien, grupo.userId) || candidatas.some((c) => c.reserva.id === reserva.id)) continue
+        if (reserva.kind !== 'entrada' || reserva.refId === 'Free Tour' || reservaEsPersonalSegunModo(rep.modo, reserva.paraQuien, grupo.userId) || candidatas.some((c) => c.reserva.id === reserva.id)) continue
         const l = lineaDeReserva(reserva)
         if (!l) continue
-        const e = reserva.paraQuien ?? []
+        const e = conjunta ? rep.todos : (reserva.paraQuien ?? [])
         if (rep.esInvitado && rep.yoId && !e.includes(rep.yoId)) {
           ocultas.push({ ...l, entre: e })
           continue
@@ -208,11 +217,14 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
   const deLaRuta = sinNulos((route.gastosExtras ?? []).map((extra) => linea(`extra-${extra.id}`, extra.nombre, leerImporte(extra.precio), { tipo: 'extra', id: extra.id })))
   const extras: LineaPresupuesto[] = entrada.compartido
     ? [
-        ...(entrada.compartido.extrasDeLaRutaMios ? deLaRuta.map((l): LineaPresupuesto => ({ ...l, compartido: { gastoId: null, vista: 'mio', autorId: null, pagadoPor: [] } })) : []),
+        ...(entrada.compartido.extrasDeLaRutaMios ? deLaRuta.map((l): LineaPresupuesto => ({ ...l, compartido: { gastoId: null, vista: conjunta ? 'grupo' : 'mio', autorId: null, pagadoPor: [] } })) : []),
         ...entrada.compartido.gastos.map((g): LineaPresupuesto => ({ id: `gasto-${g.id}`, nombre: g.nombre, precio: g.precio, enMonedaViajero: convertir(g.precio, moneda, cambio), abrir: { tipo: 'extra', id: g.id }, compartido: { gastoId: g.id, vista: vistaDeGasto(g), autorId: g.autorId, pagadoPor: g.pagadoPor } })),
       ]
     : deLaRuta
 
+  // (Tanda 10N7 §1b) En una cuenta conjunta lo «solo para mí» sale de sus bloques y va aparte, en «Lo tuyo»: cada uno el suyo, y nunca suma en lo común.
+  const esDeLoTuyo = (l: LineaPresupuesto) => conjunta && (l.personal === true || l.compartido?.vista === 'mio')
+  const loTuyo = [...transporte, ...ruta, ...util, ...extras].filter(esDeLoTuyo)
   const bloques: BloquePresupuesto[] = (
     [
       { id: 'transporte', lineas: transporte },
@@ -221,14 +233,20 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
       { id: 'extras', lineas: extras },
     ] as { id: BloqueId; lineas: LineaPresupuesto[] }[]
   )
+    .map((bloque) => ({ ...bloque, lineas: bloque.lineas.filter((l) => !esDeLoTuyo(l)) }))
     .filter((bloque) => bloque.lineas.length > 0)
     .map((bloque) => ({ ...bloque, titulo: TITULOS[bloque.id], suma: sumar(bloque.lineas.flatMap((l) => (lineaCuenta(l) && l.enMonedaViajero ? [l.enMonedaViajero] : [])), moneda) }))
 
   const todas = bloques.flatMap((bloque) => bloque.lineas).filter(lineaCuenta)
+  const total = sumar(bloques.map((bloque) => bloque.suma), moneda)
+  const sumaLoTuyo = sumar(loTuyo.flatMap((l) => (l.enMonedaViajero ? [l.enMonedaViajero] : [])), moneda)
   return {
     moneda,
     bloques,
-    total: sumar(bloques.map((bloque) => bloque.suma), moneda),
+    total,
+    loTuyo,
+    sumaLoTuyo,
+    totalConLoTuyo: sumar([total, sumaLoTuyo], moneda),
     sinCambio: todas.filter((l) => l.enMonedaViajero === null),
     hayConversion: todas.some((l) => l.enMonedaViajero !== null && l.precio.currency !== moneda),
     ocultas,
