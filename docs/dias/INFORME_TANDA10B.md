@@ -2702,3 +2702,126 @@ Un solo servidor (API 8787, Vite 5173) a prioridad baja durante toda la tanda y 
   *Dónde:* No es de móvil.
 
 **Pruebas:** pruebaTanda10N8_*: avisos 22, perfil 17, cuentas 51, paradas 32, pantallas 30, reservas 24, ficha 40, película 68, capturas del Free Tour 10 = 294 comprobaciones, 0 fallos.
+
+## 10N9 — Arreglos cortos de lo que quedó de la 10N8 (28 y 29-oct)
+
+**Qué migración hay que aplicar: SOLO la `0064_solo_para_mi_admin_aparte_solo_conjunta.sql`.** No hace falta la 0062 (no la apliques): la 0064 crea lo que falte, la sustituye y, si algún día se hubiera aplicado la 0062, la corrige y devuelve a su sitio lo apartado de los viajes que no son cuenta conjunta. Se puede pegar entera y repetir.
+
+### 1. Lo «Solo para mí» del administrador, solo en la cuenta conjunta
+- El problema de la 0062 era real: apartaba toda reserva «solo del administrador» en cualquier forma de llevar las cuentas, y en «Cada uno lo suyo» (donde una entrada sale marcada solo para quien la compra) los amigos habrían dejado de ver casi todas las entradas del administrador y se habría roto «Eric la tiene a las 9:15 · Reservar la mía a la misma hora».
+- La 0064: el disparador `separar_reservas_privadas` solo actúa si `modo_cuentas_del_viaje(route) = 'conjunta'` (igual que la 0055); la limpieza del final también; y un disparador nuevo (`a_restaurar_reservas_privadas`, sobre `route`) devuelve lo apartado a `trips.bookings` cuando el viaje deja de ser cuenta conjunta y vacía la tabla.
+- Móvil: `reservasPrivadasAdmin.ts` usa la misma regla (`esCuentaConjuntaDelServidor`: modo elegido o, sin elegir, pareja/familia) y, fuera de la cuenta conjunta, no sigue ni junta nada.
+- Probado con la base de datos real (PGlite, solo con la 0064 y sin la 0062): 13 comprobaciones, 0 fallos. En «Cada uno lo suyo» Ana sigue viendo la entrada del administrador; en la conjunta no le llega ni en los datos; al cambiar de modo vuelve; guardar en «Cada uno lo suyo» no aparta nada.
+
+### 2. «Guardar el vuelo» también para el administrador
+- «Llegada y vuelta» abre una sola hoja (`HojaDelVuelo`) con la ida y la vuelta, la misma que usa el invitado. La rueda de la hora ya no tiene [Guardar]; hay UN botón «Guardar el vuelo» (o «Guardar el tren»), apagado hasta poner alguna hora. En alojamiento, «Guardar el alojamiento».
+- Nada se guarda hasta pulsar el botón. Al pulsar se guarda todo de una vez (`guardarVueloDelAdmin`) con UN solo cambio: «ha guardado el vuelo (ida … y vuelta …)». Antes cada cambio de hora rehacía los días y salía un «ha rehecho la ruta» aparte; ahora, si el rehacer viene de «Guardar el vuelo» con las mismas fechas, mantiene el mismo cambio (si el rehacer en segundo plano tarda más de ~20 s podría salir un aviso extra; no probado en la nube real).
+- Tocado cerca del motor de cambios: `useRouteStore.ts` (`guardarVueloDelAdmin` y un cambio pequeño en el `setRoute` que rehace). Solo afecta al `ultimoCambio`; el motor de rutas no se ha tocado.
+
+### 3. Como en Design
+- **Hoja del vuelo (`Reservas Cada Uno`, 02b):** rueda de dos columnas hora : minutos con banda dorada, SIN campo de precio, botón dorado pegado al pie (fuera del scroll), título «Tu vuelo», eyebrow «LLEGADA Y VUELTA», chips con ✓ y, en cada pestaña, el resumen del otro lado cuando ya está puesto («✓ Ida · mar 10 · 11:15»). Tu prompt listaba ese resumen entre las diferencias; lo he entendido como «iguálalo a Design» (Design SÍ lo lleva). Si lo quieres fuera, es una línea (`mostrarResumen` en `HojaDelVuelo.tsx`). **Diferencias que quedan:** el fondo es el de la app (no el crema `#FBF3E2`); minutos de 5 en 5 (Design enseña de 1 en 1, era un ejemplo); el administrador ve un solo chip de día (el del viaje) con «Cambia las fechas del viaje». **El precio del vuelo** ya no está en la hoja: el del administrador sigue en la casilla «Precio» del tramo; el del invitado se conserva pero hoy no tiene dónde ponerse (decídelo tú).
+- **Mis viajes (`Mis Viajes Tarjeta`):** portada 150, etiqueta 14/14, destino 34 px Instrument Serif, fechas en mono 12 px, chips «4 días · 3 noches · 10 paradas» y «En 12 días» / «Mañana» / «Hoy», botón de 52 px (dorado con degradado en un viaje próximo; azul oscuro con letra dorada y etiqueta «Hecho» en uno hecho). En un viaje hecho Design pone «12 paradas · 3 logros · 41 fotos»: aquí salen paradas y fotos, porque no hay cifra de logros por viaje. Los anchos no cambian (uno = 100 %, varios = 60 %).
+
+### 4. La película del pase
+- **Textos pisados o cortados:** medido con `getBoundingClientRect` en las escenas 0, 1, 3, 4, 5, 6 y 7, en 390×664 y 375×667: 0 pisados, 0 cortados, 0 fuera de pantalla. **La comprobación automática ha vuelto**: la marca `data-texto-abajo` está otra vez en `adaptar.ts` (39 nodos) y `pruebaTanda10N5_pase` y `pruebaTanda10N3_apertura` miden de verdad el texto de abajo.
+- **Añadido (iPhone «sin márgenes»):** los archivos de la 10N8 eran los correctos. `Pase Pelicula Movil`, `Piezas/Pase Pelicula`, `Pase Escena 4b` y `Pase Globo` de `docs/diseno/proyecto/` son byte a byte los del `RETOQUES.zip` más nuevo (27-oct 23:34; el de Descargas es el mismo). La app no usa el HTML: usa `gen/Pase_Pelicula.ts`, `Pase_Escena_4b.ts` y `Pase_Globo.ts` (commit de la 10N8), que genera `scripts/destino/generarPelicula.mjs`; al regenerarlos salen con el mismo md5, así que reflejan exactamente los HTML. Los monta `PeliculaPase.tsx` con `pantalla="si"` y `adaptar.ts` solo cambia lo propio de la app.
+- **Medido contra Design, escena por escena** (7 escenas × 390×844, 390×664 y 375×667; también 393×852, 393×659 y 430×932): el fondo llena la pantalla y el palco 390×844 es el de Design (escala `min(ancho/390, alto/844)`, centrado; en 390×664 queda con ~42 px a cada lado, en 375×667 con ~33 px). Cajas de texto, iconos y rayitas a 0 px de Design (tolerancia 2) salvo lo propio de la app: el título pequeño (ver abajo), [Ver]/✕ del final ([Saltar] no está allí), el botón de silencio, [Comprar] y la lista del final (filas de la app, con «HOY» en oro). Píxeles distintos: 0,0–0,3 % en casi todas, ~1 % en la 3; la 5 (el globo gira sin parar) no es comparable píxel a píxel.
+- **No he podido reproducir tu «sin márgenes» en Chrome.** Posibles causas en un iPhone real que no puedo medir aquí: la app añadida a la pantalla de inicio (`index.html` lleva `viewport-fit=cover` y Design no usa `env(safe-area-inset-*)`, así que no lo he añadido) o la barra de Safari cambiando la altura. **Dime con cuál lo ves**; si es la pantalla de inicio, añado los safe-area.
+- **Único cambio que choca con Design:** el título pequeño «Todo lo que incluye tu Pase Roma». Design lo pone encima de las rayitas (top 16); tu decisión del 26-oct lo puso en la línea de [Saltar]. Probé a devolverlo al sitio de Design: se pisa con el contenido de la escena «hoy» (Fontana di Trevi) y rompe tu regla de que ningún texto se pise, así que **se queda en la línea de [Saltar]**. Si prefieres el de Design, es una línea en `ajustarLaCabecera` y habrá que aceptar ese solape en la escena 1.
+- Capturas: `10n9_peli_<e0|e1|e3|e4|e5|e6|e7>_<390x844|390x664|375x667>_<app|design>.jpg`. Ojo: Design se ve con las esquinas redondeadas de su página; la app es pantalla completa.
+
+### 5. «Abierto 24 h»
+- La Fontana di Trevi ya llevaba `abierto_24h: true` y la etiqueta verde sale en su ficha. El Teatro de Marcelo: quitado `abierto_24h` y puesto `"schedule": "09:00-19:00"` y `"windows": ["09:00-19:00"]` (como Colle Oppio); su ficha muestra 09:00–19:00 y no «Abierto 24 h». Quedan 37 sitios con la etiqueta, ninguno con horario a la vez.
+- El Teatro de Marcelo ya tiene horario, así que entra en el motor de horarios: está en `data/dias/roma/listas.json` (una entrada «de camino a la cena» que podría caer pasadas las 19:00). El barrido de 1884 viajes (`pruebaTanda6u`) da 0 fallos y 0 tardes sin aviso.
+
+### 6. La prueba
+- `pruebaTanda10N9` (envoltorio de `_cuentas` 13, `_vuelo` 29, `_pantallas` 140) y `pruebaTanda10N9_pelicula` (154): números finales en la línea «Pruebas» de abajo.
+- **Batería completa** (146 pruebas, sin los wrappers, un Chrome a la vez y a prioridad baja): 28 en MAL a la primera, como en la 10N8. Repetidas con el **Vite estable** (sin vigilar archivos): 22 pasan y 5 siguen en MAL. Triaje: `pruebaFase6y5_pantallas` (el botón de Mis viajes ahora es de 52 px, como Design: expectativa actualizada) y `pruebaFase6y6_cierre` (la hoja del vuelo tiene un solo botón: expectativa actualizada) pasan en 0; `pruebaTanda10M_app` pasa sola en 0; `pruebaTanda10N3_real` y `pruebaEntrarReal` usan Supabase real y fallan por el límite de altas anónimas («Request rate limit reached») o Realtime, ajeno a esta tanda. Otras expectativas antiguas cambiadas por lo pedido: `pruebaTanda10N5_perfil`, `pruebaTanda6z6b`, `pruebaTanda10N3_apertura` (acepta `overflow:clip`), `pruebaFase6y5_pantallas` (botones de punto) y `pruebaTanda10N5_cadauno_enLaApp` (título «Tu vuelo»).
+- `pruebaTanda7_reservas` se cae en la sección 8 (`TarjetaTuUltimoDia`, `textos` undefined): código ajeno, no entra en la batería. Fuera, como en la 10N8: `pruebaTanda10N6_recuerdos` (con el Vite normal falla; va a la 10S).
+- Typecheck `npx tsc -p tsconfig.app.json --noEmit`: limpio.
+
+### Lo que sigue a medias o sin ver
+- Sin ver en un iPhone real ni con dos móviles: tu «sin márgenes» de la película, el aviso único del vuelo del administrador (sonido, segundos), el cambio de modo de cuentas con dos cuentas reales.
+- Música: `public/sonidos/pelicula_pase.mp3` sigue sin estar (y el PC no tiene `ffmpeg`).
+- Heredado de la 10N8 y sin tocar: el botón de logros que desaparece en EXPLORAR (necesito el paso exacto), «Cuánto toca» inexistente, etiquetas de precio del explorador sin la moneda, chips de zona en el alojamiento.
+
+### Dudas para ti
+1. **Título de la película:** ¿en la línea de [Saltar] (como ahora) o en el sitio de Design (se pisa con la escena «hoy»)?
+2. **Resumen «✓ Ida…» en las pestañas de la hoja del vuelo:** lo dejé porque Design lo lleva; ¿lo quitas?
+3. **Precio del vuelo del invitado:** hoy no tiene dónde ponerse. ¿Fila en su tarjeta?
+4. **Safe-area en la película:** ¿la ves en la pantalla de inicio o en Safari?
+5. **Chip «logros» del viaje hecho en Mis viajes:** no hay cifra por viaje; ¿de dónde sale?
+
+### Lo que NO se pudo repetir al cerrar (Eric mandó cerrar ya, 29-oct)
+- Tras devolver el título de la película a la línea de [Saltar], las pruebas `pruebaTanda10N9_pelicula`, `pruebaTanda10N5_pase`, `pruebaTanda10N8_pelicula`, `pruebaTanda10N6_avisopase` y `pruebaTanda10N3_apertura` **no se repitieron completas**: las pasadas cayeron por `window.__rutaPrueba is not a function` (el Vite se había caído) y se cortaron a mano. Antes del cambio del título sí pasaron (película 154 con 6 ya tratados, `10N3_apertura` 561/0, `10N8_perfil` 17/0, `10N8_ficha` 40/0). **La película queda ⚠️ A MEDIAS**: hay que repasarlas en la 10N10 con el Vite estable.
+
+### Lista de comprobación 10N9
+
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10N9.md y en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Reglas de siempre (REGLAS_DE_LA_APP.md y Design); 2 agentes como mucho, un servidor, un Chrome, memoria mirada; nota de estado cada 30 min a la rama «estado» (apuntada en CLAUDE.md) Hubo 2 agentes a la vez, un Vite y una API, y la batería con un solo Chrome. La nota se subió cada ~25 min.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Migraciones: Eric tiene hasta la 0063 menos la 0062 Hay que aplicar SOLO la 0064 (no la 0062).  
+  *Dónde:* Supabase > SQL editor: pegar 0064_solo_para_mi_admin_aparte_solo_conjunta.sql
+
+**1 · Solo para mí del administrador, solo en cuenta conjunta**
+
+- ✅ Hecho — La separación solo vale con modo_cuentas_del_viaje = conjunta: disparador, limpieza del final y reservasPrivadasAdmin.ts; en «Cada uno lo suyo» y viajando solo, como antes de la 0062 Probado con la base de datos real (PGlite): en «Cada uno lo suyo» Ana sigue viendo la entrada del administrador; en la conjunta no le llega.  
+  *Dónde:* Con dos cuentas: Eric administrador con «Cada uno lo suyo»: la entrada «Solo para mí» de Eric la ve su amigo y sale «Reservar la mía a la misma hora».
+- ✅ Hecho — Si el viaje pasa de cuenta conjunta a «Cada uno lo suyo», lo apartado vuelve a trips.bookings Probado en la base de datos. Sin ver con dos móviles reales.  
+  *Dónde:* Con dos cuentas: Ajustes del viaje > cómo llevar las cuentas > cambiar a «Cada uno lo suyo».
+- ✅ Hecho — Migración nueva que sustituye a la 0062, sin editarla y aplicable sin ella 0064_solo_para_mi_admin_aparte_solo_conjunta.sql. Se aplica SOLA; si algún día aplicaste la 0062, también vale (la corrige y devuelve lo apartado de viajes que no son conjuntos).  
+  *Dónde:* No es de móvil.
+
+**2 · Guardar el vuelo del administrador**
+
+- ✅ Hecho — En la rueda de la hora, sin [Guardar]; un solo botón «Guardar el vuelo» (y «Guardar el alojamiento»); solo entonces se guarda y llega un solo aviso con la ida y la vuelta El aviso dice «ha guardado el vuelo (ida … y vuelta …)». El botón está apagado hasta poner alguna hora. Sin ver con dos móviles (sonido, segundos).  
+  *Dónde:* RESERVAS o RUTA > Llegada y vuelta > Tu vuelo. Cuenta de administrador de un viaje compartido.  *Captura:* `10n9_hoja_vuelo.jpg`
+
+**3 · Como en Design**
+
+- ⚠️ A medias — La hoja del vuelo exactamente como Reservas Cada Uno: resumen «✓ Ida…» en las pestañas, rueda de dos columnas, sin precio, botón fijo abajo Hecha como Design 02b. Diferencias que quedan: la hoja usa el fondo de la app (no el crema de Design); minutos de 5 en 5 (Design de 1 en 1, era un ejemplo); el administrador ve un solo chip de día (el del viaje) con «Cambia las fechas del viaje». El precio del vuelo ya no está en la hoja: el del administrador sigue en el bloque; el del invitado se conserva pero hoy no tiene dónde ponerse.  
+  *Dónde:* Llegada y vuelta > Tu vuelo (administrador e invitado).  *Captura:* `10n9_hoja_vuelo.jpg`
+- ✅ Hecho — La tarjeta de «Mis viajes» con los chips de Design Chips «4 días · 3 noches · 10 paradas», «En 12 días» y botón dorado. En un viaje hecho Design pone «12 paradas · 3 logros · 41 fotos»: aquí salen paradas y fotos (no hay cifra de logros por viaje).  
+  *Dónde:* Perfil > Mis viajes (un viaje y varios).  *Captura:* `10n9_mis_viajes.jpg`
+
+**4 · La película del pase**
+
+- ✅ Hecho — Captura de cada escena en 390×664 y 375×667: ningún texto se pisa ni se corta; comprobación automática puesta otra vez Medido con getBoundingClientRect en las escenas 0, 1, 3, 4, 5, 6 y 7: 0 pisados, 0 cortados. La marca data-texto-abajo está otra vez. En la escena «Suma» la pieza «Pedazo» pasa por encima del título pequeño (es la animación de Design, una imagen).  
+  *Dónde:* Abrir el pase (Roma, con pase) y ver la película en tu móvil.  *Captura:* `10n9_pelicula_suma_390x664.jpg`
+
+**4 · La película del pase (añadido de Eric, 28-oct)**
+
+- ⚠️ A medias — Usar Pase Pelicula Movil del RETOQUES.zip más nuevo (y Piezas/Pase Pelicula, Pase Escena 4b y Pase Globo) y hacerla exactamente igual, escena por escena; captura de cada escena tuya al lado de la de Design en 390×844, 390×664 y 375×667, con los márgenes de Design; decir qué archivos se usaron en la 10N8 y qué ha cambiado Los archivos eran los correctos: los 4 HTML de Design son byte a byte los del RETOQUES.zip (el de Descargas es el mismo) y los TS de la app (gen/Pase_Pelicula.ts, Pase_Escena_4b.ts, Pase_Globo.ts) salen idénticos al regenerarlos. Medido en 7 escenas × 3 tamaños (y 393×852, 393×659, 430×932): el fondo llena la pantalla y el palco, el texto, los iconos y las rayitas están a 0 px de Design, salvo lo propio de la app ([Ver]/✕ del final, silencio, [Comprar], la lista del final con «HOY»). NO he podido reproducir tu «sin márgenes» en Chrome. Posibles causas en un iPhone real: app añadida a la pantalla de inicio (la app usa viewport-fit=cover y Design no usa safe-area) o la barra de Safari. Dime con cuál lo ves; si es la pantalla de inicio, añado los safe-area. Único cambio que choca con Design: el título pequeño «Todo lo que incluye tu Pase Roma» va en la línea de [Saltar] (tu decisión del 26-oct) y no en su sitio de Design (top 16), donde se pisa con el contenido de la escena «hoy». Si lo quieres en el sitio de Design, es una línea.  
+  *Dónde:* Pase Roma > la película, en tu iPhone (Safari y, si la tienes, la app en la pantalla de inicio).  *Captura:* `10n9_peli_e4_390x844_app.jpg`
+
+**5 · Abierto 24 h**
+
+- ✅ Hecho — La Fontana di Trevi, con la etiqueta Ya la llevaba; se ve en su ficha.  
+  *Dónde:* Roma > Fontana de Trevi > ficha.  *Captura:* `10n9_trevi_24h.jpg`
+- ✅ Hecho — El Teatro de Marcelo, sin la etiqueta y con horario 9:00–19:00 Puede entrar ahora en el motor de horarios (hay una entrada «de camino a la cena» que podría caer pasadas las 19:00); el barrido de 1884 viajes no dio fallos.  
+  *Dónde:* Roma > Teatro de Marcelo > ficha.  *Captura:* `10n9_marcelo_horario.jpg`
+- ✅ Hecho — El resto de la lista de 38, bien Quedan 37 con la etiqueta (ninguno con horario a la vez).  
+  *Dónde:* No es de móvil.
+
+**6 · La prueba**
+
+- ✅ Hecho — Prueba nueva pruebaTanda10N9 (cuentas, vuelo, pantallas) ver el informe  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La batería completa y pruebaJutrip, en 0 fallos (si falla solo con el Vite normal, con el Vite estable) ver el informe  
+  *Dónde:* No es de móvil.
+
+**6 · Capturas**
+
+- ✅ Hecho — Capturas en docs/dias/capturas_jutrip/ y esta página a tamaño de móvil, al lado de las de Design  
+  *Dónde:* Esta página.
+
+**7 · El informe**
+
+- ✅ Hecho — Apartado «10N9» en INFORME_TANDA10B.md diciendo qué migración aplicar, y esta lista al final  
+  *Dónde:* No es de móvil.
+
+**Pruebas:** `pruebaTanda10N9` = cuentas 13 + vuelo 29 + pantallas 140 = 182 comprobaciones, 0 fallos. Película 10N9: 154 en su última pasada completa (6 ya tratados), sin repetir con el título final. Batería: 2 en MAL, ambas de Supabase real (`pruebaTanda10N3_real`, `pruebaEntrarReal`).

@@ -11,10 +11,8 @@ import { nombreDe, inicialDe, type Persona } from '../../../store/useViajeCompar
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useLoSuyo } from '../../../store/useLoSuyo'
 import { Icono } from '../../ui/Icono'
-import { TimeListWheel } from '../../ui/TimeListWheel'
-import { CampoPrecio } from '../../ui/CampoPrecio'
-import { usePrecioEditable } from '../../../lib/useMoneda'
-import { HojaAbajo, ojoStyle } from './HojaAbajo'
+import { HojaDelVuelo, type LadoDeHoja, type LadoGuardado } from './HojaDelVuelo'
+import { HojaAbajo } from './HojaAbajo'
 import { useModoCuentas } from '../../../lib/modoCuentas'
 import { ParaQuienConjunta, ParaQuienConNombres, preguntaDeReserva, type QueSeAnade } from '../presupuesto/ParaQuien'
 import { HojaTuAlojamiento } from '../alojamiento/HojaTuAlojamiento'
@@ -150,96 +148,31 @@ function diasDelTramo(route: Route, lado: 'ida' | 'vuelta'): { iso: string; text
  * La hoja del vuelo de quien no es administrador (Tanda 10N8 §7b-d; `Piezas/Reservas Cada Uno` 02 y 02b): la ida y la vuelta con su día, su aeropuerto y su hora (la rueda NO tiene [Guardar]: al cerrarla la hora queda puesta),
  * «¿Para quién es?» y, al final, UN solo botón «Guardar el vuelo». Solo entonces se guarda y llegan los avisos, una vez, con la ida y la vuelta juntas.
  */
-function HojaVuelo({ actual, route, ciudad, gente, yoId, puntos, onGuardar, onQuitar, onClose }: { actual: MiVuelo | null; route: Route; ciudad: string; gente: Persona[]; yoId: string | null; puntos: { ida: string[]; vuelta: string[] }; onGuardar: (v: MiVuelo, para: string[]) => void; onQuitar: () => void; onClose: () => void }) {
-  const HORAS = Array.from({ length: (24 * 60) / 5 }, (_, i) => `${String(Math.floor((i * 5) / 60)).padStart(2, '0')}:${String((i * 5) % 60).padStart(2, '0')}`)
-  const [lado, setLado] = useState<'ida' | 'vuelta'>('ida')
-  const [ida, setIda] = useState<MiTramo>(actual?.ida ?? { hora: '11:15' })
-  const [vuelta, setVuelta] = useState<MiTramo>(actual?.vuelta ?? { hora: '18:05' })
+function HojaVuelo({ actual, route, gente, yoId, puntos, onGuardar, onQuitar, onClose }: { actual: MiVuelo | null; route: Route; ciudad: string; gente: Persona[]; yoId: string | null; puntos: { ida: string[]; vuelta: string[] }; onGuardar: (v: MiVuelo, para: string[]) => void; onQuitar: () => void; onClose: () => void }) {
   const [ids, setIds] = useState<string[]>(() => (actual?.para && actual.para.length > 0 ? actual.para : yoId ? [yoId] : []))
-  const tramo = lado === 'ida' ? ida : vuelta
-  const poner = (t: MiTramo) => (lado === 'ida' ? setIda(t) : setVuelta(t))
-  const precioIda = usePrecioEditable(actual?.ida?.precio)
-  const precioVuelta = usePrecioEditable(actual?.vuelta?.precio)
-  const precio = lado === 'ida' ? precioIda : precioVuelta
-  const hora = HORAS.includes(tramo.hora) ? tramo.hora : lado === 'ida' ? '11:15' : '18:05'
-  const dias = diasDelTramo(route, lado)
-  const fechaElegida = tramo.fecha ?? dias[0]?.iso ?? null
-  const lista = puntos[lado]
-  const guardar = () => {
-    const con = (t: MiTramo, p: typeof precioIda, l: 'ida' | 'vuelta'): MiTramo => ({ ...t, fecha: t.fecha ?? diasDelTramo(route, l)[0]?.iso ?? null, precio: p.importe })
-    onGuardar({ ida: con(ida, precioIda, 'ida'), vuelta: con(vuelta, precioVuelta, 'vuelta') }, ids.length > 0 ? ids : yoId ? [yoId] : [])
+  const lado = (k: 'ida' | 'vuelta'): LadoDeHoja => {
+    const t = k === 'ida' ? actual?.ida : actual?.vuelta
+    return { activo: true, hora: t?.hora ?? null, punto: t?.punto ?? null, fecha: t?.fecha ?? null, hecho: Boolean(t), dias: diasDelTramo(route, k), puntos: puntos[k], etiquetaPunto: 'Aeropuerto', puntoLibre: true, llega: k === 'ida' }
   }
-  const campo = 'h-12 w-full rounded-[14px] border border-text/15 bg-white px-3.5 text-[15px] text-text outline-none focus:border-text/50'
-  const pastilla = (activa: boolean): CSSProperties => ({ minHeight: 40, padding: '0 14px', borderRadius: 999, background: activa ? '#1C2230' : '#F5EFE4', color: activa ? '#F3D88F' : '#1C2230', font: "600 13.5px 'Geist'" })
-  const resumen = (t: MiTramo, l: 'ida' | 'vuelta') => `${l === 'ida' ? 'Ida' : 'Vuelta'}${t.fecha ? ` · ${fechaCorta(t.fecha)}` : ''} · ${t.hora}`
   return (
-    <HojaAbajo titleId="hoja-mi-vuelo" onClose={onClose} capa={110}>
-      <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={ojoStyle}>
-        Llegada y vuelta
-      </p>
-      <h2 id="hoja-mi-vuelo" className="mt-1 max-w-[calc(100%-3rem)] font-display text-[26px] leading-none text-text">
-        Tu vuelo a {ciudad}
-      </h2>
-      <div className="mt-5 grid grid-cols-2 gap-2" role="tablist">
-        {(['ida', 'vuelta'] as const).map((l) => (
-          <button key={l} type="button" role="tab" aria-selected={lado === l} data-mi-vuelo-lado={l} onClick={() => setLado(l)} className="h-11 rounded-full text-[14px] font-semibold" style={{ background: lado === l ? '#1C2230' : '#F5EFE4', color: lado === l ? '#F3D88F' : '#1C2230' }}>
-            {lado !== l && (l === 'ida' ? actual?.ida || ida.fecha : actual?.vuelta || vuelta.fecha) ? resumen(l === 'ida' ? ida : vuelta, l) : l === 'ida' ? 'Ida' : 'Vuelta'}
-          </button>
-        ))}
-      </div>
-      {dias.length > 0 && (
-        <div className="mt-5" data-mi-vuelo-dias>
-          <span className="text-text/55" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase' }}>
-            {lado === 'ida' ? 'Día de llegada' : 'Día de salida'}
-          </span>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {dias.map((d) => (
-              <button key={d.iso} type="button" data-mi-vuelo-dia={d.iso} onClick={() => poner({ ...tramo, fecha: d.iso })} style={pastilla(fechaElegida === d.iso)}>
-                {d.texto}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      <div className="mt-5">
-        <TimeListWheel items={HORAS} value={hora} onChange={(h) => poner({ ...tramo, hora: h })} label={lado === 'ida' ? 'Hora de llegada' : 'Hora de salida'} />
-      </div>
-      <div className="mt-5 flex flex-col gap-5">
-        {lista.length > 1 ? (
-          <div>
-            <span className="text-text/55" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase' }}>
-              Aeropuerto
-            </span>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {lista.map((p) => (
-                <button key={p} type="button" data-mi-vuelo-punto-opcion={p} onClick={() => poner({ ...tramo, punto: p })} style={pastilla(tramo.punto === p)}>
-                  {p}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <label className="flex flex-col gap-1.5">
-            <span className="text-[13px] font-medium text-text">{lado === 'ida' ? '¿Dónde llegas? (opcional)' : '¿De dónde sales? (opcional)'}</span>
-            <input value={tramo.punto ?? ''} onChange={(e) => poner({ ...tramo, punto: e.target.value })} maxLength={40} placeholder="Ciampino" autoComplete="off" data-mi-vuelo-punto className={campo} />
-          </label>
-        )}
-        <CampoPrecio estado={precio} etiqueta="Precio (opcional)" ayuda="Lo que has pagado tú. No se reparte con el grupo." />
-        {gente.length > 1 && (
+    <HojaDelVuelo
+      guardaSiempre
+      lados={{ ida: lado('ida'), vuelta: lado('vuelta') }}
+      onClose={onClose}
+      onQuitar={actual ? onQuitar : undefined}
+      extra={
+        gente.length > 1 ? (
           <div data-mi-vuelo-para>
             <ParaQuienDeLoSuyo gente={gente} yoId={yoId} ids={ids} onIds={setIds} tipo="vuelo" />
           </div>
-        )}
-      </div>
-      <button type="button" onClick={guardar} data-mi-vuelo-guardar className="mt-6 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98]">
-        Guardar el vuelo
-      </button>
-      {actual && (
-        <button type="button" onClick={onQuitar} data-mi-vuelo-quitar className="mt-3 w-full py-2 text-center text-[13px] font-semibold text-text/60 underline underline-offset-2">
-          Quitar el mío
-        </button>
-      )}
-    </HojaAbajo>
+        ) : undefined
+      }
+      onGuardar={(ida, vuelta) => {
+        // (10N9) Sin precio en la hoja: el que ya hubiera se queda como estaba.
+        const con = (g: LadoGuardado, previo: MiTramo | undefined | null, k: 'ida' | 'vuelta'): MiTramo => ({ ...(previo ?? {}), hora: g.hora, punto: g.punto, fecha: g.fecha ?? diasDelTramo(route, k)[0]?.iso ?? null, precio: previo?.precio ?? null })
+        onGuardar({ ida: con(ida, actual?.ida, 'ida'), vuelta: con(vuelta, actual?.vuelta, 'vuelta') }, ids.length > 0 ? ids : yoId ? [yoId] : [])
+      }}
+    />
   )
 }
 

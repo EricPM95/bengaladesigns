@@ -94,9 +94,9 @@ for (const [nombre, medio] of Object.entries(MEDIOS)) {
       }
       // El medio en el círculo oscuro, entre el arco de puntos.
       debe(/stroke-dasharray="2 4"/.test(marcado) && /bg-\[#1C2230\] text-white/.test(marcado) && /<svg[^>]*viewBox="0 0 24 24"/.test(marcado), '2 círculo', `${etiqueta}: falta el arco de puntos o el círculo oscuro con el icono del medio`)
-      // Los botones del punto.
+      // Los botones del punto (Tanda 10N9: ya no están sueltos en el tramo —cada toque guardaba solo—; se eligen en la hoja del vuelo, con «Guardar el vuelo», que prueba pruebaTanda10N9_vuelo).
       const botones = [...marcado.matchAll(/<button[^>]*class="h-10 rounded-xl[^>]*>([^<]*)<\/button>/g)].map((m) => m[1])
-      debe(JSON.stringify(botones) === JSON.stringify(medio.botones), '2 botones', `${etiqueta}: los botones deberían ser ${JSON.stringify(medio.botones)} y son ${JSON.stringify(botones)}`)
+      debe(botones.length === 0, '2 botones', `${etiqueta}: los botones del punto ya no van sueltos en el tramo (van en la hoja del vuelo) y salen ${JSON.stringify(botones)}`)
       // Las cuatro casillas, en dos columnas.
       const casillas = [...marcado.matchAll(/data-casilla="([^"]+)"/g)].map((m) => m[1])
       // (Tanda 7: tras las cuatro de siempre, las dos opcionales del otro lado —el punto y la otra hora—, en su sección aparte.)
@@ -298,7 +298,7 @@ console.log('P15 a P17. El Perfil')
   // 10N5 (`Piezas/Mis Viajes Tarjeta`): TODAS las tarjetas llevan su [Abrir este viaje], también la del viaje abierto y la de uno sin guardar.
   debe(/Abrir este viaje/.test(fila(resumen(roma1), true)), 'P15', 'el viaje que ya está abierto no lleva [Abrir este viaje]')
   debe(/Abrir este viaje/.test(fila(resumen(roma1, false), false)), 'P15', 'un viaje sin guardar no lleva [Abrir este viaje]')
-  debe(/data-abrir-este-viaje[^>]*style="[^"]*height:34px/.test(fila(resumen(roma1), false)), 'P15', 'el botón no es pequeño (34 px)')
+  debe(/data-abrir-este-viaje[^>]*style="[^"]*height:52px/.test(fila(resumen(roma1), false)), 'P15', 'el botón no es el de Design (52 px, 10N9)')
   const perfil = sinComentarios(leer('src/components/layout/PerfilSheet.tsx'))
   debe(/onAbrirViaje=\{abrirViaje\}/.test(perfil) && /hydrateTrip\(viaje\.guardado\)/.test(perfil) && /setActiveTripId\(viaje\.guardado\.id\)/.test(perfil) && /onClose\(\)/.test(perfil), 'P15', 'PerfilSheet no abre el viaje al tocarlo (hydrateTrip + cerrar el Perfil)')
   debe(!/Abrir este viaje/.test(leer('src/components/perfil/FichaDeViaje.tsx').replace(/\/\*[\s\S]*?\*\//g, '')), 'P15', 'el álbum (ficha del viaje) debe seguir sin [Abrir este viaje]')

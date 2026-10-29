@@ -2,7 +2,7 @@ import { precioEnVista } from '../../../lib/moneda'
 import { useEffect, useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
-import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
+import type { CambioDeVuelo, EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { HojaZona } from './AlojamientoReservas'
 import { puntoCorto, type ArrivalInfo } from '../../../lib/arrivalReturn'
 import { legLine, legOf, legsTag, legWord, type LegKind, type LegState } from '../../../lib/reservasLegs'
@@ -16,6 +16,8 @@ import { HojaPrecio } from './HojaPrecio'
 import { leerImporte, type Importe } from '../../../lib/dinero'
 import { Icono } from '../../ui/Icono'
 import { Candado } from '../../pase/Candado'
+import { fechaCorta } from '../../../lib/nombreDeDia'
+import { HojaDelVuelo, type LadoDeHoja } from './HojaDelVuelo'
 import { usePagoActivo } from '../../../lib/pago'
 
 // (Tanda 7: las 24 horas, de 5 en 5. Una llegada a las 0:30 o un vuelo a las 2:00 son horas de verdad —el motor las trata como «la noche de antes»—; la rueda ya no empieza a las 6:00.)
@@ -174,7 +176,6 @@ function MitadAbierta({
   origen,
   ciudad,
   precio,
-  onPoint,
   onTime,
   onPrecio,
   onCodigo,
@@ -190,7 +191,6 @@ function MitadAbierta({
   origen: string
   ciudad: string
   precio: Importe | null
-  onPoint: (pointId: string) => void
   onTime: () => void
   onPrecio: () => void
   onCodigo: (texto: string) => void
@@ -233,25 +233,8 @@ function MitadAbierta({
         </div>
         {esIda ? lado(lugar, 'right') : lado(origen, 'right')}
       </div>
-      {leg.hasButtons && (
-        <div className="grid grid-cols-2 gap-1.5">
-          {leg.points.map((point) => {
-            const activo = leg.point?.id === point.id
-            return (
-              <button
-                key={point.id}
-                type="button"
-                onClick={() => onPoint(point.id)}
-                className="h-10 rounded-xl text-[13.5px] font-semibold transition-colors"
-                style={{ border: `1.5px solid ${activo ? INK : 'transparent'}`, background: activo ? INK : '#F5EFE4', color: activo ? '#FFFDF8' : INK }}
-              >
-                {puntoCorto(point)}
-              </button>
-            )
-          })}
-        </div>
-      )}
       {unico && leg.point && <span className="text-[12px] text-text/60">{leg.point.nombre} · el único de {ciudad}</span>}
+      {leg.hasButtons && leg.point && <span className="text-[12px] text-text/60" data-punto-de-la-mitad>{leg.point.nombre}</span>}
       <div className="flex flex-col gap-1.5">
         <div className="grid grid-cols-2 gap-1.5">
           <CasillaToque etiqueta={esIda ? 'Llega' : 'Sale'} valor={leg.time} vacio="Elige la hora" icono="reloj" onClick={onTime} />
@@ -309,6 +292,78 @@ function MitadAbierta({
   )
 }
 
+const ETIQUETA_PUNTO: Record<string, string> = { avion: 'Aeropuerto', tren: 'Estación', bus: 'Estación', ferry: 'Puerto', coche: 'Punto' }
+
+/**
+ * La hoja del vuelo del ADMINISTRADOR (Tanda 10N9; `Piezas/Reservas Cada Uno` 02): la misma que la del invitado (`HojaDelVuelo`), con la ida y la vuelta a la vez, la fecha del viaje (fija: se cambia con las fechas del viaje),
+ * el punto y la rueda de la hora SIN [Guardar]. Nada se pone en la ruta hasta pulsar «Guardar el vuelo»; entonces se guarda todo de una vez (`guardarVueloDelAdmin`, que apunta UN solo cambio con la ida y la vuelta
+ * juntas: un solo aviso para los demás) y se avisa a los motores de lo que ha cambiado (`onGuardar` devuelve esos cambios). El precio, la referencia y la compañía siguen en las casillas del tramo.
+ */
+export function HojaVueloDelAdmin({
+  ida,
+  vuelta,
+  ladoInicial,
+  onFechas,
+  onClose,
+  onGuardar,
+}: {
+  ida: LegState
+  vuelta: LegState
+  ladoInicial: LegKind
+  onFechas: () => void
+  onClose: () => void
+  onGuardar: (cambios: { arrival?: { time: string; pointId?: string | null }; departure?: { time: string; pointId?: string | null }; medio?: string }, cambiosDeVuelo: CambioDeVuelo[]) => void
+}) {
+  const lado = (leg: LegState): LadoDeHoja => ({
+    activo: leg.mode !== 'coche',
+    hora: leg.time,
+    punto: leg.point ? puntoCorto(leg.point) : null,
+    fecha: leg.dateIso,
+    hecho: leg.done && leg.mode !== 'coche',
+    dias: leg.dateIso ? [{ iso: leg.dateIso, texto: fechaCorta(leg.dateIso) }] : [],
+    diasFijos: true,
+    puntos: leg.points.map(puntoCorto),
+    etiquetaPunto: ETIQUETA_PUNTO[leg.mode] ?? 'Punto',
+    puntoObligatorio: leg.hasButtons,
+    llega: leg.kind === 'arrival',
+  })
+  const principal = ida.mode !== 'coche' ? ida : vuelta
+  const noun = legWord(principal.mode).noun
+  return (
+    <HojaDelVuelo
+      titulo={`Tu ${noun}`}
+      textoGuardar={`Guardar el ${noun}`}
+      datos="admin"
+      lados={{ ida: lado(ida), vuelta: lado(vuelta) }}
+      ladoInicial={ladoInicial === 'arrival' ? 'ida' : 'vuelta'}
+      avisoFechas={
+        <span className="mt-2 block text-[11px] leading-[1.35] text-text/60">
+          ¿Llegas o te vas otro día?{' '}
+          <button type="button" onClick={onFechas} className="underline underline-offset-2" style={{ color: INK }}>
+            Cambia las fechas del viaje
+          </button>
+        </span>
+      }
+      onClose={onClose}
+      onGuardar={(gIda, gVuelta) => {
+        const cambios: Parameters<typeof onGuardar>[0] = { medio: noun }
+        const avisos: CambioDeVuelo[] = []
+        for (const [leg, g] of [[ida, gIda], [vuelta, gVuelta]] as const) {
+          if (!g.puesto || leg.mode === 'coche') continue
+          const punto = leg.points.length === 1 ? leg.points[0] : (leg.points.find((p) => puntoCorto(p) === g.punto) ?? null)
+          const entrada = { time: g.hora, ...(punto ? { pointId: punto.id } : {}) }
+          if (leg.kind === 'arrival') cambios.arrival = entrada
+          else cambios.departure = entrada
+          // (Los motores solo se enteran de lo que de verdad ha cambiado: la hora o el punto de esa mitad.)
+          if (leg.time !== g.hora) avisos.push({ que: 'hora', mitad: leg.kind })
+          else if (punto && leg.point?.id !== punto.id) avisos.push({ que: 'punto', mitad: leg.kind })
+        }
+        onGuardar(cambios, avisos)
+      }}
+    />
+  )
+}
+
 /**
  * El bloque «Llegada y vuelta» de RESERVAS (de pago, Tanda 6s): la ida y la vuelta con el medio que eligió el viajero. Cerrado y vacío, una tarjeta con «Falta»; abierto, se abre la
  * mitad que falta y la hecha queda en una línea con «Cambiar»; cerrado con algo hecho, dos líneas cortas.
@@ -343,21 +398,21 @@ export function LlegadaYVuelta({
   onCambioDeVuelo: EnCambioDeVuelo
   onFechas: () => void
 }) {
-  const setArrivalFlightTime = useRouteStore((state) => state.setArrivalFlightTime)
-  const setDepartureFlightTime = useRouteStore((state) => state.setDepartureFlightTime)
+  const guardarVueloDelAdmin = useRouteStore((state) => state.guardarVueloDelAdmin)
   const setLegPrecio = useRouteStore((state) => state.setLegPrecio)
   const setLegCodigo = useRouteStore((state) => state.setLegCodigo)
   const setLegCompania = useRouteStore((state) => state.setLegCompania)
   const setLegOtroPunto = useRouteStore((state) => state.setLegOtroPunto)
   const setLegOtraHora = useRouteStore((state) => state.setLegOtraHora)
-  const setPoint = useRouteStore((state) => state.setArrivalPointId)
   const removeLeg = useRouteStore((state) => state.removeFlightLeg)
   const setZona = useRouteStore((state) => state.setAccommodationZone)
   const marcarVueltaVista = useRouteStore((state) => state.marcarVueltaVista)
   const zonaElegida = route.accommodationZone ?? null
   const pago = usePagoActivo()
   // Las hojas del tramo abierto: la rueda de la hora, la de la otra hora (opcional), el precio y la zona.
-  const [hoja, setHoja] = useState<{ leg: LegKind; que: 'hora' | 'otraHora' | 'precio' } | 'zona' | null>(null)
+  const [hoja, setHoja] = useState<{ leg: LegKind; que: 'otraHora' | 'precio' } | 'zona' | null>(null)
+  // (Tanda 10N9) La hoja del vuelo del administrador: la ida y la vuelta juntas y UN solo botón «Guardar el vuelo». `vueloAbierto` es la pestaña con la que se abre.
+  const [vueloAbierto, setVueloAbierto] = useState<LegKind | null>(null)
   const hojaLeg = hoja && hoja !== 'zona' ? hoja : null
   const ida = legOf(route, info, 'arrival')
   const vuelta = legOf(route, info, 'departure')
@@ -384,6 +439,7 @@ export function LlegadaYVuelta({
         if (leg.mode === 'coche') return
         onAbrir()
         onMitad(leg.kind)
+        if (!leg.done) setVueloAbierto(leg.kind)
       }}
       className="flex min-h-[46px] items-center gap-2.5 rounded-[14px] py-2 pl-2.5 pr-3"
       style={{
@@ -406,7 +462,7 @@ export function LlegadaYVuelta({
     <>
       <BloqueShell bloque="llegada">
         {!abierto && nadaHecho ? (
-          <div onClick={onAbrir} className="flex cursor-pointer items-center gap-3 p-3.5">
+          <div onClick={() => { onAbrir(); setVueloAbierto(ida.mode !== 'coche' ? 'arrival' : 'departure') }} className="flex cursor-pointer items-center gap-3 p-3.5">
             <IconoBloque nombre={iconoDeMedio(ida.mode)} />
             <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
               <span style={tituloBloqueStyle}>Llegada y vuelta</span>
@@ -427,6 +483,7 @@ export function LlegadaYVuelta({
                     if (leg.mode === 'coche') return
                     onAbrir()
                     onMitad(leg.kind)
+                    if (!leg.done) setVueloAbierto(leg.kind)
                   }}
                   className="flex items-start gap-[9px]"
                   style={{ cursor: leg.mode === 'coche' ? 'default' : 'pointer' }}
@@ -452,6 +509,7 @@ export function LlegadaYVuelta({
               onClick={() => {
                 onAbrir()
                 onMitad(undefined)
+                if (!hecho) setVueloAbierto(!ida.done ? 'arrival' : 'departure')
               }}
             />
           </div>
@@ -483,11 +541,7 @@ export function LlegadaYVuelta({
                     origen={origen}
                     ciudad={ciudad}
                     precio={leerImporte(leg.kind === 'arrival' ? route.arrivalPrecio : route.departurePrecio)}
-                    onPoint={(pointId) => {
-                      setPoint(leg.kind, pointId)
-                      if (leg.time) onCambioDeVuelo({ que: 'punto', mitad: leg.kind })
-                    }}
-                    onTime={() => setHoja({ leg: leg.kind, que: 'hora' })}
+                    onTime={() => setVueloAbierto(leg.kind)}
                     onPrecio={() => setHoja({ leg: leg.kind, que: 'precio' })}
                     onCodigo={(texto) => setLegCodigo(leg.kind, texto)}
                     onCompania={(texto) => setLegCompania(leg.kind, texto)}
@@ -522,19 +576,21 @@ export function LlegadaYVuelta({
       {/* P1 (cuentas parte 3): con el vuelo guardado y sin el pase de este destino, debajo del vuelo: «Con el Pase de Roma, tu primer día se ajusta solo». Con el cobro apagado, nada. */}
       {/* Tanda 10G: sin el pase, debajo del vuelo guardado, la pieza del candado (la de toda la app): guardar el vuelo es gratis; ajustar el primer y el último día a él, del pase. */}
       {!pago && (ida.done || vuelta.done) && <Candado className="mt-2.5" datos="llegada-ajuste" titulo="Tu primer y tu último día" texto="Con el {pase}, ajustamos tu primer y tu último día a tu vuelo." />}
-      {hojaLeg?.que === 'hora' && (
-        <HojaHoraLlegada
-          leg={hojaLeg.leg === 'arrival' ? ida : vuelta}
-          ciudad={ciudad}
-          onClose={() => setHoja(null)}
-          onSave={(time, pointId) => {
-            // (Tanda 7: el punto de Roma va con la hora: sin punto no se guarda una hora. Con un solo punto, ya es ese.)
-            if (pointId) setPoint(hojaLeg.leg, pointId)
-            ;(hojaLeg.leg === 'arrival' ? setArrivalFlightTime : setDepartureFlightTime)(time)
-            setHoja(null)
-            // (Tanda 6y6: tras guardar la hora el tramo SIGUE abierto, para rellenar la referencia, la compañía y el precio sin darle a «Cambiar»; se cierra al tocar la cabecera del bloque o al salir.)
-            onMitad(hojaLeg.leg)
-            onCambioDeVuelo({ que: 'hora', mitad: hojaLeg.leg })
+      {vueloAbierto && (
+        <HojaVueloDelAdmin
+          ida={ida}
+          vuelta={vuelta}
+          ladoInicial={vueloAbierto}
+          onFechas={() => {
+            setVueloAbierto(null)
+            onFechas()
+          }}
+          onClose={() => setVueloAbierto(null)}
+          onGuardar={(cambios, cambiosDeVuelo) => {
+            guardarVueloDelAdmin(cambios)
+            setVueloAbierto(null)
+            onMitad(undefined)
+            for (const cambio of cambiosDeVuelo) onCambioDeVuelo(cambio)
           }}
         />
       )}

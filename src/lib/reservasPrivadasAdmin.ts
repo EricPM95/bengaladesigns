@@ -1,9 +1,10 @@
 import { supabase } from './supabaseClient'
 import type { Reservation } from './bookings'
 import { useRouteStore } from '../store/useRouteStore'
+import type { Route } from './types'
 
 /**
- * LO «SOLO PARA MÍ» DEL ADMINISTRADOR, GUARDADO APARTE (Tanda 10N8 §0b-2; migración 0062). La base de datos saca de `trips.bookings` las reservas cuyo «¿Para quién es?» es solo el administrador y las deja
+ * LO «SOLO PARA MÍ» DEL ADMINISTRADOR, GUARDADO APARTE (Tanda 10N8 §0b-2; migración 0062, sustituida por la 0064 en la 10N9: solo en la cuenta conjunta). La base de datos saca de `trips.bookings` las reservas cuyo «¿Para quién es?» es solo el administrador y las deja
  * en `reservas_privadas_admin` (solo él las lee). Aquí, en el móvil del administrador, se vuelven a juntar con las suyas al abrir el viaje, y si quita una, se quita también de esa tabla.
  * Sin la migración (la tabla no existe) no hace nada y todo sigue como antes.
  */
@@ -13,8 +14,22 @@ let vistas = new Set<string>()
 let suscrito = false
 let miId: string | null = null
 
+/** Igual que `modo_cuentas_del_viaje` de la base de datos (0055): conjunta si se eligió así o, sin elegir, pareja o familia. */
+export function esCuentaConjuntaDelServidor(route: Pick<Route, 'answers' | 'modoCuentas'> | null | undefined): boolean {
+  if (route?.modoCuentas === 'conjunta') return true
+  if (route?.modoCuentas === 'cada_uno') return false
+  const c = route?.answers?.companion
+  return c === 'couple' || c === 'family'
+}
+
 function sincronizar() {
   if (!tripActual) return
+  // (10N9) Solo vale en la cuenta conjunta. Si el viaje pasa a «Cada uno lo suyo», la base de datos las devuelve a `trips.bookings`: aquí dejamos de seguirlas (ya están en la lista) y no se borra nada.
+  if (!esCuentaConjuntaDelServidor(useRouteStore.getState().route)) {
+    privadas = []
+    vistas = new Set()
+    return
+  }
   const { reservations } = useRouteStore.getState()
   const hay = new Set(reservations.map((r) => r.id))
   // Las que el administrador acaba de apuntar «Solo para mí» también se siguen: si luego las quita, se quitan de la tabla.

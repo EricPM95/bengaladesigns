@@ -577,6 +577,8 @@ interface RouteStoreState {
   /** Reservas — hora "HH:MM" del vuelo de llegada/salida, o null para borrarla. */
   setArrivalFlightTime: (time: string | null) => void
   setDepartureFlightTime: (time: string | null) => void
+  /** (Tanda 10N9) «Guardar el vuelo» del administrador: la ida y la vuelta (hora y punto) de una vez, con UN solo `ultimoCambio` (un solo aviso para los demás). `medio`: «vuelo», «tren»… */
+  guardarVueloDelAdmin: (cambios: { arrival?: { time: string; pointId?: string | null }; departure?: { time: string; pointId?: string | null }; medio?: string }) => void
   /** El punto de llegada o de salida elegido en la ficha (Fiumicino o Ciampino…): lo enseña la barra. */
   setArrivalPointId: (kind: 'arrival' | 'departure', pointId: string | null) => void
   /** «Eliminar vuelo» (Tanda 6s): borra la hora y el punto de esa mitad; los días se quedan como están. */
@@ -1087,7 +1089,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         }
       })()
       // (10N5) Cambiar las fechas rehace la ruta: el aviso de los demás dice «ha cambiado las fechas del viaje (del 11 al 15 de noviembre)», no la lista de lo que se movió.
-      const route = conUltimoCambio(state.route, { ...colored, ...avisosHeredados, ...(state.keepBookingsOnNextRoute ? camposDelViajero(state.route) : {}), editedManually: false, originalRoute: originalRouteOf(colored) }, state.keepBookingsOnNextRoute && state.route ? { tipo: 'fechas' } : null)
+      // (Tanda 10N9) Si lo que rehace los días es «Guardar el vuelo» del administrador (mismas fechas), el aviso sigue siendo ese: UNO, con la ida y la vuelta juntas, no un «ha rehecho la ruta» aparte.
+      const sigueElVuelo = Boolean(state.keepBookingsOnNextRoute && state.route && (state.route.ultimoCambio as { accion?: { tipo?: string } } | null | undefined)?.accion?.tipo === 'vuelo' && JSON.stringify(state.route.answers.dateRange ?? null) === JSON.stringify(colored.answers?.dateRange ?? state.route.answers.dateRange ?? null))
+      const route = conUltimoCambio(state.route, { ...colored, ...avisosHeredados, ...(sigueElVuelo ? { ultimoCambio: state.route!.ultimoCambio } : {}), ...(state.keepBookingsOnNextRoute ? camposDelViajero(state.route) : {}), editedManually: false, originalRoute: originalRouteOf(colored) }, state.keepBookingsOnNextRoute && state.route && !sigueElVuelo ? { tipo: 'fechas' } : null)
       return {
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))
@@ -1841,6 +1845,17 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   // (Tanda 7: poner o cambiar la hora de la vuelta es «verla»: queda sellada con la fecha de vuelta de ahora y el aviso de cambio de fechas se va.)
   setDepartureFlightTime: (time) =>
     set((state) => (state.route ? { route: { ...state.route, departureFlightTime: time, departureFechaVista: state.route.answers.dateRange?.end ?? null } } : state)),
+  guardarVueloDelAdmin: ({ arrival, departure, medio }) =>
+    set((state) => {
+      if (!state.route || (!arrival && !departure)) return state
+      const rango = state.route.answers.dateRange
+      const nueva: Route = {
+        ...state.route,
+        ...(arrival ? { arrivalFlightTime: arrival.time, ...(arrival.pointId !== undefined ? { arrivalPointId: arrival.pointId } : {}) } : {}),
+        ...(departure ? { departureFlightTime: departure.time, departureFechaVista: rango?.end ?? null, ...(departure.pointId !== undefined ? { departurePointId: departure.pointId } : {}) } : {}),
+      }
+      return { route: conUltimoCambio(state.route, nueva, { tipo: 'vuelo', medio, ida: arrival ? { fecha: rango?.start ?? null, hora: arrival.time } : null, vuelta: departure ? { fecha: rango?.end ?? null, hora: departure.time } : null }) }
+    }),
   setArrivalPointId: (kind, pointId) =>
     set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPointId' : 'departurePointId']: pointId } } : state)),
   removeFlightLeg: (kind) =>

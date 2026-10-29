@@ -45,6 +45,7 @@ export function AlojamientoHost() {
           ciudad={estanciaHoja.city}
           noches={estanciaHoja.noches}
           actual={selections[estanciaHoja.segmentDayId] ?? null}
+          textoGuardar="Guardar el alojamiento"
           onGuardar={(hotel) => {
             setHotel(estanciaHoja.segmentDayId, hotel)
             cerrarHoja()

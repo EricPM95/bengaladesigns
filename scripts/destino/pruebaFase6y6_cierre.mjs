@@ -131,10 +131,8 @@ console.log('4. La guía y la ida y la vuelta')
   const guia = leer('docs/dias/GUIA_NUEVOS_DESTINOS.md')
   debe(/Lo de pago no se enseña con candados:\*\* simplemente no sale, salvo "Escuchar historia", que lleva candado en la versión gratis\./.test(guia), '4 guía', 'la guía no dice lo del candado de «Escuchar historia»')
   const tramo = leer('src/components/route/reservas/LlegadaYVuelta.tsx')
-  // (Tanda 7: la hoja guarda hora y punto, `onSave={(time, pointId) => {`, y avisa con `onCambioDeVuelo` en lugar de abrir «¿Ajustamos tu ruta?».)
-  const desde = tramo.indexOf('onSave={(time, pointId) => {')
-  const guardar = tramo.slice(desde, tramo.indexOf("onCambioDeVuelo({ que: 'hora'", desde))
-  debe(desde > 0 && /onMitad\(hojaLeg\.leg\)/.test(guardar) && !/onMitad\(undefined\)/.test(guardar), '4 tramo', 'al guardar la hora el tramo no se queda abierto')
+  // (10N9) La hoja del vuelo tiene UN solo botón «Guardar el vuelo»: guarda ida y vuelta de una vez (`guardarVueloDelAdmin`) y deja el tramo cerrado.
+  debe(tramo.includes('guardarVueloDelAdmin(cambios)') && tramo.includes('onGuardar={(cambios, cambiosDeVuelo)'), '4 tramo', 'la hoja del vuelo del administrador no guarda con un solo botón')
   debe(/onClick=\{\(\) => \{\s*onMitad\(undefined\)\s*onToggle\(\)\s*\}\}/.test(tramo), '4 tramo', 'al tocar la cabecera no se cierra el tramo abierto')
 }
 

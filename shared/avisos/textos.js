@@ -65,6 +65,12 @@ export function sitioConArticulo(nombre) {
 /** «el Free Tour» (el nombre del Free Tour del destino empieza siempre por «Free Tour»), o el sitio con su artículo. */
 const sitioDicho = (nombre) => (/^free tour/i.test(String(nombre ?? '').trim()) ? 'el Free Tour' : sitioConArticulo(nombre))
 
+/** (10N9) «ida el martes 10 a las 11:15 y vuelta el viernes 13 a las 18:05» (lo que falte, no se dice). */
+function ladosDelVuelo(a) {
+  const dicho = (nombre, t) => (t && t.hora ? nombre + (diaEnPalabras(t.fecha) ? ' el ' + diaEnPalabras(t.fecha) : '') + ' a las ' + t.hora : '')
+  return [dicho('ida', a.ida), dicho('vuelta', a.vuelta)].filter(Boolean)
+}
+
 /**
  * (10N5 §2 y §2b) Una línea con lo que de verdad ha pasado, sin punto final y sin el nombre: «ha añadido el Free Tour al miércoles 11 y se han reorganizado 2 días», «ha movido el Coliseo al jueves 12 y 2 sitios más»,
  * «ha cambiado el sábado 14 a día de excursión (Pompeya y Sorrento)», «ha vuelto a la ruta inicial». Un cambio con nombre propio (`cambio.accion`, lo apunta el móvil de quien lo hace) manda sobre la lista de lo que se movió.
@@ -94,6 +100,10 @@ export function queCambioEnElViaje(p, plural = false) {
       return `${v('ha cambiado', 'han cambiado')} las fechas del viaje${f ? ` (${f})` : ''}`
     }
     if (a.tipo === 'rehacer') return v('ha rehecho la ruta', 'han rehecho la ruta')
+    if (a.tipo === 'vuelo') {
+      const lados = ladosDelVuelo(a)
+      return `${v('ha guardado', 'han guardado')} el ${a.medio || 'vuelo'}${lados.length ? ` (${lados.join(' y ')})` : ''}`
+    }
   }
   // (10N8 §4) Cambiar el orden de los días: «ha cambiado el orden de los días».
   if (c?.orden_dias) return `${v('ha cambiado', 'han cambiado')} el orden de los días`
@@ -313,6 +323,7 @@ function franjaDeCambioDelViaje(p) {
     if (ac.tipo === 'recuperar_dia') return { verbo: `ha recuperado ${elDiaDicho(ac)}`, detalle: 'Como estaba' }
     if (ac.tipo === 'fechas') return p.cambio.fechas && JSON.stringify(p.cambio.fechas.antes) !== JSON.stringify(p.cambio.fechas.despues) ? { verbo: 'ha cambiado las fechas', detalle: viaje } : { verbo: 'ha rehecho la ruta', detalle: viaje }
     if (ac.tipo === 'rehacer') return { verbo: 'ha rehecho la ruta', detalle: viaje }
+    if (ac.tipo === 'vuelo') return { verbo: `ha guardado el ${ac.medio || 'vuelo'}`, detalle: mayuscula(ladosDelVuelo(ac).join(' · ')) || viaje }
   }
   // (10N8 §4) El orden de los días y un día quitado con su fecha.
   if (p.cambio?.orden_dias) return { verbo: 'ha cambiado el orden de los días', detalle: p.destino ? `Viaje a ${p.destino}` : '' }

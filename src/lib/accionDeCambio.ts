@@ -13,6 +13,8 @@ export type AccionDeCambio =
   | { tipo: 'recuperar_dia'; dia_n: number; fecha?: string | null }
   | { tipo: 'fechas' }
   | { tipo: 'rehacer' }
+  /** (10N9) «Guardar el vuelo» del administrador: la ida y la vuelta juntas, un solo aviso. `medio`: «vuelo», «tren»… */
+  | { tipo: 'vuelo'; medio?: string; ida?: { fecha?: string | null; hora: string } | null; vuelta?: { fecha?: string | null; hora: string } | null }
 
 let pendiente: AccionDeCambio | null = null
 

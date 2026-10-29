@@ -94,7 +94,7 @@ try {
   await clic('[data-pon-el-tuyo="vuelo"]')
   await a.esp(900)
   const hojaVuelo = await hoja()
-  debe(/Tu vuelo a/.test(hojaVuelo ?? '') && /Ida/.test(hojaVuelo ?? '') && /Vuelta/.test(hojaVuelo ?? ''), '6c-1', `la hoja de su vuelo (${(hojaVuelo ?? '').slice(0, 80)})`)
+  debe(/Tu vuelo/.test(hojaVuelo ?? '') && /Ida/.test(hojaVuelo ?? '') && /Vuelta/.test(hojaVuelo ?? ''), '6c-1', `la hoja de su vuelo (${(hojaVuelo ?? '').slice(0, 80)})`)
   await a.captura(path.join(SALIDA, '10n5_cadauno_03a_hoja_mi_vuelo.jpg'))
   await clic('[data-mi-vuelo-guardar]')
   await a.esp(900)

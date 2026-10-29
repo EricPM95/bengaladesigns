@@ -53,7 +53,7 @@ const MIDE = `(() => {
     if (b.width < 60 || b.height < 14 || b.height > vh * 0.75 || b.top < 100) continue
     if (b.bottom > vh || b.left > vw || b.right < 0) continue
     let recortado = false
-    for (let p = e.parentElement; p && p !== P; p = p.parentElement) { if (getComputedStyle(p).overflow === 'hidden') { const q = p.getBoundingClientRect(); if (b.left < q.left - 2 || b.right > q.right + 2 || b.top < q.top - 2 || b.bottom > q.bottom + 2) { recortado = true; break } } }
+    for (let p = e.parentElement; p && p !== P; p = p.parentElement) { const cp = getComputedStyle(p); if (/(hidden|clip)/.test(cp.overflow + cp.overflowX + cp.overflowY)) { const q = p.getBoundingClientRect(); if (b.left < q.left - 2 || b.right > q.right + 2 || b.top < q.top - 2 || b.bottom > q.bottom + 2) { recortado = true; break } } }
     if (recortado) continue
     const cs = getComputedStyle(e)
     const pinta = (cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.backgroundImage !== 'none' || e.tagName === 'svg' || e.tagName === 'IMG' || (e.children.length === 0 && (e.textContent || '').trim()))

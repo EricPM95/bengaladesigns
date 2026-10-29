@@ -6,7 +6,7 @@ import { Icono } from '../../ui/Icono'
  * La hoja que sube desde abajo de RESERVAS (Tanda 6s): con su tirador y su cruz, igual que la hoja de la hora de las entradas. En el ordenador, centrada.
  * `titleId` es el id del título que lleva (para los lectores de pantalla); `onClose` también al pulsar fuera o Escape.
  */
-export function HojaAbajo({ titleId, onClose, children, ancha = false, capa = 90 }: { titleId: string; onClose: () => void; children: ReactNode; ancha?: boolean; capa?: number }) {
+export function HojaAbajo({ titleId, onClose, children, ancha = false, capa = 90, pie }: { titleId: string; onClose: () => void; children: ReactNode; ancha?: boolean; capa?: number; /** (Tanda 10N9) Lo que va fijo abajo, pegado al pie de la hoja (el botón de guardar), fuera del scroll. */ pie?: ReactNode }) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
@@ -24,7 +24,8 @@ export function HojaAbajo({ titleId, onClose, children, ancha = false, capa = 90
         <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#F1EADC] text-text hover:bg-bg-hover">
           <Icono nombre="cerrar" className="h-4 w-4" />
         </button>
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">{children}</div>
+        <div className={`min-h-0 flex-1 overflow-y-auto px-6 pt-4 ${pie ? "pb-3" : "pb-[max(1.25rem,env(safe-area-inset-bottom))]"}`}>{children}</div>
+        {pie && <div className="shrink-0 px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2" data-pie-de-hoja>{pie}</div>}
       </div>
     </div>,
     document.body,

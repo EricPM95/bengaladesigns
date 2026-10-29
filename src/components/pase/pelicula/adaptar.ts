@@ -110,6 +110,12 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
     ],
   })
 
+  // (Tanda 10N9, §4) Los textos de abajo de cada escena (los que entran con `fsSub`: la frase grande y la línea pequeña) llevan una marca, solo para las pruebas (`data-texto-abajo`): así se mide que no se pisan
+  // con lo de arriba ni entre sí en 390 x 664 y 375 x 667. No cambia nada de lo que se ve.
+  recorre(ast[0], (n) => {
+    if (n.a?.style?.includes('animation:fsSub') && !n.a['data-texto-abajo']) n.a = { ...n.a, 'data-texto-abajo': '1' }
+  })
+
   ajustarAlMovil(ast)
   ajustarLaCabecera(ast, destino)
   ajustarLaLista(ast)
@@ -133,8 +139,9 @@ function palcoDe(ast: Nodo[]): Nodo {
 export const bloquesDeLaLista = () => LISTA_DEL_PASE.map((g) => ({ t: g.titulo, items: g.items.map((i) => ({ titulo: i.titulo, linea: i.linea, partes: partesDeLinea(i.linea).map((p) => ({ t: p.t, dm: p.marca ? '1' : undefined, estilo: p.marca ? 'color:#6F4E37;font-weight:600' : '' })) })) }))
 
 /**
- * LA CABECERA DE TODAS LAS ESCENAS (Tanda 10N5, apartado 5).
+ * LA CABECERA DE TODAS LAS ESCENAS (Tanda 10N5, apartado 5; Tanda 10N9, apartado 3).
  *   · El título pequeño de Design («Todo lo que incluye tu Pase Roma», encima de las rayitas) va en la MISMA línea que [Saltar], centrado en medio (Eric, 26-oct), con el destino del pase; en el final no sale (allí van [Ver] y ✕).
+ *     (10N9: en su sitio de Design, top 16, se pisa con el contenido de la escena «hoy» y rompe «ningún texto se pisa»; se queda en la línea de [Saltar]. Se marca con `data-pelicula-titulo`.)
  *   · Las rayitas de arriba (una por escena) se pueden tocar: llevan a esa escena y la vuelven a poner desde el principio, como las historias de Instagram. La zona de toque es más alta que la rayita (22 px) y la rayita se ve igual (3 px, a la misma altura).
  */
 function ajustarLaCabecera(ast: Nodo[], destino: string) {

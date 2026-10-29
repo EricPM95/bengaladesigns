@@ -245,7 +245,7 @@ for (const v of lista) debe(textoPerfil.includes(v.destino) && (!v.cuando || tex
   debe(pos('r1') < pos('r2') && pos('r2') < pos('r3') && pos('r5') < pos('r1'), 'B5', 'el Perfil no pinta los viajes en orden')
 }
 debe(/data-anadir-viaje/.test(fs.readFileSync('src/components/layout/PerfilSheet.tsx', 'utf8')) && !/Tips del viaje/.test(textoPerfil), 'B5', 'falta el [+] Añadir un viaje (10N5) en el Perfil, o sigue ahí [Tips del viaje] (ahora es la bombilla de RUTA)')
-debe(/Próximo/.test(textoPerfil) && /Ya hecho/.test(textoPerfil), 'B5', '10N5: cada tarjeta del Perfil lleva su etiqueta «Próximo» / «Ya hecho»')
+debe(/(En \d+ días|Mañana|Hoy|Próximo)/.test(textoPerfil) && /Hecho/.test(textoPerfil), 'B5', '10N9: cada tarjeta del Perfil lleva su etiqueta de Design («En N días» o «Próximo» / «Hecho»)')
 debe(/Mis viajes/.test(textoPerfil), 'B5', 'falta el rótulo «Mis viajes»')
 
 // (Tanda 10N4: las chinchetas y el mapa de mis viajes se quitaron con el Perfil viejo; el pasaporte local cuenta países y ciudades.)

@@ -4352,7 +4352,10 @@
     {
       "id": "teatro_de_marcelo",
       "name": "Teatro de Marcelo",
-      "abierto_24h": true,
+      "schedule": "09:00-19:00",
+      "windows": [
+        "09:00-19:00"
+      ],
       "por_que_recomendamos": "Es un teatro romano más antiguo que el Coliseo, con casas construidas encima. En verano, a veces hay conciertos.",
       "megusta_inicial": 86,
       "duration_minutes": 15,
