@@ -13,7 +13,7 @@ export function lineaDelViaje(v: Pick<VistaDeInvitacion, 'destino' | 'inicio' | 
 }
 
 /**
- * LO QUE VE QUIEN RECIBE EL ENLACE (cuentas parte 3, P7b): «Laura te invita a su Pase de Roma», las fechas, «Sin pagar nada» (si la invitación va con pase) y [Unirme].
+ * LO QUE VE QUIEN RECIBE EL ENLACE (cuentas parte 3, P7b): «Laura te invita a su Pase Roma», las fechas, «Sin pagar nada» (si la invitación va con pase) y [Unirme].
  * Si todavía no tiene cuenta, [Unirme] lleva a la pantalla de entrar y, al entrar, se une. Una invitación que no vale (anulada, sin plazas) lo dice y deja seguir.
  */
 export function InvitacionRecibida({ vista, onUnirme, onSeguir, ocupado = false, error = null }: { vista: VistaDeInvitacion; onUnirme: () => void; onSeguir: () => void; ocupado?: boolean; error?: string | null }) {

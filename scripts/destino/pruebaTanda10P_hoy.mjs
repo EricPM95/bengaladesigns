@@ -151,9 +151,9 @@ const ORO = ['rgb(111, 78, 55)', 'rgb(166, 124, 82)', 'rgb(233, 199, 122)']
   }
   debe(segunda >= 0 && Boolean(b2), 'cerrada', 'hay otra parada con historia')
   debe(Boolean(b2) && b2.modo === 'candado' && b2.candadoDentro, 'cerrada', 'las demás, con el candado dorado dentro del botón')
-  debe(Boolean(b2) && /Todas las historias, con el Pase de Roma/.test(b2.todas ?? ''), 'cerrada', `con el texto «Todas las historias, con el Pase de Roma» (${b2?.todas})`)
+  debe(Boolean(b2) && /Todas las historias, con el Pase Roma/.test(b2.todas ?? ''), 'cerrada', `con el texto «Todas las historias, con el Pase Roma» (${b2?.todas})`)
   const oro = await a.evaluar("(() => { const m = document.querySelector('[data-escuchar-todas] [data-marca]'); return m ? getComputedStyle(m).color : null })()")
-  debe(ORO.includes(oro), 'cerrada', `«Pase de Roma» en oro (${oro})`)
+  debe(ORO.includes(oro), 'cerrada', `«Pase Roma» en oro (${oro})`)
   await a.captura(png('historia_cerrada'))
   await cerrarFicha(a)
   // la suya sigue abierta

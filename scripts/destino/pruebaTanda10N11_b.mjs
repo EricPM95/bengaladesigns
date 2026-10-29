@@ -25,7 +25,7 @@ const textoDe = (a, sel) => a.evaluar(`(() => { const e = document.querySelector
 console.log('1. El código')
 {
   const bloque = sinComentarios(leer('src/components/route/dayDetail/AccommodationBlock.tsx'))
-  debe(/abrirPase/.test(bloque) && /CandadoRedondo/.test(bloque), 'candado', '[Ir] sin pase usa abrirPase() y el CandadoRedondo de G')
+  debe(/abrirAvisoPase/.test(bloque) && /CandadoRedondo/.test(bloque), 'candado', '[Ir] sin pase usa abrirPase() y el CandadoRedondo de G')
   debe(!/libre hacia/i.test(sinComentarios(leer('src/components/route/dayDetail/TarjetaLlegadaDias.tsx') + leer('src/lib/arrivalReturn.ts') + leer('shared/arrival/arrivalRules.js'))), 'vuelo', 'ningún «libre hacia» en la tarjeta del vuelo ni en sus textos')
   debe(/Aterrizas/.test(leer('src/components/route/dayDetail/TarjetaLlegadaDias.tsx')) && /Cómo llegar desde/.test(leer('src/components/route/dayDetail/TarjetaLlegadaDias.tsx')), 'vuelo', 'la tarjeta dice «Aterrizas a las…» y «Cómo llegar desde el aeropuerto»')
 }
@@ -86,6 +86,9 @@ console.log('3. Sin el pase')
     debe(c && c.candado, '02b', `[Ir] sin pase lleva el candado dorado sobre azul (${JSON.stringify(c)})`)
     await a.captura(foto('alojamiento_dias_02b'))
     await a.evaluar(`(() => { window.__pase = 0; window.addEventListener('trazo:pagar', () => { window.__pase++ }); document.querySelector('[data-alojamiento-dia="ir-candado"]').click(); return true })()`)
+    await esp(800)
+    debe(await a.evaluar("Boolean(document.querySelector('[data-aviso-pase=\"alojamiento\"]'))"), '02b', '(10N12) [Ir] sin pase abre el aviso pequeño')
+    await a.evaluar("document.querySelector('[data-aviso-pase-ver]')?.click()")
     await esp(800)
     const abierto = await a.evaluar('window.__pase')
     debe(abierto >= 1, '02b', `al tocar [Ir] sin pase se abre el aviso del pase (${abierto})`)

@@ -32,7 +32,7 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
   // (sin voz en español no hay nada que escuchar: ni el botón ni su candado)
   if (texto.trim().length === 0 || !hayVoz) return null
   // `libre`: la historia que suena gratis para todos (la muestra). El resto es de pago (Tanda 10H): sin el pase, el MISMO botón de siempre, con su diseño, y el candado dorado en el extremo derecho, dentro del botón, sobre marfil
-  // (como los demás cerrados). Al tocarlo dice «Incluido con el Pase de Roma» y abre el pase (`abrirPase`, la única función). Sin voz en el aparato no hace falta: no suena nada, solo invita.
+  // (como los demás cerrados). Al tocarlo dice «Incluido con el Pase Roma» y abre el pase (`abrirPase`, la única función). Sin voz en el aparato no hace falta: no suena nada, solo invita.
   const permitido = conPase || (sitio ? pruebaDelSitio !== 'cerrada' : libre)
   const nombreDelPaseDelSitio = nombreDelPase(sitio?.destino ?? destino ?? '')
   const candadoDentro = (

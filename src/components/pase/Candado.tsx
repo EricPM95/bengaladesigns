@@ -1,5 +1,6 @@
 import { Fragment, type CSSProperties } from 'react'
 import { abrirPase, usePasePintable } from '../../lib/pago'
+import { abrirAvisoPase } from '../../lib/avisoPase'
 import { useRouteStore } from '../../store/useRouteStore'
 
 /** El candado de Design (`Piezas/Pase Estilo` 01), tal cual: 13 px, trazo de 2,4 en marrón oscuro. */
@@ -136,21 +137,22 @@ export function CandadoRedondo({ tamano = 'pequeno', diametro, esquina = false, 
 /**
  * LA LINEA DEL PASE (Tanda 10N11 §1): la frase en gris de Design con su `CandadoRedondo` pequeño a la izquierda.
  * «Con el {pase}, adaptamos tu primer y tu último día a tus vuelos.» Solo se pinta a quien NO tiene el pase
- * (con pase, fuera: «con el pase, sin frases del pase») y no mientras no se sabe. Al tocarla se abre `abrirPase()`.
+ * (con pase, fuera: «con el pase, sin frases del pase») y no mientras no se sabe. Al tocarla se abre el aviso pequeño (`abrirAvisoPase(clave)`).
  */
-export function LineaDelPase({ texto, datos = 'linea-pase', className = '', destino, estilo }: { texto: string; datos?: string; className?: string; destino?: string; estilo?: CSSProperties }) {
+export function LineaDelPase({ texto, datos = 'linea-pase', className = '', destino, estilo, clave = 'generico' }: { texto: string; /** La clave del aviso pequeño que abre al tocarla (`avisoPaseTextos.ts`): lo bloqueado abre el aviso, no la lista. */ clave?: string; datos?: string; className?: string; destino?: string; estilo?: CSSProperties }) {
   const estado = usePasePintable()
   const deLaRuta = useDestinoDelPase()
   if (estado !== 'sin') return null
+  const abrir = () => abrirAvisoPase(clave, { destino: destino ?? (deLaRuta || undefined) })
   return (
     <span
       role="button"
       tabIndex={0}
-      onClick={abrirPase}
+      onClick={abrir}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          abrirPase()
+          abrir()
         }
       }}
       data-linea-pase={datos}

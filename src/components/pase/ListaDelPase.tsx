@@ -4,7 +4,7 @@ import textos from '../../../data/pase/textos.json'
 import { configDelPase, crearPagoDelPase, irAPagar, type ConfigPase } from '../../lib/pagoPase'
 import { usePaseEstado } from '../../lib/paseEstado'
 import { nombreDeMoneda } from '../../lib/dinero'
-import { guardarMoneda, monedaGuardada, monedaUsable, textoEnMoneda } from '../../lib/precioMoneda'
+import { guardarMoneda, monedaGuardada, monedaUsable } from '../../lib/precioMoneda'
 import { hojaCuantosSois } from '../../lib/precioPelicula'
 import { monedaDelViajero, useCambio } from '../../lib/useMoneda'
 import { monedaElegida } from '../../lib/moneda'
@@ -17,7 +17,7 @@ import { SECCIONES_DE_LA_LISTA } from './lista/disenoLista'
  * (los dibujos y los textos salen de `lista/disenoLista.ts`, que genera `scripts/destino/generarPaseLista.mjs` desde la pieza de Design). Lo abre SIEMPRE todo lo que antes abría la película (`abrirPase()`: la pastilla de RUTA, el aviso del pase, las cajas, los candados…).
  *   · `desde="lista"`: la lista; `"compra"`: la lista con «¿Cuántos sois?» ya abierta.
  *   · Los precios (los tres de la lista y los de «¿Cuántos sois?») son los de la app (data/pase/precios.json, que da el servidor); [Elegir mi pase] abre «¿Cuántos sois?» y [Comprar] crea el pago como siempre.
- *   · Con el pase comprado: «✓ Tu Pase de {Destino} está activo», sin precios ni botón. El ✕ cierra y vuelve a donde se estaba.
+ *   · Con el pase comprado: «✓ Tu Pase Roma está activo», sin precios ni botón fijo. El ✕ cierra y vuelve a donde se estaba.
  */
 const ORO = '#E9C77A'
 const CREMA = '#FBF3E2'
@@ -77,25 +77,7 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
     setError(r.error)
   }
 
-  const en = (v: number) => textoEnMoneda(v, moneda)
-  const uno = planes.find((p) => p.id === 'uno')
-  const duo = planes.find((p) => p.id === 'duo')
-  const grupo = planes.find((p) => p.id === 'grupo')
-  const { desde: desdeGrupo } = hojaCuantosSois(planes, 1, moneda)
   const cuantos = hojaCuantosSois(planes, n, moneda)
-
-  // Con otra moneda, los euros pequeños debajo (como en «¿Cuántos sois?»).
-  const pequenoEuros = (v: number, sufijo = '') => (moneda ? <span style={{ font: "500 11px 'Geist'", color: 'rgba(251,243,226,.55)', whiteSpace: 'nowrap' }}>{`${textoEnMoneda(v, null)}${sufijo}`}</span> : null)
-
-  const tarjetaPlan = (resaltada: boolean): CSSProperties => ({
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: '14px 16px',
-    borderRadius: 18,
-    background: resaltada ? 'linear-gradient(135deg,rgba(233,199,122,.2),rgba(233,199,122,.07))' : 'rgba(255,253,248,.05)',
-    border: resaltada ? `1.5px solid ${ORO}` : '1px solid rgba(233,199,122,.28)',
-  })
 
   const monedas = ['EUR', ...Object.keys(cambio?.tasas ?? {}).sort()]
   if (codigoMoneda && !monedas.includes(codigoMoneda)) monedas.unshift(codigoMoneda)
@@ -150,53 +132,19 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
             {conPase ? (
               <span data-pase-activo="1" style={{ marginTop: 22, minHeight: 58, borderRadius: 18, background: 'rgba(43,127,69,.2)', border: '1px solid #4FAE6B', color: '#8EDBA3', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 14px', font: "600 15px 'Geist'" }}>{`✓ Tu ${nombre} está activo`}</span>
             ) : (
-              <>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginTop: 22 }}>
-                  {uno && (
-                    <div style={tarjetaPlan(false)}>
-                      <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <span style={{ font: "600 15px 'Geist'" }}>1 persona</span>
-                      </span>
-                      <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-                        <b style={{ font: `400 26px/1 ${SERIF}`, color: CREMA }}>{en(uno.precio_total ?? 0)}</b>
-                        {pequenoEuros(uno.precio_total ?? 0)}
-                      </span>
-                    </div>
-                  )}
-                  {duo && (
-                    <div style={tarjetaPlan(true)}>
-                      <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <span style={{ font: "600 15px 'Geist'" }}>Pase Dúo · 2 personas</span>
-                        {duo.precio_por_persona != null && <span style={{ font: "400 12.5px 'Geist'", color: ORO }}>{`${en(duo.precio_por_persona)} cada uno`}</span>}
-                      </span>
-                      <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                        {duo.precio_tachado != null && <s style={{ font: "400 12px 'Geist'", opacity: 0.5 }}>{en(duo.precio_tachado)}</s>}
-                        <b style={{ font: `400 26px/1 ${SERIF}`, color: '#F7E8BC' }}>{en(duo.precio_total ?? 0)}</b>
-                        {pequenoEuros(duo.precio_total ?? 0)}
-                      </span>
-                    </div>
-                  )}
-                  {grupo && (
-                    <div style={tarjetaPlan(false)}>
-                      <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <span style={{ font: "600 15px 'Geist'" }}>{`Pase Grupo · ${desdeGrupo} o más`}</span>
-                      </span>
-                      <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-                        <b style={{ font: `400 26px/1 ${SERIF}`, color: CREMA, textAlign: 'right' }}>{`${en(grupo.precio_por_persona ?? 0)} cada uno`}</b>
-                        {pequenoEuros(grupo.precio_por_persona ?? 0, ' cada uno')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <span role="button" tabIndex={0} data-elegir-pase="1" onClick={() => setHoja('buy')} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setHoja('buy')} style={{ ...BOTON_ORO, marginTop: 20, height: 58, borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 16.5px 'Geist'", cursor: 'pointer' }}>
-                  Elegir mi pase
-                </span>
-              </>
+              <span aria-hidden="true" data-lista-espacio-boton="1" style={{ height: 'calc(58px + 28px + env(safe-area-inset-bottom, 0px))', flex: 'none' }} />
             )}
           </div>
         </div>
       </div>
 
+      {!conPase && (
+        <div data-elegir-pase-fijo="1" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 8, padding: '34px 22px max(16px, env(safe-area-inset-bottom))', background: 'linear-gradient(180deg,rgba(12,16,32,0),rgba(12,16,32,.92) 55%)', pointerEvents: 'none' }}>
+          <span role="button" tabIndex={0} data-elegir-pase="1" onClick={() => setHoja('buy')} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setHoja('buy')} style={{ ...BOTON_ORO, pointerEvents: 'auto', maxWidth: 436, margin: '0 auto', height: 58, borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 16.5px 'Geist'", cursor: 'pointer' }}>
+            Elegir mi pase
+          </span>
+        </div>
+      )}
     <button
       type="button"
       onClick={onCerrar}

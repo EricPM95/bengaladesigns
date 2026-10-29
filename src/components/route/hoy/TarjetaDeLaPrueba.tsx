@@ -8,7 +8,7 @@ const ETIQUETA_DE_PRUEBA = 'Tu día de prueba'
 const CON_ETIQUETA = new Set<FilaDeHoy['tipo']>(['prueba_otro_dia', 'prueba_primer_dia', 'manana_es_prueba', 'hoy_es_prueba', 'prueba_mas_adelante', 'tras_prueba'])
 
 /**
- * LA FRANJA DEL DÍA DE PRUEBA (Tanda 10H): arriba de HOY entero, el día de la prueba (de 00:00 a 23:59, hora del destino): «Hoy es tu día de prueba: tienes el Pase de Roma completo, gratis, hasta medianoche. Disfrútalo.»
+ * LA FRANJA DEL DÍA DE PRUEBA (Tanda 10H): arriba de HOY entero, el día de la prueba (de 00:00 a 23:59, hora del destino): «Hoy es tu día de prueba: tienes el Pase Roma completo, gratis, hasta medianoche. Disfrútalo.»
  */
 export function FranjaDiaDePrueba({ fila }: { fila: FilaDeHoy }) {
   if (!fila.texto) return null
@@ -24,8 +24,8 @@ export function FranjaDiaDePrueba({ fila }: { fila: FilaDeHoy }) {
 /**
  * LO QUE DICE HOY SIN PASE sobre la prueba, según la fila de la tabla (`filaDeHoySinPase`, src/lib/diaDePrueba.ts):
  *  - antes del viaje (desde 5 días antes, con la prueba sin usar): una tarjeta clara debajo de la cuenta atrás y de «Hoy te dará»;
- *  - durante y después del viaje: la tarjeta oscura con el texto de la fila y, si toca, [Ver el Pase de Roma].
- * El destino y el pase salen siempre de los datos; «HOY» y «Pase de X» van en oro (`TextoConPase`).
+ *  - durante y después del viaje: la tarjeta oscura con el texto de la fila y, si toca, [Ver el Pase Roma].
+ * El destino y el pase salen siempre de los datos; «HOY» y «Pase X» van en oro (`TextoConPase`).
  */
 export function TarjetaDeLaPrueba({ fila, destino, enOscuro = false }: { fila: FilaDeHoy; destino: string; enOscuro?: boolean }) {
   if (!fila.texto || fila.tipo === 'hoy_es_prueba') return null

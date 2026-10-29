@@ -2,7 +2,7 @@ import { nombreDelPase } from './nombrePase'
 
 /**
  * EL DÍA DE PRUEBA EN HOY SIN PASE (Tanda 10H; reglas de Eric en docs/dias/APUNTES_TRAS_TANDA7.md §33 y la tabla del prompt). Pura: de lo que sabe la app (la fase del viaje, hoy, las fechas y lo que dice el servidor de la prueba)
- * dice QUÉ sale en HOY y con qué textos. El destino, el día y el pase salen siempre de los datos («Roma», «sábado 25», «Pase de Roma»). Nada de esto toca el servidor: la prueba (una por cuenta, para siempre; se gasta
+ * dice QUÉ sale en HOY y con qué textos. El destino, el día y el pase salen siempre de los datos («Roma», «sábado 25», «Pase Roma»). Nada de esto toca el servidor: la prueba (una por cuenta, para siempre; se gasta
  * al usar HOY; la pregunta de las 12:00) la decide `server/logros/pase.js`; aquí solo se cuenta.
  *
  *   antes_sin_prueba        más de 5 días antes del viaje, o la prueba ya se usó en otro viaje: la cuenta atrás y lo que tendrás, SIN hablar de la prueba.
@@ -12,7 +12,7 @@ import { nombreDelPase } from './nombrePase'
  *   hoy_es_prueba           el día de la prueba, de las 00:00 a las 23:59 (hora del destino): HOY entero y, arriba, la franja «Hoy es tu día de prueba…».
  *   prueba_mas_adelante     durante el viaje, la prueba es otro día más adelante: «Tu día de prueba con HOY es el miércoles 28…».
  *   tras_prueba             durante el viaje, después de la prueba: «¿Qué tal ayer con HOY?…» y [Ver el Pase].
- *   parte_del_pase          durante el viaje, la prueba ya se usó en otro viaje: «Tu modo Hoy es parte del Pase de Roma.».
+ *   parte_del_pase          durante el viaje, la prueba ya se usó en otro viaje: «Tu modo Hoy es parte del Pase Roma.».
  *   viaje_terminado         después del viaje: nada de la prueba.
  *   pon_fechas              sin fechas: «Pon tus fechas» (sin prueba hasta que haya fechas).
  */
@@ -49,9 +49,9 @@ export type TipoDeFila =
 
 export interface FilaDeHoy {
   tipo: TipoDeFila
-  /** El texto de la tarjeta de la prueba (sin las marcas «HOY» y «Pase de X» resaltadas: las resalta `TextoConPase`). null = no hay tarjeta. */
+  /** El texto de la tarjeta de la prueba (sin las marcas «HOY» y «Pase X» resaltadas: las resalta `TextoConPase`). null = no hay tarjeta. */
   texto: string | null
-  /** ¿Sale [Ver el Pase de X]? */
+  /** ¿Sale [Ver el Pase X]? */
   verElPase: boolean
 }
 

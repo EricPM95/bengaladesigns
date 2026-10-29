@@ -6,7 +6,8 @@ import { ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
 import { Icono } from '../../ui/Icono'
 import { useDineroDeReserva } from '../reservas/DineroDeReserva'
 import type { Importe } from '../../../lib/dinero'
-import { abrirPase, usePasePintable } from '../../../lib/pago'
+import { usePasePintable } from '../../../lib/pago'
+import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { CandadoRedondo, LineaDelPase } from '../../pase/Candado'
 import { BotonComoLlegarAlojamiento } from './BotonComoLlegarAlojamiento'
 
@@ -163,11 +164,11 @@ export function HojaTuAlojamiento({
           <div
             role="button"
             tabIndex={0}
-            onClick={abrirPase}
+            onClick={() => abrirAvisoPase('alojamiento')}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault()
-                abrirPase()
+                abrirAvisoPase('alojamiento')
               }
             }}
             data-alojamiento-bloque-pase
@@ -183,7 +184,7 @@ export function HojaTuAlojamiento({
               <span style={ETIQUETA}>Dirección del hotel</span>
               <span className="text-[13px] text-text/45">Escribe la dirección</span>
             </span>
-            <LineaDelPase datos="alojamiento-hoja" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />
+            <LineaDelPase clave="alojamiento" datos="alojamiento-hoja" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />
           </div>
         </div>
       )}

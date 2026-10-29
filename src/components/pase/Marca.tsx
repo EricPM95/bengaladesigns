@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
 
 /**
- * LA MARCA EN LOS TEXTOS (Tanda 10H, Eric 24-oct): «HOY» y «Pase de {Destino}» van SIEMPRE en oro, para que se reconozcan como algo de la app. Una sola pieza, que se usa dentro de cualquier frase, con la regla de
+ * LA MARCA EN LOS TEXTOS (Tanda 10H, Eric 24-oct): «HOY» y «Pase {Destino}» van SIEMPRE en oro, para que se reconozcan como algo de la app. Una sola pieza, que se usa dentro de cualquier frase, con la regla de
  * lectura de Marca JUTRIP: en texto pequeño, el oro profundo (#6F4E37); en títulos de 18 px o más, el oro oscuro (#A67C52); sobre los paneles oscuros, el oro pálido (#E9C77A).
- *   <Marca>HOY</Marca>      <Marca grande>Pase de Roma</Marca>      <Marca oscuro>HOY</Marca>
- * Para frases ya escritas (con «HOY» o «Pase de X» dentro) está `TextoConPase`, que reparte el texto y usa esta pieza.
+ *   <Marca>HOY</Marca>      <Marca grande>Pase Roma</Marca>      <Marca oscuro>HOY</Marca>
+ * Para frases ya escritas (con «HOY» o «Pase X» dentro) está `TextoConPase`, que reparte el texto y usa esta pieza.
  */
 export const ORO_PEQUENO = '#6F4E37'
 export const ORO_TITULO = '#A67C52'

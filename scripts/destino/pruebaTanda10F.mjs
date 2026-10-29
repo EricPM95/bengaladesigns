@@ -130,7 +130,7 @@ debe(mal.length === 0 && bd.aplicadas.some((f) => f.startsWith('0031_')), 'migra
   }
   // Lo que se queda.
   const pase = (await bd.servidor(() => q('select destino, trip_id from public.passes where id = $1', [e.pase])))[0]
-  debe(pase && pase.destino === 'Roma' && pase.trip_id === null, 'queda', 'el Pase de Roma sigue (solo pierde la referencia al viaje)')
+  debe(pase && pase.destino === 'Roma' && pase.trip_id === null, 'queda', 'el Pase Roma sigue (solo pierde la referencia al viaje)')
   const logro = (await bd.servidor(() => q("select trip_id from public.achievements where user_id = $1 and logro = 'primer_sello'", [e.O])))[0]
   debe(logro && logro.trip_id === null, 'queda', 'el logro ganado sigue (trip_id a null)')
   const hecho = (await bd.servidor(() => q("select trip_id, foto_id from public.logro_hechos where user_id = $1", [e.O])))[0]
@@ -241,7 +241,7 @@ await app.esp(700)
 let hoja = await texto('[data-hoja="eliminar-viaje"]')
 debe(/¿Eliminar tu viaje a Florencia\?/.test(hoja) && /13 – 16 mar 2026/.test(hoja), 'hoja', `la hoja pregunta «¿Eliminar tu viaje a Florencia?» con sus fechas (${hoja.split('\n').slice(0, 3).join(' | ')})`)
 debe(/Se borra/i.test(hoja) && /la ruta, los días, las reservas que has apuntado y las fotos de este viaje/i.test(hoja), 'hoja', 'dice lo que se borra: la ruta, los días, las reservas y las fotos')
-debe(/Se queda/i.test(hoja) && /logros, sellos y EXP/.test(hoja) && /Pase de Florencia/.test(hoja) && /por destino, no por viaje/.test(hoja), 'hoja', 'dice lo que se queda: logros, sellos y EXP y el Pase (se paga por destino, no por viaje)')
+debe(/Se queda/i.test(hoja) && /logros, sellos y EXP/.test(hoja) && /Pase Florencia/.test(hoja) && /por destino, no por viaje/.test(hoja), 'hoja', 'dice lo que se queda: logros, sellos y EXP y el Pase (se paga por destino, no por viaje)')
 debe(/Tienes 155 fotos en este viaje/.test(hoja) && (await hay('[data-boton-hoja="guardar-fotos"]')), 'hoja', 'con fotos: «Tienes 155 fotos en este viaje» y [Guardar en mi galería] antes de eliminar')
 debe(!(await hay('[data-aviso-eliminar]')), 'hoja', 'un viaje cerrado y sin invitados no lleva avisos de más')
 debe((await hay('[data-confirmar-eliminar]')) && (await hay('[data-boton-hoja="cancelar-eliminar"]')) && (await app.evaluar("getComputedStyle(document.querySelector('[data-confirmar-eliminar]')).backgroundColor")) === 'rgb(204, 39, 46)', 'hoja', '[Eliminar viaje] en el rojo de los avisos importantes y [Cancelar]')

@@ -3,7 +3,7 @@
  *
  * Qué pasa en Supabase con cada cosa ligada al viaje (migraciones 0018 a 0031):
  *   SE BORRA con la fila de `trips` (`on delete cascade`): trip_members, trip_invitations, trip_recommendations, stop_visits, logro_avisos.
- *   SE QUEDA (`on delete set null`, solo pierde la referencia al viaje): passes (el Pase de Roma), achievements y logro_hechos (los logros, sellos y EXP) y hoy_prueba.
+ *   SE QUEDA (`on delete set null`, solo pierde la referencia al viaje): passes (el Pase Roma), achievements y logro_hechos (los logros, sellos y EXP) y hoy_prueba.
  *   NO cuelga de `trips` (`trip_photos.trip_id` es el id de la RUTA, texto, sin clave ajena): las fotos y sus archivos de Storage no se borran solos. Por eso aquí se borran a mano, ANTES que el viaje:
  *     1. los archivos del almacén (la grande y la pequeña de cada foto) y 2. las filas de `trip_photos` (y, en cascada, `trip_photo_meta`).
  *   Las fotos de OTRAS personas del mismo viaje (los invitados) solo las puede borrar su dueña: con la migración 0031 un disparador de `trips` las apunta en `fotos_por_borrar` y cada persona

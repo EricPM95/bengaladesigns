@@ -3210,3 +3210,121 @@ Se probó con dos cuentas reales contra el Supabase real («Eric» administrador
 
 - ✅ Hecho — Apartado «10N11» en INFORME_TANDA10B.md (pruebas, lo que no se pudo hacer como Design, migración) y esta lista al final No hace falta migración.  
   *Dónde:* No es de móvil.
+
+
+## 10N12 — Retoques de la 10N11: el aviso pequeño, la lista del pase sin precios y con el botón fijo, HOY sin pase completo, el botón de la cama en HOY y «Pase Roma» (29-oct)
+
+**Migración: ninguna.** No se ha tocado el motor de rutas.
+
+### 1. Lo bloqueado abre el aviso pequeño, no la lista
+- **Pasados al aviso pequeño** (`abrirAvisoPase`, textos por destino en `src/lib/avisoPaseTextos.ts`): el bloque gris «¿Dónde te alojas?» / «Dirección del hotel» de la hoja «Tu alojamiento»; el [Ir] con candado del día 1 de DÍAS; `LineaDelPase` (con una `clave` por tipo: la línea gris de la tarjeta de alojamiento de RESERVAS —dos sitios—, la de la hoja del vuelo y la de la hoja «Tu alojamiento»); y la vitrina de logros cerrada sin pase.
+- **Ya abrían el aviso pequeño** (sin cambios): EXPLORAR Baños y Fuentes, «Cerca de ti», «Escuchar historia» (ficha y HOY) y la segunda foto de «Tus recuerdos».
+- **Siguen abriendo la lista a propósito** (son para ver el pase): la pastilla «Pase Roma» de RUTA, el [Ver] de la caja azul (`Candado`), [Ver el Pase Roma] de HOY sin pase, de «Tu último día» y del propio aviso, y la tarjeta del pase de RESERVAS.
+- **Textos del aviso:** alojamiento «Con el Pase Roma, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés.»; vuelo «Con el Pase Roma, adaptamos tu primer y tu último día a tus vuelos.». **El texto del aviso de Logros** («Con el Pase Roma, cada sitio que ves suma a tus logros del viaje.») lo escribió el agente porque no había ninguno en el prompt.
+
+### 2. La lista del pase: sin precios y con el botón fijo
+[Elegir mi pase] va fijo abajo (con degradado, `padding-bottom` con safe-area del iPhone y hueco al final para no tapar el último punto), sin precio, siempre a la vista; fuera el bloque de precios del final y el segundo botón (un solo botón). Los precios, solo en «¿Cuántos sois?». Con pase, sin botón y «✓ Tu Pase Roma está activo». El botón fijo lleva un degradado oscuro encima de los últimos puntos que Design no tiene.
+
+### 3. HOY sin pase, completo
+Sigue la pantalla de Design (`Pase Lista` 2 y 2b) y vuelve arriba lo de antes, con el estilo de la pantalla: sin fechas «Pon tus fechas» (con su botón), antes del viaje la cuenta atrás, después «Tu viaje ha terminado», y los avisos del día de prueba («Te regalamos un día…», «Mañana es tu día de prueba», «¿Qué tal ayer con HOY?», «Tu modo Hoy es parte del Pase Roma») cuando tocan. Fuera la ✕.
+
+### 4. El botón de la cama en HOY
+Botón redondo de 40 px con una cama de trazo fino gris, fijo arriba a la derecha junto al título del día (la zona libre de HOY; el título deja sitio con `pr-12`), solo con pase y en los días del viaje (llegada, medio, vuelta y excursión; no antes, ni después, ni sin fechas). Con dirección abre el camino (el mismo enlace de Google Maps que [Cómo llegar a tu alojamiento]); con pase y sin dirección abre la hoja «Tu alojamiento». Las tarjetas de empezar y acabar el día no se tocaron. El día de prueba sin pase que enseña HOY completo también lleva la cama.
+
+### 5. Siempre «Pase Roma»
+`nombreDelPase` da «Pase {Destino}» sin «de». Quitado «Pase de {Destino}» en `src`, `shared/avisos/textos.js` y `server/pagos.js` (error «Ya tienes el Pase Roma» y nombre del producto de pago), y en las pruebas. `TextoConPase` marca en oro «Pase {Destino}» (no «Pase Dúo», «Pase Grupo» ni «Pase Individual»). Se deja «Pase de 1 persona» en `precioPelicula.ts` (la fila de «¿Cuántos sois?»). La prueba comprueba que no hay «Pase de Roma» en `src`, `data`, `shared` ni `server`. No se ha probado con un viaje real a otro destino.
+
+### 6. Con varios destinos
+Se queda como está; apuntado en `REGLAS_DE_LA_APP.md` (apartado 6): cada estancia tendrá su zona y su dirección cuando se hagan los multidestinos.
+
+### Pruebas (solo lo tocado + pruebaJutrip; sin batería completa; hasta 2 Chrome a la vez)
+- **Nuevas:** `pruebaTanda10N12_a` (15), `_b` (63), `_c` (28) = 106 comprobaciones, 0 fallos.
+- **Pasadas en 0 fallos:** `pruebaJutrip` (129), `pruebaTanda10N11_a/_b/_c/_g`, `pruebaTanda10B` (139), `10F` (88), `10G` (78), `10H` (52), `10I`, `10J`, `10N3_apertura`, `10N5_pase`, `10N6_avisopase` (33), `10N8_ficha`, `10N9_pantallas`, `10P_pase`, `10P_hoy`, `10N4_flotantes`, `6t`, `6v`, `6z3`, `7_hoy` (126), `Cuentas3`, `10N10_avisos`, `10N10_reservas`.
+- Con 2 Chrome a la vez, 9 salieron en MAL por la carga (`__rutaPrueba is not a function`, esperas largas): las repetí sueltas y pasaron. Dos fallaban de verdad por lo pedido y se actualizaron: `pruebaJutrip` (el nombre del producto de pago ahora es «· Pase {destino}») y `pruebaTanda10N11_g` (`LineaDelPase` abre el aviso pequeño). `pruebaTanda7_hoy` tuvo 2 fallos por un error mío del botón de la cama (la clase del contenedor contenía `data-hoy-titulo-del-dia`); arreglado.
+- Pruebas antiguas ajustadas por lo pedido: `10G`, `10N11_a`, `10N11_b` (ahora sale el aviso antes de la lista), `10N11_c` y `10P_pase` (la lista no lleva precios), y las que decían «Pase de Roma».
+- Typecheck `npx tsc -p tsconfig.app.json --noEmit`: limpio.
+
+### A medias / sin ver
+- Sin ver en un iPhone real: el botón fijo de la lista con la barra de abajo; el botón de la cama con un título largo.
+- Faltan las capturas de Design al lado de la lista y de HOY sin pase, y la del aviso a 375×667.
+- «Pase {Destino}» con otro destino: sin probar con un viaje real.
+- La hora (mañana/noche) del botón de la cama: no depende de la hora, no simulada.
+
+### Dudas para ti
+1. El texto del aviso de Logros lo escribió el agente: ¿lo dejo o me das otro?
+2. La caja azul del pase (el [Ver]) abre la lista: ¿también el aviso pequeño?
+3. El degradado oscuro del botón fijo de la lista no está en Design: ¿lo quito?
+4. La cama sale solo en los días del viaje (no antes ni después ni sin fechas) y también en el día de prueba sin pase: ¿vale?
+5. El título largo de HOY queda justo al lado de la cama: ¿otro sitio?
+
+### Lista de comprobación 10N12
+
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10N12.md e incluido en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Reglas de la app: las nuevas de esta tanda, añadidas a docs/REGLAS_DE_LA_APP.md «Pase Roma» siempre, lista sin precios, HOY sin pase, botón de la cama y lo pendiente de varios destinos.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La película del pase no se toca; hasta 4 agentes, un servidor, hasta 2 Chrome; no apagar el PC Se reinició el PC antes de la tanda y se arrancaron la API y el Vite. El PC no se apaga.  
+  *Dónde:* No es de móvil.
+
+**1 · Lo bloqueado abre el aviso pequeño**
+
+- ✅ Hecho — El bloque gris «¿Dónde te alojas?» / «Dirección del hotel» de la hoja «Tu alojamiento» y el [Ir] con candado del día 1 de DÍAS abren el aviso pequeño Su [Ver el Pase Roma] abre la lista.  
+  *Dónde:* Cuenta sin pase: RESERVAS > Alojamiento > Tu alojamiento; DÍAS > día 1.  *Captura:* `10n12_aviso_01_hoja_alojamiento.jpg`
+- ✅ Hecho — Repaso de todos los sitios donde algo bloqueado abría la lista directamente Pasados al aviso pequeño: LineaDelPase (línea gris de la tarjeta de alojamiento de RESERVAS, de la hoja del vuelo y de la hoja «Tu alojamiento») y la vitrina de logros cerrada. Ya lo abrían: EXPLORAR Baños/Fuentes, Cerca de ti, Escuchar historia, segunda foto de Tus recuerdos. Siguen abriendo la lista, a propósito, los que son para ver el pase: pastilla «Pase Roma» de RUTA, [Ver] de la caja azul, [Ver el Pase Roma] de HOY sin pase y del aviso, tarjeta del pase de RESERVAS y de «Tu último día».  
+  *Dónde:* Cuenta sin pase: RESERVAS, EXPLORAR, logros.
+- ✅ Hecho — Los textos del aviso (alojamiento y vuelo), con «Desbloquéalo con el Pase Roma» y [Ver el Pase Roma] Literales del prompt. El texto del aviso de Logros («Con el Pase Roma, cada sitio que ves suma a tus logros del viaje.») lo escribió el agente porque no había ninguno: dime si lo cambias.  
+  *Dónde:* Cuenta sin pase.
+
+**2 · La lista del pase**
+
+- ✅ Hecho — [Elegir mi pase] fijo abajo, siempre a la vista, sin precio; un solo botón El botón fijo lleva un degradado oscuro encima de los últimos puntos que Design no tiene: dime si lo quito.  
+  *Dónde:* RUTA > pastilla «Pase Roma» (cuenta sin pase), bajar la lista.  *Captura:* `10n12_lista_1_arriba.jpg`
+- ✅ Hecho — Fuera los precios de la lista (bloque del final y [Elegir mi pase] del final)  
+  *Dónde:* Final de la lista.  *Captura:* `10n12_lista_3_final.jpg`
+- ✅ Hecho — Los precios solo en «¿Cuántos sois?», que se abre al tocar [Elegir mi pase]  
+  *Dónde:* Lista > [Elegir mi pase].  *Captura:* `10n12_lista_4_cuantos.jpg`
+- ⚠️ A medias — El botón fijo no tapa el último punto ni pisa la barra del iPhone Medido en 390×844 y 375×667 (hueco al final y safe-area); falta verlo en un iPhone real.  
+  *Dónde:* Final de la lista, en el iPhone.  *Captura:* `10n12_lista_375_final.jpg`
+- ✅ Hecho — Con el pase: sin botón fijo y «✓ Tu Pase Roma está activo»  
+  *Dónde:* Cuenta con pase.  *Captura:* `10n12_lista_5_con_pase.jpg`
+
+**3 · HOY sin pase, completo**
+
+- ✅ Hecho — Se queda lo de Design (HOY, tu guía del día, los puntos, la caja del día de prueba, [Ver el Pase Roma]) y vuelve arriba lo de antes: «Pon tus fechas», la cuenta atrás, «Tu viaje ha terminado» y los avisos del día de prueba  
+  *Dónde:* HOY, cuenta sin pase (sin fechas / antes / después del viaje / día de prueba).  *Captura:* `10n12_hoy_sin_pase_1_cuenta_atras.jpg`
+- ✅ Hecho — Fuera la ✕ de arriba  
+  *Dónde:* HOY sin pase.  *Captura:* `10n12_hoy_sin_pase_6_375.jpg`
+
+**4 · El botón del alojamiento en HOY**
+
+- ⚠️ A medias — Botón pequeño, redondo, con una cama, siempre a la vista en HOY (todos los días del viaje, a cualquier hora), arriba a la derecha junto al título Sale con pase en los días del viaje (llegada, medio, vuelta, excursión), no antes ni después, ni sin fechas. No se simuló la hora (no depende de ella). El día de prueba sin pase que enseña HOY completo también la lleva.  
+  *Dónde:* HOY con pase y un viaje dentro de sus fechas.  *Captura:* `10n12_cama_hoy_1.jpg`
+- ✅ Hecho — Con dirección abre el camino; con pase y sin dirección abre la hoja «Tu alojamiento»; sin pase no sale; las tarjetas de empezar y acabar el día se quedan El día de vuelta, al empezar, tampoco sale la tarjeta (solo el botón).  
+  *Dónde:* HOY con pase.  *Captura:* `10n12_cama_hoy_hoja.jpg`
+
+**5 · Siempre «Pase Roma»**
+
+- ✅ Hecho — Fuera «Pase de Roma» en toda la app; con otro destino «Pase {Destino}» Comprobado por prueba en src, data, shared y server (incluidos los avisos del servidor). No probado con un viaje real a otro destino. Se deja «Pase de 1 persona» en «¿Cuántos sois?» (es la fila de 1 persona, no el nombre del pase).  
+  *Dónde:* Toda la app.
+
+**6 · Con varios destinos**
+
+- ✅ Hecho — Se queda como está y se apunta como pendiente en REGLAS_DE_LA_APP.md (apartado 6)  
+  *Dónde:* No es de móvil.
+
+**7 · La prueba**
+
+- ✅ Hecho — Solo las pruebas de lo tocado y pruebaJutrip, en 0 fallos Pasadas las pruebas de lo tocado más pruebaJutrip (129/0), todas en 0 fallos (9 repetidas sueltas por la carga de 2 Chrome). Detalle en el informe.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Prueba nueva pruebaTanda10N12 106 comprobaciones (a 15, b 63, c 28), 0 fallos.  
+  *Dónde:* No es de móvil.
+- ⚠️ A medias — Capturas en docs/dias/capturas_jutrip/ y en REPASO_10N12.html, a 390×844 y 375×667 Faltan las capturas de Design al lado de la lista y de HOY sin pase, y la del aviso a 375×667.  
+  *Dónde:* Esta página.
+
+**8 · El informe**
+
+- ✅ Hecho — Apartado «10N12» en INFORME_TANDA10B.md y esta lista al final No hace falta migración.  
+  *Dónde:* No es de móvil.

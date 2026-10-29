@@ -5,7 +5,7 @@ import { BotonHoja, Hoja } from '../ui/Hoja'
 
 /**
  * DOS VIAJES AL MISMO DESTINO QUE SE PISAN (cuentas parte 3, diseño «Pase y cuenta» P8b y P9; la lógica de qué viajes se pisan es de la 8A2).
- *   P8b, el aviso de los 10 días, ya dentro de la app: «En 10 días empieza tu viaje a Roma. Tu Pase de Roma está activo para el viaje del 16 al 19 de octubre. Si quieres cambiarlo,
+ *   P8b, el aviso de los 10 días, ya dentro de la app: «En 10 días empieza tu viaje a Roma. Tu Pase Roma está activo para el viaje del 16 al 19 de octubre. Si quieres cambiarlo,
  *       ahora es el momento.» con [Es este] y [Cambiar al del 16 al 20].
  *   P9, el primer día si no contestó: «Tienes dos viajes a Roma. ¿Cuál haces?» con un botón por viaje y «El otro pasa a «Viajes guardados», sin borrarse.»
  * `elegir(id)` deja ese viaje y pasa el otro a «Viajes guardados». La hoja se puede cerrar: la app avisa, nunca prohíbe (P9 volverá a preguntar otro día).
@@ -50,7 +50,7 @@ export function HojaDosViajes({
         modo === 'p9' ? (
           `Tienes dos viajes a ${destino}. ¿Cuál haces?`
         ) : (
-          <TextoConPase texto={`En 10 días empieza tu viaje a ${destino}. Tu Pase de ${destino} está activo para el viaje del ${rActual}. Si quieres cambiarlo, ahora es el momento.`} />
+          <TextoConPase texto={`En 10 días empieza tu viaje a ${destino}. Tu Pase ${destino} está activo para el viaje del ${rActual}. Si quieres cambiarlo, ahora es el momento.`} />
         )
       }
       datos={modo === 'p9' ? 'P9' : 'P8b'}

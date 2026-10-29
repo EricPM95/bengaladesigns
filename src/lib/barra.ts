@@ -2,7 +2,7 @@ import type { RouteMode } from './types'
 
 /**
  * LA BARRA DE ABAJO SEGÚN LA VERSIÓN (Tanda 6z6, decidido por Eric el 10-oct-2026). Una sola regla, en un solo sitio:
- *  - Cinco pestañas siempre (Hoy · Ruta · Días · Explorar · Reservas). Hasta la 10B la gratis no llevaba Hoy; desde la 10C sí (sin pase, HOY enseña lo de antes del viaje y [Ver el Pase de Roma]).
+ *  - Cinco pestañas siempre (Hoy · Ruta · Días · Explorar · Reservas). Hasta la 10B la gratis no llevaba Hoy; desde la 10C sí (sin pase, HOY enseña lo de antes del viaje y [Ver el Pase Roma]).
  * La barra nunca cambia con el momento del viaje (antes, durante, después). Si el estado guardado dice `mode: 'today'` y la versión es la gratis, se ve 'route'.
  */
 

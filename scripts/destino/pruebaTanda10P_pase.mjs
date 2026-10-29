@@ -200,6 +200,11 @@ for (const [moneda, orden] of [['EUR', '06'], ['MXN', '07'], ['USD', '08'], ['CO
   await abrirPase(a)
   await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await esp(600)
+  const lista = await texto(a)
+  debe(!/€|≈/.test(lista), 'moneda', `${moneda}: (10N12) la lista no enseña ningún precio`)
+  await a.captura(foto(`${orden}_final_${moneda}`))
+  await clic(a, 'Elegir mi pase')
+  await esp(500)
   const fin = await texto(a)
   if (moneda === 'EUR') {
     debe(/6,99 €/.test(fin) && !/≈/.test(fin), 'eur', 'EUR: el final con «6,99 €» y sin «≈»')
@@ -208,9 +213,6 @@ for (const [moneda, orden] of [['EUR', '06'], ['MXN', '07'], ['USD', '08'], ['CO
     const grande = textoEnMoneda(6.99, m)
     debe(tasas[moneda] > 0 && fin.includes(grande) && fin.includes('6,99 €'), 'moneda', `${moneda}: el final con «${grande}» grande y «6,99 €» pequeño`)
   }
-  await a.captura(foto(`${orden}_final_${moneda}`))
-  await clic(a, 'Elegir mi pase')
-  await esp(500)
   const hoja = await a.evaluar(`(() => {
     const filas = Array.from(document.querySelectorAll('[data-hoja-cuantos-sois] div')).filter((d) => /^(Pase de 1 persona|Pase Dúo|Pase Grupo)/.test(d.innerText.trim()) && d.style.borderRadius === '18px').map((d) => d.innerText.split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean))
     const compra = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((s) => /^Comprar/.test(s.textContent.trim()))

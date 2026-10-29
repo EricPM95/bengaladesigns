@@ -6,7 +6,7 @@ import { AZUL_PASE, CandadoDeDesign, SOMBRA_PASE } from '../../pase/Candado'
 /**
  * LA TARJETA DEL DÍA DE VUELTA SIN HORA (Tanda 10B; antes «Tu último día también cuenta», Tanda 7). Dentro del acordeón del día de vuelta de DÍAS, mientras el viajero no ha puesto la hora de su vuelta
  * (el día sigue sin paradas, decidido así). Los textos salen de `src/lib/ultimoDia.ts`, con el nombre del medio con el que vuelve.
- * - Sin el pase: «El último día, a la medida de tu vuelo», el texto con el Pase y el número de ventajas resaltados en oro, [Ver el Pase de Roma] y [+ Añadir mis lugares].
+ * - Sin el pase: «El último día, a la medida de tu vuelo», el texto con el Pase y el número de ventajas resaltados en oro, [Ver el Pase Roma] y [+ Añadir mis lugares].
  * - Con el pase: «Tu último día, a la medida de tu vuelo», [+ Vuelo] (o [+ Tren]…) y [+ Añadir mis lugares].
  * Letra de tinta, legible (nada de gris claro ni cursiva pequeña); colores de Marca JUTRIP (marfil, oro).
  */

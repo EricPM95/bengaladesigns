@@ -17,7 +17,7 @@ fs.mkdirSync(SALIDA, { recursive: true })
 const png = (n) => path.join(SALIDA, `h10_${n}.jpg`)
 const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore.getState())"
 
-/* ───────────────────────── 1. Ningún «Pase de Roma» escrito a mano ───────────────────────── */
+/* ───────────────────────── 1. Ningún «Pase Roma» escrito a mano ───────────────────────── */
 {
   const ficheros = fs.readdirSync('src', { recursive: true }).map((f) => path.join('src', f)).filter((f) => /\.(tsx?|jsx?)$/.test(f))
   const sueltos = []
@@ -26,13 +26,13 @@ const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore
       if (!/[Pp]ase de (Roma|París|Londres)/.test(l)) return
       if (/^\s*(\/\/|\*|\/\*|\{\/\*)/.test(l) || /(\/\/|\/\*\*?)\s.*[Pp]ase de (Roma|París|Londres)/.test(l)) return // comentarios
       if (f.includes(`${path.sep}dev${path.sep}`)) return // datos de la ruta de pruebas
-      // La lista del pase (antes película, Tanda 10I): `pelicula/gen/` es el código de Design tal cual (no se edita a mano) y `pelicula/adaptar.ts` lo lleva a cada destino: ahí «Pase de Roma» es el TEXTO ORIGINAL
+      // La lista del pase (antes película, Tanda 10I): `pelicula/gen/` es el código de Design tal cual (no se edita a mano) y `pelicula/adaptar.ts` lo lleva a cada destino: ahí «Pase Roma» es el TEXTO ORIGINAL
       // de Design que se busca para cambiarlo por el nombre del pase del destino; no es un nombre escrito para mostrar.
       if (f.includes(`${path.sep}pelicula${path.sep}gen${path.sep}`) || f.endsWith(`${path.sep}pelicula${path.sep}adaptar.ts`)) return
       sueltos.push(`${f}:${i + 1}: ${l.trim().slice(0, 120)}`)
     })
   }
-  debe(sueltos.length === 0, 'nombre', `ningún «Pase de Roma» escrito a mano en el código de la app (${sueltos.join(' | ') || 'ninguno'})`)
+  debe(sueltos.length === 0, 'nombre', `ningún «Pase Roma» escrito a mano en el código de la app (${sueltos.join(' | ') || 'ninguno'})`)
   const marca = fs.readFileSync('src/components/pase/Marca.tsx', 'utf8')
   debe(/#6F4E37/.test(marca) && /#A67C52/.test(marca) && /#E9C77A/.test(marca), 'oro', 'Marca lleva los tres oros: profundo (#6F4E37), oscuro (#A67C52) y pálido (#E9C77A)')
 }
@@ -111,13 +111,13 @@ const g = await conViaje('gratis')
   debe(/las fotos que hagas el sábado también suman a tus logros/.test(r.otroDia.texto), 'tabla', 'y la frase de los logros promete las FOTOS (lo único que de verdad suma después), no «lo que veas»')
   debe(r.primerDia.tipo === 'prueba_primer_dia' && r.primerDia.texto === 'Te regalamos tu primer día con HOY para que lo pruebes: el sábado 17, gratis y completo.', 'tabla', `prueba el primer día: ${r.primerDia.texto}`)
   debe(r.otroViaje.tipo === 'antes_sin_prueba' && r.otroViaje.texto === null, 'tabla', 'antes del viaje con la prueba ya usada en otro viaje: solo la cuenta atrás')
-  debe(r.manana.tipo === 'manana_es_prueba' && r.manana.texto === 'Mañana es tu día de prueba: queremos que vivas Roma con el Pase de Roma completo, gratis, un día entero.', 'tabla', `mañana es la prueba: ${r.manana.texto}`)
-  debe(r.hoyEs.tipo === 'hoy_es_prueba' && r.hoyEs.texto === 'Hoy es tu día de prueba: tienes el Pase de Roma completo, gratis, hasta medianoche. Disfrútalo.', 'tabla', 'el día de la prueba: la franja')
-  debe(r.tras.tipo === 'tras_prueba' && r.tras.verElPase && r.tras.texto === '¿Qué tal ayer con HOY? Sigue con tu compañero el resto del viaje y completa los secretos y las colecciones de Roma. Lo que conseguiste ayer ya es tuyo.', 'tabla', 'después de la prueba, con [Ver el Pase de Roma]')
-  debe(r.parte.tipo === 'parte_del_pase' && r.parte.texto === 'Tu modo Hoy es parte del Pase de Roma.', 'tabla', 'prueba usada en otro viaje, durante el viaje')
-  debe(r.despues.tipo === 'viaje_terminado' && r.despues.texto === 'Tu viaje a Roma ha terminado. La próxima vez, con el Pase de Roma, te acompañamos todo el viaje.' && !/prueba/i.test(r.despues.texto), 'tabla', 'después del viaje: nada de la prueba')
+  debe(r.manana.tipo === 'manana_es_prueba' && r.manana.texto === 'Mañana es tu día de prueba: queremos que vivas Roma con el Pase Roma completo, gratis, un día entero.', 'tabla', `mañana es la prueba: ${r.manana.texto}`)
+  debe(r.hoyEs.tipo === 'hoy_es_prueba' && r.hoyEs.texto === 'Hoy es tu día de prueba: tienes el Pase Roma completo, gratis, hasta medianoche. Disfrútalo.', 'tabla', 'el día de la prueba: la franja')
+  debe(r.tras.tipo === 'tras_prueba' && r.tras.verElPase && r.tras.texto === '¿Qué tal ayer con HOY? Sigue con tu compañero el resto del viaje y completa los secretos y las colecciones de Roma. Lo que conseguiste ayer ya es tuyo.', 'tabla', 'después de la prueba, con [Ver el Pase Roma]')
+  debe(r.parte.tipo === 'parte_del_pase' && r.parte.texto === 'Tu modo Hoy es parte del Pase Roma.', 'tabla', 'prueba usada en otro viaje, durante el viaje')
+  debe(r.despues.tipo === 'viaje_terminado' && r.despues.texto === 'Tu viaje a Roma ha terminado. La próxima vez, con el Pase Roma, te acompañamos todo el viaje.' && !/prueba/i.test(r.despues.texto), 'tabla', 'después del viaje: nada de la prueba')
   debe(r.sinFechas.tipo === 'pon_fechas', 'tabla', 'sin fechas: «Pon tus fechas»')
-  debe(/Pase de París/.test(r.paris.texto) && /viaje a París/.test(r.paris.texto) && !/Roma/.test(r.paris.texto), 'nombre', `con otro destino, el nombre sale del dato: ${r.paris.texto}`)
+  debe(/Pase París/.test(r.paris.texto) && /viaje a París/.test(r.paris.texto) && !/Roma/.test(r.paris.texto), 'nombre', `con otro destino, el nombre sale del dato: ${r.paris.texto}`)
 }
 
 // 2b. HOY en pantalla, fila a fila.
@@ -130,8 +130,8 @@ const casos = [
   { id: '04_otro_viaje', hoy: '2026-10-14', p: { estado: 'gastada', fecha: '2026-06-02', tripId: 'otro-viaje' }, tipo: null, titulo: 'HOY, antes, con la prueba ya usada en otro viaje', texto: 'Solo la cuenta atrás.' },
   { id: '05_manana', hoy: '2026-10-17', p: { estado: 'pendiente', fecha: '2026-10-18', tripId: 'viaje-de-esta-prueba' }, tipo: 'manana_es_prueba', titulo: 'HOY, el día de llegada (la prueba es mañana)', texto: '«Mañana es tu día de prueba…».' },
   { id: '06_hoy_es_prueba', hoy: '2026-10-18', p: { estado: 'pendiente', fecha: '2026-10-18', tripId: 'viaje-de-esta-prueba' }, tipo: 'franja', titulo: 'HOY, el día de la prueba', texto: 'HOY entero y, arriba, la franja «Hoy es tu día de prueba…».' },
-  { id: '07_tras_prueba', hoy: '2026-10-19', p: { estado: 'gastada', fecha: '2026-10-18', tripId: 'viaje-de-esta-prueba' }, tipo: 'tras_prueba', titulo: 'HOY, después de la prueba', texto: '«¿Qué tal ayer con HOY?…» y [Ver el Pase de Roma].' },
-  { id: '08_parte_del_pase', hoy: '2026-10-19', p: { estado: 'gastada', fecha: '2026-06-02', tripId: 'otro-viaje' }, tipo: 'parte_del_pase', titulo: 'HOY, durante el viaje con la prueba usada en otro viaje', texto: '«Tu modo Hoy es parte del Pase de Roma.»' },
+  { id: '07_tras_prueba', hoy: '2026-10-19', p: { estado: 'gastada', fecha: '2026-10-18', tripId: 'viaje-de-esta-prueba' }, tipo: 'tras_prueba', titulo: 'HOY, después de la prueba', texto: '«¿Qué tal ayer con HOY?…» y [Ver el Pase Roma].' },
+  { id: '08_parte_del_pase', hoy: '2026-10-19', p: { estado: 'gastada', fecha: '2026-06-02', tripId: 'otro-viaje' }, tipo: 'parte_del_pase', titulo: 'HOY, durante el viaje con la prueba usada en otro viaje', texto: '«Tu modo Hoy es parte del Pase Roma.»' },
   { id: '09_despues', hoy: '2026-10-25', p: { estado: 'pendiente', fecha: '2026-10-18', tripId: 'viaje-de-esta-prueba' }, tipo: 'viaje_terminado', titulo: 'HOY, después del viaje', texto: 'Nada de la prueba: «Tu viaje a Roma ha terminado…».' },
 ]
 const COLORES_ORO = ['rgb(111, 78, 55)', 'rgb(166, 124, 82)', 'rgb(233, 199, 122)']
@@ -142,7 +142,7 @@ for (const c of casos) {
   const r = await leerHoy(g)
   // (Tanda 10N11, apartado 5) Sin pase, fuera del día de la prueba, HOY es la pantalla de Design (Piezas/Pase Lista 2 y 2b) con la caja de «sin usar» o «ya usado»; el día de la prueba, HOY entero con su franja.
   if (c.tipo === 'franja') {
-    debe(Boolean(r.franja) && /Hoy es tu día de prueba: tienes el Pase de Roma completo, gratis, hasta medianoche\. Disfrútalo\./.test(r.franja), 'pantalla', `${c.titulo}: la franja arriba (${r.franja})`)
+    debe(Boolean(r.franja) && /Hoy es tu día de prueba: tienes el Pase Roma completo, gratis, hasta medianoche\. Disfrútalo\./.test(r.franja), 'pantalla', `${c.titulo}: la franja arriba (${r.franja})`)
     debe(!/Con el pase tendrás/.test(r.cuerpo) && !r.sinPase, 'pantalla', `${c.titulo}: HOY entero, sin la pantalla de sin pase`)
   } else {
     const usada = c.p.estado === 'gastada'
@@ -150,7 +150,7 @@ for (const c of casos) {
     debe(r.verPase && /Ver el Pase Roma/.test(r.cuerpo) && /HOY, tu guía del día/.test(r.cuerpo), 'pantalla', `${c.titulo}: «HOY, tu guía del día» y [Ver el Pase Roma]`)
     debe(!r.fila, 'pantalla', `${c.titulo}: ya no sale la fila vieja (${r.fila ?? 'ninguna'})`)
   }
-  // El oro de HOY y de Pase de Roma en el texto de la fila.
+  // El oro de HOY y de Pase Roma en el texto de la fila.
   const oro = await g.evaluar(`Array.from(document.querySelectorAll('[data-hoy-prueba-fila] [data-marca], [data-franja-prueba] [data-marca]')).map((e) => ({ t: e.textContent, c: getComputedStyle(e).color }))`)
   if (c.tipo === 'franja') {
     debe(oro.length > 0 && oro.every((m) => COLORES_ORO.includes(m.c)), 'oro', `${c.titulo}: «${oro.map((m) => m.t).join('», «')}» en oro (${oro.map((m) => m.c).join(' ')})`)

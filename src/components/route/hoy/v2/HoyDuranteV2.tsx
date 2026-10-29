@@ -130,7 +130,7 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
   const acceso = accesoHistoria(ficha, pagoActivo(), { destino, nombre: parada.name })
   useGastarHistoriaAl3s(destino, parada.name, estado, acceso === 'prueba')
   if (acceso === 'ninguno' || texto.trim().length === 0) return null
-  // (Tanda 10H: sin el pase, el MISMO botón, con el candado dorado en el extremo derecho, dentro, sobre marfil; al tocarlo, «Incluido con el Pase de Roma» y se abre el pase.)
+  // (Tanda 10H: sin el pase, el MISMO botón, con el candado dorado en el extremo derecho, dentro, sobre marfil; al tocarlo, «Incluido con el Pase Roma» y se abre el pase.)
   if (acceso === 'candado') {
     return (
       <div className="flex items-center gap-2">

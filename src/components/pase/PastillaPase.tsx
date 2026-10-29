@@ -6,8 +6,8 @@ import { Icono } from '../ui/Icono'
 /**
  * LA PASTILLA DEL PASE (Tanda 10G; «Piezas/Pase Incluye», P0c y P0d, con los colores de Marca JUTRIP), en la tarjeta de cada destino de RUTA:
  *  - sin el pase (10N8 §2b): fondo azul oscuro con el candado dorado; mientras no se sabe, el hueco en gris claro sin texto (del mismo tamaño);
- *  - con el pase (P0d): «Pase de Roma» con el ✓, sobre oro.
- * Al tocarla se abre `abrirPase()` (la misma función de todos los candados y de [Ver el Pase de Roma]). Con varios destinos, cada tarjeta lleva la suya («Pase de Florencia»…): el nombre sale de los datos del tramo.
+ *  - con el pase (P0d): «Pase Roma» con el ✓, sobre oro.
+ * Al tocarla se abre `abrirPase()` (la misma función de todos los candados y de [Ver el Pase Roma]). Con varios destinos, cada tarjeta lleva la suya («Pase Florencia»…): el nombre sale de los datos del tramo.
  * `conPase` solo lo usan las capturas y la prueba (por defecto, la versión que se está viendo, `pagoActivo()`).
  */
 export function PastillaPase({ destino, conPase: aMano }: { destino: string; conPase?: boolean }) {
@@ -21,7 +21,7 @@ export function PastillaPase({ destino, conPase: aMano }: { destino: string; con
       type="button"
       onClick={abrirPase}
       data-pastilla-pase={conPase ? 'con' : 'sin'}
-      aria-label={conPase ? `Tienes el Pase de ${destino}` : `Ver el Pase de ${destino}`}
+      aria-label={conPase ? `Tienes el Pase ${destino}` : `Ver el Pase ${destino}`}
       className="flex h-[30px] w-fit items-center gap-1.5 rounded-full pl-2.5 pr-3.5"
       style={
         conPase

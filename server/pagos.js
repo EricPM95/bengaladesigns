@@ -203,7 +203,7 @@ export function crearServicioPagos({ admin, precios, destinos, pasarela, env = p
     if (!origen) return { estado: 500, cuerpo: { ok: false, error: 'Falta la dirección de la app en el servidor (APP_URL).' } }
     const tengo = await rpc('pases_de', { p_uid: usuario.id })
     if ((tengo ?? []).some((x) => x.estado === 'activo' && String(x.destino).toLowerCase() === destino.toLowerCase())) {
-      return { estado: 409, cuerpo: { ok: false, ya_tienes: true, error: `Ya tienes el Pase de ${destino}.` } }
+      return { estado: 409, cuerpo: { ok: false, ya_tienes: true, error: `Ya tienes el Pase ${destino}.` } }
     }
     const importe = Math.round(p.precio.total * 100)
     const nombrePlan = p.plan === 'uno' ? '1 persona' : p.plan === 'duo' ? 'Pase Dúo, 2 personas' : `Pase Grupo, ${p.personas} personas`
@@ -211,7 +211,7 @@ export function crearServicioPagos({ admin, precios, destinos, pasarela, env = p
     const sesion = await pasarela.crearSesion({
       importe_cent: importe,
       moneda: String(precios.moneda ?? 'EUR').toLowerCase(),
-      producto: `${nombreDeLaApp()} · Pase de ${destino} · ${nombrePlan}`,
+      producto: `${nombreDeLaApp()} · Pase ${destino} · ${nombrePlan}`,
       email: usuario.email ?? '',
       uid: usuario.id,
       metadata,

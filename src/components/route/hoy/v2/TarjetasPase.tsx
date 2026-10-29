@@ -24,7 +24,7 @@ export function TarjetaP3({ etiqueta, destino }: { etiqueta: string; destino: st
 
 /** La pantalla 12: al terminar el día de prueba (o si la prueba ya se gastó). «¿Te ha gustado HOY?» con los días que quedan y [Seguir con HOY]. */
 export function TarjetaDiaDePrueba({ dias, fila = null, destino }: { dias: { w: string; n: number }[]; fila?: FilaDeHoy | null; destino: string }) {
-  // (Tanda 10H) El texto sale de la tabla del día de prueba (src/lib/diaDePrueba.ts): «¿Qué tal ayer con HOY?» + lo que sigue, o «Tu modo Hoy es parte del Pase de Roma.».
+  // (Tanda 10H) El texto sale de la tabla del día de prueba (src/lib/diaDePrueba.ts): «¿Qué tal ayer con HOY?» + lo que sigue, o «Tu modo Hoy es parte del Pase Roma.».
   const texto = fila?.texto ?? `Tu modo Hoy es parte del ${nombreDelPase(destino)}.`
   const corte = fila?.tipo === 'tras_prueba' ? texto.indexOf('? ') : -1
   const titulo = corte >= 0 ? texto.slice(0, corte + 1) : texto

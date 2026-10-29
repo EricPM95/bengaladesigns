@@ -68,7 +68,7 @@ function PagoHostEncendido() {
   if (hoja.tipo === 'mentira') return <PagoDeMentira sesion={hoja.sesion} />
   if (hoja.tipo === 'dosViajes') return enCarga(<HojaDosViajes modo={hoja.modo} destino={hoja.destino} actual={hoja.actual} otro={hoja.otro} etiquetaDia={hoja.etiquetaDia} elegir={dejarUnViaje} onCerrar={cerrar} />)
   return (
-    <Hoja onCerrar={cerrar} etiqueta="Pase individual" titulo={<TextoConPase texto={`Ya tienes tu Pase de ${hoja.pase.destino}`} />} datos="pase-listo" z={92}>
+    <Hoja onCerrar={cerrar} etiqueta="Pase individual" titulo={<TextoConPase texto={`Ya tienes tu Pase ${hoja.pase.destino}`} />} datos="pase-listo" z={92}>
       <BotonHoja tipo="oscuro" onClick={cerrar}>
         Seguir
       </BotonHoja>

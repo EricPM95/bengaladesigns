@@ -74,8 +74,8 @@ export function filasDeCompra(planes: PlanDePrecios[], personasGrupo: number): F
   })
 }
 
-/** «Únete a mi Pase de Roma» (lo que se manda al compartir). */
-export const textoDeCompartirPase = (destino: string): string => `Únete a mi Pase de ${destino}`
+/** «Únete a mi Pase Roma» (lo que se manda al compartir). */
+export const textoDeCompartirPase = (destino: string): string => `Únete a mi Pase ${destino}`
 
 /** «Pase Dúo», «Pase Grupo» o «Pase individual»: el nombre corto del tipo, para las etiquetas. */
 export const nombreDelTipo = (tipo: string): string => (tipo === 'duo' ? 'Pase Dúo' : tipo === 'grupo' ? 'Pase Grupo' : 'Pase individual')

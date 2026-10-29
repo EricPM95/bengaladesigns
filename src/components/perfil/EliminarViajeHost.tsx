@@ -76,7 +76,7 @@ function ContenidoDeLaHoja({ datos }: { datos: DatosDeLaHoja }) {
 
       <div data-se-queda style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Se queda</span>
-        <p style={{ ...linea, margin: 0 }}>Tus logros, sellos y EXP, y tu Pase de {viaje.destino}, si lo tienes: se paga por destino, no por viaje.</p>
+        <p style={{ ...linea, margin: 0 }}>Tus logros, sellos y EXP, y tu Pase {viaje.destino}, si lo tienes: se paga por destino, no por viaje.</p>
       </div>
 
       <button

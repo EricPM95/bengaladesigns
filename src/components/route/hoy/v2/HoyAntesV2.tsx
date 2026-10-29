@@ -27,7 +27,7 @@ function diasHasta(startIso: string, hoyIso: string): number {
 
 /**
  * HOY antes del viaje (pantallas 1a con fechas y 1b sin fechas, «HOY v2»; desde la 10D también la HOY de producción, con y sin pase, con los colores de Marca JUTRIP: paneles en tinta y el azul claro del diseño, en oro pálido): la tarjeta oscura con la cuenta atrás (o «Pon tus fechas»), lo que dará HOY y, si hay cobro y no hay pase,
- * la tarjeta del Pase de Roma con [Ver el pase]. Con el cobro apagado, lo mismo sin la insignia del pase ni el botón.
+ * la tarjeta del Pase Roma con [Ver el pase]. Con el cobro apagado, lo mismo sin la insignia del pase ni el botón.
  */
 export function HoyAntesV2({ startIso, simulada, pase, destino, onPonFechas }: { startIso: string | null; simulada: string | null; pase: EstadoPase; destino: string; onPonFechas: () => void }) {
   const verPase = pase.cobro && !pase.conPase

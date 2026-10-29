@@ -37,6 +37,18 @@ export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
     linea1: 'Solo tienes HOY abierto el día de prueba.',
     linea2: 'Con el {pase}, tienes HOY disponible todos los días de tu viaje.',
   },
+  alojamiento: {
+    linea1: '',
+    linea2: 'Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés.',
+  },
+  vuelo: {
+    linea1: '',
+    linea2: 'Con el {pase}, adaptamos tu primer y tu último día a tus vuelos.',
+  },
+  logros: {
+    linea1: '',
+    linea2: 'Con el {pase}, cada sitio que ves suma a tus logros del viaje.',
+  },
   generico: {
     linea1: '',
     linea2: 'Desbloquea todo lo que el {pase} añade a tu viaje.',

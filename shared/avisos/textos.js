@@ -244,10 +244,10 @@ export function detalleDelAviso(aviso) {
   return [p.nombre, importe, p.resultado === 'aceptado' ? 'ya suma en el grupo' : 'se queda solo para ti'].filter(Boolean).join(' · ')
 }
 
-/** El cuerpo del aviso en el móvil: el mismo texto y, en el de los 10 días, lo del pase («Tu Pase de Roma está activo para el viaje del 16 al 19 de octubre.»). */
+/** El cuerpo del aviso en el móvil: el mismo texto y, en el de los 10 días, lo del pase («Tu Pase Roma está activo para el viaje del 16 al 19 de octubre.»). */
 export function textoDelPush(aviso) {
   const p = aviso.payload ?? {}
-  if (aviso.tipo === 'd10' && p.con_pase && p.inicio && p.fin) return `${textoDelAviso(aviso)}. Tu Pase de ${p.destino} está activo para el viaje del ${rangoEnPalabras(p.inicio, p.fin)}.`
+  if (aviso.tipo === 'd10' && p.con_pase && p.inicio && p.fin) return `${textoDelAviso(aviso)}. Tu Pase ${p.destino} está activo para el viaje del ${rangoEnPalabras(p.inicio, p.fin)}.`
   const detalle = detalleDelAviso(aviso)
   return detalle ? `${textoDelAviso(aviso)}. ${detalle}` : textoDelAviso(aviso)
 }

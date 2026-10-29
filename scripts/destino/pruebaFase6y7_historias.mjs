@@ -262,7 +262,7 @@ function hoyCon(nombre, version = 'completa') {
   const r = JSON.parse(JSON.stringify(ruta))
   // (Tanda 10C: HOY sin pase enseña lo de antes del viaje y la invitación al pase, nunca la siguiente parada ni la historia.)
   const hoyGratisTexto = aTexto(pinta(HoyView, { route: r, onPonFechas() {} }, r, { version: 'gratis', mode: 'today', hoy: INICIO }))
-  debe(/Ver el Pase de Roma/.test(hoyGratisTexto) && !/Cómo llegar/.test(hoyGratisTexto) && !/Historia/.test(hoyGratisTexto), '6 rama gratis', 'HOY gratis enseña algo más que la invitación al pase')
+  debe(/Ver el Pase Roma/.test(hoyGratisTexto) && !/Cómo llegar/.test(hoyGratisTexto) && !/Historia/.test(hoyGratisTexto), '6 rama gratis', 'HOY gratis enseña algo más que la invitación al pase')
 }
 
 console.error = consolaError

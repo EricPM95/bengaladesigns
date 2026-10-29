@@ -149,7 +149,7 @@ export function AlojamientoReservas({
                 <BotonComoLlegarAlojamiento direccion={direccion} className="mt-1" />
               </div>
             )}
-            {!pago && <LineaDelPase className="mx-4 mb-3" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
+            {!pago && <LineaDelPase clave="alojamiento" className="mx-4 mb-3" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
             {g.gente.length >= 2 && g.esAdmin && (
               <div className="mx-4 mb-4 flex flex-col gap-2.5" data-en-este-alojamiento>
                 <span className="flex items-center justify-between text-text/55" style={etiquetaMono}>
@@ -201,7 +201,7 @@ export function AlojamientoReservas({
                     Buscar alojamiento
                   </button>
                 </div>
-                {!pago && <LineaDelPase datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
+                {!pago && <LineaDelPase clave="alojamiento" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
               </div>
             )}
           </>

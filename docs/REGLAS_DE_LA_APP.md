@@ -58,6 +58,11 @@ Siempre que haya que elegir un día (añadir algo a un día, pasar algo a otro d
 - **La pastilla «Pase Roma» de RUTA:** sin pase, fondo azul oscuro con candado dorado; con pase, dorado con ✓.
 - Design: `Pase Estilo`, `Pase Pelicula Movil`.
 
+- **Siempre «Pase Roma» (10N12):** nunca «Pase de Roma». Con otro destino, «Pase {Destino}» («Pase París»), sin «de»: en los avisos, los logros, las hojas, los textos de `data/pase/` y las pruebas («✓ Tu Pase Roma está activo»).
+- **La lista del pase no lleva precios (10N12):** [Elegir mi pase] va fijo abajo, siempre a la vista y sin precio, sin tapar el último punto ni la barra del iPhone; los precios salen solo en «¿Cuántos sois?», que se abre al tocarlo. Con el pase, sin botón fijo.
+- **HOY sin pase (10N12):** la pantalla de Design (`Pase Lista` 2 y 2b) con, arriba, «Pon tus fechas» (sin fechas), la cuenta atrás (antes del viaje), «Tu viaje ha terminado» (después) y los avisos del día de prueba cuando tocan. Sin ✕: es una pestaña.
+- **El botón de la cama en HOY (10N12):** un botón redondo pequeño, siempre a la vista en HOY con pase (todos los días, a cualquier hora): con dirección abre el camino al alojamiento; con pase y sin dirección abre la hoja «Tu alojamiento»; sin pase no sale.
+
 ## 4. Reservas, vuelos, gastos y cuentas
 
 - **«¿Para quién es?» es igual en reservas, vuelos, alojamiento y gastos:** sale marcado solo quien lo añade y los demás se marcan uno a uno, con una línea pequeña debajo que cambia según lo marcado («Solo para ti: es un gasto tuyo y nadie más lo ve.», «Para 2 personas: entra en las cuentas del grupo.», «Para Ana: …»). La pregunta cambia según lo que se añade («¿Para quién has comprado la entrada?», «…el vuelo?», «¿Para quién has reservado el alojamiento?»).
@@ -96,6 +101,7 @@ Esta lista es la que quedó al terminar la tanda 10N8 y se ha de ir vaciando:
 - **Alojamiento:** sin los chips de zona de Design.
 - **Moneda por precio:** faltan por enlazar las etiquetas de precio del explorador de lugares.
 - **Lugares que esperan saber si hay pase** (aparte de la pastilla de RUTA): no repasados uno a uno.
+- **Varios destinos (10N12):** hoy la zona y la dirección del alojamiento son del viaje entero y solo salen en la primera estancia; cuando se hagan los multidestinos, cada estancia tendrá su zona y su dirección.
 - **Película del pase, ficha de un sitio y aviso de abajo:** hechos en código; falta comprobarlos en el móvil, junto a Design y en Safari (con y sin la barra).
 
 ## 7. El alojamiento (10N11, agente A)

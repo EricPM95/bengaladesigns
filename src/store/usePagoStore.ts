@@ -6,7 +6,7 @@ import type { ViajeDeLaPareja } from '../lib/viajesQueSePisan'
  * Qué hoja del pase está abierta (cuentas parte 3). Una sola a la vez.
  *   compra     la hoja de compra (P6)
  *   volviendo  al volver de la página de pago: se espera a que llegue el aviso y se crea el pase
- *   listo      el pase ya está (un pase individual: «Ya tienes tu Pase de Roma»)
+ *   listo      el pase ya está (un pase individual: «Ya tienes tu Pase Roma»)
  *   invitar    la hoja del enlace y el código: P7 (compartir el pase) o RS2 (compartir el viaje)
  *   mentira    la página de pruebas del pago de mentira (solo desarrollo)
  *   dosViajes  P8b (el aviso de los 10 días) o P9 (el primer día): dos viajes al mismo destino que se pisan, ¿cuál se hace?

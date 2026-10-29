@@ -11,7 +11,8 @@ import { bannerAntes, bannerDespues, etiquetaDeFase, faseDelViaje, lineaDeGrado,
 import { piezaDeInsignia } from './hoja/piezaDeInsignia'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
-import { abrirPase, usePasePintable } from '../../../lib/pago'
+import { usePasePintable } from '../../../lib/pago'
+import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { Candado } from '../../pase/Candado'
 
 const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
@@ -109,7 +110,7 @@ export default function HojaLogros(): ReactNode {
           ) : (
             <>
               {sinPase && <Candado datos="logros-sin-pase" destino={estado.ciudad} titulo="Tus logros del viaje" texto="Con el {pase}, cada sitio que ves suma." />}
-              <div data-logros-cerrados={sinPase ? '1' : undefined} onClickCapture={sinPase ? (e) => { e.stopPropagation(); e.preventDefault(); abrirPase() } : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 12, ...(sinPase ? { filter: 'grayscale(1)', opacity: 0.55, cursor: 'pointer' } : {}), ...(estadoPase === 'pendiente' ? { visibility: 'hidden' as const } : {}) }}>
+              <div data-logros-cerrados={sinPase ? '1' : undefined} onClickCapture={sinPase ? (e) => { e.stopPropagation(); e.preventDefault(); abrirAvisoPase('logros', { destino: estado.ciudad }) } : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 12, ...(sinPase ? { filter: 'grayscale(1)', opacity: 0.55, cursor: 'pointer' } : {}), ...(estadoPase === 'pendiente' ? { visibility: 'hidden' as const } : {}) }}>
               <div style={{ display: 'grid', gridTemplateColumns: estado.sellos.length > 1 ? '1.55fr 1fr' : '1fr', gap: 8 }}>
                 {estado.sellos.map((s, i) => (
                   <TarjetaDeSello key={s.id} sello={s} grande={i === 0} fase={fase} />

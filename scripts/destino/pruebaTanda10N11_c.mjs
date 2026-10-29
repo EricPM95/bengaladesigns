@@ -110,11 +110,11 @@ const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore
     const dibujos = await a.evaluar("Array.from(document.querySelectorAll('[data-lista-punto]')).filter((e) => e.querySelector('svg')).length")
     debe(dibujos === 19, 'lista', `cada punto con su dibujo (${dibujos})`)
     debe(t.includes('Tu ruta empieza donde duermes') && t.includes('Dinos tu zona y tu primer y último día salen desde tu alojamiento, con cómo llegar.'), 'lista', 'el texto del alojamiento es el de Design')
-    debe(t.includes(eur(uno.precio_total)) && t.includes(eur(duo.precio_total)) && t.includes(eur(duo.precio_tachado)) && t.includes(`${eur(duo.precio_por_persona)} cada uno`) && t.includes(`${eur(grupo.precio_por_persona)} cada uno`), 'precios', `los precios de la app: ${eur(uno.precio_total)}, ${eur(duo.precio_total)} (tachado ${eur(duo.precio_tachado)}), ${eur(grupo.precio_por_persona)} cada uno`)
-    debe(/Pase Dúo · 2 personas/.test(t) && /Pase Grupo · 3 o más/.test(t) && /Elegir mi pase/.test(t), 'precios', 'Pase Dúo, Pase Grupo y [Elegir mi pase]')
+    debe(!/€/.test(t), 'precios', '(10N12) la lista no enseña ningún precio: solo salen en «¿Cuántos sois?»')
+    debe(/Elegir mi pase/.test(t) && !/Pase Dúo · 2 personas/.test(t), 'precios', '[Elegir mi pase] fijo y sin las tarjetas de Dúo y Grupo')
     debe(!/✓ Tu Pase/.test(t), 'lista', 'sin pase no sale «✓ Tu Pase … está activo»')
     await a.captura(path.join(SALIDA, '10n11_lista_pase_1.jpg'))
-    // Se mueve con el dedo: tiene scroll y [Elegir mi pase] se alcanza.
+    // Se mueve con el dedo: tiene scroll y [Elegir mi pase] está fijo y a la vista (10N12).
     const sc = await a.evaluar("(() => { const l = document.querySelector('[data-lista-pase]'); const o = getComputedStyle(l).overflowY; l.scrollTop = l.scrollHeight; const e = document.querySelector('[data-elegir-pase]'); const r = e.getBoundingClientRect(); return { o, sh: l.scrollHeight, ch: l.clientHeight, b: r.bottom, vh: innerHeight, l: r.left, rr: r.right, vw: innerWidth } })()")
     debe(sc.o === 'auto' && sc.sh > sc.ch, 'lista', 'la lista se mueve con el dedo')
     debe(sc.b <= sc.vh - 8 && sc.l >= 0 && sc.rr <= sc.vw, 'lista', `[Elegir mi pase] entero a la vista al final (${Math.round(sc.b)} de ${sc.vh})`)
@@ -153,7 +153,7 @@ const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore
   try {
     await abrirLista(a)
     const t = await texto(a, '[data-lista-del-pase]')
-    debe(/✓ Tu Pase de Roma está activo/.test(t), 'con', 'con pase: «✓ Tu Pase de Roma está activo»')
+    debe(/✓ Tu Pase Roma está activo/.test(t), 'con', 'con pase: «✓ Tu Pase Roma está activo»')
     debe(!/Elegir mi pase/.test(t) && !/€/.test(t) && !/Se paga una vez/.test(t), 'con', 'con pase: sin [Elegir mi pase], sin precios y sin «Se paga una vez»')
     debe(!(await a.evaluar("Boolean(document.querySelector('[data-hoja-cuantos-sois]'))")), 'con', 'la hoja de compra no se abre')
     debe((await a.evaluar("document.querySelectorAll('[data-lista-punto]').length")) === 19, 'con', 'con pase siguen los 19 puntos')

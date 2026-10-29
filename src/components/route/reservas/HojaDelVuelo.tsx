@@ -245,7 +245,7 @@ export function HojaDelVuelo({
       {l.extras && (
         <>
           {/* (10N11 §4) Sin pase, la línea en gris con el candado; con pase, nada. */}
-          <LineaDelPase className="mt-3" datos="vuelo-hoja" texto="Con el {pase}, adaptamos tu primer y tu último día a tus vuelos." />
+          <LineaDelPase clave="vuelo" className="mt-3" datos="vuelo-hoja" texto="Con el {pase}, adaptamos tu primer y tu último día a tus vuelos." />
           <div className="mt-3 grid grid-cols-2 gap-2">
             <label className="flex h-[58px] flex-col justify-center gap-0.5 rounded-[16px] border border-text/15 bg-white px-3.5">
               <span style={{ ...etiquetaMono, fontSize: 9.5 }}>Ref. vuelo</span>

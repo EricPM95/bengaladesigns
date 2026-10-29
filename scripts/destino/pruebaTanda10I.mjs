@@ -180,14 +180,14 @@ const clic = async (a, x, y) => {
   a.cerrar()
 }
 
-// 3c. Con el pase comprado: «✓ Tu Pase de Roma está activo», sin precio y sin hoja de compra.
+// 3c. Con el pase comprado: «✓ Tu Pase Roma está activo», sin precio y sin hoja de compra.
 {
   const a = await conViaje({ antes: "window.__pruebaDelPase = { cobro: true, conPase: true, puede: true, pruebaGastada: false }" })
   await abrirPase(a)
   await cuando(a, "/está activo/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 25)
   await a.esp(1500)
   const t = await textoDe(a)
-  debe(/✓ Tu Pase de Roma está activo/.test(t), 'con', 'con el pase: «✓ Tu Pase de Roma está activo»')
+  debe(/✓ Tu Pase Roma está activo/.test(t), 'con', 'con el pase: «✓ Tu Pase Roma está activo»')
   debe(!/Verla otra vez/.test(t), 'con', 'sin «Verla otra vez» (ya no hay película)')
   debe(!/Elegir mi pase/.test(t) && !/Se paga una vez/.test(t) && !/€/.test(t), 'con', 'sin [Elegir mi pase], sin «Se paga una vez…» y sin precio')
   debe(!(await clicEnTexto(a, 'Elegir mi pase')), 'con', 'no hay [Elegir mi pase] que tocar')

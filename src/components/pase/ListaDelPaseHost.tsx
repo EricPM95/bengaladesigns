@@ -7,7 +7,7 @@ import { useSyncStore } from '../../store/useSyncStore'
 const ListaDelPase = lazy(() => import('./ListaDelPase').then((m) => ({ default: m.ListaDelPase })))
 
 /**
- * EL ANFITRIÓN DE LA LISTA DEL PASE (Tanda 10I; 10N10, 8b: antes, de la película). Siempre montado. `abrirPase()` (la función única que usan todos los candados, la pastilla de RUTA, [Ver el Pase de Roma]
+ * EL ANFITRIÓN DE LA LISTA DEL PASE (Tanda 10I; 10N10, 8b: antes, de la película). Siempre montado. `abrirPase()` (la función única que usan todos los candados, la pastilla de RUTA, [Ver el Pase Roma]
  * y [Escuchar historia] cerrado) abre SIEMPRE la lista del pase con [Elegir mi pase], la primera vez y las siguientes. Al cerrarla se vuelve a la pantalla donde se estaba.
  */
 export function ListaDelPaseHost() {

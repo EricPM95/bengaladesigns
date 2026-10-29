@@ -13,6 +13,7 @@ import { HoyDurante } from './HoyDurante'
 import { HoyDespues } from './HoyDespues'
 import { hoyV2Activo } from '../../../lib/hoyV2'
 import { HoyV2 } from './v2/HoyV2'
+import { BotonCamaHoy } from './BotonCamaHoy'
 
 /**
  * La pestaña HOY (Tanda 6z3 y 6z6): SOLO de pago (en la gratis la pestaña no está; ver src/lib/barra.ts). Lo de dentro cambia según el momento del viaje —antes, durante o después (el día siguiente al último)— y la barra no cambia.
@@ -43,12 +44,24 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
       </div>
     )
   }
-  if (hoyV2Activo()) return <HoyV2 route={route} onPonFechas={onPonFechas} />
+  // (Tanda 10N12 §4) El botón de la cama, fijo arriba a la derecha durante todos los días del viaje; el título deja sitio a su derecha.
+  const conCama = estado?.phase === 'during'
+  const envoltorio = 'relative flex min-h-0 flex-1 flex-col [&_[data-hoy-cabecera]]:pr-12 [&_[data-titulo-del-dia]]:pr-12'
+  if (hoyV2Activo()) {
+    return conCama ? (
+      <div className={envoltorio} data-hoy-con-cama="1">
+        <HoyV2 route={route} onPonFechas={onPonFechas} />
+        <BotonCamaHoy route={route} />
+      </div>
+    ) : (
+      <HoyV2 route={route} onPonFechas={onPonFechas} />
+    )
+  }
 
-  return (
+  const contenido = (
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-7 pt-1" data-hoy={estado?.phase ?? 'antes-sin-fechas'}>
       {!estado || estado.phase === 'before' ? (
-        // (Tanda 10D: con el pase, lo mismo que sin él pero sin el candado «Pase de Roma» ni [Ver el Pase de Roma].)
+        // (Tanda 10D: con el pase, lo mismo que sin él pero sin el candado «Pase Roma» ni [Ver el Pase Roma].)
         <HoyAntesDelDiseno route={route} startIso={estado?.startIso ?? null} simulada={simulada} pase={CON_PASE} onPonFechas={onPonFechas} />
       ) : estado.phase === 'during' ? (
         <>
@@ -59,5 +72,13 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
         <HoyDespues route={route} startIso={estado.startIso} />
       )}
     </div>
+  )
+  return conCama ? (
+    <div className={envoltorio} data-hoy-con-cama="1">
+      {contenido}
+      <BotonCamaHoy route={route} />
+    </div>
+  ) : (
+    contenido
   )
 }

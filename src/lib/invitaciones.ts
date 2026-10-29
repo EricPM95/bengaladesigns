@@ -62,11 +62,11 @@ export function textoDeInvitacionNoValida(motivo: MotivoNoValida | undefined): s
   return 'Este código no existe.'
 }
 
-/** Pura: el titular de «lo que ve quien recibe el enlace» (P7b): «Laura te invita a su Pase de Roma» (con pase) o «Laura te invita a su viaje a Roma». */
+/** Pura: el titular de «lo que ve quien recibe el enlace» (P7b): «Laura te invita a su Pase Roma» (con pase) o «Laura te invita a su viaje a Roma». */
 export function titularDeInvitacion(v: VistaDeInvitacion): string {
   const quien = v.invitador && v.invitador.trim() ? v.invitador.trim() : 'Alguien'
   const destino = v.destino?.trim() || 'su viaje'
-  return v.con_pase ? `${quien} te invita a su Pase de ${destino}` : `${quien} te invita a su viaje a ${destino}`
+  return v.con_pase ? `${quien} te invita a su Pase ${destino}` : `${quien} te invita a su viaje a ${destino}`
 }
 
 /** (P7b) Al tocar [Unirme] se apunta que la invitación está aceptada: solo entonces se canjea después de entrar. Abrir el enlace por sí solo no mete a nadie en un viaje. */

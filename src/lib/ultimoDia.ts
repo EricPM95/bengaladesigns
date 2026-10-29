@@ -57,20 +57,20 @@ export function botonDeLaHora(modo: MedioDeVuelta): string {
 
 export interface ParteDeTexto {
   texto: string
-  /** Resaltada en oro, como «Pase de Roma» en `TextoConPase`. */
+  /** Resaltada en oro, como «Pase Roma» en `TextoConPase`. */
   oro?: boolean
 }
 
 export interface TextosDelUltimoDia {
   titulo: string
   partes: ParteDeTexto[]
-  /** Con el pase: el botón de la hora ([+ Vuelo]…); sin el pase: [Ver el Pase de Roma]. */
+  /** Con el pase: el botón de la hora ([+ Vuelo]…); sin el pase: [Ver el Pase Roma]. */
   botonPrincipal: string
   botonLugares: string
 }
 
 export function textosDelUltimoDia({ modo, destino, conPase, ventajas = totalVentajasDelPase() }: { modo: MedioDeVuelta; destino: string; conPase: boolean; ventajas?: number }): TextosDelUltimoDia {
-  const nombrePase = `Pase de ${destino}`
+  const nombrePase = `Pase ${destino}`
   if (conPase) {
     return {
       titulo: `Tu último día, a la medida de ${tuMedio(modo)}`,

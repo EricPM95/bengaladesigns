@@ -88,7 +88,7 @@ debe(/family=Italiana(&|")/.test(leer('index.html')), 'fuente', 'Italiana, la le
   debe(hallazgos.length === 0, 'nombre', `ningún «Routy» ni «Trazo» entre los textos del código (${hallazgos.slice(0, 5).join(' · ')})`)
 }
 debe(leer('src/components/route/alojamiento/mapaAlojamientoUrl.ts').includes("campaignCode || 'JUTRIP'"), 'nombre', 'el código de campaña por defecto de los enlaces de alojamiento es JUTRIP')
-debe(/nombreDeLaApp\(\)\} · Pase de/.test(leer('server/pagos.js')), 'nombre', 'el nombre del pase que sale al pagar lleva JUTRIP')
+debe(/nombreDeLaApp\(\)\} · Pase \$\{destino\}/.test(leer('server/pagos.js')), 'nombre', 'el nombre del pase que sale al pagar lleva JUTRIP')
 debe(leer('src/components/cuenta/PrivacidadScreen.tsx').includes('marca.nombre') && leer('src/lib/privacidad.ts').includes('Avisos de destinos nuevos'), 'nombre', 'la página de privacidad lleva el nombre y la línea del aviso de destinos')
 
 /* ───────── 2. El mapa de la primera pantalla (y 1: lo que sale en pantalla) ───────── */

@@ -11,7 +11,7 @@ import { BotonHoja, Hoja } from '../ui/Hoja'
 
 /**
  * LA HOJA DEL ENLACE Y EL CÓDIGO (cuentas parte 3). Es la misma hoja para:
- *   · P7, compartir el pase («Únete a mi Pase de Roma», «1 de 2 usados»), con un Pase Dúo o Grupo;
+ *   · P7, compartir el pase («Únete a mi Pase Roma», «1 de 2 usados»), con un Pase Dúo o Grupo;
  *   · RS2, compartir el viaje desde RUTA («Invita a tu viaje a Roma»), con o sin pase (con un Dúo o Grupo, la misma hoja que P7 y el invitado entra con su plaza).
  * El código es el de siempre: ocho caracteres que se leen bien en voz alta (sin 0, O, 1, I ni L). El invitado entra sin pagar nada: paga todo el que compra.
  * `codigoInicial` solo lo usan las capturas y la prueba.

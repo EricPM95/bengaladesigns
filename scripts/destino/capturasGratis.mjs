@@ -48,7 +48,7 @@ const sacar = async (a, id, titulo, texto) => {
 const g = await conViaje('gratis')
 // RUTA con la pastilla del pase.
 await modo(g, 'route')
-await sacar(g, '01_ruta', 'RUTA', 'En la tarjeta de cada destino, la pastilla «Pase de Roma» con el candado, sobre marfil. Al tocarla se abre el pase (la hoja de compra).')
+await sacar(g, '01_ruta', 'RUTA', 'En la tarjeta de cada destino, la pastilla «Pase Roma» con el candado, sobre marfil. Al tocarla se abre el pase (la hoja de compra).')
 // El vuelo guardado (gratis) y el ajuste cerrado.
 await g.evaluar(`${store}.then((s) => { s.setArrivalFlightTime('15:40'); s.setDepartureFlightTime('18:20'); return true })`)
 await modo(g, 'days', 0)
@@ -59,7 +59,7 @@ await sacar(g, '03_dias_candado', 'DÍAS, el candado del ajuste', 'Más de cerca
 // HOY antes, durante y después.
 await modo(g, 'today')
 await hoySimulado(g, '2026-10-10')
-await sacar(g, '04_hoy_antes', 'HOY, antes del viaje', 'Sin pase: la cuenta atrás, lo que HOY te dará y un solo [Ver el Pase de Roma] (el del panel); la tarjeta del día de prueba ya no lo repite.')
+await sacar(g, '04_hoy_antes', 'HOY, antes del viaje', 'Sin pase: la cuenta atrás, lo que HOY te dará y un solo [Ver el Pase Roma] (el del panel); la tarjeta del día de prueba ya no lo repite.')
 await hoySimulado(g, '2026-10-18')
 await sacar(g, '05_hoy_durante', 'HOY, durante el viaje', 'Sin pase: HOY es del pase; se ve lo que tendrías y el día de prueba.')
 await hoySimulado(g, '2026-10-25')
@@ -93,7 +93,7 @@ await sacar(g, '11_reservas_alojamiento', 'RESERVAS, el alojamiento', 'Guardar e
 await modo(g, 'route')
 await g.evaluar('window.__momentos.hoja()')
 await g.esp(3500)
-await sacar(g, '12_logros', 'Logros', 'La vitrina y las colecciones se ven, cerradas (en gris), con «Con el Pase de Roma, cada sitio que ves suma». [Visto] no suma sin pase, salvo el día de prueba.')
+await sacar(g, '12_logros', 'Logros', 'La vitrina y las colecciones se ven, cerradas (en gris), con «Con el Pase Roma, cada sitio que ves suma». [Visto] no suma sin pase, salvo el día de prueba.')
 await g.evaluar("import('/src/components/logros/momentos/useMomentosUI.ts').then((m) => { m.useMomentosUI.getState().cerrarHojaLogros(); return true })")
 await g.esp(800)
 // El Perfil.

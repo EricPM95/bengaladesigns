@@ -1,6 +1,7 @@
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
-import { usePagoActivo, abrirPase } from '../../../lib/pago'
+import { usePagoActivo } from '../../../lib/pago'
+import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { enlaceComoLlegarAlojamiento } from '../../../lib/direccionAlojamiento'
 import { CandadoRedondo } from '../../pase/Candado'
 import { useAlojamientoDelViaje } from '../alojamiento/useAlojamientoDelViaje'
@@ -108,7 +109,7 @@ export function AccommodationBlock({ city, segmentDayId }: AccommodationBlockPro
         enlace && botonOro(<>{svgIr}Ir</>, { href: enlace, datos: 'ir', etiqueta: 'Ir al alojamiento' })
       ) : (
         <span style={{ position: 'relative', flex: 'none', display: 'flex' }}>
-          {botonOro(<>{svgIr}Ir</>, { onClick: abrirPase, datos: 'ir-candado', etiqueta: 'Ir al alojamiento (con el Pase)' })}
+          {botonOro(<>{svgIr}Ir</>, { onClick: () => abrirAvisoPase('alojamiento'), datos: 'ir-candado', etiqueta: 'Ir al alojamiento (con el Pase)' })}
           <CandadoRedondo tamano="pequeno" esquina datos="alojamiento-ir" />
         </span>
       )}

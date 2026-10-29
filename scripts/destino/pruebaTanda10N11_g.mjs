@@ -23,7 +23,7 @@ const cand = sinComentarios(leer('src/components/pase/Candado.tsx'))
 debe(/export function CandadoRedondo/.test(cand) && /export function LineaDelPase/.test(cand), 'candado', 'existen CandadoRedondo y LineaDelPase')
 debe(/#1C2230/.test(cand) && /1\.5px solid #B58A2E/.test(cand) && /stroke="#F3D88F"/.test(cand), 'candado', 'CandadoRedondo: círculo #1C2230, filo 1,5 px #B58A2E y candado #F3D88F (Design)')
 const lineaDelPase = cand.slice(cand.indexOf('export function LineaDelPase'))
-debe(/usePasePintable\(\)/.test(lineaDelPase) && /estado !== 'sin'\) return null/.test(lineaDelPase) && /abrirPase/.test(lineaDelPase), 'frases', 'LineaDelPase solo se pinta sin pase (no mientras se desconoce) y abre el pase')
+debe(/usePasePintable\(\)/.test(lineaDelPase) && /estado !== 'sin'\) return null/.test(lineaDelPase) && /abrirAvisoPase/.test(lineaDelPase), 'frases', 'LineaDelPase solo se pinta sin pase (no mientras se desconoce) y abre el aviso pequeño del pase (10N12)')
 // Quién usa el candado suelto (marrón / sobre marfil): solo la caja y los botones que ya son azules o dorados.
 const usos = []
 const recorre = (d) => {

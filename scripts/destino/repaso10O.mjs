@@ -11,7 +11,7 @@ const CAPTURAS = [
   ['10o_explorar_tarjetas.jpg', 'EXPLORAR: la tarjeta Hoteles (con foto) va antes de Baños y Fuentes. Los contadores ya no cuentan lo que está fuera de la lista (81 lugares, 6 miradores).'],
   ['10o_hoteles_alojamientos.jpg', 'Tocar Hoteles abre la pantalla de alojamientos de Roma (la misma del botón de los filtros).'],
   ['10o_pestanas_sin_pase.jpg', 'Sin pase: las dos pestañas debajo de «Buscar en Roma…», con el candado dorado pequeño junto a «Cerca de ti». Ya no hay tarjeta cerrada en medio de la lista.'],
-  ['10o_hoja_cerca_de_ti.jpg', 'Sin pase, tocar «Cerca de ti» abre esta hoja (tirador, ✕, «Pase de Roma» en oro y [Ver el Pase de Roma]).'],
+  ['10o_hoja_cerca_de_ti.jpg', 'Sin pase, tocar «Cerca de ti» abre esta hoja (tirador, ✕, «Pase Roma» en oro y [Ver el Pase Roma]).'],
   ['10o_pestanas_con_pase.jpg', 'Con pase: las mismas dos pestañas, sin candado; «Cerca de ti» ordena por cercanía.'],
   ['10o_miradores.jpg', 'Miradores: la Terraza del Altar de la Patria, justo detrás de la Cúpula de San Pedro.'],
   ['10o_ficha_terraza.jpg', 'La ficha de la Terraza del Altar de la Patria, con su horario (09:30–19:30, última subida a las 19:00) y [+ Añadir].'],

@@ -172,7 +172,7 @@ const cerrarPago = async (a) => {
   const g = await conViaje('gratis')
   // RUTA: la pastilla del pase, con el candado.
   await modo(g, 'route')
-  debe((await g.evaluar("document.querySelector('[data-pastilla-pase]')?.getAttribute('data-pastilla-pase')")) === 'sin', 'gratis', 'RUTA: la tarjeta del destino lleva la pastilla «Pase de Roma» con el candado')
+  debe((await g.evaluar("document.querySelector('[data-pastilla-pase]')?.getAttribute('data-pastilla-pase')")) === 'sin', 'gratis', 'RUTA: la tarjeta del destino lleva la pastilla «Pase Roma» con el candado')
   debe(/Pase Roma/.test(await g.evaluar("document.querySelector('[data-pastilla-pase]')?.innerText ?? ''")), 'gratis', 'y dice «Pase Roma» (el nombre sale de los datos del destino)')
   // El diseño P0c/P0d: la pastilla va en la fila de abajo de la tarjeta, a la izquierda, con la bombilla, el compartir y el recuperar a la derecha, bajo una línea fina.
   debe(await g.evaluar("(() => { const p = document.querySelector('[data-pastilla-pase]'); const fila = p?.parentElement; return Boolean(fila && fila.querySelector('[aria-label^=\"Tips de\"]') && fila.querySelector('[data-edit-tool]') && fila.previousElementSibling?.className.includes('h-px') && fila.firstElementChild === p) })()"), 'gratis', 'RUTA: la pastilla del pase va abajo a la izquierda y los iconos a la derecha, bajo una línea fina (el diseño)')
@@ -204,7 +204,9 @@ const cerrarPago = async (a) => {
   debe(await g.evaluar("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-linea-pase=\"alojamiento-tarjeta\"]'))"), 'gratis', '(10N11) RESERVAS: el alojamiento lleva la línea gris del pase con su candado (ya no la caja de la zona)')
   await g.evaluar("(() => { const c = document.querySelector('[data-linea-pase=\"alojamiento-tarjeta\"]'); if (c) c.click(); return true })()")
   await g.esp(1200)
-  debe(await hayPago(g), 'gratis', 'al tocar un candado se abre el pase')
+  debe(await g.evaluar("Boolean(document.querySelector('[data-aviso-pase=\"alojamiento\"]'))"), 'gratis', '(10N12) al tocar la línea del pase sale el aviso pequeño del alojamiento')
+  await g.evaluar("(() => { const c = document.querySelector('[data-aviso-pase-ver]'); if (c) c.click(); return true })()")
+  debe(await hayPago(g), 'gratis', 'y su [Ver el Pase Roma] abre la lista del pase')
   await cerrarPago(g)
   // DÍAS: la barra de llegada con [+ Vuelo] abierto y el ajuste cerrado.
   await g.evaluar(`${store}.then((s) => { s.setActiveDayId(s.route.days[0].id); s.setMode('days'); return true })`)
@@ -213,7 +215,7 @@ const cerrarPago = async (a) => {
   debe(/LLEGADA/.test(dias), 'gratis', 'DÍAS: la barra de llegada sale')
   debe(await g.evaluar("Boolean(document.querySelector('[data-candado=\"dia-ajuste-llegada\"]'))"), 'gratis', 'DÍAS: con el vuelo guardado, el ajuste del día sale cerrado («Con el pase, tu día se ajusta a la hora de tu vuelo»)')
   debe(await g.evaluar("Boolean(document.querySelector('[data-alojamiento-dia-bloque]'))"), 'gratis', 'DÍAS (10N11): la tarjeta del alojamiento del día 1 sale (sin la caja vieja de la zona)')
-  // Logros: la vitrina y las colecciones se ven, cerradas, con «Con el Pase de Roma, cada sitio que ves suma».
+  // Logros: la vitrina y las colecciones se ven, cerradas, con «Con el Pase Roma, cada sitio que ves suma».
   await g.evaluar('window.__momentos.hoja()')
   await g.esp(3000)
   debe(await g.evaluar("Boolean(document.querySelector('[data-logros-cerrados]')) && Boolean(document.querySelector('[data-candado=\"logros-sin-pase\"]'))"), 'gratis', 'Logros: sin pase, la vitrina y las colecciones salen cerradas, con su candado')
@@ -233,7 +235,7 @@ const cerrarPago = async (a) => {
 {
   const c = await conViaje('completa')
   await modo(c, 'route')
-  debe((await c.evaluar("document.querySelector('[data-pastilla-pase]')?.getAttribute('data-pastilla-pase')")) === 'con', 'completa', 'RUTA con el pase: la pastilla «Pase de Roma» lleva el ✓ sobre oro')
+  debe((await c.evaluar("document.querySelector('[data-pastilla-pase]')?.getAttribute('data-pastilla-pase')")) === 'con', 'completa', 'RUTA con el pase: la pastilla «Pase Roma» lleva el ✓ sobre oro')
   await modo(c, 'bookings')
   const reservas = await c.evaluar('document.body.innerText')
   debe(/Llegada y vuelta/.test(reservas), 'completa', 'RESERVAS con el pase: «Llegada y vuelta» sigue')
@@ -253,7 +255,7 @@ const cerrarPago = async (a) => {
   debe(/export function abrirPase\(\)/.test(pago) && /export const pedirPago = abrirPase/.test(pago), 'pase', 'hay UNA función para abrir el pase (abrirPase) y pedirPago es la misma')
   for (const f of ['src/components/pase/Candado.tsx', 'src/components/pase/PastillaPase.tsx']) debe(/abrirPase/.test(leer(f)) && !/usePagoStore/.test(leer(f)), 'pase', `${f} abre el pase con abrirPase`)
   debe(/abrirAvisoPase/.test(leer('src/components/route/ExplorePanel.tsx')), 'pase', 'las tarjetas cerradas de EXPLORAR también')
-  debe(/data-hoy-ver-pase/.test(leer('src/components/route/hoy/TarjetaDeLaPrueba.tsx')) && /fila\.verElPase/.test(leer('src/components/route/hoy/TarjetaDeLaPrueba.tsx')) && /tipo: 'prueba_otro_dia'[\s\S]{0,400}verElPase: false/.test(leer('src/lib/diaDePrueba.ts')), 'pase', 'HOY antes del viaje: el [Ver el Pase de Roma] de la tarjeta del día de prueba ya no se repite')
+  debe(/data-hoy-ver-pase/.test(leer('src/components/route/hoy/TarjetaDeLaPrueba.tsx')) && /fila\.verElPase/.test(leer('src/components/route/hoy/TarjetaDeLaPrueba.tsx')) && /tipo: 'prueba_otro_dia'[\s\S]{0,400}verElPase: false/.test(leer('src/lib/diaDePrueba.ts')), 'pase', 'HOY antes del viaje: el [Ver el Pase Roma] de la tarjeta del día de prueba ya no se repite')
 }
 
 console.log(`${comprobaciones} comprobaciones · ${fallos.length} fallos`)

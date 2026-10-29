@@ -103,14 +103,14 @@ console.log('1. Entrar en la cuenta (A1 a A4, I1, I2, P7b)')
   // P7b: lo que ve quien recibe el enlace.
   const vista = { valida: true, destino: 'Roma', invitador: 'Laura', inicio: '2026-10-16', fin: '2026-10-19', con_pase: true }
   const p7b = M.pintaInvitacion(vista)
-  debe(/Laura te invita a su /.test(p7b) && /Pase de Roma/.test(p7b), 'P7b', '«Laura te invita a su Pase de Roma»')
+  debe(/Laura te invita a su /.test(p7b) && /Pase Roma/.test(p7b), 'P7b', '«Laura te invita a su Pase Roma»')
   debe(/Sin pagar nada/.test(p7b) && />Unirme</.test(p7b), 'P7b', 'P7b dice «Sin pagar nada» y tiene [Unirme]')
   debe(/Roma · 16 – 19 oct 2026/.test(p7b), 'P7b', 'P7b lleva el destino y las fechas («Roma · 16 – 19 oct 2026»)')
   debe(/>L</.test(p7b), 'P7b', 'P7b lleva la inicial de quien invita')
   debe(!/Sin pagar nada/.test(M.pintaInvitacion({ ...vista, con_pase: false })) && /te invita a su viaje a Roma/.test(M.pintaInvitacion({ ...vista, con_pase: false })), 'P7b', 'sin pase no dice «Sin pagar nada» y habla del viaje')
   debe(/Alguien te invita/.test(M.titularDeInvitacion({ valida: true, destino: 'Roma', invitador: null, con_pase: true })), 'P7b', 'sin nombre puesto, «Alguien te invita…»')
   debe(/se ha anulado/.test(M.pintaInvitacion({ valida: false, motivo: 'anulada' })) && />Seguir</.test(M.pintaInvitacion({ valida: false, motivo: 'anulada' })), 'P7b', 'una invitación anulada lo dice y deja seguir')
-  debe(/<em[^>]*data-pase-resaltado/.test(M.pintaTextoPase('Con el Pase de Florencia, tu primer día')), 'P7b', 'el «Pase de …» se resalta con cualquier destino')
+  debe(/<em[^>]*data-pase-resaltado/.test(M.pintaTextoPase('Con el Pase Florencia, tu primer día')), 'P7b', 'el «Pase de …» se resalta con cualquier destino')
 
   // La invitación solo se canjea si se acepta con [Unirme].
   M.olvidarInvitacionPendiente()
@@ -277,7 +277,7 @@ const usuarioCarla = { id: comprador, email: 'carla@correo.es', is_anonymous: fa
 
   // Ya tiene el pase de Roma: no se cobra dos veces.
   const otra = await servicio.crearPago(usuarioCarla, { destino: 'Roma', plan: 'uno' }, 'http://localhost:5173')
-  debe(otra.estado === 409 && otra.cuerpo.ya_tienes === true, 'ya_tienes', 'con el Pase de Roma ya comprado no se vuelve a cobrar: el pase es del destino, para siempre')
+  debe(otra.estado === 409 && otra.cuerpo.ya_tienes === true, 'ya_tienes', 'con el Pase Roma ya comprado no se vuelve a cobrar: el pase es del destino, para siempre')
 
   // Paga todo el que compra: el invitado entra con su plaza sin pagar.
   const dani = await nuevoUsuario('dani@correo.es', false, 'Dani')
@@ -472,12 +472,12 @@ console.log('2b. Las pantallas del pase (P1, P6, P7, P8b, P9)')
   // P7 y RS2: la misma hoja del enlace y el código.
   const duo = { id: 'p', destino: 'Roma', tipo: 'duo', estado: 'activo', usos_max: 2, usos_usados: 1, es_mio: true, invitacion: null, viaje: null, miembros: [] }
   const p7 = M.pintaInvitar({ modo: 'pase', destino: 'Roma', tripId: 'v1', pase: duo, codigoInicial: 'K7MQ4XWH' })
-  debe(/Pase Dúo/.test(p7) && /Únete a mi /.test(p7) && /Pase de Roma/.test(p7) && /K7MQ4XWH/.test(p7) && /1 de 2 usados/.test(p7) && /Compartir el enlace/.test(p7), 'P7', 'P7: «Pase Dúo», «Únete a mi Pase de Roma», su código y «1 de 2 usados» con [Compartir el enlace]')
+  debe(/Pase Dúo/.test(p7) && /Únete a mi /.test(p7) && /Pase Roma/.test(p7) && /K7MQ4XWH/.test(p7) && /1 de 2 usados/.test(p7) && /Compartir el enlace/.test(p7), 'P7', 'P7: «Pase Dúo», «Únete a mi Pase Roma», su código y «1 de 2 usados» con [Compartir el enlace]')
   const rs2 = M.pintaInvitar({ modo: 'viaje', destino: 'Roma', tripId: 'v1', pase: duo, codigoInicial: 'K7MQ4XWH' })
   debe(/Compartir viaje/.test(rs2) && /Invita a los tuyos a tu viaje a Roma/.test(rs2) && /1 de 2 plazas del pase usadas/.test(rs2), 'RS2', 'RS2 con un Dúo: la misma hoja, «Invita a los tuyos a tu viaje a Roma» y «1 de 2 plazas del pase usadas»')
   debe(/^[A-Z2-9]{8}$/.test('K7MQ4XWH'), 'codigo', 'el código es de 8 caracteres sin 0, O, 1, I ni L (el de siempre)')
   debe(!/\bK7MQ4XWH\b/.test(M.pintaInvitar({ modo: 'viaje', destino: 'Roma', tripId: 'v1', pase: null })) && /········/.test(M.pintaInvitar({ modo: 'viaje', destino: 'Roma', tripId: 'v1', pase: null })), 'RS2', 'sin código todavía, la hoja espera (puntos) y [Compartir el enlace] no se puede pulsar')
-  debe(M.textoDeCompartirPase('Roma') === 'Únete a mi Pase de Roma' && M.nombreDelTipo('grupo') === 'Pase Grupo', 'P7', 'los textos de compartir')
+  debe(M.textoDeCompartirPase('Roma') === 'Únete a mi Pase Roma' && M.nombreDelTipo('grupo') === 'Pase Grupo', 'P7', 'los textos de compartir')
 
   // P8b y P9: solo con dos viajes a Roma que se pisan.
   const vA = { id: 'a', route: { destination: 'Roma', answers: { dateRange: { start: '2026-10-16', end: '2026-10-19' } } }, guardadoEn: null }
@@ -490,14 +490,14 @@ console.log('2b. Las pantallas del pase (P1, P6, P7, P8b, P9)')
   const a = { id: 'a', destino: 'Roma', inicio: '2026-10-16', fin: '2026-10-19' }
   const b = { id: 'b', destino: 'Roma', inicio: '2026-10-16', fin: '2026-10-20' }
   const p8b = M.pintaDosViajes({ modo: 'p8b', destino: 'Roma', actual: a, otro: b })
-  debe(/En 10 días empieza tu viaje a Roma\. Tu /.test(p8b) && /Pase de Roma/.test(p8b) && /está activo para el viaje del 16 al 19 de octubre\. Si quieres cambiarlo, ahora es el momento\./.test(p8b), 'P8b', 'P8b: el texto del aviso de los 10 días')
+  debe(/En 10 días empieza tu viaje a Roma\. Tu /.test(p8b) && /Pase Roma/.test(p8b) && /está activo para el viaje del 16 al 19 de octubre\. Si quieres cambiarlo, ahora es el momento\./.test(p8b), 'P8b', 'P8b: el texto del aviso de los 10 días')
   debe(/Es este/.test(p8b) && /Cambiar al del 16 al 20/.test(p8b), 'P8b', 'P8b: [Es este] y [Cambiar al del 16 al 20]')
   const p9 = M.pintaDosViajes({ modo: 'p9', destino: 'Roma', actual: a, otro: b, etiquetaDia: 'Hoy · mié 16' })
   debe(/Tienes dos viajes a Roma\. ¿Cuál haces\?/.test(p9) && /El otro pasa a «Viajes guardados», sin borrarse\./.test(p9) && /Del 16 al 19 de octubre/.test(p9) && /Del 16 al 20 de octubre/.test(p9) && /Hoy · mié 16/.test(p9), 'P9', 'P9: la pregunta, el aviso de que el otro no se borra y un botón por viaje')
 
   // P1: debajo del vuelo, sin pase.
   const p1 = M.pintaP1({ hora: '14:20', destino: 'Roma', forzar: true })
-  debe(/Llegada/.test(p1) && /Tu vuelo llega a las 14:20\. Con el /.test(p1) && /Pase de Roma/.test(p1) && /tu primer día se ajusta solo/.test(p1) && /Ver el pase/.test(p1), 'P1', 'P1: «Tu vuelo llega a las 14:20. Con el Pase de Roma, tu primer día se ajusta solo.» y [Ver el pase]')
+  debe(/Llegada/.test(p1) && /Tu vuelo llega a las 14:20\. Con el /.test(p1) && /Pase Roma/.test(p1) && /tu primer día se ajusta solo/.test(p1) && /Ver el pase/.test(p1), 'P1', 'P1: «Tu vuelo llega a las 14:20. Con el Pase Roma, tu primer día se ajusta solo.» y [Ver el pase]')
   debe(M.pintaP1({ hora: '14:20', destino: 'Roma' }) === '', 'P1', 'con el cobro apagado (todo abierto), P1 no sale')
   const reservas = fs.readFileSync('src/components/route/reservas/LlegadaYVuelta.tsx', 'utf8')
   // (Tanda 10G: la tarjeta P1 la sustituye en RESERVAS la pieza del candado de toda la app —«Con el pase, ajustamos tu primer y tu último día a tu vuelo»—, justo después del bloque del vuelo y solo con un vuelo guardado.)
@@ -739,7 +739,7 @@ console.log('4. La campanita de Avisos (los textos, la lista y el permiso)')
   debe(T('sorpresas', { texto: 'Te quedan 3 días para reclamar tus 2 sorpresas de Roma' }) === 'Te quedan 3 días para reclamar tus 2 sorpresas de Roma', 'AV2', '«Te quedan 3 días para reclamar tus 2 sorpresas de Roma»')
   debe(T('recomendacion', { autor: null, tipo_rec: 'cambio', dia: 2 }) === 'Te han recomendado un cambio en el día 2' && !/Viajero/.test(T('recomendacion', { autor: null, tipo_rec: 'ruta', dia: null })), 'AV2', 'sin nombre puesto no se inventa «Viajero»: «Te recomiendan un cambio en el día 2»')
   const p8 = M.textoDelPush({ tipo: 'd10', payload: { destino: 'Roma', dias: 10, con_pase: true, inicio: '2026-10-16', fin: '2026-10-19' } })
-  debe(p8 === 'En 10 días empieza tu viaje a Roma. Tu Pase de Roma está activo para el viaje del 16 al 19 de octubre.', 'P8', 'P8: el aviso de los 10 días en el móvil, con lo del pase')
+  debe(p8 === 'En 10 días empieza tu viaje a Roma. Tu Pase Roma está activo para el viaje del 16 al 19 de octubre.', 'P8', 'P8: el aviso de los 10 días en el móvil, con lo del pase')
   debe(M.textoDelPush({ tipo: 'd10', payload: { destino: 'Roma', dias: 10, con_pase: false } }) === 'En 10 días empieza tu viaje a Roma', 'P8', 'sin pase, el aviso de los 10 días no habla del pase')
   debe(M.quienDelAviso({ tipo: 'recomendacion', payload: { autor: 'Laura' } }) === 'Laura' && M.quienDelAviso({ tipo: 'd10', payload: {} }) === null, 'AV2', 'la inicial del círculo es de quien lo hace; los avisos de fecha no llevan persona')
   debe(M.haceCuanto('2026-10-10T10:00:00Z', Date.parse('2026-10-10T10:05:00Z')) === 'hace 5 min' && M.haceCuanto('2026-10-10T10:00:00Z', Date.parse('2026-10-10T11:10:00Z')) === 'hace 1 h' && M.haceCuanto('2026-10-09T10:00:00Z', Date.parse('2026-10-10T12:00:00Z')) === 'ayer' && M.haceCuanto('2026-10-06T10:00:00Z', Date.parse('2026-10-10T12:00:00Z')) === '6 oct' && M.haceCuanto('2026-10-10T10:00:00Z', Date.parse('2026-10-10T10:00:10Z')) === 'ahora', 'AV2', 'cuánto hace de cada aviso: «hace 5 min», «hace 1 h», «ayer», «6 oct»')
