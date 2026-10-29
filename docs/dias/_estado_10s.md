@@ -1,13 +1,13 @@
-# Estado de la tanda 10N12
+# Estado de la tanda 10S
 
-**Última actualización: 29/10/26, 19:39**
+**Última actualización: 29/10/26, 20:02**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-10N12 cerrada y pusheada (882f5451)
+Empezando la 10S: lanzando agentes (infra bateria, pruebas sueltas, peso, retoques)
 
 ## Qué falta
-nada; cerrando procesos (sin apagar el PC)
+todo
 
 ## Procesos abiertos ahora mismo
 - node: 3
