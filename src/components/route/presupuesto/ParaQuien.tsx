@@ -1,6 +1,5 @@
-import type { ReactNode } from 'react'
-import { InterruptorElegir, PastillaElegir } from '../../ui/Elegir'
-import { Icono } from '../../ui/Icono'
+import { ESTILO_PREGUNTA, PersonasCuadradas } from '../../ui/PersonasCuadradas'
+import { preguntaParaQuien } from './BloqueDinero'
 import { nombreVisible } from '../../../lib/nombrePersona'
 import { nombresEnFrase } from '../../../lib/gastosCompartidos'
 
@@ -12,20 +11,9 @@ import { nombresEnFrase } from '../../../lib/gastosCompartidos'
 
 export type QueSeAnade = 'entrada' | 'vuelo' | 'alojamiento' | 'excursion' | 'coche'
 
-/** «¿Para quién has comprado la entrada?» / «¿Para quién has reservado el alojamiento?» … */
+/** (Tanda 10N10 §6) «¿Para quién son las entradas?» / «¿Para quién es este vuelo?» / «¿Para quién es el alojamiento?» / «¿Para quién es la excursión?» / «¿Para quién es el coche?». Un solo sitio: `preguntaParaQuien` de BloqueDinero. */
 export function preguntaDeReserva(que: QueSeAnade): string {
-  switch (que) {
-    case 'entrada':
-      return '¿Para quién has comprado la entrada?'
-    case 'vuelo':
-      return '¿Para quién has comprado el vuelo?'
-    case 'alojamiento':
-      return '¿Para quién has reservado el alojamiento?'
-    case 'excursion':
-      return '¿Para quién has reservado la excursión?'
-    case 'coche':
-      return '¿Para quién has reservado el coche?'
-  }
+  return preguntaParaQuien(que === 'entrada' ? 'entradas' : que) ?? '¿Para quién es?'
 }
 
 /** La línea pequeña debajo de los nombres: «Solo para ti: es un gasto tuyo y nadie más lo ve.» · «Para 2 personas: entra en las cuentas del grupo.» · «Para Ana: entra en las cuentas del grupo.» */
@@ -38,53 +26,21 @@ export function lineaParaQuien(marcados: readonly string[], yoId: string | null,
 
 const MENUDO = { font: "400 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' } as const
 
-/** Los dos botones de la cuenta conjunta: «Para los dos» / «Para todos» (marcada) y «Solo para mí». */
-export function ParaQuienConjunta({ valor, onCambio, personas, pregunta = '¿Para quién es?', datos = 'para-quien-conjunta' }: { valor: 'todos' | 'mio'; onCambio: (v: 'todos' | 'mio') => void; personas: number; pregunta?: string; datos?: string }) {
-  const todos = personas > 2 ? 'Para todos' : 'Para los dos'
-  const marca = <Icono nombre="hecho" size={16} />
-  return (
-    <div className="flex flex-col gap-2.5" data-para-quien-modo="conjunta">
-      <span className="text-[15px] font-semibold text-text">{pregunta}</span>
-      <InterruptorElegir
-        valor={valor}
-        onCambio={(id) => onCambio(id as 'todos' | 'mio')}
-        datos={datos}
-        etiqueta={pregunta}
-        opciones={[
-          { id: 'todos', texto: todos, icono: valor === 'todos' ? marca : <Icono nombre="compartido" size={17} />, atributos: { 'data-opcion': 'todos' } },
-          { id: 'mio', texto: 'Solo para mí', icono: valor === 'mio' ? marca : <Icono nombre="perfil" size={16} />, atributos: { 'data-opcion': 'mio' } },
-        ]}
-      />
-      {valor === 'mio' && (
-        <span data-solo-lo-ves-tu className="flex items-center gap-1.5" style={MENUDO}>
-          <Icono nombre="candado" size={12} />
-          Solo lo ves tú.
-        </span>
-      )}
-    </div>
-  )
-}
-
 /** Las pastillas con los nombres de «Cada uno lo suyo»: marcado solo quien lo añade, y la línea pequeña. */
-export function ParaQuienConNombres({ pregunta, personas, marcados, onAlternar, yoId, nombreDe, inicial, datos = 'para-quien', datosPorId = true, cuenta = true, pie }: { pregunta: string; personas: { id: string; nombre: string; esAdmin: boolean }[]; marcados: string[]; onAlternar: (id: string) => void; yoId: string | null; nombreDe: (id: string) => string; inicial?: (p: { nombre: string; esAdmin: boolean }) => ReactNode; datos?: string; datosPorId?: boolean; cuenta?: boolean; pie?: boolean }) {
+export function ParaQuienConNombres({ pregunta, personas, marcados, onAlternar, yoId, nombreDe, datos = 'para-quien', cuenta = true, pie }: { pregunta: string; personas: { id: string; nombre: string; esAdmin: boolean }[]; marcados: string[]; onAlternar: (id: string) => void; yoId: string | null; nombreDe: (id: string) => string; datos?: string; cuenta?: boolean; pie?: boolean }) {
   const linea = lineaParaQuien(marcados, yoId, nombreDe)
   return (
     <div className="flex flex-col gap-2.5" data-para-quien-modo="cada_uno" data-para-quien>
       <span className="flex items-baseline justify-between gap-2">
-        <span className="text-[15px] font-semibold text-text">{pregunta}</span>
+        <span style={ESTILO_PREGUNTA}>{pregunta}</span>
         {cuenta && (
           <span data-para-quien-cuenta className="flex-none text-text/50" style={{ font: "500 11px 'Geist Mono',monospace", letterSpacing: '.04em' }}>
             {marcados.length} de {personas.length}
           </span>
         )}
       </span>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-        {personas.map((p) => (
-          <PastillaElegir key={p.id} elegida={marcados.includes(p.id)} onClick={() => onAlternar(p.id)} marca datos={datosPorId ? `${datos}-${p.id}` : datos} icono={marcados.includes(p.id) || !inicial ? undefined : inicial(p)}>
-            {nombreVisible(p.nombre) || 'Alguien'}
-          </PastillaElegir>
-        ))}
-      </div>
+      {/* (Tanda 10N10 §4) Para ELEGIR a alguien, cuadrados (azul oscuro con ✓ dorado si está marcado, blanco si no). */}
+      <PersonasCuadradas personas={personas.map((p) => ({ id: p.id, nombre: p.nombre }))} marcados={marcados} onAlternar={onAlternar} datos={datos} etiqueta={pregunta} />
       {pie !== false && (
         <span data-linea-para-quien style={MENUDO}>
           <b style={{ fontWeight: 600, color: 'rgba(28,34,48,.78)' }}>{linea.fuerte}</b>

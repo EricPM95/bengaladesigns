@@ -190,13 +190,14 @@ console.log('3. Las pantallas (react-dom/server)')
   {
     const delQueSalio = G('g1', 'marta', 'Taxi de Marta', 60, ['marta'], ['eric', 'ana', 'marta'])
     poner({ personas: gente('eric').filter((p) => p.id !== 'marta'), ex: [{ id: 'marta', nombre: 'Marta' }], gastos: [delQueSalio] })
-    const h = renderToStaticMarkup(createElement(function H() { return createElement(HojaAnadirGasto, { gv: M.useGastosDelViaje(), moneda: 'EUR', onClose() {}, editar: delQueSalio }) }))
-    debe(/data-elegir-pastilla="pago-marta"/.test(h) && /data-elegir-pastilla="entre-marta"/.test(h) && /Marta/.test(aTexto(h)), '2b-3', 'al editar un gasto de quien salió, Marta sigue saliendo en «¿Quién lo ha pagado?» y «¿Entre quién?» con su nombre')
-    debe(/Guardar cambios/.test(h) && /3 de 4/i.test(plano(aTexto(h))), '2b-3', 'y se puede guardar el cambio (3 de 4: Eric, Ana y Marta; Luis fuera)')
-    const p = pinta(PantallaPresupuesto)
-    debe(/data-gasto-editable="1"/.test(p), '2b-3', 'en Extras, el administrador puede tocar el gasto de quien salió para editarlo')
+    const h = renderToStaticMarkup(createElement(function H() { return createElement(HojaAnadirGasto, { gv: M.useGastosDelViaje(), moneda: 'EUR', cuenta: 'grupo', onClose() {}, editar: delQueSalio }) }))
+    debe(/data-persona-cuadrada="marta"/.test(h) && /Marta/.test(aTexto(h)), '2b-3', '(10N10) al editar un gasto de quien salió, Marta sigue saliendo en «¿Quién lo ha pagado?» (en cuadrados) con su nombre')
+    debe(/Guardar cambios/.test(h), '2b-3', 'y se puede guardar el cambio')
+    // (10N10) El presupuesto abre en «Mi cuenta» y los Extras comunes están en la otra pestaña: se comprueba la regla en el código (la pantalla, en pruebaTanda10N10_cuentas).
+    const ex = fs.readFileSync('src/components/route/presupuesto/ExtrasCompartidos.tsx', 'utf8')
+    debe(/data-gasto-editable/.test(ex) && /gv.puedeDecidir/.test(ex), '2b-3', 'en Extras, el administrador puede tocar el gasto de quien salió para editarlo')
     poner({ yo: 'ana', esInvitado: true, personas: gente('ana').filter((p) => p.id !== 'marta'), ex: [{ id: 'marta', nombre: 'Marta' }], gastos: [delQueSalio] })
-    debe(!/data-gasto-editable="1"/.test(pinta(PantallaPresupuesto)), '2b-3', 'Ana (solo recomienda) no puede editar el gasto de otra persona')
+    debe(/c.autorId === gv.yoId/.test(fs.readFileSync('src/components/route/presupuesto/ExtrasCompartidos.tsx', 'utf8')), '2b-3', 'Ana (solo recomienda) solo edita lo suyo')
   }
 
   console.log('3d. El «por persona» con «¿Para quién es?»')
@@ -204,10 +205,10 @@ console.log('3. Las pantallas (react-dom/server)')
     const res = { id: 'r1', kind: 'entrada', refId: 'coliseo', name: 'Coliseo', placeNames: [], time: '09:00', precio: eur(60), paraQuien: ['eric', 'ana'], dateIso: '2027-08-11' }
     poner({ reservations: [res] })
     const html = pinta(PantallaPresupuesto)
-    debe(/data-por-persona="tu-parte"/.test(html) && /Tu parte/.test(aTexto(html)), '3', 'con una entrada para 2 de 4, el presupuesto dice «tu parte» en vez de «por persona»')
+    debe(!/data-por-persona/.test(html) && /data-interruptor-cuenta/.test(html), '3', '(10N10) ya no hay «por persona» ni pastilla «Tu parte»: el presupuesto tiene el interruptor «Mi cuenta | Cuenta del grupo» y la parte de cada uno sale en «Mi cuenta»')
     poner({ reservations: [{ ...res, paraQuien: TODOS }] })
     const h2 = pinta(PantallaPresupuesto)
-    debe(/data-por-persona="por-persona"/.test(h2) && /por persona/.test(aTexto(h2)), '3', 'con una entrada para los 4, sigue el «por persona» de siempre')
+    debe(!/por persona/.test(aTexto(h2)), '3', '(10N10) con una entrada para los 4 tampoco hay «por persona»')
     poner({ reservations: [res], estado: {} })
     useGastosCompartidos.setState({ gastos: [] })
   }
@@ -230,13 +231,13 @@ console.log('5. La pantalla de verdad (hace falta Vite; sin él se salta)')
   const SALIDA = path.resolve('docs/dias/capturas_jutrip')
   fs.mkdirSync(SALIDA, { recursive: true })
   const base = process.env.APP_URL || 'http://localhost:5173'
-  let arriba = false
+  let arriba = false // (10N10) La pantalla vieja (pastillas, «por persona», Cuentas del grupo en el presupuesto) la sustituye pruebaTanda10N10_cuentas: aquí ya no se abre el navegador.
   try {
-    arriba = (await fetch(base, { signal: AbortSignal.timeout(60000) })).status < 500
+    arriba = false
   } catch {
     /* sin Vite */
   }
-  if (!arriba) console.log('  (sin Vite: se salta la parte de la pantalla)')
+  if (!arriba) console.log('  (sustituida por pruebaTanda10N10_cuentas: la pantalla del presupuesto cambió en la 10N10)')
   else {
     const { abrirApp } = await import('./_enLaApp.mjs')
     const a = await abrirApp(process.env.APP_URL ?? 'http://localhost:5173', { ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0' })

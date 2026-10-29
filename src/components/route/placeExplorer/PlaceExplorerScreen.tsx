@@ -68,6 +68,8 @@ interface PlaceExplorerScreenProps {
   route?: Route | null
   /** Filtros ya activos al abrir — EXPLORAR entra con el suyo puesto; el "+" de DIAS entra sin ninguno. */
   initialFilters?: PlaceFilterId[]
+  /** (10N10 §3c) «+ Añadir parada»: al abrir, solo los sitios para visitar; los restaurantes, cafés, helados y bares salen solo si el viajero toca su bloque. */
+  soloSitiosParaVisitar?: boolean
   /** Desde dónde se ordena «Cerca de ti» al abrir (HOY, «Cerca de ti»: donde está el viajero o la siguiente parada). Con él se entra directo en «Cerca de ti» y no se pide la ubicación. Solo de pago. */
   initialOrigin?: Coordinates | null
   /** Abrir directamente en «Cerca de ti» (ordenado por cercanía, pidiendo la ubicación si no hay punto de partida): la tarjeta «Hoy vuelves a casa» (Tanda 7). Solo de pago. */
@@ -342,6 +344,7 @@ export function PlaceExplorerScreen({
   dateIso = null,
   route = null,
   initialFilters = [],
+  soloSitiosParaVisitar = false,
   initialOrigin = null,
   initialNearby = false,
   excursions = [],
@@ -588,6 +591,7 @@ export function PlaceExplorerScreen({
     const filtered = places.filter(
       (place) =>
         (osmShown(place)) &&
+        (!soloSitiosParaVisitar || restaurantsActive || place.kind !== 'restaurant') &&
         matchesSubCategory(place) &&
         (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))) &&
         // "Entradas" acota, no sustituye: se cruza con lo que ya hubiera activo (ver ticketsActive).
@@ -622,7 +626,7 @@ export function PlaceExplorerScreen({
       return a.name.localeCompare(b.name, 'es')
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [places, needle, queryTooShort, activeFilters, activeSubCategory, tab, position, likesTotales, recommendedZone, manualOrder])
+  }, [places, needle, queryTooShort, activeFilters, activeSubCategory, tab, position, likesTotales, recommendedZone, manualOrder, soloSitiosParaVisitar])
 
   // Prompt 3 (bug 1): el mapa recibe SIEMPRE el catálogo entero, pase lo que pase con los filtros,
   // y lo que cambia al marcar un chip es únicamente qué pines están ocultos. Antes se le pasaba solo
@@ -842,11 +846,8 @@ export function PlaceExplorerScreen({
               </span>
             )}
           </div>
-          {onFreeTour ? (
-            <button type="button" onClick={onFreeTour} className="shrink-0 rounded-full border border-border px-3 py-1.5 text-caption font-semibold text-text hover:bg-bg-hover">Free Tour</button>
-          ) : (
-            <span aria-hidden="true" />
-          )}
+          {/* 10N10: fuera el botón «Free Tour» de arriba a la derecha (el Free Tour es una parada más, en «Entradas»). */}
+          <span aria-hidden="true" />
         </header>
 
         {pickMode?.hint && <p className="shrink-0 px-4 pb-2 text-center text-small text-text-soft">{pickMode.hint}</p>}
@@ -1348,6 +1349,13 @@ export function PlaceExplorerScreen({
                               {picked && (
                                 <Icono nombre="hecho" size={16} grosor={2.4} />
                               )}
+                            </span>
+                          </button>
+                        ) : quickAddLabel === '+ Añadir' && !place.solo_entradas && (onQuickAdd ?? onQuickPick) && !pickMode ? (
+                          // (10N10 §2b) Restaurantes, cafés, helados y bares también llevan el «+» redondo: se añaden como una parada más (para parar a tomar algo). En «Comida — vie 30» (quickAddLabel «Elegir») sigue «Elegir».
+                          <button type="button" onClick={() => (onQuickAdd ? onQuickAdd(place) : void addDirect(place))} aria-label={`Añadir ${place.name}`} data-mas-restaurante="1" className="flex h-11 w-11 items-center justify-center" style={{ margin: '0 -8px -8px 0' }}>
+                            <span className="flex h-7 w-7 items-center justify-center rounded-full text-[18px] font-medium leading-none" style={{ border: `1.5px solid ${warm}`, color: 'rgb(var(--accent-hover))' }}>
+                              +
                             </span>
                           </button>
                         ) : (place.solo_entradas ? onFreeTour : onQuickAdd) && !pickMode && !(place.solo_entradas && alreadyInRoute) ? (

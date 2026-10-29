@@ -50,27 +50,12 @@ console.log('1. El código')
   // §0a punto 1: las fechas del viaje, bloqueadas también para quien solo recomienda (ya estaba así; solo se comprueba).
   debe(/miPermisoAhora\(\) !== 'admin'\) return/.test(sinComentarios(leer('src/store/useDatesCalendarStore.ts'))), 'fechas', 'las fechas del viaje solo las abre el administrador (quien edita o solo recomienda no puede)')
   const presu = sinComentarios(leer('src/components/route/presupuesto/PantallaPresupuesto.tsx'))
-  debe(/<EtiquetaPorPersona tuParte=\{Boolean\(parte\?\.tuParte\)\}/.test(presu), 'tu parte', 'el presupuesto pinta la pastilla con EtiquetaPorPersona')
-  debe(!/Tu parte · [0-9]/.test(presu) && !/[0-9] €/.test(presu.replace(/\/\/.*$/gm, '')), 'tu parte', 'el € no está escrito a mano en el presupuesto')
+  // (10N10 §5b) La pastilla «Tu parte · 31 €» / «por persona» se quitó: lo suyo va en «Mi cuenta» y la línea «Tu parte de la cuenta conjunta»; el € tampoco se escribe a mano.
+  debe(!/EtiquetaPorPersona|por persona/.test(presu) && !/[0-9] €/.test(presu.replace(/\/\/.*$/gm, '')), 'tu parte', '(10N10) el presupuesto ya no tiene la pastilla «Tu parte» ni «por persona», y el € no está escrito a mano')
 }
 
 /* ─────────────────────────── 2. «Tu parte · 31 €» ─────────────────────────── */
-console.log('2. La pastilla del presupuesto')
-{
-  const { M, limpiar } = await prepararSSR('scripts/destino/_10n4_perfil_entrada.tsx')
-  const { createElement, renderToStaticMarkup, EtiquetaPorPersona, formatoImporte } = M
-  const aTexto = (html) => html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/ /g, ' ').replace(/\s+/g, ' ').trim()
-  const treintayuno = formatoImporte({ amount: 31, currency: 'EUR' })
-  const parte = aTexto(renderToStaticMarkup(createElement(EtiquetaPorPersona, { tuParte: true, importe: treintayuno, simbolo: '€' })))
-  const todos = aTexto(renderToStaticMarkup(createElement(EtiquetaPorPersona, { tuParte: false, importe: treintayuno, simbolo: '€' })))
-  const norm = (s) => s.replace(/\s+/g, ' ')
-  debe(norm(parte) === norm(`Tu parte · ${treintayuno}`), 'tu parte', `una reserva para 2 de 4 dice «Tu parte · ${treintayuno}» y sale «${parte}»`)
-  debe(/^Tu parte · 31/.test(parte) && /€$/.test(parte), 'tu parte', `mayúscula, punto medio y el € detrás: «${parte}»`)
-  debe(norm(todos) === norm(`${treintayuno} por persona`) && !/Tu parte|tu parte/.test(todos), 'tu parte', `para todo el grupo sigue «${treintayuno} por persona» y sale «${todos}»`)
-  const escondida = aTexto(renderToStaticMarkup(createElement(EtiquetaPorPersona, { tuParte: true, importe: null, simbolo: '€' })))
-  debe(/^Tu parte · € •••$/.test(escondida), 'tu parte', `con el ojo cerrado: «Tu parte · € •••» y sale «${escondida}»`)
-  limpiar?.()
-}
+console.log('2. La pastilla del presupuesto: quitada en la 10N10 (§5b); sustituida por la línea «Tu parte de la cuenta conjunta» (pruebaTanda10N10_cuentas)')
 
 /* ─────────────────────────── 3. La pantalla ─────────────────────────── */
 console.log('3. La pantalla: el perfil con los logros apagados y encendidos')

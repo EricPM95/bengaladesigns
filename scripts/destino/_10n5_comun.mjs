@@ -11,7 +11,7 @@ export const foto = (n) => path.join(SALIDA, `10n5_${n}.jpg`)
 export const esp = (ms) => new Promise((r) => setTimeout(r, ms))
 export const leer = (f) => fs.readFileSync(f, 'utf8')
 
-/** Un viaje de prueba abierto. `version`: 'gratis' (sin pase) | 'pago' (con pase). `vista`: la película ya vista (el final directo). `extraAntes`: JavaScript antes de cargar. */
+/** Un viaje de prueba abierto. `version`: 'gratis' (sin pase) | 'pago' (con pase). (Tanda 10N10, 8b: ya no hay película ni «ya vista»: si alguien aún pasa `vista`, se ignora; todo abre directo la lista del pase.)`extraAntes`: JavaScript antes de cargar. */
 export async function conViaje(o = {}) {
   // (Otros agentes editan el mismo árbol: si la página se recarga o falla a mitad de crear el viaje, se vuelve a intentar.)
   let ultimo
@@ -24,8 +24,8 @@ export async function conViaje(o = {}) {
   }
   throw ultimo
 }
-async function conViaje1({ ancho = 390, alto = 664, version = 'gratis', vista = true, extraAntes = '', ruta } = {}) {
-  const antes = `${vista ? "try{localStorage.setItem('trazo:pelicula-pase-vista','1')}catch(e){};" : ''}try{localStorage.setItem('trazo:moneda-pase','EUR')}catch(e){}; ${version === 'gratis' ? 'window.__pruebaDelPase = { cobro: true, conPase: false, puede: true, pruebaGastada: false };' : ''} ${extraAntes}`
+async function conViaje1({ ancho = 390, alto = 664, version = 'gratis', extraAntes = '', ruta } = {}) {
+  const antes = `try{localStorage.setItem('trazo:moneda-pase','EUR')}catch(e){}; ${version === 'gratis' ? 'window.__pruebaDelPase = { cobro: true, conPase: false, puede: true, pruebaGastada: false };' : ''} ${extraAntes}`
   const a = await abrirApp(BASE, { ancho, alto, ruta: ruta ?? `/?cuentas=off&logros=on&logrosDemo=1&version=${version}&apertura=0`, antes })
   for (let i = 0; i < 120 && !(await a.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await a.esp(500)
   for (let i = 0; i < 60 && !(await a.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await a.esp(500)

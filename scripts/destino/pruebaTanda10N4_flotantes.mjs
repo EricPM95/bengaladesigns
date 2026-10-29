@@ -208,6 +208,8 @@ for (const estado of ['sin', 'con']) {
   const adm = await abrir({})
   const { app, ev } = adm
   await app.evaluar(`window.__demo.estadoPase(${JSON.stringify(estado)})`)
+  // (10N10 §3a) Con lo último que se sabía guardado, la pastilla se pinta al momento (lo prueba pruebaTanda10N10_explorar); aquí se comprueba el camino SIN nada guardado.
+  await app.evaluar(`(() => { for (const k of Object.keys(localStorage)) if (k.indexOf('trazo:pase:ultimo:') === 0) localStorage.removeItem(k); return true })()`)
   await ev(`R.useRouteStore.getState().setMode('days'); return 1`)
   await app.esp(800)
   await app.evaluar(`window.__retrasoPase = 2500; window.__muestras.length = 0; 0`)
@@ -225,6 +227,7 @@ for (const estado of ['sin', 'con']) {
   // HOY: mientras no se sabe, ni «con pase» ni «sin pase».
   await ev(`R.useRouteStore.getState().setMode('days'); return 1`)
   await app.esp(600)
+  await app.evaluar(`(() => { for (const k of Object.keys(localStorage)) if (k.indexOf('trazo:pase:ultimo:') === 0) localStorage.removeItem(k); return true })()`)
   await app.evaluar(`window.__muestras.length = 0; 0`)
   await ev(`R.useRouteStore.getState().setMode('today'); return 1`)
   await app.esp(5200)

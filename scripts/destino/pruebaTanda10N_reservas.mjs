@@ -21,9 +21,9 @@ fs.mkdirSync(SALIDA, { recursive: true })
 {
   const hoja = sinComentarios(leer('src/components/route/reservas/AddReservationSheet.tsx'))
   debe(!/Lo que pagaste en total/.test(hoja), 'formulario', 'fuera «Lo que pagaste en total, todas las personas.» del formulario de la entrada')
-  debe(/¿Para quién es\?/.test(hoja) && /paraQuienVisible/.test(hoja) && /paraQuienVisible = grupo\.compartido\s*$/m.test(hoja), 'formulario', '«¿Para quién es?» solo en un viaje compartido (10N5: lo ve también quien no es el dueño, para sus entradas)')
+  debe(/BloqueDinero/.test(hoja) && /paraQuienVisible/.test(hoja) && /paraQuienVisible = grupo\.compartido\s*$/m.test(hoja), 'formulario', '«¿Para quién es?» solo en un viaje compartido (10N5: lo ve también quien no es el dueño, para sus entradas)')
   debe(/btn-champan/.test(hoja.slice(hoja.indexOf('data-guardar-reserva') - 200, hoja.indexOf('data-guardar-reserva') + 900)), 'formulario', 'el botón [Guardar · …] del formulario es champán (btn-champan)')
-  debe(/ParaQuienConNombres/.test(hoja) && /PastillaElegir/.test(sinComentarios(leer('src/components/route/presupuesto/ParaQuien.tsx'))), 'formulario', 'las pastillas de «¿Para quién es?» son las de «Elegir» (azul oscuro con su ✓)')
+  debe(/BloqueDinero/.test(hoja) && /PersonasCuadradas/.test(sinComentarios(leer('src/components/route/presupuesto/BloqueDinero.tsx'))), 'formulario', '(10N10) «¿Para quién son las entradas?» va en cuadrados (azul oscuro con su ✓ dorado)')
   const panel = sinComentarios(leer('src/components/route/ReservasPanel.tsx'))
   debe(/<ZonaGris activo=\{grupo\.esInvitado\}/.test(panel) && !/ReservasSoloVer/.test(panel), 'misma_pantalla', 'RESERVAS del invitado es la misma pantalla (ReservasPanel) con Llegada y Alojamiento en una ZonaGris')
   debe(!fs.existsSync('src/components/route/ReservasSoloVer.tsx'), 'misma_pantalla', 'la pantalla pobre «ReservasSoloVer» ya no existe')
@@ -146,7 +146,7 @@ try {
     if (!hoja) return null
     const g = hoja.querySelector('[data-guardar-reserva]')
     const est = g ? getComputedStyle(g) : null
-    return { paraQuien: Boolean(hoja.querySelector('[data-para-quien]')), pagaste: /Lo que pagaste en total/.test(hoja.textContent || ''), precio: /Precio \\(opcional\\)/.test(hoja.textContent || ''), fondo: est?.backgroundImage ?? '', color: est?.color ?? '' }
+    return { paraQuien: Boolean(hoja.querySelector('[data-para-quien]')), pagaste: /Lo que pagaste en total/.test(hoja.textContent || ''), precio: /¿Cuánto ha costado en total\\?/.test(hoja.textContent || ''), fondo: est?.backgroundImage ?? '', color: est?.color ?? '' }
   })()`)
   debe(sinCompartir && sinCompartir.paraQuien === false, 'sin_compartir', 'en un viaje sin compartir NO sale «¿Para quién es?»')
   debe(sinCompartir && sinCompartir.pagaste === false && sinCompartir.precio === true, 'sin_compartir', 'sin «Lo que pagaste en total, todas las personas.» pero con «Precio (opcional)»')
@@ -166,34 +166,38 @@ try {
       const hoja = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]')
       const bloque = hoja?.querySelector('[data-para-quien]')
       if (!bloque) return null
-      const pastillas = Array.from(bloque.querySelectorAll('[data-elegir-pastilla]'))
+      const pastillas = Array.from(bloque.querySelectorAll('[data-persona-cuadrada]'))
       const todo = Array.from(hoja.querySelectorAll('*'))
       const orden = (sel) => todo.indexOf(hoja.querySelector(sel))
       return {
-        cuenta: bloque.querySelector('[data-para-quien-cuenta]')?.textContent?.trim(),
+        cuenta: String(pastillas.filter((p) => p.dataset.elegida === '1').length) + ' de ' + pastillas.length,
         nombres: pastillas.map((p) => (p.textContent || '').trim()),
-        marcadas: pastillas.filter((p) => p.dataset.elegida === '1').map((p) => (p.textContent || '').trim()),
+        marcadas: pastillas.filter((p) => p.dataset.elegida === '1').map((p) => (p.textContent || '').trim().slice(1)),
         fondoMarcada: getComputedStyle(pastillas.find((p) => p.dataset.elegida === '1')).backgroundColor,
         despuesDeLaDisponibilidad: orden('[data-aviso="disponibilidad"]') < orden('[data-para-quien]'),
-        antesDelPrecio: orden('[data-para-quien]') < todo.indexOf(Array.from(hoja.querySelectorAll('span')).find((s) => /Precio \\(opcional\\)/.test(s.textContent || ''))),
+        antesDelPrecio: orden('[data-para-quien]') < todo.indexOf(Array.from(hoja.querySelectorAll('span')).find((s) => /¿Cuánto ha costado en total\\?/.test(s.textContent || ''))),
         pagaste: /Lo que pagaste en total/.test(hoja.textContent || ''),
         filas: new Set(pastillas.map((p) => Math.round(p.getBoundingClientRect().top))).size,
       }
     })()`)
   let est = await pq()
-  debe(est && est.nombres.join('|') === '✓Eric|Ana|Luis|Marta'.replace('✓', '') && est.cuenta === '1 de 4', 'para_quien', `cuatro pastillas, el dueño marcado y «1 de 4» (${JSON.stringify(est)})`)
+  debe(est && est.nombres.map((n) => n.slice(1)).join('|') === 'Eric|Ana|Luis|Marta' && est.cuenta === '1 de 4', 'para_quien', `cuatro pastillas, el dueño marcado y «1 de 4» (${JSON.stringify(est)})`)
   debe(est && est.marcadas.join('|') === 'Eric', 'para_quien', 'el dueño sale ya marcado')
   debe(est && /28, 34, 48/.test(est.fondoMarcada), 'para_quien', `la pastilla marcada va en azul oscuro (${est?.fondoMarcada})`)
   debe(est && est.despuesDeLaDisponibilidad && est.antesDelPrecio, 'para_quien', 'va después de «Recuerda revisar la disponibilidad…» y antes del precio')
   debe(est && est.pagaste === false, 'para_quien', 'sin «Lo que pagaste en total» tampoco en el viaje compartido')
-  await a.evaluar(`(() => { const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); Array.from(hoja.querySelectorAll('[data-elegir-pastilla]')).find((p) => /Ana/.test(p.textContent)).click(); return true })()`)
+  await a.evaluar(`(() => { const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); Array.from(hoja.querySelectorAll('[data-persona-cuadrada]')).find((p) => /Ana/.test(p.textContent)).click(); return true })()`)
   await a.esp(400)
   est = await pq()
   debe(est && est.cuenta === '2 de 4' && est.marcadas.join('|') === 'Eric|Ana', 'para_quien', `marcar a Ana: «2 de 4» (${est?.cuenta})`)
-  // el dueño no se puede desmarcar
-  await a.evaluar(`(() => { const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); Array.from(hoja.querySelectorAll('[data-elegir-pastilla]')).find((p) => /Eric/.test(p.textContent)).click(); return true })()`)
+  // (10N10) Se puede marcar y desmarcar a otra persona (sin cambiar el orden de Eric y Ana).
+  const tocaLuis = `(() => { const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); Array.from(hoja.querySelectorAll('[data-persona-cuadrada]')).find((p) => /Luis/.test(p.textContent)).click(); return true })()`
+  await a.evaluar(tocaLuis)
   est = await pq()
-  debe(est && est.marcadas.includes('Eric'), 'para_quien', 'el dueño no se puede desmarcar de su propia entrada')
+  debe(est && est.marcadas.join('|') === 'Eric|Ana|Luis', 'para_quien', '(10N10) se puede marcar a otra persona')
+  await a.evaluar(tocaLuis)
+  est = await pq()
+  debe(est && est.marcadas.join('|') === 'Eric|Ana', 'para_quien', 'y desmarcarla')
   await a.captura(path.join(SALIDA, '10n_reservas_dueno_para_quien.jpg'))
   // El día y la hora de la entrada (el primer día del viaje que no esté cerrado y las 08:00 o la primera hora de la rueda).
   const guardada = await a.evaluar(`(async () => {
@@ -317,7 +321,7 @@ try {
     return { igual: hoja.querySelector('[data-igual-que]')?.textContent ?? null, dia: marcado?.textContent ?? null, boton: g?.textContent ?? null, paraQuien: Boolean(hoja.querySelector('[data-para-quien]')), modo: g?.dataset.guardarReserva }
   })()`)
   debe(abierta && new RegExp(`Eric y Ana van el ${diaOwner} a las ${horaOwner}`).test(abierta.igual ?? ''), 'misma_hora', `la compra se abre diciendo lo del dueño (${abierta?.igual})`)
-  debe(abierta && new RegExp(`Comprar a las 0?${horaOwner}`).test(abierta.boton ?? '') && abierta.modo === 'comprar', 'misma_hora', `con la hora ya elegida (${abierta?.boton})`)
+  debe(abierta && /^Ir a comprar$/.test(abierta.boton ?? '') && abierta.modo === 'comprar', 'misma_hora', `con la hora ya elegida (${abierta?.boton})`)
   const numDiaOwner = diaOwner.split(' ')[1]
   debe(abierta && new RegExp(`(^|\\D)${numDiaOwner}(\\D|$)`).test(abierta.dia ?? ''), 'misma_hora', `y el día ya elegido (${abierta?.dia} · el del dueño es el ${diaOwner})`)
   debe(abierta && abierta.paraQuien === true, 'misma_hora', '(10N5) quien compra la suya también ve «¿Para quién es?» (la reserva es suya y decide para quién)')

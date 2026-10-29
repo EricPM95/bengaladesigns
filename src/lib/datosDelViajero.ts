@@ -24,6 +24,8 @@ const CAMPOS = [
   'accommodationZone',
   'accommodationAddress',
   'departureFechaVista',
+  'cuentasEntre',
+  'pagadoPorDe',
 ] as const satisfies readonly (keyof Route)[]
 
 export type CampoDelViajero = (typeof CAMPOS)[number]

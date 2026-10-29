@@ -26,7 +26,7 @@ const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore
       if (!/[Pp]ase de (Roma|París|Londres)/.test(l)) return
       if (/^\s*(\/\/|\*|\/\*|\{\/\*)/.test(l) || /(\/\/|\/\*\*?)\s.*[Pp]ase de (Roma|París|Londres)/.test(l)) return // comentarios
       if (f.includes(`${path.sep}dev${path.sep}`)) return // datos de la ruta de pruebas
-      // La película del pase (Tanda 10I): `pelicula/gen/` es el código de Design tal cual (no se edita a mano) y `pelicula/adaptar.ts` lo lleva a cada destino: ahí «Pase de Roma» es el TEXTO ORIGINAL
+      // La lista del pase (antes película, Tanda 10I): `pelicula/gen/` es el código de Design tal cual (no se edita a mano) y `pelicula/adaptar.ts` lo lleva a cada destino: ahí «Pase de Roma» es el TEXTO ORIGINAL
       // de Design que se busca para cambiarlo por el nombre del pase del destino; no es un nombre escrito para mostrar.
       if (f.includes(`${path.sep}pelicula${path.sep}gen${path.sep}`) || f.endsWith(`${path.sep}pelicula${path.sep}adaptar.ts`)) return
       sueltos.push(`${f}:${i + 1}: ${l.trim().slice(0, 120)}`)
@@ -192,19 +192,19 @@ await e.esp(3500)
   await sacar(e, '11_escuchar_cerrado', '[Escuchar historia] sin pase', 'El mismo botón de siempre, con el candado dorado en el extremo derecho, dentro, sobre marfil. Se quitó «Con la versión completa».')
   await e.evaluar("(() => { const b = document.querySelector('[data-escuchar=\"candado\"] button'); if (b) b.click(); return true })()")
   await e.esp(1500)
-  // (Tanda 10N6 §1g) Ya no se pinta «Incluido con el Pase» en el botón: sale el aviso pequeño del pase (escuchar_historia) y su [Ver el Pase] abre la película.
+  // (Tanda 10N6 §1g) Ya no se pinta «Incluido con el Pase» en el botón: sale el aviso pequeño del pase (escuchar_historia) y su [Ver el Pase] abre la lista del pase.
   const aviso = await e.evaluar("document.querySelector('[data-aviso-pase=\"escuchar_historia\"]')?.innerText ?? null")
   debe(/Desbloquéalo con el Pase/.test(aviso ?? "") && /podrás escuchar todas las historias que quieras, sin límite/.test(aviso ?? ""), 'escuchar', `al tocarlo sale el aviso pequeño del pase (${aviso})`)
   const oroIncl = await e.evaluar("getComputedStyle(document.querySelector('[data-aviso-pase-titulo] em')).color")
   debe(COLORES_ORO.includes(oroIncl) || oroIncl === 'rgb(243, 216, 143)', 'oro', `«Pase Roma» del aviso va en oro (${oroIncl})`)
   await e.evaluar("document.querySelector('[data-aviso-pase-ver]').click(); true")
-  // (Tanda 10I: abrirPase() ya no abre la hoja de compra suelta: lo escucha PeliculaHost y abre la película del pase, que se baja al abrirse.)
+  // (Tanda 10I: abrirPase() ya no abre la hoja de compra suelta: lo escucha ListaDelPaseHost y abre la lista del pase (10N10, 8b), que se baja al abrirse.)
   let pelicula = false
   for (let i = 0; i < 10 && !pelicula; i++) {
-    pelicula = await e.evaluar("Boolean(document.querySelector('[data-pelicula]'))")
+    pelicula = await e.evaluar("Boolean(document.querySelector('[data-lista-del-pase]'))")
     if (!pelicula) await e.esp(500)
   }
-  debe(pelicula === true, 'escuchar', 'y se abre el pase (abrirPase abre la película del pase)')
+  debe(pelicula === true, 'escuchar', 'y se abre el pase (abrirPase abre la lista del pase)')
 }
 e.cerrar()
 {

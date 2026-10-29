@@ -76,72 +76,8 @@ try {
   const hoja = () => ev("document.querySelector('[role=\"dialog\"]')?.innerText.replace(/\\s+/g, ' ') ?? null")
   const clic = (sel) => ev(`(() => { const b = document.querySelector(${JSON.stringify(sel)}); if (!b) return false; b.click(); return true })()`)
 
-  /* 01 · Ana (invitada): el vuelo y el alojamiento del administrador */
+  // (10N10 §7) Las secciones 01 a 04 (vuelo y alojamiento de cada uno en RESERVAS: «Tengo otro vuelo», «Pon el tuyo», «¿Para quién es?» en pastillas) las sustituyen el diseño nuevo de RESERVAS y sus pruebas (pruebaTanda10N10_reservas y pruebaTanda10N9_vuelo): «Lo ha puesto Eric · para Eric y para ti», «Poner el mío», «En este vuelo · Tú y Viajes» con cuadrados.
   await ponerGente('ana')
-  await loSuyo('s.setState({ mio: { vuelo: null, alojamiento: null }, grupo: {}, entradas: [] })')
-  await irAReservas()
-  await a.esp(800)
-  let t = await ev("document.body.innerText.replace(/\\s+/g, ' ')")
-  debe(/Lo ha puesto Eric · para todos/.test(t), '6c-design-01', `Ana ve «Lo ha puesto Eric · para todos» (nombre guardado «ERIC»)`)
-  debe(/Tengo otro vuelo/.test(t) && /Me alojo en otro sitio/.test(t) && /Pon el tuyo/.test(t), '6c-design-01', 'y las filas «Tengo otro vuelo» y «Me alojo en otro sitio» con «Pon el tuyo»')
-  debe(!(await ev("Boolean(document.querySelector('[data-blk=\"llegada\"]'))")), '6c-1', 'el bloque gris del administrador ya no está (cada uno pone el suyo)')
-  await a.captura(path.join(SALIDA, '10n5_cadauno_01_ana_vuelo_de_eric.jpg'))
-  // 02 · el alojamiento
-  await ev("document.querySelector('[data-lo-de-cada-uno]')?.scrollIntoView({block:'center'}); true")
-  await a.captura(path.join(SALIDA, '10n5_cadauno_02_ana_alojamiento_de_eric.jpg'))
-
-  // Ana pone SU vuelo
-  await clic('[data-pon-el-tuyo="vuelo"]')
-  await a.esp(900)
-  const hojaVuelo = await hoja()
-  debe(/Tu vuelo/.test(hojaVuelo ?? '') && /Ida/.test(hojaVuelo ?? '') && /Vuelta/.test(hojaVuelo ?? ''), '6c-1', `la hoja de su vuelo (${(hojaVuelo ?? '').slice(0, 80)})`)
-  await a.captura(path.join(SALIDA, '10n5_cadauno_03a_hoja_mi_vuelo.jpg'))
-  await clic('[data-mi-vuelo-guardar]')
-  await a.esp(900)
-  t = await ev("document.body.innerText.replace(/\\s+/g, ' ')")
-  debe(/Listo/.test(t) && /✈ Ida/.test(t) && /Cambiar/.test(t), '6c-3', '(10N8) tras guardar: «Listo», la línea de su vuelo y [Cambiar]')
-  debe(await ev("Object.keys(localStorage).some((k) => k.startsWith('trazo:lo-suyo:v1:') && !k.includes('pendiente') && JSON.parse(localStorage.getItem(k)).vuelo)"), '6c-1', 'lo suyo se guarda en el propio móvil (y en la nube, con la 0049)')
-  // Su alojamiento
-  await clic('[data-pon-el-tuyo="alojamiento"]')
-  await a.esp(900)
-  await a.escribir('[role="dialog"] input[placeholder="Hotel Artemide"]', 'Trastevere')
-  await a.esp(300)
-  await ev("Array.from(document.querySelectorAll('[role=\"dialog\"] button')).find((b) => /^Guardar( el alojamiento)?$/.test((b.textContent||'').trim()))?.click(); true")
-  await a.esp(900)
-  await ev("window.scrollTo(0,0); document.querySelector('[data-lo-de-cada-uno]')?.scrollIntoView({block:'start'}); true")
-  t = await ev("document.body.innerText.replace(/\\s+/g, ' ')")
-  debe(/Te alojas en Trastevere/.test(t), '6c-3', '«Te alojas en Trastevere» con «Listo»')
-  await a.captura(path.join(SALIDA, '10n5_cadauno_03_ana_lo_suyo.jpg'))
-
-  // Quien solo recomienda también puede (Laura)
-  await ponerGente('laura')
-  await loSuyo('s.setState({ mio: { vuelo: null, alojamiento: null } })')
-  await a.esp(900)
-  t = await ev("document.body.innerText.replace(/\\s+/g, ' ')")
-  debe(/Tengo otro vuelo/.test(t), '6c-1', 'quien solo recomienda (Laura) también puede poner el suyo')
-
-  /* 04 · Eric (administrador): a quién cubre y quién tiene otro */
-  await ponerGente('eric')
-  await loSuyo("s.setState({ mio: { vuelo: null, alojamiento: null }, grupo: { 'p-ana': { vuelo: true, alojamiento: false } } })")
-  await a.esp(900)
-  t = await ev("document.body.innerText.replace(/\\s+/g, ' ')")
-  debe(/En este vuelo/.test(t) && /Tú, Laura y Marcos/.test(t), '6c-design-04', `Eric ve «En este vuelo · Tú, Laura y Marcos» (${(t.match(/En este vuelo[^A-Z]{0,40}[^.]{0,40}/) ?? [''])[0]})`)
-  debe(/Otro vuelo/.test(t) && /Ana tiene su propio vuelo/.test(t), '6c-design-04', '«Otro vuelo · Ana tiene su propio vuelo» (nombre guardado «ana»)')
-  await ev("document.querySelector('[data-lo-de-cada-uno=\"admin\"]')?.scrollIntoView({block:'center'}); true")
-  await a.captura(path.join(SALIDA, '10n5_cadauno_04_eric_quien_va.jpg'))
-  await clic('[data-en-este-lo-suyo="vuelo"]')
-  await a.esp(800)
-  const hojaPara = await hoja()
-  debe(/¿Para quién (es|has comprado el vuelo)\?/i.test(hojaPara ?? '') && /1 de 4|4 de 4/.test(hojaPara ?? ''), '6c-design-04', `«En este vuelo» abre «¿Para quién es?» (${(hojaPara ?? '').slice(0, 90)})`)
-  await a.captura(path.join(SALIDA, '10n5_cadauno_04b_para_quien.jpg'))
-  // Marca solo a Ana además de Eric y guarda
-  await ev("Array.from(document.querySelectorAll('[role=\"dialog\"] [data-elegir-pastilla]')).find((p) => /Laura/.test(p.textContent)).click(); true")
-  await a.esp(200)
-  await clic('[data-guardar-lo-suyo]')
-  await a.esp(800)
-  const entre = await ev("JSON.stringify(window.__ruta.getState().route.cuentasEntre ?? null)")
-  debe(/llegada/.test(entre) && /vuelta/.test(entre), '6c-2', `el «¿Para quién es?» del vuelo se guarda con el viaje (${entre})`)
-  await ev("(() => { window.__ruta.getState().setCuentasEntre('llegada', null); window.__ruta.getState().setCuentasEntre('vuelta', null); return true })()")
 
   /* 05 · los avisos */
   await ponerGente('ana')
@@ -178,7 +114,7 @@ try {
   /* Sin compartir: nada cambia */
   await ponerGente('')
   await a.esp(900)
-  const sinCompartir = await ev("Boolean(document.querySelector('[data-lo-de-cada-uno]')) || /Tengo otro vuelo/.test(document.body.innerText)")
+  const sinCompartir = await ev("Boolean(document.querySelector('[data-lo-de-cada-uno], [data-en-este-vuelo]')) || /Tengo otro vuelo|Poner el mío/.test(document.body.innerText)")
   debe(!sinCompartir, '6c-0', 'un viaje que no se comparte no cambia: ni filas ni «Tengo otro vuelo»')
   await a.captura(path.join(SALIDA, '10n5_cadauno_00_sin_compartir.jpg'))
 } finally {

@@ -34,12 +34,16 @@ interface FranjaState {
 /** Un aviso solo sale en la franja si se acaba de crear (no los de hace horas que aparecen al volver a la app). */
 const MAX_EDAD_MS = 20 * 60 * 1000
 /** Un solo sonido aunque lleguen varios avisos casi a la vez (la franja y la campana, o dos avisos seguidos). */
-const SEPARACION_SONIDO_MS = 2500
+// (10N10) Antes 2,5 s: dos avisos distintos con segundos de diferencia (quitar el Free Tour y luego otro cambio) se quedaban sin sonido el segundo. Ahora solo se evita el doble sonido del MISMO momento.
+const SEPARACION_SONIDO_MS = 900
 const JUNTAR_MS = 1500
 /** Los avisos que ya salieron en la franja: aunque la lista los pierda y los recupere (eliminar y deshacer), no vuelven a salir. */
 const yaSalieron = new Set<string>()
 let ultimoSonido = 0
 let contador = 0
+/** Cuántos avisos de la campana (no las líneas de la app) han salido en la franja desde que se abrió la app. */
+let anunciadosEnTotal = 0
+export const avisosAnunciados = (): number => anunciadosEnTotal
 
 /** Pura: de la lista nueva, los avisos que no estaban en la anterior, sin leer y recientes. */
 export function avisosNuevos(antes: AvisoDeCuenta[], despues: AvisoDeCuenta[], ahora: number = Date.now()): AvisoDeCuenta[] {
@@ -48,7 +52,7 @@ export function avisosNuevos(antes: AvisoDeCuenta[], despues: AvisoDeCuenta[], a
 }
 
 /** Los avisos que la propia app también dice con una línea (ver CompartidoHost) llevan la misma clave, para que no salgan dos veces. */
-const claveDe = (aviso: AvisoDeCuenta): string | undefined => (aviso.tipo === 'gasto_resuelto' && aviso.payload.gasto_id ? `gasto:${String(aviso.payload.gasto_id)}` : aviso.tipo === 'quitado' || aviso.tipo === 'viaje_cambiado' ? `${aviso.tipo === 'quitado' ? 'quitado' : 'cambiado'}:${String(aviso.payload.trip_id ?? '')}` : undefined)
+const claveDe = (aviso: AvisoDeCuenta): string | undefined => (aviso.tipo === 'gasto_resuelto' && aviso.payload.gasto_id ? `gasto:${String(aviso.payload.gasto_id)}` : aviso.tipo === 'quitado' ? `quitado:${String(aviso.payload.trip_id ?? '')}` : undefined)
 
 export const itemDeAviso = (aviso: AvisoDeCuenta): ItemDeFranja => ({ ...franjaDe(aviso), id: aviso.id, quien: aviso.quien, aviso, clave: claveDe(aviso) })
 
@@ -62,6 +66,7 @@ export const useFranjaStore = create<FranjaState>((set, get) => ({
     const claves = new Set(actual?.items.map((i) => i.clave).filter(Boolean) ?? [])
     const nuevos = items.filter((i) => !conocidos.has(i.id) && !yaSalieron.has(i.id) && !(i.clave && claves.has(i.clave)))
     for (const i of nuevos) yaSalieron.add(i.id)
+    anunciadosEnTotal += nuevos.filter((i) => i.aviso).length
     if (nuevos.length === 0) return
     set({ franja: { n: ++contador, items: [...(actual?.items ?? []), ...nuevos], desde: actual?.desde ?? ahora } })
     if (ahora - ultimoSonido > SEPARACION_SONIDO_MS) {

@@ -37,7 +37,7 @@ export const SOMBRA_BLOQUE = '0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgb
 /** Un bloque de RESERVAS: la tarjeta blanca de esquinas redondas del diseño v4. */
 export function BloqueShell({ bloque, children, className = '' }: { bloque: string; children: ReactNode; className?: string }) {
   return (
-    <div data-blk={bloque} className={`rounded-[22px] bg-[#FFFDF8] ${className}`} style={{ border: '1px solid rgba(28,34,48,.07)', boxShadow: SOMBRA_BLOQUE }}>
+    <div data-blk={bloque} className={`rounded-[26px] bg-[#FFFDF8] ${className}`} style={{ border: '1px solid rgba(28,34,48,.07)', boxShadow: SOMBRA_BLOQUE }}>
       {children}
     </div>
   )
@@ -47,10 +47,10 @@ export function BloqueShell({ bloque, children, className = '' }: { bloque: stri
 export function IconoBloque({ nombre, hecho = false }: { nombre: NombreIcono; hecho?: boolean }) {
   return (
     <span
-      className="flex h-9 w-9 flex-none items-center justify-center rounded-xl"
+      className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl"
       style={{ background: hecho ? 'oklch(0.55 0.11 150 / .14)' : 'rgb(var(--accent-soft))', color: hecho ? GR : 'rgb(var(--accent))' }}
     >
-      <Icono nombre={nombre} size={18} />
+      <Icono nombre={nombre} size={22} />
     </span>
   )
 }
@@ -61,7 +61,7 @@ export function IconoBloque({ nombre, hecho = false }: { nombre: NombreIcono; he
  */
 export function EstadoBloque({ texto, hecho }: { texto: string; hecho: boolean }) {
   return (
-    <span className="truncate" data-estado={hecho ? 'hecho' : 'falta'} style={{ font: "600 11px 'Geist Mono',monospace", color: hecho ? GR : 'rgb(var(--frambuesa-hover))' }}>
+    <span className="truncate" data-estado={hecho ? 'hecho' : 'falta'} style={{ font: "600 12.5px 'Geist Mono',monospace", color: hecho ? GR : 'rgb(var(--frambuesa-hover))' }}>
       {texto}
     </span>
   )
@@ -70,14 +70,14 @@ export function EstadoBloque({ texto, hecho }: { texto: string; hecho: boolean }
 /** La flechita redonda de un bloque que se abre y se cierra. */
 export function FlechaBloque({ abierto }: { abierto: boolean }) {
   return (
-    <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-[#F5EFE4]" aria-hidden="true">
+    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[#F5EFE4]" aria-hidden="true">
       <Icono nombre="abajo" size={16} style={{ color: INK, transform: abierto ? 'rotate(180deg)' : 'none', transition: 'transform .35s cubic-bezier(.2,.8,.2,1)' }} />
 
     </span>
   )
 }
 
-export const tituloBloqueStyle: CSSProperties = { font: "400 22px/1 'Instrument Serif',serif" }
+export const tituloBloqueStyle: CSSProperties = { font: "400 27px/1 'Instrument Serif',serif" }
 
 /** «Cambiar» en cursiva subrayada, el botón de texto de las líneas hechas. */
 export function CambiarBoton({ onClick, texto = 'Cambiar' }: { onClick: () => void; texto?: string }) {

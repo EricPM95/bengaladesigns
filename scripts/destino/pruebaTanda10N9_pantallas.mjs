@@ -1,4 +1,4 @@
-// Tanda 10N9 (agente de pantallas) · §3b «Mis viajes» con los chips de Design, §4 la película del pase sin textos pisados ni cortados en 390x664 y 375x667 (TODAS las escenas, con medida de verdad),
+// Tanda 10N9 (agente de pantallas) · §3b «Mis viajes» con los chips de Design, §4 la lista del pase (10N10, 8b: antes, la película) sin textos pisados ni cortados en 390x664 y 375x667 (con medida de verdad),
 // §5 «Abierto 24 h» en la Fontana di Trevi y no en el Teatro de Marcelo (9:00-19:00).
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTanda10N9_pantallas.mjs
 // Capturas: docs/dias/capturas_jutrip/10n9_*.jpg; las de Design al lado (SIN_DESIGN=1 las salta). SOLO=viajes|pelicula|24h para correr una parte.
@@ -112,91 +112,68 @@ if (toca('viajes')) {
   }
 }
 
-/* B. La película del pase: ningún texto se pisa ni se corta */
+/* B. La lista del pase (Tanda 10N10, 8b: antes, la película con todas sus escenas): ningún texto se pisa ni se corta */
 if (toca('pelicula')) {
-  console.log('B. La película: todas las escenas, en 390x664 y 375x667')
-  const FF = `(() => { const r = document.querySelector('[data-pelicula] .pfr'); r.getAnimations({ subtree: true }).forEach((an) => { try { const e = an.effect.getComputedTiming().endTime; if (isFinite(e)) an.currentTime = e } catch (x) {} }); return true })()`
-  // La hora «de lectura» de cada escena (cuando ya están todos sus textos): { escena, segundos reales, ff }. Se suman instantes a mitad de las escenas largas.
-  const ESCENAS = [
-    { e: 0, s: [2], ff: true, nombre: 'tu_viaje' },
-    { e: 1, s: [2], ff: true, nombre: 'hoy' },
-    { e: 3, s: [7, 19], ff: false, nombre: 'secretos' },
-    { e: 4, s: [3, 7, 12, 16], ff: false, nombre: 'suma' },
-    { e: 5, s: [8, 20], ff: false, nombre: 'pasaporte' },
-    { e: 6, s: [9], ff: false, nombre: 'recuerdos' },
-    { e: 7, s: [2], ff: true, nombre: 'final' },
-  ]
-  /** Mide TODO el texto que SE VE (las hojas con texto: opacidad > 0,5, parte visible dentro de su recuadro y de la pantalla, y no tapadas por otra cosa que no sea texto): se pisan entre sí, se salen del marco o los corta un recuadro con overflow. */
+  console.log('B. La lista del pase, en 390x664 y 375x667 (cerrada y con «¿Cuántos sois?» abierta)')
+  // Mide: ningún texto sale por los lados de la pantalla, ninguno queda cortado por su caja (scrollWidth > clientWidth con overflow oculto) y dos textos visibles no se tapan entre sí.
   const MIDE = `(() => {
-    const P = document.querySelector('[data-pelicula]'); const vw = innerWidth, vh = innerHeight
-    const opac = (el) => { let o = 1; for (let p = el; p && p !== P.parentElement; p = p.parentElement) { const cs = getComputedStyle(p); o *= Number(cs.opacity); if (cs.visibility === 'hidden' || cs.display === 'none') return 0 } return o }
-    const enLista = (e) => Boolean(e.closest('[data-lista-pase]'))
-    const propio = (e) => Array.from(e.childNodes).some((n) => n.nodeType === 3 && n.textContent.trim())
-    const hojas = Array.from(P.querySelectorAll('*')).filter((e) => e.children.length === 0 && (e.textContent || '').trim() && e.tagName !== 'STYLE' && e.tagName !== 'SCRIPT' && !e.closest('svg') && opac(e) > 0.5)
-    const inter = (a, b) => ({ x: Math.max(a.x, b.x), y: Math.max(a.y, b.y), r: Math.min(a.r, b.r), b: Math.min(a.b, b.b) })
-    const area = (a) => Math.max(0, a.r - a.x) * Math.max(0, a.b - a.y)
-    const todas = []
+    const P = document.querySelector('[data-lista-del-pase]'); const vw = innerWidth, vh = innerHeight
+    const lista = P.querySelector('[data-lista-pase]'); const lr = lista ? lista.getBoundingClientRect() : null
+    const hojas = Array.from(P.querySelectorAll('span')).filter((e) => e.children.length === 0 && (e.textContent || '').trim())
+    const fuera = [], cortados = [], pisadas = []
+    const cajas = []
+    const tituloHoja = Array.from(P.querySelectorAll('span')).find((x) => x.children.length === 0 && x.textContent.trim() === '¿Cuántos sois?')
+    const hoja = tituloHoja ? tituloHoja.closest('div[style*="border-radius: 30px"]') : null
     for (const e of hojas) {
-      const br = e.getBoundingClientRect(); if (br.width < 1 || br.height < 1) continue
-      const caja = { x: br.left, y: br.top, r: br.right, b: br.bottom }
-      let vis = inter(caja, { x: 0, y: 0, r: vw, b: vh }); let recorte = null
-      for (let p = e.parentElement; p && p !== P; p = p.parentElement) {
-        const cs = getComputedStyle(p); if (!/(hidden|clip)/.test(cs.overflow + cs.overflowX + cs.overflowY) || p.classList.contains('pfr')) continue
-        const pr = p.getBoundingClientRect(); vis = inter(vis, { x: pr.left, y: pr.top, r: pr.right, b: pr.bottom })
+      const cs = getComputedStyle(e)
+      if (cs.visibility === 'hidden' || cs.display === 'none') continue
+      let op = 1
+      for (let p = e; p && p !== P; p = p.parentElement) op *= Number(getComputedStyle(p).opacity)
+      if (op < 0.2) continue
+      const b = e.getBoundingClientRect()
+      if (b.width < 2 || b.height < 2) continue
+      // lo que la lista tiene fuera de su caja (por el scroll) no cuenta
+      const enLista = lista && lista.contains(e)
+      if (enLista && (b.bottom < lr.top || b.top > lr.bottom)) continue
+      if (b.bottom < 0 || b.top > vh) continue
+      const t = (e.textContent || '').trim().slice(0, 40)
+      if (b.left < -0.5 || b.right > vw + 0.5) fuera.push(t)
+      for (let p = e; p && p !== P; p = p.parentElement) { const c = getComputedStyle(p); if (/(hidden|clip)/.test(c.overflowX) && p.scrollWidth > p.clientWidth + 1 && !/^(ellipsis)$/.test(c.textOverflow) && p.clientWidth > 0 && p.scrollWidth > p.clientWidth + 3 && p !== lista) { cortados.push(t); break } }
+      cajas.push({ t, x: b.left, y: b.top, r: b.right, b: b.bottom, el: e, capa: hoja && hoja.contains(e) ? 'hoja' : enLista ? 'lista' : 'fijo' })
+    }
+    for (let a = 0; a < cajas.length; a++) for (let c = a + 1; c < cajas.length; c++) {
+      const A = cajas[a], B = cajas[c]
+      // (solo se comparan textos de la MISMA capa: las filas de la lista pasan por debajo de la parte fija de abajo, y con «¿Cuántos sois?» abierta la lista queda tapada por la hoja)
+      if (A.capa !== B.capa || (hoja && A.capa !== 'hoja')) continue
+      const ox = Math.min(A.r, B.r) - Math.max(A.x, B.x), oy = Math.min(A.b, B.b) - Math.max(A.y, B.y)
+      if (ox > 3 && oy > 3 && !A.el.contains(B.el) && !B.el.contains(A.el)) {
+        // (se mira lo que de verdad se ve en el punto central de la zona compartida)
+        const px = Math.max(A.x, B.x) + ox / 2, py = Math.max(A.y, B.y) + oy / 2
+        const top = document.elementFromPoint(px, py)
+        if (top === A.el || top === B.el) pisadas.push(A.t + ' / ' + B.t)
       }
-      if (area(vis) < 4) continue
-      const cx = (vis.x + vis.r) / 2, cy = (vis.y + vis.b) / 2
-      const top = document.elementFromPoint(cx, cy)
-      if (!top || !(top === e || e.contains(top) || top.contains(e) || (top.children.length === 0 && propio(top)))) continue
-      todas.push({ e, x: vis.x, y: vis.y, r: vis.r, b: vis.b, w: br.width, h: br.height, entero: area(vis) / (br.width * br.height), caja, t: (e.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 36) })
     }
-    const sol = (p, q) => area(inter(p, q))
-    const pisadas = []
-    for (let i = 0; i < todas.length; i++) for (let j = i + 1; j < todas.length; j++) {
-      const p = todas[i], q = todas[j]
-      if (enLista(p.e) !== enLista(q.e) || p.e.contains(q.e) || q.e.contains(p.e)) continue
-      const s = sol(p, q); const menor = Math.min(area(p), area(q))
-      if (s > 40 && s / menor > 0.08) pisadas.push([p.t, q.t, Math.round(s)])
-    }
-    const fuera = todas.filter((r) => !enLista(r.e) && (r.caja.x < -0.5 || r.caja.r > vw + 0.5 || r.caja.y < -0.5 || r.caja.b > vh + 0.5)).map((r) => r.t + ' @' + [r.caja.x, r.caja.y, r.caja.r, r.caja.b].map(Math.round).join(','))
-    const cortados = todas.filter((r) => !enLista(r.e) && r.entero < 0.9).map((r) => r.t + ' (se ve el ' + Math.round(r.entero * 100) + ' %)')
-    for (const r of todas) if (!enLista(r.e) && r.e.scrollWidth > r.e.clientWidth + 2 && getComputedStyle(r.e).textOverflow === 'ellipsis') cortados.push(r.t + ' (puntos suspensivos)')
-    const texto = todas.map((r) => r.t); const abajo = todas.filter((r) => r.e.closest('[data-texto-abajo]')).length
-    return { vw, vh, n: todas.length, abajo, pisadas, fuera, cortados, texto }
+    return { n: cajas.length, fuera, cortados, pisadas, escx: Math.round(P.querySelector('[data-escenario]').getBoundingClientRect().width) }
   })()`
   for (const [w, h] of [[390, 664], [375, 667]]) {
-    const a = await conViaje({ ancho: w, alto: h, vista: false, extraAntes: 'window.__pruebaPeliculaEscena = 0;' })
+    const a = await conViaje({ ancho: w, alto: h })
     try {
-      let conMarca = 0
       await abrirPase(a)
-      await cuando(a, "Boolean(document.querySelector('[data-pelicula] .pfr'))", 60)
+      await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 60)
       await esp(1500)
-      for (const E of ESCENAS.filter((x) => !process.env.ESCENA || String(x.e) === process.env.ESCENA)) {
-        const idx = [0, 1, 3, 4, 5, 6, 7].indexOf(E.e)
-        for (const [k, seg] of E.s.entries()) {
-          const c = await a.evaluar(`(() => { const r = document.querySelectorAll('[data-pelicula] [data-raya]')[${idx}]; if (!r) return null; const b = r.getBoundingClientRect(); return [b.x + b.width / 2, b.y + b.height / 2] })()`)
-          if (k === 0) {
-            debe(Boolean(c), 'rayitas', `${w}x${h} escena ${E.e}: la rayita se puede tocar`)
-            if (c) await clicEn(a, c[0], c[1])
-          }
-          await esp((k === 0 ? seg : seg - E.s[k - 1]) * 1000)
-          if (E.ff && k === E.s.length - 1) {
-            await a.evaluar(FF)
-            await esp(700)
-          }
-          const m = await a.evaluar(MIDE)
-          const etq = `${w}x${h} · escena ${E.e} (${E.nombre}, ${seg} s)`
-          debe(m.n > 0, 'texto', `${etq}: se lee texto (${m.n} piezas, ${m.abajo} en el texto de abajo marcado con data-texto-abajo)`)
-          conMarca += m.abajo
-          debe(m.pisadas.length === 0, 'pisado', `${etq}: ningún texto pisa a otro ${JSON.stringify(m.pisadas.slice(0, 4))}`)
-          debe(m.fuera.length === 0, 'fuera', `${etq}: ningún texto se sale del marco ${JSON.stringify(m.fuera.slice(0, 4))}`)
-          debe(m.cortados.length === 0, 'cortado', `${etq}: ningún texto cortado ${JSON.stringify(m.cortados.slice(0, 4))}`)
-          if (k === E.s.length - 1) await a.captura(foto(`pelicula_${E.nombre}_${w}x${h}`))
-          else if (process.env.TODAS) await a.captura(foto(`pelicula_${E.nombre}_${seg}s_${w}x${h}`))
-          if (process.env.VER && (m.pisadas.length || m.fuera.length || m.cortados.length)) console.log('     texto:', m.texto.join(' | '))
-        }
-      }
-      debe(conMarca > 0, "marca", `${w}x${h}: el texto de abajo de las escenas lleva la marca data-texto-abajo y se mide (${conMarca} piezas)`)
+      let m = await a.evaluar(MIDE)
+      debe(m.n > 10, 'texto', `${w}x${h} · la lista: se lee texto (${m.n} piezas)`)
+      debe(m.fuera.length === 0 && m.cortados.length === 0, 'texto', `${w}x${h} · la lista: ningún texto sale de la pantalla ni queda cortado (${JSON.stringify([...m.fuera.slice(0, 2), ...m.cortados.slice(0, 2)])})`)
+      debe(m.pisadas.length === 0, 'texto', `${w}x${h} · la lista: ningún texto pisa a otro (${m.pisadas.slice(0, 3).join(' | ') || 'ninguno'})`)
+      await a.captura(foto(`lista_${w}x${h}`))
+      // «¿Cuántos sois?»
+      await a.evaluar("(() => { const e = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.children.length === 0 && x.textContent.trim() === 'Elegir mi pase'); if (e) e.click(); return true })()")
+      await cuando(a, "/¿Cuántos sois\\?/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
+      await esp(1200)
+      m = await a.evaluar(MIDE)
+      debe(m.fuera.length === 0 && m.cortados.length === 0, 'texto', `${w}x${h} · «¿Cuántos sois?»: ningún texto sale de la pantalla ni queda cortado (${JSON.stringify([...m.fuera.slice(0, 2), ...m.cortados.slice(0, 2)])})`)
+      debe(m.pisadas.length === 0, 'texto', `${w}x${h} · «¿Cuántos sois?»: ningún texto pisa a otro (${m.pisadas.slice(0, 3).join(' | ') || 'ninguno'})`)
+      await a.captura(foto(`lista_cuantos_${w}x${h}`))
     } finally {
       a.cerrar()
     }

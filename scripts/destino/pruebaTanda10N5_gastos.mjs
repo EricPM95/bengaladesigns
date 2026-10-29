@@ -1,4 +1,4 @@
-// Tanda 10N5 §6d · «Añadir gasto» más limpio: «¿Quién ha pagado?», «¿Para quién es?», quien añade el primero y marcado (los demás sin marcar), la línea de abajo como está y espacio entre bloques.
+// Tanda 10N5 §6d (ajustada en la 10N10 §6): sin «¿Para quién es?» (va a la pestaña), «¿Quién lo ha pagado?» en cuadrados, quien añade el primero y espacio entre bloques.
 //   API_URL=http://localhost:8854 node scripts/destino/pruebaTanda10N5_gastos.mjs
 import fs from 'node:fs'
 import { prepararSSR } from './_ssr.mjs'
@@ -29,37 +29,36 @@ const hoja = (props = {}) => renderToStaticMarkup(createElement(function H() { r
 
 console.log('1. La hoja')
 {
+  // (10N10 §6) Desde la cuenta del grupo: título, sin «¿Para quién es?» (el gasto va a la pestaña), «Solo para algunos» y la línea pequeña. «¿Quién lo ha pagado?» sale con precio (al editar).
   poner('ana', true)
-  const h = hoja()
+  const h = hoja({ pestana: 'comun', cuenta: 'grupo' })
   const t = plano(aTexto(h))
-  debe(/¿Quién ha pagado\?/.test(t) && !/¿Quién lo ha pagado\?/.test(t), '6d-1', 'dice «¿Quién ha pagado?» (ya no «¿Quién lo ha pagado?»)')
-  debe(/¿Para quién es\?/.test(t) && !/¿Entre quién\?/.test(t), '6d-1', 'dice «¿Para quién es?» (ya no «¿Entre quién?»)')
-  const pagan = [...h.matchAll(/data-elegir-pastilla="pago-([^"]+)"/g)].map((m) => m[1])
-  debe(pagan.join() === 'ana,eric,luis', '6d-2', `en «¿Quién ha pagado?» va primero quien añade el gasto (Ana), luego los demás: ${pagan.join()}`)
-  const bloque = h.slice(h.indexOf('data-gasto-quien-pago'), h.indexOf('data-gasto-entre-quien'))
-  const marcadas = [...bloque.matchAll(/data-elegir-pastilla="pago-([^"]+)"[^>]*data-elegida="(1|0)"/g)]
-  const estado = Object.fromEntries(marcadas.map((m) => [m[1], m[2]]))
-  debe(estado.ana === "1" && estado.eric === "0" && estado.luis === "0", '6d-2', `solo Ana, que añade, sale marcada (${JSON.stringify(estado)})`)
-  debe(/Ana María/.test(t) && !/ana maría/.test(t) && /Eric/.test(t) && !/ERIC/.test(t), 'nombres', 'los nombres con la primera en mayúscula: «Eric», «Ana María»')
-  debe(/Solo para ti|Para \d+ personas|Para [A-Z]/.test(t) && /data-linea-para-quien/.test(h), '6d-3', '(10N7) la línea pequeña de debajo de «¿Para quién es?» («Solo para ti: …»); ya no hay «… cada uno»')
+  debe(/Añadir a la cuenta del grupo/.test(t) && /Solo para algunos/.test(t), '6', 'título «Añadir a la cuenta del grupo» y la opción pequeña «Solo para algunos»')
+  debe(!/¿Para quién es\?|¿Entre quién\?|¿Quién ha pagado\?/.test(t), '6', 'sin «¿Para quién es?»: el gasto va a la pestaña desde la que se abre')
+  debe(!/¿Quién lo ha pagado\?/.test(t), '6', '«¿Quién lo ha pagado?» solo sale cuando hay precio')
+  const mia = plano(aTexto(hoja({ pestana: 'mia', cuenta: 'grupo' })))
+  debe(/Añadir a Mi cuenta/.test(mia) && !/¿Quién lo ha pagado\?|Solo para algunos/.test(mia) && /Va a Mi cuenta/.test(mia) && /Solo lo ves tú/.test(mia), '6', 'desde «Mi cuenta»: solo concepto y precio, con «Va a Mi cuenta» y «Solo lo ves tú»')
   debe(/mt-4 flex flex-col gap-5/.test(h), '6d-4', 'espacio claro entre los bloques de la hoja (gap-5)')
-  poner('eric', false)
-  const e = hoja()
-  const pe = [...e.matchAll(/data-elegir-pastilla="pago-([^"]+)"/g)].map((m) => m[1])
-  debe(pe.join() === 'eric,ana,luis', '6d-2', `si añade Eric, Eric va primero: ${pe.join()}`)
-  // Al editar: se queda lo que ya tenía
-  poner('ana', true)
+  // Al editar: «¿Quién lo ha pagado?» en cuadrados, con los nombres con mayúscula inicial, y se queda lo que ya tenía.
   const gasto = { id: 'g1', tripId: 't1', autorId: 'luis', nombre: 'Cena', precio: { amount: 30, currency: 'EUR' }, ambito: 'grupo', estado: 'aceptado', pagadoPor: ['luis', 'eric'], entre: ['eric', 'luis'], decididoPor: null, creadoEn: '2026-10-26T10:00:00Z' }
-  const ed = hoja({ editar: gasto })
-  const bq = ed.slice(ed.indexOf('data-gasto-quien-pago'), ed.indexOf('data-gasto-entre-quien'))
-  const est = Object.fromEntries([...bq.matchAll(/data-elegir-pastilla="pago-([^"]+)"[^>]*data-elegida="(1|0)"/g)].map((m) => [m[1], m[2]]))
-  debe(est.luis === "1" && est.eric === "1" && est.ana === "0", '6d-2', `al editar se queda lo que ya tenía (Luis y Eric): ${JSON.stringify(est)}`)
+  const ed = hoja({ editar: gasto, pestana: 'comun', cuenta: 'grupo' })
+  const te = plano(aTexto(ed))
+  debe(/¿Quién lo ha pagado\?/.test(te), '6', 'al editar (con precio) sale «¿Quién lo ha pagado?»')
+  const bq = ed.slice(ed.indexOf('data-personas-cuadradas="pagado"'))
+  const est = Object.fromEntries([...bq.matchAll(/data-persona-cuadrada="([^"]+)"[^>]*data-elegida="(1|0)"/g)].map((m) => [m[1], m[2]]))
+  debe(est.luis === '1' && est.eric === '1' && est.ana === undefined, '6', `en cuadrados, solo Luis y Eric (quienes pagaron y entran): ${JSON.stringify(est)}`)
+  poner('ana', true)
+  const t2 = plano(aTexto(hoja({ editar: { ...gasto, pagadoPor: ['ana'], entre: [], autorId: 'ana' }, pestana: 'comun', cuenta: 'grupo' })))
+  debe(/Ana María/.test(t2) && !/ana maría/.test(t2) && /Eric/.test(t2) && !/ERIC/.test(t2), 'nombres', 'los nombres con la primera en mayúscula: «Eric», «Ana María»')
+  const q = hoja({ editar: { ...gasto, pagadoPor: ['ana'], entre: [], autorId: 'ana' }, pestana: 'comun', cuenta: 'grupo' })
+  const pagan = [...q.slice(q.indexOf('data-personas-cuadradas="pagado"')).matchAll(/data-persona-cuadrada="([^"]+)"/g)].map((m) => m[1])
+  debe(pagan[0] === 'ana', '6d-2', `quien añade (Ana) va primero en «¿Quién lo ha pagado?»: ${pagan.join()}`)
 }
 
 console.log('2. Los textos en toda la app')
 {
   const codigo = ['src/components/route/presupuesto/HojaAnadirGasto.tsx', 'src/components/route/presupuesto/PantallaCuentas.tsx', 'src/components/route/presupuesto/PantallaPresupuesto.tsx', 'src/components/route/presupuesto/ExtrasCompartidos.tsx'].map((f) => sinComentarios(leer(f))).join('\n')
-  debe(!/Quién lo ha pagado|¿Entre quién|>\s*Entre quién\s*</.test(codigo), '6d-1', 'en añadir, editar y las cuentas ya no queda «¿Quién lo ha pagado?» ni «¿Entre quién?»')
+  debe(!/Quién lo ha pagado|¿Entre quién|>\s*Entre quién\s*</.test(codigo), '6d-1', 'en añadir, editar y las cuentas (10N10) ya no queda «¿Quién ha pagado?» ni «¿Entre quién?»')
   debe(/Para quién es/.test(sinComentarios(leer('src/components/route/presupuesto/PantallaCuentas.tsx'))), '6d-1', 'el botón de las cuentas del alojamiento dice «Para quién es»')
 }
 

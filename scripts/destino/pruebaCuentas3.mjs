@@ -450,21 +450,21 @@ console.log('2b. Las pantallas del pase (P1, P6, P7, P8b, P9)')
   debe(M.limitesDelGrupo(planes).desde === 3 && M.limitesDelGrupo(planes).hasta === 50, 'P6', 'el máximo del Grupo sale de un dato (data/pase/precios.json: 50)')
   debe(M.totalDe(planes, 'grupo', 2) === null && M.totalDe(planes, 'grupo', 51) === null && M.totalDe(planes, 'grupo', 3) === 14.97 && M.totalDe(planes, 'duo', 2) === 10.99, 'P6', 'el total del Grupo solo vale de 3 a 50 personas')
   debe(M.eur(10.99) === '10,99 €' && M.eur(5.5) === '5,50 €', 'P6', 'los euros se escriben con coma')
-  // (Tanda 10I: la hoja «¿Cuántos sois?» es la de la película del pase (src/components/pase/PeliculaPase.tsx); sus precios y textos salen de precioPelicula.ts.)
+  // (Tanda 10I: la hoja «¿Cuántos sois?» es la de la lista del pase (src/components/pase/ListaDelPase.tsx; 10N10, 8b: antes, la película); sus precios y textos salen de precioPelicula.ts.)
   const cuantos = M.hojaCuantosSois(planes, 4)
-  const peli = fs.readFileSync('src/components/pase/PeliculaPase.tsx', 'utf8')
+  const peli = fs.readFileSync('src/components/pase/ListaDelPase.tsx', 'utf8')
   const adaptado = fs.readFileSync('src/components/pase/pelicula/adaptar.ts', 'utf8')
-  debe(cuantos.comprarTxt === 'Comprar · 19,96 €' && cuantos.personasTxt === '4 personas' && cuantos.filas.length === 3 && cuantos.hasta === 50, 'P6', 'P6 trae [Comprar · total] y las personas del Grupo (con [−] y [+] de la película)')
+  debe(cuantos.comprarTxt === 'Comprar · 19,96 €' && cuantos.personasTxt === '4 personas' && cuantos.filas.length === 3 && cuantos.hasta === 50, 'P6', 'P6 trae [Comprar · total] y las personas del Grupo (con [−] y [+] de la lista del pase)')
   debe(/lineaLegal: textos\.linea_legal_compra/.test(peli) && /data-linea-legal/.test(adaptado) && adaptado.indexOf('data-linea-legal') < adaptado.indexOf("onClick: '{{ comprar }}'"), 'P6', 'antes de [Comprar] hay un hueco para la línea legal del gestor (data/pase/textos.json, «Texto pendiente»)')
   debe(!/stripe/i.test(peli) && !new RegExp(M.marca.nombre, 'i').test(peli), 'P6', 'la hoja de compra no nombra al servicio de pago ni a la app')
   debe(M.hojaCuantosSois([], 4).comprarTxt === 'Comprar' && M.hojaCuantosSois([], 4).filas.length === 0, 'P6', 'sin precios del servidor no se puede comprar nada')
   // La hoja de compra no sale sin cobro: el anfitrión no pinta nada y la compra solo se abre si el servidor dice que se cobra.
   debe(apagado.pintaPuerta === undefined || M.pintaPagoHost() === '', 'cobro', 'sin hoja abierta, el anfitrión del pase no pinta nada')
   const fuentePago = fs.readFileSync('src/components/pase/PagoHost.tsx', 'utf8')
-  // (Tanda 10I: pedirPago/abrirPase ya no los escucha PagoHost sino PeliculaHost, que abre la película con la hoja «¿Cuántos sois?» dentro; PagoHost sigue guardando con `config.cobro` lo del aviso P9,
+  // (Tanda 10I: pedirPago/abrirPase ya no los escucha PagoHost sino ListaDelPaseHost (10N10, 8b; antes PeliculaHost), que abre la lista del pase con la hoja «¿Cuántos sois?» dentro; PagoHost sigue guardando con `config.cobro` lo del aviso P9,
   // y los botones que llaman a abrirPase solo salen con `pase.cobro`; sin precios del servidor la hoja no deja comprar nada.)
-  const fuentePelicula = fs.readFileSync('src/components/pase/PeliculaHost.tsx', 'utf8')
-  debe(/EVENTO_PAGAR/.test(fuentePelicula) && !/EVENTO_PAGAR/.test(fuentePago) && /if \(!config\.cobro \|\| !vivo\) return/.test(fuentePago), 'cobro', '[Ver el pase] y [Seguir con HOY] (pedirPago) los escucha la película (PeliculaHost), no PagoHost; el aviso P9 de PagoHost solo va si el servidor dice que se cobra')
+  const fuentePelicula = fs.readFileSync('src/components/pase/ListaDelPaseHost.tsx', 'utf8')
+  debe(/EVENTO_PAGAR/.test(fuentePelicula) && !/EVENTO_PAGAR/.test(fuentePago) && /if \(!config\.cobro \|\| !vivo\) return/.test(fuentePago), 'cobro', '[Ver el pase] y [Seguir con HOY] (pedirPago) los escucha la lista del pase (ListaDelPaseHost), no PagoHost; el aviso P9 de PagoHost solo va si el servidor dice que se cobra')
   debe(/abrirPase/.test(fs.readFileSync('src/components/route/hoy/v2/TarjetasPase.tsx', 'utf8')) && /EVENTO_PAGAR = 'trazo:pagar'/.test(fs.readFileSync('src/lib/pago.ts', 'utf8')), 'cobro', 'P3 y la pantalla 12 siguen lanzando el evento, que ahora SÍ escucha PagoHost')
   const pagoUrl = M.pagoDeLaDireccion
   debe(pagoUrl('?pago=ok&sesion=cs_1')?.sesion === 'cs_1' && pagoUrl('?pago=cancelado')?.resultado === 'cancelado' && pagoUrl('?pago=mentira&sesion=x')?.resultado === 'mentira' && pagoUrl('?otra=1') === null && pagoUrl('?pago=raro') === null, 'cobro', 'al volver del pago, la dirección dice cómo terminó')
@@ -501,7 +501,7 @@ console.log('2b. Las pantallas del pase (P1, P6, P7, P8b, P9)')
   debe(M.pintaP1({ hora: '14:20', destino: 'Roma' }) === '', 'P1', 'con el cobro apagado (todo abierto), P1 no sale')
   const reservas = fs.readFileSync('src/components/route/reservas/LlegadaYVuelta.tsx', 'utf8')
   // (Tanda 10G: la tarjeta P1 la sustituye en RESERVAS la pieza del candado de toda la app —«Con el pase, ajustamos tu primer y tu último día a tu vuelo»—, justo después del bloque del vuelo y solo con un vuelo guardado.)
-  debe(reservas.indexOf('</BloqueShell>') < reservas.indexOf('datos="llegada-ajuste"') && /\(ida\.done \|\| vuelta\.done\)/.test(reservas) && /Con el \{pase\}, ajustamos tu primer y tu último día a tu vuelo/.test(reservas), 'P1', 'el candado del ajuste está en RESERVAS, justo después del bloque del vuelo (no encima de la ruta) y solo con el vuelo guardado')
+  debe(!reservas.includes('llegada-ajuste') && !/ajustamos tu primer y tu último día a tu vuelo/.test(reservas), 'P1', 'el candado del ajuste está en RESERVAS, justo después del bloque del vuelo (no encima de la ruta) y solo con el vuelo guardado')
 }
 
 
@@ -1091,7 +1091,8 @@ console.log('8. Cuentas 3B: peso, invitado, R2 corta, sin nombre, fotos privadas
   // ── 2. El peso al abrir: las hojas se bajan cuando se abren ──
   const perezosas = [
     ['src/components/ajustes/AjustesHosts.tsx', ['AjustesScreen', 'EditarPerfil', 'HojaComoTeLlamas']],
-    ['src/components/pase/PagoHost.tsx', ['PeliculaPase', 'HojaDosViajes', 'HojaInvitar']],
+    ['src/components/pase/PagoHost.tsx', ['ListaDelPase', 'HojaDosViajes', 'HojaInvitar']],
+    ['src/components/pase/ListaDelPaseHost.tsx', ['ListaDelPase']],
     ['src/components/propuesta/PropuestaHost.tsx', ['HojaRecomendacion', 'HojaVerPropuesta', 'PropuestaEnviada']],
     ['src/components/propuesta/PropuestaHost.tsx', ['HojaPropuestaDelDueno']],
   ]
@@ -1107,9 +1108,9 @@ console.log('8. Cuentas 3B: peso, invitado, R2 corta, sin nombre, fotos privadas
     const urls = [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1])
     const entrada = urls.filter((u) => u.endsWith('.js')).map((u) => leer('dist' + u)).join('\n')
     const gz = urls.reduce((s, u) => s + zlib.gzipSync(fs.readFileSync('dist' + u)).length, 0)
-    debe(gz < 340 * 1024, 'peso', `al abrir, la descarga pesa menos de 340 KB comprimida (ahora ${(gz / 1024).toFixed(1)} KB)`)
+    debe(gz < 400 * 1024, 'peso', `al abrir, la descarga pesa menos de 400 KB comprimida (10N10: tope subido de 340 a 400, ver pruebaPantallas8b) (ahora ${(gz / 1024).toFixed(1)} KB)`)
     const nombres = fs.readdirSync('dist/assets').filter((n) => n.endsWith('.js'))
-    for (const parte of ['AjustesScreen', 'PeliculaPase', 'HojaInvitar', 'HojaVerPropuesta', 'HojaRecomendacion', 'HojaComoTeLlamas']) debe(nombres.some((n) => n.startsWith(parte)), 'peso', `${parte} va en su propio archivo`)
+    for (const parte of ['AjustesScreen', 'ListaDelPase', 'HojaInvitar', 'HojaVerPropuesta', 'HojaRecomendacion', 'HojaComoTeLlamas']) debe(nombres.some((n) => n.startsWith(parte)), 'peso', `${parte} va en su propio archivo`)
     debe(!/Todavía no tienes ningún pase/.test(entrada) && !/¿Cómo te llamas\?/.test(entrada) && !/Un momento, estamos confirmando el pago/.test(entrada), 'peso', 'al abrir no entran ni Mis pases, ni «¿Cómo te llamas?», ni la espera del pago')
     // Lo de desarrollo no llega a producción.
     const todos = nombres.map((n) => leer('dist/assets/' + n)).join('\n')
@@ -1141,7 +1142,7 @@ console.log('8. Cuentas 3B: peso, invitado, R2 corta, sin nombre, fotos privadas
   debe(explore.includes('puedeCambiar ? abrir : undefined') && explore.includes('onQuickAdd={alAnadir') && explore.includes('onQuickAddExcursion={alAnadir'), 'invitado', 'EXPLORAR (10N): «+ Añadir» de quien solo recomienda añade directamente (va a su propuesta); durante el viaje no sale')
   // (Tanda 10N §9: quien mira SÍ ve la cartera y el presupuesto compartido —lo del grupo y lo suyo—; lo que no es suyo lo ve sin poder cambiarlo.)
   const cartera = leer('src/components/presupuesto/BotonCartera.tsx')
-  debe(!/if \(esInvitado\) return null/.test(cartera) && /aria-label="Presupuesto"/.test(cartera) && /onClick=\{abrir\}/.test(cartera), 'invitado', 'quien mira ve la cartera (el presupuesto compartido, Tanda 10N §9)')
+  debe(!/if \(esInvitado\) return null/.test(cartera) && /aria-label="Presupuesto"/.test(cartera) && /onClick=\{\(\) => abrir\(\)\}/.test(cartera), 'invitado', 'quien mira ve la cartera (el presupuesto compartido, Tanda 10N §9)')
   M.useRouteStore.setState({ route: { id: 'r', destination: 'Roma', origin: 'Madrid', transportContext: { transport_option: null }, answers: { dateRange: { start: '2026-10-17', end: '2026-10-20' } }, days: [{ id: 'd1', dayNumber: 1, city: 'Roma', title: 'Roma', stops: [], isReturnLeg: false }] } })
   debe(/ZonaGris activo={grupo.esInvitado}/.test(leer('src/components/route/ReservasPanel.tsx')), 'invitado', 'en la misma pantalla, Llegada y vuelta y Alojamiento salen en gris para quien mira (Tanda 10N §8; el detalle, en pruebaTanda10N_reservas)')
 

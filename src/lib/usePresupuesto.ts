@@ -13,6 +13,7 @@ import { useMisReservas } from '../store/useMisReservas'
 import { idsConLoSuyo } from './loSuyo'
 import { modoDeCuentas } from './modoCuentas'
 import { useModoCuentas } from './modoCuentas'
+import { cuentaDelViaje, entreSinDecir, esFamilia } from './cuentaDelViaje'
 
 /** El presupuesto del estado de ahora (sin React): para el PDF y para quien lo necesite fuera de una pantalla. */
 export function presupuestoDeEstado(cambio: Cambio | null): Presupuesto | null {
@@ -45,7 +46,7 @@ function compartidoDeEstado() {
   return {
     gastos: gastosQueVeo(g.gastos, g.yoId),
     extrasDeLaRutaMios: !esInvitado,
-    reparto: { yoId: yo, adminId: gente.find((p) => p.esAdmin)?.id ?? null, modo: modoDeCuentas(), esInvitado, todos: gente.map((p) => p.id), entreDe: useRouteStore.getState().route?.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(lo.grupo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(lo.grupo, 'alojamiento'), reservasPropias: esInvitado ? useMisReservas.getState().lista : [], entradasDeInvitados: lo.entradas, loSuyo: lo.mio },
+    reparto: { yoId: yo, adminId: gente.find((p) => p.esAdmin)?.id ?? null, modo: modoDeCuentas(), esInvitado, todos: gente.map((p) => p.id), porDefecto: entreSinDecir(useRouteStore.getState().route, cuentaDelViaje(gente.length, esFamilia(useRouteStore.getState().route)), gente.map((p) => p.id)), entreDe: useRouteStore.getState().route?.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(lo.grupo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(lo.grupo, 'alojamiento'), reservasPropias: esInvitado ? useMisReservas.getState().lista : [], entradasDeInvitados: lo.entradas, loSuyo: lo.mio },
   }
 }
 
@@ -73,7 +74,7 @@ export function usePresupuesto(): { presupuesto: Presupuesto | null; cambio: Cam
   const presupuesto = useMemo(
     () =>
       route
-        ? construirPresupuesto({ route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, moneda: monedaDelViajero(route), cambio, pago, compartido: compartido ? { gastos: gastosCompartidos, extrasDeLaRutaMios: !esInvitado, reparto: { yoId, adminId, modo, esInvitado, todos: todosIds, entreDe: route.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), reservasPropias: esInvitado ? misReservas : [], entradasDeInvitados: entradasInv, loSuyo: miLoSuyo } } : undefined })
+        ? construirPresupuesto({ route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, moneda: monedaDelViajero(route), cambio, pago, compartido: compartido ? { gastos: gastosCompartidos, extrasDeLaRutaMios: !esInvitado, reparto: { yoId, adminId, modo, esInvitado, todos: todosIds, porDefecto: entreSinDecir(route, cuentaDelViaje(todosIds.length, esFamilia(route)), todosIds), entreDe: route.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), reservasPropias: esInvitado ? misReservas : [], entradasDeInvitados: entradasInv, loSuyo: miLoSuyo } } : undefined })
         : null,
     [route, reservations, accommodationSelections, transportBookings, insuranceBooking, rentalVehicleBooking, esimPrecios, cambio, pago, modo, compartido, gastosCompartidos, esInvitado, yoId, adminId, todosIds, grupoLoSuyo, entradasInv, miLoSuyo, misReservas],
   )

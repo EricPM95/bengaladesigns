@@ -682,6 +682,8 @@ export function DayDetailPanel({
       return
     }
     if (insertAt !== null) insertStopAt(day.id, insertAt, conHoraDeTarde)
+    // (10N10 §3b) Se vuelve a DÍAS con la parada puesta en su sitio: la app baja hasta ella y la marca un momento (como al mover una parada de día).
+    if (insertAt !== null) setFocusStopId(conHoraDeTarde.id)
     setInsertAt(null)
     setInsertAfterDinner(false)
     setAddStopInitialQuery(undefined)
@@ -1640,6 +1642,7 @@ export function DayDetailPanel({
               excursions={curatedExcursions}
               title={`Añadir parada — ${diaCorto(route, day.dayNumber)}`}
               subtitle={addStopSubtitle}
+              soloSitiosParaVisitar
               route={route}
               dayMarkers={dayMarkers}
               // (10N5) El Free Tour sale en esta lista y ahora también se puede añadir: abre «¿A qué día lo añadimos?».
@@ -1649,7 +1652,7 @@ export function DayDetailPanel({
               initialQuery={addStopInitialQuery}
               focusCoordinates={addStopFocus}
               onPick={addPickedStop}
-              onQuickPick={(stop) => addPickedStop(stop, { keepOpen: true })}
+              onQuickPick={(stop) => addPickedStop(stop)}
               onClose={closeAddStop}
             />
           )}

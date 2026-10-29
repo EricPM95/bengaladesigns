@@ -6,7 +6,8 @@ import { dejarDeVerElViaje } from '../../lib/personasViaje'
 import { supabase } from '../../lib/supabaseClient'
 import { refrescarViajeActivo } from '../../lib/viajeEnDirecto'
 import { useAvisosStore } from '../../store/useAvisosStore'
-import { useFranjaStore } from '../../store/useFranjaStore'
+import { avisosAnunciados, useFranjaStore } from '../../store/useFranjaStore'
+import { crearAnfitrionDeCambios } from '../../lib/anfitrionDeCambios'
 import { usePersonasStore } from '../../store/usePersonasStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { useViajeCompartido } from '../../store/useViajeCompartido'
@@ -52,37 +53,26 @@ function Encendido() {
   useEffect(() => {
     if (!real || !tripId || !supabase) return undefined
     let vivo = true
-    let esperando: number | undefined
-    let hayAviso = false
-    const refrescar = () => {
-      window.clearTimeout(esperando)
-      // (Un momento para que llegue también el aviso con el nombre de quien lo hizo.)
-      esperando = window.setTimeout(() => {
-        void refrescarViajeActivo().then(async (r) => {
-          if (!vivo) return
-          // El aviso «Eric ha añadido un sitio» ya sale solo en la franja (llega con el aviso de la base de datos); si no llegó ninguno, una línea sencilla.
-          if (r === 'cambiado') {
-            if (!hayAviso) decir('Han cambiado el viaje', `cambiado:${tripId}`)
-          } else if (r === 'fuera') {
-            decir('Ya no formas parte del viaje', `quitado:${tripId}`)
-            dejarDeVerElViaje(tripId)
-          }
-          void useAvisosStore.getState().cargar()
-        })
-      }, 600)
-    }
+    // (10N10) Quién espera a quién (el cambio del viaje y su aviso llegan por canales distintos) está en lib/anfitrionDeCambios.ts.
+    const anfitrion = crearAnfitrionDeCambios({
+      tripId,
+      refrescar: refrescarViajeActivo,
+      cargarAvisos: () => useAvisosStore.getState().cargar(),
+      anunciados: avisosAnunciados,
+      decir,
+      alQuitado: () => dejarDeVerElViaje(tripId),
+    })
     const desconectar = conectarViaje(supabase, tripId, uid, {
-      alViaje: () => refrescar(),
+      alViaje: () => anfitrion.alViaje(),
       alGente: () => void useViajeCompartido.getState().cargar(tripId),
       alAviso: (aviso) => {
-        void useAvisosStore.getState().cargar()
         const que = accionPorAviso(aviso, tripId)
-        if (que.accion === 'refrescar') {
-          hayAviso = true
-          refrescar()
-        } else if (que.accion === 'quitado') {
-          dejarDeVerElViaje(tripId)
-        } else if (que.accion === 'gente') void useViajeCompartido.getState().cargar(tripId)
+        if (que.accion === 'refrescar') anfitrion.alAvisoDeCambio()
+        else {
+          void useAvisosStore.getState().cargar()
+          if (que.accion === 'quitado') dejarDeVerElViaje(tripId)
+          else if (que.accion === 'gente') void useViajeCompartido.getState().cargar(tripId)
+        }
       },
     })
     // El refresco de siempre, por si Realtime no está o se cayó.
@@ -90,7 +80,7 @@ function Encendido() {
       if (document.visibilityState !== 'visible') return
       void refrescarViajeActivo().then((r) => {
         if (!vivo) return
-        if (r === 'cambiado') decir('Han cambiado el viaje', `cambiado:${tripId}`)
+        if (r === 'cambiado') void anfitrion.alSondeo()
         else if (r === 'fuera') {
           decir('Ya no formas parte del viaje', `quitado:${tripId}`)
           dejarDeVerElViaje(tripId)
@@ -101,7 +91,7 @@ function Encendido() {
     document.addEventListener('visibilitychange', sondear)
     return () => {
       vivo = false
-      window.clearTimeout(esperando)
+      anfitrion.parar()
       window.clearInterval(reloj)
       document.removeEventListener('visibilitychange', sondear)
       desconectar()

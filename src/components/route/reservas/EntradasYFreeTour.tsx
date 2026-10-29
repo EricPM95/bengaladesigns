@@ -118,7 +118,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
   return (
     <>
       <BloqueShell bloque="entradas">
-        <div onClick={onToggle} className="flex cursor-pointer flex-col gap-3 p-3.5">
+        <div onClick={onToggle} className="flex cursor-pointer flex-col gap-3.5 p-4">
           <div className="flex items-center gap-3">
             <IconoBloque nombre={ICONOS.ticket} hecho={hecho} />
             <span className="flex min-w-0 flex-1 flex-col gap-[3px]">

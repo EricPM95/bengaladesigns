@@ -527,9 +527,12 @@ interface RouteStoreState {
   removeGastoExtra: (id: string) => void
   /** (Tanda 10N3) «¿Entre quién?» de una línea que entra sola en las cuentas del grupo (alojamiento, coche); `null` la deja entre todos. */
   setCuentasEntre: (clave: string, ids: string[] | null) => void
+  setPagadoPorDe: (clave: string, ids: string[] | null) => void
   /** (Tanda 10N7) Cómo se llevan las cuentas y con cuánta gente se eligió; el nombre de la cuenta conjunta. */
   setModoCuentasRuta: (modo: 'solo' | 'conjunta' | 'cada_uno', conCuantos: number) => void
   setNombreCuenta: (nombre: string | null) => void
+  /** (Tanda 10N10 §5a) Apunta cuántas personas hay y, mientras son dos, quiénes (para repartir bien si entra una tercera). */
+  setCuentasPersonas: (personas: number, conjuntaCon?: string[] | null) => void
   setMonedaViajero: (moneda: string | null) => void
   setPersonas: (personas: number | null) => void
   setLegPrecio: (kind: 'arrival' | 'departure', precio: Importe | null) => void
@@ -973,6 +976,14 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         // (La foto real del punto de encuentro del Free Tour, Tanda 6y3: solo si la parada acaba de crearse y no tiene foto.)
         if (reservation.refId === FREE_TOUR_REF) void pedirFotoDelFreeTour()
         return
+      }
+      // (Tanda 10N10 §3d) El sitio ya está en el día de la fecha de la reserva: la parada se queda donde está (con la hora de su entrada) y no se pide al motor rehacer nada.
+      {
+        const dia = dayOfReservation(unpinned, reservation)
+        if (dia && dia.stops.some((parada) => reservation.placeNames.includes(parada.name))) {
+          set({ route: placeReservedEntrance(unpinned, reservation) })
+          return
+        }
       }
       // Una reserva grande (Coliseo, Museos, Galería) con otra fecha mueve el día ENTERO a esa fecha (Tanda 6j, 9): el motor ordena todos los días con ella fija. Se piden todos los días
       // y solo si llegan todos se cambian (todo o nada). Nada se arranca antes: una parada sola que se va de su día dejaba el día a medias (Tanda 6k, punto 2).
@@ -1715,7 +1726,25 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return { route: { ...state.route, cuentasEntre: Object.keys(resto).length > 0 ? resto : undefined } }
     }),
 
+  setPagadoPorDe: (clave, ids) =>
+    set((state) => {
+      if (!state.route) return state
+      const resto = { ...(state.route.pagadoPorDe ?? {}) }
+      if (ids && ids.length > 0) resto[clave] = ids
+      else delete resto[clave]
+      return { route: { ...state.route, pagadoPorDe: Object.keys(resto).length > 0 ? resto : undefined } }
+    }),
+
   setModoCuentasRuta: (modo, conCuantos) => set((state) => (state.route ? { route: { ...state.route, modoCuentas: modo, modoElegidoCon: conCuantos } } : state)),
+
+  setCuentasPersonas: (personas, conjuntaCon) =>
+    set((state) => {
+      if (!state.route) return state
+      const antes = state.route.cuentaConjuntaCon
+      const nuevaCon = conjuntaCon && conjuntaCon.length === 2 ? conjuntaCon : antes
+      if (state.route.cuentasPersonas === personas && nuevaCon === antes) return state
+      return { route: { ...state.route, cuentasPersonas: personas, cuentaConjuntaCon: nuevaCon } }
+    }),
 
   setNombreCuenta: (nombre) =>
     set((state) => {

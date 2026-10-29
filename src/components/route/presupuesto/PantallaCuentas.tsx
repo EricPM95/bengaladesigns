@@ -6,7 +6,6 @@ import { formatoImporte } from '../../../lib/dinero'
 import { deCentimos } from '../../../lib/cuentasGrupo'
 import { useCuentasDelGrupo } from '../../../hooks/useCuentasDelGrupo'
 import { useGastosDelViaje } from '../../../hooks/useGastosDelViaje'
-import { useModoCuentas } from '../../../lib/modoCuentas'
 import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
@@ -23,9 +22,8 @@ const ojo = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', t
  */
 export function TarjetaCuentas({ onAbrir }: { onAbrir: () => void }) {
   const c = useCuentasDelGrupo()
-  const { modo } = useModoCuentas()
-  // (Tanda 10N7) «Cuentas del grupo» (con quién le debe a quién) solo en «Cada uno lo suyo»: en la cuenta conjunta no hay deudas y viajando solo no hay grupo.
-  if (!c.compartido || modo !== 'cada_uno') return null
+  // (Tanda 10N10 §5b) «¿Quién debe a quién?» en las dos pestañas comunes (conjunta y del grupo), nunca en «Mi cuenta», y solo cuando hay gastos comunes.
+  if (!c.compartido || !c.cuentas.hayGastos) return null
   const primera = c.cuentas.pendientes[0]
   const texto = !c.cuentas.hayGastos ? 'Todavía no hay gastos del grupo' : primera ? `${c.nombreDe(primera.deudorId)} le debe ${c.texto(primera.centimos)} a ${c.nombreDe(primera.acreedorId)}` : 'Estáis en paz'
   const paz = c.cuentas.enPaz
@@ -46,7 +44,7 @@ export function TarjetaCuentas({ onAbrir }: { onAbrir: () => void }) {
         ))}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="text-[15px] font-semibold leading-[1.2]">Cuentas del grupo</span>
+        <span className="text-[15px] font-semibold leading-[1.2]">¿Quién debe a quién?</span>
         <span data-cuentas-resumen className="truncate text-[12.5px]" style={{ color: paz ? 'oklch(0.36 0.09 150)' : 'rgba(28,34,48,.62)' }}>
           {texto}
         </span>
@@ -106,7 +104,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
           <Icono nombre="atras" size={18} />
         </button>
         <span id="titulo-cuentas" style={{ font: "400 30px/1 'Instrument Serif',serif" }}>
-          Cuentas del grupo
+          ¿Quién debe a quién?
         </span>
         <span className="text-text/55" style={{ font: "500 11px/1.35 'Geist Mono',monospace", letterSpacing: '.06em', textTransform: 'uppercase' }}>
           {quienes} {quienes === 1 ? 'persona' : 'personas'}
@@ -141,7 +139,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
           {!cuentas.hayGastos && (
             <div className="flex flex-none flex-col gap-0.5 rounded-[14px] border border-dashed border-text/[.18] px-3.5 py-3.5">
               <span className="text-[13px] font-medium">Todavía no hay gastos del grupo</span>
-              <span className="text-[12px] leading-[1.4] text-text/60">Los gastos [Para todos] y las entradas reservadas para varios aparecerán aquí, repartidos entre quienes toquen.</span>
+              <span className="text-[12px] leading-[1.4] text-text/60">Los gastos comunes y las entradas para varios aparecerán aquí, repartidos entre quienes toquen.</span>
             </div>
           )}
 

@@ -1,20 +1,19 @@
 import { useState } from 'react'
 import { HojaAbajo } from '../reservas/HojaAbajo'
-import { Icono } from '../../ui/Icono'
-import { PastillaElegir } from '../../ui/Elegir'
-import { useModoCuentas } from '../../../lib/modoCuentas'
-import { ParaQuienConjunta, ParaQuienConNombres } from './ParaQuien'
-import { importeDeTexto, simboloDe, textoDeImporte } from '../../../lib/dinero'
+import { InterruptorElegir } from '../../ui/Elegir'
+import { ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
+import { BloqueDinero, lineasDeDestino, textoDelBoton, tituloAnadirGasto, type CuentaComun } from './BloqueDinero'
 import { estadoInicial, type AmbitoGasto, type GastoCompartido } from '../../../lib/gastosCompartidos'
 import type { GastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
-import { useMonedas } from '../../../lib/useMoneda'
+import { usePrecioEditable } from '../../../lib/useMoneda'
 import { nombreDe } from '../../../store/useViajeCompartido'
 import { nombreVisible } from '../../../lib/nombrePersona'
+import { nombreDeLaCuentaComun } from '../../../lib/cuentaDelViaje'
 
-const CAMPO = 'h-[52px] min-w-0 rounded-[16px] border border-text/[.12] bg-[#FFFDF8] px-4 text-[15px] outline-none focus:border-text/40'
+const CAMPO = 'h-[52px] min-w-0 rounded-[16px] border border-text/[.12] bg-white px-4 text-[15px] outline-none focus:border-text/40'
 
-/** El círculo con la inicial de una persona (el del administrador, oscuro; los demás, dorado), para las pastillas y las filas. */
+/** El círculo con la inicial de una persona (el del administrador, oscuro; los demás, dorado), para ENSEÑAR quién es (nunca para elegir: para elegir, `PersonasCuadradas`). */
 export function InicialDePersona({ nombre, esAdmin, tam = 20 }: { nombre: string; esAdmin: boolean; tam?: number }) {
   return (
     <span
@@ -27,113 +26,131 @@ export function InicialDePersona({ nombre, esAdmin, tam = 20 }: { nombre: string
 }
 
 /**
- * «AÑADIR GASTO» de un viaje compartido (Tanda 10N, apartado 9; `Piezas/Presupuesto Compartido` 03, 04 y 05): nombre, precio, [Para todos] [Para mí], una línea que dice qué pasa (se lo enviamos al administrador /
- * entra directo / solo lo ves tú) y, en [Para todos], «¿Quién ha pagado?» con una pastilla por persona (quien lo añade, ya marcada). El botón dice [Enviar a Eric] si el gasto espera su respuesta y [Añadir gasto] si entra directo.
+ * «AÑADIR A MI CUENTA» / «AÑADIR A LA CUENTA CONJUNTA» / «AÑADIR A LA CUENTA DEL GRUPO» (Tanda 10N10 §6; cambia la 10N5 y la 10N7). El gasto suelto del presupuesto NO pregunta «¿Para quién es?»: va a la pestaña desde la que se abre,
+ * y el título lo dice. Orden: 1) concepto; 3) «¿Cuánto ha costado en total?» con su moneda; 4) «¿Quién lo ha pagado?» (cuadrados, si es común y para más de uno); 5) la línea pequeña de a dónde va el dinero; 6) el botón.
+ *   · «Mi cuenta»: solo el concepto y el precio («Va a Mi cuenta» · «Solo lo ves tú»).
+ *   · cuenta del grupo: la opción pequeña «Solo para algunos» abre los nombres (el taxi de Ana y tuyo, no de Luis).
+ *   · `editar`: la misma hoja para cambiar el precio, la cuenta o quién lo pagó, o quitarlo; al guardar todo se recalcula.
  */
-export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDelViaje; moneda: string; onClose: () => void; editar?: GastoCompartido }) {
+export function HojaAnadirGasto({ gv, onClose, editar, pestana = 'comun', cuenta = 'conjunta' }: { gv: GastosDelViaje; moneda: string; onClose: () => void; editar?: GastoCompartido; pestana?: 'mia' | 'comun'; cuenta?: CuentaComun }) {
   const anadir = useGastosCompartidos((s) => s.anadir)
   const editarGasto = useGastosCompartidos((s) => s.editar)
-  const { opciones } = useMonedas()
-  const [nombre, setNombre] = useState(editar?.nombre ?? '')
-  const [importe, setImporte] = useState(editar ? textoDeImporte(editar.precio) : '')
-  const [monedaElegida, setMoneda] = useState<string | null>(editar?.precio.currency ?? null)
-  // (Tanda 10N7) Cómo se llevan las cuentas: en la conjunta, «Para los dos» / «Solo para mí»; en «Cada uno lo suyo», solo los nombres (sin [Para todos] / [Para mí]): quien lo añade sale marcado en «¿Para quién es?».
-  const { modo } = useModoCuentas()
-  const conjunta = modo === 'conjunta'
-  const [ambito, setAmbito] = useState<AmbitoGasto>('grupo')
-  const [pagadoPor, setPagadoPor] = useState<string[]>(editar ? editar.pagadoPor : gv.yoId ? [gv.yoId] : [])
-  // «¿Entre quién?» (Tanda 10N2): todas las personas marcadas por defecto; un gasto de antes (sin lista) también es entre todos.
-  const todosIds = gv.personas.map((p) => p.id)
-  const [entre, setEntre] = useState<string[]>(editar && editar.entre.length > 0 ? editar.entre : editar || conjunta || !gv.yoId ? todosIds : [gv.yoId])
-  // (Tanda 10N3) El administrador edita también los gastos de quien ya salió del viaje: esa persona sale en las pastillas, con su nombre, para poder cambiar quién pagó y entre quién.
+  const quitar = useGastosCompartidos((s) => s.quitar)
   const exMiembros = useGastosCompartidos((st) => st.exMiembros)
+  const [nombre, setNombre] = useState(editar?.nombre ?? '')
+  const precioEstado = usePrecioEditable(editar?.precio ?? null)
+  // La cuenta: al añadir, la de la pestaña; al editar, la del gasto (se puede cambiar).
+  const [cuentaElegida, setCuentaElegida] = useState<'mia' | 'comun'>(editar ? (editar.ambito === 'mio' ? 'mia' : 'comun') : pestana)
+  const comun = cuentaElegida === 'comun'
+  const todosIds = gv.personas.map((p) => p.id)
   const idsDeSalidas = editar ? [...new Set([...editar.pagadoPor, ...editar.entre])].filter((id) => !todosIds.includes(id)) : []
-  // (Tanda 10N5 §6d) Quien añade el gasto, el primero de la lista (y ya marcado en «¿Quién ha pagado?»); los demás, detrás.
+  // Quien añade el gasto, el primero de la lista (y ya marcado en «¿Quién lo ha pagado?»).
   const personasConYoPrimero = [...gv.personas].sort((a, b) => Number(b.id === gv.yoId) - Number(a.id === gv.yoId))
   const lista = [...personasConYoPrimero, ...idsDeSalidas.map((id) => ({ id, nombre: exMiembros.find((e) => e.id === id)?.nombre ?? null, foto: null, esAdmin: false }))]
+  const personas = lista.map((p) => ({ id: p.id, nombre: nombreDe(p) }))
+  const [pagadoPor, setPagadoPor] = useState<string[]>(editar && editar.pagadoPor.length > 0 ? editar.pagadoPor : gv.yoId ? [gv.yoId] : [])
+  // «Solo para algunos» (cuenta del grupo): abierto si el gasto ya era entre unos pocos.
+  const eraParaAlgunos = Boolean(editar && editar.entre.length > 0 && editar.entre.length < todosIds.length)
+  const [soloAlgunos, setSoloAlgunos] = useState(eraParaAlgunos)
+  const [entre, setEntre] = useState<string[]>(editar && editar.entre.length > 0 ? editar.entre : todosIds)
   const [enCurso, setEnCurso] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const monedaDelCampo = monedaElegida ?? moneda
-  const precio = importeDeTexto(importe, monedaDelCampo)
-  // Solo para quien lo paga: en la conjunta, «Solo para mí»; en «Cada uno lo suyo», cuando solo marca a quien lo añade y lo paga él (lo demás es un gasto del grupo).
-  const soloMio = !editar && (conjunta ? ambito === 'mio' : Boolean(gv.yoId) && entre.length === 1 && entre[0] === gv.yoId && pagadoPor.length === 1 && pagadoPor[0] === gv.yoId)
-  const ambitoFinal: AmbitoGasto = soloMio ? 'mio' : 'grupo'
-  const listo = Boolean(nombre.trim()) && precio !== null && (soloMio || pagadoPor.length > 0)
-  const espera = !soloMio && !gv.puedeDecidir && !editar
+  const [confirmarQuitar, setConfirmarQuitar] = useState(false)
+  const precio = precioEstado.importe
   const admin = nombreVisible(gv.nombreAdmin) || 'el administrador'
+  const alternar = (lista: string[], id: string) => (lista.includes(id) ? lista.filter((x) => x !== id) : [...lista, id])
 
-  const boton = editar ? 'Guardar cambios' : espera ? `Enviar a ${admin}` : 'Añadir gasto'
-
-  const alternar = (id: string) => setPagadoPor((actuales) => (actuales.includes(id) ? (actuales.length > 1 ? actuales.filter((x) => x !== id) : actuales) : [...actuales, id]))
-
-  const alternarEntre = (id: string) => setEntre((actuales) => (actuales.includes(id) ? (actuales.length > 1 ? actuales.filter((x) => x !== id) : actuales) : [...actuales, id]))
-  // Marcar a todos = lista completa (así quien entre después al viaje no se cuela en un gasto ya hecho).
-  const entreFinal = todosIds.every((id) => entre.includes(id)) && entre.length === todosIds.length ? todosIds : entre.filter((id) => todosIds.includes(id) || editar?.entre.includes(id))
+  const entreFinal = !comun ? [] : cuenta === 'grupo' && soloAlgunos && entre.length > 0 && entre.length < todosIds.length ? entre : cuenta === 'grupo' ? todosIds : []
+  const pagadoFinal = comun ? (pagadoPor.length > 0 ? pagadoPor : gv.yoId ? [gv.yoId] : []) : []
+  const listo = Boolean(nombre.trim()) && precio !== null && (!comun || pagadoFinal.length > 0)
+  const marcadosParaLinea = comun ? (entreFinal.length > 0 ? entreFinal : todosIds) : gv.yoId ? [gv.yoId] : []
+  const normal = editar ? 'Guardar cambios' : 'Añadir gasto'
+  const boton = editar ? normal : textoDelBoton({ normal, solo: !comun, marcados: comun ? marcadosParaLinea : [], yoId: gv.yoId, permiso: gv.puedeDecidir ? 'editar' : 'recomendar', nombreAdmin: gv.nombreAdmin })
+  const titulo = editar ? 'Editar gasto' : tituloAnadirGasto(pestana === 'mia' ? 'mia' : cuenta)
 
   const enviar = async () => {
     if (!listo || !precio || enCurso) return
     setEnCurso(true)
     setError(null)
-    const fallo = editar
-      ? await editarGasto(editar.id, { nombre: nombre.trim(), precio, pagadoPor, entre: entreFinal })
-      : await anadir({ nombre: nombre.trim(), precio, ambito: ambitoFinal, estado: estadoInicial(ambitoFinal, gv.puedeDecidir), pagadoPor: soloMio ? [] : conjunta ? (gv.yoId ? [gv.yoId] : pagadoPor) : pagadoPor, entre: soloMio || conjunta ? [] : entreFinal })
+    const ambito: AmbitoGasto = comun ? 'grupo' : 'mio'
+    let fallo: string | null
+    if (editar && (editar.ambito === 'mio') === comun) {
+      // Cambia de cuenta: se quita y se vuelve a apuntar en la otra (la base de datos no deja cambiar el ámbito de un gasto).
+      fallo = await quitar(editar.id)
+      if (!fallo) fallo = await anadir({ nombre: nombre.trim(), precio, ambito, estado: estadoInicial(ambito, gv.puedeDecidir), pagadoPor: pagadoFinal, entre: entreFinal })
+    } else if (editar) {
+      fallo = await editarGasto(editar.id, { nombre: nombre.trim(), precio, pagadoPor: pagadoFinal, entre: entreFinal })
+    } else {
+      fallo = await anadir({ nombre: nombre.trim(), precio, ambito, estado: estadoInicial(ambito, gv.puedeDecidir), pagadoPor: pagadoFinal, entre: entreFinal })
+    }
     setEnCurso(false)
     if (fallo) setError(fallo)
     else onClose()
   }
 
+  const quitarGasto = async () => {
+    if (!editar) return
+    setEnCurso(true)
+    const fallo = await quitar(editar.id)
+    setEnCurso(false)
+    if (fallo) setError(fallo)
+    else onClose()
+  }
+
+  const destinoMia = (
+    <div className="flex flex-col gap-0.5" data-linea-destino style={{ font: "400 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' }}>
+      {lineasDeDestino({ solo: false, marcados: gv.yoId ? [gv.yoId] : [], yoId: gv.yoId, precio, cuenta, permiso: 'admin', nombreAdmin: gv.nombreAdmin }).map((l, i) => (
+        <span key={l} style={i === 0 ? { fontWeight: 600, color: 'rgba(28,34,48,.78)' } : undefined}>
+          {l}
+        </span>
+      ))}
+    </div>
+  )
+
   return (
     <HojaAbajo titleId="hoja-anadir-gasto" onClose={onClose} capa={100}>
-      <h2 id="hoja-anadir-gasto" className="max-w-[calc(100%-3rem)] font-display text-[28px] leading-[1.05] text-text">
-        {editar ? 'Editar gasto' : 'Añadir gasto'}
+      <h2 id="hoja-anadir-gasto" data-titulo-hoja-gasto className="max-w-[calc(100%-3rem)] font-display text-[28px] leading-[1.05] text-text">
+        {titulo}
       </h2>
       <div className="mt-4 flex flex-col gap-5">
         <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} placeholder="Cena el primer día" aria-label="Nombre del gasto" data-gasto-nombre className={CAMPO} />
-        <div className="grid gap-2" style={{ gridTemplateColumns: 'minmax(0,1fr) auto' }}>
-          <input value={importe} onChange={(e) => setImporte(e.target.value)} inputMode="decimal" placeholder="30" aria-label="Importe" data-gasto-importe className={CAMPO} style={{ fontFamily: "'Geist Mono',monospace" }} />
-          <label className="relative flex items-center">
-            <span className="sr-only">Moneda del gasto</span>
-            <select value={monedaDelCampo} onChange={(e) => setMoneda(e.target.value)} aria-label="Moneda del gasto" className="h-[52px] rounded-[16px] border border-text/[.12] bg-[#FFFDF8] px-3 text-[14px] font-semibold text-text">
-              {opciones.map((o) => (
-                <option key={o.codigo} value={o.codigo}>
-                  {simboloDe(o.codigo)}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        {conjunta && !editar && <ParaQuienConjunta valor={ambito === 'mio' ? 'mio' : 'todos'} onCambio={(v) => setAmbito(v === 'mio' ? 'mio' : 'grupo')} personas={gv.personas.length} datos="gasto-ambito" />}
-        {espera && (
-          <div data-gasto-info className="flex items-center gap-2.5 rounded-[14px] bg-[#F3E6C6]/70 px-3.5 py-3 text-[13px] font-medium text-[#6F4E37]">
-            <Icono nombre="flecha" size={16} />
-            <span>Se lo enviamos a {admin}</span>
-          </div>
-        )}
-        {!conjunta && (
-          <div className="flex flex-col gap-2" data-gasto-quien-pago>
-            <span className="text-[15px] font-semibold text-text">¿Quién ha pagado?</span>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {lista.map((p) => (
-                <PastillaElegir key={p.id} elegida={pagadoPor.includes(p.id)} onClick={() => alternar(p.id)} marca datos={`pago-${p.id}`} icono={undefined}>
-                  {nombreVisible(nombreDe(p)) || 'Alguien'}
-                </PastillaElegir>
-              ))}
-            </div>
-          </div>
-        )}
-        {!conjunta && (
-          <div data-gasto-entre-quien>
-            <ParaQuienConNombres
-              pregunta="¿Para quién es?"
-              personas={lista.map((p) => ({ id: p.id, nombre: nombreDe(p), esAdmin: p.esAdmin }))}
-              marcados={entre}
-              onAlternar={alternarEntre}
-              yoId={gv.yoId}
-              nombreDe={(id) => gv.nombreDe(id)}
-              datos="entre"
+        {editar && (
+          <div className="flex flex-col gap-2.5" data-gasto-cuenta>
+            <span style={ESTILO_PREGUNTA}>Cuenta</span>
+            <InterruptorElegir
+              valor={cuentaElegida}
+              onCambio={(id) => setCuentaElegida(id as 'mia' | 'comun')}
+              datos="gasto-cuenta"
+              etiqueta="Cuenta"
+              alto={46}
+              opciones={[
+                { id: 'mia', texto: 'Mi cuenta', atributos: { 'data-opcion': 'mia' } },
+                { id: 'comun', texto: nombreDeLaCuentaComun(cuenta === 'grupo' ? 'grupo' : 'conjunta'), atributos: { 'data-opcion': 'comun' } },
+              ]}
             />
           </div>
         )}
+        <BloqueDinero
+          tipo="gasto"
+          solo={!comun}
+          personas={personas}
+          yoId={gv.yoId}
+          paraQuien={entre}
+          onParaQuien={(id) => setEntre((actual) => (actual.includes(id) && actual.length <= 1 ? actual : alternar(actual, id)))}
+          precio={precioEstado}
+          pagadoPor={pagadoPor}
+          onPagadoPor={(id) => setPagadoPor((actual) => (actual.includes(id) && actual.length <= 1 ? actual : alternar(actual, id)))}
+          cuenta={cuenta}
+          permiso={gv.puedeDecidir ? 'editar' : 'recomendar'}
+          nombreAdmin={admin}
+          soloParaAlgunos={soloAlgunos}
+          onSoloParaAlgunos={(abierto) => {
+            setSoloAlgunos(abierto)
+            if (abierto && gv.yoId) setEntre([gv.yoId])
+            if (!abierto) setEntre(todosIds)
+          }}
+          destino={!comun ? destinoMia : undefined}
+        />
         {error && (
           <p role="alert" className="text-[13px] text-accent-red">
             {error}
@@ -142,6 +159,22 @@ export function HojaAnadirGasto({ gv, moneda, onClose, editar }: { gv: GastosDel
         <button type="button" disabled={!listo || enCurso} onClick={() => void enviar()} data-gasto-enviar className="btn-champan mt-1 h-[54px] w-full rounded-full text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40">
           {boton}
         </button>
+        {editar && (
+          confirmarQuitar ? (
+            <div className="flex items-center justify-center gap-4" data-gasto-confirmar-quitar>
+              <button type="button" onClick={() => void quitarGasto()} disabled={enCurso} className="text-[14px] font-semibold text-accent-red">
+                Sí, quitar el gasto
+              </button>
+              <button type="button" onClick={() => setConfirmarQuitar(false)} className="text-[14px] font-medium text-text/60">
+                No
+              </button>
+            </div>
+          ) : (
+            <button type="button" onClick={() => setConfirmarQuitar(true)} data-gasto-quitar className="text-center text-[14px] font-semibold text-accent-red">
+              Quitar este gasto
+            </button>
+          )
+        )}
       </div>
     </HojaAbajo>
   )

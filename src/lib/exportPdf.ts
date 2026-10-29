@@ -92,13 +92,12 @@ export function exportRouteToPdf(route: Route) {
   // (Tanda 6z2) Solo lo que el viajero puso con su precio, en su moneda; sin gastos, la línea no sale.
   const presupuesto = presupuestoDeEstado(cambioActual())
   if (presupuesto && (presupuesto.bloques.length > 0 || presupuesto.loTuyo.length > 0)) {
-    // (Tanda 10N8 §0b-6) Lleva el modo: «Tu viaje» (solo), «Cuenta conjunta», «Del grupo» (cada uno lo suyo) y, solo si esta persona tiene algo «Solo tú», «Lo tuyo» y el total explicado.
+    // (Tanda 10N10 §5) Etiquetas nuevas: «Total del viaje» (solo), «Cuenta conjunta» / «Cuenta del grupo» (lo común) y, si esta persona tiene algo solo suyo, «Mi cuenta (solo lo ves tú)».
     const modo = modoDeCuentas()
-    const etiqueta = modo === 'conjunta' ? 'Cuenta conjunta' : modo === 'cada_uno' ? 'Del grupo' : 'Tu viaje'
+    const etiqueta = modo === 'conjunta' ? 'Cuenta conjunta' : modo === 'cada_uno' ? 'Cuenta del grupo' : 'Total del viaje'
     writeLine(`Presupuesto · ${etiqueta}: ${formatoImporte(presupuesto.total)}`, { size: 13, bold: true, gap: 2 })
     if (presupuesto.loTuyo.length > 0) {
-      writeLine(`Lo tuyo (solo lo ves tú): ${formatoImporte(presupuesto.sumaLoTuyo)}`, { size: 11, gap: 1 })
-      writeLine(`${etiqueta} ${formatoImporte(presupuesto.total)} · Lo tuyo ${formatoImporte(presupuesto.sumaLoTuyo)} · Total ${formatoImporte(presupuesto.totalConLoTuyo)}`, { size: 11, gap: 2 })
+      writeLine(`Mi cuenta, solo lo tuyo (solo lo ves tú): ${formatoImporte(presupuesto.sumaLoTuyo)}`, { size: 11, gap: 2 })
     }
   }
 

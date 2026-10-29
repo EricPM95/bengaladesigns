@@ -12,7 +12,7 @@ const debe = (cond, regla, texto) => {
   comprobaciones++
   if (!cond) fallos.push({ regla, texto })
 }
-const MIGRACIONES = /^(0001|0002|0003|0012|0018|0020|0021|0023|0024|0025|0026|0027|0028|0030|0031|0034|0035|0036|0037|0038|0040|0041|0042|0043|0046|0048|0049|0051|0053|0054|0055|0058|0059)_/
+const MIGRACIONES = /^(0001|0002|0003|0012|0018|0020|0021|0023|0024|0025|0026|0027|0028|0030|0031|0034|0035|0036|0037|0038|0040|0041|0042|0043|0046|0048|0049|0051|0053|0054|0055|0058|0059|0065)_/
 const bd = await crearBaseDePrueba({ migraciones: MIGRACIONES, alFallar: (m) => debe(false, 'migracion', m) })
 const { q, como, servidor, nuevoUsuario } = bd
 debe(bd.aplicadas.includes('0058_avisos_viaje_nuevos_y_salir.sql') && bd.aplicadas.includes('0059_avisos_juntar_2_minutos.sql'), 'migracion', 'la 0058 y la 0059 se aplican')
@@ -96,8 +96,9 @@ const paso = async (uid, despues) => {
   await paso(eric, ruta([orden[1], orden[0], orden[2], orden[3]].map((d, i) => ({ ...d, dayNumber: i + 1 })), '2026-11-14'))
   const a2 = await avisosDe(ana)
   if (a2.length !== 1) console.log(JSON.stringify(a2.map((x) => ({ id: x.id.slice(0, 4), c: x.payload.cambio?.id, ac: x.payload.cambio?.accion }))))
-  debe(a2.length === 1 && a2[0].id !== antesId, 'nuevo', `el segundo cambio seguido sustituye al primero y es un aviso NUEVO (otro id): ${a2.length} aviso(s)`)
-  debe(textos.textoDelAviso({ tipo: 'viaje_cambiado', payload: a2[0].payload }) === 'Eric ha cambiado el orden de los días.', 'orden', 'con la frase de lo último')
+  // (10N10, 0065) El segundo cambio seguido YA NO sustituye al primero: cada cambio es un aviso nuevo y los dos quedan en la campana.
+  debe(a2.length === 2 && a2.some((x) => x.id === antesId), 'nuevo', `el segundo cambio seguido es un aviso NUEVO y el primero se queda: ${a2.length} aviso(s)`)
+  debe(textos.textoDelAviso({ tipo: 'viaje_cambiado', payload: a2.find((x) => x.id !== antesId).payload }) === 'Eric ha cambiado el orden de los días.', 'orden', 'con la frase de lo último')
   debe((await avisosDe(eric)).length === 0, 'propio', 'Eric no recibe avisos de lo que ha hecho él')
   // Ana (puede editar) añade un restaurante: Eric lo recibe, Ana no.
   const dias = actual.days.map((d) => ({ ...d }))
@@ -105,7 +106,7 @@ const paso = async (uid, despues) => {
   await paso(ana, { ...actual, days: dias })
   const e1 = await avisosDe(eric)
   debe(e1.length === 1 && /Ana ha añadido Da Enzo/.test(textos.textoDelAviso({ tipo: 'viaje_cambiado', payload: e1[0].payload })), 'restaurante', `Eric recibe el restaurante que añade Ana (${e1.length})`)
-  debe((await avisosDe(ana)).length === 1, 'propio', 'Ana no recibe el suyo (solo queda el de Eric)')
+  debe((await avisosDe(ana)).length === 2, 'propio', 'Ana no recibe el suyo (solo quedan los dos de Eric)')
   // Un guardado sin cambio de contenido no hace ningún aviso.
   const antes = (await avisosDe(ana)).length
   await paso(eric, { ...actual, contextBannerDismissed: true })

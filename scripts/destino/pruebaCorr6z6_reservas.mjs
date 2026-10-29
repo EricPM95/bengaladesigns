@@ -217,7 +217,7 @@ for (const [clave, route] of Object.entries(rutas)) {
 {
   debe(!fs.existsSync('src/components/route/presupuesto/FilaPresupuesto.tsx') && !/FilaPresupuesto/.test(panelSrc), '2a sin fila', 'queda FilaPresupuesto')
   const cartera = leer('src/components/presupuesto/BotonCartera.tsx')
-  debe(/usePresupuestoUi\(\(state\) => state\.abrir\)/.test(cartera) && /onClick=\{abrir\}/.test(cartera) && /aria-label="Presupuesto"/.test(cartera) && /data-cartera/.test(cartera) && /nombre="presupuesto"/.test(cartera), '2b cartera', 'BotonCartera no abre el presupuesto con aria-label y data-cartera, o no usa el icono «presupuesto»')
+  debe(/usePresupuestoUi\(\(state\) => state\.abrir\)/.test(cartera) && /onClick=\{\(\) => abrir\(\)\}/.test(cartera) && /aria-label="Presupuesto"/.test(cartera) && /data-cartera/.test(cartera) && /nombre="presupuesto"/.test(cartera), '2b cartera', 'BotonCartera no abre el presupuesto con aria-label y data-cartera, o no usa el icono «presupuesto»')
   const cabComun = leer('src/components/layout/Header.tsx')
   debe((cabComun.match(/<BotonCartera \/>/g) ?? []).length === 1 && cabComun.indexOf('data-cabecera-logo') < cabComun.indexOf('<BotonCartera />') && !/BotonCartera/.test(panelSrc.replace(/\/\*[\s\S]*?\*\//g, '')), '2b cartera', 'la cartera no está UNA sola vez en la cabecera común (a la derecha del logo) o RESERVAS vuelve a tener la suya')
   const otros = archivos('src').filter((f) => (/usePresupuestoUi/.test(leer(f)) || /aria-label="Presupuesto"|data-cartera=/.test(leer(f))) && !/BotonCartera\.tsx$|avisos\/abrirAviso\.ts$|PantallaPresupuesto\.tsx$|usePresupuestoUi\.ts$|src\/components\/presupuesto\/|precioVuela/i.test(f.replace(/\\/g, '/')))

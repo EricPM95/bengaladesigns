@@ -133,7 +133,8 @@ console.log('4. La guía y la ida y la vuelta')
   const tramo = leer('src/components/route/reservas/LlegadaYVuelta.tsx')
   // (10N9) La hoja del vuelo tiene UN solo botón «Guardar el vuelo»: guarda ida y vuelta de una vez (`guardarVueloDelAdmin`) y deja el tramo cerrado.
   debe(tramo.includes('guardarVueloDelAdmin(cambios)') && tramo.includes('onGuardar={(cambios, cambiosDeVuelo)'), '4 tramo', 'la hoja del vuelo del administrador no guarda con un solo botón')
-  debe(/onClick=\{\(\) => \{\s*onMitad\(undefined\)\s*onToggle\(\)\s*\}\}/.test(tramo), '4 tramo', 'al tocar la cabecera no se cierra el tramo abierto')
+  // (10N10) La tarjeta de «Llegada y vuelta» ya no se pliega: un pedido de otra pantalla (ficha, «+ AÑADIR VUELO») abre la hoja del vuelo y deja la tarjeta cerrada (`onMitad(undefined)` + `onToggle()`).
+  debe(/onMitad\(undefined\)\s*onToggle\(\)/.test(tramo), '4 tramo', 'un pedido de otra pantalla no deja la tarjeta cerrada tras abrir la hoja')
 }
 
 console.log(`\n${comprobaciones} comprobaciones, ${fallos.length} fallos`)

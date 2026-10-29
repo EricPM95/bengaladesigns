@@ -86,7 +86,7 @@ console.log('2. El aviso de debajo de la rueda')
   const hoja = leer('src/components/route/reservas/AddReservationSheet.tsx')
   const iRueda = hoja.indexOf('<TimeListWheel')
   const iAviso = hoja.indexOf('{AVISO_DISPONIBILIDAD}')
-  const iPrecio = hoja.indexOf('<CampoPrecio')
+  const iPrecio = hoja.indexOf('<BloqueDinero') // (10N10) el precio vive ahora en el bloque del dinero de las hojas
   debe(iRueda > 0 && iAviso > iRueda && iAviso < iPrecio, '2 sitio', 'el aviso no va entre la rueda y el precio, en la hoja de la hora')
   debe(/!isExcursion && !\(civitatisActiva\(\) && horasApi\.estado === 'ok'\) && \(\s*<p[^>]*>\s*\{AVISO_DISPONIBILIDAD\}/.test(hoja), '2 sitio', 'el aviso no sale en las entradas y el Free Tour (y solo ahí)')
   // La rueda toma las horas de UNA pieza compartida, sin su propia cuenta.

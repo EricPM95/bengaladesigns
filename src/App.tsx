@@ -12,7 +12,7 @@ import { UnirseHost } from './components/cuenta/HojaUnirse'
 import { useInvitacionEnMarcha } from './hooks/useInvitacionEnMarcha'
 import { CompartidoHost } from './components/compartir/CompartidoHost'
 import { PagoHost } from './components/pase/PagoHost'
-import { PeliculaHost } from './components/pase/PeliculaHost'
+import { ListaDelPaseHost } from './components/pase/ListaDelPaseHost'
 import { AvisoPaseHost } from './components/pase/AvisoPase'
 import { SinPasePrueba } from './components/pase/SinPasePrueba'
 import { useSinPasePrueba } from './store/useSinPasePrueba'
@@ -111,7 +111,7 @@ function App() {
       <UnirseHost />
       <CompartidoHost />
       <PagoHost />
-      <PeliculaHost />
+      <ListaDelPaseHost />
       <AvisoPaseHost />
       <SinPasePrueba />
       <PropuestaHost />

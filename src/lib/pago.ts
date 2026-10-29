@@ -74,6 +74,16 @@ export const fijarPaseDesconocido = (tripId: string | null): void => {
   paseSabido = false
   avisar()
 }
+/**
+ * (Tanda 10N10 §3a) Lo último que se sabía del pase de este viaje (guardado en el móvil): se pinta al momento como si ya se supiera, SIN dar el viaje por «sabido»: el servidor lo confirma después
+ * (`fijarServidorDiceSinPase`) y, si ha cambiado, se repinta.
+ */
+export const fijarPaseDeLaCache = (sinPase: boolean): void => {
+  const igual = servidorDiceSinPase === sinPase && paseSabido
+  servidorDiceSinPase = sinPase
+  paseSabido = true
+  if (!igual) avisar()
+}
 /** El estado del pase como texto (`con` | `sin` | `pendiente`): cambia cuando cambia cualquier cosa de la que depende `pagoActivo()`. */
 export function estadoDelPaseParaPintar(): 'con' | 'sin' | 'pendiente' {
   return pagoPendiente() ? 'pendiente' : pagoActivo() ? 'con' : 'sin'

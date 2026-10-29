@@ -173,12 +173,7 @@ export function textoDelAviso(aviso) {
     case 'unido': {
       // (Tanda 10N7 §2 y §2b-2) Si entra la primera persona a un viaje solo, o un tercero a una cuenta conjunta, al administrador se le pregunta cómo llevan las cuentas.
       const base = nombreDe(p.nombre) ? `${nombreDe(p.nombre)} se ha unido a tu viaje` : 'Alguien se ha unido a tu viaje'
-      return p.pregunta_cuentas === true ? `${base}. ¿Cómo lleváis las cuentas?` : base
-    }
-    // (Tanda 10N7 §2) A todos los del viaje: «Eric ha cambiado las cuentas a cuenta conjunta.» / «…a cada uno lo suyo.»
-    case 'cuentas_modo': {
-      const a = p.modo === 'conjunta' ? 'cuenta conjunta' : 'cada uno lo suyo'
-      return nombreDe(p.quien) ? `${nombreDe(p.quien)} ha cambiado las cuentas a ${a}.` : `Han cambiado las cuentas a ${a}.`
+      return base // (Tanda 10N10 §5a) Ya no se pregunta nada de las cuentas: las decide la app.
     }
     case 'd10':
       return p.dias === 1 ? `Mañana empieza tu viaje a ${p.destino}` : `En ${p.dias ?? 10} días empieza tu viaje a ${p.destino}`
@@ -208,6 +203,8 @@ export function textoDelAviso(aviso) {
       // «Tu entrada del Coliseo es el viernes 27, y en la ruta está el jueves 26.» (la del invitado que no cuadra con la ruta; la crea la base de datos o la calcula el móvil)
       if (p.caso === 'no_cuadra') return `Tu entrada ${conDe(sitioConArticulo(p.sitio))} es el ${p.dia_reserva}, y en la ruta está el ${p.dia_ruta}.`
       // (Tanda 10N5 §6c) Lo de cada uno: «Ana ha puesto su propio vuelo.» (al administrador) · «Eric ha puesto el vuelo para todos. Se ha cambiado el tuyo.» (a quien el administrador le cambia el suyo).
+      // (10N10) El vuelo que alguien pone solo para sí, con sus horas: «Viajes ha puesto su vuelo: ida jue 29 · 11:20, vuelta sáb 31 · 18:05.»
+      if (p.caso === 'vuelo_propio' && p.con_horas === true && p.detalle) return `${nombreDe(p.quien) || 'Alguien'} ha puesto su vuelo: ${String(p.detalle).replace(/\.$/, '')}.`
       if (p.caso === 'vuelo_propio' || p.caso === 'alojamiento_propio') return `${nombreDe(p.quien) || 'Alguien'} ha puesto su propio ${p.caso === 'vuelo_propio' ? 'vuelo' : 'alojamiento'}.`
       // (Tanda 10N8 §7d) Un vuelo o alojamiento puesto por un invitado para varios: ida y vuelta juntas, en un solo aviso, con los nombres vistos desde quien lo lee.
       if ((p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') && p.para_txt) return `${nombreDe(p.quien) || 'Alguien'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} para ${p.para_txt}${p.detalle ? `: ${p.detalle}` : ''}.${p.suyo_cambiado === true ? SUYO_CAMBIADO : ''}`
@@ -264,7 +261,6 @@ export function quienDelAviso(aviso) {
   if (aviso.tipo === 'gasto_pendiente') return de(p.autor)
   if (aviso.tipo === 'pago_marcado') return de(p.actor)
   if (aviso.tipo === 'unido') return de(p.nombre)
-  if (aviso.tipo === 'cuentas_modo') return de(p.quien)
   if (aviso.tipo === 'reserva_grupo') return de(p.quien)
   if (aviso.tipo === 'permiso') return de(p.admin)
   if (aviso.tipo === 'viaje_cambiado') return de(p.quien)
@@ -354,6 +350,7 @@ function franjaDeCambioDelViaje(p) {
       return { verbo: 'ha añadido un sitio', detalle: [nombreSinMarca(anadidas[0].nombre), dia].filter(Boolean).join(' · ') }
     }
     if (anadidas.length > 1) return { verbo: `ha añadido ${anadidas.length} sitios`, detalle: `${nombreSinMarca(anadidas[0].nombre)} y ${anadidas.length - 1 === 1 ? 'otro más' : `${anadidas.length - 1} más`}` }
+    if (quitadas.length === 1 && quitados === 0 && /^free tour/i.test(String(quitadas[0].nombre ?? '').trim())) return { verbo: 'ha quitado el Free Tour', detalle: viaje }
     if (quitadas.length > 0 && quitados === 0) return quitadas.length === 1 ? { verbo: 'ha quitado un sitio', detalle: nombreSinMarca(quitadas[0].nombre) } : { verbo: `ha quitado ${quitadas.length} sitios`, detalle: viaje }
     if (quitados > 0) return { verbo: `ha quitado ${quitados === 1 ? '1 día' : `${quitados} días`}`, detalle: viaje }
     if (anadidos > 0) return { verbo: `ha añadido ${anadidos === 1 ? '1 día' : `${anadidos} días`}`, detalle: viaje }
@@ -387,11 +384,7 @@ export function franjaDelAviso(aviso) {
     case 'sin_enviar':
       return { titulo: `Tienes ${p.n === 1 ? 'un cambio' : `${p.n} cambios`} sin enviar`, detalle: 'Envíalos hoy, que mañana empieza el viaje', icono: 'calendario' }
     case 'unido':
-      // (10N7) Con la pregunta de las cuentas, como en Design 07: «Ana se ha unido a tu viaje» y debajo «¿Cómo lleváis las cuentas?».
-      if (p.pregunta_cuentas === true) return persona(nombreDe(p.nombre) ? `${nombreDe(p.nombre)} se ha unido a tu viaje` : 'Alguien se ha unido a tu viaje', '¿Cómo lleváis las cuentas?')
       return persona(nombreDe(p.nombre) ? `${nombreDe(p.nombre)} se ha unido al viaje` : 'Alguien se ha unido al viaje', p.destino ? `Viaje a ${p.destino}` : '')
-    case 'cuentas_modo':
-      return persona(nombreDe(p.quien) ? `${nombreDe(p.quien)} ha cambiado las cuentas` : 'Han cambiado las cuentas', p.modo === 'conjunta' ? 'Ahora, cuenta conjunta' : 'Ahora, cada uno lo suyo')
     case 'd10':
       return { titulo: p.dias === 1 ? 'Mañana empieza tu viaje' : `Tu viaje empieza en ${p.dias ?? 10} días`, detalle: [p.destino, rangoCorto(p.inicio, p.fin)].filter(Boolean).join(' · '), icono: 'calendario' }
     case 'resumen':
@@ -409,6 +402,7 @@ export function franjaDelAviso(aviso) {
     case 'pago_marcado':
       return persona(con(p.actor, 'ha marcado un pago', 'Han marcado un pago'), dineroDe(p.importe))
     case 'reserva_grupo': {
+      if (p.caso === 'vuelo_propio' && p.con_horas === true && p.detalle) return persona(`${nombreDe(p.quien) || 'Alguien'} ha puesto su vuelo`, String(p.detalle))
       if (p.caso === 'vuelo_propio' || p.caso === 'alojamiento_propio') return persona(`${nombreDe(p.quien) || 'Alguien'} ha puesto su propio ${p.caso === 'vuelo_propio' ? 'vuelo' : 'alojamiento'}.`, p.detalle ?? '')
       if ((p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') && p.para_txt) return persona(`${nombreDe(p.quien) || 'Alguien'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} para ${p.para_txt}.`, [p.detalle, p.suyo_cambiado === true ? 'Se ha cambiado el tuyo.' : ''].filter(Boolean).join(' · '))
       if (p.caso === 'vuelo_cambiado' || p.caso === 'alojamiento_cambiado') return persona(`${nombreDe(p.quien) || 'El administrador'} ha puesto ${p.caso === 'vuelo_cambiado' ? 'el vuelo' : 'el alojamiento'} ${PARA_DE_LO_SUYO[p.para] ?? 'para todos'}.`, p.suyo_cambiado === true ? 'Se ha cambiado el tuyo.' : '')

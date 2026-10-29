@@ -86,11 +86,13 @@ const mismas = (antes, regla, texto) => {
 /** Ninguna parada de la mañana con la etiqueta «Tarde» (el «Tarde → Ara Pacis → 10:00» de Eric) y los días en orden de hora. */
 const etiquetasYOrden = (texto) => {
   for (const day of st().route.days.filter((d) => !d.isReturnLeg)) {
-    const malas = day.stops.filter((s) => s.franja === 'tarde' && s.time && s.time < '12:00' && !s.isNightExperience)
+    const malas = day.stops.filter((s) => s.franja === 'tarde' && s.time && s.time < '12:00' && !s.isNightExperience && !s.reservedId)
     debe(malas.length === 0, 'etiqueta_tarde', `${texto}: el día ${day.dayNumber} tiene ${malas.map((s) => `«${s.name}» con «Tarde» a las ${s.time}`).join(', ')}`)
     const horas = day.stops.filter((s) => s.time && !s.isNightExperience && !s.passThrough).map((s) => s.time)
     const desordenadas = horas.some((h, i) => i > 0 && h < horas[i - 1])
-    debe(!desordenadas, 'orden_horas', `${texto}: el día ${day.dayNumber} no va por orden de hora (${horas.join(' ')})`)
+    // (10N10 §3d) Una entrada con hora NO mueve la parada de su sitio: un día con una parada reservada puede llevar su hora de entrada fuera de orden (la coloca el viajero). Sin reservas con hora, el orden por hora sigue siendo exigido.
+    const conReservaEnSuSitio = day.stops.some((s) => s.reservedId)
+    debe(!desordenadas || conReservaEnSuSitio, 'orden_horas', `${texto}: el día ${day.dayNumber} no va por orden de hora (${horas.join(' ')})`)
   }
 }
 

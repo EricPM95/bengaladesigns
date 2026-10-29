@@ -135,10 +135,7 @@ console.log('12. Precio y código del vuelo, tren o autobús')
   // (Tanda 6y5) El precio y el código ya no están en la hoja de la hora (que es solo la rueda): son casillas del tramo abierto de la llegada y la vuelta.
   const abierta = (modo) => pinta(M.LlegadaYVuelta, { route: { ...useRouteStore.getState().route, transportContext: { transport_option: { id: modo }, archetype: null } }, info, abierto: true, onToggle() {}, onAbrir() {}, mitadAbierta: 'arrival', onMitad() {}, onGuardada() {}, onFechas() {} })
   const tAvion = abierta('flight')
-  debe(/Ref\. vuelo/.test(tAvion) && /Precio/.test(tAvion), '12', `el tramo abierto del vuelo no tiene precio y código: ${plano(tAvion).slice(0, 300)}`)
-  debe(/Ref\. tren/.test(abierta('train')) && /Precio/.test(abierta('train')), '12', 'el tramo abierto del tren no tiene precio y código')
-  debe(/Ref\. billete/.test(abierta('bus')) && /Precio/.test(abierta('bus')), '12', 'el tramo abierto del autobús no tiene precio y código')
-  debe(/data-casilla="Ref\. vuelo"/.test(renderToStaticMarkup(createElement(M.LlegadaYVuelta, { route: useRouteStore.getState().route, info, abierto: true, onToggle() {}, onAbrir() {}, mitadAbierta: 'arrival', onMitad() {}, onGuardada() {}, onFechas() {} }))) && /placeholder="AB 1234"/.test(renderToStaticMarkup(createElement(M.LlegadaYVuelta, { route: useRouteStore.getState().route, info, abierto: true, onToggle() {}, onAbrir() {}, mitadAbierta: 'arrival', onMitad() {}, onGuardada() {}, onFechas() {} }))), '12', 'el código del vuelo no enseña su ejemplo')
+  // (10N10 §7) El tramo abierto con casillas (Precio, Ref. vuelo…) ya no existe: precio, código y aerolínea van en la hoja del vuelo (pruebaTanda10N9_vuelo / pruebaTanda10N10_reservas).
   const modal = pinta(M.TransportBookingModal, { open: true, label: 'Roma', itemLabel: 'el transporte', initial: null, onSave() {}, onClose() {}, onRemove() {} })
   debe(/Código del vuelo, tren o autobús/.test(modal), '12', 'la ficha de transporte no tiene el código')
   // se guarda como lo hace la hoja (mismas acciones, mismo orden)

@@ -11,10 +11,11 @@ import { nombreDe, inicialDe, type Persona } from '../../../store/useViajeCompar
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useLoSuyo } from '../../../store/useLoSuyo'
 import { Icono } from '../../ui/Icono'
+import { useDineroDeReserva } from './DineroDeReserva'
 import { HojaDelVuelo, type LadoDeHoja, type LadoGuardado } from './HojaDelVuelo'
 import { HojaAbajo } from './HojaAbajo'
 import { useModoCuentas } from '../../../lib/modoCuentas'
-import { ParaQuienConjunta, ParaQuienConNombres, preguntaDeReserva, type QueSeAnade } from '../presupuesto/ParaQuien'
+import { ParaQuienConNombres, preguntaDeReserva, type QueSeAnade } from '../presupuesto/ParaQuien'
 import { HojaTuAlojamiento } from '../alojamiento/HojaTuAlojamiento'
 import { estanciasDelViaje, precioDeAlojamiento } from '../../../lib/tuAlojamiento'
 
@@ -93,7 +94,7 @@ function FilaPonElTuyo({ icono, titulo, sub, datos, onClick }: { icono: 'avion' 
       <IconoCuadrado nombre={icono} grande />
       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
         <span style={{ font: "400 23px/1.1 'Instrument Serif',serif" }}>{titulo}</span>
-        <span style={{ font: "400 14px/1.3 'Geist'", color: 'rgba(28,34,48,.58)' }}>{sub}</span>
+        {sub && <span style={{ font: "400 14px/1.3 'Geist'", color: 'rgba(28,34,48,.58)' }}>{sub}</span>}
       </span>
       <Icono nombre="adelante" size={18} style={{ color: 'rgba(28,34,48,.35)' }} />
     </button>
@@ -105,29 +106,6 @@ export function textoParaQuien(ids: readonly string[], gente: readonly Persona[]
   if (gente.length > 0 && gente.every((p) => ids.includes(p.id))) return 'para todos'
   if (ids.length === 2 && yoId && adminId && ids.includes(yoId) && ids.includes(adminId)) return `para ${nombreDe(gente.find((p) => p.id === adminId)) || 'el administrador'} y para ti`
   return `para ${ids.length} de ${gente.length}`
-}
-
-/**
- * «¿PARA QUIÉN ES?» de lo que pone un invitado (vuelo o alojamiento; Tanda 10N8 §7c; `Piezas/Reservas Cada Uno` 02b y 05): en «Cada uno lo suyo», las pastillas con los nombres y SOLO quien lo pone marcado; en la cuenta conjunta,
- * «Para los dos / Para todos» o «Solo para mí».
- */
-function ParaQuienDeLoSuyo({ gente, yoId, ids, onIds, tipo }: { gente: Persona[]; yoId: string | null; ids: string[]; onIds: (ids: string[]) => void; tipo: QueSeAnade }) {
-  const { modo } = useModoCuentas()
-  if (modo === 'conjunta') {
-    return <ParaQuienConjunta valor={ids.length <= 1 ? 'mio' : 'todos'} onCambio={(v) => onIds(v === 'mio' ? (yoId ? [yoId] : []) : gente.map((p) => p.id))} personas={gente.length} pregunta={preguntaDeReserva(tipo)} datos="lo-suyo-invitado-conjunta" />
-  }
-  return (
-    <ParaQuienConNombres
-      pregunta="¿Para quién es?"
-      personas={gente.map((p) => ({ id: p.id, nombre: nombreDe(p), esAdmin: p.esAdmin }))}
-      marcados={ids}
-      onAlternar={(id) => (id === yoId ? undefined : onIds(ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))}
-      yoId={yoId}
-      nombreDe={(id) => nombreDe(gente.find((p) => p.id === id)) || 'Alguien'}
-      datos="lo-suyo-invitado"
-      pie={false}
-    />
-  )
 }
 
 /** Los días que ofrece la hoja del vuelo: los tres primeros del viaje para la ida y los tres últimos para la vuelta (si el viaje tiene fechas). */
@@ -148,8 +126,9 @@ function diasDelTramo(route: Route, lado: 'ida' | 'vuelta'): { iso: string; text
  * La hoja del vuelo de quien no es administrador (Tanda 10N8 §7b-d; `Piezas/Reservas Cada Uno` 02 y 02b): la ida y la vuelta con su día, su aeropuerto y su hora (la rueda NO tiene [Guardar]: al cerrarla la hora queda puesta),
  * «¿Para quién es?» y, al final, UN solo botón «Guardar el vuelo». Solo entonces se guarda y llegan los avisos, una vez, con la ida y la vuelta juntas.
  */
-function HojaVuelo({ actual, route, gente, yoId, puntos, onGuardar, onQuitar, onClose }: { actual: MiVuelo | null; route: Route; ciudad: string; gente: Persona[]; yoId: string | null; puntos: { ida: string[]; vuelta: string[] }; onGuardar: (v: MiVuelo, para: string[]) => void; onQuitar: () => void; onClose: () => void }) {
-  const [ids, setIds] = useState<string[]>(() => (actual?.para && actual.para.length > 0 ? actual.para : yoId ? [yoId] : []))
+function HojaVuelo({ actual, route, yoId, puntos, onGuardar, onQuitar, onClose }: { actual: MiVuelo | null; route: Route; ciudad: string; gente: Persona[]; yoId: string | null; puntos: { ida: string[]; vuelta: string[] }; onGuardar: (v: MiVuelo, para: string[]) => void; onQuitar: () => void; onClose: () => void }) {
+  // (10N10 §6-7) El mismo bloque del dinero que el administrador: ¿para quién?, ¿cuánto ha costado en total?, ¿quién lo ha pagado? y la línea. El precio va en la ida (es el de todo el vuelo).
+  const dinero = useDineroDeReserva({ para: actual?.para ?? null, precio: actual?.ida?.precio ?? actual?.vuelta?.precio ?? null })
   const lado = (k: 'ida' | 'vuelta'): LadoDeHoja => {
     const t = k === 'ida' ? actual?.ida : actual?.vuelta
     return { activo: true, hora: t?.hora ?? null, punto: t?.punto ?? null, fecha: t?.fecha ?? null, hecho: Boolean(t), dias: diasDelTramo(route, k), puntos: puntos[k], etiquetaPunto: 'Aeropuerto', puntoLibre: true, llega: k === 'ida' }
@@ -160,17 +139,10 @@ function HojaVuelo({ actual, route, gente, yoId, puntos, onGuardar, onQuitar, on
       lados={{ ida: lado('ida'), vuelta: lado('vuelta') }}
       onClose={onClose}
       onQuitar={actual ? onQuitar : undefined}
-      extra={
-        gente.length > 1 ? (
-          <div data-mi-vuelo-para>
-            <ParaQuienDeLoSuyo gente={gente} yoId={yoId} ids={ids} onIds={setIds} tipo="vuelo" />
-          </div>
-        ) : undefined
-      }
+      extra={<div data-mi-vuelo-para>{dinero.bloque('vuelo')}</div>}
       onGuardar={(ida, vuelta) => {
-        // (10N9) Sin precio en la hoja: el que ya hubiera se queda como estaba.
-        const con = (g: LadoGuardado, previo: MiTramo | undefined | null, k: 'ida' | 'vuelta'): MiTramo => ({ ...(previo ?? {}), hora: g.hora, punto: g.punto, fecha: g.fecha ?? diasDelTramo(route, k)[0]?.iso ?? null, precio: previo?.precio ?? null })
-        onGuardar({ ida: con(ida, actual?.ida, 'ida'), vuelta: con(vuelta, actual?.vuelta, 'vuelta') }, ids.length > 0 ? ids : yoId ? [yoId] : [])
+        const con = (g: LadoGuardado, previo: MiTramo | undefined | null, k: 'ida' | 'vuelta'): MiTramo => ({ ...(previo ?? {}), hora: g.hora, punto: g.punto, fecha: g.fecha ?? diasDelTramo(route, k)[0]?.iso ?? null, precio: k === 'ida' ? dinero.precio.importe : null })
+        onGuardar({ ida: con(ida, actual?.ida, 'ida'), vuelta: con(vuelta, actual?.vuelta, 'vuelta') }, dinero.paraIds.length > 0 ? dinero.paraIds : yoId ? [yoId] : [])
       }}
     />
   )
@@ -184,27 +156,21 @@ export function HojaParaQuienEsLoDelAdmin({ titulo, tipo, gente, marcadas, admin
   const { modo } = useModoCuentas()
   const [ids, setIds] = useState<string[]>(() => [...new Set([...(adminId ? [adminId] : []), ...marcadas])])
   const alternar = (id: string) => setIds((previo) => (previo.includes(id) ? previo.filter((x) => x !== id) : [...previo, id]))
-  const todos = gente.map((p) => p.id)
-  const soloMio = ids.length === 1 && ids[0] === adminId && gente.length > 1
   return (
     <HojaAbajo titleId="hoja-para-quien-lo-suyo" onClose={onClose} capa={110}>
       <h2 id="hoja-para-quien-lo-suyo" className="max-w-[calc(100%-3rem)] font-display text-[26px] leading-none text-text">
         {titulo}
       </h2>
       <div className="mt-5" data-para-quien-lo-suyo>
-        {modo === 'conjunta' ? (
-          <ParaQuienConjunta valor={soloMio ? 'mio' : 'todos'} onCambio={(v) => setIds(v === 'mio' ? (adminId ? [adminId] : []) : todos)} personas={gente.length} pregunta={tipo ? preguntaDeReserva(tipo) : '¿Para quién es?'} datos="lo-suyo-conjunta" />
-        ) : (
-          <ParaQuienConNombres
-            pregunta={tipo ? preguntaDeReserva(tipo) : '¿Para quién es?'}
-            personas={gente.map((p) => ({ id: p.id, nombre: nombreDe(p), esAdmin: p.esAdmin }))}
-            marcados={ids}
-            onAlternar={(id) => (id === adminId ? undefined : alternar(id))}
-            yoId={adminId}
-            nombreDe={(id) => nombreDe(gente.find((p) => p.id === id)) || 'Alguien'}
-            datos="lo-suyo"
-          />
-        )}
+        <ParaQuienConNombres
+          pregunta={tipo ? preguntaDeReserva(tipo) : '¿Para quién es?'}
+          personas={gente.map((p) => ({ id: p.id, nombre: nombreDe(p), esAdmin: p.esAdmin }))}
+          marcados={ids}
+          onAlternar={(id) => (id === adminId ? undefined : alternar(id))}
+          yoId={adminId}
+          nombreDe={(id) => nombreDe(gente.find((p) => p.id === id)) || 'Alguien'}
+          datos="lo-suyo"
+        />
       </div>
       {tipo !== 'coche' && modo !== 'conjunta' && <p className="mt-4 text-[12.5px] leading-snug text-text/60">Quien tenga otro, lo suyo se cambia por este. Cada uno puede volver a poner el suyo.</p>}
       <button type="button" data-guardar-lo-suyo onClick={() => onGuardar(ids)} className="mt-6 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold">
@@ -214,18 +180,17 @@ export function HojaParaQuienEsLoDelAdmin({ titulo, tipo, gente, marcadas, admin
   )
 }
 
-/** El alojamiento de quien no es administrador: la hoja de siempre más «¿Para quién es?» y «Guardar el alojamiento» (Tanda 10N8 §7c; `Piezas/Reservas Cada Uno` 05). */
-function HojaAlojamientoParaVarios({ actual, ciudad, noches, gente, yoId, onGuardar, onEliminar, onClose }: { actual: MiAlojamiento | null; ciudad: string; noches: number; gente: Persona[]; yoId: string | null; onGuardar: (a: MiAlojamiento, para: string[]) => void; onEliminar: () => void; onClose: () => void }) {
-  const [ids, setIds] = useState<string[]>(() => (actual?.para && actual.para.length > 0 ? actual.para : yoId ? [yoId] : []))
+/** El alojamiento de quien no es administrador: la hoja de siempre con «¿Para quién es el alojamiento?», el dinero y «Guardar el alojamiento» (Tanda 10N10 §7c; `Piezas/Vuelo Reservas` 08b). */
+function HojaAlojamientoParaVarios({ actual, ciudad, noches, yoId, onGuardar, onEliminar, onClose }: { actual: MiAlojamiento | null; ciudad: string; noches: number; gente: Persona[]; yoId: string | null; onGuardar: (a: MiAlojamiento, para: string[]) => void; onEliminar: () => void; onClose: () => void }) {
   return (
     <HojaTuAlojamiento
       ciudad={ciudad}
       noches={noches}
       actual={actual ? { name: actual.name, precio: actual.precio ?? precioDeAlojamiento(null) } : null}
+      para={actual?.para ?? null}
       onClose={onClose}
       textoGuardar="Guardar el alojamiento"
-      extra={gente.length > 1 ? <ParaQuienDeLoSuyo gente={gente} yoId={yoId} ids={ids} onIds={setIds} tipo="alojamiento" /> : null}
-      onGuardar={(h) => onGuardar({ name: h.name, precio: h.precio }, ids.length > 0 ? ids : yoId ? [yoId] : [])}
+      onGuardar={(h, d) => h && onGuardar({ name: h.name, precio: h.precio }, d.para.length > 0 ? d.para : yoId ? [yoId] : [])}
       onEliminar={onEliminar}
     />
   )
@@ -312,7 +277,7 @@ export function LoDeCadaUnoParaElInvitado({ route, info, arrivalInfo, gente, yoI
               </button>
             )}
           </div>
-          {vueloMio.puestoPor && vueloMio.puestoPor !== yoId && <FilaPonElTuyo icono="avion" titulo="Tengo otro vuelo" sub="Pon el tuyo" datos="vuelo" onClick={() => setHoja('vuelo')} />}
+          {vueloMio.puestoPor && vueloMio.puestoPor !== yoId && <FilaPonElTuyo icono="avion" titulo="Poner el mío" sub="" datos="vuelo" onClick={() => setHoja('vuelo')} />}
         </>
       ) : delAdminVuelo && meCubreVuelo ? (
         <>
@@ -328,7 +293,7 @@ export function LoDeCadaUnoParaElInvitado({ route, info, arrivalInfo, gente, yoI
               ))}
             </span>
           </div>
-          <FilaPonElTuyo icono="avion" titulo="Tengo otro vuelo" sub="Pon el tuyo" datos="vuelo" onClick={() => setHoja('vuelo')} />
+          <FilaPonElTuyo icono="avion" titulo="Poner el mío" sub="" datos="vuelo" onClick={() => setHoja('vuelo')} />
         </>
       ) : (
         tarjetaFalta('avion', 'Llegada y vuelta', `${route.origin} → ${ciudad}`, 'vuelo', () => setHoja('vuelo'))
@@ -347,7 +312,7 @@ export function LoDeCadaUnoParaElInvitado({ route, info, arrivalInfo, gente, yoI
               </button>
             )}
           </div>
-          {alojMio.puestoPor && alojMio.puestoPor !== yoId && <FilaPonElTuyo icono="cama" titulo="Me alojo en otro sitio" sub="Pon el tuyo" datos="alojamiento" onClick={() => setHoja('alojamiento')} />}
+          {alojMio.puestoPor && alojMio.puestoPor !== yoId && <FilaPonElTuyo icono="cama" titulo="Poner el mío" sub="" datos="alojamiento" onClick={() => setHoja('alojamiento')} />}
         </>
       ) : delAdminAloj && meCubreAloj ? (
         <>
@@ -356,7 +321,7 @@ export function LoDeCadaUnoParaElInvitado({ route, info, arrivalInfo, gente, yoI
             {pastilla(paraAloj, adminId)}
             <span style={{ font: "500 14px/1.45 'Geist'" }}>{`Te alojas en ${zona?.nombre ?? hotelAdmin?.name}`}</span>
           </div>
-          <FilaPonElTuyo icono="cama" titulo="Me alojo en otro sitio" sub="Pon el tuyo" datos="alojamiento" onClick={() => setHoja('alojamiento')} />
+          <FilaPonElTuyo icono="cama" titulo="Poner el mío" sub="" datos="alojamiento" onClick={() => setHoja('alojamiento')} />
         </>
       ) : (
         tarjetaFalta('cama', 'Alojamiento', 'Todavía no hay alojamiento puesto', 'alojamiento', () => setHoja('alojamiento'))

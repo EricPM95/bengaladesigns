@@ -8,6 +8,7 @@ import { PantallaAlojamiento } from './PantallaAlojamiento'
 import { HojaTuAlojamiento } from './HojaTuAlojamiento'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { usePermisosDelViaje } from '../../../hooks/usePermisosDelViaje'
+import { rehacerPorCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 
 /**
  * Lo que abren todos los botones de alojamiento de la app (Tanda 6z): la pantalla del mapa y la hoja «Tu alojamiento». Se monta una sola vez con la ruta; quien quiere abrirlas lo pide
@@ -17,6 +18,9 @@ export function AlojamientoHost() {
   const route = useRouteStore((state) => state.route)
   const selections = useRouteStore((state) => state.accommodationSelections)
   const setHotel = useRouteStore((state) => state.setAccommodationHotel)
+  const setZona = useRouteStore((state) => state.setAccommodationZone)
+  const setCuentasEntre = useRouteStore((state) => state.setCuentasEntre)
+  const setPagadoPorDe = useRouteStore((state) => state.setPagadoPorDe)
   const mapa = useAlojamientoUi((state) => state.mapa)
   const hoja = useAlojamientoUi((state) => state.hoja)
   const cerrarMapa = useAlojamientoUi((state) => state.cerrarMapa)
@@ -45,9 +49,26 @@ export function AlojamientoHost() {
           ciudad={estanciaHoja.city}
           noches={estanciaHoja.noches}
           actual={selections[estanciaHoja.segmentDayId] ?? null}
+          zonas={info.zonasAlojamiento}
+          zonaActual={route.accommodationZone ?? null}
+          para={route.cuentasEntre?.[`aloj-${estanciaHoja.segmentDayId}`] ?? null}
+          pagado={route.pagadoPorDe?.[`aloj-${estanciaHoja.segmentDayId}`] ?? null}
           textoGuardar="Guardar el alojamiento"
-          onGuardar={(hotel) => {
-            setHotel(estanciaHoja.segmentDayId, hotel)
+          onGuardar={(hotelPuesto, d) => {
+            const seg = estanciaHoja.segmentDayId
+            // (10N10) Sin nombre pero con precio: el alojamiento lleva el nombre de la zona, para no perder el precio.
+            const nombreDeZona = info.zonasAlojamiento.find((z) => z.id === d.zona)?.nombre
+            const hotel = hotelPuesto ?? (d.precio && nombreDeZona ? { name: nombreDeZona, precio: d.precio } : null)
+            setHotel(seg, hotel)
+            if (d.zona !== (route.accommodationZone ?? null) && d.zona) {
+              setZona(d.zona)
+              void rehacerPorCambioDeVuelo({ que: 'zona', mitad: null })
+            }
+            if (!d.solo) {
+              const lista = d.para.length === d.todos.length ? null : d.para
+              setCuentasEntre(`aloj-${seg}`, lista)
+              setPagadoPorDe(`aloj-${seg}`, d.pagado)
+            }
             cerrarHoja()
             cerrarMapa()
           }}

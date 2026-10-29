@@ -86,7 +86,7 @@ function pinta(route, { version, reservas = [] }) {
 }
 
 // (Tanda 10G: «Llegada y vuelta» y «x de 3 listo» son GRATIS —guardar el vuelo o el tren es del viajero—; lo de pago es lo que la app hace con ellos y sale cerrado.)
-const PAGO = [/Falta la (ida|vuelta)/, /Eliminar vuelo/, /Aún no lo sé/, /Centro \(Panteón/, /Plaza de España \(/, /¿Ajustamos tu ruta/, /AÑADIR VUELO/i]
+const PAGO = [/Aún no lo sé/, /Centro \(Panteón/, /Plaza de España \(/, /¿Ajustamos tu ruta/, /AÑADIR VUELO/i]
 const PROVEEDORES = /Civitatis|Stay22|Booking\.com|GetYourGuide|Viator|Skyscanner|Rentalcars|Holafly|Airalo|Heymondo|N26|Iati|Mapfre/i
 const BANDERAS = /null|undefined|NaN/
 
@@ -229,8 +229,8 @@ for (const [ida, vuelta] of [['flight', 'train'], ['train', 'bus'], ['ferry', 'o
       // (Con algo hecho, la ficha cerrada enseña las dos líneas, la de la ida y la de la vuelta; sin fechas, «Día 1» y «Día 3» en lugar del día de la semana.)
       if (estado === 'todo hecho') {
         const plano = r.texto.replace(/\n/g, ' ').replace(/\s+/g, ' ')
-        debe(/Ida ·/.test(plano) && /Vuelta ·/.test(plano), '2 líneas', `${etiqueta}: faltan las líneas de la ida o la vuelta (${plano.slice(plano.indexOf('Llegada y vuelta'), plano.indexOf('Llegada y vuelta') + 200)})`)
-        if (!fechas) debe(/Ida · Día 1/.test(plano) && /Vuelta · Día 3/.test(plano), '2 líneas', `${etiqueta}: sin fechas las líneas no dicen «Día 1» y «Día 3»`)
+        debe(/\bIda\b/.test(plano) && /\bVuelta\b/.test(plano) && /(Llegas|Sales) a las/.test(plano), '2 líneas', `${etiqueta}: faltan las líneas de la ida o la vuelta (${plano.slice(plano.indexOf('Llegada y vuelta'), plano.indexOf('Llegada y vuelta') + 200)})`)
+        if (!fechas) debe(/Ida\s+Día 1/.test(plano) && /Vuelta\s+Día 3/.test(plano), '2 líneas', `${etiqueta}: sin fechas las líneas no dicen «Día 1» y «Día 3»`)
       }
     }
   }

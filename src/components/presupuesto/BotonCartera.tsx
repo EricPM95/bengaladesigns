@@ -12,7 +12,7 @@ export function BotonCartera() {
   const abrir = usePresupuestoUi((state) => state.abrir)
   // (Tanda 10N, apartado 9) Quien comparte el viaje también ve el presupuesto: lo del grupo y lo suyo. Lo que no es suyo (reservas, billetes…) lo ve sin poder cambiarlo.
   return (
-    <button type="button" onClick={abrir} aria-label="Presupuesto" title="Presupuesto" data-cartera="1" className={BOTON}>
+    <button type="button" onClick={() => abrir()} aria-label="Presupuesto" title="Presupuesto" data-cartera="1" className={BOTON}>
       <Icono nombre="presupuesto" size={23} />
     </button>
   )

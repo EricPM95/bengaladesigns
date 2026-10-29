@@ -8,13 +8,19 @@ El ordenador de Eric se quedó sin memoria por procesos que se dejaron abiertos 
 3. **Los navegadores de prueba (Chrome sin ventana) se cierran al terminar cada prueba.** Nunca dejar uno abierto entre pruebas.
 4. **Las pruebas que arrancan su propio Vite** (la batería, `bateriaParalela.mjs`) lo cierran al acabar, y no se lanza una batería mientras haya otro servidor de pruebas en marcha.
 5. **Al final de cada sesión o tarea, apagar** los servidores, los procesos de Node.js y los navegadores de prueba que se hayan abierto, y confirmarlo a Eric en el resumen final (cuántos había y cuántos se han cerrado). Los `esbuild.exe` mueren con su Vite; si quedan huérfanos, se cierran también.
-6. **Para no saturar el procesador:** las baterías y los servidores de pruebas se lanzan (o se pasan enseguida) a prioridad baja (`BelowNormal`; los procesos hijos, incluidos los Chrome de prueba, la heredan). Las baterías se lanzan con `navegador=1` y SIN los «wrappers» (`pruebaTanda10N*.mjs`, `10P`, `10O`, `10M`: cada uno ya corre sus partes, que están también sueltas en la batería y duplicarían los Chromes). Nunca más de un Chrome de prueba a la vez.
+6. **Para no saturar el procesador:** las baterías y los servidores de pruebas se lanzan (o se pasan enseguida) a prioridad baja (`BelowNormal`; los procesos hijos, incluidos los Chrome de prueba, la heredan). Las baterías se lanzan con `navegador=1` y SIN los «wrappers» (`pruebaTanda10N*.mjs`, `10P`, `10O`, `10M`: cada uno ya corre sus partes, que están también sueltas en la batería y duplicarían los Chromes). Nunca más de 2 Chrome de prueba a la vez (Eric, 29-oct; ver «Cómo probar» abajo).
 7. **Si falta un servidor para la siguiente tarea, se arranca entonces**, no antes: no dejar servidores encendidos «por si acaso».
+
+## Cómo probar (Eric, 29-oct) — para ir más rápido
+- **En cada tanda, NO la batería completa:** solo las pruebas de lo que se ha tocado en esa tanda, más `pruebaJutrip`. En el informe se dice cuáles se han pasado.
+- **La batería completa, solo cuando Eric lo pida o antes de una tanda grande** (lo dirá en el prompt).
+- **Hasta 2 Chrome de prueba a la vez.** Las pruebas que usan el Supabase real o las mismas cuentas de prueba, **siempre solas**. Si una falla con 2 a la vez, se repite sola antes de darla por mala.
+- Si una batería completa sigue sin terminar, se corta y se pasan solo las de la tanda y `pruebaJutrip`.
 
 ## Nota de estado en la rama «estado» (Eric, 28-oct) — ACTIVA otra vez en la tanda 10N9
 Eric la desactivó el 28-oct («ya estoy en casa») y la volvió a pedir en el prompt de la 10N9 (cada 30 minutos, también mientras espero a los agentes). Si un prompt de tanda no la pide, no se sube.
 
-**Agentes (Eric, 28-oct):** como mucho 2 a la vez; antes de lanzar uno, mirar la memoria libre (con menos de 4 GB, esperar).
+**Agentes:** (Eric, 28-oct) como mucho 2 a la vez y memoria libre ≥4 GB; (Eric, 29-oct, 10N10) hasta 4 a la vez con ≥6 GB libres, si Eric lo dice en el prompt de la tanda.
 
 La conexión de Claude con el PC de Eric no funciona, así que Eric sigue cada tanda desde GitHub. Mientras haga una tanda, **cada ~30 minutos** actualizo la nota `docs/dias/_estado_<tanda>.md` y la subo a la rama **`estado`**, solo con ese archivo:
 

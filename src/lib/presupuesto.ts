@@ -85,6 +85,8 @@ export interface RepartoDelViaje {
   modo?: ModoDeLasCuentas
   esInvitado: boolean
   todos: string[]
+  /** (Tanda 10N10 §5a) Entre quién se reparte lo que no dice «entre quién»: todos, salvo si la cuenta conjunta de dos pasó a ser del grupo (entonces, esos dos). */
+  porDefecto?: string[]
   entreDe?: Record<string, string[]> | null
   conVueloPropio?: ReadonlySet<string>
   conAlojamientoPropio?: ReadonlySet<string>
@@ -136,7 +138,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
   /** Lo que pone el administrador, con su «entre quién»: personal (solo suyo), del grupo, o escondido a quien no va en ello. */
   const delAdmin = (l: LineaPresupuesto | null, entre: string[] | null): LineaPresupuesto | null => {
     if (!l || !rep) return l
-    const e = entre && entre.length > 0 ? entre : rep.todos
+    const e = entre && entre.length > 0 ? entre : (rep.porDefecto ?? rep.todos)
     if (esSoloDe(e, rep.adminId)) {
       if (soyAdmin) return mio(l, e)
       ocultas.push({ ...l, entre: e })
@@ -148,7 +150,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
     }
     return { ...l, entre: e }
   }
-  const delVuelo = (id: 'llegada' | 'vuelta', l: LineaPresupuesto | null) => delAdmin(l, rep ? entreDeLoDelAdmin({ tipo: 'vuelo', clave: id, entreDe: rep.entreDe, todos: rep.todos, adminId: rep.adminId, conVueloPropio: rep.conVueloPropio }) : null)
+  const delVuelo = (id: 'llegada' | 'vuelta', l: LineaPresupuesto | null) => delAdmin(l, rep ? entreDeLoDelAdmin({ tipo: 'vuelo', clave: id, entreDe: rep.entreDe, todos: rep.porDefecto ?? rep.todos, adminId: rep.adminId, conVueloPropio: rep.conVueloPropio }) : null)
 
   const ciudad = route.days[0]?.city ?? route.destination
   const suyo = rep?.loSuyo ?? null
@@ -166,9 +168,9 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
         const hotel = entrada.accommodationSelections[segment.dayIds[0]]
         if (!hotel) return null
         const id = `aloj-${segment.dayIds[0]}`
-        return delAdmin(linea(id, hotel.name, precioDeAlojamiento(hotel), { tipo: 'alojamiento', segmentDayId: segment.dayIds[0] }, segment.city), rep ? entreDeLoDelAdmin({ tipo: 'alojamiento', clave: id, entreDe: rep.entreDe, todos: rep.todos, adminId: rep.adminId, conAlojamientoPropio: rep.conAlojamientoPropio }) : null)
+        return delAdmin(linea(id, hotel.name, precioDeAlojamiento(hotel), { tipo: 'alojamiento', segmentDayId: segment.dayIds[0] }, segment.city), rep ? entreDeLoDelAdmin({ tipo: 'alojamiento', clave: id, entreDe: rep.entreDe, todos: rep.porDefecto ?? rep.todos, adminId: rep.adminId, conAlojamientoPropio: rep.conAlojamientoPropio }) : null)
       }),
-    entrada.rentalVehicleBooking ? delAdmin(linea('coche', `Coche de alquiler · ${entrada.rentalVehicleBooking.provider}`, precioGuardado(entrada.rentalVehicleBooking), { tipo: 'coche' }), rep ? entreDeLoDelAdmin({ tipo: 'coche', clave: 'coche', entreDe: rep.entreDe, todos: rep.todos, adminId: rep.adminId }) : null) : null,
+    entrada.rentalVehicleBooking ? delAdmin(linea('coche', `Coche de alquiler · ${entrada.rentalVehicleBooking.provider}`, precioGuardado(entrada.rentalVehicleBooking), { tipo: 'coche' }), rep ? entreDeLoDelAdmin({ tipo: 'coche', clave: 'coche', entreDe: rep.entreDe, todos: rep.porDefecto ?? rep.todos, adminId: rep.adminId }) : null) : null,
   ])
 
   // Las entradas y las excursiones, con su día debajo. El Free Tour no lleva precio ni suma nunca.
@@ -178,7 +180,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
     .map((reserva) => {
       const l = lineaDeReserva(reserva)
       // Las del administrador: personal si es solo para él (o de antes de compartir); del grupo, entre los marcados.
-      return { reserva, l: rep && l ? delAdmin(l, reservaEsPersonalSegunModo(rep.modo, reserva.paraQuien, rep.adminId) && rep.adminId ? [rep.adminId] : conjunta ? null : (reserva.paraQuien ?? null)) : l }
+      return { reserva, l: rep && l ? delAdmin(l, reservaEsPersonalSegunModo(rep.modo, reserva.paraQuien, rep.adminId) && rep.adminId ? [rep.adminId] : (reserva.paraQuien ?? null)) : l }
     })
   if (rep) {
     // Las que compra el invitado: las suyas (personal si es solo para él) y las de los demás invitados que le incluyen (o, para el administrador, todas las del grupo).
@@ -186,7 +188,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
       if (reserva.refId === 'Free Tour' || candidatas.some((c) => c.reserva.id === reserva.id)) continue
       const l = lineaDeReserva(reserva)
       if (!l) continue
-      candidatas.push({ reserva, l: reservaEsPersonalSegunModo(rep.modo, reserva.paraQuien, rep.yoId) ? mio(l, rep.yoId ? [rep.yoId] : []) : { ...l, entre: conjunta ? rep.todos : (reserva.paraQuien ?? []) } })
+      candidatas.push({ reserva, l: reservaEsPersonalSegunModo(rep.modo, reserva.paraQuien, rep.yoId) ? mio(l, rep.yoId ? [rep.yoId] : []) : { ...l, entre: reserva.paraQuien && reserva.paraQuien.length > 0 ? reserva.paraQuien : conjunta ? (rep.porDefecto ?? rep.todos) : [] } })
     }
     for (const grupo of rep.entradasDeInvitados ?? []) {
       if (grupo.userId === rep.yoId) continue
@@ -194,7 +196,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
         if (reserva.kind !== 'entrada' || reserva.refId === 'Free Tour' || reservaEsPersonalSegunModo(rep.modo, reserva.paraQuien, grupo.userId) || candidatas.some((c) => c.reserva.id === reserva.id)) continue
         const l = lineaDeReserva(reserva)
         if (!l) continue
-        const e = conjunta ? rep.todos : (reserva.paraQuien ?? [])
+        const e = reserva.paraQuien && reserva.paraQuien.length > 0 ? reserva.paraQuien : conjunta ? (rep.porDefecto ?? rep.todos) : []
         if (rep.esInvitado && rep.yoId && !e.includes(rep.yoId)) {
           ocultas.push({ ...l, entre: e })
           continue

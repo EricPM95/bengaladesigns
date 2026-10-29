@@ -1,9 +1,9 @@
-// La prueba de la Tanda 10N6, agente K2: 1g el aviso pequeño del pase (una pieza para toda la app, `Piezas/Pase Estilo` 04), 1h la lista del pase, 1i la música de la película.
+// La prueba de la Tanda 10N6, agente K2: 1g el aviso pequeño del pase (una pieza para toda la app, `Piezas/Pase Estilo` 04) y 1h la lista del pase. (10N10, 8b: la película y su música se quitaron.)
 //   APP_URL=http://localhost:5202 API_URL=http://localhost:8872 node scripts/destino/pruebaTanda10N6_avisopase.mjs
 // Acaba imprimiendo «N comprobaciones, M fallos» y sale con código 1 si falla alguna. Capturas en docs/dias/capturas_jutrip/10n6_*.jpg.
 import fs from 'node:fs'
 import path from 'node:path'
-import { conViaje, abrirPase, esp, cuando, foto as foto5, leer, modulo } from './_10n5_comun.mjs'
+import { conViaje, esp, cuando, foto as foto5, leer, modulo } from './_10n5_comun.mjs'
 import { capturarDesign } from './capturaDesign.mjs'
 
 process.env.APP_URL = process.env.APP_URL ?? 'http://localhost:5173'
@@ -27,7 +27,7 @@ for (const c of ['segunda_foto', 'escuchar_historia', 'cerca_de_ti', 'banos', 'f
 debe(/Ya tienes tu foto de este sitio\./.test(textos) && /guarda fotos sin límite y haz crecer tu álbum de recuerdos\./.test(textos), 'textos', 'los dos textos de la segunda foto, los aprobados')
 debe(/Ya has escuchado tu historia de prueba\./.test(textos) && /podrás escuchar todas las historias que quieras, sin límite\./.test(textos), 'textos', 'los dos textos de «Escuchar historia», los aprobados')
 debe(/AvisoPaseHost/.test(leer('src/App.tsx')), 'host', 'el aviso está montado globalmente en App.tsx')
-debe(!/abrirPase/.test(sinComentarios(leer('src/components/route/hoy/Escuchar.tsx'))) && !/abrirPase/.test(sinComentarios(leer('src/components/route/hoy/v2/HoyDuranteV2.tsx'))), 'sitios', '«Escuchar historia» cerrado abre el aviso, no la película')
+debe(!/abrirPase/.test(sinComentarios(leer('src/components/route/hoy/Escuchar.tsx'))) && !/abrirPase/.test(sinComentarios(leer('src/components/route/hoy/v2/HoyDuranteV2.tsx'))), 'sitios', '«Escuchar historia» cerrado abre el aviso, no la lista del pase')
 debe(/abrirAvisoPase\('cerca_de_ti'/.test(leer('src/components/route/placeExplorer/PlaceExplorerScreen.tsx')) && !/datos="explorar-cerca-de-ti"/.test(leer('src/components/route/placeExplorer/PlaceExplorerScreen.tsx')), 'sitios', '«Cerca de ti» sin pase abre el aviso (la hoja suelta de la 10O ya no está)')
 debe(/abrirAvisoPase\(id === 'banos'/.test(leer('src/components/route/ExplorePanel.tsx')), 'sitios', 'Baños y Fuentes abren el aviso')
 const ajustes = JSON.parse(leer('data/pase/lista_ajustes.json'))
@@ -36,20 +36,11 @@ debe(ajustes.titulos['La historia de cada sitio'] === 'Todas las historias' && a
 debe(!ajustes.prometidas_sin_hacer.some((x) => /puesta de sol/.test(x)), 'lista', 'la puesta de sol ya no está en prometidas_sin_hacer')
 const gen = leer('src/lib/listaDelPase.ts')
 debe(!/Empiezas cerca de donde duermes/.test(gen) && !/Empiezas cerca de donde duermes/.test(leer('src/components/pase/pelicula/gen/Pase_Pelicula.ts')), 'lista', '«Empiezas cerca de donde duermes» no existe')
-const musica = leer('src/lib/peliculaMusica.ts')
-debe(/HEAD/.test(musica) && /audio\|mpeg/.test(musica), 'musica', 'se comprueba si el archivo existe (y que sea audio) antes de montar nada')
-debe(/visibilitychange/.test(musica) && /pagehide/.test(musica) && /sonidoActivado/.test(musica), 'musica', 'se para al salir de la app y respeta «Sonido de los momentos»')
-debe(fs.existsSync('scripts/destino/comprimirMusicaPelicula.sh'), 'musica', 'el script para comprimir a 96 kbps está')
-const hayArchivo = fs.existsSync('public/sonidos/pelicula_pase.mp3')
 
-/* ───────────────────────── 2. La función pura de la música ───────────────────────── */
+/* ───────────────────────── 2. El aviso sin pase ───────────────────────── */
 const g = await conViaje({ version: 'gratis', ancho: 390, alto: 844 })
 try {
   console.log('2. El aviso sin pase')
-  const m = await g.evaluar(`import('/src/lib/peliculaMusica.ts').then((m) => ({ a: m.volumenEnLaPista(0, 60), b: m.volumenEnLaPista(30, 60), c: m.volumenEnLaPista(59.9, 60), d: m.volumenEnLaPista(1, 2), hay: null }))`)
-  debe(m.a === 0 && m.b > 0.1 && m.b < 0.3 && m.c < 0.02 && m.d > 0 && m.d <= m.b, 'musica', `el volumen es bajo, entra y sale poco a poco (${JSON.stringify(m)})`)
-  const hay = await g.evaluar(`import('/src/lib/peliculaMusica.ts').then((m) => m.hayMusicaDeLaPelicula())`)
-  debe(hay === hayArchivo, 'musica', `sin el archivo no se monta nada (hay archivo: ${hayArchivo}; la comprobación dice ${hay})`)
 
   const abrir = (clave) => g.evaluar(`import('/src/lib/avisoPase.ts').then((m) => { m.abrirAvisoPase(${JSON.stringify(clave)}); return true })`)
   const leerAviso = () => g.evaluar(`(() => { const e = document.querySelector('[data-aviso-pase]'); if (!e) return null; const r = e.getBoundingClientRect(); const ver = e.querySelector('[data-aviso-pase-ver]'); return { clave: e.getAttribute('data-aviso-pase'), titulo: e.querySelector('[data-aviso-pase-titulo]').innerText, l1: e.querySelector('[data-aviso-pase-linea1]')?.innerText ?? '', l2: e.querySelector('[data-aviso-pase-linea2]').innerText, ver: ver.innerText, fondo: getComputedStyle(e).backgroundImage, l2peso: getComputedStyle(e.querySelector('[data-aviso-pase-linea2]')).fontWeight, l1color: e.querySelector('[data-aviso-pase-linea1]') ? getComputedStyle(e.querySelector('[data-aviso-pase-linea1]')).color : '', ancho: r.width, izq: r.left, der: r.right, verFondo: getComputedStyle(ver).backgroundImage } })()`)
@@ -64,13 +55,14 @@ try {
   debe(av && /28, 34, 48/.test(av.fondo) && /243, 226, 176/.test(av.verFondo) && Number(av.l2peso) >= 600 && Number(av.l2peso) > 400, 'aviso', 'azul oscuro, botón dorado y la línea 2 en negrita')
   debe(av && av.izq >= 0 && av.der <= 390, 'aviso', 'cabe en el ancho del móvil')
   await g.captura(foto('aviso_segunda_foto'))
-  // [Ver el Pase Roma] → la película (ya vista en esta prueba: directo al final)
+  // [Ver el Pase Roma] → la lista del pase (Tanda 10N10, 8b: ya no hay película; abre siempre directo la lista, con [Elegir mi pase])
   await g.evaluar(`document.querySelector('[data-aviso-pase-ver]').click(); true`)
-  const pelicula = await cuando(g, `Boolean(document.querySelector('[data-pelicula]'))`, 40)
-  debe(pelicula, 'aviso', '[Ver el Pase Roma] abre la película del pase')
+  const lista = await cuando(g, `Boolean(document.querySelector('[data-lista-del-pase]'))`, 40)
+  debe(lista, 'aviso', '[Ver el Pase Roma] abre la lista del pase')
   debe(!(await g.evaluar(`Boolean(document.querySelector('[data-aviso-pase]'))`)), 'aviso', 'y el aviso se cierra')
-  const modoPelicula = await g.evaluar(`document.querySelector('[data-pelicula]')?.getAttribute('data-pelicula')`)
-  debe(modoPelicula === 'final', 'aviso', `con la película ya vista, va directo al final (${modoPelicula})`)
+  const modoLista = await g.evaluar(`document.querySelector('[data-lista-del-pase]')?.getAttribute('data-lista-del-pase')`)
+  debe(modoLista === 'lista' && (await cuando(g, `/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')`, 20)), 'aviso', `va directo a la lista, con [Elegir mi pase] (${modoLista})`)
+  await g.captura(foto('lista_del_pase'))
   await g.evaluar(`document.querySelector('[data-pelicula-cerrar]')?.click(); true`)
   await esp(600)
 
@@ -114,54 +106,6 @@ try {
   debe(!(await c.evaluar(`Boolean(document.querySelector('[data-aviso-pase]'))`)), 'con pase', 'con pase el aviso no sale nunca')
 } finally {
   c.cerrar()
-}
-
-/* ───────────────────────── 5. La música, con un archivo de mentira ───────────────────────── */
-console.log('5. La música de la película')
-// 5a. Sin archivo: la película sale sin botón de silencio y sin ningún error.
-const s = await conViaje({ version: 'gratis', vista: false, ancho: 390, alto: 844 })
-try {
-  await abrirPase(s)
-  await cuando(s, `Boolean(document.querySelector('[data-pelicula]'))`, 40)
-  await esp(2500)
-  const errores = await s.evaluar(`window.__erroresPrueba ?? []`).catch(() => [])
-  debe(await s.evaluar(`Boolean(document.querySelector('[data-pelicula]'))`), 'musica', 'sin archivo la película abre')
-  debe(hayArchivo || !(await s.evaluar(`Boolean(document.querySelector('[data-pelicula-musica]'))`)), 'musica', 'sin archivo no sale el botón de silencio')
-  debe(Array.isArray(errores) && errores.length === 0, 'musica', 'ni un error')
-  await s.captura(foto('pelicula_sin_musica'))
-} finally {
-  s.cerrar()
-}
-// 5b. Con un archivo de mentira (se hace creer a la página que existe) para ver el botón y que recuerda lo elegido.
-const SIMULA = `(() => { const f = window.fetch; window.fetch = (u, o) => String(u).includes('/sonidos/pelicula_pase.mp3') && o && o.method === 'HEAD' ? Promise.resolve(new Response(null, { status: 200, headers: { 'content-type': 'audio/mpeg' } })) : f(u, o); window.__audios = []; const A = window.Audio; window.Audio = function (u) { const a = new A(u); window.__audios.push(a); a.play = () => Promise.resolve(); return a }; })();`
-const k = await conViaje({ version: 'gratis', vista: false, ancho: 390, alto: 844, extraAntes: SIMULA })
-try {
-  await abrirPase(k)
-  const hay = await cuando(k, `Boolean(document.querySelector('[data-pelicula-musica]'))`, 40)
-  debe(hay, 'musica', 'con archivo sale el botón de silencio')
-  if (hay) {
-    const pos = await k.evaluar(`(() => { const be = document.querySelector('[data-pelicula-musica]'); const b = be.getBoundingClientRect(); const t = document.querySelector('[data-pelicula-titulo]').getBoundingClientRect(); const sa = document.querySelector('[data-pelicula-saltar]').getBoundingClientRect(); return { top: b.top, h: b.height, w: b.width, tTop: t.top, tH: t.height, sTop: sa.top, sH: sa.height, bDer: b.right, bIzq: b.left, tTexto: (document.querySelector('[data-pelicula-titulo] span') || document.querySelector('[data-pelicula-titulo]')).getBoundingClientRect().right, sIzq: sa.left, svg: be.querySelector('svg') ? be.querySelector('svg').getAttribute('fill') : null } })()`)
-    const centro = (t, h) => t + h / 2
-    debe(Math.abs(centro(pos.top, pos.h) - centro(pos.tTop, pos.tH)) < 8 && Math.abs(centro(pos.top, pos.h) - centro(pos.sTop, pos.sH)) < 8, 'musica', `el botón está en la misma línea que el título y [Saltar] (${JSON.stringify(pos)})`)
-    debe(pos.bDer <= pos.sIzq + 1 && pos.svg === 'none', 'musica', 'a la izquierda de [Saltar], icono fino sin relleno')
-    debe(pos.tTexto <= pos.bIzq, 'musica', `el título no pisa el botón de silencio (el texto acaba en ${pos.tTexto}, el botón empieza en ${pos.bIzq})`)
-    await k.captura(foto('pelicula_boton_silencio'))
-    const sonando = await k.evaluar(`window.__audios.length > 0 && window.__audios[0].loop === true`)
-    debe(sonando, 'musica', 'se crea el audio, en bucle')
-    await k.evaluar(`document.querySelector('[data-pelicula-musica]').click(); true`)
-    await esp(300)
-    debe((await k.evaluar(`localStorage.getItem('trazo:pelicula_musica')`)) === 'no', 'musica', 'el silencio se recuerda')
-    // Saltar no corta el audio
-    await k.evaluar(`document.querySelector('[data-pelicula-saltar]').click(); true`)
-    await esp(800)
-    debe(await k.evaluar(`window.__audios[0].paused === false || window.__audios[0].paused === true`), 'musica', '[Saltar] no rompe nada')
-    // Cerrar para el audio
-    await k.evaluar(`document.querySelector('[data-pelicula-cerrar]')?.click(); true`)
-    await esp(1800)
-    debe(await k.evaluar(`window.__audios.every((a) => a.paused || a.volume < 0.01)`), 'musica', 'al cerrar la película, la música baja y se para')
-  }
-} finally {
-  k.cerrar()
 }
 
 // La pieza de Design, al lado.

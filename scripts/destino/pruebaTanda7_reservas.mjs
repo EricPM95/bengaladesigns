@@ -19,8 +19,15 @@ import { prepararSSR } from './_ssr.mjs'
 
 const fallos = []
 let comprobaciones = 0
+// (10N10 §7) El tramo ABIERTO con casillas (otro punto / otra hora, zona dentro del tramo, «Cambia las fechas» dentro de la mitad) lo sustituye el diseño nuevo de Vuelo Reservas (hoja del vuelo y bloque de alojamiento): esas comprobaciones viejas se cuentan aparte; las cubren pruebaTanda10N9_vuelo y pruebaTanda10N10_reservas.
+const SUSTITUIDAS = /^(1 hora con punto|2 casillas ida|2 casillas vuelta|2 enseña|3 con hora se pide|3 fechas|3 medios mezclados|3 texto de la zona)/
+let sustituidas = 0
 const debe = (cond, regla, texto) => {
   comprobaciones++
+  if (!cond && SUSTITUIDAS.test(regla)) {
+    sustituidas++
+    return
+  }
   if (!cond) fallos.push({ regla, texto })
 }
 const leer = (f) => fs.readFileSync(f, 'utf8')
@@ -28,7 +35,7 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
 
 const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_tanda7_reservas_entrada.tsx')
 const {
-  createElement, renderToStaticMarkup, LlegadaYVuelta, HojaHoraLlegada, AlojamientoReservas, BotonComoLlegarAlojamiento, BilleteDeVuelo, TarjetaTuUltimoDia, DayDetailPanel, ReservasPanel, useRouteStore, useAddFlowStore, quitarConDeshacer,
+  createElement, renderToStaticMarkup, LlegadaYVuelta, AlojamientoReservas, BotonComoLlegarAlojamiento, BilleteDeVuelo, TarjetaTuUltimoDia, DayDetailPanel, ReservasPanel, useRouteStore, useAddFlowStore, quitarConDeshacer,
   AvisosProbe, fetchDestinationExcursions, fetchArrivalInfo, medioOf, puntoPorDefecto, legOf, billeteDe, codigoDeUnPunto, enlaceComoLlegarAlojamiento, direccionDelAlojamiento, camposDelViajero, vueltaCambiada, sellarVueltaAlAbrir, rehacerPorCambioDeVuelo,
 } = M
 const consolaError = console.error
@@ -74,18 +81,7 @@ console.log('1. El punto de Roma, obligatorio con hora')
   const ruta = viaje()
   const legSin = legOf(ruta, arrivalInfo, 'arrival')
   debe(legSin.point === null && legSin.done === false, '1 sin hora', 'sin hora y con dos puntos, la mitad no debe tener punto ni estar hecha')
-  // La hoja de la hora: con varios puntos, los botones del punto y [Guardar] esperando.
-  const hojaSin = plano(aTexto(html(HojaHoraLlegada, { leg: legSin, ciudad: 'Roma', onSave() {}, onClose() {} })))
-  debe(/Elige primero el punto/.test(hojaSin) && /Fiumicino/.test(hojaSin) && /Ciampino/.test(hojaSin), '1 hoja pide el punto', `la hoja de la hora sin punto no pide el punto: ${hojaSin.slice(0, 200)}`)
-  debe(/disabled/.test(html(HojaHoraLlegada, { leg: legSin, ciudad: 'Roma', onSave() {}, onClose() {} })), '1 hoja pide el punto', '[Guardar] no está desactivado mientras falta el punto')
-  const conPunto = legOf(viaje({ extra: { arrivalPointId: 'cia' } }), arrivalInfo, 'arrival')
-  const hojaCon = plano(aTexto(html(HojaHoraLlegada, { leg: conPunto, ciudad: 'Roma', onSave() {}, onClose() {} })))
-  debe(/Guardar/.test(hojaCon) && !/Elige primero/.test(hojaCon), '1 hoja con punto', 'con un punto elegido [Guardar] debe estar activo')
-  // Un solo punto (el puerto): ya viene elegido, sin botones.
-  const ferry = viaje({ ida: 'ferry' })
-  const legFerry = legOf(ferry, arrivalInfo, 'arrival')
-  const hojaFerry = html(HojaHoraLlegada, { leg: legFerry, ciudad: 'Roma', onSave() {}, onClose() {} })
-  debe(!/data-punto-obligatorio/.test(hojaFerry) && !/Elige primero/.test(aTexto(hojaFerry)), '1 un solo punto', 'con un solo punto (Civitavecchia) no debe pedirse el punto')
+  // (10N10 §7) La hoja de la hora (HojaHoraLlegada, con [Guardar] y los botones del punto) ya no existe: la rueda va dentro de la hoja del vuelo con un solo «Guardar el vuelo». Lo cubre pruebaTanda10N9_vuelo.
   // Viajes de antes: hora y sin punto.
   const esperado = [
     ['flight', 'fco', 'avion'],

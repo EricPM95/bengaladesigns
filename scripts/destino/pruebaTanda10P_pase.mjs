@@ -1,4 +1,4 @@
-// La prueba de la parte «pase» de la Tanda 10P (agente A): 1.2 la película a todo el ancho del móvil, 1.4 la lista del pase solo con lo que existe, 1.7 el precio en la moneda del viajero.
+// La prueba de la parte «pase» de la Tanda 10P (agente A): 1.2 la lista del pase (10N10, 8b: antes, la película) a todo el ancho del móvil, 1.4 la lista del pase solo con lo que existe, 1.7 el precio en la moneda del viajero.
 // Hace falta el servidor y Vite (el coordinador pone APP_URL y API_URL: p. ej. APP_URL=http://localhost:5181 API_URL=http://localhost:8851 node scripts/destino/pruebaTanda10P_pase.mjs).
 // Acaba imprimiendo «N comprobaciones · M fallos». Capturas a tamaño de móvil en docs/dias/capturas_jutrip/10p_pase_*.jpg.
 import fs from 'node:fs'
@@ -69,15 +69,15 @@ const num = (t) => Number(String(t).replace(/\./g, '').replace(',', '.'))
 
 /* ───────────────────────── 3. La app ───────────────────────── */
 const esp = (ms) => new Promise((r) => setTimeout(r, ms))
-async function conViaje({ ancho = 390, alto = 664, moneda = 'EUR', vista = true } = {}) {
-  const antes = `${vista ? "try{localStorage.setItem('trazo:pelicula-pase-vista','1')}catch(e){};" : ''}try{localStorage.setItem('trazo:moneda-pase','${moneda}')}catch(e){}; window.__pruebaDelPase = { cobro: true, conPase: false, puede: true, pruebaGastada: false }`
+async function conViaje({ ancho = 390, alto = 664, moneda = 'EUR' } = {}) {
+  const antes = `try{localStorage.setItem('trazo:moneda-pase','${moneda}')}catch(e){}; window.__pruebaDelPase = { cobro: true, conPase: false, puede: true, pruebaGastada: false }`
   const a = await abrirApp(BASE, { ancho, alto, ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=gratis&apertura=0', antes })
   for (let i = 0; i < 60 && !(await a.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await a.esp(500)
   await a.evaluar('window.__rutaPrueba().then(() => true)')
   for (let i = 0; i < 60 && !(await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await a.esp(1000)
   await a.esp(3500)
   for (let i = 0; i < 4; i++) {
-    const hecho = await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Entendido|Vale|Cerrar)$/.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()")
+    const hecho = await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Entendido|Vale|Cerrar|Siguiente|Genial|Ya lo sé)$/.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()")
     if (!hecho) break
     await a.esp(600)
   }
@@ -91,12 +91,12 @@ const cuando = async (a, js, veces = 40) => {
   }
   return false
 }
-const texto = (a) => a.evaluar("(document.querySelector('[data-pelicula]')?.innerText ?? '').split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean).join(' | ')")
+const texto = (a) => a.evaluar("(document.querySelector('[data-lista-del-pase]')?.innerText ?? '').split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean).join(' | ')")
 /** El centro (visible) del elemento más pequeño cuyo texto es exactamente `t`, o del que lo CONTIENE si `contiene`. */
 const centroDe = (a, t, contiene = false) =>
   a.evaluar(`(() => {
     const t = ${JSON.stringify(t)}
-    const todos = Array.from(document.querySelectorAll('[data-pelicula] *')).filter((x) => { const s = x.textContent.trim(); return ${contiene ? 's.includes(t)' : 's === t'} && x.getBoundingClientRect().width > 0 })
+    const todos = Array.from(document.querySelectorAll('[data-lista-del-pase] *')).filter((x) => { const s = x.textContent.trim(); return ${contiene ? 's.includes(t)' : 's === t'} && x.getBoundingClientRect().width > 0 })
     const e = todos.sort((p, q) => p.textContent.length - q.textContent.length)[0]
     if (!e) return null
     for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) {
@@ -124,10 +124,10 @@ const clicEn = async (a, x, y) => {
 }
 const estado = (a) =>
   a.evaluar(`(() => {
-    const raiz = document.querySelector('[data-pelicula] .pfr')
+    const raiz = document.querySelector('[data-lista-del-pase] .pfr')
     const r = raiz?.getBoundingClientRect()
     const anims = raiz ? raiz.getAnimations({ subtree: true }) : []
-    return { montada: document.querySelector('[data-pelicula]')?.getAttribute('data-montada'), izq: r?.left, der: r?.right, ancho: window.innerWidth, alto: window.innerHeight,
+    return { izq: r?.left, der: r?.right, ancho: window.innerWidth, alto: window.innerHeight,
       sinTerminar: anims.filter((x) => x.playState === 'running' && x.effect?.getComputedTiming().iterations !== Infinity).length,
       sinTerminarLista: anims.filter((x) => x.playState === 'running' && x.effect?.getComputedTiming().iterations !== Infinity && x.effect.target?.closest('[data-lista-pase]')).length }
   })()`)
@@ -136,11 +136,11 @@ const estado = (a) =>
 for (const [ancho, alto, nombre] of [[390, 664, '01_final_390x664'], [430, 932, '02_final_430x932'], [360, 640, '03_final_360x640']]) {
   const a = await conViaje({ ancho, alto })
   await abrirPase(a)
-  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-pelicula]')?.innerText ?? '')", 20)
+  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await esp(900)
   const e = await estado(a)
-  debe(e.izq <= 0.5 && e.der >= ancho - 0.5, 'ancho', `${ancho}x${alto}: la película llega de lado a lado (${e.izq?.toFixed(1)} → ${e.der?.toFixed(1)} de ${ancho})`)
-  debe(e.montada === '1' && e.sinTerminar === 0, 'montada', `${ancho}x${alto}: ya vista, el final sale montado (sin animaciones a medias: ${e.sinTerminar})`)
+  debe(e.izq <= 0.5 && e.der >= ancho - 0.5, 'ancho', `${ancho}x${alto}: la lista llega de lado a lado (${e.izq?.toFixed(1)} → ${e.der?.toFixed(1)} de ${ancho})`)
+  debe(e.sinTerminar === 0, 'montada', `${ancho}x${alto}: la lista sale colocada (sin animaciones a medias: ${e.sinTerminar})`)
   const t = await texto(a)
   debe(/Pase de Roma/.test(t) && /Elegir mi pase/.test(t) && /Se paga una vez y no caduca/.test(t), 'final', `${ancho}x${alto}: «Pase de Roma», la lista y la parte fija ya colocadas`)
   debe(!/a mi aire/.test(t) && !/El reto del día/.test(t), 'lista', `${ancho}x${alto}: el final sin «a mi aire» ni «el reto del día»`)
@@ -148,7 +148,7 @@ for (const [ancho, alto, nombre] of [[390, 664, '01_final_390x664'], [430, 932, 
     const l = document.querySelector('[data-lista-pase]')
     if (!l) return null
     const r = l.getBoundingClientRect()
-    const b = Array.from(document.querySelectorAll('[data-pelicula] span')).find((x) => x.textContent.trim() === 'Elegir mi pase')
+    const b = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.textContent.trim() === 'Elegir mi pase')
     l.scrollTop = 0
     const antes = l.scrollTop
     l.scrollTop = 400
@@ -177,45 +177,33 @@ for (const [ancho, alto, nombre] of [[390, 664, '01_final_390x664'], [430, 932, 
   a.cerrar()
 }
 
-// 3b. [Ver] vuelve a empezar; ✕ y volver a abrir: el final sale montado.
+// 3b. (10N10, 8b: la película se quitó: ya no hay [Ver], [Saltar] ni «ya vista») El ✕ cierra la lista; al volver a abrir sale la lista YA colocada y [Elegir mi pase] abre la compra sin repetir la animación.
 {
   const a = await conViaje({})
   await abrirPase(a)
-  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-pelicula]')?.innerText ?? '')", 20)
+  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await esp(600)
-  const antes = await a.evaluar("(() => { const v = document.querySelector('[data-pelicula-ver]'); const c = document.querySelector('[data-pelicula-cerrar]'); const s = document.querySelector('[data-pelicula-saltar]'); return { ver: Boolean(v), cerrar: Boolean(c), saltar: Boolean(s), vr: v?.getBoundingClientRect().right, cl: c?.getBoundingClientRect().left } })()")
-  debe(antes.ver && antes.cerrar && !antes.saltar, 'ver', 'en el final hay [Ver] y ✕ arriba (y ya no [Saltar])')
-  debe(antes.vr <= antes.cl, 'ver', `[Ver] queda junto al ✕, sin taparlo (${antes.vr?.toFixed(0)} ≤ ${antes.cl?.toFixed(0)})`)
-  await a.evaluar("(() => { const r = document.querySelector('[data-pelicula-ver]').getBoundingClientRect(); return [r.x, r.y] })()").then(async ([x, y]) => clicEn(a, x + 10, y + 10))
-  await esp(1800)
-  const t = await texto(a)
-  const e = await estado(a)
-  debe(/Saltar/.test(t) && !/Elegir mi pase/.test(t) && e.montada === '0', 'ver', '[Ver] vuelve a la película desde el principio (con [Saltar], sin el final)')
-  await a.captura(foto('05_ver_otra_vez_empieza'))
-  const hay = await a.evaluar("Boolean(document.querySelector('[data-pelicula-saltar]'))")
-  debe(hay, 'ver', 'durante la película, [Saltar] sigue ahí')
-  await a.evaluar("(() => { const r = document.querySelector('[data-pelicula-saltar]').getBoundingClientRect(); return [r.x, r.y] })()").then(async ([x, y]) => clicEn(a, x + 10, y + 10))
-  await esp(1500)
-  console.log('tras Saltar:', (await texto(a)).slice(0, 160))
-  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-pelicula]')?.innerText ?? '')", 20)
-  await esp(500)
-  debe(/Elegir mi pase/.test(await texto(a)), 'ver', '[Saltar] lleva al final')
-  // Cierra con el ✕ y vuelve a abrir (ya vista): el final sale montado.
+  const antes = await a.evaluar("(() => { const c = document.querySelector('[data-pelicula-cerrar]'); return { ver: Boolean(document.querySelector('[data-pelicula-ver]')), cerrar: Boolean(c), saltar: Boolean(document.querySelector('[data-pelicula-saltar]')), musica: Boolean(document.querySelector('[data-pelicula-musica]')), cl: c?.getBoundingClientRect().left, cr: c?.getBoundingClientRect().right, ancho: window.innerWidth } })()")
+  debe(antes.cerrar && !antes.ver && !antes.saltar && !antes.musica, 'ver', 'en la lista hay ✕ arriba y ya no [Ver], [Saltar] ni silencio')
+  debe(antes.cl >= 0 && antes.cr <= antes.ancho, 'ver', 'el ✕ cabe en la pantalla')
+  await a.captura(foto('05_lista_con_cerrar'))
   await a.evaluar("document.querySelector('[data-pelicula-cerrar]')?.click(); true")
   await esp(600)
-  debe(!(await a.evaluar("Boolean(document.querySelector('[data-pelicula]'))")), 'montada', 'el ✕ cierra la película')
+  debe(!(await a.evaluar("Boolean(document.querySelector('[data-lista-del-pase]'))")), 'montada', 'el ✕ cierra la lista')
   await abrirPase(a)
+  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await esp(500)
   const e2 = await estado(a)
   const t2 = await texto(a)
-  debe(e2.montada === '1' && e2.sinTerminar === 0 && /Elegir mi pase/.test(t2), 'montada', 'al volver a abrir (ya vista), el final sale YA montado a los 0,5 s (sin repetir los 5 s de entrada)')
+  debe(e2.sinTerminar === 0 && /Elegir mi pase/.test(t2), 'montada', `al volver a abrir, la lista sale YA colocada a los 0,5 s (sin animaciones a medias: ${e2.sinTerminar})`)
   // Al tocar [Elegir mi pase] tampoco repite nada.
   await clic(a, 'Elegir mi pase')
   await esp(500)
   const e3 = await estado(a)
-  debe(e3.sinTerminarLista === 0 && e3.montada === '1' && /¿Cuántos sois\?/.test(await texto(a)), 'montada', 'al tocar [Elegir mi pase] se abre la compra sin repetir la animación del final')
+  debe(e3.sinTerminarLista === 0 && /¿Cuántos sois\?/.test(await texto(a)), 'montada', 'al tocar [Elegir mi pase] se abre la compra sin repetir la animación de la lista')
   a.cerrar()
 }
+
 
 // 3c. La moneda: EUR como siempre; MXN, USD y COP con «≈», tachado y «Ahorras» que cuadran.
 const tasasDe = async () => (await (await fetch(`${process.env.API_URL || 'http://localhost:8787'}/api/cambio`)).json()).tasas
@@ -223,7 +211,7 @@ const tasas = await tasasDe()
 for (const [moneda, orden] of [['EUR', '06'], ['MXN', '07'], ['USD', '08'], ['COP', '09']]) {
   const a = await conViaje({ moneda })
   await abrirPase(a)
-  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-pelicula]')?.innerText ?? '')", 20)
+  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await esp(600)
   const fin = await texto(a)
   if (moneda === 'EUR') {
@@ -237,9 +225,9 @@ for (const [moneda, orden] of [['EUR', '06'], ['MXN', '07'], ['USD', '08'], ['CO
   await clic(a, 'Elegir mi pase')
   await esp(500)
   const hoja = await a.evaluar(`(() => {
-    const filas = Array.from(document.querySelectorAll('[data-pelicula] div')).filter((d) => /^(Pase de 1 persona|Pase Dúo|Pase Grupo)/.test(d.innerText.trim()) && d.style.borderRadius === '18px').map((d) => d.innerText.split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean))
-    const compra = Array.from(document.querySelectorAll('[data-pelicula] span')).find((s) => /^Comprar/.test(s.textContent.trim()))
-    return { filas, compra: compra?.textContent.trim(), pill: Array.from(document.querySelectorAll('[data-pelicula] span')).some((s) => s.textContent.trim() === ${JSON.stringify(moneda)}) }
+    const filas = Array.from(document.querySelectorAll('[data-lista-del-pase] div')).filter((d) => /^(Pase de 1 persona|Pase Dúo|Pase Grupo)/.test(d.innerText.trim()) && d.style.borderRadius === '18px').map((d) => d.innerText.split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean))
+    const compra = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((s) => /^Comprar/.test(s.textContent.trim()))
+    return { filas, compra: compra?.textContent.trim(), pill: Array.from(document.querySelectorAll('[data-lista-del-pase] span')).some((s) => s.textContent.trim() === ${JSON.stringify(moneda)}) }
   })()`)
   debe(hoja.filas.length === 3 && hoja.pill, 'moneda', `${moneda}: «¿Cuántos sois?» con sus 3 pases y la pastilla de moneda («${moneda}»)`)
   const [uno, duo, grupo] = hoja.filas
@@ -270,17 +258,17 @@ for (const [moneda, orden] of [['EUR', '06'], ['MXN', '07'], ['USD', '08'], ['CO
   if (moneda === 'MXN') {
     // La hoja «Moneda»: la elegida con borde de oro, y se puede cambiar.
     // (10N8) La hoja del pase cambió de sitio: se toca la pastilla de la moneda (la redonda con el código de la moneda) por el DOM, no por un punto fijo.
-    await a.evaluar("(() => { const p = Array.from(document.querySelectorAll('[data-pelicula] span')).find((x) => x.style.borderRadius === '999px' && /^[A-Z]{3}\\b/.test(x.innerText.trim()) && x.style.fontFamily !== 'x' && x.getBoundingClientRect().width < 120); p?.click(); return Boolean(p) })()")
+    await a.evaluar("(() => { const p = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.style.borderRadius === '999px' && /^[A-Z]{3}\\b/.test(x.innerText.trim()) && x.style.fontFamily !== 'x' && x.getBoundingClientRect().width < 120); p?.click(); return Boolean(p) })()")
     await esp(700)
     const hm = await a.evaluar(`(() => {
-      const filas = Array.from(document.querySelectorAll('[data-pelicula] div')).filter((d) => d.style.borderRadius === '16px' && /^[A-Z]{3}\\s/.test(d.innerText.trim()))
-      return { titulo: /Moneda/.test(document.querySelector('[data-pelicula]').innerText), n: filas.length, oro: filas.filter((d) => d.style.border.includes('2px') ).map((d) => d.innerText.trim().split(String.fromCharCode(10))[0]), tieneCOP: filas.some((d) => d.innerText.startsWith('COP')), tieneEUR: filas.some((d) => d.innerText.startsWith('EUR')) }
+      const filas = Array.from(document.querySelectorAll('[data-lista-del-pase] div')).filter((d) => d.style.borderRadius === '16px' && /^[A-Z]{3}\\s/.test(d.innerText.trim()))
+      return { titulo: /Moneda/.test(document.querySelector('[data-lista-del-pase]').innerText), n: filas.length, oro: filas.filter((d) => d.style.border.includes('2px') ).map((d) => d.innerText.trim().split(String.fromCharCode(10))[0]), tieneCOP: filas.some((d) => d.innerText.startsWith('COP')), tieneEUR: filas.some((d) => d.innerText.startsWith('EUR')) }
     })()`)
     debe(hm.titulo && hm.n >= 10 && hm.oro.length === 1 && hm.oro[0] === 'MXN' && hm.tieneEUR && hm.tieneCOP, 'moneda', `la hoja «Moneda» (${hm.n} monedas, con COP y EUR) marca solo la elegida con borde de oro (${hm.oro})`)
     await a.captura(foto('10_hoja_moneda'))
     await clic(a, 'USD', false)
     await esp(500)
-    const cambiada = await a.evaluar("(() => { const s = Array.from(document.querySelectorAll('[data-pelicula] span')).find((x) => /^Comprar/.test(x.textContent.trim())); return [s?.textContent.trim(), document.querySelector('[data-pelicula]').getAttribute('data-moneda'), localStorage.getItem('trazo:moneda-pase')] })()")
+    const cambiada = await a.evaluar("(() => { const s = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => /^Comprar/.test(x.textContent.trim())); return [s?.textContent.trim(), document.querySelector('[data-lista-del-pase]').getAttribute('data-moneda'), localStorage.getItem('trazo:moneda-pase')] })()")
     debe(/≈/.test(cambiada[0] ?? '') && /USD$/.test(cambiada[0] ?? '') && cambiada[1] === 'USD' && cambiada[2] === 'USD', 'moneda', `se cambia la moneda ahí mismo (${cambiada[0]}) y se acuerda`)
   }
   a.cerrar()
@@ -290,14 +278,14 @@ for (const [moneda, orden] of [['EUR', '06'], ['MXN', '07'], ['USD', '08'], ['CO
 {
   const a = await conViaje({})
   await abrirPase(a)
-  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-pelicula]')?.innerText ?? '')", 20)
+  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await esp(500)
   debe(await clic(a, 'Ver todo lo que incluye'), 'todo', 'se puede tocar [Ver todo lo que incluye]')
   await esp(600)
-  const t = await a.evaluar("(() => { const h = Array.from(document.querySelectorAll('[data-pelicula] span')).find((x) => x.textContent.trim() === 'Todo lo que incluye'); return h.closest('div[style*=\"border-radius: 30px\"]').innerText })()")
+  const t = await a.evaluar("(() => { const h = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.textContent.trim() === 'Todo lo que incluye'); return h.closest('div[style*=\"border-radius: 30px\"]').innerText })()")
   debe(!/a mi aire/.test(t) && !/El reto del día/.test(t), 'lista', '«Todo lo que incluye» sin «a mi aire» ni «el reto del día»')
   debe(/Invita a un amigo/.test(t) && /Gana 200 EXP cuando haga su primer viaje con HOY/.test(t), 'invita', '«Todo lo que incluye» con «Invita a un amigo · Gana 200 EXP cuando haga su primer viaje con HOY»')
-  const marcas = await a.evaluar("Array.from(document.querySelectorAll('[data-pelicula] [data-marca]')).map((m) => m.textContent)")
+  const marcas = await a.evaluar("Array.from(document.querySelectorAll('[data-lista-del-pase] [data-marca]')).map((m) => m.textContent)")
   debe(marcas.includes('HOY'), 'invita', '«HOY» sale marcado (Marca) en «Todo lo que incluye»')
   const deLista = await a.evaluar("import('/src/lib/listaAjustada.ts').then((m) => m.LISTA_DEL_PASE.flatMap((g) => g.items.map((i) => i.titulo)))")
   debe(!deLista.some((x) => /a mi aire|reto del día/.test(x)) && deLista.includes('Invita a un amigo') && deLista.includes('Tu siguiente parada'), 'lista', 'la lista ajustada (la de HOY y la de la hoja) sin las dos filas y con la fila nueva')

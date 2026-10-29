@@ -115,7 +115,7 @@ const campana = (a) =>
   ev(a, `(() => ({
     etiqueta: document.querySelector('button[aria-label^="Avisos"]')?.getAttribute('aria-label'),
     // Los avisos que no son de fechas y nunca se leen (el «Cambios sin guardar» que aparece solo, sin nube, cuando le toca): no dependen de las fechas, así que no cuentan en lo que se prueba.
-    fijos: Array.from(document.querySelectorAll('#notices-heading ~ div > div:not([data-aviso-fecha])')).filter((e) => /^(ERROR|AVISO)/i.test(e.innerText.trim())).length,
+    fijos: document.body.innerText.indexOf('Cambios sin guardar') >= 0 ? 1 : 0,
     cuenta: Number(/\\((\\d+) nuevos\\)/.exec(document.querySelector('button[aria-label^="Avisos"]')?.getAttribute('aria-label') ?? '')?.[1] ?? 0),
     otros: Array.from(document.querySelectorAll('#notices-heading ~ div > div:not([data-aviso-fecha])')).map((e) => e.innerText.replace(/\\s+/g, ' ').slice(0, 90)),
     filas: Array.from(document.querySelectorAll('[data-aviso-fecha]')).map((e) => ({ id: e.getAttribute('data-aviso-fecha'), estado: e.getAttribute('data-aviso-fecha-estado'), frase: e.querySelector('[data-aviso-fecha-frase]')?.textContent })),

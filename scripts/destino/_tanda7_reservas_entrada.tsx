@@ -2,7 +2,7 @@
 // el aviso de cambio de fechas, «Deshacer» al quitar el vuelo, el billete y la tarjeta de la gratis.
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { LlegadaYVuelta, HojaHoraLlegada } from '../../src/components/route/reservas/LlegadaYVuelta'
+import { LlegadaYVuelta } from '../../src/components/route/reservas/LlegadaYVuelta'
 import { AlojamientoReservas } from '../../src/components/route/reservas/AlojamientoReservas'
 import { BotonComoLlegarAlojamiento } from '../../src/components/route/alojamiento/BotonComoLlegarAlojamiento'
 import { BilleteDeVuelo } from '../../src/components/route/dayDetail/BilleteDeVuelo'
@@ -28,7 +28,7 @@ function AvisosProbe() {
 }
 
 export {
-  createElement, renderToStaticMarkup, LlegadaYVuelta, HojaHoraLlegada, AlojamientoReservas, BotonComoLlegarAlojamiento, BilleteDeVuelo, TarjetaTuUltimoDia, DayDetailPanel, ReservasPanel, useRouteStore, useAddFlowStore, quitarConDeshacer,
+  createElement, renderToStaticMarkup, LlegadaYVuelta, AlojamientoReservas, BotonComoLlegarAlojamiento, BilleteDeVuelo, TarjetaTuUltimoDia, DayDetailPanel, ReservasPanel, useRouteStore, useAddFlowStore, quitarConDeshacer,
   AvisosProbe, fetchDestinationExcursions, fetchArrivalInfo, medioOf, puntoPorDefecto, puntoDeLaMitad, legOf, billeteDe, codigoDeUnPunto, enlaceComoLlegarAlojamiento, direccionDelAlojamiento, camposDelViajero, vueltaCambiada, sellarVueltaAlAbrir,
   rehacerPorCambioDeVuelo, pagoActivo,
 }

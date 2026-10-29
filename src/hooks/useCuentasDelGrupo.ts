@@ -12,6 +12,8 @@ import { useLoSuyoDelViaje } from './useLoSuyoDelViaje'
 import { useLoSuyo } from '../store/useLoSuyo'
 import { idsConLoSuyo } from '../lib/loSuyo'
 import { nombreVisible } from '../lib/nombrePersona'
+import { resolverModo } from '../lib/modoCuentas'
+import { cuentaDelViaje, entreSinDecir, esFamilia } from '../lib/cuentaDelViaje'
 
 /**
  * LAS CUENTAS DEL GRUPO DEL VIAJE ABIERTO (Tanda 10N2). Solo en un viaje compartido (`compartido`): los gastos [Para todos] aceptados y las entradas del dueño reservadas para varios, repartidos entre los marcados.
@@ -58,6 +60,9 @@ export function useCuentasDelGrupo(): CuentasDelGrupo {
 
   return useMemo(() => {
     const ids = gv.personas.map((p) => p.id)
+    const modo = resolverModo(route, ids.length).modo
+    // (Tanda 10N10 §5a) Lo apuntado en la cuenta conjunta de cuando eran dos se queda entre esos dos al pasar a la del grupo.
+    const porDefecto = entreSinDecir(route, cuentaDelViaje(ids.length, esFamilia(route)), ids)
     const conNombre = [
       ...gv.personas.map((p) => ({ id: p.id, nombre: nombreVisible(p.nombre) })),
       ...exMiembros.filter((e) => !ids.includes(e.id)).map((e) => ({ id: e.id, nombre: nombreVisible(e.nombre) })),
@@ -70,7 +75,7 @@ export function useCuentasDelGrupo(): CuentasDelGrupo {
       // (Tanda 10N5 §6c) Los vuelos del administrador ahora SÍ entran (cambia lo de la 10N3): se reparten entre para quién son, sin quien ha puesto el suyo.
       else if (l.abrir.tipo === 'llegada' || l.abrir.tipo === 'vuelta') entran.push({ clave: l.id, nombre: l.nombre, precio: l.precio, tipo: 'vuelo' })
     }
-    const entradaAportaciones = { gastos: gv.gastos, reservas: reservations, adminId: admin, todos: ids, cambio, entran, entreDe: route?.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), entradasDeInvitados: entradasInv }
+    const entradaAportaciones = { gastos: gv.gastos, reservas: reservations, adminId: admin, todos: ids, porDefecto, modo, pagadoPorDe: route?.pagadoPorDe ?? null, cambio, entran, entreDe: route?.cuentasEntre ?? null, conVueloPropio: idsConLoSuyo(grupoLoSuyo, 'vuelo'), conAlojamientoPropio: idsConLoSuyo(grupoLoSuyo, 'alojamiento'), entradasDeInvitados: entradasInv }
     const aportaciones = aportacionesDelViaje({ ...entradaAportaciones, moneda })
     const sinCambio = aportacionesSinCambio(entradaAportaciones)
     const cuentas = compartidoVacio(gv.compartido) ?? calcularCuentas({ aportaciones, pagos, personas: conNombre, todos: ids })
@@ -80,7 +85,7 @@ export function useCuentasDelGrupo(): CuentasDelGrupo {
       return viva ? { ...viva, salio: false } : ({ id: c.id, nombre: c.nombre || null, foto: null, esAdmin: false, salio: true } as Persona & { salio: boolean })
     })
     return { compartido: gv.compartido, moneda, texto: (c: number) => formatearCentimosBase(c, { codigo: vista.moneda, cambio: vista.cambio }), monedaVista: vista.moneda, aproximado: vista.moneda !== MONEDA_BASE && Boolean(vista.cambio?.tasas?.[vista.moneda]), sinCambio, cuentas, personas, puedeMarcarPagos: cuentasOk, nombreDe: (id: string) => cuentas.personas.find((p) => p.id === id)?.nombre || gv.nombreDe(id), aportaciones, duplicados: posiblesDuplicados(aportaciones) }
-  }, [gv, reservations, admin, moneda, cambio, pagos, exMiembros, cuentasOk, presupuesto, route?.cuentasEntre, grupoLoSuyo, entradasInv, vista.moneda, vista.cambio])
+  }, [gv, reservations, admin, moneda, cambio, pagos, exMiembros, cuentasOk, presupuesto, route?.cuentasEntre, route?.cuentaConjuntaCon, route?.answers?.companion, grupoLoSuyo, entradasInv, vista.moneda, vista.cambio])
 }
 
 /** Sin viaje compartido no se calcula nada. */

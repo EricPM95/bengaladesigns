@@ -159,7 +159,6 @@ export function AddStopScreen({
   anchorCoordinates,
   dayMarkers,
   dayLines = [],
-  onFreeTour,
   initialQuery,
   onPick,
   onClose,
@@ -349,11 +348,9 @@ export function AddStopScreen({
             <p className="truncate text-body font-semibold text-text">Añadir parada — {diaCorto(route, dayNumber)}</p>
             <p className="truncate text-caption text-text-muted">{title}</p>
           </div>
-          {onFreeTour ? (
-            <button type="button" onClick={onFreeTour} className="shrink-0 rounded-full border border-border px-3 py-1.5 text-caption font-semibold text-text hover:bg-bg-hover">Free Tour</button>
-          ) : (
-            <span className="h-9 w-9 shrink-0" aria-hidden="true" />
-          )}
+          {/* 10N10: fuera el botón «Free Tour» (es una parada más, en «Entradas»). */}
+          <span className="h-9 w-9 shrink-0" aria-hidden="true" />
+
         </div>
 
         {/* Buscador fijo */}

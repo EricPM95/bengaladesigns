@@ -1,13 +1,14 @@
 import { useState, type ReactNode, type CSSProperties } from 'react'
 import { formatoImporte } from '../../../lib/dinero'
-import { textoDeQuienPago } from '../../../lib/gastosCompartidos'
+import { textoDeQuienPago, type GastoCompartido } from '../../../lib/gastosCompartidos'
 import type { BloquePresupuesto, LineaPresupuesto } from '../../../lib/presupuesto'
 import type { GastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { Icono } from '../../ui/Icono'
 import { HojaAnadirGasto, InicialDePersona } from './HojaAnadirGasto'
-import { useModoCuentas } from '../../../lib/modoCuentas'
+import type { CuentaComun } from './BloqueDinero'
+import { nombresEnFrase } from '../../../lib/gastosCompartidos'
 
 const AZUL_EXTRAS = { fondo: 'oklch(0.55 0.1 220 / .14)', tinta: 'oklch(0.45 0.1 220)' }
 const MONO = "'Geist Mono',monospace"
@@ -20,7 +21,7 @@ const MONO = "'Geist Mono',monospace"
  *   · el que me han rechazado: «Eric prefirió no sumarlo · ahora solo para ti».
  * El que acaban de aceptar se marca en verde un momento. Debajo, [+ Añadir gasto].
  */
-export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: ReactNode; bloque: BloquePresupuesto | null; gv: GastosDelViaje; moneda: string }) {
+export function ExtrasCompartidos({ cabecera, bloque, gv, moneda, pestana = 'comun', cuenta = 'conjunta' }: { cabecera: ReactNode; bloque: BloquePresupuesto | null; gv: GastosDelViaje; moneda: string; pestana?: 'mia' | 'comun'; cuenta?: CuentaComun }) {
   const resaltado = useGastosCompartidos((s) => s.resaltado)
   const quitar = useGastosCompartidos((s) => s.quitar)
   const removeGastoExtra = useRouteStore((s) => s.removeGastoExtra)
@@ -41,7 +42,8 @@ export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: 
   }
   const puedeEditar = (l: LineaPresupuesto) => {
     const c = l.compartido
-    return Boolean(c && c.gastoId && c.vista === 'grupo' && (c.autorId === gv.yoId || gv.puedeDecidir))
+    // (10N10) Tocar cualquier gasto abre su hoja: el mío (de Mi cuenta o del grupo) y, si puedo decidir, los del grupo.
+    return Boolean(c && c.gastoId && (c.autorId === gv.yoId || (c.vista === 'grupo' && gv.puedeDecidir)))
   }
   const quitarLinea = async (l: LineaPresupuesto) => {
     const c = l.compartido
@@ -59,7 +61,7 @@ export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: 
     <div className="flex flex-none flex-col gap-2.5 rounded-[22px] bg-[#FFFDF8] p-3.5" style={{ border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35)' }} data-blk="extras" data-extras-compartidos>
       {cabecera}
       {lineas.map((l) => (
-        <FilaDeGasto key={l.id} linea={l} gv={gv} moneda={moneda} admin={admin} verde={resaltado !== null && l.compartido?.gastoId === resaltado} onQuitar={puedeQuitar(l) ? () => void quitarLinea(l) : undefined} onEditar={puedeEditar(l) ? () => setEditando(l.compartido!.gastoId) : undefined} />
+        <FilaDeGasto key={l.id} linea={l} gasto={todos.find((g) => g.id === l.compartido?.gastoId) ?? null} gv={gv} moneda={moneda} admin={admin} verde={resaltado !== null && l.compartido?.gastoId === resaltado} onQuitar={puedeQuitar(l) ? () => void quitarLinea(l) : undefined} onEditar={puedeEditar(l) ? () => setEditando(l.compartido!.gastoId) : undefined} />
       ))}
       {error && (
         <p role="alert" className="text-[12.5px] text-accent-red">
@@ -70,16 +72,14 @@ export function ExtrasCompartidos({ cabecera, bloque, gv, moneda }: { cabecera: 
         <Icono nombre="anadir" size={16} />
         Añadir gasto
       </button>
-      {hoja && <HojaAnadirGasto gv={gv} moneda={moneda} onClose={() => setHoja(false)} />}
-      {gastoEditando && <HojaAnadirGasto gv={gv} moneda={moneda} editar={gastoEditando} onClose={() => setEditando(null)} />}
+      {hoja && <HojaAnadirGasto gv={gv} moneda={moneda} pestana={pestana} cuenta={cuenta} onClose={() => setHoja(false)} />}
+      {gastoEditando && <HojaAnadirGasto gv={gv} moneda={moneda} pestana={pestana} cuenta={cuenta} editar={gastoEditando} onClose={() => setEditando(null)} />}
     </div>
   )
 }
 
-function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar, onEditar }: { linea: LineaPresupuesto; gv: GastosDelViaje; moneda: string; admin: string; verde: boolean; onQuitar?: () => void; onEditar?: () => void }) {
+function FilaDeGasto({ linea, gasto, gv, moneda, admin, verde, onQuitar, onEditar }: { linea: LineaPresupuesto; gasto: GastoCompartido | null; gv: GastosDelViaje; moneda: string; admin: string; verde: boolean; onQuitar?: () => void; onEditar?: () => void }) {
   const vista = linea.compartido?.vista ?? 'grupo'
-  // (Tanda 10N7) En una cuenta conjunta no hay «quién pagó» ni deudas: el dinero es de los dos.
-  const conjunta = useModoCuentas().modo === 'conjunta'
   const cuenta = vista === 'grupo'
   const quienes = (linea.compartido?.pagadoPor ?? []).map((id) => ({ id, persona: gv.personas.find((p) => p.id === id) }))
   const nombres = quienes.map((q) => gv.nombreDe(q.id))
@@ -104,8 +104,8 @@ function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar, onEditar }: { 
           </span>
         ) : vista === 'grupo' ? (
           <span className="flex items-center gap-1.5 text-[11px] text-text/55">
-            {!conjunta && primera && <InicialDePersona nombre={nombres[0] ?? ''} esAdmin={primera.esAdmin} tam={14} />}
-            {conjunta ? (gv.personas.length > 2 ? 'Para todos' : 'Para los dos') : `${textoDeQuienPago(nombres) || 'Del grupo'} · Para todos`}
+            {primera && <InicialDePersona nombre={nombres[0] ?? ''} esAdmin={primera.esAdmin} tam={14} />}
+            {`${textoDeQuienPago(nombres) || 'Del grupo'} · ${paraQuienTexto(gasto, gv)}`}
           </span>
         ) : (
           <span className="text-[11px] text-text/55">{vista === 'rechazado' ? `${admin} prefirió no sumarlo · ahora solo para ti` : 'Solo para ti'}</span>
@@ -128,4 +128,11 @@ function FilaDeGasto({ linea, gv, moneda, admin, verde, onQuitar, onEditar }: { 
       )}
     </div>
   )
+}
+
+/** «Para todos» / «Para los dos» / «Para Eric y Ana» (el reparto de un gasto del grupo). */
+function paraQuienTexto(gasto: GastoCompartido | null, gv: GastosDelViaje): string {
+  const ids = gasto && gasto.entre && gasto.entre.length > 0 ? gasto.entre : gv.personas.map((p) => p.id)
+  if (ids.length >= gv.personas.length) return gv.personas.length === 2 ? 'Para los dos' : 'Para todos'
+  return `Para ${nombresEnFrase(ids.map((id) => gv.nombreDe(id)))}`
 }

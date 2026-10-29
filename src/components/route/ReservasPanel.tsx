@@ -27,7 +27,6 @@ import { useEntradasDelGrupo, useReservasParaMi } from '../../hooks/useEntradasD
 import { ZonaGris } from './reservas/ZonaGris'
 import { LoDeCadaUnoParaElInvitado, QuienVaEnLoDelAdmin } from './reservas/LoDeCadaUno'
 import { useLoSuyoDelViaje } from '../../hooks/useLoSuyoDelViaje'
-import { claveDelAlojamiento } from '../../lib/loSuyo'
 import { EspacioParaElLapiz } from '../propuesta/BotonDePropuesta'
 
 interface ReservasPanelProps {
@@ -137,13 +136,11 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
         zonas={info.zonasAlojamiento}
         abierto={Boolean(abiertos.llegada)}
         onToggle={() => alternar('llegada')}
-        onAbrir={() => abrir('llegada')}
         mitadAbierta={mitad}
         onMitad={setMitad}
         onCambioDeVuelo={cambioDeVuelo}
         onFechas={abrirFechas}
       />
-      {grupo.esAdmin && grupo.compartido && <QuienVaEnLoDelAdmin route={route} gente={grupo.gente} que="vuelo" hecho={legs.arrival.done || legs.departure.done} claves={['llegada', 'vuelta']} adminId={adminId} />}
     </ZonaGris>
   )
 
@@ -161,12 +158,9 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
           >
             <Icono nombre="cerrar" size={18} />
           </button>
-          <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+          <span className="flex min-w-0 flex-1 flex-col" data-titulo-reservas>
             <span className="font-display" style={{ fontSize: 30, lineHeight: 1 }}>
               Reservas
-            </span>
-            <span className="text-text/55" style={{ font: "500 11px/1.35 'Geist Mono',monospace", letterSpacing: '.04em' }}>
-              {route.origin} → {route.destination} · {rangoDelViaje(route)}
             </span>
           </span>
           {/* (Tanda 10N §2: la cartera, la campana y el perfil están ya en la cabecera de arriba, la misma de todas las pestañas.) */}
@@ -186,7 +180,6 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
                 ) : unDestino ? (
                   <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
                     <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} onCambioDeVuelo={cambioDeVuelo} />
-                    {grupo.esAdmin && grupo.compartido && <QuienVaEnLoDelAdmin route={route} gente={grupo.gente} que="alojamiento" hecho={Object.keys(accommodationSelections).length > 0} claves={[claveDelAlojamiento(route, accommodationSelections) ?? 'aloj-0']} adminId={adminId} />}
                   </ZonaGris>
                 ) : (
                   <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin} className="flex flex-col gap-2.5">

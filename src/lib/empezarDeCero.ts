@@ -60,12 +60,6 @@ export async function empezarDeCero(): Promise<string | null> {
   const r = await llamar<{ ok: boolean; error?: string }>('/api/admin/empezar-de-cero', { cuerpo: { confirmar: true } })
   if (!r?.ok) return r?.error ?? 'No se ha podido empezar de cero. Vuelve a probar.'
   try {
-    // Por si el servidor no pudo quitar la marca de la película de los datos de la persona: se quita también desde aquí, antes de cerrar la sesión.
-    await supabase?.auth.updateUser({ data: { pelicula_pase_vista: null } })
-  } catch {
-    /* ya la ha quitado el servidor, o no hay conexión */
-  }
-  try {
     await supabase?.auth.signOut({ scope: 'local' })
   } catch {
     /* sin sesión que cerrar */

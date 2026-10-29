@@ -60,6 +60,8 @@ export function ponerSonido(activo: boolean) {
 }
 
 let contexto: AudioContext | null = null
+/** Un sonido que no pudo salir porque el audio estaba parado: suena en el siguiente toque si es reciente (menos de 20 s). */
+let pendiente: { momento: string; en: number } | null = null
 let lista: ListaDeSonidos | null = null
 const buffers = new Map<string, AudioBuffer>()
 
@@ -107,9 +109,17 @@ export async function sonar(momento: string): Promise<void> {
   const ctx = contextoDeAudio()
   if (!ctx) return
   try {
-    if (ctx.state === 'suspended') await ctx.resume()
+    // (10N10) No solo 'suspended': en el iPhone, al volver de segundo plano o tras una llamada, el audio queda en 'interrupted' y el sonido se «tocaba» sin salir. Se reanuda (sin esperar para siempre: sin un toque reciente la
+    // reanudación no llega) y, si sigue sin sonar, se deja apuntado para el siguiente toque (prepararAudioAlPrimerToque lo reproduce si es reciente).
+    if (ctx.state !== 'running') {
+      await Promise.race([ctx.resume().catch(() => undefined), new Promise((r) => setTimeout(r, 400))])
+    }
     const buffer = await cargar(momento)
     if (!buffer) return
+    if (ctx.state !== 'running') {
+      pendiente = { momento, en: Date.now() }
+      return
+    }
     const fuente = ctx.createBufferSource()
     fuente.buffer = buffer
     fuente.connect(ctx.destination)
@@ -163,6 +173,11 @@ export function prepararAudioAlPrimerToque() {
       }
       // El sonido del aviso, ya listo.
       if (!buffers.has('aviso')) void cargar('aviso')
+      if (pendiente && Date.now() - pendiente.en < 20_000) {
+        const m = pendiente.momento
+        pendiente = null
+        window.setTimeout(() => void sonar(m), 60)
+      }
     } catch {
       /* sin audio */
     }

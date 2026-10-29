@@ -430,7 +430,7 @@ console.log('3. El código')
   debe(/Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia, el día de prueba y los pases\. La cuenta se queda\. ¿Seguro\?/.test(panel) && /Sí, empezar de cero/.test(panel) && />Cancelar</.test(panel), 'pantalla', 'el diálogo lleva el texto exacto y los dos botones')
   debe(panel.indexOf('<VermeSinPase />') < panel.indexOf('<EmpezarDeCero />') && panel.indexOf('<EmpezarDeCero />') < panel.indexOf('<MisPruebas />'), 'pantalla', 'el botón está junto a «Verme como viajero sin pase»')
   debe(/location\.replace\('\/'\)/.test(cliente) && !/recargarSinApertura|MARCA_SIN_APERTURA/.test(cliente), 'pantalla', 'al acabar vuelve a la raíz SIN la marca de «sin apertura»: sale la apertura como la primera vez')
-  debe(/signOut/.test(cliente) && /pelicula_pase_vista: null/.test(cliente) && /indexedDB/.test(cliente) && /localStorage/.test(cliente) && /sessionStorage/.test(cliente), 'pantalla', 'cierra la sesión y limpia localStorage, sessionStorage, IndexedDB y la marca de la película')
+  debe(/signOut/.test(cliente) && /indexedDB/.test(cliente) && /localStorage/.test(cliente) && /sessionStorage/.test(cliente), 'pantalla', 'cierra la sesión y limpia localStorage, sessionStorage, IndexedDB')
 }
 
 /* ─────────────────────────── 4. La pantalla ─────────────────────────── */
@@ -464,7 +464,7 @@ if (!hayDev) {
   }
   // El administrador
   const a = await abrirPanel(
-    "if (window.name !== 'sembrado10j') try { window.name = 'sembrado10j'; localStorage.setItem('trazo:pelicula-pase-vista', '1'); localStorage.setItem('trazo:logrosDemo:basura', 'x'); localStorage.setItem('route-planner-algo', 'y'); sessionStorage.setItem('trazo:otra', 'z'); sessionStorage.setItem('trazo:cuentas', 'on'); indexedDB.open('base-de-prueba-10j', 1) } catch (e) {}",
+    "if (window.name !== 'sembrado10j') try { window.name = 'sembrado10j'; localStorage.setItem('trazo:marca-de-prueba-10j', '1'); localStorage.setItem('trazo:logrosDemo:basura', 'x'); localStorage.setItem('route-planner-algo', 'y'); sessionStorage.setItem('trazo:otra', 'z'); sessionStorage.setItem('trazo:cuentas', 'on'); indexedDB.open('base-de-prueba-10j', 1) } catch (e) {}",
   )
   debe((await a.evaluar("Boolean(document.querySelector('[data-empezar-de-cero-boton]'))")) === true, 'pantalla', 'el administrador ve [Empezar de cero]')
   const mismaFila = await a.evaluar("(() => { const v = document.querySelector('[data-ver-sin-pase]'); const e = document.querySelector('[data-empezar-de-cero]'); return v && e && v.nextElementSibling === e })()")
@@ -477,7 +477,7 @@ if (!hayDev) {
   await a.captura(path.join(SALIDA, 'j10_dialogo.jpg'))
   await a.evaluar("document.querySelector('[data-empezar-de-cero-no]').click()")
   await esp(400)
-  debe((await a.evaluar("!document.querySelector('[data-empezar-de-cero-dialogo]') && Boolean(document.querySelector('[data-empezar-de-cero-boton]')) && localStorage.getItem('trazo:pelicula-pase-vista') === '1'")) === true, 'pantalla', '[Cancelar] cierra el diálogo y no se borra nada del móvil')
+  debe((await a.evaluar("!document.querySelector('[data-empezar-de-cero-dialogo]') && Boolean(document.querySelector('[data-empezar-de-cero-boton]')) && localStorage.getItem('trazo:marca-de-prueba-10j') === '1'")) === true, 'pantalla', '[Cancelar] cierra el diálogo y no se borra nada del móvil')
   await a.evaluar("document.querySelector('[data-empezar-de-cero-boton]').click()")
   await esp(300)
   await a.evaluar("document.querySelector('[data-empezar-de-cero-si]').click()")
@@ -493,13 +493,13 @@ if (!hayDev) {
   const estado = await a.evaluar(`(async () => ({
     local: Object.keys(localStorage).filter((k) => !['trazo:cuentas', 'trazo:logros', 'trazo:civitatis', 'trazo:version'].includes(k)),
     sesion: Object.keys(sessionStorage).filter((k) => !['trazo:cuentas', 'trazo:logros', 'trazo:civitatis', 'trazo:version'].includes(k)),
-    peli: localStorage.getItem('trazo:pelicula-pase-vista'),
+    peli: localStorage.getItem('trazo:marca-de-prueba-10j'),
     bases: (await indexedDB.databases()).map((b) => b.name).filter((n) => n === 'base-de-prueba-10j'),
     apertura: Boolean(document.getElementById('apertura')),
     sinApertura: sessionStorage.getItem('jutrip:sin-apertura'),
   }))()`)
-  const sobran = estado.local.filter((k) => !/^(sb-|trazo:)/.test(k) || k === 'trazo:pelicula-pase-vista' || k.startsWith('trazo:logrosDemo'))
-  debe(estado.peli === null && !estado.local.includes('route-planner-algo') && !estado.local.includes('trazo:logrosDemo:basura') && !estado.sesion.includes('trazo:otra'), 'pantalla', `se borra lo del móvil, incluida la marca de la película (quedan: ${JSON.stringify(estado.local.concat(estado.sesion))})`)
+  const sobran = estado.local.filter((k) => !/^(sb-|trazo:)/.test(k) || k === 'trazo:marca-de-prueba-10j' || k.startsWith('trazo:logrosDemo'))
+  debe(estado.peli === null && !estado.local.includes('route-planner-algo') && !estado.local.includes('trazo:logrosDemo:basura') && !estado.sesion.includes('trazo:otra'), 'pantalla', `se borra lo del móvil, incluida una marca suelta de trazo: (quedan: ${JSON.stringify(estado.local.concat(estado.sesion))})`)
   debe(estado.bases.length === 0, 'pantalla', 'y las bases de IndexedDB de la app')
   debe(estado.sinApertura === null, 'pantalla', 'sin la marca de «sin apertura»: la apertura sale como la primera vez')
   void sobran

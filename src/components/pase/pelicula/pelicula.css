@@ -9,13 +9,14 @@
 @font-face { font-family: 'Instrument Serif'; font-style: italic; font-weight: 400; font-display: block; src: url('../../../assets/fonts/instrument-serif-latin-ext-400-italic.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 @font-face { font-family: 'Italiana'; font-style: normal; font-weight: 400; font-display: block; src: url('../../../assets/fonts/italiana-latin-400-normal.woff2') format('woff2'); }
 
-/* La película ocupa la pantalla: el móvil de Design (390 x 844) se escala para caber, sin el marco ni la sombra con que Design la enseña en el escritorio. */
-[data-pelicula] { position: fixed; inset: 0; z-index: 95; background: #14161c; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: manipulation; }
-[data-pelicula] .pfr { border-radius: 0 !important; box-shadow: none !important; }
-[data-pelicula] .sc-host { display: block; }
+/* (10N10, 8b: arreglo del agente E: el CSS seguía en [data-pelicula] y la lista no era fija a pantalla completa; antes la película
+   marcaba data-montada para no repetir la animación: ahora la lista sale SIEMPRE montada) La lista ocupa la pantalla: el móvil de Design (390 x 844) se escala para caber, sin el marco ni la sombra con que Design la enseña en el escritorio. */
+[data-lista-del-pase] { position: fixed; inset: 0; z-index: 95; background: #14161c; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: manipulation; }
+[data-lista-del-pase] .pfr { border-radius: 0 !important; box-shadow: none !important; }
+[data-lista-del-pase] .sc-host { display: block; }
 
 /* Tanda 10P: la película a todo el ancho. El escenario se coloca con position:absolute (lo hace PeliculaPase) y el fondo es el de la película. */
-[data-pelicula] { background: radial-gradient(ellipse 90% 60% at 50% 0%, #2a3250, #14161c 70%) #14161c; display: block; touch-action: pan-y; }
-[data-pelicula] .pfr { user-select: none; }
+[data-lista-del-pase] { background: radial-gradient(ellipse 90% 60% at 50% 0%, #2a3250, #14161c 70%) #14161c; display: block; touch-action: pan-y; }
+[data-lista-del-pase] .pfr { user-select: none; }
 /* Ya vista: el final sale MONTADO, sin repetir las animaciones de entrada (cada una acaba en su estado final al instante). */
-[data-pelicula][data-montada='1'] .pfr *, [data-pelicula][data-montada='1'] .pfr { animation-duration: 0.001s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }
+[data-lista-del-pase] .pfr *, [data-lista-del-pase] .pfr { animation-duration: 0.001s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }

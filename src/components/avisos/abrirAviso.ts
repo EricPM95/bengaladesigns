@@ -3,7 +3,6 @@ import { useLogrosPantallas } from '../logros/pantallas/useLogrosPantallas'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { usePagoStore } from '../../store/usePagoStore'
 import { usePresupuestoUi } from '../../store/usePresupuestoUi'
-import { useModoCuentasUi } from '../../store/useModoCuentasUi'
 import { useR2Store } from '../../store/useR2Store'
 import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useRouteStore } from '../../store/useRouteStore'
@@ -66,7 +65,7 @@ export async function abrirAviso(aviso: AvisoDeCuenta): Promise<string | null> {
   if (aviso.tipo === 'gasto_resuelto' || aviso.tipo === 'pago_marcado') {
     void avisos.marcarLeidos([aviso.id])
     avisos.cerrar()
-    usePresupuestoUi.getState().abrir()
+    usePresupuestoUi.getState().abrir('comun')
     return null
   }
   // (Tanda 10N §10) «Eric ha cambiado el viaje»: al tocarlo, a la ruta ya cambiada. «Ya no formas parte…» y el cambio de permiso solo se dan por leídos.
@@ -95,25 +94,6 @@ export async function abrirAviso(aviso: AvisoDeCuenta): Promise<string | null> {
       return null
     }
     useRouteStore.getState().setMode('route')
-    return null
-  }
-  // (Tanda 10N7) «Ana se ha unido a tu viaje. ¿Cómo lleváis las cuentas?»: abre esa misma hoja. «Eric ha cambiado las cuentas…»: al presupuesto, ya cambiado.
-  if (aviso.tipo === 'unido' && p.pregunta_cuentas === true) {
-    void avisos.marcarLeidos([aviso.id])
-    avisos.cerrar()
-    const tripId = String(p.trip_id ?? '')
-    if (tripId && useSyncStore.getState().activeTripId !== tripId) {
-      const { abrirViajeGuardado } = await import('../../lib/abrirViaje')
-      if (!abrirViajeGuardado(tripId)) return 'No encontramos ese viaje.'
-    }
-    usePresupuestoUi.getState().abrir()
-    useModoCuentasUi.getState().abrirEleccion()
-    return null
-  }
-  if (aviso.tipo === 'cuentas_modo') {
-    void avisos.marcarLeidos([aviso.id])
-    avisos.cerrar()
-    usePresupuestoUi.getState().abrir()
     return null
   }
   if (aviso.tipo === 'd10') {

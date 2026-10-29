@@ -1,7 +1,7 @@
 // Entrada que empaqueta la prueba de la Tanda 6y5, parte de las pantallas (scripts/destino/pruebaFase6y5_pantallas.mjs): pinta en el servidor las piezas que cambian y trae el almacén de verdad.
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { LlegadaYVuelta, HojaHoraLlegada } from '../../src/components/route/reservas/LlegadaYVuelta'
+import { LlegadaYVuelta } from '../../src/components/route/reservas/LlegadaYVuelta'
 import { UtilParaElViaje } from '../../src/components/route/reservas/UtilParaElViaje'
 import { ExcursionesReservas } from '../../src/components/route/reservas/ExcursionesReservas'
 import { DatesCalendarBody } from '../../src/components/route/DatesCalendarModal'
@@ -19,6 +19,6 @@ import { tocarDiaDelRango, rangoCompleto } from '../../src/lib/dateRange'
 import { cifrasDelPerfil, resumenDeViaje } from '../../src/lib/viajesPerfil'
 
 export {
-  createElement, renderToStaticMarkup, LlegadaYVuelta, HojaHoraLlegada, UtilParaElViaje, ExcursionesReservas, DatesCalendarBody, TrazoCalendar, TarjetaDeViaje, DayList, stopFromPlace, useRouteStore,
+  createElement, renderToStaticMarkup, LlegadaYVuelta, UtilParaElViaje, ExcursionesReservas, DatesCalendarBody, TrazoCalendar, TarjetaDeViaje, DayList, stopFromPlace, useRouteStore,
   useDatesCalendarStore, fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, legOf, legLine, legWord, tocarDiaDelRango, rangoCompleto, cifrasDelPerfil, resumenDeViaje,
 }

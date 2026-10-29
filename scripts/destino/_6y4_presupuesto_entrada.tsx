@@ -7,7 +7,7 @@ import { PantallaPresupuesto } from '../../src/components/route/presupuesto/Pant
 import { UtilParaElViaje } from '../../src/components/route/reservas/UtilParaElViaje'
 import { AccommodationBlock } from '../../src/components/route/dayDetail/AccommodationBlock'
 import { HojaPrecio } from '../../src/components/route/reservas/HojaPrecio'
-import { HojaHoraLlegada, LlegadaYVuelta } from '../../src/components/route/reservas/LlegadaYVuelta'
+import { LlegadaYVuelta } from '../../src/components/route/reservas/LlegadaYVuelta'
 import { TransportBookingModal } from '../../src/components/route/reservas/TransportBookingModal'
 import { PlaceExplorerScreen, stopFromPlace } from '../../src/components/route/placeExplorer/PlaceExplorerScreen'
 import { useRouteStore } from '../../src/store/useRouteStore'
@@ -25,7 +25,7 @@ import { pagoActivo } from '../../src/lib/pago'
 import * as PrecioVuela from '../../src/lib/precioVuela'
 
 export {
-  createElement, renderToStaticMarkup, DayList, PantallaPresupuesto, UtilParaElViaje, AccommodationBlock, HojaPrecio, HojaHoraLlegada, LlegadaYVuelta, TransportBookingModal, PlaceExplorerScreen, stopFromPlace,
+  createElement, renderToStaticMarkup, DayList, PantallaPresupuesto, UtilParaElViaje, AccommodationBlock, HojaPrecio, LlegadaYVuelta, TransportBookingModal, PlaceExplorerScreen, stopFromPlace,
   useRouteStore, usePresupuestoUi, fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, legOf, legLine, barTextOf, construirPresupuesto, alojamientoCubierto, nombreDeMoneda,
   monedaConNombre, monedaDelViajero, pagoActivo, PrecioVuela, ponerMonedaLocal,
 }

@@ -14,12 +14,12 @@ let vistas = new Set<string>()
 let suscrito = false
 let miId: string | null = null
 
-/** Igual que `modo_cuentas_del_viaje` de la base de datos (0055): conjunta si se eligió así o, sin elegir, pareja o familia. */
-export function esCuentaConjuntaDelServidor(route: Pick<Route, 'answers' | 'modoCuentas'> | null | undefined): boolean {
-  if (route?.modoCuentas === 'conjunta') return true
-  if (route?.modoCuentas === 'cada_uno') return false
+/** Igual que `modo_cuentas_del_viaje` de la base de datos (0067, Tanda 10N10 §5a): familia o dos personas = conjunta; tres o más que no son familia, no. Sin `cuentasPersonas` en la ruta, vale pareja o familia (como antes de aplicar la 0067). `modoCuentas` (el de la 10N7) ya no cuenta. */
+export function esCuentaConjuntaDelServidor(route: Pick<Route, 'answers' | 'cuentasPersonas'> | null | undefined): boolean {
   const c = route?.answers?.companion
-  return c === 'couple' || c === 'family'
+  if (c === 'family') return true
+  if (typeof route?.cuentasPersonas === 'number') return route.cuentasPersonas === 2
+  return c === 'couple'
 }
 
 function sincronizar() {

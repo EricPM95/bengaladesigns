@@ -139,8 +139,7 @@ async function conViaje(version) {
   const a = await abrirApp('http://localhost:5173', { ruta: `/?cuentas=off&logros=on&logrosDemo=1&version=${version}` })
   for (let i = 0; i < 120 && !(await a.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await a.esp(500)
   for (let i = 0; i < 60 && !(await a.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await a.esp(500)
-  // (Tanda 10I: abrirPase() abre la película del pase; con la película ya vista sale directa al final, con su ✕, y así la prueba la puede cerrar.)
-  await a.evaluar("(() => { localStorage.setItem('trazo:pelicula-pase-vista', '1'); return true })()")
+  // (Tanda 10N10, 8b: abrirPase() abre directo la lista del pase, con su ✕, y así la prueba la puede cerrar.)
   await a.evaluar('window.__rutaPrueba().then(() => true)')
   for (let i = 0; i < 60 && !(await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await a.esp(1000)
   await a.esp(5000)
@@ -156,10 +155,10 @@ const modo = async (a, m) => {
   await a.evaluar(`${store}.then((s) => { s.setActiveDayId(null); s.setMode('${m}'); return true })`)
   await a.esp(2500)
 }
-// «Se abre el pase» = se abre la película del pase (Tanda 10I; antes, la hoja de compra suelta). Se espera a que se baje.
+// «Se abre el pase» = se abre la lista del pase (Tanda 10N10, 8b; antes, la película). Se espera a que se baje.
 const hayPago = async (a) => {
   for (let i = 0; i < 12; i++) {
-    if (await a.evaluar("Boolean(document.querySelector('[data-pelicula]'))")) return true
+    if (await a.evaluar("Boolean(document.querySelector('[data-lista-del-pase]'))")) return true
     await a.esp(500)
   }
   return false
@@ -193,7 +192,7 @@ const cerrarPago = async (a) => {
   await g.esp(1500)
   await g.evaluar("(() => { const b = Array.from(document.querySelectorAll('[data-blk=\"llegada\"], [data-blk=\"llegada\"] *')).find((x) => /Llegada y vuelta/.test(x.textContent || '') && x.tagName === 'SPAN'); if (b) b.click(); return true })()")
   await g.esp(1500)
-  debe(await g.evaluar("Boolean(document.querySelector('[data-candado=\"llegada-ajuste\"]'))"), 'gratis', 'RESERVAS: con el vuelo guardado, debajo sale el candado «Con el pase, ajustamos tu primer y tu último día a tu vuelo»')
+  debe(!(await g.evaluar("Boolean(document.querySelector('[data-candado=\"llegada-ajuste\"]'))")), 'gratis', '(10N10 §7b) RESERVAS: con el vuelo guardado ya NO sale debajo la caja «Tu primer y tu último día» (la caja del pase queda en el alojamiento)')
   const hora = await g.evaluar(`${store}.then((s) => s.route.arrivalFlightTime)`)
   debe(hora === '15:40', 'gratis', 'el vuelo queda guardado gratis')
   await g.esp(4000)
@@ -203,7 +202,7 @@ const cerrarPago = async (a) => {
   await g.evaluar("(() => { const b = document.querySelector('[data-blk=\"aloj\"] div'); if (b) b.click(); return true })()")
   await g.esp(1200)
   debe(await g.evaluar("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-candado=\"alojamiento-zona\"]'))"), 'gratis', 'RESERVAS: la zona del alojamiento sale cerrada, con «Con el pase, cada día empieza cerca de donde duermes»')
-  await g.evaluar("(() => { const c = document.querySelector('[data-candado=\"llegada-ajuste\"]'); if (c) c.click(); return true })()")
+  await g.evaluar("(() => { const c = document.querySelector('[data-candado=\"alojamiento-zona\"]'); if (c) c.click(); return true })()")
   await g.esp(1200)
   debe(await hayPago(g), 'gratis', 'al tocar un candado se abre el pase')
   await cerrarPago(g)

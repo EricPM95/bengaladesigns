@@ -75,7 +75,7 @@ const medidas = () =>
       pegadoAbajo: Boolean(pr && br && pr.bottom - br.bottom < 40 && pr.bottom - br.bottom >= 0),
       columnas: d?.querySelectorAll('[data-rueda-columna]').length ?? 0,
       listboxHoras: d?.querySelectorAll('[role="listbox"]').length ?? 0,
-      precio: /precio|€/i.test(d?.innerText ?? ''),
+      precio: /Cuánto ha costado/i.test(d?.innerText ?? ""),
       resumenes: Array.from(d?.querySelectorAll('[data-mi-vuelo-resumen]') ?? []).map((x) => x.textContent.trim()),
       pestanas: Array.from(d?.querySelectorAll('[role=tab]') ?? []).map((x) => x.textContent.trim()),
       horaMostrada: d?.querySelector('[data-mi-vuelo-hora]')?.textContent.trim() ?? null,
@@ -115,8 +115,11 @@ try {
   debe(m.botones.includes('Guardar el vuelo'), '2', `la hoja del administrador trae «Guardar el vuelo» (${m.botones.join(' | ').slice(0, 140)})`)
   debe(!m.botones.some((b) => /^Guardar$/.test(b)), '2', 'y ningún [Guardar] suelto en la rueda de la hora')
   debe(m.botones.filter((b) => /^Guardar/.test(b)).length === 1, '2', 'un solo botón de guardar')
-  debe(m.columnas === 2 && m.listboxHoras === 2, '3a', `la rueda es de dos columnas, hora y minutos (${m.columnas})`)
-  debe(!m.precio, '3a', 'sin campo de precio en la hoja del vuelo')
+  await clic('[data-mi-vuelo-campo-hora]')
+  await a.esp(500)
+  m = await medidas()
+  debe(m.columnas === 2 && m.listboxHoras === 2, '3a', `(10N10) al tocar la hora, la rueda es de dos columnas (${m.columnas})`)
+  debe(m.precio, '3a', '(10N10) la hoja del vuelo lleva «¿Cuánto ha costado en total?» debajo de las pestañas')
   debe(m.botonEnPie && m.botonFueraDelScroll && m.pegadoAbajo, '3a', `el botón va fijo, pegado al pie de la hoja y fuera del scroll (${JSON.stringify({ e: m.botonEnPie, f: m.botonFueraDelScroll, p: m.pegadoAbajo })})`)
   debe(m.resumenes.length === 0, '3a', 'sin resumen en las pestañas mientras no se haya tocado nada')
   debe((await rutaDe()).ida === null, '2', 'abrir la hoja no guarda nada')
@@ -206,9 +209,11 @@ try {
   await a.esp(1000)
   m = await medidas()
   debe(m.botones.includes('Guardar el vuelo') && !m.botones.includes('Guardar'), '3a', 'la hoja del invitado: un solo «Guardar el vuelo»')
-  debe(m.columnas === 2 && !m.precio, '3a', 'rueda de dos columnas y sin precio también en la del invitado')
+  debe(m.precio, '3a', '(10N10) y con precio también en la del invitado')
   debe(m.botonEnPie && m.pegadoAbajo, '3a', 'y con el botón pegado al pie')
   await clic('[data-mi-vuelo-lado="ida"]')
+  await clic('[data-mi-vuelo-campo-hora]')
+  await a.esp(400)
   await rueda('Horas', '09')
   await a.esp(600)
   await clic('[data-mi-vuelo-lado="vuelta"]')

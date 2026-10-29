@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { llamar, logrosActivos } from './logros'
-import { fijarPaseDesconocido, fijarServidorDiceSinPase } from './pago'
+import { fijarPaseDeLaCache, fijarPaseDesconocido, fijarServidorDiceSinPase } from './pago'
 import { useSyncStore } from '../store/useSyncStore'
 import { useLogrosStore } from '../store/useLogrosStore'
 import type { PruebaDelPase } from './diaDePrueba'
@@ -26,6 +26,33 @@ export interface EstadoPase {
 const ABIERTO: EstadoPase = { cobro: false, conPase: false, puede: true, pruebaGastada: false, sabido: true }
 const DESCONOCIDO: EstadoPase = { cobro: false, conPase: false, puede: true, pruebaGastada: false, sabido: false }
 const CLAVE = 'trazo:pase'
+
+/** (Tanda 10N10 §3a) Lo último que dijo el servidor del pase de cada viaje, guardado en el móvil, para pintar la pastilla al momento y confirmarla después. */
+const claveCache = (tripId: string) => `trazo:pase:ultimo:${tripId}`
+function leerCache(tripId: string | null): EstadoPase | null {
+  if (!tripId) return null
+  try {
+    const t = window.localStorage.getItem(claveCache(tripId))
+    if (!t) return null
+    const e = JSON.parse(t) as EstadoPase
+    return e && typeof e.cobro === 'boolean' && typeof e.conPase === 'boolean' ? { ...e, sabido: true } : null
+  } catch {
+    return null
+  }
+}
+function guardarCache(tripId: string, e: EstadoPase): void {
+  try {
+    window.localStorage.setItem(claveCache(tripId), JSON.stringify(e))
+  } catch {
+    /* sin almacenamiento: se pinta al llegar la respuesta, como siempre */
+  }
+}
+/** Pone el estado del pase pendiente de este viaje: si hay uno guardado, lo pinta al momento; si no, sin pintar. */
+function pendienteOCache(tripId: string): void {
+  const c = leerCache(tripId)
+  if (c) fijarPaseDeLaCache(c.cobro && !c.conPase)
+  else fijarPaseDesconocido(tripId)
+}
 
 export function paseForzado(): 'sin' | 'prueba' | 'con' | 'pregunta' | null {
   if (!import.meta.env.DEV) return null
@@ -57,7 +84,7 @@ interface RespuestaEstado {
   const mirar = (tripId: string | null) => {
     if (tripId === visto) return
     visto = tripId
-    if (tripId && !paseForzado() && logrosActivos()) fijarPaseDesconocido(tripId)
+    if (tripId && !paseForzado() && logrosActivos()) pendienteOCache(tripId)
   }
   mirar(useSyncStore.getState().activeTripId)
   useSyncStore.subscribe((st) => mirar(st.activeTripId))
@@ -66,7 +93,7 @@ interface RespuestaEstado {
 export function usePaseEstado(tripId: string | null): EstadoPase {
   const forzado = paseForzado()
   // (Tanda 10N4 §1) Antes arrancaba en ABIERTO («cobro apagado, todo abierto») y la pastilla salía «comprada» hasta que llegaba la respuesta. Ahora, si hay que preguntar al servidor, arranca en DESCONOCIDO.
-  const [real, setReal] = useState<EstadoPase>(() => (!forzado && tripId && logrosActivos() ? DESCONOCIDO : ABIERTO))
+  const [real, setReal] = useState<EstadoPase>(() => (!forzado && tripId && logrosActivos() ? (leerCache(tripId) ?? DESCONOCIDO) : ABIERTO))
   useEffect(() => {
     if (forzado || !tripId || !logrosActivos()) return undefined
     let vivo = true
@@ -79,7 +106,9 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
         return
       }
       fijarServidorDiceSinPase(r.cobro && r.pases.length === 0, tripId)
-      setReal({ cobro: r.cobro, conPase: r.pases.length > 0, puede: !r.cobro || r.hoy.puede, pruebaGastada: r.prueba.ya_usada, sabido: true, prueba: { estado: r.prueba.estado ?? null, tripId: r.prueba.trip_id ?? null, fecha: r.prueba.fecha ?? null } })
+      const nuevo: EstadoPase = { cobro: r.cobro, conPase: r.pases.length > 0, puede: !r.cobro || r.hoy.puede, pruebaGastada: r.prueba.ya_usada, sabido: true, prueba: { estado: r.prueba.estado ?? null, tripId: r.prueba.trip_id ?? null, fecha: r.prueba.fecha ?? null } }
+      guardarCache(tripId, nuevo)
+      setReal(nuevo)
     })
     return () => {
       vivo = false
@@ -88,8 +117,15 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
   // Si el viaje abierto cambia, hasta que conteste el servidor por el nuevo no se sabe.
   useEffect(() => {
     if (!forzado && tripId && logrosActivos()) {
-      fijarPaseDesconocido(tripId)
-      setReal((r) => (r.sabido === false ? r : { ...r, sabido: false }))
+      const c = leerCache(tripId)
+      if (c) {
+        // Con lo último que se sabía de este viaje se pinta al momento; el servidor lo confirma en cuanto contesta.
+        fijarPaseDeLaCache(c.cobro && !c.conPase)
+        setReal((r) => (r.sabido === true && r.conPase === c.conPase && r.cobro === c.cobro ? r : c))
+      } else {
+        fijarPaseDesconocido(tripId)
+        setReal((r) => (r.sabido === false ? r : { ...r, sabido: false }))
+      }
     }
   }, [forzado, tripId])
   // (Tanda 10N5) Con un estado forzado (`?pase=sin|con…`, solo en desarrollo) los candados dicen lo mismo que RUTA y HOY.

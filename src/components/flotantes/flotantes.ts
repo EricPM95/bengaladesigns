@@ -35,7 +35,13 @@ const poner = (e: Estado) => {
 }
 
 function visible(e: Element): boolean {
-  return (e as HTMLElement).getClientRects().length > 0
+  const el = e as HTMLElement
+  if (el.getClientRects().length === 0) return false
+  // (Tanda 10N10 §2a) Una hoja que sigue en el árbol pero no se ve (invisible, transparente o fuera de la pantalla) NO esconde los botones flotantes: antes bastaba con que existiera.
+  const r = el.getBoundingClientRect()
+  if (r.width === 0 || r.height === 0 || r.bottom <= 0 || r.top >= window.innerHeight || r.right <= 0 || r.left >= window.innerWidth) return false
+  const c = getComputedStyle(el)
+  return c.visibility !== 'hidden' && c.display !== 'none' && Number(c.opacity) > 0.02
 }
 
 function medir(): void {

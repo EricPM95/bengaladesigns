@@ -120,7 +120,7 @@ debe(/initialTab="tickets"/.test(codigoFicha) && /StopDetailSheet/.test(codigoFi
   for (const zona of zonas) debe(!t.includes(zona.nombre), '2 zona', `sin zona: salen las fichas de las zonas («${zona.nombre}»)`)
   const prati = pinta({ ...route5, accommodationZone: 'prati' }, 'completa')
   const tp = aTexto(bloqueDe(prati.html, 'aloj'))
-  debe(/✓ Prati/.test(tp) && !/Falta/.test(tp) && !/Buscar alojamiento/.test(tp), '2 zona', `con zona: cerrado, con «✓ Prati» (${plano(tp)})`)
+  debe(/Listo/.test(tp) && /Tu zona/.test(tp) && /Prati/.test(tp) && !/Falta/.test(tp) && !/Buscar alojamiento/.test(tp), '2 zona', `(10N10) con zona: «Listo», «Tu zona · Prati» y [Cambiar] (${plano(tp)})`)
   const nose = pinta({ ...route5, accommodationZone: 'nose' }, 'completa')
   const tn = aTexto(bloqueDe(nose.html, 'aloj'))
   debe(/Falta/.test(tn) && !/✓/.test(tn) && !/Te alojas en/.test(tn), '2 zona', `«Aún no lo sé»: sigue en «Falta» (${plano(tn)})`)
@@ -131,7 +131,7 @@ debe(/initialTab="tickets"/.test(codigoFicha) && /StopDetailSheet/.test(codigoFi
 }
 const codigoAloj = fs.readFileSync('src/components/route/reservas/AlojamientoReservas.tsx', 'utf8')
 debe(/tipo="lista"/.test(codigoAloj) && /Guardar/.test(codigoAloj) && /TimeListWheel/.test(codigoAloj), '2 zona', 'la hoja de la zona no es una rueda con [Guardar]')
-debe(/\{pago && \(/.test(codigoAloj) && /¿En qué zona te alojas\?/.test(codigoAloj) && /Buscar alojamiento/.test(codigoAloj) && /Añadir mi alojamiento/.test(codigoAloj), '2 zona', 'el bloque abierto no lleva la zona (de pago), [Añadir mi alojamiento] y [Buscar alojamiento]')
+debe(/!pago && <Candado/.test(codigoAloj) && /¿En qué zona te alojas\?/.test(codigoAloj) && /Buscar alojamiento/.test(codigoAloj) && /Añadir mi alojamiento/.test(codigoAloj), '2 zona', 'el bloque abierto no lleva la zona (de pago), [Añadir mi alojamiento] y [Buscar alojamiento]')
 
 // ── 3. Excursiones ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 for (const dias of [4, 5]) {

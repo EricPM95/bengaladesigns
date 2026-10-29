@@ -1,6 +1,5 @@
 // La prueba de la Tanda 10N5, agente H3 (el pase): 0.2 los candados sin pintar hasta saber si hay pase (y repintados solos), 0.3 los tres colores de las entradas (RESERVAS, Free Tour, excursiones, DÍAS), 5 la película
-// del pase (todas las escenas de lado a lado, el título pequeño en la línea de [Saltar], ningún texto pisado ni cortado en 390 x 664 y 375 x 667, las rayitas que se tocan, la escena del pasaporte sin el rato parado),
-// 6 [Guardar] solo «Guardar» y 6b la caja pequeña del pase (`Piezas/Pase Estilo` 01) en todos los sitios que piden el pase, lo pequeño bloqueado en azul oscuro con el candado dorado y los textos verdad.
+// del pase —10N10, 8b: la película se quitó; ahora la lista del pase se abre directa, de lado a lado, con su ✕, sin rayitas ni escenas—, 6 [Guardar] solo «Guardar» y 6b la caja pequeña del pase (`Piezas/Pase Estilo` 01) en todos los sitios que piden el pase, lo pequeño bloqueado en azul oscuro con el candado dorado y los textos verdad.
 //   APP_URL=http://localhost:5183 API_URL=http://localhost:8853 node scripts/destino/pruebaTanda10N5_pase.mjs
 // Acaba imprimiendo «N comprobaciones, M fallos» y sale con código 1 si falla alguna. Capturas en docs/dias/capturas_jutrip/10n5_*.jpg.
 import fs from 'node:fs'
@@ -27,7 +26,7 @@ if (toca('codigo')) {
   const estado = leer('src/lib/paseEstado.ts')
   debe((estado.match(/fijarServidorDiceSinPase\([^)]*tripId\)/g) ?? []).length >= 3, 'candados', 'paseEstado avisa SIEMPRE al llegar la respuesta (con pase, sin pase y sin servidor): los candados nunca se quedan esperando')
   debe(/useSyncStore\.subscribe/.test(estado) && /fijarPaseDesconocido/.test(estado), 'candados', 'al abrir un viaje el pase pasa a «pendiente» al instante, sin esperar a que se pinte una pantalla')
-  debe(/usePaseEstado\(useSyncStore/.test(leer('src/components/pase/PeliculaHost.tsx')), 'candados', 'un guardián siempre montado pregunta lo del pase (también sin RUTA ni HOY a la vista)')
+  debe(/usePaseEstado\(useSyncStore/.test(leer('src/components/pase/ListaDelPaseHost.tsx')), 'candados', 'un guardián siempre montado pregunta lo del pase (también sin RUTA ni HOY a la vista)')
   const candado = sinComentarios(leer('src/components/pase/Candado.tsx'))
   debe(/estado !== 'sin'\) return null/.test(candado), 'candados', 'la caja del pase no se pinta ni con pase ni mientras no se sabe')
   debe(/data-caja-pase/.test(candado) && /#1C2230/.test(candado) && /#F3E2B0/.test(candado) && /Instrument Serif/.test(candado), 'caja', 'la caja es la de Pase Estilo 01: azul oscuro, título en la letra de titulares y botón dorado')
@@ -56,11 +55,11 @@ if (toca('codigo')) {
   for (const d of ['src', 'data/pase']) buscar(d, /cada día empieza cerca|Cada día empieza cerca|cerca de donde duermes|Cada día sale desde tu zona/, malos)
   debe(malos.length === 0, 'textos', `ningún texto de la app promete que cada día empieza cerca del alojamiento (${malos.join(', ') || 'ninguno'})`)
   const gen = leer('src/components/pase/pelicula/gen/Pase_Pelicula.ts')
-  debe(!/Cada día empieza cerca/.test(gen) && /Tu ruta se adapta a tu alojamiento/.test(gen), 'textos', 'la película (Design) ya dice «Tu ruta se adapta a tu alojamiento»')
+  debe(!/Cada día empieza cerca/.test(gen) && /Tu ruta se adapta a tu alojamiento/.test(gen), 'textos', 'la pieza de Design (gen) ya dice «Tu ruta se adapta a tu alojamiento»')
   debe(!/Cada día sale desde tu zona/.test(leer('src/lib/listaDelPase.ts')) && /Adaptamos tu ruta a tu alojamiento/.test(leer('src/lib/listaDelPase.ts')), 'textos', 'la lista de lo que incluye dice «Adaptamos tu ruta a tu alojamiento»')
   // [Guardar].
   const hoja = sinComentarios(leer('src/components/route/reservas/AddReservationSheet.tsx'))
-  debe(!/Guardar · /.test(hoja) && /: 'Guardar'\}/.test(hoja), 'guardar', 'el botón de añadir una reserva dice solo «Guardar»')
+  debe(!/Guardar · /.test(hoja) && /Guardar la entrada/.test(hoja), 'guardar', '(10N10) el botón de añadir una reserva dice «Guardar la entrada» (sin «Guardar · …»)')
   debe(!/Guardar · /.test(sinComentarios(leer('src/components/route/reservas/LlegadaYVuelta.tsx'))), 'guardar', 'y el de la hora del vuelo también')
   // Lo pequeño bloqueado.
   debe(/data-bloqueado-pase/.test(leer('src/components/route/ExplorePanel.tsx')) && /grayscale/.test(leer('src/components/route/ExplorePanel.tsx')), 'bloqueado', 'Baños y Fuentes bloqueadas, en azul oscuro con el candado dorado')
@@ -69,10 +68,10 @@ if (toca('codigo')) {
   // Los tres colores.
   debe(/grupo:/.test(leer('src/components/route/reservas/EntradaEdgeTab.tsx')) && /delGrupo/.test(leer('src/components/route/reservas/EntradaCard.tsx')), 'colores', 'el botón de DÍAS y la tarjeta de RESERVAS tienen el tercer color (azul oscuro con dorado)')
   debe(/delGrupo/.test(leer('src/components/route/reservas/EntradasYFreeTour.tsx')) && /delGrupo/.test(leer('src/components/route/reservas/ExcursionesReservas.tsx')), 'colores', 'el Free Tour y las excursiones también')
-  // La película.
+  // La lista del pase (10N10, 8b: se quitó la película; el título pequeño, las rayitas y las escenas ya no existen).
   const adaptar = leer('src/components/pase/pelicula/adaptar.ts')
-  debe(/data-pelicula-titulo/.test(adaptar) && /data-raya/.test(adaptar) && /top:66px;height:32px/.test(adaptar), 'pelicula', 'el título pequeño va en la línea de [Saltar] y las rayitas son tocables')
-  debe(/irALaEscena/.test(leer('src/components/pase/PeliculaPase.tsx')), 'pelicula', 'tocar una rayita lleva a esa escena y la reinicia')
+  debe(!/data-pelicula-titulo|data-raya|irALaEscena/.test(adaptar + leer('src/components/pase/ListaDelPase.tsx')), 'pelicula', 'ya no hay título pequeño, rayitas ni escenas en la lista del pase')
+  debe(/data-pelicula-cerrar/.test(adaptar) && /data-lista-pase/.test(adaptar), 'pelicula', 'la lista lleva su ✕ y su lista que se mueve')
 }
 
 /* ───────────────────────── 2. Las cajas del pase y lo bloqueado, en la app ───────────────────────── */
@@ -120,7 +119,7 @@ if (toca('cajas')) {
     await g.evaluar("(() => { const e = document.querySelector('[data-candado=\"llegada-ajuste\"]'); if (e) e.scrollIntoView({ block: 'center' }); return true })()")
     await g.esp(600)
     c = await g.evaluar(MIDE_CAJA('[data-candado="llegada-ajuste"]'))
-    debe(esCaja(c, 'Tu primer y tu último día', 'Con el Pase Roma, ajustamos tu primer y tu último día a tu vuelo.'), 'caja', `RESERVAS › Llegada y vuelta: la caja del pase (${JSON.stringify(c)?.slice(0, 200)})`)
+    debe(!c, 'caja', `(10N10 §7b) RESERVAS › Llegada y vuelta: ya NO hay caja del pase debajo del vuelo (${JSON.stringify(c)?.slice(0, 200)})`)
     await g.captura(foto('caja_reservas_llegada'))
     // DÍAS · primer día
     await modo(g, 'days', 0)
@@ -226,143 +225,40 @@ if (toca('pendiente')) {
   }
 }
 
-/* ───────────────────────── 4. La película del pase ───────────────────────── */
+/* ───────────────────────── 4. La lista del pase (Tanda 10N10, 8b: antes, la película) ───────────────────────── */
 if (toca('pelicula')) {
-  console.log('4. La película')
-  const ff = `(() => { const r = document.querySelector('[data-pelicula] .pfr'); r.getAnimations({ subtree: true }).forEach((an) => { try { const e = an.effect.getComputedTiming().endTime; if (isFinite(e)) an.currentTime = e } catch (x) {} }); return true })()`
-  // Cada escena a su hora «de lectura» (cuando ya están todos sus textos): { escena, segundos reales, ff }
-  const ESCENAS = [
-    { e: 0, s: 2, ff: true, nombre: 'tu_viaje' },
-    { e: 1, s: 2, ff: true, nombre: 'hoy' },
-    { e: 3, s: 19, ff: false, nombre: 'secretos' },
-    { e: 4, s: 12, ff: true, nombre: 'suma' },
-    { e: 5, s: 20, ff: false, nombre: 'pasaporte' },
-    { e: 6, s: 9, ff: false, nombre: 'recuerdos' },
-  ]
-  const MIDE = `(() => {
-    const P = document.querySelector('[data-pelicula]')
-    const vw = window.innerWidth, vh = window.innerHeight
-    const opac = (el) => { let o = 1; for (let p = el; p && p !== P.parentElement; p = p.parentElement) { const cs = getComputedStyle(p); o *= Number(cs.opacity); if (cs.visibility === 'hidden' || cs.display === 'none') return 0 } return o }
-    const hojas = Array.from(P.querySelectorAll('*')).filter((e) => e.children.length === 0 && (e.textContent || '').trim() && opac(e) > 0.5)
-    const rect = (e) => { const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, r: r.right, b: r.bottom, w: r.width, h: r.height, t: (e.textContent || '').trim().slice(0, 40) } }
-    const cab = Array.from(P.querySelectorAll('[data-pelicula-titulo],[data-pelicula-saltar]')).map(rect)
-    const abajo = Array.from(P.querySelectorAll('[data-texto-abajo]')).flatMap((c) => Array.from(c.querySelectorAll('*')).filter((e) => e.children.length === 0 && (e.textContent || '').trim() && opac(e) > 0.5).map(rect))
-    const tToast = Array.from(P.querySelectorAll('span')).filter((e) => e.children.length === 0 && /emblema oculto/.test(e.textContent || '') && opac(e) > 0.5).map(rect)
-    const dentroAbajo = (e) => Boolean(e.closest('[data-texto-abajo]'))
-    const dentroCab = (e) => Boolean(e.closest('[data-pelicula-titulo],[data-pelicula-saltar],[data-rayitas]'))
-    const verdad = (e) => { const r = e.getBoundingClientRect(); const x = Math.min(vw - 1, Math.max(0, r.left + r.width / 2)), y = Math.min(vh - 1, Math.max(0, r.top + r.height / 2)); const t = document.elementFromPoint(x, y); return Boolean(t) && (e.contains(t) || t.contains(e) || Boolean(t.closest('[data-texto-abajo],[data-pelicula-titulo],[data-pelicula-saltar]'))) && t !== P }
-    const visual = hojas.filter((e) => !dentroAbajo(e) && !dentroCab(e) && verdad(e)).map(rect).filter((r) => r.w > 0 && r.h > 0 && r.b > 0 && r.y < vh)
-    const sol = (p, q) => Math.max(0, Math.min(p.r, q.r) - Math.max(p.x, q.x)) * Math.max(0, Math.min(p.b, q.b) - Math.max(p.y, q.y))
-    const pisadas = []
-    for (const c of cab) for (const v of visual) if (sol(c, v) > 6) pisadas.push(['cabecera', c.t, 'visual', v.t])
-    for (const a of abajo) for (const v of visual) if (sol(a, v) > 6) pisadas.push(['texto de abajo', a.t, 'visual', v.t])
-    for (let i = 0; i < abajo.length; i++) for (let j = i + 1; j < abajo.length; j++) if (sol(abajo[i], abajo[j]) > 6) pisadas.push(['texto de abajo', abajo[i].t, 'texto de abajo', abajo[j].t])
-    for (const a of abajo) for (const t of tToast) if (sol(a, t) > 6) pisadas.push(['texto de abajo', a.t, 'aviso', t.t])
-    const fuera = [...cab, ...abajo, ...tToast].filter((r) => r.x < -0.5 || r.r > vw + 0.5 || r.b > vh - 8 || r.y < 0).map((r) => r.t + ' ' + Math.round(r.x) + ',' + Math.round(r.y) + ',' + Math.round(r.r) + ',' + Math.round(r.b))
-    const titulo = P.querySelector('[data-pelicula-titulo]'), saltar = P.querySelector('[data-pelicula-saltar]')
-    const tin = titulo ? (titulo.querySelector('span') ?? titulo) : null
-    const t = tin ? tin.getBoundingClientRect() : null, sa = saltar ? saltar.getBoundingClientRect() : null
-    const esc = P.querySelector('[data-escenario]')
-    const er = esc ? esc.getBoundingClientRect() : null
-    return { nVisual: hojas.filter((e) => !dentroCab(e)).length, vw, vh, pisadas, fuera, titulo: t ? { x: t.left, r: t.right, cy: (t.top + t.bottom) / 2, texto: titulo.innerText } : null, saltar: sa ? { x: sa.left, r: sa.right, cy: (sa.top + sa.bottom) / 2 } : null, esc: er ? { x: er.left, r: er.right } : null, abajoMax: abajo.reduce((m, r) => Math.max(m, r.b), 0), nAbajo: abajo.length }
-  })()`
-  for (const [w, h] of [[390, 664], [375, 667], [390, 844]]) {
-    const a = await conViaje({ ancho: w, alto: h, vista: false, extraAntes: 'window.__pruebaPeliculaEscena = 0;' })
+  console.log('4. La lista del pase')
+  // (La película entera —escenas, rayitas, título pequeño, pasaporte— se quitó: se abre SIEMPRE directo la lista, con [Elegir mi pase] y su ✕.)
+  for (const [w, h] of [[390, 664], [375, 667]]) {
+    const a = await conViaje({ ancho: w, alto: h })
     try {
       await abrirPase(a)
-      await cuando(a, "Boolean(document.querySelector('[data-pelicula] .pfr'))", 40)
-      await esp(1500)
-      const raya = (idx) => a.evaluar(`(() => { const r = document.querySelectorAll('[data-pelicula] [data-raya]')[${idx}]; if (!r) return null; const b = r.getBoundingClientRect(); return [b.x + b.width / 2, b.y + b.height / 2, b.height] })()`)
-      const rayas = await a.evaluar("document.querySelectorAll('[data-pelicula] [data-raya]').length")
-      debe(rayas === 7, 'rayitas', `${w}x${h}: hay una rayita por escena (7) (${rayas})`)
-      for (const [idx, esc] of [0, 1, 3, 4, 5, 6].map((e, i) => [i, e])) {
-        void esc
-        void idx
-      }
-      for (const E of ESCENAS) {
-        const idx = [0, 1, 3, 4, 5, 6, 7].indexOf(E.e)
-        const c = await raya(idx)
-        debe(Boolean(c) && c[2] >= 16, 'rayitas', `${w}x${h}: la rayita de la escena ${E.e} se puede tocar (zona de ${c?.[2]?.toFixed(0)} px de alto)`)
-        if (c) await clicEn(a, c[0], c[1])
-        await esp(E.s * 1000)
-        if (E.ff) {
-          await a.evaluar(ff)
-          await esp(700)
-        }
-        const m = await a.evaluar(MIDE)
-        const activa = await a.evaluar(`Array.from(document.querySelectorAll('[data-pelicula] [data-raya] > span > span')).map((s) => s.style.width)`)
-        debe(activa[idx] !== '0%' && activa.slice(0, idx).every((x) => x === '100%'), 'rayitas', `${w}x${h}: al tocar la rayita ${idx + 1} la película está en esa escena (${activa.join(' ')})`)
-        const etq = `${w}x${h} · escena ${E.e} (${E.nombre})`
-        debe(m.pisadas.length === 0, 'pisado', `${etq}: ningún texto pisa a otro (${JSON.stringify(m.pisadas.slice(0, 3))})`)
-        debe(m.fuera.length === 0, 'cortado', `${etq}: ningún texto fuera de la pantalla ni pegado al borde de abajo (${JSON.stringify(m.fuera.slice(0, 3))})`)
-        debe(m.nVisual > 0, 'texto', `${etq}: se lee texto en la escena (${m.nVisual} piezas; la 10N8 quitó la marca data-texto-abajo, el texto lo coloca Design)`)
-        debe(m.titulo && /^Todo lo que incluye tu Pase Roma$/.test(m.titulo.texto.replace(/\s+/g, ' ').trim()), 'titulo', `${etq}: el título dice «Todo lo que incluye tu Pase Roma» (${m.titulo?.texto})`)
-        debe(m.titulo && m.saltar && Math.abs(m.titulo.cy - m.saltar.cy) <= 4, 'titulo', `${etq}: el título está en la MISMA línea que [Saltar] (${m.titulo?.cy.toFixed(0)} y ${m.saltar?.cy.toFixed(0)})`)
-        debe(m.titulo && m.saltar && m.titulo.r <= m.saltar.x - 4 && Math.abs((m.titulo.x + m.titulo.r) / 2 - m.vw / 2) <= 6, 'titulo', `${etq}: centrado en medio de la pantalla y sin tocar [Saltar] (${m.titulo?.x.toFixed(0)}–${m.titulo?.r.toFixed(0)} · [Saltar] desde ${m.saltar?.x.toFixed(0)})`)
-        debe(m.esc && m.esc.x <= 0.5 && m.esc.r >= w - 0.5, 'ancho', `${etq}: el escenario llega de lado a lado (${m.esc?.x.toFixed(1)} → ${m.esc?.r.toFixed(1)} de ${w})`)
-        // Frames: el fondo de cada escena llega a los dos bordes (sin la caja estrecha de antes)
-        const bordes = await a.evaluar(`(() => { const P = document.querySelector('[data-pelicula]'); const e = Array.from(P.querySelectorAll('[data-columna-escena]')); return e.length })()`)
-        void bordes
-        if (w === 390 && h === 664) await a.captura(foto(`pelicula_e${E.e}_${E.nombre}_${w}x${h}`))
-        else if (w === 375) await a.captura(foto(`pelicula_e${E.e}_${E.nombre}_${w}x${h}`))
-      }
+      debe(await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 40), 'lista', `${w}x${h}: abrirPase abre directo la lista del pase con [Elegir mi pase]`)
+      await esp(1200)
+      const m = await a.evaluar(`(() => {
+        const P = document.querySelector('[data-lista-del-pase]')
+        const esc = P.querySelector('[data-escenario]')
+        const el = Array.from(P.querySelectorAll('span')).find((x) => (x.textContent || '').trim() === 'Elegir mi pase')
+        const x = P.querySelector('[data-pelicula-cerrar]')
+        const rr = (e) => { const b = e.getBoundingClientRect(); return { x: b.left, y: b.top, r: b.right, b: b.bottom, w: b.width, h: b.height } }
+        const lista = P.querySelector('[data-lista-pase]')
+        return { esc: rr(esc), elegir: el ? rr(el) : null, cerrar: x ? rr(x) : null, scroll: lista ? lista.scrollHeight > lista.clientHeight : false, rayitas: P.querySelectorAll('[data-raya],[data-rayitas],[data-pelicula-saltar],[data-pelicula-titulo],[data-pelicula-musica]').length, textos: P.innerText }
+      })()`)
+      debe(m.esc.x <= 0.5 && m.esc.r >= w - 0.5, 'ancho', `${w}x${h}: la lista llega de lado a lado (${m.esc.x.toFixed(1)} → ${m.esc.r.toFixed(1)} de ${w})`)
+      debe(m.elegir && m.elegir.b <= h - 8, 'entero', `${w}x${h}: [Elegir mi pase] entero y a la vista (acaba en ${m.elegir?.b.toFixed(0)} de ${h})`)
+      debe(m.cerrar && m.cerrar.w >= 24 && m.cerrar.h >= 24 && m.cerrar.x >= 0 && m.cerrar.r <= w && m.cerrar.y >= 0, 'cerrar', `${w}x${h}: el ✕ se ve y se puede tocar (${m.cerrar?.w?.toFixed(0)}x${m.cerrar?.h?.toFixed(0)} px)`)
+      debe(m.rayitas === 0 && !/Saltar|Verla otra vez|Repetir animación/.test(m.textos), 'sin-pelicula', `${w}x${h}: ni rayitas, ni título pequeño, ni [Saltar], ni silencio, ni «Verla otra vez»`)
+      debe(m.scroll, 'scroll', `${w}x${h}: la lista se mueve con el dedo`)
+      await a.captura(foto(`lista_${w}x${h}`))
+      await a.evaluar("document.querySelector('[data-pelicula-cerrar]').click(); true")
+      await esp(800)
+      debe(!(await a.evaluar("Boolean(document.querySelector('[data-lista-del-pase]'))")), 'cerrar', `${w}x${h}: el ✕ cierra la lista`)
     } finally {
       a.cerrar()
     }
   }
-  // Escena 4 («Viaja, Juega, Suma y Participa»): también mientras va cambiando (3, 7, 12 y 16 segundos).
-  {
-    const a = await conViaje({ ancho: 375, alto: 667, vista: false, extraAntes: 'window.__pruebaPeliculaEscena = 0;' })
-    try {
-      await abrirPase(a)
-      await cuando(a, "Boolean(document.querySelector('[data-pelicula] .pfr'))", 40)
-      await esp(1500)
-      const idx = [0, 1, 3, 4, 5, 6, 7].indexOf(4)
-      const c = await a.evaluar(`(() => { const r = document.querySelectorAll('[data-pelicula] [data-raya]')[${idx}]; const b = r.getBoundingClientRect(); return [b.x + b.width / 2, b.y + b.height / 2] })()`)
-      await clicEn(a, c[0], c[1])
-      let t0 = Date.now()
-      for (const s of [3, 7, 12, 16, 19]) {
-        await esp(Math.max(0, s * 1000 - (Date.now() - t0)))
-        const m = await a.evaluar(MIDE)
-        debe(m.pisadas.length === 0 && m.fuera.length === 0, 'pisado', `375x667 · escena 4 a los ${s} s: nada pisado ni cortado (${JSON.stringify([...m.pisadas.slice(0, 2), ...m.fuera.slice(0, 2)])})`)
-        await a.captura(foto(`pelicula_e4_suma_t${String(s).padStart(2, '0')}_375x667`))
-      }
-    } finally {
-      a.cerrar()
-    }
-  }
-  // El pasaporte: sin el rato parado (la escena pasa a la siguiente en cuanto acaba la vuelta al mundo).
-  {
-    const a = await conViaje({ ancho: 390, alto: 664, vista: false })
-    try {
-      await abrirPase(a)
-      await cuando(a, "Boolean(document.querySelector('[data-pelicula] .pfr'))", 40)
-      await esp(1000)
-      const c = await a.evaluar(`(() => { const r = document.querySelectorAll('[data-pelicula] [data-raya]')[4]; const b = r.getBoundingClientRect(); return [b.x + b.width / 2, b.y + b.height / 2] })()`)
-      await clicEn(a, c[0], c[1])
-      await a.evaluar(`(() => { window.__reg = []; window.__t0 = performance.now(); setInterval(() => { const P = document.querySelector('[data-pelicula]'); if (!P) return; const barras = Array.from(P.querySelectorAll('[data-raya] > span > span')).map((s) => s.style.width); const num = (P.querySelector('.pfr')?.innerText || '').match(/(\\d+)\\s*PAÍSES VISITADOS/i); window.__reg.push([Math.round(performance.now() - window.__t0), barras.join(','), num ? num[1] : '']) }, 200); return true })()`)
-      await esp(50000)
-      const reg = await a.evaluar('window.__reg')
-      let escena6 = null
-      for (const [t, barras] of reg) {
-        const b = barras.split(',')
-        if (escena6 === null && b[4] === '100%' && b[5] !== undefined && b[5] !== '0%') escena6 = t
-      }
-      // La vuelta al mundo (Pase Globo) acaba en T0 + 24 tramos + 1,3 s; la escena tiene que seguir 1 s después, no 3 ni 7.
-      const globo = leer('src/components/pase/pelicula/gen/Pase_Globo.ts')
-      const [, T0, LEG, LD] = /const T0=([\d.]+),LEG=([\d.]+),LD=([\d.]+)/.exec(globo)
-      const pelicula = leer('src/components/pase/pelicula/gen/Pase_Pelicula.ts')
-      const durs = JSON.parse(/const DURS=(\[[^\]]*\])/.exec(pelicula)[1])
-      const finTour = Number(T0) + 24 * Number(LEG) + Number(LD)
-      const sobra = durs[5] / 1000 - finTour
-      debe(sobra >= 0 && sobra <= 1, 'pasaporte', `la escena del pasaporte (${durs[5] / 1000} s) sigue ${sobra.toFixed(1)} s después de que el último país llegue (la vuelta acaba en el segundo ${finTour.toFixed(1)}; antes dejaba 3,2 s y Eric veía unos 7)`)
-      debe(escena6 !== null && escena6 / 1000 <= durs[5] / 1000 + 4, 'pasaporte', `en la película en marcha, el pasaporte pasa solo a la escena siguiente a los ${((escena6 ?? 0) / 1000).toFixed(1)} s`)
-      fs.writeFileSync(`${process.env.TEMP}/e5_parado_10n5.json`, JSON.stringify({ finTour, durs, escena6, sobra }))
-    } finally {
-      a.cerrar()
-    }
-  }
-  // La pieza de Design, al lado (la caja pequeña y la película).
+
+  // La pieza de Design, al lado (la caja pequeña).
   try {
     await capturarDesign('Piezas/Pase Estilo.dc.html', 'docs/dias/capturas_jutrip/10n5_design_pase_estilo_01.jpg', { ancho: 520, alto: 1000, despues: 'window.scrollTo(0, 0); true', espera: 5 })
   } catch (e) {

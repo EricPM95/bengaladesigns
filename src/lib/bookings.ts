@@ -41,6 +41,8 @@ export interface Reservation {
   aviso?: string | null
   /** Tanda 10N §8: en un viaje compartido, a quién cubre la entrada (ids de `Persona`; el dueño siempre dentro). Sin él (las de antes de compartir): «solo para mí», solo el dueño. */
   paraQuien?: string[] | null
+  /** (10N10) Quién la ha pagado (ids de `Persona`), si es para más de uno y hay precio. Sin él, la pagó quien la apuntó. */
+  pagadoPor?: string[] | null
   /** (Tanda 10N6, 1c) El viajero quitó la parada de su ruta pero se quedó con la entrada: sigue en RESERVAS («Ya no está en tu ruta») y no vuelve a fijar ni a mover nada hasta que la ponga de nuevo en su día. */
   fueraDeRuta?: boolean
   /** (10N6, 1c) La parada tal como estaba al quitarla de la ruta, para devolverla a su día con «Volver a ponerla en su día». */
@@ -229,6 +231,9 @@ export function placeReservedEntrance(route: Route, reservation: Reservation): R
   if (isManualRoute(route)) return reservedEntranceInPlace(route, reservation)
   const target = dayOfReservation(route, reservation)
   if (!target || reservation.kind !== 'entrada') return route
+  // (Tanda 10N10 §3d) Si el día de la fecha de la reserva YA lleva el sitio, la parada NO se mueve de franja ni de sitio: se queda donde está, con la marca y la hora de su entrada. Solo cambia de día
+  // cuando la fecha de la reserva es de otro día (entonces sí viaja a él).
+  if (target.stops.some((candidate) => reservation.placeNames.includes(candidate.name))) return reservedEntranceInPlace(route, reservation)
   let found: { day: DayPlan; stop: Stop } | null = null
   // (Si el día de la reserva ya lleva el sitio —porque el motor movió el día entero—, esa parada es la que se fija: no se trae otra de otro día.)
   for (const name of reservation.placeNames) {
@@ -272,7 +277,7 @@ export function placeReservedEntrance(route: Route, reservation: Reservation): R
  * trae la parada de otro día, nunca ordena el día por hora y nunca toca otra parada. Si el día de la reserva no lleva el sitio, la ruta no cambia: la reserva se queda en RESERVAS tal
  * como la puso el viajero.
  */
-export function reservedEntranceInPlace(route: Route, reservation: Reservation): Route {
+export function reservedEntranceInPlace(route: Route, reservation: Reservation, opciones: { conservarHora?: boolean } = {}): Route {
   if (reservation.kind !== 'entrada' || reservation.fueraDeRuta) return route
   const target = dayOfReservation(route, reservation)
   if (!target) return route
@@ -281,7 +286,7 @@ export function reservedEntranceInPlace(route: Route, reservation: Reservation):
   return {
     ...route,
     days: route.days.map((day) =>
-      day.id !== target.id ? day : { ...day, stops: day.stops.map((stop, at) => (at === index ? { ...stop, time: reservation.time, reservedId: reservation.id } : stop)) },
+      day.id !== target.id ? day : { ...day, stops: day.stops.map((stop, at) => (at === index ? { ...stop, ...(opciones.conservarHora ? {} : { time: reservation.time }), reservedId: reservation.id } : stop)) },
     ),
   }
 }

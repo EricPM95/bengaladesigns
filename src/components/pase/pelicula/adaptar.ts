@@ -3,9 +3,8 @@ import { FILAS_OCULTAS, LISTA_DEL_PASE, TEXTOS_DE_LINEA, TITULOS_NUEVOS, partesD
 import { nombreDelPase } from '../../../lib/nombrePase'
 
 /**
- * LA PELÍCULA DE DESIGN, PUESTA EN LA APP (Tanda 10I). Los textos y las animaciones son los del archivo de Design, sin tocar. Aquí solo se cambia lo que tiene que ser de la app:
- *   · una sola película para todos los destinos: solo cambian dos textos y salen del dato del destino: «Pase de {Destino}» (el nombre grande del final, «✓ Tu Pase de … está activo» y la línea de la hoja)
- *     y «Tu viaje a {Destino}» (la tarjeta de la escena 6). Todo lo demás se queda de Roma, como ejemplo;
+ * LA LISTA DEL PASE (antes, la película; Tanda 10N10, 8b: la película se quitó y solo queda su pantalla final). Los textos son los del archivo de Design, sin tocar. Aquí solo se cambia lo que tiene que ser de la app:
+ *   · una sola pantalla para todos los destinos: cambia el dato del destino: «Pase de {Destino}» (el nombre grande, «✓ Tu Pase de … está activo» y la línea de la hoja);
  *   · se quita lo que Design pone FUERA del móvil para verla en el escritorio («Repetir animación»);
  *   · la hoja «Todo lo que incluye» enseña la lista del final (nombre y línea de cada fila: `LISTA_DEL_PASE`);
  *   · [Comprar] hace lo de siempre (crear el pago), y un botón de cerrar (✕) en el final.
@@ -81,12 +80,8 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
     }
   })
 
-  // El ✕ del final (Design no lo tiene: era una página de escritorio). Fino y claro, sin relleno. En el final [Saltar] ya no sirve y deja su sitio al ✕.
+  // El ✕ de la lista (Design no lo tiene: era una página de escritorio). Fino y claro, sin relleno.
   const movil = palcoDe(ast)
-  // ([Saltar] es un span dentro de la barra de arriba, junto a [Ver])
-  recorre(movil, (n) => {
-    if (n.i !== '{{ !s7 }}' && n.c?.some((h) => esNodo(h) && h.a?.onClick === '{{ skip }}')) n.c = n.c.map((h) => (esNodo(h) && h.a?.onClick === '{{ skip }}' ? { i: '{{ !s7 }}', c: [h] } : h))
-  })
   movil.c!.push({
     i: '{{ s7 }}',
     c: [
@@ -97,7 +92,7 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
           role: 'button',
           'aria-label': 'Cerrar',
           'data-pelicula-cerrar': '1',
-          style: 'position:absolute;right:16px;top:60px;z-index:20;width:36px;height:36px;border-radius:50%;background:rgba(251,243,226,.12);display:flex;align-items:center;justify-content:center;cursor:pointer',
+          style: 'position:absolute;right:16px;top:63px;z-index:20;width:36px;height:36px;border-radius:50%;background:rgba(251,243,226,.12);display:flex;align-items:center;justify-content:center;cursor:pointer',
         },
         c: [
           {
@@ -110,14 +105,7 @@ export function plantillaDeLaPelicula(destino: string): Nodo[] {
     ],
   })
 
-  // (Tanda 10N9, §4) Los textos de abajo de cada escena (los que entran con `fsSub`: la frase grande y la línea pequeña) llevan una marca, solo para las pruebas (`data-texto-abajo`): así se mide que no se pisan
-  // con lo de arriba ni entre sí en 390 x 664 y 375 x 667. No cambia nada de lo que se ve.
-  recorre(ast[0], (n) => {
-    if (n.a?.style?.includes('animation:fsSub') && !n.a['data-texto-abajo']) n.a = { ...n.a, 'data-texto-abajo': '1' }
-  })
-
-  ajustarAlMovil(ast)
-  ajustarLaCabecera(ast, destino)
+  dejarSoloLaLista(ast)
   ajustarLaLista(ast)
 
   cache.set(destino, ast)
@@ -139,74 +127,15 @@ function palcoDe(ast: Nodo[]): Nodo {
 export const bloquesDeLaLista = () => LISTA_DEL_PASE.map((g) => ({ t: g.titulo, items: g.items.map((i) => ({ titulo: i.titulo, linea: i.linea, partes: partesDeLinea(i.linea).map((p) => ({ t: p.t, dm: p.marca ? '1' : undefined, estilo: p.marca ? 'color:#6F4E37;font-weight:600' : '' })) })) }))
 
 /**
- * LA CABECERA DE TODAS LAS ESCENAS (Tanda 10N5, apartado 5; Tanda 10N9, apartado 3).
- *   · El título pequeño de Design («Todo lo que incluye tu Pase Roma», encima de las rayitas) va en la MISMA línea que [Saltar], centrado en medio (Eric, 26-oct), con el destino del pase; en el final no sale (allí van [Ver] y ✕).
- *     (10N9: en su sitio de Design, top 16, se pisa con el contenido de la escena «hoy» y rompe «ningún texto se pisa»; se queda en la línea de [Saltar]. Se marca con `data-pelicula-titulo`.)
- *   · Las rayitas de arriba (una por escena) se pueden tocar: llevan a esa escena y la vuelven a poner desde el principio, como las historias de Instagram. La zona de toque es más alta que la rayita (22 px) y la rayita se ve igual (3 px, a la misma altura).
+ * (Tanda 10N10, 8b) FUERA LA PELÍCULA: de la pieza de Design solo se deja la lista del final («Todo lo que incluye tu Pase», con [Elegir mi pase] y las hojas de «¿Cuántos sois?» y de la moneda).
+ * Se quitan las escenas 0 a 6, la barra de arriba ([Ver], [Saltar]), las rayitas, el título pequeño, las zonas de toque y el botón «Verla otra vez». La pieza sigue siendo la de Design; cuando Design rediseñe la lista, se cambia aquí.
  */
-function ajustarLaCabecera(ast: Nodo[], destino: string) {
+function dejarSoloLaLista(ast: Nodo[]) {
   const movil = palcoDe(ast)
-  movil.c = movil.c!.map((h) => {
-    if (!esNodo(h) || h.t !== 'div' || !h.a?.style?.startsWith('position:absolute;left:0;right:0;top:16px;text-align:center')) return h
-    const titulo: Nodo = {
-      ...h,
-      a: { ...h.a, 'data-pelicula-titulo': '1', style: h.a.style.replace('top:16px;', 'top:66px;height:32px;display:flex;align-items:center;justify-content:center;white-space:nowrap;box-sizing:border-box;padding-right:{{ tPadR }}px;') },
-      // (dentro de un span: en un contenedor flex el espacio de «tu » se perdería)
-      c: [{ t: 'span', c: (h.c ?? []).map((x) => (esNodo(x) && x.t === 'em' ? { ...x, c: [`Pase ${destino}`] } : x)) }],
-    }
-    return { i: '{{ !s7 }}', c: [titulo] }
-  })
+  movil.c = (movil.c ?? []).filter((h) => esNodo(h) && (h.i === '{{ s7 }}' || h.i === '{{ hasSheet }}'))
   recorre(movil, (n) => {
-    if (!n.a?.style?.startsWith('position:absolute;left:14px;right:14px;top:50px;display:flex;gap:4px')) return
-    n.a = { ...n.a, 'data-rayitas': '1', style: n.a.style.replace('top:50px;', 'top:41px;') }
-    const para = (n.c ?? [])[0] as Nodo
-    const barra = (para.c ?? [])[0] as Nodo
-    para.c = [
-      {
-        t: 'span',
-        a: { onClick: '{{ g.ir }}', role: 'button', 'data-raya': '{{ g.k }}', 'aria-label': 'Ir a esta escena', style: 'flex:1;height:22px;display:flex;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent' },
-        c: [{ ...barra, a: { ...barra.a, style: barra.a!.style.replace('flex:1;', 'flex:1;width:100%;') } }],
-      },
-    ]
+    if (n.c) n.c = n.c.filter((h) => !(esNodo(h) && h.a?.onClick === '{{ replay }}'))
   })
-}
-
-/** LOS BOTONES DE ARRIBA ([Ver], [Saltar], el ✕ del final y el silencio de la música): se marcan para las pruebas y la barra deja sitio al ✕. La medida de la pantalla la lleva Design (`pantalla="si"`). */
-function ajustarAlMovil(ast: Nodo[]) {
-  const movil = palcoDe(ast)
-  // [Ver] / [Saltar] y el ✕ del final: la barra de arriba deja sitio al ✕ (si no, [Ver] se pone encima).
-  recorre(movil, (n) => {
-    if (n.a?.style?.startsWith('position:absolute;left:18px;right:18px;top:66px;display:flex;justify-content:flex-end')) n.a = { ...n.a, style: n.a.style.replace('right:18px', 'right:{{ barR }}px'), 'data-barra-superior': '1' }
-    if (n.a?.['data-pelicula-cerrar']) n.a = { ...n.a, style: n.a.style.replace('top:60px', 'top:63px') }
-    if (n.a?.onClick === '{{ again }}') n.a = { ...n.a, 'data-pelicula-ver': '1', role: 'button' }
-    if (n.a?.onClick === '{{ skip }}') n.a = { ...n.a, 'data-pelicula-saltar': '1', role: 'button' }
-  })
-  // (Tanda 10N6 §1i) El botón de silencio de la música, pequeño, en la misma línea que el título y [Saltar] (a su izquierda): solo si hay música. Altavoz fino y gris, sin relleno.
-  recorre(movil, (n) => {
-    if (!n.a?.['data-barra-superior'] || !n.c) return
-    const icono = (c: Nodo[]): Nodo => ({ t: 'svg', a: { width: '17', height: '17', viewBox: '0 0 24 24', fill: 'none', stroke: 'rgba(251,243,226,.8)', strokeWidth: '1.7', strokeLinecap: 'round', strokeLinejoin: 'round', style: 'flex:none' }, c })
-    const ruta = (d: string): Nodo => ({ t: 'path', a: { d }, c: [] })
-    const altavoz = 'M11 5L6 9H3v6h3l5 4V5z'
-    n.c.unshift({
-      i: '{{ !s7 }}',
-      c: [
-        {
-          i: '{{ hayMusica }}',
-          c: [
-            {
-              t: 'span',
-              a: { onClick: '{{ silenciar }}', role: 'button', 'aria-label': '{{ silTxt }}', 'data-pelicula-musica': '1', style: 'width:34px;height:34px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:rgba(20,22,28,.5);border:1px solid rgba(251,243,226,.3);cursor:pointer' },
-              c: [
-                { i: '{{ musicaOn }}', c: [icono([ruta(altavoz), ruta('M15.5 8.5a5 5 0 0 1 0 7'), ruta('M18.5 5.5a9 9 0 0 1 0 13')])] },
-                { i: '{{ musicaOff }}', c: [icono([ruta(altavoz), ruta('M16 9l5 6M21 9l-5 6')])] },
-              ],
-            },
-          ],
-        },
-      ],
-    })
-  })
-  // Las zonas de toque (atrás / adelante) tapan el final: en el final no hay nada que pasar y la lista tiene que dejarse tocar y mover.
 }
 
 /**

@@ -12,7 +12,8 @@ import { useNoticesStore } from '../../../store/useNoticesStore'
 import { DateField } from '../../ui/DateField'
 import { TimeField } from '../../ui/TimeField'
 import { TimeListWheel } from '../../ui/TimeListWheel'
-import { CampoPrecio } from '../../ui/CampoPrecio'
+import { PersonasCuadradas, ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
+import { usePermisosDelViaje } from '../../../hooks/usePermisosDelViaje'
 import { usePrecioEditable } from '../../../lib/useMoneda'
 import { Icono } from '../../ui/Icono'
 import { isManualRoute } from '../../../lib/manualPlan'
@@ -28,8 +29,8 @@ import { openTicketShop } from './EntradaCard'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { diaDeLaReservaEnPalabras, horaCorta } from '../../../lib/reservasGrupo'
 import { nombreDe } from '../../../store/useViajeCompartido'
-import { useModoCuentas } from '../../../lib/modoCuentas'
-import { ParaQuienConjunta, ParaQuienConNombres, preguntaDeReserva } from '../presupuesto/ParaQuien'
+import { cuentaDelViaje, esFamilia } from '../../../lib/cuentaDelViaje'
+import { BloqueDinero, textoDelBoton, preguntaParaQuien } from '../presupuesto/BloqueDinero'
 
 /** (10N8, N6) El nombre de la entrada con su artículo: «el Coliseo, Foro y Palatino» (la tabla de artículos solo conoce «Coliseo»: si el nombre entero no está, se usa el artículo del primer sitio que cubre). */
 function sitioDeLaEntrada(target: { name: string; placeNames: string[] }): string {
@@ -337,14 +338,18 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const personasDelViaje = useMemo(() => [...grupo.gente].sort((a, b) => Number(b.esAdmin) - Number(a.esAdmin)), [grupo.gente])
   const adminId = personasDelViaje.find((p) => p.esAdmin)?.id ?? null
   const quienReservaId = esInvitado ? grupo.yoId : adminId
-  // (Tanda 10N7) Cómo se llevan las cuentas: en la conjunta, «Para los dos / Para todos» (marcada) o «Solo para mí»; en «Cada uno lo suyo», los nombres con solo quien reserva marcado.
-  const { modo: modoCuentas } = useModoCuentas()
+  // (Tanda 10N10 §6) Marcado, solo quien la pone (más los que ya tenía la entrada); «¿Quién la ha pagado?», quien la pone.
   const [marcados, setMarcados] = useState<string[]>(() => {
     const antes = (existing?.paraQuien ?? []).filter((id) => personasDelViaje.some((p) => p.id === id))
-    if (modoCuentas === 'conjunta') return antes.length === 1 && antes[0] === quienReservaId ? antes : personasDelViaje.map((p) => p.id)
     return [...new Set([...(quienReservaId ? [quienReservaId] : []), ...antes])]
   })
+  const [pagadoPor, setPagadoPor] = useState<string[]>(() => {
+    const antes = ((existing as { pagadoPor?: string[] | null } | null)?.pagadoPor ?? []).filter((id) => personasDelViaje.some((p) => p.id === id))
+    return antes.length > 0 ? antes : quienReservaId ? [quienReservaId] : []
+  })
+  const permisos = usePermisosDelViaje()
   const alternarPersona = (id: string) => setMarcados((previous) => (previous.includes(id) ? previous.filter((other) => other !== id) : [...previous, id]))
+  const alternarPagado = (id: string) => setPagadoPor((previous) => (previous.includes(id) ? previous.filter((other) => other !== id) : [...previous, id]))
   const draftReservation = (): Reservation | null => {
     if (!resolvedDay) return null
     return {
@@ -362,7 +367,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       excursionId: target.excursion?.id ?? null,
       excursionData: target.excursion ?? null,
       precio: target.refId === 'Free Tour' ? null : precio.importe,
-      ...(paraQuienVisible ? { paraQuien: marcados } : {}),
+      ...(paraQuienVisible ? { paraQuien: marcados, pagadoPor: marcados.length > 1 && precio.importe ? pagadoPor : null } : {}),
       // (El nombre corto con artículo —«el Coliseo»— viaja con la reserva: así el aviso que crea la base de datos lo dice bien.)
       shortName: nombresCortos?.[target.refId] ?? existing?.shortName ?? null,
     }
@@ -554,7 +559,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               {igual && (
                 <p className="mt-2 text-[13.5px] leading-snug text-text/70" data-igual-que>
                   {igual.quien || 'El dueño'} {/ y |,/.test(igual.quien) ? 'van' : 'va'} el {diaDeLaReservaEnPalabras(route, igual.reserva)} a las {horaCorta(igual.reserva.time)}.{' '}
-                  {igual.modo === 'comprar' ? 'Compra la tuya para ese día y esa hora: ya los tienes elegidos.' : 'Apunta aquí la que ya tienes.'}
+                  {igual.modo === 'comprar' ? 'Ya tienes elegidos ese día y esa hora.' : 'Apunta aquí la que ya tienes.'}
                 </p>
               )}
 
@@ -645,33 +650,30 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </p>
               )}
 
-              {/* Tanda 10N §8: «¿Para quién es?» — solo el dueño y solo en un viaje compartido; una pastilla por persona (la marcada, en oscuro con su ✓); si no caben, bajan a otra fila. Sin compartir, el formulario es el de siempre. */}
-              {paraQuienVisible && (
-                <div className="mt-7" data-para-quien>
-                  {modoCuentas === 'conjunta' ? (
-                    <ParaQuienConjunta
-                      valor={marcados.length === 1 && marcados[0] === quienReservaId ? 'mio' : 'todos'}
-                      onCambio={(v) => setMarcados(v === 'mio' ? (quienReservaId ? [quienReservaId] : []) : personasDelViaje.map((p) => p.id))}
-                      personas={personasDelViaje.length}
-                    />
-                  ) : (
-                    <ParaQuienConNombres
-                      pregunta={isFreeTour ? '¿Para quién es?' : preguntaDeReserva(target.kind === 'excursion' ? 'excursion' : 'entrada')}
-                      personas={personasDelViaje.map((p) => ({ id: p.id, nombre: nombreDe(p), esAdmin: p.esAdmin }))}
-                      marcados={marcados}
-                      onAlternar={(id) => (id === quienReservaId ? undefined : alternarPersona(id))}
-                      yoId={quienReservaId}
-                      nombreDe={(id) => nombreDe(personasDelViaje.find((p) => p.id === id)) || 'Alguien'}
-                      datos="para-quien"
-                      datosPorId={false}
-                    />
-                  )}
-                </div>
-              )}
-
-              {!isFreeTour && (
-                <div className="mt-7">
-                  <CampoPrecio estado={precio} />
+              {/* (Tanda 10N10 §6-7; `Piezas/Entrada Nueva` 01-03) El orden de todas las hojas: la hora (arriba), ¿para quién son las entradas?, ¿cuánto ha costado en total?, ¿quién la ha pagado? (en cuadrados) y la línea de a dónde va el dinero. Sin gente en el viaje, solo el precio. */}
+              {isFreeTour ? (
+                paraQuienVisible && (
+                  <div className="mt-7 flex flex-col gap-2.5" data-para-quien>
+                    <span style={ESTILO_PREGUNTA}>{preguntaParaQuien('freetour')}</span>
+                    <PersonasCuadradas personas={personasDelViaje.map((p) => ({ id: p.id, nombre: nombreDe(p) }))} marcados={marcados} onAlternar={alternarPersona} datos="para-quien" etiqueta="¿Para quién son las entradas?" />
+                  </div>
+                )
+              ) : (
+                <div className="mt-7" data-para-quien={paraQuienVisible ? '' : undefined}>
+                  <BloqueDinero
+                    tipo={isExcursion ? 'excursion' : 'entradas'}
+                    solo={!paraQuienVisible}
+                    personas={personasDelViaje.map((p) => ({ id: p.id, nombre: nombreDe(p) }))}
+                    yoId={quienReservaId}
+                    paraQuien={marcados}
+                    onParaQuien={alternarPersona}
+                    precio={precio}
+                    pagadoPor={pagadoPor}
+                    onPagadoPor={alternarPagado}
+                    cuenta={cuentaDelViaje(personasDelViaje.length, esFamilia(route)) === 'grupo' ? 'grupo' : 'conjunta'}
+                    permiso={permisos.rol}
+                    nombreAdmin={grupo.nombreAdmin}
+                  />
                 </div>
               )}
 
@@ -703,10 +705,14 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               {(() => {
                 // [Reservar la mía a la misma hora] (Tanda 10N8 §8): «Comprar a las 14:00» abre la web; «Ya la tengo · Guardarla» la guarda en RESERVAS con ese día y esa hora, sin abrir la web.
                 const comprando = igual?.modo === 'comprar'
-                const hora = fields.time.length === 4 ? `0${fields.time}` : fields.time
                 const urlDeCompra = entradasPorSitio?.[isFreeTour ? 'Free Tour' : (target.placeNames[0] ?? '')]?.[0]?.url ?? buildActivitySearchUrl(`${target.name} ${route.destination}`)
                 return (
                   <>
+                    {comprando && igual && (
+                      <p data-linea-comprar className="mt-7 text-center text-[13.5px] leading-snug text-text/70">
+                        {igual.quien || 'El dueño'} {/ y |,/.test(igual.quien) ? 'la tienen' : 'la tiene'} {diaDeLaReservaEnPalabras(route, igual.reserva)} a las {horaCorta(igual.reserva.time)}. Recuerda elegir esa hora al reservar.
+                      </p>
+                    )}
                     <button
                       type="button"
                       disabled={!ready || planPending}
@@ -717,9 +723,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                           setCompraAbierta(true)
                         } else save()
                       }}
-                      className="mt-7 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40"
+                      className={`${comprando ? 'mt-3' : 'mt-7'} h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40`}
                     >
-                      {comprando ? `Comprar a las ${validTime ? hora : '…'}` : 'Guardar'}
+                      {comprando ? 'Ir a comprar' : textoDelBoton({ normal: isExcursion ? 'Guardar la excursión' : isFreeTour ? 'Guardar el Free Tour' : 'Guardar la entrada', solo: !paraQuienVisible, marcados, yoId: quienReservaId, permiso: permisos.rol, nombreAdmin: grupo.nombreAdmin })}
                     </button>
                     {comprando && (
                       <button type="button" disabled={!ready || planPending} data-ya-la-tengo-guardarla onClick={() => save()} className="mt-3 w-full py-2 text-center text-[14px] font-semibold text-text underline underline-offset-2 disabled:opacity-40">
@@ -731,10 +737,11 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               })()}
               {igual?.modo === 'comprar' && compraAbierta && preguntaCompra && (
                 <div data-pregunta-compra className="mt-3 rounded-[18px] bg-[#F3E6C6]/70 p-3.5 text-center">
-                  <p className="text-[14.5px] font-semibold leading-snug text-text">¿Has comprado la entrada {conDe(sitioDeLaEntrada(target))} de las {fields.time.length === 4 ? `0${fields.time}` : fields.time}?</p>
+                  <p className="text-[14.5px] font-semibold leading-snug text-text">¿Has comprado la entrada {conDe(sitioDeLaEntrada(target))}?</p>
+                  <p className="mt-1 text-[13px] leading-snug text-text/70">Guárdala aquí y la tendrás siempre a mano.</p>
                   <div className="mt-3 flex gap-2">
                     <button type="button" data-compra-si onClick={() => save()} className="h-11 flex-1 rounded-full btn-champan text-[14.5px] font-semibold">
-                      Sí, guardarla
+                      Guardar
                     </button>
                     <button type="button" data-compra-no onClick={() => setPreguntaCompra(false)} className="h-11 flex-1 rounded-full border border-text/15 text-[14.5px] font-medium text-text">
                       Todavía no

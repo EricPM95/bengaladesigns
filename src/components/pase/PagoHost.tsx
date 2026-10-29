@@ -12,14 +12,14 @@ import { BotonHoja, Hoja } from '../ui/Hoja'
 
 // Las hojas de comprar, invitar y de los dos viajes se bajan cuando se abren (cuentas 3B, punto 2).
 // (Tanda 10I: la hoja «¿Cuántos sois?» es la de la película del pase; `abrir({ tipo: 'compra' })` abre la película en el final con la hoja ya abierta.)
-const PeliculaPase = lazy(() => import('./PeliculaPase').then((m) => ({ default: m.PeliculaPase })))
+const ListaDelPase = lazy(() => import('./ListaDelPase').then((m) => ({ default: m.ListaDelPase })))
 const HojaDosViajes = lazy(() => import('./HojaDosViajes').then((m) => ({ default: m.HojaDosViajes })))
 const HojaInvitar = lazy(() => import('./HojaInvitar').then((m) => ({ default: m.HojaInvitar })))
 const enCarga = (hoja: ReactNode) => <Suspense fallback={null}>{hoja}</Suspense>
 
 /**
  * EL ANFITRIÓN DE LAS HOJAS DEL PASE (cuentas parte 3, punto 2). Siempre montado; con las cuentas apagadas no hace nada.
- *   · `abrirPase()` ya no pasa por aquí (Tanda 10I): lo escucha PeliculaHost y abre la película del pase, que lleva dentro la hoja «¿Cuántos sois?».
+ *   · `abrirPase()` ya no pasa por aquí (Tanda 10I): lo escucha ListaDelPaseHost y abre la lista del pase, que lleva dentro la hoja «¿Cuántos sois?».
  *   · Al volver de la página de pago (`?pago=ok&sesion=…`) espera a que llegue el aviso del servicio de pago (el pase lo crea solo el servidor) y enseña P7 (compartir el pase) o «Ya tienes tu pase».
  *   · `?pago=mentira` es la página de pruebas del pago de mentira (solo existe fuera de producción).
  */
@@ -62,7 +62,7 @@ function PagoHostEncendido() {
     )
   }
   if (!hoja) return null
-  if (hoja.tipo === 'compra') return enCarga(<PeliculaPase destino={hoja.destino} tripId={hoja.tripId} desde="compra" onCerrar={cerrar} />)
+  if (hoja.tipo === 'compra') return enCarga(<ListaDelPase destino={hoja.destino} tripId={hoja.tripId} desde="compra" onCerrar={cerrar} />)
   if (hoja.tipo === 'invitar') return enCarga(<HojaInvitar modo={hoja.modo} destino={hoja.destino} tripId={hoja.tripId} pase={hoja.pase} codigoInicial={hoja.codigoInicial} onCerrar={cerrar} />)
   if (hoja.tipo === 'volviendo') return <VolviendoDelPago sesion={hoja.sesion} />
   if (hoja.tipo === 'mentira') return <PagoDeMentira sesion={hoja.sesion} />

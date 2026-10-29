@@ -240,7 +240,7 @@ for (const mode of MODOS) {
   ponerVersion('completa')
   const t = aTexto(renderToStaticMarkup(createElement(ReservasPanel, { route: r, onClose() {} })))
   debe(!HORAS_DE_LA_APP.test(t), '2 horas de la app', `RESERVAS · ${mode}: sale una hora de la app («${t.match(HORAS_DE_LA_APP)?.[0]}»)`)
-  debe(/Ida ·/.test(t.replace(/\n/g, ' ')), '2 horas de la app', `RESERVAS · ${mode}: falta la línea de la ida`)
+  debe(/\bIda\b/.test(t.replace(/\n/g, ' ')) && /Llegas (a las 11:15|en coche)/.test(t.replace(/\n/g, ' ')), '2 horas de la app', `RESERVAS · ${mode}: falta la línea de la ida`)
 }
 
 const resumen = [...porRegla.entries()].map(([r, n]) => `${r}: ${n}`).join(' · ')

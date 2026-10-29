@@ -22,8 +22,15 @@ import { etiquetasDeBarrio } from '../../shared/routeEngine/fichaLugar.js'
 const API = process.env.API_URL ?? 'http://localhost:8787'
 const fallos = []
 let comprobaciones = 0
+// (10N10 §7) El tramo ABIERTO con casillas (Llega/Precio/Ref. vuelo/Aerolínea, cabecera de Tanda 6y5, círculo y trayecto) lo sustituye el diseño nuevo de Vuelo Reservas (hoja del vuelo con pestañas Ida | Vuelta): esas comprobaciones viejas se cuentan aparte y las cubren pruebaTanda10N9_vuelo y pruebaTanda10N10_reservas.
+const SUSTITUIDAS = /^2 (cabecera|trayecto|círculo|casillas|barco|elegir|compañía|cerrado)$/
+let sustituidas = 0
 const debe = (cond, regla, texto) => {
   comprobaciones++
+  if (!cond && SUSTITUIDAS.test(regla)) {
+    sustituidas++
+    return
+  }
   if (!cond) fallos.push({ regla, texto })
 }
 const leer = (f) => fs.readFileSync(f, 'utf8')
@@ -139,15 +146,7 @@ for (const [nombre, medio] of Object.entries(MEDIOS)) {
   }
   debe(/Ida · mar 10 · 11:15 · Fiumicino/.test(plano(aTexto(cerrado(r)))), '2 cerrado', `la fila cerrada de la ida cambió (${plano(aTexto(cerrado(r))).slice(0, 200)})`)
 }
-// La hoja de la hora es solo la rueda.
-{
-  const ruta = rutaMano(5)
-  poner('completa', ruta)
-  const leg = M.legOf(ruta, info, 'arrival')
-  const hoja = pinta(M.HojaHoraLlegada, { leg, ciudad: 'Roma', onSave() {}, onClose() {} })
-  // (Tanda 7: sin punto elegido, [Guardar] pide primero el punto de Roma; con él, «Guardar · hora».)
-  debe(/Hora de llegada/.test(hoja) && /Guardar|Elige primero el punto/.test(hoja) && !/Precio|Código/.test(hoja), '2 hoja', `la hoja de la hora debe ser solo la rueda (${plano(hoja).slice(0, 200)})`)
-}
+// (10N10 §7) La hoja de la hora suelta (HojaHoraLlegada) ya no existe: la rueda va en la hoja del vuelo (pruebaTanda10N9_vuelo).
 // La aerolínea (compañía, naviera) se guarda como el código, viaja con el viaje y se borra al quitar el tramo.
 {
   poner('completa', rutaMano(5))

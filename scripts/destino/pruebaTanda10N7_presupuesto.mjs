@@ -104,11 +104,11 @@ const ids = (p) => lineasDe(p).map((l) => l.id).join()
 
 console.log('1b. Las preguntas y la línea pequeña')
 {
-  debe(preguntaDeReserva('entrada') === '¿Para quién has comprado la entrada?', '1c', preguntaDeReserva('entrada'))
-  debe(preguntaDeReserva('vuelo') === '¿Para quién has comprado el vuelo?', '1c', preguntaDeReserva('vuelo'))
-  debe(preguntaDeReserva('alojamiento') === '¿Para quién has reservado el alojamiento?', '1c', preguntaDeReserva('alojamiento'))
-  debe(preguntaDeReserva('excursion') === '¿Para quién has reservado la excursión?', '1c', preguntaDeReserva('excursion'))
-  debe(preguntaDeReserva('coche') === '¿Para quién has reservado el coche?', '1c', preguntaDeReserva('coche'))
+  debe(preguntaDeReserva('entrada') === '¿Para quién son las entradas?', '1c', preguntaDeReserva('entrada'))
+  debe(preguntaDeReserva('vuelo') === '¿Para quién es este vuelo?', '1c', preguntaDeReserva('vuelo'))
+  debe(preguntaDeReserva('alojamiento') === '¿Para quién es el alojamiento?', '1c', preguntaDeReserva('alojamiento'))
+  debe(preguntaDeReserva('excursion') === '¿Para quién es la excursión?', '1c', preguntaDeReserva('excursion'))
+  debe(preguntaDeReserva('coche') === '¿Para quién es el coche?', '1c', preguntaDeReserva('coche'))
   const nombre = (id) => ({ eric: 'Eric', ana: 'Ana', luis: 'Luis' })[id]
   const l1 = lineaParaQuien(['eric'], 'eric', nombre)
   debe(l1.fuerte + l1.resto === 'Solo para ti: es un gasto tuyo y nadie más lo ve.', '1c', `solo tú: «${l1.fuerte}${l1.resto}»`)
@@ -128,31 +128,27 @@ console.log('1c. El modo por defecto y cuando entra alguien (la API de M1)')
   debe(resolverModo(r('solo'), 1).modo === 'solo' && resolverModo(r('couple'), 1).modo === 'solo', '1a', 'una persona sola: «solo»')
   debe(resolverModo(r('couple'), 2).modo === 'conjunta' && resolverModo(r('family', { }), 2).modo === 'conjunta', '1b', 'pareja y familia: cuenta conjunta por defecto')
   debe(resolverModo(r('group'), 4).modo === 'cada_uno' && !resolverModo(r('group'), 4).pendiente, '1c', 'amigos: cada uno lo suyo por defecto')
-  const unidoAUnoSolo = resolverModo(r('solo'), 2)
-  debe(unidoAUnoSolo.modo === 'cada_uno' && unidoAUnoSolo.pendiente, '2', 'un viaje solo al que se une alguien: «cada uno lo suyo» y pendiente de elegir')
-  debe(resolverModo(r('couple'), 3).pendiente && resolverModo(r('couple'), 3).modo === 'conjunta', '2b-2', 'una cuenta conjunta con un tercero: sigue como estaba y vuelve a preguntar')
-  debe(resolverModo(r('couple', { modoCuentas: 'conjunta', modoElegidoCon: 3 }), 3).pendiente === false, '2b-2', 'ya elegido con tres, no vuelve a preguntar')
+  // (10N10 §5a) Ya no se pregunta ni se elige a mano: dos personas o familia = conjunta; tres o más que no son familia = del grupo.
+  debe(resolverModo(r('solo'), 2).modo === 'conjunta' && !resolverModo(r('solo'), 2).pendiente, '5a', 'un viaje solo al que se une alguien: cuenta conjunta (dos personas), sin preguntar')
+  debe(resolverModo(r('couple'), 3).modo === 'cada_uno' && !resolverModo(r('couple'), 3).pendiente, '5a', 'una pareja con un tercero: cuenta del grupo, sin preguntar')
+  debe(resolverModo(r('family'), 6).modo === 'conjunta', '5a', 'una familia, sean las que sean: conjunta')
 }
 
 /* ═══════════════ 2. Lo que hay en el código ═══════════════ */
 console.log('2. El código')
 {
+  // (10N10) La hoja de gasto y las de reservas pasan por el bloque ordenado de dinero (BloqueDinero) y los cuadrados; «Lo tuyo» y la pregunta de las cuentas se quitaron.
   const gasto_ = sinComentarios(leer('src/components/route/presupuesto/HojaAnadirGasto.tsx'))
-  debe(!/Para mí|InterruptorElegir|Para todos'/.test(gasto_.replace(/ParaQuienConjunta/g, '')), '1c', '«Añadir gasto» ya no lleva [Para todos] / [Para mí] (los dice ParaQuien: conjunta o los nombres)')
-  debe(/ParaQuienConjunta/.test(gasto_) && /ParaQuienConNombres/.test(gasto_), '1b', '«Añadir gasto» usa «Para los dos / Solo para mí» en la conjunta y los nombres en «Cada uno lo suyo»')
-  const reserva_ = sinComentarios(leer('src/components/route/reservas/AddReservationSheet.tsx'))
-  debe(/ParaQuienConjunta/.test(reserva_) && /preguntaDeReserva/.test(reserva_), '1c', 'la hoja de reserva pregunta según lo que se añade')
-  const lo = sinComentarios(leer('src/components/route/reservas/LoDeCadaUno.tsx'))
-  debe(/preguntaDeReserva/.test(lo) && /ParaQuienConjunta/.test(lo), '1b', 'el vuelo, el alojamiento y el coche del administrador usan las mismas preguntas')
+  debe(/BloqueDinero/.test(gasto_) && !/Para mí|Para todos'/.test(gasto_), '6', '«Añadir gasto» usa el bloque ordenado de dinero y ya no lleva [Para todos] / [Para mí]')
   const pp = sinComentarios(leer('src/components/route/presupuesto/PantallaPresupuesto.tsx'))
-  debe(/modoCuentas\.modo !== 'conjunta' && <TarjetaCuentas/.test(pp) || /gv\.compartido && modoCuentas\.modo !== 'conjunta'/.test(pp), '1b', '«Cuentas del grupo» no sale en la cuenta conjunta (sin deudas)')
-  debe(/<LoTuyo/.test(pp), '1b', 'el bloque «Lo tuyo» está en el presupuesto')
+  debe(/!enMia && hayComunes && <TarjetaCuentas/.test(pp), '5b', '«¿Quién debe a quién?» solo en las pestañas comunes')
+  debe(!/<LoTuyo/.test(pp) && !fs.existsSync('src/components/route/presupuesto/LoTuyo.tsx'), '5b', 'el bloque «Lo tuyo» ya no está (10N10): lo mío va en «Mi cuenta»')
   debe(fs.existsSync('supabase/migrations/0055_solo_para_mi_privado.sql'), '2b-1', 'migración 0055 escrita')
 }
 
 /* ═══════════════ 3. La pantalla de verdad ═══════════════ */
 console.log('3. La pantalla de verdad')
-if (process.env.SIN_APP === '1') console.log('   (saltada: SIN_APP=1)')
+if (process.env.SIN_APP === '1' || true) console.log('   (sustituida por pruebaTanda10N10_cuentas: la pantalla de la 10N7 con «Lo tuyo», la etiqueta con lápiz y las hojas con [Para los dos] ya no existe)')
 else {
   const { abrir, foto } = await import('./_10n7_m2_comun.mjs')
   const { capturarDesign } = await import('./capturaDesign.mjs')

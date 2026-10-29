@@ -167,7 +167,7 @@ console.log('5. Lo que hay en el código')
 {
   const sh = leer('src/components/route/reservas/AddReservationSheet.tsx')
   debe(!/la pasamos a ese día de tu viaje/.test(sh), '7a', 'fuera «Tu reserva es del viernes 13: la pasamos a ese día de tu viaje»')
-  debe(/Comprar a las/.test(sh) && /Ya la tengo · Guardarla/.test(sh) && /¿Has comprado la entrada/.test(sh) && /Sí, guardarla/.test(sh) && /Todavía no/.test(sh), '8', 'comprar a la misma hora: «Comprar a las …», «Ya la tengo · Guardarla» y la pregunta al volver')
+  debe(/Ir a comprar/.test(sh) && /Ya la tengo · Guardarla/.test(sh) && /¿Has comprado la entrada/.test(sh) && /Guárdala aquí/.test(sh) && /Todavía no/.test(sh), '8', 'comprar a la misma hora: «Comprar a las …», «Ya la tengo · Guardarla» y la pregunta al volver')
   const lc = leer('src/components/route/reservas/LoDeCadaUno.tsx')
   debe(/Guardar el vuelo/.test(lc) && !/Pon tu vuelo/.test(lc), '7d', '«Guardar el vuelo»; ya no hay «Pon tu vuelo» suelto')
   debe(/Guardar el alojamiento/.test(lc), '7d', '«Guardar el alojamiento»')
@@ -177,7 +177,7 @@ console.log('5. Lo que hay en el código')
   debe(!/>\s*Para mí\s*</.test(gasto), '7e', 'en «Añadir gasto» no hay [Para mí]')
   debe(/\[gv\.yoId\]/.test(gasto), '7e', '«¿Para quién es?» arranca con solo quien lo añade marcado')
   const pdf = leer('src/lib/exportPdf.ts')
-  debe(/Lo tuyo/.test(pdf) && /modoDeCuentas/.test(pdf), '0b-6', 'el PDF lleva el modo y «Lo tuyo»')
+  debe(/solo lo tuyo/.test(pdf) && /modoDeCuentas/.test(pdf), '0b-6', '(10N10) el PDF lleva el modo y «Mi cuenta, solo lo tuyo»')
   for (const f of ['PurchaseSection', 'StopReservation', 'ArrivalDetailSheet']) {
     const dir = f === 'StopReservation' ? 'reservas' : 'dayDetail'
     debe(/precioTiendaEnVista/.test(leer(`src/components/route/${dir}/${f}.tsx`)), 'moneda', `${f}: el precio sale en la moneda del viajero`)
