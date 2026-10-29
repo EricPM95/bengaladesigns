@@ -1,13 +1,13 @@
-# Estado de la tanda 10N11
+# Estado de la tanda 10N12
 
-**Última actualización: 29/10/26, 15:36**
+**Última actualización: 29/10/26, 18:09**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-10N11 cerrada y pusheada (0b20712c)
+Empezando la 10N12 (PC reiniciado; arrancados API y Vite)
 
 ## Qué falta
-nada; cerrando procesos y apagando el PC (permiso de Eric)
+todo
 
 ## Procesos abiertos ahora mismo
 - node: 3
