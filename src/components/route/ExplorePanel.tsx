@@ -21,7 +21,7 @@ import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId, type TarjetaDe
 import { Icono } from '../ui/Icono'
 import { usePasePintable } from '../../lib/pago'
 import { abrirAvisoPase } from '../../lib/avisoPase'
-import { ORO_PASE, CandadoDeDesign } from '../pase/Candado'
+import { CandadoRedondo } from '../pase/Candado'
 import type { Coordinates } from '../../lib/types'
 import { useExploreAperturaStore } from '../../store/useExploreAperturaStore'
 
@@ -111,8 +111,8 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick, cerrado = fa
         <span style={{ filter: 'grayscale(1)', opacity: 0.55 }} className="absolute inset-0">
           {inner}
         </span>
-        <span aria-hidden="true" className="absolute right-3 top-3 flex h-[30px] w-[30px] items-center justify-center rounded-full" style={{ background: ORO_PASE }}>
-          <CandadoDeDesign size={15} />
+        <span aria-hidden="true" className="absolute right-3 top-3 flex">
+          <CandadoRedondo diametro={30} datos={`explorar-${id}`} />
         </span>
       </button>
     )

@@ -201,8 +201,8 @@ const cerrarPago = async (a) => {
   // El alojamiento: la zona, cerrada y a la vista.
   await g.evaluar("(() => { const b = document.querySelector('[data-blk=\"aloj\"] div'); if (b) b.click(); return true })()")
   await g.esp(1200)
-  debe(await g.evaluar("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-candado=\"alojamiento-zona\"]'))"), 'gratis', 'RESERVAS: la zona del alojamiento sale cerrada, con «Con el pase, cada día empieza cerca de donde duermes»')
-  await g.evaluar("(() => { const c = document.querySelector('[data-candado=\"alojamiento-zona\"]'); if (c) c.click(); return true })()")
+  debe(await g.evaluar("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-linea-pase=\"alojamiento-tarjeta\"]'))"), 'gratis', '(10N11) RESERVAS: el alojamiento lleva la línea gris del pase con su candado (ya no la caja de la zona)')
+  await g.evaluar("(() => { const c = document.querySelector('[data-linea-pase=\"alojamiento-tarjeta\"]'); if (c) c.click(); return true })()")
   await g.esp(1200)
   debe(await hayPago(g), 'gratis', 'al tocar un candado se abre el pase')
   await cerrarPago(g)
@@ -212,7 +212,7 @@ const cerrarPago = async (a) => {
   const dias = await g.evaluar('document.body.innerText')
   debe(/LLEGADA/.test(dias), 'gratis', 'DÍAS: la barra de llegada sale')
   debe(await g.evaluar("Boolean(document.querySelector('[data-candado=\"dia-ajuste-llegada\"]'))"), 'gratis', 'DÍAS: con el vuelo guardado, el ajuste del día sale cerrado («Con el pase, tu día se ajusta a la hora de tu vuelo»)')
-  debe(await g.evaluar("Boolean(document.querySelector('[data-candado=\"alojamiento-zona\"]'))"), 'gratis', 'DÍAS: la zona del alojamiento sale cerrada («cada día empieza cerca de donde duermes»)')
+  debe(await g.evaluar("Boolean(document.querySelector('[data-alojamiento-dia-bloque]'))"), 'gratis', 'DÍAS (10N11): la tarjeta del alojamiento del día 1 sale (sin la caja vieja de la zona)')
   // Logros: la vitrina y las colecciones se ven, cerradas, con «Con el Pase de Roma, cada sitio que ves suma».
   await g.evaluar('window.__momentos.hoja()')
   await g.esp(3000)

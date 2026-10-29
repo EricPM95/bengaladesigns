@@ -35,7 +35,7 @@ debe(ajustes.titulos['Tus fotos de cada sitio'] === 'Todas las fotos que quieras
 debe(ajustes.titulos['La historia de cada sitio'] === 'Todas las historias' && ajustes.textos['La historia de cada sitio'] === 'De cada sitio, como una audioguía en tu móvil.', 'lista', 'fila de las historias cambiada')
 debe(!ajustes.prometidas_sin_hacer.some((x) => /puesta de sol/.test(x)), 'lista', 'la puesta de sol ya no está en prometidas_sin_hacer')
 const gen = leer('src/lib/listaDelPase.ts')
-debe(!/Empiezas cerca de donde duermes/.test(gen) && !/Empiezas cerca de donde duermes/.test(leer('src/components/pase/pelicula/gen/Pase_Pelicula.ts')), 'lista', '«Empiezas cerca de donde duermes» no existe')
+debe(!/Empiezas cerca de donde duermes/.test(gen) && !/Empiezas cerca de donde duermes/.test(leer('src/components/pase/lista/disenoLista.ts')), 'lista', '«Empiezas cerca de donde duermes» no existe')
 
 /* ───────────────────────── 2. El aviso sin pase ───────────────────────── */
 const g = await conViaje({ version: 'gratis', ancho: 390, alto: 844 })

@@ -108,7 +108,7 @@ for (const fechas of [true, false]) {
         // HOY es solo de pago (Tanda 6z6): en la gratis no se pinta nada. Lo de dentro se comprueba en la de pago.
         if (version === 'gratis') {
           // (Tanda 10C: sin pase, HOY enseña lo de antes del viaje o «es parte del pase», y [Ver el Pase de Roma]; nunca la siguiente parada, [Cómo llegar] ni [Visto].)
-          debe(/data-hoy="sin-pase"/.test(html) && /Ver el Pase de Roma/.test(texto) && !/Cómo llegar/.test(texto) && !/>Visto</.test(html), '1 barra', `${nombre}: HOY sin pase no enseña la invitación al pase (${plano(texto).slice(0, 120)})`)
+          debe(/data-hoy="sin-pase"/.test(html) && /Ver el Pase Roma/.test(texto) && !/Cómo llegar/.test(texto) && !/>Visto</.test(html), '1 barra', `${nombre}: HOY sin pase no enseña la invitación al pase (${plano(texto).slice(0, 120)})`)
           continue
         }
         const fase = html.match(/data-hoy="([^"]+)"/)?.[1]

@@ -32,3 +32,6 @@ docs/_antes/
 
 .env
 scripts/destino/_rutasRevisionViajes.json
+
+# Documentos de proveedores (Eric, 29-oct): nunca se suben
+docs/civitatis/*.pdf

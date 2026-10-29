@@ -4,6 +4,7 @@ import { Icono } from '../../ui/Icono'
 import { RuedaDeHora } from '../../ui/RuedaDeHora'
 import { ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
 import { HojaAbajo } from './HojaAbajo'
+import { LineaDelPase } from '../../pase/Candado'
 
 /**
  * LA HOJA DEL VUELO (Tanda 10N9; `Piezas/Reservas Cada Uno` 02 y 02b), la misma para quien pone el suyo (invitado) y para el administrador: las pestañas Ida / Vuelta (con el resumen «✓ Ida · mar 10 · 11:15» de la otra),
@@ -243,6 +244,8 @@ export function HojaDelVuelo({
       )}
       {l.extras && (
         <>
+          {/* (10N11 §4) Sin pase, la línea en gris con el candado; con pase, nada. */}
+          <LineaDelPase className="mt-3" datos="vuelo-hoja" texto="Con el {pase}, adaptamos tu primer y tu último día a tus vuelos." />
           <div className="mt-3 grid grid-cols-2 gap-2">
             <label className="flex h-[58px] flex-col justify-center gap-0.5 rounded-[16px] border border-text/15 bg-white px-3.5">
               <span style={{ ...etiquetaMono, fontSize: 9.5 }}>Ref. vuelo</span>

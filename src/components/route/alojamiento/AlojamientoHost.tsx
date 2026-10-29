@@ -19,6 +19,8 @@ export function AlojamientoHost() {
   const selections = useRouteStore((state) => state.accommodationSelections)
   const setHotel = useRouteStore((state) => state.setAccommodationHotel)
   const setZona = useRouteStore((state) => state.setAccommodationZone)
+  const setDireccion = useRouteStore((state) => state.setAccommodationAddress)
+  const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
   const setCuentasEntre = useRouteStore((state) => state.setCuentasEntre)
   const setPagadoPorDe = useRouteStore((state) => state.setPagadoPorDe)
   const mapa = useAlojamientoUi((state) => state.mapa)
@@ -51,6 +53,12 @@ export function AlojamientoHost() {
           actual={selections[estanciaHoja.segmentDayId] ?? null}
           zonas={info.zonasAlojamiento}
           zonaActual={route.accommodationZone ?? null}
+          direccionActual={route.accommodationAddress ?? null}
+          onBuscar={() => {
+            const seg = estanciaHoja.segmentDayId
+            cerrarHoja()
+            abrirMapa(seg)
+          }}
           para={route.cuentasEntre?.[`aloj-${estanciaHoja.segmentDayId}`] ?? null}
           pagado={route.pagadoPorDe?.[`aloj-${estanciaHoja.segmentDayId}`] ?? null}
           textoGuardar="Guardar el alojamiento"
@@ -60,6 +68,8 @@ export function AlojamientoHost() {
             const nombreDeZona = info.zonasAlojamiento.find((z) => z.id === d.zona)?.nombre
             const hotel = hotelPuesto ?? (d.precio && nombreDeZona ? { name: nombreDeZona, precio: d.precio } : null)
             setHotel(seg, hotel)
+            // (10N11) La dirección del hotel se guarda con el viaje (solo con pase): la leen «Cómo llegar a tu alojamiento» en RESERVAS, DÍAS y HOY.
+            if (d.direccion !== (route.accommodationAddress ?? null)) setDireccion(d.direccion)
             if (d.zona !== (route.accommodationZone ?? null) && d.zona) {
               setZona(d.zona)
               void rehacerPorCambioDeVuelo({ que: 'zona', mitad: null })

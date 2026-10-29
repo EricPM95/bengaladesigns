@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ORO_PASE, CandadoDeDesign } from '../pase/Candado'
+import { CandadoRedondo } from '../pase/Candado'
 
 /**
  * ELEGIR UNA COSA U OTRA: el mismo estilo en toda la app (Tanda 10N §11, «Presupuesto Compartido» 03-05).
@@ -96,8 +96,8 @@ export function InterruptorElegir({
             }}
           >
             {o.bloqueada && (
-              <span data-bloqueado-pase="1" aria-hidden="true" style={{ position: 'absolute', top: -7, right: -5, width: 22, height: 22, borderRadius: '50%', background: ORO_PASE, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px -2px rgba(110,80,24,.6)' }}>
-                <CandadoDeDesign size={12} />
+              <span data-bloqueado-pase="1" aria-hidden="true" style={{ position: 'absolute', top: -7, right: -5, display: 'flex' }}>
+                <CandadoRedondo diametro={22} datos="elegir" />
               </span>
             )}
             {o.icono && <span aria-hidden="true" style={{ flex: 'none', display: 'inline-flex', color: elegida ? ORO : 'rgba(28,34,48,.6)' }}>{o.icono}</span>}

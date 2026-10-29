@@ -49,6 +49,7 @@ import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
 import { abrirAvisoPase } from '../../../../lib/avisoPase'
 import { nombreDelPase } from '../../../../lib/nombrePase'
 import { Marca } from '../../../pase/Marca'
+import { CandadoRedondo } from '../../../pase/Candado'
 import { filaDeHoySinPase } from '../../../../lib/diaDePrueba'
 import { useSyncStore } from '../../../../store/useSyncStore'
 import { FranjaDiaDePrueba, TarjetaDeLaPrueba } from '../TarjetaDeLaPrueba'
@@ -149,8 +150,8 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
               </span>
             )}
           </span>
-          <span aria-hidden="true" data-candado-dentro className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
-            <Icono nombre="candado" size={14} grosor={1.8} />
+          <span data-candado-dentro className="flex flex-none">
+            <CandadoRedondo diametro={30} datos="escuchar" />
           </span>
         </button>
       </div>
@@ -444,6 +445,9 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         </div>
       )}
 
+      {/* Al EMPEZAR el día (Tanda 10N11): [Cómo llegar a tu alojamiento]. El día de llegada con billete ya lo lleva en su bloque. */}
+      {!esVuelta && !hayBilleteLlegada && <BotonAlojamientoHoy route={route} />}
+
       {/* 3, 3b, 3c: el día de llegada */}
       {hayBilleteLlegada && (
         <div data-hoy-llegada="1" className="flex flex-none flex-col gap-2.5">
@@ -456,7 +460,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
               </button>
             )}
           </div>
-          <BotonAlojamientoHoy route={route} />
+          <BotonAlojamientoHoy route={route} dentro />
         </div>
       )}
       {llegadaTarde && (

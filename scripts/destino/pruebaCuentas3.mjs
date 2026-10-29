@@ -453,9 +453,9 @@ console.log('2b. Las pantallas del pase (P1, P6, P7, P8b, P9)')
   // (Tanda 10I: la hoja «¿Cuántos sois?» es la de la lista del pase (src/components/pase/ListaDelPase.tsx; 10N10, 8b: antes, la película); sus precios y textos salen de precioPelicula.ts.)
   const cuantos = M.hojaCuantosSois(planes, 4)
   const peli = fs.readFileSync('src/components/pase/ListaDelPase.tsx', 'utf8')
-  const adaptado = fs.readFileSync('src/components/pase/pelicula/adaptar.ts', 'utf8')
+  const adaptado = peli
   debe(cuantos.comprarTxt === 'Comprar · 19,96 €' && cuantos.personasTxt === '4 personas' && cuantos.filas.length === 3 && cuantos.hasta === 50, 'P6', 'P6 trae [Comprar · total] y las personas del Grupo (con [−] y [+] de la lista del pase)')
-  debe(/lineaLegal: textos\.linea_legal_compra/.test(peli) && /data-linea-legal/.test(adaptado) && adaptado.indexOf('data-linea-legal') < adaptado.indexOf("onClick: '{{ comprar }}'"), 'P6', 'antes de [Comprar] hay un hueco para la línea legal del gestor (data/pase/textos.json, «Texto pendiente»)')
+  debe(/textos\.linea_legal_compra/.test(peli) && /data-linea-legal/.test(adaptado) && adaptado.indexOf('data-linea-legal') < adaptado.indexOf('data-comprar'), 'P6', 'antes de [Comprar] hay un hueco para la línea legal del gestor (data/pase/textos.json, «Texto pendiente»)')
   debe(!/stripe/i.test(peli) && !new RegExp(M.marca.nombre, 'i').test(peli), 'P6', 'la hoja de compra no nombra al servicio de pago ni a la app')
   debe(M.hojaCuantosSois([], 4).comprarTxt === 'Comprar' && M.hojaCuantosSois([], 4).filas.length === 0, 'P6', 'sin precios del servidor no se puede comprar nada')
   // La hoja de compra no sale sin cobro: el anfitrión no pinta nada y la compra solo se abre si el servidor dice que se cobra.

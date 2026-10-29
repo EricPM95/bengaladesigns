@@ -27,11 +27,12 @@ const TAMANOS = [
 
 const MIDE = `(() => {
   const P = document.querySelector('[data-lista-del-pase]')
-  const esc = P && P.querySelector('[data-escenario]')
+  const esc = P && P.querySelector('[data-lista-pase]') // (10N11: la lista ya no es un escenario escalado: llena la pantalla)
   if (!P || !esc) return null
   const vw = window.innerWidth, vh = window.innerHeight
   const m = new DOMMatrixReadOnly(getComputedStyle(esc).transform)
   const r = (e) => { const b = e.getBoundingClientRect(); return { x: b.left, y: b.top, r: b.right, b: b.bottom, w: b.width, h: b.height } }
+  { const l0 = P.querySelector('[data-lista-pase]'); if (l0) l0.scrollTop = l0.scrollHeight } // (10N11: [Elegir mi pase] es la última fila de la lista de Design: se mide con la lista al final)
   const elegir = Array.from(P.querySelectorAll('span')).find((x) => (x.textContent || '').trim() === 'Elegir mi pase')
   const lista = P.querySelector('[data-lista-pase]')
   const pfr = P.querySelector('.pfr')
@@ -69,10 +70,9 @@ async function unaVez(ancho, alto, capturar) {
       const l = document.querySelector('[data-lista-del-pase] [data-lista-pase]')
       if (!l) return null
       l.scrollTop = l.scrollHeight
-      const filas = Array.from(l.children)
-      const ultima = filas[filas.length - 1]
+      const ultima = null
       const elegir = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => (x.textContent || '').trim() === 'Elegir mi pase')
-      return { top: l.scrollTop, ultimaB: ultima ? ultima.getBoundingClientRect().bottom : null, elegirT: elegir ? elegir.getBoundingClientRect().top : null }
+      return { top: l.scrollTop, ultimaB: elegir ? elegir.getBoundingClientRect().bottom : null, elegirT: window.innerHeight } // (10N11: [Elegir mi pase] es la última fila: con la lista al final queda entero a la vista)
     })()`)
     // ¿Cuántos sois? abierta.
     await a.evaluar("(() => { const e = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.children.length === 0 && x.textContent.trim() === 'Elegir mi pase'); if (e) e.click(); return true })()")

@@ -3051,3 +3051,162 @@ Se probó con dos cuentas reales contra el Supabase real («Eric» administrador
 
 - ✅ Hecho — Apartado «10N10» en INFORME_TANDA10B.md (por qué no llegaban los avisos y lo del sonido con la tabla, qué se quita de la 10N7, qué migración aplicar) y esta lista al final  
   *Dónde:* No es de móvil.
+
+
+## 10N11 — El alojamiento gratis y con pase, «Cómo llegar a tu alojamiento», los candados del pase, la lista del pase por puntos y HOY sin pase (29-oct)
+
+**Migración: ninguna.** La dirección del hotel usa el campo que ya existía (`route.accommodationAddress`) y la zona `route.accommodationZone`. Nada nuevo en Supabase.
+
+### Antes de la 10N11 (lo que pediste en el mensaje previo)
+- **No apagar el PC:** apuntado en `CLAUDE.md` (solo si el prompt de la tanda lo pide). En esta tanda, tú escribiste «cuando acabes puedes apagar el pc» y se apaga al final, con margen para cancelarlo.
+- **Comprobación de la 0065 y la 0067 con dos cuentas reales** (`node scripts/destino/pruebaTanda10N10_avisos_real.mjs --con0065 --tabla`): **10 comprobaciones, 0 fallos.** Los 8 casos llegan, son aviso nuevo, con franja y sonido pedido, en menos de 1 s:
+
+| Caso | ¿Llega? | ¿Aviso nuevo? | Franja | Sonidos | Tarda |
+|---|---|---|---|---|---|
+| Quitar un día | sí | sí | «Eric ha quitado el sábado 14» | 1 | 0,3 s |
+| Cambiar el orden | sí | sí | «…el orden de los días» | 1 | 0,4 s |
+| Añadir un restaurante | sí | sí | «ha añadido un sitio» (Da Enzo) | 1 | 0,7 s |
+| Añadir sitios | sí | sí | «ha añadido 3 sitios» | 1 | 0,4 s |
+| Quitar el Free Tour | sí | sí | «Eric ha quitado el Free Tour» | 1 | 0,7 s |
+| Dos seguidos (primero / segundo) | sí, los dos | sí | uno cada vez | 1 + 1 | 0,3 / 0,3 s |
+| **Vuelo del invitado** | **sí** | sí | «Viajes ha puesto su vuelo» | 1 | 0,3 s |
+
+  Con la 0065 aplicada: la campana conserva los 7 avisos (sin ella, solo el último) y el vuelo del invitado llega con «Viajes ha puesto su vuelo: ida jue 29 · 11:20, vuelta sáb 31 · 18:05.». La tabla completa está en `docs/dias/_10n11_tabla_avisos.md`. Es el móvil del invitado simulado con el código real de la app, no un iPhone.
+- **Tope de peso a 400 KB:** de acuerdo hasta la 10S.
+- **PDF de la certificación de Civitatis:** añadido al `.gitignore` (`docs/civitatis/*.pdf`); `git status` queda limpio.
+
+### 1. Las reglas nuevas (a `docs/REGLAS_DE_LA_APP.md`)
+- **El candado del pase, siempre igual:** `CandadoRedondo` (candado dorado `#F3D88F` sobre un círculo azul oscuro `#1C2230` con filo dorado `#B58A2E`; 22 px en las líneas y 34 px en la esquina de un bloque, las medidas de Design) y `LineaDelPase` (la línea en gris con su candado). Pasadas a esta forma: EXPLORAR Baños y Fuentes, «Cerca de ti», «Escuchar historia» sin pase (ficha y HOY), alojamiento y hoja del vuelo.
+- **Candados que se dejan sueltos a propósito** (van dentro de un botón que ya es azul o dorado, como en Design): la pastilla «Pase Roma» de RUTA, el botón del día de vuelta sin hora y el [Ver] de la caja azul.
+- **Con el pase, sin frases del pase:** las líneas solo salen sin pase (y no mientras no se sabe). Comprobado con pase en RUTA, DÍAS, RESERVAS y EXPLORAR: ninguna frase del pase sale a quien ya lo tiene.
+- **Pendiente:** la pastilla «Pase Roma» con candado redondo de la tarjeta de «Mis viajes» (`Viaje Compartido`) no existe hoy en la app (`TripCard` no tiene nada del pase); no estaba en el prompt de esta tanda y no se ha creado.
+
+### 2 y 3. El alojamiento y «Cómo llegar a tu alojamiento»
+- **Hoja «Tu alojamiento»** (Vuelo Reservas 08o/08p/08q/08b), en este orden: nombre del hotel + [Buscar alojamiento] (cierra la hoja y abre el mapa); zona y dirección; «¿Para quién es el alojamiento?» (cuadrados); precio; «¿Quién lo ha pagado?» con **todas** las personas marcadas; la línea («90 € cada uno · Va a la cuenta conjunta») y [Guardar el alojamiento].
+  - **Sin pase:** bloque pequeño gris con el candado en la esquina («¿Dónde te alojas?», «Dirección del hotel») y la línea de Design («Con el Pase Roma, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés.»). Sin pase no se guarda zona ni dirección (se conservan las que hubiera).
+  - **Con pase, la primera vez:** la lista de zonas a la vista. **Una vez elegida:** desplegable cerrado «TU ZONA · Prati ✓»; al tocarlo se abren las demás (todas las del destino: 7 con «Aún no lo sé»; Design dibuja 5). Debajo, «Dirección» y [Cómo llegar a tu alojamiento].
+  - Fuera las cajas «Tu primer día, cerca de donde duermes» y «¿En qué zona te alojas?» (hoja y tarjeta) y la casilla «Dirección de tu alojamiento» de la tarjeta (ahora se edita solo en la hoja). No se pierde nada más ([Eliminar], [Cambiar], noches, precio).
+- **Tarjeta de RESERVAS** (09 y 09p): sin pase, nombre, la línea con el candado y «En este alojamiento · Tú y Viajes» (redondo); con pase, «Tu zona · Prati» con dirección, «Cambiar», [Cómo llegar a tu alojamiento] y «En este alojamiento».
+- **DÍAS, día 1** (`Alojamiento Dias` 01/02/02b): sin alojamiento «Alojamiento · Roma · Añade tu alojamiento» + [+ Añadir]; con pase «Alojamiento · Prati» + nombre + dirección + [Ir] (abre el camino en Google Maps); sin pase «Alojamiento · Roma», nombre y [Ir] con el candado (abre el pase). La tarjeta sale siempre en el día 1 y sustituye a la caja vieja «¿En qué zona te alojas?» de DÍAS.
+- **HOY (nuevo):** tarjeta [Cómo llegar a tu alojamiento] (icono dorado, «TU ALOJAMIENTO · zona», nombre, dirección y el botón) al empezar el día y al acabarlo; sin pase y sin dirección no sale. El día de llegada con billete la lleva dentro de su caja. En el día de vuelta, al empezar, no sale (una prueba antigua lo exigía; dímelo si lo quieres).
+- **Con varios destinos:** la zona y la dirección son del viaje entero y solo salen en la primera estancia; las demás muestran solo el nombre.
+
+### 4. El vuelo
+- **DÍAS, tarjeta del vuelo** (`Alojamiento Dias` 03): «Aterrizas a las 15:40» y debajo «Fiumicino · Cómo llegar desde el aeropuerto» (nuevo componente `TarjetaLlegadaDias`; para tren, bus y barco cambia el verbo). «Libre hacia las 17:40» ya no existía en el código desde la 6t. La línea del aeropuerto puede ocupar dos líneas en 390 px.
+- **Hoja del vuelo:** sin pase, la línea gris con el candado «Con el Pase Roma, adaptamos tu primer y tu último día a tus vuelos.»; con pase, sin línea (solo en la hoja del administrador).
+- **«Tú» con su inicial:** en las pruebas sale «E» (viaje de «Eric»); no he encontrado de dónde saldría una «T» (las iniciales salen del nombre o del email). Si la ves con «T», dime con qué cuenta.
+
+### 5. La lista del pase por puntos y HOY sin pase
+- **La lista del pase** (`Pase Lista` 1): componente propio (`ListaDelPase.tsx`) generado a partir de la pieza de Design (`generarPaseLista.mjs` lee `Pase Lista.dc.html`: se regenera con `node scripts/destino/generarPaseLista.mjs`; falla si cambia el número de secciones o de tarjetas). 6 secciones y 19 puntos, con los precios de `data/pase/precios.json` (euros pequeños si la moneda no es euro). [Elegir mi pase] abre «¿Cuántos sois?» con moneda, línea legal y [Comprar] como siempre; con pase sale «✓ Tu Pase de Roma está activo». Está al final de la lista (≈2.600 px), sin barra fija, como Design.
+- **Cada punto existe de verdad** (`incluye.json`): ninguno se quitó. Dependen de otros trabajos: «Tu ruta empieza donde duermes … con cómo llegar» (`como_llegar_alojamiento`, hecho en esta tanda) y «Tu pasaporte de viajero» / «Tu mapa del mundo» (`logros_viajero`).
+- **Lo que se quitó de la película:** la carpeta `src/components/pase/pelicula/` entera (`dc.tsx`, `adaptar.ts`, `pelicula.css`, `mapas.ts` de 580 KB y `gen/`), tras comprobar que solo la usaba la lista (los logros tienen sus propios dibujos y no usan `dc.tsx` ni `gen/`); y los scripts `generarPelicula.mjs`, `generarMapasPelicula.mjs` y `_10n5_estructura.mjs`. No he medido el nuevo tamaño del chunk con `vite build`. `public/pelicula/assets` se queda.
+- **HOY sin pase** (`Pase Lista` 2 y 2b, `HoySinPase.tsx`): «HOY, tu guía del día», 8 tarjetas con dibujo, la caja según el día de prueba («Tienes un día de prueba con HOY completo, gratis.» / «Ya has usado tu día de prueba.») y [Ver el Pase Roma], que abre la lista. **Sustituye toda la pestaña HOY sin pase:** ya no salen la cuenta atrás, «Pon tus fechas», «Tu viaje ha terminado» ni los avisos de la prueba (mañana es tu prueba, ¿qué tal ayer?). El ✕ lleva a DÍAS.
+- El texto del botón es ahora «Ver el Pase Roma» (el del prompt y de Design) en todas las pruebas; el «✓ Tu Pase de Roma está activo» sigue usando «Pase de Roma».
+
+### Pruebas (solo lo tocado + pruebaJutrip, sin batería completa)
+- **Pasadas (35, hasta 2 Chrome a la vez):** `pruebaTanda10N11_a/_b/_c/_g` (36 + 15 + 47 + 18 = 116 comprobaciones, 0 fallos); `pruebaJutrip` (129/0); `pruebaTanda10N10_avisos/_explorar/_cuentas/_reservas`; `pruebaTanda10N9_vuelo/_pantallas`; `pruebaTanda10B` (139/0), `10G`, `10H`, `10I`, `10J`, `10P_pase`, `10N3_apertura`, `10N5_pase`, `10N6_avisopase`, `10N8_ficha`, `10N8_pantallas`, `10N8_reservas`, `10N5_cadauno`, `10N4_flotantes`, `6s`, `6t`, `6v`, `6z3`, `6z6a`, `Fase6y4_presupuesto`, `Fase6y5_pantallas`, `Fase6y6_cierre`. `pruebaJutrip` y `pruebaTanda10B` cayeron una vez por el navegador de prueba (`__rutaPrueba is not a function`) y pasaron sueltas.
+- **Pruebas antiguas cambiadas por lo pedido:** `10G`, `10N5_pase`, `6v` (la caja del alojamiento pasa a ser la línea gris), `10N10_reservas`, `Fase6y4_presupuesto`, `Fase6y5_pantallas` y `Tanda7_hoy` (tarjeta de DÍAS y de HOY nuevas), `10I`, `10H`, `10B`, `10N6_avisopase`, `10N3_apertura`, `10P_pase`, `10N9_pantallas`, `6z3`, `6z6a`, `Cuentas3` (solo comprobaciones de código sobre `ListaDelPase`) y `10N8_ficha` (el candado de `Elegir`).
+- `pruebaTanda7_hoy` (SSR, no entra en la batería por su nombre) también se pasó: 126/0. Ya fallaba en la 10N10 con 5 fallos (comprobado en un checkout del commit anterior): 4 eran del HOY sin pase de Design (expectativa vieja, actualizada por C) y el quinto (B4) era una expectativa de antes de la 10B (el día de vuelta sin paradas se llama «Hoy vuelves a casa» con «Roma → Barcelona · Día de viaje» debajo): la actualicé a lo que hace la app desde la 10B.
+- `pruebaTanda7_reservas` sigue cayendo en su sección 8 (`TarjetaTuUltimoDia`, `textos` undefined), código ajeno de antes. `pruebaCuentas3` no se ha ejecutado esta vez (solo se ajustaron sus comprobaciones de código).
+- Typecheck `npx tsc -p tsconfig.app.json --noEmit`: limpio.
+
+### Lo que no se pudo hacer igual que Design / a medias
+- Las zonas del alojamiento: al abrirse salen todas las del destino (7), Design dibuja 5.
+- La línea «Fiumicino · Cómo llegar desde el aeropuerto» puede ocupar dos líneas en 390 px (no cabe en una).
+- Pastilla «Pase Roma» con candado redondo en la tarjeta de «Mis viajes» (Viaje Compartido): no existe en la app, sin crear.
+- Faltan algunas capturas de Design al lado (DÍAS día 1, tarjeta del vuelo) y regenerar las dos del alojamiento (02 y 03) antes del último pulido.
+- Sin ver en un iPhone real o con un día real: HOY con pase dentro de un día en curso; la «T» de «Tú».
+
+### Dudas para ti
+1. ¿La tarjeta del alojamiento también en HOY al empezar el día de vuelta?
+2. Con varios destinos, zona y dirección solo en la primera estancia: ¿vale?
+3. ¿[Elegir mi pase] con barra fija abajo, para que se vea siempre?
+4. ¿Mantengo en HOY sin pase la cuenta atrás, «Pon tus fechas» o el aviso de después del viaje?
+5. El ✕ de HOY sin pase lleva a DÍAS: ¿sobra en una pestaña?
+6. «Pase Roma» (cabecera, caja, botón) y «Pase de Roma» (el ✓ activo): ¿unifico?
+7. ¿Creo la pastilla «Pase Roma» con candado en la tarjeta de «Mis viajes» (Viaje Compartido)?
+
+### Lista de comprobación 10N11
+
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10N11.md e incluido en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Reglas de la app: las nuevas de esta tanda, añadidas a docs/REGLAS_DE_LA_APP.md Candado siempre igual, con el pase sin frases del pase, y el alojamiento (apartado 7).  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Design al día desde RETOQUES.zip (Vuelo Reservas, Alojamiento Dias, Pase Lista, Pase Incluye, Pase Estilo, Pase Escena 4b, Recuerdos Ficha, Viaje Compartido) Solo lo que cambia.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Cómo trabajar: hasta 4 agentes, un servidor, hasta 2 Chrome, nota de estado cada 30 min, sin apagar el PC hasta el final Al final, con tu permiso del 29-oct, se apaga el PC.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Antes de la 10N11: no apagar el PC (CLAUDE.md), comprobar la 0065 con dos cuentas reales, PDF de Civitatis fuera de git La comprobación dio 10 comprobaciones, 0 fallos, y los 8 casos llegan en menos de 1 s (tabla en el informe). El PDF está en el .gitignore.  
+  *Dónde:* No es de móvil.
+
+**1 · Reglas nuevas**
+
+- ⚠️ A medias — El candado del pase, siempre igual: dorado sobre un círculo azul oscuro, también en las líneas pequeñas, en todas las pantallas del pase Hecho en EXPLORAR (Baños, Fuentes), Cerca de ti, Escuchar historia, alojamiento y vuelo. Se dejan sueltos los candados que van dentro de un botón ya azul o dorado (pastilla «Pase Roma» de RUTA, botón del día de vuelta sin hora, [Ver] de la caja azul). Falta la pastilla «Pase Roma» con candado redondo de la tarjeta de Mis viajes (Viaje Compartido), que no existe hoy en la app.  
+  *Dónde:* EXPLORAR > Baños y Fuentes, Cerca de ti, ficha de un sitio sin pase (cuenta sin pase).  *Captura:* `10n11_candado_explorar.jpg`
+- ✅ Hecho — Con el pase, sin frases del pase Comprobado con pase en RUTA, DÍAS (días 1 y 2), RESERVAS y EXPLORAR: ni líneas, ni candados, ni «Con el Pase Roma,…».  
+  *Dónde:* Cuenta con pase: RESERVAS, DÍAS, EXPLORAR.  *Captura:* `10n11_candado_con_pase_explorar.jpg`
+
+**2 · El alojamiento**
+
+- ✅ Hecho — Gratis: nombre del hotel, ¿Para quién?, ¿Cuánto ha costado?, ¿Quién lo ha pagado? Con pase, además zona y dirección  
+  *Dónde:* RESERVAS > Alojamiento > Añadir mi alojamiento (cuenta sin pase y con pase).  *Captura:* `10n11_aloj_05_hoja_sin_pase.jpg`
+- ✅ Hecho — La hoja «Tu alojamiento» en el orden pedido: nombre + [Buscar alojamiento], zona y dirección, ¿Para quién?, precio, ¿Quién lo ha pagado? (todas las personas marcadas), la línea y [Guardar el alojamiento] [Buscar alojamiento] cierra la hoja y abre el mapa; no guarda lo escrito en la hoja.  
+  *Dónde:* RESERVAS > Alojamiento (cuenta de Eric).  *Captura:* `10n11_aloj_01_hoja_con_pase_zona_elegida.jpg`
+- ⚠️ A medias — Sin pase: bloque pequeño gris con candado («¿Dónde te alojas?», «Dirección del hotel») y la línea de Design; al tocarlo, el pase Al tocarlo abre la lista del pase (lo que hace abrirPase() desde la 10N10), no el aviso pequeño de antes.  
+  *Dónde:* RESERVAS > Alojamiento (cuenta sin pase).  *Captura:* `10n11_aloj_05_hoja_sin_pase.jpg`
+- ✅ Hecho — Con pase: la primera vez la lista de zonas; una vez elegida, un desplegable cerrado «TU ZONA · Prati ✓» que al tocarlo abre las demás; debajo Dirección y [Cómo llegar a tu alojamiento] Al abrirse salen todas las zonas del destino (7 con «Aún no lo sé»); Design dibuja 5.  
+  *Dónde:* RESERVAS > Alojamiento (cuenta con pase).  *Captura:* `10n11_aloj_04_hoja_desplegable_abierto.jpg`
+- ✅ Hecho — Fuera la caja «Tu primer día, cerca de donde duermes» y la de «¿En qué zona te alojas?», en la hoja y en la tarjeta Se quitó también la casilla «Dirección de tu alojamiento» de la tarjeta (ahora se edita solo en la hoja).  
+  *Dónde:* RESERVAS > Alojamiento.
+- ✅ Hecho — No se pierde nada de lo que hay hoy en el bloque del alojamiento Siguen [Eliminar], [Cambiar], noches y precio.  
+  *Dónde:* RESERVAS > Alojamiento ya guardado.
+
+**3 · Cómo llegar a tu alojamiento**
+
+- ✅ Hecho — RESERVAS, tarjeta del alojamiento (09 y 09p), con y sin pase  
+  *Dónde:* RESERVAS > Alojamiento guardado.  *Captura:* `10n11_aloj_02_tarjeta_con_pase.jpg`
+- ✅ Hecho — DÍAS, dentro del día 1 (01, 02 y 02b): sin alojamiento, con pase y sin pase; [Ir] sin pase abre el pase Con varios destinos, la zona y la dirección son del viaje entero y solo salen en la primera estancia.  
+  *Dónde:* DÍAS > día 1 (sin alojamiento, con pase y sin pase).  *Captura:* `10n11_alojamiento_dias_02.jpg`
+- ⚠️ A medias — HOY: [Cómo llegar a tu alojamiento] al empezar y al acabar el día; sin pase no sale Probado en navegador con un viaje en curso; falta verlo en un día real. En el día de vuelta, al empezar, no sale.  
+  *Dónde:* HOY (cuenta con pase).  *Captura:* `10n11_alojamiento_hoy_con_pase.jpg`
+- ✅ Hecho — [Cómo llegar] abre el camino desde donde está el viajero hasta la dirección del hotel El mismo enlace de siempre (Google Maps en transporte público).  
+  *Dónde:* Con pase y dirección guardada.
+
+**4 · El vuelo**
+
+- ✅ Hecho — DÍAS, tarjeta del vuelo: «Aterrizas a las 15:40» y «Fiumicino · Cómo llegar desde el aeropuerto»; fuera «libre hacia las 17:40» «Libre hacia» ya no existía desde la 6t. La línea del aeropuerto puede ocupar dos líneas en 390 px.  
+  *Dónde:* DÍAS > día 1 con la hora del vuelo guardada.  *Captura:* `10n11_alojamiento_dias_03.jpg`
+- ✅ Hecho — Hoja del vuelo: sin pase la línea gris con el candado «Con el Pase Roma, adaptamos tu primer y tu último día a tus vuelos.»; con pase, sin línea Sale en la hoja del administrador.  
+  *Dónde:* RESERVAS > Llegada y vuelta (cuenta sin pase y con pase).  *Captura:* `10n11_aloj_07_vuelo_sin_pase.jpg`
+- ✅ Hecho — «¿Para quién es este vuelo?» como en Design  
+  *Dónde:* RESERVAS > Llegada y vuelta.
+- ⚠️ A medias — «Tú» con su inicial («E»), no con una «T», en todas las tarjetas En la prueba sale «E» (nombre «Eric»). No se ha encontrado de dónde saldría una «T»: las iniciales salen del nombre o del email. Si la ves con «T», dime con qué cuenta.  
+  *Dónde:* RESERVAS > «En este vuelo» y «En este alojamiento».
+
+**5 · Lista del pase y HOY sin pase**
+
+- ✅ Hecho — La lista del pase como Design (Pase Lista 1), con sus dibujos, textos, precios y [Elegir mi pase]; todo lo que abría la película abre esta lista Componente propio generado de la pieza de Design (6 secciones, 19 puntos). [Elegir mi pase] queda al final de la lista, como Design, sin barra fija.  
+  *Dónde:* RUTA > pastilla «Pase Roma» (cuenta sin pase).  *Captura:* `10n11_lista_pase_1.jpg`
+- ✅ Hecho — Cada punto de la lista existe de verdad en la app (data/pase/incluye.json) Existen todos; ninguno se quitó. «Tu ruta empieza donde duermes … con cómo llegar» depende del trabajo de esta tanda.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — «¿Cuántos sois?» y la compra siguen funcionando; con pase, «✓ Tu Pase de Roma está activo» Quedan «Pase Roma» (cabecera, caja, botón) y «Pase de Roma» (el ✓ activo).  
+  *Dónde:* Lista del pase > [Elegir mi pase] (sin pase y con pase).  *Captura:* `10n11_lista_pase_3_cuantos.jpg`
+- ⚠️ A medias — HOY sin pase (2 y 2b): «HOY, tu guía del día», los puntos con sus dibujos y la caja según el día de prueba (sin usar / ya usado) y [Ver el Pase Roma] que abre la lista Sustituye toda la pestaña HOY sin pase: ya no salen la cuenta atrás, «Pon tus fechas», «Tu viaje ha terminado» ni los avisos de la prueba. El ✕ lleva a DÍAS.  
+  *Dónde:* HOY (cuenta sin pase, con el día de prueba sin usar y ya usado).  *Captura:* `10n11_hoy_sin_pase_1_sin_usar.jpg`
+
+**6 · La prueba**
+
+- ✅ Hecho — Solo las pruebas de lo que tocas y pruebaJutrip, en 0 fallos Pasadas 35 pruebas de lo tocado más pruebaJutrip (129/0), todas en 0 fallos (dos cayeron una vez por el navegador de prueba y pasaron sueltas). Detalle en el informe.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Prueba nueva pruebaTanda10N11 116 comprobaciones (a 36, b 15, c 47, g 18), 0 fallos.  
+  *Dónde:* No es de móvil.
+- ⚠️ A medias — Capturas en docs/dias/capturas_jutrip/ y en REPASO_10N11.html, a tamaño de móvil, al lado de las de Design Faltan algunas capturas de Design (DÍAS día 1 y vuelo) y regenerar las dos del alojamiento antes del último pulido.  
+  *Dónde:* Esta página.
+
+**7 · El informe**
+
+- ✅ Hecho — Apartado «10N11» en INFORME_TANDA10B.md (pruebas, lo que no se pudo hacer como Design, migración) y esta lista al final No hace falta migración.  
+  *Dónde:* No es de móvil.

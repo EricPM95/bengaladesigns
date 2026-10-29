@@ -230,6 +230,8 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       {diaCompleto && <p className="flex-none px-1 text-[12.5px] leading-[1.35] text-text/60">{TEXTO_DIA_COMPLETO}</p>}
       {/* El día de llegada, ANTES de la primera parada (Tanda 7, punto 15): «Llegada a Fiumicino» con el billete y, si hay dirección, [Cómo llegar a tu alojamiento]. */}
       {esLlegada && <TarjetaLlegadaHoy route={route} mitad={fichas.llegada} onAbrir={() => fichas.abrir('llegada')} />}
+      {/* Al EMPEZAR el día (Tanda 10N11): [Cómo llegar a tu alojamiento]. El día de llegada con billete ya lo lleva dentro de su tarjeta. */}
+      {!esVuelta && !(esLlegada && fichas.llegada.billete && fichas.llegada.point) && <BotonAlojamientoHoy route={route} />}
       {/* El día de vuelta sin paradas: la tarjeta «Hoy vuelves a casa» en lugar de «Siguiente parada». */}
       {tarjetaDeVueltaEnLugarDeLaSiguiente && <TarjetaHoyVuelves tarjeta={tarjetaDeVueltaEnLugarDeLaSiguiente} onVerComoIr={() => fichas.abrir('vuelta')} onExplorarMonumentos={() => explorarMonumentos(tarjetaDeVueltaEnLugarDeLaSiguiente.explorar.cerca_de_mi)} />}
       {!sinParadasDeVuelta && (

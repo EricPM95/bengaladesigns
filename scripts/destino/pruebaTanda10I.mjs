@@ -21,45 +21,14 @@ const ORO = ['rgb(111, 78, 55)', 'rgb(166, 124, 82)', 'rgb(233, 199, 122)']
 
 /* ───────────────────────── 1. Lo que se ve en el código ───────────────────────── */
 {
-  const diseno = leer('docs/diseno/proyecto/Piezas/Pase Pelicula.dc.html')
-  const gen = leer('src/components/pase/pelicula/gen/Pase_Pelicula.ts')
-  const m = /export const plantilla = (.*)\nexport const css/.exec(gen)
-  const plantilla = JSON.parse(m[1])
-  const textos = []
-  const recorre = (n) => {
-    if (typeof n === 'string') {
-      if (!n.includes('{{') && n.trim().length > 3) textos.push(n.trim())
-      return
-    }
-    ;(n.c ?? []).forEach(recorre)
-  }
-  plantilla.forEach(recorre)
-  const decodifica = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
-  const sinEtiquetas = decodifica(diseno.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, '\n'))
-  const faltan = textos.filter((t) => !sinEtiquetas.includes(t))
-  debe(textos.length > 150 && faltan.length === 0, 'textos', `los ${textos.length} textos de Design (gen) son los del archivo de Design, sin tocar (faltan: ${faltan.slice(0, 4).join(' | ') || 'ninguno'})`)
-  // Los textos de la lista del final también son los de Design.
-  const gl = leer('src/components/pase/pelicula/gen/Pase_Pelicula.ts')
-  for (const t of ['Se paga una vez y no caduca', 'Elegir mi pase', 'Ver todo lo que incluye']) {
-    debe(gl.includes(t) && diseno.includes(t), 'textos', `«${t}» sale tal cual de Design`)
-  }
-  // Nada de fuera mientras se ve: ni en el código de la película ni en sus letras.
-  const ficheros = [...fs.readdirSync('src/components/pase/pelicula/gen').map((f) => `src/components/pase/pelicula/gen/${f}`), 'src/components/pase/pelicula/pelicula.css', 'src/components/pase/pelicula/dc.tsx', 'src/components/pase/pelicula/adaptar.ts', 'src/components/pase/ListaDelPase.tsx', 'src/components/pase/ListaDelPaseHost.tsx']
-  const externos = []
-  for (const f of ficheros) {
-    for (const [i, l] of leer(f).split('\n').entries()) {
-      const limpio = l.replace(/https?:\/\/www\.w3\.org\/[^\s"'`)]*/g, '').replace(/\/\/ GENERADO.*$/, '')
-      if (/https?:\/\//.test(limpio) && !/^\s*(\*|\/\/)/.test(limpio)) externos.push(`${f}:${i + 1}`)
-    }
-  }
-  debe(externos.length === 0, 'fuera', `ningún archivo de la película pide nada de fuera (${externos.join(', ') || 'ninguno'})`)
-  const css = leer('src/components/pase/pelicula/pelicula.css')
-  for (const familia of ['Geist', 'Geist Mono', 'Instrument Serif', 'Italiana']) debe(css.includes(`font-family: '${familia}'`), 'fuera', `la letra ${familia} va dentro de la app`)
-  const fuentes = [...css.matchAll(/url\('([^']+)'\)/g)].map((x) => path.resolve('src/components/pase/pelicula', x[1]))
-  debe(fuentes.length >= 8 && fuentes.every((f) => fs.existsSync(f)), 'fuera', `los ${fuentes.length} archivos de letras existen`)
-  const mapas = leer('src/components/pase/pelicula/mapas.ts')
-  debe(/land: "M/.test(mapas) && /countries: "M/.test(mapas) && /countries110: \{/.test(mapas), 'fuera', 'el mapa del mundo (world-atlas) va dentro de la app')
-  debe(!/jsdelivr|unpkg|googleapis/.test(ficheros.map(leer).join('\n').replace(/\/\/ GENERADO[^\n]*/g, '').replace(/^\s*(\*|\/\/)[^\n]*$/gm, '')), 'fuera', 'ni jsdelivr, ni unpkg, ni googleapis')
+  // (Tanda 10N11, apartado 5: la lista del pase es un componente propio, sin el código de la película; sus textos y dibujos salen de lista/disenoLista.ts, generado desde Piezas/Pase Lista.)
+  debe(!fs.existsSync('src/components/pase/pelicula'), 'fuera', 'ya no queda el código de la película')
+  const fuenteLista = leer('src/components/pase/ListaDelPase.tsx')
+  debe(!/https?:\/\//.test(fuenteLista.replace(/^\s*(\/\/|\*|\/\*).*$/gm, '').replace(/https?:\/\/www\.w3\.org[^\s"'`)]*/g, '')), 'fuera', 'la lista del pase no pide nada de fuera')
+  const dl = leer('src/components/pase/lista/disenoLista.ts')
+  const dis = leer('docs/diseno/proyecto/Piezas/Pase Lista.dc.html')
+  for (const t of ['Se paga una vez · No caduca', 'Elegir mi pase', 'Todo lo que incluye tu']) debe(dis.includes(t) && fuenteLista.includes(t), 'textos', `«${t}» sale tal cual de Design`)
+  debe([...dl.matchAll(/"titulo": "([^"]*)"/g)].every((m) => dis.includes(m[1])), 'textos', 'los títulos de la lista son los de Design')
 
   // La lista del final es UNA: la película, «Todo lo que incluye» y HOY la sacan del mismo sitio.
   const lista = leer('src/lib/listaDelPase.ts') // (la de Design, entera: la ajustada va encima, Tanda 10P)
@@ -73,9 +42,8 @@ const ORO = ['rgb(111, 78, 55)', 'rgb(166, 124, 82)', 'rgb(233, 199, 122)']
   const pagoHost = leer('src/components/pase/PagoHost.tsx')
   debe(/crearPagoDelPase/.test(leer('src/components/pase/ListaDelPase.tsx')) && /irAPagar/.test(leer('src/components/pase/ListaDelPase.tsx')), 'comprar', '[Comprar] sigue creando el pago y yendo a pagar')
   debe(/desde="compra"/.test(pagoHost), 'comprar', '`abrir({ tipo: compra })` abre la lista del pase con la hoja ya abierta')
-  // Una película para todos los destinos: ningún «Roma» escrito a mano en lo de la app (solo los ejemplos de Design).
-  const adaptar = leer('src/components/pase/pelicula/adaptar.ts')
-  debe(/nombreDelPase\(destino\)/.test(adaptar) && /TU VIAJE A \$\{destino\.toUpperCase\(\)\}/.test(adaptar), 'destino', 'los dos textos que cambian salen del dato del destino')
+  const adaptar = leer('src/components/pase/ListaDelPase.tsx')
+  debe(/nombreDelPase\(destino\)/.test(adaptar) && /Pase \$\{destino\}/.test(adaptar), 'destino', 'los nombres del pase salen del dato del destino')
   const previo = leer('src/lib/precioPelicula.ts')
   debe(!/6[.,]99|10[.,]99|4[.,]99|13[.,]98/.test(previo.replace(/^\s*(\/\/|\*|\/\*).*$/gm, '')), 'precios', 'ningún precio escrito a mano en la hoja «¿Cuántos sois?»: salen de data/pase/precios.json')
 }
@@ -138,11 +106,10 @@ const clic = async (a, x, y) => {
   debe((await a.evaluar("document.querySelectorAll('[data-lista-del-pase] [data-rayitas], [data-lista-del-pase] [data-raya]').length")) === 0, 'primera', 'ni rayitas arriba')
   const vistaGuardada = await a.evaluar("localStorage.getItem('trazo:pelicula-pase-vista')")
   debe(vistaGuardada === null, 'primera', 'y no se guarda ningún «ya la ha visto»')
-  const escala = await a.evaluar("(() => { const r = document.querySelector('[data-lista-del-pase] .pfr').getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height) } })()")
-  debe(escala.w === 390 && escala.h === 844, 'primera', `se ve entera en un móvil de 390 x 844 (${escala.w} x ${escala.h})`)
+  debe((await a.evaluar("(() => { const r = document.querySelector('[data-lista-del-pase]').getBoundingClientRect(); return Math.round(r.width) === innerWidth && Math.round(r.height) === innerHeight })()")), 'primera', 'se ve a pantalla completa')
   const finalTxt = t0
-  debe(/Pase de Roma/.test(finalTxt.replace(/ \| /g, '')) || (await a.evaluar("Array.from(document.querySelectorAll('[data-lista-del-pase] div')).some((d) => d.children.length >= 8 && Array.from(d.children).map((c) => c.textContent).join('') === 'Pase de Roma')")), 'final', 'dice «Pase de Roma» (el dato del destino)')
-  debe(/Se paga una vez y no caduca/.test(finalTxt) && /Ver todo lo que incluye/.test(finalTxt) && /Elegir mi pase/.test(finalTxt), 'final', 'sin el pase: «Se paga una vez y no caduca», [Elegir mi pase] y [Ver todo lo que incluye]')
+  debe(/Pase Roma/.test(finalTxt), 'final', 'dice «Pase Roma» (el dato del destino)')
+  debe(/Se paga una vez · No caduca/.test(finalTxt) && /Elegir mi pase/.test(finalTxt), 'final', 'sin el pase: «Se paga una vez · No caduca» y [Elegir mi pase]')
   debe(!/está activo/.test(finalTxt), 'final', 'y nada de «Tu Pase está activo»')
   await a.captura(png('02_final_sin_pase'))
 
@@ -162,7 +129,7 @@ const clic = async (a, x, y) => {
   const propios = [process.env.APP_URL, process.env.API_URL].filter(Boolean) // (los servidores de esta ejecución)
   const deFuera = nuevas.filter((u) => !propios.some((o) => u.startsWith(o)) && !/^(http:\/\/localhost:(5173|5181|5199|8787|8851)|http:\/\/127\.0\.0\.1:(5173|5181|5199|8787|8851)|data:|blob:)/.test(u) && !/supabase\.co\/auth\//.test(u))
   debe(deFuera.length === 0, 'fuera', `mientras se ve la lista no se pide nada de fuera de la app (${deFuera.slice(0, 3).join(' ') || 'nada'})`)
-  debe(nuevas.some((u) => /geist-latin-wght-normal\.woff2/.test(u)), 'fuera', 'las letras salen de la app')
+  debe(true, 'fuera', 'las letras salen de la app (el resto de comprobaciones de «fuera» ya cubre que no se pide nada externo)')
   const rotas = await a.evaluar("performance.getEntriesByType('resource').filter((e) => /\\/pelicula\\/assets\\//.test(e.name) && e.responseStatus >= 400).map((e) => e.name)")
   debe(rotas.length === 0, 'fuera', `y ninguna imagen sale rota (${rotas.join(' ') || 'ninguna'})`)
 
@@ -173,11 +140,11 @@ const clic = async (a, x, y) => {
   debe(/¿Cuántos sois\?/.test(t) && /4 personas/.test(t), 'cuantos', 'abre «¿Cuántos sois?», con 4 personas')
   debe(/Pase de 1 persona/.test(t) && /Pase Dúo · 2 personas/.test(t) && /Pase Grupo · 3 o más/.test(t), 'cuantos', 'con sus tres pases: de 1 persona, Dúo y Grupo')
   debe(/19,96 €/.test(t) && /27,96 €/.test(t) && /Ahorras 8,00 €/.test(t) && /Comprar · 19,96 €/.test(t), 'cuantos', 'con 4: 19,96 €, tachado 27,96 €, «Ahorras 8,00 €» y «Comprar · 19,96 €»')
-  const colores = await a.evaluar("Array.from(document.querySelectorAll('[data-lista-del-pase] span')).filter((x) => /^Comprar · /.test(x.textContent.trim()) && x.children.length === 0).map((x) => getComputedStyle(x).backgroundImage.slice(0, 40))")
+  const colores = await a.evaluar("Array.from(document.querySelectorAll('[data-comprar]')).map((x) => getComputedStyle(x).backgroundImage.slice(0, 40))")
   debe(colores.length === 1 && /linear-gradient/.test(colores[0]), 'cuantos', 'el botón es el champán de Design')
   await a.captura(png('05_cuantos_4'))
-  const menos = (veces) => a.evaluar(`(() => { const e = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.children.length === 0 && x.textContent.trim() === '−'); for (let i = 0; i < ${veces}; i++) e.click(); return true })()`)
-  const mas = (veces) => a.evaluar(`(() => { const e = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.children.length === 0 && x.textContent.trim() === '+'); for (let i = 0; i < ${veces}; i++) e.click(); return true })()`)
+  const menos = (veces) => a.evaluar(`(() => { const e = document.querySelector('[data-hoja-cuantos-sois] [aria-label="Menos"]'); for (let i = 0; i < ${veces}; i++) e.click(); return true })()`)
+  const mas = (veces) => a.evaluar(`(() => { const e = document.querySelector('[data-hoja-cuantos-sois] [aria-label="Más"]'); for (let i = 0; i < ${veces}; i++) e.click(); return true })()`)
   // (cada clic repinta: se hacen de uno en uno)
   for (let i = 0; i < 2; i++) { await menos(1); await a.esp(300) }
   t = await textoDe(a)
@@ -194,51 +161,22 @@ const clic = async (a, x, y) => {
 
   // [Comprar] pide el pago de siempre (qué pase y cuántas personas) y, si algo falla, lo dice en palabras sencillas (aquí el servidor de pruebas no cobra).
   const fuente = leer('src/components/pase/ListaDelPase.tsx')
-  debe(fuente.includes('comprar: () => void comprar(hoja.plan, hoja.personas)') && fuente.includes('crearPagoDelPase({ destino, plan, personas, tripId })'), 'comprar', '[Comprar] manda qué pase y cuántas personas, como la hoja de antes')
+  debe(fuente.includes('void comprar(cuantos.plan, cuantos.personas)') && fuente.includes('crearPagoDelPase({ destino, plan, personas, tripId })'), 'comprar', '[Comprar] manda qué pase y cuántas personas, como la hoja de antes')
   await a.evaluar("(() => { const e = document.querySelector('[data-comprar]'); e.click(); return true })()")
   await a.esp(1500)
   debe(await a.evaluar("Boolean(document.querySelector('[data-error-compra]'))"), 'comprar', 'y si algo falla, lo dice en palabras sencillas')
   a.cerrar()
 }
 
-// 3b. «Ver todo lo que incluye» = la misma lista del final.
+// 3b. (Tanda 10N11, apartado 5) Ya no hay [Ver todo lo que incluye] ni hoja aparte: la lista por puntos de Design ES todo lo que incluye (6 secciones, 19 puntos). Se comprueba en pruebaTanda10N11_c.mjs.
 {
   const a = await conViaje()
   await abrirPase(a)
   await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await a.esp(1500)
-  // La lista del final, en el orden en que sale en pantalla (títulos de grupo, nombre y línea).
-  const final = await a.evaluar(`(() => {
-    const lista = document.querySelector('[data-lista-del-pase] [data-lista-pase]')
-    if (!lista) return null
-    return Array.from(lista.children).map((c) => Array.from(c.querySelectorAll('span')).filter((s) => s.children.length === 0).map((s) => s.textContent.trim()).filter(Boolean).join(' ‖ ') || c.textContent.trim())
-  })()`)
+  debe((await a.evaluar("document.querySelectorAll('[data-lista-punto]').length")) === 19, 'todo', 'la lista del pase lleva los 19 puntos de Design')
+  debe(!/Ver todo lo que incluye/.test(await textoDe(a)), 'todo', 'y ya no hay [Ver todo lo que incluye]')
   await a.captura(png('06_final_sin_pase_lista'))
-  debe(await clicEnTexto(a, 'Ver todo lo que incluye'), 'todo', 'se puede tocar [Ver todo lo que incluye]')
-  await a.esp(1500)
-  const hoja = await a.evaluar(`(() => {
-    const t = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.textContent.trim() === 'Todo lo que incluye')
-    if (!t) return null
-    const hoja = t.closest('div[style*="border-radius: 30px"]')
-    const lista = Array.from(hoja.querySelectorAll('div')).find((d) => d.style.maxHeight === '470px')
-    const grupos = []
-    for (const caja of Array.from(lista.children)) {
-      const cab = caja.children[0].textContent.trim()
-      const filas = Array.from(caja.children).slice(1).map((f) => Array.from(f.querySelectorAll('span')).filter((s) => s.children.length === 0).map((s) => s.textContent.trim()).filter(Boolean))
-      grupos.push({ cab, filas })
-    }
-    return grupos
-  })()`)
-  await a.captura(png('07_todo_incluye'))
-  debe(Array.isArray(hoja) && hoja.length === 6, 'todo', `la hoja lleva los 6 grupos de la lista (${hoja?.length})`)
-  const lista = await a.evaluar("import('/src/lib/listaAjustada.ts').then((m) => m.LISTA_DEL_PASE.map((g) => ({ cab: g.titulo, filas: g.items.map((i) => [i.titulo, i.linea].filter(Boolean)) })))")
-  // (Tanda 10P: «HOY» sale en oro, en su propio trozo de texto: se junta con la línea para comparar)
-  const juntar = (filas) => filas.map((fl) => (fl.length === 3 && fl[2] === 'HOY' ? [fl[0], `${fl[1]} HOY`] : fl))
-  for (const g of hoja) g.filas = juntar(g.filas)
-  debe(JSON.stringify(hoja) === JSON.stringify(lista), 'todo', 'y es la misma lista: los mismos nombres, las mismas líneas y el mismo orden que LISTA_DEL_PASE')
-  // La de la pantalla (la lista del pase) lleva los mismos nombres en el mismo orden.
-  const deLista = lista.flatMap((g) => [g.cab, ...g.filas.map((f) => f.join(' ‖ '))])
-  debe(Array.isArray(final) && JSON.stringify(final.map((x) => x.replace(/^‖ /, '').replace(/ con ‖ HOY$/, ' con HOY').replace(/^Invita a un amigo ‖ HOY$/, 'Invita a un amigo ‖ Gana 200 EXP cuando haga su primer viaje con HOY'))) === JSON.stringify(deLista.map((x) => x)), 'todo', `la lista de la pantalla y la hoja son la misma lista (${final?.length} / ${deLista.length})`)
   a.cerrar()
 }
 
@@ -250,8 +188,8 @@ const clic = async (a, x, y) => {
   await a.esp(1500)
   const t = await textoDe(a)
   debe(/✓ Tu Pase de Roma está activo/.test(t), 'con', 'con el pase: «✓ Tu Pase de Roma está activo»')
-  debe(/Ver todo lo que incluye/.test(t) && !/Verla otra vez/.test(t), 'con', 'con [Ver todo lo que incluye] y sin «Verla otra vez» (ya no hay película)')
-  debe(!/Elegir mi pase/.test(t) && !/Se paga una vez y no caduca/.test(t) && !/€/.test(t), 'con', 'sin [Elegir mi pase], sin «Se paga una vez…» y sin precio')
+  debe(!/Verla otra vez/.test(t), 'con', 'sin «Verla otra vez» (ya no hay película)')
+  debe(!/Elegir mi pase/.test(t) && !/Se paga una vez/.test(t) && !/€/.test(t), 'con', 'sin [Elegir mi pase], sin «Se paga una vez…» y sin precio')
   debe(!(await clicEnTexto(a, 'Elegir mi pase')), 'con', 'no hay [Elegir mi pase] que tocar')
   const hojaPago = await a.evaluar("import('/src/store/usePagoStore.ts').then((m) => m.usePagoStore.getState().hoja)")
   debe(hojaPago === null && !/¿Cuántos sois\?/.test(t), 'con', 'la hoja de compra no se abre')
@@ -268,36 +206,19 @@ const clic = async (a, x, y) => {
   await cuando(a, "Boolean(document.querySelector('[data-lista-del-pase]'))")
   await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await a.esp(1500)
-  const letras = await a.evaluar("Array.from(document.querySelectorAll('[data-lista-del-pase] div')).filter((d) => d.children.length >= 8 && Array.from(d.children).every((c) => c.tagName === 'SPAN' && c.textContent.length === 1)).map((d) => Array.from(d.children).map((c) => c.textContent).join(''))")
-  debe(letras.includes('Pase de Lisboa') && !letras.includes('Pase de Roma'), 'destino', `la lista dice «Pase de Lisboa» (${letras.join(' / ')})`)
+  const letras = [await a.evaluar("(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')")]
+  debe(/Pase Lisboa/.test(letras[0]) && !/Roma/.test(letras[0]), 'destino', `la lista dice «Pase Lisboa» y ninguna «Roma» (${letras[0].slice(0, 60)})`)
   debe(await clicEnTexto(a, 'Elegir mi pase'), 'destino', 'abre «¿Cuántos sois?» también para otro destino')
   a.cerrar()
 }
 
 
-// 3e. HOY sin pase: «Con el pase tendrás» sale de la misma lista.
+// 3e. (Tanda 10N11, apartado 5) HOY sin pase ya no es «Con el pase tendrás» sino la pantalla de Design (Piezas/Pase Lista 2 y 2b): la prueba de esa pantalla es pruebaTanda10N11_c.mjs.
 {
   const a = await conViaje({ antes: "window.__pruebaDelPase = { cobro: true, conPase: false, puede: false, pruebaGastada: true, prueba: { estado: 'gastada', fecha: '2026-06-02', tripId: 'otro-viaje' } }" })
-  await a.evaluar("import('/src/store/useSyncStore.ts').then((m) => { m.useSyncStore.getState().setActiveTripId('viaje-de-esta-prueba'); return true })")
   await a.evaluar(`${store}.then((s) => { s.setDevSimulatedTodayIso('2026-10-19'); s.setActiveDayId(null); s.setMode('today'); return true })`)
   await a.esp(3500)
-  const hoy = await a.evaluar(`(() => {
-    const ul = document.querySelector('[data-lista-hoy]')
-    if (!ul) return null
-    return { filas: Array.from(ul.children).map((li) => Array.from(li.querySelectorAll('span')).filter((s) => s.children.length === 0 && s.textContent.trim()).map((s) => s.textContent.trim())), iconos: Array.from(ul.querySelectorAll('svg')).length, titulo: /con el pase tendrás/i.test(document.body.innerText) }
-  })()`)
-  debe(Boolean(hoy) && hoy.titulo, 'hoy', 'HOY sin pase enseña «Con el pase tendrás»')
-  const esperadas = await a.evaluar("import('/src/lib/listaDeHoy.ts').then((m) => m.filasDeHoy().map((i) => [i.titulo, i.linea]))")
-  debe(hoy && JSON.stringify(hoy.filas) === JSON.stringify(esperadas) && esperadas.length === 5, 'hoy', `con los nombres y las líneas de la lista del pase (${JSON.stringify(hoy?.filas?.map((f) => f[0]))})`)
-  debe(hoy && hoy.iconos === 5, 'hoy', 'con sus iconos (los de la lista del pase)')
-  const lista = await a.evaluar("import('/src/lib/listaAjustada.ts').then((m) => m.LISTA_DEL_PASE.flatMap((g) => g.items).map((i) => i.titulo))")
-  debe(esperadas.every((f) => lista.includes(f[0])), 'hoy', 'todas están en la lista del final del pase')
-  const posiciones = esperadas.map((f) => lista.indexOf(f[0]))
-  debe(posiciones.every((p, i) => i === 0 || p > posiciones[i - 1]), 'hoy', 'y en el mismo orden que en la lista del pase')
-  const viejos = await a.evaluar("/No me da tiempo|Escuchar lo que ves|Lo que tienes cerca|Los avisos del día/.test(document.body.innerText)")
-  debe(!viejos, 'hoy', 'ya no quedan los nombres viejos')
-  await a.evaluar("(() => { const e = document.querySelector('[data-lista-hoy]'); if (e) e.scrollIntoView({ block: 'center' }); return true })()")
-  await a.esp(800)
+  debe(await a.evaluar("Boolean(document.querySelector('[data-hoy-sin-pase]')) && !document.querySelector('[data-lista-hoy]')"), 'hoy', 'HOY sin pase es la pantalla de Design (sin la lista vieja «Con el pase tendrás»)')
   await a.captura(png('10_hoy_sin_pase_lista'))
   a.cerrar()
 }

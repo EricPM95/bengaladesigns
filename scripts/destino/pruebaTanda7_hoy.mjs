@@ -106,6 +106,7 @@ function pintaHoy(ruta, dayNumber, version = 'completa') {
 const LL = (hora, puntoId = 'fco', medio = 'avion') => ({ hora, medio, puntoId, zona: 'centro' })
 const VU = (hora, puntoId = 'fco', modo = 'flight') => ({ hora, modo, puntoId, zona: 'centro' })
 const tieneHora = (t) => t.match(/\b\d{1,2}:\d{2}\b/g) ?? []
+const soloPantallaSinPase = (h) => h.includes('data-hoy-sin-pase') && !h.includes('data-como-llegar-alojamiento') && !h.includes('data-hoy-vuelta') && !h.includes('data-hoy-llegada') && !/Cómo llegar/.test(h)
 
 // ═══ 0. El contrato: el día del motor llega a la pantalla con lo que HOY necesita ═══
 console.log('0. El día del motor llega entero a la pantalla')
@@ -145,7 +146,7 @@ console.log('A. El día de llegada, antes de la primera parada')
   // Los demás días: sin tarjeta de llegada y con el botón una sola vez, al acabar el día.
   const dia2 = pintaHoy(ruta, 2)
   debe(!dia2.includes('data-hoy-llegada'), 'A1 solo día 1', 'el día 2 enseña la tarjeta de llegada')
-  debe(cuenta(dia2, 'data-como-llegar-alojamiento') === 1 && dia2.lastIndexOf('data-como-llegar-alojamiento') > dia2.indexOf('Hoy ·'), 'A2 alojamiento', 'el día 2 debería llevar [Cómo llegar a tu alojamiento] una vez, al acabar el día')
+  debe(cuenta(dia2, 'data-como-llegar-alojamiento') === 2 && dia2.indexOf('data-como-llegar-alojamiento') < dia2.indexOf('Hoy ·') && dia2.lastIndexOf('data-como-llegar-alojamiento') > dia2.indexOf('Hoy ·'), 'A2 alojamiento', 'el día 2 debería llevar [Cómo llegar a tu alojamiento] dos veces: al empezar y al acabar el día (10N11)')
   // El día de vuelta no lo lleva.
   const diaV = pintaHoy(ruta, 4)
   debe(!diaV.includes('data-como-llegar-alojamiento'), 'A2 alojamiento', 'el día de vuelta enseña [Cómo llegar a tu alojamiento]')
@@ -160,9 +161,10 @@ console.log('A. El día de llegada, antes de la primera parada')
   debe(!sinHora.includes('data-hoy-llegada'), 'A1 sin hora', 'sin la hora de llegada sale la tarjeta de llegada')
   // En la gratis, nada de HOY (no hay pestaña) y el botón no existe.
   const gratis = pintaHoy(ruta, 1, 'gratis')
-  debe(gratis.trim() === '', 'A gratis', `en la gratis HOY pinta algo: ${gratis.slice(0, 120)}`)
+  // (10N11: sin pase la pestaña HOY enseña la pantalla de Design «HOY, tu guía del día»; nunca la llegada, la vuelta, [Cómo llegar] ni el botón del alojamiento.)
+  debe(soloPantallaSinPase(gratis), 'A gratis', `en la gratis HOY enseña solo la pantalla de sin pase: ${gratis.slice(0, 120)}`)
   ponerVersion('gratis')
-  debe(renderToStaticMarkup(createElement(BotonComoLlegarAlojamiento, { direccion: DIRECCION })) === '', 'A gratis', 'el botón del alojamiento sale en la gratis')
+  debe(!renderToStaticMarkup(createElement(BotonComoLlegarAlojamiento, { direccion: DIRECCION })).includes('data-como-llegar-alojamiento'), 'A gratis', 'el botón del alojamiento sale en la gratis (sin pase solo puede salir la cajita del pase, nunca el botón)')
   ponerVersion('completa')
 }
 
@@ -218,7 +220,7 @@ console.log('B. El día de vuelta, después de la última parada')
   // Un día de ruta (el 2) no lleva la tarjeta de la vuelta.
   debe(!pintaHoy(ruta, 2).includes('data-hoy-vuelta'), 'B3 vuelta', 'un día de ruta enseña la llegada al aeropuerto')
   // Gratis: nada.
-  debe(pintaHoy(ruta, 5, 'gratis').trim() === '', 'B3 gratis', 'en la gratis sale algo')
+  debe(soloPantallaSinPase(pintaHoy(ruta, 5, 'gratis')), 'B3 gratis', 'en la gratis sale algo más que la pantalla de sin pase')
 
   // Estaciones y puerto.
   for (const [vm, punto, esperado] of [['train', 'termini', 'Llegada a la estación de Termini'], ['bus', 'tibus', 'Llegada a la estación de Tiburtina'], ['ferry', 'civitavecchia', 'Llegada al puerto de Civitavecchia']]) {
@@ -245,7 +247,8 @@ console.log('B. El día de vuelta sin paradas y la salida de madrugada')
   debe(/Ver cómo ir/.test(texto), 'B4 sin paradas', 'la tarjeta no lleva [Ver cómo ir]')
   debe(/data-hoy-vuelves="ver-como-ir"/.test(tarjeta) && /data-hoy-vuelves="explorar-monumentos"/.test(tarjeta) && /Explorar monumentos/.test(texto) && /Esperamos que hayas disfrutado de Roma/.test(texto), 'B4 misma tarjeta', 'la tarjeta de HOY no es la de DÍAS (ver cómo ir, explorar monumentos y despedida)')
   const tituloVuelta = plano(aTexto(bloque(html, 'data-hoy-titulo-del-dia')))
-  debe(/^Día de viaje Roma → Barcelona$/.test(tituloVuelta), 'B4 línea pequeña', `el día de vuelta sin paradas debe decir «Día de viaje» y debajo solo «Roma → Barcelona»: ${tituloVuelta}`)
+  // (Tanda 10B, ya en vigor; esta expectativa se actualiza en la 10N11: el día de vuelta sin paradas se llama «Hoy vuelves a casa» y debajo lleva «Roma → Barcelona · Día de viaje».)
+  debe(/^Hoy vuelves a casa Roma → Barcelona · Día de viaje$/.test(tituloVuelta), 'B4 línea pequeña', `el día de vuelta sin paradas debe decir «Hoy vuelves a casa» y debajo «Roma → Barcelona · Día de viaje»: ${tituloVuelta}`)
   debe(!html.includes('Siguiente parada') && !html.includes('Todo visto') && !html.includes('data-hoy-vuelta="1"') && !/Hoy · .* visto/.test(aTexto(html)), 'B4 sin paradas', 'el día de vuelta sin paradas enseña «Siguiente parada», «Todo visto», la lista o la llegada al aeropuerto')
   debe(!html.includes('data-mas-visitas'), 'B4 sin paradas', 'el día de vuelta sin paradas lleva [+ Más visitas]')
   // La madrugada: el último día de ruta cierra con «Tu vuelo sale esta noche…».
@@ -316,7 +319,7 @@ const datos = () => ({ importanciaPorSitio: excursiones.importanciaPorSitio, niv
   const htmlVuelta = pintaHoy(rutaD6, 4)
   debe(cuenta(htmlVuelta, 'data-mas-visitas') === 1, 'C5 botón', 'la mañana del día de vuelta recortada no lleva [+ Más visitas]')
   debe(!pintaHoy(rutaD6, 2).includes('data-mas-visitas') && !pintaHoy(rutaD6, 1).includes('data-mas-visitas'), 'C5 botón', 'un día no recortado lleva [+ Más visitas]')
-  debe(pintaHoy(rutaD6, 4, 'gratis').trim() === '', 'C5 gratis', 'en la gratis sale algo')
+  debe(soloPantallaSinPase(pintaHoy(rutaD6, 4, 'gratis')), 'C5 gratis', 'en la gratis sale algo más que la pantalla de sin pase')
   // Todo visto: el botón sigue (es cuando se va bien de tiempo).
   const rutaTodoVisto = JSON.parse(JSON.stringify(rutaMini))
   rutaTodoVisto.days[0].stops = rutaTodoVisto.days[0].stops.map((s) => ({ ...s, checkedInAt: '2027-05-05T12:00:00Z' }))

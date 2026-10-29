@@ -60,6 +60,7 @@ import { usePagoActivo, pedirPago } from '../../../lib/pago'
 import { Candado } from '../../pase/Candado'
 import { ArrivalReturnSheet } from './ArrivalReturnSheet'
 import { BilleteDeVuelo } from './BilleteDeVuelo'
+import { TarjetaLlegadaDias } from './TarjetaLlegadaDias'
 import { TarjetaTuUltimoDia } from './TarjetaTuUltimoDia'
 import { textosDelUltimoDia } from '../../../lib/ultimoDia'
 import { TarjetaHoyVuelves } from './TarjetaHoyVuelves'
@@ -1383,7 +1384,7 @@ export function DayDetailPanel({
             // (Hasta «MAÑANA», los 28 px de la cabecera: PROMPT_UI_REPASO_3, 2.)
             <div className="space-y-1.5 pt-2">
               {billeteLlegada ? (
-                <BilleteDeVuelo billete={billeteLlegada} onOpen={() => setArrivalSheet('llegada')} />
+                <TarjetaLlegadaDias billete={billeteLlegada} point={arrivalChosen} origen={origin} destino={destinoNombre} onOpen={() => setArrivalSheet('llegada')} />
               ) : (
                 <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={() => goToBooking('llegada')} />
               )}

@@ -278,7 +278,7 @@ for (const [clave, route] of Object.entries(rutas)) {
     const nombre = `HOY · ${clave} fechas · ${m.clave}`
     const gratis = pintaHtml(HoyView, { route, onPonFechas() {} }, route, { version: 'gratis', hoy: m.hoy })
     // (Tanda 10C: sin pase, HOY enseña la invitación al pase en lugar de desaparecer.)
-    debe(gratis.includes('data-hoy="sin-pase"') && gratis.includes('Ver el Pase de Roma'), '5 HOY', `${nombre}: HOY sin pase no enseña la invitación al pase`)
+    debe(gratis.includes('data-hoy="sin-pase"') && gratis.includes('Ver el Pase Roma'), '5 HOY', `${nombre}: HOY sin pase no enseña la invitación al pase`)
     const html = pintaHtml(HoyView, { route, onPonFechas() {} }, route, { version: 'completa', hoy: m.hoy })
     const texto = aTexto(html)
     if (m.clave === 'antes') {

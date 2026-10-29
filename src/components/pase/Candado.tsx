@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, type CSSProperties } from 'react'
 import { abrirPase, usePasePintable } from '../../lib/pago'
 import { useRouteStore } from '../../store/useRouteStore'
 
@@ -22,13 +22,13 @@ export function useDestinoDelPase(): string {
 }
 
 /** «Con el {pase}, …»: el marcador `{pase}` sale en oro y en negrita como «Pase Roma» (el nombre del pase del destino, tal cual el diseño). */
-export function LineaConPase({ texto, destino }: { texto: string; destino: string }) {
+export function LineaConPase({ texto, destino, sobre = 'oscuro' }: { texto: string; destino: string; /** 'claro': sobre fondo claro (la línea en gris de Design: «Pase Roma» en dorado oscuro, subrayado). */ sobre?: 'oscuro' | 'claro' }) {
   const partes = texto.split('{pase}')
   return (
     <>
       {partes.map((p, i) => (
         <Fragment key={i}>
-          {i > 0 && <b style={{ fontWeight: 700, color: '#F3D88F' }}>{destino ? `Pase ${destino}` : 'Pase'}</b>}
+          {i > 0 && <b style={sobre === 'claro' ? { fontWeight: 700, color: '#8E6820', textDecoration: 'underline', textUnderlineOffset: 3 } : { fontWeight: 700, color: '#F3D88F' }}>{destino ? `Pase ${destino}` : 'Pase'}</b>}
           {p}
         </Fragment>
       ))}
@@ -93,5 +93,74 @@ export function Candado({
         <span className="absolute" style={{ top: '-20%', bottom: '-20%', left: 0, width: '22%', background: 'linear-gradient(90deg,transparent,rgba(255,236,170,.2),transparent)', animation: 'pase-brillo 5.5s ease-in-out infinite' }} />
       </span>
     </div>
+  )
+}
+
+/**
+ * EL CANDADO DEL PASE, SIEMPRE IGUAL (Tanda 10N11 §1; `Piezas/Vuelo Reservas` «¿Dónde te alojas?», `Pase Estilo`, `Recuerdos Ficha`, `Viaje Compartido`):
+ * el candado dorado (#F3D88F) sobre un círculo azul oscuro (#1C2230) con un filo dorado (1,5 px #B58A2E).
+ * `pequeno` = 22 px (el de las líneas en gris, con el candado de 11); `medio` = 34 px (el de la esquina de un bloque, con el candado de 16).
+ * `esquina` lo coloca arriba a la derecha del bloque (el bloque tiene que ser `relative`).
+ */
+export function CandadoRedondo({ tamano = 'pequeno', diametro, esquina = false, className = '', datos = 'candado-redondo' }: { tamano?: 'pequeno' | 'medio'; /** Un diámetro a medida (20, 22, 26, 30, 34, 54 en Design); el candado de dentro mide la mitad. */ diametro?: number; esquina?: boolean; className?: string; datos?: string }) {
+  const medio = tamano === 'medio'
+  const d = diametro ?? (medio ? 34 : 22)
+  const lado = Math.round(d / 2)
+  return (
+    <span
+      aria-hidden="true"
+      data-candado-redondo={tamano}
+      data-candado-dato={datos}
+      className={className}
+      style={{
+        width: d,
+        height: d,
+        flex: 'none',
+        borderRadius: '50%',
+        background: '#1C2230',
+        border: '1.5px solid #B58A2E',
+        display: esquina ? 'flex' : 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxSizing: 'border-box',
+        ...(esquina ? { position: 'absolute', top: -8, right: -6, zIndex: 2 } : {}),
+      }}
+    >
+      <svg width={lado} height={lado} viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth={d >= 34 ? 2 : 2.2} strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }}>
+        <path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z" />
+      </svg>
+    </span>
+  )
+}
+
+/**
+ * LA LINEA DEL PASE (Tanda 10N11 §1): la frase en gris de Design con su `CandadoRedondo` pequeño a la izquierda.
+ * «Con el {pase}, adaptamos tu primer y tu último día a tus vuelos.» Solo se pinta a quien NO tiene el pase
+ * (con pase, fuera: «con el pase, sin frases del pase») y no mientras no se sabe. Al tocarla se abre `abrirPase()`.
+ */
+export function LineaDelPase({ texto, datos = 'linea-pase', className = '', destino, estilo }: { texto: string; datos?: string; className?: string; destino?: string; estilo?: CSSProperties }) {
+  const estado = usePasePintable()
+  const deLaRuta = useDestinoDelPase()
+  if (estado !== 'sin') return null
+  return (
+    <span
+      role="button"
+      tabIndex={0}
+      onClick={abrirPase}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          abrirPase()
+        }
+      }}
+      data-linea-pase={datos}
+      className={`cursor-pointer ${className}`}
+      style={{ display: 'flex', gap: 8, alignItems: 'flex-start', font: "400 13px/1.45 'Geist'", color: 'rgba(28,34,48,.58)', ...estilo }}
+    >
+      <CandadoRedondo tamano="pequeno" datos={datos} />
+      <span style={{ marginTop: 2 }}>
+        <LineaConPase texto={texto} destino={destino ?? deLaRuta} sobre="claro" />
+      </span>
+    </span>
   )
 }

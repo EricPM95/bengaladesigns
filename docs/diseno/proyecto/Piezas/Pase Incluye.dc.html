@@ -210,7 +210,7 @@ class Component extends DCLogic {
     const cards=(has)=>[{n:'Roma',d:'4 días · 3 noches',f:'17 oct – 20 oct',dot:'#2F8AE0',g:'',pill:'Pase de Roma'},{n:'Florencia',d:'3 días · 2 noches',f:'3 jun – 5 jun',dot:'#F29A1F',g:'',pill:'Pase de Florencia'}];
     return{
       phones:[],
-      rutas:[{label:'P0c · RUTA, sin pase',pb:'#FBF3E2',pf:'#6E5018',ico:ico(lk,'#6E5018'),cards:cards()},{label:'P0d · RUTA, con pase',pb:'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)',pf:'#4A3510',ico:ico(ck,'#4A3510'),cards:cards()}]
+      rutas:[{label:'P0c · RUTA, sin pase',pb:'#FBF3E2',pf:'#6E5018',ico:React.createElement('span',{style:{width:20,height:20,borderRadius:'50%',background:'#1C2230',border:'1.5px solid #B58A2E',display:'inline-flex',alignItems:'center',justifyContent:'center',marginLeft:-4}},ico(lk,'#F3D88F')),cards:cards()},{label:'P0d · RUTA, con pase',pb:'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)',pf:'#4A3510',ico:ico(ck,'#4A3510'),cards:cards()}]
     };
   }
 }

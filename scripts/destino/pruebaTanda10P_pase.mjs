@@ -26,7 +26,7 @@ const num = (t) => Number(String(t).replace(/\./g, '').replace(',', '.'))
   debe(aj.textos['Invita a un amigo'] === 'Gana 200 EXP cuando haga su primer viaje con HOY', 'lista', 'la fila nueva de «Invita a un amigo» está en los ajustes')
   const lista = leer('src/lib/listaAjustada.ts')
   debe(/ajustes\.ocultas/.test(lista) && /ajustes\.textos/.test(lista), 'lista', 'listaAjustada.ts lee los ajustes (si Design cambia la lista, se siguen aplicando)')
-  debe(/listaAjustada/.test(leer('src/lib/listaDeHoy.ts')) && /listaAjustada/.test(leer('src/components/pase/pelicula/adaptar.ts')), 'lista', 'HOY, «Todo lo que incluye» y el final salen de la lista ajustada')
+  debe(/listaAjustada/.test(leer('src/lib/listaDeHoy.ts')), 'lista', '(10N11) HOY sale de la lista ajustada (la lista por puntos de Design ya no usa la lista ajustada)')
   debe(/lista_ajustes\.json/.test(leer('src/components/ajustes/AjustesScreen.tsx')) && /Invitar a un amigo/.test(leer('src/components/ajustes/AjustesScreen.tsx')), 'lista', 'la fila «Invitar a un amigo» de Ajustes lleva la misma línea de 200 EXP')
 }
 
@@ -124,7 +124,7 @@ const clicEn = async (a, x, y) => {
 }
 const estado = (a) =>
   a.evaluar(`(() => {
-    const raiz = document.querySelector('[data-lista-del-pase] .pfr')
+    const raiz = document.querySelector('[data-lista-del-pase]')
     const r = raiz?.getBoundingClientRect()
     const anims = raiz ? raiz.getAnimations({ subtree: true }) : []
     return { izq: r?.left, der: r?.right, ancho: window.innerWidth, alto: window.innerHeight,
@@ -132,48 +132,35 @@ const estado = (a) =>
       sinTerminarLista: anims.filter((x) => x.playState === 'running' && x.effect?.getComputedTiming().iterations !== Infinity && x.effect.target?.closest('[data-lista-pase]')).length }
   })()`)
 
-// 3a. El final, a tres anchos: sin márgenes, montado, con scroll y la parte fija a la vista.
+// 3a. (Tanda 10N11, apartado 5: la lista por puntos de Design) A tres anchos: sin márgenes, con scroll y [Elegir mi pase] al final de la lista, sin «a mi aire» ni «el reto del día».
 for (const [ancho, alto, nombre] of [[390, 664, '01_final_390x664'], [430, 932, '02_final_430x932'], [360, 640, '03_final_360x640']]) {
   const a = await conViaje({ ancho, alto })
   await abrirPase(a)
   await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await esp(900)
-  const e = await estado(a)
-  debe(e.izq <= 0.5 && e.der >= ancho - 0.5, 'ancho', `${ancho}x${alto}: la lista llega de lado a lado (${e.izq?.toFixed(1)} → ${e.der?.toFixed(1)} de ${ancho})`)
-  debe(e.sinTerminar === 0, 'montada', `${ancho}x${alto}: la lista sale colocada (sin animaciones a medias: ${e.sinTerminar})`)
   const t = await texto(a)
-  debe(/Pase de Roma/.test(t) && /Elegir mi pase/.test(t) && /Se paga una vez y no caduca/.test(t), 'final', `${ancho}x${alto}: «Pase de Roma», la lista y la parte fija ya colocadas`)
-  debe(!/a mi aire/.test(t) && !/El reto del día/.test(t), 'lista', `${ancho}x${alto}: el final sin «a mi aire» ni «el reto del día»`)
+  debe(/Pase Roma/.test(t) && /Elegir mi pase/.test(t) && /Se paga una vez · No caduca/.test(t), 'final', `${ancho}x${alto}: «Pase Roma», la lista y [Elegir mi pase]`)
+  debe(!/a mi aire/.test(t) && !/El reto del día/.test(t), 'lista', `${ancho}x${alto}: la lista sin «a mi aire» ni «el reto del día»`)
   const lista = await a.evaluar(`(() => {
     const l = document.querySelector('[data-lista-pase]')
     if (!l) return null
     const r = l.getBoundingClientRect()
-    const b = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.textContent.trim() === 'Elegir mi pase')
     l.scrollTop = 0
     const antes = l.scrollTop
     l.scrollTop = 400
     const debajo = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 3)
-    const res = { scrollable: l.scrollHeight > l.clientHeight + 50, mueve: l.scrollTop > antes, recibeToques: Boolean(debajo && l.contains(debajo)), alto: r.height, boton: b.getBoundingClientRect().bottom, ventana: window.innerHeight }
+    const res = { izq: r.left, der: r.right, scrollable: l.scrollHeight > l.clientHeight + 50, mueve: l.scrollTop > antes, recibeToques: Boolean(debajo && l.contains(debajo)) }
     l.scrollTop = l.scrollHeight
-    res.final = l.scrollTop
-    res.botonDespues = b.getBoundingClientRect().bottom
-    const filas = Array.from(l.querySelectorAll('span')).filter((s) => s.children.length === 0).map((s) => s.textContent.trim())
-    res.invita = filas.includes('Invita a un amigo')
-    res.hoy = Array.from(l.querySelectorAll('[data-marca]')).map((m) => m.textContent)
-    res.linea = l.innerText.includes('Gana 200 EXP cuando haga su primer viaje con HOY')
+    const b = document.querySelector('[data-elegir-pase]').getBoundingClientRect()
+    res.boton = b.bottom
+    res.ventana = window.innerHeight
     return res
   })()`)
-  debe(lista && lista.scrollable && lista.mueve, 'scroll', `${ancho}x${alto}: la lista del final hace scroll`)
+  debe(lista && lista.izq <= 0.5 && lista.der >= ancho - 0.5, 'ancho', `${ancho}x${alto}: la lista llega de lado a lado`)
+  debe(lista && lista.scrollable && lista.mueve, 'scroll', `${ancho}x${alto}: la lista hace scroll`)
   debe(lista && lista.recibeToques, 'scroll', `${ancho}x${alto}: nada tapa la lista (los toques llegan a ella)`)
-  debe(lista && lista.boton <= lista.ventana && lista.botonDespues <= lista.ventana && Math.abs(lista.boton - lista.botonDespues) < 1, 'scroll', `${ancho}x${alto}: [Elegir mi pase] siempre a la vista, también con la lista al final (${lista?.botonDespues?.toFixed(0)} de ${lista?.ventana})`)
-  debe(lista && lista.invita && lista.linea && lista.hoy.includes('HOY'), 'invita', `${ancho}x${alto}: «Invita a un amigo · Gana 200 EXP cuando haga su primer viaje con HOY», con «HOY» marcado`)
+  debe(lista && lista.boton <= lista.ventana, 'scroll', `${ancho}x${alto}: con la lista al final, [Elegir mi pase] entero a la vista (${lista?.boton?.toFixed(0)} de ${lista?.ventana})`)
   await a.captura(foto(nombre))
-  if (ancho === 390) {
-    await esp(300)
-    await a.evaluar("(() => { const l = document.querySelector('[data-lista-pase]'); const f = Array.from(l.querySelectorAll('span')).find((s) => s.children.length === 0 && s.textContent.trim() === 'Invita a un amigo'); f.scrollIntoView({ block: 'center' }); return true })()")
-    await esp(400)
-    await a.captura(foto('04_invita_a_un_amigo'))
-  }
   a.cerrar()
 }
 
@@ -225,7 +212,7 @@ for (const [moneda, orden] of [['EUR', '06'], ['MXN', '07'], ['USD', '08'], ['CO
   await clic(a, 'Elegir mi pase')
   await esp(500)
   const hoja = await a.evaluar(`(() => {
-    const filas = Array.from(document.querySelectorAll('[data-lista-del-pase] div')).filter((d) => /^(Pase de 1 persona|Pase Dúo|Pase Grupo)/.test(d.innerText.trim()) && d.style.borderRadius === '18px').map((d) => d.innerText.split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean))
+    const filas = Array.from(document.querySelectorAll('[data-hoja-cuantos-sois] div')).filter((d) => /^(Pase de 1 persona|Pase Dúo|Pase Grupo)/.test(d.innerText.trim()) && d.style.borderRadius === '18px').map((d) => d.innerText.split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean))
     const compra = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((s) => /^Comprar/.test(s.textContent.trim()))
     return { filas, compra: compra?.textContent.trim(), pill: Array.from(document.querySelectorAll('[data-lista-del-pase] span')).some((s) => s.textContent.trim() === ${JSON.stringify(moneda)}) }
   })()`)
@@ -274,24 +261,13 @@ for (const [moneda, orden] of [['EUR', '06'], ['MXN', '07'], ['USD', '08'], ['CO
   a.cerrar()
 }
 
-// 3d. «Todo lo que incluye»: la misma lista, sin las dos filas y con la línea de invitar.
+// 3d. (Tanda 10N11, apartado 5) Ya no hay hoja «Todo lo que incluye»: la lista por puntos es todo lo que incluye. HOY sigue sacando «Con el pase tendrás» de la lista ajustada, sin las dos filas.
 {
   const a = await conViaje({})
-  await abrirPase(a)
-  await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
-  await esp(500)
-  debe(await clic(a, 'Ver todo lo que incluye'), 'todo', 'se puede tocar [Ver todo lo que incluye]')
-  await esp(600)
-  const t = await a.evaluar("(() => { const h = Array.from(document.querySelectorAll('[data-lista-del-pase] span')).find((x) => x.textContent.trim() === 'Todo lo que incluye'); return h.closest('div[style*=\"border-radius: 30px\"]').innerText })()")
-  debe(!/a mi aire/.test(t) && !/El reto del día/.test(t), 'lista', '«Todo lo que incluye» sin «a mi aire» ni «el reto del día»')
-  debe(/Invita a un amigo/.test(t) && /Gana 200 EXP cuando haga su primer viaje con HOY/.test(t), 'invita', '«Todo lo que incluye» con «Invita a un amigo · Gana 200 EXP cuando haga su primer viaje con HOY»')
-  const marcas = await a.evaluar("Array.from(document.querySelectorAll('[data-lista-del-pase] [data-marca]')).map((m) => m.textContent)")
-  debe(marcas.includes('HOY'), 'invita', '«HOY» sale marcado (Marca) en «Todo lo que incluye»')
   const deLista = await a.evaluar("import('/src/lib/listaAjustada.ts').then((m) => m.LISTA_DEL_PASE.flatMap((g) => g.items.map((i) => i.titulo)))")
-  debe(!deLista.some((x) => /a mi aire|reto del día/.test(x)) && deLista.includes('Invita a un amigo') && deLista.includes('Tu siguiente parada'), 'lista', 'la lista ajustada (la de HOY y la de la hoja) sin las dos filas y con la fila nueva')
+  debe(!deLista.some((x) => /a mi aire|reto del día/.test(x)) && deLista.includes('Invita a un amigo') && deLista.includes('Tu siguiente parada'), 'lista', 'la lista ajustada (la de HOY) sin las dos filas y con la fila nueva')
   const hoy = await a.evaluar("import('/src/lib/listaDeHoy.ts').then((m) => m.filasDeHoy().map((i) => i.titulo))")
   debe(hoy.length === 5 && !hoy.some((x) => /a mi aire|reto del día/.test(x)), 'lista', '«Con el pase tendrás» de HOY: las mismas 5 filas, sin las dos quitadas')
-  await a.captura(foto('11_todo_lo_que_incluye'))
   a.cerrar()
 }
 

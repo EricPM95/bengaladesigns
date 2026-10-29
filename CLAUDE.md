@@ -11,6 +11,9 @@ El ordenador de Eric se quedó sin memoria por procesos que se dejaron abiertos 
 6. **Para no saturar el procesador:** las baterías y los servidores de pruebas se lanzan (o se pasan enseguida) a prioridad baja (`BelowNormal`; los procesos hijos, incluidos los Chrome de prueba, la heredan). Las baterías se lanzan con `navegador=1` y SIN los «wrappers» (`pruebaTanda10N*.mjs`, `10P`, `10O`, `10M`: cada uno ya corre sus partes, que están también sueltas en la batería y duplicarían los Chromes). Nunca más de 2 Chrome de prueba a la vez (Eric, 29-oct; ver «Cómo probar» abajo).
 7. **Si falta un servidor para la siguiente tarea, se arranca entonces**, no antes: no dejar servidores encendidos «por si acaso».
 
+## Apagar el PC (Eric, 29-oct)
+NO apagar el PC al acabar una tanda, salvo que Eric lo pida en ese mismo prompt (en la 10N10 el prompt decía «No apagues el PC al acabar» y se programó el apagado igual: no volver a pasar). Un permiso dado en una conversación no vale para la siguiente tanda.
+
 ## Cómo probar (Eric, 29-oct) — para ir más rápido
 - **En cada tanda, NO la batería completa:** solo las pruebas de lo que se ha tocado en esa tanda, más `pruebaJutrip`. En el informe se dice cuáles se han pasado.
 - **La batería completa, solo cuando Eric lo pida o antes de una tanda grande** (lo dirá en el prompt).

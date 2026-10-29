@@ -40,7 +40,7 @@ if (toca('codigo')) {
     }
   }
   recorre('src')
-  debe(usos.length >= 6, 'caja', `la caja del pase está en ${usos.length} sitios`)
+  debe(usos.length >= 4, 'caja', `la caja del pase está en ${usos.length} sitios`)
   for (const [p, u] of usos) debe(/titulo=/.test(u) && /\{pase\}/.test(u), 'caja', `${p}: la caja lleva título y la frase con «Pase {destino}»`)
   debe(usos.every(([, u]) => !/cerca de donde duermes|empieza cerca/.test(u)), 'textos', 'ninguna caja dice que cada día empieza cerca del alojamiento')
   // Los textos verdad.
@@ -54,8 +54,8 @@ if (toca('codigo')) {
   const malos = []
   for (const d of ['src', 'data/pase']) buscar(d, /cada día empieza cerca|Cada día empieza cerca|cerca de donde duermes|Cada día sale desde tu zona/, malos)
   debe(malos.length === 0, 'textos', `ningún texto de la app promete que cada día empieza cerca del alojamiento (${malos.join(', ') || 'ninguno'})`)
-  const gen = leer('src/components/pase/pelicula/gen/Pase_Pelicula.ts')
-  debe(!/Cada día empieza cerca/.test(gen) && /Tu ruta se adapta a tu alojamiento/.test(gen), 'textos', 'la pieza de Design (gen) ya dice «Tu ruta se adapta a tu alojamiento»')
+  const gen = leer('src/components/pase/lista/disenoLista.ts')
+  debe(!/Cada día empieza cerca/.test(gen) && /Tu ruta empieza donde duermes/.test(gen), 'textos', '(10N11) la lista del pase de Design dice «Tu ruta empieza donde duermes», sin prometer que cada día empieza cerca')
   debe(!/Cada día sale desde tu zona/.test(leer('src/lib/listaDelPase.ts')) && /Adaptamos tu ruta a tu alojamiento/.test(leer('src/lib/listaDelPase.ts')), 'textos', 'la lista de lo que incluye dice «Adaptamos tu ruta a tu alojamiento»')
   // [Guardar].
   const hoja = sinComentarios(leer('src/components/route/reservas/AddReservationSheet.tsx'))
@@ -69,8 +69,8 @@ if (toca('codigo')) {
   debe(/grupo:/.test(leer('src/components/route/reservas/EntradaEdgeTab.tsx')) && /delGrupo/.test(leer('src/components/route/reservas/EntradaCard.tsx')), 'colores', 'el botón de DÍAS y la tarjeta de RESERVAS tienen el tercer color (azul oscuro con dorado)')
   debe(/delGrupo/.test(leer('src/components/route/reservas/EntradasYFreeTour.tsx')) && /delGrupo/.test(leer('src/components/route/reservas/ExcursionesReservas.tsx')), 'colores', 'el Free Tour y las excursiones también')
   // La lista del pase (10N10, 8b: se quitó la película; el título pequeño, las rayitas y las escenas ya no existen).
-  const adaptar = leer('src/components/pase/pelicula/adaptar.ts')
-  debe(!/data-pelicula-titulo|data-raya|irALaEscena/.test(adaptar + leer('src/components/pase/ListaDelPase.tsx')), 'pelicula', 'ya no hay título pequeño, rayitas ni escenas en la lista del pase')
+  const adaptar = leer('src/components/pase/ListaDelPase.tsx')
+  debe(!/data-pelicula-titulo|data-raya|irALaEscena/.test(adaptar), 'pelicula', 'ya no hay título pequeño, rayitas ni escenas en la lista del pase')
   debe(/data-pelicula-cerrar/.test(adaptar) && /data-lista-pase/.test(adaptar), 'pelicula', 'la lista lleva su ✕ y su lista que se mueve')
 }
 
@@ -107,9 +107,10 @@ if (toca('cajas')) {
     await g.esp(1500)
     await g.evaluar("(() => { const e = document.querySelector('[data-blk=\"aloj\"]'); if (e) e.scrollIntoView({ block: 'start' }); return true })()")
     await g.esp(600)
+    // (10N11 §2) RESERVAS › Alojamiento ya no lleva la caja del pase: lleva la línea gris con su candado redondo.
     let c = await g.evaluar(MIDE_CAJA('[data-candado="alojamiento-zona"]'))
-    debe(esCaja(c, '¿En qué zona te alojas?', 'Con el Pase Roma, adaptamos tu ruta a tu alojamiento.'), 'caja', `RESERVAS › Alojamiento: la caja de Pase Estilo 01 con su título, su línea y [🔒 Ver] (${JSON.stringify(c)?.slice(0, 260)})`)
-    debe(c && c.izq >= 0 && c.der <= 390, 'caja', 'la caja cabe en el ancho del móvil')
+    debe(!c, 'caja', '(10N11) RESERVAS › Alojamiento: ya NO hay la caja «¿En qué zona te alojas?»')
+    debe(await g.evaluar("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-linea-pase=\"alojamiento-tarjeta\"]'))"), 'caja', '(10N11) RESERVAS › Alojamiento: la línea gris con el candado')
     await g.captura(foto('caja_reservas_alojamiento'))
     // RESERVAS · Llegada y vuelta, con el vuelo guardado
     await g.evaluar(`${store}.then((s) => { const e = s.useRouteStore.getState(); e.setArrivalFlightTime('15:40'); e.setDepartureFlightTime('18:20'); return true })`)
@@ -209,7 +210,7 @@ if (toca('pendiente')) {
         // Al llegar la respuesta, la caja aparece sola (sin que nadie toque nada).
         let aparece = false
         for (let i = 0; i < 12 && !aparece; i++) {
-          aparece = (await a.evaluar("document.querySelectorAll('[data-caja-pase]').length")) > 0
+          aparece = (await a.evaluar("document.querySelectorAll('[data-caja-pase], [data-linea-pase]').length")) > 0
           if (!aparece) await a.esp(400)
         }
         debe(aparece, 'repinta', 'sin pase: al llegar la respuesta la caja del pase aparece sola')
@@ -237,7 +238,8 @@ if (toca('pelicula')) {
       await esp(1200)
       const m = await a.evaluar(`(() => {
         const P = document.querySelector('[data-lista-del-pase]')
-        const esc = P.querySelector('[data-escenario]')
+        const esc = P.querySelector('[data-lista-pase]')
+        { const l0 = P.querySelector('[data-lista-pase]'); if (l0) l0.scrollTop = l0.scrollHeight } // (10N11: [Elegir mi pase] es la última fila: se mide con la lista al final)
         const el = Array.from(P.querySelectorAll('span')).find((x) => (x.textContent || '').trim() === 'Elegir mi pase')
         const x = P.querySelector('[data-pelicula-cerrar]')
         const rr = (e) => { const b = e.getBoundingClientRect(); return { x: b.left, y: b.top, r: b.right, b: b.bottom, w: b.width, h: b.height } }

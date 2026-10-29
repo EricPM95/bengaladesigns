@@ -8,7 +8,7 @@ import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { estanciasDelViaje, nochesTexto, precioDeAlojamiento, zonaDeAlojamientoElegida } from '../../../lib/tuAlojamiento'
 import { BloqueShell, CambiarBoton, EliminarTexto, EstadoBloque, FlechaBloque, ICONOS, IconoBloque, tituloBloqueStyle } from './BloqueReservas'
 import { Icono } from '../../ui/Icono'
-import { Candado } from '../../pase/Candado'
+import { LineaDelPase } from '../../pase/Candado'
 import { useLoSuyo } from '../../../store/useLoSuyo'
 import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
 import { nombreDe } from '../../../store/useViajeCompartido'
@@ -18,35 +18,6 @@ import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { TimeListWheel } from '../../ui/TimeListWheel'
 import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojamiento'
-
-/**
- * La casilla «Dirección de tu alojamiento (opcional)» (Tanda 7, de pago): texto libre que se guarda al salir del campo (`route.accommodationAddress`). Solo con ella existe [Cómo llegar a tu alojamiento]
- * (`BotonComoLlegarAlojamiento`), que aquí sale debajo para que el viajero compruebe que el enlace lleva a su puerta.
- */
-function CampoDireccion({ valor, onGuardar }: { valor: string; onGuardar: (texto: string | null) => void }) {
-  const [texto, setTexto] = useState(valor)
-  return (
-    <div className="flex flex-col gap-2" data-direccion-alojamiento>
-      <label className="flex flex-col gap-1.5">
-        <span className="text-[14px] font-medium">Dirección de tu alojamiento (opcional)</span>
-        <input
-          value={texto}
-          onChange={(event) => setTexto(event.target.value)}
-          onBlur={() => onGuardar(texto)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') event.currentTarget.blur()
-          }}
-          maxLength={160}
-          autoComplete="street-address"
-          placeholder="Calle, número y ciudad"
-          data-casilla="direccion"
-          className="h-12 w-full rounded-[14px] border border-text/15 bg-white px-3.5 text-[14.5px] outline-none placeholder:text-text/35 focus:border-text/40"
-        />
-      </label>
-      <BotonComoLlegarAlojamiento direccion={valor} />
-    </div>
-  )
-}
 
 /** La hoja de la zona (Tanda 6v): las zonas del destino en una rueda, como la de la hora, y [Guardar]. */
 export function HojaZona({ zonas, actual, onGuardar, onClose }: { zonas: DestinationExcursions['zonasAlojamiento']; actual: string | null; onGuardar: (id: string) => void; onClose: () => void }) {
@@ -103,7 +74,6 @@ export function AlojamientoReservas({
   useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const zona = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const direccion = useRouteStore((state) => state.route?.accommodationAddress ?? null)
-  const setDireccion = useRouteStore((state) => state.setAccommodationAddress)
   const setHotel = useRouteStore((state) => state.setAccommodationHotel)
   const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
@@ -144,11 +114,11 @@ export function AlojamientoReservas({
               <IconoBloque nombre={ICONOS.hotel} hecho={resumenVerde} />
               <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span style={tituloBloqueStyle}>Alojamiento</span>
-                <span className="text-[13px] text-text/55">{estancia?.city ?? route.days[0]?.city ?? route.destination}</span>
+                <span className="text-[13px] text-text/55" data-alojamiento-subtitulo>{hotel?.name && !(elegida && hotel.name === elegida.nombre) ? hotel.name : (estancia?.city ?? route.days[0]?.city ?? route.destination)}</span>
               </span>
               <EstadoBloque texto={resumenVerde ? 'Listo' : 'Falta la zona'} hecho={resumenVerde} />
             </div>
-            {elegida && (
+            {pago && elegida && (
               <div className="mx-3.5 mb-3 flex flex-col gap-1 rounded-[18px] px-3.5 pb-3.5 pt-3" style={{ background: '#FBF1D8', border: '1px solid rgba(181,138,46,.3)' }} data-tu-zona>
                 <div className="flex items-center justify-between gap-2">
                   <span className="inline-flex h-6 items-center gap-1 rounded-full px-2.5" style={{ background: '#1C2230', color: '#F3D88F', ...etiquetaMono }}>
@@ -160,18 +130,26 @@ export function AlojamientoReservas({
                 <span style={{ font: "400 34px/1.05 'Instrument Serif',serif" }}>{elegida.nombre}</span>
                 {elegida.sub && <span className="text-[13px] text-text/60">{elegida.sub}</span>}
                 {hotel && hotel.name === elegida.nombre && precio !== null && <span className="text-[13px] text-text/60">{precioEnVista(precio)}{noches > 0 ? ` · ${nochesTexto(noches)}` : ''}</span>}
+                {direccion && <span className="text-[13px] text-text/75" data-direccion-tarjeta>{direccion}</span>}
+                <BotonComoLlegarAlojamiento direccion={direccion} className="mt-2" />
               </div>
             )}
-            {hotel && !(elegida && hotel.name === elegida.nombre) && (
+            {hotel && !(pago && elegida && hotel.name === elegida.nombre) && (
               <div className="mx-3.5 mb-3 flex items-center gap-2.5 rounded-[14px] py-2.5 pl-3 pr-1.5" style={{ background: 'oklch(0.97 0.025 150)' }} data-hotel-puesto>
                 <span className="min-w-0 flex-1 text-[13.5px] leading-[1.4]">
-                  <span className="block truncate text-[15px] font-medium">{hotel.name}</span>
-                  {noches > 0 && <span className="block text-text/65">{nochesTexto(noches)}</span>}
-                  {precio !== null && <span className="block text-text/65">{precioEnVista(precio)}</span>}
+                  {/* (10N11) El nombre ya va en la cabecera de la tarjeta (09): aquí, solo las noches y el precio. */}
+                  <span className="block text-text/65">{[noches > 0 ? nochesTexto(noches) : null, precio !== null ? precioEnVista(precio) : null].filter(Boolean).join(' · ')}</span>
                 </span>
-                {!elegida && <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />}
+                {!(pago && elegida) && <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />}
               </div>
             )}
+            {pago && !elegida && direccion && (
+              <div className="mx-3.5 mb-3 flex flex-col gap-1" data-direccion-tarjeta-sola>
+                <span className="text-[13px] text-text/75">{direccion}</span>
+                <BotonComoLlegarAlojamiento direccion={direccion} className="mt-1" />
+              </div>
+            )}
+            {!pago && <LineaDelPase className="mx-4 mb-3" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
             {g.gente.length >= 2 && g.esAdmin && (
               <div className="mx-4 mb-4 flex flex-col gap-2.5" data-en-este-alojamiento>
                 <span className="flex items-center justify-between text-text/55" style={etiquetaMono}>
@@ -187,7 +165,6 @@ export function AlojamientoReservas({
             {abierto && (
               <div className="flex flex-col gap-3.5 px-4 pb-4">
                 {hotel && <EliminarTexto texto="Eliminar" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}
-                <CampoDireccion key={direccion ?? ''} valor={direccion ?? ''} onGuardar={setDireccion} />
               </div>
             )}
           </>
@@ -224,22 +201,12 @@ export function AlojamientoReservas({
                     Buscar alojamiento
                   </button>
                 </div>
-                {!pago && <Candado datos="alojamiento-zona" titulo="¿En qué zona te alojas?" texto="Con el {pase}, adaptamos tu ruta a tu alojamiento." />}
-                {pago && <CampoDireccion key={direccion ?? ''} valor={direccion ?? ''} onGuardar={setDireccion} />}
+                {!pago && <LineaDelPase datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
               </div>
             )}
           </>
         )}
       </BloqueShell>
-      {/* La caja del pase del alojamiento: con la zona ya elegida no vuelve a preguntarla («Adaptamos tu ruta a Prati»); sin zona, la pregunta de siempre (la del bloque cerrado va dentro). */}
-      {!pago && hayAlgo && (
-        <Candado
-          className="mt-2.5"
-          datos="alojamiento-zona"
-          titulo={elegida ? `Adaptamos tu ruta a ${elegida.nombre}` : '¿En qué zona te alojas?'}
-          texto={elegida ? 'Con el {pase}, tu primer y tu último día salen desde tu zona.' : 'Con el {pase}, adaptamos tu ruta a tu alojamiento.'}
-        />
-      )}
     </>
   )
 }

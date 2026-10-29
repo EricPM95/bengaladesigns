@@ -1,10 +1,9 @@
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
-import { alojamientoCubierto, lineaAlojamiento } from '../../../lib/tuAlojamiento'
-import { buildDestinationSegments } from '../../../lib/destinationSegments'
-import { usePagoActivo } from '../../../lib/pago'
-import { Icono } from '../../ui/Icono'
-import { Candado } from '../../pase/Candado'
+import { usePagoActivo, abrirPase } from '../../../lib/pago'
+import { enlaceComoLlegarAlojamiento } from '../../../lib/direccionAlojamiento'
+import { CandadoRedondo } from '../../pase/Candado'
+import { useAlojamientoDelViaje } from '../alojamiento/useAlojamientoDelViaje'
 
 interface AccommodationBlockProps {
   city: string
@@ -13,59 +12,106 @@ interface AccommodationBlockProps {
   totalNights: number
 }
 
+const DORADO_BOTON = 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)'
+const FILA = { fontFamily: "'Geist Mono',monospace", fontSize: 9.5, fontWeight: 600, letterSpacing: '.12em', color: '#6E5018', whiteSpace: 'nowrap' as const }
+
 /**
- * La fila «Añade alojamiento en {destino}» — solo se renderiza en el primer día de cada estancia
- * (ver DayDetailPanel.tsx), con la excepción natural de rutas donde cada día es una parada nueva
- * de 1 noche (roadtrip_exclusivo, etc.): ahí CADA día es ya "el primer día" de su propia estancia
- * de 1 noche, así que el bloque aparece cada día sin necesitar ningún caso especial.
- *
- * Tanda 6z: sin alojamiento abre el mapa de alojamientos a pantalla completa; con el alojamiento que cuenta el viajero se ve con su ✓ verde, su nombre y «3 noches · 420 €», y
- * al tocarla abre «Tu alojamiento» para verlo, cambiarlo o quitarlo. El alojamiento solo informa: no cambia la ruta.
+ * LA TARJETA DEL ALOJAMIENTO DENTRO DEL DÍA 1 (Tanda 10N11 §3; `Piezas/Alojamiento Dias` 01, 02 y 02b). Solo se pinta en el primer día de cada estancia (ver DayDetailPanel.tsx).
+ *  - Sin alojamiento (01): «ALOJAMIENTO · ROMA», «Añade tu alojamiento» y [+ Añadir] (abre el mapa de alojamientos).
+ *  - Con el pase (02): «ALOJAMIENTO · PRATI» (la zona), el nombre, la dirección y [Ir] (el camino desde donde estés hasta la dirección del hotel: el mismo enlace de [Cómo llegar a tu alojamiento]).
+ *  - Sin el pase (02b): «ALOJAMIENTO · ROMA», el nombre (sin zona ni dirección) y [Ir] con el candado dorado sobre azul en la esquina; al tocarlo, el aviso del pase.
+ * El alojamiento solo informa: no cambia la ruta (la zona y la dirección, del pase, sí orientan el primer día).
  */
-export function AccommodationBlock({ city, segmentDayId, totalNights }: AccommodationBlockProps) {
-  const selectedHotel = useRouteStore((state) => state.accommodationSelections[segmentDayId])
-  const selections = useRouteStore((state) => state.accommodationSelections)
-  const route = useRouteStore((state) => state.route)
+export function AccommodationBlock({ city, segmentDayId }: AccommodationBlockProps) {
   const pago = usePagoActivo()
-  const cubierto = alojamientoCubierto({ pago, unDestino: buildDestinationSegments(route?.days ?? []).length <= 1, selections, zona: route?.accommodationZone, segmentDayId })
   const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
+  const hotelDeEstaEstancia = useRouteStore((state) => state.accommodationSelections[segmentDayId])
+  const viaje = useAlojamientoDelViaje()
+  // La zona y la dirección son las del viaje (de la primera estancia); el nombre, el de esta estancia.
+  const esLaPrimera = viaje.primeraEstanciaId === segmentDayId
+  const nombre = (hotelDeEstaEstancia?.name ?? '').trim() || null
+  const zona = pago && esLaPrimera ? viaje.zonaNombre : null
+  const direccion = pago && esLaPrimera ? viaje.direccion : null
+  const enlace = pago && esLaPrimera ? enlaceComoLlegarAlojamiento(viaje.direccion) : null
+  const etiqueta = `ALOJAMIENTO · ${(zona ?? city).toUpperCase()}`
 
-  // (Tanda 6t, diseño «1b»: solo el aspecto. Una fila sin caja: el icono de la cama en un círculo, el texto en cursiva con su línea pequeña y el botón redondo; puesto, el ✓ verde.)
-  const VERDE = 'oklch(0.55 0.11 150)'
-  const fila = (hecho: boolean, titulo: string, sub: string, accion: string, onClick: () => void) => (
-    <button type="button" onClick={onClick} aria-label={accion} className="flex h-12 w-full items-center gap-2.5 rounded-[14px] bg-transparent px-1 text-left text-text">
-      <span
-        className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full"
-        style={{ border: `1.5px solid ${hecho ? VERDE : 'rgba(28,34,48,.4)'}`, color: hecho ? VERDE : 'rgba(28,34,48,.4)' }}
-      >
-        <Icono nombre="cama" size={15} />
-      </span>
-      <span className="flex min-w-0 flex-1 flex-col gap-px whitespace-nowrap">
-        <span className="truncate font-display text-[17px] italic leading-[1.1]">{titulo}</span>
-        {sub && <span className="text-[11px] text-text/50">{sub}</span>}
-      </span>
-      <span
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[16px] font-medium leading-none"
-        style={{ background: hecho ? VERDE : 'rgb(var(--bg-hover))', color: hecho ? '#fff' : 'rgb(var(--accent-hover))' }}
-      >
-        {hecho ? '✓' : '+'}
-      </span>
-    </button>
+  const tarjeta = {
+    minHeight: 76,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    padding: '10px 12px',
+    borderRadius: 22,
+    background: '#FFFDF8',
+    border: '1px solid rgba(181,138,46,.4)',
+    boxShadow: '0 10px 22px -16px rgba(60,40,10,.5)',
+    boxSizing: 'border-box' as const,
+  }
+  const icono = (
+    <span aria-hidden="true" style={{ width: 46, height: 46, flex: 'none', borderRadius: 14, background: 'radial-gradient(circle at 35% 28%,#FFFDF8,#F3E3B2 70%,#E3C77E)', boxShadow: '0 0 0 1.5px #B58A2E', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 18V8M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-8v5" />
+      </svg>
+    </span>
+  )
+  const botonOro = (children: React.ReactNode, props: { onClick?: () => void; href?: string; datos: string; etiqueta: string }) => {
+    const estilo = { height: 42, padding: '0 15px', borderRadius: 999, background: DORADO_BOTON, color: '#3A2A0A', boxShadow: '0 8px 14px -8px rgba(110,80,24,.8),inset 0 1px 0 rgba(255,255,255,.55)', display: 'flex', alignItems: 'center', gap: 6, font: "700 13.5px 'Geist',sans-serif", flex: 'none', cursor: 'pointer', textDecoration: 'none', border: 0 } as const
+    return props.href ? (
+      <a href={props.href} target="_blank" rel="noopener noreferrer" data-alojamiento-dia={props.datos} aria-label={props.etiqueta} style={estilo} onClick={(e) => e.stopPropagation()}>
+        {children}
+      </a>
+    ) : (
+      <button type="button" data-alojamiento-dia={props.datos} aria-label={props.etiqueta} style={estilo} onClick={(e) => { e.stopPropagation(); props.onClick?.() }}>
+        {children}
+      </button>
+    )
+  }
+  const svgIr = (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A2A0A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 11l18-8-8 18-2-8z" />
+    </svg>
   )
 
-  // Tanda 6y4: el aviso solo sale mientras FALTA el alojamiento (la misma regla que la tarjeta «Alojamiento» de RESERVAS). Con el hotel ya añadido, ni aviso ni fila: se ve y se cambia desde RESERVAS.
-  // (Tanda 10G: sin el pase, la zona del alojamiento sale cerrada debajo —y con el alojamiento ya guardado, es lo único que queda—: guardarlo es gratis, que cada día empiece cerca de donde duermes es del pase.)
-  const cerradoDelPase = !pago ? <Candado datos="alojamiento-zona" className="my-1" titulo="¿En qué zona te alojas?" texto="Con el {pase}, adaptamos tu ruta a tu alojamiento." /> : null
-  if (cubierto) return cerradoDelPase
+  // 01: sin alojamiento.
+  if (!nombre) {
+    return (
+      <div data-alojamiento-dia-bloque="vacio" style={tarjeta}>
+        {icono}
+        <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <span style={FILA}>{etiqueta}</span>
+          <span style={{ font: "italic 400 19px/1.1 'Instrument Serif',serif", color: 'rgba(28,34,48,.62)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Añade tu alojamiento</span>
+        </span>
+        {botonOro(
+          <>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A2A0A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Añadir
+          </>,
+          { onClick: () => abrirMapa(segmentDayId), datos: 'anadir', etiqueta: `Añadir alojamiento en ${city}` },
+        )}
+      </div>
+    )
+  }
 
+  // 02 y 02b: con alojamiento. Con el pase, [Ir] lleva a la dirección (si no hay dirección, no sale: al tocar la tarjeta se abre «Tu alojamiento» para ponerla); sin el pase, [Ir] con el candado.
   return (
-    <>
-      {selectedHotel
-        ? fila(true, selectedHotel.name, lineaAlojamiento(selectedHotel, totalNights), 'Ver o cambiar tu alojamiento', () => abrirTuAlojamiento(segmentDayId))
-        : fila(false, `Añade alojamiento en ${city}`, '', `Añadir alojamiento en ${city}`, () => abrirMapa(segmentDayId))}
-      {cerradoDelPase}
-      <div aria-hidden="true" className="h-px" style={{ background: 'linear-gradient(90deg,transparent,rgba(28,34,48,.12),transparent)' }} />
-    </>
+    <div data-alojamiento-dia-bloque={pago ? 'con-pase' : 'sin-pase'} role="button" tabIndex={0} onClick={() => abrirTuAlojamiento(segmentDayId)} onKeyDown={(e) => { if (e.key === 'Enter') abrirTuAlojamiento(segmentDayId) }} style={{ ...tarjeta, cursor: 'pointer' }} aria-label={`Ver o cambiar tu alojamiento: ${nombre}`}>
+      {icono}
+      <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <span style={FILA}>{etiqueta}</span>
+        <span style={{ font: "400 21px/1.05 'Instrument Serif',serif", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombre}</span>
+        {direccion && <span style={{ fontSize: 12, color: 'rgba(28,34,48,.55)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{direccion}</span>}
+      </span>
+      {pago ? (
+        enlace && botonOro(<>{svgIr}Ir</>, { href: enlace, datos: 'ir', etiqueta: 'Ir al alojamiento' })
+      ) : (
+        <span style={{ position: 'relative', flex: 'none', display: 'flex' }}>
+          {botonOro(<>{svgIr}Ir</>, { onClick: abrirPase, datos: 'ir-candado', etiqueta: 'Ir al alojamiento (con el Pase)' })}
+          <CandadoRedondo tamano="pequeno" esquina datos="alojamiento-ir" />
+        </span>
+      )}
+    </div>
   )
 }

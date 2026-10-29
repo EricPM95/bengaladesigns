@@ -153,7 +153,7 @@ if (toca('pelicula')) {
         if (top === A.el || top === B.el) pisadas.push(A.t + ' / ' + B.t)
       }
     }
-    return { n: cajas.length, fuera, cortados, pisadas, escx: Math.round(P.querySelector('[data-escenario]').getBoundingClientRect().width) }
+    return { n: cajas.length, fuera, cortados, pisadas, escx: Math.round(P.querySelector('[data-lista-pase]').getBoundingClientRect().width) }
   })()`
   for (const [w, h] of [[390, 664], [375, 667]]) {
     const a = await conViaje({ ancho: w, alto: h })

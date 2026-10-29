@@ -15,7 +15,7 @@ import { BloqueDinero, type CuentaComun, type TipoDeHoja } from '../presupuesto/
  *   dinero.bloque('vuelo') // el JSX
  *   dinero.paraIds / dinero.pagadoIds / dinero.precio.importe // al guardar
  */
-export function useDineroDeReserva(inicial: { para?: readonly string[] | null; precio?: Importe | null; pagado?: readonly string[] | null; marcarTodos?: boolean } = {}) {
+export function useDineroDeReserva(inicial: { para?: readonly string[] | null; precio?: Importe | null; pagado?: readonly string[] | null; marcarTodos?: boolean; pagadoTodos?: boolean } = {}) {
   const g = useEntradasDelGrupo()
   const permisos = usePermisosDelViaje()
   const personas = g.gente.map((p) => ({ id: p.id, nombre: nombreDe(p) }))
@@ -24,7 +24,7 @@ export function useDineroDeReserva(inicial: { para?: readonly string[] | null; p
   const solo = laCuenta === 'solo'
   const yoId = g.yoId
   const [para, setPara] = useState<string[]>(() => (inicial.para && inicial.para.length > 0 ? [...inicial.para] : inicial.marcarTodos ? g.gente.map((p) => p.id) : yoId ? [yoId] : []))
-  const [pagado, setPagado] = useState<string[]>(() => (inicial.pagado && inicial.pagado.length > 0 ? [...inicial.pagado] : yoId ? [yoId] : []))
+  const [pagado, setPagado] = useState<string[]>(() => (inicial.pagado && inicial.pagado.length > 0 ? [...inicial.pagado] : inicial.pagadoTodos ? g.gente.map((p) => p.id) : yoId ? [yoId] : []))
   const precio = usePrecioEditable(inicial.precio ?? null)
   const alternar = (lista: string[], id: string) => (lista.includes(id) ? lista.filter((x) => x !== id) : [...lista, id])
   // (10N10 §4/§6) Cuenta común: dos personas, conjunta; tres o más, del grupo. (La regla de la familia la decide `cuentaDelViaje` del presupuesto cuando exista.)

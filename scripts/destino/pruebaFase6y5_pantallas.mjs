@@ -249,7 +249,7 @@ console.log('P9. La zona elegida')
 {
   const fuente = leer('src/lib/tuAlojamiento.ts')
   debe(/return datos\.pago && datos\.unDestino && zonaDeAlojamientoElegida\(datos\.zona\)/.test(fuente), 'P9', 'alojamientoCubierto ya no cuenta la zona elegida (de pago y con un destino)')
-  for (const f of ['src/components/route/dayDetail/AccommodationBlock.tsx', 'src/components/route/ReservasPanel.tsx', 'src/hooks/useTripReadiness.ts']) debe(/alojamientoCubierto/.test(leer(f)), 'P9', `${f} no usa la regla compartida`)
+  for (const f of ['src/components/route/ReservasPanel.tsx', 'src/hooks/useTripReadiness.ts']) debe(/alojamientoCubierto/.test(leer(f)), 'P9', `${f} no usa la regla compartida`)
 }
 
 // ── P10. «Lo tienes · Mi banco · 30 €» ──

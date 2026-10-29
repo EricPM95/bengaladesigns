@@ -131,7 +131,7 @@ debe(/initialTab="tickets"/.test(codigoFicha) && /StopDetailSheet/.test(codigoFi
 }
 const codigoAloj = fs.readFileSync('src/components/route/reservas/AlojamientoReservas.tsx', 'utf8')
 debe(/tipo="lista"/.test(codigoAloj) && /Guardar/.test(codigoAloj) && /TimeListWheel/.test(codigoAloj), '2 zona', 'la hoja de la zona no es una rueda con [Guardar]')
-debe(/!pago && <Candado/.test(codigoAloj) && /¿En qué zona te alojas\?/.test(codigoAloj) && /Buscar alojamiento/.test(codigoAloj) && /Añadir mi alojamiento/.test(codigoAloj), '2 zona', 'el bloque abierto no lleva la zona (de pago), [Añadir mi alojamiento] y [Buscar alojamiento]')
+debe(/!pago && <LineaDelPase/.test(codigoAloj) && /¿En qué zona te alojas\?/.test(codigoAloj) && /Buscar alojamiento/.test(codigoAloj) && /Añadir mi alojamiento/.test(codigoAloj), '2 zona', 'el bloque abierto no lleva la zona (de pago), [Añadir mi alojamiento] y [Buscar alojamiento]')
 
 // ── 3. Excursiones ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 for (const dias of [4, 5]) {

@@ -81,7 +81,7 @@ const leerHoy = (a) =>
     const fila = document.querySelector('[data-hoy-prueba-fila]')
     const franja = document.querySelector('[data-franja-prueba]')
     const t = (e) => (e ? e.innerText.replace(/\\s+/g, ' ').trim() : null)
-    return { fila: fila?.getAttribute('data-hoy-prueba-fila') ?? null, filaTexto: t(fila), franja: t(franja), verPase: Boolean(document.querySelector('[data-hoy-ver-pase]')), cuerpo: document.body.innerText.replace(/\\s+/g, ' ') }
+    return { fila: fila?.getAttribute('data-hoy-prueba-fila') ?? null, filaTexto: t(fila), franja: t(franja), verPase: Boolean(document.querySelector('[data-hoy-ver-pase]')), sinPase: document.querySelector('[data-hoy-caja-prueba]')?.getAttribute('data-hoy-caja-prueba') ?? null, cuerpo: document.body.innerText.replace(/\\s+/g, ' ') }
   })()`)
 
 // 2a. La función pura, con todas las filas de la tabla (se carga a través de vite).
@@ -140,19 +140,19 @@ for (const c of casos) {
   await hoy(g, c.hoy)
   await g.esp(1500)
   const r = await leerHoy(g)
-  if (c.tipo === null) {
-    debe(r.fila === null && !r.franja && !/día de prueba|Te regalamos/.test(r.cuerpo), 'pantalla', `${c.titulo}: no se habla de la prueba (${r.fila ?? 'sin fila'})`)
-  } else if (c.tipo === 'franja') {
+  // (Tanda 10N11, apartado 5) Sin pase, fuera del día de la prueba, HOY es la pantalla de Design (Piezas/Pase Lista 2 y 2b) con la caja de «sin usar» o «ya usado»; el día de la prueba, HOY entero con su franja.
+  if (c.tipo === 'franja') {
     debe(Boolean(r.franja) && /Hoy es tu día de prueba: tienes el Pase de Roma completo, gratis, hasta medianoche\. Disfrútalo\./.test(r.franja), 'pantalla', `${c.titulo}: la franja arriba (${r.franja})`)
-    debe(!/Con el pase tendrás/.test(r.cuerpo), 'pantalla', `${c.titulo}: HOY entero, sin la lista de lo cerrado`)
+    debe(!/Con el pase tendrás/.test(r.cuerpo) && !r.sinPase, 'pantalla', `${c.titulo}: HOY entero, sin la pantalla de sin pase`)
   } else {
-    debe(r.fila === c.tipo, 'pantalla', `${c.titulo}: sale la fila ${c.tipo} (${r.fila})`)
-    if (c.tipo === 'tras_prueba') debe(r.verPase && /Ver el Pase de Roma/.test(r.cuerpo), 'pantalla', `${c.titulo}: con [Ver el Pase de Roma]`)
-    if (c.tipo === 'viaje_terminado') debe(!/Tienes un día de prueba/.test(r.cuerpo), 'pantalla', `${c.titulo}: ya no sale «Tienes un día de prueba»`)
+    const usada = c.p.estado === 'gastada'
+    debe(r.sinPase === (usada ? 'usada' : 'sin_usar'), 'pantalla', `${c.titulo}: la caja del día de prueba ${usada ? 'ya usado' : 'sin usar'} (${r.sinPase})`)
+    debe(r.verPase && /Ver el Pase Roma/.test(r.cuerpo) && /HOY, tu guía del día/.test(r.cuerpo), 'pantalla', `${c.titulo}: «HOY, tu guía del día» y [Ver el Pase Roma]`)
+    debe(!r.fila, 'pantalla', `${c.titulo}: ya no sale la fila vieja (${r.fila ?? 'ninguna'})`)
   }
   // El oro de HOY y de Pase de Roma en el texto de la fila.
   const oro = await g.evaluar(`Array.from(document.querySelectorAll('[data-hoy-prueba-fila] [data-marca], [data-franja-prueba] [data-marca]')).map((e) => ({ t: e.textContent, c: getComputedStyle(e).color }))`)
-  if (c.tipo) {
+  if (c.tipo === 'franja') {
     debe(oro.length > 0 && oro.every((m) => COLORES_ORO.includes(m.c)), 'oro', `${c.titulo}: «${oro.map((m) => m.t).join('», «')}» en oro (${oro.map((m) => m.c).join(' ')})`)
     const texto = r.filaTexto ?? r.franja ?? ''
     const cuantosHoy = (texto.match(/\bHOY\b/g) ?? []).length
@@ -167,7 +167,7 @@ await g.evaluar(`${store}.then((s) => { s.setRouteDateRange(undefined); return t
 await g.esp(2500)
 {
   const r = await leerHoy(g)
-  debe(/Pon tus fechas/.test(r.cuerpo) && !/Te regalamos|día de prueba/.test(r.cuerpo), 'pantalla', 'sin fechas: «Pon tus fechas» y nada de la prueba')
+  debe(/HOY, tu guía del día/.test(r.cuerpo) && Boolean(r.sinPase), 'pantalla', '(10N11) sin fechas, sin pase: la pantalla de Design con la caja del día de prueba')
   await sacar(g, '10_sin_fechas', 'HOY, sin fechas', '«Pon tus fechas» (sin prueba hasta que haya fechas).')
 }
 await prueba(g, null)

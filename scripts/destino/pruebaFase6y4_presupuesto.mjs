@@ -106,24 +106,18 @@ for (const version of ['gratis', 'completa']) {
 console.log('11. Aviso del alojamiento')
 {
   const bloque = () => pinta(M.AccommodationBlock, { city: 'Roma', segmentDayId: 'd1', totalNights: 2 })
+  // (Tanda 10N11: la tarjeta del día 1 sale SIEMPRE: sin hotel «Añade tu alojamiento» + Añadir; con hotel, su nombre + [Ir] (con candado sin el pase). Lo detallado, en pruebaTanda10N11_b.)
   poner('completa', rutaMano())
-  debe(/Añade alojamiento en Roma/.test(bloque()), '11', 'sin hotel, el aviso no sale')
+  debe(/Añade tu alojamiento/.test(bloque()) && /Añadir/.test(bloque()), '11', 'sin hotel, la tarjeta «Añade tu alojamiento» + Añadir no sale')
   useRouteStore.setState({ accommodationSelections: { d1: { name: 'Mi hotel', precio: null } } })
-  debe(bloque().trim() === '', '11', `con el hotel añadido, el aviso sigue saliendo: ${plano(bloque())}`)
-  poner('completa', rutaMano(3, { accommodationZone: 'trastevere' }))
-  debe(bloque().trim() === '', '11', 'de pago y con la zona elegida (la tarjeta de RESERVAS la cuenta como hecha), el aviso sigue saliendo')
-  poner('completa', rutaMano(3, { accommodationZone: 'nose' }))
-  debe(/Añade alojamiento/.test(bloque()), '11', '«Aún no lo sé» cuenta como que falta: el aviso debería salir')
-  poner('gratis', rutaMano(3, { accommodationZone: 'trastevere' }))
-  debe(/Añade alojamiento/.test(bloque()), '11', 'gratis, la zona no cuenta (no existe): el aviso debería salir')
+  debe(/Mi hotel/.test(bloque()) && !/Añade tu alojamiento/.test(bloque()), '11', `con el hotel añadido, la tarjeta no enseña su nombre: ${plano(bloque())}`)
   poner('gratis', rutaMano())
   useRouteStore.setState({ accommodationSelections: { d1: { name: 'Mi hotel', precio: null } } })
-  // (Tanda 10G: gratis con el hotel puesto, el aviso «Añade alojamiento» no sale; solo queda la caja del pase de la zona del alojamiento; Tanda 10N5: «¿En qué zona te alojas?» / «Con el Pase Roma, adaptamos tu ruta a tu alojamiento.»)
-  debe(!/Añade alojamiento/.test(bloque()) && /¿En qué zona te alojas?/.test(plano(bloque())) && /adaptamos tu ruta a tu alojamiento/.test(plano(bloque())), '11', `gratis con hotel: el aviso sigue saliendo o falta el candado de la zona (${plano(bloque())})`)
+  debe(/Mi hotel/.test(plano(bloque())) && /Mi hotel | Ir/.test(plano(bloque())) && !/¿En qué zona te alojas?/.test(plano(bloque())), '11', `gratis con hotel: falta el nombre o el [Ir] con candado, o sobra la caja vieja de la zona (${plano(bloque())})`)
   // una sola regla
   const c = M.alojamientoCubierto
   debe(c({ pago: false, unDestino: true, selections: {}, zona: 'x', segmentDayId: 'd1' }) === false && c({ pago: true, unDestino: true, selections: {}, zona: 'x', segmentDayId: 'd1' }) === true && c({ pago: true, unDestino: false, selections: {}, zona: 'x', segmentDayId: 'd1' }) === false && c({ pago: false, unDestino: false, selections: { d1: {} }, zona: null, segmentDayId: 'd1' }) === true, '11', 'alojamientoCubierto no da lo esperado')
-  for (const f of ['src/components/route/dayDetail/AccommodationBlock.tsx', 'src/components/route/ReservasPanel.tsx', 'src/hooks/useTripReadiness.ts']) debe(/alojamientoCubierto/.test(fs.readFileSync(f, 'utf8')), '11', `${f} no usa la regla compartida`)
+  for (const f of ['src/components/route/ReservasPanel.tsx', 'src/hooks/useTripReadiness.ts']) debe(/alojamientoCubierto/.test(fs.readFileSync(f, 'utf8')), '11', `${f} no usa la regla compartida`)
 }
 
 // ── 12. El vuelo: precio y código ──

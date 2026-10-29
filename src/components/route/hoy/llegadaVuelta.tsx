@@ -13,6 +13,7 @@ import { BilleteDeVuelo } from '../dayDetail/BilleteDeVuelo'
 import { ArrivalReturnSheet } from '../dayDetail/ArrivalReturnSheet'
 import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojamiento'
 import { Icono } from '../../ui/Icono'
+import { useAlojamientoDelViaje } from '../alojamiento/useAlojamientoDelViaje'
 import { CajaBlanca, ojoMono } from './piezas'
 
 /**
@@ -85,10 +86,34 @@ export function useFichasDeHoy(route: Route, day: DayPlan, dateIso: string | nul
   return { llegada, vuelta, abrir, hoja }
 }
 
-/** [Cómo llegar a tu alojamiento]: la pieza compartida, con la dirección del viaje. Sin dirección, o en la gratis, no sale. */
-export function BotonAlojamientoHoy({ route }: { route: Route }) {
+/**
+ * [Cómo llegar a tu alojamiento] en HOY (Tanda 10N11 §3; solo con el pase y solo con dirección): una tarjeta con la zona y el nombre del hotel y, debajo, el botón compartido
+ * (`BotonComoLlegarAlojamiento`, que abre el camino desde donde estás hasta la dirección). Sale al EMPEZAR el día (donde el viajero se levanta) y al ACABARLO (para volver a dormir).
+ * `dentro`: sin la tarjeta (solo el botón), para ir dentro de otra caja (la llegada).
+ */
+export function BotonAlojamientoHoy({ route, dentro = false }: { route: Route; dentro?: boolean }) {
+  const viaje = useAlojamientoDelViaje()
   if (!pagoActivo()) return null
-  return <BotonComoLlegarAlojamiento direccion={direccionDelAlojamiento(route)} />
+  const direccion = direccionDelAlojamiento(route)
+  if (!direccion) return null
+  if (dentro) return <BotonComoLlegarAlojamiento direccion={direccion} />
+  return (
+    <div data-alojamiento-hoy className="flex flex-col gap-2.5 rounded-[22px] p-3" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)', boxShadow: '0 10px 22px -16px rgba(60,40,10,.5)' }}>
+      <div className="flex items-center gap-3">
+        <span aria-hidden="true" style={{ width: 46, height: 46, flex: 'none', borderRadius: 14, background: 'radial-gradient(circle at 35% 28%,#FFFDF8,#F3E3B2 70%,#E3C77E)', boxShadow: '0 0 0 1.5px #B58A2E', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 18V8M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-8v5" />
+          </svg>
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+          <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.12em', color: '#6E5018', whiteSpace: 'nowrap' }}>{'TU ALOJAMIENTO · ' + (viaje.zonaNombre ?? viaje.ciudad).toUpperCase()}</span>
+          <span className="truncate" style={{ font: "400 21px/1.05 'Instrument Serif',serif" }}>{viaje.nombre ?? direccion}</span>
+          {viaje.nombre && <span className="truncate text-[12px] text-text/55">{direccion}</span>}
+        </span>
+      </div>
+      <BotonComoLlegarAlojamiento direccion={direccion} />
+    </div>
+  )
 }
 
 /** El día de llegada, antes de la primera parada. Sin billete (sin la hora del viajero, o en coche) no sale. */
@@ -104,7 +129,7 @@ export function TarjetaLlegadaHoy({ route, mitad, onAbrir }: { route: Route; mit
         {tituloDeLlegada(mitad.point)}
       </span>
       <BilleteDeVuelo billete={mitad.billete} onOpen={onAbrir} />
-      {hayAlojamiento && <BotonAlojamientoHoy route={route} />}
+      {hayAlojamiento && <BotonAlojamientoHoy route={route} dentro />}
     </CajaBlanca>
   )
 }

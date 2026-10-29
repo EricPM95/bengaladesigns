@@ -3,6 +3,7 @@ import { pagoActivo } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { nombreDelPase } from '../../../lib/nombrePase'
 import { Marca, ORO_PALIDO, ORO_PEQUENO } from '../../pase/Marca'
+import { CandadoRedondo } from '../../pase/Candado'
 import { accesoDePrueba, useHistoriaDePrueba } from '../../../lib/historiaDePrueba'
 import { useGastarHistoriaAl3s } from '../../../lib/useGastarHistoria'
 import { useEscuchar } from '../../../lib/useEscuchar'
@@ -35,8 +36,8 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
   const permitido = conPase || (sitio ? pruebaDelSitio !== 'cerrada' : libre)
   const nombreDelPaseDelSitio = nombreDelPase(sitio?.destino ?? destino ?? '')
   const candadoDentro = (
-    <span aria-hidden="true" data-candado-dentro className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full" style={{ background: '#FBF3E2', border: '1px solid rgba(166,124,82,.35)', color: '#A67C52' }}>
-      <Icono nombre="candado" size={14} grosor={1.8} />
+    <span data-candado-dentro className="flex flex-none">
+      <CandadoRedondo diametro={30} datos="escuchar" />
     </span>
   )
   const alTocarCerrado = () => {
