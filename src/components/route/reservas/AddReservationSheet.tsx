@@ -20,7 +20,7 @@ import { isManualRoute } from '../../../lib/manualPlan'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { AVISO_DISPONIBILIDAD, horasDeLaRueda, useHorarioDeEntrada } from '../../../lib/horarioDeEntrada'
-import { FREE_TOUR_HOURS } from '../../../lib/freeTourHoras'
+import { FREE_TOUR_RUEDA } from '../../../lib/freeTourHoras'
 import { avisoDeLaHora, civitatisActiva, ruedaConHorasLibres, useHorasLibres } from '../../../lib/civitatis'
 import { llegadaVueltaDe } from '../../../lib/llegadaVuelta'
 import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
@@ -293,11 +293,11 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const wheelItems = useMemo(() => {
     const horaDePartida = existing?.time ?? igual?.reserva.time ?? null
     const propia = horaDePartida && /^\d{1,2}:\d{2}$/.test(horaDePartida) ? (horaDePartida.length === 4 ? `0${horaDePartida}` : horaDePartida) : null
-    const base = horasDeLaRueda(entryHours, propia)
+    // (10S3 §5) El Free Tour: la misma rueda de las entradas, sin las seis horas fijas nuestras.
+    const base = isFreeTour ? (propia && !FREE_TOUR_RUEDA.includes(propia) ? [...FREE_TOUR_RUEDA, propia].sort() : FREE_TOUR_RUEDA) : horasDeLaRueda(entryHours, propia)
     return filtrando ? ruedaConHorasLibres(base, horasDelDia, propia) : base
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entryHours, filtrando, horasDelDia])
-  const horasDelFreeTour = filtrando && isFreeTour && horasDelDia ? horasDelDia.horas.map((h) => h.hora) : FREE_TOUR_HOURS
   const pickupItems = useMemo(() => {
     const out: string[] = []
     for (let m = 300; m <= 660; m += 5) out.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`)
@@ -314,13 +314,13 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // La hora de partida de la rueda (Tanda 10O): la de la reserva que ya hay; si no, la hora a la que la ruta llega a ese sitio ese día (si el sitio ya está en la ruta), y si no está, las 9:00; la rueda
   // se queda en la hora más cercana de las del sitio (así, si abre más tarde de las 9:00, parte de la hora de apertura).
   useEffect(() => {
-    if (isFreeTour || isExcursion || view !== 'hora') return
+    if (isExcursion || view !== 'hora') return
     const asMin = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
-    const enLaRuta = resolvedDay?.stops.find((stop) => !stop.isNightExperience && target.placeNames.includes(stop.name))
+    const enLaRuta = resolvedDay?.stops.find((stop) => (isFreeTour ? stop.isFreeTour : !stop.isNightExperience && target.placeNames.includes(stop.name)))
     const llegada = enLaRuta && /^\d{1,2}:\d{2}$/.test(enLaRuta.time ?? '') ? asMin(enLaRuta.time) : NaN
     // (Con la hora del dueño de partida —«Reservar la mía a la misma hora»— la rueda se queda en ella aunque llegue después la lista de horas.)
     ultimoCambioDeRueda.current = Date.now()
-    const wanted = igual?.reserva.time ? asMin(igual.reserva.time) : validTime ? asMin(fields.time) : Number.isNaN(llegada) ? 9 * 60 : llegada
+    const wanted = igual?.reserva.time ? asMin(igual.reserva.time) : validTime ? asMin(fields.time) : Number.isNaN(llegada) ? (isFreeTour ? 10 : 9) * 60 : llegada
     const nearest = wheelItems.reduce((best, item) => (Math.abs(asMin(item) - wanted) < Math.abs(asMin(best) - wanted) ? item : best), wheelItems[0])
     const current = validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : ''
     if (nearest !== current) set({ time: nearest })
@@ -331,7 +331,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // La respuesta del servidor para esta hora y este día aún no ha llegado: no se guarda hasta entonces (la hoja de «mover el día» y la regla 17 salen con ella).
   const [planDoneKey, setPlanDoneKey] = useState<string | null>(null)
   // (En una ruta a mano no se pregunta qué día se mueve: ninguno se mueve, la reserva se queda en el día y a la hora del viajero. Tanda 6y.)
-  const planKey = resolvedDay && bigPlace && !isExcursion && validTime && !isManualRoute(route) && !esInvitado ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
+  // (Tanda 10S3, apartado 5) El Free Tour no mueve días, y una entrada cuyo sitio YA está en el día de la fecha elegida se queda donde está con su hora (10N10 §3d): en los dos casos no se pide el plan y no sale el mensaje de «mover el día».
+  const yaEnSuDia = Boolean(resolvedDay?.stops.some((parada) => (isFreeTour ? parada.isFreeTour : target.placeNames.includes(parada.name))))
+  const planKey = resolvedDay && bigPlace && !isFreeTour && !yaEnSuDia && !isExcursion && validTime && !isManualRoute(route) && !esInvitado ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
   // «¿Para quién es?» (Tanda 10N §8): solo el dueño y solo en un viaje compartido. El dueño va siempre marcado; una reserva de antes de compartir cuenta como «solo para mí».
   // (Tanda 10N5 §6c) También quien reserva en un viaje de otra persona dice para quién es: la pagó él y, si es para varios, entra en las cuentas del grupo. Siempre va marcado quien reserva.
   const paraQuienVisible = grupo.compartido
@@ -576,16 +578,24 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                       disabled={closed}
                       aria-pressed={selected}
                       onClick={() => pickDay(day)}
-                      className="flex h-11 flex-none items-center gap-[7px] rounded-full px-3.5 transition-colors"
+                      data-dia-cuadrado={day.id}
+                      data-elegida={selected ? '1' : '0'}
+                      // (10S3 §7) Todo lo que se elige va en cuadrados: el día, como las personas; el elegido, azul oscuro con ✓ dorado.
+                      className="relative flex h-[62px] min-w-[86px] flex-none flex-col items-center justify-center gap-0.5 rounded-2xl px-3 transition-colors"
                       style={{
-                        border: `1.5px solid ${selected ? '#1C2230' : 'rgba(28,34,48,.12)'}`,
-                        background: selected ? '#1C2230' : closed ? '#F1EADC' : '#FFFFFF',
-                        color: selected ? '#FFFDF8' : '#1C2230',
+                        border: `1px solid ${selected ? '#1C2230' : 'rgba(28,34,48,.14)'}`,
+                        background: selected ? '#1C2230' : closed ? '#F1EADC' : '#FFFDF8',
+                        color: selected ? '#FBF3E2' : '#1C2230',
                         opacity: closed ? 0.5 : 1,
                         cursor: closed ? 'not-allowed' : 'pointer',
                       }}
                     >
-                      <span className="text-[13.5px] font-semibold" style={{ textDecoration: closed ? 'line-through' : 'none' }}>
+                      {selected && (
+                        <svg aria-hidden="true" data-dia-marca width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', top: 7, right: 8 }}>
+                          <path d="M5 12.5l4.5 4.5L19 7.5" />
+                        </svg>
+                      )}
+                      <span className="text-[14px] font-semibold" style={{ textDecoration: closed ? 'line-through' : 'none' }}>
                         {chipText(day)}
                       </span>
                       {(closed || inRoute) && <span className="text-[10.5px] font-medium opacity-70">{closed ? 'Cerrado' : 'En tu ruta'}</span>}
@@ -598,25 +608,10 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               </p>
 
               <div className="mt-3.5">
-                {isFreeTour ? (
-                  <div className="grid grid-cols-3 gap-2">
-                    {horasDelFreeTour.map((hour) => (
-                      <button
-                        key={hour}
-                        type="button"
-                        onClick={() => set({ time: hour })}
-                        className={`h-12 rounded-2xl border text-[16px] font-medium ${fields.time === hour ? 'border-text bg-text text-bg' : 'border-text/15 bg-bg text-text hover:bg-bg-hover'}`}
-                      >
-                        {hour}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <TimeListWheel items={rueda} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : rueda[0]} onChange={(hhmm) => {
-                    if (igual && Date.now() - ultimoCambioDeRueda.current < 1500) return
-                    set({ time: hhmm })
-                  }} label={isExcursion ? 'Hora de recogida' : 'Hora de la entrada'} />
-                )}
+                <TimeListWheel items={rueda} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : rueda[0]} onChange={(hhmm) => {
+                  if (igual && Date.now() - ultimoCambioDeRueda.current < 1500) return
+                  set({ time: hhmm })
+                }} label={isExcursion ? 'Hora de recogida' : isFreeTour ? 'Hora del Free Tour' : 'Hora de la entrada'} />
               </div>
 
               {civitatisActiva() && modoReservar && !isExcursion && horasApi.estado !== 'apagado' && (
@@ -875,7 +870,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                     value={fields.time}
                     onChange={(hhmm) => set({ time: hhmm })}
                     title={isExcursion ? 'Hora de recogida' : 'Hora de entrada'}
-                    options={isFreeTour ? FREE_TOUR_HOURS : undefined}
                     min={window0?.min}
                     max={window0?.max}
                   />

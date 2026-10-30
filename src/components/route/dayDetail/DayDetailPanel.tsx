@@ -1,4 +1,5 @@
 import { PendienteDeParada } from '../../logros/visto/PendienteDeParada'
+import { LineaReservaFueraDeFranja } from '../reservas/LineaReservaFueraDeFranja'
 import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
@@ -1055,7 +1056,7 @@ export function DayDetailPanel({
     const at = placed.findIndex((entry) => entry.item.type === 'stop' && entry.item.index === index)
     return at > 0 && placed[at - 1].item.type === 'stop'
   }
-  const renderTimelineItem = ({ item, start }: PlacedItem, firstInPeriod: boolean, omitGap = false) => {
+  const renderTimelineItem = ({ item, start, period }: PlacedItem, firstInPeriod: boolean, omitGap = false) => {
     if (item.type === 'end') {
       return renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, '', stops.length, dinnerInsertionIndex !== null)
     }
@@ -1166,6 +1167,8 @@ export function DayDetailPanel({
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} onVerFicha={() => { setDetailTab(null); setDetailIndex(index) }} />}
             />
           )}
+          {/* (10S3, apartado 6) Sin pase, una reserva cuya hora no cuadra con la franja de la parada: la línea gris del pase. */}
+          {realStop?.reservedId && <LineaReservaFueraDeFranja reservedId={realStop.reservedId} periodo={period} />}
           {/* 8b, V6: lo que le falta a la parada ya vista (foto del pedazo, sorpresa o recuerdo). Con los logros apagados no pinta nada. */}
           {realStop && <PendienteDeParada dayId={day.id} stopId={realStop.id} visto={Boolean((realStop as { checkedInAt?: string | null }).checkedInAt)} />}
         </div>

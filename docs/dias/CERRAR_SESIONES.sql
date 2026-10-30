@@ -5,7 +5,7 @@
 with cuenta as (
   select id from auth.users where lower(email) = lower('<TU CORREO>')
 ), llaves as (
-  delete from auth.refresh_tokens where user_id in (select id from cuenta) returning 1
+  delete from auth.refresh_tokens where user_id in (select id::text from cuenta) returning 1
 ), sesiones as (
   delete from auth.sessions where user_id in (select id from cuenta) returning 1
 )

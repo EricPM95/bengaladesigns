@@ -249,7 +249,16 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
 
   const { data, error } = await supabase.from('trips').insert({ traveler_id: travelerId, ...row }).select('id').single()
   if (error) throw error
+  // (Tanda 10S3 §3) El primer guardado de un viaje nuevo también es NUESTRO: se apunta para que su eco de Realtime no salga como «Han cambiado el viaje».
+  anotarGuardadoPropio(data.id as string, payload.route)
   return data.id as string
+}
+
+/** (10S3 §3) Apunta como «guardado aquí» una ruta que acabamos de escribir en la nube (viaje nuevo o paso de la generación), para reconocer su eco. */
+function anotarGuardadoPropio(tripId: string, ruta: unknown): void {
+  const canonica = canonico(ruta)
+  recordarGuardado(tripId, canonica)
+  rutaVista.set(tripId, canonica)
 }
 
 /**
@@ -276,11 +285,13 @@ export async function saveGenerationCheckpoint(travelerId: string, tripId: strin
   if (tripId) {
     const { error } = await supabase.from('trips').update(row).eq('id', tripId)
     if (error) throw error
+    anotarGuardadoPropio(tripId, route)
     return tripId
   }
 
   const { data, error } = await supabase.from('trips').insert({ traveler_id: travelerId, ...row }).select('id').single()
   if (error) throw error
+  anotarGuardadoPropio(data.id as string, route)
   return data.id as string
 }
 

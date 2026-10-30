@@ -276,8 +276,28 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
     onOrigin(lugar)
     setOq('')
     if (!destination) setFoco('d')
-    else setFoco(null)
+    else {
+      setFoco(null)
+      origenRef.current?.blur()
+    }
     if (!destination) setTimeout(() => destinoRef.current?.focus(), 30)
+  }
+
+  // (Tanda 10S3) Mientras se escribe en un campo, la tarjeta sube arriba y los resultados salen justo debajo, entre el campo y el teclado; se esconde lo que estorba (logo, «Volver a mi viaje», título, mapa). Al soltar el campo (teclado cerrado) o elegir, todo vuelve.
+  const escribiendo = !enTransporte && foco !== null
+  const [visible, setVisible] = useState(alto)
+  useEffect(() => {
+    const medir = () => setVisible(Math.max(200, Math.min(alto, Math.round(window.visualViewport?.height ?? window.innerHeight))))
+    medir()
+    window.visualViewport?.addEventListener('resize', medir)
+    window.addEventListener('resize', medir)
+    return () => {
+      window.visualViewport?.removeEventListener('resize', medir)
+      window.removeEventListener('resize', medir)
+    }
+  }, [alto])
+  const soltarFoco = (cual: 'o' | 'd') => {
+    setTimeout(() => setFoco((f) => (f === cual && document.activeElement !== (cual === 'o' ? origenRef.current : destinoRef.current) ? null : f)), 250)
   }
 
   const escribioDestino = dq.trim()
@@ -319,7 +339,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
         ref={lienzo}
         data-mapa-primera
         onPointerDown={alBajar}
-        style={{ position: 'absolute', left: 0, top: 0, width: ancho, height: alto600, touchAction: 'none', cursor: 'grab', background: MAR }}
+        style={{ position: 'absolute', left: 0, top: 0, width: ancho, height: alto600, touchAction: 'none', cursor: 'grab', background: MAR, ...(escribiendo ? { visibility: 'hidden' as const } : null) }}
       >
         <svg width={ancho} height={alto600} viewBox={`0 0 ${ancho} ${alto600}`} style={{ display: 'block' }} role="img" aria-label="Mapa del mundo con nuestros destinos">
           {tierra && <path d={tierra} fill="#FBF3E2" stroke="rgba(166,124,82,.4)" strokeWidth={0.8} vectorEffect="non-scaling-stroke" transform={`translate(${ancho / 2} ${anclaY}) scale(${k}) translate(${-c.cx} ${-c.cy})`} />}
@@ -366,12 +386,16 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
 
       {!tocado && !foco && <div style={{ position: 'absolute', left: '50%', top: Math.round(alto * 0.5), transform: 'translateX(-50%)', font: "500 11px 'Geist'", letterSpacing: '.04em', color: 'rgba(28,34,48,.6)', pointerEvents: 'none', whiteSpace: 'nowrap' }}>Arrastra y haz zoom</div>}
 
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 250, background: 'linear-gradient(180deg,#FFFFFF 0%,#FFFFFF 16%,#BCD8EC 72%,rgba(188,216,236,0) 100%)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', left: 0, right: 0, top: Math.round(alto * 0.5), height: Math.round(alto * 0.24), background: `linear-gradient(180deg,rgba(246,239,224,0),${CREMA} 85%)`, pointerEvents: 'none' }} />
+      {!escribiendo && <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 250, background: 'linear-gradient(180deg,#FFFFFF 0%,#FFFFFF 16%,#BCD8EC 72%,rgba(188,216,236,0) 100%)', pointerEvents: 'none' }} />}
+      {!escribiendo && <div style={{ position: 'absolute', left: 0, right: 0, top: Math.round(alto * 0.5), height: Math.round(alto * 0.24), background: `linear-gradient(180deg,rgba(246,239,224,0),${CREMA} 85%)`, pointerEvents: 'none' }} />}
+      {/* (10S3) Tocar fuera, con el teclado abierto, lo cierra y todo vuelve. */}
+      {escribiendo && <div data-fondo-escribir onPointerDown={() => (document.activeElement as HTMLElement | null)?.blur?.()} style={{ position: 'absolute', inset: 0, zIndex: 2 }} />}
 
-      <span style={{ position: 'absolute', left: 22, top: 'max(30px, calc(env(safe-area-inset-top) + 14px))', zIndex: 3, display: 'flex', alignItems: 'center' }}>
-        <LogoPequeno />
-      </span>
+      {!escribiendo && (
+        <span style={{ position: 'absolute', left: 22, top: 'max(30px, calc(env(safe-area-inset-top) + 14px))', zIndex: 3, display: 'flex', alignItems: 'center' }}>
+          <LogoPequeno />
+        </span>
+      )}
       {enTransporte && onCambiar && (
         <button className="zona-toque"
           type="button"
@@ -382,7 +406,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
           Cambiar ruta
         </button>
       )}
-      {onVolverAMiViaje && !enTransporte && (
+      {onVolverAMiViaje && !enTransporte && !escribiendo && (
         <button className="zona-toque"
           type="button"
           onClick={onVolverAMiViaje}
@@ -391,7 +415,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
           Volver a mi viaje
         </button>
       )}
-      <div style={{ position: 'absolute', left: 22, right: 22, top: 'max(84px, calc(env(safe-area-inset-top) + 68px))', display: 'flex', flexDirection: 'column', gap: 12, pointerEvents: 'none' }}>
+      <div style={{ position: 'absolute', left: 22, right: 22, top: 'max(84px, calc(env(safe-area-inset-top) + 68px))', display: escribiendo ? 'none' : 'flex', flexDirection: 'column', gap: 12, pointerEvents: 'none' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', font: `500 10px ${MONO}`, letterSpacing: '.14em', color: 'rgba(28,34,48,.68)' }}>
           <span>01 — RUTA</span>
           <span>1/{totalPasos}</span>
@@ -418,8 +442,13 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
         </h1>
       </div>
 
+      {/* (10S3) Con un campo en uso: tarjeta arriba y, debajo, sus resultados (en flujo, entre el campo y el teclado). Sin campo en uso, `contents`: nada cambia. */}
+      <div
+        data-zona-escribir={escribiendo ? '' : undefined}
+        style={escribiendo ? { position: 'absolute', left: 14, right: 14, top: 'max(10px, calc(env(safe-area-inset-top) + 6px))', zIndex: 6, display: 'flex', flexDirection: 'column', gap: 6, maxHeight: Math.max(160, visible - 12) } : { display: 'contents' }}
+      >
       {noHay && (
-        <div data-aviso-destino style={{ position: 'absolute', left: 18, right: 18, bottom: 332, padding: 16, borderRadius: 20, background: 'rgba(255,253,248,.96)', border: '1px solid #E4D2A4', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div data-aviso-destino style={{ order: 2, padding: 16, borderRadius: 20, background: 'rgba(255,253,248,.96)', border: '1px solid #E4D2A4', display: 'flex', flexDirection: 'column', gap: 10 }}>
           {avisoDeEste?.estado === 'hecho' ? (
             <span data-aviso-hecho style={{ font: `400 22px/1.1 ${SERIF}` }}>
               ¡Hecho! Te escribimos en cuanto llegue <em style={{ color: ORO_OSCURO }}>{escribioDestino}</em>.
@@ -464,39 +493,46 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
       )}
 
       {sugerenciasO && (
-        <div data-sugerencias-origen style={{ position: 'absolute', left: 18, right: 18, bottom: 332, borderRadius: 18, background: 'rgba(255,253,248,.95)', border: '1px solid #E4D2A4', overflow: 'hidden', maxHeight: '38%', overflowY: 'auto' }}>
-          {resultados.map((lugar) => (
-            <div
-              key={`${lugar.fullName}-${lugar.coordinates.lat}`}
-              data-origen-opcion={lugar.name}
-              onPointerDown={(e) => {
-                e.preventDefault()
-                elegirOrigen(lugar)
-              }}
-              style={{ minHeight: 46, padding: '0 16px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(28,34,48,.07)', font: "500 15px 'Geist'", cursor: 'pointer' }}
-            >
-              <span style={{ font: `500 12px ${MONO}`, letterSpacing: '.06em', color: ORO_TEXTO, width: 34 }}>{cityCode(lugar)}</span>
-              <span style={{ flex: 1 }}>{lugar.name}</span>
-              {lugar.countryCode ? (
-                <span role="img" aria-label={countryOf(lugar)} title={countryOf(lugar)} className={`fi fi-${lugar.countryCode.toLowerCase()}`} style={{ width: 28, height: 20, flex: 'none', borderRadius: 4, backgroundSize: 'cover', boxShadow: '0 0 0 1px rgba(28,34,48,.1)' }} />
-              ) : (
-                <span style={{ font: "400 12px 'Geist'", color: 'rgba(28,34,48,.62)' }}>{countryOf(lugar)}</span>
-              )}
-            </div>
-          ))}
+        <div data-sugerencias-origen onMouseDown={(e) => e.preventDefault()} style={{ order: 1, flex: '0 1 auto', minHeight: 0, borderRadius: 18, background: 'rgba(255,253,248,.97)', border: '1px solid #E4D2A4', overflowY: 'auto', boxShadow: '0 14px 30px -14px rgba(111,78,55,.45)' }}>
+          {resultados.map((lugar) => {
+            const pais = countryOf(lugar)
+            return (
+              <div
+                key={`${lugar.fullName}-${lugar.coordinates.lat}`}
+                data-origen-opcion={lugar.name}
+                data-origen-pais={pais}
+                onPointerDown={(e) => {
+                  e.preventDefault()
+                  elegirOrigen(lugar)
+                }}
+                style={{ minHeight: 41, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(28,34,48,.07)', font: "500 15px 'Geist'", cursor: 'pointer' }}
+              >
+                {lugar.countryCode ? (
+                  <span role="img" aria-label={pais} title={pais} className={`fi fi-${lugar.countryCode.toLowerCase()}`} data-origen-bandera style={{ width: 28, height: 20, flex: 'none', borderRadius: 4, backgroundSize: 'cover', boxShadow: '0 0 0 1px rgba(28,34,48,.1)' }} />
+                ) : (
+                  <span data-origen-bandera style={{ width: 28, height: 20, flex: 'none', borderRadius: 4, background: 'rgba(28,34,48,.08)' }} />
+                )}
+                <span data-origen-texto style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {lugar.name}
+                  {pais ? <span style={{ font: "400 14px 'Geist'", color: 'rgba(28,34,48,.7)' }}>, {pais}</span> : null}
+                </span>
+                <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.06em', color: ORO_TEXTO, flex: 'none' }}>{cityCode(lugar)}</span>
+              </div>
+            )
+          })}
           {!buscando && resultados.length === 0 && <div style={{ padding: '14px 16px', font: "400 14px 'Geist'", color: 'rgba(28,34,48,.7)' }}>No encontramos esa ciudad todavía.</div>}
           {buscando && resultados.length === 0 && <div style={{ padding: '14px 16px', font: "400 14px 'Geist'", color: 'rgba(28,34,48,.7)' }}>Buscando…</div>}
         </div>
       )}
 
-      <div style={{ position: 'absolute', left: 14, right: 14, bottom: enTransporte ? 'max(26px, env(safe-area-inset-bottom))' : 'max(66px, calc(env(safe-area-inset-bottom) + 40px))', padding: 14, borderRadius: 28, background: 'linear-gradient(180deg,rgba(255,253,248,.96),rgba(251,243,226,.94))', border: '1px solid #E4D2A4', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', flexDirection: 'column', gap: 10, boxShadow: '0 20px 40px -16px rgba(111,78,55,.4),inset 0 1px 0 rgba(255,255,255,.8)' }}>
+      <div data-tarjeta-origen-destino style={{ ...(escribiendo ? { order: 0, position: 'relative' as const, flex: 'none' } : { position: 'absolute' as const, left: 14, right: 14, bottom: enTransporte ? 'max(26px, env(safe-area-inset-bottom))' : 'max(66px, calc(env(safe-area-inset-bottom) + 40px))' }), padding: escribiendo ? 8 : 14, borderRadius: escribiendo ? 24 : 28, background: 'linear-gradient(180deg,rgba(255,253,248,.96),rgba(251,243,226,.94))', border: '1px solid #E4D2A4', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', flexDirection: 'column', gap: escribiendo ? 6 : 10, boxShadow: '0 20px 40px -16px rgba(111,78,55,.4),inset 0 1px 0 rgba(255,255,255,.8)' }}>
         {enTransporte ? (
           transporte
         ) : (
           <>
         {/* (Tanda 10C: las fotos de los destinos curados van pegadas a la tarjeta de ORIGEN, 8 px por encima, no a una altura fija.) */}
         {foco === 'd' && coinciden.length > 0 && (
-          <div className="trazo-noscroll" data-destinos-fila style={{ position: 'absolute', left: -14, right: -14, bottom: '100%', marginBottom: 8, padding: '0 18px', display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
+          <div className="trazo-noscroll" data-destinos-fila onMouseDown={(e) => e.preventDefault()} style={{ order: 5, margin: '0 -8px', padding: '0 8px', display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
             {coinciden.map((d, i) => (
               <div
                 key={d.clave}
@@ -516,7 +552,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
             ))}
           </div>
         )}
-        <label style={{ height: 62, borderRadius: 18, background: TARJETA, border: `1px solid ${bordeO}`, display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px', cursor: 'text' }}>
+        <label style={{ height: escribiendo ? 54 : 62, borderRadius: 18, background: TARJETA, border: `1px solid ${bordeO}`, display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px', cursor: 'text' }}>
           <span style={{ width: 14, height: 14, flex: 'none', borderRadius: '50%', border: `2px solid ${ORO_OSCURO}` }} />
           <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
             <span style={{ font: `500 9.5px ${MONO}`, letterSpacing: '.14em', color: 'rgba(28,34,48,.66)' }}>ORIGEN</span>
@@ -528,6 +564,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
                 setFoco('o')
                 setOq('')
               }}
+              onBlur={() => soltarFoco('o')}
               onChange={(e) => {
                 setOq(e.target.value)
                 if (origin) onOrigin(null)
@@ -537,7 +574,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
             />
           </span>
         </label>
-        <label style={{ height: 62, borderRadius: 18, background: TARJETA, border: `1px solid ${bordeD}`, display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px', cursor: 'text' }}>
+        <label style={{ height: escribiendo ? 54 : 62, borderRadius: 18, background: TARJETA, border: `1px solid ${bordeD}`, display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px', cursor: 'text' }}>
           <span style={{ width: 14, height: 14, flex: 'none', borderRadius: '50%', background: ORO_OSCURO, boxShadow: '0 0 12px rgba(166,124,82,.55)' }} />
           <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
             <span style={{ font: `500 9.5px ${MONO}`, letterSpacing: '.14em', color: 'rgba(28,34,48,.66)' }}>DESTINO</span>
@@ -549,6 +586,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
                 setFoco('d')
                 setDq('')
               }}
+              onBlur={() => soltarFoco('d')}
               onChange={(e) => {
                 setDq(e.target.value)
                 if (destination) onDestination(null)
@@ -567,16 +605,17 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
           data-trazar-ruta
           onClick={listo ? onNext : undefined}
           aria-disabled={!listo}
-          style={{ height: 54, borderRadius: 18, border: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', font: "600 16px 'Geist'", ...(listo ? botonChampan() : { background: '#F1E8D4', color: 'rgba(28,34,48,.5)' }), cursor: listo ? 'pointer' : 'default' }}
+          style={{ height: 54, borderRadius: 18, border: 0, display: escribiendo ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center', font: "600 16px 'Geist'", ...(listo ? botonChampan() : { background: '#F1E8D4', color: 'rgba(28,34,48,.5)' }), cursor: listo ? 'pointer' : 'default' }}
         >
           Trazar ruta
         </button>
           </>
         )}
       </div>
+      </div>
 
       {/* (Tanda 10N5, `Piezas/Unirse Codigo` 04) Debajo de la caja, en pequeño y siempre visible: donde llega el amigo que abre la app por primera vez con un código. */}
-      {!enTransporte && (
+      {!enTransporte && !escribiendo && (
         <button className="zona-toque"
           type="button"
           data-unirme-con-codigo

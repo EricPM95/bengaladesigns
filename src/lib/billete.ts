@@ -1,5 +1,6 @@
 import type { Route } from './types'
 import { puntoCorto, type ArrivalMode, type ArrivalPoint } from './arrivalReturn'
+import { cityCode } from '../components/trazo/cityCode'
 
 /**
  * EL BILLETE (Tanda 7, de pago): la tarjeta del vuelo (o del tren, el autobús o el barco) del acordeón del día de llegada y del de vuelta de DÍAS. Esta pieza saca los datos, sin React.
@@ -31,6 +32,19 @@ export function codigoDeUnPunto(texto: string | null | undefined): string | null
   return (entreParentesis ? entreParentesis[1] : limpio).toUpperCase()
 }
 
+/**
+ * (10S3) El código del lado de fuera del billete: el que lleve el texto escrito entre paréntesis («Barcelona-El Prat (BCN)» → «BCN»); si no lleva, el código de la ciudad de salida del viaje, el mismo de la primera
+ * pantalla («BCN», «MAD»). Nunca el texto largo («BARCELONA-EL PRAT»). Sin ciudad de salida (solo en las pruebas), el texto tal cual, como antes.
+ */
+export function codigoDelOtroLado(texto: string | null | undefined, ciudadDeSalida: string | null | undefined): string | null {
+  const limpio = (texto ?? '').replace(/\s+/g, ' ').trim()
+  const entreParentesis = limpio.match(/\(([A-Za-z0-9]{2,5})\)\s*$/)
+  if (entreParentesis) return entreParentesis[1].toUpperCase()
+  const ciudad = (ciudadDeSalida ?? '').trim()
+  if (ciudad) return cityCode({ name: ciudad }) || null
+  return codigoDeUnPunto(limpio)
+}
+
 /** El código del lado de Roma: el IATA del aeropuerto si lo tiene (FCO); si no, la barra del punto (TERMINI, CIVITAVECCHIA). */
 export function codigoDeRoma(point: ArrivalPoint | null): string {
   if (!point) return 'ROMA'
@@ -39,7 +53,7 @@ export function codigoDeRoma(point: ArrivalPoint | null): string {
 
 /** El billete de una mitad, o null (en coche no hay billete; sin la hora de Roma, tampoco: lo que sale entonces es la barra de siempre). */
 export function billeteDe(input: {
-  route: Pick<Route, 'arrivalFlightTime' | 'departureFlightTime' | 'arrivalCodigo' | 'departureCodigo' | 'arrivalOtroPunto' | 'arrivalOtraHora' | 'departureOtroPunto' | 'departureOtraHora'>
+  route: Pick<Route, 'arrivalFlightTime' | 'departureFlightTime' | 'arrivalCodigo' | 'departureCodigo' | 'arrivalOtroPunto' | 'arrivalOtraHora' | 'departureOtroPunto' | 'departureOtraHora'> & { origin?: string | null; originPlace?: { name: string } | null }
   kind: 'llegada' | 'vuelta'
   mode: ArrivalMode
   point: ArrivalPoint | null
@@ -59,6 +73,7 @@ export function billeteDe(input: {
     horaRoma,
     codigoRoma: codigoDeRoma(point),
     horaOtra: otraHora,
-    codigoOtro: codigoDeUnPunto(otroPunto),
+    // (10S3) Con la hora del otro lado puesta y sin nada escrito, también sale el código de la ciudad de salida: «BCN 08:30».
+    codigoOtro: (otroPunto ?? '').trim() || otraHora ? codigoDelOtroLado(otroPunto, route.originPlace?.name ?? route.origin) : null,
   }
 }

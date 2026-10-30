@@ -49,6 +49,8 @@ export async function planDeReservas({ destData, destKey, body, answers, engineE
   const grande = (nueva?.placeNames ?? []).find((name) => sitiosGrandes.has(name)) ?? null
   const base = { antes: [], despues: [], cambia: false, principal: null, mensaje: null, motivos: [], sinMover: null, cambios: [] }
   if (!grande || dayNumbers.length === 0) return base
+  // (Tanda 10S3, apartado 5) El Free Tour es una parada más y no mueve días: reservarlo o cambiarle la hora no cambia ningún día ni sale el mensaje de «mover el día». La parada se queda donde está con su hora nueva (lo hace la app); aquí no hay nada que calcular.
+  if (grande === destData.default_free_tour?.name) return base
   const written = writtenDaysFor(destKey)
   const reservasAntes = (body.reservas_antes ?? []).filter((r) => r && r.dateIso !== undefined)
   // (El «antes» con las respuestas de antes de esta reserva: si la reserva es el Free Tour, el viaje antes no lo llevaba a esa hora.)
@@ -66,8 +68,7 @@ export async function planDeReservas({ destData, destKey, body, answers, engineE
   const antesDia = diaDelSitio(antes)
   const despuesDia = despues.find((entry) => entry.dayNumber === reservaDay)
   // (Ya estaba en ese día, o ese día es una excursión: no se mueve nada.)
-  // (El Free Tour es la excepción: el viaje antes no lo llevaba, así que no hay un día suyo «de antes»; lo que cambia es el conjunto de días.)
-  if ((!antesDia && grande !== destData.default_free_tour?.name) || !despuesDia) return result
+  if (!antesDia || !despuesDia) return result
   if (despuesDia.isExcursion) return { ...result, sinMover: { motivo: 'excursion' } }
   const cambios = despues.filter((entry, index) => entry.curatedId !== antes[index]?.curatedId)
   if (cambios.length === 0) return result

@@ -5,6 +5,9 @@
     {
       "origen": "Madrid",
       "alias": ["madrid"],
+      "pais": "es",
+      "lat": 40.4168,
+      "lng": -3.7038,
       "opciones": {
         "avion": { "apta": true, "tiempo": "2 h 30", "recomendada": true },
         "tren": { "apta": false },
@@ -16,6 +19,9 @@
     {
       "origen": "Barcelona",
       "alias": ["barcelona"],
+      "pais": "es",
+      "lat": 41.3874,
+      "lng": 2.1686,
       "opciones": {
         "avion": { "apta": true, "tiempo": "1 h 50", "recomendada": true },
         "tren": { "apta": false },
@@ -27,6 +33,9 @@
     {
       "origen": "Valencia",
       "alias": ["valencia", "valència"],
+      "pais": "es",
+      "lat": 39.4699,
+      "lng": -0.3763,
       "opciones": {
         "avion": { "apta": true, "tiempo": "2 h", "recomendada": true },
         "tren": { "apta": false },
@@ -38,6 +47,9 @@
     {
       "origen": "Sevilla",
       "alias": ["sevilla", "seville"],
+      "pais": "es",
+      "lat": 37.3891,
+      "lng": -5.9845,
       "opciones": {
         "avion": { "apta": true, "tiempo": "2 h 40", "recomendada": true },
         "tren": { "apta": false },
@@ -49,6 +61,9 @@
     {
       "origen": "Málaga",
       "alias": ["malaga", "málaga"],
+      "pais": "es",
+      "lat": 36.7213,
+      "lng": -4.4214,
       "opciones": {
         "avion": { "apta": true, "tiempo": "2 h 45", "recomendada": true },
         "tren": { "apta": false },
@@ -60,6 +75,9 @@
     {
       "origen": "Bilbao",
       "alias": ["bilbao", "bilbo"],
+      "pais": "es",
+      "lat": 43.263,
+      "lng": -2.935,
       "opciones": {
         "avion": { "apta": true, "tiempo": "2 h 20", "recomendada": true },
         "tren": { "apta": false },
@@ -71,6 +89,9 @@
     {
       "origen": "Palma",
       "alias": ["palma", "palma de mallorca", "palma, mallorca"],
+      "pais": "es",
+      "lat": 39.5696,
+      "lng": 2.6502,
       "opciones": {
         "avion": { "apta": true, "tiempo": "1 h 50", "recomendada": true },
         "tren": { "apta": false },
@@ -82,6 +103,9 @@
     {
       "origen": "Alicante",
       "alias": ["alicante", "alacant"],
+      "pais": "es",
+      "lat": 38.3452,
+      "lng": -0.481,
       "opciones": {
         "avion": { "apta": true, "tiempo": "2 h 15", "recomendada": true },
         "tren": { "apta": false },
@@ -93,6 +117,9 @@
     {
       "origen": "Ciudad de México",
       "alias": ["ciudad de mexico", "ciudad de méxico", "mexico city", "cdmx"],
+      "pais": "mx",
+      "lat": 19.4326,
+      "lng": -99.1332,
       "opciones": {
         "avion": { "apta": true, "tiempo": "12 h", "recomendada": true },
         "tren": { "apta": false },
@@ -104,6 +131,9 @@
     {
       "origen": "Buenos Aires",
       "alias": ["buenos aires"],
+      "pais": "ar",
+      "lat": -34.6037,
+      "lng": -58.3816,
       "opciones": {
         "avion": { "apta": true, "tiempo": "13 h", "recomendada": true },
         "tren": { "apta": false },
@@ -115,6 +145,9 @@
     {
       "origen": "Zaragoza",
       "alias": ["zaragoza"],
+      "pais": "es",
+      "lat": 41.6488,
+      "lng": -0.8891,
       "opciones": {
         "avion": { "apta": true, "tiempo": "2 h", "recomendada": true },
         "tren": { "apta": false },
@@ -126,6 +159,9 @@
     {
       "origen": "Santiago de Compostela",
       "alias": ["santiago de compostela"],
+      "pais": "es",
+      "lat": 42.8782,
+      "lng": -8.5448,
       "opciones": {
         "avion": { "apta": true, "tiempo": "4-5 h", "recomendada": true },
         "tren": { "apta": false },
@@ -137,6 +173,9 @@
     {
       "origen": "Londres",
       "alias": ["londres", "london"],
+      "pais": "gb",
+      "lat": 51.5074,
+      "lng": -0.1278,
       "opciones": {
         "avion": { "apta": true, "tiempo": "2 h 30", "recomendada": true },
         "tren": { "apta": false },
@@ -148,6 +187,9 @@
     {
       "origen": "París",
       "alias": ["paris", "parís"],
+      "pais": "fr",
+      "lat": 48.8566,
+      "lng": 2.3522,
       "opciones": {
         "avion": { "apta": true, "tiempo": "2 h", "recomendada": true },
         "tren": { "apta": false, "nota": "≈ 10-11 h con cambio en Milán: pasa el límite" },
@@ -159,6 +201,9 @@
     {
       "origen": "Lisboa",
       "alias": ["lisboa", "lisbon"],
+      "pais": "pt",
+      "lat": 38.7223,
+      "lng": -9.1393,
       "opciones": {
         "avion": { "apta": true, "tiempo": "3 h", "recomendada": true },
         "tren": { "apta": false },
@@ -170,6 +215,9 @@
     {
       "origen": "Nueva York",
       "alias": ["nueva york", "new york", "new york city", "nyc"],
+      "pais": "us",
+      "lat": 40.7128,
+      "lng": -74.006,
       "opciones": {
         "avion": { "apta": true, "tiempo": "8 h 30", "recomendada": true },
         "tren": { "apta": false },
@@ -181,6 +229,9 @@
     {
       "origen": "Miami",
       "alias": ["miami"],
+      "pais": "us",
+      "lat": 25.7617,
+      "lng": -80.1918,
       "opciones": {
         "avion": { "apta": true, "tiempo": "10 h", "recomendada": true },
         "tren": { "apta": false },
@@ -192,6 +243,9 @@
     {
       "origen": "Bogotá",
       "alias": ["bogota", "bogotá"],
+      "pais": "co",
+      "lat": 4.711,
+      "lng": -74.0721,
       "opciones": {
         "avion": { "apta": true, "tiempo": "14-16 h", "recomendada": true },
         "tren": { "apta": false },
@@ -203,6 +257,9 @@
     {
       "origen": "Lima",
       "alias": ["lima"],
+      "pais": "pe",
+      "lat": -12.0464,
+      "lng": -77.0428,
       "opciones": {
         "avion": { "apta": true, "tiempo": "16-18 h", "recomendada": true },
         "tren": { "apta": false },
@@ -214,6 +271,9 @@
     {
       "origen": "Santiago de Chile",
       "alias": ["santiago de chile"],
+      "pais": "cl",
+      "lat": -33.4489,
+      "lng": -70.6693,
       "opciones": {
         "avion": { "apta": true, "tiempo": "17-19 h", "recomendada": true },
         "tren": { "apta": false },

@@ -123,9 +123,10 @@ console.log('2. Las casillas opcionales del otro lado')
   const ida = plano(aTexto(llegada(tomaRuta())))
   // (10S) Antes: «De dónde sales · opcional» / «Sale de» / placeholder Barcelona dentro de la mitad abierta. Ahora, en la hoja del vuelo: «¿De dónde sales? · opcional» y «Sales a las» (ida), «¿A dónde llegas? · opcional» y «Llegas a las» (vuelta). Tanda 10N10 §7b, Eric 29-oct-2026.
   const hojaIda = hoja(tomaRuta())
-  debe(/¿De dónde sales\? · opcional/.test(ida_hoja_texto(hojaIda)) && /Sales a las/.test(ida_hoja_texto(hojaIda)), '2 casillas ida', `la hoja de la ida no trae las casillas de salida: ${ida_hoja_texto(hojaIda).slice(0, 260)}`)
+  // (10S3) Antes → ahora → decisión de Eric (10S3, 30-oct): «¿De dónde sales? · opcional» y «Sales a las» → «Sales de» (opcional) y «Sale a las · opcional»; «¿A dónde llegas? · opcional» y «Llegas a las» → «Llegas a» (opcional) y «Llega a las · opcional» (Vuelo Reservas 02b y 03).
+  debe(/Sales de/.test(ida_hoja_texto(hojaIda)) && /Sale a las · opcional/.test(ida_hoja_texto(hojaIda)) && !/¿De dónde sales\?/.test(ida_hoja_texto(hojaIda)), '2 casillas ida', `la hoja de la ida no trae las casillas de salida: ${ida_hoja_texto(hojaIda).slice(0, 260)}`)
   const hojaVuelta = hoja(tomaRuta(), 'departure')
-  debe(/¿A dónde llegas\? · opcional/.test(ida_hoja_texto(hojaVuelta)) && /Llegas a las/.test(ida_hoja_texto(hojaVuelta)), '2 casillas vuelta', 'la hoja de la vuelta no trae las casillas de llegada')
+  debe(/Llegas a/.test(ida_hoja_texto(hojaVuelta)) && /Llega a las · opcional/.test(ida_hoja_texto(hojaVuelta)) && !/¿A dónde llegas\?/.test(ida_hoja_texto(hojaVuelta)), '2 casillas vuelta', 'la hoja de la vuelta no trae las casillas de llegada')
   debe(/data-mi-vuelo-otro-punto/.test(hojaIda) && /data-mi-vuelo-otra-hora/.test(hojaIda), '2 casillas ida', 'faltan las casillas otro punto / otra hora en la hoja de la ida')
   debe(/data-mi-vuelo-otro-punto/.test(hojaVuelta) && /data-mi-vuelo-otra-hora/.test(hojaVuelta), '2 casillas vuelta', 'faltan las casillas en la hoja de la vuelta')
   // Se guardan con el viaje.
@@ -143,7 +144,8 @@ console.log('2. Las casillas opcionales del otro lado')
   st.setLegOtraHora('arrival', '08:55')
   // Con la casilla guardada, la mitad la enseña.
   const conDatos = hoja(tomaRuta())
-  debe(/value="08:55"/.test(conDatos), '2 enseña', 'la casilla de la otra hora no enseña la hora guardada')
+  // (10S3) Antes: el input type=time con value="08:55" → ahora el campo de hora de Design (Sale a las · opcional) enseña 08:55 en su texto → decisión de Eric (10S3, 30-oct).
+  debe(/data-mi-vuelo-otra-hora-valor[^>]*>08:55</.test(conDatos), '2 enseña', 'la casilla de la otra hora no enseña la hora guardada')
   // Sobreviven a rehacer la ruta (cambiar las fechas): setRoute las devuelve.
   const antes = tomaRuta()
   const nueva = { ...viaje({ dias: 4 }) }
@@ -205,9 +207,10 @@ console.log('3. La zona y las fechas')
   debe(!/data-mi-vuelo-lado=/.test(cocheHoja) && !/data-mi-vuelo-punto-lista/.test(cocheHoja) && /Guardar el viaje en coche/.test(plano(aTexto(cocheHoja))), '3 coche', 'en coche no debe pedirse ninguna hora de vuelo ni aeropuerto (la hoja es la del viaje en coche)')
   poner(viaje({ ida: 'flight', vuelta: 'train', extra: { arrivalFlightTime: '11:20', arrivalPointId: 'fco' } }))
   const mezclado = plano(aTexto(hoja(tomaRuta(), 'departure')))
-  debe(/¿De qué estación sales\?/.test(mezclado) && /Tiburtina/.test(mezclado) && /Termini/.test(mezclado), '3 medios mezclados', 'con ida en avión y vuelta en tren, la vuelta debe hablar de estación (Tiburtina / Termini)')
+  // (10S3) Antes: «¿De qué estación sales?» / «¿A qué aeropuerto llegas?» → ahora «Sales de» / «Llegas a» con los cuadrados del medio (Termini, Tiburtina / Fiumicino, Ciampino) y «Ref. del billete» (tren) o «Ref. vuelo» (avión) → decisión de Eric (10S3, 30-oct).
+  debe(/Sales de/.test(mezclado) && /Ref\. del billete/.test(mezclado) && /Tiburtina/.test(mezclado) && /Termini/.test(mezclado), '3 medios mezclados', 'con ida en avión y vuelta en tren, la vuelta debe hablar de estación (Tiburtina / Termini)')
   const mezcladoIda = plano(aTexto(hoja(tomaRuta(), 'arrival')))
-  debe(/¿A qué aeropuerto llegas\?/.test(mezcladoIda) && /Ref\. vuelo/.test(mezcladoIda), '3 medios mezclados', 'con ida en avión, la ida debe hablar de aeropuerto y de vuelo')
+  debe(/Llegas a/.test(mezcladoIda) && /Fiumicino/.test(mezcladoIda) && /Ciampino/.test(mezcladoIda) && /Ref\. vuelo/.test(mezcladoIda), '3 medios mezclados', 'con ida en avión, la ida debe hablar de aeropuerto y de vuelo')
 }
 
 // ── 4. La dirección del alojamiento ──
@@ -395,7 +398,7 @@ console.log('7. El billete')
   if (dia1) {
     const t1 = plano(aTexto(dia1))
     // (10S) Antes: el billete «LLEGADA · VUELO IB3214 · Reservado · BCN · FCO». Ahora, la tarjeta de la llegada de DÍAS: «LLEGADA · … Aterrizas a las 11:20 · Fiumicino · Cómo llegar desde el aeropuerto». Tanda 10N11, Eric 29-oct-2026.
-    debe(/LLEGADA/.test(t1) && t1.includes('Aterrizas a las 11:20') && t1.includes('Fiumicino') && t1.includes('Cómo llegar desde el aeropuerto'), '7 DÍAS llegada', `el día de llegada no trae la tarjeta de la llegada: ${t1.slice(0, 300)}`)
+    debe(/LLEGADA/.test(t1) && t1.includes('FCO 11:20') && t1.includes('Fiumicino') && t1.includes('Cómo llegar desde el aeropuerto'), '7 DÍAS llegada', `el día de llegada no trae la tarjeta de la llegada: ${t1.slice(0, 300)}`)
     const dv = panelDe(ruta.days.at(-1))
     const tv = plano(aTexto(dv))
     debe(/data-billete="vuelta"/.test(dv) && tv.includes('VUELTA · VUELO') && tv.includes('Reservado') && tv.includes('18:05'), '7 DÍAS vuelta', `el día de vuelta no trae el billete: ${tv.slice(0, 300)}`)
@@ -408,7 +411,7 @@ console.log('7. El billete')
     ponerVersion('gratis')
     const gr = panelDe(ruta.days[0])
     // (10S) Antes: en la gratis no había billete. Ahora la tarjeta de la llegada sale también sin pase (guardar el vuelo es gratis). Tanda 10G, Eric 24-oct-2026.
-    debe(plano(aTexto(gr)).includes('Aterrizas a las 11:20'), '7 DÍAS gratis', 'en la gratis debe salir la tarjeta de la llegada (guardar el vuelo es gratis)')
+    debe(plano(aTexto(gr)).includes('FCO 11:20'), '7 DÍAS gratis', 'en la gratis debe salir la tarjeta de la llegada (guardar el vuelo es gratis)')
     ponerVersion('completa')
     // En coche: sin billete.
     poner(viaje({ ida: 'car', extra: { arrivalFlightTime: '11:20' } }))

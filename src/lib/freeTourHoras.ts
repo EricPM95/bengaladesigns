@@ -14,3 +14,13 @@ export const FREE_TOUR_FRANJAS: readonly { id: FranjaFreeTour; label: string; ho
 }))
 
 export const FREE_TOUR_HOURS: string[] = FREE_TOUR_FRANJAS.map((franja) => franja.hora)
+
+/**
+ * (Tanda 10S3, apartado 5) La rueda de la hora del Free Tour: la misma de las entradas, de las 08:00 a las 22:00 de 15 en 15. Las seis horas fijas de `FREE_TOUR_HOURS` son nuestras (el motor las usa para elegir
+ * franja; la ficha del Free Tour dice que la web del tour no publica horarios: solo se ven al elegir fecha), no las reales de ese día: el viajero pone la hora que ha reservado.
+ */
+export const FREE_TOUR_RUEDA: string[] = (() => {
+  const out: string[] = []
+  for (let m = 8 * 60; m <= 22 * 60; m += 15) out.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`)
+  return out
+})()

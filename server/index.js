@@ -13,6 +13,7 @@ import { diasDeRuta } from '../shared/routeEngine/tripSkeleton.js'
 import { reorganizarDia, puntoZonaAlojamiento } from '../shared/routeEngine/reorganizarDia.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
+import { entradaDeTabla, claveDeOrigen } from './transportOrigen.js'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
@@ -1764,8 +1765,8 @@ app.post('/api/transport-feasibility', async (req, res) => {
   const destinationKey = findPipelineV2Key(destination.name) ?? null
   const table = transportTableFor(destinationKey)
   if (table) {
-    const names = [normTransport(origin.name), normTransport(String(origin.fullName ?? '').split(',')[0])]
-    const entry = (table.origenes ?? []).find((row) => (row.alias ?? [row.origen]).some((alias) => names.includes(normTransport(alias))))
+    // (10S3) Nombre Y país Y coordenadas a ≤50 km; si no, se trata como una ciudad que no está en la tabla.
+    const entry = entradaDeTabla(table, origin)
     if (entry) {
       res.json(feasibilityFromTable(entry))
       return
@@ -1774,7 +1775,7 @@ app.post('/api/transport-feasibility', async (req, res) => {
 
   // 2) Caché por par (sin precios).
   const cacheDestination = `transport:${destinationKey ?? normTransport(destination.name)}`
-  const cacheOrigin = `${normTransport(origin.name)}|${normTransport(origin.countryCode ?? '')}`
+  const cacheOrigin = claveDeOrigen(origin)
   if (supabaseAdmin) {
     try {
       const { data, error } = await supabaseAdmin.from('place_content_cache').select('id, place_data, hit_count').eq('place_name', cacheOrigin).eq('destination', cacheDestination).maybeSingle()
@@ -5495,7 +5496,9 @@ function soloFotoDeFechas(name, city) {
 function ownPhotoFor(name, city, dateIso) {
   const table = photosFor(findPipelineV2Key(city) ?? '')
   if (!table) return null
-  const foto = ownPhotoFile(table, name, dateIso)
+  // (Tanda 10S3 §9) «Castillo de Sant'Angelo (por fuera)» —el nombre con el que el motor pide la foto de su forma de visita— sin foto propia con ese nombre caía a una búsqueda de Unsplash, que trajo el Castillo DE NOCHE
+  // en una parada de día. Sin foto propia con el sufijo, vale la propia del sitio (la de día de siempre).
+  const foto = ownPhotoFile(table, name, dateIso) ?? (/\s\((?:por fuera|por dentro)\)$/i.test(String(name)) ? ownPhotoFile(table, String(name).replace(/\s\((?:por fuera|por dentro)\)$/i, ''), dateIso) : null)
   if (!foto) return null
   const base = `${table.carpeta}/${foto.archivo}`
   // El crédito (Tanda 6f): `credito` {autor, licencia, enlace}; sin autor, la foto va sin línea de crédito. (Los campos antiguos autor/enlace/fuente siguen valiendo.)

@@ -22,7 +22,7 @@ const ETIQUETA_PUNTO: Record<string, string> = { avion: 'Aeropuerto', tren: 'Est
 const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
 
 /**
- * LA HOJA DEL VUELO DEL ADMINISTRADOR (Tanda 10N10 §7b; `Piezas/Vuelo Reservas` 02-05b): las pestañas Ida | Vuelta con sus datos (día fijo, aeropuerto, hora, referencia, aerolínea y «¿De dónde sales? · opcional»)
+ * LA HOJA DEL VUELO DEL ADMINISTRADOR (Tanda 10N10 §7b; `Piezas/Vuelo Reservas` 02-05b): las pestañas Ida | Vuelta con sus datos (día fijo, los dos lados —Sales de / Llegas a, con su hora— con el medio en medio, referencia y aerolínea)
  * y, debajo, para TODO el vuelo, el bloque del dinero (¿para quién?, ¿cuánto ha costado en total?, ¿quién lo ha pagado?, la línea de a dónde va). La rueda de la hora no tiene [Guardar]: un solo botón «Guardar el vuelo» y un solo aviso
  * (`guardarVueloDelAdmin` apunta UN cambio con la ida y la vuelta juntas). El precio, el para quién y quién pagó se guardan en el viaje (`setLegPrecio`, `setCuentasEntre`, `setPagadoPorDe`).
  */
@@ -77,8 +77,7 @@ export function HojaVueloDelAdmin({
       compania: leg.compania ?? '',
       otroPunto: leg.otroPunto ?? '',
       otraHora: leg.otraHora,
-      etiquetaOtro: leg.kind === 'arrival' ? '¿De dónde sales? · opcional' : '¿A dónde llegas? · opcional',
-      marcaOtraHora: leg.kind === 'arrival' ? 'Sales a las' : 'Llegas a las',
+      icono: iconoDeMedio(leg.mode),
     },
   })
   return (

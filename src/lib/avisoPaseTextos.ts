@@ -45,6 +45,10 @@ export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
     linea1: '',
     linea2: 'Con el {pase}, adaptamos tu primer y tu último día a tus vuelos.',
   },
+  reservas: {
+    linea1: '',
+    linea2: 'Con el {pase}, tus reservas se colocan solas a su hora.',
+  },
   logros: {
     linea1: '',
     linea2: 'Con el {pase}, consigues el sello de cada sitio que visitas, las colecciones y los emblemas secretos.',

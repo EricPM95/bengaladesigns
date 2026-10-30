@@ -145,7 +145,8 @@ try {
   m = await medidas()
   debe(m.resumenes.length === 1 && /^Ida · .*14:25$/.test(m.resumenes[0]), '3a', `la pestaña de la ida dice su resumen «✓ Ida · día · 14:25» (${JSON.stringify(m.resumenes)})`)
   const hojaVuelta = (await hoja()) ?? ''
-  debe(/Día de salida/i.test(hojaVuelta) && /Hora de salida/i.test(hojaVuelta), '3a', 'en la vuelta, «Día de salida» y «Hora de salida»')
+  // (10S3) Antes: «Día de salida» → ahora «Día de vuelta» (Vuelo Reservas 03) → decisión de Eric (10S3, 30-oct). «Hora de salida» sigue en la rueda.
+  debe(/Día de vuelta/i.test(hojaVuelta) && /Hora de salida/i.test(hojaVuelta), '3a', 'en la vuelta, «Día de vuelta» y «Hora de salida»')
   await clic(`[data-mi-vuelo-punto-opcion="${puntos[1]}"]`)
   await rueda('Horas', '19')
   await a.esp(300)

@@ -988,6 +988,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       }
       // Una reserva grande (Coliseo, Museos, Galería) con otra fecha mueve el día ENTERO a esa fecha (Tanda 6j, 9): el motor ordena todos los días con ella fija. Se piden todos los días
       // y solo si llegan todos se cambian (todo o nada). Nada se arranca antes: una parada sola que se va de su día dejaba el día a medias (Tanda 6k, punto 2).
+      // (Tanda 10S3, apartado 5) El Free Tour es una parada más y no mueve días ni rehace el motor: va a su fecha como cualquier parada, con su hora, y nada más.
+      if (reservation.refId === FREE_TOUR_REF) {
+        set({ route: placeReservedEntrance(unpinned, reservation) })
+        return
+      }
       if (isBigReservation(reservation, sitiosGrandesDelViaje(route)) && !reservation.noMueve) {
         if (unpinned !== route) set({ route: unpinned })
         void import('../lib/rebuildDay')

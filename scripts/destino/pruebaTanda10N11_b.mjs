@@ -27,7 +27,8 @@ console.log('1. El código')
   const bloque = sinComentarios(leer('src/components/route/dayDetail/AccommodationBlock.tsx'))
   debe(/abrirAvisoPase/.test(bloque) && /CandadoRedondo/.test(bloque), 'candado', '[Ir] sin pase usa abrirPase() y el CandadoRedondo de G')
   debe(!/libre hacia/i.test(sinComentarios(leer('src/components/route/dayDetail/TarjetaLlegadaDias.tsx') + leer('src/lib/arrivalReturn.ts') + leer('shared/arrival/arrivalRules.js'))), 'vuelo', 'ningún «libre hacia» en la tarjeta del vuelo ni en sus textos')
-  debe(/Aterrizas/.test(leer('src/components/route/dayDetail/TarjetaLlegadaDias.tsx')) && /Cómo llegar desde/.test(leer('src/components/route/dayDetail/TarjetaLlegadaDias.tsx')), 'vuelo', 'la tarjeta dice «Aterrizas a las…» y «Cómo llegar desde el aeropuerto»')
+// (10S3) Antes: «Aterrizas a las HH:MM». Ahora: «FCO HH:MM» (o «BCN 08:30 → FCO HH:MM» con los dos lados), Alojamiento Dias 03 y 03b. Decisión de Eric (10S3, 30-oct).
+  debe(/billete.codigoRoma/.test(leer('src/components/route/dayDetail/TarjetaLlegadaDias.tsx')) && /Cómo llegar desde/.test(leer('src/components/route/dayDetail/TarjetaLlegadaDias.tsx')), 'vuelo', 'la tarjeta dice «Aterrizas a las…» y «Cómo llegar desde el aeropuerto»')
 }
 
 /* ───────── 2. Con el pase ───────── */
@@ -55,7 +56,8 @@ console.log('2. Con el pase')
     await poner(a, `e.setArrivalFlightTime('15:40')`)
     await esp(1500)
     const v = await textoDe(a, '[data-llegada-dias]')
-    debe(v && /Aterrizas a las 15:40/.test(v) && /Fiumicino · Cómo llegar desde el aeropuerto/.test(v), '03', `tarjeta del vuelo: «Aterrizas a las 15:40» y «Fiumicino · Cómo llegar desde el aeropuerto» (${v})`)
+    // (10S3) Antes: «Aterrizas a las HH:MM». Ahora: «FCO HH:MM» (o «BCN 08:30 → FCO HH:MM» con los dos lados), Alojamiento Dias 03 y 03b. Decisión de Eric (10S3, 30-oct).
+    debe(v && /FCO 15:40/.test(v) && /Fiumicino · Cómo llegar desde el aeropuerto/.test(v), '03', `tarjeta del vuelo: «Aterrizas a las 15:40» y «Fiumicino · Cómo llegar desde el aeropuerto» (${v})`)
     const cuerpo = await a.evaluar('document.body.innerText')
     debe(!/libre hacia/i.test(cuerpo), '03', 'DÍAS no enseña «libre hacia…»')
     await a.captura(foto('alojamiento_dias_03'))
