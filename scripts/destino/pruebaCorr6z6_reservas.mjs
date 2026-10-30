@@ -79,7 +79,7 @@ const momentos = [
 const hotel = { name: 'Hotel de prueba' }
 function todoListo(route, version) {
   const reservas = []
-  const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [])
+  const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
   enRuta.forEach((item, i) => reservas.push({ id: `rx${i}`, kind: 'entrada', refId: item.isFreeTour ? 'Free Tour' : item.name, name: item.name, placeNames: item.placeNames, dateIso: route.answers.dateRange ? INICIO : null, dayNumber: route.answers.dateRange ? null : 1, time: '10:00' }))
   const listo = { ...route }
   {
@@ -129,7 +129,7 @@ for (const [clave, route] of Object.entries(rutas)) {
         debe(/bg-\[#FFFDF8\]/.test(claraTag) && !/#1C2230/.test(claraTag.slice(claraTag.lastIndexOf('<div'))), '1b clara', `${nombre}: la tarjeta del resumen no es clara`)
         const clara = html.slice(iResumen, html.indexOf('data-blk="', iResumen + 12))
         const claraTexto = aTexto(clara)
-        const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [])
+        const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
         debe(new RegExp(`0 de ${total} listo`).test(claraTexto.replace(/\n/g, ' ')) && !/Tu viaje a/.test(claraTexto), '1b clara', `${nombre}: no dice solo «0 de ${total} listo», sin «Tu viaje a…» delante (${plano(claraTexto)})`)
         const fichas = [...clara.matchAll(/data-ficha="(\w+)"/g)].map((x) => x[1])
         const esperadas = ['llegada', 'aloj', 'entradas']
@@ -193,7 +193,8 @@ for (const [clave, route] of Object.entries(rutas)) {
   const html = pintaHtml(ReservasPanel, { route: dosDestinos, onClose() {} }, dosDestinos, { version: 'completa', hoy: '2027-03-01' })
   const hayVarios = !/data-blk="aloj"/.test(html)
   if (hayVarios) debe(!/data-blk="resumen"/.test(html), '1b clara', 'con varios destinos sale el resumen')
-  debe(/unDestino && !viajeAcabado && <ResumenViaje[^>]*onFicha=\{\(bloque\) => pedir\(bloque\)\}/.test(panelSrc), '1b clara', 'las fichas no bajan a su bloque con pedir(bloque) o el resumen sale con varios destinos / después del viaje')
+  // Antes (6z6): <ResumenViaje> directo tras la condición → ahora (10S4, agente I): puede ir dentro de <PiezaSegura> (con paréntesis) → decisión de Eric (10S4, 30-oct): PiezaSegura en cada bloque de RESERVAS; misma condición y mismo pedir(bloque).
+  debe(/unDestino && !viajeAcabado && (?:\(\s*<PiezaSegura[^>]*>\s*)?<ResumenViaje[^>]*onFicha=\{\(bloque\) => pedir\(bloque\)\}/.test(panelSrc), '1b clara', 'las fichas no bajan a su bloque con pedir(bloque) o el resumen sale con varios destinos / después del viaje')
   const sinComentarios = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
   const codigoOscura = sinComentarios(leer('src/components/route/reservas/TarjetaCuentaAtras.tsx'))
   const codigoClara = sinComentarios(leer('src/components/route/reservas/ResumenViaje.tsx'))

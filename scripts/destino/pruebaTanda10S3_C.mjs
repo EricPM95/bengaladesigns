@@ -176,6 +176,11 @@ for (const version of ['gratis', 'pago']) {
     // (Con pase, al guardar sale «Hemos ajustado tu ruta»: se cierra con «De acuerdo».)
     await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('[role=dialog] button')).find((x) => /^De acuerdo$/.test((x.textContent || '').trim())); if (b) b.click(); return true })()")
     await esp(1000)
+    // 10S4: antes → ahora → decisión de Eric (10S4, 30-oct): antes la tarjeta del vuelo salía siempre abierta; ahora, con ida y vuelta listas, sale plegada y se abre con un toque en su cabecera. Misma comprobación después de abrirla.
+    if (!(await a.evaluar("Boolean(document.querySelector('[data-mitad=\"arrival\"] button'))"))) {
+      await clic(a, '[data-llegada-cabecera]')
+      await esp(800)
+    }
     await clic(a, '[data-mitad="arrival"] button')
     await esp(2000)
     v = await vista(a)

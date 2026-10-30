@@ -4,7 +4,7 @@
 import { spawnSync } from 'node:child_process'
 
 const patron = /(\d+)\s+comprobaciones\s*[·,]\s*(\d+)\s+fallos/
-const partes = ['pruebaTanda10S3_A.mjs', 'pruebaTanda10S3_B.mjs', 'pruebaTanda10S3_C.mjs', 'pruebaTanda10S3_D.mjs']
+const partes = ['pruebaTanda10S3_A.mjs', 'pruebaTanda10S3_B.mjs', 'pruebaTanda10S3_C.mjs', 'pruebaTanda10S3_D.mjs', 'pruebaTanda10S3_E.mjs']
 let comprobaciones = 0
 let fallos = 0
 for (const f of partes) {

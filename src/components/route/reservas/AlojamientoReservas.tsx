@@ -17,6 +17,7 @@ import { EnEsteChips } from './EnEsteChips'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { TimeListWheel } from '../../ui/TimeListWheel'
 import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
+import { fechaLarga } from '../../../lib/fechaLarga'
 import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojamiento'
 
 /** La hoja de la zona (Tanda 6v): las zonas del destino en una rueda, como la de la hora, y [Guardar]. */
@@ -91,6 +92,11 @@ export function AlojamientoReservas({
 
   // Con el hotel puesto pero sin la zona (de pago) la línea sigue en rosa: lo que falta es la zona.
   const resumenVerde = pago ? zonaHecha : true
+  /** (10S4 §2) Desplegado: mientras falta algo, siempre; con todo listo, solo si el viajero lo abre. */
+  const desplegado = !resumenVerde || abierto
+  const nombreHotel = hotel?.name && !(pago && elegida && hotel.name === elegida.nombre) ? hotel.name : null
+  const rango = route.answers.dateRange
+  const fechasTexto = rango?.start && rango?.end ? fechaLarga(rango.start) + ' → ' + fechaLarga(rango.end) : null
 
   const hayAlgo = Boolean(hotel) || zonaHecha
   // «En este alojamiento · Tú y Viajes»: a quién cubre (solo el administrador, en un viaje con más gente).
@@ -109,63 +115,58 @@ export function AlojamientoReservas({
       <BloqueShell bloque="aloj">
         {hayAlgo ? (
           <>
-            {/* (Tanda 10N10 §7c; `Piezas/Vuelo Reservas` 09) La tarjeta guardada: «TU ZONA · Prati» con [Cambiar], el hotel si lo hay y «En este alojamiento · Tú y Viajes» con [Cambiar]. */}
-            <div onClick={onToggle} className="flex cursor-pointer items-center gap-3.5 px-4 pb-3 pt-4">
+            {/* (10S4 §2) Cabecera como la de vacío: icono (verde si está listo), título y estado debajo, SIN línea de texto. Con todo listo se pliega y se abre al tocarla; mientras falta algo, abierto. */}
+            <div onClick={resumenVerde ? onToggle : undefined} className={`flex items-center gap-3.5 px-4 pb-3 pt-4 ${resumenVerde ? 'cursor-pointer' : ''}`} data-aloj-cabecera>
               <IconoBloque nombre={ICONOS.hotel} hecho={resumenVerde} />
               <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span style={tituloBloqueStyle}>Alojamiento</span>
-                <span className="text-[13px] text-text/55" data-alojamiento-subtitulo>{hotel?.name && !(elegida && hotel.name === elegida.nombre) ? hotel.name : (estancia?.city ?? route.days[0]?.city ?? route.destination)}</span>
+                <EstadoBloque texto={resumenVerde ? 'Listo' : 'Falta la zona'} hecho={resumenVerde} />
               </span>
-              <EstadoBloque texto={resumenVerde ? 'Listo' : 'Falta la zona'} hecho={resumenVerde} />
+              {resumenVerde && <FlechaBloque abierto={desplegado} />}
             </div>
-            {pago && elegida && (
-              <div className="mx-3.5 mb-3 flex flex-col gap-1 rounded-[18px] px-3.5 pb-3.5 pt-3" style={{ background: '#FBF1D8', border: '1px solid rgba(181,138,46,.3)' }} data-tu-zona>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="inline-flex h-6 items-center gap-1 rounded-full px-2.5" style={{ background: '#1C2230', color: '#F3D88F', ...etiquetaMono }}>
-                    <Icono nombre="ubicacion" size={11} />
-                    Tu zona
-                  </span>
-                  <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />
+            {/* La línea del pase (sin pase): con el bloque cerrado, fuera y debajo de la cabecera; abierto, dentro y debajo (al final). */}
+            {!pago && !desplegado && <LineaDelPase clave="alojamiento" className="mx-4 mb-4" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
+            {desplegado && (
+              <>
+                {/* Con el estilo de los bloques del vuelo: caja crema, [Cambiar] arriba a la derecha y [Eliminar alojamiento] abajo a la derecha. */}
+                <div
+                  className="mx-3.5 mb-3 flex flex-col gap-1 rounded-[18px] px-3.5 pb-3.5 pt-3"
+                  style={{ background: '#FBF1D8', border: '1px solid rgba(181,138,46,.3)' }}
+                  data-tu-zona={pago && elegida ? '' : undefined}
+                  data-hotel-puesto={hotel ? '' : undefined}
+                  data-alojamiento-caja
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="inline-flex h-6 items-center gap-1 rounded-full px-2.5" style={{ background: '#1C2230', color: '#F3D88F', ...etiquetaMono }}>
+                      <Icono nombre={pago && elegida ? 'ubicacion' : ICONOS.hotel} size={11} />
+                      {pago && elegida ? 'Tu zona' : 'Tu alojamiento'}
+                    </span>
+                    <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />
+                  </div>
+                  {nombreHotel && <span style={{ font: "400 28px/1.05 'Instrument Serif',serif" }} data-alojamiento-nombre>{nombreHotel}</span>}
+                  {pago && elegida && <span style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>{elegida.nombre}</span>}
+                  {pago && elegida?.sub && <span className="text-[13px] text-text/60">{elegida.sub}</span>}
+                  {fechasTexto && <span className="text-[13px] text-text/60" data-alojamiento-fechas>{fechasTexto}</span>}
+                  {noches > 0 && <span className="text-[13px] text-text/60" data-alojamiento-noches>{nochesTexto(noches)}</span>}
+                  {precio !== null && <span className="text-[13px] text-text/60" data-alojamiento-precio>{`Precio · ${precioEnVista(precio)}`}</span>}
+                  {direccion && <span className="text-[13px] text-text/75" data-direccion-tarjeta>{direccion}</span>}
+                  {pago && (elegida || direccion) && <BotonComoLlegarAlojamiento direccion={direccion} className="mt-2" />}
+                  {hotel && <EliminarTexto alinear="derecha" texto="Eliminar alojamiento" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}
                 </div>
-                <span style={{ font: "400 34px/1.05 'Instrument Serif',serif" }}>{elegida.nombre}</span>
-                {elegida.sub && <span className="text-[13px] text-text/60">{elegida.sub}</span>}
-                {hotel && hotel.name === elegida.nombre && precio !== null && <span className="text-[13px] text-text/60">{precioEnVista(precio)}{noches > 0 ? ` · ${nochesTexto(noches)}` : ''}</span>}
-                {direccion && <span className="text-[13px] text-text/75" data-direccion-tarjeta>{direccion}</span>}
-                <BotonComoLlegarAlojamiento direccion={direccion} className="mt-2" />
-              </div>
-            )}
-            {hotel && !(pago && elegida && hotel.name === elegida.nombre) && (
-              <div className="mx-3.5 mb-3 flex items-center gap-2.5 rounded-[14px] py-2.5 pl-3 pr-1.5" style={{ background: 'oklch(0.97 0.025 150)' }} data-hotel-puesto>
-                <span className="min-w-0 flex-1 text-[13.5px] leading-[1.4]">
-                  {/* (10N11) El nombre ya va en la cabecera de la tarjeta (09): aquí, solo las noches y el precio. */}
-                  <span className="block text-text/65">{[noches > 0 ? nochesTexto(noches) : null, precio !== null ? precioEnVista(precio) : null].filter(Boolean).join(' · ')}</span>
-                </span>
-                {!(pago && elegida) && <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />}
-              </div>
-            )}
-            {pago && !elegida && direccion && (
-              <div className="mx-3.5 mb-3 flex flex-col gap-1" data-direccion-tarjeta-sola>
-                <span className="text-[13px] text-text/75">{direccion}</span>
-                <BotonComoLlegarAlojamiento direccion={direccion} className="mt-1" />
-              </div>
-            )}
-            {!pago && <LineaDelPase clave="alojamiento" className="mx-4 mb-3" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
-            {g.gente.length >= 2 && g.esAdmin && (
-              <div className="mx-4 mb-4 flex flex-col gap-2.5" data-en-este-alojamiento>
-                <span className="flex items-center justify-between text-text/55" style={etiquetaMono}>
-                  En este alojamiento
-                  <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />
-                </span>
-                <EnEsteChips gente={quienes} datos="alojamiento" />
-                <span hidden data-en-este-alojamiento-nombres>
-                  {nombresQuienes}
-                </span>
-              </div>
-            )}
-            {abierto && (
-              <div className="flex flex-col gap-3.5 px-4 pb-4">
-                {hotel && <EliminarTexto texto="Eliminar" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}
-              </div>
+                {g.gente.length >= 2 && g.esAdmin && (
+                  <div className="mx-4 mb-4 flex flex-col gap-2.5" data-en-este-alojamiento>
+                    <span className="flex items-center justify-between text-text/55" style={etiquetaMono}>
+                      En este alojamiento
+                      <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />
+                    </span>
+                    <EnEsteChips gente={quienes} datos="alojamiento" />
+                    <span hidden data-en-este-alojamiento-nombres>
+                      {nombresQuienes}
+                    </span>
+                  </div>
+                )}
+                {!pago && <LineaDelPase clave="alojamiento" className="mx-4 mb-4" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
+              </>
             )}
           </>
         ) : (

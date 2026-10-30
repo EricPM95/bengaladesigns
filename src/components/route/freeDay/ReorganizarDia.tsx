@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Icono } from '../../ui/Icono'
+import { usePagoActivo } from '../../../lib/pago'
 import { puedeReorganizar, reorganizarElDia } from '../../../lib/reorganizarDia'
 import type { DayPlan } from '../../../lib/types'
 
@@ -10,6 +11,9 @@ import type { DayPlan } from '../../../lib/types'
  */
 export function ReorganizarDia({ day }: { day: DayPlan }) {
   const [trabajando, setTrabajando] = useState(false)
+  // (10S4 §6) Reorganizar es del pase: sin pase, el botón no sale (con pase, como siempre).
+  const conPase = usePagoActivo()
+  if (!conPase) return null
   if (!puedeReorganizar(day)) return null
 
   const reorganizar = async () => {

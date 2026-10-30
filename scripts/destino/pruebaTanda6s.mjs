@@ -153,14 +153,16 @@ for (const dias of [1, 2, 3, 4, 5, 6]) {
           debe(r.bloques.includes('resumen') || /Tu viaje a Roma/.test(r.texto), '1 pago ausente', `${etiqueta}: en la versión de pago no sale el resumen`)
         }
         // 4. las entradas (Tanda 6v): «En tu ruta» (las de las paradas que se visitan por dentro y el Free Tour si va; son las que cuentan) y «Ver n más» (las demás de la lista, que no cuentan)
-        const bloque = buildEntradasBloque(route, orden, info.entradas, reservas)
+        const bloque = buildEntradasBloque(route, orden, info.entradas, reservas, Object.keys(info.entradasPorSitio ?? {}))
         const lista = [...orden.arriba, ...orden.mas]
         const m = r.texto.match(/(\d+) de (\d+) reservadas/)
         if (bloque.enRuta.length > 0) debe(m && Number(m[2]) === bloque.enRuta.length && Number(m[1]) === bloque.enRuta.filter((x) => x.reservation).length, '4 entradas', `${etiqueta}: el bloque dice «${m?.[0]}» y en la ruta hay ${bloque.enRuta.length} (${bloque.enRuta.filter((x) => x.reservation).length} reservadas)`)
         else if (bloque.masEntradas.length > 0) debe(/Ninguna en tu ruta/.test(r.texto), '4 entradas', `${etiqueta}: sin entradas en la ruta, el bloque no lo dice`)
         const nombres = [...bloque.enRuta, ...bloque.masEntradas].map((x) => x.name)
-        debe(nombres.length === lista.length && lista.every((nombre) => nombres.includes(nombre)), '4 entradas', `${etiqueta}: las dos partes no suman la lista del destino (${nombres.length} de ${lista.length})`)
-        const idx = (arr) => arr.map((x) => lista.indexOf(x.name))
+        // (10S4: antes → las dos partes sumaban EXACTAMENTE la lista del destino → ahora la lista se abre a cualquier sitio con entrada, así que las dos partes llevan toda la lista y, además, los demás sitios con entrada → decisión de Eric (10S4, 30-oct): «Entradas y Free Tour» enseña lo que hay en la ruta, no una lista cerrada.)
+        debe(lista.every((nombre) => nombres.includes(nombre)), '4 entradas', `${etiqueta}: las dos partes no llevan toda la lista del destino (${nombres.length}, lista ${lista.length})`)
+        // (10S4: los sitios con entrada que no son de la lista van detrás y no entran en la comprobación del orden.)
+        const idx = (arr) => arr.filter((x) => lista.includes(x.name)).map((x) => lista.indexOf(x.name))
         debe(idx(bloque.enRuta).every((x, i, a) => x >= 0 && (i === 0 || x > a[i - 1])), '4 entradas', `${etiqueta}: las de «En tu ruta» no siguen el orden de los datos`)
         debe(idx(bloque.masEntradas).every((x, i, a) => x >= 0 && (i === 0 || x > a[i - 1])), '4 entradas', `${etiqueta}: las de «Ver n más» no siguen el orden de los datos`)
         const dentro = new Set(route.days.flatMap((d) => d.stops.filter((s) => !s.passThrough && !s.isFreeTour && s.visitMode !== 'fuera').map((s) => s.name)))
@@ -229,8 +231,13 @@ for (const [ida, vuelta] of [['flight', 'train'], ['train', 'bus'], ['ferry', 'o
       // (Con algo hecho, la ficha cerrada enseña las dos líneas, la de la ida y la de la vuelta; sin fechas, «Día 1» y «Día 3» en lugar del día de la semana.)
       if (estado === 'todo hecho') {
         const plano = r.texto.replace(/\n/g, ' ').replace(/\s+/g, ' ')
-        debe(/\bIda\b/.test(plano) && /\bVuelta\b/.test(plano) && /(Llegas|Sales) a las/.test(plano), '2 líneas', `${etiqueta}: faltan las líneas de la ida o la vuelta (${plano.slice(plano.indexOf('Llegada y vuelta'), plano.indexOf('Llegada y vuelta') + 200)})`)
-        if (!fechas) debe(/Ida\s+Día 1/.test(plano) && /Vuelta\s+Día 3/.test(plano), '2 líneas', `${etiqueta}: sin fechas las líneas no dicen «Día 1» y «Día 3»`)
+        // 10S4 (antes → ahora → decisión de Eric, 30-oct): antes «Llegada y vuelta» listo salía abierto con las líneas de la ida y la vuelta; ahora sale PLEGADO (título y «Listo», sin ninguna línea debajo) y las líneas están dentro, al abrirlo.
+        // Esta prueba pinta sin clics: aquí se comprueba el plegado y que las líneas existen en el código del bloque (abiertas, en el navegador: pruebaTanda10S4_G y pruebaTanda10N10_reservas).
+        const iLl = r.html.indexOf('data-blk="llegada"')
+        const bloqueLl = aTexto(r.html.slice(iLl, r.html.indexOf('data-blk="', iLl + 12))).replace(/\n/g, ' ').replace(/\s+/g, ' ')
+        debe(/Llegada y vuelta\s+Listo/.test(bloqueLl) && !/\bIda\b|\bVuelta\b|→/.test(bloqueLl), '2 líneas', `${etiqueta}: «Llegada y vuelta» listo debe salir plegado, solo título y «Listo» (${bloqueLl.slice(0, 160)})`)
+        const codigoLl = fs.readFileSync('src/components/route/reservas/LlegadaYVuelta.tsx', 'utf8')
+        debe(/Llegas a las/.test(codigoLl) && /Sales a las/.test(codigoLl) && /'Ida' : 'Vuelta'/.test(codigoLl) && /Día \$\{leg\.dayNumber\}/.test(codigoLl), '2 líneas', `${etiqueta}: en el bloque abierto faltan las líneas de la ida o la vuelta (y «Día n» sin fechas)`)
       }
     }
   }

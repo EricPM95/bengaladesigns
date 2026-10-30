@@ -156,7 +156,7 @@ export function LineaDelPase({ texto, datos = 'linea-pase', className = '', dest
         }
       }}
       data-linea-pase={datos}
-      className={`cursor-pointer ${className}`}
+      className={`zona-toque zt-sin-x cursor-pointer ${className}`}
       style={{ display: 'flex', gap: 8, alignItems: 'flex-start', font: "400 13px/1.45 'Geist'", color: 'rgba(28,34,48,.58)', ...estilo }}
     >
       <CandadoRedondo tamano="pequeno" datos={datos} />

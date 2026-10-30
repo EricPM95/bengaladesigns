@@ -1,5 +1,11 @@
-import { Component, type ReactNode } from 'react'
+import { Component, Fragment, type ReactNode } from 'react'
 import { avisarDeError } from '../lib/errorDePantalla'
+
+/** Solo en desarrollo (la prueba 10S4_I): `window.__pruebaFallo = '<nombre de la pieza>'` hace que esa pieza se rompa al pintarse, para comprobar que no tumba la app. En producción no existe. */
+function PuntoDeFallo({ nombre }: { nombre: string }) {
+  if (typeof window !== 'undefined' && (window as unknown as { __pruebaFallo?: string }).__pruebaFallo === nombre) throw new Error(`fallo forzado de prueba en ${nombre}`)
+  return null
+}
 
 /**
  * UNA PIEZA SEGURA (10S2): un dato raro (de un viaje, un gasto, un aviso, una moneda…) no puede tumbar la app entera con «Algo ha ido mal». Esto envuelve una pieza suelta de una pantalla (una tarjeta, una fila,
@@ -19,6 +25,14 @@ export class PiezaSegura extends Component<{ nombre: string; children: ReactNode
   }
 
   render() {
-    return this.state.fallo ? (this.props.alternativa ?? null) : this.props.children
+    if (this.state.fallo) return this.props.alternativa ?? null
+    return import.meta.env.DEV ? (
+      <Fragment>
+        <PuntoDeFallo nombre={this.props.nombre} />
+        {this.props.children}
+      </Fragment>
+    ) : (
+      this.props.children
+    )
   }
 }

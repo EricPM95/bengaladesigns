@@ -4,12 +4,13 @@ import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
 import { elDia } from '../../../lib/nombreDeDia'
-import { isManualRoute } from '../../../lib/manualPlan'
 import { aplicarAvisoFueraDeDia, reservasFueraDeSuDia, type ReservaFueraDeDia } from '../../../lib/reservaFueraDeDia'
 import { BloqueShell, EstadoBloque, FlechaBloque, GR, ICONOS, IconoBloque, LineaReservada, tituloBloqueStyle } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
 import { FueraDeRutaFila } from './FueraDeRutaFila'
 import { FichaEntrada } from './FichaEntrada'
+import { OtraReservaBuscador } from './OtraReservaBuscador'
+import { esReservaLibre } from '../../../lib/otraReserva'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 import { Icono } from '../../ui/Icono'
 import { useEntradasDelGrupo, useReservasParaMi, reservaDelDuenoDe } from '../../../hooks/useEntradasDelGrupo'
@@ -69,10 +70,10 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
   // Tanda 10N §8: quien mira el viaje de otra persona ve las entradas como su propia lista: las que ha comprado él, las que el dueño compró también para él, y de las demás, el día y la hora del dueño.
   const grupo = useEntradasDelGrupo()
   const reservations = useReservasParaMi()
-  const [verMas, setVerMas] = useState(false)
+  const [buscando, setBuscando] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
   const [ficha, setFicha] = useState<BloqueEntrada | null>(null)
-  const { enRuta, masEntradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
+  const { enRuta, masEntradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations, Object.keys(info.entradasPorSitio ?? {}))
   const pedido = useReservasGrupoUi((state) => state.pedido)
   const limpiarPedido = useReservasGrupoUi((state) => state.limpiar)
   // (Tanda 10N6 §1l) Las entradas de los demás —del dueño o de un invitado, da igual— se miran igual: la que me cubre sale como mía (verde), las que no me cubren, en azul con dorado y con quién las tiene.
@@ -104,7 +105,8 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
 
   const targetOf = (item: BloqueEntrada): ReservationTarget => ({
     kind: 'entrada',
-    refId: item.isFreeTour ? 'Free Tour' : item.name,
+    // (10S4) La escrita a mano en [Añadir otra reserva] conserva su refId «otra:…» para volver a abrirla con «Cambiar».
+    refId: item.reservation && esReservaLibre(item.reservation) ? item.reservation.refId : item.isFreeTour ? 'Free Tour' : item.name,
     name: item.name,
     placeNames: item.placeNames,
     currentDayId: item.day?.id ?? null,
@@ -130,7 +132,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
           {enRuta.length > 0 && (
             <div className="flex gap-[3px]" aria-hidden="true">
               {enRuta.map((item) => (
-                <span key={item.name} className="h-1 flex-1 rounded transition-colors" style={{ background: item.reservation ? GR : 'rgba(28,34,48,.1)' }} />
+                <span key={item.clave} className="h-1 flex-1 rounded transition-colors" style={{ background: item.reservation ? GR : 'rgba(28,34,48,.1)' }} />
               ))}
             </div>
           )}
@@ -139,7 +141,8 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
           <div className="flex flex-col gap-3 px-3.5 pb-3.5">
             {enRuta.length > 0 && (
               <>
-                <span className="flex items-center gap-1.5 text-text/50" style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
+                <span data-en-tu-ruta className="flex items-center gap-2 text-text" style={{ font: "700 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
+                  <span className="h-2 w-2 rounded-full" style={{ background: 'rgb(var(--accent-gold))' }} aria-hidden="true" />
                   En tu ruta
                 </span>
                 <span className="-mt-1.5 flex items-center gap-1.5 text-[12px] text-text/65">
@@ -148,12 +151,12 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                 </span>
                 {enRuta.map((item) =>
                   item.reservation ? (
-                    <div key={item.name} className="flex flex-col gap-2" data-entrada-fila={item.name}>
+                    <div key={item.clave} className="flex flex-col gap-2" data-entrada-fila={item.name}>
                       {/* (La del dueño que le cubre a quien mira: no es suya para cambiarla, sin «Cambiar».) */}
                       {!esMia(item.reservation!.id) ? (
                         <LineaReservada nombre={item.name} meta={metaReserva(route, item.reservation)} nota={`${compradorDe(item.reservation!.id)} la ha reservado para ti`} />
                       ) : (
-                        <LineaReservada nombre={item.name} meta={metaReserva(route, item.reservation)} nota={grupo.compartido && !grupo.esInvitado ? paraQuienTexto(item.reservation) : undefined} onChange={() => setTarget({ ...targetOf(item), existing: item.reservation })} />
+                        <LineaReservada nombre={item.name} meta={metaReserva(route, item.reservation)} nota={!item.inRoute && !item.reservation.fueraDeRuta && !esReservaLibre(item.reservation) ? 'Ya no está en tu ruta' : grupo.compartido && !grupo.esInvitado ? paraQuienTexto(item.reservation) : undefined} onChange={() => setTarget({ ...targetOf(item), existing: item.reservation })} />
                       )}
                       {item.reservation.fueraDeRuta && <FueraDeRutaFila reservaId={item.reservation.id} esFreeTour={item.isFreeTour} />}
                       {avisoDe(item.reservation.id) && <AvisoFueraDeDiaTarjeta aviso={avisoDe(item.reservation.id)!} />}
@@ -165,7 +168,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                     </div>
                   ) : delDuenoDe(item) ? (
                     <EntradaCard
-                      key={item.name}
+                      key={item.clave}
                       eyebrow={etiquetaDe(item)}
                       when={enTuRuta(route, item.day)}
                       name={item.name}
@@ -179,7 +182,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                     />
                   ) : (
                     <EntradaCard
-                      key={item.name}
+                      key={item.clave}
                       eyebrow={etiquetaDe(item)}
                       when={enTuRuta(route, item.day)}
                       name={item.name}
@@ -193,30 +196,32 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                 )}
               </>
             )}
-            {masEntradas.length > 0 && (
-              <>
-                <button type="button" onClick={() => setVerMas((value) => !value)} className="h-11 rounded-[14px] border border-dashed border-text/20 bg-transparent text-[13px] font-semibold text-text">
-                  {verMas ? 'Ver menos' : `Ver ${masEntradas.length} más`}
-                </button>
-                {verMas &&
-                  masEntradas.map((item) => (
-                    <EntradaCard
-                      key={item.name}
-                      eyebrow={etiquetaDe(item)}
-                      name={item.name}
-                      buyLabel={botonDe(item)}
-                      onBuy={() => setFicha(item)}
-                      reservedTime={null}
-                      // (Ruta a mano, Tanda 6y2: el Free Tour se añade como cualquier reserva —«¿Ya la tienes? Añádela», con su hora—; va al día de su fecha. Las demás entradas, desde «+ Añadir parada».)
-                      onAdd={isManualRoute(route) && item.isFreeTour ? () => setTarget(targetOf(item)) : undefined}
-                    />
-                  ))}
-              </>
+            {enRuta.length === 0 && (
+              <p className="px-1 text-[13px] leading-snug text-text/65" data-sin-entradas-en-ruta>
+                Ninguna parada de tu ruta necesita entrada. Si añades un sitio con entrada, saldrá aquí solo.
+              </p>
             )}
+            {/* (10S4) Fuera «Ver n más»: en su lugar, [Añadir otra reserva] (casilla libre con sugerencias de sitios nuestros). */}
+            <button type="button" onClick={() => setBuscando(true)} data-anadir-otra-reserva className="flex h-12 items-center justify-center gap-2 rounded-[14px] border border-dashed border-text/25 bg-transparent text-[14px] font-semibold text-text">
+              <Icono nombre="anadir" size={16} />
+              Añadir otra reserva
+            </button>
           </div>
         )}
       </BloqueShell>
       {target && <AddReservationSheet route={route} target={target} onClose={() => setTarget(null)} />}
+      {buscando && (
+        <OtraReservaBuscador
+          route={route}
+          sitiosConEntrada={Object.keys(info.entradasPorSitio ?? {})}
+          enRuta={enRuta}
+          onClose={() => setBuscando(false)}
+          onElegir={(siguiente) => {
+            setBuscando(false)
+            setTarget(siguiente)
+          }}
+        />
+      )}
       {ficha && <FichaEntrada route={route} item={ficha} onClose={() => setFicha(null)} />}
     </>
   )

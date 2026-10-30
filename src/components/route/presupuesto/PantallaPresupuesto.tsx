@@ -295,9 +295,22 @@ export function PantallaPresupuesto() {
 
   // Lo que se pinta en la barra y la leyenda: siempre con importes. En «Mi cuenta», mis bloques y «Tu parte».
   const COLOR_PARTE = '#D2B67A'
+  // (10S4 §1) En la barra y la leyenda, «Transporte» y «Alojamiento» van separados (abajo el bloque sigue junto: «Transporte y alojamiento»).
+  const COLOR_ALOJ = 'oklch(0.7 0.1 35)'
+  const esAloj = (l: LineaPresupuesto) => l.id.startsWith('aloj-') || l.id === 'mi-aloj'
+  const segmentosDe = (b: BloquePresupuesto): { id: string; titulo: string; suma: Importe; color: string }[] => {
+    if (b.id !== 'transporte') return [{ id: b.id, titulo: b.titulo.split(' y ')[0], suma: b.suma, color: ESTILO[b.id].color }]
+    const sumaDe = (ls: LineaPresupuesto[]) => sumar(ls.flatMap((l) => (l.enMonedaViajero ? [l.enMonedaViajero] : [])), moneda)
+    const aloj = b.lineas.filter(esAloj)
+    const trans = b.lineas.filter((l) => !esAloj(l))
+    return [
+      ...(trans.length > 0 ? [{ id: 'transporte', titulo: 'Transporte', suma: sumaDe(trans), color: ESTILO.transporte.color }] : []),
+      ...(aloj.length > 0 ? [{ id: 'alojamiento', titulo: 'Alojamiento', suma: sumaDe(aloj), color: COLOR_ALOJ }] : []),
+    ]
+  }
   const segmentos: { id: string; titulo: string; suma: Importe; color: string }[] = enMia
-    ? [...bloquesMios.map((b) => ({ id: b.id, titulo: b.titulo.split(' y ')[0], suma: b.suma, color: ESTILO[b.id].color })), ...(miParteCentimos > 0 ? [{ id: 'parte', titulo: 'Tu parte', suma: miParte, color: COLOR_PARTE }] : [])]
-    : bloquesComunes.map((b) => ({ id: b.id, titulo: b.titulo.split(' y ')[0], suma: b.suma, color: ESTILO[b.id].color }))
+    ? [...bloquesMios.flatMap(segmentosDe), ...(miParteCentimos > 0 ? [{ id: 'parte', titulo: 'Tu parte', suma: miParte, color: COLOR_PARTE }] : [])]
+    : bloquesComunes.flatMap(segmentosDe)
   const hayGastos = segmentos.length > 0
 
   // La hoja que se abre al tocar una línea: la de siempre de cada cosa.
@@ -385,7 +398,7 @@ export function PantallaPresupuesto() {
                 </div>
                 <div data-leyenda className="relative flex flex-wrap gap-x-3.5 gap-y-1.5">
                   {segmentos.map((s) => (
-                    <span key={s.id} className="flex items-center gap-1.5 text-[12px] font-medium text-[#FFFDF8]/80">
+                    <span key={s.id} data-leyenda-item={s.id} className="flex items-center gap-1.5 whitespace-nowrap text-[12px] font-medium text-[#FFFDF8]/80">
                       <span className="h-2 w-2 rounded-full" style={{ background: s.color }} />
                       {s.titulo} · {formatoImporte(s.suma)}
                     </span>

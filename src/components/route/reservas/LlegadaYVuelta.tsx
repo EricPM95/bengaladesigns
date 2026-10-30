@@ -91,7 +91,7 @@ export function HojaVueloDelAdmin({
       avisoFechas={
         <span className="mt-3 block text-[12px] leading-[1.35] text-text/60">
           ¿Llegas o te vas otro día?{' '}
-          <button type="button" onClick={onFechas} className="underline underline-offset-2" style={{ color: INK }}>
+          <button type="button" onClick={onFechas} className="zona-toque zt-sin-x underline underline-offset-2" style={{ color: INK }}>
             Cambia las fechas del viaje
           </button>
         </span>
@@ -166,7 +166,7 @@ function MitadGuardada({ leg, ciudad, onCambiar, onQuitar }: { leg: LegState; ci
             {leg.point ? `${leg.point.nombre} · ${ciudad}` : ciudad}
             {leg.codigo ? ` · ${leg.codigo.toUpperCase()}` : ''}
           </span>
-          <EliminarTexto onClick={onQuitar} texto={`Eliminar ${legWord(leg.mode).noun}`} />
+          <EliminarTexto alinear="derecha" onClick={onQuitar} texto={`Eliminar ${legWord(leg.mode).noun}`} />
         </>
       ) : (
         <span className="text-[13.5px] text-text/55">{esIda ? 'Falta la ida' : 'Falta la vuelta'}</span>
@@ -215,6 +215,10 @@ export function LlegadaYVuelta({
   const ciudad = route.days[0]?.city ?? route.destination
   const hecho = ida.done && vuelta.done
   const algoHecho = ida.done || vuelta.done
+  // (10S4 §2) Listo = plegado (se abre al tocar la cabecera); mientras falta algo, abierto. Al quedar listo se vuelve a plegar solo.
+  const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
+  useEffect(() => setDesplegadoUsuario(null), [hecho])
+  const desplegado = desplegadoUsuario ?? !hecho
   const hayVuelo = (ida.done && ida.mode !== 'coche') || (vuelta.done && vuelta.mode !== 'coche')
   const etiqueta = legsTag(ida, vuelta)
   const precioTotal = leerImporte(route.arrivalPrecio) ?? leerImporte(route.departurePrecio)
@@ -226,6 +230,7 @@ export function LlegadaYVuelta({
   // Las fichas del resumen, el «+ AÑADIR VUELO» de DÍAS y el «Editar» de la ventana de llegada piden este bloque con una mitad: se abre la hoja.
   useEffect(() => {
     if (abierto && !vueloAbierto) {
+      setDesplegadoUsuario(true)
       setVueloAbierto(mitadAbierta === 'departure' ? 'departure' : mitadAbierta === 'arrival' ? 'arrival' : !ida.done ? 'arrival' : !vuelta.done ? 'departure' : 'arrival')
       onMitad(undefined)
       onToggle()
@@ -271,19 +276,26 @@ export function LlegadaYVuelta({
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-3.5 px-4 pb-3 pt-4">
+            <div onClick={hecho ? () => setDesplegadoUsuario(!desplegado) : undefined} className={`flex items-center gap-3.5 px-4 pb-3 pt-4 ${hecho ? 'cursor-pointer' : ''}`} data-llegada-cabecera>
               <IconoBloque nombre={iconoDeMedio(ida.mode)} hecho={hecho} />
               <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span style={tituloBloqueStyle}>Llegada y vuelta</span>
-                <span className="text-[13px] text-text/55">
-                  {origen} → {ciudad}
-                  {precioTotal ? ` · ${precioEnVista(precioTotal)}` : ''}
-                </span>
+                <EstadoBloque texto={hecho ? 'Listo' : etiqueta} hecho={hecho} />
               </span>
-              <EstadoBloque texto={hecho ? 'Listo' : etiqueta} hecho={hecho} />
+              {hecho && <FlechaBloque abierto={desplegado} />}
             </div>
+            {desplegado && (
+              <>
             <MitadGuardada leg={ida} ciudad={ciudad} onCambiar={() => abrirHoja('arrival')} onQuitar={() => quitar(ida)} />
             <MitadGuardada leg={vuelta} ciudad={ciudad} onCambiar={() => abrirHoja('departure')} onQuitar={() => quitar(vuelta)} />
+            {hayVuelo && (
+              <div className="mx-3.5 mb-3 flex items-center justify-between gap-2 rounded-[14px] py-1 pl-3.5 pr-1.5" style={{ background: '#FBF1D8', border: '1px solid rgba(181,138,46,.3)' }} data-precio-vuelo>
+                <span className="text-[14px] font-medium" data-precio-vuelo-texto>
+                  {precioTotal ? `Precio · ${precioEnVista(precioTotal)}` : 'Precio · sin poner'}
+                </span>
+                <CambiarBoton onClick={() => abrirHoja(primeraLibre)} />
+              </div>
+            )}
             {hayVuelo && g.gente.length >= 2 && g.esAdmin && (
               <div className="flex flex-col gap-2.5 px-4 pb-4 pt-1" data-en-este-vuelo>
                 <span className="flex items-center justify-between text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
@@ -295,6 +307,8 @@ export function LlegadaYVuelta({
                   {nombresQuienes}
                 </span>
               </div>
+            )}
+              </>
             )}
           </>
         )}

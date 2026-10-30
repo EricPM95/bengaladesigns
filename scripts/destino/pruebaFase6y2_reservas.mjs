@@ -80,7 +80,7 @@ for (const fechas of [true, false]) {
   debe(freeTourAvailable(rutaMano(3, { fechas, manual: false })) === false, '1 free tour', `${nombre}: freeTourAvailable cambia en una ruta nuestra sin días escritos`)
 
   // RESERVAS: antes de añadirlo, el Free Tour sale en «Ver más» y se puede añadir (EntradaCard con «Añádela»).
-  const bloqueAntes = buildEntradasBloque(base, info.entradasOrden, info.entradas, [])
+  const bloqueAntes = buildEntradasBloque(base, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
   const ftAntes = [...bloqueAntes.enRuta, ...bloqueAntes.masEntradas].find((item) => item.name === FT)
   debe(ftAntes && ftAntes.isFreeTour && !ftAntes.inRoute && bloqueAntes.masEntradas.includes(ftAntes), '1 reservas', `${nombre}: el Free Tour no sale en RESERVAS como Free Tour (fuera de la ruta) antes de añadirlo`)
 
@@ -103,7 +103,7 @@ for (const fechas of [true, false]) {
   // Sale en DÍAS (con su nombre y su hora) y en RESERVAS como «En tu ruta», reservado.
   const diasHtml = plano(aTexto(renderToStaticMarkup(createElement(DayList, { route: despues, activeDayId: 'd2', onSelectDay() {}, showAllDaysOnMap: false }))))
   debe(diasHtml.includes(FT) /* Tanda 10N4: la hora ya no sale en la tarjeta de DÍAS (solo el botón redondo de la entrada, sin palabras): la dice la ficha */, '1 free tour', `${nombre}: DÍAS no enseña el Free Tour con su hora`)
-  const bloque = buildEntradasBloque(despues, info.entradasOrden, info.entradas, [r1])
+  const bloque = buildEntradasBloque(despues, info.entradasOrden, info.entradas, [r1], Object.keys(info.entradasPorSitio ?? {}))
   const ftDespues = bloque.enRuta.find((item) => item.name === FT)
   debe(ftDespues && ftDespues.inRoute && ftDespues.reservation?.id === 'r-ft' && ftDespues.day?.dayNumber === 2, '1 reservas', `${nombre}: en RESERVAS el Free Tour no sale «En tu ruta», reservado y en su día`)
   // Sin precio, como siempre: ni en la reserva ni en el presupuesto.
@@ -134,12 +134,13 @@ for (const fechas of [true, false]) {
   debe(/addReservation\(reservation, target\.excursion \?\? null, freeTourEntry\)/.test(hojaReserva) && /precio: target\.refId === 'Free Tour' \? null/.test(hojaReserva), '1 free tour', 'la hoja de reserva no pasa los datos del Free Tour o le deja un precio')
   for (const f of ['src/components/route/ExplorePanel.tsx', 'src/components/route/freeDay/AddToTripScreen.tsx']) debe(/freeTourAvailable\(route\)/.test(fs.readFileSync(f, 'utf8')), '1 free tour', `${f} no ofrece el Free Tour con freeTourAvailable`)
   const reservas = fs.readFileSync('src/components/route/reservas/EntradasYFreeTour.tsx', 'utf8')
-  debe(/isManualRoute\(route\) && item\.isFreeTour \? \(\) => setTarget\(targetOf\(item\)\)/.test(reservas), '1 reservas', 'RESERVAS no ofrece «Añádela» en el Free Tour de una ruta a mano')
+  // (10S4: antes → el «Añádela» del Free Tour a mano salía en «Ver n más» solo con isManualRoute → ahora «Ver n más» ya no existe y el Free Tour sale en «En tu ruta» con su «Añádela» siempre → decisión de Eric (10S4, 30-oct).)
+  debe(/onAdd=\{\(\) => setTarget\(targetOf\(item\)\)\}/.test(reservas) && !/Ver \$\{masEntradas/.test(reservas), '1 reservas', 'RESERVAS no ofrece «Añádela» en el Free Tour de una ruta a mano')
 }
 // Ruta nuestra: el Free Tour sin parada sigue sin ser Free Tour en el bloque (nada cambia fuera de la ruta a mano).
 {
   const nuestra = rutaMano(3, { fechas: true, manual: false })
-  const bloque = buildEntradasBloque(nuestra, info.entradasOrden, info.entradas, [])
+  const bloque = buildEntradasBloque(nuestra, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
   const ft = [...bloque.enRuta, ...bloque.masEntradas].find((item) => item.name === FT)
   debe(ft && !ft.isFreeTour, '1 reservas', 'en una ruta nuestra el Free Tour sin parada cambia en RESERVAS')
 }

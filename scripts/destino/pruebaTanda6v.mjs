@@ -88,8 +88,8 @@ const route3 = await viaje(3)
   const html = renderToStaticMarkup(createElement(EntradasYFreeTour, { route: route3, info, abierto: true, onToggle() {} }))
   const t = aTexto(html)
   debe(/EN TU RUTA|En tu ruta/i.test(t.split('\n').slice(0, 12).join('\n')), '1 entradas', `el bloque abierto no tiene el título «EN TU RUTA» (${plano(t).slice(0, 200)})`)
-  const masM = t.match(/Ver (\d+) más/)
-  debe(Boolean(masM) && Number(masM[1]) >= 1, '1 entradas', `no sale «Ver n más» en un viaje de 3 días (le faltan entradas de la lista) (${plano(t).slice(-200)})`)
+  // (10S4: antes → «Ver n más» salía con las entradas de la lista que no estaban en la ruta → ahora ya no existe y en su lugar sale [Añadir otra reserva] → decisión de Eric (10S4, 30-oct).)
+  debe(!/Ver \d+ más/.test(t) && /Añadir otra reserva/.test(t), '1 entradas', `sale «Ver n más» o falta [Añadir otra reserva] (${plano(t).slice(-200)})`)
   debe(!/href=/.test(html), '1 entradas', 'el bloque de entradas lleva enlaces a una tienda (href)')
 }
 {
@@ -103,7 +103,9 @@ const route3 = await viaje(3)
 const codigoEntradas = fs.readFileSync('src/components/route/reservas/EntradasYFreeTour.tsx', 'utf8')
 debe(/onBuy=\{\(\) => setFicha\(item\)\}/.test(codigoEntradas) && !/openTicketShop|buyHref/.test(codigoEntradas), '1 entradas', 'EntradasYFreeTour.tsx no abre la ficha con [Reservar] (o todavía abre la tienda)')
 {
-  const dentroMas = codigoEntradas.slice(codigoEntradas.indexOf('masEntradas.map('))
+  // (10S4: antes → se miraba el código de «Ver n más» (masEntradas.map) → ahora ese bloque no existe: se comprueba que no está.)
+  debe(!/masEntradas\.map\(/.test(codigoEntradas), '1 entradas', 'queda código de «Ver n más»')
+  const dentroMas = codigoEntradas.slice(codigoEntradas.indexOf('masEntradas.map(') < 0 ? codigoEntradas.length : codigoEntradas.indexOf('masEntradas.map('))
   // (Tanda 6y2: la única excepción es el Free Tour de una ruta a mano, que se añade como una reserva más: `onAdd={isManualRoute(route) && item.isFreeTour ? …}`.)
   debe(!/onAdd=\{(?!isManualRoute\(route\) && item\.isFreeTour)/.test(dentroMas.slice(0, dentroMas.indexOf('))}'))), '1 entradas', 'las de «Ver n más» llevan «Añádela» (onAdd)')
 }
@@ -120,7 +122,10 @@ debe(/initialTab="tickets"/.test(codigoFicha) && /StopDetailSheet/.test(codigoFi
   for (const zona of zonas) debe(!t.includes(zona.nombre), '2 zona', `sin zona: salen las fichas de las zonas («${zona.nombre}»)`)
   const prati = pinta({ ...route5, accommodationZone: 'prati' }, 'completa')
   const tp = aTexto(bloqueDe(prati.html, 'aloj'))
-  debe(/Listo/.test(tp) && /Tu zona/.test(tp) && /Prati/.test(tp) && !/Falta/.test(tp) && !/Buscar alojamiento/.test(tp), '2 zona', `(10N10) con zona: «Listo», «Tu zona · Prati» y [Cambiar] (${plano(tp)})`)
+  // 10S4 (antes → ahora → decisión de Eric, 30-oct): antes con zona salía abierto con «Tu zona · Prati» y [Cambiar]; ahora, listo, sale PLEGADO (título y «Listo») y «Tu zona · Prati» con [Cambiar] están dentro, al abrirlo (en el código; abierto en el navegador: pruebaTanda10S4_G).
+  debe(/Listo/.test(tp) && !/Falta/.test(tp) && !/Buscar alojamiento/.test(tp) && !/Prati/.test(tp), '2 zona', `(10S4) con zona: plegado, solo «Listo» (${plano(tp)})`)
+  const codAloj = fs.readFileSync('src/components/route/reservas/AlojamientoReservas.tsx', 'utf8')
+  debe(/'Tu zona'/.test(codAloj) && /data-tu-zona/.test(codAloj) && /elegida\.nombre/.test(codAloj) && /CambiarBoton onClick=\{\(\) => abrirTuAlojamiento/.test(codAloj), '2 zona', '(10N10) con zona, abierto: «Tu zona · Prati» y [Cambiar] en el código del bloque')
   const nose = pinta({ ...route5, accommodationZone: 'nose' }, 'completa')
   const tn = aTexto(bloqueDe(nose.html, 'aloj'))
   debe(/Falta/.test(tn) && !/✓/.test(tn) && !/Te alojas en/.test(tn), '2 zona', `«Aún no lo sé»: sigue en «Falta» (${plano(tn)})`)

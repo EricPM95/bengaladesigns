@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { prepararTierra, type Tierra } from './proyeccion'
+import { buscar } from '../../../../lib/busqueda'
 
 /** Un país del catálogo (data/logros/paises_mundo.json): iso en minúsculas, nombre en español, continente, centro y si es tan pequeño que no sale en el mapa (p = 1). */
 export interface Pais {
@@ -45,7 +46,7 @@ export function usePaisesYTierra(): { paises: Pais[] | null; tierra: Tierra | nu
 /** Buscar sin tildes ni mayúsculas. */
 export const buscarPaises = (lista: Pais[], q: string): Pais[] => {
   const k = sinTildes(q)
-  return k ? lista.filter((p) => sinTildes(p.n).includes(k)) : lista
+  return k ? buscar(lista, q, (p) => [p.n], { max: lista.length, minimoDeLetras: 1 }) : lista
 }
 
 export const reducirMovimiento = (): boolean => typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)

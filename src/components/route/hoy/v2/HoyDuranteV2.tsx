@@ -36,6 +36,7 @@ import { TusFotosDeHoy } from '../../fotos/TusFotosDeHoy'
 import { RainAlert } from '../../today/RainAlert'
 import { TodayExcursion } from '../../today/TodayExcursion'
 import { BilleteDeVuelo } from '../../dayDetail/BilleteDeVuelo'
+import { TarjetaLlegadaDias } from '../../dayDetail/TarjetaLlegadaDias'
 import { BotonAlojamientoHoy, useFichasDeHoy, type MitadDeHoy } from '../llegadaVuelta'
 import { anadirMasVisita, useMasVisitas } from '../masVisitas'
 import type { MasVisita } from '../../../../lib/masVisitas'
@@ -451,8 +452,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* 3, 3b, 3c: el día de llegada */}
       {hayBilleteLlegada && (
         <div data-hoy-llegada="1" className="flex flex-none flex-col gap-2.5">
-          <div className="flex flex-col rounded-[18px] bg-white" style={{ border: '1px solid oklch(0.55 0.12 240 / .28)', boxShadow: '0 12px 24px -16px oklch(0.45 0.1 240 / .6)' }}>
-            <BilleteDeVuelo billete={llegadaMitad.billete!} onOpen={() => fichas.abrir('llegada')} />
+          <div className="flex flex-col">
+            <TarjetaLlegadaDias billete={llegadaMitad.billete!} point={llegadaMitad.point} origen={llegadaMitad.origen} destino={llegadaMitad.destino} onOpen={() => fichas.abrir('llegada')} />
             {!comidaAlLlegar && !llegadaTarde && (
               <button type="button" onClick={() => explorar('restaurantes', null, true)} className="mx-3.5 mb-1 mt-0 flex min-h-11 items-center gap-1.5 border-t border-dashed border-text/15 text-left text-[12.5px] font-semibold text-[#1C2230] underline underline-offset-[3px]">
                 Restaurantes cerca de tu alojamiento

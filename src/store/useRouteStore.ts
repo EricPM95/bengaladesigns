@@ -968,6 +968,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     const route = get().route
     if (!route) return
     if (reservation.kind === 'entrada') {
+      // (10S4) La escrita a mano en [Añadir otra reserva] (refId `otra:…`) solo vive en RESERVAS: no toca la ruta ni pide nada al motor.
+      if (reservation.refId.startsWith('otra:')) return
       const previous = get().reservations.find((other) => other.kind === 'entrada' && other.refId === reservation.refId && other.id !== reservation.id)
       const unpinned = previous ? unpinReservedStops(route, previous.id) : route
       // Ruta a mano (Tanda 6y): ni el motor rehace el día ni la reserva grande mueve días; la parada se queda donde la puso el viajero, con la hora de la reserva.
@@ -1039,7 +1041,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       for (const notice of useNoticesStore.getState().pushed) if (notice.id.includes(id)) useNoticesStore.getState().remove(notice.id)
     })
     // (Tanda 6m: quitar una reserva no mueve ningún día: ese día se rehace en su sitio, con el orden que el viajero ya ve, y la parada vuelve a su lista normal, sin hora fija.)
-    if (removedDay && !isManualRoute(get().route)) {
+    if (removedDay && !isManualRoute(get().route) && !removed?.refId.startsWith('otra:')) {
       if (removed && isBigReservation(removed, sitiosGrandesDelViaje(get().route))) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id, { mantenerOrden: true }))
       // Sin la reserva de un sitio que no es de los grandes, el sitio vuelve al día que lo llevaba (Tanda 6y4, punto 7): hay que rehacer todos los días, sin cambiar su orden.
       else void import('../lib/rebuildDay').then((module) => module.rehacerDiasSinTocar(null, { mantenerOrden: true }))

@@ -97,9 +97,9 @@ export function CambiarBoton({ onClick, texto = 'Cambiar' }: { onClick: () => vo
 }
 
 /** El texto de borrar: en rojo, sin caja. */
-export function EliminarTexto({ onClick, texto }: { onClick: () => void; texto: string }) {
+export function EliminarTexto({ onClick, texto, alinear = 'centro' }: { onClick: () => void; texto: string; /** (10S4) «derecha»: al final del bloque pero pegado a la derecha, debajo de «Cambiar». */ alinear?: 'centro' | 'derecha' }) {
   return (
-    <button type="button" onClick={onClick} className="self-center border-none bg-transparent px-2 py-1 text-[13.5px] font-medium" style={{ color: 'oklch(0.52 0.19 25)' }}>
+    <button type="button" onClick={onClick} data-eliminar={alinear} className={`${alinear === 'derecha' ? 'self-end' : 'self-center'} border-none bg-transparent px-2 py-1 text-[13.5px] font-medium`} style={{ color: 'oklch(0.52 0.19 25)' }}>
       {texto}
     </button>
   )

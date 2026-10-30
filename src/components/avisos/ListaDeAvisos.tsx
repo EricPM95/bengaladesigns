@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+import { PiezaSegura } from '../PiezaSegura'
 import type { NombreIcono } from '../../lib/iconos'
 import { haceCuanto, type AvisoDeCuenta } from '../../lib/avisos'
 import { Icono } from '../ui/Icono'
@@ -35,7 +37,9 @@ export function ListaDeAvisos({
 }) {
   return (
     <div data-lista-avisos className="flex flex-col gap-2">
-      {avisos.map((a) => {
+      {avisos.map((a) => (
+        <PiezaSegura key={a.id} nombre="aviso de la campana">
+          {((): ReactNode => {
         const clave = claveDeAviso(a.id)
         // (Tanda 10N, apartado 9) «Ana quiere añadir al presupuesto»: el gasto va dentro y [Rechazar] [Aceptar] en el mismo aviso.
         if (a.tipo === 'gasto_pendiente')
@@ -93,7 +97,9 @@ export function ListaDeAvisos({
             </span>
           </FilaDeAviso>
         )
-      })}
+          })()}
+        </PiezaSegura>
+      ))}
     </div>
   )
 }

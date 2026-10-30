@@ -52,7 +52,7 @@ export function useTripReadiness() {
     esimResolvedCountries: new Set(Object.keys(esimSelections)),
   }
 
-  const bloque = buildEntradasBloque(route, destinationInfo.entradasOrden, destinationInfo.entradas, reservations)
+  const bloque = buildEntradasBloque(route, destinationInfo.entradasOrden, destinationInfo.entradas, reservations, Object.keys(destinationInfo.entradasPorSitio ?? {}))
   const entries: EntryRow[] = bloque.enRuta.map((item) => ({ id: item.name, name: item.name, placeNames: item.placeNames, day: item.day, reservation: item.reservation }))
   const excursion = destinationInfo.excursions.length > 0 && hasEnoughDaysForExcursions(route, destinationInfo.fromDays) ? buildExcursionRow(route, reservations) : null
   // (Tanda 10G: el vuelo o el tren y el alojamiento se guardan gratis: sus casillas cuentan en las dos versiones.)

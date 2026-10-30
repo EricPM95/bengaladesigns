@@ -35,6 +35,7 @@ import { usePasePintable } from '../../../lib/pago'
 import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
 import { diaCorto } from '../../../lib/nombreDeDia'
 import { InterruptorElegir } from '../../ui/Elegir'
+import { puntuar } from '../../../lib/busqueda'
 
 
 /** Por encima de esta distancia el "a N min a pie" deja de tener sentido (el viajero todavía no está
@@ -183,13 +184,8 @@ function withBookingNote(place: DestinationPlace): string | null {
  * nombre que el lugar tenía antes del renombrado a español.
  */
 function searchScore(place: DestinationPlace, needle: string): number {
-  const name = normalize(place.name)
-  if (name.startsWith(needle)) return 100
-  const aliases = (place.search_aliases ?? []).map(normalize)
-  if (aliases.some((alias) => alias.startsWith(needle))) return 90
-  if (name.includes(needle)) return 70
-  if (aliases.some((alias) => alias.includes(needle))) return 60
-  return 0
+  // (10S4 §5) La forma de buscar de todos los buscadores (src/lib/busqueda.ts): sin acentos ni mayúsculas, palabras a medias, una letra equivocada y los alias (el nombre en italiano).
+  return puntuar(needle, [place.name, ...(place.search_aliases ?? [])])
 }
 
 /** Mínimo de letras antes de buscar: con una sola, media ciudad coincide y la lista no dice nada. */
@@ -1310,7 +1306,7 @@ export function PlaceExplorerScreen({
                             data-cambiar-por={place.name}
                             aria-label={`Cambiar por ${place.name}`}
                             title="Cambiar por este"
-                            className="flex h-11 w-11 items-center justify-center"
+                            className="zona-toque flex h-11 w-11 items-center justify-center"
                           >
                             <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ border: `1.5px solid ${warm}`, color: 'rgb(var(--accent-hover))' }}>
                               <Icono nombre="intercambiar" size={15} />
@@ -1319,7 +1315,7 @@ export function PlaceExplorerScreen({
                         ) : freeTourYaEstaba ? (
                           <span className="h-11 w-11" />
                         ) : plusAction && !pickMode ? (
-                          <button type="button" onClick={plusAction} aria-label={`Añadir ${place.name}`} className="flex h-11 w-11 items-center justify-center">
+                          <button type="button" onClick={plusAction} aria-label={`Añadir ${place.name}`} className="zona-toque flex h-11 w-11 items-center justify-center">
                             <span className="flex h-7 w-7 items-center justify-center rounded-full text-[18px] font-medium leading-none" style={{ border: `1.5px solid ${warm}`, color: 'rgb(var(--accent-hover))' }}>
                               +
                             </span>
@@ -1327,7 +1323,7 @@ export function PlaceExplorerScreen({
                         ) : (
                           <span className="h-11 w-11" />
                         )}
-                        <MeGusta destino={destination} nombre={place.name} variante="tarjeta" className="h-11 min-w-11 pl-1 pr-2.5" />
+                        <MeGusta destino={destination} nombre={place.name} variante="tarjeta" className="zona-toque h-11 min-w-11 pl-1 pr-2.5" />
                       </div>
                     )}
                     {!toilet && !visitable && (
@@ -1353,7 +1349,7 @@ export function PlaceExplorerScreen({
                           </button>
                         ) : quickAddLabel === '+ Añadir' && !place.solo_entradas && (onQuickAdd ?? onQuickPick) && !pickMode ? (
                           // (10N10 §2b) Restaurantes, cafés, helados y bares también llevan el «+» redondo: se añaden como una parada más (para parar a tomar algo). En «Comida — vie 30» (quickAddLabel «Elegir») sigue «Elegir».
-                          <button type="button" onClick={() => (onQuickAdd ? onQuickAdd(place) : void addDirect(place))} aria-label={`Añadir ${place.name}`} data-mas-restaurante="1" className="flex h-11 w-11 items-center justify-center" style={{ margin: '0 -8px -8px 0' }}>
+                          <button type="button" onClick={() => (onQuickAdd ? onQuickAdd(place) : void addDirect(place))} aria-label={`Añadir ${place.name}`} data-mas-restaurante="1" className="zona-toque flex h-11 w-11 items-center justify-center" style={{ margin: '0 -8px -8px 0' }}>
                             <span className="flex h-7 w-7 items-center justify-center rounded-full text-[18px] font-medium leading-none" style={{ border: `1.5px solid ${warm}`, color: 'rgb(var(--accent-hover))' }}>
                               +
                             </span>

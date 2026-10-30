@@ -173,6 +173,8 @@ try {
   /* ═══ 7b · tarjeta guardada (06) ═══ */
   console.log('7b. Tarjeta guardada')
   await ev("document.querySelector('[data-blk=\"llegada\"]')?.scrollIntoView({ block: 'start' }); true")
+  // 10S4 (antes → ahora → decisión de Eric, 30-oct): antes la tarjeta del vuelo salía siempre abierta; ahora, con ida y vuelta listas, sale PLEGADA y se abre con un toque en la cabecera. Misma fuerza: se abre y se mira lo mismo.
+  if (!(await ev("Boolean(document.querySelector('[data-blk=\"llegada\"] [data-mitad]'))"))) await ev("document.querySelector('[data-blk=\"llegada\"] [data-llegada-cabecera]')?.click(); true")
   await a.esp(600)
   const tarjeta = await ev("document.querySelector('[data-blk=\"llegada\"]')?.innerText.replace(/\\s+/g, ' ') ?? ''")
   debe(/ida/i.test(tarjeta) && /vuelta/i.test(tarjeta) && /Cambiar/.test(tarjeta), '7b', 'la tarjeta guardada trae la ida y la vuelta con [Cambiar]')
@@ -187,6 +189,8 @@ try {
   console.log('7b. Vuelo viajando solo')
   await ponerGente('eric', GENTE1)
   await a.esp(800)
+  if (!(await ev("Boolean(document.querySelector('[data-blk=\"llegada\"] [data-mitad]'))"))) await ev("document.querySelector('[data-blk=\"llegada\"] [data-llegada-cabecera]')?.click(); true")
+  await a.esp(500)
   await clic('[data-blk="llegada"] [data-mitad="arrival"] button')
   await a.esp(1000)
   m = await medidas()

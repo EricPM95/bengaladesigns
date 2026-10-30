@@ -31,6 +31,8 @@ import { diaDeLaReservaEnPalabras, horaCorta } from '../../../lib/reservasGrupo'
 import { nombreDe } from '../../../store/useViajeCompartido'
 import { cuentaDelViaje, esFamilia } from '../../../lib/cuentaDelViaje'
 import { BloqueDinero, textoDelBoton, preguntaParaQuien } from '../presupuesto/BloqueDinero'
+import { anadirComoPrimeraParada, esReservaLibre, type SugerenciaDeEntrada } from '../../../lib/otraReserva'
+import { llevarALaParada } from '../../../lib/cambiarParada'
 
 /** (10N8, N6) El nombre de la entrada con su artículo: «el Coliseo, Foro y Palatino» (la tabla de artículos solo conoce «Coliseo»: si el nombre entero no está, se usa el artículo del primer sitio que cubre). */
 function sitioDeLaEntrada(target: { name: string; placeNames: string[] }): string {
@@ -63,6 +65,10 @@ export interface ReservationTarget {
   igualQue?: { reserva: Reservation; quien: string; modo: 'comprar' | 'tengo' } | null
   /** Cómo se abre el selector de hora. 'tengo' (por defecto: «¿Ya la tienes? Añádela», «Cambiar»): cualquier hora, sin filtros ni avisos. 'reservar': solo las horas libres del calendario, con sus plazas (solo con la API de consulta encendida). */
   modo?: 'tengo' | 'reservar'
+  /** (10S4) [Añadir otra reserva] con lo escrito tal cual (sin sitio nuestro): solo vive en RESERVAS (refId «otra:…»). */
+  libre?: boolean
+  /** (10S4) [Añadir otra reserva] con una sugerencia: al guardar, el sitio entra también en la ruta, en el día elegido, como primera parada. */
+  sugerencia?: SugerenciaDeEntrada | null
 }
 
 /** Qué se mueve al meter una reserva grande (/api/reservation-plan). */
@@ -216,7 +222,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const bigPlace = target.placeNames.find((name) => sitiosGrandes.includes(name)) ?? null
   const isFreeTour = target.refId === 'Free Tour'
   // El sitio cuyas horas de entrada se piden al servidor: el grande, o el primero que cubre la entrada (el Free Tour no tiene: sus cinco horas son fijas).
-  const hoursPlace = isExcursion || isFreeTour ? null : (bigPlace ?? target.placeNames[0] ?? null)
+  const esLibre = target.libre === true || esReservaLibre(existing)
+  const hoursPlace = isExcursion || isFreeTour || esLibre ? null : (bigPlace ?? target.placeNames[0] ?? null)
   const tripDates = hasDates && days.length > 0 ? { min: dateOfDay(route, days[0]) ?? undefined, max: dateOfDay(route, days[days.length - 1]) ?? undefined } : null
 
   const dayLabel = (day: (typeof days)[number]) => `${dayLineOf(route, day)}${day.id === target.currentDayId ? ' · aquí está ahora' : ''}`
@@ -285,7 +292,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     if (view === 'hora') setAperturas((n) => n + 1)
   }, [view])
   const modoReservar = target.modo === 'reservar'
-  const lugarDeLasHoras = isExcursion ? null : isFreeTour ? 'Free Tour' : (bigPlace ?? target.placeNames[0] ?? null)
+  const lugarDeLasHoras = isExcursion || esLibre ? null : isFreeTour ? 'Free Tour' : (bigPlace ?? target.placeNames[0] ?? null)
   const claveDeLasHoras = view === 'hora' && hasDates && fields.dateIso && resolvedDay && aperturas > 0 ? `${lugarDeLasHoras}|${fields.dateIso}|${aperturas}` : null
   const horasApi = useHorasLibres(lugarDeLasHoras, hasDates ? fields.dateIso : null, route.destination, claveDeLasHoras)
   const horasDelDia = horasApi.estado === 'ok' ? horasApi.datos : null
@@ -333,7 +340,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // (En una ruta a mano no se pregunta qué día se mueve: ninguno se mueve, la reserva se queda en el día y a la hora del viajero. Tanda 6y.)
   // (Tanda 10S3, apartado 5) El Free Tour no mueve días, y una entrada cuyo sitio YA está en el día de la fecha elegida se queda donde está con su hora (10N10 §3d): en los dos casos no se pide el plan y no sale el mensaje de «mover el día».
   const yaEnSuDia = Boolean(resolvedDay?.stops.some((parada) => (isFreeTour ? parada.isFreeTour : target.placeNames.includes(parada.name))))
-  const planKey = resolvedDay && bigPlace && !isFreeTour && !yaEnSuDia && !isExcursion && validTime && !isManualRoute(route) && !esInvitado ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
+  const planKey = resolvedDay && bigPlace && !isFreeTour && !yaEnSuDia && !isExcursion && !target.sugerencia && !esLibre && validTime && !isManualRoute(route) && !esInvitado ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
   // «¿Para quién es?» (Tanda 10N §8): solo el dueño y solo en un viaje compartido. El dueño va siempre marcado; una reserva de antes de compartir cuenta como «solo para mí».
   // (Tanda 10N5 §6c) También quien reserva en un viaje de otra persona dice para quién es: la pagó él y, si es para varios, entra en las cuentas del grupo. Siempre va marcado quien reserva.
   const paraQuienVisible = grupo.compartido
@@ -372,6 +379,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       ...(paraQuienVisible ? { paraQuien: marcados, pagadoPor: marcados.length > 1 && precio.importe ? pagadoPor : null } : {}),
       // (El nombre corto con artículo —«el Coliseo»— viaja con la reserva: así el aviso que crea la base de datos lo dice bien.)
       shortName: nombresCortos?.[target.refId] ?? existing?.shortName ?? null,
+      // (10S4) Lo escrito a mano en [Añadir otra reserva]: ni mueve ni rehace nada, solo vive en RESERVAS.
+      ...(esLibre ? { noMueve: true } : {}),
     }
   }
   useEffect(() => {
@@ -505,6 +514,15 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       // El aviso se queda en la campana.
       useNoticesStore.getState().push({ id: `reserva-aviso-${reservation.id}`, kind: 'info', title: 'Tu reserva está guardada', text: aviso })
     }
+    // (10S4) [Añadir otra reserva] con una sugerencia: el sitio entra en la ruta, en el día elegido, de primera, ANTES de guardar la reserva (así la reserva lo encuentra ya en su día y no pide nada al motor: el día no cambia).
+    let llevarA: { dayId: string; stopId: string } | null = null
+    if (target.sugerencia && !esLibre) {
+      try {
+        llevarA = anadirComoPrimeraParada(resolvedDay.id, target.sugerencia, reservation)
+      } catch (error) {
+        console.error('[AddReservationSheet] no se pudo poner en la ruta', error)
+      }
+    }
     try {
       addReservation(reservation, target.excursion ?? null, freeTourEntry)
     } catch (error) {
@@ -518,6 +536,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       }
     }
     onClose()
+    // (10S4) La app lleva a la parada nueva y la marca un momento.
+    if (llevarA) llevarALaParada(llevarA.dayId, llevarA.stopId)
   }
 
   const showForm = tab === 'manual' || read
@@ -553,7 +573,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
           {view === 'hora' ? (
             <div>
               <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
-                {isExcursion ? (target.paso2 ? 'Añadir una excursión · 2 de 2' : 'Excursión · elige día y hora') : isFreeTour ? 'Free Tour · elige día y hora' : 'Entrada · elige día y hora'}
+                {isExcursion ? (target.paso2 ? 'Añadir una excursión · 2 de 2' : 'Excursión · elige día y hora') : esLibre ? 'Reserva · elige día y hora' : isFreeTour ? 'Free Tour · elige día y hora' : 'Entrada · elige día y hora'}
               </p>
               <h2 id="add-reservation-heading" className="mt-1.5 font-display text-[24px] leading-[1.05] text-text">
                 {target.name}

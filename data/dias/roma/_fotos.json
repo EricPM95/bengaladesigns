@@ -1285,6 +1285,23 @@
       }
     },
     {
+      "archivo": "dia_castillo_sant_angelo_dentro.jpg",
+      "lugares": [
+        "Castillo de Sant'Angelo (por dentro)"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "nota": "10S3b: el Castillo por dentro, de DIA (la galeria con vistas al Puente Sant'Angelo y al Tiber). Nunca la de noche. Sin credito aun (sin autor, la foto va sin linea de credito).",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
       "archivo": "dia_terraza_altar_patria.jpg",
       "lugares": [
         "Terraza del Altar de la Patria"

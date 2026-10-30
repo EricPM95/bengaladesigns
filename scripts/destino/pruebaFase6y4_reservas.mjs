@@ -323,7 +323,7 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
   debe(![...info.entradasOrden.arriba, ...info.entradasOrden.mas].some((n) => /Trevi/.test(n)) && info.entradas.every((e) => !e.places.includes('Fontana de Trevi')), '4 trevi', 'la Fontana de Trevi está en la lista de entradas de RESERVAS')
   // Con la Fontana en la ruta: ni en el bloque, ni en «x de n listo», ni en el filtro «Entradas».
   const ruta = conParadas(rutaMano(3), [['Fontana de Trevi', 'Coliseo'], ['Panteón'], []])
-  const bloque = buildEntradasBloque(ruta, info.entradasOrden, info.entradas, [])
+  const bloque = buildEntradasBloque(ruta, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
   debe([...bloque.enRuta, ...bloque.masEntradas].every((e) => !/Trevi/.test(e.name) && !e.placeNames.includes('Fontana de Trevi')), '4 trevi', 'la Fontana de Trevi sale en el bloque de entradas')
   debe(bloque.enRuta.map((e) => e.name).join() === 'Coliseo, Foro y Palatino,Panteón', '4 trevi', `las entradas en la ruta no son las esperadas: ${bloque.enRuta.map((e) => e.name)}`)
   const entries = bloque.enRuta.map((item) => ({ id: item.name, name: item.name, placeNames: item.placeNames, day: item.day, reservation: item.reservation }))

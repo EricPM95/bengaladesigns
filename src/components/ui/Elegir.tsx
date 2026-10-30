@@ -71,6 +71,7 @@ export function InterruptorElegir({
             key={o.id}
             type="button"
             role="radio"
+            className={compacto ? 'zona-toque zt-sin-x' : undefined}
             aria-checked={elegida}
             data-elegida={elegida ? '1' : '0'}
             disabled={apagada}

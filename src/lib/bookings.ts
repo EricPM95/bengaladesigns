@@ -124,6 +124,8 @@ export interface EntryRow {
 
 /** Una entrada del bloque «Entradas y Free Tour» de RESERVAS (Tanda 6s y 6v). */
 export interface BloqueEntrada {
+  /** (10S4) Clave única de la fila: el nombre y, con el sitio varias veces en la ruta, el nombre + la parada. */
+  clave: string
   /** El nombre con el que sale: «Coliseo, Foro y Palatino», «Panteón», «Free Tour por Roma». */
   name: string
   /** Las paradas de la ruta que cubre. */
@@ -146,22 +148,47 @@ export function buildEntradasBloque(
   orden: { arriba: string[]; mas: string[] },
   essentials: EssentialEntry[],
   reservations: Reservation[],
+  /** (10S4) Los sitios con entrada del destino (las claves de `entradasPorSitio`): entran en el bloque en cuanto están en la ruta aunque no estén en `orden`. */
+  sitiosConEntrada: string[] = [],
 ): { enRuta: BloqueEntrada[]; masEntradas: BloqueEntrada[] } {
   const stops = route.days.flatMap((day) => day.stops.filter((stop) => !stop.passThrough).map((stop) => ({ day, stop })))
   const freeTour = stops.find(({ stop }) => stop.isFreeTour) ?? null
-  const build = (name: string): BloqueEntrada => {
+  const build = (name: string): BloqueEntrada[] => {
     // (Ruta a mano, Tanda 6y2: el Free Tour se reconoce por su nombre aunque todavía no esté en un día, para poder añadirlo como una reserva. En una ruta nuestra, solo si va en ella.)
     const isFreeTour = (Boolean(freeTour) && name === freeTour!.stop.name) || (isManualRoute(route) && /^free tour\b/i.test(name))
     const group = essentials.find((entry) => entry.name === name)
     const placeNames = isFreeTour ? [name] : (group?.places ?? [name])
-    // Por dentro: una parada que va por fuera («Castillo de Sant'Angelo», solo mirarlo) no lleva entrada.
-    const visitada = stops.find(({ stop }) => placeNames.includes(stop.name) && !stop.isFreeTour && stop.visitMode !== 'fuera') ?? null
     const reservation = reservations.find((item) => item.kind === 'entrada' && (isFreeTour ? item.refId === 'Free Tour' : item.refId === name || item.placeNames.some((place) => placeNames.includes(place)))) ?? null
-    const inRoute = isFreeTour ? Boolean(freeTour) : visitada != null
-    const stopDay = (isFreeTour ? freeTour?.day : visitada?.day) ?? null
-    return { name, placeNames, isFreeTour, day: (reservation && dayOfReservation(route, reservation)) ?? stopDay, reservation, inRoute }
+    // Por dentro: una parada que va por fuera («Castillo de Sant'Angelo», solo mirarlo) no lleva entrada.
+    const visitadas = isFreeTour ? (freeTour ? [freeTour] : []) : stops.filter(({ stop }) => placeNames.includes(stop.name) && !stop.isFreeTour && stop.visitMode !== 'fuera')
+    if (visitadas.length === 0) return [{ name, clave: name, placeNames, isFreeTour, day: (reservation && dayOfReservation(route, reservation)) ?? null, reservation, inRoute: false }]
+    // (10S4) Una entrada por parada: la reserva va a la parada de su día (o a la primera); las demás paradas del mismo sitio, sin reservar.
+    // (Una entrada que cubre varios sitios —Coliseo, Foro y Palatino— es UNA fila; solo un mismo sitio repetido en la ruta da filas nuevas: la primera es la primera parada de la ruta, las demás las repeticiones de un sitio.)
+    const porLugar = placeNames.map((lugar) => visitadas.filter(({ stop }) => stop.name === lugar)).filter((grupo) => grupo.length > 0)
+    const filas = Math.max(1, ...porLugar.map((grupo) => grupo.length))
+    const paradas = Array.from({ length: filas }, (_, i) => (i === 0 ? visitadas[0] : (porLugar.find((grupo) => grupo.length > i) ?? porLugar[0])[i]))
+    const reservaDay = reservation ? dayOfReservation(route, reservation) : null
+    const conReserva = Math.max(0, paradas.findIndex(({ day }) => reservaDay != null && day.id === reservaDay.id))
+    return paradas.map(({ day, stop }, index) => ({
+      name,
+      clave: index === 0 ? name : `${name}#${stop.id}`,
+      placeNames,
+      isFreeTour,
+      day: index === conReserva ? (reservaDay ?? day) : day,
+      reservation: index === conReserva ? reservation : null,
+      inRoute: true,
+    }))
   }
-  const items = [...orden.arriba, ...orden.mas].map(build)
+  // (10S4) La lista ya no es cerrada: cualquier sitio con entrada que esté en la ruta (Museos Capitolinos, Cúpula…) tiene la suya; los que cubre una entrada de `essentials` o son el Free Tour no se repiten.
+  const cubiertos = new Set(essentials.flatMap((entry) => entry.places))
+  const extras = sitiosConEntrada.filter((name) => !orden.arriba.includes(name) && !orden.mas.includes(name) && !cubiertos.has(name) && !/^free tour\b/i.test(name))
+  const items = [...orden.arriba, ...orden.mas, ...extras].flatMap(build)
+  // (10S4) Una entrada guardada que ninguna fila recoge (la escrita a mano en [Añadir otra reserva], o la de un sitio que no es de la lista) sale igual: no se pierde de vista.
+  const recogidas = new Set(items.map((item) => item.reservation?.id).filter(Boolean))
+  for (const r of reservations) {
+    if (r.kind !== 'entrada' || recogidas.has(r.id)) continue
+    items.push({ name: r.name, clave: r.id, placeNames: r.placeNames, isFreeTour: r.refId === 'Free Tour', day: dayOfReservation(route, r), reservation: r, inRoute: false })
+  }
   return { enRuta: items.filter((item) => item.inRoute || item.reservation), masEntradas: items.filter((item) => !item.inRoute && !item.reservation) }
 }
 

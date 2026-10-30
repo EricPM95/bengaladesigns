@@ -36,6 +36,7 @@ import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '.
 import { diaDeHoy, diaQueSeAbreAlEntrar } from '../../lib/diaDeHoy'
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../lib/diaCompleto'
 import { Icono } from '../ui/Icono'
+import { PiezaSegura } from '../PiezaSegura'
 
 interface DayListProps {
   route: Route
@@ -224,6 +225,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         return (
           <SortableDay key={day.id} id={day.id} disabled={soloRecomienda || !isMovableDay(day, index) || isDayPinned(route, reservations, day)}>
             {(dragHandle) => (
+          <PiezaSegura nombre={`día ${day.dayNumber} de DÍAS`}>
           <div
             data-day-id={day.id}
             className={`relative scroll-mt-3 ml-2.5 rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
@@ -370,6 +372,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               />
             )}
           </div>
+          </PiezaSegura>
             )}
           </SortableDay>
         )

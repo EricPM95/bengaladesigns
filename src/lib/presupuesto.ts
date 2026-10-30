@@ -108,7 +108,7 @@ export interface EntradaPresupuesto {
   esimPrecios: Record<string, Importe>
   moneda: string
   cambio: Cambio | null
-  /** Lo de pago (los billetes de llegada y vuelta) solo cuenta con la versión de pago. */
+  /** (10S4) Ya no condiciona los billetes: el precio del vuelo, tren, autobús y barco suma siempre, con pase y sin él. Se deja por compatibilidad. */
   pago: boolean
   /** Viaje compartido (Tanda 10N, apartado 9): los Extras salen de los gastos compartidos que veo (no de la ruta). `extrasDeLaRutaMios`: los de la ruta (anteriores a compartir) son del administrador: «solo para ti». */
   compartido?: { gastos: GastoCompartido[]; extrasDeLaRutaMios: boolean; reparto?: RepartoDelViaje }
@@ -155,8 +155,8 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
   const ciudad = route.days[0]?.city ?? route.destination
   const suyo = rep?.loSuyo ?? null
   const transporte = sinNulos([
-    entrada.pago ? delVuelo('llegada', linea('llegada', `Ida a ${ciudad}`, leerImporte(route.arrivalPrecio), { tipo: 'llegada' })) : null,
-    entrada.pago ? delVuelo('vuelta', linea('vuelta', `Vuelta a ${route.origin}`, leerImporte(route.departurePrecio), { tipo: 'vuelta' })) : null,
+    delVuelo('llegada', linea('llegada', `Ida a ${ciudad}`, leerImporte(route.arrivalPrecio), { tipo: 'llegada' })),
+    delVuelo('vuelta', linea('vuelta', `Vuelta a ${route.origin}`, leerImporte(route.departurePrecio), { tipo: 'vuelta' })),
     // (Tanda 10N6 0a-8) Su vuelo y su alojamiento, si tiene los suyos: solo suyos (candado), nunca del grupo.
     ...(rep && suyo?.vuelo?.ida?.precio ? [mio(linea('mi-ida', 'Tu vuelo de ida', suyo.vuelo.ida.precio, { tipo: 'extra', id: 'mi-ida' })!, rep.yoId ? [rep.yoId] : [])] : []),
     ...(rep && suyo?.vuelo?.vuelta?.precio ? [mio(linea('mi-vuelta', 'Tu vuelo de vuelta', suyo.vuelo.vuelta.precio, { tipo: 'extra', id: 'mi-vuelta' })!, rep.yoId ? [rep.yoId] : [])] : []),

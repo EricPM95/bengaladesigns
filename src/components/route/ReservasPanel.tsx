@@ -22,6 +22,7 @@ import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
 import { ExcursionesReservas } from './reservas/ExcursionesReservas'
 import { UtilParaElViaje } from './reservas/UtilParaElViaje'
 import { Icono } from '../ui/Icono'
+import { PiezaSegura } from '../PiezaSegura'
 import { diasDelViaje, textoDeDuracion } from '../../lib/duracionViaje'
 import { useEntradasDelGrupo, useReservasParaMi } from '../../hooks/useEntradasDelGrupo'
 import { ZonaGris } from './reservas/ZonaGris'
@@ -112,7 +113,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   const cambioDeVuelo: EnCambioDeVuelo = (cambio) => (onCambioDeVuelo ?? ((c) => void rehacerPorCambioDeVuelo(c)))(cambio)
 
   // El resumen de arriba, dentro de la tarjeta (gratis y de pago): dos o tres fichas.
-  const { enRuta: entradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
+  const { enRuta: entradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations, Object.keys(info.entradasPorSitio ?? {}))
   const legs = legsOf(route, arrivalInfo)
   // (Gratis: «x de 2», Alojamiento · Entradas, y el alojamiento cuenta con el que puso el viajero; de pago: «x de 3», con Llegada y vuelta, y el alojamiento cuenta con la zona elegida.)
   const primerTramo = segments.find((segment) => segment.nights > 0)
@@ -129,6 +130,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   const conSuyo = unDestino && grupo.esInvitado && grupo.compartido
   // (Tanda 10N5 §6c) Quien no es el administrador pone SU vuelo y SU alojamiento; el administrador, en un viaje compartido, ve a quién cubren los suyos.
   const llegada = unDestino && !conSuyo && (
+    <PiezaSegura nombre="RESERVAS: Llegada y vuelta">
     <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
       <LlegadaYVuelta
         route={route}
@@ -142,6 +144,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
         onFechas={abrirFechas}
       />
     </ZonaGris>
+    </PiezaSegura>
   )
 
   return (
@@ -169,26 +172,36 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
         <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-10 pt-2 md:px-8">
           <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5 md:max-w-[1120px]">
             {/* Arriba del todo (Tanda 6z6b): la tarjeta oscura con SOLO la cuenta atrás (después del viaje no sale) y, aparte y debajo, la clara con lo que falta por reservar (solo con un destino). */}
-            <TarjetaCuentaAtras route={route} onPonFechas={abrirFechas} />
-            {unDestino && !viajeAcabado && <ResumenViaje fichas={fichas} onFicha={(bloque) => pedir(bloque)} />}
+            <PiezaSegura nombre="RESERVAS: cuenta atrás">
+              <TarjetaCuentaAtras route={route} onPonFechas={abrirFechas} />
+            </PiezaSegura>
+            {unDestino && !viajeAcabado && (
+              <PiezaSegura nombre="RESERVAS: resumen del viaje">
+                <ResumenViaje fichas={fichas} onFicha={(bloque) => pedir(bloque)} />
+              </PiezaSegura>
+            )}
 
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               <div className="flex min-w-0 flex-col gap-3.5">
                 {llegada}
                 {conSuyo ? (
-                  <LoDeCadaUnoParaElInvitado route={route} info={info} arrivalInfo={arrivalInfo} gente={grupo.gente} yoId={grupo.yoId} />
+                  <PiezaSegura nombre="RESERVAS: lo de cada uno">
+                    <LoDeCadaUnoParaElInvitado route={route} info={info} arrivalInfo={arrivalInfo} gente={grupo.gente} yoId={grupo.yoId} />
+                  </PiezaSegura>
                 ) : unDestino ? (
-                  <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
-                    <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} onCambioDeVuelo={cambioDeVuelo} />
-                  </ZonaGris>
+                  <PiezaSegura nombre="RESERVAS: Alojamiento">
+                    <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
+                      <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} onCambioDeVuelo={cambioDeVuelo} />
+                    </ZonaGris>
+                  </PiezaSegura>
                 ) : (
                   <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin} className="flex flex-col gap-2.5">
                     <span className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
                       Destinos
                     </span>
                     {segments.map((segment, index) => (
+                      <PiezaSegura key={segment.id} nombre="RESERVAS: destino">
                       <DestinationReservasAccordion
-                        key={segment.id}
                         route={route}
                         segment={segment}
                         isFirstSegment={index === 0}
@@ -196,23 +209,30 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
                         expanded={openCity === segment.id}
                         onToggle={() => setOpenCity((current) => (current === segment.id ? null : segment.id))}
                       />
+                      </PiezaSegura>
                     ))}
                   </ZonaGris>
                 )}
               </div>
               <div className="flex min-w-0 flex-col gap-3.5">
-                <EntradasYFreeTour route={route} info={info} abierto={Boolean(abiertos.entradas)} onToggle={() => alternar('entradas')} />
+                <PiezaSegura nombre="RESERVAS: Entradas y Free Tour">
+                  <EntradasYFreeTour route={route} info={info} abierto={Boolean(abiertos.entradas)} onToggle={() => alternar('entradas')} />
+                </PiezaSegura>
               </div>
             </div>
 
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               {hayExcursiones && (
                 <div className="flex min-w-0 flex-col gap-2.5" data-blk="excursiones">
-                  <ExcursionesReservas route={route} info={info} />
+                  <PiezaSegura nombre="RESERVAS: Excursiones">
+                    <ExcursionesReservas route={route} info={info} />
+                  </PiezaSegura>
                 </div>
               )}
               <div className={hayExcursiones ? 'contents' : 'md:col-span-2'}>
-                <UtilParaElViaje route={route} pago={pago} />
+                <PiezaSegura nombre="RESERVAS: Útil para el viaje">
+                  <UtilParaElViaje route={route} pago={pago} />
+                </PiezaSegura>
                 {/* (Tanda 10N7) El coche del administrador también dice «¿Para quién has reservado el coche?» (cuenta conjunta: «Para los dos» / «Solo para mí»). */}
                 {grupo.esAdmin && grupo.compartido && <QuienVaEnLoDelAdmin route={route} gente={grupo.gente} que="coche" hecho={Boolean(rentalVehicleBooking)} claves={['coche']} adminId={adminId} />}
               </div>

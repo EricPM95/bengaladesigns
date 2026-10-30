@@ -231,8 +231,9 @@ const SITIOS = [
   ['alojamiento', (st) => st.setAccommodationHotel('d1', { name: 'Hotel Artemide', precio: eur(420) }), (st) => st.setAccommodationHotel('d1', null), true],
   ['entrada', (st) => st.addReservation(reserva('r1', 'entrada', 'Panteon', 'Panteón', eur(54))), (st) => st.removeReservation('r1'), true],
   ['excursión', (st) => st.addReservation(reserva('r2', 'excursion', 'pompeya', 'Excursión a Pompeya', eur(90))), (st) => st.removeReservation('r2'), true],
-  ['vuelo (hoja de la llegada)', (st) => { st.setArrivalFlightTime('11:15'); st.setLegPrecio('arrival', eur(180)); st.setLegCodigo('arrival', 'IB 3214') }, (st) => st.removeFlightLeg('arrival'), 'pago'],
-  ['vuelta (hoja de la vuelta)', (st) => { st.setDepartureFlightTime('18:05'); st.setLegPrecio('departure', eur(150)); st.setLegCodigo('departure', 'IB 3215') }, (st) => st.removeFlightLeg('departure'), 'pago'],
+  // (10S4, antes → ahora → decisión de Eric, 30-oct) el precio del vuelo, hoy gratis de poner, sumaba solo con pase (pastilla solo «completa»); ahora suma siempre, con pase y sin él.
+  ['vuelo (hoja de la llegada)', (st) => { st.setArrivalFlightTime('11:15'); st.setLegPrecio('arrival', eur(180)); st.setLegCodigo('arrival', 'IB 3214') }, (st) => st.removeFlightLeg('arrival'), true],
+  ['vuelta (hoja de la vuelta)', (st) => { st.setDepartureFlightTime('18:05'); st.setLegPrecio('departure', eur(150)); st.setLegCodigo('departure', 'IB 3215') }, (st) => st.removeFlightLeg('departure'), true],
   ['tren o autobús (ficha de transporte)', (st) => st.setTransportBooking('d1', { operator: 'Tren a Florencia', dateTime: '', precio: eur(40), locator: '', codigo: 'AB 1' }), (st) => st.setTransportBooking('d1', null), true],
   ['seguro (Útil para el viaje)', (st) => st.setInsuranceBooking({ provider: 'Seguro de viaje', startDate: '', endDate: '', precio: eur(30) }), (st) => st.setInsuranceBooking(null), true],
   ['eSIM (Útil para el viaje)', (st) => { st.setEsimSelection('it', 'booked'); st.setEsimPrecio('it', eur(9.99)); st.setDondeComprado('esim-it', 'Mi tienda') }, (st) => { st.setEsimSelection('it', null); st.setEsimPrecio('it', null) }, true],

@@ -102,7 +102,7 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
           <button
             type="button"
             onClick={() => setMapsSheetOpen(true)}
-            className="ml-1 text-[12.5px] font-medium text-accent underline underline-offset-[3px] hover:text-accent-hover"
+            className="zona-toque ml-1 text-[12.5px] font-medium text-accent underline underline-offset-[3px] hover:text-accent-hover"
           >
             Rutas
           </button>
@@ -116,7 +116,7 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
           <button
             type="button"
             onClick={() => setModeSheetOpen(true)}
-            className="flex flex-col items-start gap-0.5 text-text/60 hover:text-text"
+            className="zona-toque zt-sin-x flex flex-col items-start gap-0.5 text-text/60 hover:text-text"
           >
             <span className="flex items-center gap-1.5">
               <TransportModeIcon mode={selectedOption.mode} className="h-[15px] w-[15px] shrink-0" />
@@ -132,7 +132,7 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
           <button
             type="button"
             onClick={() => setMapsSheetOpen(true)}
-            className="ml-1 text-[12.5px] font-medium text-accent underline underline-offset-[3px] hover:text-accent-hover"
+            className="zona-toque ml-1 text-[12.5px] font-medium text-accent underline underline-offset-[3px] hover:text-accent-hover"
           >
             Rutas
           </button>

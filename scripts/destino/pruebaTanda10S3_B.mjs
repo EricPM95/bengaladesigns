@@ -25,7 +25,9 @@ const nombreDeNoche = (n) => /\(noche\)$|\sde noche$/i.test(n)
 console.log('1. El servidor: el Castillo, de día con todos sus nombres de día; de noche solo con el de la nocturna')
 for (const n of ["Castillo de Sant'Angelo", "Castillo de Sant'Angelo (por fuera)", "Castillo de Sant'Angelo (por dentro)"]) {
   const r = await foto(n)
-  debe(archivo(r) === 'dia_castillo_sant_angelo_fuera.jpg', 'dia', `«${n}» → foto de día (${archivo(r) || r.photo_source})`)
+  // (10S3b: antes → «por dentro» caía a la foto de fuera → ahora tiene la suya, de día, apuntada en la tabla → decisión de Eric, 10S3 «Antes de cerrar»: la foto de día del Castillo por dentro, nunca la de noche.)
+  const esperada = /por dentro/.test(n) ? 'dia_castillo_sant_angelo_dentro.jpg' : 'dia_castillo_sant_angelo_fuera.jpg'
+  debe(archivo(r) === esperada, 'dia', `«${n}» → foto de día (${archivo(r) || r.photo_source}; esperada ${esperada})`)
 }
 const pool = await fetch(`${API}/api/pool-photos`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination: 'Roma', names: ["Castillo de Sant'Angelo", "Castillo de Sant'Angelo (por fuera)", 'Puente Sant\'Angelo'] }) }).then((r) => r.json()).catch(() => ({}))
 for (const n of ["Castillo de Sant'Angelo", "Castillo de Sant'Angelo (por fuera)", "Puente Sant'Angelo"]) {

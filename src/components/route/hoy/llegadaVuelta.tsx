@@ -9,7 +9,7 @@ import { buildGoogleMapsUrlToPlaceTransit } from '../../../lib/mapsLinks'
 import { pagoActivo } from '../../../lib/pago'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
-import { BilleteDeVuelo } from '../dayDetail/BilleteDeVuelo'
+import { TarjetaLlegadaDias } from '../dayDetail/TarjetaLlegadaDias'
 import { ArrivalReturnSheet } from '../dayDetail/ArrivalReturnSheet'
 import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojamiento'
 import { Icono } from '../../ui/Icono'
@@ -30,6 +30,9 @@ export interface MitadDeHoy {
   billete: DatosBillete | null
   /** La hora del viajero (la de Roma). Sin ella no hay billete ni tarjeta. */
   hora: string | null
+  /** (10S3b) Para la tarjeta de la llegada, la misma que en DÍAS: la ciudad de salida y el nombre del destino. */
+  origen: string
+  destino: string
 }
 
 export interface FichasDeHoy {
@@ -54,8 +57,8 @@ export function useFichasDeHoy(route: Route, day: DayPlan, dateIso: string | nul
   const horaVuelta = route.departureFlightTime || null
   const puntoLlegada = puntoDeLaMitad(medioLlegada, route.arrivalPointId, Boolean(horaLlegada)).point
   const puntoVuelta = puntoDeLaMitad(medioVuelta, route.departurePointId, Boolean(horaVuelta)).point
-  const llegada: MitadDeHoy = { mode: modes.arrival, point: puntoLlegada, hora: horaLlegada, billete: billeteDe({ route, kind: 'llegada', mode: modes.arrival, point: puntoLlegada }) }
-  const vuelta: MitadDeHoy = { mode: modes.departure, point: puntoVuelta, hora: horaVuelta, billete: billeteDe({ route, kind: 'vuelta', mode: modes.departure, point: puntoVuelta }) }
+  const llegada: MitadDeHoy = { mode: modes.arrival, point: puntoLlegada, hora: horaLlegada, origen: route.origin ?? '', destino: info.ciudad || route.destination || day.city, billete: billeteDe({ route, kind: 'llegada', mode: modes.arrival, point: puntoLlegada }) }
+  const vuelta: MitadDeHoy = { mode: modes.departure, point: puntoVuelta, hora: horaVuelta, origen: route.origin ?? '', destino: info.ciudad || route.destination || day.city, billete: billeteDe({ route, kind: 'vuelta', mode: modes.departure, point: puntoVuelta }) }
   const abrir = (cual: 'llegada' | 'vuelta') => {
     if (cual === 'vuelta') marcarVueltaVista()
     setAbierta(cual)
@@ -128,7 +131,7 @@ export function TarjetaLlegadaHoy({ route, mitad, onAbrir }: { route: Route; mit
       <span className="pl-1" style={{ font: "400 26px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>
         {tituloDeLlegada(mitad.point)}
       </span>
-      <BilleteDeVuelo billete={mitad.billete} onOpen={onAbrir} />
+      <TarjetaLlegadaDias billete={mitad.billete} point={mitad.point} origen={mitad.origen} destino={mitad.destino} onOpen={onAbrir} />
       {hayAlojamiento && <BotonAlojamientoHoy route={route} dentro />}
     </CajaBlanca>
   )

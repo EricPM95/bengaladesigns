@@ -15,6 +15,7 @@ import { useUnirseUi } from '../../store/useUnirseUi'
 import { botonChampan } from '../../lib/marcaBoton'
 import { cityCode, countryOf } from './cityCode'
 import { aPantalla, cargarTierraDelMapa, curvaEntre, encuadrar, proyectar, type Camara } from './mapaMundo'
+import { buscar } from '../../lib/busqueda'
 
 /**
  * LA PRIMERA PANTALLA (Tanda 10, `Piezas/Primera Pantalla` de Design, estados A a G): el mapa del mundo con los pines de NUESTROS destinos (solo los curados de verdad, de los datos),
@@ -264,7 +265,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
 
   // --- el destino: solo los nuestros ---
   const q = sinTildes(dq)
-  const coinciden = useMemo(() => lista.filter((d) => !q || sinTildes(d.nombre).includes(q)), [lista, q])
+  const coinciden = useMemo(() => (q ? buscar(lista, dq, (d) => [d.nombre], { max: 50, minimoDeLetras: 1 }) : lista), [lista, q, dq])
   const noHay = foco === 'd' && q.length > 0 && destinos !== null && coinciden.length === 0
   const elegirDestino = (d: DestinoCurado) => {
     onDestination(lugarDeDestino(d))

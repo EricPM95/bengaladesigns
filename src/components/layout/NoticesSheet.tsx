@@ -4,6 +4,7 @@ import type { NombreIcono } from '../../lib/iconos'
 import { useNoticesStore } from '../../store/useNoticesStore'
 import type { AppNotice } from '../../hooks/useAppNotices'
 import { Icono } from '../ui/Icono'
+import { PiezaSegura } from '../PiezaSegura'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { claveDeAviso, ListaDeAvisos } from '../avisos/ListaDeAvisos'
@@ -273,9 +274,17 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
             </div>
           )}
           {cuentaNuevos.length > 0 && <ListaDeAvisos avisos={cuentaNuevos} resaltado={resaltado} onTocar={(aviso) => void abrirAviso(aviso)} alLeer={(aviso) => void marcarLeidosDeLaCuenta([aviso.id])} fotoDe={fotoDeLaPersona} seleccion={seleccion} />}
-          {appNuevos.map(fila)}
+          {appNuevos.map((i) => (
+            <PiezaSegura key={i.id} nombre="aviso de la campana (app)">
+              {fila(i)}
+            </PiezaSegura>
+          ))}
           {cuentaLeidos.length > 0 && <ListaDeAvisos avisos={cuentaLeidos} resaltado={resaltado} onTocar={(aviso) => void abrirAviso(aviso)} alLeer={(aviso) => void marcarLeidosDeLaCuenta([aviso.id])} fotoDe={fotoDeLaPersona} seleccion={seleccion} />}
-          {appLeidos.map(fila)}
+          {appLeidos.map((i) => (
+            <PiezaSegura key={i.id} nombre="aviso de la campana (app)">
+              {fila(i)}
+            </PiezaSegura>
+          ))}
         </div>
 
         {/* Las opciones de lo elegido: una hoja pequeña desde abajo, con el formato de «Hojas Opciones» de Design; no tapa la lista (la lista deja su hueco abajo). */}

@@ -121,7 +121,7 @@ const hotel = { name: 'Hotel de prueba' }
 async function reservasListas(route, version) {
   // Todo lo que sale como «Falta» en los bloques, resuelto.
   const reservas = []
-  const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [])
+  const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
   enRuta.forEach((item, i) => reservas.push({ id: `rx${i}`, kind: 'entrada', refId: item.isFreeTour ? 'Free Tour' : item.name, name: item.name, placeNames: item.placeNames, dateIso: route.answers.dateRange ? INICIO : null, dayNumber: route.answers.dateRange ? null : 1, time: '10:00' }))
   const hoteles = { d1: hotel }
   const listo = { ...route }
@@ -143,7 +143,7 @@ for (const [clave, route] of Object.entries(rutas)) {
       const nombre = `RESERVAS · ${clave} fechas · ${version} · ${m.clave}`
       const html = pintaHtml(ReservasPanel, { route, onClose() {} }, route, { version, hoy: m.hoy, mode: 'bookings' })
       const texto = aTexto(html)
-      const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [])
+      const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
       const total = 3 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis)
       if (m.clave === 'despues') {
         debe(!/data-blk="resumen"/.test(html) && !/Antes del viaje|Durante el viaje|empieza en|Estás en|\d de \d listo/.test(texto), '2 tarjeta', `${nombre}: después del viaje sale la tarjeta (${plano(texto).slice(0, 200)})`)
