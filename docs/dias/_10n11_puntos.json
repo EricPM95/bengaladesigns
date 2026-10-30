@@ -1,31 +1,230 @@
 [
-{"apartado":"0 · Antes de empezar","punto":"Prompt guardado en docs/dias/PROMPT_TANDA10N11.md e incluido en el commit","estado":"hecho","nota":"","donde":"No es de móvil."},
-{"apartado":"0 · Antes de empezar","punto":"Reglas de la app: las nuevas de esta tanda, añadidas a docs/REGLAS_DE_LA_APP.md","estado":"hecho","nota":"Candado siempre igual, con el pase sin frases del pase, y el alojamiento (apartado 7).","donde":"No es de móvil."},
-{"apartado":"0 · Antes de empezar","punto":"Design al día desde RETOQUES.zip (Vuelo Reservas, Alojamiento Dias, Pase Lista, Pase Incluye, Pase Estilo, Pase Escena 4b, Recuerdos Ficha, Viaje Compartido)","estado":"hecho","nota":"Solo lo que cambia.","donde":"No es de móvil."},
-{"apartado":"0 · Antes de empezar","punto":"Cómo trabajar: hasta 4 agentes, un servidor, hasta 2 Chrome, nota de estado cada 30 min, sin apagar el PC hasta el final","estado":"hecho","nota":"Al final, con tu permiso del 29-oct, se apaga el PC.","donde":"No es de móvil."},
-{"apartado":"0 · Antes de empezar","punto":"Antes de la 10N11: no apagar el PC (CLAUDE.md), comprobar la 0065 con dos cuentas reales, PDF de Civitatis fuera de git","estado":"hecho","nota":"La comprobación dio 10 comprobaciones, 0 fallos, y los 8 casos llegan en menos de 1 s (tabla en el informe). El PDF está en el .gitignore.","donde":"No es de móvil."},
-{"apartado":"1 · Reglas nuevas","punto":"El candado del pase, siempre igual: dorado sobre un círculo azul oscuro, también en las líneas pequeñas, en todas las pantallas del pase","estado":"medias","nota":"Hecho en EXPLORAR (Baños, Fuentes), Cerca de ti, Escuchar historia, alojamiento y vuelo. Se dejan sueltos los candados que van dentro de un botón ya azul o dorado (pastilla «Pase Roma» de RUTA, botón del día de vuelta sin hora, [Ver] de la caja azul). Falta la pastilla «Pase Roma» con candado redondo de la tarjeta de Mis viajes (Viaje Compartido), que no existe hoy en la app.","donde":"EXPLORAR > Baños y Fuentes, Cerca de ti, ficha de un sitio sin pase (cuenta sin pase).","captura":"10n11_candado_explorar.jpg","captura_design":"10n11_candado_design_pase_estilo.jpg"},
-{"apartado":"1 · Reglas nuevas","punto":"Con el pase, sin frases del pase","estado":"hecho","nota":"Comprobado con pase en RUTA, DÍAS (días 1 y 2), RESERVAS y EXPLORAR: ni líneas, ni candados, ni «Con el Pase Roma,…».","donde":"Cuenta con pase: RESERVAS, DÍAS, EXPLORAR.","captura":"10n11_candado_con_pase_explorar.jpg"},
-{"apartado":"2 · El alojamiento","punto":"Gratis: nombre del hotel, ¿Para quién?, ¿Cuánto ha costado?, ¿Quién lo ha pagado? Con pase, además zona y dirección","estado":"hecho","nota":"","donde":"RESERVAS > Alojamiento > Añadir mi alojamiento (cuenta sin pase y con pase).","captura":"10n11_aloj_05_hoja_sin_pase.jpg","captura_design":"10n11_aloj_05_hoja_sin_pase_design.jpg"},
-{"apartado":"2 · El alojamiento","punto":"La hoja «Tu alojamiento» en el orden pedido: nombre + [Buscar alojamiento], zona y dirección, ¿Para quién?, precio, ¿Quién lo ha pagado? (todas las personas marcadas), la línea y [Guardar el alojamiento]","estado":"hecho","nota":"[Buscar alojamiento] cierra la hoja y abre el mapa; no guarda lo escrito en la hoja.","donde":"RESERVAS > Alojamiento (cuenta de Eric).","captura":"10n11_aloj_01_hoja_con_pase_zona_elegida.jpg","captura_design":"10n11_aloj_01_hoja_con_pase_zona_elegida_design.jpg"},
-{"apartado":"2 · El alojamiento","punto":"Sin pase: bloque pequeño gris con candado («¿Dónde te alojas?», «Dirección del hotel») y la línea de Design; al tocarlo, el pase","estado":"medias","nota":"Al tocarlo abre la lista del pase (lo que hace abrirPase() desde la 10N10), no el aviso pequeño de antes.","donde":"RESERVAS > Alojamiento (cuenta sin pase).","captura":"10n11_aloj_05_hoja_sin_pase.jpg","captura_design":"10n11_aloj_05_hoja_sin_pase_design.jpg"},
-{"apartado":"2 · El alojamiento","punto":"Con pase: la primera vez la lista de zonas; una vez elegida, un desplegable cerrado «TU ZONA · Prati ✓» que al tocarlo abre las demás; debajo Dirección y [Cómo llegar a tu alojamiento]","estado":"hecho","nota":"Al abrirse salen todas las zonas del destino (7 con «Aún no lo sé»); Design dibuja 5.","donde":"RESERVAS > Alojamiento (cuenta con pase).","captura":"10n11_aloj_04_hoja_desplegable_abierto.jpg","captura_design":"10n11_aloj_04_hoja_desplegable_abierto_design.jpg"},
-{"apartado":"2 · El alojamiento","punto":"Fuera la caja «Tu primer día, cerca de donde duermes» y la de «¿En qué zona te alojas?», en la hoja y en la tarjeta","estado":"hecho","nota":"Se quitó también la casilla «Dirección de tu alojamiento» de la tarjeta (ahora se edita solo en la hoja).","donde":"RESERVAS > Alojamiento."},
-{"apartado":"2 · El alojamiento","punto":"No se pierde nada de lo que hay hoy en el bloque del alojamiento","estado":"hecho","nota":"Siguen [Eliminar], [Cambiar], noches y precio.","donde":"RESERVAS > Alojamiento ya guardado."},
-{"apartado":"3 · Cómo llegar a tu alojamiento","punto":"RESERVAS, tarjeta del alojamiento (09 y 09p), con y sin pase","estado":"hecho","nota":"","donde":"RESERVAS > Alojamiento guardado.","captura":"10n11_aloj_02_tarjeta_con_pase.jpg","captura_design":"10n11_aloj_02_tarjeta_con_pase_design.jpg"},
-{"apartado":"3 · Cómo llegar a tu alojamiento","punto":"DÍAS, dentro del día 1 (01, 02 y 02b): sin alojamiento, con pase y sin pase; [Ir] sin pase abre el pase","estado":"hecho","nota":"Con varios destinos, la zona y la dirección son del viaje entero y solo salen en la primera estancia.","donde":"DÍAS > día 1 (sin alojamiento, con pase y sin pase).","captura":"10n11_alojamiento_dias_02.jpg"},
-{"apartado":"3 · Cómo llegar a tu alojamiento","punto":"HOY: [Cómo llegar a tu alojamiento] al empezar y al acabar el día; sin pase no sale","estado":"medias","nota":"Probado en navegador con un viaje en curso; falta verlo en un día real. En el día de vuelta, al empezar, no sale.","donde":"HOY (cuenta con pase).","captura":"10n11_alojamiento_hoy_con_pase.jpg"},
-{"apartado":"3 · Cómo llegar a tu alojamiento","punto":"[Cómo llegar] abre el camino desde donde está el viajero hasta la dirección del hotel","estado":"hecho","nota":"El mismo enlace de siempre (Google Maps en transporte público).","donde":"Con pase y dirección guardada."},
-{"apartado":"4 · El vuelo","punto":"DÍAS, tarjeta del vuelo: «Aterrizas a las 15:40» y «Fiumicino · Cómo llegar desde el aeropuerto»; fuera «libre hacia las 17:40»","estado":"hecho","nota":"«Libre hacia» ya no existía desde la 6t. La línea del aeropuerto puede ocupar dos líneas en 390 px.","donde":"DÍAS > día 1 con la hora del vuelo guardada.","captura":"10n11_alojamiento_dias_03.jpg"},
-{"apartado":"4 · El vuelo","punto":"Hoja del vuelo: sin pase la línea gris con el candado «Con el Pase Roma, adaptamos tu primer y tu último día a tus vuelos.»; con pase, sin línea","estado":"hecho","nota":"Sale en la hoja del administrador.","donde":"RESERVAS > Llegada y vuelta (cuenta sin pase y con pase).","captura":"10n11_aloj_07_vuelo_sin_pase.jpg","captura_design":"10n11_aloj_07_vuelo_sin_pase_design.jpg"},
-{"apartado":"4 · El vuelo","punto":"«¿Para quién es este vuelo?» como en Design","estado":"hecho","nota":"","donde":"RESERVAS > Llegada y vuelta."},
-{"apartado":"4 · El vuelo","punto":"«Tú» con su inicial («E»), no con una «T», en todas las tarjetas","estado":"medias","nota":"En la prueba sale «E» (nombre «Eric»). No se ha encontrado de dónde saldría una «T»: las iniciales salen del nombre o del email. Si la ves con «T», dime con qué cuenta.","donde":"RESERVAS > «En este vuelo» y «En este alojamiento»."},
-{"apartado":"5 · Lista del pase y HOY sin pase","punto":"La lista del pase como Design (Pase Lista 1), con sus dibujos, textos, precios y [Elegir mi pase]; todo lo que abría la película abre esta lista","estado":"hecho","nota":"Componente propio generado de la pieza de Design (6 secciones, 19 puntos). [Elegir mi pase] queda al final de la lista, como Design, sin barra fija.","donde":"RUTA > pastilla «Pase Roma» (cuenta sin pase).","captura":"10n11_lista_pase_1.jpg","captura_design":"10n11_lista_pase_1_design.jpg"},
-{"apartado":"5 · Lista del pase y HOY sin pase","punto":"Cada punto de la lista existe de verdad en la app (data/pase/incluye.json)","estado":"hecho","nota":"Existen todos; ninguno se quitó. «Tu ruta empieza donde duermes … con cómo llegar» depende del trabajo de esta tanda.","donde":"No es de móvil."},
-{"apartado":"5 · Lista del pase y HOY sin pase","punto":"«¿Cuántos sois?» y la compra siguen funcionando; con pase, «✓ Tu Pase de Roma está activo»","estado":"hecho","nota":"Quedan «Pase Roma» (cabecera, caja, botón) y «Pase de Roma» (el ✓ activo).","donde":"Lista del pase > [Elegir mi pase] (sin pase y con pase).","captura":"10n11_lista_pase_3_cuantos.jpg"},
-{"apartado":"5 · Lista del pase y HOY sin pase","punto":"HOY sin pase (2 y 2b): «HOY, tu guía del día», los puntos con sus dibujos y la caja según el día de prueba (sin usar / ya usado) y [Ver el Pase Roma] que abre la lista","estado":"medias","nota":"Sustituye toda la pestaña HOY sin pase: ya no salen la cuenta atrás, «Pon tus fechas», «Tu viaje ha terminado» ni los avisos de la prueba. El ✕ lleva a DÍAS.","donde":"HOY (cuenta sin pase, con el día de prueba sin usar y ya usado).","captura":"10n11_hoy_sin_pase_1_sin_usar.jpg","captura_design":"10n11_hoy_sin_pase_1_sin_usar_design.jpg"},
-{"apartado":"6 · La prueba","punto":"Solo las pruebas de lo que tocas y pruebaJutrip, en 0 fallos","estado":"hecho","nota":"Pasadas 35 pruebas de lo tocado más pruebaJutrip (129/0), todas en 0 fallos (dos cayeron una vez por el navegador de prueba y pasaron sueltas). Detalle en el informe.","donde":"No es de móvil."},
-{"apartado":"6 · La prueba","punto":"Prueba nueva pruebaTanda10N11","estado":"hecho","nota":"116 comprobaciones (a 36, b 15, c 47, g 18), 0 fallos.","donde":"No es de móvil."},
-{"apartado":"6 · La prueba","punto":"Capturas en docs/dias/capturas_jutrip/ y en REPASO_10N11.html, a tamaño de móvil, al lado de las de Design","estado":"medias","nota":"Faltan algunas capturas de Design (DÍAS día 1 y vuelo) y regenerar las dos del alojamiento antes del último pulido.","donde":"Esta página."},
-{"apartado":"7 · El informe","punto":"Apartado «10N11» en INFORME_TANDA10B.md (pruebas, lo que no se pudo hacer como Design, migración) y esta lista al final","estado":"hecho","nota":"No hace falta migración.","donde":"No es de móvil."}
+  {
+    "apartado": "0 · Antes de empezar",
+    "punto": "Prompt guardado en docs/dias/PROMPT_TANDA10N11.md e incluido en el commit",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "No es de móvil."
+  },
+  {
+    "apartado": "0 · Antes de empezar",
+    "punto": "Reglas de la app: las nuevas de esta tanda, añadidas a docs/REGLAS_DE_LA_APP.md",
+    "estado": "hecho",
+    "nota": "Candado siempre igual, con el pase sin frases del pase, y el alojamiento (apartado 7).",
+    "donde": "No es de móvil."
+  },
+  {
+    "apartado": "0 · Antes de empezar",
+    "punto": "Design al día desde RETOQUES.zip (Vuelo Reservas, Alojamiento Dias, Pase Lista, Pase Incluye, Pase Estilo, Pase Escena 4b, Recuerdos Ficha, Viaje Compartido)",
+    "estado": "hecho",
+    "nota": "Solo lo que cambia.",
+    "donde": "No es de móvil."
+  },
+  {
+    "apartado": "0 · Antes de empezar",
+    "punto": "Cómo trabajar: hasta 4 agentes, un servidor, hasta 2 Chrome, nota de estado cada 30 min, sin apagar el PC hasta el final",
+    "estado": "hecho",
+    "nota": "Al final, con tu permiso del 29-oct, se apaga el PC.",
+    "donde": "No es de móvil."
+  },
+  {
+    "apartado": "0 · Antes de empezar",
+    "punto": "Antes de la 10N11: no apagar el PC (CLAUDE.md), comprobar la 0065 con dos cuentas reales, PDF de Civitatis fuera de git",
+    "estado": "hecho",
+    "nota": "La comprobación dio 10 comprobaciones, 0 fallos, y los 8 casos llegan en menos de 1 s (tabla en el informe). El PDF está en el .gitignore.",
+    "donde": "No es de móvil."
+  },
+  {
+    "apartado": "1 · Reglas nuevas",
+    "punto": "El candado del pase, siempre igual: dorado sobre un círculo azul oscuro, también en las líneas pequeñas, en todas las pantallas del pase",
+    "estado": "medias",
+    "nota": "Hecho en EXPLORAR (Baños, Fuentes), Cerca de ti, Escuchar historia, alojamiento y vuelo. Se dejan sueltos los candados que van dentro de un botón ya azul o dorado (pastilla «Pase Roma» de RUTA, botón del día de vuelta sin hora, [Ver] de la caja azul). Falta la pastilla «Pase Roma» con candado redondo de la tarjeta de Mis viajes (Viaje Compartido), que no existe hoy en la app.",
+    "donde": "EXPLORAR > Baños y Fuentes, Cerca de ti, ficha de un sitio sin pase (cuenta sin pase).",
+    "captura": "10n11_candado_explorar.jpg",
+    "captura_design": "10n11_candado_design_pase_estilo.jpg"
+  },
+  {
+    "apartado": "1 · Reglas nuevas",
+    "punto": "Con el pase, sin frases del pase",
+    "estado": "hecho",
+    "nota": "Comprobado con pase en RUTA, DÍAS (días 1 y 2), RESERVAS y EXPLORAR: ni líneas, ni candados, ni «Con el Pase Roma,…».",
+    "donde": "Cuenta con pase: RESERVAS, DÍAS, EXPLORAR.",
+    "captura": "10n11_candado_con_pase_explorar.jpg"
+  },
+  {
+    "apartado": "2 · El alojamiento",
+    "punto": "Gratis: nombre del hotel, ¿Para quién?, ¿Cuánto ha costado?, ¿Quién lo ha pagado? Con pase, además zona y dirección",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "RESERVAS > Alojamiento > Añadir mi alojamiento (cuenta sin pase y con pase).",
+    "captura": "10n11_aloj_05_hoja_sin_pase.jpg",
+    "captura_design": "10n11_aloj_05_hoja_sin_pase_design.jpg"
+  },
+  {
+    "apartado": "2 · El alojamiento",
+    "punto": "La hoja «Tu alojamiento» en el orden pedido: nombre + [Buscar alojamiento], zona y dirección, ¿Para quién?, precio, ¿Quién lo ha pagado? (todas las personas marcadas), la línea y [Guardar el alojamiento]",
+    "estado": "hecho",
+    "nota": "[Buscar alojamiento] cierra la hoja y abre el mapa; no guarda lo escrito en la hoja.",
+    "donde": "RESERVAS > Alojamiento (cuenta de Eric).",
+    "captura": "10n11_aloj_01_hoja_con_pase_zona_elegida.jpg",
+    "captura_design": "10n11_aloj_01_hoja_con_pase_zona_elegida_design.jpg"
+  },
+  {
+    "apartado": "2 · El alojamiento",
+    "punto": "Sin pase: bloque pequeño gris con candado («¿Dónde te alojas?», «Dirección del hotel») y la línea de Design; al tocarlo, el pase",
+    "estado": "medias",
+    "nota": "Al tocarlo abre la lista del pase (lo que hace abrirPase() desde la 10N10), no el aviso pequeño de antes.",
+    "donde": "RESERVAS > Alojamiento (cuenta sin pase).",
+    "captura": "10n11_aloj_05_hoja_sin_pase.jpg",
+    "captura_design": "10n11_aloj_05_hoja_sin_pase_design.jpg"
+  },
+  {
+    "apartado": "2 · El alojamiento",
+    "punto": "Con pase: la primera vez la lista de zonas; una vez elegida, un desplegable cerrado «TU ZONA · Prati ✓» que al tocarlo abre las demás; debajo Dirección y [Cómo llegar a tu alojamiento]",
+    "estado": "hecho",
+    "nota": "Al abrirse salen todas las zonas del destino (7 con «Aún no lo sé»); Design dibuja 5.",
+    "donde": "RESERVAS > Alojamiento (cuenta con pase).",
+    "captura": "10n11_aloj_04_hoja_desplegable_abierto.jpg",
+    "captura_design": "10n11_aloj_04_hoja_desplegable_abierto_design.jpg"
+  },
+  {
+    "apartado": "2 · El alojamiento",
+    "punto": "Fuera la caja «Tu primer día, cerca de donde duermes» y la de «¿En qué zona te alojas?», en la hoja y en la tarjeta",
+    "estado": "hecho",
+    "nota": "Se quitó también la casilla «Dirección de tu alojamiento» de la tarjeta (ahora se edita solo en la hoja).",
+    "donde": "RESERVAS > Alojamiento."
+  },
+  {
+    "apartado": "2 · El alojamiento",
+    "punto": "No se pierde nada de lo que hay hoy en el bloque del alojamiento",
+    "estado": "hecho",
+    "nota": "Siguen [Eliminar], [Cambiar], noches y precio.",
+    "donde": "RESERVAS > Alojamiento ya guardado."
+  },
+  {
+    "apartado": "3 · Cómo llegar a tu alojamiento",
+    "punto": "RESERVAS, tarjeta del alojamiento (09 y 09p), con y sin pase",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "RESERVAS > Alojamiento guardado.",
+    "captura": "10n11_aloj_02_tarjeta_con_pase.jpg",
+    "captura_design": "10n11_aloj_02_tarjeta_con_pase_design.jpg"
+  },
+  {
+    "apartado": "3 · Cómo llegar a tu alojamiento",
+    "punto": "DÍAS, dentro del día 1 (01, 02 y 02b): sin alojamiento, con pase y sin pase; [Ir] sin pase abre el pase",
+    "estado": "hecho",
+    "nota": "Con varios destinos, la zona y la dirección son del viaje entero y solo salen en la primera estancia.",
+    "donde": "DÍAS > día 1 (sin alojamiento, con pase y sin pase).",
+    "captura": "10n11_alojamiento_dias_02.jpg",
+    "captura_design": "10n11_alojamiento_dias_02_design.jpg"
+  },
+  {
+    "apartado": "3 · Cómo llegar a tu alojamiento",
+    "punto": "HOY: [Cómo llegar a tu alojamiento] al empezar y al acabar el día; sin pase no sale",
+    "estado": "medias",
+    "nota": "Probado en navegador con un viaje en curso; falta verlo en un día real. En el día de vuelta, al empezar, no sale.",
+    "donde": "HOY (cuenta con pase).",
+    "captura": "10n11_alojamiento_hoy_con_pase.jpg"
+  },
+  {
+    "apartado": "3 · Cómo llegar a tu alojamiento",
+    "punto": "[Cómo llegar] abre el camino desde donde está el viajero hasta la dirección del hotel",
+    "estado": "hecho",
+    "nota": "El mismo enlace de siempre (Google Maps en transporte público).",
+    "donde": "Con pase y dirección guardada."
+  },
+  {
+    "apartado": "4 · El vuelo",
+    "punto": "DÍAS, tarjeta del vuelo: «Aterrizas a las 15:40» y «Fiumicino · Cómo llegar desde el aeropuerto»; fuera «libre hacia las 17:40»",
+    "estado": "hecho",
+    "nota": "«Libre hacia» ya no existía desde la 6t. La línea del aeropuerto puede ocupar dos líneas en 390 px.",
+    "donde": "DÍAS > día 1 con la hora del vuelo guardada.",
+    "captura": "10n11_alojamiento_dias_03.jpg",
+    "captura_design": "10n11_alojamiento_dias_03_design.jpg"
+  },
+  {
+    "apartado": "4 · El vuelo",
+    "punto": "Hoja del vuelo: sin pase la línea gris con el candado «Con el Pase Roma, adaptamos tu primer y tu último día a tus vuelos.»; con pase, sin línea",
+    "estado": "hecho",
+    "nota": "Sale en la hoja del administrador.",
+    "donde": "RESERVAS > Llegada y vuelta (cuenta sin pase y con pase).",
+    "captura": "10n11_aloj_07_vuelo_sin_pase.jpg",
+    "captura_design": "10n11_aloj_07_vuelo_sin_pase_design.jpg"
+  },
+  {
+    "apartado": "4 · El vuelo",
+    "punto": "«¿Para quién es este vuelo?» como en Design",
+    "estado": "hecho",
+    "nota": "",
+    "donde": "RESERVAS > Llegada y vuelta."
+  },
+  {
+    "apartado": "4 · El vuelo",
+    "punto": "«Tú» con su inicial («E»), no con una «T», en todas las tarjetas",
+    "estado": "medias",
+    "nota": "En la prueba sale «E» (nombre «Eric»). No se ha encontrado de dónde saldría una «T»: las iniciales salen del nombre o del email. Si la ves con «T», dime con qué cuenta.",
+    "donde": "RESERVAS > «En este vuelo» y «En este alojamiento»."
+  },
+  {
+    "apartado": "5 · Lista del pase y HOY sin pase",
+    "punto": "La lista del pase como Design (Pase Lista 1), con sus dibujos, textos, precios y [Elegir mi pase]; todo lo que abría la película abre esta lista",
+    "estado": "hecho",
+    "nota": "Componente propio generado de la pieza de Design (6 secciones, 19 puntos). [Elegir mi pase] queda al final de la lista, como Design, sin barra fija.",
+    "donde": "RUTA > pastilla «Pase Roma» (cuenta sin pase).",
+    "captura": "10n11_lista_pase_1.jpg",
+    "captura_design": "10n11_lista_pase_1_design.jpg"
+  },
+  {
+    "apartado": "5 · Lista del pase y HOY sin pase",
+    "punto": "Cada punto de la lista existe de verdad en la app (data/pase/incluye.json)",
+    "estado": "hecho",
+    "nota": "Existen todos; ninguno se quitó. «Tu ruta empieza donde duermes … con cómo llegar» depende del trabajo de esta tanda.",
+    "donde": "No es de móvil."
+  },
+  {
+    "apartado": "5 · Lista del pase y HOY sin pase",
+    "punto": "«¿Cuántos sois?» y la compra siguen funcionando; con pase, «✓ Tu Pase de Roma está activo»",
+    "estado": "hecho",
+    "nota": "Quedan «Pase Roma» (cabecera, caja, botón) y «Pase de Roma» (el ✓ activo).",
+    "donde": "Lista del pase > [Elegir mi pase] (sin pase y con pase).",
+    "captura": "10n11_lista_pase_3_cuantos.jpg"
+  },
+  {
+    "apartado": "5 · Lista del pase y HOY sin pase",
+    "punto": "HOY sin pase (2 y 2b): «HOY, tu guía del día», los puntos con sus dibujos y la caja según el día de prueba (sin usar / ya usado) y [Ver el Pase Roma] que abre la lista",
+    "estado": "medias",
+    "nota": "Sustituye toda la pestaña HOY sin pase: ya no salen la cuenta atrás, «Pon tus fechas», «Tu viaje ha terminado» ni los avisos de la prueba. El ✕ lleva a DÍAS.",
+    "donde": "HOY (cuenta sin pase, con el día de prueba sin usar y ya usado).",
+    "captura": "10n11_hoy_sin_pase_1_sin_usar.jpg",
+    "captura_design": "10n11_hoy_sin_pase_1_sin_usar_design.jpg"
+  },
+  {
+    "apartado": "6 · La prueba",
+    "punto": "Solo las pruebas de lo que tocas y pruebaJutrip, en 0 fallos",
+    "estado": "hecho",
+    "nota": "Pasadas 35 pruebas de lo tocado más pruebaJutrip (129/0), todas en 0 fallos (dos cayeron una vez por el navegador de prueba y pasaron sueltas). Detalle en el informe.",
+    "donde": "No es de móvil."
+  },
+  {
+    "apartado": "6 · La prueba",
+    "punto": "Prueba nueva pruebaTanda10N11",
+    "estado": "hecho",
+    "nota": "116 comprobaciones (a 36, b 15, c 47, g 18), 0 fallos.",
+    "donde": "No es de móvil."
+  },
+  {
+    "apartado": "6 · La prueba",
+    "punto": "Capturas en docs/dias/capturas_jutrip/ y en REPASO_10N11.html, a tamaño de móvil, al lado de las de Design",
+    "estado": "medias",
+    "nota": "Faltan algunas capturas de Design (DÍAS día 1 y vuelo) y regenerar las dos del alojamiento antes del último pulido.",
+    "donde": "Esta página."
+  },
+  {
+    "apartado": "7 · El informe",
+    "punto": "Apartado «10N11» en INFORME_TANDA10B.md (pruebas, lo que no se pudo hacer como Design, migración) y esta lista al final",
+    "estado": "hecho",
+    "nota": "No hace falta migración.",
+    "donde": "No es de móvil."
+  }
 ]

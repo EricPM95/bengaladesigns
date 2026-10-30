@@ -45,7 +45,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
             onClick={onClose}
             aria-label="Cerrar"
             title="Cerrar"
-            className="fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
+            className="zona-toque fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
           >
             <Icono nombre="cerrar" size={18} />
           </button>

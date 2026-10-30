@@ -80,7 +80,7 @@ function LineasPlegadas({ lineas }: { lineas: Linea<string>[] }) {
         ) : abiertos.has(i) ? (
           t.lineas.map((l, k) => <LineaDeDia key={`${i}-${k}`} l={l} />)
         ) : (
-          <button
+          <button className="zona-toque"
             key={i}
             type="button"
             data-paradas-recogidas={t.lineas.length}

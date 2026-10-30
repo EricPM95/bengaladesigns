@@ -221,13 +221,13 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 4 }}>
             {seleccionando ? (
-              <button type="button" data-campana-cancelar onClick={salirDeSeleccionar} style={{ height: 36, padding: '0 15px', borderRadius: 999, background: '#1C2230', color: '#FBF3E2', border: 'none', display: 'flex', alignItems: 'center', font: "600 13.5px 'Geist'", cursor: 'pointer' }}>
+              <button className="zona-toque" type="button" data-campana-cancelar onClick={salirDeSeleccionar} style={{ height: 36, padding: '0 15px', borderRadius: 999, background: '#1C2230', color: '#FBF3E2', border: 'none', display: 'flex', alignItems: 'center', font: "600 13.5px 'Geist'", cursor: 'pointer' }}>
                 Cancelar
               </button>
             ) : (
               <>
                 {!nada && (
-                  <button type="button" data-campana-seleccionar onClick={empezarASeleccionar} style={{ height: 36, padding: '0 15px', borderRadius: 999, border: '1px solid rgba(181,138,46,.6)', background: '#FBF3E2', color: '#6E5018', display: 'flex', alignItems: 'center', gap: 6, font: "600 13.5px 'Geist'", cursor: 'pointer' }}>
+                  <button className="zona-toque" type="button" data-campana-seleccionar onClick={empezarASeleccionar} style={{ height: 36, padding: '0 15px', borderRadius: 999, border: '1px solid rgba(181,138,46,.6)', background: '#FBF3E2', color: '#6E5018', display: 'flex', alignItems: 'center', gap: 6, font: "600 13.5px 'Geist'", cursor: 'pointer' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <circle cx="12" cy="12" r="9" />
                       <path d="M8 12.5l3 3 5-6" />
@@ -235,7 +235,7 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
                     Seleccionar
                   </button>
                 )}
-                <button type="button" onClick={cerrar} aria-label="Cerrar" data-campana-cerrar style={{ width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1C2230', cursor: 'pointer' }}>
+                <button className="zona-toque" type="button" onClick={cerrar} aria-label="Cerrar" data-campana-cerrar style={{ width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1C2230', cursor: 'pointer' }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
                     <path d="M6 6l12 12M18 6L6 18" />
                   </svg>

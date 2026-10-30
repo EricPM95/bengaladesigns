@@ -58,10 +58,10 @@ export function SaleCards({ route }: { route: Route }) {
             <div key={sale.id} className="rounded-2xl border border-accent-red/30 bg-accent-red/[.07] p-4">
               <p className="text-[14.5px] leading-snug text-text">Tu reserva de {sale.name} se ha cancelado.</p>
               <div className="mt-3 flex gap-2">
-                <button type="button" onClick={() => quitarConDeshacer(sale.kind === 'excursion' ? 'Excursión quitada del viaje' : 'Entrada quitada del viaje', () => resolveSale(sale.id, 'remove'))} className="h-10 flex-1 rounded-full bg-text text-[14px] font-medium text-bg">
+                <button type="button" onClick={() => quitarConDeshacer(sale.kind === 'excursion' ? 'Excursión quitada del viaje' : 'Entrada quitada del viaje', () => resolveSale(sale.id, 'remove'))} className="zona-toque h-10 flex-1 rounded-full bg-text text-[14px] font-medium text-bg">
                   Quitar del viaje
                 </button>
-                <button type="button" onClick={() => resolveSale(sale.id, 'dismiss')} className="h-10 flex-1 rounded-full border border-text/15 text-[14px] font-medium text-text">
+                <button type="button" onClick={() => resolveSale(sale.id, 'dismiss')} className="zona-toque h-10 flex-1 rounded-full border border-text/15 text-[14px] font-medium text-text">
                   Ahora no
                 </button>
               </div>
@@ -76,11 +76,11 @@ export function SaleCards({ route }: { route: Route }) {
             </p>
             <div className="mt-3 flex gap-2">
               {day && (
-                <button type="button" onClick={() => resolveSale(sale.id, 'accept', excursionFor(sale))} className="h-10 flex-1 rounded-full btn-champan text-[14px] font-medium ">
+                <button type="button" onClick={() => resolveSale(sale.id, 'accept', excursionFor(sale))} className="zona-toque h-10 flex-1 rounded-full btn-champan text-[14px] font-medium ">
                   Sí, ponla
                 </button>
               )}
-              <button type="button" onClick={() => resolveSale(sale.id, 'dismiss')} className="h-10 flex-1 rounded-full border border-text/15 text-[14px] font-medium text-text">
+              <button type="button" onClick={() => resolveSale(sale.id, 'dismiss')} className="zona-toque h-10 flex-1 rounded-full border border-text/15 text-[14px] font-medium text-text">
                 Ahora no
               </button>
             </div>

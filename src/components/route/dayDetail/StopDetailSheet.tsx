@@ -606,7 +606,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                           <button
                             type="button"
                             onClick={onWantInside}
-                            className="h-10 rounded-full btn-champan px-5 text-[14px] font-medium transition-transform active:scale-[.98]"
+                            className="zona-toque h-10 rounded-full btn-champan px-5 text-[14px] font-medium transition-transform active:scale-[.98]"
                           >
                             Quiero entrar
                           </button>

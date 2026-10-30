@@ -340,7 +340,7 @@ export function AddStopScreen({
             onClick={onClose}
             aria-label="Cerrar"
             title="Cerrar"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
+            className="zona-toque flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
           >
             <Icono nombre="cerrar" size={14} />
           </button>
@@ -438,7 +438,7 @@ export function AddStopScreen({
                 type="button"
                 onClick={() => setSelected(null)}
                 aria-label="Cerrar"
-                className="h-6 w-6 shrink-0 rounded-full text-text-muted hover:bg-bg-hover hover:text-text"
+                className="zona-toque h-6 w-6 shrink-0 rounded-full text-text-muted hover:bg-bg-hover hover:text-text"
               >
                 <Icono nombre="cerrar" size={14} />
               </button>

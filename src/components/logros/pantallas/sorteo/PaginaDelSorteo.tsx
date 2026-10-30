@@ -138,7 +138,7 @@ export default function PaginaDelSorteo({ pantalla: _pantalla }: { pantalla: Pan
                   target="_blank"
                   rel="noopener noreferrer"
                   data-bases-legales
-                  className="mt-0.5 flex h-[34px] items-center gap-1 self-center rounded-full bg-[#FFFDF8] px-3 no-underline"
+                  className="zona-toque mt-0.5 flex h-[34px] items-center gap-1 self-center rounded-full bg-[#FFFDF8] px-3 no-underline"
                   style={{ border: '1px solid rgba(111,78,55,.35)', color: '#6F4E37', font: "600 13.5px 'Geist'" }}
                 >
                   Bases legales

@@ -186,7 +186,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
             {mensaje}
           </p>
         )}
-        <button type="button" onClick={() => setBorrando(true)} data-borrar-cuenta className="h-12 bg-transparent text-[14px] font-semibold" style={{ color: ROJO }}>
+        <button type="button" onClick={() => setBorrando(true)} data-borrar-cuenta className="zona-toque h-12 bg-transparent text-[14px] font-semibold" style={{ color: ROJO }}>
           Borrar mi cuenta
         </button>
       </main>

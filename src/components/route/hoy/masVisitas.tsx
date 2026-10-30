@@ -85,7 +85,7 @@ export function HojaMasVisitas({ visitas, onAnadir, onCerrar }: { visitas: MasVi
                   {visita.peso === 0 ? ' · Imprescindible' : ''}
                 </span>
               </span>
-              <button type="button" onClick={() => onAnadir(visita)} className="h-10 flex-none rounded-full border-[1.5px] border-accent px-4 text-[13px] font-semibold text-accent transition-colors hover:bg-accent-soft">
+              <button type="button" onClick={() => onAnadir(visita)} className="zona-toque h-10 flex-none rounded-full border-[1.5px] border-accent px-4 text-[13px] font-semibold text-accent transition-colors hover:bg-accent-soft">
                 Añadir
               </button>
             </li>

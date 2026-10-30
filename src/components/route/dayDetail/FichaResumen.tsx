@@ -107,7 +107,7 @@ function Traslado({ texto, etiqueta, onReservar, mejor }: { texto: string; etiqu
         <span className="text-[12px] leading-[1.45] text-text/65">{texto}</span>
         <span className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
           {onReservar && (
-            <button type="button" onClick={onReservar} className="h-8 whitespace-nowrap rounded-full btn-champan px-3.5 text-[12.5px] font-semibold " style={{ boxShadow: '0 8px 16px -8px rgb(var(--accent))' }}>
+            <button type="button" onClick={onReservar} className="zona-toque h-8 whitespace-nowrap rounded-full btn-champan px-3.5 text-[12.5px] font-semibold " style={{ boxShadow: '0 8px 16px -8px rgb(var(--accent))' }}>
               Reservar traslado
             </button>
           )}
@@ -187,7 +187,7 @@ export function FichaResumen({ ficha, onReservarTraslado, onExplorarRestaurantes
             <Icono nombre="comida" size={20} className="mt-px flex-none text-text/65" />
             <span className="text-[13px] leading-[1.5] text-text">{ficha.comida.texto}</span>
           </span>
-          <button type="button" onClick={onExplorarRestaurantes} className="h-10 self-start rounded-full btn-champan px-4 text-[13px] font-semibold ">
+          <button type="button" onClick={onExplorarRestaurantes} className="zona-toque h-10 self-start rounded-full btn-champan px-4 text-[13px] font-semibold ">
             {ficha.comida.boton}
           </button>
         </div>

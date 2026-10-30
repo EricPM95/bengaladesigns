@@ -20,6 +20,8 @@ export async function conViaje(o = {}) {
       return await conViaje1(o)
     } catch (e) {
       ultimo = e
+      // (Tanda 10S: una espera agotada —el Vite no sirve la página en minutos— no mejora repitiéndola: se lanza el error y la prueba sale, en vez de gastar 3 intentos de varios minutos.)
+      if (/esperé \d+ s|no existe|no salió|no arrancó/.test(String(e?.message ?? e))) break
     }
   }
   throw ultimo
@@ -27,17 +29,29 @@ export async function conViaje(o = {}) {
 async function conViaje1({ ancho = 390, alto = 664, version = 'gratis', extraAntes = '', ruta } = {}) {
   const antes = `try{localStorage.setItem('trazo:moneda-pase','EUR')}catch(e){}; ${version === 'gratis' ? 'window.__pruebaDelPase = { cobro: true, conPase: false, puede: true, pruebaGastada: false };' : ''} ${extraAntes}`
   const a = await abrirApp(BASE, { ancho, alto, ruta: ruta ?? `/?cuentas=off&logros=on&logrosDemo=1&version=${version}&apertura=0`, antes })
-  for (let i = 0; i < 120 && !(await a.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await a.esp(500)
-  for (let i = 0; i < 60 && !(await a.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await a.esp(500)
-  await a.evaluar('window.__rutaPrueba().then(() => true)')
-  for (let i = 0; i < 60 && !(await a.evaluar(modulo('/src/store/useRouteStore.ts') + '.then((m) => Boolean(m.useRouteStore.getState().route))')); i++) await a.esp(1000)
-  await a.esp(3500)
-  for (let i = 0; i < 4; i++) {
-    const hecho = await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Entendido|Vale|Cerrar|Siguiente|Genial|Ya lo sé)$/.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()")
-    if (!hecho) break
-    await a.esp(600)
+  // (Tanda 10S: si cualquier paso falla, el Chrome de este intento se CIERRA antes de reintentar o de lanzar el error: antes cada reintento dejaba uno vivo y la prueba no acababa.)
+  try {
+    // (Tanda 10S: esperas de verdad, con tope y mensaje claro; `abrirApp` ya espera a que exista `window.__rutaPrueba`.)
+    await a.hasta("Boolean(document.querySelector('[data-primera-pantalla]'))", { segundos: 120, lanzar: 'conViaje: la pantalla de inicio no salió' })
+    await a.hasta("typeof window.__rutaPrueba === 'function'", { segundos: 180, lanzar: 'conViaje: window.__rutaPrueba no existe' })
+    let creado
+    for (let i = 0; i < 3 && creado !== true; i++) {
+      creado = await a.evaluar('window.__rutaPrueba().then(() => true, (e) => String((e && e.message) || e))')
+      if (creado !== true) await a.esp(1500)
+    }
+    if (creado !== true) throw new Error(`conViaje: no se creó el viaje de pruebas (${creado})`)
+    await a.hasta(modulo('/src/store/useRouteStore.ts') + '.then((m) => Boolean(m.useRouteStore.getState().route))', { segundos: 90, lanzar: 'conViaje: el almacén no tiene viaje' })
+    await a.esp(3500)
+    for (let i = 0; i < 4; i++) {
+      const hecho = await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Entendido|Vale|Cerrar|Siguiente|Genial|Ya lo sé)$/.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()")
+      if (!hecho) break
+      await a.esp(600)
+    }
+    return a
+  } catch (e) {
+    a.cerrar()
+    throw e
   }
-  return a
 }
 /** Importa un módulo de la app DESDE LA MISMA dirección que usa la página (con Vite abierto mientras otros editan, las direcciones llevan «?t=…»: sin esto saldría una copia distinta del almacén). */
 export const modulo = (ruta) => `(async () => { const n = performance.getEntriesByType('resource').map((r) => r.name).find((x) => x.includes(${JSON.stringify(ruta)})); return import(n || ${JSON.stringify(ruta)}) })()`

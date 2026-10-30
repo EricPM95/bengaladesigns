@@ -36,14 +36,14 @@ export function TarjetaHoyVuelves({ tarjeta, onVerComoIr, onExplorarMonumentos, 
             type="button"
             onClick={onVerComoIr}
             data-hoy-vuelves="ver-como-ir"
-            className="h-10 self-start rounded-full border border-text/20 bg-white px-4 text-[13px] font-semibold text-text transition-transform active:scale-[.98]"
+            className="zona-toque h-10 self-start rounded-full border border-text/20 bg-white px-4 text-[13px] font-semibold text-text transition-transform active:scale-[.98]"
           >
             {tarjeta.ver_como_ir.texto}
           </button>
         </div>
       )}
       {!tarjeta.desde_tu_zona && (
-        <button type="button" onClick={onVerComoIr} data-hoy-vuelves="ver-como-ir" className="h-10 self-start rounded-full border border-text/20 bg-white px-4 text-[13px] font-semibold text-text transition-transform active:scale-[.98]">
+        <button type="button" onClick={onVerComoIr} data-hoy-vuelves="ver-como-ir" className="zona-toque h-10 self-start rounded-full border border-text/20 bg-white px-4 text-[13px] font-semibold text-text transition-transform active:scale-[.98]">
           {tarjeta.ver_como_ir.texto}
         </button>
       )}

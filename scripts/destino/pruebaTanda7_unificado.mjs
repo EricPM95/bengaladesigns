@@ -9,6 +9,8 @@
 //   4. los botones de la tarjeta en HOY no abren la ficha de vuelta ni EXPLORAR › Atracciones con «Cerca de mí»;
 //   5. la línea pequeña de HOY en el día de llegada no es «{origen} → Roma · Día de viaje» (o en el de vuelta sin paradas, solo el trayecto), o el título del día no es «Día de viaje»;
 //   6. «más visitas» no se decide con los planes de la ruta (`Route.planLlegada`, `Route.planVuelta`), o la hoja del resumen no sale de ellos.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · «5 vuelta sin paradas» (la linea pequena de HOY): antes «Dia de viaje Roma → Barcelona» (titulo «Dia de viaje» y el trayecto solo, sin repetir palabras); ahora «Hoy vuelves a casa Roma → Barcelona · Dia de viaje». Tanda 10B, Eric 21-oct-2026 («el de VUELTA sin paradas se llama Hoy vuelves a casa, con “Roma → Barcelona · Dia de viaje” debajo», src/lib/tituloDelDia.ts).
 import fs from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
@@ -183,7 +185,7 @@ console.log('5. La línea pequeña de HOY: «{origen} → Roma · Día de viaje�
   const linea1 = plano(aTexto(bloque(html1, 'data-hoy-titulo-del-dia')))
   debe(/Barcelona → Roma · Día de viaje$/.test(linea1), '5 llegada', `la línea del día de llegada no es «Barcelona → Roma · Día de viaje»: ${linea1}`)
   const lineaCasa = plano(aTexto(bloque(hoy(casa, 4), 'data-hoy-titulo-del-dia')))
-  debe(lineaCasa === 'Día de viaje Roma → Barcelona', '5 vuelta sin paradas', `el día de vuelta sin paradas debe decir «Día de viaje» y el trayecto solo, sin repetir las palabras: ${lineaCasa}`)
+  debe(lineaCasa === 'Hoy vuelves a casa Roma → Barcelona · Día de viaje', '5 vuelta sin paradas', `el día de vuelta sin paradas debe decir «Hoy vuelves a casa» y debajo «Roma → Barcelona · Día de viaje»: ${lineaCasa}`)
   // En DÍAS es el mismo orden (el trayecto primero, la marca después).
   const lista = leer('src/components/route/DayList.tsx')
   const durante = leer('src/components/route/hoy/HoyDurante.tsx')

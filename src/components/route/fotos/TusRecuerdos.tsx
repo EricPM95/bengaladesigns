@@ -103,7 +103,7 @@ export function TusRecuerdos({ stopName, dayNumber }: { stopName: string; dayNum
           type="button"
           onClick={() => setAbierta(true)}
           data-recuerdos-abrir
-          className="flex h-[38px] flex-none items-center gap-[5px] rounded-full px-3.5 active:scale-[.98]"
+          className="zona-toque flex h-[38px] flex-none items-center gap-[5px] rounded-full px-3.5 active:scale-[.98]"
           style={{ background: ORO, color: '#4A3510', font: "700 13.5px 'Geist'", boxShadow: 'inset 0 1px 0 rgba(255,255,255,.55)' }}
         >
           {n === 0 ? (

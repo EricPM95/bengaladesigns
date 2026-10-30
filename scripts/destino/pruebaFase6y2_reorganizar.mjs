@@ -176,7 +176,11 @@ for (const [zona, primero] of [['prati', 'a'], ['monti', 'b'], ['termini', 'b'],
   const datos = await res.json()
   debe(Array.isArray(datos.zonas_alojamiento) && datos.zonas_alojamiento.length === zonas.length && datos.zonas_alojamiento.every((z) => z.id && z.nombre), 'S_zonas_cliente', 'el servidor ya no entrega las zonas del alojamiento al cliente')
 }
+// (Tanda 10S: se espera a que el servidor de la prueba haya salido ANTES de process.exit; salir con un hijo cerrándose da el cierre raro 0xC0000409 de Windows.)
+const servidorFuera = new Promise((r) => servidor.once('exit', r))
 apagar()
+await Promise.race([servidorFuera, new Promise((r) => setTimeout(r, 4000))])
+await new Promise((r) => setTimeout(r, 300))
 
 console.log(`\nPrueba 6y2 (Reorganizar): ${comprobaciones} comprobaciones, ${fallos.length} fallos`)
 for (const f of fallos.slice(0, 40)) console.log(`[${f.regla}] ${f.texto}`)

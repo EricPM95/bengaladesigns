@@ -92,7 +92,7 @@ export function HojaInvitar({
       {modo === 'viaje' && enlace && (
         <div data-enlace-invitar style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 6px 6px 14px', borderRadius: 999, border: '1px solid rgba(28,34,48,.14)', background: '#fff' }}>
           <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', font: "500 12px 'Geist Mono',monospace", color: 'rgba(28,34,48,.7)' }}>{enlace.replace(/^https?:\/\//, '')}</span>
-          <button type="button" data-copiar-enlace onClick={() => void copiar()} style={{ height: 34, padding: '0 14px', borderRadius: 999, border: '1px solid rgba(28,34,48,.18)', background: 'transparent', font: "600 12.5px 'Geist'", color: '#1C2230', cursor: 'pointer' }}>
+          <button className="zona-toque" type="button" data-copiar-enlace onClick={() => void copiar()} style={{ height: 34, padding: '0 14px', borderRadius: 999, border: '1px solid rgba(28,34,48,.18)', background: 'transparent', font: "600 12.5px 'Geist'", color: '#1C2230', cursor: 'pointer' }}>
             Copiar
           </button>
         </div>

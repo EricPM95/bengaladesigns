@@ -46,7 +46,7 @@ if (!(await cogerCandado())) {
   console.error('No he podido coger la cola de Chrome en 40 minutos.')
   process.exit(3)
 }
-const hijo = spawn(comando[0], comando.slice(1), { stdio: 'inherit', env: process.env })
+const hijo = spawn(comando[0], comando.slice(1), { stdio: 'inherit', env: { ...process.env, TRAZO_EN_COLA: '1' } })
 try {
   os.setPriority(hijo.pid, os.constants.priority.PRIORITY_BELOW_NORMAL)
 } catch {

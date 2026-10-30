@@ -60,7 +60,7 @@ export function TripTipsSheet({ open, destination, onClose }: TripTipsSheetProps
               type="button"
               onClick={onClose}
               aria-label="Cerrar los tips"
-              className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-white/10"
+              className="zona-toque absolute right-4 top-[max(1rem,env(safe-area-inset-top))] flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-white/10"
             >
               <Icono nombre="cerrar" size={18} />
             </button>

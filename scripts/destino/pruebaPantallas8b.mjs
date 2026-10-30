@@ -7,6 +7,7 @@ import path from 'node:path'
 import zlib from 'node:zlib'
 import { createRequire } from 'node:module'
 import { build } from 'esbuild'
+import { distFresco } from './_distFresco.mjs'
 
 const fallos = []
 let comprobaciones = 0
@@ -120,26 +121,28 @@ console.log('4. Lo que no debe llegar a producción ni pesar al abrir')
   debe(/import\.meta\.env\.DEV/.test(main) && /dibujos/.test(main), 'dev', 'la página de prueba de los dibujos solo existe en desarrollo')
   const logros = leer('src/lib/logros.ts')
   debe(/import\.meta\.env\.DEV/.test(logros) && /logrosDemo/.test(logros), 'dev', 'el modo demo solo se carga en desarrollo')
-  if (fs.existsSync('dist/index.html')) {
-    const html = leer('dist/index.html')
+  {
+    // 10S: se mide SIEMPRE un build recién hecho (en una carpeta temporal, ~22 s si hay que construirlo), nunca un dist viejo.
+    const DIST = distFresco()
+    const html = leer(DIST + '/index.html')
     const urls = [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1])
-    const abren = urls.filter((u) => u.endsWith('.js')).map((u) => leer('dist' + u))
-    const todos = archivos('dist/assets', /\.js$/).map(leer).join('\n')
+    const abren = urls.filter((u) => u.endsWith('.js')).map((u) => leer(DIST + u))
+    const todos = archivos(DIST + '/assets', /\.js$/).map(leer).join('\n')
     debe(!/__demo|logrosDemo|window\.__momentos/.test(todos), 'dev', 'el build de producción NO lleva el modo demo ni los atajos de prueba')
-    const nombres = archivos('dist/assets', /\.js$/).map((f) => path.basename(f))
+    const nombres = archivos(DIST + '/assets', /\.js$/).map((f) => path.basename(f))
     for (const parte of ['Reproductor', 'Compartir', 'ResumenViaje', 'ResumenDia', 'EscenaDeEmblema', 'coliseo', 'Medalla', 'HojaLogros']) {
       debe(nombres.some((n) => n.startsWith(parte)), 'carga', `la escena «${parte}» va en su propio archivo (se baja al abrirla)`)
     }
     const dentro = abren.join('\n')
     debe(!/Casi 2\.000 años esperándote/.test(dentro) && !/Tu día en /.test(dentro), 'carga', 'al abrir no entran ni la película del Coliseo ni los resúmenes')
     debe(!/cuatro_joyas|baldaquino|dib-quieto|mm-off/.test(dentro), 'carga', 'al abrir no entran los dibujos de los logros (insignias, sellos, emblemas, medalla): la hoja del Visto importa solo InsigniaPerezosa')
-    const bytes = urls.filter((u) => u.endsWith('.js')).reduce((s, u) => s + fs.statSync('dist' + u).size, 0)
-    const gz = urls.reduce((s, u) => s + zlib.gzipSync(fs.readFileSync('dist' + u)).length, 0)
+    const bytes = urls.filter((u) => u.endsWith('.js')).reduce((s, u) => s + fs.statSync(DIST + u).size, 0)
+    const gz = urls.reduce((s, u) => s + zlib.gzipSync(fs.readFileSync(DIST + u)).length, 0)
     console.log(`   al abrir: ${(bytes / 1024).toFixed(1)} KB de JavaScript (${(gz / 1024).toFixed(1)} KB comprimido) en ${urls.length} archivos`)
-    debe(bytes < 1024 * 1024 && gz < 400 * 1024, 'peso', 'al abrir, el JavaScript pesa menos de 1 MB y la descarga (con CSS) menos de 400 KB comprimida (10N10: tope subido de 340 a 400; la 10N9 ya pesaba 378 KB y ahora 371 KB; aligerarla queda para la 10S)')
+    debe(bytes < 1024 * 1024 && gz < 340 * 1024, 'peso', 'al abrir, el JavaScript pesa menos de 1 MB y la descarga (con CSS) menos de 340 KB comprimida (10S: el tope vuelve a 340; las banderas ya no van en el CSS de entrada)')
     const medalla = archivos('public/medalla', /\.(webp|png)$/).reduce((s, f) => s + fs.statSync(f).size, 0)
     debe(medalla < 220 * 1024, 'peso', 'la medalla de las 7 maravillas pesa menos de unos 200 KB')
-  } else console.log('   (sin dist/: no se comprueba la versión de producción; ejecuta antes «npx vite build»)')
+  }
 }
 
 console.log('5. Tanda 8B2: el orden de las sorpresas, el pedazo con su insignia, la medalla 1 de 7 y los avisos con cruz')

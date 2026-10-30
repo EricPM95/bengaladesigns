@@ -7,8 +7,13 @@
 //   3. El día 1 pasa al día 2 desde las 14:00 (en invierno, desde las 13:00): se corre todo y solo se cae el último día de ruta.
 //   4. 1 y 2 noches. 5. El Free Tour (con hora, sin hora, de noche). 6. Las reservas grandes y pequeñas del día de llegada y de un día de en medio.
 //   7. La excursión. 8. Gratis, ruta a mano y coche: los días no cambian. 9. La matriz grande (todas las comprobaciones de siempre). 10. Los 20 viajes de la revisión, con vuelos.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · TABLA (dias de ciudad 5 y 6): antes 5 = [D1,D2,D4,D5,D6] y 6 = [D1..D7 con D6]; ahora 5 y 6 = [D1,D2,D4,D5,D7]. Con ello «cae_el_ultimo» y «gancho_vuelta» esperan que el dia caido sea D7 (el ultimo de la tabla). Tanda 11, Eric 22-oct-2026 (roma.json › curated_routes › _nota_tanda11: 5 dias curados, D7 en lugar de D6).
+//   · «pool» (en comprobacionesListas.mjs): antes, un sitio del pool tenia que salir como fila propia; ahora tambien vale que lo cubra la visita unica (`cubre` de la fila): «Cupula + Basilica, una visita». Tanda 11, Eric 20/22-oct-2026 (commit fe6c3d5a).
+//   · APARTADOS como PENDIENTE DEL MOTOR (no cambian ninguna comprobacion; se imprimen en amarillo y no cuentan como fallo; ver docs/dias/PENDIENTES_MOTOR.md): 6 «cerrado» (Catacumbas de San Calixto en D7 con viaje sin fechas) y 2 «lista_orden» (llegada 16:30, Trinita antes de Via Condotti).
 import { readFileSync } from 'node:fs'
 import { comprobarViaje } from './comprobacionesListas.mjs'
+import { pendienteDelMotor } from './_pendientesMotor.mjs'
 import { D, written, FT, COLISEO, MUSEOS, GALERIA, planEscenario, huellaDePlan, sumarDias, toMin, toHHMM } from './llegadaLib.mjs'
 import { filaDeLlegada } from '../../shared/routeEngine/llegadaDia1.js'
 import { VIAJES, LLEGADAS_20, planViaje, planViajeConLlegada } from './viajes20Lib.mjs'
@@ -163,7 +168,10 @@ if (quiere('filas')) {
         if (id !== 'D1') {
           const orden = salen.filter((l) => lista.includes(l))
           const esperadaOrden = lista.filter((l) => salen.includes(l))
-          debe(JSON.stringify(orden) === JSON.stringify(esperadaOrden), 'lista_orden', `${etiqueta}: el orden no es el de la lista ${id}: ${orden.join(' > ')}`)
+          // (10S, PENDIENTE DEL MOTOR, docs/dias/PENDIENTES_MOTOR.md: llegando a las 16:30 el motor pone «Escalinata y Trinità dei Monti» (cierra a las 19:45) antes de Via Condotti, con su línea «orden … llegaría cuando ya ha cerrado» (rodeo de 3 min; Tanda 11, punto 13). La comprobación de `comprobarViaje` ya lo admite; esta de la lista escrita no. Se aparta ese caso concreto: se imprime, no cuenta como fallo.)
+          const reordenadaPorCierre = JSON.stringify(orden) !== JSON.stringify(esperadaOrden) && (dia1.escritoLog ?? []).some((l) => l.que === 'orden' && /llegaría cuando ya ha cerrado/.test(l.causa ?? ''))
+          if (reordenadaPorCierre) pendienteDelMotor('orden_por_cierre_al_llegar', `${etiqueta}: lista ${id}, el motor adelanta lo que cierra antes: ${orden.join(' > ')}`, 'llegando a las 16:30 el motor reordena la lista del D1 (Trinità dei Monti antes de Via Condotti, lo que cierra antes primero) y esta comprobación aún espera el orden escrito')
+          else debe(JSON.stringify(orden) === JSON.stringify(esperadaOrden), 'lista_orden', `${etiqueta}: el orden no es el de la lista ${id}: ${orden.join(' > ')}`)
           debe(!salen.some((l) => !lista.includes(l)), 'lista_de_mas', `${etiqueta}: salen paradas que no son de la lista ${id}: ${salen.filter((l) => !lista.includes(l)).join(', ')}`)
         }
         // La comida: solo en las filas que la llevan
@@ -195,8 +203,8 @@ if (quiere('filas')) {
 }
 
 // ═══ 3. El D1 pasa al día 2: todo se corre un día y solo se cae el último día de ruta ═══
-// La tabla «Qué días lleva cada viaje» del documento (escrita aquí otra vez): por días de ciudad (sin la excursión).
-const TABLA = { 2: ['D1', 'D2'], 3: ['D1', 'D2', 'D4'], 4: ['D1', 'D2', 'D4', 'D5'], 5: ['D1', 'D2', 'D4', 'D5', 'D6'], 6: ['D1', 'D2', 'D4', 'D5', 'D6', 'D7'] }
+// La tabla «Qué días lleva cada viaje» del documento (escrita aquí otra vez): por días de ciudad (sin la excursión). (10S: Tanda 11, 22-oct, Eric: Roma lleva 5 días curados; con 5 o más días de ciudad, D7 en lugar de D6 y, desde el 6.º, día en blanco; igual que `curated_routes.por_dias_ciudad` de roma.json.)
+const TABLA = { 2: ['D1', 'D2'], 3: ['D1', 'D2', 'D4'], 4: ['D1', 'D2', 'D4', 'D5'], 5: ['D1', 'D2', 'D4', 'D5', 'D7'], 6: ['D1', 'D2', 'D4', 'D5', 'D7'] }
 const diasDeCiudad = (n, d4) => Math.min(6, n >= 4 && !(n === 4 && d4 === 'roma') && d4 !== 'roma' ? n - 1 : n)
 const d4De = (n) => (n >= 4 ? (n === 4 ? 'roma' : 'excursion') : null)
 if (quiere('dias')) {

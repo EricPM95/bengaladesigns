@@ -53,7 +53,7 @@ export function ListaDeViajes({ grupos, antesDeLaApp, onVolver, onAbrirViaje, on
     <div role="dialog" aria-modal="true" aria-label="Todos mis viajes" data-lista-de-viajes className="fixed inset-0 z-[75] flex flex-col bg-bg text-text">
       <div style={{ padding: 'calc(env(safe-area-inset-top) + 10px) 18px 0', display: 'flex', flexDirection: 'column', gap: 10, flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button type="button" onClick={onVolver} aria-label="Volver" data-volver-lista style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
+          <button className="zona-toque" type="button" onClick={onVolver} aria-label="Volver" data-volver-lista style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
               <path d="M15 5l-7 7 7 7" />
             </svg>

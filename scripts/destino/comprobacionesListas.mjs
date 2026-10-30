@@ -8,10 +8,11 @@ import { sitiosGrandesDe } from '../../shared/routeEngine/listasReservas.js'
 import { closedOnDay, effectiveSchedule, lastEntryMinutes, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { COMIDA_HASTA_MIN } from '../../shared/routeEngine/comida.js'
+import { pendienteDelMotor } from './_pendientesMotor.mjs'
 
 const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
 
-export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [], hasFreeTour = false, listas = null, franjas = {}, reservaConDia = false }) {
+export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [], hasFreeTour = false, listas = null, franjas = {}, reservaConDia = false, apartarPendientes = true }) {
   const fallos = []
   const info = []
   const place = (name) => D.places.find((p) => p.name === name)
@@ -107,6 +108,11 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       if (r.hora_tipo === 'reserva') continue // (la reserva del viajero manda: el motor avisa)
       // (Tanda 6y5: el Vaticano y la Galería nunca se quitan; si ningún día del viaje abre, se quedan en su día con su aviso. La prueba propia comprueba que de verdad no había otro día.)
       if (r.lugar && closedOnDay(p, dia.hours.weekday, dia.hours.dateIso) && log.some((l) => l.que === 'aviso' && l.sitio === r.lugar && /^cierre de .*ningún otro día/.test(l.causa ?? ''))) { avisa('cierra_sin_otro_dia', dia, `«${r.lugar}» se queda en su día, cerrado, con su aviso`); continue }
+      // (10S, PENDIENTE DEL MOTOR, docs/dias/PENDIENTES_MOTOR.md: en un viaje SIN fechas (solo el mes) el motor no aplica los cierres por rango de fechas —`closedThatDay` pasa fecha null sin `calendar.hasDates`—, pero esta comprobación usa la fecha de referencia del mes (`plan.calendar.referenceIso`, el día 15). Con la Tanda 11, D7 sale en los viajes de 6 y 7 noches y las Catacumbas (cerradas 13-ene a 10-feb) caen ahí. Se aparta ese caso concreto: se imprime, no cuenta como fallo.)
+      if (r.lugar && closedOnDay(p, dia.hours.weekday, dia.hours.dateIso) && plan.calendar?.hasDates === false && !closedOnDay(p, dia.hours.weekday, null) && apartarPendientes) {
+        pendienteDelMotor('catacumbas_cerradas_viaje_sin_fechas', `${etiqueta} · ${dia.hours?.dateIso} ${dia.curatedDay.id}: «${r.titulo ?? r.lugar}»`, 'viaje sin fechas (solo el mes): el motor no aplica el cierre por rango de fechas (Catacumbas 13-ene a 10-feb) y las pone en D7 en pleno cierre de la fecha de referencia')
+        continue
+      }
       if (r.lugar && closedOnDay(p, dia.hours.weekday, dia.hours.dateIso)) { falla('cerrado', dia, `«${r.titulo ?? r.lugar}» sale por dentro y está cerrado ese día`); continue }
       const sesiones = parseHoursSessions(effectiveSchedule(p, dia.hours))
       if (sesiones.length === 0) continue
@@ -303,9 +309,9 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // Lo que el viajero marcó en el pool y no sale
   }
   for (const name of poolNames) {
-    // (Sale si lo enseña la ruta —de camino también—, su nocturna, o una parada de su mismo barrio; o si está en «Si te sobra tiempo» o en «No incluido».)
+    // (10S: Tanda 11, «Cúpula + Basílica una visita»: la fila de la visita única lleva la Basílica en su `cubre`, y eso cuenta como que sale.) (Sale si lo enseña la ruta —de camino también—, su nocturna, o una parada de su mismo barrio; o si está en «Si te sobra tiempo» o en «No incluido».)
     const barrio = place(name)?.tags?.includes('barrio') ? place(name)?.zone : null
-    const sale = dias.some((d) => (d.escritoRows ?? []).some((r) => r.lugar === name || (barrio && place(r.lugar)?.zone === barrio && r.modo !== 'camino')) || (d.escritoNights ?? []).some((n) => (n.conflicts_with ?? []).includes(name)) || (d.spareRows ?? []).some((r) => r.lugar === name) || (d.escritoLog ?? []).some((l) => l.sitio === name && l.que === 'quitada')) || plan.unplacedPool.some((u) => u.name === name) || (hasFreeTour && cubiertos.has(name) && place(name)?.type !== 'interior')
+    const sale = dias.some((d) => (d.escritoRows ?? []).some((r) => r.lugar === name || (r.cubre ?? []).includes(name) || (barrio && place(r.lugar)?.zone === barrio && r.modo !== 'camino')) || (d.escritoNights ?? []).some((n) => (n.conflicts_with ?? []).includes(name)) || (d.spareRows ?? []).some((r) => r.lugar === name) || (d.escritoLog ?? []).some((l) => l.sitio === name && l.que === 'quitada')) || plan.unplacedPool.some((u) => u.name === name) || (hasFreeTour && cubiertos.has(name) && place(name)?.type !== 'interior')
     if (!sale) fallos.push({ regla: 'pool', texto: `${etiqueta}: «${name}» marcado en el pool no sale ni está en «No incluido»` })
   }
   // (Tanda 6f, 4f) El orden de los días: lo imprescindible primero. Los dos primeros días completos son el D1 y el D2 (con Free Tour de mañana, el D3 y el D1-FT); solo cambia por un cierre o una fecha mala que marca el documento.

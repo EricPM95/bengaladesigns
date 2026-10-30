@@ -8,6 +8,7 @@ import { AdminLogros } from './components/logros/AdminLogros.tsx'
 import { PruebaFotos } from './components/logros/PruebaFotos.tsx'
 import { logrosActivos } from './lib/logros.ts'
 import { lazy, Suspense } from 'react'
+import { precargarBanderas } from './lib/banderas.ts'
 
 // Solo en desarrollo: window.__rutaPrueba() crea el viaje de pruebas de siempre (src/dev/rutaDePrueba.ts).
 if (import.meta.env.DEV) void import('./dev/rutaDePrueba.ts')
@@ -32,6 +33,9 @@ createRoot(document.getElementById('root')!).render(
     </ErrorBoundary>
   </StrictMode>,
 )
+
+// Las banderas (su CSS pesa 84 KB comprimido) se bajan con el navegador libre, justo después de abrir (10S).
+precargarBanderas()
 
 // La pantalla al abrir (I2; Tanda 10E, la de JUTRIP) vive en index.html para verse antes de que cargue nada. Tanda 10G: sale en CADA apertura (index.html solo la omite en la recarga de después de entrar), dura 3,5 segundos, se ve entera
 // y NADA la corta: ni un toque ni la app. Se quita cuando ACABA su animación, contando desde que empieza de verdad (no desde que se abrió la página): si cargar o la letra Italiana tardan, la animación empieza más tarde y se ve igual de entera.

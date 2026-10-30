@@ -128,7 +128,7 @@ export function PastillaElegir({
   datos?: string
 }) {
   return (
-    <button
+    <button className="zona-toque"
       type="button"
       aria-pressed={elegida}
       data-elegir-pastilla={datos ?? ''}

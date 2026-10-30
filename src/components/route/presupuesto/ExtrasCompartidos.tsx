@@ -120,7 +120,7 @@ function FilaDeGasto({ linea, gasto, gv, moneda, admin, verde, onQuitar, onEdita
         )}
       </span>
       {onQuitar ? (
-        <button type="button" aria-label={`Quitar ${linea.nombre}`} onClick={(e) => { e.stopPropagation(); onQuitar() }} className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-text/45 hover:bg-[#EDE4D3]">
+        <button type="button" aria-label={`Quitar ${linea.nombre}`} onClick={(e) => { e.stopPropagation(); onQuitar() }} className="zona-toque flex h-9 w-9 flex-none items-center justify-center rounded-full text-text/45 hover:bg-[#EDE4D3]">
           <Icono nombre="cerrar" size={13} />
         </button>
       ) : (

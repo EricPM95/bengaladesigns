@@ -1,0 +1,189 @@
+[
+ {
+  "pantalla": "route",
+  "tag": "button",
+  "t": "Toggle attribution",
+  "d": "",
+  "w": 24,
+  "h": 24,
+  "vw": 24,
+  "vh": 24,
+  "cls": "mapboxgl-ctrl-attrib-button"
+ },
+ {
+  "pantalla": "route",
+  "tag": "a",
+  "t": "Mapbox homepage",
+  "d": "",
+  "w": 88,
+  "h": 23,
+  "vw": 88,
+  "vh": 23,
+  "cls": "mapboxgl-ctrl-logo"
+ },
+ {
+  "pantalla": "route",
+  "tag": "button",
+  "t": "Pruebas",
+  "d": "data-panel-pruebas",
+  "w": 72,
+  "h": 32,
+  "vw": 72,
+  "vh": 32,
+  "cls": "fixed bottom-[92px] left-3 z-40 h-8 rounded-full border bord"
+ },
+ {
+  "pantalla": "days",
+  "tag": "button",
+  "t": "Toggle attribution",
+  "d": "",
+  "w": 24,
+  "h": 24,
+  "vw": 24,
+  "vh": 24,
+  "cls": "mapboxgl-ctrl-attrib-button"
+ },
+ {
+  "pantalla": "days",
+  "tag": "a",
+  "t": "Mapbox homepage",
+  "d": "",
+  "w": 88,
+  "h": 23,
+  "vw": 88,
+  "vh": 23,
+  "cls": "mapboxgl-ctrl-logo"
+ },
+ {
+  "pantalla": "days",
+  "tag": "button",
+  "t": "Pruebas",
+  "d": "data-panel-pruebas",
+  "w": 72,
+  "h": 32,
+  "vw": 72,
+  "vh": 32,
+  "cls": "fixed bottom-[92px] left-3 z-40 h-8 rounded-full border bord"
+ },
+ {
+  "pantalla": "explore",
+  "tag": "button",
+  "t": "Toggle attribution",
+  "d": "",
+  "w": 24,
+  "h": 24,
+  "vw": 24,
+  "vh": 24,
+  "cls": "mapboxgl-ctrl-attrib-button"
+ },
+ {
+  "pantalla": "explore",
+  "tag": "a",
+  "t": "Mapbox homepage",
+  "d": "",
+  "w": 88,
+  "h": 23,
+  "vw": 88,
+  "vh": 23,
+  "cls": "mapboxgl-ctrl-logo"
+ },
+ {
+  "pantalla": "explore",
+  "tag": "button",
+  "t": "Pruebas",
+  "d": "data-panel-pruebas",
+  "w": 72,
+  "h": 32,
+  "vw": 72,
+  "vh": 32,
+  "cls": "fixed bottom-[92px] left-3 z-40 h-8 rounded-full border bord"
+ },
+ {
+  "pantalla": "bookings",
+  "tag": "button",
+  "t": "Pruebas",
+  "d": "data-panel-pruebas",
+  "w": 72,
+  "h": 32,
+  "vw": 72,
+  "vh": 32,
+  "cls": "fixed bottom-[92px] left-3 z-40 h-8 rounded-full border bord"
+ },
+ {
+  "pantalla": "hoy",
+  "tag": "button",
+  "t": "Pruebas",
+  "d": "data-panel-pruebas",
+  "w": 72,
+  "h": 32,
+  "vw": 72,
+  "vh": 32,
+  "cls": "fixed bottom-[92px] left-3 z-40 h-8 rounded-full border bord"
+ },
+ {
+  "pantalla": "perfil",
+  "tag": "button",
+  "t": "Toggle attribution",
+  "d": "",
+  "w": 24,
+  "h": 24,
+  "vw": 24,
+  "vh": 24,
+  "cls": "mapboxgl-ctrl-attrib-button"
+ },
+ {
+  "pantalla": "perfil",
+  "tag": "a",
+  "t": "Mapbox homepage",
+  "d": "",
+  "w": 88,
+  "h": 23,
+  "vw": 88,
+  "vh": 23,
+  "cls": "mapboxgl-ctrl-logo"
+ },
+ {
+  "pantalla": "perfil",
+  "tag": "button",
+  "t": "Pruebas",
+  "d": "data-panel-pruebas",
+  "w": 72,
+  "h": 32,
+  "vw": 72,
+  "vh": 32,
+  "cls": "fixed bottom-[92px] left-3 z-40 h-8 rounded-full border bord"
+ },
+ {
+  "pantalla": "ajustes",
+  "tag": "button",
+  "t": "Toggle attribution",
+  "d": "",
+  "w": 24,
+  "h": 24,
+  "vw": 24,
+  "vh": 24,
+  "cls": "mapboxgl-ctrl-attrib-button"
+ },
+ {
+  "pantalla": "ajustes",
+  "tag": "a",
+  "t": "Mapbox homepage",
+  "d": "",
+  "w": 88,
+  "h": 23,
+  "vw": 88,
+  "vh": 23,
+  "cls": "mapboxgl-ctrl-logo"
+ },
+ {
+  "pantalla": "ajustes",
+  "tag": "button",
+  "t": "Pruebas",
+  "d": "data-panel-pruebas",
+  "w": 72,
+  "h": 32,
+  "vw": 72,
+  "vh": 32,
+  "cls": "fixed bottom-[92px] left-3 z-40 h-8 rounded-full border bord"
+ }
+]

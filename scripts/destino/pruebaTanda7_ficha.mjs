@@ -12,6 +12,11 @@
 //   9. la tarjeta «Hoy vuelves a casa» (avión, tren, autobús, barco y madrugada), con los datos reales del motor, no lleva su título, su texto, «Desde tu zona», [Ver cómo ir], [Explorar monumentos] y la despedida; sale en la gratis;
 //  10. un día de llegada o de vuelta sin paradas no se llama «Día de viaje» (nunca «Día libre»), o la línea pequeña no es «{origen} → Roma · Día de viaje»;
 //  11. [Explorar restaurantes] y [Explorar monumentos] no abren EXPLORAR con el filtro pedido; el billete no abre la ficha de llegada o de vuelta que toca.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · «8 [Reservar traslado]»: antes el boton era frambuesa (`bg-accent`); ahora `btn-champan`. Tanda 10E, Eric 22-oct-2026 («la marca nueva en toda la app: botones champan»).
+//   · «11 el billete de la llegada abre la ficha» y «11 el dia de llegada lleva el billete»: antes DIAS pintaba `<BilleteDeVuelo>` con «LLEGADA · VUELO …»; ahora pinta `<TarjetaLlegadaDias>` con «Aterrizas a las 13:00» y «Fiumicino» (sigue abriendo la ficha de llegada). Tanda 10N11, Eric 29-oct-2026 («tarjeta del vuelo de DIAS con Aterrizas a las y Fiumicino»). El billete de la VUELTA no cambia.
+//   · «10 vuelta sin paradas»: antes el titulo era «Dia de viaje» y la linea pequena «Roma → Barcelona»; ahora el titulo es «Hoy vuelves a casa» (`DIA_DE_VUELTA`) y la linea «Roma → Barcelona · Dia de viaje». Tanda 10B, Eric 21-oct-2026.
+//   · «6 la barra de llegada»: antes la frase era siempre «Añade tu {vuelo} y ajustamos tu dia»; ahora «Añade tu {vuelo}» y solo con pase «… y ajustamos tu dia» (`const ajuste = pago ? …`). Tanda 10G, Eric 24-oct-2026 (guardar el vuelo es gratis; lo del pase es ajustar el dia).
 import fs from 'node:fs'
 import { prepararSSR } from './_ssr.mjs'
 import { D, written } from './llegadaLib.mjs'
@@ -28,7 +33,7 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
 const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_tanda7_ficha_entrada.tsx')
 const {
   createElement, renderToStaticMarkup, ArrivalReturnSheet, ArrivalDetailSheet, FichaResumen, TarjetaHoyVuelves, DayDetailPanel, useRouteStore, useExploreAperturaStore, fetchDestinationExcursions, fetchArrivalInfo, medioOf,
-  construirFicha, nombreDelDia, lineaDeViaje, DIA_DE_VIAJE, buildArrivalDepartureDetail,
+  construirFicha, nombreDelDia, lineaDeViaje, DIA_DE_VIAJE, DIA_DE_VUELTA, buildArrivalDepartureDetail,
 } = M
 const consolaError = console.error
 console.error = (...a) => (/useLayoutEffect|Warning:|act\(/.test(String(a[0])) ? undefined : consolaError(...a))
@@ -284,7 +289,7 @@ const hoja = (ruta, { kind = 'llegada', mode = 'avion', time, pointId, dateIso =
   infoConEnlace.medios.avion.puntos.find((p) => p.id === 'fco').traslado = { url: 'https://ejemplo.test/traslado' }
   const conEnlace = hoja(ruta, { time: '13:00', pointId: 'fco', infoPropia: infoConEnlace })
   debe(/Reservar traslado/.test(aTexto(conEnlace)), '8 con enlace sale [Reservar traslado]', '')
-  debe(/bg-accent/.test(conEnlace.slice(conEnlace.indexOf('Reservar traslado') - 400, conEnlace.indexOf('Reservar traslado'))), '8 [Reservar traslado] en frambuesa', '')
+  debe(/btn-champan/.test(conEnlace.slice(conEnlace.indexOf('Reservar traslado') - 400, conEnlace.indexOf('Reservar traslado'))), '8 [Reservar traslado] en frambuesa', '')
 
   // Con dirección: Tu ruta empieza + [Cómo llegar a tu alojamiento]. Con la comida al llegar: [Explorar restaurantes].
   const conDireccion = viaje({ extra: { ...base, accommodationAddress: 'Via del Corso 1, Roma' } })
@@ -435,10 +440,10 @@ console.log('9. La tarjeta «Hoy vuelves a casa»')
   const rutaB = viaje({ extra: { arrivalFlightTime: '13:00', arrivalPointId: 'fco', departureFlightTime: '19:00', departurePointId: 'fco' } })
   poner(rutaB)
   const src = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
-  debe(/<BilleteDeVuelo billete=\{billeteLlegada\} onOpen=\{\(\) => setArrivalSheet\('llegada'\)\} \/>/.test(src), '11 el billete de la llegada abre la ficha de llegada', '')
+  debe(/<TarjetaLlegadaDias billete=\{billeteLlegada\} point=\{arrivalChosen\} origen=\{origin\} destino=\{destinoNombre\} onOpen=\{\(\) => setArrivalSheet\('llegada'\)\} \/>/.test(src), '11 el billete de la llegada abre la ficha de llegada', '')
   debe(/<BilleteDeVuelo billete=\{billeteVuelta\} onOpen=\{\(\) => abrirFichaDeVuelta\(\)\} \/>/.test(src) && /setArrivalSheet\('vuelta'\)/.test(src), '11 el billete de la vuelta abre la ficha de vuelta', '')
   const d1 = aTexto(panelDe(rutaB.days[0], { isFirstDayOfTrip: true }))
-  debe(/LLEGADA/.test(d1) && /VUELO/.test(d1), '11 el día de llegada lleva el billete', '')
+  debe(/LLEGADA/.test(d1) && /Aterrizas a las 13:00/.test(d1) && /Fiumicino/.test(d1), '11 el día de llegada lleva el billete', '')
   const rutaSin = viaje({})
   poner(rutaSin)
   const d1sin = aTexto(html(DayDetailPanel, { day: rutaSin.days[0], travel: null, isLastDay: false, origin: 'Barcelona', stay: null, allDays: rutaSin.days.filter((d) => !d.isReturnLeg).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city })), isFirstDayOfTrip: true, showCamperBlock: false, showRentalCarBlock: false }))
@@ -456,7 +461,7 @@ console.log('10. «Día de viaje»')
   const grupos = destino.gruposDia
   debe(Boolean(grupos), '10 datos de los grupos', 'el destino no trae grupos de día')
   const vuelta = ruta.days[ruta.days.length - 1]
-  debe(nombreDelDia(ruta, vuelta, grupos).titulo === DIA_DE_VIAJE, '10 vuelta sin paradas: «Día de viaje»', nombreDelDia(ruta, vuelta, grupos).titulo)
+  debe(nombreDelDia(ruta, vuelta, grupos).titulo === DIA_DE_VUELTA, '10 vuelta sin paradas: «Hoy vuelves a casa»', nombreDelDia(ruta, vuelta, grupos).titulo)
   const dia1 = { ...ruta.days[0], stops: [], arrivalDay: { sin_paradas: true, es_dia_1: true } }
   const rutaL = { ...ruta, days: [dia1, ...ruta.days.slice(1)] }
   const n1 = nombreDelDia(rutaL, dia1, grupos)
@@ -474,7 +479,7 @@ console.log('10. «Día de viaje»')
   debe(lineaDeViaje(nGrupos.titulo, nGrupos.viaje) === 'Barcelona → Roma · Día de viaje', '10 línea pequeña con paradas', lineaDeViaje(nGrupos.titulo, nGrupos.viaje))
   debe(lineaDeViaje(DIA_DE_VIAJE, 'Barcelona → Roma') === 'Barcelona → Roma', '10 línea pequeña sin repetir las palabras', lineaDeViaje(DIA_DE_VIAJE, 'Barcelona → Roma'))
   const nVuelta = nombreDelDia(ruta, vuelta, grupos)
-  debe(lineaDeViaje(nVuelta.titulo, nVuelta.viaje) === 'Roma → Barcelona', '10 línea pequeña de la vuelta', lineaDeViaje(nVuelta.titulo, nVuelta.viaje))
+  debe(lineaDeViaje(nVuelta.titulo, nVuelta.viaje) === 'Roma → Barcelona · Día de viaje', '10 línea pequeña de la vuelta', lineaDeViaje(nVuelta.titulo, nVuelta.viaje))
 }
 
 // ═══ 11. EXPLORAR: lo que abren los botones ═══
@@ -513,7 +518,7 @@ console.log('6. Los textos del código')
   debe(!/taxi/i.test(JSON.stringify(detalle)) && !/Tren\/autobús directo al centro/.test(JSON.stringify(detalle)), '6 el mock de Roma sin taxi', '')
   debe(!/\bcentro\b/i.test(JSON.stringify(detalle.subtitle ?? '')), '6 el subtítulo de la llegada sin «centro»', detalle.subtitle)
   // La barra no se toca.
-  debe(/Añade tu \$\{label\.palabra\} y ajustamos tu día/.test(leer('shared/arrival/arrivalRules.js')), '6 la barra de llegada no cambia', '')
+  debe(/Añade tu \$\{label\.palabra\}\$\{ajuste\}/.test(leer('shared/arrival/arrivalRules.js')) && /const ajuste = pago \? ' y ajustamos tu día' : ''/.test(leer('shared/arrival/arrivalRules.js')), '6 la barra de llegada no cambia', '')
   // El mapeo de las marcas del motor.
   const mapa = leer('src/lib/mapGeneratedRoute.ts')
   debe(/no_restaurant/.test(mapa) && /noRestaurant: true/.test(mapa) && /arrivalDay: generated\.arrival_day/.test(mapa) && /planVuelta/.test(mapa) && /\.return_day/.test(mapa) && !/returnDay/.test(mapa), '5 el cliente lee las marcas del motor (no_restaurant, arrival_day, return_day)', '')

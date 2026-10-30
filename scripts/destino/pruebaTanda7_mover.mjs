@@ -20,6 +20,8 @@
 //     13. la tarjeta de una parada cerrada ese día no dice «Cerrado este día» UNA vez, o dice «Hoy cierra» o «Cerrado hoy» (en DÍAS, HOY y EXPLORAR);
 //   E. UNA SOLA PIEZA
 //     14. queda algún `PlaceFinderPanel` o `poolEntries`, o el código nuevo escribe emojis, colores a mano o nombres de empresas.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · «C11 sueltos» (el escaner de «{n} dias» suelto): antes solo HoyAntesV2.tsx estaba permitido como cuenta atras; ahora tambien HoySinPase.tsx («se activa dentro de N dias») y TarjetaDeViaje.tsx («En N dias» y «26 – 29 nov · 4 dias»): son cuentas atras / la duracion con su plural, no la duracion del viaje suelta. Tanda 10N11, Eric 29-oct-2026 (HOY sin pase con cuenta atras y la tarjeta de Mis viajes de Design). La duda de si «26 – 29 nov · 4 dias» deberia llevar tambien «· 3 noches» queda para Eric.
 import fs from 'node:fs'
 import path from 'node:path'
 import { prepararSSR } from './_ssr.mjs'
@@ -339,6 +341,8 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
     'src/components/route/freeDay/DayNameSheet.tsx', // «Máximo 14 días»
     'src/components/logros/visto/fechas.ts', // «Te quedan 10 días para reclamar»: plazo, no duración del viaje
     'src/components/route/hoy/v2/HoyAntesV2.tsx', // la cuenta atrás de HOY: «faltan N días»
+    'src/components/route/hoy/HoySinPase.tsx', // (10N11/10N12) la cuenta atrás de HOY sin pase: «se activa dentro de N días»
+    'src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx', // (10N11) la cuenta atrás de la tarjeta de Mis viajes: «En N días» y los chips «4 días · 3 noches» (con su plural); la línea de fechas ya va sin días (10S)
   ].map((p) => p.replace(/\//g, path.sep))
   const sueltos = []
   for (const f of archivos) {

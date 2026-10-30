@@ -1103,19 +1103,21 @@ console.log('8. Cuentas 3B: peso, invitado, R2 corta, sin nombre, fotos privadas
     }
   }
   debe(!/stripe/i.test(leer('package.json')), 'peso', 'Stripe sigue sin sumar peso')
-  if (fs.existsSync('dist/index.html')) {
-    const html = leer('dist/index.html')
+  {
+    // 10S: build recién hecho en carpeta temporal (se reutiliza si nada ha cambiado desde que se construyó).
+    const DIST = (await import('./_distFresco.mjs')).distFresco()
+    const html = leer(DIST + '/index.html')
     const urls = [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1])
-    const entrada = urls.filter((u) => u.endsWith('.js')).map((u) => leer('dist' + u)).join('\n')
-    const gz = urls.reduce((s, u) => s + zlib.gzipSync(fs.readFileSync('dist' + u)).length, 0)
-    debe(gz < 400 * 1024, 'peso', `al abrir, la descarga pesa menos de 400 KB comprimida (10N10: tope subido de 340 a 400, ver pruebaPantallas8b) (ahora ${(gz / 1024).toFixed(1)} KB)`)
-    const nombres = fs.readdirSync('dist/assets').filter((n) => n.endsWith('.js'))
+    const entrada = urls.filter((u) => u.endsWith('.js')).map((u) => leer(DIST + u)).join('\n')
+    const gz = urls.reduce((s, u) => s + zlib.gzipSync(fs.readFileSync(DIST + u)).length, 0)
+    debe(gz < 340 * 1024, 'peso', `al abrir, la descarga pesa menos de 340 KB comprimida (10S: el tope vuelve a 340) (ahora ${(gz / 1024).toFixed(1)} KB)`)
+    const nombres = fs.readdirSync(DIST + '/assets').filter((n) => n.endsWith('.js'))
     for (const parte of ['AjustesScreen', 'ListaDelPase', 'HojaInvitar', 'HojaVerPropuesta', 'HojaRecomendacion', 'HojaComoTeLlamas']) debe(nombres.some((n) => n.startsWith(parte)), 'peso', `${parte} va en su propio archivo`)
     debe(!/Todavía no tienes ningún pase/.test(entrada) && !/¿Cómo te llamas\?/.test(entrada) && !/Un momento, estamos confirmando el pago/.test(entrada), 'peso', 'al abrir no entran ni Mis pases, ni «¿Cómo te llamas?», ni la espera del pago')
     // Lo de desarrollo no llega a producción.
-    const todos = nombres.map((n) => leer('dist/assets/' + n)).join('\n')
+    const todos = nombres.map((n) => leer(DIST + '/assets/' + n)).join('\n')
     debe(!/Dev: ruta rápida/.test(todos), 'desarrollo', 'el botón «Dev: ruta rápida (sin IA)» no está en la versión de producción')
-  } else console.log('   (sin dist/: no se comprueba el peso real; ejecuta antes «npx vite build»)')
+  }
 
   // ── 8. «Pruebas» y la ruta rápida: solo en local y vistas previas, nunca en producción ──
   const enHost = async (host, entorno, nombre) => {

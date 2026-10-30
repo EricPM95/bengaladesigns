@@ -85,7 +85,7 @@ export function TuEntrada({
             type="button"
             data-cambiar-hora
             onClick={onCambiarHora}
-            className="flex h-[42px] flex-1 items-center justify-center gap-[7px] rounded-[13px] text-[14px] font-semibold text-text active:scale-[.98]"
+            className="zona-toque flex h-[42px] flex-1 items-center justify-center gap-[7px] rounded-[13px] text-[14px] font-semibold text-text active:scale-[.98]"
             style={{ background: '#FFFDF8', border: '1px solid rgba(43,127,69,.4)' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2B7F45" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -94,7 +94,7 @@ export function TuEntrada({
             Cambiar hora
           </button>
         )}
-        <button type="button" data-ver-entrada onClick={onVerEntrada} className="flex h-[42px] flex-1 items-center justify-center gap-[7px] rounded-[13px] text-[14px] font-semibold active:scale-[.98]" style={{ background: '#1C2230', color: '#F3D88F' }}>
+        <button type="button" data-ver-entrada onClick={onVerEntrada} className="zona-toque flex h-[42px] flex-1 items-center justify-center gap-[7px] rounded-[13px] text-[14px] font-semibold active:scale-[.98]" style={{ background: '#1C2230', color: '#F3D88F' }}>
           <TicketDesign size={16} color="#F3D88F" grosor={2} />
           Ver entrada
         </button>

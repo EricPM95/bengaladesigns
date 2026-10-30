@@ -44,12 +44,12 @@ export function AvisoSaltada({ nombre, onDeshacer, onOtroDia }: { nombre: string
         <span className="font-semibold text-text">Saltada</span> · {nombre}
       </span>
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={onDeshacer} className="flex h-10 items-center gap-1.5 rounded-full border border-text/15 px-3.5 text-[13px] font-semibold text-text">
+        <button type="button" onClick={onDeshacer} className="zona-toque flex h-10 items-center gap-1.5 rounded-full border border-text/15 px-3.5 text-[13px] font-semibold text-text">
           <Icono nombre="recuperar" size={15} grosor={1.8} />
           Deshacer
         </button>
         {onOtroDia && (
-          <button type="button" onClick={onOtroDia} className="flex h-10 items-center gap-1.5 rounded-full border border-text/15 px-3.5 text-[13px] font-semibold text-text">
+          <button type="button" onClick={onOtroDia} className="zona-toque flex h-10 items-center gap-1.5 rounded-full border border-text/15 px-3.5 text-[13px] font-semibold text-text">
             <Icono nombre="adelante" size={15} grosor={1.8} />
             Pasarla a otro día
           </button>

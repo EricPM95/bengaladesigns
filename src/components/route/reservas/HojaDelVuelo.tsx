@@ -56,7 +56,7 @@ function Pastilla({ activa, onClick, children, dato }: { activa: boolean; onClic
       onClick={onClick}
       aria-pressed={activa}
       {...dato}
-      className="inline-flex h-10 items-center gap-1.5 rounded-full px-[15px] text-[14px] font-semibold"
+      className="zona-toque inline-flex h-10 items-center gap-1.5 rounded-full px-[15px] text-[14px] font-semibold"
       style={activa ? { background: '#1C2230', color: '#F3D88F' } : { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.18)', color: '#1C2230' }}
     >
       {activa && <Icono nombre="hecho" size={14} grosor={3} style={{ color: '#E9C77A' }} />}

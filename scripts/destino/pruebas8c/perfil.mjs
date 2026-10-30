@@ -33,9 +33,11 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   debe(/loading="lazy"/.test(marco), 'lazy', 'la imagen del marco lleva loading="lazy"')
   debe(!/^import .*\.(webp|png)'/m.test(marco), 'lazy', 'los marcos no se importan en el código (se piden por URL al pintarse)')
   const hoja = sinComentarios(leer(ruta('src/components/layout/PerfilSheet.tsx')))
-  debe(/lazy\(\(\) => import\('\.\.\/logros\/pantallas\/perfil\/CuerpoConLogros'\)\)/.test(hoja), 'lazy', 'el Perfil con logros se baja con import() (no entra en el paquete al abrir la app)')
+  // (10S: antes lazy(() => import(...)) en una sola línea; ahora la importación es una función aparte, \`cargarCuerpo\`, para poder precargarla; sigue bajándose con import(). Tanda 10N5, Eric 27-oct-2026: «abre al momento».)
+  debe(/const cargarCuerpo = \(\) => import\('\.\.\/logros\/pantallas\/perfil\/CuerpoConLogros'\)/.test(hoja) && /lazy\(cargarCuerpo\)/.test(hoja), 'lazy', 'el Perfil con logros se baja con import() (no entra en el paquete al abrir la app)')
   debe(!/pantallas\/perfil\/(MarcoDeRango|NivelYBarra|ExpGanada)/.test(hoja.replace(/import\('\.\.\/logros\/pantallas\/perfil\/CuerpoConLogros'\)/, '')), 'lazy', 'PerfilSheet no importa a mano nada de pantallas/perfil salvo el cuerpo perezoso')
-  debe(!/logrosActivos\(\)/.test(hoja) && /logrosActivos\(\)/.test(sinComentarios(leer(ruta(carpeta, 'CuerpoConLogros.tsx')))), 'apagado', '(10N4) la rama de los logros vive dentro del cuerpo único: PerfilSheet ya no decide entre dos perfiles')
+  // (10S: antes PerfilSheet no nombraba logrosActivos() en absoluto; desde la 10N5 lo usa solo para enseñar la tarjeta «Añade un viaje que ya hiciste». Lo que se comprueba sigue igual: PerfilSheet NO decide entre dos perfiles —ningún «logrosActivos() ? … : …» y un solo cuerpo—. Tanda 10N5, Eric 27-oct-2026.)
+  debe(!/logrosActivos\(\)\s*\?/.test(hoja) && (hoja.match(/<CuerpoConLogros/g) ?? []).length === 1 && /logrosActivos\(\)/.test(sinComentarios(leer(ruta(carpeta, 'CuerpoConLogros.tsx')))), 'apagado', '(10N4) la rama de los logros vive dentro del cuerpo único: PerfilSheet ya no decide entre dos perfiles')
   debe(!/cuerpoDeSiempre/.test(hoja), 'apagado', '(10N4) con los logros apagados NO queda el cuerpo de siempre: es el mismo perfil nuevo sin lo de los logros')
   const host = leer(ruta('src/components/logros/pantallas/PantallasHost.tsx'))
   debe(/import\('\.\/ViajeGuardado'\)/.test(host), 'lazy', 'ViajeGuardado se carga con import() desde PantallasHost')
@@ -56,7 +58,14 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   debe(!sinNumeros.split('\n').filter((l) => !/DURACION|font:/.test(l)).some((l) => /\b(900|1\.?300|2\.?500|3\.?000)\b/.test(l)), 'numeros', 'ningún coste de nivel escrito a mano en el móvil')
   // 44 px de toque en lo que se toca
   debe(/min-h-\[44px\]/.test(codigo.find((c) => c.f.endsWith('CuerpoConLogros.tsx'))?.t ?? ''), '44px', 'el título del Perfil tiene zona de toque de 44 px')
-  debe(/h-11 w-11/.test(codigo.find((c) => c.f.endsWith('CuerpoConLogros.tsx'))?.t ?? ''), '44px', 'Ajustes tiene zona de toque de 44 px')
+  // (10S) Ajustes (ahora en PerfilSheet, 40 px a la vista) y la cama de HOY: lo VISIBLE sigue en 40 × 40 y la ZONA DE TOQUE llega a 44 × 44 con la clase `zona-toque` (index.css: un ::after centrado de al menos 44 × 44).
+  // La medida real (getBoundingClientRect 40 × 40 y elementFromPoint en las 4 esquinas y el centro del cuadrado de 44 × 44, y 1 px fuera no devuelve el botón) está en pruebaTanda10S.mjs; aquí, el código que la hace posible.
+  const ajustes = sinComentarios(leer(ruta('src/components/layout/PerfilSheet.tsx'))).match(/data-ajustes[\s\S]{0,300}/)?.[0] ?? ''
+  const cama = sinComentarios(leer(ruta('src/components/route/hoy/BotonCamaHoy.tsx')))
+  const css = leer(ruta('src/index.css'))
+  debe(/\.zona-toque::after\s*\{[^}]*width:\s*max\(100%,\s*44px\)[^}]*height:\s*max\(100%,\s*44px\)/.test(css), '44px', 'la clase zona-toque crea una zona de toque invisible de 44 × 44 como mínimo')
+  debe(/zona-toque/.test(ajustes) && /\bh-10 w-10\b/.test(ajustes), '44px', 'Ajustes tiene zona de toque de 44 px y a la vista sigue de 40 × 40')
+  debe(/zona-toque/.test(cama) && /\bh-10 w-10\b/.test(cama), '44px', 'la cama de HOY tiene zona de toque de 44 px y a la vista sigue de 40 × 40')
   // Emblemas ocultos: el Perfil solo dibuja lo que el servidor manda como ganado.
   debe(/CON_HORA/.test(leer(ruta(carpeta, 'piezasDelViaje.ts'))), 'emblemas', 'las piezas del viaje no dibujan Madrugador ni Nocturno')
 

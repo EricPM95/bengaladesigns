@@ -22,7 +22,7 @@ export function PastillaPase({ destino, conPase: aMano }: { destino: string; con
       onClick={abrirPase}
       data-pastilla-pase={conPase ? 'con' : 'sin'}
       aria-label={conPase ? `Tienes el Pase ${destino}` : `Ver el Pase ${destino}`}
-      className="flex h-[30px] w-fit items-center gap-1.5 rounded-full pl-2.5 pr-3.5"
+      className="zona-toque flex h-[30px] w-fit items-center gap-1.5 rounded-full pl-2.5 pr-3.5"
       style={
         conPase
           ? { background: 'linear-gradient(100deg,#E6CB8E 0%,#D2AE62 55%,#B38B3A 100%)', color: '#2E2008', border: '1px solid rgba(166,124,82,.45)', boxShadow: '0 1px 2px rgba(111,78,55,.25)' }

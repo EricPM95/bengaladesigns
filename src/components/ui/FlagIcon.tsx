@@ -1,3 +1,5 @@
+import { cargarBanderas } from '../../lib/banderas'
+
 interface FlagIconProps {
   /** Código ISO de país en minúsculas (ej. "es") — null/undefined no renderiza nada. */
   countryCode: string | null | undefined
@@ -11,5 +13,6 @@ interface FlagIconProps {
  */
 export function FlagIcon({ countryCode, className = '' }: FlagIconProps) {
   if (!countryCode || countryCode.length !== 2) return null
+  void cargarBanderas()
   return <span aria-hidden="true" className={`fi fi-${countryCode.toLowerCase()} rounded-[2px] ${className}`} />
 }

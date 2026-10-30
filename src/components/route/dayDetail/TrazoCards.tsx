@@ -195,7 +195,7 @@ export function PeriodHeader({ period, onAddStop }: { period: DayPeriod; onAddSt
       </span>
       {/* (Tanda 6i: «+ Añadir parada» en la misma línea que el título de la franja, a la derecha.) */}
       {onAddStop && (
-        <button type="button" onClick={onAddStop} className="ml-auto shrink-0 py-2 text-[12.5px] font-medium text-text/50 transition-colors hover:text-text">
+        <button type="button" onClick={onAddStop} className="zona-toque ml-auto shrink-0 py-2 text-[12.5px] font-medium text-text/50 transition-colors hover:text-text">
           + Añadir parada
         </button>
       )}

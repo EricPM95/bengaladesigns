@@ -110,7 +110,7 @@ export function TrazoCalendar({ dateRange, onSelect, onPreviewMonth }: TrazoCale
           const isEdge = ts === start || ts === end
           const inRange = Boolean(start && end && ts > start && ts < end)
           return (
-            <button
+            <button className="zona-toque"
               key={cell.key}
               type="button"
               disabled={disabled}

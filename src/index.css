@@ -1,8 +1,34 @@
-@import 'flag-icons/css/flag-icons.min.css';
+/* Las banderas (flag-icons) ya no entran aquí: se bajan aparte con src/lib/banderas.ts (10S, peso al abrir). */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ZONA DE TOQUE DE 44 × 44 px (Tanda 10S): un botón pequeño se queda del tamaño que se ve, pero su zona de toque invisible (un ::after centrado) llega a 44 × 44 como mínimo.
+   No cambia lo que se ve, ni el diseño, ni el espacio: el ::after es absoluto y sin pintar. Si el botón no es absoluto/fijo/pegajoso se le da position: relative (las utilidades de Tailwind y el style en línea ganan a esto).
+ */
+@layer components {
+  .zona-toque {
+    position: relative;
+  }
+}
+.zona-toque::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+  background: transparent;
+}
+.zona-toque.zt-sin-x::after {
+  width: 100%;
+}
+.zona-toque.zt-sin-y::after {
+  height: 100%;
+}
+
 
 :root {
   /* JUTRIP (Tanda 10, «Marca JUTRIP 01 · Colores»): mármol y oro. El crema es el fondo, la tarjeta es blanca marfil, la tinta es el texto y el oro es el acento de la marca: botones,

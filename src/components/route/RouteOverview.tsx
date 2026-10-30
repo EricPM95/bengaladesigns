@@ -37,7 +37,7 @@ function TipsButton({ city, onOpen }: { city: string; onOpen: () => void }) {
   const data = useDestinationTips(city, true)
   // (Tanda 10C: la bombilla sale siempre; sin tips de ese destino, apagada.)
   return (
-    <button type="button" onClick={onOpen} disabled={!data} title={data ? `Tips de ${city}` : `Aún no hay tips de ${city}`} aria-label={`Tips de ${city}`} className="group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed">
+    <button type="button" onClick={onOpen} disabled={!data} title={data ? `Tips de ${city}` : `Aún no hay tips de ${city}`} aria-label={`Tips de ${city}`} className="zona-toque group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed">
       <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
         <Icono nombre="tips" className="h-[16px] w-[16px]" />
       </span>
@@ -129,7 +129,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
               title={!canRestoreRoute ? 'Todavía no hay una ruta anterior que recuperar' : cityChanged ? 'Recuperar mi ruta' : 'Tu ruta está tal como te la preparamos'}
               data-edit-tool="1"
               aria-label="Recuperar mi ruta"
-              className="group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed"
+              className="zona-toque group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed"
             >
               <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
                 <Icono nombre="recuperar" className="h-[16px] w-[16px]" />

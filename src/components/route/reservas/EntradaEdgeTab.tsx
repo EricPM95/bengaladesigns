@@ -54,7 +54,7 @@ export function EntradaEdgeTab({ estado, onOpenEntradas }: { estado: BotonEntrad
       data-cuantos={estado.cuantos || undefined}
       onClick={onOpenEntradas}
       aria-label={tengo ? 'Tu entrada está reservada. Ver las entradas' : estado.cuantos > 0 ? `Ver las entradas (${estado.cuantos} del viaje ya la tienen)` : 'Ver las entradas'}
-      className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-[13px] active:scale-95"
+      className="zona-toque absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-[13px] active:scale-95"
       style={{ background: color.fondo, boxShadow: color.sombra }}
     >
       <TicketDesign color={delGrupo ? '#F3D88F' : '#fff'} />

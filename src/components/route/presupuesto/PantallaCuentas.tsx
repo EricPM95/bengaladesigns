@@ -178,7 +178,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
                   </span>
                   <span style={{ font: `600 13px ${MONO}` }}>{dinero(a.centimos, c.texto)}</span>
                   {soyAdmin && (
-                    <button type="button" data-cambiar-entre onClick={() => setCambiando(a.clave ?? null)} className="h-9 flex-none rounded-[10px] border border-text/[.14] px-2.5 text-[12px] font-semibold">
+                    <button type="button" data-cambiar-entre onClick={() => setCambiando(a.clave ?? null)} className="zona-toque h-9 flex-none rounded-[10px] border border-text/[.14] px-2.5 text-[12px] font-semibold">
                       Para quién es
                     </button>
                   )}
@@ -219,7 +219,7 @@ export function PantallaCuentas({ onCerrar }: { onCerrar: () => void }) {
                 {c.nombreDe(x.deudorId)} le debe {dinero(x.centimos, c.texto)} a {c.nombreDe(x.acreedorId)}
               </span>
               {puede(x.deudorId, x.acreedorId) && (
-                <button type="button" data-ya-pagado disabled={enCurso === `${x.deudorId}>${x.acreedorId}`} onClick={() => void marcar(x.deudorId, x.acreedorId, x.centimos)} className="btn-champan h-10 flex-none rounded-[12px] px-3 text-[12.5px] font-semibold">
+                <button type="button" data-ya-pagado disabled={enCurso === `${x.deudorId}>${x.acreedorId}`} onClick={() => void marcar(x.deudorId, x.acreedorId, x.centimos)} className="zona-toque btn-champan h-10 flex-none rounded-[12px] px-3 text-[12.5px] font-semibold">
                   Ya está pagado
                 </button>
               )}

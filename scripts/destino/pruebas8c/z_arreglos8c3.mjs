@@ -151,8 +151,9 @@ export default async function ({ debe, leer, sinComentarios }) {
   const cuerpo = L('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx')
   debe(/<TarjetaDeViaje/.test(cuerpo) && !/<FilaDeViaje/.test(cuerpo), 'viajes', 'Mis viajes (Perfil con logros) usa las tarjetas grandes, no las filas')
   const tarjeta = L('src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx')
-  debe(/height: enCurso \? 176 : 132/.test(tarjeta) && /borderRadius: 22/.test(tarjeta), 'viajes', 'las tarjetas miden 176 px (en curso) y 132 px, con las esquinas del diseño')
-  debe(/Día \$\{Math\.min\(diaN, viaje\.dias\)\} de \$\{viaje\.dias\}/.test(tarjeta), 'viajes', 'el viaje en curso dice «Día N de M»')
+  // (10S: antes la tarjeta medía 176 px en curso y 132 px, esquinas de 22, y el viaje en curso decía «Día N de M». Ahora, como Design (\`Piezas/Mis Viajes Tarjeta\` y \`Perfil Orden\`): portada de 150 px, esquinas de 26, etiqueta «En curso» (verde) / «Próximo» / «Ya hecho» y [Abrir este viaje]; el «Día N de M» y los 176/132 ya no existen. Tanda 10N5 (Eric 27-oct-2026, apartado 4) y 10N11 (29-oct).)
+  debe(/height: 150/.test(tarjeta) && /borderRadius: 26/.test(tarjeta), 'viajes', 'las tarjetas llevan la portada de 150 px y las esquinas del diseño (26)')
+  debe(/en_curso: 'En curso'/.test(tarjeta) && /en_curso: \{ background: '#2B7F45'/.test(tarjeta) && /Abrir este viaje/.test(tarjeta), 'viajes', 'el viaje en curso lleva su etiqueta «En curso» y [Abrir este viaje]')
   debe(!fs.existsSync(ruta('src/components/perfil/FilaDeViaje.tsx')) && !/<FilaDeViaje/.test(leer(ruta('src/components/layout/PerfilSheet.tsx'))), 'viajes', '(10N4) la fila de siempre ya no existe: con los logros apagados salen las mismas tarjetas')
 
   /* ── 10. La vitrina del servidor ── */

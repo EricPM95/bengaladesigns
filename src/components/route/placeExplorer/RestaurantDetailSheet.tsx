@@ -71,7 +71,7 @@ export function RestaurantDetailSheet({ restaurant, destino, onClose }: Restaura
               onClick={onClose}
               aria-label="Volver"
               title="Volver"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-bg-card text-text transition-colors hover:bg-bg-hover"
+              className="zona-toque flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-bg-card text-text transition-colors hover:bg-bg-hover"
             >
               ←
             </button>

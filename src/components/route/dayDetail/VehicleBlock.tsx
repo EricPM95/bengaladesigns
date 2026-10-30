@@ -54,7 +54,7 @@ export function VehicleBlock({ kind }: VehicleBlockProps) {
             type="button"
             onClick={() => setModalOpen(true)}
             aria-label={copy.title}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full btn-champan text-body font-semibold transition-colors "
+            className="zona-toque flex h-8 w-8 shrink-0 items-center justify-center rounded-full btn-champan text-body font-semibold transition-colors "
           >
             +
           </button>

@@ -1,8 +1,56 @@
 // Tanda 10N6 (agente K3), apartado 1f: «Tus recuerdos» en la ficha de un sitio (propuesta A de `Piezas/Recuerdos Ficha`), sin la cámara encima de la foto.
 //   SERVER_PORT=8873 node server/index.js   y   API_TARGET=http://localhost:8873 npx vite --config scripts/destino/_vite_estable.config.mjs --port 5203 --strictPort
 //   APP_URL=http://localhost:5203 API_URL=http://localhost:8873 node scripts/destino/pruebaTanda10N6_recuerdos.mjs
+// (10S) USA EL SUPABASE REAL (cada Chrome nuevo hace un alta anonima y sube fotos de verdad): correr SOLA, nunca con otra prueba de Supabase a la vez. Si falla con «No se ha podido subir la foto» no es la pantalla: es el Supabase (limite de altas anonimas «Request rate limit reached», o sin red); esperar unos minutos y repetirla sola. Pasa igual con el Vite estable y con el de desarrollo normal (comprobado en la 10S).
 // Las fotos se suben de verdad (a la tabla y al bucket de pruebas de siempre) y se BORRAN al acabar. Imprime «N comprobaciones, M fallos» y sale con 1 si falla.
-import { conViaje, modo, esp, cuando, foto, leer, preparar, store, modulo } from './_10n6_k3_comun.mjs'
+import fs from 'node:fs'
+import { conViaje as conViajeSuelto, modo, esp, cuando, foto, leer, preparar, store, modulo } from './_10n6_k3_comun.mjs'
+import { createClient } from '@supabase/supabase-js'
+
+// (10S) UNA cuenta anónima FIJA para los tres Chrome de esta prueba: ninguna alta nueva por pasada ni por Chrome (Supabase limita las altas anónimas: «Request rate limit reached», y en la batería, con otras pruebas a la vez, la subida fallaba con «No se ha podido subir la foto»).
+// Cada Chrome arranca con la sesión de esa cuenta sembrada en su localStorage (se refresca desde docs/dias/_cuentas_prueba_10n6_recuerdos.json, que solo guarda el refresh token, fuera de git y sin imprimirse) y al cerrar se guarda el token renovado.
+// Si el archivo no existe o la sesión ya no vale, la app da de alta UNA (la del primer Chrome) y se guarda para las siguientes pasadas. Usa el Supabase real: va SOLA (grupo «solas al final» de la batería).
+const ARCHIVO_SESION = 'docs/dias/_cuentas_prueba_10n6_recuerdos.json'
+const entorno = { ...process.env }
+try {
+  for (const l of leer('.env.local').split(/\r?\n/)) {
+    const m = /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec(l)
+    if (m && entorno[m[1]] === undefined) entorno[m[1]] = m[2].replace(/^["']|["']$/g, '')
+  }
+} catch {
+  /* sin .env.local */
+}
+const URL_SB = entorno.VITE_SUPABASE_URL
+const CLAVE_SESION = URL_SB ? `sb-${new URL(URL_SB).hostname.split('.')[0]}-auth-token` : null
+async function guionDeSesion() {
+  if (!URL_SB || !entorno.VITE_SUPABASE_ANON_KEY || !fs.existsSync(ARCHIVO_SESION)) return ''
+  try {
+    const guardada = JSON.parse(fs.readFileSync(ARCHIVO_SESION, 'utf8'))
+    const c = createClient(URL_SB, entorno.VITE_SUPABASE_ANON_KEY, { auth: { persistSession: false, autoRefreshToken: false } })
+    const { data, error } = await c.auth.refreshSession({ refresh_token: guardada.refresh_token })
+    if (error || !data.session?.user?.is_anonymous) return ''
+    fs.writeFileSync(ARCHIVO_SESION, JSON.stringify({ refresh_token: data.session.refresh_token }))
+    return `try { if (!localStorage.getItem(${JSON.stringify(CLAVE_SESION)})) localStorage.setItem(${JSON.stringify(CLAVE_SESION)}, ${JSON.stringify(JSON.stringify(data.session))}) } catch (e) {};`
+  } catch {
+    return ''
+  }
+}
+async function conViaje(opciones) {
+  const app = await conViajeSuelto({ ...opciones, extraAntes: `${await guionDeSesion()} ${opciones.extraAntes ?? ''}` })
+  const cerrarDeVerdad = app.cerrar.bind(app)
+  app.cerrar = async (...a) => {
+    // El token renovado por el navegador se guarda para el siguiente Chrome y la siguiente pasada.
+    try {
+      const cruda = CLAVE_SESION ? await app.evaluar(`localStorage.getItem(${JSON.stringify(CLAVE_SESION)})`) : null
+      const rt = cruda ? JSON.parse(cruda).refresh_token : null
+      if (rt) fs.writeFileSync(ARCHIVO_SESION, JSON.stringify({ refresh_token: rt }))
+    } catch {
+      /* no se pudo guardar: la próxima vez habrá una alta nueva */
+    }
+    return cerrarDeVerdad(...a)
+  }
+  return app
+}
 
 const { debe, fin } = preparar()
 const sinComentarios = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
@@ -68,6 +116,7 @@ console.log('2. Sin pase')
     await esp(1500)
     h = await g.evaluar(HOJA)
     const err = await g.evaluar("document.querySelector('[data-recuerdos-error]')?.innerText ?? null")
+    if (err && /No se ha podido subir/.test(err)) console.log("  AVISO: la subida de la foto fallo: esta prueba usa el Supabase real (limite de altas anonimas o red), no es la pantalla; repetirla sola tras unos minutos.")
     debe(subida && h && h.fotos === 1 && !err, '1f', `la foto se guarda y sale en «Tus fotos · 1» (${JSON.stringify(h && { fotos: h.fotos, rotulo: h.rotulo })} error: ${err})`)
     tripGratis = await g.evaluar(`${store}.then((s) => s.useRouteStore.getState().route.id)`)
     const guardadas = await g.evaluar(`${fotosMod}.then(async (m) => (await m.listarFotos(${JSON.stringify(tripGratis)})).map((f) => ({ dia: f.dayNumber, parada: f.stopName })))`)
@@ -78,13 +127,16 @@ console.log('2. Sin pase')
     await g.captura(foto('recuerdos_hoja_una_foto_sin_pase'))
     // Cambiar la foto: sigue siendo una
     await g.evaluar(SUBIR('[data-recuerdos-entrada="cambiar"]', 1))
-    await esp(6000)
+    // (10S) Espera de verdad en lugar de 6 s fijos: con la CPU cargada (batería) la subida tarda más, la tarjeta «Elegir de la galería» sigue deshabilitada mientras sube y su clic no avisaba del pase. Primero empieza a subir (o ya acabó) y luego se espera a que termine.
+    await cuando(g, "Boolean(document.querySelector('[data-recuerdos-subiendo]')) || document.querySelectorAll('[data-foto-recuerdo]').length > 0", 40)
+    await cuando(g, "!document.querySelector('[data-recuerdos-subiendo]')", 480)
+    await esp(1500)
     const trasCambio = await g.evaluar(`${fotosMod}.then(async (m) => (await m.listarFotos(${JSON.stringify(tripGratis)})).length)`)
     debe(trasCambio === 1, '1f', `«Cambiar la foto» sustituye a la vieja: sigue habiendo 1 (${trasCambio})`)
     // La segunda: el aviso del pase
     await g.evaluar("window.__avisos.length = 0; true")
     await clic(g, "Array.from(document.querySelectorAll('[data-hoja-opciones=\"tus-recuerdos\"] [data-opcion-hoja]')).find((b) => /Elegir de la galería/.test(b.innerText))")
-    await esp(1200)
+    await cuando(g, 'window.__avisos.length > 0', 40)
     const avisos = await g.evaluar("window.__avisos")
     debe(avisos.length === 1 && avisos[0].clave === 'segunda_foto', '1f', `intentar guardar una segunda abre el aviso del pase con la clave «segunda_foto» (${JSON.stringify(avisos)})`)
     await g.captura(foto('recuerdos_aviso_pase_segunda_foto'))
@@ -99,7 +151,7 @@ console.log('2. Sin pase')
     // Limpieza
     await g.evaluar(`${fotosMod}.then(async (m) => { for (const f of await m.listarFotos(${JSON.stringify(tripGratis)})) await m.borrarFoto(f); return true })`)
   } finally {
-    g.cerrar()
+    await g.cerrar()
   }
 }
 
@@ -140,7 +192,7 @@ console.log('3. Con pase')
     debe(avisos.length === 0, '1f', 'con pase, ninguna foto abre el aviso del pase')
   } finally {
     if (trip) await k.evaluar(`${fotosMod}.then(async (m) => { for (const f of await m.listarFotos(${JSON.stringify(trip)})) await m.borrarFoto(f); return true })`).catch(() => undefined)
-    k.cerrar()
+    await k.cerrar()
   }
 }
 
@@ -163,7 +215,7 @@ console.log('4. La ficha de EXPLORAR (sin día)')
     await esp(1200)
     await g.captura(foto('recuerdos_ficha_explorar'))
   } finally {
-    g.cerrar()
+    await g.cerrar()
   }
 }
 

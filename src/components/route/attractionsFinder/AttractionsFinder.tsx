@@ -192,7 +192,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                 onClick={onClose}
                 aria-label="Cerrar"
                 title="Cerrar"
-                className="fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
+                className="zona-toque fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
               >
                 <Icono nombre="cerrar" size={14} />
               </button>
@@ -224,7 +224,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                             type="button"
                             onClick={() => toggleSelected(stop)}
                             aria-label={`Quitar ${stop.name}`}
-                            className="flex h-4 w-4 items-center justify-center rounded-full text-text-muted hover:bg-bg-hover hover:text-text"
+                            className="zona-toque flex h-4 w-4 items-center justify-center rounded-full text-text-muted hover:bg-bg-hover hover:text-text"
                           >
                             <Icono nombre="cerrar" size={14} />
                           </button>
@@ -357,7 +357,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
               onClick={onClose}
               aria-label="Cerrar"
               title="Cerrar"
-              className="fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
+              className="zona-toque fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
             >
               <Icono nombre="cerrar" size={14} />
             </button>
@@ -383,7 +383,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                     inputRef.current?.focus()
                   }}
                   aria-label="Borrar búsqueda"
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-hover text-text-muted hover:text-text"
+                  className="zona-toque flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-hover text-text-muted hover:text-text"
                 >
                   <XIcon />
                 </button>

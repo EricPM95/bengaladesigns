@@ -17,7 +17,7 @@ export function BotonCamaHoy({ route }: { route: Route }) {
   if (!pagoActivo()) return null
   const direccion = direccionDelAlojamiento(route)
   const enlace = enlaceComoLlegarAlojamiento(direccion)
-  const estilo = 'absolute right-4 top-1 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-text/20 bg-white shadow-sm transition-transform active:scale-95'
+  const estilo = 'zona-toque absolute right-4 top-1 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-text/20 bg-white shadow-sm transition-transform active:scale-95'
   const cama = (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.6)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M3 19V6M3 15h18v4M21 15v-2.5A2.5 2.5 0 0 0 18.5 10H11v5" />

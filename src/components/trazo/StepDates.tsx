@@ -98,7 +98,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
             const sel = n === flexNights
             const under = n < flexNights
             return (
-              <button
+              <button className="zona-toque"
                 key={n}
                 type="button"
                 onClick={() => setFlexDays(n + 1)}
@@ -118,7 +118,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
             )
           })}
         </div>
-        <button
+        <button className="zona-toque"
           type="button"
           data-solo-un-dia="1"
           aria-pressed={flexNights === 0}
@@ -163,7 +163,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
                 {months.map((m) => {
                   const active = flexMonth === m
                   return (
-                    <button
+                    <button className="zona-toque"
                       key={m}
                       type="button"
                       onClick={() => {

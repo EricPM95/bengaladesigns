@@ -7,6 +7,9 @@
 //   4. LOS AVISOS DEL DÍA: no salen con el horario real («cierra hoy a las X»), pasan de 3 líneas, no van los que cierran antes primero o cuentan lo visto, saltado, cerrado o sin hora;
 //   5. «DÍA COMPLETO»: la línea sale cuando no toca o no sale cuando toca; o el día cambia con ella;
 //   6. «DEVOLVERLA A LA RUTA»: no hay opción en el menú de la parada o en la lista de HOY, o no deja la parada no saltada.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · «1 gratis HOY»: antes, HOY sin pase no podia llevar la palabra «Cerca de ti» ni «Escuchar» ni «Cerca de mí»; ahora «Cerca de ti» SI puede salir, solo como una ventaja cerrada de la lista del pase de la pantalla HOY sin pase de Design
+//     («Cerca de ti: baños / fuentes / dónde comer», data/pase/incluye.json); se sigue comprobando que NO salgan los botones de «Cerca de ti» (Baños, Fuentes, Comer), ningun «Escuchar» suelto, ni «Cómo llegar», «Llegada a», «Hoy vuelves a casa» ni «No me da tiempo». «Escuchar» y «Cerca de mí» siguen prohibidos. Tanda 10N11, Eric 29-oct-2026 (HOY sin pase como Design) y 10N12, 29-oct (aviso del día de prueba).
 import fs from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
@@ -91,7 +94,14 @@ const hoyEn = (r, opciones) => aTexto(pinta(HoyView, { route: r, onPonFechas() {
 ponerSintesis(sintesisSimulada([VOZ_ES, VOZ_EN]))
 const hoyGratis = hoyEn(route, { version: 'gratis' })
 // (Tanda 10C: HOY sin pase enseña la lista de lo que tendrá —«Escuchar lo que ves»— y la invitación al pase, pero ningún botón de escuchar ni «Cerca de ti».)
-for (const palabra of ['Escuchar', 'Cerca de ti', 'Cerca de mí']) debe(!hoyGratis.replace('Escuchar lo que ves', '').includes(palabra), '1 gratis HOY', `en HOY gratis sale «${palabra}» (${plano(hoyGratis).slice(0, 200)})`)
+// (10S) «Cerca de ti» ya no es una palabra prohibida en HOY sin pase: la pantalla de Design de HOY sin pase (10N11) enseña la lista de lo que incluye el pase y en ella sale «Cerca de ti» como una ventaja cerrada. Lo que NO puede salir es la cosa de pago: los tres botones (Baños, Fuentes, Comer), ningún «Escuchar» suelto y nada de la llegada, la vuelta ni «Cómo llegar».
+for (const palabra of ['Escuchar', 'Cerca de mí']) debe(!hoyGratis.replace('Escuchar lo que ves', '').includes(palabra), '1 gratis HOY', `en HOY gratis sale «${palabra}» (${plano(hoyGratis).slice(0, 200)})`)
+{
+  const lineasGratis = hoyGratis.split('\n')
+  for (const boton of ['Baños', 'Fuentes', 'Comer']) debe(!lineasGratis.includes(boton), '1 gratis HOY', `en HOY gratis salen los botones de «Cerca de ti» (falta quitar «${boton}»)`)
+  debe(!/data-cerca-de-ti|data-hoy-cerca/.test(hoyGratis) && !hoyGratis.includes('Ubicación'), '1 gratis HOY', 'en HOY gratis sale la caja de «Cerca de ti» de pago')
+  for (const cosa of ['Cómo llegar', 'Llegada a ', 'Hoy vuelves a casa', 'No me da tiempo']) debe(!hoyGratis.includes(cosa), '1 gratis HOY', `en HOY gratis sale algo de pago: «${cosa}»`)
+}
 const hoyPago = hoyEn(route, { version: 'completa' })
 debe(/Cerca de ti/.test(hoyPago), '2 pago HOY', 'en HOY de pago, durante el viaje, falta «Cerca de ti»')
 for (const boton of ['Baños', 'Fuentes', 'Comer']) debe(hoyPago.split('\n').includes(boton), '2 pago HOY', `en «Cerca de ti» falta el botón «${boton}»`)

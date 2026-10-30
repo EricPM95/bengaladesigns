@@ -85,7 +85,8 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   debe(/en_ruta: enRuta\.has\(s\.sitio\)/.test(servicio) && /\.\.\.\(coordenadasDeSitio/.test(servicio), 'servidor', 'el estado manda el nombre, si está en la ruta y las coordenadas de cada sitio')
   // --- Compartir ---
   const imagen = sinComentarios(leer('src/components/logros/momentos/imagen.ts'))
-  debe(/LOGO_DE_LA_APP: string \| null = null/.test(imagen) && /setLineDash/.test(imagen), 'compartir', 'el hueco del logo queda vacío y preparado')
+  // (10S: antes el logo era null y el hueco quedaba vacío; ahora lleva el de la marca, con el hueco de rayas preparado si no hay logo. Tanda 10, Eric 20-oct-2026, JUTRIP y su logo.)
+  debe(/LOGO_DE_LA_APP: string \| null = marca\.logo_oscuro/.test(imagen) && /setLineDash/.test(imagen), 'compartir', 'el logo de la marca puesto (data/marca.json) y el hueco de rayas preparado si falta')
   debe(!/Routy/.test(imagen + leer('src/components/logros/momentos/Compartir.tsx')), 'compartir', 'ningún nombre de la app puesto a mano')
   debe(/marco-\$\{/.test(imagen) && /datosDelPie/.test(leer('src/components/logros/momentos/Compartir.tsx')), 'compartir', 'el pie lleva el marco de rango y el título')
   debe(!/secretos\.texto/.test(imagen), 'compartir', 'la imagen del viaje no dice «N de 12 secretos encontrados»')

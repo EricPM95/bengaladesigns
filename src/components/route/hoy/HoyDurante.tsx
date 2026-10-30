@@ -252,7 +252,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                   type="button"
                   onClick={pedirUbicacion}
                   disabled={ubicacionEstado === 'pidiendo'}
-                  className={`flex h-8 flex-none items-center gap-1.5 rounded-full px-2.5 text-[12px] font-semibold disabled:opacity-60 text-[#1C2230]`}
+                  className={`zona-toque flex h-8 flex-none items-center gap-1.5 rounded-full px-2.5 text-[12px] font-semibold disabled:opacity-60 text-[#1C2230]`}
                   style={{ background: fondoPastilla() }}
                 >
                   <Icono nombre="ubicacion" size={14} />
@@ -326,7 +326,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
             <Icono nombre="camara" size={16} />
             Añadir foto
           </BotonFoto>
-          <button type="button" onClick={() => setOfrecerFoto(null)} aria-label="Ahora no" className="flex h-10 w-10 flex-none items-center justify-center rounded-full text-text/50">
+          <button type="button" onClick={() => setOfrecerFoto(null)} aria-label="Ahora no" className="zona-toque flex h-10 w-10 flex-none items-center justify-center rounded-full text-text/50">
             <Icono nombre="cerrar" size={16} />
           </button>
         </div>
@@ -388,7 +388,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                   {!saltada && <PendienteDeParada dayId={day.id} stopId={stop.id} visto={vista} />}
                 </span>
                 {saltada && (
-                  <button type="button" onClick={() => devolverALaRuta(stop)} className="flex h-8 flex-none items-center gap-1 rounded-full border border-text/15 px-2.5 text-[11.5px] font-semibold text-text/70">
+                  <button type="button" onClick={() => devolverALaRuta(stop)} className="zona-toque flex h-8 flex-none items-center gap-1 rounded-full border border-text/15 px-2.5 text-[11.5px] font-semibold text-text/70">
                     <Icono nombre="recuperar" size={13} grosor={1.8} />
                     Devolverla a la ruta
                   </button>

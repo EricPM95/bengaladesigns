@@ -34,7 +34,7 @@ export function ResumenViaje({ fichas, onFicha }: { fichas: FichaResumen[]; onFi
             type="button"
             onClick={() => onFicha(ficha.bloque)}
             data-ficha={ficha.bloque}
-            className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-3 text-[12.5px] font-medium transition-colors"
+            className="zona-toque flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-3 text-[12.5px] font-medium transition-colors"
             style={{
               border: `1px solid ${ficha.hecho ? 'oklch(0.55 0.11 150 / .35)' : 'rgba(28,34,48,.12)'}`,
               background: ficha.hecho ? 'oklch(0.96 0.035 150)' : '#FFFFFF',

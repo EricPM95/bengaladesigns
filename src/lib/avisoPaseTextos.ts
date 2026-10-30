@@ -47,7 +47,7 @@ export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
   },
   logros: {
     linea1: '',
-    linea2: 'Con el {pase}, cada sitio que ves suma a tus logros del viaje.',
+    linea2: 'Con el {pase}, consigues el sello de cada sitio que visitas, las colecciones y los emblemas secretos.',
   },
   generico: {
     linea1: '',

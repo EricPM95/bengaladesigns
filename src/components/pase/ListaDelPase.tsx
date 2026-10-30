@@ -93,9 +93,9 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
       {/* El fondo de Design: degradado azul oscuro con el halo de oro arriba a la izquierda. */}
       <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#1B2240 0%,#12172D 38%,#0C1020 100%)' }} />
       <span aria-hidden="true" style={{ position: 'absolute', left: -60, top: -80, width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle,rgba(233,199,122,.22),transparent 68%)' }} />
-      <div data-lista-pase="1" style={{ position: 'absolute', inset: 0, overflowY: 'auto', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
+      <div data-lista-pase="1" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 'calc(env(safe-area-inset-top, 0px) + 56px)', overflowY: 'auto', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
         <div style={{ position: 'relative', maxWidth: 480, margin: '0 auto', paddingBottom: 'max(34px, env(safe-area-inset-bottom))' }}>
-          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: 'calc(env(safe-area-inset-top, 0px) + 44px) 26px 14px', textAlign: 'center' }}>
+          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '4px 26px 14px', textAlign: 'center' }}>
             <span style={{ font: `400 35px/1.04 ${SERIF}`, color: CREMA, textShadow: '0 0 24px rgba(233,199,122,.28)' }}>
               Todo lo que incluye tu <span style={{ color: ORO }}>{`Pase ${destino}`}</span>
             </span>
@@ -138,6 +138,8 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
         </div>
       </div>
 
+      {/* (Tanda 10S §1) Franja de cabecera: la lista se desplaza debajo de ella (el scroll empieza bajo la ✕), así la ✕ nunca pisa texto. */}
+      <div aria-hidden="true" data-lista-franja-fundido="1" style={{ position: 'absolute', left: 0, right: 0, top: 'calc(env(safe-area-inset-top, 0px) + 56px)', height: 14, background: 'linear-gradient(180deg,rgba(26,33,62,1),rgba(26,33,62,0))', zIndex: 9, pointerEvents: 'none' }} />
       {!conPase && (
         <div data-elegir-pase-fijo="1" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 8, padding: '34px 22px max(16px, env(safe-area-inset-bottom))', background: 'linear-gradient(180deg,rgba(12,16,32,0),rgba(12,16,32,.92) 55%)', pointerEvents: 'none' }}>
           <span role="button" tabIndex={0} data-elegir-pase="1" onClick={() => setHoja('buy')} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setHoja('buy')} style={{ ...BOTON_ORO, pointerEvents: 'auto', maxWidth: 436, margin: '0 auto', height: 58, borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 16.5px 'Geist'", cursor: 'pointer' }}>
@@ -145,7 +147,7 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
           </span>
         </div>
       )}
-    <button
+    <button className="zona-toque"
       type="button"
       onClick={onCerrar}
       aria-label="Cerrar"
@@ -165,7 +167,7 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
               <span style={{ font: `400 28px/1 ${SERIF}` }}>{hoja === 'cur' ? 'Moneda' : '¿Cuántos sois?'}</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 {hoja === 'buy' && (
-                  <span role="button" onClick={() => setHoja('cur')} style={{ height: 32, padding: '0 11px 0 13px', borderRadius: 999, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.5)', display: 'flex', alignItems: 'center', gap: 5, font: `700 12.5px ${MONO}`, letterSpacing: '.04em', color: '#6E5018', cursor: 'pointer' }}>
+                  <span className="zona-toque" role="button" onClick={() => setHoja('cur')} style={{ height: 32, padding: '0 11px 0 13px', borderRadius: 999, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.5)', display: 'flex', alignItems: 'center', gap: 5, font: `700 12.5px ${MONO}`, letterSpacing: '.04em', color: '#6E5018', cursor: 'pointer' }}>
                     {activa}
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M6 9l6 6 6-6" />

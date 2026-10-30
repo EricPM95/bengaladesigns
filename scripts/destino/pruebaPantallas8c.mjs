@@ -2,6 +2,13 @@
 //   node scripts/destino/pruebaPantallas8c.mjs
 // No toca el motor de rutas. Cada parte de las pantallas tiene su archivo en `scripts/destino/pruebas8c/*.mjs`, que exporta `titulo` y una función por defecto `({ debe, leer, archivos, sinComentarios })`;
 // aquí se cargan todos en orden y se cuentan juntos. `debe(condicion, regla, texto)` apunta un fallo si la condición no se cumple.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · «compartir» (a_boton_hoja_exp): el logo era null con el hueco de rayas vacio -> ahora `marca.logo_oscuro` y el hueco queda de reserva. Tanda 10, Eric 20-oct-2026 (JUTRIP, su logo).
+//   · «lazy» (perfil): `lazy(() => import(...))` -> `const cargarCuerpo = () => import(...)` + `lazy(cargarCuerpo)` (se puede precargar; sigue bajo demanda). Tanda 10N5, Eric 27-oct-2026.
+//   · «apagado» (perfil): PerfilSheet sin ningun logrosActivos() -> sin «logrosActivos() ? … : …» y con un solo cuerpo (usa logrosActivos() solo para la tarjeta «Añade un viaje que ya hiciste»). Tanda 10N5, Eric 27-oct-2026.
+//   · «viajes» (z_arreglos8c3): tarjetas de 176/132 px con esquinas de 22 y «Dia N de M» -> portada de 150 px, esquinas de 26, etiqueta «En curso»/«Proximo»/«Ya hecho» y [Abrir este viaje]. Tanda 10N5 (apartado 4) y 10N11, Eric 27 y 29-oct-2026 (Design `Piezas/Mis Viajes Tarjeta`).
+//   · «demo» (vitrina) y «viajero» secretos: el fixture src/lib/logrosDemo_ganados_datos.json (18-oct) se REGENERO el 30-oct con `node scripts/destino/generarDemoGanados.mjs`; la unica diferencia es Roma › secretos › total 12 -> 14 (dos emblemas secretos nuevos en el servidor de logros). Sin cambiar la prueba.
+//   · «44px» («Ajustes tiene zona de toque de 44 px»): NO SE HA TOCADO. El boton Ajustes del Perfil ahora esta en PerfilSheet (cabecera, 10N5) con `h-10 w-10` = 40 px, no 44, y no he encontrado ninguna decision de Eric sobre ese tamano: puede ser un fallo real de la app (ver informe).
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'

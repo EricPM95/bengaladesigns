@@ -102,7 +102,7 @@ export function HojaDia({
               {titulo}
             </span>
           </span>
-          <button type="button" onClick={onCerrar} disabled={ocupado} aria-label="Cerrar" style={{ width: 36, height: 36, flex: 'none', borderRadius: '50%', border: 'none', background: 'rgba(28,34,48,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#1C2230' }}>
+          <button className="zona-toque" type="button" onClick={onCerrar} disabled={ocupado} aria-label="Cerrar" style={{ width: 36, height: 36, flex: 'none', borderRadius: '50%', border: 'none', background: 'rgba(28,34,48,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#1C2230' }}>
             <Icono nombre="cerrar" size={18} grosor={2} />
           </button>
         </div>

@@ -59,11 +59,11 @@ export function AccommodationBlock({ city, segmentDayId }: AccommodationBlockPro
   const botonOro = (children: React.ReactNode, props: { onClick?: () => void; href?: string; datos: string; etiqueta: string }) => {
     const estilo = { height: 42, padding: '0 15px', borderRadius: 999, background: DORADO_BOTON, color: '#3A2A0A', boxShadow: '0 8px 14px -8px rgba(110,80,24,.8),inset 0 1px 0 rgba(255,255,255,.55)', display: 'flex', alignItems: 'center', gap: 6, font: "700 13.5px 'Geist',sans-serif", flex: 'none', cursor: 'pointer', textDecoration: 'none', border: 0 } as const
     return props.href ? (
-      <a href={props.href} target="_blank" rel="noopener noreferrer" data-alojamiento-dia={props.datos} aria-label={props.etiqueta} style={estilo} onClick={(e) => e.stopPropagation()}>
+      <a className="zona-toque" href={props.href} target="_blank" rel="noopener noreferrer" data-alojamiento-dia={props.datos} aria-label={props.etiqueta} style={estilo} onClick={(e) => e.stopPropagation()}>
         {children}
       </a>
     ) : (
-      <button type="button" data-alojamiento-dia={props.datos} aria-label={props.etiqueta} style={estilo} onClick={(e) => { e.stopPropagation(); props.onClick?.() }}>
+      <button type="button" className="zona-toque" data-alojamiento-dia={props.datos} aria-label={props.etiqueta} style={estilo} onClick={(e) => { e.stopPropagation(); props.onClick?.() }}>
         {children}
       </button>
     )

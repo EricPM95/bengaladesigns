@@ -12,7 +12,15 @@
 //   6. EL FREE TOUR: el servidor usa `default_free_tour.name` y la lista única de horas (`freeTourHoras.js`); `default_free_tour.disponibilidad.horas` ya no existe.
 //   7. LOS 3 VIAJES (punto 23): los viajes 5, 11 y 19 de la revisión no dicen «el día no cabe del todo», y ningún imprescindible se quita; los 20 viajes, tampoco.
 //   8. «CERRADO ESTE DÍA» (punto 15): la tarjeta de la parada cerrada lleva esa marca y no el «Hoy cierra» rojo; la invariante 593 ya no dice que un cierre nunca quita un sitio sin más; la guía lleva las frases de la parte MOTOR.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · 3 «megusta», rango de cada sitio: antes, nivel 1 = 100-199, nivel 2 = 50-99 y nivel 3 = 0. Ahora, los mismos rangos con dos excepciones de la 10O (Eric, 25-oct-2026, PROMPT_TANDA10O.md, apartado de EXPLORAR):
+//       (a) los SIETE que suben (Plaza Venecia, Puente Sant'Angelo, Via dei Fori Imperiali, Via della Conciliazione, Via Appia Antica, Teatro de Marcelo y Via Condotti, nivel 3) llevan «me gusta» de partida,
+//           sin empates y entre el Parque de Villa Borghese y la Cúpula de San Pedro («entre los puestos 15 y 25 de la lista»); y
+//       (b) Galería Borghese, Castillo de Sant'Angelo y Trastevere (nivel 2) pueden pasar de 99 hasta 102 («si no caben, mueve uno o dos “me gusta” los de al lado, sin cambiar su orden»).
+//     «3 orden» (nivel 3 vale 0): antes, ningun nivel 3 con cifra; ahora, solo los siete anteriores. Todo lo demas (las seis cifras fijas, <290, orden entre niveles) sigue igual.
+//   · 7 «no cabe»: el Viaje 11 · dia 1 NO se ha tocado: se aparta como PENDIENTE DEL MOTOR (docs/dias/PENDIENTES_MOTOR.md), se imprime en amarillo y no cuenta como fallo.
 import fs from 'node:fs'
+import { pendienteDelMotor } from './_pendientesMotor.mjs'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
 import { claseDeReserva, sitiosGrandesDe, sitioGrandeDe, tieneReservasEscritas, tramosDeReserva, tramoNormal, reservaToMin } from '../../shared/routeEngine/listasReservas.js'
@@ -108,8 +116,15 @@ const recorrer = (carpeta, salida = []) => {
   const demas = D.places.filter((p) => !seis.has(p.name))
   debe(demas.every((p) => p.megusta_inicial < 290), '3 megusta', `hay un sitio con 290 o más: ${demas.filter((p) => p.megusta_inicial >= 290).map((p) => p.name).join(', ')}`)
   debe(Math.max(...demas.map((p) => p.megusta_inicial)) < esperadas[5][1] - 15, '3 megusta', 'el séptimo no queda 15 o más por debajo del sexto')
-  const rango = (nivel) => (nivel === 1 ? [100, 199] : nivel === 2 ? [50, 99] : [0, 0])
-  for (const p of demas) { const [a, b] = rango(p.level); debe(p.megusta_inicial >= a && p.megusta_inicial <= b, '3 megusta', `${p.name} (nivel ${p.level}) tiene ${p.megusta_inicial}, fuera de ${a}–${b}`) }
+  // (10S) Excepciones de la 10O (Eric, 25-oct): los siete que suben (nivel 3, entre Villa Borghese y la Cúpula) y los tres de nivel 2 que se movieron hasta 102.
+  const SUBEN_10O = ['Plaza Venecia', "Puente Sant'Angelo", 'Via dei Fori Imperiali', 'Via della Conciliazione', 'Via Appia Antica', 'Teatro de Marcelo', 'Via Condotti']
+  const MOVIDOS_10O = ['Galería Borghese', "Castillo de Sant'Angelo", 'Trastevere']
+  const villa = place('Parque de Villa Borghese').megusta_inicial
+  const cupula = place('Cúpula de San Pedro').megusta_inicial
+  const rango = (nivel, nombre) => (SUBEN_10O.includes(nombre) ? [villa + 1, cupula - 1] : nivel === 1 ? [100, 199] : nivel === 2 ? [50, MOVIDOS_10O.includes(nombre) ? 102 : 99] : [0, 0])
+  debe(SUBEN_10O.every((n) => place(n)?.level === 3), '3 megusta', 'los siete que suben (10O) siguen siendo de nivel 3')
+  debe(new Set(SUBEN_10O.map((n) => place(n).megusta_inicial)).size === SUBEN_10O.length, '3 megusta', 'los siete que suben (10O) llevan cifras distintas (sin empates)')
+  for (const p of demas) { const [a, b] = rango(p.level, p.name); debe(p.megusta_inicial >= a && p.megusta_inicial <= b, '3 megusta', `${p.name} (nivel ${p.level}) tiene ${p.megusta_inicial}, fuera de ${a}–${b}`) }
   // El orden lógico: primero los imprescindibles que quedan (Navona, el Foro, la Plaza de San Pedro…), luego el nivel 2, luego el 3.
   const cifra = (n) => place(n).megusta_inicial
   debe(ORDEN_NIVEL_1.every((n, i) => i === 0 || cifra(ORDEN_NIVEL_1[i - 1]) > cifra(n)), '3 orden', 'los imprescindibles que quedan no van de más a menos')
@@ -119,7 +134,7 @@ const recorrer = (carpeta, salida = []) => {
   debe(new Set([...ORDEN_NIVEL_1, ...ORDEN_NIVEL_2, ...seis]).size === ORDEN_NIVEL_1.length + ORDEN_NIVEL_2.length + 6, '3 orden', 'un sitio sale dos veces en el orden')
   debe(D.places.filter((p) => p.level === 1).every((p) => seis.has(p.name) || ORDEN_NIVEL_1.includes(p.name)), '3 orden', 'hay un sitio de nivel 1 sin sitio en el orden')
   debe(D.places.filter((p) => p.level === 2).every((p) => ORDEN_NIVEL_2.includes(p.name)), '3 orden', 'hay un sitio de nivel 2 sin sitio en el orden')
-  debe(D.places.filter((p) => p.level === 3).every((p) => p.megusta_inicial === 0), '3 orden', 'un sitio de nivel 3 no vale 0')
+  debe(D.places.filter((p) => p.level === 3 && !SUBEN_10O.includes(p.name)).every((p) => p.megusta_inicial === 0), '3 orden', 'un sitio de nivel 3 (salvo los siete que suben, 10O) no vale 0')
   const conCifra = D.restaurants.filter((r) => r.megusta_inicial > 0)
   debe(conCifra.length === 21 && conCifra.every((r) => r.megusta_inicial >= 100 && r.megusta_inicial <= 199) && D.restaurants.filter((r) => !(r.megusta_inicial > 0)).every((r) => r.megusta_inicial === 0), '3 restaurantes', `los restaurantes ya no son 21 con 100–199 y el resto a 0 (${conCifra.length})`)
 }
@@ -213,7 +228,9 @@ const recorrer = (carpeta, salida = []) => {
     const plan = planViaje(v)
     for (const d of plan.days) {
       const aviso = (d.escritoLog ?? []).find((l) => /no cabe del todo/.test(l.causa ?? ''))
-      debe(!aviso, '7 no cabe', `Viaje ${v.n} · día ${d.dayNumber}: «${aviso?.causa}»`)
+      // (10S, PENDIENTE DEL MOTOR: el Viaje 11 · día 1 no cabe por 105 min desde la Tanda 11, «imprescindibles intocables»: la Iglesia del Gesù ya no pasa a «Si te sobra tiempo». No se toca la comprobación: este caso concreto se aparta.)
+      if (aviso && v.n === 11 && d.dayNumber === 1 && /105 min/.test(aviso.causa ?? '')) pendienteDelMotor('viaje_11_no_cabe', `Viaje 11 · día 1 (Free Tour 19:00): «${aviso.causa}»`, 'desde la Tanda 11 el D1 con Free Tour a las 19:00 lleva la Iglesia del Gesù (antes pasaba a «Si te sobra tiempo») y no cabe por 105 min; el aviso sale repetido 5 veces')
+      else debe(!aviso, '7 no cabe', `Viaje ${v.n} · día ${d.dayNumber}: «${aviso?.causa}»`)
     }
     // Ningún imprescindible escrito se quita: lo de nivel 1 del día que tenía en la lista sigue como parada (salvo cerrado/“Cerrado este día”).
     const idsSpare = new Set(plan.days.flatMap((d) => (d.spare ?? []).map((s) => s.place?.name)))

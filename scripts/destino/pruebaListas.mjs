@@ -1,7 +1,26 @@
 // La prueba del motor de listas: todos los viajes de 1 a 6 días, las 365 fechas de 2027, con y sin pool, Free Tour y reservas.
 //   node scripts/destino/pruebaListas.mjs [desde=AAAA-MM-DD] [n=fechas seguidas] [paso=N] [dias=1,2,3…] [sinreservasdia=1] [antiguo=1: sin la regla de las reservas con día, para ver que la prueba la echa en falta] [fallos=ruta.txt] [out=docs/dias/PRUEBA_LISTAS.md]
 // (`paso`: una de cada N fechas, para mirar rápido; sin él, las 365.)
+//
+// Tanda 10S — DOS MODOS:
+//   · SIN `muestra`: el BARRIDO COMPLETO de las 365 fechas de 2027 (tarda más de 25 minutos). NO se quita: se corre aparte (obligatorio en toda tanda que toque el motor o los datos de Roma, y una vez antes de lanzar).
+//   · CON `muestra=1` (es lo que corre la batería): las mismas formas, extras, reservas y pares, pero solo en 12 fechas FIJAS de inicio (cada viaje dura de 1 a 7 días, así que cada una cubre también los días que siguen). Las fechas y por qué:
+//       2027-01-01  viernes · Año Nuevo: casi todo cerrado (Coliseo, Foro, Panteón, Vaticanos, Catacumbas) el día de empezar el viaje.
+//       2027-01-12  martes · víspera del cierre de las Catacumbas de San Calixto (13-ene a 10-feb): los viajes de 2+ días cruzan al primer día cerrado; el 6 de enero (Reyes) queda atrás.
+//       2027-01-31  domingo · DENTRO del cierre de las Catacumbas, y último domingo del mes (los Museos Vaticanos abren gratis ese domingo aunque los domingos cierran).
+//       2027-02-10  miércoles · último día del cierre de las Catacumbas (y miércoles: también cierran por su día de cierre) y 11-feb, Vaticanos cerrados.
+//       2027-03-24  miércoles · Semana Santa: Jueves Santo 25, Viernes Santo 26, Pascua 28 y Pasquetta 29 (Vaticanos y Catacumbas cerrados en Pascua; Vaticanos en Pasquetta).
+//       2027-03-28  domingo · Domingo de Pascua el mismo día de empezar (cierra Catacumbas; los domingos cierran los Vaticanos).
+//       2027-06-02  miércoles · Fiesta de la República (festivo) y miércoles; 29-jun (San Pedro y San Pablo) queda fuera de la ventana corta.
+//       2027-06-06  domingo · primer domingo de junio, domingo con el Vaticano CERRADO (no es el último del mes; sí es el Domenica al Museo).
+//       2027-07-17  sábado · pleno verano (calor, noche por sol tardío, horarios de temporada).
+//       2027-08-13  viernes · semana de Ferragosto: 14-ago Vaticanos cerrados y 15-ago (domingo) festivo.
+//       2027-12-22  miércoles · Navidad: 24 Nochebuena, 25 Navidad (todo cerrado) y 26 San Esteban.
+//       2027-12-29  miércoles · fin de año: 31 Nochevieja y el viaje cruza al 1 de enero de 2028.
+//   Con `muestra=1` NO escribe docs/dias/PRUEBA_LISTAS.md (es el informe del barrido completo): va a la carpeta de temporales salvo que se pase `out=`.
 import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import { planListasTrip } from '../../shared/routeEngine/listasTrip.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { writtenDaysFor } from '../../server/engine/writtenDays.js'
@@ -22,7 +41,8 @@ const LLEGADA = args.llegada ? { hora: args.llegada, medio: args.medio ?? 'avion
 const VUELTA = args.vuelta ? { hora: args.vuelta, modo: args.vmedio ?? 'flight', puntoId: args.vpunto ?? (args.vmedio ? null : 'fco'), zona: args.zona ?? 'centro' } : null
 if (LLEGADA || VUELTA) { args.sinreservasdia = '1'; args.sinpares = '1' }
 const SOLO = args.dias ? new Set(args.dias.split(',')) : null
-const out = args.out ?? 'docs/dias/PRUEBA_LISTAS.md'
+const MUESTRA = args.muestra === '1'
+const out = args.out ?? (MUESTRA ? path.join(os.tmpdir(), 'PRUEBA_LISTAS_MUESTRA.md') : 'docs/dias/PRUEBA_LISTAS.md')
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const MUSEOS = 'Museos Vaticanos y Capilla Sixtina'
 
@@ -95,7 +115,43 @@ const EXTRAS = [
 const fechas = []
 const DESDE = args.desde ?? '2027-01-01' // (los próximos 12 meses: desde=AAAA-MM-DD)
 const NFECHAS = Number(args.n ?? 365) // (n: cuántas fechas seguidas desde `desde`; así se reparten las 365 en varios procesos)
-for (let d = 0; d < NFECHAS; d += paso) fechas.push(addDays(DESDE, d))
+const FECHAS_MUESTRA = ['2027-01-01', '2027-01-12', '2027-01-31', '2027-02-10', '2027-03-24', '2027-03-28', '2027-06-02', '2027-06-06', '2027-07-17', '2027-08-13', '2027-12-22', '2027-12-29']
+if (MUESTRA) fechas.push(...FECHAS_MUESTRA)
+else for (let d = 0; d < NFECHAS; d += paso) fechas.push(addDays(DESDE, d))
+// El muestreo se reparte en `trozos=4` procesos (cada uno, con las fechas de su trozo y las MISMAS comprobaciones): cada fecha cuesta casi un minuto de CPU y así la muestra entera tarda ~4 veces menos.
+const INDICES = new Map(fechas.map((f, i) => [f, i]))
+const TROZOS = Math.max(1, Number(args.trozos ?? 4))
+if (MUESTRA && args.trozo === undefined && TROZOS > 1) {
+  const { spawn } = await import('node:child_process')
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'listas_muestra_'))
+  console.log(`pruebaListas: muestreo de ${fechas.length} fechas (el barrido completo se corre aparte), en ${TROZOS} procesos`)
+  const t00 = Date.now()
+  const salidas = await Promise.all(Array.from({ length: TROZOS }, (_, i) => new Promise((ok) => {
+    const hijo = spawn(process.execPath, [process.argv[1], 'muestra=1', `trozo=${i}`, `trozos=${TROZOS}`, `json=${path.join(tmp, `j${i}.json`)}`, `fallos=${path.join(tmp, `f${i}.txt`)}`, `out=${path.join(tmp, `o${i}.md`)}`], { stdio: 'ignore' })
+    hijo.on('close', (code) => ok(code))
+  })))
+  const suma = { viajes: 0, dias: 0, fallos: 0 }
+  let sinResultado = 0
+  for (let i = 0; i < TROZOS; i++) {
+    try {
+      const j = JSON.parse(fs.readFileSync(path.join(tmp, `j${i}.json`), 'utf8'))
+      suma.viajes += j.viajes; suma.dias += j.dias; suma.fallos += j.fallos
+      const lineas = fs.readFileSync(path.join(tmp, `f${i}.txt`), 'utf8').split(/\r?\n/).filter(Boolean)
+      for (const l of lineas.slice(0, 15)) console.log(`  ✗ ${l}`)
+    } catch { sinResultado++ }
+  }
+  fs.rmSync(tmp, { recursive: true, force: true })
+  if (sinResultado) { suma.fallos += sinResultado; console.log(`  ✗ ${sinResultado} trozo(s) sin resultado (códigos ${salidas.join(',')})`) }
+  console.log(JSON.stringify({ ...suma, segundos: Math.round((Date.now() - t00) / 1000) }))
+  console.log(`${suma.viajes} viajes en ${fechas.length} fechas (MUESTREO, no el barrido completo) · ${suma.fallos} fallos`)
+  process.exit(suma.fallos ? 1 : 0)
+}
+if (MUESTRA && args.trozo !== undefined) {
+  const k = Number(args.trozo)
+  const mias = fechas.filter((_, i) => i % TROZOS === k)
+  fechas.length = 0
+  fechas.push(...mias)
+}
 
 const todos = []
 const resumen = { viajes: 0, dias: 0, fallos: 0 }
@@ -223,7 +279,8 @@ if (!args.sinpares) {
   for (const forma of FORMAS) {
     if (SOLO && !SOLO.has(forma.g)) continue
     if (forma.ft && args.sinft) continue
-    for (const [indice, inicio] of fechas.entries()) {
+    for (const [indiceLocal, inicio] of fechas.entries()) {
+      const indice = INDICES.get(inicio) ?? indiceLocal
       const sinFechas = indice % 7 === 3
       const exp = forma.ft ? ['imprescindibles', 'free_tour'] : []
       // (Una de cada 5 fechas, con el Altar elegido en el pool del formulario: el sitio que el viajero marcó y además reservó.)
@@ -286,3 +343,5 @@ if (args.fallos) fs.writeFileSync(args.fallos, fallos.map((f) => `[${f.regla}] $
 if (args.info) fs.writeFileSync(args.info, vistoInfo.map((f) => `[${f.regla}] ${f.texto}`).join('\n'))
 if (args.json) fs.writeFileSync(args.json, JSON.stringify({ ...resumen, segundos, porRegla: Object.fromEntries(porRegla), info: Object.fromEntries(infoPorRegla) }))
 console.log(JSON.stringify({ ...resumen, segundos, porRegla: Object.fromEntries(porRegla), info: Object.fromEntries(infoPorRegla) }))
+console.log(`${resumen.viajes} viajes en ${fechas.length} fechas${MUESTRA ? ' (MUESTREO, no el barrido completo)' : ''} · ${resumen.fallos} fallos`)
+process.exitCode = resumen.fallos ? 1 : 0

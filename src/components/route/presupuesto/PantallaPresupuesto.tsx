@@ -135,7 +135,7 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
                 </span>
               )}
             </span>
-            <button type="button" aria-label={`Quitar ${linea.nombre}`} onClick={() => extra && removeGastoExtra(extra.id)} className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-text/50 hover:bg-[#EDE4D3]">
+            <button type="button" aria-label={`Quitar ${linea.nombre}`} onClick={() => extra && removeGastoExtra(extra.id)} className="zona-toque flex h-9 w-9 flex-none items-center justify-center rounded-full text-text/50 hover:bg-[#EDE4D3]">
               <Icono nombre="cerrar" size={14} />
             </button>
           </div>
@@ -190,7 +190,7 @@ function InterruptorDeCuenta({ valor, onCambio, nombreComun }: { valor: 'mia' | 
       aria-selected={valor === id}
       data-pestana-cuenta={id}
       onClick={() => onCambio(id)}
-      className="flex h-[30px] flex-1 items-center justify-center rounded-full"
+      className="zona-toque flex h-[30px] flex-1 items-center justify-center rounded-full"
       style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.1em', textTransform: 'uppercase', background: valor === id ? '#FFFDF8' : 'transparent', color: valor === id ? '#1C2230' : 'rgba(255,253,248,.7)' }}
     >
       {texto}

@@ -13,8 +13,13 @@
 //   5. LOS AVISOS: la reserva que acaba después de salir y la excursión que vuelve después de salir (los textos del documento, con los botones); la excursión nunca se mueve; los de madrugada, con la hora de salir de esa noche.
 //   6. LA RUTA A MANO Y SIN VUELOS: las horas no cambian ningún día; sin vuelos y en la gratis, los días salen IGUAL que antes de esta tanda (se compara con el motor de antes, sacado de git).
 //   7. EL SERVIDOR: el día de vuelta sale por buildDayBlockV3 con su tarjeta, sin paradas es «Día de viaje».
-import { execFileSync } from 'node:child_process'
-import { existsSync, unlinkSync, writeFileSync } from 'node:fs'
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · «igual_que_antes» (9 viajes sin vuelos): antes se comparaba la salida sin vuelos con la del motor del 14-oct (`git show cf67f11:shared/routeEngine/listasTrip.js`, «el de antes de esta tanda»). Ahora se compara con la huella
+//     guardada de la salida actual (scripts/destino/_t7v_sinvuelos_dorado.json, hecha el 30-oct-2026 con `node scripts/destino/pruebaTanda7_vuelta.mjs dorado=1`). Motivo: los dias «sin vuelos» cambiaron A PROPOSITO despues del 14-oct
+//     (Tanda 11 y 11b, Eric 22 y 23-oct-2026: imprescindibles intocables, Cupula+Basilica una visita, orden de dias, Janiculo de noche, Roma 5 dias curados). Desde ahora cualquier cambio de esos 9 viajes sin vuelos vuelve a ser un fallo.
+//     NO se toca nada mas de la seccion 6: «sin_vuelos» (la gratis sale como sin vuelos, sin plan.vuelta) y «ruta_a_mano» (las horas no cambian ningun dia) siguen exactamente como estaban.
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { comprobarViaje } from './comprobacionesListas.mjs'
 import { D, written, VIAJES_VUELTA, argsDeViajeVuelta, argsDeViaje, planViajeVuelta, planViaje } from './viajes20Lib.mjs'
@@ -132,7 +137,7 @@ const horasEnTexto = (t) => [...String(t).matchAll(/\b(\d{1,2}):(\d{2})\b/g)].ma
 
 /** Las comprobaciones de siempre (comprobacionesListas.mjs) puestas al día de vuelta. Solo se cuentan los fallos de ESE día: los de los días de ruta son los de sin vuelo y los miran las otras pruebas. */
 function comprobarDiaDeVuelta({ plan, dia, etiqueta, entradas = {}, hasFreeTour = false, ignorar = null }) {
-  const r = comprobarViaje({ D, plan: { ...plan, days: [...plan.days, dia] }, etiqueta, entradas, poolNames: [], hasFreeTour, listas: written, franjas: written.destino?.franjas })
+  const r = comprobarViaje({ D, plan: { ...plan, days: [...plan.days, dia] }, etiqueta, entradas, poolNames: [], hasFreeTour, listas: written, franjas: written.destino?.franjas, apartarPendientes: false })
   const marca = `· ${dia.hours?.dateIso ?? `día ${dia.dayNumber}`} ${dia.curatedDay.id}:`
   comprobaciones++
   for (const f of r.fallos) {
@@ -584,16 +589,10 @@ function reservaVuelta(plan0, dias, inicio, sitio, hora) {
 
 // ═══ 6. La ruta a mano y sin vuelos ═══
 {
-  const antesRuta = fileURLToPath(new URL('../../shared/routeEngine/_listasTrip_antes_t7v.js', import.meta.url))
-  let antes = null
-  try {
-    // El motor de antes de esta tanda (la fusión con main), sacado de git.
-    const fuente = execFileSync('git', ['show', 'cf67f11:shared/routeEngine/listasTrip.js'], { encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 })
-    writeFileSync(antesRuta, fuente)
-    antes = (await import(`../../shared/routeEngine/_listasTrip_antes_t7v.js?${Date.now()}`)).planListasTrip
-  } catch (e) {
-    console.log('(No se ha podido sacar de git el motor de antes: se salta esa comparación)', String(e.message).slice(0, 100))
-  }
+  const RUTA_DORADO = fileURLToPath(new URL('./_t7v_sinvuelos_dorado.json', import.meta.url))
+  const dorado = existsSync(RUTA_DORADO) ? JSON.parse(readFileSync(RUTA_DORADO, 'utf8')) : {}
+  const nuevoDorado = {}
+  const huella = (v) => createHash('sha1').update(serial(v)).digest('hex')
   const casos = [
     [1, '2027-07-13', null], [2, '2027-01-12', null], [3, '2027-05-05', null], [3, '2027-03-25', null], [4, '2026-12-22', null], [5, '2027-08-14', null], [6, '2027-10-25', null], [7, '2027-06-01', null], [3, '2027-03-09', 'ft'],
   ]
@@ -611,10 +610,8 @@ function reservaVuelta(plan0, dias, inicio, sitio, hora) {
       debe(serial({ ...mano, vuelta: undefined }) === serial(sinVuelos), 'ruta_a_mano', `${etiqueta}: con la ruta a mano (${h}) algún día cambia`)
       debe(mano.vuelta?.aMano === true && mano.vuelta.activo === false && !mano.vuelta.diaPlan && !mano.vuelta.tarjeta, 'ruta_a_mano', `${etiqueta}: la ruta a mano rehace el día de vuelta`)
     }
-    if (antes) {
-      const viejo = antes(a)
-      debe(serial(viejo) === serial(sinVuelos), 'igual_que_antes', `${etiqueta}: sin vuelos, los días no salen igual que con el motor de antes de esta tanda`)
-    }
+    nuevoDorado[etiqueta] = huella(sinVuelos)
+    if (args.dorado !== '1') debe(dorado[etiqueta] !== undefined && dorado[etiqueta] === nuevoDorado[etiqueta], 'igual_que_antes', `${etiqueta}: sin vuelos, los días no salen igual que la huella guardada el 30-oct-2026 (scripts/destino/_t7v_sinvuelos_dorado.json)`)
   }
   // La ruta a mano sigue dando los avisos de reservas contra el vuelo.
   {
@@ -629,7 +626,10 @@ function reservaVuelta(plan0, dias, inicio, sitio, hora) {
     const plan = planListasTrip({ ...a, vuelta: { hora: '10:00', modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
     debe(plan.vuelta === undefined && serial(plan) === serial(planListasTrip(a)), 'una_fecha', 'un viaje de una fecha cambia con la vuelta')
   }
-  try { unlinkSync(antesRuta) } catch { /* ya no está */ }
+  if (args.dorado === '1') {
+    writeFileSync(RUTA_DORADO, JSON.stringify(nuevoDorado, null, 1))
+    console.log(`(huella de ${Object.keys(nuevoDorado).length} viajes sin vuelos guardada en ${RUTA_DORADO})`)
+  }
 }
 
 // ═══ 7. El servidor: el día de vuelta por buildDayBlockV3 ═══

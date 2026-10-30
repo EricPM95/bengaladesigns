@@ -16,7 +16,7 @@ export function FueraDeRutaFila({ reservaId, esFreeTour = false }: { reservaId: 
           setOcupado(true)
           void volverAPonerEnSuDia(reservaId).finally(() => setOcupado(false))
         }}
-        className="h-8 whitespace-nowrap rounded-full border border-accent px-3.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft disabled:opacity-50"
+        className="zona-toque h-8 whitespace-nowrap rounded-full border border-accent px-3.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft disabled:opacity-50"
       >
         {esFreeTour ? 'Volver a ponerlo en su día' : 'Volver a ponerla en su día'}
       </button>

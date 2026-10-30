@@ -12,6 +12,9 @@
 //   6. queda algo de lo viejo (`FlightAdjustSheet`, `flightOpportunity`, `flightAdjust`, `fitDayToTrip`, «Ajustar este día a tu llegada / vuelta», `fitMealsToStops`);
 //   7. [Añadir en un día nuevo] pone el día nuevo después del día de vuelta, o el aviso de las fechas no salta al moverse la vuelta;
 //   8. un texto nuevo lleva una hora calculada, el nombre de una empresa, «taxi» o un emoji.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · «1 gratis avisos»: antes, en la gratis `datosParaMotor(..., { paraAvisos: true })` no mandaba nada; ahora manda llegada y vuelta (para los avisos); sin `paraAvisos` la gratis sigue sin mandar nada («1 gratis»).
+//   · «5 gratis sin avisos» -> «5 gratis con avisos»: antes la campana de la gratis no tenia avisos de vuelos; ahora si, con «Ver mi reserva» (el aviso solo cuenta, nada se cambia solo). Tanda 10G, Eric 24-oct-2026: «guardar el vuelo es gratis y este aviso evita que el viajero pierda una entrada pagada» (src/lib/llegadaVuelta.ts, useAvisosDeVuelo.ts, useAppNotices.ts).
 import fs from 'node:fs'
 import path from 'node:path'
 import { prepararSSR } from './_ssr.mjs'
@@ -133,7 +136,7 @@ console.log('1. Lo que se manda al servidor')
   d = datosParaMotor(guardada, [], info)
   debe(!d.llegada && !d.vuelta, '1 gratis', `la gratis manda ${JSON.stringify(d)}`)
   d = datosParaMotor(guardada, [], info, { paraAvisos: true })
-  debe(!d.llegada && !d.vuelta, '1 gratis avisos', 'la gratis no pide avisos de vuelos')
+  debe(Boolean(d.llegada) && Boolean(d.vuelta), '1 gratis avisos', 'la gratis SÍ pide los avisos de vuelos (llegada y vuelta con hora), aunque no rehaga ningún día')
   debe((await llegadaVueltaDe(guardada, [])).llegada === undefined, '1 gratis', 'llegadaVueltaDe manda algo en la gratis')
   debe(useRouteStore.getState().route.arrivalFlightTime === '16:00' && useRouteStore.getState().route.departureFlightTime === '17:00' && useRouteStore.getState().route.accommodationZone === 'prati', '1 no se borran', 'las horas guardadas se borraron en la gratis')
   ponerVersion('completa')
@@ -337,7 +340,7 @@ console.log('4. Los avisos de la campana')
   debe(!campana(a, lleg('09:00')).some((x) => /coinciden/.test(x.texto)), '4 sin repetir coinciden', 'el aviso «coinciden» de los motores no debe repetirse en la campana')
   // El bloque de RESERVAS al que lleva [Ver mi reserva].
   debe(bloqueDeReservasDelAviso({ tipo: 'excursion_vuelve_tarde', texto: '' }) === 'excursiones' && bloqueDeReservasDelAviso({ tipo: 'reserva_antes_de_llegar', texto: '' }) === 'entradas' && bloqueDeReservasDelAviso({ tipo: 'free_tour_antes_de_llegar', texto: '' }) === 'entradas', '4 Ver mi reserva', 'el botón no lleva al bloque que toca')
-  // En la campana de verdad: título, texto y los botones; en la gratis, ninguno.
+  // En la campana de verdad: título, texto y los botones; en la gratis, también el aviso (10G).
   ruta = vue('17:00')
   poner(ruta, [excursion('2026-11-14', '07:30', '20:00')])
   useAvisosVueloStore.getState().poner(await avisos(ruta, [excursion('2026-11-14', '07:30', '20:00')]))
@@ -346,7 +349,8 @@ console.log('4. Los avisos de la campana')
   debe(v?.kind === 'warning' && v.title === 'Tu excursión vuelve tarde' && v.acciones.join('|') === 'Ver mi reserva|Pasar este día a Roma', '4 campana', `campana: ${JSON.stringify(probe)}`)
   ponerVersion('gratis')
   probe = JSON.parse(aTexto(html(AvisosProbe, {})).trim().split('\n').find((l) => l.startsWith('[')))
-  debe(!probe.some((x) => x.id.startsWith('vuelo:')), '5 gratis sin avisos', 'la gratis no debe tener avisos de vuelos')
+  const vueloGratis = probe.find((x) => x.id.startsWith('vuelo:'))
+  debe(vueloGratis?.title === 'Tu excursión vuelve tarde' && vueloGratis.acciones.includes('Ver mi reserva'), '5 gratis con avisos', `la gratis SÍ debe tener el aviso de vuelos (solo cuenta; nada se cambia solo): ${JSON.stringify(probe)}`)
   ponerVersion('completa')
   useAvisosVueloStore.getState().vaciar()
   probe = JSON.parse(aTexto(html(AvisosProbe, {})).trim().split('\n').find((l) => l.startsWith('[')))

@@ -438,7 +438,7 @@ export function TrazoFlow() {
           {step > 1 && (
           <div style={{ position: 'absolute', left: 0, right: 0, top: 0, zIndex: 6, padding: `${desk ? 26 : 14}px 20px 0`, display: 'flex', flexDirection: 'column', gap: 12, pointerEvents: 'none' }}>
             {resumeTrip && !isSummaryStep(step) && (
-              <button
+              <button className="zona-toque"
                 type="button"
                 onClick={backToMyTrip}
                 aria-label="Volver a mi viaje"
@@ -469,7 +469,7 @@ export function TrazoFlow() {
               </button>
             )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, pointerEvents: 'auto' }}>
-              <button
+              <button className="zona-toque"
                 type="button"
                 onClick={back}
                 aria-label="Atrás"

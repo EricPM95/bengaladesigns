@@ -4,9 +4,12 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { LlegadaYVuelta } from '../../src/components/route/reservas/LlegadaYVuelta'
 import { AlojamientoReservas } from '../../src/components/route/reservas/AlojamientoReservas'
+import { HojaVueloDelAdmin } from '../../src/components/route/reservas/LlegadaYVuelta'
+import { HojaTuAlojamiento } from '../../src/components/route/alojamiento/HojaTuAlojamiento'
 import { BotonComoLlegarAlojamiento } from '../../src/components/route/alojamiento/BotonComoLlegarAlojamiento'
 import { BilleteDeVuelo } from '../../src/components/route/dayDetail/BilleteDeVuelo'
 import { TarjetaTuUltimoDia } from '../../src/components/route/dayDetail/TarjetaTuUltimoDia'
+import { textosDelUltimoDia } from '../../src/lib/ultimoDia'
 import { DayDetailPanel } from '../../src/components/route/dayDetail/DayDetailPanel'
 import { ReservasPanel } from '../../src/components/route/ReservasPanel'
 import { useRouteStore } from '../../src/store/useRouteStore'
@@ -28,7 +31,7 @@ function AvisosProbe() {
 }
 
 export {
-  createElement, renderToStaticMarkup, LlegadaYVuelta, AlojamientoReservas, BotonComoLlegarAlojamiento, BilleteDeVuelo, TarjetaTuUltimoDia, DayDetailPanel, ReservasPanel, useRouteStore, useAddFlowStore, quitarConDeshacer,
+  createElement, renderToStaticMarkup, HojaVueloDelAdmin, HojaTuAlojamiento, LlegadaYVuelta, AlojamientoReservas, BotonComoLlegarAlojamiento, BilleteDeVuelo, TarjetaTuUltimoDia, textosDelUltimoDia, DayDetailPanel, ReservasPanel, useRouteStore, useAddFlowStore, quitarConDeshacer,
   AvisosProbe, fetchDestinationExcursions, fetchArrivalInfo, medioOf, puntoPorDefecto, puntoDeLaMitad, legOf, billeteDe, codigoDeUnPunto, enlaceComoLlegarAlojamiento, direccionDelAlojamiento, camposDelViajero, vueltaCambiada, sellarVueltaAlAbrir,
   rehacerPorCambioDeVuelo, pagoActivo,
 }

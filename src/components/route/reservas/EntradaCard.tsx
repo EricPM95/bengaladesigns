@@ -122,7 +122,7 @@ export function EntradaCard({
             <button
               type="button"
               onClick={buy}
-              className="h-8 whitespace-nowrap rounded-full px-3.5 text-white transition-transform active:scale-[.97]"
+              className="zona-toque h-8 whitespace-nowrap rounded-full px-3.5 text-white transition-transform active:scale-[.97]"
               style={delGrupo ? { background: '#1C2230', color: '#F3D88F', boxShadow: 'inset 0 0 0 1.2px rgba(233,199,122,.6)', font: "600 12.5px 'Geist'" } : { ...botonChampan(), font: "600 12.5px 'Geist'" }}
             >
               {buyLabel}

@@ -89,12 +89,12 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
             <div role="dialog" aria-modal="true" aria-label="Perfil" className="fixed inset-0 z-[70] flex flex-col bg-bg text-text">
               {/* Arriba, solo los ajustes y la ✕ (Tanda 10N5: fuera la palabra «PERFIL»). */}
               <header className="flex shrink-0 items-center justify-end gap-2.5 px-5 pb-0 pt-[calc(env(safe-area-inset-top)+10px)]">
-                <button type="button" aria-label="Ajustes" data-ajustes onClick={() => abrirAjustes()} className="flex h-10 w-10 items-center justify-center rounded-full" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)' }}>
+                <button type="button" aria-label="Ajustes" data-ajustes onClick={() => abrirAjustes()} className="zona-toque flex h-10 w-10 items-center justify-center rounded-full" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)' }}>
                   <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
                     <path d="M4 7h10M18 7h2M4 17h2M10 17h10M16 4v6M8 14v6" />
                   </svg>
                 </button>
-                <button type="button" onClick={onClose} aria-label="Cerrar el Perfil" title="Cerrar" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EDE4D3] text-[#1C2230] transition-colors hover:bg-[#E4D9C4]">
+                <button type="button" onClick={onClose} aria-label="Cerrar el Perfil" title="Cerrar" className="zona-toque flex h-10 w-10 items-center justify-center rounded-full bg-[#EDE4D3] text-[#1C2230] transition-colors hover:bg-[#E4D9C4]">
                   <Icono nombre="cerrar" size={18} />
                 </button>
               </header>

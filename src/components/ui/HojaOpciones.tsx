@@ -121,7 +121,7 @@ export function HojaOpciones({
             {etiqueta && <span data-hoja-opciones-etiqueta style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.18em', color: '#6F4E37', textTransform: 'uppercase' }}>{etiqueta}</span>}
             <span data-hoja-opciones-titulo style={{ font: "400 32px/1.05 'Instrument Serif',serif", textWrap: 'pretty', overflowWrap: 'anywhere' }}>{titulo}</span>
           </div>
-          <button type="button" onClick={onCerrar} aria-label="Cerrar" data-hoja-cerrar style={{ width: 40, height: 40, flex: 'none', borderRadius: '50%', border: 'none', background: '#EEEAE0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
+          <button className="zona-toque" type="button" onClick={onCerrar} aria-label="Cerrar" data-hoja-cerrar style={{ width: 40, height: 40, flex: 'none', borderRadius: '50%', border: 'none', background: '#EEEAE0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>

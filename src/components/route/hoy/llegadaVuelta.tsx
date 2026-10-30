@@ -152,7 +152,7 @@ export function TarjetaVueltaHoy({ route, mitad, onVerComoIr }: { route: Route; 
         <Icono nombre="explorar" size={16} grosor={1.8} />
         Cómo llegar
       </a>
-      <button type="button" onClick={onVerComoIr} data-hoy-ver-como-ir className="-mt-0.5 flex h-9 items-center justify-center gap-1.5 self-center px-3 text-[12.5px] font-medium text-text/60 underline underline-offset-2">
+      <button type="button" onClick={onVerComoIr} data-hoy-ver-como-ir className="zona-toque -mt-0.5 flex h-9 items-center justify-center gap-1.5 self-center px-3 text-[12.5px] font-medium text-text/60 underline underline-offset-2">
         Ver cómo ir
       </button>
     </CajaBlanca>

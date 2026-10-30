@@ -53,7 +53,7 @@ export function BotonPuntitos({ etiqueta, tam = 28, datos, onClick }: { etiqueta
       title="Más opciones"
       aria-label={etiqueta}
       data-menu-hoja={datos ?? ''}
-      className="flex shrink-0 items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-[12px] font-bold leading-none tracking-[1px] text-text/60 hover:bg-bg-hover"
+      className="zona-toque flex shrink-0 items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-[12px] font-bold leading-none tracking-[1px] text-text/60 hover:bg-bg-hover"
       style={{ width: tam, height: tam }}
     >
       ···

@@ -44,11 +44,11 @@ function Encendido() {
       </ol>
       <div className="mt-3 flex gap-2">
         {aviso && (
-          <button type="button" onClick={() => void aviso.prompt().then(() => setVisible(false))} className="h-10 flex-1 rounded-full btn-champan text-[14px] font-semibold ">
+          <button type="button" onClick={() => void aviso.prompt().then(() => setVisible(false))} className="zona-toque h-10 flex-1 rounded-full btn-champan text-[14px] font-semibold ">
             Instalar
           </button>
         )}
-        <button type="button" onClick={() => setVisible(false)} className="h-10 flex-1 rounded-full border border-text/15 text-[14px] font-medium text-text">
+        <button type="button" onClick={() => setVisible(false)} className="zona-toque h-10 flex-1 rounded-full border border-text/15 text-[14px] font-medium text-text">
           Cerrar
         </button>
       </div>

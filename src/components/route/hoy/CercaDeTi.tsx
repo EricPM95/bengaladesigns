@@ -32,7 +32,7 @@ export function CercaDeTi({ origen }: { origen: Coordinates | null }) {
               pedir({ categoria: boton.categoria, origen })
               setMode('explore')
             }}
-            className="flex h-10 items-center justify-center gap-1.5 rounded-full border border-text/15 bg-white text-[13px] font-semibold text-text hover:bg-bg-hover"
+            className="zona-toque flex h-10 items-center justify-center gap-1.5 rounded-full border border-text/15 bg-white text-[13px] font-semibold text-text hover:bg-bg-hover"
           >
             <Icono nombre={boton.icono} size={16} />
             {boton.etiqueta}

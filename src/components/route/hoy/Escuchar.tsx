@@ -80,7 +80,7 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
           type="button"
           onClick={alTocarCerrado}
           aria-label={`${nombreBoton}, incluido con el ${nombreDelPaseDelSitio}`}
-          className={`${oscuro ? 'flex h-9 flex-none items-center gap-1.5 rounded-full pl-3 pr-1.5 text-[12.5px] font-semibold text-[#FFFDF8] hover:bg-[#FFFDF8]/20' : 'flex h-9 flex-none items-center gap-1.5 rounded-full border border-text/15 bg-white pl-3 pr-1.5 text-[12.5px] font-semibold text-text hover:bg-bg-hover'}`}
+          className={`${oscuro ? 'zona-toque flex h-9 flex-none items-center gap-1.5 rounded-full pl-3 pr-1.5 text-[12.5px] font-semibold text-[#FFFDF8] hover:bg-[#FFFDF8]/20' : 'zona-toque flex h-9 flex-none items-center gap-1.5 rounded-full border border-text/15 bg-white pl-3 pr-1.5 text-[12.5px] font-semibold text-text hover:bg-bg-hover'}`}
           style={oscuro ? { background: 'rgba(255,253,248,.12)' } : undefined}
         >
           <Icono nombre="altavoz" size={15} />
@@ -125,7 +125,7 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
           )}
         </span>
         {estado !== 'parado' && (
-          <button type="button" onClick={parar} aria-label="Parar" className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-[#FFFDF8]/80 hover:bg-[#FFFDF8]/10">
+          <button type="button" onClick={parar} aria-label="Parar" className="zona-toque flex h-9 w-9 flex-none items-center justify-center rounded-full text-[#FFFDF8]/80 hover:bg-[#FFFDF8]/10">
             <Icono nombre="cerrar" size={15} />
           </button>
         )}
@@ -133,8 +133,8 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
     )
   }
   const claseBoton = oscuro
-    ? 'flex h-9 flex-none items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold text-[#FFFDF8] hover:bg-[#FFFDF8]/20'
-    : 'flex h-9 flex-none items-center gap-1.5 rounded-full border border-text/15 bg-white px-3 text-[12.5px] font-semibold text-text hover:bg-bg-hover'
+    ? 'zona-toque flex h-9 flex-none items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold text-[#FFFDF8] hover:bg-[#FFFDF8]/20'
+    : 'zona-toque flex h-9 flex-none items-center gap-1.5 rounded-full border border-text/15 bg-white px-3 text-[12.5px] font-semibold text-text hover:bg-bg-hover'
   const fondo = oscuro ? { background: 'rgba(255,253,248,.12)' } : undefined
   return (
     <div className="flex flex-none items-center gap-2" data-escuchar={estado}>

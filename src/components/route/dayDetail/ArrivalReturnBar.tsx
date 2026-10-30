@@ -81,7 +81,7 @@ export function ArrivalReturnBar({ mode, text, onOpen, onAdd }: ArrivalReturnBar
             event.stopPropagation()
             onAdd?.()
           }}
-          className="flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-[12.5px] font-semibold text-white transition-transform active:scale-[.97]"
+          className="zona-toque flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-[12.5px] font-semibold text-white transition-transform active:scale-[.97]"
           style={{ background: AZUL }}
         >
           {boton}

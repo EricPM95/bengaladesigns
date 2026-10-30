@@ -5,23 +5,27 @@
 //   1. (Tanda 10K) [Continuar con Google] va DIRECTO a Google (una sola salida, sin vincular antes).
 //   2. Al volver con un error (aunque sea `identity_already_exists`), NO sale otra vez a Google.
 //   3. Si vuelve con el mismo error otra vez, NO hace ninguna llamada más, NO recarga y enseña «No hemos podido entrar. Inténtalo de nuevo.» con su botón.
+// (10S) NO da de alta una cuenta anonima nueva en cada pasada (Supabase limita las altas: «Request rate limit reached»). El Chrome nuevo arranca con la sesion de UNA cuenta anonima FIJA, la de
+//   docs/dias/_cuentas_prueba_10n3_entrar.json (fuera de git: solo guarda su refresh token, que no se imprime nunca; se renueva en cada pasada). Es lo mismo que le pasa a quien ya abrio la app antes: la sesion
+//   anonima ya existe. Solo si ese archivo no existe o la sesion ya no vale, la app da de alta una nueva (1 alta) y esa sesion se guarda para las siguientes pasadas. Usa el Supabase real: CORRER SOLA.
 // No toca ningún navegador tuyo: lleva su propio Chrome, su propio perfil y su propio puerto, y los borra al acabar.
 import { spawn } from 'node:child_process'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+import { createClient } from '@supabase/supabase-js'
 
 const args = process.argv.slice(2)
 const opcion = (n, def) => args.find((a) => a.startsWith(`--${n}=`))?.split('=').slice(1).join('=') ?? def
-const base = opcion('url', 'http://localhost:5173')
+const base = opcion('url', process.env.APP_URL || 'http://localhost:5173')
 const salida = opcion('captura', null)
 const CHROME = ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find((f) => fs.existsSync(f))
 if (!CHROME) throw new Error('No encuentro Chrome ni Edge.')
 if (salida) fs.mkdirSync(salida, { recursive: true })
 
-const puerto = 9300 + Math.floor(Math.random() * 600)
+let puerto = 0 // (10S) puerto 0: lo elige Chrome y lo escribe en <perfil>/DevToolsActivePort (como _enLaApp)
 const perfil = fs.mkdtempSync(path.join(os.tmpdir(), 'pruebaEntrarReal-'))
-const chrome = spawn(CHROME, [`--remote-debugging-port=${puerto}`, `--user-data-dir=${perfil}`, '--headless=new', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', 'about:blank'], { stdio: 'ignore' })
+const chrome = spawn(CHROME, [`--remote-debugging-port=0`, `--user-data-dir=${perfil}`, '--headless=new', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', 'about:blank'], { stdio: 'ignore' })
 const parar = () => {
   try {
     chrome.kill()
@@ -40,6 +44,8 @@ const espera = (ms) => new Promise((r) => setTimeout(r, ms))
 async function conectar() {
   for (let i = 0; i < 80; i++) {
     try {
+      if (!puerto) puerto = Number(fs.readFileSync(path.join(perfil, 'DevToolsActivePort'), 'utf8').split(/\r?\n/)[0]) || 0
+      if (!puerto) throw new Error('arrancando')
       const pestanas = await (await fetch(`http://127.0.0.1:${puerto}/json/list`)).json()
       const p = pestanas.find((x) => x.type === 'page')
       if (p) return p.webSocketDebuggerUrl
@@ -128,6 +134,36 @@ ws.addEventListener('message', (m) => {
   if (d.method === 'Page.frameNavigated' && !d.params.frame.parentId) marcos++
 })
 
+// ── La sesion anonima fija (sin altas nuevas) ──
+const ARCHIVO_SESION = 'docs/dias/_cuentas_prueba_10n3_entrar.json'
+const entorno = { ...process.env }
+try {
+  for (const l of fs.readFileSync('.env.local', 'utf8').split(/\r?\n/)) {
+    const m = /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec(l)
+    if (m && entorno[m[1]] === undefined) entorno[m[1]] = m[2].replace(/^["']|["']$/g, '')
+  }
+} catch {
+  /* sin .env.local */
+}
+const URL_SB = entorno.VITE_SUPABASE_URL
+const CLAVE_SESION = URL_SB ? `sb-${new URL(URL_SB).hostname.split('.')[0]}-auth-token` : null
+let sembrada = false
+if (URL_SB && entorno.VITE_SUPABASE_ANON_KEY && fs.existsSync(ARCHIVO_SESION)) {
+  try {
+    const guardada = JSON.parse(fs.readFileSync(ARCHIVO_SESION, 'utf8'))
+    const c = createClient(URL_SB, entorno.VITE_SUPABASE_ANON_KEY, { auth: { persistSession: false, autoRefreshToken: false } })
+    const { data, error } = await c.auth.refreshSession({ refresh_token: guardada.refresh_token })
+    if (!error && data.session?.user?.is_anonymous) {
+      const poner = `try { if (!localStorage.getItem(${JSON.stringify(CLAVE_SESION)})) localStorage.setItem(${JSON.stringify(CLAVE_SESION)}, ${JSON.stringify(JSON.stringify(data.session))}) } catch (e) {}`
+      await cdp('Page.addScriptToEvaluateOnNewDocument', { source: poner })
+      sembrada = true
+    }
+  } catch {
+    /* sin sesion guardada que valga: la app dara de alta una nueva */
+  }
+}
+console.log(sembrada ? '   (arranca con la sesion anonima fija: ninguna alta nueva)' : '   (no hay sesion anonima fija que valga: la app dara de alta UNA nueva y se guardara para las siguientes pasadas)')
+
 const abrir = async (ruta) => {
   await cdp('Page.navigate', { url: `${base}${ruta}` })
 }
@@ -174,6 +210,16 @@ await foto('3-no-hemos-podido-entrar')
 const guardada = JSON.parse((await evaluar("localStorage.getItem('trazo:cuenta:anonima')")) ?? 'null')
 debe(Boolean(guardada?.uid && guardada?.refreshToken), 'la sesión anónima de este navegador sigue guardada (con su token) para pasar lo suyo a la cuenta cuando se entre')
 
+// Guarda la sesion tal como la dejo el navegador (el refresh token se renueva) para la proxima pasada.
+if (CLAVE_SESION) {
+  try {
+    const cruda = await evaluar(`localStorage.getItem(${JSON.stringify(CLAVE_SESION)})`)
+    const rt = cruda ? JSON.parse(cruda).refresh_token : null
+    if (rt) fs.writeFileSync(ARCHIVO_SESION, JSON.stringify({ refresh_token: rt }))
+  } catch {
+    /* no se pudo guardar: la proxima pasada dara de alta una nueva */
+  }
+}
 const mios = consola.filter((c) => !/mapbox|404|Failed to load resource|net::ERR|api\/|favicon/i.test(c))
 debe(mios.length === 0, 'sin errores en la consola', mios.slice(0, 3).join(' | '))
 console.log(`\nPrueba de entrar de verdad: ${comprobaciones} comprobaciones · ${fallos.length} fallos`)

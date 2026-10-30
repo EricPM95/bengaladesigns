@@ -824,7 +824,7 @@ export function PlaceExplorerScreen({
             onClick={onClose}
             aria-label="Cerrar"
             title="Cerrar"
-            className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-bg-card text-accent"
+            className="zona-toque flex h-[42px] w-[42px] items-center justify-center rounded-full bg-bg-card text-accent"
             style={{ border: `1.5px solid ${warm}` }}
           >
             <Icono nombre="cerrar" size={18} />
@@ -864,7 +864,7 @@ export function PlaceExplorerScreen({
                   onClick={() => toggleFilter(chip.id)}
                   aria-pressed={active}
                   data-active={active}
-                  className="flex shrink-0 items-center gap-2 rounded-full transition-colors"
+                  className="zona-toque flex shrink-0 items-center gap-2 rounded-full transition-colors"
                   style={{
                     height: 38,
                     padding: '0 14px 0 6px',
@@ -889,7 +889,7 @@ export function PlaceExplorerScreen({
               <button
                 type="button"
                 onClick={onHotels}
-                className="flex shrink-0 items-center gap-2 rounded-full transition-colors"
+                className="zona-toque flex shrink-0 items-center gap-2 rounded-full transition-colors"
                 style={{
                   height: 38,
                   padding: '0 14px 0 6px',
@@ -914,7 +914,7 @@ export function PlaceExplorerScreen({
             onClick={() => setActiveFilters([])}
             aria-label="Quitar todos los filtros"
             title="Quitar todos los filtros"
-            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full transition-opacity"
+            className="zona-toque flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full transition-opacity"
             style={{ border: '1px solid rgba(28,34,48,.12)', background: '#FFFDF8', color: 'rgba(28,34,48,.6)', opacity: activeFilters.length > 0 ? 1 : 0.35 }}
           >
             {iconBox('close')}
@@ -950,7 +950,7 @@ export function PlaceExplorerScreen({
             onClick={() => setMapCollapsed(false)}
             aria-label="Mostrar mapa"
             title="Mostrar mapa"
-            className="flex h-8 w-full shrink-0 items-center justify-center border-y border-text/10 bg-bg-card text-text-soft transition-colors hover:bg-bg-hover"
+            className="zona-toque flex h-8 w-full shrink-0 items-center justify-center border-y border-text/10 bg-bg-card text-text-soft transition-colors hover:bg-bg-hover"
           >
             <Icono nombre="abajo" className="h-4 w-4" />
           </button>
@@ -994,7 +994,7 @@ export function PlaceExplorerScreen({
             onClick={() => setMapCollapsed(true)}
             aria-label="Ocultar mapa"
             title="Ocultar mapa"
-            className="absolute right-3.5 top-3.5 z-[6] flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
+            className="zona-toque absolute right-3.5 top-3.5 z-[6] flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
           >
             <Icono nombre="arriba" className="h-4 w-4" />
           </button>
@@ -1019,7 +1019,7 @@ export function PlaceExplorerScreen({
             }}
             aria-label="Mi ubicación"
             title="Mi ubicación"
-            className="absolute right-3.5 z-[5] flex h-[42px] w-[42px] items-center justify-center rounded-full text-text"
+            className="zona-toque absolute right-3.5 z-[5] flex h-[42px] w-[42px] items-center justify-center rounded-full text-text"
             style={{ bottom: 36, background: '#FFFDF8', border: '1.5px solid rgb(var(--accent))', boxShadow: '0 8px 20px -8px rgba(28,34,48,.4)' }}
           >
             <Icono nombre="localizar" size={18} />
@@ -1032,7 +1032,7 @@ export function PlaceExplorerScreen({
           <button
             type="button"
             aria-label="Arrastrar panel"
-            className="flex h-[26px] shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing"
+            className="zona-toque flex h-[26px] shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing"
             onPointerDown={(event) => {
               event.currentTarget.setPointerCapture(event.pointerId)
               dragRef.current = { startY: event.clientY, startH: mapH, moved: false }
@@ -1066,7 +1066,7 @@ export function PlaceExplorerScreen({
                 style={{ font: "400 15px 'Geist'" }}
               />
               {trimmedQuery && (
-                <button type="button" onClick={() => setQuery('')} aria-label="Borrar búsqueda" className="h-[26px] w-[26px] rounded-full bg-text/[0.08] text-text">
+                <button type="button" onClick={() => setQuery('')} aria-label="Borrar búsqueda" className="zona-toque h-[26px] w-[26px] rounded-full bg-text/[0.08] text-text">
                   ×
                 </button>
               )}
@@ -1363,7 +1363,7 @@ export function PlaceExplorerScreen({
                             type="button"
                             onClick={() => (place.solo_entradas ? onFreeTour?.() : onQuickAdd?.(place))}
                             aria-label={`Añadir ${place.name}`}
-                            className="whitespace-nowrap transition-colors"
+                            className="zona-toque whitespace-nowrap transition-colors"
                             style={{
                               height: 32,
                               padding: '0 11px',

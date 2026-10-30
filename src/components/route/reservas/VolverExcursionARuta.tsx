@@ -42,7 +42,7 @@ export function VolverExcursionARuta({ route, reserva, excursion }: { route: Rou
 
   return (
     <>
-      <button type="button" data-volver-excursion="1" onClick={() => setAbierta(true)} className="mt-1.5 h-8 self-start whitespace-nowrap rounded-full border border-accent px-3.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft">
+      <button type="button" data-volver-excursion="1" onClick={() => setAbierta(true)} className="zona-toque mt-1.5 h-8 self-start whitespace-nowrap rounded-full border border-accent px-3.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft">
         Volver a ponerla en la ruta
       </button>
       {abierta && !preguntando && (

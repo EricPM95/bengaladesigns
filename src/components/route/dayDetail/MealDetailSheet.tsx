@@ -244,7 +244,7 @@ export function MealDetailSheet({ open, destino, city, coordinates, curatedZone,
               onClick={onClose}
               aria-label="Volver"
               title="Volver"
-              className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card/80 text-text shadow-md backdrop-blur transition-colors hover:bg-bg-hover"
+              className="zona-toque absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card/80 text-text shadow-md backdrop-blur transition-colors hover:bg-bg-hover"
             >
               <BackIcon />
             </button>

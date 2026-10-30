@@ -69,7 +69,7 @@ function IconoCompartir({ cuenta, activo, tripId = null }: { cuenta: 'cuenta' | 
   const compartido = gente.length > 1 || (esInvitado && gente.length > 0)
   if (compartido) {
     return (
-      <button type="button" data-caras-del-viaje-boton onClick={abrirPersonas} aria-label={`Personas del viaje: ${gente.length}`} title="Personas del viaje" className="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-text/[.14] bg-bg-card pl-1.5 pr-2.5 text-text">
+      <button type="button" data-caras-del-viaje-boton onClick={abrirPersonas} aria-label={`Personas del viaje: ${gente.length}`} title="Personas del viaje" className="zona-toque flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-text/[.14] bg-bg-card pl-1.5 pr-2.5 text-text">
         <CarasDelViaje personas={gente} max={4} tam={24} borde="#FFFDF8" />
         <span data-numero-de-personas className="text-[13px] font-semibold">
           {gente.length}
@@ -82,7 +82,7 @@ function IconoCompartir({ cuenta, activo, tripId = null }: { cuenta: 'cuenta' | 
   return (
     <>
       {/* (Tanda 10N §4a) Sin compartir: el botón [Compartir] en champán, con su texto, junto a la pastilla del pase (fuera el icono suelto). */}
-      <button type="button" data-compartir-viaje disabled={ocupado} onClick={() => void compartir()} title="Compartir viaje" aria-label="Compartir viaje" className="flex h-[34px] shrink-0 items-center gap-1.5 rounded-full px-3.5 disabled:opacity-60" style={{ ...botonChampan(), border: 'none', font: "700 13px 'Geist'" }}>
+      <button type="button" data-compartir-viaje disabled={ocupado} onClick={() => void compartir()} title="Compartir viaje" aria-label="Compartir viaje" className="zona-toque flex h-[34px] shrink-0 items-center gap-1.5 rounded-full px-3.5 disabled:opacity-60" style={{ ...botonChampan(), border: 'none', font: "700 13px 'Geist'" }}>
         <Icono nombre="compartirViaje" size={14} grosor={2} />
         Compartir
       </button>

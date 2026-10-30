@@ -11,10 +11,16 @@
 //   6. los 20 viajes de la revisión y los de `VIAJES_VUELTA`, hechos por la app, no dan los mismos días que el motor directo;
 //   7. el rehacer por cambio de fechas, [Añadir en un día nuevo] y «+ Añadir día» no dejan el día de vuelta el último, con su fecha, y los días añadidos antes de él;
 //   8. la ruta a mano, el coche o un viaje guardado cambian.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
+//   · «3 tabla de dias», con 6 dias de ruta o mas: antes [D1,D2,D4,D5,D6]; ahora [D1,D2,D4,D5,D7] (D6, «Roma desde arriba», sale de la tabla y se ofrece en el dia en blanco). Tanda 11, Eric 22-oct-2026 (nota «Eric 22-oct» en roma.json › curated_routes: Roma lleva 5 dias curados).
+//   · «5 vuelta con horas», vuelta a las 23:30 con 6 o mas dias de ruta: antes, el dia de vuelta lleva paradas (dia_mas); ahora tambien vale «sin paradas con tarjeta Hoy vuelves a casa» (como ya valia para las mananas desde 6 dias de ruta). Misma decision: con la tabla de la Tanda 11 ya no queda ningun dia de Roma por ver.
+//   · «5 tarjeta de la gratis»: antes, la tarjeta «Tu ultimo dia tambien cuenta» solo en la gratis (!pago) y fuera del coche; ahora, «El ultimo dia, a la medida de…» / «Tu ultimo dia, a la medida de…» con y sin pase, solo en el dia de vuelta y mientras no haya hora de vuelta (src/lib/ultimoDia.ts, tarjetaUltimoDia en DayDetailPanel). Tanda 10B, Eric 21-oct-2026 («dia de vuelta Hoy vuelves a casa con tarjeta y lista de ventajas del pase»).
 import fs from 'node:fs'
 import { prepararSSR } from './_ssr.mjs'
 import { D, VIAJES, LLEGADAS_20, VIAJES_VUELTA, planViaje, planViajeConLlegada, planViajeVuelta } from './viajes20Lib.mjs'
 
+const T0 = Date.now()
+const hito = (n) => console.log(`[${Math.round((Date.now() - T0) / 1000)} s] sección ${n}`)
 const fallos = []
 let comprobaciones = 0
 const debe = (cond, regla, texto) => {
@@ -31,6 +37,7 @@ const consolaError = console.error
 console.error = (...a) => (/useLayoutEffect|Warning:|act\(/.test(String(a[0])) ? undefined : consolaError(...a))
 const info = await fetchArrivalInfo('Roma')
 
+hito('1.')
 // ── 1. El punto de verdad (código) ──
 {
   const skeleton = leer('shared/routeEngine/tripSkeleton.js')
@@ -43,6 +50,7 @@ const info = await fetchArrivalInfo('Roma')
   debe(copias.length === 0, '1 un solo sitio', `queda otra copia de «días − 1» fuera de diasDeRuta: ${copias.join(' | ')}`)
 }
 
+hito('2.')
 // ── 2. El esqueleto del servidor de verdad ──
 async function post(ruta, cuerpo) {
   const r = await fetch(`${API}${ruta}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
@@ -60,6 +68,7 @@ for (const fechas of [true, false]) {
   }
 }
 
+hito('3.')
 // ── 3. El viaje que arma el cliente de verdad ──
 const MEDIOS = { avion: 'flight', tren: 'train', bus: 'bus', ferry: 'ferry' }
 /** Genera el viaje con la petición completa del cliente. `vuelos`: { llegada, salida, medio?, puntoLlegada?, puntoSalida?, zona? } = lo que el viajero pone en RESERVAS (la app lo rehace con ello). */
@@ -83,14 +92,16 @@ async function generar({ n, fechas = true, inicio = '2026-10-15', version = 'com
 }
 /** Los días de la tabla «Qué días lleva cada viaje» (sin Free Tour) para j días de ruta: ids escritos, días de excursión y días en blanco. */
 function esperadoPorTabla(j, conTourDeManana = false) {
-  const base = j === 1 ? ['D0'] : j === 2 ? ['D1', 'D2'] : j === 3 ? ['D1', 'D2', 'D4'] : j < 6 ? ['D1', 'D2', 'D4', 'D5'] : ['D1', 'D2', 'D4', 'D5', 'D6']
+  // (10S) Desde la Tanda 11 (22-oct, Eric) Roma lleva 5 dias curados: con 6 dias de ruta o mas, D7 en lugar de D6 (Roma desde arriba, D6, queda fuera de la tabla; se ofrece en el dia en blanco).
+  const base = j === 1 ? ['D0'] : j === 2 ? ['D1', 'D2'] : j === 3 ? ['D1', 'D2', 'D4'] : j < 6 ? ['D1', 'D2', 'D4', 'D5'] : ['D1', 'D2', 'D4', 'D5', 'D7']
   // Con Free Tour de mañana: D3 + D1-FT en lugar de D1 + D2 (un viaje de un día no lo ofrece).
   const ids = conTourDeManana && j >= 2 ? base.map((id) => (id === 'D1' ? 'D1-FT' : id === 'D2' ? 'D3' : id)) : base
   const excursion = j >= 5 ? 1 : 0
   return { ids, excursion, blancos: j - ids.length - excursion }
 }
 const idsDe = (route) => route.days.filter((d) => !d.isReturnLeg).map((d) => d.curatedId ?? null)
-const TARJETA_DEL_DIA = /Tu último día también cuenta/
+// (10S) Desde la 10B la tarjeta del dia de vuelta sin hora se llama «El ultimo dia, a la medida de…» (sin pase) / «Tu ultimo dia, a la medida de…» (con pase); los textos salen de src/lib/ultimoDia.ts.
+const TARJETA_DEL_DIA = /(El|Tu) último día, a la medida de/
 
 function comprobarReparto(route, { n, fechas, version, etiqueta, inicio = '2026-10-15', sinIds = false, tourDeManana = false }) {
   const esperadosRuta = Math.max(1, n - 1)
@@ -139,6 +150,7 @@ for (const version of ['completa', 'gratis']) {
   }
 }
 
+hito('3b.')
 // ── 3b. Los mismos viajes con Free Tour (sin pagos): el reparto no cambia ──
 for (const n of [3, 5, 8]) {
   const route = await generar({ n, extra: { experiencesPositive: ['imprescindibles', 'free_tour'], freeTourDespues: { hora: '10:00' } } })
@@ -147,6 +159,7 @@ for (const n of [3, 5, 8]) {
   debe(idsDe(route).includes('D3') && idsDe(route).includes('D1-FT'), '3 con Free Tour', `${n} días con Free Tour de mañana: no lleva D3 y D1-FT (lleva [${idsDe(route)}])`)
 }
 
+hito('4.')
 // ── 4. Las reservas, en su día y a su hora ──
 {
   const reserva = (id, nombre, fecha, hora) => ({ id, kind: 'entrada', refId: nombre, name: nombre, placeNames: [nombre], dateIso: fecha, dayNumber: null, time: hora })
@@ -166,6 +179,7 @@ for (const n of [3, 5, 8]) {
   }
 }
 
+hito('5.')
 // ── 5. La vuelta con horas y la llegada, con la petición completa del cliente ──
 const FILAS_VUELTA = [
   { hora: '03:00', lleva: 'solo_traslado', tarjeta: true, tarjetaUlt: true, conParadas: false },
@@ -185,7 +199,8 @@ for (const n of [2, 3, 4, 5, 7, 10, 14]) {
     debe(vuelta?.isReturnLeg === true, '5 vuelta con horas', `${etiqueta}: el último día no es el de vuelta`)
     debe(route.planVuelta?.lleva === fila.lleva, '5 vuelta con horas', `${etiqueta}: lleva «${route.planVuelta?.lleva}» y no «${fila.lleva}»`)
     // Con 6 días de ruta o más ya se ha visto todo lo de la lista de la última mañana: el día de vuelta va sin paradas, con la hoja «Ya has visto lo mejor de Roma» y su tarjeta.
-    const todoVisto = n >= 7 && ['manana_corta', 'manana_sin_comida', 'manana_con_comida'].includes(fila.lleva)
+    // (10S) Tambien «dia_mas» (vuelta a las 23:30): con la tabla de la Tanda 11 ya no queda ningun dia de Roma por ver, y el dia de vuelta sale sin paradas, con su hoja y su tarjeta.
+    const todoVisto = n >= 7 && ['manana_corta', 'manana_sin_comida', 'manana_con_comida', 'dia_mas'].includes(fila.lleva)
     if (!todoVisto) {
       debe(vuelta.stops.length > 0 === fila.conParadas, '5 vuelta con horas', `${etiqueta}: el día de vuelta lleva ${vuelta.stops.length} paradas (¿con paradas? debía ser ${fila.conParadas})`)
       debe((tarjetaHoyVuelvesDelDia(route, vuelta) !== null) === fila.tarjeta, '5 «Hoy vuelves a casa»', `${etiqueta}: la tarjeta «Hoy vuelves a casa» ${fila.tarjeta ? 'no sale' : 'sale'} el día de vuelta`)
@@ -206,12 +221,12 @@ for (const n of [3, 5]) {
   const datos = datosParaMotor({ ...ruta, arrivalFlightTime: '09:00', departureFlightTime: '11:00' }, [], info)
   debe(Object.keys(datos).length === 0, '5 gratis', `la gratis manda llegada o vuelta al motor`)
 }
-// La tarjeta de la gratis «Tu último día también cuenta»: sale en el día de vuelta de la gratis (sin ruta) y no en el de pago, ni en coche.
+// La tarjeta del dia de vuelta sin hora (10B: con pase y sin pase, solo en el dia de vuelta y mientras no haya hora de vuelta).
 {
   const panel = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
-  const tarjeta = leer('src/components/route/dayDetail/TarjetaTuUltimoDia.tsx')
-  debe(TARJETA_DEL_DIA.test(tarjeta) && /TarjetaTuUltimoDia/.test(panel), '5 tarjeta de la gratis', 'la tarjeta «Tu último día también cuenta» no está en el panel del día')
-  debe(/const tarjetaUltimoDia = !pago && Boolean\(route\) && day\.isReturnLeg === true && modes\.departure !== 'coche'/.test(panel), '5 tarjeta de la gratis', 'la tarjeta de la gratis no es solo de la gratis, del día de vuelta y fuera del coche')
+  const tarjeta = leer('src/lib/ultimoDia.ts')
+  debe(TARJETA_DEL_DIA.test(tarjeta) && /TarjetaTuUltimoDia/.test(panel), '5 tarjeta de la gratis', 'la tarjeta «El último día, a la medida de…» no está en el panel del día')
+  debe(/const tarjetaUltimoDia = Boolean\(route\) && day\.isReturnLeg === true && !departureTime/.test(panel), '5 tarjeta de la gratis', 'la tarjeta del día de vuelta no es solo del día de vuelta y sin hora de vuelta puesta')
 }
 // Una sola fecha: el D0 de siempre, con las dos barras, y las horas no lo recortan.
 {
@@ -226,6 +241,7 @@ for (const [medioId, llegada] of [['train', '08:00'], ['bus', '09:00'], ['ferry'
   comprobarReparto(route, { n: 4, fechas: true, version: 'completa', etiqueta: `4 días, ${medioId}`, sinIds: Boolean(llegada) })
 }
 
+hito('6.')
 // ── 6. Los 20 viajes de la revisión y la mitad vuelta, hechos por la app, contra el motor directo ──
 const FT_HORA = (v) => v.ft ?? null
 function extraDeViaje(v) {
@@ -272,6 +288,7 @@ for (const v of VIAJES_VUELTA) {
   debe(vuelta.stops.length > 0 || tarjetaHoyVuelvesDelDia(route, vuelta) !== null, '6 mitad vuelta', `viaje ${v.n} (${v.fila}): un día de vuelta sin paradas sin la tarjeta «Hoy vuelves a casa»`)
 }
 
+hito('7.')
 // ── 7. Rehacer por cambio de fechas, [Añadir en un día nuevo] y «+ Añadir día» ──
 {
   ponerVersion('completa')
@@ -325,6 +342,7 @@ for (const v of VIAJES_VUELTA) {
   M.useAddFlowStore.setState({ toast: null })
 }
 
+hito('8.')
 // ── 8. Lo que no cambia: la ruta a mano, el coche, los viajes guardados ──
 {
   const manual = buildManualRoute({ destination: 'Roma', answers: respuestas(5), transportContext: { transport_option: { id: 'flight' }, archetype: null } })
@@ -349,3 +367,6 @@ else {
   for (const f of fallos.slice(0, 60)) console.log(` - [${f.regla}] ${f.texto}`)
   process.exitCode = 1
 }
+// (Tanda 10S: la prueba acaba en ~20 s, pero node no salía solo —algo del cliente de la app, del servidor de React o de esbuild deja un temporizador vivo— y la batería la cortaba por tiempo, una hora después de «TODO BIEN». Se sale a propósito, tras un respiro.)
+await new Promise((r) => setTimeout(r, 300))
+process.exit(fallos.length ? 1 : 0)

@@ -237,7 +237,7 @@ export function RouteView() {
                 <button
                   type="button"
                   onClick={() => setShowAllDaysOnMap((prev) => !prev)}
-                  className="absolute bottom-8 left-3 z-10 rounded-full border-[1.5px] border-accent bg-bg-card px-3 py-1.5 text-[12px] font-medium text-text/60 shadow-sm backdrop-blur-sm transition-colors hover:text-text"
+                  className="zona-toque absolute bottom-8 left-3 z-10 rounded-full border-[1.5px] border-accent bg-bg-card px-3 py-1.5 text-[12px] font-medium text-text/60 shadow-sm backdrop-blur-sm transition-colors hover:text-text"
                 >
                   {showAllDaysOnMap ? 'Solo este día' : 'Ver todo'}
                 </button>
@@ -263,7 +263,7 @@ export function RouteView() {
                 onClick={() => setMapCollapsed(true)}
                 aria-label="Ocultar mapa"
                 title="Ocultar mapa"
-                className="absolute right-3.5 top-[22px] z-10 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
+                className="zona-toque absolute right-3.5 top-[22px] z-10 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
               >
                 <CollapseMapIcon />
               </button>
@@ -284,7 +284,7 @@ export function RouteView() {
               onClick={() => setMapCollapsed(false)}
               aria-label="Mostrar mapa"
               title="Mostrar mapa"
-              className="flex h-8 w-full shrink-0 items-center justify-center border-b border-text/10 bg-bg-card text-text-soft transition-colors hover:bg-bg-hover"
+              className="zona-toque flex h-8 w-full shrink-0 items-center justify-center border-b border-text/10 bg-bg-card text-text-soft transition-colors hover:bg-bg-hover"
             >
               <OpenMapIcon />
             </button>

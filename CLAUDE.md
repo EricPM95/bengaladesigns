@@ -15,9 +15,11 @@ El ordenador de Eric se quedó sin memoria por procesos que se dejaron abiertos 
 NO apagar el PC al acabar una tanda, salvo que Eric lo pida en ese mismo prompt (en la 10N10 el prompt decía «No apagues el PC al acabar» y se programó el apagado igual: no volver a pasar). Un permiso dado en una conversación no vale para la siguiente tanda.
 
 ## Cómo probar (Eric, 29-oct) — para ir más rápido
+(10S: la guía paso a paso, con comandos y qué hacer si una falla, está en `docs/dias/COMO_CORRER_LAS_PRUEBAS.md`.)
 - **En cada tanda, NO la batería completa:** solo las pruebas de lo que se ha tocado en esa tanda, más `pruebaJutrip`. En el informe se dice cuáles se han pasado.
 - **La batería completa, solo cuando Eric lo pida o antes de una tanda grande** (lo dirá en el prompt).
 - **Hasta 2 Chrome de prueba a la vez.** Las pruebas que usan el Supabase real o las mismas cuentas de prueba, **siempre solas**. Si una falla con 2 a la vez, se repite sola antes de darla por mala.
+- **La batería (10S):** `node scripts/destino/bateriaParalela.mjs navegador=2 conc=3 salida=docs/dias/_bateria.json`. Coge todas las `prueba*.mjs` menos los envoltorios (se detectan por contenido), arranca su Vite estable calentado en 5199 y lo cierra, coge la cola de Chrome, da a cada prueba su carpeta de temporales, corre las del Supabase real solas al final y no repite nada. `listar=1` enseña el reparto sin correr. Detalle en `docs/dias/COMO_CORRER_LAS_PRUEBAS.md`.
 - Si una batería completa sigue sin terminar, se corta y se pasan solo las de la tanda y `pruebaJutrip`.
 
 ## Nota de estado en la rama «estado» (Eric, 28-oct) — ACTIVA otra vez en la tanda 10N9

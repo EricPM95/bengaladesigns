@@ -3328,3 +3328,172 @@ Se queda como está; apuntado en `REGLAS_DE_LA_APP.md` (apartado 6): cada estanc
 
 - ✅ Hecho — Apartado «10N12» en INFORME_TANDA10B.md y esta lista al final No hace falta migración.  
   *Dónde:* No es de móvil.
+
+
+## 10S — La batería de pruebas en 0 fallos de una pasada (y más rápida), la descarga más ligera, las zonas de toque de 44 px y tres retoques de la 10N12 (29 y 30-oct)
+
+**Migración: ninguna.** No se ha tocado el motor de rutas ni nada de `server/` ni `data/` más allá de lo dicho. **La muestra de 60 fechas** (`muestraRutas60.mjs`): «las rutas salen exactamente iguales que antes», antes de empezar y al terminar.
+
+### Resultado en una línea
+**Tres pasadas seguidas de la batería completa, con 2 Chrome a la vez, en 0 fallos cada una, sin repetir nada a mano: 34,4 / 34,7 / 34,7 minutos para 178 pruebas** (112 de Node, 62 de Chrome a 2 a la vez y 4 solas al final del Supabase real). **Antes: unos 65-70 minutos con 148 pruebas** (aproximado: sale de mis registros de la 10N10, no se midió de nuevo). `pruebaJutrip` (129/0) va dentro de cada pasada. El camino hasta ahí: la pasada 1 dio 4 en MAL, la 2 dio 3 en MAL; se arregló la causa de cada una y la cuenta de «tres seguidas» empezó de nuevo.
+
+### 1. Los retoques de la 10N12 (tus respuestas)
+- **Aviso de Logros:** «Con el Pase Roma, consigues el sello de cada sitio que visitas, las colecciones y los emblemas secretos.»
+- **Caja azul y degradado:** la caja azul ([Ver]) sigue abriendo la lista; el degradado detrás del botón fijo se queda. Sin cambios.
+- **Botón de la cama:** en el día de prueba sin pase ya no sale. Causa: el pago está encendido ese día, y el botón decidía por ahí; ahora decide por el pase de verdad (`HoyView`, `conCama = fase "durante" && no es día de prueba`).
+- **La ✕ de la lista:** la zona que se desplaza empieza justo debajo de la ✕ (con un fundido de 14 px), así que ningún texto pasa por debajo. El botón fijo y su degradado no cambian. Se comprueba por geometría en 8 posiciones de scroll, a 390×844 y 375×667.
+- **«Mis viajes»:** tu respuesta del 30-oct: la línea de fechas lleva solo las fechas, sin «· 4 días» (los chips «4 días · 3 noches · N paradas» y «En 12 días» no se tocan).
+
+### 1b. Zonas de toque de 44 × 44 (tu petición del 30-oct)
+Clase `zona-toque` en `src/index.css`: un `::after` transparente y centrado de al menos 44 × 44 que **solo crece hacia fuera**; el botón sigue midiendo lo mismo a la vista (Ajustes y la cama, 40 × 40), sin cambiar diseño ni espacio. Se añade `position: relative` solo si el botón no es `absolute`/`fixed`; los botones anchos y bajos crecen solo en vertical; donde hay vecinos pegados se amplía solo hacia el lado libre.
+- **Cuáles (129 apariciones de la clase en 85 archivos; lista exacta con `git diff -U0 -- src | grep zona-toque`):**
+  - **40 px:** Ajustes y Cerrar del Perfil; la cama de HOY; la ✕ de las hojas (unirse, lista del pase, añadir parada, buscador de atracciones ×2, calendario, llegada/vuelta, ficha de destino, foto en grande, añadir reserva, hoja abajo, consejos del viaje, hojas de opciones y selectores); «Volver» (lista de viajes, llegada, comida); Ocultar mapa; las tarjetas anchas con alto de 40.
+  - **36-38 px:** ✕ de avisos y de elegir día, «Tips» y «Recuperar mi ruta», «Atrás» del flujo, «Volver» de restaurante; eliminar viaje y cambiar portada de «Mis viajes» (38 × 38).
+  - **42 px:** Cerrar de alojamiento, de RESERVAS y del explorador.
+  - **Los más pequeños (menos de 30 px, los que más ganan):** el «…» de las paradas (28), editar parada (22 × 28), quitar paseo (28), borrar búsqueda (24-26), cerrar aviso (24) y quitar lugar del buscador de atracciones (16).
+  - **Pastillas de 30-42 px de alto** en el explorador, presupuesto, reservas, HOY, primera pantalla, fechas, calendario y los selectores.
+  - **Añadidos a mano tras la auditoría con Chrome:** fechas del viaje en el mapa, «Ver todo» del mapa, «Añadir alojamiento»/«Ir» del día 1, «Más opciones del día», «+ Añadir parada», Ubicación y Escuchar en HOY, «Borrar mi cuenta».
+- **Saltados a propósito:** los de desarrollo (`DevQuickRouteScreen`, `PanelDePruebas`), los de `ReservasItemRow` (30 px, Añadir/Reservar apilados sin hueco) y 4 falsos positivos del escáner.
+- **Comprobado:** un Chrome midió 5 pantallas (RUTA, DÍAS, RESERVAS, EXPLORAR, HOY; con y sin pase; 5 puntos por botón y varias posiciones de scroll): **ninguna zona de toque tapa el clic de un vecino** (5 coincidencias, todas explicadas: elementos fuera del recorte del scroll y «Visto» pasando bajo el botón flotante de la cama). **No se midieron** las hojas, los modales ni los menús («…», Perfil, calendario): solo pasada estática. Quedan por debajo de 44 solo dos controles de Mapbox (atribución obligatoria) y el panel «Pruebas» (desarrollo).
+- **Capturas antes y después** (`10s_toque_*`): la cama idéntica byte a byte; Ajustes idéntica a la vista (difiere en bytes por la animación de «Mi vitrina»).
+- **Prueba:** `pruebaPantallas8c` ya no lee `h-11 w-11` (estaba obsoleta); comprueba que `.zona-toque::after` es de ≥ 44 × 44 y que Ajustes y la cama la llevan y siguen en `h-10 w-10`. `pruebaTanda10S` mide la zona real con `elementFromPoint` en las 4 esquinas y el centro (y que 1 px fuera no devuelve el botón).
+
+### 2 y 3. La causa de cada fallo y cómo se arregló
+| Fallo | Causa | Arreglo |
+|---|---|---|
+| `__rutaPrueba is not a function`, `reading 'days'` | `window.__rutaPrueba` se carga con un `import()` y las ~48 pruebas copiaban un bucle de 60 × 500 ms (30 s). Con un Vite frío y la CPU ocupada la página tardó **207 s** en tenerla | `abrirApp` no devuelve la app hasta que existe (tope 300 s, mensaje claro); las pruebas antiguas pasan sin tocarlas |
+| «No se ha podido crear el viaje de pruebas» | esperas fijas (800/1200/3500 ms) en `rutaDePrueba.ts` | `hasta()` espera de verdad (primera pantalla, campos, botones, ruta en el almacén); una sola creación por página; `conViaje` reintenta solo fallos de creación |
+| `reading 'focus'` | `escribir()` hacía foco en un campo que aún no existía | espera 20 s y nombra el selector |
+| Vite frío | la primera carga de Vite es lenta | `server.warmup` en el Vite estable y el runner lo precalienta (peticiones a `/`, `main.tsx`, `App.tsx`, `rutaDePrueba.ts`, el almacén y una pasada de Chrome por todas las pestañas) |
+| Chrome «de más» | la batería solo miraba si el texto decía `abrirApp`; las que abren Chrome vía `_10n5_comun`, `_ayuda10F`… corrían sin límite | sigue los `import` recursivamente: 62-63 de Chrome detectadas, 2 a la vez |
+| Puerto de Chrome al azar | colisiones posibles | puerto 0 + lectura de `DevToolsActivePort` del perfil propio |
+| Basura | había **8.573 carpetas `enLaApp-*`** en %TEMP% (el borrado se rendía a la primera) | `cerrar()` las borra con reintentos; el runner avisa en amarillo de las de más de un día |
+| Cierre raro `0xC0000409` (`explorar`, `6y2_reorganizar`) | `process.exit()` con el WebSocket de CDP o el servidor hijo todavía cerrándose (aserto de libuv en Windows) | cerrar el WebSocket, esperar al hijo y 400 ms antes de salir |
+| Chrome huérfanos y cola bloqueada ~22 min | `conViaje` reintentaba abriendo otro Chrome sin cerrar el anterior | `conViaje1` cierra su app si falla; una espera agotada no se reintenta; un `process.on('exit')` cierra todas las apps abiertas |
+| `pruebaTanda7_reparto` «PASADO DE TIEMPO» | no era lenta: tarda **21 s** y se quedaba colgada después de dar «TODO BIEN» (un temporizador vivo) | `process.exit` explícito + vigilante en el runner (si ya dio su resultado limpio y no sale sola en 90 s, la cierra y la apunta como OK\* «NO SALÍA SOLA»; con fallos no actúa) |
+| `pruebaTanda10P_sorteo` (error -4094) | bloqueo momentáneo de Windows al guardar una captura | `app.captura` reintenta hasta 8 veces con espera creciente |
+| `pruebaTanda10N6_recuerdos` | altas anónimas del Supabase real por Chrome + esperas fijas de 6 s en la subida | una cuenta anónima fija, espera a que empiece y acabe la subida, y corre sola al final |
+| `pruebaEntrarReal`, `pruebaTanda10N3_real` | altas anónimas nuevas cada pasada | cuentas fijas (fuera de git, sin imprimirse) y a la cola de «solas al final» (4 en total) |
+
+- **Runner nuevo (`bateriaParalela.mjs`):** enumera TODAS las `prueba*.mjs` (178) y excluye los 16 envoltorios por contenido (solo si todas sus partes están sueltas); cada prueba con su carpeta temporal y su perfil de Chrome; Vite estable propio calentado en el puerto 5199 y cerrado al acabar; las que comparten Supabase real, solas al final; tope por prueba = el mayor entre 25 min y 2 × su tiempo histórico; ordena de las más largas a las cortas; guarda la salida de las MAL; sin reintentos; `listar=1`, `solo=`, `sin=`, `filtro=`. Comando: `node scripts/destino/bateriaParalela.mjs navegador=2 conc=3 salida=docs/dias/_bateria.json`.
+- **`pruebaListas`:** en la batería, un muestreo de **12 fechas fijas** (con las difíciles: Navidad, fin de año, Semana Santa, el cierre de las Catacumbas, pleno verano y un domingo con el Vaticano cerrado, cada una con su motivo en la cabecera): 3 min 39 s, 25.887 viajes, 0 fallos. **El barrido completo de 365 fechas no se ha quitado:** sigue existiendo y se corre aparte (unas 6-7 h de CPU, ≈ 1 h 50 min en 4 trozos; comandos en `COMO_CORRER_LAS_PRUEBAS.md`, sección 10), obligatorio en toda tanda que toque el motor o los datos de Roma, y una vez antes de lanzar. **No se ha corrido entero en esta tanda** (no se toca el motor).
+
+### 2b. Las 21 pruebas antiguas que la batería «completa» hizo entrar
+Con «coger todas» entraron 21 pruebas que nadie corría (Tanda 7, `pruebaListas`, `pruebaSalida`, `pruebaSugerencias`, `pruebaTanda11`, `pruebaVarita`, `pruebaPantallas8c`, `pruebaRevisionRutas`). 10 salían MAL por motivos que no eran de infraestructura. Ninguna era una regresión clara: casi todas tenían la expectativa obsoleta por cambios tuyos entre el 21 y el 29-oct. **Con tu aprobación del 30-oct** se actualizaron con la misma fuerza (cada comprobación cambiada lleva en la cabecera de su prueba un bloque «CAMBIOS DE LA 10S» con qué esperaba antes, qué espera ahora y qué decisión tuya lo justifica, tanda y fecha):
+- `7_reparto` (2084/0): la tabla pasa de D6 a D7 (Tanda 11, 22-oct); la vuelta sin paradas; la tarjeta del último día de la 10B (21-oct).
+- `7_llegada` (59.271/0 y 8 apartados): la tabla D6 → D7 (108 casos) y «Cúpula + Basílica» como una visita.
+- `7_vuelta` (54.073/0): la referencia congelada del 14-oct se refresca con la salida actual solo para 9 viajes (`_t7v_sinvuelos_dorado.json`); `sin_vuelos` y `ruta_a_mano` intactas.
+- `7_respuestas` (260/0 y 1 apartado): los «me gusta» iniciales de la 10O (25-oct).
+- `7_ficha` (1295/0), `7_conexion` (194/0), `7_unificado` (845/0): `btn-champan` (10E), la tarjeta del vuelo de DÍAS (10N11), lo gratis de la 10G, «Hoy vuelves a casa» (10B).
+- `pruebaPantallas8c` (1265/0): logo, carga diferida del Perfil, tarjetas de Design, fixture de logros regenerado (`generarDemoGanados.mjs`, solo cambia Roma › secretos: 12 → 14) y la zona de toque.
+- `7_reservas` (159/0): sección 8 y 11 contra la tarjeta de la 10B; las 8 reglas «SUSTITUIDAS» (que ignoraban fallos en silencio) reescritas contra `HojaDelVuelo`, `HojaTuAlojamiento`, la tarjeta del vuelo y el aviso sin pase. Un cambio de significado: «la mitad con hora pide la zona» (`data-pide-zona`) ya no existe; ahora el bloque de Alojamiento dice «Falta la zona».
+- `6z6c` (99/0): HOY sin pase ahora es la pantalla de Design (10N11), que lleva «Cerca de ti» como punto cerrado; sigue comprobando que no sale nada de lo de pago (ahora con más: «Baños», «Fuentes», «Comer», «Ubicación», llegada y vuelta).
+- `7_mover` (145/0): `HoySinPase` y `TarjetaDeViaje` en la lista de permitidos del escáner de «{n} días» (son cuentas atrás).
+
+### 2c. «PENDIENTE DEL MOTOR» (13 casos, en amarillo en cada pasada, nunca en verde)
+Solo esos casos concretos, no las pruebas enteras; no cuentan como fallo ni como OK. Apuntados en `docs/dias/PENDIENTES_MOTOR.md` (con prioridad y fecha de hoy, 30-oct, «mirar en la próxima tanda del motor») y en `REGLAS_DE_LA_APP.md` (sección 6):
+1. **Catacumbas de San Calixto el 15-ene-2027 en D7 (8 + 4 casos, viajes sin fechas, solo el mes):** `roma.json` tiene el cierre `2027-01-13..2027-02-10`, pero un viaje sin fechas reales no aplica el cierre por rango (`listasTrip.js` línea 171: `closedOnDay(..., calendar.hasDates ? dateIso : null)`); el motor las pone a las 14:00 sin avisar. Solo se ve ahora porque la Tanda 11 puso D7 (que las lleva) en 6 y 7 noches. **Pregunta: ¿un viaje de solo enero debe evitar D7 o avisar?** (Prioridad alta: mandar al viajero a un sitio cerrado.)
+2. **Viaje 11 · día 1 no cabe por 105 min (1 caso):** con «imprescindibles intocables» de la Tanda 11 la Iglesia del Gesù se queda en D1 y el aviso sale 5 veces repetido (también de mirar).
+3. **Orden llegando a las 16:30 (2 casos):** el motor pone la Trinità dei Monti antes de Via Condotti por la regla «rodeo para no llegar cerrado» de la Tanda 11 (cierra a las 19:45); probablemente solo falte actualizar la comprobación de la lista escrita.
+4. **D6 «Roma desde arriba»:** confirmado a propósito (`roma.json › curated_routes › _nota_tanda11`: Eric, 22-oct); por eso las pruebas esperan D7.
+
+### 4. La descarga
+**371,6 KB → 288,9 KB** comprimidos al abrir (tope 340 KB, repuesto en `pruebaPantallas8c` y `pruebaCuentas3`). Causa: el CSS de banderas (`flag-icons`, 84,5 KB comprimidos de los 98,7 del CSS de entrada, unos 420 KB sin comprimir) entraba al abrir con un `@import` en `index.css`; ahora va en su propio archivo (`banderasCss`) que se baja después de abrir, con precarga cuando la app está libre (`precargarBanderas()`). CSS de entrada: 98,7 → 15,8 KB. JS sin cambios (index 172, vendor-react 44, vendor-supabase 56). **La lista del pase sin la película: 4,7 KB** comprimidos (antes 4,6; en la 10N10, con las escenas, 1,13 MB sin comprimir). Los logros: 6,4 KB. Las dos pruebas del peso miden un `dist` recién construido (`_distFresco.mjs`: unos 24 s si hay que construir; nunca un `dist` viejo). Las banderas no se han visto en un navegador real: mira el desplegable de destino y las tarjetas de «Mis viajes» (cualquier cuenta). Si alguien teclea antes de que carguen, una bandera podría salir un instante sin estilo.
+
+### 5 y 6. Capturas de Design y guía
+Capturas de Design nuevas para DÍAS día 1 (01, 02, 02b, 03), alojamiento 02 y 03 regeneradas, la lista del pase y HOY sin pase (Pase Lista) y el aviso a 375×667; regenerados `REPASO_10N11.html` y `REPASO_10N12.html`. Solo hay una captura de Design por punto, así que algunas quedan fuera del lado a lado y solo salen en la galería. `docs/dias/COMO_CORRER_LAS_PRUEBAS.md`: cómo se corre la batería entera, solo las de una tanda, cuánto tarda cada cosa, qué hacer si una falla y la tabla causa → arreglo; `CLAUDE.md` con una línea que apunta a la guía y otra con el comando de la batería.
+
+### Posibles fallos de la app que salieron (sin decisión tuya detrás; no tocados)
+1. **`HojaDelVuelo.tsx`** pone «Ref. vuelo» y «Aerolínea» fijos también con la vuelta en tren y en el «viaje en coche».
+
+### A medias
+- Sin ver en un iPhone real: las banderas sin parpadeo, la zona de toque de 44 px (hojas, modales y menús no medidos con Chrome).
+- El tiempo «antes» de la batería (65-70 min) es aproximado; el «después» es medido (tres pasadas).
+- El barrido completo de 365 fechas de `pruebaListas` no se ha corrido en esta tanda.
+- Quedan en %TEMP% unas 1.800 carpetas `enLaApp-*` antiguas (las limpio al cerrar).
+
+### Dudas para ti
+1. Los 13 «pendientes del motor»: Catacumbas sin fechas es el importante (¿D7 debe evitarse o avisar en un viaje de solo enero?). ¿Lo miramos en la próxima tanda del motor?
+2. El vigilante del runner marca OK\* «NO SALÍA SOLA» a una prueba que ya dio su resultado limpio y no sale en 90 s. ¿Prefieres que cuente como MAL?
+3. `HojaDelVuelo` pone «Ref. vuelo» y «Aerolínea» también con tren o coche: ¿es lo que quieres?
+
+### Lista de comprobación 10S
+
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado en docs/dias/PROMPT_TANDA10S.md e incluido en el commit  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Reglas de siempre (REGLAS_DE_LA_APP.md y CLAUDE.md); hasta 4 agentes, memoria mirada, nota de estado a la rama «estado» cada 30 min (también con la batería corriendo); batería completa esta tanda Con tu permiso del 30-oct, al terminar se apaga el PC (solo esta vez).  
+  *Dónde:* No es de móvil.
+
+**1 · Tres retoques de la 10N12**
+
+- ✅ Hecho — El aviso de Logros: «Con el Pase Roma, consigues el sello de cada sitio que visitas, las colecciones y los emblemas secretos.»  
+  *Dónde:* Cuenta sin pase: Logros cerrados > tocar la vitrina.  *Captura:* `10s_aviso_375x667.jpg`
+- ✅ Hecho — La caja azul del pase ([Ver]) sigue abriendo la lista; el degradado detrás del botón fijo se queda Sin cambios.  
+  *Dónde:* Cuenta sin pase: RUTA > pastilla «Pase Roma»; bajar la lista.  *Captura:* `10s_lista_x_final.jpg`
+- ✅ Hecho — El botón de la cama: sí en los días del viaje; en el día de prueba sin pase, no sale; solo con pase Antes salía el día de prueba porque el pago está encendido ese día: ahora mira el pase de verdad.  
+  *Dónde:* HOY: con pase en un día del viaje, arriba a la derecha; cuenta sin pase en el día de prueba, no sale.  *Captura:* `10s_cama_dia_de_prueba.jpg`
+- ✅ Hecho — La ✕ de la lista del pase no pisa el texto al bajar La zona que se desplaza empieza justo debajo de la ✕, con un fundido de 14 px; el botón fijo y su degradado quedan igual. Comprobado por geometría en 8 posiciones de scroll, a 390×844 y 375×667.  
+  *Dónde:* Lista del pase (cuenta sin pase): bajar hasta el final.  *Captura:* `10s_lista_x_medio.jpg`
+
+**1 · Añadido de Eric (zonas de toque)**
+
+- ✅ Hecho — Zona de toque de 44 × 44 en Ajustes, la cama de HOY y cualquier otro botón de menos de 44 px, sin cambiar lo que se ve Clase `zona-toque` en src/index.css (zona invisible que solo crece hacia fuera). 129 apariciones de la clase (111 sitios por escáner, 10 a mano tras la auditoría con Chrome y el resto repetidos); la lista completa sale de `git diff -U0 -- src | grep zona-toque` y está en el informe. Capturas antes/después de Ajustes y la cama idénticas a la vista. Sin cobertura en Chrome: hojas, modales y menús (solo pasada estática). Quedan por debajo de 44 solo dos controles de Mapbox (atribución obligatoria) y el panel «Pruebas» (solo desarrollo).  
+  *Dónde:* Perfil > Ajustes (arriba a la derecha) y HOY (cama): toca un poco fuera del botón y responde.  *Captura:* `10s_toque_ajustes_despues.jpg`
+
+**2 · Lo que fallaba hoy**
+
+- ✅ Hecho — Fallos por la carga (`__rutaPrueba is not a function`, «No se ha podido crear el viaje de pruebas», esperas largas) Causas y arreglos en el informe (tabla causa → arreglo).  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — pruebaTanda7_reservas (TarjetaTuUltimoDia, textos undefined) Era la prueba, no la app: la 10B rediseñó el componente a propósito. Reescrita contra las piezas actuales (159 comprobaciones, 0 fallos); las 8 reglas «SUSTITUIDAS» ya no se ignoran en silencio.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — pruebaTanda7_mover (5 fallos) Solo fallaba 1 (falso positivo del escáner de «{n} días» en cuentas atrás). 145/0.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — pruebaTanda10N6_recuerdos (falla con el Vite normal) Subía fotos al Supabase real con altas anónimas por Chrome y esperas fijas. Ahora una cuenta anónima fija, espera a que acabe la subida, y corre sola al final de la batería. 29/0.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — pruebaTanda10N10_explorar acaba con un cierre raro de node (código 3221226505) Aserto de libuv de Windows al salir con el WebSocket y Chrome cerrándose. Arreglado en _enLaApp.mjs; el mismo origen en pruebaFase6y2_reorganizar y pruebaFase6y_reorganizar (esperan al hijo).  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — pruebaEntrarReal y pruebaTanda10N3_real (altas anónimas del Supabase real) Reutilizan cuentas fijas, guardadas fuera de git, y hacen cero altas nuevas por pasada. Corren solas al final de la batería.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — pruebaTanda7_hoy y cualquier otra que valga entran en la batería; los envoltorios no duplican El runner enumera todas las prueba*.mjs (178) y excluye los 16 envoltorios por contenido. Entraron 21 pruebas antiguas que nadie corría: 10 estaban desfasadas (ver el informe).  
+  *Dónde:* No es de móvil.
+
+**3 · Lo que te pido**
+
+- ⚠️ A medias — Causa de cada fallo y arreglo de raíz, sin quitar ni bajar pruebas Se actualizaron expectativas obsoletas en 10 pruebas antiguas (con «antes → ahora → decisión tuya» en la cabecera de cada una), se apartaron como «PENDIENTE DEL MOTOR» solo 13 casos concretos (Catacumbas sin fechas, orden a las 16:30, Viaje 11), y pruebaListas corre en la batería con 12 fechas fijas (el barrido de 365 va aparte). Todo con tu aprobación del 30-oct.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La batería completa con 2 Chrome, en 0 fallos de una pasada, tres veces seguidas, y cuánto tarda antes y después Tres pasadas seguidas: 34,4 / 34,7 / 34,7 min, 178 pruebas, 0 en MAL cada una. Antes: unos 65-70 min con 148 pruebas (aproximado).  
+  *Dónde:* No es de móvil.
+
+**4 · La descarga, más ligera**
+
+- ✅ Hecho — Bajar de 371 KB a menos de 340 KB y volver a poner el tope en 340 en pruebaPantallas8c y pruebaCuentas3, midiendo un dist recién construido 288,9 KB (de 371,6). Causa: el CSS de banderas (flag-icons, 84,5 KB comprimidos) entraba al abrir; ahora va aparte. Tope 340 KB repuesto; las dos pruebas construyen un dist nuevo (unos 24 s).  
+  *Dónde:* No es de móvil. Mira en el móvil que el desplegable de destino y las tarjetas de Mis viajes muestran las banderas sin parpadeo.
+- ✅ Hecho — Lo que pesa la lista del pase sin la película 4,7 KB comprimidos (antes 4,6; en la 10N10, con las escenas, 1,13 MB sin comprimir).  
+  *Dónde:* No es de móvil.
+
+**5 · Capturas de Design que faltan**
+
+- ⚠️ A medias — En REPASO_10N11 y REPASO_10N12, las de Design al lado: DÍAS día 1 y vuelo, alojamiento 02 y 03, la lista del pase, HOY sin pase y el aviso a 375×667 Hechas y regeneradas; solo hay una captura de Design por punto en los repasos, así que algunas (p. ej. DÍAS 01 y 02b) quedan fuera del lado a lado y solo salen en la galería.  
+  *Dónde:* docs/dias/REPASO_10N11.html y REPASO_10N12.html.
+
+**6 · Cómo correr las pruebas**
+
+- ✅ Hecho — docs/dias/COMO_CORRER_LAS_PRUEBAS.md y CLAUDE.md al día Con comandos, tiempos y qué hacer si una falla.  
+  *Dónde:* No es de móvil.
+
+**7 · La prueba**
+
+- ✅ Hecho — La batería completa tres veces seguidas, con 2 Chrome a la vez, en 0 fallos; y pruebaJutrip pruebaJutrip 129/0 dentro de cada pasada.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — Prueba nueva pruebaTanda10S: los tres retoques y el peso por debajo de 340 KB 85 comprobaciones, 0 fallos (también la línea de fechas de Mis viajes y la zona de toque medida con elementFromPoint).  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — La muestra de 60 fechas: las rutas salen exactamente iguales «Las rutas salen exactamente iguales que antes», antes y después de la tanda. No se ha tocado el motor.  
+  *Dónde:* No es de móvil.
+
+**8 · El informe**
+
+- ✅ Hecho — Apartado «10S» en INFORME_TANDA10B.md y esta lista al final No hace falta migración.  
+  *Dónde:* No es de móvil.

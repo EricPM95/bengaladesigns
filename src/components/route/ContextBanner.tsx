@@ -22,7 +22,7 @@ export function ContextBanner({ route }: ContextBannerProps) {
         type="button"
         onClick={dismissContextBanner}
         aria-label="Cerrar aviso"
-        className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover"
+        className="zona-toque absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover"
       >
         ×
       </button>

@@ -2,7 +2,11 @@
 //   node scripts/destino/pruebaTanda10N3_real.mjs
 //
 // Lee en memoria VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY y SUPABASE_SERVICE_ROLE_KEY de .env.local (o del entorno); NUNCA las imprime.
-// Usa DOS cuentas anónimas de prueba (`signInAnonymously`, como la app) y un viaje de prueba propio; al acabar BORRA el viaje, sus filas, los avisos y las cuentas anónimas.
+// (10S) Ya NO crea cuentas nuevas en cada pasada (Supabase limita las altas anonimas: «Request rate limit reached»). Usa TRES cuentas FIJAS y un viaje de prueba propio:
+//   · dueño = «Eric» y Luis = «Viajes»: las dos cuentas REALES de docs/dias/_cuentas_prueba_10n10.json (las mismas de pruebaTanda10N10_avisos_real; si el archivo no existe se crean aqui, una sola vez, igual que alli);
+//   · Ana = UNA cuenta anonima fija: su sesion (el refresh token, que se renueva en cada pasada) se guarda en docs/dias/_cuentas_prueba_10n3_ana.json. Solo se da de alta una anonima la primera vez o si esa sesion ya no vale (y lo dice).
+//   Los dos archivos estan fuera de git (.git/info/exclude: docs/dias/_cuentas_prueba*.json) y no se imprimen nunca. Al acabar BORRA el viaje, sus filas y los avisos de esas cuentas; las cuentas NO se borran.
+//   Usa el Supabase real y las mismas cuentas que pruebaTanda10N10_avisos_real: CORRER SOLA (nunca con otra prueba de Supabase a la vez).
 // No toca ningún dato de nadie más y no llama a `empezar_de_cero`.
 // OJO: `crear_invitacion` y `canjear_invitacion` exigen una cuenta de verdad (no anónima), así que con cuentas anónimas NO se pueden probar contra Supabase: se dice en el resumen.
 // Los miembros se meten con la clave de servicio (lo que hace `canjear_invitacion` por dentro) y el resto de funciones se llaman COMO cada cuenta, con sus reglas de seguridad reales.
@@ -45,16 +49,74 @@ const limpio = (m) => String(m ?? '').replace(/eyJ[\w.-]+/g, '[clave]')
 
 const usuarios = []
 let viaje = null
+let anaRenovada = false
 
-async function cuentaAnonima(nombre) {
+const ARCHIVO_REALES = 'docs/dias/_cuentas_prueba_10n10.json'
+const ARCHIVO_ANA = 'docs/dias/_cuentas_prueba_10n3_ana.json'
+
+/** Las dos cuentas reales de siempre (admin «Eric» e invitado «Viajes»): se leen del archivo; si no existe, se crean una sola vez (como en pruebaTanda10N10_avisos_real). */
+async function cuentasReales() {
+  let datos = null
+  try {
+    datos = JSON.parse(fs.readFileSync(ARCHIVO_REALES, 'utf8'))
+  } catch {
+    /* se crean */
+  }
+  if (!datos) {
+    datos = {}
+    for (const [clave, nombre] of [['admin', 'Eric'], ['invitado', 'Viajes']]) {
+      const email = `prueba10n10.${clave}.${Math.random().toString(36).slice(2, 8)}@example.com`
+      const password = 'Pr-' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)
+      const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: true })
+      if (error) throw new Error('createUser: ' + limpio(error.message))
+      datos[clave] = { email, password, id: data.user.id, nombre: nombre }
+    }
+    fs.writeFileSync(ARCHIVO_REALES, JSON.stringify(datos, null, 1))
+    console.log('  (cuentas reales de prueba creadas una sola vez y guardadas fuera de git)')
+  }
+  const salida = {}
+  for (const clave of ['admin', 'invitado']) {
+    const d = datos[clave]
+    const c = createClient(URL_, ANON, opciones)
+    const { error } = await c.auth.signInWithPassword({ email: d.email, password: d.password })
+    if (error) throw new Error('signIn ' + clave + ': ' + limpio(error.message))
+    await admin.from('travelers').upsert({ id: d.id, nombre: d.nombre, is_anonymous: false }, { onConflict: 'id' })
+    salida[clave] = { c, id: d.id, nombre: d.nombre }
+  }
+  return salida
+}
+
+/** Una cuenta anónima FIJA: se reanuda su sesión guardada (el refresh token se renueva y se guarda otra vez); solo si no hay o ya no vale se da de alta una nueva (1 alta, y lo dice). */
+async function cuentaAnonimaFija(nombre) {
   const c = createClient(URL_, ANON, opciones)
-  const { data, error } = await c.auth.signInAnonymously()
-  if (error || !data.user) throw new Error(`no se pudo crear la cuenta anónima ${nombre}: ${limpio(error?.message)}`)
-  usuarios.push(data.user.id)
-  const { error: e2 } = await c.from('travelers').upsert({ id: data.user.id, is_anonymous: true }, { onConflict: 'id', ignoreDuplicates: true })
+  let user = null
+  try {
+    const guardada = JSON.parse(fs.readFileSync(ARCHIVO_ANA, 'utf8'))
+    const { data, error } = await c.auth.refreshSession({ refresh_token: guardada.refresh_token })
+    if (!error && data.session?.user?.is_anonymous) {
+      user = data.session.user
+      fs.writeFileSync(ARCHIVO_ANA, JSON.stringify({ refresh_token: data.session.refresh_token }))
+    }
+  } catch {
+    /* sin sesión guardada */
+  }
+  if (!user) {
+    const { data, error } = await c.auth.signInAnonymously()
+    if (error || !data.user) throw new Error(`no se pudo dar de alta la cuenta anónima fija ${nombre}: ${limpio(error?.message)} (límite de altas de Supabase: espera unos minutos y repite la prueba SOLA; esta alta solo hace falta una vez)`)
+    anaRenovada = true
+    user = data.user
+    fs.writeFileSync(ARCHIVO_ANA, JSON.stringify({ refresh_token: data.session.refresh_token }))
+    console.log('  (cuenta anónima fija creada: 1 alta; las próximas pasadas reanudan su sesión)')
+  }
+  const { error: e2 } = await c.from('travelers').upsert({ id: user.id, is_anonymous: true }, { onConflict: 'id', ignoreDuplicates: true })
   if (e2) throw new Error(`travelers: ${limpio(e2.message)}`)
-  await admin.from('travelers').update({ nombre }).eq('id', data.user.id)
-  return { c, id: data.user.id, nombre }
+  await admin.from('travelers').update({ nombre }).eq('id', user.id)
+  return { c, id: user.id, nombre }
+}
+
+/** Los avisos de las tres cuentas fijas: se vacían al empezar y al acabar (las cuentas se reutilizan, así que no puede quedar nada de la pasada anterior). */
+async function limpiarAvisos() {
+  if (usuarios.length) await admin.from('avisos').delete().in('user_id', usuarios)
 }
 const rpc = async (u, f, args) => {
   const { data, error } = await u.c.rpc(f, args)
@@ -82,17 +144,20 @@ async function principal() {
   const t41 = await admin.rpc('sacar_del_viaje', { p_trip: '00000000-0000-0000-0000-000000000000', p_user: '00000000-0000-0000-0000-000000000000', p_aviso: false })
   console.log(`  (la 0041 ${t41.error && /permission|denied|42501/i.test(`${t41.error.code} ${t41.error.message}`) ? 'responde (función reservada)' : 'no se puede comprobar desde aquí'}; esta tanda no la aplica Eric hasta que la lea)`)
 
-  console.log('1. Dos cuentas anónimas de prueba y un viaje de prueba')
-  const eric = await cuentaAnonima('PruebaDueno')
-  const ana = await cuentaAnonima('PruebaAna')
-  const luis = await cuentaAnonima('PruebaLuis')
-  debe(Boolean(eric.id && ana.id && luis.id), 'cuentas', 'tres cuentas anónimas creadas con signInAnonymously (la que usa la app)')
+  console.log('1. Las tres cuentas fijas de prueba y un viaje de prueba')
+  const real = await cuentasReales()
+  const eric = real.admin
+  const luis = real.invitado
+  const ana = await cuentaAnonimaFija('PruebaAna')
+  usuarios.push(eric.id, luis.id, ana.id)
+  await limpiarAvisos()
+  debe(Boolean(eric.id && ana.id && luis.id), 'cuentas', `tres cuentas fijas (dueño y Luis reales, Ana anónima fija; sin altas nuevas${anaRenovada ? ', salvo la de Ana, que no tenía sesión guardada' : ''})`)
   const ins = await eric.c.from('trips').insert({ traveler_id: eric.id, route: ruta(base) }).select('id').single()
   debe(!ins.error && Boolean(ins.data?.id), 'viaje', `el dueño crea su viaje de prueba${ins.error ? ': ' + limpio(ins.error.message) : ''}`)
   viaje = ins.data.id
 
   console.log('2. Invitar (crear_invitacion/canjear_invitacion exigen cuenta de verdad)')
-  const inv = await rpc(eric, 'crear_invitacion', { p_trip: viaje, p_pass: null, p_usos: 10 })
+  const inv = await rpc(ana, 'crear_invitacion', { p_trip: viaje, p_pass: null, p_usos: 10 })
   debe(inv.error !== null && /Primero crea tu cuenta/.test(inv.error), 'invitar', `con una cuenta anónima, crear_invitacion dice «Primero crea tu cuenta» (la regla funciona en real): ${inv.error}`)
   hechas.push('crear_invitacion y canjear_invitacion: solo se comprobó que rechazan a una cuenta anónima; probarlas de verdad necesita dos cuentas de verdad (email)')
   // La invitación (una fila) y los miembros se ponen con la clave de servicio, como lo hace canjear_invitacion por dentro.
@@ -138,7 +203,7 @@ async function principal() {
   const borra = await luis.c.from('trips').delete().eq('id', viaje).select('id')
   debe((borra.data ?? []).length === 0, 'editor', 'Luis no borra el viaje')
   const avc = await avisosDe(eric, 'viaje_cambiado')
-  debe(avc.length >= 1 && avc[0].payload.quien === 'PruebaLuis' && (avc[0].payload.anadidas ?? []).some((a) => a.nombre === 'Fontana de Trevi'), 'directo', 'el cambio de Luis deja en la campana del dueño el aviso «viaje_cambiado» con lo añadido')
+  debe(avc.length >= 1 && avc[0].payload.quien === luis.nombre.split(' ')[0] && (avc[0].payload.anadidas ?? []).some((a) => a.nombre === 'Fontana de Trevi'), 'directo', 'el cambio de Luis deja en la campana del dueño el aviso «viaje_cambiado» con lo añadido')
   const avAna = await avisosDe(ana, 'viaje_cambiado')
   debe(avAna.length === 1, 'directo', 'y en la de Ana (uno solo)')
   const recs = await rpc(ana, 'ver_invitacion', { p_codigo: codigo })
@@ -163,8 +228,15 @@ async function principal() {
     new Promise((ok) => {
       let canal = u.c.channel('p10n3:' + u.id + Math.random())
       for (const [filtro, cb] of escuchas) canal = canal.on('postgres_changes', filtro, cb)
-      canal.subscribe((estado) => estado === 'SUBSCRIBED' && ok(canal))
-      setTimeout(() => ok(canal), 8000)
+      let ultimo = 'sin respuesta'
+      canal.subscribe((estado, err) => {
+        ultimo = estado + (err ? ' ' + limpio(err.message) : '')
+        if (estado === 'SUBSCRIBED') ok(canal)
+      })
+      setTimeout(() => {
+        if (ultimo !== 'SUBSCRIBED') console.log('  (el canal de ' + u.nombre + ' no llegó a SUBSCRIBED: ' + ultimo + ')')
+        ok(canal)
+      }, 8000)
     })
   const canales = []
   canales.push(await conectar(eric, [[{ event: 'UPDATE', schema: 'public', table: 'trips', filter: `id=eq.${viaje}` }, () => recibidos.ericViaje++], [{ event: '*', schema: 'public', table: 'avisos', filter: `user_id=eq.${eric.id}` }, () => recibidos.ericAviso++]]))
@@ -184,7 +256,7 @@ async function principal() {
 
   console.log('7. Quitar y salir')
   const info = await rpc(eric, 'info_quitar', { p_trip: viaje, p_user: ana.id })
-  debe(info.data?.nombre === 'PruebaAna' || info.data?.nombre === 'PruebaAna'.split(' ')[0], 'quitar', `info_quitar dice el nombre${info.error ? ': ' + info.error : ''}`)
+  debe(info.data?.nombre === ana.nombre || info.data?.nombre === ana.nombre.split(' ')[0], 'quitar', `info_quitar dice el nombre${info.error ? ': ' + info.error : ''}`)
   const sinPermiso = await rpc(luis, 'quitar_del_viaje', { p_trip: viaje, p_user: ana.id })
   debe(/Solo el administrador/.test(sinPermiso.error ?? ''), 'quitar', 'un editor no quita a nadie')
   const aSiMismo = await rpc(eric, 'quitar_del_viaje', { p_trip: viaje, p_user: eric.id })
@@ -219,15 +291,14 @@ async function limpiar() {
       await admin.from('trips').delete().eq('id', viaje)
     }
     if (usuarios.length) {
-      await admin.from('avisos').delete().in('user_id', usuarios)
-      for (const id of usuarios) await admin.auth.admin.deleteUser(id)
+      await limpiarAvisos()
     }
-    const quedan = usuarios.length ? ((await admin.from('travelers').select('id').in('id', usuarios)).data ?? []).length : 0
+    const quedan = viaje ? ((await admin.from('trip_members').select('user_id').eq('trip_id', viaje)).data ?? []).length : 0
     const viajeQueda = viaje ? ((await admin.from('trips').select('id').eq('id', viaje)).data ?? []).length : 0
-    console.log(`  viaje borrado: ${viajeQueda === 0 ? 'sí' : 'NO'} · cuentas de prueba que quedan: ${quedan}`)
+    console.log(`  viaje borrado: ${viajeQueda === 0 ? 'sí' : 'NO'} · miembros que quedan en el viaje de prueba: ${quedan}`)
     debe(viajeQueda === 0 && quedan === 0, 'limpieza', 'no queda nada de lo que creó la prueba')
   } catch (e) {
-    console.log('  (la limpieza falló: ' + limpio(e.message) + ') — borrar a mano las cuentas anónimas «PruebaDueno», «PruebaAna» y «PruebaLuis» y su viaje ' + viaje)
+    console.log('  (la limpieza falló: ' + limpio(e.message) + ') — borrar a mano el viaje de prueba (las cuentas fijas NO se borran) ' + viaje)
     fallos.push({ regla: 'limpieza', texto: 'la limpieza falló' })
   }
 }

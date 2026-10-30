@@ -9,25 +9,31 @@
 //   5. al cambiar las fechas con la vuelta puesta no sale el aviso de la campana, o no se va al abrir o cambiar la vuelta, o sale en la gratis/sin fechas/sin vuelta;
 //   6. quitar el vuelo y pulsar «Deshacer» no devuelve el viaje como estaba (casillas nuevas incluidas);
 //   7. el billete no sale con su medio (vuelo, tren, autobús, barco), con [Reservado], con los dos lados si el viajero los puso y solo con el de Roma si no, en la llegada y la vuelta; o sale en coche;
-//   8. la tarjeta «Tu último día también cuenta» no sale en la gratis (grande, o pequeña con lugares), sale de pago o en coche, o su botón no es el candado de pago;
+//   8. la tarjeta del dia de vuelta sin hora (con pase y sin pase, 10B) no sale en DIAS, sale en otro dia o con la hora puesta, o su boton sin pase no es el candado de pago;
 //   9. en la gratis sale «Llegada y vuelta» o la zona en RESERVAS;
 //  10. el enganche `onCambioDeVuelo` no avisa al poner/cambiar/borrar una hora, un punto o la zona (y SOLO a eso), o el rehacer no se pone en marcha cuando toca;
 //  11. un texto nuevo lleva una hora calculada, el nombre de una empresa, «taxi» o un emoji.
+// CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica). Se QUITO el mecanismo «SUSTITUIDAS» de la 10N10 (que ignoraba en silencio 8 reglas): cada una se reescribio contra la pieza actual, con la misma fuerza.
+//   · 1 «hora con punto»: «if (pointId) setPoint» de la hoja de la hora -> la hoja del vuelo manda hora y punto juntos al «Guardar el vuelo» (HojaVueloDelAdmin). 10N10 §7, Eric 29-oct-2026.
+//   · 2 «casillas ida/vuelta» y «enseña»: «De donde sales · opcional / Sale de / placeholder Barcelona / data-casilla» dentro de la mitad abierta -> en la hoja del vuelo: «¿De dónde sales? · opcional» + «Sales a las» (ida) y «¿A dónde llegas? · opcional» + «Llegas a las» (vuelta), data-mi-vuelo-otro-punto / otra-hora, y la hora guardada sale en el campo. 10N10 §7b, 29-oct.
+//   · 3 «texto de la zona», «con hora se pide», «aun no lo se vale»: el texto «Con tu zona, tu ruta queda…» y data-pide-zona (la mitad pedia la zona) -> la zona vive en la hoja «Tu alojamiento»: con pase, «¿En qué zona te alojas?» con la lista (y «Aún no lo sé»); sin pase, el bloque gris «¿Dónde te alojas?» con la linea del pase debajo; y el bloque de Alojamiento dice «Falta la zona» con hotel y sin zona (tambien con «Aún no lo sé») y «Listo» con zona. 10N10 §7 («la tarjeta ya no usa las zonas») y 10N11 §2, 28 y 29-oct.
+//   · 3 «fechas», «coche», «medios mezclados»: «¿Llegas o te vas otro día? Cambia las fechas del viaje» y «Ref. tren / Tiburtina|Termini» dentro de la mitad -> lo mismo, dentro de la hoja del vuelo (en coche: la hoja del viaje en coche, sin aeropuerto ni hora; con vuelta en tren: «¿De qué estación sales?» con Tiburtina y Termini). 10N10 §7b.
+//   · 4 «casilla» y «con direccion hay boton»: «Dirección de tu alojamiento (opcional)» en RESERVAS -> «Dirección» en la hoja «Tu alojamiento» (con pase) y la tarjeta de Alojamiento enseña la direccion y [Cómo llegar a tu alojamiento] (con la zona o el hotel puestos: la hoja no deja guardar solo una direccion). 10N11 §2, 29-oct.
+//   · 4 «gratis»: sin pase no salia nada -> sin pase sale el boton CERRADO (candado «Con el Pase…», sin enlace a Maps) y en la hoja solo el bloque gris con candado: ni casilla ni enlace. 10G (24-oct) y 10N11 §2 (29-oct).
+//   · 5 «gratis»: sin pase no salia el aviso «Revisa tu vuelta» -> sale tambien (guardar el vuelo es gratis; el aviso solo cuenta). 10G, 24-oct.
+//   · 7 «DÍAS llegada»: billete «LLEGADA · VUELO IB3214 · Reservado · BCN · FCO» -> tarjeta de la llegada «Aterrizas a las 11:20 · Fiumicino · Cómo llegar desde el aeropuerto» (el billete de la VUELTA no cambia). 10N11, 29-oct. «DÍAS gratis»: sin billete -> la tarjeta sale tambien sin pase. 10G.
+//   · 8 y 11 (TarjetaTuUltimoDia): props viejas y textos de la Tanda 7 -> la tarjeta de la 10B con pase y sin pase (src/lib/ultimoDia.ts). 10B, Eric 21-oct-2026.
+//   · 9 «gratis»: la gratis no enseñaba «Llegada y vuelta» y contaba «x de 2» -> enseña «Llegada y vuelta» y cuenta «x de 3»; la zona y la direccion siguen siendo solo del pase. 10G (24-oct) y 10N11 (29-oct).
+//   · 10 «hora», «punto», «zona»: llamadas sueltas onCambioDeVuelo por campo -> aviso en bloque al «Guardar el vuelo» (solo hora o punto si cambiaron) y la zona desde AlojamientoHost. 10N10 §7b y 10N11 §2.
+//   · A VER (no cambiado, posible fallo de la app): la hoja del vuelo pone «Ref. vuelo» (HojaDelVuelo.tsx, fijo) tambien con la vuelta en tren y en coche («Tu viaje en coche» lleva «Ref. vuelo»/«Aerolínea»); no he hallado ninguna decision de Eric sobre eso.
 import fs from 'node:fs'
 import path from 'node:path'
 import { prepararSSR } from './_ssr.mjs'
 
 const fallos = []
 let comprobaciones = 0
-// (10N10 §7) El tramo ABIERTO con casillas (otro punto / otra hora, zona dentro del tramo, «Cambia las fechas» dentro de la mitad) lo sustituye el diseño nuevo de Vuelo Reservas (hoja del vuelo y bloque de alojamiento): esas comprobaciones viejas se cuentan aparte; las cubren pruebaTanda10N9_vuelo y pruebaTanda10N10_reservas.
-const SUSTITUIDAS = /^(1 hora con punto|2 casillas ida|2 casillas vuelta|2 enseña|3 con hora se pide|3 fechas|3 medios mezclados|3 texto de la zona)/
-let sustituidas = 0
 const debe = (cond, regla, texto) => {
   comprobaciones++
-  if (!cond && SUSTITUIDAS.test(regla)) {
-    sustituidas++
-    return
-  }
   if (!cond) fallos.push({ regla, texto })
 }
 const leer = (f) => fs.readFileSync(f, 'utf8')
@@ -35,7 +41,7 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
 
 const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_tanda7_reservas_entrada.tsx')
 const {
-  createElement, renderToStaticMarkup, LlegadaYVuelta, AlojamientoReservas, BotonComoLlegarAlojamiento, BilleteDeVuelo, TarjetaTuUltimoDia, DayDetailPanel, ReservasPanel, useRouteStore, useAddFlowStore, quitarConDeshacer,
+  createElement, renderToStaticMarkup, HojaVueloDelAdmin, HojaTuAlojamiento, LlegadaYVuelta, AlojamientoReservas, BotonComoLlegarAlojamiento, BilleteDeVuelo, TarjetaTuUltimoDia, textosDelUltimoDia, DayDetailPanel, ReservasPanel, useRouteStore, useAddFlowStore, quitarConDeshacer,
   AvisosProbe, fetchDestinationExcursions, fetchArrivalInfo, medioOf, puntoPorDefecto, legOf, billeteDe, codigoDeUnPunto, enlaceComoLlegarAlojamiento, direccionDelAlojamiento, camposDelViajero, vueltaCambiada, sellarVueltaAlAbrir, rehacerPorCambioDeVuelo,
 } = M
 const consolaError = console.error
@@ -73,6 +79,8 @@ const tomaRuta = () => useRouteStore.getState().route
 const llegada = (ruta, props = {}) =>
   html(LlegadaYVuelta, { route: ruta, info: arrivalInfo, zonas: info.zonasAlojamiento, abierto: true, onToggle() {}, onAbrir() {}, mitadAbierta: 'arrival', onMitad() {}, onCambioDeVuelo() {}, onFechas() {}, ...props })
 const modosDe = (ida, vuelta) => ({ ida, vuelta })
+// (10S) La hoja del vuelo del administrador (10N10 §7b): es donde viven ahora las casillas opcionales, las fechas y el punto; antes estaban dentro de LlegadaYVuelta.
+const hoja = (ruta, lado = 'arrival') => html(HojaVueloDelAdmin, { route: ruta, ida: legOf(ruta, arrivalInfo, 'arrival'), vuelta: legOf(ruta, arrivalInfo, 'departure'), ladoInicial: lado, onFechas() {}, onClose() {}, onGuardar() {} })
 
 // ── 1. El punto de Roma es obligatorio con hora; los viajes de antes usan el del traslado más largo ──
 console.log('1. El punto de Roma, obligatorio con hora')
@@ -103,7 +111,8 @@ console.log('1. El punto de Roma, obligatorio con hora')
   debe(elegido.point?.id === 'cia' && elegido.pointPorDefecto === false, '1 elegido manda', 'el punto elegido por el viajero debe mandar sobre el de por defecto')
   // La hoja guarda hora y punto juntos: en el código, el guardado manda el punto con la hora.
   const src = leer('src/components/route/reservas/LlegadaYVuelta.tsx')
-  debe(/if \(pointId\) setPoint\(hojaLeg\.leg, pointId\)/.test(src), '1 hora con punto', 'LlegadaYVuelta no guarda el punto junto a la hora')
+  // (10S) Antes: la hoja de la hora guardaba «if (pointId) setPoint(...)». Ahora, la hoja del vuelo del administrador manda la hora con el punto en una sola entrada al pulsar «Guardar el vuelo» (10N10 §7).
+  debe(/const entrada = \{ time: g\.hora, \.\.\.\(punto \? \{ pointId: punto\.id \} : \{\}\) \}/.test(src), '1 hora con punto', 'HojaVueloDelAdmin no guarda el punto junto a la hora')
 }
 
 // ── 2. Las casillas opcionales del otro lado ──
@@ -112,11 +121,13 @@ console.log('2. Las casillas opcionales del otro lado')
   ponerVersion('completa')
   poner(viaje({ extra: { arrivalFlightTime: '11:20', arrivalPointId: 'fco' } }))
   const ida = plano(aTexto(llegada(tomaRuta())))
-  debe(/De dónde sales · opcional/i.test(ida) && /Sale de/.test(ida) && /placeholder="Barcelona"/.test(llegada(tomaRuta())), '2 casillas ida', `la ida no trae las casillas de salida: ${ida.slice(0, 260)}`)
-  const vuelta = plano(aTexto(llegada(tomaRuta(), { mitadAbierta: 'departure' })))
-  debe(/A dónde llegas · opcional/i.test(vuelta) && /Llega a/.test(vuelta), '2 casillas vuelta', 'la vuelta no trae las casillas de llegada')
-  debe(/data-casilla="otro-punto"/.test(llegada(tomaRuta())) && /data-casilla="otra-hora"/.test(llegada(tomaRuta())), '2 casillas ida', 'faltan los data-casilla otro-punto / otra-hora en la ida')
-  debe(/data-casilla="otro-punto"/.test(llegada(tomaRuta(), { mitadAbierta: 'departure' })) && /data-casilla="otra-hora"/.test(llegada(tomaRuta(), { mitadAbierta: 'departure' })), '2 casillas vuelta', 'faltan las casillas en la vuelta')
+  // (10S) Antes: «De dónde sales · opcional» / «Sale de» / placeholder Barcelona dentro de la mitad abierta. Ahora, en la hoja del vuelo: «¿De dónde sales? · opcional» y «Sales a las» (ida), «¿A dónde llegas? · opcional» y «Llegas a las» (vuelta). Tanda 10N10 §7b, Eric 29-oct-2026.
+  const hojaIda = hoja(tomaRuta())
+  debe(/¿De dónde sales\? · opcional/.test(ida_hoja_texto(hojaIda)) && /Sales a las/.test(ida_hoja_texto(hojaIda)), '2 casillas ida', `la hoja de la ida no trae las casillas de salida: ${ida_hoja_texto(hojaIda).slice(0, 260)}`)
+  const hojaVuelta = hoja(tomaRuta(), 'departure')
+  debe(/¿A dónde llegas\? · opcional/.test(ida_hoja_texto(hojaVuelta)) && /Llegas a las/.test(ida_hoja_texto(hojaVuelta)), '2 casillas vuelta', 'la hoja de la vuelta no trae las casillas de llegada')
+  debe(/data-mi-vuelo-otro-punto/.test(hojaIda) && /data-mi-vuelo-otra-hora/.test(hojaIda), '2 casillas ida', 'faltan las casillas otro punto / otra hora en la hoja de la ida')
+  debe(/data-mi-vuelo-otro-punto/.test(hojaVuelta) && /data-mi-vuelo-otra-hora/.test(hojaVuelta), '2 casillas vuelta', 'faltan las casillas en la hoja de la vuelta')
   // Se guardan con el viaje.
   const st = useRouteStore.getState()
   st.setLegOtroPunto('arrival', '  Barcelona-El Prat (BCN) ')
@@ -131,8 +142,8 @@ console.log('2. Las casillas opcionales del otro lado')
   debe(tomaRuta().arrivalOtraHora === null, '2 hora válida', 'una "hora" que no es HH:MM no debe guardarse')
   st.setLegOtraHora('arrival', '08:55')
   // Con la casilla guardada, la mitad la enseña.
-  const conDatos = plano(aTexto(llegada(tomaRuta())))
-  debe(/08:55/.test(conDatos), '2 enseña', 'la casilla de la otra hora no enseña la hora guardada')
+  const conDatos = hoja(tomaRuta())
+  debe(/value="08:55"/.test(conDatos), '2 enseña', 'la casilla de la otra hora no enseña la hora guardada')
   // Sobreviven a rehacer la ruta (cambiar las fechas): setRoute las devuelve.
   const antes = tomaRuta()
   const nueva = { ...viaje({ dias: 4 }) }
@@ -149,40 +160,54 @@ console.log('2. Las casillas opcionales del otro lado')
   debe(codigoDeUnPunto('Barcelona-El Prat (BCN)') === 'BCN' && codigoDeUnPunto('Valencia') === 'VALENCIA' && codigoDeUnPunto('  ') === null, '2 código', 'codigoDeUnPunto falla')
 }
 function leerHtml(h) { return h }
+function ida_hoja_texto(h) { return plano(aTexto(h)) }
 
 // ── 3. La zona y «¿Llegas o te vas otro día?» ──
 console.log('3. La zona y las fechas')
 {
+  // (10S) La zona ya no se pregunta dentro de «Llegada y vuelta»: vive en la hoja «Tu alojamiento» (10N11 §2) y en la tarjeta de Alojamiento (10N10 §7c). Antes: el texto «Con tu zona, tu ruta queda…» debajo de «¿En qué zona te alojas?»,
+  // la mitad con hora pedía la zona (data-pide-zona) y «Aún no lo sé» valía; ahora: con pase, la hoja lista las zonas con «Aún no lo sé»; sin pase, el bloque gris «¿Dónde te alojas?» con la línea del pase debajo; y la tarjeta de Alojamiento
+  // dice «Falta la zona» con hotel y sin zona (también con «Aún no lo sé»). Tanda 10N10 §7 y 10N11 §2, Eric 28 y 29-oct-2026.
   ponerVersion('completa')
   poner(viaje())
-  const aloj = plano(aTexto(html(AlojamientoReservas, { route: tomaRuta(), info, pago: true, abierto: true, onToggle() {} })))
-  const FRASE_ZONA = 'Con tu zona, tu ruta queda aún más a tu medida: te decimos cómo llegar desde el aeropuerto y por dónde empezar tu primer día.'
-  debe(aloj.includes('¿En qué zona te alojas?') && aloj.includes(FRASE_ZONA), '3 texto de la zona', 'falta el texto pequeño debajo de «¿En qué zona te alojas?»')
-  debe(aloj.indexOf(FRASE_ZONA) > aloj.indexOf('¿En qué zona te alojas?'), '3 texto de la zona', 'el texto de la zona no va DEBAJO de la pregunta')
+  const zonas = info.zonasAlojamiento.map((z) => ({ id: z.id, nombre: z.nombre, sub: z.sub }))
+  const hojaAloj = (props = {}) => html(HojaTuAlojamiento, { actual: null, zonas, onGuardar() {}, onEliminar() {}, onClose() {}, ...props })
+  const con = plano(aTexto(hojaAloj()))
+  debe(con.includes('¿En qué zona te alojas?') && info.zonasAlojamiento.every((z) => con.includes(z.nombre)), '3 texto de la zona', 'la hoja «Tu alojamiento» con pase no lista las zonas debajo de «¿En qué zona te alojas?»')
+  debe(con.indexOf('Aún no lo sé') > con.indexOf('¿En qué zona te alojas?'), '3 texto de la zona', '«Aún no lo sé» no va dentro de la lista de zonas')
+  ponerVersion('gratis')
+  const sinPase = plano(aTexto(hojaAloj()))
+  const FRASE = 'adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque'
+  debe(sinPase.includes('¿Dónde te alojas?') && sinPase.includes(FRASE) && sinPase.indexOf(FRASE) > sinPase.indexOf('¿Dónde te alojas?') && !/data-zonas-alojamiento/.test(hojaAloj()), '3 texto de la zona', 'sin pase: el bloque gris «¿Dónde te alojas?» debe llevar debajo la línea del pase y no la lista de zonas')
+  ponerVersion('completa')
   // «Aún no lo sé» es una respuesta válida de la lista.
   debe(info.zonasAlojamiento.some((z) => /Aún no lo sé/i.test(z.nombre)), '3 aún no lo sé', 'la lista de zonas del destino no tiene «Aún no lo sé»')
-  // Con hora puesta y sin zona, la mitad la pide.
+  // Con hotel y sin zona, el bloque de Alojamiento la pide («Falta la zona»); con «Aún no lo sé» también; con zona, «Listo».
+  const estadoAloj = (zona) => {
+    poner(viaje({ extra: zona ? { accommodationZone: zona } : {} }))
+    useRouteStore.setState({ accommodationSelections: { d1: { name: 'Hotel Artemide', id: 'h1' } } })
+    return plano(aTexto(html(AlojamientoReservas, { route: tomaRuta(), info, pago: true, abierto: true, onToggle() {} })))
+  }
+  debe(/Falta la zona/.test(estadoAloj(null)), '3 con hora se pide', 'con hotel y sin zona, el bloque de Alojamiento no pide la zona')
+  debe(/Falta la zona/.test(estadoAloj('nose')), '3 aún no lo sé vale', '«Aún no lo sé» debe seguir contando «Falta la zona»')
+  debe(!/Falta la zona/.test(estadoAloj('monti')) && /Listo/.test(estadoAloj('monti')), '3 con hora se pide', 'con la zona elegida el bloque de Alojamiento debe decir «Listo»')
+  // «¿Llegas o te vas otro día? Cambia las fechas del viaje» debajo de la hora, en las dos mitades de la hoja del vuelo; abre el calendario de siempre.
   poner(viaje({ extra: { arrivalFlightTime: '11:20', arrivalPointId: 'fco' } }))
-  const pide = llegada(tomaRuta())
-  debe(/data-pide-zona/.test(pide), '3 con hora se pide', 'con hora y sin zona, la mitad no pide la zona')
-  poner(viaje({ extra: { arrivalFlightTime: '11:20', arrivalPointId: 'fco', accommodationZone: 'nose' } }))
-  debe(!/data-pide-zona/.test(llegada(tomaRuta())), '3 aún no lo sé vale', '«Aún no lo sé» debe valer: no se vuelve a pedir la zona')
-  // «¿Llegas o te vas otro día? Cambia las fechas del viaje» debajo de la hora, en las dos mitades; abre el calendario de siempre.
   for (const mitad of ['arrival', 'departure']) {
-    const t = plano(aTexto(llegada(tomaRuta(), { mitadAbierta: mitad })))
-    debe(t.includes('¿Llegas o te vas otro día? Cambia las fechas del viaje'), '3 fechas', `la mitad ${mitad} no trae «¿Llegas o te vas otro día? Cambia las fechas del viaje»`)
+    const t = plano(aTexto(hoja(tomaRuta(), mitad)))
+    debe(t.includes('¿Llegas o te vas otro día? Cambia las fechas del viaje'), '3 fechas', `la hoja del vuelo (${mitad}) no trae «¿Llegas o te vas otro día? Cambia las fechas del viaje»`)
   }
   const panel = leer('src/components/route/ReservasPanel.tsx')
   debe(/useDatesCalendarStore\.getState\(\)\.request\(\)/.test(panel) && /onFechas=\{abrirFechas\}/.test(panel), '3 fechas', 'onFechas debe abrir el calendario de siempre (useDatesCalendarStore.request)')
-  // En coche no se pide hora; con medios mezclados, cada mitad con su medio.
+  // En coche no se pide hora ni punto; con medios mezclados, cada lado con su medio (la vuelta en tren habla de estación y de Tiburtina/Termini, la ida en avión de aeropuerto).
   poner(viaje({ ida: 'car' }))
-  const coche = plano(aTexto(llegada(tomaRuta())))
-  debe(!/data-casilla="otra-hora"/.test(llegada(tomaRuta())) && !/Elige la hora/.test(coche), '3 coche', 'en coche no debe pedirse ninguna hora')
+  const cocheHoja = hoja(tomaRuta())
+  debe(!/data-mi-vuelo-lado=/.test(cocheHoja) && !/data-mi-vuelo-punto-lista/.test(cocheHoja) && /Guardar el viaje en coche/.test(plano(aTexto(cocheHoja))), '3 coche', 'en coche no debe pedirse ninguna hora de vuelo ni aeropuerto (la hoja es la del viaje en coche)')
   poner(viaje({ ida: 'flight', vuelta: 'train', extra: { arrivalFlightTime: '11:20', arrivalPointId: 'fco' } }))
-  const mezclado = plano(aTexto(llegada(tomaRuta(), { mitadAbierta: 'departure' })))
-  debe(/Ref\. tren/.test(mezclado) && /Tiburtina|Termini/.test(mezclado), '3 medios mezclados', 'con ida en avión y vuelta en tren, la vuelta debe hablar de tren')
-  const mezcladoIda = plano(aTexto(llegada(tomaRuta(), { mitadAbierta: 'arrival' })))
-  debe(/Ref\. vuelo/.test(mezcladoIda), '3 medios mezclados', 'con ida en avión, la ida debe hablar de vuelo')
+  const mezclado = plano(aTexto(hoja(tomaRuta(), 'departure')))
+  debe(/¿De qué estación sales\?/.test(mezclado) && /Tiburtina/.test(mezclado) && /Termini/.test(mezclado), '3 medios mezclados', 'con ida en avión y vuelta en tren, la vuelta debe hablar de estación (Tiburtina / Termini)')
+  const mezcladoIda = plano(aTexto(hoja(tomaRuta(), 'arrival')))
+  debe(/¿A qué aeropuerto llegas\?/.test(mezcladoIda) && /Ref\. vuelo/.test(mezcladoIda), '3 medios mezclados', 'con ida en avión, la ida debe hablar de aeropuerto y de vuelo')
 }
 
 // ── 4. La dirección del alojamiento ──
@@ -191,14 +216,22 @@ console.log('4. La dirección del alojamiento')
   ponerVersion('completa')
   poner(viaje())
   let aloj = plano(aTexto(html(AlojamientoReservas, { route: tomaRuta(), info, pago: true, abierto: true, onToggle() {} })))
-  debe(aloj.includes('Dirección de tu alojamiento (opcional)'), '4 casilla', 'falta la casilla «Dirección de tu alojamiento (opcional)»')
+  // (10S) Antes: la casilla «Dirección de tu alojamiento (opcional)» dentro de RESERVAS › Alojamiento. Ahora: «Dirección» en la hoja «Tu alojamiento» (solo con pase) y la tarjeta de Alojamiento enseña la dirección y el botón. Tanda 10N11 §2, Eric 29-oct-2026.
+  const zonasHoja = info.zonasAlojamiento.map((z) => ({ id: z.id, nombre: z.nombre, sub: z.sub }))
+  const hojaAlojamiento = (props = {}) => html(HojaTuAlojamiento, { actual: null, zonas: zonasHoja, onGuardar() {}, onEliminar() {}, onClose() {}, ...props })
+  debe(/data-alojamiento-direccion/.test(hojaAlojamiento()) && /placeholder="Escribe la dirección"/.test(hojaAlojamiento()), '4 casilla', 'falta la casilla «Dirección» en la hoja «Tu alojamiento»')
   debe(!aloj.includes('Cómo llegar a tu alojamiento'), '4 sin dirección no hay botón', 'el botón sale sin dirección')
   const st = useRouteStore.getState()
   st.setAccommodationAddress('  Via   del Corso 1, 00186 Roma ')
   debe(tomaRuta().accommodationAddress === 'Via del Corso 1, 00186 Roma'.replace(/ {2,}/g, ' ') || tomaRuta().accommodationAddress === 'Via   del Corso 1, 00186 Roma', '4 se guarda', `la dirección no se guarda bien: ${tomaRuta().accommodationAddress}`)
   debe(direccionDelAlojamiento(tomaRuta()) === 'Via del Corso 1, 00186 Roma', '4 limpia', 'direccionDelAlojamiento debe quitar los espacios de más')
   aloj = aTexto(html(AlojamientoReservas, { route: tomaRuta(), info, pago: true, abierto: true, onToggle() {} }))
-  debe(plano(aloj).includes('Cómo llegar a tu alojamiento'), '4 con dirección hay botón', 'con dirección no sale el botón en RESERVAS')
+  // (Con solo la dirección y ni hotel ni zona el bloque no tiene nada que enseñar —la hoja no deja guardar sin hotel o zona—: se prueba con la zona puesta.)
+  useRouteStore.setState({ route: { ...tomaRuta(), accommodationZone: 'monti' } })
+  const alojHtml = html(AlojamientoReservas, { route: tomaRuta(), info, pago: true, abierto: true, onToggle() {} })
+  aloj = aTexto(alojHtml)
+  debe(plano(aloj).includes('Cómo llegar a tu alojamiento') && /data-como-llegar-alojamiento/.test(alojHtml) && plano(aloj).includes('Via del Corso 1, 00186 Roma'), '4 con dirección hay botón', 'con dirección no sale la dirección y el botón en RESERVAS')
+  debe(/data-como-llegar-alojamiento/.test(hojaAlojamiento({ direccionActual: 'Via del Corso 1, 00186 Roma' })), '4 con dirección hay botón', 'con dirección no sale el botón en la hoja «Tu alojamiento»')
   // El botón compartido.
   const enlace = enlaceComoLlegarAlojamiento('Via del Corso 1, 00186 Roma')
   debe(enlace?.startsWith('https://www.google.com/maps/dir/?') && enlace.includes('destination=Via+del+Corso+1%2C+00186+Roma') && enlace.includes('travelmode=transit'), '4 enlace', `el enlace de Google Maps no es el esperado: ${enlace}`)
@@ -214,7 +247,10 @@ console.log('4. La dirección del alojamiento')
   ponerVersion('gratis')
   poner(viaje({ extra: { accommodationAddress: 'Via del Corso 1, Roma' } }))
   const gratis = plano(aTexto(html(AlojamientoReservas, { route: tomaRuta(), info, pago: false, abierto: true, onToggle() {} })))
-  debe(!gratis.includes('Dirección de tu alojamiento') && !gratis.includes('Cómo llegar a tu alojamiento') && html(BotonComoLlegarAlojamiento, { direccion: 'Via del Corso 1, Roma' }) === '', '4 gratis', 'en la gratis sale la dirección o el botón')
+  // (10S) Antes: sin pase no salía ni la casilla ni el botón (ni nada). Ahora, sin pase el botón sale CERRADO (el candado con «Con el Pase…», sin enlace a Maps) y en la hoja «Tu alojamiento» solo el bloque gris con el candado: ni casilla ni enlace. Tanda 10G (24-oct) y 10N11 §2 (29-oct), Eric.
+  const botonGratis = html(BotonComoLlegarAlojamiento, { direccion: 'Via del Corso 1, Roma' })
+  const hojaGratis = hojaAlojamiento({ direccionActual: 'Via del Corso 1, Roma' })
+  debe(!/data-como-llegar-alojamiento|href=/.test(botonGratis) && botonGratis.includes('Cómo llegar a tu alojamiento') && !/data-alojamiento-direccion/.test(hojaGratis) && !/data-como-llegar-alojamiento/.test(hojaGratis) && /data-alojamiento-bloque-pase/.test(hojaGratis) && !gratis.includes('Dirección de tu alojamiento') && !/data-como-llegar-alojamiento/.test(html(AlojamientoReservas, { route: tomaRuta(), info, pago: false, abierto: true, onToggle() {} })), '4 gratis', 'en la gratis sale la dirección o el enlace (debe salir solo el candado)')
   ponerVersion('completa')
   // Una sola pieza construye el enlace.
   const donde = recorrer('src').filter((f) => /\.(ts|tsx)$/.test(f)).filter((f) => /accommodationAddress|direccionDelAlojamiento/.test(leer(f)))
@@ -269,7 +305,8 @@ console.log('5. Aviso de cambio de fechas con la vuelta puesta')
   debe(!aviso(), '5 sin fechas', 'sale el aviso en un viaje sin fechas')
   poner(viaje({ dias: 3, extra: { departureFlightTime: '18:05', departurePointId: 'fco', departureFechaVista: '2027-03-12' } }))
   ponerVersion('gratis')
-  debe(!aviso(), '5 gratis', 'sale el aviso en la gratis')
+  // (10S) Antes: sin pase no salía el aviso «Revisa tu vuelta». Ahora sí: guardar el vuelo es gratis y el aviso solo cuenta. Tanda 10G, Eric 24-oct-2026 («gratis, como guardar el vuelo», useAppNotices.ts).
+  debe(Boolean(aviso()), '5 gratis', 'en la gratis también debe salir el aviso (guardar el vuelo es gratis)')
   ponerVersion('completa')
   debe(Boolean(aviso()), '5 de pago', 'de pago no sale el aviso con el sello de otra fecha')
   // La función pura.
@@ -357,7 +394,8 @@ console.log('7. El billete')
   }
   if (dia1) {
     const t1 = plano(aTexto(dia1))
-    debe(/data-billete="llegada"/.test(dia1) && t1.includes('LLEGADA · VUELO IB3214') && t1.includes('Reservado') && t1.includes('BCN') && t1.includes('FCO'), '7 DÍAS llegada', `el día de llegada no trae el billete: ${t1.slice(0, 300)}`)
+    // (10S) Antes: el billete «LLEGADA · VUELO IB3214 · Reservado · BCN · FCO». Ahora, la tarjeta de la llegada de DÍAS: «LLEGADA · … Aterrizas a las 11:20 · Fiumicino · Cómo llegar desde el aeropuerto». Tanda 10N11, Eric 29-oct-2026.
+    debe(/LLEGADA/.test(t1) && t1.includes('Aterrizas a las 11:20') && t1.includes('Fiumicino') && t1.includes('Cómo llegar desde el aeropuerto'), '7 DÍAS llegada', `el día de llegada no trae la tarjeta de la llegada: ${t1.slice(0, 300)}`)
     const dv = panelDe(ruta.days.at(-1))
     const tv = plano(aTexto(dv))
     debe(/data-billete="vuelta"/.test(dv) && tv.includes('VUELTA · VUELO') && tv.includes('Reservado') && tv.includes('18:05'), '7 DÍAS vuelta', `el día de vuelta no trae el billete: ${tv.slice(0, 300)}`)
@@ -365,11 +403,12 @@ console.log('7. El billete')
     poner(viaje())
     const sin = panelDe(tomaRuta().days[0])
     debe(!/data-billete/.test(sin) && /\+ Vuelo/.test(sin), '7 DÍAS sin hora', 'sin hora debe salir la barra con «+ Vuelo»')
-    // En la gratis no hay billete aunque haya horas guardadas.
+    // En la gratis también sale (las horas guardadas valen sin pase).
     poner(ruta)
     ponerVersion('gratis')
     const gr = panelDe(ruta.days[0])
-    debe(!/data-billete/.test(gr), '7 DÍAS gratis', 'en la gratis sale el billete')
+    // (10S) Antes: en la gratis no había billete. Ahora la tarjeta de la llegada sale también sin pase (guardar el vuelo es gratis). Tanda 10G, Eric 24-oct-2026.
+    debe(plano(aTexto(gr)).includes('Aterrizas a las 11:20'), '7 DÍAS gratis', 'en la gratis debe salir la tarjeta de la llegada (guardar el vuelo es gratis)')
     ponerVersion('completa')
     // En coche: sin billete.
     poner(viaje({ ida: 'car', extra: { arrivalFlightTime: '11:20' } }))
@@ -378,24 +417,25 @@ console.log('7. El billete')
   }
 }
 
-// ── 8. La tarjeta «Tu último día también cuenta» (solo en la gratis) ──
-console.log('8. La tarjeta del día de vuelta en la gratis')
+// ── 8. La tarjeta del día de vuelta sin hora (Tanda 7 «Tu último día también cuenta»; desde la 10B es `TarjetaTuUltimoDia` con textos de `ultimoDia.ts`, con el pase y sin él) ──
+// (10S) La sección se pasó al diseño de la 10B: antes comprobaba solo la gratis, con su tarjeta grande/pequeña y los textos de la Tanda 7; ahora la tarjeta sale con y sin el pase.
+console.log('8. La tarjeta del día de vuelta sin hora')
 {
-  const TITULO = 'Tu último día también cuenta'
-  const TEXTO = 'Aún no sabemos a qué hora te vas, por eso este día está en blanco. Dinos cuándo sale tu vuelo o tu tren y te lo dejamos listo: lo que te falta por ver, dónde comer y la tarde libre si te da tiempo. Sin repetir nada y sin prisas para irte.'
-  const LINEA = 'Con tu vuelo, el primer y el último día se ajustan a tu hora.'
-  const PEQUENA = '¿Te vas por la tarde? Añade tu vuelta y te preparamos la mañana.'
-  const grande = html(TarjetaTuUltimoDia, { pequena: false, onAnadirVuelta() {}, onMontarlo() {} })
-  const tg = plano(aTexto(grande))
-  debe(tg.includes(TITULO) && tg.includes(TEXTO) && tg.includes(LINEA) && tg.includes('Añadir mi vuelta') && tg.includes('Prefiero montarlo yo'), '8 grande', `la tarjeta grande no trae los textos del documento: ${tg}`)
-  debe(tg.indexOf(LINEA) < tg.indexOf('Añadir mi vuelta') && tg.indexOf('Añadir mi vuelta') < tg.indexOf('Prefiero montarlo yo'), '8 orden', 'el orden de la tarjeta no es: línea, botón con candado, [Prefiero montarlo yo]')
-  debe(/<svg/.test(grande.slice(grande.indexOf('anadir-vuelta'), grande.indexOf('Añadir mi vuelta'))), '8 candado', 'el botón [Añadir mi vuelta] no lleva el candado')
-  const peq = plano(aTexto(html(TarjetaTuUltimoDia, { pequena: true, onAnadirVuelta() {}, onMontarlo() {} })))
-  debe(peq.includes(PEQUENA) && peq.includes('Añadir mi vuelta') && !peq.includes(TITULO) && !peq.includes('Prefiero montarlo yo'), '8 pequeña', `la tarjeta pequeña no es la del documento: ${peq}`)
-  // El botón hace lo mismo que el candado de «Escuchar historia»: pedirPago().
+  const TEXTOS = {
+    sin: { titulo: 'El último día, a la medida de', boton: 'Ver el Pase Roma', lugares: '+ Añadir mis lugares' },
+    con: { titulo: 'Tu último día, a la medida de', boton: '+ Vuelo', lugares: '+ Añadir mis lugares' },
+  }
+  // La pieza sola: con los textos que le da el panel.
+  const sin = html(TarjetaTuUltimoDia, { textos: { titulo: `${TEXTOS.sin.titulo} tu vuelo`, partes: [{ texto: 'Con el ' }, { texto: 'Pase Roma', oro: true }], botonPrincipal: TEXTOS.sin.boton, botonLugares: TEXTOS.sin.lugares }, conPase: false, onPrincipal() {}, onAnadirLugares() {} })
+  const ts = plano(aTexto(sin))
+  debe(/data-tarjeta-ultimo-dia="sin-pase"/.test(sin) && ts.includes(TEXTOS.sin.titulo) && ts.includes(TEXTOS.sin.boton) && ts.includes(TEXTOS.sin.lugares), '8 pieza sin pase', `la tarjeta sin pase no trae sus textos: ${ts}`)
+  debe(ts.indexOf(TEXTOS.sin.boton) < ts.indexOf(TEXTOS.sin.lugares), '8 orden', 'el orden de la tarjeta no es: título, texto, [Ver el Pase Roma], [+ Añadir mis lugares]')
+  debe(/<svg/.test(sin.slice(sin.indexOf('data-ultimo-dia="principal"'), sin.indexOf(TEXTOS.sin.boton))), '8 candado', 'el botón principal sin pase no lleva el candado')
+  debe(/data-pase-resaltado/.test(sin), '8 oro', 'el Pase Roma no sale resaltado en oro')
+  // El panel: lo que enlaza la tarjeta.
   const panelSrc = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
-  debe(/onAnadirVuelta=\{pedirPago\}/.test(panelSrc), '8 pedirPago', 'el botón [Añadir mi vuelta] no llama a pedirPago()')
-  debe(/onMontarlo=\{\(\) => openAddFlow\(day\.id\)\}/.test(panelSrc), '8 montarlo yo', '[Prefiero montarlo yo] no hace lo mismo que [+ Añadir lugares] (openAddFlow)')
+  debe(/onPrincipal=\{pago \? \(\) => goToBooking\('vuelta'\) : pedirPago\}/.test(panelSrc), '8 pedirPago', 'el botón principal sin pase no llama a pedirPago() (con pase, a goToBooking)')
+  debe(/onAnadirLugares=\{\(\) => openAddFlow\(day\.id\)\}/.test(panelSrc), '8 añadir lugares', '[+ Añadir mis lugares] no hace lo mismo que [+ Añadir lugares] (openAddFlow)')
   // En DÍAS.
   const ruta = viaje()
   const panelDe = (dia) =>
@@ -409,21 +449,28 @@ console.log('8. La tarjeta del día de vuelta en la gratis')
     debe(false, '8 DÍAS', `no se pudo pintar el día de vuelta: ${error.message}`)
   }
   if (dv) {
-    debe(/data-tarjeta-ultimo-dia="grande"/.test(dv) && plano(aTexto(dv)).includes(TITULO), '8 gratis grande', 'en la gratis, el día de vuelta en blanco no trae la tarjeta grande')
-    debe(!/Añadir lugares/.test(plano(aTexto(dv))), '8 sin duplicar', 'con la tarjeta grande no debe salir además el botón «Añadir lugares»')
-    // Con lugares añadidos: la pequeña.
-    const conLugares = { ...ruta.days.at(-1), stops: [{ id: 'x1', time: '10:00', name: 'Panteón', description: '', durationMinutes: 60, coordinates: { lat: 41.9, lng: 12.47 }, photoUrl: '' }] }
-    const dp = panelDe(conLugares)
-    debe(/data-tarjeta-ultimo-dia="pequena"/.test(dp) && plano(aTexto(dp)).includes(PEQUENA) && !plano(aTexto(dp)).includes(TITULO), '8 gratis pequeña', 'con lugares añadidos debe salir la tarjeta pequeña')
+    const tv = plano(aTexto(dv))
+    debe(/data-tarjeta-ultimo-dia="sin-pase"/.test(dv) && tv.includes(TEXTOS.sin.titulo) && tv.includes(TEXTOS.sin.boton) && tv.includes(TEXTOS.sin.lugares), '8 gratis', `en la gratis, el día de vuelta sin hora no trae la tarjeta sin pase: ${tv.slice(0, 300)}`)
+    debe(!/Añadir lugares/.test(tv.replace(/\+ Añadir mis lugares/g, '')), '8 sin duplicar', 'con la tarjeta no debe salir además el botón «Añadir lugares»')
     // Otro día (no el de vuelta): sin tarjeta.
     debe(!/data-tarjeta-ultimo-dia/.test(panelDe(ruta.days[0])), '8 otros días', 'la tarjeta sale en un día que no es el de vuelta')
-    // De pago: no sale.
+    // Con lugares añadidos en el día de vuelta: la tarjeta sigue (solo depende de que no haya hora de salida).
+    const conLugares = { ...ruta.days.at(-1), stops: [{ id: 'x1', time: '10:00', name: 'Panteón', description: '', durationMinutes: 60, coordinates: { lat: 41.9, lng: 12.47 }, photoUrl: '' }] }
+    debe(/data-tarjeta-ultimo-dia="sin-pase"/.test(panelDe(conLugares)), '8 con lugares', 'con lugares añadidos el día de vuelta sin hora debe seguir con su tarjeta')
+    // De pago: la tarjeta con pase (otro título y el botón de la hora).
     ponerVersion('completa')
-    debe(!/data-tarjeta-ultimo-dia/.test(panelDe(ruta.days.at(-1))), '8 de pago', 'de pago sale la tarjeta de la gratis')
-    // En coche: no sale.
-    ponerVersion('gratis')
+    const dc = panelDe(ruta.days.at(-1))
+    const tc = plano(aTexto(dc))
+    debe(/data-tarjeta-ultimo-dia="con-pase"/.test(dc) && tc.includes(TEXTOS.con.titulo) && tc.includes(TEXTOS.con.boton) && tc.includes(TEXTOS.con.lugares) && !tc.includes('Ver el Pase'), '8 de pago', `de pago, el día de vuelta sin hora no trae la tarjeta con pase: ${tc.slice(0, 300)}`)
+    // Con la hora de salida puesta: ya no sale la tarjeta.
+    poner(viaje({ extra: { departureFlightTime: '18:05' } }))
+    const hr = tomaRuta()
+    debe(!/data-tarjeta-ultimo-dia/.test(panelDe(hr.days.at(-1))), '8 con hora', 'con la hora de la vuelta puesta sale la tarjeta de «sin hora»')
+    // En coche: la tarjeta pide la hora de salida (no un vuelo).
+    ponerVersion('completa')
     poner(viaje({ ida: 'car' }))
-    debe(!/data-tarjeta-ultimo-dia/.test(panelDe(tomaRuta().days.at(-1))), '8 coche', 'en coche sale la tarjeta')
+    const dcoche = panelDe(tomaRuta().days.at(-1))
+    debe(!/\+ Vuelo/.test(plano(aTexto(dcoche))) || !/data-tarjeta-ultimo-dia/.test(dcoche), '8 coche', 'en coche la tarjeta pide un vuelo')
     ponerVersion('completa')
   }
 }
@@ -441,8 +488,9 @@ console.log('9. La gratis en RESERVAS')
     debe(false, '9 RESERVAS', `no se pudo pintar RESERVAS en el servidor: ${error.message}`)
   }
   if (t) {
-    debe(!t.includes('Llegada y vuelta') && !t.includes('¿En qué zona te alojas?') && !t.includes('Dirección de tu alojamiento') && !t.includes('Billete'), '9 gratis', `en la gratis sale algo de pago en RESERVAS: ${t.slice(0, 200)}`)
-    debe(/\d de 2\b/.test(t) || /de 2/.test(t), '9 x de 2', 'en la gratis RESERVAS debe contar "x de 2"')
+    // (10S) Antes: la gratis no enseñaba «Llegada y vuelta» y contaba «x de 2». Ahora enseña «Llegada y vuelta» (guardar el vuelo es gratis) y cuenta «x de 3»; la zona y la dirección siguen siendo solo con pase (aquí, dentro de la hoja). Tanda 10G y 10N11, Eric 24 y 29-oct-2026.
+    debe(t.includes('Llegada y vuelta') && !t.includes('¿En qué zona te alojas?') && !t.includes('Dirección de tu alojamiento') && !t.includes('Billete'), '9 gratis', `en la gratis RESERVAS enseña algo que es solo del pase: ${t.slice(0, 200)}`)
+    debe(/de 3\b/.test(t), '9 x de 3', 'en la gratis RESERVAS debe contar "x de 3"')
     ponerVersion('completa')
     const tp = plano(aTexto(html(ReservasPanel, { route: ruta, onClose() {} })))
     debe(tp.includes('Llegada y vuelta') && /de 3/.test(tp), '9 de pago', 'de pago debe salir «Llegada y vuelta» y "x de 3"')
@@ -455,10 +503,11 @@ console.log('10. El enganche onCambioDeVuelo y el rehacer')
 {
   ponerVersion('completa')
   const src = leer('src/components/route/reservas/LlegadaYVuelta.tsx')
-  debe(/onCambioDeVuelo\(\{ que: 'hora', mitad: hojaLeg\.leg \}\)/.test(src), '10 hora', 'LlegadaYVuelta no avisa al guardar la hora de Roma')
-  debe(/onCambioDeVuelo\(\{ que: 'punto', mitad: leg\.kind \}\)/.test(src), '10 punto', 'LlegadaYVuelta no avisa al cambiar el punto de Roma')
+  // (10S) Antes: llamadas sueltas onCambioDeVuelo({ que: 'hora' ... }) por campo. Ahora, un solo «Guardar el vuelo» apunta los cambios (hora o punto, solo si cambiaron) y LlegadaYVuelta los manda en bloque; la zona, desde AlojamientoHost. Tanda 10N10 §7b y 10N11 §2, Eric 29-oct-2026.
+  debe(/if \(leg\.time !== g\.hora\) avisos\.push\(\{ que: 'hora', mitad: leg\.kind \}\)/.test(src) && /for \(const cambio of cambiosDeVuelo\) onCambioDeVuelo\(cambio\)/.test(src), '10 hora', 'el guardado del vuelo no avisa de la hora')
+  debe(/else if \(punto && leg\.point\?\.id !== punto\.id\) avisos\.push\(\{ que: 'punto', mitad: leg\.kind \}\)/.test(src), '10 punto', 'el guardado del vuelo no avisa al cambiar el punto')
   debe(/onCambioDeVuelo\(\{ que: 'quitar', mitad: leg\.kind \}\)/.test(src), '10 quitar', 'LlegadaYVuelta no avisa al quitar el vuelo')
-  debe(/onCambioDeVuelo\(\{ que: 'zona', mitad: null \}\)/.test(src) && /onCambioDeVuelo\?\.\(\{ que: 'zona', mitad: null \}\)/.test(leer('src/components/route/reservas/AlojamientoReservas.tsx')), '10 zona', 'no se avisa al cambiar la zona')
+  debe(/rehacerPorCambioDeVuelo\(\{ que: 'zona', mitad: null \}\)/.test(leer('src/components/route/alojamiento/AlojamientoHost.tsx')), '10 zona', 'no se avisa al cambiar la zona (AlojamientoHost)')
   // Las casillas opcionales, el código, la compañía, el precio y la dirección NO avisan.
   const lineas = src.split('\n')
   for (const campo of ['setLegOtroPunto', 'setLegOtraHora', 'setLegCodigo', 'setLegCompania', 'setLegPrecio']) {
@@ -517,7 +566,7 @@ console.log('11. Los textos nuevos')
   const vistos = [
     plano(aTexto(llegada(viaje({ extra: { arrivalFlightTime: '11:20', arrivalPointId: 'fco' } })))),
     plano(aTexto(html(AlojamientoReservas, { route: viaje(), info, pago: true, abierto: true, onToggle() {} }))),
-    plano(aTexto(html(TarjetaTuUltimoDia, { pequena: false, onAnadirVuelta() {}, onMontarlo() {} }))),
+    plano(aTexto(html(TarjetaTuUltimoDia, { textos: textosDelUltimoDia({ modo: 'avion', destino: 'Roma', conPase: false }), conPase: false, onPrincipal() {}, onAnadirLugares() {} }))),
     plano(aTexto(html(BilleteDeVuelo, { billete: billeteDe({ route: { arrivalFlightTime: '11:20', arrivalCodigo: 'IB 3214', arrivalOtroPunto: 'Barcelona-El Prat (BCN)', arrivalOtraHora: '08:55' }, kind: 'llegada', mode: 'avion', point: medioOf(arrivalInfo, 'avion').puntos[0] }), onOpen() {} }))),
   ]
   for (const t of vistos) {

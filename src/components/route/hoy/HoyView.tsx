@@ -45,7 +45,8 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
     )
   }
   // (Tanda 10N12 §4) El botón de la cama, fijo arriba a la derecha durante todos los días del viaje; el título deja sitio a su derecha.
-  const conCama = estado?.phase === 'during'
+  // (Tanda 10S §1) En el día de prueba sin pase NO sale: sin pase no hay dirección y el botón llevaría a un candado.
+  const conCama = estado?.phase === 'during' && !diaDePrueba
   const envoltorio = 'relative flex min-h-0 flex-1 flex-col [&_[data-hoy-cabecera]]:pr-12 [&_[data-titulo-del-dia]]:pr-12'
   if (hoyV2Activo()) {
     return conCama ? (

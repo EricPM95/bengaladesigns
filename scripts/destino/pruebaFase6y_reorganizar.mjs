@@ -279,7 +279,11 @@ for (const caso of casosAlmacen) {
   debe([...parte.manana, ...parte.tarde].map((s) => s.lugar).join('|') === esperado.join('|'), 'D_dia_propio', 'el día propio no lleva las paradas en ese orden')
   debe(parte.manana.length > 0 && parte.tarde.length > 0 && parte.comida && parte.cena, 'D_dia_propio', 'el día propio no lleva mañana, comida, tarde y cena')
 }
+// (Tanda 10S: se espera a que el servidor de la prueba haya salido ANTES de process.exit; salir con un hijo cerrándose da el cierre raro 0xC0000409 de Windows.)
+const servidorFuera = new Promise((r) => servidor.once('exit', r))
 apagar()
+await Promise.race([servidorFuera, new Promise((r) => setTimeout(r, 4000))])
+await new Promise((r) => setTimeout(r, 300))
 
 const resumen = { comprobaciones, fallos: fallos.length, A: { sinReservas, conReservas }, B: cuentas }
 if (args.out) fs.writeFileSync(args.out, JSON.stringify({ resumen, ejemplos, casos: { zigzag: casos.zigzag.slice(0, 30), zigzagMomento: casos.zigzagMomento, zigzagEscrito: casos.zigzagEscrito, nocturnaDeDia: casos.nocturnaDeDia.slice(0, 12), comida: casos.comida.slice(0, 12), trastevere: casos.trastevere.slice(0, 12), partido: casos.partido.slice(0, 12) }, fallos: fallos.slice(0, 60) }, null, 2))

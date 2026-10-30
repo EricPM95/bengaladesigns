@@ -21,7 +21,7 @@ export function HojaAbajo({ titleId, onClose, children, ancha = false, capa = 90
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
-        <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#F1EADC] text-text hover:bg-bg-hover">
+        <button type="button" onClick={onClose} aria-label="Cerrar" className="zona-toque absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#F1EADC] text-text hover:bg-bg-hover">
           <Icono nombre="cerrar" className="h-4 w-4" />
         </button>
         <div className={`min-h-0 flex-1 overflow-y-auto px-6 pt-4 ${pie ? "pb-3" : "pb-[max(1.25rem,env(safe-area-inset-bottom))]"}`}>{children}</div>

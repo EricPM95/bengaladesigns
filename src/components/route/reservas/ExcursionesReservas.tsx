@@ -123,7 +123,7 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
                 </span>
               </span>
               <span className="my-auto mr-3 flex flex-none flex-col items-end gap-1.5">
-                <button type="button" onClick={() => openExcursions(false)} className="h-[34px] whitespace-nowrap rounded-full btn-champan px-[13px] text-[12.5px] font-semibold ">
+                <button type="button" onClick={() => openExcursions(false)} className="zona-toque h-[34px] whitespace-nowrap rounded-full btn-champan px-[13px] text-[12.5px] font-semibold ">
                   Ver excursiones
                 </button>
                 <button type="button" onClick={() => setLista(true)} className="border-none bg-transparent p-0 text-right text-[11px] leading-[1.25] text-text/60">

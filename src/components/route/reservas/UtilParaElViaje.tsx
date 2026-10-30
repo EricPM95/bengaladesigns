@@ -200,7 +200,7 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
                 type="button"
                 onClick={() => gestionar(tarjeta)}
                 data-util-lo-tienes="1"
-                className="mt-auto flex h-10 w-full items-center gap-2 rounded-full px-3 text-left text-[13.5px] font-semibold"
+                className="zona-toque mt-auto flex h-10 w-full items-center gap-2 rounded-full px-3 text-left text-[13.5px] font-semibold"
                 style={{ background: 'oklch(0.96 0.035 150)', color: 'oklch(0.38 0.1 150)', border: `1px solid ${'oklch(0.55 0.11 150 / .35)'}` }}
               >
                 <span className="flex h-[18px] w-[18px] flex-none items-center justify-center rounded-full text-[10px] font-bold leading-none text-white" style={{ background: GR }} aria-hidden="true">
@@ -215,15 +215,15 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
                 {!(dondeDe(tarjeta) && tarjeta.precio) && <span className="flex-none text-[12px] font-medium underline underline-offset-2">Cambiar</span>}
               </button>
             ) : tarjeta.soloBuscar ? (
-              <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="mt-auto flex h-10 w-full items-center justify-center rounded-full btn-champan text-[13.5px] font-semibold no-underline">
+              <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="zona-toque mt-auto flex h-10 w-full items-center justify-center rounded-full btn-champan text-[13.5px] font-semibold no-underline">
                 Buscar
               </a>
             ) : (
               <span className="mt-auto flex gap-2">
-                <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="flex h-10 flex-1 items-center justify-center rounded-full btn-champan text-[13.5px] font-semibold no-underline">
+                <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="zona-toque flex h-10 flex-1 items-center justify-center rounded-full btn-champan text-[13.5px] font-semibold no-underline">
                   Comprar
                 </a>
-                <button type="button" onClick={() => gestionar(tarjeta)} className="flex h-10 flex-1 items-center justify-center rounded-full border border-text/20 bg-white text-[13.5px] font-semibold text-text">
+                <button type="button" onClick={() => gestionar(tarjeta)} className="zona-toque flex h-10 flex-1 items-center justify-center rounded-full border border-text/20 bg-white text-[13.5px] font-semibold text-text">
                   Añadir
                 </button>
               </span>

@@ -29,7 +29,7 @@ export function PantallaAlojamiento({ route, ciudad, mapa, onTengo, onClose }: {
           onClick={onClose}
           aria-label="Cerrar"
           title="Cerrar"
-          className="flex h-[42px] w-[42px] flex-none items-center justify-center rounded-full bg-bg-card text-accent"
+          className="zona-toque flex h-[42px] w-[42px] flex-none items-center justify-center rounded-full bg-bg-card text-accent"
           style={{ border: '1.5px solid rgb(var(--accent))' }}
         >
           <Icono nombre="cerrar" size={18} />

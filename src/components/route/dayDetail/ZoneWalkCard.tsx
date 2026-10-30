@@ -33,7 +33,7 @@ export function ZoneWalkCard({ stop, onDismiss }: { stop: MockStopDetail; startT
           onClick={onDismiss}
           aria-label="Quitar este paseo"
           title="Quitar este paseo"
-          className="flex h-7 w-7 items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-[12px] text-text/60 hover:bg-bg-hover"
+          className="zona-toque flex h-7 w-7 items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-[12px] text-text/60 hover:bg-bg-hover"
         >
           <Icono nombre="cerrar" size={14} />
         </button>

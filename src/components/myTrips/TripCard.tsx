@@ -53,7 +53,7 @@ export function TripCard({ trip, onOpen, onDelete }: TripCardProps) {
         }}
         aria-label={`Eliminar viaje a ${trip.route.destination}`}
         title="Eliminar viaje"
-        className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-hover hover:text-accent-red"
+        className="zona-toque absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-hover hover:text-accent-red"
       >
         <TrashIcon />
       </button>

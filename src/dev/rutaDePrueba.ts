@@ -22,26 +22,58 @@ function escribir(campo: HTMLInputElement, valor: string) {
 }
 const boton = (texto: string) => Array.from(document.querySelectorAll('button')).find((b) => b.textContent?.includes(texto))
 
-export async function crearRutaDePrueba(): Promise<Route> {
+/** (Tanda 10S) Espera DE VERDAD a que algo ocurra (con tope), en lugar de una espera fija que bajo carga se queda corta. Devuelve lo que devuelve `buscar` en cuanto no sea falso. */
+async function hasta<T>(buscar: () => T | null | undefined | false, segundos: number): Promise<T | null> {
+  const limite = Date.now() + segundos * 1000
+  for (;;) {
+    const r = buscar()
+    if (r) return r
+    if (Date.now() > limite) return null
+    await espera(100)
+  }
+}
+
+let enCurso: Promise<Route> | null = null
+
+/** Una sola creación a la vez por página: si una prueba la vuelve a pedir mientras la primera sigue (esperas largas por la carga), recibe la misma y no se crea un segundo viaje. */
+export function crearRutaDePrueba(): Promise<Route> {
+  enCurso ??= crear().finally(() => {
+    enCurso = null
+  })
+  return enCurso
+}
+
+async function crear(): Promise<Route> {
   // (no dejar un «hoy» fingido de otra prueba: mandaría sobre el de este viaje)
   delete (window as unknown as { __demoHoy?: string }).__demoHoy
   if (!useRouteStore.getState().route) {
+    // (Si la app aún no ha pintado su primera pantalla, ella misma volvería a poner la suya encima de la nuestra: se espera a que salga, hasta 60 s.)
+    await hasta(() => document.querySelector('[data-primera-pantalla]'), 60)
     useRouteStore.getState().setScreen('devQuickRoute')
-    await espera(800)
-    const campos = Array.from(document.querySelectorAll('input'))
-    const origen = campos.find((c) => c.placeholder === 'Madrid')
-    const ciudad = campos.find((c) => /Parada 1/.test(c.placeholder))
-    if (!origen || !ciudad) throw new Error('Abre la pantalla de inicio (la de «Dev: ruta rápida») antes de crear el viaje de pruebas.')
+    // (La pantalla se carga bajo demanda y, con un Vite frío o la CPU ocupada, tarda: se espera a que salgan sus campos, hasta 240 s con un Vite frío y la CPU ocupada, y no 800 ms.)
+    const campos = await hasta(() => {
+      const c = Array.from(document.querySelectorAll('input'))
+      return c.some((x) => x.placeholder === 'Madrid') && c.some((x) => /Parada 1/.test(x.placeholder)) ? c : null
+    }, 240)
+    const origen = campos?.find((c) => c.placeholder === 'Madrid')
+    const ciudad = campos?.find((c) => /Parada 1/.test(c.placeholder))
+    if (!origen || !ciudad) throw new Error('Abre la pantalla de inicio (la de «Dev: ruta rápida») antes de crear el viaje de pruebas (los campos no salieron en 240 s).')
     escribir(origen, 'Madrid')
     escribir(ciudad, 'Roma')
-    await espera(300)
-    boton('Continuar')?.click()
-    await espera(1200)
-    boton('Crear ruta')?.click()
-    await espera(3500)
+    const continuar = await hasta(() => {
+      const b = boton('Continuar')
+      return b && !b.disabled ? b : null
+    }, 30)
+    continuar?.click()
+    const crearBtn = await hasta(() => {
+      const b = boton('Crear ruta')
+      return b && !b.disabled ? b : null
+    }, 60)
+    crearBtn?.click()
+    await hasta(() => useRouteStore.getState().route, 120)
   }
   const base = useRouteStore.getState().route
-  if (!base) throw new Error('No se ha podido crear el viaje de pruebas.')
+  if (!base) throw new Error('No se ha podido crear el viaje de pruebas (la pantalla «Dev: ruta rápida» no llegó a crear la ruta en 120 s).')
   const respuestas: QuestionnaireAnswers = {
     ...base.answers,
     origin: 'Madrid',

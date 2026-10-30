@@ -373,7 +373,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
         <LogoPequeno />
       </span>
       {enTransporte && onCambiar && (
-        <button
+        <button className="zona-toque"
           type="button"
           onClick={onCambiar}
           data-cambiar-ruta
@@ -383,7 +383,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
         </button>
       )}
       {onVolverAMiViaje && !enTransporte && (
-        <button
+        <button className="zona-toque"
           type="button"
           onClick={onVolverAMiViaje}
           style={{ position: 'absolute', right: 20, top: 'max(26px, calc(env(safe-area-inset-top) + 10px))', zIndex: 4, height: 36, padding: '0 14px', borderRadius: 999, border: '1px solid rgba(28,34,48,.14)', background: 'rgba(255,253,248,.9)', color: TINTA, font: '600 13px Geist, sans-serif', cursor: 'pointer' }}
@@ -577,7 +577,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
 
       {/* (Tanda 10N5, `Piezas/Unirse Codigo` 04) Debajo de la caja, en pequeño y siempre visible: donde llega el amigo que abre la app por primera vez con un código. */}
       {!enTransporte && (
-        <button
+        <button className="zona-toque"
           type="button"
           data-unirme-con-codigo
           onClick={() => useUnirseUi.getState().abrir()}

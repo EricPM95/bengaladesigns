@@ -38,7 +38,7 @@ export function AddStopButton({ onAddStop }: { onAddStop: () => void }) {
       type="button"
       onClick={onAddStop}
       data-edit-tool="1"
-      className="ml-auto shrink-0 py-2 text-[12.5px] font-medium text-text/50 transition-colors hover:text-text"
+      className="zona-toque ml-auto shrink-0 py-2 text-[12.5px] font-medium text-text/50 transition-colors hover:text-text"
     >
       + Añadir parada
     </button>

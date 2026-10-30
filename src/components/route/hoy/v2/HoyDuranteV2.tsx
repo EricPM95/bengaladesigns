@@ -523,7 +523,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
                   {formatDuration(siguiente.durationMinutes)}
               </span>
               )}
-              <button type="button" onClick={pedirUbicacion} disabled={ubicacionEstado === 'pidiendo'} className={`flex h-[30px] items-center gap-1.5 rounded-full border pl-2 pr-2.5 text-[12px] font-medium disabled:opacity-60 border-[#1C2230]/25`}>
+              <button type="button" onClick={pedirUbicacion} disabled={ubicacionEstado === 'pidiendo'} className={`zona-toque flex h-[30px] items-center gap-1.5 rounded-full border pl-2 pr-2.5 text-[12px] font-medium disabled:opacity-60 border-[#1C2230]/25`}>
                 <Icono nombre="ubicacion" size={13} grosor={1.9} />
                 {ubicacionEstado === 'pidiendo' ? 'Buscando…' : minutos !== null ? `${minutos} min andando` : ubicacionEstado === 'no' ? 'Sin ubicación' : 'Ubicación'}
               </button>

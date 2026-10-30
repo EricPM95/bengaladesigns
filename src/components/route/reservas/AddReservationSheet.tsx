@@ -543,7 +543,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
-        <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
+        <button type="button" onClick={onClose} aria-label="Cerrar" className="zona-toque absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
           <Icono nombre="cerrar" className="h-5 w-5" />
         </button>
 

@@ -137,7 +137,7 @@ function TrasladoCard({ title, href }: { title: string; href: string }) {
           <button
             type="button"
             onClick={() => openTicketShop(href, 'Abriendo la tienda de traslados…')}
-            className="btn-champan h-8 whitespace-nowrap rounded-full px-3.5 transition-transform active:scale-[.97]"
+            className="zona-toque btn-champan h-8 whitespace-nowrap rounded-full px-3.5 transition-transform active:scale-[.97]"
             style={{ font: "600 12.5px 'Geist'" }}
           >
             Reservar traslado
@@ -269,7 +269,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                 type="button"
                 onClick={onClose}
                 aria-label="Cerrar"
-                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-[18px] text-text shadow-md hover:bg-bg-card"
+                className="zona-toque absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-[18px] text-text shadow-md hover:bg-bg-card"
               >
                 <Icono nombre="cerrar" size={14} />
               </button>

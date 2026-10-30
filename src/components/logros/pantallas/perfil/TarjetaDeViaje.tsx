@@ -9,7 +9,7 @@ import { textoDeDias, textoDeNoches } from '../../../../lib/duracionViaje'
 
 /**
  * UN VIAJE DE «MIS VIAJES» EN FILA PARA DESLIZAR (Tanda 10N5, apartado 4, `Piezas/Perfil Orden` 01 a 04 y `Piezas/Mis Viajes Tarjeta`, exactamente igual): una tarjeta de 330 px con la portada arriba (142 px), la etiqueta
- * («Próximo», «En curso», «Ya hecho») arriba a la izquierda, SOLO el icono de la cámara arriba a la derecha para cambiar la portada (sin texto), el destino en grande con «26 – 29 nov 2026 · 4 días» abajo a la
+ * («Próximo», «En curso», «Ya hecho») arriba a la izquierda, SOLO el icono de la cámara arriba a la derecha para cambiar la portada (sin texto), el destino en grande con «26 – 29 nov 2026» abajo a la
  * izquierda y, debajo, el botón «Abrir este viaje» bien visible. Sin foto del destino, el degradado de Design (uno por destino, siempre el mismo). Fuera la pastilla de las fotos.
  * Tocar la portada abre el viaje por dentro (su álbum / su ficha); [Abrir este viaje] lo abre en la app. En el modo [Editar] la cámara pasa a ser la papelera (o «salir», si el viaje es de otra persona).
  */
@@ -52,8 +52,6 @@ const ESTILO_ETIQUETA: Record<EtiquetaDeViaje, { background: string; color: stri
   hecho: { background: 'rgba(255,253,248,.92)', color: '#1C2230' },
 }
 
-/** «26 – 29 nov 2026 · 4 días». */
-export const fechasYDias = (v: Pick<ResumenViaje, 'cuando' | 'dias'>): string => [v.cuando, v.dias > 0 ? plural(v.dias, 'día', 'días') : ''].filter(Boolean).join(' · ')
 
 const CHIP = { height: 26, padding: '0 11px', borderRadius: 999, background: '#F1EADC', display: 'flex', alignItems: 'center', font: "600 12px 'Geist'", color: '#4A3C28' } as const
 
@@ -70,7 +68,8 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editand
     void contarFotos([viaje.id]).then((m) => { if (vivo) setFotos(m.get(viaje.id) ?? 0) }).catch(() => undefined)
     return () => { vivo = false }
   }, [hecho, viaje.id])
-  const fechas = fechasYDias(viaje)
+  // (10S) La línea de fechas lleva SOLO las fechas («26 – 29 nov 2026»); los días ya van en los chips de debajo.
+  const fechas = viaje.cuando
   const textoEtiqueta = etiqueta === 'proximo' ? cuentaAtras(viaje.inicioIso) : etiqueta === 'hecho' ? 'Hecho' : TEXTO_DE_ETIQUETA[etiqueta]
   const chips = chipsDeViaje(viaje, hecho, fotos)
   return (
@@ -88,7 +87,7 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editand
           {textoEtiqueta}
         </span>
         {editando && onEliminar ? (
-          <button
+          <button className="zona-toque"
             type="button"
             onClick={onEliminar}
             data-eliminar-viaje={viaje.id}
@@ -99,7 +98,7 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editand
             <Icono nombre={esInvitado ? 'salir' : 'papelera'} size={19} />
           </button>
         ) : (
-          <button type="button" onClick={() => setCambiandoPortada(true)} data-cambiar-portada={viaje.id} aria-label={`Cambiar la portada del viaje a ${viaje.destino}`} style={{ position: 'absolute', right: 12, top: 12, width: 38, height: 38, borderRadius: '50%', border: 'none', background: 'rgba(255,253,248,.92)', color: '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
+          <button className="zona-toque" type="button" onClick={() => setCambiandoPortada(true)} data-cambiar-portada={viaje.id} aria-label={`Cambiar la portada del viaje a ${viaje.destino}`} style={{ position: 'absolute', right: 12, top: 12, width: 38, height: 38, borderRadius: '50%', border: 'none', background: 'rgba(255,253,248,.92)', color: '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
               <path d="M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" />
             </svg>
@@ -112,7 +111,7 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editand
         )}
         <span style={{ position: 'absolute', left: 16, bottom: 12, right: 14, display: 'flex', flexDirection: 'column', gap: 3, color: '#fff', pointerEvents: 'none' }}>
           <span style={{ font: "400 34px/1 'Instrument Serif',serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{viaje.destino}</span>
-          <span data-fechas-del-viaje style={{ font: "500 12px 'Geist Mono',monospace", opacity: 0.9 }}>{viaje.cuando || fechas}</span>
+          <span data-fechas-del-viaje style={{ font: "500 12px 'Geist Mono',monospace", opacity: 0.9 }}>{fechas}</span>
         </span>
       </div>
       <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>

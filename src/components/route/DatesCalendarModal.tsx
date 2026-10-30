@@ -90,7 +90,7 @@ export function DatesCalendarBody({ destination, dateRange, onChangeDateRange }:
             type="button"
             onClick={close}
             aria-label="Cerrar el calendario"
-            className="flex h-10 w-10 items-center justify-center rounded-full"
+            className="zona-toque flex h-10 w-10 items-center justify-center rounded-full"
             style={{ border: '1px solid rgba(28,34,48,.12)', background: 'rgba(255,255,255,.7)', color: INK, cursor: 'pointer', font: "400 18px 'Geist'" }}
           >
             ✕

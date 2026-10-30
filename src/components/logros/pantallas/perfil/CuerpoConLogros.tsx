@@ -127,7 +127,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
           {viajes.length > 0 && <BotonEditarViajes />}
         </span>
         {viajes.length > 0 && (
-          <button type="button" onClick={() => setVerTodos(true)} data-ver-todos style={{ font: "600 14px 'Geist'", color: '#6F4E37', display: 'flex', alignItems: 'center', gap: 3, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', minHeight: 36, flex: 'none' }}>
+          <button className="zona-toque" type="button" onClick={() => setVerTodos(true)} data-ver-todos style={{ font: "600 14px 'Geist'", color: '#6F4E37', display: 'flex', alignItems: 'center', gap: 3, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', minHeight: 36, flex: 'none' }}>
             <span data-numero-de-viajes>Ver todos ({viajes.length})</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6F4E37" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
               <path d={CHEVRON} />
