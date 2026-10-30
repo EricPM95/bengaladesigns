@@ -14,6 +14,9 @@ import { Icono } from '../../ui/Icono'
 import { useDineroDeReserva } from './DineroDeReserva'
 import { HojaDelVuelo, type LadoDeHoja, type LadoGuardado } from './HojaDelVuelo'
 import { HojaAbajo } from './HojaAbajo'
+import { BilleteDelInvitado } from './BilleteDelInvitado'
+import { PiezaSegura } from '../../PiezaSegura'
+import { tripModes } from '../../../lib/arrivalReturn'
 import { useModoCuentas } from '../../../lib/modoCuentas'
 import { ParaQuienConNombres, preguntaDeReserva, type QueSeAnade } from '../presupuesto/ParaQuien'
 import { HojaTuAlojamiento } from '../alojamiento/HojaTuAlojamiento'
@@ -276,6 +279,14 @@ export function LoDeCadaUnoParaElInvitado({ route, info, arrivalInfo, gente, yoI
                 Cambiar
               </button>
             )}
+            {(!vueloMio.puestoPor || vueloMio.puestoPor === yoId) && (() => {
+              const m = tripModes(route).arrival
+              return m === 'coche' ? null : (
+                <PiezaSegura nombre="BilleteDelInvitado">
+                  <BilleteDelInvitado ida={vueloMio.ida} vuelta={vueloMio.vuelta} medio={m} yoId={yoId} />
+                </PiezaSegura>
+              )
+            })()}
           </div>
           {vueloMio.puestoPor && vueloMio.puestoPor !== yoId && <FilaPonElTuyo icono="avion" titulo="Poner el mío" sub="" datos="vuelo" onClick={() => setHoja('vuelo')} />}
         </>

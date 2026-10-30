@@ -3793,3 +3793,6 @@ Incluye el seguimiento de la 10S3 (10S3b), que llegó con tus respuestas cuando 
 
 - ✅ Hecho — pruebaTanda10S4 (F, G, H, I) y pruebaTanda10S3 con el caso nuevo del Free Tour, más pruebaJutrip Sin migración.  
   *Dónde:* No es de móvil.
+
+### 10S5b — La 0070: el billete en varios móviles (31-oct)
+Por tu «Sí, crea la 0070»: el billete (datos y código, sin el PDF) se sincroniza con una fila privada por persona (`billetes_personales`, RLS solo para su dueño; ni el administrador ni otro viajero la leen) y mantiene la copia en el móvil para verlo sin internet; si falla o no está la 0070, sigue solo en local sin errores. El invitado ya puede añadir el suyo desde su tarjeta. Pruebas: pruebaTanda10S5_L2 35/0 (migración en PGlite, sincronización con una nube de mentira, invitado), L 140/0, 10S4_G 44/0, 10S3_C 66/0, pruebaJutrip 129/0, tsc limpio. **Por aplicar:** 0069 y 0070 (comprobaciones `COMPROBAR_0069.sql` y `COMPROBAR_0070.sql`: «FALTA» → «Aplicada»). La prueba con el Supabase real `pruebaTanda10S5_L2_real.mjs` quedó SALTADA porque la 0070 no está aplicada: pásala sola después (`node scripts/destino/pruebaTanda10S5_L2_real.mjs`). ⚠️ La política de insertar no exige ser miembro del viaje (inocuo: fila privada y el viaje debe existir). ⚠️ El invitado añade código, asiento, terminal y localizador, no horas ni aeropuertos.
