@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { PiezaSegura } from '../../../PiezaSegura'
 import { createPortal } from 'react-dom'
 import { usePortadaDeViaje } from '../../../../hooks/usePortadaDeViaje'
 import { plural, type ResumenViaje } from '../../../../lib/viajesPerfil'
@@ -64,7 +65,9 @@ export function ListaDeViajes({ grupos, antesDeLaApp, onVolver, onAbrirViaje, on
           <div key={g.clave} style={{ display: 'flex', flexDirection: 'column', gap: 10 }} data-grupo-de-lista={g.clave}>
             <span style={ETIQUETA_DE_GRUPO}>{TITULO_DE_GRUPO[g.clave]}</span>
             {g.viajes.map((v) => (
-              <FilaDeLista key={v.id} viaje={v} etiqueta={g.clave} onAbrir={() => onAbrirViaje(v, g.clave)} editando={editando} onEliminar={() => onEliminar(v)} />
+              <PiezaSegura key={v.id} nombre="fila de Mis viajes">
+                <FilaDeLista viaje={v} etiqueta={g.clave} onAbrir={() => onAbrirViaje(v, g.clave)} editando={editando} onEliminar={() => onEliminar(v)} />
+              </PiezaSegura>
             ))}
           </div>
         ))}

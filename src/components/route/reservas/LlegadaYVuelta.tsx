@@ -69,7 +69,10 @@ export function HojaVueloDelAdmin({
     etiquetaPunto: ETIQUETA_PUNTO[leg.mode] ?? 'Punto',
     puntoObligatorio: leg.hasButtons,
     llega: leg.kind === 'arrival',
-    extras: {
+    // (10S2) Con coche no hay referencia ni compañía; con tren o autobús (y barco) son «Ref. del billete» y «Compañía»; solo en avión, «Ref. vuelo» y «Aerolínea».
+    extras: leg.mode === 'coche' ? undefined : {
+      etiquetaCodigo: legWord(leg.mode).refLabel,
+      etiquetaCompania: legWord(leg.mode).companiaLabel,
       codigo: leg.codigo ?? '',
       compania: leg.compania ?? '',
       otroPunto: leg.otroPunto ?? '',

@@ -3497,3 +3497,53 @@ Capturas de Design nuevas para DÍAS día 1 (01, 02, 02b, 03), alojamiento 02 y 
 
 - ✅ Hecho — Apartado «10S» en INFORME_TANDA10B.md y esta lista al final No hace falta migración.  
   *Dónde:* No es de móvil.
+
+
+## 10S2 — El fallo grave «Algo ha ido mal» al entrar con Google (29 y 30-oct)
+
+**Migración a aplicar: la `0068_errores_de_pantalla.sql`** (crea la tabla donde se guardan los avisos de «Algo ha ido mal»; sin ella el aviso solo queda en el registro del servidor, en Vercel › Logs). Se puede pegar entera y repetir. **Además, una cosa que solo puedes hacer tú: cerrar las sesiones de tu cuenta** (apartado 3).
+
+### 1. La causa, en palabras sencillas
+En tu cuenta principal hay un viaje guardado en la nube con las **reservas y el estado de pantalla vacíos** (`bookings = {}` y `ui_state = {}`). Al entrar (también al volver de Google), la app baja tus viajes y abre el más cercano; al abrirlo, el presupuesto intenta recorrer unas listas de reservas que ese viaje no trae y lanza un error en plena carga: `TypeError: Cannot convert undefined or null to object` (`Object.entries` de `transportBookings`, en `presupuesto.ts`, disparado desde `hydrateTrip`). La app queda a medias y toda pantalla que lee esas reservas se rompe (`Cannot read properties of undefined (reading 'day-1')`): «Algo ha ido mal». Un móvil que ya tenía la sesión y el viaje cargado en el propio móvil no lo vuelve a bajar y por eso va bien. Tu segunda cuenta tiene 4 viajes completos y tampoco falla.
+- **Cómo se hizo esa fila vacía:** no se ha podido determinar con seguridad (la tabla `trips` crea `bookings` y `ui_state` en `{}` por defecto, y un guardado a medias de la propia app puede dejarlos así). Ningún código del servidor escribe en `trips`.
+- **Cómo se reprodujo:** (a) en local, sin nube y sin tocar tu cuenta, con una carga de un viaje con `bookings = {}` (falla igual); (b) con el Supabase real y una **cuenta de prueba nueva**: la app guarda su viaje, se dejan en la nube las reservas y el estado en `{}` y se recarga: **con el arreglo quitado la prueba falla (5 fallos); con él, pasa**.
+- **No reproducido:** la vuelta de Google en sí (con `#access_token=…` y una sesión de prueba, también con una sesión anónima antes) **no falla** ni en el servidor de desarrollo ni en el build de producción: el fallo era el viaje vacío que se baja justo al entrar. Es coherente con todo lo que viste (también «Crear mi ruta», que pide entrar). Los datos de las dos cuentas de administrador se leyeron **solo leyendo** (sin escribir nada ni entrar como tú) y los volcados temporales ya están borrados.
+
+### 2. El arreglo (pequeño)
+- `src/lib/reservasPorDefecto.ts` (nuevo): `reservasConDefectos` y `uiConDefectos` completan lo que falte (diccionarios vacíos, sin seguro ni coche, `n26Added` falso, RUTA sin día elegido) y corrigen un campo con el tipo cambiado. **No cambian lo guardado**: solo lo que se lee.
+- Todo viaje que baja de la nube pasa por ahí (`filaAViaje`), `hydrateTrip` lo usa para todos los campos y el presupuesto no revienta con las listas sin rellenar (`?? {}`). Así se autorrepara el viaje vacío de tu cuenta al guardarse otra vez (no he escrito nada en tu fila).
+- **Un dato raro ya no puede tumbar la app entera:** `PiezaSegura` (nuevo) envuelve cada «host» de arriba de la app (TripSync, la puerta de cuenta, PrecioVuela, MomentosHost, los avisos…, 25 piezas) y cada fila de «Mis viajes»: si una se rompe al pintarse, solo ella se queda sin pintar y se avisa al servidor con su nombre. El `ErrorBoundary` sigue como última red.
+- **Si más adelante quieres blindar más sitios** (tarjetas de día, bloques de RESERVAS, filas de avisos), `PiezaSegura` está lista para envolverlos.
+
+### 3. Cerrar las sesiones de tu cuenta — A MEDIAS (necesita un pegado tuyo)
+Lo intenté de todas las formas que permite la API de administración de Supabase, probando con una cuenta de prueba (nunca con la tuya): **no hay forma de cerrar todas las sesiones de una cuenta con la clave de servicio** (los caminos de administración no existen en tu versión; cambiar la contraseña la invalida pero cambia cómo entra la cuenta; el cierre global pide la llave de la propia persona). La única vía es SQL. Te dejo **`docs/dias/CERRAR_SESIONES.sql`**: pegas tu correo donde pone `<TU CORREO>` y lo ejecutas una vez en Supabase › SQL editor. Borra solo sus sesiones y llaves de renovación (no toca viajes, datos ni la identidad de Google). Las llaves que pegaste en el chat privado dejan de valer en cuanto lo ejecutas (el token de acceso, de una hora, ya habrá caducado; la llave de renovación solo muere con esto o al usarse).
+
+### 4. «Algo ha ido mal» ahora se guarda en el servidor
+- El `ErrorBoundary` y cada `PiezaSegura` avisan a `POST /api/error-pantalla` de **qué ha fallado y en qué pantalla**: mensaje, pila, componentes, pantalla de la app (`screen / mode / pieza`), ruta (**sin parámetros ni `#`**) y versión. **Sin datos privados:** no se guarda quién es (ni id, ni correo, ni IP), se recortan los textos y se tachan correos, tokens, claves, ids y **la vuelta de Google entera (`#access_token=…`)**: se tacha en el navegador **antes de enviar** y otra vez en el servidor. Probado en vivo: un aviso con un `#access_token=…` queda en el registro como `#<tachado>`.
+- Se guarda en la tabla `errores_pantalla` (migración 0068; RLS encendido y sin políticas: solo lee y escribe el servidor) y siempre deja una línea `[error-pantalla]` en el registro del servidor. Se frena solo (30 por minuto, 5 iguales por minuto) y siempre contesta 202, así que un aviso de error nunca da otro error.
+- **Para ver los últimos** (una vez aplicada la 0068), en el SQL editor: `select creado, pantalla, mensaje, ruta, left(pila, 300) from public.errores_pantalla order by creado desc limit 50;`.
+
+### 5. `ArrivalReturnSheet.tsx` y oxlint
+`useEnlaceDeTraslados` se llamaba después de `if (!medio) return null` (cuando `medio` pasaba de vacío a con datos, React lanzaba «Rendered more hooks…»). Ahora se llama **antes**. `npx oxlint src`: **0 errores de `rules-of-hooks`**, y la prueba `pruebaTanda10S2` lo comprueba cada vez (entra en la batería).
+
+### 6. Respuestas a tus dudas de la 10S
+- **Catacumbas:** evitarlas cuando el viaje, o su mes si no hay fechas, cae en el cierre (13-ene a 10-feb): apuntado en `docs/dias/PENDIENTES_MOTOR.md` y en `REGLAS_DE_LA_APP.md` para la próxima tanda del motor (los 12 casos siguen apartados en amarillo).
+- **`OK*`:** sale siempre en **amarillo**, nunca en verde. Las pruebas ya se cierran solas (ningún `OK*` en las últimas pasadas).
+- **Hoja del vuelo:** con tren o autobús, «Ref. del billete» y «Compañía»; con coche, ninguno de los dos; con avión, «Ref. vuelo» y «Aerolínea»; con ferry, «Ref. del billete» y «Naviera». Los nombres salen de un solo sitio (`legWord`, `reservasLegs.ts`). Se actualizó `pruebaFase6y5_pantallas` (antes decía «Ref. tren» y «Ref. billete») con tu decisión en el comentario.
+
+### 7. Pruebas
+- **Nuevas (entran en la batería):** `pruebaTanda10S2` (42 comprobaciones, sin Chrome: ganchos de React con oxlint, el aviso de error —limpieza de llaves, freno, ruta, 202 siempre—, la migración 0068 con PGlite y el viaje con las reservas vacías) y `pruebaTanda10S2_real` (**USA EL SUPABASE REAL, corre sola al final**: 18 comprobaciones; crea y borra su propia cuenta nueva; entra, crea su viaje, lo baja de la nube, lo deja con `bookings = {}`, lo abre en todas las pestañas y simula la vuelta de Google con `#access_token`, sin «Algo ha ido mal»).
+- **Limitación de la prueba con el Supabase real:** crea el viaje con la ruta rápida de desarrollo, no recorre con clics los 7 pasos del formulario; el formulario, sin cuentas, lo cubren otras pruebas, y la pantalla de «Entrar con Google» no se puede completar con una cuenta de Google desde aquí (se simula su vuelta).
+- **Batería completa** (180 pruebas, 34,8 min): 2 en MAL, las dos explicadas y arregladas: `pruebaFase6y5_pantallas` (los nombres de las casillas, por tu decisión de la hoja del vuelo) y `pruebaTanda10N6_entradas` (pasa sola 12/0: fallo suelto bajo carga). Repetidas después de los últimos retoques, todas en 0 fallos: `10N9_vuelo` 29, `10N10_reservas` 52, `10N11_a` 36, `10N5_cadauno` 60, `7_reservas` 159, `Fase6y6_cierre` 3215, `10N6_entradas` 12, `pruebaTanda10S` 85, **`pruebaJutrip` 129**, `pruebaTanda10S2` 42 y `pruebaTanda10S2_real` 18.
+- Typecheck `npx tsc -p tsconfig.app.json --noEmit`: limpio.
+
+### A medias / sin ver
+- **Cerrar las sesiones de tu cuenta:** falta que ejecutes `CERRAR_SESIONES.sql`.
+- **Aplicar la 0068** para ver los errores reales en producción.
+- **El viaje vacío de tu cuenta no se ha tocado** (no he escrito nada): se autorrepara en cuanto lo abras con la app nueva, que lo guarda ya completo.
+- **No reproducido en producción el fallo con Google real:** si tras desplegar esto y aplicar la 0068 vuelve a salir, el aviso nos dirá qué pantalla y qué error son.
+- Las pruebas nuevas de la hoja del vuelo con coche/tren/autobús se cubren con la actualización de `pruebaFase6y5_pantallas` (código) y las de RESERVAS existentes; no hay una captura nueva.
+
+### Dudas para ti
+1. ¿Quieres que envuelva en `PiezaSegura` más sitios (cada día de DÍAS, cada bloque de RESERVAS, cada aviso de la campana)? Con 25 piezas de arriba y las filas de «Mis viajes» ya cubre lo que rompió, pero cuanto más fina, mejor aísla.
+2. El viaje vacío se arregla solo al abrirlo; si prefieres repararlo ya en la nube, dime y escribo un `update` solo para esa fila (con tu permiso).

@@ -78,9 +78,9 @@ export const legsOf = (route: Route, info: ArrivalInfo): { arrival: LegState; de
 /** Las palabras de cada medio: el sustantivo, la búsqueda y los nombres de las casillas «Ref.» y «Aerolínea / Compañía / Naviera» del tramo abierto (Tanda 6y5). */
 const MODE_WORD: Record<ArrivalMode, { noun: string; search: string; searchLabel: string; refLabel: string; companiaLabel: string }> = {
   avion: { noun: 'vuelo', search: '¿Aún no tienes vuelo?', searchLabel: 'Buscar vuelos', refLabel: 'Ref. vuelo', companiaLabel: 'Aerolínea' },
-  tren: { noun: 'tren', search: '¿Aún no tienes tren?', searchLabel: 'Buscar tren', refLabel: 'Ref. tren', companiaLabel: 'Compañía' },
-  bus: { noun: 'autobús', search: '¿Aún no tienes autobús?', searchLabel: 'Buscar autobús', refLabel: 'Ref. billete', companiaLabel: 'Compañía' },
-  ferry: { noun: 'ferry', search: '¿Aún no tienes ferry?', searchLabel: 'Buscar ferry', refLabel: 'Ref. billete', companiaLabel: 'Naviera' },
+  tren: { noun: 'tren', search: '¿Aún no tienes tren?', searchLabel: 'Buscar tren', refLabel: 'Ref. del billete', companiaLabel: 'Compañía' },
+  bus: { noun: 'autobús', search: '¿Aún no tienes autobús?', searchLabel: 'Buscar autobús', refLabel: 'Ref. del billete', companiaLabel: 'Compañía' },
+  ferry: { noun: 'ferry', search: '¿Aún no tienes ferry?', searchLabel: 'Buscar ferry', refLabel: 'Ref. del billete', companiaLabel: 'Naviera' },
   coche: { noun: 'viaje en coche', search: '', searchLabel: '', refLabel: '', companiaLabel: '' },
 }
 export const legWord = (mode: ArrivalMode) => MODE_WORD[mode]

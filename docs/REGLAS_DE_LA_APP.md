@@ -102,6 +102,7 @@ Esta lista es la que quedó al terminar la tanda 10N8 y se ha de ir vaciando:
 - **Moneda por precio:** faltan por enlazar las etiquetas de precio del explorador de lugares.
 - **Lugares que esperan saber si hay pase** (aparte de la pastilla de RUTA): no repasados uno a uno.
 - **Varios destinos (10N12):** hoy la zona y la dirección del alojamiento son del viaje entero y solo salen en la primera estancia; cuando se hagan los multidestinos, cada estancia tendrá su zona y su dirección.
+- **Catacumbas de San Calixto (decisión de Eric, 30-oct):** evitarlas cuando el viaje, o su mes si no hay fechas, cae en el cierre (13-ene a 10-feb); se hace en la próxima tanda del motor (ver `docs/dias/PENDIENTES_MOTOR.md`).
 - **Casos del motor apartados en las pruebas (10S, 30-oct):** Catacumbas de San Calixto cerradas en viajes sin fechas, el Viaje 11 · día 1 que no cabe por 105 min y el orden de la lista del D1 al llegar a las 16:30. Se imprimen como «PENDIENTE DEL MOTOR» y se miran en la próxima tanda del motor; el detalle y la evidencia, en docs/dias/PENDIENTES_MOTOR.md.
 - **Película del pase, ficha de un sitio y aviso de abajo:** hechos en código; falta comprobarlos en el móvil, junto a Design y en Safari (con y sin la barra).
 

@@ -55,6 +55,7 @@ import { cargarDatos as cargarDatosLogros, cargarCatalogo as cargarCatalogoLogro
 import { crearServicioLogros } from './logros/servicio.js'
 import { repoSupabase } from './logros/repo.js'
 import { registrarRutasLogros, logrosActivos, esAdmin as esAdminLogros } from './logros/rutas.js'
+import { registrarRutaErrores } from './errores.js'
 import { cobroListo, crearServicioPagos, modoDePago, pasarelaDeMentira, pasarelaStripe, registrarRutasPagos } from './pagos.js'
 import { precioTienda } from '../shared/dinero/formato.js'
 import { compareInside } from './engine/insideSwitch.js'
@@ -1140,6 +1141,9 @@ const salesStore = new Map()
 // (Sirve también a las cuentas. La clave puede ser la antigua `service_role` o una nueva `sb_secret_…`: supabase-js 2.114 reconoce las dos y manda la nueva solo en la cabecera `apikey`.)
 const salesAdmin = supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } }) : null
 const CAMPAIGN_PATTERN = /^(app|v)-[A-Z0-9]{5}$/
+
+// (10S2) «Algo ha ido mal»: la app avisa de qué ha fallado y en qué pantalla (sin datos privados); ver server/errores.js y la migración 0068.
+registrarRutaErrores(app, { servicio: salesAdmin })
 
 app.post('/api/sales/ingest', async (req, res) => {
   const secret = process.env.SALES_INGEST_SECRET

@@ -29,6 +29,7 @@ import { AvisoInstalar } from './components/logros/AvisoInstalar'
 import { EliminarViajeHost } from './components/perfil/EliminarViajeHost'
 import { CampaignLinks } from './components/sync/CampaignLinks'
 import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
+import { PiezaSegura } from './components/PiezaSegura'
 import { FotoVuela } from './components/perfil/FotoVuela'
 import { RehacerRuta } from './components/route/RehacerRuta'
 import { HojaResumenVuelo } from './components/route/reservas/HojaResumenVuelo'
@@ -106,31 +107,81 @@ function App() {
 
   return (
     <Layout>
-      <TripSync />
-      <PuertaDeCuenta />
-      <UnirseHost />
-      <CompartidoHost />
-      <PagoHost />
-      <ListaDelPaseHost />
-      <AvisoPaseHost />
-      <SinPasePrueba />
-      <PropuestaHost />
-      <AvisosHost />
-      <GastosCompartidosHost />
-      <ModoCuentasHost />
-      <AjustesHosts />
-      <VistosPorPersona />
-      <LogrosPorVisto />
-      <MomentosHost />
-      <PantallasHost />
-      <AvisoInstalar />
-      <EliminarViajeHost />
-      <PrecioVuela />
-      <FotoVuela />
-      <CampaignLinks />
-      <RehacerRuta />
-      <HojaResumenVuelo />
-      <AvisosDeVueloWatcher />
+      <PiezaSegura nombre="TripSync">
+        <TripSync />
+      </PiezaSegura>
+      <PiezaSegura nombre="PuertaDeCuenta">
+        <PuertaDeCuenta />
+      </PiezaSegura>
+      <PiezaSegura nombre="UnirseHost">
+        <UnirseHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="CompartidoHost">
+        <CompartidoHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="PagoHost">
+        <PagoHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="ListaDelPaseHost">
+        <ListaDelPaseHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="AvisoPaseHost">
+        <AvisoPaseHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="SinPasePrueba">
+        <SinPasePrueba />
+      </PiezaSegura>
+      <PiezaSegura nombre="PropuestaHost">
+        <PropuestaHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="AvisosHost">
+        <AvisosHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="GastosCompartidosHost">
+        <GastosCompartidosHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="ModoCuentasHost">
+        <ModoCuentasHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="AjustesHosts">
+        <AjustesHosts />
+      </PiezaSegura>
+      <PiezaSegura nombre="VistosPorPersona">
+        <VistosPorPersona />
+      </PiezaSegura>
+      <PiezaSegura nombre="LogrosPorVisto">
+        <LogrosPorVisto />
+      </PiezaSegura>
+      <PiezaSegura nombre="MomentosHost">
+        <MomentosHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="PantallasHost">
+        <PantallasHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="AvisoInstalar">
+        <AvisoInstalar />
+      </PiezaSegura>
+      <PiezaSegura nombre="EliminarViajeHost">
+        <EliminarViajeHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="PrecioVuela">
+        <PrecioVuela />
+      </PiezaSegura>
+      <PiezaSegura nombre="FotoVuela">
+        <FotoVuela />
+      </PiezaSegura>
+      <PiezaSegura nombre="CampaignLinks">
+        <CampaignLinks />
+      </PiezaSegura>
+      <PiezaSegura nombre="RehacerRuta">
+        <RehacerRuta />
+      </PiezaSegura>
+      <PiezaSegura nombre="HojaResumenVuelo">
+        <HojaResumenVuelo />
+      </PiezaSegura>
+      <PiezaSegura nombre="AvisosDeVueloWatcher">
+        <AvisosDeVueloWatcher />
+      </PiezaSegura>
       <AnimatePresence mode="wait">
         {/* Formulario de creación de viaje (diseño "Trazo App"): sustituye a LandingScreen + Questionnaire. */}
         {/* (Tanda 10N §5: con un enlace de invitación en marcha NO sale «Crear viaje», ni al abrirlo ni al tocar [Unirme].) */}

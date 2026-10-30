@@ -231,6 +231,8 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
     return { markers, lines }
   }, [ficha, puntoDeLaFicha, mode, info, destino.zonasAlojamiento, route.accommodationZone])
 
+  // (10S2) Un hook va SIEMPRE antes de cualquier `return`: con `medio` aún sin datos, el de abajo se saltaba y, al llegar `medio`, React lanzaba «Rendered more hooks…» («Algo ha ido mal»).
+  const enlaceDeTraslados = useEnlaceDeTraslados(route.destination)
   if (!medio) return null
   const arrival = kind === 'llegada'
   const title = arrival ? medio.textos.llegada_titulo : medio.textos.vuelta_titulo.replace('{origen}', origin)
@@ -239,8 +241,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
   const why = (arrival ? onePoint?.por_que_llegada : onePoint?.por_que_vuelta) ?? (arrival ? medio.textos.llegada_por_que : medio.textos.vuelta_por_que)
   // La pestaña «Traslados» (Tanda 6t): solo en aeropuerto y puerto, y solo con el punto que tenga enlace de traslado en los datos. Con el punto elegido en RESERVAS, el de ese punto; sin elegir, los de todos.
   // (Parte 1 de la API de consulta, con el interruptor encendido: el enlace de traslados del destino; si la API no lo da, el de los datos de siempre.)
-  const enlaceDeTraslados = useEnlaceDeTraslados(route.destination)
-  const privatePoints = TRASLADO_EN.includes(mode) ? shownPoints.filter((point) => point.traslado?.url || enlaceDeTraslados) : []
+  const privatePoints =TRASLADO_EN.includes(mode) ? shownPoints.filter((point) => point.traslado?.url || enlaceDeTraslados) : []
   // Un tip de un punto (`solo_en`) sale solo si ese punto está a la vista (con reserva, el elegido; sin ella, todos); uno con fecha de fin (`hasta`), solo hasta
   // esa fecha (la del viaje o, sin ella, la de hoy).
   const tipDate = dateIso ?? new Date().toISOString().slice(0, 10)

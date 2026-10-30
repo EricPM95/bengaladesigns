@@ -68,11 +68,12 @@ const D = findPipelineV2Data('Roma')
 
 // ── 2. La ida y la vuelta abiertas ──
 console.log('2. La ida y la vuelta abiertas')
+// (10S2, Eric 30-oct: con tren o autobús las casillas son «Ref. del billete» y «Compañía»; antes «Ref. tren» y «Ref. billete». Con coche, ninguna. Avión y barco como siempre, el barco con «Ref. del billete» para ser coherente.)
 const MEDIOS = {
   avion: { id: 'flight', botones: ['Fiumicino', 'Ciampino'], pregunta: '¿Fiumicino o Ciampino?', ref: 'Ref. vuelo', cia: 'Aerolínea' },
-  tren: { id: 'train', botones: ['Termini', 'Tiburtina'], pregunta: '¿Termini o Tiburtina?', ref: 'Ref. tren', cia: 'Compañía' },
-  bus: { id: 'bus', botones: ['Tiburtina', 'Termini'], pregunta: '¿Tiburtina o Termini?', ref: 'Ref. billete', cia: 'Compañía' },
-  barco: { id: 'ferry', botones: [], pregunta: null, ref: 'Ref. billete', cia: 'Naviera' },
+  tren: { id: 'train', botones: ['Termini', 'Tiburtina'], pregunta: '¿Termini o Tiburtina?', ref: 'Ref. del billete', cia: 'Compañía' },
+  bus: { id: 'bus', botones: ['Tiburtina', 'Termini'], pregunta: '¿Tiburtina o Termini?', ref: 'Ref. del billete', cia: 'Compañía' },
+  barco: { id: 'ferry', botones: [], pregunta: null, ref: 'Ref. del billete', cia: 'Naviera' },
 }
 const abierto = (route, mitad) => html(M.LlegadaYVuelta, { route, info, abierto: true, onToggle() {}, onAbrir() {}, mitadAbierta: mitad, onMitad() {}, onGuardada() {}, onFechas() {} })
 const cerrado = (route) => html(M.LlegadaYVuelta, { route, info, abierto: false, onToggle() {}, onAbrir() {}, mitadAbierta: undefined, onMitad() {}, onGuardada() {}, onFechas() {} })
@@ -185,7 +186,7 @@ for (const [nombre, medio] of Object.entries(MEDIOS)) {
   const fuentes = ['src/components/route/reservas/LlegadaYVuelta.tsx', 'src/lib/reservasLegs.ts'].map((f) => sinComentarios(leer(f))).join('\n')
   debe(!/\b(Iberia|Vueling|Ryanair|Ita Airways|Trenitalia|Italo|Flixbus|Moby|Grimaldi|GNV|Skyscanner)\b/i.test(fuentes.replace(/skyscanner\.net/g, '')), '2 empresas', 'un texto nuestro nombra una empresa')
   debe(!/Aerolínea|Naviera|Ref\. vuelo/.test(sinComentarios(leer('src/components/route/reservas/LlegadaYVuelta.tsx'))), '2 un sitio', 'LlegadaYVuelta escribe a mano los nombres de las casillas (salen de legWord)')
-  debe(/refLabel: 'Ref\. vuelo', companiaLabel: 'Aerolínea'/.test(leer('src/lib/reservasLegs.ts')) && /Ref\. tren/.test(leer('src/lib/reservasLegs.ts')) && /Naviera/.test(leer('src/lib/reservasLegs.ts')), '2 un sitio', 'faltan los nombres de las casillas en reservasLegs')
+  debe(/refLabel: 'Ref\. vuelo', companiaLabel: 'Aerolínea'/.test(leer('src/lib/reservasLegs.ts')) && /tren: \{[^\n]*refLabel: 'Ref\. del billete', companiaLabel: 'Compañía'/.test(leer('src/lib/reservasLegs.ts')) && /bus: \{[^\n]*refLabel: 'Ref\. del billete', companiaLabel: 'Compañía'/.test(leer('src/lib/reservasLegs.ts')) && /coche: \{[^\n]*refLabel: '', companiaLabel: ''/.test(leer('src/lib/reservasLegs.ts')) && /Naviera/.test(leer('src/lib/reservasLegs.ts')), '2 un sitio', 'faltan los nombres de las casillas en reservasLegs (10S2, Eric 30-oct: tren y autobús «Ref. del billete» y «Compañía»; coche, ninguna)')
 }
 
 // ── 3. «Ver más excursiones» ──

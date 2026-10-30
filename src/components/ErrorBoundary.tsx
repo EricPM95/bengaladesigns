@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from 'react'
 import { Icono } from './ui/Icono'
+import { avisarDeError } from '../lib/errorDePantalla'
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -25,6 +26,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   componentDidCatch(error: Error, info: { componentStack: string }) {
     console.error('[ErrorBoundary] Crash de renderizado:', error, info.componentStack)
+    // (10S2) Se avisa al servidor de qué ha fallado y en qué pantalla (sin datos privados) para verlo sin reproducirlo.
+    avisarDeError(error, info.componentStack)
   }
 
   render() {

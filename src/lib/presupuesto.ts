@@ -161,7 +161,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
     ...(rep && suyo?.vuelo?.ida?.precio ? [mio(linea('mi-ida', 'Tu vuelo de ida', suyo.vuelo.ida.precio, { tipo: 'extra', id: 'mi-ida' })!, rep.yoId ? [rep.yoId] : [])] : []),
     ...(rep && suyo?.vuelo?.vuelta?.precio ? [mio(linea('mi-vuelta', 'Tu vuelo de vuelta', suyo.vuelo.vuelta.precio, { tipo: 'extra', id: 'mi-vuelta' })!, rep.yoId ? [rep.yoId] : [])] : []),
     ...(rep && suyo?.alojamiento?.precio ? [mio(linea('mi-aloj', `Tu alojamiento · ${suyo.alojamiento.name}`, suyo.alojamiento.precio, { tipo: 'extra', id: 'mi-aloj' })!, rep.yoId ? [rep.yoId] : [])] : []),
-    ...Object.entries(entrada.transportBookings).map(([dayId, booking]) => linea(`transporte-${dayId}`, booking.operator, precioGuardado(booking), { tipo: 'transporte', dayId })),
+    ...Object.entries(entrada.transportBookings ?? {}).map(([dayId, booking]) => linea(`transporte-${dayId}`, booking.operator, precioGuardado(booking), { tipo: 'transporte', dayId })),
     ...buildDestinationSegments(route.days)
       .filter((segment) => segment.nights > 0)
       .map((segment) => {
@@ -213,7 +213,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
 
   const util = sinNulos([
     entrada.insuranceBooking ? linea('seguro', 'Seguro de viaje', precioGuardado(entrada.insuranceBooking), { tipo: 'seguro' }) : null,
-    ...Object.entries(entrada.esimPrecios).map(([pais, precio]) => linea(`esim-${pais}`, `eSIM de ${countryDisplayName(pais)}`, leerImporte(precio), { tipo: 'esim', pais })),
+    ...Object.entries(entrada.esimPrecios ?? {}).map(([pais, precio]) => linea(`esim-${pais}`, `eSIM de ${countryDisplayName(pais)}`, leerImporte(precio), { tipo: 'esim', pais })),
   ])
 
   const deLaRuta = sinNulos((route.gastosExtras ?? []).map((extra) => linea(`extra-${extra.id}`, extra.nombre, leerImporte(extra.precio), { tipo: 'extra', id: extra.id })))

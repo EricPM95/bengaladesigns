@@ -1,4 +1,7 @@
 import type { Route, RouteMode, WishlistItem } from './types'
+import { reservasConDefectos, uiConDefectos } from './reservasPorDefecto'
+
+export { reservasConDefectos, uiConDefectos }
 import type { TuAlojamiento } from './tuAlojamiento'
 import type { Importe } from './dinero'
 import type { EsimStatus, GeneralBooking, TransportBooking } from './readiness'
@@ -158,9 +161,9 @@ function filaAViaje(row: FilaDeViaje, travelerId: string, conInvitados: boolean)
   return {
     id: row.id as string,
     route: withCurrentFreeTourName(withTripMonth(row.route as Route)),
-    bookings: withCurrentFreeTourName(row.bookings as TripBookings),
+    bookings: withCurrentFreeTourName(reservasConDefectos(row.bookings as Partial<TripBookings> | null)),
     wishlist: (row.wishlist ?? []) as WishlistItem[],
-    uiState: row.ui_state as TripUiState,
+    uiState: uiConDefectos(row.ui_state as Partial<TripUiState> | null),
     generationState: generationState && generationState.phase !== 'done' ? generationState : null,
     ...(conInvitados && row.traveler_id && row.traveler_id !== travelerId ? { esInvitado: true } : {}),
     ...(conInvitados && row.guardado_en ? { guardadoEn: row.guardado_en } : {}),

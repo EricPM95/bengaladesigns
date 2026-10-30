@@ -5,6 +5,8 @@ Casos concretos que hoy no encajan con lo que el motor hace (o no hace) y que **
 Prioridad por el orden en que Eric pidió el diagnóstico.
 
 ## 1. Catacumbas de San Calixto cerradas en viajes sin fechas (prioridad 1)
+
+**DECISIÓN DE ERIC (30-oct, 10S2): evitarlas** cuando el viaje —o su mes, si no hay fechas— cae en el cierre (del 13 de enero al 10 de febrero): que el motor no las ponga en D7 (ni en ningún día) esos días, y que la prueba lo exija. Se hace en la próxima tanda del motor; hasta entonces los 12 casos siguen apartados como «PENDIENTE DEL MOTOR» en amarillo.
 - **Caso:** 6 casos en `pruebaTanda7_llegada` (matriz de 1500 viajes, solo los de «mes sin fechas», enero) y 2 en `pruebaTanda7_integracion`: viajes de 6 y 7 noches con D7 el «2027-01-15». Clave: `catacumbas_cerradas_viaje_sin_fechas`.
 - **Evidencia:**
   - `data/pipeline_v2/roma.json`: Catacumbas tiene `closed_dates: ["01-01","easter","12-25","2027-01-13..2027-02-10"]` (desde el 8-oct, commit 3f84d938).

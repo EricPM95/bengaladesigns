@@ -33,6 +33,7 @@ import type {
   WishlistItem,
 } from '../lib/types'
 import type { TripPayload } from '../lib/tripPersistence'
+import { reservasConDefectos, uiConDefectos } from '../lib/reservasPorDefecto'
 import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour, roundUpToQuarterHour } from '../lib/time'
 import { spareInsertIndex } from '../lib/spareStops'
 import { getTodayTripContext } from '../lib/todayMode'
@@ -1127,6 +1128,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     }),
 
   hydrateTrip: (payload) => {
+    const reservas = reservasConDefectos(payload.bookings)
+    const ui = uiConDefectos(payload.uiState)
     set({
       screen: 'route',
       // Abrir otro viaje corta un rehacer a medias.
@@ -1138,20 +1141,21 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         const colored = sellarVueltaAlAbrir(withDayColors(payload.route))
         return colored.originalRoute || colored.editedManually ? colored : { ...colored, originalRoute: originalRouteOf(colored) }
       })(),
-      accommodationSelections: payload.bookings.accommodationSelections,
-      transportBookings: payload.bookings.transportBookings,
-      insuranceBooking: payload.bookings.insuranceBooking,
-      n26Added: payload.bookings.n26Added,
-      rentalVehicleBooking: payload.bookings.rentalVehicleBooking,
-      esimSelections: payload.bookings.esimSelections,
-      esimPrecios: payload.bookings.esimPrecios ?? {},
-      dondeComprado: payload.bookings.dondeComprado ?? {},
-      reservations: payload.bookings.reservations ?? [],
-      campaignCode: payload.bookings.campaignCode ?? newCampaignCode(),
-      sales: payload.bookings.sales ?? [],
-      wishlist: payload.wishlist,
-      mode: payload.uiState.mode,
-      activeDayId: payload.uiState.activeDayId,
+      // (10S2) Con las reservas o el estado vacíos (`{}`), cada campo toma su valor de siempre: antes quedaban `undefined` y el presupuesto tumbaba la app entera.
+      accommodationSelections: reservas.accommodationSelections,
+      transportBookings: reservas.transportBookings,
+      insuranceBooking: reservas.insuranceBooking,
+      n26Added: reservas.n26Added,
+      rentalVehicleBooking: reservas.rentalVehicleBooking,
+      esimSelections: reservas.esimSelections,
+      esimPrecios: reservas.esimPrecios ?? {},
+      dondeComprado: reservas.dondeComprado ?? {},
+      reservations: reservas.reservations ?? [],
+      campaignCode: reservas.campaignCode ?? newCampaignCode(),
+      sales: reservas.sales ?? [],
+      wishlist: payload.wishlist ?? [],
+      mode: ui.mode,
+      activeDayId: ui.activeDayId,
     })
     // (Tanda 10N) Ha llegado un viaje: la propuesta de quien solo recomienda se ajusta a la ruta nueva del administrador.
     alHidratarViaje.fn?.()

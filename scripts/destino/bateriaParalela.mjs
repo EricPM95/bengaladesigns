@@ -309,7 +309,7 @@ const correr = (f) =>
       const ultimas = out.trim().split('\n').slice(-6).join(' | ').slice(0, 500)
       resultados.push({ f, code, fallos, seg, mal, raro, porTiempo, ultimas, pendientes, motivos: motivos.slice(0, 40) })
       if (!porTiempo) tiempos[f] = seg // (una prueba cortada por el tope no dice cuánto tarda de verdad)
-      console.log(`${mal ? 'MAL' : raro ? (fallos === 0 ? 'OK*' : 'ok?') : 'OK '} ${f} exit=${code}${porTiempo && !colgadaTrasAcabar ? ' (PASADO DE TIEMPO)' : ''}${colgadaTrasAcabar ? ' (acabó bien pero NO SALÍA SOLA: cortada a los 90 s de su resultado)' : ''} fallos=${fallos} ${seg}s`)
+      console.log(`${raro && !mal ? AMARILLO : ''}${mal ? 'MAL' : raro ? (fallos === 0 ? 'OK*' : 'ok?') : 'OK '} ${f} exit=${code}${porTiempo && !colgadaTrasAcabar ? ' (PASADO DE TIEMPO)' : ''}${colgadaTrasAcabar ? ' (acabó bien pero NO SALÍA SOLA: cortada a los 90 s de su resultado)' : ''} fallos=${fallos} ${seg}s`)
       if (pendientes) console.log(`${AMARILLO}    ${pendientes} pendientes del motor en ${f}${RESET}`)
       if (mal) {
         const salida = path.join(os.tmpdir(), `trazo_bateria_MAL_${f}.txt`)
