@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { cuentasActivas } from '../../lib/cuentas'
-import { formatShortDateEs } from '../../lib/dateRange'
+import { formatFechaListaEs } from '../../lib/dateRange'
 import { configDelPase, estadoDelPago, misPases, olvidarConfigDelPase, pagoDeLaDireccion } from '../../lib/pagoPase'
 import { guardarViajeAparte } from '../../lib/tripPersistence'
 import { parejasQueSePisan } from '../../lib/viajesQueSePisan'
@@ -126,7 +126,7 @@ const hoyEnLocal = (): string => {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
-const etiquetaDelDia = (iso: string): string => formatShortDateEs(iso).replace(',', '').toLowerCase()
+const etiquetaDelDia = (iso: string): string => formatFechaListaEs(iso)
 
 /** Al volver de la página de pago: se pregunta cada poco si el pase ya está (el aviso del servicio de pago puede tardar unos segundos). */
 function VolviendoDelPago({ sesion }: { sesion: string }) {

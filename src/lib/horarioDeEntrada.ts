@@ -18,6 +18,8 @@ export interface HorarioDeEntrada {
 
 /** El aviso de debajo de la rueda y de la hoja del Free Tour. */
 export const AVISO_DISPONIBILIDAD = 'Recuerda revisar la disponibilidad antes de añadirlo a tu ruta.'
+/** (10S5) El de la reserva escrita a mano (no va a la ruta). Antes: «…antes de añadirlo a tu ruta.» → ahora «…antes de reservar.» (decisión de Eric, 10S5, 30-oct). */
+export const AVISO_DISPONIBILIDAD_RESERVAR = 'Recuerda revisar la disponibilidad antes de reservar.'
 
 const asMin = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
 const two = (n: number) => String(n).padStart(2, '0')

@@ -193,6 +193,9 @@ try {
   // Cambiar solo la vuelta: otro guardado, con solo la vuelta en el aviso.
   await ev("document.querySelector('[data-blk=\"llegada\"]')?.scrollIntoView({block:'center'}); true")
   await a.esp(500)
+  // antes: el bloque salía abierto → ahora (10S4): con la ida y la vuelta listas sale plegado; se abre tocando la cabecera.
+  await ev("if (!document.querySelector('[data-blk=\"llegada\"] [data-mitad]')) document.querySelector('[data-blk=\"llegada\"] [data-llegada-cabecera]')?.click(); true")
+  await a.esp(400)
   const lineas = await ev("Array.from(document.querySelectorAll('[data-blk=\"llegada\"] *')).filter((e) => e.children.length === 0 && /Cambiar/.test(e.textContent || '')).length")
   debe(lineas >= 1, 'A', 'con el vuelo guardado, el bloque ofrece «Cambiar»')
   await ev("window.__ruta.getState().guardarVueloDelAdmin && true")

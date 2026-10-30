@@ -17,6 +17,7 @@ import { AvisoPaseHost } from './components/pase/AvisoPase'
 import { SinPasePrueba } from './components/pase/SinPasePrueba'
 import { useSinPasePrueba } from './store/useSinPasePrueba'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
+import { ProponerSitioHost } from './components/proponerSitio/ProponerSitioHost'
 import { AvisosHost } from './components/avisos/AvisosHost'
 import { GastosCompartidosHost } from './components/presupuesto/GastosCompartidosHost'
 import { ModoCuentasHost } from './components/route/presupuesto/CuentaModo'
@@ -130,6 +131,9 @@ function App() {
       </PiezaSegura>
       <PiezaSegura nombre="SinPasePrueba">
         <SinPasePrueba />
+      </PiezaSegura>
+      <PiezaSegura nombre="ProponerSitioHost">
+        <ProponerSitioHost />
       </PiezaSegura>
       <PiezaSegura nombre="PropuestaHost">
         <PropuestaHost />

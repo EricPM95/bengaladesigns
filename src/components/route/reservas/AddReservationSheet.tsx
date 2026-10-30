@@ -2,7 +2,8 @@ import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 
 import { createPortal } from 'react-dom'
 import { conDe, sitioConArticulo } from '../../../../shared/avisos/textos.js'
 import type { Excursion, Route } from '../../../lib/types'
-import { dateOfDay, dayLineOf, dayOfReservation, dayOnDate, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
+import { repartirEnFilas } from '../../../lib/repartirEnFilas'
+import { dateOfDay, dayLineOf, dayOfReservation, dayOnDate, fechaDeLista, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
 import { alDia, ElDia, elDia } from '../../../lib/nombreDeDia'
 import { reservasParaMotor } from '../../../lib/engineReservas'
 import { excursionTargetDays } from '../../../lib/excursionOffer'
@@ -19,7 +20,7 @@ import { Icono } from '../../ui/Icono'
 import { isManualRoute } from '../../../lib/manualPlan'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
-import { AVISO_DISPONIBILIDAD, horasDeLaRueda, useHorarioDeEntrada } from '../../../lib/horarioDeEntrada'
+import { AVISO_DISPONIBILIDAD, AVISO_DISPONIBILIDAD_RESERVAR, horasDeLaRueda, useHorarioDeEntrada } from '../../../lib/horarioDeEntrada'
 import { FREE_TOUR_RUEDA } from '../../../lib/freeTourHoras'
 import { avisoDeLaHora, civitatisActiva, ruedaConHorasLibres, useHorasLibres } from '../../../lib/civitatis'
 import { llegadaVueltaDe } from '../../../lib/llegadaVuelta'
@@ -554,7 +555,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   }
   const dateLabel = (iso: string) => {
     const day = dayOnDate(route, iso)
-    return day ? dayLabel(day) : shortDateEs(iso)
+    return day ? dayLabel(day) : fechaDeLista(iso)
   }
 
 
@@ -586,8 +587,11 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               )}
 
               {/* Los días del viaje, en fichas que se deslizan de lado: el día que tiene en la ruta ya va marcado («En tu ruta»); un sitio cerrado ese día sale apagado. */}
-              <div className="-mx-6 mt-5 flex gap-1.5 overflow-x-auto px-6 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Día de tu reserva">
-                {chipDays.map((day) => {
+              {/* (10S5) Los días ocupan todo el ancho, a partes iguales; si no caben en una fila (más de 4), en dos o más filas igual de llenas. */}
+              <div className="mt-5 flex flex-col gap-1.5" role="group" aria-label="Día de tu reserva" data-dias-filas>
+                {repartirEnFilas(chipDays).map((fila, indiceFila) => (
+                  <div key={indiceFila} className="flex gap-1.5" data-dias-fila={indiceFila}>
+                {fila.map((day) => {
                   const selected = resolvedDay?.id === day.id
                   const closed = isClosedDay(day)
                   const inRoute = day.id === target.currentDayId
@@ -601,7 +605,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                       data-dia-cuadrado={day.id}
                       data-elegida={selected ? '1' : '0'}
                       // (10S3 §7) Todo lo que se elige va en cuadrados: el día, como las personas; el elegido, azul oscuro con ✓ dorado.
-                      className="relative flex h-[62px] min-w-[86px] flex-none flex-col items-center justify-center gap-0.5 rounded-2xl px-3 transition-colors"
+                      className="relative flex h-[62px] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-1.5 transition-colors"
                       style={{
                         border: `1px solid ${selected ? '#1C2230' : 'rgba(28,34,48,.14)'}`,
                         background: selected ? '#1C2230' : closed ? '#F1EADC' : '#FFFDF8',
@@ -622,6 +626,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                     </button>
                   )
                 })}
+                  </div>
+                ))}
               </div>
               <p className="mt-7 text-center text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
                 {isExcursion ? 'Hora de recogida' : isFreeTour ? 'Hora de inicio' : 'Hora de entrada'}
@@ -661,7 +667,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
 
               {!isExcursion && !(civitatisActiva() && horasApi.estado === 'ok') && (
                 <p className="mt-3 text-center text-[12.5px] leading-snug text-text-soft" data-aviso="disponibilidad">
-                  {AVISO_DISPONIBILIDAD}
+                  {esLibre ? AVISO_DISPONIBILIDAD_RESERVAR : AVISO_DISPONIBILIDAD}
                 </p>
               )}
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { CambioDeVuelo, EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { puntoCorto, type ArrivalInfo } from '../../../lib/arrivalReturn'
@@ -7,7 +7,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useLoSuyo } from '../../../store/useLoSuyo'
 import { nombreDe } from '../../../store/useViajeCompartido'
 import { entreEfectivo, idsConLoSuyo } from '../../../lib/loSuyo'
-import { BloqueShell, CambiarBoton, EliminarTexto, EstadoBloque, FlechaBloque, IconoBloque, iconoDeMedio, tituloBloqueStyle, INK } from './BloqueReservas'
+import { BloqueShell, CambiarBoton, EstadoBloque, FlechaBloque, IconoBloque, iconoDeMedio, tituloBloqueStyle, INK } from './BloqueReservas'
 import { leerImporte } from '../../../lib/dinero'
 import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { fechaLarga } from '../../../lib/fechaLarga'
@@ -17,6 +17,16 @@ import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
 import { EnEsteChips } from './EnEsteChips'
 import { Icono } from '../../ui/Icono'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
+import { useSyncStore } from '../../../store/useSyncStore'
+import { useViajeCompartido } from '../../../store/useViajeCompartido'
+import { useBilleteStore } from '../../../store/useBilleteStore'
+import { useBillete } from '../../../hooks/useBillete'
+import { useDuracionBillete } from '../../../hooks/useDuracionBillete'
+import { ciudadDeSalida, diaEntero, trayectoDeLaMitad } from '../../../lib/billete'
+import { leerBillete, type DatosBilleteLeido } from '../../../lib/billeteLeer'
+import { ladoDesdeBillete } from '../../../lib/billeteAplicar'
+import { etiquetaDeCiudadConEstacion, etiquetaDeCiudadConPunto } from '../../../lib/aeropuertosCiudad'
+import { CodigoPantallaCompleta, TarjetaBillete, filasDelBillete } from './TarjetaBillete'
 
 const ETIQUETA_PUNTO: Record<string, string> = { avion: 'Aeropuerto', tren: 'Estación', bus: 'Estación', ferry: 'Puerto', coche: 'Punto' }
 const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
@@ -34,11 +44,16 @@ export function HojaVueloDelAdmin({
   onFechas,
   onClose,
   onGuardar,
+  leido = null,
+  onCambiarArchivo,
 }: {
   route: Route
   ida: LegState
   vuelta: LegState
   ladoInicial: LegKind
+  /** (10S5) Lo que se ha leído del PDF, la foto o la captura de un billete: rellena la hoja para que el viajero lo revise; no se guarda hasta pulsar «Guardar». */
+  leido?: { kind: LegKind; datos: DatosBilleteLeido } | null
+  onCambiarArchivo?: (kind: LegKind) => void
   onFechas: () => void
   onClose: () => void
   onGuardar: (cambios: { arrival?: { time: string; pointId?: string | null }; departure?: { time: string; pointId?: string | null }; medio?: string }, cambiosDeVuelo: CambioDeVuelo[]) => void
@@ -50,6 +65,14 @@ export function HojaVueloDelAdmin({
   const setLegOtraHora = useRouteStore((s) => s.setLegOtraHora)
   const setCuentasEntre = useRouteStore((s) => s.setCuentasEntre)
   const setPagadoPorDe = useRouteStore((s) => s.setPagadoPorDe)
+  const tripId = useSyncStore((s) => s.activeTripId)
+  const yoId = useViajeCompartido((s) => s.gente.find((p) => p.esYo)?.id ?? null)
+  const ponerBillete = useBilleteStore((s) => s.poner)
+  const quitarBillete = useBilleteStore((s) => s.quitar)
+  const bIda = useBillete('arrival', ida.time).billete
+  const bVuelta = useBillete('departure', vuelta.time).billete
+  const billeteDeLa = (leg: LegState) => (leg.kind === 'arrival' ? bIda : bVuelta)
+  const ciudadFuera = ciudadDeSalida(route)
   const principal = ida.mode !== 'coche' ? ida : vuelta
   const noun = legWord(principal.mode).noun
   const dinero = useDineroDeReserva({
@@ -57,10 +80,14 @@ export function HojaVueloDelAdmin({
     pagado: route.pagadoPorDe?.llegada ?? null,
     precio: leerImporte(route.arrivalPrecio) ?? leerImporte(route.departurePrecio),
   })
-  const lado = (leg: LegState): LadoDeHoja => ({
+  const lado = (leg: LegState): LadoDeHoja => {
+    const l = leido && leido.kind === leg.kind ? ladoDesdeBillete(leg, leido.datos, ciudadFuera) : null
+    const b = billeteDeLa(leg)
+    return {
     activo: leg.mode !== 'coche',
-    hora: leg.time,
-    punto: leg.point ? puntoCorto(leg.point) : null,
+    tocado: Boolean(l),
+    hora: l?.hora ?? leg.time,
+    punto: l?.punto ?? (leg.point ? puntoCorto(leg.point) : null),
     fecha: leg.dateIso,
     hecho: leg.done && leg.mode !== 'coche',
     dias: leg.dateIso ? [{ iso: leg.dateIso, texto: fechaLarga(leg.dateIso) }] : [],
@@ -73,19 +100,52 @@ export function HojaVueloDelAdmin({
     extras: leg.mode === 'coche' ? undefined : {
       etiquetaCodigo: legWord(leg.mode).refLabel,
       etiquetaCompania: legWord(leg.mode).companiaLabel,
-      codigo: leg.codigo ?? '',
-      compania: leg.compania ?? '',
-      otroPunto: leg.otroPunto ?? '',
-      otraHora: leg.otraHora,
+      codigo: l?.codigo ?? leg.codigo ?? '',
+      compania: l?.compania ?? leg.compania ?? '',
+      otroPunto: l?.otroPunto ?? leg.otroPunto ?? '',
+      // (10S5) «Sales de» / «Llegas a»: de partida, la ciudad de la primera pantalla y, si solo tiene un aeropuerto (o una estación principal sin duda), entre paréntesis: «Barcelona (El Prat)».
+      otroPuntoPorDefecto: leg.mode === 'avion' ? etiquetaDeCiudadConPunto(ciudadFuera) : leg.mode === 'tren' ? etiquetaDeCiudadConEstacion(ciudadFuera) : ciudadFuera,
+      otraHora: l?.otraHora ?? leg.otraHora,
+      privados: { localizador: l?.localizador ?? b?.localizador ?? '', terminal: l?.terminal ?? b?.terminal ?? '', asiento: l?.asiento ?? b?.asiento ?? '', coche: l?.coche ?? b?.coche ?? '' },
+      conCoche: leg.mode === 'tren' || leg.mode === 'bus',
       icono: iconoDeMedio(leg.mode),
     },
-  })
+  }
+  }
+  const hayCodigo = (leg: LegState) => Boolean((leido && leido.kind === leg.kind && leido.datos.codigo) || billeteDeLa(leg)?.codigo)
+  const leidoAlgo = leido ? Boolean(leido.datos.numero || leido.datos.horaSalida || leido.datos.horaLlegada || leido.datos.localizador || leido.datos.asiento || leido.datos.fuentes.length > 0) : false
   return (
     <HojaDelVuelo
       titulo={`Tu ${noun}`}
       textoGuardar={`Guardar el ${noun}`}
       datos="admin"
       lados={{ ida: lado(ida), vuelta: lado(vuelta) }}
+      aviso={
+        leido ? (
+          <p className="mt-3 rounded-[14px] px-3.5 py-2.5 text-[13px] leading-[1.35]" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.35)', color: INK }} data-billete-leido={leidoAlgo ? 'si' : 'no'}>
+            {leidoAlgo ? 'Hemos leído tu billete. Revisa los datos, cámbialos si hace falta y guarda.' : 'No hemos podido leer los datos de este archivo. Ponlos a mano: el código se guarda igual si lo hemos encontrado.'}
+          </p>
+        ) : undefined
+      }
+      tarjeta={
+        <div className="flex flex-col gap-1" data-mi-vuelo-tarjeta>
+          {([ida, vuelta] as const).filter((leg) => leg.mode !== 'coche' && hayCodigo(leg) && onCambiarArchivo).map((leg) => (
+            <div key={leg.kind} data-tarjeta-de={leg.kind} className="flex items-center justify-between gap-2 text-[13px]" style={{ color: INK }}>
+              <span className="font-semibold">{leg.mode === 'avion' ? 'Tu tarjeta de embarque' : 'Tu billete'} · {leg.kind === 'arrival' ? 'ida' : 'vuelta'}</span>
+              <span className="flex gap-3">
+                <button type="button" onClick={() => onCambiarArchivo?.(leg.kind)} data-billete-cambiar-archivo className="zona-toque underline underline-offset-2">
+                  Cambiar el archivo
+                </button>
+                {billeteDeLa(leg)?.codigo && (
+                  <button type="button" onClick={() => ponerBillete(tripId, leg.kind, { ...billeteDeLa(leg)!, codigo: null })} data-billete-quitar-codigo className="zona-toque underline underline-offset-2" style={{ color: 'oklch(0.52 0.19 25)' }}>
+                    Quitar
+                  </button>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      }
       ladoInicial={ladoInicial === 'arrival' ? 'ida' : 'vuelta'}
       extra={dinero.bloque('vuelo')}
       avisoFechas={
@@ -116,8 +176,26 @@ export function HojaVueloDelAdmin({
           if (leg.mode === 'coche' || !g.puesto) continue
           setLegCodigo(leg.kind, g.codigo)
           setLegCompania(leg.kind, g.compania)
-          setLegOtroPunto(leg.kind, g.otroPunto)
+          // (10S5) Si lo único que hay es la ciudad de partida, no se guarda nada (sale igual en el trayecto): solo se guarda lo que el viajero ha cambiado o un aeropuerto.
+          setLegOtroPunto(leg.kind, g.otroPunto.trim() === ciudadFuera ? '' : g.otroPunto)
           setLegOtraHora(leg.kind, g.otraHora)
+          // (10S5) Lo privado del billete (localizador, terminal, asiento, coche y el código): solo en el móvil de esta persona.
+          const nuevo = leido && leido.kind === leg.kind ? leido.datos : null
+          const previo = billeteDeLa(leg)
+          const codigo = nuevo?.codigo ? { texto: nuevo.codigo.texto, formato: nuevo.codigo.formato, imagen: nuevo.codigo.imagen, dibujo: nuevo.codigo.dibujo ?? null } : (previo?.codigo ?? null)
+          const limpio = (t: string) => t.trim() || null
+          if (limpio(g.localizador) || limpio(g.terminal) || limpio(g.asiento) || limpio(g.coche) || codigo) {
+            ponerBillete(tripId, leg.kind, {
+              horaRoma: g.hora,
+              localizador: limpio(g.localizador),
+              terminal: limpio(g.terminal),
+              asiento: limpio(g.asiento),
+              coche: limpio(g.coche),
+              codigo,
+              codigoFuera: nuevo ? ladoDesdeBillete(leg, nuevo, ciudadFuera).codigoFuera : (previo?.codigoFuera ?? null),
+              dueno: yoId,
+            })
+          } else if (previo) quitarBillete(tripId, leg.kind)
         }
         const total = dinero.precio.importe
         setLegPrecio(principal.kind, total)
@@ -137,11 +215,38 @@ export function HojaVueloDelAdmin({
   )
 }
 
-/** Una mitad en la tarjeta guardada (Design 06): «IDA · Jueves 29 octubre · Cambiar», «Llegas a las» / 11:20 / «Aeropuerto de Fiumicino · Roma». */
-function MitadGuardada({ leg, ciudad, onCambiar, onQuitar }: { leg: LegState; ciudad: string; onCambiar: () => void; onQuitar: () => void }) {
+/**
+ * Una mitad hecha (vuelo, tren, autobús o barco) con SU billete (10S5 §4; `Piezas/Billete Reservas` B1-B4): las horas grandes, el trayecto con paréntesis («Barcelona → Roma (Fiumicino)»), los datos que haya en su fila,
+ * el código en pequeño con «Toca para ampliar» (a pantalla completa en blanco) o, si aún no hay, [Añadir tarjeta de embarque] / [Añadir tu billete].
+ */
+function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarjeta }: { route: Route; leg: LegState; ciudad: string; onCambiar: () => void; onQuitar: () => void; onAnadirTarjeta: (kind: LegKind) => void }) {
+  const esIda = leg.kind === 'arrival'
+  const { billete } = useBillete(leg.kind, leg.time)
+  const [ampliado, setAmpliado] = useState(false)
+  const ciudadFuera = ciudadDeSalida(route)
+  const trayecto = trayectoDeLaMitad({ kind: esIda ? 'llegada' : 'vuelta', ciudadFuera, otroPunto: leg.otroPunto, ciudadRoma: ciudad, puntoRoma: leg.point })
+  const horaFuera = leg.otraHora
+  const duracion = useDuracionBillete({ llega: esIda, horaRoma: leg.time, horaFuera, fecha: leg.dateIso, avion: leg.mode === 'avion', ciudadFuera, iataFuera: billete?.codigoFuera ?? null })
+  const fecha = leg.dateIso ? capitalizar(fechaLarga(leg.dateIso)) : `Día ${leg.dayNumber}`
+  const filas = filasDelBillete(leg, billete, duracion)
+  const salida = esIda ? horaFuera : leg.time
+  const pie = [filas.find((f) => f.clave === 'asiento')?.texto, filas.find((f) => f.clave === 'numero')?.texto].filter(Boolean).join(' · ')
+  return (
+    <>
+      <TarjetaBillete leg={leg} trayecto={trayecto} fecha={fecha} billete={billete} duracion={duracion} horaFuera={horaFuera} onCambiar={onCambiar} onQuitar={onQuitar} onAnadirTarjeta={() => onAnadirTarjeta(leg.kind)} onAmpliar={() => setAmpliado(true)} />
+      {ampliado && billete?.codigo && (
+        <CodigoPantallaCompleta codigo={billete.codigo} titulo={esIda ? `${ciudadFuera} → ${ciudad}` : `${ciudad} → ${ciudadFuera}`} cuando={[diaEntero(leg.dateIso), salida].filter(Boolean).join(' · ')} pie={pie} onClose={() => setAmpliado(false)} />
+      )}
+    </>
+  )
+}
+
+/** Una mitad en la tarjeta guardada: con billete (avión, tren, autobús, barco), o la línea de coche, o «Falta la ida». */
+function MitadGuardada({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarjeta }: { route: Route; leg: LegState; ciudad: string; onCambiar: () => void; onQuitar: () => void; onAnadirTarjeta: (kind: LegKind) => void }) {
   const esIda = leg.kind === 'arrival'
   const fecha = leg.dateIso ? capitalizar(fechaLarga(leg.dateIso)) : `Día ${leg.dayNumber}`
   const coche = leg.mode === 'coche'
+  if (leg.done && !coche) return <MitadConBillete route={route} leg={leg} ciudad={ciudad} onCambiar={onCambiar} onQuitar={onQuitar} onAnadirTarjeta={onAnadirTarjeta} />
   return (
     <div data-mitad={leg.kind} data-mitad-hecha={leg.done ? '1' : '0'} className="mx-3.5 mb-3 flex flex-col gap-1 rounded-[18px] px-3.5 pb-3.5 pt-3" style={{ background: '#FBF1D8', border: '1px solid rgba(181,138,46,.3)' }}>
       <div className="flex items-center justify-between gap-2">
@@ -154,20 +259,10 @@ function MitadGuardada({ leg, ciudad, onCambiar, onQuitar }: { leg: LegState; ci
             {fecha}
           </span>
         </span>
-        {!coche && <CambiarBoton onClick={onCambiar} texto={leg.done ? 'Cambiar' : 'Añadir'} />}
+        {!coche && <CambiarBoton onClick={onCambiar} texto="Añadir" />}
       </div>
       {coche ? (
         <span className="text-[14px] text-text/70">{legLine(leg)}</span>
-      ) : leg.done ? (
-        <>
-          <span className="text-[13px] text-text/60">{esIda ? 'Llegas a las' : 'Sales a las'}</span>
-          <span style={{ font: "400 34px/1 'Instrument Serif',serif" }}>{leg.time}</span>
-          <span className="text-[13px] text-text/60">
-            {leg.point ? `${leg.point.nombre} · ${ciudad}` : ciudad}
-            {leg.codigo ? ` · ${leg.codigo.toUpperCase()}` : ''}
-          </span>
-          <EliminarTexto alinear="derecha" onClick={onQuitar} texto={`Eliminar ${legWord(leg.mode).noun}`} />
-        </>
       ) : (
         <span className="text-[13.5px] text-text/55">{esIda ? 'Falta la ida' : 'Falta la vuelta'}</span>
       )}
@@ -209,6 +304,12 @@ export function LlegadaYVuelta({
   const g = useEntradasDelGrupo()
   // La hoja del vuelo: la ida y la vuelta juntas y UN solo botón «Guardar el vuelo». `vueloAbierto` es la pestaña con la que se abre.
   const [vueloAbierto, setVueloAbierto] = useState<LegKind | null>(null)
+  // (10S5) Añadir el billete: el PDF, la foto o la captura se lee y rellena la hoja del vuelo para que el viajero la revise.
+  const archivoRef = useRef<HTMLInputElement>(null)
+  const archivoDe = useRef<LegKind>('arrival')
+  const [leyendo, setLeyendo] = useState<LegKind | null>(null)
+  const [lecturas, setLecturas] = useState(0)
+  const [leido, setLeido] = useState<{ kind: LegKind; datos: DatosBilleteLeido } | null>(null)
   const ida = legOf(route, info, 'arrival')
   const vuelta = legOf(route, info, 'departure')
   const origen = route.origin
@@ -239,7 +340,29 @@ export function LlegadaYVuelta({
   }, [abierto])
 
   const abrirHoja = (mitad: LegKind) => {
+    setLeido(null)
     setVueloAbierto(mitad)
+  }
+  const pedirArchivo = (kind: LegKind) => {
+    archivoDe.current = kind
+    if (archivoRef.current) {
+      archivoRef.current.value = ''
+      archivoRef.current.click()
+    }
+  }
+  const alElegirArchivo = async (archivo: File | undefined) => {
+    if (!archivo) return
+    const kind = archivoDe.current
+    const leg = kind === 'arrival' ? ida : vuelta
+    setLeyendo(kind)
+    try {
+      const datos = await leerBillete(archivo, { modo: leg.mode === 'coche' ? undefined : leg.mode })
+      setLeido({ kind, datos })
+      setLecturas((n) => n + 1)
+    } finally {
+      setLeyendo(null)
+    }
+    setVueloAbierto(kind)
   }
   const primeraLibre: LegKind = !ida.done && ida.mode !== 'coche' ? 'arrival' : !vuelta.done && vuelta.mode !== 'coche' ? 'departure' : ida.mode !== 'coche' ? 'arrival' : 'departure'
 
@@ -286,8 +409,8 @@ export function LlegadaYVuelta({
             </div>
             {desplegado && (
               <>
-            <MitadGuardada leg={ida} ciudad={ciudad} onCambiar={() => abrirHoja('arrival')} onQuitar={() => quitar(ida)} />
-            <MitadGuardada leg={vuelta} ciudad={ciudad} onCambiar={() => abrirHoja('departure')} onQuitar={() => quitar(vuelta)} />
+            <MitadGuardada route={route} leg={ida} ciudad={ciudad} onCambiar={() => abrirHoja('arrival')} onQuitar={() => quitar(ida)} onAnadirTarjeta={pedirArchivo} />
+            <MitadGuardada route={route} leg={vuelta} ciudad={ciudad} onCambiar={() => abrirHoja('departure')} onQuitar={() => quitar(vuelta)} onAnadirTarjeta={pedirArchivo} />
             {hayVuelo && (
               <div className="mx-3.5 mb-3 flex items-center justify-between gap-2 rounded-[14px] py-1 pl-3.5 pr-1.5" style={{ background: '#FBF1D8', border: '1px solid rgba(181,138,46,.3)' }} data-precio-vuelo>
                 <span className="text-[14px] font-medium" data-precio-vuelo-texto>
@@ -313,20 +436,33 @@ export function LlegadaYVuelta({
           </>
         )}
       </BloqueShell>
+      <input ref={archivoRef} type="file" accept="application/pdf,image/*" hidden data-billete-archivo onChange={(e) => void alElegirArchivo(e.target.files?.[0])} />
+      {leyendo && (
+        <div role="status" data-billete-leyendo className="fixed inset-x-0 bottom-24 z-[120] mx-auto w-fit max-w-[88vw] rounded-full px-5 py-3 text-[14px] font-semibold" style={{ background: '#1C2230', color: '#F3D88F' }}>
+          Leyendo tu {leyendo === 'arrival' ? (ida.mode === 'avion' ? 'tarjeta de embarque' : 'billete') : vuelta.mode === 'avion' ? 'tarjeta de embarque' : 'billete'}…
+        </div>
+      )}
       {vueloAbierto && (
         <HojaVueloDelAdmin
+          key={`hoja-${lecturas}`}
           route={route}
           ida={ida}
           vuelta={vuelta}
           ladoInicial={vueloAbierto}
+          leido={leido}
+          onCambiarArchivo={pedirArchivo}
           onFechas={() => {
             setVueloAbierto(null)
             onFechas()
           }}
-          onClose={() => setVueloAbierto(null)}
+          onClose={() => {
+            setVueloAbierto(null)
+            setLeido(null)
+          }}
           onGuardar={(cambios, cambiosDeVuelo) => {
             guardarVueloDelAdmin(cambios)
             setVueloAbierto(null)
+            setLeido(null)
             onMitad(undefined)
             for (const cambio of cambiosDeVuelo) onCambioDeVuelo(cambio)
           }}

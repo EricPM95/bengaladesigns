@@ -68,13 +68,19 @@ export interface EssentialEntry {
   places: string[]
 }
 
-const WEEKDAY = new Intl.DateTimeFormat('es-ES', { weekday: 'short' })
+const WEEKDAY = new Intl.DateTimeFormat('es-ES', { weekday: 'long' })
 const MONTH = new Intl.DateTimeFormat('es-ES', { month: 'short' })
 
-/** «jue 15 oct». */
+/** (10S5) «jueves 15 oct» (el día entero; en una lista o tarjeta, con `fechaDeLista`: «Jueves 15 oct»). Antes «jue 15 oct». */
 export function shortDateEs(dateIso: string): string {
   const date = new Date(`${dateIso}T00:00:00`)
   return `${WEEKDAY.format(date).replace('.', '')} ${date.getDate()} ${MONTH.format(date).replace('.', '')}`
+}
+
+/** (10S5) «Jueves 15 oct» con la inicial en mayúscula: la fecha de una lista o una tarjeta. */
+export function fechaDeLista(dateIso: string): string {
+  const texto = shortDateEs(dateIso)
+  return `${texto.charAt(0).toUpperCase()}${texto.slice(1)}`
 }
 
 /** La fecha de un día del viaje, si el viaje tiene fechas. */
@@ -83,10 +89,10 @@ export function dateOfDay(route: Route, day: DayPlan): string | null {
   return start ? addDaysToIso(start, day.dayNumber - 1) : null
 }
 
-/** «jue 15 oct» (sin fechas, «Día 2»): con fechas el día se llama por su fecha, nunca «Día n» (tanda 6z3, punto 5). */
+/** «Jueves 15 oct» (10S5; sin fechas, «Día 2»): con fechas el día se llama por su fecha, nunca «Día n» (tanda 6z3, punto 5). */
 export function dayLineOf(route: Route, day: DayPlan): string {
   const dateIso = dateOfDay(route, day)
-  return dateIso ? shortDateEs(dateIso) : `Día ${day.dayNumber}`
+  return dateIso ? fechaDeLista(dateIso) : `Día ${day.dayNumber}`
 }
 
 /** El día del viaje que cae en esa fecha (null si está fuera del viaje o no hay fechas). */
@@ -175,7 +181,8 @@ export function buildEntradasBloque(
       placeNames,
       isFreeTour,
       day: index === conReserva ? (reservaDay ?? day) : day,
-      reservation: index === conReserva ? reservation : null,
+      // (10S5) Un sitio con entrada DOS veces en la ruta: la entrada sale reservada en las dos paradas (el viajero quita la que no quiera).
+      reservation,
       inRoute: true,
     }))
   }
@@ -214,10 +221,10 @@ export function hasEnoughDaysForExcursions(route: Route, fromDays: number | null
   return route.days.filter((day) => !day.isReturnLeg).length >= fromDays
 }
 
-/** La línea de una reservada: «Reservada ✓ · Día 2 · jue 15 oct · 10:00». */
+/** La línea de una reservada: «Reservada ✓ · Día 2 · Jueves 15 oct · 10:00». */
 export function reservedLine(route: Route, reservation: Reservation): string {
   const day = dayOfReservation(route, reservation)
-  const where = day ? dayLineOf(route, day) : reservation.dateIso ? shortDateEs(reservation.dateIso) : null
+  const where = day ? dayLineOf(route, day) : reservation.dateIso ? fechaDeLista(reservation.dateIso) : null
   return ['Reservada ✓', where, reservation.time].filter(Boolean).join(' · ')
 }
 
@@ -253,6 +260,36 @@ export function newCampaignCode(): string {
  * saliendo en Reservas.
  */
 export function placeReservedEntrance(route: Route, reservation: Reservation): Route {
+  return conRepetidasMarcadas(placeReservedEntranceUna(route, reservation), reservation)
+}
+
+/**
+ * (Tanda 10S5, apartado 1) Un sitio con entrada que va DOS veces en la ruta (la Cúpula el jueves con [Añadir otra reserva] y otra vez el viernes): su entrada sale reservada en las dos paradas. La que fija la reserva (su día y su hora)
+ * ya la marca `placeReservedEntranceUna`; aquí se marcan las demás paradas del mismo sitio (`reservedId`), SIN tocar su día ni su hora. Con la reserva fuera de la ruta o sin sitio, no cambia nada.
+ */
+export function conRepetidasMarcadas(route: Route, reservation: Reservation): Route {
+  if (reservation.kind !== 'entrada' || reservation.fueraDeRuta || reservation.noMueve || reservation.placeNames.length === 0 || reservation.refId.startsWith('otra:') || reservation.refId === 'Free Tour') return route
+  // Los nombres de las paradas que la reserva YA fija (la de su día): solo las demás paradas con ESE MISMO nombre son el sitio repetido. (Una entrada que cubre varios sitios —Coliseo, Foro y Palatino— fija una sola parada.)
+  const fijados = new Set(route.days.flatMap((day) => day.stops.filter((stop) => stop.reservedId === reservation.id).map((stop) => stop.name)))
+  if (fijados.size === 0) return route
+  const repetida = (stop: Stop) => fijados.has(stop.name) && !stop.reservedId && !stop.passThrough && !stop.isFreeTour && stop.visitMode !== 'fuera'
+  if (!route.days.some((day) => day.stops.some(repetida))) return route
+  return { ...route, days: route.days.map((day) => ({ ...day, stops: day.stops.map((stop) => (repetida(stop) ? { ...stop, reservedId: reservation.id } : stop)) })) }
+}
+
+/**
+ * (Tanda 10S5, apartado 1) Una parada NUEVA de un sitio cuya entrada ya está reservada en otra parada de la ruta (la Cúpula el viernes, con su entrada ya reservada el jueves): nace marcada con esa reserva, así que la entrada
+ * sale reservada en las dos paradas. Su día y su hora no cambian. Sin otra parada ya fijada por la reserva, no marca nada.
+ */
+export function conSuEntradaReservada(route: Route, reservations: readonly Reservation[], stop: Stop): Stop {
+  if (stop.reservedId || stop.passThrough || stop.isFreeTour || stop.visitMode === 'fuera') return stop
+  const reserva = reservations.find((r) => r.kind === 'entrada' && !r.fueraDeRuta && !r.noMueve && !r.refId.startsWith('otra:') && r.refId !== 'Free Tour' && r.placeNames.includes(stop.name))
+  if (!reserva) return stop
+  if (!route.days.some((day) => day.stops.some((otra) => otra.reservedId === reserva.id && otra.name === stop.name))) return stop
+  return { ...stop, reservedId: reserva.id }
+}
+
+function placeReservedEntranceUna(route: Route, reservation: Reservation): Route {
   if (reservation.fueraDeRuta) return route
   // Ruta a mano (Tanda 6y): la reserva no trae la parada de otro día ni ordena el día por hora; la parada se queda donde la puso el viajero (manualPlan.ts).
   if (isManualRoute(route)) return reservedEntranceInPlace(route, reservation)
@@ -305,6 +342,10 @@ export function placeReservedEntrance(route: Route, reservation: Reservation): R
  * como la puso el viajero.
  */
 export function reservedEntranceInPlace(route: Route, reservation: Reservation, opciones: { conservarHora?: boolean } = {}): Route {
+  return conRepetidasMarcadas(reservedEntranceInPlaceUna(route, reservation, opciones), reservation)
+}
+
+function reservedEntranceInPlaceUna(route: Route, reservation: Reservation, opciones: { conservarHora?: boolean } = {}): Route {
   if (reservation.kind !== 'entrada' || reservation.fueraDeRuta) return route
   const target = dayOfReservation(route, reservation)
   if (!target) return route

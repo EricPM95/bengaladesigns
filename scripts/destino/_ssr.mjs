@@ -61,7 +61,7 @@ export async function prepararSSR(entrada, { piezasFalsas = [] } = {}) {
         },
       })),
     ],
-    loader: { '.svg': 'dataurl', '.png': 'dataurl', '.jpg': 'dataurl', '.jpeg': 'dataurl', '.webp': 'dataurl', '.css': 'empty', '.woff2': 'dataurl' },
+    loader: { '.svg': 'dataurl', '.png': 'dataurl', '.jpg': 'dataurl', '.jpeg': 'dataurl', '.webp': 'dataurl', '.css': 'empty', '.woff2': 'dataurl', '.wasm': 'empty' },
     define: { 'import.meta.env.DEV': 'false', 'import.meta.env.PROD': 'true', 'import.meta.env.MODE': '"test"', 'import.meta.env.VITE_MAPBOX_TOKEN': '""', 'import.meta.env.VITE_SUPABASE_URL': '"http://localhost"', 'import.meta.env.VITE_SUPABASE_ANON_KEY': '"x"', 'import.meta.env': '{}' },
   })
   const M = createRequire(import.meta.url)(bundle)

@@ -7,6 +7,7 @@ import { convertir, leerImporte, precioGuardado, sumar, type Cambio, type Import
 import { buildDestinationSegments } from './destinationSegments'
 import { countryDisplayName } from './readiness'
 import { vistaDeGasto, type GastoCompartido, type VistaDeGasto } from './gastosCompartidos'
+import { tripModes } from './arrivalReturn'
 import { entreDeLoDelAdmin, esSoloDe, reservaEsPersonalSegunModo, type LoSuyoDeCadaUno, type ModoDeLasCuentas } from './loSuyo'
 
 /**
@@ -115,9 +116,18 @@ export interface EntradaPresupuesto {
 }
 
 const TITULOS: Record<BloqueId, string> = { transporte: 'Transporte y alojamiento', ruta: 'Ruta', util: 'Útil para el viaje', extras: 'Extras' }
-const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+/** (10S5) La línea del billete de ida y vuelta: «Vuelo a Roma», «Tren a Roma», «Autobús a Roma», «Barco a Roma» (es el billete entero, ida y vuelta). En coche no hay billete: «Ida a Roma» como siempre. */
+const NOMBRE_DEL_BILLETE: Record<string, string> = { avion: 'Vuelo', tren: 'Tren', bus: 'Autobús', ferry: 'Barco' }
+function nombreDelBillete(route: Route): string {
+  try {
+    return NOMBRE_DEL_BILLETE[tripModes(route).arrival] ?? 'Ida'
+  } catch {
+    return 'Ida'
+  }
+}
 
-/** «Mié 11». */
+/** (10S5) «Miércoles 11»: las fechas van enteras en las listas y las tarjetas (solo los cuadrados de elegir día las llevan cortas). */
 export function diaCorto(dateIso: string): string {
   const fecha = new Date(`${dateIso}T00:00:00`)
   return `${DIAS[fecha.getDay()]} ${fecha.getDate()}`
@@ -155,7 +165,7 @@ export function construirPresupuesto(entrada: EntradaPresupuesto): Presupuesto {
   const ciudad = route.days[0]?.city ?? route.destination
   const suyo = rep?.loSuyo ?? null
   const transporte = sinNulos([
-    delVuelo('llegada', linea('llegada', `Ida a ${ciudad}`, leerImporte(route.arrivalPrecio), { tipo: 'llegada' })),
+    delVuelo('llegada', linea('llegada', `${nombreDelBillete(route)} a ${ciudad}`, leerImporte(route.arrivalPrecio), { tipo: 'llegada' })),
     delVuelo('vuelta', linea('vuelta', `Vuelta a ${route.origin}`, leerImporte(route.departurePrecio), { tipo: 'vuelta' })),
     // (Tanda 10N6 0a-8) Su vuelo y su alojamiento, si tiene los suyos: solo suyos (candado), nunca del grupo.
     ...(rep && suyo?.vuelo?.ida?.precio ? [mio(linea('mi-ida', 'Tu vuelo de ida', suyo.vuelo.ida.precio, { tipo: 'extra', id: 'mi-ida' })!, rep.yoId ? [rep.yoId] : [])] : []),

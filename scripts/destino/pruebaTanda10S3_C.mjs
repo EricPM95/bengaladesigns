@@ -92,7 +92,8 @@ for (const version of ['gratis', 'pago']) {
     debe(v && v.titulo === 'Tu vuelo' && v.guardar === 'Guardar el vuelo', `2 ${version} título`, `título y botón: ${v && v.titulo} / ${v && v.guardar}`)
     debe(v && !/¿De dónde sales/.test(v.texto) && !/Sales a las/.test(v.texto) && !v.raya, `2 ${version} sin caja`, `sigue la caja amarilla de puntos: ${v && v.texto.slice(0, 300)}`)
     debe(v && /Día de llegada/.test(v.texto) && /Sales de/.test(v.texto) && /opcional/.test(v.texto) && /Sale a las · opcional/i.test(v.texto) && /Llegas a/.test(v.texto) && /Llega a las/i.test(v.texto), `2 ${version} ida textos`, `faltan textos de la ida: ${v && v.texto.slice(0, 400)}`)
-    debe(v && v.otroValor === '' && v.otroPlaceholder === '', `2 ${version} ida en blanco`, `«Sales de» no va en blanco (valor «${v && v.otroValor}», ayuda «${v && v.otroPlaceholder}»)`)
+    // antes: «Sales de» en blanco, la app no propone nada → ahora: relleno de partida con la ciudad de la primera pantalla (un solo aeropuerto: «Barcelona (El Prat)») → decisión de Eric (10S5, 30-oct). Sin ayuda escrita dentro (placeholder).
+    debe(v && v.otroValor === 'Barcelona (El Prat)' && v.otroPlaceholder === '', `2 ${version} ida relleno`, `«Sales de» va relleno de partida con «Barcelona (El Prat)» (valor «${v && v.otroValor}», ayuda «${v && v.otroPlaceholder}»)`)
     debe(v && v.punto.length >= 2 && v.punto.every((p) => p.top === v.punto[0].top) && v.punto.some((p) => /Fiumicino/.test(p.t)) && v.punto.some((p) => /Ciampino/.test(p.t)), `2 ${version} ida cuadrados`, `Fiumicino y Ciampino en cuadrados, uno al lado del otro: ${JSON.stringify(v && v.punto)}`)
     debe(v && v.campoOtro && v.campoHoraOtra && v.medio && v.lista && v.campoHora && v.campoOtro.top < v.campoHoraOtra.top && v.campoHoraOtra.top < v.medio.top && v.medio.top < v.lista.top && v.lista.top < v.campoHora.top, `2 ${version} ida orden`, `orden de la ida: Sales de, Sale a las, medio, Llegas a, Llega a las: ${JSON.stringify(v && { o: v.campoOtro, ho: v.campoHoraOtra, m: v.medio, l: v.lista, h: v.campoHora })}`)
     debe(v && v.campoHora && v.campoHora.h >= 52 && v.campoHoraOtra.h >= 52 && v.campoOtro.h >= 52, `2 ${version} ida tamaños`, 'las casillas miden unos 54 px como en Design')
@@ -130,7 +131,8 @@ for (const version of ['gratis', 'pago']) {
     await esp(300)
     v = await vista(a)
     debe(v && /Día de vuelta/.test(v.texto) && /Sales de/.test(v.texto) && /Sale a las/i.test(v.texto) && /Llegas a/.test(v.texto) && /Llega a las · opcional/i.test(v.texto), `2 ${version} vuelta textos`, `faltan textos de la vuelta: ${v && v.texto.slice(0, 400)}`)
-    debe(v && v.otroValor === '' && v.otroPlaceholder === '', `2 ${version} vuelta en blanco`, `«Llegas a» no va en blanco (${v && v.otroValor})`)
+    // antes: en blanco → ahora: relleno de partida (10S5, decisión de Eric, 30-oct).
+    debe(v && v.otroValor === 'Barcelona (El Prat)' && v.otroPlaceholder === '', `2 ${version} vuelta relleno`, `«Llegas a» va relleno de partida (${v && v.otroValor})`)
     debe(v && v.lista && v.campoHora && v.medio && v.campoOtro && v.campoHoraOtra && v.lista.top < v.campoHora.top && v.campoHora.top < v.medio.top && v.medio.top < v.campoOtro.top && v.campoOtro.top < v.campoHoraOtra.top, `2 ${version} vuelta orden`, `orden de la vuelta: Sales de, Sale a las, medio, Llegas a, Llega a las: ${JSON.stringify(v && { l: v.lista, h: v.campoHora, m: v.medio, o: v.campoOtro, ho: v.campoHoraOtra })}`)
     debe(v && (version === 'gratis' ? v.pase && v.campoHora && v.pase.top >= v.campoHora.bottom && v.medio && v.pase.bottom <= v.medio.top : v.pase === null), `2 ${version} vuelta pase`, `la línea del pase ${version === 'gratis' ? 'sale debajo de «Sale a las» (antes del medio)' : 'no sale con pase'}: ${JSON.stringify(v && v.pase)}`)
     debe(v && v.sinSalirse, `2 ${version} vuelta sin salirse`, 'algo de la vuelta se sale de la pantalla')

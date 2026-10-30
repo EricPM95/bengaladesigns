@@ -65,7 +65,7 @@ for (let n = 1; n <= 14; n++) {
     // También con solo el primer día del viaje (yyyy-mm-dd) como fuente.
     debe(nombreDeDia[f](INICIO, n) === con, '2 puras con fechas', `${f}(inicio, ${n}) ≠ ${f}(ruta, ${n})`)
   }
-  debe(nombreDeDia.diaCorto(conFechas, n) === `${SEMANA[dow]} ${dd}`, '4 ficha', `diaCorto(${n}) = «${nombreDeDia.diaCorto(conFechas, n)}» y debería ser «${SEMANA[dow]} ${dd}»`)
+  debe(nombreDeDia.diaCorto(conFechas, n) === `${SEMANA_LARGA[dow].charAt(0).toUpperCase()}${SEMANA_LARGA[dow].slice(1)} ${dd}`, '4 ficha', `diaCorto(${n}) = «${nombreDeDia.diaCorto(conFechas, n)}» y debería ser el día entero (10S5: antes «lun 13» → ahora «Lunes 13» → decisión de Eric, 30-oct)`)
   debe(nombreDeDia.diaProsa(conFechas, n) === `${SEMANA_LARGA[dow]} ${dd}`, '4 ficha', `diaProsa(${n}) = «${nombreDeDia.diaProsa(conFechas, n)}»`)
   const ficha = nombreDeDia.fichaDelDia(conFechas, n)
   debe(ficha && ficha.semana === SEMANA[dow].toUpperCase() && ficha.numero === String(dd), '4 ficha', `fichaDelDia(${n}) = ${JSON.stringify(ficha)}`)

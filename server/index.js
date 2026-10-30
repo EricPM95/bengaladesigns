@@ -57,6 +57,8 @@ import { crearServicioLogros } from './logros/servicio.js'
 import { repoSupabase } from './logros/repo.js'
 import { registrarRutasLogros, logrosActivos, esAdmin as esAdminLogros } from './logros/rutas.js'
 import { registrarRutaErrores } from './errores.js'
+import { registrarLeerBillete } from './billete/lectura.js'
+import { registrarRutaPropuestasSitio } from './propuestasSitio.js'
 import { cobroListo, crearServicioPagos, modoDePago, pasarelaDeMentira, pasarelaStripe, registrarRutasPagos } from './pagos.js'
 import { precioTienda } from '../shared/dinero/formato.js'
 import { compareInside } from './engine/insideSwitch.js'
@@ -1130,6 +1132,9 @@ ${text.slice(0, 20000)}` : intro })
   }
 })
 
+// (10S5) Leer un billete (tarjeta de embarque o billete de tren, autobús, barco): ver server/billete/lectura.js. No guarda nada.
+registrarLeerBillete(app, { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError })
+
 // ── Ventas del afiliado unidas a un viaje (PARA_CODE_RESERVAS, 5) ────────────────────────────────────────────
 //
 // Cada viaje lleva un código de campaña al azar en todos los enlaces de «Reservar». Cuando llega una venta con ese código (de la API o del informe
@@ -1145,6 +1150,8 @@ const CAMPAIGN_PATTERN = /^(app|v)-[A-Z0-9]{5}$/
 
 // (10S2) «Algo ha ido mal»: la app avisa de qué ha fallado y en qué pantalla (sin datos privados); ver server/errores.js y la migración 0068.
 registrarRutaErrores(app, { servicio: salesAdmin })
+// (10S5) «Propón un sitio»: el viajero propone un sitio que no está en JUTRIP; se guarda sin datos privados (server/propuestasSitio.js, migración 0069).
+registrarRutaPropuestasSitio(app, { servicio: salesAdmin })
 
 app.post('/api/sales/ingest', async (req, res) => {
   const secret = process.env.SALES_INGEST_SECRET

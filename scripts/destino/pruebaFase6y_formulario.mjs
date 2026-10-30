@@ -126,7 +126,8 @@ const cuenta0 = () => llamadas.length
 }
 
 // ── 3 y 4. La ruta a mano ──
-const NOMBRES = { '2025-10-13': ['lun 13 oct', 'mar 14 oct', 'mié 15 oct', 'jue 16 oct', 'vie 17 oct'], '2025-10-30': ['jue 30 oct', 'vie 31 oct', 'sáb 1 nov', 'dom 2 nov', 'lun 3 nov'] }
+// 10S5 (Eric, 30-oct): antes «lun 13 oct» → ahora el día entero → las fechas van enteras en listas y tarjetas.
+const NOMBRES = { '2025-10-13': ['Lunes 13 oct', 'Martes 14 oct', 'Miércoles 15 oct', 'Jueves 16 oct', 'Viernes 17 oct'], '2025-10-30': ['Jueves 30 oct', 'Viernes 31 oct', 'Sábado 1 nov', 'Domingo 2 nov', 'Lunes 3 nov'] }
 const place = { name: 'Roma', fullName: 'Roma, Italia', coordinates: { lat: 41.9, lng: 12.5 }, countryCode: 'IT' }
 const estadoTransporte = { archetype: 'base_y_excursiones', is_region: false, transport_option: { id: 'flight', title: 'Avión' }, vehicle_type: null, vehicle_ownership: null, accommodation_mode: null, travel_mode: null, pase_dominante: null, vehiculo_altamente_recomendado: false, travel_pass_confirmed: null }
 const respuestas = (n, inicio, companion = 'couple') => ({
@@ -177,7 +178,7 @@ for (const n of [2, 3, 4, 5]) {
   // Los días salen de las fechas si el viaje las tiene, aunque `days` diga otra cosa; 14 días como máximo y 1 como mínimo.
   debe(manualTripDays({ days: 7, dateRange: { start: '2025-10-13', end: '2025-10-15' } }) === 3, '3 días', 'con fechas, los días no son los de las fechas')
   debe(manualTripDays({ days: 40 }) === 14 && manualTripDays({ days: 0 }) === 1 && manualTripDays({ days: 4 }) === 4, '3 días', 'los días no van de 1 a 14')
-  debe(manualDayName(null, 3) === 'Día 3' && manualDayName('2025-10-13', 1) === 'lun 13 oct', '3 nombres', 'manualDayName no da «Día n» sin fechas y «lun 13 oct» con ellas')
+  debe(manualDayName(null, 3) === 'Día 3' && manualDayName('2025-10-13', 1) === 'Lunes 13 oct', '3 nombres', 'manualDayName no da «Día n» sin fechas y «Lunes 13 oct» con ellas (10S5: antes «lun 13 oct» → ahora el día entero → decisión de Eric, 30-oct)')
   // Sin país en el destino, los días van sin país (no se inventa uno).
   const sinPais = buildManualRoute({ destination: 'Roma', answers: respuestas(2, null), transportContext: transportContextOf(estadoTransporte) })
   debe(sinPais.days.every((d) => d.countryCode === null), '3 ruta a mano', 'sin país en el destino, los días llevan país')
@@ -199,10 +200,10 @@ for (const n of [2, 3, 4, 5]) {
   debe(useRouteStore.getState().route.days[0].title === 'Mi día de museos' && useRouteStore.getState().route.days[0].curatedTitle === 'Mi día de museos', '3 nombres', 'un día de la ruta a mano no se puede renombrar')
   useRouteStore.getState().setRouteDateRange({ start: '2025-10-13', end: '2025-10-15' })
   let titulos = useRouteStore.getState().route.days.map((d) => d.title)
-  debe(JSON.stringify(titulos) === JSON.stringify(['Mi día de museos', 'mar 14 oct', 'mié 15 oct']), '3 nombres', `al poner fechas, los días sin renombrar no pasan a su fecha y el renombrado se queda: ${titulos}`)
+  debe(JSON.stringify(titulos) === JSON.stringify(['Mi día de museos', 'Martes 14 oct', 'Miércoles 15 oct']), '3 nombres', `al poner fechas, los días sin renombrar no pasan a su fecha y el renombrado se queda: ${titulos}`)
   useRouteStore.getState().setRouteDateRange({ start: '2025-10-20', end: '2025-10-22' })
   titulos = useRouteStore.getState().route.days.map((d) => d.title)
-  debe(JSON.stringify(titulos) === JSON.stringify(['Mi día de museos', 'mar 21 oct', 'mié 22 oct']), '3 nombres', `al cambiar las fechas, los días no siguen a las fechas nuevas: ${titulos}`)
+  debe(JSON.stringify(titulos) === JSON.stringify(['Mi día de museos', 'Martes 21 oct', 'Miércoles 22 oct']), '3 nombres', `al cambiar las fechas, los días no siguen a las fechas nuevas: ${titulos}`)
   useRouteStore.getState().setRouteDateRange(undefined)
   titulos = useRouteStore.getState().route.days.map((d) => d.title)
   debe(JSON.stringify(titulos) === JSON.stringify(['Mi día de museos', 'Día 2', 'Día 3']), '3 nombres', `al quitar las fechas, los días no vuelven a «Día n»: ${titulos}`)

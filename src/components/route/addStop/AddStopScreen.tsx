@@ -17,6 +17,12 @@ import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 import { alDia, diaCorto } from '../../../lib/nombreDeDia'
 import { Icono } from '../../ui/Icono'
+import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
+import { lineaDeSitio, sinLosNuestros, useSitiosNuestros } from '../../../lib/useSitiosNuestros'
+import { stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
+import { normalizarTexto } from '../../../lib/busqueda'
+import { FilaSitioNuestro, TituloOtrosSitios } from './FilaSitioNuestro'
+import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 
 /** Radio de búsqueda de categorías/bbox del buscador alrededor del centro del destino del día. */
 const CITY_SEARCH_RADIUS_METERS = 6000
@@ -30,6 +36,8 @@ interface PoiCandidate {
   photoUrl: string
   rating: number
   reviewCount: number
+  /** (10S5) Si es un sitio NUESTRO (con su horario, entrada e historia), no uno del mapa. */
+  place?: DestinationPlace
 }
 
 interface AddStopScreenProps {
@@ -76,6 +84,20 @@ function candidateFromSearchResult(result: AttractionSearchResult): PoiCandidate
     photoUrl: result.photoUrl,
     rating,
     reviewCount,
+  }
+}
+
+function candidateFromPlace(place: DestinationPlace, photoUrl: string | null): PoiCandidate {
+  return {
+    id: `nuestro-${normalizarTexto(place.name).replace(/\s+/g, '-')}`,
+    name: place.name,
+    address: place.zone_label ?? '',
+    coordinates: place.coordinates,
+    categoryLabel: place.type ?? 'Lugar',
+    photoUrl: photoUrl ?? '',
+    rating: 0,
+    reviewCount: 0,
+    place,
   }
 }
 
@@ -163,6 +185,7 @@ export function AddStopScreen({
   onPick,
   onClose,
 }: AddStopScreenProps) {
+  const huecoAlFinal = useHuecoAlFinal(24) // (10S5) los botones flotantes no tapan lo último de la lista
   const [query, setQuery] = useState('')
   const [searching, setSearching] = useState(false)
   const [searchResults, setSearchResults] = useState<PoiCandidate[] | null>(null)
@@ -179,6 +202,10 @@ export function AddStopScreen({
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   const stopEntries = useMemo(() => buildRouteStopEntries(route), [route])
+  // (10S5) Primero NUESTROS sitios (foto, horario, entrada, historia); debajo, «Otros sitios» del mapa.
+  const sitios = useSitiosNuestros(route.destination, city, query, open)
+  const nuestrosCandidatos = useMemo(() => sitios.nuestros.map((place) => candidateFromPlace(place, sitios.foto(place))), [sitios])
+  const otrosDelMapa = useMemo(() => sinLosNuestros(searchResults ?? [], sitios.nuestros), [searchResults, sitios.nuestros])
 
   useEffect(() => {
     if (!open) return
@@ -285,7 +312,7 @@ export function AddStopScreen({
   }, [activePois, anchor])
 
   const markers: StopsMapMarker[] = useMemo(() => {
-    const poiMarkers: StopsMapMarker[] = (query.trim() ? (searchResults ?? []) : activePois).map((candidate) => ({
+    const poiMarkers: StopsMapMarker[] = (query.trim() ? [...nuestrosCandidatos, ...otrosDelMapa] : activePois).map((candidate) => ({
       id: `poi-${candidate.id}`,
       name: candidate.name,
       coordinates: candidate.coordinates,
@@ -296,7 +323,7 @@ export function AddStopScreen({
       photoUrl: candidate.photoUrl,
     }))
     return [...dayMarkers, ...poiMarkers]
-  }, [dayMarkers, activePois, searchResults, query, stopEntries])
+  }, [dayMarkers, activePois, nuestrosCandidatos, otrosDelMapa, query, stopEntries])
 
   const selectCandidate = (candidate: PoiCandidate) => {
     setSelected(candidate)
@@ -306,6 +333,12 @@ export function AddStopScreen({
   const openDetail = (candidate: PoiCandidate) => {
     setSelected(candidate)
     setDetailOpen(true)
+    // (10S5) Un sitio nuestro ya trae su ficha: no se pide nada fuera.
+    if (candidate.place) {
+      setPoiContent(null)
+      setPoiContentLoading(false)
+      return
+    }
     setPoiContentLoading(true)
     fetchPoiContent(candidate.name, city).then((content) => {
       setPoiContent(content)
@@ -314,14 +347,14 @@ export function AddStopScreen({
   }
 
   const addCandidate = (candidate: PoiCandidate) => {
-    onPick(stopFromCandidate(candidate))
+    onPick(candidate.place ? stopFromPlace(candidate.place, candidate.photoUrl) : stopFromCandidate(candidate))
   }
 
   if (!open) return null
 
   const title = beforeStopName && afterStopName ? `Entre ${beforeStopName} y ${afterStopName}` : beforeStopName ? `Después de ${beforeStopName}` : afterStopName ? `Antes de ${afterStopName}` : diaCorto(route, dayNumber)
 
-  const listToShow = query.trim() ? (searchResults ?? []) : nearbySorted
+  const listToShow = query.trim() ? otrosDelMapa : nearbySorted
   const anyCategoryLoading = activeFilters.some((id) => categoryLoading.has(id))
 
   // En el body y por encima de todo (menú de arriba y barra flotante incluidos), con su cruz para cerrar (paso 6.4).
@@ -404,9 +437,16 @@ export function AddStopScreen({
           {/* Mini-ficha flotante al seleccionar un POI */}
           {selected && !detailOpen && (
             <div className="absolute inset-x-3 bottom-3 z-10 flex gap-3 rounded-xl bg-bg-card p-3 shadow-lg">
-              <img src={selected.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
+              {selected.photoUrl ? <img src={selected.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" /> : <span aria-hidden="true" className="h-16 w-16 shrink-0 rounded-lg bg-bg-hover" />}
               <div className="min-w-0 flex-1 space-y-1">
                 <p className="truncate text-small font-semibold text-text">{selected.name}</p>
+                {selected.place ? (
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-caption text-text-soft">
+                    <span>{formatDuration(selected.place.duration_min ?? 60)}</span>
+                    <span>·</span>
+                    <span className="truncate">{lineaDeSitio(selected.place)}</span>
+                  </div>
+                ) : (
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-caption text-text-soft">
                   <span className="flex items-center gap-0.5">
                     <StarIcon />
@@ -417,6 +457,7 @@ export function AddStopScreen({
                   <span>·</span>
                   <span>Acceso libre</span>
                 </div>
+                )}
                 <div className="flex gap-2 pt-1">
                   <button
                     type="button"
@@ -453,7 +494,7 @@ export function AddStopScreen({
 
         {/* Panel inferior */}
         <div className="flex-1 overflow-y-auto bg-bg-card">
-          <div className="mx-auto w-full max-w-lg px-4 pb-6 pt-2">
+          <div className="mx-auto w-full max-w-lg px-4 pt-2" style={{ paddingBottom: huecoAlFinal }}>
             {/* (Tanda 10N §11) El estilo de elegir una cosa u otra de toda la app. */}
             <div className="mb-3">
               <InterruptorElegir
@@ -488,9 +529,24 @@ export function AddStopScreen({
                     Buscando lugares cerca...
                   </p>
                 )}
-                {query.trim() && !searching && listToShow.length === 0 && (
+                {query.trim() && !searching && listToShow.length === 0 && nuestrosCandidatos.length === 0 && (
                   <p className="py-6 text-center text-small text-text-soft">No hemos encontrado ese lugar. Prueba con otro nombre.</p>
                 )}
+
+                {/* (10S5) Primero, NUESTROS sitios: con su foto, horario, entrada e historia. */}
+                {query.trim() &&
+                  nuestrosCandidatos.map((candidate) => (
+                    <FilaSitioNuestro
+                      key={candidate.id}
+                      place={candidate.place!}
+                      foto={candidate.photoUrl || null}
+                      activa={selected?.id === candidate.id}
+                      yaEnRuta={isNameAlreadyInRoute(candidate.name, stopEntries)}
+                      onClick={() => selectCandidate(candidate)}
+                    />
+                  ))}
+                {/* Y debajo, con su título, lo del mapa. */}
+                {query.trim() && listToShow.length > 0 && <TituloOtrosSitios />}
 
                 {listToShow.map((candidate) => {
                   const alreadyInRoute = isNameAlreadyInRoute(candidate.name, stopEntries)
@@ -545,12 +601,12 @@ export function AddStopScreen({
                 ? {
                     id: selected.id,
                     name: selected.name,
-                    category: poiContent?.category ?? selected.categoryLabel,
-                    hours: poiContent?.hoursShort ?? null,
-                    durationMinutes: poiContent?.visitDurationMin ?? estimatedVisitMinutes(selected.categoryLabel),
+                    category: selected.place ? (selected.place.type ?? selected.categoryLabel) : (poiContent?.category ?? selected.categoryLabel),
+                    hours: selected.place ? selected.place.schedule : (poiContent?.hoursShort ?? null),
+                    durationMinutes: selected.place ? (selected.place.duration_min ?? 60) : (poiContent?.visitDurationMin ?? estimatedVisitMinutes(selected.categoryLabel)),
                     photoUrl: selected.photoUrl,
-                    description: poiContent?.summary ?? '',
-                    tips: poiContent?.tips ?? [],
+                    description: selected.place ? (selected.place.por_que_recomendamos ?? '') : (poiContent?.summary ?? ''),
+                    tips: selected.place ? [] : (poiContent?.tips ?? []),
                     purchase: null,
                   }
                 : null
@@ -560,7 +616,7 @@ export function AddStopScreen({
             dateIso={null}
             dayStops={dayMarkers.map((marker): DayStopRef => ({ id: marker.id, name: marker.name, coordinates: marker.coordinates, photoUrl: marker.photoUrl }))}
             isAnchor={false}
-            externalContent={{ description: poiContent ? poiContentToStopDescription(poiContent) : null, loading: poiContentLoading }}
+            externalContent={{ description: selected.place ? { description: selected.place.por_que_recomendamos ?? '', whatYoullSee: '', whyRecommended: '', address: selected.place.address ?? null, officialWebsite: null, hoursDetail: selected.place.hours_card ?? selected.place.schedule, tips: [] } : poiContent ? poiContentToStopDescription(poiContent) : null, loading: selected.place ? false : poiContentLoading }}
             footerAction={{ label: `Añadir ${alDia(route, dayNumber)} →`, onClick: () => addCandidate(selected) }}
             onClose={() => setDetailOpen(false)}
           />

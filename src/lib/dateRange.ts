@@ -72,6 +72,15 @@ export function formatWeekdayAbbrEs(dateIso: string): string {
   return WEEKDAY_ABBR_FORMAT.format(new Date(`${dateIso}T00:00:00`)).replace('.', '').toUpperCase()
 }
 
+const WEEKDAY_LONG_FORMAT = new Intl.DateTimeFormat('es', { weekday: 'long' })
+
+/** (10S5) "Martes 1 Sep": la fecha ENTERA para una lista o una tarjeta (el día de la semana sin abreviar). Los cuadrados de elegir día siguen cortos. */
+export function formatFechaListaEs(dateIso: string): string {
+  const date = new Date(`${dateIso}T00:00:00`)
+  const month = capitalize(MONTH_ABBR_FORMAT.format(date).replace('.', ''))
+  return `${capitalize(WEEKDAY_LONG_FORMAT.format(date))} ${date.getDate()} ${month}`
+}
+
 /** "Mar, 1 Sep" — para la fila de la lista de días en la pestaña DIAS. */
 export function formatShortDateEs(dateIso: string): string {
   const date = new Date(`${dateIso}T00:00:00`)

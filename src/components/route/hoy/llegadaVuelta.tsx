@@ -15,6 +15,7 @@ import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojam
 import { Icono } from '../../ui/Icono'
 import { useAlojamientoDelViaje } from '../alojamiento/useAlojamientoDelViaje'
 import { CajaBlanca, ojoMono } from './piezas'
+import { BilleteEnHoy } from './BilleteEnHoy'
 
 /**
  * LA LLEGADA Y LA VUELTA EN HOY (Tanda 7, punto 15; solo de pago). Tres piezas y una hoja:
@@ -132,6 +133,7 @@ export function TarjetaLlegadaHoy({ route, mitad, onAbrir }: { route: Route; mit
         {tituloDeLlegada(mitad.point)}
       </span>
       <TarjetaLlegadaDias billete={mitad.billete} point={mitad.point} origen={mitad.origen} destino={mitad.destino} onOpen={onAbrir} />
+      <BilleteEnHoy route={route} kind="llegada" mitad={mitad} />
       {hayAlojamiento && <BotonAlojamientoHoy route={route} dentro />}
     </CajaBlanca>
   )
@@ -155,6 +157,7 @@ export function TarjetaVueltaHoy({ route, mitad, onVerComoIr }: { route: Route; 
         <Icono nombre="explorar" size={16} grosor={1.8} />
         Cómo llegar
       </a>
+      <BilleteEnHoy route={route} kind="vuelta" mitad={mitad} />
       <button type="button" onClick={onVerComoIr} data-hoy-ver-como-ir className="zona-toque -mt-0.5 flex h-9 items-center justify-center gap-1.5 self-center px-3 text-[12.5px] font-medium text-text/60 underline underline-offset-2">
         Ver cómo ir
       </button>

@@ -32,8 +32,10 @@ export interface LadoDeHoja {
   /** Hay que elegir el punto para guardar este lado (el administrador, con varios puntos). */
   puntoObligatorio?: boolean
   llega: boolean
+  /** (10S5) Ya viene tocado (los datos se han leído de un billete y hay que guardarlos aunque el viajero no toque nada). */
+  tocado?: boolean
   /** (10N10, 10S3) Las casillas de Design: el otro lado (casilla en blanco para escribir y su hora, opcionales), referencia y aerolínea. Solo el administrador las lleva. */
-  extras?: { codigo: string; compania: string; otroPunto: string; otraHora: string | null; etiquetaCodigo?: string; etiquetaCompania?: string; /** El icono del medio, en medio de los dos lados. */ icono: NombreIcono }
+  extras?: { codigo: string; compania: string; otroPunto: string; otraHora: string | null; /** (10S5) «Barcelona (El Prat)»: lo que sale en «Sales de» / «Llegas a» mientras el viajero no haya escrito nada (la ciudad de la primera pantalla y, si solo tiene un aeropuerto, el aeropuerto). */ otroPuntoPorDefecto?: string; /** (10S5) Lo privado del billete: localizador, terminal, asiento y (tren, autobús) coche. */ privados?: { localizador: string; terminal: string; asiento: string; coche: string }; conCoche?: boolean; etiquetaCodigo?: string; etiquetaCompania?: string; /** El icono del medio, en medio de los dos lados. */ icono: NombreIcono }
 }
 export interface LadoGuardado {
   hora: string
@@ -45,6 +47,10 @@ export interface LadoGuardado {
   compania: string
   otroPunto: string
   otraHora: string | null
+  localizador: string
+  terminal: string
+  asiento: string
+  coche: string
 }
 
 const HORA_DE_SERIE = { ida: '11:15', vuelta: '18:05' } as const
@@ -79,6 +85,8 @@ export function HojaDelVuelo({
   ladoInicial = 'ida',
   datos = 'mi-vuelo',
   guardaSiempre = false,
+  aviso,
+  tarjeta,
 }: {
   titulo?: string
   textoGuardar?: string
@@ -94,14 +102,18 @@ export function HojaDelVuelo({
   datos?: string
   /** El invitado guarda siempre los dos lados con lo que enseña la rueda (como antes); el administrador, solo los que ha puesto (no se inventa ninguna hora). */
   guardaSiempre?: boolean
+  /** (10S5) «Hemos leído tu billete. Revísalo.» arriba, tras añadir el PDF o la foto. */
+  aviso?: ReactNode
+  /** (10S5) El bloque de la tarjeta de embarque (cambiar el archivo o quitarla), debajo de los datos. */
+  tarjeta?: ReactNode
 }) {
   const primero = lados[ladoInicial].activo ? ladoInicial : ladoInicial === 'ida' ? 'vuelta' : 'ida'
   const [lado, setLado] = useState<'ida' | 'vuelta'>(primero)
   const [borrador, setBorrador] = useState(() => {
-    const parte = (k: 'ida' | 'vuelta') => ({ hora: lados[k].hora ?? HORA_DE_SERIE[k], punto: lados[k].punto, fecha: lados[k].fecha ?? lados[k].dias[0]?.iso ?? null, tocado: false, codigo: lados[k].extras?.codigo ?? '', compania: lados[k].extras?.compania ?? '', otroPunto: lados[k].extras?.otroPunto ?? '', otraHora: lados[k].extras?.otraHora ?? null })
+    const parte = (k: 'ida' | 'vuelta') => ({ hora: lados[k].hora ?? HORA_DE_SERIE[k], punto: lados[k].punto, fecha: lados[k].fecha ?? lados[k].dias[0]?.iso ?? null, tocado: lados[k].tocado ?? false, codigo: lados[k].extras?.codigo ?? '', compania: lados[k].extras?.compania ?? '', otroPunto: lados[k].extras?.otroPunto || lados[k].extras?.otroPuntoPorDefecto || '', otraHora: lados[k].extras?.otraHora ?? null, localizador: lados[k].extras?.privados?.localizador ?? '', terminal: lados[k].extras?.privados?.terminal ?? '', asiento: lados[k].extras?.privados?.asiento ?? '', coche: lados[k].extras?.privados?.coche ?? '' })
     return { ida: parte('ida'), vuelta: parte('vuelta') }
   })
-  const cambia = (k: 'ida' | 'vuelta', cambio: Partial<{ hora: string; punto: string | null; fecha: string | null; codigo: string; compania: string; otroPunto: string; otraHora: string | null }>) => setBorrador((previo) => ({ ...previo, [k]: { ...previo[k], ...cambio, tocado: previo[k].tocado || 'hora' in cambio || 'punto' in cambio || 'fecha' in cambio } }))
+  const cambia = (k: 'ida' | 'vuelta', cambio: Partial<{ hora: string; punto: string | null; fecha: string | null; codigo: string; compania: string; otroPunto: string; otraHora: string | null; localizador: string; terminal: string; asiento: string; coche: string }>) => setBorrador((previo) => ({ ...previo, [k]: { ...previo[k], ...cambio, tocado: previo[k].tocado || 'hora' in cambio || 'punto' in cambio || 'fecha' in cambio } }))
 
   const [ruedaAbierta, setRuedaAbierta] = useState<'roma' | 'otra' | null>(null)
   const l = lados[lado]
@@ -115,7 +127,7 @@ export function HojaDelVuelo({
   const puedeGuardar = hayAlgo && !faltaPunto
   const guardar = () => {
     if (!puedeGuardar) return
-    const salida = (k: 'ida' | 'vuelta'): LadoGuardado => ({ hora: borrador[k].hora, punto: borrador[k].punto, fecha: borrador[k].fecha, puesto: puesto(k), codigo: borrador[k].codigo, compania: borrador[k].compania, otroPunto: borrador[k].otroPunto, otraHora: borrador[k].otraHora })
+    const salida = (k: 'ida' | 'vuelta'): LadoGuardado => ({ hora: borrador[k].hora, punto: borrador[k].punto, fecha: borrador[k].fecha, puesto: puesto(k), codigo: borrador[k].codigo, compania: borrador[k].compania, otroPunto: borrador[k].otroPunto, otraHora: borrador[k].otraHora, localizador: borrador[k].localizador, terminal: borrador[k].terminal, asiento: borrador[k].asiento, coche: borrador[k].coche })
     onGuardar(salida('ida'), salida('vuelta'))
   }
   const pestanas = (['ida', 'vuelta'] as const).filter((k) => lados[k].activo)
@@ -258,6 +270,7 @@ export function HojaDelVuelo({
       <h2 id="hoja-mi-vuelo" className="max-w-[calc(100%-3rem)] font-display text-[32px] leading-[1.05] text-text">
         {titulo}
       </h2>
+      {aviso}
       {pestanas.length > 1 && (
         <div className="mt-4 grid grid-cols-2 gap-2" role="tablist">
           {pestanas.map((k) => {
@@ -331,6 +344,24 @@ export function HojaDelVuelo({
               <input value={b.compania} onChange={(e) => cambia(lado, { compania: e.target.value })} maxLength={40} placeholder="Opcional" autoComplete="off" data-mi-vuelo-compania className="w-full min-w-0 bg-transparent text-[15px] font-medium outline-none placeholder:font-normal placeholder:text-text/40" />
             </label>
           </div>
+          {l.extras.privados && (
+            <div className="flex flex-wrap gap-2" data-mi-vuelo-privados>
+              {([
+                ['localizador', 'Localizador', 'ABC123', true],
+                [l.extras.conCoche ? 'coche' : 'terminal', l.extras.conCoche ? 'Coche' : 'Terminal', l.extras.conCoche ? '003' : '1', false],
+                ['asiento', 'Asiento', l.extras.conCoche ? '01D' : '14C', true],
+              ] as const).map(([clave, etiqueta, ejemplo, mayus]) => (
+                <label key={clave} className={cajaDeDesign} style={{ borderColor: 'rgba(28,34,48,.12)', flexBasis: 'calc(50% - 4px)', flexGrow: 0 }}>
+                  <span style={etiquetaDeCaja}>{etiqueta}</span>
+                  <input value={b[clave]} onChange={(e) => cambia(lado, { [clave]: e.target.value })} maxLength={20} placeholder={`Opcional · ${ejemplo}`} autoComplete="off" autoCapitalize={mayus ? 'characters' : 'off'} data-mi-vuelo-privado={clave} className={`w-full min-w-0 bg-transparent text-[15px] font-medium outline-none placeholder:font-normal placeholder:normal-case placeholder:text-text/40 ${mayus ? 'uppercase' : ''}`} />
+                </label>
+              ))}
+              <span className="w-full text-[12px] leading-[1.35] text-text/55" data-mi-vuelo-privados-nota>
+                Solo lo ves tú: se guarda en tu móvil y se ve sin internet.
+              </span>
+            </div>
+          )}
+          {tarjeta}
         </div>
       ) : (
         <>

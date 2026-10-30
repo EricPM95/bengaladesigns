@@ -88,7 +88,8 @@ debe(fTerraza.photo_credit?.autor === 'Eric', 'terraza', 'y la foto de la Terraz
   const orden = ex2.match(/\{ id: '(\w+)', label: '/g)?.map((x) => x.match(/'(\w+)'/)[1]) ?? []
   debe(orden.indexOf('hoteles') === orden.indexOf('banos') - 1 && orden.indexOf('hoteles') > orden.indexOf('excursiones'), 'hoteles', `la tarjeta Hoteles va antes de Baños y Fuentes (${orden.join(', ')})`)
   const rueda = sinComentarios(leer('src/components/route/reservas/AddReservationSheet.tsx'))
-  debe(/enLaRuta/.test(rueda) && /9 \* 60/.test(rueda) && !/: 10 \* 60/.test(rueda), 'rueda', 'la ruedita de una entrada parte de la hora a la que la ruta llega ahí, o de las 9:00 (o la apertura si abre más tarde)')
+  // 10S5: antes → ahora → decisión de Eric (10S3/10S5, 30-oct): antes la rueda partía siempre de las 9:00 (`9 * 60`); desde la 10S3 el Free Tour parte de las 10:00 y la entrada de las 9:00 (`(isFreeTour ? 10 : 9) * 60`). La entrada sigue partiendo de las 9:00 y nunca de las 10:00.
+  debe(/enLaRuta/.test(rueda) && /(?:9|: 9\)) \* 60/.test(rueda) && !/: 10 \* 60/.test(rueda), 'rueda', 'la ruedita de una entrada parte de la hora a la que la ruta llega ahí, o de las 9:00 (o la apertura si abre más tarde)')
 }
 
 /* ───────────────────────── 3. mejorHuecoEnElDia (sin pantalla) ───────────────────────── */
@@ -239,7 +240,7 @@ const tarjeta = (nombre) => `(() => { const b = Array.from(document.querySelecto
   await irAExplorar(a)
   // Los días con su fecha.
   const dias = await a.evaluar("import('/src/lib/nombreDeDia.ts').then((n) => import('/src/store/useRouteStore.ts').then((m) => { const r = m.useRouteStore.getState().route; return r.days.filter((d) => !d.isReturnLeg).map((d) => n.diaConFecha(r, d.dayNumber)) }))")
-  debe(dias.length >= 3 && dias.every((d) => /^(Lun|Mar|Mié|Jue|Vie|Sáb|Dom) \d{1,2} (Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)$/.test(d)), 'dias', `los días salen como «Jue 26 Nov» (${dias.join(', ')})`)
+  debe(dias.length >= 3 && dias.every((d) => /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo) \d{1,2} (Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)$/.test(d)), 'dias', `los días salen como «Jueves 26 Nov» (10S5: antes «Jue 26 Nov» → ahora el día entero → decisión de Eric, 30-oct) (${dias.join(', ')})`)
   // Añadir un sitio: la hoja no pide la hora y los días van con su fecha y su nombre.
   await a.evaluar(tarjeta('Atracciones'))
   await a.esp(2500)

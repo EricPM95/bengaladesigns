@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { Route } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { getTodayTripStatus } from '../../../lib/todayMode'
-import { addDaysToIso, formatShortDateEs, todayIso } from '../../../lib/dateRange'
+import { addDaysToIso, formatFechaListaEs, todayIso } from '../../../lib/dateRange'
 import { lluviaDePruebaActiva } from '../../../lib/lluviaDePrueba'
 import { fetchDailyWeather, RAIN_PROBABILITY_THRESHOLD, type DiaDeTiempo } from '../../../lib/rainForecast'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
@@ -97,7 +97,7 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
           </span>
           {prevision.map((dia) => (
             <div key={dia.dateIso} className="flex items-center gap-2.5 text-[12px] text-[#FFFDF8]/85">
-              <span className="w-[70px] flex-none">{formatShortDateEs(dia.dateIso).replace(',', '')}</span>
+              <span className="w-[116px] flex-none">{formatFechaListaEs(dia.dateIso)}</span>
               <Icono nombre={(dia.lluvia ?? 0) >= RAIN_PROBABILITY_THRESHOLD ? 'lluvia' : 'hoy'} size={14} />
               <span className="flex-1" style={{ font: "500 11.5px 'Geist Mono',monospace" }}>
                 {dia.maxima !== null ? `${Math.round(dia.maxima)}°` : '–'} / {dia.minima !== null ? `${Math.round(dia.minima)}°` : '–'}

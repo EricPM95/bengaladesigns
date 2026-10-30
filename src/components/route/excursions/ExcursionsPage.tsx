@@ -1,5 +1,6 @@
 import { precioTiendaEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { useEffect, useState } from 'react'
+import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
@@ -63,6 +64,7 @@ function ExcursionPhoto({ excursion, destination }: { excursion: Excursion; dest
  */
 export function ExcursionsPage({ route }: { route: Route }) {
   useMonedaViajero() // (10N7)
+  const huecoAlFinal = useHuecoAlFinal(32) // (10S5) los botones flotantes no tapan lo último de la página
   const page = useExcursionsStore((state) => state.page)
   const picking = useExcursionsStore((state) => state.picking)
   const pick = useExcursionsStore((state) => state.pick)
@@ -110,7 +112,7 @@ export function ExcursionsPage({ route }: { route: Route }) {
         </h1>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-[max(2rem,env(safe-area-inset-bottom))]">
+      <div className="min-h-0 flex-1 overflow-y-auto px-5" style={{ paddingBottom: huecoAlFinal }}>
         <div className="rounded-[22px] bg-[#1F1B16] px-5 py-5 text-[#F3EEE4]">
           <div className="flex items-center gap-4">
             {info.rating && (

@@ -9,6 +9,7 @@ import { FREE_TOUR_REF } from '../../../lib/freeTourManual'
 import type { Route } from '../../../lib/types'
 import type { BloqueEntrada } from '../../../lib/bookings'
 import type { ReservationTarget } from './AddReservationSheet'
+import { abrirProponerSitio } from '../../../store/useProponerSitioStore'
 
 /**
  * (Tanda 10S4, apartado 4) [Añadir otra reserva]: una casilla donde se escribe lo que sea. Mientras se escribe, si lo escrito se parece a un sitio nuestro con entrada, sale debajo como sugerencia (foto pequeña y nombre);
@@ -112,9 +113,19 @@ export function OtraReservaBuscador({ route, sitiosConEntrada, enRuta, onElegir,
               })}
             </ul>
           )}
-          {limpio.length >= 2 && (
+          {limpio.length >= 2 && sugerencias.length > 0 && (
             <p className="mt-3 text-[12.5px] leading-snug text-text-soft" data-aviso-escrito>
-              {sugerencias.length > 0 ? 'Si no es ninguno de estos, seguimos con lo que has escrito.' : 'No tenemos ese sitio en la lista: seguimos con lo que has escrito (solo en Reservas).'}
+              Si no es ninguno de estos, seguimos con lo que has escrito.
+            </p>
+          )}
+          {/* (10S5; `Billete Reservas` P1) Un sitio que no tenemos: se invita a proponerlo; «aquí» abre la hoja «Propón un sitio» con lo escrito ya puesto. */}
+          {limpio.length >= 2 && sugerencias.length === 0 && (
+            <p className="mt-3 text-[14px] leading-[1.45] text-text/70" data-aviso-escrito data-propon-sitio-texto>
+              Este sitio aún no está en JUTRIP. Ayúdanos a añadirlo desde{' '}
+              <button type="button" onClick={() => abrirProponerSitio({ nombre: limpio, origen: 'reservas' })} data-propon-sitio-aqui className="zona-toque zt-sin-x font-bold underline underline-offset-[3px]" style={{ color: '#8E6820' }}>
+                aquí
+              </button>
+              .
             </p>
           )}
           <button type="button" disabled={limpio.length < 2} onClick={seguirConLoEscrito} data-otra-reserva-seguir className="mt-5 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40">

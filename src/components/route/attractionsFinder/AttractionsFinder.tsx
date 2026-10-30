@@ -6,6 +6,12 @@ import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeStopsIndex'
 import { Spinner } from '../../ui/Spinner'
 import { Icono } from '../../ui/Icono'
+import { sinLosNuestros, useSitiosNuestros } from '../../../lib/useSitiosNuestros'
+import { stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
+import { FilaSitioNuestro, TituloOtrosSitios } from '../addStop/FilaSitioNuestro'
+import { normalizarTexto } from '../../../lib/busqueda'
+import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
+import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
 
 interface MultiSelectConfig {
   /** Paradas ya marcadas al abrir — "Regenerar este día" (DayMenu.tsx) precarga las paradas actuales del día, así el viajero parte de lo que ya tenía y añade/quita libremente. */
@@ -81,6 +87,7 @@ function stopFromResult(result: AttractionSearchResult): Stop {
  *   botón "Confirmar", sin tocar — ver DayMenu.tsx "Regenerar este día".
  */
 export function AttractionsFinder({ route, city, open, onClose, onPick, multiSelect, title }: AttractionsFinderProps) {
+  const huecoAlFinal = useHuecoAlFinal(16) // (10S5) los botones flotantes no tapan lo último de la lista
   const [accordionOpen, setAccordionOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<AttractionSearchResult[] | null>(null)
@@ -91,6 +98,9 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
   const inputRef = useRef<HTMLInputElement>(null)
 
   const stopEntries = buildRouteStopEntries(route)
+  // (10S5) Primero NUESTROS sitios (con foto, horario, entrada e historia); debajo, con el título «Otros sitios», lo del mapa.
+  const sitios = useSitiosNuestros(route.destination, city, query, open)
+  const paradaDeNuestro = (place: DestinationPlace): Stop => ({ ...stopFromPlace(place, sitios.foto(place) ?? ''), id: `stop-nuestro-${normalizarTexto(place.name).replace(/s+/g, '-')}` })
   const cityStops = stopEntries.filter((entry) => entry.city === city)
 
   useEffect(() => {
@@ -158,8 +168,8 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, proximity])
 
-  const pick = (result: AttractionSearchResult) => {
-    const stop = stopFromResult(result)
+  const pick = (result: AttractionSearchResult | DestinationPlace) => {
+    const stop = 'kind' in result ? paradaDeNuestro(result) : stopFromResult(result)
     if (multiSelect) {
       toggleSelected(stop)
       return
@@ -168,8 +178,9 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
     onClose()
   }
 
-  const sortedResults = results
-    ? [...results].sort((a, b) => Number(isNameAlreadyInRoute(b.name, stopEntries)) - Number(isNameAlreadyInRoute(a.name, stopEntries)))
+  const delMapa = results ? sinLosNuestros(results, sitios.nuestros) : null
+  const sortedResults = delMapa
+    ? [...delMapa].sort((a, b) => Number(isNameAlreadyInRoute(b.name, stopEntries)) - Number(isNameAlreadyInRoute(a.name, stopEntries)))
     : []
 
   const selectedCount = selected.size
@@ -199,7 +210,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
               <h2 className="font-display text-h2 font-semibold text-text">{title ?? `Añadir un lugar en ${city}`}</h2>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-4" style={{ paddingBottom: huecoAlFinal }}>
               <div className="mx-auto w-full max-w-lg space-y-4">
                 <div className="flex items-center gap-2 rounded-xl border border-border bg-bg-card px-3 py-2">
                   <SearchIcon />
@@ -273,9 +284,30 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                       Buscando...
                     </p>
                   )}
-                  {!searching && searchFailed && (
+                  {!searching && searchFailed && sitios.nuestros.length === 0 && (
                     <p className="py-4 text-center text-small text-text-soft">No hemos encontrado ese lugar. Prueba con otro nombre.</p>
                   )}
+
+                  {query.trim() &&
+                    sitios.nuestros.map((place) => {
+                      const incluido = selected.has(paradaDeNuestro(place).id)
+                      return (
+                        <FilaSitioNuestro
+                          key={place.name}
+                          place={place}
+                          foto={sitios.foto(place)}
+                          activa={incluido}
+                          yaEnRuta={isNameAlreadyInRoute(place.name, stopEntries)}
+                          onClick={() => pick(place)}
+                          accion={
+                            <button type="button" onClick={() => pick(place)} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-caption font-semibold transition-colors ${incluido ? 'bg-text text-white' : 'bg-accent-soft text-accent-hover hover:bg-border'}`}>
+                              {incluido ? '✓ Añadido' : '+ Añadir'}
+                            </button>
+                          }
+                        />
+                      )
+                    })}
+                  {query.trim() && !searching && sortedResults.length > 0 && <TituloOtrosSitios />}
 
                   {!searching &&
                     sortedResults.map((result) => {
@@ -391,7 +423,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 pt-2">
+          <div className="flex-1 overflow-y-auto p-4 pt-2" style={{ paddingBottom: huecoAlFinal }}>
             <div className="mx-auto w-full max-w-lg space-y-1">
               {!trimmedQuery && <p className="py-6 text-center text-small text-text-soft">Escribe para buscar un lugar.</p>}
 
@@ -402,9 +434,26 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                 </p>
               )}
 
-              {trimmedQuery && !searching && searchFailed && (
+              {trimmedQuery && !searching && searchFailed && sitios.nuestros.length === 0 && (
                 <p className="py-4 text-center text-small text-text-soft">No hemos encontrado ese lugar. Prueba con otro nombre.</p>
               )}
+
+              {trimmedQuery &&
+                sitios.nuestros.map((place) => (
+                  <FilaSitioNuestro
+                    key={place.name}
+                    place={place}
+                    foto={sitios.foto(place)}
+                    yaEnRuta={isNameAlreadyInRoute(place.name, stopEntries)}
+                    onClick={() => pick(place)}
+                    accion={
+                      <button type="button" onClick={() => pick(place)} aria-label={`Añadir ${place.name}`} className="shrink-0 rounded-lg bg-accent-soft px-2.5 py-1.5 text-caption font-semibold text-accent-hover hover:bg-border">
+                        + Añadir
+                      </button>
+                    }
+                  />
+                ))}
+              {trimmedQuery && !searching && sortedResults.length > 0 && <TituloOtrosSitios />}
 
               {trimmedQuery && !searching && sortedResults.map(resultRow)}
             </div>

@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom'
+import { useHuecoAlFinal } from '../propuesta/BotonDePropuesta'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { DayPlan } from '../../lib/types'
 import { FlagIcon } from '../ui/FlagIcon'
@@ -26,6 +27,7 @@ interface DestinationDetailModalProps {
  * datos de ejemplo y sin acción de "añadir a mi viaje" aquí (eso se gestiona en DIAS/RESERVAS, ver AccommodationBlock.tsx).
  */
 export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onClose }: DestinationDetailModalProps) {
+  const huecoAlFinal = useHuecoAlFinal(32) // (10S5) los botones flotantes no tapan lo último de la ficha
   const cityDays = city ? days.filter((day) => day.city === city) : []
   const countryCode = cityDays[0]?.countryCode ?? null
   const excursions = city ? destinationExcursions(city) : []
@@ -50,7 +52,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
             <Icono nombre="cerrar" size={18} />
           </button>
 
-          <div className="mx-auto w-full max-w-lg space-y-4 px-6 pb-8 pt-20">
+          <div className="mx-auto w-full max-w-lg space-y-4 px-6 pt-20" style={{ paddingBottom: huecoAlFinal }}>
             <div className="text-center">
               <p className="flex items-center justify-center gap-2 font-display text-h2 font-semibold text-text">
                 <FlagIcon countryCode={countryCode} />

@@ -77,3 +77,57 @@ export function billeteDe(input: {
     codigoOtro: (otroPunto ?? '').trim() || otraHora ? codigoDelOtroLado(otroPunto, route.originPlace?.name ?? route.origin) : null,
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────────────────────
+// (10S5 §5) EL TRAYECTO: «Barcelona → Roma (Fiumicino)» / «Roma (Ciampino) → Barcelona». La ciudad y, entre paréntesis, el aeropuerto o la estación.
+// ─────────────────────────────────────────────────────────────────────────────────────────────
+
+const sinAcentos = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+
+/**
+ * El lado de fuera, como se lee en el trayecto: la ciudad de salida del viaje y, si el viajero escribió su aeropuerto o estación, entre paréntesis.
+ *   '' → «Barcelona»;  «Barcelona (El Prat)» → igual;  «Barcelona-El Prat» → «Barcelona (El Prat)»;  «El Prat» → «Barcelona (El Prat)»;  «Barcelona» → «Barcelona».
+ */
+export function ladoDeFuera(ciudad: string | null | undefined, otroPunto: string | null | undefined): string {
+  const c = (ciudad ?? '').replace(/\s+/g, ' ').trim()
+  const t = (otroPunto ?? '').replace(/\s+/g, ' ').trim()
+  if (!t) return c
+  if (t.includes('(')) return t
+  if (!c) return t
+  const tn = sinAcentos(t)
+  const cn = sinAcentos(c)
+  if (tn === cn) return c
+  if (tn.startsWith(cn)) {
+    const resto = t.slice(c.length).replace(/^[\s\-–—·,/:]+/, '').trim()
+    return resto ? `${c} (${resto})` : c
+  }
+  return `${c} (${t})`
+}
+
+/** Roma (o la ciudad del destino) con su aeropuerto o estación entre paréntesis. */
+export function ladoDeRoma(ciudad: string | null | undefined, punto: ArrivalPoint | null): string {
+  const c = (ciudad ?? '').trim()
+  if (!punto) return c
+  return c ? `${c} (${puntoCorto(punto)})` : puntoCorto(punto)
+}
+
+/** El trayecto de una mitad: la ida va de fuera a Roma, la vuelta de Roma a fuera. */
+export function trayectoDeLaMitad(input: { kind: 'llegada' | 'vuelta'; ciudadFuera: string | null | undefined; otroPunto: string | null | undefined; ciudadRoma: string | null | undefined; puntoRoma: ArrivalPoint | null }): string {
+  const fuera = ladoDeFuera(input.ciudadFuera, input.otroPunto)
+  const roma = ladoDeRoma(input.ciudadRoma, input.puntoRoma)
+  return input.kind === 'llegada' ? `${fuera} → ${roma}` : `${roma} → ${fuera}`
+}
+
+/** «Jueves 26» (el día de la semana entero y el número, nunca «jue 26»). */
+export function diaEntero(dateIso: string | null | undefined): string {
+  if (!dateIso) return ''
+  const d = new Date(`${dateIso}T12:00:00`)
+  if (Number.isNaN(d.getTime())) return ''
+  const t = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })
+  return t.charAt(0).toUpperCase() + t.slice(1)
+}
+
+/** La ciudad de salida del viaje, la de la primera pantalla («Barcelona», sin el país). */
+export function ciudadDeSalida(route: { origin?: string | null; originPlace?: { name: string } | null }): string {
+  return (route.originPlace?.name ?? route.origin ?? '').split(',')[0].trim()
+}

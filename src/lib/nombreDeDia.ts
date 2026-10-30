@@ -13,6 +13,8 @@ import type { Route } from './types'
 export type FuenteDeFechas = Pick<Route, 'answers'> | string | null | undefined
 
 const SEMANA_CORTA = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
+/** (10S5) Los días enteros: en las listas y las tarjetas la fecha va entera («Viernes 27»); solo los cuadrados de elegir día la llevan corta (`fichaDelDia`). */
+const SEMANA_LARGA = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 
 function inicioDe(fuente: FuenteDeFechas): string | null {
   if (!fuente) return null
@@ -43,9 +45,15 @@ export function fichaDelDia(fuente: FuenteDeFechas, dayNumber: number): { semana
   return { semana: SEMANA_CORTA[diaDeLaSemana(iso)].toUpperCase(), numero: String(Number(iso.slice(8, 10))) }
 }
 
-/** «lun 13» para una fecha ISO cualquiera (la de una reserva, la de un tramo de ida o vuelta). */
+/** (10S5) «Lunes 13» para una fecha ISO cualquiera (la de una reserva, la de un tramo de ida o vuelta), para listas y tarjetas. Antes «lun 13». */
 export function fechaCorta(dateIso: string): string {
-  return `${SEMANA_CORTA[diaDeLaSemana(dateIso)]} ${Number(dateIso.slice(8, 10))}`
+  const dia = SEMANA_LARGA[diaDeLaSemana(dateIso)]
+  return `${dia.charAt(0).toUpperCase()}${dia.slice(1)} ${Number(dateIso.slice(8, 10))}`
+}
+
+/** (10S5) «lunes 13» en medio de una frase («el lunes 13»). */
+export function fechaEnProsa(dateIso: string): string {
+  return `${SEMANA_LARGA[diaDeLaSemana(dateIso)]} ${Number(dateIso.slice(8, 10))}`
 }
 
 /** Forma corta, para fichas y etiquetas: «lun 13» (sin fechas, «Día 2»). */
@@ -57,7 +65,7 @@ export function diaCorto(fuente: FuenteDeFechas, dayNumber: number): string {
 /** Forma corta SIN artículo, para prosa de las hojas y los avisos de los vuelos: «mar 10» (sin fechas, «día 2»). Con el artículo delante: «el mar 10» / «el día 2». */
 export function diaCortoProsa(fuente: FuenteDeFechas, dayNumber: number): string {
   const iso = fechaDelDia(fuente, dayNumber)
-  return iso ? fechaCorta(iso) : `día ${dayNumber}`
+  return iso ? fechaEnProsa(iso) : `día ${dayNumber}`
 }
 
 /** Forma larga SIN artículo, para prosa: «martes 14» (sin fechas, «día 2»). Con el artículo delante: `elDia`, `alDia`, `delDia`, `tuDia`. */
@@ -98,15 +106,15 @@ export function diaTitulo(fuente: FuenteDeFechas, dayNumber: number): string {
   return texto.charAt(0).toUpperCase() + texto.slice(1)
 }
 
-const SEMANA_TITULO = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+const SEMANA_TITULO = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
 const MES_TITULO = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 
-/** «Jue 26 Nov» para una fecha ISO (Tanda 10O: el día de la semana y el mes con la primera letra en mayúscula). */
+/** «Jueves 26 Nov» (10S5: el día entero) para una fecha ISO (Tanda 10O: el día de la semana y el mes con la primera letra en mayúscula). */
 export function fechaConMes(dateIso: string): string {
   return `${SEMANA_TITULO[diaDeLaSemana(dateIso)]} ${Number(dateIso.slice(8, 10))} ${MES_TITULO[Number(dateIso.slice(5, 7)) - 1]}`
 }
 
-/** «Jue 26 Nov» de un día del viaje; sin fechas, «Día 3». Es lo que va delante del nombre del día en las hojas para elegir día. */
+/** «Jueves 26 Nov» de un día del viaje; sin fechas, «Día 3». Es lo que va delante del nombre del día en las hojas para elegir día. */
 export function diaConFecha(fuente: FuenteDeFechas, dayNumber: number): string {
   const iso = fechaDelDia(fuente, dayNumber)
   return iso ? fechaConMes(iso) : `Día ${dayNumber}`

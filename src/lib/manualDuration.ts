@@ -1,6 +1,6 @@
 import type { DateRange, DayPlan, Route } from './types'
 import { daysBetweenInclusive } from './dateRange'
-import { diaCorto } from './nombreDeDia'
+import { diaProsa } from './nombreDeDia'
 import { manualDayName } from './manualRoute'
 import { MAX_TRIP_DAYS } from './freeDays'
 import { dayOfReservation, type Reservation } from './bookings'
@@ -51,10 +51,8 @@ export interface ManualResizePlan {
   removed: ManualRemovedDay[]
 }
 
-const labelOf = (route: Route, dayNumber: number): string => {
-  const corto = diaCorto(route, dayNumber)
-  return corto.startsWith('Día ') ? `día ${dayNumber}` : corto
-}
+/** (10S5) Para la frase del aviso: «viernes 12» (el día entero, en minúscula) o «día 3». */
+const labelOf = (route: Route, dayNumber: number): string => diaProsa(route, dayNumber)
 
 /** Los días que dejan de estar, dado el rango nuevo. */
 export function planManualResize(route: Route, dateRange: DateRange | undefined): ManualResizePlan {
@@ -119,7 +117,7 @@ export function bookingsAfterRemovingDays<T, H>(route: Route, removedIds: Readon
 const unir = (lista: string[]): string => (lista.length <= 1 ? (lista[0] ?? '') : `${lista.slice(0, -1).join(', ')} y ${lista.at(-1)}`)
 
 /**
- * El texto del «¿Estás seguro?» al acortar el viaje: «Se quitarán el jue 16 y el vie 17, con sus paradas y tu excursión a Pompeya.» (un día: «Se quitará el jue 16, con sus paradas.»; sin fechas, «el día 3»).
+ * El texto del «¿Estás seguro?» al acortar el viaje: «Se quitarán el jueves 16 y el viernes 17, con sus paradas y tu excursión a Pompeya.» (un día: «Se quitará el jueves 16, con sus paradas.»; sin fechas, «el día 3»).
  * «con sus paradas» solo si algún día de esos lleva paradas o comida elegida (o algo que no es una excursión reservada: esa se nombra aparte); un día vacío se quita sin más. Cada reserva de esos días
  * se nombra: la entrada con su día («tu entrada al Coliseo del vie 16») y la excursión sin él («tu excursión a Pompeya»; con dos o más excursiones, con el día para distinguirlas).
  */

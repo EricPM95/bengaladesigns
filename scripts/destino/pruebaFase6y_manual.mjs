@@ -43,7 +43,8 @@ globalThis.fetch = (url, opts) => {
 }
 
 const INICIO = '2027-03-10' // miércoles
-const SEMANA = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
+// 10S5 (Eric, 30-oct): antes «lun 13» → ahora el día entero («lunes 13» en prosa) → las fechas van enteras en listas, tarjetas y frases; solo los cuadrados de elegir día quedan cortos.
+const SEMANA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
 const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 const sumaDias = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const nombreDeFecha = (iso) => { const d = new Date(`${iso}T12:00:00Z`); return `${SEMANA[d.getUTCDay()]} ${d.getUTCDate()} ${MES[d.getUTCMonth()]}` }
@@ -298,8 +299,9 @@ for (const dias of [2, 3, 4, 5]) {
     useRouteStore.setState({ ...estadoBase, route: ruta })
     const html = renderToStaticMarkup(createElement(PlaceExplorerScreen, { open: true, destination: 'Roma', places: lugares, excursions: [], title: 'Añadir parada', route: ruta, dayNumber: 3, pickMode: { confirmLabel: (n) => `Añadir (${n})`, selected: [], onToggle() {}, onConfirm() {} }, onClose() {} }))
     const t = plano(aTexto(html))
-    const dia2 = fechas ? 'En tu jue 11' : 'En tu día 2'
-    const dia1 = fechas ? 'En tu mié 10' : 'En tu día 1'
+    const dia2 = fechas ? 'En tu jueves 11' : 'En tu día 2'
+    // 10S5: antes «En tu mié 10» → ahora «En tu miércoles 10» (el día entero) → decisión de Eric, 30-oct.
+    const dia1 = fechas ? 'En tu miércoles 10' : 'En tu día 1'
     debe(t.includes(dia2) && t.includes(dia1), '8 etiqueta', `${fechas ? 'con' : 'sin'} fechas: no sale «${dia1}» / «${dia2}»`)
     debe(!/✓ En ruta/.test(t), '8 etiqueta', 'sale «✓ En ruta» en vez del día')
   }

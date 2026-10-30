@@ -1328,7 +1328,7 @@ export function PlaceExplorerScreen({
                     )}
                     {!toilet && !visitable && (
                       <div className="flex shrink-0 flex-col items-end justify-between" style={{ padding: '6px 10px 9px 4px' }}>
-                        <MeGusta destino={destination} nombre={place.name} variante="tarjeta" className="h-[30px] min-w-[30px] px-1" />
+                        <MeGusta destino={destination} nombre={place.name} variante="tarjeta" className="zona-toque h-[30px] min-w-[30px] px-1" />
                         {pickable(place) ? (
                           <button
                             type="button"

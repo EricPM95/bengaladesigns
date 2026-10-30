@@ -53,7 +53,8 @@ globalThis.fetch = (url, opts) => {
 }
 
 const INICIO = '2027-03-10' // miércoles
-const SEMANA = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
+// 10S5 (Eric, 30-oct): antes «lun 13» → ahora el día entero («lunes 13» en prosa) → las fechas van enteras en listas, tarjetas y frases; solo los cuadrados de elegir día quedan cortos.
+const SEMANA = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const sumaDias = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const corta = (iso) => { const d = new Date(`${iso}T12:00:00Z`); return `${SEMANA[d.getUTCDay()]} ${d.getUTCDate()}` }
 const rango = (dias, inicio = INICIO) => ({ start: inicio, end: sumaDias(inicio, dias - 1) })

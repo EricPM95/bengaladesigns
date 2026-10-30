@@ -51,13 +51,21 @@ export async function quitarParadaConEntrada(dayId: string, stop: Stop, reserva:
       for (const aviso of useNoticesStore.getState().pushed) if (aviso.id.includes(reserva.id)) useNoticesStore.getState().remove(aviso.id)
     })
   }
+  const quedaOtraParada = Boolean(antes.route?.days.some((day) => day.stops.some((otra) => otra.id !== stop.id && otra.reservedId === reserva.id && otra.name === stop.name)))
   const sacarParada = () => {
-    useRouteStore.setState((state) => (state.route ? { route: unpinReservedStops(state.route, reserva.id) } : state))
+    // (10S5) «Solo de la ruta» con el sitio dos veces: la otra parada se queda reservada; solo se suelta la que se quita.
+    const soltarSoloEsta = modo === 'solo' && quedaOtraParada
+    useRouteStore.setState((state) =>
+      state.route
+        ? { route: soltarSoloEsta ? { ...state.route, days: state.route.days.map((day) => ({ ...day, stops: day.stops.map((otra) => (otra.id === stop.id ? { ...otra, reservedId: null } : otra)) })) } : unpinReservedStops(state.route, reserva.id) }
+        : state,
+    )
     useRouteStore.getState().removeStop(dayId, stop.id)
   }
 
+  // (10S5) Con el sitio DOS veces en la ruta (la entrada reservada en las dos paradas), quitar una parada «solo de la ruta» no deja la entrada fuera de la ruta: sigue en la otra parada.
   cambiarConDeshacer(mensaje, () => {
-    if (modo === 'solo') marcarFuera()
+    if (modo === 'solo' && !quedaOtraParada) marcarFuera()
     sacarParada()
     if (modo === 'tambien') {
       if (manual) useRouteStore.getState().removeReservation(reserva.id)

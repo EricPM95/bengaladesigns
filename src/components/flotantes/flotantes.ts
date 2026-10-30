@@ -18,18 +18,23 @@ const BOTONES_A_ESQUIVAR = '[data-hoy-siguiente] button, [data-hoy-siguiente] a,
 /** Lo que sube el lápiz sobre el botón de los logros (58 px de botón + 12 de aire). */
 export const SOBRE_LOS_LOGROS = 70
 const LADO = 58
+/** (10S5) Lo que mide el lápiz y el aire que se deja entre el último contenido y los botones flotantes. */
+export const LADO_DEL_LAPIZ = 56
+export const AIRE_BAJO_LOS_BOTONES = 16
 
 interface Estado {
   debajo: boolean
   /** `bottom` en px del botón de los logros cuando hay que subirlo para no tapar nada; null = su sitio de siempre. */
   alto: number | null
+  /** (10S5) El `bottom` en px del botón de los logros AHORA (con la barra de abajo del móvil y lo que haya subido por los botones de la pantalla): de ahí sale el hueco que cada pantalla deja al final. */
+  suelo: number
 }
-let estado: Estado = { debajo: false, alto: null }
+let estado: Estado = { debajo: false, alto: null, suelo: 88 }
 let hayLapiz = false
 const oyentes = new Set<() => void>()
 const avisar = () => oyentes.forEach((f) => f())
 const poner = (e: Estado) => {
-  if (e.debajo === estado.debajo && e.alto === estado.alto) return
+  if (e.debajo === estado.debajo && e.alto === estado.alto && Math.abs(e.suelo - estado.suelo) < 1) return
   estado = e
   avisar()
 }
@@ -71,7 +76,7 @@ function medir(): void {
     bottom = vh - Math.min(...pisan.map((r) => r.top)) + 10
   }
   const nuevo = bottom === inicio ? null : bottom
-  poner({ debajo, alto: estado.alto !== null && nuevo !== null && Math.abs(estado.alto - nuevo) < 1 ? estado.alto : nuevo })
+  poner({ debajo, alto: estado.alto !== null && nuevo !== null && Math.abs(estado.alto - nuevo) < 1 ? estado.alto : nuevo, suelo: Math.round(bottom) })
 }
 
 let cuadro = 0

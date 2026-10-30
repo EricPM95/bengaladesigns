@@ -7,7 +7,7 @@ import { isManualRoute } from '../lib/manualPlan'
 import type { PlanLlegada, PlanVuelta } from '../lib/planLlegadaVuelta'
 import { FREE_TOUR_REF, isManualFreeTourReservation, pedirFotoDelFreeTour, withManualFreeTour, withoutManualFreeTour } from '../lib/freeTourManual'
 import type { DestinationPlace } from '../lib/destinationPlacesApi'
-import { dayOfReservation, isBigReservation, sitiosGrandesDelViaje, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
+import { conSuEntradaReservada, dayOfReservation, isBigReservation, sitiosGrandesDelViaje, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
 import type {
   ChosenRestaurant,
   AccommodationMode,
@@ -1486,6 +1486,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   addStop: (dayId, stop) =>
     set((state) => {
       if (!state.route) return state
+      stop = conSuEntradaReservada(state.route, state.reservations, stop)
       return {
         // La parada NUEVA es la única a la que le ponemos hora (no tenía); las que ya estaban no se tocan.
         route: updateDay(state.route, dayId, (day) => {
@@ -1523,6 +1524,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   insertStopAt: (dayId, index, stop) =>
     set((state) => {
       if (!state.route) return state
+      stop = conSuEntradaReservada(state.route, state.reservations, stop)
       return {
         route: updateDay(state.route, dayId, (day) => {
           // Igual que addStop pero en una posición concreta: hora para la que entra, calculada desde la

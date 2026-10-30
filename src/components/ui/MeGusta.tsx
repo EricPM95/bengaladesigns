@@ -78,7 +78,7 @@ export function MeGusta({ destino, nombre, variante, className = '' }: { destino
       aria-pressed={marcado}
       aria-label={etiqueta}
       data-megusta="ficha"
-      className={`flex h-7 items-center gap-1.5 self-start rounded-full border pl-[7px] pr-2.5 transition-[background-color,border-color] duration-300 motion-reduce:transition-none ${marcado ? 'border-frambuesa/40 bg-frambuesa/[.08]' : 'border-text/[.14] bg-transparent'} ${className}`}
+      className={`zona-toque zt-sin-x flex h-7 items-center gap-1.5 self-start rounded-full border pl-[7px] pr-2.5 transition-[background-color,border-color] duration-300 motion-reduce:transition-none ${marcado ? 'border-frambuesa/40 bg-frambuesa/[.08]' : 'border-text/[.14] bg-transparent'} ${className}`}
     >
       {corazon}
       <span className="whitespace-nowrap text-[11.5px] font-medium text-text">
