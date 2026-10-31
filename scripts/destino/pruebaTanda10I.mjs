@@ -174,7 +174,7 @@ const clic = async (a, x, y) => {
   await abrirPase(a)
   await cuando(a, "/Elegir mi pase/.test(document.querySelector('[data-lista-del-pase]')?.innerText ?? '')", 20)
   await a.esp(1500)
-  debe((await a.evaluar("document.querySelectorAll('[data-lista-punto]').length")) === 19, 'todo', 'la lista del pase lleva los 19 puntos de Design')
+  debe((await a.evaluar("document.querySelectorAll('[data-lista-punto]').length")) === 20, 'todo', 'la lista del pase lleva los 20 puntos de Design (antes 19 → ahora 20 → decisión de Eric, 10S7, 31-oct: +«Tu día, reorganizado en un toque»)')
   debe(!/Ver todo lo que incluye/.test(await textoDe(a)), 'todo', 'y ya no hay [Ver todo lo que incluye]')
   await a.captura(png('06_final_sin_pase_lista'))
   a.cerrar()

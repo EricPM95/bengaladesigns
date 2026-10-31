@@ -1,6 +1,7 @@
 import type { Route } from './types'
 import { buildDestinationSegments } from './destinationSegments'
 import { formatoImporte, leerImporte, type Importe } from './dinero'
+import type { ReservaAlojamiento } from './reservaAlojamiento'
 
 /**
  * «Tu alojamiento» (Tanda 6z): lo que el viajero cuenta de dónde duerme. Solo informa: no cambia la ruta ni el mapa (la zona, de pago, es lo que orienta la ruta). Un nombre libre y un precio total opcional (importe y moneda).
@@ -10,6 +11,8 @@ export interface TuAlojamiento {
   name: string
   /** Lo que costó toda la estancia (importe y moneda); null si no lo ha dicho. */
   precio: Importe | null
+  /** (10S7 §5) La reserva leída o escrita a mano: dirección, fechas, horas, teléfono y localizador. Viaja con el alojamiento y se borra con él. */
+  reserva?: ReservaAlojamiento | null
 }
 
 /** El precio del alojamiento (Importe) o null. Lee también los viajes guardados con el `totalPrice` de la 6z (un número en euros). */

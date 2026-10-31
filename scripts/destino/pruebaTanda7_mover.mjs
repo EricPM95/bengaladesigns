@@ -22,6 +22,7 @@
 //     14. queda algún `PlaceFinderPanel` o `poolEntries`, o el código nuevo escribe emojis, colores a mano o nombres de empresas.
 // CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
 //   · «C11 sueltos» (el escaner de «{n} dias» suelto): antes solo HoyAntesV2.tsx estaba permitido como cuenta atras; ahora tambien HoySinPase.tsx («se activa dentro de N dias») y TarjetaDeViaje.tsx («En N dias» y «26 – 29 nov · 4 dias»): son cuentas atras / la duracion con su plural, no la duracion del viaje suelta. Tanda 10N11, Eric 29-oct-2026 (HOY sin pase con cuenta atras y la tarjeta de Mis viajes de Design). La duda de si «26 – 29 nov · 4 dias» deberia llevar tambien «· 3 noches» queda para Eric.
+// (10S7, 31-oct) Puesta al dia: «A1 fila» y «A2 excursion»: antes la fila de la lista de dias decia «Mié 10 Mar», «Vie 12 Mar», «Sáb 13 Mar»; ahora la hoja de elegir dia (HojaDia, 10N8) lleva el dia entero («Miércoles 10 Mar»…). Decision de Eric (10S7, 31-oct): pasar las pruebas viejas en 0 fallos con el texto de ahora.
 import fs from 'node:fs'
 import path from 'node:path'
 import { prepararSSR } from './_ssr.mjs'
@@ -109,14 +110,14 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   debe(/MOVER A|Mover a/i.test(t) && /Ahora: jueves 11/.test(t), 'A1 cabecera', `falta «Mover a» y «Ahora: jueves 11» (${plano(t).slice(0, 200)})`)
   const fila = (id) => h.split('<button').find((b) => b.includes(`data-dia-de-la-lista="${id}"`)) ?? ''
   const d1 = aTexto(fila('d1'))
-  debe(/MIÉ/.test(d1) && /\n10\n/.test(`\n${d1}\n`) && /Mié 10 Mar/.test(d1) && /Mi día 1/.test(d1), 'A1 fila', `el día 1 no lleva «MIÉ», «10», «Miércoles 10» y su título (${plano(d1)})`)
+  debe(/MIÉ/.test(d1) && /\n10\n/.test(`\n${d1}\n`) && /Miércoles 10 Mar/.test(d1) && /Mi día 1/.test(d1), 'A1 fila', `el día 1 no lleva «MIÉ», «10», «Miércoles 10» y su título (${plano(d1)})`)
   const d3 = aTexto(fila('d3'))
-  debe(/VIE/.test(d3) && /Vie 12 Mar/.test(d3) && /Mi día 3/.test(d3), 'A1 fila', `el día 3 no lleva «VIE», «Viernes 12» y su título (${plano(d3)})`)
+  debe(/VIE/.test(d3) && /Viernes 12 Mar/.test(d3) && /Mi día 3/.test(d3), 'A1 fila', `el día 3 no lleva «VIE», «Viernes 12» y su título (${plano(d3)})`)
   // La excursión entera: gris, su icono, «Día de excursión», sin poder elegirse.
   const d4h = fila('d4')
   const d4 = aTexto(d4h)
   debe(d4h.includes('disabled=""') && d4h.includes('data-excursion="1"') && d4h.includes('aria-disabled="true"'), 'A2 excursión', 'el día de excursión se puede elegir (falta disabled)')
-  debe(/Día de excursión/.test(d4) && d4h.includes(ICONOS.montana) && /opacity-50|opacity-60/.test(d4h) && /Sáb 13 Mar/.test(d4), 'A2 excursión', `el día de excursión no sale en gris con su icono y «Día de excursión» (${plano(d4)})`)
+  debe(/Día de excursión/.test(d4) && d4h.includes(ICONOS.montana) && /opacity-50|opacity-60/.test(d4h) && /Sábado 13 Mar/.test(d4), 'A2 excursión', `el día de excursión no sale en gris con su icono y «Día de excursión» (${plano(d4)})`)
   debe(!fila('d3').includes('disabled=""') && !fila('d1').includes('disabled=""'), 'A2 excursión', 'un día normal sale sin poder elegirse')
   debe(veces(h, /data-excursion="1"/g) === 1, 'A2 excursión', 'sale más de una fila de excursión')
   debe(fila('vuelta') === '' && !/vuelta|Lunes 15/i.test(t), 'A2 vuelta', `el día de vuelta sale en la lista (${plano(t)})`)

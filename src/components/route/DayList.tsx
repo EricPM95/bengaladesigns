@@ -36,6 +36,8 @@ import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '.
 import { diaDeHoy, diaQueSeAbreAlEntrar } from '../../lib/diaDeHoy'
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../lib/diaCompleto'
 import { Icono } from '../ui/Icono'
+import { usePagoActivo } from '../../lib/pago'
+import { reorganizarDias, sePuedeReorganizar } from '../../lib/reorganizarDia'
 import { PiezaSegura } from '../PiezaSegura'
 
 interface DayListProps {
@@ -95,6 +97,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
   // Tanda 10N §6b: quien solo recomienda no tiene los tres puntitos del día ni las rayitas para arrastrar días (no mueve días enteros; sí propone mover paradas).
   const { soloRecomienda } = usePermisosDelViaje()
+  const conPase = usePagoActivo()
   /** La ventana del nombre: crear un día o cambiar el de uno libre. */
   const [nameSheet, setNameSheet] = useState<{ dayId: string | null } | null>(null)
   // «+ Añadir día»: primero qué quieres hacer, si el destino tiene excursiones (PARA_CODE_EXCURSIONES, 5).
@@ -322,6 +325,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                   onRestoreDay={!isFreeDay(day) && !day.userAdded && !isDayPinned(route, reservations, day) && day.originalSnapshot ? () => setAskRestore({ dayId: day.id, dayNumber: day.dayNumber }) : undefined}
                   onDelete={isDayPinned(route, reservations, day) ? null : () => setRemoveDayId(day.id)}
                   onAddPlaces={() => openAddFlow(day.id)}
+                  // (10S7) «Reorganizar este día»: solo con pase (sin pase no sale) y no para quien solo recomienda (ese menú ni se pinta).
+                  onReorganize={conPase && sePuedeReorganizar(day) ? () => void reorganizarDias([day.id], { avisar: true }) : undefined}
                   // (Tanda 10N4 §3) «Añadir una excursión» hace lo mismo que el interruptor [Roma | Excursión]: solo cabe donde el día lleva interruptor (no en el de llegada ni en el de vuelta).
                   excursion={{
                     cabe: Boolean(day.interruptor),

@@ -19,6 +19,8 @@ import { TimeListWheel } from '../../ui/TimeListWheel'
 import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { fechaLarga } from '../../../lib/fechaLarga'
 import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojamiento'
+import { ReservaDelAlojamiento } from './ReservaDelAlojamiento'
+import { reservaConDatos } from '../../../lib/reservaAlojamiento'
 
 /** La hoja de la zona (Tanda 6v): las zonas del destino en una rueda, como la de la hora, y [Guardar]. */
 export function HojaZona({ zonas, actual, onGuardar, onClose }: { zonas: DestinationExcursions['zonasAlojamiento']; actual: string | null; onGuardar: (id: string) => void; onClose: () => void }) {
@@ -99,6 +101,8 @@ export function AlojamientoReservas({
   const fechasTexto = rango?.start && rango?.end ? fechaLarga(rango.start) + ' → ' + fechaLarga(rango.end) : null
 
   const hayAlgo = Boolean(hotel) || zonaHecha
+  // (10S7 §5) Con la reserva del hotel (A2) las filas ya dicen la dirección, las fechas y las noches: no se repiten las de la ruta.
+  const conReserva = reservaConDatos(hotel?.reserva)
   // «En este alojamiento · Tú y Viajes»: a quién cubre (solo el administrador, en un viaje con más gente).
   const adminId = g.gente.find((p) => p.esAdmin)?.id ?? null
   const todos = g.gente.map((p) => p.id)
@@ -146,10 +150,11 @@ export function AlojamientoReservas({
                   {nombreHotel && <span style={{ font: "400 28px/1.05 'Instrument Serif',serif" }} data-alojamiento-nombre>{nombreHotel}</span>}
                   {pago && elegida && <span style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>{elegida.nombre}</span>}
                   {pago && elegida?.sub && <span className="text-[13px] text-text/60">{elegida.sub}</span>}
-                  {fechasTexto && <span className="text-[13px] text-text/60" data-alojamiento-fechas>{fechasTexto}</span>}
-                  {noches > 0 && <span className="text-[13px] text-text/60" data-alojamiento-noches>{nochesTexto(noches)}</span>}
+                  {!conReserva && fechasTexto && <span className="text-[13px] text-text/60" data-alojamiento-fechas>{fechasTexto}</span>}
+                  {!conReserva && noches > 0 && <span className="text-[13px] text-text/60" data-alojamiento-noches>{nochesTexto(noches)}</span>}
                   {precio !== null && <span className="text-[13px] text-text/60" data-alojamiento-precio>{`Precio · ${precioEnVista(precio)}`}</span>}
-                  {direccion && <span className="text-[13px] text-text/75" data-direccion-tarjeta>{direccion}</span>}
+                  {!conReserva && direccion && <span className="text-[13px] text-text/75" data-direccion-tarjeta>{direccion}</span>}
+                  {hotel && <ReservaDelAlojamiento hotel={hotel} segmentDayId={segmentDayId} nombreMostrado={nombreHotel} conPase={pago} direccionDelViaje={direccion} año={rango?.start ? Number(rango.start.slice(0, 4)) : undefined} />}
                   {pago && (elegida || direccion) && <BotonComoLlegarAlojamiento direccion={direccion} className="mt-2" />}
                   {hotel && <EliminarTexto alinear="derecha" texto="Eliminar alojamiento" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}
                 </div>

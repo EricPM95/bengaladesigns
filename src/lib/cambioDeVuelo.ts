@@ -1,10 +1,7 @@
 import type { DayPlan, Route } from './types'
 import type { LegKind } from './reservasLegs'
 import { useRouteStore } from '../store/useRouteStore'
-import { useAddFlowStore } from '../store/useAddFlowStore'
 import { useResumenVueloStore } from '../store/useResumenVueloStore'
-import { pagoActivo } from './pago'
-import { isManualRoute } from './manualPlan'
 import { construirResumen, firmaDeLosDias } from './resumenDeVuelo'
 
 /**
@@ -38,26 +35,12 @@ export function rehacerPorVueloEnMarcha(): boolean {
 }
 
 /**
- * El rehacer de siempre (`regenerateRouteForDates`: sin Claude, en segundo plano, «gana el último»), puesto en marcha por un cambio de vuelo. Solo de pago, solo en rutas nuestras de un destino
- * curado (la ruta a mano no se rehace nunca: los vuelos solo ponen la barra, el billete y los avisos). Devuelve si se puso en marcha.
+ * (Tanda 10S7, apartado 2) YA NO REHACE LOS DÍAS SOLO. Hasta la 10S6, con pase, poner, cambiar o borrar la hora o el punto de Roma, o elegir la zona del alojamiento, rehacía los días en segundo plano
+ * (`regenerateRouteForDates`). Eric lo quitó: nada se reorganiza solo, tampoco el vuelo al guardarlo. Ahora el cambio se guarda y la ruta se queda como está; si reorganizar cambiaría algo en los días
+ * afectados, sale el botón flotante «Reorganizar» (`ReorganizarHost`), que lo vigila mirando la ruta, no esta llamada. Se deja la función (y quien la llama) para no tocar las pantallas: devuelve siempre false.
  */
-export function rehacerPorCambioDeVuelo(cambio: CambioDeVuelo, route?: Route | null): boolean {
-  if (!pagoActivo()) return false
-  const ruta = route ?? useRouteStore.getState().route
-  if (!ruta || isManualRoute(ruta)) return false
-  const curado = ruta.days.some((day) => day.timesAreFinal)
-  if (!curado) return false
-  const estado = useRouteStore.getState()
-  // Si ya había uno en marcha, el nuevo lo sustituye y la hoja cuenta los dos cambios.
-  const enMarcha = rehacerPorVueloEnMarcha() ? estado.rehacerGeneracion : null
-  useResumenVueloStore.getState().iniciar(cambio, estado.rehacerGeneracion + 1, enMarcha)
-  estado.regenerateRouteForDates(ruta.answers.dateRange)
-  // Quitar el vuelo deja el aviso «Deshacer»: si se pulsa con el rehacer en marcha, se corta (su resultado no debe acabar encima de lo deshecho).
-  if (cambio.que === 'quitar') {
-    const generacion = useRouteStore.getState().rehacerGeneracion
-    useAddFlowStore.setState((state) => (state.toast ? { toast: { ...state.toast, alDeshacer: () => cortarRehacerPorVuelo(generacion) } } : state))
-  }
-  return true
+export function rehacerPorCambioDeVuelo(_cambio: CambioDeVuelo, _route?: Route | null): boolean {
+  return false
 }
 
 /**

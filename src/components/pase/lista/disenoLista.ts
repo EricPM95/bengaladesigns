@@ -12,9 +12,14 @@ export const SECCIONES_DE_LA_LISTA: SeccionDeLista[] = [
     "linea": "Pon tu vuelo o tu tren y el primer y el último día se ajustan a tus horas."
    },
    {
+    "icono": "<svg width=\"42\" height=\"42\" viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"32\" r=\"22\" fill=\"#FFFDF8\" stroke=\"#1C2230\" stroke-width=\"2.2\"/><path fill=\"none\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20 24h14l8 16h6M20 40h14l8-16h6M44 20l4 4-4 4M44 36l4 4-4 4\"/><circle cx=\"32\" cy=\"32\" r=\"26\" fill=\"none\" stroke=\"#B58A2E\" stroke-width=\"1.4\" stroke-dasharray=\"1 3.5\"/></svg>",
+    "titulo": "Tu día, reorganizado en un toque",
+    "linea": "Optimizamos tu ruta para que no pierdas tiempo."
+   },
+   {
     "icono": "<svg width=\"42\" height=\"42\" viewBox=\"0 0 64 64\"><rect x=\"8\" y=\"12\" width=\"48\" height=\"42\" rx=\"7\" fill=\"#FFFDF8\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path fill=\"none\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M8 24h48M20 8v8M44 8v8\"/><path fill=\"#E9C77A\" stroke=\"#B58A2E\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M16 36h22M33 31l5 5-5 5\"/><path fill=\"#E9C77A\" stroke=\"#B58A2E\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M48 46H26M31 41l-5 5 5 5\" transform=\"translate(0 -2)\"/></svg>",
-    "titulo": "Los días, en el mejor orden",
-    "linea": "Ordenamos tus días según cuándo llegas y cuándo te vas."
+    "titulo": "Adaptamos tu viaje al mejor orden",
+    "linea": "Ordenamos tus días según tu llegada, tu vuelta y los cierres de los monumentos."
    },
    {
     "icono": "<svg width=\"42\" height=\"42\" viewBox=\"0 0 64 64\"><path fill=\"none\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 50V22M6 42h40a8 8 0 0 1 8 8M6 50h52\"/><rect x=\"10\" y=\"30\" width=\"16\" height=\"12\" rx=\"5\" fill=\"#FFFDF8\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path fill=\"#FFFDF8\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M26 42v-8h18a8 8 0 0 1 8 8z\"/><path fill=\"#E9C77A\" stroke=\"#B58A2E\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M48 24c-6-6-9-9-9-13a9 9 0 0 1 18 0c0 4-3 7-9 13z\" transform=\"translate(-1 -3) scale(.9)\"/><circle cx=\"47\" cy=\"12\" r=\"3\" fill=\"#FFFDF8\" stroke=\"#B58A2E\" stroke-width=\"1.5\"/></svg>",

@@ -2,7 +2,8 @@
   "_nota": "Lo que incluye el pase, UNA COSA POR LÍNEA, sacado del apartado «EN EL PASE» de docs/dias/GRATIS_Y_PASE.md (solo lo que ya está hecho, ✅). La app cuenta esta lista: con 21 o más, el texto del día de vuelta dice «más de 20 ventajas»; con menos, el número exacto. Cuando entre algo nuevo (el compañero de HOY, descargar el viaje sin conexión…), se añade aquí una línea y el número sube solo. `origen` es el principio de la línea del documento de donde sale (la prueba comprueba que no falta ninguna).",
   "ventajas": [
     { "id": "vuelos_horas", "grupo": "Antes del viaje", "texto": "Poner el vuelo o el tren: el primer y el último día se ajustan a tus horas", "origen": "Poner los vuelos o el tren" },
-    { "id": "orden_dias", "grupo": "Antes del viaje", "texto": "El orden de los días según tu llegada y tu vuelta", "origen": "El orden de los días según la llegada" },
+    { "id": "orden_dias", "grupo": "Antes del viaje", "texto": "El orden de los días según tu llegada, tu vuelta y los cierres", "origen": "El orden de los días según la llegada" },
+    { "id": "reorganizar_dia", "grupo": "Antes del viaje", "texto": "Reorganizar tu día en un toque ([Reorganizar])", "origen": "Reorganizar un día en un toque" },
     { "id": "zona_alojamiento", "grupo": "Antes del viaje", "texto": "La zona del alojamiento", "origen": "La zona del alojamiento" },
     { "id": "como_llegar_alojamiento", "grupo": "Antes del viaje", "texto": "[Cómo llegar a tu alojamiento]", "origen": "La zona del alojamiento" },
     { "id": "resumen_reservas", "grupo": "Antes del viaje", "texto": "El resumen de las reservas (lo que llevas hecho)", "origen": "El resumen de las reservas" },

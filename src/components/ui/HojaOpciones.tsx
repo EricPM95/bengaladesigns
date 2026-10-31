@@ -55,6 +55,8 @@ export const ICONOS_OPCION = {
   check: 'M5 12.5l4.5 4.5L19 7.5',
   campana: 'M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4',
   circulo: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z',
+  /** (10S7) «Reorganizar este día» (Piezas/Reorganizar R4): dos flechas en sentidos contrarios. */
+  reorganizar: 'M4 8h10l3-3 3 3M20 16H10l-3 3-3-3M17 5v6M7 13v6',
 } as const
 
 export function HojaOpciones({

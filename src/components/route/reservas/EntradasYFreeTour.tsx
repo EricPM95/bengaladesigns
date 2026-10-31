@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { leerImporte, type Importe } from '../../../lib/dinero'
-import type { Route } from '../../../lib/types'
+import type { Route, Stop } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
 import { elDia, fechaCorta, diaTitulo } from '../../../lib/nombreDeDia'
@@ -9,6 +9,9 @@ import { ICONOS } from './BloqueReservas'
 import { TarjetaPorReservar, TarjetaReservada, ROTULO } from './TarjetasEntradas'
 import { FueraDeRutaFila } from './FueraDeRutaFila'
 import { FichaEntrada } from './FichaEntrada'
+import { TarjetaEntradaBillete, CodigoDeEntradaPantallaCompleta } from './EntradaConBillete'
+import { useBilletesDeEntradas } from '../../../hooks/useBilleteEntrada'
+import { useBilleteStore, entradaConCodigo, type BilleteDeEntrada } from '../../../store/useBilleteStore'
 import { OtraReservaBuscador } from './OtraReservaBuscador'
 import { esReservaLibre } from '../../../lib/otraReserva'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
@@ -36,6 +39,12 @@ export function metaReservaEntera(route: Route, reservation: { dateIso: string |
   const fecha = reservation.dateIso && route.answers.dateRange ? fechaCorta(reservation.dateIso) : `Día ${reservation.dayNumber ?? ''}`.trim()
   const precio = leerImporte(reservation.precio)
   return `${fecha} · ${reservation.time}${precio ? ` · ${precioEnVista(precio)}` : ''}`
+}
+
+/** (10S7) «Viernes 27 · 09:00»: el día entero y la hora, sin el precio (lo que lleva el código a pantalla completa). */
+export function cuandoDeLaReserva(route: Route, reservation: { dateIso: string | null; dayNumber: number | null; time: string }): string {
+  const fecha = reservation.dateIso && route.answers.dateRange ? fechaCorta(reservation.dateIso) : `Día ${reservation.dayNumber ?? ''}`.trim()
+  return `${fecha} · ${reservation.time}`
 }
 
 /** (10S6) «En tu ruta · Jueves 26» (con fechas) o «En tu ruta · Día 2»: la etiqueta de una por reservar, con el día entero. */
@@ -87,6 +96,9 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
   const [buscando, setBuscando] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
   const [ficha, setFicha] = useState<BloqueEntrada | null>(null)
+  // (10S7 §3 y §4) El billete de cada entrada (privado de esta persona) y el código a pantalla completa.
+  const billetes = useBilletesDeEntradas()
+  const [codigoAbierto, setCodigoAbierto] = useState<{ titulo: string; cuando: string; billete: BilleteDeEntrada & { codigo: NonNullable<BilleteDeEntrada['codigo']> } } | null>(null)
   const { enRuta, masEntradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations, Object.keys(info.entradasPorSitio ?? {}))
   const pedido = useReservasGrupoUi((state) => state.pedido)
   const limpiarPedido = useReservasGrupoUi((state) => state.limpiar)
@@ -131,6 +143,11 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
   const etiquetaDe = (item: BloqueEntrada) => (item.isFreeTour ? 'Free Tour' : 'Entrada')
   const botonDe = (item: BloqueEntrada) => (item.isFreeTour ? 'Reservar Free Tour' : 'Reservar entrada')
 
+  /** (10S7) La parada de ese sitio en la ruta (la que tiene foto, si hay varias): de ella sale la foto de la miniatura, la misma de DÍAS y de su ficha. */
+  const paradaDe = (item: BloqueEntrada): Stop | null => {
+    const paradas = route.days.flatMap((day) => day.stops.filter((stop) => !stop.passThrough && (item.isFreeTour ? stop.isFreeTour : !stop.isFreeTour && item.placeNames.includes(stop.name))))
+    return paradas.find((stop) => stop.photoUrl) ?? paradas[0] ?? null
+  }
   const sinReservar = enRuta.filter((item) => !item.reservation)
   const conReserva = enRuta.filter((item) => item.reservation)
 
@@ -145,9 +162,21 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
         : grupo.compartido && !grupo.esInvitado
           ? paraQuienTexto(reserva)
           : undefined
+    const billete = mia ? billetes.de(reserva.refId) : null
+    const cuando = cuandoDeLaReserva(route, reserva)
     return (
       <div key={item.clave} className="flex flex-col gap-2" data-entrada-fila={item.name}>
-        <TarjetaReservada etiqueta={item.isFreeTour ? 'Reservado' : 'Reservada'} name={item.name} meta={metaReservaEntera(route, reserva)} nota={nota} onChange={mia ? () => setTarget({ ...targetOf(item), existing: reserva }) : undefined} />
+        <TarjetaReservada onCodigo={entradaConCodigo(billete) ? () => setCodigoAbierto({ titulo: item.name, cuando, billete }) : undefined} etiqueta={item.isFreeTour ? 'Reservado' : 'Reservada'} name={item.name} meta={metaReservaEntera(route, reserva)} nota={nota} onChange={mia ? () => setTarget({ ...targetOf(item), existing: reserva }) : undefined} parada={paradaDe(item)} ciudad={route.destination} freeTour={item.isFreeTour} />
+        {mia && reserva.kind === 'entrada' && (
+          <TarjetaEntradaBillete
+            billete={billete}
+            nombre={item.name}
+            cuando={cuando}
+            año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined}
+            onLeida={(lectura) => setTarget({ ...targetOf(item), existing: reserva, lectura })}
+            onQuitar={() => useBilleteStore.getState().quitarEntrada(billetes.tripId, reserva.refId)}
+          />
+        )}
         {reserva.fueraDeRuta && <FueraDeRutaFila reservaId={reserva.id} esFreeTour={item.isFreeTour} />}
         {avisoDe(reserva.id) && <AvisoFueraDeDiaTarjeta aviso={avisoDe(reserva.id)!} />}
         {noCuadran.filter((aviso) => aviso.cambio.reservaId === reserva.id).map((aviso) => (
@@ -174,6 +203,8 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
         onAdd={() => setTarget(delDueno ? { ...targetOf(item), igualQue: { reserva: delDueno, quien: quienesDe(item), modo: 'tengo' } } : targetOf(item))}
         nota={delDueno ? textoDe(item) : undefined}
         freeTour={item.isFreeTour}
+        parada={paradaDe(item)}
+        ciudad={route.destination}
       />
     )
   }
@@ -259,6 +290,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
         />
       )}
       {ficha && <FichaEntrada route={route} item={ficha} onClose={() => setFicha(null)} />}
+      {codigoAbierto && <CodigoDeEntradaPantallaCompleta billete={codigoAbierto.billete} titulo={codigoAbierto.titulo} cuando={codigoAbierto.cuando} onClose={() => setCodigoAbierto(null)} />}
     </>
   )
 }

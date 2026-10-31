@@ -324,7 +324,7 @@ async function paraElServidor(archivo: File, paginas: HTMLCanvasElement[]): Prom
   return { media_type: 'image/jpeg', data: sal.toDataURL('image/jpeg', 0.85).split(',')[1] }
 }
 
-async function leerEnServidor(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete): Promise<LecturaServidor | null> {
+async function leerEnServidor(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete, tipo?: 'entrada' | 'alojamiento'): Promise<LecturaServidor | null> {
   const adjunto = await paraElServidor(archivo, paginas)
   if (!adjunto) return null
   const control = new AbortController()
@@ -334,7 +334,7 @@ async function leerEnServidor(archivo: File, paginas: HTMLCanvasElement[], opcio
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: control.signal,
-      body: JSON.stringify({ file: adjunto, mode: opciones.modo, year_hint: opciones.anioPorDefecto }),
+      body: JSON.stringify({ file: adjunto, mode: opciones.modo, year_hint: opciones.anioPorDefecto, ...(tipo ? { tipo } : {}) }),
     })
     return r.ok ? ((await r.json()) as LecturaServidor) : null
   } catch {
@@ -425,4 +425,116 @@ export async function leerBillete(archivo: File, opciones: OpcionesLeerBillete =
     /* nunca lanza */
   }
   return datos
+}
+
+// ── Las entradas (10S7 §3) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+/** Lo que sale de leer una entrada (Coliseo, Museos, Free Tour…): el día, la hora, cuántas personas, el localizador y el código. Lo que no se sepa, `null`. */
+export interface DatosEntradaLeida {
+  /** `YYYY-MM-DD`. */
+  fecha: string | null
+  /** `HH:MM` 24 h. */
+  hora: string | null
+  personas: number | null
+  localizador: string | null
+  codigo: CodigoBillete | null
+  fuentes: Array<'codigo' | 'servidor'>
+}
+
+export function entradaVacia(): DatosEntradaLeida {
+  return { fecha: null, hora: null, personas: null, localizador: null, codigo: null, fuentes: [] }
+}
+
+interface LecturaServidorEntrada {
+  fecha: string | null
+  hora: string | null
+  personas: number | null
+  localizador: string | null
+  codigo_caja: { pagina: number; x0: number; y0: number; x1: number; y1: number } | null
+}
+
+/** PDF, foto o captura de una entrada → datos y código. Igual que `leerBillete`: nunca lanza; si no se puede leer nada, devuelve `entradaVacia()`. */
+export async function leerEntrada(archivo: File, opciones: OpcionesLeerBillete = {}): Promise<DatosEntradaLeida> {
+  const datos = entradaVacia()
+  try {
+    let paginas: HTMLCanvasElement[] = []
+    try {
+      paginas = await paginasDe(archivo)
+    } catch {
+      paginas = []
+    }
+    const [hallazgos, servidor] = await Promise.all([
+      buscarCodigos(paginas).catch(() => [] as Hallazgo[]),
+      leerEnServidor(archivo, paginas, opciones, 'entrada').catch(() => null) as Promise<LecturaServidorEntrada | null>,
+    ])
+    const area = (h: Hallazgo) => (h.caja.x1 - h.caja.x0) * (h.caja.y1 - h.caja.y0)
+    const elegido = [...hallazgos].sort((a, b) => area(b) - area(a))[0] ?? null
+    if (servidor) {
+      datos.fuentes.push('servidor')
+      datos.fecha = servidor.fecha ?? null
+      datos.hora = servidor.hora ?? null
+      datos.personas = Number.isInteger(servidor.personas) && (servidor.personas as number) > 0 ? servidor.personas : null
+      datos.localizador = servidor.localizador ?? null
+    }
+    if (elegido) datos.fuentes.push('codigo')
+    let recorte: string | null = null
+    let caja = elegido ? { pagina: elegido.pagina, ...elegido.caja } : null
+    if (!caja && servidor?.codigo_caja) caja = servidor.codigo_caja
+    if (caja && paginas[caja.pagina - 1]) recorte = recortar(paginas[caja.pagina - 1], caja)
+    if (elegido || recorte) {
+      datos.codigo = {
+        formato: elegido?.formato ?? 'otro',
+        texto: elegido?.texto ?? null,
+        dibujo: elegido ? await aSvgDataUrl(elegido.texto, elegido.formato) : null,
+        imagen: recorte,
+      }
+    }
+  } catch {
+    /* nunca lanza */
+  }
+  return datos
+}
+
+// ── El alojamiento (10S7 §5, agente T) ────────────────────────────────────────────────────────
+
+/** Lo que sale de leer la reserva de un alojamiento. Sin código (los hoteles no lo usan). Lo que no se sepa, `null`. */
+export interface DatosReservaLeida {
+  nombre: string | null
+  direccion: string | null
+  /** `YYYY-MM-DD`. */
+  entrada: string | null
+  salida: string | null
+  noches: number | null
+  /** `HH:MM`. */
+  horaEntrada: string | null
+  horaSalida: string | null
+  telefono: string | null
+  localizador: string | null
+  /** `false` si no se pudo leer nada (sin servidor, archivo ilegible…): la hoja sale vacía para escribirla a mano. */
+  leida: boolean
+}
+
+/** PDF, foto o captura de la reserva de un hotel → datos. Nunca lanza: si no se puede leer, devuelve todo `null` y `leida: false`. */
+export async function leerReservaAlojamiento(archivo: File, opciones: OpcionesLeerBillete = {}): Promise<DatosReservaLeida> {
+  const vacio: DatosReservaLeida = { nombre: null, direccion: null, entrada: null, salida: null, noches: null, horaEntrada: null, horaSalida: null, telefono: null, localizador: null, leida: false }
+  try {
+    let paginas: HTMLCanvasElement[] = []
+    try {
+      paginas = await paginasDe(archivo)
+    } catch {
+      paginas = []
+    }
+    const s = (await leerEnServidor(archivo, paginas, opciones, 'alojamiento').catch(() => null)) as unknown as {
+      nombre: string | null; direccion: string | null; entrada: string | null; salida: string | null; noches: number | null
+      hora_entrada: string | null; hora_salida: string | null; telefono: string | null; localizador: string | null
+    } | null
+    if (!s) return vacio
+    return {
+      nombre: s.nombre ?? null, direccion: s.direccion ?? null, entrada: s.entrada ?? null, salida: s.salida ?? null, noches: s.noches ?? null,
+      horaEntrada: s.hora_entrada ?? null, horaSalida: s.hora_salida ?? null, telefono: s.telefono ?? null, localizador: s.localizador ?? null,
+      leida: Object.values(s).some((v) => v != null),
+    }
+  } catch {
+    return vacio
+  }
 }

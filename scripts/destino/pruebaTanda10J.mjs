@@ -51,14 +51,22 @@ for (const archivo of todas) {
 const NECESARIAS = ['0001', '0003', '0012', '0018', '0020', '0021', '0023', '0024', '0025', '0026', '0028', '0030', '0031', '0032']
 for (const n of NECESARIAS) debe(!noAplicadas.some((x) => x.startsWith(n)), 'migracion', `la migración ${n} se aplica (${noAplicadas.filter((x) => x.startsWith(n)).join(' | ')})`)
 // 0071 (10S5): empezar_de_cero también borra billetes_personales. Su comprobación (docs/dias/COMPROBAR_0071.sql) dice «Aplicada» con todas las migraciones y «FALTA» con la función de la 0032 sola.
-debe(!noAplicadas.some((x) => x.startsWith('0071')) && !noAplicadas.some((x) => x.startsWith('0070')), 'migracion', `las migraciones 0070 y 0071 se aplican (${noAplicadas.filter((x) => /^007[01]/.test(x)).join(' | ')})`)
+debe(!noAplicadas.some((x) => /^007[012]/.test(x)), 'migracion', `las migraciones 0070, 0071 y 0072 se aplican (${noAplicadas.filter((x) => /^007[012]/.test(x)).join(' | ')})`)
 const comprobar0071 = fs.readFileSync('docs/dias/COMPROBAR_0071.sql', 'utf8')
-debe((await db.query(comprobar0071)).rows[0]?.migracion_0071 === 'Aplicada', 'migracion', 'COMPROBAR_0071.sql dice «Aplicada» con la 0071 aplicada')
+// 10S7: antes → ahora → decisión de Eric (31-oct): antes, con todas las migraciones, COMPROBAR_0071 decía «Aplicada»; ahora la 0072 (que ya no borra la prueba gastada) es la función vigente y la 0071 deja de encajar a
+// propósito (la función ya no nombra historia_de_prueba): la comprobación que vale es la 0072.
+debe((await db.query(comprobar0071)).rows[0]?.migracion_0071 === 'FALTA', 'migracion', 'con la 0072 vigente, COMPROBAR_0071.sql ya no encaja (la función ya no nombra historia_de_prueba): la que vale es la 0072')
+const comprobar0072 = fs.readFileSync('docs/dias/COMPROBAR_0072.sql', 'utf8')
+debe((await db.query(comprobar0072)).rows[0]?.migracion_0072 === 'Aplicada', 'migracion', 'COMPROBAR_0072.sql dice «Aplicada» con la 0072 aplicada')
 await db.exec(fs.readFileSync('supabase/migrations/0032_empezar_de_cero.sql', 'utf8'))
 debe((await db.query(comprobar0071)).rows[0]?.migracion_0071 === 'FALTA', 'migracion', 'COMPROBAR_0071.sql dice «FALTA» con la función de la 0032 sola')
 await db.exec(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8'))
 await db.exec(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8')) // idempotente: pegada dos veces
 debe((await db.query(comprobar0071)).rows[0]?.migracion_0071 === 'Aplicada', 'migracion', 'y «Aplicada» otra vez tras la 0071 (pegada dos veces)')
+debe((await db.query(comprobar0072)).rows[0]?.migracion_0072 === 'FALTA', 'migracion', 'COMPROBAR_0072.sql dice «FALTA» con la función de la 0071 (la que devolvía las pruebas)')
+await db.exec(fs.readFileSync('supabase/migrations/0072_empezar_de_cero_no_devuelve_pruebas.sql', 'utf8'))
+await db.exec(fs.readFileSync('supabase/migrations/0072_empezar_de_cero_no_devuelve_pruebas.sql', 'utf8')) // idempotente: pegada dos veces
+debe((await db.query(comprobar0072)).rows[0]?.migracion_0072 === 'Aplicada', 'migracion', 'y «Aplicada» tras la 0072 (pegada dos veces)')
 await db.exec(`
   grant usage on schema public, auth, storage to anon, authenticated, service_role;
   grant all on all tables in schema public to authenticated, service_role;
@@ -88,11 +96,12 @@ const S = (sql, params = []) => servidor(() => q(sql, params))
 /** El inventario: TODA tabla con datos de una cuenta y la columna que dice de quién es. Lo que se borra. */
 const INVENTARIO = [
   ['stop_visits', 'user_id'], ['trip_photo_meta', 'user_id'], ['trip_photos', 'user_id'], ['logro_hechos', 'user_id'], ['achievements', 'user_id'], ['logro_avisos', 'user_id'], ['logro_perfil', 'user_id'],
-  ['push_suscripciones', 'user_id'], ['hoy_prueba', 'user_id'], ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
-  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['admin_sin_pase', 'user_id'] /* 0040 */, ['trip_gastos', 'autor_id'] /* 0037/0040 */, ['trip_pagos', 'marcado_por'] /* 0040 */, ['trip_ex_miembros', 'user_id'] /* 0040 */, ['lo_suyo_del_viaje', 'user_id'] /* 0049, añadida en la 0071 */, ['reservas_invitado', 'user_id'] /* 0038, 0071 */, ['reservas_privadas_admin', 'user_id'] /* 0062/0064, 0071 */, ['historia_de_prueba', 'user_id'] /* 0033, 0071 */, ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
+  ['push_suscripciones', 'user_id'], /* hoy_prueba: 0072, se queda */ ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
+  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['admin_sin_pase', 'user_id'] /* 0040 */, ['trip_gastos', 'autor_id'] /* 0037/0040 */, ['trip_pagos', 'marcado_por'] /* 0040 */, ['trip_ex_miembros', 'user_id'] /* 0040 */, ['lo_suyo_del_viaje', 'user_id'] /* 0049, añadida en la 0071 */, ['reservas_invitado', 'user_id'] /* 0038, 0071 */, ['reservas_privadas_admin', 'user_id'] /* 0062/0064, 0071 */, /* historia_de_prueba: 0072, se queda */ ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
 ]
 /** Lo que se queda (de la cuenta). */
-const SE_QUEDA = [['travelers', 'id'], ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id']]
+// 10S7: hoy_prueba e historia_de_prueba pasan aquí (0072): las pruebas gastadas se quedan SIEMPRE («una por cuenta, para siempre»).
+const SE_QUEDA = [['travelers', 'id'], ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id'], ['hoy_prueba', 'user_id'], ['historia_de_prueba', 'user_id']]
 
 const usuario = async (email) => (await q('insert into auth.users (email, is_anonymous) values ($1, false) returning id', [email]))[0].id
 let contador = 0
@@ -250,6 +259,15 @@ c = await contar(A)
 for (const [tabla, columna] of INVENTARIO) debe(c[`${tabla}.${columna}`] === 0, 'vacio', `${tabla}.${columna}: vacío para la cuenta`)
 debe(resultado.borrados.trips > 0 && resultado.borrados.logro_hechos > 0 && resultado.borrados.passes > 0, 'vacio', `la función cuenta lo que borra: ${JSON.stringify(resultado.borrados)}`)
 debe(c['travelers.id'] === 1 && c['invitaciones_app.user_id'] === 1, 'cuenta', 'la cuenta y su ficha se quedan (travelers e invitaciones_app)')
+// 10S7: antes → ahora → decisión de Eric (31-oct): antes la prueba gastada se borraba con el resto (y se podía volver a gastar sin fin); ahora se queda SIEMPRE, gastada, y lo demás se borra igual.
+debe(c['hoy_prueba.user_id'] === 1 && c['historia_de_prueba.user_id'] === 1, 'pruebas', 'las pruebas gastadas SE QUEDAN: hoy_prueba e historia_de_prueba siguen con su fila tras empezar de cero')
+{
+  const hp = (await S('select gastada_en, trip_id from public.hoy_prueba where user_id = $1', [A]))[0]
+  debe(hp && hp.gastada_en !== null, 'pruebas', 'la prueba de HOY sigue GASTADA (con su fecha de gasto): no se puede volver a gastar')
+  debe(hp && hp.trip_id === null, 'pruebas', 'y solo perdió la referencia al viaje borrado (on delete set null)')
+  const hd = (await S('select sitio from public.historia_de_prueba where user_id = $1', [A]))[0]
+  debe(hd && hd.sitio === 'coliseo', 'pruebas', 'la historia de prueba sigue como estaba')
+}
 debe(c['logro_referidos.invitado_id'] === 1, 'cuenta', 'el registro de quien la invitó (donde ella es la invitada) se queda: es de quien invitó')
 debe((await S('select count(*)::int as n from auth.users where id = $1', [A]))[0].n === 1, 'cuenta', 'la cuenta de auth NO se borra')
 debe((await S('select count(*)::int as n from public.pagos_registro'))[0].n === pagosAntes, 'stripe', 'el registro de cobros queda igual')
@@ -260,6 +278,7 @@ debe(Object.values(await contar(B)).filter((n) => n > 0).length >= 18, 'otra', '
 // Y repetirlo no rompe nada
 const otraVez = (await S('select public.empezar_de_cero($1) as r', [A]))[0].r
 debe(Object.values(otraVez.borrados).every((n) => n === 0), 'repetir', 'repetirlo con la cuenta ya vacía no borra nada y no falla')
+debe(!('hoy_prueba' in resultado.borrados) && !('historia_de_prueba' in resultado.borrados), 'pruebas', 'la función ni cuenta ni toca las tablas de las pruebas gastadas')
 let falla = null
 try {
   await S('select public.empezar_de_cero($1)', ['00000000-0000-0000-0000-000000000001'])
@@ -439,7 +458,9 @@ console.log('3. El código')
 {
   const sin = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\s--.*$/gm, '')
   // 10S5: la función vigente es la de la 0071 (la 0032 no se edita; la 0071 la vuelve a crear con una línea más en el inventario).
-  const sql = sin(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8'))
+  // 10S7: la vigente es ahora la de la 0072 (parte de la 0071 y solo le quita hoy_prueba e historia_de_prueba: las pruebas gastadas se quedan).
+  const sql = sin(fs.readFileSync('supabase/migrations/0072_empezar_de_cero_no_devuelve_pruebas.sql', 'utf8'))
+  const sql71 = sin(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8'))
   const sql32 = sin(fs.readFileSync('supabase/migrations/0032_empezar_de_cero.sql', 'utf8'))
   debe(!/billetes_personales/.test(sql32) && /billetes_personales/.test(sql), 'inventario', 'la 0032 no está editada y la 0071 añade billetes_personales')
   const reiniciar = sin(fs.readFileSync('server/logros/reiniciar.js', 'utf8'))
@@ -455,7 +476,7 @@ console.log('3. El código')
   debe(/conAdmin\(async \(req, res, usuario\)/.test(bloque) && /esAdmin\(usuario, env\)/.test(bloque), 'admin', 'el servidor decide con LOGROS_ADMIN_EMAILS (esAdmin) en las dos rutas')
   debe(!/@[a-z0-9-]+\.(com|es|org)/i.test(reiniciar + bloque), 'admin', 'ningún email escrito en el código')
   debe(!/from\('(?!admin_sin_pase')/.test(reiniciar), 'filtro', 'el servicio no hace consultas sueltas a tablas: todo pasa por la función de la base de datos')
-  const motor = ['server/logros/reiniciar.js', 'src/lib/empezarDeCero.ts', 'supabase/migrations/0032_empezar_de_cero.sql', 'supabase/migrations/0071_empezar_de_cero_billetes.sql'].map((f) => fs.readFileSync(f, 'utf8')).join('\n')
+  const motor = ['server/logros/reiniciar.js', 'src/lib/empezarDeCero.ts', 'supabase/migrations/0032_empezar_de_cero.sql', 'supabase/migrations/0071_empezar_de_cero_billetes.sql', 'supabase/migrations/0072_empezar_de_cero_no_devuelve_pruebas.sql'].map((f) => fs.readFileSync(f, 'utf8')).join('\n')
   debe(!/routeEngine|server\/engine|shared\//.test(motor), 'motor', 'no toca el motor de rutas')
   // El inventario de la prueba es el de la migración
   const tablasSql = [...sql.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
@@ -463,10 +484,15 @@ console.log('3. El código')
   // 10S5d: la 0071 parte de la ÚLTIMA versión de la función (la de la 0040) y añade SOLO `billetes_personales` (Eric, 31-oct): ninguna tabla de la 0040 se pierde.
   const sql40 = sin(fs.readFileSync('supabase/migrations/0040_cuentas_del_grupo.sql', 'utf8'))
   const tablas40 = [...sql40.slice(sql40.indexOf('create or replace function public.empezar_de_cero')).matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
-  const tablas71 = tablasSql
+  const tablas71 = [...sql71.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
   debe(tablas40.every((x) => tablas71.includes(x)), 'inventario', `la 0071 conserva todas las tablas de la 0040 (${tablas40.length}); le faltan: ${tablas40.filter((x) => !tablas71.includes(x)).join(', ') || 'ninguna'}`)
   const NUEVAS_DE_LA_0071 = ['billetes_personales.user_id', 'historia_de_prueba.user_id', 'lo_suyo_del_viaje.user_id', 'reservas_invitado.user_id', 'reservas_privadas_admin.user_id']
   debe(JSON.stringify(tablas71.filter((x) => !tablas40.includes(x)).sort()) === JSON.stringify(NUEVAS_DE_LA_0071), 'inventario', `y sus únicas tablas nuevas son billetes_personales y las cuatro que pidió Eric (31-oct) (nuevas: ${tablas71.filter((x) => !tablas40.includes(x)).join(', ') || 'ninguna'})`)
+  // 10S7: la 0072 parte de la ÚLTIMA versión (la de la 0071) y su ÚNICA diferencia es que ya no borra hoy_prueba ni historia_de_prueba (decisión de Eric, 31-oct).
+  const SE_QUITAN_EN_LA_0072 = ['historia_de_prueba.user_id', 'hoy_prueba.user_id']
+  debe(JSON.stringify(tablas71.filter((x) => !tablasSql.includes(x)).sort()) === JSON.stringify(SE_QUITAN_EN_LA_0072), 'inventario', `la 0072 solo le quita a la 0071 hoy_prueba e historia_de_prueba (quita: ${tablas71.filter((x) => !tablasSql.includes(x)).join(', ') || 'nada'})`)
+  debe(tablasSql.every((x) => tablas71.includes(x)), 'inventario', `y no añade nada que la 0071 no tuviera (añade: ${tablasSql.filter((x) => !tablas71.includes(x)).join(', ') || 'nada'})`)
+  debe(!/hoy_prueba|historia_de_prueba/.test(sql), 'pruebas', 'el código de la 0072 (sin comentarios) no nombra hoy_prueba ni historia_de_prueba: no se borran nunca')
   // El cliente
   const cliente = fs.readFileSync('src/lib/empezarDeCero.ts', 'utf8')
   const panel = fs.readFileSync('src/components/logros/AdminLogros.tsx', 'utf8')

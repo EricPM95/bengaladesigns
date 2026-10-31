@@ -1490,12 +1490,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return {
         // La parada NUEVA es la única a la que le ponemos hora (no tenía); las que ya estaban no se tocan.
         route: updateDay(state.route, dayId, (day) => {
-          const previous = day.stops[day.stops.length - 1]
-          const fallback = stop.time
-          const stops = day.stops.map((other, at) => (at === day.stops.length - 1 ? { ...other, nextLegPending: true } : other))
-          // Día libre: sin hora (la pone el viajero si quiere).
-          if (isFreeDay(day)) return { ...day, stops: [...stops, { ...stop, time: '' }] }
-          return { ...day, stops: [...stops, { ...stop, time: stop.isNightExperience ? stop.time : timeForStopAfter(previous, fallback, stop) }] }
+          // Día libre: sin hora (la pone el viajero si quiere), al final como siempre.
+          if (isFreeDay(day)) return { ...day, stops: [...day.stops, { ...stop, time: '' }] }
+          // (10S7) Toda parada nueva entra la PRIMERA del día: coge la hora de la que era primera y las de detrás se empujan lo justo si se pisan.
+          const first = day.stops[0]
+          const time = stop.isNightExperience ? stop.time : first ? first.time : timeForStopAfter(undefined, stop.time, stop)
+          return { ...day, stops: pushOverlapsForward([{ ...stop, time, nextLegPending: first ? true : undefined }, ...day.stops]) }
         }),
       }
     }),

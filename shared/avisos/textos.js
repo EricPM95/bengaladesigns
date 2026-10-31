@@ -93,6 +93,8 @@ export function queCambioEnElViaje(p, plural = false) {
     }
     if (a.tipo === 'recuperar_ruta') return v('ha vuelto a la ruta inicial', 'han vuelto a la ruta inicial')
     if (a.tipo === 'recuperar_dia') return `${v('ha recuperado', 'han recuperado')} ${dia} como estaba`
+    // (10S7) «Eric ha reorganizado el jueves 26» (un solo aviso por reorganizar, aunque sean varios días: «ha reorganizado 2 días»).
+    if (a.tipo === 'reorganizar') return `${v('ha reorganizado', 'han reorganizado')} ${Number(a.n) > 1 ? `${Number(a.n)} días` : dia}`
     // (Nunca «ha cambiado las fechas» si las fechas son las mismas: rehacer la ruta con las mismas fechas es «ha rehecho la ruta».)
     if (a.tipo === 'fechas' && !(c.fechas && JSON.stringify(c.fechas.antes) !== JSON.stringify(c.fechas.despues))) return v('ha rehecho la ruta', 'han rehecho la ruta')
     if (a.tipo === 'fechas') {
@@ -317,6 +319,7 @@ function franjaDeCambioDelViaje(p) {
     if (ac.tipo === 'excursion') return { verbo: `ha cambiado ${elDiaDicho(ac)}`, detalle: ac.a === 'excursion' ? ['A día de excursión', ac.excursion].filter(Boolean).join(' · ') : `A un día en ${ac.ciudad || 'la ciudad'}` }
     if (ac.tipo === 'recuperar_ruta') return { verbo: 'ha vuelto a la ruta inicial', detalle: viaje }
     if (ac.tipo === 'recuperar_dia') return { verbo: `ha recuperado ${elDiaDicho(ac)}`, detalle: 'Como estaba' }
+    if (ac.tipo === 'reorganizar') return { verbo: `ha reorganizado ${Number(ac.n) > 1 ? `${Number(ac.n)} días` : elDiaDicho(ac)}`, detalle: viaje }
     if (ac.tipo === 'fechas') return p.cambio.fechas && JSON.stringify(p.cambio.fechas.antes) !== JSON.stringify(p.cambio.fechas.despues) ? { verbo: 'ha cambiado las fechas', detalle: viaje } : { verbo: 'ha rehecho la ruta', detalle: viaje }
     if (ac.tipo === 'rehacer') return { verbo: 'ha rehecho la ruta', detalle: viaje }
     if (ac.tipo === 'vuelo') return { verbo: `ha guardado el ${ac.medio || 'vuelo'}`, detalle: mayuscula(ladosDelVuelo(ac).join(' · ')) || viaje }

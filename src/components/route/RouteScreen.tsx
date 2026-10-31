@@ -3,6 +3,7 @@ import { RouteView } from './RouteView'
 import { AvisoSolape } from './reservas/AvisoSolape'
 import { AlojamientoHost } from './alojamiento/AlojamientoHost'
 import { BotonFlotanteLogros } from '../logros/momentos/BotonFlotanteLogros'
+import { ReorganizarHost } from '../reorganizar/ReorganizarHost'
 import { PantallaPresupuesto } from './presupuesto/PantallaPresupuesto'
 
 /**
@@ -17,6 +18,7 @@ export default function RouteScreen() {
       <AlojamientoHost />
       <PantallaPresupuesto />
       <BotonFlotanteLogros />
+      <ReorganizarHost />
     </motion.div>
   )
 }

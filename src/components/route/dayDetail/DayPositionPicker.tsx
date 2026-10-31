@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Route, Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { resolveDisplayStops, seedStopsFromTemplate } from '../../../lib/mockDayDetail'
+import { ponerParadaEnElDia, llevarALaParada } from '../../../lib/cambiarParada'
 import { Modal } from '../../ui/Modal'
 import { HojaDia, filasDeDias } from '../../ui/HojaDia'
 import { delDia, diaCorto } from '../../../lib/nombreDeDia'
@@ -42,6 +43,18 @@ export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPosit
     onInserted()
   }
 
+  // (10S7) Desde EXPLORAR la parada va de PRIMERA del día elegido y se ilumina un momento: ya no se pregunta el punto del día.
+  const anadirDePrimera = (dayId: string) => {
+    if (!stop) return
+    const dia = route.days.find((d) => d.id === dayId)
+    if (dia && dia.stops.length === 0) seedDayStops(dia.id, seedStopsFromTemplate(dia))
+    const id = ponerParadaEnElDia(dayId, { ...stop, addedByUser: true })
+    setSelectedDayId(null)
+    setElegido(null)
+    onInserted()
+    if (id) llevarALaParada(dayId, id)
+  }
+
   // (10N8, 3i) El primer paso, «¿A qué día?», es la hoja de elegir día de la app (`HojaDia`); el segundo, el punto del día, sigue como estaba.
   if (stop && !selectedDay) {
     return (
@@ -51,8 +64,8 @@ export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPosit
         filas={filasDeDias(route, route.days.filter((day) => !day.isReturnLeg))}
         elegido={elegido}
         onElegir={setElegido}
-        boton={elegido ? 'Siguiente: elegir el punto' : 'Elige un día'}
-        onConfirmar={() => setSelectedDayId(elegido)}
+        boton={elegido ? 'Añadir a este día' : 'Elige un día'}
+        onConfirmar={() => elegido && anadirDePrimera(elegido)}
         onCerrar={handleClose}
         datos="day-position-picker"
       />

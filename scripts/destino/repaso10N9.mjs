@@ -3,6 +3,7 @@
 //   node scripts/destino/repaso10N9.mjs --md     → imprime la lista de comprobación en Markdown
 // La lista sale de los ficheros `docs/dias/_10n9_checklist_<agente>.json` (un objeto por punto: apartado, punto, estado, nota, donde, captura), puestos en el orden del prompt de la Tanda 10N9
 // (docs/dias/PROMPT_TANDA10N9.md), más los puntos del §0, el §12 y el §13, que son de quien integra.
+// (10S7, 31-oct) Puesta al dia: antes -> «nombra lo quitado y no se ha pasado»; ahora -> se ha pasado y genera el repaso sin errores (no tiene fallos que dar: es un generador). Decision de Eric (10S7, 31-oct): pasarla en 0 fallos. No cambia nada del repaso ya entregado.
 import fs from 'node:fs'
 
 const ORDEN = ['0', '1', '2', '3', '4', '5', '6', '7']

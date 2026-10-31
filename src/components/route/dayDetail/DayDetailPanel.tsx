@@ -88,7 +88,6 @@ import { useParejasDeLaPropuesta, useMarcasDePropuesta } from '../../../hooks/us
 import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
-import { ReorganizarDia } from '../freeDay/ReorganizarDia'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
@@ -1549,7 +1548,7 @@ export function DayDetailPanel({
               </button>
           )}
 
-          <ReorganizarDia day={day} />
+          {/* (10S7) «Reorganizar este día» ya no es un botón aquí: está en el menú «···» del día (solo con pase) y, tras un cambio que lo pida, en el botón flotante. */}
 
           {/* (Sin «¿Prefieres una excursión este día?»: las excursiones se abren desde el botón flotante del autobús, PARA_CODE_EXCURSIONES 1.) */}
           {/* Rechazada: no se vuelve a proponer sola, pero el camino de vuelta queda abierto. */}
@@ -1581,7 +1580,8 @@ export function DayDetailPanel({
                       type="button"
                       onClick={() => {
                         setAddStopInitialQuery(rec.name)
-                        setInsertAt(realStops.length)
+                        // (10S7) Una parada que no se añade «entre dos paradas» entra la primera del día.
+                        setInsertAt(0)
                       }}
                       className="mt-2 rounded-full btn-champan px-3 py-1.5 text-caption font-semibold transition-colors "
                     >

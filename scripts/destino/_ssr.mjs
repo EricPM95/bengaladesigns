@@ -30,6 +30,14 @@ export async function prepararSSR(entrada, { piezasFalsas = [] } = {}) {
     process.exit(2)
   }
 
+  // (10S7) La traza de React «useLayoutEffect does nothing on the server» (sobre `ReservasPanel`/`PresenceChild`/`AnimatePresence`) NO es un fallo de la app: es framer-motion, que usa useLayoutEffect en el
+  // navegador (donde funciona) y avisa solo porque esta prueba pinta en el servidor con react-dom/server. Se quita ese aviso concreto y nada más; cualquier otro error de React se sigue viendo.
+  const errorOriginal = console.error
+  console.error = (...partes) => {
+    if (typeof partes[0] === 'string' && partes[0].startsWith('Warning: useLayoutEffect does nothing on the server')) return
+    errorOriginal(...partes)
+  }
+
   const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-ssr-'))
   const bundle = path.join(carpeta, 'panel.cjs')
   const real = path.resolve('node_modules/react-dom/index.js')

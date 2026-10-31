@@ -34,6 +34,11 @@ import { cuentaDelViaje, esFamilia } from '../../../lib/cuentaDelViaje'
 import { BloqueDinero, textoDelBoton, preguntaParaQuien } from '../presupuesto/BloqueDinero'
 import { anadirComoPrimeraParada, esReservaLibre, type SugerenciaDeEntrada } from '../../../lib/otraReserva'
 import { llevarALaParada } from '../../../lib/cambiarParada'
+import type { DatosEntradaLeida } from '../../../lib/billeteLeer'
+import { useBilleteStore, entradaConCodigo, type CodigoDelBillete } from '../../../store/useBilleteStore'
+import { useBilletesDeEntradas } from '../../../hooks/useBilleteEntrada'
+import { BotonAnadirEntrada } from './EntradaConBillete'
+import { ImagenDelCodigo } from './TarjetaBillete'
 
 /** (10N8, N6) El nombre de la entrada con su artículo: «el Coliseo, Foro y Palatino» (la tabla de artículos solo conoce «Coliseo»: si el nombre entero no está, se usa el artículo del primer sitio que cubre). */
 function sitioDeLaEntrada(target: { name: string; placeNames: string[] }): string {
@@ -70,6 +75,8 @@ export interface ReservationTarget {
   libre?: boolean
   /** (10S4) [Añadir otra reserva] con una sugerencia: al guardar, el sitio entra también en la ruta, en el día elegido, como primera parada. */
   sugerencia?: SugerenciaDeEntrada | null
+  /** (10S7 §3) Lo que se ha leído de una entrada (PDF, foto o captura) con [Añadir tu entrada]: la hoja sale con el día, la hora, las personas, el localizador y el código ya puestos. */
+  lectura?: DatosEntradaLeida | null
 }
 
 /** Qué se mueve al meter una reserva grande (/api/reservation-plan). */
@@ -199,6 +206,16 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const existing = target.existing ?? null
   // El precio (Tanda 6z2): opcional, total de todas las personas; el Free Tour no lo lleva (es gratis).
   const precio = usePrecioEditable(existing?.precio)
+  // (10S7 §3) El billete de esta entrada (privado de esta persona): cuántas personas, el localizador y el código.
+  const billetes = useBilletesDeEntradas()
+  const billeteDeAntes = target.kind === 'entrada' ? billetes.de(target.refId) : null
+  const lectura = target.lectura ?? null
+  const [personas, setPersonas] = useState<string>(() => String(lectura?.personas ?? billeteDeAntes?.personas ?? ''))
+  const [codigoDeEntrada, setCodigoDeEntrada] = useState<CodigoDelBillete | null>(() => (lectura?.codigo as CodigoDelBillete | null) ?? billeteDeAntes?.codigo ?? null)
+  // (El localizador del billete es PRIVADO: va aparte del de la reserva, que viaja con la ruta compartida.)
+  const [localizadorDeEntrada, setLocalizadorDeEntrada] = useState<string>(() => lectura?.localizador ?? billeteDeAntes?.localizador ?? '')
+  const [horaLeida, setHoraLeida] = useState<string | null>(lectura?.hora ?? null)
+  const [billeteTocado, setBilleteTocado] = useState(Boolean(lectura))
   const [fields, setFields] = useState<Fields>(() => ({
     ...EMPTY,
     dateIso: existing?.dateIso ?? igual?.reserva.dateIso ?? (hasDates && startDay ? (dateOfDay(route, startDay) ?? '') : ''),
@@ -208,6 +225,12 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     meetingPoint: existing?.meetingPoint ?? '',
     locator: existing?.locator ?? '',
   }))
+  // (La lectura que llega ya hecha —desde la tarjeta de una entrada reservada— pone su día y su hora.)
+  useEffect(() => {
+    if (!lectura) return
+    setFields((previous) => ({ ...previous, dateIso: hasDates && lectura.fecha ? lectura.fecha : previous.dateIso, time: lectura.hora ?? previous.time }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   // La hoja de la hora (Tanda 6m) es lo primero para una entrada; el formulario de siempre (email, captura, a mano) sigue detrás de «Rellenar desde el email o el PDF» y para las excursiones.
   const [view, setView] = useState<'hora' | 'form'>('hora')
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -299,13 +322,13 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const horasDelDia = horasApi.estado === 'ok' ? horasApi.datos : null
   const filtrando = horasDelDia != null && horasDelDia.horas.length > 0 && modoReservar
   const wheelItems = useMemo(() => {
-    const horaDePartida = existing?.time ?? igual?.reserva.time ?? null
+    const horaDePartida = horaLeida ?? existing?.time ?? igual?.reserva.time ?? null
     const propia = horaDePartida && /^\d{1,2}:\d{2}$/.test(horaDePartida) ? (horaDePartida.length === 4 ? `0${horaDePartida}` : horaDePartida) : null
     // (10S3 §5) El Free Tour: la misma rueda de las entradas, sin las seis horas fijas nuestras.
     const base = isFreeTour ? (propia && !FREE_TOUR_RUEDA.includes(propia) ? [...FREE_TOUR_RUEDA, propia].sort() : FREE_TOUR_RUEDA) : horasDeLaRueda(entryHours, propia)
     return filtrando ? ruedaConHorasLibres(base, horasDelDia, propia) : base
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entryHours, filtrando, horasDelDia])
+  }, [entryHours, filtrando, horasDelDia, horaLeida])
   const pickupItems = useMemo(() => {
     const out: string[] = []
     for (let m = 300; m <= 660; m += 5) out.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`)
@@ -491,6 +514,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       const propia = draftReservation()
       if (!propia) return
       useMisReservas.getState().anadir(propia)
+      guardarBilleteDeEntrada()
       onClose()
       return
     }
@@ -536,9 +560,30 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
         // (Sin más que hacer: la reserva ya está en la lista o no se pudo guardar; la pantalla no se rompe.)
       }
     }
+    guardarBilleteDeEntrada()
     onClose()
     // (10S4) La app lleva a la parada nueva y la marca un momento.
     if (llevarA) llevarALaParada(llevarA.dayId, llevarA.stopId)
+  }
+
+  /** (10S7 §3) Guarda el billete de la entrada (personas, localizador y código) en el móvil de esta persona. Sin nada que guardar, se quita el que hubiera. */
+  const guardarBilleteDeEntrada = () => {
+    if (target.kind !== 'entrada' || isExcursion) return
+    const n = Number.parseInt(personas, 10)
+    const datosBillete = { personas: Number.isFinite(n) && n > 0 ? n : null, localizador: localizadorDeEntrada.trim() || null, codigo: codigoDeEntrada }
+    if (datosBillete.personas || datosBillete.localizador || datosBillete.codigo) {
+      if (!billeteTocado && billeteDeAntes) return
+      useBilleteStore.getState().ponerEntrada(billetes.tripId, target.refId, { ...datosBillete, dueno: billeteDeAntes?.dueno ?? billetes.yoId })
+    } else if (billeteDeAntes) useBilleteStore.getState().quitarEntrada(billetes.tripId, target.refId)
+  }
+  /** Lo leído de la entrada rellena el día, la hora, las personas y el localizador (se puede cambiar todo a mano) y guarda el código. */
+  const aplicarLecturaDeEntrada = (leida: DatosEntradaLeida) => {
+    setBilleteTocado(true)
+    setFields((previous) => ({ ...previous, dateIso: hasDates && leida.fecha ? leida.fecha : previous.dateIso, time: leida.hora ?? previous.time }))
+    if (leida.localizador) setLocalizadorDeEntrada(leida.localizador)
+    if (leida.hora) setHoraLeida(leida.hora)
+    if (leida.personas) setPersonas(String(leida.personas))
+    if (leida.codigo) setCodigoDeEntrada(leida.codigo as CodigoDelBillete)
   }
 
   const showForm = tab === 'manual' || read
@@ -548,6 +593,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     try {
       if (esInvitado) useMisReservas.getState().quitar(existing.id)
       else removeReservationWithUndo(existing.id)
+      if (existing.kind === 'entrada' && billeteDeAntes) useBilleteStore.getState().quitarEntrada(billetes.tripId, existing.refId)
     } catch (error) {
       console.error('[AddReservationSheet] no se pudo eliminar', error)
     }
@@ -584,6 +630,38 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   {igual.quien || 'El dueño'} {/ y |,/.test(igual.quien) ? 'van' : 'va'} el {diaDeLaReservaEnPalabras(route, igual.reserva)} a las {horaCorta(igual.reserva.time)}.{' '}
                   {igual.modo === 'comprar' ? 'Ya tienes elegidos ese día y esa hora.' : 'Apunta aquí la que ya tienes.'}
                 </p>
+              )}
+
+              {/* (10S7 §3, E1) [Añadir tu entrada]: desde el PDF, una foto o una captura la app lee el día, la hora, las personas y el localizador y guarda el código. Todo se puede cambiar a mano. */}
+              {!isExcursion && !igual && (
+                <div className="mt-5 flex flex-col gap-3" data-entrada-billete-hoja>
+                  <BotonAnadirEntrada onLeida={aplicarLecturaDeEntrada} año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined} datos="hoja" />
+                  {(billeteTocado || billeteDeAntes || codigoDeEntrada) && (
+                    <div className="flex flex-col gap-2.5" data-entrada-billete-datos>
+                      <div className="flex gap-2">
+                        <label className="flex h-[54px] w-[110px] flex-none flex-col justify-center gap-px rounded-[15px] border bg-[#FFFDF8] px-3.5" style={{ borderColor: 'rgba(28,34,48,.12)' }}>
+                          <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)', textTransform: 'uppercase' }}>Personas</span>
+                          <input value={personas} onChange={(e) => { setBilleteTocado(true); setPersonas(e.target.value.replace(/\D/g, '').slice(0, 2)) }} inputMode="numeric" placeholder="2" autoComplete="off" data-entrada-dato="personas" className="w-full min-w-0 bg-transparent text-[15px] font-medium outline-none placeholder:font-normal placeholder:text-text/40" />
+                        </label>
+                        <label className="flex h-[54px] min-w-0 flex-1 flex-col justify-center gap-px rounded-[15px] border bg-[#FFFDF8] px-3.5" style={{ borderColor: 'rgba(28,34,48,.12)' }}>
+                          <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)', textTransform: 'uppercase' }}>Localizador</span>
+                          <input value={localizadorDeEntrada} onChange={(e) => { setBilleteTocado(true); setLocalizadorDeEntrada(e.target.value) }} maxLength={30} placeholder="ABC123" autoComplete="off" autoCapitalize="characters" data-entrada-dato="localizador" className="w-full min-w-0 bg-transparent text-[15px] font-medium uppercase outline-none placeholder:font-normal placeholder:normal-case placeholder:text-text/40" />
+                        </label>
+                      </div>
+                      {codigoDeEntrada && entradaConCodigo({ personas: null, localizador: null, dueno: null, actualizado: '', codigo: codigoDeEntrada }) && (
+                        <div className="flex items-center gap-3.5" data-entrada-codigo-leido>
+                          <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>
+                            <ImagenDelCodigo codigo={codigoDeEntrada} tam={56} />
+                          </span>
+                          <span className="min-w-0 flex-1 text-[13px] font-semibold text-text/70">Tu código está guardado en tu móvil.</span>
+                          <button type="button" onClick={() => { setBilleteTocado(true); setCodigoDeEntrada(null) }} data-entrada-quitar-codigo className="zona-toque text-[13px] font-medium underline" style={{ color: 'oklch(0.52 0.19 25)' }}>
+                            Quitar
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Los días del viaje, en fichas que se deslizan de lado: el día que tiene en la ruta ya va marcado («En tu ruta»); un sitio cerrado ese día sale apagado. */}

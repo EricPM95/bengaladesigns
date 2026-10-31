@@ -555,7 +555,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
               </button>
             </div>
             <EscucharHistoria destino={route.destination} parada={siguiente} />
-            <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" />
+            <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" route={route} reserva={reservaSiguiente} />
             {masVisitas.length > 0 && (
               <div className="flex justify-center">
                 <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: '1.5px dashed rgba(166,124,82,.6)'}}>

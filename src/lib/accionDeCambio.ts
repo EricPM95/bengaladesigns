@@ -11,6 +11,8 @@ export type AccionDeCambio =
   | { tipo: 'excursion'; dia_n: number; fecha?: string | null; a: 'excursion' | 'roma'; excursion?: string | null; ciudad?: string | null }
   | { tipo: 'recuperar_ruta' }
   | { tipo: 'recuperar_dia'; dia_n: number; fecha?: string | null }
+  /** (10S7) El botón «Reorganizar» del pase: `n` días reorganizados; `dia_n` y `fecha` el primero. Un solo aviso para los demás. */
+  | { tipo: 'reorganizar'; dia_n: number; fecha?: string | null; n?: number }
   | { tipo: 'fechas' }
   | { tipo: 'rehacer' }
   /** (10N9) «Guardar el vuelo» del administrador: la ida y la vuelta juntas, un solo aviso. `medio`: «vuelo», «tren»… */

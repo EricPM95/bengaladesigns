@@ -53,6 +53,10 @@ const usado = caja(hoy2, 'Ya has usado tu día de prueba\\.')
 const cab = hoy.match(/<span style="color:#E9C77A">HOY<\/span>, tu guía del día<\/span><span[^>]*>([^<]*)</)
 if (!cab) throw new Error('No encuentro la cabecera de HOY')
 
+// 10S7: el prompt de Eric manda sobre Design en los textos («solo si es verdad»). Design dice «Ordenamos tus días según tus prioridades y los cierres de los monumentos.»; lo que hace el motor es ordenar
+// los días según la llegada, la vuelta y los cierres (las «prioridades» no son del viajero y las entradas grandes las fija cualquiera, con o sin pase), así que la frase dice solo eso.
+const TEXTOS_DEL_PROMPT = { 'Adaptamos tu viaje al mejor orden': 'Ordenamos tus días según tu llegada, tu vuelta y los cierres de los monumentos.' }
+for (const s of secciones) for (const f of s.filas) if (TEXTOS_DEL_PROMPT[f.titulo]) f.linea = TEXTOS_DEL_PROMPT[f.titulo]
 if (secciones.length !== 6) throw new Error(`Esperaba 6 secciones y hay ${secciones.length}`)
 if (tarjetas.length !== 8) throw new Error(`Esperaba 8 tarjetas de HOY y hay ${tarjetas.length}`)
 const cuenta = secciones.reduce((s, x) => s + x.filas.length, 0)

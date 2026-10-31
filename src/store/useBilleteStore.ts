@@ -39,6 +39,18 @@ export interface BilleteGuardado {
   actualizado: string
 }
 
+/**
+ * (10S7 §3) LA ENTRADA CON SU BILLETE: lo mismo que el billete del vuelo, para las entradas y el Free Tour, en el MISMO documento privado (`entradas`, por el `refId` de la reserva: el nombre de la entrada o «Free Tour»).
+ * El día y la hora son de la reserva (los ve el grupo, como siempre); aquí solo lo privado: cuántas personas, el localizador y el código. Sin tabla nueva: es el JSON `datos` de `billetes_personales` (0070).
+ */
+export interface BilleteDeEntrada {
+  personas: number | null
+  localizador: string | null
+  codigo: CodigoDelBillete | null
+  dueno: string | null
+  actualizado: string
+}
+
 const PREFIJO = 'trazo:billete:v1'
 const MAX_IMAGEN = 900_000
 
@@ -62,7 +74,7 @@ const poner1 = (k: string, v: string | null) => {
   }
 }
 
-type Datos = Partial<Record<LegDelBillete, BilleteGuardado>>
+type Datos = Partial<Record<LegDelBillete, BilleteGuardado>> & { entradas?: Record<string, BilleteDeEntrada> }
 
 function leer(clave: string): Datos {
   try {
@@ -89,6 +101,9 @@ interface BilleteState {
   cargar: (tripId: string | null) => void
   poner: (tripId: string | null, kind: LegDelBillete, billete: Omit<BilleteGuardado, 'actualizado'>) => void
   quitar: (tripId: string | null, kind: LegDelBillete) => void
+  /** (10S7) El billete de una entrada o del Free Tour (clave = `refId` de la reserva). */
+  ponerEntrada: (tripId: string | null, clave: string, billete: Omit<BilleteDeEntrada, 'actualizado'>) => void
+  quitarEntrada: (tripId: string | null, clave: string) => void
   /** Lleva la copia de la nube (0070) a este móvil y sube lo que falte. Nunca lanza; sin la 0070 o sin conexión, no hace nada. */
   sincronizar: (tripId: string | null) => Promise<void>
 }
@@ -112,6 +127,24 @@ export const useBilleteStore = create<BilleteState>((set, get) => ({
     const previo = get().tripId === tripId ? get().datos : leer(claveDe(tripId))
     const datos: Datos = { ...previo }
     delete datos[kind]
+    set({ tripId, datos })
+    escribir(claveDe(tripId), datos)
+    void tocado(tripId, datos)
+  },
+  ponerEntrada: (tripId, clave, billete) => {
+    const previo = get().tripId === tripId ? get().datos : leer(claveDe(tripId))
+    const codigo = billete.codigo && billete.codigo.imagen && billete.codigo.imagen.length > MAX_IMAGEN ? { ...billete.codigo, imagen: null } : billete.codigo
+    const datos: Datos = { ...previo, entradas: { ...(previo.entradas ?? {}), [clave]: { ...billete, codigo, actualizado: new Date().toISOString() } } }
+    set({ tripId, datos })
+    escribir(claveDe(tripId), datos)
+    void tocado(tripId, datos)
+  },
+  quitarEntrada: (tripId, clave) => {
+    const previo = get().tripId === tripId ? get().datos : leer(claveDe(tripId))
+    if (!previo.entradas?.[clave]) return
+    const entradas = { ...previo.entradas }
+    delete entradas[clave]
+    const datos: Datos = { ...previo, entradas }
     set({ tripId, datos })
     escribir(claveDe(tripId), datos)
     void tocado(tripId, datos)
@@ -158,6 +191,9 @@ function delDueno(datos: Datos, uid: string): Datos {
     const b = datos[k]
     if (b && (!b.dueno || b.dueno === uid)) salida[k] = { ...b, dueno: uid }
   }
+  const entradas: Record<string, BilleteDeEntrada> = {}
+  for (const [clave, b] of Object.entries(datos.entradas ?? {})) if (b && (!b.dueno || b.dueno === uid)) entradas[clave] = { ...b, dueno: uid }
+  if (Object.keys(entradas).length > 0) salida.entradas = entradas
   return salida
 }
 
@@ -199,6 +235,9 @@ if (typeof window !== 'undefined') {
 }
 
 /** ¿Hay algo que enseñar en este billete? (alguno de los datos privados o el código). */
+/** ¿Hay un código que enseñar en el billete de esta entrada? */
+export const entradaConCodigo = (b: BilleteDeEntrada | null | undefined): b is BilleteDeEntrada & { codigo: CodigoDelBillete } => Boolean(b?.codigo && (b.codigo.dibujo || b.codigo.imagen))
+
 export const billeteConAlgo = (b: BilleteGuardado | null | undefined): boolean => Boolean(b && (b.localizador || b.terminal || b.asiento || b.coche || b.codigo))
 
 // Solo desarrollo y pruebas: window.__billete.getState().poner(...) para probar sin PDF.

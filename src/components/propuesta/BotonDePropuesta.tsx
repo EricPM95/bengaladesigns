@@ -3,6 +3,7 @@ import { useLaPropuesta } from '../../hooks/useLaPropuesta'
 import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { logrosActivos } from '../../lib/logros'
 import { useRouteStore } from '../../store/useRouteStore'
+import { useBotonReorganizarVisible } from '../reorganizar/useBotonReorganizarVisible'
 import { AIRE_BAJO_LOS_BOTONES, SOBRE_LOS_LOGROS as SUBE, useFlotantes, useLapizALaVista } from '../flotantes/flotantes'
 
 /**
@@ -90,7 +91,10 @@ export function BotonDePropuesta() {
  * 150 con el botón de los logros y 220 si además está el lápiz. Las pantallas que no son DÍAS/EXPLORAR/RESERVAS lo usan como `paddingBottom`.
  */
 export function useHuecoAlFinal(minimo = 40): number {
-  const { visible } = useLapizVisible()
+  const { visible: lapiz } = useLapizVisible()
+  // (10S7) El botón «Reorganizar» del pase ocupa el mismo sitio que el lápiz.
+  const reorganizar = useBotonReorganizarVisible()
+  const visible = lapiz || reorganizar
   // (10S5) El hueco sale de DÓNDE están de verdad los botones (con la barra de abajo del móvil, que sube el botón de los logros): su borde de arriba más un poco de aire.
   const { suelo } = useFlotantes()
   if (!logrosActivos() && !visible) return minimo
@@ -99,7 +103,9 @@ export function useHuecoAlFinal(minimo = 40): number {
 
 /** El hueco que se deja al final de DÍAS y EXPLORAR cuando el lápiz está a la vista, para que no tape la última parada ni la última tarjeta. */
 export function EspacioParaElLapiz() {
-  const { visible } = useLapizVisible()
+  const { visible: lapiz } = useLapizVisible()
+  const reorganizar = useBotonReorganizarVisible()
+  const visible = lapiz || reorganizar
   // (10S5) También con SOLO el botón de los logros: ninguna pantalla deja contenido debajo de los botones flotantes (regla de los botones flotantes).
   if (!visible && !logrosActivos()) return null
   return <div aria-hidden="true" data-espacio-lapiz style={{ height: visible ? 150 : 96, flex: 'none' }} />

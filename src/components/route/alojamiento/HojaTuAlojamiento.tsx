@@ -83,7 +83,8 @@ export function HojaTuAlojamiento({
   const elegida = todos.find((z) => z.id === zona) ?? null
   const guardar = () => {
     if (!puede) return
-    const hotel = nombreLimpio ? { name: nombreLimpio, precio: dinero.precio.importe } : null
+    // (10S7 §5) La reserva del hotel (A2) se conserva al guardar «Tu alojamiento»: solo cambian el nombre y el precio.
+    const hotel = nombreLimpio ? { name: nombreLimpio, precio: dinero.precio.importe, ...(actual?.reserva ? { reserva: actual.reserva } : {}) } : null
     const total = dinero.precio.importe
     onGuardar(hotel, {
       // Sin pase no se toca ni la zona ni la dirección (se conservan las que hubiera).

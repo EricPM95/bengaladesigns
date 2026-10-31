@@ -31,6 +31,8 @@ interface Estado {
 }
 let estado: Estado = { debajo: false, alto: null, suelo: 88 }
 let hayLapiz = false
+/** (10S7) El botón «Reorganizar» del pase va en el mismo sitio que el lápiz (encima del de los logros): nunca están los dos (el lápiz es de quien solo recomienda; Reorganizar, de quien edita). */
+let hayReorganizar = false
 const oyentes = new Set<() => void>()
 const avisar = () => oyentes.forEach((f) => f())
 const poner = (e: Estado) => {
@@ -65,7 +67,7 @@ function medir(): void {
     .filter(visible)
     .map((e) => e.getBoundingClientRect())
     .filter((r) => r.width > 0 && r.height > 0)
-  const lado = LADO + (hayLapiz ? SOBRE_LOS_LOGROS : 0)
+  const lado = LADO + (hayLapiz || hayReorganizar ? SOBRE_LOS_LOGROS : 0)
   let bottom = base + safe
   const inicio = bottom
   for (let i = 0; i < 3; i++) {
@@ -128,6 +130,19 @@ export function useLapizALaVista(visibleAhora: boolean): void {
     pedir()
     return () => {
       hayLapiz = false
+      pedir()
+    }
+  }, [visibleAhora])
+}
+
+/** (10S7) El botón «Reorganizar» avisa de si está a la vista (para esquivar también su sitio). */
+export function useReorganizarALaVista(visibleAhora: boolean): void {
+  useEffect(() => {
+    if (hayReorganizar === visibleAhora) return undefined
+    hayReorganizar = visibleAhora
+    pedir()
+    return () => {
+      hayReorganizar = false
       pedir()
     }
   }, [visibleAhora])

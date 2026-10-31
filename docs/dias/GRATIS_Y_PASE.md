@@ -29,7 +29,8 @@ El pase es por destino: «el pase de Roma», sin caducidad. 6,99 € por persona
 
 **Antes del viaje**
 - Poner los vuelos o el tren: el primer y el último día se ajustan a las horas. ✅
-- El orden de los días según la llegada y la vuelta. ✅
+- El orden de los días según la llegada, la vuelta y los cierres. ✅
+- Reorganizar un día en un toque: el botón «Reorganizar» (10S7) y «Reorganizar este día» en el menú del día. ✅
 - La zona del alojamiento y [Cómo llegar a tu alojamiento]. ✅
 - El resumen de las reservas (lo que llevas hecho). ✅
 

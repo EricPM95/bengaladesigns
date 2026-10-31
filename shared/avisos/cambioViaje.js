@@ -203,7 +203,7 @@ export function marcasDelAviso(p) {
   const sumaDia = (n) => { if (Number.isInteger(n) && !dias.includes(n)) dias.push(n) }
   if (a && typeof a === 'object') {
     if (a.tipo === 'free_tour') { marcas[norma('Free Tour')] = 'nueva'; sumaDia(a.dia_n) }
-    if (a.tipo === 'excursion' || a.tipo === 'recuperar_dia') sumaDia(a.dia_n)
+    if (a.tipo === 'excursion' || a.tipo === 'recuperar_dia' || a.tipo === 'reorganizar') sumaDia(a.dia_n)
     return { marcas, dias }
   }
   const L = limpiarListas(c ?? p ?? {})

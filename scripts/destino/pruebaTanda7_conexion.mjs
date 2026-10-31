@@ -15,6 +15,8 @@
 // CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
 //   · «1 gratis avisos»: antes, en la gratis `datosParaMotor(..., { paraAvisos: true })` no mandaba nada; ahora manda llegada y vuelta (para los avisos); sin `paraAvisos` la gratis sigue sin mandar nada («1 gratis»).
 //   · «5 gratis sin avisos» -> «5 gratis con avisos»: antes la campana de la gratis no tenia avisos de vuelos; ahora si, con «Ver mi reserva» (el aviso solo cuenta, nada se cambia solo). Tanda 10G, Eric 24-oct-2026: «guardar el vuelo es gratis y este aviso evita que el viajero pierda una entrada pagada» (src/lib/llegadaVuelta.ts, useAvisosDeVuelo.ts, useAppNotices.ts).
+// CAMBIOS DE LA 10S7 (antes -> ahora -> decision de Eric (10S7, 31-oct)):
+//   · «2 llegada», «2 dia corrido», «2 madrugada», «2 Free Tour», «2 Si te sobra tiempo», «2 vuelta», «2 cambiado a mano» y «5 hoja»: antes la fecha de las frases del resumen salia abreviada («El mar 10 es tu llegada», «el sab 14»); ahora sale con el dia de la semana entero («El martes 10», «El sábado 14», «el miércoles 11», «El jueves 12»). Lo cambio la app a proposito (los dias se nombran enteros en toda la app, `elDia`/`diaTitulo`); Eric en la 10S7 (31-oct) manda poner la prueba al dia con ese texto, sin bajar la fuerza: los textos de las frases siguen comparandose palabra por palabra.
 import fs from 'node:fs'
 import path from 'node:path'
 import { prepararSSR } from './_ssr.mjs'
@@ -187,8 +189,8 @@ console.log('2. La hoja del resumen')
   // La llegada de tarde (16:00): su día y el día que se corre.
   let r = await items(lleg('16:00'), [{ que: 'hora', mitad: 'arrival' }])
   let t = r.items.map((i) => i.texto)
-  debe(t[0] === 'El mar 10 es tu llegada a Roma.', '2 llegada', `primera frase: «${t[0]}»`)
-  debe(t.includes('Como llegas por la tarde, la Roma antigua pasa al mié 11.'), '2 día corrido', `frases: ${JSON.stringify(t)}`)
+  debe(t[0] === 'El martes 10 es tu llegada a Roma.', '2 llegada', `primera frase: «${t[0]}»`)
+  debe(t.includes('Como llegas por la tarde, la Roma antigua pasa al miércoles 11.'), '2 día corrido', `frases: ${JSON.stringify(t)}`)
   debe(r.items.every((i) => !/\{dia/.test(i.texto)), '2 fechas puestas', 'queda un {dia:N} sin escribir')
   debe(r.items.every((i) => !i.botones.some((b) => b.id === 'de_acuerdo')), '2 un solo De acuerdo', 'la hoja no debe llevar [De acuerdo] dentro de las frases: lo pone la hoja una sola vez')
   // El día que se cae: Villa Borghese (con 3 días de ruta y la llegada de tarde cae el D4).
@@ -198,10 +200,10 @@ console.log('2. La hoja del resumen')
   // La madrugada: texto y botón [Cambiar fechas].
   r = await items(lleg('00:30'), [{ que: 'hora', mitad: 'arrival' }])
   const mad = r.items.find((i) => /0:30/.test(i.texto))
-  debe(mad?.texto === 'Aterrizas a las 0:30 del mar 10: ese día lo tienes entero, y esa noche ya necesitas alojamiento. Si aterrizas la noche del mar 10, cambia las fechas del viaje.', '2 madrugada', `madrugada: «${mad?.texto}»`)
+  debe(mad?.texto === 'Aterrizas a las 0:30 del martes 10: ese día lo tienes entero, y esa noche ya necesitas alojamiento. Si aterrizas la noche del martes 10, cambia las fechas del viaje.', '2 madrugada', `madrugada: «${mad?.texto}»`)
   debe(mad?.botones.map((b) => b.texto).join('|') === 'Cambiar fechas', '2 madrugada botón', `botones: ${JSON.stringify(mad?.botones)}`)
   // La madrugada con cada medio.
-  for (const [opcion, patron] of [['train', /^Llegas a [^.]+ a las 0:30 del mar 10: ese día lo tienes entero, y esa noche ya necesitas alojamiento\. Si llegas la noche del mar 10, cambia las fechas del viaje\.$/], ['bus', /^Llegas a [^.]+ a las 0:30 del mar 10/], ['ferry', /^Desembarcas a las 0:30 del mar 10: .* Si desembarcas la noche del mar 10, cambia las fechas del viaje\.$/]]) {
+  for (const [opcion, patron] of [['train', /^Llegas a [^.]+ a las 0:30 del martes 10: ese día lo tienes entero, y esa noche ya necesitas alojamiento\. Si llegas la noche del martes 10, cambia las fechas del viaje\.$/], ['bus', /^Llegas a [^.]+ a las 0:30 del martes 10/], ['ferry', /^Desembarcas a las 0:30 del martes 10: .* Si desembarcas la noche del martes 10, cambia las fechas del viaje\.$/]]) {
     const punto = { train: 'termini', bus: 'tibus', ferry: 'civitavecchia' }[opcion]
     r = await items(lleg('00:30', { arrivalPointId: punto }, { ida: opcion }), [{ que: 'hora', mitad: 'arrival' }])
     const m = r.items.find((i) => /0:30/.test(i.texto))
@@ -216,21 +218,21 @@ console.log('2. La hoja del resumen')
   conTour.answers = respuestas({ freeTour: true })
   r = await items(conTour, [{ que: 'hora', mitad: 'arrival' }])
   const ft = r.items.find((i) => /Free Tour/.test(i.texto))
-  debe(ft?.texto === 'Hemos puesto el Free Tour el mar 10, nada más llegar. Al reservarlo, elige la hora que te encaje.' && ft.botones.map((b) => b.texto).join('|') === 'Ver disponibilidad', '2 Free Tour', `Free Tour: ${JSON.stringify(ft)}`)
+  debe(ft?.texto === 'Hemos puesto el Free Tour el martes 10, nada más llegar. Al reservarlo, elige la hora que te encaje.' && ft.botones.map((b) => b.texto).join('|') === 'Ver disponibilidad', '2 Free Tour', `Free Tour: ${JSON.stringify(ft)}`)
   // Lo que queda en «Si te sobra tiempo» (1 noche con la llegada tarde: el Coliseo).
   const corto = viaje({ dias: 2, extra: { arrivalFlightTime: '16:00', arrivalPointId: 'fco' } })
   r = await items(corto, [{ que: 'hora', mitad: 'arrival' }])
   t = r.items.map((i) => i.texto)
-  debe(t.includes('El Coliseo lo tienes en «Si te sobra tiempo» del mar 10: si reservas la entrada, te lo ponemos en el día.'), '2 Si te sobra tiempo', `frases: ${JSON.stringify(t)}`)
+  debe(t.includes('El Coliseo lo tienes en «Si te sobra tiempo» del martes 10: si reservas la entrada, te lo ponemos en el día.'), '2 Si te sobra tiempo', `frases: ${JSON.stringify(t)}`)
   // La vuelta: la última mañana, un día casi entero y solo el camino, con el lugar de cada medio.
   const filas = [
-    ['flight', 'fco', '17:00', 'El sáb 14 tienes una última mañana por Roma antes de irte al aeropuerto.'],
-    ['flight', 'fco', '23:30', 'El sáb 14 tienes casi un día entero por Roma antes de irte.'],
-    ['flight', 'fco', '10:00', 'El sáb 14 te vas pronto: ese día solo lleva el camino al aeropuerto.'],
-    ['train', 'termini', '17:00', 'El sáb 14 tienes una última mañana por Roma antes de irte a la estación.'],
-    ['ferry', 'civitavecchia', '20:00', 'El sáb 14 tienes una última mañana por Roma antes de irte al puerto.'],
-    ['train', 'termini', '09:00', 'El sáb 14 te vas pronto: ese día solo lleva el camino a la estación.'],
-    ['ferry', 'civitavecchia', '09:00', 'El sáb 14 te vas pronto: ese día solo lleva el camino al puerto.'],
+    ['flight', 'fco', '17:00', 'El sábado 14 tienes una última mañana por Roma antes de irte al aeropuerto.'],
+    ['flight', 'fco', '23:30', 'El sábado 14 tienes casi un día entero por Roma antes de irte.'],
+    ['flight', 'fco', '10:00', 'El sábado 14 te vas pronto: ese día solo lleva el camino al aeropuerto.'],
+    ['train', 'termini', '17:00', 'El sábado 14 tienes una última mañana por Roma antes de irte a la estación.'],
+    ['ferry', 'civitavecchia', '20:00', 'El sábado 14 tienes una última mañana por Roma antes de irte al puerto.'],
+    ['train', 'termini', '09:00', 'El sábado 14 te vas pronto: ese día solo lleva el camino a la estación.'],
+    ['ferry', 'civitavecchia', '09:00', 'El sábado 14 te vas pronto: ese día solo lleva el camino al puerto.'],
   ]
   for (const [medio, punto, hora, esperado] of filas) {
     r = await items(viaje({ ida: medio, extra: { departureFlightTime: hora, departurePointId: punto, accommodationZone: 'centro' } }), [{ que: 'hora', mitad: 'departure' }])
@@ -243,7 +245,7 @@ console.log('2. La hoja del resumen')
   // Un día cambiado a mano.
   const dia12 = { id: 'day-3', dayNumber: 3, originalSnapshot: { id: 'x' } }
   r = await items(lleg('16:00'), [{ que: 'hora', mitad: 'arrival' }], { mantenidos: [dia12] })
-  debe(r.items.some((i) => i.texto === 'El jue 12 lo has cambiado tú: lo dejamos como está.'), '2 cambiado a mano', `frases: ${JSON.stringify(r.items.map((i) => i.texto))}`)
+  debe(r.items.some((i) => i.texto === 'El jueves 12 lo has cambiado tú: lo dejamos como está.'), '2 cambiado a mano', `frases: ${JSON.stringify(r.items.map((i) => i.texto))}`)
   debe(textoDiaCambiadoATu({ answers: respuestas({ fechas: false }) }, 3) === 'El día 3 lo has cambiado tú: lo dejamos como está.', '2 cambiado a mano sin fechas', 'sin fechas: «El día 3 lo has cambiado tú…»')
   // Al borrar los vuelos.
   r = await items(viaje(), [{ que: 'quitar', mitad: 'arrival' }])
@@ -383,6 +385,24 @@ console.log('5. Quitar el vuelo, «Deshacer» y el rehacer')
 {
   ponerVersion('completa')
   const original = useRouteStore.getState().regenerateRouteForDates
+  // (10S7, 31-oct) ANTES → AHORA → DECISIÓN DE ERIC. ANTES: con pase, poner/cambiar/borrar la hora o el punto de Roma, o la zona del alojamiento, rehacía los días solo
+  // (`rehacerPorCambioDeVuelo` llamaba a `regenerateRouteForDates`). AHORA: esa función no hace nada y devuelve false: nada se reorganiza solo; lo que cambia lo ofrece el botón «Reorganizar»
+  // (pruebaTanda10S7_R). DECISIÓN DE ERIC (10S7, 31-oct): «Nada se reorganiza solo (tampoco el vuelo al guardarlo)». Lo que sigue de esta sección prueba lo que SÍ queda (la hoja del resumen
+  // al acabar un rehacer, «Deshacer», conservar lo cambiado a mano, las fechas): para no perder esa fuerza se usa `rehacerAntiguo`, que hace lo que hacía la función de antes (apuntar el cambio
+  // y pedir el rehacer de fechas); las tres comprobaciones de gratis, ruta a mano y ruta no curada siguen llamando a la función de verdad (que ahora devuelve false siempre).
+  const rehacerAntiguo = (cambio) => {
+    const estado = useRouteStore.getState()
+    const ruta = estado.route
+    if (!ruta || !ruta.days.some((day) => day.timesAreFinal) || ruta.planMode === 'manual') return false
+    const enMarcha = estado.rehaciendoRuta && useResumenVueloStore.getState().pendiente && useResumenVueloStore.getState().pendiente.generacion === estado.rehacerGeneracion ? estado.rehacerGeneracion : null
+    useResumenVueloStore.getState().iniciar(cambio, estado.rehacerGeneracion + 1, enMarcha)
+    estado.regenerateRouteForDates(ruta.answers.dateRange)
+    if (cambio.que === 'quitar') {
+      const generacion = useRouteStore.getState().rehacerGeneracion
+      useAddFlowStore.setState((s) => (s.toast ? { toast: { ...s.toast, alDeshacer: () => cortarRehacerPorVuelo(generacion) } } : s))
+    }
+    return true
+  }
   let llamadas = []
   // Un rehacer de mentira que hace lo que hace el de verdad con el estado (sube la generación y pone `rehaciendoRuta`), sin pedir nada al servidor.
   useRouteStore.setState({
@@ -397,7 +417,7 @@ console.log('5. Quitar el vuelo, «Deshacer» y el rehacer')
   useAddFlowStore.setState({ toast: null })
   // Quitar la vuelta con «Deshacer» y el rehacer aún en marcha.
   quitarConDeshacer('Vuelta quitada del viaje', () => useRouteStore.getState().removeFlightLeg('departure'))
-  debe(rehacerPorCambioDeVuelo({ que: 'quitar', mitad: 'departure' }) === true && llamadas.length === 1 && useRouteStore.getState().rehaciendoRuta === true, '5 rehacer', 'quitar el vuelo debe poner en marcha el rehacer')
+  debe(rehacerAntiguo({ que: 'quitar', mitad: 'departure' }) === true && llamadas.length === 1 && useRouteStore.getState().rehaciendoRuta === true, '5 rehacer', 'quitar el vuelo debe poner en marcha el rehacer')
   debe(useResumenVueloStore.getState().pendiente?.cambios.length === 1 && useResumenVueloStore.getState().pendiente.generacion === useRouteStore.getState().rehacerGeneracion, '5 pendiente', 'el rehacer debe quedar anotado con su generación')
   debe(typeof useAddFlowStore.getState().toast?.alDeshacer === 'function', '5 Deshacer corta', 'el aviso «Deshacer» debe llevar el corte del rehacer')
   useAddFlowStore.getState().undo()
@@ -409,7 +429,7 @@ console.log('5. Quitar el vuelo, «Deshacer» y el rehacer')
   useAddFlowStore.setState({ toast: null })
   const diasAntes = JSON.stringify(curada.days)
   quitarConDeshacer('Vuelta quitada del viaje', () => useRouteStore.getState().removeFlightLeg('departure'))
-  rehacerPorCambioDeVuelo({ que: 'quitar', mitad: 'departure' })
+  rehacerAntiguo({ que: 'quitar', mitad: 'departure' })
   const generacion = useRouteStore.getState().rehacerGeneracion
   const rehecha = { ...useRouteStore.getState().route, days: useRouteStore.getState().route.days.map((d) => ({ ...d, stops: [] })) }
   debe(terminarRehacer(rehecha, generacion) === true && useResumenVueloStore.getState().hoja?.items.some((i) => i.texto === TEXTO_AL_BORRAR), '5 hoja al borrar', 'al acabar el rehacer de quitar el vuelo debe salir la hoja «Tus días vuelven a ser enteros…»')
@@ -419,9 +439,9 @@ console.log('5. Quitar el vuelo, «Deshacer» y el rehacer')
   // «Gana el último»: dos cambios seguidos, la hoja cuenta los dos y solo vale la generación última.
   poner(curada)
   useResumenVueloStore.setState({ hoja: null, pendiente: null })
-  rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' })
+  rehacerAntiguo({ que: 'hora', mitad: 'arrival' })
   const primera = useRouteStore.getState().rehacerGeneracion
-  rehacerPorCambioDeVuelo({ que: 'zona', mitad: null })
+  rehacerAntiguo({ que: 'zona', mitad: null })
   const segunda = useRouteStore.getState().rehacerGeneracion
   const pendiente = useResumenVueloStore.getState().pendiente
   debe(segunda === primera + 1 && pendiente.generacion === segunda && pendiente.cambios.map((c) => c.que).join(',') === 'hora,zona', '5 gana el último', `pendiente: ${JSON.stringify(pendiente)}`)
@@ -434,7 +454,7 @@ console.log('5. Quitar el vuelo, «Deshacer» y el rehacer')
   mano.days[2] = { ...mano.days[2], title: 'Mi día', stops: [{ ...mano.days[2].stops[0], name: 'Mi sitio' }], originalSnapshot: { id: 'day-3' } }
   poner(mano, [reserva('r1', 'Coliseo', ['Coliseo'], '2026-11-11', '10:00')])
   useRouteStore.setState({ regenerateRouteForDates: (rango) => { llamadas.push(rango); useRouteStore.setState((s) => ({ rehaciendoRuta: true, keepBookingsOnNextRoute: true, rehacerGeneracion: s.rehacerGeneracion + 1 })) } })
-  debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === true, '5 a mano también se rehace', 'una ruta con días cambiados a mano debe rehacerse (esos días no se tocan)')
+  debe(rehacerAntiguo({ que: 'hora', mitad: 'arrival' }) === true, '5 a mano también se rehace', 'una ruta con días cambiados a mano debe rehacerse (esos días no se tocan)')
   const generacionMano = useRouteStore.getState().rehacerGeneracion
   const nueva = viaje({ extra: { arrivalFlightTime: '16:00' } })
   nueva.days = nueva.days.map((d) => ({ ...d, title: `Nuevo ${d.dayNumber}` }))
@@ -445,11 +465,11 @@ console.log('5. Quitar el vuelo, «Deshacer» y el rehacer')
   debe(fin.route.editedManually === true && fin.reservations.length === 1 && fin.reservations[0].time === '10:00' && fin.reservations[0].dateIso === '2026-11-11', '5 reservas', 'las reservas o la marca de «cambiado a mano» no se quedaron como estaban')
   debe(fin.route.arrivalFlightTime === '16:00' && fin.route.arrivalPointId === 'fco', '5 datos del viajero', 'las horas del viajero no sobreviven al rehacer')
   const textos = useResumenVueloStore.getState().hoja?.items.map((i) => i.texto) ?? []
-  debe(textos[0] === 'El mar 10 es tu llegada a Roma.' && textos.includes('El jue 12 lo has cambiado tú: lo dejamos como está.'), '5 hoja', `hoja: ${JSON.stringify(textos)}`)
+  debe(textos[0] === 'El martes 10 es tu llegada a Roma.' && textos.includes('El jueves 12 lo has cambiado tú: lo dejamos como está.'), '5 hoja', `hoja: ${JSON.stringify(textos)}`)
   // Un cambio de zona o de punto que no mueve ningún día no saca hoja.
   poner(curada)
   useResumenVueloStore.setState({ hoja: null, pendiente: null })
-  rehacerPorCambioDeVuelo({ que: 'zona', mitad: null })
+  rehacerAntiguo({ que: 'zona', mitad: null })
   const g2 = useRouteStore.getState().rehacerGeneracion
   terminarRehacer({ ...useRouteStore.getState().route, planLlegada: { resumen: [{ tipo: 'llegada', dayNumber: 1, texto: 'El {dia:1} es tu llegada a Roma.' }] } }, g2)
   debe(useResumenVueloStore.getState().hoja === null, '5 sin nada que contar', 'una zona que no mueve ningún día no debe sacar hoja')
@@ -458,6 +478,18 @@ console.log('5. Quitar el vuelo, «Deshacer» y el rehacer')
   useRouteStore.setState({ rehaciendoRuta: true, keepBookingsOnNextRoute: true, rehacerGeneracion: 50 })
   useResumenVueloStore.setState({ hoja: null, pendiente: null })
   debe(terminarRehacer(curada, 50) === false && useResumenVueloStore.getState().hoja === null, '5 fechas', 'un rehacer por fechas no debe sacar la hoja de los vuelos')
+  // AHORA (10S7): la función de verdad no rehace nada con pase (ni con hora, ni con punto, ni con zona, ni al quitar el vuelo).
+  {
+    ponerVersion('completa')
+    poner(curada)
+    llamadas = []
+    useRouteStore.setState({ regenerateRouteForDates: (rango) => llamadas.push(rango), rehaciendoRuta: false })
+    for (const cambio of [{ que: 'hora', mitad: 'arrival' }, { que: 'punto', mitad: 'departure' }, { que: 'zona', mitad: null }, { que: 'quitar', mitad: 'departure' }]) {
+      debe(rehacerPorCambioDeVuelo(cambio) === false, '5 nada solo (10S7)', `rehacerPorCambioDeVuelo(${cambio.que}) con pase devuelve true: rehace los días solo`)
+    }
+    debe(llamadas.length === 0 && useRouteStore.getState().rehaciendoRuta === false && useResumenVueloStore.getState().pendiente === null, '5 nada solo (10S7)', 'con pase, un cambio de vuelo o de zona pone en marcha el rehacer')
+    useRouteStore.setState({ regenerateRouteForDates: original })
+  }
   // Gratis, ruta a mano, no curada: no se rehace nada; las horas siguen guardadas.
   llamadas = []
   ponerVersion('gratis')

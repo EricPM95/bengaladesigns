@@ -30,6 +30,7 @@ import { CERRADO_ESTE_DIA } from '../../../lib/placeHoursOnDate'
 import { tarjetaHoyVuelvesDelDia } from '../../../lib/planLlegadaVuelta'
 import { useExploreAperturaStore } from '../../../store/useExploreAperturaStore'
 import { TarjetaHoyVuelves } from '../dayDetail/TarjetaHoyVuelves'
+import { TuEntradaEnHoy } from './TuEntradaEnHoy'
 import { BotonAlojamientoHoy, TarjetaLlegadaHoy, TarjetaVueltaHoy, useFichasDeHoy } from './llegadaVuelta'
 import { anadirMasVisita, BotonMasVisitas, HojaMasVisitas, useMasVisitas } from './masVisitas'
 
@@ -346,13 +347,17 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
 
       {/* (Tanda 6y4: la hora de una entrada, UNA vez por pantalla: mientras el aviso «Tienes la entrada reservada a las…» está abierto, esa entrada no repite su hora aquí abajo.) */}
       {entradasDeHoy.filter((entrada) => !(confirmarReservada && entrada.id === reservaSiguiente?.id)).map((entrada) => (
-        <div key={entrada.id} className="flex min-h-[60px] flex-none overflow-hidden rounded-[18px]" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)' }}>
+        <div key={entrada.id} className="flex flex-none flex-col gap-2">
+        <div className="flex min-h-[60px] flex-none overflow-hidden rounded-[18px]" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)' }}>
           <span className="flex w-[50px] flex-none items-center pl-[11px] text-white" style={{ background: VERDE, clipPath: 'polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)' }}>
             <Icono nombre="reservas" size={18} />
           </span>
           <span className="min-w-0 flex-1 self-center py-2 pl-1.5 pr-3.5 text-[13.5px] font-medium leading-[1.35]" style={{ color: 'oklch(0.3 0.08 150)' }}>
             Tu entrada a {info.nombresCortos[entrada.refId] ?? displayStopName(entrada.placeNames[0] ?? entrada.name)} · <span style={{ font: "600 13px 'Geist Mono',monospace" }}>{entrada.time} ✓</span>
           </span>
+        </div>
+        {/* (10S7, E4) «Tu entrada» con su código pequeño: solo con pase y si la entrada tiene su billete. */}
+        <TuEntradaEnHoy route={route} reserva={entrada} />
         </div>
       ))}
 

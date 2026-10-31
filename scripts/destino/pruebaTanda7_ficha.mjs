@@ -17,6 +17,7 @@
 //   · «11 el billete de la llegada abre la ficha» y «11 el dia de llegada lleva el billete»: antes DIAS pintaba `<BilleteDeVuelo>` con «LLEGADA · VUELO …»; ahora pinta `<TarjetaLlegadaDias>` con «Aterrizas a las 13:00» y «Fiumicino» (sigue abriendo la ficha de llegada). Tanda 10N11, Eric 29-oct-2026 («tarjeta del vuelo de DIAS con Aterrizas a las y Fiumicino»). El billete de la VUELTA no cambia.
 //   · «10 vuelta sin paradas»: antes el titulo era «Dia de viaje» y la linea pequena «Roma → Barcelona»; ahora el titulo es «Hoy vuelves a casa» (`DIA_DE_VUELTA`) y la linea «Roma → Barcelona · Dia de viaje». Tanda 10B, Eric 21-oct-2026.
 //   · «6 la barra de llegada»: antes la frase era siempre «Añade tu {vuelo} y ajustamos tu dia»; ahora «Añade tu {vuelo}» y solo con pase «… y ajustamos tu dia» (`const ajuste = pago ? …`). Tanda 10G, Eric 24-oct-2026 (guardar el vuelo es gratis; lo del pase es ajustar el dia).
+// (10S7, 31-oct) Puesta al dia: antes -> se decia que nombraba lo quitado y no se habia pasado; ahora -> se ha pasado y da 0 fallos sin cambiar ninguna comprobacion. Decision de Eric (10S7, 31-oct): pasarla en 0 fallos.
 import fs from 'node:fs'
 import { prepararSSR } from './_ssr.mjs'
 import { D, written } from './llegadaLib.mjs'

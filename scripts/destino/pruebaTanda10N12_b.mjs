@@ -69,7 +69,7 @@ for (const [w, h] of [[390, 844], [375, 667]]) {
     debe(!/€|\$|£/.test(t), 'precios', `${w}x${h}: en la lista no sale ningún precio`)
     debe(!/1 persona|Pase Dúo|Pase Grupo|cada uno/.test(t), 'precios', `${w}x${h}: ni «1 persona», ni Pase Dúo, ni Pase Grupo en la lista`)
     debe(/Todo lo que incluye tu Pase Roma/.test(t) && /Se paga una vez · No caduca/.test(t), 'lista', `${w}x${h}: la cabecera de Design se queda`)
-    debe((await a.evaluar("document.querySelectorAll('[data-lista-punto]').length")) === 19, 'lista', `${w}x${h}: los 19 puntos`)
+    debe((await a.evaluar("document.querySelectorAll('[data-lista-punto]').length")) === 20, 'lista', `${w}x${h}: los 20 puntos (antes 19 → ahora 20 → decisión de Eric, 10S7, 31-oct)`)
     debe((await a.evaluar("document.querySelectorAll('[data-elegir-pase]').length")) === 1, 'boton', `${w}x${h}: un solo [Elegir mi pase]`)
     const medir = () =>
       a.evaluar(`(() => {

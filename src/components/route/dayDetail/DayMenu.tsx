@@ -30,6 +30,8 @@ interface DayMenuProps {
   /** «Añadir lugares» en los días que no son libres (abre EXPLORAR para añadir a ese día). En un día libre es `freeDay.onAddPlaces`. */
   onAddPlaces?: () => void
   excursion?: DayMenuExcursion
+  /** (10S7) «Reorganizar este día»: solo con pase y para quien puede editar (undefined: la opción no sale). */
+  onReorganize?: () => void
   /** El nombre del día que se toca, arriba de la hoja («Domingo 15 · Hoy vuelves a casa»). */
   titulo?: string
   /** Por qué «Eliminar día» no se puede (un día fijado por una reserva). */
@@ -40,7 +42,7 @@ interface DayMenuProps {
  * Menú "···" de CABECERA de un día completo (a diferencia de StopMenu.tsx, que es por parada), como el 02 de `Piezas/Hojas Opciones` de Design (Tanda 10N4 §3): «Añadir lugares», «Añadir una excursión»
  * y, la última y en rojo, «Eliminar día». En un día libre, además, cambiar el nombre y moverlo; en el que tiene cambios, recuperarlo.
  */
-export function DayMenu({ onDelete, freeDay, onAddPlaces, excursion, onRestoreDay, onBackToProposed, titulo = 'Este día', motivoNoEliminar = 'Está fijado por una reserva' }: DayMenuProps) {
+export function DayMenu({ onDelete, freeDay, onAddPlaces, excursion, onRestoreDay, onBackToProposed, onReorganize, titulo = 'Este día', motivoNoEliminar = 'Está fijado por una reserva' }: DayMenuProps) {
   const alAnadir = freeDay?.onAddPlaces ?? onAddPlaces
   const extra = (cerrar: () => void, tono: TonoOpcion, icono: string, tit: string, linea: string, action: (() => void) | null | undefined, flecha = false) =>
     action === undefined ? null : (
@@ -63,6 +65,7 @@ export function DayMenu({ onDelete, freeDay, onAddPlaces, excursion, onRestoreDa
     <MenuHoja etiquetaBoton="Más opciones del día" etiqueta="Día" titulo={titulo} tam={38} datos="dia">
       {(cerrar) => (
         <>
+          {onReorganize && extra(cerrar, 'arena', ICONOS_OPCION.reorganizar, 'Reorganizar este día', 'Tus paradas, en el mejor orden', onReorganize)}
           {alAnadir && extra(cerrar, 'salvia', ICONOS_OPCION.pin, 'Añadir lugares', 'Monumentos, barrios, miradores…', alAnadir, true)}
           {excursion &&
             (excursion.cabe

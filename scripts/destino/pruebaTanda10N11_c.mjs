@@ -1,5 +1,5 @@
 // La prueba del agente C de la Tanda 10N11 (apartado 5): la lista del pase por puntos (`Piezas/Pase Lista` 1) y HOY sin pase (2 y 2b).
-//   · la lista: sus 6 secciones y 19 puntos (los de Design), los precios de la app, [Elegir mi pase] → «¿Cuántos sois?», con pase «✓ Tu Pase de … está activo»;
+//   · la lista: sus 6 secciones y 20 puntos (10S7: +1) (los de Design), los precios de la app, [Elegir mi pase] → «¿Cuántos sois?», con pase «✓ Tu Pase de … está activo»;
 //   · cada punto de la lista existe de verdad en la app (data/pase/incluye.json) y no queda código de la película;
 //   · HOY sin pase: «HOY, tu guía del día», las 8 tarjetas, las dos cajas (día de prueba sin usar / ya usado) y [Ver el Pase Roma] que abre la lista.
 // Hace falta el servidor y Vite (siempre por la cola):
@@ -34,13 +34,15 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
   const diseno = leer('docs/diseno/proyecto/Piezas/Pase Lista.dc.html')
   const gen = leer('src/components/pase/lista/disenoLista.ts')
   const titulos = [...gen.matchAll(/"titulo": "([^"]*)"/g)].map((m) => m[1]).filter((t) => !/^[IVX]+ · /.test(t))
-  debe(titulos.length === 19 + 8, 'diseno', `27 títulos (19 de la lista + 8 de HOY) y hay ${titulos.length}`)
+  debe(titulos.length === 20 + 8, 'diseno', `28 títulos (20 de la lista —10S7: +1— + 8 de HOY) y hay ${titulos.length}`)
   debe(titulos.every((t) => diseno.includes(t)), 'diseno', 'todos los títulos están en la pieza de Design')
   // Cada punto de la lista existe de verdad en la app.
   const incluye = JSON.parse(leer('data/pase/incluye.json')).ventajas.map((v) => v.id)
   const respaldo = {
     'Tu ruta se adapta a tu vuelo': ['vuelos_horas'],
-    'Los días, en el mejor orden': ['orden_dias'],
+    // 10S7: antes → ahora → decisión de Eric (31-oct): «Los días, en el mejor orden» pasa a «Adaptamos tu viaje al mejor orden» (misma ventaja) y entra «Tu día, reorganizado en un toque» (ventaja nueva).
+    'Adaptamos tu viaje al mejor orden': ['orden_dias'],
+    'Tu día, reorganizado en un toque': ['reorganizar_dia'],
     'Tu ruta empieza donde duermes': ['zona_alojamiento', 'como_llegar_alojamiento'],
     'Todas tus reservas, de un vistazo': ['resumen_reservas'],
     'HOY, todos los días de tu viaje': ['hoy_siguiente_parada', 'hoy_como_llegar'],
@@ -60,7 +62,7 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
   }
   const sinRespaldo = Object.entries(respaldo).filter(([, ids]) => !ids.every((id) => incluye.includes(id)))
   debe(sinRespaldo.length === 0, 'existe', `cada punto de la lista tiene su ventaja en data/pase/incluye.json (${sinRespaldo.map(([t]) => t).join(', ') || 'todos'})`)
-  const deLista = titulos.slice(0, 19)
+  const deLista = titulos.slice(0, 20)
   debe(deLista.filter((t) => t !== 'Viaja en pareja o en grupo').every((t) => t in respaldo), 'existe', 'todos los puntos de la lista (menos el de compartir) están en la tabla de comprobación de esta prueba')
 }
 
@@ -106,9 +108,9 @@ const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore
     const secciones = await a.evaluar("Array.from(document.querySelectorAll('[data-lista-seccion]')).map((e) => e.getAttribute('data-lista-seccion'))")
     debe(JSON.stringify(secciones) === JSON.stringify(['I · ANTES DEL VIAJE', 'II · DURANTE EL VIAJE: HOY', 'III · TUS RECUERDOS', 'IV · TUS LOGROS', 'V · DESPUÉS DEL VIAJE', 'VI · PARA COMPARTIR']), 'lista', `las 6 secciones de Design (${secciones})`)
     const puntos = await a.evaluar("document.querySelectorAll('[data-lista-punto]').length")
-    debe(puntos === 19, 'lista', `19 puntos (${puntos})`)
+    debe(puntos === 20, 'lista', `20 puntos (antes 19 → ahora 20 → decisión de Eric, 10S7, 31-oct: +«Tu día, reorganizado en un toque») (${puntos})`)
     const dibujos = await a.evaluar("Array.from(document.querySelectorAll('[data-lista-punto]')).filter((e) => e.querySelector('svg')).length")
-    debe(dibujos === 19, 'lista', `cada punto con su dibujo (${dibujos})`)
+    debe(dibujos === 20, 'lista', `cada punto con su dibujo (${dibujos})`)
     debe(t.includes('Tu ruta empieza donde duermes') && t.includes('Dinos tu zona y tu primer y último día salen desde tu alojamiento, con cómo llegar.'), 'lista', 'el texto del alojamiento es el de Design')
     debe(!/€/.test(t), 'precios', '(10N12) la lista no enseña ningún precio: solo salen en «¿Cuántos sois?»')
     debe(/Elegir mi pase/.test(t) && !/Pase Dúo · 2 personas/.test(t), 'precios', '[Elegir mi pase] fijo y sin las tarjetas de Dúo y Grupo')
@@ -156,7 +158,7 @@ const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore
     debe(/✓ Tu Pase Roma está activo/.test(t), 'con', 'con pase: «✓ Tu Pase Roma está activo»')
     debe(!/Elegir mi pase/.test(t) && !/€/.test(t) && !/Se paga una vez/.test(t), 'con', 'con pase: sin [Elegir mi pase], sin precios y sin «Se paga una vez»')
     debe(!(await a.evaluar("Boolean(document.querySelector('[data-hoja-cuantos-sois]'))")), 'con', 'la hoja de compra no se abre')
-    debe((await a.evaluar("document.querySelectorAll('[data-lista-punto]').length")) === 19, 'con', 'con pase siguen los 19 puntos')
+    debe((await a.evaluar("document.querySelectorAll('[data-lista-punto]').length")) === 20, 'con', 'con pase siguen los 20 puntos')
     await a.evaluar("(() => { const l = document.querySelector('[data-lista-pase]'); l.scrollTop = l.scrollHeight; return true })()")
     await a.esp(300)
     await a.captura(path.join(SALIDA, '10n11_lista_pase_4_con_pase.jpg'))

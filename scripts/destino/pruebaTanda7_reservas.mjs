@@ -533,11 +533,13 @@ console.log('10. El enganche onCambioDeVuelo y el rehacer')
   const curada = viaje()
   curada.days.forEach((d) => (d.timesAreFinal = true))
   poner(curada)
-  debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === true && llamadas.length === 1 && llamadas[0].start === '2027-03-10', '10 rehacer', 'un cambio de vuelo en una ruta curada de pago no pone en marcha el rehacer')
+  // (10S7, 31-oct) ANTES: un cambio de vuelo en una ruta curada de pago ponía en marcha el rehacer (true y 1 llamada). AHORA: nada se reorganiza solo, tampoco el vuelo al guardarlo: devuelve false y no llama a nada;
+  // si algo cambiaría, sale el botón «Reorganizar» (pruebaTanda10S7_R). DECISIÓN DE ERIC (10S7, 31-oct). Se mantiene la fuerza: la función sigue existiendo y se comprueba que NO rehace.
+  debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === false && llamadas.length === 0, '10 rehacer', 'un cambio de vuelo en una ruta curada de pago rehace los días solo (ya no debe: 10S7)')
   llamadas = []
   // (Tanda 7, conexión: una ruta con días cambiados a mano SÍ se rehace; esos días no se tocan —lo comprueba `pruebaTanda7_conexion`—. Antes no se rehacía nada.)
   poner({ ...curada, editedManually: true })
-  debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === true && llamadas.length === 1, '10 a mano no se toca', 'una ruta con días cambiados a mano debe rehacerse (sus días no se tocan)')
+  debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === false && llamadas.length === 0, '10 a mano no se toca', 'una ruta con días cambiados a mano tampoco se rehace solo (10S7)')
   llamadas = []
   poner({ ...curada, planMode: 'manual' })
   debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === false && llamadas.length === 0, '10 ruta a mano', 'la ruta a mano nunca se rehace')

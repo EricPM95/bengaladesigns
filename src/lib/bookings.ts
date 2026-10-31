@@ -320,16 +320,17 @@ function placeReservedEntranceUna(route: Route, reservation: Reservation): Route
     if (found) break
   }
   if (!found) return route
-  const minutesOf = (stop: Stop) => {
-    const [hours, minutes] = (stop.time ?? '').split(':').map(Number)
-    return Number.isFinite(hours) && Number.isFinite(minutes) ? hours * 60 + minutes : Number.MAX_SAFE_INTEGER
-  }
-  const placed: Stop = { ...found.stop, time: reservation.time, reservedId: reservation.id }
+  // (10S7) La parada que viaja a su día (otro distinto del suyo, por ejemplo el Free Tour reservado el viernes cuando estaba el jueves) llega de PRIMERA, como cualquier parada nueva; ningún otro día se toca.
+  // Sin su franja de otro día: entra en la del día (la de la que era primera).
+  const { franja: _franjaVieja, ...sinFranja } = found.stop
+  void _franjaVieja
+  const franjaDelDia = target.stops[0]?.franja
+  const placed: Stop = { ...sinFranja, ...(found.stop.isFreeTour ? { franja: 'manana' as const } : franjaDelDia ? { franja: franjaDelDia } : {}), time: reservation.time, reservedId: reservation.id }
   const { day: from } = found
   return {
     ...route,
     days: route.days.map((day) => {
-      if (day.id === target.id) return { ...day, stops: [...day.stops.filter((stop) => stop.id !== placed.id), placed].sort((a, b) => minutesOf(a) - minutesOf(b)) }
+      if (day.id === target.id) return { ...day, stops: [placed, ...day.stops.filter((stop) => stop.id !== placed.id)] }
       if (day.id === from.id) return { ...day, stops: day.stops.filter((stop) => stop.id !== placed.id) }
       return day
     }),

@@ -123,7 +123,7 @@ try {
   await app.esp(1800)
   await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const cab = b?.firstElementChild; if (cab && b.children.length < 2) cab.click(); return true })()`)
   await app.esp(1500)
-  const abrirFT = `(() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).filter((x) => /Añádela/.test(x.textContent || '')).find((x) => /Free Tour/.test(x.closest('[class*="min-h-"]')?.textContent || '')); if (!b) return false; b.click(); return true })()`
+  const abrirFT = `(() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).filter((x) => /Añádela/.test(x.textContent || '')).find((x) => /Free Tour/.test(x.closest('[data-tarjeta-por-reservar],[data-tarjeta-reservada],[class*="min-h-"]')?.textContent || '')); if (!b) return false; b.click(); return true })()`
   let abierta = false
   for (let i = 0; i < 20 && !abierta; i++) {
     abierta = await ev(`return ${abrirFT}`)
@@ -131,7 +131,7 @@ try {
   }
   if (!abierta) {
     // (Plan B: la fila del Free Tour reservable de otra forma.)
-    abierta = await ev(`return (() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).find((x) => /Reservar Free Tour|Añádela|Cambiar/.test(x.textContent || '') && /Free Tour/.test(x.closest('[class*="min-h-"]')?.textContent || '')); if (!b) return false; b.click(); return true })()`)
+    abierta = await ev(`return (() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).find((x) => /Reservar Free Tour|Añádela|Cambiar/.test(x.textContent || '') && /Free Tour/.test(x.closest('[data-tarjeta-por-reservar],[data-tarjeta-reservada],[class*="min-h-"]')?.textContent || '')); if (!b) return false; b.click(); return true })()`)
   }
   debe(abierta, 'ap5', 'se abre la hoja del Free Tour desde RESERVAS')
   await app.esp(1800)
@@ -182,7 +182,7 @@ try {
   // Cambiar la hora (la hoja sale con la reserva puesta): 15:00, misma regla.
   await ev("st().setMode('bookings'); return true")
   await app.esp(1500)
-  const abrirCambiar = `(() => { const bloque = document.querySelector('[data-blk="entradas"]'); if (bloque && bloque.children.length < 2) bloque.firstElementChild?.click(); const b = Array.from(document.querySelectorAll('[data-blk="entradas"] button')).find((x) => /^Cambiar$/.test((x.textContent || '').trim()) && /Free Tour/.test(x.closest('[class*="min-h-"]')?.textContent || '')); if (!b) return false; b.click(); return true })()`
+  const abrirCambiar = `(() => { const bloque = document.querySelector('[data-blk="entradas"]'); if (bloque && bloque.children.length < 2) bloque.firstElementChild?.click(); const b = Array.from(document.querySelectorAll('[data-blk="entradas"] button')).find((x) => /^Cambiar$/.test((x.textContent || '').trim()) && /Free Tour/.test(x.closest('[data-tarjeta-por-reservar],[data-tarjeta-reservada],[class*="min-h-"]')?.textContent || '')); if (!b) return false; b.click(); return true })()`
   let cambiar = false
   for (let i = 0; i < 20 && !cambiar; i++) {
     cambiar = await ev(`return ${abrirCambiar}`)
