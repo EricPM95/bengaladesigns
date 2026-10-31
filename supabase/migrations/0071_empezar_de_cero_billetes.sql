@@ -1,9 +1,11 @@
 -- 0071 · EMPEZAR DE CERO TAMBIÉN BORRA EL BILLETE (Tanda 10S5). SIN APLICAR: se aplica a mano en el SQL editor de Supabase (se puede pegar entera y repetir). Comprobación: docs/dias/COMPROBAR_0071.sql.
 --
--- La 0070 creó `billetes_personales` (el billete de cada persona, privado) y no estaba en el inventario de `empezar_de_cero` de la 0032: al empezar de cero, los billetes de esa cuenta se quedaban.
--- Esta migración NO edita la 0032: vuelve a crear la función con `create or replace`, idéntica a la de la 0032 salvo UNA línea nueva en el inventario: ('billetes_personales', 'user_id'), siempre con `columna = uid`.
--- (Si la 0070 aún no está aplicada, esa tabla se salta sola: la función comprueba `to_regclass` antes de borrar.) Los billetes de OTRAS personas no se tocan: solo las filas con `user_id` = la cuenta.
--- Cada vez que se cree una tabla con datos de una persona, hay que añadirla aquí (o en una migración nueva igual) y en el inventario de scripts/destino/pruebaTanda10J.mjs.
+-- La 0070 creó `billetes_personales` (el billete de cada persona, privado) y no estaba en el inventario de `empezar_de_cero`: al empezar de cero, los billetes de esa cuenta se quedaban.
+-- Esta migración NO edita ninguna anterior: vuelve a crear la función con `create or replace`, partiendo de su ÚLTIMA versión (la de la 0040: 0032 → 0037 → 0040), idéntica salvo DOS cosas: (1) UNA línea nueva en el inventario, ('billetes_personales', 'user_id'), siempre con `columna = uid`; y (2) `trip_ex_miembros` pasa a borrarse DESPUÉS de `trip_members`: al borrar la fila de `trip_members` de la cuenta, el disparador `recordar_ex_miembro` (0040) vuelve a apuntarla como ex miembro, y con el orden de la 0040 esa fila se quedaba en los viajes compartidos (la detectó pruebaTanda10J).
+-- (Si la 0070 aún no está aplicada, esa tabla se salta sola: la función comprueba `to_regclass` antes de borrar.) Los billetes de OTRAS personas no se tocan.
+-- Cada vez que se cree una tabla con datos de una persona, hay que añadirla en una migración nueva igual (partiendo de la última versión de la función) y en el inventario de scripts/destino/pruebaTanda10J.mjs.
+
+begin;
 
 create or replace function public.empezar_de_cero(p_uid uuid) returns jsonb
 language plpgsql security definer set search_path = public as $$
@@ -35,9 +37,13 @@ begin
       ('avisos', 'user_id'),
       ('avisos_destino', 'user_id'),
       ('place_likes', 'user_id'),
+      ('admin_sin_pase', 'user_id'),
       ('trip_recommendations', 'author_id'),
+      ('trip_gastos', 'autor_id'),
+      ('trip_pagos', 'marcado_por'),
       ('trip_invitations', 'creada_por'),
       ('trip_members', 'user_id'),
+      ('trip_ex_miembros', 'user_id'),
       ('pass_members', 'user_id'),
       ('passes', 'comprador_id'),
       ('billetes_personales', 'user_id'),
@@ -57,3 +63,5 @@ end $$;
 
 revoke all on function public.empezar_de_cero(uuid) from public, anon, authenticated;
 grant execute on function public.empezar_de_cero(uuid) to service_role;
+
+commit;

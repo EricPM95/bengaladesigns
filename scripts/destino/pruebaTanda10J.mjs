@@ -89,10 +89,10 @@ const S = (sql, params = []) => servidor(() => q(sql, params))
 const INVENTARIO = [
   ['stop_visits', 'user_id'], ['trip_photo_meta', 'user_id'], ['trip_photos', 'user_id'], ['logro_hechos', 'user_id'], ['achievements', 'user_id'], ['logro_avisos', 'user_id'], ['logro_perfil', 'user_id'],
   ['push_suscripciones', 'user_id'], ['hoy_prueba', 'user_id'], ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
-  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
+  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['admin_sin_pase', 'user_id'] /* 0040 */, ['trip_gastos', 'autor_id'] /* 0037/0040 */, ['trip_pagos', 'marcado_por'] /* 0040 */, ['trip_ex_miembros', 'user_id'] /* 0040 */, ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
 ]
 /** Lo que se queda (de la cuenta). */
-const SE_QUEDA = [['travelers', 'id'], ['admin_sin_pase', 'user_id'] /* Tanda 10N: «sin pase» es un ajuste de las pruebas, no se borra */, ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id']]
+const SE_QUEDA = [['travelers', 'id'], ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id']]
 
 const usuario = async (email) => (await q('insert into auth.users (email, is_anonymous) values ($1, false) returning id', [email]))[0].id
 let contador = 0
@@ -122,6 +122,9 @@ async function sembrar(uid, etiqueta, { invitado = null, amiga = null } = {}) {
   const pase = (await S("insert into public.passes (destino, comprador_id, tipo, usos_max, usos_usados, codigo) values ('roma',$1,'uno',1,1,$2) returning id", [uid, unico('PASE')]))[0].id
   await S('insert into public.pass_members (pass_id, user_id) values ($1,$2)', [pase, uid])
   await S('insert into public.trip_invitations (trip_id, creada_por, codigo) values ($1,$2,$3)', [viaje, uid, unico('INV')])
+  await S("insert into public.trip_gastos (trip_id, autor_id, nombre, precio, ambito) values ($1, $2, 'Cena', '{\"amount\": 30, \"currency\": \"EUR\"}'::jsonb, 'mio')", [viaje, uid])
+  await S("insert into public.trip_pagos (trip_id, deudor_id, acreedor_id, importe, marcado_por) values ($1, $2, gen_random_uuid(), '{\"amount\": 15, \"currency\": \"EUR\"}'::jsonb, $2)", [viaje, uid])
+  await S('insert into public.trip_ex_miembros (trip_id, user_id) values ($1, $2)', [viaje, uid])
   await S("insert into public.billetes_personales (trip_id, user_id, datos) values ($1, $2, '{}'::jsonb)", [viaje, uid])
   const amigoQueInvito = await usuario(unico(`invitado-${etiqueta}@x.es`))
   await S('insert into public.logro_referidos (invitador_id, invitado_id) values ($1,$2)', [uid, amigoQueInvito])
@@ -171,17 +174,33 @@ const aSembrada = await sembrar(A, 'A', { invitado: B })
 let c = await contar(A)
 for (const [tabla, columna] of INVENTARIO.filter(([t]) => !['trip_recommendations', 'trip_members'].includes(t))) debe(c[`${tabla}.${columna}`] > 0, 'siembra', `la cuenta de prueba tiene datos en ${tabla}.${columna}`)
 // ¿Se ha olvidado alguna tabla con datos de una cuenta? Cualquier tabla del esquema con una columna que apunta a auth.users tiene que estar en el inventario o en «se queda» o ser global.
+// 10S5d: antes → ahora → decisión de Eric (31-oct): este control miraba `information_schema.constraint_column_usage`, que en PGlite devuelve CERO filas, así que nunca protegió nada (con la 0071 mala pasó
+// sin avisar). Ahora usa el catálogo `pg_constraint` (claves ajenas hacia auth.users, de tablas del esquema public) y falla de verdad si una tabla con datos de una cuenta queda fuera del inventario.
 const apuntanAUsuarios = await S(`
-  select distinct kcu.table_name as tabla, kcu.column_name as columna
-  from information_schema.table_constraints tc
-  join information_schema.key_column_usage kcu on kcu.constraint_name = tc.constraint_name and kcu.table_schema = tc.table_schema
-  join information_schema.constraint_column_usage ccu on ccu.constraint_name = tc.constraint_name and ccu.table_schema = tc.table_schema
-  where tc.constraint_type = 'FOREIGN KEY' and tc.table_schema = 'public' and ccu.table_schema = 'auth' and ccu.table_name = 'users'`)
+  select distinct c.conrelid::regclass::text as tabla, a.attname as columna
+  from pg_constraint c
+  join pg_attribute a on a.attrelid = c.conrelid and a.attnum = any (c.conkey)
+  where c.contype = 'f' and c.confrelid = 'auth.users'::regclass and c.connamespace = 'public'::regnamespace`)
+debe(apuntanAUsuarios.length >= 20, 'inventario', `el control de tablas olvidadas ve las claves ajenas hacia auth.users (${apuntanAUsuarios.length}; si fuera 0 el control no serviría de nada)`)
 const conocidas = new Set(INVENTARIO.concat(SE_QUEDA).map(([t, col]) => `${t}.${col}`))
 // Columnas que apuntan a una cuenta pero son «quién lo hizo» y no de quién es (se dejan: no son de la cuenta, o se limpian solas con `on delete set null`).
-const NO_SON_DE_LA_CUENTA = new Set(['trip_members.invited_by', 'trip_recommendations.decidida_por', 'passes.para_id'])
-const olvidadas = apuntanAUsuarios.map((x) => `${x.tabla}.${x.columna}`).filter((x) => !conocidas.has(x) && !NO_SON_DE_LA_CUENTA.has(x))
+const NO_SON_DE_LA_CUENTA = new Set(['trip_members.invited_by', 'trip_recommendations.decidida_por', 'passes.para_id', 'trip_gastos.decidido_por'])
+// 10S5d: HUECOS CONOCIDOS que el control nuevo ha destapado: tablas con datos de una cuenta que NINGUNA versión de `empezar_de_cero` borra (ni la 0032, ni la 0037, ni la 0040) y que la 0071 no añade
+// porque Eric pidió que su única diferencia con la 0040 fuera `billetes_personales`. Decisión de Eric pendiente (se le ha dicho en el informe): añadirlas a una migración nueva. Si alguien las añade a la
+// función, la prueba obliga a quitarlas de esta lista (así no se quedan escritas como hueco cuando ya no lo son).
+const HUECOS_CONOCIDOS = new Set(['historia_de_prueba.user_id', 'lo_suyo_del_viaje.user_id', 'reservas_invitado.user_id', 'reservas_privadas_admin.user_id'])
+const olvidadas = apuntanAUsuarios.map((x) => `${x.tabla}.${x.columna}`).filter((x) => !conocidas.has(x) && !NO_SON_DE_LA_CUENTA.has(x) && !HUECOS_CONOCIDOS.has(x))
 debe(olvidadas.length === 0, 'inventario', `ninguna tabla con datos de una cuenta queda fuera del inventario (olvidadas: ${olvidadas.join(', ') || 'ninguna'})`)
+// La función VIGENTE (con todas las migraciones aplicadas en orden, manda la última) es la que vale: se lee de la base de datos, no de un archivo de migración.
+const defVigente = (await S("select pg_get_functiondef('public.empezar_de_cero(uuid)'::regprocedure) as def"))[0].def
+const enLaFuncion = new Set([...defVigente.matchAll(/\('([a-z_]+)',\s*'([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`))
+const faltanEnLaFuncion = INVENTARIO.map(([t, col]) => `${t}.${col}`).filter((x) => !enLaFuncion.has(x))
+debe(faltanEnLaFuncion.length === 0, 'inventario', `a empezar_de_cero (la versión vigente, la última migración que la define) no le falta ninguna tabla del inventario (faltan: ${faltanEnLaFuncion.join(', ') || 'ninguna'})`)
+const sobranEnLaFuncion = [...enLaFuncion].filter((x) => !INVENTARIO.some(([t, col]) => `${t}.${col}` === x))
+debe(sobranEnLaFuncion.length === 0, 'inventario', `y no borra nada que no esté en el inventario de la prueba (sobran: ${sobranEnLaFuncion.join(', ') || 'ninguna'})`)
+const yaNoSonHuecos = [...HUECOS_CONOCIDOS].filter((x) => enLaFuncion.has(x))
+debe(yaNoSonHuecos.length === 0, 'inventario', `los huecos conocidos siguen siéndolo (si ya están en la función, quítalos de HUECOS_CONOCIDOS y ponlos en el inventario: ${yaNoSonHuecos.join(', ') || 'ninguno'})`)
+if (HUECOS_CONOCIDOS.size) console.log(`   PENDIENTE (decisión de Eric): empezar_de_cero NO borra ${[...HUECOS_CONOCIDOS].join(', ')}`)
 const sinColumnaDeCuenta = (await S("select table_name from information_schema.tables where table_schema = 'public' and table_type = 'BASE TABLE'")).map((t) => t.table_name)
 debe(sinColumnaDeCuenta.includes('pagos_registro') && !apuntanAUsuarios.some((x) => x.tabla === 'pagos_registro'), 'stripe', 'el registro de cobros no cuelga de ninguna cuenta (no se puede borrar por cuenta)')
 
@@ -437,6 +456,12 @@ console.log('3. El código')
   // El inventario de la prueba es el de la migración
   const tablasSql = [...sql.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
   debe(JSON.stringify(tablasSql) === JSON.stringify(INVENTARIO.map(([t, col]) => `${t}.${col}`).sort()), 'inventario', `el inventario de la prueba y el de la migración son el mismo (${tablasSql.length} tablas)`)
+  // 10S5d: la 0071 parte de la ÚLTIMA versión de la función (la de la 0040) y añade SOLO `billetes_personales` (Eric, 31-oct): ninguna tabla de la 0040 se pierde.
+  const sql40 = sin(fs.readFileSync('supabase/migrations/0040_cuentas_del_grupo.sql', 'utf8'))
+  const tablas40 = [...sql40.slice(sql40.indexOf('create or replace function public.empezar_de_cero')).matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
+  const tablas71 = tablasSql
+  debe(tablas40.every((x) => tablas71.includes(x)), 'inventario', `la 0071 conserva todas las tablas de la 0040 (${tablas40.length}); le faltan: ${tablas40.filter((x) => !tablas71.includes(x)).join(', ') || 'ninguna'}`)
+  debe(JSON.stringify(tablas71.filter((x) => !tablas40.includes(x))) === JSON.stringify(['billetes_personales.user_id']), 'inventario', `y su única tabla nueva es billetes_personales (nuevas: ${tablas71.filter((x) => !tablas40.includes(x)).join(', ') || 'ninguna'})`)
   // El cliente
   const cliente = fs.readFileSync('src/lib/empezarDeCero.ts', 'utf8')
   const panel = fs.readFileSync('src/components/logros/AdminLogros.tsx', 'utf8')
