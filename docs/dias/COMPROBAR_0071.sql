@@ -7,6 +7,10 @@ select case
    and pg_get_functiondef(to_regprocedure('public.empezar_de_cero(uuid)')) like '%trip_pagos%'
    and pg_get_functiondef(to_regprocedure('public.empezar_de_cero(uuid)')) like '%trip_ex_miembros%'
    and pg_get_functiondef(to_regprocedure('public.empezar_de_cero(uuid)')) like '%admin_sin_pase%'
+   and pg_get_functiondef(to_regprocedure('public.empezar_de_cero(uuid)')) like '%lo_suyo_del_viaje%'
+   and pg_get_functiondef(to_regprocedure('public.empezar_de_cero(uuid)')) like '%reservas_invitado%'
+   and pg_get_functiondef(to_regprocedure('public.empezar_de_cero(uuid)')) like '%reservas_privadas_admin%'
+   and pg_get_functiondef(to_regprocedure('public.empezar_de_cero(uuid)')) like '%historia_de_prueba%'
   then 'Aplicada'
   else 'FALTA'
 end as migracion_0071;

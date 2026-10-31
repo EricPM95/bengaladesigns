@@ -1,8 +1,8 @@
 -- 0071 · EMPEZAR DE CERO TAMBIÉN BORRA EL BILLETE (Tanda 10S5). SIN APLICAR: se aplica a mano en el SQL editor de Supabase (se puede pegar entera y repetir). Comprobación: docs/dias/COMPROBAR_0071.sql.
 --
 -- La 0070 creó `billetes_personales` (el billete de cada persona, privado) y no estaba en el inventario de `empezar_de_cero`: al empezar de cero, los billetes de esa cuenta se quedaban.
--- Esta migración NO edita ninguna anterior: vuelve a crear la función con `create or replace`, partiendo de su ÚLTIMA versión (la de la 0040: 0032 → 0037 → 0040), idéntica salvo DOS cosas: (1) UNA línea nueva en el inventario, ('billetes_personales', 'user_id'), siempre con `columna = uid`; y (2) `trip_ex_miembros` pasa a borrarse DESPUÉS de `trip_members`: al borrar la fila de `trip_members` de la cuenta, el disparador `recordar_ex_miembro` (0040) vuelve a apuntarla como ex miembro, y con el orden de la 0040 esa fila se quedaba en los viajes compartidos (la detectó pruebaTanda10J).
--- (Si la 0070 aún no está aplicada, esa tabla se salta sola: la función comprueba `to_regclass` antes de borrar.) Los billetes de OTRAS personas no se tocan.
+-- Esta migración NO edita ninguna anterior: vuelve a crear la función con `create or replace`, partiendo de su ÚLTIMA versión (la de la 0040: 0032 → 0037 → 0040), idéntica salvo TRES cosas: (1) CINCO líneas nuevas en el inventario, siempre con `columna = uid`: ('billetes_personales', 'user_id') (0070) y cuatro tablas que ninguna versión anterior borraba y que destapó pruebaTanda10J (Eric las pidió el 31-oct): `lo_suyo_del_viaje` (0049), `reservas_invitado` (0038), `reservas_privadas_admin` (0062/0064) e `historia_de_prueba` (0033); y (2) `trip_ex_miembros` pasa a borrarse DESPUÉS de `trip_members`: al borrar la fila de `trip_members` de la cuenta, el disparador `recordar_ex_miembro` (0040) vuelve a apuntarla como ex miembro, y con el orden de la 0040 esa fila se quedaba en los viajes compartidos (la detectó pruebaTanda10J).
+-- (Si alguna tabla aún no existe —la 0070, por ejemplo—, se salta sola: la función comprueba `to_regclass` antes de borrar.) Los billetes de OTRAS personas no se tocan.
 -- Cada vez que se cree una tabla con datos de una persona, hay que añadirla en una migración nueva igual (partiendo de la última versión de la función) y en el inventario de scripts/destino/pruebaTanda10J.mjs.
 
 begin;
@@ -47,6 +47,10 @@ begin
       ('pass_members', 'user_id'),
       ('passes', 'comprador_id'),
       ('billetes_personales', 'user_id'),
+      ('lo_suyo_del_viaje', 'user_id'),
+      ('reservas_invitado', 'user_id'),
+      ('reservas_privadas_admin', 'user_id'),
+      ('historia_de_prueba', 'user_id'),
       ('trips', 'traveler_id'),
       ('fotos_por_borrar', 'user_id')
     ) as t (tabla, columna)

@@ -89,7 +89,7 @@ const S = (sql, params = []) => servidor(() => q(sql, params))
 const INVENTARIO = [
   ['stop_visits', 'user_id'], ['trip_photo_meta', 'user_id'], ['trip_photos', 'user_id'], ['logro_hechos', 'user_id'], ['achievements', 'user_id'], ['logro_avisos', 'user_id'], ['logro_perfil', 'user_id'],
   ['push_suscripciones', 'user_id'], ['hoy_prueba', 'user_id'], ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
-  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['admin_sin_pase', 'user_id'] /* 0040 */, ['trip_gastos', 'autor_id'] /* 0037/0040 */, ['trip_pagos', 'marcado_por'] /* 0040 */, ['trip_ex_miembros', 'user_id'] /* 0040 */, ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
+  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['admin_sin_pase', 'user_id'] /* 0040 */, ['trip_gastos', 'autor_id'] /* 0037/0040 */, ['trip_pagos', 'marcado_por'] /* 0040 */, ['trip_ex_miembros', 'user_id'] /* 0040 */, ['lo_suyo_del_viaje', 'user_id'] /* 0049, añadida en la 0071 */, ['reservas_invitado', 'user_id'] /* 0038, 0071 */, ['reservas_privadas_admin', 'user_id'] /* 0062/0064, 0071 */, ['historia_de_prueba', 'user_id'] /* 0033, 0071 */, ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
 ]
 /** Lo que se queda (de la cuenta). */
 const SE_QUEDA = [['travelers', 'id'], ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id']]
@@ -125,6 +125,10 @@ async function sembrar(uid, etiqueta, { invitado = null, amiga = null } = {}) {
   await S("insert into public.trip_gastos (trip_id, autor_id, nombre, precio, ambito) values ($1, $2, 'Cena', '{\"amount\": 30, \"currency\": \"EUR\"}'::jsonb, 'mio')", [viaje, uid])
   await S("insert into public.trip_pagos (trip_id, deudor_id, acreedor_id, importe, marcado_por) values ($1, $2, gen_random_uuid(), '{\"amount\": 15, \"currency\": \"EUR\"}'::jsonb, $2)", [viaje, uid])
   await S('insert into public.trip_ex_miembros (trip_id, user_id) values ($1, $2)', [viaje, uid])
+  await S('insert into public.lo_suyo_del_viaje (trip_id, user_id) values ($1, $2)', [viaje, uid])
+  await S('insert into public.reservas_invitado (trip_id, user_id) values ($1, $2)', [viaje, uid])
+  await S('insert into public.reservas_privadas_admin (trip_id, user_id) values ($1, $2)', [viaje, uid])
+  await S("insert into public.historia_de_prueba (user_id, destino, sitio, nombre) values ($1, 'roma', 'coliseo', 'Coliseo') on conflict (user_id, destino) do nothing", [uid])
   await S("insert into public.billetes_personales (trip_id, user_id, datos) values ($1, $2, '{}'::jsonb)", [viaje, uid])
   const amigoQueInvito = await usuario(unico(`invitado-${etiqueta}@x.es`))
   await S('insert into public.logro_referidos (invitador_id, invitado_id) values ($1,$2)', [uid, amigoQueInvito])
@@ -188,7 +192,7 @@ const NO_SON_DE_LA_CUENTA = new Set(['trip_members.invited_by', 'trip_recommenda
 // 10S5d: HUECOS CONOCIDOS que el control nuevo ha destapado: tablas con datos de una cuenta que NINGUNA versión de `empezar_de_cero` borra (ni la 0032, ni la 0037, ni la 0040) y que la 0071 no añade
 // porque Eric pidió que su única diferencia con la 0040 fuera `billetes_personales`. Decisión de Eric pendiente (se le ha dicho en el informe): añadirlas a una migración nueva. Si alguien las añade a la
 // función, la prueba obliga a quitarlas de esta lista (así no se quedan escritas como hueco cuando ya no lo son).
-const HUECOS_CONOCIDOS = new Set(['historia_de_prueba.user_id', 'lo_suyo_del_viaje.user_id', 'reservas_invitado.user_id', 'reservas_privadas_admin.user_id'])
+const HUECOS_CONOCIDOS = new Set([]) // 31-oct: Eric dijo «Sí, mételas» y la 0071 añade las cuatro (lo_suyo_del_viaje, reservas_invitado, reservas_privadas_admin, historia_de_prueba): ya no hay huecos
 const olvidadas = apuntanAUsuarios.map((x) => `${x.tabla}.${x.columna}`).filter((x) => !conocidas.has(x) && !NO_SON_DE_LA_CUENTA.has(x) && !HUECOS_CONOCIDOS.has(x))
 debe(olvidadas.length === 0, 'inventario', `ninguna tabla con datos de una cuenta queda fuera del inventario (olvidadas: ${olvidadas.join(', ') || 'ninguna'})`)
 // La función VIGENTE (con todas las migraciones aplicadas en orden, manda la última) es la que vale: se lee de la base de datos, no de un archivo de migración.
@@ -461,7 +465,8 @@ console.log('3. El código')
   const tablas40 = [...sql40.slice(sql40.indexOf('create or replace function public.empezar_de_cero')).matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
   const tablas71 = tablasSql
   debe(tablas40.every((x) => tablas71.includes(x)), 'inventario', `la 0071 conserva todas las tablas de la 0040 (${tablas40.length}); le faltan: ${tablas40.filter((x) => !tablas71.includes(x)).join(', ') || 'ninguna'}`)
-  debe(JSON.stringify(tablas71.filter((x) => !tablas40.includes(x))) === JSON.stringify(['billetes_personales.user_id']), 'inventario', `y su única tabla nueva es billetes_personales (nuevas: ${tablas71.filter((x) => !tablas40.includes(x)).join(', ') || 'ninguna'})`)
+  const NUEVAS_DE_LA_0071 = ['billetes_personales.user_id', 'historia_de_prueba.user_id', 'lo_suyo_del_viaje.user_id', 'reservas_invitado.user_id', 'reservas_privadas_admin.user_id']
+  debe(JSON.stringify(tablas71.filter((x) => !tablas40.includes(x)).sort()) === JSON.stringify(NUEVAS_DE_LA_0071), 'inventario', `y sus únicas tablas nuevas son billetes_personales y las cuatro que pidió Eric (31-oct) (nuevas: ${tablas71.filter((x) => !tablas40.includes(x)).join(', ') || 'ninguna'})`)
   // El cliente
   const cliente = fs.readFileSync('src/lib/empezarDeCero.ts', 'utf8')
   const panel = fs.readFileSync('src/components/logros/AdminLogros.tsx', 'utf8')
