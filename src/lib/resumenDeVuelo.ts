@@ -2,6 +2,7 @@ import type { DayPlan, Route } from './types'
 import type { CambioDeVuelo } from './cambioDeVuelo'
 import { botonesDe, vaALaCampana, type AvisoDelMotor, type ResumenDelMotor } from './planLlegadaVuelta'
 import { diaCortoProsa } from './nombreDeDia'
+import { planLlegadaVeraz } from './planLlegadaVeraz'
 
 /**
  * LA HOJA DEL RESUMEN (Tanda 7, punto 14): UNA sola hoja de abajo, al poner, cambiar o borrar una hora, un punto o la zona de los vuelos, con lo que ha cambiado. Todo el contenido sale de lo que el
@@ -58,10 +59,12 @@ export function construirResumen({ route, cambios, mantenidos }: { route: Route;
   const items: ItemDeResumen[] = []
   const quitado = cambios.some((cambio) => cambio.que === 'quitar')
 
-  if (mitades.has('arrival') && route.planLlegada) {
-    ;(route.planLlegada.resumen ?? []).forEach((item, indice) => items.push(desdeResumen(item, route, indice)))
+  // (10S7c) Solo lo que la ruta real cumple: «la Roma antigua pasa al día 2» no sale si no ha pasado.
+  const llegada = planLlegadaVeraz(route)
+  if (mitades.has('arrival') && llegada) {
+    ;(llegada.resumen ?? []).forEach((item, indice) => items.push(desdeResumen(item, route, indice)))
     // Los avisos de la hoja (no los de la campana): el Free Tour puesto, lo que queda en «Si te sobra tiempo»…
-    ;(route.planLlegada.avisos ?? []).forEach((aviso, indice) => {
+    ;(llegada.avisos ?? []).forEach((aviso, indice) => {
       if (!vaALaCampana(aviso)) items.push(desdeAviso(aviso, route, indice))
     })
   }

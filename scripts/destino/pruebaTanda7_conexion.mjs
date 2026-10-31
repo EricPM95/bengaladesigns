@@ -183,7 +183,18 @@ console.log('2. La hoja del resumen')
   ponerVersion('completa')
   const items = async (ruta, cambios, { reservas = [], mantenidos = [] } = {}) => {
     const p = await planes(ruta, reservas)
-    return { items: construirResumen({ route: { ...ruta, planLlegada: p.planLlegada ?? undefined, planVuelta: p.planVuelta ?? undefined }, cambios, mantenidos }), p }
+    // (10S7c, 31-oct) ANTES → AHORA → DECISIÓN DE ERIC (el plan de llegada solo dice lo que de verdad ha pasado). ANTES: la hoja repetía todo lo que decía el motor. AHORA: construirResumen contrasta cada frase con la ruta real (planLlegadaVeraz). Por eso la ruta de la prueba se pone COMO LA DEJARÍA ese plan (el día escrito que pasa al día 2 está en el día 2, el que se cae ya no está, lo que queda fuera está en «Si te sobra tiempo»): ahí la frase SÍ sale; con la ruta sin tocar (no ha pasado nada) NO sale (se comprueba abajo).
+    const plan = p.planLlegada ?? undefined
+    const real = { ...ruta, days: ruta.days.map((d) => ({ ...d })) }
+    for (const f of plan?.resumen ?? []) {
+      if (f.tipo === 'dia_corrido') real.days.find((d) => d.dayNumber === 2).curatedId = f.dia_id
+      if (f.tipo === 'dia_caido') real.days.forEach((d) => { if (d.curatedId === f.dia_id) d.curatedId = undefined })
+    }
+    for (const f of plan?.dejado_fuera ?? []) {
+      const d = real.days.find((x) => x.dayNumber === (f.dia ?? 1))
+      if (d) d.spareStops = [...(d.spareStops ?? []), { id: 'sp-' + f.lugar, name: f.lugar, fullName: f.parada ?? f.lugar }]
+    }
+    return { items: construirResumen({ route: { ...real, planLlegada: plan, planVuelta: p.planVuelta ?? undefined }, cambios, mantenidos }), p, sinCambios: construirResumen({ route: { ...ruta, planLlegada: plan, planVuelta: p.planVuelta ?? undefined }, cambios, mantenidos }) }
   }
   const lleg = (hora, extra = {}, opciones = {}) => viaje({ extra: { arrivalFlightTime: hora, arrivalPointId: 'fco', accommodationZone: 'centro', ...extra }, ...opciones })
   // La llegada de tarde (16:00): su día y el día que se corre.
@@ -586,6 +597,7 @@ console.log('8. Lo viejo, fuera')
   // (10S7b, 31-oct) ANTES → AHORA → DECISIÓN DE ERIC. ANTES: reorganizarDia.ts no nombraba la llegada ni la vuelta. AHORA: el primer y el último día miran el vuelo (`diaAdaptadoAlVuelo`, src/lib/adaptarVuelos.ts), así que el
   // fichero lo nombra; lo que se mantiene con la misma fuerza: el servidor de «reorganizar» (`/api/reorganizar-dia`) NO recibe vuelos y el fichero no lee las horas del vuelo directamente. DECISIÓN DE ERIC (10S7b, 31-oct):
   // «El botón Reorganizar tiene que mirar el vuelo en el primer y el último día: no pone nada antes de la llegada ni después de la hora de irse al aeropuerto.»
+  // (10S7c, 31-oct) ANTES → AHORA → DECISIÓN DE ERIC. ANTES: el primer y el último día se adaptaban al vuelo RECORTANDO en el cliente (recortarAlVuelo). AHORA: los pide al modo nuevo del motor (/api/adaptar-dia-vuelo: mismas paradas reordenadas y con horas nuevas, lo que no cabe a «Si te sobra tiempo», los imprescindibles con aviso) y el recorte queda solo de respaldo; reorganizarDia.ts sigue sin leer las horas del vuelo. DECISIÓN DE ERIC (10S7c, 31-oct): «Añade al motor adaptar solo el primer día (y lo mismo para el último). Nada pasa a otro día.»
   const cuerpoReorganizar = reorganizar.slice(reorganizar.indexOf("fetch('/api/reorganizar-dia'"), reorganizar.indexOf('if (!response.ok) return null'))
   debe(cuerpoReorganizar.length > 50 && !/llegada|vuelta|arrivalFlightTime|departureFlightTime/.test(cuerpoReorganizar), '5 reorganizar', 'la petición de «Reorganizar este día» al servidor lleva el vuelo')
   debe(!/arrivalFlightTime|departureFlightTime/.test(reorganizar) && /diaAdaptadoAlVuelo/.test(reorganizar), '5 reorganizar mira el vuelo', 'Reorganizar no mira el vuelo por diaAdaptadoAlVuelo (o lee las horas del vuelo directamente)')

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { PropuestaDeVuelos } from '../lib/adaptarVuelos'
+import type { NoCabe, PropuestaDeVuelos } from '../lib/adaptarVuelos'
 
 /**
  * EL BOTÓN «REORGANIZAR» DEL PASE (Tanda 10S7, apartado 2; `Piezas/Reorganizar` R1-R3). Estado de pantalla (no se guarda con el viaje):
@@ -15,6 +15,10 @@ interface ReorganizarState {
   iluminadas: string[]
   /** (10S7b) La alerta «¿Adaptamos tu primer y tu último día a tus vuelos?» abierta, con los días que cambiarían. null = no hay. */
   vuelos: PropuestaDeVuelos | null
+  /** (10S7c) Los imprescindibles que no caben tras adaptar un día al vuelo: se avisan debajo de la franja con [Pasarlo a otro día]. Solo cuenta el que SIGUE en «Si te sobra tiempo» de su día (Deshacer o pasarlo lo quita solo). */
+  noCaben: NoCabe[]
+  ponerNoCaben: (lista: NoCabe[]) => void
+  quitarNoCaben: (stopId: string) => void
   proponerVuelos: (propuesta: PropuestaDeVuelos) => void
   cerrarVuelos: () => void
   /** Un cambio nuevo ha calculado estos días: se suman los que cambian y se quitan los que ya están bien. */
@@ -37,6 +41,9 @@ export const useReorganizarStore = create<ReorganizarState>((set) => ({
   trabajando: false,
   iluminadas: [],
   vuelos: null,
+  noCaben: [],
+  ponerNoCaben: (lista) => set({ noCaben: lista }),
+  quitarNoCaben: (stopId) => set((state) => ({ noCaben: state.noCaben.filter((item) => item.stopId !== stopId) })),
   proponerVuelos: (propuesta) => set({ vuelos: propuesta }),
   cerrarVuelos: () => set({ vuelos: null }),
   poner: (cambian, revisados) =>
@@ -51,6 +58,6 @@ export const useReorganizarStore = create<ReorganizarState>((set) => ({
   fijarTrabajando: (trabajando) => set({ trabajando }),
   iluminar: (ids) => set({ iluminadas: ids }),
   limpiarIluminadas: () => set({ iluminadas: [] }),
-  reiniciar: () => set({ dias: [], alerta: false, trabajando: false, iluminadas: [], vuelos: null }),
+  reiniciar: () => set({ dias: [], alerta: false, trabajando: false, iluminadas: [], vuelos: null, noCaben: [] }),
   terminar: () => set({ dias: [], alerta: false, trabajando: false }),
 }))

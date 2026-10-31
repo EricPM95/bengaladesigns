@@ -11,6 +11,7 @@ import { useFlotantes, SOBRE_LOS_LOGROS, useReorganizarALaVista } from '../flota
 import { Icono } from '../ui/Icono'
 import { useBotonReorganizarVisible } from './useBotonReorganizarVisible'
 import { usePermisosDelViaje } from '../../hooks/usePermisosDelViaje'
+import { AvisoNoCabe } from './AvisoNoCabe'
 
 /**
  * EL BOTÓN «REORGANIZAR» DEL PASE (Tanda 10S7, apartado 2; `Piezas/Reorganizar` R1 a R3). Se monta una vez por pantalla del viaje, junto al botón de los logros:
@@ -166,6 +167,7 @@ export function ReorganizarHost(): ReactNode {
         </button>
       )}
       {primero && puedeEditar && conPase && vuelos && !hojaAbierta && <AlertaAdaptarVuelos />}
+      {primero && puedeEditar && conPase && <AvisoNoCabe />}
       {mostrar && alerta && <AlertaReorganizar trabajando={trabajando} onReorganizar={() => void reorganizar()} />}
     </>
   )

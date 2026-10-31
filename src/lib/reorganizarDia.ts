@@ -10,7 +10,7 @@ import { useReorganizarStore } from '../store/useReorganizarStore'
 import { isFreeDay } from './freeDays'
 import { useRouteStore } from '../store/useRouteStore'
 import { useAddFlowStore, withUndo } from '../store/useAddFlowStore'
-import { diaAdaptadoAlVuelo } from './adaptarVuelos'
+import { diaAdaptadoAlVuelo, type NoCabe } from './adaptarVuelos'
 
 export interface OrdenDelDia {
   /** Los mismos ids de las paradas del día, en el orden nuevo. */
@@ -108,6 +108,8 @@ export interface CambioDeUnDia {
   movidas: string[]
   /** (10S7b) Solo el primer y el último día con vuelo: el día rehecho por el motor con la hora del vuelo (nada antes de la llegada ni después de irse al aeropuerto). Con él, no se usa `order`. */
   reconstruido?: DayPlan
+  /** (10S7c) Los imprescindibles que no caben ese día con el vuelo: se avisan debajo de la franja. */
+  noCaben?: NoCabe[]
 }
 
 /**
@@ -124,7 +126,7 @@ export async function diasQueCambian(dayIds: string[]): Promise<CambioDeUnDia[]>
     // (10S7b) El primer y el último día miran el vuelo: si hay vuelo y el motor lo rehace distinto, ese es el cambio.
     const adaptado = await diaAdaptadoAlVuelo(route, reservations, dayId).catch(() => null)
     if (adaptado) {
-      cambian.push({ dayId, dayNumber: day.dayNumber, order: day.stops.map((stop) => stop.id), mealAfter: {}, movidas: adaptado.movidas, reconstruido: adaptado.next })
+      cambian.push({ dayId, dayNumber: day.dayNumber, order: day.stops.map((stop) => stop.id), mealAfter: {}, movidas: adaptado.movidas, reconstruido: adaptado.next, noCaben: adaptado.noCaben })
       continue
     }
     const orden = await pedirOrdenDelDia(route, day, reservations)
@@ -158,5 +160,6 @@ export async function reorganizarDias(dayIds: string[], { avisar = false }: { av
     if (despues) useRouteStore.setState({ route: conUltimoCambio(antes, despues, { tipo: 'reorganizar', dia_n: primero.dayNumber, fecha: fechaDelDia(despues, primero.dayNumber), n: cambian.length }) })
   })
   useReorganizarStore.getState().iluminar(cambian.flatMap((cambio) => cambio.movidas))
+  useReorganizarStore.getState().ponerNoCaben(cambian.flatMap((cambio) => cambio.noCaben ?? []))
   return cambian
 }

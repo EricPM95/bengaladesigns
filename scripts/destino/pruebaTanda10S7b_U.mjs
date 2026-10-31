@@ -3,6 +3,7 @@
 // Un solo Chrome de prueba (dos, uno detrás de otro). Necesita el Vite estable y la API ya encendidos con el código nuevo (si el Vite se arrancó antes, reiniciarlo).
 // Casos: con pase, cambiar la hora de llegada → sale la alerta (los planes ya se actualizaron y ninguna parada se ha movido); «Ahora no» no cambia nada y deja el botón «Reorganizar»;
 // «Reorganizar» el día 1 no pone nada antes de la llegada y «Deshacer» lo deja como estaba; «Sí, adaptarlos» cambia solo el primer y el último día y «Deshacer» los deja como estaban;
+// (10S7c, 31-oct) ANTES → AHORA → DECISIÓN DE ERIC. ANTES: el primer y el último día se recortaban en el cliente. AHORA: los adapta el modo nuevo del motor (/api/adaptar-dia-vuelo); lo que esta prueba comprueba (alerta, nada se mueve sin preguntar, solo esos días, Deshacer) sigue igual y pasa. DECISIÓN DE ERIC (10S7c): adaptar solo el primer/último día con el motor, sin pasar nada a otro día.
 // sin cambios, no sale alerta; sin pase nunca sale la alerta pero el plan de la vuelta («Hoy vuelves a casa») se actualiza.
 import fs from 'node:fs'
 import path from 'node:path'

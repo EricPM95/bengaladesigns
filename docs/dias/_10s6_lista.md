@@ -1,63 +1,42 @@
 
-**10S3 · Respuestas a mis dudas (seguimiento 10S3b)**
+**0 · Antes de empezar**
 
-- ✅ Hecho — Captura de la hoja del tren Con Design 02c al lado. Es sin pase.  
-  *Dónde:* RESERVAS > Llegada y vuelta, viaje en tren.  *Captura:* `10s3b_tren_hoja.jpg`
-- ✅ Hecho — HOY: el billete como en DÍAS, «BCN 08:30 → FCO 11:15», sin cortar la hora de llegada Comprobado por render de servidor, sin captura de HOY. La vuelta en HOY conserva su tarjeta.  
-  *Dónde:* HOY, con pase, día de llegada.
-- ✅ Hecho — Castillo «por dentro»: foto de día apuntada Sin crédito (no hay autor ni licencia).  
-  *Dónde:* Parada «Castillo (por dentro)», EXPLORAR y Añadir parada.
-- ✅ Hecho — Free Tour: reservarlo o cambiarle la hora nunca rehace ni mueve días, tampoco por reservasParaMotor Causa que faltaba: reservasParaMotor mandaba el Free Tour al motor en cada «rehacer días». Sin tocar servidor ni motor. Caso nuevo en pruebaTanda10S3.  
-  *Dónde:* RESERVAS > Entradas y Free Tour > Free Tour a otra hora; mira todos los días.
+- ✅ Hecho — Prompt guardado, Design al día (Entradas Lista, Reorganizar, Entradas Billete, Pase Lista), nota de estado cada 30 minutos Cambio de Eric durante la tanda: la rueda de la hora solo en la hoja del vuelo. La carpeta docs/diseno/proyecto/uploads no se ha subido.  
+  *Dónde:* No es de móvil.
 
-**1 · El presupuesto**
+**1 · La hoja del vuelo, más limpia**
 
-- ✅ Hecho — El vuelo, tren, autobús y barco suman siempre, con pase y sin él Nada más del presupuesto depende del pase. Prueba antigua puesta al día (pastilla de precio siempre).  
-  *Dónde:* Presupuesto, cualquier cuenta: vuelo 150 € + hotel 280 € + Coliseo 50 €.
-- ✅ Hecho — Leyenda separada: «Transporte», «Alojamiento», «Ruta» (y «Extras»), cada uno con su color; el bloque de abajo junto Comprobado a 375 px: no se corta (Ruta pasa a una segunda línea). El botón flotante tapa un poco el borde de Extras.  
-  *Dónde:* Presupuesto, debajo del total.  *Captura:* `10s4_presupuesto_375.jpg`
+- ✅ Hecho — «Sales de»: un solo aeropuerto, relleno («Barcelona (El Prat)»); varios, vacío con el ejemplo en gris («Londres (Heathrow)»); con tren, estaciones Las estaciones de ejemplo (Atocha, Sants, Termini…) son una tabla corta mía de 13 ciudades en aeropuertosCiudad.ts.  
+  *Dónde:* RESERVAS > Llegada y vuelta > Cambiar en la ida.  *Captura:* `10s6_vuelo_01_ida.jpg`
+- ✅ Hecho — «Sale a las · opcional» sin hora: hora de ejemplo en gris con el reloj, sin raya  
+  *Dónde:* Hoja del vuelo, ida y vuelta.  *Captura:* `10s6_vuelo_02_vuelta.jpg`
+- ✅ Hecho — «Aeropuerto de llegada» y «Aeropuerto de salida» (tren: «Estación de…»; barco: «Puerto de…») Autobús usa la misma lógica que el tren; no se probó con navegador. La hoja del invitado usa la misma hoja; no se comprobó con navegador.  
+  *Dónde:* Hoja del vuelo, ida y vuelta; viaje en tren.  *Captura:* `10s6_vuelo_07_tren.jpg`
+- ✅ Hecho — La línea del pase con 10 px más arriba y 10 px más abajo Medido. En la VUELTA la línea queda en medio, bajo «Sale a las», como pidió la 10S3: no la moví porque el prompt no decía dónde ponerla.  
+  *Dónde:* Hoja del vuelo, sin pase.
+- ✅ Hecho — Fuera las cinco casillas (Ref. vuelo, Aerolínea, Localizador, Terminal, Asiento) y la línea «Solo lo ves tú…»; lo guardado no se pierde Esos datos se cambian en la tarjeta del billete de RESERVAS: antes solo se podían cambiar volviendo a leer el archivo, así que añadí lo mínimo, un enlace «Cambiar los datos» que abre una hoja con esas casillas. La tarjeta «Tu tarjeta de embarque · Cambiar el archivo» pasó justo bajo el título.  
+  *Dónde:* RESERVAS > tarjeta del billete > Cambiar los datos.  *Captura:* `10s6_vuelo_04_datos.jpg`
+- ✅ Hecho — Fuera «¿Llegas o te vas otro día? Cambia las fechas del viaje»; tras la línea del pase, directamente «¿Cuánto ha costado en total?» y [Guardar el vuelo] Así queda en la ida; en la vuelta, ver arriba.  
+  *Dónde:* Hoja del vuelo.
 
-**2 · RESERVAS: bloques que se pliegan**
+**2 · Elegir una hora, siempre igual**
 
-- ✅ Hecho — «Llegada y vuelta» y «Alojamiento» cerrados cuando están «Listo» (icono verde, sin línea bajo el título); se abren y cierran; abiertos mientras falta algo  
-  *Dónde:* RESERVAS, con vuelo y alojamiento puestos.  *Captura:* `10s4_reservas_gratis_01_cerrados.jpg`
-- ✅ Hecho — El precio dentro («Precio · 110 €» con «Cambiar»); el alojamiento abierto con el estilo del vuelo Con pase, la zona real de la hoja no está cubierta por la prueba (usa una zona inventada).  
-  *Dónde:* RESERVAS, bloques abiertos.  *Captura:* `10s4_reservas_gratis_03_aloj_abierto.jpg`
-- ✅ Hecho — Línea del pase sin pase: dentro si abierto, fuera bajo la cabecera si cerrado; «Eliminar vuelo» a la derecha (también tren, bus y barco) Tren, bus y barco usan el mismo componente; la prueba solo ejerce el avión.  
-  *Dónde:* RESERVAS, cuenta sin pase.  *Captura:* `10s4_reservas_gratis_02_vuelo_abierto.jpg`
+- ⚠️ A medias — La rueda de la hora desde abajo, en su propia hoja, con ✓ y papelera arriba a la derecha; tocar fuera también guarda la hora Por tu cambio, SOLO en la hoja del vuelo (administrador e invitado, tren, autobús y barco). Las demás ruedas (entradas, Free Tour, excursiones…) se quedan como están. La hoja «Añadir gasto» no tiene ninguna hora. Regla escrita («por ahora solo en el vuelo»). Componente compartido: src/components/ui/HojaDeHora.tsx.  
+  *Dónde:* Hoja del vuelo > tocar una hora.  *Captura:* `10s6_rueda_hora_2_ida_rueda.jpg`
 
-**3 · Entradas y Free Tour, solo lo de tu ruta**
+**3 · Entradas y Free Tour como Design**
 
-- ✅ Hecho — Solo «En tu ruta» y al día: añadir un sitio con entrada (Capitolinos) lo hace aparecer; quitarlo, desaparecer; con la entrada guardada, «Ya no está en tu ruta»; sin «Ver 3 más» Causa: la lista era cerrada, de 8 nombres. Un sitio repetido en otro día se duplica (una entrada por parada).  
-  *Dónde:* DÍAS: añade Museos Capitolinos; mira RESERVAS.  *Captura:* `10s4_entradas_1.jpg`
+- ✅ Hecho — «Reservadas» arriba (✓, día, hora, precio, «Cambiar») y «Por reservar» debajo ([Reservar entrada] y «¿Ya la tienes? Añádela»), sin el botón del código Las miniaturas son un degradado con rayas, como Design: los datos de las entradas no traen foto del sitio.  
+  *Dónde:* RESERVAS > Entradas y Free Tour.  *Captura:* `10s6_entradas_2.jpg`
+- ✅ Hecho — Sin «Ver n más», con [Añadir otra reserva]; fechas enteras («En tu ruta · Lunes 19»); lo de la 10S4 sigue igual  
+  *Dónde:* Final del bloque abierto.  *Captura:* `10s6_entradas_1.jpg`
 
-**4 · [Añadir otra reserva] y su buscador**
+**4 · La cabecera del alojamiento**
 
-- ✅ Hecho — Casilla libre con sugerencias con foto; la sugerencia entra en la ruta como primera parada del día elegido, marcada, sin quitar nada; lo escrito, solo en RESERVAS Con pase, igual que sin pase (de momento). Si el día es de excursión o de vuelta, la parada no se añade.  
-  *Dónde:* RESERVAS > Añadir otra reserva > «cupula».  *Captura:* `10s4_otra_reserva_3.jpg`
-- ✅ Hecho — Línea gris del pase si la hora no cuadra con su franja (sin pase)  
-  *Dónde:* Cuenta sin pase, hora de tarde en una parada de mañana.  *Captura:* `10s4_otra_reserva_3b_sin_pase.jpg`
-- ✅ Hecho — Buscador sin acentos ni mayúsculas, palabras a medias, letra equivocada, nombre en italiano «cupula», «capito», «cupla», «Cupola», «Musei Capitolini».  
-  *Dónde:* Añadir otra reserva.  *Captura:* `10s4_otra_reserva_1.jpg`
+- ✅ Hecho — Sin línea bajo el título del bloque del alojamiento Ya estaba sin ella: solo se añadieron comprobaciones. Sin captura (no cambia).  
+  *Dónde:* RESERVAS > Alojamiento, cerrado y abierto.
 
-**5 · Todos los buscadores, igual**
+**5 · La prueba**
 
-- ⚠️ A medias — Una sola forma de buscar (src/lib/busqueda.ts) en EXPLORAR y «+» de DÍAS, destino de la primera pantalla, país de Logros y Añadir otra reserva Sin cambiar: «Añadir parada», AttractionsFinder y la ciudad de salida buscan en Mapbox, que ya tolera acentos y erratas; que busquen también en nuestro catálogo es otra tanda. Regla añadida.  
-  *Dónde:* EXPLORAR: «Cupola» y «Musei Capitolini».
-
-**6 · «Reorganizar este día» solo con pase**
-
-- ✅ Hecho — Sin pase no sale; con pase, como antes  
-  *Dónde:* DÍAS, día con 2 o más paradas, con y sin pase.
-
-**7 · Lo pendiente de otras tandas**
-
-- ✅ Hecho — PiezaSegura en cada día de DÍAS, cada bloque de RESERVAS y cada aviso de la campana Solo se nota si algo falla. Gancho de prueba solo en desarrollo.  
-  *Dónde:* No se ve a simple vista.
-- ✅ Hecho — Zonas de toque de 44×44 en hojas, modales y menús 7 botones cambiados (Rutas, tiempo entre paradas, «Cambia las fechas», pestañas del explorador, «+ Añadir», «Me gusta» grande, línea del pase). Sin tocar el «Me gusta» pequeño de 30 px (pisaría el botón de debajo): decisión tuya.  
-  *Dónde:* Vuelo, menús «…», explorador, aviso del pase.
-
-**8 · La prueba**
-
-- ✅ Hecho — pruebaTanda10S4 (F, G, H, I) y pruebaTanda10S3 con el caso nuevo del Free Tour, más pruebaJutrip Sin migración.  
+- ✅ Hecho — pruebaTanda10S6 (N, O, P) y las antiguas tocadas, más pruebaJutrip Sin migraciones.  
   *Dónde:* No es de móvil.

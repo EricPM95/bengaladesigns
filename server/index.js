@@ -11,6 +11,8 @@ import { esNombreNuestro } from './engine/nombresDeFoto.js'
 import { sitiosGrandesDe } from '../shared/routeEngine/listasReservas.js'
 import { diasDeRuta } from '../shared/routeEngine/tripSkeleton.js'
 import { reorganizarDia, puntoZonaAlojamiento } from '../shared/routeEngine/reorganizarDia.js'
+import { adaptarDiaAlVuelo } from '../shared/routeEngine/adaptarDiaVuelo.js'
+import { travelTimesFor } from './engine/buildDayV3.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { entradaDeTabla, claveDeOrigen } from './transportOrigen.js'
@@ -5747,6 +5749,34 @@ app.post('/api/reorganizar-dia', (req, res) => {
   } catch (error) {
     console.error('[reorganizar-dia]', error)
     res.status(500).json({ error: 'No se pudo reorganizar el día.' })
+  }
+})
+
+// (10S7c) Adaptar SOLO el primer o el último día a los vuelos: las mismas paradas de ese día, con las horas vueltas a poner desde la llegada (`desde`) o hasta la salida al aeropuerto (`hasta`);
+// lo que no cabe sale aparte (va a «Si te sobra tiempo»). Modo aparte: no toca /api/rebuild-day ni la generación. Sin Claude ni Mapbox. Contrato: docs/dias/_estado_10s7c_X.md.
+app.post('/api/adaptar-dia-vuelo', (req, res) => {
+  const { destination, stops, meals, date, season, desde, hasta } = req.body ?? {}
+  const destData = destination ? findPipelineV2Data(destination) : null
+  if (!destData || !Array.isArray(stops) || stops.length > 80 || stops.some((s) => !s || typeof s.id !== 'string' || typeof s.name !== 'string')) {
+    res.status(400).json({ error: 'Faltan datos para adaptar el día al vuelo.' })
+    return
+  }
+  try {
+    const numero = (v) => (v === null || v === undefined || v === '' || !Number.isFinite(Number(v)) ? null : Number(v))
+    const result = adaptarDiaAlVuelo({
+      destData,
+      travel: travelTimesFor(findPipelineV2Key(destination)),
+      stops,
+      meals: Array.isArray(meals) ? meals : [],
+      dateIso: typeof date === 'string' ? date.slice(0, 10) : null,
+      season: typeof season === 'string' ? season : null,
+      desde: numero(desde),
+      hasta: numero(hasta),
+    })
+    res.json(result)
+  } catch (error) {
+    console.error('[adaptar-dia-vuelo]', error)
+    res.status(500).json({ error: 'No se pudo adaptar el día al vuelo.' })
   }
 })
 

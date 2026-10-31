@@ -42,6 +42,17 @@ export interface DiaAdaptado {
   next: DayPlan
   /** Las paradas del día nuevo que no estaban donde están (para iluminarlas). */
   movidas: string[]
+  /** (10S7c) Los imprescindibles que no caben en este día con el vuelo (el motor los marca): «El Coliseo no cabe el jueves.» + [Pasarlo a otro día]. Ya están en «Si te sobra tiempo»: nunca se pierden. */
+  noCaben?: NoCabe[]
+}
+
+export interface NoCabe {
+  dayId: string
+  dayNumber: number
+  stopId: string
+  nombre: string
+  /** «jueves» (el motor, con fechas) o null (sin fechas: se dice «el día 1»). */
+  weekday: string | null
 }
 
 export interface PropuestaDeVuelos {
@@ -177,8 +188,102 @@ async function adaptarUnDia(route: Route, day: DayPlan, vuelo: DatosParaMotor, i
   // La salida solo recorta el último día de ciudad cuando no hay día de vuelta (con él, es el día de vuelta quien se va).
   const hasta = esUltimo && !hayDiaDeVuelta && salida !== null ? salida - tiempos.salirAntes : null
   if (desde === null && hasta === null) return null
+  // (10S7c) El motor adapta ESE día (modo aparte, `/api/adaptar-dia-vuelo`): mismas paradas, vueltas a ordenar y a poner en hora para que quepan las máximas; lo que no cabe, a «Si te sobra tiempo».
+  // Si el motor no responde, se recorta en el cliente como en la 10S7b (nada se queda sin adaptar por un fallo de red).
+  const delMotor = await adaptarDiaConElMotor(route, day, { desde, hasta })
+  if (delMotor !== undefined) return delMotor
   const next = recortarAlVuelo(day, { desde, hasta })
   return next ? { dayId: day.id, dayNumber: day.dayNumber, next, movidas: [] } : null
+}
+
+// ── (10S7c) El modo del motor «adaptar solo este día al vuelo» ──────────────────────────────────────────────────────────────────────────────────────
+
+/** Lo que devuelve `POST /api/adaptar-dia-vuelo` (contrato en docs/dias/_estado_10s7c_X.md). */
+export interface RespuestaAdaptarDia {
+  changed: boolean
+  weekday: string | null
+  order: { id: string; time: string; changed: boolean }[]
+  spare: { id: string; name: string; reason: string; imprescindible: boolean; esLlegada?: boolean }[]
+  imprescindiblesFuera: { id: string; name: string; weekday?: string | null; reason?: string }[]
+  meals?: { index: number; mealTime: string; time: string | null; keep: boolean; afterId: string | null }[]
+  fin?: string | null
+  margenFinal?: number | null
+}
+
+/** Pone en el día lo que dice el motor. Función pura: la usan el cliente y la prueba. null = no cambia nada. */
+export function aplicarAdaptacionDelMotor(day: DayPlan, respuesta: RespuestaAdaptarDia, comidasEnviadas: number[]): DiaAdaptado | null {
+  if (!respuesta.changed) return null
+  const porId = new Map(day.stops.map((stop) => [stop.id, stop]))
+  const stops: DayPlan['stops'] = []
+  for (const fila of respuesta.order) {
+    const stop = porId.get(fila.id)
+    if (stop) stops.push(stop.reservedId ? stop : { ...stop, time: fila.time, ...(fila.changed ? { nextLegPending: true } : {}) })
+  }
+  // Nunca se pierde una parada: lo que el motor no ha devuelto ni en «order» ni en «spare» se queda donde estaba.
+  const dichas = new Set([...respuesta.order.map((fila) => fila.id), ...respuesta.spare.map((fila) => fila.id)])
+  for (const stop of day.stops) if (!dichas.has(stop.id)) stops.push(stop)
+  const ya = new Set((day.spareStops ?? []).map((stop) => stop.name))
+  const nuevas = respuesta.spare
+    .map((fila) => porId.get(fila.id))
+    .filter((stop): stop is DayPlan['stops'][number] => Boolean(stop) && !ya.has((stop as DayPlan['stops'][number]).name))
+    .map((stop) => ({ ...stop, spareReason: 'Con tu vuelo no te da tiempo ese día.' }))
+  const porIndice = new Map((respuesta.meals ?? []).map((fila) => [fila.index, fila]))
+  const meals: DayPlan['meals'] = []
+  const mealAfter: { lunch?: number; dinner?: number } = {}
+  day.meals.forEach((meal) => {
+    const posicion = comidasEnviadas.indexOf(day.meals.indexOf(meal))
+    const fila = posicion >= 0 ? porIndice.get(posicion) : undefined
+    if (!fila) return void meals.push(meal)
+    if (!fila.keep && !meal.chosenRestaurant) return
+    meals.push(fila.time ? { ...meal, time: fila.time } : meal)
+    const donde = fila.afterId === null ? -1 : stops.findIndex((stop) => stop.id === fila.afterId)
+    if (fila.mealTime === 'lunch' || fila.mealTime === 'dinner') mealAfter[fila.mealTime === 'lunch' ? 'lunch' : 'dinner'] = donde
+  })
+  const next: DayPlan = {
+    ...day,
+    stops: stops.filter((stop) => !respuesta.spare.some((fila) => fila.id === stop.id)),
+    meals,
+    spareStops: [...(day.spareStops ?? []), ...nuevas],
+    mealAfter: Object.keys(mealAfter).length > 0 ? mealAfter : undefined,
+  }
+  const noCaben: NoCabe[] = respuesta.imprescindiblesFuera.map((fila) => ({ dayId: day.id, dayNumber: day.dayNumber, stopId: fila.id, nombre: fila.name, weekday: fila.weekday ?? respuesta.weekday ?? null }))
+  return { dayId: day.id, dayNumber: day.dayNumber, next, movidas: respuesta.order.filter((fila) => fila.changed).map((fila) => fila.id), noCaben }
+}
+
+/**
+ * Pide al motor adaptar ESE día a la ventana del vuelo y lo pone. undefined = el motor no ha respondido (que el cliente recorte); null = no cambia nada; si no, el día adaptado.
+ */
+async function adaptarDiaConElMotor(route: Route, day: DayPlan, ventana: { desde: number | null; hasta: number | null }): Promise<DiaAdaptado | null | undefined> {
+  const comidas = day.meals.map((meal, i) => ({ meal, i })).filter(({ meal }) => enMinutos(meal.time) !== null)
+  const cuerpo = {
+    destination: route.destination,
+    date: fechaDelDia(route, day.dayNumber),
+    season: route.answers.season ?? null,
+    desde: ventana.desde,
+    hasta: ventana.hasta,
+    stops: day.stops.map((stop) => ({
+      id: stop.id,
+      name: stop.name,
+      fullName: stop.fullName,
+      time: stop.time,
+      durationMinutes: stop.durationMinutes,
+      coordinates: stop.coordinates,
+      reservedId: stop.reservedId ?? null,
+      isArrival: stop.isArrival === true,
+      night: stop.isNightExperience === true,
+      freeTour: stop.isFreeTour === true,
+    })),
+    meals: comidas.map(({ meal }) => ({ mealTime: meal.mealTime, time: meal.time, chosenRestaurant: Boolean(meal.chosenRestaurant) })),
+  }
+  try {
+    const response = await fetch('/api/adaptar-dia-vuelo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+    if (!response.ok) return undefined
+    const respuesta = (await response.json()) as RespuestaAdaptarDia
+    if (!respuesta || !Array.isArray(respuesta.order) || !Array.isArray(respuesta.spare)) return undefined
+    return aplicarAdaptacionDelMotor(day, { ...respuesta, imprescindiblesFuera: respuesta.imprescindiblesFuera ?? [] }, comidas.map(({ i }) => i))
+  } catch {
+    return undefined
+  }
 }
 
 /** Los días que se adaptan al vuelo: el primero de ciudad, el último de ciudad y el de vuelta (si lo hay). */
@@ -249,6 +354,7 @@ export function ponerDiasAdaptados(dias: DiaAdaptado[], mensaje = 'Hemos adaptad
     if (despues) useRouteStore.setState({ route: conUltimoCambio(antes, despues, { tipo: 'reorganizar', dia_n: vigentes[0].dayNumber, fecha: fechaDelDia(despues, vigentes[0].dayNumber), n: vigentes.length }) })
   })
   useReorganizarStore.getState().iluminar(vigentes.flatMap((dia) => dia.movidas))
+  useReorganizarStore.getState().ponerNoCaben(vigentes.flatMap((dia) => dia.noCaben ?? []))
   return vigentes.length
 }
 

@@ -1,63 +1,70 @@
 
-**10S3 · Respuestas a mis dudas (seguimiento 10S3b)**
+**0 · Antes de empezar**
 
-- ✅ Hecho — Captura de la hoja del tren Con Design 02c al lado. Es sin pase.  
-  *Dónde:* RESERVAS > Llegada y vuelta, viaje en tren.  *Captura:* `10s3b_tren_hoja.jpg`
-- ✅ Hecho — HOY: el billete como en DÍAS, «BCN 08:30 → FCO 11:15», sin cortar la hora de llegada Comprobado por render de servidor, sin captura de HOY. La vuelta en HOY conserva su tarjeta.  
-  *Dónde:* HOY, con pase, día de llegada.
-- ✅ Hecho — Castillo «por dentro»: foto de día apuntada Sin crédito (no hay autor ni licencia).  
-  *Dónde:* Parada «Castillo (por dentro)», EXPLORAR y Añadir parada.
-- ✅ Hecho — Free Tour: reservarlo o cambiarle la hora nunca rehace ni mueve días, tampoco por reservasParaMotor Causa que faltaba: reservasParaMotor mandaba el Free Tour al motor en cada «rehacer días». Sin tocar servidor ni motor. Caso nuevo en pruebaTanda10S3.  
-  *Dónde:* RESERVAS > Entradas y Free Tour > Free Tour a otra hora; mira todos los días.
+- ✅ Hecho — Prompt guardado, Design ya al día (10S6), nota de estado cada 30 minutos Motor: no se ha tocado shared/routeEngine ni la generación de la ruta inicial (ni siquiera reorganizarDia.js).  
+  *Dónde:* No es de móvil.
 
-**1 · El presupuesto**
+**0b · Respuestas a la 10S6**
 
-- ✅ Hecho — El vuelo, tren, autobús y barco suman siempre, con pase y sin él Nada más del presupuesto depende del pase. Prueba antigua puesta al día (pastilla de precio siempre).  
-  *Dónde:* Presupuesto, cualquier cuenta: vuelo 150 € + hotel 280 € + Coliseo 50 €.
-- ✅ Hecho — Leyenda separada: «Transporte», «Alojamiento», «Ruta» (y «Extras»), cada uno con su color; el bloque de abajo junto Comprobado a 375 px: no se corta (Ruta pasa a una segunda línea). El botón flotante tapa un poco el borde de Extras.  
-  *Dónde:* Presupuesto, debajo del total.  *Captura:* `10s4_presupuesto_375.jpg`
+- ✅ Hecho — Miniaturas de las entradas con la foto del sitio (la de la parada); el degradado solo sin foto Comprobado por código y prueba, no a ojo en el móvil.  
+  *Dónde:* RESERVAS > Entradas y Free Tour, viaje a Roma con fotos.
+- ✅ Hecho — La traza de React sobre ReservasPanel No es un fallo de la app: es un aviso de framer-motion (useLayoutEffect) al pintar sin navegador en las pruebas. Filtrado en _ssr.mjs.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — pruebaTanda7_conexion, pruebaTanda7_ficha y repaso10N9 al día en 0 fallos También pruebaTanda7_mover (fechas enteras).  
+  *Dónde:* No es de móvil.
 
-**2 · RESERVAS: bloques que se pliegan**
+**1 · Toda parada nueva, la primera del día**
 
-- ✅ Hecho — «Llegada y vuelta» y «Alojamiento» cerrados cuando están «Listo» (icono verde, sin línea bajo el título); se abren y cierran; abiertos mientras falta algo  
-  *Dónde:* RESERVAS, con vuelo y alojamiento puestos.  *Captura:* `10s4_reservas_gratis_01_cerrados.jpg`
-- ✅ Hecho — El precio dentro («Precio · 110 €» con «Cambiar»); el alojamiento abierto con el estilo del vuelo Con pase, la zona real de la hoja no está cubierta por la prueba (usa una zona inventada).  
-  *Dónde:* RESERVAS, bloques abiertos.  *Captura:* `10s4_reservas_gratis_03_aloj_abierto.jpg`
-- ✅ Hecho — Línea del pase sin pase: dentro si abierto, fuera bajo la cabecera si cerrado; «Eliminar vuelo» a la derecha (también tren, bus y barco) Tren, bus y barco usan el mismo componente; la prueba solo ejerce el avión.  
-  *Dónde:* RESERVAS, cuenta sin pase.  *Captura:* `10s4_reservas_gratis_02_vuelo_abierto.jpg`
+- ⚠️ A medias — Toda parada que se añade a un día o se pasa a otro va la primera y se ilumina; «Añadir entre dos paradas» se queda donde se pone; una reserva que ya está en su día no se mueve; el Free Tour reservado en otro día pasa a ese día de primero sin tocar otros No se ilumina cuando una reserva (Free Tour o entrada) trae la parada de otro día de forma automática (dependencia circular entre stores). El «+» de la cabecera de franja y el del hueco entre tarjetas los traté como «entre dos paradas»; «Más visitas» de HOY y la ruta a mano no se tocaron. Fuera la regla vieja «con pase, donde mejor encaja».  
+  *Dónde:* EXPLORAR > «+», DÍAS > «+ Añadir parada», «⋯» > Mover a otro día; con y sin pase.
 
-**3 · Entradas y Free Tour, solo lo de tu ruta**
+**2 · El botón «Reorganizar» del pase**
 
-- ✅ Hecho — Solo «En tu ruta» y al día: añadir un sitio con entrada (Capitolinos) lo hace aparecer; quitarlo, desaparecer; con la entrada guardada, «Ya no está en tu ruta»; sin «Ver 3 más» Causa: la lista era cerrada, de 8 nombres. Un sitio repetido en otro día se duplica (una entrada por parada).  
-  *Dónde:* DÍAS: añade Museos Capitolinos; mira RESERVAS.  *Captura:* `10s4_entradas_1.jpg`
+- ✅ Hecho — Botón flotante redondo encima del de logros, solo con pase, que sale solo si reorganizar cambiaría algo, tras añadir/pasar parada, hora de entrada o Free Tour, vuelos o zona del alojamiento Solo para quien puede editar.  
+  *Dónde:* Cuenta con pase, DÍAS: pasa una parada a otro día.  *Captura:* `10s7_reorganizar_R1_boton.jpg`
+- ✅ Hecho — Alerta «¿Reorganizamos tu día?» con [Reorganizar] y [Ahora no] (que esconde el botón hasta el próximo cambio) La alerta no se miró a ojo, solo en la prueba (textos y botones).  
+  *Dónde:* Tocar el botón.  *Captura:* `10s7_reorganizar_R2_alerta.jpg`
+- ⚠️ A medias — Reorganizar: solo los días afectados, no quita nada, reservas a su hora; franja «Hemos reorganizado tu día» con [Deshacer] e iluminar lo movido El orden NO considera los cierres de cada día (cuándo cierra un museo): hacerlo sería tocar el motor y pasarle la fecha, y lo dejé. Usa la regla de siempre: nuestros días escritos, cercanía y reservas a su hora.  
+  *Dónde:* Tras tocar [Reorganizar].  *Captura:* `10s7_reorganizar_R3_franja.jpg`
+- ✅ Hecho — «Reorganizar este día» en el menú «⋯» del día (el nuestro), solo con pase Se quitó el botón viejo del final del día (ya vive en el menú).  
+  *Dónde:* DÍAS > «⋯» del día, con pase.  *Captura:* `10s7_reorganizar_R4_menu.jpg`
+- ⚠️ A medias — Nada se reorganiza solo (tampoco el vuelo al guardarlo) Quité lo que se recolocaba solo con el pase: al cambiar la hora o el punto del vuelo, o la zona del alojamiento, la app rehacía la ruta entera (rehacerPorCambioDeVuelo). CONSECUENCIA: ya no se actualiza solo lo que el motor calculaba con la hora del vuelo (el plan de llegada y de vuelta, «Hoy vuelves a casa», el resumen del vuelo), y el reorganizador no mira el vuelo. Dime si lo echas de menos y cómo quieres ofrecerlo. Una reserva grande en otra fecha sigue moviendo el día entero (regla 6j) y quitar una reserva sigue rehaciendo: no lo toqué.  
+  *Dónde:* Guardar el vuelo con pase: no se mueve ninguna parada.
+- ⚠️ A medias — Viaje compartido: solo quien puede editar, y un solo aviso a los demás («Eric ha reorganizado el jueves 26»); sin pase, el botón no sale nunca La frase y la acción única se comprobaron en la ruta, no entre dos móviles reales; «sin pase» se probó cambiando la versión por la dirección, no con una cuenta sin pase de verdad; quien solo recomienda no lo ve está en el código sin prueba de navegador.  
+  *Dónde:* Dos móviles en un viaje compartido; cuenta sin pase.
 
-**4 · [Añadir otra reserva] y su buscador**
+**3 · Las entradas con su billete**
 
-- ✅ Hecho — Casilla libre con sugerencias con foto; la sugerencia entra en la ruta como primera parada del día elegido, marcada, sin quitar nada; lo escrito, solo en RESERVAS Con pase, igual que sin pase (de momento). Si el día es de excursión o de vuelta, la parada no se añade.  
-  *Dónde:* RESERVAS > Añadir otra reserva > «cupula».  *Captura:* `10s4_otra_reserva_3.jpg`
-- ✅ Hecho — Línea gris del pase si la hora no cuadra con su franja (sin pase)  
-  *Dónde:* Cuenta sin pase, hora de tarde en una parada de mañana.  *Captura:* `10s4_otra_reserva_3b_sin_pase.jpg`
-- ✅ Hecho — Buscador sin acentos ni mayúsculas, palabras a medias, letra equivocada, nombre en italiano «cupula», «capito», «cupla», «Cupola», «Musei Capitolini».  
-  *Dónde:* Añadir otra reserva.  *Captura:* `10s4_otra_reserva_1.jpg`
+- ✅ Hecho — [Añadir tu entrada] desde PDF, foto o captura (lee día, hora, personas y localizador y guarda el código); con billete, código pequeño «Toca para ampliar»; pantalla completa; cambiar a mano Sin tabla ni migración nuevas: vive en billetes_personales (0070), datos.entradas[refId]. La lectura con IA de una entrada real no se ha probado contra Claude (gasta cuota): prueba con una entrada real. Al quitar una reserva por otros caminos su billete queda guardado pero oculto.  
+  *Dónde:* RESERVAS > Entradas y Free Tour > una entrada reservada o «Añádela»/«Cambiar».  *Captura:* `10s7_entradas_billete_03_e2.jpg`
+- ✅ Hecho — Con pase, en HOY, en la parada de ese sitio, la fila «Tu entrada» con el código pequeño que abre a pantalla completa; privado y sin internet Sin pase no sale (comprobado). En la pantalla antigua de HOY sale bajo la franja verde.  
+  *Dónde:* HOY, día del viaje, con pase; modo avión.  *Captura:* `10s7_entradas_billete_06_hoy.jpg`
 
-**5 · Todos los buscadores, igual**
+**4 · El botón del código en «Entradas y Free Tour»**
 
-- ⚠️ A medias — Una sola forma de buscar (src/lib/busqueda.ts) en EXPLORAR y «+» de DÍAS, destino de la primera pantalla, país de Logros y Añadir otra reserva Sin cambiar: «Añadir parada», AttractionsFinder y la ciudad de salida buscan en Mapbox, que ya tolera acentos y erratas; que busquen también en nuestro catálogo es otra tanda. Regla añadida.  
-  *Dónde:* EXPLORAR: «Cupola» y «Musei Capitolini».
+- ✅ Hecho — En las entradas reservadas, el botón redondo del código que abre la pantalla completa, solo si esa entrada tiene billete Va encima de «Cambiar».  
+  *Dónde:* RESERVAS > Reservadas.  *Captura:* `10s7_entradas_billete_05_l2.jpg`
 
-**6 · «Reorganizar este día» solo con pase**
+**5 · El alojamiento con su reserva**
 
-- ✅ Hecho — Sin pase no sale; con pase, como antes  
-  *Dónde:* DÍAS, día con 2 o más paradas, con y sin pase.
+- ⚠️ A medias — [Añadir tu reserva] desde PDF, foto o captura: lee nombre del hotel, dirección, fechas y noches, hora de entrada y de salida, teléfono y localizador; sin código; cambiar a mano; si la dirección es distinta, pregunta antes (con pase) La lectura real con Claude no está probada con una confirmación de hotel real. La reserva se guarda dentro del alojamiento (sin tabla ni migración): la ve quien ve el viaje, no es privada por persona (el prompt no lo pedía).  
+  *Dónde:* RESERVAS > Alojamiento, con un alojamiento puesto.  *Captura:* `10s7_alojamiento_gratis_03_a2_con_reserva.jpg`
+- ✅ Hecho — Cabecera del bloque sin línea bajo el título; dentro, precio con «Cambiar», «Eliminar alojamiento» abajo a la derecha y, con pase, zona, dirección y [Cómo llegar]  
+  *Dónde:* RESERVAS > Alojamiento.  *Captura:* `10s7_alojamiento_pago_03_a2_con_reserva.jpg`
 
-**7 · Lo pendiente de otras tandas**
+**6 · La lista del pase**
 
-- ✅ Hecho — PiezaSegura en cada día de DÍAS, cada bloque de RESERVAS y cada aviso de la campana Solo se nota si algo falla. Gancho de prueba solo en desarrollo.  
-  *Dónde:* No se ve a simple vista.
-- ✅ Hecho — Zonas de toque de 44×44 en hojas, modales y menús 7 botones cambiados (Rutas, tiempo entre paradas, «Cambia las fechas», pestañas del explorador, «+ Añadir», «Me gusta» grande, línea del pase). Sin tocar el «Me gusta» pequeño de 30 px (pisaría el botón de debajo): decisión tuya.  
-  *Dónde:* Vuelo, menús «…», explorador, aviso del pase.
+- ✅ Hecho — «Tu día, reorganizado en un toque» tras «Tu ruta se adapta a tu vuelo» Verdad porque el botón funciona. También en data/pase/incluye.json.  
+  *Dónde:* Hoja de la lista del pase.
+- ⚠️ A medias — «Adaptamos tu viaje al mejor orden» en lugar de «Los días, en el mejor orden» El motor sí ordena los días por la llegada, la vuelta y los cierres/fechas malas, pero lo hace también la ruta gratis y no existen «prioridades» del viajero: la frase queda «Ordenamos tus días según tu llegada, tu vuelta y los cierres de los monumentos.» (no la de Design). Decide si te vale.  
+  *Dónde:* Hoja de la lista del pase.
+
+**7 · «Empezar de cero» no devuelve las pruebas**
+
+- ✅ Hecho — Migración 0072: hoy_prueba e historia_de_prueba no se borran; COMPROBAR_0072.sql; pruebaTanda10J al día (falla con la 0072 mala) POR APLICAR: 0072 en el SQL editor y pegar COMPROBAR_0072.sql («Aplicada»). COMPROBAR_0071 pasa a decir «FALTA» con la 0072 aplicada, a propósito. Pendientes tuyos: el diálogo de Empezar de cero aún dice «el día de prueba» y «Reiniciar mis pruebas» del panel de administrador (reiniciar.js) sigue borrando hoy_prueba.  
+  *Dónde:* SQL editor.
 
 **8 · La prueba**
 
-- ✅ Hecho — pruebaTanda10S4 (F, G, H, I) y pruebaTanda10S3 con el caso nuevo del Free Tour, más pruebaJutrip Sin migración.  
+- ✅ Hecho — pruebaTanda10S7 (Q, R, S, T), pruebaTanda10J y pruebaJutrip, más las antiguas tocadas  
   *Dónde:* No es de móvil.

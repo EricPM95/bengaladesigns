@@ -8,7 +8,7 @@ import fs from 'node:fs'
 const ORDEN = ['0', '1', '2', '3', '4', '5', '6', '7']
 const E = { hecho: '✅ Hecho', medias: '⚠️ A medias', no: '❌ No hecho' }
 const P = (apartado, punto, estado, nota, donde, captura = null, captura_design = null) => ({ apartado, punto, estado, nota, donde, captura, captura_design })
-let puntos = JSON.parse(fs.readFileSync('docs/dias/_10s4_puntos.json', 'utf8'))
+let puntos = JSON.parse(fs.readFileSync('docs/dias/_10s7_puntos.json', 'utf8'))
 const seccion = (p) => (/^(?:§s*)?(d+(?:.d+)?[a-z]?)/.exec(p.apartado)?.[1] ?? '99')
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
 const estado = (p) => E[p.estado] ?? p.estado
