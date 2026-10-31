@@ -132,14 +132,12 @@ await leerConToken('tok-otro', { file: quinceMB })
 await leerConToken('tok-otro', { file: { media_type: 'text/plain', data: 'x' } })
 debe(gastadas() === g0, '1g', 'un archivo rechazado (muy grande o de otro tipo) NO cuenta como lectura del día')
 
-// ── Cobro apagado: «todo abierto», pero con sesión ──
-cobro = false
+// ── Pase siempre (Eric, 31-oct: antes → con el cobro apagado bastaba la sesión → ahora → el pase se exige SIEMPRE, el cobro no cambia nada) ──
 const antesAbierto = llamadas()
 r = await leerConToken('tok-sin-pase')
-debe(r.estado === 200 && llamadas() === antesAbierto + 1, '1h', 'con el cobro apagado basta la sesión (como el resto de la app)')
+debe(r.estado === 403 && llamadas() === antesAbierto, '1h', 'el pase se exige siempre: sin pase no se llama a Claude (el cobro ya no cuenta)')
 r = await leerConToken(null)
-debe(r.estado === 401, '1h', 'con el cobro apagado, sin sesión sigue sin leer')
-cobro = true
+debe(r.estado === 401, '1h', 'sin sesión sigue sin leer')
 
 // ── Con la tabla (migración 0073): el contador vive en la base, es atómico y vale entre instancias ──
 {
@@ -189,7 +187,7 @@ const cliente = leer('src/lib/billeteLeer.ts')
 const posRegistro = indexJs.indexOf('registrarLeerBillete(app, {')
 const posAdmin = indexJs.indexOf('const salesAdmin =')
 debe(posRegistro > posAdmin && posAdmin > 0, '2a', 'index.js registra la lectura DESPUÉS de crear `salesAdmin` (si no, no existiría al pasarlo)')
-debe(/registrarLeerBillete\(app, \{[^\n]*admin: salesAdmin[^\n]*quienEs: quienEsCuenta[^\n]*tokenDe: tokenDeCuenta[^\n]*cobro: \(\) => cobroListo\(\)/.test(indexJs), '2a', 'index.js le pasa la clave de servicio, quién es, el token y si se cobra')
+debe(/registrarLeerBillete\(app, \{[^\n]*admin: salesAdmin[^\n]*quienEs: quienEsCuenta[^\n]*tokenDe: tokenDeCuenta \}\)/.test(indexJs) && !/registrarLeerBillete\(app, \{[^\n]*cobro/.test(indexJs), '2a', 'index.js le pasa la clave de servicio, quién es y el token (sin depender del cobro)')
 debe(/startsWith\('\/api\/read-ticket'\)\s*\?\s*next\(\)/.test(indexJs), '2b', 'el lector general de 6 MB se salta /api/read-ticket (el suyo va tras la puerta)')
 debe(/function logCallCost\(endpoint, response, modelo = MODEL\)/.test(indexJs) && /'claude-haiku-4-5': \{ input: 1, output: 5/.test(indexJs), '2c', 'logCallCost sabe el precio de Haiku ($1 / $5) y escribe el modelo cuando no es el de siempre')
 debe(!/model: MODEL, max_tokens: 700/.test(lecturaJs) && /model: modeloLectura/.test(lecturaJs), '2c', 'la lectura usa su propio modelo (Haiku), no el MODEL general')

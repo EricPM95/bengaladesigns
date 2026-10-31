@@ -110,12 +110,12 @@ export async function tienePaseVigente(admin, uid, hoy) {
 
 /**
  * POST /api/read-ticket  {file: {media_type, data(base64)}, mode?, year_hint?, tipo?}  →  la lectura limpia.
- * `deps`: { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError } (los de index.js) y, de 10S8: `express`, `admin` (Supabase con la clave de servicio), `quienEs`, `tokenDe`, `cobro()` (¿se cobra el pase?),
+ * `deps`: { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError } (los de index.js) y, de 10S8: `express`, `admin` (Supabase con la clave de servicio), `quienEs`, `tokenDe`,
  * `ahora` y `lecturas` (el contador del día; en memoria del servidor: un reinicio lo pone a cero y en Vercel es por instancia).
- * Con el cobro apagado «todo abierto» (como el resto de la app): basta la sesión y el límite. Sin la clave de servicio no se puede comprobar nada y NO se lee (cierra, no abre).
+ * El pase se exige SIEMPRE, también con el cobro apagado (Eric, 31-oct: leer cuesta dinero). Sin la clave de servicio no se puede comprobar nada y NO se lee (cierra, no abre).
  */
 export function registrarLeerBillete(app, deps) {
-  const { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError, admin = null, quienEs, tokenDe, cobro = () => true, ahora = () => new Date(), lecturas = new Map(), express } = deps
+  const { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError, admin = null, quienEs, tokenDe, ahora = () => new Date(), lecturas = new Map(), express } = deps
   const modeloLectura = deps.modeloLectura ?? MODELO_LECTURA ?? MODEL
   const clave = (uid) => `${uid}|${hoyUtc(ahora)}`
   // El contador del día: en la tabla `lecturas_de_documentos` (migración 0073; vale en Vercel y tras reinicios) y, si la 0073 aún no está aplicada (o la base falla), en memoria del servidor SIN romper nada.
@@ -150,7 +150,7 @@ export function registrarLeerBillete(app, deps) {
       if (!admin || !quienEs || !tokenDe) return res.status(503).json({ error: TEXTO_NO_DISPONIBLE, codigo: 'no_disponible' })
       const usuario = await quienEs(admin, tokenDe(req))
       if (!usuario || usuario.is_anonymous === true) return res.status(401).json({ error: TEXTO_SIN_SESION, codigo: 'sin_sesion' })
-      if (cobro() && !(await tienePaseVigente(admin, usuario.id, hoyUtc(ahora)))) return res.status(403).json({ error: TEXTO_SIN_PASE, codigo: 'sin_pase' })
+      if (!(await tienePaseVigente(admin, usuario.id, hoyUtc(ahora)))) return res.status(403).json({ error: TEXTO_SIN_PASE, codigo: 'sin_pase' })
       const { puede, tabla } = await reservar(usuario.id) // se apunta ya (atómico: dos peticiones a la vez no se cuelan); se devuelve si al final no se llama a Claude
       if (!puede) return res.status(429).json({ error: TEXTO_LIMITE, codigo: 'limite' })
       req.usuarioLectura = usuario

@@ -1154,7 +1154,7 @@ const salesStore = new Map()
 // (Sirve también a las cuentas. La clave puede ser la antigua `service_role` o una nueva `sb_secret_…`: supabase-js 2.114 reconoce las dos y manda la nueva solo en la cabecera `apikey`.)
 const salesAdmin = supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } }) : null
 // (10S5) Leer un billete (tarjeta de embarque o billete de tren, autobús, barco), una entrada o la reserva de un hotel: ver server/billete/lectura.js. No guarda nada. (10S8) Solo con sesión, con el pase y con límite.
-registrarLeerBillete(app, { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError, express, admin: salesAdmin, quienEs: quienEsCuenta, tokenDe: tokenDeCuenta, cobro: () => cobroListo() })
+registrarLeerBillete(app, { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError, express, admin: salesAdmin, quienEs: quienEsCuenta, tokenDe: tokenDeCuenta })
 const CAMPAIGN_PATTERN = /^(app|v)-[A-Z0-9]{5}$/
 
 // (10S2) «Algo ha ido mal»: la app avisa de qué ha fallado y en qué pantalla (sin datos privados); ver server/errores.js y la migración 0068.
