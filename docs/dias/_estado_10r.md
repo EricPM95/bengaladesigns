@@ -1,15 +1,15 @@
-# Estado de la tanda 10s8
+# Estado de la tanda 10r
 
-**Última actualización: 31/10/26, 17:46**
+**Última actualización: 31/10/26, 20:51**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-10S8 terminada y subida (0f9d316b): pruebas en 0 fallos y muestra de 60 fechas idéntica.
+Empezando la tanda 10R: 4 agentes repartidos (datos de excursiones, RESERVAS, servidor y HOY, candado y avisos)
 
 ## Qué falta
-Nada: solo que Eric aplique la 0073 y decida las dudas del informe.
+Todo: datos, Venecia, excursion en RESERVAS, candado, pruebas, informe, push
 
 ## Procesos abiertos ahora mismo
-- node: 3
-- esbuild: 1
+- node: 2
+- esbuild: 0
 - Chrome de prueba (con remote-debugging-port): 0
