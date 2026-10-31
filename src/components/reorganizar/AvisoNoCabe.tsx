@@ -10,6 +10,7 @@ import { esDiaDeExcursion } from '../../lib/tituloDelDia'
 import { elSitio, sitioEnPlural } from '../../lib/articulos'
 import { pasarImprescindibleAOtroDia } from '../../lib/pasarImprescindible'
 import type { NoCabe } from '../../lib/adaptarVuelos'
+import { repartirNoCaben, textoYMasSitios } from '../../lib/imprescindiblesGrandes'
 
 /** «El Coliseo no cabe el jueves.» (sin fechas, «el día 1»). Con plural: «Los Museos Capitolinos no caben el jueves.» */
 export function textoNoCabe(item: NoCabe, sinFechas: boolean): string {
@@ -31,6 +32,16 @@ export function AvisoNoCabe(): ReactNode {
   const vigentes = useMemo(() => noCaben.filter((item) => route?.days.find((day) => day.id === item.dayId)?.spareStops?.some((stop) => stop.id === item.stopId)), [noCaben, route])
   if (!route) return null
   const sinFechas = !route.answers.dateRange?.start
+  // (10S8) Solo los GRANDES tienen su línea; los demás imprescindibles que no caben, juntos en una línea con [Ver].
+  const { grandes, resto } = repartirNoCaben(vigentes, route.destination)
+  const verResto = () => {
+    const dia = route.days.find((day) => day.id === resto[0].dayId)
+    if (!dia) return
+    const rutaStore = useRouteStore.getState()
+    rutaStore.setMode('days')
+    rutaStore.setActiveDayId(dia.id)
+    useReorganizarStore.getState().verSobraTiempo(dia.id)
+  }
   return (
     <>
       {vigentes.length > 0 &&
@@ -39,7 +50,7 @@ export function AvisoNoCabe(): ReactNode {
             data-aviso-no-cabe="1"
             style={{ position: 'fixed', left: rect ? rect.left : 0, width: rect ? rect.width : '100%', bottom: rect ? `calc(100vh - ${rect.top}px)` : 'calc(72px + env(safe-area-inset-bottom))', zIndex: 101, display: 'flex', flexDirection: 'column', maxHeight: '38vh', overflowY: 'auto', background: '#1C2230', color: '#FBF3E2' }}
           >
-            {vigentes.map((item) => (
+            {grandes.map((item) => (
               <div key={item.stopId} data-no-cabe={item.stopId} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderBottom: '1px solid rgba(251,243,226,.12)' }}>
                 <span data-no-cabe-texto="1" style={{ flex: 1, minWidth: 0, font: "500 14px/1.3 'Geist',sans-serif" }}>
                   {textoNoCabe(item, sinFechas)}
@@ -52,6 +63,19 @@ export function AvisoNoCabe(): ReactNode {
                 </button>
               </div>
             ))}
+            {resto.length > 0 && (
+              <div data-no-cabe-resto="1" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderBottom: '1px solid rgba(251,243,226,.12)' }}>
+                <span data-no-cabe-resto-texto="1" style={{ flex: 1, minWidth: 0, font: "500 14px/1.3 'Geist',sans-serif" }}>
+                  {textoYMasSitios(resto.length)}
+                </span>
+                <button type="button" data-no-cabe-ver="1" onClick={verResto} style={{ flex: 'none', height: 34, padding: '0 12px', borderRadius: 12, border: '1.5px solid rgba(251,243,226,.45)', cursor: 'pointer', background: 'transparent', color: '#FBF3E2', font: "700 13px 'Geist',sans-serif" }}>
+                  Ver
+                </button>
+                <button type="button" className="zona-toque" aria-label="Cerrar el aviso" data-no-cabe-resto-cerrar="1" onClick={() => resto.forEach((item) => useReorganizarStore.getState().quitarNoCaben(item.stopId))} style={{ flex: 'none', width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'rgba(251,243,226,.12)', color: '#FBF3E2', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                  <Icono nombre="cerrar" size={14} grosor={2} />
+                </button>
+              </div>
+            )}
           </div>,
           document.body,
         )}

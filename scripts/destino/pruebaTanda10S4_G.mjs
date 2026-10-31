@@ -52,7 +52,9 @@ async function pasada(version) {
         if (!el) return null
         const cab = el.querySelector('[data-llegada-cabecera], [data-aloj-cabecera], [data-llegada-vacia]') ?? el.firstElementChild
         const lineaPase = el.querySelector('[data-linea-pase]')
-        const hijos = Array.from(cab?.querySelector('span.flex-col')?.children ?? []).map((x) => (x.textContent || '').trim())
+        // (10S8, 31-oct) antes: el icono y la columna título/estado → ahora: la cabecera clara de Design (icono, título, estado a la derecha) en «Alojamiento» → decisión de Eric (10S8, 31-oct).
+        const clara = el.querySelector('[data-aloj-cabecera] [data-cabecera-clara]')
+        const hijos = clara ? Array.from(clara.children).map((x) => (x.textContent || '').trim()).filter(Boolean) : Array.from(cab?.querySelector('span.flex-col')?.children ?? []).map((x) => (x.textContent || '').trim())
         return {
           texto: el.innerText.replace(/\\s+/g, ' '),
           cabecera: hijos,
@@ -64,13 +66,13 @@ async function pasada(version) {
           precioVuelo: el.querySelector('[data-precio-vuelo-texto]')?.textContent ?? null,
           precioAloj: el.querySelector('[data-alojamiento-precio]')?.textContent ?? null,
           lineaPase: lineaPase ? { dentroDeCaja: false, y: Math.round(lineaPase.getBoundingClientRect().top), cabY: Math.round(cab.getBoundingClientRect().bottom), cajaY: el.querySelector('[data-alojamiento-caja]') ? Math.round(el.querySelector('[data-alojamiento-caja]').getBoundingClientRect().bottom) : null } : null,
-          eliminar: Array.from(el.querySelectorAll('[data-eliminar]')).map((b) => { const r = b.getBoundingClientRect(); const c = el.getBoundingClientRect(); return { texto: b.textContent.trim(), derecha: Math.round(c.right - r.right), izq: Math.round(r.left - c.left), y: Math.round(r.top) } }),
+          eliminar: Array.from(el.querySelectorAll('[data-eliminar], [data-papelera]')).map((b) => { const r = b.getBoundingClientRect(); const c = el.getBoundingClientRect(); return { texto: b.textContent.trim(), derecha: Math.round(c.right - r.right), izq: Math.round(r.left - c.left), y: Math.round(r.top) } }),
           cambiar: Array.from(el.querySelectorAll('button')).filter((b) => /^Cambiar$/.test(b.textContent.trim())).length,
           cabY: cab ? Math.round(cab.getBoundingClientRect().top) : 0,
           bloqueW: Math.round(el.getBoundingClientRect().width),
         }
       })()`)
-    const clicCab = (b) => ev(`(() => { const el = document.querySelector('[data-blk="${b}"]'); const c = el?.querySelector('[data-llegada-cabecera], [data-aloj-cabecera]'); if (!c) return false; c.click(); return true })()`)
+    const clicCab = (b) => ev(`(() => { const el = document.querySelector('[data-blk="${b}"]'); const c = el?.querySelector('[data-aloj-cabecera] [data-cabecera-clara]') ?? el?.querySelector('[data-llegada-cabecera], [data-aloj-cabecera]'); if (!c) return false; c.click(); return true })()`)
     const cerrarHojas = async () => {
       for (let i = 0; i < 6 && (await ev("Boolean(document.querySelector('[role=dialog]'))")); i++) {
         await ev("(() => { const d = document.querySelector('[role=dialog]'); const b = d.querySelector('button[aria-label=Cerrar]') ?? Array.from(d.querySelectorAll('button')).find((x) => /Entendido|Vale|Cerrar|Listo/.test(x.textContent || '')); b?.click(); return true })()")
@@ -114,11 +116,11 @@ async function pasada(version) {
     await a.esp(500)
     ll = await bloque('llegada')
     debe(ll.mitades === 2, 'abrir', `tocar la cabecera abre Llegada y vuelta: ida y vuelta (${ll.mitades})`)
-    debe(/Precio · 110/.test(ll.precioVuelo ?? ''), 'precio', `el precio está dentro: «${ll.precioVuelo}»`)
-    debe(ll.cambiar >= 3, 'cambiar', `«Cambiar» en la ida, en la vuelta y en el precio (${ll.cambiar})`)
+    debe(/Precio total · 110/.test(ll.precioVuelo ?? ''), 'precio', `el precio está dentro: «${ll.precioVuelo}» (10S8, 31-oct: antes «Precio · 110 €» → ahora «Precio total · 110 €» con la ida y la vuelta → decisión de Eric (10S8, 31-oct))`)
+    debe((await ev("document.querySelectorAll('[data-blk=\"llegada\"] [data-lapiz]').length")) >= 3, 'cambiar', '(10S8, 31-oct) antes «Cambiar» en texto en la ida, la vuelta y el precio → ahora un lápiz en cada uno (Design) → decisión de Eric (10S8, 31-oct)')
     debe(!/Barcelona/.test(ll.cabecera.join(' ')), 'sin-linea', 'abierto, la cabecera sigue sin la línea de debajo del título')
-    const elim = ll.eliminar.filter((e) => /^Eliminar/.test(e.texto))
-    debe(elim.length >= 1 && elim.every((e) => e.derecha < 40 && e.izq > ll.bloqueW / 2), 'eliminar-derecha', `«Eliminar vuelo» al final del bloque pero a la derecha (${JSON.stringify(elim)})`)
+    const elim = ll.eliminar // (10S8, 31-oct: antes «Eliminar vuelo» en texto → ahora la papelera roja abajo a la derecha, mismo `data-eliminar`)
+    debe(elim.length >= 1 && elim.every((e) => e.derecha < 40 && e.izq > ll.bloqueW / 2), 'eliminar-derecha', `la papelera (antes «Eliminar vuelo») al final del bloque pero a la derecha (${JSON.stringify(elim)})`)
     await a.captura(foto(`${version}_02_vuelo_abierto`))
     await clicCab('llegada')
     await a.esp(500)
@@ -129,11 +131,14 @@ async function pasada(version) {
     await a.esp(500)
     al = await bloque('aloj')
     debe(al.caja, 'abrir', 'tocar la cabecera abre el alojamiento: caja crema')
-    debe(/Artemide/.test(al.texto) && /noches?/.test(al.texto), 'estilo', `la caja trae el hotel y las noches (${al.texto.slice(0, 160)})`)
-    debe(/Precio · 280/.test(al.precioAloj ?? ''), 'precio', `el precio del alojamiento está dentro: «${al.precioAloj}»`)
-    debe(al.cambiar >= 1, 'cambiar', '«Cambiar» arriba a la derecha')
-    const ea = al.eliminar.find((e) => /Eliminar alojamiento/.test(e.texto))
-    debe(ea && ea.derecha < 40 && ea.izq > al.bloqueW / 2, 'eliminar-derecha', `«Eliminar alojamiento» abajo a la derecha (${JSON.stringify(ea)})`)
+    debe(/Artemide/.test(al.texto) && /noches?/i.test(al.texto), 'estilo', `la caja trae el hotel y las noches (${al.texto.slice(0, 160)})`)
+    // (10S8, 31-oct) antes «Precio · 280 €» → ahora «280 €» en su fila con el icono del euro (Design A1) → decisión de Eric (10S8, 31-oct).
+    debe(/280/.test(al.precioAloj ?? ''), 'precio', `el precio del alojamiento está dentro: «${al.precioAloj}»`)
+    // (10S8, 31-oct) antes «Cambiar» en texto → ahora el lápiz de arriba (Design) → decisión de Eric (10S8, 31-oct).
+    debe((await ev("document.querySelectorAll('[data-blk=\"aloj\"] [data-lapiz]').length")) >= 2, 'cambiar', 'los dos lápices (arriba y el del bloque de datos)')
+    // (10S8, 31-oct) antes «Eliminar alojamiento» en texto → ahora la papelera roja abajo a la derecha → decisión de Eric (10S8, 31-oct).
+    const ea = al.eliminar[0]
+    debe(ea && ea.derecha < 40 && ea.izq > al.bloqueW / 2, 'eliminar-derecha', `la papelera abajo a la derecha (${JSON.stringify(ea)})`)
     if (sin) debe(al.lineaPase && al.lineaPase.cajaY != null && al.lineaPase.y >= al.lineaPase.cajaY - 2, 'pase-dentro', `abierto, la línea del pase va dentro y debajo de la caja (${JSON.stringify(al.lineaPase)})`)
     await a.captura(foto(`${version}_03_aloj_abierto`))
     await clicCab('aloj')

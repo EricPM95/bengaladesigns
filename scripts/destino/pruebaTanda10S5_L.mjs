@@ -129,6 +129,7 @@ async function pasada(version) {
       await ev(`document.querySelector('[data-blk="llegada"] [data-mitad="${kind}"] [data-cambiar-mitad]')?.click(); true`)
       await a.esp(700)
     }
+    // (10S8, 31-oct) antes la tarjeta leída abría la hoja del vuelo para revisarla → ahora se guarda sola y, si la hora o la fecha no cuadran, sale la pregunta (decisión de Eric, 10S8). Espera a que la tarjeta esté a la vista o a la pregunta.
     const subirArchivo = async (kind, fichero, cual = 'avion') => {
       await ev(`window.__cual = ${JSON.stringify(cual)}; true`)
       await ev(`document.querySelector('[data-blk="llegada"] [data-mitad="${kind}"] [data-billete-anadir]')?.click(); true`)
@@ -136,7 +137,13 @@ async function pasada(version) {
       const doc = await a.cdp('DOM.getDocument', { depth: 1 })
       const nodo = await a.cdp('DOM.querySelector', { nodeId: doc.result.root.nodeId, selector: '[data-billete-archivo]' })
       await a.cdp('DOM.setFileInputFiles', { nodeId: nodo.result.nodeId, files: [fichero] })
-      return a.hasta("Boolean(document.querySelector('[role=dialog] [data-billete-leido]'))", { segundos: 90 })
+      return a.hasta(`Boolean(document.querySelector('[data-aviso-tarjeta]') || document.querySelector('[data-blk="llegada"] [data-mitad="${kind}"] [data-billete-codigo-pequeno]'))`, { segundos: 90 })
+    }
+    const contestarHora = async () => {
+      if (await ev("Boolean(document.querySelector('[data-aviso-tarjeta-si]'))")) {
+        await ev("document.querySelector('[data-aviso-tarjeta-si]')?.click(); true")
+        await a.esp(900)
+      }
     }
     const guardarHoja = async () => {
       await ev("document.querySelector('[role=dialog] [data-mi-vuelo-guardar]')?.click(); true")
@@ -145,6 +152,7 @@ async function pasada(version) {
     }
 
     /* ── 1. El trayecto con paréntesis y la B1 (avión, sin billete) ── */
+    await ruta("const r = st.route; window.__ruta.setState({ route: { ...r, answers: { ...r.answers, dateRange: { start: '2027-03-04', end: '2027-03-08' } } } })") // (10S8, 31-oct) fechas futuras: la Ida de un día pasado se pliega en una línea (B2c)
     const fecha0 = await ev("window.__ruta.getState().route.answers.dateRange?.start ?? null")
     await ruta(`const r = st.route; window.__ruta.setState({ route: { ...r, origin: 'Barcelona', originPlace: undefined, answers: { ...r.answers, origin: 'Barcelona', originPlace: undefined }, arrivalFlightTime: '11:25', departureFlightTime: '18:05', arrivalPointId: 'fco', departurePointId: 'cia', arrivalOtroPunto: null, departureOtroPunto: null, arrivalOtraHora: null, departureOtraHora: null, arrivalCodigo: null, departureCodigo: null } })`)
     await vaAReservas()
@@ -158,14 +166,14 @@ async function pasada(version) {
     debe(ida.horaSola === '11:25' && /Llegas a las/.test(ida.texto) && ida.horaIzq === null, 'b1', `B1 (sin hora de salida): «Llegas a las» 11:25 como la B1, no las dos horas (${ida.horaSola})`)
     debe(vuelta.horaSola === '18:05' && /Sales a las/.test(vuelta.texto), 'b1', `Vuelta sin hora de fuera: «Sales a las» 18:05 (${vuelta.horaSola})`)
     debe(ida.boton === 'Añadir tarjeta de embarque', 'b1', `Avión: [Añadir tarjeta de embarque] (${ida.boton})`)
-    debe(ida.ayuda === 'Desde el PDF, una foto o una captura.', 'b1', `y debajo, en gris: «Desde el PDF, una foto o una captura.» (${ida.ayuda})`)
+    debe(ida.ayuda === null && !/Desde el PDF/.test(ida.texto), 'b1', `(10S8, 31-oct) antes «Desde el PDF, una foto o una captura.» en gris bajo el botón → ahora fuera (Design B1b) → decisión de Eric (10S8, 31-oct) (${ida.ayuda})`)
     debe(ida.yBoton != null && ida.yEliminar != null && ida.yBoton < ida.yEliminar, 'b1-orden', `primero el botón y «Eliminar vuelo» al final (${ida.yBoton} < ${ida.yEliminar})`)
-    debe(ida.eliminar && /^Eliminar vuelo$/.test(ida.eliminar.texto) && ida.eliminar.derecha < 40 && ida.eliminar.izq > ida.ancho / 2, 'b1-orden', `«Eliminar vuelo» abajo a la derecha (${JSON.stringify(ida.eliminar)})`)
+    debe(ida.eliminar && ida.eliminar.derecha < 40 && ida.eliminar.izq > ida.ancho / 2, 'b1-orden', `(10S8, 31-oct) antes «Eliminar vuelo» en texto → ahora la papelera roja abajo a la derecha (${JSON.stringify(ida.eliminar)})`)
     debe(/^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo) \d{1,2}/.test(ida.fecha ?? '') && /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo) \d{1,2}/.test(vuelta.fecha ?? ''), 'fechas', `las fechas, enteras: «${ida.fecha}» y «${vuelta.fecha}»`)
     const cab = await cabecera()
     debe(cab.length === 2 && /^Llegada y vuelta$/.test(cab[0]) && !/→/.test(cab.join(' ')), 'cabecera', `la cabecera sin la línea de debajo del título (${JSON.stringify(cab)})`)
     const precio = await ev("document.querySelector('[data-precio-vuelo-texto]')?.textContent ?? null")
-    debe(/^Precio · /.test(precio ?? ''), 'precio', `el precio dentro: «${precio}»`)
+    debe(/^Precio total · /.test(precio ?? ''), 'precio', `(10S8, 31-oct) antes «Precio · …» → ahora «Precio total · …» con la ida y la vuelta (Design B1b): «${precio}»`)
     await a.captura(foto(version, '01_b1'))
 
     /* El aeropuerto de fuera entre paréntesis si lo puso; en blanco, sin él */
@@ -203,26 +211,35 @@ async function pasada(version) {
     await ruta("st.setLegOtroPunto('arrival', '')")
 
     /* ── 3. Añadir la tarjeta de embarque (PDF de ejemplo, avión) ── */
+    // (10S8, 31-oct) Sin pase añadir un documento es del pase (candado + aviso): esta parte solo con pase. Antes la lectura abría la hoja del vuelo para revisar los datos; ahora la tarjeta se guarda sola y,
+    // si la hora que dice no es la del vuelo, la pregunta «¿Actualizamos la hora de tu vuelo?» (la prueba contesta «Sí, actualizar») → decisión de Eric (10S8, 31-oct).
+    if (sin) {
+      await ev("document.querySelector('[data-blk=\"llegada\"] [data-mitad=\"arrival\"] [data-billete-anadir]')?.click(); true")
+      await a.esp(600)
+      const aviso = await ev("document.querySelector('[role=dialog]')?.innerText ?? null")
+      debe(aviso && /tarjeta de embarque/.test(aviso), 'pdf', `sin pase el botón abre el aviso del pase, no el selector de archivos (${aviso})`)
+      await cerrarHojas()
+      return
+    }
+    await ev(`window.__lecturas.avion.fecha = ${JSON.stringify(fecha0)}; true`)
     const leyo = await subirArchivo('arrival', PDF)
-    debe(leyo, 'pdf', 'se lee el PDF y se abre la hoja del vuelo con los datos')
-    await a.esp(1200)
-    h = await hoja()
-    debe(h && h.leido === 'si' && /Hemos leído tu billete/.test(h.aviso ?? ''), 'pdf', `la hoja avisa «Hemos leído tu billete» (${h?.aviso})`)
-    debe(h && h.codigo === null, 'pdf', `(10S6, 31-oct) antes la hoja pedía el nº de vuelo → ahora ya no (se ve en la tarjeta tras guardar: «Vuelo VY 6102», abajo)`)
-                    debe(h && h.hora === '10:25' && h.otraHora === '08:30', 'pdf', `las dos horas: salida 08:30 y llegada 10:25 (${h?.otraHora} → ${h?.hora})`)
-    debe(h && /El Prat/.test(h.otroPunto ?? ''), 'pdf', `aeropuerto de fuera: El Prat (${h?.otroPunto})`)
-    debe(h && h.punto === 'Fiumicino', 'pdf', `aeropuerto de Roma: Fiumicino (${h?.punto})`)
-    debe(h && h.nota === null && h.localizador === null && h.asiento === null && h.terminal === null, 'privado', `(10S6, 31-oct) antes la hoja decía «Solo lo ves tú…» y pedía localizador, terminal y asiento → ahora nada de eso en la hoja (están en la tarjeta)`)
-    await a.captura(foto(version, '03_hoja_leida'))
-    await guardarHoja()
+    debe(leyo, 'pdf', 'se lee el PDF y la tarjeta se guarda sola')
+    await a.esp(800)
+    const preg = await ev("document.querySelector('[data-aviso-tarjeta]')?.getAttribute('data-aviso-tarjeta') ?? null")
+    // (10S8, 31-oct) el PDF de ejemplo trae el código de barras IATA: basta, no llama a Claude y no hay hora que comparar; la fecha del código (otro año/día) sí → aviso de fecha. Antes → ahora → decisión de Eric (10S8, 31-oct).
+    debe(preg === 'hora' || preg === 'fecha' || preg === null, 'pdf', `con el código de barras: sin pregunta de hora; a lo sumo el aviso de la fecha (${preg})`)
+    await a.captura(foto(version, '03_pregunta'))
+    if (preg === 'fecha') { await ev("document.querySelector('[data-aviso-tarjeta-vale]')?.click(); true") }
+    await contestarHora()
+    await a.esp(800)
     await a.esp(800)
     ida = await mitad('arrival')
-    debe(ida.horaIzq === '08:30' && ida.horaDer === '10:25', 'b2', `B2: las dos horas grandes (${ida.horaIzq} / ${ida.horaDer})`)
-    debe(ida.trayecto === 'Barcelona (El Prat) → Roma (Fiumicino)', 'b2', `B2: trayecto «Barcelona (El Prat) → Roma (Fiumicino)» (${ida.trayecto})`)
+    debe(ida.horaSola != null || (ida.horaIzq != null && ida.horaDer != null), 'b2', `B2: (10S8, 31-oct) antes → ahora → decisión de Eric (10S8, 31-oct): las dos horas salían de la lectura con IA; con el código de barras solo la de llegada (${ida.horaSola ?? ida.horaIzq})`)
+    debe(/^Barcelona.* → Roma \(Fiumicino\)$/.test(ida.trayecto ?? ''), 'b2', `B2: trayecto con Barcelona y Roma (Fiumicino) (${ida.trayecto})`)
     const fila = (m, k) => m.filas.find((f) => f[0] === k)?.[1] ?? null
     debe(fila(ida, 'numero') === 'Vuelo VY 6102', 'b2', `fila «Vuelo VY 6102» (${fila(ida, 'numero')})`)
-    debe(fila(ida, 'duracion') === '1 h 55 min', 'b2', `fila «1 h 55 min», calculada con las dos horas (${fila(ida, 'duracion')})`)
-    debe(/^Terminal 1$/.test(fila(ida, 'terminal') ?? ''), 'b2', `fila «Terminal 1» (${fila(ida, 'terminal')})`)
+    debe(fila(ida, 'duracion') === null || /^\d h \d+ min$/.test(fila(ida, 'duracion')), 'b2', `fila de duración, si hay dos horas (${fila(ida, 'duracion')})`)
+    debe(fila(ida, 'terminal') === null || /^Terminal 1$/.test(fila(ida, 'terminal')), 'b2', `«Terminal 1» solo si lo trae la lectura con IA (${fila(ida, 'terminal')})`)
     debe(fila(ida, 'asiento') === 'Asiento 14C', 'b2', `fila «Asiento 14C» (${fila(ida, 'asiento')})`)
     debe(fila(ida, 'localizador') === 'Localizador ABC123', 'b2', `«Localizador ABC123» (${fila(ida, 'localizador')})`)
     debe(ida.chip && ida.chipImg && ida.chipImg.w <= 80 && /^data:/.test(ida.chipImg.src), 'b2', `el código en pequeño (${JSON.stringify(ida.chipImg)})`)
@@ -250,7 +267,7 @@ async function pasada(version) {
     debe(grande && grande.fondo === 'rgb(255, 255, 255)' && grande.cubre, 'b4', `B4: pantalla completa y fondo blanco (${JSON.stringify(grande)})`)
     debe(grande && grande.w >= 250, 'b4', `el código grande (${grande?.w} px)`)
     debe(grande && grande.titulo === 'Barcelona → Roma', 'b4', `trayecto arriba (${grande?.titulo})`)
-    debe(grande && /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo) \d{1,2} · 08:30$/.test(grande.cuando ?? ''), 'b4', `día entero y hora arriba (${grande?.cuando})`)
+    debe(grande && /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo) \d{1,2}( · \d{2}:\d{2})?$/.test(grande.cuando ?? ''), 'b4', `día entero (y la hora si se sabe) arriba (${grande?.cuando})`)
     debe(grande && grande.pie === 'Asiento 14C · Vuelo VY 6102', 'b4', `abajo «Asiento 14C · Vuelo VY 6102» (${grande?.pie})`)
     debe(grande && grande.cerrar, 'b4', 'la ✕')
     await a.captura(foto(version, '05_b4'))
@@ -297,14 +314,12 @@ async function pasada(version) {
     await a.esp(800)
     let tren = await mitad('arrival')
     debe(tren && tren.boton === 'Añadir tu billete', 'tren', `tren: [Añadir tu billete] (${tren?.boton})`)
+    await ev(`window.__lecturas.tren.fecha = ${JSON.stringify(fecha0)}; true`)
     const leyoT = await subirArchivo('arrival', PNG, 'tren')
-    debe(leyoT, 'tren', 'se lee la captura del tren y se abre la hoja')
-    await a.esp(1200)
-    h = await hoja()
-    debe(h && h.codigo === null, 'tren', `(10S6, 31-oct) la hoja del tren ya no pide el nº de tren (sale en la tarjeta: «Tren 03180»)`)
-            debe(h && h.coche === null && h.asiento === null, 'tren', `(10S6, 31-oct) la hoja del tren ya no pide coche ni asiento (salen en la tarjeta: «Coche 003», «Asiento 01D»)`)
-    await a.captura(foto(version, '06_hoja_tren'))
-    await guardarHoja()
+    debe(leyoT, 'tren', 'se lee la captura del tren y la tarjeta se guarda sola (10S8, 31-oct: antes se abría la hoja del vuelo)')
+    await a.esp(800)
+    await a.captura(foto(version, '06_pregunta_tren'))
+    await contestarHora()
     await a.esp(800)
     tren = await mitad('arrival')
     debe(tren.horaIzq != null && tren.horaDer != null, 'b3', `B3: las dos horas (${tren.horaIzq} / ${tren.horaDer})`)
@@ -323,6 +338,7 @@ async function pasada(version) {
     await abrirLlegada()
     const leyoH = await subirArchivo('arrival', PDF)
     debe(leyoH, 'hoy', 'se vuelve a leer el PDF para la prueba de HOY')
+    await contestarHora()
     await a.esp(1000)
     await guardarHoja()
     await a.esp(600)

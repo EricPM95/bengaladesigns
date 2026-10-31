@@ -1492,7 +1492,7 @@ export function DayDetailPanel({
           )}
 
           {/* Tanda 6: lo que no cabía, plegado al final del día. */}
-          {muestraParadas && <SpareStopsSection stops={day.spareStops ?? []} onAdd={(stopId) => addSpareStop(day.id, stopId)} />}
+          {muestraParadas && <SpareStopsSection dayId={day.id} stops={day.spareStops ?? []} onAdd={(stopId) => addSpareStop(day.id, stopId)} />}
 
           {/* Día libre sin paradas con su comida o su cena ya elegida: se ve igual. */}
           {dayType === 'manual' && day.meals.some((meal) => meal.chosenRestaurant) && (

@@ -227,7 +227,8 @@ try {
   await irAReservas(a)
   await a.esp(1000)
   const lineaDueno = await a.evaluar(`document.querySelector('[data-entrada-fila*="Coliseo"]')?.textContent ?? null`)
-  debe(lineaDueno && /Para Eric, Ana/.test(lineaDueno), 'para_quien', `el dueño ve en su línea «Para Eric, Ana» (${lineaDueno})`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): la línea «Para Eric, Ana» → las iniciales con «Tú · Ana» (para quién, en redondo, E1); «Cambiar» → la tarjeta propia con sus lápices y [Añadir tu entrada]. Misma información, otra forma.
+  debe(lineaDueno && /Tú · Ana/.test(lineaDueno), 'para_quien', `el dueño ve en su línea «Para Eric, Ana» (${lineaDueno})`)
   await a.captura(path.join(SALIDA, '10n_reservas_dueno_entradas.jpg'))
 
   /* — Ana (incluida): la misma pantalla, en gris, y «Reservada ✓» — */
@@ -341,7 +342,7 @@ try {
   debe(propias.mias.length === 1 && /Coliseo/.test(propias.mias[0].refId) && propias.mias[0].time === ownerRes.time && propias.mias[0].dateIso === ownerRes.dateIso, 'misma_hora', `la entrada de Luis queda en SU lista con el mismo día y hora (${JSON.stringify(propias.mias)})`)
   debe(propias.dueno === nReservasDueno, 'misma_hora', 'y NO entra en las reservas del dueño (el viaje sigue con las mismas)')
   const lineaLuis = await a.evaluar(`document.querySelector('[data-entrada-fila*="Coliseo"]')?.textContent ?? null`)
-  debe(lineaLuis && /Cambiar/.test(lineaLuis) && !/Eric la ha reservado/.test(lineaLuis), 'misma_hora', `Luis ve ahora SU entrada del Coliseo como reservada, con Cambiar (${lineaLuis})`)
+  debe(lineaLuis && /Añadir tu entrada/.test(lineaLuis) && !/Eric la ha reservado/.test(lineaLuis), 'misma_hora', `Luis ve ahora SU entrada del Coliseo como reservada, con Cambiar (${lineaLuis})`)
   await a.captura(path.join(SALIDA, '10n_reservas_invitado_la_suya.jpg'))
   const etiquetaLuis2 = await (async () => { await irA(a, 'days'); return etiquetaDeLaParada(a) })()
   debe(etiquetaLuis2 === 'tengo', 'dias', `con la suya comprada, Luis pasa a ver el botón verde con ✓ (${etiquetaLuis2})`)
@@ -375,7 +376,7 @@ try {
   const mismasDueno = await a.evaluar(`window.__ruta.getState().reservations.length`)
   debe(mismasDueno === nReservasDueno, 'suya', 'lo que compra el invitado es suyo: las reservas del dueño siguen siendo las mismas')
   const lineaDueno2 = await a.evaluar(`document.querySelector('[data-entrada-fila*="Coliseo"]')?.textContent ?? null`)
-  debe(lineaDueno2 && !/Cambiar.*Cambiar/.test(lineaDueno2) && /Para Eric, Ana/.test(lineaDueno2), 'suya', 'y su RESERVAS sigue diciendo «Para Eric, Ana», sin rastro de la entrada de Luis')
+  debe(lineaDueno2 && !/Cambiar.*Cambiar/.test(lineaDueno2) && /Tú · Ana/.test(lineaDueno2), 'suya', 'y su RESERVAS sigue diciendo «Para Eric, Ana», sin rastro de la entrada de Luis')
 } catch (e) {
   console.log('ERRS', await a.evaluar('JSON.stringify(window.__errs)').catch(() => '?'))
   throw e

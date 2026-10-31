@@ -16,6 +16,8 @@ import {
   type ReservaAlojamiento,
 } from '../../../lib/reservaAlojamiento'
 import { HojaAbajo } from './HojaAbajo'
+import { BotonAnadirDocumento } from './BotonesDeReserva'
+import { Trazo as TrazoDesign } from './PiezasDesignReservas'
 
 /**
  * LA RESERVA DEL ALOJAMIENTO (10S7 §5; `Piezas/Entradas Billete` A1 y A2). Va dentro de la caja del alojamiento de RESERVAS (AlojamientoReservas):
@@ -27,6 +29,12 @@ import { HojaAbajo } from './HojaAbajo'
  */
 const ORO = '#6E5018'
 const ETIQUETA_CAJA: CSSProperties = { font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)', textTransform: 'uppercase' }
+/** « · JUE 26» (con el día de la semana) o nada, para la etiqueta de la hora de entrada y de salida. */
+const diaCortoDe = (iso: string): string => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return ''
+  const f = new Date(`${iso}T12:00:00`)
+  return ` · ${new Intl.DateTimeFormat('es-ES', { weekday: 'short' }).format(f).replace('.', '')} ${f.getDate()}`
+}
 const CAJA = 'flex h-[54px] min-w-0 flex-col justify-center gap-px rounded-[15px] border bg-[#FFFDF8] px-3.5'
 
 const ICONOS = {
@@ -94,15 +102,20 @@ export function FilasDeLaReserva({ reserva, direccion, localizador }: { reserva:
   )
 }
 
-/** A1: [Añadir tu reserva] con su ayuda. Lee el archivo y devuelve lo leído (`onLeida`; con `leida: false` si no se pudo leer nada). */
+/** A1: [Añadir tu reserva]. Lee el archivo y devuelve lo leído (`onLeida`; con `leida: false` si no se pudo leer nada). (10S8 §2) Sin pase lleva el candado y abre el aviso del pase; sin la línea «Desde el PDF, una foto o una captura.». */
 export function BotonAnadirReserva({ onLeida, año }: { onLeida: (datos: DatosReservaLeida) => void; año?: number }) {
   const ref = useRef<HTMLInputElement>(null)
   const [leyendo, setLeyendo] = useState(false)
+  const [aviso, setAviso] = useState<string | null>(null)
   const alElegir = async (archivo: File | undefined) => {
     if (!archivo) return
     setLeyendo(true)
     try {
-      onLeida(await leerReservaAlojamiento(archivo, { anioPorDefecto: año }))
+      setAviso(null)
+      const leidos = await leerReservaAlojamiento(archivo, { anioPorDefecto: año })
+      // (10S8 §1) Límite del día, archivo grande o sin sesión: se enseña el texto del servidor y no se abre la hoja vacía.
+      if (leidos.aviso && !leidos.leida) setAviso(leidos.aviso)
+      else onLeida(leidos)
     } finally {
       setLeyendo(false)
       if (ref.current) ref.current.value = ''
@@ -111,20 +124,12 @@ export function BotonAnadirReserva({ onLeida, año }: { onLeida: (datos: DatosRe
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-reserva-aloj-archivo onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <button
-        type="button"
-        disabled={leyendo}
-        onClick={() => ref.current?.click()}
-        data-reserva-aloj-anadir
-        className="flex h-[50px] items-center justify-center gap-2 rounded-[15px] text-[15.5px] font-bold disabled:opacity-60"
-        style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }}
-      >
-        <Trazo d={ICONOS.cama} size={18} color="#4A3510" />
-        {leyendo ? 'Leyendo tu reserva…' : 'Añadir tu reserva'}
-      </button>
-      <span className="text-center text-[12.5px] text-text/50" data-reserva-aloj-ayuda>
-        Desde el PDF, una foto o una captura.
-      </span>
+      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu reserva…' : 'Añadir tu reserva'} clave="documento_alojamiento" datos="reserva-aloj-anadir" icono={<TrazoDesign d="cama" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} />
+      {aviso && (
+        <span role="status" data-reserva-aloj-error className="text-center text-[12.5px] leading-snug text-accent-red">
+          {aviso}
+        </span>
+      )}
     </div>
   )
 }
@@ -149,9 +154,12 @@ export function HojaReservaAlojamiento({
   leidos,
   direccionDelViaje,
   conPase,
+  modo = 'leida',
   onGuardar,
   onClose,
 }: {
+  /** (10S8 §5, A3) 'datos': el lápiz del bloque de datos, «Datos de la reserva» (dirección, horas de entrada y de salida, teléfono y localizador). 'leida': lo que acaba de leer la app, con todos los campos. */
+  modo?: 'leida' | 'datos'
   nombreActual: string
   reserva: ReservaAlojamiento | null
   /** El localizador privado de esta persona (la reserva compartida no lo lleva). */
@@ -193,9 +201,9 @@ export function HojaReservaAlojamiento({
     const nueva = reservaDeCampos(c)
     onGuardar({ nombre: c.nombre.trim(), reserva: reservaConDatos(nueva) ? nueva : null, usarDireccionDeLaReserva: Boolean(nueva.direccion) && !yaEstabaEnLaReserva && (!direccionDelViaje || eleccion === 'reserva') })
   }
-  const cuadro = (clave: keyof Campos, etiqueta: string, ejemplo: string, opciones: { tipo?: string; mayus?: boolean; max?: number; ancho?: boolean } = {}) => (
+  const cuadro = (clave: keyof Campos, etiqueta: string, ejemplo: string, opciones: { tipo?: string; mayus?: boolean; max?: number; ancho?: boolean; sinEtiqueta?: boolean } = {}) => (
     <label className={`${CAJA} ${opciones.ancho ? 'w-full' : 'flex-1'}`} style={{ borderColor: 'rgba(28,34,48,.12)' }}>
-      <span style={ETIQUETA_CAJA}>{etiqueta}</span>
+      {!opciones.sinEtiqueta && <span style={ETIQUETA_CAJA}>{etiqueta}</span>}
       <input
         type={opciones.tipo ?? 'text'}
         value={c[clave]}
@@ -217,23 +225,32 @@ export function HojaReservaAlojamiento({
       capa={115}
       pie={
         <button type="button" onClick={guardar} disabled={!puede} data-reserva-aloj-guardar className="h-[54px] w-full rounded-full btn-champan text-[16px] font-bold transition-transform active:scale-[.98] disabled:opacity-40">
-          {puede ? 'Guardar la reserva' : 'Elige la dirección'}
+          {puede ? (modo === 'datos' ? 'Guardar los datos' : 'Guardar la reserva') : 'Elige la dirección'}
         </button>
       }
     >
-      <h2 id="hoja-reserva-alojamiento" className="max-w-[calc(100%-3rem)] font-display text-[28px] leading-[1.05] text-text">
-        Tu reserva
+      <h2 id="hoja-reserva-alojamiento" className={`max-w-[calc(100%-3rem)] font-display leading-[1.05] text-text ${modo === 'datos' ? 'text-[30px]' : 'text-[28px]'}`} data-hoja-titulo={modo === 'datos' ? 'datos-reserva' : 'reserva'}>
+        {modo === 'datos' ? 'Datos de la reserva' : 'Tu reserva'}
       </h2>
-      <p className="mt-2 text-[13px] leading-[1.35] text-text/60" data-reserva-aloj-aviso>
-        {leidos == null
-          ? 'Todo opcional.'
-          : leidos.leida
-            ? 'Esto es lo que hemos leído. Cámbialo si algo no cuadra.'
-            : 'No hemos podido leer la reserva. Puedes escribir los datos a mano.'}
-      </p>
+      {modo !== 'datos' && (
+        <p className="mt-2 text-[13px] leading-[1.35] text-text/60" data-reserva-aloj-aviso>
+          {leidos == null
+            ? 'Todo opcional.'
+            : leidos.leida
+              ? 'Esto es lo que hemos leído. Cámbialo si algo no cuadra.'
+              : 'No hemos podido leer la reserva. Puedes escribir los datos a mano.'}
+        </p>
+      )}
       <div className="mt-5 flex flex-col gap-3" data-reserva-aloj-campos>
-        {cuadro('nombre', 'Nombre del hotel', 'Hotel Palatino', { ancho: true })}
-        {cuadro('direccion', 'Dirección', 'Via Cavour 12, Roma', { ancho: true, max: 160 })}
+        {modo !== 'datos' && cuadro('nombre', 'Nombre del hotel', 'Hotel Palatino', { ancho: true })}
+        {modo === 'datos' ? (
+          <div className="flex flex-col gap-[7px]">
+            <span style={{ font: "700 14.5px 'Geist'" }}>Dirección</span>
+            {cuadro('direccion', '', 'Via Cavour 12, Roma', { ancho: true, max: 160, sinEtiqueta: true })}
+          </div>
+        ) : (
+          cuadro('direccion', 'Dirección', 'Via Cavour 12, Roma', { ancho: true, max: 160 })
+        )}
         {hayPregunta && (
           <div className="flex flex-col gap-2 rounded-[16px] px-3.5 py-3" style={{ background: 'rgba(181,138,46,.1)', border: '1px solid rgba(181,138,46,.4)' }} data-reserva-aloj-pregunta>
             <span className="text-[13.5px] font-semibold leading-snug text-text">La dirección de la reserva no es la que tenías. ¿Cuál dejamos?</span>
@@ -261,17 +278,32 @@ export function HojaReservaAlojamiento({
             </div>
           </div>
         )}
-        <div className="flex gap-2">
-          {cuadro('entrada', 'Entrada', '', { tipo: 'date' })}
-          {cuadro('salida', 'Salida', '', { tipo: 'date' })}
-        </div>
-        <div className="flex gap-2">
-          {cuadro('noches', 'Noches', '3', { max: 3 })}
-          {cuadro('horaEntrada', 'Desde las', '15:00', { tipo: 'time' })}
-          {cuadro('horaSalida', 'Hasta las', '11:00', { tipo: 'time' })}
-        </div>
-        {cuadro('telefono', 'Teléfono', '+39 06 1234 5678', { ancho: true, max: 30 })}
-        {cuadro('localizador', 'Localizador', 'HX48K2', { ancho: true, mayus: true, max: 30 })}
+        {modo === 'datos' ? (
+          <>
+            <div className="flex gap-2">
+              {cuadro('horaEntrada', `Entrada${diaCortoDe(c.entrada)}`, '15:00', { tipo: 'time' })}
+              {cuadro('horaSalida', `Salida${diaCortoDe(c.salida)}`, '11:00', { tipo: 'time' })}
+            </div>
+            <div className="flex gap-2">
+              {cuadro('telefono', 'Teléfono', '+39 06 1234 5678', { max: 30 })}
+              {cuadro('localizador', 'Localizador', 'HX48K2', { mayus: true, max: 30 })}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex gap-2">
+              {cuadro('entrada', 'Entrada', '', { tipo: 'date' })}
+              {cuadro('salida', 'Salida', '', { tipo: 'date' })}
+            </div>
+            <div className="flex gap-2">
+              {cuadro('noches', 'Noches', '3', { max: 3 })}
+              {cuadro('horaEntrada', 'Desde las', '15:00', { tipo: 'time' })}
+              {cuadro('horaSalida', 'Hasta las', '11:00', { tipo: 'time' })}
+            </div>
+            {cuadro('telefono', 'Teléfono', '+39 06 1234 5678', { ancho: true, max: 30 })}
+            {cuadro('localizador', 'Localizador', 'HX48K2', { ancho: true, mayus: true, max: 30 })}
+          </>
+        )}
       </div>
     </HojaAbajo>
   )
@@ -280,11 +312,20 @@ export function HojaReservaAlojamiento({
 /**
  * Lo que va dentro de la caja del alojamiento: A1 (sin reserva) o A2 (con ella) y la hoja. `hotel` es el alojamiento puesto en esa estancia; `segmentDayId`, su clave en el store.
  */
-export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, conPase, direccionDelViaje, año }: { hotel: TuAlojamiento; segmentDayId: string; nombreMostrado: string | null; conPase: boolean; direccionDelViaje: string | null; año?: number }) {
+/** (10S8 §5) Lo que la caja del alojamiento necesita de la reserva para pintarla como Design: la reserva, el localizador privado, quién puede cambiarla y los dos gestos (el lápiz del bloque y [Añadir tu reserva]). */
+export interface ApiReservaAloj {
+  reserva: ReservaAlojamiento | null
+  localizador: string | null
+  esAdmin: boolean
+  abrirDatos: () => void
+  botonAnadir: ReactNode
+}
+
+export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, conPase, direccionDelViaje, año, children }: { hotel: TuAlojamiento; segmentDayId: string; nombreMostrado: string | null; conPase: boolean; direccionDelViaje: string | null; año?: number; children: (api: ApiReservaAloj) => ReactNode }) {
   const setHotel = useRouteStore((s) => s.setAccommodationHotel)
   const setDireccion = useRouteStore((s) => s.setAccommodationAddress)
   const { esAdmin } = usePermisosDelViaje()
-  const [hoja, setHoja] = useState<{ leidos: DatosReservaLeida | null } | null>(null)
+  const [hoja, setHoja] = useState<{ leidos: DatosReservaLeida | null; modo: 'leida' | 'datos' } | null>(null)
   const tripId = useSyncStore((s) => s.activeTripId)
   const yoId = useViajeCompartido((s) => s.gente.find((p) => p.esYo)?.id ?? null)
   const aloj = useBilleteStore((s) => s.datos.alojamientos)
@@ -315,18 +356,7 @@ export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, con
   }
   return (
     <>
-      {reserva ? (
-        <>
-          <FilasDeLaReserva reserva={reserva} direccion={direccionDelViaje} localizador={localizador} />
-          {esAdmin && (
-            <button type="button" onClick={() => setHoja({ leidos: null })} data-reserva-aloj-cambiar-datos className="zona-toque self-start text-[13px] font-semibold underline underline-offset-2" style={{ color: ORO }}>
-              Cambiar los datos
-            </button>
-          )}
-        </>
-      ) : (
-        esAdmin && <BotonAnadirReserva año={año} onLeida={(leidos) => setHoja({ leidos })} />
-      )}
+      {children({ reserva, localizador, esAdmin, abrirDatos: () => setHoja({ leidos: null, modo: 'datos' }), botonAnadir: esAdmin && !reserva ? <BotonAnadirReserva año={año} onLeida={(leidos) => setHoja({ leidos, modo: 'leida' })} /> : null })}
       {hoja && (
         <HojaReservaAlojamiento
           nombreActual={nombreMostrado ?? ''}
@@ -335,6 +365,7 @@ export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, con
           leidos={hoja.leidos}
           direccionDelViaje={direccionDelViaje}
           conPase={conPase}
+          modo={hoja.modo}
           onGuardar={guardar}
           onClose={() => setHoja(null)}
         />

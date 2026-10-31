@@ -277,7 +277,7 @@ try {
     return b ? { texto: b.innerText.replace(/\\s+/g, ' '), boton: b.querySelector('[data-billete-anadir]')?.textContent ?? null, chip: Boolean(b.querySelector('[data-billete-codigo-pequeno] img')) } : null
   })()`)
   let g1 = await estado()
-  debe(g1 && g1.boton === 'Añadir tarjeta de embarque' && /Desde el PDF, una foto o una captura/.test(g1.texto), '3 invitado', `el invitado ve [Añadir tarjeta de embarque] en su tarjeta de vuelo (${g1 && g1.texto})`)
+  debe(g1 && g1.boton === 'Añadir tarjeta de embarque' && !/Desde el PDF/.test(g1.texto), '3 invitado', `(10S8, 31-oct: antes con «Desde el PDF, una foto o una captura.» debajo → ahora fuera, como Design; con el pase de grupo no hay candado) el invitado ve [Añadir tarjeta de embarque] en su tarjeta de vuelo (${g1 && g1.texto})`)
   await ev("document.querySelector('[data-billete-invitado=\"arrival\"] [data-billete-anadir]')?.click(); true")
   await a.esp(300)
   const doc = await a.cdp('DOM.getDocument', { depth: 1 })

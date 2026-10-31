@@ -130,7 +130,7 @@ export function BloqueDinero({
           <PersonasCuadradas personas={personas} marcados={paraQuien} onAlternar={onParaQuien} datos="para-quien" etiqueta={textoPregunta} />
         </div>
       )}
-      <CampoPrecio estado={precio} etiqueta="¿Cuánto ha costado en total?" />
+      <CampoPrecio estado={precio} etiqueta="¿Cuánto ha costado en total?" ayuda={tipo === 'vuelo' ? 'Si compraste la ida y la vuelta por separado, pon la suma.' : undefined} />
       {!solo && esGasto && cuenta === 'grupo' && (
         <div className="flex flex-col gap-2.5" data-solo-para-algunos>
           <button type="button" onClick={() => onSoloParaAlgunos?.(!soloParaAlgunos)} aria-expanded={soloParaAlgunos} className="self-start text-[13px] font-semibold underline underline-offset-2" style={{ color: '#6F4E37' }}>

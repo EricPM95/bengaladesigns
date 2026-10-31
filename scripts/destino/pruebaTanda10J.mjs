@@ -101,7 +101,8 @@ const INVENTARIO = [
 ]
 /** Lo que se queda (de la cuenta). */
 // 10S7: hoy_prueba e historia_de_prueba pasan aquí (0072): las pruebas gastadas se quedan SIEMPRE («una por cuenta, para siempre»).
-const SE_QUEDA = [['travelers', 'id'], ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id'], ['hoy_prueba', 'user_id'], ['historia_de_prueba', 'user_id']]
+const SE_QUEDA = [['travelers', 'id'], ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id'], ['hoy_prueba', 'user_id'], ['historia_de_prueba', 'user_id'], ['lecturas_de_documentos', 'user_id']]
+// 10S8: el contador de lecturas del día (0073) no se borra, para que empezar de cero no devuelva lecturas (como las pruebas gastadas).
 
 const usuario = async (email) => (await q('insert into auth.users (email, is_anonymous) values ($1, false) returning id', [email]))[0].id
 let contador = 0
@@ -138,6 +139,7 @@ async function sembrar(uid, etiqueta, { invitado = null, amiga = null } = {}) {
   await S('insert into public.reservas_invitado (trip_id, user_id) values ($1, $2)', [viaje, uid])
   await S('insert into public.reservas_privadas_admin (trip_id, user_id) values ($1, $2)', [viaje, uid])
   await S("insert into public.historia_de_prueba (user_id, destino, sitio, nombre) values ($1, 'roma', 'coliseo', 'Coliseo') on conflict (user_id, destino) do nothing", [uid])
+  await S("insert into public.lecturas_de_documentos (user_id, dia, n) values ($1, current_date, 7) on conflict (user_id, dia) do nothing", [uid])
   await S("insert into public.billetes_personales (trip_id, user_id, datos) values ($1, $2, '{}'::jsonb)", [viaje, uid])
   const amigoQueInvito = await usuario(unico(`invitado-${etiqueta}@x.es`))
   await S('insert into public.logro_referidos (invitador_id, invitado_id) values ($1,$2)', [uid, amigoQueInvito])

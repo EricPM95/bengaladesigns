@@ -5,13 +5,15 @@ import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
 import { elDia, fechaCorta, diaTitulo } from '../../../lib/nombreDeDia'
 import { aplicarAvisoFueraDeDia, reservasFueraDeSuDia, type ReservaFueraDeDia } from '../../../lib/reservaFueraDeDia'
-import { ICONOS } from './BloqueReservas'
-import { TarjetaPorReservar, TarjetaReservada, ROTULO } from './TarjetasEntradas'
+import { TarjetaPorReservar, ROTULO } from './TarjetasEntradas'
+import { BloqueClaro, CabeceraClara, PildoraEstado } from './PiezasDesignReservas'
+import { useMisReservas } from '../../../store/useMisReservas'
+import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { FueraDeRutaFila } from './FueraDeRutaFila'
 import { FichaEntrada } from './FichaEntrada'
-import { TarjetaEntradaBillete, CodigoDeEntradaPantallaCompleta } from './EntradaConBillete'
+import { TarjetaEntradaDesign, CodigoDeEntradaPantallaCompleta } from './EntradaConBillete'
 import { useBilletesDeEntradas } from '../../../hooks/useBilleteEntrada'
-import { useBilleteStore, entradaConCodigo, type BilleteDeEntrada } from '../../../store/useBilleteStore'
+import { useBilleteStore, type BilleteDeEntrada } from '../../../store/useBilleteStore'
 import { OtraReservaBuscador } from './OtraReservaBuscador'
 import { esReservaLibre } from '../../../lib/otraReserva'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
@@ -22,7 +24,6 @@ import { entradasQueNoCuadran, idsIncluidos } from '../../../lib/reservasGrupo'
 import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { frase, textoLaTienen } from '../../../lib/entradasDelGrupo'
 import { nombreDe } from '../../../store/useViajeCompartido'
-import type { Reservation } from '../../../lib/bookings'
 
 const MES = new Intl.DateTimeFormat('es-ES', { month: 'short' })
 
@@ -39,6 +40,12 @@ export function metaReservaEntera(route: Route, reservation: { dateIso: string |
   const fecha = reservation.dateIso && route.answers.dateRange ? fechaCorta(reservation.dateIso) : `Día ${reservation.dayNumber ?? ''}`.trim()
   const precio = leerImporte(reservation.precio)
   return `${fecha} · ${reservation.time}${precio ? ` · ${precioEnVista(precio)}` : ''}`
+}
+
+/** (10S8 §4) Las dos líneas de la caja del día de Design: «VIERNES» y «27 de noviembre». */
+export function diaEnCajas(dateIso: string): { rotulo: string; grande: string } {
+  const f = new Date(`${dateIso}T12:00:00`)
+  return { rotulo: new Intl.DateTimeFormat('es-ES', { weekday: 'long' }).format(f).toUpperCase(), grande: new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long' }).format(f) }
 }
 
 /** (10S7) «Viernes 27 · 09:00»: el día entero y la hora, sin el precio (lo que lleva el código a pantalla completa). */
@@ -121,11 +128,6 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
   }, [pedido])
   if (enRuta.length === 0 && masEntradas.length === 0) return null
   const noCuadran = grupo.esInvitado ? entradasQueNoCuadran(route, grupo.mias, info.nombresCortos) : []
-  /** «Para Eric, Ana»: a quién cubre la entrada del dueño (solo si es para más de una persona). */
-  const paraQuienTexto = (r: Reservation) => {
-    const nombres = idsIncluidos(r, grupo.gente).map((id) => nombreDe(grupo.gente.find((p) => p.id === id))).filter(Boolean)
-    return nombres.length > 1 ? `Para ${nombres.join(', ')}` : undefined
-  }
   const reservadas = enRuta.filter((item) => item.reservation).length
   const hecho = enRuta.length > 0 && reservadas === enRuta.length
 
@@ -151,36 +153,47 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
   const sinReservar = enRuta.filter((item) => !item.reservation)
   const conReserva = enRuta.filter((item) => item.reservation)
 
-  /** Una reservada (Design «Entradas Lista» L2): borde verde, ✓ en la miniatura, «Reservada», nombre, día entero · hora · precio y «Cambiar». Sin el botón del código (llega con el billete de las entradas). */
+  /** (10S8 §4) Una reservada como Design E1/E2: tarjeta crema con «En tu ruta», el sitio, el día y la hora, para quién, el precio, el localizador, el código, [Añadir tu entrada] y la papelera. */
   const filaReservada = (item: BloqueEntrada) => {
     const reserva = item.reservation!
     const mia = esMia(reserva.id)
-    const nota = !mia
-      ? `${compradorDe(reserva.id)} la ha reservado para ti`
-      : !item.inRoute && !reserva.fueraDeRuta && !esReservaLibre(reserva)
-        ? 'Ya no está en tu ruta'
-        : grupo.compartido && !grupo.esInvitado
-          ? paraQuienTexto(reserva)
-          : undefined
+    const fueraDeLaRuta = mia && !item.inRoute && !reserva.fueraDeRuta && !esReservaLibre(reserva)
+    const nota = !mia ? `${compradorDe(reserva.id)} la ha reservado para ti` : undefined
     const billete = mia ? billetes.de(reserva.refId) : null
     const cuando = cuandoDeLaReserva(route, reserva)
+    const gente = grupo.gente.length >= 2 ? idsIncluidos(reserva, grupo.gente).map((id) => grupo.gente.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => Boolean(p)) : []
+    const precio = item.isFreeTour ? null : leerImporte(reserva.precio)
+    const fecha = reserva.dateIso && route.answers.dateRange ? diaEnCajas(reserva.dateIso) : { rotulo: 'DÍA', grande: `Día ${reserva.dayNumber ?? ''}`.trim() }
+    const quitar = () => {
+      if (grupo.esInvitado) useMisReservas.getState().quitar(reserva.id)
+      else removeReservationWithUndo(reserva.id)
+      if (reserva.kind === 'entrada' && billete) useBilleteStore.getState().quitarEntrada(billetes.tripId, reserva.refId)
+    }
     return (
-      <div key={item.clave} className="flex flex-col gap-2" data-entrada-fila={item.name}>
-        <TarjetaReservada onCodigo={entradaConCodigo(billete) ? () => setCodigoAbierto({ titulo: item.name, cuando, billete }) : undefined} etiqueta={item.isFreeTour ? 'Reservado' : 'Reservada'} name={item.name} meta={metaReservaEntera(route, reserva)} nota={nota} onChange={mia ? () => setTarget({ ...targetOf(item), existing: reserva }) : undefined} parada={paradaDe(item)} ciudad={route.destination} freeTour={item.isFreeTour} />
-        {mia && reserva.kind === 'entrada' && (
-          <TarjetaEntradaBillete
-            billete={billete}
-            nombre={item.name}
-            cuando={cuando}
-            año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined}
-            onLeida={(lectura) => setTarget({ ...targetOf(item), existing: reserva, lectura })}
-            onQuitar={() => useBilleteStore.getState().quitarEntrada(billetes.tripId, reserva.refId)}
-          />
-        )}
+      <div key={item.clave} className='flex flex-col gap-2' data-entrada-fila={item.name}>
+        <TarjetaEntradaDesign
+          datos={item.isFreeTour ? 'free-tour' : 'entrada'}
+          chip={fueraDeLaRuta ? 'Ya no está en tu ruta' : item.isFreeTour ? 'Free Tour · En tu ruta' : 'En tu ruta'}
+          nombre={item.name}
+          diaRotulo={fecha.rotulo}
+          diaGrande={fecha.grande}
+          hora={reserva.time}
+          gente={gente}
+          precio={precio ? precioEnVista(precio) : null}
+          billete={billete}
+          cuando={cuando}
+          nota={nota}
+          soloVer={!mia}
+          año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined}
+          onLapizArriba={() => setTarget({ ...targetOf(item), existing: reserva })}
+          onLapizDatos={() => setTarget({ ...targetOf(item), existing: reserva, soloDatos: true })}
+          onLeida={(lectura) => setTarget({ ...targetOf(item), existing: reserva, lectura })}
+          onQuitar={quitar}
+        />
         {reserva.fueraDeRuta && <FueraDeRutaFila reservaId={reserva.id} esFreeTour={item.isFreeTour} />}
         {avisoDe(reserva.id) && <AvisoFueraDeDiaTarjeta aviso={avisoDe(reserva.id)!} />}
         {noCuadran.filter((aviso) => aviso.cambio.reservaId === reserva.id).map((aviso) => (
-          <p key={aviso.id} data-entrada-no-cuadra className="rounded-[14px] px-3.5 py-2.5 text-[12.5px] leading-snug text-text" style={{ background: 'color-mix(in srgb, rgb(var(--accent-gold)) 14%, transparent)' }}>
+          <p key={aviso.id} data-entrada-no-cuadra className='rounded-[14px] px-3.5 py-2.5 text-[12.5px] leading-snug text-text' style={{ background: 'color-mix(in srgb, rgb(var(--accent-gold)) 14%, transparent)' }}>
             {aviso.texto}
           </p>
         ))}
@@ -211,34 +224,19 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
 
   return (
     <>
-      <div data-blk="entradas" className="flex flex-col gap-3">
-        {/* La cabecera de Design (L1/L2): tarjeta oscura con el icono, «2 de 8» en dorado y la barra. */}
-        <div onClick={onToggle} data-cabecera-entradas className="flex cursor-pointer items-center gap-3.5 rounded-[24px] px-4 py-3.5" style={{ background: '#1C2230', color: '#FBF3E2' }}>
-          <span className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-[14px]" style={{ background: 'rgba(233,199,122,.16)', border: '1px solid rgba(233,199,122,.45)', color: '#F3D88F' }}>
-            <Icono nombre={ICONOS.ticket} size={23} />
-          </span>
-          <span className="flex min-w-0 flex-1 flex-col gap-[7px]">
-            <span className="flex items-baseline justify-between gap-2">
-              <span style={{ font: "400 23px/1 'Instrument Serif',serif" }}>Entradas y Free Tour</span>
-              <span data-estado={hecho ? 'hecho' : 'falta'} style={{ font: "600 13px 'Geist'", color: '#F3D88F' }}>
-                {enRuta.length > 0 ? (
-                  <>
-                    {`${reservadas} de ${enRuta.length}`}
-                    <span className="sr-only"> reservadas</span>
-                  </>
-                ) : (
-                  'Ninguna en tu ruta'
-                )}
-              </span>
+      <BloqueClaro bloque="entradas">
+        {/* (10S8 §4) La cabecera clara de Design (E1): icono, título en una línea y «1 de 8 reservadas» en su píldora; sin línea de texto debajo. */}
+        <CabeceraClara
+          icono='entrada'
+          titulo='Entradas y Free Tour'
+          datos='entradas'
+          onClick={onToggle}
+          estado={
+            <span data-cabecera-entradas>
+              {enRuta.length > 0 ? <PildoraEstado tipo={hecho ? 'listo' : 'cuenta'}>{`${reservadas} de ${enRuta.length} reservadas`}</PildoraEstado> : <PildoraEstado tipo='cuenta'>Ninguna en tu ruta</PildoraEstado>}
             </span>
-            {enRuta.length > 0 && (
-              <span className="block h-1.5 overflow-hidden rounded-[3px]" style={{ background: 'rgba(251,243,226,.16)' }} aria-hidden="true">
-                <span className="block h-full rounded-[3px] transition-[width]" style={{ width: `${(reservadas / enRuta.length) * 100}%`, background: 'linear-gradient(90deg,#B58A2E,#F3D88F)' }} />
-              </span>
-            )}
-          </span>
-          <Icono nombre="abajo" size={20} style={{ color: '#F3D88F', flex: 'none', transform: abierto ? 'rotate(180deg)' : 'none', transition: 'transform .35s cubic-bezier(.2,.8,.2,1)' }} />
-        </div>
+          }
+        />
         {abierto && (
           <>
             {conReserva.length > 0 && (
@@ -275,7 +273,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
             </button>
           </>
         )}
-      </div>
+      </BloqueClaro>
       {target && <AddReservationSheet route={route} target={target} onClose={() => setTarget(null)} />}
       {buscando && (
         <OtraReservaBuscador

@@ -110,8 +110,8 @@ export function TarjetaPorReservar({
     <div
       data-entrada-color={delGrupo ? 'grupo' : 'falta'}
       data-tarjeta-por-reservar
-      className="flex gap-3 rounded-[22px] bg-[#FFFDF8] p-2.5"
-      style={{ border: delGrupo ? '1.5px solid rgba(233,199,122,.7)' : '1px solid rgba(28,34,48,.08)', boxShadow: '0 10px 22px -16px rgba(28,34,48,.4)' }}
+      className="flex gap-3 rounded-[20px] p-2.5"
+      style={{ background: '#FBF3E2', border: delGrupo ? '1.5px solid rgba(233,199,122,.7)' : '1px solid rgba(181,138,46,.35)' }}
     >
       <Miniatura nombre={name} parada={parada} ciudad={ciudad} freeTour={freeTour}>
         <span className="absolute flex h-[26px] w-[26px] items-center justify-center rounded-full" style={{ left: 6, top: 6, background: '#1C2230', border: `1.5px solid ${ORO}` }} aria-hidden="true">

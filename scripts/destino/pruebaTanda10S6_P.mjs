@@ -8,6 +8,7 @@
 import fs from 'node:fs'
 import { abrirApp } from './_enLaApp.mjs'
 
+const leerTodo = (p) => fs.readFileSync(p, 'utf8')
 const APP = process.env.APP_URL ?? 'http://localhost:5173'
 const fallos = []
 let comprobaciones = 0
@@ -29,7 +30,7 @@ console.log('1. El código')
   debe(!/Ver \$\{masEntradas|setVerMas|Ver menos/.test(ent), 'ap3', 'sin «Ver n más»')
   debe(/data-anadir-otra-reserva/.test(ent) && /Añadir otra reserva/.test(ent), 'ap3', 'está [Añadir otra reserva]')
   debe(/Reservadas ·/.test(ent) && /Por reservar ·/.test(ent), 'ap3', 'las dos partes «Reservadas · n» y «Por reservar · n»')
-  debe(/TarjetaReservada/.test(ent) && /TarjetaPorReservar/.test(ent) && /Cambiar/.test(tar) && /¿Ya la tienes\?/.test(tar) && /Añádela/.test(tar), 'ap3', 'las tarjetas de Design (reservada con «Cambiar», por reservar con «Añádela»)')
+  debe(/TarjetaEntradaDesign/.test(ent) && /TarjetaPorReservar/.test(ent) && /LapizDeReserva/.test(leerTodo('src/components/route/reservas/EntradaConBillete.tsx')) && /¿Ya la tienes\?/.test(tar) && /Añádela/.test(tar), 'ap3', 'las tarjetas de Design (reservada con «Cambiar», por reservar con «Añádela»)')
   debe(!/data-codigo|Ver el código|Ver código|QR/i.test(ent + tar), 'ap3', 'sin el botón del código de las reservadas')
   debe(/fechaCorta/.test(ent) && /diaTitulo/.test(ent) && /En tu ruta · /.test(ent), 'ap3', 'las etiquetas con el día entero («En tu ruta · Jueves 26»)')
   debe(!/(?:fechaCortaAbrev|diaCorto\()/.test(ent), 'ap3', 'ninguna fecha corta («Jue 26») en el bloque')
@@ -66,14 +67,15 @@ try {
     etiquetas: Array.from(document.querySelectorAll('[data-tarjeta-por-reservar]')).map((t) => t.firstElementChild?.nextElementSibling?.firstElementChild?.firstElementChild?.textContent ?? ''),
     botones: Array.from(document.querySelectorAll('[data-tarjeta-por-reservar] button')).map((b) => b.textContent.trim()),
     rotulo: document.querySelector('[data-seccion-por-reservar]')?.textContent ?? null,
-    cabOscura: getComputedStyle(document.querySelector('[data-cabecera-entradas]') ?? document.body).backgroundColor,
+    cabOscura: getComputedStyle(document.querySelector('[data-blk="entradas"]') ?? document.body).backgroundColor,
     texto: (document.querySelector('[data-blk="entradas"]')?.textContent ?? '').replace(/\\s+/g, ' '),
   }`)
   debe(l1.tarjetas >= 1, 'ap3', `hay tarjetas «Por reservar» (${l1.tarjetas})`)
   debe(/^Por reservar · \d+$/i.test(l1.rotulo ?? ''), 'ap3', `rótulo «Por reservar · n» (${l1.rotulo})`)
   debe(l1.etiquetas.length > 0 && l1.etiquetas.every((e) => new RegExp(`^(Free Tour · )?En tu ruta · ${DIA} \\d+$`).test(e)), 'ap3', `etiquetas con el día entero (${JSON.stringify(l1.etiquetas)})`)
   debe(l1.botones.some((b) => /^Reservar (entrada|Free Tour)$/.test(b)) && l1.botones.includes('Añádela'), 'ap3', `[Reservar entrada] y «Añádela» (${JSON.stringify(l1.botones)})`)
-  debe(/^rgb\(28, 34, 48\)$/.test(l1.cabOscura), 'ap3', `la cabecera oscura de Design (${l1.cabOscura})`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): la cabecera oscura de «Entradas y Free Tour» → clara, como los otros bloques (error de Eric al aprobarla).
+  debe(/^rgb\(255, 253, 248\)$/.test(l1.cabOscura), 'ap3', `el bloque claro de Design (${l1.cabOscura})`)
   debe(/\d+ de \d+ reservadas/.test(l1.texto), 'ap3', 'la cabecera cuenta «n de m»')
   debe(!/Ver \d+ más|Ver menos/.test(l1.texto), 'ap3', 'sin «Ver n más»')
   debe(/Añadir otra reserva/.test(l1.texto), 'ap3', 'sale [Añadir otra reserva]')
@@ -107,16 +109,19 @@ try {
   const l2 = await ev(`return {
     rotuloRes: document.querySelector('[data-seccion-reservadas]')?.textContent ?? null,
     orden: (() => { const b = document.querySelector('[data-blk="entradas"]'); const a = b.querySelector('[data-seccion-reservadas]'); const c = b.querySelector('[data-seccion-por-reservar]'); return !c || (a && (a.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) })(),
-    filas: Array.from(document.querySelectorAll('[data-tarjeta-reservada]')).map((t) => ({ texto: t.textContent.replace(/\\s+/g, ' '), cambiar: Array.from(t.querySelectorAll('button')).map((b) => b.textContent.trim()), botones: t.querySelectorAll('button').length })),
+    filas: Array.from(document.querySelectorAll('[data-tarjeta-crema="entrada"]')).map((t) => ({ texto: t.textContent.replace(/\\s+/g, ' '), cambiar: Array.from(t.querySelectorAll('button')).map((b) => b.textContent.trim()), botones: t.querySelectorAll('button').length })),
     texto: (document.querySelector('[data-blk="entradas"]')?.textContent ?? '').replace(/\\s+/g, ' '),
   }`)
   debe(/^Reservadas · \d+$/i.test(l2.rotuloRes ?? ''), 'ap3', `rótulo «Reservadas · n» (${l2.rotuloRes})`)
   debe(l2.orden === true, 'ap3', '«Reservadas» va arriba y «Por reservar» debajo')
   debe(l2.filas.length === elegidos.length, 'ap3', `salen ${elegidos.length} reservadas (${l2.filas.length})`)
   for (const f of l2.filas) {
-    debe(new RegExp(`${DIA} \\d+ · 09:15 · 50`).test(f.texto), 'ap3', `la reservada lleva día entero, hora y precio (${f.texto})`)
-    debe(/Reservad[ao]/.test(f.texto), 'ap3', `lleva «Reservada» (${f.texto})`)
-    debe(f.cambiar.length === 1 && f.cambiar[0] === 'Cambiar', 'ap3', `solo el botón «Cambiar», sin botón de código (${JSON.stringify(f.cambiar)})`)
+    // antes «Domingo 18 · 09:15 · 50 €» en una línea → ahora el día entero y la hora en sus cajas y el precio en su fila (decisión de Eric, 10S8, 31-oct).
+    debe(/\d+ de [a-zé]+/i.test(f.texto) && /09:15/.test(f.texto) && /50\s*€/.test(f.texto), 'ap3', `la reservada lleva día entero, hora y precio (${f.texto})`)
+      // antes → ahora → decisión de Eric (10S8, 31-oct): «Reservada» → «En tu ruta»/«Ya no está en tu ruta» (E1).
+    debe(/En tu ruta|Ya no está en tu ruta/.test(f.texto), 'ap3', `lleva su etiqueta (${f.texto})`)
+      // antes → ahora → decisión de Eric (10S8, 31-oct): «Cambiar» → los dos lápices (el de arriba cambia día y hora), [Añadir tu entrada] y la papelera.
+    debe(f.botones >= 4, 'ap3', `lápices, botón del documento y papelera (${f.botones})`)
   }
   debe(new RegExp(`${elegidos.length} de \\d+ reservadas`).test(l2.texto), 'ap3', 'la cabecera cuenta las reservadas')
   debe(!/Ver \d+ más|Ver menos/.test(l2.texto) && /Añadir otra reserva/.test(l2.texto), 'ap3', 'sin «Ver n más» y con [Añadir otra reserva]')
@@ -127,7 +132,7 @@ try {
   await app.esp(600)
   await app.captura('docs/dias/capturas_jutrip/10s6_entradas_2.jpg').catch(() => {})
   // «Cambiar» abre la hoja con la reserva.
-  await ev(`document.querySelector('[data-tarjeta-reservada] button')?.click(); return true`)
+  await ev(`document.querySelector('[data-lapiz="entrada-arriba"]')?.click(); return true`)
   await app.esp(1200)
   const hojaCambiar = await ev(`return document.querySelector('#add-reservation-heading')?.innerText ?? ''`)
   debe(hojaCambiar.length > 0, 'ap3', '«Cambiar» abre la hoja de la reserva')

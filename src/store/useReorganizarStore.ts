@@ -19,6 +19,9 @@ interface ReorganizarState {
   noCaben: NoCabe[]
   ponerNoCaben: (lista: NoCabe[]) => void
   quitarNoCaben: (stopId: string) => void
+  /** (10S8) [Ver] de «Y N sitios más pasan a “Si te sobra tiempo”.»: el día cuya sección «Si te sobra tiempo» hay que abrir (la propia sección lo recoge y lo borra). */
+  verSobraTiempoDe: string | null
+  verSobraTiempo: (dayId: string | null) => void
   proponerVuelos: (propuesta: PropuestaDeVuelos) => void
   cerrarVuelos: () => void
   /** Un cambio nuevo ha calculado estos días: se suman los que cambian y se quitan los que ya están bien. */
@@ -44,6 +47,8 @@ export const useReorganizarStore = create<ReorganizarState>((set) => ({
   noCaben: [],
   ponerNoCaben: (lista) => set({ noCaben: lista }),
   quitarNoCaben: (stopId) => set((state) => ({ noCaben: state.noCaben.filter((item) => item.stopId !== stopId) })),
+  verSobraTiempoDe: null,
+  verSobraTiempo: (dayId) => set({ verSobraTiempoDe: dayId }),
   proponerVuelos: (propuesta) => set({ vuelos: propuesta }),
   cerrarVuelos: () => set({ vuelos: null }),
   poner: (cambian, revisados) =>

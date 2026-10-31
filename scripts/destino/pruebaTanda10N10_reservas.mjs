@@ -109,7 +109,8 @@ try {
   debe(titulo === 'Reservas', '7a', `el título es «Reservas» solo, sin línea debajo (${titulo})`)
   const alturas = await ev("['llegada', 'aloj', 'entradas'].map((b) => Math.round(document.querySelector('[data-blk=\"' + b + '\"]')?.getBoundingClientRect().height ?? 0))")
   // 10S6 (antes → ahora → decisión de Eric, 31-oct: bloque como Design): antes las tres ≥ 76 px; ahora Llegada y Alojamiento siguen ≥ 76 y la de Entradas mide lo que la cabecera oscura de Design (14 + 46 + 14 = 74 px), así que ≥ 72.
-  debe(alturas[0] >= 76 && alturas[1] >= 76 && alturas[2] >= 72, '7a', `las tres tarjetas son más amplias (alturas ${alturas.join(', ')})`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): Alojamiento también mide lo que su cabecera de Design (14 + 44 + 14 = 72-74 px): antes ≥ 76, ahora ≥ 72 como Entradas; Llegada y vuelta sigue ≥ 76.
+  debe(alturas[0] >= 76 && alturas[1] >= 72 && alturas[2] >= 72, '7a', `las tres tarjetas son más amplias (alturas ${alturas.join(', ')})`)
   const resto = await ev("document.body.innerText.replace(/\\s+/g, ' ')")
   debe(/de 3 listo/i.test(resto) && /Útil para el viaje/i.test(resto) && /Entradas y Free Tour/i.test(resto), '7a', 'sigue todo lo nuestro: «x de 3 listo», «Útil para el viaje», «Entradas y Free Tour»')
   await a.captura(foto('01_reservas'))
@@ -204,7 +205,8 @@ try {
     }
     await a.esp(500)
   }
-  await clic('[data-blk="llegada"] [data-mitad="arrival"] button')
+  // antes → ahora → decisión de Eric (10S8, 31-oct): el botón «Cambiar» de la ida → su lápiz (Design B1b); abre la misma hoja del vuelo.
+  await clic('[data-blk="llegada"] [data-lapiz="mitad-arrival"]')
   await a.esp(1000)
   m = await medidas()
   debe(/¿Cuánto ha costado en total\?/.test(m.texto) && !/¿Para quién es este vuelo\?/.test(m.texto) && !/¿Quién lo ha pagado\?/.test(m.texto), '7b', `solo: el precio y nada más (05b) ${m.texto.slice(0, 200)}`)
@@ -259,7 +261,8 @@ try {
   await ev("document.querySelector('[data-blk=\"aloj\"]')?.scrollIntoView({ block: 'start' }); true")
   await a.esp(600)
   const cardAloj = await ev("document.querySelector('[data-blk=\"aloj\"]')?.innerText.replace(/\\s+/g, ' ') ?? ''")
-  debe(/Tu zona/i.test(cardAloj) && /En este alojamiento/i.test(cardAloj) && /Tú/.test(cardAloj) && /Ana/.test(cardAloj), '7c', `la tarjeta (09): «Tu zona», «En este alojamiento · Tú y Ana» (${cardAloj.slice(0, 120)})`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): «Tu zona» y «En este alojamiento · Tú y Ana» como etiquetas → la tarjeta de Design: «Zona X · dirección» en su fila y las iniciales «Tú · Ana» (misma información: la zona y quién está).
+  debe(/Zona /i.test(cardAloj) && /Tú · Ana|Tú.*Ana/.test(cardAloj) && /Listo/.test(cardAloj), '7c', `la tarjeta (09): la zona «Zona …» y quién está en el alojamiento «Tú · Ana» (${cardAloj.slice(0, 120)})`)
   await a.captura(foto('10_alojamiento_tarjeta'))
 } catch (e) {
   debe(false, 'error', String(e && e.stack ? e.stack : e).slice(0, 500))

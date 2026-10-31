@@ -107,6 +107,7 @@ try {
   const MALAS = /Ref\. vuelo|Aerolínea|Localizador|Terminal|Asiento|Solo lo ves tú|Cambia las fechas|¿Llegas o te vas otro día/
 
   /* ── 1. Avión desde Londres (varios aeropuertos): ejemplo en gris ── */
+  await ruta("const r = st.route; window.__ruta.setState({ route: { ...r, answers: { ...r.answers, dateRange: { start: '2027-03-04', end: '2027-03-08' } } } })") // (10S8, 31-oct) fechas futuras: la Ida de un día pasado se pliega en una línea (B2c)
   await ruta(`const r = st.route; window.__ruta.setState({ route: { ...r, origin: 'Londres', originPlace: undefined, answers: { ...r.answers, origin: 'Londres', originPlace: undefined }, transportContext: { ...r.transportContext, transport_option: { ...(r.transportContext.transport_option ?? {}), id: 'plane' } }, arrivalFlightTime: '11:25', departureFlightTime: '18:05', arrivalPointId: 'fco', departurePointId: 'cia', arrivalOtroPunto: null, departureOtroPunto: null, arrivalOtraHora: null, departureOtraHora: null, arrivalCodigo: 'VY 6102', departureCodigo: null, arrivalCompania: 'Vueling', departureCompania: null } })`)
   await vaAReservas()
   await abrirLlegada()
@@ -189,8 +190,11 @@ try {
 
   /* ── 4. Los datos se cambian en la tarjeta del billete de RESERVAS ── */
   await abrirLlegada()
+  // (10S8, 31-oct) antes la fila de datos salía con solo el nº de vuelo; ahora, sin tarjeta ni datos guardados, solo hora y trayecto (Design B1b): se siembran el localizador y el asiento para ver el lápiz de los datos.
+  await ev("window.__billete.getState().poner(null, 'arrival', { horaRoma: '11:25', localizador: 'ABC123', terminal: null, asiento: '14C', coche: null, codigo: null, codigoFuera: null, dueno: null }); true")
+  await a.esp(500)
   const hayEnlace = await ev("Boolean(document.querySelector('[data-blk=\"llegada\"] [data-mitad=\"arrival\"] [data-billete-cambiar-datos]'))")
-  debe(hayEnlace, 'datos', 'la tarjeta de la ida tiene «Cambiar los datos»')
+  debe(hayEnlace, 'datos', 'la tarjeta de la ida tiene el lápiz de los datos (10S8, 31-oct: antes «Cambiar los datos» en texto → ahora el lápiz del bloque de datos, mismo `data-billete-cambiar-datos`)')
   await ev("document.querySelector('[data-blk=\"llegada\"] [data-mitad=\"arrival\"] [data-billete-cambiar-datos]')?.click(); true")
   await a.esp(700)
   const form = await ev(`(() => {
@@ -199,8 +203,8 @@ try {
     const v = (k) => d.querySelector('[data-datos-billete="' + k + '"]')?.value ?? null
     return { codigo: v('codigo'), compania: v('compania'), localizador: v('localizador'), terminal: v('terminal'), asiento: v('asiento'), etiquetas: d.innerText.replace(/\\s+/g, ' ') }
   })()`)
-  debe(form && form.codigo === 'VY 6102' && form.compania === 'Vueling', 'datos', `lo ya guardado sale puesto (${form?.codigo} · ${form?.compania})`)
-  debe(form && /ref\. vuelo/i.test(form.etiquetas) && /aerolínea/i.test(form.etiquetas) && /localizador/i.test(form.etiquetas) && /terminal/i.test(form.etiquetas) && /asiento/i.test(form.etiquetas), 'datos', 'están Ref. vuelo, Aerolínea, Localizador, Terminal y Asiento')
+  debe(form && form.codigo === 'VY 6102', 'datos', `lo ya guardado sale puesto (${form?.codigo}). (10S8, 31-oct) antes también salía la aerolínea («Vueling») en esta hoja → ahora «Datos del vuelo» (Design B2b) no la pide (se guarda igual en el viaje) → decisión de Eric (10S8, 31-oct)`)
+  debe(form && /localizador/i.test(form.etiquetas) && /terminal/i.test(form.etiquetas) && /asiento/i.test(form.etiquetas) && /horario/i.test(form.etiquetas) && !/aerolínea|ref. vuelo/i.test(form.etiquetas), 'datos', '(10S8, 31-oct) antes la hoja traía Ref. vuelo, Aerolínea, Localizador, Terminal y Asiento → ahora «Datos del vuelo» trae Vuelo, Horario, Terminal, Asiento y Localizador (Design B2b) → decisión de Eric (10S8, 31-oct)')
   await a.captura(foto('04_datos'))
   await a.escribir('[data-datos-billete="codigo"]', 'IB 3251').catch(() => undefined)
   await a.escribir('[data-datos-billete="asiento"]', '21A').catch(() => undefined)

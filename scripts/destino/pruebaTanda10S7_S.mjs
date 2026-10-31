@@ -179,12 +179,15 @@ try {
   }
   await abrirBloque()
   fs.mkdirSync(SALIDA, { recursive: true })
-  const fila = () => ev(`(() => { const f = document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"]'); const t = f?.querySelector('[data-tarjeta-reservada]'); const b = f?.querySelector('[data-entrada-billete]'); return f ? { estado: b?.getAttribute('data-entrada-billete') ?? null, texto: (b?.innerText ?? '').replace(/\\s+/g, ' '), botonesTarjeta: Array.from(t?.querySelectorAll('button') ?? []).map((x) => x.getAttribute('data-entrada-codigo-boton') != null ? 'CODIGO' : x.textContent.trim()), codigoPequeno: Boolean(b?.querySelector('[data-entrada-codigo-pequeno] img')), anadir: b?.querySelector('[data-entrada-anadir]')?.textContent ?? null, ayuda: b?.querySelector('[data-entrada-ayuda]')?.textContent ?? null } : null })()`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): la tarjeta «reservada» verde con su botón del código aparte → la tarjeta crema de Design (E1/E2: el código pequeño ES el botón; [Añadir tu entrada] sin la ayuda «Desde el PDF…»).
+  const fila = () => ev(`(() => { const f = document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"]'); const b = f?.querySelector('[data-entrada-billete]'); return f ? { estado: b?.getAttribute('data-entrada-billete') ?? null, texto: (f.innerText ?? '').replace(/\\s+/g, ' '), botonesTarjeta: Array.from(f.querySelectorAll('[data-lapiz],[data-papelera],[data-entrada-codigo-pequeno]')).map((x) => (x.getAttribute('data-entrada-codigo-pequeno') != null ? 'CODIGO' : x.getAttribute('data-lapiz') ?? x.getAttribute('data-papelera'))), codigoPequeno: Boolean(f.querySelector('[data-entrada-codigo-pequeno] img')), anadir: f.querySelector('[data-anadir-doc]')?.textContent.trim() ?? null, ayuda: f.querySelector('[data-entrada-ayuda]')?.textContent ?? null } : null })()`)
 
   // — E1: la entrada reservada sin billete —
   let f1 = await fila()
-  debe(f1 && f1.estado === 'sin-billete' && f1.anadir === 'Añadir tu entrada' && /Desde el PDF, una foto o una captura\./.test(f1.ayuda ?? ''), 'E1', `la entrada sin billete lleva [Añadir tu entrada] con «Desde el PDF, una foto o una captura.» (${JSON.stringify(f1)})`)
-  debe(f1 && f1.botonesTarjeta.length === 1 && f1.botonesTarjeta[0] === 'Cambiar', 'L2', `sin billete, la tarjeta reservada no lleva botón del código (${JSON.stringify(f1?.botonesTarjeta)})`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): E1 con «Desde el PDF…» → sin esa línea (Design no la lleva).
+  debe(f1 && f1.estado === 'sin-billete' && f1.anadir === 'Añadir tu entrada' && f1.ayuda === null, 'E1', `la entrada sin billete lleva [Añadir tu entrada], sin línea de ayuda (${JSON.stringify(f1)})`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): sin billete la tarjeta lleva los dos lápices y la papelera, y ningún botón del código.
+  debe(f1 && !f1.botonesTarjeta.includes('CODIGO') && f1.botonesTarjeta.length === 3, 'L2', `sin billete, la tarjeta no lleva código (${JSON.stringify(f1?.botonesTarjeta)})`)
   await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"]')?.scrollIntoView({ block: 'center' }); true`)
   await a.esp(500)
   await a.captura(path.join(SALIDA, '10s7_entradas_billete_01_e1.jpg')).catch(() => {})
@@ -196,15 +199,16 @@ try {
   await a.cdp('DOM.setFileInputFiles', { nodeId: nodo.result.nodeId, files: [PDF] })
   await a.hasta("Boolean(document.querySelector('#add-reservation-heading'))", { segundos: 90 })
   await a.hasta("Boolean(document.querySelector('[data-entrada-codigo-leido] img'))", { segundos: 30 }).catch(() => {})
-  const hoja = await ev(`(() => ({ personas: document.querySelector('[data-entrada-dato="personas"]')?.value, localizador: document.querySelector('[data-entrada-dato="localizador"]')?.value, codigo: Boolean(document.querySelector('[data-entrada-codigo-leido] img')), titulo: document.querySelector('#add-reservation-heading')?.innerText, boton: document.querySelector('[data-entrada-anadir="hoja"]')?.textContent }))()`)
-  debe(hoja.personas === '2' && hoja.localizador === 'ABC123' && hoja.codigo === true, 'E1 lee', `la hoja sale rellena con lo leído: 2 personas, ABC123 y el código (${JSON.stringify(hoja)})`)
+  const hoja = await ev(`(() => ({ localizador: document.querySelector('[data-entrada-dato="localizador"]')?.value, codigo: Boolean(document.querySelector('[data-entrada-codigo-leido] img')), titulo: document.querySelector('#add-reservation-heading')?.innerText, boton: document.querySelector('[data-anadir-doc="hoja"]')?.textContent }))()`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): la hoja ya no trae «Personas».
+  debe(hoja.localizador === 'ABC123' && hoja.codigo === true, 'E1 lee', `la hoja sale rellena con lo leído: ABC123 y el código (${JSON.stringify(hoja)})`)
   debe(hoja.boton === 'Añadir tu entrada', 'E1 hoja', 'y la hoja de «Añádela»/«Cambiar» también lleva [Añadir tu entrada]')
   await a.captura(path.join(SALIDA, '10s7_entradas_billete_02_hoja.jpg')).catch(() => {})
-  // Se puede cambiar a mano: personas 2 → 3 y vuelve.
-  await ev(`(() => { const i = document.querySelector('[data-entrada-dato="personas"]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '3'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()`)
-  await a.esp(200)
-  debe((await ev(`document.querySelector('[data-entrada-dato="personas"]')?.value`)) === '3', 'E1 a mano', 'cualquier dato se puede cambiar a mano (personas)')
-  await ev(`(() => { const i = document.querySelector('[data-entrada-dato="personas"]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '2'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): se quita el cambio a mano de «personas» (el dato ya no se enseña).
+
+
+
+
   await a.hasta("(() => { const b = document.querySelector('[data-guardar-reserva]'); return Boolean(b) && !b.disabled })()", { segundos: 30 })
   await ev(`document.querySelector('[data-guardar-reserva]')?.click(); true`)
   await a.hasta("!document.querySelector('#add-reservation-heading')", { segundos: 30 })
@@ -215,8 +219,9 @@ try {
   await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"]')?.scrollIntoView({ block: 'center' }); true`)
   await a.esp(500)
   f1 = await fila()
-  debe(f1 && f1.estado === 'con-billete' && /2 personas/.test(f1.texto) && /Localizador ABC123/.test(f1.texto) && /Toca para ampliar/.test(f1.texto) && f1.codigoPequeno, 'E2', `con billete: «2 personas», «Localizador ABC123» y el código pequeño con «Toca para ampliar» (${JSON.stringify(f1)})`)
-  debe(f1 && f1.botonesTarjeta.includes('CODIGO') && f1.botonesTarjeta.includes('Cambiar'), 'L2', `la tarjeta reservada lleva el botón del código y «Cambiar» (${JSON.stringify(f1?.botonesTarjeta)})`)
+  debe(f1 && f1.estado === 'con-billete' && /Localizador ABC123/.test(f1.texto) && /Toca para ampliar/.test(f1.texto) && f1.codigoPequeno, 'E2', `con billete: «Localizador ABC123» y el código pequeño con «Toca para ampliar» (${JSON.stringify(f1)})`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): ya no hay botón del código aparte: el código pequeño lo abre.
+  debe(f1 && f1.botonesTarjeta.includes('CODIGO') && f1.botonesTarjeta.includes('entrada-arriba'), 'L2', `la tarjeta lleva el código y el lápiz (${JSON.stringify(f1?.botonesTarjeta)})`)
   await a.captura(path.join(SALIDA, '10s7_entradas_billete_03_e2.jpg')).catch(() => {})
   const guardado = await R(`const s = (await import('/src/store/useBilleteStore.ts')).useBilleteStore.getState(); const e = s.datos.entradas?.[${JSON.stringify(NOMBRE)}]; const res = st().reservations.find((x) => x.refId === ${JSON.stringify(NOMBRE)}); return { personas: e?.personas, localizador: e?.localizador, texto: e?.codigo?.texto ?? null, formato: e?.codigo?.formato ?? null, dibujo: Boolean(e?.codigo?.dibujo), hora: res?.time, fecha: res?.dateIso, rutaConLocalizador: JSON.stringify(route()).includes('ABC123'), locatorReserva: res?.locator ?? null, local: window.localStorage.getItem('trazo:billete:v1:' + (s.tripId ?? 'local')) ?? '' }`)
   debe(guardado.personas === 2 && guardado.localizador === 'ABC123', 'E2 guarda', `se guardan las personas y el localizador (${JSON.stringify(guardado).slice(0, 200)})`)
@@ -227,7 +232,7 @@ try {
 
   // — E3: pantalla completa, desde el código pequeño y desde el botón de L2 —
   const grande = () => ev(`(() => { const d = document.querySelector('[data-billete-pantalla-completa]'); const i = d?.querySelector('img'); return d ? { w: Math.round(i?.getBoundingClientRect().width ?? 0), titulo: d.querySelector('[data-billete-grande-titulo]')?.textContent, cuando: d.querySelector('[data-billete-grande-cuando]')?.textContent, pie: d.querySelector('[data-billete-grande-pie]')?.textContent, fondo: getComputedStyle(d).backgroundColor } : null })()`)
-  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-entrada-codigo-boton]')?.click(); true`)
+  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-entrada-codigo-pequeno]')?.click(); true`)
   await a.esp(600)
   let g = await grande()
   debe(g && g.w >= 250 && g.titulo === NOMBRE && /^\p{L}+ \d+ · 09:00$/u.test(g.cuando ?? '') && g.pie === 'Localizador ABC123' && /255, 255, 255/.test(g.fondo), 'E3 / L2', `el botón del código de L2 abre el código a pantalla completa: nombre, día y hora, «Localizador ABC123», fondo blanco (${JSON.stringify(g)})`)
@@ -245,7 +250,7 @@ try {
 
   // — Sin internet: el código se ve igual —
   await a.cdp('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0 })
-  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-entrada-codigo-boton]')?.click(); true`)
+  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-entrada-codigo-pequeno]')?.click(); true`)
   await a.esp(600)
   g = await grande()
   debe(g && g.w >= 250 && g.pie === 'Localizador ABC123', 'sin internet', `sin conexión, el código se abre igual (${JSON.stringify(g)})`)
@@ -304,17 +309,19 @@ try {
 
   // — Quitar el billete, y quitar la reserva se lleva su billete —
   await abrirBloque()
-  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-entrada-billete] [data-eliminar]')?.click(); true`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): «Quitar tu billete» → la papelera quita la entrada entera con su billete.
+  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-papelera]')?.click(); true`)
   await a.esp(600)
   f1 = await fila()
-  debe(f1 && f1.estado === 'sin-billete' && f1.botonesTarjeta.length === 1, 'quitar', `«Quitar tu billete» deja la entrada sin billete y sin botón del código (${JSON.stringify(f1)})`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): la papelera quita la reserva y su billete.
+  debe(f1 === null, 'quitar', `la papelera quita la entrada (${JSON.stringify(f1)})`)
   const borrado = await R(`const s = (await import('/src/store/useBilleteStore.ts')).useBilleteStore.getState(); return Boolean(s.datos.entradas?.[${JSON.stringify(NOMBRE)}])`)
   debe(borrado === false, 'quitar', 'y se borra del móvil')
   // «Cambiar» trae su hoja con [Añadir tu entrada] (sin lectura previa).
-  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-tarjeta-reservada] button')?.click(); true`)
-  await a.esp(1000)
-  debe((await ev(`document.querySelector('[data-entrada-anadir="hoja"]')?.textContent ?? null`)) === 'Añadir tu entrada', 'hoja', '«Cambiar» abre la hoja con [Añadir tu entrada]')
-  await ev(`document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]')?.querySelector('button[aria-label*="errar"]')?.click(); true`)
+  // (La reserva ya no está: lo de «Cambiar» se ve en pruebaTanda10S8_D.)
+
+
+
   await a.esp(300)
   await R(`for (const x of st().reservations.filter((y) => y.refId === ${JSON.stringify(NOMBRE)})) st().removeReservation(x.id); return true`)
 } finally {

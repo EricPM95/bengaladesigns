@@ -10,12 +10,22 @@
  *  3. LOS AEROPUERTOS (`aeropuertosCiudad.ts`) completan la ciudad y la zona horaria de cada código IATA, y con eso `duracionDelTrayecto` calcula la duración.
  * Las bibliotecas (pdf.js, zxing-wasm) se cargan SOLO al leer un billete (import dinámico): no pesan en la descarga de la app.
  *
+ * (10S8 §1) LEER CUESTA DINERO: el código va PRIMERO y gratis; solo si no basta se llama al servidor, y el servidor solo lee con sesión, con el pase y hasta 10 lecturas al día (y archivos de hasta 10 MB).
+ *  Cuando algo de eso lo impide, el resultado trae `aviso` (el texto exacto que hay que enseñar: «Has leído muchos documentos hoy. Puedes añadir los datos a mano.», «El archivo es demasiado grande. Prueba con una captura.»…).
+ *  Una tarjeta de embarque con código BCBP que ya trae vuelo, día, asiento y localizador NO llama al servidor (hora, terminal y puerta quedan para escribirlas a mano).
+ *
  * ESTE ARCHIVO ES EL CONTRATO PARA LA UI (L): `leerBillete(archivo)` y los tipos de abajo.
  */
 import { aeropuertoPorIata } from './aeropuertosCiudad'
 import { duracionDelTrayecto } from './duracionViaje'
 
 export type ModoBillete = 'avion' | 'tren' | 'bus' | 'ferry'
+
+/** (10S8 §1) Los textos de lo que impide leer un documento (los mismos que dice el servidor, server/billete/lectura.js). */
+export const MAX_ARCHIVO_LECTURA_BYTES = 10 * 1024 * 1024
+export const AVISO_ARCHIVO_GRANDE = 'El archivo es demasiado grande. Prueba con una captura.'
+export const AVISO_LIMITE_DE_LECTURAS = 'Has leído muchos documentos hoy. Puedes añadir los datos a mano.'
+export const AVISO_SIN_SESION = 'Entra en tu cuenta para leer documentos. Puedes añadir los datos a mano.'
 
 /** Un lado del trayecto (salida o llegada). */
 export interface PuntoBillete {
@@ -72,13 +82,15 @@ export interface DatosBilleteLeido {
   codigo: CodigoBillete | null
   /** De dónde han salido los datos: `codigo` (el propio código BCBP), `servidor` (lectura con IA). */
   fuentes: Array<'codigo' | 'servidor'>
+  /** (10S8) Si no se pudo LEER con IA por sesión, pase, límite o tamaño: el texto que hay que enseñar. `null` si no hay nada que avisar. */
+  aviso: string | null
 }
 
 export function billeteVacio(): DatosBilleteLeido {
   const punto = (): PuntoBillete => ({ ciudad: null, codigo: null, nombre: null, terminal: null, puerta: null })
   return {
     modo: null, numero: null, compania: null, localizador: null, fecha: null, fechaLlegada: null, horaSalida: null, horaLlegada: null,
-    origen: punto(), destino: punto(), asiento: null, coche: null, duracionMin: null, codigo: null, fuentes: [],
+    origen: punto(), destino: punto(), asiento: null, coche: null, duracionMin: null, codigo: null, fuentes: [], aviso: null,
   }
 }
 
@@ -324,21 +336,38 @@ async function paraElServidor(archivo: File, paginas: HTMLCanvasElement[]): Prom
   return { media_type: 'image/jpeg', data: sal.toDataURL('image/jpeg', 0.85).split(',')[1] }
 }
 
-async function leerEnServidor(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete, tipo?: 'entrada' | 'alojamiento'): Promise<LecturaServidor | null> {
+/** Lo que contesta el servidor: los datos, o el aviso que hay que enseñar si no pudo leer (o `null` si falló sin más: el texto de siempre). */
+interface RespuestaServidor<T> {
+  datos: T | null
+  aviso: string | null
+}
+
+async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete, tipo?: 'entrada' | 'alojamiento'): Promise<RespuestaServidor<T>> {
+  // (10S8) Antes de nada, sin gastar una llamada: el tamaño. La sesión se manda siempre que haya; si no hay (o no vale), el servidor contesta 401 con su texto y sin llamar a Claude.
+  if (archivo.size > MAX_ARCHIVO_LECTURA_BYTES) return { datos: null, aviso: AVISO_ARCHIVO_GRANDE }
+  // (La sesión se pide al cargar el cliente de Supabase solo ahora, no al importar este archivo: así las pruebas del lector en Node, sin Vite, siguen funcionando.)
+  const sesion = await import('./supabaseClient').then((m) => m.supabase?.auth.getSession()).then((r) => r?.data.session ?? null).catch(() => null)
   const adjunto = await paraElServidor(archivo, paginas)
-  if (!adjunto) return null
+  if (!adjunto) return { datos: null, aviso: null }
   const control = new AbortController()
   const reloj = setTimeout(() => control.abort(), opciones.esperaServidorMs ?? 40_000)
   try {
     const r = await fetch('/api/read-ticket', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(sesion?.access_token ? { Authorization: `Bearer ${sesion.access_token}` } : {}) },
       signal: control.signal,
       body: JSON.stringify({ file: adjunto, mode: opciones.modo, year_hint: opciones.anioPorDefecto, ...(tipo ? { tipo } : {}) }),
     })
-    return r.ok ? ((await r.json()) as LecturaServidor) : null
+    if (r.ok) return { datos: (await r.json()) as T, aviso: null }
+    // 401 sin sesión · 403 sin pase · 429 límite del día · 413 demasiado grande: el servidor trae su texto; si no, el de siempre.
+    if ([401, 403, 413, 429].includes(r.status)) {
+      const cuerpo = (await r.json().catch(() => null)) as { error?: string; codigo?: string } | null
+      const texto = r.status === 413 ? AVISO_ARCHIVO_GRANDE : r.status === 429 ? AVISO_LIMITE_DE_LECTURAS : r.status === 401 ? AVISO_SIN_SESION : cuerpo?.error
+      return { datos: null, aviso: texto ?? null }
+    }
+    return { datos: null, aviso: null }
   } catch {
-    return null
+    return { datos: null, aviso: null }
   } finally {
     clearTimeout(reloj)
   }
@@ -356,16 +385,21 @@ export async function leerBillete(archivo: File, opciones: OpcionesLeerBillete =
     } catch {
       paginas = []
     }
-    // El servidor y la búsqueda del código, a la vez.
-    const [hallazgos, servidor] = await Promise.all([
-      buscarCodigos(paginas).catch(() => [] as Hallazgo[]),
-      leerEnServidor(archivo, paginas, opciones).catch(() => null),
-    ])
+    // (10S8) PRIMERO el código, gratis y en el móvil. Solo si no basta se llama al servidor (que cuesta dinero y pide sesión, pase y límite).
+    const hallazgos = await buscarCodigos(paginas).catch(() => [] as Hallazgo[])
 
     // El código que cuenta: el BCBP si lo hay; si no, el más grande.
     const area = (h: Hallazgo) => (h.caja.x1 - h.caja.x0) * (h.caja.y1 - h.caja.y0)
     const elegido = [...hallazgos].sort((a, b) => Number(Boolean(leerBCBP(b.texto))) - Number(Boolean(leerBCBP(a.texto))) || area(b) - area(a))[0] ?? null
     const bcbp = elegido ? leerBCBP(elegido.texto) : null
+    // Basta el código si trae el vuelo, el día, el asiento y el localizador (las tarjetas de embarque de avión con código IATA). Las horas, la terminal y la puerta no vienen en él: se escriben a mano.
+    const bastaElCodigo = Boolean(bcbp && bcbp.localizador && bcbp.asiento && bcbp.diaJuliano)
+    let servidor: LecturaServidor | null = null
+    if (!bastaElCodigo) {
+      const r = await leerEnServidor<LecturaServidor>(archivo, paginas, opciones).catch(() => ({ datos: null, aviso: null }) as RespuestaServidor<LecturaServidor>)
+      servidor = r.datos
+      datos.aviso = r.aviso
+    }
 
     if (servidor) {
       datos.fuentes.push('servidor')
@@ -439,10 +473,12 @@ export interface DatosEntradaLeida {
   localizador: string | null
   codigo: CodigoBillete | null
   fuentes: Array<'codigo' | 'servidor'>
+  /** (10S8) Como en `DatosBilleteLeido`: el texto de lo que impidió leerla con IA. */
+  aviso: string | null
 }
 
 export function entradaVacia(): DatosEntradaLeida {
-  return { fecha: null, hora: null, personas: null, localizador: null, codigo: null, fuentes: [] }
+  return { fecha: null, hora: null, personas: null, localizador: null, codigo: null, fuentes: [], aviso: null }
 }
 
 interface LecturaServidorEntrada {
@@ -463,12 +499,13 @@ export async function leerEntrada(archivo: File, opciones: OpcionesLeerBillete =
     } catch {
       paginas = []
     }
-    const [hallazgos, servidor] = await Promise.all([
-      buscarCodigos(paginas).catch(() => [] as Hallazgo[]),
-      leerEnServidor(archivo, paginas, opciones, 'entrada').catch(() => null) as Promise<LecturaServidorEntrada | null>,
-    ])
+    // (10S8) El código de una entrada no trae datos (día, hora, personas): hay que leer el documento; se busca el código primero y el servidor se llama después.
+    const hallazgos = await buscarCodigos(paginas).catch(() => [] as Hallazgo[])
     const area = (h: Hallazgo) => (h.caja.x1 - h.caja.x0) * (h.caja.y1 - h.caja.y0)
     const elegido = [...hallazgos].sort((a, b) => area(b) - area(a))[0] ?? null
+    const r = await leerEnServidor<LecturaServidorEntrada>(archivo, paginas, opciones, 'entrada').catch(() => ({ datos: null, aviso: null }) as RespuestaServidor<LecturaServidorEntrada>)
+    const servidor = r.datos
+    datos.aviso = r.aviso
     if (servidor) {
       datos.fuentes.push('servidor')
       datos.fecha = servidor.fecha ?? null
@@ -512,6 +549,8 @@ export interface DatosReservaLeida {
   localizador: string | null
   /** `false` si no se pudo leer nada (sin servidor, archivo ilegible…): la hoja sale vacía para escribirla a mano. */
   leida: boolean
+  /** (10S8) Como en `DatosBilleteLeido`: el texto de lo que impidió leerla con IA (sesión, pase, límite, tamaño). */
+  aviso?: string | null
 }
 
 /** PDF, foto o captura de la reserva de un hotel → datos. Nunca lanza: si no se puede leer, devuelve todo `null` y `leida: false`. */
@@ -524,15 +563,17 @@ export async function leerReservaAlojamiento(archivo: File, opciones: OpcionesLe
     } catch {
       paginas = []
     }
-    const s = (await leerEnServidor(archivo, paginas, opciones, 'alojamiento').catch(() => null)) as unknown as {
+    const r = await leerEnServidor<{
       nombre: string | null; direccion: string | null; entrada: string | null; salida: string | null; noches: number | null
       hora_entrada: string | null; hora_salida: string | null; telefono: string | null; localizador: string | null
-    } | null
-    if (!s) return vacio
+    }>(archivo, paginas, opciones, 'alojamiento').catch(() => ({ datos: null, aviso: null }))
+    const s = r.datos
+    if (!s) return { ...vacio, aviso: r.aviso }
     return {
       nombre: s.nombre ?? null, direccion: s.direccion ?? null, entrada: s.entrada ?? null, salida: s.salida ?? null, noches: s.noches ?? null,
       horaEntrada: s.hora_entrada ?? null, horaSalida: s.hora_salida ?? null, telefono: s.telefono ?? null, localizador: s.localizador ?? null,
       leida: Object.values(s).some((v) => v != null),
+      aviso: null,
     }
   } catch {
     return vacio

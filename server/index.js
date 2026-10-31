@@ -134,7 +134,9 @@ const anthropic = new Anthropic()
 const app = express()
 // (6 MB: la captura o el PDF de una confirmación de reserva viaja en base64, ver /api/read-booking.)
 // (El aviso de Stripe lleva firma: se comprueba con el cuerpo TAL CUAL llegó, por eso se guarda aparte en `req.rawBody` solo para esa ruta.)
-app.use(express.json({ limit: '6mb', verify: (req, _res, buf) => { if (req.originalUrl?.startsWith('/api/pago/webhook')) req.rawBody = buf } }))
+const jsonGeneral = express.json({ limit: '6mb', verify: (req, _res, buf) => { if (req.originalUrl?.startsWith('/api/pago/webhook')) req.rawBody = buf } })
+// (10S8) `/api/read-ticket` lee su propio cuerpo (hasta 24 MB) DESPUÉS de comprobar sesión, pase y límite: server/billete/lectura.js.
+app.use((req, res, next) => (req.originalUrl?.startsWith('/api/read-ticket') ? next() : jsonGeneral(req, res, next)))
 // El Free Tour del viaje (Tanda 6u): el de una reserva con hora manda sobre el de la hoja; se pone en las respuestas UNA vez, aquí, y todo el servidor lo lee de ellas.
 // (`answers_sin_reservas`: las de antes de aplicar las reservas; el plan de reservas las necesita para calcular el «antes».)
 app.use((req, _res, next) => {
@@ -231,6 +233,10 @@ const SONNET_4_6_PRICING_PER_MTOK = {
   cacheWrite1h: 6,
   cacheRead: 0.3,
 }
+// (10S8) La lectura de documentos va con claude-haiku-4-5 ($1 / $5 por millón de tokens; escritura de caché 1,25; lectura 0,10). Cualquier otro modelo no listado se cuenta como Sonnet.
+const PRECIOS_POR_MODELO = {
+  'claude-haiku-4-5': { input: 1, output: 5, cacheWrite5m: 1.25, cacheWrite1h: 2, cacheRead: 0.1 },
+}
 const WEB_SEARCH_PRICE_PER_1000 = 10
 
 /**
@@ -239,7 +245,7 @@ const WEB_SEARCH_PRICE_PER_1000 = 10
  * los logs (Vercel → Runtime Logs en producción; terminal en local), no cambia nada del comportamiento
  * de la llamada. Nunca lanza ni bloquea la respuesta si `response.usage` faltara por lo que sea.
  */
-function logCallCost(endpoint, response) {
+function logCallCost(endpoint, response, modelo = MODEL) {
   const usage = response?.usage
   if (!usage) return
   const inputTokens = usage.input_tokens ?? 0
@@ -248,18 +254,19 @@ function logCallCost(endpoint, response) {
   const cacheReadTokens = usage.cache_read_input_tokens ?? 0
   const webSearches = usage.server_tool_use?.web_search_requests ?? 0
 
+  const precios = PRECIOS_POR_MODELO[modelo] ?? SONNET_4_6_PRICING_PER_MTOK
   const cost =
-    (inputTokens / 1_000_000) * SONNET_4_6_PRICING_PER_MTOK.input +
-    (outputTokens / 1_000_000) * SONNET_4_6_PRICING_PER_MTOK.output +
-    (cacheWriteTokens / 1_000_000) * SONNET_4_6_PRICING_PER_MTOK.cacheWrite5m +
-    (cacheReadTokens / 1_000_000) * SONNET_4_6_PRICING_PER_MTOK.cacheRead +
+    (inputTokens / 1_000_000) * precios.input +
+    (outputTokens / 1_000_000) * precios.output +
+    (cacheWriteTokens / 1_000_000) * precios.cacheWrite5m +
+    (cacheReadTokens / 1_000_000) * precios.cacheRead +
     (webSearches / 1000) * WEB_SEARCH_PRICE_PER_1000
 
   const parts = [`input=${inputTokens}tok`, `output=${outputTokens}tok`]
   if (cacheWriteTokens) parts.push(`cache_write=${cacheWriteTokens}tok`)
   if (cacheReadTokens) parts.push(`cache_read=${cacheReadTokens}tok`)
   if (webSearches) parts.push(`web_searches=${webSearches}`)
-  console.log(`[cost] ${new Date().toISOString()} ${endpoint} — ${parts.join(' ')} — $${cost.toFixed(4)}`)
+  console.log(`[cost] ${new Date().toISOString()} ${endpoint}${modelo === MODEL ? '' : ` (${modelo})`} — ${parts.join(' ')} — $${cost.toFixed(4)}`)
 }
 
 const DESTINATION_ARCHETYPES = new Set([
@@ -1134,8 +1141,6 @@ ${text.slice(0, 20000)}` : intro })
   }
 })
 
-// (10S5) Leer un billete (tarjeta de embarque o billete de tren, autobús, barco): ver server/billete/lectura.js. No guarda nada.
-registrarLeerBillete(app, { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError })
 
 // ── Ventas del afiliado unidas a un viaje (PARA_CODE_RESERVAS, 5) ────────────────────────────────────────────
 //
@@ -1148,6 +1153,8 @@ registrarLeerBillete(app, { anthropic, MODEL, logCallCost, extractJsonText, logA
 const salesStore = new Map()
 // (Sirve también a las cuentas. La clave puede ser la antigua `service_role` o una nueva `sb_secret_…`: supabase-js 2.114 reconoce las dos y manda la nueva solo en la cabecera `apikey`.)
 const salesAdmin = supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } }) : null
+// (10S5) Leer un billete (tarjeta de embarque o billete de tren, autobús, barco), una entrada o la reserva de un hotel: ver server/billete/lectura.js. No guarda nada. (10S8) Solo con sesión, con el pase y con límite.
+registrarLeerBillete(app, { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError, express, admin: salesAdmin, quienEs: quienEsCuenta, tokenDe: tokenDeCuenta, cobro: () => cobroListo() })
 const CAMPAIGN_PATTERN = /^(app|v)-[A-Z0-9]{5}$/
 
 // (10S2) «Algo ha ido mal»: la app avisa de qué ha fallado y en qué pantalla (sin datos privados); ver server/errores.js y la migración 0068.

@@ -3,7 +3,10 @@ import { leerEntrada, type DatosEntradaLeida } from '../../../lib/billeteLeer'
 import type { BilleteDeEntrada } from '../../../store/useBilleteStore'
 import { entradaConCodigo } from '../../../store/useBilleteStore'
 import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
-import { EliminarTexto, INK } from './BloqueReservas'
+import { INK } from './BloqueReservas'
+import type { Persona } from '../../../store/useViajeCompartido'
+import { BotonAnadirDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
+import { CajaDia, CajaHora, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema, Trazo } from './PiezasDesignReservas'
 
 /**
  * (10S7 §3 y §4) LA ENTRADA CON SU BILLETE (`Piezas/Entradas Billete` E1 a E3 y el botón del código de `Entradas Lista` L2). Lo mismo que el billete del vuelo (10S5), para las entradas y el Free Tour:
@@ -14,16 +17,6 @@ import { EliminarTexto, INK } from './BloqueReservas'
  */
 
 const QR = 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v6h-4M14 18h2v2'
-
-function IconoRedondo({ children, lado = 32 }: { children: ReactNode; lado?: number }) {
-  return (
-    <span aria-hidden="true" style={{ width: lado, height: lado, flex: 'none', borderRadius: '50%', background: '#F3E3B2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width={Math.round(lado / 2)} height={Math.round(lado / 2)} viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        {children}
-      </svg>
-    </span>
-  )
-}
 
 /** El botón del código de L2: el cuadradito (redondo, dorado claro) de la derecha de una entrada reservada que tiene su billete. */
 export function BotonCodigoDeEntrada({ onClick }: { onClick: () => void }) {
@@ -37,7 +30,8 @@ export function BotonCodigoDeEntrada({ onClick }: { onClick: () => void }) {
 }
 
 /**
- * E1: [Añadir tu entrada] con «Desde el PDF, una foto o una captura.». Abre el selector de archivos, lee la entrada y devuelve los datos (`onLeida`). Si no se puede leer nada, lo dice y deja añadirla a mano.
+ * E1: [Añadir tu entrada]. Abre el selector de archivos, lee la entrada y devuelve los datos (`onLeida`). Si no se puede leer nada, lo dice y deja añadirla a mano.
+ * (10S8 §2) SIN pase lleva el candado dorado y, al tocarlo, abre el aviso pequeño del pase en vez del selector; con pase, nunca candado. Sin la línea «Desde el PDF, una foto o una captura.» (Design no la lleva).
  */
 export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir' }: { onLeida: (datos: DatosEntradaLeida) => void; año?: number; datos?: string }) {
   const ref = useRef<HTMLInputElement>(null)
@@ -49,7 +43,9 @@ export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir' }: 
     setError(null)
     try {
       const leida = await leerEntrada(archivo, { anioPorDefecto: año })
-      if (leida.fuentes.length === 0 && !leida.codigo) setError('No hemos podido leer la entrada. Puedes añadir los datos a mano.')
+      // (10S8 §1) Si el servidor no pudo leer (límite del día, archivo grande, sin sesión), se enseña su texto exacto.
+      if (leida.aviso) setError(leida.aviso)
+      else if (leida.fuentes.length === 0 && !leida.codigo) setError('No hemos podido leer la entrada. Puedes añadir los datos a mano.')
       else onLeida(leida)
     } catch {
       setError('No hemos podido leer la entrada. Puedes añadir los datos a mano.')
@@ -61,15 +57,7 @@ export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir' }: 
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-entrada-archivo={datos} onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <button type="button" disabled={leyendo} onClick={() => ref.current?.click()} data-entrada-anadir={datos} className="flex h-[50px] items-center justify-center gap-2 rounded-[15px] text-[15.5px] font-bold disabled:opacity-60" style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A3510" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12" />
-        </svg>
-        {leyendo ? 'Leyendo tu entrada…' : 'Añadir tu entrada'}
-      </button>
-      <span className="text-center text-[12.5px] text-text/50" data-entrada-ayuda>
-        Desde el PDF, una foto o una captura.
-      </span>
+      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu entrada…' : 'Añadir tu entrada'} clave="documento_entrada" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} />
       {error && (
         <span role="status" data-entrada-error className="text-center text-[12.5px] leading-snug text-accent-red">
           {error}
@@ -83,54 +71,116 @@ export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir' }: 
 export const textoPersonas = (n: number) => `${n} ${n === 1 ? 'persona' : 'personas'}`
 
 /**
- * E1/E2 dentro de una entrada reservada. Sin billete: [Añadir tu entrada]. Con billete: «2 personas», «Localizador ABC123» y el código pequeño con «Toca para ampliar» (si hay código); «Quitar tu billete» al final, a la derecha.
+ * (10S8 §4) LA ENTRADA COMO DESIGN (`Piezas/Entradas Billete` E1 y E2; también el Free Tour): la tarjeta crema con «En tu ruta» pequeño, el sitio grande y su lápiz (sitio, día y hora), el día y la hora en sus cajas,
+ * la sección de los datos con su lápiz (para quién, precio, localizador), el código con «Toca para ampliar», [Añadir tu entrada] (candado sin pase) y la papelera.
+ * Todo lo del billete es de esta persona: se guarda en su móvil y se ve sin internet, con o sin pase. Sin lápices, papelera ni botón (`soloVer`): la entrada que el dueño reservó para ti.
  */
-export function TarjetaEntradaBillete({ billete, nombre, cuando, onLeida, onQuitar, año }: { billete: BilleteDeEntrada | null; nombre: string; cuando: string; onLeida: (datos: DatosEntradaLeida) => void; onQuitar: () => void; año?: number }) {
+export function TarjetaEntradaDesign({
+  chip,
+  nombre,
+  diaRotulo,
+  diaGrande,
+  hora,
+  gente,
+  precio,
+  billete,
+  cuando,
+  nota,
+  soloVer = false,
+  onLapizArriba,
+  onLapizDatos,
+  onQuitar,
+  onLeida,
+  año,
+  extra,
+  datos,
+}: {
+  chip: string
+  nombre: string
+  diaRotulo: string
+  diaGrande: string
+  hora: string
+  gente: Persona[]
+  precio: string | null
+  billete: BilleteDeEntrada | null
+  cuando: string
+  nota?: string
+  soloVer?: boolean
+  onLapizArriba?: () => void
+  onLapizDatos?: () => void
+  onQuitar?: () => void
+  onLeida: (datos: DatosEntradaLeida) => void
+  año?: number
+  extra?: ReactNode
+  datos?: string
+}) {
   const [ampliado, setAmpliado] = useState(false)
-  const conAlgo = Boolean(billete && (billete.personas || billete.localizador || entradaConCodigo(billete)))
+  const conCodigo = entradaConCodigo(billete)
+  const localizador = billete?.localizador ? billete.localizador.toUpperCase() : null
+  const hayFilas = gente.length > 0 || Boolean(precio) || Boolean(localizador)
   return (
-    <div data-entrada-billete={conAlgo ? 'con-billete' : 'sin-billete'} className="mx-1 flex flex-col gap-3 rounded-[20px] px-4 py-3.5" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.35)' }}>
-      {conAlgo && billete ? (
-        <>
-          <span className="flex flex-col gap-[9px]">
-            {billete.personas ? (
-              <span data-entrada-fila="personas" className="flex items-center gap-2.5" style={{ font: "600 14px 'Geist'" }}>
-                <IconoRedondo>
-                  <path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM20 20v-1.5a3.5 3.5 0 0 0-2.5-3.35M15 4.2a3.5 3.5 0 0 1 0 6.6" />
-                </IconoRedondo>
-                {textoPersonas(billete.personas)}
-              </span>
-            ) : null}
-            {billete.localizador ? (
-              <span data-entrada-fila="localizador" className="flex items-center gap-2.5" style={{ font: "600 14px 'Geist'" }}>
-                <IconoRedondo>
-                  <path d="M4 7h16v10H4zM4 12h16M9 7v10" />
-                </IconoRedondo>
-                Localizador {billete.localizador.toUpperCase()}
-              </span>
-            ) : null}
+    <TarjetaCrema datos={datos}>
+      <div className="flex items-start gap-2.5">
+        <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <span className="inline-flex h-[22px] items-center self-start whitespace-nowrap rounded-full px-[9px]" data-entrada-chip style={{ background: '#F3E3B2', color: '#6E5018', font: "600 10.5px 'Geist'" }}>
+            {chip}
           </span>
-          {entradaConCodigo(billete) && (
-            <button type="button" onClick={() => setAmpliado(true)} data-entrada-codigo-pequeno className="flex w-full items-center gap-3.5 text-left">
-              <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>
-                <ImagenDelCodigo codigo={billete.codigo} tam={72} />
-              </span>
-              <span className="flex flex-col gap-1.5">
-                <span style={{ font: "600 14px 'Geist'", color: INK }}>Toca para ampliar</span>
-                <IconoRedondo lado={34}>
-                  <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />
-                </IconoRedondo>
-              </span>
-            </button>
+          <span data-entrada-nombre className="[overflow-wrap:anywhere]" style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>
+            {nombre}
+          </span>
+          {nota && (
+            <span data-nota-reserva className="text-[12.5px] leading-snug text-text/60">
+              {nota}
+            </span>
           )}
-          {!entradaConCodigo(billete) && <BotonAnadirEntrada onLeida={onLeida} año={año} datos="entrada-sin-codigo" />}
-          <EliminarTexto alinear="derecha" onClick={onQuitar} texto="Quitar tu billete" />
-          {ampliado && entradaConCodigo(billete) && <CodigoDeEntradaPantallaCompleta billete={billete} titulo={nombre} cuando={cuando} onClose={() => setAmpliado(false)} />}
-        </>
-      ) : (
-        <BotonAnadirEntrada onLeida={onLeida} año={año} />
-      )}
-    </div>
+        </span>
+        {!soloVer && onLapizArriba && <LapizDeReserva onClick={onLapizArriba} etiqueta="Cambiar el sitio, el día y la hora" datos="entrada-arriba" />}
+      </div>
+      <div className="flex items-stretch gap-2.5">
+        <CajaDia rotulo={diaRotulo} grande={diaGrande} />
+        <CajaHora hora={hora} />
+      </div>
+      <SeccionDatos datos="entrada" onLapiz={!soloVer ? onLapizDatos : undefined} etiquetaLapiz="Cambiar los datos de la entrada" sinLineaAbajo={!hayFilas && !conCodigo}>
+        {gente.length > 0 && <ParaQuienDesign gente={gente} />}
+        {precio && (
+          <FilaIcono icono="euro" datos="precio">
+            {precio}
+          </FilaIcono>
+        )}
+        {localizador && (
+          <span data-entrada-fila="localizador">
+            <FilaIcono icono="entrada" datos="localizador">
+              Localizador {localizador}
+            </FilaIcono>
+          </span>
+        )}
+        {!hayFilas && <span className="text-[13px] text-text/55">Para quién es y cuánto ha costado.</span>}
+      </SeccionDatos>
+      <div data-entrada-billete={billete && (billete.localizador || conCodigo) ? 'con-billete' : 'sin-billete'} className="flex flex-col gap-3">
+        {conCodigo && billete && (
+          <button type="button" onClick={() => setAmpliado(true)} data-entrada-codigo-pequeno className="flex w-full items-center gap-3.5 text-left">
+            <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>
+              <ImagenDelCodigo codigo={billete.codigo} tam={72} />
+            </span>
+            <span className="flex flex-col gap-1.5">
+              <span style={{ font: "600 14px 'Geist'", color: INK }}>Toca para ampliar</span>
+              <span className="flex h-[34px] w-[34px] items-center justify-center rounded-full" style={{ background: '#F3E3B2' }}>
+                <Trazo d="ampliar" size={16} grosor={1.9} />
+              </span>
+            </span>
+          </button>
+        )}
+        {!conCodigo && !soloVer && onLeida && <BotonAnadirEntrada onLeida={onLeida} año={año} datos="entrada-sin-codigo" />}
+        {extra}
+        {!soloVer && onQuitar && (
+          <>
+            {conCodigo && <div style={{ borderTop: '1px dotted rgba(28,34,48,.28)' }} />}
+            <PapeleraRoja onClick={onQuitar} etiqueta="Quitar la entrada" datos="entrada" />
+          </>
+        )}
+      </div>
+      {ampliado && conCodigo && billete && <CodigoDeEntradaPantallaCompleta billete={billete} titulo={nombre} cuando={cuando} onClose={() => setAmpliado(false)} />}
+    </TarjetaCrema>
   )
 }
 

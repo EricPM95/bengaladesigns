@@ -78,6 +78,8 @@ export interface ReservationTarget {
   sugerencia?: SugerenciaDeEntrada | null
   /** (10S7 §3) Lo que se ha leído de una entrada (PDF, foto o captura) con [Añadir tu entrada]: la hoja sale con el día, la hora, las personas, el localizador y el código ya puestos. */
   lectura?: DatosEntradaLeida | null
+  /** (10S8 §4, E5) El lápiz del bloque de datos: la hoja «Datos de la entrada» (para quién, precio y, con documento, los datos leídos), sin el día ni la hora. */
+  soloDatos?: boolean
 }
 
 /** Qué se mueve al meter una reserva grande (/api/reservation-plan). */
@@ -205,6 +207,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // Una excursión sin día en la ruta parte del primer día donde puede ir (nunca el de llegada ni el de vuelta).
   const startDay = currentDay ?? (isExcursion ? (excursionTargetDays(route)[0] ?? null) : null)
   const existing = target.existing ?? null
+  const soloDatos = Boolean(target.soloDatos && existing)
   // El precio (Tanda 6z2): opcional, total de todas las personas; el Free Tour no lo lleva (es gratis).
   const precio = usePrecioEditable(existing?.precio)
   // (10S7 §3) El billete de esta entrada (privado de esta persona): cuántas personas, el localizador y el código.
@@ -628,11 +631,11 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
         <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
           {view === 'hora' ? (
             <div>
-              <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
+              {!soloDatos && <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
                 {isExcursion ? (target.paso2 ? 'Añadir una excursión · 2 de 2' : 'Excursión · elige día y hora') : esLibre ? 'Reserva · elige día y hora' : isFreeTour ? 'Free Tour · elige día y hora' : 'Entrada · elige día y hora'}
-              </p>
-              <h2 id="add-reservation-heading" className="mt-1.5 font-display text-[24px] leading-[1.05] text-text">
-                {target.name}
+              </p>}
+              <h2 id="add-reservation-heading" className={soloDatos ? "mt-1.5 font-display text-[30px] leading-none text-text" : "mt-1.5 font-display text-[24px] leading-[1.05] text-text"} data-hoja-titulo={soloDatos ? "datos-entrada" : undefined}>
+                {soloDatos ? "Datos de la entrada" : target.name}
               </h2>
               {igual && (
                 <p className="mt-2 text-[13.5px] leading-snug text-text/70" data-igual-que>
@@ -644,14 +647,10 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               {/* (10S7 §3, E1) [Añadir tu entrada]: desde el PDF, una foto o una captura la app lee el día, la hora, las personas y el localizador y guarda el código. Todo se puede cambiar a mano. */}
               {!isExcursion && !igual && (
                 <div className="mt-5 flex flex-col gap-3" data-entrada-billete-hoja>
-                  <BotonAnadirEntrada onLeida={aplicarLecturaDeEntrada} año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined} datos="hoja" />
+                  {!soloDatos && <BotonAnadirEntrada onLeida={aplicarLecturaDeEntrada} año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined} datos="hoja" />}
                   {(billeteTocado || billeteDeAntes || codigoDeEntrada) && (
                     <div className="flex flex-col gap-2.5" data-entrada-billete-datos>
                       <div className="flex gap-2">
-                        <label className="flex h-[54px] w-[110px] flex-none flex-col justify-center gap-px rounded-[15px] border bg-[#FFFDF8] px-3.5" style={{ borderColor: 'rgba(28,34,48,.12)' }}>
-                          <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)', textTransform: 'uppercase' }}>Personas</span>
-                          <input value={personas} onChange={(e) => { setBilleteTocado(true); setPersonas(e.target.value.replace(/\D/g, '').slice(0, 2)) }} inputMode="numeric" placeholder="2" autoComplete="off" data-entrada-dato="personas" className="w-full min-w-0 bg-transparent text-[15px] font-medium outline-none placeholder:font-normal placeholder:text-text/40" />
-                        </label>
                         <label className="flex h-[54px] min-w-0 flex-1 flex-col justify-center gap-px rounded-[15px] border bg-[#FFFDF8] px-3.5" style={{ borderColor: 'rgba(28,34,48,.12)' }}>
                           <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)', textTransform: 'uppercase' }}>Localizador</span>
                           <input value={localizadorDeEntrada} onChange={(e) => { setBilleteTocado(true); setLocalizadorDeEntrada(e.target.value) }} maxLength={30} placeholder="ABC123" autoComplete="off" autoCapitalize="characters" data-entrada-dato="localizador" className="w-full min-w-0 bg-transparent text-[15px] font-medium uppercase outline-none placeholder:font-normal placeholder:normal-case placeholder:text-text/40" />
@@ -673,6 +672,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </div>
               )}
 
+              {!soloDatos && (<>
               {/* Los días del viaje, en fichas que se deslizan de lado: el día que tiene en la ruta ya va marcado («En tu ruta»); un sitio cerrado ese día sale apagado. */}
               {/* (10S5) Los días ocupan todo el ancho, a partes iguales; si no caben en una fila (más de 4), en dos o más filas igual de llenas. */}
               <div className="mt-5 flex flex-col gap-1.5" role="group" aria-label="Día de tu reserva" data-dias-filas>
@@ -757,6 +757,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   {esLibre ? AVISO_DISPONIBILIDAD_RESERVAR : AVISO_DISPONIBILIDAD}
                 </p>
               )}
+              </>)}
 
               {/* (Tanda 10N10 §6-7; `Piezas/Entrada Nueva` 01-03) El orden de todas las hojas: la hora (arriba), ¿para quién son las entradas?, ¿cuánto ha costado en total?, ¿quién la ha pagado? (en cuadrados) y la línea de a dónde va el dinero. Sin gente en el viaje, solo el precio. */}
               {isFreeTour ? (
@@ -796,7 +797,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </p>
               )}
 
-              <p className="mt-1 text-center">
+              {!soloDatos && (<p className="mt-1 text-center">
                 <button
                   type="button"
                   onClick={() => {
@@ -808,7 +809,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   <Icono nombre="correo" size={13} />
                   <span className="underline underline-offset-2">Rellenar desde el email o el PDF</span>
                 </button>
-              </p>
+              </p>)}
 
               {(() => {
                 // [Reservar la mía a la misma hora] (Tanda 10N8 §8): «Comprar a las 14:00» abre la web; «Ya la tengo · Guardarla» la guarda en RESERVAS con ese día y esa hora, sin abrir la web.
@@ -833,7 +834,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                       }}
                       className={`${comprando ? 'mt-3' : 'mt-7'} h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40`}
                     >
-                      {comprando ? 'Ir a comprar' : textoDelBoton({ normal: isExcursion ? 'Guardar la excursión' : isFreeTour ? 'Guardar el Free Tour' : 'Guardar la entrada', solo: !paraQuienVisible, marcados, yoId: quienReservaId, permiso: permisos.rol, nombreAdmin: grupo.nombreAdmin })}
+                      {comprando ? 'Ir a comprar' : soloDatos ? 'Guardar los datos' : textoDelBoton({ normal: isExcursion ? 'Guardar la excursión' : isFreeTour ? 'Guardar el Free Tour' : 'Guardar la entrada', solo: !paraQuienVisible, marcados, yoId: quienReservaId, permiso: permisos.rol, nombreAdmin: grupo.nombreAdmin })}
                     </button>
                     {comprando && (
                       <button type="button" disabled={!ready || planPending} data-ya-la-tengo-guardarla onClick={() => save()} className="mt-3 w-full py-2 text-center text-[14px] font-semibold text-text underline underline-offset-2 disabled:opacity-40">
@@ -859,7 +860,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               )}
 
 
-              {target.existing && (
+              {target.existing && !soloDatos && (
                 <div className="mt-5 border-t border-text/10 pt-4 text-center">
                   {confirmDelete ? (
                     <div>

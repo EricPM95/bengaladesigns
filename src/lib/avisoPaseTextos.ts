@@ -53,6 +53,27 @@ export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
     linea1: '',
     linea2: 'Con el {pase}, consigues el sello de cada sitio que visitas, las colecciones y los emblemas secretos.',
   },
+  // (10S8 §2) Añadir un documento (tarjeta de embarque, billete, entrada, reserva) es del pase.
+  documento_vuelo: {
+    linea1: '',
+    linea2: 'Con el {pase}, guardas tu tarjeta de embarque y la tienes a mano en el aeropuerto, aunque no haya internet.',
+  },
+  documento_tren: {
+    linea1: '',
+    linea2: 'Con el {pase}, guardas tu billete y lo tienes a mano en la estación, aunque no haya internet.',
+  },
+  documento_barco: {
+    linea1: '',
+    linea2: 'Con el {pase}, guardas tu billete y lo tienes a mano en el puerto, aunque no haya internet.',
+  },
+  documento_entrada: {
+    linea1: '',
+    linea2: 'Con el {pase}, guardas tu entrada y la tienes a mano en la puerta, aunque no haya internet.',
+  },
+  documento_alojamiento: {
+    linea1: '',
+    linea2: 'Con el {pase}, guardas tu reserva y tienes la dirección, las horas y el teléfono a mano, aunque no haya internet.',
+  },
   generico: {
     linea1: '',
     linea2: 'Desbloquea todo lo que el {pase} añade a tu viaje.',

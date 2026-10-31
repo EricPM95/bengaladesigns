@@ -39,8 +39,9 @@ console.log('A. La reserva del hotel: el localizador es privado, sin migración'
   debe(/ponerAlojamiento/.test(fuente) && /ponerAlojamiento/.test(store) && /alojamientos\?: Record<string, BilleteDeAlojamiento>/.test(store), 'privado', 'el localizador se guarda en el documento privado del billete (alojamientos)')
   debe(/delDueno[\s\S]*datos\.alojamientos/.test(store), 'privado', 'y solo sube a la fila privada de quien lo puso (delDueno)')
   debe(/const compartida = nueva \? \{ \.\.\.nueva, localizador: null \}/.test(fuente), 'privado', 'al guardar, la reserva compartida del alojamiento NO lleva localizador')
-  const migs = fs.readdirSync('supabase/migrations').filter((f) => /^007[3-9]_/.test(f))
-  debe(migs.length === 0, 'migracion', `sin migración nueva (${migs.join(', ') || 'ninguna'})`)
+  // antes → ahora → decisión de Eric (10S8, 31-oct): la 0073 (contador de lecturas de documentos) es de la 10S8, no de la 10S7b; la 10S7b sigue sin migración propia.
+  const migs = fs.readdirSync('supabase/migrations').filter((f) => /^007[4-9]_/.test(f) || /^0073_(?!lecturas_de_documentos)/.test(f))
+  debe(migs.length === 0, 'migracion', `sin migración nueva de la 10S7b (${migs.join(', ') || 'ninguna'})`)
 }
 
 if (process.env.SOLO_SECO) {
@@ -84,7 +85,7 @@ async function pasada(version) {
     const textoBloque = () => ev("(document.querySelector('[data-blk=\"aloj\"]')?.innerText || '').replace(/\\s+/g, ' ')")
     const abrirBloque = async () => {
       if (!(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-alojamiento-caja]'))"))) {
-        await ev("document.querySelector('[data-blk=\"aloj\"] [data-aloj-cabecera]')?.click(); true")
+        await ev("document.querySelector('[data-blk=\"aloj\"] [data-cabecera-clara]')?.click(); true")
         await a.esp(700)
       }
     }
@@ -104,10 +105,11 @@ async function pasada(version) {
     await ev(`window.__billete.setState({ tripId: null, datos: { alojamientos: { ${JSON.stringify(segId)}: { localizador: 'HX48K2', dueno: 'otra', actualizado: new Date().toISOString() } } } }); true`)
     await a.esp(700)
     const otro = await textoBloque()
-    debe(/Via Cavour 12, Roma/.test(otro) && /Jueves 26 → Domingo 29 · 3 noches/.test(otro) && /\+39 06 1234 5678/.test(otro), 'compartido', `${nom}: el otro ve la dirección, las fechas y el teléfono (${otro.slice(0, 160)})`)
+    // antes → ahora → decisión de Eric (10S8, 31-oct): la fila «Jueves 26 → Domingo 29 · 3 noches» → las cajas de fechas y noches de Design (mismo dato, otra forma; el rótulo sale en mayúsculas); la fila del localizador se llama ahora data-fila-design.
+    debe(/Via Cavour 12, Roma/.test(otro) && /jueves 26 → domingo 29/i.test(otro) && /3\s*noches/i.test(otro) && /\+39 06 1234 5678/.test(otro), 'compartido', `${nom}: el otro ve la dirección, las fechas y el teléfono (${otro.slice(0, 160)})`)
     debe(/Entrada desde las 15:00/.test(otro), 'compartido', `${nom}: y las horas`)
     debe(!/HX48K2/.test(otro) && !/Localizador/.test(otro), 'compartido', `${nom}: pero NO el localizador (lo añadió otra persona)`)
-    debe((await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-reserva-aloj-fila=\"localizador\"]'))")) === false, 'compartido', `${nom}: ni la fila del localizador`)
+    debe((await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-fila-design=\"localizador\"]'))")) === false, 'compartido', `${nom}: ni la fila del localizador`)
     await ev("document.querySelector('[data-blk=\"aloj\"] [data-reserva-aloj-filas]')?.scrollIntoView({ block: 'center' }); true"); await a.esp(400)
     await a.captura(foto(`${version}_1_el_otro`))
 

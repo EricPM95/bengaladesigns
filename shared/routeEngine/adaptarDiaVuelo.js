@@ -8,11 +8,14 @@
  *  · Cada parada libre empieza como pronto a `desde` (o a su hora de siempre si esa es posterior: nada se adelanta), tras lo que se tarda a pie desde la anterior. Si cae en un cierre
  *    espera a la apertura; si no cabe antes de cerrar, de la última entrada o de `hasta`, no cabe.
  *  · De todas las formas de dejar paradas se elige: más imprescindibles, luego más paradas, luego más de nivel 1, luego acabar antes. El orden de entrada se conserva.
+ *  · (10S8) Con `desde` (día que empieza tarde), el orden de colocación es: primero los sitios que CIERRAN ese día (el Panteón, que cierra a las 19:00), luego los que se ven a cualquier hora
+ *    (el Arco de Constantino, la Fontana delle Tartarughe: caben aunque se haga tarde); cada grupo conserva su orden. Sin `desde` (último día) se conserva el orden recibido.
+ *  · (10S8) Una comida quitada por caer antes de la llegada no se recoloca; la siguiente (la cena) se queda si cae dentro de la ventana.
  *  · Con reserva (`reservedId`): no se toca. Noche y Free Tour: mantienen su hora si caben en la ventana; si no, van aparte. Las comidas dentro de la ventana se quedan a su hora
  *    (y las demás paradas las respetan); fuera de ella se quitan, salvo la que el viajero eligió.
  * Puro: sin red, sin reloj, determinista.
  */
-import { effectiveSchedule, earliestVisitStart, lastEntryMinutes, closedOnDay, seasonKey } from './openingHours.js'
+import { effectiveSchedule, earliestVisitStart, lastEntryMinutes, closedOnDay, seasonKey, parseHoursSessions } from './openingHours.js'
 import { sunsetFor } from './sunset.js'
 import { importanciaDeSitios } from './importanciaDeSitios.js'
 import { toHHMM } from './time.js'
@@ -55,7 +58,15 @@ export function adaptarDiaAlVuelo({ destData, travel = null, stops = [], meals =
       llegada: Boolean(stop.isArrival), reservada: Boolean(stop.reservedId), fija: !stop.reservedId && !stop.isArrival && Boolean(stop.night || stop.freeTour),
     }
   })
-  const libres = info.filter((s) => !s.llegada && !s.reservada && !s.fija)
+  // ¿Esta parada cierra ese día (tiene un horario con hora de cierre)? Las de acceso libre (sin horario) se ven a cualquier hora.
+  const cierraEseDia = (s) => {
+    if (!s.place) return false
+    const sesiones = parseHoursSessions(effectiveSchedule(s.place, hours))
+    return sesiones.length > 0 && Math.max(...sesiones.map((x) => x.close)) < 23 * 60 + 30
+  }
+  const libresEnOrden = info.filter((s) => !s.llegada && !s.reservada && !s.fija)
+  // (10S8) Día que empieza tarde: primero los que cierran, al final los de cualquier hora (cada grupo en su orden).
+  const libres = desdeMin !== null ? [...libresEnOrden.filter(cierraEseDia), ...libresEnOrden.filter((s) => !cierraEseDia(s))] : libresEnOrden
   const anclas = info.filter((s) => s.reservada || s.fija)
   const llegadas = info.filter((s) => s.llegada)
 

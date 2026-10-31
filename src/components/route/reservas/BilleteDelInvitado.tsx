@@ -6,7 +6,7 @@ import { useBilleteStore, type LegDelBillete } from '../../../store/useBilleteSt
 import { useSyncStore } from '../../../store/useSyncStore'
 import { diaEntero } from '../../../lib/billete'
 import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
-import { EliminarTexto } from './BloqueReservas'
+import { BotonAnadirDocumento, PapeleraRoja, claveDocumentoDeMedio } from './BotonesDeReserva'
 
 /**
  * EL BILLETE DE QUIEN NO ES EL ADMINISTRADOR (10S5): debajo de su tarjeta «Llegada y vuelta», para su ida y su vuelta, [Añadir tarjeta de embarque] (o su billete), el mismo billete privado que el del administrador
@@ -20,6 +20,7 @@ function UnTramo({ kind, tramo, medio, yoId }: { kind: LegDelBillete; tramo: MiT
   const archivo = useRef<HTMLInputElement>(null)
   const [leyendo, setLeyendo] = useState(false)
   const [ampliado, setAmpliado] = useState(false)
+  const [aviso, setAviso] = useState<string | null>(null)
   const esIda = kind === 'arrival'
   const nombre = medio === 'avion' ? 'tarjeta de embarque' : 'billete'
   const conCodigo = Boolean(billete?.codigo && (billete.codigo.dibujo || billete.codigo.imagen))
@@ -28,6 +29,8 @@ function UnTramo({ kind, tramo, medio, yoId }: { kind: LegDelBillete; tramo: MiT
     setLeyendo(true)
     try {
       const d = await leerBillete(f, { modo: medio })
+      setAviso(d.aviso)
+      if (d.aviso && !d.codigo && !d.localizador && !d.asiento) return
       poner(tripId, kind, {
         horaRoma: null,
         localizador: d.localizador,
@@ -55,14 +58,10 @@ function UnTramo({ kind, tramo, medio, yoId }: { kind: LegDelBillete; tramo: MiT
           <span style={{ font: "600 13px 'Geist'", color: '#6E5018' }}>Toca para ampliar</span>
         </button>
       ) : (
-        <>
-          <button type="button" onClick={() => archivo.current?.click()} disabled={leyendo} data-billete-anadir className="flex h-[46px] items-center justify-center rounded-[15px] text-[15px] font-bold" style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510' }}>
-            {leyendo ? 'Leyendo…' : medio === 'avion' ? 'Añadir tarjeta de embarque' : 'Añadir tu billete'}
-          </button>
-          <span className="text-center text-[12.5px] text-text/55">Desde el PDF, una foto o una captura.</span>
-        </>
+        <BotonAnadirDocumento texto={leyendo ? 'Leyendo…' : medio === 'avion' ? 'Añadir tarjeta de embarque' : 'Añadir tu billete'} clave={claveDocumentoDeMedio(medio)} onAnadir={() => archivo.current?.click()} datos={`invitado-${kind}`} />
       )}
-      {billete && <EliminarTexto alinear="derecha" onClick={() => quitar(tripId, kind)} texto={`Quitar mi ${nombre}`} />}
+      {aviso && <span role="status" className="text-[12.5px] text-text/70" data-billete-aviso>{aviso}</span>}
+      {billete && <PapeleraRoja onClick={() => quitar(tripId, kind)} etiqueta={`Quitar mi ${nombre}`} datos={`invitado-${kind}`} atributos={{ 'data-eliminar': 'derecha' }} />}
       <input ref={archivo} type="file" accept="application/pdf,image/*" hidden data-billete-archivo onChange={(e) => void alElegir(e.target.files?.[0])} />
       {ampliado && billete?.codigo && (
         <CodigoPantallaCompleta codigo={billete.codigo} titulo={esIda ? 'Tu ida' : 'Tu vuelta'} cuando={[diaEntero(tramo.fecha), tramo.hora].filter(Boolean).join(' · ')} pie={[billete.asiento ? `Asiento ${billete.asiento}` : null, tramo.codigo ? `${medio === 'avion' ? 'Vuelo' : 'Tren'} ${tramo.codigo.toUpperCase()}` : null].filter(Boolean).join(' · ')} onClose={() => setAmpliado(false)} />

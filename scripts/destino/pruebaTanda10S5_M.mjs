@@ -118,7 +118,7 @@ debe(bien.codigo_caja?.pagina === 2, 'srv-caja-buena-se-queda', JSON.stringify(b
 // El endpoint con una IA de mentira: 400 sin archivo, 200 con él, y nada del contenido en la consola.
 {
   const rutas = new Map()
-  const app = { post: (ruta, fn) => rutas.set(ruta, fn) }
+  const app = { post: (ruta, ...fns) => rutas.set(ruta, fns.at(-1)) } // (10S8: antes → la ruta era un solo manejador → ahora lleva delante la puerta de sesión/pase/límite y el lector del cuerpo, y el manejador de la lectura es el último → estas pruebas llaman a ese último con la sesión ya comprobada; la puerta se prueba en pruebaTanda10S8_A. Decisión de Eric (10S8, 31-oct))
   const registros = []
   const consola = { log: console.log, error: console.error, warn: console.warn }
   let llamadas = 0
@@ -126,7 +126,7 @@ debe(bien.codigo_caja?.pagina === 2, 'srv-caja-buena-se-queda', JSON.stringify(b
   registrarLeerBillete(app, { anthropic, MODEL: 'prueba', logCallCost: (n) => registros.push(`cost:${n}`), extractJsonText: (t) => t.replace(/```json|```/g, '').trim(), logAnthropicError: (c) => registros.push(`err:${c}`) })
   const manejar = rutas.get('/api/read-ticket')
   debe(typeof manejar === 'function', 'srv-endpoint-registrado', 'POST /api/read-ticket')
-  const responder = async (body) => { let estado = 200, cuerpo = null; await manejar({ body }, { status: (c) => ({ json: (j) => { estado = c; cuerpo = j } }), json: (j) => { cuerpo = j } }); return { estado, cuerpo } }
+  const responder = async (body) => { let estado = 200, cuerpo = null; await manejar({ body, usuarioLectura: { id: 'prueba' } }, { status: (c) => ({ json: (j) => { estado = c; cuerpo = j } }), json: (j) => { cuerpo = j } }); return { estado, cuerpo } }
   const r400 = await responder({})
   debe(r400.estado === 400 && llamadas === 0, 'srv-sin-archivo-400', JSON.stringify(r400))
   const r400b = await responder({ file: { media_type: 'text/html', data: 'eA==' } })
@@ -137,9 +137,9 @@ debe(bien.codigo_caja?.pagina === 2, 'srv-caja-buena-se-queda', JSON.stringify(b
   debe(registros.length === 1 && registros[0] === 'cost:read-ticket', 'srv-solo-registra-el-coste', JSON.stringify(registros))
   const rotas = { messages: { create: async () => { throw new Error('boom') } } }
   const rutas2 = new Map()
-  registrarLeerBillete({ post: (r, f) => rutas2.set(r, f) }, { anthropic: rotas, MODEL: 'x', logCallCost() {}, extractJsonText: (t) => t, logAnthropicError: () => registros.push('err') })
+  registrarLeerBillete({ post: (r, ...f) => rutas2.set(r, f.at(-1)) }, { anthropic: rotas, MODEL: 'x', logCallCost() {}, extractJsonText: (t) => t, logAnthropicError: () => registros.push('err') })
   let est = 0
-  await rutas2.get('/api/read-ticket')({ body: { file: { media_type: 'image/png', data: 'AA==' } } }, { status: (c) => ({ json: () => { est = c } }) })
+  await rutas2.get('/api/read-ticket')({ usuarioLectura: { id: 'prueba' }, body: { file: { media_type: 'image/png', data: 'AA==' } } }, { status: (c) => ({ json: () => { est = c } }) })
   debe(est === 502, 'srv-ia-caida-502-y-la-app-sigue-a-mano', String(est))
   void consola
 }
@@ -200,15 +200,16 @@ try {
   console.log(`   ${av.__ms} ms · fuentes ${av.fuentes} · enviado ${JSON.stringify(av.__enviado)} · código ${av.codigo?.formato}`)
   debe(av.modo === 'avion' && av.numero === 'VY 6102' && av.compania === 'Vueling', 'pdf-avion-vuelo-y-compania', JSON.stringify([av.modo, av.numero, av.compania]))
   debe(av.localizador === 'ABC123' && av.asiento === '14C', 'pdf-avion-localizador-y-asiento', JSON.stringify([av.localizador, av.asiento]))
-  debe(av.horaSalida === '08:30' && av.horaLlegada === '10:25' && av.fecha === '2026-12-05', 'pdf-avion-horas-y-fecha', JSON.stringify([av.horaSalida, av.horaLlegada, av.fecha]))
+// 10S8 §1: antes → el PDF de avión se leía siempre con el código Y con el servidor → ahora el código va primero y, si trae vuelo, día, asiento y localizador (este PDF lo trae), NO se llama al servidor: horas, terminal y puerta quedan sin leer (se escriben a mano) → decisión de Eric (10S8, 31-oct). El camino del servidor sigue probado con el billete de tren (su QR no trae datos).
+  debe(av.fecha === '2026-12-05' && (REAL || (av.horaSalida === null && av.horaLlegada === null)), 'pdf-avion-horas-y-fecha', JSON.stringify([av.horaSalida, av.horaLlegada, av.fecha]))
   debe(av.origen.codigo === 'BCN' && av.destino.codigo === 'FCO' && av.origen.ciudad === 'Barcelona' && av.destino.ciudad === 'Roma', 'pdf-avion-aeropuertos-y-ciudades', JSON.stringify([av.origen, av.destino]))
-  debe(av.origen.terminal === '1' && av.origen.puerta === 'B34', 'pdf-avion-terminal-y-puerta', JSON.stringify(av.origen))
-  debe(av.duracionMin === 115, 'pdf-avion-duracion-1h55', String(av.duracionMin))
-  debe(av.fuentes.includes('codigo') && av.fuentes.includes('servidor'), 'pdf-avion-las-dos-fuentes', JSON.stringify(av.fuentes))
+  debe(REAL || (av.origen.terminal === null && av.origen.puerta === null), 'pdf-avion-terminal-y-puerta', JSON.stringify(av.origen))
+  debe(REAL ? av.duracionMin === 115 : av.duracionMin === null, 'pdf-avion-duracion-1h55', String(av.duracionMin))
+  debe(av.fuentes.includes('codigo') && (REAL || !av.fuentes.includes('servidor')), 'pdf-avion-las-dos-fuentes', JSON.stringify(av.fuentes))
   debe(av.codigo?.formato === 'aztec' && av.codigo.texto?.startsWith('M1') && av.codigo.texto.includes('BCNFCO'), 'pdf-avion-codigo-aztec-decodificado', JSON.stringify([av.codigo?.formato, av.codigo?.texto?.slice(0, 12)]))
   debe(av.codigo?.dibujo?.startsWith('data:image/svg+xml;base64,') && av.codigo?.imagen?.startsWith('data:image/png;base64,'), 'pdf-avion-codigo-redibujado-y-recortado', 'dibujo+imagen')
   debe(av.codigo?.imagen && av.codigo.imagen.length < 130_000, 'pdf-avion-recorte-pequeno', String(av.codigo?.imagen?.length))
-  debe(REAL || av.__enviado.length === 1 && av.__enviado[0].tipo === 'application/pdf', 'pdf-avion-manda-el-pdf-al-servidor', JSON.stringify(av.__enviado))
+  debe(REAL || av.__enviado.length === 0, 'pdf-avion-manda-el-pdf-al-servidor', JSON.stringify(av.__enviado))
   debe(!JSON.stringify({ ...av, codigo: null }).includes('PRUEBA'), 'pdf-avion-el-nombre-no-sale-en-los-datos', 'sin nombre fuera del código')
   // El redibujo se lee otra vez igual (se rasteriza el SVG en node y se decodifica).
   if (av.codigo?.dibujo) {

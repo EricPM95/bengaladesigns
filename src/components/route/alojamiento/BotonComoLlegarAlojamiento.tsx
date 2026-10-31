@@ -11,7 +11,7 @@ interface BotonComoLlegarAlojamientoProps {
    */
   direccion: string | null | undefined
   /** `completo`: botón ancho de la ficha de llegada y de HOY. `pequeno`: la línea corta (para sitios con poco espacio). Por defecto, `completo`. */
-  variante?: 'completo' | 'pequeno'
+  variante?: 'completo' | 'pequeno' | 'design'
   className?: string
   style?: CSSProperties
 }
@@ -27,6 +27,16 @@ export function BotonComoLlegarAlojamiento({ direccion, variante = 'completo', c
   if (!enlace) return null
   // (Tanda 10G: sin el pase, cerrado y a la vista; Tanda 10N5: con la caja pequeña del pase, y sin pintar hasta saber si hay pase.)
   if (!pago) return <Candado datos="como-llegar-alojamiento" titulo="Cómo llegar a tu alojamiento" texto="Con el {pase}, adaptamos tu ruta a tu alojamiento." />
+  // (10S8, `Piezas/Entradas Billete` A1p/A2p) El botón azul noche con letra dorada de las tarjetas de RESERVAS.
+  if (variante === 'design')
+    return (
+      <a href={enlace} target="_blank" rel="noopener noreferrer" data-como-llegar-alojamiento className={`flex h-[46px] items-center justify-center gap-2 rounded-[14px] ${className}`} style={{ background: '#1C2230', color: '#F3D88F', font: "700 14.5px 'Geist'", ...style }}>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M13 4a1 1 0 1 0 0 .01M10 21l2-7-3-3 1-5 4 2 3 1M7 12l3-1" />
+        </svg>
+        Cómo llegar a tu alojamiento
+      </a>
+    )
   return (
     <a
       href={enlace}

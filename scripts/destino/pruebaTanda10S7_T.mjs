@@ -43,7 +43,7 @@ const { limpiarLecturaAlojamiento, LEER_ALOJAMIENTO_SISTEMA } = await import(pat
   const llamadas = []
   const respuestaIA = { content: [{ type: 'text', text: '{"nombre":"Hotel Palatino","entrada":"2026-11-26","salida":"2026-11-29","noches":3,"localizador":"HX48K2","huesped":"Ana"}' }] }
   const costes = []
-  registrarLeerBillete({ post: (ruta, f) => { if (ruta === '/api/read-ticket') manejador = f } }, {
+  registrarLeerBillete({ post: (ruta, ...fs) => { if (ruta === '/api/read-ticket') manejador = fs.at(-1) } }, { // (10S8: antes → un manejador → ahora puerta + cuerpo + manejador; se llama al último con la sesión ya comprobada. Decisión de Eric, 10S8, 31-oct)
     anthropic: { messages: { create: async (p) => { llamadas.push(p); return respuestaIA } } },
     MODEL: 'modelo-de-prueba',
     logCallCost: (nombre) => costes.push(nombre),
@@ -52,7 +52,7 @@ const { limpiarLecturaAlojamiento, LEER_ALOJAMIENTO_SISTEMA } = await import(pat
   })
   const pedir = async (cuerpo) => {
     let salida = { estado: 200, json: null }
-    await manejador({ body: cuerpo }, { status(c) { salida.estado = c; return this }, json(j) { salida.json = j } })
+    await manejador({ body: cuerpo, usuarioLectura: { id: 'prueba' } }, { status(c) { salida.estado = c; return this }, json(j) { salida.json = j } })
     return salida
   }
   const archivo = { media_type: 'image/png', data: 'AAAA' }
@@ -186,7 +186,7 @@ async function pasada(version) {
     }
     const abrirBloque = async () => {
       if (!(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-alojamiento-caja]'))"))) {
-        await ev("document.querySelector('[data-blk=\"aloj\"] [data-aloj-cabecera]')?.click(); true")
+        await ev("document.querySelector('[data-blk=\"aloj\"] [data-cabecera-clara]')?.click(); true")
         await a.esp(700)
       }
     }
@@ -223,27 +223,42 @@ async function pasada(version) {
     await vaAReservas()
     await abrirBloque()
 
+    // antes → ahora → decisión de Eric (10S8, 31-oct): A1 con «Desde el PDF…», cabecera con 2 líneas y «Eliminar alojamiento» → A1 de Design (sin ayuda, cabecera sin línea de texto, papelera roja, el precio como «280 €»); sin pase el botón lleva candado y abre el aviso.
     /* ── 1. A1: sin reserva ── */
     const a1 = await ev(`(() => {
       const b = document.querySelector('[data-blk="aloj"]')
-      const cab = b.querySelector('[data-aloj-cabecera]')
+      const cab = b.querySelector('[data-cabecera-clara]')
       return {
-        boton: b.querySelector('[data-reserva-aloj-anadir]')?.textContent.trim() ?? null,
+        boton: b.querySelector('[data-anadir-doc]')?.textContent.trim() ?? null,
+        candado: b.querySelector('[data-anadir-doc]')?.getAttribute('data-con-candado') ?? null,
         ayuda: b.querySelector('[data-reserva-aloj-ayuda]')?.textContent.trim() ?? null,
-        filas: b.querySelectorAll('[data-reserva-aloj-fila]').length,
-        cabecera: Array.from(cab?.querySelector('span.flex-col')?.children ?? []).map((x) => x.textContent.trim()),
+        filas: b.querySelectorAll('[data-reserva-aloj-fila], [data-fila-design="horas"], [data-fila-design="telefono"]').length,
+        cabecera: Array.from(cab?.children ?? []).map((x) => x.textContent.trim()).filter(Boolean),
         codigo: Boolean(b.querySelector('[data-billete-codigo-pequeno], [data-billete-ampliar], canvas, img[src^="data:image/svg"]')),
         precio: b.querySelector('[data-alojamiento-precio]')?.textContent ?? null,
-        eliminar: b.querySelector('[data-eliminar="derecha"]')?.textContent.trim() ?? null,
+        eliminar: b.querySelector('[data-papelera="alojamiento"]') ? 'papelera' : null,
       }
     })()`)
-    debe(a1.boton === 'Añadir tu reserva' && a1.ayuda === 'Desde el PDF, una foto o una captura.', 'a1', `A1: [Añadir tu reserva] con «Desde el PDF, una foto o una captura.» (${a1.boton} · ${a1.ayuda})`)
+    debe(a1.boton === 'Añadir tu reserva' && a1.ayuda === null && a1.candado === (sin ? '1' : '0'), 'a1', `A1: [Añadir tu reserva] sin línea de ayuda, con candado solo sin pase (${a1.boton} · ${a1.candado})`)
     debe(a1.filas === 0 && a1.codigo === false, 'a1', 'A1: sin filas de reserva y SIN código')
-    debe(a1.cabecera.length === 2 && a1.cabecera[0] === 'Alojamiento' && !/noches/.test(a1.cabecera.join(' ')), 'cabecera', `la cabecera sin línea debajo del título (solo el estado): ${JSON.stringify(a1.cabecera)} (Design pinta «Roma · 3 noches»; la 10S4 lo dejó sin ella)`)
-    debe(a1.precio?.includes('Precio') && a1.eliminar === 'Eliminar alojamiento', 'diez_s4', `sigue lo de la 10S4: el precio y «Eliminar alojamiento» a la derecha (${a1.precio} · ${a1.eliminar})`)
+    debe(a1.cabecera.length === 2 && a1.cabecera[0] === 'Alojamiento' && !/noches/.test(a1.cabecera.join(' ')), 'cabecera', `la cabecera sin línea debajo del título (solo el estado): ${JSON.stringify(a1.cabecera)}`)
+    debe(a1.precio?.includes('280') && a1.eliminar === 'papelera', 'diez_s4', `sigue lo de la 10S4: el precio y la papelera abajo a la derecha (${a1.precio} · ${a1.eliminar})`)
     await verLaCaja()
     await a.captura(foto(version, '01_a1_sin_reserva'))
 
+    // antes → ahora → decisión de Eric (10S8, 31-oct): sin pase se leía el archivo → ahora leer es del pase: el botón abre el aviso del pase y la reserva se siembra como guardada de antes (lo guardado se ve sin pase).
+    if (sin) {
+      await ev("document.querySelector('[data-blk=\"aloj\"] [data-anadir-doc]')?.click(); true")
+      await a.esp(900)
+      const aviso = await ev("(document.querySelector('[data-aviso-pase]')?.innerText ?? '').replace(/\\s+/g, ' ')")
+      debe(/guardas tu reserva y tienes la dirección, las horas y el teléfono a mano, aunque no haya internet/.test(aviso), 'leer', 'sin pase, [Añadir tu reserva] abre el aviso del pase y no el selector de archivos')
+      debe((await ev('window.__peticiones')).length === 0, 'leer', 'y no se lee nada (no se llama a la IA)')
+      await ev("document.querySelector('[data-aviso-pase]')?.closest('[role=dialog]')?.querySelector('button[aria-label=Cerrar]')?.click(); true")
+      await a.esp(500)
+      await ruta("const id = st.route.days[0].id; const h = st.accommodationSelections[id]; window.__ruta.getState().setAccommodationHotel(id, { ...h, reserva: { direccion: 'Via Cavour 12, Roma', entrada: '2026-11-26', salida: '2026-11-29', noches: 3, horaEntrada: '15:00', horaSalida: '11:00', telefono: '+39 06 1234 5678', localizador: null } }); import('/src/store/useBilleteStore.ts').then((m) => m.useBilleteStore.getState().ponerAlojamiento(m.useBilleteStore.getState().tripId, id, 'HX48K2'))")
+      await a.esp(1200)
+      await abrirBloque()
+    } else {
     /* ── 2. Leer el archivo: la hoja sale rellena ── */
     const leyo = await subirArchivo()
     debe(leyo, 'leer', 'al elegir el archivo sale la hoja «Tu reserva» con lo leído')
@@ -278,61 +293,63 @@ async function pasada(version) {
     debe(dirViaje === (sin ? null : 'Via Marsala 5, Roma'), 'direccion', `elegir «La de antes»: la dirección de «Cómo llegar» NO cambia (${dirViaje})`)
     await abrirBloque()
 
+    }
+
     /* ── 3. A2: con reserva ── */
+    // antes → ahora → decisión de Eric (10S8, 31-oct): A2 con cinco filas, «Cambiar los datos» y «Eliminar alojamiento» → A2 de Design (las fechas van en sus cajas, el lápiz del bloque, la papelera).
     const a2 = await ev(`(() => {
       const b = document.querySelector('[data-blk="aloj"]')
-      const f = (k) => b.querySelector('[data-reserva-aloj-fila="' + k + '"]')?.textContent.replace(/\\s+/g, ' ').trim() ?? null
-      return { boton: Boolean(b.querySelector('[data-reserva-aloj-anadir]')), direccion: f('direccion'), fechas: f('fechas'), horas: f('horas'), telefono: f('telefono'), localizador: f('localizador'), cambiar: b.querySelector('[data-reserva-aloj-cambiar-datos]')?.textContent.trim() ?? null, eliminar: b.querySelector('[data-eliminar="derecha"]')?.textContent.trim() ?? null, dosDirecciones: b.querySelectorAll('[data-direccion-tarjeta]').length, codigo: Boolean(b.querySelector('[data-billete-codigo-pequeno], canvas')) }
+      const f = (k) => b.querySelector('[data-fila-design="' + k + '"]')?.textContent.replace(/\\s+/g, ' ').trim() ?? null
+      return { boton: Boolean(b.querySelector('[data-anadir-doc]')), direccion: b.querySelector('[data-direccion-tarjeta]')?.textContent ?? null, fechas: (b.querySelector('[data-alojamiento-fechas]')?.innerText ?? '').replace(/\s+/g, ' ') + ' · ' + (b.querySelector('[data-alojamiento-noches]')?.innerText ?? '').replace(/\s+/g, ' '), horas: f('horas'), telefono: f('telefono'), localizador: f('localizador'), lapiz: Boolean(b.querySelector('[data-lapiz="aloj-datos"]')), eliminar: b.querySelector('[data-papelera="alojamiento"]') ? 'papelera' : null, dosDirecciones: b.querySelectorAll('[data-direccion-tarjeta]').length, codigo: Boolean(b.querySelector('[data-billete-codigo-pequeno], canvas, img[src^="data:image/svg"]')) }
     })()`)
     debe(a2.boton === false, 'a2', 'A2: ya no sale [Añadir tu reserva]')
-    debe(a2.direccion === 'Via Cavour 12, Roma' && a2.fechas === 'Jueves 26 → Domingo 29 · 3 noches' && a2.horas === 'Entrada desde las 15:00 · Salida hasta las 11:00' && a2.telefono === '+39 06 1234 5678' && a2.localizador === 'Localizador HX48K2', 'a2', `A2: las cinco filas como Design (${JSON.stringify(a2)})`)
+    debe(/Via Cavour 12, Roma$/.test(a2.direccion ?? '') && /Jueves 26 → Domingo 29/i.test(a2.fechas) && /3\s*NOCHES/i.test(a2.fechas) && a2.horas === 'Entrada desde las 15:00 · Salida hasta las 11:00' && a2.telefono === '+39 06 1234 5678' && a2.localizador === 'Localizador HX48K2', 'a2', `A2: dirección, fechas y noches en sus cajas, horas, teléfono y localizador (${JSON.stringify(a2)})`)
     debe(a2.dosDirecciones === 1 && a2.codigo === false, 'a2', 'A2: la dirección sale una sola vez y SIN código')
-    debe(a2.cambiar === 'Cambiar los datos' && a2.eliminar === 'Eliminar alojamiento', 'a2', 'A2: «Cambiar los datos» y «Eliminar alojamiento» abajo a la derecha (10S4)')
+    debe(a2.lapiz && a2.eliminar === 'papelera', 'a2', 'A2: el lápiz del bloque de datos y la papelera abajo a la derecha')
     if (!sin) {
       const comoLlegar = await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] a[href*=\"Marsala\"], [data-blk=\"aloj\"] a[href*=\"google\"], [data-blk=\"aloj\"] [data-como-llegar-alojamiento]'))")
       debe(comoLlegar, 'a2', 'con pase sigue [Cómo llegar a tu alojamiento]')
-      debe(/tu zona/i.test(await textoBloque()), 'a2', 'con pase sigue la zona')
+      debe(/Zona Centro/.test(await textoBloque()), 'a2', 'con pase sigue la zona (antes «Tu zona»; ahora «Zona Centro · dirección» en una fila)')
     }
     await verLaCaja()
     await a.captura(foto(version, '03_a2_con_reserva'))
 
+    // antes → ahora → decisión de Eric (10S8, 31-oct): la hoja de «Cambiar los datos» con noches y salida → «Datos de la reserva» (A3): dirección, horas, teléfono y localizador; las fechas no se tocan ahí (van con el alojamiento).
     /* ── 4. A mano ── */
-    await ev("document.querySelector('[data-blk=\"aloj\"] [data-reserva-aloj-cambiar-datos]')?.click(); true")
+    await ev("document.querySelector('[data-blk=\"aloj\"] [data-lapiz=\"aloj-datos\"]')?.click(); true")
     await a.hasta("Boolean(document.querySelector('[role=dialog] [data-reserva-aloj-campos]'))", { segundos: 10 })
-    const sinLeer = await ev("document.querySelector('[role=dialog] [data-reserva-aloj-aviso]')?.textContent")
-    debe(sinLeer === 'Todo opcional.' && (await campo('localizador')) === 'HX48K2', 'mano', '«Cambiar los datos» abre la hoja con lo guardado, a mano y todo opcional')
+    debe((await ev("document.querySelector('[data-hoja-titulo]')?.textContent")) === 'Datos de la reserva' && (await campo('localizador')) === 'HX48K2', 'mano', '«Datos de la reserva» abre la hoja con lo guardado')
     debe((await ev("Boolean(document.querySelector('[role=dialog] [data-reserva-aloj-pregunta]'))")) === false, 'mano', 'al cambiar otro dato a mano, la dirección que ya estaba guardada en la reserva no se vuelve a preguntar')
     await ponCampo('localizador', 'zz99')
-    await ponCampo('salida', '2026-11-30')
-    await a.esp(200)
-    debe((await campo('noches')) === '4', 'mano', 'cambiar la salida a mano recalcula las noches (4)')
     await ponCampo('telefono', '')
     await ev("document.querySelector('[role=dialog] [data-reserva-aloj-guardar]')?.click(); true")
     await a.esp(1000)
     await cerrarHojas()
     const mano = await hotelDelStore()
-    debe(mano?.reserva?.localizador === null && mano.reserva.noches === 4 && mano.reserva.telefono === null && mano.reserva.entrada === '2026-11-26', 'mano', `a mano: localizador en mayúsculas, 4 noches, sin teléfono (${JSON.stringify(mano?.reserva)})`)
+    debe(mano?.reserva?.localizador === null && mano.reserva.noches === 3 && mano.reserva.telefono === null && mano.reserva.entrada === '2026-11-26', 'mano', `a mano: localizador privado en mayúsculas, sin teléfono y las fechas intactas (${JSON.stringify(mano?.reserva)})`)
     await abrirBloque()
     const filasMano = await textoBloque()
-    debe(/Localizador ZZ99/.test(filasMano) && /Jueves 26 → Lunes 30 · 4 noches/.test(filasMano) && !/\+39/.test(filasMano), 'mano', 'y la tarjeta lo enseña')
+    debe(/Localizador ZZ99/.test(filasMano) && !/\+39/.test(filasMano), 'mano', 'y la tarjeta lo enseña')
 
     /* ── 5. «Tu alojamiento» no pierde la reserva ── */
-    await ev("document.querySelector('[data-blk=\"aloj\"] [data-alojamiento-caja] button')?.click(); true")
+    await ev("document.querySelector('[data-blk=\"aloj\"] [data-lapiz=\"aloj-arriba\"]')?.click(); true")
     const hojaAloj = await a.hasta("Boolean(document.querySelector('[role=dialog] [data-guardar-alojamiento]'))", { segundos: 10 })
     if (hojaAloj) {
       await ev("document.querySelector('[role=dialog] [data-guardar-alojamiento]')?.click(); true")
       await a.esp(1200)
       await cerrarHojas()
       const trasAloj = await hotelDelStore()
-      debe(trasAloj?.reserva?.noches === 4 && trasAloj.reserva.localizador === null, 'conserva', 'guardar «Tu alojamiento» conserva la reserva (solo cambian el nombre y el precio)')
+      debe(trasAloj?.reserva?.noches === 3 && trasAloj.reserva.localizador === null, 'conserva', 'guardar «Tu alojamiento» conserva la reserva (solo cambian el nombre y el precio)')
     } else debe(false, 'conserva', 'no se abre la hoja «Tu alojamiento» desde [Cambiar]')
 
     /* ── 6. Eliminar alojamiento se lleva la reserva ── */
     await abrirBloque()
-    await ev("document.querySelector('[data-blk=\"aloj\"] [data-eliminar=\"derecha\"]')?.click(); true")
+    await ev("document.querySelector('[data-blk=\"aloj\"] [data-papelera=\"alojamiento\"]')?.click(); true")
     await a.esp(900)
     debe((await hotelDelStore()) === null, 'eliminar', '«Eliminar alojamiento» quita el hotel y su reserva (con su Deshacer)')
 
+    // antes → ahora → decisión de Eric (10S8, 31-oct): leer es del pase: lo del fallo de lectura solo se prueba con pase.
+    if (!sin) {
     /* ── 7. Si no se puede leer ── */
     await ruta("window.__ruta.getState().setAccommodationHotel(st.route.days[0].id, { name: 'Hotel Palatino', precio: null })")
     await a.esp(700)
@@ -345,6 +362,7 @@ async function pasada(version) {
     await a.captura(foto(version, '04_sin_leer'))
     await cerrarHojas()
     debe((await hotelDelStore())?.reserva == null, 'fallo', 'cerrar sin guardar no deja ninguna reserva')
+    }
   } finally {
     await a.cerrar()
   }

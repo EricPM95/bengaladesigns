@@ -84,19 +84,107 @@ export function limpiarLecturaEntrada(crudo) {
   }
 }
 
+// ── Quién puede leer, cuánto y de qué tamaño (10S8 §1) ───────────────────────────────────────────────────────────────────────────────────
+// Cada lectura cuesta dinero (una llamada a Claude). Antes de leer el cuerpo —que puede pesar decenas de MB— se mira, solo con la cabecera: sesión de una cuenta (no anónima),
+// pase (de esa persona o el de grupo del viaje, que `pases_de` ya cuenta) y el límite del día. Sin sesión o sin pase se responde con error y NO se llama a Claude.
+export const MAX_LECTURAS_AL_DIA = 10
+export const MAX_ARCHIVO_BYTES = 10 * 1024 * 1024
+export const TEXTO_SIN_SESION = 'Entra en tu cuenta para leer documentos. Puedes añadir los datos a mano.'
+export const TEXTO_SIN_PASE = 'Leer documentos es parte del Pase Roma. Puedes añadir los datos a mano.'
+export const TEXTO_LIMITE = 'Has leído muchos documentos hoy. Puedes añadir los datos a mano.'
+export const TEXTO_GRANDE = 'El archivo es demasiado grande. Prueba con una captura.'
+export const TEXTO_NO_DISPONIBLE = 'Ahora mismo no podemos leer documentos. Puedes añadir los datos a mano.'
+/** El modelo que lee los documentos (10S8: prueba Haiku frente a Sonnet, ver docs/dias/INFORME_TANDA10B.md › 10S8). */
+export const MODELO_LECTURA = 'claude-haiku-4-5'
+
+const hoyUtc = (ahora) => ahora().toISOString().slice(0, 10)
+const bytesDeBase64 = (b64) => Math.floor((b64.length * 3) / 4) - (b64.endsWith('==') ? 2 : b64.endsWith('=') ? 1 : 0)
+
+/** ¿Tiene esta cuenta un pase que vale hoy? `pases_de` (migración 0026) trae los suyos y los de grupo en los que está. Un pase anulado o ya terminado no vale para AÑADIR documentos (lo ya guardado se sigue viendo). */
+export async function tienePaseVigente(admin, uid, hoy) {
+  const { data, error } = await admin.rpc('pases_de', { p_uid: uid })
+  if (error) throw new Error(`pases_de: ${error.message}`)
+  const lista = Array.isArray(data) ? data : []
+  return lista.some((p) => p?.estado === 'activo' && !(p.viaje?.fin && hoy > p.viaje.fin))
+}
+
 /**
- * POST /api/read-ticket  {file: {media_type, data(base64)}, mode?, year_hint?}  →  la lectura limpia.
- * `deps`: { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError } (los de index.js).
+ * POST /api/read-ticket  {file: {media_type, data(base64)}, mode?, year_hint?, tipo?}  →  la lectura limpia.
+ * `deps`: { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError } (los de index.js) y, de 10S8: `express`, `admin` (Supabase con la clave de servicio), `quienEs`, `tokenDe`, `cobro()` (¿se cobra el pase?),
+ * `ahora` y `lecturas` (el contador del día; en memoria del servidor: un reinicio lo pone a cero y en Vercel es por instancia).
+ * Con el cobro apagado «todo abierto» (como el resto de la app): basta la sesión y el límite. Sin la clave de servicio no se puede comprobar nada y NO se lee (cierra, no abre).
  */
 export function registrarLeerBillete(app, deps) {
-  const { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError } = deps
-  app.post('/api/read-ticket', async (req, res) => {
+  const { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError, admin = null, quienEs, tokenDe, cobro = () => true, ahora = () => new Date(), lecturas = new Map(), express } = deps
+  const modeloLectura = deps.modeloLectura ?? MODELO_LECTURA ?? MODEL
+  const clave = (uid) => `${uid}|${hoyUtc(ahora)}`
+  // El contador del día: en la tabla `lecturas_de_documentos` (migración 0073; vale en Vercel y tras reinicios) y, si la 0073 aún no está aplicada (o la base falla), en memoria del servidor SIN romper nada.
+  const enMemoria = {
+    reservar: (uid) => {
+      for (const k of [...lecturas.keys()]) if (!k.endsWith(`|${hoyUtc(ahora)}`)) lecturas.delete(k) // (se tiran los días pasados)
+      if ((lecturas.get(clave(uid)) ?? 0) >= MAX_LECTURAS_AL_DIA) return false
+      lecturas.set(clave(uid), (lecturas.get(clave(uid)) ?? 0) + 1)
+      return true
+    },
+    liberar: (uid) => lecturas.set(clave(uid), Math.max(0, (lecturas.get(clave(uid)) ?? 1) - 1)),
+  }
+  const reservar = async (uid) => {
+    try {
+      const { data, error } = await admin.rpc('registrar_lectura', { p_uid: uid, p_limite: MAX_LECTURAS_AL_DIA })
+      if (!error && typeof data === 'boolean') return { puede: data, tabla: true }
+      if (!avisadoSinTabla) { avisadoSinTabla = true; console.warn('[read-ticket] sin la tabla de lecturas (¿falta aplicar la 0073?): contador en memoria.', error?.message ?? '') }
+    } catch (e) {
+      console.warn('[read-ticket] contador en la base caído, contador en memoria:', e?.message ?? e)
+    }
+    return { puede: enMemoria.reservar(uid), tabla: false }
+  }
+  const liberar = async (uid, tabla) => {
+    if (tabla) await Promise.resolve(admin.rpc('devolver_lectura', { p_uid: uid })).catch(() => {})
+    else enMemoria.liberar(uid)
+  }
+  let avisadoSinTabla = false
+
+  // 1. La puerta: sin leer el cuerpo.
+  const puerta = async (req, res, next) => {
+    try {
+      if (!admin || !quienEs || !tokenDe) return res.status(503).json({ error: TEXTO_NO_DISPONIBLE, codigo: 'no_disponible' })
+      const usuario = await quienEs(admin, tokenDe(req))
+      if (!usuario || usuario.is_anonymous === true) return res.status(401).json({ error: TEXTO_SIN_SESION, codigo: 'sin_sesion' })
+      if (cobro() && !(await tienePaseVigente(admin, usuario.id, hoyUtc(ahora)))) return res.status(403).json({ error: TEXTO_SIN_PASE, codigo: 'sin_pase' })
+      const { puede, tabla } = await reservar(usuario.id) // se apunta ya (atómico: dos peticiones a la vez no se cuelan); se devuelve si al final no se llama a Claude
+      if (!puede) return res.status(429).json({ error: TEXTO_LIMITE, codigo: 'limite' })
+      req.usuarioLectura = usuario
+      req.lecturaEnTabla = tabla
+      next()
+    } catch (error) {
+      console.error('[read-ticket] puerta:', error?.message ?? error)
+      res.status(503).json({ error: TEXTO_NO_DISPONIBLE, codigo: 'no_disponible' })
+    }
+  }
+  // 2. El cuerpo, con tope propio (el general de index.js se salta esta ruta): pasa solo quien ha entrado.
+  const cuerpo = (req, res, next) =>
+    express.json({ limit: '24mb' })(req, res, (error) => {
+      if (!error) return next()
+      void liberar(req.usuarioLectura.id, req.lecturaEnTabla)
+      const grande = error.status === 413 || error.type === 'entity.too.large'
+      res.status(grande ? 413 : 400).json(grande ? { error: TEXTO_GRANDE, codigo: 'grande' } : { error: 'Falta el archivo del billete.' })
+    })
+
+  app.post('/api/read-ticket', puerta, cuerpo, async (req, res) => {
+    const uid = req.usuarioLectura.id
+    const devolver = () => liberar(uid, req.lecturaEnTabla)
     const { file, mode, year_hint: yearHint, tipo } = req.body ?? {}
     const esEntrada = tipo === 'entrada'
     const esAlojamiento = tipo === 'alojamiento' // 10S7 §5: la reserva de un hotel (server/billete/lecturaAlojamiento.js)
     const hayArchivo = file && typeof file.data === 'string' && ['image/png', 'image/jpeg', 'image/webp', 'application/pdf'].includes(file.media_type)
     if (!hayArchivo) {
+      await devolver()
       res.status(400).json({ error: 'Falta el archivo del billete.' })
+      return
+    }
+    if (bytesDeBase64(file.data) > MAX_ARCHIVO_BYTES) {
+      await devolver()
+      res.status(413).json({ error: TEXTO_GRANDE, codigo: 'grande' })
       return
     }
     try {
@@ -107,8 +195,9 @@ export function registrarLeerBillete(app, deps) {
           : { type: 'image', source: { type: 'base64', media_type: file.media_type, data: file.data } },
         { type: 'text', text: intro },
       ]
-      const respuesta = await anthropic.messages.create({ model: MODEL, max_tokens: 700, system: esAlojamiento ? LEER_ALOJAMIENTO_SISTEMA : esEntrada ? LEER_ENTRADA_SISTEMA : LEER_BILLETE_SISTEMA, messages: [{ role: 'user', content: contenido }] })
-      logCallCost(esAlojamiento ? 'read-lodging-booking' : esEntrada ? 'read-entry-ticket' : 'read-ticket', respuesta)
+      const respuesta = await anthropic.messages.create({ model: modeloLectura, max_tokens: 700, system: esAlojamiento ? LEER_ALOJAMIENTO_SISTEMA : esEntrada ? LEER_ENTRADA_SISTEMA : LEER_BILLETE_SISTEMA, messages: [{ role: 'user', content: contenido }] })
+      // (El coste de CADA lectura sale en el registro: `[cost] … read-ticket / read-entry-ticket / read-lodging-booking`, con el modelo.)
+      logCallCost(esAlojamiento ? 'read-lodging-booking' : esEntrada ? 'read-entry-ticket' : 'read-ticket', respuesta, modeloLectura)
       const bloque = respuesta.content.find((b) => b.type === 'text')
       if (!bloque) throw new Error('Respuesta de Claude sin bloque de texto')
       const crudo = JSON.parse(extractJsonText(bloque.text))

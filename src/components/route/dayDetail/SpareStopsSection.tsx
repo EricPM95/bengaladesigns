@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useReorganizarStore } from '../../../store/useReorganizarStore'
 import type { Stop } from '../../../lib/types'
 import { displayStopName, formatDuration } from '../../../lib/format'
 import { Icono } from '../../ui/Icono'
 
 interface SpareStopsSectionProps {
   stops: Stop[]
+  /** (10S8) El día al que pertenece: el [Ver] del aviso «Y N sitios más…» abre esta sección en ese día. */
+  dayId?: string
   onAdd: (stopId: string) => void
 }
 
@@ -12,11 +15,19 @@ interface SpareStopsSectionProps {
  * «Si te sobra tiempo» (Tanda 6): lo que queda para si te da tiempo. Plegado al final del día y solo si hay algo; cada parada con su
  * motivo y un «Añadir» que la pasa al día (al final de su franja) y la saca de la lista.
  */
-export function SpareStopsSection({ stops, onAdd }: SpareStopsSectionProps) {
+export function SpareStopsSection({ stops, onAdd, dayId }: SpareStopsSectionProps) {
   const [open, setOpen] = useState(false)
+  const raiz = useRef<HTMLDivElement>(null)
+  const pedida = useReorganizarStore((s) => (dayId ? s.verSobraTiempoDe === dayId : false))
+  useEffect(() => {
+    if (!pedida || stops.length === 0) return
+    setOpen(true)
+    useReorganizarStore.getState().verSobraTiempo(null)
+    window.setTimeout(() => raiz.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150)
+  }, [pedida, stops.length])
   if (stops.length === 0) return null
   return (
-    <div className="mt-6 rounded-2xl border border-text/[.12] bg-bg-card">
+    <div ref={raiz} data-sobra-tiempo={dayId ?? ''} className="mt-6 rounded-2xl border border-text/[.12] bg-bg-card">
       <button type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left">
         <span className="text-[14px] font-medium text-text">
           Si te sobra tiempo <span className="font-normal text-text/50">· {stops.length}</span>
