@@ -1,10 +1,12 @@
 import { useEffect, useId, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { pagoActivo } from '../../lib/pago'
+import { pagoActivo, usePagoActivo } from '../../lib/pago'
 import { diasPuestosEnDuda } from '../../lib/diasEnDuda'
 import { diasQueCambian, reorganizarDias } from '../../lib/reorganizarDia'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useReorganizarStore } from '../../store/useReorganizarStore'
+import { useResumenVueloStore } from '../../store/useResumenVueloStore'
+import { adaptarLosDias } from '../../lib/adaptarVuelos'
 import { useFlotantes, SOBRE_LOS_LOGROS, useReorganizarALaVista } from '../flotantes/flotantes'
 import { Icono } from '../ui/Icono'
 import { useBotonReorganizarVisible } from './useBotonReorganizarVisible'
@@ -49,6 +51,9 @@ export function ReorganizarHost(): ReactNode {
   const alerta = useReorganizarStore((s) => s.alerta)
   const trabajando = useReorganizarStore((s) => s.trabajando)
   const iluminadas = useReorganizarStore((s) => s.iluminadas)
+  const vuelos = useReorganizarStore((s) => s.vuelos)
+  const conPase = usePagoActivo()
+  const hojaAbierta = useResumenVueloStore((s) => s.hoja !== null)
   const { debajo, alto } = useFlotantes()
   const modo = useRouteStore((s) => s.mode)
   const { puedeEditar } = usePermisosDelViaje()
@@ -160,6 +165,7 @@ export function ReorganizarHost(): ReactNode {
           </svg>
         </button>
       )}
+      {primero && puedeEditar && conPase && vuelos && !hojaAbierta && <AlertaAdaptarVuelos />}
       {mostrar && alerta && <AlertaReorganizar trabajando={trabajando} onReorganizar={() => void reorganizar()} />}
     </>
   )
@@ -192,6 +198,52 @@ function AlertaReorganizar({ trabajando, onReorganizar }: { trabajando: boolean;
             Reorganizar
           </button>
           <button type="button" data-reorganizar-no="1" onClick={ahoraNo} disabled={trabajando} style={{ flex: 1, height: 50, borderRadius: 15, cursor: 'pointer', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.18)', color: '#1C2230', font: "600 15px 'Geist',sans-serif" }}>
+            Ahora no
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+/**
+ * (10S7b) La alerta «¿Adaptamos tu primer y tu último día a tus vuelos?»: sale al guardar o cambiar el vuelo, con pase, solo a quien lo cambió y solo si adaptar esos días cambiaría algo. [Sí, adaptarlos] rehace
+ * SOLO el día de llegada y el de vuelta (franja «Hemos adaptado tus días a tus vuelos» con [Deshacer]); [Ahora no] no cambia nada y deja el botón «Reorganizar» en esos días.
+ */
+function AlertaAdaptarVuelos(): ReactNode {
+  const ahoraNo = () => {
+    const propuesta = useReorganizarStore.getState().vuelos
+    useReorganizarStore.getState().cerrarVuelos()
+    if (propuesta) {
+      const ids = propuesta.dias.map((dia) => dia.dayId)
+      useReorganizarStore.getState().poner(ids, ids)
+    }
+  }
+  useEffect(() => {
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') ahoraNo()
+    }
+    window.addEventListener('keydown', alTeclear)
+    return () => window.removeEventListener('keydown', alTeclear)
+  }, [])
+  return createPortal(
+    <div data-hoja="adaptar-vuelos" data-alerta-adaptar="1" role="dialog" aria-modal="true" aria-label="¿Adaptamos tu primer y tu último día a tus vuelos?" style={{ position: 'fixed', inset: 0, zIndex: 110, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+      <div className="hoja-fondo" onClick={ahoraNo} style={{ position: 'absolute', inset: 0, background: 'rgba(20,16,10,.5)' }} />
+      <div className="hoja-panel" style={{ position: 'relative', width: '100%', maxWidth: 520, borderRadius: '32px 32px 0 0', background: '#FBF3E2', color: '#1C2230', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 -20px 40px rgba(0,0,0,.25)' }}>
+        <span aria-hidden="true" style={{ alignSelf: 'center', width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+          <span style={{ font: "400 28px/1.1 'Instrument Serif',serif" }}>¿Adaptamos tu primer y tu último día a tus vuelos?</span>
+          <button className="zona-toque" type="button" onClick={ahoraNo} aria-label="Cerrar" style={{ width: 36, height: 36, flex: 'none', borderRadius: '50%', border: 'none', background: 'rgba(28,34,48,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#1C2230' }}>
+            <Icono nombre="cerrar" size={17} grosor={2} />
+          </button>
+        </div>
+        <span style={{ font: "400 14.5px/1.45 'Geist',sans-serif", color: 'rgba(28,34,48,.7)' }}>Solo cambiamos esos dos días, para que no pongan nada antes de que llegues ni después de irte. El resto de tu ruta se queda como está.</span>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button type="button" data-adaptar-si="1" onClick={() => void adaptarLosDias()} style={{ flex: 1.2, height: 50, borderRadius: 15, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', font: "700 15.5px 'Geist',sans-serif", boxShadow: '0 10px 20px -14px rgba(110,80,24,.7), inset 0 1px 0 rgba(255,255,255,.55)' }}>
+            Sí, adaptarlos
+          </button>
+          <button type="button" data-adaptar-no="1" onClick={ahoraNo} style={{ flex: 1, height: 50, borderRadius: 15, cursor: 'pointer', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.18)', color: '#1C2230', font: "600 15px 'Geist',sans-serif" }}>
             Ahora no
           </button>
         </div>

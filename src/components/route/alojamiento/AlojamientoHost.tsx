@@ -8,7 +8,7 @@ import { PantallaAlojamiento } from './PantallaAlojamiento'
 import { HojaTuAlojamiento } from './HojaTuAlojamiento'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { usePermisosDelViaje } from '../../../hooks/usePermisosDelViaje'
-import { rehacerPorCambioDeVuelo } from '../../../lib/cambioDeVuelo'
+import { alCambiarElVuelo } from '../../../lib/adaptarVuelos'
 
 /**
  * Lo que abren todos los botones de alojamiento de la app (Tanda 6z): la pantalla del mapa y la hoja «Tu alojamiento». Se monta una sola vez con la ruta; quien quiere abrirlas lo pide
@@ -72,7 +72,7 @@ export function AlojamientoHost() {
             if (d.direccion !== (route.accommodationAddress ?? null)) setDireccion(d.direccion)
             if (d.zona !== (route.accommodationZone ?? null) && d.zona) {
               setZona(d.zona)
-              void rehacerPorCambioDeVuelo({ que: 'zona', mitad: null })
+              void alCambiarElVuelo({ que: 'zona', mitad: null })
             }
             if (!d.solo) {
               const lista = d.para.length === d.todos.length ? null : d.para

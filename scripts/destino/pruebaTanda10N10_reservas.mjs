@@ -195,6 +195,15 @@ try {
   await a.esp(800)
   if (!(await ev("Boolean(document.querySelector('[data-blk=\"llegada\"] [data-mitad]'))"))) await ev("document.querySelector('[data-blk=\"llegada\"] [data-llegada-cabecera]')?.click(); true")
   await a.esp(500)
+  // 10S7b (antes → ahora → decisión de Eric, 31-oct): antes, guardar un vuelo con pase no preguntaba nada; ahora, si adaptar el primer y el último día cambiaría algo, sale «¿Adaptamos tu primer y tu último día a tus vuelos?». Misma fuerza: se contesta [Ahora no] (no cambia nada) y se comprueba lo mismo.
+  for (let i = 0; i < 16; i++) {
+    if (await ev("Boolean(document.querySelector('[data-alerta-adaptar]'))")) {
+      await ev("document.querySelector('[data-adaptar-no]')?.click(); true")
+      await a.esp(500)
+      break
+    }
+    await a.esp(500)
+  }
   await clic('[data-blk="llegada"] [data-mitad="arrival"] button')
   await a.esp(1000)
   m = await medidas()

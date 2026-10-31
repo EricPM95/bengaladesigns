@@ -34,6 +34,7 @@ import { cuentaDelViaje, esFamilia } from '../../../lib/cuentaDelViaje'
 import { BloqueDinero, textoDelBoton, preguntaParaQuien } from '../presupuesto/BloqueDinero'
 import { anadirComoPrimeraParada, esReservaLibre, type SugerenciaDeEntrada } from '../../../lib/otraReserva'
 import { llevarALaParada } from '../../../lib/cambiarParada'
+import { FREE_TOUR_REF } from '../../../lib/freeTourManual'
 import type { DatosEntradaLeida } from '../../../lib/billeteLeer'
 import { useBilleteStore, entradaConCodigo, type CodigoDelBillete } from '../../../store/useBilleteStore'
 import { useBilletesDeEntradas } from '../../../hooks/useBilleteEntrada'
@@ -548,6 +549,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
         console.error('[AddReservationSheet] no se pudo poner en la ruta', error)
       }
     }
+    // (10S7b §7) Dónde estaba la parada antes: si la reserva la trae de otro día (o crea la del Free Tour), después se ilumina. Se lee aquí, en la pantalla, y no en el almacén de la ruta (que no puede mirar al del añadir: dependencia circular).
+    const sitioDeLaParada = (stop: { name: string; isFreeTour?: boolean }) => (reservation.refId === FREE_TOUR_REF ? Boolean(stop.isFreeTour) : reservation.placeNames.includes(stop.name))
+    const diaAntes = !llevarA && reservation.kind === 'entrada' && !esLibre ? (useRouteStore.getState().route?.days.find((day) => day.stops.some(sitioDeLaParada))?.id ?? null) : null
     try {
       addReservation(reservation, target.excursion ?? null, freeTourEntry)
     } catch (error) {
@@ -564,6 +568,11 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     onClose()
     // (10S4) La app lleva a la parada nueva y la marca un momento.
     if (llevarA) llevarALaParada(llevarA.dayId, llevarA.stopId)
+    else if (reservation.kind === 'entrada' && !esLibre) {
+      // (10S7b §7) La reserva trae el Free Tour o una entrada de otro día: la parada se ilumina igual. Si no estaba (el Free Tour nuevo) o su día ha cambiado.
+      const despues = useRouteStore.getState().route?.days.flatMap((day) => day.stops.filter((stop) => stop.reservedId === reservation.id).map((stop) => ({ dayId: day.id, stopId: stop.id })))[0]
+      if (despues && despues.dayId !== diaAntes) llevarALaParada(despues.dayId, despues.stopId)
+    }
   }
 
   /** (10S7 §3) Guarda el billete de la entrada (personas, localizador y código) en el móvil de esta persona. Sin nada que guardar, se quita el que hubiera. */

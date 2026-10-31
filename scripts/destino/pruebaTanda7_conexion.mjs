@@ -583,7 +583,12 @@ console.log('8. Lo viejo, fuera')
   debe(!/EN EL CENTRO/.test(leer('src/lib/arrivalReturn.ts')), '6 fuera lo viejo', 'arrivalReturn.ts sigue con «EN EL CENTRO»')
   // La ruta a mano: «Reorganizar este día» no mira el vuelo (el servidor de «reorganizar» no recibe vuelos).
   const reorganizar = leer('src/lib/reorganizarDia.ts')
-  debe(!/llegada|vuelta|arrivalFlightTime|departureFlightTime/.test(reorganizar), '5 reorganizar', 'Reorganizar este día mira el vuelo')
+  // (10S7b, 31-oct) ANTES → AHORA → DECISIÓN DE ERIC. ANTES: reorganizarDia.ts no nombraba la llegada ni la vuelta. AHORA: el primer y el último día miran el vuelo (`diaAdaptadoAlVuelo`, src/lib/adaptarVuelos.ts), así que el
+  // fichero lo nombra; lo que se mantiene con la misma fuerza: el servidor de «reorganizar» (`/api/reorganizar-dia`) NO recibe vuelos y el fichero no lee las horas del vuelo directamente. DECISIÓN DE ERIC (10S7b, 31-oct):
+  // «El botón Reorganizar tiene que mirar el vuelo en el primer y el último día: no pone nada antes de la llegada ni después de la hora de irse al aeropuerto.»
+  const cuerpoReorganizar = reorganizar.slice(reorganizar.indexOf("fetch('/api/reorganizar-dia'"), reorganizar.indexOf('if (!response.ok) return null'))
+  debe(cuerpoReorganizar.length > 50 && !/llegada|vuelta|arrivalFlightTime|departureFlightTime/.test(cuerpoReorganizar), '5 reorganizar', 'la petición de «Reorganizar este día» al servidor lleva el vuelo')
+  debe(!/arrivalFlightTime|departureFlightTime/.test(reorganizar) && /diaAdaptadoAlVuelo/.test(reorganizar), '5 reorganizar mira el vuelo', 'Reorganizar no mira el vuelo por diaAdaptadoAlVuelo (o lee las horas del vuelo directamente)')
 }
 
 // ── 9. Los textos nuevos ──

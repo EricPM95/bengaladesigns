@@ -51,6 +51,16 @@ export interface BilleteDeEntrada {
   actualizado: string
 }
 
+/**
+ * (10S7b §6) LO PRIVADO DE LA RESERVA DEL HOTEL: el localizador (clave = la del alojamiento, `segmentDayId`). El nombre, la dirección, las fechas y el teléfono van en el alojamiento y los ve todo el viaje (todos tienen que llegar al hotel);
+ * el localizador, solo quien lo añadió. Mismo documento privado y misma fila (0070): sin tabla nueva.
+ */
+export interface BilleteDeAlojamiento {
+  localizador: string | null
+  dueno: string | null
+  actualizado: string
+}
+
 const PREFIJO = 'trazo:billete:v1'
 const MAX_IMAGEN = 900_000
 
@@ -74,7 +84,7 @@ const poner1 = (k: string, v: string | null) => {
   }
 }
 
-type Datos = Partial<Record<LegDelBillete, BilleteGuardado>> & { entradas?: Record<string, BilleteDeEntrada> }
+type Datos = Partial<Record<LegDelBillete, BilleteGuardado>> & { entradas?: Record<string, BilleteDeEntrada>; alojamientos?: Record<string, BilleteDeAlojamiento> }
 
 function leer(clave: string): Datos {
   try {
@@ -104,6 +114,8 @@ interface BilleteState {
   /** (10S7) El billete de una entrada o del Free Tour (clave = `refId` de la reserva). */
   ponerEntrada: (tripId: string | null, clave: string, billete: Omit<BilleteDeEntrada, 'actualizado'>) => void
   quitarEntrada: (tripId: string | null, clave: string) => void
+  /** (10S7b) El localizador privado de la reserva del hotel (clave = `segmentDayId`). Sin localizador, se quita. */
+  ponerAlojamiento: (tripId: string | null, clave: string, localizador: string | null) => void
   /** Lleva la copia de la nube (0070) a este móvil y sube lo que falte. Nunca lanza; sin la 0070 o sin conexión, no hace nada. */
   sincronizar: (tripId: string | null) => Promise<void>
 }
@@ -145,6 +157,18 @@ export const useBilleteStore = create<BilleteState>((set, get) => ({
     const entradas = { ...previo.entradas }
     delete entradas[clave]
     const datos: Datos = { ...previo, entradas }
+    set({ tripId, datos })
+    escribir(claveDe(tripId), datos)
+    void tocado(tripId, datos)
+  },
+  ponerAlojamiento: (tripId, clave, localizador) => {
+    const previo = get().tripId === tripId ? get().datos : leer(claveDe(tripId))
+    const alojamientos = { ...(previo.alojamientos ?? {}) }
+    if (localizador) alojamientos[clave] = { localizador, dueno: null, actualizado: new Date().toISOString() }
+    else if (alojamientos[clave]) delete alojamientos[clave]
+    else return
+    const datos: Datos = { ...previo, alojamientos }
+    if (Object.keys(alojamientos).length === 0) delete datos.alojamientos
     set({ tripId, datos })
     escribir(claveDe(tripId), datos)
     void tocado(tripId, datos)
@@ -194,6 +218,9 @@ function delDueno(datos: Datos, uid: string): Datos {
   const entradas: Record<string, BilleteDeEntrada> = {}
   for (const [clave, b] of Object.entries(datos.entradas ?? {})) if (b && (!b.dueno || b.dueno === uid)) entradas[clave] = { ...b, dueno: uid }
   if (Object.keys(entradas).length > 0) salida.entradas = entradas
+  const alojamientos: Record<string, BilleteDeAlojamiento> = {}
+  for (const [clave, b] of Object.entries(datos.alojamientos ?? {})) if (b && (!b.dueno || b.dueno === uid)) alojamientos[clave] = { ...b, dueno: uid }
+  if (Object.keys(alojamientos).length > 0) salida.alojamientos = alojamientos
   return salida
 }
 

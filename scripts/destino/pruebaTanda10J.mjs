@@ -496,7 +496,8 @@ console.log('3. El código')
   // El cliente
   const cliente = fs.readFileSync('src/lib/empezarDeCero.ts', 'utf8')
   const panel = fs.readFileSync('src/components/logros/AdminLogros.tsx', 'utf8')
-  debe(/Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia, el día de prueba y los pases\. La cuenta se queda\. ¿Seguro\?/.test(panel) && /Sí, empezar de cero/.test(panel) && />Cancelar</.test(panel), 'pantalla', 'el diálogo lleva el texto exacto y los dos botones')
+  // antes: «…experiencia, el día de prueba y los pases. La cuenta se queda. ¿Seguro?» → ahora: sin «el día de prueba» y con «Las pruebas gratis que ya has usado no vuelven.» → decisión de Eric (10S7b, 31-oct): la 0072 ya no borra la prueba gastada, el diálogo no debe prometerlo.
+  debe(/Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia y los pases. La cuenta se queda. Las pruebas gratis que ya has usado no vuelven. ¿Seguro?\?/.test(panel) && /Sí, empezar de cero/.test(panel) && />Cancelar</.test(panel), 'pantalla', 'el diálogo lleva el texto exacto y los dos botones')
   debe(panel.indexOf('<VermeSinPase />') < panel.indexOf('<EmpezarDeCero />') && panel.indexOf('<EmpezarDeCero />') < panel.indexOf('<MisPruebas />'), 'pantalla', 'el botón está junto a «Verme como viajero sin pase»')
   debe(/location\.replace\('\/'\)/.test(cliente) && !/recargarSinApertura|MARCA_SIN_APERTURA/.test(cliente), 'pantalla', 'al acabar vuelve a la raíz SIN la marca de «sin apertura»: sale la apertura como la primera vez')
   debe(/signOut/.test(cliente) && /indexedDB/.test(cliente) && /localStorage/.test(cliente) && /sessionStorage/.test(cliente), 'pantalla', 'cierra la sesión y limpia localStorage, sessionStorage, IndexedDB')
@@ -542,7 +543,7 @@ if (!hayDev) {
   await a.evaluar("document.querySelector('[data-empezar-de-cero-boton]').click()")
   await esp(500)
   const dialogo = await a.evaluar("document.querySelector('[data-empezar-de-cero-dialogo]')?.innerText ?? null")
-  debe(dialogo && dialogo.includes('Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia, el día de prueba y los pases. La cuenta se queda. ¿Seguro?') && dialogo.includes('Sí, empezar de cero') && dialogo.includes('Cancelar'), 'pantalla', `el diálogo dice el texto exacto (${String(dialogo).replace(/\n/g, ' | ')})`)
+  debe(dialogo && dialogo.includes('Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia y los pases. La cuenta se queda. Las pruebas gratis que ya has usado no vuelven. ¿Seguro?') && dialogo.includes('Sí, empezar de cero') && dialogo.includes('Cancelar'), 'pantalla', `el diálogo dice el texto exacto (${String(dialogo).replace(/\n/g, ' | ')})`)
   await a.captura(path.join(SALIDA, 'j10_dialogo.jpg'))
   await a.evaluar("document.querySelector('[data-empezar-de-cero-no]').click()")
   await esp(400)

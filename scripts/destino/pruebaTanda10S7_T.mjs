@@ -271,7 +271,8 @@ async function pasada(version) {
     await a.esp(1200)
     await cerrarHojas()
     const tras = await hotelDelStore()
-    debe(tras?.name === 'Hotel Palatino' && tras.reserva?.localizador === 'HX48K2' && tras.reserva.noches === 3 && tras.reserva.horaEntrada === '15:00' && tras.reserva.direccion === 'Via Cavour 12, Roma', 'guardar', `la reserva queda dentro del alojamiento (${JSON.stringify(tras?.reserva)})`)
+    // antes: el localizador iba dentro de la reserva compartida (reserva.localizador === 'HX48K2' / 'ZZ99') → ahora: la reserva compartida NO lo lleva (null) y se ve en la tarjeta porque es privado de quien lo añadió (la tarjeta lo sigue enseñando, comprobado abajo) → decisión de Eric (10S7b, 31-oct).
+    debe(tras?.name === 'Hotel Palatino' && tras.reserva?.localizador === null && tras.reserva.noches === 3 && tras.reserva.horaEntrada === '15:00' && tras.reserva.direccion === 'Via Cavour 12, Roma', 'guardar', `la reserva queda dentro del alojamiento (${JSON.stringify(tras?.reserva)})`)
     debe(tras?.precio?.amount === 280, 'guardar', 'y el precio del hotel se conserva')
     const dirViaje = await estado('st.route.accommodationAddress ?? null')
     debe(dirViaje === (sin ? null : 'Via Marsala 5, Roma'), 'direccion', `elegir «La de antes»: la dirección de «Cómo llegar» NO cambia (${dirViaje})`)
@@ -310,7 +311,7 @@ async function pasada(version) {
     await a.esp(1000)
     await cerrarHojas()
     const mano = await hotelDelStore()
-    debe(mano?.reserva?.localizador === 'ZZ99' && mano.reserva.noches === 4 && mano.reserva.telefono === null && mano.reserva.entrada === '2026-11-26', 'mano', `a mano: localizador en mayúsculas, 4 noches, sin teléfono (${JSON.stringify(mano?.reserva)})`)
+    debe(mano?.reserva?.localizador === null && mano.reserva.noches === 4 && mano.reserva.telefono === null && mano.reserva.entrada === '2026-11-26', 'mano', `a mano: localizador en mayúsculas, 4 noches, sin teléfono (${JSON.stringify(mano?.reserva)})`)
     await abrirBloque()
     const filasMano = await textoBloque()
     debe(/Localizador ZZ99/.test(filasMano) && /Jueves 26 → Lunes 30 · 4 noches/.test(filasMano) && !/\+39/.test(filasMano), 'mano', 'y la tarjeta lo enseña')
@@ -323,7 +324,7 @@ async function pasada(version) {
       await a.esp(1200)
       await cerrarHojas()
       const trasAloj = await hotelDelStore()
-      debe(trasAloj?.reserva?.localizador === 'ZZ99', 'conserva', 'guardar «Tu alojamiento» conserva la reserva (solo cambian el nombre y el precio)')
+      debe(trasAloj?.reserva?.noches === 4 && trasAloj.reserva.localizador === null, 'conserva', 'guardar «Tu alojamiento» conserva la reserva (solo cambian el nombre y el precio)')
     } else debe(false, 'conserva', 'no se abre la hoja «Tu alojamiento» desde [Cambiar]')
 
     /* ── 6. Eliminar alojamiento se lleva la reserva ── */

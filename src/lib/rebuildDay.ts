@@ -142,7 +142,7 @@ export async function rehacerDiasConReservas(dayIds: string[], opciones: { mante
 }
 
 /** El orden de los días escritos que el viajero ya ve (sin la vuelta ni las excursiones); vacío si algún día no es de los escritos. */
-function ordenDeLosDias(route: { days: { isReturnLeg?: boolean; curatedId?: string; dayType?: string }[] }): string[] {
+export function ordenDeLosDias(route: { days: { isReturnLeg?: boolean; curatedId?: string; dayType?: string }[] }): string[] {
   const days = route.days.filter((day) => !day.isReturnLeg && day.dayType !== 'excursion')
   return days.every((day) => day.curatedId) ? days.map((day) => day.curatedId as string) : []
 }

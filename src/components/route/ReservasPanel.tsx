@@ -4,7 +4,8 @@ import type { Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useReservasFocusStore, type BloqueReservasId } from '../../store/useReservasFocusStore'
 import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
-import { rehacerPorCambioDeVuelo, type EnCambioDeVuelo } from '../../lib/cambioDeVuelo'
+import type { EnCambioDeVuelo } from '../../lib/cambioDeVuelo'
+import { alCambiarElVuelo } from '../../lib/adaptarVuelos'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { buildEntradasBloque, hasEnoughDaysForExcursions } from '../../lib/bookings'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
@@ -110,7 +111,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
    * (Tanda 7) Al poner, cambiar o borrar una hora de Roma, un punto de Roma o la zona, los días se rehacen solos en segundo plano (`rehacerPorCambioDeVuelo`, que usa el rehacer de siempre: «Actualizando tu
    * ruta…», gana el último). Sustituye a la ventana «¿Ajustamos tu ruta a tu vuelo?». Es el punto de enganche para la hoja del resumen y para la decisión de qué se rehace de verdad.
    */
-  const cambioDeVuelo: EnCambioDeVuelo = (cambio) => (onCambioDeVuelo ?? ((c) => void rehacerPorCambioDeVuelo(c)))(cambio)
+  const cambioDeVuelo: EnCambioDeVuelo = (cambio) => (onCambioDeVuelo ?? ((c) => void alCambiarElVuelo(c)))(cambio)
 
   // El resumen de arriba, dentro de la tarjeta (gratis y de pago): dos o tres fichas.
   const { enRuta: entradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations, Object.keys(info.entradasPorSitio ?? {}))

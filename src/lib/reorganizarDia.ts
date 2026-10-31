@@ -10,6 +10,7 @@ import { useReorganizarStore } from '../store/useReorganizarStore'
 import { isFreeDay } from './freeDays'
 import { useRouteStore } from '../store/useRouteStore'
 import { useAddFlowStore, withUndo } from '../store/useAddFlowStore'
+import { diaAdaptadoAlVuelo } from './adaptarVuelos'
 
 export interface OrdenDelDia {
   /** Los mismos ids de las paradas del día, en el orden nuevo. */
@@ -105,6 +106,8 @@ export interface CambioDeUnDia {
   mealAfter: OrdenDelDia['mealAfter']
   /** Las paradas que cambian de sitio (para iluminarlas). */
   movidas: string[]
+  /** (10S7b) Solo el primer y el último día con vuelo: el día rehecho por el motor con la hora del vuelo (nada antes de la llegada ni después de irse al aeropuerto). Con él, no se usa `order`. */
+  reconstruido?: DayPlan
 }
 
 /**
@@ -118,6 +121,12 @@ export async function diasQueCambian(dayIds: string[]): Promise<CambioDeUnDia[]>
   for (const dayId of [...new Set(dayIds)]) {
     const day = route.days.find((other) => other.id === dayId)
     if (!day || !sePuedeReorganizar(day)) continue
+    // (10S7b) El primer y el último día miran el vuelo: si hay vuelo y el motor lo rehace distinto, ese es el cambio.
+    const adaptado = await diaAdaptadoAlVuelo(route, reservations, dayId).catch(() => null)
+    if (adaptado) {
+      cambian.push({ dayId, dayNumber: day.dayNumber, order: day.stops.map((stop) => stop.id), mealAfter: {}, movidas: adaptado.movidas, reconstruido: adaptado.next })
+      continue
+    }
     const orden = await pedirOrdenDelDia(route, day, reservations)
     if (!orden || !orden.changed) continue
     const antes = day.stops.map((stop) => stop.id)
@@ -141,7 +150,10 @@ export async function reorganizarDias(dayIds: string[], { avisar = false }: { av
   const antes = useRouteStore.getState().route
   const primero = cambian[0]
   withUndo(cambian.length === 1 ? 'Hemos reorganizado tu día' : 'Hemos reorganizado tus días', () => {
-    for (const cambio of cambian) useRouteStore.getState().reorganizeDay(cambio.dayId, cambio.order, cambio.mealAfter)
+    for (const cambio of cambian) {
+      if (cambio.reconstruido) useRouteStore.getState().replaceDayRebuilt(cambio.dayId, cambio.reconstruido)
+      else useRouteStore.getState().reorganizeDay(cambio.dayId, cambio.order, cambio.mealAfter)
+    }
     const despues = useRouteStore.getState().route
     if (despues) useRouteStore.setState({ route: conUltimoCambio(antes, despues, { tipo: 'reorganizar', dia_n: primero.dayNumber, fecha: fechaDelDia(despues, primero.dayNumber), n: cambian.length }) })
   })

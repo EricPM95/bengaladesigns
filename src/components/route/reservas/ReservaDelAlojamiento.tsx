@@ -1,5 +1,8 @@
-import { useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { useBilleteStore } from '../../../store/useBilleteStore'
+import { useSyncStore } from '../../../store/useSyncStore'
+import { useViajeCompartido } from '../../../store/useViajeCompartido'
 import { leerReservaAlojamiento, type DatosReservaLeida } from '../../../lib/billeteLeer'
 import { usePermisosDelViaje } from '../../../hooks/usePermisosDelViaje'
 import type { TuAlojamiento } from '../../../lib/tuAlojamiento'
@@ -55,7 +58,8 @@ function Fila({ icono, datos, children }: { icono: keyof typeof ICONOS; datos: s
 }
 
 /** Las filas de A2. `direccion`: la de la reserva o, si no la trae, la que ya tenía el viaje. */
-export function FilasDeLaReserva({ reserva, direccion }: { reserva: ReservaAlojamiento; direccion?: string | null }) {
+/** (10S7b) `localizador`: el PRIVADO de esta persona (no el de la reserva compartida, que ya no lo lleva): el otro viajero ve todo menos esta fila. */
+export function FilasDeLaReserva({ reserva, direccion, localizador }: { reserva: ReservaAlojamiento; direccion?: string | null; localizador?: string | null }) {
   const fechas = textoFechasReserva(reserva)
   const horas = textoHorasReserva(reserva)
   const dir = reserva.direccion ?? direccion ?? null
@@ -81,9 +85,9 @@ export function FilasDeLaReserva({ reserva, direccion }: { reserva: ReservaAloja
           {reserva.telefono}
         </Fila>
       )}
-      {reserva.localizador && (
+      {localizador && (
         <Fila icono="localizador" datos="localizador">
-          Localizador {reserva.localizador}
+          Localizador {localizador}
         </Fila>
       )}
     </div>
@@ -141,6 +145,7 @@ interface Campos {
 export function HojaReservaAlojamiento({
   nombreActual,
   reserva,
+  localizadorActual,
   leidos,
   direccionDelViaje,
   conPase,
@@ -149,6 +154,8 @@ export function HojaReservaAlojamiento({
 }: {
   nombreActual: string
   reserva: ReservaAlojamiento | null
+  /** El localizador privado de esta persona (la reserva compartida no lo lleva). */
+  localizadorActual: string | null
   /** Lo que acaba de leer la app (si viene de un archivo). */
   leidos: DatosReservaLeida | null
   /** La dirección que ya había para «Cómo llegar a tu alojamiento» (solo con pase). */
@@ -167,7 +174,7 @@ export function HojaReservaAlojamiento({
     horaEntrada: base?.horaEntrada ?? reserva?.horaEntrada ?? '',
     horaSalida: base?.horaSalida ?? reserva?.horaSalida ?? '',
     telefono: base?.telefono ?? reserva?.telefono ?? '',
-    localizador: base?.localizador ?? reserva?.localizador ?? '',
+    localizador: base?.localizador ?? localizadorActual ?? '',
   }))
   const pon = (cambio: Partial<Campos>) =>
     setC((previo) => {
@@ -278,10 +285,30 @@ export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, con
   const setDireccion = useRouteStore((s) => s.setAccommodationAddress)
   const { esAdmin } = usePermisosDelViaje()
   const [hoja, setHoja] = useState<{ leidos: DatosReservaLeida | null } | null>(null)
+  const tripId = useSyncStore((s) => s.activeTripId)
+  const yoId = useViajeCompartido((s) => s.gente.find((p) => p.esYo)?.id ?? null)
+  const aloj = useBilleteStore((s) => s.datos.alojamientos)
+  const cargado = useBilleteStore((s) => s.tripId)
   const reserva = reservaConDatos(hotel.reserva) ? hotel.reserva : null
+  useEffect(() => {
+    if (cargado !== tripId) useBilleteStore.getState().cargar(tripId)
+  }, [tripId, cargado])
+  // El localizador es PRIVADO (10S7b): solo el de quien lo añadió (en su móvil y su fila privada). Si un viaje antiguo lo traía dentro de la reserva compartida, el administrador lo pasa a lo privado y se quita de lo compartido.
+  const propio = cargado === tripId ? (aloj?.[segmentDayId] ?? null) : null
+  const localizador = propio && (!propio.dueno || !yoId || propio.dueno === yoId) ? propio.localizador : null
+  const heredado = reserva?.localizador ?? null
+  useEffect(() => {
+    if (!esAdmin || !heredado || cargado !== tripId || !reserva) return
+    if (!localizador) useBilleteStore.getState().ponerAlojamiento(tripId, segmentDayId, heredado)
+    setHotel(segmentDayId, { ...hotel, reserva: { ...reserva, localizador: null } })
+  }, [esAdmin, heredado, cargado, tripId, localizador, segmentDayId, reserva, hotel, setHotel])
   const guardar = ({ nombre, reserva: nueva, usarDireccionDeLaReserva }: { nombre: string; reserva: ReservaAlojamiento | null; usarDireccionDeLaReserva: boolean }) => {
+    // Lo común (nombre, dirección, fechas, teléfono) va en el alojamiento, que ve todo el viaje; el localizador, solo en lo privado de quien lo añade.
+    const privado = nueva?.localizador ?? null
+    const compartida = nueva ? { ...nueva, localizador: null } : null
+    useBilleteStore.getState().ponerAlojamiento(tripId, segmentDayId, privado)
     // El hotel conserva su precio y todo lo demás; cambia el nombre (si lo hay) y la reserva.
-    setHotel(segmentDayId, { ...hotel, name: nombre || hotel.name, reserva: nueva })
+    setHotel(segmentDayId, { ...hotel, name: nombre || hotel.name, reserva: reservaConDatos(compartida) ? compartida : null })
     // La dirección de «Cómo llegar» (solo con pase): se pone la de la reserva si no había otra o si el viajero lo ha elegido.
     if (conPase && nueva?.direccion && usarDireccionDeLaReserva && nueva.direccion !== direccionDelViaje) setDireccion(nueva.direccion)
     setHoja(null)
@@ -290,7 +317,7 @@ export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, con
     <>
       {reserva ? (
         <>
-          <FilasDeLaReserva reserva={reserva} direccion={direccionDelViaje} />
+          <FilasDeLaReserva reserva={reserva} direccion={direccionDelViaje} localizador={localizador} />
           {esAdmin && (
             <button type="button" onClick={() => setHoja({ leidos: null })} data-reserva-aloj-cambiar-datos className="zona-toque self-start text-[13px] font-semibold underline underline-offset-2" style={{ color: ORO }}>
               Cambiar los datos
@@ -304,6 +331,7 @@ export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, con
         <HojaReservaAlojamiento
           nombreActual={nombreMostrado ?? ''}
           reserva={reserva}
+          localizadorActual={reserva ? localizador : null}
           leidos={hoja.leidos}
           direccionDelViaje={direccionDelViaje}
           conPase={conPase}

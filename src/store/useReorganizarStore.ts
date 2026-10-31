@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { PropuestaDeVuelos } from '../lib/adaptarVuelos'
 
 /**
  * EL BOTÓN «REORGANIZAR» DEL PASE (Tanda 10S7, apartado 2; `Piezas/Reorganizar` R1-R3). Estado de pantalla (no se guarda con el viaje):
@@ -12,6 +13,10 @@ interface ReorganizarState {
   alerta: boolean
   trabajando: boolean
   iluminadas: string[]
+  /** (10S7b) La alerta «¿Adaptamos tu primer y tu último día a tus vuelos?» abierta, con los días que cambiarían. null = no hay. */
+  vuelos: PropuestaDeVuelos | null
+  proponerVuelos: (propuesta: PropuestaDeVuelos) => void
+  cerrarVuelos: () => void
   /** Un cambio nuevo ha calculado estos días: se suman los que cambian y se quitan los que ya están bien. */
   poner: (cambian: string[], revisados: string[]) => void
   abrirAlerta: () => void
@@ -31,6 +36,9 @@ export const useReorganizarStore = create<ReorganizarState>((set) => ({
   alerta: false,
   trabajando: false,
   iluminadas: [],
+  vuelos: null,
+  proponerVuelos: (propuesta) => set({ vuelos: propuesta }),
+  cerrarVuelos: () => set({ vuelos: null }),
   poner: (cambian, revisados) =>
     set((state) => {
       const resto = state.dias.filter((id) => !revisados.includes(id))
@@ -43,6 +51,6 @@ export const useReorganizarStore = create<ReorganizarState>((set) => ({
   fijarTrabajando: (trabajando) => set({ trabajando }),
   iluminar: (ids) => set({ iluminadas: ids }),
   limpiarIluminadas: () => set({ iluminadas: [] }),
-  reiniciar: () => set({ dias: [], alerta: false, trabajando: false, iluminadas: [] }),
+  reiniciar: () => set({ dias: [], alerta: false, trabajando: false, iluminadas: [], vuelos: null }),
   terminar: () => set({ dias: [], alerta: false, trabajando: false }),
 }))

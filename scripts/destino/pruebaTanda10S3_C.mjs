@@ -186,6 +186,15 @@ for (const version of ['gratis', 'pago']) {
     // (Con pase, al guardar sale «Hemos ajustado tu ruta»: se cierra con «De acuerdo».)
     await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('[role=dialog] button')).find((x) => /^De acuerdo$/.test((x.textContent || '').trim())); if (b) b.click(); return true })()")
     await esp(1000)
+    // 10S7b (antes → ahora → decisión de Eric, 31-oct): antes, guardar el vuelo con pase no preguntaba nada; ahora puede salir «¿Adaptamos tu primer y tu último día a tus vuelos?»: se contesta [Ahora no] (no cambia nada) y se sigue comprobando lo mismo.
+    for (let i = 0; i < 16; i++) {
+      if (await a.evaluar("Boolean(document.querySelector('[data-alerta-adaptar]'))")) {
+        await a.evaluar("document.querySelector('[data-adaptar-no]')?.click(); true")
+        await esp(500)
+        break
+      }
+      await esp(500)
+    }
     // 10S4: antes → ahora → decisión de Eric (10S4, 30-oct): antes la tarjeta del vuelo salía siempre abierta; ahora, con ida y vuelta listas, sale plegada y se abre con un toque en su cabecera. Misma comprobación después de abrirla.
     if (!(await a.evaluar("Boolean(document.querySelector('[data-mitad=\"arrival\"] button'))"))) {
       await clic(a, '[data-llegada-cabecera]')

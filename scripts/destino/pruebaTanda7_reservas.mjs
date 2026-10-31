@@ -515,7 +515,8 @@ console.log('10. El enganche onCambioDeVuelo y el rehacer')
   debe(/if \(leg\.time !== g\.hora\) avisos\.push\(\{ que: 'hora', mitad: leg\.kind \}\)/.test(src) && /for \(const cambio of cambiosDeVuelo\) onCambioDeVuelo\(cambio\)/.test(src), '10 hora', 'el guardado del vuelo no avisa de la hora')
   debe(/else if \(punto && leg\.point\?\.id !== punto\.id\) avisos\.push\(\{ que: 'punto', mitad: leg\.kind \}\)/.test(src), '10 punto', 'el guardado del vuelo no avisa al cambiar el punto')
   debe(/onCambioDeVuelo\(\{ que: 'quitar', mitad: leg\.kind \}\)/.test(src), '10 quitar', 'LlegadaYVuelta no avisa al quitar el vuelo')
-  debe(/rehacerPorCambioDeVuelo\(\{ que: 'zona', mitad: null \}\)/.test(leer('src/components/route/alojamiento/AlojamientoHost.tsx')), '10 zona', 'no se avisa al cambiar la zona (AlojamientoHost)')
+  // (10S7b, 31-oct) ANTES → AHORA → DECISIÓN DE ERIC. ANTES: AlojamientoHost y ReservasPanel avisaban con rehacerPorCambioDeVuelo (que ya no hace nada desde la 10S7). AHORA: avisan con alCambiarElVuelo (src/lib/adaptarVuelos.ts): repone los planes y pregunta por el primer y el último día. DECISIÓN DE ERIC (10S7b, 31-oct): «Lo que solo informa se actualiza solo, siempre; lo que mueve paradas, con pase y preguntando». Las dos comprobaciones siguen exigiendo que se avise.
+  debe(/alCambiarElVuelo\(\{ que: 'zona', mitad: null \}\)/.test(leer('src/components/route/alojamiento/AlojamientoHost.tsx')), '10 zona', 'no se avisa al cambiar la zona (AlojamientoHost)')
   // Las casillas opcionales, el código, la compañía, el precio y la dirección NO avisan.
   const lineas = src.split('\n')
   for (const campo of ['setLegOtroPunto', 'setLegOtraHora', 'setLegCodigo', 'setLegCompania', 'setLegPrecio']) {
@@ -524,7 +525,7 @@ console.log('10. El enganche onCambioDeVuelo y el rehacer')
   }
   // La prueba del enganche con la pantalla: un registro de llamadas (se prueba la hoja con el guardado real simulado en el código).
   const panel = leer('src/components/route/ReservasPanel.tsx')
-  debe(/onCambioDeVuelo\?: EnCambioDeVuelo/.test(panel) && /rehacerPorCambioDeVuelo/.test(panel) && /onCambioDeVuelo=\{cambioDeVuelo\}/.test(panel), '10 enganche', 'ReservasPanel no recibe/usa onCambioDeVuelo')
+  debe(/onCambioDeVuelo\?: EnCambioDeVuelo/.test(panel) && /alCambiarElVuelo/.test(panel) && /onCambioDeVuelo=\{cambioDeVuelo\}/.test(panel), '10 enganche', 'ReservasPanel no recibe/usa onCambioDeVuelo')
   debe(!/FlightAdjustSheet|setFlightAdjust|onGuardada/.test(panel + src), '10 fuera lo viejo', 'ReservasPanel o LlegadaYVuelta siguen usando la hoja «¿Ajustamos tu ruta a tu vuelo?»')
   // El rehacer: solo de pago, solo curado y sin cambios a mano.
   let llamadas = []

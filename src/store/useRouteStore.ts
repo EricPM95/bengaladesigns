@@ -1029,7 +1029,6 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   },
   removeReservation: (id) => {
     const removed = get().reservations.find((reservation) => reservation.id === id)
-    const removedDay = removed && removed.kind === 'entrada' && get().route ? dayOfReservation(get().route!, removed) : null
     // (Tanda 6y3: en una ruta a mano, quitar la reserva del Free Tour quita también su parada del día; la pantalla lo avisa con «Deshacer».)
     const quitaParada = isManualFreeTourReservation(get().route, removed)
     set((state) => ({
@@ -1040,12 +1039,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     void import('./useNoticesStore').then(({ useNoticesStore }) => {
       for (const notice of useNoticesStore.getState().pushed) if (notice.id.includes(id)) useNoticesStore.getState().remove(notice.id)
     })
-    // (Tanda 6m: quitar una reserva no mueve ningún día: ese día se rehace en su sitio, con el orden que el viajero ya ve, y la parada vuelve a su lista normal, sin hora fija.)
-    if (removedDay && !isManualRoute(get().route) && !removed?.refId.startsWith('otra:')) {
-      if (removed && isBigReservation(removed, sitiosGrandesDelViaje(get().route))) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id, { mantenerOrden: true }))
-      // Sin la reserva de un sitio que no es de los grandes, el sitio vuelve al día que lo llevaba (Tanda 6y4, punto 7): hay que rehacer todos los días, sin cambiar su orden.
-      else void import('../lib/rebuildDay').then((module) => module.rehacerDiasSinTocar(null, { mantenerOrden: true }))
-    }
+    // (Tanda 10S7b, apartado 8) Quitar una reserva NO rehace nada: se va la reserva (su hora fija y su billete) y la parada se queda donde está, en su día y su sitio.
+    // Antes (Tanda 6m / 6y4): se rehacía el día, o todos, con el motor y la parada podía irse a otro día. Decisión de Eric (10S7b, 31-oct).
   },
   receiveSale: (sale) =>
     set((state) => {

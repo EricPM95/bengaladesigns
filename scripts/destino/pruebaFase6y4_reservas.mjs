@@ -334,7 +334,8 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
   const html = renderToStaticMarkup(createElement(ReservasPanel, { route: ruta, onClose() {} }))
   const texto = aTexto(html)
   const trozo = (() => { const a = html.lastIndexOf('<', html.indexOf('data-blk="entradas"')); const b = html.indexOf('data-blk="', a + 40); return a < 0 ? '' : aTexto(html.slice(a, b < 0 ? undefined : html.lastIndexOf('<', b))) })()
-  debe(/Entradas y Free Tour/.test(trozo) && /0 de 2 reservadas/.test(trozo) && !/Trevi/.test(trozo) && !/Trevi/.test(texto), '4 trevi', `RESERVAS enseña la Fontana de Trevi en las entradas, o no cuenta «0 de 2»: ${plano(trozo).slice(0, 300)}`)
+  // (antes → ahora → decisión de Eric (10S7b, 31-oct)) antes el texto salía seguido «0 de 2 reservadas»; ahora el contador y «reservadas» van en piezas separadas (tarjeta de Entradas de la 10S6, Design L1/L2): se exige lo mismo, con o sin el separador entre piezas.
+  debe(/Entradas y Free Tour/.test(trozo) && /0 de 2\s*(\|\s*)?reservadas/.test(trozo) && !/Trevi/.test(trozo) && !/Trevi/.test(texto), '4 trevi', `RESERVAS enseña la Fontana de Trevi en las entradas, o no cuenta «0 de 2»: ${plano(trozo).slice(0, 300)}`)
   // El filtro «Entradas» de EXPLORAR y «Añadir parada» (lo que se compra): la Fontana no está.
   const trevi = lugar('Fontana de Trevi')
   debe(trevi && trevi.requires_ticket === false, '4 trevi', 'la Fontana de Trevi cuenta como lugar con entrada en el filtro «Entradas» de EXPLORAR')
