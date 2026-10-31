@@ -50,6 +50,15 @@ for (const archivo of todas) {
 // Las que la función necesita tienen que aplicarse (las demás, de cachés de rutas y similares, no le importan).
 const NECESARIAS = ['0001', '0003', '0012', '0018', '0020', '0021', '0023', '0024', '0025', '0026', '0028', '0030', '0031', '0032']
 for (const n of NECESARIAS) debe(!noAplicadas.some((x) => x.startsWith(n)), 'migracion', `la migración ${n} se aplica (${noAplicadas.filter((x) => x.startsWith(n)).join(' | ')})`)
+// 0071 (10S5): empezar_de_cero también borra billetes_personales. Su comprobación (docs/dias/COMPROBAR_0071.sql) dice «Aplicada» con todas las migraciones y «FALTA» con la función de la 0032 sola.
+debe(!noAplicadas.some((x) => x.startsWith('0071')) && !noAplicadas.some((x) => x.startsWith('0070')), 'migracion', `las migraciones 0070 y 0071 se aplican (${noAplicadas.filter((x) => /^007[01]/.test(x)).join(' | ')})`)
+const comprobar0071 = fs.readFileSync('docs/dias/COMPROBAR_0071.sql', 'utf8')
+debe((await db.query(comprobar0071)).rows[0]?.migracion_0071 === 'Aplicada', 'migracion', 'COMPROBAR_0071.sql dice «Aplicada» con la 0071 aplicada')
+await db.exec(fs.readFileSync('supabase/migrations/0032_empezar_de_cero.sql', 'utf8'))
+debe((await db.query(comprobar0071)).rows[0]?.migracion_0071 === 'FALTA', 'migracion', 'COMPROBAR_0071.sql dice «FALTA» con la función de la 0032 sola')
+await db.exec(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8'))
+await db.exec(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8')) // idempotente: pegada dos veces
+debe((await db.query(comprobar0071)).rows[0]?.migracion_0071 === 'Aplicada', 'migracion', 'y «Aplicada» otra vez tras la 0071 (pegada dos veces)')
 await db.exec(`
   grant usage on schema public, auth, storage to anon, authenticated, service_role;
   grant all on all tables in schema public to authenticated, service_role;
@@ -80,7 +89,7 @@ const S = (sql, params = []) => servidor(() => q(sql, params))
 const INVENTARIO = [
   ['stop_visits', 'user_id'], ['trip_photo_meta', 'user_id'], ['trip_photos', 'user_id'], ['logro_hechos', 'user_id'], ['achievements', 'user_id'], ['logro_avisos', 'user_id'], ['logro_perfil', 'user_id'],
   ['push_suscripciones', 'user_id'], ['hoy_prueba', 'user_id'], ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
-  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
+  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
 ]
 /** Lo que se queda (de la cuenta). */
 const SE_QUEDA = [['travelers', 'id'], ['admin_sin_pase', 'user_id'] /* Tanda 10N: «sin pase» es un ajuste de las pruebas, no se borra */, ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id']]
@@ -113,6 +122,7 @@ async function sembrar(uid, etiqueta, { invitado = null, amiga = null } = {}) {
   const pase = (await S("insert into public.passes (destino, comprador_id, tipo, usos_max, usos_usados, codigo) values ('roma',$1,'uno',1,1,$2) returning id", [uid, unico('PASE')]))[0].id
   await S('insert into public.pass_members (pass_id, user_id) values ($1,$2)', [pase, uid])
   await S('insert into public.trip_invitations (trip_id, creada_por, codigo) values ($1,$2,$3)', [viaje, uid, unico('INV')])
+  await S("insert into public.billetes_personales (trip_id, user_id, datos) values ($1, $2, '{}'::jsonb)", [viaje, uid])
   const amigoQueInvito = await usuario(unico(`invitado-${etiqueta}@x.es`))
   await S('insert into public.logro_referidos (invitador_id, invitado_id) values ($1,$2)', [uid, amigoQueInvito])
   if (invitado) await S('insert into public.logro_referidos (invitador_id, invitado_id) values ($1,$2)', [invitado, uid]) // alguien la invitó a ella
@@ -405,7 +415,10 @@ debe(segunda.estado === 200 && segunda.cuerpo.archivos === 0, 'repetir', 'repeti
 console.log('3. El código')
 {
   const sin = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\s--.*$/gm, '')
-  const sql = sin(fs.readFileSync('supabase/migrations/0032_empezar_de_cero.sql', 'utf8'))
+  // 10S5: la función vigente es la de la 0071 (la 0032 no se edita; la 0071 la vuelve a crear con una línea más en el inventario).
+  const sql = sin(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8'))
+  const sql32 = sin(fs.readFileSync('supabase/migrations/0032_empezar_de_cero.sql', 'utf8'))
+  debe(!/billetes_personales/.test(sql32) && /billetes_personales/.test(sql), 'inventario', 'la 0032 no está editada y la 0071 añade billetes_personales')
   const reiniciar = sin(fs.readFileSync('server/logros/reiniciar.js', 'utf8'))
   const rutas = fs.readFileSync('server/logros/rutas.js', 'utf8')
   const bloque = rutas.slice(rutas.indexOf("app.get('/api/admin/empezar-de-cero/puede'"), rutas.indexOf("app.post('/api/admin/logros/sin-pase'"))
@@ -419,7 +432,7 @@ console.log('3. El código')
   debe(/conAdmin\(async \(req, res, usuario\)/.test(bloque) && /esAdmin\(usuario, env\)/.test(bloque), 'admin', 'el servidor decide con LOGROS_ADMIN_EMAILS (esAdmin) en las dos rutas')
   debe(!/@[a-z0-9-]+\.(com|es|org)/i.test(reiniciar + bloque), 'admin', 'ningún email escrito en el código')
   debe(!/from\('(?!admin_sin_pase')/.test(reiniciar), 'filtro', 'el servicio no hace consultas sueltas a tablas: todo pasa por la función de la base de datos')
-  const motor = ['server/logros/reiniciar.js', 'src/lib/empezarDeCero.ts', 'supabase/migrations/0032_empezar_de_cero.sql'].map((f) => fs.readFileSync(f, 'utf8')).join('\n')
+  const motor = ['server/logros/reiniciar.js', 'src/lib/empezarDeCero.ts', 'supabase/migrations/0032_empezar_de_cero.sql', 'supabase/migrations/0071_empezar_de_cero_billetes.sql'].map((f) => fs.readFileSync(f, 'utf8')).join('\n')
   debe(!/routeEngine|server\/engine|shared\//.test(motor), 'motor', 'no toca el motor de rutas')
   // El inventario de la prueba es el de la migración
   const tablasSql = [...sql.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()

@@ -38,3 +38,6 @@ La conexión de Claude con el PC de Eric no funciona, así que Eric sigue cada t
 
 ## Tandas de Eric
 Los avisos de tandas anteriores (prompt guardado en `docs/dias/PROMPT_TANDA<id>.md`, informe en `docs/dias/INFORME_TANDA10B.md`, repaso en `docs/dias/REPASO_<id>.html`, push a `main` sin `--force`, reiniciar el api-server al final) están en cada prompt de tanda; no se repiten aquí.
+
+## Tablas con datos de una persona y «Empezar de cero» (Eric, 31-oct)
+Cada vez que se crea una tabla con datos de una persona (una columna que apunta a la cuenta), hay que hacer TRES cosas en la misma tanda: (1) una migración nueva que vuelva a crear `empezar_de_cero` (con `create or replace`, sin editar la 0032 ni las anteriores) con la tabla en su inventario, más su `COMPROBAR_<n>.sql`; (2) añadir la tabla al inventario de `scripts/destino/pruebaTanda10J.mjs` (y sembrarle una fila); (3) **pasar `pruebaTanda10J`** en 0 fallos, además de las pruebas de lo tocado y `pruebaJutrip`. Su control «ninguna tabla con datos de una cuenta queda fuera del inventario» falla si se olvida. (Caso real: `billetes_personales`, 0070 → 0071.)
