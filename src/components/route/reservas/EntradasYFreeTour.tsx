@@ -3,10 +3,10 @@ import { leerImporte, type Importe } from '../../../lib/dinero'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
-import { elDia } from '../../../lib/nombreDeDia'
+import { elDia, fechaCorta, diaTitulo } from '../../../lib/nombreDeDia'
 import { aplicarAvisoFueraDeDia, reservasFueraDeSuDia, type ReservaFueraDeDia } from '../../../lib/reservaFueraDeDia'
-import { BloqueShell, EstadoBloque, FlechaBloque, GR, ICONOS, IconoBloque, LineaReservada, tituloBloqueStyle } from './BloqueReservas'
-import { EntradaCard } from './EntradaCard'
+import { ICONOS } from './BloqueReservas'
+import { TarjetaPorReservar, TarjetaReservada, ROTULO } from './TarjetasEntradas'
 import { FueraDeRutaFila } from './FueraDeRutaFila'
 import { FichaEntrada } from './FichaEntrada'
 import { OtraReservaBuscador } from './OtraReservaBuscador'
@@ -29,6 +29,20 @@ export function metaReserva(route: Route, reservation: { dateIso: string | null;
   // (Tanda 6z2) El precio, al final, si el viajero lo puso: «11 ago · 10:00 · 54 €». Sin precio, como siempre.
   const precio = leerImporte(reservation.precio)
   return `${fecha} · ${prefijoHora}${reservation.time}${precio ? ` · ${precioEnVista(precio)}` : ''}`
+}
+
+/** (10S6) «Jueves 26 · 09:15 · 50 €»: el día ENTERO (como Design L2), la hora y el precio si lo hay. Sin fechas, «Día 2 · 09:15». */
+export function metaReservaEntera(route: Route, reservation: { dateIso: string | null; dayNumber: number | null; time: string; precio?: Importe | null }): string {
+  const fecha = reservation.dateIso && route.answers.dateRange ? fechaCorta(reservation.dateIso) : `Día ${reservation.dayNumber ?? ''}`.trim()
+  const precio = leerImporte(reservation.precio)
+  return `${fecha} · ${reservation.time}${precio ? ` · ${precioEnVista(precio)}` : ''}`
+}
+
+/** (10S6) «En tu ruta · Jueves 26» (con fechas) o «En tu ruta · Día 2»: la etiqueta de una por reservar, con el día entero. */
+export function enTuRutaDia(route: Route, day: { dayNumber: number; id: string } | null): string {
+  if (!day) return ''
+  const full = route.days.find((candidate) => candidate.id === day.id)
+  return `En tu ruta · ${diaTitulo(route, full?.dayNumber ?? day.dayNumber)}`
 }
 
 /** El aviso de una reserva fuera de su día, bajo su línea verde: el texto y el botón que lo arregla (Tanda 6y2). */
@@ -117,83 +131,105 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
   const etiquetaDe = (item: BloqueEntrada) => (item.isFreeTour ? 'Free Tour' : 'Entrada')
   const botonDe = (item: BloqueEntrada) => (item.isFreeTour ? 'Reservar Free Tour' : 'Reservar entrada')
 
+  const sinReservar = enRuta.filter((item) => !item.reservation)
+  const conReserva = enRuta.filter((item) => item.reservation)
+
+  /** Una reservada (Design «Entradas Lista» L2): borde verde, ✓ en la miniatura, «Reservada», nombre, día entero · hora · precio y «Cambiar». Sin el botón del código (llega con el billete de las entradas). */
+  const filaReservada = (item: BloqueEntrada) => {
+    const reserva = item.reservation!
+    const mia = esMia(reserva.id)
+    const nota = !mia
+      ? `${compradorDe(reserva.id)} la ha reservado para ti`
+      : !item.inRoute && !reserva.fueraDeRuta && !esReservaLibre(reserva)
+        ? 'Ya no está en tu ruta'
+        : grupo.compartido && !grupo.esInvitado
+          ? paraQuienTexto(reserva)
+          : undefined
+    return (
+      <div key={item.clave} className="flex flex-col gap-2" data-entrada-fila={item.name}>
+        <TarjetaReservada etiqueta={item.isFreeTour ? 'Reservado' : 'Reservada'} name={item.name} meta={metaReservaEntera(route, reserva)} nota={nota} onChange={mia ? () => setTarget({ ...targetOf(item), existing: reserva }) : undefined} />
+        {reserva.fueraDeRuta && <FueraDeRutaFila reservaId={reserva.id} esFreeTour={item.isFreeTour} />}
+        {avisoDe(reserva.id) && <AvisoFueraDeDiaTarjeta aviso={avisoDe(reserva.id)!} />}
+        {noCuadran.filter((aviso) => aviso.cambio.reservaId === reserva.id).map((aviso) => (
+          <p key={aviso.id} data-entrada-no-cuadra className="rounded-[14px] px-3.5 py-2.5 text-[12.5px] leading-snug text-text" style={{ background: 'color-mix(in srgb, rgb(var(--accent-gold)) 14%, transparent)' }}>
+            {aviso.texto}
+          </p>
+        ))}
+      </div>
+    )
+  }
+
+  /** Una por reservar (Design L1): miniatura con la entrada, «En tu ruta · Jueves 26», nombre, [Reservar entrada] y «¿Ya la tienes? Añádela». */
+  const filaPorReservar = (item: BloqueEntrada) => {
+    const delDueno = delDuenoDe(item)
+    const cuando = enTuRutaDia(route, item.day)
+    return (
+      <TarjetaPorReservar
+        key={item.clave}
+        eyebrow={[item.isFreeTour ? 'Free Tour' : '', cuando].filter(Boolean).join(' · ') || etiquetaDe(item)}
+        name={item.name}
+        delGrupo={!!delDueno}
+        buyLabel={delDueno ? 'Reservar la mía a la misma hora' : botonDe(item)}
+        onBuy={() => (delDueno ? setTarget({ ...targetOf(item), igualQue: { reserva: delDueno, quien: quienesDe(item), modo: 'comprar' } }) : setFicha(item))}
+        onAdd={() => setTarget(delDueno ? { ...targetOf(item), igualQue: { reserva: delDueno, quien: quienesDe(item), modo: 'tengo' } } : targetOf(item))}
+        nota={delDueno ? textoDe(item) : undefined}
+        freeTour={item.isFreeTour}
+      />
+    )
+  }
+
   return (
     <>
-      <BloqueShell bloque="entradas">
-        <div onClick={onToggle} className="flex cursor-pointer flex-col gap-3.5 p-4">
-          <div className="flex items-center gap-3">
-            <IconoBloque nombre={ICONOS.ticket} hecho={hecho} />
-            <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-              <span style={tituloBloqueStyle}>Entradas y Free Tour</span>
-              <EstadoBloque texto={enRuta.length > 0 ? `${reservadas} de ${enRuta.length} reservadas` : 'Ninguna en tu ruta'} hecho={hecho} />
+      <div data-blk="entradas" className="flex flex-col gap-3">
+        {/* La cabecera de Design (L1/L2): tarjeta oscura con el icono, «2 de 8» en dorado y la barra. */}
+        <div onClick={onToggle} data-cabecera-entradas className="flex cursor-pointer items-center gap-3.5 rounded-[24px] px-4 py-3.5" style={{ background: '#1C2230', color: '#FBF3E2' }}>
+          <span className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-[14px]" style={{ background: 'rgba(233,199,122,.16)', border: '1px solid rgba(233,199,122,.45)', color: '#F3D88F' }}>
+            <Icono nombre={ICONOS.ticket} size={23} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-[7px]">
+            <span className="flex items-baseline justify-between gap-2">
+              <span style={{ font: "400 23px/1 'Instrument Serif',serif" }}>Entradas y Free Tour</span>
+              <span data-estado={hecho ? 'hecho' : 'falta'} style={{ font: "600 13px 'Geist'", color: '#F3D88F' }}>
+                {enRuta.length > 0 ? (
+                  <>
+                    {`${reservadas} de ${enRuta.length}`}
+                    <span className="sr-only"> reservadas</span>
+                  </>
+                ) : (
+                  'Ninguna en tu ruta'
+                )}
+              </span>
             </span>
-            <FlechaBloque abierto={abierto} />
-          </div>
-          {enRuta.length > 0 && (
-            <div className="flex gap-[3px]" aria-hidden="true">
-              {enRuta.map((item) => (
-                <span key={item.clave} className="h-1 flex-1 rounded transition-colors" style={{ background: item.reservation ? GR : 'rgba(28,34,48,.1)' }} />
-              ))}
-            </div>
-          )}
+            {enRuta.length > 0 && (
+              <span className="block h-1.5 overflow-hidden rounded-[3px]" style={{ background: 'rgba(251,243,226,.16)' }} aria-hidden="true">
+                <span className="block h-full rounded-[3px] transition-[width]" style={{ width: `${(reservadas / enRuta.length) * 100}%`, background: 'linear-gradient(90deg,#B58A2E,#F3D88F)' }} />
+              </span>
+            )}
+          </span>
+          <Icono nombre="abajo" size={20} style={{ color: '#F3D88F', flex: 'none', transform: abierto ? 'rotate(180deg)' : 'none', transition: 'transform .35s cubic-bezier(.2,.8,.2,1)' }} />
         </div>
         {abierto && (
-          <div className="flex flex-col gap-3 px-3.5 pb-3.5">
-            {enRuta.length > 0 && (
+          <>
+            {conReserva.length > 0 && (
               <>
-                <span data-en-tu-ruta className="flex items-center gap-2 text-text" style={{ font: "700 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
-                  <span className="h-2 w-2 rounded-full" style={{ background: 'rgb(var(--accent-gold))' }} aria-hidden="true" />
-                  En tu ruta
+                <span data-seccion-reservadas style={ROTULO}>
+                  Reservadas · {conReserva.length}
                 </span>
-                <span className="-mt-1.5 flex items-center gap-1.5 text-[12px] text-text/65">
-                  <Icono nombre="reloj" size={13} style={{ color: 'rgb(var(--accent))' }} />
-                  Las más buscadas se agotan: resérvalas pronto
-                </span>
-                {enRuta.map((item) =>
-                  item.reservation ? (
-                    <div key={item.clave} className="flex flex-col gap-2" data-entrada-fila={item.name}>
-                      {/* (La del dueño que le cubre a quien mira: no es suya para cambiarla, sin «Cambiar».) */}
-                      {!esMia(item.reservation!.id) ? (
-                        <LineaReservada nombre={item.name} meta={metaReserva(route, item.reservation)} nota={`${compradorDe(item.reservation!.id)} la ha reservado para ti`} />
-                      ) : (
-                        <LineaReservada nombre={item.name} meta={metaReserva(route, item.reservation)} nota={!item.inRoute && !item.reservation.fueraDeRuta && !esReservaLibre(item.reservation) ? 'Ya no está en tu ruta' : grupo.compartido && !grupo.esInvitado ? paraQuienTexto(item.reservation) : undefined} onChange={() => setTarget({ ...targetOf(item), existing: item.reservation })} />
-                      )}
-                      {item.reservation.fueraDeRuta && <FueraDeRutaFila reservaId={item.reservation.id} esFreeTour={item.isFreeTour} />}
-                      {avisoDe(item.reservation.id) && <AvisoFueraDeDiaTarjeta aviso={avisoDe(item.reservation.id)!} />}
-                      {noCuadran.filter((aviso) => aviso.cambio.reservaId === item.reservation!.id).map((aviso) => (
-                        <p key={aviso.id} data-entrada-no-cuadra className="rounded-[14px] px-3.5 py-2.5 text-[12.5px] leading-snug text-text" style={{ background: 'color-mix(in srgb, rgb(var(--accent-gold)) 14%, transparent)' }}>
-                          {aviso.texto}
-                        </p>
-                      ))}
-                    </div>
-                  ) : delDuenoDe(item) ? (
-                    <EntradaCard
-                      key={item.clave}
-                      eyebrow={etiquetaDe(item)}
-                      when={enTuRuta(route, item.day)}
-                      name={item.name}
-                      delGrupo
-                      buyLabel="Reservar la mía a la misma hora"
-                      onBuy={() => setTarget({ ...targetOf(item), igualQue: { reserva: delDuenoDe(item)!, quien: quienesDe(item), modo: 'comprar' } })}
-                      reservedTime={null}
-                      notes={[{ text: textoDe(item) }]}
-                      onAdd={() => setTarget({ ...targetOf(item), igualQue: { reserva: delDuenoDe(item)!, quien: quienesDe(item), modo: 'tengo' } })}
-                      onChange={() => setTarget(targetOf(item))}
-                    />
-                  ) : (
-                    <EntradaCard
-                      key={item.clave}
-                      eyebrow={etiquetaDe(item)}
-                      when={enTuRuta(route, item.day)}
-                      name={item.name}
-                      buyLabel={botonDe(item)}
-                      onBuy={() => setFicha(item)}
-                      reservedTime={null}
-                      onAdd={() => setTarget(targetOf(item))}
-                      onChange={() => setTarget(targetOf(item))}
-                    />
-                  ),
+                {conReserva.map(filaReservada)}
+              </>
+            )}
+            {sinReservar.length > 0 && (
+              <>
+                {conReserva.length === 0 && (
+                  <span className="flex items-center gap-2 text-[12.5px] font-medium text-text/60">
+                    <Icono nombre="reloj" size={15} style={{ color: '#B58A2E' }} />
+                    Las más buscadas se agotan: resérvalas pronto
+                  </span>
                 )}
+                <span data-seccion-por-reservar data-en-tu-ruta style={ROTULO}>
+                  Por reservar · {sinReservar.length}
+                </span>
+                {sinReservar.map(filaPorReservar)}
               </>
             )}
             {enRuta.length === 0 && (
@@ -202,13 +238,13 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
               </p>
             )}
             {/* (10S4) Fuera «Ver n más»: en su lugar, [Añadir otra reserva] (casilla libre con sugerencias de sitios nuestros). */}
-            <button type="button" onClick={() => setBuscando(true)} data-anadir-otra-reserva className="flex h-12 items-center justify-center gap-2 rounded-[14px] border border-dashed border-text/25 bg-transparent text-[14px] font-semibold text-text">
+            <button type="button" onClick={() => setBuscando(true)} data-anadir-otra-reserva className="flex h-12 items-center justify-center gap-2 rounded-[15px] border-[1.5px] border-dashed bg-transparent text-[14px] font-semibold" style={{ borderColor: 'rgba(181,138,46,.6)', color: '#8E6820' }}>
               <Icono nombre="anadir" size={16} />
               Añadir otra reserva
             </button>
-          </div>
+          </>
         )}
-      </BloqueShell>
+      </div>
       {target && <AddReservationSheet route={route} target={target} onClose={() => setTarget(null)} />}
       {buscando && (
         <OtraReservaBuscador

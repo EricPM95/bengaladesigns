@@ -202,6 +202,32 @@ export function etiquetaDeCiudadConEstacion(ciudad: string | null | undefined): 
   return est ? `${c?.nombre ?? limpia} (${est})` : c?.nombre ?? limpia
 }
 
+/**
+ * (10S6) EL EJEMPLO EN GRIS de «Sales de» cuando la ciudad tiene VARIOS aeropuertos: «Londres (Heathrow)» (la ciudad y uno de sus aeropuertos entre paréntesis), para que se vea cómo escribirlo.
+ * Con un solo aeropuerto (o sin datos) no hay ejemplo: la casilla va rellena como siempre («Barcelona (El Prat)»). Síncrona.
+ */
+export function ejemploDeCiudadConAeropuerto(ciudad: string | null | undefined): string {
+  const c = (ciudad ?? '').trim() ? ciudadCorta(ciudad as string) : null
+  if (!c || c.iatas.length < 2) return ''
+  const corto = CORTOS_VARIOS[c.iatas[0]]
+  return corto ? `${c.nombre} (${corto})` : ''
+}
+
+// Una estación de ejemplo por ciudad con varias (solo las que se conocen de verdad).
+const ESTACION_DE_EJEMPLO: Record<string, string> = {
+  madrid: 'Atocha', barcelona: 'Sants', roma: 'Termini', paris: 'Gare de Lyon', milan: 'Centrale', venecia: 'Santa Lucia', valencia: 'Joaquín Sorolla', londres: 'St Pancras',
+  berlin: 'Hauptbahnhof', munich: 'Hauptbahnhof', viena: 'Hauptbahnhof', lisboa: 'Santa Apolónia', zurich: 'HB',
+}
+
+/** (10S6) Como la anterior, para el tren: «Madrid (Atocha)». Solo si la ciudad no tiene una estación principal sin duda (en esas, la casilla va rellena). */
+export function ejemploDeCiudadConEstacionEjemplo(ciudad: string | null | undefined): string {
+  const limpia = (ciudad ?? '').replace(/\s+/g, ' ').trim()
+  if (!limpia || ESTACIONES[normalizarCiudad(limpia)]) return ''
+  const est = ESTACION_DE_EJEMPLO[normalizarCiudad(limpia)]
+  const c = ciudadCorta(limpia)
+  return est ? `${c?.nombre ?? limpia} (${est})` : ''
+}
+
 /** Los códigos IATA de los aeropuertos de la ciudad según la tabla corta (vacío si no está). Síncrona. */
 export function iatasDeCiudad(ciudad: string | null | undefined): string[] {
   const c = ciudad ? ciudadCorta(ciudad) : null

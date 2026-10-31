@@ -75,6 +75,7 @@ export function TarjetaBillete({
   onQuitar,
   onAnadirTarjeta,
   onAmpliar,
+  onDatos,
 }: {
   leg: LegState
   trayecto: string
@@ -87,6 +88,8 @@ export function TarjetaBillete({
   onQuitar: () => void
   onAnadirTarjeta: () => void
   onAmpliar: () => void
+  /** (10S6) «Cambiar los datos»: referencia, aerolínea, localizador, terminal y asiento (ya no se piden en la hoja del vuelo). */
+  onDatos?: () => void
 }) {
   const esIda = leg.kind === 'arrival'
   const word = legWord(leg.mode)
@@ -149,6 +152,12 @@ export function TarjetaBillete({
         <span style={{ font: "600 13.5px 'Geist'" }} data-billete-fila="localizador">
           Localizador {billete.localizador.toUpperCase()}
         </span>
+      )}
+
+      {onDatos && (
+        <button type="button" onClick={onDatos} data-billete-cambiar-datos className="zona-toque self-start text-[13px] font-semibold underline underline-offset-2" style={{ color: INK }}>
+          Cambiar los datos
+        </button>
       )}
 
       {conCodigo && billete?.codigo ? (

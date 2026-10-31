@@ -73,12 +73,13 @@ const medidas = () =>
       botonEnPie: Boolean(boton && pie && pie.contains(boton)),
       botonFueraDelScroll: Boolean(boton && cuerpo && !cuerpo.contains(boton)),
       pegadoAbajo: Boolean(pr && br && pr.bottom - br.bottom < 40 && pr.bottom - br.bottom >= 0),
-      columnas: d?.querySelectorAll('[data-rueda-columna]').length ?? 0,
-      listboxHoras: d?.querySelectorAll('[role="listbox"]').length ?? 0,
+      // (10S6, 31-oct) antes → ahora → decisión de Eric: la rueda dentro de la hoja del vuelo → la hoja de la hora desde abajo, con ✓ (se cuenta en ella).
+      columnas: document.querySelectorAll('[data-hoja-de-hora] [data-rueda-columna]').length,
+      listboxHoras: document.querySelectorAll('[data-hoja-de-hora] [role="listbox"]').length,
       precio: /Cuánto ha costado/i.test(d?.innerText ?? ""),
       resumenes: Array.from(d?.querySelectorAll('[data-mi-vuelo-resumen]') ?? []).map((x) => x.textContent.trim()),
       pestanas: Array.from(d?.querySelectorAll('[role=tab]') ?? []).map((x) => x.textContent.trim()),
-      horaMostrada: d?.querySelector('[data-mi-vuelo-hora]')?.textContent.trim() ?? null,
+      horaMostrada: d?.querySelector('[data-campo-de-hora="roma"] [data-campo-de-hora-texto]')?.textContent.trim() ?? null,
     }
   })()`)
 
@@ -115,7 +116,7 @@ try {
   debe(m.botones.includes('Guardar el vuelo'), '2', `la hoja del administrador trae «Guardar el vuelo» (${m.botones.join(' | ').slice(0, 140)})`)
   debe(!m.botones.some((b) => /^Guardar$/.test(b)), '2', 'y ningún [Guardar] suelto en la rueda de la hora')
   debe(m.botones.filter((b) => /^Guardar/.test(b)).length === 1, '2', 'un solo botón de guardar')
-  await clic('[data-mi-vuelo-campo-hora]')
+  await clic('[data-campo-de-hora="roma"]')
   await a.esp(500)
   m = await medidas()
   debe(m.columnas === 2 && m.listboxHoras === 2, '3a', `(10N10) al tocar la hora, la rueda es de dos columnas (${m.columnas})`)
@@ -131,10 +132,14 @@ try {
 
   // Ida: aeropuerto y hora 14:25.
   await clic(`[data-mi-vuelo-punto-opcion="${puntos[0]}"]`)
+  await clic('[data-campo-de-hora="roma"]')
+  await a.esp(500)
   await rueda('Horas', '14')
   await a.esp(300)
   await rueda('Minutos', '25')
-  await a.esp(900)
+  await a.esp(500)
+  await ev("document.querySelector('[data-hoja-de-hora-guardar]')?.click(); true")
+  await a.esp(500)
   m = await medidas()
   debe(m.horaMostrada === '14:25', '3a', `la hora de la cabecera sigue a la rueda (${m.horaMostrada})`)
   let r = await rutaDe()
@@ -146,12 +151,17 @@ try {
   debe(m.resumenes.length === 1 && /^Ida · .*14:25$/.test(m.resumenes[0]), '3a', `la pestaña de la ida dice su resumen «✓ Ida · día · 14:25» (${JSON.stringify(m.resumenes)})`)
   const hojaVuelta = (await hoja()) ?? ''
   // (10S3) Antes: «Día de salida» → ahora «Día de vuelta» (Vuelo Reservas 03) → decisión de Eric (10S3, 30-oct). «Hora de salida» sigue en la rueda.
-  debe(/Día de vuelta/i.test(hojaVuelta) && /Hora de salida/i.test(hojaVuelta), '3a', 'en la vuelta, «Día de vuelta» y «Hora de salida»')
+  // (10S6, 31-oct) antes «Hora de salida» (cabecera de la rueda dentro de la hoja) → ahora la casilla dice «Sale a las» (la rueda tiene su propia hoja) → decisión de Eric.
+  debe(/Día de vuelta/i.test(hojaVuelta) && /Sale a las/i.test(hojaVuelta), '3a', 'en la vuelta, «Día de vuelta» y «Sale a las»')
   await clic(`[data-mi-vuelo-punto-opcion="${puntos[1]}"]`)
+  await clic('[data-campo-de-hora="roma"]')
+  await a.esp(500)
   await rueda('Horas', '19')
   await a.esp(300)
   await rueda('Minutos', '40')
-  await a.esp(900)
+  await a.esp(500)
+  await ev("document.querySelector('[data-hoja-de-hora-guardar]')?.click(); true")
+  await a.esp(500)
   r = await rutaDe()
   debe(r.ida === null && r.vuelta === null, '2', 'con la ida y la vuelta rellenas, la ruta sigue sin tocar hasta pulsar el botón')
   const botonActivo = await ev("document.querySelector('[data-mi-vuelo-guardar]')?.disabled === false")
@@ -216,10 +226,12 @@ try {
   debe(m.precio, '3a', '(10N10) y con precio también en la del invitado')
   debe(m.botonEnPie && m.pegadoAbajo, '3a', 'y con el botón pegado al pie')
   await clic('[data-mi-vuelo-lado="ida"]')
-  await clic('[data-mi-vuelo-campo-hora]')
+  await clic('[data-campo-de-hora="roma"]')
   await a.esp(400)
   await rueda('Horas', '09')
-  await a.esp(600)
+  await a.esp(400)
+  await ev("document.querySelector('[data-hoja-de-hora-guardar]')?.click(); true")
+  await a.esp(500)
   await clic('[data-mi-vuelo-lado="vuelta"]')
   await a.esp(400)
   m = await medidas()

@@ -126,7 +126,8 @@ console.log('2. Las casillas opcionales del otro lado')
   // (10S3) Antes → ahora → decisión de Eric (10S3, 30-oct): «¿De dónde sales? · opcional» y «Sales a las» → «Sales de» (opcional) y «Sale a las · opcional»; «¿A dónde llegas? · opcional» y «Llegas a las» → «Llegas a» (opcional) y «Llega a las · opcional» (Vuelo Reservas 02b y 03).
   debe(/Sales de/.test(ida_hoja_texto(hojaIda)) && /Sale a las · opcional/.test(ida_hoja_texto(hojaIda)) && !/¿De dónde sales\?/.test(ida_hoja_texto(hojaIda)), '2 casillas ida', `la hoja de la ida no trae las casillas de salida: ${ida_hoja_texto(hojaIda).slice(0, 260)}`)
   const hojaVuelta = hoja(tomaRuta(), 'departure')
-  debe(/Llegas a/.test(ida_hoja_texto(hojaVuelta)) && /Llega a las · opcional/.test(ida_hoja_texto(hojaVuelta)) && !/¿A dónde llegas\?/.test(ida_hoja_texto(hojaVuelta)), '2 casillas vuelta', 'la hoja de la vuelta no trae las casillas de llegada')
+  // (10S6, 31-oct) antes → ahora → decisión de Eric: «Llegas a» → «Aeropuerto de llegada».
+  debe(/Aeropuerto de llegada/.test(ida_hoja_texto(hojaVuelta)) && /Llega a las · opcional/.test(ida_hoja_texto(hojaVuelta)) && !/¿A dónde llegas\?/.test(ida_hoja_texto(hojaVuelta)), '2 casillas vuelta', 'la hoja de la vuelta no trae las casillas de llegada')
   debe(/data-mi-vuelo-otro-punto/.test(hojaIda) && /data-mi-vuelo-otra-hora/.test(hojaIda), '2 casillas ida', 'faltan las casillas otro punto / otra hora en la hoja de la ida')
   debe(/data-mi-vuelo-otro-punto/.test(hojaVuelta) && /data-mi-vuelo-otra-hora/.test(hojaVuelta), '2 casillas vuelta', 'faltan las casillas en la hoja de la vuelta')
   // Se guardan con el viaje.
@@ -145,7 +146,8 @@ console.log('2. Las casillas opcionales del otro lado')
   // Con la casilla guardada, la mitad la enseña.
   const conDatos = hoja(tomaRuta())
   // (10S3) Antes: el input type=time con value="08:55" → ahora el campo de hora de Design (Sale a las · opcional) enseña 08:55 en su texto → decisión de Eric (10S3, 30-oct).
-  debe(/data-mi-vuelo-otra-hora-valor[^>]*>08:55</.test(conDatos), '2 enseña', 'la casilla de la otra hora no enseña la hora guardada')
+  // (10S6, 31-oct) antes → ahora → decisión de Eric: la casilla de la hora ahora es el campo de hora común (data-campo-de-hora="otra").
+  debe(/data-campo-de-hora-texto[^>]*>08:55</.test(conDatos), '2 enseña', 'la casilla de la otra hora no enseña la hora guardada')
   // Sobreviven a rehacer la ruta (cambiar las fechas): setRoute las devuelve.
   const antes = tomaRuta()
   const nueva = { ...viaje({ dias: 4 }) }
@@ -197,7 +199,8 @@ console.log('3. La zona y las fechas')
   poner(viaje({ extra: { arrivalFlightTime: '11:20', arrivalPointId: 'fco' } }))
   for (const mitad of ['arrival', 'departure']) {
     const t = plano(aTexto(hoja(tomaRuta(), mitad)))
-    debe(t.includes('¿Llegas o te vas otro día? Cambia las fechas del viaje'), '3 fechas', `la hoja del vuelo (${mitad}) no trae «¿Llegas o te vas otro día? Cambia las fechas del viaje»`)
+    // (10S6, 31-oct) antes → ahora → decisión de Eric: la línea «¿Llegas o te vas otro día? Cambia las fechas del viaje» se quita de la hoja del vuelo (las fechas se cambian en el calendario del viaje).
+    debe(!t.includes('¿Llegas o te vas otro día?') && !t.includes('Cambia las fechas del viaje'), '3 fechas', `la hoja del vuelo (${mitad}) ya no trae «¿Llegas o te vas otro día? Cambia las fechas del viaje»`)
   }
   const panel = leer('src/components/route/ReservasPanel.tsx')
   debe(/useDatesCalendarStore\.getState\(\)\.request\(\)/.test(panel) && /onFechas=\{abrirFechas\}/.test(panel), '3 fechas', 'onFechas debe abrir el calendario de siempre (useDatesCalendarStore.request)')
@@ -208,9 +211,11 @@ console.log('3. La zona y las fechas')
   poner(viaje({ ida: 'flight', vuelta: 'train', extra: { arrivalFlightTime: '11:20', arrivalPointId: 'fco' } }))
   const mezclado = plano(aTexto(hoja(tomaRuta(), 'departure')))
   // (10S3) Antes: «¿De qué estación sales?» / «¿A qué aeropuerto llegas?» → ahora «Sales de» / «Llegas a» con los cuadrados del medio (Termini, Tiburtina / Fiumicino, Ciampino) y «Ref. del billete» (tren) o «Ref. vuelo» (avión) → decisión de Eric (10S3, 30-oct).
-  debe(/Sales de/.test(mezclado) && /Ref\. del billete/.test(mezclado) && /Tiburtina/.test(mezclado) && /Termini/.test(mezclado), '3 medios mezclados', 'con ida en avión y vuelta en tren, la vuelta debe hablar de estación (Tiburtina / Termini)')
+  // (10S6, 31-oct) antes → ahora → decisión de Eric: «Sales de» + «Ref. del billete» → «Estación de salida», sin la casilla de referencia.
+  debe(/Estación de salida/.test(mezclado) && !/Ref\. del billete/.test(mezclado) && /Tiburtina/.test(mezclado) && /Termini/.test(mezclado), '3 medios mezclados', 'con ida en avión y vuelta en tren, la vuelta debe hablar de estación (Tiburtina / Termini)')
   const mezcladoIda = plano(aTexto(hoja(tomaRuta(), 'arrival')))
-  debe(/Llegas a/.test(mezcladoIda) && /Fiumicino/.test(mezcladoIda) && /Ciampino/.test(mezcladoIda) && /Ref\. vuelo/.test(mezcladoIda), '3 medios mezclados', 'con ida en avión, la ida debe hablar de aeropuerto y de vuelo')
+  // (10S6, 31-oct) antes → ahora → decisión de Eric: «Llegas a» + «Ref. vuelo» → «Aeropuerto de llegada», sin la casilla de referencia.
+  debe(/Aeropuerto de llegada/.test(mezcladoIda) && /Fiumicino/.test(mezcladoIda) && /Ciampino/.test(mezcladoIda) && !/Ref\. vuelo/.test(mezcladoIda), '3 medios mezclados', 'con ida en avión, la ida debe hablar de aeropuerto y de vuelo')
 }
 
 // ── 4. La dirección del alojamiento ──

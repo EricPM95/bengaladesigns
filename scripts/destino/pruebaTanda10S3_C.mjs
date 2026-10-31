@@ -1,4 +1,5 @@
 // Tanda 10S3, agente C (apartado 4) · La hoja del vuelo (y del tren, el autobús y el barco) con sus dos lados, y el billete de DÍAS y HOY.
+// (10S6, 31-oct) antes → ahora → decisión de Eric: la rueda de la hora dentro de la hoja con «Quitar la hora» → hoja de la hora desde abajo (✓ guarda, papelera quita); «Llegas a»/«Sales de» de Roma → «Aeropuerto de llegada/salida»; fuera la casilla de referencia; la hora vacía sale como ejemplo en gris, no «—» (se lee con data-vacia).
 //   Design: `Piezas/Vuelo Reservas` 02, 02b, 02c, 03 y 04; `Piezas/Alojamiento Dias` 03 y 03b.
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTanda10S3_C.mjs
 // Capturas docs/dias/capturas_jutrip/10s3_vuelo_*.jpg y 10s3_billete_dias_*.jpg (con su _design al lado; SIN_DESIGN=1 las salta).
@@ -28,7 +29,8 @@ console.log('1. El código')
   const tarjeta = leer('src/components/route/dayDetail/TarjetaLlegadaDias.tsx')
   debe(!/dashed/.test(hoja) && !/¿De dónde sales\? · opcional/.test(hoja + legs) && !/marcaOtraHora|etiquetaOtro/.test(hoja + legs), '1 caja', 'la caja amarilla de puntos «¿De dónde sales? · opcional / Sales a las» ya no está en el código')
   debe(/data-mi-vuelo-otro-punto/.test(hoja) && /data-mi-vuelo-otra-hora/.test(hoja) && /data-mi-vuelo-medio/.test(hoja), '1 lados', 'la hoja trae el otro lado (texto y hora) y el medio en medio')
-  debe(!/placeholder/.test((hoja.match(/data-mi-vuelo-otro-punto[\s\S]{0,200}/) ?? [''])[0]) && !/placeholder=[^\n]*data-mi-vuelo-otro-punto/.test(hoja), '1 en blanco', 'la casilla de «Sales de» / «Llegas a» va en blanco: la app no propone nada')
+  // (10S6, 31-oct) antes → ahora → decisión de Eric: casilla sin ningún ayuda → con varios aeropuertos, el ejemplo en gris (otroPuntoEjemplo, calculado); nunca un texto fijo.
+  debe(!/placeholder="[^"]/.test((hoja.match(/data-mi-vuelo-otro-punto[\s\S]{0,200}/) ?? [''])[0]) && /placeholder=\{l\.extras\?\.otroPuntoEjemplo/.test(hoja), '1 en blanco', 'la casilla de «Sales de» no lleva texto fijo: solo el ejemplo calculado')
   debe(/data-llegada-roma/.test(tarjeta) && /ResizeObserver/.test(tarjeta) && /codigoRoma/.test(tarjeta), '1 tarjeta', 'la tarjeta de DÍAS pinta «CÓDIGO hora» y mide si cabe')
   debe(/codigoDelOtroLado/.test(leer('src/lib/billete.ts')), '1 código de fuera', 'el código del lado de fuera sale de una sola función')
 }
@@ -54,8 +56,8 @@ const vista = (a) =>
       raya: Array.from(d.querySelectorAll('*')).some((x) => /dashed/.test(getComputedStyle(x).borderTopStyle || '')),
       otroValor: otro ? otro.value : null,
       otroPlaceholder: otro ? (otro.getAttribute('placeholder') ?? '') : null,
-      otraHora: el('[data-mi-vuelo-otra-hora-valor]')?.textContent.trim() ?? null,
-      hora: el('[data-mi-vuelo-hora]')?.textContent.trim() ?? null,
+      otraHora: el('[data-campo-de-hora="otra"]')?.getAttribute('data-vacia') === '1' ? '—' : (el('[data-campo-de-hora="otra"] [data-campo-de-hora-texto]')?.textContent.trim() ?? null),
+      hora: el('[data-campo-de-hora="roma"] [data-campo-de-hora-texto]')?.textContent.trim() ?? null,
       punto,
       medio: r('[data-mi-vuelo-medio]'),
       campoOtro: r('[data-mi-vuelo-otro-punto]'),
@@ -63,7 +65,7 @@ const vista = (a) =>
       campoHora: r('[data-mi-vuelo-campo-hora]'),
       lista: r('[data-mi-vuelo-punto-lista]'),
       pase: r('[data-linea-pase="vuelo-hoja"]'),
-      codigo: r('[data-mi-vuelo-codigo]'),
+      codigo: null,
       guardar: el('[data-mi-vuelo-guardar]')?.textContent.trim() ?? null,
       etiquetas: { llegasA: top(/^Llegas a$/), salesDe: top(/^Sales de$/) },
       sinSalirse: Array.from(d.querySelectorAll('[data-mi-vuelo-lados] *')).every((x) => { const b = x.getBoundingClientRect(); return b.width === 0 || (b.left >= -1 && b.right <= innerWidth + 1) }),
@@ -91,35 +93,39 @@ for (const version of ['gratis', 'pago']) {
     let v = await vista(a)
     debe(v && v.titulo === 'Tu vuelo' && v.guardar === 'Guardar el vuelo', `2 ${version} título`, `título y botón: ${v && v.titulo} / ${v && v.guardar}`)
     debe(v && !/¿De dónde sales/.test(v.texto) && !/Sales a las/.test(v.texto) && !v.raya, `2 ${version} sin caja`, `sigue la caja amarilla de puntos: ${v && v.texto.slice(0, 300)}`)
-    debe(v && /Día de llegada/.test(v.texto) && /Sales de/.test(v.texto) && /opcional/.test(v.texto) && /Sale a las · opcional/i.test(v.texto) && /Llegas a/.test(v.texto) && /Llega a las/i.test(v.texto), `2 ${version} ida textos`, `faltan textos de la ida: ${v && v.texto.slice(0, 400)}`)
+    debe(v && /Día de llegada/.test(v.texto) && /Sales de/.test(v.texto) && /opcional/.test(v.texto) && /Sale a las · opcional/i.test(v.texto) && /Aeropuerto de llegada/.test(v.texto) && /Llega a las/i.test(v.texto), `2 ${version} ida textos`, `faltan textos de la ida: ${v && v.texto.slice(0, 400)}`)
     // antes: «Sales de» en blanco, la app no propone nada → ahora: relleno de partida con la ciudad de la primera pantalla (un solo aeropuerto: «Barcelona (El Prat)») → decisión de Eric (10S5, 30-oct). Sin ayuda escrita dentro (placeholder).
     debe(v && v.otroValor === 'Barcelona (El Prat)' && v.otroPlaceholder === '', `2 ${version} ida relleno`, `«Sales de» va relleno de partida con «Barcelona (El Prat)» (valor «${v && v.otroValor}», ayuda «${v && v.otroPlaceholder}»)`)
     debe(v && v.punto.length >= 2 && v.punto.every((p) => p.top === v.punto[0].top) && v.punto.some((p) => /Fiumicino/.test(p.t)) && v.punto.some((p) => /Ciampino/.test(p.t)), `2 ${version} ida cuadrados`, `Fiumicino y Ciampino en cuadrados, uno al lado del otro: ${JSON.stringify(v && v.punto)}`)
     debe(v && v.campoOtro && v.campoHoraOtra && v.medio && v.lista && v.campoHora && v.campoOtro.top < v.campoHoraOtra.top && v.campoHoraOtra.top < v.medio.top && v.medio.top < v.lista.top && v.lista.top < v.campoHora.top, `2 ${version} ida orden`, `orden de la ida: Sales de, Sale a las, medio, Llegas a, Llega a las: ${JSON.stringify(v && { o: v.campoOtro, ho: v.campoHoraOtra, m: v.medio, l: v.lista, h: v.campoHora })}`)
     debe(v && v.campoHora && v.campoHora.h >= 52 && v.campoHoraOtra.h >= 52 && v.campoOtro.h >= 52, `2 ${version} ida tamaños`, 'las casillas miden unos 54 px como en Design')
-    debe(v && (version === 'gratis' ? v.pase && v.codigo && v.pase.top >= v.campoHora.bottom && v.pase.bottom <= v.codigo.top : v.pase === null), `2 ${version} ida pase`, `la línea del pase ${version === 'gratis' ? 'sale debajo de «Llega a las»' : 'no sale con pase'}: ${JSON.stringify(v && v.pase)}`)
+    debe(v && (version === 'gratis' ? v.pase && v.pase.top >= v.campoHora.bottom : v.pase === null), `2 ${version} ida pase`, `la línea del pase ${version === 'gratis' ? 'sale debajo de «Llega a las»' : 'no sale con pase'}: ${JSON.stringify(v && v.pase)}`)
     debe(v && v.sinSalirse, `2 ${version} ida sin salirse`, 'algo de la ida se sale de la pantalla')
     // El botón no se enciende sin la hora y el aeropuerto de Roma.
     debe(await a.evaluar("document.querySelector('[data-mi-vuelo-guardar]')?.disabled === true"), `2 ${version} ida botón`, 'sin tocar nada el botón está apagado')
     await a.captura(foto(`vuelo_ida_${version}`))
     // Rellena: sale de (escrito), su hora (rueda), aeropuerto y hora de llegada a Roma.
     await escribe(a, '[data-mi-vuelo-otro-punto]', 'Barcelona-El Prat (BCN)')
-    await clic(a, '[data-mi-vuelo-otra-hora]')
+    await clic(a, '[data-campo-de-hora="otra"]')
     await esp(500)
     debe(await a.evaluar("document.querySelectorAll('[role=\"dialog\"] [data-rueda-columna]').length === 2"), `2 ${version} ida rueda`, 'la rueda de «Sale a las» es de dos columnas (hora : minutos)')
     await rueda(a, 'Horas', '08')
     await esp(300)
     await rueda(a, 'Minutos', '30')
     await esp(700)
+    await clic(a, '[data-hoja-de-hora-guardar]')
+    await esp(400)
     v = await vista(a)
     debe(v && v.otraHora === '08:30', `2 ${version} ida otra hora`, `la hora de salida sigue a la rueda (${v && v.otraHora})`)
     await clic(a, '[data-mi-vuelo-punto-opcion="Fiumicino"]')
-    await clic(a, '[data-mi-vuelo-campo-hora]')
+    await clic(a, '[data-campo-de-hora="roma"]')
     await esp(500)
     await rueda(a, 'Horas', '11')
     await esp(300)
     await rueda(a, 'Minutos', '15')
     await esp(700)
+    await clic(a, '[data-hoja-de-hora-guardar]')
+    await esp(400)
     v = await vista(a)
     debe(v && v.hora === '11:15' && v.otraHora === '08:30', `2 ${version} ida horas`, `las dos horas se ven (${v && v.hora} / ${v && v.otraHora})`)
     await a.evaluar("document.querySelector('[role=dialog] [data-mi-vuelo-campo-hora]')?.scrollIntoView({ block: 'center' }); true")
@@ -127,10 +133,8 @@ for (const version of ['gratis', 'pago']) {
     // — La vuelta.
     await clic(a, '[data-mi-vuelo-lado="vuelta"]')
     await esp(600)
-    await clic(a, '[data-mi-vuelo-campo-hora]') // cierra la rueda que se quedó abierta
-    await esp(300)
     v = await vista(a)
-    debe(v && /Día de vuelta/.test(v.texto) && /Sales de/.test(v.texto) && /Sale a las/i.test(v.texto) && /Llegas a/.test(v.texto) && /Llega a las · opcional/i.test(v.texto), `2 ${version} vuelta textos`, `faltan textos de la vuelta: ${v && v.texto.slice(0, 400)}`)
+    debe(v && /Día de vuelta/.test(v.texto) && /Aeropuerto de salida/.test(v.texto) && /Sale a las/i.test(v.texto) && /Aeropuerto de llegada/.test(v.texto) && /Llega a las · opcional/i.test(v.texto), `2 ${version} vuelta textos`, `faltan textos de la vuelta: ${v && v.texto.slice(0, 400)}`)
     // antes: en blanco → ahora: relleno de partida (10S5, decisión de Eric, 30-oct).
     debe(v && v.otroValor === 'Barcelona (El Prat)' && v.otroPlaceholder === '', `2 ${version} vuelta relleno`, `«Llegas a» va relleno de partida (${v && v.otroValor})`)
     debe(v && v.lista && v.campoHora && v.medio && v.campoOtro && v.campoHoraOtra && v.lista.top < v.campoHora.top && v.campoHora.top < v.medio.top && v.medio.top < v.campoOtro.top && v.campoOtro.top < v.campoHoraOtra.top, `2 ${version} vuelta orden`, `orden de la vuelta: Sales de, Sale a las, medio, Llegas a, Llega a las: ${JSON.stringify(v && { l: v.lista, h: v.campoHora, m: v.medio, o: v.campoOtro, ho: v.campoHoraOtra })}`)
@@ -138,33 +142,37 @@ for (const version of ['gratis', 'pago']) {
     debe(v && v.sinSalirse, `2 ${version} vuelta sin salirse`, 'algo de la vuelta se sale de la pantalla')
     await escribe(a, '[data-mi-vuelo-otro-punto]', 'Barcelona-El Prat')
     await clic(a, '[data-mi-vuelo-punto-opcion="Ciampino"]')
-    await clic(a, '[data-mi-vuelo-campo-hora]')
+    await clic(a, '[data-campo-de-hora="roma"]')
     await esp(400)
     await rueda(a, 'Horas', '18')
     await esp(300)
     await rueda(a, 'Minutos', '05')
     await esp(700)
-    await clic(a, '[data-mi-vuelo-campo-hora]')
-    await esp(300)
-    await clic(a, '[data-mi-vuelo-otra-hora]')
+    await clic(a, '[data-hoja-de-hora-guardar]')
+    await esp(400)
+    await clic(a, '[data-campo-de-hora="otra"]')
     await esp(400)
     await rueda(a, 'Horas', '20')
     await esp(300)
     await rueda(a, 'Minutos', '35')
     await esp(700)
+    await clic(a, '[data-hoja-de-hora-guardar]')
+    await esp(400)
     await a.captura(foto(`vuelo_vuelta_${version}`))
     // Quitar la otra hora la deja vacía.
-    await clic(a, '[data-mi-vuelo-otra-hora-quitar]')
+    await clic(a, '[data-campo-de-hora="otra"]')
+    await esp(400)
+    await clic(a, '[data-hoja-de-hora-quitar]')
     await esp(400)
     v = await vista(a)
     debe(v && v.otraHora === '—', `2 ${version} quitar hora`, `«Quitar la hora» deja la casilla vacía (${v && v.otraHora})`)
-    await clic(a, '[data-mi-vuelo-otra-hora]')
+    await clic(a, '[data-campo-de-hora="otra"]')
     await esp(400)
     await rueda(a, 'Horas', '20')
     await esp(300)
     await rueda(a, 'Minutos', '35')
     await esp(500)
-    await clic(a, '[data-mi-vuelo-otra-hora]')
+    await clic(a, '[data-hoja-de-hora-guardar]')
     await esp(300)
     // Guardar: todo a la ruta.
     debe(await a.evaluar("document.querySelector('[data-mi-vuelo-guardar]')?.disabled === false"), `2 ${version} botón`, 'con los dos aeropuertos y las horas el botón se enciende')

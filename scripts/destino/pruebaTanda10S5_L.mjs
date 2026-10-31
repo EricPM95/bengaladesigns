@@ -106,8 +106,8 @@ async function pasada(version) {
           leido: d.querySelector('[data-billete-leido]')?.getAttribute('data-billete-leido') ?? null,
           otroPunto: d.querySelector('[data-mi-vuelo-otro-punto]')?.value ?? null,
           otroTitulo: d.querySelector('[data-mi-vuelo-otro-lado] span')?.textContent ?? null,
-          otraHora: d.querySelector('[data-mi-vuelo-otra-hora-valor]')?.textContent ?? null,
-          hora: d.querySelector('[data-mi-vuelo-hora]')?.textContent ?? null,
+          otraHora: d.querySelector('[data-campo-de-hora="otra"] [data-campo-de-hora-texto]')?.textContent ?? null,
+          hora: d.querySelector('[data-campo-de-hora="roma"] [data-campo-de-hora-texto]')?.textContent ?? null,
           codigo: d.querySelector('[data-mi-vuelo-codigo]')?.value ?? null,
           compania: d.querySelector('[data-mi-vuelo-compania]')?.value ?? null,
           localizador: d.querySelector('[data-mi-vuelo-privado="localizador"]')?.value ?? null,
@@ -184,13 +184,13 @@ async function pasada(version) {
     await ev("Array.from(document.querySelectorAll('[role=dialog] [data-mi-vuelo-lado]')).find((b) => b.getAttribute('data-mi-vuelo-lado') === 'vuelta')?.click(); true")
     await a.esp(400)
     h = await hoja()
-    debe(h && h.otroPunto === 'Barcelona (El Prat)' && h.otroTitulo === 'Llegas a', 'sales-de', `«Llegas a» (vuelta) también relleno (${h?.otroTitulo} · ${h?.otroPunto})`)
+    debe(h && h.otroPunto === 'Barcelona (El Prat)' && h.otroTitulo === 'Aeropuerto de llegada', 'sales-de', `(10S6, 31-oct) antes «Llegas a» → ahora «Aeropuerto de llegada» (vuelta), también relleno (${h?.otroTitulo} · ${h?.otroPunto})`)
     await a.captura(foto(version, '02_sales_de'))
     await cerrarHojas()
     await ruta("window.__ruta.setState({ route: { ...st.route, origin: 'Londres', answers: { ...st.route.answers, origin: 'Londres' } } })")
     await clicHoja('arrival')
     h = await hoja()
-    debe(h && h.otroPunto === 'Londres', 'sales-de', `desde Londres (varios aeropuertos), solo «Londres» (${h?.otroPunto})`)
+    debe(h && h.otroPunto === '', 'sales-de', `(10S6, 31-oct) antes «Londres» relleno → ahora casilla vacía (con el ejemplo «Londres (Heathrow)» en gris; lo prueba pruebaTanda10S6_N) (${h?.otroPunto})`)
     await cerrarHojas()
     await ruta("window.__ruta.setState({ route: { ...st.route, origin: 'Barcelona', answers: { ...st.route.answers, origin: 'Barcelona' } } })")
     // Guardar sin tocar nada: el trayecto lleva el aeropuerto que se vio en el campo.
@@ -208,15 +208,11 @@ async function pasada(version) {
     await a.esp(1200)
     h = await hoja()
     debe(h && h.leido === 'si' && /Hemos leído tu billete/.test(h.aviso ?? ''), 'pdf', `la hoja avisa «Hemos leído tu billete» (${h?.aviso})`)
-    debe(h && h.codigo === 'VY 6102', 'pdf', `nº de vuelo rellenado: VY 6102 (${h?.codigo})`)
-    debe(h && /Vueling/i.test(h.compania ?? ''), 'pdf', `compañía: Vueling (${h?.compania})`)
-    debe(h && h.localizador === 'ABC123', 'pdf', `localizador ABC123 (${h?.localizador})`)
-    debe(h && /^(T)?1$/.test((h.terminal ?? '').replace(/^Terminal\s*/i, '')), 'pdf', `terminal 1 (${h?.terminal})`)
-    debe(h && h.asiento === '14C', 'pdf', `asiento 14C (${h?.asiento})`)
-    debe(h && h.hora === '10:25' && h.otraHora === '08:30', 'pdf', `las dos horas: salida 08:30 y llegada 10:25 (${h?.otraHora} → ${h?.hora})`)
+    debe(h && h.codigo === null, 'pdf', `(10S6, 31-oct) antes la hoja pedía el nº de vuelo → ahora ya no (se ve en la tarjeta tras guardar: «Vuelo VY 6102», abajo)`)
+                    debe(h && h.hora === '10:25' && h.otraHora === '08:30', 'pdf', `las dos horas: salida 08:30 y llegada 10:25 (${h?.otraHora} → ${h?.hora})`)
     debe(h && /El Prat/.test(h.otroPunto ?? ''), 'pdf', `aeropuerto de fuera: El Prat (${h?.otroPunto})`)
     debe(h && h.punto === 'Fiumicino', 'pdf', `aeropuerto de Roma: Fiumicino (${h?.punto})`)
-    debe(/Solo lo ves tú/.test(h?.nota ?? ''), 'privado', `la hoja dice que lo privado solo lo ve él (${h?.nota})`)
+    debe(h && h.nota === null && h.localizador === null && h.asiento === null && h.terminal === null, 'privado', `(10S6, 31-oct) antes la hoja decía «Solo lo ves tú…» y pedía localizador, terminal y asiento → ahora nada de eso en la hoja (están en la tarjeta)`)
     await a.captura(foto(version, '03_hoja_leida'))
     await guardarHoja()
     await a.esp(800)
@@ -305,10 +301,8 @@ async function pasada(version) {
     debe(leyoT, 'tren', 'se lee la captura del tren y se abre la hoja')
     await a.esp(1200)
     h = await hoja()
-    debe(h && /03180/.test(h.codigo ?? ''), 'tren', `nº de tren rellenado (${h?.codigo})`)
-    debe(h && h.localizador === 'XYZ789', 'tren', `localizador XYZ789 (${h?.localizador})`)
-    debe(h && /003/.test(h.coche ?? '') && h.asiento === '01D', 'tren', `coche 003 y asiento 01D (${h?.coche} · ${h?.asiento})`)
-    debe(h && h.coche !== null && h.terminal === null, 'tren', 'en tren la casilla es «Coche», no «Terminal»')
+    debe(h && h.codigo === null, 'tren', `(10S6, 31-oct) la hoja del tren ya no pide el nº de tren (sale en la tarjeta: «Tren 03180»)`)
+            debe(h && h.coche === null && h.asiento === null, 'tren', `(10S6, 31-oct) la hoja del tren ya no pide coche ni asiento (salen en la tarjeta: «Coche 003», «Asiento 01D»)`)
     await a.captura(foto(version, '06_hoja_tren'))
     await guardarHoja()
     await a.esp(800)

@@ -1,7 +1,7 @@
-import { useState, type CSSProperties, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { fechaCorta } from '../../../lib/nombreDeDia'
 import { Icono } from '../../ui/Icono'
-import { RuedaDeHora } from '../../ui/RuedaDeHora'
+import { CampoDeHora } from '../../ui/HojaDeHora'
 import { ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
 import { HojaAbajo } from './HojaAbajo'
 import { LineaDelPase } from '../../pase/Candado'
@@ -35,7 +35,7 @@ export interface LadoDeHoja {
   /** (10S5) Ya viene tocado (los datos se han leído de un billete y hay que guardarlos aunque el viajero no toque nada). */
   tocado?: boolean
   /** (10N10, 10S3) Las casillas de Design: el otro lado (casilla en blanco para escribir y su hora, opcionales), referencia y aerolínea. Solo el administrador las lleva. */
-  extras?: { codigo: string; compania: string; otroPunto: string; otraHora: string | null; /** (10S5) «Barcelona (El Prat)»: lo que sale en «Sales de» / «Llegas a» mientras el viajero no haya escrito nada (la ciudad de la primera pantalla y, si solo tiene un aeropuerto, el aeropuerto). */ otroPuntoPorDefecto?: string; /** (10S5) Lo privado del billete: localizador, terminal, asiento y (tren, autobús) coche. */ privados?: { localizador: string; terminal: string; asiento: string; coche: string }; conCoche?: boolean; etiquetaCodigo?: string; etiquetaCompania?: string; /** El icono del medio, en medio de los dos lados. */ icono: NombreIcono }
+  extras?: { codigo: string; compania: string; otroPunto: string; otraHora: string | null; /** (10S5) «Barcelona (El Prat)»: lo que sale en «Sales de» / «Llegas a» mientras el viajero no haya escrito nada (la ciudad de la primera pantalla y, si solo tiene un aeropuerto, el aeropuerto). */ /** (10S6) El ejemplo en gris de la casilla cuando la ciudad tiene varios aeropuertos: «Londres (Heathrow)». */ otroPuntoEjemplo?: string; otroPuntoPorDefecto?: string; /** (10S5) Lo privado del billete: localizador, terminal, asiento y (tren, autobús) coche. */ privados?: { localizador: string; terminal: string; asiento: string; coche: string }; conCoche?: boolean; etiquetaCodigo?: string; etiquetaCompania?: string; /** El icono del medio, en medio de los dos lados. */ icono: NombreIcono }
 }
 export interface LadoGuardado {
   hora: string
@@ -54,7 +54,6 @@ export interface LadoGuardado {
 }
 
 const HORA_DE_SERIE = { ida: '11:15', vuelta: '18:05' } as const
-const etiquetaMono: CSSProperties = { font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: '#6F4E37' }
 
 function Pastilla({ activa, onClick, children, dato }: { activa: boolean; onClick?: () => void; children: ReactNode; dato?: Record<string, string> }) {
   return (
@@ -77,7 +76,6 @@ export function HojaDelVuelo({
   textoGuardar = 'Guardar el vuelo',
   lados,
   extra,
-  avisoFechas,
   onGuardar,
   onQuitar,
   textoQuitar = 'Quitar el mío',
@@ -92,8 +90,6 @@ export function HojaDelVuelo({
   textoGuardar?: string
   lados: { ida: LadoDeHoja; vuelta: LadoDeHoja }
   extra?: ReactNode
-  /** «¿Llegas o te vas otro día? Cambia las fechas del viaje» (el administrador). */
-  avisoFechas?: ReactNode
   onGuardar: (ida: LadoGuardado, vuelta: LadoGuardado) => void
   onQuitar?: () => void
   textoQuitar?: string
@@ -115,7 +111,6 @@ export function HojaDelVuelo({
   })
   const cambia = (k: 'ida' | 'vuelta', cambio: Partial<{ hora: string; punto: string | null; fecha: string | null; codigo: string; compania: string; otroPunto: string; otraHora: string | null; localizador: string; terminal: string; asiento: string; coche: string }>) => setBorrador((previo) => ({ ...previo, [k]: { ...previo[k], ...cambio, tocado: previo[k].tocado || 'hora' in cambio || 'punto' in cambio || 'fecha' in cambio } }))
 
-  const [ruedaAbierta, setRuedaAbierta] = useState<'roma' | 'otra' | null>(null)
   const l = lados[lado]
   const b = borrador[lado]
   const elegida = (k: 'ida' | 'vuelta') => lados[k].activo && (lados[k].hecho || borrador[k].tocado)
@@ -156,15 +151,14 @@ export function HojaDelVuelo({
       )}
     </>
   )
-  const cajaDeDesign = 'flex h-[54px] min-w-0 flex-1 flex-col justify-center gap-px rounded-[15px] border bg-[#FFFDF8] px-3.5'
-  const etiquetaDeCaja: CSSProperties = { font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)', textTransform: 'uppercase' }
   const tituloDeLado = (texto: string, opcional: boolean) => (
     <div className="flex items-baseline justify-between">
       <span style={{ font: "700 14.5px 'Geist'", color: '#1C2230' }}>{texto}</span>
       {opcional && <span style={{ font: "500 12px 'Geist Mono',monospace", color: 'rgba(28,34,48,.5)' }}>opcional</span>}
     </div>
   )
-  const sale = lado === 'ida' ? 'Sales de' : 'Llegas a'
+  // (10S6) «Llegas a» hacía pensar en Roma: el lado de fuera de la vuelta es «Aeropuerto de llegada» (estación, puerto); el de la ida sigue siendo «Sales de».
+  const sale = lado === 'ida' ? 'Sales de' : `${l.etiquetaPunto} de llegada`
   /* El lado de fuera (Barcelona): casilla en blanco para escribir, opcional. La app no propone nada. */
   const bloqueOtroPunto = (
     <div className="flex flex-col gap-3" data-mi-vuelo-otro-lado>
@@ -175,64 +169,29 @@ export function HojaDelVuelo({
         maxLength={60}
         autoComplete="off"
         aria-label={sale}
+        placeholder={l.extras?.otroPuntoEjemplo ?? ''}
         data-mi-vuelo-otro-punto
-        className="h-[54px] w-full min-w-0 rounded-[15px] border bg-[#FFFDF8] px-3.5 text-[15px] font-medium text-text outline-none focus:border-text/50"
+        className="h-[54px] w-full min-w-0 rounded-[15px] border bg-[#FFFDF8] px-3.5 text-[15px] font-medium text-text outline-none placeholder:font-normal placeholder:text-text/35 focus:border-text/50"
         style={{ borderColor: 'rgba(28,34,48,.12)' }}
       />
     </div>
   )
-  const campoDeHora = (clave: 'roma' | 'otra', etiqueta: string, valor: string | null, datos: Record<string, string>, datosValor: Record<string, string>) => (
-    <div className="flex flex-col gap-2">
-      <button
-        type="button"
-        onClick={() => {
-          if (clave === 'otra' && !b.otraHora && ruedaAbierta !== 'otra') cambia(lado, { otraHora: lado === 'ida' ? '08:30' : '20:35' })
-          setRuedaAbierta((v) => (v === clave ? null : clave))
-        }}
-        aria-expanded={ruedaAbierta === clave ? true : false}
-        {...datos}
-        className="flex h-[54px] w-full items-center gap-2 rounded-[15px] border bg-[#FFFDF8] px-3.5 text-left"
-        style={{ borderColor: 'rgba(28,34,48,.12)' }}
-      >
-        <span className="flex min-w-0 flex-1 flex-col gap-px">
-          <span style={etiquetaDeCaja}>{etiqueta}</span>
-          <span className="text-[15px] font-medium text-text" {...datosValor}>
-            {valor ?? '—'}
-          </span>
-        </span>
-        <Icono nombre="reloj" size={18} style={{ color: 'rgba(28,34,48,.4)' }} />
-      </button>
-      {ruedaAbierta === clave && (
-        <div data-mi-vuelo-rueda>
-          <div className="mb-1.5 flex items-baseline justify-between">
-            <span style={etiquetaMono}>{(clave === 'roma') === l.llega ? 'Hora de llegada' : 'Hora de salida'}</span>
-            <span className="text-[12px] font-semibold text-text/55">{valor}</span>
-          </div>
-          <RuedaDeHora value={(clave === 'roma' ? b.hora : b.otraHora) ?? '08:30'} onChange={(h) => cambia(lado, clave === 'roma' ? { hora: h } : { otraHora: h })} label={(clave === 'roma') === l.llega ? 'Hora de llegada' : 'Hora de salida'} />
-          <p className="mt-2 text-center text-[12px] text-text/55">Toca fuera para cerrar: la hora se queda puesta</p>
-          {clave === 'otra' && (
-            <button
-              type="button"
-              onClick={() => {
-                cambia(lado, { otraHora: null })
-                setRuedaAbierta(null)
-              }}
-              data-mi-vuelo-otra-hora-quitar
-              className="mt-1 w-full py-1.5 text-center text-[13px] font-semibold text-text/60 underline underline-offset-2"
-            >
-              Quitar la hora
-            </button>
-          )}
-        </div>
-      )}
+  /* (10S6) La hora, siempre igual en toda la app: la casilla abre la hoja de la hora desde abajo (✓ guarda, papelera quita, tocar fuera guarda). Vacía: hora de ejemplo en gris y el reloj, sin raya. */
+  const claseCaja = 'flex h-[54px] w-full items-center justify-between rounded-[15px] border bg-[#FFFDF8] px-3.5 text-left'
+  const campoHoraRoma = (
+    <div data-mi-vuelo-campo-hora>
+      <CampoDeHora valor={b.hora} onChange={(h) => h && cambia(lado, { hora: h })} titulo={l.llega ? 'Hora de llegada' : 'Hora de salida'} etiqueta={l.llega ? 'Llega a las' : 'Sale a las'} ejemplo={HORA_DE_SERIE[lado]} quitable={false} className={claseCaja} datos="roma" />
     </div>
   )
-  const campoHoraRoma = campoDeHora('roma', l.llega ? 'Llega a las' : 'Sale a las', b.hora, { 'data-mi-vuelo-campo-hora': '' }, { 'data-mi-vuelo-hora': '' })
-  const campoHoraOtra = campoDeHora('otra', lado === 'ida' ? 'Sale a las · opcional' : 'Llega a las · opcional', b.otraHora, { 'data-mi-vuelo-otra-hora': '' }, { 'data-mi-vuelo-otra-hora-valor': '' })
+  const campoHoraOtra = (
+    <div data-mi-vuelo-otra-hora>
+      <CampoDeHora valor={b.otraHora} onChange={(h) => cambia(lado, { otraHora: h })} titulo={lado === 'ida' ? 'Hora de salida' : 'Hora de llegada'} etiqueta={lado === 'ida' ? 'Sale a las · opcional' : 'Llega a las · opcional'} ejemplo={lado === 'ida' ? '08:30' : '20:35'} className={claseCaja} datos="otra" />
+    </div>
+  )
   /* El lado de Roma: Fiumicino o Ciampino (o Termini y Tiburtina, o el puerto) en cuadrados. */
   const bloquePuntoRoma = (
     <div className="flex flex-col gap-3" data-mi-vuelo-punto-lista>
-      {tituloDeLado(l.llega ? 'Llegas a' : 'Sales de', false)}
+      {tituloDeLado(`${l.etiquetaPunto} de ${l.llega ? 'llegada' : 'salida'}`, false)}
       <div className="flex gap-2">
         {l.puntos.map((p) => {
           const activa = (b.punto ?? (l.puntos.length === 1 ? p : null)) === p
@@ -264,13 +223,19 @@ export function HojaDelVuelo({
     </div>
   ) : null
   /* (10N11 §4) Sin pase, la línea en gris con el candado; con pase, nada. (10S3) Va en los dos lados: en la ida debajo de «Llega a las» y en la vuelta debajo de «Sale a las». */
-  const lineaPase = <LineaDelPase clave="vuelo" datos="vuelo-hoja" texto="Con el {pase}, adaptamos tu primer y tu último día a tus vuelos." />
+  // (10S6) 10 px más de espacio arriba y 10 px más abajo.
+  const lineaPase = (
+    <div className="py-[10px] empty:hidden" data-vuelo-linea-pase>
+      <LineaDelPase clave="vuelo" datos="vuelo-hoja" texto="Con el {pase}, adaptamos tu primer y tu último día a tus vuelos." />
+    </div>
+  )
   return (
     <HojaAbajo titleId="hoja-mi-vuelo" onClose={onClose} capa={110} pie={pie}>
       <h2 id="hoja-mi-vuelo" className="max-w-[calc(100%-3rem)] font-display text-[32px] leading-[1.05] text-text">
         {titulo}
       </h2>
       {aviso}
+      {tarjeta}
       {pestanas.length > 1 && (
         <div className="mt-4 grid grid-cols-2 gap-2" role="tablist">
           {pestanas.map((k) => {
@@ -334,34 +299,6 @@ export function HojaDelVuelo({
               {campoHoraOtra}
             </>
           )}
-          <div className="flex gap-2">
-            <label className={cajaDeDesign} style={{ borderColor: 'rgba(28,34,48,.12)' }}>
-              <span style={etiquetaDeCaja}>{l.extras.etiquetaCodigo ?? 'Ref. vuelo'}</span>
-              <input value={b.codigo} onChange={(e) => cambia(lado, { codigo: e.target.value })} maxLength={20} placeholder="AB 1234" autoComplete="off" autoCapitalize="characters" data-mi-vuelo-codigo className="w-full min-w-0 bg-transparent text-[15px] font-medium uppercase outline-none placeholder:font-normal placeholder:normal-case placeholder:text-text/40" />
-            </label>
-            <label className={cajaDeDesign} style={{ borderColor: 'rgba(28,34,48,.12)' }}>
-              <span style={etiquetaDeCaja}>{l.extras.etiquetaCompania ?? 'Aerolínea'}</span>
-              <input value={b.compania} onChange={(e) => cambia(lado, { compania: e.target.value })} maxLength={40} placeholder="Opcional" autoComplete="off" data-mi-vuelo-compania className="w-full min-w-0 bg-transparent text-[15px] font-medium outline-none placeholder:font-normal placeholder:text-text/40" />
-            </label>
-          </div>
-          {l.extras.privados && (
-            <div className="flex flex-wrap gap-2" data-mi-vuelo-privados>
-              {([
-                ['localizador', 'Localizador', 'ABC123', true],
-                [l.extras.conCoche ? 'coche' : 'terminal', l.extras.conCoche ? 'Coche' : 'Terminal', l.extras.conCoche ? '003' : '1', false],
-                ['asiento', 'Asiento', l.extras.conCoche ? '01D' : '14C', true],
-              ] as const).map(([clave, etiqueta, ejemplo, mayus]) => (
-                <label key={clave} className={cajaDeDesign} style={{ borderColor: 'rgba(28,34,48,.12)', flexBasis: 'calc(50% - 4px)', flexGrow: 0 }}>
-                  <span style={etiquetaDeCaja}>{etiqueta}</span>
-                  <input value={b[clave]} onChange={(e) => cambia(lado, { [clave]: e.target.value })} maxLength={20} placeholder={`Opcional · ${ejemplo}`} autoComplete="off" autoCapitalize={mayus ? 'characters' : 'off'} data-mi-vuelo-privado={clave} className={`w-full min-w-0 bg-transparent text-[15px] font-medium outline-none placeholder:font-normal placeholder:normal-case placeholder:text-text/40 ${mayus ? 'uppercase' : ''}`} />
-                </label>
-              ))}
-              <span className="w-full text-[12px] leading-[1.35] text-text/55" data-mi-vuelo-privados-nota>
-                Solo lo ves tú: se guarda en tu móvil y se ve sin internet.
-              </span>
-            </div>
-          )}
-          {tarjeta}
         </div>
       ) : (
         <>
@@ -369,8 +306,8 @@ export function HojaDelVuelo({
           <div className="mt-5" data-mi-vuelo-punto-lista>
             <span style={ESTILO_PREGUNTA}>
               {l.llega
-                ? l.etiquetaPunto === 'Aeropuerto' ? '¿A qué aeropuerto llegas?' : l.etiquetaPunto === 'Puerto' ? '¿A qué puerto llegas?' : '¿A qué estación llegas?'
-                : l.etiquetaPunto === 'Aeropuerto' ? '¿De qué aeropuerto sales?' : l.etiquetaPunto === 'Puerto' ? '¿De qué puerto sales?' : '¿De qué estación sales?'}
+                ? `${l.etiquetaPunto} de llegada`
+                : `${l.etiquetaPunto} de salida`}
             </span>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {l.puntos.map((p) => {
@@ -394,32 +331,15 @@ export function HojaDelVuelo({
           </div>
         ) : l.puntoLibre ? (
           <label className="mt-5 flex flex-col gap-1.5">
-            <span style={ESTILO_PREGUNTA}>{lado === 'ida' ? '¿Dónde llegas? (opcional)' : '¿De dónde sales? (opcional)'}</span>
+            <span style={ESTILO_PREGUNTA}>{`${l.etiquetaPunto} de ${lado === 'ida' ? 'llegada' : 'salida'} (opcional)`}</span>
             <input value={b.punto ?? ''} onChange={(e) => cambia(lado, { punto: e.target.value })} maxLength={40} placeholder="Ciampino" autoComplete="off" data-mi-vuelo-punto className={campo} />
           </label>
         ) : null}
-        <button type="button" onClick={() => setRuedaAbierta((v) => (v ? null : 'roma'))} aria-expanded={ruedaAbierta !== null} data-mi-vuelo-campo-hora className="mt-4 flex h-[60px] w-full items-center justify-between rounded-[16px] border border-text/15 bg-white px-3.5 text-left">
-          <span className="flex flex-col gap-0.5">
-            <span style={{ ...etiquetaMono, fontSize: 10 }}>{l.llega ? 'Llega' : 'Sale'}</span>
-            <span className="text-[17px] font-medium text-text" data-mi-vuelo-hora>
-              {b.hora}
-            </span>
-          </span>
-          <Icono nombre="reloj" size={16} style={{ color: 'rgba(28,34,48,.5)' }} />
-        </button>
-        {ruedaAbierta && (
-          <div className="mt-2" data-mi-vuelo-rueda>
-            <div className="mb-1.5 flex items-baseline justify-between">
-              <span style={etiquetaMono}>{l.llega ? 'Hora de llegada' : 'Hora de salida'}</span>
-              <span className="text-[12px] font-semibold text-text/55">{b.hora}</span>
-            </div>
-            <RuedaDeHora value={b.hora} onChange={(h) => cambia(lado, { hora: h })} label={l.llega ? 'Hora de llegada' : 'Hora de salida'} />
-            <p className="mt-2 text-center text-[12px] text-text/55">Toca fuera para cerrar: la hora se queda puesta</p>
-          </div>
-        )}
+        <div className="mt-4" data-mi-vuelo-campo-hora>
+          <CampoDeHora valor={b.hora} onChange={(h) => h && cambia(lado, { hora: h })} titulo={l.llega ? 'Hora de llegada' : 'Hora de salida'} etiqueta={l.llega ? 'Llega' : 'Sale'} ejemplo={HORA_DE_SERIE[lado]} quitable={false} datos="roma" />
+        </div>
         </>
       )}
-      {l.dias.length > 0 && avisoFechas}
       {extra && <div className="mt-6 flex flex-col gap-5" data-mi-vuelo-extra>{extra}</div>}
     </HojaAbajo>
   )

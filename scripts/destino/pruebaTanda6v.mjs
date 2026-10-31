@@ -101,7 +101,8 @@ const route3 = await viaje(3)
   debe(!/Ver \d+ más/.test(t), '1 entradas', 'sale «Ver n más» sin haber más entradas')
 }
 const codigoEntradas = fs.readFileSync('src/components/route/reservas/EntradasYFreeTour.tsx', 'utf8')
-debe(/onBuy=\{\(\) => setFicha\(item\)\}/.test(codigoEntradas) && !/openTicketShop|buyHref/.test(codigoEntradas), '1 entradas', 'EntradasYFreeTour.tsx no abre la ficha con [Reservar] (o todavía abre la tienda)')
+// 10S6 (antes → ahora → decisión de Eric, 31-oct): antes `onBuy={() => setFicha(item)}`; ahora la tarjeta de Design lo lleva dentro de un ternario (la del grupo abre la hoja); [Reservar] sigue abriendo la ficha.
+debe(/: setFicha\(item\)\)/.test(codigoEntradas) && !/openTicketShop|buyHref/.test(codigoEntradas), '1 entradas', 'EntradasYFreeTour.tsx no abre la ficha con [Reservar] (o todavía abre la tienda)')
 {
   // (10S4: antes → se miraba el código de «Ver n más» (masEntradas.map) → ahora ese bloque no existe: se comprueba que no está.)
   debe(!/masEntradas\.map\(/.test(codigoEntradas), '1 entradas', 'queda código de «Ver n más»')

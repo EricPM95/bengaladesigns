@@ -155,7 +155,7 @@ for (const dias of [1, 2, 3, 4, 5, 6]) {
         // 4. las entradas (Tanda 6v): «En tu ruta» (las de las paradas que se visitan por dentro y el Free Tour si va; son las que cuentan) y «Ver n más» (las demás de la lista, que no cuentan)
         const bloque = buildEntradasBloque(route, orden, info.entradas, reservas, Object.keys(info.entradasPorSitio ?? {}))
         const lista = [...orden.arriba, ...orden.mas]
-        const m = r.texto.match(/(\d+) de (\d+) reservadas/)
+        const m = r.texto.match(/(\d+) de (\d+)\s+reservadas/) // 10S6: «2 de 6» y «reservadas» en elementos distintos (cabecera oscura de Design)
         if (bloque.enRuta.length > 0) debe(m && Number(m[2]) === bloque.enRuta.length && Number(m[1]) === bloque.enRuta.filter((x) => x.reservation).length, '4 entradas', `${etiqueta}: el bloque dice «${m?.[0]}» y en la ruta hay ${bloque.enRuta.length} (${bloque.enRuta.filter((x) => x.reservation).length} reservadas)`)
         else if (bloque.masEntradas.length > 0) debe(/Ninguna en tu ruta/.test(r.texto), '4 entradas', `${etiqueta}: sin entradas en la ruta, el bloque no lo dice`)
         const nombres = [...bloque.enRuta, ...bloque.masEntradas].map((x) => x.name)
@@ -236,7 +236,8 @@ for (const [ida, vuelta] of [['flight', 'train'], ['train', 'bus'], ['ferry', 'o
         const iLl = r.html.indexOf('data-blk="llegada"')
         const bloqueLl = aTexto(r.html.slice(iLl, r.html.indexOf('data-blk="', iLl + 12))).replace(/\n/g, ' ').replace(/\s+/g, ' ')
         debe(/Llegada y vuelta\s+Listo/.test(bloqueLl) && !/\bIda\b|\bVuelta\b|→/.test(bloqueLl), '2 líneas', `${etiqueta}: «Llegada y vuelta» listo debe salir plegado, solo título y «Listo» (${bloqueLl.slice(0, 160)})`)
-        const codigoLl = fs.readFileSync('src/components/route/reservas/LlegadaYVuelta.tsx', 'utf8')
+        // (10S6, 31-oct) antes → ahora → decisión de Eric: «Llegas a las» / «Sales a las» viven en TarjetaBillete.tsx desde la 10S5 (la mitad con billete), no en LlegadaYVuelta.tsx: se leen los dos archivos, misma fuerza.
+        const codigoLl = fs.readFileSync('src/components/route/reservas/LlegadaYVuelta.tsx', 'utf8') + fs.readFileSync('src/components/route/reservas/TarjetaBillete.tsx', 'utf8')
         debe(/Llegas a las/.test(codigoLl) && /Sales a las/.test(codigoLl) && /'Ida' : 'Vuelta'/.test(codigoLl) && /Día \$\{leg\.dayNumber\}/.test(codigoLl), '2 líneas', `${etiqueta}: en el bloque abierto faltan las líneas de la ida o la vuelta (y «Día n» sin fechas)`)
       }
     }
