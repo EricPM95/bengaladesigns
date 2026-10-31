@@ -61,6 +61,18 @@ export interface BilleteDeAlojamiento {
   actualizado: string
 }
 
+/**
+ * (10R §4) EL BILLETE DE UNA EXCURSIÓN: igual que el de la entrada (privado de cada persona, mismo documento `datos` de `billetes_personales`, sin migración), clave = `refId` de la reserva (el id de la excursión).
+ * El día, la hora y el punto de encuentro van en la reserva (los ve el grupo); aquí solo lo privado: cuántas personas, el localizador y el código.
+ */
+export interface BilleteDeExcursion {
+  personas: number | null
+  localizador: string | null
+  codigo: CodigoDelBillete | null
+  dueno: string | null
+  actualizado: string
+}
+
 const PREFIJO = 'trazo:billete:v1'
 const MAX_IMAGEN = 900_000
 
@@ -84,7 +96,7 @@ const poner1 = (k: string, v: string | null) => {
   }
 }
 
-type Datos = Partial<Record<LegDelBillete, BilleteGuardado>> & { entradas?: Record<string, BilleteDeEntrada>; alojamientos?: Record<string, BilleteDeAlojamiento> }
+type Datos = Partial<Record<LegDelBillete, BilleteGuardado>> & { entradas?: Record<string, BilleteDeEntrada>; excursiones?: Record<string, BilleteDeExcursion>; alojamientos?: Record<string, BilleteDeAlojamiento> }
 
 function leer(clave: string): Datos {
   try {
@@ -114,6 +126,9 @@ interface BilleteState {
   /** (10S7) El billete de una entrada o del Free Tour (clave = `refId` de la reserva). */
   ponerEntrada: (tripId: string | null, clave: string, billete: Omit<BilleteDeEntrada, 'actualizado'>) => void
   quitarEntrada: (tripId: string | null, clave: string) => void
+  /** (10R §4) El billete de una excursión (clave = `refId` de la reserva: el id de la excursión). */
+  ponerExcursion: (tripId: string | null, clave: string, billete: Omit<BilleteDeExcursion, 'actualizado'>) => void
+  quitarExcursion: (tripId: string | null, clave: string) => void
   /** (10S7b) El localizador privado de la reserva del hotel (clave = `segmentDayId`). Sin localizador, se quita. */
   ponerAlojamiento: (tripId: string | null, clave: string, localizador: string | null) => void
   /** Lleva la copia de la nube (0070) a este móvil y sube lo que falte. Nunca lanza; sin la 0070 o sin conexión, no hace nada. */
@@ -157,6 +172,25 @@ export const useBilleteStore = create<BilleteState>((set, get) => ({
     const entradas = { ...previo.entradas }
     delete entradas[clave]
     const datos: Datos = { ...previo, entradas }
+    set({ tripId, datos })
+    escribir(claveDe(tripId), datos)
+    void tocado(tripId, datos)
+  },
+  ponerExcursion: (tripId, clave, billete) => {
+    const previo = get().tripId === tripId ? get().datos : leer(claveDe(tripId))
+    const codigo = billete.codigo && billete.codigo.imagen && billete.codigo.imagen.length > MAX_IMAGEN ? { ...billete.codigo, imagen: null } : billete.codigo
+    const datos: Datos = { ...previo, excursiones: { ...(previo.excursiones ?? {}), [clave]: { ...billete, codigo, actualizado: new Date().toISOString() } } }
+    set({ tripId, datos })
+    escribir(claveDe(tripId), datos)
+    void tocado(tripId, datos)
+  },
+  quitarExcursion: (tripId, clave) => {
+    const previo = get().tripId === tripId ? get().datos : leer(claveDe(tripId))
+    if (!previo.excursiones?.[clave]) return
+    const excursiones = { ...previo.excursiones }
+    delete excursiones[clave]
+    const datos: Datos = { ...previo, excursiones }
+    if (Object.keys(excursiones).length === 0) delete datos.excursiones
     set({ tripId, datos })
     escribir(claveDe(tripId), datos)
     void tocado(tripId, datos)
@@ -218,6 +252,9 @@ function delDueno(datos: Datos, uid: string): Datos {
   const entradas: Record<string, BilleteDeEntrada> = {}
   for (const [clave, b] of Object.entries(datos.entradas ?? {})) if (b && (!b.dueno || b.dueno === uid)) entradas[clave] = { ...b, dueno: uid }
   if (Object.keys(entradas).length > 0) salida.entradas = entradas
+  const excursiones: Record<string, BilleteDeExcursion> = {}
+  for (const [clave, b] of Object.entries(datos.excursiones ?? {})) if (b && (!b.dueno || b.dueno === uid)) excursiones[clave] = { ...b, dueno: uid }
+  if (Object.keys(excursiones).length > 0) salida.excursiones = excursiones
   const alojamientos: Record<string, BilleteDeAlojamiento> = {}
   for (const [clave, b] of Object.entries(datos.alojamientos ?? {})) if (b && (!b.dueno || b.dueno === uid)) alojamientos[clave] = { ...b, dueno: uid }
   if (Object.keys(alojamientos).length > 0) salida.alojamientos = alojamientos
@@ -264,6 +301,9 @@ if (typeof window !== 'undefined') {
 /** ¿Hay algo que enseñar en este billete? (alguno de los datos privados o el código). */
 /** ¿Hay un código que enseñar en el billete de esta entrada? */
 export const entradaConCodigo = (b: BilleteDeEntrada | null | undefined): b is BilleteDeEntrada & { codigo: CodigoDelBillete } => Boolean(b?.codigo && (b.codigo.dibujo || b.codigo.imagen))
+
+/** ¿Hay un código que enseñar en el billete de esta excursión? */
+export const excursionConCodigo = (b: BilleteDeExcursion | null | undefined): b is BilleteDeExcursion & { codigo: CodigoDelBillete } => Boolean(b?.codigo && (b.codigo.dibujo || b.codigo.imagen))
 
 export const billeteConAlgo = (b: BilleteGuardado | null | undefined): boolean => Boolean(b && (b.localizador || b.terminal || b.asiento || b.coche || b.codigo))
 

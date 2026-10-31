@@ -3,6 +3,7 @@ import { precioTiendaEnVista } from '../../../../lib/moneda'
 import type { Excursion } from '../../../../lib/types'
 import { hoursLabel } from './hoursLabel'
 import { Icono } from '../../../ui/Icono'
+import { AvisosExcursion } from '../../excursions/AvisosExcursion'
 import type { NombreIcono } from '../../../../lib/iconos'
 
 /**
@@ -234,6 +235,8 @@ export function ExcursionDayPage({
             <em className="text-accent-grande">{view.nameDestination}</em>
             {view.nameAfter}
           </h3>
+
+          <AvisosExcursion excursion={viewed} />
 
           {tagList.length > 0 && (
             <span className="flex flex-wrap gap-1.5">

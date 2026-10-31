@@ -1,4 +1,4 @@
-import { pagoActivo } from './pago'
+import { avisoDelPaseSeEnsena } from './pago'
 
 /**
  * EL AVISO PEQUEÑO DEL PASE (Tanda 10N6 §1g): lo que sale cuando alguien SIN pase toca algo bloqueado por el pase.
@@ -13,7 +13,7 @@ export interface DetalleAvisoPase {
 }
 
 export function abrirAvisoPase(clave: string, opciones?: { destino?: string }): void {
-  if (pagoActivo()) return
+  if (!avisoDelPaseSeEnsena(clave)) return
   try {
     window.dispatchEvent(new CustomEvent<DetalleAvisoPase>(EVENTO_AVISO_PASE, { detail: { clave, destino: opciones?.destino } }))
   } catch {

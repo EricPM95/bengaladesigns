@@ -1,6 +1,7 @@
 import type { DayPlan, Route } from '../../../lib/types'
 import { excursionReservationOf, viewedExcursion } from '../../../lib/dayInterruptor'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { TuExcursionEnHoy } from '../hoy/TuExcursionEnHoy'
 
 /**
  * HOY el día de excursión (Tanda 6g, punto 6): sale la excursión, su nombre y su hora de salida, con el código si está confirmada. Nada más. Si es de medio día, después salen los lugares
@@ -36,6 +37,8 @@ export function TodayExcursion({ route, day }: { route: Route; day: DayPlan }) {
         )}
         {reservation && <p className="mt-2 text-[13px] font-medium text-accent-green">✓ Reservada{reservation.locator ? ` · ${reservation.locator}` : ''}</p>}
       </div>
+      {/* (10R §4) Con el pase: «Tu excursión» con su código y [Cómo llegar al punto de encuentro]. */}
+      <TuExcursionEnHoy route={route} reserva={reservation} puntoDeEncuentro={excursion.meetingPoint ?? null} />
       {page?.halfDay && afterwards.length > 0 && (
         <div className="rounded-2xl border border-text/[.08] bg-bg-card p-4">
           <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.14em] text-text-muted">Tu tarde</p>

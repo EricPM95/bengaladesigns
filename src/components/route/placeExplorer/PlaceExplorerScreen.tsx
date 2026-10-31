@@ -36,6 +36,7 @@ import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
 import { diaCorto } from '../../../lib/nombreDeDia'
 import { InterruptorElegir } from '../../ui/Elegir'
 import { puntuar } from '../../../lib/busqueda'
+import { AvisosExcursion } from '../excursions/AvisosExcursion'
 
 
 /** Por encima de esta distancia el "a N min a pie" deja de tener sentido (el viajero todavía no está
@@ -197,25 +198,26 @@ const MAX_SEARCH_RESULTS = 8
  * La foto de una fila en el diseño «Trazo Explorar»: una franja con el borde izquierdo en diagonal. Misma foto y misma carga perezosa
  * que PlaceThumb; si no hay foto se queda el degradado del color de la categoría con su icono.
  */
-function PlacePhotoPanel({ place, city, color, icon }: { place: DestinationPlace; city: string; color: string; icon: ExploreIconName }) {
+function PlacePhotoPanel({ place, city, color, icon, fixedUrl = null }: { place: DestinationPlace; city: string; color: string; icon: ExploreIconName; fixedUrl?: string | null }) {
   const ref = useRef<HTMLSpanElement>(null)
   const [inView, setInView] = useState(false)
-  const [photo, setPhoto] = useState<string | null>(null)
+  const [photoBuscada, setPhoto] = useState<string | null>(null)
+  const photo = fixedUrl ?? photoBuscada // (10R) la foto del operador, tal cual
   const toilet = isOsmPoint(place)
   useEffect(() => {
-    if (inView || toilet || !ref.current) return
+    if (inView || toilet || fixedUrl || !ref.current) return
     const observer = new IntersectionObserver((entries) => entries.some((entry) => entry.isIntersecting) && setInView(true), { rootMargin: '200px' })
     observer.observe(ref.current)
     return () => observer.disconnect()
-  }, [inView, toilet])
+  }, [inView, toilet, fixedUrl])
   useEffect(() => {
-    if (!inView) return
+    if (!inView || fixedUrl) return
     let cancelled = false
     fetchPlacePhoto(place.photo_name ?? place.name, city, place.wikipedia_title).then((url) => !cancelled && setPhoto(url))
     return () => {
       cancelled = true
     }
-  }, [inView, place.name, place.photo_name, place.wikipedia_title, city])
+  }, [inView, fixedUrl, place.name, place.photo_name, place.wikipedia_title, city])
   return (
     <span ref={ref} className="relative block shrink-0" style={{ width: 100, margin: '-1px 0 -1px -1px' }}>
       <span
@@ -268,7 +270,7 @@ function ExcursionResultCard({ excursion, destination, open, onToggle, onAdd }: 
         style={{ borderRadius: 18, border: `1px solid ${open ? color : 'rgba(28,34,48,.08)'}`, boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)' }}
       >
         <button type="button" onClick={onToggle} aria-expanded={open} className="flex min-w-0 flex-1 text-left">
-          <PlacePhotoPanel place={comoLugar} city={destination} color={color} icon="excursion" />
+          <PlacePhotoPanel place={comoLugar} city={destination} color={color} icon="excursion" fixedUrl={excursion.photoUrl ?? null} />
           <span className="flex min-w-0 flex-1 flex-col justify-center gap-1" style={{ padding: '10px 0 10px 18px' }}>
             <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
               {excursion.title}
@@ -306,7 +308,8 @@ function ExcursionResultCard({ excursion, destination, open, onToggle, onAdd }: 
               Reservar
             </a>
           )}
-          <p className="text-caption text-text-muted">Precio orientativo: se reserva fuera de la app.</p>
+          <AvisosExcursion excursion={excursion} />
+          <p className="text-caption text-text-muted">Se reserva fuera de la app.</p>
         </div>
       )}
     </div>

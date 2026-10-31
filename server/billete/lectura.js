@@ -28,6 +28,17 @@ export const LEER_ENTRADA_SISTEMA = `Lees entradas (a museos, monumentos, visita
  "codigo_caja": si en la imagen o en alguna página se ve el código de barras 2D (QR, Aztec o PDF417) que escanean al entrar: {"pagina": número de página empezando en 1 (1 si es una imagen), "x0": 0..1, "y0": 0..1, "x1": 0..1, "y1": 0..1} como fracciones del ancho y del alto de esa página, ajustado al código; si no se ve ninguno, null}
 No inventes nada. No devuelvas el nombre de ninguna persona.`
 
+// (10R §4) El billete de una EXCURSIÓN (Civitatis y similares): localizador, nombre, día, hora, punto de encuentro, personas y el código. Sin nombres de personas.
+export const LEER_EXCURSION_SISTEMA = `Lees el billete o el bono de una excursión (visita guiada, excursión de un día, tour; en PDF, foto o captura de pantalla, casi siempre en español, inglés o italiano) para una app de viajes. Devuelves SOLO un JSON, sin texto alrededor, con estos campos (lo que no aparezca claro: null):
+{"nombre": nombre de la excursión tal cual, o null,
+ "localizador": código de reserva ("Localizador", "Booking reference", "Codice prenotazione", "Número de pedido", "Voucher") o null,
+ "fecha": "YYYY-MM-DD" del día de la excursión o null (si no trae el año, usa el que te indico),
+ "hora": "HH:MM" 24 h, hora de inicio o de encuentro, o null,
+ "punto_encuentro": dónde hay que presentarse (nombre del sitio y dirección si la trae, en una frase corta), o null,
+ "personas": número entero de personas que cubre el documento (adultos + niños), o null si no se ve,
+ "codigo_caja": si en la imagen o en alguna página se ve el código de barras 2D (QR, Aztec o PDF417) que escanean: {"pagina": número de página empezando en 1 (1 si es una imagen), "x0": 0..1, "y0": 0..1, "x1": 0..1, "y1": 0..1} como fracciones del ancho y del alto de esa página, ajustado al código; si no se ve ninguno, null}
+No inventes nada. No devuelvas el nombre de ninguna persona ni teléfonos.`
+
 const HORA = /^([01]?\d|2[0-3]):[0-5]\d$/
 const FECHA = /^\d{4}-\d{2}-\d{2}$/
 
@@ -81,6 +92,21 @@ export function limpiarLecturaEntrada(crudo) {
     personas: n != null && n >= 1 && n <= 50 ? n : null,
     localizador: base.localizador,
     codigo_caja: base.codigo_caja,
+  }
+}
+
+/** Limpia lo que devuelve la IA al leer una excursión: solo campos con la forma buena; el resto, null. */
+export function limpiarLecturaExcursion(crudo) {
+  const c = crudo && typeof crudo === 'object' ? crudo : {}
+  const e = limpiarLecturaEntrada(c)
+  return {
+    nombre: texto(c.nombre, 120),
+    localizador: e.localizador,
+    fecha: e.fecha,
+    hora: e.hora,
+    punto_encuentro: texto(c.punto_encuentro, 160),
+    personas: e.personas,
+    codigo_caja: e.codigo_caja,
   }
 }
 
@@ -175,7 +201,8 @@ export function registrarLeerBillete(app, deps) {
     const devolver = () => liberar(uid, req.lecturaEnTabla)
     const { file, mode, year_hint: yearHint, tipo } = req.body ?? {}
     const esEntrada = tipo === 'entrada'
-    const esAlojamiento = tipo === 'alojamiento' // 10S7 §5: la reserva de un hotel (server/billete/lecturaAlojamiento.js)
+    const esExcursion = tipo === 'excursion' // 10R §4: el billete de una excursión
+    const esAlojamiento = tipo === 'alojamiento'// 10S7 §5: la reserva de un hotel (server/billete/lecturaAlojamiento.js)
     const hayArchivo = file && typeof file.data === 'string' && ['image/png', 'image/jpeg', 'image/webp', 'application/pdf'].includes(file.media_type)
     if (!hayArchivo) {
       await devolver()
@@ -188,20 +215,20 @@ export function registrarLeerBillete(app, deps) {
       return
     }
     try {
-      const intro = `Año por defecto: ${Number.isInteger(yearHint) ? yearHint : new Date().getFullYear()}.${esEntrada || esAlojamiento ? '' : ['avion', 'tren', 'bus', 'ferry'].includes(mode) ? ` Es un billete de ${{ avion: 'avión', tren: 'tren', bus: 'autobús', ferry: 'barco' }[mode]}.` : ''}`
+      const intro = `Año por defecto: ${Number.isInteger(yearHint) ? yearHint : new Date().getFullYear()}.${esEntrada || esAlojamiento || esExcursion ? '' : ['avion', 'tren', 'bus', 'ferry'].includes(mode) ? ` Es un billete de ${{ avion: 'avión', tren: 'tren', bus: 'autobús', ferry: 'barco' }[mode]}.` : ''}`
       const contenido = [
         file.media_type === 'application/pdf'
           ? { type: 'document', source: { type: 'base64', media_type: file.media_type, data: file.data } }
           : { type: 'image', source: { type: 'base64', media_type: file.media_type, data: file.data } },
         { type: 'text', text: intro },
       ]
-      const respuesta = await anthropic.messages.create({ model: modeloLectura, max_tokens: 700, system: esAlojamiento ? LEER_ALOJAMIENTO_SISTEMA : esEntrada ? LEER_ENTRADA_SISTEMA : LEER_BILLETE_SISTEMA, messages: [{ role: 'user', content: contenido }] })
+      const respuesta = await anthropic.messages.create({ model: modeloLectura, max_tokens: 700, system: esAlojamiento ? LEER_ALOJAMIENTO_SISTEMA : esExcursion ? LEER_EXCURSION_SISTEMA : esEntrada ? LEER_ENTRADA_SISTEMA : LEER_BILLETE_SISTEMA, messages: [{ role: 'user', content: contenido }] })
       // (El coste de CADA lectura sale en el registro: `[cost] … read-ticket / read-entry-ticket / read-lodging-booking`, con el modelo.)
-      logCallCost(esAlojamiento ? 'read-lodging-booking' : esEntrada ? 'read-entry-ticket' : 'read-ticket', respuesta, modeloLectura)
+      logCallCost(esAlojamiento ? 'read-lodging-booking' : esExcursion ? 'read-excursion-ticket' : esEntrada ? 'read-entry-ticket' : 'read-ticket', respuesta, modeloLectura)
       const bloque = respuesta.content.find((b) => b.type === 'text')
       if (!bloque) throw new Error('Respuesta de Claude sin bloque de texto')
       const crudo = JSON.parse(extractJsonText(bloque.text))
-      res.json(esAlojamiento ? limpiarLecturaAlojamiento(crudo) : esEntrada ? limpiarLecturaEntrada(crudo) : limpiarLecturaBillete(crudo))
+      res.json(esAlojamiento ? limpiarLecturaAlojamiento(crudo) : esExcursion ? limpiarLecturaExcursion(crudo) : esEntrada ? limpiarLecturaEntrada(crudo) : limpiarLecturaBillete(crudo))
     } catch (error) {
       logAnthropicError('read-ticket', error)
       res.status(502).json({ error: 'No hemos podido leer el billete. Puedes añadirlo a mano.' })

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { abrirPase, pagoActivo } from '../../lib/pago'
+import { abrirPase, avisoDelPaseSeEnsena } from '../../lib/pago'
 import { EVENTO_AVISO_PASE, type DetalleAvisoPase } from '../../lib/avisoPase'
 import { textoDelAviso } from '../../lib/avisoPaseTextos'
 import { useRouteStore } from '../../store/useRouteStore'
@@ -18,8 +18,9 @@ export function AvisoPaseHost() {
 
   useEffect(() => {
     const alPedir = (e: Event) => {
-      if (pagoActivo()) return
-      setAbierto((e as CustomEvent<DetalleAvisoPase>).detail)
+      const detalle = (e as CustomEvent<DetalleAvisoPase>).detail
+      if (!avisoDelPaseSeEnsena(detalle.clave)) return
+      setAbierto(detalle)
     }
     window.addEventListener(EVENTO_AVISO_PASE, alPedir)
     return () => window.removeEventListener(EVENTO_AVISO_PASE, alPedir)

@@ -24,15 +24,19 @@ function photoOf(excursion, folder) {
  * Lo que viaja al cliente (en snake_case, como el resto de las respuestas del servidor), en el orden del archivo. Null si el destino no tiene excursiones escritas.
  * @returns {{ phrase: string, options: object[] } | null}
  */
-export function excursionPagePayload(destKey) {
+export function excursionPagePayload(destKey, destData = null) {
   const data = excursionsFor(destKey)
   if (!data || !Array.isArray(data.excursiones) || data.excursiones.length === 0) return null
   const folder = `fotos/${destKey}/excursiones`
+  // (10R) El dato de roma.json › excursions.options de cada una (por `opcion` o, si no, por su mismo id): de ahí salen la foto del proveedor, el precio, el «Precio orientativo» y la cancelación.
+  const opciones = new Map((destData?.excursions?.options ?? []).map((o) => [o.id, o]))
   const options = [...data.excursiones]
     .sort((a, b) => (a.orden ?? 99) - (b.orden ?? 99))
     .map((excursion) => {
       const price = typeof excursion.precio_desde === 'number' ? excursion.precio_desde : null
       const half = excursion.medio_dia === true
+      const op = opciones.get(excursion.opcion ?? excursion.id) ?? null
+      const precioOp = typeof op?.price_from_eur === 'number' ? op.price_from_eur : null
       return {
         id: excursion.id,
         example: excursion.ejemplo === true,
@@ -43,13 +47,16 @@ export function excursionPagePayload(destKey) {
         duration_hours: excursion.duracion_h ?? null,
         return_time: excursion.vuelta ?? null,
         half_day: half,
-        price_from: price,
-        price_label: price != null ? precioTienda(price, 'EUR') : '',
+        price_from: precioOp ?? price,
+        price_label: (precioOp ?? price) != null ? precioTienda(precioOp ?? price, 'EUR') : '',
+        price_orientativo: op ? !op["civ" + "itatis"] /* (el nombre del proveedor no se escribe aquí: lo vigila pruebaTanda6g) */ : false,
+        cancellation: op?.cancellation ?? null,
+        cancellation_note: op?.cancellation_note ?? null,
         affiliate_url: excursion.enlace ? String(excursion.enlace) : null,
         tags: (excursion.etiquetas ?? []).map((tag) => ({ kind: tag.tipo, text: tag.texto })),
         stops: (excursion.paradas ?? []).map((stop) => ({ time: stop.hora, name: stop.nombre })),
         text: excursion.texto ?? '',
-        photo: photoOf(excursion, folder),
+        photo: photoOf(excursion, folder) ?? (op?.photo_url_big || op?.photo_url ? { url: op.photo_url_big ?? op.photo_url, credit: '' } : null),
         color: excursion.color ?? '#B4704A',
         percentage: Number.isFinite(excursion.porcentaje) ? excursion.porcentaje : null,
         meeting_point: excursion.punto_de_encuentro ?? null,

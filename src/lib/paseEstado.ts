@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { llamar, logrosActivos } from './logros'
-import { fijarPaseDeLaCache, fijarPaseDesconocido, fijarServidorDiceSinPase } from './pago'
+import { fijarPaseDeLaCache, fijarPaseDesconocido, fijarServidorDiceSinPase, fijarSinPaseParaDocumentos } from './pago'
 import { useSyncStore } from '../store/useSyncStore'
 import { useLogrosStore } from '../store/useLogrosStore'
 import type { PruebaDelPase } from './diaDePrueba'
@@ -50,8 +50,10 @@ function guardarCache(tripId: string, e: EstadoPase): void {
 /** Pone el estado del pase pendiente de este viaje: si hay uno guardado, lo pinta al momento; si no, sin pintar. */
 function pendienteOCache(tripId: string): void {
   const c = leerCache(tripId)
-  if (c) fijarPaseDeLaCache(c.cobro && !c.conPase)
-  else fijarPaseDesconocido(tripId)
+  if (c) {
+    fijarPaseDeLaCache(c.cobro && !c.conPase)
+    fijarSinPaseParaDocumentos(!c.conPase)
+  } else fijarPaseDesconocido(tripId)
 }
 
 export function paseForzado(): 'sin' | 'prueba' | 'con' | 'pregunta' | null {
@@ -102,10 +104,12 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
       if (!r?.ok) {
         // Sin respuesta (sin servidor o sin sesión): como siempre, todo abierto. (Y ya se sabe: los candados dejan de esperar.)
         fijarServidorDiceSinPase(false, tripId)
+        fijarSinPaseParaDocumentos(false)
         setReal(ABIERTO)
         return
       }
       fijarServidorDiceSinPase(r.cobro && r.pases.length === 0, tripId)
+      fijarSinPaseParaDocumentos(r.pases.length === 0)
       const nuevo: EstadoPase = { cobro: r.cobro, conPase: r.pases.length > 0, puede: !r.cobro || r.hoy.puede, pruebaGastada: r.prueba.ya_usada, sabido: true, prueba: { estado: r.prueba.estado ?? null, tripId: r.prueba.trip_id ?? null, fecha: r.prueba.fecha ?? null } }
       guardarCache(tripId, nuevo)
       setReal(nuevo)
@@ -121,6 +125,7 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
       if (c) {
         // Con lo último que se sabía de este viaje se pinta al momento; el servidor lo confirma en cuanto contesta.
         fijarPaseDeLaCache(c.cobro && !c.conPase)
+        fijarSinPaseParaDocumentos(!c.conPase)
         setReal((r) => (r.sabido === true && r.conPase === c.conPase && r.cobro === c.cobro ? r : c))
       } else {
         fijarPaseDesconocido(tripId)
@@ -130,7 +135,10 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
   }, [forzado, tripId])
   // (Tanda 10N5) Con un estado forzado (`?pase=sin|con…`, solo en desarrollo) los candados dicen lo mismo que RUTA y HOY.
   useEffect(() => {
-    if (forzado) fijarServidorDiceSinPase(forzado !== 'con', tripId)
+    if (forzado) {
+      fijarServidorDiceSinPase(forzado !== 'con', tripId)
+      fijarSinPaseParaDocumentos(forzado !== 'con')
+    }
   }, [forzado, tripId])
   // La pregunta de las 12:00 de prueba, una sola vez por carga.
   useEffect(() => {

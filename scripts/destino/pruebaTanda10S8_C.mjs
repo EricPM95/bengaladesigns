@@ -4,6 +4,7 @@
 //   · el precio abajo del todo («Precio total · 180 €» / solo con ida «Precio · 180 €») con su lápiz y su hoja (con la nota en gris); «Datos del vuelo» y la hoja del vuelo comparten las horas;
 //   · la Ida plegada con la llegada; la pregunta de la hora y el aviso de la fecha tras leer una tarjeta; «Vuelo VY 6102» en una línea a 375 px; tren igual (B3);
 //   · la lista de la comprobación (REPASO_10S8.html) tiene sus apartados (solo si existe: lo escribe el agente principal).
+// (10R, 31-oct) El candado de los documentos depende solo del pase, no del cobro: antes → con el cobro apagado no había candado → ahora → sin pase, candado y aviso aunque el cobro esté apagado → decisión de Eric; se prueba en pruebaTanda10R_C. Estas pasadas fuerzan ?version= y siguen valiendo.
 // Capturas docs/dias/capturas_jutrip/10s8_vuelo_<version>_<n>.jpg (390 x 844).
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTanda10S8_C.mjs
 import fs from 'node:fs'

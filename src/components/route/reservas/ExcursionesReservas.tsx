@@ -6,19 +6,24 @@ import { buildExcursionRow, dayOfReservation, hasEnoughDaysForExcursions, type R
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useEntradasDelGrupo, useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
-import { textoQuienVa } from '../../../lib/reservasGrupo'
-import { ICONOS, LineaReservada } from './BloqueReservas'
+import { textoQuienVa, idsIncluidos } from '../../../lib/reservasGrupo'
+import { ICONOS } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
-import { enTuRuta, metaReserva } from './EntradasYFreeTour'
+import { enTuRuta, cuandoDeLaReserva, diaEnCajas } from './EntradasYFreeTour'
+import { ROTULO } from './TarjetasEntradas'
 import { Icono } from '../../ui/Icono'
 import { VolverExcursionARuta } from './VolverExcursionARuta'
-
-const sinCero = (hora: string) => hora.replace(/^0(\d:)/, '$1')
-
-/** El nombre corto de una excursión para su línea verde («Pompeya»). */
-const nombreCorto = (excursion: Excursion | null | undefined, respaldo: string) => excursion?.page?.shortName ?? respaldo
+import { TarjetaExcursionDesign, HojaDatosDeLaExcursion, type DatosDeLaExcursion } from './ExcursionConBillete'
+import { useBilletesDeExcursiones } from '../../../hooks/useBilleteExcursion'
+import { useBilleteStore } from '../../../store/useBilleteStore'
+import { useRouteStore } from '../../../store/useRouteStore'
+import { useMisReservas } from '../../../store/useMisReservas'
+import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
+import { leerImporte } from '../../../lib/dinero'
+import { precioEnVista } from '../../../lib/moneda'
+import type { DatosExcursionLeida } from '../../../lib/billeteLeer'
 
 /** Una excursión de la lista de «¿Qué excursión tienes?»: su foto pequeña (o el color), el nombre y «Día completo» / «Medio día». */
 function FilaExcursion({ excursion, onPick }: { excursion: Excursion; onPick: () => void }) {
@@ -70,12 +75,25 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
   const openExcursions = useExcursionsStore((state) => state.openPage)
   const [lista, setLista] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
+  // (10R §4) El billete de cada excursión (privado de esta persona) y la hoja «Datos de la excursión».
+  const billetes = useBilletesDeExcursiones()
+  const [datosDe, setDatosDe] = useState<{ reserva: Reservation; leida: DatosExcursionLeida | null } | null>(null)
   const disponible = info.excursions.length > 0 && hasEnoughDaysForExcursions(route, info.fromDays)
   if (!disponible) return null
   const fila = buildExcursionRow(route, reservations)
   const hayDiaDeExcursion = Boolean(fila.excursion && fila.day)
   const añadidas = reservations.filter((item) => item.kind === 'excursion')
   const excursionDe = (reserva: Reservation): Excursion | null => reserva.excursionData ?? info.excursions.find((item) => item.id === reserva.refId) ?? null
+  /** Guarda lo privado (personas, localizador, código) en el móvil de esta persona y la hora y el punto de encuentro en la reserva. NO toca la ruta ni el día: la excursión no cambia de sitio (regla 6j). */
+  const guardarDatos = (reserva: Reservation, d: DatosDeLaExcursion) => {
+    const antes = billetes.de(reserva.refId)
+    if (d.personas || d.localizador || d.codigo) useBilleteStore.getState().ponerExcursion(billetes.tripId, reserva.refId, { personas: d.personas, localizador: d.localizador, codigo: d.codigo, dueno: antes?.dueno ?? billetes.yoId })
+    else if (antes) useBilleteStore.getState().quitarExcursion(billetes.tripId, reserva.refId)
+    const nueva: Reservation = { ...reserva, time: d.hora ?? reserva.time, meetingPoint: d.puntoEncuentro }
+    if (nueva.time === reserva.time && nueva.meetingPoint === (reserva.meetingPoint ?? null)) return
+    if (grupo.esInvitado) useMisReservas.getState().anadir(nueva)
+    else useRouteStore.setState((state) => ({ reservations: state.reservations.map((otra) => (otra.id === reserva.id ? nueva : otra)) }))
+  }
   const sinReservar = hayDiaDeExcursion && !fila.reservation
   // (Tanda 10N5, los tres colores) Otro del grupo ya reservó esta excursión y a ti te queda elegir la tuya → azul oscuro con dorado.
   const delGrupo = sinReservar && fila.excursion && grupo.esInvitado ? (grupo.reservasDelDueno.find((r) => r.kind === 'excursion' && r.refId === fila.excursion!.id) ?? null) : null
@@ -97,17 +115,44 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
             onChange={() => undefined}
           />
         )}
+        {añadidas.length > 0 && (
+          <span data-seccion-reservadas style={ROTULO}>
+            Reservadas · {añadidas.length}
+          </span>
+        )}
         {añadidas.map((reserva) => {
           const excursion = excursionDe(reserva)
+          const billete = billetes.de(reserva.refId)
+          const gente = grupo.gente.length >= 2 ? idsIncluidos(reserva, grupo.gente).map((id) => grupo.gente.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => Boolean(p)) : []
+          const precio = leerImporte(reserva.precio)
+          const fecha = reserva.dateIso && route.answers.dateRange ? diaEnCajas(reserva.dateIso) : { rotulo: 'DÍA', grande: `Día ${reserva.dayNumber ?? ''}`.trim() }
+          const quitar = () => {
+            if (grupo.esInvitado) useMisReservas.getState().quitar(reserva.id)
+            else removeReservationWithUndo(reserva.id)
+            if (billete) useBilleteStore.getState().quitarExcursion(billetes.tripId, reserva.refId)
+          }
           return (
-            <LineaReservada
-              key={reserva.id}
-              nombre={nombreCorto(excursion, reserva.name)}
-              meta={sinCero(metaReserva(route, reserva, 'recogida '))}
-              nota={reserva.noMueve ? 'Ya no está en tu ruta' : undefined}
-              accion={reserva.noMueve ? <VolverExcursionARuta route={route} reserva={reserva} excursion={excursion} /> : undefined}
-              onChange={() => setTarget({ kind: 'excursion', refId: reserva.refId, name: reserva.name, placeNames: [], excursion, currentDayId: dayOfReservation(route, reserva)?.id ?? null, existing: reserva })}
-            />
+            <div key={reserva.id} className="flex flex-col gap-2" data-excursion-fila={reserva.refId}>
+              <TarjetaExcursionDesign
+                chip={reserva.noMueve ? 'Ya no está en tu ruta' : 'Excursión'}
+                nombre={reserva.name}
+                diaRotulo={fecha.rotulo}
+                diaGrande={fecha.grande}
+                hora={reserva.time}
+                gente={gente}
+                precio={precio ? precioEnVista(precio) : null}
+                billete={billete}
+                puntoEncuentro={reserva.meetingPoint ?? excursion?.meetingPoint ?? null}
+                ciudad={route.destination}
+                cuando={cuandoDeLaReserva(route, reserva)}
+                año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined}
+                onLapizArriba={() => setTarget({ kind: 'excursion', refId: reserva.refId, name: reserva.name, placeNames: [], excursion, currentDayId: dayOfReservation(route, reserva)?.id ?? null, existing: reserva })}
+                onLapizDatos={() => setDatosDe({ reserva, leida: null })}
+                onLeida={(leida) => setDatosDe({ reserva, leida })}
+                onQuitar={quitar}
+                extra={reserva.noMueve ? <VolverExcursionARuta route={route} reserva={reserva} excursion={excursion} /> : undefined}
+              />
+            </div>
           )
         })}
         {!hayDiaDeExcursion && (
@@ -147,6 +192,19 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
             setLista(false)
             const dia = fila.day && fila.excursion?.id === excursion.id ? fila.day : null
             setTarget({ kind: 'excursion', refId: excursion.id, name: excursion.title, placeNames: [], excursion, currentDayId: dia?.id ?? null, paso2: true })
+          }}
+        />
+      )}
+      {datosDe && (
+        <HojaDatosDeLaExcursion
+          billete={billetes.de(datosDe.reserva.refId)}
+          puntoActual={datosDe.reserva.meetingPoint ?? excursionDe(datosDe.reserva)?.meetingPoint ?? null}
+          horaActual={datosDe.reserva.time}
+          leida={datosDe.leida}
+          onClose={() => setDatosDe(null)}
+          onGuardar={(d) => {
+            guardarDatos(datosDe.reserva, d)
+            setDatosDe(null)
           }}
         />
       )}

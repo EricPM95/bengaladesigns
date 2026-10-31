@@ -53,6 +53,8 @@ export interface NoCabe {
   nombre: string
   /** «jueves» (el motor, con fechas) o null (sin fechas: se dice «el día 1»). */
   weekday: string | null
+  /** (10R) false = no es un imprescindible: igualmente se dice que pasa a «Si te sobra tiempo» (en la línea de «Y N sitios más…»). Ausente = imprescindible. */
+  imprescindible?: boolean
 }
 
 export interface PropuestaDeVuelos {
@@ -246,7 +248,14 @@ export function aplicarAdaptacionDelMotor(day: DayPlan, respuesta: RespuestaAdap
     spareStops: [...(day.spareStops ?? []), ...nuevas],
     mealAfter: Object.keys(mealAfter).length > 0 ? mealAfter : undefined,
   }
-  const noCaben: NoCabe[] = respuesta.imprescindiblesFuera.map((fila) => ({ dayId: day.id, dayNumber: day.dayNumber, stopId: fila.id, nombre: fila.name, weekday: fila.weekday ?? respuesta.weekday ?? null }))
+  // (10R §0b) TODAS las paradas de ese día que no caben (imprescindibles o no; no la llegada, que no es un sitio): nada pasa a «Si te sobra tiempo» sin que se diga.
+  const fuera = new Map(respuesta.imprescindiblesFuera.map((fila) => [fila.id, fila]))
+  const noCaben: NoCabe[] = [
+    ...respuesta.imprescindiblesFuera.map((fila) => ({ dayId: day.id, dayNumber: day.dayNumber, stopId: fila.id, nombre: fila.name, weekday: fila.weekday ?? respuesta.weekday ?? null })),
+    ...respuesta.spare
+      .filter((fila) => !fuera.has(fila.id) && !fila.esLlegada)
+      .map((fila) => ({ dayId: day.id, dayNumber: day.dayNumber, stopId: fila.id, nombre: fila.name, weekday: respuesta.weekday ?? null, imprescindible: false })),
+  ]
   return { dayId: day.id, dayNumber: day.dayNumber, next, movidas: respuesta.order.filter((fila) => fila.changed).map((fila) => fila.id), noCaben }
 }
 

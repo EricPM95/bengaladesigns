@@ -20,10 +20,11 @@ export function esImprescindibleGrande(destino: string | null | undefined, nombr
 }
 
 /** Reparte los avisos: los grandes, uno por línea; el resto, a la línea de «Y N sitios más…». */
-export function repartirNoCaben<T extends { nombre: string }>(items: T[], destino: string | null | undefined): { grandes: T[]; resto: T[] } {
+export function repartirNoCaben<T extends { nombre: string; imprescindible?: boolean }>(items: T[], destino: string | null | undefined): { grandes: T[]; resto: T[] } {
   const grandes: T[] = []
   const resto: T[] = []
-  for (const item of items) (esImprescindibleGrande(destino, item.nombre) ? grandes : resto).push(item)
+  // (10R) Lo que no es imprescindible nunca tiene línea propia: va a «Y N sitios más…».
+  for (const item of items) (item.imprescindible !== false && esImprescindibleGrande(destino, item.nombre) ? grandes : resto).push(item)
   return { grandes, resto }
 }
 

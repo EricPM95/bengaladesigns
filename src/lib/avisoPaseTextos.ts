@@ -70,6 +70,10 @@ export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
     linea1: '',
     linea2: 'Con el {pase}, guardas tu entrada y la tienes a mano en la puerta, aunque no haya internet.',
   },
+  documento_excursion: {
+    linea1: '',
+    linea2: 'Con el {pase}, guardas el billete de tu excursión y lo tienes a mano en el punto de encuentro, aunque no haya internet.',
+  },
   documento_alojamiento: {
     linea1: '',
     linea2: 'Con el {pase}, guardas tu reserva y tienes la dirección, las horas y el teléfono a mano, aunque no haya internet.',

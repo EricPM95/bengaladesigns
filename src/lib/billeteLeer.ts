@@ -342,7 +342,7 @@ interface RespuestaServidor<T> {
   aviso: string | null
 }
 
-async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete, tipo?: 'entrada' | 'alojamiento'): Promise<RespuestaServidor<T>> {
+async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete, tipo?: 'entrada' | 'alojamiento' | 'excursion'): Promise<RespuestaServidor<T>> {
   // (10S8) Antes de nada, sin gastar una llamada: el tamaño. La sesión se manda siempre que haya; si no hay (o no vale), el servidor contesta 401 con su texto y sin llamar a Claude.
   if (archivo.size > MAX_ARCHIVO_LECTURA_BYTES) return { datos: null, aviso: AVISO_ARCHIVO_GRANDE }
   // (La sesión se pide al cargar el cliente de Supabase solo ahora, no al importar este archivo: así las pruebas del lector en Node, sin Vite, siguen funcionando.)
@@ -510,6 +510,82 @@ export async function leerEntrada(archivo: File, opciones: OpcionesLeerBillete =
       datos.fuentes.push('servidor')
       datos.fecha = servidor.fecha ?? null
       datos.hora = servidor.hora ?? null
+      datos.personas = Number.isInteger(servidor.personas) && (servidor.personas as number) > 0 ? servidor.personas : null
+      datos.localizador = servidor.localizador ?? null
+    }
+    if (elegido) datos.fuentes.push('codigo')
+    let recorte: string | null = null
+    let caja = elegido ? { pagina: elegido.pagina, ...elegido.caja } : null
+    if (!caja && servidor?.codigo_caja) caja = servidor.codigo_caja
+    if (caja && paginas[caja.pagina - 1]) recorte = recortar(paginas[caja.pagina - 1], caja)
+    if (elegido || recorte) {
+      datos.codigo = {
+        formato: elegido?.formato ?? 'otro',
+        texto: elegido?.texto ?? null,
+        dibujo: elegido ? await aSvgDataUrl(elegido.texto, elegido.formato) : null,
+        imagen: recorte,
+      }
+    }
+  } catch {
+    /* nunca lanza */
+  }
+  return datos
+}
+
+// ── Las excursiones (10R §4, agente D) ────────────────────────────────────────────────────────
+
+/** Lo que sale de leer el billete de una excursión: nombre, día, hora, punto de encuentro, personas, localizador y código. Lo que no se sepa, `null`. */
+export interface DatosExcursionLeida {
+  nombre: string | null
+  /** `YYYY-MM-DD`. */
+  fecha: string | null
+  /** `HH:MM` 24 h. */
+  hora: string | null
+  puntoEncuentro: string | null
+  personas: number | null
+  localizador: string | null
+  codigo: CodigoBillete | null
+  fuentes: Array<'codigo' | 'servidor'>
+  /** Como en `DatosEntradaLeida`: el texto de lo que impidió leerla con IA (sesión, pase, límite, tamaño). */
+  aviso: string | null
+}
+
+export function excursionVacia(): DatosExcursionLeida {
+  return { nombre: null, fecha: null, hora: null, puntoEncuentro: null, personas: null, localizador: null, codigo: null, fuentes: [], aviso: null }
+}
+
+interface LecturaServidorExcursion {
+  nombre: string | null
+  localizador: string | null
+  fecha: string | null
+  hora: string | null
+  punto_encuentro: string | null
+  personas: number | null
+  codigo_caja: { pagina: number; x0: number; y0: number; x1: number; y1: number } | null
+}
+
+/** PDF, foto o captura del billete de una excursión → datos y código. Igual que `leerEntrada`: nunca lanza; si no se puede leer nada, devuelve `excursionVacia()`. */
+export async function leerExcursion(archivo: File, opciones: OpcionesLeerBillete = {}): Promise<DatosExcursionLeida> {
+  const datos = excursionVacia()
+  try {
+    let paginas: HTMLCanvasElement[] = []
+    try {
+      paginas = await paginasDe(archivo)
+    } catch {
+      paginas = []
+    }
+    const hallazgos = await buscarCodigos(paginas).catch(() => [] as Hallazgo[])
+    const area = (h: Hallazgo) => (h.caja.x1 - h.caja.x0) * (h.caja.y1 - h.caja.y0)
+    const elegido = [...hallazgos].sort((a, b) => area(b) - area(a))[0] ?? null
+    const r = await leerEnServidor<LecturaServidorExcursion>(archivo, paginas, opciones, 'excursion').catch(() => ({ datos: null, aviso: null }) as RespuestaServidor<LecturaServidorExcursion>)
+    const servidor = r.datos
+    datos.aviso = r.aviso
+    if (servidor) {
+      datos.fuentes.push('servidor')
+      datos.nombre = servidor.nombre ?? null
+      datos.fecha = servidor.fecha ?? null
+      datos.hora = servidor.hora ?? null
+      datos.puntoEncuentro = servidor.punto_encuentro ?? null
       datos.personas = Number.isInteger(servidor.personas) && (servidor.personas as number) > 0 ? servidor.personas : null
       datos.localizador = servidor.localizador ?? null
     }

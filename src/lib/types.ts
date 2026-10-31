@@ -642,8 +642,16 @@ export interface Excursion {
   priceLabel?: string | null
   /** Dónde arranca la excursión, tal cual lo publica el operador. */
   meetingPoint?: string | null
-  /** El precio y la nota de esta excursión están puestos a mano, no vienen de la API del operador. */
-  provisionalPricing?: boolean
+  /** (10R) El precio no viene de la API del operador sino de nuestros datos (comprobados en su web el 26-oct): se enseña con «Precio orientativo» debajo. */
+  priceOrientativo?: boolean
+  /** (10R) 'gratuita' | 'no_reembolsable' | null (sin dato) y su nota («Gratuita hasta 24 h antes»). */
+  cancellation?: 'gratuita' | 'no_reembolsable' | null
+  cancellationNote?: string | null
+  /** (10R) La duración tal como la da el operador («12 h 15 - 13 h»); sin ella, `durationLabel`. */
+  durationText?: string | null
+  /** (10R) Su foto (la del operador, con permiso): tarjeta y ficha. Sin ella, la de siempre (`photoName`). */
+  photoUrl?: string | null
+  photoUrlBig?: string | null
   /** La más reservada del destino: solo si el dato es real (PARA_CODE_EXCURSIONES, 2). */
   bestSeller?: boolean
   /** Tanda 6g: lo que enseña la página de la excursión del día 4 (datos de `_excursiones.json`). */

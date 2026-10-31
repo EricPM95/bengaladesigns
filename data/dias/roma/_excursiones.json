@@ -11,7 +11,7 @@
       "duracion_h": 13,
       "vuelta": "20:00",
       "medio_dia": false,
-      "precio_desde": 65,
+      "precio_desde": 98.26,
       "enlace": "",
       "etiquetas": [
         { "tipo": "transporte", "texto": "Autobús" },
@@ -33,6 +33,7 @@
     },
     {
       "id": "tivoli",
+      "opcion": "tivoli_villas",
       "orden": 2,
       "ejemplo": true,
       "nombre": { "antes": "Excursión a", "destino": "Tívoli", "despues": "" },
@@ -90,6 +91,7 @@
     },
     {
       "id": "florencia",
+      "opcion": "florencia_tren",
       "orden": 4,
       "ejemplo": true,
       "nombre": { "antes": "Excursión a", "destino": "Florencia", "despues": "" },
@@ -97,7 +99,7 @@
       "duracion_h": 13,
       "vuelta": "20:30",
       "medio_dia": false,
-      "precio_desde": null,
+      "precio_desde": 149,
       "enlace": "",
       "etiquetas": [
         { "tipo": "transporte", "texto": "Tren" },
@@ -124,7 +126,7 @@
       "duracion_h": 14,
       "vuelta": "21:00",
       "medio_dia": false,
-      "precio_desde": null,
+      "precio_desde": 115,
       "enlace": "",
       "etiquetas": [
         { "tipo": "transporte", "texto": "Autobús" },

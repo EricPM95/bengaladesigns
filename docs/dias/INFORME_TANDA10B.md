@@ -4205,3 +4205,83 @@ Por tu «Sí, mételas»: la 0071 (aún sin aplicar) borra también `lo_suyo_del
 
 - ✅ Hecho — pruebaTanda10S8 (A, B, C, D) con los casos del prompt; REPASO_10S8.html con sus apartados (lo comprueba la propia prueba) El prompt llegó cortado: la parte final de la lista de la prueba la he completado como en las tandas anteriores. Más pruebaJutrip, pruebaTanda10J y la muestra de 60 fechas.  
   *Dónde:* No es de móvil.
+
+## 10R — Las excursiones de Roma con sus enlaces y datos de verdad, y en RESERVAS como las entradas (31-oct)
+
+**Qué se ha hecho (en sencillo).** (A) Los siete enlaces buenos, los datos de la tabla de Eric (precio, nota sobre 10, opiniones, duración y cancelación, con «comprobado: 2026-10-26»), fuera `provisional_pricing`, «Precio orientativo» mientras el precio no venga de la API, «No reembolsable» en Florencia en tren, las fotos de Civitatis de su servidor público (sin su nombre) y Venecia nueva. También en la página del día de excursión. (B) La excursión reservada en RESERVAS como una entrada (E1–E5), con billete privado solo con pase. (C) El candado de los documentos depende solo del pase (no del cobro) y «Y N sitios más…» cuenta todas las paradas que no caben. (D) Leer el billete de una excursión (`read-ticket` con tipo `excursion`: sesión, pase, 10 al día, 10 MB, Haiku) y «Tu excursión» en HOY.
+
+**Archivos:** roma.json, `_excursiones.json`, server/index.js, server/civitatis/servicio.js, server/engine/excursionPage.js, server/billete/lectura.js, src/lib (pago, paseEstado, avisoPase, avisoPaseTextos, billeteLeer, adaptarVuelos, imprescindiblesGrandes, mapGeneratedRoute, types), store del billete, componentes de excursiones, RESERVAS y HOY (nuevos: AvisosExcursion, ExcursionConBillete, TuExcursionEnHoy, useBilleteExcursion).
+
+**Motor:** sin tocar; muestra de 60 fechas idéntica. **Migración:** ninguna (el billete de la excursión va dentro del JSON de `billetes_personales`).
+
+**Pruebas (todas en 0 fallos):** pruebaTanda10R (A 215, B 54, C 24, D 35, + REPASO) · pruebaTanda10S8 (A–D, 264) · pruebaCivitatis1 149 · pruebaJutrip 129 · tsc limpio. `pruebaTanda6g` (días 4, 5 y 6): da `noche_d5` en 487 de 4526 viajes y **también en el código de antes de esta tanda** (11 de 134 en la muestra, igual en ambos): es de los pendientes del motor, no de la 10R. Sí salió una falla mía («proveedor_visible»: el nombre del proveedor en un archivo del servidor) y está corregida.
+
+**Dudas para Eric:**
+1. En el sandbox solo se resuelven 2 de las 8 excursiones (Florencia y Pisa 142547, Ostia 2283); las otras 6 dan 404: no están en el sandbox. Con la API real harán falta sus números en `data/civitatis/roma.json`. Además, los datos del sandbox no son los reales (Florencia y Pisa: 129 €/7,9/455 frente a 95,40 €/8,6/704): con la API de consulta encendida, los de pruebas pisarían los de tu tabla.
+2. Ostia Antica conserva su nota de antes (4,8 sobre 5, 278 opiniones): no estaba en tu tabla. ¿Pongo la real?
+3. Nápoles y Pompeya en tren: cancelación «—», no sale nada. ¿Así?
+4. Las notas pasan a estar sobre 10 en siete excursiones (Ostia sigue sobre 5): el top 3 del banner de días con excursión puede cambiar de orden; la muestra de 60 no lo cubre.
+5. Las fotos: confirmadas a ojo Venecia, Pompeya en tren y Florencia y Pisa; el resto por ruta y nombre de archivo. No se pudo comprobar con la API que la galería sea la de la web.
+6. Sin pase, HOY entero dice «Tu modo Hoy es parte del Pase Roma»: no hay candado para la excursión (igual que «Tu entrada»).
+7. «Cómo llegar al punto de encuentro» usa el punto de la reserva si se editó, y la tarjeta del día dice el de la excursión.
+8. La lectura real de un billete de excursión con Claude está probada con Claude de mentira: falta probar con un PDF real de Civitatis.
+9. El candado con el cobro apagado se probó forzando el estado del pase en la página, no con el cobro apagado de verdad.
+10. Venecia solo entra en viajes de 6 o más días (por el orden de las excursiones).
+
+### Lista de comprobación de la 10R
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado tal cual (llegó entero, acaba en «reinicia el api-server»); migraciones hasta la 0073 aplicadas; nota de estado cada 30 minutos; sin motor (muestra de 60 fechas idéntica) Sin migración nueva. Motor sin tocar: la muestra de 60 fechas sale idéntica.  
+  *Dónde:* No es de móvil.
+
+**0b · Respuestas a la 10S8**
+
+- ✅ Hecho — El candado de los documentos depende solo de tener el pase, no del cobro: sin pase, candado y aviso pequeño también con el cobro apagado; el resto de la app como estaba Hook nuevo solo para documentos (usePaseParaDocumentos); abrirAvisoPase y AvisoPaseHost tenían su propio «si hay cobro» y se ajustaron solo para las claves documento_*. Con la lectura de logros apagada el candado queda en «con» y manda el servidor (403). Probado forzando el estado del pase en la página, no con el cobro apagado de verdad en el servidor.  
+  *Dónde:* RESERVAS con cuenta sin pase: Entradas y Free Tour, Llegada y vuelta, Alojamiento.  *Captura:* `10r_candado_documentos_1.jpg`
+- ✅ Hecho — «Y N sitios más…» cuenta TODAS las paradas del día que no caben, imprescindibles o no La parada de llegada no cuenta (no es un sitio). Solo cliente; el motor ya devolvía todas.  
+  *Dónde:* Con pase: cambiar la hora del vuelo de llegada > Sí, adaptarlos > aviso de abajo.
+- ✅ Hecho — Pasar otra vez pruebaTanda10S8 (A a D) y pruebaJutrip Ver el informe.  
+  *Dónde:* No es de móvil.
+
+**1 · Los enlaces buenos**
+
+- ⚠️ A medias — Los siete slugs puestos; Ostia Antica como está; resolver en el sandbox y decir cuáles y con qué número Slugs puestos y «Reservar» abre la página real de cada una (las 8 dan 200). En el sandbox solo se resuelven 2 de 8: florencia_pisa (142547) y ostia_antica (2283). Pompeya y Sorrento, Nápoles y Pompeya en tren, Costa Amalfitana, Tívoli, Florencia en tren y Venecia dan 404: el sandbox no las tiene. Con la API real harán falta sus números en data/civitatis/roma.json.  
+  *Dónde:* Excursiones desde Roma > Reservar.
+
+**2 · Los datos de hoy**
+
+- ✅ Hecho — Los siete datos de la tabla (precio, nota sobre 10, opiniones, duración, cancelación) con «comprobado: 2026-10-26 (Eric, web de Civitatis)» Tívoli sigue con su duración de ahora (5 h) porque la API no dio otra. Nápoles y Pompeya en tren: cancelación «—», no sale nada. Ostia Antica mantiene su nota de antes (4,8/5, 278 opiniones): no estaba en tu tabla.  
+  *Dónde:* Lista de Excursiones desde Roma.  *Captura:* `10r_excursiones_01_lista.jpg`
+- ✅ Hecho — Nota sobre 10 visible; fuera los tachados escritos a mano y provisional_pricing Efecto de datos: el top de excursiones del banner de días ordena por nota y ahora hay siete sobre 10 (Ostia sigue sobre 5): puede cambiar el orden. La muestra de 60 no lo cubre.  
+  *Dónde:* Lista de Excursiones.
+- ✅ Hecho — «Precio orientativo» en pequeño debajo del precio mientras no venga de la API; sin esa línea con la API «Sin él con la API» está probado en pruebaCivitatis1, no directamente en pantalla.  
+  *Dónde:* Lista de Excursiones, tarjetas de la ficha del día y página del día de excursión.
+- ✅ Hecho — «No reembolsable» bien a la vista en la tarjeta y en la ficha de Florencia en tren, en estilo de aviso Caja champán con «!». En la página del día de excursión se comprobó por datos, sin captura.  
+  *Dónde:* Excursiones > Florencia en tren.  *Captura:* `10r_excursiones_03_florencia_tren.jpg`
+
+**2b · Fotos de Civitatis**
+
+- ⚠️ A medias — Fotos de Civitatis de sus servidores públicos (no qa.) en tarjeta y ficha de las siete, guardando la dirección y la fecha; sin su nombre en la app Fotos de cdn2.civitatis.com (las 8 responden 200), guardadas con fecha. Comprobadas a ojo contra su web: Venecia, Pompeya en tren y Florencia y Pisa; el resto por ruta y nombre de archivo. No se pudo confirmar con la API que la galería sea la de la web: el sandbox no tiene esas excursiones; se usa la foto principal. En la página del día de excursión la foto se comprobó por datos, no en pantalla.  
+  *Dónde:* Lista de Excursiones y página del día de excursión.  *Captura:* `10r_excursiones_01_lista.jpg`
+
+**3 · Venecia, nueva**
+
+- ✅ Hecho — Foto, coordenadas, punto de encuentro, descripción corta nuestra; sale en la lista y donde salen las demás Punto de encuentro «Via Marsala 46/48 (junto a la estación Termini)», de su web. Sin tocar el motor: por el orden del JSON solo entra en el grupo de excursiones de viajes de 6 o más días.  
+  *Dónde:* Excursiones desde Roma > Venecia.  *Captura:* `10r_excursiones_02_venecia.jpg`
+
+**4 · Excursiones en RESERVAS**
+
+- ✅ Hecho — La excursión reservada como una entrada (E1 a E5): nombre grande, día y hora en sus dos cuadros, para quién, precio, dos lápices, papelera roja con Deshacer Solo salen las excursiones en RESERVAS con 4 o más días sin la vuelta. Un viaje compartido ve su propia tarjeta, como las entradas; el caso de invitado solo se probó por código. Sin captura de Design al lado: Design no tiene pieza propia de excursión, usa E1 a E5.  
+  *Dónde:* RESERVAS > Excursiones, viaje de 4 días o más con una excursión reservada.  *Captura:* `10r_reservas_excursion_pago_375.jpg`
+- ✅ Hecho — [Añadir tu excursión] con candado dorado y aviso pequeño sin pase; con pase, localizador, código «Toca para ampliar» y «Datos de la excursión» con lápiz; lectura por read-ticket con sesión, pase y límite Lectura nueva tipo «excursion» (Haiku, coste en el registro como read-excursion-ticket), nunca devuelve nombre de persona ni teléfono. Probado con Claude de mentira; falta probar con un PDF real de Civitatis.  
+  *Dónde:* RESERVAS > Excursiones, con y sin pase.  *Captura:* `10r_reservas_excursion_aviso_375.jpg`
+- ⚠️ A medias — Punto de encuentro con [Cómo llegar al punto de encuentro] (con pase), y «Tu excursión» con su código en HOY (con pase) En HOY sin pase sale «Tu modo Hoy es parte del Pase Roma» (como «Tu entrada»), no hay candado. La tarjeta del día dice el punto de encuentro de la excursión y el botón usa el de la reserva si se editó. La captura con pase usa una reserva montada por la prueba, no un PDF real.  
+  *Dónde:* HOY el día de la excursión, con pase.  *Captura:* `10r_hoy_tu_excursion_1.jpg`
+- ✅ Hecho — El día de la excursión no cambia de sitio al reservarla (regla 6j); fechas enteras, bloque en claro y cabecera sin línea Comprobado en la prueba: «Datos de la excursión» no llama a addReservation.  
+  *Dónde:* RESERVAS y DÍAS.
+
+**5 · La prueba**
+
+- ✅ Hecho — pruebaTanda10R (A a D) y pruebaCivitatis1 al día; solo lo tocado más pruebaJutrip; capturas y REPASO_10R.html Capturas de la lista, de Venecia, de Florencia en tren y de la excursión en RESERVAS, sin y con pase.  
+  *Dónde:* No es de móvil.

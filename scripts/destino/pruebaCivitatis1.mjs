@@ -313,7 +313,7 @@ console.log('4. El servicio: la caché, la API caída y lo que se monta')
   const svcCaido = crearServicioCivitatis({ activa: true, cliente: nuevoCliente(sCaida), cache: crearCache() })
   const entradasCaida = await svcCaido.enriquecerEntradas('Roma', entradasHoy)
   debe(entradasCaida.entradasPorSitio.Coliseo === entradasHoy.Coliseo && entradasCaida.enriquecidos === 0, 'api_caida', 'con la API caída, las entradas son las de hoy (nuestros datos y nuestros enlaces)')
-  debe((await svcCaido.enriquecerExcursiones('Roma', opcionesHoy)).opciones[0].provisional_pricing === true, 'api_caida', 'con la API caída, las excursiones siguen provisionales')
+  debe((await svcCaido.enriquecerExcursiones('Roma', opcionesHoy)).opciones[0].civitatis === undefined, 'api_caida', 'con la API caída, las excursiones se quedan con nuestros datos (sin ficha de la API: «Precio orientativo»)')
   debe((await svcCaido.traslados(19)).ok === false && (await svcCaido.horasLibres(3834, hoy)).ok === false, 'api_caida', 'y no lanza nada')
 
   // Una base de datos que falla no rompe la caché
@@ -357,10 +357,10 @@ console.log('4. El servicio: la caché, la API caída y lo que se monta')
   // (c) Las excursiones
   const sExc = servidorFalso()
   const svcX = crearServicioCivitatis({ activa: true, cliente: nuevoCliente(sExc), cache: crearCache() })
-  const opciones = [{ id: 'florencia_pisa', name: 'Florencia y Pisa', price_from_eur: 85, rating: 4.9, review_count: 1000, provisional_pricing: true, meeting_point: 'Termini' }, { id: 'pompeya_sorrento', name: 'Pompeya', price_from_eur: 65, rating: 4.8, review_count: 2340, provisional_pricing: true }]
+  const opciones = [{ id: 'florencia_pisa', name: 'Florencia y Pisa', price_from_eur: 85, rating: 4.9, review_count: 1000, meeting_point: 'Termini' }, { id: 'pompeya_sorrento', name: 'Pompeya', price_from_eur: 65, rating: 4.8, review_count: 2340 }]
   // (Florencia y Pisa tiene actividad 142547 en el sandbox, pero no está guardada: la API la da como «no encontrada» y se queda provisional.)
   const x = await svcX.enriquecerExcursiones('Roma', opciones)
-  debe(x.opciones.every((o) => o.provisional_pricing === true) && x.enriquecidas === 0, 'excursiones', 'una excursión cuya actividad no responde se queda provisional, con su precio y su nota de siempre')
+  debe(x.opciones.every((o) => o.civitatis === undefined) && x.enriquecidas === 0, 'excursiones', 'una excursión cuya actividad no responde se queda con nuestros datos (sin ficha de la API, con «Precio orientativo»)')
   debe(datosDelDestino('Roma').excursiones.florencia_pisa === 142547 && datosDelDestino('Roma').excursiones.ostia_antica === 2283, 'excursiones', 'las excursiones que se han podido resolver están en los datos (Florencia y Pisa, Ostia Antica)')
   debe(datosDelDestino('Madrid') === null, 'excursiones', 'un destino sin datos no se toca')
 

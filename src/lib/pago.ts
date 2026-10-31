@@ -105,6 +105,32 @@ export function usePasePintable(): 'con' | 'sin' | 'pendiente' {
   return useSyncExternalStore(suscribirTodo, estadoDelPaseParaPintar, estadoDelPaseParaPintar)
 }
 
+/**
+ * (Tanda 10R §0b) LOS DOCUMENTOS (tarjeta de embarque, billetes, entradas, reserva del alojamiento) son del pase SIEMPRE, también con el cobro apagado (el servidor ya lo exige): su candado mira solo
+ * «¿tiene esta cuenta un pase?», no el cobro. El resto de la app sigue con `pagoActivo()`. `fijarSinPaseParaDocumentos(true)` = el servidor dice que la cuenta no tiene pase (sea cual sea el cobro).
+ */
+let sinPaseParaDocumentos = false
+export const fijarSinPaseParaDocumentos = (sinPase: boolean): void => {
+  if (sinPaseParaDocumentos === sinPase) return
+  sinPaseParaDocumentos = sinPase
+  avisar()
+}
+export function estadoDelPaseParaDocumentos(): 'con' | 'sin' | 'pendiente' {
+  if (pagoPendiente()) return 'pendiente'
+  if (sinPasePruebaActivo()) return 'sin'
+  const pedida = versionPedida()
+  if (pedida !== null) return pedida === 'completa' ? 'con' : 'sin'
+  return sinPaseParaDocumentos ? 'sin' : 'con'
+}
+/** ¿Se enseña el aviso pequeño del pase para esta clave? Los documentos (`documento_*`) miran solo el pase; el resto, `pagoActivo()` como siempre. */
+export function avisoDelPaseSeEnsena(clave: string): boolean {
+  return clave.startsWith('documento_') ? estadoDelPaseParaDocumentos() === 'sin' : !pagoActivo()
+}
+/** El hook del candado de los documentos: `'pendiente'` = ni candado ni aviso todavía. */
+export function usePaseParaDocumentos(): 'con' | 'sin' | 'pendiente' {
+  return useSyncExternalStore(suscribirTodo, estadoDelPaseParaDocumentos, estadoDelPaseParaDocumentos)
+}
+
 /** (Tanda 10N §3) Lo que dijo el servidor del pase (`usePaseEstado`): verdadero si el cobro está encendido y la cuenta no tiene pase. RUTA, HOY y todos los candados leen lo mismo a través de `pagoActivo()`. */
 let servidorDiceSinPase = false
 export const fijarServidorDiceSinPase = (sinPase: boolean, tripId: string | null = null): void => {

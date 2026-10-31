@@ -82,7 +82,7 @@ export function useWrittenDays(requestEngine) {
 function attachInterruptor(day, { destData, destKey, dayNumber, totalDays, dateRangeStartIso, mediaJornada, mode }) {
   const sw = interruptorDia4(destData, { totalDays, dateRangeStartIso, mediaJornada: Boolean(mediaJornada) })
   if (!sw || sw.dia !== dayNumber) return
-  const page = excursionPagePayload(destKey)
+  const page = excursionPagePayload(destKey, destData)
   if (!page) return
   day.interruptor = { mode, default: sw.defecto, by_date: sw.porFecha }
   day.excursion_page = page

@@ -11,11 +11,12 @@ import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { WhereSheet } from './WhereSheet'
 import { Icono } from '../../ui/Icono'
+import { AvisosExcursion } from './AvisosExcursion'
 
 /** «Día entero · 13 h · recogida en Estación de Termini». */
 function detailLine(excursion: Excursion): string {
   const length = excursion.length === 'half-day' ? 'Medio día' : 'Día entero'
-  const hours = excursion.durationHours ? `${excursion.durationHours} h` : null
+  const hours = excursion.durationText ? (/h/.test(excursion.durationText) ? excursion.durationText : `${excursion.durationText} h`) : excursion.durationHours ? `${excursion.durationHours} h` : null
   const how = excursion.meetingPoint ? `recogida en ${excursion.meetingPoint}` : null
   return [length, hours, how].filter(Boolean).join(' · ')
 }
@@ -34,18 +35,19 @@ function ExcursionPhoto({ excursion, destination }: { excursion: Excursion; dest
   const [photo, setPhoto] = useState<PlacePhoto | null>(null)
   useEffect(() => {
     let alive = true
+    if (excursion.photoUrl) return // (10R) la foto del operador, tal cual: no se busca otra
     void fetchPlacePhotoDetail(excursion.photoName ?? excursion.title, destination).then((found) => {
       if (alive && found) setPhoto(found)
     })
     return () => {
       alive = false
     }
-  }, [excursion.photoName, excursion.title, destination])
-  const url = photo?.small ?? null
+  }, [excursion.photoName, excursion.title, excursion.photoUrl, destination])
+  const url = excursion.photoUrl ?? photo?.small ?? null
   return (
     <div className="relative">
       <div className="h-40 w-full bg-bg-hover" style={url ? { backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined} role="img" aria-label={excursion.title} />
-      {hayCreditoDeFoto(photo) && (
+      {!excursion.photoUrl && hayCreditoDeFoto(photo) && (
         <FotoCredito
           photo={photo}
           className="absolute bottom-1.5 right-1.5 max-w-[80%] rounded-md bg-black/50 px-1.5 py-0.5 text-[10px] leading-tight text-white/90"
@@ -144,6 +146,7 @@ export function ExcursionsPage({ route }: { route: Route }) {
                     <p className="text-[13px] text-text-soft">{excursion.rating ? `${excursion.ratingMax === 10 ? `${excursion.rating.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/10` : `★ ${String(excursion.rating).replace('.', ',')}`} · ${formatReviewCount(excursion.reviewCount ?? 0)}` : ''}</p>
                     {price && <p className="font-display text-[19px] text-text">{price}</p>}
                   </div>
+                  <AvisosExcursion excursion={excursion} className="mt-1.5" />
                   <div className="mt-3 flex gap-2">
                     {excursion.bookUrl && (
                       <a href={excursion.bookUrl} target="_blank" rel="noopener noreferrer" className="flex h-11 flex-1 items-center justify-center rounded-full border border-text/15 text-[14.5px] font-medium text-text transition-colors hover:bg-bg-hover">

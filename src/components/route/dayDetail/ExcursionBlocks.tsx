@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { ExcursionBookArea, ExcursionReservedTop, useExcursionReservation } from '../reservas/ReservedMarks'
 import type { CuratedAlternative, Excursion } from '../../../lib/types'
 import { Icono } from '../../ui/Icono'
+import { AvisosExcursion } from '../excursions/AvisosExcursion'
 
 /**
  * Prompt 4 — las piezas de excursión de la ficha de un día, en un solo sitio porque comparten el
@@ -214,6 +215,7 @@ export function ExcursionOptions({
                   </>
                 ) : null}
               </span>
+              <AvisosExcursion excursion={excursion} className="mt-1" />
               {/* La descripción solo cuando está elegida: con seis tarjetas abiertas a la vez no se
                   compara nada, y comparar es justo lo que se viene a hacer a esta pantalla. */}
               {isSelected && excursion.description && <span className="mt-2 block text-caption leading-relaxed text-text-soft">{excursion.description}</span>}
@@ -361,6 +363,7 @@ export function HalfDayExcursionBlock({
                 </>
               ) : null}
             </p>
+            <AvisosExcursion excursion={excursion} className="mt-1" />
           </div>
         </div>
         {excursion.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{excursion.description}</p>}
@@ -433,6 +436,7 @@ export function BlankDayFullExcursion({ excursion, onRemove }: { excursion: Excu
                 </>
               ) : null}
             </p>
+            <AvisosExcursion excursion={excursion} className="mt-1" />
           </div>
         </div>
         {excursion.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{excursion.description}</p>}
@@ -577,6 +581,7 @@ export function ExcursionDayProposal({
                 </>
               ) : null}
             </p>
+            <AvisosExcursion excursion={featured} className="mt-1" />
           </div>
         </div>
         {featured.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{featured.description}</p>}

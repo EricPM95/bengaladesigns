@@ -289,6 +289,9 @@ export interface GeneratedExcursionPage {
   stops: { time: string; name: string }[]
   text: string
   photo: { url: string; credit: string } | null
+  price_orientativo?: boolean
+  cancellation?: 'gratuita' | 'no_reembolsable' | null
+  cancellation_note?: string | null
   color: string
   percentage: number | null
   meeting_point: string | null
@@ -365,8 +368,13 @@ export interface GeneratedExcursion {
   rating_max?: number | null
   /** Dónde arranca la excursión, tal cual lo publica el operador — solo las curadas. */
   meeting_point?: string | null
-  /** El precio y la nota están puestos a mano hasta que se integre la API de afiliados. */
-  provisional_pricing?: boolean
+  /** (10R) El precio sale de nuestros datos y no de la API de consulta: se enseña «Precio orientativo». */
+  price_orientativo?: boolean
+  duration_label?: string | null
+  cancellation?: 'gratuita' | 'no_reembolsable' | null
+  cancellation_note?: string | null
+  photo_url?: string | null
+  photo_url_big?: string | null
   /** La más reservada del destino (dato real del destino, nunca inventado). */
   best_seller?: boolean
   suggested_day?: number
@@ -663,6 +671,11 @@ export function mapExcursionPage(option: GeneratedExcursionPage): Excursion {
     destinationCoords: option.coords,
     meetingPoint: option.meeting_point,
     bookUrl: option.affiliate_url ?? undefined,
+    priceOrientativo: option.price_orientativo === true,
+    cancellation: option.cancellation ?? null,
+    cancellationNote: option.cancellation_note ?? null,
+    photoUrl: option.photo?.url ?? null,
+    photoUrlBig: option.photo?.url ?? null,
     page: {
       nameBefore: option.name_before,
       nameDestination: option.name_destination,
@@ -696,7 +709,7 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       length: excursion.duration === 'half_day' ? 'half-day' : 'full-day',
       // Con horas curadas se enseña el dato concreto ("12h"), que es lo que decide si el día cabe;
       // sin ellas se cae a la etiqueta genérica de siempre.
-      durationLabel: excursion.duration_hours ? `${excursion.duration_hours}h` : excursion.duration === 'half_day' ? 'Medio día' : 'Día completo',
+      durationLabel: excursion.duration_label ?? (excursion.duration_hours ? `${excursion.duration_hours}h` : excursion.duration === 'half_day' ? 'Medio día' : 'Día completo'),
       price: parseEuroMidpoint(excursion.estimated_price),
       priceLabel: excursion.estimated_price || null,
       description: excursion.description,
@@ -711,12 +724,17 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       //
       // Se corta aquí, en la frontera, y no en cada tarjeta: así ninguna pantalla puede enseñarlo
       // por descuido, ni esta ni la que se escriba mañana.
-      rating: excursion.provisional_pricing ? undefined : (excursion.rating ?? undefined),
-      reviewCount: excursion.provisional_pricing ? undefined : (excursion.review_count ?? undefined),
+      rating: excursion.rating ?? undefined,
+      reviewCount: excursion.review_count ?? undefined,
       ratingMax: excursion.rating_max === 10 ? 10 : 5,
       destinationCoords: excursion.destination_coords ?? null,
       meetingPoint: excursion.meeting_point ?? null,
-      provisionalPricing: excursion.provisional_pricing ?? false,
+      priceOrientativo: excursion.price_orientativo === true,
+      cancellation: excursion.cancellation ?? null,
+      cancellationNote: excursion.cancellation_note ?? null,
+      durationText: excursion.duration_label ?? null,
+      photoUrl: excursion.photo_url ?? null,
+      photoUrlBig: excursion.photo_url_big ?? excursion.photo_url ?? null,
       bestSeller: excursion.best_seller === true,
       bookUrl: excursion.civitatis_url || buildExcursionSearchUrl(excursion.name, excursion.civitatis_search),
     }

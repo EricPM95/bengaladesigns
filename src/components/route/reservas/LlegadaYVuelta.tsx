@@ -32,7 +32,7 @@ import { LapizDeReserva, claveDocumentoDeMedio } from './BotonesDeReserva'
 import { HojaPrecio } from './HojaPrecio'
 import { fechaEnProsa } from '../../../lib/nombreDeDia'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
-import { estadoDelPaseParaPintar } from '../../../lib/pago'
+import { estadoDelPaseParaDocumentos } from '../../../lib/pago'
 
 const ETIQUETA_PUNTO: Record<string, string> = { avion: 'Aeropuerto', tren: 'Estación', bus: 'Estación', ferry: 'Puerto', coche: 'Punto' }
 const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
@@ -428,7 +428,7 @@ export function LlegadaYVuelta({
   }
   const pedirArchivo = (kind: LegKind) => {
     // (10S8 §2) Añadir un documento nuevo es del pase: sin él, el aviso pequeño (el botón ya lo hace; esto cierra «Cambiar el archivo» de la hoja del vuelo).
-    if (estadoDelPaseParaPintar() === 'sin') {
+    if (estadoDelPaseParaDocumentos() === 'sin') {
       abrirAvisoPase(claveDocumentoDeMedio((kind === 'arrival' ? ida : vuelta).mode), { destino: route.destination })
       return
     }

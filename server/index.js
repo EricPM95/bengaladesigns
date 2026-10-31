@@ -4682,7 +4682,7 @@ app.post('/api/destination-excursions', async (req, res) => {
     res.json({ found: false, from_days: null, excursions: [], entradas: [], entradas_por_sitio: entradasPorSitio, ...reservasExtra, day_name_example: dayNameExample })
     return
   }
-  const rated = options.filter((option) => option.provisional_pricing === false && Number.isFinite(option.rating) && Number.isFinite(option.review_count))
+  const rated = options.filter((option) => Number.isFinite(option.rating) && Number.isFinite(option.review_count))
   // (Cada nota va con su escala: las nuestras de siempre son de 0 a 5 y las de la API de consulta, de 0 a 10 como en la web. La media se calcula sobre 10 y se enseña en %: 9,0 de 10 = 90 %.)
   const sobre10 = (option) => option.rating * (10 / (option.rating_max === 10 ? 10 : 5))
   const average = rated.length > 0 ? rated.reduce((sum, option) => sum + sobre10(option), 0) / rated.length : null
@@ -5218,7 +5218,16 @@ function excursionsAvailablePayload(destData, dayNumber, options, totalDays) {
     // La escala de la nota: 5 las de siempre; 10 las de la API de consulta (se enseñan «9,6/10», como en la web).
     rating_max: option.rating_max === 10 ? 10 : 5,
     review_count: option.review_count ?? null,
-    provisional_pricing: option.provisional_pricing !== false,
+    // (10R) Ya no hay precios «provisionales»: los datos del 26-oct son de la web. Mientras no vengan de la API de consulta, el precio sale como «Precio orientativo».
+    price_orientativo: !option.civitatis,
+    duration_label: option.duration_label ?? null,
+    // La cancelación: 'gratuita' | 'no_reembolsable' | null (sin dato), con su nota («Gratuita hasta 24 h antes»). De la API, cuando viene, manda su frase.
+    cancellation: option.cancellation ?? null,
+    cancellation_note: option.cancellation_note ?? null,
+    checked: option.checked ?? null,
+    // Las fotos de Civitatis (permiso confirmado, 31-oct): la dirección guardada en nuestros datos (servidor público, nunca `qa.`).
+    photo_url: option.photo_url ?? null,
+    photo_url_big: option.photo_url_big ?? null,
     /** Dónde arranca la excursión, tal cual lo publica el operador. */
     meeting_point: option.meeting_point ?? null,
     destination_coords: Array.isArray(option.destination_coords) ? { lat: option.destination_coords[0], lng: option.destination_coords[1] } : null,
@@ -5228,7 +5237,8 @@ function excursionsAvailablePayload(destData, dayNumber, options, totalDays) {
     // 404 delante del viajero, y una búsqueda no puede romperse.
     civitatis_search: option.civitatis_search ?? null,
     // La página de la actividad de verdad, si la API de consulta la ha resuelto (parte 1; con el interruptor encendido). Sin ella, la búsqueda de arriba.
-    civitatis_url: option.civitatis?.url ?? null,
+    // Sin la API, la página de la actividad con el slug comprobado en la web (10R); el código de afiliado lo pone la app al pulsar.
+    civitatis_url: option.civitatis?.url ?? (option.civitatis_slug ? `https://www.civitatis.com/es/${destData?.excursions?.civitatis_city ?? 'roma'}/${option.civitatis_slug}/` : null),
     // Con qué se busca su foto (en inglés: "Pompeii ruins"): con el nombre en español salía cualquier cosa.
     photo_name: option.photo_name ?? null,
     suggested_day: dayNumber,
