@@ -99,6 +99,7 @@ export function TripSync() {
     // Sin Supabase, o en el modo de pruebas (`?logrosDemo=1`, solo desarrollo): sin guardado en la nube. (Con el Supabase de verdad y sin la migración 0024, leer los viajes falla y salía «Cambios sin guardar» en las capturas.)
     if (!supabase || demoActivo()) {
       useSyncStore.getState().setStatus('disabled')
+      useSyncStore.getState().setCargaInicialHecha(true)
       return
     }
 
@@ -170,6 +171,7 @@ export function TripSync() {
 
         hydratedRef.current = true
         useSyncStore.getState().setStatus('idle')
+        useSyncStore.getState().setCargaInicialHecha(true) // (10S10 §8) ya se sabe si hay viaje: se quita la pantalla de carga
       } catch (err) {
         if (cancelled) return
         olvidarViajeAAbrir()
@@ -177,6 +179,7 @@ export function TripSync() {
         // La carga inicial falló, pero seguimos permitiendo guardar en memoria hacia adelante —
         // reintentos posteriores (reconexión) pueden aún recuperar el guardado en la nube.
         hydratedRef.current = true
+        useSyncStore.getState().setCargaInicialHecha(true)
       }
     })()
 

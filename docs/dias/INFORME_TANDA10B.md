@@ -4440,3 +4440,103 @@ Por tu «Sí, mételas»: la 0071 (aún sin aplicar) borra también `lo_suyo_del
 
 - ✅ Hecho — pruebaTanda10S9b con todo lo anterior; capturas y REPASO_10S9b.html Ver el informe. Pruebas viejas puestas al día: 10S3_D, 10S4_H, 10S7_S, 10S7_T, 10S9_A, 10S9_D, 10S5_J, 10O_datos (8 excursiones y precios con céntimos), 10N_reservas, 10N8_reservas, 10N10_reservas, Fase6y9_pantallas.  
   *Dónde:* No es de móvil.
+
+
+## 10S10 — Lo que encontró Eric en el móvil (1-nov)
+
+**Qué se ha hecho, en palabras sencillas**
+- **Mover paradas entre franjas (grave):** la pantalla decidía la franja de cada parada por una etiqueta guardada y pintaba las cabeceras por grupos seguidos, y la comida y la cena no se movían como las demás. Ahora la franja sale de dónde cae la parada (antes de la comida MAÑANA, entre comida y cena TARDE, después de la cena NOCHE), las cabeceras salen una vez cada una y la comida y la cena se mueven como cualquier parada. «Mover antes/después», arrastrar, «Mover a otro día» y «Añadir entre dos paradas» están repasados (qué estaba mal en cada uno, en la lista de abajo). No hizo falta tocar el motor.
+- **Avisos de horario:** una línea pequeña con «posiblemente» bajo la parada, mientras sea verdad, de los cuatro tipos que pediste. La tabla de qué sitio es de cada tipo (22 «por dentro y por fuera», 14 «solo por dentro») está en `REPASO_10S10.html` para que la revises.
+- **Nombres que dependen de la hora:** «Fontana de Trevi» a secas; la hora va en una etiqueta pequeña que sale solo si la hora lo cumple. **Ojo:** los títulos de los datos no se han cambiado, porque el motor lee «sin gente»; el nombre se limpia al pintar. Si prefieres cambiar también los datos, hay que tocar el motor y pasar la muestra de 60.
+- **Excursiones:** la página del día de excursión usa las 8 con sus enlaces; «Añade tu confirmación» lleva a RESERVAS; bloque «Excursiones» como «Entradas y Free Tour».
+- **RESERVAS:** todos los bloques cerrados al entrar; etiqueta del precio en negrita; el vuelo escrito a mano ya enseña su bloque de datos; lápiz de 44×44 en el «Cambiar» de la entrada reservada.
+- **DÍAS, día de llegada:** sin la franja oscura; [Añadir] y [Ver] llevan a RESERVAS.
+- **Ficha de un sitio:** «Entradas» con su número dorado.
+- **Destello al refrescar:** logo mientras no se sabe si hay viaje.
+
+**Pruebas (0 fallos):** `pruebaTanda10S10` 255 comprobaciones (A 30, B 41, C 142, D 40), `pruebaJutrip` 129, la muestra de 60 fechas idéntica, `tsc` limpio. Puestas al día con «antes → ahora → decisión de Eric»: 10N4_menus, 10N_reservas, 10N11_a, 10N8_reservas, 10N10_reservas, 10R_B, 10S3_D, 10S4_G, 10S6_P, 10S7_S, 10S8_C, 10S8_D, 10S9_B, 10S9b_A, 10S9b_B, 6g, 6s, 6v. Sin migración.
+
+**Dudas para Eric:** (1) comida y cena seguidas, sin parada en medio, no se pueden invertir; (2) al moverse la cena a un hueco se lleva la hora de ese hueco; (3) los títulos de los datos con «sin gente» se limpian al pintar (ver arriba); (4) dejé el atajo «¿Ya tienes una? Añádela» dentro del bloque Excursiones sin día; (5) «Cambiar hora» de la ficha del sitio mide 42 px y no se tocó; (6) el destello no se probó con un viaje guardado (la cuenta de prueba no tiene) y falta mirarlo en el móvil con red lenta; (7) quedan fallos previos ajenos: `pruebaTanda6g` `noche_d5` y 4 de `pruebaFase6y5_pantallas`.
+
+**Lista de comprobación DE ESTA TANDA** (la misma, con casillas y la tabla de horarios, arriba de `docs/dias/REPASO_10S10.html`):
+
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado tal cual (llegó entero, acaba en «reinicia el api-server»); nota de estado cada 30 minutos; motor sin tocar La muestra de 60 fechas sale idéntica (se pasó por si acaso). Sin migración. El apartado 1 se arregló en la app (almacén de la ruta y pantalla de DÍAS), no en el motor.  
+  *Dónde:* No es de móvil.
+
+**1 · Mover paradas entre franjas**
+
+- ✅ Hecho — El caso del Castillo: dos «Mover después» y el Castillo pasa a NOCHE, la primera, sin cabeceras repetidas Causa: la pantalla decidía la franja por una etiqueta guardada en cada parada y pintaba las cabeceras por grupos seguidos; la comida y la cena no se movían como las demás. Ahora la franja sale de la posición (antes de la comida MAÑANA; entre comida y cena TARDE; después de la cena NOCHE). Solo en días sin comida o sin cena (media jornada, día libre) se sigue usando la hora o la franja del motor.  
+  *Dónde:* DÍAS > un día con tarde, cena y noche > «···» del Castillo > Mover después, dos veces. Con y sin pase.  *Captura:* `10s10_mover_1.jpg`
+- ✅ Hecho — La comida y la cena son paradas como las demás: se mueven con los botones y arrastrando; si se mueve la cena, la NOCHE se va con ella Antes tenían topes («no puede acabar en la noche», «vuelve a su sitio»); ahora ocupan el sitio del elemento sobre el que se suelta.  
+  *Dónde:* DÍAS > asa de la cena, arrastrar.
+- ✅ Hecho — Textos MAÑANA, TARDE y NOCHE fijos, una vez cada uno y en ese orden; una franja sin paradas no enseña su texto  
+  *Dónde:* DÍAS, un día con una franja vacía.  *Captura:* `10s10_mover_2.jpg`
+- ✅ Hecho — «Mover antes/después» cambia una posición por la de al lado y nada más se mueve Antes solo permutaba paradas y la cena se quedaba en el mismo número de posición. Ahora actúa sobre la línea entera.  
+  *Dónde:* DÍAS > «···» de una parada.
+- ✅ Hecho — Repaso de «Mover a otro día» y «Añadir entre dos paradas» cruzando franjas y pasando por la comida y la cena Mover a otro día: el almacén no recolocaba la comida y la cena guardadas (mealAfter es un número de posición); ahora siguen detrás de SU parada. Añadir entre dos paradas: el «+» de encima de la comida o la cena metía la parada después; ahora entra antes. Añadir, quitar y «la primera del día» también ajustan ahora las comidas guardadas. Una comida o cena en la posición -1 no se pintaba y desaparecía: ahora se pinta y se mueve.  
+  *Dónde:* DÍAS > «···» > Mover a otro día; «+» junto a la comida y la cena.
+- ⚠️ A medias — Comida y cena seguidas, sin parada en medio No se puede invertir su orden: la comida va siempre primero en ese hueco. Hace falta un campo nuevo para guardar el orden en un hueco compartido. Además, al moverse la cena a un hueco se lleva la hora de ese hueco (así reparte las horas por posición): el Castillo detrás de la cena coge una hora de las 20:00 y la cena una de la tarde. Decídelo tú.  
+  *Dónde:* DÍAS.
+
+**2 · Avisos de horario**
+
+- ✅ Hecho — Una línea pequeña bajo la parada, con «posiblemente», mientras sea verdad; se quita sola si se mueve Cuatro frases tal cual: por dentro y por fuera («…ya esté cerrado, pero puedes verlo por fuera igualmente»), solo por dentro, antes de abrir («aún no haya/hayan abierto») y experiencia nocturna antes de la cena. No sale con el sitio abierto, con el día cerrado entero, con paradas «por fuera», con plazas o fuentes sin horario, ni cuando el motor ya lo pone en rojo. Captura solo del caso «por dentro y por fuera»; los otros tres se prueban con datos reales, no en pantalla.  
+  *Dónde:* DÍAS > mover un sitio (Basílica de San Pedro, Castillo, Museos Vaticanos…) al final del día. Con y sin pase.  *Captura:* `10s10_aviso_horario_1.jpg`
+- ✅ Hecho — Qué sitio es de cada tipo, con una tabla en este REPASO para que la revises 22 «por dentro y por fuera» y 14 «solo por dentro» (tabla abajo). La Galería Borghese es solo por dentro por decisión tuya aunque tenga texto «por fuera» en los datos. Parques (Villa Borghese, Colle Oppio), Teatro de Marcelo, Boca de la Verdad y Santo Bambino no llevan aviso de cierre (sí «aún no haya abierto»).  
+  *Dónde:* Tabla de abajo.
+
+**3 · Nombres que dependen de la hora**
+
+- ⚠️ A medias — El nombre nunca depende de la hora («Fontana de Trevi»); la hora va en una etiqueta pequeña que solo sale si la hora lo cumple y se quita sola DECISIÓN QUE DEBES SABER: los títulos de los datos («…, sin gente», «iluminado»…) NO se han cambiado en los datos, porque el motor lee ese «sin gente» (reorganizarDia.js, línea 73) y cambiarlos obligaba a tocar el motor y la muestra de 60 fechas. En su lugar el nombre se limpia al pintar (displayStopName, que usan unos 56 sitios), así que también quedan arreglados los viajes ya guardados. Etiquetas: «Sin gente a primera hora» (parada a las 9:00 o antes), «Iluminado»/«De noche» (con el sol ya puesto) y «Al atardecer» (desde una hora antes del sol hasta un cuarto de hora después). Si prefieres cambiar también los datos, hay que tocar esa línea del motor y pasar la muestra.  
+  *Dónde:* DÍAS > primer día con Trevi como primera parada; moverla al final.  *Captura:* `10s10_trevi_temprano_1.jpg`
+- ⚠️ A medias — Títulos de los días: si el viajero cambia el día y ya no es verdad, el título pasa a uno sin horas La función existe y está probada (tituloSinHorasSiYaNoEsVerdad), pero solo sale en los sitios donde se pinta el título de los datos (la lista «Sus días» del viaje guardado y el respaldo de la cabecera de HOY). En DÍAS el título ya sale por grupos de zonas, sin horas, y no cambia.  
+  *Dónde:* Viaje guardado > Sus días; HOY.  *Captura:* `10s10_trevi_tarde_1.jpg`
+
+**4 · Las excursiones**
+
+- ✅ Hecho — [Ver disponibilidad] de la página del día de excursión con enlace en las 8; sin «Enlace pendiente» Causa: la página leía un JSON de 5 excursiones de ejemplo y sin enlace. Ahora la tabla de la 10R manda (nombre completo, duración, punto de encuentro) y el enlace sale de ella por el slug; la app le pone la campaña al pulsar. Las 3 nuevas (Florencia y Pisa, Nápoles y Pompeya, Venecia) no llevan línea de horas porque no hay horas tuyas.  
+  *Dónde:* DÍAS > día de excursión.  *Captura:* `10s10_excursion_pagina_florencia.jpg`
+- ✅ Hecho — Nombre completo («Excursión a Florencia en tren de alta velocidad») y «No reembolsable» cuando toque «No reembolsable» sale en Florencia en tren y en Nápoles y Pompeya en tren.  
+  *Dónde:* DÍAS > día de excursión.
+- ✅ Hecho — «¿Ya la has reservado? Añade tu confirmación» lleva a RESERVAS › Excursiones y abre la hoja de esa excursión con el día puesto Antes guardaba un código suelto que no llevaba a ningún sitio.  
+  *Dónde:* DÍAS > día de excursión > enlace de abajo.  *Captura:* `10s10_excursion_confirmacion_hoja.jpg`
+- ✅ Hecho — En RESERVAS, bloque «Excursiones» como «Entradas y Free Tour»: cabecera grande, estado debajo, flecha; dentro la excursión de tu ruta, las reservadas y, abajo, «Ver más excursiones» Estados «0 de 1 reservada», «Listo» (con la reservada, como Entradas) y «Ninguna en tu ruta». Sin día de excursión dejé dentro un atajo pequeño «¿Ya tienes una? Añádela» además de «Ver más excursiones»: sin él no hay forma de añadir una ya comprada sin día en la ruta. Quitarlo es borrar un botón.  
+  *Dónde:* RESERVAS > Excursiones.  *Captura:* `10s10_excursion_bloque_abierto.jpg`
+
+**5 · RESERVAS**
+
+- ✅ Hecho — Todos los bloques cerrados al entrar, siempre (cambia lo de la 10S9) Solo se abren al tocar la cabecera o cuando otra pantalla lo pide (como [Añadir] desde DÍAS).  
+  *Dónde:* RESERVAS con y sin pase.  *Captura:* `10s10_reservas_cerrado_pase_01.jpg`
+- ✅ Hecho — La etiqueta del precio, del mismo tamaño y en negrita que «Sales de»: vuelo «¿Cuánto ha costado en total?»; alojamiento, entradas y excursiones «Precio» El Free Tour también dice «Precio»; los gastos y el coche conservan «¿Cuánto ha costado en total?».  
+  *Dónde:* RESERVAS > lápiz del precio.  *Captura:* `10s10_reservas_etiqueta_precio_pase_03.jpg`
+- ✅ Hecho — Datos del vuelo escritos a mano sin tarjeta: sí sale el bloque de datos con su lápiz Aparece incluso sin pase. Puesta al día pruebaTanda10S8_C.  
+  *Dónde:* RESERVAS > Llegada y vuelta.  *Captura:* `10s10_reservas_vuelo_a_mano_pase_02.jpg`
+- ⚠️ A medias — El «Cambiar» de las entradas reservadas: un lápiz de 44 × 44 Cambiado el de la tarjeta reservada (EntradaCard). Queda «Cambiar hora», un botón de 42 px, en la caja de entrada de la ficha de un sitio (CajasEntrada.tsx): no lo toqué porque el prompt habla de RESERVAS.  
+  *Dónde:* RESERVAS > Excursiones / Entradas reservadas.
+
+**6 · DÍAS, el día de llegada**
+
+- ✅ Hecho — [Añadir] del bloque de alojamiento → RESERVAS › Alojamiento (abierto)  
+  *Dónde:* DÍAS > día 1 > bloque de alojamiento > Añadir.  *Captura:* `10s10_dia_llegada_anadir_pase_05.jpg`
+- ✅ Hecho — Fuera la franja oscura «Tu día de llegada · Con el Pase Roma…» La franja de la vuelta («Tu día de vuelta») se queda: el prompt solo pedía la de llegada.  
+  *Dónde:* DÍAS > día 1, con y sin pase.  *Captura:* `10s10_dia_llegada_pase_04.jpg`
+- ✅ Hecho — El bloque del vuelo: [Ver] → RESERVAS › Llegada y vuelta; tocar el resto, como antes Llega abierta y sin hoja encima.  
+  *Dónde:* DÍAS > día 1 > bloque del vuelo.  *Captura:* `10s10_dia_llegada_ver_pase_06.jpg`
+
+**7 · La ficha de un sitio**
+
+- ✅ Hecho — La pestaña «Entradas» con su número en un círculo pequeño dorado El número cuenta las entradas del sitio más las actividades cercanas. Una pestaña con «No necesitas entrada» o solo Free Tour sale sin número. Si prefieres contar solo las entradas, es una línea.  
+  *Dónde:* Ficha de un sitio (Museos Vaticanos y Capilla Sixtina: «Entradas 1»).  *Captura:* `10s10_ficha_entradas_numero_pase_07.jpg`
+
+**8 · El destello al refrescar**
+
+- ⚠️ A medias — Mientras la app no sepa si hay viaje, la pantalla de carga (el logo), nunca la de crear viaje Probado en un Chrome de prueba con Supabase retrasado 3 s: lo primero que se ve es el logo y el formulario no sale antes de acabar. Hay un tope de seguridad de 12 s. La prueba no tiene viaje guardado en la cuenta de prueba, así que el caso «con viaje guardado» se apoya en la misma marca pero no se probó. Falta que lo mires en el móvil con red lenta.  
+  *Dónde:* Refrescar con un viaje abierto y la red lenta.  *Captura:* `10s10_sin_destello_08.jpg`
+
+**9 · La prueba**
+
+- ✅ Hecho — pruebaTanda10S10 con todo lo anterior más pruebaJutrip; capturas y REPASO_10S10.html con la tabla Ver el informe.  
+  *Dónde:* No es de móvil.

@@ -1,4 +1,5 @@
 import { formatDaySessions } from './stopHoursTag'
+import { nombreSinHora } from './nombreDeParada'
 export function formatDuration(minutes: number): string {
   if (minutes < 60) return `${minutes}min`
   const hours = Math.floor(minutes / 60)
@@ -18,7 +19,8 @@ export function formatReviewCount(count: number): string {
  * el texto. Case-insensitive por si algún día llega en mayúsculas desde otro origen de datos.
  */
 export function displayStopName(name: string): string {
-  return name.replace(/\s*\(noche\)\s*$/i, '')
+  // (10S10, apartado 3) El nombre nunca depende de la hora: «Fontana de Trevi, sin gente» → «Fontana de Trevi» (la hora va en una etiqueta que sale solo si se cumple; src/lib/nombreDeParada.ts).
+  return nombreSinHora(name.replace(/\s*\(noche\)\s*$/i, '')).nombre
 }
 
 /**

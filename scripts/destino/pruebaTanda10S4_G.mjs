@@ -71,7 +71,7 @@ async function pasada(version) {
           bloqueW: Math.round(el.getBoundingClientRect().width),
         }
       })()`)
-    const clicCab = (b) => ev(`(() => { const el = document.querySelector('[data-blk="${b}"]'); const c = el?.querySelector('[data-aloj-cabecera] [data-cabecera-clara]') ?? el?.querySelector('[data-llegada-cabecera], [data-aloj-cabecera]'); if (!c) return false; c.click(); return true })()`)
+    const clicCab = (b) => ev(`(() => { const el = document.querySelector('[data-blk="${b}"]'); const c = el?.querySelector('[data-aloj-cabecera] [data-cabecera-clara]') ?? el?.querySelector('[data-llegada-cabecera], [data-aloj-cabecera], [data-cabecera-clara]'); if (!c) return false; c.click(); return true })()`)
     const cerrarHojas = async () => {
       for (let i = 0; i < 6 && (await ev("Boolean(document.querySelector('[role=dialog]'))")); i++) {
         await ev("(() => { const d = document.querySelector('[role=dialog]'); const b = d.querySelector('button[aria-label=Cerrar]') ?? Array.from(d.querySelectorAll('button')).find((x) => /Entendido|Vale|Cerrar|Listo/.test(x.textContent || '')); b?.click(); return true })()")
@@ -149,9 +149,19 @@ async function pasada(version) {
     await ev(`(() => { const r = window.__ruta.getState().route; window.__ruta.setState({ route: { ...r, departureFlightTime: null } }); window.__ruta.getState().setAccommodationHotel(r.days[0].id, null); window.__ruta.setState((s) => ({ route: { ...s.route, accommodationZone: null } })); return true })()`)
     await a.esp(800)
     ll = await bloque('llegada')
-    debe(ll.mitades === 2 && ll.estado === 'falta', 'abierto-falta', `Llegada y vuelta con la vuelta sin poner: abierto y en «falta» (${ll.mitades}, ${ll.estado}, «${ll.estadoTexto}»)`)
+    // antes (10S9, 1-nov): mientras falta algo, abierto → ahora: cerrado SIEMPRE, también con «Falta»; se abre con un toque → decisión de Eric (10S10, 1-nov).
+    debe(ll.mitades === 0 && ll.estado === 'falta', 'abierto-falta', `Llegada y vuelta con la vuelta sin poner: «falta» y CERRADA (${ll.mitades}, ${ll.estado}, «${ll.estadoTexto}»)`)
+    await clicCab('llegada')
+    await a.esp(500)
+    ll = await bloque('llegada')
+    debe(ll.mitades === 2, 'abierto-falta', `un toque en la cabecera la abre con la ida y la vuelta (${ll.mitades})`)
     al = await bloque('aloj')
-    debe(/Falta/.test(al.estadoTexto ?? '') && /Añadir mi alojamiento/.test(al.texto), 'abierto-falta', `Alojamiento vacío: «Falta» y ABIERTO al entrar (10S9, 1-nov: antes plegado hasta que se tocara → ahora abierto si falta algo → decisión de Eric) (${al.estadoTexto})`)
+    // antes (10S9, 1-nov): «Falta» y ABIERTO al entrar → ahora: «Falta» y CERRADO (no sale «Añadir mi alojamiento» hasta tocar la cabecera) → decisión de Eric (10S10, 1-nov).
+    debe(/Falta/.test(al.estadoTexto ?? '') && !/Añadir mi alojamiento/.test(al.texto), 'abierto-falta', `Alojamiento vacío: «Falta» y CERRADO al entrar (${al.estadoTexto})`)
+    await clicCab('aloj')
+    await a.esp(500)
+    al = await bloque('aloj')
+    debe(/Añadir mi alojamiento/.test(al.texto), 'abierto-falta', 'un toque en la cabecera lo abre con «Añadir mi alojamiento»')
     await a.captura(foto(`${version}_04_falta`))
   } finally {
     await a.cerrar()

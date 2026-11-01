@@ -1,4 +1,5 @@
 // Tanda 10N8 (N6) · EN PANTALLA lo principal de N4: bloque único de vuelo/alojamiento para quien no es administrador, hoja del vuelo con «Guardar el vuelo» (sin [Guardar] suelto),
+// antes → ahora → decisión de Eric (10S10, 1-nov): los bloques de RESERVAS entraban abiertos si faltaba algo → ahora entran CERRADOS siempre; esta prueba los abre al entrar (a los 600 ms) para seguir comprobando lo de dentro.
 // «Añadir gasto» con solo quien lo añade marcado y sin [Para todos]/[Para mí] en «Cada uno lo suyo», presupuesto con «Lo tuyo» y el de quien viaja solo («Tu viaje»),
 // comprar la entrada a la misma hora («Comprar a las HH:MM», «Ya la tengo · Guardarla» y la pregunta al volver).
 // Capturas docs/dias/capturas_jutrip/10n8_reservas_*.jpg y, al lado, las de Design (10n8_design_*.jpg; SIN_DESIGN=1 las salta).
@@ -54,7 +55,7 @@ const loSuyo = (js) =>
 const presUi = (m) => ev(`(async () => { const n = performance.getEntriesByType('resource').map((r) => r.name).find((x) => x.includes('store/usePresupuestoUi.ts')); const mod = await import(/* @vite-ignore */ n ?? '/src/store/usePresupuestoUi.ts'); mod.usePresupuestoUi.getState().${m}(); return true })()`)
 const textoPres = () => ev("(document.querySelector('[aria-labelledby=\"titulo-presupuesto\"]')?.innerText ?? 'SIN PANTALLA').replace(/\\s+/g, ' ')")
 const irAReservas = async () => {
-  await ev("window.__ruta.getState().setMode('bookings'); true")
+  await ev("window.__ruta.getState().setMode('bookings'); setTimeout(() => { for (const f of document.querySelectorAll('[data-flecha-bloque=\"cerrada\"]')) f.closest('[data-cabecera-bloque]')?.click() }, 600); true")
   await a.esp(1800)
 }
 

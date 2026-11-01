@@ -12,7 +12,7 @@ const TARJETA = 'rounded-[22px] border border-text/[.07] bg-bg-card'
 const OJO = 'font-mono text-[10px] font-semibold uppercase tracking-[.16em] text-text/55'
 
 /** La pastilla de pestañas con la bolita oscura que se desliza (Resumen · Entradas · Tips). Pegada arriba al hacer scroll. */
-export function FichaPestanas<T extends string>({ pestanas, activa, onPick }: { pestanas: { id: T; label: string }[]; activa: T; onPick: (id: T) => void }) {
+export function FichaPestanas<T extends string>({ pestanas, activa, onPick }: { pestanas: { id: T; label: string; /** (10S10 §7) El número de la pestaña (Entradas · 9): un círculo pequeño dorado al lado. */ numero?: number }[]; activa: T; onPick: (id: T) => void }) {
   if (pestanas.length < 2) return null
   const indice = Math.max(0, pestanas.findIndex((pestana) => pestana.id === activa))
   return (
@@ -32,6 +32,11 @@ export function FichaPestanas<T extends string>({ pestanas, activa, onPick }: { 
             className={`zona-toque relative rounded-full text-[15px] font-semibold transition-colors duration-300 ${activa === pestana.id ? 'text-[#FBF3E2]' : 'text-text/65'}`}
           >
             {pestana.label}
+            {pestana.numero != null && pestana.numero > 0 && (
+              <span data-ficha-pestana-numero className="ml-1.5 inline-flex h-[19px] min-w-[19px] items-center justify-center rounded-full px-1 align-middle" style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#3A2A0A', font: "700 11px/1 'Geist',sans-serif" }}>
+                {pestana.numero}
+              </span>
+            )}
           </button>
         ))}
       </div>

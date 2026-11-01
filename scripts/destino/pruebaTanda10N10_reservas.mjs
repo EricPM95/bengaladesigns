@@ -248,7 +248,8 @@ try {
   m = await medidas()
   debe(/¿En qué zona te alojas\?/.test(m.texto) && /Prati/.test(m.texto) && /Aún no lo sé/.test(m.texto), '7c', 'la hoja trae las zonas a todo el ancho y «Aún no lo sé» (08)')
   debe(/Nombre del hotel/i.test(m.texto), '7c', '(10N11) «Nombre del hotel»')
-  debe(/¿Para quién es el alojamiento\?/.test(m.texto) && /¿Cuánto ha costado en total\?/.test(m.texto), '7c', '«¿Para quién es el alojamiento?» y el bloque del dinero (08b)')
+  // antes → ahora → decisión de Eric (10S10, 1-nov): en alojamiento y entradas la etiqueta del precio pasa de «¿Cuánto ha costado en total?» a «Precio» (en negrita, como «Sales de»); el vuelo la conserva.
+  debe(/¿Para quién es el alojamiento\?/.test(m.texto) && /Precio/.test(m.texto), '7c', '«¿Para quién es el alojamiento?» y el bloque del dinero (08b)')
   debe(m.botones.includes('Guardar el alojamiento'), '7c', '«Guardar el alojamiento»')
   const ancho = await ev("(() => { const d = document.querySelector('[role=dialog] [data-zona-opcion]'); const p = document.querySelector('[role=dialog] .trazo-notice-panel'); if (!d || !p) return null; const a = d.getBoundingClientRect(), b = p.getBoundingClientRect(); return { izq: Math.round(a.left - b.left), der: Math.round(b.right - a.right) } })()")
   debe(ancho && ancho.izq >= 16 && ancho.izq === ancho.der, '7c', `elegir la zona a todo el ancho, con sus márgenes (${JSON.stringify(ancho)})`)
@@ -257,7 +258,7 @@ try {
   await clic('[data-zona-opcion]')
   await ev("document.querySelector('[role=dialog] [data-alojamiento-dinero]')?.scrollIntoView({ block: 'center' }); true")
   // (10N11) En el alojamiento «¿Para quién…?» sale con todos marcados: Ana ya está.
-  await ev("(() => { const i = Array.from(document.querySelectorAll('[role=dialog] input')).find((x) => x.getAttribute('aria-label') === '¿Cuánto ha costado en total?'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '300'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
+  await ev("(() => { const i = Array.from(document.querySelectorAll('[role=dialog] input')).find((x) => x.getAttribute('aria-label') === 'Precio'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '300'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
   await a.esp(500)
   await a.captura(foto('09_alojamiento_dinero'))
   await clic('[data-guardar-alojamiento]')
@@ -313,7 +314,7 @@ try {
   await a.esp(3000)
   await ponerGente('eric')
   await irAReservas()
-  await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const cab = b?.firstElementChild; if (cab && b.children.length < 2) cab.click(); return true })()`)
+  await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const cab = b?.querySelector('[data-cabecera-clara]') ?? b?.firstElementChild; if (cab && !Array.from(b.querySelectorAll('button')).some((x) => /Añádela/.test(x.textContent || ''))) cab.click(); return true })()`)
   await a.esp(1500)
   const botonColiseo = `(() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).filter((x) => /Añádela/.test(x.textContent || '')).find((x) => /Coliseo/.test(x.closest('[class*="min-h-"]')?.textContent || '')); if (!b) return false; b.click(); return true })()`
   for (let i = 0; i < 40 && !(await ev(`(() => { const bloque = document.querySelector('[data-blk="entradas"]'); return Boolean(bloque) && Array.from(bloque.querySelectorAll('button')).some((x) => /Añádela/.test(x.textContent || '') && /Coliseo/.test(x.closest('[class*="min-h-"]')?.textContent || '')) })()`)); i++) await a.esp(500)
@@ -326,13 +327,13 @@ try {
   await a.esp(500)
   const he = await ev(`(() => {
     const d = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const t = d?.innerText.replace(/\\s+/g, ' ') ?? ''
-    return { t, orden: ['¿Para quién son las entradas?', '¿Cuánto ha costado en total?', '¿Quién la ha pagado?'].map((s) => t.indexOf(s)), cuadrados: Array.from(d.querySelectorAll('[data-personas-cuadradas]')).map((g) => g.getAttribute('data-personas-cuadradas')), boton: d.querySelector('[data-guardar-reserva]')?.textContent.trim() }
+    return { t, orden: ['¿Para quién son las entradas?', 'Precio', '¿Quién la ha pagado?'].map((s) => t.indexOf(s)), cuadrados: Array.from(d.querySelectorAll('[data-personas-cuadradas]')).map((g) => g.getAttribute('data-personas-cuadradas')), boton: d.querySelector('[data-guardar-reserva]')?.textContent.trim() }
   })()`)
-  debe(/¿Para quién son las entradas\?/.test(he.t) && /¿Cuánto ha costado en total\?/.test(he.t), '7d', '«¿Para quién son las entradas?» antes del precio')
+  debe(/¿Para quién son las entradas\?/.test(he.t) && /Precio/.test(he.t), '7d', '«¿Para quién son las entradas?» antes del precio')
   debe(he.orden[0] > 0 && he.orden[0] < he.orden[1], '7d', `el orden: para quién → precio (${he.orden.join(' < ')})`)
   debe(!/¿A qué cuenta lo sumamos\?/.test(he.t), '7d', 'fuera «¿A qué cuenta lo sumamos?»')
   debe(he.boton === 'Guardar la entrada', '7d', `el botón dice «Guardar la entrada» (${he.boton})`)
-  await ev("(() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role=dialog]'); const c = d.querySelector('[data-persona-cuadrada=\"p-ana\"]'); c?.click(); const i = Array.from(d.querySelectorAll('input')).find((x) => x.getAttribute('aria-label') === '¿Cuánto ha costado en total?'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '36'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
+  await ev("(() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role=dialog]'); const c = d.querySelector('[data-persona-cuadrada=\"p-ana\"]'); c?.click(); const i = Array.from(d.querySelectorAll('input')).find((x) => x.getAttribute('aria-label') === 'Precio'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '36'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
   await a.esp(600)
   const he2 = await ev("(() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role=dialog]'); return { t: d.innerText.replace(/\\s+/g, ' '), cuadrados: Array.from(d.querySelectorAll('[data-personas-cuadradas]')).map((g) => g.getAttribute('data-personas-cuadradas')) } })()")
   debe(/¿Quién la ha pagado\?|¿Quién lo ha pagado\?/.test(he2.t) && he2.cuadrados.includes('pagado'), '7d', `«¿Quién la ha pagado?» en CUADRADOS (${he2.cuadrados.join(',')})`)
@@ -360,7 +361,7 @@ try {
   await ponerGente('ana')
   await a.esp(1200)
   await irAReservas()
-  await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const cab = b?.firstElementChild; if (cab && b.children.length < 2) cab.click(); return true })()`)
+  await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const cab = b?.querySelector('[data-cabecera-clara]') ?? b?.firstElementChild; if (cab && !Array.from(b.querySelectorAll('button')).some((x) => /Añádela/.test(x.textContent || ''))) cab.click(); return true })()`)
   await a.esp(1500)
   const abierta = await ev(`(() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).find((x) => /Reservar la mía a la misma hora/.test(x.textContent || '')); if (!b) return false; b.click(); return true })()`)
   debe(abierta === true, '8', 'Ana ve [Reservar la mía a la misma hora]')

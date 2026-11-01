@@ -4,6 +4,7 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { FREE_TOUR_HORAS } from '../shared/routeEngine/freeTourHoras.js'
+import { nombreParaAviso, verPorDeLugar } from '../shared/verPor.js'
 import { etiquetasDeBarrio, gruposDeDia, sinEntradaPorSitio } from '../shared/routeEngine/fichaLugar.js'
 import { importanciaDeSitios } from '../shared/routeEngine/importanciaDeSitios.js'
 import { arrivalInfoFor, entradasDe, fotoOculta, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
@@ -4209,6 +4210,17 @@ function nightExperienceOf(data, placeName) {
   return night ? { name: night.name, duration_min: night.duration ?? null, description: night.description ?? null } : null
 }
 
+/**
+ * (Tanda 10S10, apartado 2) Lo que la tarjeta necesita para el aviso de horario: cómo se ve el sitio (`ver_por`: por dentro y por fuera / solo por dentro) y cómo se dice en la frase
+ * (`aviso_nombre`: «el Castillo de Sant'Angelo»). De los datos del sitio (shared/verPor.js); un sitio sin horario no lleva nada. Va dentro de `hours_data` y no es un campo de horario.
+ */
+function avisoDeHorarioDe(place) {
+  const verPor = verPorDeLugar(place)
+  if (!verPor) return {}
+  const nombre = nombreParaAviso(place.name, place.id)
+  return { ver_por: verPor, aviso_nombre: nombre.frase, aviso_genero: nombre.genero, aviso_plural: nombre.plural }
+}
+
 app.post('/api/destination-places', (req, res) => {
   const { destination } = req.body ?? {}
   if (!destination) {
@@ -4261,7 +4273,7 @@ app.post('/api/destination-places', (req, res) => {
       requires_ticket: !(place.is_free_access ?? place.type === 'exterior'),
       // "+ Añadir" (decisión del usuario, 2026-09-28): el horario de ese día y de esa época, con el mismo módulo que el
       // motor (shared/routeEngine/openingHours.js), para avisar de "A esa hora está cerrado".
-      hours_data: Object.fromEntries(['schedule', 'type', 'windows', 'by_day', 'by_season', 'by_period', 'closed_on', 'closed_dates', 'special_hours', 'last_entry', 'last_entry_by_day', 'abierto_24h', 'restriccion_dia', 'last_sunday', 'nth_sunday', 'closed_nth_sunday', 'misas_festivos'].filter((key) => place[key] != null).map((key) => [key, place[key]])),
+      hours_data: { ...Object.fromEntries(['schedule', 'type', 'windows', 'by_day', 'by_season', 'by_period', 'closed_on', 'closed_dates', 'special_hours', 'last_entry', 'last_entry_by_day', 'abierto_24h', 'restriccion_dia', 'last_sunday', 'nth_sunday', 'closed_nth_sunday', 'misas_festivos'].filter((key) => place[key] != null).map((key) => [key, place[key]])), ...avisoDeHorarioDe(place) },
       // Experiencias a las que pertenece (misma tabla que el motor): "También te puede interesar".
       themes: Object.entries(TAG_INTEREST_MAP)
         .filter(([theme, tags]) => theme !== 'free_tour' && (place.tags ?? []).some((tag) => tags.includes(tag)))

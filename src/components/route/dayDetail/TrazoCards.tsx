@@ -38,6 +38,8 @@ interface TrazoCardProps {
   topNote?: string | null
   /** Línea de horario, duración y notas (reserva, atardecer…). */
   meta?: CardMeta[]
+  /** (10S10, apartado 2) El aviso de horario: una línea pequeña y gris, con «posiblemente», que solo está mientras sea verdad (src/lib/avisoDeHorario.ts). */
+  aviso?: string | null
   /** Píldoras de tipo de lugar (del JSON curado). */
   /** `green`: lo reservado (Reservada ✓ / Fijada), en verde. */
   tags?: { label: string; kind: StopKind; green?: boolean }[]
@@ -69,7 +71,7 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
-export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], tags = [], barrio = null, photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, edgeTab, conBotonEntrada = false }: TrazoCardProps) {
+export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], aviso = null, tags = [], barrio = null, photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, edgeTab, conBotonEntrada = false }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const hasPhoto = Boolean(photoUrl) && !noPhoto
   const night = variant === 'night'
@@ -129,6 +131,11 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
             ))}
           </span>
         )}
+        {aviso && (
+          <span data-aviso-horario className={`text-[10.5px] leading-[1.3] ${night ? '' : 'text-text/55'} ${conBotonEntrada ? 'pr-[22px]' : ''}`} style={{ color: ink2 }}>
+            {aviso}
+          </span>
+        )}
         {(tags.length > 0 || barrio) && (
           <span className={`mt-0.5 flex flex-wrap gap-1 ${conBotonEntrada ? 'pr-[22px]' : ''}`} data-etiquetas-tarjeta>
             {tags.map((tag) => (
@@ -186,7 +193,7 @@ export function PeriodHeader({ period, onAddStop }: { period: DayPeriod; onAddSt
   return (
     // (40 px arriba, para que se vea dónde empieza cada parte del día, también la primera; 12 hasta lo primero de la
     // franja: PROMPT_UI_REPASO_4, 2.)
-    <div className="mb-2 mt-[40px] flex items-center gap-2 pl-0.5">
+    <div data-period-header={period} className="mb-2 mt-[40px] flex items-center gap-2 pl-0.5">
       <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full" style={{ background: style.soft, color: style.color }}>
         <Icon d={style.icon} />
       </span>

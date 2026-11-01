@@ -348,6 +348,7 @@ export function LlegadaYVuelta({
   route,
   info,
   abierto,
+  verBloque = 0,
   onToggle,
   mitadAbierta,
   onMitad,
@@ -358,6 +359,8 @@ export function LlegadaYVuelta({
   /** (Se conserva por el panel; la tarjeta ya no usa las zonas.) */
   zonas?: unknown
   abierto: boolean
+  /** (10S10 §6) Cambia cada vez que DÍAS pide solo ver el bloque: se despliega, sin hoja. */
+  verBloque?: number
   onToggle: () => void
   /** undefined = la que falta; null = ninguna. */
   mitadAbierta: LegKind | null | undefined
@@ -399,8 +402,11 @@ export function LlegadaYVuelta({
   const algoHecho = ida.done || vuelta.done
   // (10S4 §2) Listo = plegado (se abre al tocar la cabecera); mientras falta algo, abierto. Al quedar listo se vuelve a plegar solo.
   const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
-  useEffect(() => setDesplegadoUsuario(null), [hecho])
-  const desplegado = desplegadoUsuario ?? !hecho
+  // (10S10 §5, decisión de Eric, 1-nov) Cerrado al entrar SIEMPRE, falte lo que falte; solo se abre si el viajero toca la cabecera o el panel lo pide.
+  const desplegado = desplegadoUsuario ?? false
+  useEffect(() => {
+    if (verBloque) setDesplegadoUsuario(true)
+  }, [verBloque])
   const hayVuelo = (ida.done && ida.mode !== 'coche') || (vuelta.done && vuelta.mode !== 'coche')
   // (10S8, B1d) «Precio total» con la ida y la vuelta puestas; con solo una, «Precio».
   const ambos = ida.done && ida.mode !== 'coche' && vuelta.done && vuelta.mode !== 'coche'

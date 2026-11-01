@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { displayStopName, formatDuration } from '../../../lib/format'
+import { etiquetaDeHora, nombreSinHora, type HoraDeParada } from '../../../lib/nombreDeParada'
 import type { HorarioDeParada } from '../../../lib/horarioDeParada'
 import { CERRADO_ESTE_DIA } from '../../../lib/placeHoursOnDate'
 import { tagLabel, visibleTags } from '../../../lib/tagColors'
@@ -33,6 +34,10 @@ interface StopAccordionProps {
   tripWarning?: string | null
   /** Su horario ese día («Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy»), de src/lib/horarioDeParada.ts; null/undefined = sin horario (plazas, fuentes, calles). */
   horario?: HorarioDeParada | null
+  /** (10S10, apartado 2) El aviso de horario de la parada, ya calculado con su hora de ahora (src/lib/avisoDeHorario.ts); null/undefined = ninguno. */
+  avisoHorario?: string | null
+  /** (10S10, apartado 3) La hora de la parada (inicio, puesta de sol, si va detrás de la cena): decide si sale la etiqueta pequeña de la hora que el nombre ya no lleva. */
+  horaDeParada?: HoraDeParada
 }
 
 /** El motivo corto de "Por fuera", en la línea de la tarjeta. */
@@ -50,7 +55,7 @@ const OUTSIDE_SHORT: Record<string, string> = {
  * (StopDetailSheet). Sin texto descriptivo (decisión del usuario, 2026-09-28): hora, nombre, foto, horario,
  * duración, por dentro / por fuera con su motivo corto, avisos en rojo y etiquetas. El "Por qué aquí" va en la ficha.
  */
-export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning, horario }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning, horario, avisoHorario, horaDeParada }: StopAccordionProps) {
   const freeDay = freeDayWarning !== undefined
   // La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos del destino.
   const barrio = useEtiquetaBarrio(useRouteStore((state) => state.route?.destination), stop.name)
@@ -136,6 +141,9 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   // Una entrada reservada: las dos marcas (PARA_CODE_RESERVAS, 6).
   // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
   if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })
+  // (10S10, apartado 3) La hora que el nombre ya no lleva («Sin gente a primera hora», «Iluminado», «Al atardecer»): solo si la hora de la parada lo cumple; se quita sola si se mueve.
+  const etiquetaHora = horaDeParada ? etiquetaDeHora(nombreSinHora(stop.nightViewTitle ?? stop.name).marca, horaDeParada) : null
+  if (etiquetaHora) tags.unshift({ label: etiquetaHora, kind })
   if (marcaDeCambio) tags.unshift({ label: marcaDeCambio === 'nueva' ? 'Nueva' : 'Movida', kind, green: marcaDeCambio === 'nueva' })
 
   return (
@@ -145,7 +153,8 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
       number={number}
       numberColors={numberColors}
       // Tanda 6b: sin hora por parada; solo la fija (reserva, turno, Free Tour). La franja lleva su hora en la cabecera.
-      name={stop.nightViewTitle ?? displayStopName(stop.name)}
+      name={displayStopName(stop.nightViewTitle ?? stop.name)}
+      aviso={avisoHorario}
       meta={meta}
       tags={tags}
       barrio={stop.isFreeTour ? null : barrio}

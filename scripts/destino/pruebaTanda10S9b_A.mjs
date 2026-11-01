@@ -103,7 +103,9 @@ async function pasada(version) {
     } else {
       debe(eIda && eIda.texto === 'o escribe los datos a mano' && eVuelta && eVuelta.texto === 'o escribe los datos a mano', 'enlace', `con pase sale en la ida y en la vuelta (${JSON.stringify(eIda)})`)
       debe(eIda && eIda.zonaToque && eIda.h <= 30, 'enlace', `pequeño (${eIda?.h} px de alto) y con zona de toque de 44 (clase zona-toque)`)
-      debe(!(await lapices('[data-blk="llegada"] [data-mitad="arrival"]')).includes('datos-billete'), 'vuelo', 'antes de escribir, la ida no tiene bloque de datos ni su lápiz')
+      // antes → ahora → decisión de Eric (10S10, 1-nov): sin datos, sin bloque → el vuelo escrito a mano (aquí «VY 6102») ya abre el bloque de datos con su lápiz; sin terminal, asiento ni localizador todavía.
+      debe((await lapices('[data-blk="llegada"] [data-mitad="arrival"]')).includes('datos-billete'), 'vuelo', 'antes de escribir los datos, la ida con el número del vuelo ya tiene su bloque de datos y su lápiz')
+      debe(!(await ev("/Terminal|Asiento|Localizador/.test(document.querySelector('[data-blk=\"llegada\"] [data-mitad=\"arrival\"] [data-billete-datos]')?.textContent ?? '')")), 'vuelo', 'y sin terminal, asiento ni localizador todavía')
       await ev("document.querySelector('[data-blk=\"llegada\"] [data-mitad=\"arrival\"]')?.scrollIntoView({ block: 'center' }); true")
       await a.esp(300)
       await a.captura(foto('vuelo_enlace', 1))

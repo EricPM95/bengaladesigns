@@ -201,7 +201,9 @@ for (const dias of [4, 5, 6]) {
     continue
   }
   debe(/En tu ruta el/.test(a.texto.slice(a.texto.indexOf('XCURSI'))) || /Excursi/.test(a.texto), '5 excursiones', `${dias} días con interruptor: no sale la tarjeta de la excursión del día`)
-  debe(/Excursiones desde Roma/.test(b.texto), '5 excursiones', `${dias} días sin interruptor: no sale «Excursiones desde Roma»`)
+  // (10S10 §4) antes: sin día de excursión salía suelta la tarjeta «Excursiones desde Roma»; ahora → un bloque «Excursiones» (como «Entradas y Free Tour») CERRADO con «Ninguna en tu ruta» y, con el día de excursión, «0 de 1 reservada». Decisión de Eric (10S10, 1-nov).
+  debe(/Excursiones\s*\n?\s*Ninguna en tu ruta/.test(b.texto), '5 excursiones', `${dias} días sin interruptor: el bloque Excursiones no dice «Ninguna en tu ruta»`)
+  debe(/Excursiones\s*\n?\s*0 de 1 reservada/.test(a.texto), '5 excursiones', `${dias} días con interruptor: el bloque Excursiones no dice «0 de 1 reservada»`)
   debe(!/Excursiones desde Roma/.test(a.texto), '5 excursiones', `${dias} días con interruptor: sale también «Excursiones desde Roma»`)
   // Nunca dos «Añádela» en el bloque de excursiones.
   for (const [nombre, r] of [['con interruptor', a], ['sin interruptor', b]]) {

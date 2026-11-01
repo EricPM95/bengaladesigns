@@ -1,4 +1,5 @@
 // Tanda 10S3 (agente D): apartados 5, 6 y 7.
+// antes → ahora → decisión de Eric (10S10, 1-nov): los bloques de RESERVAS entraban abiertos si faltaba algo → ahora entran CERRADOS siempre; esta prueba los abre al entrar (a los 600 ms) para seguir comprobando lo de dentro.
 //   5 · reservar el Free Tour (o cambiarle la hora) funciona como una entrada: la parada se queda donde está con su hora nueva, ningún día se mueve, ningún mensaje de mover días, la franja no cambia;
 //       la hoja del Free Tour lleva la rueda de la hora de las entradas (no las seis horas fijas).
 //   6 · sin pase, la reserva que no cuadra con la franja (Mañana hasta 14:00, Tarde hasta 20:00, Noche después) lleva debajo la línea gris del pase; con pase, nada.
@@ -119,7 +120,7 @@ try {
   debe(Boolean(antes.dateIso) && antes.idx >= 0, 'ap5', 'el Free Tour está en un día con fecha')
 
   // Abrir RESERVAS y la hoja del Free Tour.
-  await ev("st().setMode('bookings'); return true")
+  await ev("st().setMode('bookings'); setTimeout(() => { for (const f of document.querySelectorAll('[data-flecha-bloque=\"cerrada\"]')) f.closest('[data-cabecera-bloque]')?.click() }, 600); return true")
   await app.esp(1800)
   await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const cab = b?.firstElementChild; if (cab && b.children.length < 2) cab.click(); return true })()`)
   await app.esp(1500)
@@ -188,7 +189,7 @@ try {
   debe(despues.dias === antes.dias, 'ap5', 'ningún día cambia de sitio ni de paradas')
 
   // Cambiar la hora (la hoja sale con la reserva puesta): 15:00, misma regla.
-  await ev("st().setMode('bookings'); return true")
+  await ev("st().setMode('bookings'); setTimeout(() => { for (const f of document.querySelectorAll('[data-flecha-bloque=\"cerrada\"]')) f.closest('[data-cabecera-bloque]')?.click() }, 600); return true")
   await app.esp(1500)
   // antes → ahora → decisión de Eric (10S9b, 1-nov): antes el texto «Cambiar» de la tarjeta reservada → ahora el lápiz de arriba de la tarjeta (10S8/10S9, `data-lapiz="entrada-arriba"`).
   const abrirCambiar = `(() => { const bloque = document.querySelector('[data-blk="entradas"]'); if (bloque && bloque.children.length < 2) bloque.firstElementChild?.click(); const b = Array.from(document.querySelectorAll('[data-blk="entradas"] [data-lapiz="entrada-arriba"], [data-blk="entradas"] button')).find((x) => (x.getAttribute('data-lapiz') === 'entrada-arriba' || /^Cambiar$/.test((x.textContent || '').trim())) && /Free Tour/.test(x.closest('[data-tarjeta-por-reservar],[data-tarjeta-reservada],[class*="min-h-"],[data-entrada-billete]')?.textContent || '')); if (!b) return false; b.click(); return true })()`
@@ -247,7 +248,7 @@ try {
 
   // Sin pase.
   await ev("const P = await import('/src/lib/pago.ts'); P.fijarVersion('gratis'); return true")
-  await ev("st().setMode('bookings'); return true")
+  await ev("st().setMode('bookings'); setTimeout(() => { for (const f of document.querySelectorAll('[data-flecha-bloque=\"cerrada\"]')) f.closest('[data-cabecera-bloque]')?.click() }, 600); return true")
   await app.esp(800)
   await verDia(montado.dayId)
   let lineas = await linea()

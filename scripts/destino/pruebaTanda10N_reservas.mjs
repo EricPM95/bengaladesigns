@@ -1,4 +1,5 @@
 // La prueba de la Tanda 10N, parte D1 (§8): RESERVAS del invitado = la misma pantalla que la del dueño, sin poder tocar lo que comparte el grupo; las entradas, de cada uno; «¿Para quién es?»;
+// antes → ahora → decisión de Eric (10S10, 1-nov): en alojamiento y entradas la etiqueta del precio pasa de «¿Cuánto ha costado en total?» a «Precio»; el vuelo y los gastos la conservan.
 // «Reservada ✓» / «Comprar entrada» en DÍAS; los avisos de la campana; la entrada del invitado que no cuadra con la ruta.
 // Hace falta el servidor y la app (abre un Chrome sin ventana: scripts/destino/_enLaApp.mjs). Guarda las capturas en docs/dias/capturas_jutrip/10n_reservas_*.jpg.
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/pruebaTanda10N_reservas.mjs
@@ -96,9 +97,10 @@ const irA = async (a, modo) => {
   await a.evaluar(`window.__ruta.getState().setMode('${modo}'); true`)
   await a.esp(1500)
 }
+// antes → ahora → decisión de Eric (10S10, 1-nov): se hacía clic en el primer hijo del bloque (la envoltura de la cabecera, que ya no recibe el clic) y solo si el bloque tenía menos de 2 hijos; ahora se toca la cabecera de verdad y solo si la flecha dice «cerrada».
 const abrirBloque = async (a, bloque) => {
   for (let n = 0; n < 40; n++) {
-    const hecho = await a.evaluar(`(() => { const b = document.querySelector('[data-blk="${bloque}"]'); const cab = b && b.firstElementChild; if (!cab) return false; if (b.children.length < 2) cab.click(); return true })()`)
+    const hecho = await a.evaluar(`(() => { const b = document.querySelector('[data-blk="${bloque}"]'); const cab = b && (b.querySelector('[data-cabecera-bloque]') ?? b.firstElementChild); if (!cab) return false; const f = b.querySelector('[data-flecha-bloque]'); if (f ? f.getAttribute('data-flecha-bloque') === 'cerrada' : b.children.length < 2) cab.click(); return true })()`)
     if (hecho) return true
     await a.esp(500)
   }
@@ -139,6 +141,9 @@ try {
   })()`)
   debe(Boolean(filaColiseo), 'app', `en RESERVAS aparece la entrada del Coliseo (${filaColiseo})`)
   await esperarAnadela(a)
+  // antes → ahora → decisión de Eric (10S10, 1-nov): «Entradas y Free Tour» entra cerrado; la prueba lo abre tocando su cabecera.
+  await a.evaluar(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const cab = b?.querySelector('[data-cabecera-clara]'); if (cab && !Array.from(b.querySelectorAll('button')).some((x) => /Añádela/.test(x.textContent || ''))) cab.click(); return true })()`)
+  await a.esp(1200)
   await a.evaluar(`(() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque.querySelectorAll('button')).filter((x) => /Añádela/.test(x.textContent || '')).find((x) => /Coliseo/.test(x.closest('[class*="min-h-"]')?.textContent || '')); b.click(); return true })()`)
   await a.esp(1500)
   const sinCompartir = await a.evaluar(`(() => {
@@ -146,7 +151,7 @@ try {
     if (!hoja) return null
     const g = hoja.querySelector('[data-guardar-reserva]')
     const est = g ? getComputedStyle(g) : null
-    return { paraQuien: Boolean(hoja.querySelector('[data-para-quien]')), pagaste: /Lo que pagaste en total/.test(hoja.textContent || ''), precio: /¿Cuánto ha costado en total\\?/.test(hoja.textContent || ''), fondo: est?.backgroundImage ?? '', color: est?.color ?? '' }
+    return { paraQuien: Boolean(hoja.querySelector('[data-para-quien]')), pagaste: /Lo que pagaste en total/.test(hoja.textContent || ''), precio: /Precio/.test(hoja.textContent || ''), fondo: est?.backgroundImage ?? '', color: est?.color ?? '' }
   })()`)
   debe(sinCompartir && sinCompartir.paraQuien === false, 'sin_compartir', 'en un viaje sin compartir NO sale «¿Para quién es?»')
   debe(sinCompartir && sinCompartir.pagaste === false && sinCompartir.precio === true, 'sin_compartir', 'sin «Lo que pagaste en total, todas las personas.» pero con «Precio (opcional)»')
@@ -175,7 +180,7 @@ try {
         marcadas: pastillas.filter((p) => p.dataset.elegida === '1').map((p) => (p.textContent || '').trim().slice(1)),
         fondoMarcada: getComputedStyle(pastillas.find((p) => p.dataset.elegida === '1')).backgroundColor,
         despuesDeLaDisponibilidad: orden('[data-aviso="disponibilidad"]') < orden('[data-para-quien]'),
-        antesDelPrecio: orden('[data-para-quien]') < todo.indexOf(Array.from(hoja.querySelectorAll('span')).find((s) => /¿Cuánto ha costado en total\\?/.test(s.textContent || ''))),
+        antesDelPrecio: orden('[data-para-quien]') < todo.indexOf(Array.from(hoja.querySelectorAll('span')).find((s) => /Precio/.test(s.textContent || ''))),
         pagaste: /Lo que pagaste en total/.test(hoja.textContent || ''),
         filas: new Set(pastillas.map((p) => Math.round(p.getBoundingClientRect().top))).size,
       }

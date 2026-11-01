@@ -350,7 +350,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // 0 resultados para este lugar" — mismo efecto: sin tickets, sin pestaña (ver hasTickets abajo).
   // La entrada oficial (precio y condiciones del lugar) va siempre en Tickets, haya o no proveedores.
   const ticketInfo = stop?.ticketInfo ?? []
-  const hasEntradas = useStopEntradas(stop) != null
+  const entradasDelSitio = useStopEntradas(stop)
+  const hasEntradas = entradasDelSitio != null
   // La API de consulta (parte 1, con el interruptor encendido): las actividades cerca del sitio, si no tiene entradas escritas a mano ni «No necesitas entrada». Nuestros sitios no traen el número de lugar de Google: se busca por coordenadas.
   const coordenadasDelSitio = dayStops.find((dayStop) => dayStop.id === stop?.id)?.coordinates
   const actividadesCerca = useActividadesCerca(coordenadasDelSitio?.lat, coordenadasDelSitio?.lng, Boolean(stop) && !stop?.isFreeTour && !hasEntradas && sinEntrada == null)
@@ -462,7 +463,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                       <h1 ref={nombreRef} className="flex items-start gap-1.5 pr-[78px] font-display text-[33px] leading-[1.02] text-text [text-wrap:balance]">
                         {stop.isFreeTour && <FreeTourIcon className="mt-1.5 text-accent" />}
                         {stop.isNightExperience && <MoonIcon className="mt-1.5 text-[#5B6BC0]" />}
-                        <span>{stop.nightViewTitle ?? displayStopName(stop.name)}</span>
+                        <span>{displayStopName(stop.nightViewTitle ?? stop.name)}</span>
                       </h1>
                       {/* El corazón de «me gusta» con su número: la misma cuenta que el de EXPLORAR (src/store/useMeGustaStore.ts). Solo en los sitios del catálogo del destino. */}
                       {!stop.isFreeTour && !stop.isBreak && !stop.isFreeWalk && (
@@ -512,7 +513,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                 {!stop.isBreak && <TusRecuerdos stopName={stop.name} dayNumber={dayNumber} />}
   
                 <FichaPestanas<Tab>
-                  pestanas={([{ id: 'resumen', label: 'Resumen' }, { id: 'tickets', label: 'Entradas' }, { id: 'tips', label: 'Tips' }] as const).filter((item) => visibleTabs.includes(item.id)).map((item) => ({ id: item.id as Tab, label: item.label }))}
+                  pestanas={([{ id: 'resumen', label: 'Resumen' }, { id: 'tickets', label: 'Entradas' }, { id: 'tips', label: 'Tips' }] as const).filter((item) => visibleTabs.includes(item.id)).map((item) => ({ id: item.id as Tab, label: item.label, numero: item.id === 'tickets' ? (entradasDelSitio?.entradas.length ?? 0) + actividadesCerca.length : undefined }))}
                   activa={activeTab}
                   onPick={setTab}
                 />

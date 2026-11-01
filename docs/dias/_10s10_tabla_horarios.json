@@ -1,0 +1,331 @@
+{
+  "_nota": "Generado por scripts/destino/_tablaHorarios10s10.mjs desde data/pipeline_v2/roma.json con shared/verPor.js. Para cambiar un sitio: escribe `ver_por` («dentro_y_fuera» o «solo_dentro») en el sitio del JSON, o añádelo a VER_POR_A_MANO en shared/verPor.js; el nombre de la frase, en NOMBRE_DE_AVISO.",
+  "dentro_y_fuera": [
+    {
+      "id": "coliseo",
+      "nombre": "Coliseo",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "08:30-16:30",
+      "frase_si_cerrado": "A esta hora, posiblemente el Coliseo ya esté cerrado, pero puedes verlo por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "foro_romano_y_palatino",
+      "nombre": "Foro Romano y Palatino",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "09:00-16:30",
+      "frase_si_cerrado": "A esta hora, posiblemente el Foro Romano ya esté cerrado, pero puedes verlo por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "panteon",
+      "nombre": "Panteón",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "09:00-19:00",
+      "frase_si_cerrado": "A esta hora, posiblemente el Panteón ya esté cerrado, pero puedes verlo por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "basilica_de_san_pedro",
+      "nombre": "Basílica de San Pedro",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "07:00-20:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Basílica de San Pedro ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "castillo_de_santangelo",
+      "nombre": "Castillo de Sant'Angelo",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "09:00-19:30",
+      "frase_si_cerrado": "A esta hora, posiblemente el Castillo de Sant'Angelo ya esté cerrado, pero puedes verlo por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "altar_de_la_patria",
+      "nombre": "Altar de la Patria",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "09:30-19:30",
+      "frase_si_cerrado": "A esta hora, posiblemente el Altar de la Patria ya esté cerrado, pero puedes verlo por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "mercados_de_trajano",
+      "nombre": "Mercados de Trajano",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "09:30-19:30",
+      "frase_si_cerrado": "A esta hora, posiblemente los Mercados de Trajano ya estén cerrados, pero puedes verlos por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no hayan abierto."
+    },
+    {
+      "id": "cupula_de_san_pedro",
+      "nombre": "Cúpula de San Pedro",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "07:30-17:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Cúpula de San Pedro ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "iglesia_del_gesu",
+      "nombre": "Iglesia del Gesù",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "07:30-12:30 y 16:30-19:30",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia del Gesù ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "iglesia_de_san_luigi_dei_francesi",
+      "nombre": "Iglesia de San Luigi dei Francesi",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "09:30-12:45 y 14:30-18:30",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia de San Luigi dei Francesi ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "ara_pacis",
+      "nombre": "Ara Pacis",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "09:30-19:30",
+      "frase_si_cerrado": "A esta hora, posiblemente el Ara Pacis ya esté cerrado, pero puedes verlo por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "iglesia_de_santa_maria_sopra_minerva",
+      "nombre": "Iglesia de Santa Maria sopra Minerva",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "07:00-19:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia de Santa Maria sopra Minerva ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "iglesia_de_san_ignacio_de_loyola",
+      "nombre": "Iglesia de San Ignacio de Loyola",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "09:00-19:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia de San Ignacio de Loyola ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "iglesia_de_san_pietro_in_vincoli",
+      "nombre": "Iglesia de San Pietro in Vincoli",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "08:00-12:30 y 15:00-18:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia de San Pietro in Vincoli ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "termas_de_caracalla",
+      "nombre": "Termas de Caracalla",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "09:00-16:30",
+      "frase_si_cerrado": "A esta hora, posiblemente las Termas de Caracalla ya estén cerradas, pero puedes verlas por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no hayan abierto."
+    },
+    {
+      "id": "basilica_de_santa_maria_la_mayor",
+      "nombre": "Basílica de Santa María la Mayor",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "07:00-18:45",
+      "frase_si_cerrado": "A esta hora, posiblemente la Basílica de Santa María la Mayor ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "iglesia_de_santa_maria_in_trastevere",
+      "nombre": "Iglesia de Santa Maria in Trastevere",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "07:30-21:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia de Santa Maria in Trastevere ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "basilica_de_san_juan_de_letran",
+      "nombre": "Basílica de San Juan de Letrán",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "07:00-18:30",
+      "frase_si_cerrado": "A esta hora, posiblemente la Basílica de San Juan de Letrán ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "san_pietro_in_montorio_y_tempietto_de_bramante",
+      "nombre": "San Pietro in Montorio y Tempietto de Bramante",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "10:00-18:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia de San Pietro in Montorio ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "basilica_de_santa_cecilia_in_trastevere",
+      "nombre": "Basílica de Santa Cecilia in Trastevere",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "10:00-12:30 y 16:30-18:30",
+      "frase_si_cerrado": "A esta hora, posiblemente la Basílica de Santa Cecilia in Trastevere ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "santa_maria_del_popolo",
+      "nombre": "Santa Maria del Popolo",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "08:30-09:45 y 10:30-12:00 y 16:00-18:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia de Santa Maria del Popolo ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "trinita_dei_monti",
+      "nombre": "Trinità dei Monti",
+      "ver_por": "dentro_y_fuera",
+      "por_que": "tiene texto «por fuera» en los datos",
+      "horario": "10:15-19:45",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia de la Trinità dei Monti ya esté cerrada, pero puedes verla por fuera igualmente.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    }
+  ],
+  "solo_dentro": [
+    {
+      "id": "museos_vaticanos_y_capilla_sixtina",
+      "nombre": "Museos Vaticanos y Capilla Sixtina",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "08:00-20:00",
+      "frase_si_cerrado": "A esta hora, posiblemente los Museos Vaticanos ya estén cerrados.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no hayan abierto."
+    },
+    {
+      "id": "galeria_borghese",
+      "nombre": "Galería Borghese",
+      "ver_por": "solo_dentro",
+      "por_que": "decidido por Eric (1-nov)",
+      "horario": "09:00-19:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Galería Borghese ya esté cerrada.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "bioparque_de_roma",
+      "nombre": "Bioparque de Roma",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "09:30-17:00",
+      "frase_si_cerrado": "A esta hora, posiblemente el Bioparque de Roma ya esté cerrado.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "galeria_nacional_de_arte_moderno",
+      "nombre": "Galería Nacional de Arte Moderno",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "09:00-19:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Galería Nacional de Arte Moderno ya esté cerrada.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "museos_capitolinos",
+      "nombre": "Museos Capitolinos",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "09:30-19:30",
+      "frase_si_cerrado": "A esta hora, posiblemente los Museos Capitolinos ya estén cerrados.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no hayan abierto."
+    },
+    {
+      "id": "basilica_de_san_clemente",
+      "nombre": "Basílica de San Clemente",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "09:00-12:30 y 14:00-18:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Basílica de San Clemente ya esté cerrada.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "domus_aurea",
+      "nombre": "Domus Aurea",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "09:00-16:30",
+      "frase_si_cerrado": "A esta hora, posiblemente la Domus Aurea ya esté cerrada.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "iglesia_de_santa_maria_della_vittoria",
+      "nombre": "Iglesia de Santa Maria della Vittoria",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "08:00-12:00 y 16:00-18:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Iglesia de Santa Maria della Vittoria ya esté cerrada.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "villa_farnesina",
+      "nombre": "Villa Farnesina",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "09:00-14:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Villa Farnesina ya esté cerrada.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "mercado_de_testaccio",
+      "nombre": "Mercado de Testaccio",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "07:00-15:30",
+      "frase_si_cerrado": "A esta hora, posiblemente el Mercado de Testaccio ya esté cerrado.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "palazzo_doria_pamphilj",
+      "nombre": "Palazzo Doria Pamphilj",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "09:00-19:00",
+      "frase_si_cerrado": "A esta hora, posiblemente el Palazzo Doria Pamphilj ya esté cerrado.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "catacumbas_de_san_calixto",
+      "nombre": "Catacumbas de San Calixto",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "09:00-12:00 y 14:00-17:00",
+      "frase_si_cerrado": "A esta hora, posiblemente las Catacumbas de San Calixto ya estén cerradas.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no hayan abierto."
+    },
+    {
+      "id": "cementerio_protestante",
+      "nombre": "Cementerio Protestante",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "09:00-17:00",
+      "frase_si_cerrado": "A esta hora, posiblemente el Cementerio Protestante ya esté cerrado.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "cripta_de_los_capuchinos",
+      "nombre": "Cripta de los Capuchinos",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "10:00-19:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Cripta de los Capuchinos ya esté cerrada.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    }
+  ]
+}

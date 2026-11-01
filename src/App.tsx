@@ -1,5 +1,7 @@
 import { Suspense, useEffect } from 'react'
 import { Cargando, pantallaPerezosa } from './components/layout/PantallaPerezosa'
+import { CargandoApp } from './components/layout/CargandoApp'
+import { useSyncStore } from './store/useSyncStore'
 import { AnimatePresence } from 'framer-motion'
 import { useRouteStore } from './store/useRouteStore'
 import { TrazoFlow } from './components/trazo/TrazoFlow'
@@ -70,6 +72,13 @@ function App() {
   useSinPasePrueba((state) => state.activo)
   const invitacionEnMarcha = useInvitacionEnMarcha()
   const screen = useRouteStore((state) => state.screen)
+  // (10S10 §8) Mientras no se sabe si hay viaje guardado, la pantalla de carga (el logo), nunca la de crear viaje. Tope de seguridad: si la lectura se cuelga, a los 12 s se enseña la de siempre.
+  const cargaHecha = useSyncStore((state) => state.cargaInicialHecha)
+  useEffect(() => {
+    if (cargaHecha) return
+    const aviso = window.setTimeout(() => useSyncStore.getState().setCargaInicialHecha(true), 12000)
+    return () => window.clearTimeout(aviso)
+  }, [cargaHecha])
   const setDestination = useRouteStore((state) => state.setDestination)
   const setArchetype = useRouteStore((state) => state.setArchetype)
   const setTransportOption = useRouteStore((state) => state.setTransportOption)
@@ -189,7 +198,8 @@ function App() {
       <AnimatePresence mode="wait">
         {/* Formulario de creación de viaje (diseño "Trazo App"): sustituye a LandingScreen + Questionnaire. */}
         {/* (Tanda 10N §5: con un enlace de invitación en marcha NO sale «Crear viaje», ni al abrirlo ni al tocar [Unirme].) */}
-        {(screen === 'destination' || screen === 'questionnaire') && !invitacionEnMarcha && <TrazoFlow key="trazo" />}
+        {(screen === 'destination' || screen === 'questionnaire') && !invitacionEnMarcha && !cargaHecha && <CargandoApp key="cargando-app" />}
+        {(screen === 'destination' || screen === 'questionnaire') && !invitacionEnMarcha && cargaHecha && <TrazoFlow key="trazo" />}
         {screen === 'myTrips' && (
           <Suspense key="myTrips" fallback={<Cargando />}>
             <MyTripsScreen />

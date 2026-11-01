@@ -183,3 +183,34 @@ export function nombrePropioDelDia(day: DayPlan | undefined): string {
 export function tituloSimpleDelDia(route: Route, day: DayPlan): string {
   return (nombreDelDiaYaCargado(route, day) ?? { ...nombreDelDia(route, day, null) }).titulo
 }
+
+// ── (Tanda 10S10, apartado 3) Los títulos de día que prometen una hora ─────────────────────────────────────────────────────────────────────────────────────
+
+/** Las frases de hora que puede llevar el título de un día de los datos, y qué hay que cumplir para que sigan siendo verdad. */
+const FRASES_DE_HORA: { patron: RegExp; cumple: (paradas: { stop: Stop; minutos: number }[], ocaso: number | null) => boolean }[] = [
+  // «Trevi a primera hora», «Trevi y la Escalinata sin gente»: lo primero del día, a las 9:00 o antes.
+  { patron: /\s*\([^)]*sin gente[^)]*\)|\s+a primera hora|\s+sin gente/i, cumple: (paradas) => paradas.length > 0 && paradas[0].minutos <= 9 * 60 },
+  // «… al atardecer»: alguna parada cae en la ventana del atardecer (una hora antes del sol a un cuarto de hora después).
+  { patron: /\s+al atardecer/i, cumple: (paradas, ocaso) => ocaso === null || paradas.some((p) => p.minutos >= ocaso - 60 && p.minutos <= ocaso + 15 + 60) },
+  // «… de noche», «… iluminado»: alguna parada empieza con el sol ya puesto.
+  { patron: /\s+de noche|\s+iluminad[oa]s?/i, cumple: (paradas, ocaso) => paradas.some((p) => p.stop.isNightExperience || p.stop.isNightView || (ocaso !== null && p.minutos >= ocaso)) },
+]
+
+/**
+ * El título de un día de los datos («Trevi a primera hora, el Popolo y la Borghese»), sin la hora que ya no es verdad: si el viajero cambia el día y lo primero ya no es a primera hora (o ya no hay nada al atardecer o de noche),
+ * el título pasa a uno sin horas, solo con los sitios («Trevi, el Popolo y la Borghese»). Con las horas cumplidas, queda tal cual. Un día sin horas en sus paradas no se toca (no se puede saber).
+ * @param ocaso la puesta de sol de ese día en minutos (src/lib/avisoDeHorario.ts → ocasoDelDia), null si no se sabe
+ */
+export function tituloSinHorasSiYaNoEsVerdad(titulo: string, day: Pick<DayPlan, 'stops'>, ocaso: number | null): string {
+  const paradas = day.stops
+    .filter((stop) => !stop.isBreak && !stop.passThrough && !stop.isFreeTime && !stop.isArrival && stop.time)
+    .map((stop) => ({ stop, minutos: parseTimeToMinutes(stop.time as string) }))
+    .filter((entrada) => !Number.isNaN(entrada.minutos))
+    .sort((a, b) => a.minutos - b.minutos)
+  if (paradas.length === 0) return titulo
+  let resultado = titulo
+  for (const { patron, cumple } of FRASES_DE_HORA) {
+    if (patron.test(resultado) && !cumple(paradas, ocaso)) resultado = resultado.replace(patron, '').replace(/\s{2,}/g, ' ').trim()
+  }
+  return resultado
+}

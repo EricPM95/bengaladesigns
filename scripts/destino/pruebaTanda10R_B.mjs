@@ -84,6 +84,9 @@ async function pasada(version) {
     await R("st().setMode('bookings'); return true")
     for (let i = 0; i < 30 && !(await ev("Boolean(document.querySelector('[data-blk=excursiones]'))")); i++) await a.esp(500)
     await a.esp(800)
+    // (10S10 §4/§5) antes: el bloque Excursiones salía abierto con la tarjeta a la vista → ahora: sale CERRADO (como Entradas y Free Tour) y el viajero lo abre. Decisión de Eric (10S10, 1-nov). Aquí se abre tocando su cabecera.
+    await ev("(() => { const b = document.querySelector('[data-blk=excursiones]'); if (b && !b.querySelector('[data-ver-mas-excursiones]')) b.querySelector('[data-cabecera-bloque]')?.click(); return true })()")
+    await a.esp(700)
     const fila = '[data-excursion-fila="pompeya_sorrento"]'
     const diaDe = () => R(`const r = route(); const d = r.days.find((x) => (x.excursions ?? []).some((e) => e.id === 'pompeya_sorrento') || x.selectedExcursionId === 'pompeya_sorrento'); return d ? d.id : null`)
     const diaAntes = await diaDe()

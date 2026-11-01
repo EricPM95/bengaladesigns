@@ -202,8 +202,9 @@ const datos = excursionsFor('roma')
 for (const excursion of datos?.excursiones ?? []) {
   viajes++
   const ultima = excursion.paradas?.at(-1)
-  if (excursion.medio_dia && (excursion.vuelta !== '14:00' || ultima?.hora !== '14:00')) falla('medio_dia_14h', `${excursion.id}: es de medio día y su línea de horas no acaba a las 14:00`)
-  if (!excursion.medio_dia && ultima?.hora !== excursion.vuelta) falla('linea_horas', `${excursion.id}: la hora de vuelta (${excursion.vuelta}) no es la última de su línea (${ultima?.hora})`)
+  // (10S10 §4) antes: toda excursión de medio día acababa a las 14:00 → ahora: Ostia Antica (3 h, 08:00-11:00, 10S9) acaba a su hora de vuelta; el resto sigue a las 14:00. Y una excursión SIN línea de horas (las tres nuevas de la 10R: no se inventan horas) no la comprueba. Decisión de Eric (10S10, 1-nov).
+  if (excursion.medio_dia && (excursion.vuelta !== ultima?.hora || (excursion.id !== 'ostia_antica' && excursion.vuelta !== '14:00'))) falla('medio_dia_14h', `${excursion.id}: es de medio día y su línea de horas no acaba a las 14:00`)
+  if (!excursion.medio_dia && (excursion.paradas?.length ?? 0) > 0 && ultima?.hora !== excursion.vuelta) falla('linea_horas', `${excursion.id}: la hora de vuelta (${excursion.vuelta}) no es la última de su línea (${ultima?.hora})`)
   if (excursion.precio_desde == null && excursion.ejemplo !== true) falla('precio_sin_dato', `${excursion.id}: sin precio y sin marcar como ejemplo`)
   if (excursion.porcentaje != null && !Number.isFinite(excursion.porcentaje)) falla('porcentaje_raro', `${excursion.id}: porcentaje que no es un número`)
 }

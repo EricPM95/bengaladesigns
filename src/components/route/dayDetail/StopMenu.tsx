@@ -26,6 +26,10 @@ interface StopMenuProps {
   otherDays: { id: string; dayNumber: number; city: string }[]
   /** Día libre (decisión del usuario, 2026-09-28): Poner / Cambiar / Quitar hora, Mover a otro día, Subir, Bajar y Quitar del día, con "Deshacer". */
   freeDay?: boolean
+  /** (10S10, 1) «Mover antes / después» en la línea del día entera (paradas, comida y cena): cambia la parada por el elemento de al lado y nada más. Sin esto, solo entre paradas. */
+  moverEnLaLinea?: (stopId: string, direccion: 'antes' | 'despues') => void
+  /** (10S10, 1) Si no hay nada antes / después de la parada en la línea del día (ni parada, ni comida, ni cena). */
+  lugarEnLaLinea?: { primero: boolean; ultimo: boolean }
   /** Abre la ficha de la parada (el menú de quien mira el viaje de otra persona lo ofrece). */
   onVerFicha?: () => void
 }
@@ -44,7 +48,9 @@ type MenuView = 'menu' | 'move-day'
  * (Tanda 10N §6c) El menú, la confirmación de quitar y «Mover a otro día» salen DESDE ABAJO como hoja baja (`HojaDelMenu`: tirador, ✕, se cierra deslizando o tocando fuera) con el nombre de la parada arriba;
  * «Mover a» elige el día con una ruedita (`MoverADia`).
  */
-function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, freeDay = false }: StopMenuProps) {
+function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, freeDay = false, moverEnLaLinea, lugarEnLaLinea }: StopMenuProps) {
+  const esPrimera = lugarEnLaLinea ? lugarEnLaLinea.primero : index === 0
+  const esUltima = lugarEnLaLinea ? lugarEnLaLinea.ultimo : index === realStops.length - 1
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<MenuView>('menu')
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -70,6 +76,11 @@ function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, free
   const undoable = (message: string, change: () => void) => (freeDay ? withUndo(message, change) : change())
 
   const handleReorder = (direction: 'before' | 'after') => {
+    if (moverEnLaLinea) {
+      undoable(direction === 'before' ? `${stop.name}: sube` : `${stop.name}: baja`, () => moverEnLaLinea(stop.id, direction === 'before' ? 'antes' : 'despues'))
+      close()
+      return
+    }
     ensureSeeded()
     const ids = realStops.map((s) => s.id)
     const targetIndex = direction === 'before' ? index - 1 : index + 1
@@ -150,8 +161,8 @@ function StopMenuCompleto({ dayId, city, stop, index, realStops, otherDays, free
                 deshabilitada={Boolean(reserva) || otherDays.length === 0}
                 onClick={() => setView('move-day')}
               />
-              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.arriba} titulo="Mover antes" linea={index === 0 ? 'Ya es la primera del día' : reserva ? `Tienes tu entrada a las ${horaCorta(reserva.time)}` : 'Una posición antes'} flecha={index !== 0} deshabilitada={index === 0} onClick={() => handleReorder('before')} />
-              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.abajo} titulo="Mover después" linea={index === realStops.length - 1 ? 'Ya es la última del día' : reserva ? `Tienes tu entrada a las ${horaCorta(reserva.time)}` : 'Una posición más tarde'} flecha={index !== realStops.length - 1} deshabilitada={index === realStops.length - 1} onClick={() => handleReorder('after')} />
+              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.arriba} titulo="Mover antes" linea={esPrimera ? 'Ya es la primera del día' : reserva ? `Tienes tu entrada a las ${horaCorta(reserva.time)}` : 'Una posición antes'} flecha={!esPrimera} deshabilitada={esPrimera} onClick={() => handleReorder('before')} />
+              <OpcionTarjeta tono="gris" icono={ICONOS_OPCION.abajo} titulo="Mover después" linea={esUltima ? 'Ya es la última del día' : reserva ? `Tienes tu entrada a las ${horaCorta(reserva.time)}` : 'Una posición más tarde'} flecha={!esUltima} deshabilitada={esUltima} onClick={() => handleReorder('after')} />
               <OpcionTarjeta
                 peligro
                 icono={ICONOS_OPCION.papelera}

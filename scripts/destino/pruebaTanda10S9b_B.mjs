@@ -1,4 +1,5 @@
 // Tanda 10S9b (agente B), apartado 3: la hora de la hoja «Añadir» (entrada, Free Tour, excursión) con la misma rueda que el resto de la app.
+// antes → ahora → decisión de Eric (10S10, 1-nov): RESERVAS entra con todos los bloques cerrados; la prueba abre «Entradas» tocando su cabecera.
 //   1 · el código (sin navegador): la hoja usa CampoDeHora/HojaDeHora y no la rueda abierta; la hora no se pone sola; el día sigue en sus cuadrados.
 //   2 · la hoja de la entrada del Coliseo en la app (390 px): día en cuadrados, hora en casilla con ejemplo en gris, [Guardar] sin activar hasta elegirla,
 //       tocar fuera de la rueda vacía sin moverla la deja vacía, el ✓ guarda lo que se ve, tocar fuera con la hora elegida la guarda.
@@ -41,7 +42,7 @@ try {
   a = await conViaje({ version: 'gratis', ancho: 390, alto: 844 })
   await a.evaluar("(async () => { const n = performance.getEntriesByType('resource').map((r) => r.name).find((x) => x.includes('/src/store/useRouteStore.ts')); const m = await import(n || '/src/store/useRouteStore.ts'); m.useRouteStore.getState().setMode('bookings'); return true })()")
   await esp(2200)
-  await a.evaluar(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const cab = b?.firstElementChild; if (cab && b.children.length < 2) cab.click(); return true })()`)
+  await a.evaluar(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const cab = b?.querySelector('[data-cabecera-clara]') ?? b?.firstElementChild; if (cab && !Array.from(b.querySelectorAll('button')).some((x) => /Añádela/.test(x.textContent || ''))) cab.click(); return true })()`)
   await esp(1500)
   const botonColiseo = `(() => { const bloque = document.querySelector('[data-blk="entradas"]'); const b = Array.from(bloque?.querySelectorAll('button') ?? []).filter((x) => /Añádela/.test(x.textContent || '')).find((x) => /Coliseo/.test(x.closest('[class*="min-h-"]')?.textContent || '')); if (!b) return false; b.click(); return true })()`
   let abierta = false

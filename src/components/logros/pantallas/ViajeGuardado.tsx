@@ -4,6 +4,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
 import { useFotosViaje } from '../../../lib/useFotosViaje'
 import { viajePorId, viajesDelPerfil } from '../../../lib/viajesPerfil'
+import { tituloSinHorasSiYaNoEsVerdad } from '../../../lib/tituloDelDia'
 import { FotoEnGrande } from '../../route/fotos/FotoEnGrande'
 import { Icono } from '../../ui/Icono'
 import { Capa } from './Capa'
@@ -72,7 +73,7 @@ export default function ViajeGuardado({ pantalla }: { pantalla: PantallaDe<'viaj
               {dias.map((d) => (
                 <span key={d.id} className="flex w-[118px] flex-none flex-col gap-[3px] rounded-2xl border border-[#1C2230]/[.07] bg-[#FFFDF8] px-3 py-2.5">
                   <span style={{ font: "600 10px 'Geist Mono',monospace", color: 'rgba(28,34,48,.55)' }}>DÍA {d.dayNumber}</span>
-                  <span style={{ font: "400 16px/1.15 'Instrument Serif',serif" }}>{d.curatedTitle ?? d.title}</span>
+                  <span style={{ font: "400 16px/1.15 'Instrument Serif',serif" }}>{tituloSinHorasSiYaNoEsVerdad(d.curatedTitle ?? d.title, d, null)}</span>
                 </span>
               ))}
               <span className="w-3 flex-none" />

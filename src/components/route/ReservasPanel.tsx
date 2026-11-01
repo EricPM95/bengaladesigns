@@ -76,6 +76,8 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   const [abiertos, setAbiertos] = useState<Record<string, boolean>>({})
   /** La mitad de «Llegada y vuelta» abierta: undefined = la que falta; null = ninguna. */
   const [mitad, setMitad] = useState<LegKind | null | undefined>(undefined)
+  /** (10S10 §6) El [Ver] de DÍAS: despliega «Llegada y vuelta» sin abrir la hoja del vuelo. */
+  const [verLlegada, setVerLlegada] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const info = useDestinationExcursions(route.destination)
@@ -92,8 +94,11 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   useEffect(() => {
     if (!pedido) return
     const bloque: BloqueReservasId = pedido.bloque
-    abrir(bloque)
-    if (bloque === 'llegada') setMitad(pedido.mitad ?? undefined)
+    if (bloque === 'llegada' && pedido.soloBloque) setVerLlegada(pedido.id)
+    else {
+      abrir(bloque)
+      if (bloque === 'llegada') setMitad(pedido.mitad ?? undefined)
+    }
     limpiarPedido()
     window.setTimeout(() => {
       const destino = scrollRef.current?.querySelector(`[data-blk="${bloque}"]`) as HTMLElement | null
@@ -138,6 +143,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
         info={arrivalInfo}
         zonas={info.zonasAlojamiento}
         abierto={Boolean(abiertos.llegada)}
+        verBloque={verLlegada}
         onToggle={() => alternar('llegada')}
         mitadAbierta={mitad}
         onMitad={setMitad}
@@ -224,9 +230,9 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
 
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               {hayExcursiones && (
-                <div className="flex min-w-0 flex-col gap-2.5" data-blk="excursiones">
+                <div className="flex min-w-0 flex-col gap-2.5">
                   <PiezaSegura nombre="RESERVAS: Excursiones">
-                    <ExcursionesReservas route={route} info={info} />
+                    <ExcursionesReservas route={route} info={info} abierto={Boolean(abiertos.excursiones)} />
                   </PiezaSegura>
                 </div>
               )}

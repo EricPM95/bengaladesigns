@@ -15,7 +15,7 @@ const desdeDonde = (mode: DatosBillete['mode']): string => (mode === 'avion' ? '
  * «Fiumicino · Cómo llegar desde el aeropuerto», con [Ver] (abre la ficha de llegada). SOLO la hora que puso el viajero: la app no enseña horas calculadas (nada de «libre hacia las 17:40»).
  * Conserva `data-billete="llegada"` (es el mismo billete, con otra cara).
  */
-export function TarjetaLlegadaDias({ billete, point, origen, destino, onOpen }: { billete: DatosBillete; point: ArrivalPoint | null; origen: string; destino: string; onOpen: () => void }) {
+export function TarjetaLlegadaDias({ billete, point, origen, destino, onOpen, onVer }: { billete: DatosBillete; point: ArrivalPoint | null; origen: string; destino: string; onOpen: () => void; /** (10S10 §6) El [Ver] lleva a RESERVAS › Llegada y vuelta; el resto de la tarjeta sigue abriendo la ficha. */ onVer?: () => void }) {
   const handleKey = (event: KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
@@ -80,7 +80,11 @@ export function TarjetaLlegadaDias({ billete, point, origen, destino, onOpen }: 
           </span>
         )}
       </span>
-      <span style={{ height: 42, padding: '0 15px', borderRadius: 999, background: AZUL, color: '#FFFDF8', boxShadow: '0 8px 14px -8px rgba(31,46,102,.7)', display: 'flex', alignItems: 'center', font: "700 13.5px 'Geist',sans-serif", flex: 'none' }}>Ver</span>
+      {onVer ? (
+        <button type="button" data-llegada-dias-ver aria-label="Ver en Reservas tu llegada y vuelta" className="zona-toque" onClick={(event) => { event.stopPropagation(); onVer() }} style={{ height: 42, padding: '0 15px', borderRadius: 999, border: 0, cursor: 'pointer', background: AZUL, color: '#FFFDF8', boxShadow: '0 8px 14px -8px rgba(31,46,102,.7)', display: 'flex', alignItems: 'center', font: "700 13.5px 'Geist',sans-serif", flex: 'none' }}>Ver</button>
+      ) : (
+        <span style={{ height: 42, padding: '0 15px', borderRadius: 999, background: AZUL, color: '#FFFDF8', boxShadow: '0 8px 14px -8px rgba(31,46,102,.7)', display: 'flex', alignItems: 'center', font: "700 13.5px 'Geist',sans-serif", flex: 'none' }}>Ver</span>
+      )}
     </div>
   )
 }

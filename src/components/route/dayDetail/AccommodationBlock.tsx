@@ -11,6 +11,8 @@ interface AccommodationBlockProps {
   /** Id del primer día de esta estancia — clave de `accommodationSelections` en el store. */
   segmentDayId: string
   totalNights: number
+  /** (10S10 §6) El [Añadir] lleva a RESERVAS › Alojamiento (sin él, abre el mapa de alojamientos como antes). */
+  onAnadir?: () => void
 }
 
 const DORADO_BOTON = 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)'
@@ -23,7 +25,7 @@ const FILA = { fontFamily: "'Geist Mono',monospace", fontSize: 9.5, fontWeight: 
  *  - Sin el pase (02b): «ALOJAMIENTO · ROMA», el nombre (sin zona ni dirección) y [Ir] con el candado dorado sobre azul en la esquina; al tocarlo, el aviso del pase.
  * El alojamiento solo informa: no cambia la ruta (la zona y la dirección, del pase, sí orientan el primer día).
  */
-export function AccommodationBlock({ city, segmentDayId }: AccommodationBlockProps) {
+export function AccommodationBlock({ city, segmentDayId, onAnadir }: AccommodationBlockProps) {
   const pago = usePagoActivo()
   const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
@@ -90,7 +92,7 @@ export function AccommodationBlock({ city, segmentDayId }: AccommodationBlockPro
             </svg>
             Añadir
           </>,
-          { onClick: () => abrirMapa(segmentDayId), datos: 'anadir', etiqueta: `Añadir alojamiento en ${city}` },
+          { onClick: () => (onAnadir ? onAnadir() : abrirMapa(segmentDayId)), datos: 'anadir', etiqueta: `Añadir alojamiento en ${city}` },
         )}
       </div>
     )

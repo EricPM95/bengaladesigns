@@ -1,4 +1,5 @@
 // Tanda 10S7 (agente S): las entradas y el Free Tour con su billete (apartado 3) y el botón del código en «Entradas y Free Tour» (apartado 4).
+// antes → ahora → decisión de Eric (10S10, 1-nov): los bloques de RESERVAS entraban abiertos si faltaba algo → ahora entran CERRADOS siempre; esta prueba los abre al entrar (a los 600 ms) para seguir comprobando lo de dentro.
 //   1 · la lectura de una entrada en el servidor (server/billete/lectura.js): solo campos con forma buena, sin nombres de personas.
 //   2 · el billete de las entradas en el store (el MISMO documento privado de `billetes_personales`, 0070, sin tabla nueva): sube, otro móvil de la misma persona lo trae, otra cuenta no lo ve, sin conexión queda pendiente,
 //       y lo del vuelo y lo de las entradas conviven.
@@ -171,7 +172,7 @@ try {
   await a.esp(1200)
   const cerrarAvisos = () => ev(`Array.from(document.querySelectorAll('[role="dialog"] button, [role="alertdialog"] button')).filter((b) => /^(cerrar|×|✕)$/i.test((b.getAttribute('aria-label') ?? b.textContent).trim())).forEach((b) => b.click()); true`)
   const abrirBloque = async () => {
-    await R("st().setMode('bookings'); return true")
+    await R("st().setMode('bookings'); setTimeout(() => { for (const f of document.querySelectorAll('[data-flecha-bloque=\"cerrada\"]')) f.closest('[data-cabecera-bloque]')?.click() }, 600); return true")
     await a.esp(1800)
     await cerrarAvisos()
     await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); if (b && b.children.length < 2) b.firstElementChild?.click(); return true })()`)
@@ -305,7 +306,7 @@ try {
   h = await hoy()
   debe(h.hay === false, 'E4 sin pase', `sin pase, HOY no enseña «Tu entrada» (${JSON.stringify(h)})`)
   await ev(`delete window.__pruebaDelPase; true`)
-  await R(`R.useRouteStore.setState({ dev_simulated_today_iso: null }); st().setMode('bookings'); return true`)
+  await R(`R.useRouteStore.setState({ dev_simulated_today_iso: null }); st().setMode('bookings'); setTimeout(() => { for (const f of document.querySelectorAll('[data-flecha-bloque=\"cerrada\"]')) f.closest('[data-cabecera-bloque]')?.click() }, 600); return true`)
   await a.esp(1500)
   await cerrarAvisos()
 

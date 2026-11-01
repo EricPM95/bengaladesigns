@@ -1,5 +1,5 @@
 import { useMonedaViajero } from '../../../lib/moneda'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Excursion, Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildExcursionRow, dayOfReservation, hasEnoughDaysForExcursions, type Reservation } from '../../../lib/bookings'
@@ -7,7 +7,9 @@ import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useEntradasDelGrupo, useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
 import { textoQuienVa, idsIncluidos } from '../../../lib/reservasGrupo'
-import { ICONOS } from './BloqueReservas'
+import { CabeceraBloque, ICONOS } from './BloqueReservas'
+import { BloqueClaro } from './PiezasDesignReservas'
+import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
 import { EntradaCard } from './EntradaCard'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
@@ -67,7 +69,7 @@ function HojaQueExcursion({ excursions, onPick, onClose }: { excursions: Excursi
  * Con el día de excursión: solo la tarjeta de esa excursión (la de entrada, con [Reservar excursión] y «¿Ya la tienes? Añádela») y, debajo, «Ver más excursiones». Nunca dos «Añádela».
  * Las añadidas, en una línea verde con «Cambiar». Viajes de menos días que `excursiones_desde_dias`: no sale.
  */
-export function ExcursionesReservas({ route, info }: { route: Route; info: DestinationExcursions }) {
+export function ExcursionesReservas({ route, info, abierto = false }: { route: Route; info: DestinationExcursions; abierto?: boolean }) {
   useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   // (Tanda 10N §8: las excursiones también son de cada uno; quien mira el viaje de otra persona ve las suyas.)
   const reservations = useReservasParaMi()
@@ -78,6 +80,21 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
   // (10R §4) El billete de cada excursión (privado de esta persona) y la hoja «Datos de la excursión».
   const billetes = useBilletesDeExcursiones()
   const [datosDe, setDatosDe] = useState<{ reserva: Reservation; leida: DatosExcursionLeida | null } | null>(null)
+  // (10S10 §4 y §5) Un bloque como «Entradas y Free Tour»: cerrado al entrar, siempre; el viajero lo abre y lo cierra.
+  const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
+  useEffect(() => setDesplegadoUsuario(null), [abierto])
+  const desplegado = desplegadoUsuario ?? abierto
+  // «¿Ya la has reservado? Añade tu confirmación» de la página del día de excursión: abre este bloque y la hoja de ESA excursión con el día puesto.
+  const excursionPedida = useReservasFocusStore((state) => state.excursionPedida)
+  useEffect(() => {
+    if (!excursionPedida) return
+    const { excursion, dayId } = excursionPedida
+    useReservasFocusStore.getState().limpiarExcursion()
+    setDesplegadoUsuario(true)
+    const existing = reservations.find((item) => item.kind === 'excursion' && item.refId === excursion.id && dayOfReservation(route, item)?.id === dayId)
+    setTarget({ kind: 'excursion', refId: excursion.id, name: excursion.title, placeNames: [], excursion, currentDayId: dayId, ...(existing ? { existing } : {}) })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [excursionPedida])
   const disponible = info.excursions.length > 0 && hasEnoughDaysForExcursions(route, info.fromDays)
   if (!disponible) return null
   const fila = buildExcursionRow(route, reservations)
@@ -100,7 +117,21 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
 
   return (
     <>
-      <div className="flex flex-col gap-2.5">
+      <BloqueClaro bloque="excursiones">
+        <span data-cabecera-excursiones className="block">
+          <CabeceraBloque
+            icono={ICONOS.excursion}
+            titulo="Excursiones"
+            datos="excursiones"
+            onClick={() => setDesplegadoUsuario(!desplegado)}
+            estado={hayDiaDeExcursion ? (fila.reservation ? 'Listo' : '0 de 1 reservada') : 'Ninguna en tu ruta'}
+            hecho={!hayDiaDeExcursion || Boolean(fila.reservation)}
+            abierto={desplegado}
+            className="px-0.5"
+          />
+        </span>
+        {desplegado && (
+          <>
         {sinReservar && fila.excursion && fila.day && (
           <EntradaCard
             eyebrow="Excursión"
@@ -155,35 +186,18 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
             </div>
           )
         })}
+        {/* (10S10 §4) «Ver más excursiones», abajo y DENTRO del bloque; sin día de excursión es lo único que hay (más el atajo pequeño para quien ya tiene una). */}
+        <button type="button" onClick={() => openExcursions(false)} data-ver-mas-excursiones className="zona-toque flex h-12 items-center justify-center gap-2 rounded-[15px] border-[1.5px] border-text/20 bg-transparent text-[14px] font-semibold text-text">
+          Ver más excursiones
+        </button>
         {!hayDiaDeExcursion && (
-          <>
-            <div className="relative flex min-h-[88px] overflow-hidden rounded-[20px] border border-text/[.08] bg-white shadow-[0_1px_2px_rgba(28,34,48,.05),0_10px_22px_-18px_rgba(28,34,48,.4)]">
-              <span className="flex w-[66px] flex-none items-center pl-3.5 text-white" style={{ clipPath: 'polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)', background: 'oklch(0.56 0.1 220)' }}>
-                <Icono nombre="excursion" size={20} />
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 py-2.5 pl-1.5 pr-2">
-                <span style={{ font: "400 19px/1.05 'Instrument Serif',serif" }}>Excursiones desde {route.destination}</span>
-                <span className="text-[11.5px] text-text/55">
-                  {info.excursions.length} {info.excursions.length === 1 ? 'excursión' : 'excursiones'}
-                </span>
-              </span>
-              <span className="my-auto mr-3 flex flex-none flex-col items-end gap-1.5">
-                <button type="button" onClick={() => openExcursions(false)} className="zona-toque h-[34px] whitespace-nowrap rounded-full btn-champan px-[13px] text-[12.5px] font-semibold ">
-                  Ver excursiones
-                </button>
-                <button type="button" onClick={() => setLista(true)} className="border-none bg-transparent p-0 text-right text-[11px] leading-[1.25] text-text/60">
-                  ¿Ya tienes una? <span className="font-semibold text-text underline underline-offset-2">Añádela</span>
-                </button>
-              </span>
-            </div>
-          </>
-        )}
-        {hayDiaDeExcursion && (
-          <button type="button" onClick={() => openExcursions(false)} className="self-start border-none bg-transparent px-1 py-0.5 text-[12px] font-medium text-text underline underline-offset-2">
-            Ver más excursiones
+          <button type="button" onClick={() => setLista(true)} data-ya-tengo-excursion className="zona-toque border-none bg-transparent p-0 text-center text-[12px] leading-[1.25] text-text/60">
+            ¿Ya tienes una? <span className="font-semibold text-text underline underline-offset-2">Añádela</span>
           </button>
         )}
-      </div>
+          </>
+        )}
+      </BloqueClaro>
       {lista && (
         <HojaQueExcursion
           excursions={info.excursions}

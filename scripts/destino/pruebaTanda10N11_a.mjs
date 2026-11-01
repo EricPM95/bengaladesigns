@@ -1,4 +1,7 @@
 // Tanda 10N11 (agente A) · el alojamiento gratis y con pase (hoja «Tu alojamiento» 08/08o/08p/08q), la tarjeta de RESERVAS (09/09p), la línea del pase en la hoja del vuelo (02/03) y «Tú» con su inicial.
+// antes → ahora → decisión de Eric (10S10, 1-nov): la tarjeta del alojamiento es la de Design de la 10S8/10S9: «Zona Prati · dirección» (no «Tu zona»), el lápiz de arriba (`aloj-arriba`) en vez del texto «Cambiar», y «Tú» sale en `data-en-este-alojamiento` (iniciales de ParaQuienDesign) en vez de «En este alojamiento» con chips. Misma intención.
+// antes → ahora → decisión de Eric (10S10, 1-nov): en alojamiento y entradas la etiqueta del precio pasa de «¿Cuánto ha costado en total?» a «Precio»; el vuelo y los gastos la conservan.
+// antes → ahora → decisión de Eric (10S10, 1-nov): los bloques de RESERVAS entraban abiertos si faltaba algo → ahora entran CERRADOS siempre; esta prueba los abre al entrar (a los 600 ms) para seguir comprobando lo de dentro.
 // Capturas docs/dias/capturas_jutrip/10n11_aloj_*.jpg y, al lado, las de Design (..._design.jpg; SIN_DESIGN=1 las salta).
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTanda10N11_a.mjs
 import fs from 'node:fs'
@@ -63,7 +66,7 @@ const medidas = () =>
       cajaVieja: Boolean(d?.querySelector('[data-candado]')),
       pagado: (() => { const g = d?.querySelector('[data-personas-cuadradas="pagado"]'); return g ? { n: g.children.length, elegidas: Array.from(g.children).filter((c) => c.getAttribute('data-elegida') === '1').length } : null })(),
       para: (() => { const g = d?.querySelector('[data-personas-cuadradas="para-quien"]'); return g ? { n: g.children.length, elegidas: Array.from(g.children).filter((c) => c.getAttribute('data-elegida') === '1').length } : null })(),
-      pos: ['Nombre del hotel', 'Buscar alojamiento', '¿En qué zona', '¿Dónde te alojas?', 'Dirección', '¿Para quién', '¿Cuánto ha costado', '¿Quién lo ha pagado?'].map((s) => t.indexOf(s)),
+      pos: ['Nombre del hotel', 'Buscar alojamiento', '¿En qué zona', '¿Dónde te alojas?', 'Dirección', '¿Para quién', 'Precio', '¿Quién lo ha pagado?'].map((s) => t.indexOf(s)),
     }
   })()`)
 const escribe = (sel, valor) =>
@@ -71,7 +74,7 @@ const escribe = (sel, valor) =>
 const abrirHojaAloj = async () => {
   await ev("document.querySelector('[data-blk=\"aloj\"]')?.scrollIntoView({ block: 'start' }); true")
   await a.esp(400)
-  await ev("(() => { const b = document.querySelector('[data-blk=\"aloj\"]'); if (!b.querySelector('[data-anadir-alojamiento]')) b.firstElementChild.click(); return true })()")
+  await ev("(() => { const b = document.querySelector('[data-blk=\"aloj\"]'); if (!b.querySelector('[data-anadir-alojamiento]')) (b.querySelector('[data-cabecera-bloque]') ?? b.firstElementChild).click(); return true })()")
   await a.esp(500)
   await clic('[data-anadir-alojamiento]')
   await a.esp(1300)
@@ -122,7 +125,7 @@ try {
   await escribe('[data-alojamiento-nombre]', 'Hotel Aurora')
   await clic('[data-zona-opcion="prati"]')
   await escribe('[data-alojamiento-direccion]', 'Via Cola di Rienzo, 45')
-  await ev("(() => { const i = Array.from(document.querySelectorAll('[role=dialog] input')).find((x) => x.getAttribute('aria-label') === '¿Cuánto ha costado en total?'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '180'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
+  await ev("(() => { const i = Array.from(document.querySelectorAll('[role=dialog] input')).find((x) => x.getAttribute('aria-label') === 'Precio'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '180'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
   await a.esp(600)
   m = await medidas()
   debe(m.pagado && m.pagado.n === 2 && m.pagado.elegidas === 2, 'A1', `«¿Quién lo ha pagado?» con TODAS las personas marcadas (${JSON.stringify(m.pagado)})`)
@@ -137,12 +140,14 @@ try {
   await ev("document.querySelector('[data-blk=\"aloj\"]')?.scrollIntoView({ block: 'start' }); true")
   await a.esp(600)
   const tarjeta = await ev("document.querySelector('[data-blk=\"aloj\"]')?.innerText.replace(/\\s+/g, ' ') ?? ''")
-  debe(/Hotel Aurora/.test(tarjeta) && /Tu zona/i.test(tarjeta) && /Prati/.test(tarjeta) && /Via Cola di Rienzo, 45/.test(tarjeta) && /Cambiar/.test(tarjeta) && /Cómo llegar a tu alojamiento/.test(tarjeta) && /En este alojamiento/i.test(tarjeta) && /Tú/.test(tarjeta), 'A1', `tarjeta 09p (${tarjeta.slice(0, 200)})`)
+  debe(/Hotel Aurora/.test(tarjeta) && /Zona Prati/.test(tarjeta) && /Via Cola di Rienzo, 45/.test(tarjeta) && /Cómo llegar a tu alojamiento/.test(tarjeta) && Boolean(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-lapiz=\"aloj-arriba\"]'))")) && Boolean(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento]')) && /Tú/.test(document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento-nombres]')?.textContent ?? '')")), 'A1', `tarjeta 09p (${tarjeta.slice(0, 200)})`)
   debe(!/Con el Pase/.test(tarjeta), 'A1', 'con pase, la tarjeta sin frase del pase')
-  const inicial = await ev("(() => { const c = document.querySelector('[data-blk=\"aloj\"] [data-en-este-chips] span span'); return c ? c.textContent.trim() : null })()")
+  const inicial = await ev("(() => { const c = document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento] [data-para-quien-design] > span > span'); return c ? c.textContent.trim() : null })()")
   debe(inicial === 'E', 'A1', `«Tú» con su inicial «E», no «T» (${inicial})`)
   await a.captura(foto('02_tarjeta_con_pase'))
-  // Cambiar: desplegable cerrado y, al tocarlo, las demás.
+  // Cambiar: desplegable cerrado y, al tocarlo, las demás. (10S10: se llega con el lápiz de arriba de la tarjeta, que abre «Tu alojamiento»; ahí está «Tu zona» con su «Cambiar».)
+  await clic('[data-blk="aloj"] [data-lapiz="aloj-arriba"]')
+  await a.esp(1300)
   await ev("(() => { const b = Array.from(document.querySelectorAll('[data-tu-zona] button')).find((x) => /Cambiar/.test(x.textContent || '')); b?.click(); return true })()")
   await a.esp(1200)
   m = await medidas()
@@ -180,7 +185,7 @@ try {
   debe(m.lineaPase && /Con el Pase Roma, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés\./.test(m.texto), 'A4', 'la línea gris con el candado')
   debe(m.candadoRedondo >= 2, 'A4', `candado dorado sobre azul (${m.candadoRedondo})`)
   debe(!m.cajaVieja, 'A4', 'sin la caja vieja del pase')
-  debe(/¿Para quién es el alojamiento\?/.test(m.texto) && /¿Cuánto ha costado en total\?/.test(m.texto), 'A4', 'el dinero, gratis')
+  debe(/¿Para quién es el alojamiento\?/.test(m.texto) && /Precio/.test(m.texto), 'A4', 'el dinero, gratis')
   await a.captura(foto('05_hoja_sin_pase'))
   await clic('[data-alojamiento-bloque-pase]')
   await a.esp(900)
@@ -195,7 +200,7 @@ try {
   await resetAloj()
   await abrirHojaAloj()
   await escribe('[data-alojamiento-nombre]', 'Hotel Aurora')
-  await ev("(() => { const i = Array.from(document.querySelectorAll('[role=dialog] input')).find((x) => x.getAttribute('aria-label') === '¿Cuánto ha costado en total?'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '180'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
+  await ev("(() => { const i = Array.from(document.querySelectorAll('[role=dialog] input')).find((x) => x.getAttribute('aria-label') === 'Precio'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '180'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
   await a.esp(500)
   m = await medidas()
   debe(m.pagado && m.pagado.elegidas === 2, 'A4', `«¿Quién lo ha pagado?» con todos marcados también gratis (${JSON.stringify(m.pagado)})`)
@@ -206,9 +211,9 @@ try {
   await ev("document.querySelector('[data-blk=\"aloj\"]')?.scrollIntoView({ block: 'start' }); true")
   await a.esp(600)
   const tarjeta = await ev("document.querySelector('[data-blk=\"aloj\"]')?.innerText.replace(/\\s+/g, ' ') ?? ''")
-  debe(/Hotel Aurora/.test(tarjeta) && /Con el Pase Roma, adaptamos tus días a donde duermes/.test(tarjeta) && /En este alojamiento/i.test(tarjeta) && /Tú/.test(tarjeta), 'A4', `tarjeta 09 (${tarjeta.slice(0, 220)})`)
+  debe(/Hotel Aurora/.test(tarjeta) && /Con el Pase Roma, adaptamos tus días a donde duermes/.test(tarjeta) && Boolean(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento]')) && /Tú/.test(document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento-nombres]')?.textContent ?? '')")), 'A4', `tarjeta 09 (${tarjeta.slice(0, 220)})`)
   debe(!(await ev("Boolean(document.querySelector('[data-candado=\"alojamiento-zona\"]'))")), 'A4', 'fuera la caja del pase de la tarjeta')
-  const inicial = await ev("(() => { const c = document.querySelector('[data-blk=\"aloj\"] [data-en-este-chips] span span'); return c ? c.textContent.trim() : null })()")
+  const inicial = await ev("(() => { const c = document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento] [data-para-quien-design] > span > span'); return c ? c.textContent.trim() : null })()")
   debe(inicial === 'E', 'A4', `«Tú» con la inicial «E» (${inicial})`)
   await a.captura(foto('06_tarjeta_sin_pase'))
   // Vuelo sin pase: línea gris.

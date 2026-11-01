@@ -138,7 +138,7 @@ export function TarjetaBillete({
   const conCodigo = Boolean(billete?.codigo && (billete.codigo.dibujo || billete.codigo.imagen))
   // (10S8, B1b) Sin tarjeta ni datos guardados: solo la hora grande y el trayecto (ni fila de datos ni su lápiz). Con datos (o con la tarjeta): sus filas y el lápiz de «Datos del vuelo».
   // (10S9b §1) Lo escrito a mano en «Datos del vuelo» (localizador, terminal, asiento, coche) ya cuenta igual que lo leído del documento: guarda la misma fila privada y abre el bloque con su lápiz. El número del vuelo solo NO lo abre (viene también de la hoja del vuelo, «Ref. vuelo»).
-  const conDatos = conCodigo || Boolean(billete && (billete.localizador || billete.terminal || billete.asiento || billete.coche))
+  const conDatos = conCodigo || Boolean(leg.codigo) || Boolean(billete && (billete.localizador || billete.terminal || billete.asiento || billete.coche))
   const filas = conDatos ? filasDelBillete(leg, billete, conCodigo ? duracion : null) : []
   const botonTexto = leg.mode === 'avion' ? 'Añadir tarjeta de embarque' : 'Añadir tu billete'
   const iconoMedio = iconoDeMedio(leg.mode)

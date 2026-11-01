@@ -15,7 +15,7 @@ export function CampoPrecio({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-[13px] font-medium text-text">{etiqueta}</span>
+      <span style={{ font: "700 14.5px 'Geist'", color: "#1C2230" }}>{etiqueta}</span>
       {ayuda && <span className="-mt-1 text-[12px] text-text/55">{ayuda}</span>}
       <div className="flex gap-2">
         <input

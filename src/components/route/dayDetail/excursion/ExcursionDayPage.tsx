@@ -20,7 +20,8 @@ interface ExcursionDayPageProps {
   percentPhrase: string | null
   reservation: { locator: string | null; excursionId: string } | null
   onSelect: (excursionId: string) => void
-  onConfirm: (excursionId: string, code: string) => void
+  /** (10S10 §4) «¿Ya la has reservado? Añade tu confirmación»: lleva a RESERVAS › Excursiones y abre la hoja de esa excursión con el día puesto. */
+  onAddConfirmation: (excursionId: string) => void
   onStayInRoma: () => void
   onOwnDay: () => void
   onAddPlaces: () => void
@@ -60,7 +61,7 @@ function toView(excursion: Excursion): View {
       nameDestination: page.nameDestination,
       nameAfter: page.nameAfter,
       fullName: excursion.title || `${page.nameBefore} ${page.nameDestination}${page.nameAfter}`,
-      listName: page.nameDestination || excursion.title,
+      listName: excursion.title || page.nameDestination, // (10S10 §4) el nombre completo: hay dos «Florencia» y dos «Pompeya»
       shortName: page.shortName,
       duration: hoursLabel(page.durationHours) ?? excursion.durationLabel ?? null,
       returnTime: page.returnTime,
@@ -139,7 +140,7 @@ export function ExcursionDayPage({
   percentPhrase,
   reservation,
   onSelect,
-  onConfirm,
+  onAddConfirmation,
   onStayInRoma,
   onOwnDay,
   onAddPlaces,
@@ -148,9 +149,6 @@ export function ExcursionDayPage({
   const rootRef = useRef<HTMLDivElement>(null)
   const noticeTimer = useRef<number | undefined>(undefined)
   const [moreOpen, setMoreOpen] = useState(false)
-  const [confOpen, setConfOpen] = useState(false)
-  const [confId, setConfId] = useState(viewed.id)
-  const [code, setCode] = useState('')
   const [pending, setPending] = useState(false)
 
   const confirmed = !!reservation && reservation.excursionId === viewed.id
@@ -163,21 +161,6 @@ export function ExcursionDayPage({
     percentPhrase && view.percentage !== null
       ? percentPhrase.replace('{dias}', String(tripDays)).replace('{porcentaje}', String(view.percentage)).replace('{corto}', view.shortName)
       : null
-
-  const toggleConfirmation = () => {
-    if (!confOpen) {
-      setConfId(reservation?.excursionId ?? viewed.id)
-      setCode(reservation?.locator ?? '')
-    }
-    setConfOpen((open) => !open)
-  }
-
-  const save = () => {
-    const clean = code.trim()
-    if (!clean) return
-    onConfirm(confId, clean)
-    setConfOpen(false)
-  }
 
   const showPending = () => {
     setPending(true)
@@ -288,34 +271,7 @@ export function ExcursionDayPage({
               </>
             ))}
 
-          {confOpen && (
-            <div className="flex flex-col gap-2.5 rounded-2xl bg-bg p-3">
-              <label className="flex flex-col gap-1.5 text-[12px] font-medium text-text/75">
-                ¿Qué excursión has reservado?
-                <select value={confId} onChange={(e) => setConfId(e.target.value)} className="h-11 rounded-xl border border-text/[.18] bg-bg-card px-2.5 text-[14px] font-normal text-text">
-                  {options.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.title || toView(option).fullName}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="flex flex-col gap-1.5 text-[12px] font-medium text-text/75">
-                Código de reserva
-                <input
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="Por ejemplo, CIV-48213"
-                  className="h-11 rounded-xl border border-text/[.18] bg-bg-card px-3 text-[14px] font-normal text-text placeholder:text-text/40"
-                />
-              </label>
-              <button type="button" onClick={save} disabled={!code.trim()} className="min-h-[44px] rounded-full btn-champan text-[14px] font-semibold disabled:opacity-50">
-                Guardar
-              </button>
-            </div>
-          )}
-
-          <button type="button" onClick={toggleConfirmation} aria-expanded={confOpen} className="flex min-h-[44px] items-center gap-[7px] self-center text-[13px] text-text/70 underline underline-offset-[3px]">
+          <button type="button" onClick={() => onAddConfirmation(reservation?.excursionId ?? viewed.id)} data-anadir-confirmacion className="flex min-h-[44px] items-center gap-[7px] self-center text-[13px] text-text/70 underline underline-offset-[3px]">
             <Icono nombre="reservas" size={14} className="shrink-0" />
             {reservation ? 'Cambiar confirmación' : '¿Ya la has reservado? Añade tu confirmación'}
           </button>

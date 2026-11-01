@@ -65,6 +65,33 @@ import { recuperarDestino } from '../lib/recuperarDestino'
 import { conUltimoCambio } from '../lib/accionDeCambio'
 import { fechaDelDia } from '../lib/nombreDeDia'
 import { indiceTrasParada, ordenTrasMover, resolverRecomendacion, type DiaPosible, type Recomendacion } from '../lib/aplicarRecomendacion'
+import { comidasTrasInsertar, comidasTrasQuitar, ordenYComidas, type ItemLinea, type NombreComida, type PosicionComidas } from '../lib/lineaDelDia'
+
+/**
+ * (10S10, 1) Cómo entra una parada en el día respecto a la comida y la cena. `comidas`: dónde se veían (detrás de qué parada) cuando el viajero la añadió, para que cada una siga detrás de SU parada;
+ * `antesDe`: entra justo antes de esa comida (el hueco de encima de su tarjeta); `alPrincipio`: la primera del día, delante de todo.
+ */
+export interface OpcionesDeInsercion {
+  comidas?: PosicionComidas
+  antesDe?: NombreComida | null
+  alPrincipio?: boolean
+}
+
+/** Dónde van la comida y la cena: lo que se veía en pantalla (si lo dicen) y, si no, lo guardado en `mealAfter`. */
+function comidasDelDia(day: DayPlan, vistas?: PosicionComidas): PosicionComidas {
+  return { lunch: vistas?.lunch ?? day.mealAfter?.lunch ?? undefined, dinner: vistas?.dinner ?? day.mealAfter?.dinner ?? undefined }
+}
+function conComidas(day: DayPlan, nuevas: { lunch?: number; dinner?: number }): DayPlan {
+  return Object.keys(nuevas).length === 0 ? day : { ...day, mealAfter: { ...(day.mealAfter ?? {}), ...nuevas } }
+}
+/** Quitar una parada del día sin que la comida y la cena guardadas cambien de sitio respecto a las demás paradas. */
+function sinParadaYConComidas(day: DayPlan, stopId: string): DayPlan {
+  const index = day.stops.findIndex((stop) => stop.id === stopId)
+  const sin = { ...day, stops: withoutStop(day.stops, stopId) }
+  if (index < 0 || !day.mealAfter) return sin
+  const guardadas: { lunch?: number; dinner?: number } = { ...(day.mealAfter.lunch !== undefined ? { lunch: day.mealAfter.lunch } : {}), ...(day.mealAfter.dinner !== undefined ? { dinner: day.mealAfter.dinner } : {}) }
+  return conComidas(sin, comidasTrasQuitar(guardadas, index))
+}
 import { CERRADO_ESTE_DIA } from '../lib/placeHoursOnDate'
 import { camposDelViajero, sellarVueltaAlAbrir } from '../lib/datosDelViajero'
 import { avisosDeFechaLeidos, dateNoticesKey } from '../lib/dateNotices'
@@ -478,6 +505,14 @@ interface RouteStoreState {
    */
   moveMeal: (dayId: string, mealTime: 'lunch' | 'dinner', fromAfter: number, toAfter: number) => void
   /**
+   * (10S10, 1) Coloca la LÍNEA del día (paradas, comida y cena) en el orden nuevo: `antes` es la línea que se veía y `despues` la que el viajero ha dejado (un botón «Mover antes/después» o un arrastre).
+   * Las horas son los huecos del día y se reparten por posición (cada elemento coge la hora del hueco que le toca; lo que se pisa se empuja); detrás de qué parada va cada comida se guarda en `mealAfter`.
+   * Ninguna franja se guarda: la franja de una parada es la donde cae.
+   */
+  colocarLinea: (dayId: string, antes: ItemLinea[], despues: ItemLinea[]) => void
+  /** (10S10, 1) Tras meter una parada en el puesto `desde` por otro camino (p. ej. pasarla de día): las comidas guardadas que iban detrás de esa parada o de las siguientes pasan una más abajo (`desde` = 0, todas). */
+  desplazarComidas: (dayId: string, desde: number) => void
+  /**
    * Cambia de sitio un día entero dentro del viaje (arrastrar en la lista de días, DayList.tsx).
    *
    * El día se lleva su contenido tal cual: las horas de sus paradas NO se tocan, porque lo que se
@@ -490,7 +525,7 @@ interface RouteStoreState {
   addStop: (dayId: string, stop: Stop) => void
   replaceStop: (dayId: string, stopId: string, updates: Partial<Stop>) => void
   /** Inserta `stop` en la posición `index` exacta de `day.stops` (a diferencia de `addStop`, que siempre añade al final) — para el "+" entre paradas de DIAS. */
-  insertStopAt: (dayId: string, index: number, stop: Stop) => void
+  insertStopAt: (dayId: string, index: number, stop: Stop, opciones?: OpcionesDeInsercion) => void
   /** Cuentas, parte 2: el administrador acepta una recomendación y la ruta cambia de verdad (usa las acciones de siempre, así «Recuperar este día» y «Recuperar mi ruta» siguen funcionando). Si ya no encaja, no cambia nada y devuelve el motivo. */
   aplicarRecomendacion: (recomendacion: Pick<Recomendacion, 'tipo' | 'payload'>, diaElegido?: string | null) => { ok: boolean; motivo?: string; nota?: string; necesitaDia?: boolean; diasPosibles?: DiaPosible[] }
   /** Cuentas, parte 2: la ruta entera recomendada. Los días que ya existían guardan su copia de antes (la varita los recupera); los nuevos son del viajero. */
@@ -1295,10 +1330,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (state.route.days.find((day) => day.id === dayId)?.stops.some((stop) => stop.id === stopId && stop.reservedId)) return state
       return {
         // Quitar una parada no toca la hora de ninguna otra — ver LA REGLA arriba y withoutStop.
-        route: updateDay(state.route, dayId, (day) => ({
-          ...day,
-          stops: withoutStop(day.stops, stopId),
-        })),
+        route: updateDay(state.route, dayId, (day) => sinParadaYConComidas(day, stopId)),
       }
     }),
 
@@ -1345,6 +1377,75 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             ),
             mealAfter: { ...(day.mealAfter ?? {}), [mealTime]: toAfter },
           }
+        }),
+      }
+    }),
+
+  colocarLinea: (dayId, antes, despues) =>
+    set((state) => {
+      if (!state.route) return state
+      return {
+        route: updateDay(state.route, dayId, (day) => {
+          const porId = new Map(day.stops.map((stop) => [stop.id, stop]))
+          const { stopIds, comidas } = ordenYComidas(despues)
+          const reordenadas = stopIds.map((id) => porId.get(id)).filter((stop): stop is Stop => Boolean(stop))
+          // Seguridad: tienen que ser las mismas paradas y los mismos elementos que se veían.
+          if (reordenadas.length !== day.stops.length || antes.length !== despues.length) return day
+          if (isFreeDay(day)) return { ...day, stops: reordenadas }
+          const comida = (cual: NombreComida) => day.meals.find((candidate) => candidate.mealTime === cual)
+          const minutosDe = (cual: NombreComida) => {
+            const meal = comida(cual)
+            const inicio = meal ? parseTimeToMinutes(meal.time) : NaN
+            const fin = meal?.windowEnd ? parseTimeToMinutes(meal.windowEnd) : NaN
+            return Number.isNaN(inicio) || Number.isNaN(fin) ? (cual === 'dinner' ? 90 : 75) : fin - inicio
+          }
+          const horaDe = (item: ItemLinea): string | undefined => (item.tipo === 'stop' ? porId.get(item.id)?.time : comida(item.comida)?.time)
+          // Por posición: cada elemento coge la hora del hueco que le toca; lo que se pisa, hacia delante (al cuarto de hora).
+          let cursor = -Infinity
+          const horasParadas = new Map<string, string>()
+          const horasComidas: Partial<Record<NombreComida, string>> = {}
+          despues.forEach((item, posicion) => {
+            let inicio = parseTimeToMinutes(horaDe(antes[posicion]) ?? '')
+            const parada = item.tipo === 'stop' ? porId.get(item.id) : undefined
+            if (parada?.isNightExperience) {
+              // Las experiencias nocturnas no empujan ni se empujan (como en pushOverlapsForward).
+              if (!Number.isNaN(inicio)) horasParadas.set(parada.id, minutesToTime(inicio))
+              return
+            }
+            if (Number.isNaN(inicio)) {
+              if (cursor === -Infinity) return
+              inicio = cursor
+            }
+            if (inicio < cursor) inicio = roundUpToQuarterHour(cursor)
+            cursor = inicio + (parada ? parada.durationMinutes + (parada.walkingTimeToNextMinutes ?? 0) : minutosDe((item as { comida: NombreComida }).comida))
+            if (parada) horasParadas.set(parada.id, minutesToTime(inicio))
+            else horasComidas[(item as { comida: NombreComida }).comida] = minutesToTime(inicio)
+          })
+          return conComidas(
+            {
+              ...day,
+              stops: reordenadas.map((stop) => ({ ...stop, time: horasParadas.get(stop.id) ?? stop.time })),
+              meals: day.meals.map((meal) => {
+                const nueva = horasComidas[meal.mealTime as NombreComida]
+                if (!nueva) return meal
+                return { ...meal, time: nueva, ...(meal.windowEnd ? { windowEnd: minutesToTime(parseTimeToMinutes(nueva) + minutosDe(meal.mealTime as NombreComida)) } : {}) }
+              }),
+            },
+            comidas,
+          )
+        }),
+      }
+    }),
+
+  desplazarComidas: (dayId, desde) =>
+    set((state) => {
+      if (!state.route) return state
+      return {
+        route: updateDay(state.route, dayId, (day) => {
+          const mover = (m: number | undefined) => (m === undefined ? undefined : (desde === 0 ? m >= -1 : m >= desde) ? m + 1 : m)
+          const lunch = mover(day.mealAfter?.lunch)
+          const dinner = mover(day.mealAfter?.dinner)
+          return conComidas(day, { ...(lunch !== undefined ? { lunch } : {}), ...(dinner !== undefined ? { dinner } : {}) })
         }),
       }
     }),
@@ -1454,7 +1555,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             // El día de ORIGEN solo pierde una parada (como removeStop: nadie más cambia de hora).
             // En el de DESTINO la parada llega al final, y ahí sí hay que ponerle una hora porque la
             // que traía era la de otro día — pero sin tocar las que ya estaban.
-            if (day.id === fromDayId) return { ...day, stops: withoutStop(day.stops, stopId) }
+            if (day.id === fromDayId) return sinParadaYConComidas(day, stopId)
             if (day.id === toDayId) {
               return { ...day, stops: pushOverlapsForward([...day.stops, { ...stop, saltada: false, time: suggestedTimeFor(day, stop) }]) }
             }
@@ -1490,7 +1591,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           // (10S7) Toda parada nueva entra la PRIMERA del día: coge la hora de la que era primera y las de detrás se empujan lo justo si se pisan.
           const first = day.stops[0]
           const time = stop.isNightExperience ? stop.time : first ? first.time : timeForStopAfter(undefined, stop.time, stop)
-          return { ...day, stops: pushOverlapsForward([{ ...stop, time, nextLegPending: first ? true : undefined }, ...day.stops]) }
+          const nuevas = day.mealAfter ? comidasTrasInsertar(comidasDelDia(day), 0, { alPrincipio: true }) : {}
+          return conComidas({ ...day, stops: pushOverlapsForward([{ ...stop, time, nextLegPending: first ? true : undefined }, ...day.stops]) }, nuevas)
         }),
       }
     }),
@@ -1516,7 +1618,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       }
     }),
 
-  insertStopAt: (dayId, index, stop) =>
+  insertStopAt: (dayId, index, stop, opciones) =>
     set((state) => {
       if (!state.route) return state
       stop = conSuEntradaReservada(state.route, state.reservations, stop)
@@ -1533,7 +1635,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           // Una experiencia nocturna trae su hora (después de cenar): no se encadena a la última parada. Las de detrás no
           // se mueven (decisión del usuario, 2026-09-28): solo se recalculan los paseos con la anterior y la siguiente.
           stops.splice(index, 0, stop.isNightExperience ? stop : { ...stop, time: timeForStopAfter(day.stops[index - 1], fallback, stop), nextLegPending: index < day.stops.length || undefined })
-          return { ...day, stops }
+          // (10S10, 1) La comida y la cena siguen detrás de SU parada: la nueva entra donde se pidió (antes o después de la comida del hueco), no donde las deja un número viejo.
+          const vistas = opciones?.comidas
+          const nuevas = vistas || day.mealAfter ? comidasTrasInsertar(comidasDelDia(day, vistas), index, { antesDe: opciones?.antesDe, alPrincipio: opciones?.alPrincipio }) : {}
+          return conComidas({ ...day, stops }, nuevas)
         }),
       }
     }),
@@ -1936,7 +2041,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 const MANUAL_EDIT_ACTIONS = [
   'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'replaceDayExact', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
   'addFreeDay', 'removeFreeDay', 'renameDay', 'moveFreeDay',
-  'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
+  'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops', 'colocarLinea',
   'addSuggestedStop', 'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant', 'aplicarRutaRecomendada',
 ] as const
 for (const name of MANUAL_EDIT_ACTIONS) {

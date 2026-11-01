@@ -159,7 +159,9 @@ const LEER_HOJA = (datos) => `(() => {
     const d0 = dias[0]
     debe(/^día$/i.test(d0?.etiqueta ?? '') && (d0?.titulo ?? '').length > 4, '02', `arriba «DÍA» y debajo el nombre del día (${d0?.etiqueta} · ${d0?.titulo})`)
     for (const [i, d] of dias.entries()) {
-      const n = (d?.tarjetas ?? []).map((t) => t.titulo)
+      // antes: «Añadir lugares» la primera → ahora: «Reorganizar este día» abre el menú (solo con pase, 10S7) y, si sale, va la primera → decisión de Eric (10S7). Misma fuerza: el resto del orden se comprueba igual.
+      const todas = (d?.tarjetas ?? []).map((t) => t.titulo)
+      const n = todas[0] === 'Reorganizar este día' ? todas.slice(1) : todas
       debe(n[0] === 'Añadir lugares' && n[1] === 'Añadir una excursión' && n[n.length - 1] === 'Eliminar día', '02', `día ${i + 1}: Añadir lugares, Añadir una excursión … y Eliminar día la última (${n.join(', ')})`)
       const el = d?.tarjetas.find((t) => t.titulo === 'Eliminar día')
       debe(el?.peligro && /Se quitan el día y sus paradas|fijado/.test(el.linea), '02', `día ${i + 1}: «Eliminar día» en rojo con su línea (${el?.linea})`)

@@ -137,7 +137,8 @@ async function pasada(version) {
     const e5 = await ev(`(() => ({ titulo: document.querySelector('[data-hoja-titulo]')?.textContent ?? null, texto: (document.querySelector('[role=dialog]')?.innerText ?? '').replace(/\\s+/g, ' '), personas: Boolean(document.querySelector('[data-entrada-dato="personas"]')), loc: document.querySelector('[data-entrada-dato="localizador"]')?.value ?? null, boton: document.querySelector('[data-guardar-reserva]')?.textContent.trim() ?? null, dias: document.querySelectorAll('[data-dia-cuadrado]').length }))()`)
     debe(e5.titulo === 'Datos de la entrada' && e5.boton === 'Guardar los datos', 'E5', `«Datos de la entrada» con [Guardar los datos] (${e5.titulo} · ${e5.boton})`)
     debe(!e5.personas && !/Personas|2 personas/.test(e5.texto) && e5.loc === 'ABC123', 'E5 sin personas', 'sin «personas», con el localizador leído')
-    debe(/¿Cuánto ha costado en total\?/.test(e5.texto) && e5.dias === 0, 'E5 contenido', 'trae el precio y no el día ni la hora (eso es el lápiz de arriba)')
+    // antes (10S8): «¿Cuánto ha costado en total?» → ahora: solo «Precio» (en negrita, como «Sales de») en entradas, alojamiento y excursiones; el vuelo conserva la pregunta → decisión de Eric (10S10, 1-nov).
+    debe(/Precio/.test(e5.texto) && !/¿Cuánto ha costado en total[?]/.test(e5.texto) && e5.dias === 0, 'E5 contenido', 'trae el precio («Precio») y no el día ni la hora (eso es el lápiz de arriba)')
     await a.captura(path.join(SALIDA, `10s8_d_e5_${version}_375.jpg`)).catch(() => {})
     await ev("document.querySelector('[role=dialog] button[aria-label=Cerrar]')?.click(); true")
     await a.esp(500)

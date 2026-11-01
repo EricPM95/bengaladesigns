@@ -6,7 +6,7 @@ import { moverParadaAOtroDia } from '../../../../lib/cambiarParada'
 import { useDestinationExcursions } from '../../../../lib/destinationExcursions'
 import { dayOfReservation } from '../../../../lib/bookings'
 import { addDaysToIso, formatWeekdayAbbrEs } from '../../../../lib/dateRange'
-import { esDiaDeLlegada, nombreDelDia, viajeDelDia } from '../../../../lib/tituloDelDia'
+import { esDiaDeLlegada, nombreDelDia, tituloSinHorasSiYaNoEsVerdad, viajeDelDia } from '../../../../lib/tituloDelDia'
 import { numberedStopsOf } from '../../../../lib/stopKind'
 import { displayStopName, formatDuration } from '../../../../lib/format'
 import { hasRealCoordinates, haversineMeters } from '../../../../lib/distanceMock'
@@ -347,7 +347,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
   // ── La cabecera: «jue 23» y el título del día (si es día de viaje, su trayecto al lado) ──
   const ojo = `${formatWeekdayAbbrEs(dateIso)} ${Number(dateIso.slice(8, 10))}`
-  const tituloLimpio = tituloDeHoy.titulo.includes('→') ? (day.curatedTitle ?? day.city) : tituloDeHoy.titulo
+  const tituloLimpio = tituloDeHoy.titulo.includes('→') ? tituloSinHorasSiYaNoEsVerdad(day.curatedTitle ?? day.city, day, null) : tituloDeHoy.titulo
   const cabecera = info.cargado || esVuelta ? <CabeceraHoy ojo={ojo} titulo={tituloLimpio} sub={tituloDeHoy.viaje ?? viajeDelDia(route, day)} /> : <CabeceraHoy ojo={ojo} titulo=" " />
 
   // ── El pase: con cobro y sin pase, el día de llegada es la tarjeta P3 y, si la prueba ya se gastó, solo la tarjeta de la 12 ──

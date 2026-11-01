@@ -144,17 +144,14 @@ for (const dias of [4, 5]) {
   const sin = pinta(await viaje(dias), 'completa')
   const bloque = bloqueDe(sin.html, 'excursiones')
   const t = aTexto(bloque)
-  const iVer = t.indexOf('Ver excursiones')
-  const iAn = t.indexOf('Añádela')
-  debe(iVer >= 0 && iAn > iVer, '3 excursiones', `${dias} días sin día de excursión: «Añádela» no va debajo de [Ver excursiones] (${plano(t)})`)
-  debe((t.match(/Añádela/g) ?? []).length === 1, '3 excursiones', `${dias} días sin día de excursión: sale más de un «Añádela»`)
-  // Dentro de la misma tarjeta: el HTML entre [Ver excursiones] y «Añádela» no cierra la tarjeta (sin salir de su contenedor de 88 px de alto mínimo).
-  const iHtmlVer = bloque.indexOf('Ver excursiones')
-  const iHtmlAn = bloque.indexOf('Añádela')
-  debe(iHtmlAn > iHtmlVer && !/min-h-\[88px\]/.test(bloque.slice(iHtmlVer, iHtmlAn)) && /<\/button><button[^>]*>¿Ya tienes una\?/.test(bloque), '3 excursiones', `${dias} días: «Añádela» no está dentro de la tarjeta, junto al botón`)
+  // (10S10 §4) antes: sin día de excursión, la tarjeta suelta «Excursiones desde Roma» con [Ver excursiones] y «¿Ya tienes una? Añádela» debajo; ahora → el bloque «Excursiones» sale CERRADO (cabecera
+  // «Ninguna en tu ruta»); dentro, al abrirlo, «Ver más excursiones» y el atajo «Añádela» (una sola vez). Decisión de Eric (10S10, 1-nov). La parte de dentro se comprueba en el código y en pruebaTanda10S10_C.
+  debe(/Excursiones\s*\n?\s*Ninguna en tu ruta/.test(t) && !/Ver excursiones/.test(t) && !/Añádela/.test(t), '3 excursiones', `${dias} días sin día de excursión: el bloque no sale cerrado con «Ninguna en tu ruta» (${plano(t)})`)
+  const codExc = fs.readFileSync('src/components/route/reservas/ExcursionesReservas.tsx', 'utf8')
+  debe(/data-ver-mas-excursiones/.test(codExc) && (codExc.match(/ya-tengo-excursion/g) ?? []).length === 1 && /\{!hayDiaDeExcursion && \(\s*<button[^]*?data-ya-tengo-excursion/.test(codExc), '3 excursiones', 'el atajo «¿Ya tienes una? Añádela» (solo sin día de excursión) y «Ver más excursiones» van dentro del bloque')
   const con = pinta(await viaje(dias, { interruptor: true }), 'completa')
   const tc = aTexto(bloqueDe(con.html, 'excursiones'))
-  debe((tc.match(/Añádela/g) ?? []).length === 1 && /¿Ya la tienes\?/.test(tc) && /Ver más excursiones/.test(tc), '3 excursiones', `${dias} días con día de excursión: ${plano(tc)}`)
+  debe(/Excursiones\s*\n?\s*0 de 1 reservada/.test(tc) && (tc.match(/Añádela/g) ?? []).length === 0, '3 excursiones', `${dias} días con día de excursión: ${plano(tc)}`)
 }
 
 // ── 4. Fuera la hoja de «no encaja bien» ─────────────────────────────────────────────────────────────────────────────────────────────────────

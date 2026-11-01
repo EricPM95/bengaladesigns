@@ -286,7 +286,8 @@ console.log('3. En la app: «Añadir parada», «Otros sitios» y la entrada dos
     // En la pantalla de RESERVAS salen las dos.
     await ev(`R.useRouteStore.getState().setMode('bookings'); return 1`)
     await app.esp(1800)
-    await app.evaluar(`(() => { const b = document.querySelector('[data-blk="entradas"]'); if (b && b.children.length < 2) b.firstElementChild?.click(); return true })()`)
+    // (10S10) antes → ahora → decisión de Eric (10S10, 1-nov): los bloques de RESERVAS entran cerrados; se abre tocando la cabecera de verdad (antes se pulsaba el primer hijo, que ya no es la cabecera).
+    await app.evaluar(`(() => { const b = document.querySelector('[data-blk="entradas"]'); const c = b?.querySelector('[data-cabecera-bloque]'); if (c && b.querySelector('[data-flecha-bloque="cerrada"]')) c.click(); return true })()`)
     await app.esp(1200)
     const txt = await app.evaluar(`(document.querySelector('[data-blk="entradas"]')?.innerText ?? '').replace(/\\s+/g, ' ')`)
     debe((txt.match(/Museos Capitolinos/g) ?? []).length >= 2, 'dos', `RESERVAS enseña el sitio dos veces (${txt.slice(0, 160)})`)

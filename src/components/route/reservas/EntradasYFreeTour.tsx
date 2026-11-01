@@ -128,11 +128,10 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pedido])
   // (10S9 §1) Abierto al entrar si falta alguna entrada por reservar, cerrado si está «Listo» (o no hay ninguna en la ruta); el viajero lo cierra y abre SIEMPRE.
-  const faltaAlguna = enRuta.length > 0 && enRuta.some((item) => !item.reservation)
   const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
-  useEffect(() => setDesplegadoUsuario(null), [faltaAlguna, abierto])
+  useEffect(() => setDesplegadoUsuario(null), [abierto])
   if (enRuta.length === 0 && masEntradas.length === 0) return null
-  const desplegado = desplegadoUsuario ?? (faltaAlguna || abierto)
+  const desplegado = desplegadoUsuario ?? abierto // (10S10 §5) cerrado al entrar siempre
   const noCuadran = grupo.esInvitado ? entradasQueNoCuadran(route, grupo.mias, info.nombresCortos) : []
   const reservadas = enRuta.filter((item) => item.reservation).length
   const hecho = enRuta.length > 0 && reservadas === enRuta.length

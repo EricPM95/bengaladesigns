@@ -95,12 +95,10 @@ export function AlojamientoReservas({
   // Con el hotel puesto pero sin la zona (de pago) la línea sigue en rosa: lo que falta es la zona.
   const resumenVerde = pago ? zonaHecha : true
   const hayAlgo = Boolean(hotel) || zonaHecha
-  /** (10S9 §1) Falta algo = no hay alojamiento puesto o falta la zona (de pago). */
-  const faltaAlgo = !hayAlgo || !resumenVerde
   /** (10S9 §1) Al entrar: abierto si falta algo, cerrado si está «Listo». El viajero lo puede cerrar SIEMPRE (y abrir) con la cabecera; su gesto manda hasta que cambie lo que falta o el panel pida abrirlo. */
   const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
-  useEffect(() => setDesplegadoUsuario(null), [faltaAlgo, abierto])
-  const desplegado = desplegadoUsuario ?? (faltaAlgo || abierto)
+  useEffect(() => setDesplegadoUsuario(null), [abierto])
+  const desplegado = desplegadoUsuario ?? abierto // (10S10 §5) cerrado al entrar siempre
   const alternarBloque = () => setDesplegadoUsuario(!desplegado)
   const nombreHotel = hotel?.name && !(pago && elegida && hotel.name === elegida.nombre) ? hotel.name : null
   const rango = route.answers.dateRange

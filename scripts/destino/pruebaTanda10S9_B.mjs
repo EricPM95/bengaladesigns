@@ -1,6 +1,6 @@
 // Tanda 10S9 (agente B) · apartado 1: los tres bloques de RESERVAS (Llegada y vuelta, Alojamiento, Entradas y Free Tour) con LA MISMA cabecera
 // (icono grande, título grande, el estado DEBAJO del título y la flecha a la derecha), y un bloque que SIEMPRE se puede cerrar, falte lo que falte.
-// Al entrar: abierto si falta algo, cerrado si «Listo». Capturas docs/dias/capturas_jutrip/10s9_cabeceras_<n>.jpg (390 x 844).
+// Al entrar: (10S10, 1-nov) CERRADO siempre (antes: abierto si falta algo, cerrado si «Listo»). Capturas docs/dias/capturas_jutrip/10s9_cabeceras_<n>.jpg (390 x 844).
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTanda10S9_B.mjs
 import fs from 'node:fs'
 import path from 'node:path'
@@ -143,16 +143,17 @@ async function pasada(version) {
       if (!cabs[b]?.hay) continue
       let x = await abierto(b)
       const faltaAlgo = cabs[b].estado === 'falta' && !(b === 'entradas' && /Ninguna/.test(cabs[b].estadoTexto))
-      debe(hayAbierto(b, x) === faltaAlgo, 'al-entrar', `(${et}) ${b}: al entrar, ${faltaAlgo ? 'abierto porque falta algo' : 'cerrado'} (${JSON.stringify(x)})`)
+      // antes (10S9): al entrar, abierto si falta algo y cerrado si «Listo» → ahora: CERRADO siempre, falte lo que falte → decisión de Eric (10S10, 1-nov). Se abre y se cierra con la cabecera.
+      debe(!hayAbierto(b, x), 'al-entrar', `(${et}) ${b}: al entrar, cerrado aunque ${faltaAlgo ? 'falte algo' : 'esté listo'} (${JSON.stringify(x)})`)
       if (faltaAlgo) {
+        await tocarCab(b)
+        x = await abierto(b)
+        debe(hayAbierto(b, x), 'reabrir', `(${et}) ${b}: un toque en la cabecera lo abre (${JSON.stringify(x)})`)
         debe((await cab(b)).flechaGira.includes('180deg'), 'flecha-gira', `(${et}) ${b}: abierto, la flecha está girada`)
         await tocarCab(b)
         x = await abierto(b)
         debe(!hayAbierto(b, x), 'cerrar-faltando', `(${et}) ${b}: SE PUEDE CERRAR aunque falte algo (${JSON.stringify(x)})`)
         debe(!(await cab(b)).flechaGira.includes('180deg'), 'flecha-gira', `(${et}) ${b}: cerrado, la flecha vuelve`)
-        await tocarCab(b)
-        x = await abierto(b)
-        debe(hayAbierto(b, x), 'reabrir', `(${et}) ${b}: otro toque lo vuelve a abrir (${JSON.stringify(x)})`)
       }
     }
     await a.captura(foto(`${version}_01_faltan`))

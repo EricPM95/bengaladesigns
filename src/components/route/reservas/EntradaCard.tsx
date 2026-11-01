@@ -3,6 +3,7 @@ import { withCampaign } from '../../../lib/affiliateLinks'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { Icono } from '../../ui/Icono'
+import { LapizDeReserva } from './BotonesDeReserva'
 
 // El frambuesa de la app: los tokens de `src/index.css` (un solo sitio).
 const ROSE = 'rgb(var(--frambuesa))'
@@ -112,10 +113,10 @@ export function EntradaCard({
             <span className="text-text" style={{ font: "600 12px 'Geist Mono',monospace" }}>
               {reservedTime}
             </span>
-            <span>·</span>
-            <button type="button" onClick={onChange ?? onAdd} className="text-text underline underline-offset-[3px]" style={{ font: "italic 400 15px 'Instrument Serif',serif" }}>
-              Cambiar
-            </button>
+            {/* (10S10 §5) antes «Cambiar» en texto pequeño → ahora el lápiz de 44 × 44 de las demás reservas */}
+            <span className="-my-2.5 ml-auto">
+              <LapizDeReserva onClick={(onChange ?? onAdd) as () => void} etiqueta={`Cambiar ${name}`} datos="entrada-cambiar" />
+            </span>
           </span>
         ) : (
           <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1.5">

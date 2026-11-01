@@ -1,4 +1,5 @@
 // Tanda 10S6 (agente P): apartados 3 y 4 — «Entradas y Free Tour» como Design `Piezas/Entradas Lista` (L1 y L2) y la cabecera del alojamiento sin línea bajo el título.
+// antes → ahora → decisión de Eric (10S10, 1-nov): los bloques de RESERVAS entraban abiertos si faltaba algo → ahora entran CERRADOS siempre; esta prueba los abre al entrar (a los 600 ms) para seguir comprobando lo de dentro.
 //   1 · el código: tarjetas nuevas, sin «Ver n más», con [Añadir otra reserva], sin botón de código en las reservadas, día entero en las etiquetas.
 //   2 · en la app: «Por reservar» con «En tu ruta · Jueves 26» (día entero), [Reservar entrada] y «¿Ya la tienes? Añádela» (abre la hoja de siempre);
 //       con una entrada guardada: «Reservadas» arriba con ✓, día entero · hora · precio y «Cambiar», sin botón de código; sin «Ver n más»; [Añadir otra reserva];
@@ -54,7 +55,7 @@ try {
   const ev = (js) => app.evaluar(`(async () => { const R = await import('/src/store/useRouteStore.ts'); const B = await import('/src/lib/bookings.ts'); const route = () => R.useRouteStore.getState().route; const st = () => R.useRouteStore.getState(); ${js} })()`)
   const bloque = "return (document.querySelector('[data-blk=\"entradas\"]')?.textContent ?? '').replace(/\\s+/g, ' ')"
   const abrirBloque = async () => {
-    await ev("st().setMode('bookings'); return true")
+    await ev("st().setMode('bookings'); setTimeout(() => { for (const f of document.querySelectorAll('[data-flecha-bloque=\"cerrada\"]')) f.closest('[data-cabecera-bloque]')?.click() }, 600); return true")
     await app.esp(1800)
     await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); if (b && b.children.length < 2) b.firstElementChild?.click(); return true })()`)
     await app.esp(1200)
@@ -121,7 +122,7 @@ try {
       // antes → ahora → decisión de Eric (10S8, 31-oct): «Reservada» → «En tu ruta»/«Ya no está en tu ruta» (E1).
     debe(/En tu ruta|Ya no está en tu ruta/.test(f.texto), 'ap3', `lleva su etiqueta (${f.texto})`)
       // antes → ahora → decisión de Eric (10S8, 31-oct): «Cambiar» → los dos lápices (el de arriba cambia día y hora), [Añadir tu entrada] y la papelera.
-    debe(f.botones === 3, 'ap3', `(10S9, 1-nov) antes: 4 (dos lápices, documento y papelera) → ahora: 3 (un solo lápiz sin documento, documento y papelera) → decisión de Eric (10S9, 1-nov). Lápices, botón del documento y papelera (${f.botones})`)
+    debe(f.botones === 4, 'ap3', `(10S9, 1-nov) antes: 4 (dos lápices, documento y papelera) → ahora: 3 → (10S10) 4 (lápiz de arriba, «o escribe los datos a mano» de la 10S9b, documento y papelera) → decisión de Eric (10S9, 1-nov). Lápices, botón del documento y papelera (${f.botones})`)
   }
   debe(new RegExp(`${elegidos.length} de \\d+ reservadas`).test(l2.texto), 'ap3', 'la cabecera cuenta las reservadas')
   debe(!/Ver \d+ más|Ver menos/.test(l2.texto) && /Añadir otra reserva/.test(l2.texto), 'ap3', 'sin «Ver n más» y con [Añadir otra reserva]')
@@ -139,7 +140,7 @@ try {
   for (const i of elegidos.keys()) await ev(`st().removeReservation('res-10s6-${i}'); return true`)
 
   // — Apartado 4: la cabecera del alojamiento —
-  await ev("st().setMode('bookings'); return true")
+  await ev("st().setMode('bookings'); setTimeout(() => { for (const f of document.querySelectorAll('[data-flecha-bloque=\"cerrada\"]')) f.closest('[data-cabecera-bloque]')?.click() }, 600); return true")
   await app.esp(1500)
   const aloj = await ev(`const c = document.querySelector('[data-blk="aloj"] [data-aloj-cabecera], [data-blk="aloj"]'); return { texto: (c?.textContent ?? '').replace(/\\s+/g, ' ').trim(), hay: Boolean(document.querySelector('[data-blk="aloj"]')) }`)
   debe(aloj.hay, 'ap4', 'está el bloque del alojamiento')

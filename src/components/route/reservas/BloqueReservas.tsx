@@ -70,7 +70,7 @@ export function EstadoBloque({ texto, hecho }: { texto: string; hecho: boolean }
 /** La flechita redonda de un bloque que se abre y se cierra. */
 export function FlechaBloque({ abierto }: { abierto: boolean }) {
   return (
-    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[#F5EFE4]" aria-hidden="true">
+    <span data-flecha-bloque={abierto ? 'abierta' : 'cerrada'} className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[#F5EFE4]" aria-hidden="true">
       <Icono nombre="abajo" size={16} style={{ color: INK, transform: abierto ? 'rotate(180deg)' : 'none', transition: 'transform .35s cubic-bezier(.2,.8,.2,1)' }} />
 
     </span>

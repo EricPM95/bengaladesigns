@@ -74,6 +74,8 @@ export function moverParadaAOtroDia(stopId: string, deDiaId: string, aDiaId: str
     const orden = sin.stops.map((s) => s.id)
     orden.splice(Math.min(indice, orden.length), 0, stopId)
     state.reorderStops(aDiaId, orden)
+    // (10S10, 1) La parada llegó al final y se ha colocado en su sitio: la comida y la cena guardadas siguen detrás de SU parada.
+    if (Math.min(indice, sin.stops.length) < sin.stops.length) useRouteStore.getState().desplazarComidas(aDiaId, Math.min(indice, sin.stops.length))
     ponerFranjaDeLaParada(aDiaId, stopId, sinSuFranja(sin, parada, Math.min(indice, orden.length - 1)).franja)
   })
   if (opciones.llevar === true) llevarALaParada(aDiaId, stopId)
@@ -92,7 +94,7 @@ export function ponerParadaEnElDia(dayId: string, parada: Stop, opciones: { conP
   const { indice } = dondeQueda(route, dia, parada, opciones)
   const conFranja = sinSuFranja(dia, parada, indice)
   const hora = indice === 0 && dia.stops[0] ? dia.stops[0].time : conFranja.time
-  state.insertStopAt(dayId, indice, { ...conFranja, time: hora, addedByUser: parada.addedByUser ?? true })
+  state.insertStopAt(dayId, indice, { ...conFranja, time: hora, addedByUser: parada.addedByUser ?? true }, indice === 0 ? { alPrincipio: true } : undefined)
   if (indice === 0 && dia.stops.length > 0) {
     const ahora = useRouteStore.getState().route?.days.find((d) => d.id === dayId)
     if (ahora) useRouteStore.getState().reorderStops(dayId, ahora.stops.map((s) => s.id))

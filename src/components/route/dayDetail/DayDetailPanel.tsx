@@ -27,6 +27,7 @@ import {
   seedStopsFromTemplate,
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { arrastrarAlSitioDe, cambiarConElVecino, mismoItem, type ItemLinea, type NombreComida } from '../../../lib/lineaDelDia'
 import { isManualRoute } from '../../../lib/manualPlan'
 import { ManualDayFooter } from '../manualRoute/ManualDayFooter'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../../map/StopsMapView'
@@ -75,7 +76,7 @@ import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { MealDetailSheet } from './MealDetailSheet'
 import { ExcursionDayPage } from './excursion/ExcursionDayPage'
 import { ExtraDaySheet } from '../freeDay/ExtraDaySheet'
-import { confirmarExcursion, elegirExcursion, excursionReservationOf, viewedExcursion } from '../../../lib/dayInterruptor'
+import { elegirExcursion, excursionReservationOf, viewedExcursion } from '../../../lib/dayInterruptor'
 import { useInterruptorUiStore } from '../../../store/useInterruptorUiStore'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
@@ -90,7 +91,8 @@ import { FreeTimeBlock } from './FreeTimeBlock'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
-import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
+import { useDatosDeHorario, useHorarioDeParadas } from '../../../lib/horarioDeParada'
+import { avisoDeHorario, ocasoDelDia } from '../../../lib/avisoDeHorario'
 import { Icono } from '../../ui/Icono'
 
 /** Por debajo de esto, lo que queda antes de cenar es caminar tranquilo; por encima, tiempo libre que se dice. */
@@ -316,8 +318,7 @@ export function DayDetailPanel({
     return () => window.clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusStopId, day.stops.length])
-  const reorderStops = useRouteStore((state) => state.reorderStops)
-  const moveMeal = useRouteStore((state) => state.moveMeal)
+  const colocarLinea = useRouteStore((state) => state.colocarLinea)
   const setLegToNext = useRouteStore((state) => state.setLegToNext)
   // Prompt 6: paseos que el viajero ha quitado. No vuelven a proponerse en este día — "el algoritmo
   // propone, el viajero dispone". Vive en el panel y no en el store porque el paseo tampoco es una
@@ -366,6 +367,8 @@ export function DayDetailPanel({
   const [freeTourOpen, setFreeTourOpen] = useState(false)
   // El "+" que se ha pulsado está después de la cena: lo que se puede ver de noche entra como nocturna.
   const [insertAfterDinner, setInsertAfterDinner] = useState(false)
+  // (10S10, 1) El "+" del hueco de encima de la tarjeta de la comida o la cena: la parada entra ANTES de esa comida.
+  const [insertAntesDe, setInsertAntesDe] = useState<NombreComida | null>(null)
   /** Dónde centrar "Añadir parada" cuando se abre desde el bloque de tiempo libre: donde está el viajero. */
   const [addStopFocus, setAddStopFocus] = useState<Coordinates | null>(null)
   /** Precarga del buscador de AddStopScreen cuando se abre desde el botón "Añadir como parada" de una tarjeta de segunda visita recomendada (ver day.recommendedRevisits) — undefined = buscador vacío, comportamiento normal del "+". */
@@ -514,72 +517,40 @@ export function DayDetailPanel({
     useSensor(TouchSensor, { activationConstraint: { delay: 180, tolerance: 8 } }),
   )
 
+  /** (10S10, 1) Coloca la línea del día (paradas, comida y cena) en el orden nuevo. Mientras las paradas del día sigan siendo la plantilla, `day.stops` está vacío: se cristalizan antes, igual que al añadir una parada. */
+  const aplicarLinea = (nueva: ItemLinea[] | null) => {
+    if (!nueva) return
+    if (day.stops.length === 0) seedDayStops(day.id, realStops)
+    colocarLinea(day.id, lineaVisible, nueva)
+  }
+  /**
+   * Arrastrar: la parada, la comida o la cena ocupa el sitio del elemento sobre el que se suelta, sea una parada o la comida o la cena (todo son elementos de la misma línea). No se impide ningún movimiento.
+   */
   const handleStopDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
-    // La comida o la cena: a otro sitio del día, sin salirse de su parte (PROMPT_UI_REPASO_3, 3).
-    const activeMeal = mealOfDragId(String(active.id))
-    if (activeMeal) {
-      handleMealDrop(activeMeal, String(over.id))
-      return
+    const aItem = (id: string): ItemLinea | null => {
+      const comida = mealOfDragId(id)
+      if (comida) return { tipo: 'meal', comida }
+      return lineaVisible.some((item) => item.tipo === 'stop' && item.id === id) ? { tipo: 'stop', id } : null
     }
-    // (Una parada que se suelta encima de una comida o una cena vuelve a su sitio.)
-    if (mealOfDragId(String(over.id))) return
-    const ids = realStops.map((realStop) => realStop.id)
-    const from = ids.indexOf(String(active.id))
-    const to = ids.indexOf(String(over.id))
-    if (from < 0 || to < 0) return
-    const next = [...ids]
-    next.splice(to, 0, next.splice(from, 1)[0])
-    // Mientras las paradas del día sigan siendo la plantilla, `day.stops` está vacío y el store no
-    // encuentra nada que reordenar: hay que cristalizarlas primero, igual que hace añadir una
-    // parada. Sin esto el arrastre se ve, suelta, y no pasa absolutamente nada.
-    if (day.stops.length === 0) seedDayStops(day.id, realStops)
-
-    // Mover una parada puede dejarla antes de que su sitio abra. No se impide —el viajero manda—
-    // pero se dice, porque es justo lo que no se ve a simple vista al arrastrar.
-    const movedStop = realStops[from]
-    const nuevaPosicion = schedule[to]
-    // El horario se lee de la parada MOSTRADA, en el mismo orden de preferencia que la tarjeta
-    // (ver StopAccordion): así el aviso y lo que el viajero está leyendo en pantalla dicen la
-    // misma hora, en vez de que uno hable del horario general y el otro del de esta visita.
-    const mostrada = stops[from]
-    const abreA = parseOpeningMinutes(
-      mostrada?.scheduleText ?? mostrada?.hours ?? movedStop?.scheduleText ?? movedStop?.hours ?? null,
-    )
-    if (movedStop && nuevaPosicion && abreA !== null && nuevaPosicion.startMinutes < abreA) {
-      setReorderWarning(`${movedStop.name} abre a las ${minutesToTime(abreA)} — en ese hueco todavía está cerrado.`)
-    } else {
-      setReorderWarning(null)
+    const moviendo = aItem(String(active.id))
+    const sobre = aItem(String(over.id))
+    if (!moviendo || !sobre) return
+    const nueva = arrastrarAlSitioDe(lineaVisible, moviendo, sobre)
+    if (!nueva) return
+    // Mover una parada puede dejarla antes de que su sitio abra. No se impide —el viajero manda— pero se dice, porque es justo lo que no se ve a simple vista al arrastrar.
+    setReorderWarning(null)
+    if (moviendo.tipo === 'stop') {
+      const from = realStops.findIndex((realStop) => realStop.id === moviendo.id)
+      const posicionNueva = nueva.findIndex((item) => mismoItem(item, moviendo))
+      const horaDelHueco = placed.filter((entry) => entry.item.type === 'stop' || entry.item.type === 'lunch' || entry.item.type === 'dinner')[posicionNueva]?.start
+      const mostrada = stops[from]
+      const movedStop = realStops[from]
+      const abreA = parseOpeningMinutes(mostrada?.scheduleText ?? mostrada?.hours ?? movedStop?.scheduleText ?? movedStop?.hours ?? null)
+      if (movedStop && horaDelHueco != null && abreA !== null && horaDelHueco < abreA) setReorderWarning(`${movedStop.name} abre a las ${minutesToTime(abreA)} — en ese hueco todavía está cerrado.`)
     }
-    // El store recoloca las horas por posición (reassignTimesByPosition): la parada que pasa a ser
-    // la tercera hereda el hueco de la tercera, no se lleva su hora antigua a otro sitio del día.
-    reorderStops(day.id, next)
-  }
-  /**
-   * La comida o la cena, soltada encima de una parada: detrás de ella si se baja, delante si se sube. La comida no puede
-   * acabar en la noche (ni detrás de la cena) y la cena no puede acabar en la mañana (ni delante de la comida): si se suelta
-   * fuera de su parte, vuelve a su sitio. Las horas se recolocan como al mover una parada.
-   */
-  const handleMealDrop = (mealTime: 'lunch' | 'dinner', overId: string) => {
-    const ids = realStops.map((realStop) => realStop.id)
-    const overIndex = ids.indexOf(overId)
-    const fromAfter = mealTime === 'lunch' ? lunchInsertionIndex : dinnerInsertionIndex
-    if (overIndex < 0 || fromAfter == null) return
-    const toAfter = overIndex > fromAfter ? overIndex : overIndex - 1
-    if (toAfter === fromAfter || toAfter < 0) return
-    const periodOf = (index: number) => placed.find((entry) => entry.item.type === 'stop' && entry.item.index === index)?.period ?? null
-    const firstNight = realStops.findIndex((_, index) => periodOf(index) === 'noche')
-    const lastMorning = realStops.reduce((last, _, index) => (periodOf(index) === 'manana' ? index : last), -1)
-    if (mealTime === 'lunch') {
-      if (firstNight >= 0 && toAfter >= firstNight) return
-      if (dinnerInsertionIndex != null && toAfter > dinnerInsertionIndex) return
-    } else {
-      if (toAfter < lastMorning) return
-      if (lunchInsertionIndex != null && toAfter < lunchInsertionIndex) return
-    }
-    if (day.stops.length === 0) seedDayStops(day.id, realStops)
-    moveMeal(day.id, mealTime, fromAfter, toAfter)
+    aplicarLinea(nueva)
   }
   // El número de cada tarjeta es el de su pin en el mapa: misma lista y mismo orden de hora (stopNumbersOf).
   const stopNumbers = stopNumbersOf(day)
@@ -588,6 +559,9 @@ export function DayDetailPanel({
   const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null
   // El horario de cada parada ese día (Tanda 6z5): «Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy».
   const horarioDe = useHorarioDeParadas(day.city, dateIso)
+  // (10S10, apartados 2 y 3) Los datos del catálogo (cómo se ve cada sitio) y el mes del viaje, para el aviso de horario y la etiqueta de la hora de cada parada.
+  const datosDeHorario = useDatosDeHorario(day.city)
+  const mesDelViaje = route?.answers.month ?? null
   // Paradas REALES del día (con coordenadas) para el mapa de StopDetailSheet — mismo orden que
   // `stops` (contenido rico mock/real), así que `realStops[index]` siempre es la pareja correcta.
   const dayStopRefs: DayStopRef[] = realStops.map((realStop) => ({
@@ -668,6 +642,8 @@ export function DayDetailPanel({
 
   const addPickedStop = (picked: Stop, { keepOpen = false } = {}) => {
     if (day.stops.length === 0) seedDayStops(day.id, realStops)
+    // (10S10, 1) Dónde se veían la comida y la cena, para que cada una siga detrás de SU parada, y si entra justo antes de una de ellas.
+    const opcionesDeInsercion = { comidas: { lunch: hasLunch ? lunchInsertionIndex : null, dinner: hasDinner ? dinnerInsertionIndex : null }, antesDe: insertAntesDe }
     const newStop = insertAfterDinner && insertAt !== null ? asNightExperience(picked, insertAt) : picked
     // La primera parada de una tarde que arranca tras una excursión de medio día empieza a las
     // 16:00, no a la hora de siempre: el viajero está volviendo hasta entonces. A partir de ahí el
@@ -678,15 +654,16 @@ export function DayDetailPanel({
         : newStop
     if (keepOpen) {
       // El «+» de la tarjeta (Tanda 6z): se añade, sale «Añadido al día N» con Deshacer, y la pantalla sigue abierta (el siguiente cae detrás de este).
-      if (insertAt !== null) withUndo(`Añadido ${alDia(route, day.dayNumber)}`, () => insertStopAt(day.id, insertAt, conHoraDeTarde))
+      if (insertAt !== null) withUndo(`Añadido ${alDia(route, day.dayNumber)}`, () => insertStopAt(day.id, insertAt, conHoraDeTarde, opcionesDeInsercion))
       if (insertAt !== null) setInsertAt(insertAt + 1)
       return
     }
-    if (insertAt !== null) insertStopAt(day.id, insertAt, conHoraDeTarde)
+    if (insertAt !== null) insertStopAt(day.id, insertAt, conHoraDeTarde, opcionesDeInsercion)
     // (10N10 §3b) Se vuelve a DÍAS con la parada puesta en su sitio: la app baja hasta ella y la marca un momento (como al mover una parada de día).
     if (insertAt !== null) setFocusStopId(conHoraDeTarde.id)
     setInsertAt(null)
     setInsertAfterDinner(false)
+    setInsertAntesDe(null)
     setAddStopInitialQuery(undefined)
     setAddStopFocus(null)
   }
@@ -718,6 +695,7 @@ export function DayDetailPanel({
   const closeAddStop = () => {
     setInsertAt(null)
     setInsertAfterDinner(false)
+    setInsertAntesDe(null)
     setAddStopInitialQuery(undefined)
     setAddStopFocus(null)
   }
@@ -809,6 +787,7 @@ export function DayDetailPanel({
     addStopIndex: number,
     afterDinner = false,
     transitLabel: string | null = null,
+    antesDe: NombreComida | null = null,
   ) => {
     const resolvedMode = modeOverrides[connectorKey] ?? dayDefaultMode ?? defaultModeFor(connector)
     return (
@@ -828,6 +807,7 @@ export function DayDetailPanel({
         onAddStop={() => {
           setInsertAt(addStopIndex)
           setInsertAfterDinner(afterDinner)
+          setInsertAntesDe(antesDe)
         }}
       />
     )
@@ -843,7 +823,7 @@ export function DayDetailPanel({
       <FreeTimeBlock time={time} title={entry.title ?? ''} hint={entry.hint} />
     </div>
   )
-  const renderMealGap = (insertIndex: number) => renderGap(`${day.id}-meal-gap-${insertIndex}`, null, '', '', insertIndex)
+  const renderMealGap = (insertIndex: number, antesDe: NombreComida) => renderGap(`${day.id}-meal-gap-${antesDe}-${insertIndex}`, null, '', '', insertIndex, false, null, antesDe)
 
   // StopDetailSheet/ArrivalDetailSheet abren su PROPIO mapa encima de este mismo panel — dos
   // canvas WebGL de Mapbox GL montados a la vez arriesgan que el de abajo se "filtre" por encima
@@ -961,6 +941,11 @@ export function DayDetailPanel({
   const movedDay = !freeDay && originalDayNumber != null && originalDayNumber !== day.dayNumber
   // (Tanda 7: el primer y el último día los monta el motor con las horas del viajero; la pantalla ya no marca paradas con «Llegas después» ni «Ya te has ido».)
   if (muestraParadas) {
+    // (10S10, 1) La comida o la cena delante de la primera parada (detrás de «-1»): también son elementos de la línea.
+    if (!freeDay && stops.length > 0) {
+      if (lunchInsertionIndex === -1) timeline.push({ type: 'lunch', index: -1 })
+      if (dinnerInsertionIndex === -1) timeline.push({ type: 'dinner', index: -1 })
+    }
     stops.forEach((_stop, index) => {
       timeline.push({ type: 'stop', index })
       for (const entry of freeTimesOf(day)) {
@@ -990,6 +975,7 @@ export function DayDetailPanel({
   // tarde; las nocturnas y lo de después de cenar, la noche. La comida y la cena, entre tramos; en invierno, si la cena
   // va después de las nocturnas, dentro de la noche, al final.
   const hasLunch = timeline.some((item) => item.type === 'lunch')
+  const hasDinner = timeline.some((item) => item.type === 'dinner')
   let phase: DayPeriod = 'manana'
   for (const item of timeline) {
     const floor = placed.length > 0 ? placed[placed.length - 1].period : null
@@ -1020,19 +1006,24 @@ export function DayDetailPanel({
     let period: DayPeriod = phase
     if (item.type === 'lunch') {
       period = 'comida'
-      phase = 'tarde'
+      if (phase === 'manana') phase = 'tarde'
     } else if (item.type === 'dinner') {
       period = phase === 'noche' ? 'noche' : 'cena'
       phase = 'noche'
     } else if (item.type === 'stop') {
-      // (Sin comida en el día —media jornada, día libre—, la tarde empieza a las 14:00.)
+      // (10S10, 1) Una parada es de la franja DONDE CAE: antes de la comida, MAÑANA; entre la comida y la cena, TARDE; después de la cena, NOCHE. Ni la franja que traiga guardada ni la hora ni «es de noche» deciden:
+      // si el Castillo pasa por detrás de la cena, es de Noche. Solo en un día sin comida o sin cena (media jornada, día libre) se sigue por la hora, la franja del motor y lo nocturno, porque ahí no hay dónde caer.
+      // (Sin comida en el día, la tarde empieza a las 14:00.)
       if (!hasLunch && phase === 'manana' && start >= AFTERNOON_FROM) phase = 'tarde'
-      if (flags.night && phase !== 'manana') phase = 'noche'
+      if (!hasDinner && flags.night && phase !== 'manana') phase = 'noche'
       period = phase
-      // Tanda 6b: si el servidor manda la franja de la parada, manda ella.
-      if (realStops[item.index]?.franja) {
-        period = realStops[item.index].franja as DayPeriod
-        if (period === 'noche') phase = 'noche'
+      if (!hasDinner && realStops[item.index]?.franja) {
+        const delMotor = realStops[item.index].franja as DayPeriod
+        const orden = ['manana', 'tarde', 'noche']
+        if (orden.indexOf(delMotor) > orden.indexOf(phase)) {
+          period = delMotor
+          if (delMotor === 'noche') phase = 'noche'
+        }
       }
     }
     placed.push({ item, period, start, end })
@@ -1041,6 +1032,16 @@ export function DayDetailPanel({
   const sortableIds = placed.flatMap((entry) =>
     entry.item.type === 'stop' ? [realStops[entry.item.index]?.id ?? stops[entry.item.index].id] : entry.item.type === 'lunch' ? [MEAL_DRAG_ID.lunch] : entry.item.type === 'dinner' ? [MEAL_DRAG_ID.dinner] : [],
   )
+  // (10S10, 1) La línea del día tal como se ve: paradas, comida y cena. «Mover antes/después» y el arrastre cambian elementos de ESTA línea.
+  const lineaVisible: ItemLinea[] = placed.flatMap((entry): ItemLinea[] =>
+    entry.item.type === 'stop' ? [{ tipo: 'stop', id: realStops[entry.item.index]?.id ?? stops[entry.item.index].id }] : entry.item.type === 'lunch' ? [{ tipo: 'meal', comida: 'lunch' }] : entry.item.type === 'dinner' ? [{ tipo: 'meal', comida: 'dinner' }] : [],
+  )
+  /** Si delante o detrás de la parada hay algo en la línea (otra parada, la comida o la cena): lo que decide si «Mover antes / después» se puede pulsar. */
+  const lugarEnLaLinea = (stopId: string) => {
+    const at = lineaVisible.findIndex((item) => item.tipo === 'stop' && item.id === stopId)
+    return { primero: at <= 0, ultimo: at < 0 || at >= lineaVisible.length - 1 }
+  }
+  const moverEnLaLinea = (stopId: string, direccion: 'antes' | 'despues') => aplicarLinea(cambiarConElVecino(lineaVisible, { tipo: 'stop', id: stopId }, direccion))
   // (Las franjas ya no enseñan su hora: «Mañana», «Tarde», «Noche». Las horas siguen dentro para ordenar el día.)
   const periodGroups: { period: DayPeriod; items: PlacedItem[] }[] = []
   for (const entry of placed) {
@@ -1080,18 +1081,18 @@ export function DayDetailPanel({
     if (item.type === 'lunch') {
       const index = item.index
       return (
-        <SortableStop key={`lunch-${index}`} id={MEAL_DRAG_ID.lunch} label="Mover la comida" gap={renderMealGap(index + 1)}>
+        <SortableStop key={`lunch-${index}`} id={MEAL_DRAG_ID.lunch} label="Mover la comida" gap={renderMealGap(index + 1, 'lunch')}>
           <MealTimeAccordion
             destino={destino}
             city={day.city}
-            coordinates={lunchCoordinates ?? realStops[index].coordinates}
+            coordinates={lunchCoordinates ?? realStops[Math.max(index, 0)].coordinates}
             curatedZone={lunchCuratedZone}
             curatedZoneDisplay={lunchCuratedZoneDisplay}
             franja="comida"
             chosenName={restaurantOf('lunch')?.name ?? null}
             walkNote={[mealWalkNote('lunch', index), lunchReservationNote].filter(Boolean).join(' · ') || null}
             onChange={() => openMealPicker('lunch')}
-            onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
+            onOpen={() => setMealSheet({ franja: 'comida', stopIndex: Math.max(index, 0) })}
           />
         </SortableStop>
       )
@@ -1099,18 +1100,18 @@ export function DayDetailPanel({
     if (item.type === 'dinner') {
       const index = item.index
       return (
-        <SortableStop key={`dinner-${index}`} id={MEAL_DRAG_ID.dinner} label="Mover la cena" gap={renderMealGap(index + 1)}>
+        <SortableStop key={`dinner-${index}`} id={MEAL_DRAG_ID.dinner} label="Mover la cena" gap={renderMealGap(index + 1, 'dinner')}>
           <MealTimeAccordion
             destino={destino}
             city={day.city}
-            coordinates={realStops[index].coordinates}
+            coordinates={realStops[Math.max(index, 0)].coordinates}
             curatedZone={dinnerCuratedZone}
             curatedZoneDisplay={dinnerCuratedZoneDisplay}
             franja="cena"
             chosenName={restaurantOf('dinner')?.name ?? null}
             walkNote={[mealWalkNote('dinner', index), dinnerReservationNote].filter(Boolean).join(' · ') || null}
             onChange={() => openMealPicker('dinner')}
-            onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
+            onOpen={() => setMealSheet({ franja: 'cena', stopIndex: Math.max(index, 0) })}
           />
         </SortableStop>
       )
@@ -1127,6 +1128,15 @@ export function DayDetailPanel({
     // Día libre: siempre los minutos andando entre una parada y la siguiente (no hay franjas).
     const showConnector = realStop?.isZoneWalk ? false : index === 0 ? false : freeDay || !firstInPeriod || stopBefore(index)
     const walkDismissed = Boolean(realStop?.isZoneWalk) && dismissedWalks.has(stop.name)
+    // (10S10, apartados 2 y 3) La hora de ESTA parada ahora y su sitio respecto a la cena (por posición en el día, no por la franja guardada): con ella se calcula el aviso de horario y la etiqueta de la hora del nombre.
+    // Se recalcula en cada pintado: si el viajero mueve la parada, el aviso y la etiqueta se quitan (o salen) solos.
+    const inicioDeLaParada = freeDay ? (realStop && hasOwnTime(realStop) ? parseTimeToMinutes(realStop.time) : null) : day.untimed ? null : startMinutes
+    const lugarDeLaCena = placed.findIndex((entry) => entry.item.type === 'dinner')
+    const lugarDeLaParada = placed.findIndex((entry) => entry.item.type === 'stop' && entry.item.index === index)
+    const ocasoDeLaParada = ocasoDelDia(dateIso, mesDelViaje, realStop?.coordinates)
+    const horaDeLaParada = { inicio: inicioDeLaParada, ocaso: ocasoDeLaParada, despuesDeCena: lugarDeLaCena >= 0 && lugarDeLaParada > lugarDeLaCena }
+    const horarioDeLaParada = horarioDe({ ...stop, hoursData: realStop?.hoursData })
+    const avisoDeLaParada = avisoDeHorario({ parada: { ...stop, ...realStop, name: stop.name }, datos: datosDeHorario, horario: horarioDeLaParada, inicio: inicioDeLaParada, antesDeCena: lugarDeLaCena >= 0 && lugarDeLaParada < lugarDeLaCena, ocaso: ocasoDeLaParada })
     return (
       // El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia para un hueco.
       <SortableStop
@@ -1152,7 +1162,9 @@ export function DayDetailPanel({
               stop={freeDay && dateIso && realStop?.hoursData ? { ...stop, scheduleText: placeHoursOnDate(realStop.hoursData, dateIso)?.schedule ?? stop.scheduleText } : stop}
               startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)}
               freeDayWarning={freeDay && realStop ? freeDayStopWarning(realStop, dateIso) : undefined}
-              horario={horarioDe({ ...stop, hoursData: realStop?.hoursData })}
+              horario={horarioDeLaParada}
+              avisoHorario={avisoDeLaParada}
+              horaDeParada={horaDeLaParada}
               tripWarning={(movedDay && realStop && stop.visitMode !== 'fuera' ? freeDayStopWarning({ ...realStop, time: minutesToTime(startMinutes) }, dateIso) : null)}
               addedByUser={Boolean(realStop?.addedByUser)}
               onOpen={() => {
@@ -1163,7 +1175,7 @@ export function DayDetailPanel({
                 setDetailTab('tickets')
                 setDetailIndex(index)
               }}
-              menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} onVerFicha={() => { setDetailTab(null); setDetailIndex(index) }} />}
+              menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} moverEnLaLinea={moverEnLaLinea} lugarEnLaLinea={lugarEnLaLinea(realStop?.id ?? stop.id)} onVerFicha={() => { setDetailTab(null); setDetailIndex(index) }} />}
             />
           )}
           {/* (10S3, apartado 6) Sin pase, una reserva cuya hora no cuadra con la franja de la parada: la línea gris del pase. */}
@@ -1304,7 +1316,13 @@ export function DayDetailPanel({
                     return found ? { locator: found.locator ?? null, excursionId: found.refId } : null
                   })()}
                   onSelect={(id) => elegirExcursion(day.id, id)}
-                  onConfirm={(id, code) => confirmarExcursion(day.id, id, code)}
+                  onAddConfirmation={(id) => {
+                    // (10S10 §4) «¿Ya la has reservado? Añade tu confirmación» → RESERVAS › Excursiones, con la hoja de ESA excursión y el día puesto (como las entradas).
+                    const elegida = excursionOptions.find((option) => option.id === id) ?? viewedExcursion(day)
+                    if (!elegida) return
+                    setMode('bookings')
+                    useReservasFocusStore.getState().pedirExcursion(elegida, day.id)
+                  }}
                   onStayInRoma={() => void pedirInterruptor(day.id, 'roma')}
                   onOwnDay={() => openOwnDayFlow(day.id)}
                   onAddPlaces={() => openAddFlow(day.id)}
@@ -1376,7 +1394,7 @@ export function DayDetailPanel({
 
           {isFirstDayOfTrip && showCamperBlock && <VehicleBlock kind="camper" />}
 
-          {stay && <AccommodationBlock city={day.city} segmentDayId={stay.segmentDayId} totalNights={stay.totalNights} />}
+          {stay && <AccommodationBlock city={day.city} segmentDayId={stay.segmentDayId} totalNights={stay.totalNights} onAnadir={() => { setMode('bookings'); pedirReservas('aloj') }} />}
 
           {isFirstDayOfTrip && showRentalCarBlock && <VehicleBlock kind="rental-car" />}
 
@@ -1386,12 +1404,11 @@ export function DayDetailPanel({
             // (Hasta «MAÑANA», los 28 px de la cabecera: PROMPT_UI_REPASO_3, 2.)
             <div className="space-y-1.5 pt-2">
               {billeteLlegada ? (
-                <TarjetaLlegadaDias billete={billeteLlegada} point={arrivalChosen} origen={origin} destino={destinoNombre} onOpen={() => setArrivalSheet('llegada')} />
+                <TarjetaLlegadaDias billete={billeteLlegada} point={arrivalChosen} origen={origin} destino={destinoNombre} onOpen={() => setArrivalSheet('llegada')} onVer={() => { setArrivalSheet(null); setMode('bookings'); pedirReservas('llegada', undefined, true) }} />
               ) : (
                 <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={() => goToBooking('llegada')} />
               )}
-              {/* Tanda 10G: con el vuelo guardado y sin el pase, el ajuste del día sale cerrado (guardarlo es gratis). */}
-              {!pago && arrivalTime && modes.arrival !== 'coche' && <Candado datos="dia-ajuste-llegada" titulo="Tu día de llegada" texto="Con el {pase}, tu día se ajusta a la hora de tu vuelo." />}
+              {/* (10S10 §6) antes: franja oscura «Tu día de llegada · Con el Pase Roma, tu día se ajusta…» sin pase → ahora fuera (decisión de Eric, 1-nov). */}
             </div>
           )}
 
@@ -1454,7 +1471,8 @@ export function DayDetailPanel({
           {periodGroups.map((group, groupIndex) => {
             // El título de la franja lleva «+ Añadir parada» a la derecha y la primera tarjeta va justo debajo (Tanda 6i): el hueco de antes de la primera parada, cuando no tiene
             // trayecto que enseñar, es el del título. Si lo tiene (viene de otra parada o del alojamiento), el título no repite el botón.
-            const hasHeader = !freeDay && PERIOD_WITH_HEADER.has(group.period)
+            // (10S10, 1) Una franja sin paradas no enseña su texto (solo el rato libre o el final del día no la abren).
+            const hasHeader = !freeDay && PERIOD_WITH_HEADER.has(group.period) && group.items.some((entry) => entry.item.type === 'stop')
             const first = group.items[0]
             const firstIndex = first?.item.type === 'stop' ? first.item.index : null
             const firstHasGapInfo =
@@ -1473,6 +1491,7 @@ export function DayDetailPanel({
                     headerAddIndex !== null
                       ? () => {
                           setInsertAt(headerAddIndex)
+                          setInsertAntesDe(null)
                           setInsertAfterDinner(dinnerInsertionIndex !== null && headerAddIndex > dinnerInsertionIndex)
                         }
                       : undefined

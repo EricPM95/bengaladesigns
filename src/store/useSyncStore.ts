@@ -26,6 +26,9 @@ interface SyncStoreState {
    * nueva (incluidos los reintentos).
    */
   generationComplete: boolean
+  /** (10S10 §8) false hasta que TripSync sabe si hay un viaje que abrir (o no hay guardado en la nube): mientras, App.tsx pone la pantalla de carga con el logo y nunca la de crear viaje. */
+  cargaInicialHecha: boolean
+  setCargaInicialHecha: (value: boolean) => void
   setStatus: (status: SyncStatus) => void
   setTravelerId: (id: string | null) => void
   /** message = intento fallido (pone status en 'error'); null = limpia el error. */
@@ -54,6 +57,8 @@ export const useSyncStore = create<SyncStoreState>((set) => ({
   activeTripId: null,
   savedTrips: null,
   generationComplete: false,
+  cargaInicialHecha: false,
+  setCargaInicialHecha: (value) => set({ cargaInicialHecha: value }),
   setStatus: (status) => set({ status }),
   setTravelerId: (id) => set({ travelerId: id }),
   setError: (message) => set({ lastError: message, status: message ? 'error' : 'idle' }),
