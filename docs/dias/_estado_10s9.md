@@ -10,6 +10,6 @@ Empezando la tanda 10S9: 4 agentes
 Todo: datos, cabeceras, hoja del vuelo y ruedas, aviso sin pase, un lapiz, flotantes, pruebas, informe, push
 
 ## Procesos abiertos ahora mismo
-- node: 1
+- node: 2
 - esbuild: 0
 - Chrome de prueba (con remote-debugging-port): 0
