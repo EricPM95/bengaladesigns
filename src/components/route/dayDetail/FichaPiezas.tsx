@@ -29,7 +29,7 @@ export function FichaPestanas<T extends string>({ pestanas, activa, onPick }: { 
             type="button"
             onClick={() => onPick(pestana.id)}
             aria-pressed={activa === pestana.id}
-            className={`relative rounded-full text-[15px] font-semibold transition-colors duration-300 ${activa === pestana.id ? 'text-[#FBF3E2]' : 'text-text/65'}`}
+            className={`zona-toque relative rounded-full text-[15px] font-semibold transition-colors duration-300 ${activa === pestana.id ? 'text-[#FBF3E2]' : 'text-text/65'}`}
           >
             {pestana.label}
           </button>

@@ -98,13 +98,15 @@ console.log('3. El servidor')
 console.log('4. Los botones flotantes: un solo mecanismo')
 {
   const flot = sinComentarios(leer('src/components/flotantes/flotantes.ts'))
-  debe(/escondidos/.test(flot) && /export function estiloEscondido/.test(flot) && /export function mostrarLosFlotantes/.test(flot), 'flotantes.ts: escondidos, estiloEscondido y mostrarLosFlotantes')
+  // (10S9b, Eric 1-nov) antes → ahora: ya no se esconden; se mira que el mecanismo de esconder ya no existe (lo vigila pruebaTanda10S9b).
+  debe(!/escondidos/.test(flot) && !/estiloEscondido/.test(flot) && !/mostrarLosFlotantes/.test(flot), 'flotantes.ts: sin esconder (10S9b)')
   for (const f of ['src/components/logros/momentos/BotonFlotanteLogros.tsx', 'src/components/propuesta/BotonDePropuesta.tsx', 'src/components/reorganizar/ReorganizarHost.tsx']) {
     const s = sinComentarios(leer(f))
-    debe(/estiloEscondido\(escondidos\)/.test(s) && /data-flotantes-escondidos/.test(s), `${path.basename(f)} usa el mecanismo compartido`)
+    // (10S9b) antes → ahora → decisión de Eric (1-nov): ya no se esconden; se comprueba que no queda rastro y que siguen usando useFlotantes.
+    debe(!/estiloEscondido|data-flotantes-escondidos/.test(s) && /useFlotantes/.test(s), `${path.basename(f)} usa useFlotantes y no se esconde`)
   }
   const reglas = leer('docs/REGLAS_DE_LA_APP.md')
-  debe(/10S9/.test(reglas) && /se esconden al bajar/i.test(reglas), 'la regla de los flotantes (se esconden al bajar) está en REGLAS_DE_LA_APP.md')
+  debe(/10S9b/.test(reglas) && /siempre visibles/i.test(reglas), 'la regla de los flotantes (siempre visibles) está en REGLAS_DE_LA_APP.md')
 }
 
 // ── 5. En la pantalla ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -157,7 +159,8 @@ if (args.sinNavegador !== '1') {
     await ev("Array.from(document.querySelectorAll('[role=dialog] button[aria-label=Cerrar], [role=dialog] button[aria-label=Volver]')).forEach((b) => b.click()); true").catch(() => {})
     await a.esp(800)
 
-    console.log('5b. Los botones flotantes se esconden al bajar y vuelven al subir')
+    // (10S9b, Eric 1-nov) antes → ahora → decisión de Eric: ya NO se esconden al bajar; siguen visibles y con toques después de bajar, subir y al final. El nombre del apartado se queda por los informes.
+    console.log('5b. Los botones flotantes siguen siempre visibles (10S9b)')
     // Un invitado que solo recomienda (como en 10S5_J), para que salga también el lápiz encima del de los logros.
     await ev(`(async () => { const R = await import('/src/store/useRouteStore.ts'); const S = await import('/src/store/useSyncStore.ts'); const V = await import('/src/store/useViajeCompartido.ts'); R.useRouteStore.getState().setDevSimulatedTodayIso('2026-10-10'); S.useSyncStore.setState({ activeTripId: 'demo-viaje' }); V.useViajeCompartido.getState().poner({ tripId: 'demo-viaje', gente: [{ id: 'eric', nombre: 'Eric', foto: null, esAdmin: true, permiso: 'admin' }, { id: 'ana', nombre: 'Ana', foto: null, esAdmin: false, permiso: 'recomendar' }], yo: 'ana' }); return true })()`).catch(() => null)
     await a.esp(1000)
@@ -180,25 +183,25 @@ if (args.sinNavegador !== '1') {
       debe(Boolean(s1) && s1.top > 100, `${nombre}: la pantalla se puede desplazar (${JSON.stringify(s1)})`)
       await a.esp(700)
       const abajo = await estado()
-      debe(abajo.logros?.esc === true && abajo.logros.op < 0.05 && abajo.logros.pe === 'none', `${nombre}: al BAJAR se esconde el botón de logros y no recibe toques (${JSON.stringify(abajo.logros)})`)
-      debe(abajo.lapiz?.esc === true && abajo.lapiz.op < 0.05 && abajo.lapiz.pe === 'none', `${nombre}: al BAJAR se esconde el lápiz (${JSON.stringify(abajo.lapiz)})`)
+      debe(abajo.logros?.esc === false && abajo.logros.op > 0.9 && abajo.logros.pe !== 'none', `${nombre}: al BAJAR el botón de logros sigue visible y recibe toques (${JSON.stringify(abajo.logros)})`)
+      debe(abajo.lapiz?.esc === false && abajo.lapiz.op > 0.9 && abajo.lapiz.pe !== 'none', `${nombre}: al BAJAR el lápiz sigue visible (${JSON.stringify(abajo.lapiz)})`)
       if (args.capturas !== '0') await a.captura(jpg(`flotantes_${modo}_2_bajando`)).catch(() => {})
       await scroll('sc.scrollTop = sc.scrollTop - 60')
       await a.esp(700)
       const sube = await estado()
-      debe(sube.logros?.esc === false && sube.logros.op > 0.9 && sube.logros.pe !== 'none', `${nombre}: al SUBIR (aunque sea un poco) vuelve el botón de logros (${JSON.stringify(sube.logros)})`)
-      debe(sube.lapiz?.esc === false && sube.lapiz.op > 0.9, `${nombre}: al SUBIR vuelve el lápiz (${JSON.stringify(sube.lapiz)})`)
+      debe(sube.logros?.esc === false && sube.logros.op > 0.9 && sube.logros.pe !== 'none', `${nombre}: al SUBIR el botón de logros sigue visible (${JSON.stringify(sube.logros)})`)
+      debe(sube.lapiz?.esc === false && sube.lapiz.op > 0.9, `${nombre}: al SUBIR el lápiz sigue visible (${JSON.stringify(sube.lapiz)})`)
       await scroll('sc.scrollTop = sc.scrollTop + 120')
       await a.esp(600)
       await scroll('sc.scrollTop = 0')
       await a.esp(700)
       const tope = await estado()
-      debe(tope.logros?.esc === false && tope.logros.op > 0.9, `${nombre}: al llegar arriba del todo se ven (${JSON.stringify(tope.logros)})`)
-      // Al final del todo, nada se tapa: están escondidos.
+      debe(tope.logros?.esc === false && tope.logros.op > 0.9, `${nombre}: al llegar arriba del todo se ven igual (${JSON.stringify(tope.logros)})`)
+      // Al final del todo siguen visibles (el hueco de abajo lo vigila 10S5_J).
       const fin = await scroll('sc.scrollTop = sc.scrollHeight')
       await a.esp(800)
       const alFinal = await estado()
-      debe(Boolean(fin) && alFinal.logros?.esc === true && alFinal.logros.op < 0.05, `${nombre}: al final de la pantalla los botones están escondidos y no tapan nada (${JSON.stringify(alFinal.logros)})`)
+      debe(Boolean(fin) && alFinal.logros?.esc === false && alFinal.logros.op > 0.9 && alFinal.lapiz?.op > 0.9, `${nombre}: al final de la pantalla los botones siguen visibles (${JSON.stringify(alFinal)})`)
       if (args.capturas !== '0') await a.captura(jpg(`flotantes_${modo}_3_final`)).catch(() => {})
     }
     // Cambiar de pestaña los trae de vuelta (la pantalla nueva empieza arriba).
@@ -210,7 +213,7 @@ if (args.sinNavegador !== '1') {
     await R("st().setMode('explore'); return true")
     await a.esp(1200)
     const despues = await ev("document.querySelector('[data-boton-logros]')?.hasAttribute('data-flotantes-escondidos') ?? null")
-    debe(antes === true && despues === false, `al cambiar de pestaña vuelven (antes ${antes}, después ${despues})`)
+    debe(antes === false && despues === false, `al cambiar de pestaña siguen visibles (antes ${antes}, después ${despues})`)
     // Un toque sobre el botón de logros, con la pantalla arriba, sigue abriendo la hoja de logros (el botón no se ha roto).
     await ev("document.querySelector('[data-boton-logros]')?.click(); true")
     await a.esp(1200)

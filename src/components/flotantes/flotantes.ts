@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore, type CSSProperties } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
 
 /**
@@ -11,8 +11,7 @@ import { useRouteStore } from '../../store/useRouteStore'
  *  2. CUÁNTO SUBEN para no tapar los botones de abajo de la pantalla en la que están (`alto`): HOY ya marcaba los suyos; cualquier pantalla marca los suyos con
  *     `data-evitar-flotantes` (el botón, o el contenedor de los botones, que no se tape).
  *
- *  3. (10S9, Eric 1-nov) QUE NO TAPEN LO QUE SE TOCA: al BAJAR el scroll de la pantalla se esconden (`escondidos`: se deslizan hacia abajo y dejan de recibir toques) y vuelven al SUBIR (o al llegar arriba, o al cambiar de pestaña).
- *     Un solo mecanismo para los tres (logros, lápiz de la propuesta y Reorganizar): cada uno aplica `estiloEscondido(escondidos)` a su estilo; `data-flotantes-escondidos="1"` en cada botón lo hace visible a las pruebas.
+ *  3. (10S9b, Eric 1-nov) SIEMPRE VISIBLES: no se esconden al bajar ni al subir el scroll (lo de la 10S9 se quitó): están quietos y, si tapan algo mientras se desplaza la pantalla, no importa. Lo que sí vale es la regla de la 10S5: al final de cada pantalla hay hueco debajo (`suelo`) para que el último contenido no quede bajo ellos.
  *
  * Una pantalla entera nueva que deba llevar los botones encima solo tiene que llevar `data-flotantes`. Las que no lo llevan los esconden (Perfil, Ajustes, películas…).
  */
@@ -31,17 +30,15 @@ interface Estado {
   alto: number | null
   /** (10S5) El `bottom` en px del botón de los logros AHORA (con la barra de abajo del móvil y lo que haya subido por los botones de la pantalla): de ahí sale el hueco que cada pantalla deja al final. */
   suelo: number
-  /** (10S9) Escondidos porque el viajero está bajando por la pantalla: vuelven en cuanto sube. */
-  escondidos: boolean
 }
-let estado: Estado = { debajo: false, alto: null, suelo: 88, escondidos: false }
+let estado: Estado = { debajo: false, alto: null, suelo: 88 }
 let hayLapiz = false
 /** (10S7) El botón «Reorganizar» del pase va en el mismo sitio que el lápiz (encima del de los logros): nunca están los dos (el lápiz es de quien solo recomienda; Reorganizar, de quien edita). */
 let hayReorganizar = false
 const oyentes = new Set<() => void>()
 const avisar = () => oyentes.forEach((f) => f())
 const poner = (e: Estado) => {
-  if (e.debajo === estado.debajo && e.alto === estado.alto && Math.abs(e.suelo - estado.suelo) < 1 && e.escondidos === estado.escondidos) return
+  if (e.debajo === estado.debajo && e.alto === estado.alto && Math.abs(e.suelo - estado.suelo) < 1) return
   estado = e
   avisar()
 }
@@ -83,7 +80,7 @@ function medir(): void {
     bottom = vh - Math.min(...pisan.map((r) => r.top)) + 10
   }
   const nuevo = bottom === inicio ? null : bottom
-  poner({ debajo, alto: estado.alto !== null && nuevo !== null && Math.abs(estado.alto - nuevo) < 1 ? estado.alto : nuevo, suelo: Math.round(bottom), escondidos: debajo !== estado.debajo ? false : estado.escondidos /* (al abrir o cerrar una hoja vuelven) */ })
+  poner({ debajo, alto: estado.alto !== null && nuevo !== null && Math.abs(estado.alto - nuevo) < 1 ? estado.alto : nuevo, suelo: Math.round(bottom) })
 }
 
 let cuadro = 0
@@ -93,56 +90,6 @@ const pedir = () => {
     medir()
   })
 }
-/** (10S9) Esconder al bajar, mostrar al subir: se mira el desplazamiento vertical de cada zona que se desplaza (la página o un contenedor alto), con un margen para que un roce no los mueva. */
-const ultimoTop = new WeakMap<object, number>()
-const MARGEN_SCROLL = 8
-const ARRIBA_DEL_TODO = 40
-function ponerEscondidos(escondidos: boolean) {
-  if (estado.escondidos === escondidos) return
-  estado = { ...estado, escondidos }
-  avisar()
-}
-function alDesplazar(ev: Event) {
-  const objetivo = ev.target
-  const el = objetivo === document || objetivo === document.body || objetivo === document.documentElement ? document.scrollingElement : objetivo instanceof HTMLElement ? objetivo : null
-  if (!el) return
-  // (Solo zonas que se desplazan de verdad hacia abajo y arriba: no una fila horizontal, un mapa ni un cajón pequeño.)
-  if (el.scrollHeight - el.clientHeight < 80 || el.clientHeight < 300) return
-  const antes = ultimoTop.get(el) ?? 0 // (la primera vez que se ve moverse una zona, venía de arriba)
-  const ahora = el.scrollTop
-  const delta = ahora - antes
-  if (ahora <= ARRIBA_DEL_TODO) {
-    ultimoTop.set(el, ahora)
-    ponerEscondidos(false)
-    return
-  }
-  if (Math.abs(delta) < MARGEN_SCROLL) return
-  ultimoTop.set(el, ahora)
-  ponerEscondidos(delta > 0)
-}
-/** El estilo que esconde un botón flotante (se desliza hacia abajo y no recibe toques); sin esconder, no añade nada. */
-export function estiloEscondido(escondidos: boolean): CSSProperties {
-  return { transition: 'transform .22s ease, opacity .22s ease', ...(escondidos ? { transform: 'translateY(150px)', opacity: 0, pointerEvents: 'none' as const, animation: 'none' /* (la entrada `hoja-pop` del lápiz y de Reorganizar mantiene su transform y su opacidad: fuera mientras están escondidos) */ } : {}) }
-}
-/**
- * Los botones flotantes vuelven YA (sin esperar a que el viajero suba): para quien necesita verlos o apuntar a ellos (el dibujo que vuela al botón de los logros) y para las pruebas.
- * También quita el desplazamiento de los que ya estén escondidos en pantalla, para que su sitio se lea bien al momento.
- */
-export function mostrarLosFlotantes(): void {
-  ponerEscondidos(false)
-  if (typeof document === 'undefined') return
-  for (const e of Array.from(document.querySelectorAll<HTMLElement>('[data-flotantes-escondidos]'))) {
-    e.style.transition = 'none'
-    e.style.transform = 'none'
-    e.style.opacity = '1'
-    e.style.pointerEvents = 'auto'
-
-    window.requestAnimationFrame(() => {
-      e.style.transition = 'transform .22s ease, opacity .22s ease'
-    })
-  }
-}
-let quitarModo: (() => void) | null = null
 let observador: MutationObserver | null = null
 let reloj = 0
 function encender() {
@@ -151,12 +98,7 @@ function encender() {
   observador.observe(document.body, { childList: true, subtree: true })
   reloj = window.setInterval(pedir, 500)
   window.addEventListener('scroll', pedir, true)
-  window.addEventListener('scroll', alDesplazar, true)
   window.addEventListener('resize', pedir)
-  // Al cambiar de pestaña o de pantalla vuelven (la nueva pantalla empieza arriba).
-  quitarModo = useRouteStore.subscribe((s, previo) => {
-    if (s.mode !== previo.mode || s.screen !== previo.screen) ponerEscondidos(false)
-  })
   medir()
 }
 function apagar() {
@@ -165,11 +107,7 @@ function apagar() {
   observador = null
   window.clearInterval(reloj)
   window.removeEventListener('scroll', pedir, true)
-  window.removeEventListener('scroll', alDesplazar, true)
   window.removeEventListener('resize', pedir)
-  quitarModo?.()
-  quitarModo = null
-  estado = { ...estado, escondidos: false }
 }
 
 function suscribir(f: () => void): () => void {

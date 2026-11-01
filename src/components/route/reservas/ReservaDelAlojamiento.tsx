@@ -104,7 +104,7 @@ export function FilasDeLaReserva({ reserva, direccion, localizador }: { reserva:
 }
 
 /** A1: [Añadir tu reserva]. Lee el archivo y devuelve lo leído (`onLeida`; con `leida: false` si no se pudo leer nada). (10S8 §2) Sin pase lleva el candado y abre el aviso del pase; sin la línea «Desde el PDF, una foto o una captura.». */
-export function BotonAnadirReserva({ onLeida, año }: { onLeida: (datos: DatosReservaLeida) => void; año?: number }) {
+export function BotonAnadirReserva({ onLeida, año, onAMano }: { onLeida: (datos: DatosReservaLeida) => void; año?: number; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la reserva» vacía. */ onAMano?: () => void }) {
   const ref = useRef<HTMLInputElement>(null)
   const [leyendo, setLeyendo] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
@@ -125,7 +125,7 @@ export function BotonAnadirReserva({ onLeida, año }: { onLeida: (datos: DatosRe
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-reserva-aloj-archivo onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu reserva…' : 'Añadir tu reserva'} clave="documento_alojamiento" datos="reserva-aloj-anadir" icono={<TrazoDesign d="cama" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} />
+      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu reserva…' : 'Añadir tu reserva'} clave="documento_alojamiento" datos="reserva-aloj-anadir" icono={<TrazoDesign d="cama" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
       {aviso && (
         <span role="status" data-reserva-aloj-error className="text-center text-[12.5px] leading-snug text-accent-red">
           {aviso}
@@ -363,7 +363,7 @@ export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, con
   }
   return (
     <>
-      {children({ reserva, localizador, esAdmin, abrirDatos: () => setHoja({ leidos: null, modo: 'datos' }), botonAnadir: esAdmin && !reserva ? <BotonAnadirReserva año={año} onLeida={(leidos) => setHoja({ leidos, modo: 'leida' })} /> : null })}
+      {children({ reserva, localizador, esAdmin, abrirDatos: () => setHoja({ leidos: null, modo: 'datos' }), botonAnadir: esAdmin && !reserva ? <BotonAnadirReserva año={año} onLeida={(leidos) => setHoja({ leidos, modo: 'leida' })} onAMano={() => setHoja({ leidos: null, modo: 'datos' })} /> : null })}
       {hoja && (
         <HojaReservaAlojamiento
           nombreActual={nombreMostrado ?? ''}

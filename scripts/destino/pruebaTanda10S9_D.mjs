@@ -28,7 +28,8 @@ console.log('A. El código')
   const aloj = leer('src/components/route/reservas/AlojamientoReservas.tsx')
   debe(/onLapiz=\{esAdmin && hotel && \(reserva \|\| localizador\) \? abrirDatos : undefined\}/.test(aloj), 'apartado 4', 'alojamiento: el lápiz de «Datos de la reserva» solo con documento')
   debe(/onLapiz=\{!soloVer && \(conCodigo \|\| localizador\) \? onLapizDatos : undefined\}/.test(leer('src/components/route/reservas/EntradaConBillete.tsx')), 'apartado 4', 'entradas: el lápiz de «Datos de la entrada» solo con documento')
-  debe(/onLapiz=\{conCodigo \|\| localizador \? onLapizDatos : undefined\}/.test(leer('src/components/route/reservas/ExcursionConBillete.tsx')), 'apartado 4', 'excursiones: el lápiz de «Datos de la excursión» solo con documento')
+  // antes → ahora → decisión de Eric (10S9b, 1-nov): `conCodigo || localizador` → `conCodigo || localizador || personasEscritas` (las personas escritas a mano en «Datos de la excursión» cuentan como datos: salen en su fila y abren el bloque con su lápiz). Sin nada guardado sigue sin lápiz.
+  debe(/onLapiz=\{conCodigo \|\| localizador \|\| personasEscritas \? onLapizDatos : undefined\}/.test(leer('src/components/route/reservas/ExcursionConBillete.tsx')), 'apartado 4', 'excursiones: el lápiz de «Datos de la excursión» solo con datos (documento o escritos a mano)')
 }
 if (process.env.SOLO_SECO) {
   console.log(`\n${comprobaciones} comprobaciones, ${fallos.length} fallos`)

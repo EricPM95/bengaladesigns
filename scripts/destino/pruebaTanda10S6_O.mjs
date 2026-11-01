@@ -38,7 +38,8 @@ console.log('1. El código')
   // Lo demás, tal como estaba (decisión de Eric: solo el vuelo por ahora).
   const add = sinComentarios(leerArchivo('src/components/route/reservas/AddReservationSheet.tsx'))
   // antes → ahora → decisión de Eric (10S9, 1-nov): antes TimeField seguía con PickerSheet; ahora todas las ruedas son iguales y TimeField usa HojaDeHora. La rueda de elegir día y hora de la reserva (TimeListWheel) sigue dentro de su hoja.
-  debe(/<TimeListWheel/.test(add) && /<TimeField/.test(add), 'o1', 'la hoja de reservar (día y hora) sigue con su rueda y su TimeField')
+  // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la rueda (TimeListWheel) iba abierta dentro de la hoja «Añadir» → ahora la hora es una casilla (CampoDeHora) que abre la hoja de la hora de toda la app.
+  debe(/<CampoDeHora/.test(add) && /<TimeField/.test(add) && !/<TimeListWheel/.test(add), 'o1', 'la hoja de reservar (día y hora): el día en cuadrados, la hora con la casilla y la hoja de la hora, y su TimeField')
   const tf = sinComentarios(leerArchivo('src/components/ui/TimeField.tsx'))
   debe(/<HojaDeHora/.test(tf) && !/<PickerSheet|WheelSheet/.test(tf), 'o1', 'TimeField abre la misma HojaDeHora que el vuelo (10S9)')
 }

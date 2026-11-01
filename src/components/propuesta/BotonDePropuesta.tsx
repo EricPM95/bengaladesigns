@@ -4,7 +4,7 @@ import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { logrosActivos } from '../../lib/logros'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useBotonReorganizarVisible } from '../reorganizar/useBotonReorganizarVisible'
-import { AIRE_BAJO_LOS_BOTONES, SOBRE_LOS_LOGROS as SUBE, estiloEscondido, useFlotantes, useLapizALaVista } from '../flotantes/flotantes'
+import { AIRE_BAJO_LOS_BOTONES, SOBRE_LOS_LOGROS as SUBE, useFlotantes, useLapizALaVista } from '../flotantes/flotantes'
 
 /**
  * EL LÁPIZ FLOTANTE DE LA PROPUESTA (Tanda 10N, apartado 6; «Propuesta Botón · A»): un círculo azul noche con el lápiz y, encima, el numerito de cambios en oro, justo ENCIMA del botón de los logros.
@@ -27,7 +27,7 @@ export function BotonDePropuesta() {
   const modo = useRouteStore((s) => s.mode)
   const abrirHoja = usePropuestaStore((s) => s.abrirHoja)
   // (Tanda 10N4 §0b) En todas las pantallas; solo debajo de una hoja abierta, y sube con el botón de los logros para no tapar los botones de abajo (flotantes.ts).
-  const { debajo, alto, escondidos } = useFlotantes()
+  const { debajo, alto } = useFlotantes()
   useLapizALaVista(visible)
   if (!visible) return null
   const cuantos = n > 0 ? n : enEsperaN
@@ -35,7 +35,6 @@ export function BotonDePropuesta() {
     <button
       type="button"
       data-boton-propuesta={n > 0 ? 'sin-enviar' : 'enviada'}
-      data-flotantes-escondidos={escondidos ? '1' : undefined}
       data-propuesta-n={cuantos}
       aria-label={n > 0 ? `Tu propuesta: ${n} ${n === 1 ? 'cambio' : 'cambios'}` : `Tu propuesta enviada: ${enEsperaN} ${enEsperaN === 1 ? 'cambio' : 'cambios'}`}
       onClick={() => abrirHoja({ modo: 'mia' })}
@@ -56,7 +55,6 @@ export function BotonDePropuesta() {
         justifyContent: 'center',
         cursor: 'pointer',
         zIndex: debajo ? 31 : 100,
-        ...estiloEscondido(escondidos),
       }}
     >
       <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#FBF3E2" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

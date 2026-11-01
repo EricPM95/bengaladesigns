@@ -137,6 +137,7 @@ export function TarjetaBillete({
   const esIda = leg.kind === 'arrival'
   const conCodigo = Boolean(billete?.codigo && (billete.codigo.dibujo || billete.codigo.imagen))
   // (10S8, B1b) Sin tarjeta ni datos guardados: solo la hora grande y el trayecto (ni fila de datos ni su lápiz). Con datos (o con la tarjeta): sus filas y el lápiz de «Datos del vuelo».
+  // (10S9b §1) Lo escrito a mano en «Datos del vuelo» (localizador, terminal, asiento, coche) ya cuenta igual que lo leído del documento: guarda la misma fila privada y abre el bloque con su lápiz. El número del vuelo solo NO lo abre (viene también de la hoja del vuelo, «Ref. vuelo»).
   const conDatos = conCodigo || Boolean(billete && (billete.localizador || billete.terminal || billete.asiento || billete.coche))
   const filas = conDatos ? filasDelBillete(leg, billete, conCodigo ? duracion : null) : []
   const botonTexto = leg.mode === 'avion' ? 'Añadir tarjeta de embarque' : 'Añadir tu billete'
@@ -205,7 +206,7 @@ export function TarjetaBillete({
         </button>
       ) : (
         <div style={{ borderTop: filas.length === 0 ? PUNTEADA : undefined, paddingTop: filas.length === 0 ? 12 : 0 }}>
-          <BotonAnadirDocumento texto={botonTexto} clave={claveDocumentoDeMedio(leg.mode)} onAnadir={onAnadirTarjeta} datos={`vuelo-${leg.kind}`} />
+          <BotonAnadirDocumento texto={botonTexto} clave={claveDocumentoDeMedio(leg.mode)} onAnadir={onAnadirTarjeta} datos={`vuelo-${leg.kind}`} aMano={onDatos} />
         </div>
       )}
 

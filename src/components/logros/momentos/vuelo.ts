@@ -3,7 +3,6 @@
  * viendo y lo lleva (≈ 0,8 s) hasta el botón de destino, que da un latido. Con «reducir movimiento», solo el latido.
  * Destinos: `[data-boton-logros]` (el botón flotante) y `[data-boton-perfil]` (el Perfil de la cabecera, el mismo de las fotos).
  */
-import { mostrarLosFlotantes } from '../../flotantes/flotantes'
 
 export type DestinoVuelo = 'logros' | 'perfil'
 const SELECTOR: Record<DestinoVuelo, string> = { logros: '[data-boton-logros]', perfil: '[data-boton-perfil]' }
@@ -35,7 +34,6 @@ export function latir(el: HTMLElement) {
 /** Lleva una copia de `origen` hasta el botón de destino. Nunca lanza. Devuelve cuánto dura (ms). */
 export function volar(origen: HTMLElement | null, destino: DestinoVuelo): number {
   try {
-    mostrarLosFlotantes() // (10S9) si el viajero iba bajando, el botón de los logros estaba escondido: vuelve antes de apuntarle
     const boton = botonVisible(destino)
     if (!boton) return 0
     if (!origen || sinMovimiento() || typeof origen.animate !== 'function') {

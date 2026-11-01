@@ -12,7 +12,7 @@ import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { useNoticesStore } from '../../../store/useNoticesStore'
 import { DateField } from '../../ui/DateField'
 import { TimeField } from '../../ui/TimeField'
-import { TimeListWheel } from '../../ui/TimeListWheel'
+import { CampoDeHora } from '../../ui/HojaDeHora'
 import { PersonasCuadradas, ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
 import { usePermisosDelViaje } from '../../../hooks/usePermisosDelViaje'
 import { usePrecioEditable } from '../../../lib/useMoneda'
@@ -196,7 +196,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     }
   }, [compraAbierta])
   // («Reservar la mía a la misma hora»: la rueda parte de la hora del dueño; mientras la lista de horas se acomoda, los saltos de la rueda no la cambian. Los gestos de después, sí.)
-  const ultimoCambioDeRueda = useRef(0)
   const sitiosGrandes = fichasSitiosGrandes.map((sitio) => sitio.nombre)
   const { freeTourEntry } = useDestinationPool(route.destination, target.refId === 'Free Tour' && isManualRoute(route))
   const hasDates = Boolean(route.answers.dateRange)
@@ -339,28 +338,21 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     return out
   }, [])
   const rueda = isExcursion ? pickupItems : wheelItems
-  // Una excursión parte de su hora de salida (la primera de su línea) o, si no la hay, de las 07:00.
-  useEffect(() => {
-    if (!isExcursion || view !== 'hora' || validTime) return
-    const first = target.excursion?.page?.stops?.[0]?.time
-    set({ time: first && pickupItems.includes(first) ? first : '07:00' })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view])
-  // La hora de partida de la rueda (Tanda 10O): la de la reserva que ya hay; si no, la hora a la que la ruta llega a ese sitio ese día (si el sitio ya está en la ruta), y si no está, las 9:00; la rueda
-  // se queda en la hora más cercana de las del sitio (así, si abre más tarde de las 9:00, parte de la hora de apertura).
-  useEffect(() => {
-    if (isExcursion || view !== 'hora') return
+  // (10S9b §3) La hora NO se pone sola: la rueda sale con un ejemplo en gris (la de partida de abajo) que no cuenta hasta que el viajero la elige. Una excursión parte de su hora de salida
+  // (la primera de su línea) o, si no la hay, de las 07:00. Una entrada parte de la de la reserva que ya hay (o la del dueño); si no, la hora a la que la ruta llega a ese sitio ese día, y si no está,
+  // las 9:00 (10:00 en el Free Tour); siempre la más cercana de las horas del sitio.
+  const horaDePartida = useMemo(() => {
+    if (isExcursion) {
+      const first = target.excursion?.page?.stops?.[0]?.time
+      return first && pickupItems.includes(first) ? first : '07:00'
+    }
     const asMin = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
     const enLaRuta = resolvedDay?.stops.find((stop) => (isFreeTour ? stop.isFreeTour : !stop.isNightExperience && target.placeNames.includes(stop.name)))
     const llegada = enLaRuta && /^\d{1,2}:\d{2}$/.test(enLaRuta.time ?? '') ? asMin(enLaRuta.time) : NaN
-    // (Con la hora del dueño de partida —«Reservar la mía a la misma hora»— la rueda se queda en ella aunque llegue después la lista de horas.)
-    ultimoCambioDeRueda.current = Date.now()
     const wanted = igual?.reserva.time ? asMin(igual.reserva.time) : validTime ? asMin(fields.time) : Number.isNaN(llegada) ? (isFreeTour ? 10 : 9) * 60 : llegada
-    const nearest = wheelItems.reduce((best, item) => (Math.abs(asMin(item) - wanted) < Math.abs(asMin(best) - wanted) ? item : best), wheelItems[0])
-    const current = validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : ''
-    if (nearest !== current) set({ time: nearest })
+    return wheelItems.reduce((best, item) => (Math.abs(asMin(item) - wanted) < Math.abs(asMin(best) - wanted) ? item : best), wheelItems[0])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wheelItems, view])
+  }, [wheelItems, isExcursion, resolvedDay?.id, pickupItems])
 
   const [plan, setPlan] = useState<ReservationPlan | null>(null)
   // La respuesta del servidor para esta hora y este día aún no ha llegado: no se guarda hasta entonces (la hoja de «mover el día» y la regla 17 salen con ella).
@@ -648,7 +640,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               {!isExcursion && !igual && (
                 <div className="mt-5 flex flex-col gap-3" data-entrada-billete-hoja>
                   {!soloDatos && <BotonAnadirEntrada onLeida={aplicarLecturaDeEntrada} año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined} datos="hoja" />}
-                  {(billeteTocado || billeteDeAntes || codigoDeEntrada) && (
+                  {/* (10S9b §1) En «Datos de la entrada» (solo con pase, desde «o escribe los datos a mano») el localizador sale siempre, vacío y con su ejemplo en gris. */}
+                  {(billeteTocado || billeteDeAntes || codigoDeEntrada || soloDatos) && (
                     <div className="flex flex-col gap-2.5" data-entrada-billete-datos>
                       <div className="flex gap-2">
                         <label className="flex h-[54px] min-w-0 flex-1 flex-col justify-center gap-px rounded-[15px] border bg-[#FFFDF8] px-3.5" style={{ borderColor: 'rgba(28,34,48,.12)' }}>
@@ -720,11 +713,16 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 {isExcursion ? 'Hora de recogida' : isFreeTour ? 'Hora de inicio' : 'Hora de entrada'}
               </p>
 
-              <div className="mt-3.5">
-                <TimeListWheel items={rueda} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : rueda[0]} onChange={(hhmm) => {
-                  if (igual && Date.now() - ultimoCambioDeRueda.current < 1500) return
-                  set({ time: hhmm })
-                }} label={isExcursion ? 'Hora de recogida' : isFreeTour ? 'Hora del Free Tour' : 'Hora de la entrada'} />
+              <div className="mt-3.5" data-hora-de-la-hoja>
+                <CampoDeHora
+                  valor={validTime ? fields.time : null}
+                  onChange={(hhmm) => set({ time: hhmm ?? '' })}
+                  titulo={isExcursion ? 'Hora de recogida' : isFreeTour ? 'Hora del Free Tour' : 'Hora de la entrada'}
+                  ejemplo={horaDePartida}
+                  items={rueda}
+                  quitable={false}
+                  datos="anadir"
+                />
               </div>
 
               {civitatisActiva() && modoReservar && !isExcursion && horasApi.estado !== 'apagado' && (

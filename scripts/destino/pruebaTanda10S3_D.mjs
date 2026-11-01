@@ -32,7 +32,7 @@ console.log('1. El código')
   const hoja = leer('src/components/route/reservas/AddReservationSheet.tsx')
   const h = sinComentarios(hoja)
   debe(!/FREE_TOUR_HOURS|horasDelFreeTour/.test(h), 'ap5', 'la hoja ya no usa las seis horas fijas del Free Tour')
-  debe(/FREE_TOUR_RUEDA/.test(h) && !/grid grid-cols-3 gap-2/.test(h), 'ap5', 'el Free Tour usa la rueda de la hora (TimeListWheel) y no la rejilla de seis botones')
+  debe(/FREE_TOUR_RUEDA/.test(h) && !/grid grid-cols-3 gap-2/.test(h), 'ap5', 'el Free Tour usa la rueda de la hora (la hoja de la hora) y no la rejilla de seis botones')
   debe(/!isFreeTour && !yaEnSuDia/.test(h), 'ap5', 'el plan de reservas no se pide para el Free Tour ni para una entrada cuyo sitio ya está en ese día')
   debe(/data-dia-cuadrado/.test(h) && !/gap-\[7px\] rounded-full px-3\.5/.test(h), 'ap7', 'los días de la hoja de reservas son cuadrados (no pastillas redondas)')
   const plan = sinComentarios(leer('server/engine/reservationPlan.js'))
@@ -150,12 +150,20 @@ try {
     debe(hoja.n >= 2, 'ap7', `los días van en cuadrados (${hoja.n} en la hoja)`)
     debe(hoja.radios.every((c) => c.rad > 0 && c.rad <= 18 && c.h >= 56 && c.w >= 70), 'ap7', `cada día es un cuadrado de esquinas suaves, no una pastilla (${JSON.stringify(hoja.radios[0])})`)
     debe(hoja.radios.filter((c) => c.elegida === '1').length === 1 && hoja.radios.filter((c) => c.marca).length === 1, 'ap7', 'un solo día elegido, con su ✓ dorado')
-    debe(hoja.rueda && hoja.opciones.includes('21:00') && hoja.opciones.includes('20:15') && hoja.opciones.length > 20, 'ap5', `la hora del Free Tour es la rueda de las entradas (${hoja.opciones.length} horas, con 20:15 y 21:00)`)
+    // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la hora de la hoja «Añadir» se ponía sola (rueda siempre abierta) → ahora la casilla sale con un ejemplo en gris, la hora no cuenta hasta elegirla (se abre la hoja de la hora y el ✓ guarda lo que se ve).
+    debe(!hoja.rueda, 'ap5', 'la hora del Free Tour es una casilla (la rueda está en su hoja, no abierta en la pantalla)')
     debe(hoja.seis === 0, 'ap5', 'ya no están los seis botones fijos de horas')
     await app.captura(jpg('01_free_tour_hoja'))
   }
   // El día elegido, el mismo donde está el Free Tour; la hora, 21:00.
-  await ev(`(() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const o = Array.from(d.querySelectorAll('[role="option"]')).find((x) => x.textContent.trim() === '21:00'); o?.click(); return true })()`)
+  // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la hora de la hoja «Añadir» se ponía sola (rueda siempre abierta) → ahora la casilla sale con un ejemplo en gris, la hora no cuenta hasta elegirla (se abre la hoja de la hora y el ✓ guarda lo que se ve).
+  await ev(`document.querySelector('[data-campo-de-hora="anadir"]')?.click(); return true`)
+  await app.esp(700)
+  const opcionesHoja = await ev(`return Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')).map((x) => x.textContent.trim())`)
+  debe(opcionesHoja.includes('21:00') && opcionesHoja.includes('20:15') && opcionesHoja.length > 20, 'ap5', `la hoja de la hora del Free Tour tiene la rueda de las entradas (${opcionesHoja.length} horas, con 20:15 y 21:00)`)
+  await ev(`(() => { const o = Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')).find((x) => x.textContent.trim() === '21:00'); o?.click(); return true })()`)
+  await app.esp(500)
+  await ev(`document.querySelector('[data-hoja-de-hora-guardar]')?.click(); return true`)
   await app.esp(1500)
   const llamadasAntes = await ev("return performance.getEntriesByType('resource').filter((e) => e.name.includes('/api/reservation-plan')).length")
   const listo = await ev(`return (() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const g = d?.querySelector('[data-guardar-reserva]'); return { activo: Boolean(g) && !g.disabled, dia: Array.from(d.querySelectorAll('[data-dia-cuadrado][data-elegida="1"]')).map((b) => b.textContent.trim()) } })()`)
@@ -182,7 +190,8 @@ try {
   // Cambiar la hora (la hoja sale con la reserva puesta): 15:00, misma regla.
   await ev("st().setMode('bookings'); return true")
   await app.esp(1500)
-  const abrirCambiar = `(() => { const bloque = document.querySelector('[data-blk="entradas"]'); if (bloque && bloque.children.length < 2) bloque.firstElementChild?.click(); const b = Array.from(document.querySelectorAll('[data-blk="entradas"] button')).find((x) => /^Cambiar$/.test((x.textContent || '').trim()) && /Free Tour/.test(x.closest('[data-tarjeta-por-reservar],[data-tarjeta-reservada],[class*="min-h-"]')?.textContent || '')); if (!b) return false; b.click(); return true })()`
+  // antes → ahora → decisión de Eric (10S9b, 1-nov): antes el texto «Cambiar» de la tarjeta reservada → ahora el lápiz de arriba de la tarjeta (10S8/10S9, `data-lapiz="entrada-arriba"`).
+  const abrirCambiar = `(() => { const bloque = document.querySelector('[data-blk="entradas"]'); if (bloque && bloque.children.length < 2) bloque.firstElementChild?.click(); const b = Array.from(document.querySelectorAll('[data-blk="entradas"] [data-lapiz="entrada-arriba"], [data-blk="entradas"] button')).find((x) => (x.getAttribute('data-lapiz') === 'entrada-arriba' || /^Cambiar$/.test((x.textContent || '').trim())) && /Free Tour/.test(x.closest('[data-tarjeta-por-reservar],[data-tarjeta-reservada],[class*="min-h-"],[data-entrada-billete]')?.textContent || '')); if (!b) return false; b.click(); return true })()`
   let cambiar = false
   for (let i = 0; i < 20 && !cambiar; i++) {
     cambiar = await ev(`return ${abrirCambiar}`)
@@ -191,8 +200,12 @@ try {
   debe(cambiar, 'ap5', 'con la reserva puesta, «Cambiar» abre la hoja del Free Tour')
   if (cambiar) {
     await app.esp(1500)
-    await ev(`(() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const o = Array.from(d.querySelectorAll('[role="option"]')).find((x) => x.textContent.trim() === '15:00'); o?.click(); return true })()`)
-    await app.esp(1200)
+    await ev(`document.querySelector('[data-campo-de-hora="anadir"]')?.click(); return true`)
+    await app.esp(700)
+    await ev(`(() => { const o = Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')).find((x) => x.textContent.trim() === '15:00'); o?.click(); return true })()`)
+    await app.esp(400)
+    await ev(`document.querySelector('[data-hoja-de-hora-guardar]')?.click(); return true`)
+    await app.esp(1000)
     await ev(`(async () => { const g = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]')?.querySelector('[data-guardar-reserva]'); g?.click(); await new Promise((r) => setTimeout(r, 1500)); return true })()`)
     await app.esp(2000)
     const m2 = await ev("return { dialogo: Boolean(document.querySelector('#move-day-heading')), texto: /vamos a mover el día|Hemos puesto el día/.test(document.body.innerText) }")

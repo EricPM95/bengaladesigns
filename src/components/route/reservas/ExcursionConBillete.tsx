@@ -40,7 +40,7 @@ export function BotonComoLlegarPuntoDeEncuentro({ punto, ciudad, className = '' 
 }
 
 /** [Añadir tu excursión]: abre el selector, lee el billete (`read-ticket`, tipo excursión) y devuelve lo leído. Sin pase, candado y aviso pequeño (clave `documento_excursion`). */
-export function BotonAnadirExcursion({ onLeida, año, datos = 'excursion-anadir' }: { onLeida: (datos: DatosExcursionLeida) => void; año?: number; datos?: string }) {
+export function BotonAnadirExcursion({ onLeida, año, datos = 'excursion-anadir', onAMano }: { onLeida: (datos: DatosExcursionLeida) => void; año?: number; datos?: string; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la excursión» vacía. */ onAMano?: () => void }) {
   const ref = useRef<HTMLInputElement>(null)
   const [leyendo, setLeyendo] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -63,7 +63,7 @@ export function BotonAnadirExcursion({ onLeida, año, datos = 'excursion-anadir'
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-excursion-archivo={datos} onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu excursión…' : 'Añadir tu excursión'} clave="documento_excursion" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} />
+      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu excursión…' : 'Añadir tu excursión'} clave="documento_excursion" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
       {error && (
         <span role="status" data-excursion-error className="text-center text-[12.5px] leading-snug text-accent-red">
           {error}
@@ -115,7 +115,9 @@ export function TarjetaExcursionDesign({
   const [ampliado, setAmpliado] = useState(false)
   const conCodigo = excursionConCodigo(billete)
   const localizador = billete?.localizador ? billete.localizador.toUpperCase() : null
-  const hayFilas = gente.length > 0 || Boolean(precio) || Boolean(localizador) || Boolean(puntoEncuentro)
+  // (10S9b §1) Lo escrito a mano cuenta como datos: el localizador o las personas (igual que si vinieran del documento) abren el bloque con su lápiz.
+  const personasEscritas = billete?.personas ?? null
+  const hayFilas = gente.length > 0 || Boolean(precio) || Boolean(localizador) || Boolean(puntoEncuentro) || Boolean(personasEscritas)
   return (
     <TarjetaCrema datos="excursion">
       <div className="flex items-start gap-2.5">
@@ -138,7 +140,7 @@ export function TarjetaExcursionDesign({
         <CajaDia rotulo={diaRotulo} grande={diaGrande} />
         <CajaHora hora={hora} />
       </div>
-      <SeccionDatos datos="excursion" onLapiz={conCodigo || localizador ? onLapizDatos : undefined} etiquetaLapiz="Cambiar los datos de la excursión" sinLineaAbajo={!hayFilas && !conCodigo}>
+      <SeccionDatos datos="excursion" onLapiz={conCodigo || localizador || personasEscritas ? onLapizDatos : undefined} etiquetaLapiz="Cambiar los datos de la excursión" sinLineaAbajo={!hayFilas && !conCodigo}>
         {gente.length > 0 && <ParaQuienDesign gente={gente} />}
         {precio && (
           <FilaIcono icono="euro" datos="precio">
@@ -149,6 +151,13 @@ export function TarjetaExcursionDesign({
           <span data-excursion-fila="localizador">
             <FilaIcono icono="entrada" datos="localizador">
               Localizador {localizador}
+            </FilaIcono>
+          </span>
+        )}
+        {personasEscritas && (
+          <span data-excursion-fila="personas">
+            <FilaIcono icono="entrada" datos="personas">
+              {personasEscritas} {personasEscritas === 1 ? 'persona' : 'personas'}
             </FilaIcono>
           </span>
         )}
@@ -175,7 +184,7 @@ export function TarjetaExcursionDesign({
             </span>
           </button>
         )}
-        {!conCodigo && <BotonAnadirExcursion onLeida={onLeida} año={año} datos="excursion-sin-codigo" />}
+        {!conCodigo && <BotonAnadirExcursion onLeida={onLeida} año={año} datos="excursion-sin-codigo" onAMano={onLapizDatos} />}
         <BotonComoLlegarPuntoDeEncuentro punto={puntoEncuentro} ciudad={ciudad} />
         {extra}
         {onQuitar && (

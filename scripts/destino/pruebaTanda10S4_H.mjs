@@ -145,13 +145,18 @@ try {
   await app.esp(1500)
   const marcado = await ev(`return document.querySelector('[data-dia-cuadrado=${JSON.stringify(destino.id)}]')?.getAttribute('data-elegida')`)
   debe(marcado === '1', 'ap4', 'el día elegido (en cuadrados) queda marcado')
-  const hora = await ev(`const o = Array.from(document.querySelectorAll('#add-reservation-heading')).length ? Array.from(document.querySelectorAll('[role="dialog"] [role="option"]')).map((x) => x.textContent.trim()) : []; return o`)
+  // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la hora de la hoja «Añadir» se ponía sola (rueda siempre abierta) → ahora la casilla sale con un ejemplo en gris, la hora no cuenta hasta elegirla (se abre la hoja de la hora y el ✓ guarda lo que se ve).
+  await ev(`document.querySelector('[data-campo-de-hora="anadir"]')?.click(); return true`)
+  await app.esp(700)
+  const hora = await ev(`return Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')).map((x) => x.textContent.trim())`)
   // (La última hora de la rueda: por la tarde, para ver que, si no cuadra con la franja de la parada, sale la línea gris del pase.)
   const horaElegida = hora.at(-1) ?? null
   if (horaElegida) {
-    await ev(`Array.from(document.querySelectorAll('[role="dialog"] [role="option"]')).find((x) => x.textContent.trim() === ${JSON.stringify(horaElegida)})?.click(); return true`)
-    await app.esp(900)
+    await ev(`Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')).find((x) => x.textContent.trim() === ${JSON.stringify(horaElegida)})?.click(); return true`)
+    await app.esp(500)
   }
+  await ev(`document.querySelector('[data-hoja-de-hora-guardar]')?.click(); return true`)
+  await app.esp(900)
   await app.captura('docs/dias/capturas_jutrip/10s4_otra_reserva_2.jpg').catch(() => {})
   const guardar = await ev(`const g = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]')?.querySelector('[data-guardar-reserva]'); return { hay: Boolean(g), texto: g?.textContent ?? null, off: g?.disabled ?? null }`)
   debe(guardar.hay && /Guardar la entrada/.test(guardar.texto ?? ''), 'ap4', `el botón dice «Guardar la entrada» (${guardar.texto})`)
@@ -215,6 +220,8 @@ try {
   debe(/Cena en casa de Marco/.test(hoja2), 'ap4', 'la hoja de siempre se abre con lo escrito, tal cual')
   await ev(`document.querySelector('[data-dia-cuadrado=${JSON.stringify(destino.id)}]')?.click(); return true`)
   await app.esp(1200)
+  // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la hora de la hoja «Añadir» se ponía sola (rueda siempre abierta) → ahora la casilla sale con un ejemplo en gris, la hora no cuenta hasta elegirla (se abre la hoja de la hora y el ✓ guarda lo que se ve).
+  await ev(`return (async () => { const c = document.querySelector('[data-campo-de-hora="anadir"]'); if (!c) return false; if (c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } return true })()`)
   await ev(`document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]')?.querySelector('[data-guardar-reserva]')?.click(); return true`)
   await app.esp(2500)
   const rutaDespues = await ev(dias)

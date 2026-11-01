@@ -34,7 +34,8 @@ const plano = (t) => t.replace(/\n/g, ' | ')
 const INICIO = '2027-03-10' // miércoles
 const unDia = 86400000
 const sumaDias = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * unDia).toISOString().slice(0, 10)
-const EMPRESAS = /Civitatis|Stay22|Booking|GetYourGuide|Viator|Skyscanner|Rentalcars|Holafly|Airalo|Heymondo|N26|Iati|Mapfre|Revolut|Europcar|Goldcar|Mondo|Allianz|Hertz|Avis|Sixt|Wise/i
+// 10S9b (C, 1-nov): «Sixt» → «Sixt» como palabra entera. Antes: «Sixt» saltaba con «Capilla Sixtina» (un lugar de Roma, no el proveedor de coches) → ahora solo la palabra entera «Sixt» → decisión de Eric (10S9b, 1-nov): nunca nombramos proveedores, y la Capilla Sixtina no lo es.
+const EMPRESAS = /Civitatis|Stay22|Booking|GetYourGuide|Viator|Skyscanner|Rentalcars|Holafly|Airalo|Heymondo|N26|Iati|Mapfre|Revolut|Europcar|Goldcar|Mondo|Allianz|Hertz|Avis|Sixt\b|Wise/i
 const leer = (f) => fs.readFileSync(f, 'utf8')
 function archivos(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? archivos(`${dir}/${e.name}`) : /\.tsx?$/.test(e.name) ? [`${dir}/${e.name}`] : []))
@@ -117,7 +118,8 @@ for (const [clave, route] of Object.entries(rutas)) {
         debe(iOscura >= 0, '1a oscura', `${nombre}: no sale la tarjeta oscura`)
         debe(!/Te faltan|Lo tienes todo listo|\d+ de \d+ listo|Llegada y vuelta|Alojamiento|Entradas/.test(oscura), '1a oscura', `${nombre}: la oscura lleva lo que falta dentro (${plano(oscura).slice(0, 250)})`)
         if (m.clave === 'antes') debe(/Tu viaje a Roma empieza en/.test(oscura) && /^\d+$/m.test(oscura) && /^días$/m.test(oscura), '1a oscura', `${nombre}: la oscura no dice «Tu viaje a Roma empieza en n días» (${plano(oscura)})`)
-        if (m.clave === 'durante') debe(/Estás en/.test(oscura) && /mié 10/.test(oscura) && /1 de 3/.test(oscura), '1a oscura', `${nombre}: la oscura no dice «Estás en Roma · mié 10 · 1 de 3» (${plano(oscura)})`)
+// 10S9b (C, 1-nov): «mié 10» → «Miércoles 10». Antes: fecha corta del día → ahora: fecha entera (10S8) → decisión de Eric (10S8): fechas enteras en la tarjeta oscura.
+        if (m.clave === 'durante') debe(/Estás en/.test(oscura) && /(?:mié|Miércoles) 10/.test(oscura) && /1 de 3/.test(oscura), '1a oscura', `${nombre}: la oscura no dice «Estás en Roma · mié 10 · 1 de 3» (${plano(oscura)})`)
         if (m.clave === 'sin-fechas') debe(/Tu viaje a Roma · octubre/.test(oscura.replace(/\n/g, ' ')) && /Pon tus fechas/.test(oscura), '1a oscura', `${nombre}: sin fechas la oscura no es «Tu viaje a Roma · octubre» con [Pon tus fechas] (${plano(oscura)})`)
       }
       debe(!/Te faltan|Lo tienes todo listo/.test(texto), '1a oscura', `${nombre}: sale «Te faltan…» o «Lo tienes todo listo» en la pantalla`)
@@ -308,7 +310,7 @@ for (const [clave, route] of Object.entries(rutas)) {
     debe((panel.match(/data-util-tarjeta="seguro"/g) ?? []).length === 1 && (panel.match(/data-util-tarjeta="tarjeta"/g) ?? []).length === 1, '3f varios destinos', 'varios destinos: el seguro o la tarjeta salen más de una vez en RESERVAS')
     const acordeon = leer('src/components/route/reservas/DestinationReservasAccordion.tsx')
     debe(!/N26Row|EsimRow/.test(acordeon), '3f varios destinos', 'el acordeón de cada destino todavía pinta N26Row o EsimRow')
-    debe(!EMPRESAS.test(aTexto(panel)), '3f varios destinos', `RESERVAS de varios destinos: sale una empresa en los textos (${aTexto(panel).match(EMPRESAS)?.[0]})`)
+    debe(!EMPRESAS.test(aTexto(panel)), '3f varios destinos', `RESERVAS de varios destinos: sale una empresa en los textos (${aTexto(panel).match(EMPRESAS)?.[0]} en «${(aTexto(panel).match(/.{0,40}(?:Civitatis|Sixt|Wise).{0,40}/i) ?? [])[0]}»)`)
   }
   // 3c (fuente): Comprar es solo un enlace que no marca nada; Añadir y tocar «Lo tienes» abren la hoja de precio; la hoja elimina.
   const util = leer('src/components/route/reservas/UtilParaElViaje.tsx')

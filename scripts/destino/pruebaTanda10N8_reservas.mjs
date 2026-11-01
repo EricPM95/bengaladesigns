@@ -214,6 +214,8 @@ try {
     const fichas = Array.from(hoja.querySelectorAll('[role="group"] button')).filter((b) => !b.disabled)
     ;(fichas[1] ?? fichas[0]).click()
     await new Promise((r) => setTimeout(r, 1500))
+    // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la hora de la hoja «Añadir» se ponía sola (rueda siempre abierta) → ahora la casilla sale con un ejemplo en gris, la hora no cuenta hasta elegirla (se abre la hoja de la hora y el ✓ guarda lo que se ve).
+    { const c = hoja.querySelector('[data-campo-de-hora="anadir"]'); if (c && c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } }
     const g = hoja.querySelector('[data-guardar-reserva]')
     for (let i = 0; i < 30 && g.disabled; i++) await new Promise((r) => setTimeout(r, 300))
     g.click()

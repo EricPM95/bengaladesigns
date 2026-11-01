@@ -24,6 +24,7 @@ export function BotonAnadirDocumento({
   onAnadir,
   datos = 'anadir-documento',
   icono,
+  aMano,
 }: {
   texto: string
   clave: ClaveDocumento
@@ -31,12 +32,14 @@ export function BotonAnadirDocumento({
   onAnadir: () => void
   datos?: string
   icono?: ReactNode
+  /** (10S9b §1) Con pase: el enlace pequeño «o escribe los datos a mano» debajo del botón, que abre la hoja de datos de siempre vacía (con sus ejemplos en gris). Sin pase no sale (los datos son del pase). */
+  aMano?: () => void
 }) {
   const estado = usePaseParaDocumentos()
   const destino = useRouteStore((s) => s.route?.destination) ?? ''
   const cerrado = estado === 'sin'
   return (
-    <div className="relative" data-anadir-doc-envoltorio>
+    <div className="relative flex flex-col" data-anadir-doc-envoltorio>
       <button
         type="button"
         onClick={() => (cerrado ? abrirAvisoPase(clave, { destino: destino || undefined }) : onAnadir())}
@@ -54,6 +57,11 @@ export function BotonAnadirDocumento({
         {texto}
       </button>
       {cerrado && <CandadoRedondo diametro={24} datos="documento" className="pointer-events-none absolute -left-1.5 -top-2" />}
+      {aMano && estado === 'con' && (
+        <button type="button" onClick={aMano} data-datos-a-mano={datos} className="zona-toque mx-auto mt-2 border-none bg-transparent p-0 text-[13px] font-medium text-text/65 underline underline-offset-2">
+          o escribe los datos a mano
+        </button>
+      )}
     </div>
   )
 }

@@ -84,11 +84,12 @@ console.log('2. El aviso de debajo de la rueda')
 {
   debe(AVISO_DISPONIBILIDAD === 'Recuerda revisar la disponibilidad antes de añadirlo a tu ruta.', '2 texto', `el aviso no es el de Eric: «${AVISO_DISPONIBILIDAD}»`)
   const hoja = leer('src/components/route/reservas/AddReservationSheet.tsx')
-  const iRueda = hoja.indexOf('<TimeListWheel')
-  const iAviso = hoja.indexOf('{AVISO_DISPONIBILIDAD}')
+  // antes → ahora → decisión de Eric (10S9b, 1-nov): la rueda abierta (<TimeListWheel) → la casilla de la hora (<CampoDeHora) que abre su hoja.
+  const iRueda = hoja.indexOf('<CampoDeHora')
+  const iAviso = hoja.indexOf(': AVISO_DISPONIBILIDAD}') // (10N: el aviso se escribe con «{esLibre ? AVISO_DISPONIBILIDAD_RESERVAR : AVISO_DISPONIBILIDAD}»)
   const iPrecio = hoja.indexOf('<BloqueDinero') // (10N10) el precio vive ahora en el bloque del dinero de las hojas
   debe(iRueda > 0 && iAviso > iRueda && iAviso < iPrecio, '2 sitio', 'el aviso no va entre la rueda y el precio, en la hoja de la hora')
-  debe(/!isExcursion && !\(civitatisActiva\(\) && horasApi\.estado === 'ok'\) && \(\s*<p[^>]*>\s*\{AVISO_DISPONIBILIDAD\}/.test(hoja), '2 sitio', 'el aviso no sale en las entradas y el Free Tour (y solo ahí)')
+  debe(/!isExcursion && !\(civitatisActiva\(\) && horasApi\.estado === 'ok'\) && \(\s*<p[^>]*>\s*\{esLibre \? AVISO_DISPONIBILIDAD_RESERVAR : AVISO_DISPONIBILIDAD\}/.test(hoja), '2 sitio', 'el aviso no sale en las entradas y el Free Tour (y solo ahí)')
   // La rueda toma las horas de UNA pieza compartida, sin su propia cuenta.
   debe(/horasDeLaRueda\(entryHours/.test(hoja) && /useHorarioDeEntrada\(/.test(hoja) && !/m \+= 15/.test(hoja), '2 una pieza', 'la rueda de la hoja de reserva vuelve a calcular las horas por su cuenta')
 
@@ -104,7 +105,9 @@ console.log('2. El aviso de debajo de la rueda')
   debe(plano(entrada).includes(AVISO_DISPONIBILIDAD), '2 pintado', 'la hoja de una entrada no enseña el aviso de la disponibilidad')
   const ft = aTexto(html(M.AddReservationSheet, { route: ruta, target: { kind: 'entrada', refId: 'Free Tour', name: 'Free Tour por Roma', placeNames: ['Free Tour por Roma'], currentDayId: 'd1', existing: null }, onClose() {} }))
   debe(plano(ft).includes(AVISO_DISPONIBILIDAD), '2 pintado', 'la hoja del Free Tour (como reserva) no enseña el aviso de la disponibilidad')
-  for (const hora of FREE_TOUR_HOURS) debe(ft.split('\n').includes(hora), '2 pintado', `la hoja del Free Tour (como reserva) no enseña la hora ${hora}`)
+  // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la rueda de horas iba pintada en la hoja → ahora está en la hoja de la hora (se abre al tocar la casilla): se mira que la hoja enseñe la casilla, que lleve la rueda del Free Tour y que esa rueda tenga las seis horas.
+  debe(/\b\d{2}:\d{2}\b/.test(ft) && /FREE_TOUR_RUEDA/.test(hoja) && /items=\{rueda\}/.test(hoja), '2 pintado', 'la hoja del Free Tour (como reserva) no enseña la casilla de la hora con la rueda del Free Tour')
+  debe(/FREE_TOUR_HOURS/.test(leer('src/lib/freeTourHoras.ts')) && FREE_TOUR_HOURS.length === 6, '2 pintado', 'la rueda del Free Tour no parte de sus seis horas')
 }
 
 // ── 3. La hoja del Free Tour ──

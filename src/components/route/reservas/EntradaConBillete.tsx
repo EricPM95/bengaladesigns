@@ -33,7 +33,7 @@ export function BotonCodigoDeEntrada({ onClick }: { onClick: () => void }) {
  * E1: [Añadir tu entrada]. Abre el selector de archivos, lee la entrada y devuelve los datos (`onLeida`). Si no se puede leer nada, lo dice y deja añadirla a mano.
  * (10S8 §2) SIN pase lleva el candado dorado y, al tocarlo, abre el aviso pequeño del pase en vez del selector; con pase, nunca candado. Sin la línea «Desde el PDF, una foto o una captura.» (Design no la lleva).
  */
-export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir' }: { onLeida: (datos: DatosEntradaLeida) => void; año?: number; datos?: string }) {
+export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir', onAMano }: { onLeida: (datos: DatosEntradaLeida) => void; año?: number; datos?: string; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la entrada» vacía. */ onAMano?: () => void }) {
   const ref = useRef<HTMLInputElement>(null)
   const [leyendo, setLeyendo] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -57,7 +57,7 @@ export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir' }: 
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-entrada-archivo={datos} onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu entrada…' : 'Añadir tu entrada'} clave="documento_entrada" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} />
+      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu entrada…' : 'Añadir tu entrada'} clave="documento_entrada" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
       {error && (
         <span role="status" data-entrada-error className="text-center text-[12.5px] leading-snug text-accent-red">
           {error}
@@ -170,7 +170,7 @@ export function TarjetaEntradaDesign({
             </span>
           </button>
         )}
-        {!conCodigo && !soloVer && onLeida && <BotonAnadirEntrada onLeida={onLeida} año={año} datos="entrada-sin-codigo" />}
+        {!conCodigo && !soloVer && onLeida && <BotonAnadirEntrada onLeida={onLeida} año={año} datos="entrada-sin-codigo" onAMano={onLapizDatos} />}
         {extra}
         {!soloVer && onQuitar && (
           <>

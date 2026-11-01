@@ -210,8 +210,10 @@ const tarjeta = (nombre) => `(() => { const b = Array.from(document.querySelecto
   await a.evaluar(tarjeta('Excursiones'))
   await a.esp(3500)
   const exc = await a.evaluar("Array.from(document.querySelectorAll('[data-excursion-tarjeta]')).map((c) => ({ texto: c.innerText.replace(/\\s+/g, ' ').trim(), foto: Boolean(c.querySelector('span[aria-hidden][style*=\"url(\"]')) }))")
-  debe(exc.length === 7, 'excursiones', `salen las siete excursiones (${exc.length})`)
-  debe(exc.every((e) => /\d+ ?h/.test(e.texto) && /desde \d+ ?€/.test(e.texto)), 'excursiones', 'cada una con su duración y su precio «desde»')
+  // (10S9b) antes → ahora → decisión de Eric (10R, Venecia nueva): ahora son ocho excursiones, no siete.
+  debe(exc.length === 8, 'excursiones', `salen las ocho excursiones (${exc.length})`)
+// (10S9b) antes → ahora → decisión de Eric (10R): los precios de su tabla llevan céntimos («desde 98,26 €»); el patrón los admite.
+  debe(exc.every((e) => /\d+ ?h/.test(e.texto) && /desde \d+(?:[.,]\d+)? ?€/.test(e.texto)), 'excursiones', 'cada una con su duración y su precio «desde»')
   debe(exc.every((e) => !/undefined|null|NaN|\(0\)/.test(e.texto)), 'excursiones', 'ninguna con «undefined», «null» ni huecos')
   debe(exc.slice(0, 3).every((e) => e.foto), 'excursiones', 'las que se ven, con su foto (las demás la piden al llegar a la pantalla)')
   debe(!/civitatis/i.test(await a.evaluar('document.body.innerText')), 'excursiones', 'sin el nombre del proveedor en los textos de la lista')

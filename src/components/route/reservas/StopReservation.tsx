@@ -121,7 +121,7 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
         data.inTrip && !delGrupo && (
           <p className="text-center text-small text-text-soft">
             ¿Ya la tienes?{' '}
-            <button type="button" onClick={() => setSheet(true)} className="font-semibold text-text underline underline-offset-2">
+            <button type="button" onClick={() => setSheet(true)} className="zona-toque font-semibold text-text underline underline-offset-2">
               Añádela
             </button>
           </p>

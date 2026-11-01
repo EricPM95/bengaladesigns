@@ -67,8 +67,8 @@
       "ejemplo": true,
       "nombre": { "antes": "Excursión a", "destino": "Ostia Antica", "despues": "" },
       "corto": "Ostia Antica",
-      "duracion_h": 6,
-      "vuelta": "14:00",
+      "duracion_h": 3,
+      "vuelta": "11:00",
       "medio_dia": true,
       "precio_desde": null,
       "enlace": "",
@@ -79,10 +79,10 @@
       ],
       "paradas": [
         { "hora": "08:00", "nombre": "Roma" },
-        { "hora": "09:00", "nombre": "Ostia Antica" },
-        { "hora": "14:00", "nombre": "Roma" }
+        { "hora": "08:45", "nombre": "Ostia Antica" },
+        { "hora": "11:00", "nombre": "Roma" }
       ],
-      "texto": "El puerto de la antigua Roma: calles, termas, un teatro y casas de hace 2.000 años, con guía. Vuelves a Roma a la hora de comer.",
+      "texto": "El puerto de la antigua Roma: calles, termas, un teatro y casas de hace 2.000 años, con guía. Vuelves a Roma antes de comer.",
       "foto": { "archivo": "", "credito": "" },
       "color": "#B98F55",
       "porcentaje": null,

@@ -112,17 +112,13 @@ const circulos = (app) =>
  * Todo lo que se desplaza, llevado al final: ¿queda algún texto, borde, imagen o botón de la pantalla (lo que NO es fijo) debajo de un botón flotante? Si la pantalla no se desplaza, también se mira.
  * Devuelve cuántos elementos quedan tapados y el primero.
  */
-// (10S9) antes → ahora → decisión de Eric (10S9, 1-nov): al llevar la pantalla al final, los botones flotantes ahora se esconden solos (bajan el scroll); la prueba los hace volver con mostrarLosFlotantes() para seguir comprobando
-// que, aunque vuelvan, ahí no hay nada debajo. Misma fuerza que antes (y se añade en pruebaTanda10S9_A que al bajar se esconden).
+// (10S9b) antes → ahora → decisión de Eric (10S9b, 1-nov): los botones flotantes vuelven a estar SIEMPRE visibles (se quitó lo de esconderlos al bajar de la 10S9); la prueba mira igual que ahí abajo no hay nada debajo de ellos.
 const ultimoLibre = (app) =>
   app.evaluar(`(async () => {
     for (const e of document.querySelectorAll('*')) {
       const c = getComputedStyle(e)
       if ((c.overflowY === 'auto' || c.overflowY === 'scroll') && e.scrollHeight > e.clientHeight + 4) e.scrollTop = e.scrollHeight
     }
-    const F = await import('/src/components/flotantes/flotantes.ts')
-    await new Promise((r) => setTimeout(r, 250)) // (los eventos de scroll llegan después: primero se esconden…)
-    F.mostrarLosFlotantes()
     await new Promise((r) => setTimeout(r, 450))
     const cajas = Array.from(document.querySelectorAll('[data-boton-propuesta], [data-boton-logros]')).map((e) => e.getBoundingClientRect())
     const tapados = []

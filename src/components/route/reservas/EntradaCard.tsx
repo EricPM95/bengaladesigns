@@ -130,7 +130,7 @@ export function EntradaCard({
             {onAdd && (
               <span className="text-text/55" style={{ font: "400 11px 'Geist'" }}>
                 ¿Ya la tienes?{' '}
-                <button type="button" onClick={onAdd} className="font-semibold text-text underline underline-offset-2">
+                <button type="button" onClick={onAdd} className="zona-toque font-semibold text-text underline underline-offset-2">
                   Añádela
                 </button>
               </span>
