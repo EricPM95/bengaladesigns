@@ -20,13 +20,17 @@ const roma = JSON.parse(fs.readFileSync('data/pipeline_v2/roma.json', 'utf8'))
 const opciones = roma.excursions.options
 const por = Object.fromEntries(opciones.map((o) => [o.id, o]))
 const CH = '2026-10-26 (Eric, web de Civitatis)'
+// (10S9) antes → ahora → decisión de Eric (10S9, 1-nov): Nápoles y Pompeya en tren: cancelación null → 'no_reembolsable' (web, 1-nov; mismo aviso que Florencia en tren) y comprobado 26-oct → 1-nov;
+// Ostia Antica entra en la tabla (antes solo se miraba su enlace): 9,6/10, 294 opiniones, 3 h, gratuita hasta 3 días antes, comprobado 2026-11-01. Ninguna comprobación baja de fuerza: se añaden.
+const CH_1NOV = '2026-11-01 (web de Civitatis)'
 const TABLA = {
   pompeya_sorrento: { slug: 'excursion-pompeya-sorrento', nombre: 'Excursión a Pompeya y Sorrento', precio: 98.26, nota: 8.3, op: 793, dur: '12-13 h', canc: 'gratuita' },
-  napoles_pompeya_tren: { slug: 'excursion-pompeya-tren', nombre: 'Excursión a Nápoles y Pompeya en tren de alta velocidad', precio: 139, nota: 8.7, op: 343, dur: '12 h', canc: null },
+  napoles_pompeya_tren: { slug: 'excursion-pompeya-tren', nombre: 'Excursión a Nápoles y Pompeya en tren de alta velocidad', precio: 139, nota: 8.7, op: 343, dur: '12 h', canc: 'no_reembolsable', ch: CH_1NOV },
   florencia_pisa: { slug: 'excursion-florencia-pisa', nombre: 'Excursión a Florencia y Pisa', precio: 95.4, nota: 8.6, op: 704, dur: '14 h', canc: 'gratuita' },
   costa_amalfitana: { slug: 'excursion-amalfi-positano', nombre: 'Excursión a la Costa Amalfitana en autobús + Barco a Positano y Amalfi', precio: 115, nota: 7.9, op: 60, dur: '15 h 30', canc: 'gratuita' },
   tivoli_villas: { slug: 'excursion-villa-adriana-villa-este', nombre: 'Excursión a Tívoli', precio: 118.8, nota: 8.7, op: 725, dur: null, canc: 'gratuita' },
   florencia_tren: { slug: 'excursion-florencia', nombre: 'Excursión a Florencia en tren de alta velocidad', precio: 149, nota: 8.6, op: 689, dur: '12 h 15 - 13 h', canc: 'no_reembolsable' },
+  ostia_antica: { slug: 'excursion-ostia-antica', nombre: 'Excursión a Ostia Antica', precio: 52, nota: 9.6, op: 294, dur: '3 h', canc: 'gratuita', ch: CH_1NOV },
   venecia_tren: { slug: 'excursion-venecia', nombre: 'Excursión a Venecia en tren de alta velocidad', precio: 243.95, nota: 9, op: 315, dur: '15 h', canc: 'gratuita' },
 }
 for (const [id, t] of Object.entries(TABLA)) {
@@ -40,7 +44,7 @@ for (const [id, t] of Object.entries(TABLA)) {
   debe(o.review_count === t.op, `${id}: opiniones ${o.review_count} (${t.op})`)
   debe((o.duration_label ?? null) === t.dur || (t.dur === null && !o.duration_label), `${id}: duración «${o.duration_label}» (${t.dur})`)
   debe((o.cancellation ?? null) === t.canc, `${id}: cancelación ${o.cancellation} (${t.canc})`)
-  debe(o.checked === CH, `${id}: sin «comprobado: ${CH}»`)
+  debe(o.checked === (t.ch ?? CH), `${id}: sin «comprobado: ${t.ch ?? CH}»`)
   debe(!('provisional_pricing' in o), `${id}: sigue con provisional_pricing`)
   debe(/^https:\/\/cdn2\.civitatis\.com\//.test(o.photo_url ?? '') && !/qa\./.test(`${o.photo_url}${o.photo_url_big}`), `${id}: su foto no es de un servidor público de Civitatis (${o.photo_url})`)
   debe(/^\d{4}-\d{2}-\d{2}$/.test(o.photo_checked ?? ''), `${id}: la foto no lleva la fecha`)
@@ -51,6 +55,8 @@ debe(por.ostia_antica?.civitatis_slug === 'excursion-ostia-antica', 'Ostia Antic
 debe(por.venecia_tren && por.venecia_tren.half_day === false && Array.isArray(por.venecia_tren.destination_coords) && por.venecia_tren.destination_coords.length === 2, 'Venecia: sin coordenadas o sin ser de día entero')
 debe(Boolean(por.venecia_tren?.meeting_point) && (por.venecia_tren?.description ?? '').length > 40 && !/civitatis/i.test(por.venecia_tren.description), 'Venecia: sin punto de encuentro o sin descripción nuestra')
 debe(por.florencia_tren?.cancellation === 'no_reembolsable', 'Florencia en tren: no dice «no reembolsable»')
+debe(por.napoles_pompeya_tren?.cancellation === 'no_reembolsable', 'Nápoles y Pompeya en tren: no dice «no reembolsable» (10S9)')
+debe(por.ostia_antica?.meeting_point === 'Piazzale Ostiense (salida del metro Piramide)' && por.ostia_antica?.cancellation_note === 'Gratuita hasta 3 días antes', 'Ostia Antica: punto de encuentro o nota de cancelación (10S9)')
 
 // ── 2. El servidor (lo que recibe la app) ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 const r = await fetch(`${API}/api/destination-excursions`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination: 'Roma' }) })

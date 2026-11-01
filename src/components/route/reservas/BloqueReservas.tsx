@@ -79,6 +79,46 @@ export function FlechaBloque({ abierto }: { abierto: boolean }) {
 
 export const tituloBloqueStyle: CSSProperties = { font: "400 27px/1 'Instrument Serif',serif" }
 
+/**
+ * (10S9 §1) LA cabecera de los bloques de RESERVAS (Llegada y vuelta, Alojamiento, Entradas y Free Tour): icono grande, título grande, el estado DEBAJO del título
+ * («Falta», «Listo», «0 de 9 reservadas») y la flecha a la derecha. Un solo componente para los tres; sustituye a las pastillas de la 10S4/10S8.
+ * `onClick` la hace tocable (abre o cierra el bloque); `atributos` deja a cada bloque sus `data-…` de siempre para las pruebas.
+ */
+export function CabeceraBloque({
+  icono,
+  titulo,
+  estado,
+  hecho,
+  abierto,
+  onClick,
+  datos,
+  atributos,
+  className = '',
+}: {
+  icono: NombreIcono
+  titulo: string
+  estado: string
+  hecho: boolean
+  abierto: boolean
+  onClick?: () => void
+  datos?: string
+  atributos?: Record<string, string>
+  className?: string
+}) {
+  return (
+    <div onClick={onClick} data-cabecera-clara={datos} data-cabecera-bloque {...atributos} className={`flex items-center gap-3.5 ${onClick ? 'cursor-pointer' : ''} ${className}`}>
+      <IconoBloque nombre={icono} hecho={hecho} />
+      <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+        <span data-titulo-bloque style={tituloBloqueStyle}>
+          {titulo}
+        </span>
+        <EstadoBloque texto={estado} hecho={hecho} />
+      </span>
+      <FlechaBloque abierto={abierto} />
+    </div>
+  )
+}
+
 /** «Cambiar» en cursiva subrayada, el botón de texto de las líneas hechas. */
 export function CambiarBoton({ onClick, texto = 'Cambiar' }: { onClick: () => void; texto?: string }) {
   return (

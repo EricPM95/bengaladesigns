@@ -105,10 +105,16 @@ debe(valoracionSobre10(9.64) === 9.64 && valoracionSobre10(8.867924528) === 8.86
   debe(!('descripcion' in f) && !('resumen' in f), 'la ficha no inventa ni resume ninguna descripción')
   debe(f.incluye.length === 2 && f.incluye[0] === 'Guía oficial en español' && f.incluye[1] === 'Entradas incluidas', 'lo que incluye pasa igual; solo se quitan las líneas que nombran a la empresa (regla de la app)')
   const cliente = { entorno: 'sandbox', tieneClaves: true, pedir: async () => ({ ok: true, datos: bruto }) }
-  const svc = crearServicioCivitatis({ activa: true, cliente, cache: crearCache() })
+  // (10S9) antes → ahora → decisión de Eric (10S9, 1-nov): antes la API enriquecía siempre; ahora solo con el interruptor datosApiMandan (CIVITATIS_DATOS_API_MANDAN), apagado mientras sea sandbox. Esta prueba lo enciende para seguir comprobando el mecanismo entero, y abajo se añade lo de apagado.
+  const svc = crearServicioCivitatis({ activa: true, datosApiMandan: true, cliente, cache: crearCache() })
   const { opciones, enriquecidas } = await svc.enriquecerExcursiones('roma', [{ id: 'ostia_antica', name: 'Excursión a Ostia Antica', description: 'Texto nuestro intacto', rating: 4.8, review_count: 278, provisional_pricing: false }])
   debe(enriquecidas === 1 && opciones[0].rating === 9.64 && opciones[0].rating_max === 10 && opciones[0].review_count === 1234, 'la excursión enriquecida lleva la nota y las opiniones tal cual de la API')
   debe(opciones[0].description === 'Texto nuestro intacto', 'la descripción de la excursión no se toca')
+  // (10S9) Apagado (lo normal en sandbox): la API NO pisa nada nuestro, ni siquiera para el administrador.
+  const nuestra = { id: 'ostia_antica', name: 'Excursión a Ostia Antica', rating: 9.6, rating_max: 10, review_count: 294, price_from_eur: 52, duration_label: '3 h', cancellation: 'gratuita', meeting_point: 'Piazzale Ostiense (salida del metro Piramide)' }
+  const apagadoMandan = crearServicioCivitatis({ activa: true, cliente, cache: crearCache() })
+  const sin = await apagadoMandan.enriquecerExcursiones('roma', [nuestra])
+  debe(sin.enriquecidas === 0 && JSON.stringify(sin.opciones[0]) === JSON.stringify(nuestra) && sin.opciones[0].civitatis === undefined, 'con CIVITATIS_DATOS_API_MANDAN apagado, los datos de la API (9,64 / 1234 / sandbox) no pisan ni precio, ni nota, ni opiniones, ni punto de encuentro nuestros')
 }
 
 /* 4. (10O2) La API cae y lo guardado tiene más de 4 horas: no se enseña, salen nuestros datos de roma.json */
@@ -118,7 +124,7 @@ console.log('4. Sin datos de más de 4 h')
   let cae = false
   const bruto = { id: 7, title: 'Ostia', minimumPrice: 25, score: 9.64, reviews: 1234, url: 'https://www.civitatis.com/es/roma/ostia/' }
   const cliente = { entorno: 'sandbox', tieneClaves: true, pedir: async () => (cae ? { ok: false, motivo: 'caida' } : { ok: true, datos: bruto }) }
-  const svc = crearServicioCivitatis({ activa: true, cliente, cache: crearCache({ ahora: () => t }), ahora: () => t })
+  const svc = crearServicioCivitatis({ activa: true, datosApiMandan: true, cliente, cache: crearCache({ ahora: () => t }), ahora: () => t })
   const nuestras = [{ id: 'ostia_antica', name: 'Excursión a Ostia Antica', description: 'Texto nuestro', rating: 4.8, review_count: 278, provisional_pricing: false }]
   const antes = await svc.enriquecerExcursiones('roma', nuestras)
   debe(antes.enriquecidas === 1, 'con la API viva se enriquece')

@@ -52,9 +52,8 @@ async function pasada(version) {
         if (!el) return null
         const cab = el.querySelector('[data-llegada-cabecera], [data-aloj-cabecera], [data-llegada-vacia]') ?? el.firstElementChild
         const lineaPase = el.querySelector('[data-linea-pase]')
-        // (10S8, 31-oct) antes: el icono y la columna título/estado → ahora: la cabecera clara de Design (icono, título, estado a la derecha) en «Alojamiento» → decisión de Eric (10S8, 31-oct).
-        const clara = el.querySelector('[data-aloj-cabecera] [data-cabecera-clara]')
-        const hijos = clara ? Array.from(clara.children).map((x) => (x.textContent || '').trim()).filter(Boolean) : Array.from(cab?.querySelector('span.flex-col')?.children ?? []).map((x) => (x.textContent || '').trim())
+        // (10S9, 1-nov) antes: «Alojamiento» con la cabecera clara de Design (estado a la derecha, en pastilla) → ahora: los tres bloques con la cabecera de «Llegada y vuelta» (título y estado DEBAJO, flecha) → decisión de Eric (10S9, 1-nov).
+        const hijos = Array.from(cab?.querySelector('span.flex-col')?.children ?? []).map((x) => (x.textContent || '').trim())
         return {
           texto: el.innerText.replace(/\\s+/g, ' '),
           cabecera: hijos,
@@ -135,7 +134,7 @@ async function pasada(version) {
     // (10S8, 31-oct) antes «Precio · 280 €» → ahora «280 €» en su fila con el icono del euro (Design A1) → decisión de Eric (10S8, 31-oct).
     debe(/280/.test(al.precioAloj ?? ''), 'precio', `el precio del alojamiento está dentro: «${al.precioAloj}»`)
     // (10S8, 31-oct) antes «Cambiar» en texto → ahora el lápiz de arriba (Design) → decisión de Eric (10S8, 31-oct).
-    debe((await ev("document.querySelectorAll('[data-blk=\"aloj\"] [data-lapiz]').length")) >= 2, 'cambiar', 'los dos lápices (arriba y el del bloque de datos)')
+    debe((await ev("document.querySelectorAll('[data-blk=\"aloj\"] [data-lapiz]').length")) === 1, 'cambiar', '(10S9, 1-nov) antes: los dos lápices (arriba y el del bloque de datos) → ahora: sin documento un solo lápiz, arriba (el de los datos leídos solo con documento) → decisión de Eric (10S9, 1-nov)')
     // (10S8, 31-oct) antes «Eliminar alojamiento» en texto → ahora la papelera roja abajo a la derecha → decisión de Eric (10S8, 31-oct).
     const ea = al.eliminar[0]
     debe(ea && ea.derecha < 40 && ea.izq > al.bloqueW / 2, 'eliminar-derecha', `la papelera abajo a la derecha (${JSON.stringify(ea)})`)
@@ -152,7 +151,7 @@ async function pasada(version) {
     ll = await bloque('llegada')
     debe(ll.mitades === 2 && ll.estado === 'falta', 'abierto-falta', `Llegada y vuelta con la vuelta sin poner: abierto y en «falta» (${ll.mitades}, ${ll.estado}, «${ll.estadoTexto}»)`)
     al = await bloque('aloj')
-    debe(/Falta/.test(al.estadoTexto ?? '') && /Añadir mi alojamiento/.test(al.texto) === false, 'abierto-falta', `Alojamiento vacío: «Falta» y plegado hasta que se toque (${al.estadoTexto})`)
+    debe(/Falta/.test(al.estadoTexto ?? '') && /Añadir mi alojamiento/.test(al.texto), 'abierto-falta', `Alojamiento vacío: «Falta» y ABIERTO al entrar (10S9, 1-nov: antes plegado hasta que se tocara → ahora abierto si falta algo → decisión de Eric) (${al.estadoTexto})`)
     await a.captura(foto(`${version}_04_falta`))
   } finally {
     await a.cerrar()

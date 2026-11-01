@@ -991,7 +991,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 {isExcursion && (
                   <div className="flex-1">
                     <span className="text-[12px] font-medium text-text-soft">Hora de vuelta (opcional)</span>
-                    <TimeField value={fields.returnTime} onChange={(hhmm) => set({ returnTime: hhmm })} title="Hora de vuelta" placeholder="Sin hora" />
+                    <TimeField value={fields.returnTime} onChange={(hhmm) => set({ returnTime: hhmm })} title="Hora de vuelta" placeholder="Sin hora" quitable />
                   </div>
                 )}
               </div>

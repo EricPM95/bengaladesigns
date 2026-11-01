@@ -140,7 +140,7 @@ export function TarjetaEntradaDesign({
         <CajaDia rotulo={diaRotulo} grande={diaGrande} />
         <CajaHora hora={hora} />
       </div>
-      <SeccionDatos datos="entrada" onLapiz={!soloVer ? onLapizDatos : undefined} etiquetaLapiz="Cambiar los datos de la entrada" sinLineaAbajo={!hayFilas && !conCodigo}>
+      <SeccionDatos datos="entrada" onLapiz={!soloVer && (conCodigo || localizador) ? onLapizDatos : undefined} etiquetaLapiz="Cambiar los datos de la entrada" sinLineaAbajo={!hayFilas && !conCodigo}>
         {gente.length > 0 && <ParaQuienDesign gente={gente} />}
         {precio && (
           <FilaIcono icono="euro" datos="precio">

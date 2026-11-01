@@ -121,7 +121,7 @@ try {
       // antes → ahora → decisión de Eric (10S8, 31-oct): «Reservada» → «En tu ruta»/«Ya no está en tu ruta» (E1).
     debe(/En tu ruta|Ya no está en tu ruta/.test(f.texto), 'ap3', `lleva su etiqueta (${f.texto})`)
       // antes → ahora → decisión de Eric (10S8, 31-oct): «Cambiar» → los dos lápices (el de arriba cambia día y hora), [Añadir tu entrada] y la papelera.
-    debe(f.botones >= 4, 'ap3', `lápices, botón del documento y papelera (${f.botones})`)
+    debe(f.botones === 3, 'ap3', `(10S9, 1-nov) antes: 4 (dos lápices, documento y papelera) → ahora: 3 (un solo lápiz sin documento, documento y papelera) → decisión de Eric (10S9, 1-nov). Lápices, botón del documento y papelera (${f.botones})`)
   }
   debe(new RegExp(`${elegidos.length} de \\d+ reservadas`).test(l2.texto), 'ap3', 'la cabecera cuenta las reservadas')
   debe(!/Ver \d+ más|Ver menos/.test(l2.texto) && /Añadir otra reserva/.test(l2.texto), 'ap3', 'sin «Ver n más» y con [Añadir otra reserva]')

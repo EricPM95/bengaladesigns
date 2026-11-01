@@ -1,5 +1,4 @@
 import { useState, type ReactNode } from 'react'
-import { fechaCorta } from '../../../lib/nombreDeDia'
 import { Icono } from '../../ui/Icono'
 import { CampoDeHora } from '../../ui/HojaDeHora'
 import { ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
@@ -8,7 +7,7 @@ import { LineaDelPase } from '../../pase/Candado'
 import type { NombreIcono } from '../../../lib/iconos'
 
 /**
- * LA HOJA DEL VUELO (Tanda 10N9; `Piezas/Reservas Cada Uno` 02 y 02b), la misma para quien pone el suyo (invitado) y para el administrador: las pestañas Ida / Vuelta (con el resumen «✓ Ida · mar 10 · 11:15» de la otra),
+ * LA HOJA DEL VUELO (Tanda 10N9; `Piezas/Reservas Cada Uno` 02 y 02b), la misma para quien pone el suyo (invitado) y para el administrador: las pestañas «Ida» y «Vuelta» (siempre así, sin día ni hora, con un ✓ si ese lado está puesto),
  * el día, el aeropuerto, la rueda de la hora de dos columnas (hora : minutos) y, pegado al pie de la hoja, UN solo botón «Guardar el vuelo». Sin precio. La rueda NO tiene [Guardar]: nada se guarda hasta pulsar el botón.
  */
 export interface LadoDeHoja {
@@ -106,23 +105,26 @@ export function HojaDelVuelo({
   const primero = lados[ladoInicial].activo ? ladoInicial : ladoInicial === 'ida' ? 'vuelta' : 'ida'
   const [lado, setLado] = useState<'ida' | 'vuelta'>(primero)
   const [borrador, setBorrador] = useState(() => {
-    const parte = (k: 'ida' | 'vuelta') => ({ hora: lados[k].hora ?? HORA_DE_SERIE[k], punto: lados[k].punto, fecha: lados[k].fecha ?? lados[k].dias[0]?.iso ?? null, tocado: lados[k].tocado ?? false, codigo: lados[k].extras?.codigo ?? '', compania: lados[k].extras?.compania ?? '', otroPunto: lados[k].extras?.otroPunto || lados[k].extras?.otroPuntoPorDefecto || '', otraHora: lados[k].extras?.otraHora ?? null, localizador: lados[k].extras?.privados?.localizador ?? '', terminal: lados[k].extras?.privados?.terminal ?? '', asiento: lados[k].extras?.privados?.asiento ?? '', coche: lados[k].extras?.privados?.coche ?? '' })
+    // (10S9) Una hora que pone la app es un ejemplo en gris hasta que el viajero la elige: sin hora guardada, el borrador va VACÍO (`null`); el ejemplo (HORA_DE_SERIE) solo se pinta en gris.
+    const parte = (k: 'ida' | 'vuelta') => ({ hora: (lados[k].hora ?? null) as string | null, punto: lados[k].punto, fecha: lados[k].fecha ?? lados[k].dias[0]?.iso ?? null, tocado: lados[k].tocado ?? false, codigo: lados[k].extras?.codigo ?? '', compania: lados[k].extras?.compania ?? '', otroPunto: lados[k].extras?.otroPunto || lados[k].extras?.otroPuntoPorDefecto || '', otraHora: lados[k].extras?.otraHora ?? null, localizador: lados[k].extras?.privados?.localizador ?? '', terminal: lados[k].extras?.privados?.terminal ?? '', asiento: lados[k].extras?.privados?.asiento ?? '', coche: lados[k].extras?.privados?.coche ?? '' })
     return { ida: parte('ida'), vuelta: parte('vuelta') }
   })
-  const cambia = (k: 'ida' | 'vuelta', cambio: Partial<{ hora: string; punto: string | null; fecha: string | null; codigo: string; compania: string; otroPunto: string; otraHora: string | null; localizador: string; terminal: string; asiento: string; coche: string }>) => setBorrador((previo) => ({ ...previo, [k]: { ...previo[k], ...cambio, tocado: previo[k].tocado || 'hora' in cambio || 'punto' in cambio || 'fecha' in cambio } }))
+  const cambia = (k: 'ida' | 'vuelta', cambio: Partial<{ hora: string | null; punto: string | null; fecha: string | null; codigo: string; compania: string; otroPunto: string; otraHora: string | null; localizador: string; terminal: string; asiento: string; coche: string }>) => setBorrador((previo) => ({ ...previo, [k]: { ...previo[k], ...cambio, tocado: previo[k].tocado || 'hora' in cambio || 'punto' in cambio || 'fecha' in cambio } }))
 
   const l = lados[lado]
   const b = borrador[lado]
-  const elegida = (k: 'ida' | 'vuelta') => lados[k].activo && (lados[k].hecho || borrador[k].tocado)
-  const puesto = (k: 'ida' | 'vuelta') => lados[k].activo && (guardaSiempre || elegida(k))
-  const resumen = (k: 'ida' | 'vuelta') => `${k === 'ida' ? 'Ida' : 'Vuelta'}${borrador[k].fecha ? ` · ${fechaCorta(borrador[k].fecha as string)}` : ''} · ${borrador[k].hora}`
+  // (10S9) Un lado cuenta como «puesto» (✓ en su pestaña y se guarda) cuando el viajero ha elegido su hora y ese lado ya estaba hecho o lo ha tocado (el invitado guarda siempre los dos lados). El ejemplo en gris no cuenta.
+  const queda = (k: 'ida' | 'vuelta') => lados[k].activo && (guardaSiempre || lados[k].hecho || borrador[k].tocado)
+  const puesto = (k: 'ida' | 'vuelta') => queda(k) && borrador[k].hora != null
+  // Un lado que hay que guardar (o que se ha empezado a rellenar) y no tiene hora elegida frena el botón.
+  const faltaHora = (['ida', 'vuelta'] as const).find((k) => queda(k) && borrador[k].hora == null) ?? null
   // Cada lado que se va a guardar con punto obligatorio y sin punto frena el botón.
   const faltaPunto = (['ida', 'vuelta'] as const).find((k) => puesto(k) && lados[k].puntoObligatorio && lados[k].puntos.length > 0 && !borrador[k].punto) ?? null
   const hayAlgo = puesto('ida') || puesto('vuelta')
-  const puedeGuardar = hayAlgo && !faltaPunto
+  const puedeGuardar = hayAlgo && !faltaPunto && !faltaHora
   const guardar = () => {
     if (!puedeGuardar) return
-    const salida = (k: 'ida' | 'vuelta'): LadoGuardado => ({ hora: borrador[k].hora, punto: borrador[k].punto, fecha: borrador[k].fecha, puesto: puesto(k), codigo: borrador[k].codigo, compania: borrador[k].compania, otroPunto: borrador[k].otroPunto, otraHora: borrador[k].otraHora, localizador: borrador[k].localizador, terminal: borrador[k].terminal, asiento: borrador[k].asiento, coche: borrador[k].coche })
+    const salida = (k: 'ida' | 'vuelta'): LadoGuardado => ({ hora: borrador[k].hora ?? '', punto: borrador[k].punto, fecha: borrador[k].fecha, puesto: puesto(k), codigo: borrador[k].codigo, compania: borrador[k].compania, otroPunto: borrador[k].otroPunto, otraHora: borrador[k].otraHora, localizador: borrador[k].localizador, terminal: borrador[k].terminal, asiento: borrador[k].asiento, coche: borrador[k].coche })
     onGuardar(salida('ida'), salida('vuelta'))
   }
   const pestanas = (['ida', 'vuelta'] as const).filter((k) => lados[k].activo)
@@ -132,6 +134,11 @@ export function HojaDelVuelo({
       {faltaPunto && (
         <p className="mb-2 text-center text-[12.5px] text-text/60" data-vuelo-falta-punto>
           Elige primero {lados[faltaPunto].etiquetaPunto === 'Aeropuerto' ? 'el aeropuerto' : lados[faltaPunto].etiquetaPunto === 'Puerto' ? 'el puerto' : 'la estación'} {faltaPunto === 'ida' ? 'de la ida' : 'de la vuelta'}
+        </p>
+      )}
+      {!faltaPunto && faltaHora && (
+        <p className="mb-2 text-center text-[12.5px] text-text/60" data-vuelo-falta-hora>
+          Elige la hora {lados[faltaHora].llega ? 'de llegada' : 'de salida'} {faltaHora === 'ida' ? 'de la ida' : 'de la vuelta'}
         </p>
       )}
       <button
@@ -240,7 +247,8 @@ export function HojaDelVuelo({
         <div className="mt-4 grid grid-cols-2 gap-2" role="tablist">
           {pestanas.map((k) => {
             const activa = lado === k
-            const mostrarResumen = !activa && elegida(k)
+            // (10S9) Las pestañas dicen siempre «Ida» y «Vuelta», sin día ni hora; con un ✓ si ese lado ya está puesto.
+            const marcada = puesto(k)
             return (
               <button
                 key={k}
@@ -248,12 +256,13 @@ export function HojaDelVuelo({
                 role="tab"
                 aria-selected={activa}
                 data-mi-vuelo-lado={k}
+                data-mi-vuelo-puesto={marcada ? "1" : "0"}
                 onClick={() => setLado(k)}
                 className="flex h-11 items-center justify-center gap-1.5 rounded-[14px] text-[14px] font-semibold"
                 style={activa ? { background: '#1C2230', color: '#F3D88F' } : { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.18)', color: '#1C2230' }}
               >
-                {mostrarResumen && <Icono nombre="hecho" size={14} grosor={3} style={{ color: '#2B7F45' }} />}
-                <span data-mi-vuelo-resumen={mostrarResumen ? '1' : undefined}>{mostrarResumen ? resumen(k) : k === 'ida' ? 'Ida' : 'Vuelta'}</span>
+                {marcada && <Icono nombre="hecho" size={14} grosor={3}  style={{ color: activa ? '#F3D88F' : '#2B7F45' }} />}
+                <span>{k === 'ida' ? 'Ida' : 'Vuelta'}</span>
               </button>
             )
           })}

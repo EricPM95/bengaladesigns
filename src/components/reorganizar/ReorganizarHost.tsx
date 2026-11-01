@@ -7,7 +7,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { useReorganizarStore } from '../../store/useReorganizarStore'
 import { useResumenVueloStore } from '../../store/useResumenVueloStore'
 import { adaptarLosDias } from '../../lib/adaptarVuelos'
-import { useFlotantes, SOBRE_LOS_LOGROS, useReorganizarALaVista } from '../flotantes/flotantes'
+import { estiloEscondido, useFlotantes, SOBRE_LOS_LOGROS, useReorganizarALaVista } from '../flotantes/flotantes'
 import { Icono } from '../ui/Icono'
 import { useBotonReorganizarVisible } from './useBotonReorganizarVisible'
 import { usePermisosDelViaje } from '../../hooks/usePermisosDelViaje'
@@ -55,7 +55,7 @@ export function ReorganizarHost(): ReactNode {
   const vuelos = useReorganizarStore((s) => s.vuelos)
   const conPase = usePagoActivo()
   const hojaAbierta = useResumenVueloStore((s) => s.hoja !== null)
-  const { debajo, alto } = useFlotantes()
+  const { debajo, alto, escondidos } = useFlotantes()
   const modo = useRouteStore((s) => s.mode)
   const { puedeEditar } = usePermisosDelViaje()
   const mostrar = visible && primero
@@ -140,6 +140,7 @@ export function ReorganizarHost(): ReactNode {
         <button
           type="button"
           data-boton-reorganizar="1"
+          data-flotantes-escondidos={escondidos ? '1' : undefined}
           aria-label="Reorganizar tu día"
           onClick={() => useReorganizarStore.getState().abrirAlerta()}
           className="hoja-pop"
@@ -159,6 +160,7 @@ export function ReorganizarHost(): ReactNode {
             justifyContent: 'center',
             cursor: 'pointer',
             zIndex: debajo ? 31 : 100,
+            ...estiloEscondido(escondidos),
           }}
         >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

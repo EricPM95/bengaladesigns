@@ -7,7 +7,7 @@ import { Sello, type GradoDeSello } from '../dibujos'
 import { pedirEstado, type EstadoLogros } from './api'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
-import { useFlotantes } from '../../flotantes/flotantes'
+import { estiloEscondido, useFlotantes } from '../../flotantes/flotantes'
 
 /**
  * EL BOTÓN FLOTANTE DE LOS LOGROS (Tanda 8B, «Logros · el botón del destino»; 8C2: sus estados). Fijo abajo a la derecha, justo encima de la barra de pestañas:
@@ -81,7 +81,7 @@ function Boton({ soloEn }: { soloEn: string[] | null }): ReactNode {
   }, [tripId, ronda, puntito])
 
   // (Tanda 10N4 §0b) Se ve en TODAS las pantallas del viaje; solo se queda debajo de una hoja abierta (y sube para no tapar los botones de abajo): ver flotantes.ts.
-  const { debajo, alto } = useFlotantes()
+  const { debajo, alto, escondidos } = useFlotantes()
   if (!primero || (soloEn !== null && !soloEn.includes(String(modo)))) return null
   const sello = estado?.sellos[0]
   const grado = (sello?.grado ?? null) as GradoDeSello | null
@@ -90,11 +90,12 @@ function Boton({ soloEn }: { soloEn: string[] | null }): ReactNode {
     <button
       type="button"
       data-boton-logros="1"
+      data-flotantes-escondidos={escondidos ? "1" : undefined}
       data-grado={grado ?? 'ninguno'}
       aria-label={`${estado?.ciudad ? `Tus logros en ${estado.ciudad}` : 'Tus logros'}${puntito ? ' (hay algo nuevo)' : ''}`}
       onClick={() => useMomentosUI.getState().abrirHojaLogros()}
       className="mo"
-      style={{ position: 'fixed', right: 14, bottom: alto !== null ? `${alto}px` : `calc(env(safe-area-inset-bottom,0px) + ${modo === 'today' ? 120 : 88}px)`, width: 58, height: 58, padding: 0, border: 'none', borderRadius: '50%', background: '#FFFDF8', cursor: 'pointer', zIndex: debajo ? 30 : 99, boxShadow: '0 0 0 1px rgba(28,34,48,.08),0 12px 22px -10px rgba(28,34,48,.6)' }}
+      style={{ position: 'fixed', right: 14, bottom: alto !== null ? `${alto}px` : `calc(env(safe-area-inset-bottom,0px) + ${modo === 'today' ? 120 : 88}px)`, width: 58, height: 58, padding: 0, border: 'none', borderRadius: '50%', background: '#FFFDF8', cursor: 'pointer', zIndex: debajo ? 30 : 99, boxShadow: '0 0 0 1px rgba(28,34,48,.08),0 12px 22px -10px rgba(28,34,48,.6)', ...estiloEscondido(escondidos) }}
     >
       <BotonVisual sello={sello?.id ?? 'roma'} grado={grado} fraccion={fraccion} puntito={puntito} />
     </button>

@@ -8,7 +8,8 @@ import { TimeListWheel } from './TimeListWheel'
  * ELEGIR UNA HORA, SIEMPRE IGUAL EN TODA LA APP (Tanda 10S6, apartado 2; regla en `docs/REGLAS_DE_LA_APP.md`).
  *
  * `HojaDeHora` es la hoja que sube desde abajo, en su propia capa, con la rueda (como la del iPhone). Arriba a la derecha: una papelera para quitar la hora y un ✓ para guardarla.
- * Tocar fuera, o Escape, TAMBIÉN guarda la hora elegida (toques donde toques). Si la casilla estaba vacía y no se ha movido la rueda, tocar fuera la deja vacía.
+ * El ✓ guarda SIEMPRE la hora que se ve en la rueda, se haya movido o no (10S9: con el vuelo justo a las 08:30, el ✓ sin mover la rueda guarda 08:30).
+ * Tocar fuera, o Escape, TAMBIÉN guarda la hora elegida (toques donde toques). Solo si la casilla estaba vacía y no se ha movido la rueda, tocar fuera (que no es elegir) la deja vacía.
  *   - `valor`: «HH:MM» o null (vacía). `onElegir(h)` recibe la hora, o null si se quita; la hoja se cierra sola después (`onCerrar`).
  *   - `items`: si se pasa, la rueda es de una sola columna con esas horas (las de verdad de cada sitio ese día); si no, la de dos columnas (horas y minutos, de 5 en 5).
  *   - `inicial`: la hora con la que se abre la rueda si `valor` está vacío.
@@ -45,11 +46,11 @@ export function HojaDeHora({
     tocada.current = true
     setElegida(h)
   }
-  const guardar = () => {
+  const guardar = (conTick = false) => {
     if (cierre.current) return
     cierre.current = true
-    // Vacía y sin tocar la rueda: tocar fuera no inventa una hora.
-    if (valida || tocada.current) onElegir(elegidaRef.current)
+    // (10S9) El ✓ guarda lo que se ve en la rueda, esté o no movida. Vacía y sin tocar la rueda, tocar fuera (que no es elegir) no inventa una hora.
+    if (conTick || valida || tocada.current) onElegir(elegidaRef.current)
     onCerrar()
   }
   const quitar = () => {
@@ -64,7 +65,7 @@ export function HojaDeHora({
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.stopPropagation()
-        guardarRef.current()
+        guardarRef.current(false)
       }
     }
     window.addEventListener('keydown', onKey, true)
@@ -72,7 +73,7 @@ export function HojaDeHora({
   }, [])
   return createPortal(
     <div className="fixed inset-0 z-[140] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={titulo} data-hoja-de-hora>
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={guardar} data-hoja-de-hora-fondo />
+      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={() => guardar(false)} data-hoja-de-hora-fondo />
       <div className="trazo-notice-panel relative flex w-full flex-col rounded-t-[28px] bg-bg-card pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[400px] md:rounded-[28px]">
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
@@ -85,7 +86,7 @@ export function HojaDeHora({
                 <Icono nombre="papelera" size={18} />
               </button>
             )}
-            <button type="button" onClick={guardar} aria-label="Guardar la hora" data-hoja-de-hora-guardar className="zona-toque flex h-10 w-10 items-center justify-center rounded-full bg-text text-[#F3D88F]">
+            <button type="button" onClick={() => guardar(true)} aria-label="Guardar la hora" data-hoja-de-hora-guardar className="zona-toque flex h-10 w-10 items-center justify-center rounded-full bg-text text-[#F3D88F]">
               <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12.5l4.5 4.5L19 7.5" />
               </svg>

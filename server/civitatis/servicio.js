@@ -38,6 +38,9 @@ export function crearServicioCivitatis(opciones = {}) {
   const cache = opciones.cache ?? crearCache()
   const ajustes = opciones.ajustes ?? AJUSTES
   const ahora = opciones.ahora ?? (() => Date.now())
+  // (10S9, decisión de Eric, 1-nov) Mientras la API sea el sandbox, MANDAN SIEMPRE los datos de nuestra tabla (roma.json › excursions.options), también para el administrador:
+  // la API de pruebas nunca pisa precio, nota, opiniones, duración, cancelación ni punto de encuentro. Interruptor: opción `datosApiMandan` o variable `CIVITATIS_DATOS_API_MANDAN=1` (apagado por defecto; se enciende con la producción).
+  const datosApiMandan = opciones.datosApiMandan ?? /^(1|true|si)$/i.test(String(process.env.CIVITATIS_DATOS_API_MANDAN ?? ''))
   const ttl = (que) => ttlConTope(ajustes.ttl_segundos?.[que] ?? 3600) // (tope duro de 4 h: lo pidió el proveedor el 19-oct)
   const lang = ajustes.idioma ?? 'es'
   const moneda = ajustes.moneda ?? 'EUR'
@@ -174,7 +177,7 @@ export function crearServicioCivitatis(opciones = {}) {
    */
   async function enriquecerExcursiones(destino, opcionesDelDestino) {
     const datos = datosDelDestino(destino)
-    if (!activa || !datos) return { opciones: opcionesDelDestino, enriquecidas: 0 }
+    if (!activa || !datos || !datosApiMandan) return { opciones: opcionesDelDestino, enriquecidas: 0 } // (10S9: sin el interruptor, se quedan nuestros datos tal cual)
     let enriquecidas = 0
     const opciones2 = await Promise.all(
       (opcionesDelDestino ?? []).map(async (opcion) => {

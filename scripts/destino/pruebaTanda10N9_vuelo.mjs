@@ -77,7 +77,7 @@ const medidas = () =>
       columnas: document.querySelectorAll('[data-hoja-de-hora] [data-rueda-columna]').length,
       listboxHoras: document.querySelectorAll('[data-hoja-de-hora] [role="listbox"]').length,
       precio: /Cuánto ha costado/i.test(d?.innerText ?? ""),
-      resumenes: Array.from(d?.querySelectorAll('[data-mi-vuelo-resumen]') ?? []).map((x) => x.textContent.trim()),
+      resumenes: Array.from(d?.querySelectorAll('[data-mi-vuelo-lado][data-mi-vuelo-puesto="1"]') ?? []).map((x) => x.textContent.trim()),
       pestanas: Array.from(d?.querySelectorAll('[role=tab]') ?? []).map((x) => x.textContent.trim()),
       horaMostrada: d?.querySelector('[data-campo-de-hora="roma"] [data-campo-de-hora-texto]')?.textContent.trim() ?? null,
     }
@@ -148,7 +148,8 @@ try {
   await clic('[data-mi-vuelo-lado="vuelta"]')
   await a.esp(500)
   m = await medidas()
-  debe(m.resumenes.length === 1 && /^Ida · .*14:25$/.test(m.resumenes[0]), '3a', `la pestaña de la ida dice su resumen «✓ Ida · día · 14:25» (${JSON.stringify(m.resumenes)})`)
+  // antes → ahora → decisión de Eric (10S9, 1-nov): antes la pestaña decía «Ida · día · 14:25»; ahora dice siempre «Ida» (sin día ni hora) con su ✓.
+  debe(m.resumenes.length === 1 && m.resumenes[0] === 'Ida', '3a', `la pestaña de la ida dice «Ida» con su ✓, sin día ni hora (${JSON.stringify(m.resumenes)})`)
   const hojaVuelta = (await hoja()) ?? ''
   // (10S3) Antes: «Día de salida» → ahora «Día de vuelta» (Vuelo Reservas 03) → decisión de Eric (10S3, 30-oct). «Hora de salida» sigue en la rueda.
   // (10S6, 31-oct) antes «Hora de salida» (cabecera de la rueda dentro de la hoja) → ahora la casilla dice «Sale a las» (la rueda tiene su propia hoja) → decisión de Eric.
@@ -235,7 +236,7 @@ try {
   await clic('[data-mi-vuelo-lado="vuelta"]')
   await a.esp(400)
   m = await medidas()
-  debe(m.resumenes.length === 1 && /09:\d\d$/.test(m.resumenes[0]), '3a', `el resumen de la ida en su pestaña (${JSON.stringify(m.resumenes)})`)
+  debe(m.resumenes.length === 1 && m.resumenes[0] === 'Ida', '3a', `la ida en su pestaña, solo «Ida» con ✓ (${JSON.stringify(m.resumenes)})`)
   await a.captura(foto('_02_invitado'))
   await cerrarHoja()
 } catch (e) {

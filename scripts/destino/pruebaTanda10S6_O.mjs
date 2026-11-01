@@ -30,15 +30,17 @@ console.log('1. El código')
 {
   const hoja = sinComentarios(leerArchivo('src/components/ui/HojaDeHora.tsx'))
   debe(/createPortal/.test(hoja) && /items-end/.test(hoja) && /data-hoja-de-hora-guardar/.test(hoja) && /data-hoja-de-hora-quitar/.test(hoja), 'o1', 'HojaDeHora sube desde abajo, en un portal, con ✓ y papelera')
-  debe(/onClick=\{guardar\} data-hoja-de-hora-fondo/.test(hoja), 'o1', 'tocar el fondo GUARDA (no cierra sin más)')
+  // antes → ahora → decisión de Eric (10S9, 1-nov): antes `onClick={guardar}`; ahora `guardar(false)` (el ✓ es `guardar(true)` y guarda aunque no se mueva la rueda). Tocar el fondo sigue guardando.
+  debe(/onClick=\{\(\) => guardar\(false\)\} data-hoja-de-hora-fondo/.test(hoja) && /onClick=\{\(\) => guardar\(true\)\} aria-label="Guardar la hora"/.test(hoja), 'o1', 'tocar el fondo GUARDA (no cierra sin más) y el ✓ guarda siempre')
   debe(!/Toca fuera para cerrar/.test(hoja) && !/>\s*Quitar la hora\s*</.test(hoja), 'o1', 'sin las frases viejas «Toca fuera para cerrar» ni «Quitar la hora» escritas')
   const vuelo = sinComentarios(leerArchivo('src/components/route/reservas/HojaDelVuelo.tsx'))
   debe(/<CampoDeHora/.test(vuelo) && !/<RuedaDeHora/.test(vuelo) && !/Toca fuera para cerrar|data-mi-vuelo-otra-hora-quitar/.test(vuelo), 'o1', 'la hoja del vuelo usa CampoDeHora y ya no pinta su rueda ni las frases viejas')
   // Lo demás, tal como estaba (decisión de Eric: solo el vuelo por ahora).
   const add = sinComentarios(leerArchivo('src/components/route/reservas/AddReservationSheet.tsx'))
-  debe(/<TimeListWheel/.test(add) && /<TimeField/.test(add) && !/CampoDeHora|HojaDeHora/.test(add), 'o1', 'las entradas, el Free Tour y las excursiones NO se han tocado (siguen con su rueda)')
+  // antes → ahora → decisión de Eric (10S9, 1-nov): antes TimeField seguía con PickerSheet; ahora todas las ruedas son iguales y TimeField usa HojaDeHora. La rueda de elegir día y hora de la reserva (TimeListWheel) sigue dentro de su hoja.
+  debe(/<TimeListWheel/.test(add) && /<TimeField/.test(add), 'o1', 'la hoja de reservar (día y hora) sigue con su rueda y su TimeField')
   const tf = sinComentarios(leerArchivo('src/components/ui/TimeField.tsx'))
-  debe(/PickerSheet/.test(tf) && !/HojaDeHora/.test(tf), 'o1', 'TimeField sigue como estaba')
+  debe(/<HojaDeHora/.test(tf) && !/<PickerSheet|WheelSheet/.test(tf), 'o1', 'TimeField abre la misma HojaDeHora que el vuelo (10S9)')
 }
 
 console.log('2. La hoja del vuelo en la app')

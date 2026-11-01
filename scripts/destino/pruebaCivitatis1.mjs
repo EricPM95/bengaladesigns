@@ -310,7 +310,7 @@ console.log('4. El servicio: la caché, la API caída y lo que se monta')
   debe(nada.ok === false && nada.motivo === 'no_disponible', 'api_caida', 'si la API cae y no hay nada guardado, el fallo claro')
   void fallo
   const sCaida = servidorFalso({ caida: true })
-  const svcCaido = crearServicioCivitatis({ activa: true, cliente: nuevoCliente(sCaida), cache: crearCache() })
+  const svcCaido = crearServicioCivitatis({ activa: true, datosApiMandan: true, cliente: nuevoCliente(sCaida), cache: crearCache() })
   const entradasCaida = await svcCaido.enriquecerEntradas('Roma', entradasHoy)
   debe(entradasCaida.entradasPorSitio.Coliseo === entradasHoy.Coliseo && entradasCaida.enriquecidos === 0, 'api_caida', 'con la API caída, las entradas son las de hoy (nuestros datos y nuestros enlaces)')
   debe((await svcCaido.enriquecerExcursiones('Roma', opcionesHoy)).opciones[0].civitatis === undefined, 'api_caida', 'con la API caída, las excursiones se quedan con nuestros datos (sin ficha de la API: «Precio orientativo»)')
@@ -356,7 +356,8 @@ console.log('4. El servicio: la caché, la API caída y lo que se monta')
 
   // (c) Las excursiones
   const sExc = servidorFalso()
-  const svcX = crearServicioCivitatis({ activa: true, cliente: nuevoCliente(sExc), cache: crearCache() })
+  // (10S9) antes → ahora → decisión de Eric (10S9, 1-nov): se enciende datosApiMandan para seguir probando que una actividad que no responde deja nuestros datos; con el interruptor apagado (lo normal) ni se pregunta (lo cubre pruebaTanda10O_api).
+  const svcX = crearServicioCivitatis({ activa: true, datosApiMandan: true, cliente: nuevoCliente(sExc), cache: crearCache() })
   const opciones = [{ id: 'florencia_pisa', name: 'Florencia y Pisa', price_from_eur: 85, rating: 4.9, review_count: 1000, meeting_point: 'Termini' }, { id: 'pompeya_sorrento', name: 'Pompeya', price_from_eur: 65, rating: 4.8, review_count: 2340 }]
   // (Florencia y Pisa tiene actividad 142547 en el sandbox, pero no está guardada: la API la da como «no encontrada» y se queda provisional.)
   const x = await svcX.enriquecerExcursiones('Roma', opciones)

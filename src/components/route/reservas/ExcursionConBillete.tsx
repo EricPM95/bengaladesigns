@@ -1,3 +1,4 @@
+import { CampoDeHora } from '../../ui/HojaDeHora'
 import { useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { leerExcursion, type DatosExcursionLeida } from '../../../lib/billeteLeer'
 import { excursionConCodigo, type BilleteDeExcursion, type CodigoDelBillete } from '../../../store/useBilleteStore'
@@ -137,7 +138,7 @@ export function TarjetaExcursionDesign({
         <CajaDia rotulo={diaRotulo} grande={diaGrande} />
         <CajaHora hora={hora} />
       </div>
-      <SeccionDatos datos="excursion" onLapiz={onLapizDatos} etiquetaLapiz="Cambiar los datos de la excursión" sinLineaAbajo={!hayFilas && !conCodigo}>
+      <SeccionDatos datos="excursion" onLapiz={conCodigo || localizador ? onLapizDatos : undefined} etiquetaLapiz="Cambiar los datos de la excursión" sinLineaAbajo={!hayFilas && !conCodigo}>
         {gente.length > 0 && <ParaQuienDesign gente={gente} />}
         {precio && (
           <FilaIcono icono="euro" datos="precio">
@@ -264,7 +265,10 @@ export function HojaDatosDeLaExcursion({ billete, puntoActual, horaActual, leida
         </p>
       )}
       <div className="mt-5 flex flex-col gap-3.5" data-excursion-campos>
-        {campo('hora', 'Hora de recogida', hora, setHora, '07:30', { tipo: 'time' })}
+        <div className="flex flex-col gap-[7px]" data-excursion-hora>
+          <span style={ETIQUETA}>Hora de recogida</span>
+          <CampoDeHora valor={hora} onChange={(h) => h && setHora(h)} titulo="Hora de recogida" ejemplo="07:30" quitable={false} datos="excursion-hora" className="flex h-[54px] w-full min-w-0 items-center justify-between rounded-[15px] border bg-[#FFFDF8] px-3.5 text-left" />
+        </div>
         {campo('punto', 'Punto de encuentro', punto, setPunto, 'Piazza della Repubblica, Roma', { max: 160 })}
         <div className="flex gap-2.5">
           <div className="min-w-0 flex-1">{campo('localizador', 'Localizador', localizador, setLocalizador, 'ABC123', { mayus: true, max: 30 })}</div>

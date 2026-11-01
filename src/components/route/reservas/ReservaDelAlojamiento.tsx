@@ -18,6 +18,7 @@ import {
 import { HojaAbajo } from './HojaAbajo'
 import { BotonAnadirDocumento } from './BotonesDeReserva'
 import { Trazo as TrazoDesign } from './PiezasDesignReservas'
+import { CampoDeHora } from '../../ui/HojaDeHora'
 
 /**
  * LA RESERVA DEL ALOJAMIENTO (10S7 §5; `Piezas/Entradas Billete` A1 y A2). Va dentro de la caja del alojamiento de RESERVAS (AlojamientoReservas):
@@ -218,6 +219,12 @@ export function HojaReservaAlojamiento({
       />
     </label>
   )
+  // (10S9) Las horas de entrada y de salida, con la rueda de siempre (`CampoDeHora`: desde abajo, ✓ y papelera, tocar fuera guarda). Vacías, el ejemplo en gris («15:00», «11:00»); no se pone sola ninguna hora.
+  const hora = (clave: 'horaEntrada' | 'horaSalida', etiqueta: string, ejemplo: string, titulo: string) => (
+    <div className="min-w-0 flex-1" data-reserva-aloj-hora={clave}>
+      <CampoDeHora valor={c[clave]} onChange={(h) => pon({ [clave]: h ?? '' } as Partial<Campos>)} titulo={titulo} etiqueta={etiqueta} ejemplo={ejemplo} datos={`aloj-${clave}`} className="flex h-[54px] w-full min-w-0 items-center justify-between rounded-[15px] border bg-[#FFFDF8] px-3.5 text-left" />
+    </div>
+  )
   return (
     <HojaAbajo
       titleId="hoja-reserva-alojamiento"
@@ -281,8 +288,8 @@ export function HojaReservaAlojamiento({
         {modo === 'datos' ? (
           <>
             <div className="flex gap-2">
-              {cuadro('horaEntrada', `Entrada${diaCortoDe(c.entrada)}`, '15:00', { tipo: 'time' })}
-              {cuadro('horaSalida', `Salida${diaCortoDe(c.salida)}`, '11:00', { tipo: 'time' })}
+              {hora('horaEntrada', `Entrada${diaCortoDe(c.entrada)}`, '15:00', 'Hora de entrada')}
+              {hora('horaSalida', `Salida${diaCortoDe(c.salida)}`, '11:00', 'Hora de salida')}
             </div>
             <div className="flex gap-2">
               {cuadro('telefono', 'Teléfono', '+39 06 1234 5678', { max: 30 })}
@@ -297,8 +304,8 @@ export function HojaReservaAlojamiento({
             </div>
             <div className="flex gap-2">
               {cuadro('noches', 'Noches', '3', { max: 3 })}
-              {cuadro('horaEntrada', 'Desde las', '15:00', { tipo: 'time' })}
-              {cuadro('horaSalida', 'Hasta las', '11:00', { tipo: 'time' })}
+              {hora('horaEntrada', 'Desde las', '15:00', 'Hora de entrada')}
+              {hora('horaSalida', 'Hasta las', '11:00', 'Hora de salida')}
             </div>
             {cuadro('telefono', 'Teléfono', '+39 06 1234 5678', { ancho: true, max: 30 })}
             {cuadro('localizador', 'Localizador', 'HX48K2', { ancho: true, mayus: true, max: 30 })}

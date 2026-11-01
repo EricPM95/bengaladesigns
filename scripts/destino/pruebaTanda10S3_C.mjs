@@ -196,11 +196,11 @@ for (const version of ['gratis', 'pago']) {
       await esp(500)
     }
     // 10S4: antes → ahora → decisión de Eric (10S4, 30-oct): antes la tarjeta del vuelo salía siempre abierta; ahora, con ida y vuelta listas, sale plegada y se abre con un toque en su cabecera. Misma comprobación después de abrirla.
-    if (!(await a.evaluar("Boolean(document.querySelector('[data-mitad=\"arrival\"] button'))"))) {
+    if (!(await a.evaluar("Boolean(document.querySelector('[data-mitad=\"arrival\"] [data-cambiar-mitad]'))"))) {
       await clic(a, '[data-llegada-cabecera]')
       await esp(800)
     }
-    await clic(a, '[data-mitad="arrival"] button')
+    await clic(a, '[data-mitad="arrival"] [data-cambiar-mitad]')
     await esp(2000)
     v = await vista(a)
     if (!v) console.log('   (sin hoja al reabrir; en pantalla:', (await a.evaluar('document.body.innerText.slice(0, 300)')).split(String.fromCharCode(10)).join(' | '), ')')

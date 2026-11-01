@@ -70,7 +70,7 @@ const medidas = () =>
       botones: Array.from(d?.querySelectorAll('button') ?? []).map((b) => (b.textContent || '').trim()).filter(Boolean),
       botonEnPie: Boolean(pie && pie.querySelector('[data-mi-vuelo-guardar], [data-guardar-alojamiento]')),
       pestanas: Array.from(d?.querySelectorAll('[role=tab]') ?? []).map((x) => x.textContent.trim()),
-      resumenes: Array.from(d?.querySelectorAll('[data-mi-vuelo-resumen]') ?? []).map((x) => x.textContent.trim()),
+      resumenes: Array.from(d?.querySelectorAll('[data-mi-vuelo-lado][data-mi-vuelo-puesto="1"]') ?? []).map((x) => x.textContent.trim()),
       ruedas: d?.querySelectorAll('[data-rueda-columna]').length ?? 0,
       cuadrados: Array.from(d?.querySelectorAll('[data-personas-cuadradas]') ?? []).map((g) => ({ k: g.getAttribute('data-personas-cuadradas'), n: g.children.length, elegidas: Array.from(g.children).filter((c) => c.getAttribute('data-elegida') === '1').length })),
       ordenDinero: ['¿Para quién', '¿Cuánto ha costado en total?', '¿Quién lo ha pagado?'].map((s) => t.indexOf(s)),
@@ -145,8 +145,14 @@ try {
   await clic('[data-mi-vuelo-lado="vuelta"]')
   await a.esp(400)
   m = await medidas()
-  debe(m.resumenes.length === 1 && /^Ida · .*14:\d\d$/.test(m.resumenes[0]), '7b', `✓ en la pestaña rellena, con su resumen (${JSON.stringify(m.resumenes)})`)
+  // antes → ahora → decisión de Eric (10S9, 1-nov): antes «Ida · día · 14:xx»; ahora la pestaña dice siempre «Ida», con su ✓.
+  debe(m.resumenes.length === 1 && m.resumenes[0] === 'Ida', '7b', `✓ en la pestaña rellena, que dice solo «Ida» (${JSON.stringify(m.resumenes)})`)
   await clic(`[data-mi-vuelo-punto-opcion="${puntos[1]}"]`)
+  // antes → ahora → decisión de Eric (10S9, 1-nov): antes la vuelta se guardaba con la hora de ejemplo (18:05) sin elegirla; ahora la hora hay que elegirla (el ejemplo en gris no cuenta): se elige con el ✓ de la rueda.
+  await clic('[data-campo-de-hora="roma"]')
+  await a.esp(500)
+  await clic('[data-hoja-de-hora-guardar]')
+  await a.esp(500)
   // Dinero: 180 €, para los dos, lo pagó Eric.
   await ev("document.querySelector('[role=dialog] [data-mi-vuelo-extra]')?.scrollIntoView({ block: 'center' }); true")
   await clic('[role=dialog] [data-persona-cuadrada="p-ana"]')
@@ -260,6 +266,8 @@ try {
   debe(Boolean(zonaElegida) && r.zona === zonaElegida, '7c', `la zona se guarda (${r.zona})`)
   await ev("document.querySelector('[data-blk=\"aloj\"]')?.scrollIntoView({ block: 'start' }); true")
   await a.esp(600)
+  // (10S9, 1-nov) antes: la tarjeta del alojamiento seguía abierta tras guardar → ahora: con todo «Listo» el bloque se pliega solo (cabecera compartida) y se abre con un toque → decisión de Eric (10S9, 1-nov). Misma comprobación después de abrirla.
+  if (!(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-alojamiento-caja]'))"))) { await ev("document.querySelector('[data-blk=\"aloj\"] [data-cabecera-bloque]')?.click(); true"); await a.esp(600) }
   const cardAloj = await ev("document.querySelector('[data-blk=\"aloj\"]')?.innerText.replace(/\\s+/g, ' ') ?? ''")
   // antes → ahora → decisión de Eric (10S8, 31-oct): «Tu zona» y «En este alojamiento · Tú y Ana» como etiquetas → la tarjeta de Design: «Zona X · dirección» en su fila y las iniciales «Tú · Ana» (misma información: la zona y quién está).
   debe(/Zona /i.test(cardAloj) && /Tú · Ana|Tú.*Ana/.test(cardAloj) && /Listo/.test(cardAloj), '7c', `la tarjeta (09): la zona «Zona …» y quién está en el alojamiento «Tú · Ana» (${cardAloj.slice(0, 120)})`)

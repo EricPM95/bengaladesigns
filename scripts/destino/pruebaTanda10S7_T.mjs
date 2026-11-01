@@ -204,7 +204,8 @@ async function pasada(version) {
     const textoBloque = () => ev("(document.querySelector('[data-blk=\"aloj\"]')?.innerText || '').replace(/\\s+/g, ' ')")
     const ponCampo = (clave, valor) =>
       ev(`(() => { const e = document.querySelector('[role=dialog] [data-reserva-aloj-campo="${clave}"]'); if (!e) return false; const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(e, ${JSON.stringify(valor)}); e.dispatchEvent(new Event('input', { bubbles: true })); return true })()`)
-    const campo = (clave) => ev(`document.querySelector('[role=dialog] [data-reserva-aloj-campo="${clave}"]')?.value ?? null`)
+    // antes → ahora → decisión de Eric (10S9, 1-nov): las horas de entrada y de salida ya no son un <input type=time> sino la rueda de siempre (CampoDeHora); su valor se lee de la casilla ('' si está en gris).
+    const campo = (clave) => ev(`(() => { const i = document.querySelector('[role=dialog] [data-reserva-aloj-campo="${clave}"]'); if (i) return i.value; const c = document.querySelector('[role=dialog] [data-campo-de-hora="aloj-${clave}"]'); return c ? (c.getAttribute('data-vacia') === '0' ? c.querySelector('[data-campo-de-hora-texto]').textContent.trim() : '') : null })()`)
     const subirArchivo = async () => {
       await ev("document.querySelector('[data-blk=\"aloj\"] [data-reserva-aloj-anadir]')?.click(); true")
       await a.esp(300)
@@ -233,7 +234,8 @@ async function pasada(version) {
         candado: b.querySelector('[data-anadir-doc]')?.getAttribute('data-con-candado') ?? null,
         ayuda: b.querySelector('[data-reserva-aloj-ayuda]')?.textContent.trim() ?? null,
         filas: b.querySelectorAll('[data-reserva-aloj-fila], [data-fila-design="horas"], [data-fila-design="telefono"]').length,
-        cabecera: Array.from(cab?.children ?? []).map((x) => x.textContent.trim()).filter(Boolean),
+        // (10S9, 1-nov) antes: los hijos de la cabecera clara (título y pastilla a la derecha) → ahora: la columna título + estado debajo de la cabecera compartida → decisión de Eric (10S9, 1-nov).
+        cabecera: Array.from(cab?.querySelector('span.flex-col')?.children ?? []).map((x) => x.textContent.trim()).filter(Boolean),
         codigo: Boolean(b.querySelector('[data-billete-codigo-pequeno], [data-billete-ampliar], canvas, img[src^="data:image/svg"]')),
         precio: b.querySelector('[data-alojamiento-precio]')?.textContent ?? null,
         eliminar: b.querySelector('[data-papelera="alojamiento"]') ? 'papelera' : null,

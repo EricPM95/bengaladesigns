@@ -7,7 +7,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useLoSuyo } from '../../../store/useLoSuyo'
 import { nombreDe } from '../../../store/useViajeCompartido'
 import { entreEfectivo, idsConLoSuyo } from '../../../lib/loSuyo'
-import { BloqueShell, CambiarBoton, EstadoBloque, FlechaBloque, IconoBloque, iconoDeMedio, tituloBloqueStyle, INK } from './BloqueReservas'
+import { BloqueShell, CabeceraBloque, CambiarBoton, iconoDeMedio, INK } from './BloqueReservas'
 import { leerImporte } from '../../../lib/dinero'
 import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { fechaLarga } from '../../../lib/fechaLarga'
@@ -530,24 +530,11 @@ export function LlegadaYVuelta({
     <>
       <BloqueShell bloque="llegada">
         {!algoHecho ? (
-          <div onClick={() => abrirHoja(primeraLibre)} className="flex cursor-pointer items-center gap-3.5 p-4" data-llegada-vacia>
-            <IconoBloque nombre={iconoDeMedio(ida.mode)} />
-            <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-              <span style={tituloBloqueStyle}>Llegada y vuelta</span>
-              <EstadoBloque texto={etiqueta} hecho={false} />
-            </span>
-            <FlechaBloque abierto={false} />
-          </div>
+          <CabeceraBloque icono={iconoDeMedio(ida.mode)} titulo="Llegada y vuelta" estado={etiqueta} hecho={false} abierto={false} onClick={() => abrirHoja(primeraLibre)} atributos={{ 'data-llegada-vacia': '' }} className="p-4" />
         ) : (
           <>
-            <div onClick={hecho ? () => setDesplegadoUsuario(!desplegado) : undefined} className={`flex items-center gap-3.5 px-4 pb-3 pt-4 ${hecho ? 'cursor-pointer' : ''}`} data-llegada-cabecera>
-              <IconoBloque nombre={iconoDeMedio(ida.mode)} hecho={hecho} />
-              <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                <span style={tituloBloqueStyle}>Llegada y vuelta</span>
-                <EstadoBloque texto={hecho ? 'Listo' : etiqueta} hecho={hecho} />
-              </span>
-              {hecho && <FlechaBloque abierto={desplegado} />}
-            </div>
+            {/* (10S9 §1) La cabecera compartida, y SIEMPRE se puede cerrar, falte lo que falte (antes, con un vuelo sin poner no se cerraba). */}
+            <CabeceraBloque icono={iconoDeMedio(ida.mode)} titulo="Llegada y vuelta" estado={hecho ? 'Listo' : etiqueta} hecho={hecho} abierto={desplegado} onClick={() => setDesplegadoUsuario(!desplegado)} atributos={{ 'data-llegada-cabecera': '' }} className="px-4 pb-3 pt-4" />
             {desplegado && (
               <>
             <MitadGuardada route={route} leg={ida} ciudad={ciudad} onCambiar={() => abrirHoja('arrival')} onQuitar={() => quitar(ida)} onAnadirTarjeta={pedirArchivo} onCambioDeVuelo={onCambioDeVuelo} />

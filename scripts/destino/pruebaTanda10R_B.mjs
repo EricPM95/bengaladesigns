@@ -100,7 +100,7 @@ async function pasada(version) {
     debe(e1.hay && e1.crema, 'E1', 'la excursión reservada es la tarjeta crema de las entradas')
     debe(e1.chip === 'Excursión' && /Excursión a Pompeya y Sorrento/.test(e1.nombre ?? '') && e1.nombreFuente === '28px', 'E1 nombre', `«Excursión» pequeño y el nombre grande a 28 px (${e1.chip} · ${e1.nombreFuente})`)
     debe(/07:30/.test(e1.hora ?? '') && /\d/.test(e1.dia ?? ''), 'E1 cajas', `el día y la hora en sus dos cuadros (${(e1.dia ?? '').trim()} · ${(e1.hora ?? '').trim()})`)
-    debe(e1.lapices.length === 2 && e1.lapices.every(([w, h]) => w === 44 && h === 44), 'E1 lapices', `dos lápices de 44 × 44 (${JSON.stringify(e1.lapices)})`)
+    debe(e1.lapices.length === 1 && e1.lapices.every(([w, h]) => w === 44 && h === 44), 'E1 lapices', `un solo lápiz (10S9, 1-nov: antes dos → ahora uno sin documento → decisión de Eric) de 44 × 44 (${JSON.stringify(e1.lapices)})`)
     debe(e1.papelera.length === 1 && e1.papelera[0][0] === 44 && e1.papelera[0][1] === 44, 'E1 papelera', `la papelera roja de 44 × 44 (${JSON.stringify(e1.papelera)})`)
     debe(/98,26 €|98.26 €|€ ?98/.test(e1.texto), 'E1 precio', `el precio en su fila (${e1.texto.slice(0, 140)})`)
     debe(/Piazza della Repubblica/.test(e1.texto), 'E1 punto', 'el punto de encuentro en su fila')
@@ -139,12 +139,21 @@ async function pasada(version) {
     /* — «Datos de la excursión» — */
     await ev(`document.querySelector(${JSON.stringify(fila + ' [data-lapiz="excursion-datos"]')})?.click(); true`)
     await a.esp(1500)
-    const d = await ev(`(() => ({ titulo: document.querySelector('[data-hoja-titulo]')?.textContent ?? null, boton: document.querySelector('[data-excursion-guardar]')?.textContent.trim() ?? null, loc: document.querySelector('[data-excursion-campo="localizador"]')?.value, per: document.querySelector('[data-excursion-campo="personas"]')?.value, punto: document.querySelector('[data-excursion-campo="punto"]')?.value, hora: document.querySelector('[data-excursion-campo="hora"]')?.value }))()`)
+    const d = await ev(`(() => ({ titulo: document.querySelector('[data-hoja-titulo]')?.textContent ?? null, boton: document.querySelector('[data-excursion-guardar]')?.textContent.trim() ?? null, loc: document.querySelector('[data-excursion-campo="localizador"]')?.value, per: document.querySelector('[data-excursion-campo="personas"]')?.value, punto: document.querySelector('[data-excursion-campo="punto"]')?.value, hora: document.querySelector('[data-campo-de-hora="excursion-hora"] [data-campo-de-hora-texto]')?.textContent.trim() }))()`)
     debe(d.titulo === 'Datos de la excursión' && d.boton === 'Guardar los datos', 'Datos', `«Datos de la excursión» con [Guardar los datos] (${d.titulo} · ${d.boton})`)
     debe(d.loc === 'CIV48213' && d.per === '2' && d.punto === 'Piazza della Repubblica' && d.hora === '07:30', 'Datos contenido', `con lo guardado (${JSON.stringify(d)})`)
     await a.captura(path.join(SALIDA, `10r_reservas_excursion_datos_${version}_375.jpg`)).catch(() => {})
-    await ev(`(() => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; const e = document.querySelector('[data-excursion-campo="punto"]'); set.call(e, 'Termini, Roma'); e.dispatchEvent(new Event('input', { bubbles: true })); const h = document.querySelector('[data-excursion-campo="hora"]'); set.call(h, '08:00'); h.dispatchEvent(new Event('input', { bubbles: true })); return true })()`)
-    await a.esp(300)
+    await ev(`(() => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; const e = document.querySelector('[data-excursion-campo="punto"]'); set.call(e, 'Termini, Roma'); e.dispatchEvent(new Event('input', { bubbles: true })); return true })()`)
+    // antes → ahora → decisión de Eric (10S9, 1-nov): antes la hora de recogida era un <input type=time> y se escribía; ahora es la rueda de siempre (CampoDeHora): se abre, se elige 08:00 y se guarda con el ✓.
+    await ev(`document.querySelector('[data-campo-de-hora="excursion-hora"]')?.click(); true`)
+    await a.esp(700)
+    for (const [c, t] of [['Horas', '08'], ['Minutos', '00']]) {
+      await ev(`(() => { Array.from(document.querySelectorAll('[data-hoja-de-hora] [data-rueda-columna="${c}"] [role="option"]')).find((x) => x.textContent.trim() === '${t}')?.click(); return true })()`)
+      await a.esp(700)
+    }
+    await a.esp(500)
+    await ev("document.querySelector('[data-hoja-de-hora-guardar]')?.click(); true")
+    await a.esp(500)
     await ev("document.querySelector('[data-excursion-guardar]')?.click(); true")
     await a.esp(1500)
     const tras = await ev(`(() => { const f = document.querySelector(${JSON.stringify(fila)}); return { texto: f.innerText.replace(/\\s+/g, ' '), hora: f.querySelector('[data-caja-hora]')?.textContent } })()`)

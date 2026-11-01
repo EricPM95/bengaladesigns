@@ -6,7 +6,8 @@ import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
 import { elDia, fechaCorta, diaTitulo } from '../../../lib/nombreDeDia'
 import { aplicarAvisoFueraDeDia, reservasFueraDeSuDia, type ReservaFueraDeDia } from '../../../lib/reservaFueraDeDia'
 import { TarjetaPorReservar, ROTULO } from './TarjetasEntradas'
-import { BloqueClaro, CabeceraClara, PildoraEstado } from './PiezasDesignReservas'
+import { BloqueClaro } from './PiezasDesignReservas'
+import { CabeceraBloque, ICONOS } from './BloqueReservas'
 import { useMisReservas } from '../../../store/useMisReservas'
 import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { FueraDeRutaFila } from './FueraDeRutaFila'
@@ -95,7 +96,7 @@ export function enTuRuta(route: Route, day: { dayNumber: number; id: string } | 
  * está «+ Añadir parada» de DÍAS); si no hay más, la línea no sale. [Reservar entrada] y [Reservar Free Tour] abren la ficha del sitio en su pestaña «Entradas», no la tienda; «¿Ya la tienes? Añádela» abre la hoja de la hora.
  * Una reservada, una línea verde con «Cambiar».
  */
-export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: Route; info: DestinationExcursions; abierto: boolean; onToggle: () => void }) {
+export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info: DestinationExcursions; abierto: boolean; onToggle?: () => void }) {
   useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   // Tanda 10N §8: quien mira el viaje de otra persona ve las entradas como su propia lista: las que ha comprado él, las que el dueño compró también para él, y de las demás, el día y la hora del dueño.
   const grupo = useEntradasDelGrupo()
@@ -126,7 +127,12 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
     setTarget({ kind: 'entrada', refId: item.isFreeTour ? 'Free Tour' : item.name, name: item.name, placeNames: item.placeNames, currentDayId: item.day?.id ?? null, igualQue: { reserva, quien: compradorDe(reserva.id), modo: pedido.accion === 'misma-hora' ? 'comprar' : 'tengo' } })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pedido])
+  // (10S9 §1) Abierto al entrar si falta alguna entrada por reservar, cerrado si está «Listo» (o no hay ninguna en la ruta); el viajero lo cierra y abre SIEMPRE.
+  const faltaAlguna = enRuta.length > 0 && enRuta.some((item) => !item.reservation)
+  const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
+  useEffect(() => setDesplegadoUsuario(null), [faltaAlguna, abierto])
   if (enRuta.length === 0 && masEntradas.length === 0) return null
+  const desplegado = desplegadoUsuario ?? (faltaAlguna || abierto)
   const noCuadran = grupo.esInvitado ? entradasQueNoCuadran(route, grupo.mias, info.nombresCortos) : []
   const reservadas = enRuta.filter((item) => item.reservation).length
   const hecho = enRuta.length > 0 && reservadas === enRuta.length
@@ -225,19 +231,20 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
   return (
     <>
       <BloqueClaro bloque="entradas">
-        {/* (10S8 §4) La cabecera clara de Design (E1): icono, título en una línea y «1 de 8 reservadas» en su píldora; sin línea de texto debajo. */}
-        <CabeceraClara
-          icono='entrada'
-          titulo='Entradas y Free Tour'
-          datos='entradas'
-          onClick={onToggle}
-          estado={
-            <span data-cabecera-entradas>
-              {enRuta.length > 0 ? <PildoraEstado tipo={hecho ? 'listo' : 'cuenta'}>{`${reservadas} de ${enRuta.length} reservadas`}</PildoraEstado> : <PildoraEstado tipo='cuenta'>Ninguna en tu ruta</PildoraEstado>}
-            </span>
-          }
-        />
-        {abierto && (
+        {/* (10S9 §1) La cabecera compartida de los tres bloques: icono, título, estado debajo («0 de 9 reservadas», «Listo») y flecha. */}
+        <span data-cabecera-entradas className="block">
+          <CabeceraBloque
+            icono={ICONOS.ticket}
+            titulo="Entradas y Free Tour"
+            datos="entradas"
+            onClick={() => setDesplegadoUsuario(!desplegado)}
+            estado={enRuta.length > 0 ? (hecho ? 'Listo' : `${reservadas} de ${enRuta.length} reservadas`) : 'Ninguna en tu ruta'}
+            hecho={enRuta.length === 0 || hecho}
+            abierto={desplegado}
+            className="px-0.5"
+          />
+        </span>
+        {desplegado && (
           <>
             {conReserva.length > 0 && (
               <>

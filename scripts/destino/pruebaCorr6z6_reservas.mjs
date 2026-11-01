@@ -208,7 +208,8 @@ for (const [clave, route] of Object.entries(rutas)) {
   debe(usan.length === 0, '1c sin %', `TripReadinessBadge sale en ${usan.join(', ')}`)
   for (const f of ['LlegadaYVuelta', 'AlojamientoReservas', 'EntradasYFreeTour']) {
     const s = leer(`src/components/route/reservas/${f}.tsx`)
-    debe(/<EstadoBloque/.test(s) && !/PastillaEstado/.test(s), '1d falta', `${f}.tsx no usa el componente común EstadoBloque (o queda PastillaEstado)`)
+    // (10S9, 1-nov) antes: cada bloque usaba <EstadoBloque> directamente → ahora: <CabeceraBloque> (que lleva el mismo EstadoBloque debajo del título) → decisión de Eric (10S9, 1-nov).
+    debe(/<(EstadoBloque|CabeceraBloque)/.test(s) && !/PastillaEstado/.test(s), '1d falta', `${f}.tsx no usa el componente común EstadoBloque (o queda PastillaEstado)`)
   }
   debe(!/PastillaEstado/.test(leer('src/components/route/reservas/BloqueReservas.tsx')), '1d falta', 'BloqueReservas.tsx conserva PastillaEstado')
   debe((leer('src/components/route/reservas/BloqueReservas.tsx').match(/data-estado=/g) ?? []).length === 1, '1d falta', 'el estilo del «Falta» está en más de un sitio')

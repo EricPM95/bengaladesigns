@@ -30,11 +30,9 @@ import { isFreeDay } from './freeDays'
 import { pagoActivo } from './pago'
 import { conUltimoCambio } from './accionDeCambio'
 import { fechaDelDia } from './nombreDeDia'
-import { construirResumen } from './resumenDeVuelo'
 import { useRouteStore } from '../store/useRouteStore'
 import { withUndo } from '../store/useAddFlowStore'
 import { useReorganizarStore } from '../store/useReorganizarStore'
-import { useResumenVueloStore } from '../store/useResumenVueloStore'
 
 export interface DiaAdaptado {
   dayId: string
@@ -388,15 +386,11 @@ export async function alCambiarElVuelo(cambio: CambioDeVuelo): Promise<void> {
   if (mia !== ultimaPeticion || !propuesta) return
   // 1. Lo que solo informa: siempre, sin tocar ninguna parada.
   useRouteStore.getState().ponerPlanes(propuesta.planes)
-  const despues = useRouteStore.getState().route
-  const quitado = cambios.some((otro) => otro.que === 'quitar')
-  const soloPuntoOZona = cambios.every((otro) => otro.que === 'punto' || otro.que === 'zona')
+  // (10S9, apartado 3) La hoja «Hemos ajustado tu ruta» (`HojaResumenVuelo`) ya NO sale desde aquí: decía «Hemos puesto…» y sin pase no se mueve nada, y con pase salía a la vez que la pregunta.
+  // Lo que solo informa (plan de la llegada y de la vuelta) se queda callado en DÍAS. Con pase, tras [Sí, adaptarlos] sale solo la franja con [Deshacer] (`ponerDiasAdaptados`), y solo si algo se ha movido.
   // La zona del alojamiento no es un vuelo: solo repone los planes (sus días los ofrece el botón «Reorganizar», que mira todos).
   const soloZona = cambios.every((otro) => otro.que === 'zona')
   const dias = soloZona ? [] : propuesta.dias
-  if (despues && !quitado && !(soloPuntoOZona && dias.length === 0)) {
-    useResumenVueloStore.getState().mostrar(construirResumen({ route: despues, cambios, mantenidos: [] }))
-  }
   // 2. Lo que mueve paradas: solo con pase y preguntando.
   if (pagoActivo() && dias.length > 0) useReorganizarStore.getState().proponerVuelos({ ...propuesta, dias })
   else useReorganizarStore.getState().cerrarVuelos()

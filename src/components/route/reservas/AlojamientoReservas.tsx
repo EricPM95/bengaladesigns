@@ -1,13 +1,13 @@
 import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { estanciasDelViaje, precioDeAlojamiento, zonaDeAlojamientoElegida } from '../../../lib/tuAlojamiento'
-import { ICONOS } from './BloqueReservas'
-import { BloqueClaro, CabeceraClara, CajaDia, CajaNoches, FilaIcono, ParaQuienDesign, PildoraEstado, SeccionDatos, TarjetaCrema } from './PiezasDesignReservas'
+import { CabeceraBloque, ICONOS } from './BloqueReservas'
+import { BloqueClaro, CajaDia, CajaNoches, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema } from './PiezasDesignReservas'
 import { LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { fechaCorta } from '../../../lib/nombreDeDia'
 import { Icono } from '../../ui/Icono'
@@ -65,7 +65,6 @@ export function AlojamientoReservas({
   info,
   pago,
   abierto,
-  onToggle,
 }: {
   route: Route
   info: DestinationExcursions
@@ -95,12 +94,17 @@ export function AlojamientoReservas({
 
   // Con el hotel puesto pero sin la zona (de pago) la línea sigue en rosa: lo que falta es la zona.
   const resumenVerde = pago ? zonaHecha : true
-  /** (10S4 §2) Desplegado: mientras falta algo, siempre; con todo listo, solo si el viajero lo abre. */
-  const desplegado = !resumenVerde || abierto
+  const hayAlgo = Boolean(hotel) || zonaHecha
+  /** (10S9 §1) Falta algo = no hay alojamiento puesto o falta la zona (de pago). */
+  const faltaAlgo = !hayAlgo || !resumenVerde
+  /** (10S9 §1) Al entrar: abierto si falta algo, cerrado si está «Listo». El viajero lo puede cerrar SIEMPRE (y abrir) con la cabecera; su gesto manda hasta que cambie lo que falta o el panel pida abrirlo. */
+  const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
+  useEffect(() => setDesplegadoUsuario(null), [faltaAlgo, abierto])
+  const desplegado = desplegadoUsuario ?? (faltaAlgo || abierto)
+  const alternarBloque = () => setDesplegadoUsuario(!desplegado)
   const nombreHotel = hotel?.name && !(pago && elegida && hotel.name === elegida.nombre) ? hotel.name : null
   const rango = route.answers.dateRange
 
-  const hayAlgo = Boolean(hotel) || zonaHecha
   // (10S7 §5) Con la reserva del hotel (A2) las filas ya dicen la dirección, las fechas y las noches: no se repiten las de la ruta.
   const conReserva = reservaConDatos(hotel?.reserva)
   // «En este alojamiento · Tú y Viajes»: a quién cubre (solo el administrador, en un viaje con más gente).
@@ -130,7 +134,7 @@ export function AlojamientoReservas({
           <>
             {/* (10S8 §5, A1/A2) La cabecera clara: icono, título y «Listo» (en cuanto el hotel está puesto; el documento es un extra y del pase) o «Falta», SIN línea de texto debajo. Con todo listo se pliega y se abre al tocarla; mientras falta algo, abierto. */}
             <div data-aloj-cabecera>
-              <CabeceraClara icono="cama" titulo="Alojamiento" datos="alojamiento" onClick={resumenVerde ? onToggle : undefined} estado={<PildoraEstado tipo={resumenVerde ? 'listo' : 'falta'}>{resumenVerde ? 'Listo' : 'Falta la zona'}</PildoraEstado>} />
+              <CabeceraBloque icono={ICONOS.hotel} titulo="Alojamiento" datos="alojamiento" onClick={alternarBloque} estado={resumenVerde ? 'Listo' : 'Falta la zona'} hecho={resumenVerde} abierto={desplegado} className="px-0.5" />
             </div>
             {/* La línea del pase (sin pase): con el bloque cerrado, debajo de la cabecera; abierto, dentro y debajo (al final). */}
             {!pago && !desplegado && <LineaDelPase clave="alojamiento" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
@@ -165,7 +169,7 @@ export function AlojamientoReservas({
                               )}
                             </div>
                           )}
-                          <SeccionDatos datos="aloj" onLapiz={esAdmin && hotel ? abrirDatos : undefined} etiquetaLapiz="Cambiar los datos de la reserva" sinLineaAbajo={!hayFilas}>
+                          <SeccionDatos datos="aloj" onLapiz={esAdmin && hotel && (reserva || localizador) ? abrirDatos : undefined} etiquetaLapiz="Cambiar los datos de la reserva" sinLineaAbajo={!hayFilas}>
                             {gestionaAdmin && quienes.length > 0 && (
                               <span data-en-este-alojamiento>
                                 <ParaQuienDesign gente={quienes} />
@@ -215,8 +219,8 @@ export function AlojamientoReservas({
           </>
         ) : (
           <>
-            <CabeceraClara icono="cama" titulo="Alojamiento" datos="alojamiento" onClick={onToggle} estado={<PildoraEstado tipo="falta">Falta</PildoraEstado>} />
-            {abierto && (
+            <CabeceraBloque icono={ICONOS.hotel} titulo="Alojamiento" datos="alojamiento" onClick={alternarBloque} estado="Falta" hecho={false} abierto={desplegado} className="px-0.5" />
+            {desplegado && (
               <div className="flex flex-col gap-3.5">
                 <div className="flex flex-col gap-2.5">
                   <span className="text-[14px] font-medium">¿Ya tienes alojamiento?</span>
