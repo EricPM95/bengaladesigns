@@ -1,13 +1,13 @@
-# Estado de la tanda 10s10
+# Estado de la tanda 10s11
 
-**Última actualización: 1/11/26, 20:07**
+**Última actualización: 3/11/26, 18:45**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-Tanda 10S10 terminada y subida (ea836c03)
+Tres agentes: A noche_d5, B pantallas 6y5, C dia de vuelta; yo hice la Cupula a solo por dentro
 
 ## Qué falta
-Nada: solo cierre de procesos
+Esperar agentes, pruebaTanda10S11, informe, REPASO, push, reiniciar API
 
 ## Procesos abiertos ahora mismo
 - node: 3
