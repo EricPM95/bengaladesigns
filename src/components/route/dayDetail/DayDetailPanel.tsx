@@ -59,12 +59,11 @@ import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { ArrivalReturnBar } from './ArrivalReturnBar'
 import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
 import { usePagoActivo, pedirPago } from '../../../lib/pago'
-import { Candado } from '../../pase/Candado'
 import { ArrivalReturnSheet } from './ArrivalReturnSheet'
 import { BilleteDeVuelo } from './BilleteDeVuelo'
 import { TarjetaLlegadaDias } from './TarjetaLlegadaDias'
 import { TarjetaTuUltimoDia } from './TarjetaTuUltimoDia'
-import { textosDelUltimoDia } from '../../../lib/ultimoDia'
+import { datosDelDiaDeVuelta, textosDelDiaDeVuelta } from '../../../lib/diaDeVuelta'
 import { TarjetaHoyVuelves } from './TarjetaHoyVuelves'
 import { tarjetaHoyVuelvesDelDia } from '../../../lib/planLlegadaVuelta'
 import { useExploreAperturaStore, type AperturaExplorar } from '../../../store/useExploreAperturaStore'
@@ -412,9 +411,7 @@ export function DayDetailPanel({
   const billeteLlegada = route ? billeteDe({ route, kind: 'llegada', mode: modes.arrival, point: arrivalChosen }) : null
   const billeteVuelta = route ? billeteDe({ route, kind: 'vuelta', mode: modes.departure, point: departureChosen }) : null
   // La tarjeta del día de vuelta sin hora (Tanda 10B; antes «Tu último día también cuenta»): con el pase y sin él, en el día de vuelta mientras el viajero no ha puesto la hora de salida. Con la hora puesta ya no sale.
-  const tarjetaUltimoDia = Boolean(route) && day.isReturnLeg === true && !departureTime
-  // Cómo vuelve: el medio que eligió (null si no eligió ninguno: «tu vuelo o tu tren»).
-  const medioDeVuelta = route && (route.returnTransportOptionId || route.transportContext.transport_option?.id) ? modes.departure : null
+  // (10S11 §4) antes: solo sin hora de salida, y «El último día, a la medida de tu vuelo» → ahora: «Hoy vuelves a casa» en el día de vuelta, con y sin hora, con y sin pase (decisión de Eric, 1-nov). Con el pase y el día sin paradas, la del motor (`tarjetaHoyVuelves`) sigue mandando.
   const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalChosen, origin, destino: destinoNombre, time: modes.arrival === 'coche' ? null : arrivalTime, pago, codigo: route?.arrivalCodigo ?? null })
   const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departureChosen, origin, destino: destinoNombre, time: modes.departure === 'coche' ? null : departureTime, pago, codigo: route?.departureCodigo ?? null })
   const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)
@@ -435,6 +432,8 @@ export function DayDetailPanel({
   }
   // La tarjeta «Hoy vuelves a casa» (de pago): la del día de vuelta sin paradas y, con salida de madrugada, la del final del último día de ruta. El motor la deja en `Route.planVuelta` (`tarjeta` y `tarjetaUltimoDia`); HOY la lee con la misma función.
   const tarjetaHoyVuelves = !pago || !route ? null : tarjetaHoyVuelvesDelDia(route, day)
+  const tarjetaUltimoDia = Boolean(route) && day.isReturnLeg === true && !tarjetaHoyVuelves
+  const datosDeVuelta = tarjetaUltimoDia ? datosDelDiaDeVuelta({ modo: modes.departure, hora: modes.departure === 'coche' ? null : departureTime, punto: departureChosen, medio: departureMedio, info: arrivalInfo, zonaId: route?.accommodationZone ?? null }) : null
   /** «+ AÑADIR VUELO» y «Editar»: a Reservas, al bloque «Llegada y vuelta» (de pago), con la mitad que se pide abierta. */
   const goToBooking = (which: 'llegada' | 'vuelta') => {
     setArrivalSheet(null)
@@ -1539,12 +1538,15 @@ export function DayDetailPanel({
           {/* Ruta a mano (Tanda 6y): [Añadir parada] (y [Añadir excursión] en un día en blanco) en lugar de «Añadir lugares». */}
           {dayType === 'manual' && route && isManualRoute(route) && <ManualDayFooter route={route} day={day} />}
           {/* Tanda 10B: la tarjeta del día de vuelta sin hora, con el pase y sin él; con ella, la barra de «+ AÑADIR VUELO» y «Fin del viaje» de abajo no salen (no estorban). */}
-          {tarjetaUltimoDia && (
+          {tarjetaUltimoDia && datosDeVuelta && (
             <TarjetaTuUltimoDia
-              textos={textosDelUltimoDia({ modo: medioDeVuelta, destino: route?.destination ?? day.city, conPase: pago })}
+              textos={textosDelDiaDeVuelta(datosDeVuelta, pago)}
               conPase={pago}
-              onPrincipal={pago ? () => goToBooking('vuelta') : pedirPago}
+              destino={route?.destination ?? day.city}
+              onAnadirVuelo={() => goToBooking('vuelta')}
               onAnadirLugares={() => openAddFlow(day.id)}
+              onExplorar={() => abrirExplorar({ categoria: 'atracciones', origen: null })}
+              onVerPase={pedirPago}
             />
           )}
           {/* Tanda 7: «Hoy vuelves a casa» (de pago): el día de vuelta sin paradas y, con una salida de madrugada, el final del último día de ruta. */}
@@ -1612,14 +1614,14 @@ export function DayDetailPanel({
           )}
 
           {/* La vuelta: el último día, al final del todo, y la despedida en el idioma del destino. */}
-          {isLastDay && route && !tarjetaUltimoDia && (
+          {isLastDay && route && (!tarjetaUltimoDia || Boolean(departureTime)) && (
             <div className="space-y-1.5 pt-6">
               {billeteVuelta ? (
                 <BilleteDeVuelo billete={billeteVuelta} onOpen={() => abrirFichaDeVuelta()} />
               ) : (
                 <ArrivalReturnBar mode={modes.departure} text={returnBarText} onOpen={() => abrirFichaDeVuelta()} onAdd={() => goToBooking('vuelta')} />
               )}
-              {!pago && departureTime && modes.departure !== 'coche' && <Candado datos="dia-ajuste-vuelta" titulo="Tu día de vuelta" texto="Con el {pase}, tu día se ajusta a la hora de tu vuelo." />}
+              {/* (10S11 §4) antes: franja oscura «Tu día de vuelta · Con el Pase Roma…» sin pase → ahora fuera; la línea del pase va en la tarjeta «Hoy vuelves a casa» (decisión de Eric, 1-nov). */}
               <p className="pt-4 text-center font-display text-[19px] italic text-text/60">
                 Fin del viaje.{arrivalInfo.despedida ? ` ${arrivalInfo.despedida}` : ''}
               </p>

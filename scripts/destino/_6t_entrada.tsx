@@ -6,6 +6,7 @@ import { ArrivalReturnSheet } from '../../src/components/route/dayDetail/Arrival
 import { ReservasPanel } from '../../src/components/route/ReservasPanel'
 import { useRouteStore } from '../../src/store/useRouteStore'
 import { fetchDestinationExcursions } from '../../src/lib/destinationExcursions'
+import { legLine, legOf } from '../../src/lib/reservasLegs'
 import { barTextOf, fetchArrivalInfo, medioOf, tripModes } from '../../src/lib/arrivalReturn'
 
-export { createElement, renderToStaticMarkup, ArrivalReturnBar, ArrivalReturnSheet, ReservasPanel, useRouteStore, fetchDestinationExcursions, fetchArrivalInfo, barTextOf, medioOf, tripModes }
+export { legLine, legOf, createElement, renderToStaticMarkup, ArrivalReturnBar, ArrivalReturnSheet, ReservasPanel, useRouteStore, fetchDestinationExcursions, fetchArrivalInfo, barTextOf, medioOf, tripModes }

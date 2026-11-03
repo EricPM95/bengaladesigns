@@ -4540,3 +4540,65 @@ Por tu «Sí, mételas»: la 0071 (aún sin aplicar) borra también `lo_suyo_del
 
 - ✅ Hecho — pruebaTanda10S10 con todo lo anterior más pruebaJutrip; capturas y REPASO_10S10.html con la tabla Ver el informe.  
   *Dónde:* No es de móvil.
+
+
+## 10S11 — Los fallos de antes, la Cúpula y el día de vuelta (2-nov)
+
+**Qué se ha hecho, en palabras sencillas**
+- **`noche_d5`:** el motor estaba mal. En los viajes de 4 y 5 días el día 5 acaba cenando en Testaccio y no tiene noche escrita; el motor elegía la pareja de nocturnas más cercana a la cena, y el Mirador del Janículo estaba más cerca que el Panteón y Piazza Navona. Venía de la Tanda 11 (22-oct), cuando se añadió el Janículo a las nocturnas para el viaje de 2 días con Free Tour; no tenía que ver con la 10R. Ahora el Janículo de noche solo sale si un día lo escribe. Con esto cambian las noches de 1.797 de 6.570 viajes (todos sin Free Tour, solo noches); en la muestra de 60, 28 viajes (la noche del último día). `pruebaTanda6g`: de 486 fallos a 0.
+- **`pruebaFase6y5_pantallas`:** 3 de los 4 fallos eran de la prueba (desde la 10S10 el bloque «Llegada y vuelta» entra cerrado y la prueba no lo veía); puestos al día. El cuarto (P28 en vivo) son dos filas viejas de Supabase: espera tu decisión.
+- **Cúpula de San Pedro:** «solo por dentro».
+- **Día de vuelta:** sin la franja oscura, con la tarjeta «Hoy vuelves a casa» (con hora, sin hora, vuelo muy pronto, tren, autobús, barco y coche).
+
+**Pruebas:** `pruebaTanda10S11` 538 comprobaciones en 0 (A 489, C 45 y la Cúpula), `pruebaTanda6g` 4.529 viajes en 0, `pruebaJutrip` 129 en 0, `pruebaTanda10S10` 255 en 0, `tsc` limpio, muestra de 60 con la huella nueva. `pruebaFase6y5_pantallas`: 239 comprobaciones, 1 fallo (el P28, pendiente de ti). Puestas al día con «antes → ahora → decisión de Eric»: 6y5, 7_vuelta (huella dorada regenerada, 4 de 9 viajes), 10B, 7_reservas, 7_reparto, 6t y 7_ficha. Sin migración.
+
+**Dudas para Eric:** (1) el P28: borrar a mano las dos filas viejas de `place_photo_cache` (te dejo el SQL en el REPASO), aceptar esos nombres en la prueba o hacer una migración; (2) con Ciampino sin zona sale «hasta las 15:15» y no 15:00 (con Fiumicino sí 15:00); (3) con pase, hora y día vacío manda la tarjeta del motor, no la nueva; (4) en HOY no se tocó; (5) el margen de 30 min para tren y autobús y el texto del coche los puso el agente; (6) en 5 y 6 días el día 7 ahora lleva Puente y Castillo en lugar del Panteón.
+
+**Lista de comprobación DE ESTA TANDA** (la misma, con casillas, arriba de `docs/dias/REPASO_10S11.html`):
+
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado tal cual (llegó entero, acaba en «reinicia el api-server»); nota de estado cada 30 minutos Se tocó el motor (apartado 1) y se pasó la muestra de 60 fechas: con el motor de antes sale idéntica; con el arreglo cambian 28 viajes, todos de 4 y 5 días y solo la noche del último día (ver abajo). He guardado la huella nueva. Sin migración.  
+  *Dónde:* No es de móvil.
+
+**1 · noche_d5 (pruebaTanda6g)**
+
+- ✅ Hecho — Por qué en unos 487 viajes la noche del día 5 no lleva «Panteón y Piazza Navona» El MOTOR estaba mal. En los viajes de 4 días (con el día 4 en Roma) y de 5 días (con la excursión el día 4) el día 5 acaba cenando en Testaccio y no tiene noche escrita, así que el motor elige la pareja de nocturnas más cercana a la cena; el Mirador del Janículo está más cerca de Testaccio que el Panteón y Piazza Navona y ganaba. Viene de la Tanda 11 (22-oct): para el viaje de 2 días con Free Tour se añadió el Janículo al diccionario de nocturnas y pasó a ser candidato en cualquier viaje; por eso «viene de atrás» y no tiene que ver con la 10R. Ejemplos sin Free Tour: 4 días desde el 3-ene-2027, el día 5 llevaba el Janículo y ahora Panteón y Piazza Navona; 4 días desde el 10-jun-2027, igual (13-jun); 5 días con excursión desde el 3-ene-2027, el día 5 (7-ene), igual. Arreglo (`shared/routeEngine/listasTrip.js`, `nochesDelDia`): el Janículo de noche solo sale si un día lo escribe; el viaje de 2 días con Free Tour no cambia (lo lleva en sus 365 fechas).  
+  *Dónde:* DÍAS > viaje de 4 días a Roma sin Free Tour (por ejemplo desde el 3-ene-2027, con el día 4 en Roma) > último día: la noche termina en Panteón y Piazza Navona. Igual con y sin pase (es motor).
+- ✅ Hecho — Qué cambia en los viajes (muestra de 60 fechas) Comparados todos los viajes de 1 a 6 días, con y sin Free Tour y con los dos interruptores del día 4: cambian las noches de 1.797 de 6.570 viajes, todos sin Free Tour y solo noches: (a) el día 5 pasa del Janículo a Panteón y Piazza Navona (viajes de 4, 5 y 6 días); (b) en 5 y 6 días el día 5 puede pasar a Puente y Castillo, porque el Panteón ya salió el día 4; (c) en 5 y 6 días el día 7, que llevaba Panteón y Piazza Navona por culpa del fallo, pasa a El Puente y el Castillo de Sant'Angelo, que es lo que pide `noche_d7` y el documento de días; (d) 1 caso suelto en 6 días: el día 5 pasa del Janículo a Trevi y Plaza de España. En la muestra de 60 cambian 28 viajes (14 el día 4, 13 el día 5, 1 los dos), siempre solo la noche. Huella nueva guardada; `pruebaTanda7_vuelta` con su huella de 30-oct regenerada (4 de 9 viajes). `pruebaTanda6g` 0 fallos (antes 486).  
+  *Dónde:* No es de móvil.
+
+**2 · Los 4 fallos de pruebaFase6y5_pantallas**
+
+- ✅ Hecho — Fallos 1 a 3: «sin hora calculada» en Llegada y vuelta (cerrado, abierto con hora y abierto la vuelta) Comprueba que en «Llegada y vuelta» las únicas horas que se ven son las que puso el viajero y ninguna calculada por la app. Fallaba por la PRUEBA, no por la app: desde la 10S10 (decisión tuya del 1-nov) el bloque entra siempre cerrado y el pintado en servidor no despliega nada, así que no veía horas. Puesta al día con «antes → ahora → decisión de Eric (10S10, 1-nov)» sin bajar la fuerza: cerrado → «Listo» y ninguna hora; desplegado → solo 11:15 y 18:05.  
+  *Dónde:* RESERVAS > Llegada y vuelta, con y sin pase.
+- ⚠️ A medias — Fallo 4: «P28 en vivo»: quedan 2 filas de Roma con foto para un nombre ajeno PENDIENTE DE TI. Son dos filas viejas de la tabla `place_photo_cache` de Supabase («Excursión a Nápoles y Pompeya en tren» y «Excursión a la Costa Amalfitana», con una foto equivocada de Marsella y un avión, del 11-oct). Quedaron huérfanas cuando la 10R renombró esas excursiones. La app no las ve (el servidor ya no lee nombres que no son nuestros), pero la prueba exige que no haya filas ajenas con foto. No lo he tocado porque es escribir en el Supabase real y la tanda es sin migraciones. Opciones: (a) borrarlas tú con `delete from place_photo_cache where city='roma' and place_name in ('Excursión a Nápoles y Pompeya en tren','Excursión a la Costa Amalfitana');` (mi recomendación), (b) que la prueba acepte esos nombres antiguos (más débil), (c) una migración de limpieza. Aparte: siguen en esa tabla «Florencia y Pisa» (un manuscrito) y «Florencia en tren» (el avión de Vueling), con nombres que sí son nuestros: esas fotos equivocadas podrían salir en la app salvo que la excursión use ya la foto de Civitatis; no lo he comprobado.  
+  *Dónde:* No es de móvil.
+
+**3 · La tabla de horarios (10S10)**
+
+- ✅ Hecho — La Cúpula de San Pedro pasa a «solo por dentro» `cupula_de_san_pedro: 'solo_dentro'` en `shared/verPor.js`; la tabla del REPASO regenerada. El aviso de la Cúpula ya no dice «puedes verlo por fuera». El resto, como estaba.  
+  *Dónde:* DÍAS > mover la Cúpula de San Pedro al final del día: «A esta hora, posiblemente la Cúpula de San Pedro ya esté cerrada.»
+
+**4 · El día de vuelta**
+
+- ✅ Hecho — Fuera la franja oscura «Tu día de vuelta · Con el Pase Roma…»; en su lugar la tarjeta «Hoy vuelves a casa» Con y sin pase. «Añade tu vuelo de vuelta y ajustamos tu día» ya no sale en el día de vuelta.  
+  *Dónde:* DÍAS > último día (día de vuelta). Sin pase: «Verme sin pase».  *Captura:* `10s11_vuelta_con_hora_gratis_01.jpg`
+- ✅ Hecho — Con la hora del vuelo (18:05): «Tu vuelo sale de Ciampino a las 18:05… hasta las HH:MM»; [+ Añadir lugares] y [Explorar]; línea del pase con candado sin pase Con Ciampino sin zona sale «hasta las 15:15» (no 15:00 como en tu ejemplo): el cálculo es salida − 2 h − trayecto, y para Ciampino el trayecto desde el centro de nuestros datos es de 50 min; con Fiumicino sale 15:00. Redondeado hacia abajo al cuarto de hora. El trayecto es el de su zona de alojamiento si todos los tramos traen un tiempo limpio; si no, el del centro.  
+  *Dónde:* DÍAS > día de vuelta, con vuelo a las 18:05.  *Captura:* `10s11_vuelta_con_hora_completa_01.jpg`
+- ✅ Hecho — Sin la hora del vuelo: «Aún no sabemos…», [Añadir tu vuelo] → RESERVAS › Llegada y vuelta, «Mientras tanto…» y los dos botones Línea del pase sin pase (con candado): «Con el Pase Roma, al poner tu vuelo te preparamos este día…»; con pase (sin candado): «Pon tu vuelo y te preparamos este día…». [Añadir tu vuelo] abre RESERVAS › Llegada y vuelta con la hoja de la vuelta lista.  
+  *Dónde:* DÍAS > día de vuelta sin vuelo.  *Captura:* `10s11_vuelta_sin_hora_gratis_02.jpg`
+- ✅ Hecho — Vuelo muy pronto (no queda tiempo): solo «Hoy vuelves a casa», día de irse con calma, sin [+ Añadir lugares] Con menos de 1 hora libre desde las 9:00. Sin [Explorar] ni línea del pase tampoco.  
+  *Dónde:* DÍAS > día de vuelta con vuelo temprano.  *Captura:* `10s11_vuelta_muy_pronto_gratis_04.jpg`
+- ✅ Hecho — Tren, autobús o barco: «tu tren», «tu autobús», «tu barco» con su estación o puerto; en coche, sin la parte del vuelo El margen de tren y autobús (30 min) y el texto del coche («Hoy es tu día de volver a casa en coche: tú decides a qué hora sales.») los puso el agente: tu prompt solo daba el caso del vuelo. Barco: el margen del medio, o 2 h.  
+  *Dónde:* DÍAS > día de vuelta en tren.  *Captura:* `10s11_vuelta_tren_gratis_05.jpg`
+- ✅ Hecho — [+ Añadir lugares] añade al día de vuelta como siempre (primera del día); [Explorar] abre EXPLORAR  
+  *Dónde:* DÍAS > día de vuelta.
+- ⚠️ A medias — Con pase, con vuelo y el día vacío: la tarjeta; y lo mismo en HOY ese día Con pase y con hora de vuelo, si el día va sin paradas, sigue mandando la tarjeta del motor («Desde tu zona…»); la nueva sale solo cuando el motor no da tarjeta (con pase sin hora, o sin pase). Si quieres una sola tarjeta siempre, hay que quitar la del motor en DÍAS. En HOY no se ha tocado nada: ya enseña «Hoy vuelves a casa» con pase (tarjeta del motor) y sin pase no pasa por la tarjeta nueva. El botón «Reorganizar» con pase es el flotante de siempre, no se duplicó.  
+  *Dónde:* DÍAS y HOY el día de vuelta, con pase.
+
+**5 · La prueba**
+
+- ✅ Hecho — pruebaTanda10S11, pruebaTanda6g y pruebaFase6y5_pantallas en 0 fallos (o lo pendiente explicado) más pruebaJutrip Ver el informe. Lo pendiente de ti: el fallo 4 de pruebaFase6y5_pantallas (filas viejas de Supabase).  
+  *Dónde:* No es de móvil.

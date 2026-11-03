@@ -225,8 +225,10 @@ for (const n of [3, 5]) {
 {
   const panel = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
   const tarjeta = leer('src/lib/ultimoDia.ts')
-  debe(TARJETA_DEL_DIA.test(tarjeta) && /TarjetaTuUltimoDia/.test(panel), '5 tarjeta de la gratis', 'la tarjeta «El último día, a la medida de…» no está en el panel del día')
-  debe(/const tarjetaUltimoDia = Boolean\(route\) && day\.isReturnLeg === true && !departureTime/.test(panel), '5 tarjeta de la gratis', 'la tarjeta del día de vuelta no es solo del día de vuelta y sin hora de vuelta puesta')
+  // (10S11) antes: la tarjeta «El último día, a la medida de…», solo sin hora de vuelta → ahora «Hoy vuelves a casa» (src/lib/diaDeVuelta.ts), con y sin hora, con y sin pase → decisión de Eric (10S11, 2-nov).
+  void tarjeta
+  debe(/Hoy vuelves a casa/.test(leer('src/lib/diaDeVuelta.ts')) && /TarjetaTuUltimoDia/.test(panel), '5 tarjeta de la gratis', 'la tarjeta «Hoy vuelves a casa» no está en el panel del día')
+  debe(/const tarjetaUltimoDia = Boolean\(route\) && day\.isReturnLeg === true && !tarjetaHoyVuelves/.test(panel), '5 tarjeta de la gratis', 'la tarjeta del día de vuelta no es solo del día de vuelta (con la del motor, que manda con el pase y el día sin paradas)')
 }
 // Una sola fecha: el D0 de siempre, con las dos barras, y las horas no lo recortan.
 {

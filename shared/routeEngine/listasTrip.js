@@ -1768,7 +1768,9 @@ export function planListasTrip(args) {
       }
       return buenos
     }
-    const todasLasParejas = [...parejas, ...[...catalogueByName.keys()].filter((name) => NOCHE_MIN[name] && !parejas.some((pareja) => pareja.includes(name))).map((name) => [name])]
+    // (10S11, apartado 1: el Janículo de noche solo sale si un día lo ESCRIBE —el viaje de 2 días con Free Tour—; la Tanda 11 lo metió en NOCHE_MIN y, al ser el sitio más cercano a la cena del D5 en Testaccio, le quitaba al D5 su Panteón y Piazza Navona.)
+    const SOLO_SI_ESCRITA = new Set(['Mirador del Janículo (noche)'])
+    const todasLasParejas = [...parejas, ...[...catalogueByName.keys()].filter((name) => NOCHE_MIN[name] && !parejas.some((pareja) => pareja.includes(name)) && (!SOLO_SI_ESCRITA.has(name) || name === nocheDef.lista?.[0])).map((name) => [name])]
     const escrita = nocheDef.lista?.[0] ?? null
     const salida = []
     let elegidos = []

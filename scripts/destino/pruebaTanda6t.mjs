@@ -240,7 +240,9 @@ for (const mode of MODOS) {
   ponerVersion('completa')
   const t = aTexto(renderToStaticMarkup(createElement(ReservasPanel, { route: r, onClose() {} })))
   debe(!HORAS_DE_LA_APP.test(t), '2 horas de la app', `RESERVAS · ${mode}: sale una hora de la app («${t.match(HORAS_DE_LA_APP)?.[0]}»)`)
-  debe(/\bIda\b/.test(t.replace(/\n/g, ' ')) && /Llegas (a las 11:15|en coche)/.test(t.replace(/\n/g, ' ')), '2 horas de la app', `RESERVAS · ${mode}: falta la línea de la ida`)
+  // antes: la línea «Ida … Llegas a las 11:15» a la vista en RESERVAS → ahora: el bloque sale CERRADO al entrar (decisión de Eric, 10S10, 1-nov) y la línea es «Ida · <día> · 11:15 · <punto>» (`legLine`); se comprueba la cabecera cerrada («Listo») y la línea de la ida con su función.
+  const lineaIda = M.legLine(M.legOf(r, info, 'arrival'))
+  debe(/Llegada y vuelta/.test(t) && /Listo/.test(t) && /^Ida\b/.test(lineaIda) && (/11:15/.test(lineaIda) || /en coche/.test(lineaIda)), '2 horas de la app', `RESERVAS · ${mode}: falta la línea de la ida («${lineaIda}»)`)
 }
 
 const resumen = [...porRegla.entries()].map(([r, n]) => `${r}: ${n}`).join(' · ')

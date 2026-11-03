@@ -262,7 +262,7 @@ function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarj
 }
 
 /** Una mitad en la tarjeta guardada: con billete (avión, tren, autobús, barco), o la línea de coche, o «Falta la ida». */
-function MitadGuardada({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarjeta, onCambioDeVuelo }: { route: Route; leg: LegState; ciudad: string; onCambiar: () => void; onQuitar: () => void; onAnadirTarjeta: (kind: LegKind) => void; onCambioDeVuelo: EnCambioDeVuelo }) {
+export function MitadGuardada({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarjeta, onCambioDeVuelo }: { route: Route; leg: LegState; ciudad: string; onCambiar: () => void; onQuitar: () => void; onAnadirTarjeta: (kind: LegKind) => void; onCambioDeVuelo: EnCambioDeVuelo }) {
   const esIda = leg.kind === 'arrival'
   const fecha = leg.dateIso ? capitalizar(fechaLarga(leg.dateIso)) : `Día ${leg.dayNumber}`
   const coche = leg.mode === 'coche'

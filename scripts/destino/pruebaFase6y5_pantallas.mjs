@@ -139,7 +139,17 @@ for (const [nombre, medio] of Object.entries(MEDIOS)) {
   useRouteStore.getState().setArrivalPointId('arrival', fco.id)
   useRouteStore.getState().setArrivalPointId('departure', fco.id)
   const r = useRouteStore.getState().route
-  for (const [nombre, marcado] of [['cerrado', cerrado(r)], ['abierto y con hora', abierto(r, 'arrival')], ['abierto, la vuelta', abierto(r, 'departure')]]) {
+  // (10S11 §2) antes → ahora → decisión de Eric (10S10, 1-nov): antes, el bloque «Llegada y vuelta» salía desplegado al entrar (y con `abierto: true` también al pintar en el servidor) y la prueba buscaba
+  // las horas del viajero en él; ahora entra SIEMPRE cerrado, falte lo que falte (solo la cabecera con «Listo»), y se despliega con un efecto (que el pintado en el servidor no ejecuta).
+  // La comprobación sigue igual de fuerte: el bloque cerrado no enseña ninguna hora, y el desplegado (la ida y la vuelta, `MitadGuardada`, las dos mitades que se ven al abrirlo) solo las dos del viajero.
+  const desplegado = (ruta) => ['arrival', 'departure'].map((k) => html(M.MitadGuardada, { route: ruta, leg: M.legOf(ruta, info, k), ciudad: 'Roma', onCambiar() {}, onQuitar() {}, onAnadirTarjeta() {}, onCambioDeVuelo() {} })).join('')
+  {
+    const t = plano(aTexto(cerrado(r)))
+    debe(/Listo/.test(t) && !/\b\d{1,2}:\d{2}\b/.test(t), '2 sin hora calculada', `cerrado al entrar: debería enseñar solo la cabecera «Listo», sin horas (${t.slice(0, 200)})`)
+    const ta = plano(aTexto(abierto(r, 'arrival')))
+    debe(/Listo/.test(ta) && !/libre hacia|libre a partir|libre desde/.test(ta), '2 sin hora calculada', `abierto con la hoja pedida: enseña «libre hacia…» (${ta.slice(0, 200)})`)
+  }
+  for (const [nombre, marcado] of [['desplegado, ida y vuelta', desplegado(r)]]) {
     const t = plano(aTexto(marcado))
     const horas = [...new Set(t.match(/\b\d{1,2}:\d{2}\b/g) ?? [])].sort()
     debe(JSON.stringify(horas) === JSON.stringify(['11:15', '18:05']), '2 sin hora calculada', `${nombre}: las únicas horas deberían ser las dos del viajero y son ${JSON.stringify(horas)} (${t.slice(0, 260)})`)

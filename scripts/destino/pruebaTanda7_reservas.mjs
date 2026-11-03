@@ -429,21 +429,23 @@ console.log('7. El billete')
 // (10S) La sección se pasó al diseño de la 10B: antes comprobaba solo la gratis, con su tarjeta grande/pequeña y los textos de la Tanda 7; ahora la tarjeta sale con y sin el pase.
 console.log('8. La tarjeta del día de vuelta sin hora')
 {
+  // (10S11) antes: «El último día, a la medida de tu vuelo» / «Tu último día…» con [Ver el Pase Roma] o [+ Vuelo] y [+ Añadir mis lugares] → ahora «Hoy vuelves a casa» con [Añadir tu vuelo], [+ Añadir lugares], [Explorar] y la línea del pase (con candado sin pase) → decisión de Eric (10S11, 2-nov).
   const TEXTOS = {
-    sin: { titulo: 'El último día, a la medida de', boton: 'Ver el Pase Roma', lugares: '+ Añadir mis lugares' },
-    con: { titulo: 'Tu último día, a la medida de', boton: '+ Vuelo', lugares: '+ Añadir mis lugares' },
+    sin: { titulo: 'Hoy vuelves a casa', boton: 'Añadir tu vuelo', lugares: '+ Añadir lugares' },
+    con: { titulo: 'Hoy vuelves a casa', boton: 'Añadir tu vuelo', lugares: '+ Añadir lugares' },
   }
   // La pieza sola: con los textos que le da el panel.
-  const sin = html(TarjetaTuUltimoDia, { textos: { titulo: `${TEXTOS.sin.titulo} tu vuelo`, partes: [{ texto: 'Con el ' }, { texto: 'Pase Roma', oro: true }], botonPrincipal: TEXTOS.sin.boton, botonLugares: TEXTOS.sin.lugares }, conPase: false, onPrincipal() {}, onAnadirLugares() {} })
+  const textosPieza = { titulo: 'Hoy vuelves a casa', texto: 'Aún no sabemos a qué hora sale tu vuelo.', botonAnadirVuelo: 'Añadir tu vuelo', invitacion: 'Mientras tanto, añade lo que te quedó por ver.', conLugares: true, lineaPase: 'Con el {pase}, al poner tu vuelo te preparamos este día.' }
+  const sin = html(TarjetaTuUltimoDia, { textos: textosPieza, conPase: false, destino: 'Roma', onAnadirVuelo() {}, onAnadirLugares() {}, onExplorar() {}, onVerPase() {} })
   const ts = plano(aTexto(sin))
   debe(/data-tarjeta-ultimo-dia="sin-pase"/.test(sin) && ts.includes(TEXTOS.sin.titulo) && ts.includes(TEXTOS.sin.boton) && ts.includes(TEXTOS.sin.lugares), '8 pieza sin pase', `la tarjeta sin pase no trae sus textos: ${ts}`)
-  debe(ts.indexOf(TEXTOS.sin.boton) < ts.indexOf(TEXTOS.sin.lugares), '8 orden', 'el orden de la tarjeta no es: título, texto, [Ver el Pase Roma], [+ Añadir mis lugares]')
-  debe(/<svg/.test(sin.slice(sin.indexOf('data-ultimo-dia="principal"'), sin.indexOf(TEXTOS.sin.boton))), '8 candado', 'el botón principal sin pase no lleva el candado')
-  debe(/data-pase-resaltado/.test(sin), '8 oro', 'el Pase Roma no sale resaltado en oro')
+  debe(ts.indexOf(TEXTOS.sin.boton) < ts.indexOf(TEXTOS.sin.lugares) && ts.indexOf(TEXTOS.sin.lugares) < ts.indexOf('Explorar') && ts.indexOf('Explorar') < ts.indexOf('Pase Roma'), '8 orden', 'el orden de la tarjeta no es: título, texto, [Añadir tu vuelo], [+ Añadir lugares] [Explorar], línea del pase')
+  debe(/<svg/.test(sin.slice(sin.indexOf('data-ultimo-dia-pase="sin-pase"'))), '8 candado', 'la línea del pase sin pase no lleva el candado')
+  debe(/Pase Roma/.test(sin), '8 oro', 'el Pase Roma no sale en la línea del pase')
   // El panel: lo que enlaza la tarjeta.
   const panelSrc = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
-  debe(/onPrincipal=\{pago \? \(\) => goToBooking\('vuelta'\) : pedirPago\}/.test(panelSrc), '8 pedirPago', 'el botón principal sin pase no llama a pedirPago() (con pase, a goToBooking)')
-  debe(/onAnadirLugares=\{\(\) => openAddFlow\(day\.id\)\}/.test(panelSrc), '8 añadir lugares', '[+ Añadir mis lugares] no hace lo mismo que [+ Añadir lugares] (openAddFlow)')
+  debe(/onVerPase=\{pedirPago\}/.test(panelSrc) && /onAnadirVuelo=\{\(\) => goToBooking\('vuelta'\)\}/.test(panelSrc), '8 pedirPago', 'la línea del pase no llama a pedirPago() o [Añadir tu vuelo] no va a goToBooking')
+  debe(/onAnadirLugares=\{\(\) => openAddFlow\(day\.id\)\}/.test(panelSrc), '8 añadir lugares', '[+ Añadir lugares] no hace lo de siempre (openAddFlow)')
   // En DÍAS.
   const ruta = viaje()
   const panelDe = (dia) =>
@@ -459,7 +461,7 @@ console.log('8. La tarjeta del día de vuelta sin hora')
   if (dv) {
     const tv = plano(aTexto(dv))
     debe(/data-tarjeta-ultimo-dia="sin-pase"/.test(dv) && tv.includes(TEXTOS.sin.titulo) && tv.includes(TEXTOS.sin.boton) && tv.includes(TEXTOS.sin.lugares), '8 gratis', `en la gratis, el día de vuelta sin hora no trae la tarjeta sin pase: ${tv.slice(0, 300)}`)
-    debe(!/Añadir lugares/.test(tv.replace(/\+ Añadir mis lugares/g, '')), '8 sin duplicar', 'con la tarjeta no debe salir además el botón «Añadir lugares»')
+    debe((tv.match(/Añadir lugares/g) ?? []).length === 1, '8 sin duplicar', 'con la tarjeta no debe salir además otro botón «Añadir lugares»')
     // Otro día (no el de vuelta): sin tarjeta.
     debe(!/data-tarjeta-ultimo-dia/.test(panelDe(ruta.days[0])), '8 otros días', 'la tarjeta sale en un día que no es el de vuelta')
     // Con lugares añadidos en el día de vuelta: la tarjeta sigue (solo depende de que no haya hora de salida).
@@ -470,10 +472,10 @@ console.log('8. La tarjeta del día de vuelta sin hora')
     const dc = panelDe(ruta.days.at(-1))
     const tc = plano(aTexto(dc))
     debe(/data-tarjeta-ultimo-dia="con-pase"/.test(dc) && tc.includes(TEXTOS.con.titulo) && tc.includes(TEXTOS.con.boton) && tc.includes(TEXTOS.con.lugares) && !tc.includes('Ver el Pase'), '8 de pago', `de pago, el día de vuelta sin hora no trae la tarjeta con pase: ${tc.slice(0, 300)}`)
-    // Con la hora de salida puesta: ya no sale la tarjeta.
+    // Con la hora de salida puesta: (10S11) antes ya no salía la tarjeta → ahora sale, con «hasta las HH:MM» (decisión de Eric, 1-nov).
     poner(viaje({ extra: { departureFlightTime: '18:05' } }))
     const hr = tomaRuta()
-    debe(!/data-tarjeta-ultimo-dia/.test(panelDe(hr.days.at(-1))), '8 con hora', 'con la hora de la vuelta puesta sale la tarjeta de «sin hora»')
+    debe(/data-tarjeta-ultimo-dia/.test(panelDe(hr.days.at(-1))) && /Tu vuelo sale/.test(plano(aTexto(panelDe(hr.days.at(-1))))), '8 con hora', 'con la hora de la vuelta puesta debe salir la tarjeta con «Tu vuelo sale…»')
     // En coche: la tarjeta pide la hora de salida (no un vuelo).
     ponerVersion('completa')
     poner(viaje({ ida: 'car' }))

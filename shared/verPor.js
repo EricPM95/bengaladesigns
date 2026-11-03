@@ -13,6 +13,8 @@
 /** Los ids que Eric ha decidido a mano (si el JSON no lo trae escrito). */
 export const VER_POR_A_MANO = {
   galeria_borghese: 'solo_dentro',
+  // (10S11, Eric 1-nov) La subida a la cúpula es solo por dentro: no se ve «por fuera» como la basílica.
+  cupula_de_san_pedro: 'solo_dentro',
 }
 
 /** Cómo se dice el sitio en la frase del aviso, cuando el nombre largo del dato no sirve. */

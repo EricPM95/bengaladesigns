@@ -65,15 +65,6 @@
       "frase_si_sin_abrir": "A esta hora, posiblemente aún no hayan abierto."
     },
     {
-      "id": "cupula_de_san_pedro",
-      "nombre": "Cúpula de San Pedro",
-      "ver_por": "dentro_y_fuera",
-      "por_que": "tiene texto «por fuera» en los datos",
-      "horario": "07:30-17:00",
-      "frase_si_cerrado": "A esta hora, posiblemente la Cúpula de San Pedro ya esté cerrada, pero puedes verla por fuera igualmente.",
-      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
-    },
-    {
       "id": "iglesia_del_gesu",
       "nombre": "Iglesia del Gesù",
       "ver_por": "dentro_y_fuera",
@@ -235,6 +226,15 @@
       "por_que": "se visita por dentro y no tiene texto «por fuera»",
       "horario": "09:00-19:00",
       "frase_si_cerrado": "A esta hora, posiblemente la Galería Nacional de Arte Moderno ya esté cerrada.",
+      "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
+    },
+    {
+      "id": "cupula_de_san_pedro",
+      "nombre": "Cúpula de San Pedro",
+      "ver_por": "solo_dentro",
+      "por_que": "se visita por dentro y no tiene texto «por fuera»",
+      "horario": "07:30-17:00",
+      "frase_si_cerrado": "A esta hora, posiblemente la Cúpula de San Pedro ya esté cerrada.",
       "frase_si_sin_abrir": "A esta hora, posiblemente aún no haya abierto."
     },
     {
