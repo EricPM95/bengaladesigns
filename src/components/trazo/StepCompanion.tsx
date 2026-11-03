@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Companion, QuestionnaireAnswers } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
+import { esDestinoDeCoche } from '../../lib/experienceCategoryBank'
 import { getCapacityWarning, isCompanionFullyResolved, totalCompanionPeople } from '../../lib/companionFlow'
 import { ACCENT, AMBER, Cta, Em, Figures, INK, MONO, RadioRow, SERIF, Sheet, Stepper, Title } from './trazoUi'
 
@@ -30,6 +31,18 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
   const acknowledged = useRouteStore((state) => state.companion_capacity_acknowledged)
   const setAcknowledged = useRouteStore((state) => state.setCompanionCapacityAcknowledged)
 
+  const destino = useRouteStore((state) => state.destination)
+  const setVehicleOwnership = useRouteStore((state) => state.setVehicleOwnership)
+  const setVehicleType = useRouteStore((state) => state.setVehicleType)
+  // (LZ2a §4) Lanzarote: «¿Vas a moverte en coche?» en esta misma pantalla, debajo de la compañía.
+  const pideCoche = esDestinoDeCoche(destino)
+  const pickCoche = (coche: 'alquiler' | 'propio' | 'no') => {
+    onChange({ coche })
+    // De alquiler: el bloque del coche de alquiler de RESERVAS y del día 1 (ya existe) se enciende con estos dos datos del viaje.
+    setVehicleType(coche === 'no' ? null : 'car')
+    setVehicleOwnership(coche === 'alquiler' ? 'rental' : coche === 'propio' ? 'own' : null)
+  }
+
   const [sheet, setSheet] = useState<'family' | 'group' | null>(null)
   const [adults, setAdults] = useState(answers.companionAdults ?? 2)
   const [ages, setAges] = useState<number[]>(answers.companionChildrenAges ?? [])
@@ -45,7 +58,7 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
     setSheet(k)
   }
 
-  const resolved = isCompanionFullyResolved(answers.companion, answers.companionAdults, answers.companionChildrenAges, answers.companionGroupSize, archetype, vehicleType, acknowledged)
+  const resolved = (!pideCoche || Boolean(answers.coche)) && isCompanionFullyResolved(answers.companion, answers.companionAdults, answers.companionChildrenAges, answers.companionGroupSize, archetype, vehicleType, acknowledged)
   const total = totalCompanionPeople(answers.companion, answers.companionAdults, answers.companionChildrenAges, answers.companionGroupSize)
   const warning = getCapacityWarning(archetype, vehicleType, total)
 
@@ -100,6 +113,19 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
           )
         })}
       </div>
+      {pideCoche && (
+        <div data-pregunta-coche style={{ margin: '0 0 10px' }}>
+          <div style={{ font: `400 22px/1.1 ${SERIF}`, marginBottom: 2 }}>¿Vas a moverte en coche?</div>
+          <RadioRow label="Sí, de alquiler" description="Muy recomendado: Lanzarote se recorre en coche" active={answers.coche === 'alquiler'} onClick={() => pickCoche('alquiler')} />
+          <RadioRow label="Sí, el mío" active={answers.coche === 'propio'} onClick={() => pickCoche('propio')} />
+          <RadioRow label="No" description="La misma ruta; cada día te propone su excursión sin coche" active={answers.coche === 'no'} onClick={() => pickCoche('no')} />
+          {answers.coche === 'no' && (
+            <p style={{ margin: '6px 0 0', font: "400 13px/1.4 'Geist'", color: INK }}>
+              Sin coche, a Timanfaya, el Mirador del Río, Papagayo o El Golfo no se llega por tu cuenta: te proponemos las excursiones que los hacen.
+            </p>
+          )}
+        </div>
+      )}
       {warning?.level === 'camper_recommend' && (
         <p style={{ margin: '0 4px 10px', font: "400 13px/1.4 'Geist'", color: INK }}>Sois {total} — os recomendamos {warning.unitsRecommended} autocaravanas para ir cómodos.</p>
       )}

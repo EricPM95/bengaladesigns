@@ -31,6 +31,7 @@ import { pagoActivo } from './pago'
 import { conUltimoCambio } from './accionDeCambio'
 import { fechaDelDia } from './nombreDeDia'
 import { useRouteStore } from '../store/useRouteStore'
+import { esDestinoDeCoche } from './experienceCategoryBank'
 import { withUndo } from '../store/useAddFlowStore'
 import { useReorganizarStore } from '../store/useReorganizarStore'
 
@@ -65,7 +66,7 @@ const firmaDelDia = (day: DayPlan): string => JSON.stringify([day.stops.map((sto
 
 /** Un día que se puede adaptar sin pisar nada del viajero. */
 function sePuedeRehacer(day: DayPlan): boolean {
-  return !(day.originalSnapshot || day.userAdded || day.ownDay || day.dayType === 'excursion' || day.dayType === 'manual' || isFreeDay(day))
+  return !(day.originalSnapshot || day.userAdded || day.ownDay || (day.dayType === 'excursion' && !day.curatedTitle) || day.dayType === 'manual' || isFreeDay(day))
 }
 
 /** ¿La ruta es de las que rehace el motor (destino con días escritos y no a mano)? */
@@ -382,6 +383,8 @@ export async function alCambiarElVuelo(cambio: CambioDeVuelo): Promise<void> {
   acumulados = []
   const { route, reservations } = useRouteStore.getState()
   if (!route) return
+  // (LZ2a) Lanzarote: elegir la zona rehace cada día desde la zona del viajero (solo con pase; lo gratis usa la zona más lejana).
+  if (esDestinoDeCoche(route.destination) && cambios.some((otro) => otro.que === 'zona')) void adaptarDiasDeCoche()
   const propuesta = await propuestaDeVuelos(route, reservations)
   if (mia !== ultimaPeticion || !propuesta) return
   // 1. Lo que solo informa: siempre, sin tocar ninguna parada.
@@ -409,4 +412,60 @@ export function adaptarLosDias(): number {
 /** Solo para las pruebas: vacía la memoria de respuestas del motor. */
 export function olvidarRespuestasDelMotor(): void {
   guardadas.clear()
+}
+
+// ── (LZ2a) Lanzarote: cada día desde la zona del viajero ─────────────────────────────────────────────────────────
+
+let adaptandoCoche = false
+
+/**
+ * Lanzarote con pase: rehace CADA día con `zona`+`pase`+`coche` (contrato `docs/dias/_estado_lz2a_contrato.md`, cambio 1) por `/api/rebuild-day`: la ida, la vuelta, la hora de salir y la cena cerca
+ * (con restaurantes) salen de la zona del viajero. Sin pase o sin zona no hace nada (la ruta de todos, desde la zona más lejana). Un solo `[Deshacer]`; lo que el viajero cambió a mano no se pisa.
+ * Devuelve cuántos días ha cambiado.
+ */
+export async function adaptarDiasDeCoche(): Promise<number> {
+  if (adaptandoCoche) return 0
+  const { route, reservations } = useRouteStore.getState()
+  if (!route || !esDestinoDeCoche(route.destination) || !pagoActivo()) return 0
+  const zona = route.accommodationZone
+  if (!zona || zona === 'nose') return 0
+  const pendientes = route.days.filter((day) => !day.isReturnLeg && sePuedeRehacer(day) && !(day.coche?.pase === true && day.coche.zona?.id === zona))
+  if (pendientes.length === 0) return 0
+  adaptandoCoche = true
+  try {
+    const { vuelo } = await datosDelVuelo(route, reservations)
+    const cocheRespuesta = route.answers.coche ?? 'alquiler'
+    const orden = ordenDeLosDias(route)
+    const dias: DiaAdaptado[] = []
+    for (const day of pendientes) {
+      const cuerpo = {
+        destination: route.destination,
+        answers: { ...route.answers, zona, pase: true, coche: cocheRespuesta },
+        zona,
+        pase: true,
+        coche: cocheRespuesta,
+        all_days: route.days.filter((other) => !other.isReturnLeg).map((other) => ({ day_number: other.dayNumber, city: other.city })),
+        day_number: day.dayNumber,
+        must_include_places: route.mustIncludePlaces ?? [],
+        inside_names: route.insideNames ?? [],
+        reservas: reservasParaMotor(reservations),
+        ...vuelo,
+        ...(orden.length > 0 ? { force_order: orden } : {}),
+      }
+      try {
+        const response = await fetch('/api/rebuild-day', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+        if (!response.ok) continue
+        const generado = ((await response.json()) as { day?: GeneratedDay }).day
+        if (!generado) continue
+        const next = mapSingleGeneratedDay(route.destination, generado, day)
+        await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
+        dias.push({ dayId: day.id, dayNumber: day.dayNumber, next, movidas: movidasDe(day, next) })
+      } catch {
+        /* sin conexión: ese día se queda como está */
+      }
+    }
+    return ponerDiasAdaptados(dias, 'Hemos adaptado cada día a donde duermes')
+  } finally {
+    adaptandoCoche = false
+  }
 }

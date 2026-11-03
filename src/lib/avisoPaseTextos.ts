@@ -85,7 +85,15 @@ export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
 }
 
 /** Textos distintos para un destino (clave: nombre del destino → clave del aviso → texto). Vacío: todos los destinos usan los de arriba. */
-export const AVISO_PASE_TEXTOS_POR_DESTINO: Record<string, Record<string, TextoAviso>> = {}
+export const AVISO_PASE_TEXTOS_POR_DESTINO: Record<string, Record<string, TextoAviso>> = {
+  // (LZ2a §3) En Lanzarote la zona adapta CADA día (el coche lo cambia todo), no solo el primero y el último.
+  Lanzarote: {
+    alojamiento: {
+      linea1: '',
+      linea2: 'Con el {pase}, adaptamos cada día a donde duermes: a qué hora salir, por dónde empezar y dónde cenar cerca.',
+    },
+  },
+}
 
 export function textoDelAviso(clave: string, destino?: string): TextoAviso {
   const propio = destino ? AVISO_PASE_TEXTOS_POR_DESTINO[destino]?.[clave] : undefined

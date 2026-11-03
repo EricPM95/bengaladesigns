@@ -121,3 +121,42 @@ crearRutaDePrueba.conParada = async function conParada(nombre: string, dia: numb
 }
 
 if (typeof window !== 'undefined') (window as unknown as { __rutaPrueba: typeof crearRutaDePrueba }).__rutaPrueba = crearRutaDePrueba
+
+/**
+ * (LZ2a) EL VIAJE DE ERIC EN LANZAROTE, para pruebas y capturas (solo en desarrollo; la API tiene que arrancar con `DESTINOS_OCULTOS='-'`):
+ * `await window.__rutaLanzarote({ zona: 'costa_teguise', coche: 'alquiler' })`. Empieza el domingo 8-nov-2026, 5 días de ruta + el de la vuelta (13-nov), con la misma generación que el formulario.
+ * Con `zona` la elige (RESERVAS › Alojamiento); lo de pago se pide con `?version=completa` en la dirección.
+ */
+export async function crearRutaLanzarote(opciones: { zona?: string; coche?: 'alquiler' | 'propio' | 'no'; hoy?: string } = {}): Promise<Route> {
+  const { transportContextOf } = await import('../lib/manualRoute')
+  const estado = useRouteStore.getState()
+  const coche = opciones.coche ?? 'alquiler'
+  const respuestas: QuestionnaireAnswers = {
+    ...estado.answers,
+    origin: 'Madrid',
+    days: 6,
+    dateRange: { start: '2026-11-08', end: '2026-11-13' },
+    month: 10,
+    companion: 'couple',
+    experiences: [],
+    experiencesPositive: ['imprescindibles'],
+    experiencesNegative: [],
+    chronotype: 'normal',
+    budgetLevel: 'comfortable',
+    coche,
+  }
+  const contexto = { ...transportContextOf(estado), vehicle_type: coche === 'no' ? null : ('car' as const), vehicle_ownership: coche === 'alquiler' ? ('rental' as const) : coche === 'propio' ? ('own' as const) : null }
+  let final: GenerationResumeState | null = null
+  await runGeneration({ destination: 'Lanzarote', answers: respuestas, transportContext: contexto, mustIncludePlaces: [] }, null, async (cp) => {
+    if (cp.phase === 'done') final = cp
+  })
+  if (!final) throw new Error('El motor no ha devuelto la ruta de Lanzarote.')
+  const ruta = mapGeneratedRouteToRoute((final as GenerationResumeState).generated, 'Lanzarote', respuestas, contexto)
+  for (const dia of ruta.days) if (!dia.countryCode) dia.countryCode = 'es'
+  await enrichRoutePhotos(ruta)
+  if (opciones.zona) ruta.accommodationZone = opciones.zona
+  useRouteStore.setState({ destination: 'Lanzarote', route: ruta, screen: 'route', dev_simulated_today_iso: opciones.hoy ?? '2026-11-08' } as never)
+  await espera(800)
+  return ruta
+}
+if (typeof window !== 'undefined') (window as unknown as { __rutaLanzarote: typeof crearRutaLanzarote }).__rutaLanzarote = crearRutaLanzarote

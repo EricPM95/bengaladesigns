@@ -1,6 +1,7 @@
 import { Fragment, type CSSProperties } from 'react'
 import { abrirPase, usePasePintable } from '../../lib/pago'
 import { abrirAvisoPase } from '../../lib/avisoPase'
+import { AVISO_PASE_TEXTOS_POR_DESTINO } from '../../lib/avisoPaseTextos'
 import { useRouteStore } from '../../store/useRouteStore'
 
 /** El candado de Design (`Piezas/Pase Estilo` 01), tal cual: 13 px, trazo de 2,4 en marrón oscuro. */
@@ -144,6 +145,8 @@ export function LineaDelPase({ texto, datos = 'linea-pase', className = '', dest
   const deLaRuta = useDestinoDelPase()
   if (estado !== 'sin') return null
   const abrir = () => abrirAvisoPase(clave, { destino: destino ?? (deLaRuta || undefined) })
+  // (LZ2a §3) El texto propio del destino (Lanzarote: la zona adapta cada día); Roma y los demás, el de siempre.
+  texto = AVISO_PASE_TEXTOS_POR_DESTINO[destino ?? deLaRuta]?.[clave]?.linea2 ?? texto
   return (
     <span
       role="button"

@@ -2653,7 +2653,12 @@ function engineExtrasFromRequest(body, answers, dayNumber, destData) {
         excursion: vb.excursion && typeof vb.excursion === 'object' && typeof vb.excursion.nombre === 'string' ? { nombre: vb.excursion.nombre.slice(0, 60), vuelve: /^\d{1,2}:\d{2}$/.test(String(vb.excursion.vuelve ?? '')) ? String(vb.excursion.vuelve) : null, medioDia: vb.excursion.medioDia === true, dateIso: typeof vb.excursion.dateIso === 'string' ? vb.excursion.dateIso : null, dayNumber: Number.isInteger(Number(vb.excursion.dayNumber)) ? Number(vb.excursion.dayNumber) : null } : null,
       }
     : null
-  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, reservasViaje, forceOrder, llegada, ...(vuelta ? { vuelta } : {}) }
+  // (LZ2a) Un destino en coche (`destination_config.medio === 'coche'`, Lanzarote): dónde duerme (`answers.zona`), si lleva pase (`body.pase`) y cómo se mueve (`answers.coche`: 'alquiler' | 'propio' | 'no'). Contrato: docs/dias/_estado_lz2a_contrato.md. Roma no recibe nada de esto.
+  const enCoche = destData?.destination_config?.medio === 'coche'
+  const zonaCoche = enCoche ? [answers?.zona, answers?.zonaAlojamiento, body?.zona].find((z) => typeof z === 'string' && /^[a-z_]{2,40}$/.test(z)) ?? null : null
+  const cocheModo = enCoche ? [answers?.coche, body?.coche].find((c) => c === 'alquiler' || c === 'propio' || c === 'no') ?? null : null
+  const extrasCoche = enCoche ? { zona: zonaCoche, pase: (body?.pase ?? answers?.pase) === true, ...(cocheModo ? { coche: cocheModo } : {}), ...(answers?.nochesJameos === true ? { nochesJameos: true } : {}), ...(answers?.cuevaPrimero === true ? { cuevaPrimero: true } : {}), ...(answers?.kayak === true ? { kayak: true } : {}) } : {}
+  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, reservasViaje, forceOrder, llegada, ...(vuelta ? { vuelta } : {}), ...extrasCoche }
 }
 
 function hasRequiredAnswers(answers) {
@@ -5725,7 +5730,7 @@ app.post('/api/rebuild-day', async (req, res) => {
     return
   }
   // Solo los destinos con días escritos: los demás se generan con Claude y no se rehacen aquí.
-  if (!destData.curated_routes?.por_dias_ciudad) {
+  if (!destData.curated_routes?.por_dias_ciudad && destData.destination_config?.medio !== 'coche') {
     res.status(422).json({ error: 'Este destino no se rehace con reservas.' })
     return
   }

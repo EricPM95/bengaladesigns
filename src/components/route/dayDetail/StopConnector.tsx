@@ -4,6 +4,8 @@ import { TransitKindIcon, TransportModeIcon, type TransitKind } from './Transpor
 import { TransportModeSheet } from './TransportModeSheet'
 import { OpenInMapsSheet } from './OpenInMapsSheet'
 import { Icono } from '../../ui/Icono'
+import { FilaCoche } from './CocheDelDia'
+import type { TrayectoCoche } from '../../../lib/types'
 
 interface StopConnectorProps {
   /** Desplazamiento a mostrar en este hueco, o `null` si aquí no hay ninguno que mostrar: el hueco
@@ -21,6 +23,8 @@ interface StopConnectorProps {
   onAddStop: () => void
   /** El tramo lo hace el día en bus o metro ("Bus 118, unos 25 min"): se enseña eso, no el paseo. */
   transitLabel?: string | null
+  /** (LZ2a) Destinos de coche: el trayecto en coche («En coche · 25 min · 18 km» + [Abrir en Maps]). Va en lugar del paseo o el bus. */
+  trayectoCoche?: TrayectoCoche | null
 }
 
 /** Cómo se lee el modo en la fila cuando NO se va andando — el sitio de la distancia lo ocupa el
@@ -71,10 +75,18 @@ function parseTransitLabel(label: string): { line: string; minutes: number | nul
   return { line, minutes: minutes ? Number(minutes[1]) : null, mode: kind === 'taxi' ? 'driving' : 'transit', kind }
 }
 
-export function StopConnector({ connector, fromName, toName, mode, onSelectMode, onHide, onSetDefaultForDay, onAddStop, transitLabel }: StopConnectorProps) {
+export function StopConnector({ connector, fromName, toName, mode, onSelectMode, onHide, onSetDefaultForDay, onAddStop, transitLabel, trayectoCoche }: StopConnectorProps) {
   const [modeSheetOpen, setModeSheetOpen] = useState(false)
   const [mapsSheetOpen, setMapsSheetOpen] = useState(false)
-  const transitRow = transitLabel ? parseTransitLabel(transitLabel) : null
+  const transitRow = transitLabel && !trayectoCoche ? parseTransitLabel(transitLabel) : null
+  if (trayectoCoche) {
+    return (
+      <div className="flex min-h-[44px] items-center gap-1.5 text-[12.5px] text-text/60">
+        <FilaCoche texto={trayectoCoche.texto} aparcar={trayectoCoche.aparcar_min} mapsUrl={trayectoCoche.maps_url} llegada={trayectoCoche.llegada_texto} />
+        <AddStopButton onAddStop={onAddStop} />
+      </div>
+    )
+  }
 
   // Si el modo pedido no está (el transporte que no ahorra tiempo no se ofrece), a pie.
   const selectedOption =

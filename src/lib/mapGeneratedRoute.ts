@@ -111,6 +111,9 @@ export interface GeneratedStop {
   free_tour_end?: string | null
   /** El tramo en bus o metro hasta esta parada — Stop.transitLabel ("Bus 118, unos 25 min"). */
   transit?: { icon: string; label: string; minutes: number; detail?: string | null } | null
+  /** (LZ2a) El trayecto en coche hasta esta parada y la llegada con hora online — Stop.trayectoCoche / Stop.llegadaTexto. */
+  trayecto_previo?: import('./types').TrayectoCoche | null
+  llegada_texto?: string | null
   /** Monumento que ese día no se visita: "Por fuera" con su motivo — Stop.outsideReason. */
   outside?: boolean
   outside_reason?: string | null
@@ -254,6 +257,14 @@ export interface GeneratedDay {
   date_notices?: { id: string; day_number: number | null; date_iso: string | null; icon: string; title: string; tag: string; texts: string[]; kind: 'auto' | 'curado' | 'mixto'; cierran?: string[]; campana?: string }[] | null
   /** Motor v3: minutos andando de la última visita a la cena — ver DayPlan.dinnerWalkMinutes. */
   dinner_walk_minutes?: number | null
+  /** (LZ2a) Destinos de coche: ver DayPlan.coche, cenaCerca, opcionalesQuitados, sinCoche. */
+  coche?: import('./types').CocheDelDia | null
+  cena_cerca?: import('./types').CenaCerca | null
+  opcionales_quitados?: import('./types').OpcionalQuitado[] | null
+  sin_coche?: import('./types').SinCocheDelDia | null
+  dia_id?: string | null
+  aeropuerto?: import('./types').AeropuertoDelDia | null
+  timezone?: string | null
   /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
   half_day_excursion?: { id: string; starts_at: string; ends_at: string; route_starts_at: string } | null
   /** Con excursión de medio día: de la tarde no queda ninguna parada de nivel 1 o 2 (DayPlan.afternoonFree). */
@@ -534,6 +545,8 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.free_tour_end ? { freeTourEnd: generated.free_tour_end } : {}),
     // (Sin emoji: la app pone su icono lineal según el tipo, PROMPT_UI_REPASO_3 4.)
     ...(generated.transit ? { transitLabel: generated.transit.label } : {}),
+    ...(generated.trayecto_previo ? { trayectoCoche: { ...generated.trayecto_previo, ...(generated.llegada_texto ? { llegada_texto: generated.llegada_texto } : {}) } } : {}),
+    ...(generated.llegada_texto ? { llegadaTexto: generated.llegada_texto } : {}),
     ...(generated.outside ? { outsideReason: generated.outside_reason ?? 'Hoy lo ves por fuera para llegar a todo lo del día' } : {}),
     ...(generated.visit_mode ? { visitMode: generated.visit_mode } : {}),
     ...(generated.outside_kind ? { outsideKind: generated.outside_kind } : {}),
@@ -830,7 +843,7 @@ function mapDay(
     countryCode: generated.country_code ? generated.country_code.toLowerCase() : null,
     phaseType: asPhaseType(generated.phase_type),
     title: generated.title,
-    ...(generated.curated_day?.name ? { curatedTitle: generated.curated_day.name } : {}),
+    ...(generated.curated_day?.name ? { curatedTitle: generated.curated_day.name } : generated.dia_id && generated.type === 'excursion' ? { curatedTitle: generated.title } : {}), // (LZ2a: el día de excursión de Lanzarote lleva su nombre, «La Graciosa (excursión)»)
     ...(generated.curated_day?.id ? { curatedId: generated.curated_day.id } : {}),
     transport: transportByDay.get(generated.day_number),
     // (Un lugar que sale dos veces el mismo día, el parque de Villa Borghese en D4, no comparte id: el número del mapa y la clave de la
@@ -891,6 +904,13 @@ function mapDay(
     dayNotice: generated.day_notice ?? null,
     transferNotice: generated.transfer_notice ?? null,
     dinnerWalkMinutes: generated.dinner_walk_minutes ?? null,
+    ...(generated.coche ? { coche: generated.coche } : {}),
+    ...(generated.cena_cerca ? { cenaCerca: generated.cena_cerca } : {}),
+    ...(generated.opcionales_quitados?.length ? { opcionalesQuitados: generated.opcionales_quitados } : {}),
+    ...(generated.sin_coche ? { sinCoche: generated.sin_coche } : {}),
+    ...(generated.dia_id ? { diaEscritoId: generated.dia_id } : {}),
+    ...(generated.aeropuerto ? { aeropuerto: generated.aeropuerto } : {}),
+    ...(generated.timezone ? { zonaHorariaDia: generated.timezone } : {}),
     excursionEssential: generated.excursion_essential,
     excursionProminence: asProminence(generated.excursion_prominence),
     excursionHighlights: generated.excursion_highlights ? mapExcursionList(generated.excursion_highlights) : undefined,

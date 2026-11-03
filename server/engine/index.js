@@ -43,6 +43,7 @@ import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
 import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
 import { MODE_V3 } from '../../shared/routeEngine/modes.js'
+import { buildCocheDay, esDestinoEnCoche } from './cocheDay.js'
 
 /**
  * Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno, y en ausencia de
@@ -252,6 +253,11 @@ async function buildDayBlockV3Inner(
   options = {},
 ) {
   if (!destData) return null
+  // (LZ2a) Un destino que se recorre en coche (`destination_config.medio === 'coche'`, Lanzarote) monta sus días con su propio motor (shared/routeEngine/cocheTrip.js). Roma no pasa por aquí.
+  if (esDestinoEnCoche(destData)) {
+    const cocheDay = buildCocheDay(destData, findPipelineV2Key(destData.destination ?? options.city ?? ''), { totalDays, dayNumber, dateRangeStartIso, experiencesPositive: experiencesPositive ?? [], options, buildManualDay: buildManualDayV2 })
+    if (cocheDay) return cocheDay
+  }
   // Experiencias de temporada fuera de su ventana: fuera de la selección (Estaciones, Parte 4).
   experiencesPositive = experiencesInSeason(destData, experiencesPositive ?? [], {
     dateRangeStartIso,

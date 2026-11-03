@@ -2,7 +2,8 @@ import { PendienteDeParada } from '../../logros/visto/PendienteDeParada'
 import { LineaReservaFueraDeFranja } from '../reservas/LineaReservaFueraDeFranja'
 import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
+import type { Coordinates, DayPlan, Stop, TrayectoCoche } from '../../../lib/types'
+import { CabeceraDelDiaCoche, CenaCercaBloque, VueltaEnCoche, trayectoDeVuelta } from './CocheDelDia'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { addDaysToIso } from '../../../lib/dateRange'
@@ -787,6 +788,7 @@ export function DayDetailPanel({
     afterDinner = false,
     transitLabel: string | null = null,
     antesDe: NombreComida | null = null,
+    trayectoCoche: TrayectoCoche | null = null,
   ) => {
     const resolvedMode = modeOverrides[connectorKey] ?? dayDefaultMode ?? defaultModeFor(connector)
     return (
@@ -794,6 +796,7 @@ export function DayDetailPanel({
         key={connectorKey}
         connector={hiddenConnectors.has(connectorKey) ? null : connector}
         transitLabel={transitLabel}
+        trayectoCoche={trayectoCoche}
         fromName={fromName}
         toName={toName}
         mode={resolvedMode}
@@ -1057,7 +1060,12 @@ export function DayDetailPanel({
   }
   const renderTimelineItem = ({ item, start, period }: PlacedItem, firstInPeriod: boolean, omitGap = false) => {
     if (item.type === 'end') {
-      return renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, '', stops.length, dinnerInsertionIndex !== null)
+      return (
+        <div key={`${day.id}-fin-del-dia`}>
+          {day.cenaCerca && <div className="mb-1 mt-1"><CenaCercaBloque cena={day.cenaCerca} /></div>}
+          {renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, '', stops.length, dinnerInsertionIndex !== null, null, null, trayectoDeVuelta(day))}
+        </div>
+      )
     }
     if (item.type === 'free') {
       const index = item.index < 0 ? -1 - item.index : item.index
@@ -1068,7 +1076,7 @@ export function DayDetailPanel({
         const { connectorKey, connector, fromName } = connectorEntries[next]
         return (
           <div key={`free-transit-${index}`}>
-            {renderGap(connectorKey, connector, fromName, stops[next].name, next, false, realStops[next].transitLabel ?? null)}
+            {renderGap(connectorKey, connector, fromName, stops[next].name, next, false, realStops[next].transitLabel ?? null, null, realStops[next].trayectoCoche ?? null)}
             {renderFreeTime(item.entry, index, minutesToTime(start))}
           </div>
         )
@@ -1144,7 +1152,7 @@ export function DayDetailPanel({
         disabled={Boolean(realStop?.isZoneWalk)}
         // El hueco SIEMPRE se pinta (es desde donde se inserta una parada ahí); `showConnector` decide solo si además lleva
         // el trayecto. Un paseo quitado no deja ni rastro. (Fuera de la tarjeta: el asa, centrada en ella.)
-        gap={walkDismissed || omitGap ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
+        gap={walkDismissed || omitGap ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null, null, realStop?.trayectoCoche ?? null)}
       >
         <div data-stop-id={realStop?.id ?? stop.id} data-propuesta={realStop ? marcasDePropuesta.get(realStop.id) : undefined}>
           {realStop?.isZoneWalk ? (
@@ -1219,7 +1227,7 @@ export function DayDetailPanel({
             key={`camino-${stops[primero].id}`}
             id={realStops[primero]?.id ?? stops[primero].id}
             disabled
-            gap={omitFirstGap && i === 0 ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stops[primero].name, primero, dinnerInsertionIndex !== null && primero > dinnerInsertionIndex, realStops[primero]?.transitLabel ?? null)}
+            gap={omitFirstGap && i === 0 ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stops[primero].name, primero, dinnerInsertionIndex !== null && primero > dinnerInsertionIndex, realStops[primero]?.transitLabel ?? null, null, realStops[primero]?.trayectoCoche ?? null)}
           >
             <OnTheWayGroupCard
               toName={nombreSiguiente}
@@ -1245,6 +1253,8 @@ export function DayDetailPanel({
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
             decisión que haya que tomar. */}
         {showsRoute && day.dayNotice && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.dayNotice}</p>}
+        {/* (LZ2a) Destinos de coche: salir de casa, el aviso de 3 h, «¿Sin coche?» y los opcionales quitados. */}
+        {showsRoute && <CabeceraDelDiaCoche day={day} />}
         {/* (Tanda 10M: «Hoy el sol se pone a las…» ya no sale en la cabecera del día de DÍAS; la puesta de sol queda para HOY.) */}
         {/* "Volver al día original" va en el menú "···" del día (PROMPT_UI, Parte 2). */}
         {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
@@ -1550,6 +1560,13 @@ export function DayDetailPanel({
             />
           )}
           {/* Tanda 7: «Hoy vuelves a casa» (de pago): el día de vuelta sin paradas y, con una salida de madrugada, el final del último día de ruta. */}
+          {/* (LZ2a) Destinos de coche: el trayecto al aeropuerto desde la zona del último día. */}
+          {route && (() => {
+            const ciudad = route.days.filter((other) => !other.isReturnLeg)
+            const ultimo = ciudad[ciudad.length - 1]
+            const aero = ultimo && (day.isReturnLeg || day.id === ultimo.id) ? ultimo.aeropuerto : null
+            return aero ? <VueltaEnCoche aeropuerto={aero} zona={ultimo.coche?.zona?.nombre ?? null} /> : null
+          })()}
           {tarjetaHoyVuelves && (
             <TarjetaHoyVuelves
               className="mt-2"

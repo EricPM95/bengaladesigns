@@ -1,0 +1,400 @@
+{
+ "formato": "restaurantes/1",
+ "fuente": "docs/destinos/lanzarote/RESTAURANTES_LANZAROTE.md (3-nov-2026)",
+ "_nota": "Generado por scripts/destino/lanzaroteRestaurantes.mjs. comidas: restaurante + alternativa de cada comida/cena de los días. cenas_por_zona: 2-3 restaurantes por zona de alojamiento (cena cerca, con pase). Sin coordenadas = sin confirmar en el documento.",
+ "comidas": {
+  "D1_comida": [
+   {
+    "rol": "restaurante",
+    "nombre": "Bodega La Geria (bar de tapas La Cepa)",
+    "direccion": "Ctra. de La Geria, km 19, Yaiza. Coordenadas: 28.969275, -13.714922.",
+    "lat": 28.969275,
+    "lng": -13.714922,
+    "cocina": "tapas, montaditos y algún plato (atún, cherne, entrecot), con vinos de la casa. Precio sin confirmar.",
+    "horario": "Wanderlog (datos de Google) da de lunes a sábado de 10:00 a 20:00 y domingo de 11:00 a 19:00. La Maleta Inquieta da de lunes a sábado de 9:00 a 18:00 y domingo de 10:00 a 14:00. El horario de cocina está sin confirmar.",
+    "reserva": "no hace falta."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Restaurante de Bodegas Rubicón",
+    "direccion": "Ctra. Teguise-Yaiza, 2, La Geria. Teléfono 928 173 708. Coordenadas sin confirmar.",
+    "cocina": "canaria casera, guisos y tapas, con vinos de la bodega. Precio sin confirmar.",
+    "horario": "todos los días de 10:00 a 18:30 (Wanderlog). Lanzarote3 da de 10:00 a 19:00.",
+    "reserva": "sin confirmar."
+   },
+   {
+    "rol": "tercera",
+    "nombre": "Bodega de Uga",
+    "nota": "(Uga, a unos 5 minutos)",
+    "direccion": "Ctra. Playa Blanca-Arrecife, km 21. Coordenadas: 28.947351, -13.746375.",
+    "lat": 28.947351,
+    "lng": -13.746375,
+    "cocina": "casa tradicional famosa por su salmón ahumado de Uga y el atún. Unos 45-60 € por persona.",
+    "horario": "de martes a sábado de 13:00 a 18:00; cierra domingo y lunes.",
+    "reserva": "conviene."
+   }
+  ],
+  "D1_comida_tranquilo": [],
+  "D1_cena": [
+   {
+    "rol": "restaurante",
+    "nombre": "Bogavante",
+    "direccion": "Av. Marítima, 39. Teléfono 928 17 35 05.",
+    "cocina": "marisco, con la langosta elegida del vivero. Precio €€.",
+    "horario": "todos los días de 12:00 a 21:00 (Wanderlog). Capture the Atlas (2023) daba de 11:30 a 21:30.",
+    "reserva": "aconsejada, sobre todo el domingo a mediodía."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Lago Verde",
+    "cocina": "pescado y marisco, barato (€). Tiene terraza cubierta.",
+    "horario": "de miércoles a domingo de 12:00 a 21:00; cierra lunes y martes. El dato es de 2023 y sigue sin confirmar."
+   },
+   {
+    "rol": "tercera",
+    "nombre": "Mar Azul (Casa Luis)",
+    "direccion": "Av. Marítima, 42. Teléfono 928 17 31 32.",
+    "cocina": "arroz de marisco, sobre la playa. Precio €€.",
+    "horario": "de 11:00 a 20:00; el martes hasta las 16:00; cierra el miércoles."
+   }
+  ],
+  "D2_comida": [
+   {
+    "rol": "restaurante",
+    "nombre": "Tacande",
+    "direccion": "Plaza del Castillo, 5. Teléfono de reservas 928 83 51 17.",
+    "cocina": "producto de la isla (cabra, pescado local, verduras), con parrilla Josper. Unos 45 € por persona.",
+    "horario": "comidas todos los días de 13:00 a 16:00; cenas desde las 17:30 o las 18:00 hasta las 22:00 (Michelin).",
+    "reserva": "sí, y sobre todo el sábado."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "La Puerta Verde",
+    "direccion": "C/ Fajardo, 24. Teléfono 928 835 350.",
+    "cocina": "fusión con base canaria (pescado, sancocho). Menos de 20 € por persona (GastroRanking).",
+    "horario": "de lunes a jueves de 13:00 a 18:00; viernes y sábado de 13:00 a 22:00; domingo de 13:00 a 21:00.",
+    "reserva": "sin confirmar."
+   },
+   {
+    "rol": "otra",
+    "nombre": "Mercado Municipal de Haría",
+    "direccion": "C/ Barranco de Tesnesia, 2A.",
+    "cocina": "bandejas de carne o pescado para compartir, barato.",
+    "horario": "de martes a sábado de 9:00 a 16:00.",
+    "reserva": "por WhatsApp un día antes (639 10 16 55). No contestan al teléfono y hay que coger número."
+   }
+  ],
+  "D2_cena": [
+   {
+    "rol": "restaurante",
+    "nombre": "La Casa de la Playa",
+    "direccion": "C/ El Lajero, 1C, junto a la playa de La Garita. Teléfono 928 173 339.",
+    "cocina": "pescado fresco a la parrilla y parrilladas para compartir. Unos 28 € por persona.",
+    "horario": "de jueves a lunes de 10:00 a 22:00; cierra martes y miércoles. Lo confirman dos fuentes.",
+    "reserva": "sí (lanzarote.com). La Maleta avisa de que se disfruta más a mediodía."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "El Amanecer",
+    "direccion": "C/ La Garita, 46. Coordenadas: 29.131536, -13.460945. Teléfono 928 17 92 13.",
+    "lat": 29.131536,
+    "lng": -13.460945,
+    "cocina": "pescado del día (cherne, sama, abae), con terraza al mar. Precio sin confirmar.",
+    "horario": "de martes a sábado de 13:00 a 21:00; cierra domingo y lunes (Wanderlog).",
+    "reserva": "no acepta reservas (La Voz, 2023)."
+   }
+  ],
+  "D3_comida": [
+   {
+    "rol": "restaurante",
+    "nombre": "La Cantina",
+    "direccion": "C/ León y Castillo, 8. Coordenadas: 29.058535, -13.560330. Teléfono 928 84 55 36.",
+    "lat": 29.058535,
+    "lng": -13.56033,
+    "cocina": "tapas y cocina casera en una casa de unos 400 años con patio. Unos 30-45 € por persona.",
+    "horario": "todos los días de 10:00 a 23:00.",
+    "reserva": "conviene el domingo, por el mercadillo."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Ikarus",
+    "direccion": "Plaza Clavijo y Fajardo, 6. Teléfono 928 845 701.",
+    "cocina": "cocina de Lanzarote al día, en una casona. Precio sin confirmar.",
+    "horario": "comidas de jueves a sábado de 13:00 a 16:00 y domingo de 12:00 a 16:00. Martes y miércoles solo cenas (19:00-23:00). Lunes, cerrado."
+   }
+  ],
+  "D3_cena": [
+   {
+    "rol": "restaurante",
+    "nombre": "Castillo de San José",
+    "direccion": "carretera de Los Castillos. Coordenadas: 28.9710, -13.5332. Teléfono 928 81 23 21.",
+    "lat": 28.971,
+    "lng": -13.5332,
+    "cocina": "canaria actualizada, vinos de Lanzarote y vistas al puerto. Precio sin confirmar.",
+    "horario": "de miércoles a sábado de 11:00 a 23:00; de domingo a martes de 11:00 a 18:00, es decir, sin cenas.",
+    "reserva": "sí, por la web o por teléfono."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Tasca La Raspa",
+    "nota": "(en el Charco de San Ginés)",
+    "direccion": "Av. César Manrique, 20. Coordenadas: 28.962326, -13.546774. Teléfono 928 80 84 05.",
+    "lat": 28.962326,
+    "lng": -13.546774,
+    "cocina": "tapas canarias, con terraza sobre el Charco. Unos 20-30 € por persona.",
+    "horario": "todos los días de 13:00 a 00:00.",
+    "reserva": "sin confirmar."
+   }
+  ],
+  "D4_comida": [
+   {
+    "rol": "restaurante",
+    "nombre": "Liken",
+    "nota": "(Marina Rubicón)",
+    "direccion": "Av. Marítima, 159F. Teléfono 928 27 05 87.",
+    "cocina": "canaria, con pescado, marisco y arroces del chef Dailos Perdomo. Unos 35-60 € por persona.",
+    "horario": "Lanzarote3 (actualizado en septiembre de 2025) da todos los días de 12:00 a 23:00. Una reseña de 2021 decía que cerraba los lunes, así que el lunes está sin confirmar.",
+    "reserva": "por su web."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Brisa Marina",
+    "nota": "(paseo marítimo)",
+    "direccion": "Av. Marítima, 97-99. Coordenadas: 28.86287, -13.82898. Teléfono 928 51 72 06.",
+    "lat": 28.86287,
+    "lng": -13.82898,
+    "cocina": "canaria con pescado del día, en una antigua casa de pescadores (abierto desde 1987). Unos 35-60 € por persona.",
+    "horario": "sin confirmar."
+   }
+  ],
+  "D4_cena": [
+   {
+    "rol": "restaurante",
+    "nombre": "La Casa Roja",
+    "nota": "(Marina Rubicón)",
+    "cocina": "mediterránea; arroz negro y pescado del día. Precio €€.",
+    "horario": "Wanderlog da todos los días de 13:00 a 22:00. En 2023 era de lunes a sábado de 18:00 a 21:30, así que está sin confirmar."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Casa Carlos",
+    "nota": "(Marina Rubicón)",
+    "direccion": "C/ El Berrugo, 2, local 27A.",
+    "cocina": "arroces, pescado y su paletilla de cordero de 22 horas. Unos 40-45 € por persona.",
+    "horario": "de miércoles a lunes de 13:00 a 22:00; cierra el martes."
+   },
+   {
+    "rol": "otra",
+    "nombre": "Cena especial",
+    "nota": "(con «Vino y cocina canaria»), los dos con reserva:"
+   }
+  ],
+  "D5_comida": [
+   {
+    "rol": "restaurante",
+    "nombre": "El Risco",
+    "direccion": "Repsol da C/ Montaña Clara, 30. Teléfono 928 528 550.",
+    "cocina": "pescado, marisco y arroces de la Reserva Marina. €€ según Michelin; Repsol habla de menús desde más de 60 €.",
+    "horario": "todos los días de 13:00 a 21:30 (Michelin).",
+    "reserva": "sí; suele estar lleno."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Costa Famara",
+    "direccion": "C/ Montaña Clara, 28.",
+    "cocina": "pescado a la brasa y arroces. Precio sin confirmar.",
+    "horario": "sin confirmar."
+   }
+  ],
+  "D5_cena": [
+   {
+    "rol": "restaurante",
+    "nombre": "Sol",
+    "direccion": "lanzarote.com da C/ Montaña Clara, 26; Mapstr da C/ Salvavidas, 48. Teléfono 928 528 788.",
+    "cocina": "canaria moderna, con marisco y arroces. €€.",
+    "horario": "de lunes a sábado de 12:00 a 22:00 y domingo de 12:00 a 21:30."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Dunas de Famara",
+    "direccion": "C/ Chirimoya, 13 (Urb. Famara).",
+    "cocina": "canaria y marinera actual. Unos 35-60 € por persona.",
+    "horario": "sin confirmar."
+   }
+  ],
+  "DG_comida": [
+   {
+    "rol": "restaurante",
+    "nombre": "Casa Enriqueta",
+    "direccion": "C/ Mar de Barlovento, 6.",
+    "cocina": "tradicional graciosera (caldo de pescado, arroz caldoso, lapas). Unos 20-30 € por persona con vino.",
+    "horario": "de jueves a lunes de 10:00 a 23:30; cierra martes y miércoles.",
+    "reserva": "en temporada alta, sí."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "El Veril",
+    "direccion": "Av. Virgen del Mar, 93-95.",
+    "cocina": "raciones generosas, informal. Precio sin confirmar.",
+    "horario": "todos los días de 11:00 a 23:00, salvo el lunes, que cierra a las 17:00."
+   },
+   {
+    "rol": "tercera",
+    "nombre": "Girasol (Casa Margucha)",
+    "direccion": "Av. Virgen del Mar, 99, frente al puerto.",
+    "horario": "sin confirmar."
+   }
+  ],
+  "DG_orzola": [
+   {
+    "rol": "restaurante",
+    "nombre": "La Maresía",
+    "direccion": "C/ La Quemadita, 18. Teléfono 928 84 25 16.",
+    "cocina": "pescado fresco, con jardín a la sombra y aparcamiento. Barato.",
+    "horario": "solo comidas, de 12:30 a 17:30; cierra jueves y viernes."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Punta Fariones",
+    "direccion": "C/ La Quemadita, 10. Coordenadas: 29.222961, -13.452687. Teléfono 928 84 25 82.",
+    "lat": 29.222961,
+    "lng": -13.452687,
+    "cocina": "pescado y marisco junto al puerto, no caro.",
+    "horario": "sin confirmar."
+   },
+   {
+    "rol": "tercera",
+    "nombre": "Mirador El Roque",
+    "nota": ", en C/ Peña del Señor Dionisio, 8. Es el que tiene más opiniones del pueblo. Horario sin confirmar. Teneriffa News"
+   }
+  ]
+ },
+ "cenas_por_zona": {
+  "puerto_del_carmen": [
+   {
+    "nombre": "La Carmencita del Puerto",
+    "direccion": "C/ Chabusquillo, 47, junto a la Av. de las Playas. Teléfono 928 29 11 69.",
+    "cocina": "canaria y tapas. €€.",
+    "horario": "de lunes a viernes de 19:30 a 23:00; cierra sábado y domingo.",
+    "reserva": "sí, «llama antes»."
+   },
+   {
+    "nombre": "El Cangrejo Rojo",
+    "nota": "(Puerto Viejo, con vistas al puerto y a Playa Chica)",
+    "cocina": "tapas de marisco. €€.",
+    "horario": "de lunes a sábado de 13:00 a 23:00 (dato de 2023).",
+    "reserva": "aconsejada el fin de semana."
+   },
+   {
+    "nombre": "Lomo Alto",
+    "nota": "(Puerto Viejo)",
+    "direccion": "C/ Hierro, 2. Teléfono 928 51 22 77.",
+    "cocina": "carnes a la brasa. €€.",
+    "horario": "todos los días de 12:00 a 23:00 (dato de 2023)."
+   },
+   {
+    "nombre": "Para pescado: La Cofradía",
+    "nota": ", en el Varadero. Pescado de la cofradía de pescadores y precios bajos. Horario sin confirmar; la reseña es de 2020. Lanzarote Information"
+   }
+  ],
+  "playa_blanca": [
+   {
+    "nombre": "Primario Gastrobar",
+    "nota": ", en La Marina, 8B (Marina Rubicón). Canaria moderna. Miércoles y jueves de 19:00 a 24:00; de viernes a domingo de 14:00 a 24:00. Lanzarote3"
+   },
+   {
+    "nombre": "La Tapita",
+    "nota": ", en C/ El Correíllo, 14. Tapas, unos 12-18 € por persona. Horario sin confirmar. La Maleta, 2026"
+   },
+   {
+    "nombre": "Restaurante La Cubierta",
+    "nota": ", en C/ El Berrugo, 2. Todos los días de 12:00 a 22:00. Precio asequible. Es apoyo: solo tengo su ficha de Wanderlog. Wanderlog"
+   }
+  ],
+  "costa_teguise": [
+   {
+    "nombre": "SeBE",
+    "direccion": "Av. Islas Canarias, 8. Teléfono 928 59 31 55.",
+    "cocina": "arroces, pescado y marisco. €€€. Está en la Guía Michelin 2026.",
+    "horario": "cenas lunes, martes, jueves y viernes de 20:00 a 23:30. El miércoles solo comidas. Sábado y domingo, cerrado."
+   },
+   {
+    "nombre": "La Bohemia",
+    "nota": "(Pueblo Marinero)",
+    "cocina": "cocina de mercado y parrilla. Unos 28-38 € por persona.",
+    "horario": "de jueves a martes de 13:00 a 22:30 (dato de 2023).",
+    "reserva": "aconsejada."
+   },
+   {
+    "nombre": "Villa Toledo",
+    "nota": "(paseo de Playa Bastián)",
+    "cocina": "marisco, con vistas al mar. €€.",
+    "horario": "cenas de martes a domingo de 19:00 a 22:30 o 23:00; cierra el lunes (dato de 2023)."
+   }
+  ],
+  "arrecife": [
+   {
+    "nombre": "Lilium",
+    "nota": "(Marina Lanzarote)",
+    "direccion": "Av. Olof Palme.",
+    "cocina": "regional, de autor. €€. Está en la Guía Michelin 2026 y tiene 1 Sol Repsol 2026.",
+    "horario": "martes a jueves de 19:00 a 21:00; viernes y sábado de 19:30 a 21:30, y también comidas de 13:30 a 15:00. Cierra domingo y lunes.",
+    "reserva": "sí."
+   },
+   {
+    "nombre": "Naia",
+    "nota": "(Charco de San Ginés)",
+    "cocina": "mediterránea; su plato es el arroz de setas. €€.",
+    "horario": "de martes a domingo de 19:30 a 22:30 (dato de 2023, sin confirmar)."
+   },
+   {
+    "nombre": "Malecón Restaurante & Copas",
+    "nota": "(Charco)",
+    "cocina": "tapas y paella. Barato (€).",
+    "horario": "de miércoles a lunes de 10:00 a 23:00 (dato de 2023)."
+   }
+  ],
+  "el_norte": [
+   {
+    "nombre": "Volcán de la Corona",
+    "nota": ", en Yé (C/ Malpaís, 8).",
+    "cocina": "brasa de leña. Unos 20-30 € por persona. Tiene nota de 9,0 sobre más de 4.300 opiniones.",
+    "horario": "sin confirmar. Conviene reservar el domingo."
+   },
+   {
+    "nombre": "Centro Sociocultural La Tegala",
+    "nota": ", en la Plaza León y Castillo, 16, de Haría. Teléfono 696 90 06 52.",
+    "horario": "todos los días de 9:00 a 22:00, salvo el miércoles, que cierra."
+   },
+   {
+    "nombre": "El Charcón",
+    "nota": ", en Arrieta (C/ El Charcón, 13).",
+    "horario": "sin confirmar si abre por la noche; una ficha solo da «martes de 12:00 a 20:00»."
+   }
+  ],
+  "el_interior": [
+   {
+    "nombre": "La Era",
+    "nota": ", en Yaiza (C/ El Barranco, 3). Teléfono 928 83 00 16.",
+    "horario": "de lunes a viernes de 13:00 a 16:00 y de 18:00 a 22:00; cierra sábado y domingo.",
+    "reserva": "aconsejada."
+   },
+   {
+    "nombre": "El Barquillo",
+    "nota": ", en La Santa (Tinajo), C/ Recalmón, 20.",
+    "horario": "de miércoles a domingo de 10:00 a 17:00 y de 19:00 a 22:00; cierra lunes y martes."
+   },
+   {
+    "nombre": "Palacio Ico",
+    "especial": true,
+    "nota": ", en Teguise (C/ El Rayo, 2). Cena especial.",
+    "cocina": "menú degustación de 98 € o 120 €. Está en la Guía Michelin 2026.",
+    "horario": "de lunes a viernes, por la noche (las horas exactas, en el punto 1 de arriba)."
+   },
+   {
+    "nombre": "Casa Cejas",
+    "nota": ", en Teguise (Plaza San Francisco, 5). Tasca canaria, unos 20-25 € por persona. Horario sin confirmar. La Maleta, 2026"
+   }
+  ]
+ }
+}

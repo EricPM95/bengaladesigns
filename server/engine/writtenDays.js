@@ -167,7 +167,7 @@ function withSlots(key, table) {
   const folder = join(DIAS_DIR, '..', '..', 'public', String(table.carpeta ?? '').replace(/^\//, ''))
   const registered = new Set(table.fotos.map((foto) => foto.archivo))
   const arrived = table.huecos
-    .filter((slot) => !registered.has(slot.archivo) && existsSync(join(folder, slot.archivo)))
+    .filter((slot) => slot && typeof slot === 'object' && slot.archivo && !registered.has(slot.archivo) && existsSync(join(folder, slot.archivo)))
     .map((slot) => ({ archivo: slot.archivo, lugares: slot.lugares, cuando: slot.cuando ?? 'dia', ancho: 1600, fuente: '', autor: '', enlace: '', hueco: true }))
   const value = arrived.length > 0 ? { ...table, fotos: [...table.fotos, ...arrived] } : table
   slotsCache.set(key, { at: Date.now(), value })

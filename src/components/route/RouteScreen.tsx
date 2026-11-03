@@ -1,3 +1,4 @@
+import { AdaptarDiasDeCoche } from './AdaptarDiasDeCoche'
 import { motion } from 'framer-motion'
 import { RouteView } from './RouteView'
 import { AvisoSolape } from './reservas/AvisoSolape'
@@ -16,6 +17,7 @@ export default function RouteScreen() {
       <RouteView />
       <AvisoSolape />
       <AlojamientoHost />
+      <AdaptarDiasDeCoche />
       <PantallaPresupuesto />
       <BotonFlotanteLogros />
       <ReorganizarHost />

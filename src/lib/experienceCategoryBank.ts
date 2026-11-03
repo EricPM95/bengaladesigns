@@ -29,6 +29,21 @@ export const EXPERIENCE_CATEGORY_BANK: ExperienceCategoryDefinition[] = [
   { id: 'mercadillos_navidenos', icon: 'abeto', title: 'Mercadillos Navideños', description: 'Mercadillos de Navidad y ambiente invernal', winterOnly: true },
 ]
 
+/**
+ * (LZ2a §4) Las experiencias de Lanzarote: SUSTITUYEN a las de Roma (el destino de coche no tiene Free Tour ni mercadillos). Los ids son los que lee
+ * `data/dias/lanzarote/listas.json` (`experiencia`). Qué cambia cada una en la ruta: `DIAS_CURADOS_LANZAROTE.md`, apartado 3.
+ */
+export const EXPERIENCE_CATEGORY_BANK_LANZAROTE: ExperienceCategoryDefinition[] = [
+  { id: 'imprescindibles', icon: 'columnas', title: 'Imprescindibles', description: 'Lo esencial de Lanzarote', lockedPositive: true },
+  { id: 'arte', icon: 'arte', title: 'Manrique y arte', description: 'La Fundación, el Jardín de Cactus, Jameos y el Mirador del Río' },
+  { id: 'volcanes', icon: 'montana', title: 'Volcanes y senderismo', description: 'Timanfaya, el Volcán del Cuervo y los paisajes de La Geria' },
+  { id: 'playa_y_calma', icon: 'playa', title: 'Playa y calma', description: 'Papagayo y más ratos de playa, sin prisa' },
+  { id: 'vino', icon: 'copa', title: 'Vino y cocina canaria', description: 'Bodegas de La Geria, queso y mesas de la isla' },
+]
+
+/** Los destinos de coche (Lanzarote): su pregunta «¿Vas a moverte en coche?», sus experiencias y sin Free Tour. Por el nombre del destino, como `zonaHoraria.ts`. */
+export const esDestinoDeCoche = (destino: string | null | undefined): boolean => /^lanzarote$/i.test((destino ?? '').trim())
+
 export const MAX_POSITIVE_CATEGORIES = 3
 export const MAX_NEGATIVE_CATEGORIES = 2
 

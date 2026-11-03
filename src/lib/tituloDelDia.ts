@@ -131,6 +131,7 @@ export function viajeDelDia(route: Route, day: DayPlan): string | null {
 function nombreDeSiempre(route: Route, day: DayPlan, conTrayecto: boolean): { titulo: string; ponleNombre: boolean } {
   const enExcursion = day.interruptor?.mode === 'excursion'
   if (day.userAdded) return { titulo: day.curatedTitle ?? day.title ?? day.city, ponleNombre: false }
+  if (day.dayType === 'excursion' && day.curatedTitle && !day.interruptor) return { titulo: day.curatedTitle, ponleNombre: false }
   if (enExcursion) return { titulo: `Excursión desde ${day.city}`, ponleNombre: false }
   const viaje = conTrayecto ? viajeDelDia(route, day) : null
   if (viaje) return { titulo: viaje, ponleNombre: false }
@@ -147,7 +148,7 @@ export function nombreDelDia(route: Route, day: DayPlan, grupos: GruposDelDestin
   const viaje = viajeDelDia(route, day)
   const sinTrayecto = (titulo: string): NombreDelDia => ({ titulo, viaje, ponleNombre: false })
   if (day.nameByUser || (day.userAdded && !esDiaDeExcursion(day))) return sinTrayecto(day.curatedTitle ?? day.title ?? day.city)
-  if (esDiaDeExcursion(day)) return sinTrayecto(grupos.excursion ?? `Excursión desde ${day.city}`)
+  if (esDiaDeExcursion(day)) return sinTrayecto(day.curatedTitle && !day.interruptor ? day.curatedTitle : grupos.excursion ?? `Excursión desde ${day.city}`)
 
   const paradas = paradasParaElTitulo(day)
   const marcadores: string[] = []

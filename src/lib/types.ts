@@ -107,6 +107,11 @@ export type ExperienceCategoryId =
   | 'free_tour'
   /** Solo visible/seleccionable cuando `answers.season === 'winter'`, ver EXPERIENCE_CATEGORY_BANK. */
   | 'mercadillos_navidenos'
+  /** (LZ2a §4) Las 4 experiencias de Lanzarote (los ids que lee `data/dias/lanzarote/listas.json`): Manrique y arte, Volcanes y senderismo, Playa y calma, Vino y cocina canaria. */
+  | 'arte'
+  | 'volcanes'
+  | 'playa_y_calma'
+  | 'vino'
 
 /**
  * Un lugar concreto y real del destino, sugerido por Claude tras elegir experiencias (ver
@@ -171,6 +176,8 @@ export interface QuestionnaireAnswers {
   diaCuatro?: 'roma' | 'excursion'
   /** Viaje de 1,5 días: el medio día cae por la tarde (llegada) o por la mañana (salida). */
   mediaJornada?: { franja: 'manana' | 'tarde'; llegada?: string; salida?: string; /** Dónde cae el medio día: 'primero' (llegada) o 'ultimo' (salida); sin él, la tarde es la llegada y la mañana la salida. */ posicion?: 'primero' | 'ultimo' }
+  /** (LZ2a §4) Solo en los destinos de coche (Lanzarote): «¿Vas a moverte en coche?». 'alquiler' = sí, de alquiler; 'propio' = sí, el mío; 'no' = sin coche (cada día enseña su «¿Sin coche?»). Ausente = sin preguntar (Roma). */
+  coche?: 'alquiler' | 'propio' | 'no'
 }
 
 /** Todo lo decidido en la fase de transporte — se pasa tal cual al prompt de generación de ruta. */
@@ -252,6 +259,52 @@ export interface DatosDeActividad {
   idiomas: string[]
   url: string | null
 }
+
+/** (LZ2a) Un punto de un trayecto en coche. */
+export interface PuntoDeTrayecto { nombre: string; lat: number; lng: number }
+/** (LZ2a) El trayecto en coche entre dos paradas (el destino es el aparcamiento de la parada). */
+export interface TrayectoCoche {
+  modo: 'car'
+  minutos: number
+  km: number
+  aparcar_min?: number
+  minutos_total?: number
+  texto: string
+  desde?: PuntoDeTrayecto
+  destino?: PuntoDeTrayecto
+  maps_url: string
+  /** La llegada con hora online («15 minutos antes de tu hora…»), si la parada la tiene. */
+  llegada_texto?: string
+}
+/** (LZ2a) Lo que el motor de coche dice del día. */
+export interface CocheDelDia {
+  activo: boolean
+  pase?: boolean
+  desde?: 'zona' | 'zona_mas_lejana'
+  zona?: { id: string; nombre: string }
+  ida?: { minutos: number; km: number; aparcar_min?: number; salir?: string; destino?: PuntoDeTrayecto; maps_url?: string } | null
+  vuelta?: { minutos: number; km: number; sale?: string; llegas?: string; origen?: PuntoDeTrayecto; maps_url?: string } | null
+  coche_min?: number
+  tope_min?: number
+  aviso_tope?: { minutos_de_mas: number; texto: string } | null
+  salir_texto?: string
+}
+export interface AeropuertoDelDia {
+  recoger_coche_min?: number
+  punto?: PuntoDeTrayecto
+  zona_a_aeropuerto?: { minutos: number; km: number; maps_url?: string }
+  aeropuerto_a_zona?: { minutos: number; km: number; maps_url?: string }
+}
+export interface CenaCerca {
+  con_pase: boolean
+  zona?: { id: string; nombre: string }
+  titulo: string
+  texto?: string
+  hora?: string
+  restaurantes?: { name: string; direccion?: string; lat?: number; lng?: number }[]
+}
+export interface OpcionalQuitado { name: string; motivo?: string; texto?: string; duracion_minutos?: number }
+export interface SinCocheDelDia { excursion: string; deja_fuera?: string; civitatis?: { url?: string; titulo?: string; precio?: number | string } | null }
 
 export interface Stop {
   id: string
@@ -339,6 +392,10 @@ export interface Stop {
   freeTourEnd?: string
   /** El tramo hasta aquí lo hace el día en bus o metro: "Bus 118, unos 25 min". */
   transitLabel?: string
+  /** (LZ2a) Solo destinos de coche (Lanzarote): el trayecto en coche hasta esta parada (contrato de `docs/dias/_estado_lz2a_contrato.md`, apartado a). Sin él, el de siempre (a pie, bus). */
+  trayectoCoche?: TrayectoCoche | null
+  /** (LZ2a) «Llegada al aparcamiento…: 15 minutos antes de tu hora» de las entradas con hora solo online (Timanfaya, Cueva de los Verdes). */
+  llegadaTexto?: string | null
   /** Monumento que ese día no se visita (va de paso por delante): sale "Por fuera" con este motivo ("hoy no toca
       entrar", "a esta hora ya ha cerrado", "cerrado hoy"). Sin él, lo de paso es "Por el camino". */
   outsideReason?: string | null
@@ -855,6 +912,16 @@ export interface DayPlan {
   transferNotice?: string | null
   /** Minutos andando desde la última visita hasta el sitio de la cena (motor v3). Sirve para saber cuánto tiempo LIBRE queda antes de cenar, ver FreeTimeBlock. */
   dinnerWalkMinutes?: number | null
+  /** (LZ2a) Solo destinos de coche: la ida desde el alojamiento y la vuelta a casa, el tope de 3 h, la cena cerca, los opcionales quitados y el «¿Sin coche?» del día. */
+  coche?: CocheDelDia | null
+  cenaCerca?: CenaCerca | null
+  opcionalesQuitados?: OpcionalQuitado[] | null
+  sinCoche?: SinCocheDelDia | null
+  /** (LZ2a) El día escrito de Lanzarote (D1…D5, DG, DF) y su zona horaria («Atlantic/Canary»). */
+  diaEscritoId?: string | null
+  zonaHorariaDia?: string | null
+  /** (LZ2a) Solo destinos de coche: del alojamiento del día al aeropuerto y de vuelta (para «Hoy vuelves a casa» y la llegada). */
+  aeropuerto?: AeropuertoDelDia | null
   /** Solo días de revisitas: la excursión de medio día que ocupa la mañana. Ver HalfDayExcursionSlot. */
   halfDayExcursion?: HalfDayExcursionSlot | null
   /** Motor v3: los ratos con nombre y contenido propio (el descanso de después de comer, el paseo de antes del mirador).

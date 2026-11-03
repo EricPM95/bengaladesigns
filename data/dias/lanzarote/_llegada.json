@@ -1,0 +1,86 @@
+{
+ "_nota": "La llegada y la vuelta de Lanzarote (LZ2a, apartado 5): solo el avión por el aeropuerto César Manrique-Lanzarote (ACE), de docs/destinos/lanzarote/LLEGADA_FECHAS_CONSEJOS_LANZAROTE.md (apartados 1.1 a 1.3). Mismo esquema que data/dias/roma/_llegada.json; lo lee /api/arrival-info y lo pinta ArrivalReturnSheet. Aquí «lo más cómodo» es el coche de alquiler (se recoge en la T1). Los tiempos en coche son de rome2rio, sin tráfico (Google Maps no se pudo usar); lo que la fuente no confirma no lleva precio ni tiempo. Salir antes del vuelo: 165 min (coche hasta el aeropuerto + 30 min de repostar y devolver el coche + las 2 h de siempre; Playa Blanca, 180): es una propuesta pendiente de Eric. Hora de Canarias (Atlantic/Canary), una hora menos que la península.",
+ "ciudad": "Lanzarote",
+ "despedida": "Hasta pronto, Lanzarote.",
+ "medios": {
+  "avion": {
+   "textos": {
+    "llegada_titulo": "Llegada a Lanzarote",
+    "llegada_sub": "Cómo llegar a tu alojamiento desde el aeropuerto",
+    "llegada_por_que": "Lo más cómodo en Lanzarote es el coche de alquiler: se recoge en la terminal 1 y casi todo queda a menos de media hora del aeropuerto, que está a unos 5 km de Arrecife, en el centro de la isla. Pon el reloj en hora al aterrizar: en Canarias es una hora menos que en la península.",
+    "vuelta_titulo": "Vuelta a {origen}",
+    "vuelta_sub": "Cómo llegar al aeropuerto de Lanzarote con margen de sobra",
+    "vuelta_por_que": "Te recomendamos estar en el aeropuerto 2 horas antes, con el coche ya devuelto: llena el depósito (la gasolinera del aeropuerto abre de 07:00 a 23:00) y sigue los carteles de «Devolución de coches de alquiler» de la T1."
+   },
+   "salir_antes_min": 165,
+   "puntos": [
+    {
+     "id": "ace",
+     "corto": "Lanzarote",
+     "nombre": "Aeropuerto César Manrique-Lanzarote",
+     "codigo": "ACE",
+     "barra": "LANZAROTE",
+     "foto": "Lanzarote airport",
+     "al_centro_min": 13,
+     "distancia": "5 km a Arrecife",
+     "al_centro": [
+      {
+       "nombre": "Tu coche de alquiler",
+       "mas_comodo": true,
+       "tiempo": "Puerto del Carmen, unos 10 min; Costa Teguise, unos 13 min; Playa Blanca, unos 28 min",
+       "nota": "Los mostradores de alquiler están en la zona de llegadas de la T1; el coche te espera en el aparcamiento de coches de alquiler, junto a la terminal. Si tu vuelo llega tarde, avisa a tu empresa: los mostradores cierran por la noche (algunos a las 23:00).",
+       "fuente": "https://www.rome2rio.com (opción coche, sin tráfico; Google Maps no se pudo usar)",
+       "comprobado": "2026-11-03"
+      },
+      {
+       "nombre": "Guagua (autobús)",
+       "tiempo": "Arrecife, la línea 22 (~25 min); Puerto del Carmen y Playa Blanca, la línea 161 (~55 min a Playa Blanca)",
+       "frecuencia": "la 161, de 07:30 a 21:30: cada 30 min hasta las 16:30 y luego cada hora",
+       "nota": "Sale de la planta 0, Llegadas, de la T1. Se paga a bordo en efectivo (billete de 10 € como máximo) o con tarjeta bancaria. A Costa Teguise no hay guagua directa: la 22 hasta la estación de Arrecife y allí la línea 1. La última 161 sale a las 21:30.",
+       "fuente": "Web oficial de guaguas de Lanzarote (horarios leídos el 3-nov-2026)",
+       "comprobado": "2026-11-03"
+      },
+      {
+       "nombre": "Taxi",
+       "tiempo": "Puerto del Carmen, unos 10 min",
+       "nota": "Parada en la planta 0, Llegadas, de la T1. Tarifa oficial con taxímetro, más un suplemento por salir del aeropuerto; desde las 22:00 cobra la tarifa de noche. Coge siempre el taxi en la parada de la terminal.",
+       "fuente": "Aena y tarifa oficial de taxis de Lanzarote",
+       "comprobado": "2026-11-03"
+      }
+     ],
+     "a_la_salida": [
+      {
+       "nombre": "Devuelve el coche en la terminal 1",
+       "mas_comodo": true,
+       "tiempo": "Llega con 30 min extra para repostar y devolverlo",
+       "nota": "Gasolinera en el propio aeropuerto, a la entrada (de 07:00 a 23:00 todos los días, festivos incluidos). Sigue los carteles de «Devolución de coches de alquiler» hasta el aparcamiento de alquiler de la T1 y deja las llaves donde te diga tu empresa. Si sales antes de las 7, llena el depósito la tarde anterior.",
+       "fuente": "Web de la petrolera y de Aena",
+       "comprobado": "2026-11-03"
+      },
+      {
+       "nombre": "Guagua (autobús)",
+       "tiempo": "Desde Playa Blanca, la 161, ~51 min hasta la T1; desde Arrecife, la 22",
+       "frecuencia": "la 161 sale de 08:25 a 21:25 desde la estación de Playa Blanca: cada 30 min y luego cada hora",
+       "nota": "Pide el taxi con tiempo, sobre todo a primera hora.",
+       "fuente": "Web oficial de guaguas de Lanzarote (horarios leídos el 3-nov-2026)",
+       "comprobado": "2026-11-03"
+      }
+     ],
+     "coordenadas": { "lat": 28.9455, "lng": -13.6052 },
+     "por_que_llegada": "En Lanzarote lo más cómodo es el coche de alquiler: lo recoges en la T1 y llegas a tu alojamiento en 10 a 30 min según la zona. Si no vas a alquilar, la guagua llega a Arrecife, Puerto del Carmen y Playa Blanca, o puedes reservar un traslado privado.",
+     "por_que_vuelta": "Devuelve el coche en la T1 con el depósito lleno y con 30 min de margen, y estate en el aeropuerto 2 horas antes de tu vuelo."
+    }
+   ],
+   "tips_llegada": [
+    { "titulo": "Reserva el coche con antelación", "texto": "En temporada alta se encarece y quedan pocos coches: reserva con 2-3 semanas.", "fuente": null },
+    { "titulo": "Mira qué seguro llevas", "texto": "Elige un seguro sin franquicia: el arcén de lava daña los bajos. Muchos contratos no cubren las pistas de tierra, y algunos sitios de la ruta se hacen por pista (Papagayo, por ejemplo).", "fuente": null },
+    { "titulo": "Hora de Canarias", "texto": "En Canarias es una hora menos que en la península. Pon el reloj en hora al aterrizar.", "fuente": null }
+   ],
+   "tips_vuelta": [
+    { "titulo": "El depósito, lleno la tarde anterior si sales antes de las 7", "texto": "La gasolinera del aeropuerto abre a las 07:00. Algunas empresas piden devolver el coche lleno y otras no: mira tu contrato.", "fuente": null }
+   ]
+  }
+ },
+ "ultima_tarde": { "texto": "Sal con tiempo: unos 10 a 30 min en coche hasta el aeropuerto, más el rato de llenar el depósito y devolver el coche." },
+ "maleta": { "titulo": "La maleta, el último día", "texto": "Déjala en el maletero y no a la vista si paras en un mirador o en una playa." }
+}

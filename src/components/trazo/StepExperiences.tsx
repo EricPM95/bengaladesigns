@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { DateRange, ExperienceCategoryId, Season } from '../../lib/types'
-import { EXPERIENCE_CATEGORY_BANK, MAX_POSITIVE_CATEGORIES, isCategoryVisible } from '../../lib/experienceCategoryBank'
+import { EXPERIENCE_CATEGORY_BANK, EXPERIENCE_CATEGORY_BANK_LANZAROTE, MAX_POSITIVE_CATEGORIES, esDestinoDeCoche, isCategoryVisible } from '../../lib/experienceCategoryBank'
 import { fetchSeasonalWindows, seasonStatus, type SeasonalWindow } from '../../lib/seasonalAvailability'
 import { ACCENT, AMBER, Cta, DARK, Em, INK, MONO, SERIF, Title } from './trazoUi'
 import { Icono } from '../ui/Icono'
@@ -50,8 +50,10 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
   const statusOf = (id: ExperienceCategoryId) => seasonStatus(windows[id], month, dateRange)
   // Con 1 día o con 1,5 (2 días de calendario) el Free Tour no se ofrece; desde 2 días de ruta, sí. Va sin pregunta de hora: sale de mañana (10:00) y la hora se cambia después desde RESERVAS.
   const sinFreeTour = days != null && days <= 2
-  const shown = EXPERIENCE_CATEGORY_BANK.filter((category) =>
-    category.id === 'free_tour' && sinFreeTour ? false : windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
+  // (LZ2a §4) Lanzarote: sus 4 experiencias, sin Free Tour ni mercadillos ni ventanas de temporada.
+  const deCoche = esDestinoDeCoche(destinationName)
+  const shown = (deCoche ? EXPERIENCE_CATEGORY_BANK_LANZAROTE : EXPERIENCE_CATEGORY_BANK).filter((category) =>
+    deCoche ? true : category.id === 'free_tour' && sinFreeTour ? false : windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
   )
   // El Free Tour, segundo, justo debajo de Imprescindibles y con la etiqueta «Recomendado» (solo cambia el orden en que se ven).
   const freeTour = shown.find((category) => category.id === 'free_tour')
