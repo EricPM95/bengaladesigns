@@ -1,13 +1,13 @@
-# Estado de la tanda 10s11
+# Estado de la tanda lz1
 
-**Última actualización: 3/11/26, 19:38**
+**Última actualización: 3/11/26, 19:54**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-Tanda 10S11 terminada y subida
+Cuatro agentes: A atado a Roma, B datos de Lanzarote, C tiempos en coche con Mapbox, D Civitatis y fotos
 
 ## Qué falta
-Nada: solo cierre de procesos
+Esperar agentes, pruebaTandaLZ1, muestra de 60, informe, REPASO_LZ1, push, reiniciar API
 
 ## Procesos abiertos ahora mismo
 - node: 3
