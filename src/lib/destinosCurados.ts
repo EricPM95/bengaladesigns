@@ -1,6 +1,16 @@
 import { useEffect, useState } from 'react'
 import type { Place } from './types'
 
+/** (LZ1) La cabecera con la sesión, con el cliente de Supabase cargado a demanda (no pesa en la primera pantalla). Sin sesión o ante cualquier fallo: sin cabecera. */
+async function cabecerasConSesion(): Promise<Record<string, string>> {
+  try {
+    const token = (await (await import('./supabaseClient')).supabase?.auth.getSession())?.data.session?.access_token
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  } catch {
+    return {}
+  }
+}
+
 /**
  * Los destinos curados de verdad (Tanda 10, la primera pantalla): los que salen como pines en el mapa y los únicos que se pueden elegir de DESTINO. Salen de los datos del
  * servidor (`GET /api/destinos-curados`: días escritos, datos del destino, logros con pase y su pin), no de una lista del móvil. Hoy, solo Roma; cuando haya otro, sale solo.
@@ -36,7 +46,9 @@ const deLaPrueba = (): DestinoCurado[] | null => {
 export function cargarDestinosCurados(): Promise<DestinoCurado[]> {
   const prueba = deLaPrueba()
   if (prueba) return Promise.resolve(prueba)
-  lista ??= fetch('/api/destinos-curados')
+  // (LZ1) Con la sesión en la cabecera: solo si es el administrador el servidor añade los destinos ocultos (Lanzarote). Sin sesión o con otra cuenta, la lista de siempre.
+  lista ??= cabecerasConSesion()
+    .then((headers) => fetch('/api/destinos-curados', { headers }))
     .then((r) => (r.ok ? r.json() : null))
     .then((j: { destinos?: unknown[] } | null) => (Array.isArray(j?.destinos) ? j!.destinos.filter(valido) : []))
     .catch(() => [])

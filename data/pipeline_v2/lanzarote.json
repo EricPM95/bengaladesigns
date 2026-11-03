@@ -1,0 +1,2186 @@
+{
+ "_nota": "LZ1 (agente B, 3-nov-2026): los datos de Lanzarote, generados por scripts/destino/lanzaroteDatos.mjs desde docs/destinos/lanzarote/ (LANZAROTE_SITIOS.md y los tres DATOS_*.md, consultados el 2-nov-2026) y las paradas del agente C (data/dias/lanzarote/_paradas.json, coordenadas EN EL APARCAMIENTO). Todo lo que las fuentes no confirman va en `verificar`. NO lleva historias, restaurantes, llegada, consejos de fichas, fechas especiales, categorías de EXPLORAR ni textos del pase (son de la LZ2). Lanzarote está OCULTO: solo lo ve el administrador.",
+ "destination": "Lanzarote",
+ "country": "España",
+ "timezone": "Atlantic/Canary",
+ "moneda": "EUR",
+ "default_transport": "car",
+ "default_free_tour": {
+  "name": "Free Tour por Teguise",
+  "duration_minutes": 120,
+  "rating": 9.3,
+  "rating_max": 10,
+  "meeting_point": null,
+  "coordinates": null,
+  "zone": "centro_norte",
+  "turnos_reserva": null,
+  "verificar": "Días y horas del Free Tour de Teguise por confirmar (agente D, Civitatis). Rating de LANZAROTE_SITIOS.md."
+ },
+ "joyas": [
+  "Montañas del Fuego (Timanfaya)",
+  "Jameos del Agua",
+  "Fundación César Manrique"
+ ],
+ "_joyas_nota": "Provisional: una joya por día curado (D1 Timanfaya, D2 Jameos, D3 Fundación). DIAS_CURADOS_LANZAROTE.md nombra como joyas del D1 a Timanfaya, La Geria y El Golfo; del D2 a Jameos, la Cueva y el Mirador del Río; del D3 a la Fundación. Eric decide cuáles son joya y cuáles imprescindible.",
+ "night_experiences": [],
+ "closed_on": {},
+ "meal_zones": {},
+ "evening_blocks": [],
+ "zones": {
+  "centro": {
+   "name": "Centro",
+   "center": [
+    29.0086,
+    -13.6074
+   ],
+   "places": [
+    "Fundación César Manrique",
+    "La Geria y sus bodegas",
+    "Casa-Museo del Campesino",
+    "LagOmar",
+    "Las Grietas (Montaña Blanca)"
+   ],
+   "zone_priority": 1
+  },
+  "centro_oeste": {
+   "name": "Centro-oeste",
+   "center": [
+    29.0136,
+    -13.709
+   ],
+   "places": [
+    "Montañas del Fuego (Timanfaya)",
+    "Volcán del Cuervo",
+    "Caldera Blanca"
+   ],
+   "zone_priority": 2
+  },
+  "centro_norte": {
+   "name": "Centro-norte",
+   "center": [
+    29.069,
+    -13.5669
+   ],
+   "places": [
+    "Teguise (villa)",
+    "Ermita de las Nieves",
+    "Ciudad Estratificada (Rofera de Teseguite)",
+    "Castillo de Santa Bárbara"
+   ],
+   "zone_priority": 3
+  },
+  "norte": {
+   "name": "Norte",
+   "center": [
+    29.1553,
+    -13.494
+   ],
+   "places": [
+    "Jameos del Agua",
+    "Cueva de los Verdes",
+    "Mirador del Río",
+    "Haría y la Casa-Museo César Manrique",
+    "Mirador de Guinate",
+    "Mirador del Bosquecillo (Risco de Famara)",
+    "Mirador de Haría",
+    "Mirador de los Helechos"
+   ],
+   "zone_priority": 4
+  },
+  "extremo_norte": {
+   "name": "Extremo norte",
+   "center": [
+    29.232,
+    -13.4505
+   ],
+   "places": [
+    "Caletón Blanco"
+   ],
+   "zone_priority": 5
+  },
+  "noreste": {
+   "name": "Noreste",
+   "center": [
+    29.114,
+    -13.4665
+   ],
+   "places": [
+    "Jardín de Cactus",
+    "Punta Mujeres y Arrieta (La Garita)",
+    "Playa de La Garita"
+   ],
+   "zone_priority": 6
+  },
+  "noroeste": {
+   "name": "Noroeste",
+   "center": [
+    29.1158,
+    -13.5636
+   ],
+   "places": [
+    "Caleta de Famara y Playa de Famara"
+   ],
+   "zone_priority": 7
+  },
+  "este": {
+   "name": "Este (Arrecife)",
+   "center": [
+    28.9681,
+    -13.5441
+   ],
+   "places": [
+    "Arrecife: Charco de San Ginés y el paseo",
+    "Castillo de San José (MIAC)"
+   ],
+   "zone_priority": 8
+  },
+  "sur": {
+   "name": "Sur",
+   "center": [
+    28.8528,
+    -13.8089
+   ],
+   "places": [
+    "Playas de Papagayo",
+    "Playa Blanca y el Faro de Pechiguera"
+   ],
+   "zone_priority": 9
+  },
+  "sur_centro": {
+   "name": "Sur-centro (Puerto del Carmen)",
+   "center": [
+    28.9208,
+    -13.6726
+   ],
+   "places": [
+    "Puerto del Carmen (Puerto Viejo)"
+   ],
+   "zone_priority": 10
+  },
+  "suroeste": {
+   "name": "Suroeste (Yaiza)",
+   "center": [
+    28.9519,
+    -13.8277
+   ],
+   "places": [
+    "El Golfo y el Charco de los Clicos",
+    "Los Hervideros",
+    "Salinas de Janubio",
+    "Playa de Montaña Bermeja"
+   ],
+   "zone_priority": 11
+  }
+ },
+ "lugares_solo_lista": [
+  {
+   "id": "charco_del_palo",
+   "name": "Charco del Palo",
+   "zone": "noreste",
+   "coordinates": [
+    29.08508,
+    -13.44923
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (hellocanaryislands)",
+   "nudista": true,
+   "aviso": "Zona nudista (la primera comunidad naturista de la isla); tres calas de roca, sin socorrista y con viento. No va en la ruta: solo en EXPLORAR con este aviso.",
+   "fuente": "https://www.hellocanaryislands.com/beaches/lanzarote/charco-del-palo/",
+   "comprobado": "2026-11-02"
+  },
+  {
+   "id": "museo_atlantico",
+   "name": "Museo Atlántico",
+   "zone": "sur",
+   "coordinates": null,
+   "nota": "Solo se visita buceando con empresas privadas (no hay web ni taquilla oficial). No es una parada: va en EXPLORAR como actividad.",
+   "verificar": "Coordenadas del punto exacto en el mar sin confirmar.",
+   "fuente": "https://www.divecollegelanzarote.com/en/museo-atlantico/",
+   "comprobado": "2026-11-02"
+  }
+ ],
+ "places": [
+  {
+   "id": "montanas_del_fuego",
+   "name": "Montañas del Fuego (Timanfaya)",
+   "level": 1,
+   "tier": "imprescindible",
+   "zone": "centro_oeste",
+   "coordinates": [
+    29.0056,
+    -13.7529
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §1 (aparcamiento del Islote, gratis con entrada; cola y subida en cuesta)",
+   "aparcar_min": 10,
+   "duration_minutes": 90,
+   "min_max": 90,
+   "type": "interior",
+   "ver_por": "solo_dentro",
+   "tags": [
+    "volcan",
+    "parque_nacional"
+   ],
+   "schedule": "09:00-15:45",
+   "windows": [
+    "09:00-15:45"
+   ],
+   "last_entry": "15:45",
+   "closed_on": [],
+   "closed_dates": [],
+   "horario_nota": "Son las horas de entrada (turnos): la web oficial dice «09:00–15:45, todos los días» y no da la hora de cierre ni la última entrada aparte.",
+   "turnos_reserva": null,
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://cactlanzarote.com/en/visit/montanas-del-fuego",
+    "nota": "Web oficial del CACT: 09:00–15:45 todos los días, 365 días. Otra fuente (lanzaroteon.com) dice que abre a las 9:30, con cierre a las 17:30; Google Maps, 9:30–15:45 en fin de semana. Manda el dato oficial y la diferencia queda como duda.",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "obligatoria",
+   "reserva_solo_online": true,
+   "reserva_con_dia_y_hora": true,
+   "reserva_paso": 15,
+   "carrito_en_reserva": false,
+   "reserva_nota": "Entrada con día y hora, SOLO por internet (no se vende en taquilla desde el 15-jun-2026). Hay que llegar 15 minutos antes; si llegas tarde no te aseguran la entrada. Se agota en temporada alta.",
+   "precio": {
+    "adulto": 30,
+    "nino_7_12": 15,
+    "nino_0_6": 0,
+    "moneda": "EUR",
+    "fuente": "https://cactlanzarote.com/en/visit/montanas-del-fuego",
+    "comprobado": "2026-11-02"
+   },
+   "ticket_info": [
+    "De pago.",
+    "Reserva obligatoria, solo online, con día y hora.",
+    "Entrada: 30 € (7-12 años: 15 €; 0-6: gratis).",
+    "Incluye las demostraciones de calor del Islote de Hilario y la Ruta de los Volcanes en el autobús del parque (35-40 min, sin bajarse)."
+   ],
+   "duracion_nota": "La web oficial da 90 min en una página y 75 en otra.",
+   "avisos": [
+    {
+     "tipo": "cola",
+     "texto": "En julio de 2025 hubo colas de cientos de coches; las entradas con hora se crearon para evitarlo. Con todo, en temporada alta puede haber espera.",
+     "fuente": "La Voz de Lanzarote, 1-jul-2025"
+    },
+    {
+     "tipo": "aparcamiento",
+     "texto": "Aparcamiento gratis en el Islote de Hilario, solo con entrada; está en cuesta y las puertas pueden dar a otros coches.",
+     "fuente": "CACT"
+    }
+   ],
+   "carrito": "dificil",
+   "comprobado": "2026-11-02",
+   "verificar": "Primer turno: 09:00 (web oficial) o 09:30 (otras fuentes). Si se puede comer en El Diablo (12:00-16:00) sin tener entrada, sin confirmar."
+  },
+  {
+   "id": "jameos_del_agua",
+   "name": "Jameos del Agua",
+   "level": 1,
+   "tier": "imprescindible",
+   "zone": "norte",
+   "coordinates": [
+    29.1575,
+    -13.4321
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §2",
+   "aparcar_min": 5,
+   "duration_minutes": 60,
+   "min_max": 60,
+   "type": "interior",
+   "ver_por": "solo_dentro",
+   "tags": [
+    "cesar_manrique",
+    "cueva"
+   ],
+   "schedule": "10:00-18:00",
+   "windows": [
+    "10:00-18:00"
+   ],
+   "last_entry": "17:15",
+   "closed_on": [],
+   "closed_dates": [],
+   "noche_de_jameos": {
+    "dia": "viernes",
+    "todos_los_viernes_del_ano": true,
+    "cena": "18:30-20:30",
+    "concierto": "22:30-23:15",
+    "abierto_hasta": "00:00",
+    "precio_menu": {
+     "adulto": 98,
+     "vegano": 88,
+     "nino_7_12": 49
+    },
+    "reserva": "con mesa reservada en la web (no hay entrada solo para la visita nocturna)",
+    "fuente": "https://cactlanzarote.com/en/tickets/jameos-noche",
+    "nota": "Hay 2 h entre el fin de la cena y el concierto (es lo que pone la web)."
+   },
+   "hours_audit": {
+    "confianza": "alta",
+    "fuente": "https://cactlanzarote.com/en/cact/jameos-del-agua",
+    "nota": "Web oficial del CACT: 10:00–18:00 todos los días, última entrada 17:15. Los viernes, Noches de Jameos (cena 18:30–20:30 y concierto 22:30–23:15).",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "no",
+   "precio": {
+    "adulto": 17,
+    "adulto_con_casa_de_los_volcanes": 22.4,
+    "nino_7_12": 8.5,
+    "nino_0_6": 0,
+    "moneda": "EUR",
+    "fuente": "https://cactlanzarote.com/en/cact/jameos-del-agua",
+    "comprobado": "2026-11-02"
+   },
+   "ticket_info": [
+    "De pago.",
+    "Entrada: 17 € (con la Casa de los Volcanes, 22,40 €; 7-12 años: 8,50 €).",
+    "Sin hora: taquilla u online (comprar antes ahorra cola).",
+    "Viernes por la noche: Noches de Jameos con cena y concierto (98 € el menú de adulto)."
+   ],
+   "no_en_carrito": true,
+   "avisos": [
+    {
+     "tipo": "carrito",
+     "texto": "No se permite entrar con carrito de bebé: mejor mochila portabebés (hay desniveles y suelo de piedra).",
+     "fuente": "https://cactlanzarote.com/en/cact/jameos-del-agua"
+    }
+   ],
+   "carrito": "no",
+   "comprobado": "2026-11-02",
+   "verificar": "Noches de Jameos de los viernes 25-dic, 1-ene y Viernes Santo, sin confirmar."
+  },
+  {
+   "id": "cueva_de_los_verdes",
+   "name": "Cueva de los Verdes",
+   "level": 1,
+   "tier": "imprescindible",
+   "zone": "norte",
+   "coordinates": [
+    29.1611,
+    -13.4389
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §3",
+   "aparcar_min": 5,
+   "duration_minutes": 50,
+   "min_max": 50,
+   "type": "interior",
+   "ver_por": "solo_dentro",
+   "tags": [
+    "cueva",
+    "tubo_volcanico"
+   ],
+   "schedule": "09:30-16:45",
+   "windows": [
+    "09:30-16:45"
+   ],
+   "closed_on": [],
+   "closed_dates": [],
+   "turnos": {
+    "cada_minutos": 30,
+    "nota": "Un grupo cada ~30 minutos (de 15 a 30 personas). Dato de un blog (La Maleta Inquieta, 2-sep-2026): la web oficial no da la frecuencia ni la última visita.",
+    "fuente_tipo": "blog"
+   },
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://cactlanzarote.com/en/cueva-de-los-verdes",
+    "nota": "Web oficial del CACT: 09:30–16:45 todos los días. La hora de la última visita no la dice la web oficial (depende de las plazas del día).",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "obligatoria",
+   "reserva_solo_online": true,
+   "reserva_con_dia_y_hora": true,
+   "reserva_paso": 15,
+   "no_se_puede_cambiar": true,
+   "reserva_nota": "Entrada con día y hora, SOLO por internet; no se puede cambiar. Llegar 15 minutos antes.",
+   "precio": {
+    "adulto": 17,
+    "nino_7_12": 8.5,
+    "nino_0_6": 0,
+    "moneda": "EUR",
+    "fuente": "https://cactlanzarote.com/en/cueva-de-los-verdes",
+    "comprobado": "2026-11-02"
+   },
+   "ticket_info": [
+    "De pago.",
+    "Reserva obligatoria, solo online, con día y hora.",
+    "Entrada: 17 € (7-12 años: 8,50 €).",
+    "Visita guiada de ~50 min (1 km a pie) con explicaciones en español e inglés."
+   ],
+   "avisos": [
+    {
+     "tipo": "carrito",
+     "texto": "No se permiten carritos y no hay dónde dejarlos: mejor mochila portabebés.",
+     "fuente": "https://cactlanzarote.com/en/cueva-de-los-verdes"
+    },
+    {
+     "tipo": "acceso",
+     "texto": "Escaleras, pasos estrechos y techos bajos (avisan a quien mida más de 1,80 m y a quien tenga claustrofobia). No está adaptada a movilidad reducida.",
+     "fuente": "https://cactlanzarote.com/en/cueva-de-los-verdes"
+    }
+   ],
+   "carrito": "no",
+   "comprobado": "2026-11-02",
+   "verificar": "Los turnos reales y la última visita (la web oficial no los da; los ~30 min son de un blog)."
+  },
+  {
+   "id": "mirador_del_rio",
+   "name": "Mirador del Río",
+   "level": 1,
+   "tier": "imprescindible",
+   "zone": "norte",
+   "coordinates": [
+    29.2145,
+    -13.4812
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §4 (curvas y aparcamiento que se llena)",
+   "aparcar_min": 10,
+   "duration_minutes": 45,
+   "min_max": 45,
+   "type": "interior",
+   "ver_por": "solo_dentro",
+   "tags": [
+    "mirador",
+    "cesar_manrique"
+   ],
+   "schedule": "10:00-17:00",
+   "windows": [
+    "10:00-17:00"
+   ],
+   "last_entry": "16:40",
+   "closed_on": [],
+   "closed_dates": [],
+   "hours_audit": {
+    "confianza": "alta",
+    "fuente": "https://cactlanzarote.com/en/centre/mirador-del-rio",
+    "nota": "Web oficial del CACT: 10:00–17:00 todos los días, última entrada 16:40.",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "no",
+   "precio": {
+    "adulto": 9,
+    "nino_7_12": 4.5,
+    "nino_0_6": 0,
+    "moneda": "EUR",
+    "fuente": "https://cactlanzarote.com/en/centre/mirador-del-rio",
+    "comprobado": "2026-11-02"
+   },
+   "ticket_info": [
+    "De pago.",
+    "Entrada: 9 € (7-12 años: 4,50 €).",
+    "Sin hora: taquilla u online."
+   ],
+   "avisos": [
+    {
+     "tipo": "nubes",
+     "texto": "Si hay nubes, apenas se ve nada.",
+     "fuente": "opiniones de visitantes"
+    },
+    {
+     "tipo": "carretera",
+     "texto": "Subida por la LZ-203 y la LZ-201, con pendiente fuerte y curvas.",
+     "fuente": "hellocanaryislands.com"
+    }
+   ],
+   "carrito": "dificil",
+   "comprobado": "2026-11-02",
+   "verificar": "Si hay un mirador gratis equivalente cerca: la web oficial no lo dice (el Mirador de Guinate es la alternativa gratuita de la lista)."
+  },
+  {
+   "id": "fundacion_cesar_manrique",
+   "name": "Fundación César Manrique",
+   "level": 1,
+   "tier": "imprescindible",
+   "zone": "centro",
+   "coordinates": [
+    29.0021,
+    -13.5475
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §8 (aparcamiento gratis en el recinto)",
+   "aparcar_min": 5,
+   "duration_minutes": 90,
+   "min_max": 90,
+   "type": "interior",
+   "ver_por": "solo_dentro",
+   "tags": [
+    "cesar_manrique",
+    "museo"
+   ],
+   "schedule": "10:00-17:30",
+   "windows": [
+    "10:00-17:30"
+   ],
+   "last_entry": "17:00",
+   "closed_on": [],
+   "closed_dates": [
+    "01-01"
+   ],
+   "closed_dates_audit": {
+    "01-01": {
+     "estado": "cierra",
+     "fuente": "fcmanrique.org: cierra el 1 de enero. El 25 de diciembre no se menciona.",
+     "comprobado": "2026-11-02"
+    }
+   },
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://fcmanrique.org/en/casas-museo-visitas/",
+    "nota": "Todos los días, festivos incluidos, 10:00–17:30; taquilla hasta las 17:00 y desalojan desde las 17:20. Otra página de la misma web pone 10:00–18:00 (taquilla hasta las 17:30): podría ser horario de verano sin quitar.",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "no",
+   "precio": {
+    "adulto": 10,
+    "nino_7_12": 3,
+    "combinada_con_casa_museo_de_haria": 17,
+    "combinada_nino": 4,
+    "moneda": "EUR",
+    "fuente": "https://fcmanrique.org/en/casas-museo-visitas/",
+    "comprobado": "2026-11-02"
+   },
+   "ticket_info": [
+    "De pago.",
+    "Entrada: 10 € (7-12 años: 3 €).",
+    "Entrada conjunta con la Casa-Museo de Haría: 17 € (niño 4 €); según un blog vale en días distintos, sin confirmar en la web oficial."
+   ],
+   "dias_de_crucero": [
+    "martes",
+    "miércoles"
+   ],
+   "dias_de_crucero_nota": "Se llena desde las 11:00: ir antes de esa hora o comprar antes.",
+   "avisos": [
+    {
+     "tipo": "acceso",
+     "texto": "Túneles entre burbujas de menos de 1 m de ancho y 1,90 m de alto (fuente secundaria). Sobre carritos no hay información.",
+     "fuente": "La Maleta Inquieta [blog]"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Horario de cierre: 17:30 (portada y Google) o 18:00 (otra página oficial). Frecuencia de cierre el 25-dic no mencionada."
+  },
+  {
+   "id": "el_golfo_y_el_charco_de_los_clicos",
+   "name": "El Golfo y el Charco de los Clicos",
+   "level": 1,
+   "tier": "imprescindible",
+   "zone": "suroeste",
+   "coordinates": [
+    28.977147,
+    -13.827658
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (hellocanaryislands); aparcamiento arriba del sendero y a la entrada del pueblo",
+   "aparcar_min": 5,
+   "duration_minutes": 45,
+   "min_max": 45,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "naturaleza",
+    "atardecer",
+    "pueblo"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md",
+    "nota": "No hay taquilla ni horario. Que sea gratis está sin confirmar de forma explícita (ninguna fuente lo dice).",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0,
+    "verificar": true,
+    "nota": "Sin taquilla; «gratis» sin confirmar de forma explícita."
+   },
+   "a_pie_desde_aparcamiento_min": 5,
+   "mejor_momento": "tarde y atardecer",
+   "atardece_al_mar": true,
+   "avisos": [
+    {
+     "tipo": "zona_protegida",
+     "texto": "La laguna está dentro de una Reserva Natural. spain.info marca «viento y oleaje fuerte». Si se puede bajar al agua o bañarse, sin confirmar.",
+     "fuente": "spain.info"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Tiempo total de visita sin confirmar (45 min con el pueblo, de LANZAROTE_SITIOS.md). La ficha «El Golfo Viewpoint» de hellocanaryislands trae las coordenadas mal (28.451, -15.931): no usarlas."
+  },
+  {
+   "id": "la_geria_y_sus_bodegas",
+   "name": "La Geria y sus bodegas",
+   "level": 1,
+   "tier": "imprescindible",
+   "zone": "centro",
+   "coordinates": [
+    28.97,
+    -13.709
+   ],
+   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Stratvs, ctra. La Geria-Uga; las coordenadas de bodegas están «sin confirmar» en DATOS_NATURALEZA_PUEBLOS_COCHE.md",
+   "aparcar_min": 5,
+   "duration_minutes": 60,
+   "min_max": 90,
+   "type": "exterior",
+   "ver_por": "dentro_y_fuera",
+   "tags": [
+    "paisaje",
+    "vino",
+    "bodega"
+   ],
+   "schedule": "10:00-19:00",
+   "windows": [
+    "10:00-19:00"
+   ],
+   "closed_on": [],
+   "closed_dates": [],
+   "horario_nota": "La Geria es una carretera (LZ-30) y un paisaje; el horario es el de la bodega más amplia (Bodega La Geria, 10:00–19:00, días sin confirmar). Ver `bodegas` para cada una.",
+   "bodegas": [
+    {
+     "id": "bodega_el_grifo",
+     "nombre": "El Grifo",
+     "ubicacion": "LZ-30 km 11, San Bartolomé",
+     "dias": "lunes a viernes",
+     "visitas": "10:00-17:15 (último acceso)",
+     "tienda": "lunes a viernes 10:00-18:00",
+     "cerrada": [
+      "sábado",
+      "domingo"
+     ],
+     "visita": {
+      "nombre": "«El Grifo a tu aire» (audioguía, museo del vino, bodega de 1775 y 2 vinos)",
+      "precio": 15,
+      "dura_min": 45,
+      "gratis_hasta_anos": 17
+     },
+     "reserva": "muy recomendada",
+     "fuente": "https://elgrifo.com/en/pages/museo-del-vino-el-grifo",
+     "confianza": "alta"
+    },
+    {
+     "id": "stratvs",
+     "nombre": "Stratvs",
+     "ubicacion": "Ctra. La Geria–Uga",
+     "dias": "todos los días",
+     "visitas": [
+      "10:30",
+      "12:00",
+      "13:30",
+      "16:00"
+     ],
+     "visita": {
+      "nombre": "Visita guiada con 3 vinos y quesos",
+      "precio": 25,
+      "dura_min": 60
+     },
+     "reserva": "online; la web no dice si es obligatoria",
+     "fuente": "https://stratvs.com/en/visitas-agenda/",
+     "confianza": "alta",
+     "duda": "Un blog dice de martes a sábado y catas de 8 y 25 €; un artículo de 2013, 12 €. Manda la web oficial."
+    },
+    {
+     "id": "bodega_la_geria",
+     "nombre": "Bodega La Geria",
+     "ubicacion": "Ctra. de La Geria km 19 (bar-cafetería y Taberna La Cepa dentro del mismo sitio)",
+     "dias": "sin confirmar",
+     "visitas": "10:00-19:00",
+     "visita": {
+      "nombre": "Visita guiada con reserva online",
+      "precio": null,
+      "precio_blog": 15,
+      "dura_min": 60
+     },
+     "reserva": "online",
+     "fuente": "https://www.lageria.com/en/la-geria-winery/",
+     "confianza": "media",
+     "duda": "La web no dice qué días abre ni el precio de la visita (el blog dice 15 € con 3 vinos)."
+    }
+   ],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://turismolanzarote.com/en/sightseeing/wineries/",
+    "nota": "El Grifo: lunes a viernes 10:00–17:15; Stratvs: todos los días, visitas 10:30, 12:00, 13:30 y 16:00; Bodega La Geria: 10:00–19:00 (días sin confirmar).",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "recomendada",
+   "precio": {
+    "visita_el_grifo": 15,
+    "visita_stratvs": 25,
+    "nota": "La carretera es gratis; la visita a una bodega se paga."
+   },
+   "nunca_solo_de_camino": true,
+   "nunca_solo_de_camino_nota": "Lleva parada en una bodega o un mirador (regla del imprescindible).",
+   "fuera_domingo": [
+    "bodega_el_grifo"
+   ],
+   "avisos": [
+    {
+     "tipo": "conducir",
+     "texto": "Quien conduce, sin alcohol.",
+     "fuente": "DIAS_CURADOS_LANZAROTE.md"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Días que abre Bodega La Geria; si Stratvs pide reserva; bodegas: coordenadas sin confirmar. | Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Stratvs, ctra. La Geria-Uga; las coordenadas de bodegas están «sin confirmar» en DATOS_NATURALEZA_PUEBLOS_COCHE.md)"
+  },
+  {
+   "id": "playas_de_papagayo",
+   "name": "Playas de Papagayo",
+   "level": 2,
+   "zone": "sur",
+   "coordinates": [
+    28.84292,
+    -13.78813
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (Papagayo 28.84292,-13.78813; Mujeres 28.85331,-13.792615). Pista de tierra «despacio» (+15-20 min con la barrera y el pago de 3 €)",
+   "aparcar_min": 20,
+   "duration_minutes": 240,
+   "min_max": 480,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "playa",
+    "pista_de_tierra",
+    "sin_socorrista"
+   ],
+   "schedule": "09:00-19:00",
+   "windows": [
+    "09:00-19:00"
+   ],
+   "closed_on": [],
+   "closed_dates": [],
+   "hours_audit": {
+    "confianza": "baja",
+    "fuente": "La Voz de Lanzarote / Annua Hotels [blog]",
+    "nota": "Aparcamiento de 9:00 a 19:00 según un blog; no hay horario oficial de la barrera. En verano de 2025 el control cerró dos días por semana (La Voz).",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "por_coche": 3,
+    "no_residentes": true,
+    "moneda": "EUR",
+    "fuente": "La Voz de Lanzarote, ago-2025",
+    "nota": "Los residentes no pagan. Pago solo con tarjeta: lo dice un blog, sin confirmar oficialmente."
+   },
+   "ticket_info": [
+    "De pago por coche: 3 € (no residentes).",
+    "Pista de tierra «despacio» por los baches."
+   ],
+   "experiencia": "playa_y_calma",
+   "calas": [
+    "Mujeres",
+    "Papagayo",
+    "Pozo",
+    "La Cera",
+    "Caleta del Congrio (zona mixta nudista y textil)"
+   ],
+   "pista_de_tierra": {
+    "min_extra": "15-20",
+    "nota": "Pista de tierra de ~5,5 km con barrera y pago"
+   },
+   "avisos": [
+    {
+     "tipo": "pista_de_tierra",
+     "texto": "Revisa si tu seguro cubre las pistas de tierra",
+     "fuente": "LANZAROTE_SITIOS.md (Para todos)"
+    },
+    {
+     "tipo": "sin_socorrista",
+     "texto": "Las playas no tienen socorrista.",
+     "fuente": "turismolanzarote.com"
+    },
+    {
+     "tipo": "tarjeta",
+     "texto": "Lleva tarjeta por si acaso (el pago solo con tarjeta es de un blog).",
+     "fuente": "[blog]"
+    },
+    {
+     "tipo": "duchas",
+     "texto": "Hay un chiringuito en la ladera y duchas donde no se puede usar jabón.",
+     "fuente": "turismolanzarote.com"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Horario de la barrera y cómo se paga. Coordenadas de Pozo, La Cera y Caleta del Congrio sin confirmar."
+  },
+  {
+   "id": "caleton_blanco",
+   "name": "Caletón Blanco",
+   "level": 2,
+   "zone": "extremo_norte",
+   "coordinates": [
+    29.232,
+    -13.4505
+   ],
+   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento en el arcén de la LZ-1; a 1,2 km del puerto de Órzola",
+   "aparcar_min": 5,
+   "duration_minutes": 120,
+   "min_max": 180,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "playa",
+    "sin_socorrista"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "baja",
+    "fuente": "La Maleta Inquieta, 7-oct-2026 [blog]",
+    "nota": "Libre. Mejor con marea bajando, de 9:00 a 12:00; desde las 13:00 sube el viento (blog).",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "mejor_hora": "09:00-12:00 (marea bajando)",
+   "aparcamiento": "arcén de la LZ-1 (km 30)",
+   "distancia_a_orzola_km": 1.2,
+   "avisos": [
+    {
+     "tipo": "sin_socorrista",
+     "texto": "Sin socorrista. Los charcos de dentro, resguardados con marea baja o media; fuera, mar abierto.",
+     "fuente": "La Maleta Inquieta [blog]"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Todo viene de un blog (no hay fuente oficial). | Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento en el arcén de la LZ-1; a 1,2 km del puerto de Órzola)"
+  },
+  {
+   "id": "jardin_de_cactus",
+   "name": "Jardín de Cactus",
+   "level": 2,
+   "zone": "noreste",
+   "coordinates": [
+    29.0803,
+    -13.4764
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §5 (Wikipedia)",
+   "aparcar_min": 5,
+   "duration_minutes": 60,
+   "min_max": 60,
+   "type": "interior",
+   "ver_por": "solo_dentro",
+   "tags": [
+    "cesar_manrique",
+    "jardin"
+   ],
+   "schedule": "10:00-17:00",
+   "windows": [
+    "10:00-17:00"
+   ],
+   "last_entry": "16:30",
+   "closed_on": [],
+   "closed_dates": [],
+   "hours_audit": {
+    "confianza": "alta",
+    "fuente": "https://cactlanzarote.com/en/visit/jardin-de-cactus",
+    "nota": "Web oficial del CACT: 10:00–17:00 todos los días, última entrada 16:30.",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "no",
+   "precio": {
+    "adulto": 9,
+    "nino_7_12": 4.5,
+    "nino_0_6": 0,
+    "moneda": "EUR",
+    "fuente": "https://cactlanzarote.com/en/visit/jardin-de-cactus",
+    "comprobado": "2026-11-02",
+    "brunch": 22
+   },
+   "ticket_info": [
+    "De pago.",
+    "Entrada: 9 € (7-12 años: 4,50 €).",
+    "Sin hora; se recomienda comprar antes por internet."
+   ],
+   "avisos": [
+    {
+     "tipo": "acceso",
+     "texto": "Caminos de piedra irregulares; el molino y la tienda no tienen rampa. Sobre carritos no dice nada.",
+     "fuente": "https://cactlanzarote.com/en/visit/jardin-de-cactus"
+    }
+   ],
+   "comprobado": "2026-11-02"
+  },
+  {
+   "id": "los_hervideros",
+   "name": "Los Hervideros",
+   "level": 2,
+   "zone": "suroeste",
+   "coordinates": [
+    28.953901,
+    -13.834287
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md",
+   "aparcar_min": 5,
+   "duration_minutes": 30,
+   "min_max": 30,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "costa",
+    "lava"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md",
+    "nota": "Sin taquilla ni horario. Gratis: sin confirmar de forma explícita.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0,
+    "verificar": true
+   },
+   "mejor_momento": "marea alta y atardecer",
+   "avisos": [
+    {
+     "tipo": "mar_brava",
+     "texto": "Con mar brava hay que extremar la precaución, sobre todo con niños; no salirse de los caminos marcados.",
+     "fuente": "hellocanaryislands.com"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Tiempo de visita y aparcamiento sin confirmar en las fuentes (30 min de LANZAROTE_SITIOS.md)."
+  },
+  {
+   "id": "salinas_de_janubio",
+   "name": "Salinas de Janubio",
+   "level": 2,
+   "zone": "suroeste",
+   "coordinates": [
+    28.932583,
+    -13.820839
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (mirador; salinas 28.938,-13.821019)",
+   "aparcar_min": 5,
+   "duration_minutes": 20,
+   "min_max": 20,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "mirador",
+    "atardecer",
+    "salinas"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/museums-and-places-of-interest/lanzarote/janubio-salt-mines/",
+    "nota": "Mirador libre. Precio, horario y visitas guiadas de las salinas, sin confirmar (la web oficial no abrió).",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0,
+    "nota": "El mirador es gratis."
+   },
+   "visita_guiada_civitatis": {
+    "duracion": "2 h",
+    "precio_aprox_eur": 22,
+    "verificar": true
+   },
+   "mejor_momento": "atardecer desde el mirador",
+   "comprobado": "2026-11-02",
+   "verificar": "Precio y horario de la visita a las salinas."
+  },
+  {
+   "id": "teguise",
+   "name": "Teguise (villa)",
+   "level": 2,
+   "zone": "centro_norte",
+   "coordinates": [
+    29.059188,
+    -13.562594
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (casco histórico). Aparcamiento en domingo «sin confirmar»",
+   "aparcar_min": 5,
+   "aparcar_min_domingo": 15,
+   "duration_minutes": 90,
+   "min_max": 120,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "pueblo",
+    "historia",
+    "mercadillo"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "by_day": {
+    "dom": [
+     "09:00-14:00"
+    ]
+   },
+   "mercadillo": {
+    "dia": "domingo",
+    "horario": "09:00-14:00",
+    "lugar": "casco histórico",
+    "fuente": "https://turismolanzarote.com/en/market/villa-de-teguise-market/"
+   },
+   "hours_audit": {
+    "confianza": "alta",
+    "fuente": "https://turismolanzarote.com/en/teguise/",
+    "nota": "Casco libre. Mercadillo todos los domingos 9:00–14:00 en el casco histórico.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "dura_domingo_min": 120,
+   "free_tour": {
+    "nota": "Free Tour de Teguise: 9,3/10, 2 h; días y horas por confirmar (Agente D).",
+    "verificar": true
+   },
+   "aparcamiento_domingo": "sin confirmar (un blog dice que los gratis de la entrada se llenan hacia las 10:30)",
+   "comprobado": "2026-11-02",
+   "verificar": "Aparcamiento en domingo; días y horas del Free Tour."
+  },
+  {
+   "id": "haria_y_la_casa_museo_cesar_manrique",
+   "name": "Haría y la Casa-Museo César Manrique",
+   "level": 2,
+   "zone": "norte",
+   "coordinates": [
+    29.1418,
+    -13.5037
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §9 (Casa-Museo; el pueblo, 29.1423,-13.50293, está a unos 300 m: una sola parada de coche)",
+   "aparcar_min": 5,
+   "duration_minutes": 90,
+   "min_max": 90,
+   "type": "interior",
+   "ver_por": "dentro_y_fuera",
+   "tags": [
+    "pueblo",
+    "cesar_manrique",
+    "museo",
+    "mercado"
+   ],
+   "schedule": "10:00-17:30",
+   "windows": [
+    "10:00-17:30"
+   ],
+   "last_entry": "17:00",
+   "closed_on": [],
+   "closed_dates": [
+    "01-01"
+   ],
+   "closed_dates_audit": {
+    "01-01": {
+     "estado": "cierra",
+     "fuente": "fcmanrique.org: la Casa-Museo cierra el 1 de enero.",
+     "comprobado": "2026-11-02"
+    }
+   },
+   "horario_nota": "Es el horario de la Casa-Museo; el pueblo es libre. Mercado artesanal los sábados 9:00–14:30 en la plaza León y Castillo.",
+   "mercado": {
+    "dia": "sábado",
+    "horario": "09:00-14:30",
+    "lugar": "plaza León y Castillo",
+    "fuente": "https://turismolanzarote.com/en/market/haria-artisanal-market/",
+    "duda": "Otras webs no oficiales dicen 10:00–14:30 o 9:00–14:00; manda turismolanzarote."
+   },
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://fcmanrique.org/en/casas-museo-visitas/",
+    "nota": "Casa-Museo: según su web oficial, 10:00–17:30 (otra fuente: 10:30), taquilla hasta las 17:00; cierra el 1 de enero. Otra página oficial dice hasta las 18:00.",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "no",
+   "precio": {
+    "adulto": 10,
+    "nino_7_12": 3,
+    "combinada_con_fundacion": 17,
+    "moneda": "EUR",
+    "fuente": "https://fcmanrique.org/en/casas-museo-visitas/",
+    "comprobado": "2026-11-02"
+   },
+   "ticket_info": [
+    "De pago (la casa; el pueblo es libre).",
+    "Entrada Casa-Museo: 10 € (7-12 años: 3 €).",
+    "Entrada conjunta con la Fundación: 17 € (niño 4 €)."
+   ],
+   "duracion_nota": "Casa-Museo ~1 h (opiniones de visitantes) más el pueblo.",
+   "comprobado": "2026-11-02",
+   "verificar": "Hora de apertura de la Casa-Museo: 10:00 (web oficial) o 10:30 (otra fuente). Accesibilidad, carrito y aparcamiento sin confirmar. Reserva sin confirmar en la web oficial."
+  },
+  {
+   "id": "casa_museo_del_campesino",
+   "name": "Casa-Museo del Campesino",
+   "level": 2,
+   "zone": "centro",
+   "coordinates": [
+    29.0158,
+    -13.6156
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §7",
+   "aparcar_min": 5,
+   "duration_minutes": 50,
+   "min_max": 50,
+   "type": "interior",
+   "ver_por": "dentro_y_fuera",
+   "tags": [
+    "cesar_manrique",
+    "museo",
+    "gratis"
+   ],
+   "schedule": "10:00-18:00",
+   "windows": [
+    "10:00-18:00"
+   ],
+   "closed_on": [],
+   "closed_dates": [],
+   "hours_audit": {
+    "confianza": "alta",
+    "fuente": "https://cactlanzarote.com/en/visit/casa-museo-del-campesino",
+    "nota": "Web oficial del CACT: 10:00–18:00 todos los días. Última entrada sin confirmar. Reabierta en agosto de 2026 (La Voz).",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "no",
+   "precio": {
+    "adulto": 0,
+    "gratis": true,
+    "fuente": "https://cactlanzarote.com/en/visit/casa-museo-del-campesino",
+    "comprobado": "2026-11-02"
+   },
+   "restaurante": {
+    "horario": "12:00-16:00",
+    "reserva": "online hasta 2 h antes o 928 52 01 36"
+   },
+   "escultura_fuera": "La escultura «Fecundidad» de Manrique se ve desde fuera.",
+   "avisos": [
+    {
+     "tipo": "acceso",
+     "texto": "Mayormente adaptado; el acceso a la escultura «Fecundidad» no tiene recorrido adaptado.",
+     "fuente": "https://cactlanzarote.com/en/visit/casa-museo-del-campesino"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Última entrada."
+  },
+  {
+   "id": "caleta_de_famara_y_playa_de_famara",
+   "name": "Caleta de Famara y Playa de Famara",
+   "level": 2,
+   "zone": "noroeste",
+   "coordinates": [
+    29.115758,
+    -13.563593
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (Caleta); la playa, 29.115813,-13.553589",
+   "aparcar_min": 5,
+   "duration_minutes": 90,
+   "min_max": 120,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "playa",
+    "pueblo",
+    "surf",
+    "atardecer"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "alta",
+    "fuente": "https://turismolanzarote.com/en/beach/playa-de-famara-famara-beach/",
+    "nota": "Libre. La playa tiene socorristas y señalización de peligro.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "atardece_al_mar": true,
+   "avisos": [
+    {
+     "tipo": "bandera_roja",
+     "texto": "La playa tiene bandera roja todo el año (corrientes de las más peligrosas de la isla): solo para remojarse.",
+     "fuente": "turismolanzarote.com / hellocanaryislands.com"
+    }
+   ],
+   "comprobado": "2026-11-02"
+  },
+  {
+   "id": "arrecife_charco_de_san_gines_y_el_paseo",
+   "name": "Arrecife: Charco de San Ginés y el paseo",
+   "level": 2,
+   "zone": "este",
+   "coordinates": [
+    28.965169,
+    -13.555036
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (casco). Ciudad: buscar aparcamiento",
+   "aparcar_min": 10,
+   "duration_minutes": 90,
+   "min_max": 90,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "ciudad",
+    "paseo",
+    "laguna"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "alta",
+    "fuente": "https://turismolanzarote.com/en/arrecife-a-4-kilometre-seaside-walk-past-islets-and-two-castles/",
+    "nota": "Paseo oficial de 4 km (2020) del Reducto al Castillo de San José; libre.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "mercadillo": {
+    "dias": "miércoles y jueves 9:00-14:00",
+    "fuente_tipo": "no oficial (lanzaroteinformation.co.uk)"
+   },
+   "mira_al_este": "Arrecife mira al este: el sol no se pone sobre el mar.",
+   "playa_del_reducto": "Bandera Azul; mejor con marea alta o media",
+   "comprobado": "2026-11-02",
+   "verificar": "Calle León y Castillo sin confirmar (la ruta oficial cita la calle Real)."
+  },
+  {
+   "id": "castillo_de_san_jose",
+   "name": "Castillo de San José (MIAC)",
+   "level": 2,
+   "zone": "este",
+   "coordinates": [
+    28.971,
+    -13.5332
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §6",
+   "aparcar_min": 5,
+   "duration_minutes": 60,
+   "min_max": 60,
+   "type": "interior",
+   "ver_por": "dentro_y_fuera",
+   "tags": [
+    "museo",
+    "castillo",
+    "cena_con_vistas"
+   ],
+   "schedule": "11:00-18:00",
+   "windows": [
+    "11:00-18:00"
+   ],
+   "closed_on": [],
+   "closed_dates": [],
+   "restaurante": {
+    "domingo-martes": "11:00-18:00",
+    "miercoles-sabado": "11:00-23:00",
+    "reservas": "928 81 23 21"
+   },
+   "hours_audit": {
+    "confianza": "alta",
+    "fuente": "https://www.cactlanzarote.com/en/visit/castillo-de-san-jose",
+    "nota": "Web oficial del CACT: museo 11:00–18:00 todos los días; restaurante de domingo a martes 11:00–18:00 y de miércoles a sábado 11:00–23:00. Última entrada sin confirmar.",
+    "fecha": "2026-11-02"
+   },
+   "reservation": "no",
+   "precio": {
+    "adulto": 5.4,
+    "nino_7_12": 2.7,
+    "nino_0_6": 0,
+    "moneda": "EUR",
+    "fuente": "https://www.cactlanzarote.com/en/visit/castillo-de-san-jose",
+    "comprobado": "2026-11-02"
+   },
+   "ticket_info": [
+    "De pago.",
+    "Entrada: 5,40 € (7-12 años: 2,70 €)."
+   ],
+   "por_fuera_valoracion": "Valoración del documento (no de la web oficial): el edificio y las vistas al puerto se disfrutan desde fuera.",
+   "comprobado": "2026-11-02",
+   "verificar": "Última entrada. «Por fuera» es una valoración, no un dato oficial."
+  },
+  {
+   "id": "lagomar",
+   "name": "LagOmar",
+   "level": 3,
+   "zone": "centro",
+   "coordinates": [
+    29.0452,
+    -13.5551
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §10 (ficha del restaurante, mismo recinto)",
+   "aparcar_min": 5,
+   "duration_minutes": 60,
+   "min_max": 60,
+   "type": "interior",
+   "ver_por": "solo_dentro",
+   "tags": [
+    "cesar_manrique",
+    "museo"
+   ],
+   "schedule": "10:00-18:00",
+   "windows": [
+    "10:00-18:00"
+   ],
+   "closed_on": [],
+   "closed_dates": [],
+   "restaurante": {
+    "dias": "martes a domingo",
+    "horario": "18:00-00:00",
+    "cierra": "lunes"
+   },
+   "hours_audit": {
+    "confianza": "baja",
+    "fuente": "https://gazettelife.com/places-to-visit/visiting-lagomar/",
+    "nota": "Sin web oficial. Gazette Life (10-jul-2026): 10:00–18:00 todos los días; restaurante de martes a domingo de 18:00 a 00:00.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 10,
+    "nino_4_12": 4,
+    "residente_canario": 4,
+    "residente_lanzarote": 2,
+    "moneda": "EUR"
+   },
+   "comprobado": "2026-11-02",
+   "verificar": "Horario oficial y si abre el 1 de enero (sin web oficial). Aparcamiento y carrito sin confirmar."
+  },
+  {
+   "id": "ermita_de_las_nieves",
+   "name": "Ermita de las Nieves",
+   "level": 3,
+   "zone": "centro_norte",
+   "coordinates": [
+    29.10684,
+    -13.61263
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md. Acceso y aparcamiento «sin confirmar»",
+   "aparcar_min": 5,
+   "duration_minutes": 20,
+   "min_max": 20,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "mirador"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/viewpoints/lanzarote/ermita-de-las-nieves-viewpoint/",
+    "nota": "Mirador libre a 650 m de altura. Acceso, aparcamiento y si abre la ermita, sin confirmar.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "mejor_momento": "amanecer y atardecer",
+   "avisos": [
+    {
+     "tipo": "niebla",
+     "texto": "Con niebla o viento fuerte no se ve nada.",
+     "fuente": "barcelo.com"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Duración (20 min es estimación) y acceso."
+  },
+  {
+   "id": "mirador_de_guinate",
+   "name": "Mirador de Guinate",
+   "level": 3,
+   "zone": "norte",
+   "coordinates": [
+    29.184725,
+    -13.542362
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (LZ-10, calle La Majadita hasta el final)",
+   "aparcar_min": 5,
+   "duration_minutes": 20,
+   "min_max": 20,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "mirador",
+    "gratis"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/viewpoints/lanzarote/guinate-viewpoint/",
+    "nota": "Mirador libre, a 500 m de altura, poco concurrido; vistas al archipiélago Chinijo.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0,
+    "verificar": true,
+    "nota": "No hay taquilla; precio sin confirmar."
+   },
+   "alternativa_a": "mirador_del_rio",
+   "comprobado": "2026-11-02",
+   "verificar": "Duración estimada; sube de prioridad (Eric, 3-nov)."
+  },
+  {
+   "id": "ciudad_estratificada_rofera_de_teseguite",
+   "name": "Ciudad Estratificada (Rofera de Teseguite)",
+   "level": 3,
+   "zone": "centro_norte",
+   "coordinates": [
+    29.052,
+    -13.542
+   ],
+   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento de tierra",
+   "aparcar_min": 5,
+   "duration_minutes": 25,
+   "min_max": 25,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "geologia",
+    "fotogenico"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "baja",
+    "fuente": "Solo Sophie [blog]",
+    "nota": "Libre y gratis; aparcamiento de tierra y sin servicios.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "avisos": [
+    {
+     "tipo": "fragil",
+     "texto": "No subirse: las formaciones son frágiles, y hay quejas de basura y pintadas: «llévate tu basura».",
+     "fuente": "Solo Sophie [blog]"
+    },
+    {
+     "tipo": "pista_de_tierra",
+     "texto": "Revisa si tu seguro cubre las pistas de tierra",
+     "fuente": "LANZAROTE_SITIOS.md (Para todos)"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Todo de un blog. | Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento de tierra)"
+  },
+  {
+   "id": "playa_de_montana_bermeja",
+   "name": "Playa de Montaña Bermeja",
+   "level": 3,
+   "zone": "suroeste",
+   "coordinates": [
+    28.944,
+    -13.828
+   ],
+   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar (entre Janubio y Los Hervideros)",
+   "aparcar_min": 5,
+   "duration_minutes": 15,
+   "min_max": 20,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "playa",
+    "arena_negra"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "spain.info",
+    "nota": "Libre, poco visitada y sin servicios.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "avisos": [
+    {
+     "tipo": "no_es_de_bano",
+     "texto": "No es de baño: viento y mar de fondo fuerte.",
+     "fuente": "spain.info"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar (entre Janubio y Los Hervideros))"
+  },
+  {
+   "id": "las_grietas_montana_blanca",
+   "name": "Las Grietas (Montaña Blanca)",
+   "level": 3,
+   "zone": "centro",
+   "coordinates": [
+    29.01,
+    -13.61
+   ],
+   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Sin aparcamiento oficial: apartadero de tierra (+3 min)",
+   "aparcar_min": 8,
+   "duration_minutes": 40,
+   "min_max": 45,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "geologia",
+    "fotogenico",
+    "pista_de_tierra"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "La Voz de Lanzarote / Annua Hotels",
+    "nota": "Libre y gratis, sin horario; sin aparcamiento oficial (apartadero de tierra); sin señales ni camino marcado.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "mejor_hora": "primera hora o última de la tarde (Annua Hotels)",
+   "solo_de_dia": true,
+   "avisos": [
+    {
+     "tipo": "pista_de_tierra",
+     "texto": "Revisa si tu seguro cubre las pistas de tierra",
+     "fuente": "LANZAROTE_SITIOS.md (Para todos)"
+    },
+    {
+     "tipo": "desprendimientos",
+     "texto": "Acceso sin regular; en 2024 se pidió cerrarlo por riesgo de desprendimientos. No ir con lluvia ni viento fuerte (resbala); solo de día; con niños, mucho cuidado.",
+     "fuente": "La Voz de Lanzarote"
+    },
+    {
+     "tipo": "aparcamiento",
+     "texto": "Sin aparcamiento oficial: aparcar fuera de la carretera.",
+     "fuente": "LANZAROTE_SITIOS.md"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Duración (30-45 min) por comprobar. | Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Sin aparcamiento oficial: apartadero de tierra (+3 min))"
+  },
+  {
+   "id": "mirador_del_bosquecillo",
+   "name": "Mirador del Bosquecillo (Risco de Famara)",
+   "level": 3,
+   "zone": "norte",
+   "coordinates": [
+    29.1266,
+    -13.5242
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md [blog]. Pista de tierra mal señalizada (+3 min)",
+   "aparcar_min": 8,
+   "duration_minutes": 20,
+   "min_max": 20,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "mirador",
+    "pista_de_tierra"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "baja",
+    "fuente": "La Voz de Lanzarote / La Maleta Inquieta [blog]",
+    "nota": "Libre y gratis (blog). Pista de tierra mal señalizada desde la LZ-10; sin valla continua ni servicios.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "avisos": [
+    {
+     "tipo": "pista_de_tierra",
+     "texto": "Revisa si tu seguro cubre las pistas de tierra",
+     "fuente": "LANZAROTE_SITIOS.md (Para todos)"
+    },
+    {
+     "tipo": "viento",
+     "texto": "Solo con día claro y sin viento fuerte; cuidado con los desniveles.",
+     "fuente": "La Voz de Lanzarote"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Coordenada del blog; duración estimada."
+  },
+  {
+   "id": "mirador_de_haria",
+   "name": "Mirador de Haría",
+   "level": 3,
+   "zone": "norte",
+   "coordinates": [
+    29.131806,
+    -13.513611
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md. Aparcamiento pequeño, prohibido el arcén",
+   "aparcar_min": 5,
+   "duration_minutes": 20,
+   "min_max": 20,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "mirador"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/viewpoints/lanzarote/mirador-de-haria/",
+    "nota": "Libre. Aparcamiento pequeño, prohibido dejar el coche en el arcén. Viernes, sábados y domingos de 11:00 a 15:00 hay microbús desde la Biblioteca de Haría.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "no_es_de_atardecer": true,
+   "avisos": [
+    {
+     "tipo": "pista",
+     "texto": "Un tramo de pista de tierra con baches (La Voz).",
+     "fuente": "La Voz de Lanzarote"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Duración estimada."
+  },
+  {
+   "id": "mirador_de_los_helechos",
+   "name": "Mirador de los Helechos",
+   "level": 3,
+   "zone": "norte",
+   "coordinates": [
+    29.1245,
+    -13.516
+   ],
+   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar (carretera de Haría hacia Teguise)",
+   "aparcar_min": 3,
+   "duration_minutes": 15,
+   "min_max": 15,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "mirador"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "baja",
+    "fuente": "LANZAROTE_SITIOS.md (nota de Haría)",
+    "nota": "Sin ficha propia en los datos: es la mejor vista del Valle de las Mil Palmeras.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0,
+    "verificar": true
+   },
+   "comprobado": "2026-11-02",
+   "verificar": "Sin ficha de datos: horario, duración y aparcamiento por comprobar. | Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar (carretera de Haría hacia Teguise))"
+  },
+  {
+   "id": "castillo_de_santa_barbara",
+   "name": "Castillo de Santa Bárbara",
+   "level": 3,
+   "zone": "centro_norte",
+   "coordinates": [
+    29.058,
+    -13.5502
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §12 (solo por fuera)",
+   "aparcar_min": 5,
+   "duration_minutes": 30,
+   "min_max": 45,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "castillo",
+    "mirador"
+   ],
+   "closed_on": [],
+   "solo_por_fuera": true,
+   "hours_audit": {
+    "confianza": "baja",
+    "fuente": "La Voz de Lanzarote, 23-jul-2026; La Maleta Inquieta",
+    "nota": "El Museo de la Piratería ya no existe: el castillo está vacío. Horario sin confirmar (blog: 10:00–15:00, 3 €; Google: 10:00–14:30, cerrado viernes y sábado, gratis).",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": null,
+    "verificar": true,
+    "nota": "3 € o gratis, sin confirmar."
+   },
+   "avisos": [
+    {
+     "tipo": "museo_cerrado",
+     "texto": "El Museo de la Piratería ya no funciona (castillo vacío desde 2026); las señales de la carretera aún lo anuncian. Solo por fuera, por las vistas.",
+     "fuente": "La Voz de Lanzarote, 23-jul-2026"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Horario y precio (las fuentes no coinciden). A veces cierra sin avisar."
+  },
+  {
+   "id": "punta_mujeres_y_arrieta",
+   "name": "Punta Mujeres y Arrieta (La Garita)",
+   "level": 3,
+   "zone": "noreste",
+   "coordinates": [
+    29.132569,
+    -13.459073
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (Punta Mujeres 29.14291,-13.45013)",
+   "aparcar_min": 5,
+   "duration_minutes": 90,
+   "min_max": 90,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "pueblo",
+    "bano",
+    "piscinas_naturales"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/natural-pools/lanzarote/punta-mujeres-natural-swimming-pools/",
+    "nota": "Piscinas naturales de Punta Mujeres (~2 km, dos resguardadas), mejor a media marea. Restaurantes de marisco en el espigón de Arrieta.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "la_garita": {
+    "id": "playa_de_la_garita",
+    "largo_m": "500-800 (las fuentes no coinciden)",
+    "socorrista": false
+   },
+   "avisos": [
+    {
+     "tipo": "sin_socorrista",
+     "texto": "La Garita, familiar y de agua tranquila casi siempre, sin socorrista.",
+     "fuente": "hellocanaryislands.com"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Duración estimada."
+  },
+  {
+   "id": "playa_de_la_garita",
+   "name": "Playa de La Garita",
+   "level": 3,
+   "zone": "noreste",
+   "coordinates": [
+    29.129135,
+    -13.464039
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (tiene aparcamiento)",
+   "aparcar_min": 5,
+   "duration_minutes": 90,
+   "min_max": 90,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "playa",
+    "sin_socorrista",
+    "familiar"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/beaches/lanzarote/la-garita/",
+    "nota": "Libre; duchas, aparcamiento y un pequeño restaurante.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "avisos": [
+    {
+     "tipo": "sin_socorrista",
+     "texto": "Sin socorrista.",
+     "fuente": "hellocanaryislands.com"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Duración estimada."
+  },
+  {
+   "id": "playa_blanca_y_el_faro_de_pechiguera",
+   "name": "Playa Blanca y el Faro de Pechiguera",
+   "level": 3,
+   "zone": "sur",
+   "coordinates": [
+    28.862748,
+    -13.829732
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md",
+   "aparcar_min": 8,
+   "duration_minutes": 90,
+   "min_max": 90,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "pueblo",
+    "paseo",
+    "atardecer",
+    "faro"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "mercado_marina_rubicon": {
+    "dias": "miércoles y sábados",
+    "horario": "09:00-14:00",
+    "fuente_tipo": "no oficial (lanzaroteinformation.co.uk)"
+   },
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/beaches/lanzarote/playa-blanca/",
+    "nota": "Paseo marítimo libre. La playa (130 m, agua tranquila) no tiene socorrista. El paseo al Faro de Pechiguera, casi todo pavimentado.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "atardece_al_mar": true,
+   "avisos": [
+    {
+     "tipo": "sin_socorrista",
+     "texto": "La playa de Playa Blanca no tiene socorrista.",
+     "fuente": "hellocanaryislands.com"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Distancia a pie al faro y si se puede visitar por dentro: sin confirmar."
+  },
+  {
+   "id": "puerto_del_carmen_puerto_viejo",
+   "name": "Puerto del Carmen (Puerto Viejo)",
+   "level": 3,
+   "zone": "sur_centro",
+   "coordinates": [
+    28.920847,
+    -13.672629
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md",
+   "aparcar_min": 8,
+   "duration_minutes": 60,
+   "min_max": 60,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "pueblo",
+    "paseo",
+    "cena"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/ports-and-marinas/lanzarote/puerto-del-carmen/",
+    "nota": "Puerto viejo (La Tiñosa) con restaurantes junto al muelle. Playa Grande, más de 1 km, con socorristas y aparcamiento.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "comprobado": "2026-11-02",
+   "verificar": "Duración estimada."
+  },
+  {
+   "id": "volcan_del_cuervo",
+   "name": "Volcán del Cuervo",
+   "level": 3,
+   "zone": "centro_oeste",
+   "coordinates": [
+    28.991104,
+    -13.692037
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md [blog]. Desde nov-2026 se anuncia aparcar en Mancha Blanca y subir en la guagua del parque (comprobar)",
+   "aparcar_min": 5,
+   "duration_minutes": 75,
+   "min_max": 90,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "volcan",
+    "senderismo"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/nature-spaces/lanzarote/volcan-del-cuervo/",
+    "nota": "Sendero de dificultad baja, apto para familias; ~4 km circulares y 1–1,5 h (blog), sin reserva. No hay que llevarse piedras.",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "sin_coche_particular_desde": "2026-11",
+   "sin_coche_particular_nota": "Desde noviembre de 2026, sin coche particular: se aparca en Mancha Blanca y se sube en la guagua del parque (línea P3, aviso del 19-oct).",
+   "avisos": [
+    {
+     "tipo": "sin_coche",
+     "texto": "Desde noviembre de 2026 está previsto aparcar en Mancha Blanca (parking de Los Dolores) y subir en guagua (línea P3).",
+     "fuente": "Canarias7, 5-oct-2026 / aviso de la web de guaguas"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Comprobar si el servicio de guaguas (P3) ya funciona y sus horarios; duración (blog). | Coordenada del aparcamiento aproximada (agente C: DATOS_NATURALEZA_PUEBLOS_COCHE.md [blog]. Desde nov-2026 se anuncia aparcar en Mancha Blanca y subir en la guagua del parque (comprobar))"
+  },
+  {
+   "id": "caldera_blanca",
+   "name": "Caldera Blanca",
+   "level": 3,
+   "zone": "centro_oeste",
+   "coordinates": [
+    29.044056,
+    -13.682056
+   ],
+   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (enlace de mapa)",
+   "aparcar_min": 5,
+   "duration_minutes": 180,
+   "min_max": 180,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "volcan",
+    "senderismo"
+   ],
+   "is_free_access": true,
+   "closed_on": [],
+   "hours_audit": {
+    "confianza": "media",
+    "fuente": "https://www.hellocanaryislands.com/paths/lanzarote/caldera-blanca",
+    "nota": "~10 km (9,97), ~3 h, dificultad baja (fuente oficial; el blog dice baja-media); sale de la iglesia de Los Dolores, en Mancha Blanca. Sin reserva (blog).",
+    "fecha": "2026-11-02"
+   },
+   "precio": {
+    "adulto": 0
+   },
+   "avisos": [
+    {
+     "tipo": "sin_sombra",
+     "texto": "Arriba no hay sombra ni barandilla y hay viento (blog).",
+     "fuente": "[blog]"
+    }
+   ],
+   "comprobado": "2026-11-02",
+   "verificar": "Coordenada: la salida en Mancha Blanca (no hay punto propio). Parking y guagua como el Volcán del Cuervo."
+  }
+ ],
+ "restaurants": [],
+ "excursions": {
+  "civitatis_city": "lanzarote",
+  "_nota": "Solo lo que dice LANZAROTE_SITIOS.md. Los enlaces, precios, notas y cancelación de Civitatis en español los comprueba el agente D en data/dias/lanzarote/_civitatis.json.",
+  "options": [
+   {
+    "id": "la_graciosa",
+    "name": "La Graciosa",
+    "tipo": "ferry_o_excursion",
+    "con_coche": {
+     "ferry": {
+      "naviera": "Líneas Romero",
+      "desde": "Órzola",
+      "duracion_min": "25-30",
+      "precio_ida_y_vuelta_eur": 29,
+      "precio_nino_eur": 16,
+      "salidas_invierno": [
+       "08:30",
+       "10:00",
+       "11:00",
+       "12:00",
+       "13:30",
+       "16:00",
+       "17:00",
+       "18:00"
+      ],
+      "vueltas_invierno": [
+       "08:00",
+       "08:40",
+       "10:00",
+       "11:00",
+       "12:30",
+       "15:00",
+       "16:00",
+       "17:00"
+      ],
+      "extra_verano": {
+       "ida": [
+        "19:00 (27/03-25/10)",
+        "20:00 (01/07-24/10)"
+       ],
+       "vuelta": [
+        "18:00 (27/03-25/10)",
+        "19:00 (01/07-24/10)"
+       ]
+      },
+      "fuente": "https://www.lineasromero.com/en/schedules/lanzarote-la-graciosa",
+      "comprobado": "2026-11-02",
+      "verificar": "La página de la ruta dice «desde 28 €»."
+     }
+    },
+    "sin_coche": {
+     "civitatis": "Excursión a La Graciosa + paseo en velero",
+     "rating": 9.1,
+     "rating_max": 10,
+     "review_count": 2332,
+     "duration_hours": 6,
+     "verificar": "Datos de LANZAROTE_SITIOS.md; enlace en español sin abrir (agente D)."
+    }
+   },
+   {
+    "id": "fuerteventura",
+    "name": "Fuerteventura (Corralejo y dunas)",
+    "tipo": "ferry_o_excursion",
+    "con_coche": {
+     "ferry": {
+      "desde": "Playa Blanca",
+      "hasta": "Corralejo",
+      "duracion_min": "25-35",
+      "salidas": "hasta 26 al día"
+     },
+     "aviso": "El coche de alquiler normalmente no puede subir al ferry (lo prohíben o cobran aparte los contratos de Canarias)."
+    },
+    "sin_coche": {
+     "civitatis": "Excursión a Fuerteventura (Corralejo, El Cotillo y las dunas)",
+     "verificar": "Nota en Civitatis por comprobar (agente D)."
+    }
+   },
+   {
+    "id": "isla_de_lobos",
+    "name": "Isla de Lobos",
+    "tipo": "excursion",
+    "sin_coche": {
+     "civitatis": "Excursión a Isla de Lobos desde Puerto del Carmen",
+     "verificar": "Nota por comprobar (agente D)."
+    }
+   }
+  ]
+ },
+ "destination_config": {
+  "medio": "coche",
+  "tope_coche_dia_min": 180,
+  "_tope_coche": "Eric, 2-nov: el tope de coche es de 3 h al día en la prueba, desde el alojamiento más lejano.",
+  "sin_paseo_nocturno": true,
+  "cena_cerca_del_alojamiento": true,
+  "sin_free_tour_ni_eje_free_tour": true,
+  "size": "isla",
+  "core_days": 3,
+  "max_auto_days": 8,
+  "llegada": {
+   "_nota": "La llegada al aeropuerto (ACE) es de la LZ2.",
+   "aeropuerto": "aeropuerto_ace"
+  },
+  "zonas_alojamiento": [
+   {
+    "id": "puerto_del_carmen",
+    "nombre": "Puerto del Carmen",
+    "coordinates": {
+     "lat": 28.92,
+     "lng": -13.665
+    }
+   },
+   {
+    "id": "playa_blanca",
+    "nombre": "Playa Blanca",
+    "coordinates": {
+     "lat": 28.863,
+     "lng": -13.83
+    }
+   },
+   {
+    "id": "costa_teguise",
+    "nombre": "Costa Teguise",
+    "coordinates": {
+     "lat": 28.998,
+     "lng": -13.495
+    }
+   },
+   {
+    "id": "arrecife",
+    "nombre": "Arrecife",
+    "coordinates": {
+     "lat": 28.963,
+     "lng": -13.55
+    }
+   },
+   {
+    "id": "el_norte",
+    "nombre": "El norte (Haría, Arrieta, Órzola)",
+    "coordinates": {
+     "lat": 29.14,
+     "lng": -13.48
+    }
+   },
+   {
+    "id": "el_interior",
+    "nombre": "El interior (Teguise, La Geria, Yaiza, Tinajo, Famara)",
+    "coordinates": {
+     "lat": 29.03,
+     "lng": -13.64
+    }
+   },
+   {
+    "id": "nose",
+    "nombre": "Aún no lo sé"
+   }
+  ],
+  "meses_invierno": [
+   11,
+   12,
+   1,
+   2,
+   3
+  ],
+  "_meses_invierno": "En Lanzarote la temporada alta es el invierno.",
+  "sunset_by_season": {
+   "invierno": "18:20",
+   "primavera": "20:05",
+   "verano": "20:45",
+   "otono": "19:10"
+  },
+  "cortes_luz": [
+   "18:40",
+   "19:25",
+   "20:10"
+  ],
+  "_cortes_luz": "Atardeceres de Lanzarote en 2027 (sunset.js, Atlantic/Canary): de 17:56 a 20:57; tres cortes que reparten ese rango en 4 partes iguales, como DIAS_ESCRITOS_FORMATO.md.",
+  "festivos": {
+   "_nota": "Festivos de Canarias y de la isla (DATOS_NATURALEZA_PUEBLOS_COCHE.md, Gobierno de Canarias): para la LZ2 (fechas especiales). 15 de septiembre, Virgen de Los Dolores (festivo insular), y la romería de Mancha Blanca el sábado anterior.",
+   "fuente": "https://www3.gobiernodecanarias.org/noticias/el-gobierno-aprueba-el-calendario-laboral-de-canarias-para-2026/"
+  },
+  "pistas_de_tierra": {
+   "sitios": [
+    "playas_de_papagayo",
+    "las_grietas_montana_blanca",
+    "mirador_del_bosquecillo"
+   ],
+   "aviso": "Revisa si tu seguro cubre las pistas de tierra"
+  },
+  "sin_carrito": {
+   "no": [
+    "jameos_del_agua",
+    "cueva_de_los_verdes"
+   ],
+   "dificil": [
+    "montanas_del_fuego",
+    "mirador_del_rio"
+   ],
+   "aviso": "Mejor mochila portabebés"
+  },
+  "centros_cact": {
+   "abren_365_dias": true,
+   "nino_0_6": "gratis",
+   "nino_7_12": "media entrada",
+   "bono_varios_centros": false,
+   "nota": "Ya no hay bono de varios centros (los blogs que lo anuncian están desfasados). Las entradas sin hora valen 3 meses.",
+   "fuente": "https://cactlanzarote.com/en/preguntas-frecuentes-cact-lanzarote"
+  }
+ },
+ "cerca_de_mi": {
+  "tipos": [
+   "gasolineras",
+   "aparcamientos"
+  ],
+  "_nota": "En todos los destinos «Cerca de mí» es del pase. En Lanzarote lleva gasolineras y aparcamientos EN LUGAR de baños y fuentes. Datos de OpenStreetMap (ODbL), descargados con scripts/destino/gasolinerasLanzarote.mjs.",
+  "gasolineras": "data/pipeline_v2/gasolineras/lanzarote.json",
+  "aparcamientos": "data/pipeline_v2/aparcamientos/lanzarote.json",
+  "pocas_en_el_norte": "En el municipio de Haría figuran solo dos (Haría pueblo y Arrieta); en Órzola, sin confirmar: repostar antes de subir al norte."
+ },
+ "tiempos_en_coche": "data/pipeline_v2/travel/lanzarote_coche.json"
+}

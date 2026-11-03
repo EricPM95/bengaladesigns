@@ -10,6 +10,7 @@
  */
 import { frasePorHora } from '../../shared/verPor.js'
 import { sunsetMinutesOn } from '../../shared/routeEngine/sunset.js'
+import { zonaDelDestinoORoma } from './zonaHoraria'
 import type { HorarioDeParada } from './horarioDeParada'
 import { normalizaNombre } from './horarioDeParada'
 
@@ -48,11 +49,11 @@ export function datosDelSitio(parada: Pick<ParadaParaAviso, 'name' | 'fullName'>
  * La puesta de sol del día de la parada (minutos locales), con la fecha del día o, sin fechas, la de mediados del mes del viaje. null si no se puede saber.
  * (El destino curado es Roma: su hora local; la hora de las paradas son horas del reloj del destino.)
  */
-export function ocasoDelDia(dateIso: string | null, mes: number | null, coordenadas: { lat: number; lng: number } | null | undefined): number | null {
+export function ocasoDelDia(dateIso: string | null, mes: number | null, coordenadas: { lat: number; lng: number } | null | undefined, destino?: string | null): number | null {
   if (!coordenadas) return null
   const fecha = dateIso && /^\d{4}-\d{2}-\d{2}/.test(dateIso) ? dateIso.slice(0, 10) : typeof mes === 'number' && mes >= 0 && mes <= 11 ? `2027-${String(mes + 1).padStart(2, '0')}-15` : null
   if (!fecha) return null
-  return sunsetMinutesOn(fecha, [coordenadas.lat, coordenadas.lng], 'Europe/Rome') as number | null
+  return sunsetMinutesOn(fecha, [coordenadas.lat, coordenadas.lng], zonaDelDestinoORoma(destino)) as number | null
 }
 
 export interface EntradaDelAviso {

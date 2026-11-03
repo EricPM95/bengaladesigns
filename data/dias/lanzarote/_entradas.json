@@ -1,0 +1,115 @@
+{
+ "_que_es": "Las entradas oficiales que se pueden comprar de cada sitio (como data/dias/roma/_entradas.json). Precios del 2-nov-2026 (CACT y fcmanrique.org). Las de Timanfaya y la Cueva SOLO se venden online con día y hora.",
+ "lugares": {
+  "Montañas del Fuego (Timanfaya)": [
+   {
+    "nombre": "Entrada con día y hora",
+    "incluye": "Islote de Hilario y Ruta de los Volcanes en el autobús del parque. Solo online.",
+    "desde": 30,
+    "url": "https://ventaonline.cactlanzarote.com/en/product/17"
+   }
+  ],
+  "Jameos del Agua": [
+   {
+    "nombre": "Jameos del Agua",
+    "incluye": "Entrada sin hora (vale 3 meses).",
+    "desde": 17,
+    "url": "https://ventaonline.cactlanzarote.com/en/tickets/jameos-del-agua-ticket"
+   },
+   {
+    "nombre": "Jameos del Agua + Casa de los Volcanes",
+    "incluye": "Entrada combinada.",
+    "desde": 22.4,
+    "url": "https://ventaonline.cactlanzarote.com/en/tickets/jameos-del-agua-ticket"
+   },
+   {
+    "nombre": "Noches de Jameos (viernes)",
+    "incluye": "Cena y concierto; menú adulto.",
+    "desde": 98,
+    "url": "https://cactlanzarote.com/en/tickets/jameos-noche"
+   }
+  ],
+  "Cueva de los Verdes": [
+   {
+    "nombre": "Entrada con día y hora",
+    "incluye": "Visita guiada de ~50 min. Solo online.",
+    "desde": 17,
+    "url": "https://ventaonline.cactlanzarote.com/en/tickets/cueva-de-los-verdes-ticket"
+   }
+  ],
+  "Mirador del Río": [
+   {
+    "nombre": "Mirador del Río",
+    "incluye": "Entrada sin hora (vale 3 meses).",
+    "desde": 9,
+    "url": "https://ventaonline.cactlanzarote.com/en/tickets/mirador-del-rio-ticket"
+   }
+  ],
+  "Jardín de Cactus": [
+   {
+    "nombre": "Jardín de Cactus",
+    "incluye": "Entrada sin hora (vale 3 meses).",
+    "desde": 9,
+    "url": "https://ventaonline.cactlanzarote.com/en/tickets/jardin-de-cactus-ticket"
+   }
+  ],
+  "Castillo de San José (MIAC)": [
+   {
+    "nombre": "Castillo de San José (MIAC)",
+    "incluye": "Entrada sin hora (vale 3 meses).",
+    "desde": 5.4,
+    "url": "https://ventaonline.cactlanzarote.com/en/tickets/international-museum-contemporary-art-castillo-de-san-jose-ticket"
+   }
+  ],
+  "Fundación César Manrique": [
+   {
+    "nombre": "Fundación César Manrique",
+    "incluye": "Entrada de taquilla u online.",
+    "desde": 10,
+    "url": null
+   },
+   {
+    "nombre": "Fundación + Casa-Museo de Haría",
+    "incluye": "Entrada conjunta.",
+    "desde": 17,
+    "url": null
+   }
+  ],
+  "Haría y la Casa-Museo César Manrique": [
+   {
+    "nombre": "Casa-Museo César Manrique (Haría)",
+    "incluye": "Entrada de la casa; el pueblo es libre.",
+    "desde": 10,
+    "url": null
+   },
+   {
+    "nombre": "Fundación + Casa-Museo de Haría",
+    "incluye": "Entrada conjunta.",
+    "desde": 17,
+    "url": null
+   }
+  ],
+  "La Geria y sus bodegas": [
+   {
+    "nombre": "El Grifo «a tu aire»",
+    "incluye": "Museo del vino, bodega de 1775 y 2 vinos (~45 min).",
+    "desde": 15,
+    "url": "https://elgrifo.com/tienda/gb/visits/118-guided-tour-of-el-grifo-winery.html"
+   },
+   {
+    "nombre": "Stratvs, visita guiada",
+    "incluye": "3 vinos y quesos (~60 min).",
+    "desde": 25,
+    "url": "https://stratvs.com/en/visitas-agenda/"
+   }
+  ],
+  "Playas de Papagayo": [
+   {
+    "nombre": "Acceso con coche (por coche)",
+    "incluye": "Pista de tierra; 3 € por coche para no residentes.",
+    "desde": 3,
+    "url": null
+   }
+  ]
+ }
+}

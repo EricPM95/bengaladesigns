@@ -1,0 +1,843 @@
+{
+ "formato": "listas",
+ "fuente": "docs/destinos/lanzarote/DIAS_CURADOS_LANZAROTE.md (borrador 2, 2-nov-2026)",
+ "generado": "scripts/destino/lanzaroteDatos.mjs",
+ "destino": "lanzarote",
+ "_nota": "LZ1 (agente B): los días SOLO como datos, tal cual el documento (no se cambian ni se inventan). Los textos de restaurantes, historias y llegada son de la LZ2 y van vacíos; las variantes llevan `ops: null` (el motor las leerá en la LZ2). Las horas son orientativas (para comprobar que el día cabe).",
+ "dias": {
+  "D1": {
+   "id": "D1",
+   "nombre": "Fuego y mar: el sur volcánico",
+   "titulo_documento": "Fuego y mar: el sur volcánico · D1",
+   "joyas": [
+    "Montañas del Fuego (Timanfaya)",
+    "La Geria y sus bodegas",
+    "El Golfo y el Charco de los Clicos"
+   ],
+   "coche": true,
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Montañas del Fuego (Timanfaya)",
+       "modo": "dentro",
+       "doc": "🎟 Montañas del Fuego (Timanfaya) ~90 min (turno de las 09:30)",
+       "min": 90,
+       "hora_tipo": "turno",
+       "hora": "09:30",
+       "hora_aprox": true,
+       "notas": [
+        "Reserva online con día y hora; la web abre turnos desde las 09:00 ⚠️ (el de las 09:30 deja llegar a la bodega sin esperas). Islote de Hilario y la Ruta de los Volcanes en el autobús del parque."
+       ],
+       "llegada_antes_min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "La Geria y sus bodegas",
+       "modo": "fuera",
+       "doc": "La Geria: la carretera de los viñedos (LZ-30), con parada en un mirador de los hoyos de viña y una parada corta en una bodega (Stratvs, todos los días; El Grifo, de lunes a viernes) ~1 h",
+       "min": 60,
+       "bebida_aviso": "Quien conduce, sin alcohol",
+       "min_fuente": "LANZAROTE_SITIOS.md (45-60 min)"
+      }
+     ],
+     "comida": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en La Geria",
+      "hora_aprox": "13:15",
+      "doc": "En La Geria, hacia las 13:15 (domingo: fuera de Bodega La Geria, que cierra a las 14:00 ⚠️)",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Salinas de Janubio",
+       "modo": null,
+       "doc": "Salinas de Janubio, desde el mirador ~20 min",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Playa de Montaña Bermeja",
+       "modo": null,
+       "doc": "(opcional) Playa de Montaña Bermeja, la arena negra bajo la montaña roja ~15 min",
+       "min": 15,
+       "opcional": true
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Los Hervideros",
+       "modo": null,
+       "doc": "Los Hervideros, la costa de lava ~30 min",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "El Golfo y el Charco de los Clicos",
+       "modo": null,
+       "doc": "El Golfo y el Charco de los Clicos: la laguna verde desde el mirador y el pueblo, hasta el atardecer",
+       "hasta_atardecer": true,
+       "tiempo_de_playa": true
+      }
+     ],
+     "cena": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en El Golfo, después del atardecer (en verano, antes del atardecer o cerca del alojamiento)",
+      "doc": "En El Golfo, después del atardecer. Solo en invierno: los restaurantes de El Golfo cierran entre las 20:00 y las 21:00; en verano (atardecer ~20:55) se cena antes del atardecer en El Golfo o cerca del alojamiento",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     }
+    }
+   },
+   "coche_doc": "~2 h desde Puerto del Carmen o Playa Blanca; ~2 h 35 desde Costa Teguise ⚠️ (Islote → Stratvs ~25 min ⚠️; Yaiza → Janubio → Los Hervideros → El Golfo, ~35 min seguidos, La Voz). Las cifras de Mapbox, en INFORME_DIAS_MAPBOX.md (agente C).",
+   "orden_del_sur": "La Geria → Yaiza → Janubio → Los Hervideros → El Golfo, en una sola pasada (REVISION_BORRADOR_1.md).",
+   "variantes": [
+    {
+     "id": "tranquilo",
+     "cuando": {
+      "ritmo": "tranquilo"
+     },
+     "doc": "Timanfaya a las 11:00 y comida en el Restaurante El Diablo, en el mismo Islote (12:00-16:00, sin reserva ⚠️ si se puede sin entrada); La Geria por la tarde, con su mirador, camino de la costa.",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "verano",
+     "cuando": {
+      "temporada": "verano"
+     },
+     "doc": "Atardecer ~20:30-20:55: el tiempo libre se queda en El Golfo o en la playa de Janubio. (Playa, si el viaje no lleva el D4: después de comer, Papagayo ⚠️ 9:00-19:00 y luego Janubio → Los Hervideros → El Golfo con el atardecer.)",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "vino",
+     "cuando": {
+      "experiencia": "vino"
+     },
+     "doc": "La visita guiada de Stratvs a las 12:00 (60 min, 3 vinos y queso, 25 €); comida: Bodega de Uga, de martes a sábado.",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "volcanes",
+     "cuando": {
+      "experiencia": "volcanes"
+     },
+     "doc": "Timanfaya → Volcán del Cuervo (sendero fácil ~1-1,5 h ⚠️; desde noviembre de 2026, sin coche particular: se aparca en Mancha Blanca y se sube en la guagua del parque ⚠️ comprobar si ya funciona) → por la LZ-56, Masdache y La Geria, con su mirador → comida en La Geria. La Geria no se pierde.",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "domingo",
+     "cuando": {
+      "dia_semana": "domingo"
+     },
+     "doc": "Comida en Bodegas Rubicón (abre todos los días): Bodega La Geria cierra a las 14:00 ⚠️ y El Grifo no abre.",
+     "ops": null,
+     "pendiente_motor": true
+    }
+   ],
+   "sin_coche": {
+    "excursion": "Excursión al Timanfaya, La Geria y el Charco de los Clicos (Civitatis, con recogida; 8,1, 281 opiniones)",
+    "deja_fuera": "No pasa por Los Hervideros ni Janubio. Hace Timanfaya, una bodega y El Golfo.",
+    "verificar": "Datos de LANZAROTE_SITIOS.md; enlace en español sin abrir (agente D)."
+   },
+   "inicio": {
+    "turno_obligatorio": "montanas_del_fuego"
+   }
+  },
+  "D2": {
+   "id": "D2",
+   "nombre": "El norte de Manrique",
+   "titulo_documento": "El norte de Manrique · D2",
+   "joyas": [
+    "Jameos del Agua",
+    "Cueva de los Verdes",
+    "Mirador del Río"
+   ],
+   "coche": true,
+   "nota_dia": "El día más rígido: la Cueva va con hora. Nunca el último día.",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Jameos del Agua",
+       "modo": "dentro",
+       "doc": "Jameos del Agua, a la apertura (10:00), antes de los autobuses ~1 h",
+       "min": 60,
+       "hora": "10:00",
+       "hora_tipo": "apertura",
+       "notas": [
+        "Sin carrito: mochila portabebés"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Cueva de los Verdes",
+       "modo": "dentro",
+       "doc": "🎟 Cueva de los Verdes ~50 min (turno de las 11:30)",
+       "min": 50,
+       "hora_tipo": "turno",
+       "hora": "11:30",
+       "hora_aprox": true,
+       "notas": [
+        "Turno de hacia las 11:30 ⚠️ (a 5 min de Jameos). Sin carrito."
+       ],
+       "llegada_antes_min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Mirador del Río",
+       "modo": "dentro",
+       "doc": "Mirador del Río (~20 min con curvas) ~45 min",
+       "min": 45,
+       "notas": [
+        "Si hay nubes, apenas se ve; alternativa gratuita: Mirador de Guinate"
+       ],
+       "alternativa": "Mirador de Guinate"
+      }
+     ],
+     "comida": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en Haría (~15 min del Mirador)",
+      "hora_aprox": "13:45",
+      "doc": "En Haría (~15 min), hacia las 13:45 (sábado: también el Mercado Municipal, con reserva por WhatsApp)",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Haría y la Casa-Museo César Manrique",
+       "modo": null,
+       "doc": "Haría y el Valle de las Mil Palmeras: el pueblo y su plaza",
+       "min": 60
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Haría y la Casa-Museo César Manrique",
+       "modo": "dentro",
+       "doc": "Casa-Museo César Manrique (Haría), taquilla hasta las 17:00 (para quien no tenga Arte, opcional) ~1 h",
+       "min": 60,
+       "titulo": "Casa-Museo César Manrique (Haría)",
+       "opcional_sin_experiencia": "arte",
+       "taquilla_hasta": "17:00"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Mirador de los Helechos",
+       "modo": null,
+       "doc": "Mirador de los Helechos, la vista del valle, saliendo hacia Teguise ~15 min",
+       "min": 15
+      }
+     ],
+     "cena": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "cerca del alojamiento",
+      "doc": "Cerca de tu alojamiento (los restaurantes de cada zona, en RESTAURANTES_LANZAROTE.md)",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     }
+    }
+   },
+   "coche_doc": "~2 h-2 h 15 desde Puerto del Carmen o Costa Teguise; ~2 h 35 desde Playa Blanca (Playa Blanca → Jameos 55 min, rome2rio). Las cifras de Mapbox, en INFORME_DIAS_MAPBOX.md (agente C).",
+   "variantes": [
+    {
+     "id": "al_reves",
+     "cuando": {
+      "opcion": "cueva_primero"
+     },
+     "doc": "Al revés: Cueva a las 09:30 (su apertura) → Jameos a las 10:40.",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "playa_o_verano_manana",
+     "cuando": {
+      "experiencia": "playa_y_calma",
+      "o_temporada": "verano"
+     },
+     "doc": "Caletón Blanco (junto a Órzola) con la marea bajando, de 9:00 a 12:00, antes de Jameos: entonces Jameos a las 12:00 y la Cueva por la tarde ⚠️ (comprobar que cabe).",
+     "ops": null,
+     "pendiente_motor": true,
+     "sitio_extra": "caleton_blanco"
+    },
+    {
+     "id": "verano",
+     "cuando": {
+      "temporada": "verano"
+     },
+     "doc": "Después de la Casa-Museo, bajar a Arrieta: La Garita o las piscinas de Punta Mujeres (mejor a media marea; sin socorrista) y cena en Arrieta (marisquerías del espigón). Sin los Helechos.",
+     "ops": null,
+     "pendiente_motor": true,
+     "sitios_extra": [
+      "playa_de_la_garita",
+      "punta_mujeres_y_arrieta"
+     ]
+    },
+    {
+     "id": "sabado",
+     "cuando": {
+      "dia_semana": "sábado"
+     },
+     "doc": "Mercado de artesanía de Haría (9:00-14:30): Jameos 10:00 → Cueva 11:30 → Haría hacia las 12:35, mercado y comida → Casa-Museo hasta las ~15:50 → Mirador del Río hacia las 16:10 (última entrada 16:40, justo). Sin los Helechos. Coche desde Playa Blanca: ~2 h 40.",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "viernes_noches_de_jameos",
+     "cuando": {
+      "dia_semana": "viernes",
+      "opcional": true
+     },
+     "doc": "Noches de Jameos: visita al atardecer, cena (18:30-20:30) y concierto junto al lago (22:30-23:15). Menú de adulto 98 € (vegano 88 €, niños 49 €), con reserva. Ese día: Cueva por la mañana → Mirador del Río → comida y Casa-Museo en Haría → Jameos a las 18:30. Hay 2 h entre la cena y el concierto y luego se conduce de noche (quien conduce, sin alcohol). Los viernes 25-dic, 1-ene y Viernes Santo, sin confirmar ⚠️.",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "1_enero",
+     "cuando": {
+      "fecha": "01-01"
+     },
+     "doc": "La Casa-Museo de Haría cierra: el pueblo y el Mirador de los Helechos.",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "dos_dias",
+     "cuando": {
+      "dias_del_viaje": 2
+     },
+     "doc": "Como no hay D3, este día lleva la Fundación César Manrique (imprescindible): comida en Haría, sin la Casa-Museo, y por la LZ-1 a Tahíche (~25 min ⚠️) para entrar hacia las 16:00 (taquilla hasta las 17:00).",
+     "ops": null,
+     "pendiente_motor": true,
+     "sitio_extra": "fundacion_cesar_manrique"
+    }
+   ],
+   "sin_coche": {
+    "excursion": "Tour por lo mejor de Lanzarote con entradas (Civitatis, 8,2, 2.971 opiniones)",
+    "deja_fuera": "Hace la Cueva y Jameos (y Timanfaya); no lleva el Mirador del Río ni Haría.",
+    "verificar": "Datos de LANZAROTE_SITIOS.md; enlace en español sin abrir (agente D)."
+   },
+   "no_ultimo_dia": true
+  },
+  "D3": {
+   "id": "D3",
+   "nombre": "Manrique en casa: Tahíche, Teguise y Arrecife",
+   "titulo_documento": "Manrique en casa: Tahíche, Teguise y Arrecife · D3",
+   "joyas": [
+    "Fundación César Manrique"
+   ],
+   "coche": true,
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Fundación César Manrique",
+       "modo": "dentro",
+       "doc": "Fundación César Manrique, a la apertura (10:00): los días de crucero (martes y miércoles) se llena desde las 11:00 ~1 h 30",
+       "min": 90,
+       "hora": "10:00",
+       "hora_tipo": "apertura"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Jardín de Cactus",
+       "modo": "dentro",
+       "doc": "Jardín de Cactus (Guatiza, ~15 min ⚠️) ~1 h",
+       "min": 60
+      }
+     ],
+     "comida": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en Teguise",
+      "hora_aprox": "13:00",
+      "doc": "En Teguise, hacia las 13:00 (reservar en domingo)",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Teguise (villa)",
+       "modo": null,
+       "doc": "Teguise, la antigua capital: el casco, la iglesia de Guadalupe y el Palacio Spínola por fuera (⚠️ horario)",
+       "min": 60
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Santa Bárbara",
+       "modo": "fuera",
+       "doc": "(opcional) Castillo de Santa Bárbara, por fuera: las vistas desde el volcán Guanapay (el museo ya no existe)",
+       "min": 30,
+       "opcional": true,
+       "solo_por_fuera": true
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Ciudad Estratificada (Rofera de Teseguite)",
+       "modo": null,
+       "doc": "(opcional) Ciudad Estratificada (Rofera de Teseguite), las formaciones de toba junto a Teguise (20-30 min). Sin subirse: son frágiles",
+       "min": 25,
+       "opcional": true
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Casa-Museo del Campesino",
+       "modo": "dentro",
+       "doc": "Casa-Museo del Campesino (Mozaga, 7 min; gratis, hasta las 18:00) ~50 min",
+       "min": 50
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Las Grietas (Montaña Blanca)",
+       "modo": null,
+       "doc": "(opcional) Las Grietas, en la LZ-35 a pocos minutos del Campesino: los cañones de lava (30-45 min ⚠️). Sin aparcamiento oficial, no con lluvia ni viento, solo de día",
+       "min": 40,
+       "opcional": true
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arrecife: Charco de San Ginés y el paseo",
+       "modo": null,
+       "doc": "Arrecife, al caer la tarde: el Charco de San Ginés con sus luces y el paseo",
+       "min": 60,
+       "al_caer_la_tarde": true,
+       "nota_sol": "Arrecife mira al este: el sol no se pone sobre el mar."
+      }
+     ],
+     "cena": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en Arrecife",
+      "doc": "En Arrecife: restaurante del Castillo de San José (de miércoles a sábado por la noche; no hace falta entrada al museo) o en el Charco; o cerca del alojamiento",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     }
+    }
+   },
+   "coche_doc": "~1 h 15 desde Costa Teguise o Arrecife; ~2 h 15 desde Playa Blanca. Las cifras de Mapbox, en INFORME_DIAS_MAPBOX.md (agente C).",
+   "cambia_en_domingo": true,
+   "variantes": [
+    {
+     "id": "arte",
+     "cuando": {
+      "experiencia": "arte"
+     },
+     "doc": "Sin el Castillo de Santa Bárbara. Teguise hasta las 15:30 → LagOmar (Nazaret, ⚠️ hasta las 18:00) 15:40-16:40 → Campesino → Arrecife.",
+     "ops": null,
+     "pendiente_motor": true,
+     "sitio_extra": "lagomar"
+    },
+    {
+     "id": "domingo",
+     "cuando": {
+      "dia_semana": "domingo"
+     },
+     "doc": "Mercadillo de Teguise (9:00-14:00). Teguise a las 10:00 (antes del gentío de las 11:00; ⚠️ aparcamiento) y comida allí → Jardín de Cactus 14:30 (última entrada 16:30) → Fundación 15:45 (taquilla hasta las 17:00) → Arrecife. Sin el Campesino (queda en EXPLORAR).",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "1_enero",
+     "cuando": {
+      "fecha": "01-01"
+     },
+     "doc": "La Fundación cierra: LagOmar en su lugar ⚠️ (comprobar que abre ese día).",
+     "ops": null,
+     "pendiente_motor": true,
+     "sitio_extra": "lagomar"
+    },
+    {
+     "id": "verano",
+     "cuando": {
+      "temporada": "verano"
+     },
+     "doc": "Antes del Charco, tiempo de playa en el Reducto (mejor con marea alta).",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "free_tour",
+     "cuando": {
+      "free_tour": true
+     },
+     "doc": "El Free Tour de Teguise (2 h, 9,3/10) puede sustituir a la visita por libre ⚠️ (días y horas por confirmar).",
+     "ops": null,
+     "pendiente_motor": true
+    }
+   ],
+   "sin_coche": {
+    "excursion": "Tour de César Manrique por Lanzarote (Civitatis)",
+    "deja_fuera": "Hace la Fundación, el Jardín de Cactus y el Campesino (y además el Mirador del Río y Jameos); no lleva Teguise ni Arrecife.",
+    "verificar": "Datos de LANZAROTE_SITIOS.md; enlace en español sin abrir (agente D)."
+   }
+  },
+  "D4": {
+   "id": "D4",
+   "nombre": "Papagayo y Playa Blanca",
+   "titulo_documento": "Papagayo y Playa Blanca · D4",
+   "joyas": [],
+   "coche": true,
+   "nota_dia": "El día de playa. De los que se añaden.",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Playas de Papagayo",
+       "modo": null,
+       "doc": "Playas de Papagayo: pista de tierra, despacio (~15-20 min ⚠️), 3 € por coche (lleva tarjeta por si acaso). Playa Mujeres o Papagayo. Sin socorrista. Toda la mañana",
+       "tiempo_de_playa": true,
+       "aviso_pista": true
+      }
+     ],
+     "comida": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en Marina Rubicón o Playa Blanca",
+      "hora_aprox": "14:00",
+      "doc": "En Marina Rubicón o Playa Blanca, hacia las 14:00",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Playa Blanca y el Faro de Pechiguera",
+       "modo": null,
+       "doc": "El paseo marítimo de Playa Blanca",
+       "min": 45,
+       "titulo": "El paseo marítimo de Playa Blanca"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Playa Blanca y el Faro de Pechiguera",
+       "modo": null,
+       "doc": "Faro de Pechiguera, al atardecer",
+       "min": 45,
+       "titulo": "Faro de Pechiguera",
+       "hasta_atardecer": true
+      }
+     ],
+     "cena": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en Marina Rubicón",
+      "doc": "En Marina Rubicón (o cerca del alojamiento)",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     }
+    }
+   },
+   "coche_doc": "~1 h 40 desde Puerto del Carmen; ~2 h 20 desde Costa Teguise. Las cifras de Mapbox, en INFORME_DIAS_MAPBOX.md (agente C).",
+   "variantes": [
+    {
+     "id": "verano",
+     "cuando": {
+      "temporada": "verano"
+     },
+     "doc": "Después de comer, un segundo rato de playa (la de Playa Blanca, de agua tranquila, o volver a Papagayo hasta las 19:00) y luego el paseo y el faro.",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "invierno",
+     "cuando": {
+      "temporada": "invierno"
+     },
+     "doc": "La playa, más corta; el paseo y el faro, con más calma.",
+     "ops": null,
+     "pendiente_motor": true
+    },
+    {
+     "id": "kayak_snorkel",
+     "cuando": {
+      "opcion": "kayak_y_snorkel"
+     },
+     "doc": "Kayak y snorkel en Papagayo (Civitatis, 9:45-14:00, 9,5/10; se queda en Playa Blanca, sin recogida) en lugar de la playa por libre.",
+     "ops": null,
+     "pendiente_motor": true
+    }
+   ],
+   "sin_coche": {
+    "excursion": "El yate a las playas de Papagayo (Civitatis, con recogida salvo en Playa Blanca los lunes)",
+    "deja_fuera": null,
+    "verificar": "Datos de LANZAROTE_SITIOS.md; enlace en español sin abrir (agente D)."
+   },
+   "entra_si": {
+    "experiencia": "playa_y_calma",
+    "antes_que": "DG"
+   }
+  },
+  "D5": {
+   "id": "D5",
+   "nombre": "Volcanes y Famara",
+   "titulo_documento": "Volcanes y Famara · D5",
+   "joyas": [],
+   "coche": true,
+   "nota_dia": "Para viajes de 6 días o más (o antes, con Volcanes).",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Volcán del Cuervo",
+       "modo": null,
+       "doc": "Volcán del Cuervo, temprano (no hay sombra): el sendero fácil por dentro de un cráter ~1-1,5 h ⚠️. Desde noviembre de 2026, se aparca en Mancha Blanca y se sube en la guagua del parque ⚠️ (comprobar horarios)",
+       "min": 75,
+       "temprano": true
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Ermita de las Nieves",
+       "modo": null,
+       "doc": "(opcional) Ermita de las Nieves, sobre el Risco de Famara (con niebla no se ve)",
+       "min": 20,
+       "opcional": true,
+       "alternativa": "Mirador del Bosquecillo (Risco de Famara)"
+      }
+     ],
+     "comida": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en Caleta de Famara",
+      "hora_aprox": "13:30",
+      "doc": "En Caleta de Famara, hacia las 13:30",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Caleta de Famara y Playa de Famara",
+       "modo": null,
+       "doc": "Caleta de Famara, las calles de arena y el surf; Playa de Famara: el paseo por la arena (no es de baño: bandera roja todo el año)",
+       "min": 90
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Caleta de Famara y Playa de Famara",
+       "modo": null,
+       "doc": "El atardecer en Famara",
+       "titulo": "El atardecer en Famara",
+       "hasta_atardecer": true
+      }
+     ],
+     "cena": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en Caleta de Famara",
+      "doc": "En Caleta de Famara (o cerca del alojamiento)",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     }
+    }
+   },
+   "coche_doc": "~1 h 45 desde Playa Blanca; ~2 h 10 con la Ermita. Las cifras de Mapbox, en INFORME_DIAS_MAPBOX.md (agente C).",
+   "variantes": [
+    {
+     "id": "volcanes",
+     "cuando": {
+      "experiencia": "volcanes"
+     },
+     "doc": "Caldera Blanca, ~10 km y 3 h, desde Mancha Blanca (en lugar del Volcán del Cuervo).",
+     "ops": null,
+     "pendiente_motor": true,
+     "sitio_extra": "caldera_blanca"
+    },
+    {
+     "id": "verano",
+     "cuando": {
+      "temporada": "verano"
+     },
+     "doc": "Es un día corto (más de 4 h hasta el atardecer). Después de comer, quien quiera bañarse: La Garita (Arrieta), ~25 min ⚠️, y vuelta al atardecer de Famara (o quedarse allí y cenar en Arrieta).",
+     "ops": null,
+     "pendiente_motor": true,
+     "sitio_extra": "playa_de_la_garita"
+    },
+    {
+     "id": "tranquilo",
+     "cuando": {
+      "ritmo": "tranquilo"
+     },
+     "doc": "Sin la Ermita.",
+     "ops": null,
+     "pendiente_motor": true
+    }
+   ],
+   "sin_coche": {
+    "excursion": null,
+    "deja_fuera": "No hay excursión que lo haga: el día se queda para quien lleva coche."
+   }
+  },
+  "DG": {
+   "id": "DG",
+   "nombre": "La Graciosa (excursión)",
+   "titulo_documento": "La Graciosa (excursión) · DG",
+   "joyas": [],
+   "coche": true,
+   "tipo_dia": "excursion",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "traslado",
+       "como": "coche",
+       "texto": "A Órzola (pocas gasolineras en el norte: repostar antes). Salida desde Playa Blanca hacia las 08:30 (1 h 01, rome2rio); desde Puerto del Carmen, 43 min.",
+       "doc": "Coche hasta Órzola"
+      },
+      {
+       "tipo": "traslado",
+       "como": "ferry",
+       "texto": "Ferry de las 10:00 (Líneas Romero, 25-30 min, 29 € ida y vuelta)",
+       "doc": "Ferry a La Graciosa",
+       "hora": "10:00"
+      }
+     ],
+     "comida": {
+      "restaurante": null,
+      "alternativa": null,
+      "zona": "en Caleta de Sebo",
+      "hora_aprox": null,
+      "doc": "En Caleta de Sebo",
+      "restaurantes_pendientes": "LZ2 (RESTAURANTES_LANZAROTE.md)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "La Laja o El Salado",
+       "modo": null,
+       "doc": "Tiempo de playa: La Laja o El Salado, junto al pueblo",
+       "tiempo_de_playa": true
+      }
+     ],
+     "cena": null
+    }
+   },
+   "en_la_isla": "No hay carreteras. Bici o taxi 4x4 hasta la Playa de La Francesa y la Montaña Amarilla.",
+   "vuelta": {
+    "ultima_todo_el_ano": "17:00",
+    "verano_27_mar_25_oct": "18:00",
+    "verano_1_jul_24_oct": "19:00",
+    "aviso": "No te quedes sin barco: mira a qué hora sale la última ese día. El billete vale cualquier día y hora durante un año ⚠️."
+   },
+   "coche_doc": "~1 h 25 desde Puerto del Carmen; ~2 h desde Playa Blanca.",
+   "variantes": [
+    {
+     "id": "caleton_blanco",
+     "cuando": {
+      "opcion": "antes_del_ferry"
+     },
+     "doc": "Antes del ferry (si se coge uno más tarde) o otro día de mañana: Caletón Blanco, a 1,2 km del puerto de Órzola (mejor con marea bajando, por la mañana).",
+     "ops": null,
+     "pendiente_motor": true,
+     "sitio_extra": "caleton_blanco"
+    }
+   ],
+   "sin_coche": {
+    "excursion": "Excursión a La Graciosa + paseo en velero (Civitatis, 9,1/10, 2.332 opiniones, con recogida)",
+    "deja_fuera": null,
+    "verificar": "Datos de LANZAROTE_SITIOS.md; enlace en español sin abrir (agente D)."
+   }
+  },
+  "DF": {
+   "id": "DF",
+   "nombre": "Fuerteventura (excursión, 7 días)",
+   "titulo_documento": "Fuerteventura (excursión, 7 días) · DF",
+   "joyas": [],
+   "coche": true,
+   "tipo_dia": "excursion",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [],
+     "cena": null
+    }
+   },
+   "doc": "Ferry de Playa Blanca a Corralejo (25-35 min) a pie, o la excursión de Civitatis (Corralejo, El Cotillo y las dunas). El coche de alquiler, normalmente no puede subir al ferry (lo prohíben o cobran aparte los contratos de Canarias ⚠️): el aviso lo dice.",
+   "variantes": [],
+   "sin_coche": {
+    "excursion": "Excursión de Civitatis a Fuerteventura (Corralejo, El Cotillo y las dunas)",
+    "deja_fuera": null,
+    "verificar": "Nota en Civitatis por comprobar (agente D)."
+   },
+   "verificar": "DIAS_CURADOS_LANZAROTE.md no detalla paradas de este día."
+  }
+ },
+ "reparto": {
+  "_nota": "Qué días van según la duración (DIAS_CURADOS_LANZAROTE.md, apartado 3). Solo datos: el motor aún no los lee.",
+  "por_dias": {
+   "2": [
+    "D1",
+    "D2"
+   ],
+   "3": [
+    "D1",
+    "D2",
+    "D3"
+   ],
+   "4": [
+    "D1",
+    "D2",
+    "D3",
+    "DG"
+   ],
+   "5": [
+    "D1",
+    "D2",
+    "D3",
+    "DG",
+    "D4"
+   ],
+   "6": [
+    "D1",
+    "D2",
+    "D3",
+    "DG",
+    "D4",
+    "D5"
+   ],
+   "7": [
+    "D1",
+    "D2",
+    "D3",
+    "DG",
+    "D4",
+    "D5",
+    "DF"
+   ]
+  },
+  "desde_8": "días en blanco con sugerencias de playa",
+  "experiencias": {
+   "playa_y_calma": {
+    "4": [
+     "D1",
+     "D2",
+     "D3",
+     "D4"
+    ]
+   },
+   "volcanes": {
+    "6": [
+     "D1",
+     "D2",
+     "D3",
+     "DG",
+     "D5",
+     "D4"
+    ]
+   }
+  },
+  "prioridades": [
+   "los cierres (1 de enero) y la romería de Los Dolores (el sábado antes del 15 de septiembre: ese sábado no va el D1 ni el Volcán del Cuervo)",
+   "el día 1 es el D1 (Timanfaya), siempre",
+   "el domingo es del D3 si no es el día 1",
+   "el sábado, el D2 (si no es el día 1 ni el último; el D2 nunca el último día)",
+   "el viernes, si cae el D2, puede llevar las Noches de Jameos (opcional)",
+   "el día que se recorta es el último de la tabla"
+  ]
+ },
+ "llegadas": null
+}

@@ -13,7 +13,13 @@ import { fichaDeActividad, fichaCorta, horasParaLaApp, precioMinimoDelCalendario
 const leerJson = (ruta) => JSON.parse(fs.readFileSync(new URL(ruta, import.meta.url), 'utf8'))
 
 export const AJUSTES = leerJson('../../data/civitatis/ajustes.json')
-const DESTINOS = { roma: leerJson('../../data/civitatis/roma.json') }
+// (LZ1) Cada destino con su archivo `data/civitatis/<clave>.json` (Roma hoy; Lanzarote cuando exista el suyo): se leen todos menos `ajustes.json`, sin lista escrita en el código.
+const DESTINOS = Object.fromEntries(
+  fs
+    .readdirSync(new URL('../../data/civitatis/', import.meta.url))
+    .filter((f) => f.endsWith('.json') && f !== 'ajustes.json')
+    .map((f) => [f.replace(/\.json$/, ''), leerJson(`../../data/civitatis/${f}`)]),
+)
 
 /** Los números de actividad de un destino (null si el destino no está curado). */
 export function datosDelDestino(nombre) {

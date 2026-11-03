@@ -363,7 +363,9 @@ async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLC
     if ([401, 403, 413, 429].includes(r.status)) {
       const cuerpo = (await r.json().catch(() => null)) as { error?: string; codigo?: string } | null
       const texto = r.status === 413 ? AVISO_ARCHIVO_GRANDE : r.status === 429 ? AVISO_LIMITE_DE_LECTURAS : r.status === 401 ? AVISO_SIN_SESION : cuerpo?.error
-      return { datos: null, aviso: texto ?? null }
+      // (LZ1) El servidor no sabe de qué destino es el viaje: su texto dice «Pase Roma» y aquí se pone el nombre del pase del destino del viaje abierto (sin él, el texto tal cual).
+      const destino = r.status === 403 && texto ? await import('../store/useRouteStore').then((m) => m.useRouteStore.getState().route?.destination ?? null).catch(() => null) : null
+      return { datos: null, aviso: texto && destino ? texto.replace(/Pase Roma/g, `Pase ${destino}`) : (texto ?? null) }
     }
     return { datos: null, aviso: null }
   } catch {

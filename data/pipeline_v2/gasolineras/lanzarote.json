@@ -1,0 +1,490 @@
+{
+ "fuente": "OpenStreetMap (amenity=fuel), descargado con la Overpass API",
+ "licencia": "ODbL — © OpenStreetMap contributors (https://www.openstreetmap.org/copyright)",
+ "descargado": "2026-11-03",
+ "zona_descargada": "28.82,-13.90,29.25,-13.40",
+ "datos_osm_del": "2026-11-03T18:54:36Z",
+ "nota": "Todas las gasolineras de la isla. horario: el de OpenStreetMap (null = sin dato). En el norte hay pocas (Haría y Arrieta, según DATOS_NATURALEZA_PUEBLOS_COCHE.md; Órzola sin confirmar): la app avisa de repostar antes de subir. La del aeropuerto, de 07:00 a 23:00 (web de la petrolera, 2-nov-2026).",
+ "gasolineras": [
+  {
+   "id": "node/12905298496",
+   "lat": 28.976936,
+   "lng": -13.545162,
+   "name": "Plenergy Arrecife II",
+   "marca": "Plenergy",
+   "horario": "24/7",
+   "de_noche_24h": true,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/1614161174",
+   "lat": 28.949443,
+   "lng": -13.616348,
+   "name": "Estación de Servicio SPL Playas I",
+   "marca": "SPL",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Aeropuerto"
+  },
+  {
+   "id": "node/1614161175",
+   "lat": 28.949687,
+   "lng": -13.615634,
+   "name": "Estación de Servicio SPL Playas II",
+   "marca": "SPL",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Aeropuerto"
+  },
+  {
+   "id": "node/1907362609",
+   "lat": 28.965151,
+   "lng": -13.568,
+   "name": "Estación de Servicio Repsol Canary Green Corner",
+   "marca": "Repsol",
+   "horario": "Mo-Su 06:00-22:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/1907395765",
+   "lat": 28.965418,
+   "lng": -13.546078,
+   "name": "BP",
+   "marca": "BP",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/1907402541",
+   "lat": 28.972425,
+   "lng": -13.546017,
+   "name": "Shell",
+   "marca": "Shell",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/1907415622",
+   "lat": 28.988253,
+   "lng": -13.542872,
+   "name": "Moeve",
+   "marca": "Moeve",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/1907440254",
+   "lat": 29.050513,
+   "lng": -13.562376,
+   "name": "Moeve",
+   "marca": "Moeve",
+   "horario": "Mo-Su 07:00-20:00",
+   "de_noche_24h": null,
+   "zona": "El interior"
+  },
+  {
+   "id": "node/267042901",
+   "lat": 28.923638,
+   "lng": -13.824599,
+   "name": "Repsol",
+   "marca": "Repsol",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Playa Blanca"
+  },
+  {
+   "id": "node/269022867",
+   "lat": 29.056773,
+   "lng": -13.564894,
+   "name": "Moeve",
+   "marca": "Moeve",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "El interior"
+  },
+  {
+   "id": "node/287005750",
+   "lat": 29.131722,
+   "lng": -13.464861,
+   "name": "PCAN Arrieta",
+   "marca": "PCAN",
+   "horario": "Mo-Su 06:00-23:00",
+   "de_noche_24h": null,
+   "zona": "El norte"
+  },
+  {
+   "id": "node/287005756",
+   "lat": 28.98691,
+   "lng": -13.515899,
+   "name": "Disa",
+   "marca": "Disa",
+   "horario": "Mo-Su 07:00-22:00",
+   "de_noche_24h": null,
+   "zona": "Costa Teguise"
+  },
+  {
+   "id": "node/287005758",
+   "lat": 29.000533,
+   "lng": -13.503984,
+   "name": "DISA COSTA TEGUISE",
+   "marca": "Disa",
+   "horario": "24/7",
+   "de_noche_24h": true,
+   "zona": "Costa Teguise"
+  },
+  {
+   "id": "node/287005760",
+   "lat": 28.974259,
+   "lng": -13.534374,
+   "name": "DISA BANADEROS",
+   "marca": "Disa",
+   "horario": "Mo-Su 06:00-22:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/287005762",
+   "lat": 28.968226,
+   "lng": -13.543666,
+   "name": "BP",
+   "marca": "BP",
+   "horario": "24/7",
+   "de_noche_24h": true,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/287005764",
+   "lat": 28.979829,
+   "lng": -13.535762,
+   "name": "Estación de Servicio Disa Circunvalación II",
+   "marca": "Disa",
+   "horario": "Mo-Su,PH 07:00-23:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/287005765",
+   "lat": 28.972147,
+   "lng": -13.546637,
+   "name": "Shell Arrecife II",
+   "marca": "Shell",
+   "horario": "Mo-Su 07:00-23:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/287005766",
+   "lat": 28.987667,
+   "lng": -13.543806,
+   "name": "Moeve",
+   "marca": "Moeve",
+   "horario": "Mo-Su 06:30-22:30",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/287005972",
+   "lat": 28.868109,
+   "lng": -13.831583,
+   "name": "Combustibles Canarios",
+   "marca": "Combustibles Canarios",
+   "horario": "24/7",
+   "de_noche_24h": true,
+   "zona": "Playa Blanca"
+  },
+  {
+   "id": "node/287005977",
+   "lat": 29.065044,
+   "lng": -13.670785,
+   "name": "Moeve",
+   "marca": "Moeve",
+   "horario": "Mo-Su 06:00-22:30",
+   "de_noche_24h": null,
+   "zona": "El interior"
+  },
+  {
+   "id": "node/287005979",
+   "lat": 28.923861,
+   "lng": -13.666361,
+   "name": "Disa Puerto del Carmen",
+   "marca": "Moeve",
+   "horario": "24/7",
+   "de_noche_24h": true,
+   "zona": "Puerto del Carmen"
+  },
+  {
+   "id": "node/287005980",
+   "lat": 28.951341,
+   "lng": -13.64919,
+   "name": "PCAN",
+   "marca": "PCAN",
+   "horario": "06:00-23:00",
+   "de_noche_24h": null,
+   "zona": "Puerto del Carmen"
+  },
+  {
+   "id": "node/287005982",
+   "lat": 29.012904,
+   "lng": -13.613853,
+   "name": "Disa",
+   "marca": "Disa",
+   "horario": "Mo-Su 06:30-23:00",
+   "de_noche_24h": null,
+   "zona": "El interior"
+  },
+  {
+   "id": "node/287005984",
+   "lat": 28.957997,
+   "lng": -13.571748,
+   "name": "Disa",
+   "marca": "Disa",
+   "horario": "Mo-Su 06:00-22:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/287005987",
+   "lat": 28.962275,
+   "lng": -13.552402,
+   "name": "Estación de Servicio Disa Arrecife",
+   "marca": "Disa",
+   "horario": "Mo-Su 06:00-22:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/3050104636",
+   "lat": 28.958275,
+   "lng": -13.592544,
+   "name": "Repsol",
+   "marca": "Repsol",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Aeropuerto"
+  },
+  {
+   "id": "node/3759377165",
+   "lat": 29.06014,
+   "lng": -13.489622,
+   "name": "Moeve",
+   "marca": "Moeve",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Costa Teguise"
+  },
+  {
+   "id": "node/631608470",
+   "lat": 28.965004,
+   "lng": -13.568923,
+   "name": "Estación de Servicio Repsol Volcán Este",
+   "marca": "Repsol",
+   "horario": "Mo-Fr 07:00-21:00; Sa,Su 08:45-17:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/631608472",
+   "lat": 28.971705,
+   "lng": -13.564483,
+   "name": "Repsol",
+   "marca": "Repsol",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/839469476",
+   "lat": 28.976184,
+   "lng": -13.570658,
+   "name": "Moeve Barambio",
+   "marca": "Moeve",
+   "horario": "Mo-Su 07:00-23:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/839475509",
+   "lat": 28.948386,
+   "lng": -13.686346,
+   "name": "Disa",
+   "marca": "Disa",
+   "horario": "Mo-Sa 06:30-22:00; Su 08:00-15:00",
+   "de_noche_24h": null,
+   "zona": "Puerto del Carmen"
+  },
+  {
+   "id": "node/839477351",
+   "lat": 28.954619,
+   "lng": -13.762999,
+   "name": "Disa",
+   "marca": "Disa",
+   "horario": "Mo-Su 07:00-21:00",
+   "de_noche_24h": null,
+   "zona": "Puerto del Carmen"
+  },
+  {
+   "id": "node/839480007",
+   "lat": 29.149376,
+   "lng": -13.498734,
+   "name": "Moeve",
+   "marca": "Moeve",
+   "horario": "Mo-Sa 07:30-22:00; Su 08:00-22:00",
+   "de_noche_24h": null,
+   "zona": "El norte"
+  },
+  {
+   "id": "node/839483885",
+   "lat": 28.958417,
+   "lng": -13.575389,
+   "name": "Disa",
+   "marca": "Disa",
+   "horario": "24/7",
+   "de_noche_24h": true,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/839487177",
+   "lat": 28.955136,
+   "lng": -13.631282,
+   "name": "SPL",
+   "marca": null,
+   "horario": "24/7",
+   "de_noche_24h": true,
+   "zona": "Aeropuerto"
+  },
+  {
+   "id": "node/839487526",
+   "lat": 28.965209,
+   "lng": -13.557399,
+   "name": "Shell",
+   "marca": "Shell",
+   "horario": "Mo-Su 07:00-23:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "node/839488570",
+   "lat": 28.953558,
+   "lng": -13.607942,
+   "name": "Moeve",
+   "marca": "Moeve",
+   "horario": "Mo-Su 07:00-00:00",
+   "de_noche_24h": null,
+   "zona": "Aeropuerto"
+  },
+  {
+   "id": "way/1317556764",
+   "lat": 28.9393,
+   "lng": -13.736458,
+   "name": "Estación de Servicio Combustibles Canarios",
+   "marca": "Combustibles Canarios",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Puerto del Carmen"
+  },
+  {
+   "id": "way/1317820889",
+   "lat": 28.979249,
+   "lng": -13.536314,
+   "name": "Estación de Servicio Disa Circunvalación I",
+   "marca": "Disa",
+   "horario": "Mo-Su,PH 07:00-23:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "way/1394102395",
+   "lat": 28.969906,
+   "lng": -13.547166,
+   "name": "Plenergy Arrecife I",
+   "marca": "Plenergy",
+   "horario": "24/7",
+   "de_noche_24h": true,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "way/1410870517",
+   "lat": 28.920577,
+   "lng": -13.673398,
+   "name": "Estación de Servicio Moeve Puerto del Carmen",
+   "marca": "Moeve",
+   "horario": "Mo-Su 06:00-00:00",
+   "de_noche_24h": null,
+   "zona": "Puerto del Carmen"
+  },
+  {
+   "id": "way/1415346711",
+   "lat": 28.859172,
+   "lng": -13.815623,
+   "name": "Gasolinera Marina Rubicón",
+   "marca": null,
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Playa Blanca"
+  },
+  {
+   "id": "way/154019288",
+   "lat": 28.939505,
+   "lng": -13.736481,
+   "name": "Estación de Servicio Combustibles Canarios",
+   "marca": "Combustibles Canarios",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Puerto del Carmen"
+  },
+  {
+   "id": "way/154019324",
+   "lat": 28.938754,
+   "lng": -13.737022,
+   "name": "Estación de Servicio Combustibles Canarios",
+   "marca": "Combustibles Canarios",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Puerto del Carmen"
+  },
+  {
+   "id": "way/230539457",
+   "lat": 28.978116,
+   "lng": -13.558447,
+   "name": "Disa",
+   "marca": "Disa",
+   "horario": "24/7",
+   "de_noche_24h": true,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "way/231230513",
+   "lat": 28.954565,
+   "lng": -13.632295,
+   "name": "SPL",
+   "marca": null,
+   "horario": "Mo-Su 07:00-22:00",
+   "de_noche_24h": null,
+   "zona": "Aeropuerto"
+  },
+  {
+   "id": "way/841924855",
+   "lat": 28.97447,
+   "lng": -13.562368,
+   "name": "Repsol",
+   "marca": "Repsol",
+   "horario": null,
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  },
+  {
+   "id": "way/924101982",
+   "lat": 28.979323,
+   "lng": -13.536281,
+   "name": "Estación de Servicio Disa Circunvalación I",
+   "marca": "Disa",
+   "horario": "Mo-Su,PH 07:00-23:00",
+   "de_noche_24h": null,
+   "zona": "Arrecife"
+  }
+ ]
+}

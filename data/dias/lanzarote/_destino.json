@@ -1,0 +1,19 @@
+{
+ "_nota": "LZ1 (agente B): lo que el motor necesita del destino además de listas.json. Entradas con hora SOLO online (Timanfaya, Cueva de los Verdes): «Llegada a…» 15 min antes (LANZAROTE_PARA_CODE.md, punto 8). Los cortes de luz salen de sunset.js para Lanzarote (ver destination_config.cortes_luz en lanzarote.json).",
+ "llegadas": {
+  "turno": {
+   "min": 15,
+   "texto": "Llegas 15 minutos antes de tu hora: la web oficial lo pide (si llegas tarde, no te aseguran la entrada)."
+  },
+  "por_lugar": {
+   "Montañas del Fuego (Timanfaya)": "Llegada al aparcamiento del Islote de Hilario: 15 minutos antes de tu hora. La entrada se compra solo por internet, con día y hora, y se agota en temporada alta.",
+   "Cueva de los Verdes": "Llegada a la cueva: 15 minutos antes de tu hora. La entrada se compra solo por internet, con día y hora, y no se puede cambiar."
+  }
+ },
+ "timezone": "Atlantic/Canary",
+ "cortes_luz": [
+  "18:40",
+  "19:25",
+  "20:10"
+ ]
+}

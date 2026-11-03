@@ -1,0 +1,362 @@
+[
+ {
+  "desde": "puerto_del_carmen",
+  "hasta": "orzola_puerto_de_la_graciosa",
+  "documento": "43",
+  "mapbox_min": 49,
+  "km": 49.7,
+  "cuadra": true,
+  "diferencia_min": 6,
+  "fuente": "rome2rio"
+ },
+ {
+  "desde": "playa_blanca",
+  "hasta": "jameos_del_agua",
+  "documento": "55",
+  "mapbox_min": 66,
+  "km": 64.9,
+  "cuadra": true,
+  "diferencia_min": 11,
+  "fuente": "rome2rio"
+ },
+ {
+  "desde": "playa_blanca",
+  "hasta": "mirador_del_rio",
+  "documento": "68",
+  "mapbox_min": 73,
+  "km": 71.2,
+  "cuadra": true,
+  "diferencia_min": 5,
+  "fuente": "rome2rio"
+ },
+ {
+  "desde": "teguise",
+  "hasta": "cueva_de_los_verdes",
+  "documento": "21",
+  "mapbox_min": 27,
+  "km": 22.2,
+  "cuadra": false,
+  "diferencia_min": 6,
+  "fuente": "rome2rio"
+ },
+ {
+  "desde": "casa_museo_del_campesino",
+  "hasta": "teguise",
+  "documento": "7",
+  "mapbox_min": 10,
+  "km": 7.6,
+  "cuadra": true,
+  "diferencia_min": 3,
+  "fuente": "rome2rio (dato de taxi)"
+ },
+ {
+  "desde": "mancha_blanca",
+  "hasta": "caleta_de_famara_y_playa_de_famara",
+  "documento": "20",
+  "mapbox_min": 29,
+  "km": 16.4,
+  "cuadra": false,
+  "diferencia_min": 9,
+  "fuente": "rome2rio (Tinajo a Famara); la estimación de Cuervo a Famara era 25-30"
+ },
+ {
+  "desde": "volcan_del_cuervo",
+  "hasta": "caleta_de_famara_y_playa_de_famara",
+  "documento": "25-30",
+  "mapbox_min": 26,
+  "km": 23,
+  "cuadra": true,
+  "diferencia_min": 0,
+  "fuente": "estimación del documento (D5)"
+ },
+ {
+  "desde": "caleta_de_famara_y_playa_de_famara",
+  "hasta": "costa_teguise",
+  "documento": "25",
+  "mapbox_min": 30,
+  "km": 24,
+  "cuadra": true,
+  "diferencia_min": 5,
+  "fuente": "rome2rio"
+ },
+ {
+  "desde": "playa_blanca",
+  "hasta": "costa_teguise",
+  "documento": "36",
+  "mapbox_min": 48,
+  "km": 45.7,
+  "cuadra": false,
+  "diferencia_min": 12,
+  "fuente": "Wanderlog (poco fiable)"
+ },
+ {
+  "desde": "costa_teguise",
+  "hasta": "jardin_de_cactus",
+  "documento": "17",
+  "mapbox_min": 17,
+  "km": 12.1,
+  "cuadra": true,
+  "diferencia_min": 0,
+  "fuente": "Wanderlog"
+ },
+ {
+  "desde": "jardin_de_cactus",
+  "hasta": "arrecife_charco_de_san_gines_y_el_paseo",
+  "documento": "20",
+  "mapbox_min": 19,
+  "km": 17.5,
+  "cuadra": true,
+  "diferencia_min": -1,
+  "fuente": "blog"
+ },
+ {
+  "desde": "el_golfo_y_el_charco_de_los_clicos",
+  "hasta": "salinas_de_janubio",
+  "documento": "10-15",
+  "mapbox_min": 11,
+  "km": 10.3,
+  "cuadra": true,
+  "diferencia_min": 0,
+  "fuente": "blog («menos de 15 min», no 10)"
+ },
+ {
+  "desde": "salinas_de_janubio",
+  "hasta": "playa_blanca_y_el_faro_de_pechiguera",
+  "documento": "12",
+  "mapbox_min": 10,
+  "km": 9.7,
+  "cuadra": true,
+  "diferencia_min": -2,
+  "fuente": "blog"
+ },
+ {
+  "desde": "salinas_de_janubio",
+  "hasta": "arrecife_charco_de_san_gines_y_el_paseo",
+  "documento": "35-40",
+  "mapbox_min": 30,
+  "km": 30.5,
+  "cuadra": true,
+  "diferencia_min": -5,
+  "fuente": "blog"
+ },
+ {
+  "desde": "casa_museo_del_campesino",
+  "hasta": "la_geria_y_sus_bodegas",
+  "documento": "20",
+  "mapbox_min": 14,
+  "km": 11.1,
+  "cuadra": false,
+  "diferencia_min": -6,
+  "fuente": "La Voz de Lanzarote (Campesino a La Geria por Masdache)"
+ },
+ {
+  "desde": "orzola_puerto_de_la_graciosa",
+  "hasta": "mirador_del_rio",
+  "documento": "20",
+  "mapbox_min": 17,
+  "km": 10.7,
+  "cuadra": true,
+  "diferencia_min": -3,
+  "fuente": "La Voz de Lanzarote"
+ },
+ {
+  "desde": "teguise",
+  "hasta": "mirador_de_haria",
+  "documento": "35",
+  "mapbox_min": 17,
+  "km": 13.1,
+  "cuadra": false,
+  "diferencia_min": -18,
+  "fuente": "La Voz de Lanzarote (por Las Nieves; el directo puede ser menos)"
+ },
+ {
+  "desde": "playa_blanca",
+  "hasta": "el_golfo_y_el_charco_de_los_clicos",
+  "documento": "20",
+  "mapbox_min": 23,
+  "km": 18.2,
+  "cuadra": true,
+  "diferencia_min": 3,
+  "fuente": "Splodz Blogz (blog)"
+ },
+ {
+  "desde": "el_golfo_y_el_charco_de_los_clicos",
+  "hasta": "arrecife_charco_de_san_gines_y_el_paseo",
+  "documento": "30",
+  "mapbox_min": 32,
+  "km": 31.6,
+  "cuadra": true,
+  "diferencia_min": 2,
+  "fuente": "Splodz Blogz (blog)"
+ },
+ {
+  "desde": "el_golfo_y_el_charco_de_los_clicos",
+  "hasta": "volcan_del_cuervo",
+  "documento": "15-20",
+  "mapbox_min": 22,
+  "km": 20.2,
+  "cuadra": true,
+  "diferencia_min": 2,
+  "fuente": "Splodz Blogz («algo más de 15 min»)"
+ },
+ {
+  "desde": "arrecife",
+  "hasta": "mancha_blanca",
+  "documento": "20-25",
+  "mapbox_min": 29,
+  "km": 20.4,
+  "cuadra": true,
+  "diferencia_min": 4,
+  "fuente": "Ayuntamiento de Tinajo (Arrecife a Tinajo)"
+ },
+ {
+  "desde": "playa_blanca",
+  "hasta": "mancha_blanca",
+  "documento": "35-40",
+  "mapbox_min": 35,
+  "km": 29.4,
+  "cuadra": true,
+  "diferencia_min": 0,
+  "fuente": "Ayuntamiento de Tinajo (Playa Blanca a Tinajo)"
+ },
+ {
+  "desde": "montanas_del_fuego",
+  "hasta": "la_geria_y_sus_bodegas",
+  "documento": "25",
+  "mapbox_min": 22,
+  "km": 16.5,
+  "cuadra": true,
+  "diferencia_min": -3,
+  "fuente": "estimación del documento (⚠️ Islote a Stratvs)"
+ },
+ {
+  "desde": "la_geria_y_sus_bodegas",
+  "hasta": "los_hervideros",
+  "documento": "25",
+  "mapbox_min": 22,
+  "km": 18.8,
+  "cuadra": true,
+  "diferencia_min": -3,
+  "fuente": "estimación del documento (⚠️)"
+ },
+ {
+  "desde": "la_geria_y_sus_bodegas",
+  "hasta": "el_golfo_y_el_charco_de_los_clicos",
+  "documento": "20",
+  "mapbox_min": 18,
+  "km": 16,
+  "cuadra": true,
+  "diferencia_min": -2,
+  "fuente": "estimación del documento (por la LZ-704)"
+ },
+ {
+  "desde": "fundacion_cesar_manrique",
+  "hasta": "jardin_de_cactus",
+  "documento": "12-15",
+  "mapbox_min": 12,
+  "km": 12,
+  "cuadra": true,
+  "diferencia_min": 0,
+  "fuente": "estimación del documento (⚠️)"
+ },
+ {
+  "desde": "jardin_de_cactus",
+  "hasta": "teguise",
+  "documento": "15",
+  "mapbox_min": 15,
+  "km": 11,
+  "cuadra": true,
+  "diferencia_min": 0,
+  "fuente": "estimación del documento (⚠️)"
+ },
+ {
+  "desde": "casa_museo_del_campesino",
+  "hasta": "arrecife_charco_de_san_gines_y_el_paseo",
+  "documento": "15",
+  "mapbox_min": 15,
+  "km": 9,
+  "cuadra": true,
+  "diferencia_min": 0,
+  "fuente": "estimación del documento (⚠️ Mozaga a Arrecife)"
+ },
+ {
+  "desde": "mirador_del_rio",
+  "hasta": "haria_y_la_casa_museo_cesar_manrique",
+  "documento": "15",
+  "mapbox_min": 20,
+  "km": 9.6,
+  "cuadra": true,
+  "diferencia_min": 5,
+  "fuente": "estimación del documento"
+ },
+ {
+  "desde": "haria_y_la_casa_museo_cesar_manrique",
+  "hasta": "fundacion_cesar_manrique",
+  "documento": "25",
+  "mapbox_min": 28,
+  "km": 25.1,
+  "cuadra": true,
+  "diferencia_min": 3,
+  "fuente": "estimación del documento (⚠️ Haría a Tahíche)"
+ },
+ {
+  "desde": "caleta_de_famara_y_playa_de_famara",
+  "hasta": "playa_de_la_garita",
+  "documento": "25",
+  "mapbox_min": 36,
+  "km": 33.8,
+  "cuadra": false,
+  "diferencia_min": 11,
+  "fuente": "estimación del documento (⚠️ Famara a La Garita)"
+ },
+ {
+  "desde": "playa_blanca",
+  "hasta": "playas_de_papagayo",
+  "documento": "15-20",
+  "mapbox_min": 19,
+  "km": 8.3,
+  "cuadra": true,
+  "diferencia_min": 0,
+  "fuente": "estimación del documento (por la pista; Mapbox no conoce la pista de tierra)"
+ },
+ {
+  "desde": "mancha_blanca",
+  "hasta": "montanas_del_fuego",
+  "documento": "7",
+  "mapbox_min": 16,
+  "km": 9.8,
+  "cuadra": false,
+  "diferencia_min": 9,
+  "fuente": "4,5 km (MITECO); a 4,5 km serían unos 7 min"
+ },
+ {
+  "desde": "aeropuerto_ace",
+  "hasta": "puerto_del_carmen",
+  "documento": "10",
+  "mapbox_min": 12,
+  "km": 9.9,
+  "cuadra": true,
+  "diferencia_min": 2,
+  "fuente": "DATOS_CIVITATIS_Y_LLEGADA.md (llegar)"
+ },
+ {
+  "desde": "aeropuerto_ace",
+  "hasta": "costa_teguise",
+  "documento": "13",
+  "mapbox_min": 15,
+  "km": 13.9,
+  "cuadra": true,
+  "diferencia_min": 2,
+  "fuente": "DATOS_CIVITATIS_Y_LLEGADA.md"
+ },
+ {
+  "desde": "aeropuerto_ace",
+  "hasta": "playa_blanca",
+  "documento": "28",
+  "mapbox_min": 31,
+  "km": 33,
+  "cuadra": true,
+  "diferencia_min": 3,
+  "fuente": "DATOS_CIVITATIS_Y_LLEGADA.md"
+ }
+]

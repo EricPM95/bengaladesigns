@@ -1,0 +1,206 @@
+{
+ "fecha": "2026-11-03",
+ "resueltos": [
+  {
+   "id": "graciosa_velero",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-isla-graciosa/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "lanzarote_completo",
+   "url": "https://www.civitatis.com/es/arrecife/tour-lanzarote-completo/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "timanfaya_jameos",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-timanfaya-jameos-agua/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "timanfaya_medio_dia",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-expres-sur-lanzarote/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "sur_lanzarote",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-sur-lanzarote/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "norte_lanzarote",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-norte-lanzarote/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "cesar_manrique",
+   "url": "https://www.civitatis.com/es/arrecife/tour-cesar-manrique-lanzarote/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "ferry_graciosa",
+   "url": "https://www.civitatis.com/es/arrecife/ferry-isla-la-graciosa/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "fuerteventura",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-fuerteventura/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "ferry_fuerteventura",
+   "url": "https://www.civitatis.com/es/playa-blanca/ferry-fuerteventura/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "isla_lobos",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-isla-lobos/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "corralejo_lobos",
+   "url": "https://www.civitatis.com/es/playa-blanca/excursion-corralejo-isla-lobos/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "dunas_fuerteventura",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-dunas-fuerteventura/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "kayak_papagayo",
+   "url": "https://www.civitatis.com/es/playa-blanca/kayak-snorkel-playa-papagayo/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "velero_papagayo",
+   "url": "https://www.civitatis.com/es/playa-blanca/excursion-velero-playas-papagayo/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "catamaran_atardecer",
+   "url": "https://www.civitatis.com/es/puerto-del-carmen/paseo-catamaran-puerto-carmen-atardecer/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "delfines",
+   "url": "https://www.civitatis.com/es/puerto-del-carmen/avistamiento-delfines-snorkel/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "senderismo_volcanes",
+   "url": "https://www.civitatis.com/es/tinajo/senderismo-parque-natural-volcanes/",
+   "ok": true,
+   "activity_id": 33778,
+   "motivo": null,
+   "estado": 200
+  },
+  {
+   "id": "salinas_janubio",
+   "url": "https://www.civitatis.com/es/yaiza/visita-guiada-salinas-janubio/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "submarino",
+   "url": "https://www.civitatis.com/es/playa-blanca/paseo-submarino-lanzarote/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "grupo_reducido",
+   "url": "https://www.civitatis.com/es/playa-blanca/tour-lanzarote-grupo-reducido/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "buggy_volcanes",
+   "url": "https://www.civitatis.com/es/costa-teguise/tour-buggy-senderismo-parque-volcanes/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "privada",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-privada-lanzarote/",
+   "ok": true,
+   "activity_id": 135260,
+   "motivo": null,
+   "estado": 200
+  },
+  {
+   "id": "free_tour_teguise",
+   "url": "https://www.civitatis.com/es/teguise/free-tour-teguise/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  },
+  {
+   "id": "free_tour_arrecife",
+   "url": "https://www.civitatis.com/es/arrecife/free-tour-arrecife/",
+   "ok": false,
+   "activity_id": null,
+   "motivo": "no_encontrado",
+   "estado": 404
+  }
+ ],
+ "calendarios_free_tour": {}
+}

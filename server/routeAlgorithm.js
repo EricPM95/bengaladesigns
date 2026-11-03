@@ -78,6 +78,8 @@ function validateZoneCoverage(destinationKey, data) {
 // vale la pena acoplar los dos módulos todavía).
 const PIPELINE_V2_ALIASES = {
   roma: ['roma', 'rome'],
+  // (LZ1) Lanzarote: sale al detectar su nombre; sus datos son `data/pipeline_v2/lanzarote.json` (si aún no existe, `PIPELINE_V2_DATA[key]` falta y se salta). Oculto para quien no es administrador: ver `server/destinosCurados.js`.
+  lanzarote: ['lanzarote'],
 }
 
 function stripAccentsLower(value) {
@@ -117,13 +119,15 @@ export function hasFreeTourFromAnswers(answers) {
 }
 
 const NOMBRE_FREE_TOUR = 'Free Tour por Roma'
+/** (LZ1) El Free Tour de cualquier destino: «Free Tour por Roma», «Free Tour por Teguise»… (el nombre sale de `default_free_tour.name` de cada destino). */
+const esNombreDeFreeTour = (n) => n === NOMBRE_FREE_TOUR || (typeof n === 'string' && /^Free Tour (por|de|en) \S/.test(n))
 /**
  * El Free Tour que manda en el viaje (Tanda 6u): el de una reserva del viajero (con su hora y su fecha) o, si no hay reserva, el que eligió en la hoja del Free Tour. Devuelve las respuestas
  * con él puesto (la experiencia `free_tour` y `freeTourDespues` con la hora). Un solo sitio para todo el servidor: ningún otro lugar mira las reservas para saber si hay Free Tour.
  */
 export function respuestasConFreeTour(answers, reservas) {
   if (!answers || typeof answers !== 'object') return answers
-  const reserva = (Array.isArray(reservas) ? reservas : []).find((r) => r && Array.isArray(r.placeNames) && r.placeNames.includes(NOMBRE_FREE_TOUR) && /^\d{1,2}:\d{2}$/.test(String(r.time ?? '')))
+  const reserva = (Array.isArray(reservas) ? reservas : []).find((r) => r && Array.isArray(r.placeNames) && r.placeNames.some(esNombreDeFreeTour) && /^\d{1,2}:\d{2}$/.test(String(r.time ?? '')))
   if (!reserva) return answers
   const hora = String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)
   const experiencias = Array.isArray(answers.experiencesPositive) ? answers.experiencesPositive : ['imprescindibles']
@@ -1869,7 +1873,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     return places.filter((place) => {
       if (!weekday || place.isFreeTour || !Array.isArray(place.closed_on)) return true
       if (place.closed_on.includes(weekday)) {
-        notIncluded.push({ name: place.name, reason: `Cierra los ${weekday}`, where_it_fits: 'Otro día de tu viaje a Roma' })
+        notIncluded.push({ name: place.name, reason: `Cierra los ${weekday}`, where_it_fits: `Otro día de tu viaje a ${destData?.destination ?? 'Roma'}` })
         return false
       }
       return true

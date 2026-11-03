@@ -1132,7 +1132,7 @@ export function DayDetailPanel({
     const inicioDeLaParada = freeDay ? (realStop && hasOwnTime(realStop) ? parseTimeToMinutes(realStop.time) : null) : day.untimed ? null : startMinutes
     const lugarDeLaCena = placed.findIndex((entry) => entry.item.type === 'dinner')
     const lugarDeLaParada = placed.findIndex((entry) => entry.item.type === 'stop' && entry.item.index === index)
-    const ocasoDeLaParada = ocasoDelDia(dateIso, mesDelViaje, realStop?.coordinates)
+    const ocasoDeLaParada = ocasoDelDia(dateIso, mesDelViaje, realStop?.coordinates, route?.destination ?? day.city)
     const horaDeLaParada = { inicio: inicioDeLaParada, ocaso: ocasoDeLaParada, despuesDeCena: lugarDeLaCena >= 0 && lugarDeLaParada > lugarDeLaCena }
     const horarioDeLaParada = horarioDe({ ...stop, hoursData: realStop?.hoursData })
     const avisoDeLaParada = avisoDeHorario({ parada: { ...stop, ...realStop, name: stop.name }, datos: datosDeHorario, horario: horarioDeLaParada, inicio: inicioDeLaParada, antesDeCena: lugarDeLaCena >= 0 && lugarDeLaParada < lugarDeLaCena, ocaso: ocasoDeLaParada })

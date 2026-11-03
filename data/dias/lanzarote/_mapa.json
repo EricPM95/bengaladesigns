@@ -1,0 +1,8 @@
+{
+ "_nota": "Dónde pone la primera pantalla el pin de Lanzarote. La portada (foto) la pone el agente D desde _fotos.json (LZ1); hasta entonces, sin portada. Lanzarote está oculto: solo lo ve el administrador.",
+ "lat": 29.0469,
+ "lng": -13.59,
+ "iso": "es",
+ "portada": null,
+ "portada_pequena": null
+}

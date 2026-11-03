@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { aeropuertoPorIata, aeropuertosDeCiudad } from '../lib/aeropuertosCiudad'
 import { duracionDelTrayecto, textoDeTrayecto } from '../lib/duracionViaje'
 
-const ZONA_DE_ROMA = 'Europe/Rome'
+import { zonaDelDestinoORoma } from '../lib/zonaHoraria'
 
 /** La zona horaria del lado de fuera: la del aeropuerto por su código, o la que comparten los aeropuertos de la ciudad. `null` si no se sabe (nunca se inventa). */
 async function zonaDeFuera(ciudad: string, iata: string | null): Promise<string | null> {
@@ -23,8 +23,9 @@ async function zonaDeFuera(ciudad: string, iata: string | null): Promise<string 
  * La duración de esa mitad (10S5 §4): «1 h 55 min». La calcula la app con las dos horas y la hora de cada país (con avión, la zona de cada aeropuerto; en tren, autobús y barco, el mismo reloj si no se sabe).
  * Sin las dos horas, o sin saber la zona de fuera con un avión: `null` (sin duración, nunca inventada). Solo se calcula con las dos horas puestas.
  */
-export function useDuracionBillete(entrada: { llega: boolean; horaRoma: string | null; horaFuera: string | null; fecha: string | null; avion: boolean; ciudadFuera: string; iataFuera: string | null }): string | null {
-  const { llega, horaRoma, horaFuera, fecha, avion, ciudadFuera, iataFuera } = entrada
+export function useDuracionBillete(entrada: { llega: boolean; horaRoma: string | null; horaFuera: string | null; fecha: string | null; avion: boolean; ciudadFuera: string; iataFuera: string | null; /** (LZ1) El destino (su zona horaria); sin él, Roma, como siempre. */ destino?: string | null }): string | null {
+  const { llega, horaRoma, horaFuera, fecha, avion, ciudadFuera, iataFuera, destino } = entrada
+  const ZONA_DE_ROMA = zonaDelDestinoORoma(destino)
   const [texto, setTexto] = useState<string | null>(null)
   useEffect(() => {
     let vivo = true
@@ -47,6 +48,6 @@ export function useDuracionBillete(entrada: { llega: boolean; horaRoma: string |
     return () => {
       vivo = false
     }
-  }, [llega, horaRoma, horaFuera, fecha, avion, ciudadFuera, iataFuera])
+  }, [llega, horaRoma, horaFuera, fecha, avion, ciudadFuera, iataFuera, ZONA_DE_ROMA])
   return texto
 }

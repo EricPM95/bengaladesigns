@@ -48,7 +48,8 @@ import { cambioDelDia } from './cambio.js'
 import { registrarRutasTiempo } from './tiempo.js'
 import { registrarRutasCuentas, quienEs as quienEsCuenta, tokenDe as tokenDeCuenta } from './cuentas.js'
 import { registrarRutasAvisosDestino } from './avisosDestino.js'
-import { registrarRutasDestinosCurados } from './destinosCurados.js'
+import { registrarRutasDestinosCurados, DESTINOS_OCULTOS } from './destinosCurados.js'
+import { crearGuardianDestinosOcultos } from './destinoOculto.js'
 import { crearServicioAvisos, registrarRutasAvisos } from './avisos.js'
 import { crearClienteCivitatis, modoDeCivitatis } from './civitatis/cliente.js'
 import { crearPermisoAdminCivitatis } from './civitatis/permiso.js'
@@ -138,6 +139,8 @@ const app = express()
 const jsonGeneral = express.json({ limit: '6mb', verify: (req, _res, buf) => { if (req.originalUrl?.startsWith('/api/pago/webhook')) req.rawBody = buf } })
 // (10S8) `/api/read-ticket` lee su propio cuerpo (hasta 24 MB) DESPUÉS de comprobar sesión, pase y límite: server/billete/lectura.js.
 app.use((req, res, next) => (req.originalUrl?.startsWith('/api/read-ticket') ? next() : jsonGeneral(req, res, next)))
+// (LZ1) Los destinos ocultos (Lanzarote) solo para el administrador: en TODAS las rutas /api que traen un destino, 404 como si no existiera. `esAdminOculto` se define más abajo (mismo permiso que /api/destinos-curados).
+app.use('/api', crearGuardianDestinosOcultos({ ocultos: DESTINOS_OCULTOS, esAdminDe: (req) => esAdminOculto(req) }))
 // El Free Tour del viaje (Tanda 6u): el de una reserva con hora manda sobre el de la hoja; se pone en las respuestas UNA vez, aquí, y todo el servidor lo lee de ellas.
 // (`answers_sin_reservas`: las de antes de aplicar las reservas; el plan de reservas las necesita para calcular el «antes».)
 app.use((req, _res, next) => {
@@ -4602,7 +4605,9 @@ registrarRutasTiempo(app)
 // Las cuentas (parte 1): reclamar lo de una sesión anónima y borrar la cuenta. Con la clave de servicio de Supabase; sin ella responden 503 y no tocan nada.
 registrarRutasCuentas(app, salesAdmin)
 // La primera pantalla (Tanda 10): los destinos curados de verdad que salen en el mapa (de los datos) y el aviso «avísame cuando llegue» de los que aún no tenemos (migración 0028).
-registrarRutasDestinosCurados(app, join(__dirname, '../data'))
+// (LZ1) Lanzarote sale solo si quien pide es el administrador (el mismo mecanismo que la API de Civitatis); para los demás, la lista de siempre.
+const esAdminOculto = crearPermisoAdminCivitatis({ admin: salesAdmin, quienEs: quienEsCuenta, esAdmin: esAdminLogros, tokenDe: tokenDeCuenta })
+registrarRutasDestinosCurados(app, join(__dirname, '../data'), { esAdminDe: esAdminOculto })
 registrarRutasAvisosDestino(app, { admin: salesAdmin })
 // La campanita de avisos (cuentas parte 3): lista, leídos, avisos con fecha (nunca de noche), aviso al móvil (con PUSH_ACTIVO) y la tarea programada de Vercel (con CRON_SECRET).
 const servicioAvisos = salesAdmin ? crearServicioAvisos({ admin: salesAdmin, destinos: cargarDatosLogros().destinos }) : null

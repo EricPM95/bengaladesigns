@@ -381,6 +381,7 @@ export function avisosDeVuelta({ V, destData, tour, duracionDe }) {
   const salirNoche = V.datos.salirMin + 1440
   comprobar(V.reservas.vuelta, salirVuelta, V.dia)
   if (V.madrugada) comprobar(V.reservas.ultimoDia, salirNoche, V.ultimoDeRuta)
+  const ciudad = destData?.destination ?? 'Roma' // (LZ1) el destino viene de los datos; en Roma, «Roma» como siempre
   // La excursión reservada ese día que vuelve después de la hora de salir (o, de medio día, sin hora de vuelta: vuelve a media tarde).
   if (excursion) {
     const enVuelta = V.madrugada ? excursion.enUltimoDia : excursion.enVuelta
@@ -391,9 +392,9 @@ export function avisosDeVuelta({ V, destData, tour, duracionDe }) {
       const choca = sinHora ? excursion.medioDia !== true : vuelve > salirEnEseDia
       if (choca) {
         const texto = sinHora
-          ? `Tienes el ${palabra} a las ${horaViajero} y tu excursión a ${excursion.nombre} vuelve a Roma: no te da tiempo. Revisa tu reserva de la excursión.`
-          : `Tienes el ${palabra} a las ${horaViajero} y tu excursión a ${excursion.nombre} vuelve a Roma a las ${horaCorta(excursion.vuelve)}: no te da tiempo. Revisa tu reserva de la excursión.`
-        avisos.push(aviso('excursion_vuelve_tarde', texto, { botones: [{ id: 'ver_reserva', texto: 'Ver mi reserva' }, { id: 'pasar_a_roma', texto: 'Pasar este día a Roma' }], dayNumber: V.madrugada ? V.ultimoDeRuta.dayNumber : V.dia.dayNumber, dateIso: V.madrugada ? V.ultimoDeRuta.dateIso : V.dia.dateIso }))
+          ? `Tienes el ${palabra} a las ${horaViajero} y tu excursión a ${excursion.nombre} vuelve a ${ciudad}: no te da tiempo. Revisa tu reserva de la excursión.`
+          : `Tienes el ${palabra} a las ${horaViajero} y tu excursión a ${excursion.nombre} vuelve a ${ciudad} a las ${horaCorta(excursion.vuelve)}: no te da tiempo. Revisa tu reserva de la excursión.`
+        avisos.push(aviso('excursion_vuelve_tarde', texto, { botones: [{ id: 'ver_reserva', texto: 'Ver mi reserva' }, { id: 'pasar_a_roma', texto: `Pasar este día a ${ciudad}` }], dayNumber: V.madrugada ? V.ultimoDeRuta.dayNumber : V.dia.dayNumber, dateIso: V.madrugada ? V.ultimoDeRuta.dateIso : V.dia.dateIso }))
       }
     }
   }
@@ -404,9 +405,9 @@ export function avisosDeVuelta({ V, destData, tour, duracionDe }) {
  * Lo que dice la hoja del resumen sobre el día de vuelta, sin el nombre del día (las pantallas lo ponen con nombreDeDia: «El sáb 14»).
  * @returns {{ tipo: 'ultima_manana'|'casi_un_dia'|'solo_traslado'|'madrugada', plantilla: string }}
  */
-export function resumenDeVuelta({ V, contenido }) {
+export function resumenDeVuelta({ V, contenido, ciudad = 'Roma' }) {
   const adonde = LUGAR_DE_SALIDA[V.datos.modeKey]
   if (contenido === 'sin_paradas' || contenido === 'hoja') return { tipo: V.madrugada ? 'madrugada' : 'solo_traslado', plantilla: `{dia} te vas pronto: ese día solo lleva el camino ${adonde}.` }
-  if (V.lleva === 'dia_mas') return { tipo: 'casi_un_dia', plantilla: `{dia} tienes casi un día entero por Roma antes de irte.` }
-  return { tipo: 'ultima_manana', plantilla: `{dia} tienes una última mañana por Roma antes de irte ${adonde}.` }
+  if (V.lleva === 'dia_mas') return { tipo: 'casi_un_dia', plantilla: `{dia} tienes casi un día entero por ${ciudad} antes de irte.` }
+  return { tipo: 'ultima_manana', plantilla: `{dia} tienes una última mañana por ${ciudad} antes de irte ${adonde}.` }
 }

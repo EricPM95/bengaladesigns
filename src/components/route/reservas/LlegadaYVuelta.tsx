@@ -236,7 +236,7 @@ function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarj
   const ciudadFuera = ciudadDeSalida(route)
   const trayecto = trayectoDeLaMitad({ kind: esIda ? 'llegada' : 'vuelta', ciudadFuera, otroPunto: leg.otroPunto, ciudadRoma: ciudad, puntoRoma: leg.point })
   const horaFuera = leg.otraHora
-  const duracion = useDuracionBillete({ llega: esIda, horaRoma: leg.time, horaFuera, fecha: leg.dateIso, avion: leg.mode === 'avion', ciudadFuera, iataFuera: billete?.codigoFuera ?? null })
+  const duracion = useDuracionBillete({ llega: esIda, horaRoma: leg.time, horaFuera, fecha: leg.dateIso, avion: leg.mode === 'avion', ciudadFuera, iataFuera: billete?.codigoFuera ?? null, destino: route.destination })
   const fecha = leg.dateIso ? capitalizar(fechaLarga(leg.dateIso)) : `Día ${leg.dayNumber}`
   const filas = filasDelBillete(leg, billete, duracion)
   const salida = esIda ? horaFuera : leg.time

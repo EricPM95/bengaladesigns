@@ -1,4 +1,5 @@
 import { MenuHoja } from '../../ui/MenuHoja'
+import { useNombreDelDestino } from '../../../lib/nombreDelDestino'
 import { ICONOS_OPCION, OpcionTarjeta, type TonoOpcion } from '../../ui/HojaOpciones'
 
 /** Las acciones de un día libre (decisión del usuario, 2026-09-28). */
@@ -43,6 +44,7 @@ interface DayMenuProps {
  * y, la última y en rojo, «Eliminar día». En un día libre, además, cambiar el nombre y moverlo; en el que tiene cambios, recuperarlo.
  */
 export function DayMenu({ onDelete, freeDay, onAddPlaces, excursion, onRestoreDay, onBackToProposed, onReorganize, titulo = 'Este día', motivoNoEliminar = 'Está fijado por una reserva' }: DayMenuProps) {
+  const ciudad = useNombreDelDestino()
   const alAnadir = freeDay?.onAddPlaces ?? onAddPlaces
   const extra = (cerrar: () => void, tono: TonoOpcion, icono: string, tit: string, linea: string, action: (() => void) | null | undefined, flecha = false) =>
     action === undefined ? null : (
@@ -69,7 +71,7 @@ export function DayMenu({ onDelete, freeDay, onAddPlaces, excursion, onRestoreDa
           {alAnadir && extra(cerrar, 'salvia', ICONOS_OPCION.pin, 'Añadir lugares', 'Monumentos, barrios, miradores…', alAnadir, true)}
           {excursion &&
             (excursion.cabe
-              ? extra(cerrar, 'arena', ICONOS_OPCION.mochila, excursion.modo === 'excursion' ? 'Volver a Roma' : 'Añadir una excursión', excursion.modo === 'excursion' ? 'Deja la excursión y vuelve al plan de la ciudad' : 'Pompeya, Florencia, la Costa Amalfitana…', excursion.onCambiar, true)
+              ? extra(cerrar, 'arena', ICONOS_OPCION.mochila, excursion.modo === 'excursion' ? `Volver a ${ciudad}` : 'Añadir una excursión', excursion.modo === 'excursion' ? 'Deja la excursión y vuelve al plan de la ciudad' : 'Pompeya, Florencia, la Costa Amalfitana…', excursion.onCambiar, true)
               : extra(cerrar, 'arena', ICONOS_OPCION.mochila, 'Añadir una excursión', excursion.motivo, null))}
           {freeDay && (
             <>

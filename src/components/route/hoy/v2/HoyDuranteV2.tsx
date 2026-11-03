@@ -467,7 +467,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {llegadaTarde && (
         <div className="flex flex-none flex-col gap-3 rounded-[22px] bg-[#1C2230] p-[18px] text-[#FFFDF8]" data-hoy-llegada-tarde>
           <Icono nombre="noche" size={26} style={{ color: '#F3D59A' }} />
-          <span style={{ font: "400 22px/1.2 'Instrument Serif',serif", textWrap: 'pretty' as never }}>Llegas tarde: hoy no te hemos puesto paradas, descansa. Si tienes hambre, aquí tienes los restaurantes de Roma.</span>
+          <span style={{ font: "400 22px/1.2 'Instrument Serif',serif", textWrap: 'pretty' as never }}>Llegas tarde: hoy no te hemos puesto paradas, descansa. Si tienes hambre, aquí tienes los restaurantes de {route.destination}.</span>
           <button type="button" onClick={() => explorar('restaurantes', null, true)} className="h-11 self-start rounded-full px-4 text-[13.5px] font-bold text-[#17120a]" style={{ background: 'oklch(0.8 0.14 70)' }}>
             Explorar restaurantes
           </button>
@@ -483,10 +483,10 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
               <span className="flex-1 text-[13.5px] leading-[1.5] text-[#1C2230]/80" style={{ textWrap: 'pretty' as never }}>
                 {zona ? (
                   <>
-                    Tu alojamiento está en la zona de <strong className="font-semibold text-[#1C2230]">{nombreDeZona(zona.nombre)}</strong>. Te recomendamos comer algo antes de ponerte en marcha: aquí tienes los mejores restaurantes de Roma.
+                    Tu alojamiento está en la zona de <strong className="font-semibold text-[#1C2230]">{nombreDeZona(zona.nombre)}</strong>. Te recomendamos comer algo antes de ponerte en marcha: aquí tienes los mejores restaurantes de {route.destination}.
                   </>
                 ) : (
-                  'Te recomendamos comer algo antes de ponerte en marcha: aquí tienes los mejores restaurantes de Roma.'
+                  `Te recomendamos comer algo antes de ponerte en marcha: aquí tienes los mejores restaurantes de ${route.destination}.`
                 )}
               </span>
             </span>

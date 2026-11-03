@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Icono } from '../../../ui/Icono'
+import { useNombreDelDestino } from '../../../../lib/nombreDelDestino'
 
 /**
  * El interruptor [Roma | Excursión] del día 4 (Tanda 6g, diseño «2a · Interruptor»).
@@ -22,6 +23,7 @@ function HouseIcon() {
 }
 
 export function DayInterruptorSwitch({ mode, onChange, excursionColor, excursionPhotoUrl, busy = false }: DayInterruptorSwitchProps) {
+  const ciudad = useNombreDelDestino()
   const option = (target: 'roma' | 'excursion', label: string, lead: ReactNode) => {
     const active = mode === target
     return (
@@ -46,7 +48,7 @@ export function DayInterruptorSwitch({ mode, onChange, excursionColor, excursion
   return (
     <div onClick={(e) => e.stopPropagation()} className="flex flex-col gap-1.5">
       <div role="group" aria-label="Qué hacer este día" aria-busy={busy} className={`flex gap-2 ${busy ? 'opacity-70' : ''}`}>
-        {option('roma', 'Roma', <HouseIcon />)}
+        {option('roma', ciudad, <HouseIcon />)}
         {option(
           'excursion',
           'Excursión',

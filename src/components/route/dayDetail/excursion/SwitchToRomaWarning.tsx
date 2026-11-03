@@ -1,4 +1,6 @@
 /** El aviso al pasar a Roma con la excursión reservada: la reserva sigue en pie (Tanda 6g). Nunca el nombre de un proveedor. */
+import { useNombreDelDestino } from '../../../../lib/nombreDelDestino'
+
 interface SwitchToRomaWarningProps {
   excursionName: string
   code: string | null
@@ -7,21 +9,22 @@ interface SwitchToRomaWarningProps {
 }
 
 export function SwitchToRomaWarning({ excursionName, code, onConfirm, onCancel }: SwitchToRomaWarningProps) {
+  const ciudad = useNombreDelDestino()
   const codeText = code ? ` (${code})` : ''
   return (
     <div
       role="alertdialog"
-      aria-label="Cambiar a Roma"
+      aria-label={`Cambiar a ${ciudad}`}
       onClick={(e) => e.stopPropagation()}
       className="flex flex-col gap-2.5 rounded-2xl border border-accent/30 bg-accent-soft/70 p-3.5"
     >
       <span className="text-[13.5px] leading-[1.5] text-text">
         Tienes reservada la excursión a {excursionName}
-        {codeText}. Si cambias a Roma, tu reserva sigue en pie: si no vas a ir, cancélala desde tu confirmación
+        {codeText}. Si cambias a {ciudad}, tu reserva sigue en pie: si no vas a ir, cancélala desde tu confirmación
       </span>
       <span className="flex gap-2">
         <button type="button" onClick={onConfirm} className="min-h-[44px] flex-1 rounded-full btn-champan px-3 text-[13px] font-semibold ">
-          Cambiar a Roma
+          Cambiar a {ciudad}
         </button>
         <button type="button" onClick={onCancel} className="min-h-[44px] flex-1 rounded-full border border-text/20 bg-bg-card px-3 text-[13px] font-semibold text-text">
           Seguir con la excursión

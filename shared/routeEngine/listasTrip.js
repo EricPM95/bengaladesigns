@@ -2222,7 +2222,7 @@ export function planListasTrip(args) {
         ultimaTarde: llevaManana && info?.ultima_tarde ? { texto: info.ultima_tarde.texto } : null,
         tarjeta: !V.aMano && sinParadas && contenido !== 'excursion' ? tarjetaHoyVuelves({ V, written, info, destData, zona, madrugada: false }) : null,
         tarjetaUltimoDia: !V.aMano && V.madrugada ? tarjetaHoyVuelves({ V, written, info, destData, zona, madrugada: true }) : null,
-        resumen: V.aMano || contenido === 'excursion' ? null : { ...resumenDeVuelta({ V, contenido: sinParadas ? 'sin_paradas' : contenido }), dayNumber: V.dia.dayNumber, dateIso: V.dia.dateIso, madrugada: V.madrugada },
+        resumen: V.aMano || contenido === 'excursion' ? null : { ...resumenDeVuelta({ V, contenido: sinParadas ? 'sin_paradas' : contenido, ciudad: destData?.destination ?? 'Roma' }), dayNumber: V.dia.dayNumber, dateIso: V.dia.dateIso, madrugada: V.madrugada },
         avisos: avisosDeVuelta({ V, destData, tour, duracionDe }),
         notas,
         interno: { salirMin: V.datos.salirMin, margenMin: V.datos.margen, equivalenteMin: V.equivalente, aviso: 'Solo para el motor y las pruebas: nunca se enseña.' },
