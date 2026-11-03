@@ -78,7 +78,7 @@ debe(fotos.fotos.filter((f) => f.cuando === 'dia').length >= 25, 'F7', 'menos de
 const roma = json('data/dias/roma/_fotos.json')
 debe(roma.carpeta === '/fotos/roma', 'R1', 'Roma: _fotos.json tocado')
 const portadaTs = fs.readFileSync('src/lib/portadaViaje.ts', 'utf8')
-debe(/roma: \{ url: '\/fotos\/roma\/dia_coliseo_p\.jpg'/.test(portadaTs) && /lanzarote: \{ url: '\/fotos\/lanzarote\/portada_lanzarote_p\.jpg'/.test(portadaTs), 'R2', 'portadaViaje.ts: Roma igual y Lanzarote con su portada')
+debe(/roma: \{ url: '\/fotos\/roma\/dia_coliseo_p\.jpg'/.test(portadaTs) && /lanzarote: \{ url: '\/fotos\/lanzarote\/playas_de_papagayo_p\.jpg'/.test(portadaTs), 'R2', 'portadaViaje.ts: Roma igual y Lanzarote con su portada')
 
 console.log(`${n} comprobaciones, ${fallos.length} fallos`)
 for (const f of fallos) console.log(`  FALLO ${f.regla}: ${f.texto}`)

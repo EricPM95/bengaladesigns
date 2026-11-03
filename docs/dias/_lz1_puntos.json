@@ -58,8 +58,8 @@
  {
   "apartado": "2 · Los datos de Lanzarote",
   "punto": "Foto de portada de Lanzarote: elige una bonita con licencia libre y su crédito",
-  "estado": "medias",
-  "nota": "Cinco candidatas en la parte de abajo de este REPASO, con su autor y licencia (CC BY-SA 3.0 todas las de Commons). Puesta por defecto la 1 (Timanfaya, campo de volcanes, de rgmz) en `src/lib/portadaViaje.ts`; Roma intacta. Mi recomendación: la 4 (La Geria, viñedos en hoyos de ceniza) o la 3 (Papagayo). Dime cuál y la cambio.",
+  "estado": "hecho",
+  "nota": "ELEGIDA por Eric el 4-nov: la opción 3, la cala de Papagayo con agua turquesa (Lviatour, CC BY-SA 3.0). Puesta en `src/lib/portadaViaje.ts` y en `data/dias/lanzarote/_fotos.json`; Roma intacta. Las otras cuatro candidatas quedan en el REPASO por si cambias de idea.",
   "donde": "REPASO_LZ1.html, abajo."
  },
  {

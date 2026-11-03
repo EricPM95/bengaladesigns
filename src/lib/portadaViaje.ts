@@ -17,8 +17,8 @@ const sinAcentos = (t: string): string => t.normalize('NFD').replace(/[̀-ͯ]/g,
  */
 export const PORTADAS_PROPIAS: Record<string, { url: string; credito: string }> = {
   roma: { url: '/fotos/roma/dia_coliseo_p.jpg', credito: 'Foto: David Libeert · Unsplash' },
-  // LZ1: Lanzarote (oculto, solo administrador). Provisional hasta que Eric elija entre las candidatas de data/dias/lanzarote/_fotos.json › portadas_candidatas.
-  lanzarote: { url: '/fotos/lanzarote/portada_lanzarote_p.jpg', credito: 'Foto: rgmz · CC BY-SA 3.0' },
+  // LZ1: Lanzarote (oculto, solo administrador). Portada elegida por Eric (4-nov): la cala de Papagayo.
+  lanzarote: { url: '/fotos/lanzarote/playas_de_papagayo_p.jpg', credito: 'Foto: Lviatour · CC BY-SA 3.0' },
 }
 
 export const portadaPropiaDe = (destino: string): { url: string; credito: string } | null => PORTADAS_PROPIAS[sinAcentos(destino)] ?? null
