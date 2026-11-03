@@ -4,10 +4,10 @@
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-LZ1 hecha y probada (1417 en 0, Jutrip 129, muestra de 60 idéntica); escribiendo informe y commit
+LZ1 terminada y subida
 
 ## Qué falta
-Informe LZ1, commit, push, reiniciar API, cerrar procesos
+Nada: solo cierre de procesos
 
 ## Procesos abiertos ahora mismo
 - node: 3
