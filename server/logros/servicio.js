@@ -37,8 +37,8 @@ const esHora = (h) => /^\d{1,2}:\d{2}$/.test(String(h ?? ''))
 
 /**
  * La hora a la que queda libre el viajero el día de llegada y la hora a la que tiene que salir el último día, según el motor (solo se LEEN sus funciones, no se toca el motor):
- *   - llegada: `libreDeLlegada` = hora de llegada + traslado del punto (Fiumicino 60 min, Ciampino 50, Termini 15…) + 30 de maleta;
- *   - vuelta: `datosDeVuelta` = hora del billete − lo que hay que salir antes (Fiumicino 3 h, Ciampino 2 h 50, tren 45 min…).
+ *   - llegada: `libreDeLlegada` = la HORA ÚTIL (tanda LL, Eric 4-nov): aterrizas + 45 min para salir del aeropuerto + trayecto a la zona del alojamiento + 60 de instalarse;
+ *   - vuelta: `datosDeVuelta` = la HORA DE IRSE: billete − 2 h de aeropuerto − trayecto desde la zona − 30 de maleta. Las dos cuentas son las del motor y la tarjeta (shared/arrival/horaUtil.js).
  * Devuelve { llegada, vuelta, libre_llegada_min, libre_origen, salir_min, salir_origen }; el origen es 'motor' o 'respaldo' (el motor no da la hora: sin plan de llegada, en coche, sin datos…).
  */
 export function horasDelViaje(route, destino, catalogo) {
@@ -47,11 +47,12 @@ export function horasDelViaje(route, destino, catalogo) {
   const llegada = esHora(entradaDelPlan?.hora) ? entradaDelPlan.hora : esHora(a.arrivalFlightTime) ? a.arrivalFlightTime : null
   const vuelta = esHora(a.planVuelta?.hora) ? a.planVuelta.hora : esHora(a.departureFlightTime) ? a.departureFlightTime : null
   const info = { llegadaInfo: destino.llegadaInfo ?? null }
+  const zona = entradaDelPlan?.zona ?? route?.accommodationZone ?? a.accommodationZone ?? a.zona ?? null
   let libre = null
-  if (llegada) libre = libreDeLlegada(catalogo, info, { hora: llegada, medio: entradaDelPlan?.medio ?? 'avion', puntoId: entradaDelPlan?.punto_id ?? a.arrivalPointId ?? null })
+  if (llegada) libre = libreDeLlegada(catalogo, info, { hora: llegada, medio: entradaDelPlan?.medio ?? 'avion', puntoId: entradaDelPlan?.punto_id ?? a.arrivalPointId ?? null, zona })
   let salir = null
   if (vuelta && destino.llegadaInfo) {
-    const d = datosDeVuelta({ modo: a.planVuelta?.medio ?? a.returnTransportOptionId ?? 'avion', hora: vuelta, puntoId: a.departurePointId ?? null }, destino.llegadaInfo)
+    const d = datosDeVuelta({ modo: a.planVuelta?.medio ?? a.returnTransportOptionId ?? 'avion', hora: vuelta, puntoId: a.departurePointId ?? null, zona }, destino.llegadaInfo)
     if (d && Number.isFinite(d.horaMin) && Number.isFinite(d.margen)) salir = d.horaMin - d.margen
   }
   return { llegada, vuelta, libre_llegada_min: libre, libre_origen: llegada ? (libre != null ? 'motor' : 'respaldo') : null, salir_min: salir, salir_origen: vuelta ? (salir != null ? 'motor' : 'respaldo') : null }

@@ -5792,7 +5792,8 @@ app.post('/api/curated-day-inside', async (req, res) => {
 })
 
 // Rehacer un día con las reservas del viajero (5-oct-2026): el motor corre las horas con los márgenes alrededor de la hora que puso. Sin Claude.
-app.post('/api/rebuild-day', async (req, res) => {
+// (Tanda LL, UN SOLO CAMINO) El mismo manejador lo usa /api/adaptar-dia-vuelo para el primer día y el de vuelta: el día de llegada y el de vuelta salen del motor, no de un recorte.
+const reconstruirDia = async (req, res) => {
   const { destination, answers, all_days, day_number, must_include_places, inside_names, own_places, own_day_name } = req.body ?? {}
   const destData = findPipelineV2Data(destination)
   if (!destination || !answers || !destData || !Number.isInteger(Number(day_number))) {
@@ -5827,7 +5828,8 @@ app.post('/api/rebuild-day', async (req, res) => {
     console.error('[rebuild-day]', error)
     res.status(500).json({ error: 'No se pudo rehacer el día.' })
   }
-})
+}
+app.post('/api/rebuild-day', reconstruirDia)
 
 // «Reorganizar este día» (Tanda 6y): el orden de las paradas que ya tiene el día del viajero, con nuestros días escritos. Solo ordena: devuelve los mismos ids. Sin Claude.
 app.post('/api/reorganizar-dia', (req, res) => {
@@ -5864,6 +5866,14 @@ app.post('/api/reorganizar-dia', (req, res) => {
 // (10S7c) Adaptar SOLO el primer o el último día a los vuelos: las mismas paradas de ese día, con las horas vueltas a poner desde la llegada (`desde`) o hasta la salida al aeropuerto (`hasta`);
 // lo que no cabe sale aparte (va a «Si te sobra tiempo»). Modo aparte: no toca /api/rebuild-day ni la generación. Sin Claude ni Mapbox. Contrato: docs/dias/_estado_10s7c_X.md.
 app.post('/api/adaptar-dia-vuelo', (req, res) => {
+  // (Tanda LL, UN SOLO CAMINO) Con el viaje entero (`answers`, `all_days`, `day_number`) y los vuelos (`llegada` o `vuelta`), el PRIMER día y el de VUELTA no se recortan: se piden al mismo motor que rehace un día suelto
+  // (/api/rebuild-day: la hora útil, las franjas, el día de llegada y el de vuelta). Solo los días de en medio, o una petición sin el viaje, siguen el camino de siempre (el recorte).
+  {
+    const b = req.body ?? {}
+    const numeroDia = Number(b.day_number)
+    const conViaje = b.answers && Array.isArray(b.all_days) && Number.isInteger(numeroDia) && (b.llegada || b.vuelta)
+    if (conViaje && (numeroDia === 1 || numeroDia > b.all_days.length)) return reconstruirDia(req, res)
+  }
   const { destination, stops, meals, date, season, desde, hasta } = req.body ?? {}
   const destData = destination ? findPipelineV2Data(destination) : null
   if (!destData || !Array.isArray(stops) || stops.length > 80 || stops.some((s) => !s || typeof s.id !== 'string' || typeof s.name !== 'string')) {

@@ -9,7 +9,8 @@ import { esDiaDeLlegada } from './tituloDelDia'
  */
 
 /** Los casos de la llegada (`plan.llegada.caso`) en que el día 1 sale recortado. La ruta del centro entera (`ruta_del_centro_entera`), el anochecer y la noche no son recortes: son su propia lista. */
-const CASOS_DE_LLEGADA_RECORTADOS = new Set(['rapido', 'de_tarde', 'ruta_del_centro'])
+// (LL parte 2) «rapido» y «de_tarde» ya no existen: la llegada va por franjas (F0 a F7).
+const CASOS_DE_LLEGADA_RECORTADOS = new Set(['rapido', 'de_tarde', 'ruta_del_centro', 'ruta_del_centro_entera', 'anochecer', 'noche_con_cena', 'noche_sin_cena', 'sin_ruta'])
 
 /** El caso sin lo que lleva detrás de un `+` (`rapido+reserva_grande` → `rapido`). */
 export const casoBase = (caso: string | null | undefined): string => (caso ?? '').split('+')[0]

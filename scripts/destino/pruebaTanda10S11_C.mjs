@@ -1,3 +1,4 @@
+// LL parte 2 (Eric, 4-nov). Antes → ahora: «hasta las HH:MM» del día de vuelta = vuelo − tiempo de estar allí − trayecto desde su zona − 30 min de maleta (una sola cuenta con el motor, shared/arrival/horaUtil.js). Ciampino 15:15 → 14:30, Fiumicino sin zona 15:00 → 14:15, tren 17:15 → 16:30.
 // Tanda 10S11 (agente C) · apartado 4: el día de vuelta, «Hoy vuelves a casa» (Eric, 1-nov).
 //   Sin pase con vuelo a las 18:05: fuera la franja oscura «Tu día de vuelta · Con el Pase Roma…», la tarjeta con «hasta las HH:MM», [+ Añadir lugares], [Explorar] y la línea del pase con candado.
 //   Sin hora: «Aún no sabemos…», [Añadir tu vuelo] → RESERVAS › Llegada y vuelta. Vuelo muy pronto: sin [+ Añadir lugares]. Tren: «tu tren» con su estación. Coche: sin la parte del vuelo.
@@ -80,7 +81,7 @@ async function pasada(version) {
     await poner({ medio: 'flight', hora: '18:05', punto: 'cia', zona: null })
     let d = await leer()
     debe(d.hay && d.titulo === 'Hoy vuelves a casa', 'apartado 4', `con vuelo a las 18:05 sale la tarjeta «Hoy vuelves a casa» (${JSON.stringify(d)})`)
-    debe(d.texto === 'Tu vuelo sale de Ciampino a las 18:05. Te recomendamos estar en el aeropuerto 2 horas antes: hasta las 15:15, más o menos, el día es tuyo.', 'apartado 4', `el texto con la hora del vuelo y «hasta las 15:15» (${d.texto})`)
+    debe(d.texto === 'Tu vuelo sale de Ciampino a las 18:05. Te recomendamos estar en el aeropuerto 2 horas antes: hasta las 14:30, más o menos, el día es tuyo.', 'apartado 4', `el texto con la hora del vuelo y «hasta las 14:30» (${d.texto})`)
     debe(d.invitacion === '¿Quieres aprovecharlo? Añade lo que te quedó por ver.' && d.lugares === '+ Añadir lugares' && d.explorar === 'Explorar', 'apartado 4', `la invitación y los dos botones (${d.invitacion} | ${d.lugares} | ${d.explorar})`)
     debe(!d.franja && !d.viejoBarra && !d.viejaTarjeta, 'apartado 4', `ni franja oscura «Tu día de vuelta», ni «Añade tu vuelo de vuelta y ajustamos tu día», ni la tarjeta vieja (${d.franja}, ${d.viejoBarra}, ${d.viejaTarjeta})`)
     if (sin) debe(d.version === 'sin-pase' && /Con el Pase Roma, te preparamos este día con lo que te queda por ver, a tiempo para tu vuelo\./.test(d.paseSin ?? '') && d.candado, 'apartado 4', `sin pase, la línea del pase con su candado (${d.paseSin}, candado ${d.candado})`)
@@ -90,7 +91,7 @@ async function pasada(version) {
     // 1b. Con Fiumicino (sin zona: 60 min desde el centro): 18:05 − 2 h − 60 = 15:05 → 15:00.
     await poner({ medio: 'flight', hora: '18:05', punto: 'fco', zona: null })
     d = await leer()
-    debe(/Tu vuelo sale de Fiumicino a las 18:05\..*hasta las 15:00, más o menos/.test(d.texto ?? ''), 'apartado 4', `Fiumicino sin zona: «hasta las 15:00» (${d.texto})`)
+    debe(/Tu vuelo sale de Fiumicino a las 18:05\..*hasta las 14:15, más o menos/.test(d.texto ?? ''), 'apartado 4', `Fiumicino sin zona: «hasta las 14:15» (${d.texto})`)
 
     // 2. Los botones.
     await click('[data-ultimo-dia="explorar"]')
@@ -133,7 +134,7 @@ async function pasada(version) {
     // 5. En tren (Termini, 30 min antes, 15 min desde el centro): 18:05 − 30 − 15 = 17:20 → 17:15.
     await poner({ medio: 'train', hora: '18:05', punto: 'termini', zona: null })
     d = await leer()
-    debe(/^Tu tren sale de Termini a las 18:05\. Te recomendamos estar en la estación 30 minutos antes: hasta las 17:15, más o menos, el día es tuyo\.$/.test(d.texto ?? ''), 'apartado 4', `en tren: «tu tren», su estación (${d.texto})`)
+    debe(/^Tu tren sale de Termini a las 18:05\. Te recomendamos estar en la estación 30 minutos antes: hasta las 16:30, más o menos, el día es tuyo\.$/.test(d.texto ?? ''), 'apartado 4', `en tren: «tu tren», su estación (${d.texto})`)
     debe(!/vuelo|aeropuerto/.test(`${d.texto} ${d.paseSin ?? ''} ${d.paseCon ?? ''}`), 'apartado 4', 'en tren, ni «vuelo» ni «aeropuerto»')
     await a.captura(foto(`vuelta_tren_${version}`, '05'))
     await poner({ medio: 'train', hora: null, punto: null, zona: null })

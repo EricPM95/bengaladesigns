@@ -2,6 +2,8 @@
  * (Tanda 10S7c) «Adaptar solo el primer día / solo el último día» a los vuelos. Modo APARTE: no lo usa la ruta normal ni /api/rebuild-day; solo el cliente cuando el viajero
  * acepta adaptar sus días a los vuelos (`POST /api/adaptar-dia-vuelo`). Contrato completo en docs/dias/_estado_10s7c_X.md.
  *
+ * (Tanda LL, Roma parte 2, Eric 4-nov: UN SOLO CAMINO. El PRIMER día y el de VUELTA ya no se recortan aquí: `/api/adaptar-dia-vuelo` los delega en el motor que rehace un día suelto —`/api/rebuild-day`— cuando la petición trae el viaje
+ *  (`answers`, `all_days`, `day_number`) y los vuelos (`llegada`, `vuelta`); el día de llegada sale de las franjas F0 a F7 por la hora útil y el de vuelta de la hora de irse. Este recorte queda solo para un día de en medio o una petición sin el viaje.)
  * Recibe las paradas de UN día (ninguna de otros días), la fecha de ese día, `desde` (llegada + traslado al centro) y/o `hasta` (hora de irse al aeropuerto), y devuelve LAS MISMAS
  * paradas: las que caben, con la hora vuelta a poner respetando sus horarios de ESE día, y las que no caben aparte (van a «Si te sobra tiempo»: nunca se pierde ni se añade una).
  *

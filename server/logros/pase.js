@@ -4,7 +4,7 @@
  *   - El cobro todavía no existe (va con las pantallas de las cuentas): con el cobro apagado, siempre sí.
  *   - Con el cobro encendido: con el pase de ese destino, o en su día de prueba.
  *   - UNA prueba de HOY por cuenta, PARA SIEMPRE (no una por destino). Si ya la usó, no hay más.
- *   - Qué día es la prueba: sin vuelo puesto, el día 1; si el día de llegada está libre antes de las 10:00, ese día; si no, el día siguiente; y si no hay
+ *   - Qué día es la prueba: sin vuelo puesto, el día 1; si el día de llegada está libre antes de las 10:00 (tanda LL: «libre» es ahora la HORA ÚTIL —aterrizas + 45 + trayecto a la zona + 60—, así que solo el día entero F0 cumple), ese día; si no, el día siguiente; y si no hay
  *     ningún día libre antes de las 10:00 (por ejemplo, 2 días con llegada tarde), el día con más horas libres.
  *   - Cuándo se gasta: solo al USAR HOY de verdad, es decir, al tocar [Visto] o [Cómo llegar]. Abrirlo y cerrarlo no gasta nada. Si pone o cambia el vuelo antes de
  *     gastarla, el día de prueba se vuelve a calcular (mientras no se gasta no se guarda: se calcula cada vez).

@@ -133,7 +133,18 @@ export function ordenarDias(env) {
     }
     return todo
   }
-  if (Array.isArray(forceOrder) && forceOrder.length === todosLosDias.length && forceOrder.every((id) => written.days[id])) order = forceOrder.filter((_, index) => !pins.some((pin) => pin.index === index))
+  // (Tanda LL, UN SOLO CAMINO: el orden que el viajero ya ve —`forceOrder`— NO gana a la llegada con pase. Si lo que ve no es lo que la llegada ha decidido para este vuelo —el día 1 es una versión que no está en lo que ve, o ve días que la llegada ha
+  //  quitado—, el día 1 es el de la llegada y el resto de días conserva su orden; si ya ve lo mismo que la llegada, su orden se respeta como siempre.)
+  let forzado = forceOrder
+  if (Array.isArray(forceOrder) && pins.length === 0 && llegadaDecision?.aplica && !llegadaDecision.reiniciarSinFreeTour && llegadaDecision.fijoPrimero && chosen.includes(llegadaDecision.fijoPrimero)) {
+    const primero = llegadaDecision.fijoPrimero
+    const mismoConjunto = forceOrder.length === chosen.length && forceOrder.every((id) => chosen.includes(id))
+    if (!mismoConjunto) {
+      const resto = forceOrder.filter((id) => id !== primero && chosen.includes(id))
+      forzado = [primero, ...resto, ...chosen.filter((id) => id !== primero && !resto.includes(id))]
+    }
+  }
+  if (Array.isArray(forzado) && forzado.length === todosLosDias.length && forzado.every((id) => written.days[id])) order = forzado.filter((_, index) => !pins.some((pin) => pin.index === index))
   else if (chosen.length > 1) {
     const fixedCost = new Map()
     // (Por qué cada día no va en cada fecha: lo que le cuesta ahí; con eso el informe y la prueba explican cada cambio de orden.)

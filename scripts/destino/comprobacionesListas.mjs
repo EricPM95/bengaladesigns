@@ -77,7 +77,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // Con una reserva no se quita nada ni se manda a «Si te sobra tiempo» por el tiempo: solo cierres (regla 5, Tanda 6x) y lo que el propio documento deja para «Si te sobra tiempo» en esa versión del día (Tanda 6y7: el miércoles con los Museos reservados).
     if (conReserva) {
       for (const l of log) {
-        if (l.que === 'sobra' && !/cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera|con tu reserva a esa hora ya no cabe|el documento lo deja para/i.test(l.causa ?? '')) falla('sobra_con_reserva', dia, `«${l.lugar}» pasa a «Si te sobra tiempo» con una reserva: ${l.causa}`)
+        if (l.que === 'sobra' && !/cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera|con tu reserva a esa hora ya no cabe|el documento lo deja para|no te da tiempo antes de irte/i.test(l.causa ?? '')) falla('sobra_con_reserva', dia, `«${l.lugar}» pasa a «Si te sobra tiempo» con una reserva: ${l.causa}`)
         if (l.que === 'quitada' && /hora límite|no cabe|no cabía/i.test(l.causa ?? '')) falla('quitada_con_reserva', dia, `«${l.lugar}» se quita con una reserva: ${l.causa}`)
       }
     }
@@ -338,7 +338,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     for (const sp of dia.spareRows ?? []) {
       const conReservaDia = (dia.escritoRows ?? []).some((r) => r.hora_tipo === 'reserva' && !r.llegada)
       const causa = (dia.escritoLog ?? []).find((l) => l.id === sp.id && l.que === 'sobra')?.causa ?? ''
-      const tipo = /con tu reserva a esa hora ya no cabe/i.test(causa) ? 'por_fila_de_reserva' : /cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera/i.test(causa) ? 'cierre' : /el documento lo deja/i.test(causa) ? 'documento' : conReservaDia ? 'tiempo_con_reserva' : 'tiempo_sin_reserva'
+      const tipo = /con tu reserva a esa hora ya no cabe/i.test(causa) ? 'por_fila_de_reserva' : /cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera/i.test(causa) ? 'cierre' : /el documento lo deja/i.test(causa) ? 'documento' : /no te da tiempo antes de irte/i.test(sp.sobra_causa ?? causa) ? 'hora_de_irse' : conReservaDia ? 'tiempo_con_reserva' : 'tiempo_sin_reserva'
       avisa(`sobra_${tipo}`, dia, `«${sp.titulo ?? sp.lugar}» pasa a «Si te sobra tiempo»`)
       if (tipo === 'tiempo_con_reserva') falla('sobra_con_reserva', dia, `«${sp.titulo ?? sp.lugar}» pasa a «Si te sobra tiempo» con una reserva`)
     }

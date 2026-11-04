@@ -9516,8 +9516,9 @@
   ],
   "destination_config": {
     "llegada": {
-      "_nota": "Tanda 7 (agente F). Lo que el motor de la llegada necesita del destino y no está en las tablas de listas.json: los 30 min de la maleta que se suman al traslado del punto («libre»), el sitio que dice cuándo es invierno (los días en que cierra a esa hora según su horario), el día de la segunda noche con la llegada tarde y las reglas del Free Tour de mañana. Los ids son los de los días escritos.",
-      "libre_extra_min": 30,
+      "_nota": "Tanda 7 (agente F). Lo que el motor de la llegada necesita del destino y no está en las tablas de listas.json: (Tanda LL, 4-nov) `instalarse_min` (60 min para dejar la maleta y ponerse cómodo: se suma a salir del punto y al trayecto a la zona de `_llegada.json › hora_util`, la «hora útil») y `dia_entero_hasta` (con la hora útil hasta las 9:30, el día 1 es el día entero normal), el sitio que dice cuándo es invierno (los días en que cierra a esa hora según su horario), el día de la segunda noche con la llegada tarde y las reglas del Free Tour de mañana. Los ids son los de los días escritos.",
+      "instalarse_min": 60,
+      "dia_entero_hasta": "09:30",
       "invierno": { "lugar": "Coliseo", "cierra": "16:30" },
       "dos_noches_tarde": "D1-vaticano",
       "dia_roma_antigua": "D1",

@@ -6,7 +6,8 @@
  * Un destino que no esté en la lista no tiene «grandes» y todos sus imprescindibles avisan uno a uno, como en la 10S7c.
  */
 export const IMPRESCINDIBLES_GRANDES: Record<string, string[]> = {
-  roma: ['coliseo', 'foro romano', 'museos vaticanos', 'basilica de san pedro', 'galeria borghese'],
+  // LL parte 2 (Eric, 4-nov): la Basílica de San Pedro SOLA ya no es grande (gratis, 45-75 min); los grandes son el Coliseo y el Foro, los Museos Vaticanos y la Galería Borghese.
+  roma: ['coliseo', 'foro romano', 'museos vaticanos', 'galeria borghese'],
 }
 
 const norm = (texto: string): string => String(texto ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim()

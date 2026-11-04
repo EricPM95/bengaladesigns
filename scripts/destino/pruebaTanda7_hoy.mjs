@@ -282,7 +282,7 @@ const datos = () => ({ importanciaPorSitio: excursiones.importanciaPorSitio, niv
     debe(a.peso === pesoDe(a.stop.name), 'C6 orden', `${a.stop.name}: el peso no sale de los datos`)
   }
   // Mañana del día de vuelta recortada: nivel y, a igual nivel, lo más cercano. (Tanda 7b: con vuelo de 15:00 la mañana es la lista sin comida y no deja nada fuera; con 17:00 la Cúpula y el Vaticano tienen lista con comida; el Aventino (3 noches) deja 2 visitas fuera.)
-  const rutaD6 = await viaje({ noches: 3, llegada: LL('08:30'), vuelta: VU('17:00'), horaLlegada: '08:30', horaVuelta: '17:00' })
+  const rutaD6 = await viaje({ noches: 3, llegada: LL('08:30'), vuelta: VU('18:30'), horaLlegada: '08:30', horaVuelta: '18:30' }) // (Tanda LL, parte 2: antes 17:00; con la hora de irse nueva —billete − 3 h 40— la mañana con comida empieza con el vuelo de las 17:40; Eric, 4-nov)
   const dv = rutaD6.days.at(-1)
   const vv = masVisitasDe(rutaD6, dv, datos())
   debe(rutaD6.planVuelta?.contenido === 'manana' && vv.length === 2, 'C6 orden', `el día de vuelta de 3 noches no deja 2 visitas fuera (${vv.length})`)

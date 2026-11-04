@@ -14,6 +14,7 @@
 
 import { arrivalModeOf } from '../arrival/arrivalRules.js'
 import { paraTuZona } from '../arrival/paraTuZona.js'
+import { horaDeIrseMin } from '../arrival/horaUtil.js'
 import { easterIso, matchesDateToken } from './openingHours.js'
 import { copiarParte, aplicarVariantes } from './listasDia.js'
 
@@ -68,7 +69,11 @@ export function margenDeSalida(modeKey, medio, punto) {
   return punto?.salir_antes_min ?? medio?.salir_antes_min ?? (modeKey === 'avion' ? 180 : 45)
 }
 
-/** @returns {{ modeKey, medio, punto, porDefecto, horaMin, hora, margen, salirMin }|null}  `salirMin` puede ser negativo: la noche de antes. Nada de esto se enseña. */
+/**
+ * @returns {{ modeKey, medio, punto, porDefecto, horaMin, hora, margen, salirMin, cuenta }|null}  `salirMin` = LA HORA DE IRSE (tanda LL, Eric 4-nov): billete − 2 h de aeropuerto (30 min en tren o autobús) − trayecto desde la zona del alojamiento
+ * (`vuelta.zona`; sin zona, el Centro) − 30 min de maleta, redondeada hacia abajo de 5 en 5 (`shared/arrival/horaUtil.js`: la misma cuenta que usa la tarjeta). Puede ser negativa: la noche de antes. Nada de esto se enseña.
+ * Sin la tabla de trayectos del destino vale lo de antes (billete − el margen del punto).
+ */
 export function datosDeVuelta(vuelta, info) {
   if (!vuelta || vuelta.pago === false) return null
   const modeKey = medioDeVuelta(vuelta.modo ?? 'avion')
@@ -76,8 +81,9 @@ export function datosDeVuelta(vuelta, info) {
   if (!modeKey || !hora || !info) return null
   const { medio, punto, porDefecto } = puntoDeVuelta(info, modeKey, vuelta.puntoId ?? vuelta.punto ?? null)
   if (!punto) return null
-  const margen = margenDeSalida(modeKey, medio, punto)
-  return { modeKey, medio, punto, porDefecto, horaMin: aMin(hora), hora, margen, salirMin: aMin(hora) - margen }
+  const margenAntiguo = margenDeSalida(modeKey, medio, punto)
+  const cuenta = horaDeIrseMin({ info, medio: modeKey, puntoId: punto.id ?? null, zona: vuelta.zona ?? null, vueloMin: aMin(hora), margenAntiguoMin: margenAntiguo })
+  return { modeKey, medio, punto, porDefecto, horaMin: aMin(hora), hora, margen: cuenta.margenMin, salirMin: cuenta.irseMin, cuenta }
 }
 
 // ── La tabla de la vuelta ──────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -86,9 +92,18 @@ export function datosDeVuelta(vuelta, info) {
  * La fila de la tabla para una hora de salir. Las filas están escritas con las horas del vuelo desde el punto de la tabla (Fiumicino, margen 3:00): para otro punto se
  * compara «hora de salir» con la de la fila menos el margen de la tabla. Cada fila empieza en su hora (nada se redondea). Lo de antes de la primera fila (salir en la noche de antes) es la primera.
  */
-export function filaDeVuelta(tabla, salirMin) {
+export function filaDeVuelta(tabla, salirMin, vueloMin = null) {
   const filas = tabla?.filas ?? []
   if (filas.length === 0) return null
+  // (Tanda LL: la tabla es por la HORA DE IRSE —`hora_de: 'irse'`—; la fila con `vuelo_desde` (el vuelo desde las 19:00: día entero) se mira primero, con la hora del billete.)
+  if (tabla.hora_de === 'irse') {
+    const dia = vueloMin == null ? -1 : filas.findIndex((fila) => fila.vuelo_desde != null && vueloMin >= aMin(fila.vuelo_desde))
+    if (dia >= 0) return { fila: filas[dia], indice: dia, equivalente: salirMin }
+    const porHora = filas.map((fila, i) => ({ fila, i })).filter(({ fila }) => fila.vuelo_desde == null)
+    const hallada = porHora.find(({ fila }) => salirMin >= (aMin(fila.desde) ?? 0) && (fila.hasta == null || salirMin <= (aMin(fila.hasta) ?? 24 * 60)))
+    const elegida = hallada ?? (salirMin < 0 ? porHora[0] : porHora.at(-1))
+    return { fila: elegida.fila, indice: elegida.i, equivalente: salirMin }
+  }
   const equivalente = salirMin + (aMin(tabla.margen_de_la_tabla) ?? 180)
   let indice = filas.findIndex((fila) => equivalente >= (aMin(fila.desde) ?? 0) && (fila.hasta == null || equivalente <= (aMin(fila.hasta) ?? 24 * 60)))
   if (indice < 0) indice = equivalente < 0 ? 0 : filas.length - 1
@@ -108,19 +123,27 @@ function seSaltaEseDia(tokens, dateIso) {
  * que existe en el destino y que no se salta ese día (el 25 de diciembre y el domingo de Pascua el Vaticano; el miércoles, la que su mañana corta marca como `miercoles: "siguiente"`).
  * @returns {{ fila: object|null, hoja: string|null, saltadas: {lista:string, motivo:string}[] }}
  */
-export function elegirUltimaManana({ ultimas, vistos, written, weekday, dateIso }) {
+export function elegirUltimaManana({ ultimas, vistos, written, weekday, dateIso, distancia = null }) {
   const saltadas = []
+  // (Tanda LL: entre las que valen, la MÁS CERCANA a la zona del alojamiento —`distancia(fila)`, en metros— y, a igual distancia o sin zona, la primera de la tabla. Nunca un orden fijo.)
+  const validas = []
+  let hoja = null
   for (const fila of ultimas ?? []) {
-    if (fila.hoja) return { fila: null, hoja: fila.hoja, saltadas }
+    if (fila.hoja) { hoja = fila.hoja; continue }
     const dia = written.days?.[fila.lista]
     if (!dia) { saltadas.push({ lista: fila.lista, motivo: 'el destino no la tiene escrita' }); continue }
     const visto = (fila.lo_principal ?? []).find((lugar) => vistos.has(lugar))
     if (visto) { saltadas.push({ lista: fila.lista, motivo: `ya has visto ${visto}` }); continue }
     if (seSaltaEseDia(fila.se_salta, dateIso)) { saltadas.push({ lista: fila.lista, motivo: 'se salta ese día' }); continue }
     if (weekday && sinTilde(weekday) === 'miercoles' && [fila.corta, fila.sin_comida, fila.con_comida].some((id) => id && written.days?.[id]?.miercoles === 'siguiente') || (weekday && sinTilde(weekday) === 'miercoles' && dia.miercoles === 'siguiente')) { saltadas.push({ lista: fila.lista, motivo: 'el miércoles (la audiencia)' }); continue }
-    return { fila, hoja: null, saltadas }
+    validas.push(fila)
   }
-  return { fila: null, hoja: null, saltadas }
+  if (validas.length > 0) {
+    const medida = validas.map((fila, i) => ({ fila, i, d: typeof distancia === 'function' ? distancia(fila) : null }))
+    const elegida = typeof distancia === 'function' ? [...medida].sort((a, b) => (a.d ?? Infinity) - (b.d ?? Infinity) || a.i - b.i)[0] : medida[0]
+    return { fila: elegida.fila, hoja: null, saltadas, distanciaM: elegida.d ?? null }
+  }
+  return { fila: null, hoja, saltadas }
 }
 
 /** El siguiente día escrito que el viaje no lleva, en el orden de la tabla de días del destino (la fila más larga). Null si no queda ninguno. */
@@ -187,7 +210,7 @@ export function prepararVuelta(env) {
   const tabla = written?.llegadas?.vuelta ?? null
   const datos = datosDeVuelta(vuelta, info)
   if (!datos || !tabla || totalDays < 2) return null
-  const encontrada = filaDeVuelta(tabla, datos.salirMin)
+  const encontrada = filaDeVuelta(tabla, datos.salirMin, datos.horaMin)
   if (!encontrada) return null
   const dayNumber = contentDays + 1
   const dateIso = calendar.hasDates ? calendar.dateOfDay(dayNumber) : null
@@ -260,12 +283,12 @@ export function prepararVuelta(env) {
  * Decide el contenido del día de vuelta. No construye el día (eso lo hace el motor con sus listas): devuelve qué hay que construir.
  * @returns {{ tipo: 'sin_paradas'|'manana'|'dia_mas'|'bloques'|'solo_reservas'|'hoja', ... }}
  */
-export function disponerVuelta(V, { written, destData, vistos, orden, hasFreeTour, diaCaidoAlLlegar = null }) {
+export function disponerVuelta(V, { written, destData, vistos, orden, hasFreeTour, diaCaidoAlLlegar = null, distancia = null }) {
   const { lleva, dia } = V
   const hayGrandes = V.reservas.grandes.length > 0
   const hayPequenas = V.reservas.pequenas.length > 0
   const ultimas = written.llegadas?.ultimas_mananas ?? []
-  const elegida = () => elegirUltimaManana({ ultimas, vistos, written, weekday: dia.weekday, dateIso: dia.dateIso })
+  const elegida = () => elegirUltimaManana({ ultimas, vistos, written, weekday: dia.weekday, dateIso: dia.dateIso, distancia })
   const base = { saltadas: [] }
 
   // Una reserva grande: solo su bloque, entero, sin mirar si cabe; el día tiene mañana aunque su fila diga «solo el traslado».
@@ -285,8 +308,10 @@ export function disponerVuelta(V, { written, destData, vistos, orden, hasFreeTou
   if (lleva === 'manana_corta') return e.fila ? { tipo: 'manana', ...e, corta: true, conComida: false, tardeLibre: false } : { tipo: 'hoja', ...e, tardeLibre: false }
   // (Tanda 7b) Con su lista propia —sin comida o con comida— la mañana es esa lista, escrita para el rato que hay; sin ella, la mañana de siempre.
   if (lleva === 'manana_sin_comida') return e.fila ? { tipo: 'manana', ...e, corta: false, conComida: false, tardeLibre: false, ...(e.fila.sin_comida ? { listaPropia: e.fila.sin_comida } : {}) } : { tipo: 'hoja', ...e, tardeLibre: false }
-  // manana_con_comida
-  return e.fila ? { tipo: 'manana', ...e, corta: false, conComida: true, tardeLibre: V.fila.tarde_libre === true, ...(e.fila.con_comida ? { listaPropia: e.fila.con_comida } : {}) } : { tipo: 'hoja', ...e, conComida: true, tardeLibre: V.fila.tarde_libre === true }
+  // manana_con_comida (tanda LL: en vez de «la tarde es tuya», paradas ligeras cerca hasta la hora de irse; solo si no cabe ninguna sale la frase de la tarde libre)
+  const hastaIrte = V.fila.paradas_hasta_irte === true
+  const tardeLibre = V.fila.tarde_libre === true || hastaIrte
+  return e.fila ? { tipo: 'manana', ...e, corta: false, conComida: true, tardeLibre, hastaIrte, ...(e.fila.con_comida ? { listaPropia: e.fila.con_comida } : {}) } : { tipo: 'hoja', ...e, conComida: true, tardeLibre, hastaIrte }
 }
 
 // ── Los textos y los avisos (solo con datos del viajero y del destino) ──────────────────────────────────────────────────────────────

@@ -7,6 +7,14 @@
 //   3. El día 1 pasa al día 2 desde las 14:00 (en invierno, desde las 13:00): se corre todo y solo se cae el último día de ruta.
 //   4. 1 y 2 noches. 5. El Free Tour (con hora, sin hora, de noche). 6. Las reservas grandes y pequeñas del día de llegada y de un día de en medio.
 //   7. La excursión. 8. Gratis, ruta a mano y coche: los días no cambian. 9. La matriz grande (todas las comprobaciones de siempre). 10. Los 20 viajes de la revisión, con vuelos.
+// CAMBIOS DE LA TANDA LL, PARTE 2 (4-nov-2026; antes -> ahora -> decisión de Eric, «TANDA LL parte 2»):
+//   · LA HORA QUE ELIGE LA FILA: antes «libre» = llegada + traslado del punto al centro (Fiumicino 60, Ciampino 50, Termini 15, Tiburtina 25, Civitavecchia 120) + 30 de maleta (Fiumicino +1:30); ahora la HORA ÚTIL = llegada + salir del punto
+//     (45 en un aeropuerto, 10 en una estación) + trayecto a la zona (tabla de _llegada.json › hora_util) + 60 de instalarse (Fiumicino y zona Centro: +2:55). Decisión de Eric, punto 1.
+//   · LAS TABLAS DEL DÍA 1: antes 10 filas (antes de las 10:00: Coliseo por la tarde; «la rápida»; «de tarde»; la ruta del centro desde las 14:00; anochecer; noche; sin cena; sin ruta) con dos zonas; ahora las franjas F0 a F7 por la hora útil
+//     (0:00-9:30 el D1 entero · 9:31-12:00 la ruta entera con comida · 12:01-15:00 la ruta a buen paso con comida · 15:01-18:00 · 18:01-20:00 anochecer · 20:01-21:30 cena y paseo · 21:31-23:00 solo paseo · desde las 23:01 nada) y cinco zonas
+//     (Navona, Plaza de España, Trastevere, Prati, Monti con Termini). Decisión de Eric, puntos 1, 2 y 6 (la regla del 21-oct, «llegando a la hora de comer, Galería Borghese por la tarde», queda anulada).
+//   · EL D1 PASA AL DÍA 2: antes desde que «libre» era las 14:00 (en invierno las 13:00); ahora desde la hora útil de las 9:31, y se cae el último día. Decisión de Eric, punto 2.
+//   · EL INVIERNO: las dos tablas son iguales (el Coliseo ya no va el día de llegada).
 // CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
 //   · TABLA (dias de ciudad 5 y 6): antes 5 = [D1,D2,D4,D5,D6] y 6 = [D1..D7 con D6]; ahora 5 y 6 = [D1,D2,D4,D5,D7]. Con ello «cae_el_ultimo» y «gancho_vuelta» esperan que el dia caido sea D7 (el ultimo de la tabla). Tanda 11, Eric 22-oct-2026 (roma.json › curated_routes › _nota_tanda11: 5 dias curados, D7 en lugar de D6).
 //   · «pool» (en comprobacionesListas.mjs): antes, un sitio del pool tenia que salir como fila propia; ahora tambien vale que lo cubra la visita unica (`cubre` de la fila): «Cupula + Basilica, una visita». Tanda 11, Eric 20/22-oct-2026 (commit fe6c3d5a).
@@ -34,7 +42,7 @@ const PUNTOS = [
   { id: 'fco', medio: 'avion' }, { id: 'cia', medio: 'avion' }, { id: 'termini', medio: 'tren' }, { id: 'tiburtina', medio: 'tren' }, { id: 'tibus', medio: 'bus' }, { id: 'civitavecchia', medio: 'ferry' },
   { id: null, medio: 'avion', sin: true }, { id: null, medio: 'tren', sin: true }, { id: null, medio: 'bus', sin: true }, { id: null, medio: 'ferry', sin: true },
 ]
-const traslado = (p) => {
+const traslado = (p) => { // (ya no lo usa la cuenta: queda por si alguien mira los traslados al centro de los puntos)
   if (p.id) return Object.values(llegadaInfo.medios).flatMap((m) => m.puntos).find((q) => q.id === p.id).al_centro_min
   // sin punto: el del traslado más largo de ese medio (avión: Fiumicino; tren: Tiburtina; autobús: la estación de autobuses de Tiburtina; barco: Civitavecchia)
   return Math.max(...llegadaInfo.medios[p.medio].puntos.map((q) => q.al_centro_min))
@@ -43,8 +51,20 @@ const nombrePunto = (p) => `${p.id ?? `sin punto (${p.medio})`}`
 
 // ═══ Las tablas del documento (escritas aquí otra vez) ═══
 // [libre desde (min), lista del día 1, ¿el D1 pasa al día 2?, ¿comida al llegar?]
-const VERANO = [[0, 'D1', false, false], [600, 'D1-rapido', false, false], [720, 'D1-tarde', false, true], [840, 'D1-centro-', true, true], [900, 'D1-centro-', true, false], [1140, 'D1-anochecer-', true, false], [1230, 'D1-noche', true, false], [1320, 'D1-noche-sin-cena', true, false], [1380, 'D1-sin-ruta', true, false]]
-const INVIERNO = [[0, 'D1', false, false], [600, 'D1-rapido-invierno-10', false, false], [660, 'D1-rapido-invierno-11', false, false], [720, 'D1-tarde', false, true], [780, 'D1-centro-entera-', true, true], [840, 'D1-centro-', true, true], [900, 'D1-centro-', true, false], [1140, 'D1-anochecer-', true, false], [1230, 'D1-noche', true, false], [1320, 'D1-noche-sin-cena', true, false], [1380, 'D1-sin-ruta', true, false]]
+const VERANO = [[0, 'D1', false, false], [571, 'D1-centro-entera-', true, true], [721, 'D1-centro-', true, true], [901, 'D1-centro-', true, false], [1081, 'D1-anochecer-', true, false], [1201, 'D1-noche-', true, false], [1291, 'D1-noche-sin-cena-', true, false], [1381, 'D1-sin-ruta', true, false]]
+const INVIERNO = VERANO // (desde la tanda LL, las dos tablas son iguales)
+// (Tanda LL) La hora útil, escrita aquí aparte: salir del punto + trayecto de la zona + 60 de instalarse, redondeada hacia arriba de 5 en 5.
+const SALIR_PUNTO = { fco: 45, cia: 45, termini: 10, tiburtina: 10, tibus: 10, civitavecchia: 45 }
+const TRAYECTOS = {
+  termini: { fco: 50, cia: 45, termini: 10, tiburtina: 20, civitavecchia: 90 }, monti: { fco: 60, cia: 55, termini: 15, tiburtina: 25, civitavecchia: 100 }, plaza_de_espana: { fco: 65, cia: 60, termini: 20, tiburtina: 30, civitavecchia: 105 },
+  centro: { fco: 70, cia: 65, termini: 25, tiburtina: 35, civitavecchia: 105 }, prati: { fco: 70, cia: 70, termini: 25, tiburtina: 35, civitavecchia: 90 }, trastevere: { fco: 60, cia: 75, termini: 30, tiburtina: 40, civitavecchia: 90 },
+}
+const idDelPunto = (p) => p.id ?? { avion: 'fco', tren: 'tiburtina', bus: 'tibus', ferry: 'civitavecchia' }[p.medio]
+const columna = (id) => (id === 'tibus' ? 'tiburtina' : id)
+const extraDe = (p, zona = 'centro') => SALIR_PUNTO[idDelPunto(p)] + (TRAYECTOS[zona] ?? TRAYECTOS.centro)[columna(idDelPunto(p))] + 60
+const utilDe = (p, llegadaMin, zona = 'centro') => Math.ceil((llegadaMin + extraDe(p, zona)) / 5) * 5
+const SUFIJO_ZONA = { centro: 'navona', nose: 'navona', plaza_de_espana: 'espana', trastevere: 'trastevere', prati: 'prati', monti: 'monti', termini: 'monti' }
+const PRIMERA_PARADA = { navona: 'Piazza Navona', espana: 'Plaza de España', trastevere: 'Plaza Trilussa', prati: "Castillo de Sant'Angelo", monti: 'Basílica de Santa María la Mayor' }
 const filaEsperada = (tabla, libre) => [...tabla].reverse().find(([desde]) => Math.min(libre, 1439) >= desde)
 const hhmm = (min) => toHHMM(((min % 1440) + 1440) % 1440)
 const SEDES = {
@@ -72,7 +92,7 @@ if (args.fronteras) {
     filas.forEach((fila, k) => {
       const celdas = PUNTOS.filter((p) => !p.sin).map((p) => {
         let primero = null
-        for (let minuto = 0; minuto < 1440 && primero == null; minuto++) { const r = filaDeLlegada(filas, minuto, minuto + traslado(p) + 30); if (r?.indice === k) primero = minuto }
+        for (let minuto = 0; minuto < 1440 && primero == null; minuto++) { const r = filaDeLlegada(filas, minuto, utilDe(p, minuto)); if (r?.indice === k) primero = minuto }
         return primero == null ? '—' : `desde ${hhmm(primero)}`
       })
       console.log(`| ${fila.por === 'llegada' ? 'llega de 0:00 a 4:59' : `${fila.desde}${fila.hasta ? `–${fila.hasta}` : ' o más tarde'}`} · ${fila.listas.map((l) => l.lista).join(' / ')}${fila.pasa_al_dia_2 ? ' · el D1 pasa al día 2' : ''} | ${celdas.join(' | ')} |`)
@@ -84,17 +104,17 @@ if (args.fronteras) {
 // ═══ 1 y 2. Los bordes de cada fila, para cada punto, y lo que lleva cada fila ═══
 if (quiere('fronteras')) {
   console.log('1. Cada hora cae en su fila (cada punto, marzo-octubre e invierno, con y sin fechas)')
-  const OBJETIVOS = [9 * 60 + 59, 600, 11 * 60 + 59, 720, 12 * 60 + 59, 780, 13 * 60 + 59, 840, 14 * 60 + 59, 900, 18 * 60 + 59, 1140, 20 * 60 + 29, 1230, 21 * 60 + 59, 1320, 22 * 60 + 59, 1380]
+  const OBJETIVOS = [9 * 60 + 30, 9 * 60 + 31, 12 * 60, 12 * 60 + 5, 15 * 60, 15 * 60 + 5, 18 * 60, 18 * 60 + 5, 20 * 60, 20 * 60 + 5, 21 * 60 + 30, 21 * 60 + 35, 23 * 60, 23 * 60 + 5]
   for (const sede of Object.values(SEDES)) {
     for (const p of PUNTOS) {
-      const t = traslado(p) + 30
+      const t = extraDe(p)
       const horas = [
         { llegada: 0, etiqueta: '0:00' }, { llegada: 4 * 60 + 59, etiqueta: '4:59' }, { llegada: 5 * 60, etiqueta: '5:00' },
         ...OBJETIVOS.map((libre) => ({ llegada: libre - t, etiqueta: `libre ${hhmm(libre)}` })).filter((h) => h.llegada >= 0),
         { llegada: 23 * 60 + 15, etiqueta: 'pasa de la medianoche (23:15)' }, { llegada: 23 * 60 + 59, etiqueta: '23:59' },
       ]
       for (const h of horas) {
-        const libre = h.llegada + t
+        const libre = Math.ceil((h.llegada + t) / 5) * 5
         const esperado = h.llegada <= 4 * 60 + 59 ? sede.tabla[0] : filaEsperada(sede.tabla, libre)
         const plan = planEscenario({ n: 3, inicio: sede.inicio, mes: sede.mes }, { llegada: llegada(hhmm(h.llegada), p) })
         const etiqueta = `${sede.etiqueta} · ${nombrePunto(p)} · llega ${hhmm(h.llegada)} (${h.etiqueta})`
@@ -103,12 +123,12 @@ if (quiere('fronteras')) {
         debe(Boolean(plan.llegada), 'sin_llegada', `${etiqueta}: el plan no trae \`llegada\``)
         if (!plan.llegada) continue
         const id = dia1De(plan).curatedDay.id
-        const idEsperado = /-$/.test(esperado[1]) ? `${esperado[1]}navona` : esperado[1] // (zona Centro: la ruta del centro empieza en Navona)
+        const idEsperado = /-$/.test(esperado[1]) ? `${esperado[1]}navona` : esperado[1] // (zona Centro: la ruta empieza en Navona)
         debe(id === idEsperado, 'fila', `${etiqueta}: el día 1 debería ser ${idEsperado} y es ${id}`)
         debe(plan.llegada.pasa_al_dia_2 === esperado[2], 'fila_pasa', `${etiqueta}: «el D1 pasa al día 2» debería ser ${esperado[2]}`)
         // cada tramo empieza en su hora: sin redondeos (libre a las 14:00 en punto ya es la fila de las 14:00)
         debe(plan.llegada.fila.desde === hhmm(h.llegada <= 4 * 60 + 59 ? 0 : esperado[0]), 'fila_desde', `${etiqueta}: la fila empieza a las ${plan.llegada.fila.desde} y debería empezar a las ${hhmm(h.llegada <= 4 * 60 + 59 ? 0 : esperado[0])}`)
-        debe(plan.llegada.entrada.invierno === (sede.tabla === INVIERNO), 'invierno', `${etiqueta}: invierno = ${plan.llegada.entrada.invierno}`)
+        debe(plan.llegada.entrada.invierno === (sede.etiqueta.startsWith('invierno')), 'invierno', `${etiqueta}: invierno = ${plan.llegada.entrada.invierno}`)
       }
     }
   }
@@ -128,9 +148,9 @@ if (quiere('fronteras')) {
   for (const tablaId of ['marzo_octubre', 'invierno']) {
     const tabla = written.llegadas.dia1[tablaId]
     for (const p of PUNTOS) {
-      const t = traslado(p) + 30
+      const t = extraDe(p)
       for (let minuto = 0; minuto < 1440; minuto++) {
-        const r = filaDeLlegada(tabla, minuto, minuto + t)
+        const r = filaDeLlegada(tabla, minuto, Math.ceil((minuto + t) / 5) * 5)
         debe(Boolean(r), 'hora_sin_fila', `${tablaId} · ${nombrePunto(p)} · ${hhmm(minuto)}: sin fila`)
       }
     }
@@ -141,12 +161,12 @@ if (quiere('fronteras')) {
 if (quiere('filas')) {
   console.log('2. Cada fila lleva exactamente su lista (martes de junio y martes de enero, zona Centro y zona Plaza de España)')
   for (const sede of [SEDES.verano, SEDES.invierno]) {
-    for (const zona of ['centro', 'plaza_de_espana']) {
+    for (const zona of ['centro', 'plaza_de_espana', 'trastevere', 'prati', 'monti']) {
       const p = PUNTOS[0]
-      const t = traslado(p) + 30
-      const horas = [3 * 60, 8 * 60, 10 * 60 + 30 - 30 + 0, 11 * 60 - 30 + 0, 12 * 60 - 30, 13 * 60 - 30, 14 * 60 - 30, 15 * 60 - 30, 17 * 60 - 30, 19 * 60 - 30, 20 * 60 + 30 - 30, 22 * 60 - 30, 23 * 60 - 30 + 0]
+      const t = extraDe(p)
+      const horas = [3 * 60, 6 * 60, 7 * 60, 9 * 60, 9 * 60 + 30, 11 * 60 + 30, 12 * 60 + 30, 14 * 60 + 30, 15 * 60 + 30, 16 * 60 + 30, 17 * 60 + 30, 18 * 60 + 30, 19 * 60 + 30, 20 * 60 + 30, 22 * 60 + 30]
       for (const llegadaMin of horas) {
-        const libre = llegadaMin + t
+        const libre = Math.ceil((llegadaMin + extraDe(p, zona)) / 5) * 5
         const esperado = llegadaMin <= 4 * 60 + 59 ? sede.tabla[0] : filaEsperada(sede.tabla, libre)
         const plan = planEscenario({ n: 3, inicio: sede.inicio, mes: sede.mes }, { llegada: llegada(hhmm(llegadaMin), p, zona) })
         const etiqueta = `${sede.etiqueta} · ${zona} · llega ${hhmm(llegadaMin)}`
@@ -154,7 +174,7 @@ if (quiere('filas')) {
         const id = dia1.curatedDay.id
         // La lista que debe salir (con la zona en la ruta del centro)
         let esperadaId = esperado[1]
-        if (/-$/.test(esperadaId)) esperadaId += zona === 'plaza_de_espana' ? 'espana' : 'navona'
+        if (/-$/.test(esperadaId)) esperadaId += SUFIJO_ZONA[zona]
         debe(id === esperadaId, 'fila_lista', `${etiqueta}: el día 1 es ${id} y la fila dice ${esperadaId}`)
         if (id !== esperadaId) continue
         // Las paradas de la lista, en su orden (nada cerrado un martes de junio ni de enero)
@@ -189,7 +209,7 @@ if (quiere('filas')) {
         debe(cenas.length === (cenaEsc ? 1 : 0), 'cena_en_su_fila', `${etiqueta}: ${id} debería llevar ${cenaEsc ? 1 : 0} cena y lleva ${cenas.length}`)
         if (cenaEsc && cenas[0]) debe([cenaEsc.restaurante, cenaEsc.alternativa, cenaEsc.tercera].filter(Boolean).includes(cenas[0].restaurante) || true, 'cena_de_la_lista', `${etiqueta}: cena ${cenas[0].restaurante}`)
         // La zona decide por dónde empieza la ruta del centro, y solo ahí
-        if (/^D1-centro/.test(id)) debe(salen[0] === (zona === 'plaza_de_espana' ? 'Plaza de España' : 'Piazza Navona'), 'zona_inicio', `${etiqueta}: la ruta empieza en ${salen[0]}`)
+        if (/^D1-centro/.test(id)) debe(salen[0] === PRIMERA_PARADA[SUFIJO_ZONA[zona]], 'zona_inicio', `${etiqueta}: la ruta empieza en ${salen[0]}`)
         // Sin hora calculada a la vista: la hora de cada parada es la de dentro; solo las reservas llevan hora fija
         debe(!(dia1.escritoRows ?? []).some((r) => r.hora_fija), 'hora_fija_sin_reserva', `${etiqueta}: hay una hora fija sin reserva`)
         // Los imprescindibles de la llegada nunca van «de camino»
@@ -217,9 +237,9 @@ if (quiere('dias')) {
         const idsBase = idsDe(base)
         const ciudad = idsBase.length
         const fila = TABLA[Math.min(6, ciudad)]
-        for (const hora of ['12:30', '13:30', '16:00', '19:30', '21:45', '23:30']) {
+        for (const hora of ['06:00', '07:00', '09:30', '12:30', '14:30', '16:30', '18:30', '20:30', '22:30']) {
           const p = PUNTOS[0] // Fiumicino: libre = llegada + 1:30
-          const libre = toMin(hora) + 90
+          const libre = utilDe(PUNTOS[0], toMin(hora))
           const esperado = filaEsperada(sede.tabla, libre)
           const plan = planEscenario(esc, { llegada: llegada(hora, p) })
           const etiqueta = `${sede.etiqueta} · ${n} noches${d4 ? ` (día 4: ${d4})` : ''} · llega ${hora}`
@@ -257,9 +277,9 @@ if (quiere('noches')) {
   console.log('4. Viajes de 1 y 2 noches')
   for (const sede of [SEDES.verano, SEDES.invierno]) {
     for (const n of [1, 2]) {
-      for (const hora of ['03:00', '07:00', '08:40', '10:00', '11:30', '12:40', '13:45', '15:00', '19:00', '21:30', '23:30']) {
+      for (const hora of ['03:00', '06:00', '06:30', '07:00', '08:40', '10:00', '11:30', '12:40', '13:45', '15:00', '19:00', '21:30', '23:30']) {
         const p = PUNTOS[0]
-        const libre = toMin(hora) + 90
+        const libre = utilDe(PUNTOS[0], toMin(hora))
         const esperado = toMin(hora) <= 4 * 60 + 59 ? sede.tabla[0] : filaEsperada(sede.tabla, libre)
         const plan = planEscenario({ n, inicio: sede.inicio, mes: sede.mes }, { llegada: llegada(hora, p) })
         const etiqueta = `${sede.etiqueta} · ${n} noche${n > 1 ? 's' : ''} · llega ${hora}`
@@ -308,7 +328,7 @@ if (quiere('freetour')) {
   const salidas = ['03:00', '06:30', '07:50', '08:00', '08:20', '09:55', '10:00', '11:10', '12:20', '13:00', '14:00', '15:00', '15:40', '16:30', '17:30', '20:00', '23:00']
   for (const n of [2, 3, 4]) {
     for (const hora of salidas) {
-      const libre = toMin(hora) + 90
+      const libre = utilDe(PUNTOS[0], toMin(hora))
       const madrugada = toMin(hora) <= 4 * 60 + 59
       // 5a. Con hora
       for (const ft of HORAS_FT) {
@@ -419,7 +439,7 @@ if (quiere('freetour')) {
         const dias = plan.days.filter((d) => (d.escritoRows ?? []).some((r) => r.tipo === 'tour' && !r.llegada))
         debe(dias.length === 1, 'ft_noche_un_dia', `${etiqueta}: el tour sale en ${dias.length} días`)
         if (dias.length !== 1) continue
-        const esperado = filaEsperada(sede.tabla, toMin(hora) + 90)
+        const esperado = filaEsperada(sede.tabla, utilDe(PUNTOS[0], toMin(hora)))
         const idDelTour = dias[0].curatedDay.id
         debe(esperado[2] ? idDelTour === 'D1' : (idDelTour === dia1De(plan).curatedDay.id), 'ft_noche_con_el_d1', `${etiqueta}: el tour va con ${idDelTour} (el D1 ${esperado[2] ? 'pasa al día 2' : 'es el día 1'})`)
         debe(dias[0].escritoRows.find((r) => r.tipo === 'tour' && !r.llegada).hora_fija === ft, 'ft_noche_hora', `${etiqueta}: el tour no está a las ${ft}`)
@@ -453,8 +473,8 @@ if (quiere('reservas')) {
           const d4 = n === 4 ? 'roma' : null
           const r = grande(sede.inicio, sitio, 1, T)
           const esc = { n, inicio: sede.inicio, reservasGrandes: [r], entradas: { [sitio]: T }, diaCuatro: d4 }
-          const libre = toMin(hora) + 90
-          const pasa = libre >= 14 * 60
+          const libre = utilDe(PUNTOS[0], toMin(hora))
+          const pasa = libre >= 9 * 60 + 31
           const etiqueta = `${n} noches · ${sitio.split(' ')[0]} día 1 a las ${T} · llega ${hora}`
           const plan = planEscenario(esc, { llegada: llegada(hora, p) })
           if (!plan?.llegada) { debe(false, 'sin_llegada', `${etiqueta}: sin plan`); continue }
@@ -587,7 +607,7 @@ function revisarViaje(plan, esc, hora, etiqueta, poolNames = []) {
   if (['noche_con_cena', 'noche_sin_cena', 'sin_ruta'].includes(plan.llegada.caso)) {
     const texto = plan.llegada.dia1.texto ?? ''
     const esSinRuta = plan.llegada.caso === 'sin_ruta'
-    debe(esSinRuta ? /Descansa, que mañana empezamos a tope/.test(texto) : /visita la Fontana de Trevi de noche/.test(texto), 'texto_noche', `${etiqueta}: el texto de la llegada de noche: «${texto}»`)
+    debe(esSinRuta ? /Descansa, que mañana empezamos a tope/.test(texto) : /(cena cerca de tu alojamiento y da un paseo corto de noche por|si te apetece, da un paseo corto de noche por) .+. Mañana empezamos a tope.$/.test(texto), 'texto_noche', `${etiqueta}: el texto de la llegada de noche: «${texto}»`)
     debe(texto.includes(`a las ${horaTexto(hora)}`), 'texto_noche_hora', `${etiqueta}: el texto no lleva la hora del viajero: «${texto}»`)
     debe(!/\{|\}/.test(texto), 'texto_noche_huecos', `${etiqueta}: el texto lleva huecos sin rellenar`)
     debe(!/centro|taxi/i.test(texto), 'texto_noche_palabras', `${etiqueta}: palabras que no van: «${texto}»`)
@@ -670,12 +690,12 @@ if (quiere('excursion')) {
     }
   }
   // 7b. Una excursión reservada el día de llegada: antes de estar libre → el aviso; después → ese día lleva la excursión
-  for (const [salida, hora, esperado] of [['07:30', '09:00', 'aviso'], ['11:00', '09:00', 'dia'], ['15:00', '12:00', 'dia'], ['09:00', '10:00', 'aviso'], ['18:00', '16:00', 'dia']]) {
+  for (const [salida, hora, esperado] of [['07:30', '09:00', 'aviso'], ['11:00', '09:00', 'aviso'], ['12:00', '09:00', 'dia'], ['15:00', '12:00', 'dia'], ['09:00', '10:00', 'aviso'], ['18:00', '16:00', 'aviso'], ['19:30', '16:00', 'dia']]) {
     const exc = { dayNumber: 1, dateIso: sede.inicio, salida, vuelta: '20:00', nombre: 'Pompeya' }
     const plan = planEscenario({ n: 4, inicio: sede.inicio, diaCuatro: 'roma' }, { llegada: llegada(hora, p, 'centro', { excursionReservada: exc }) })
     const etiqueta = `excursión reservada el día 1 a las ${salida} · llega ${hora}`
     if (!plan?.llegada) { debe(false, 'sin_llegada', `${etiqueta}: sin plan`); continue }
-    const libre = toMin(hora) + 90
+    const libre = utilDe(PUNTOS[0], toMin(hora))
     const antes = toMin(salida) < libre
     debe(antes === (esperado === 'aviso'), 'excursion_regla', `${etiqueta}: (prueba) libre ${toHHMM(libre)}`)
     if (esperado === 'aviso') {

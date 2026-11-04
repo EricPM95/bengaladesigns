@@ -48,6 +48,7 @@ export function argsDeViaje(v, extra = {}) {
 export const planViaje = (v, extra = {}) => planListasTrip(argsDeViaje(v, extra))
 
 // ── Los 20 viajes CON VUELOS (Tanda 7, punto 23): una llegada de cada fila del punto 6 (y de las dos tablas: marzo-octubre e invierno), con sus puntos, sus medios y sus zonas. ──
+// (Tanda LL, parte 2: los comentarios de cada llegada de abajo dicen la fila de ANTES de la tanda —libre = llegada + traslado + 30—; con la hora útil nueva cada una cae en otra franja. Eric, 4-nov.)
 // (La mitad de la llegada; la de la vuelta la pone el agente de la vuelta con sus horas en `VUELTAS_20`, si existe.)
 export const LLEGADAS_20 = {
   1: { hora: '08:30', medio: 'avion', puntoId: 'fco', zona: 'centro' }, // 1 día, 26 dic (invierno): libre a las 10:00 → rápida de invierno de 10:00

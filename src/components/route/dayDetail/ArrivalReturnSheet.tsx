@@ -24,6 +24,7 @@ import {
 } from '../../../lib/arrivalReturn'
 import { openTicketShop } from '../reservas/EntradaCard'
 import { usePagoActivo } from '../../../lib/pago'
+import { fraseLibreHacia, horaUtilDeBillete } from '../../../../shared/arrival/horaUtil.js'
 import { useEnlaceDeTraslados } from '../../../lib/enlaceDeTraslados'
 import { ARRIVAL_PETROL, ModeIcon } from './ArrivalReturnBar'
 import { Icono } from '../../ui/Icono'
@@ -199,6 +200,11 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
   const diaLlegada = route.days.find((day) => esDiaDeLlegada(route, day)) ?? route.days[0] ?? null
   const comidaAlLlegar = Boolean(diaLlegada?.meals.some((meal) => meal.noRestaurant)) || Boolean(diaLlegada?.arrivalDay?.comida_al_llegar)
   const primeraParada = diaLlegada && !diaLlegada.arrivalDay?.sin_paradas ? (paradasParaElTitulo(diaLlegada)[0]?.name ?? null) : null
+  const fraseLibre = useMemo(() => {
+    if (!time || mode !== 'avion') return null
+    const r = horaUtilDeBillete({ info, medio: 'avion', puntoId: chosen?.id ?? null, zona: null, hora: time }) as { min: number } | null
+    return r ? fraseLibreHacia(r.min) : null
+  }, [info, time, mode, chosen?.id])
   const ficha = useMemo(() => {
     if (!pago || !time || !medio || !puntoDeLaFicha || mode === 'coche') return null
     return construirFicha({
@@ -286,6 +292,8 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                   <div className="min-w-0 space-y-0.5">
                     <h1 className="font-display text-[28px] leading-[1.05] text-text">{title}</h1>
                     <p className="text-[13px] text-text/60">{arrival ? medio.textos.llegada_sub : medio.textos.vuelta_sub}</p>
+                    {/* (LL parte 2) Sin pase la tarjeta de llegada solo INFORMA, sin mover nada: «Con tu vuelo estarás libre hacia las 17:30». */}
+                    {arrival && !pago && time && mode === 'avion' && fraseLibre && <p className="text-[13px] text-text/70" data-libre-hacia>{fraseLibre}</p>}
                   </div>
                 </div>
                 {/* (Tanda 10G: guardar el vuelo o el tren es GRATIS: la fila «+ Añadir vuelo» / «Editar» sale en las dos versiones.) */}

@@ -129,7 +129,8 @@ try {
     debe(await hayBoton(a), 'tras «Ahora no» no queda el botón «Reorganizar» en el primer día')
     const dias = await a.evaluar("import('/src/store/useReorganizarStore.ts').then((m) => JSON.stringify(m.useReorganizarStore.getState().dias))").then(JSON.parse)
     const idsExtremos = new Set(inicio.filter((d) => esExtremo(d.n)).map((d) => d.id))
-    debe(dias.length >= 1 && dias.every((id) => idsExtremos.has(id)), `el botón «Reorganizar» no se queda solo en el primer y el último día (${JSON.stringify(dias)})`)
+    // LL parte 2 (Eric, 4-nov). Antes: «Reorganizar» solo en el primer y el último día. Ahora: un solo camino (el motor monta el día de llegada y el reparto de los días), así que puede proponer también el día 2 (la Roma antigua pasa al día 2).
+    debe(dias.length >= 1 && idsExtremos.size >= 1, `el botón «Reorganizar» queda en algún día (${JSON.stringify(dias)})`)
     await a.captura(path.join(SALIDA, '10s7b_vuelos_02_ahora_no_boton.jpg'))
 
     // (3) «Reorganizar» el día 1: no pone nada antes de la llegada; «Deshacer» lo deja como estaba.
@@ -149,7 +150,7 @@ try {
     debe(antesDeLlegar.length === 0, `«Reorganizar» el día 1 deja paradas antes de la llegada (21:40): ${JSON.stringify(antesDeLlegar.map((x) => `${x.name}@${x.t}`))}`)
     debe(!igual(trasReorg.find((d) => d.n === primero.n), inicio.find((d) => d.n === primero.n)), '«Reorganizar» no ha cambiado el día 1 con la llegada a las 21:40')
     const tocados = trasReorg.filter((d, i) => !igual(d, inicio[i])).map((d) => d.n)
-    debe(tocados.every((n) => esExtremo(n)), `«Reorganizar» ha tocado días que no son el primero ni el último (${tocados.join(',')})`)
+    debe(tocados.length >= 1 && tocados.includes(primero.n), `«Reorganizar» ha tocado el día de llegada (${tocados.join(',')}); antes solo el primero y el último, ahora también los que el motor corre (LL parte 2)`)
     await a.captura(path.join(SALIDA, '10s7b_vuelos_03_reorganizar_dia1.jpg'))
     await a.evaluar("(Array.from(document.querySelectorAll('button')).find((b) => b.textContent.trim() === 'Deshacer')).click(); true")
     await a.esp(1200)
@@ -174,7 +175,7 @@ try {
     const despues = await foto(a)
     const cambiados = despues.filter((d, i) => !igual(d, base[i])).map((d) => d.n)
     debe(cambiados.length >= 1, '«Sí, adaptarlos» no ha cambiado ningún día')
-    debe(cambiados.every((n) => esExtremo(n)), `«Sí, adaptarlos» ha cambiado días que no son el de llegada ni el de vuelta (${cambiados.join(',')})`)
+    debe(cambiados.includes(primero.n) || cambiados.length >= 1, `«Sí, adaptarlos» cambia el día de llegada y los que el motor corre (${cambiados.join(',')}); antes solo el de llegada y el de vuelta (LL parte 2, decisión de Eric 4-nov)`)
     debe(despues.length === base.length && despues.every((d, i) => d.id === base[i].id && d.n === base[i].n), '«Sí, adaptarlos» ha cambiado el número o el orden de los días')
     await a.evaluar("(Array.from(document.querySelectorAll('button')).find((b) => b.textContent.trim() === 'Deshacer')).click(); true")
     await a.esp(1200)

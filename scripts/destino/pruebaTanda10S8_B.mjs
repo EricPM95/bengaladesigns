@@ -69,8 +69,9 @@ debe(Boolean(trevi) && trevi.time === '07:30', '3b', `lo que ya cabía no se mue
 
 console.log('4. Solo los grandes tienen su línea')
 const lib = await import('../../src/lib/imprescindiblesGrandes.ts')
-for (const grande of ['Coliseo', 'Foro Romano y Palatino', 'Museos Vaticanos y Capilla Sixtina', 'Basílica de San Pedro', 'Galería Borghese']) debe(lib.esImprescindibleGrande('Roma', grande), '4a', `${grande} es grande`)
-for (const chico of ['Altar de la Patria', 'Piazza Navona', 'Plaza de San Pedro', 'Panteón']) debe(!lib.esImprescindibleGrande('Roma', chico), '4b', `${chico} no es grande`)
+// LL parte 2. Antes: la Basílica de San Pedro era grande. Ahora NO (decisión de Eric, 4-nov: la Basílica sola es gratis y de 45-75 min); los grandes son el Coliseo y Foro, los Museos Vaticanos y la Galería Borghese.
+for (const grande of ['Coliseo', 'Foro Romano y Palatino', 'Museos Vaticanos y Capilla Sixtina', 'Galería Borghese']) debe(lib.esImprescindibleGrande('Roma', grande), '4a', `${grande} es grande`)
+for (const chico of ['Altar de la Patria', 'Piazza Navona', 'Plaza de San Pedro', 'Panteón', 'Basílica de San Pedro']) debe(!lib.esImprescindibleGrande('Roma', chico), '4b', `${chico} no es grande`)
 debe(lib.esImprescindibleGrande('Lisboa', 'Torre de Belém'), '4c', 'un destino sin lista: todos avisan uno a uno (como antes)')
 // (antes → la línea «Y N sitios más…» contaba solo los imprescindibles que no caben → ahora → cuenta TODAS las paradas del día que no caben, sean imprescindibles o no → decisión de Eric (10R, 31-oct); la prueba nueva, pruebaTanda10R_C. Lo que aquí se comprueba (reparto de imprescindibles) sigue igual.)
 const reparto = lib.repartirNoCaben([{ nombre: 'Coliseo' }, { nombre: 'Altar de la Patria' }, { nombre: 'Piazza Navona' }, { nombre: 'Museos Vaticanos y Capilla Sixtina' }], 'Roma')

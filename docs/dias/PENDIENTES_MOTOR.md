@@ -34,3 +34,9 @@ Prioridad por el orden en que Eric pidió el diagnóstico.
 
 ## 4. D6 «Roma desde arriba» ya no sale en las tablas (prioridad 3) — confirmado, no es un pendiente
 - `data/pipeline_v2/roma.json › curated_routes › _nota_tanda11`: «Tanda 11 (C8, Eric 22-oct-2026): Roma lleva 5 días curados (Roma antigua, Vaticano, Centro y Villa Borghese, Basílicas y el Aventino y la Vía Appia); desde el 6.º día de ciudad, día en blanco («Ya has visto lo mejor de Roma»). Roma desde arriba (D6) se queda en los datos, sin tabla: se ofrece en el día en blanco («¿Te lo organizamos?»).» Fue a propósito; por eso las pruebas de la 10S esperan D7 en lugar de D6.
+
+## 5. (LL, Roma parte 2) Una reserva grande el día de llegada con una llegada de mañana (prioridad 3)
+- **Casos:** `pruebaTanda7_integracion`, claves `comida_tarde_con_reserva_grande_el_dia_1` y `basilica_dos_veces_museos_reservados_el_dia_1`.
+- **Qué pasa:** desde la tanda LL, una llegada con hora útil desde las 9:31 (aterrizar desde las 5:35 en Fiumicino con zona Centro) ya es día de llegada, no el día entero de la reserva. Si ese día el viajero tiene el Coliseo (a las 14:30) o los Museos (a las 10:30 o las 12:00) reservados, la reserva manda y no se quita nada: el bloque se come el hueco de la comida y esta cae pasadas las 15:00, y el D2 en su versión sin Museos vuelve a llevar la Basílica por dentro (la que ya entra el bloque).
+- **Hecho ya:** con una reserva grande el día 1 la ruta «entera» (comida en medio) pasa a la ruta a buen paso con la comida al llegar antes de todo (`llegadaDia1.js`, `decidirNormal`).
+- **Mirar en la próxima tanda del motor:** que la comida vaya antes del bloque aunque este empiece a media mañana, y que el D2 sin Museos no repita la Basílica.

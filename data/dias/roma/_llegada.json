@@ -1443,5 +1443,67 @@
       }
     }
   },
-  "_nota_tanda7": "Tanda 7 (13-oct-2026): `no_enseñar: true` = se queda en los datos pero no se enseña (el taxi). Los nombres de empresas solo quedan en los campos `fuente`. `tramos` + `para_tu_zona` = la tabla de Eric; `horario` de un tramo = su primero y último (tramos de fechas; sin `from`/`to` vale todo el año). Lo lee shared/arrival/paraTuZona.js."
+  "_nota_tanda7": "Tanda 7 (13-oct-2026): `no_enseñar: true` = se queda en los datos pero no se enseña (el taxi). Los nombres de empresas solo quedan en los campos `fuente`. `tramos` + `para_tu_zona` = la tabla de Eric; `horario` de un tramo = su primero y último (tramos de fechas; sin `from`/`to` vale todo el año). Lo lee shared/arrival/paraTuZona.js.",
+  "hora_util": {
+    "_nota": "Tanda LL, parte 2 (Eric, 4-nov-2026). UNA SOLA CUENTA de la hora útil y de la hora de irse (shared/arrival/horaUtil.js): hora útil = aterrizas + salir del punto + trayecto a la zona + instalarse (destination_config.llegada.instalarse_min); hora de irse = billete − antes del billete − trayecto desde la zona − maleta. Los trayectos son puerta a puerta con el transporte que recomienda la app (esperas y andar incluidos) y son ESTIMACIONES: contrastadas con los tiempos de `tramos` (Leonardo 32 min, autobús de Fiumicino 45-50, FL1 27, Airlink de Ciampino, autobús de Ciampino 40, metro B Tiburtina-Termini 10, tren de Civitavecchia 60-80). `al_centro_min` de cada punto NO se toca: lo sigue leyendo la ficha «en el centro a las…».",
+    "comprobado": "2026-11-04",
+    "salir_del_punto_min": {
+      "fco": 45,
+      "cia": 45,
+      "termini": 10,
+      "tiburtina": 10,
+      "civitavecchia": 45
+    },
+    "antes_del_billete_min": {
+      "avion": 120,
+      "tren": 30,
+      "bus": 30,
+      "ferry": 120
+    },
+    "maleta_min": 30,
+    "trayectos": {
+      "termini": {
+        "fco": 50,
+        "cia": 45,
+        "termini": 10,
+        "tiburtina": 20,
+        "civitavecchia": 90
+      },
+      "monti": {
+        "fco": 60,
+        "cia": 55,
+        "termini": 15,
+        "tiburtina": 25,
+        "civitavecchia": 100
+      },
+      "plaza_de_espana": {
+        "fco": 65,
+        "cia": 60,
+        "termini": 20,
+        "tiburtina": 30,
+        "civitavecchia": 105
+      },
+      "centro": {
+        "fco": 70,
+        "cia": 65,
+        "termini": 25,
+        "tiburtina": 35,
+        "civitavecchia": 105
+      },
+      "prati": {
+        "fco": 70,
+        "cia": 70,
+        "termini": 25,
+        "tiburtina": 35,
+        "civitavecchia": 90
+      },
+      "trastevere": {
+        "fco": 60,
+        "cia": 75,
+        "termini": 30,
+        "tiburtina": 40,
+        "civitavecchia": 90
+      }
+    }
+  }
 }

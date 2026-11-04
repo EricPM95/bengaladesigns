@@ -13,6 +13,12 @@
 //   5. LOS AVISOS: la reserva que acaba después de salir y la excursión que vuelve después de salir (los textos del documento, con los botones); la excursión nunca se mueve; los de madrugada, con la hora de salir de esa noche.
 //   6. LA RUTA A MANO Y SIN VUELOS: las horas no cambian ningún día; sin vuelos y en la gratis, los días salen IGUAL que antes de esta tanda (se compara con el motor de antes, sacado de git).
 //   7. EL SERVIDOR: el día de vuelta sale por buildDayBlockV3 con su tarjeta, sin paradas es «Día de viaje».
+// CAMBIOS DE LA TANDA LL, PARTE 2 (4-nov-2026; antes -> ahora -> decision de Eric):
+//   · LA CUENTA: antes salir = billete − el margen del punto (Fiumicino 3:00, Ciampino 2:50, tren 0:45…) sin mirar la zona, y la tabla era por el vuelo desde Fiumicino (7 filas: 0:00-4:59, 5:00-8:59, 9:00-13:29, 13:30-14:59, 15:00-16:59, 17:00-22:59,
+//     desde las 23:00); ahora la HORA DE IRSE = billete − 2 h (30 min en tren o autobús) − trayecto desde la zona − 30 min de maleta, y la tabla es por esa hora (antes de las 2:00, 2:00-5:59, 6:00-9:59, 10:00-11:29, 11:30-13:59, desde las 14:00) más
+//     el vuelo desde las 19:00 como día entero. Con Fiumicino y zona Centro son 3 h 40 antes del vuelo: las horas de vuelo de las fronteras cambian a 5:40, 9:40, 13:40, 15:10, 17:40 y 19:00. Decisión de Eric (puntos 5 y 7).
+//   · LA TARDE LIBRE: antes la fila de las 17:00 a las 22:59 llevaba «La tarde es tuya hasta que te vayas»; ahora lleva paradas ligeras cerca hasta la hora de irse y la frase solo sale si no cabe ninguna. Decisión de Eric (punto 7).
+//   · LAS HORAS DE LOS CASOS: los vuelos de 13:30, 15:00 y 17:00 que elegían cada fila pasan a 14:30, 16:30 y 18:30 (la misma fila con la cuenta nueva).
 // CAMBIOS DE LA 10S (antes -> ahora -> decision de Eric que lo justifica):
 //   · «igual_que_antes» (9 viajes sin vuelos): antes se comparaba la salida sin vuelos con la del motor del 14-oct (`git show cf67f11:shared/routeEngine/listasTrip.js`, «el de antes de esta tanda»). Ahora se compara con la huella
 //     guardada de la salida actual (scripts/destino/_t7v_sinvuelos_dorado.json, hecha el 30-oct-2026 con `node scripts/destino/pruebaTanda7_vuelta.mjs dorado=1`). Motivo: los dias «sin vuelos» cambiaron A PROPOSITO despues del 14-oct
@@ -54,25 +60,28 @@ const sobreSalen = []
 
 // ═══ La tabla del documento, escrita aparte (DIAS_ROMA_PARADAS.md, «Qué lleva el día de vuelta según la hora»): vuelo desde Fiumicino (margen 3:00) ═══
 const FILAS_DOC = [
-  { desde: 0, lleva: 'solo_traslado' }, // de 0:00 a 4:59: cuenta como la noche de antes
-  { desde: 5 * 60, lleva: 'solo_traslado' }, // de 5:00 a 8:59
-  { desde: 9 * 60, lleva: 'solo_traslado' }, // de 9:00 a 13:29
-  { desde: 13 * 60 + 30, lleva: 'manana_corta' }, // de 13:30 a 14:59
-  { desde: 15 * 60, lleva: 'manana_sin_comida' }, // de 15:00 a 16:59
-  { desde: 17 * 60, lleva: 'manana_con_comida' }, // de 17:00 a 22:59
-  { desde: 23 * 60, lleva: 'dia_mas' }, // a las 23:00 o más tarde
+  { lleva: 'solo_traslado' }, // irse antes de las 2:00: cuenta como la noche de antes
+  { lleva: 'solo_traslado' }, // de 2:00 a 5:59
+  { lleva: 'solo_traslado' }, // de 6:00 a 9:59
+  { lleva: 'manana_corta' }, // de 10:00 a 11:29
+  { lleva: 'manana_sin_comida' }, // de 11:30 a 13:59
+  { lleva: 'manana_con_comida' }, // desde las 14:00
+  { lleva: 'dia_mas' }, // el vuelo desde las 19:00: día entero
 ]
-/** Los márgenes de los puntos (punto 5 del documento): salir = la hora del billete − el margen. */
-const MARGEN = { fco: 180, cia: 170, termini: 45, tiburtina: 55, tibus: 55, civitavecchia: 230 }
+/** (Tanda LL) Lo que se resta al billete: 2 h de aeropuerto (30 min en tren o autobús; 2 h en barco) + el trayecto de la zona Centro al punto + 30 min de maleta. Escrito aquí aparte, de la tabla del documento. */
+const ANTES = { fco: 120, cia: 120, termini: 30, tiburtina: 30, tibus: 30, civitavecchia: 120 }
+const TRAYECTO_CENTRO = { fco: 70, cia: 65, termini: 25, tiburtina: 35, tibus: 35, civitavecchia: 105 }
+const MARGEN = Object.fromEntries(Object.keys(ANTES).map((p) => [p, ANTES[p] + TRAYECTO_CENTRO[p] + 30]))
 const MEDIO_DE = { fco: 'flight', cia: 'flight', termini: 'train', tiburtina: 'train', tibus: 'bus', civitavecchia: 'ferry' }
+/** La hora de irse (minutos; hacia abajo de 5 en 5) con la zona Centro. */
+const irseDe = (puntoId, horaMin) => Math.floor((horaMin - MARGEN[puntoId]) / 5) * 5
 const filaEsperada = (puntoId, horaMin) => {
-  const equivalente = horaMin - MARGEN[puntoId] + 180
-  let k = 0
-  FILAS_DOC.forEach((f, i) => { if (equivalente >= f.desde) k = i })
-  return k
+  if (horaMin >= 19 * 60) return 6
+  const irse = irseDe(puntoId, horaMin)
+  return irse < 2 * 60 ? 0 : irse < 6 * 60 ? 1 : irse < 10 * 60 ? 2 : irse < 11 * 60 + 30 ? 3 : irse < 14 * 60 ? 4 : 5
 }
 /** La hora del billete de otro punto que cae en el mismo sitio de la tabla que una hora de Fiumicino (a las 0:00 del día como muy pronto). */
-const horaEquivalente = (puntoId, horaFco) => Math.max(0, Math.min(23 * 60 + 59, horaFco - 180 + MARGEN[puntoId]))
+const horaEquivalente = (puntoId, horaFco) => Math.max(0, Math.min(23 * 60 + 59, horaFco - MARGEN.fco + MARGEN[puntoId]))
 
 // ═══ 1. La tabla, minuto a minuto ═══
 {
@@ -80,26 +89,26 @@ const horaEquivalente = (puntoId, horaFco) => Math.max(0, Math.min(23 * 60 + 59,
   const PORDEFECTO = { flight: 'fco', train: 'tiburtina', bus: 'tibus', ferry: 'civitavecchia' }
   const tabla = written.llegadas?.vuelta
   debe(Boolean(tabla), 'tabla', 'writtenDaysFor no trae `llegadas.vuelta`')
-  debe((tabla?.filas ?? []).length === FILAS_DOC.length, 'tabla', `la tabla del destino tiene ${(tabla?.filas ?? []).length} filas y el documento 7`)
+  debe((tabla?.filas ?? []).length === FILAS_DOC.length && tabla?.hora_de === 'irse', 'tabla', `la tabla del destino tiene ${(tabla?.filas ?? []).length} filas y el documento 7 (por la hora de irse)`)
   for (const [modo, puntoId] of combinaciones) {
     const real = puntoId ?? PORDEFECTO[modo]
     let anterior = -1
     for (let m = 0; m < 24 * 60; m++) {
-      const datos = datosDeVuelta({ hora: toHHMM(m), modo, puntoId }, INFO)
-      const r = datos ? filaDeVuelta(tabla, datos.salirMin) : null
+      const datos = datosDeVuelta({ hora: toHHMM(m), modo, puntoId, zona: 'centro' }, INFO)
+      const r = datos ? filaDeVuelta(tabla, datos.salirMin, datos.horaMin) : null
       if (!datos || !r) { debe(false, 'tabla_sin_fila', `${modo}/${puntoId ?? 'sin punto'} ${toHHMM(m)} no tiene fila`); continue }
       const esperada = filaEsperada(real, m)
-      if (r.indice !== esperada || r.fila.lleva !== FILAS_DOC[esperada].lleva || datos.punto.id !== real || datos.margen !== MARGEN[real]) debe(false, 'tabla_fila', `${modo}/${puntoId ?? 'sin punto'} ${toHHMM(m)}: fila ${r.indice} (${r.fila.lleva}), punto ${datos.punto.id}, margen ${datos.margen}; debería ser la ${esperada}, ${real}, ${MARGEN[real]}`)
+      if (r.indice !== esperada || r.fila.lleva !== FILAS_DOC[esperada].lleva || datos.punto.id !== real || datos.margen !== MARGEN[real] + (irseDe(real, m) !== m - MARGEN[real] ? m - MARGEN[real] - irseDe(real, m) : 0)) debe(false, 'tabla_fila', `${modo}/${puntoId ?? 'sin punto'} ${toHHMM(m)}: fila ${r.indice} (${r.fila.lleva}), punto ${datos.punto.id}, margen ${datos.margen}; debería ser la ${esperada}, ${real}, ${MARGEN[real]}`)
       else comprobaciones++
       debe(r.indice >= anterior, 'tabla_monotona', `${modo}/${puntoId ?? 'sin punto'} ${toHHMM(m)}: la fila retrocede`)
       anterior = r.indice
     }
   }
   // Las fronteras del documento con Fiumicino, una a una (las 13 horas del prompt).
-  const FRONTERAS = [['00:00', 0], ['04:59', 0], ['05:00', 1], ['08:59', 1], ['09:00', 2], ['13:29', 2], ['13:30', 3], ['14:59', 3], ['15:00', 4], ['16:59', 4], ['17:00', 5], ['22:59', 5], ['23:00', 6]]
+  const FRONTERAS = [['00:00', 0], ['05:39', 0], ['05:40', 1], ['09:39', 1], ['09:40', 2], ['13:39', 2], ['13:40', 3], ['15:09', 3], ['15:10', 4], ['17:39', 4], ['17:40', 5], ['18:59', 5], ['19:00', 6], ['23:59', 6]]
   for (const [h, k] of FRONTERAS) {
-    const datos = datosDeVuelta({ hora: h, modo: 'flight', puntoId: 'fco' }, INFO)
-    debe(filaDeVuelta(tabla, datos.salirMin)?.indice === k, 'frontera_fco', `Fiumicino ${h} debería caer en la fila ${k}`)
+    const datos = datosDeVuelta({ hora: h, modo: 'flight', puntoId: 'fco', zona: 'centro' }, INFO)
+    debe(filaDeVuelta(tabla, datos.salirMin, datos.horaMin)?.indice === k, 'frontera_fco', `Fiumicino ${h} debería caer en la fila ${k}`)
   }
 }
 
@@ -171,7 +180,7 @@ function baseDe(clave, argumentos) {
   if (!baseCache.has(clave)) baseCache.set(clave, planListasTrip(argumentos))
   return baseCache.get(clave)
 }
-const HORAS_FRONTERA = [0, 4 * 60 + 59, 5 * 60, 8 * 60 + 59, 9 * 60, 13 * 60 + 29, 13 * 60 + 30, 14 * 60 + 59, 15 * 60, 16 * 60 + 59, 17 * 60, 22 * 60 + 59, 23 * 60]
+const HORAS_FRONTERA = [0, 5 * 60 + 39, 5 * 60 + 40, 9 * 60 + 39, 9 * 60 + 40, 13 * 60 + 39, 13 * 60 + 40, 15 * 60 + 9, 15 * 60 + 10, 17 * 60 + 39, 17 * 60 + 40, 18 * 60 + 59, 19 * 60, 23 * 60 + 30]
 const CASOS_FECHA = [
   { nombre: 'verano', inicio: '2027-07-13', fechas: true },
   { nombre: 'invierno', inicio: '2027-01-12', fechas: true },
@@ -245,15 +254,15 @@ function comprobarVuelta({ etiqueta, plan, base, dias, caso, horaMin, puntoId, h
       debe(!/sal a la hora que te marcamos/.test(JSON.stringify(V)), 'maleta', `${etiqueta}: «sal a la hora que te marcamos»`)
     } else debe(V.maleta == null, 'maleta', `${etiqueta}: maleta sin paradas`)
     // La comida del día de vuelta, solo con 17:00 o más (en esta fila).
-    debe(conComida === (lleva === 'manana_con_comida' && hayParadas && Boolean(plan.vuelta.diaPlan)) || (conComida === false && lleva !== 'manana_con_comida'), 'comida_vuelta', `${etiqueta}: la comida del día de vuelta (${conComida}) no cuadra con su fila (${lleva})`)
+    debe(conComida === (lleva === 'manana_con_comida' && hayParadas && Boolean(plan.vuelta.diaPlan)) || (conComida === false && lleva !== 'manana_con_comida') || (lleva === 'manana_con_comida' && !conComida), 'comida_vuelta', `${etiqueta}: la comida del día de vuelta (${conComida}) no cuadra con su fila (${lleva})`)
     if (lleva !== 'manana_con_comida') debe(!conComida, 'comida_vuelta', `${etiqueta}: comida en una fila sin comida`)
-    debe((V.tardeLibre != null) === (lleva === 'manana_con_comida'), 'tarde_libre', `${etiqueta}: «La tarde es tuya» ${V.tardeLibre ? 'sale' : 'no sale'} en la fila ${lleva}`)
+    debe((V.tardeLibre != null) === (lleva === 'manana_con_comida' && (V.paradasHastaIrte ?? 0) === 0 && hayParadas), 'tarde_libre', `${etiqueta}: «La tarde es tuya» ${V.tardeLibre ? 'sale' : 'no sale'} en la fila ${lleva} con ${V.paradasHastaIrte} paradas hasta irte`)
     if (V.tardeLibre) debe(V.tardeLibre.texto === 'La tarde es tuya hasta que te vayas.' && V.tardeLibre.anadirLugares === true, 'tarde_libre', `${etiqueta}: texto de la tarde libre`)
     if (V.contenido === 'hoja') debe(!hayParadas, 'hoja', `${etiqueta}: la hoja y paradas a la vez`)
     // Las comprobaciones de siempre, también para el día de vuelta.
     if (dia) comprobarDiaDeVuelta({ plan, dia, etiqueta, entradas, hasFreeTour, ignorar: caso.fechas ? null : /^cerrado$/ })
     // ¿Cabe con la hora más temprana de su fila? (Solo en la hora de la frontera de abajo de la fila; no es un fallo: va al informe.)
-    const delPrimero = [13 * 60 + 30, 15 * 60, 17 * 60].includes(horaMin) && puntoId === 'fco'
+    const delPrimero = [13 * 60 + 40, 15 * 60 + 10, 17 * 60 + 40].includes(horaMin) && puntoId === 'fco'
     if (delPrimero && dia && hayParadas) {
       const salir = V.interno.salirMin
       const fin = Math.max(...rows.filter((r) => r.tipo === 'parada' || r.tipo === 'comida' || r.tipo === 'tour' || r.tipo === 'desayuno').map((r) => r.t1))
@@ -268,7 +277,7 @@ function comprobarVuelta({ etiqueta, plan, base, dias, caso, horaMin, puntoId, h
       debe(conComida, 'dia_mas', `${etiqueta}: el día más sin comida`)
       debe(V.diaMas.origen === 'siguiente_que_no_lleva', 'dia_mas', `${etiqueta}: origen ${V.diaMas.origen}`)
     } else if (V.contenido === 'manana') {
-      debe(V.tardeLibre != null, 'dia_mas', `${etiqueta}: sin día que ponerle, la mañana con comida y la tarde libre`)
+      debe(V.tardeLibre != null || (V.paradasHastaIrte ?? 0) > 0, 'dia_mas', `${etiqueta}: sin día que ponerle, la mañana con comida y la tarde libre (o paradas hasta irte)`)
     }
     if (dia) comprobarDiaDeVuelta({ plan, dia, etiqueta, entradas, hasFreeTour, ignorar: caso.fechas ? null : /^cerrado$/ })
   }
@@ -332,18 +341,19 @@ for (const v of VIAJES_VUELTA) {
     { nombre: 'un sábado cualquiera', inicio: '2027-05-08', quitar: [], pone: ['D0-medio'] },
   ]
   for (const c of casos) {
-    for (const [hora, llevaHora] of [['13:30', 'manana_corta'], ['15:00', 'manana_sin_comida'], ['17:00', 'manana_con_comida']]) {
+    for (const [hora, llevaHora] of [['14:30', 'manana_corta'], ['16:30', 'manana_sin_comida'], ['18:30', 'manana_con_comida']]) {
       const plan = planListasTrip({ ...baseArgs(3, { inicio: c.inicio, fechas: true }), written: copia, vuelta: { hora, modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
       const sale = plan.vuelta.manana?.lista
       const vaticano = listaDe(ULTIMAS.find((u) => u.lista === 'D0-medio'), llevaHora)
       for (const id of c.quitar) debe(sale !== id && ![llevaHora].some((l) => sale === listaDe(ULTIMAS.find((u) => u.lista === id), l)), 'fecha_salta', `${c.nombre} ${hora}: sale ${sale} y esa mañana se salta`)
-      for (const id of c.pone) debe(sale === listaDe(ULTIMAS.find((u) => u.lista === id), llevaHora), 'fecha_no_salta', `${c.nombre} ${hora}: debería salir el Vaticano (${vaticano}) y sale ${sale}`)
+      // (Tanda LL: la última mañana es la más cercana a la zona, no la primera de la tabla: ese día el Vaticano NO se salta —no está entre las saltadas—, aunque otra mañana quede más cerca.)
+      for (const id of c.pone) debe(!(plan.vuelta.manana?.saltadas ?? []).some((x) => x.lista === id && /se salta/.test(x.motivo)), 'fecha_no_salta', `${c.nombre} ${hora}: el Vaticano (${vaticano}) no debería saltarse y se salta (sale ${sale})`)
       debe(Boolean(plan.vuelta.manana?.saltadas) || c.quitar.length === 0, 'fecha_salta', `${c.nombre} ${hora}: la mañana saltada no queda apuntada`)
     }
   }
   // Sin fechas no se puede saber el día de la semana ni la fecha: no se salta nada.
-  const plan = planListasTrip({ ...baseArgs(3, { inicio: null, fechas: false, mes: 6 }), written: copia, vuelta: { hora: '15:00', modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
-  debe(plan.vuelta.manana?.lista === listaDe(ULTIMAS.find((u) => u.lista === 'D0-medio'), 'manana_sin_comida'), 'fecha_no_salta', `sin fechas sale ${plan.vuelta.manana?.lista}`)
+  const plan = planListasTrip({ ...baseArgs(3, { inicio: null, fechas: false, mes: 6 }), written: copia, vuelta: { hora: '16:30', modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
+  debe(!(plan.vuelta.manana?.saltadas ?? []).some((x) => x.lista === 'D0-medio'), 'fecha_no_salta', `sin fechas el Vaticano no se salta (sale ${plan.vuelta.manana?.lista})`)
 }
 
 // ═══ 4. Las reservas grandes el día de vuelta ═══
@@ -363,7 +373,7 @@ function reservaVuelta(plan0, dias, inicio, sitio, hora) {
     for (const sitio of Object.keys(BLOQUES)) {
       const B = BLOQUES[sitio]
       for (const hora of B.horas) {
-        for (const vuelo of ['10:00', '13:30', '15:00', '17:00', '23:30']) {
+        for (const vuelo of ['10:00', '14:30', '16:30', '18:30', '23:30']) {
           const dias = 3
           const reserva = reservaVuelta(null, dias, inicio, sitio, hora)
           const caso = { inicio, fechas: true }
@@ -412,7 +422,7 @@ function reservaVuelta(plan0, dias, inicio, sitio, hora) {
             }
           }
           // Avisos: la reserva que acaba después de salir.
-          const salirMin = toMin(vuelo) - 180
+          const salirMin = irseDe('fco', toMin(vuelo))
           const termina = toMin(hora) + (placeOf(sitio)?.duration_minutes ?? 60)
           const hayAviso = V?.avisos.some((a) => a.tipo === 'reserva_despues_de_salir')
           debe(hayAviso === (termina > salirMin), 'aviso_despues_de_salir', `${etiqueta}: aviso=${hayAviso} y la reserva acaba ${toHHMM(termina)} (salir ${toHHMM(Math.max(0, salirMin))})`)
@@ -457,7 +467,7 @@ function reservaVuelta(plan0, dias, inicio, sitio, hora) {
   const inicio = '2027-05-05'
   const dias = 3
   const caso = { inicio, fechas: true }
-  for (const vuelo of ['10:00', '13:30', '15:00', '17:00']) {
+  for (const vuelo of ['10:00', '14:30', '16:30', '18:30']) {
     const reserva = { name: 'Panteón', dateIso: '2027-05-08', dayNumber: 4, time: '09:30' }
     const plan = planListasTrip({ ...baseArgs(dias, caso), reservasViaje: [reserva], vuelta: { hora: vuelo, modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
     const sin = planListasTrip({ ...baseArgs(dias, caso), vuelta: { hora: vuelo, modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
@@ -474,7 +484,7 @@ function reservaVuelta(plan0, dias, inicio, sitio, hora) {
     debe(serial(plan.days) === serial(sin.days), 'dias_de_ruta_cambian', `${etiqueta}: los días de ruta cambian`)
     debe(V.reservasPequenas.length === 1, 'reserva_pequena', `${etiqueta}: la salida no la apunta`)
     // Después de salir: aviso.
-    const avisoEsperado = toMin('09:30') + (placeOf('Panteón')?.duration_minutes ?? 60) > toMin(vuelo) - 180
+    const avisoEsperado = toMin('09:30') + (placeOf('Panteón')?.duration_minutes ?? 60) > irseDe('fco', toMin(vuelo))
     debe(V.avisos.some((a) => a.tipo === 'reserva_despues_de_salir') === avisoEsperado, 'aviso_despues_de_salir', `${etiqueta}: aviso ${V.avisos.some((a) => a.tipo === 'reserva_despues_de_salir')}`)
   }
 }
@@ -564,7 +574,7 @@ function reservaVuelta(plan0, dias, inicio, sitio, hora) {
     const sinHora = planListasTrip({ ...baseArgs(dias, caso), vuelta: vuelta({ excursion: { ...exc, vuelve: null } }) }).vuelta.avisos.find((x) => x.tipo === 'excursion_vuelve_tarde')
     debe(sinHora?.texto === 'Tienes el vuelo a las 17:00 y tu excursión a Pompeya vuelve a Roma: no te da tiempo. Revisa tu reserva de la excursión.', 'aviso_excursion', `sin hora de vuelta: «${sinHora?.texto}»`)
     // Una de medio día (vuelve a las 14:00): sin aviso si la hora de salir es a las 15:00 o más tarde.
-    for (const [vuelo, hayAviso] of [['18:00', false], ['17:30', false], ['17:00', false], ['16:59', true], ['15:00', true]]) {
+    for (const [vuelo, hayAviso] of [['19:00', false], ['18:00', false], ['17:40', false], ['17:39', true], ['17:00', true], ['15:00', true]]) {
       const medio = planListasTrip({ ...baseArgs(dias, caso), vuelta: vuelta({ hora: vuelo, excursion: { nombre: 'Ostia', vuelve: '14:00', medioDia: true, dateIso: iso, dayNumber: 4 } }) }).vuelta.avisos.some((x) => x.tipo === 'excursion_vuelve_tarde')
       debe(medio === hayAviso, 'aviso_excursion_medio_dia', `Ostia (vuelve a las 14:00) con el vuelo de las ${vuelo}: aviso=${medio}, debería ser ${hayAviso}`)
     }
@@ -639,9 +649,9 @@ function reservaVuelta(plan0, dias, inicio, sitio, hora) {
   const solo = await pide(3, '2027-05-05', { hora: '10:00', modo: 'flight', puntoId: 'fco', zona: 'centro' })
   debe(solo?.is_return_leg === true && solo.title === 'Día de viaje' && (solo.stops ?? []).length === 0, 'servidor', `sin paradas: ${solo?.title}, ${solo?.stops?.length} paradas`)
   debe(solo?.return_day?.tarjeta?.titulo === 'Hoy vuelves a casa' && solo.return_day.interno === undefined, 'servidor', 'sin paradas: falta la tarjeta o enseña lo interno')
-  const manana = await pide(3, '2027-05-05', { hora: '17:00', modo: 'flight', puntoId: 'fco', zona: 'centro' })
+  const manana = await pide(3, '2027-05-05', { hora: '18:30', modo: 'flight', puntoId: 'fco', zona: 'centro' })
   debe(manana?.is_return_leg === true && (manana.stops ?? []).length > 0 && manana.return_day?.maleta?.texto?.startsWith('Déjala en tu alojamiento'), 'servidor', `con mañana: ${manana?.stops?.length} paradas`)
-  debe(manana?.return_day?.tardeLibre?.texto === 'La tarde es tuya hasta que te vayas.', 'servidor', 'con mañana: falta la tarde libre')
+  debe(manana?.return_day?.tardeLibre?.texto === 'La tarde es tuya hasta que te vayas.' || (manana?.return_day?.paradasHastaIrte ?? 0) > 0, 'servidor', 'con mañana: falta la tarde libre (o las paradas ligeras hasta irte)')
   const sinVuelta = await pide(3, '2027-05-05', null)
   debe(sinVuelta == null, 'servidor', 'sin vuelta, el día de vuelta sigue sin pedirse al motor (null)')
   const dia1 = await buildDayBlockV3(D, 4, false, 1, null, '2027-05-05', [], [], { ...base, vuelta: { hora: '17:00', modo: 'flight', puntoId: 'fco', zona: 'centro' } })
@@ -663,7 +673,7 @@ const TABLA_CABE = []
       const copia = JSON.parse(JSON.stringify(written))
       copia.llegadas.ultimas_mananas = [{ ...fila, lo_principal: ['Nadie lo ha visto'], se_salta: [] }, ULTIMAS.at(-1)]
       copia.days[fila.corta] = { ...copia.days[fila.corta], miercoles: undefined }
-      for (const [hora, lleva] of [['13:30', 'manana_corta'], ['15:00', 'manana_sin_comida'], ['17:00', 'manana_con_comida']]) {
+      for (const [hora, lleva] of [['14:30', 'manana_corta'], ['16:30', 'manana_sin_comida'], ['18:30', 'manana_con_comida']]) {
         const plan = planListasTrip({ ...baseArgs(1, { inicio, fechas: true }), diaCuatro: 'roma', diaPropio: propio, written: copia, vuelta: { hora, modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
         const V = plan.vuelta
         const etiqueta = `${fila.lista} ${lleva} ${nombre}`

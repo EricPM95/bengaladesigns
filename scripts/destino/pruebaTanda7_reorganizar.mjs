@@ -34,7 +34,8 @@ const marcadas = Object.entries(W.days).filter(([, dia]) => !esDiaDeRuta(dia)).m
 debe(delDocumento.size >= 20, 'marca_documento', `el documento debería traer al menos 20 listas bajo «Llegadas y vueltas» y trae ${delDocumento.size}`)
 debe(marcadas.length === delDocumento.size && marcadas.every((id) => delDocumento.has(id)), 'marca_documento', `las marcadas (${marcadas.join(' ')}) no son las del documento (${[...delDocumento].join(' ')})`)
 for (const id of ['D0', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D1-corto', 'D1-FT', 'DT-medio', 'DM-medio', 'DA-medio', 'D0-medio']) debe(esDiaDeRuta(W.days[id]), 'marca_ruta', `${id} es un día de ruta y no debería estar marcado`)
-for (const id of ['D1-rapido', 'D1-tarde', 'D1-centro-navona', 'D1-anochecer-espana', 'D1-noche', 'D1-sin-ruta', 'D1-vaticano', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula', 'DV-traslado']) debe(!esDiaDeRuta(W.days[id]), 'marca_llegada_vuelta', `${id} es de llegada o vuelta y no está marcado`)
+// (Tanda LL, parte 2: antes «la rápida» y «de tarde»; ahora las listas por franja y zona del día 1 —Eric, 4-nov—.)
+for (const id of ['D1-centro-entera-trastevere', 'D1-centro-prati', 'D1-centro-navona', 'D1-anochecer-espana', 'D1-noche-monti', 'D1-noche-sin-cena-navona', 'D1-noche', 'D1-sin-ruta', 'D1-vaticano', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula', 'DV-traslado']) debe(!esDiaDeRuta(W.days[id]), 'marca_llegada_vuelta', `${id} es de llegada o vuelta y no está marcado`)
 
 // 2. Las tablas de la llegada y de la vuelta siguen apuntando a listas que existen (los motores las leen por su id).
 {

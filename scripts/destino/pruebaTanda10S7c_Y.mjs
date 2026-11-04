@@ -110,10 +110,11 @@ try {
     // Mismas paradas: lo que se queda + lo que pasa a «Si te sobra tiempo» = lo que había (nunca se pierde ni se añade una).
     const antes1 = new Set(dia1.stops.map((x) => x.id))
     const ahora1 = new Set([...d1.stops.map((x) => x.id), ...d1.spare])
-    debe(antes1.size === ahora1.size && [...antes1].every((id) => ahora1.has(id)), 'el día 1 ha perdido o añadido paradas (lo que se queda + «Si te sobra tiempo» no es lo de antes)')
-    debe(d1.spare.length >= 1, 'con la llegada a las 16:30 no ha pasado nada a «Si te sobra tiempo»')
+    // LL parte 2 (Eric, 4-nov). Antes: «Sí, adaptarlos» recortaba el día 1 (mismas paradas, lo que no cabía a «Si te sobra tiempo»). Ahora: el motor monta el día de llegada de las franjas (paradas ligeras cerca del alojamiento) y la Roma antigua pasa al día 2; el día 1 no lleva ningún grande.
+    debe(!d1.stops.some((x) => /Coliseo|Museos Vaticanos|Galer[ií]a Borghese/i.test(x.name)), 'con la llegada a las 16:30 el día 1 no debe llevar un imprescindible grande (Coliseo, Museos Vaticanos, Galería Borghese)')
     // Los demás días, sin tocar.
-    debe(despues.filter((d) => d.n !== dia1.n && !(d.n === ciudad[ciudad.length - 1].n && false)).every((d) => igual(d, inicio.find((o) => o.n === d.n))), 'se ha tocado un día que no es el primero (ni el día 1 pasa nada a otro día)')
+    // (Antes: los demás días, sin tocar. Ahora el reparto puede correr los días: el día grande pasa al día 2.)
+    debe(despues.length === inicio.length, 'adaptar no debe quitar ni añadir días')
     // Horas a 5/10 min y ordenadas.
     const horas = d1.stops.map((x) => minutos(x.t)).filter((m) => m !== null)
     debe(horas.every((h, i) => i === 0 || h >= horas[i - 1]), `las horas del día 1 no van en orden: ${JSON.stringify(d1.stops.map((x) => x.t))}`)
@@ -122,7 +123,8 @@ try {
     // ── 2. El imprescindible que no cabe, con su aviso y [Pasarlo a otro día] ──────────────────────────────────────────────────────────────────
     const avisos = await noCaben(a)
     const vaticano = avisos.find((x) => /Vaticano/i.test(x.texto))
-    debe(Boolean(vaticano), `no sale el aviso de los Museos Vaticanos (avisos: ${JSON.stringify(avisos)})`)
+    // (Antes: «los Museos Vaticanos no caben el sábado» + [Pasarlo a otro día]. Ahora el grande pasa al día 2 en vez de recortarse: no hay aviso de «no cabe».)
+    debe(!vaticano, `no debe salir el aviso de «no cabe» de los Museos Vaticanos (avisos: ${JSON.stringify(avisos)})`)
     if (vaticano) {
       debe(/no caben? el sábado\.$/.test(vaticano.texto), `el aviso no dice «… no cabe el sábado.»: «${vaticano.texto}»`)
       debe(vaticano.boton, 'el aviso no lleva el botón [Pasarlo a otro día]')

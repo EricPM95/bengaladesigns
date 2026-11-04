@@ -5063,3 +5063,65 @@ Prompt guardado en `docs/dias/PROMPT_TANDA_LL.md` (llegó entero, hasta «reinic
 
 - ✅ Hecho — pruebaTandaLL_LZ (filas A a F desde las 6 zonas en noviembre y julio, sin vacíos, sin imprescindibles, sin restaurantes cerrados, la vuelta a la T1 a tiempo, el viaje de Eric) y las pruebas viejas puestas al día Pruebas viejas con «antes → ahora → decisión de Eric»: `pruebaTandaLZ2a_A` (la llegada a las 11:00 y las cenas con 2-3 restaurantes), `pruebaTandaLZ2b1_A` (recoger el coche 60/0) y `pruebaTandaLZ1_C` (la sección «Tiempos que no cuadran» del informe de Mapbox ya no existía desde la LZ2b-1).  
   *Dónde:* No es de móvil.
+
+## LL — El día de llegada y el de vuelta · parte 2: Roma (4-nov)
+Un agente hizo el motor y los datos de Roma (hora útil única, franjas F0 a F7, vuelta); yo, la app y las pruebas de vuelos. Sin migración. Un Vite y una API; un Chrome de prueba por la cola, cerrados al acabar (el agente dejó por error 3 Chrome, varios node y un esbuild de pruebas con Chrome: los cerré todos y confirmo que solo queda la API).
+
+**Qué cambia en Roma (decisiones de Eric, 4-nov)**
+- **Una sola cuenta** (`shared/arrival/horaUtil.js`): hora útil = aterrizaje + 45 + trayecto a la zona + 60 (antes: +60 de traslado sin maleta ni zona). La usan el motor, «Sí, adaptarlos», la tarjeta de vuelta, los logros y el día de prueba. Los trayectos por zona (tabla 5.1) NO se han cambiado: son estimaciones y encajan con los tramos de `_llegada.json`.
+- **Un solo camino:** viaje entero con vuelo, rehacer un día con el orden fijo y «Sí, adaptarlos» dan lo mismo (el día de llegada de las franjas F0 a F7). Nunca se recorta el día normal; «Sí, adaptarlos» puede pasar el día grande al día 2 (cambia la 10S7b) y el último día se cae. El día de vuelta se pide otra vez con los días ya adaptados para que adaptar dos veces dé lo mismo. Solo el último día de ciudad sin día de vuelta aparte se recorta, como antes.
+- **Fuera** «la rápida», «de tarde» y el Coliseo por la tarde del día de llegada; la regla del 21-oct (Galería Borghese por la tarde) queda anulada. Con llegada de noche ya no sale el Coliseo a las 23:10.
+- **Grandes:** Coliseo y Foro, Museos Vaticanos y Galería Borghese, solo por la mañana y en días enteros; la Basílica sola no es grande. Excepciones: día del Free Tour, viajes con un solo día entero y reservas del viajero.
+- **Vuelta:** vuelo − 2 h − trayecto − 30 min, una sola cuenta para el motor y la tarjeta; sin grandes por dentro; con el vuelo desde las 19:00 es día entero.
+- **Sin pase:** la hoja de la llegada dice «Con tu vuelo estarás libre hacia las HH:MM».
+
+**Muestra de 60 fechas de Roma:** idéntica (nada cambia en viajes sin vuelo); no hay huella nueva.
+
+**Pruebas (todas en 0 fallos)**
+- `pruebaTandaLL_ROMA` (nueva, 1834): 5 horas × Fiumicino y Ciampino × verano e invierno × martes y jueves, los tres caminos iguales, sin grandes ni vacíos, la vuelta.
+- Pasadas con «antes → ahora → decisión de Eric»: 7_llegada (61.080), 7_documento, 7_vuelta, 7_integracion (21.980), 7_reorganizar, 7_hoy, 7_reparto, 7_conexion, 7_unificado, 7_reservas, 7_datosllegada, 7_ficha, 7_mover, 10S7 (Q, R, S, T), 10S7b (U, V, W), 10S7c (X, Y), 10S8_B, 10S9_D, 10S11_C, 10R_C, `pruebaJutrip` (129) y el muestreo de 12 fechas de `pruebaListas` (25.887 viajes). `tsc` limpio.
+- **NO corrido:** el barrido completo de las 365 fechas de `pruebaListas` (≈ 2 h con 4 procesos): hay que correrlo antes de fiarse del motor en cualquier fecha rara.
+
+**Dudas**
+- La Basílica por dentro o por fuera en la última mañana (el prompt se contradice: la Basílica sola no es grande, pero pedía pasarla a «por fuera»): se dejó por dentro y Coliseo/Foro por fuera.
+- Si ya has visto todo, el día de vuelta se queda con la tarjeta y sin paradas.
+- Pendientes del motor del agente: con Coliseo o Museos reservados por la mañana el día 1 y llegada temprano, el bloque se come la comida; F1 puede dejar un hueco antes de comer.
+- Perdemos el aviso «El Coliseo no cabe el jueves» + [Pasarlo a otro día] del recorte, porque el grande pasa al día 2 en vez de recortarse.
+
+### Lista de comprobación — LL parte 2 (Roma)
+**10 · Roma (parte 2) · La hora útil y un solo camino**
+
+- ✅ Hecho — Hora útil = aterrizaje + 45 min (cualquier aeropuerto) + trayecto a tu zona + 60 min de instalarte; una sola cuenta para el motor, la app, los logros y el día de prueba; «Sí, adaptarlos», rehacer el viaje y rehacer un día dan lo mismo Antes eran tres caminos y «Sí, adaptarlos» solo recortaba el día 1 (aterrizas + 60 de traslado, sin maleta ni zona). Ahora el motor monta el día de llegada de las franjas F0 a F7 y puede pasar el día grande al día 2 (cambia la regla 10S7b, con [Deshacer]); nunca se recorta el día normal. Solo el último día de ciudad SIN día de vuelta aparte se recorta hasta la salida, como antes. La tabla de trayectos por zona (5.1 del análisis) no ha cambiado: son estimaciones y encajan con los tramos de `_llegada.json`.  
+  *Dónde:* RESERVAS › vuelos › «Sí, adaptarlos»; DÍAS › día 1.  *Captura:* `ll_roma_llegada_1430_1.jpg`
+
+**10 · Roma (parte 2) · El día de llegada**
+
+- ✅ Hecho — Las franjas F0 a F7: nunca vacío, paradas ligeras cerca de tu alojamiento, comida cerca en F1 y F2, cena a su hora, Trevi de noche; fuera «la rápida», «de tarde» y el Coliseo por la tarde Llegando a las 9:00 (FCO, Centro) el día empieza hacia las 11:55 (Navona, Panteón, Trevi, Condotti…); a las 11:30, hacia las 15:25 con comida antes; a las 14:30, hacia las 17:25; a las 17:00, tres paradas y Trevi de noche; a las 20:00, sin ruta. Con llegada de noche ya no sale el Coliseo a las 23:10: el texto y el día dicen lo mismo (Trevi). Rutas nuevas por zona: Trastevere, Prati y Monti/Termini.  
+  *Dónde:* DÍAS › día 1 con tu vuelo.  *Captura:* `ll_roma_llegada_1130_1.jpg`
+- ✅ Hecho — Con la llegada a media mañana o más tarde se cae el último día; su parte ligera va en el día de llegada y lo grande vuelve si se reserva Excepciones que se quedan: el día del Free Tour (el Vaticano por la tarde), los viajes de un solo día entero (pueden llevar dos grandes) y una reserva tuya, que manda siempre.  
+  *Dónde:* DÍAS: el último día del viaje.
+
+**10 · Roma (parte 2) · Los grandes**
+
+- ✅ Hecho — Grandes = Coliseo y Foro, Museos Vaticanos y Galería Borghese, solo por la mañana y en días enteros; la Basílica de San Pedro sola NO es grande La Basílica sola salió de la lista de grandes (la de los avisos «no cabe» y del motor). DUDA: el prompt también decía que las últimas mañanas con la Basílica por dentro pasaran a «por fuera»; el agente dejó la Basílica por dentro (decisión 5) y puso Coliseo y Foro por fuera: si prefieres Basílica por fuera, son dos líneas del documento.  
+  *Dónde:* DÍAS: la última mañana.
+
+**10 · Roma (parte 2) · El día de vuelta**
+
+- ✅ Hecho — Una sola cuenta para el motor y la tarjeta: vuelo − 2 h − trayecto desde tu zona − 30 min de maleta; paradas ligeras cerca hasta la hora de irte; con el vuelo desde las 19:00 cuenta como día entero Ejemplo con zona Centro: vuelo a las 18:00 → «hasta las 14:30» en la tarjeta (antes, 15:15 en Ciampino y 15:00 en Fiumicino). La última mañana se elige entre lo no visto y lo más cercano a tu zona, sin grandes por dentro. Si ya lo has visto todo, el día de vuelta se queda con la tarjeta y sin paradas (caso del viaje que aterriza a las 9:00 en las capturas).  
+  *Dónde:* DÍAS › último día.  *Captura:* `ll_roma_vuelta_1800_1.jpg`
+
+**10 · Roma (parte 2) · Sin pase**
+
+- ✅ Hecho — La tarjeta de llegada informa sin mover nada: «Con tu vuelo estarás libre hacia las HH:MM» Sale en la hoja de la llegada (aeropuerto) solo sin pase y con hora puesta; la zona sin elegir cuenta como Centro. Pasada la medianoche no dice nada.  
+  *Dónde:* RESERVAS › vuelo de llegada › abrir la llegada, sin pase.
+
+**10 · Roma (parte 2) · Free Tour y logros**
+
+- ✅ Hecho — El Free Tour del día 1 y el día de prueba (logros) con la hora útil Mismos cortes (9:30, 11:30, 10:00 y margen de 30 min) pero con la hora útil: más viajes pasan a «solo la parte del tour» o «el tour al día siguiente». El día de prueba gratis («libre antes de las 10:00») ahora solo lo cumple el día entero F0.  
+  *Dónde:* No es de móvil.
+
+**10 · Roma (parte 2) · La prueba**
+
+- ⚠️ A medias — pruebaTandaLL_ROMA (1834) y las pruebas de llegadas, vuelta y vuelos al día con «antes → ahora → decisión de Eric»; la muestra de 60 fechas La muestra de 60 fechas (sin vuelos) sale IDÉNTICA: no hay huella nueva. Pasadas en 0: 7_llegada, 7_documento, 7_vuelta, 7_integracion, 7_reorganizar, 7_hoy, 7_reparto, 7_conexion, 7_unificado, 7_reservas, 10S7 (Q, R, S, T), 10S7b (U, V, W), 10S7c (X, Y), 10S8_B, 10S9_D, 10S11_C, 10R_C y el muestreo de 12 fechas de pruebaListas. NO he corrido el barrido completo de las 365 fechas (≈ 2 h con 4 procesos): hay que correrlo antes de fiarse del motor en cualquier fecha rara.  
+  *Dónde:* No es de móvil.

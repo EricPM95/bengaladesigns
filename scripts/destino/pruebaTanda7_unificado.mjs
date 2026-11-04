@@ -55,7 +55,8 @@ debe((mapa.match(/\.arrival_plan\b/g) ?? []).length === 2 && (mapa.match(/\.retu
 debe((mapa.match(/no_restaurant/g) ?? []).length === 2 && (mapa.match(/noRestaurant: true/g) ?? []).length === 1, '2 un mapeo', 'no_restaurant no se mapea una sola vez')
 debe((mapa.match(/is_return_leg/g) ?? []).length >= 2 && (mapa.match(/isReturnLeg: true \}/g) ?? []).length >= 1, '2 un mapeo', 'is_return_leg no se mapea')
 for (const f of fuentes) {
-  if (f.ruta === 'src/lib/mapGeneratedRoute.ts') continue
+  // Antes: solo mapGeneratedRoute.ts leía los planes del JSON del motor. Ahora también adaptarVuelos.ts, que pide el día de llegada y el de vuelta al motor para sacar sus planes (desde la 10S7c; la prueba no lo había vuelto a pasar). Decisión de Eric (4-nov, tanda LL).
+  if (f.ruta === 'src/lib/mapGeneratedRoute.ts' || f.ruta === 'src/lib/adaptarVuelos.ts') continue
   debe(!/\.arrival_plan\b|\.return_day\b|\.arrival_day\b/.test(f.src), '2 un mapeo', `${f.ruta} lee el JSON del motor por su cuenta`)
 }
 const tipos = fuentes.find((f) => f.ruta === 'src/lib/types.ts').src

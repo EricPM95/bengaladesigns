@@ -35,7 +35,8 @@ import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { ordenarDias, paradasDelDia } from './listasOrden.js'
 import { claseDeReserva, sitiosGrandesDe } from './listasReservas.js'
-import { aplicarOpsLlegada, decidirLlegada, excursionEnDia1, libreDeLlegada, MEDIOS_CON_HORA } from './llegadaDia1.js'
+import { aplicarOpsLlegada, decidirLlegada, excursionEnDia1, libreDeLlegada, limpiarTraslados, MEDIOS_CON_HORA } from './llegadaDia1.js'
+import { zonaDeCuenta } from '../arrival/horaUtil.js'
 import { copiarParte, aplicarVariantes, aplicarExperiencias, aplicarOps, aplicarOp, cumple, norm, toMin, toHHMM } from './listasDia.js'
 import { crearReglas, valorDe } from './listasReglas.js'
 import { COMIDA_HASTA } from './comida.js'
@@ -1744,9 +1745,11 @@ export function planListasTrip(args) {
     const usadasHoy = new Set()
     const larga = cityDays.length >= 3
     const sitioDeLaNoche = (name) => [name.replace(/ \(noche\)$/, '').replace(/ de noche$/, ''), ...(catalogueByName.get(name)?.conflicts_with ?? [])]
-    const vale = (name) => {
+    const vale = (name, repite = false) => {
       const entrada = catalogueByName.get(name)
       if (!entrada || estado.noches.has(name) || usadasHoy.has(name)) return false
+      // (Tanda LL: la noche escrita de un día de llegada puede repetir lo visto ese día —`repite`—: de noche es otra cosa, y es UN paseo corto cerca de la cena.)
+      if (repite) return true
       // (Viajes de 2 días o menos: sí se puede repetir de noche lo visto ese día, hay poco tiempo. De 2,5 días o más, no.)
       return !larga || !sitioDeLaNoche(name).some((lugar) => vistoHoy.has(lugar))
     }
@@ -1777,7 +1780,7 @@ export function planListasTrip(args) {
     let causa = null
     if (especial && escrita && escrita === especial.noche) { elegidos = [escrita]; usadasHoy.add(escrita) } // (Nochebuena: solo Trevi, y esa noche puede repetir.)
     // (Tanda 11, punto 3: una noche escrita con `fija` —el Janículo del viaje de 2 días con Free Tour— es la que sale, sin ceder su sitio a la primera imprescindible.)
-    else if (nocheDef.fija && escrita && vale(escrita)) { elegidos = [escrita]; usadasHoy.add(escrita); causa = `${escrita}: la noche escrita del día, que el documento fija` }
+    else if (nocheDef.fija && escrita && vale(escrita, nocheDef.repite === true)) { elegidos = [escrita]; usadasHoy.add(escrita); causa = `${escrita}: la noche escrita del día, que el documento fija` }
     else {
       // 1. La primera pareja imprescindible que aún no ha salido y queda a 15 min en taxi o menos de la cena. «La imprescindible que falte»: la que ningún día de después del viaje lleve como su
       //    noche escrita (Tanda 6g: el D4 escribe el Coliseo, así que en un viaje con el D4 el D2 se queda con su Trastevere de noche y no le quita el Coliseo).
@@ -1809,7 +1812,8 @@ export function planListasTrip(args) {
       salida.push({ kind: 'noche', noche: elegida, min: NOCHE_MIN[elegida] ?? 20, id: `noche_${slug(elegida)}`, ...(nocheDef.fija && elegida === escrita ? { fija: true } : {}) })
     }
     // La hora: después de cenar (o de la última parada), con lo andado hasta ella.
-    let t = (cena ?? ultimo)?.t1 ?? 21 * 60
+    // (Tanda LL: el día de llegada no tiene nocturna antes de que el viajero esté libre —su hora útil, que es donde «empieza» ese día—.)
+    let t = Math.max((cena ?? ultimo)?.t1 ?? 21 * 60, draft.diaLlegada && draft.trabajo.empieza ? toMin(draft.trabajo.empieza) : 0)
     let prev = origenC
     const sunset = hours.sunset
     const resultado = []
@@ -2133,12 +2137,68 @@ export function planListasTrip(args) {
       return { ...trabajo, tarde: [], sobra: [...(trabajo.sobra ?? []), ...nuevas] }
     }
 
+    /**
+     * (Tanda LL, el día de vuelta) Cuánto cabe hasta la HORA DE IRSE (`irseMin`): cada parada cuenta lo suyo más ~10 min de camino; la comida, desde su hora y con sus minutos. Lo que ya no cabe pasa a «Si te sobra tiempo»
+     * (y, si se corta en la mañana, tampoco hay comida). No cuenta los traslados ni lo de camino. Es una estimación: la prueba comprueba que lo que sale acaba antes de irse.
+     */
+    const costeParada = (s) => (s.modo === 'camino' ? 5 : (s.min ?? 20) + 10)
+    const recortarAlTiempo = (trabajo, irseMin) => {
+      let t = toMin(trabajo.empieza ?? cfg.inicio)
+      let cortado = false
+      const sobra = [...(trabajo.sobra ?? [])]
+      // (La mañana acaba a tiempo para comer: si el día lleva comida, lo último que se quita es la comida; antes se quitan paradas de la mañana.)
+      const reservaComida = trabajo.comida ? (trabajo.comida.min ?? cfg.comida_min) + 10 : 0
+      const corta = (lista, limite) => (lista ?? []).filter((s) => {
+        if (s.tipo === 'traslado') return !cortado
+        if (s.hora) t = Math.max(t, toMin(s.hora))
+        if (!cortado && t + costeParada(s) <= limite) { t += costeParada(s); return true }
+        cortado = true
+        if (s.lugar && s.modo !== 'camino') sobra.push({ ...s, sobra_causa: 'no te da tiempo antes de irte' })
+        return false
+      })
+      const manana = corta(trabajo.manana, irseMin - reservaComida)
+      let comida = trabajo.comida ?? null
+      if (comida) {
+        const inicioComida = Math.max(t, toMin(cfg.comida_desde))
+        if (inicioComida + (comida.min ?? cfg.comida_min) + 10 <= irseMin) t = inicioComida + (comida.min ?? cfg.comida_min) + 10
+        else { cortado = true; comida = null }
+      }
+      const tarde = corta(trabajo.tarde, irseMin)
+      return { ...trabajo, manana: limpiarTraslados(manana), comida, tarde: limpiarTraslados(tarde), sobra, _finMin: t }
+    }
+    /** Paradas ligeras de la zona del viajero (las de su ruta ligera del día 1), que el viaje aún no ha visto, hasta la hora de irse; la primera a más de ~35 min de irse ya no cabe. */
+    const tardeLigera = (trabajo, irseMin, zonaId) => {
+      const inicio = written.llegadas?.inicio_por_zona?.[zonaId] ?? written.llegadas?.inicio_por_zona?.nose ?? 'navona'
+      const listaId = Object.keys(written.days).find((id) => /^D1-centro-(?!entera)/.test(id) && written.days[id].inicio === inicio)
+      const yaEstan = new Set([...trabajo.manana, ...(trabajo.tarde ?? [])].map((s) => s.lugar))
+      const candidatas = (written.days[listaId]?.partes?.unica?.tarde ?? []).filter((s) => s.tipo !== 'traslado' && s.lugar && s.modo !== 'camino' && !estado.vistos.has(s.lugar) && !yaEstan.has(s.lugar) && !closedThatDay(s.lugar, retDay))
+      const base = recortarAlTiempo({ ...trabajo, tarde: [] }, irseMin)
+      let t = base._finMin
+      const paradas = []
+      for (const s of candidatas) {
+        const c = costeParada(s)
+        if (t + c > irseMin - 20) break
+        t += c
+        paradas.push({ ...s, protegido: false })
+      }
+      return paradas
+    }
+
     let disp = null
     let draft = null
     let nota = null
     // (La ruta a mano: ni se recorta ni se rehace nada; solo salen los avisos de las reservas contra el vuelo.)
     if (!Vactiva) return { disp: null, plan: null, ...montarPublico(V, null, null, []) }
-    disp = disponerVuelta(V, { written, destData, vistos: new Set(estado.vistos), orden: [...order, ...(llegadaDecision?.aplica ? llegadaDecision.publico?.hooks?.vuelta?.sustituidos ?? [] : [])], hasFreeTour, diaCaidoAlLlegar })
+    // (Tanda LL: la última mañana más cercana a la zona del alojamiento: la distancia de la zona a lo principal de cada fila.)
+    const zonaCuentaId = zonaDeCuenta(vuelta?.info ?? null, vuelta?.zona ?? null)
+    const zonaCoord = (destData.destination_config?.zonas_alojamiento ?? []).find((z) => z.id === zonaCuentaId)?.coordinates ?? null
+    const distanciaDeFila = zonaCoord ? (fila) => {
+      const puntos = (fila.lo_principal ?? []).map((n) => placeByName.get(n)?.coordinates).filter((c) => Array.isArray(c))
+      if (puntos.length === 0) return null
+      const centro = [puntos.reduce((a, c) => a + c[0], 0) / puntos.length, puntos.reduce((a, c) => a + c[1], 0) / puntos.length]
+      return Math.round(meters([zonaCoord.lat, zonaCoord.lng], centro))
+    } : null
+    disp = disponerVuelta(V, { written, destData, vistos: new Set(estado.vistos), orden: [...order, ...(llegadaDecision?.aplica ? llegadaDecision.publico?.hooks?.vuelta?.sustituidos ?? [] : [])], hasFreeTour, diaCaidoAlLlegar, distancia: distanciaDeFila })
     if (disp.tipo === 'manana') {
       const id = disp.listaPropia ?? (disp.corta ? disp.fila.corta : disp.fila.lista)
       const dia = written.days[id]
@@ -2148,6 +2208,14 @@ export function planListasTrip(args) {
       draft.dia = { ...draft.dia, lluvia: null }
       const conTarde = disp.conComida ? 'el documento lo deja para «Si te sobra tiempo» en este día: lo que va después de la comida (la tarde es del viajero)' : 'el documento lo deja para «Si te sobra tiempo» en este día: lo que va después de la comida (este día no lleva comida)'
       draft.trabajo = conLoYaVisto({ ...tardeASobra(draft.trabajo, conTarde), comida: disp.conComida ? draft.trabajo.comida : null, cena: null, noche: null })
+      // (Tanda LL: con más de 4 h, en vez de «la tarde es tuya», paradas ligeras cerca hasta la hora de irse.)
+      if (disp.hastaIrte && disp.conComida) {
+        const ligeras = tardeLigera(draft.trabajo, V.datos.salirMin, zonaCuentaId)
+        draft.trabajo = { ...draft.trabajo, tarde: ligeras }
+        disp.paradasLigeras = ligeras.length
+      }
+      // (Tanda LL: la mañana cabe hasta la hora de irse: lo que no cabe va a «Si te sobra tiempo». Con una reserva del viajero ese día no se quita nada.)
+      if (V.reservas.pequenas.length === 0) draft.trabajo = recortarAlTiempo(draft.trabajo, V.datos.salirMin - 5)
       nota = draft.trabajo.empieza ? null : `la hora de empezar de ${id} no está escrita: se usa la de un día normal`
       meterReservas(draft, V.reservas.pequenas)
     } else if (disp.tipo === 'dia_mas') {
@@ -2155,7 +2223,7 @@ export function planListasTrip(args) {
       draft = preparar(disp.lista, -1, { day: retDay, parteKey: dia.partes.unica ? 'unica' : Object.keys(dia.partes)[0], entradas: entradasVuelta })
       draft.unitPrefix = `vuelta:${disp.lista}`
       draft.dia = { ...draft.dia, lluvia: null }
-      draft.trabajo = conLoYaVisto({ ...draft.trabajo, cena: null, noche: null })
+      draft.trabajo = recortarAlTiempo(conLoYaVisto({ ...draft.trabajo, cena: null, noche: null }), V.datos.salirMin - 15)
       meterReservas(draft, V.reservas.pequenas)
     } else if (disp.tipo === 'bloques') {
       // (Lo que el día del sitio se ha quedado en su versión sin esa visita —la Plaza y la Basílica del Vaticano sin Museos— no se repite en el bloque.)
@@ -2217,7 +2285,8 @@ export function planListasTrip(args) {
         bloques: V.reservas.grandes.map((g) => ({ sitio: g.name, hora: g.hora, paradas: g.sitio.bloque.paradas })),
         reservasPequenas: V.reservas.pequenas.map((r) => ({ name: r.name, hora: r.hora })),
         comida: Boolean(plan && (plan.escritoRows ?? []).some((r) => r.tipo === 'comida')),
-        tardeLibre: disp?.tardeLibre && !V.aMano ? { texto: textosDV.tarde_libre ?? null, anadirLugares: true } : null,
+        tardeLibre: disp?.tardeLibre && !V.aMano && !(disp.paradasLigeras > 0) ? { texto: textosDV.tarde_libre ?? null, anadirLugares: true } : null,
+        paradasHastaIrte: disp?.hastaIrte === true && !V.aMano ? (disp.paradasLigeras ?? 0) : null,
         maleta: llevaManana && info?.maleta ? { titulo: info.maleta.titulo ?? null, texto: info.maleta.texto, consigna: info.maleta.consigna ?? null } : null,
         ultimaTarde: llevaManana && info?.ultima_tarde ? { texto: info.ultima_tarde.texto } : null,
         tarjeta: !V.aMano && sinParadas && contenido !== 'excursion' ? tarjetaHoyVuelves({ V, written, info, destData, zona, madrugada: false }) : null,
@@ -2225,7 +2294,7 @@ export function planListasTrip(args) {
         resumen: V.aMano || contenido === 'excursion' ? null : { ...resumenDeVuelta({ V, contenido: sinParadas ? 'sin_paradas' : contenido, ciudad: destData?.destination ?? 'Roma' }), dayNumber: V.dia.dayNumber, dateIso: V.dia.dateIso, madrugada: V.madrugada },
         avisos: avisosDeVuelta({ V, destData, tour, duracionDe }),
         notas,
-        interno: { salirMin: V.datos.salirMin, margenMin: V.datos.margen, equivalenteMin: V.equivalente, aviso: 'Solo para el motor y las pruebas: nunca se enseña.' },
+        interno: { salirMin: V.datos.salirMin, irseMin: V.datos.salirMin, margenMin: V.datos.margen, cuenta: V.datos.cuenta ?? null, equivalenteMin: V.equivalente, aviso: 'Solo para el motor y las pruebas: nunca se enseña.' },
       },
     }
   }

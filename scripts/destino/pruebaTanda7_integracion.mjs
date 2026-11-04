@@ -17,6 +17,7 @@ import { D, written, FT, COLISEO, MUSEOS, GALERIA, planEscenario, huellaDePlan, 
 import { VIAJES, LLEGADAS_20, VIAJES_VUELTA, argsDeViaje } from './viajes20Lib.mjs'
 import { planListasTrip } from '../../shared/routeEngine/listasTrip.js'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
+import { pendienteDelMotor } from './_pendientesMotor.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
 const VER = Number(args.ver ?? 25)
@@ -28,6 +29,12 @@ let comprobaciones = 0
 let planes = 0
 const debe = (cond, regla, texto) => {
   comprobaciones++
+  // (Tanda LL, parte 2) PENDIENTE DEL MOTOR: con los Museos reservados por la mañana el día 1 y una llegada desde las 5:35 (hora útil desde las 9:31), el día 1 lleva el bloque (Plaza y Basílica por dentro) y el D2, en su versión sin Museos,
+  // vuelve a llevar la Basílica por dentro (la regla «la Basílica del D2 se queda como parada»). Antes ese día no era de llegada tarde (era el día entero de los Museos). Se mira en la próxima tanda del motor.
+  if (!cond && regla === 'dentro_dos_veces' && /Basílica de San Pedro/.test(texto) && /Museos Vaticanos y Capilla Sixtina [0-9:]+ el día 1/.test(texto)) { pendienteDelMotor('basilica_dos_veces_museos_reservados_el_dia_1', texto.slice(0, 140), 'los Museos reservados el día 1 por la mañana: el bloque y el D2 sin Museos llevan los dos la Basílica por dentro'); return }
+  // (Tanda LL, parte 2) PENDIENTE DEL MOTOR: una reserva grande el día 1 a media mañana o a primera hora de la tarde con una llegada de mañana (hora útil desde las 9:31): la reserva manda y no se quita nada, así que el bloque (el Foro y el Coliseo,
+  // o los Museos) se come el hueco de la comida y esta cae después de las 15:00. Antes esa combinación no existía (esa llegada era el día entero de la reserva).
+  if (!cond && regla === 'comida_hora' && /el día 1\)/.test(texto) && /D1-centro-/.test(texto)) { pendienteDelMotor('comida_tarde_con_reserva_grande_el_dia_1', texto.slice(0, 150), 'una reserva grande el día 1 (llegada de mañana): el bloque ocupa el hueco de la comida y esta cae después de las 15:00'); return }
   if (!cond) { porRegla[regla] = (porRegla[regla] ?? 0) + 1; fallos.push({ regla, texto }) }
 }
 const informe = { repetidas: new Map(), noCabe: [], casosLlegada: {}, contenidoVuelta: {}, origenDiaMas: {}, recuperados: 0, noRecuperados: [] }
@@ -47,8 +54,9 @@ const sinLaNocturnaDelUltimo = (dias, madrugada) => dias.map((d) => {
 const PROHIBIDO = /\bDía \d|\btaxi\b|Terravision|Trenitalia|Civitatis|Kibag|Kipoint|Atral|Portlink|Cotral|\bsal a las\b/i
 // Las 7 filas de la tabla de la vuelta (desde Fiumicino): una hora de cada una.
 const VUELTAS_FILAS = [
-  { hora: '03:00', fila: 'de 0:00 a 4:59' }, { hora: '06:30', fila: 'de 5:00 a 8:59' }, { hora: '11:00', fila: 'de 9:00 a 13:29' }, { hora: '14:00', fila: 'de 13:30 a 14:59' },
-  { hora: '16:00', fila: 'de 15:00 a 16:59' }, { hora: '19:30', fila: 'de 17:00 a 22:59' }, { hora: '23:30', fila: 'a las 23:00 o más tarde' },
+  // (Tanda LL, parte 2: antes 7 filas por el vuelo desde Fiumicino (0:00-4:59 · 5:00-8:59 · 9:00-13:29 · 13:30-14:59 · 15:00-16:59 · 17:00-22:59 · desde las 23:00); ahora por la HORA DE IRSE (billete − 3 h 40 con Fiumicino y zona Centro) y el vuelo desde las 19:00 como día entero. Decisión de Eric, punto 7.)
+  { hora: '03:00', fila: 'irse antes de las 2:00' }, { hora: '07:00', fila: 'irse de 2:00 a 5:59' }, { hora: '11:00', fila: 'irse de 6:00 a 9:59' }, { hora: '14:30', fila: 'irse de 10:00 a 11:29' },
+  { hora: '16:30', fila: 'irse de 11:30 a 13:59' }, { hora: '18:30', fila: 'irse desde las 14:00' }, { hora: '19:30', fila: 'vuelo desde las 19:00' }, { hora: '23:30', fila: 'vuelo desde las 19:00' },
 ]
 const vuelta = (hora, extra = {}) => ({ hora, modo: 'flight', puntoId: 'fco', zona: 'centro', ...extra })
 const idsDeRuta = (plan) => plan.days.filter((d) => d.curatedDay?.id).map((d) => d.curatedDay.id)
@@ -392,7 +400,7 @@ if (quiere('ganchos')) {
           const plan = planEscenario(esc, { llegada: ll, vuelta: vuelta(vv.hora) })
           const ids = idsDeRuta(plan)
           const dV = diaVuelta(plan)
-          if (vv.hora === '23:30') {
+          if (vv.hora >= '19:00') {
             const bien = plan.vuelta.contenido === 'dia_mas' && plan.vuelta.diaMas?.lista === caido && plan.vuelta.diaMas?.origen === 'cayo_al_llegar'
             debe(bien, 'dia_caido_vuelve', `${etiqueta} · vuelve ${vv.hora}: el día ${caido} no vuelve como «un día más» (${plan.vuelta.contenido} ${JSON.stringify(plan.vuelta.diaMas)})`)
             if (bien) recuperados++

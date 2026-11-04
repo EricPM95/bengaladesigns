@@ -870,40 +870,39 @@ Si el viajero elige una excursión de medio día en el día de excursión (el d�
 - **«¿En qué zona te alojas?»,** en el bloque del alojamiento de RESERVAS (sirve para saber por dónde empieza la ruta del día 1 y para «Para tu zona», abajo): Centro (Panteón, Trevi, Navona) · Plaza de España (Plaza de España, Popolo, Via del Corso) · Prati (Vaticano) · Trastevere · Termini · Monti (Coliseo) · Aún no lo sé. «Aún no lo sé» cuenta como Centro.
 - **Sin hora de llegada ni de salida,** el viaje sale con días enteros, como hasta ahora.
 
-### Las horas: libre y salir
-- **Todas las horas salen de `_llegada.json`,** que ya tiene los tiempos comprobados de cada punto. No se escriben en ningún otro sitio.
-- **Libre** = la hora de llegada + el traslado de ese punto + 30 min para dejar la maleta:
+### Las horas: la hora útil y la hora de irse
+Tanda LL (4-nov-2026): UNA SOLA CUENTA para el motor, la tarjeta, los logros y el día de prueba (`shared/arrival/horaUtil.js`).
+- **Todas las horas salen de `_llegada.json › hora_util`** (los tiempos de cada punto y de cada zona) y de `destination_config.llegada` (`instalarse_min`, `dia_entero_hasta`). No se escriben en ningún otro sitio.
+- **Hora útil** = la hora de llegada + salir del punto con el equipaje + el trayecto hasta la zona del alojamiento + instalarse (60 min, dato del destino). Se redondea hacia arriba de 5 en 5.
 
-  | Punto | Libre = llegada + |
+  | Salir del punto | Minutos |
   |---|---|
-  | Fiumicino | 1:30 |
-  | Ciampino | 1:20 |
-  | Termini | 0:45 |
-  | Tiburtina (tren) | 0:55 |
-  | Estación de autobuses de Tiburtina | 0:55 |
-  | Civitavecchia | 2:30 |
+  | Cualquier aeropuerto (Fiumicino, Ciampino) | 45, siempre |
+  | Termini, Tiburtina (tren) y la estación de autobuses de Tiburtina | 10 |
+  | Civitavecchia (barco) | 45 |
 
-  Si pasa de la medianoche, sigue siendo el mismo día: cuenta en la última fila.
-- **Salir** = la hora de salida − el margen de ese punto:
+  El trayecto es puerta a puerta con el transporte que recomienda la app (esperas y andar incluidos). Son estimaciones, contrastadas con los tiempos de `tramos` de `_llegada.json`:
 
-  | Punto | Salir = salida − |
-  |---|---|
-  | Fiumicino | 3:00 |
-  | Ciampino | 2:50 |
-  | Termini | 0:45 |
-  | Tiburtina (tren) | 0:55 |
-  | Estación de autobuses de Tiburtina | 0:55 |
-  | Civitavecchia | 3:50 |
+  | Zona | Fiumicino | Ciampino | Termini | Tiburtina / estación de autobuses | Civitavecchia |
+  |---|---|---|---|---|---|
+  | Termini | 50 | 45 | 10 | 20 | 90 |
+  | Monti | 60 | 55 | 15 | 25 | 100 |
+  | Plaza de España | 65 | 60 | 20 | 30 | 105 |
+  | Centro (Panteón, Trevi, Navona) | 70 | 65 | 25 | 35 | 105 |
+  | Prati | 70 | 70 | 25 | 35 | 90 |
+  | Trastevere | 60 | 75 | 30 | 40 | 90 |
+  | Aún no lo sé (y sin pase) | como Centro | como Centro | como Centro | como Centro | como Centro |
 
-  Si queda antes de la medianoche, es la noche del día de antes.
-- **Ninguna de las dos horas se enseña nunca:** ni la de «libre» ni la de «salir». Solo eligen la fila de una tabla. A la vista solo van las horas que pone el viajero (su vuelo, sus reservas) y las de los datos (un horario, el último tren, «32 min, sin paradas»). Nunca un tiempo total sumado por la app.
-- **Cada tramo empieza en su hora:** libre a las 14:00 en punto ya es la fila de las 14:00. La hora no se redondea para elegir la fila. La única excepción escrita es la del Coliseo en su tabla de horas («hasta las 13:00 incluida»).
-- **Los tiempos se cuentan siempre desde el centro,** y la zona no cambia la hora de salir. En los textos para el viajero no sale nunca la palabra «centro» (los nombres de zona, como «Centro (Panteón, Trevi, Navona)», y los datos reales, como «32 km al centro», sí).
-- **Invierno y de marzo a octubre:** «invierno» son los días en que el Coliseo cierra a las 16:30 según el horario de su fecha (hoy, del último domingo de octubre al último sábado de febrero); todos los demás días son «de marzo a octubre». Así, los últimos días de octubre son invierno. Nunca se escriben fechas a mano: se mira el horario de la fecha. Sin fechas, se usa el día 15 del mes.
+  Con la zona Centro: Fiumicino, +2 h 55 min (45 + 70 + 60); Ciampino, +2 h 50 min (45 + 65 + 60).
+- **Hora de irse** = el billete − 2 h de aeropuerto (30 min en tren o autobús; 2 h en barco) − el trayecto desde tu zona al punto (la misma tabla) − 30 min para recoger la maleta. Se redondea hacia abajo de 5 en 5. Con Fiumicino y zona Centro, 3 h 40 min antes del vuelo.
+- **Ninguna de las dos horas se enseña nunca como hora calculada:** solo eligen la fila de una tabla. A la vista solo van las horas que pone el viajero (su vuelo, sus reservas) y las de los datos (un horario, el último tren, «32 min, sin paradas»). **Una excepción, sin pase:** la tarjeta de llegada informa, sin mover nada: «Con tu vuelo estarás libre hacia las 17:30».
+- **Cada tramo empieza en su hora:** una hora útil de 15:00 en punto ya es la fila de las 15:00; no se redondea para elegir la fila.
+- **Sin zona** («Aún no lo sé»): cuenta como el Centro. **En los textos para el viajero no sale nunca la palabra «centro»** (los nombres de zona, como «Centro (Panteón, Trevi, Navona)», y los datos reales, como «32 km al centro», sí).
+- **Invierno y de marzo a octubre:** «invierno» son los días en que el Coliseo cierra a las 16:30 según el horario de su fecha. Desde la tanda LL las dos tablas del día 1 son iguales (el Coliseo ya no va el día de llegada); la separación se conserva por si un destino la necesita. Sin fechas, se usa el día 15 del mes.
 - **Vuelos de madrugada** (de 0:00 a 4:59):
   - **a la llegada,** el día 1 es un día entero normal (se duerme y se empieza a su hora, las 9:00);
-  - **a la vuelta,** cuenta como la noche de antes: el último día de ruta lleva su cena y no lleva nocturna, y el día de vuelta solo lleva el traslado.
-- **Vuelos de vuelta de 5:00 a 9:00:** el día de antes es normal, con su noche, y el día de vuelta solo lleva el traslado.
+  - **a la vuelta,** si hay que irse antes de las 2:00, cuenta como la noche de antes: el último día de ruta lleva su cena y no lleva nocturna, y el día de vuelta solo lleva el traslado.
+- **Irse de 2:00 a 5:59:** el día de antes es normal, con su noche, y el día de vuelta solo lleva el traslado.
 
 ### Lo que se ve en el día
 - **La barra de llegada,** sin hora calculada: «LLEGADA · VUELO 09:00 · FIUMICINO». Es la hora que puso el viajero. No lleva ninguna hora de la derecha.
@@ -914,153 +913,177 @@ Si el viajero elige una excursión de medio día en el día de excursión (el d�
 ### Los días reales
 - **La idea:** con vuelos, el viaje es el mismo que sin vuelos («Qué días lleva cada viaje»). Solo cambian el **primer día** y el **último**; los días de en medio no se mueven.
 - **El día 1** es el **D1** (la Roma antigua y el centro) en la versión que toque por la hora a la que está libre (ver «Qué lleva el día 1 según la hora»). Con el Free Tour de mañana, el día 1 es el D3 o su parte del Free Tour (ver «El Free Tour y otras reservas el día de llegada»).
-- **El D1 pasa entero al día 2** cuando está libre desde las 14:00 (en invierno, desde las 13:00): todo se corre un día y se cae el último día de ruta del viaje, que es el de menos importancia (en 3 noches, el D4: Villa Borghese; en 4, el de Roma del día 4…). Vuelve como «un día más» si el vuelo de vuelta lo permite (ver «El día de vuelta»). Si el viajero reserva la Galería Borghese, su día vuelve solo (reserva grande).
+- **El D1 pasa entero al día 2** cuando la hora útil es de las 9:31 en adelante (todo vuelo que aterrice desde las 5:35 en Fiumicino con zona Centro): todo se corre un día y se cae el último día de ruta del viaje, que es el de menos importancia (en 3 noches, el D4: Villa Borghese; en 4, el de Roma del día 4…). **Su parte ligera** (Plaza de España, Trinità, Via Condotti, el Pincio y el Popolo) va en el día de llegada; lo grande (la Galería Borghese) vuelve si se reserva. Vuelve como «un día más» si el vuelo de vuelta es desde las 19:00 (ver «El día de vuelta»). Si el viajero reserva la Galería Borghese, su día vuelve solo (reserva grande).
+- **Los grandes** (el Coliseo y el Foro —una entrada—, los Museos Vaticanos y la Galería Borghese; la Basílica de San Pedro sola NO es grande) van **por la mañana** (empiezan antes de las 13:00) y **en días enteros**: nunca el día de llegada (salvo F0) ni el de vuelta (salvo el vuelo desde las 19:00). Excepciones: una reserva del viajero manda siempre; los cierres mandan primero; el día del Free Tour (el Vaticano por la tarde); y un viaje con un solo día entero.
+- **Un solo camino:** el día de llegada sale IGUAL si se pide el viaje entero con vuelo, si se rehace un día suelto (con el orden de los días que el viajero ya ve) o si se pulsa «Sí, adaptarlos»: lo decide el mismo motor, con la misma hora útil. Nunca se recorta el día normal.
 - **La zona** solo decide por dónde empieza la ruta del centro, no el D1 ni sus versiones, que van por la hora, el mes y la reserva del Coliseo.
 - **La nocturna de la llegada** cuenta para el viaje (no se repite otra noche) y solo como nocturna: lo visto solo de noche sigue siendo parada de día otro día.
 - **El día de llegada cumple las reglas de cierres** de cualquier día, con el horario de su fecha.
 - **Viajes de 1 y 2 noches:** no se escriben días nuevos. El día 1 usa las mismas versiones, y lo que no cabe va a la mañana del día de vuelta (la primera que no ha visto) o, si tampoco cabe, a «Si te sobra tiempo» con el aviso «{sitio} lo tienes en «Si te sobra tiempo» del {día}: si reservas la entrada, te lo ponemos en el día.».
-  - **2 noches, libre antes de las 14:00** (en invierno, antes de las 13:00): día 1, el D1 en su versión (tranquila, rápida o de tarde); día 2, el D2 entero; la vuelta, por su tabla.
-  - **2 noches, libre desde las 14:00** (en invierno, desde las 13:00): día 1, la ruta del centro en su fila; día 2, **D1+Vaticano (2 noches con llegada tarde)**, escrito abajo; la vuelta, la primera mañana que no ha visto. Nunca la parte del centro del D1 (se repetiría).
+  - **2 noches, hora útil hasta las 9:30:** día 1, el D1 entero; día 2, el D2 entero; la vuelta, por su tabla.
+  - **2 noches, hora útil desde las 9:31:** día 1, la ruta ligera en su fila; día 2, **D1+Vaticano (2 noches con llegada tarde)**, escrito abajo (es el único día entero del viaje: puede llevar dos grandes); la vuelta, la primera mañana que no ha visto. Nunca la parte del centro del D1 (se repetiría).
   - **2 noches con Free Tour de mañana:** como se cuenta en «El Free Tour y otras reservas el día de llegada», con el día 2 que toque; lo que no cabe, a la mañana de la vuelta.
-  - **1 noche, libre antes de las 10:00:** el D0 entero, como sin vuelos. **De 10:00 a 13:59:** el D1 en su versión rápida o de tarde, y la mañana de la vuelta, el Vaticano si el vuelo lo permite. **Desde las 14:00:** la ruta del centro en su fila, la mañana de la vuelta el Vaticano si cabe, y el Coliseo a «Si te sobra tiempo» con su aviso.
+  - **1 noche, hora útil hasta las 9:30:** el D0 entero, como sin vuelos. **Desde las 9:31:** la ruta ligera en su fila, la mañana de la vuelta, el Vaticano si el vuelo lo permite, y el Coliseo a «Si te sobra tiempo» con su aviso.
   - **1 día (D0) un miércoles con la versión sin Museos** (por ejemplo, el 6 de enero en miércoles), también sin vuelos: va el D0 del miércoles que ya está escrito arriba (por la mañana el Panteón por dentro, Piazza Navona, el Puente y el Castillo por fuera; la comida en el Borgo; después de comer, la Plaza y la Basílica, y la tarde de siempre). Así la mañana nunca queda vacía.
 - **La regla 11c** (la noche y lo visto ese día) cuenta los días del viaje por sus fechas.
 
 ### Qué lleva el día 1 según la hora (viajes de 3 noches o más, sin Free Tour de mañana)
-Cada fila es una lista escrita (más abajo, con ese nombre). Las dos tablas, la de **marzo a octubre** y la de **invierno**, cubren las 24 horas. La primera fila es por la hora de **llegada** (el vuelo de madrugada); las demás, por la hora a la que el viajero está **libre**. Si el viajero reserva el Coliseo, manda la tabla de la hora del Coliseo del D1, como siempre. Después de la lista: «comida al llegar» es la parada «Comida, cerca de tu alojamiento» (sin restaurante nuestro) antes de la primera parada; «comida corta» es la misma comida contada en 45 min.
+Cada fila es una lista escrita (más abajo, con ese nombre). La hora que elige la fila es la **hora útil** (ver «Las horas: la hora útil y la hora de irse»). Las dos tablas, la de **marzo a octubre** y la de **invierno**, son iguales desde la tanda LL (4-nov-2026): el Coliseo ya no va nunca el día de llegada, así que su cierre de las 16:30 no cambia el día 1. Cubren las 24 horas. La primera fila es por la hora de **llegada** (el vuelo de madrugada); las demás, por la **hora útil**. Si el viajero reserva el Coliseo, manda la tabla de la hora del Coliseo del D1, como siempre (una reserva del viajero manda siempre). «Comida al llegar» es la parada «Comida, cerca de tu alojamiento» (sin restaurante nuestro); sale solo con hora útil hasta las 15:00 (la comida no empieza después).
 
 #### El día 1, de marzo a octubre
 
-| Libre a las… | El día 1 |
+| Hora útil a las… | El día 1 |
 |---|---|
 | llega de 0:00 a 4:59 | D1 · desde las 9:00 |
-| antes de las 10:00 | D1 («Por la tarde (a las 15:30 o más tarde)») |
-| de 10:00 a 11:59 | D1-rapido |
-| de 12:00 a 13:59 | D1-tarde · comida al llegar |
-| de 14:00 a 14:59 | D1-centro-navona o D1-centro-espana · comida al llegar · el D1 pasa al día 2 |
-| de 15:00 a 18:59 | D1-centro-navona o D1-centro-espana · el D1 pasa al día 2 |
-| de 19:00 a 20:29 | D1-anochecer-navona o D1-anochecer-espana · el D1 pasa al día 2 |
-| de 20:30 a 21:59 | D1-noche · el D1 pasa al día 2 |
-| de 22:00 a 22:59 | D1-noche-sin-cena · el D1 pasa al día 2 |
-| a las 23:00 o más tarde | D1-sin-ruta · el D1 pasa al día 2 |
+| antes de las 9:31 | D1 |
+| de 9:31 a 12:00 | D1-centro-entera-navona o D1-centro-entera-espana o D1-centro-entera-trastevere o D1-centro-entera-prati o D1-centro-entera-monti · comida al llegar · el D1 pasa al día 2 |
+| de 12:01 a 15:00 | D1-centro-navona o D1-centro-espana o D1-centro-trastevere o D1-centro-prati o D1-centro-monti · comida al llegar · el D1 pasa al día 2 |
+| de 15:01 a 18:00 | D1-centro-navona o D1-centro-espana o D1-centro-trastevere o D1-centro-prati o D1-centro-monti · el D1 pasa al día 2 |
+| de 18:01 a 20:00 | D1-anochecer-navona o D1-anochecer-espana o D1-anochecer-trastevere o D1-anochecer-prati o D1-anochecer-monti · el D1 pasa al día 2 |
+| de 20:01 a 21:30 | D1-noche-navona o D1-noche-espana o D1-noche-trastevere o D1-noche-prati o D1-noche-monti · el D1 pasa al día 2 |
+| de 21:31 a 23:00 | D1-noche-sin-cena-navona o D1-noche-sin-cena-espana o D1-noche-sin-cena-trastevere o D1-noche-sin-cena-prati o D1-noche-sin-cena-monti · el D1 pasa al día 2 |
+| a las 23:01 o más tarde | D1-sin-ruta · el D1 pasa al día 2 |
 
 #### El día 1, en invierno
 
-| Libre a las… | El día 1 |
+| Hora útil a las… | El día 1 |
 |---|---|
 | llega de 0:00 a 4:59 | D1 · desde las 9:00 |
-| antes de las 10:00 | D1 |
-| de 10:00 a 10:59 | D1-rapido-invierno-10 |
-| de 11:00 a 11:59 | D1-rapido-invierno-11 |
-| de 12:00 a 12:59 | D1-tarde · comida al llegar · comida corta (45 min) |
-| de 13:00 a 13:59 | D1-centro-entera-navona o D1-centro-entera-espana · comida al llegar · el D1 pasa al día 2 |
-| de 14:00 a 14:59 | D1-centro-navona o D1-centro-espana · comida al llegar · el D1 pasa al día 2 |
-| de 15:00 a 18:59 | D1-centro-navona o D1-centro-espana · el D1 pasa al día 2 |
-| de 19:00 a 20:29 | D1-anochecer-navona o D1-anochecer-espana · el D1 pasa al día 2 |
-| de 20:30 a 21:59 | D1-noche · el D1 pasa al día 2 |
-| de 22:00 a 22:59 | D1-noche-sin-cena · el D1 pasa al día 2 |
-| a las 23:00 o más tarde | D1-sin-ruta · el D1 pasa al día 2 |
+| antes de las 9:31 | D1 |
+| de 9:31 a 12:00 | D1-centro-entera-navona o D1-centro-entera-espana o D1-centro-entera-trastevere o D1-centro-entera-prati o D1-centro-entera-monti · comida al llegar · el D1 pasa al día 2 |
+| de 12:01 a 15:00 | D1-centro-navona o D1-centro-espana o D1-centro-trastevere o D1-centro-prati o D1-centro-monti · comida al llegar · el D1 pasa al día 2 |
+| de 15:01 a 18:00 | D1-centro-navona o D1-centro-espana o D1-centro-trastevere o D1-centro-prati o D1-centro-monti · el D1 pasa al día 2 |
+| de 18:01 a 20:00 | D1-anochecer-navona o D1-anochecer-espana o D1-anochecer-trastevere o D1-anochecer-prati o D1-anochecer-monti · el D1 pasa al día 2 |
+| de 20:01 a 21:30 | D1-noche-navona o D1-noche-espana o D1-noche-trastevere o D1-noche-prati o D1-noche-monti · el D1 pasa al día 2 |
+| de 21:31 a 23:00 | D1-noche-sin-cena-navona o D1-noche-sin-cena-espana o D1-noche-sin-cena-trastevere o D1-noche-sin-cena-prati o D1-noche-sin-cena-monti · el D1 pasa al día 2 |
+| a las 23:01 o más tarde | D1-sin-ruta · el D1 pasa al día 2 |
 
-- **TRANQUILO (antes de las 10:00).** De marzo a octubre, el D1 «al revés» (su versión «Por la tarde (a las 15:30 o más tarde)», más arriba: la parte del centro por la mañana y la Roma antigua por la tarde), con todas sus paradas. En invierno, el D1 de siempre (la Roma antigua por la mañana). La versión tranquila no es una lista nueva.
-- **RÁPIDO (de 10:00 a 11:59)** y **DE TARDE (de 12:00 a 13:59)** son listas nuevas, a buen paso: **los sitios por dentro que no son de los grandes se ven por fuera o más cortos, con sus propios minutos; los sitios grandes llevan siempre su tiempo entero** (el Coliseo, el Foro y Palatino, los Museos…).
-- **La ruta del centro** tiene dos inicios según la zona del alojamiento (ver «Por dónde empieza la ruta del centro»). La cena de la ruta del centro es donde acaba la ruta, con el restaurante de esa zona.
-- **La nocturna de las rutas** que dicen «la nocturna que toque» es la regla 13: no repite lo visto ese día (suele ser el Coliseo y el Foro desde el Campidoglio, en taxi de 15 min o menos).
-- **Los dos puntos de las 22:00:** la cena del día 1 solo sale si el viajero está libre antes de las 22:00; por eso son dos filas.
-- **«El D1 pasa al día 2»** quiere decir lo que dice «Los días reales»: se corre un día y se cae el último.
+**Las franjas** (la hora útil de la tabla es la de Eric: aterrizas + 45 min + trayecto a tu zona + 1 h):
+- **F0 · día entero** (aterrizas de 0:00 a 4:59, o hora útil hasta las 9:30): el D1 de siempre, entero y desde las 9:00 (o desde que está libre): es el único día de llegada con un imprescindible grande.
+- **F1 · desde media mañana** (9:31 a 12:00): unas paradas ligeras cerca del alojamiento, la comida cerca, la ruta ligera del centro por la tarde, la cena y un paseo de noche corto. **La Roma antigua pasa al día 2 y se cae el último día.**
+- **F2 · desde la comida** (12:01 a 15:00): la comida cerca del alojamiento, la ruta ligera del centro a buen paso, la cena y un paseo de noche corto.
+- **F3 · tarde** (15:01 a 18:00): la ruta ligera a buen paso, la cena y un paseo de noche corto.
+- **F4 · antes de cenar** (18:01 a 20:00): 2 o 3 paradas al lado de casa, la cena y un paseo de noche corto.
+- **F5 · cena** (20:01 a 21:30): la cena cerca del alojamiento y UN sitio de noche, a menos de 15 min andando.
+- **F6 · noche** (21:31 a 23:00): sin cena con restaurante; un paseo corto de noche cerca, si apetece.
+- **F7 · muy tarde** (después de las 23:00): «Descansa, que mañana empezamos a tope.»
+
+- **Qué es una parada «ligera»:** se ve en 45 min o menos, sin entrada con hora fija, no es de los grandes (el Coliseo y el Foro, los Museos Vaticanos y la Galería Borghese; la Basílica de San Pedro sola NO es grande), y a esa hora está abierta. Las plazas, las fuentes, los miradores, las calles y las iglesias pequeñas se ven a cualquier hora.
+- **Los grandes, por la mañana y en días enteros:** nunca el día de llegada (salvo F0) ni el de vuelta (salvo el vuelo desde las 19:00). Excepciones: una reserva del viajero manda siempre (se avisa, nunca se quita); los cierres mandan primero; el día del Free Tour (Vaticano por la tarde) se queda como excepción; y un viaje con UN solo día entero (2 noches con llegada tarde) puede llevar dos grandes ese día.
+- **La parte ligera del día que se cae** (Plaza de España, Trinità, Via Condotti, el Pincio y el Popolo) va en el día de llegada; lo grande de ese día (la Galería Borghese) vuelve si se reserva.
+- **La nocturna de las rutas** es UNA, escrita en la lista y cerca de la cena («fija»: no cede su sitio a la primera imprescindible que falte, y puede repetir lo visto ese día: de noche es otra cosa). Por eso con una llegada de noche ya no sale el Coliseo a las 23:10 cuando el texto promete Trevi.
+- **La comida y la cena de la ruta:** se come donde esté la ruta; la cena, cerca del alojamiento o de la última parada, con el restaurante de esa zona. Si llega tarde, lo primero que sale de la ruta es lo último (el Pincio y el Popolo): va a «Si te sobra tiempo».
 
 ### La «Llegada a Roma» (el día 1)
-Las listas de abajo son las de las tablas de arriba. Todas van **por fuera y a buen paso**, con sus propios minutos, salvo la que dice «entera».
+Las listas de abajo son las de las tablas de arriba. Todas van **por fuera y a buen paso**, con sus propios minutos, salvo la que dice «entera». Cinco zonas: Navona (Centro y «Aún no lo sé»), la Plaza de España, Trastevere, Prati y Monti (con Termini).
 
 #### Por dónde empieza la ruta del centro (según la zona)
-La zona solo decide **por dónde empieza** la ruta del centro (las filas desde las 14:00 y la de invierno de 13:00 a 13:59). Desde Prati se cruza el Puente; desde Trastevere, el Ponte Sisto; desde Monti, el bus 40 o 64.
+La zona decide **por dónde empieza** la ruta ligera y dónde se cena. Desde Prati se cruza el Puente; desde Trastevere, el Ponte Sisto; desde Monti y Termini, a pie o en el bus 40 o 64.
 
 | Zona | Empieza en |
 |---|---|
 | Centro | Navona |
-| Prati | Navona |
-| Trastevere | Navona |
-| Monti | Navona |
+| Prati | Prati |
+| Trastevere | Trastevere |
+| Monti | Monti |
 | Aún no lo sé | Navona |
 | Plaza de España | Plaza de España |
-| Termini | Plaza de España |
+| Termini | Monti |
 
-- **Empieza en Navona:** Piazza Navona · Panteón · Fontana de Trevi · Via Condotti · Plaza de España · Escalinata y Trinità dei Monti · Terraza del Pincio · Piazza del Popolo.
-- **Empieza en la Plaza de España:** Plaza de España · Escalinata y Trinità dei Monti · Terraza del Pincio · Piazza del Popolo · de camino Via del Corso · Fontana de Trevi · Panteón · Piazza Navona. Desde Termini va en el metro A, directo a Spagna; la ruta acaba en Navona y vuelve en el bus 40 o 64.
-- **La comida y la cena de la ruta del centro:** se come donde esté la ruta, con el restaurante de esa zona, sin repetir en el viaje (Navona y el Panteón: Armando al Pantheon o Da Baffetto; el Tridente: Poldo e Gianna o Edy). La cena: si la ruta acaba en Trevi o antes, Armando o Da Baffetto; si llega a la Plaza de España o más allá, Il Gabriello o Poldo e Gianna. Desde la Plaza de España, al revés.
-- **Si llega tarde,** lo primero que sale de la ruta es el Pincio y el Popolo, que son lo menos vistoso: van a «Si te sobra tiempo».
+- **Navona:** Piazza Navona · Panteón · Fontana de Trevi · Via Condotti · Plaza de España · Escalinata y Trinità dei Monti · Terraza del Pincio · Piazza del Popolo.
+- **Plaza de España:** Plaza de España · Escalinata y Trinità dei Monti · Terraza del Pincio · Piazza del Popolo · de camino Via del Corso · Fontana de Trevi · Panteón · Piazza Navona.
+- **Trastevere:** Plaza Trilussa · Ponte Sisto · Campo de' Fiori · Piazza Navona · Panteón · Largo di Torre Argentina (el tranvía 8 vuelve de allí a Trastevere) · Barrio Judío · Isla Tiberina. Cena y nocturna en Trastevere.
+- **Prati:** el Castillo de Sant'Angelo por fuera · el Puente · Via dei Coronari · Piazza Navona · Panteón. Cena y nocturna en Prati (el Puente y el Castillo).
+- **Monti:** Santa María la Mayor · Plaza del Quirinal · Fontana de Trevi · Panteón · Piazza Navona · Largo di Torre Argentina. Cena en Monti.
+- **Qué se «come» de otros días:** Trastevere y Prati llevan paradas del día del Vaticano y Trastevere (Isla Tiberina, el Castillo y el Puente); Monti, Santa María la Mayor (D5) y el Quirinal; el centro, lo que ya llevaban las rutas del centro. Esos días lo llevan «de camino» (regla 9), salvo los imprescindibles, que salen otra vez.
 
-### La ruta rápida del día 1 (marzo a octubre) · D1-rapido
-Para quien está libre de 10:00 a 11:59: por la mañana, el centro a buen paso; después de comer, la Roma antigua entera. Trevi ya se vio por la mañana y no se repite de noche (regla 11c).
+### La ruta del centro entera, desde Navona · D1-centro-entera-navona
+Hora útil de 9:31 a 12:00 (F1), con la comida al llegar en medio: unas paradas ligeras antes de comer y el resto de la ruta por la tarde.
 
+- **Empieza en:** Navona
 - **Mañana:**
-  - Piazza Navona ~20
-  - Panteón, por fuera ~15 (con su etiqueta de reserva)
-  - Fontana de Trevi ~20
-- **Comida:** Armando al Pantheon (o Da Baffetto)
+  - Piazza Navona ~30
+  - Panteón, por fuera ~20 (con su etiqueta de reserva)
+  - Fontana de Trevi ~30
+  - Via Condotti ~15
 - **Tarde:**
-  - 🎟 Coliseo, por dentro ~1 h 15 (turno)
-  - Arco de Constantino ~10
-  - Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)
-  - Plaza del Campidoglio ~30
-  - Piazza Venezia ~10
-  - Altar de la Patria, por dentro ~45
+  - Plaza de España ~30
+  - Escalinata y Trinità dei Monti ~20
+  - Terraza del Pincio ~20
+  - Piazza del Popolo ~20
 - **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente
-- **Noche:** la Plaza de España y la Escalinata
-- **Si te sobra tiempo:** Barrio Judío ~30, Fuente de las Tortugas ~5, Largo di Torre Argentina ~15, San Luigi dei Francesi (los Caravaggio) ~20, Iglesia del Gesù ~20
+- **Noche:** Plaza de España de noche (fija, repite)
 
-### La ruta rápida del día 1 en invierno, libre de 10:00 a 10:59 · D1-rapido-invierno-10
-En invierno la Roma antigua va siempre primero (el Coliseo cierra a las 16:30). La comida, en el Gueto, antes de las 15:00; después, la parte del centro a buen paso.
+### La ruta del centro entera, desde la Plaza de España · D1-centro-entera-espana
+Hora útil de 9:31 a 12:00 (F1), con la comida al llegar en medio: unas paradas ligeras antes de comer y el resto de la ruta por la tarde.
 
+- **Empieza en:** Plaza de España
 - **Mañana:**
-  - 🎟 Coliseo, por dentro ~1 h 15 (turno)
-  - Arco de Constantino ~10
-  - Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)
-  - Plaza del Campidoglio ~30
-- **Comida:** Nonna Betta (o Giggetto), en el Barrio Judío
+  - Plaza de España ~30
+  - Escalinata y Trinità dei Monti ~20
+  - Terraza del Pincio ~20
+  - Piazza del Popolo ~20
 - **Tarde:**
-  - Piazza Venezia ~10
-  - Altar de la Patria, por dentro ~45
-  - Panteón, por dentro ~30
-  - Piazza Navona ~20
+  - *de camino:* Via del Corso
+  - Fontana de Trevi ~30
+  - Panteón, por fuera ~20 (con su etiqueta de reserva)
+  - Piazza Navona ~30
+- **Cena:** Armando al Pantheon (o Da Baffetto)
+- **Noche:** Piazza Navona de noche (fija, repite)
+
+### La ruta del centro entera, desde Trastevere · D1-centro-entera-trastevere
+Hora útil de 9:31 a 12:00 (F1), con la comida al llegar en medio: unas paradas ligeras antes de comer y el resto de la ruta por la tarde.
+
+- **Empieza en:** Trastevere
+- **Mañana:**
+  - Plaza Trilussa ~15
+  - Ponte Sisto ~15
+  - Campo de' Fiori ~25
+  - Piazza Navona ~30
+- **Tarde:**
+  - Panteón, por fuera ~20 (con su etiqueta de reserva)
+  - Largo di Torre Argentina ~20
+  - Barrio Judío ~30
+  - Isla Tiberina ~20
+- **Cena:** Taverna Trilussa (o Da Lucia), en Trastevere
+- **Noche:** Trastevere de noche (fija, repite)
+
+### La ruta del centro entera, desde Prati · D1-centro-entera-prati
+Hora útil de 9:31 a 12:00 (F1), con la comida al llegar en medio: unas paradas ligeras antes de comer y el resto de la ruta por la tarde.
+
+- **Empieza en:** Prati
+- **Mañana:**
+  - Castillo de Sant'Angelo, por fuera ~20
+  - Puente Sant'Angelo ~10
+  - Via dei Coronari ~10
+  - Piazza Navona ~30
+- **Tarde:**
+  - Panteón, por fuera ~20 (con su etiqueta de reserva)
+  - Fontana de Trevi ~30
+  - Plaza de España ~30
+  - Escalinata y Trinità dei Monti ~20
+- **Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati
+- **Noche:** el Puente y el Castillo de Sant'Angelo iluminados (fija, repite)
+
+### La ruta del centro entera, desde Monti y Termini · D1-centro-entera-monti
+Hora útil de 9:31 a 12:00 (F1), con la comida al llegar en medio: unas paradas ligeras antes de comer y el resto de la ruta por la tarde.
+
+- **Empieza en:** Monti
+- **Mañana:**
+  - Basílica de Santa María la Mayor ~30
+  - Plaza del Quirinal ~15
+  - Fontana de Trevi ~30
+  - Panteón, por fuera ~20 (con su etiqueta de reserva)
+- **Tarde:**
+  - Piazza Navona ~30
+  - Via Condotti ~15
+  - Plaza de España ~30
+  - Escalinata y Trinità dei Monti ~20
 - **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente
-- **Noche:** Fontana de Trevi y la Plaza de España
-- **Si te sobra tiempo:** Barrio Judío ~30, Fuente de las Tortugas ~5, Largo di Torre Argentina ~15, San Luigi dei Francesi (los Caravaggio) ~20, Iglesia del Gesù ~20
-
-### La ruta rápida del día 1 en invierno, libre de 11:00 a 11:59 · D1-rapido-invierno-11
-Igual que la anterior, pero la comida va primero (nunca antes de las 12:00): en Monti, al lado del Coliseo, y después la Roma antigua y la parte del centro.
-
-- **Comida:** La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti
-- **Tarde:**
-  - 🎟 Coliseo, por dentro ~1 h 15 (turno)
-  - Arco de Constantino ~10
-  - Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)
-  - Plaza del Campidoglio ~30
-  - Piazza Venezia ~10
-  - Altar de la Patria, por dentro ~45
-  - Panteón, por dentro ~30
-  - Piazza Navona ~20
-- **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente
-- **Noche:** Fontana de Trevi y la Plaza de España
-- **Si te sobra tiempo:** Barrio Judío ~30, Fuente de las Tortugas ~5, Largo di Torre Argentina ~15, San Luigi dei Francesi (los Caravaggio) ~20, Iglesia del Gesù ~20
-
-### El día 1 de tarde · D1-tarde
-Para quien está libre de 12:00 a 13:59: la comida al llegar (la fila la pone) y la Roma antigua entera, con el centro al atardecer. **En invierno, de 12:00 a 12:59,** es la misma lista con la comida corta (45 min) para entrar al Coliseo y al Foro antes de su última entrada.
-
-- **Tarde:**
-  - 🎟 Coliseo, por dentro ~1 h 15 (turno)
-  - Arco de Constantino ~10
-  - Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)
-  - Plaza del Campidoglio ~30
-  - Piazza Venezia ~10
-  - Altar de la Patria, por dentro ~45
-  - Panteón, por dentro ~45 (parada normal al atardecer, sin aviso de su última entrada)
-  - Piazza Navona ~45
-- **Cena:** Da Baffetto (o Armando al Pantheon)
-- **Noche:** Fontana de Trevi y la Plaza de España
-- **Si te sobra tiempo:** Barrio Judío ~30, Fuente de las Tortugas ~5, Largo di Torre Argentina ~15, San Luigi dei Francesi (los Caravaggio) ~20, Iglesia del Gesù ~20
+- **Noche:** Plaza de España de noche (fija, repite)
 
 ### La ruta del centro a buen paso, desde Navona · D1-centro-navona
-Libre desde las 14:00 hasta las 18:59 (de 14:00 a 14:59, con la comida al llegar). Todo por fuera. Unas 2 h con los paseos.
+Hora útil de 12:01 a 18:00 (F2 y F3; en F2, con la comida al llegar). Todo por fuera. Unas 2 h con los paseos.
 
 - **Empieza en:** Navona
 - **Tarde:**
@@ -1071,11 +1094,11 @@ Libre desde las 14:00 hasta las 18:59 (de 14:00 a 14:59, con la comida al llegar
   - Plaza de España ~20
   - Escalinata y Trinità dei Monti ~15
 - **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente
-- **Noche:** la nocturna que toque (regla 13): no repite lo visto ese día; suele ser el Coliseo y el Foro desde el Campidoglio (taxi, 15 min o menos)
+- **Noche:** Fontana de Trevi iluminada (fija, repite)
 - **Si te sobra tiempo:** Terraza del Pincio ~20, Piazza del Popolo ~20
 
 ### La ruta del centro a buen paso, desde la Plaza de España · D1-centro-espana
-La misma ruta, empezando en la Plaza de España y sin volver atrás.
+Hora útil de 12:01 a 18:00 (F2 y F3; en F2, con la comida al llegar). Todo por fuera. Unas 2 h con los paseos.
 
 - **Empieza en:** Plaza de España
 - **Tarde:**
@@ -1086,55 +1109,65 @@ La misma ruta, empezando en la Plaza de España y sin volver atrás.
   - Panteón, por fuera ~15 (con su etiqueta de reserva)
   - Piazza Navona ~20
 - **Cena:** Armando al Pantheon (o Da Baffetto)
-- **Noche:** la nocturna que toque (regla 13): no repite lo visto ese día; suele ser el Coliseo y el Foro desde el Campidoglio (taxi, 15 min o menos)
+- **Noche:** Piazza Navona de noche (fija, repite)
 - **Si te sobra tiempo:** Terraza del Pincio ~20, Piazza del Popolo ~20
 
-### La ruta del centro entera, desde Navona · D1-centro-entera-navona
-Solo en invierno, libre de 13:00 a 13:59 (con la comida al llegar). Con todos sus minutos, el Pincio y el Popolo incluidos.
+### La ruta del centro a buen paso, desde Trastevere · D1-centro-trastevere
+Hora útil de 12:01 a 18:00 (F2 y F3; en F2, con la comida al llegar). Todo por fuera. Unas 2 h con los paseos.
 
-- **Empieza en:** Navona
+- **Empieza en:** Trastevere
 - **Tarde:**
-  - Piazza Navona ~45
-  - Panteón, por fuera ~30 (con su etiqueta de reserva)
-  - Fontana de Trevi ~45
-  - Via Condotti ~15
-  - Plaza de España ~45
-  - Escalinata y Trinità dei Monti ~20
-  - Terraza del Pincio ~20
-  - Piazza del Popolo ~20
-- **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente
-- **Noche:** la nocturna que toque (regla 13): no repite lo visto ese día
-- **Mercadillos (8 dic – 6 ene):** «Piazza Navona y su mercadillo navideño».
+  - Plaza Trilussa ~10
+  - Ponte Sisto ~10
+  - Campo de' Fiori ~20
+  - Piazza Navona ~20
+  - Panteón, por fuera ~15 (con su etiqueta de reserva)
+  - Largo di Torre Argentina ~15
+- **Cena:** Taverna Trilussa (o Da Lucia), en Trastevere
+- **Noche:** Trastevere de noche (fija, repite)
+- **Si te sobra tiempo:** Barrio Judío ~20, Isla Tiberina ~15
 
-### La ruta del centro entera, desde la Plaza de España · D1-centro-entera-espana
-Solo en invierno, libre de 13:00 a 13:59 (con la comida al llegar).
+### La ruta del centro a buen paso, desde Prati · D1-centro-prati
+Hora útil de 12:01 a 18:00 (F2 y F3; en F2, con la comida al llegar). Todo por fuera. Unas 2 h con los paseos.
 
-- **Empieza en:** Plaza de España
+- **Empieza en:** Prati
 - **Tarde:**
-  - Plaza de España ~45
-  - Escalinata y Trinità dei Monti ~20
-  - Terraza del Pincio ~20
-  - Piazza del Popolo ~20
-  - *de camino:* Via del Corso
-  - Fontana de Trevi ~45
-  - Panteón, por fuera ~30 (con su etiqueta de reserva)
-  - Piazza Navona ~45
+  - Castillo de Sant'Angelo, por fuera ~15
+  - Puente Sant'Angelo ~10
+  - Via dei Coronari ~10
+  - Piazza Navona ~20
+  - Panteón, por fuera ~15 (con su etiqueta de reserva)
+- **Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati
+- **Noche:** el Puente y el Castillo de Sant'Angelo iluminados (fija, repite)
+- **Si te sobra tiempo:** Fontana de Trevi ~20, Largo di Torre Argentina ~15
+
+### La ruta del centro a buen paso, desde Monti y Termini · D1-centro-monti
+Hora útil de 12:01 a 18:00 (F2 y F3; en F2, con la comida al llegar). Todo por fuera. Unas 2 h con los paseos.
+
+- **Empieza en:** Monti
+- **Tarde:**
+  - Basílica de Santa María la Mayor ~20
+  - Plaza del Quirinal ~10
+  - Fontana de Trevi ~20
+  - Panteón, por fuera ~15 (con su etiqueta de reserva)
+  - Piazza Navona ~20
+  - Largo di Torre Argentina ~15
 - **Cena:** Armando al Pantheon (o Da Baffetto)
-- **Noche:** la nocturna que toque (regla 13): no repite lo visto ese día
-- **Mercadillos (8 dic – 6 ene):** «Piazza Navona y su mercadillo navideño».
+- **Noche:** Panteón de noche (fija, repite)
+- **Si te sobra tiempo:** Via Condotti ~10, Plaza de España ~20
 
 ### La llegada al anochecer, desde Navona · D1-anochecer-navona
-Libre de 19:00 a 20:29: Navona y el Panteón por fuera, a buen paso; la cena; y de noche, Trevi y la Plaza de España.
+Hora útil de 18:01 a 20:00 (F4): unas paradas al lado de casa, la cena y un paseo de noche corto.
 
 - **Empieza en:** Navona
 - **Tarde:**
   - Piazza Navona ~20
   - Panteón, por fuera ~15 (con su etiqueta de reserva)
 - **Cena:** Armando al Pantheon (o Da Baffetto)
-- **Noche:** Fontana de Trevi y la Plaza de España
+- **Noche:** Fontana de Trevi iluminada (fija, repite)
 
 ### La llegada al anochecer, desde la Plaza de España · D1-anochecer-espana
-Libre de 19:00 a 20:29: la Plaza de España y la Trinità, el Panteón y Navona, la cena y, de noche, Trevi.
+Hora útil de 18:01 a 20:00 (F4): unas paradas al lado de casa, la cena y un paseo de noche corto.
 
 - **Empieza en:** Plaza de España
 - **Tarde:**
@@ -1143,27 +1176,127 @@ Libre de 19:00 a 20:29: la Plaza de España y la Trinità, el Panteón y Navona,
   - Panteón, por fuera ~15 (con su etiqueta de reserva)
   - Piazza Navona ~20
 - **Cena:** Armando al Pantheon (o Da Baffetto)
-- **Noche:** Fontana de Trevi
+- **Noche:** Fontana de Trevi iluminada (fija, repite)
 
-### La llegada de noche, con cena · D1-noche
-Libre de 20:30 a 21:59: la cena y Trevi de noche, «para un primer contacto» (su texto, abajo).
+### La llegada al anochecer, desde Trastevere · D1-anochecer-trastevere
+Hora útil de 18:01 a 20:00 (F4): unas paradas al lado de casa, la cena y un paseo de noche corto.
 
+- **Empieza en:** Trastevere
+- **Tarde:**
+  - Plaza Trilussa ~10
+  - Ponte Sisto ~10
+  - Campo de' Fiori ~20
+- **Cena:** Taverna Trilussa (o Da Lucia), en Trastevere
+- **Noche:** Trastevere de noche (fija, repite)
+
+### La llegada al anochecer, desde Prati · D1-anochecer-prati
+Hora útil de 18:01 a 20:00 (F4): unas paradas al lado de casa, la cena y un paseo de noche corto.
+
+- **Empieza en:** Prati
+- **Tarde:**
+  - Puente Sant'Angelo ~10
+  - Castillo de Sant'Angelo, por fuera ~20
+- **Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati
+- **Noche:** el Puente y el Castillo de Sant'Angelo iluminados (fija, repite)
+
+### La llegada al anochecer, desde Monti y Termini · D1-anochecer-monti
+Hora útil de 18:01 a 20:00 (F4): unas paradas al lado de casa, la cena y un paseo de noche corto.
+
+- **Empieza en:** Monti
+- **Tarde:**
+  - Plaza del Quirinal ~15
+  - Fontana de Trevi ~20
+- **Cena:** Trattoria Monti (o La Boccaccia), en Monti
+- **Noche:** Fontana de Trevi iluminada (fija, repite)
+
+### La llegada de noche, con cena, desde Navona · D1-noche-navona
+Hora útil de 20:01 a 21:30 (F5): la cena cerca del alojamiento y un sitio de noche a menos de 15 min andando.
+
+- **Empieza en:** Navona
 - **Cena:** Armando al Pantheon (o Da Baffetto)
-- **Noche:** Fontana de Trevi
-- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope.»
+- **Noche:** Fontana de Trevi iluminada (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, cena cerca de tu alojamiento y da un paseo corto de noche por la Fontana de Trevi. Mañana empezamos a tope.»
 
-### La llegada de noche, sin cena · D1-noche-sin-cena
-Libre de 22:00 a 22:59: Trevi de noche, con el mismo texto. La cena ya no sale.
+### La llegada de noche, con cena, desde la Plaza de España · D1-noche-espana
+Hora útil de 20:01 a 21:30 (F5): la cena cerca del alojamiento y un sitio de noche a menos de 15 min andando.
 
-- **Noche:** Fontana de Trevi
-- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope.»
+- **Empieza en:** Plaza de España
+- **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente
+- **Noche:** Plaza de España de noche (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, cena cerca de tu alojamiento y da un paseo corto de noche por la Plaza de España. Mañana empezamos a tope.»
+
+### La llegada de noche, con cena, desde Trastevere · D1-noche-trastevere
+Hora útil de 20:01 a 21:30 (F5): la cena cerca del alojamiento y un sitio de noche a menos de 15 min andando.
+
+- **Empieza en:** Trastevere
+- **Cena:** Taverna Trilussa (o Da Lucia), en Trastevere
+- **Noche:** Trastevere de noche (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, cena cerca de tu alojamiento y da un paseo corto de noche por Trastevere. Mañana empezamos a tope.»
+
+### La llegada de noche, con cena, desde Prati · D1-noche-prati
+Hora útil de 20:01 a 21:30 (F5): la cena cerca del alojamiento y un sitio de noche a menos de 15 min andando.
+
+- **Empieza en:** Prati
+- **Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati
+- **Noche:** el Puente y el Castillo de Sant'Angelo iluminados (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, cena cerca de tu alojamiento y da un paseo corto de noche por el Puente y el Castillo de Sant'Angelo. Mañana empezamos a tope.»
+
+### La llegada de noche, con cena, desde Monti y Termini · D1-noche-monti
+Hora útil de 20:01 a 21:30 (F5): la cena cerca del alojamiento y un sitio de noche a menos de 15 min andando.
+
+- **Empieza en:** Monti
+- **Cena:** Trattoria Monti (o La Boccaccia), en Monti
+- **Noche:** Fontana de Trevi iluminada (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, cena cerca de tu alojamiento y da un paseo corto de noche por la Fontana de Trevi. Mañana empezamos a tope.»
+
+### La llegada de noche, sin cena, desde Navona · D1-noche-sin-cena-navona
+Hora útil de 21:31 a 23:00 (F6): sin cena con restaurante; un paseo corto de noche cerca, si apetece.
+
+- **Empieza en:** Navona
+- **Noche:** Fontana de Trevi iluminada (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, si te apetece, da un paseo corto de noche por la Fontana de Trevi. Mañana empezamos a tope.»
+
+### La llegada de noche, sin cena, desde la Plaza de España · D1-noche-sin-cena-espana
+Hora útil de 21:31 a 23:00 (F6): sin cena con restaurante; un paseo corto de noche cerca, si apetece.
+
+- **Empieza en:** Plaza de España
+- **Noche:** Plaza de España de noche (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, si te apetece, da un paseo corto de noche por la Plaza de España. Mañana empezamos a tope.»
+
+### La llegada de noche, sin cena, desde Trastevere · D1-noche-sin-cena-trastevere
+Hora útil de 21:31 a 23:00 (F6): sin cena con restaurante; un paseo corto de noche cerca, si apetece.
+
+- **Empieza en:** Trastevere
+- **Noche:** Trastevere de noche (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, si te apetece, da un paseo corto de noche por Trastevere. Mañana empezamos a tope.»
+
+### La llegada de noche, sin cena, desde Prati · D1-noche-sin-cena-prati
+Hora útil de 21:31 a 23:00 (F6): sin cena con restaurante; un paseo corto de noche cerca, si apetece.
+
+- **Empieza en:** Prati
+- **Noche:** el Puente y el Castillo de Sant'Angelo iluminados (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, si te apetece, da un paseo corto de noche por el Puente y el Castillo de Sant'Angelo. Mañana empezamos a tope.»
+
+### La llegada de noche, sin cena, desde Monti y Termini · D1-noche-sin-cena-monti
+Hora útil de 21:31 a 23:00 (F6): sin cena con restaurante; un paseo corto de noche cerca, si apetece.
+
+- **Empieza en:** Monti
+- **Noche:** Fontana de Trevi iluminada (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, si te apetece, da un paseo corto de noche por la Fontana de Trevi. Mañana empezamos a tope.»
 
 ### La llegada tardísima, sin ruta · D1-sin-ruta
-Libre desde las 23:00 (también si pasa de la medianoche): nada, con su texto.
+Hora útil desde las 23:01 (también si pasa de la medianoche): nada, con su texto.
 
 - **Texto:** «{Llegada} a las {hora}. Descansa, que mañana empezamos a tope.»
 
-**Los textos de la llegada de noche:** `{Llegada}` según cómo llega: avión, «Aterrizas»; tren o autobús, «Llegas a {punto}» (Termini, Tiburtina…); barco, «Desembarcas». `{hora}` es la que puso el viajero. Ejemplos: «Aterrizas a las 21:00. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope.» y «Llegas a Termini a las 23:30. Descansa, que mañana empezamos a tope.»
+### La noche de la parte del Free Tour (la cena y la noche del día 1 con el tour a media tarde) · D1-noche
+No es una fila de la tabla: es la cena y la noche que lleva el día 1 cuando solo hace la parte del Free Tour (`destination_config.llegada.free_tour.cena_y_noche_de`).
+
+- **Cena:** Armando al Pantheon (o Da Baffetto)
+- **Noche:** Fontana de Trevi (fija, repite)
+- **Texto:** «{Llegada} a las {hora}. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope.»
+
+**Los textos de la llegada de noche:** `{Llegada}` según cómo llega: avión, «Aterrizas»; tren o autobús, «Llegas a {punto}» (Termini, Tiburtina…); barco, «Desembarcas». `{hora}` es la que puso el viajero. Ejemplos: «Aterrizas a las 21:00. Cuando dejes las maletas, cena cerca de tu alojamiento y da un paseo corto de noche por la Fontana de Trevi. Mañana empezamos a tope.» y «Llegas a Termini a las 23:30. Descansa, que mañana empezamos a tope.»
 
 **La nocturna de la llegada cuenta para el viaje:** no se repite otra noche.
 
@@ -1193,6 +1326,7 @@ El día 2 de un viaje de 2 noches cuando el día 1 fue la ruta del centro (libre
 - **Cierres:** si cae en domingo o miércoles, el Vaticano va a la mañana de la vuelta si cabe; si no, a «Si te sobra tiempo» con su aviso («Los Museos Vaticanos los tienes en «Si te sobra tiempo» del {día}: si reservas la entrada, te lo ponemos en el día.»).
 
 ### El Free Tour y otras reservas el día de llegada
+- **Tanda LL (4-nov-2026): «libre» en toda esta sección es la HORA ÚTIL** (aterrizas + 45 + trayecto a la zona + 60; ver «Las horas»), con los mismos cortes de siempre (9:30 con el tour de las 10:00, 11:30 con el de las 12:00, 10:00 con el de las 15:00 y el de las 17:00; 30 min de margen). Con la hora útil más tarde, más viajes pasan a «solo la parte del tour» o «el tour al día siguiente»; la cena y la noche de la parte del tour son las de `D1-noche` (Trevi, fija).
 - **Las horas del Free Tour en Roma:** 10:00, 12:00, 15:00 («Después de comer»), 17:00 («Por la tarde»), 19:00 y 21:00. Sale de la Plaza de España y dura 2 h 30. Las horas salen de la lista única del destino, no de este documento.
 - **Se ofrece como ahora:** en viajes de 2 días o más (por sus fechas). Los días sin tour y los de horas especiales mandan también el día de llegada.
 - **Con vuelos y Free Tour de mañana** (10:00, 12:00, 15:00 o 17:00), viajes de 3 noches o más, el día 1 es el **D3**, con sus dos partes: la del Free Tour (Trevi sin gente, el desayuno, el Panteón y el tour) y la del Vaticano (los Museos, la Plaza, la Basílica, la Conciliazione, el Castillo por fuera y el Puente).
@@ -1218,19 +1352,19 @@ El día 2 de un viaje de 2 noches cuando el día 1 fue la ruta del centro (libre
 - **Cualquier otra reserva pequeña de ese día** queda fija a su hora (regla 4) y del día al que llega no se quita nada.
 
 ### El día de vuelta
-La hora de la tabla es la del **vuelo** (la que pone el viajero); por dentro se le resta el margen del punto («Las horas: libre y salir»). La tabla está escrita para Fiumicino; con los demás puntos, el mismo momento de salir (la hora de vuelo menos el margen de su punto, comparada con la de Fiumicino menos 3:00).
+La fila la elige la **hora de irse del alojamiento** (ver «Las horas: la hora útil y la hora de irse»): una sola cuenta para el motor y para la tarjeta «Hoy vuelves a casa». Se cuenta desde las 9:00 hasta la hora de irse.
 
 #### Qué lleva el día de vuelta según la hora
 
-| Vuelo desde Fiumicino | El día de vuelta | Lleva |
+| Hora de irse | El día de vuelta | Lleva |
 |---|---|---|
-| de 0:00 a 4:59 | cuenta como la noche de antes: el último día de ruta con su cena y sin nocturna; el día de vuelta, solo el traslado | solo-traslado · el día de antes con cena y sin nocturna |
-| de 5:00 a 8:59 | solo el traslado; el día de antes, normal, con su noche | solo-traslado |
-| de 9:00 a 13:29 | solo el traslado | solo-traslado |
-| de 13:30 a 14:59 | una mañana corta (abajo), sin comida | manana-corta |
-| de 15:00 a 16:59 | la última mañana sin comida: su lista sin comida (abajo) | manana-sin-comida |
-| de 17:00 a 22:59 | la última mañana con comida: su lista con comida (abajo) si la tiene; si no, la mañana de siempre. Después, «La tarde es tuya hasta que te vayas.» y [+ Añadir lugares] (como la excursión de medio día) | manana-con-comida · tarde libre |
-| a las 23:00 o más tarde | un día más entero, sin cena ni noche: el día que se cayó al llegar si se cayó alguno; si no, el siguiente día escrito que el viaje no lleva; si no queda ninguno, la última mañana con comida y la tarde libre | dia-mas · sin cena ni noche |
+| antes de las 2:00 | cuenta como la noche de antes: el último día de ruta con su cena y sin nocturna; el día de vuelta, solo el traslado | solo-traslado · el día de antes con cena y sin nocturna |
+| de 2:00 a 5:59 | solo el traslado; el día de antes, normal, con su noche | solo-traslado |
+| de 6:00 a 9:59 | menos de 1 h desde las 9:00: nada, solo la tarjeta «Hoy vuelves a casa» | solo-traslado |
+| de 10:00 a 11:29 | de 1 h a 2 h 30: una mañana corta (abajo), 2 o 3 paradas ligeras cerca | manana-corta |
+| de 11:30 a 13:59 | de 2 h 30 a 4 h: la última mañana sin comida, ligera: su lista sin comida (abajo) | manana-sin-comida |
+| a las 14:00 o más tarde | más de 4 h: la última mañana con comida (su lista con comida, abajo, si la tiene; si no, la mañana de siempre) y, en vez de «tarde libre», paradas ligeras cerca hasta la hora de irse | manana-con-comida · paradas hasta irte |
+| vuelo desde las 19:00 | cuenta como día ENTERO: un día más, sin cena ni noche, que puede llevar un grande por la mañana: el día que se cayó al llegar si se cayó alguno; si no, el siguiente día escrito que el viaje no lleva; si no queda ninguno, la última mañana con comida y paradas ligeras hasta irte | dia-mas · sin cena ni noche |
 
 - **Una reserva pequeña el día de vuelta:** su parada a su hora, dentro de la mañana; no se quita nada.
 - **Los avisos del último día de ruta,** con una salida de madrugada, se comparan con la hora de salir de esa noche.
@@ -1238,7 +1372,7 @@ La hora de la tabla es la del **vuelo** (la que pone el viajero); por dentro se 
 - **La maleta:** cuando el día de vuelta lleva mañana, su primera línea es «Déjala en tu alojamiento (pregunta si te la guardan después de dejar la habitación) o en la consigna de Termini y recógela de camino.» (`_llegada.json`, `maleta`). Y en la tarde libre: «Aprovecha la mañana sin prisas: deja la maleta en la consigna o en tu alojamiento y sal con margen.»
 
 #### Las últimas mañanas (en su orden)
-**La última mañana es la primera de esta tabla que no repite lo principal ya visto de día,** tal como está escrita, con su versión de cierres. Si el viajero ya ha visto alguno de «lo principal» de una fila, esa fila se salta. Si su hora de empezar no está escrita (solo lo está la del DT-medio, a las 7:30), se usa la de un día normal (las 9:00). Si no queda ninguna, la hoja «Ya has visto lo mejor de Roma».
+**La última mañana se elige entre lo que aún no has visto** (si ya has visto alguno de «lo principal» de una fila, esa fila se salta) **y lo más cercano a la zona de tu alojamiento** (la distancia de la zona a lo principal de cada fila); a igual distancia, el orden de la tabla. Nunca lleva un grande por dentro: el Coliseo y el Foro van por fuera (la Basílica de San Pedro sola no es grande y sigue por dentro). Con su versión de cierres. Si su hora de empezar no está escrita (solo lo está la del DT-medio, a las 7:30), se usa la de un día normal (las 9:00). Si no queda ninguna, la hoja «Ya has visto lo mejor de Roma».
 
 | Orden | La última mañana | Su mañana corta | Lo principal (si ya lo ha visto, se salta) | Se salta además |
 |---|---|---|---|---|
@@ -1252,7 +1386,7 @@ La hora de la tabla es la del **vuelo** (la que pone el viajero); por dentro se 
 - **El miércoles (la audiencia),** la mañana del Vaticano y la de la Cúpula no se hacen: se usa la siguiente de la tabla.
 - **El Vaticano el domingo:** su versión sin Museos de los cierres. Los demás días de cierres, como en cualquier día.
 
-### Las mañanas cortas (vuelo de 13:30 a 14:59)
+### Las mañanas cortas (irse de 10:00 a 11:29)
 Unas pocas paradas cercanas, de 1 h 15 a 1 h 30 en total. Cada una cumple las reglas de cierres.
 
 ### Mañana corta del Vaticano · DC-vaticano
@@ -1284,7 +1418,7 @@ Unas pocas paradas cercanas, de 1 h 15 a 1 h 30 en total. Cada una cumple las re
 - Plaza de San Pedro ~10
 - **El miércoles:** la siguiente de la tabla (por la audiencia del Papa).
 
-### Las mañanas sin comida (vuelo de 15:00 a 16:59)
+### Las mañanas sin comida (irse de 11:30 a 13:59)
 Las mismas 5 últimas mañanas y en el mismo orden de la tabla «Las últimas mañanas». Solo paradas, sin comida. Están pensadas para unas 2 h 30 con lo que se anda. Cada lista cumple las reglas de cierres y de lluvia de su día de origen (el D0-medio, el D1, el DT-medio, el DA-medio o el D6), salvo lo que se dice aquí.
 
 ### Mañana sin comida del Vaticano · DS-vaticano
@@ -1296,7 +1430,8 @@ Las mismas 5 últimas mañanas y en el mismo orden de la tabla «Las últimas ma
 - **El miércoles:** la siguiente de la tabla (por la audiencia del Papa), como siempre.
 
 ### Mañana sin comida de la Roma antigua · DS-roma-antigua
-- 🎟 Coliseo, por dentro ~1 h 15 (turno)
+Tanda LL: nunca un grande por dentro en la última mañana: el Coliseo, por fuera.
+- Coliseo, por fuera ~30 (con su etiqueta de reserva: si lo reserva, manda su hora)
 - Arco de Constantino ~10
 - Plaza del Campidoglio ~20
 - El Foro Romano, desde la terraza del Campidoglio ~15
@@ -1329,7 +1464,7 @@ El DT-medio de mañana sin Santa Maria del Popolo ni Via Condotti. Empieza a las
 - Puente Sant'Angelo ~10
 - **El miércoles:** la siguiente de la tabla (por la audiencia del Papa), como siempre.
 
-### Las mañanas con comida (vuelo de 17:00 a 22:59)
+### Las mañanas con comida (irse desde las 14:00)
 Solo las 3 que no cabían. El Pincio y el Popolo y el Aventino usan su mañana de siempre, con su comida.
 
 ### Mañana con comida del Vaticano · DCC-vaticano
@@ -1346,9 +1481,10 @@ El D0-medio de mañana, con Trevi y la Plaza de España más cortas.
 - **El miércoles:** la siguiente de la tabla (por la audiencia del Papa), como siempre.
 
 ### Mañana con comida de la Roma antigua · DCC-roma-antigua
-- 🎟 Coliseo, por dentro ~1 h 15 (turno)
+Tanda LL: nunca un grande por dentro en la última mañana: el Coliseo y el Foro, por fuera.
+- Coliseo, por fuera ~30 (con su etiqueta de reserva: si lo reserva, manda su hora)
 - Arco de Constantino ~10
-- Foro Romano y Palatino, por dentro ~1 h 15 (se sale por el Campidoglio)
+- Foro Romano y Palatino, por fuera ~20
 - Plaza del Campidoglio ~20
 - Piazza Venezia ~10
 - **Comida:** Nonna Betta (o Giggetto), en el Barrio Judío

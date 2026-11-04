@@ -15,7 +15,10 @@
 import { FREE_TOUR_HORAS, franjaDelFreeTour } from './freeTourHoras.js'
 import { horarioDeLaFecha } from './horarioDeLaFecha.js'
 import { COMIDA_HASTA_MIN } from './comida.js'
+import { horaUtilMin } from '../arrival/horaUtil.js'
 
+/** Desde qué hora útil el día de llegada es «de noche» (la franja F5: desde las 20:01). */
+export const DE_NOCHE_DESDE = 20 * 60 + 1
 const clone = (value) => (value == null ? value : JSON.parse(JSON.stringify(value)))
 export const aMin = (hora) => {
   const m = /^(\d{1,2}):(\d{2})$/.exec(String(hora ?? ''))
@@ -47,8 +50,17 @@ export function puntoDeLlegada(info, medio, puntoId = null) {
   return delMedio.reduce((a, b) => ((b.al_centro_min ?? 0) > (a.al_centro_min ?? 0) ? b : a))
 }
 
-/** «Libre» (minutos desde las 0:00; puede pasar de 1440): la hora de llegada + el traslado del punto + lo de la maleta. Nunca se enseña. */
+/** «Libre» de antes de la tanda LL (llegada + traslado del punto al centro + 30 de maleta). Ya no lo usa el motor (ahora es la HORA ÚTIL, `horaUtilDeLlegada`); queda para quien lo pida (la ficha «en el centro a las…»). */
 export const minutosLibre = (llegadaMin, punto, extra = 30) => llegadaMin + (punto?.al_centro_min ?? 0) + extra
+
+/**
+ * LA HORA ÚTIL de una llegada (tanda LL, Eric 4-nov): aterrizas + salir del punto (45 min en un aeropuerto) + trayecto a la zona del alojamiento + instalarse (60, dato del destino). Es lo que ELIGE la fila de la tabla del día 1
+ * (antes era «libre»). Sin zona (o «nose») cuenta como el Centro. Nunca se enseña (salvo la frase de la tarjeta sin pase, `fraseLibreHacia`). Devuelve { min, salirMin, trayectoMin, instalarseMin, conTabla }.
+ */
+export function horaUtilDeLlegada(destData, info, { llegadaMin, medio = 'avion', puntoId = null, zona = null }) {
+  const cfg = destData?.destination_config?.llegada ?? {}
+  return horaUtilMin({ info, medio, puntoId, zona, aterrizaMin: llegadaMin, instalarseMin: Number.isFinite(cfg.instalarse_min) ? cfg.instalarse_min : 60, extraMin: Number.isFinite(cfg.libre_extra_min) ? cfg.libre_extra_min : 30 })
+}
 
 /**
  * ¿Es «invierno» para la llegada? Los días en que el sitio de referencia del destino (`destination_config.llegada.invierno`: en Roma, el Coliseo) cierra a la hora marcada
@@ -204,7 +216,7 @@ function conOps(dias, extraDays, id, ops, cambios = {}) {
 /** La hora de empezar el día: «libre» redondeada hacia arriba de 5 en 5 (se usa por dentro y no se enseña). */
 const empiezaDesde = (libreMin) => aHHMM(Math.min(Math.ceil(libreMin / 5) * 5, 23 * 60 + 55))
 
-/** «Libre» (minutos) de una llegada, o null si no se puede saber (sin datos del destino, en coche…). Es lo único que el motor necesita antes de repartir los días. */
+/** La hora útil (minutos) de una llegada, o null si no se puede saber (sin datos del destino, en coche…). Es lo único que el motor necesita antes de repartir los días. (Antes «libre».) */
 export function libreDeLlegada(destData, written, entrada) {
   const info = written?.llegadaInfo
   if (!entrada || !info) return null
@@ -213,8 +225,7 @@ export function libreDeLlegada(destData, written, entrada) {
   if (!MEDIOS_CON_HORA.includes(medio) || llegadaMin == null) return null
   const punto = puntoDeLlegada(info, medio, entrada.puntoId)
   if (!punto) return null
-  const extra = destData?.destination_config?.llegada?.libre_extra_min
-  return minutosLibre(llegadaMin, punto, Number.isFinite(extra) ? extra : 30)
+  return horaUtilDeLlegada(destData, info, { llegadaMin, medio, puntoId: entrada.puntoId ?? punto.id ?? null, zona: entrada.zona ?? null }).min
 }
 
 /**
@@ -261,7 +272,8 @@ export function decidirLlegada(c) {
   if (llegadaMin == null) return NO('sin_hora')
   const punto = puntoDeLlegada(info, medio, entrada.puntoId)
   if (!punto) return NO('sin_punto')
-  const libre = minutosLibre(llegadaMin, punto, Number.isFinite(cfg.libre_extra_min) ? cfg.libre_extra_min : 30)
+  const util = horaUtilDeLlegada(destData, info, { llegadaMin, medio, puntoId: entrada.puntoId ?? punto.id ?? null, zona: entrada.zona ?? null })
+  const libre = util.min // la HORA ÚTIL (tanda LL): lo que elige la fila de la tabla
   const invierno = esInvierno(destData, { dateIso: c.fecha1 ?? null, month: c.mes ?? null })
   const tablaId = invierno ? 'invierno' : 'marzo_octubre'
   const encontrada = filaDeLlegada(tablas[tablaId], llegadaMin, libre)
@@ -283,6 +295,7 @@ export function decidirLlegada(c) {
     fila: { indice: encontrada.indice, desde: fila.desde, hasta: fila.hasta ?? null, doc: fila.doc ?? null },
     caso: null, dia1: null, pasa_al_dia_2: false, dia_caido: null, orden: null, free_tour: null, bloques: [],
     dejado_fuera: x.dejado, avisos: x.avisos, resumen: x.resumen,
+    interno: { horaUtilMin: libre, salirDelPuntoMin: util.salirMin, trayectoMin: util.trayectoMin, instalarseMin: util.instalarseMin, conTabla: util.conTabla, aviso: 'Solo para el motor y las pruebas: nunca se enseña.' },
     hooks: { vuelta: { dia_caido: null, pendientes: [], vuelve_como_dia_mas: null } },
   }
   x.sitioDe = (nombre) => x.sitios.find((s) => s.nombre === nombre) ?? null
@@ -357,6 +370,13 @@ function decidirNormal(x) {
       publico.fila = { ...publico.fila, desviada_por_reserva: true }
     }
   }
+  // (Tanda LL) Con una reserva GRANDE el día de llegada, la ruta «entera» —con unas paradas antes de comer y la comida en medio— no vale: la reserva ocupa el medio del día y la comida se iría a la noche.
+  // Sale la ruta a buen paso de la misma zona, con la comida al llegar ANTES de todo (la reserva manda y se avisa; nada se quita).
+  if (pasa && reservasDia1.length > 0 && !esMadrugada && (dias[lista?.lista]?.partes?.unica?.manana ?? []).some((s) => s.lugar)) {
+    const tabla = x.written.llegadas?.dia1?.[x.tablaId] ?? []
+    const filaSinManana = tabla.find((f) => f.pasa_al_dia_2 && f.segun_zona && f.comida_al_llegar && !(dias[listaDe(f)?.lista]?.partes?.unica?.manana ?? []).some((s) => s.lugar))
+    if (filaSinManana && dias[listaDe(filaSinManana)?.lista]) { fila = filaSinManana; lista = listaDe(filaSinManana); publico.fila = { ...publico.fila, desviada_por_reserva: true } }
+  }
   if (!lista || !dias[lista.lista]) return { aplica: false, motivo: 'lista_sin_escribir' }
   const esElDiaDeSiempre = lista.lista === cfg.dia_roma_antigua // «antes de las 10:00»: el D1 de siempre (en marzo-octubre, su versión tranquila)
   const chosen = [...chosen0]
@@ -403,7 +423,7 @@ function decidirNormal(x) {
     fijoPrimero = versionId
     avisarReservasAntesDeLlegar(x)
   } else {
-    publico.caso = lista.lista.includes('entera') ? 'ruta_del_centro_entera' : lista.lista.includes('centro') ? 'ruta_del_centro' : lista.lista.includes('anochecer') ? 'anochecer' : lista.lista === 'D1-noche' ? 'noche_con_cena' : lista.lista === 'D1-noche-sin-cena' ? 'noche_sin_cena' : 'sin_ruta'
+    publico.caso = lista.lista.includes('entera') ? 'ruta_del_centro_entera' : lista.lista.includes('centro') ? 'ruta_del_centro' : lista.lista.includes('anochecer') ? 'anochecer' : lista.lista.startsWith('D1-noche-sin-cena') ? 'noche_sin_cena' : lista.lista.startsWith('D1-noche') ? 'noche_con_cena' : 'sin_ruta'
     versionId = lista.lista
     publico.pasa_al_dia_2 = true
     // El D1 pasa entero al día 2: todo se corre un día y se cae el ÚLTIMO día de ruta (el de menos importancia). Con 2 noches, el día 2 es el «D1+Vaticano»; con 1, no hay día 2.
@@ -492,7 +512,7 @@ function decidirNormal(x) {
   const sinParadas = !(diaTexto?.partes?.unica?.manana?.length || diaTexto?.partes?.unica?.tarde?.length) && esVersion
   publico.dia1 = {
     lista: dia1Id, nombre: dias[dia1Id]?.nombre ?? null, variante: lista.variante ?? null, comida_al_llegar: Boolean(opsDia1.comida_al_llegar), comida_corta_min: fila.comida_corta_min ?? null,
-    inicio_ruta: dias[dia1Id]?.inicio ?? null, sin_paradas: sinParadas, texto, de_noche: esVersion && aMin(fila.desde) >= 20 * 60 + 30,
+    inicio_ruta: dias[dia1Id]?.inicio ?? null, sin_paradas: sinParadas, texto, de_noche: esVersion && aMin(fila.desde) >= DE_NOCHE_DESDE,
   }
   publico.orden = chosen
   // Si el día 1 es de noche (desde las 20:30), lo que se queda fuera va al «Si te sobra tiempo» del día 2.
@@ -622,7 +642,7 @@ function decidirConFreeTour(x) {
     const horaDia2 = horasDia2.includes(ft.sin_hora_dia_siguiente) ? ft.sin_hora_dia_siguiente : horasDia2[0]
     publico.free_tour = { hora: horaDia2, sin_hora: true, dia: 2 }
     avisos.push({ tipo: 'free_tour_puesto_al_llegar', dayNumber: 2, campana: false, botones: ['ver_disponibilidad'], texto: 'Hemos puesto el Free Tour el {dia:2}, nada más llegar. Al reservarlo, elige la hora que te encaje.' })
-    publico.dia1 = { lista: lista.lista, nombre: dias[lista.lista]?.nombre ?? null, variante: null, comida_al_llegar: Boolean(ops.comida_al_llegar), sin_paradas: false, texto: null, inicio_ruta: dias[lista.lista]?.inicio ?? null, de_noche: aMin(fila.desde) >= 20 * 60 + 30 }
+    publico.dia1 = { lista: lista.lista, nombre: dias[lista.lista]?.nombre ?? null, variante: null, comida_al_llegar: Boolean(ops.comida_al_llegar), sin_paradas: false, texto: null, inicio_ruta: dias[lista.lista]?.inicio ?? null, de_noche: aMin(fila.desde) >= DE_NOCHE_DESDE }
     publico.orden = chosen
     // (En un día de horas especiales —Nochebuena, Navidad…— el tour del día 2 es el de esas horas: la lista del D3 de esa hora.)
     return finalizar({ ...x, chosen, fijoPrimero: lista.lista, diaCaido, entradasApp: horaDia2 !== x.destData.default_free_tour?.default_time ? { 1: { [x.tourName]: horaDia2 } } : null })
@@ -688,6 +708,9 @@ function decidirConFreeTour(x) {
   return finalizar({ ...x, chosen: chosen0, fijoPrimero: null, diaCaido: null, entradasApp: null, noReorganiza: true, punto })
 }
 
+/** «Como llegas {a media mañana | a mediodía | por la tarde | de noche}» según la franja de la hora útil (F1 desde las 9:31, F2 desde las 12:01, F3 y F4 desde las 15:01, F5 en adelante). */
+const cuandoLlegas = (desde) => (desde >= DE_NOCHE_DESDE ? 'de noche' : desde >= 15 * 60 + 1 ? 'por la tarde' : desde >= 12 * 60 + 1 ? 'a mediodía' : 'a media mañana')
+
 /** Lo último de cualquier decisión: el día que se cae, el resumen para la hoja y el gancho para el agente de la vuelta. */
 function finalizar(x) {
   const { publico, avisos, resumen, dejado, chosen, diaCaido, entrada, medio, punto, esMadrugada, dias } = x
@@ -701,7 +724,7 @@ function finalizar(x) {
   resumen.push({ tipo: 'llegada', dayNumber: 1, texto: `El {dia:1} es tu llegada a ${x.destData.destination ?? 'tu destino'}.` })
   if (esMadrugada) resumen.push({ tipo: 'madrugada', dayNumber: 1, botones: ['cambiar_fechas', 'de_acuerdo'], texto: `${verboDeLlegada(medio, punto)} a las ${horaEnTexto(entrada.hora)} del {dia:1}: ese día lo tienes entero, y esa noche ya necesitas alojamiento. Si ${verboMinusculas(medio)} la noche del {dia:1}, cambia las fechas del viaje.` })
   if (publico.pasa_al_dia_2 && x.diaCorrido && chosen.length > 1) {
-    resumen.push({ tipo: 'dia_corrido', dayNumber: 2, dia_id: x.diaCorrido, texto: `Como llegas ${aMin(x.fila.desde) >= 20 * 60 + 30 ? 'de noche' : 'por la tarde'}, ${fraseDeDia(dias[x.diaCorrido]?.nombre, x.diaCorrido)} pasa al {dia:2}.` })
+    resumen.push({ tipo: 'dia_corrido', dayNumber: 2, dia_id: x.diaCorrido, texto: `Como llegas ${cuandoLlegas(aMin(x.fila.desde))}, ${fraseDeDia(dias[x.diaCorrido]?.nombre, x.diaCorrido)} pasa al {dia:2}.` })
   }
   if (diaCaido?.id) {
     // (Si el día que se cae lleva un sitio grande, la hoja dice que su reserva lo vuelve a poner: «si reservas la Galería, te ponemos su día».)

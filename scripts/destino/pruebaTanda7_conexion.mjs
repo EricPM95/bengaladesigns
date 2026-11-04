@@ -241,7 +241,7 @@ console.log('2. La hoja del resumen')
     ['flight', 'fco', '23:30', 'El sábado 14 tienes casi un día entero por Roma antes de irte.'],
     ['flight', 'fco', '10:00', 'El sábado 14 te vas pronto: ese día solo lleva el camino al aeropuerto.'],
     ['train', 'termini', '17:00', 'El sábado 14 tienes una última mañana por Roma antes de irte a la estación.'],
-    ['ferry', 'civitavecchia', '20:00', 'El sábado 14 tienes una última mañana por Roma antes de irte al puerto.'],
+    ['ferry', 'civitavecchia', '20:00', 'El sábado 14 tienes casi un día entero por Roma antes de irte.' /* LL parte 2 (Eric, 4-nov): antes «una última mañana…» con la hora de irse de siempre; ahora, con la cuenta única (barco a las 20:00 desde Civitavecchia), cuenta como día entero. */],
     ['train', 'termini', '09:00', 'El sábado 14 te vas pronto: ese día solo lleva el camino a la estación.'],
     ['ferry', 'civitavecchia', '09:00', 'El sábado 14 te vas pronto: ese día solo lleva el camino al puerto.'],
   ]
@@ -346,8 +346,9 @@ console.log('4. Los avisos de la campana')
   ruta = lleg('09:30')
   a = await avisos(ruta, [reserva('r1', 'Coliseo', ['Coliseo'], '2026-11-10', '15:00')])
   debe(campana(a, ruta).length === 0, '4 se van solos', `con la reserva a las 15:00 sigue el aviso: ${JSON.stringify(a.llegada.map((x) => x.texto))}`)
-  a = await avisos(lleg('08:00'), [reserva('r1', 'Coliseo', ['Coliseo'], '2026-11-10', '10:00')])
-  debe(campana(a, lleg('08:00')).filter((x) => x.mitad === 'arrival').length === 0, '4 se van solos', 'aterrizando con margen antes de la reserva no debe haber aviso')
+  // LL parte 2 (Eric, 4-nov). Antes: aterrizando a las 08:00 había margen para el Coliseo de las 10:00 (hora libre = aterrizaje + 60 + 30). Ahora la hora útil es aterrizaje + 45 + trayecto a la zona + 60 (hacia las 11:55 desde Fiumicino y zona Centro): con margen es aterrizando a las 06:00.
+  a = await avisos(lleg('06:00'), [reserva('r1', 'Coliseo', ['Coliseo'], '2026-11-10', '10:00')])
+  debe(campana(a, lleg('06:00')).filter((x) => x.mitad === 'arrival').length === 0, '4 se van solos', 'aterrizando con margen antes de la reserva no debe haber aviso')
   // «Dos reservas coinciden» ya lo da la campana de siempre: no se repite.
   a = await avisos(lleg('09:00'), [reserva('r1', 'Coliseo', ['Coliseo'], '2026-11-10', '11:00'), reserva('r3', 'Museos Vaticanos y Capilla Sixtina', ['Museos Vaticanos y Capilla Sixtina'], '2026-11-10', '11:30')])
   debe(!campana(a, lleg('09:00')).some((x) => /coinciden/.test(x.texto)), '4 sin repetir coinciden', 'el aviso «coinciden» de los motores no debe repetirse en la campana')

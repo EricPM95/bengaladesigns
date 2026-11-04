@@ -1,5 +1,14 @@
 // La prueba de la Tanda 7, parte del DOCUMENTO (punto 18): las listas nuevas de las llegadas y las vueltas, tal como las pide el prompt, ya convertidas a datos.
 //   node scripts/destino/pruebaTanda7_documento.mjs
+// CAMBIOS DE LA TANDA LL, PARTE 2 (4-nov-2026; antes -> ahora -> decisión de Eric):
+//   · TABLAS DEL DÍA 1: antes 10 filas por «libre» (llegada + traslado + 30 min) con «la rápida», «de tarde» y «Coliseo por la tarde», y dos zonas (Navona y Plaza de España); ahora 9 filas por la HORA ÚTIL
+//     (aterrizas + 45 + trayecto a la zona + 60), franjas F0 a F7 (0:00-9:30 · 9:31-12:00 · 12:01-15:00 · 15:01-18:00 · 18:01-20:00 · 20:01-21:30 · 21:31-23:00 · desde las 23:01), cinco zonas y lista escrita por zona y franja.
+//     Decisión de Eric (4-nov, «TANDA LL parte 2», puntos 1, 2 y 6): el día de llegada por franjas, fuera «la rápida», «de tarde» y «Coliseo por la tarde»; la regla vieja del 21-oct queda anulada.
+//   · TABLA DE LA VUELTA: antes por el vuelo desde Fiumicino (margen 3:00; 7 filas: 0:00-4:59, 5:00-8:59, 9:00-13:29, 13:30-14:59, 15:00-16:59, 17:00-22:59, desde las 23:00); ahora por la HORA DE IRSE (vuelo − 2 h − trayecto
+//     desde la zona − 30 min; 7 filas: antes de las 2:00, 2:00-5:59, 6:00-9:59, 10:00-11:29, 11:30-13:59, desde las 14:00 con paradas hasta irte, y el vuelo desde las 19:00 como día entero). Decisión de Eric (puntos 5 y 7).
+//   · «LA TARDE ES TUYA» (tarde libre): antes, la fila de 17:00 a 22:59 llevaba la tarde libre; ahora lleva paradas ligeras cerca hasta la hora de irse (la frase solo sale si no cabe ninguna). Decisión de Eric (punto 7).
+//   · «LIBRE HACIA»: antes ninguna hora calculada a la vista; ahora una excepción, la frase de la tarjeta de llegada SIN pase: «Con tu vuelo estarás libre hacia las 17:30». Decisión de Eric (punto 8).
+//   · LAS LISTAS DE LA ÚLTIMA MAÑANA: antes el Coliseo (y el Foro) por dentro en DS-roma-antigua y DCC-roma-antigua; ahora por fuera (nunca un grande por dentro). Decisión de Eric (punto 5).
 // Da fallo si:
 //   1. falta alguna lista nueva de `data/dias/roma/listas.json`, o no lleva sus paradas, sus tiempos, sus modos, su comida, su cena, su noche o su «Si te sobra tiempo»;
 //   2. las tablas «Qué lleva el día 1 según la hora» (marzo a octubre e invierno) y «Qué lleva el día de vuelta» no cubren las 24 horas, o una hora de las fronteras del prompt
@@ -32,28 +41,51 @@ const norm = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toL
 console.log('1. Las listas nuevas')
 const firma = (lista) => (lista ?? []).map((s) => `${s.lugar ?? s.texto}|${s.min}|${s.modo}`).join('; ')
 const MESA = (m) => (m ? `${m.restaurante} / ${m.alternativa}${m.zona ? ` / ${m.zona}` : ''}` : null)
-const SOBRA_D1 = 'Barrio Judío|30|null; Fuente de las Tortugas|5|null; Largo di Torre Argentina|15|null; Iglesia de San Luigi dei Francesi|20|null; Iglesia del Gesù|20|null'
 const ROMA_ANTIGUA = 'Coliseo|75|dentro; Arco de Constantino|10|null; Foro Romano y Palatino|90|dentro; Plaza del Campidoglio|30|null; Plaza Venecia|10|null; Altar de la Patria|45|dentro'
 const QUIERO = {
-  'D1-rapido': { manana: 'Piazza Navona|20|null; Panteón|15|fuera; Fontana de Trevi|20|null', comida: 'Armando al Pantheon / Pizzeria Da Baffetto', tarde: ROMA_ANTIGUA, cena: 'Il Gabriello / Poldo e Gianna Osteria / en el Tridente', noche: ['Plaza de España (noche)'], sobra: SOBRA_D1 },
-  'D1-rapido-invierno-10': { manana: 'Coliseo|75|dentro; Arco de Constantino|10|null; Foro Romano y Palatino|90|dentro; Plaza del Campidoglio|30|null', comida: "Nonna Betta / Giggetto al Portico d'Ottavia / en el Barrio Judío", tarde: 'Plaza Venecia|10|null; Altar de la Patria|45|dentro; Panteón|30|dentro; Piazza Navona|20|null', cena: 'Il Gabriello / Poldo e Gianna Osteria / en el Tridente', noche: ['Fontana de Trevi (noche)', 'Plaza de España (noche)'], sobra: SOBRA_D1 },
-  'D1-rapido-invierno-11': { manana: '', comida: 'La Taverna dei Fori Imperiali / Trattoria Valentino / en Monti', tarde: `${ROMA_ANTIGUA}; Panteón|30|dentro; Piazza Navona|20|null`, cena: 'Il Gabriello / Poldo e Gianna Osteria / en el Tridente', noche: ['Fontana de Trevi (noche)', 'Plaza de España (noche)'], sobra: SOBRA_D1 },
-  'D1-tarde': { manana: '', comida: null, tarde: `${ROMA_ANTIGUA}; Panteón|45|dentro; Piazza Navona|45|null`, cena: 'Pizzeria Da Baffetto / Armando al Pantheon', noche: ['Fontana de Trevi (noche)', 'Plaza de España (noche)'], sobra: SOBRA_D1 },
-  'D1-centro-navona': { inicio: 'navona', tarde: 'Piazza Navona|20|null; Panteón|15|fuera; Fontana de Trevi|20|null; Via Condotti|10|null; Plaza de España|20|null; Trinità dei Monti|15|null', cena: 'Il Gabriello / Poldo e Gianna Osteria / en el Tridente', libre: true, sobra: 'Terraza del Pincio|20|null; Piazza del Popolo|20|null' },
-  'D1-centro-espana': { inicio: 'plaza_de_espana', tarde: 'Plaza de España|20|null; Trinità dei Monti|15|null; Via del Corso|5|camino; Fontana de Trevi|20|null; Panteón|15|fuera; Piazza Navona|20|null', cena: 'Armando al Pantheon / Pizzeria Da Baffetto', libre: true, sobra: 'Terraza del Pincio|20|null; Piazza del Popolo|20|null' },
-  'D1-centro-entera-navona': { inicio: 'navona', tarde: 'Piazza Navona|45|null; Panteón|30|fuera; Fontana de Trevi|45|null; Via Condotti|15|null; Plaza de España|45|null; Trinità dei Monti|20|null; Terraza del Pincio|20|null; Piazza del Popolo|20|null', cena: 'Il Gabriello / Poldo e Gianna Osteria / en el Tridente', libre: true },
-  'D1-centro-entera-espana': { inicio: 'plaza_de_espana', tarde: 'Plaza de España|45|null; Trinità dei Monti|20|null; Terraza del Pincio|20|null; Piazza del Popolo|20|null; Via del Corso|5|camino; Fontana de Trevi|45|null; Panteón|30|fuera; Piazza Navona|45|null', cena: 'Armando al Pantheon / Pizzeria Da Baffetto', libre: true },
-  'D1-anochecer-navona': { inicio: 'navona', tarde: 'Piazza Navona|20|null; Panteón|15|fuera', cena: 'Armando al Pantheon / Pizzeria Da Baffetto', noche: ['Fontana de Trevi (noche)', 'Plaza de España (noche)'] },
-  'D1-anochecer-espana': { inicio: 'plaza_de_espana', tarde: 'Plaza de España|20|null; Trinità dei Monti|15|null; Panteón|15|fuera; Piazza Navona|20|null', cena: 'Armando al Pantheon / Pizzeria Da Baffetto', noche: ['Fontana de Trevi (noche)'] },
   'D1-noche': { cena: 'Armando al Pantheon / Pizzeria Da Baffetto', noche: ['Fontana de Trevi (noche)'], texto: /Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad\. Mañana empezamos a tope\.$/ },
-  'D1-noche-sin-cena': { cena: null, noche: ['Fontana de Trevi (noche)'], texto: /Cuando dejes las maletas, visita la Fontana de Trevi de noche/ },
   'D1-sin-ruta': { sinPartes: true, texto: /^\{Llegada\} a las \{hora\}\. Descansa, que mañana empezamos a tope\.$/ },
-  'D1-vaticano': { manana: ROMA_ANTIGUA, comida: "Nonna Betta / Giggetto al Portico d'Ottavia / en el Barrio Judío", tarde: "Taxi a la entrada de los Museos|undefined|undefined; Museos Vaticanos y Capilla Sixtina|150|null; Plaza de San Pedro|30|null; Basílica de San Pedro|60|dentro; Via della Conciliazione|10|null; Castillo de Sant'Angelo|30|fuera; Puente Sant'Angelo|15|null", cena: "L'Arcangelo / Osteria dell'Angelo / en Prati", libre: true, nombre: 'D1+Vaticano (2 noches con llegada tarde)' },
+  'D1-vaticano': { manana: ROMA_ANTIGUA, comida: "Nonna Betta / Giggetto al Portico d'Ottavia / en el Barrio Judío", tarde: "Taxi a la entrada de los Museos|undefined|undefined; Museos Vaticanos y Capilla Sixtina|150|null; Plaza de San Pedro|30|null; Basílica de San Pedro|60|dentro; Via della Conciliazione|10|null; Castillo de Sant'Angelo|30|fuera; Puente Sant'Angelo|15|null" },
   'DC-vaticano': { manana: 'Plaza de San Pedro|30|null; Basílica de San Pedro|45|dentro; Via della Conciliazione|10|null', miercoles: true },
   'DC-roma-antigua': { manana: 'Coliseo|30|fuera; Arco de Constantino|10|null; Plaza del Campidoglio|20|null; Foro Romano y Palatino|15|fuera' },
   'DC-pincio-popolo': { manana: 'Plaza de España|30|null; Trinità dei Monti|15|null; Terraza del Pincio|20|null; Piazza del Popolo|15|null' },
   'DC-aventino': { manana: 'Circo Máximo|15|null; Jardín de los Naranjos|20|null; Ojo de la Cerradura del Aventino|15|null; Pirámide Cestia|10|null' },
   'DC-cupula': { manana: 'Cúpula de San Pedro|75|null; Plaza de San Pedro|10|null', miercoles: true },
+  // (Tanda LL: la última mañana nunca lleva un grande por dentro: el Coliseo y el Foro, por fuera.)
+  'DS-roma-antigua': { manana: 'Coliseo|30|fuera; Arco de Constantino|10|null; Plaza del Campidoglio|20|null; Foro Romano y Palatino|15|fuera; Plaza Venecia|10|null' },
+  'DCC-roma-antigua': { manana: 'Coliseo|30|fuera; Arco de Constantino|10|null; Foro Romano y Palatino|20|fuera; Plaza del Campidoglio|20|null; Plaza Venecia|10|null' },
+}
+// (Tanda LL) Las listas del día 1 por zona y franja: la estructura que pide Eric, sin copiar cada parada.
+const ZONAS_LL = { navona: ['Piazza Navona', 'Plaza de España'], espana: ['Plaza de España', 'Plaza de España'], trastevere: ['Plaza Trilussa', 'Trastevere'], prati: ["Castillo de Sant'Angelo", "Puente Sant'Angelo"], monti: ['Basílica de Santa María la Mayor', 'Plaza de España'] }
+const PRIMERA = { navona: 'Piazza Navona', espana: 'Plaza de España', trastevere: 'Plaza Trilussa', prati: "Castillo de Sant'Angelo", monti: 'Basílica de Santa María la Mayor' }
+const NOCHE_ZONA = { navona: 'Fontana de Trevi (noche)', espana: 'Plaza de España (noche)', trastevere: 'Trastevere de noche', prati: "El Puente y el Castillo de Sant'Angelo (noche)", monti: 'Fontana de Trevi (noche)' }
+const INICIO_ZONA = { navona: 'navona', espana: 'plaza_de_espana', trastevere: 'trastevere', prati: 'prati', monti: 'monti' }
+const GRANDES_LL = new Set(['Coliseo', 'Foro Romano y Palatino', 'Museos Vaticanos y Capilla Sixtina', 'Galería Borghese'])
+{
+  const paradas = (p) => [...p.manana, ...p.tarde, ...(p.sobra ?? [])].filter((x) => x.tipo !== 'traslado')
+  for (const zona of Object.keys(PRIMERA)) {
+    for (const [tipo, quiero] of [['centro-entera', { manana: 4, tarde: 4, cena: true, comida: false }], ['centro', { manana: 0, tarde: 6, cena: true }], ['anochecer', { manana: 0, tarde: 2, cena: true }], ['noche', { manana: 0, tarde: 0, cena: true }], ['noche-sin-cena', { manana: 0, tarde: 0, cena: false }]]) {
+      const id = `D1-${tipo}-${zona}`
+      const dia = L.dias[id]
+      debe(!!dia, '1 lista', `${id}: no está en listas.json`)
+      if (!dia) continue
+      const p = dia.partes.unica
+      debe(dia.inicio === INICIO_ZONA[zona] && dia.solo_llegada_o_vuelta === true, '1 inicio', `${id}: empieza en «${dia.inicio}» y tiene que empezar en «${INICIO_ZONA[zona]}» (y ser solo de llegada o vuelta)`)
+      debe(p.manana.filter((x) => x.tipo !== 'traslado').length === quiero.manana, '1 mañana', `${id}: la mañana lleva ${p.manana.length} paradas y tiene que llevar ${quiero.manana}`)
+      const nTarde = p.tarde.filter((x) => x.tipo !== 'traslado').length
+      if (tipo === 'anochecer') debe(nTarde >= 2 && nTarde <= 4, '1 tarde', `${id}: el anochecer lleva ${nTarde} paradas (de 2 a 4)`)
+      else if (tipo === 'centro') debe(nTarde >= 5 && nTarde <= 6, '1 tarde', `${id}: la ruta a buen paso lleva ${nTarde} paradas (de 5 a 6)`)
+      else debe(nTarde === quiero.tarde || (tipo === 'centro-entera' && nTarde === quiero.tarde + 1), '1 tarde', `${id}: la tarde lleva ${nTarde} paradas y tiene que llevar ${quiero.tarde}`)
+      if (tipo.startsWith('centro')) debe((p.manana[0] ?? p.tarde[0])?.lugar === PRIMERA[zona], '1 primera', `${id}: la primera parada es «${(p.manana[0] ?? p.tarde[0])?.lugar}» y tiene que ser «${PRIMERA[zona]}»`)
+      debe(quiero.cena ? !!p.cena?.restaurante : !p.cena, '1 cena', `${id}: ${quiero.cena ? 'sin cena' : 'lleva cena y tiene que ir sin ella'}`)
+      debe(!paradas(p).some((x) => GRANDES_LL.has(x.lugar)), '1 grandes', `${id}: lleva un grande (Coliseo, Foro, Museos o Galería)`)
+      debe(p.noche?.fija === true && p.noche?.repite === true && p.noche?.lista?.length === 1, '1 noche fija', `${id}: la nocturna tiene que ser UNA, escrita y fija (regla de la llegada)`)
+      if (tipo === 'noche' || tipo === 'noche-sin-cena') debe(/Cuando dejes las maletas/.test(dia.textos?.texto ?? '') && /\{Llegada\} a las \{hora\}/.test(dia.textos?.texto ?? ''), '1 texto', `${id}: falta su texto de la llegada de noche`)
+      if (tipo === 'centro') debe(paradas({ manana: [], tarde: [], sobra: p.sobra }).length >= 2, '1 sobra', `${id}: «Si te sobra tiempo» tiene que llevar lo que sale de la ruta`)
+    }
+    debe(L.dias[`D1-centro-entera-${zona}`]?.partes.unica.noche.lista[0] != null && L.dias[`D1-noche-${zona}`]?.partes.unica.noche.lista[0] === NOCHE_ZONA[zona], '1 noche zona', `D1-noche-${zona}: la noche es ${L.dias[`D1-noche-${zona}`]?.partes.unica.noche.lista[0]} y tiene que ser ${NOCHE_ZONA[zona]}`)
+  }
+  for (const id of ['D1-rapido', 'D1-rapido-invierno-10', 'D1-rapido-invierno-11', 'D1-tarde', 'D1-noche-sin-cena']) debe(!L.dias[id], '1 fuera', `${id}: tiene que haber desaparecido (la rápida, de tarde y la noche sin zona)`)
 }
 for (const [id, q] of Object.entries(QUIERO)) {
   const dia = L.dias[id]
@@ -101,14 +133,13 @@ const filaDe = (filas, hhmm, llegada = false) => {
   return filas.find((x) => x.por !== 'llegada' && mins(hhmm) >= mins(x.desde) && (x.hasta == null || mins(hhmm) <= mins(x.hasta)))
 }
 const listasDe = (f) => (f?.listas ?? []).map((l) => (l.variante ? `${l.lista}/${l.variante}` : l.lista)).join(' o ')
-const FRONTERAS = ['0:00', '4:59', '5:00', '9:59', '10:00', '10:59', '11:00', '11:59', '12:00', '12:59', '13:00', '13:59', '14:00', '14:59', '15:00', '18:59', '19:00', '20:29', '20:30', '21:59', '22:00', '22:59', '23:00', '23:59']
-const CENTRO = 'D1-centro-navona o D1-centro-espana'
-const CENTRO_E = 'D1-centro-entera-navona o D1-centro-entera-espana'
-const ANOCHECER = 'D1-anochecer-navona o D1-anochecer-espana'
-const QUIERO_VERANO = { '0:00': ['D1', 'llegada'], '4:59': ['D1', 'llegada'], '5:00': ['D1/coliseo_tarde'], '9:59': ['D1/coliseo_tarde'], '10:00': ['D1-rapido'], '10:59': ['D1-rapido'], '11:00': ['D1-rapido'], '11:59': ['D1-rapido'], '12:00': ['D1-tarde'], '12:59': ['D1-tarde'], '13:00': ['D1-tarde'], '13:59': ['D1-tarde'], '14:00': [CENTRO], '14:59': [CENTRO], '15:00': [CENTRO], '18:59': [CENTRO], '19:00': [ANOCHECER], '20:29': [ANOCHECER], '20:30': ['D1-noche'], '21:59': ['D1-noche'], '22:00': ['D1-noche-sin-cena'], '22:59': ['D1-noche-sin-cena'], '23:00': ['D1-sin-ruta'], '23:59': ['D1-sin-ruta'] }
-const QUIERO_INVIERNO = { ...QUIERO_VERANO, '5:00': ['D1'], '9:59': ['D1'], '10:00': ['D1-rapido-invierno-10'], '10:59': ['D1-rapido-invierno-10'], '11:00': ['D1-rapido-invierno-11'], '11:59': ['D1-rapido-invierno-11'], '12:00': ['D1-tarde'], '12:59': ['D1-tarde'], '13:00': [CENTRO_E], '13:59': [CENTRO_E] }
-const PASA_VERANO = new Set(['14:00', '14:59', '15:00', '18:59', '19:00', '20:29', '20:30', '21:59', '22:00', '22:59', '23:00', '23:59'])
-const PASA_INVIERNO = new Set(['13:00', '13:59', ...PASA_VERANO])
+const FRONTERAS = ['0:00', '4:59', '5:00', '9:30', '9:31', '12:00', '12:01', '15:00', '15:01', '18:00', '18:01', '20:00', '20:01', '21:30', '21:31', '23:00', '23:01', '23:59']
+const zonas5 = (base) => ['navona', 'espana', 'trastevere', 'prati', 'monti'].map((z) => `${base}-${z}`).join(' o ')
+const QUIERO_VERANO = { '0:00': ['D1', 'llegada'], '4:59': ['D1', 'llegada'], '5:00': ['D1'], '9:30': ['D1'], '9:31': [zonas5('D1-centro-entera')], '12:00': [zonas5('D1-centro-entera')], '12:01': [zonas5('D1-centro')], '15:00': [zonas5('D1-centro')], '15:01': [zonas5('D1-centro')],
+  '18:00': [zonas5('D1-centro')], '18:01': [zonas5('D1-anochecer')], '20:00': [zonas5('D1-anochecer')], '20:01': [zonas5('D1-noche')], '21:30': [zonas5('D1-noche')], '21:31': [zonas5('D1-noche-sin-cena')], '23:00': [zonas5('D1-noche-sin-cena')], '23:01': ['D1-sin-ruta'], '23:59': ['D1-sin-ruta'] }
+const QUIERO_INVIERNO = { ...QUIERO_VERANO } // (desde la tanda LL las dos tablas son iguales)
+const PASA_VERANO = new Set(['9:31', '12:00', '12:01', '15:00', '15:01', '18:00', '18:01', '20:00', '20:01', '21:30', '21:31', '23:00', '23:01', '23:59'])
+const PASA_INVIERNO = PASA_VERANO
 for (const [clave, quiero, pasa] of [['marzo_octubre', QUIERO_VERANO, PASA_VERANO], ['invierno', QUIERO_INVIERNO, PASA_INVIERNO]]) {
   const filas = L.llegadas?.dia1?.[clave] ?? []
   debe(filas.length > 0, '2 tabla', `la tabla del día 1 «${clave}» no está en listas.json`)
@@ -119,40 +150,38 @@ for (const [clave, quiero, pasa] of [['marzo_octubre', QUIERO_VERANO, PASA_VERAN
     if (!f) continue
     debe(quiero[h][0] === listasDe(f), '2 fila', `día 1 ${clave}: a las ${h} sale «${listasDe(f)}» y tiene que salir «${quiero[h][0]}»`)
     debe(llega ? !f.pasa_al_dia_2 : !!f.pasa_al_dia_2 === pasa.has(h), '2 pasa al día 2', `día 1 ${clave}: a las ${h} «el D1 pasa al día 2» está ${f.pasa_al_dia_2 ? 'puesto' : 'sin poner'} y tiene que estar ${pasa.has(h) ? 'puesto' : 'sin poner'}`)
-    // La hora de la frontera no se redondea: la fila empieza en su hora.
     if (!llega) debe(mins(f.desde) <= mins(h) && (f.hasta == null || mins(h) <= mins(f.hasta)), '2 borde', `día 1 ${clave}: ${h} fuera de su fila`)
   }
   const comidaAlLlegar = filas.filter((f) => f.comida_al_llegar).map((f) => f.desde)
-  const esperada = clave === 'marzo_octubre' ? ['12:00', '14:00'] : ['12:00', '13:00', '14:00']
-  debe(JSON.stringify(comidaAlLlegar) === JSON.stringify(esperada), '2 comida al llegar', `día 1 ${clave}: «comida al llegar» en las filas ${comidaAlLlegar} y tiene que ser en ${esperada}`)
-  // Las filas de la ruta del centro llevan las dos listas (las dos zonas) y cada una empieza donde dice la tabla de zonas.
-  for (const f of filas.filter((x) => (x.listas ?? []).length === 2)) {
-    debe(f.segun_zona === true && (f.listas ?? []).map((l) => L.dias[l.lista]?.inicio).sort().join() === 'navona,plaza_de_espana', '2 zonas', `día 1 ${clave}: la fila de ${f.desde} no tiene las dos entradas (Navona y Plaza de España)`)
+  debe(JSON.stringify(comidaAlLlegar) === JSON.stringify(['09:31', '12:01']), '2 comida al llegar', `día 1 ${clave}: «comida al llegar» en las filas ${comidaAlLlegar} y tiene que ser en 09:31 y 12:01 (la comida no empieza después de las 15:00)`)
+  // Las filas con ruta llevan las cinco listas (una por zona) y cada una empieza donde dice la tabla de zonas.
+  for (const f of filas.filter((x) => (x.listas ?? []).length > 1)) {
+    debe(f.segun_zona === true && (f.listas ?? []).map((l) => L.dias[l.lista]?.inicio).sort().join() === 'monti,navona,plaza_de_espana,prati,trastevere', '2 zonas', `día 1 ${clave}: la fila de ${f.desde} no tiene las cinco entradas (Navona, Plaza de España, Trastevere, Prati y Monti)`)
   }
+  debe(!filas.some((f) => f.listas.some((l) => l.variante)), '2 sin variante', `día 1 ${clave}: ya no hay «Coliseo por la tarde» en la tabla de llegada`)
 }
-debe(L.llegadas?.dia1?.invierno?.find((f) => f.desde === '12:00')?.comida_corta_min === 45, '2 comida corta', 'invierno de 12:00 a 12:59: falta la comida corta de 45 min')
-debe(L.llegadas?.dia1?.marzo_octubre?.find((f) => f.desde === '12:00')?.comida_corta_min == null, '2 comida corta', 'la comida corta es solo de invierno')
 debe(L.llegadas?.dia1?.marzo_octubre?.find((f) => f.por === 'llegada')?.empieza === '09:00', '2 madrugada', 'la llegada de madrugada empieza a las 9:00')
 {
-  // La zona decide por dónde empieza la ruta del centro: Plaza de España y Termini empiezan en la Plaza de España; las demás, en Navona.
+  // La zona decide por dónde empieza la ruta ligera (cinco zonas).
   const z = L.llegadas?.inicio_por_zona ?? {}
-  const esperado = { centro: 'navona', prati: 'navona', trastevere: 'navona', monti: 'navona', nose: 'navona', plaza_de_espana: 'plaza_de_espana', termini: 'plaza_de_espana' }
+  const esperado = { centro: 'navona', prati: 'prati', trastevere: 'trastevere', monti: 'monti', nose: 'navona', plaza_de_espana: 'plaza_de_espana', termini: 'monti' }
   debe(JSON.stringify(Object.fromEntries(Object.entries(z).sort())) === JSON.stringify(Object.fromEntries(Object.entries(esperado).sort())), '2 zonas', `por dónde empieza la ruta del centro: ${JSON.stringify(z)}`)
   const zonasDelDestino = (D.destination_config?.zonas_alojamiento ?? []).map((x) => x.id).sort().join()
   debe(Object.keys(z).sort().join() === zonasDelDestino, '2 zonas', 'las zonas de la tabla no son las del destino')
 }
 {
+  // (Tanda LL: la tabla es por la HORA DE IRSE; el vuelo desde las 19:00 es un día entero.)
   const filas = L.llegadas?.vuelta?.filas ?? []
-  const QUIERO_VUELTA = { '0:00': 'solo_traslado', '4:59': 'solo_traslado', '5:00': 'solo_traslado', '8:59': 'solo_traslado', '9:00': 'solo_traslado', '13:29': 'solo_traslado', '13:30': 'manana_corta', '14:59': 'manana_corta', '15:00': 'manana_sin_comida', '16:59': 'manana_sin_comida', '17:00': 'manana_con_comida', '22:59': 'manana_con_comida', '23:00': 'dia_mas', '23:59': 'dia_mas' }
-  debe(filas.length === 7, '2 vuelta', `la tabla de la vuelta tiene ${filas.length} filas y tiene que tener 7`)
+  const QUIERO_VUELTA = { '0:00': 'solo_traslado', '1:59': 'solo_traslado', '2:00': 'solo_traslado', '5:59': 'solo_traslado', '6:00': 'solo_traslado', '9:59': 'solo_traslado', '10:00': 'manana_corta', '11:29': 'manana_corta', '11:30': 'manana_sin_comida', '13:59': 'manana_sin_comida', '14:00': 'manana_con_comida', '23:59': 'manana_con_comida' }
+  debe(filas.length === 7 && L.llegadas?.vuelta?.hora_de === 'irse', '2 vuelta', `la tabla de la vuelta tiene ${filas.length} filas y tiene que tener 7 (por la hora de irse)`)
   for (const [h, lleva] of Object.entries(QUIERO_VUELTA)) {
-    const f = filaDe(filas, h)
-    debe(f?.lleva === lleva, '2 vuelta', `vuelta: a las ${h} sale «${f?.lleva}» y tiene que salir «${lleva}»`)
+    const f = filaDe(filas.filter((x) => x.vuelo_desde == null), h)
+    debe(f?.lleva === lleva, '2 vuelta', `vuelta: irse a las ${h} sale «${f?.lleva}» y tiene que salir «${lleva}»`)
   }
-  debe(filaDe(filas, '0:00')?.dia_antes === 'con_cena_sin_nocturna', '2 vuelta', 'vuelo de 0:00 a 4:59: falta «el día de antes con cena y sin nocturna»')
-  debe(filaDe(filas, '17:00')?.tarde_libre === true, '2 vuelta', 'vuelo de 17:00 a 22:59: falta la tarde libre')
-  debe(filaDe(filas, '23:00')?.sin_cena_ni_noche === true, '2 vuelta', 'vuelo de las 23:00 o más tarde: falta «sin cena ni noche»')
-  debe(L.llegadas?.vuelta?.punto_de_la_tabla === 'fiumicino' && L.llegadas?.vuelta?.margen_de_la_tabla === '03:00', '2 vuelta', 'falta decir de qué punto es la tabla de la vuelta')
+  debe(filaDe(filas, '0:00')?.dia_antes === 'con_cena_sin_nocturna' && filaDe(filas, '1:59')?.dia_antes === 'con_cena_sin_nocturna' && !filaDe(filas, '2:00')?.dia_antes, '2 vuelta', 'irse antes de las 2:00: falta «el día de antes con cena y sin nocturna» (y solo ahí)')
+  debe(filaDe(filas, '14:00')?.paradas_hasta_irte === true && !filaDe(filas, '14:00')?.tarde_libre, '2 vuelta', 'irse desde las 14:00: faltan las paradas hasta irte (y ya no la tarde libre)')
+  const dia = filas.find((x) => x.vuelo_desde != null)
+  debe(dia?.vuelo_desde === '19:00' && dia?.lleva === 'dia_mas' && dia?.sin_cena_ni_noche === true, '2 vuelta', 'el vuelo desde las 19:00: día entero (dia_mas, sin cena ni noche)')
 }
 
 // ═══ 3. Las últimas mañanas y las cortas ═══
@@ -207,7 +236,7 @@ console.log('5. El texto nuevo del documento')
   const MALOS = [
     [/SAL A LAS|Sal a las|sal a las/, 'una hora de salir calculada («sal a las…»)'],
     [/Ese día sales hacia el aeropuerto a las/, 'la hoja «Ese día sales hacia el aeropuerto a las 12:00…»'],
-    [/EN EL CENTRO \d|En el centro \d|libre hacia|Libre hasta|Maleta a las/, 'una hora calculada a la vista'],
+    [/EN EL CENTRO \d|En el centro \d|Libre hasta|Maleta a las/, 'una hora calculada a la vista'],
     [/El orden nuevo de los días|Toda esta sección es de la Tanda 7|se decide al final/, 'un resto de lo que se quita'],
     [/Terravision|Rome Airport Bus|Rome Airport|ATRAL|KiPoint|KiBag|Trenitalia|Italo|Uber|Booking|Civitatis|GetYourGuide|Viator|Omio|Stay22|Airbnb/i, 'un nombre de empresa'],
     [/\bDía \d/, '«Día n» con número'],
@@ -219,6 +248,8 @@ console.log('5. El texto nuevo del documento')
     const m = re.exec(META.reduce((t, x) => t.split(x).join(''), bloque)) ?? re.exec(META.reduce((t, x) => t.split(x).join(''), doc))
     debe(!m, '5 texto', `el documento lleva ${que}: «${m?.[0]}»`)
   }
+  // (Tanda LL, decisión de Eric, punto 8: la ÚNICA hora calculada a la vista es la frase de la tarjeta de llegada sin pase: «Con tu vuelo estarás libre hacia las 17:30».)
+  for (const m of doc.matchAll(/libre hacia[^\n]{0,24}/g)) debe(/^libre hacia las 17:30»|^libre hacia las HH:MM/.test(m[0]) || /estarás libre hacia las 17:30/.test(doc.slice(m.index - 20, m.index + 40)), '5 texto', `«libre hacia» fuera de la frase de la tarjeta sin pase: «${m[0]}»`)
   // «taxi»: solo como parada ya escrita dentro de una ruta (Taxi a…), la nocturna en taxi de las rutas del centro, y la frase que dice que el taxi se va.
   const lineas = bloque.split('\n')
   const taxis = lineas.filter((l) => /taxi/i.test(l) && !/^\s*- Taxi a |\(taxi, 15 min o menos\)|^- \*\*El taxi se va\*\*|El taxi se va|en taxi de 15 min o menos|Sin taxi|sin taxi/.test(l))
@@ -262,7 +293,7 @@ const noCabe = []
     reales.forEach((s, i) => { total += s.min ?? 0; if (i > 0) total += andando(reales[i - 1], s) })
     return total
   }
-  const SALIR_FCO = 180 // el margen de Fiumicino, el más largo: es la hora más temprana de la fila
+  const SALIR_FCO = 220 // (tanda LL) la hora de irse desde Fiumicino y la zona Centro: 2 h + 70 min + 30 min
   const inicioDe = (lista) => (lista.partes?.manana?.empieza ?? lista.partes?.unica?.empieza ? mins(lista.partes?.manana?.empieza ?? lista.partes?.unica?.empieza) : 9 * 60)
   const COMIDA = 60
   const cortas = [['DC-vaticano', '13:30'], ['DC-roma-antigua', '13:30'], ['DC-pincio-popolo', '13:30'], ['DC-aventino', '13:30'], ['DC-cupula', '13:30']]

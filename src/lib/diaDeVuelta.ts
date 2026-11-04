@@ -6,6 +6,7 @@
  * traslado privado, algún tramo sin tiempo), el del centro (`al_centro_min` del punto). Sin tiempo para ver nada (menos de 1 h desde las 9:00): «sin tiempo», sin [+ Añadir lugares].
  */
 import { paraTuZona } from '../../shared/arrival/paraTuZona.js'
+import { horaDeIrseMin } from '../../shared/arrival/horaUtil.js'
 import type { ArrivalInfo, ArrivalMedio, ArrivalMode, ArrivalPoint } from './arrivalReturn'
 import { puntoCorto } from './arrivalReturn'
 
@@ -82,9 +83,14 @@ export function datosDelDiaDeVuelta(entrada: { modo: MedioDeLaVuelta; hora: stri
   const salida = aMin(hora)
   if (modo === 'coche' || salida == null) return { ...base, hasta: null, conHora: false, sinTiempo: false, trayecto: null, margen: 0 }
   const zona = trayectoDesdeSuZonaMin(info, zonaId, punto)
-  const trayecto = zona != null ? { min: zona, de: 'zona' as const } : { min: punto?.al_centro_min ?? 0, de: 'centro' as const }
+  let trayecto = zona != null ? { min: zona, de: 'zona' as const } : { min: punto?.al_centro_min ?? 0, de: 'centro' as const }
   const margen = margenDeEstarMin(modo, medio)
-  const limite = salida - margen - trayecto.min
+  let limite = salida - margen - trayecto.min
+  // (LL parte 2, Eric 4-nov) UNA sola cuenta para la tarjeta y el motor: vuelo − tiempo de estar allí − trayecto desde su zona (tabla del destino) − 30 min de maleta (`shared/arrival/horaUtil.js`).
+  if (info && (modo === 'avion' || modo === 'tren' || modo === 'bus' || modo === 'ferry')) {
+    const r = horaDeIrseMin({ info, medio: modo, puntoId: punto?.id ?? null, zona: zonaId ?? null, vueloMin: salida, margenAntiguoMin: margen + trayecto.min }) as { irseMin: number; margenMin: number; trayectoMin: number; conTabla: boolean }
+    if (r.conTabla) { limite = r.irseMin; trayecto = { min: r.trayectoMin, de: zonaId && zonaId !== 'nose' ? 'zona' : 'centro' } }
+  }
   const hasta = Math.floor(limite / 15) * 15
   const sinTiempo = hasta - INICIO_DEL_DIA_MIN < MINIMO_PARA_VER_ALGO_MIN
   return { ...base, hasta: sinTiempo ? null : hhmm(hasta), conHora: true, sinTiempo, trayecto, margen }

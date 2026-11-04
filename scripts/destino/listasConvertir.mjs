@@ -180,10 +180,24 @@ function mesaDe(texto, dia) {
   return { restaurante: nombres0[0] ?? null, alternativa: nombres0[1] ?? null, tercera: nombres0[2] ?? null, ...(nombres0.length > 3 ? { otras: nombres0.slice(3) } : {}), zona, doc: texto.trim() }
 }
 
+/** Por dónde empieza la ruta del día 1 (tanda LL: cinco zonas). */
+function inicioDe(texto) {
+  const n = norm(texto)
+  if (n.startsWith('navona')) return 'navona'
+  if (n.startsWith('plaza de espana')) return 'plaza_de_espana'
+  if (n.startsWith('trastevere')) return 'trastevere'
+  if (n.startsWith('prati')) return 'prati'
+  if (n.startsWith('monti')) return 'monti'
+  return null
+}
+
 function nocheDe(texto, dia) {
   const doc = texto.trim()
   let t = doc.replace(/\.$/, '')
   const out = { lista: [], doc }
+  // (Tanda LL) «(fija, repite)»: la noche escrita es la que sale (no cede su sitio a la primera imprescindible que falte) y puede repetir lo visto ese día.
+  const marcas = /\s*\((fija(?:, repite)?)\)\s*$/i.exec(t)
+  if (marcas) { out.fija = true; if (/repite/i.test(marcas[1])) out.repite = true; t = t.slice(0, marcas.index) }
   // «la que no haya salido» / «la pareja de nocturnas que toque (regla 13)»: la elige el motor por las parejas cercanas (regla 13).
   if (/^la que no haya salido|^la (pareja|nocturna)( de nocturnas)? que toque/i.test(t)) return { ...out, libre: true, texto: t }
   const o = /\(o la imprescindible que falte\)/i.exec(t)
@@ -211,7 +225,10 @@ function nocheDe(texto, dia) {
 
 // ── El documento, día a día ─────────────────────────────────────────────────────────────────────────────────────
 // (Tanda 7, punto 18: las listas nuevas de las llegadas y las vueltas —el día 1 a buen paso, la ruta del centro, D1+Vaticano, las mañanas cortas y la tarjeta «Hoy vuelves a casa»— son días del documento como los demás.)
-const LISTAS_TANDA7 = ['D1-rapido', 'D1-rapido-invierno-10', 'D1-rapido-invierno-11', 'D1-tarde', 'D1-centro-navona', 'D1-centro-espana', 'D1-centro-entera-navona', 'D1-centro-entera-espana', 'D1-anochecer-navona', 'D1-anochecer-espana', 'D1-noche', 'D1-noche-sin-cena', 'D1-sin-ruta', 'D1-vaticano', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula', 'DS-vaticano', 'DS-roma-antigua', 'DS-pincio-popolo', 'DS-aventino', 'DS-cupula', 'DCC-vaticano', 'DCC-roma-antigua', 'DCC-cupula', 'DV-traslado']
+// (Tanda LL, parte 2: el día 1 por franjas y por zona —cinco zonas— y sin «la rápida», «de tarde» ni «Coliseo por la tarde».)
+const ZONAS_LL = ['navona', 'espana', 'trastevere', 'prati', 'monti']
+const LISTAS_LL = ['D1-centro-entera', 'D1-centro', 'D1-anochecer', 'D1-noche', 'D1-noche-sin-cena'].flatMap((base) => ZONAS_LL.map((zona) => `${base}-${zona}`))
+const LISTAS_TANDA7 = [...LISTAS_LL, 'D1-noche', 'D1-sin-ruta', 'D1-vaticano', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula', 'DS-vaticano', 'DS-roma-antigua', 'DS-pincio-popolo', 'DS-aventino', 'DS-cupula', 'DCC-vaticano', 'DCC-roma-antigua', 'DCC-cupula', 'DV-traslado']
 const IDS = ['D0', 'D0-medio', 'D1-corto', 'D1', 'D2', 'D3', 'D1-FT', 'DT-medio', 'DM-medio', 'D4', 'DA-medio', 'D5', 'D6', 'D7', ...LISTAS_TANDA7]
 const secciones = []
 for (let i = 0; i < lineas.length; i++) {
@@ -291,7 +308,7 @@ for (const seccion of secciones) {
         ;(dia.textos ??= {})[clave] = sinComillas(resto)
         modo = 'prosa'; continue
       }
-      if (nombreEt === 'empieza en') { dia.inicio = norm(resto).startsWith('navona') ? 'navona' : norm(resto).startsWith('plaza de espana') ? 'plaza_de_espana' : (duda(id, `No sé por dónde empieza «${resto}».`, 'inicio'), null); modo = 'prosa'; continue }
+      if (nombreEt === 'empieza en') { dia.inicio = inicioDe(resto) ?? (duda(id, `No sé por dónde empieza «${resto}».`, 'inicio'), null); modo = 'prosa'; continue }
       if (nombreEt === 'el miercoles' && /siguiente/i.test(resto)) { dia.miercoles = 'siguiente'; modo = 'prosa'; continue }
       if (nombreEt === 'comida') { parte = parte ?? tomarParte('unica'); parte.comida = mesaDe(resto, id); franja = 'tarde'; modo = FLAT.has(id) ? 'lista' : 'prosa'; continue }
       if (nombreEt === 'cena') { parte = parte ?? tomarParte('unica'); parte.cena = mesaDe(resto, id); modo = FLAT.has(id) ? 'prosa' : 'prosa'; continue }
@@ -444,7 +461,7 @@ for (const [clave, titulo] of [['marzo_octubre', /^El día 1, de marzo a octubre
   const zonas = D.destination_config?.zonas_alojamiento ?? []
   for (const [zona, empieza] of tablaDe(/^Por dónde empieza la ruta del centro \(según la zona\)$/, 'inicio')) {
     const hallada = zonas.find((z) => norm(z.nombre) === norm(zona) || norm(z.nombre).startsWith(`${norm(zona)} (`))
-    const inicio = norm(empieza).startsWith('navona') ? 'navona' : norm(empieza).startsWith('plaza de espana') ? 'plaza_de_espana' : null
+    const inicio = inicioDe(empieza)
     if (!hallada || !inicio) { duda('inicio', `No entiendo la fila «${zona} | ${empieza}» de por dónde empieza la ruta del centro.`, 'tablas'); continue }
     llegadas.inicio_por_zona[hallada.id] = inicio
   }
@@ -454,21 +471,24 @@ for (const [clave, titulo] of [['marzo_octubre', /^El día 1, de marzo a octubre
   const LLEVA = new Set(['solo-traslado', 'manana-corta', 'manana-sin-comida', 'manana-con-comida', 'dia-mas'])
   const filas = []
   for (const [rango, queDia, lleva] of tablaDe(/^Qué lleva el día de vuelta según la hora$/, 'vuelta')) {
-    const r = rangoDe(rango.replace(/^de (\d)/, 'de $1'), 'vuelta')
+    // (Tanda LL: la tabla es por la HORA DE IRSE; la fila «vuelo desde las 19:00» es el día entero y se mira primero, con la hora del billete.)
+    const vd = /^vuelo desde las (\d{1,2}:\d{2})$/i.exec(rango)
+    const r = vd ? { desde: null, hasta: null } : rangoDe(rango.replace(/^de (\d)/, 'de $1'), 'vuelta')
     if (!r) continue
     const [codigo, ...flags] = lleva.split(' · ').map((s) => s.trim())
     if (!LLEVA.has(codigo)) { duda('vuelta', `No entiendo qué lleva la fila «${rango}»: «${codigo}».`, 'tablas'); continue }
-    const fila = { desde: r.desde, hasta: r.hasta, lleva: codigo.replace(/-/g, '_'), doc: `${rango} | ${queDia}` }
+    const fila = vd ? { vuelo_desde: hhmm(vd[1]), lleva: codigo.replace(/-/g, '_'), doc: `${rango} | ${queDia}` } : { desde: r.desde, hasta: r.hasta, lleva: codigo.replace(/-/g, '_'), doc: `${rango} | ${queDia}` }
     for (const flag of flags) {
       if (/^el día de antes con cena y sin nocturna$/i.test(flag)) fila.dia_antes = 'con_cena_sin_nocturna'
       else if (/^tarde libre$/i.test(flag)) fila.tarde_libre = true
+      else if (/^paradas hasta irte$/i.test(flag)) fila.paradas_hasta_irte = true
       else if (/^sin cena ni noche$/i.test(flag)) fila.sin_cena_ni_noche = true
       else duda('vuelta', `No entiendo «${flag}» en la tabla del día de vuelta.`, 'tablas')
     }
     filas.push(fila)
   }
-  cubrenElDia(filas, 'vuelta')
-  llegadas.vuelta = { hora_de: 'vuelo', punto_de_la_tabla: 'fiumicino', margen_de_la_tabla: '03:00', filas }
+  cubrenElDia(filas.filter((f) => f.vuelo_desde == null), 'vuelta')
+  llegadas.vuelta = { hora_de: 'irse', filas }
 }
 {
   const SALTOS = { 'el 25 de diciembre': '12-25', 'el domingo de pascua': 'pascua', 'el miercoles': 'miercoles' }

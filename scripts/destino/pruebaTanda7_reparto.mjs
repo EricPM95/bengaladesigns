@@ -187,7 +187,7 @@ const FILAS_VUELTA = [
   { hora: '11:00', lleva: 'solo_traslado', tarjeta: true, tarjetaUlt: false, conParadas: false },
   { hora: '14:00', lleva: 'manana_corta', tarjeta: false, tarjetaUlt: false, conParadas: true },
   { hora: '16:00', lleva: 'manana_sin_comida', tarjeta: false, tarjetaUlt: false, conParadas: true },
-  { hora: '19:30', lleva: 'manana_con_comida', tarjeta: false, tarjetaUlt: false, conParadas: true },
+  { hora: '19:30', lleva: 'dia_mas' /* LL parte 2 (Eric, 4-nov): antes «manana_con_comida»; con el vuelo desde las 19:00 cuenta como día ENTERO */, tarjeta: false, tarjetaUlt: false, conParadas: true },
   { hora: '23:30', lleva: 'dia_mas', tarjeta: false, tarjetaUlt: false, conParadas: true },
 ]
 for (const n of [2, 3, 4, 5, 7, 10, 14]) {
