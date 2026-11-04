@@ -72,7 +72,8 @@ for (const fecha of ['2026-11-08', '2026-11-14', '2027-07-10']) {
   const ll = { hora: '11:00', medio: 'avion' }
   const [al] = await dias('2026-11-08', 2, { zona: 'costa_teguise', pase: true, coche: 'alquiler', llegada: ll })
   const [pr] = await dias('2026-11-08', 2, { zona: 'costa_teguise', pase: true, coche: 'propio', llegada: ll })
-  eq(al.llegada_aeropuerto?.recoger_coche_min === 45 && pr.llegada_aeropuerto?.recoger_coche_min === 20, 'recoger el coche: alquiler 45 min, mi coche 20 min')
+  // LL (Eric, 4-nov). Antes: alquiler 45 min y mi coche 20. Ahora: alquiler 60 min y mi coche 0 (más 45 para salir con el equipaje, siempre).
+  eq(al.llegada_ll?.recoger_coche_min === 60 && pr.llegada_ll?.recoger_coche_min === 0 && al.llegada_ll?.salir_aeropuerto_min === 45, 'recoger el coche: alquiler 60 min, mi coche 0 (y 45 min para salir con el equipaje)')
 }
 // Haría y su Casa-Museo: a pie, sin coche; Playa Blanca y el Faro: cada uno con su nombre (el Faro, en coche desde su aparcamiento)
 {

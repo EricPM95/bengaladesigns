@@ -1,0 +1,2099 @@
+{
+ "_nota": "LL (4-nov): el día de llegada (filas A a F) y el de vuelta (V0 a V5) de Lanzarote, por zona. Generado por scripts/destino/lanzaroteLlegadasDatos.mjs desde docs/llegadas/LANZAROTE_LLEGADAS_PROPUESTA.md. No editar a mano.",
+ "constantes": {
+  "salir_aeropuerto_min": 45,
+  "recoger_coche_min": 60,
+  "instalarse_min": 60,
+  "devolver_coche_min": 30,
+  "aeropuerto_min": 120
+ },
+ "llegada": {
+  "costa_teguise": {
+   "A": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "B": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "14:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "C": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "D": {
+    "manana": [],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "domingoA": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 75,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "domingoB": {
+    "manana": [],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "E": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "F": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "arrecife": {
+   "A": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "B": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "14:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "C": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "D": {
+    "manana": [],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "domingoA": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 75,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "domingoB": {
+    "manana": [],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "E": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "F": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "puerto_del_carmen": {
+   "A": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "B": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "14:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Puerto del Carmen (Puerto Viejo)",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "C": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Puerto del Carmen (Puerto Viejo)",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "D": {
+    "manana": [],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Puerto del Carmen (Puerto Viejo)",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "domingoA": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 75,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "domingoB": {
+    "manana": [],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "E": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "F": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "playa_blanca": {
+   "A": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Playas de Papagayo",
+      "min": 120,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Marina Rubicón",
+     "hora_aprox": "14:00",
+     "lista": "D4_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": true,
+      "titulo": "El paseo marítimo de Playa Blanca"
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": false,
+      "titulo": "Faro de Pechiguera",
+      "parada": "faro_de_pechiguera",
+      "hasta_atardecer": true
+     }
+    ]
+   },
+   "B": {
+    "manana": [],
+    "comida": {
+     "zona": "en Marina Rubicón",
+     "hora_aprox": "13:30",
+     "lista": "D4_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Playas de Papagayo",
+      "min": 90,
+      "opcional": true,
+      "hasta_hora": "16:15"
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": true,
+      "titulo": "El paseo marítimo de Playa Blanca"
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": false,
+      "titulo": "Faro de Pechiguera",
+      "parada": "faro_de_pechiguera",
+      "hasta_atardecer": true
+     }
+    ]
+   },
+   "C": {
+    "manana": [],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": true,
+      "titulo": "El paseo marítimo de Playa Blanca"
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": false,
+      "titulo": "Faro de Pechiguera",
+      "parada": "faro_de_pechiguera",
+      "hasta_atardecer": true
+     }
+    ]
+   },
+   "D": {
+    "manana": [],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": false,
+      "titulo": "Faro de Pechiguera",
+      "parada": "faro_de_pechiguera",
+      "hasta_atardecer": true
+     }
+    ]
+   },
+   "E": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "F": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "el_norte": {
+   "A": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Punta Mujeres y Arrieta (La Garita)",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "B": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "14:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Punta Mujeres y Arrieta (La Garita)",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "C": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Punta Mujeres y Arrieta (La Garita)",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "D": {
+    "manana": [],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Punta Mujeres y Arrieta (La Garita)",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "domingoA": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 75,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "domingoB": {
+    "manana": [],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "E": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "F": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "el_interior": {
+   "A": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Caleta de Famara y Playa de Famara",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "B": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "14:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Caleta de Famara y Playa de Famara",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "C": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Caleta de Famara y Playa de Famara",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "D": {
+    "manana": [],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Caleta de Famara y Playa de Famara",
+      "min": 60,
+      "opcional": false,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "domingoA": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 75,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "domingoB": {
+    "manana": [],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "12:30",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "E": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "F": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  }
+ },
+ "verano": {
+  "costa_teguise": {
+   "C": [
+    {
+     "tipo": "parada",
+     "lugar": "Playa del Reducto",
+     "min": 45,
+     "opcional": true,
+     "parada": "playa_del_reducto"
+    }
+   ]
+  },
+  "arrecife": {
+   "C": [
+    {
+     "tipo": "parada",
+     "lugar": "Playa del Reducto",
+     "min": 45,
+     "opcional": true,
+     "parada": "playa_del_reducto"
+    }
+   ]
+  },
+  "el_norte": {
+   "C": [
+    {
+     "tipo": "parada",
+     "lugar": "Playa de La Garita",
+     "min": 60,
+     "opcional": true
+    }
+   ]
+  }
+ },
+ "vuelta": {
+  "costa_teguise": {
+   "V2": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": []
+   },
+   "V3": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "LagOmar",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Arrecife",
+     "hora_aprox": "13:15",
+     "lista": null
+    },
+    "tarde": []
+   },
+   "V4": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "LagOmar",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ]
+   },
+   "V5": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "LagOmar",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "V0": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "V1": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "puerto_del_carmen": {
+   "V2": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Puerto del Carmen (Puerto Viejo)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": []
+   },
+   "V3": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Puerto del Carmen (Puerto Viejo)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     }
+    ]
+   },
+   "V4": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     }
+    ]
+   },
+   "V5": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Puerto del Carmen (Puerto Viejo)",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30
+     }
+    ]
+   },
+   "V0": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "V1": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "playa_blanca": {
+   "V2": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Puerto del Carmen (Puerto Viejo)",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": true,
+      "titulo": "El paseo marítimo de Playa Blanca"
+     }
+    ]
+   },
+   "V3": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Playas de Papagayo",
+      "min": 120,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Marina Rubicón",
+     "hora_aprox": "13:00",
+     "lista": "D4_comida"
+    },
+    "tarde": []
+   },
+   "V4": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Playas de Papagayo",
+      "min": 150,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Marina Rubicón",
+     "hora_aprox": "13:30",
+     "lista": "D4_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": true,
+      "titulo": "El paseo marítimo de Playa Blanca"
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Puerto del Carmen (Puerto Viejo)",
+      "min": 60,
+      "opcional": true
+     }
+    ]
+   },
+   "V5": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Playas de Papagayo",
+      "min": 150,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Marina Rubicón",
+     "hora_aprox": "13:30",
+     "lista": "D4_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": true,
+      "titulo": "El paseo marítimo de Playa Blanca"
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Playa Blanca y el Faro de Pechiguera",
+      "min": 45,
+      "opcional": false,
+      "titulo": "Faro de Pechiguera",
+      "parada": "faro_de_pechiguera",
+      "hasta_atardecer": true
+     }
+    ]
+   },
+   "V0": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "V1": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "el_norte": {
+   "V2": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Punta Mujeres y Arrieta (La Garita)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": []
+   },
+   "V3": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Punta Mujeres y Arrieta (La Garita)",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": []
+   },
+   "V4": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     }
+    ]
+   },
+   "V5": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "V0": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "V1": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "el_interior": {
+   "V2": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     }
+    ]
+   },
+   "V3": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Fundación César Manrique",
+      "min": 90,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": []
+   },
+   "V4": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     }
+    ]
+   },
+   "V5": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "V0": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "V1": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "arrecife": {
+   "V2": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": []
+   },
+   "V3": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "LagOmar",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Arrecife",
+     "hora_aprox": "13:15",
+     "lista": null
+    },
+    "tarde": []
+   },
+   "V4": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "LagOmar",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ]
+   },
+   "V5": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "LagOmar",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "V0": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "V1": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  },
+  "nose": {
+   "V2": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": null,
+    "tarde": []
+   },
+   "V3": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "LagOmar",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Arrecife",
+     "hora_aprox": "13:15",
+     "lista": null
+    },
+    "tarde": []
+   },
+   "V4": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "LagOmar",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     }
+    ]
+   },
+   "V5": {
+    "manana": [
+     {
+      "tipo": "parada",
+      "lugar": "Jardín de Cactus",
+      "min": 60,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Teguise (villa)",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "LagOmar",
+      "min": 60,
+      "opcional": true
+     }
+    ],
+    "comida": {
+     "zona": "en Teguise",
+     "hora_aprox": "13:00",
+     "lista": "D3_comida"
+    },
+    "tarde": [
+     {
+      "tipo": "parada",
+      "lugar": "Casa-Museo del Campesino",
+      "min": 50,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Las Grietas (Montaña Blanca)",
+      "min": 40,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Castillo de San José",
+      "min": 45,
+      "opcional": true
+     },
+     {
+      "tipo": "parada",
+      "lugar": "Arrecife: Charco de San Ginés y el paseo",
+      "min": 60,
+      "opcional": true,
+      "llegar_sol_menos": 30,
+      "al_caer_la_tarde": true
+     }
+    ]
+   },
+   "V0": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   },
+   "V1": {
+    "manana": [],
+    "comida": null,
+    "tarde": []
+   }
+  }
+ },
+ "d3_corto": {
+  "manana": [
+   {
+    "tipo": "parada",
+    "lugar": "Fundación César Manrique",
+    "min": 90,
+    "opcional": true
+   },
+   {
+    "tipo": "parada",
+    "lugar": "Jardín de Cactus",
+    "min": 60,
+    "opcional": true
+   }
+  ],
+  "comida": {
+   "zona": "en Teguise",
+   "hora_aprox": "13:00",
+   "lista": "D3_comida"
+  },
+  "tarde": [
+   {
+    "tipo": "parada",
+    "lugar": "Teguise (villa)",
+    "min": 40,
+    "opcional": true
+   }
+  ]
+ }
+}

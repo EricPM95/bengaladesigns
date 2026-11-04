@@ -54,7 +54,8 @@ function revisaDia(d, etiqueta, { pase, cocheModo, zona }) {
     eq(d.cena_cerca && d.cena_cerca.titulo === 'Cena cerca de tu alojamiento', `${etiqueta}: ${d.dia_id} sin cena cerca`)
     if (pase && zona && zona !== 'nose' && d.cena_cerca) {
       eq(d.cena_cerca.con_pase === true && d.cena_cerca.zona?.id === zona, `${etiqueta}: ${d.dia_id} cena con pase no es de la zona ${zona}`)
-      eq(d.cena_cerca.restaurantes.length >= 2 && d.cena_cerca.restaurantes.length <= 3, `${etiqueta}: ${d.dia_id} con pase deben ser 2-3 restaurantes (hay ${d.cena_cerca.restaurantes.length})`)
+      // LL (Eric, 4-nov). Antes: con pase, siempre 2-3 restaurantes. Ahora: solo los que abren ese día de la semana (0 a 3); si no se sabe de ninguno abierto, «Cena cerca de tu alojamiento» sin nombre. Decisión de Eric (4-nov, tanda LL).
+      eq(d.cena_cerca.restaurantes.length <= 3, `${etiqueta}: ${d.dia_id} con pase, como mucho 3 restaurantes (hay ${d.cena_cerca.restaurantes.length})`)
     } else if (d.cena_cerca) eq(d.cena_cerca.con_pase === false && d.cena_cerca.restaurantes.length === 0, `${etiqueta}: ${d.dia_id} sin pase la cena no lleva restaurante`)
   }
   // 6. Nunca taxi ni Roma; 7. nunca paseo nocturno
@@ -190,9 +191,9 @@ for (const [nombre, fecha] of Object.entries(FECHAS)) {
 // ───────────── la llegada en avión (día 1) ─────────────
 {
   const [a] = await dias('2026-11-08', 2, { zona: 'costa_teguise', pase: true, coche: 'alquiler', llegada: { hora: '11:00', medio: 'avion' } })
-  eq(a.llegada_aeropuerto?.aterriza === '11:00' && a.llegada_aeropuerto?.coche_listo === '11:45' && a.coche.ida.desde_aeropuerto === true, 'llegada: la ida sale del aeropuerto')
-  const t = a.stops[0]
-  eq(a.llegada_aeropuerto.primer_turno_movido && hm(t.suggested_time) > hm('09:30') && hm(t.suggested_time) % 15 === 0, `llegada a las 11:00: Timanfaya se pasa al turno de las ${t.suggested_time}`)
+  // LL (Eric, 4-nov). Antes: la llegada con pase sacaba el día 1 (Timanfaya) del aeropuerto y movía su turno (a las 11:00, a las 11:45+). Ahora: el día 1 es el de llegada (LL), con la hora útil = aterrizaje + 45 + 60 (alquiler) + trayecto a la zona + 60, y Timanfaya va el primer día entero. Decisión de Eric (4-nov, tanda LL).
+  eq(a.dia_id === 'LL' && a.llegada_ll?.aterriza === '11:00' && a.llegada_ll?.hora_util === '14:00' && a.llegada_ll?.fila === 'C', `llegada a las 11:00 (Costa Teguise, alquiler): día de llegada, hora útil ${a.llegada_ll?.hora_util}, fila ${a.llegada_ll?.fila}`)
+  eq(!a.stops.some((s) => /Monta.as del Fuego/.test(s.name)), 'llegada: Timanfaya ya no se mueve de turno el día de llegada')
   eq(a.aeropuerto && a.aeropuerto.zona_a_aeropuerto.minutos > 0, 'el día lleva el trayecto a/desde el aeropuerto')
 }
 

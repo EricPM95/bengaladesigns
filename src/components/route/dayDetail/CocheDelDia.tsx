@@ -36,6 +36,8 @@ export function FilaCoche({ texto, aparcar, mapsUrl, llegada }: { texto: string;
 export function trayectoDeVuelta(day: DayPlan): TrayectoCoche | null {
   const v = day.coche?.activo ? day.coche.vuelta : null
   if (!v || !v.maps_url) return null
+  // LL: el último día, la vuelta del día es al aeropuerto, con la hora límite de tener el coche devuelto en la T1 (vuelo − 2 h − 30 min de repostar y devolverlo).
+  if (v.al_aeropuerto) return { modo: 'car', minutos: v.minutos, km: v.km, texto: `Al aeropuerto · ${min1(v.minutos)} · ${km1(v.km)}`, maps_url: v.maps_url, ...(v.llegas ? { llegada_texto: `Llegas a la T1 hacia las ${v.llegas}${v.limite_t1 ? `; el coche, devuelto en la T1 antes de las ${v.limite_t1}` : ''} (hora de Canarias)` } : {}) }
   return { modo: 'car', minutos: v.minutos, km: v.km, texto: `Vuelta a casa · ${min1(v.minutos)} · ${km1(v.km)}`, maps_url: v.maps_url, ...(v.llegas ? { llegada_texto: `Llegas hacia las ${v.llegas} (hora de Canarias)` } : {}) }
 }
 

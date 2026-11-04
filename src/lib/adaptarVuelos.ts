@@ -174,9 +174,47 @@ async function diaDeVueltaNuevo(route: Route, day: DayPlan, generado: GeneratedD
   return { dayId: day.id, dayNumber: day.dayNumber, next, movidas: movidasDe(day, next) }
 }
 
+/**
+ * (LL, Lanzarote) Un día de un destino en coche, rehecho por el motor desde la zona del viajero y con SUS vuelos: el día 1 es el de llegada (con la hora útil), el último es el de vuelta
+ * (con la hora límite del coche en la T1), y lo que va en medio se reparte en consecuencia. Un solo camino para todos los días: el del motor. null si el día no cambia.
+ */
+async function adaptarUnDiaDeCoche(route: Route, day: DayPlan, vuelo: DatosParaMotor): Promise<DiaAdaptado | null> {
+  const { reservations } = useRouteStore.getState()
+  const zona = route.accommodationZone
+  const coche = route.answers.coche ?? 'alquiler'
+  const orden = ordenDeLosDias(route)
+  const cuerpo = {
+    destination: route.destination,
+    answers: { ...route.answers, zona: zona ?? 'nose', pase: true, coche },
+    zona: zona ?? 'nose',
+    pase: true,
+    coche,
+    all_days: route.days.filter((other) => !other.isReturnLeg).map((other) => ({ day_number: other.dayNumber, city: other.city })),
+    day_number: day.dayNumber,
+    must_include_places: route.mustIncludePlaces ?? [],
+    inside_names: route.insideNames ?? [],
+    reservas: reservasParaMotor(reservations),
+    ...vuelo,
+    ...(orden.length > 0 ? { force_order: orden } : {}),
+  }
+  try {
+    const response = await fetch('/api/rebuild-day', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+    if (!response.ok) return null
+    const generado = ((await response.json()) as { day?: GeneratedDay }).day
+    if (!generado) return null
+    const next = mapSingleGeneratedDay(route.destination, generado, day)
+    await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
+    if (firmaDelDia(next) === firmaDelDia(day)) return null
+    return { dayId: day.id, dayNumber: day.dayNumber, next, movidas: movidasDe(day, next) }
+  } catch {
+    return null
+  }
+}
+
 /** Cómo se adapta un día de la ruta a los vuelos de ahora. */
 async function adaptarUnDia(route: Route, day: DayPlan, vuelo: DatosParaMotor, info: ArrivalInfo | null, generadoDeVuelta: GeneratedDay | null): Promise<DiaAdaptado | null> {
   if (!sePuedeRehacer(day)) return null
+  if (esDestinoDeCoche(route.destination)) return adaptarUnDiaDeCoche(route, day, vuelo)
   if (day.isReturnLeg) return vuelo.vuelta && generadoDeVuelta ? diaDeVueltaNuevo(route, day, generadoDeVuelta) : null
   const ciudad = route.days.filter((other) => !other.isReturnLeg)
   const esPrimero = ciudad[0]?.id === day.id
@@ -327,7 +365,8 @@ export async function propuestaDeVuelos(route: Route, reservations: Reservation[
   // Los días que cambiarían (solo con pase: lo gratis nunca mueve paradas).
   const dias: DiaAdaptado[] = []
   if (pagoActivo()) {
-    for (const day of diasDeVuelo(route)) {
+    // (LL) Lanzarote: el reparto entero depende del día de llegada y del de vuelta, así que se miran todos los días.
+    for (const day of esDestinoDeCoche(route.destination) ? route.days : diasDeVuelo(route)) {
       const adaptado = await adaptarUnDia(route, day, vuelo, info, generadoDeVuelta)
       if (adaptado) dias.push(adaptado)
     }
@@ -340,7 +379,7 @@ export async function propuestaDeVuelos(route: Route, reservations: Reservation[
  */
 export async function diaAdaptadoAlVuelo(route: Route, reservations: Reservation[], dayId: string): Promise<DiaAdaptado | null> {
   if (!pagoActivo() || !esRutaDelMotor(route)) return null
-  const day = diasDeVuelo(route).find((other) => other.id === dayId)
+  const day = (esDestinoDeCoche(route.destination) ? route.days : diasDeVuelo(route)).find((other) => other.id === dayId)
   if (!day || !sePuedeRehacer(day)) return null
   const { vuelo, info } = await datosDelVuelo(route, reservations)
   if (!vuelo.llegada && !vuelo.vuelta) return null

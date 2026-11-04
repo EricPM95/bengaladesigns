@@ -127,7 +127,7 @@ if (typeof window !== 'undefined') (window as unknown as { __rutaPrueba: typeof 
  * `await window.__rutaLanzarote({ zona: 'costa_teguise', coche: 'alquiler' })`. Empieza el domingo 8-nov-2026, 5 días de ruta + el de la vuelta (13-nov), con la misma generación que el formulario.
  * Con `zona` la elige (RESERVAS › Alojamiento); lo de pago se pide con `?version=completa` en la dirección.
  */
-export async function crearRutaLanzarote(opciones: { zona?: string; coche?: 'alquiler' | 'propio'; hoy?: string } = {}): Promise<Route> {
+export async function crearRutaLanzarote(opciones: { zona?: string; coche?: 'alquiler' | 'propio'; hoy?: string; vuelos?: { llegada?: string; vuelta?: string } } = {}): Promise<Route> {
   const { transportContextOf } = await import('../lib/manualRoute')
   const estado = useRouteStore.getState()
   const coche = opciones.coche ?? 'alquiler'
@@ -157,6 +157,18 @@ export async function crearRutaLanzarote(opciones: { zona?: string; coche?: 'alq
   if (opciones.zona) ruta.accommodationZone = opciones.zona
   useRouteStore.setState({ destination: 'Lanzarote', route: ruta, screen: 'route', dev_simulated_today_iso: opciones.hoy ?? '2026-11-08' } as never)
   await espera(800)
-  return ruta
+  // (LL) Con `vuelos`: pone las horas del vuelo (llegada y vuelta) y adapta los días como «Sí, adaptarlos» (día de llegada, reparto y día de vuelta del motor en coche). Hace falta el pase (`?version=completa`).
+  if (opciones.vuelos) {
+    const antes = useRouteStore.getState().route
+    if (antes) useRouteStore.setState({ route: { ...antes, arrivalFlightTime: opciones.vuelos.llegada ?? antes.arrivalFlightTime, departureFlightTime: opciones.vuelos.vuelta ?? antes.departureFlightTime } as Route })
+    const { propuestaDeVuelos, ponerDiasAdaptados } = await import('../lib/adaptarVuelos')
+    const actual = useRouteStore.getState()
+    if (actual.route) {
+      const propuesta = await propuestaDeVuelos(actual.route, actual.reservations)
+      if (propuesta) { useRouteStore.getState().ponerPlanes(propuesta.planes); ponerDiasAdaptados(propuesta.dias) }
+    }
+    await espera(500)
+  }
+  return useRouteStore.getState().route ?? ruta
 }
 if (typeof window !== 'undefined') (window as unknown as { __rutaLanzarote: typeof crearRutaLanzarote }).__rutaLanzarote = crearRutaLanzarote

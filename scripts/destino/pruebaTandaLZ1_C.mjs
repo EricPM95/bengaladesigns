@@ -64,7 +64,8 @@ for (const dia of res) {
     t(r && r.coche > 0 && r.coche < 400, `${dia.id} desde ${z}: coche calculado`)
   }
 }
-t(md.includes('Tiempos que no cuadran'), 'sección de lo que no cuadra con los documentos')
+// Antes: la sección «Tiempos que no cuadran» (el informe se regeneró en la LZ2b-1 sin ella). Ahora: el informe lleva el resumen y los días. Decisión de Eric (4-nov): no bloquea.
+t(md.includes('## Resumen') && md.includes('## D1'), 'el informe de tiempos lleva su resumen y los días')
 t(existsSync(join(ROOT, 'data/dias/lanzarote/_dias_coche.json')), '_dias_coche.json')
 const cmp = comparar()
 t(cmp.length >= 30 && cmp.every((x) => x.mapbox_min > 0), 'comparación con los documentos completa')

@@ -283,7 +283,7 @@ export interface CocheDelDia {
   desde?: 'zona' | 'zona_mas_lejana'
   zona?: { id: string; nombre: string }
   ida?: { minutos: number; km: number; aparcar_min?: number; salir?: string; destino?: PuntoDeTrayecto; maps_url?: string } | null
-  vuelta?: { minutos: number; km: number; sale?: string; llegas?: string; origen?: PuntoDeTrayecto; maps_url?: string } | null
+  vuelta?: { minutos: number; km: number; sale?: string; llegas?: string; origen?: PuntoDeTrayecto; maps_url?: string; al_aeropuerto?: boolean; limite_t1?: string } | null
   coche_min?: number
   tope_min?: number
   aviso_tope?: { minutos_de_mas: number; texto: string } | null

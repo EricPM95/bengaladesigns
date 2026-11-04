@@ -20,7 +20,7 @@ export function cocheDataFor(destinationKey) {
   const paradas = leer(join(dir, '_paradas.json'))
   const matriz = leer(join(RAIZ, 'data', 'pipeline_v2', 'travel', `${key}_coche.json`))
   const value = listas && paradas && matriz
-    ? { listas, paradas, matriz, restaurantes: leer(join(dir, '_restaurantes.json')) ?? {}, civitatis: leer(join(dir, '_civitatis.json')), destino: leer(join(dir, '_destino.json')) ?? {} }
+    ? { listas, paradas, matriz, restaurantes: leer(join(dir, '_restaurantes.json')) ?? {}, civitatis: leer(join(dir, '_civitatis.json')), destino: leer(join(dir, '_destino.json')) ?? {}, ll: leer(join(dir, '_ll.json')), llegadaInfo: leer(join(dir, '_llegada.json')) }
     : null
   cache.set(key, value)
   return value
