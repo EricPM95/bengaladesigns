@@ -28,8 +28,8 @@
         "La playa de Famara y el risco desde arriba",
         "La Graciosa al fondo, si el día está claro"
       ],
-      "aparcar": "Aparcamiento junto a la ermita.",
-      "aparcar_verificar": true,
+      "aparcar": "Sin aparcamiento marcado: se deja el coche junto a la ermita, al borde de la pista de tierra.",
+      "aparcar_verificar": false,
       "tips": [
         "Con niebla o viento fuerte, no se ve nada: mírala en un día claro.",
         "Mejor al amanecer o al atardecer."
@@ -43,8 +43,8 @@
         "Las formas que ha tallado el viento",
         "La vista sobre el campo de Teguise"
       ],
-      "aparcar": "Aparcamiento de tierra junto a las formaciones, por la LZ-404.",
-      "aparcar_verificar": true,
+      "aparcar": "Sin aparcamiento marcado: explanada de tierra junto a la LZ-404, al pie de la antigua rofera.",
+      "aparcar_verificar": false,
       "tips": [
         "No te subas a las formaciones: son frágiles.",
         "Llévate tu basura: no hay servicios."
@@ -58,8 +58,8 @@
         "Teguise a tus pies",
         "Las vistas sobre el centro de la isla"
       ],
-      "aparcar": "Aparcamiento pequeño junto al castillo.",
-      "aparcar_verificar": true,
+      "aparcar": "Sin aparcamiento marcado: la carretera sube hasta el pie del castillo y se deja el coche en el ensanche del final, con poco sitio.",
+      "aparcar_verificar": false,
       "tips": [
         "Por las vistas desde el volcán: dentro ya no hay museo.",
         "El aparcamiento es pequeño."

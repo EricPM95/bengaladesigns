@@ -1,5 +1,5 @@
 {
- "_nota": "LZ2b-1 (agente A, 4-nov-2026). Para el REPASO. Fuentes: Mapbox Search Box (categoría parking), los 147 de OpenStreetMap de la LZ1 y Mapbox Directions. Overpass (OpenStreetMap en vivo) no respondía y Google Maps no se ha mirado: los sitios con verificar=true siguen sin comprobar y Eric los mira en el viaje.",
+ "_nota": "LZ2b-1 (agente A, 4-nov-2026). Para el REPASO. Cierre del 4-nov: los 14 sitios con verificar=true que se podían comprobar se han mirado en Google Maps (vista de satélite, sin cuenta, cookies rechazadas); el de los Helechos no aparece en Google y sigue sin comprobar. Antes: Mapbox Search Box (categoría parking), los 147 de OpenStreetMap de la LZ1 y Mapbox Directions. tamano = lo que se ve en satélite; gratis_o_pago solo dice «gratis» si Google lo dice («Aparcamiento gratuito») o si es una pista/calle sin infraestructura.",
  "sitios": [
   {
    "id": "jameos_del_agua",
@@ -167,90 +167,119 @@
   {
    "id": "cueva_de_los_verdes",
    "sitio": "Cueva de los Verdes",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "Aparcamiento junto a la entrada.",
-   "verificar": true,
-   "motivo": "Ni Mapbox ni OpenStreetMap tienen aparcamiento a menos de 600 m (el de Jameos está a ~1 km)."
+   "aparcamiento_encontrado": "Aparcamiento grande en círculo junto a la entrada (lavabos y CACT), con decenas de coches",
+   "gratis_o_pago": "sin dato (no se ve barrera ni caseta de cobro)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 29.1609,
+    "lng": -13.43885
+   },
+   "texto_nuevo": "Aparcamiento grande junto a la entrada.",
+   "verificar": false,
+   "tamano": "grande",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "la_geria_y_sus_bodegas",
    "sitio": "La Geria y sus bodegas (parada en Stratvs)",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "En la bodega que visites (todas tienen aparcamiento) o en los apartaderos de la carretera LZ-30. No pares en el arcén.",
-   "verificar": true,
-   "motivo": "Es una carretera de bodegas, no un aparcamiento: lo más cercano está a 504-567 m. Se comprueba en cada bodega."
+   "aparcamiento_encontrado": "Explanada asfaltada de la bodega Stratvs, junto a la LZ-30",
+   "gratis_o_pago": "sin dato (aparcamiento de bodega)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 28.97366,
+    "lng": -13.70492
+   },
+   "texto_nuevo": "Aparcamiento pequeño de la bodega Stratvs, junto a la LZ-30. No pares en el arcén.",
+   "verificar": false,
+   "tamano": "pequeño",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "caleton_blanco",
    "sitio": "Caletón Blanco (LZ-1 km 30, Órzola)",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "En el arcén de la LZ-1, junto a la playa (a 1,2 km del puerto de Órzola).",
-   "verificar": true,
-   "motivo": "Sin aparcamiento encontrado: la ficha dice que se aparca en el arcén de la LZ-1. Es lo único que se sabe."
+   "aparcamiento_encontrado": "NO hay aparcamiento marcado: pista de tierra desde la LZ-1 hasta la arena; se deja el coche al final",
+   "gratis_o_pago": "gratis (sin infraestructura)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 29.21586,
+    "lng": -13.4426
+   },
+   "texto_nuevo": "Sin aparcamiento marcado: pista de tierra desde la LZ-1 hasta la arena; se deja el coche al final.",
+   "verificar": false,
+   "tamano": "sin aparcamiento (pista)",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "playa_de_montana_bermeja",
    "sitio": "Playa de Montaña Bermeja (LZ-703)",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "Junto a la carretera LZ-703, entre Janubio y Los Hervideros.",
-   "verificar": true,
-   "motivo": "Sin aparcamiento encontrado; la ficha dice «junto a la carretera LZ-703»."
+   "aparcamiento_encontrado": "«Parking montaña Bermeja», pin de Google a pie de la LZ-703",
+   "gratis_o_pago": "gratis (Google: «Aparcamiento gratuito»)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 28.96051,
+    "lng": -13.82872
+   },
+   "texto_nuevo": "Aparcamiento gratuito pequeño junto a la carretera LZ-703, al lado de la playa.",
+   "verificar": false,
+   "tamano": "pequeño (apartadero junto a la carretera)",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "castillo_de_santa_barbara",
    "sitio": "Castillo de Santa Bárbara (volcán Guanapay)",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "Aparcamiento pequeño junto al castillo.",
-   "verificar": true,
-   "motivo": "Sin aparcamiento encontrado a menos de 600 m."
+   "aparcamiento_encontrado": "NO hay aparcamiento marcado: la carretera sube hasta el pie del castillo y acaba en un ensanche",
+   "gratis_o_pago": "gratis (sin infraestructura)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 29.05785,
+    "lng": -13.5504
+   },
+   "texto_nuevo": "Sin aparcamiento marcado: la carretera sube hasta el pie del castillo y se deja el coche en el ensanche del final, con poco sitio.",
+   "verificar": false,
+   "tamano": "pequeño (ensanche del final de la carretera)",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "ciudad_estratificada_rofera_de_teseguite",
    "sitio": "Ciudad Estratificada (Rofera de Teseguite, LZ-404)",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "Aparcamiento de tierra junto a las formaciones, por la LZ-404.",
-   "verificar": true,
-   "motivo": "Sin aparcamiento encontrado: es un apartadero de tierra por la LZ-404."
+   "aparcamiento_encontrado": "NO hay aparcamiento marcado: explanada de tierra junto a la LZ-404, al pie de la antigua rofera",
+   "gratis_o_pago": "gratis (sin infraestructura)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 29.0567,
+    "lng": -13.5047
+   },
+   "texto_nuevo": "Sin aparcamiento marcado: explanada de tierra junto a la LZ-404, al pie de la antigua rofera.",
+   "verificar": false,
+   "tamano": "pequeño (tierra)",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "las_grietas_montana_blanca",
    "sitio": "Las Grietas (Montaña Blanca, LZ-35)",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "No hay aparcamiento oficial: sigue unos 200 m hasta la pista de tierra y aparca fuera de la carretera.",
-   "verificar": true,
-   "motivo": "No hay aparcamiento oficial (solo la pista de tierra): la ficha ya lo dice tal cual."
+   "aparcamiento_encontrado": "NO hay aparcamiento oficial: se ven coches aparcados en la franja de tierra junto a la LZ-35",
+   "gratis_o_pago": "gratis (sin infraestructura)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 28.97535,
+    "lng": -13.63322
+   },
+   "texto_nuevo": "Sin aparcamiento oficial: se deja el coche en la franja de tierra junto a la LZ-35. Cabe poco: no pares en la calzada.",
+   "verificar": false,
+   "tamano": "pequeño (franja de arcén ancho)",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "haria_y_la_casa_museo_cesar_manrique",
    "sitio": "Haría y la Casa-Museo César Manrique",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "aparcamiento_encontrado": "NO hay aparcamiento propio: calles del pueblo (calle Elvira Sánchez) junto a la Casa-Museo",
+   "gratis_o_pago": "gratis (calle)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "coordenada_movida": null,
-   "texto_nuevo": "Aparcamiento en el pueblo, a unos 300 m de la Casa-Museo: se va a pie a las dos cosas.",
-   "verificar": true,
-   "motivo": "Mapbox solo tiene el aparcamiento de autobuses, a 509 m. Casa-Museo y pueblo se hacen a pie desde el mismo sitio."
+   "texto_nuevo": "Sin aparcamiento propio: se aparca en las calles del pueblo, junto a la Casa-Museo (calle Elvira Sánchez).",
+   "verificar": false,
+   "tamano": "sin aparcamiento (calle)",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "mirador_de_los_helechos",
@@ -261,73 +290,92 @@
    "coordenada_movida": null,
    "texto_nuevo": "Aparcamiento junto al mirador, en la carretera de Teguise a Haría.",
    "verificar": true,
-   "motivo": "Sin aparcamiento encontrado."
+   "motivo": "Google Maps no tiene ningún «Mirador de los Helechos» (solo «Volcán los Helechos» y el «Mirador Barranco del Chafarís» en la LZ-10, a unos 300 m, que podría ser otro sitio): no se puede comprobar. Se queda en verificar.",
+   "comprobado_con_google_maps": false
   },
   {
    "id": "mirador_de_haria",
    "sitio": "Mirador de Haría (Malpaso)",
-   "aparcamiento_encontrado": "ninguno comprobado",
+   "aparcamiento_encontrado": "Curva en herradura junto al mirador (Google lo marca «Cerrado temporalmente»)",
    "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "Aparcamiento pequeño junto al mirador. Prohibido dejar el coche en el arcén.",
-   "verificar": true,
-   "motivo": "Sin aparcamiento encontrado (el texto ya dice «pequeño» y «prohibido el arcén»)."
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 29.13158,
+    "lng": -13.51417
+   },
+   "texto_nuevo": "Aparcamiento pequeño en la curva, junto al mirador. Prohibido dejar el coche en el arcén.",
+   "verificar": false,
+   "tamano": "pequeño",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "mirador_de_guinate",
    "sitio": "Mirador de Guinate",
-   "aparcamiento_encontrado": "ninguno comprobado",
+   "aparcamiento_encontrado": "Final de la calle La Majadita, junto al mirador (el parque Guinate Tropical queda a unos 150 m)",
    "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "Al final de la calle La Majadita, en Guinate.",
-   "verificar": true,
-   "motivo": "Sin aparcamiento encontrado; la ficha dice «al final de la calle La Majadita»."
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 29.18433,
+    "lng": -13.50116
+   },
+   "texto_nuevo": "Al final de la calle La Majadita, apartadero pequeño junto al mirador.",
+   "verificar": false,
+   "tamano": "pequeño",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "ermita_de_las_nieves",
    "sitio": "Ermita de las Nieves",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "Aparcamiento junto a la ermita.",
-   "verificar": true,
-   "motivo": "Sin aparcamiento encontrado."
+   "aparcamiento_encontrado": "NO hay aparcamiento marcado: el coche se deja junto a la ermita, al borde de la pista de tierra",
+   "gratis_o_pago": "gratis (sin infraestructura)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 29.10634,
+    "lng": -13.52811
+   },
+   "texto_nuevo": "Sin aparcamiento marcado: se deja el coche junto a la ermita, al borde de la pista de tierra.",
+   "verificar": false,
+   "tamano": "pequeño (pista)",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "caleta_de_famara_y_playa_de_famara",
    "sitio": "Caleta de Famara y Playa de Famara",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "aparcamiento_encontrado": "NO se ve aparcamiento propio en satélite: calles del pueblo (el pin «P» de la entrada es una parada de guagua)",
+   "gratis_o_pago": "gratis (calle)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "coordenada_movida": null,
-   "texto_nuevo": "Aparcamiento a la entrada del pueblo y junto a la playa.",
-   "verificar": true,
-   "motivo": "Solo un «Aparcamiento» a 331 m, en la entrada del pueblo; el de la playa no aparece."
+   "texto_nuevo": "Sin aparcamiento propio a la vista: se aparca en las calles del pueblo.",
+   "verificar": false,
+   "tamano": "sin aparcamiento (calle)",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "playa_blanca_y_el_faro_de_pechiguera",
    "sitio": "Playa Blanca (paseo marítimo)",
-   "aparcamiento_encontrado": "ninguno comprobado",
+   "aparcamiento_encontrado": "Centro: solo calle. Aparcamientos públicos en Marina Rubicón («Parking Público» y «Parking Marina Rubicón») a poco más de 1 km; un «Private Parking Lot» al oeste",
    "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "coordenada_movida": null,
-   "texto_nuevo": "Aparcamiento en Marina Rubicón y junto al faro.",
-   "verificar": true,
-   "motivo": "Paseo marítimo: Parking Varadero (132 m) y otros a 200 m. El aparcamiento del Faro (parada propia) no aparece en ninguna fuente."
+   "texto_nuevo": "En el centro se aparca en la calle; los aparcamientos públicos están en Marina Rubicón, a poco más de 1 km del paseo.",
+   "verificar": false,
+   "tamano": "centro: sin aparcamiento; Marina Rubicón: grande",
+   "comprobado_con_google_maps": true
   },
   {
    "id": "volcan_del_cuervo",
    "sitio": "Volcán del Cuervo (aparcamiento junto a la LZ-56)",
-   "aparcamiento_encontrado": "ninguno comprobado",
-   "gratis_o_pago": "sin dato",
-   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
-   "coordenada_movida": null,
-   "texto_nuevo": "Desde noviembre de 2026 está previsto aparcar en Mancha Blanca (aparcamiento de Los Dolores) y subir en la guagua del parque (línea P3).",
-   "verificar": true,
-   "motivo": "Sin aparcamiento encontrado; desde nov-2026 se anuncia aparcar en Mancha Blanca y subir en guagua."
+   "aparcamiento_encontrado": "«Parking Sendero Volcán del Cuervo», al oeste de la LZ-56, con unos 20-30 coches en satélite",
+   "gratis_o_pago": "gratis (Google: «Aparcamiento gratuito»)",
+   "fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 28.9965606,
+    "lng": -13.6846084
+   },
+   "texto_nuevo": "Aparcamiento gratuito mediano junto a la LZ-56, al pie del sendero. Desde noviembre de 2026 está previsto aparcar en Mancha Blanca y subir en la guagua del parque (línea P3).",
+   "verificar": false,
+   "tamano": "mediano",
+   "comprobado_con_google_maps": true
   }
  ]
 }

@@ -46,7 +46,7 @@ if (process.argv.includes('--md')) {
     .join('')
   const todas = fs
     .readdirSync('docs/dias/capturas_jutrip')
-    .filter((f) => /^lz2b1_.*\.jpg$/.test(f))
+    .filter((f) => /^lz2b1c?_.*\.jpg$/.test(f))
     .sort()
   const tabla = JSON.parse(fs.readFileSync('docs/dias/_lz2b1_tabla_aparcamientos.json', 'utf8'))
   const filas = tabla.sitios.map((x) => '<tr><td>' + esc(x.sitio) + (x.verificar ? ' ⚠️' : '') + '</td><td>' + esc(x.aparcamiento_encontrado ?? '') + '</td><td>' + esc(x.gratis_o_pago ?? '') + '</td><td>' + esc(x.fuente ?? '') + '</td><td>' + esc(x.texto_nuevo ?? '') + '</td></tr>').join('')

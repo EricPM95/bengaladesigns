@@ -30,8 +30,8 @@
         "Alguna higuera plantada igual, en su hoyo y con su muro",
         "Una bodega con cata de malvasía volcánica"
       ],
-      "aparcar": "En la bodega que visites (todas tienen aparcamiento) o en los apartaderos de la carretera LZ-30. No pares en el arcén.",
-      "aparcar_verificar": true,
+      "aparcar": "Aparcamiento pequeño de la bodega Stratvs, junto a la LZ-30. No pares en el arcén.",
+      "aparcar_verificar": false,
       "tips": [
         "Quien conduce, sin alcohol: en la cata se puede pedir una bebida sin alcohol en su lugar.",
         "El fin de semana, la bodega de visita es la que abre todos los días (la otra grande solo abre de lunes a viernes).",
@@ -81,8 +81,8 @@
         "La luz que entra desde arriba",
         "Los colores y las capas de la roca"
       ],
-      "aparcar": "No hay aparcamiento oficial: sigue unos 200 m hasta la pista de tierra y aparca fuera de la carretera.",
-      "aparcar_verificar": true,
+      "aparcar": "Sin aparcamiento oficial: se deja el coche en la franja de tierra junto a la LZ-35. Cabe poco: no pares en la calzada.",
+      "aparcar_verificar": false,
       "tips": [
         "No aparques en el arcén: te pueden multar. Sigue unos 200 m hasta la pista de tierra.",
         "Nunca con lluvia: el cañón se convierte en cauce, y las paredes sueltan piedras (respeta las cintas).",

@@ -30,8 +30,8 @@
   "centro": {
    "name": "Centro",
    "center": [
-    29.0086,
-    -13.6075
+    29.0024,
+    -13.6114
    ],
    "places": [
     "Fundación César Manrique",
@@ -45,8 +45,8 @@
   "centro_oeste": {
    "name": "Centro-oeste",
    "center": [
-    29.0136,
-    -13.709
+    29.0154,
+    -13.7065
    ],
    "places": [
     "Montañas del Fuego (Timanfaya)",
@@ -58,8 +58,8 @@
   "centro_norte": {
    "name": "Centro-norte",
    "center": [
-    29.069,
-    -13.5669
+    29.07,
+    -13.5365
    ],
    "places": [
     "Teguise (villa)",
@@ -72,8 +72,8 @@
   "norte": {
    "name": "Norte",
    "center": [
-    29.1553,
-    -13.4938
+    29.1552,
+    -13.4887
    ],
    "places": [
     "Jameos del Agua",
@@ -90,8 +90,8 @@
   "extremo_norte": {
    "name": "Extremo norte",
    "center": [
-    29.232,
-    -13.4505
+    29.2159,
+    -13.4426
    ],
    "places": [
     "Caletón Blanco"
@@ -160,8 +160,8 @@
   "suroeste": {
    "name": "Suroeste (Yaiza)",
    "center": [
-    28.9518,
-    -13.8275
+    28.956,
+    -13.8276
    ],
    "places": [
     "El Golfo y el Charco de los Clicos",
@@ -362,10 +362,10 @@
    "tier": "imprescindible",
    "zone": "norte",
    "coordinates": [
-    29.1611,
-    -13.4389
+    29.1609,
+    -13.43885
    ],
-   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §3",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 50,
    "min_max": 50,
@@ -429,8 +429,8 @@
    "verificar": "Los turnos reales y la última visita (la web oficial no los da; los ~30 min son de un blog).",
    "por_que_recomendamos": "Es un viaje de un kilómetro por dentro de un tubo de lava, con una sorpresa al final que no te vamos a contar.",
    "description": "Parte del mismo tubo volcánico que los Jameos, recorrida con guía por galerías iluminadas en varios niveles.",
-   "aparcar": "Aparcamiento junto a la entrada.",
-   "aparcar_verificar": true
+   "aparcar": "Aparcamiento grande junto a la entrada.",
+   "aparcar_verificar": false
   },
   {
    "id": "mirador_del_rio",
@@ -633,10 +633,10 @@
    "tier": "imprescindible",
    "zone": "centro",
    "coordinates": [
-    28.97,
-    -13.709
+    28.97366,
+    -13.70492
    ],
-   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Stratvs, ctra. La Geria-Uga; las coordenadas de bodegas están «sin confirmar» en DATOS_NATURALEZA_PUEBLOS_COCHE.md",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 60,
    "min_max": 90,
@@ -740,11 +740,11 @@
     }
    ],
    "comprobado": "2026-11-02",
-   "verificar": "Días que abre Bodega La Geria; si Stratvs pide reserva; bodegas: coordenadas sin confirmar. | Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Stratvs, ctra. La Geria-Uga; las coordenadas de bodegas están «sin confirmar» en DATOS_NATURALEZA_PUEBLOS_COCHE.md)",
+   "verificar": "Días que abre Bodega La Geria; si Stratvs pide reserva; bodegas: coordenadas sin confirmar.",
    "por_que_recomendamos": "Es el paisaje más original de Lanzarote: viñas plantadas una a una en hoyos de ceniza negra, y bodegas para probar su malvasía.",
    "description": "La comarca del vino de Lanzarote, nacida tras las erupciones del siglo XVIII: cada vid en su hoyo, protegida del viento por un muro de piedra en media luna.",
-   "aparcar": "En la bodega que visites (todas tienen aparcamiento) o en los apartaderos de la carretera LZ-30. No pares en el arcén.",
-   "aparcar_verificar": true
+   "aparcar": "Aparcamiento pequeño de la bodega Stratvs, junto a la LZ-30. No pares en el arcén.",
+   "aparcar_verificar": false
   },
   {
    "id": "playas_de_papagayo",
@@ -836,10 +836,10 @@
    "level": 2,
    "zone": "extremo_norte",
    "coordinates": [
-    29.232,
-    -13.4505
+    29.21586,
+    -13.4426
    ],
-   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento en el arcén de la LZ-1; a 1,2 km del puerto de Órzola",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 120,
    "min_max": 180,
@@ -871,11 +871,11 @@
     }
    ],
    "comprobado": "2026-11-02",
-   "verificar": "Todo viene de un blog (no hay fuente oficial). | Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento en el arcén de la LZ-1; a 1,2 km del puerto de Órzola)",
+   "verificar": "Todo viene de un blog (no hay fuente oficial).",
    "por_que_recomendamos": "Es la playa más fotogénica del norte: arena blanca entre lava negra, con charcos de agua turquesa.",
    "description": "Una playa de arena blanca junto a Órzola, rodeada de lava negra, con charcos resguardados para bañarse con marea baja.",
-   "aparcar": "En el arcén de la LZ-1, junto a la playa (a 1,2 km del puerto de Órzola).",
-   "aparcar_verificar": true
+   "aparcar": "Sin aparcamiento marcado: pista de tierra desde la LZ-1 hasta la arena; se deja el coche al final.",
+   "aparcar_verificar": false
   },
   {
    "id": "jardin_de_cactus",
@@ -1154,8 +1154,8 @@
    "verificar": "Hora de apertura de la Casa-Museo: 10:00 (web oficial) o 10:30 (otra fuente). Accesibilidad, carrito y aparcamiento sin confirmar. Reserva sin confirmar en la web oficial.",
    "por_que_recomendamos": "Es el pueblo del valle de las mil palmeras, y la casa donde César Manrique pasó sus últimos años.",
    "description": "Un pueblo tranquilo del norte entre palmeras y montañas, con la última casa de Manrique, que se conserva como él la dejó.",
-   "aparcar": "Aparcamiento en el pueblo, a unos 300 m de la Casa-Museo: se va a pie a las dos cosas.",
-   "aparcar_verificar": true,
+   "aparcar": "Sin aparcamiento propio: se aparca en las calles del pueblo, junto a la Casa-Museo (calle Elvira Sánchez).",
+   "aparcar_verificar": false,
    "search_aliases": [
     "haria y el valle de las mil palmeras",
     "casa-museo cesar manrique (haria)"
@@ -1262,8 +1262,8 @@
    "comprobado": "2026-11-02",
    "por_que_recomendamos": "Es el pueblo surfero de Lanzarote: calles de arena, una playa enorme y el gran acantilado de Famara detrás.",
    "description": "Un pueblo de pescadores con calles de arena junto a una playa de varios kilómetros, bajo el Risco de Famara.",
-   "aparcar": "Aparcamiento a la entrada del pueblo y junto a la playa.",
-   "aparcar_verificar": true,
+   "aparcar": "Sin aparcamiento propio a la vista: se aparca en las calles del pueblo.",
+   "aparcar_verificar": false,
    "search_aliases": [
     "el atardecer en famara"
    ]
@@ -1426,10 +1426,10 @@
    "level": 3,
    "zone": "centro_norte",
    "coordinates": [
-    29.10684,
-    -13.61263
+    29.10634,
+    -13.52811
    ],
-   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md. Acceso y aparcamiento «sin confirmar»",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 20,
    "min_max": 20,
@@ -1461,8 +1461,8 @@
    "verificar": "Duración (20 min es estimación) y acceso.",
    "por_que_recomendamos": "Es uno de los puntos más altos de la isla, con una ermita blanca y vistas a Famara y La Graciosa.",
    "description": "Una ermita blanca a unos 650 metros, en lo alto del Risco de Famara, con vistas a la playa de Famara y a La Graciosa.",
-   "aparcar": "Aparcamiento junto a la ermita.",
-   "aparcar_verificar": true
+   "aparcar": "Sin aparcamiento marcado: se deja el coche junto a la ermita, al borde de la pista de tierra.",
+   "aparcar_verificar": false
   },
   {
    "id": "mirador_de_guinate",
@@ -1470,10 +1470,10 @@
    "level": 3,
    "zone": "norte",
    "coordinates": [
-    29.184725,
-    -13.542362
+    29.18433,
+    -13.50116
    ],
-   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (LZ-10, calle La Majadita hasta el final)",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 20,
    "min_max": 20,
@@ -1501,8 +1501,8 @@
    "verificar": "Duración estimada; sube de prioridad (Eric, 3-nov).",
    "por_que_recomendamos": "Es la vista del Mirador del Río gratis y sin gente: La Graciosa y el archipiélago Chinijo a tus pies.",
    "description": "Un mirador sobre el acantilado del norte, muy cerca del Mirador del Río, con vistas a La Graciosa, Montaña Clara y Alegranza.",
-   "aparcar": "Al final de la calle La Majadita, en Guinate.",
-   "aparcar_verificar": true
+   "aparcar": "Al final de la calle La Majadita, apartadero pequeño junto al mirador.",
+   "aparcar_verificar": false
   },
   {
    "id": "ciudad_estratificada_rofera_de_teseguite",
@@ -1510,10 +1510,10 @@
    "level": 3,
    "zone": "centro_norte",
    "coordinates": [
-    29.052,
-    -13.542
+    29.0567,
+    -13.5047
    ],
-   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento de tierra",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 25,
    "min_max": 25,
@@ -1547,11 +1547,11 @@
     }
    ],
    "comprobado": "2026-11-02",
-   "verificar": "Todo de un blog. | Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento de tierra)",
+   "verificar": "Todo de un blog.",
    "por_que_recomendamos": "Son formaciones de roca con capas, esculpidas por el viento: uno de los rincones más fotogénicos y menos conocidos de la isla.",
    "description": "Paredes y torres de toba volcánica junto a Teguise, erosionadas en capas que parecen una ciudad en ruinas.",
-   "aparcar": "Aparcamiento de tierra junto a las formaciones, por la LZ-404.",
-   "aparcar_verificar": true
+   "aparcar": "Sin aparcamiento marcado: explanada de tierra junto a la LZ-404, al pie de la antigua rofera.",
+   "aparcar_verificar": false
   },
   {
    "id": "playa_de_montana_bermeja",
@@ -1559,10 +1559,10 @@
    "level": 3,
    "zone": "suroeste",
    "coordinates": [
-    28.944,
-    -13.828
+    28.96051,
+    -13.82872
    ],
-   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar (entre Janubio y Los Hervideros)",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 15,
    "min_max": 20,
@@ -1591,11 +1591,10 @@
     }
    ],
    "comprobado": "2026-11-02",
-   "verificar": "Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar (entre Janubio y Los Hervideros))",
    "por_que_recomendamos": "Es una playa de arena negra bajo una montaña roja, de las menos visitadas de la costa oeste.",
    "description": "Una playa salvaje de arena negra a los pies de la Montaña Bermeja, entre las Salinas de Janubio y Los Hervideros.",
-   "aparcar": "Junto a la carretera LZ-703, entre Janubio y Los Hervideros.",
-   "aparcar_verificar": true
+   "aparcar": "Aparcamiento gratuito pequeño junto a la carretera LZ-703, al lado de la playa.",
+   "aparcar_verificar": false
   },
   {
    "id": "las_grietas_montana_blanca",
@@ -1603,10 +1602,10 @@
    "level": 3,
    "zone": "centro",
    "coordinates": [
-    29.01,
-    -13.61
+    28.97535,
+    -13.63322
    ],
-   "coordinates_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Sin aparcamiento oficial: apartadero de tierra (+3 min)",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 8,
    "duration_minutes": 40,
    "min_max": 45,
@@ -1648,11 +1647,11 @@
     }
    ],
    "comprobado": "2026-11-02",
-   "verificar": "Duración (30-45 min) por comprobar. | Coordenada del aparcamiento aproximada (agente C: aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Sin aparcamiento oficial: apartadero de tierra (+3 min))",
+   "verificar": "Duración (30-45 min) por comprobar.",
    "por_que_recomendamos": "Son cañones de lava tan estrechos que caminas entre paredes altísimas: uno de los rincones más fotogénicos de Lanzarote.",
    "description": "Grietas abiertas en la ladera de Montaña Blanca, en el centro de la isla, sin señales ni camino marcado.",
-   "aparcar": "No hay aparcamiento oficial: sigue unos 200 m hasta la pista de tierra y aparca fuera de la carretera.",
-   "aparcar_verificar": true
+   "aparcar": "Sin aparcamiento oficial: se deja el coche en la franja de tierra junto a la LZ-35. Cabe poco: no pares en la calzada.",
+   "aparcar_verificar": false
   },
   {
    "id": "mirador_del_bosquecillo",
@@ -1709,10 +1708,10 @@
    "level": 3,
    "zone": "norte",
    "coordinates": [
-    29.131806,
-    -13.513611
+    29.13158,
+    -13.51417
    ],
-   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md. Aparcamiento pequeño, prohibido el arcén",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 20,
    "min_max": 20,
@@ -1744,8 +1743,8 @@
    "verificar": "Duración estimada.",
    "por_que_recomendamos": "Es la vista del valle de Haría, con su palmeral, desde la carretera que baja al pueblo.",
    "description": "Un mirador en la carretera del norte, sobre el valle de Haría.",
-   "aparcar": "Aparcamiento pequeño junto al mirador. Prohibido dejar el coche en el arcén.",
-   "aparcar_verificar": true
+   "aparcar": "Aparcamiento pequeño en la curva, junto al mirador. Prohibido dejar el coche en el arcén.",
+   "aparcar_verificar": false
   },
   {
    "id": "mirador_de_los_helechos",
@@ -1790,10 +1789,10 @@
    "level": 3,
    "zone": "centro_norte",
    "coordinates": [
-    29.058,
-    -13.5502
+    29.05785,
+    -13.5504
    ],
-   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §12 (solo por fuera)",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 30,
    "min_max": 45,
@@ -1827,8 +1826,8 @@
    "verificar": "Horario y precio (las fuentes no coinciden). A veces cierra sin avisar.",
    "por_que_recomendamos": "Es un castillo en el borde de un volcán, con vistas sobre Teguise y media isla.",
    "description": "El castillo del volcán Guanapay, sobre Teguise, que servía de refugio en los asaltos piratas. Hoy se visita por fuera, por las vistas.",
-   "aparcar": "Aparcamiento pequeño junto al castillo.",
-   "aparcar_verificar": true
+   "aparcar": "Sin aparcamiento marcado: la carretera sube hasta el pie del castillo y se deja el coche en el ensanche del final, con poco sitio.",
+   "aparcar_verificar": false
   },
   {
    "id": "punta_mujeres_y_arrieta",
@@ -1974,8 +1973,8 @@
    "verificar": "Distancia a pie al faro y si se puede visitar por dentro: sin confirmar.",
    "por_que_recomendamos": "Es el paseo junto al mar del sur de la isla, con Fuerteventura enfrente y el atardecer en el faro.",
    "description": "El pueblo de Playa Blanca, su paseo marítimo y Marina Rubicón, y el Faro de Pechiguera en la punta.",
-   "aparcar": "Aparcamiento en Marina Rubicón y junto al faro.",
-   "aparcar_verificar": true,
+   "aparcar": "En el centro se aparca en la calle; los aparcamientos públicos están en Marina Rubicón, a poco más de 1 km del paseo.",
+   "aparcar_verificar": false,
    "search_aliases": [
     "el paseo maritimo de playa blanca",
     "faro de pechiguera"
@@ -2025,10 +2024,10 @@
    "level": 3,
    "zone": "centro_oeste",
    "coordinates": [
-    28.991104,
-    -13.692037
+    28.9965606,
+    -13.6846084
    ],
-   "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md [blog]. Desde nov-2026 se anuncia aparcar en Mancha Blanca y subir en la guagua del parque (comprobar)",
+   "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
    "duration_minutes": 75,
    "min_max": 90,
@@ -2059,11 +2058,11 @@
     }
    ],
    "comprobado": "2026-11-02",
-   "verificar": "Comprobar si el servicio de guaguas (P3) ya funciona y sus horarios; duración (blog). | Coordenada del aparcamiento aproximada (agente C: DATOS_NATURALEZA_PUEBLOS_COCHE.md [blog]. Desde nov-2026 se anuncia aparcar en Mancha Blanca y subir en la guagua del parque (comprobar))",
+   "verificar": "Comprobar si el servicio de guaguas (P3) ya funciona y sus horarios; duración (blog).",
    "por_que_recomendamos": "Es la forma más fácil de meterse dentro de un cráter: un sendero corto y llano entre lava, apto para familias.",
    "description": "Un volcán de las erupciones de Timanfaya, junto al parque nacional, con un sendero que rodea el cráter y entra en él.",
-   "aparcar": "Desde noviembre de 2026 está previsto aparcar en Mancha Blanca (aparcamiento de Los Dolores) y subir en la guagua del parque (línea P3).",
-   "aparcar_verificar": true
+   "aparcar": "Aparcamiento gratuito mediano junto a la LZ-56, al pie del sendero. Desde noviembre de 2026 está previsto aparcar en Mancha Blanca y subir en la guagua del parque (línea P3).",
+   "aparcar_verificar": false
   },
   {
    "id": "caldera_blanca",

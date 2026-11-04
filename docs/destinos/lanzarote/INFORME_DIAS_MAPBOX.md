@@ -10,54 +10,54 @@ Cada día de `DIAS_CURADOS_LANZAROTE.md` se ha recorrido **desde las 6 zonas de 
 
 | Día | Puerto del Carmen | Playa Blanca | Costa Teguise | Arrecife | El norte | El interior |
 |---|---|---|---|---|---|---|
-| D1 · Fuego y mar: el sur volcánico | 2 h 13 min ✅ | 2 h 02 min ✅ | 2 h 35 min ✅ | 2 h 25 min ✅ | 2 h 59 min ✅ | 2 h 09 min ✅ |
+| D1 · Fuego y mar: el sur volcánico | 2 h 10 min ✅ | 1 h 59 min ✅ | 2 h 32 min ✅ | 2 h 22 min ✅ | 2 h 56 min ✅ | 2 h 06 min ✅ |
 | D1 · Fuego y mar: el sur volcánico (sin los opcionales) | 2 h 09 min ✅ | 1 h 58 min ✅ | 2 h 31 min ✅ | 2 h 21 min ✅ | 2 h 55 min ✅ | 2 h 05 min ✅ |
-| D1 · variante Volcanes (Volcán del Cuervo) | 2 h 13 min ✅ | 2 h 02 min ✅ | 2 h 35 min ✅ | 2 h 25 min ✅ | 2 h 59 min ✅ | 2 h 09 min ✅ |
+| D1 · variante Volcanes (Volcán del Cuervo) | 2 h 11 min ✅ | 2 h 00 min ✅ | 2 h 33 min ✅ | 2 h 23 min ✅ | 2 h 57 min ✅ | 2 h 07 min ✅ |
 | D2 · El norte de Manrique | 2 h 14 min ✅ | 2 h 51 min ✅ | 1 h 50 min ✅ | 1 h 54 min ✅ | 1 h 15 min ✅ | 1 h 56 min ✅ |
 | D2 · sábado (mercado de Haría) | 2 h 13 min ✅ | 2 h 52 min ✅ | 1 h 46 min ✅ | 1 h 55 min ✅ | 1 h 07 min ✅ | 2 h 03 min ✅ |
 | D2 · viaje de 2 días (con la Fundación) | 2 h 08 min ✅ | 2 h 49 min ✅ | 1 h 44 min ✅ | 1 h 49 min ✅ | 1 h 35 min ✅ | 1 h 58 min ✅ |
-| D2 · al revés (la Cueva a primera hora) | 2 h 16 min ✅ | 2 h 52 min ✅ | 1 h 52 min ✅ | 1 h 55 min ✅ | 1 h 17 min ✅ | 1 h 57 min ✅ |
-| D2 · viernes con Noches de Jameos (opcional) | 2 h 16 min ✅ | 2 h 54 min ✅ | 1 h 48 min ✅ | 1 h 56 min ✅ | 1 h 09 min ✅ | 2 h 05 min ✅ |
-| D3 · Manrique en casa: Tahíche, Teguise y Arrecife | 1 h 48 min ⚠️1 | 2 h 31 min ⚠️1 | 1 h 33 min ⚠️1 | 1 h 23 min ⚠️1 | 1 h 57 min ⚠️1 | 1 h 46 min ⚠️1 |
+| D2 · al revés (la Cueva a primera hora) | 2 h 16 min ✅ | 2 h 53 min ✅ | 1 h 52 min ✅ | 1 h 55 min ✅ | 1 h 17 min ✅ | 1 h 58 min ✅ |
+| D2 · viernes con Noches de Jameos (opcional) | 2 h 16 min ✅ | 2 h 55 min ✅ | 1 h 48 min ✅ | 1 h 56 min ✅ | 1 h 09 min ✅ | 2 h 06 min ✅ |
+| D3 · Manrique en casa: Tahíche, Teguise y Arrecife | 1 h 55 min ⚠️1 | 2 h 38 min ⚠️1 | 1 h 40 min ⚠️1 | 1 h 30 min ⚠️1 | 2 h 04 min ⚠️1 | 1 h 53 min ⚠️1 |
 | D3 · Manrique en casa: Tahíche, Teguise y Arrecife (sin los opcionales) | 1 h 28 min ✅ | 2 h 11 min ✅ | 1 h 13 min ✅ | 1 h 03 min ✅ | 1 h 37 min ✅ | 1 h 26 min ✅ |
 | D3 · domingo (mercadillo de Teguise) | 1 h 23 min ✅ | 2 h 01 min ✅ | 1 h 08 min ✅ | 58 min ✅ | 1 h 27 min ✅ | 1 h 11 min ✅ |
 | D3 · con Arte (LagOmar, sin el Castillo) | 1 h 37 min ⚠️1 | 2 h 20 min ⚠️1 | 1 h 22 min ⚠️1 | 1 h 12 min ⚠️1 | 1 h 46 min ⚠️1 | 1 h 35 min ⚠️1 |
 | D4 · Papagayo y Playa Blanca | 2 h 22 min ✅ | 1 h 23 min ✅ | 2 h 44 min ✅ | 2 h 36 min ✅ | 3 h 09 min ⚠️1 | 2 h 32 min ✅ |
-| D5 · Volcanes y Famara | 1 h 33 min ✅ | 2 h 01 min ✅ | 1 h 37 min ✅ | 1 h 33 min ✅ | 1 h 55 min ✅ | 1 h 14 min ✅ |
-| D5 · Volcanes y Famara (sin los opcionales) | 1 h 19 min ✅ | 1 h 47 min ✅ | 1 h 23 min ✅ | 1 h 19 min ✅ | 1 h 41 min ✅ | 1 h 00 min ✅ |
+| D5 · Volcanes y Famara | 1 h 59 min ✅ | 2 h 27 min ✅ | 2 h 03 min ✅ | 1 h 59 min ✅ | 2 h 21 min ✅ | 1 h 40 min ✅ |
+| D5 · Volcanes y Famara (sin los opcionales) | 1 h 21 min ✅ | 1 h 49 min ✅ | 1 h 25 min ✅ | 1 h 21 min ✅ | 1 h 43 min ✅ | 1 h 02 min ✅ |
 | DG · La Graciosa (con coche hasta Órzola) | 1 h 39 min ✅ | 2 h 18 min ✅ | 1 h 13 min ✅ | 1 h 20 min ✅ | 33 min ✅ | 1 h 29 min ✅ |
 
 ✅ = cabe sin ningún aviso. ⚠️N = N avisos (abajo, en cada día).
 
 ## D1 · Fuego y mar: el sur volcánico
 
-**En sencillo:** cabe desde las 6 zonas. El coche va de 2 h 02 min (Playa Blanca) a 2 h 59 min (El norte).
+**En sencillo:** cabe desde las 6 zonas. El coche va de 1 h 59 min (Playa Blanca) a 2 h 56 min (El norte).
 
 | Zona | Sale | Coche total | Con aparcar | Vuelve a casa (hacia) | Avisos |
 |---|---|---|---|---|---|
-| Puerto del Carmen | 08:32 | 2 h 13 min | 2 h 53 min | 19:38 | — |
-| Playa Blanca | 08:32 | 2 h 02 min | 2 h 42 min | 19:27 | — |
-| Costa Teguise | 08:21 | 2 h 35 min | 3 h 15 min | 19:49 | — |
-| Arrecife | 08:26 | 2 h 25 min | 3 h 05 min | 19:44 | — |
-| El norte | 08:11 | 2 h 59 min | 3 h 39 min | 20:03 | — |
-| El interior | 08:41 | 2 h 09 min | 2 h 49 min | 19:43 | — |
+| Puerto del Carmen | 08:32 | 2 h 10 min | 2 h 50 min | 19:38 | — |
+| Playa Blanca | 08:32 | 1 h 59 min | 2 h 39 min | 19:27 | — |
+| Costa Teguise | 08:21 | 2 h 32 min | 3 h 12 min | 19:49 | — |
+| Arrecife | 08:26 | 2 h 22 min | 3 h 02 min | 19:44 | — |
+| El norte | 08:11 | 2 h 56 min | 3 h 36 min | 20:03 | — |
+| El interior | 08:41 | 2 h 06 min | 2 h 46 min | 19:43 | — |
 
 Recorrido desde El norte (la zona con más coche):
 
 - 08:11 sales de casa (54 min de coche hasta el primer sitio).
 - 09:15 llegas a **Montañas del Fuego (Timanfaya, Islote de Hilario)** (entras a las 09:30); visita de 1 h 30 min hasta las 11:00 (turno de las 09:30).
-  - coche 22 min (16.5 km) a La Geria y sus bodegas (parada en Stratvs)
-- 11:27 llegas a **La Geria y sus bodegas (parada en Stratvs)**; visita de 1 h 00 min hasta las 12:27 (mirador de los hoyos de viña y parada corta en una bodega).
-  - coche 7 min (2.2 km) a Bodega La Geria (LZ-30 km 19, bar La Cepa)
+  - coche 23 min (17 km) a La Geria y sus bodegas (parada en Stratvs)
+- 11:28 llegas a **La Geria y sus bodegas (parada en Stratvs)**; visita de 1 h 00 min hasta las 12:28 (mirador de los hoyos de viña y parada corta en una bodega).
+  - coche 6 min (1.6 km) a Bodega La Geria (LZ-30 km 19, bar La Cepa)
 - 12:39 llegas a **Bodega La Geria (LZ-30 km 19, bar La Cepa)** (entras a las 13:00); comida de 1 h 15 min hasta las 14:15 (comida (La Cepa), hacia las 13:15).
   - coche 21 min (16.5 km) a Salinas de Janubio (mirador)
 - 14:41 llegas a **Salinas de Janubio (mirador)**; visita de 20 min hasta las 15:01.
-  - coche 3 min (2.3 km) a Playa de Montaña Bermeja (LZ-703)
-- 15:09 llegas a **Playa de Montaña Bermeja (LZ-703)**; visita de 15 min hasta las 15:24 (opcional).
-  - coche 16 min (14 km) a Los Hervideros
-- 15:45 llegas a **Los Hervideros**; visita de 30 min hasta las 16:15.
+  - coche 14 min (12.5 km) a Playa de Montaña Bermeja (LZ-703)
+- 15:20 llegas a **Playa de Montaña Bermeja (LZ-703)**; visita de 15 min hasta las 15:35 (opcional).
+  - coche 2 min (0.9 km) a Los Hervideros
+- 15:42 llegas a **Los Hervideros**; visita de 30 min hasta las 16:12.
   - coche 3 min (2.7 km) a El Golfo y el Charco de los Clicos
-- 16:23 llegas a **El Golfo y el Charco de los Clicos**; visita de 1 h 00 min hasta las 18:10 (hasta el atardecer).
+- 16:20 llegas a **El Golfo y el Charco de los Clicos**; visita de 1 h 00 min hasta las 18:10 (hasta el atardecer).
 - 18:10 llegas a **El Golfo y el Charco de los Clicos**; cena de 1 h 00 min hasta las 19:10 (cena en El Golfo).
 - 19:10 vuelves a casa: 53 min de coche; llegas hacia las 20:03.
 
@@ -78,9 +78,9 @@ Recorrido desde El norte (la zona con más coche):
 
 - 08:11 sales de casa (54 min de coche hasta el primer sitio).
 - 09:15 llegas a **Montañas del Fuego (Timanfaya, Islote de Hilario)** (entras a las 09:30); visita de 1 h 30 min hasta las 11:00 (turno de las 09:30).
-  - coche 22 min (16.5 km) a La Geria y sus bodegas (parada en Stratvs)
-- 11:27 llegas a **La Geria y sus bodegas (parada en Stratvs)**; visita de 1 h 00 min hasta las 12:27 (mirador de los hoyos de viña y parada corta en una bodega).
-  - coche 7 min (2.2 km) a Bodega La Geria (LZ-30 km 19, bar La Cepa)
+  - coche 23 min (17 km) a La Geria y sus bodegas (parada en Stratvs)
+- 11:28 llegas a **La Geria y sus bodegas (parada en Stratvs)**; visita de 1 h 00 min hasta las 12:28 (mirador de los hoyos de viña y parada corta en una bodega).
+  - coche 6 min (1.6 km) a Bodega La Geria (LZ-30 km 19, bar La Cepa)
 - 12:39 llegas a **Bodega La Geria (LZ-30 km 19, bar La Cepa)** (entras a las 13:00); comida de 1 h 15 min hasta las 14:15 (comida (La Cepa), hacia las 13:15).
   - coche 21 min (16.5 km) a Salinas de Janubio (mirador)
 - 14:41 llegas a **Salinas de Janubio (mirador)**; visita de 20 min hasta las 15:01.
@@ -93,33 +93,33 @@ Recorrido desde El norte (la zona con más coche):
 
 ## D1 · variante Volcanes (Volcán del Cuervo)
 
-**En sencillo:** cabe desde las 6 zonas. El coche va de 2 h 02 min (Playa Blanca) a 2 h 59 min (El norte).
+**En sencillo:** cabe desde las 6 zonas. El coche va de 2 h 00 min (Playa Blanca) a 2 h 57 min (El norte).
 
 | Zona | Sale | Coche total | Con aparcar | Vuelve a casa (hacia) | Avisos |
 |---|---|---|---|---|---|
-| Puerto del Carmen | 08:32 | 2 h 13 min | 2 h 53 min | 19:38 | — |
-| Playa Blanca | 08:32 | 2 h 02 min | 2 h 42 min | 19:27 | — |
-| Costa Teguise | 08:21 | 2 h 35 min | 3 h 15 min | 19:49 | — |
-| Arrecife | 08:26 | 2 h 25 min | 3 h 05 min | 19:44 | — |
-| El norte | 08:11 | 2 h 59 min | 3 h 39 min | 20:03 | — |
-| El interior | 08:41 | 2 h 09 min | 2 h 49 min | 19:43 | — |
+| Puerto del Carmen | 08:32 | 2 h 11 min | 2 h 51 min | 19:38 | — |
+| Playa Blanca | 08:32 | 2 h 00 min | 2 h 40 min | 19:27 | — |
+| Costa Teguise | 08:21 | 2 h 33 min | 3 h 13 min | 19:49 | — |
+| Arrecife | 08:26 | 2 h 23 min | 3 h 03 min | 19:44 | — |
+| El norte | 08:11 | 2 h 57 min | 3 h 37 min | 20:03 | — |
+| El interior | 08:41 | 2 h 07 min | 2 h 47 min | 19:43 | — |
 
 Recorrido desde El norte (la zona con más coche):
 
 - 08:11 sales de casa (54 min de coche hasta el primer sitio).
 - 09:15 llegas a **Montañas del Fuego (Timanfaya, Islote de Hilario)** (entras a las 09:30); visita de 1 h 30 min hasta las 11:00.
-  - coche 21 min (14.6 km) a Volcán del Cuervo (aparcamiento junto a la LZ-56)
-- 11:26 llegas a **Volcán del Cuervo (aparcamiento junto a la LZ-56)**; visita de 1 h 30 min hasta las 12:56.
+  - coche 20 min (14.1 km) a Volcán del Cuervo (aparcamiento junto a la LZ-56)
+- 11:25 llegas a **Volcán del Cuervo (aparcamiento junto a la LZ-56)**; visita de 1 h 30 min hasta las 12:55.
   - coche 5 min (4.3 km) a La Geria y sus bodegas (parada en Stratvs)
-- 13:06 llegas a **La Geria y sus bodegas (parada en Stratvs)**; visita de 30 min hasta las 13:36 (mirador, camino de la comida).
-  - coche 7 min (2.2 km) a Bodega La Geria (LZ-30 km 19, bar La Cepa)
-- 13:48 llegas a **Bodega La Geria (LZ-30 km 19, bar La Cepa)**; comida de 1 h 15 min hasta las 15:03.
+- 13:05 llegas a **La Geria y sus bodegas (parada en Stratvs)**; visita de 30 min hasta las 13:35 (mirador, camino de la comida).
+  - coche 6 min (1.6 km) a Bodega La Geria (LZ-30 km 19, bar La Cepa)
+- 13:46 llegas a **Bodega La Geria (LZ-30 km 19, bar La Cepa)**; comida de 1 h 15 min hasta las 15:01.
   - coche 21 min (16.5 km) a Salinas de Janubio (mirador)
-- 15:29 llegas a **Salinas de Janubio (mirador)**; visita de 20 min hasta las 15:49.
+- 15:27 llegas a **Salinas de Janubio (mirador)**; visita de 20 min hasta las 15:47.
   - coche 15 min (13.4 km) a Los Hervideros
-- 16:09 llegas a **Los Hervideros**; visita de 30 min hasta las 16:39.
+- 16:07 llegas a **Los Hervideros**; visita de 30 min hasta las 16:37.
   - coche 3 min (2.7 km) a El Golfo y el Charco de los Clicos
-- 16:47 llegas a **El Golfo y el Charco de los Clicos**; visita de 1 h 00 min hasta las 18:10.
+- 16:45 llegas a **El Golfo y el Charco de los Clicos**; visita de 1 h 00 min hasta las 18:10.
 - 18:10 llegas a **El Golfo y el Charco de los Clicos**; cena de 1 h 00 min hasta las 19:10.
 - 19:10 vuelves a casa: 53 min de coche; llegas hacia las 20:03.
 
@@ -206,20 +206,20 @@ Recorrido desde Playa Blanca (la zona con más coche):
 
 ## D2 · al revés (la Cueva a primera hora)
 
-**En sencillo:** cabe desde las 6 zonas. El coche va de 1 h 17 min (El norte) a 2 h 52 min (Playa Blanca).
+**En sencillo:** cabe desde las 6 zonas. El coche va de 1 h 17 min (El norte) a 2 h 53 min (Playa Blanca).
 
 | Zona | Sale | Coche total | Con aparcar | Vuelve a casa (hacia) | Avisos |
 |---|---|---|---|---|---|
 | Puerto del Carmen | 08:28 | 2 h 16 min | 2 h 44 min | 17:02 | — |
-| Playa Blanca | 08:06 | 2 h 52 min | 3 h 20 min | 17:16 | — |
+| Playa Blanca | 08:05 | 2 h 53 min | 3 h 21 min | 17:16 | — |
 | Costa Teguise | 08:42 | 1 h 52 min | 2 h 20 min | 16:52 | — |
 | Arrecife | 08:38 | 1 h 55 min | 2 h 23 min | 16:51 | — |
 | El norte | 09:01 | 1 h 17 min | 1 h 45 min | 16:36 | — |
-| El interior | 08:34 | 1 h 57 min | 2 h 25 min | 16:49 | — |
+| El interior | 08:33 | 1 h 58 min | 2 h 26 min | 16:49 | — |
 
 Recorrido desde Playa Blanca (la zona con más coche):
 
-- 08:06 sales de casa (64 min de coche hasta el primer sitio).
+- 08:05 sales de casa (65 min de coche hasta el primer sitio).
 - 09:15 llegas a **Cueva de los Verdes** (entras a las 09:30); visita de 50 min hasta las 10:20.
   - coche 4 min (1.2 km) a Jameos del Agua
 - 10:29 llegas a **Jameos del Agua**; visita de 1 h 00 min hasta las 11:29.
@@ -234,20 +234,20 @@ Recorrido desde Playa Blanca (la zona con más coche):
 
 ## D2 · viernes con Noches de Jameos (opcional)
 
-**En sencillo:** cabe desde las 6 zonas. El coche va de 1 h 09 min (El norte) a 2 h 54 min (Playa Blanca).
+**En sencillo:** cabe desde las 6 zonas. El coche va de 1 h 09 min (El norte) a 2 h 55 min (Playa Blanca).
 
 | Zona | Sale | Coche total | Con aparcar | Vuelve a casa (hacia) | Avisos |
 |---|---|---|---|---|---|
 | Puerto del Carmen | 08:28 | 2 h 16 min | 2 h 41 min | 23:57 | — |
-| Playa Blanca | 08:06 | 2 h 54 min | 3 h 19 min | 00:13 | — |
+| Playa Blanca | 08:05 | 2 h 55 min | 3 h 20 min | 00:13 | — |
 | Costa Teguise | 08:42 | 1 h 48 min | 2 h 13 min | 23:43 | — |
 | Arrecife | 08:38 | 1 h 56 min | 2 h 21 min | 23:47 | — |
 | El norte | 09:01 | 1 h 09 min | 1 h 34 min | 23:23 | — |
-| El interior | 08:34 | 2 h 05 min | 2 h 30 min | 23:52 | — |
+| El interior | 08:33 | 2 h 06 min | 2 h 31 min | 23:52 | — |
 
 Recorrido desde Playa Blanca (la zona con más coche):
 
-- 08:06 sales de casa (64 min de coche hasta el primer sitio).
+- 08:05 sales de casa (65 min de coche hasta el primer sitio).
 - 09:15 llegas a **Cueva de los Verdes** (entras a las 09:30); visita de 50 min hasta las 10:20.
   - coche 14 min (9.8 km) a Mirador del Río
 - 10:44 llegas a **Mirador del Río**; visita de 45 min hasta las 11:29.
@@ -260,16 +260,16 @@ Recorrido desde Playa Blanca (la zona con más coche):
 
 ## D3 · Manrique en casa: Tahíche, Teguise y Arrecife
 
-**En sencillo:** desde ninguna zona sale limpio. El coche va de 1 h 23 min (Arrecife) a 2 h 31 min (Playa Blanca).
+**En sencillo:** desde ninguna zona sale limpio. El coche va de 1 h 30 min (Arrecife) a 2 h 38 min (Playa Blanca).
 
 | Zona | Sale | Coche total | Con aparcar | Vuelve a casa (hacia) | Avisos |
 |---|---|---|---|---|---|
-| Puerto del Carmen | 09:35 | 1 h 48 min | 2 h 28 min | 21:38 | llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10 |
-| Playa Blanca | 09:10 | 2 h 31 min | 3 h 11 min | 21:56 | llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10 |
-| Costa Teguise | 09:45 | 1 h 33 min | 2 h 13 min | 21:33 | llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10 |
-| Arrecife | 09:45 | 1 h 23 min | 2 h 03 min | 21:23 | llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10 |
-| El norte | 09:35 | 1 h 57 min | 2 h 37 min | 21:47 | llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10 |
-| El interior | 09:39 | 1 h 46 min | 2 h 26 min | 21:40 | llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10 |
+| Puerto del Carmen | 09:35 | 1 h 55 min | 2 h 35 min | 21:45 | llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10 |
+| Playa Blanca | 09:10 | 2 h 38 min | 3 h 18 min | 22:03 | llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10 |
+| Costa Teguise | 09:45 | 1 h 40 min | 2 h 20 min | 21:40 | llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10 |
+| Arrecife | 09:45 | 1 h 30 min | 2 h 10 min | 21:30 | llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10 |
+| El norte | 09:35 | 2 h 04 min | 2 h 44 min | 21:54 | llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10 |
+| El interior | 09:39 | 1 h 53 min | 2 h 33 min | 21:47 | llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10 |
 
 Recorrido desde Playa Blanca (la zona con más coche):
 
@@ -282,14 +282,14 @@ Recorrido desde Playa Blanca (la zona con más coche):
 - 14:22 llegas a **Teguise (villa, aparcamiento a la entrada del pueblo)**; visita de 1 h 30 min hasta las 15:52 (el casco y el Palacio Spínola por fuera).
   - coche 6 min (2.4 km) a Castillo de Santa Bárbara (volcán Guanapay)
 - 16:03 llegas a **Castillo de Santa Bárbara (volcán Guanapay)**; visita de 20 min hasta las 16:23 (opcional, por fuera).
-  - coche 8 min (4.5 km) a Ciudad Estratificada (Rofera de Teseguite, LZ-404)
-- 16:36 llegas a **Ciudad Estratificada (Rofera de Teseguite, LZ-404)**; visita de 25 min hasta las 17:01 (opcional).
-  - coche 15 min (11.1 km) a Casa-Museo del Campesino (Mozaga)
-- 17:21 llegas a **Casa-Museo del Campesino (Mozaga)**; visita de 50 min hasta las 18:11 (cierra a las 18:00).
+  - coche 12 min (7.2 km) a Ciudad Estratificada (Rofera de Teseguite, LZ-404)
+- 16:40 llegas a **Ciudad Estratificada (Rofera de Teseguite, LZ-404)**; visita de 25 min hasta las 17:05 (opcional).
+  - coche 18 min (13.8 km) a Casa-Museo del Campesino (Mozaga)
+- 17:28 llegas a **Casa-Museo del Campesino (Mozaga)**; visita de 50 min hasta las 18:18 (cierra a las 18:00).
   - coche 14 min (8.9 km) a Arrecife: Charco de San Ginés y el paseo
-- 18:35 llegas a **Arrecife: Charco de San Ginés y el paseo**; visita de 1 h 30 min hasta las 20:05 (al caer la tarde, con las luces del Charco).
-- 20:05 llegas a **Arrecife: Charco de San Ginés y el paseo**; cena de 1 h 15 min hasta las 21:20.
-- 21:20 vuelves a casa: 36 min de coche; llegas hacia las 21:56.
+- 18:42 llegas a **Arrecife: Charco de San Ginés y el paseo**; visita de 1 h 30 min hasta las 20:12 (al caer la tarde, con las luces del Charco).
+- 20:12 llegas a **Arrecife: Charco de San Ginés y el paseo**; cena de 1 h 15 min hasta las 21:27.
+- 21:27 vuelves a casa: 36 min de coche; llegas hacia las 22:03.
 
 ## D3 · Manrique en casa: Tahíche, Teguise y Arrecife (sin los opcionales)
 
@@ -407,25 +407,25 @@ Recorrido desde El norte (la zona con más coche):
 
 ## D5 · Volcanes y Famara
 
-**En sencillo:** cabe desde las 6 zonas. El coche va de 1 h 14 min (El interior) a 2 h 01 min (Playa Blanca).
+**En sencillo:** cabe desde las 6 zonas. El coche va de 1 h 40 min (El interior) a 2 h 27 min (Playa Blanca).
 
 | Zona | Sale | Coche total | Con aparcar | Vuelve a casa (hacia) | Avisos |
 |---|---|---|---|---|---|
-| Puerto del Carmen | 08:39 | 1 h 33 min | 1 h 48 min | 19:47 | — |
-| Playa Blanca | 08:24 | 2 h 01 min | 2 h 16 min | 20:00 | — |
-| Costa Teguise | 08:28 | 1 h 37 min | 1 h 52 min | 19:40 | — |
-| Arrecife | 08:32 | 1 h 33 min | 1 h 48 min | 19:40 | — |
-| El norte | 08:17 | 1 h 55 min | 2 h 10 min | 19:47 | — |
-| El interior | 08:42 | 1 h 14 min | 1 h 29 min | 19:31 | — |
+| Puerto del Carmen | 08:38 | 1 h 59 min | 2 h 14 min | 19:47 | — |
+| Playa Blanca | 08:23 | 2 h 27 min | 2 h 42 min | 20:00 | — |
+| Costa Teguise | 08:27 | 2 h 03 min | 2 h 18 min | 19:40 | — |
+| Arrecife | 08:31 | 1 h 59 min | 2 h 14 min | 19:40 | — |
+| El norte | 08:16 | 2 h 21 min | 2 h 36 min | 19:47 | — |
+| El interior | 08:41 | 1 h 40 min | 1 h 55 min | 19:31 | — |
 
 Recorrido desde Playa Blanca (la zona con más coche):
 
-- 08:24 sales de casa (31 min de coche hasta el primer sitio).
+- 08:23 sales de casa (32 min de coche hasta el primer sitio).
 - 09:00 llegas a **Volcán del Cuervo (aparcamiento junto a la LZ-56)**; visita de 1 h 30 min hasta las 10:30 (temprano, sin sombra).
-  - coche 28 min (18.1 km) a Ermita de las Nieves
-- 11:03 llegas a **Ermita de las Nieves**; visita de 30 min hasta las 11:33 (opcional).
-  - coche 12 min (5.6 km) a Caleta de Famara y Playa de Famara
-- 11:50 llegas a **Caleta de Famara y Playa de Famara** (entras a las 13:00); comida de 1 h 15 min hasta las 14:15 (comida (El Risco), hacia las 13:30).
+  - coche 35 min (27.9 km) a Ermita de las Nieves
+- 11:10 llegas a **Ermita de las Nieves**; visita de 30 min hasta las 11:40 (opcional).
+  - coche 30 min (23.4 km) a Caleta de Famara y Playa de Famara
+- 12:15 llegas a **Caleta de Famara y Playa de Famara** (entras a las 13:00); comida de 1 h 15 min hasta las 14:15 (comida (El Risco), hacia las 13:30).
 - 14:15 llegas a **Caleta de Famara y Playa de Famara**; visita de 1 h 30 min hasta las 15:45 (calles de arena y paseo por la playa).
 - 15:45 llegas a **Caleta de Famara y Playa de Famara**; visita de 30 min hasta las 18:10 (atardecer).
 - 18:10 llegas a **Caleta de Famara y Playa de Famara**; cena de 1 h 00 min hasta las 19:10.
@@ -433,23 +433,23 @@ Recorrido desde Playa Blanca (la zona con más coche):
 
 ## D5 · Volcanes y Famara (sin los opcionales)
 
-**En sencillo:** cabe desde las 6 zonas. El coche va de 1 h 00 min (El interior) a 1 h 47 min (Playa Blanca).
+**En sencillo:** cabe desde las 6 zonas. El coche va de 1 h 02 min (El interior) a 1 h 49 min (Playa Blanca).
 
 | Zona | Sale | Coche total | Con aparcar | Vuelve a casa (hacia) | Avisos |
 |---|---|---|---|---|---|
-| Puerto del Carmen | 08:39 | 1 h 19 min | 1 h 29 min | 19:47 | — |
-| Playa Blanca | 08:24 | 1 h 47 min | 1 h 57 min | 20:00 | — |
-| Costa Teguise | 08:28 | 1 h 23 min | 1 h 33 min | 19:40 | — |
-| Arrecife | 08:32 | 1 h 19 min | 1 h 29 min | 19:40 | — |
-| El norte | 08:17 | 1 h 41 min | 1 h 51 min | 19:47 | — |
-| El interior | 08:42 | 1 h 00 min | 1 h 10 min | 19:31 | — |
+| Puerto del Carmen | 08:38 | 1 h 21 min | 1 h 31 min | 19:47 | — |
+| Playa Blanca | 08:23 | 1 h 49 min | 1 h 59 min | 20:00 | — |
+| Costa Teguise | 08:27 | 1 h 25 min | 1 h 35 min | 19:40 | — |
+| Arrecife | 08:31 | 1 h 21 min | 1 h 31 min | 19:40 | — |
+| El norte | 08:16 | 1 h 43 min | 1 h 53 min | 19:47 | — |
+| El interior | 08:41 | 1 h 02 min | 1 h 12 min | 19:31 | — |
 
 Recorrido desde Playa Blanca (la zona con más coche):
 
-- 08:24 sales de casa (31 min de coche hasta el primer sitio).
+- 08:23 sales de casa (32 min de coche hasta el primer sitio).
 - 09:00 llegas a **Volcán del Cuervo (aparcamiento junto a la LZ-56)**; visita de 1 h 30 min hasta las 10:30 (temprano, sin sombra).
-  - coche 26 min (23 km) a Caleta de Famara y Playa de Famara
-- 11:01 llegas a **Caleta de Famara y Playa de Famara** (entras a las 13:00); comida de 1 h 15 min hasta las 14:15 (comida (El Risco), hacia las 13:30).
+  - coche 27 min (23.6 km) a Caleta de Famara y Playa de Famara
+- 11:02 llegas a **Caleta de Famara y Playa de Famara** (entras a las 13:00); comida de 1 h 15 min hasta las 14:15 (comida (El Risco), hacia las 13:30).
 - 14:15 llegas a **Caleta de Famara y Playa de Famara**; visita de 1 h 30 min hasta las 15:45 (calles de arena y paseo por la playa).
 - 15:45 llegas a **Caleta de Famara y Playa de Famara**; visita de 30 min hasta las 18:10 (atardecer).
 - 18:10 llegas a **Caleta de Famara y Playa de Famara**; cena de 1 h 00 min hasta las 19:10.

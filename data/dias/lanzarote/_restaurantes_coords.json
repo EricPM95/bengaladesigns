@@ -1,0 +1,16 @@
+{
+ "formato": "restaurantes-coords/1",
+ "_nota": "LZ2b-1 cierre (agente A, 4-nov-2026). Coordenadas de restaurantes que RESTAURANTES_LANZAROTE.md no trae, sacadas de Mapbox Search Box (nombre + pueblo) SOLO cuando el resultado es claramente ese restaurante (mismo nombre y el pueblo y la calle que dice el documento). Las usa scripts/destino/lanzaroteRestaurantes.mjs al regenerar _restaurantes.json (si el documento ya trae coordenadas, mandan las del documento). Los demás se quedan sin coordenada.",
+ "restaurantes": {
+  "Restaurante de Bodegas Rubicón": { "lat": 28.96882, "lng": -13.714, "mapbox": "Bodegas Rubicón, Crta. Teguise-Yaiza, Yaiza" },
+  "Mercado Municipal de Haría": { "lat": 29.14546, "lng": -13.50124, "mapbox": "Mercado Municipal de Abastos de Haría, C. Barranco de Tesnesia" },
+  "La Casa de la Playa": { "lat": 29.12816, "lng": -13.46482, "mapbox": "La Casa de La Playa, C. el Lajero, Haría" },
+  "Dunas de Famara": { "lat": 29.1145, "lng": -13.54796, "mapbox": "Restaurante Dunas de Famara, C. Chirimoya, Teguise" },
+  "El Veril": { "lat": 29.23045, "lng": -13.50374, "mapbox": "Restaurante El Veril, Av. Virgen del Mar, La Graciosa" },
+  "Mirador El Roque": { "lat": 29.22221, "lng": -13.45171, "mapbox": "Restaurante Mirador El Roque, C/ Peña del Señor Dionisio 8, Órzola" },
+  "La Carmencita del Puerto": { "lat": 28.932, "lng": -13.62112, "mapbox": "La Carmencita del Puerto, C. Chabusquillo, Tías" },
+  "El Cangrejo Rojo": { "lat": 28.92105, "lng": -13.67121, "mapbox": "Restaurante El Cangrejo Rojo, C. Roque Nublo, Puerto del Carmen" },
+  "Lomo Alto": { "lat": 28.92049, "lng": -13.67044, "mapbox": "Lomo Alto, C. Hierro, Puerto del Carmen" },
+  "Villa Toledo": { "lat": 28.99333, "lng": -13.49406, "mapbox": "Villa Toledo, Av. los Cocederos, Costa Teguise" }
+ }
+}

@@ -20,7 +20,10 @@
     "direccion": "Ctra. Teguise-Yaiza, 2, La Geria. Teléfono 928 173 708. Coordenadas sin confirmar.",
     "cocina": "canaria casera, guisos y tapas, con vinos de la bodega. Precio sin confirmar.",
     "horario": "todos los días de 10:00 a 18:30 (Wanderlog). Lanzarote3 da de 10:00 a 19:00.",
-    "reserva": "sin confirmar."
+    "reserva": "sin confirmar.",
+    "lat": 28.96882,
+    "lng": -13.714,
+    "coord_fuente": "Mapbox Search Box: Bodegas Rubicón, Crta. Teguise-Yaiza, Yaiza"
    },
    {
     "rol": "tercera",
@@ -81,7 +84,10 @@
     "direccion": "C/ Barranco de Tesnesia, 2A.",
     "cocina": "bandejas de carne o pescado para compartir, barato.",
     "horario": "de martes a sábado de 9:00 a 16:00.",
-    "reserva": "por WhatsApp un día antes (639 10 16 55). No contestan al teléfono y hay que coger número."
+    "reserva": "por WhatsApp un día antes (639 10 16 55). No contestan al teléfono y hay que coger número.",
+    "lat": 29.14546,
+    "lng": -13.50124,
+    "coord_fuente": "Mapbox Search Box: Mercado Municipal de Abastos de Haría, C. Barranco de Tesnesia"
    }
   ],
   "D2_cena": [
@@ -91,7 +97,10 @@
     "direccion": "C/ El Lajero, 1C, junto a la playa de La Garita. Teléfono 928 173 339.",
     "cocina": "pescado fresco a la parrilla y parrilladas para compartir. Unos 28 € por persona.",
     "horario": "de jueves a lunes de 10:00 a 22:00; cierra martes y miércoles. Lo confirman dos fuentes.",
-    "reserva": "sí (lanzarote.com). La Maleta avisa de que se disfruta más a mediodía."
+    "reserva": "sí (lanzarote.com). La Maleta avisa de que se disfruta más a mediodía.",
+    "lat": 29.12816,
+    "lng": -13.46482,
+    "coord_fuente": "Mapbox Search Box: La Casa de La Playa, C. el Lajero, Haría"
    },
    {
     "rol": "alternativa",
@@ -219,7 +228,10 @@
     "nombre": "Dunas de Famara",
     "direccion": "C/ Chirimoya, 13 (Urb. Famara).",
     "cocina": "canaria y marinera actual. Unos 35-60 € por persona.",
-    "horario": "sin confirmar."
+    "horario": "sin confirmar.",
+    "lat": 29.1145,
+    "lng": -13.54796,
+    "coord_fuente": "Mapbox Search Box: Restaurante Dunas de Famara, C. Chirimoya, Teguise"
    }
   ],
   "DG_comida": [
@@ -236,7 +248,10 @@
     "nombre": "El Veril",
     "direccion": "Av. Virgen del Mar, 93-95.",
     "cocina": "raciones generosas, informal. Precio sin confirmar.",
-    "horario": "todos los días de 11:00 a 23:00, salvo el lunes, que cierra a las 17:00."
+    "horario": "todos los días de 11:00 a 23:00, salvo el lunes, que cierra a las 17:00.",
+    "lat": 29.23045,
+    "lng": -13.50374,
+    "coord_fuente": "Mapbox Search Box: Restaurante El Veril, Av. Virgen del Mar, La Graciosa"
    },
    {
     "rol": "tercera",
@@ -265,7 +280,10 @@
    {
     "rol": "tercera",
     "nombre": "Mirador El Roque",
-    "nota": ", en C/ Peña del Señor Dionisio, 8. Es el que tiene más opiniones del pueblo. Horario sin confirmar. Teneriffa News"
+    "nota": ", en C/ Peña del Señor Dionisio, 8. Es el que tiene más opiniones del pueblo. Horario sin confirmar. Teneriffa News",
+    "lat": 29.22221,
+    "lng": -13.45171,
+    "coord_fuente": "Mapbox Search Box: Restaurante Mirador El Roque, C/ Peña del Señor Dionisio 8, Órzola"
    }
   ]
  },
@@ -276,21 +294,30 @@
     "direccion": "C/ Chabusquillo, 47, junto a la Av. de las Playas. Teléfono 928 29 11 69.",
     "cocina": "canaria y tapas. €€.",
     "horario": "de lunes a viernes de 19:30 a 23:00; cierra sábado y domingo.",
-    "reserva": "sí, «llama antes»."
+    "reserva": "sí, «llama antes».",
+    "lat": 28.932,
+    "lng": -13.62112,
+    "coord_fuente": "Mapbox Search Box: La Carmencita del Puerto, C. Chabusquillo, Tías"
    },
    {
     "nombre": "El Cangrejo Rojo",
     "nota": "(Puerto Viejo, con vistas al puerto y a Playa Chica)",
     "cocina": "tapas de marisco. €€.",
     "horario": "de lunes a sábado de 13:00 a 23:00 (dato de 2023).",
-    "reserva": "aconsejada el fin de semana."
+    "reserva": "aconsejada el fin de semana.",
+    "lat": 28.92105,
+    "lng": -13.67121,
+    "coord_fuente": "Mapbox Search Box: Restaurante El Cangrejo Rojo, C. Roque Nublo, Puerto del Carmen"
    },
    {
     "nombre": "Lomo Alto",
     "nota": "(Puerto Viejo)",
     "direccion": "C/ Hierro, 2. Teléfono 928 51 22 77.",
     "cocina": "carnes a la brasa. €€.",
-    "horario": "todos los días de 12:00 a 23:00 (dato de 2023)."
+    "horario": "todos los días de 12:00 a 23:00 (dato de 2023).",
+    "lat": 28.92049,
+    "lng": -13.67044,
+    "coord_fuente": "Mapbox Search Box: Lomo Alto, C. Hierro, Puerto del Carmen"
    },
    {
     "nombre": "Para pescado: La Cofradía",
@@ -329,7 +356,10 @@
     "nombre": "Villa Toledo",
     "nota": "(paseo de Playa Bastián)",
     "cocina": "marisco, con vistas al mar. €€.",
-    "horario": "cenas de martes a domingo de 19:00 a 22:30 o 23:00; cierra el lunes (dato de 2023)."
+    "horario": "cenas de martes a domingo de 19:00 a 22:30 o 23:00; cierra el lunes (dato de 2023).",
+    "lat": 28.99333,
+    "lng": -13.49406,
+    "coord_fuente": "Mapbox Search Box: Villa Toledo, Av. los Cocederos, Costa Teguise"
    }
   ],
   "arrecife": [

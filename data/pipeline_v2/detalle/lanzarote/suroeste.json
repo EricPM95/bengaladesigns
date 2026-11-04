@@ -59,8 +59,8 @@
         "El contraste de la montaña roja con la arena negra",
         "El mar abierto de la costa oeste"
       ],
-      "aparcar": "Junto a la carretera LZ-703, entre Janubio y Los Hervideros.",
-      "aparcar_verificar": true,
+      "aparcar": "Aparcamiento gratuito pequeño junto a la carretera LZ-703, al lado de la playa.",
+      "aparcar_verificar": false,
       "tips": [
         "No es de baño: viento y mar de fondo fuertes.",
         "Sin servicios: agua y calzado cerrado."

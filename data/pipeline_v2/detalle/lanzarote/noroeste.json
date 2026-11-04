@@ -10,8 +10,8 @@
         "El Risco de Famara, el gran acantilado del norte",
         "El atardecer: el sol cae al mar"
       ],
-      "aparcar": "Aparcamiento a la entrada del pueblo y junto a la playa.",
-      "aparcar_verificar": true,
+      "aparcar": "Sin aparcamiento propio a la vista: se aparca en las calles del pueblo.",
+      "aparcar_verificar": false,
       "tips": [
         "La playa tiene bandera roja todo el año: para pasear y remojarse los pies, no para bañarse.",
         "Quédate al atardecer: el sol cae al mar.",

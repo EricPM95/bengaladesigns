@@ -27,8 +27,8 @@
         "El Faro de Pechiguera, el antiguo (apagado en 1988) y el nuevo",
         "El atardecer en el faro"
       ],
-      "aparcar": "Aparcamiento en Marina Rubicón y junto al faro.",
-      "aparcar_verificar": true,
+      "aparcar": "En el centro se aparca en la calle; los aparcamientos públicos están en Marina Rubicón, a poco más de 1 km del paseo.",
+      "aparcar_verificar": false,
       "tips": [
         "Al faro se llega por un paseo costero, casi todo pavimentado.",
         "La playa de Playa Blanca es de agua tranquila, pero sin socorrista."

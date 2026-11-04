@@ -1,18 +1,121 @@
 [
-{"apartado":"0 · Antes de empezar","punto":"FICHAS_LANZAROTE.json está; prompt guardado tal cual (llegó entero, acaba en «reinicia el api-server»); Design al día; Roma no cambia; Lanzarote sigue oculto; HOY no se toca","estado":"hecho","nota":"Design: el zip nuevo puesto en `docs/diseno/proyecto/` (sin `uploads/` ni `Archivo/`; 17 archivos cambiados, entre ellos `Piezas/Coche Lanza`). El zip pesa 150 MB y NO se sube a git. Muestra de 60 fechas de Roma idéntica y pruebaJutrip en 0. De HOY solo se tocó lo que pedía el prompt («Cerca de ti» y HoySinPase). Dos agentes.","donde":"No es de móvil."},
-{"apartado":"1 · Las fichas de los sitios","punto":"Las 34 fichas metidas como en Roma: por_que_recomendamos y description en lanzarote.json; what_to_see, tips e historia en el detalle","estado":"hecho","nota":"`lanzarote.json` lleva `por_que_recomendamos`, `description` y `aparcar`; `data/pipeline_v2/detalle/lanzarote/` (12 ficheros: uno por zona más `excursiones.json`) lleva `what_to_see`, `tips`, `aparcar` y las historias. Los textos no se han cambiado (salvo `aparcar` donde se comprobó el sitio, apartado siguiente). Se regeneran con `scripts/destino/lanzaroteDatos.mjs` y `pasarFichasLanzarote.mjs`. Ningún texto nombra Roma, Pompeya o Florencia.","donde":"Ficha de cualquier sitio de Lanzarote (con tu cuenta de administrador)."},
-{"apartado":"1 · Las fichas de los sitios","punto":"Las 12 historias en el campo `historia`, sin las líneas «Comprobar» ni dudas y fuentes; audios NO (solo --simular)","estado":"hecho","nota":"Timanfaya, Jameos, Cueva, Mirador del Río, Fundación, Cactus, La Geria, El Golfo, Teguise, Haría, Campesino y La Graciosa (esta va en la ficha «La Graciosa» de `excursiones.json`, no es un sitio del catálogo). La simulación de los audios dice unos 27.720 caracteres; no se ha creado ninguno (gasta créditos).","donde":"«Escuchar historia» en la ficha de Teguise.","captura":"lz2b1_ficha_teguise_1.jpg"},
-{"apartado":"1 · Las fichas de los sitios","punto":"«Dónde aparcar» en lugar de «Cómo llegar», con [Abrir en Maps] a la coordenada de la parada, sin líneas de transporte","estado":"hecho","nota":"Pieza nueva `FichaDondeAparcar` (Design `Coche Lanza` 01): el texto de `aparcar` y [Abrir en Maps] en coche a la coordenada de la parada (su aparcamiento), gratis y con pase. `aparcar_verificar` NUNCA sale al viajero: si es true, la ficha no enseña el texto de aparcar (la prueba lo comprueba).","donde":"DÍAS > día 3 > tocar «Teguise (villa)».","captura":"lz2b1_ficha_teguise_1.jpg"},
-{"apartado":"1b · Los aparcamientos de verdad","punto":"Comprobar con datos reales los 27 sitios con aparcar_verificar y las 12 coordenadas aproximadas; coordenada en el aparcamiento real; texto nuevo; tiempos en coche rehechos","estado":"medias","nota":"HECHO A MEDIAS. Overpass (OpenStreetMap en vivo) no respondía y Google Maps NO se ha mirado en ningún sitio (no cabía en el presupuesto). Con Mapbox Search Box (categoría parking), los 147 aparcamientos de OSM de la LZ1 y Mapbox Directions: 14 sitios con aparcamiento real comprobado (`aparcar_verificar: false`); quedan 15 en `true`: Cueva de los Verdes, La Geria, Caletón Blanco, Montaña Bermeja, Castillo de Santa Bárbara, Ciudad Estratificada, Las Grietas, Haría, Helechos, Mirador de Haría, Guinate, Ermita de las Nieves, Caleta de Famara, Playa Blanca y el Faro, Volcán del Cuervo. Sin aparcamiento oficial: Caletón Blanco (solo el arcén de la LZ-1) y Las Grietas (solo la pista de tierra), y los textos lo dicen así. Coordenadas movidas al aparcamiento real (todas a menos de 120 m): Jameos, Jardín de Cactus, Los Hervideros, Casa-Museo del Campesino, Mirador del Bosquecillo, Castillo de San José y LagOmar. Matriz de coche rehecha con Mapbox para esas (630 celdas, 0 fallos); los días siguen cabiendo (`pruebaTandaLZ2a_A` en 0). Textos de `aparcar` reescritos: Los Hervideros, LagOmar, Punta Mujeres y Arrieta («gratis»: así se llaman los dos en Mapbox), Arrecife y Puerto del Carmen. La parada del ferry y el aeropuerto salen de «verificar». Casi ningún dato dice si es gratis o de pago: casi todo «sin dato» (solo Punta Mujeres y Arrieta «gratuito» y el aeropuerto de pago). La tabla, abajo en este REPASO.","donde":"La tabla de abajo. Los 15 en `true` los miras tú en el viaje."},
-{"apartado":"1c · Dos cambios de Eric","punto":"Timanfaya abre a las 9:00 todos los días (primer turno 9:00, último 15:45, cierre 16:00); fuera la duda de las 9:30","estado":"hecho","nota":"Cambiado en `lanzaroteDatos.mjs` y `listas.json`; quitados los textos de la duda.","donde":"DÍAS > día 1 (Timanfaya)."},
-{"apartado":"1c · Dos cambios de Eric","punto":"Fuera la pregunta «¿Vas a moverte en coche?»: se da por hecho que hay coche; ruta siempre la misma; fuera el aviso «sin coche» y la línea «¿Sin coche?»","estado":"hecho","nota":"Sin pregunta en el formulario (paso Compañía). El motor: `answers.coche` solo vale `alquiler` (por defecto) o `propio`; `day.sin_coche` es siempre null y `day.coche.activo` siempre true. La ruta y los trayectos son idénticos en los dos modos (comprobado por HTTP en los días 2 y 3).","donde":"Formulario (paso Compañía) y DÍAS."},
-{"apartado":"1c · Dos cambios de Eric","punto":"En RESERVAS, el bloque del coche con interruptor «Coche de alquiler | Mi coche» (Design Coche Lanza 06a/06b)","estado":"hecho","nota":"Por defecto «Coche de alquiler». «Mi coche»: bloque «Listo», nada que rellenar, y el día 1 el rato de recoger baja a 20 min. «Coche de alquiler»: «Falta» hasta añadirlo, con Añadir/Reservar (nuestro enlace de alquiler, `vehicleRentalLinks.ts`) y 30-45 min el día 1 (el motor usa 45, el techo). Dentro, «¿No vas a conducir? Mira las excursiones con recogida en tu hotel» abre EXPLORAR › Excursiones. Es MI adaptación de Design 06a/06b: no he reproducido al píxel las filas «Recogida y devolución» y «¿Para quién es?» (el alquiler usa la fila de siempre y su hoja de datos) y la píldora «Falta» es neutra, porque el frambuesa no se usa fuera de las piezas permitidas. Al cambiar el interruptor, el día 1 se rehace SOLO si ya hay vuelo de llegada puesto.","donde":"RESERVAS > bloque «Coche».","captura":"lz2b1_coche_reservas_alquiler_1.jpg"},
-{"apartado":"3 · «Cerca de ti» en Lanzarote","punto":"Gasolineras y aparcamientos en lugar de baños y fuentes; «Dónde comer» como en Roma; siempre del pase; aviso de pocas gasolineras en el norte","estado":"medias","nota":"Botones Gasolineras / Aparcar / Comer, con las 8 más cercanas (OpenStreetMap) en una hoja con [Abrir en Maps], y el aviso «Pocas gasolineras en el norte (Haría y Arrieta): llena el depósito antes de subir». Roma igual que antes. «Cerca de ti» solo se ve en HOY durante el viaje. «Dónde comer» solo enseña 8 restaurantes: de los 50 de `RESTAURANTES_LANZAROTE.md`, 42 no tienen coordenada («sin confirmar»); hacen falta coordenadas.","donde":"HOY > Cerca de ti (con pase).","captura":"lz2b1_cerca_de_ti_1.jpg"},
-{"apartado":"4 · EXPLORAR en Lanzarote","punto":"Las 7 categorías con sus sitios; desde aquí se añaden los opcionales que quitó el motor; Charco del Palo con «Zona nudista»; Museo Atlántico como actividad","estado":"medias","nota":"Volcanes (7), César Manrique (8), Playas y charcos (9), Miradores (8), Pueblos (8), Bodegas (1: solo La Geria) y Excursiones (3 opciones), más Restaurantes y Hoteles; un sitio en dos categorías (Mirador del Río). Se añade con «+ Añadir» y el aviso de siempre. Charco del Palo solo en Playas y charcos con «Zona nudista». Faltan los que el documento nombra y no están en el catálogo: El Grifo, Stratvs, Bodega La Geria, Órzola, Playa Grande, El Reducto, Isla de Lobos. NO HECHO: el Museo Atlántico como actividad: está en `lugares_solo_lista` sin coordenadas («punto exacto en el mar sin confirmar») y el catálogo lo descarta; dime una coordenada y lo meto.","donde":"EXPLORAR.","captura":"lz2b1_explorar_1.jpg"},
-{"apartado":"5 · Lo que salía mal o con Roma","punto":"Las paradas con el mismo nombre (Haría y su Casa-Museo, Playa Blanca y el Faro, Caleta de Famara)","estado":"hecho","nota":"Qué pasaba: Haría + Casa-Museo y Playa Blanca + Faro salían como dos paradas con el mismo nombre porque el motor ignoraba el título de la lista; en Famara las dos filas tenían nombres distintos pero compartían aparcamiento sin tramo a pie. Ahora cada fila sale con su título («Haría y el Valle de las Mil Palmeras», «Casa-Museo César Manrique (Haría)», «El paseo marítimo de Playa Blanca», «Faro de Pechiguera», «El atardecer en Famara») y con «A pie · 5 min» (Haría → Casa-Museo) y «A pie · 12 min» (Famara → atardecer en la playa), sin [Abrir en Maps]. El Faro de Pechiguera tiene aparcamiento propio a unos 5 km de Playa Blanca, así que su trayecto es en coche: confirma que quieres esa parada.","donde":"DÍAS > día 2 (Haría), el de Playa Blanca y el de Famara."},
-{"apartado":"5 · Lo que salía mal o con Roma","punto":"Ningún texto de Roma en un viaje a Lanzarote: menú del día, ejemplos en gris de los campos y HoySinPase","estado":"hecho","nota":"DayMenu («La Graciosa, Fuerteventura…» y «Volcanes, playas, miradores…»), el ejemplo del campo de punto del vuelo («Aeropuerto de Lanzarote»), `fichaLlegada` («Termini» solo si la ciudad es Roma) y HoySinPase con la lista del pase de Lanzarote. La prueba busca «Roma», «Pompeya», «Florencia», «Ciampino» y «Vaticano» en un viaje a Lanzarote.","donde":"DÍAS > menú del día; RESERVAS > Llegada y vuelta."},
-{"apartado":"5 · Lo que salía mal o con Roma","punto":"La Lista del pase de Lanzarote (de LANZAROTE_EXPLORAR_Y_PASE.md); lo que aún no existe, fuera","estado":"hecho","nota":"`listaDeCoche.ts` y `ListaDelPase`: el ferry, los minutos en coche, gasolineras y aparcamientos, 12 sitios con historia y «Vuelve a Lanzarote»; fuera «Los avisos del día» y la sección Logros.","donde":"Pase > la lista (y HOY sin pase)."},
-{"apartado":"5 · Lo que salía mal o con Roma","punto":"La hoja de llegada y vuelta por ACE con un vuelo puesto: mírala y arregla","estado":"medias","nota":"Vista en pantalla con un administrador simulado: sin Roma, Termini, Fiumicino, Ciampino, Vaticano ni ZTL; «Tu coche de alquiler» como lo más cómodo, guagua 22/161, taxi y consejos (reservar coche, seguro, hora de Canarias). En la captura el día 1 aún salía con Timanfaya por la mañana y «Sal de casa 07:51» con llegada 14:30 porque el script de capturas guarda el vuelo pero no dispara el «rehacer por vuelo»; en la app real, ponerlo desde RESERVAS rehace el día. Míralo con un vuelo de verdad.","donde":"RESERVAS > Llegada y vuelta, con un vuelo.","captura":"lz2b1_llegada_vuelo_1.jpg"},
-{"apartado":"6 · Lo que NO toca ahora","punto":"Variantes sin aplicar (día 4 en invierno, veranos, La Graciosa con Caletón Blanco), HOY entero, audios, fechas especiales, «el orden al revés», aviso de nubes y viento","estado":"hecho","nota":"Se quedan como están hasta después del viaje, como pediste. En la ficha, la llamada a Claude de tránsito cercano y consejos de ancla ya no se lanza en un destino de coche (gastaba créditos por ficha y su resultado no se pintaba).","donde":"No es de móvil."},
-{"apartado":"7 · La prueba","punto":"Muestra de 60 de Roma idéntica; pruebaJutrip y pruebaTandaLZ2a en 0; pruebaTandaLZ2b1","estado":"hecho","nota":"Ver el informe.","donde":"No es de móvil."}
+ {
+  "apartado": "0 · Antes de empezar",
+  "punto": "FICHAS_LANZAROTE.json está; prompt guardado tal cual (llegó entero, acaba en «reinicia el api-server»); Design al día; Roma no cambia; Lanzarote sigue oculto; HOY no se toca",
+  "estado": "hecho",
+  "nota": "Design: el zip nuevo puesto en `docs/diseno/proyecto/` (sin `uploads/` ni `Archivo/`; 17 archivos cambiados, entre ellos `Piezas/Coche Lanza`). El zip pesa 150 MB y NO se sube a git. Muestra de 60 fechas de Roma idéntica y pruebaJutrip en 0. De HOY solo se tocó lo que pedía el prompt («Cerca de ti» y HoySinPase). Dos agentes.",
+  "donde": "No es de móvil."
+ },
+ {
+  "apartado": "1 · Las fichas de los sitios",
+  "punto": "Las 34 fichas metidas como en Roma: por_que_recomendamos y description en lanzarote.json; what_to_see, tips e historia en el detalle",
+  "estado": "hecho",
+  "nota": "`lanzarote.json` lleva `por_que_recomendamos`, `description` y `aparcar`; `data/pipeline_v2/detalle/lanzarote/` (12 ficheros: uno por zona más `excursiones.json`) lleva `what_to_see`, `tips`, `aparcar` y las historias. Los textos no se han cambiado (salvo `aparcar` donde se comprobó el sitio, apartado siguiente). Se regeneran con `scripts/destino/lanzaroteDatos.mjs` y `pasarFichasLanzarote.mjs`. Ningún texto nombra Roma, Pompeya o Florencia. CIERRE: confirmado con captura que la ficha de Teguise enseña «Qué vas a ver» (5 puntos) en la pestaña Resumen.",
+  "donde": "Ficha de cualquier sitio de Lanzarote (con tu cuenta de administrador).",
+  "captura": "lz2b1c_teguise_que_vas_a_ver_1.jpg"
+ },
+ {
+  "apartado": "1 · Las fichas de los sitios",
+  "punto": "Las 12 historias en el campo `historia`, sin las líneas «Comprobar» ni dudas y fuentes; audios NO (solo --simular)",
+  "estado": "hecho",
+  "nota": "Timanfaya, Jameos, Cueva, Mirador del Río, Fundación, Cactus, La Geria, El Golfo, Teguise, Haría, Campesino y La Graciosa (esta va en la ficha «La Graciosa» de `excursiones.json`, no es un sitio del catálogo). La simulación de los audios dice unos 27.720 caracteres; no se ha creado ninguno (gasta créditos).",
+  "donde": "«Escuchar historia» en la ficha de Teguise.",
+  "captura": "lz2b1_ficha_teguise_1.jpg"
+ },
+ {
+  "apartado": "1 · Las fichas de los sitios",
+  "punto": "«Dónde aparcar» en lugar de «Cómo llegar», con [Abrir en Maps] a la coordenada de la parada, sin líneas de transporte",
+  "estado": "hecho",
+  "nota": "Pieza nueva `FichaDondeAparcar` (Design `Coche Lanza` 01): el texto de `aparcar` y [Abrir en Maps] en coche a la coordenada de la parada (su aparcamiento), gratis y con pase. `aparcar_verificar` NUNCA sale al viajero: si es true, la ficha no enseña el texto de aparcar (la prueba lo comprueba).",
+  "donde": "DÍAS > día 3 > tocar «Teguise (villa)».",
+  "captura": "lz2b1_ficha_teguise_1.jpg"
+ },
+ {
+  "apartado": "1b · Los aparcamientos de verdad",
+  "punto": "Comprobar con datos reales los 27 sitios con aparcar_verificar y las 12 coordenadas aproximadas; coordenada en el aparcamiento real; texto nuevo; tiempos en coche rehechos",
+  "estado": "medias",
+  "nota": "CIERRE (4-nov): 14 de los 15 que quedaban comprobados con Google Maps (navegador integrado, vista de satélite, sin cuenta, cookies rechazadas). Sin aparcamiento propio: Caletón Blanco (pista de tierra desde la LZ-1 hasta la arena; la coordenada antigua caía en el mar, corregida), Castillo de Santa Bárbara (la carretera acaba en un ensanche al pie del castillo, poco sitio), Ciudad Estratificada (explanada de tierra junto a la LZ-404; la coordenada antigua estaba a 3,5 km, corregida), Las Grietas (franja de tierra junto a la LZ-35), Haría y la Casa-Museo (calles del pueblo), Ermita de las Nieves (al borde de la pista; la coordenada antigua estaba a 8 km, corregida), Caleta de Famara (calles del pueblo; el «P» de la entrada era una parada de guagua), Playa Blanca (en el centro solo calle; aparcamientos públicos en Marina Rubicón a poco más de 1 km). Con aparcamiento: Cueva de los Verdes (grande, en círculo junto a la entrada), La Geria (explanada pequeña de la bodega Stratvs junto a la LZ-30), Montaña Bermeja («Aparcamiento gratuito» según Google, pequeño; la coordenada antigua estaba en la lava), Mirador de Haría (curva en herradura, pequeña; ⚠️ Google lo marca «Cerrado temporalmente»), Mirador de Guinate (final de la calle La Majadita, pequeño; la coordenada antigua estaba a 4 km), Volcán del Cuervo («Aparcamiento gratuito» según Google, mediano, 20-30 coches; coordenada movida 600 m). SIGUE SIN COMPROBAR: el Mirador de los Helechos (Google no tiene ningún «Mirador de los Helechos», solo «Volcán los Helechos» y el «Mirador Barranco del Chafarís» a unos 300 m en la LZ-10): ¿lo quitamos o lo dejamos con el aviso? Varias coordenadas viejas estaban a km, así que algunos tiempos en coche cambian de verdad (matriz rehecha con Mapbox, 0 fallos; los días siguen cabiendo). «Gratis o de pago» solo dice «gratis» si Google lo dice o es pista o calle sin infraestructura. La tabla, abajo.",
+  "donde": "La tabla de abajo y «Dónde aparcar» de cada ficha."
+ },
+ {
+  "apartado": "1c · Dos cambios de Eric",
+  "punto": "Timanfaya abre a las 9:00 todos los días (primer turno 9:00, último 15:45, cierre 16:00); fuera la duda de las 9:30",
+  "estado": "hecho",
+  "nota": "Cambiado en `lanzaroteDatos.mjs` y `listas.json`; quitados los textos de la duda.",
+  "donde": "DÍAS > día 1 (Timanfaya)."
+ },
+ {
+  "apartado": "1c · Dos cambios de Eric",
+  "punto": "Fuera la pregunta «¿Vas a moverte en coche?»: se da por hecho que hay coche; ruta siempre la misma; fuera el aviso «sin coche» y la línea «¿Sin coche?»",
+  "estado": "hecho",
+  "nota": "Sin pregunta en el formulario (paso Compañía). El motor: `answers.coche` solo vale `alquiler` (por defecto) o `propio`; `day.sin_coche` es siempre null y `day.coche.activo` siempre true. La ruta y los trayectos son idénticos en los dos modos (comprobado por HTTP en los días 2 y 3).",
+  "donde": "Formulario (paso Compañía) y DÍAS."
+ },
+ {
+  "apartado": "1c · Dos cambios de Eric",
+  "punto": "En RESERVAS, el bloque del coche con interruptor «Coche de alquiler | Mi coche» (Design Coche Lanza 06a/06b)",
+  "estado": "hecho",
+  "nota": "CIERRE: rehecho EXACTAMENTE como Design (`Coche Lanza` 06a y 06b), copiando medidas, colores, tipografías, iconos y textos: cabecera con círculo oscuro de borde dorado, «Coche» y «Lanzarote»; píldora «Falta» frambuesa o «Listo» verde con tic; interruptor «Coche de alquiler | Mi coche» en botones de 54 px con tic dorado; con «Coche de alquiler»: «Recogida y devolución» con las dos fechas (las del alquiler si ya está puesto y, si no, las del viaje; tocarlas abre la ficha del alquiler), «¿Para quién es?» con la gente del viaje (todos marcados) y el botón dorado «Reservar coche» (nuestro enlace de alquiler); con «Mi coche»: «Listo» y «Vas con tu coche por la isla.». «¿No vas a conducir?» sigue abriendo EXPLORAR › Excursiones. Ya no sale la tarjeta morada «Vehículo de alquiler». Diferencias que quedan frente a Design: las fechas y los nombres son los nuestros (con un solo viajero, un único botón «Solo yo» en lugar de «Eric» y «Viajes», y no se puede desmarcar); el bloque va a ancho de columna, no a los 375 px de la pieza; si hay un alquiler puesto, debajo de las fechas sale una línea pequeña con empresa y precio, que Design no tiene. Pendiente de que lo mires: que te cuadra tal cual y que las fechas abran la ficha del alquiler en vez de un calendario. Al cambiar el interruptor el día 1 se rehace solo si ya hay vuelo de llegada. Captura de las dos modos, abajo.",
+  "donde": "RESERVAS > bloque «Coche».",
+  "captura": "lz2b1c_coche_reservas_alquiler_1.jpg"
+ },
+ {
+  "apartado": "3 · «Cerca de ti» en Lanzarote",
+  "punto": "Gasolineras y aparcamientos en lugar de baños y fuentes; «Dónde comer» como en Roma; siempre del pase; aviso de pocas gasolineras en el norte",
+  "estado": "medias",
+  "nota": "Botones Gasolineras / Aparcar / Comer, con las 8 más cercanas (OpenStreetMap) en una hoja con [Abrir en Maps], y el aviso «Pocas gasolineras en el norte (Haría y Arrieta): llena el depósito antes de subir». Roma igual que antes. «Cerca de ti» solo se ve en HOY durante el viaje. CIERRE: «Dónde comer» ahora enseña 18 de los 50 restaurantes de `RESTAURANTES_LANZAROTE.md`: con Mapbox (nombre + pueblo, solo si salía claramente ese restaurante) se han localizado 10 de los 42 que no tenían coordenada (Restaurante de Bodegas Rubicón, Mercado Municipal de Haría, La Casa de la Playa, Dunas de Famara, El Veril, Mirador El Roque, La Carmencita del Puerto, El Cangrejo Rojo, Lomo Alto, Villa Toledo). Quedan 32 SIN coordenada porque Mapbox no los tiene o solo sale el pueblo, la calle o un alojamiento: Bogavante, Lago Verde, Mar Azul, Tacande, La Puerta Verde, Ikarus, Casa Cejas, Palacio Ico, Liken, La Casa Roja, Casa Carlos, Primario Gastrobar, La Tapita, La Cubierta, El Risco, Costa Famara, Sol, Casa Enriqueta, Girasol, La Maresía, La Cofradía, SeBE, La Bohemia, Lilium, Naia, Malecón, La Tegala, El Charcón, La Era, El Barquillo y «Cena especial» (que no es un sitio concreto), más el «Asador Volcán de La Corona», dudoso a propósito: mismo nombre pero otra dirección (Haría frente a Yé), lo dejé fuera. Hacen falta sus coordenadas (de ti o de Google Maps).",
+  "donde": "HOY > Cerca de ti (con pase).",
+  "captura": "lz2b1_cerca_de_ti_1.jpg"
+ },
+ {
+  "apartado": "4 · EXPLORAR en Lanzarote",
+  "punto": "Las 7 categorías con sus sitios; desde aquí se añaden los opcionales que quitó el motor; Charco del Palo con «Zona nudista»; Museo Atlántico como actividad",
+  "estado": "medias",
+  "nota": "Volcanes (7), César Manrique (8), Playas y charcos (9), Miradores (8), Pueblos (8), Bodegas (1: solo La Geria) y Excursiones (3 opciones), más Restaurantes y Hoteles; un sitio en dos categorías (Mirador del Río). Se añade con «+ Añadir» y el aviso de siempre. Charco del Palo solo en Playas y charcos con «Zona nudista». Faltan los que el documento nombra y no están en el catálogo: El Grifo, Stratvs, Bodega La Geria, Órzola, Playa Grande, El Reducto, Isla de Lobos. NO HECHO: el Museo Atlántico como actividad: está en `lugares_solo_lista` sin coordenadas («punto exacto en el mar sin confirmar») y el catálogo lo descarta; dime una coordenada y lo meto. CIERRE (Eric, 4-nov): el Museo Atlántico se queda fuera de momento.",
+  "donde": "EXPLORAR.",
+  "captura": "lz2b1_explorar_1.jpg"
+ },
+ {
+  "apartado": "5 · Lo que salía mal o con Roma",
+  "punto": "Las paradas con el mismo nombre (Haría y su Casa-Museo, Playa Blanca y el Faro, Caleta de Famara)",
+  "estado": "hecho",
+  "nota": "Qué pasaba: Haría + Casa-Museo y Playa Blanca + Faro salían como dos paradas con el mismo nombre porque el motor ignoraba el título de la lista; en Famara las dos filas tenían nombres distintos pero compartían aparcamiento sin tramo a pie. Ahora cada fila sale con su título («Haría y el Valle de las Mil Palmeras», «Casa-Museo César Manrique (Haría)», «El paseo marítimo de Playa Blanca», «Faro de Pechiguera», «El atardecer en Famara») y con «A pie · 5 min» (Haría → Casa-Museo) y «A pie · 12 min» (Famara → atardecer en la playa), sin [Abrir en Maps]. El Faro de Pechiguera tiene aparcamiento propio a unos 5 km de Playa Blanca, así que su trayecto es en coche: confirma que quieres esa parada. CIERRE (Eric, 4-nov): el Faro de Pechiguera se queda como parada con su trayecto en coche (es el atardecer del día 4): comprobado, sigue en el día 4 (`hasta_atardecer`), «coche 12 min (5,7 km)».",
+  "donde": "DÍAS > día 2 (Haría), el de Playa Blanca y el de Famara."
+ },
+ {
+  "apartado": "5 · Lo que salía mal o con Roma",
+  "punto": "Ningún texto de Roma en un viaje a Lanzarote: menú del día, ejemplos en gris de los campos y HoySinPase",
+  "estado": "hecho",
+  "nota": "DayMenu («La Graciosa, Fuerteventura…» y «Volcanes, playas, miradores…»), el ejemplo del campo de punto del vuelo («Aeropuerto de Lanzarote»), `fichaLlegada` («Termini» solo si la ciudad es Roma) y HoySinPase con la lista del pase de Lanzarote. La prueba busca «Roma», «Pompeya», «Florencia», «Ciampino» y «Vaticano» en un viaje a Lanzarote.",
+  "donde": "DÍAS > menú del día; RESERVAS > Llegada y vuelta."
+ },
+ {
+  "apartado": "5 · Lo que salía mal o con Roma",
+  "punto": "La Lista del pase de Lanzarote (de LANZAROTE_EXPLORAR_Y_PASE.md); lo que aún no existe, fuera",
+  "estado": "hecho",
+  "nota": "`listaDeCoche.ts` y `ListaDelPase`: el ferry, los minutos en coche, gasolineras y aparcamientos, 12 sitios con historia y «Vuelve a Lanzarote»; fuera «Los avisos del día» y la sección Logros.",
+  "donde": "Pase > la lista (y HOY sin pase)."
+ },
+ {
+  "apartado": "5 · Lo que salía mal o con Roma",
+  "punto": "La hoja de llegada y vuelta por ACE con un vuelo puesto: mírala y arregla",
+  "estado": "medias",
+  "nota": "Vista en pantalla con un administrador simulado: sin Roma, Termini, Fiumicino, Ciampino, Vaticano ni ZTL; «Tu coche de alquiler» como lo más cómodo, guagua 22/161, taxi y consejos (reservar coche, seguro, hora de Canarias). En la captura el día 1 aún salía con Timanfaya por la mañana y «Sal de casa 07:51» con llegada 14:30 porque el script de capturas guarda el vuelo pero no dispara el «rehacer por vuelo»; en la app real, ponerlo desde RESERVAS rehace el día. Míralo con un vuelo de verdad.",
+  "donde": "RESERVAS > Llegada y vuelta, con un vuelo.",
+  "captura": "lz2b1_llegada_vuelo_1.jpg"
+ },
+ {
+  "apartado": "6 · Lo que NO toca ahora",
+  "punto": "Variantes sin aplicar (día 4 en invierno, veranos, La Graciosa con Caletón Blanco), HOY entero, audios, fechas especiales, «el orden al revés», aviso de nubes y viento",
+  "estado": "hecho",
+  "nota": "Se quedan como están hasta después del viaje, como pediste. En la ficha, la llamada a Claude de tránsito cercano y consejos de ancla ya no se lanza en un destino de coche (gastaba créditos por ficha y su resultado no se pintaba).",
+  "donde": "No es de móvil."
+ },
+ {
+  "apartado": "7 · La prueba",
+  "punto": "Muestra de 60 de Roma idéntica; pruebaJutrip y pruebaTandaLZ2a en 0; pruebaTandaLZ2b1",
+  "estado": "hecho",
+  "nota": "Ver el informe.",
+  "donde": "No es de móvil."
+ }
 ]

@@ -36,11 +36,11 @@
    "zona": "norte",
    "tipo": "sitio",
    "coordinates": [
-    -13.4389,
-    29.1611
+    -13.43885,
+    29.1609
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_CENTROS_Y_MUSEOS.md §3",
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "verificar": false
   },
   {
@@ -88,12 +88,12 @@
    "zona": "centro",
    "tipo": "sitio",
    "coordinates": [
-    -13.709,
-    28.97
+    -13.70492,
+    28.97366
    ],
    "aparcar_min": 5,
-   "coord_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Stratvs, ctra. La Geria-Uga; las coordenadas de bodegas están «sin confirmar» en DATOS_NATURALEZA_PUEBLOS_COCHE.md",
-   "verificar": true
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "verificar": false
   },
   {
    "id": "bodega_el_grifo",
@@ -153,12 +153,12 @@
    "zona": "extremo norte",
    "tipo": "playa",
    "coordinates": [
-    -13.4505,
-    29.232
+    -13.4426,
+    29.21586
    ],
    "aparcar_min": 5,
-   "coord_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento en el arcén de la LZ-1; a 1,2 km del puerto de Órzola",
-   "verificar": true
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "verificar": false
   },
   {
    "id": "jardin_de_cactus",
@@ -205,12 +205,12 @@
    "zona": "suroeste",
    "tipo": "playa",
    "coordinates": [
-    -13.828,
-    28.944
+    -13.82872,
+    28.96051
    ],
    "aparcar_min": 5,
-   "coord_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar (entre Janubio y Los Hervideros)",
-   "verificar": true
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "verificar": false
   },
   {
    "id": "teguise",
@@ -232,11 +232,11 @@
    "zona": "centro-norte",
    "tipo": "sitio",
    "coordinates": [
-    -13.5502,
-    29.058
+    -13.5504,
+    29.05785
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_CENTROS_Y_MUSEOS.md §12 (solo por fuera)",
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "verificar": false
   },
   {
@@ -245,12 +245,12 @@
    "zona": "centro-norte",
    "tipo": "sitio",
    "coordinates": [
-    -13.542,
-    29.052
+    -13.5047,
+    29.0567
    ],
    "aparcar_min": 5,
-   "coord_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Aparcamiento de tierra",
-   "verificar": true
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "verificar": false
   },
   {
    "id": "casa_museo_del_campesino",
@@ -271,12 +271,12 @@
    "zona": "centro",
    "tipo": "sitio",
    "coordinates": [
-    -13.61,
-    29.01
+    -13.63322,
+    28.97535
    ],
    "aparcar_min": 8,
-   "coord_fuente": "aproximada (no hay coordenada en los documentos): punto estimado en la carretera, comprobar. Sin aparcamiento oficial: apartadero de tierra (+3 min)",
-   "verificar": true
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "verificar": false
   },
   {
    "id": "haria_y_la_casa_museo_cesar_manrique",
@@ -310,11 +310,11 @@
    "zona": "norte",
    "tipo": "sitio",
    "coordinates": [
-    -13.513611,
-    29.131806
+    -13.51417,
+    29.13158
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md. Aparcamiento pequeño, prohibido el arcén",
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "verificar": false
   },
   {
@@ -323,11 +323,11 @@
    "zona": "norte",
    "tipo": "sitio",
    "coordinates": [
-    -13.542362,
-    29.184725
+    -13.50116,
+    29.18433
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (LZ-10, calle La Majadita hasta el final)",
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "verificar": false
   },
   {
@@ -349,11 +349,11 @@
    "zona": "centro-norte",
    "tipo": "sitio",
    "coordinates": [
-    -13.61263,
-    29.10684
+    -13.52811,
+    29.10634
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md. Acceso y aparcamiento «sin confirmar»",
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "verificar": false
   },
   {
@@ -505,12 +505,12 @@
    "zona": "centro-oeste",
    "tipo": "sitio",
    "coordinates": [
-    -13.692037,
-    28.991104
+    -13.6846084,
+    28.9965606
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md [blog]. Desde nov-2026 se anuncia aparcar en Mancha Blanca y subir en la guagua del parque (comprobar)",
-   "verificar": true
+   "coord_fuente": "Google Maps, vista de satélite (4-nov-2026)",
+   "verificar": false
   },
   {
    "id": "mancha_blanca",

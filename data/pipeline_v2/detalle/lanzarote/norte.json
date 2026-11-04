@@ -28,8 +28,8 @@
         "La sala grande con asientos: un auditorio dentro del volcán, donde se dan conciertos",
         "Y el secreto del final, que es mejor descubrir allí"
       ],
-      "aparcar": "Aparcamiento junto a la entrada.",
-      "aparcar_verificar": true,
+      "aparcar": "Aparcamiento grande junto a la entrada.",
+      "aparcar_verificar": false,
       "tips": [
         "Llega 15 minutos antes de tu turno.",
         "Suela que no resbale: el suelo es irregular y los techos son bajos si mides más de 1,80 m. No se recomienda con claustrofobia.",
@@ -64,8 +64,8 @@
         "El palmeral del valle",
         "Los sábados, el mercado artesanal de la plaza"
       ],
-      "aparcar": "Aparcamiento en el pueblo, a unos 300 m de la Casa-Museo: se va a pie a las dos cosas.",
-      "aparcar_verificar": true,
+      "aparcar": "Sin aparcamiento propio: se aparca en las calles del pueblo, junto a la Casa-Museo (calle Elvira Sánchez).",
+      "aparcar_verificar": false,
       "tips": [
         "El Valle de las Mil Palmeras se ve mejor desde el Mirador de los Helechos.",
         "Los sábados, mercado artesanal en la plaza (de 9:00 a 14:30).",
@@ -80,8 +80,8 @@
         "La Graciosa y las islas del archipiélago Chinijo",
         "El acantilado del Risco de Famara cayendo al mar"
       ],
-      "aparcar": "Al final de la calle La Majadita, en Guinate.",
-      "aparcar_verificar": true,
+      "aparcar": "Al final de la calle La Majadita, apartadero pequeño junto al mirador.",
+      "aparcar_verificar": false,
       "tips": [
         "Mejor después de las 11:00: antes, la niebla suele taparlo.",
         "Lleva abrigo: le da el alisio de lleno.",
@@ -110,8 +110,8 @@
         "El valle de Haría y su palmeral",
         "Las montañas del norte"
       ],
-      "aparcar": "Aparcamiento pequeño junto al mirador. Prohibido dejar el coche en el arcén.",
-      "aparcar_verificar": true,
+      "aparcar": "Aparcamiento pequeño en la curva, junto al mirador. Prohibido dejar el coche en el arcén.",
+      "aparcar_verificar": false,
       "tips": [
         "Aparcamiento pequeño, y prohibido dejar el coche en el arcén.",
         "Para ir de día: no es de atardecer."

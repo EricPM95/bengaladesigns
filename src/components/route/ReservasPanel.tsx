@@ -251,7 +251,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
                   <UtilParaElViaje route={route} pago={pago} />
                 </PiezaSegura>
                 {/* (Tanda 10N7) El coche del administrador también dice «¿Para quién has reservado el coche?» (cuenta conjunta: «Para los dos» / «Solo para mí»). */}
-                {grupo.esAdmin && grupo.compartido && <QuienVaEnLoDelAdmin route={route} gente={grupo.gente} que="coche" hecho={Boolean(rentalVehicleBooking)} claves={['coche']} adminId={adminId} />}
+                {grupo.esAdmin && grupo.compartido && !esDestinoDeCoche(route.destination) && <QuienVaEnLoDelAdmin route={route} gente={grupo.gente} que="coche" hecho={Boolean(rentalVehicleBooking)} claves={['coche']} adminId={adminId} />}
               </div>
             </div>
             {/* (Tanda 10N3) El lápiz de la propuesta no tapa lo último de RESERVAS. */}

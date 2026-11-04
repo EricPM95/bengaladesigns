@@ -99,6 +99,12 @@ for (const raw of lines) {
   }
 }
 
+// Coordenadas de Mapbox (cierre de la LZ2b-1): solo para los que el documento no trae.
+const extra = JSON.parse(readFileSync(join(ROOT, 'data/dias/lanzarote/_restaurantes_coords.json'), 'utf8')).restaurantes
+const poner = (it) => { const e = extra[it.nombre]; if (e && !it.lat) { it.lat = e.lat; it.lng = e.lng; it.coord_fuente = 'Mapbox Search Box: ' + e.mapbox } }
+Object.values(comidas).flat().forEach(poner)
+Object.values(cenasZona).flat().forEach(poner)
+
 const salida = {
   formato: 'restaurantes/1',
   fuente: 'docs/destinos/lanzarote/RESTAURANTES_LANZAROTE.md (3-nov-2026)',

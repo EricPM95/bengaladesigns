@@ -5,43 +5,43 @@
   "zonas": {
    "puerto_del_carmen": {
     "salida": "08:32",
-    "coche_min": 133,
-    "con_aparcar_min": 173,
+    "coche_min": 130,
+    "con_aparcar_min": 170,
     "regreso": "19:38",
     "avisos": []
    },
    "playa_blanca": {
     "salida": "08:32",
-    "coche_min": 122,
-    "con_aparcar_min": 162,
+    "coche_min": 119,
+    "con_aparcar_min": 159,
     "regreso": "19:27",
     "avisos": []
    },
    "costa_teguise": {
     "salida": "08:21",
-    "coche_min": 155,
-    "con_aparcar_min": 195,
+    "coche_min": 152,
+    "con_aparcar_min": 192,
     "regreso": "19:49",
     "avisos": []
    },
    "arrecife": {
     "salida": "08:26",
-    "coche_min": 145,
-    "con_aparcar_min": 185,
+    "coche_min": 142,
+    "con_aparcar_min": 182,
     "regreso": "19:44",
     "avisos": []
    },
    "el_norte": {
     "salida": "08:11",
-    "coche_min": 179,
-    "con_aparcar_min": 219,
+    "coche_min": 176,
+    "con_aparcar_min": 216,
     "regreso": "20:03",
     "avisos": []
    },
    "el_interior": {
     "salida": "08:41",
-    "coche_min": 129,
-    "con_aparcar_min": 169,
+    "coche_min": 126,
+    "con_aparcar_min": 166,
     "regreso": "19:43",
     "avisos": []
    }
@@ -101,43 +101,43 @@
   "zonas": {
    "puerto_del_carmen": {
     "salida": "08:32",
-    "coche_min": 133,
-    "con_aparcar_min": 173,
+    "coche_min": 131,
+    "con_aparcar_min": 171,
     "regreso": "19:38",
     "avisos": []
    },
    "playa_blanca": {
     "salida": "08:32",
-    "coche_min": 122,
-    "con_aparcar_min": 162,
+    "coche_min": 120,
+    "con_aparcar_min": 160,
     "regreso": "19:27",
     "avisos": []
    },
    "costa_teguise": {
     "salida": "08:21",
-    "coche_min": 155,
-    "con_aparcar_min": 195,
+    "coche_min": 153,
+    "con_aparcar_min": 193,
     "regreso": "19:49",
     "avisos": []
    },
    "arrecife": {
     "salida": "08:26",
-    "coche_min": 145,
-    "con_aparcar_min": 185,
+    "coche_min": 143,
+    "con_aparcar_min": 183,
     "regreso": "19:44",
     "avisos": []
    },
    "el_norte": {
     "salida": "08:11",
-    "coche_min": 179,
-    "con_aparcar_min": 219,
+    "coche_min": 177,
+    "con_aparcar_min": 217,
     "regreso": "20:03",
     "avisos": []
    },
    "el_interior": {
     "salida": "08:41",
-    "coche_min": 129,
-    "con_aparcar_min": 169,
+    "coche_min": 127,
+    "con_aparcar_min": 167,
     "regreso": "19:43",
     "avisos": []
    }
@@ -299,9 +299,9 @@
     "avisos": []
    },
    "playa_blanca": {
-    "salida": "08:06",
-    "coche_min": 172,
-    "con_aparcar_min": 200,
+    "salida": "08:05",
+    "coche_min": 173,
+    "con_aparcar_min": 201,
     "regreso": "17:16",
     "avisos": []
    },
@@ -327,9 +327,9 @@
     "avisos": []
    },
    "el_interior": {
-    "salida": "08:34",
-    "coche_min": 117,
-    "con_aparcar_min": 145,
+    "salida": "08:33",
+    "coche_min": 118,
+    "con_aparcar_min": 146,
     "regreso": "16:49",
     "avisos": []
    }
@@ -347,9 +347,9 @@
     "avisos": []
    },
    "playa_blanca": {
-    "salida": "08:06",
-    "coche_min": 174,
-    "con_aparcar_min": 199,
+    "salida": "08:05",
+    "coche_min": 175,
+    "con_aparcar_min": 200,
     "regreso": "00:13",
     "avisos": []
    },
@@ -375,9 +375,9 @@
     "avisos": []
    },
    "el_interior": {
-    "salida": "08:34",
-    "coche_min": 125,
-    "con_aparcar_min": 150,
+    "salida": "08:33",
+    "coche_min": 126,
+    "con_aparcar_min": 151,
     "regreso": "23:52",
     "avisos": []
    }
@@ -389,56 +389,56 @@
   "zonas": {
    "puerto_del_carmen": {
     "salida": "09:35",
-    "coche_min": 108,
-    "con_aparcar_min": 148,
-    "regreso": "21:38",
+    "coche_min": 115,
+    "con_aparcar_min": 155,
+    "regreso": "21:45",
     "avisos": [
-     "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
+     "llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10"
     ]
    },
    "playa_blanca": {
     "salida": "09:10",
-    "coche_min": 151,
-    "con_aparcar_min": 191,
-    "regreso": "21:56",
+    "coche_min": 158,
+    "con_aparcar_min": 198,
+    "regreso": "22:03",
     "avisos": [
-     "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
+     "llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10"
     ]
    },
    "costa_teguise": {
     "salida": "09:45",
-    "coche_min": 93,
-    "con_aparcar_min": 133,
-    "regreso": "21:33",
+    "coche_min": 100,
+    "con_aparcar_min": 140,
+    "regreso": "21:40",
     "avisos": [
-     "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
+     "llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10"
     ]
    },
    "arrecife": {
     "salida": "09:45",
-    "coche_min": 83,
-    "con_aparcar_min": 123,
-    "regreso": "21:23",
+    "coche_min": 90,
+    "con_aparcar_min": 130,
+    "regreso": "21:30",
     "avisos": [
-     "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
+     "llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10"
     ]
    },
    "el_norte": {
     "salida": "09:35",
-    "coche_min": 117,
-    "con_aparcar_min": 157,
-    "regreso": "21:47",
+    "coche_min": 124,
+    "con_aparcar_min": 164,
+    "regreso": "21:54",
     "avisos": [
-     "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
+     "llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10"
     ]
    },
    "el_interior": {
     "salida": "09:39",
-    "coche_min": 106,
-    "con_aparcar_min": 146,
-    "regreso": "21:40",
+    "coche_min": 113,
+    "con_aparcar_min": 153,
+    "regreso": "21:47",
     "avisos": [
-     "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
+     "llega tarde a casa_museo_del_campesino: entra a las 17:28 y la última entrada es a las 17:10"
     ]
    }
   }
@@ -654,44 +654,44 @@
   "nombre": "D5 · Volcanes y Famara",
   "zonas": {
    "puerto_del_carmen": {
-    "salida": "08:39",
-    "coche_min": 93,
-    "con_aparcar_min": 108,
+    "salida": "08:38",
+    "coche_min": 119,
+    "con_aparcar_min": 134,
     "regreso": "19:47",
     "avisos": []
    },
    "playa_blanca": {
-    "salida": "08:24",
-    "coche_min": 121,
-    "con_aparcar_min": 136,
+    "salida": "08:23",
+    "coche_min": 147,
+    "con_aparcar_min": 162,
     "regreso": "20:00",
     "avisos": []
    },
    "costa_teguise": {
-    "salida": "08:28",
-    "coche_min": 97,
-    "con_aparcar_min": 112,
+    "salida": "08:27",
+    "coche_min": 123,
+    "con_aparcar_min": 138,
     "regreso": "19:40",
     "avisos": []
    },
    "arrecife": {
-    "salida": "08:32",
-    "coche_min": 93,
-    "con_aparcar_min": 108,
+    "salida": "08:31",
+    "coche_min": 119,
+    "con_aparcar_min": 134,
     "regreso": "19:40",
     "avisos": []
    },
    "el_norte": {
-    "salida": "08:17",
-    "coche_min": 115,
-    "con_aparcar_min": 130,
+    "salida": "08:16",
+    "coche_min": 141,
+    "con_aparcar_min": 156,
     "regreso": "19:47",
     "avisos": []
    },
    "el_interior": {
-    "salida": "08:42",
-    "coche_min": 74,
-    "con_aparcar_min": 89,
+    "salida": "08:41",
+    "coche_min": 100,
+    "con_aparcar_min": 115,
     "regreso": "19:31",
     "avisos": []
    }
@@ -702,44 +702,44 @@
   "nombre": "D5 · Volcanes y Famara (sin los opcionales)",
   "zonas": {
    "puerto_del_carmen": {
-    "salida": "08:39",
-    "coche_min": 79,
-    "con_aparcar_min": 89,
+    "salida": "08:38",
+    "coche_min": 81,
+    "con_aparcar_min": 91,
     "regreso": "19:47",
     "avisos": []
    },
    "playa_blanca": {
-    "salida": "08:24",
-    "coche_min": 107,
-    "con_aparcar_min": 117,
+    "salida": "08:23",
+    "coche_min": 109,
+    "con_aparcar_min": 119,
     "regreso": "20:00",
     "avisos": []
    },
    "costa_teguise": {
-    "salida": "08:28",
-    "coche_min": 83,
-    "con_aparcar_min": 93,
+    "salida": "08:27",
+    "coche_min": 85,
+    "con_aparcar_min": 95,
     "regreso": "19:40",
     "avisos": []
    },
    "arrecife": {
-    "salida": "08:32",
-    "coche_min": 79,
-    "con_aparcar_min": 89,
+    "salida": "08:31",
+    "coche_min": 81,
+    "con_aparcar_min": 91,
     "regreso": "19:40",
     "avisos": []
    },
    "el_norte": {
-    "salida": "08:17",
-    "coche_min": 101,
-    "con_aparcar_min": 111,
+    "salida": "08:16",
+    "coche_min": 103,
+    "con_aparcar_min": 113,
     "regreso": "19:47",
     "avisos": []
    },
    "el_interior": {
-    "salida": "08:42",
-    "coche_min": 60,
-    "con_aparcar_min": 70,
+    "salida": "08:41",
+    "coche_min": 62,
+    "con_aparcar_min": 72,
     "regreso": "19:31",
     "avisos": []
    }
