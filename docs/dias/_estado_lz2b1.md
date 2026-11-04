@@ -1,15 +1,15 @@
 # Estado de la tanda lz2b1
 
-**Última actualización: 4/11/26, 13:59**
+**Última actualización: 4/11/26, 14:14**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-Dos agentes: A fichas, aparcamientos reales y datos; B app (ficha Donde aparcar, interruptor del coche, Cerca de ti, EXPLORAR, textos); Design al dia
+LZ2b-1 terminada y subida
 
 ## Qué falta
-Esperar agentes, pruebaTandaLZ2b1, muestra de 60, informe, REPASO, push antes del sabado 7, reiniciar API
+Nada: solo cierre de procesos
 
 ## Procesos abiertos ahora mismo
-- node: 6
+- node: 3
 - esbuild: 1
-- Chrome de prueba (con remote-debugging-port): 1
+- Chrome de prueba (con remote-debugging-port): 0
