@@ -24,7 +24,7 @@ import { textoResumenDeParada, useEscuchar } from '../../../../lib/useEscuchar'
 import { useAudioDeHistoria } from '../../../../lib/escucharAudio'
 import { accesoHistoria, textoHistoria, useFichaDeSitio } from '../../../../lib/historia'
 import { useHistoriaDePrueba } from '../../../../lib/historiaDePrueba'
-import { conArticuloMinuscula, fraseDeAtardecer, horaDelSol, tocaLoDeManana } from '../../../../lib/puestaDeSolYManana'
+import { atardecerDelDestino, fraseDeAtardecer, tocaLoDeManana } from '../../../../lib/puestaDeSolYManana'
 import { useGastarHistoriaAl3s } from '../../../../lib/useGastarHistoria'
 import { useExploreAperturaStore } from '../../../../store/useExploreAperturaStore'
 import type { EstadoPase } from '../../../../lib/paseEstado'
@@ -167,7 +167,7 @@ export function EscucharHistoria({ destino, parada, variante = 'boton' }: { dest
 function EscucharCompacta({ variante, candado, destino, estado, hayVoz, escuchar, pausar, seguir, parar }: { variante: 'linea' | 'pastilla'; candado: boolean; destino: string; estado: string; hayVoz: boolean; escuchar: () => void; pausar: () => void; seguir: () => void; parar: () => void }) {
   if (!candado && !hayVoz) return null
   const alPulsar = candado ? () => abrirAvisoPase('escuchar_historia', { destino }) : estado === 'parado' ? escuchar : estado === 'hablando' ? pausar : seguir
-  const etiqueta = estado === 'parado' ? 'Escuchar' : estado === 'hablando' ? 'Pausar' : 'Seguir'
+  const etiqueta = estado === 'parado' ? 'Escuchar historia' : estado === 'hablando' ? 'Pausar' : 'Seguir'
   if (variante === 'linea') {
     return (
       <div data-hoy-escuchar-linea data-escuchar={candado ? 'candado' : estado} className="flex items-center gap-2 text-[13px] leading-[1.3]" style={{ color: 'rgba(251,243,226,.85)' }}>
@@ -259,14 +259,17 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
   // Tanda 10P (1.3): la puesta de sol y lo de mañana (con el pase y en el día de prueba; sin pase, como antes).
   const conPaseOPrueba = pagoActivo()
+  const zonaCoordsAtardecer = (route.accommodationZone ? info.zonasAlojamiento.find((z) => z.id === route.accommodationZone)?.coordinates : null) ?? null
+  // (LG1) Lanzarote: la hora del sol sale de la fecha y la parada del atardecer es El Golfo, Famara…; ver `atardecerDelDestino`.
+  const solDelDestino = atardecerDelDestino(route.destination, dateIso)
   const fraseAtardecer = conPaseOPrueba
     ? fraseDeAtardecer({
         day,
-        siguiente,
         pendientes: vigentes.filter((s) => !s.checkedInAt),
-        otrosMiradores: [...route.days.filter((d) => d.id !== day.id).flatMap((d) => [...numberedStopsOf(d), ...(d.spareStops ?? [])]), ...(day.spareStops ?? [])],
-        desde: anterior,
+        desde: ubicacion ?? (anterior && hasRealCoordinates(anterior.coordinates) ? anterior.coordinates : null) ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null) ?? zonaCoordsAtardecer,
         ahoraMin: new Date().getHours() * 60 + new Date().getMinutes(),
+        delDestino: solDelDestino,
+        enCoche,
       })
     : null
   const horaDeCena = day.meals.find((m) => m.mealTime === 'dinner')?.time
@@ -461,22 +464,37 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         </>
       )}
 
-      {/* HOY1 (H13): el sol del día con su sitio y [Cómo llegar] */}
+      {/* HOY1 (H13) + LG1: el atardecer (Roma y Lanzarote), desde 2 horas antes de la puesta de sol */}
       {fraseAtardecer && (
-        <div data-hoy-atardecer={fraseAtardecer.tipo} className="flex flex-none items-center gap-3.5 rounded-3xl p-4 text-white" style={{ background: 'linear-gradient(160deg,#F9C98A,#E58A5E 55%,#7A3E78)' }}>
-          <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(255,255,255,.22)' }}>
-            <Icono nombre="hoy" size={26} grosor={1.8} />
-          </span>
-          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <b data-hoy-atardecer-titulo style={{ font: "400 24px/1.1 'Instrument Serif',serif" }}>Hoy el sol se pone a las {horaDelSol(day)}</b>
-            <span data-hoy-atardecer-sitio className="text-[13.5px] font-medium opacity-90">
-              {fraseAtardecer.tipo === 'siguiente' ? `${displayStopName(fraseAtardecer.sitio)}, tu siguiente parada, es para verlo` : `Desde ${conArticuloMinuscula(fraseAtardecer.sitio)}, a ${fraseAtardecer.minutos} minutos, se ve precioso`}
+        <div data-hoy-atardecer={fraseAtardecer.tipo} className="flex flex-none flex-col gap-3 rounded-3xl p-4 text-white" style={{ background: 'linear-gradient(160deg,#F9C98A,#E58A5E 55%,#7A3E78)' }}>
+          <div className="flex items-center gap-3.5">
+            <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(255,255,255,.22)' }}>
+              <Icono nombre="hoy" size={26} grosor={1.8} />
             </span>
-          </span>
-          {fraseAtardecer.parada && hasRealCoordinates(fraseAtardecer.parada.coordinates) && (
-            <a href={urlComoLlegar(fraseAtardecer.parada.coordinates, ubicacion, enCoche)} target="_blank" rel="noopener noreferrer" data-hoy-atardecer-como-llegar className="flex h-11 flex-none items-center rounded-xl px-3.5 text-[12.5px] font-bold no-underline" style={{ background: '#FBF3E2', color: '#4A3510' }}>
-              Cómo llegar
-            </a>
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <b data-hoy-atardecer-titulo style={{ font: "400 22px/1.15 'Instrument Serif',serif" }}>{fraseAtardecer.texto}</b>
+              {fraseAtardecer.extra && <span data-hoy-atardecer-mar className="text-[13.5px] font-medium opacity-90">{fraseAtardecer.extra}</span>}
+            </span>
+            {fraseAtardecer.tipo === 'parada' && fraseAtardecer.parada && hasRealCoordinates(fraseAtardecer.parada.coordinates) && (
+              <a href={urlComoLlegar(fraseAtardecer.parada.coordinates, ubicacion, enCoche)} target="_blank" rel="noopener noreferrer" data-hoy-atardecer-como-llegar className="flex h-11 flex-none items-center rounded-xl px-3.5 text-[12.5px] font-bold no-underline" style={{ background: '#FBF3E2', color: '#4A3510' }}>
+                Cómo llegar
+              </a>
+            )}
+          </div>
+          {fraseAtardecer.tipo === 'cerca' && (
+            <div className="flex flex-col gap-2">
+              {fraseAtardecer.cerca.map((c) => (
+                <div key={c.nombre} data-hoy-atardecer-sitio className="flex items-center gap-3 rounded-2xl px-3 py-2" style={{ background: 'rgba(255,255,255,.16)' }}>
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <b className="truncate text-[14.5px]">{displayStopName(c.nombre)}</b>
+                    <span className="text-[12.5px] opacity-90">{c.modo === 'coche' ? `a ${c.minutos} min en coche` : `a ${c.minutos} min a pie`}</span>
+                  </span>
+                  <a href={urlComoLlegar(c.coordinates, ubicacion, c.modo === 'coche')} target="_blank" rel="noopener noreferrer" data-hoy-atardecer-como-llegar className="flex h-11 flex-none items-center rounded-xl px-3.5 text-[12.5px] font-bold no-underline" style={{ background: '#FBF3E2', color: '#4A3510' }}>
+                    Cómo llegar
+                  </a>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}

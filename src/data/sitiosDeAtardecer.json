@@ -1,0 +1,137 @@
+{
+ "roma": {
+  "mar": false,
+  "sitios": [
+   {
+    "id": "terraza_del_pincio",
+    "corto": "el Pincio",
+    "alias": [
+     "pincio"
+    ],
+    "nombre": "Terraza del Pincio",
+    "lat": 41.9111,
+    "lng": 12.4779
+   },
+   {
+    "id": "mirador_del_janiculo",
+    "corto": "el Janículo",
+    "alias": [
+     "janiculo",
+     "gianicolo"
+    ],
+    "nombre": "Mirador del Janículo",
+    "lat": 41.8912,
+    "lng": 12.4596
+   },
+   {
+    "id": "mirador_de_san_pietro_in_montorio",
+    "corto": "San Pietro in Montorio",
+    "alias": [
+     "san pietro in montorio"
+    ],
+    "nombre": "Mirador de San Pietro in Montorio",
+    "lat": 41.8886,
+    "lng": 12.4667
+   },
+   {
+    "id": "castillo_de_santangelo",
+    "corto": "el Castillo de Sant’Angelo",
+    "alias": [
+     "castillo de sant",
+     "castel sant"
+    ],
+    "nombre": "Castillo de Sant'Angelo",
+    "lat": 41.9031,
+    "lng": 12.4663
+   },
+   {
+    "id": "puente_santangelo",
+    "corto": "el Puente Sant’Angelo",
+    "alias": [
+     "puente sant",
+     "ponte sant"
+    ],
+    "nombre": "Puente Sant'Angelo",
+    "lat": 41.9032,
+    "lng": 12.4657
+   },
+   {
+    "id": "ponte_sisto",
+    "corto": "el Ponte Sisto",
+    "alias": [
+     "ponte sisto"
+    ],
+    "nombre": "Ponte Sisto",
+    "lat": 41.8923,
+    "lng": 12.4709
+   }
+  ]
+ },
+ "lanzarote": {
+  "mar": true,
+  "sitios": [
+   {
+    "id": "el_golfo_y_el_charco_de_los_clicos",
+    "corto": "El Golfo",
+    "alias": [
+     "el golfo"
+    ],
+    "nombre": "El Golfo y el Charco de los Clicos",
+    "lat": 28.977147,
+    "lng": -13.827658
+   },
+   {
+    "id": "playa_blanca_y_el_faro_de_pechiguera",
+    "corto": "el Faro de Pechiguera",
+    "alias": [
+     "pechiguera",
+     "playa blanca"
+    ],
+    "nombre": "Playa Blanca y el Faro de Pechiguera",
+    "lat": 28.862748,
+    "lng": -13.829732
+   },
+   {
+    "id": "caleta_de_famara_y_playa_de_famara",
+    "corto": "Famara",
+    "alias": [
+     "caleta de famara",
+     "playa de famara"
+    ],
+    "nombre": "Caleta de Famara y Playa de Famara",
+    "lat": 29.115758,
+    "lng": -13.563593
+   },
+   {
+    "id": "los_hervideros",
+    "corto": "Los Hervideros",
+    "alias": [
+     "hervideros"
+    ],
+    "nombre": "Los Hervideros",
+    "lat": 28.95357,
+    "lng": -13.83336
+   },
+   {
+    "id": "salinas_de_janubio",
+    "corto": "las Salinas de Janubio",
+    "alias": [
+     "janubio"
+    ],
+    "nombre": "Salinas de Janubio",
+    "lat": 28.932583,
+    "lng": -13.820839
+   },
+   {
+    "id": "playa_de_montana_bermeja",
+    "corto": "Montaña Bermeja",
+    "alias": [
+     "montana bermeja"
+    ],
+    "nombre": "Playa de Montaña Bermeja",
+    "lat": 28.96051,
+    "lng": -13.82872
+   }
+  ]
+ }
+}

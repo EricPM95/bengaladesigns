@@ -23,6 +23,9 @@ export const METROS_MAS_CERCA = 150
  * desde el Mirador del Río, mirando a La Graciosa a 2,4 km, no estás «en La Graciosa». Aquí el radio se recorta a esto.
  */
 export const RADIO_MAXIMO_AVISO_M = 800
+/** (LG1) Un sitio SIN radio en los datos: «Ya estás aquí» y el Visto cuentan 150 m; la foto, 800 m. Con radio, vale el suyo (La Graciosa y Timanfaya, 2.500 m), sin recortes. */
+export const RADIO_SIN_DATOS_AQUI_M = 150
+export const RADIO_SIN_DATOS_FOTO_M = 800
 
 /** Un sitio fuera de ruta con algo por ganar «se pasa al lado» (H8b) a menos de esto del borde de su radio. */
 export const METROS_JUNTO_A = 150
@@ -56,7 +59,7 @@ export function porGanarEn(d, destino, items, sitio) {
  * @param {Set<string>} [p.sitiosHoy]  ids de los sitios de la ruta de hoy
  * @param {number} [p.margenM]
  */
-export function sitiosCerca({ datos, catalogos, destino, ubicacion, items, sitiosHoy = new Set(), margenM = METROS_BRILLA }) {
+export function sitiosCerca({ datos, catalogos, destino, ubicacion, items, sitiosHoy = new Set(), margenM = METROS_BRILLA, sinTope = false, radioSinDatos = RADIO_SIN_DATOS_AQUI_M }) {
   if (!ubicacion || !Number.isFinite(ubicacion.lat) || !Number.isFinite(ubicacion.lng)) return []
   const d = datos.destinos[destino]
   if (!d) return []
@@ -64,8 +67,10 @@ export function sitiosCerca({ datos, catalogos, destino, ubicacion, items, sitio
   for (const id of sitiosConLogro(d)) {
     const coords = coordenadasDeSitio(catalogos, destino, id)
     if (!coords) continue
-    const radioDatos = d.sitios?.[id]?.radio_m ?? 150
-    const radio = Math.min(radioDatos, RADIO_MAXIMO_AVISO_M)
+    const propio = d.sitios?.[id]?.radio_m
+    const radioDatos = Number.isFinite(propio) && propio > 0 ? propio : radioSinDatos
+    // Los avisos de «cerca» recortan los radios enormes (si no, desde el Mirador del Río «estarías en La Graciosa»); la foto (`sinTope`) usa el radio entero de cada sitio.
+    const radio = sinTope ? radioDatos : Math.min(radioDatos, RADIO_MAXIMO_AVISO_M)
     const m = metros(ubicacion, coords)
     const alBorde = Math.max(0, m - radio)
     if (alBorde > margenM) continue
@@ -96,7 +101,7 @@ export function sitiosCerca({ datos, catalogos, destino, ubicacion, items, sitio
  * null si no está en ninguno (la foto solo es un recuerdo).
  */
 export function sitioDeFotoLibre({ datos, catalogos, destino, ubicacion, items }) {
-  const dentro = sitiosCerca({ datos, catalogos, destino, ubicacion, items, margenM: 0 }).filter((s) => s.dentro && (s.hay_emblema || s.hay_pedazo))
+  const dentro = sitiosCerca({ datos, catalogos, destino, ubicacion, items, margenM: 0, sinTope: true, radioSinDatos: RADIO_SIN_DATOS_FOTO_M }).filter((s) => s.dentro && (s.hay_emblema || s.hay_pedazo))
   if (dentro.length === 0) return null
   dentro.sort((a, b) => Number(b.hay_emblema) - Number(a.hay_emblema) || a.metros - b.metros)
   return dentro[0].sitio

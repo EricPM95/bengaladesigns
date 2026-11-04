@@ -64,7 +64,8 @@ export const TEXTO_AL_COMPLETAR: Record<string, string> = { roma: 'Lo esencial, 
 
 /** Debajo del nombre del grado: «Bronce · 3 de 8 imprescindibles» («… de 3 sitios»). `unidad` es lo que cuenta el sello. */
 export function lineaDeGrado(grado: string | null, n: number, total: number, unidad: string): string {
-  return grado ? `${nombreDeGrado(grado)} · ${n} de ${total} ${unidad}` : `${n} de ${total} ${unidad}`
+  // (LG1) Sin grado, también «Por conseguir · 0 de 8 imprescindibles» (Logros Boton 2a: GNAME.none + ' · ' + n + ' de ' + tot).
+  return `${nombreDeGrado(grado)} · ${n} de ${total} ${unidad}`
 }
 
 /** El banner de antes del viaje: «Con tu ruta puedes completar 7 de las 11 colecciones». */

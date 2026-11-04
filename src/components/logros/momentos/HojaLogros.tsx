@@ -46,7 +46,7 @@ const FORMA_HUECO: [number, number, string, string][] = [
   [75, 75, '50%', 'none'],
   [75, 75, '50%', 'none'],
 ]
-const UNIDAD_DE_SELLO: Record<string, string> = { roma: 'imprescindibles' }
+const UNIDAD_DE_SELLO: Record<string, string> = { roma: 'imprescindibles', lanzarote: 'imprescindibles' }
 
 const ETIQUETA = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' } as const
 const FRAMBUESA = 'oklch(0.55 0.17 5)'
@@ -172,7 +172,8 @@ function TarjetaDeSello({ sello, grande, fase }: { sello: EstadoLogros['sellos']
   const texto = textoDelSiguiente({ fase, grado, siguiente, alCompletar: TEXTO_AL_COMPLETAR[sello.id] ?? null })
   return (
     <div data-sello={sello.id} style={{ borderRadius: 22, background: grande ? '#F5EFE4' : '#FFFFFF', border: '1px solid rgba(28,34,48,.07)', padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, textAlign: 'center' }}>
-      <span style={{ opacity: grado ? 1 : 0.55 }}>
+      {/* (LG1) El sello «Por conseguir» del diseño (2a): en gris pero cálido (grayscale .4 + sepia .3 + saturate 1.2) y casi opaco (.9), no apagado a la mitad. */}
+      <span style={grado ? { opacity: 1 } : { filter: 'grayscale(.4) sepia(.3) saturate(1.2)', opacity: 0.9 }}>
         <Sello id={sello.id} grado={(grado ?? 'bronce') as GradoDeSello} apagado={!grado} tam={grande ? 84 : 60} animado={false} etiqueta={grande} />
       </span>
       <span style={{ font: `400 ${grande ? 20 : 16}px/1.05 'Instrument Serif',serif`, textWrap: 'balance' as never }}>{sello.nombre_grado ?? 'Por conseguir'}</span>
@@ -180,7 +181,7 @@ function TarjetaDeSello({ sello, grande, fase }: { sello: EstadoLogros['sellos']
       <div style={{ width: '100%', height: 5, borderRadius: 5, background: 'rgba(28,34,48,.08)', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${sello.total > 0 ? (sello.n / sello.total) * 100 : 0}%`, borderRadius: 5, background: color, animation: 'moGrow 1.1s .4s cubic-bezier(.3,0,.2,1) both' }} />
       </div>
-      {texto && <span style={{ font: "500 11.5px/1.3 'Geist'", color: grado ? 'oklch(0.48 0.17 5)' : 'rgba(28,34,48,.55)', textWrap: 'balance' as never }}>{texto}</span>}
+      {texto && <span style={{ font: "500 11.5px/1.3 'Geist'", color: grado ? 'oklch(0.48 0.17 5)' : '#8E6820', textWrap: 'balance' as never }}>{texto}</span>}
     </div>
   )
 }

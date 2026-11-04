@@ -5,6 +5,8 @@ import { displayStopName, formatDuration } from '../../../../lib/format'
 import { hasRealCoordinates } from '../../../../lib/distanceMock'
 import { formatWeekdayAbbrEs } from '../../../../lib/dateRange'
 import { logrosActivos } from '../../../../lib/logros'
+import { useRadioDeParada } from '../../../../lib/radiosDeHoy'
+import { useSyncStore } from '../../../../store/useSyncStore'
 import {
   aplicarCambio,
   avisoDeSalida,
@@ -307,7 +309,9 @@ export function TarjetaParada(p: PropsParada) {
   const [aviso, setAviso] = useState<{ cambio: CambioDelDia | null; texto: string } | null>(null)
   const ahoraMin = useAhoraMin()
   const reservations = useRouteStore((s) => s.reservations)
-  const aqui = forzada === siguiente.id || estaAqui(ubicacion, siguiente)
+  // (LG1) «Ya estás aquí» con el radio de cada sitio en los datos de logros (La Graciosa y Timanfaya, 2.500 m); sin radio, 150 m.
+  const radioAqui = useRadioDeParada(useSyncStore((s) => s.activeTripId) ?? route.id, siguiente.name)
+  const aqui = forzada === siguiente.id || estaAqui(ubicacion, siguiente, radioAqui)
   const trayecto: TrayectoDeParada | null = trayectoHasta({ siguiente, ubicacion, anterior, enCoche, casa: p.casa, ida: day.coche?.activo ? day.coche.ida : null })
   const fija = horaFijaDe(siguiente, reservaSiguiente)
   const salida = aqui ? null : avisoDeSalida(ahoraMin, fija, trayecto?.totalMin ?? null)
@@ -354,12 +358,12 @@ export function TarjetaParada(p: PropsParada) {
   return (
     <>
       <div data-hoy-siguiente data-hoy-estado={aqui ? 'aqui' : 'llegar'} data-tarjeta="oscura" className="flex-none overflow-hidden rounded-[26px]" style={{ background: TINTA, color: MARFIL, boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
-        <div className="relative">
+        <div className="relative" onClick={!aqui ? p.onQueVasAVer : undefined} data-hoy-abrir-ficha={!aqui ? '1' : undefined}>
           {aqui ? <FotoDeLaParada parada={siguiente} ciudad={day.city} dateIso={dateIso} /> : <MapaDeLlegada parada={siguiente} desde={desde} />}
           <Insignia texto={insignia} />
         </div>
         <div className="flex flex-col gap-[9px] px-4 pb-4 pt-3">
-          <button type="button" onClick={() => setForzada(siguiente.id)} aria-label={`Ya he llegado a ${displayStopName(siguiente.name)}`} data-hoy-ya-he-llegado className="text-left" style={{ font: "400 30px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>
+          <button type="button" onClick={aqui ? () => setForzada(siguiente.id) : p.onQueVasAVer} aria-label={aqui ? displayStopName(siguiente.name) : `Abrir la ficha de ${displayStopName(siguiente.name)}`} data-hoy-titulo className="text-left" style={{ font: "400 30px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>
             {displayStopName(siguiente.name)}
           </button>
           {duracion && !aqui && <span className="-mt-1 text-[12px]" style={{ color: 'rgba(251,243,226,.65)' }}>{duracion} de visita</span>}
@@ -439,6 +443,10 @@ export function TarjetaParada(p: PropsParada) {
                 </button>
               </div>
               <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" route={route} reserva={reservaSiguiente} />
+              {/* (LG1) Si el GPS no lo detecta, una línea pequeña para pasar a mano a «Ya estás aquí». */}
+              <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${displayStopName(siguiente.name)}`} className="flex min-h-11 items-center justify-center text-[12.5px] underline underline-offset-2" style={{ color: 'rgba(251,243,226,.7)' }}>
+                ¿No te detecta el GPS? Ya he llegado
+              </button>
             </>
           )}
         </div>

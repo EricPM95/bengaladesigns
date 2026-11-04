@@ -17,6 +17,9 @@ import { aparcarDe, catalogoEnMemoria, fetchDestinationPlaces, mapsConsultaDe, p
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { HowToGetThereSheet } from '../today/HowToGetThereSheet'
 import { Spinner } from '../../ui/Spinner'
+import { createPortal } from 'react-dom'
+import { PestanaLogros, useLogrosDeLaFicha } from '../../logros/ficha/PestanaLogros'
+import { useSyncStore } from '../../../store/useSyncStore'
 import { FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
 import { withoutLeadingEmoji } from '../../../lib/stopKind'
 import { DateNoticeSmallIcon } from '../DateNoticeIcons'
@@ -53,7 +56,7 @@ export interface DayStopRef {
   photoUrl?: string
 }
 
-type Tab = 'resumen' | 'tickets' | 'tips'
+type Tab = 'resumen' | 'tickets' | 'tips' | 'logros'
 
 interface StopDetailSheetProps {
   /** null = cerrado. */
@@ -119,6 +122,10 @@ function lineasDe(texto: string | null | undefined): string[] {
 export function StopDetailSheet({ stop, initialTab = null, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside }: StopDetailSheetProps) {
   const huecoAlFinal = useHuecoAlFinal(32) // (Tanda 10N4 §0b) hueco para el lápiz y los logros
   const [tab, setTab] = useState<Tab>(initialTab ?? 'resumen')
+  // (LG1 §1) La pestaña «Logros»: las colecciones en las que está este sitio (sale solo si hay alguna) y, al tocar otro sitio de la lista, su ficha encima de esta.
+  const tripIdLogros = useSyncStore((state) => state.activeTripId) ?? null
+  const logros = useLogrosDeLaFicha(tripIdLogros, stop && !stop.isBreak ? stop.name : null)
+  const [sitioDeLogros, setSitioDeLogros] = useState<string | null>(null)
   // Prompt 5: la foto real del lugar y su procedencia. Unsplash exige atribución visible allí donde
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
   const [photo, setPhoto] = useState<PlacePhoto | null>(null)
@@ -397,7 +404,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // Tour, una visita guiada o una actividad: entonces sí, y en ella va ese tour o esa visita.
   // La pestaña «Entradas» solo sale en sitios con entradas en los datos (o en el recorrido de un Free Tour), o con su «No necesitas entrada» (la tasa de la Fontana de Trevi).
   const showTickets = hasEntradas || Boolean(stop?.inFreeTour) || sinEntrada != null || actividadesCerca.length > 0
-  const visibleTabs: Tab[] = stop?.isFreeTour ? ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])] : ['resumen', ...(showTickets ? (['tickets'] as const) : []), 'tips']
+  const hayLogros = logros.tarjetas.length > 0
+  const visibleTabs: Tab[] = stop?.isFreeTour ? ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])] : ['resumen', ...(showTickets ? (['tickets'] as const) : []), 'tips', ...(hayLogros ? (['logros'] as const) : [])]
   // Si el tab guardado quedó en uno que ya no está visible (p.ej. se abrió otro lugar sin ese
   // contenido), cae a "resumen".
   const activeTab: Tab = visibleTabs.includes(tab) ? tab : 'resumen'
@@ -528,7 +536,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                 {!stop.isBreak && <TusRecuerdos stopName={stop.name} dayNumber={dayNumber} />}
   
                 <FichaPestanas<Tab>
-                  pestanas={([{ id: 'resumen', label: 'Resumen' }, { id: 'tickets', label: 'Entradas' }, { id: 'tips', label: 'Tips' }] as const).filter((item) => visibleTabs.includes(item.id)).map((item) => ({ id: item.id as Tab, label: item.label, numero: item.id === 'tickets' ? (entradasDelSitio?.entradas.length ?? 0) + actividadesCerca.length : undefined }))}
+                  pestanas={([{ id: 'resumen', label: 'Resumen' }, { id: 'tickets', label: 'Entradas' }, { id: 'tips', label: 'Tips' }, { id: 'logros', label: 'Logros' }] as const).filter((item) => visibleTabs.includes(item.id)).map((item) => ({ id: item.id as Tab, label: item.label, numero: item.id === 'tickets' ? (entradasDelSitio?.entradas.length ?? 0) + actividadesCerca.length : undefined }))}
                   activa={activeTab}
                   onPick={setTab}
                 />
@@ -720,6 +728,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                   </div>
                 )}
   
+                {activeTab === 'logros' && hayLogros && <PestanaLogros datos={logros} nombreDelSitio={stop.name} abrirSitio={setSitioDeLogros} />}
+
                 {activeTab === 'tips' && (
                   <div className="space-y-2">
                     {tips.length === 0 && <p className="px-1 text-small text-text-soft">{descLoading ? 'Preparando los consejos…' : 'Todavía no tenemos consejos para este lugar.'}</p>}
@@ -747,6 +757,20 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                 {footerAction.label}
               </button>
             </div>
+          )}
+
+          {/* (LG1 §1) Al tocar un sitio de la pestaña «Logros», su ficha encima de esta (con su botón Volver). */}
+          {sitioDeLogros && createPortal(
+            <StopDetailSheet
+              stop={{ id: `logros-${sitioDeLogros}`, name: sitioDeLogros, category: 'Lugar', hours: null, durationMinutes: 60, photoUrl: '', description: '', tips: [], purchase: null }}
+              city={city}
+              dayNumber={null}
+              dateIso={null}
+              dayStops={[]}
+              isAnchor={false}
+              onClose={() => setSitioDeLogros(null)}
+            />,
+            document.body,
           )}
 
           <HowToGetThereSheet open={directionsOpen} onClose={() => setDirectionsOpen(false)} destination={description?.address ?? stop.name} />

@@ -89,11 +89,11 @@ export function contextoDeViaje({ id, route }, datos, catalogos, { esDuo = false
 }
 
 export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new Date(), cobro = false, azar = Math.random, ocultos = new Set(), esAdminDeCuenta = null }) {
-  const sitioInfo = (destino, sitio) => {
+  const sitioInfo = (destino, sitio, radioSinDatos = 150) => {
     const d = datos.destinos[destino]
     const dato = d.sitios[sitio] ?? null
     const coords = coordenadasDeSitio(catalogos, destino, sitio)
-    return { coords, radio_m: dato?.radio_m ?? 150, dato, nombre: nombreDeSitio(catalogos, destino, sitio) }
+    return { coords, radio_m: dato?.radio_m ?? radioSinDatos, dato, nombre: nombreDeSitio(catalogos, destino, sitio) }
   }
   const hoyEn = (destino) => parteLocal(ahora(), datos.destinos[destino].timezone).fecha
 
@@ -271,7 +271,16 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const sitiosHoy = new Set(delMovil ?? deLaRuta)
     const items = aItems(c.logros)
     const lista = sitiosCerca({ datos, catalogos, destino: viaje.destino, ubicacion, items, sitiosHoy })
-    return { ok: true, cerca: lista, ...queEnsenar(lista), reto: retoDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy }) }
+    // (LG1) El radio de cada parada de hoy (por el nombre que mandó el móvil) para «Ya estás aquí»: el del sitio en los datos, o null (el móvil usa 150 m).
+    const radios_hoy = {}
+    if (Array.isArray(sitios_hoy)) {
+      for (const n of sitios_hoy) {
+        const s = sitioDeParada({ name: String(n) }, catalogos[viaje.destino])
+        const r = s ? datos.destinos[viaje.destino].sitios?.[s]?.radio_m : null
+        radios_hoy[String(n)] = Number.isFinite(r) && r > 0 ? r : null
+      }
+    }
+    return { ok: true, cerca: lista, radios_hoy, ...queEnsenar(lista), reto: retoDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy }) }
   }
 
   /** Lo que tiene un sitio por ganar (sin decir qué emblema): para que la tarjeta del Visto sepa cuál enseñar. Solo se LEE; no cambia nada. */
@@ -368,7 +377,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     }
     if (!sitio) return { ok: false, motivo: 'faltan_datos', nuevos: [] }
     const recibido = recibido_en ?? ahora().toISOString()
-    const info = sitioInfo(viaje.destino, sitio)
+    // (LG1) La foto usa el radio de cada sitio; sin radio en los datos, 800 m (el Visto y «Ya estás aquí» siguen en 150).
+    const info = sitioInfo(viaje.destino, sitio, 800)
     const e = evaluarFoto({ origen, tomadaEn: tomada_en, conCamara: origen === 'app' ? true : Boolean(con_camara), ubicacion, sitio: info, viaje, destino: datos.destinos[viaje.destino], nombreSitio: info.nombre, recibidoEn: recibido, ajustes: datos.ajustes })
     void de_amigo // (la foto de un amigo del grupo vale igual: no se mira quién la hizo)
     if (!e.valida) return { ok: true, valida: false, motivo: e.motivo, mensaje: e.mensaje, nuevos: [] }

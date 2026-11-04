@@ -1,0 +1,725 @@
+{
+ "ok": true,
+ "destino": "lanzarote",
+ "ciudad": "Lanzarote",
+ "sellos": [
+  {
+   "id": "lanzarote",
+   "nombre": "Lanzarote",
+   "grado": null,
+   "nombre_grado": null,
+   "linea": null,
+   "n": 0,
+   "total": 7,
+   "siguiente": {
+    "grado": "bronce",
+    "faltan": 1,
+    "nombre": "Primeros pasos en Lanzarote"
+   },
+   "alcanzados": []
+  }
+ ],
+ "colecciones": [
+  {
+   "id": "lz_imprescindibles",
+   "grupo": "principales",
+   "orden": 1,
+   "nombre": "Los imprescindibles de Lanzarote",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "montanas_del_fuego",
+     "visto": false,
+     "nombre": "Montañas del Fuego (Timanfaya)",
+     "en_ruta": true,
+     "lat": 29.0056,
+     "lng": -13.7529
+    },
+    {
+     "sitio": "jameos_del_agua",
+     "visto": false,
+     "nombre": "Jameos del Agua",
+     "en_ruta": true,
+     "lat": 29.15805,
+     "lng": -13.43165
+    },
+    {
+     "sitio": "cueva_de_los_verdes",
+     "visto": false,
+     "nombre": "Cueva de los Verdes",
+     "en_ruta": true,
+     "lat": 29.1609,
+     "lng": -13.43885
+    },
+    {
+     "sitio": "mirador_del_rio",
+     "visto": false,
+     "nombre": "Mirador del Río",
+     "en_ruta": true,
+     "lat": 29.2145,
+     "lng": -13.4812
+    },
+    {
+     "sitio": "fundacion_cesar_manrique",
+     "visto": false,
+     "nombre": "Fundación César Manrique",
+     "en_ruta": true,
+     "lat": 29.0021,
+     "lng": -13.5475
+    },
+    {
+     "sitio": "el_golfo_y_el_charco_de_los_clicos",
+     "visto": false,
+     "nombre": "El Golfo y el Charco de los Clicos",
+     "en_ruta": true,
+     "lat": 28.977147,
+     "lng": -13.827658
+    },
+    {
+     "sitio": "la_geria_y_sus_bodegas",
+     "visto": false,
+     "nombre": "La Geria y sus bodegas",
+     "en_ruta": true,
+     "lat": 28.97366,
+     "lng": -13.70492
+    }
+   ],
+   "n": 0,
+   "total": 7,
+   "completa": false,
+   "en_tu_ruta": true
+  },
+  {
+   "id": "tierra_de_fuego",
+   "grupo": "de_explorar",
+   "orden": 3,
+   "nombre": "Tierra de fuego",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "montanas_del_fuego",
+     "visto": false,
+     "nombre": "Montañas del Fuego (Timanfaya)",
+     "en_ruta": true,
+     "lat": 29.0056,
+     "lng": -13.7529
+    },
+    {
+     "sitio": "cueva_de_los_verdes",
+     "visto": false,
+     "nombre": "Cueva de los Verdes",
+     "en_ruta": true,
+     "lat": 29.1609,
+     "lng": -13.43885
+    },
+    {
+     "sitio": "los_hervideros",
+     "visto": false,
+     "nombre": "Los Hervideros",
+     "en_ruta": true,
+     "lat": 28.95357,
+     "lng": -13.83336
+    },
+    {
+     "sitio": "volcan_del_cuervo",
+     "visto": false,
+     "nombre": "Volcán del Cuervo",
+     "en_ruta": true,
+     "lat": 28.9965606,
+     "lng": -13.6846084
+    },
+    {
+     "sitio": "caldera_blanca",
+     "visto": false,
+     "nombre": "Caldera Blanca",
+     "en_ruta": true,
+     "lat": 29.044056,
+     "lng": -13.682056
+    },
+    {
+     "sitio": "las_grietas_montana_blanca",
+     "visto": false,
+     "nombre": "Las Grietas (Montaña Blanca)",
+     "en_ruta": true,
+     "lat": 28.97535,
+     "lng": -13.63322
+    },
+    {
+     "sitio": "ciudad_estratificada_rofera_de_teseguite",
+     "visto": false,
+     "nombre": "Ciudad Estratificada (Rofera de Teseguite)",
+     "en_ruta": true,
+     "lat": 29.0567,
+     "lng": -13.5047
+    }
+   ],
+   "n": 0,
+   "total": 7,
+   "completa": false,
+   "en_tu_ruta": true
+  },
+  {
+   "id": "isla_a_tus_pies",
+   "grupo": "de_explorar",
+   "orden": 4,
+   "nombre": "La isla a tus pies",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "mirador_del_rio",
+     "visto": false,
+     "nombre": "Mirador del Río",
+     "en_ruta": true,
+     "lat": 29.2145,
+     "lng": -13.4812
+    },
+    {
+     "sitio": "mirador_de_guinate",
+     "visto": false,
+     "nombre": "Mirador de Guinate",
+     "en_ruta": true,
+     "lat": 29.18433,
+     "lng": -13.50116
+    },
+    {
+     "sitio": "ermita_de_las_nieves",
+     "visto": false,
+     "nombre": "Ermita de las Nieves",
+     "en_ruta": true,
+     "lat": 29.10634,
+     "lng": -13.52811
+    },
+    {
+     "sitio": "mirador_del_bosquecillo",
+     "visto": false,
+     "nombre": "Mirador del Bosquecillo (Risco de Famara)",
+     "en_ruta": true,
+     "lat": 29.12602,
+     "lng": -13.52319
+    },
+    {
+     "sitio": "mirador_de_haria",
+     "visto": false,
+     "nombre": "Mirador de Haría",
+     "en_ruta": true,
+     "lat": 29.13158,
+     "lng": -13.51417
+    },
+    {
+     "sitio": "salinas_de_janubio",
+     "visto": false,
+     "nombre": "Salinas de Janubio",
+     "en_ruta": true,
+     "lat": 28.932583,
+     "lng": -13.820839
+    }
+   ],
+   "n": 0,
+   "total": 6,
+   "completa": false,
+   "en_tu_ruta": true
+  },
+  {
+   "id": "entre_vinas_de_ceniza",
+   "grupo": "de_empezar",
+   "orden": 7,
+   "nombre": "Entre viñas de ceniza",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "la_geria_y_sus_bodegas",
+     "visto": false,
+     "nombre": "La Geria y sus bodegas",
+     "en_ruta": true,
+     "lat": 28.97366,
+     "lng": -13.70492
+    }
+   ],
+   "n": 0,
+   "total": 1,
+   "completa": false,
+   "en_tu_ruta": true
+  },
+  {
+   "id": "cesar_manrique",
+   "grupo": "de_artistas",
+   "orden": 2,
+   "nombre": "La Lanzarote de César Manrique",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "jameos_del_agua",
+     "visto": false,
+     "nombre": "Jameos del Agua",
+     "en_ruta": true,
+     "lat": 29.15805,
+     "lng": -13.43165
+    },
+    {
+     "sitio": "mirador_del_rio",
+     "visto": false,
+     "nombre": "Mirador del Río",
+     "en_ruta": true,
+     "lat": 29.2145,
+     "lng": -13.4812
+    },
+    {
+     "sitio": "jardin_de_cactus",
+     "visto": false,
+     "nombre": "Jardín de Cactus",
+     "en_ruta": false,
+     "lat": 29.080393,
+     "lng": -13.476949
+    },
+    {
+     "sitio": "fundacion_cesar_manrique",
+     "visto": false,
+     "nombre": "Fundación César Manrique",
+     "en_ruta": true,
+     "lat": 29.0021,
+     "lng": -13.5475
+    },
+    {
+     "sitio": "haria_y_la_casa_museo_cesar_manrique",
+     "visto": false,
+     "nombre": "Haría y la Casa-Museo César Manrique",
+     "en_ruta": true,
+     "lat": 29.1418,
+     "lng": -13.5037
+    },
+    {
+     "sitio": "casa_museo_del_campesino",
+     "visto": false,
+     "nombre": "Casa-Museo del Campesino",
+     "en_ruta": true,
+     "lat": 29.01527,
+     "lng": -13.61553
+    },
+    {
+     "sitio": "castillo_de_san_jose",
+     "visto": false,
+     "nombre": "Castillo de San José (MIAC)",
+     "en_ruta": true,
+     "lat": 28.97159,
+     "lng": -13.53334
+    }
+   ],
+   "n": 0,
+   "total": 7,
+   "completa": false,
+   "en_tu_ruta": false
+  },
+  {
+   "id": "playas_y_charcos",
+   "grupo": "de_explorar",
+   "orden": 5,
+   "nombre": "Playas y charcos",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "playas_de_papagayo",
+     "visto": false,
+     "nombre": "Playas de Papagayo",
+     "en_ruta": false,
+     "lat": 28.84292,
+     "lng": -13.78813
+    },
+    {
+     "sitio": "caleton_blanco",
+     "visto": false,
+     "nombre": "Caletón Blanco",
+     "en_ruta": true,
+     "lat": 29.21586,
+     "lng": -13.4426
+    },
+    {
+     "sitio": "el_golfo_y_el_charco_de_los_clicos",
+     "visto": false,
+     "nombre": "El Golfo y el Charco de los Clicos",
+     "en_ruta": true,
+     "lat": 28.977147,
+     "lng": -13.827658
+    },
+    {
+     "sitio": "caleta_de_famara_y_playa_de_famara",
+     "visto": false,
+     "nombre": "Caleta de Famara y Playa de Famara",
+     "en_ruta": false,
+     "lat": 29.115758,
+     "lng": -13.563593
+    },
+    {
+     "sitio": "punta_mujeres_y_arrieta",
+     "visto": false,
+     "nombre": "Punta Mujeres y Arrieta (La Garita)",
+     "en_ruta": true,
+     "lat": 29.132569,
+     "lng": -13.459073
+    },
+    {
+     "sitio": "playa_de_la_garita",
+     "visto": false,
+     "nombre": "Playa de La Garita",
+     "en_ruta": true,
+     "lat": 29.129135,
+     "lng": -13.464039
+    },
+    {
+     "sitio": "playa_de_montana_bermeja",
+     "visto": false,
+     "nombre": "Playa de Montaña Bermeja",
+     "en_ruta": true,
+     "lat": 28.96051,
+     "lng": -13.82872
+    }
+   ],
+   "n": 0,
+   "total": 7,
+   "completa": false,
+   "en_tu_ruta": false
+  },
+  {
+   "id": "pueblos_con_alma",
+   "grupo": "de_empezar",
+   "orden": 6,
+   "nombre": "Pueblos con alma",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "teguise",
+     "visto": false,
+     "nombre": "Teguise (villa)",
+     "en_ruta": true,
+     "lat": 29.059188,
+     "lng": -13.562594
+    },
+    {
+     "sitio": "haria_y_la_casa_museo_cesar_manrique",
+     "visto": false,
+     "nombre": "Haría y la Casa-Museo César Manrique",
+     "en_ruta": true,
+     "lat": 29.1418,
+     "lng": -13.5037
+    },
+    {
+     "sitio": "caleta_de_famara_y_playa_de_famara",
+     "visto": false,
+     "nombre": "Caleta de Famara y Playa de Famara",
+     "en_ruta": false,
+     "lat": 29.115758,
+     "lng": -13.563593
+    },
+    {
+     "sitio": "el_golfo_y_el_charco_de_los_clicos",
+     "visto": false,
+     "nombre": "El Golfo y el Charco de los Clicos",
+     "en_ruta": true,
+     "lat": 28.977147,
+     "lng": -13.827658
+    },
+    {
+     "sitio": "arrecife_charco_de_san_gines_y_el_paseo",
+     "visto": false,
+     "nombre": "Arrecife: Charco de San Ginés y el paseo",
+     "en_ruta": true,
+     "lat": 28.965169,
+     "lng": -13.555036
+    }
+   ],
+   "n": 0,
+   "total": 5,
+   "completa": false,
+   "en_tu_ruta": false
+  }
+ ],
+ "secretos": {
+  "total": 11,
+  "encontrados": 0,
+  "texto": "Lanzarote esconde 11 secretos",
+  "encontrados_lista": []
+ },
+ "con_tu_ruta_puedes_completar": 4,
+ "pendiente": {
+  "pendientes": [
+   {
+    "dia": null,
+    "sitio": "montanas_del_fuego",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo",
+     "emblema"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "jameos_del_agua",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo",
+     "emblema"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "cueva_de_los_verdes",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo",
+     "emblema"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "mirador_del_rio",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo",
+     "emblema"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "fundacion_cesar_manrique",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo",
+     "emblema"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "el_golfo_y_el_charco_de_los_clicos",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo",
+     "emblema"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "la_geria_y_sus_bodegas",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo",
+     "emblema"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "haria_y_la_casa_museo_cesar_manrique",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "casa_museo_del_campesino",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "castillo_de_san_jose",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "los_hervideros",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "volcan_del_cuervo",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "caldera_blanca",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "las_grietas_montana_blanca",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "ciudad_estratificada_rofera_de_teseguite",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "mirador_de_guinate",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "ermita_de_las_nieves",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "mirador_del_bosquecillo",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "mirador_de_haria",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "salinas_de_janubio",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "caleton_blanco",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "punta_mujeres_y_arrieta",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "playa_de_la_garita",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "playa_de_montana_bermeja",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "teguise",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "arrecife_charco_de_san_gines_y_el_paseo",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   }
+  ],
+  "sorpresas": 7,
+  "pedazos": 26,
+  "dias_para_reclamar": null,
+  "plazo_pasado": false,
+  "texto": "Te espera una sorpresa: sube tu foto"
+ },
+ "puntito": false,
+ "viaje": {
+  "id": "viaje-ejemplo-lz",
+  "inicio": "2026-11-08",
+  "fin": "2026-11-13",
+  "hoy": "2026-11-04"
+ }
+}

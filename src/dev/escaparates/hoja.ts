@@ -10,6 +10,7 @@ import antes from './datos/hoja_antes.json'
 import dia1 from './datos/hoja_dia1.json'
 import despues from './datos/hoja_despues.json'
 import ultimo from './datos/hoja_ultimo.json'
+import antesLz from './datos/hoja_lz_antes.json'
 import roma from '../../../data/logros/roma.json'
 
 /**
@@ -133,6 +134,7 @@ const lista: Escaparate[] = [
     cerrar: () => desmontar('1b'),
   },
   { id: '2a', que: 'La hoja antes del viaje', abrir: () => abrirHoja(antes), cerrar: cerrarHoja },
+  { id: '2a-lz', que: 'La hoja antes del viaje en Lanzarote (LG1)', abrir: () => abrirHoja(antesLz), cerrar: cerrarHoja },
   { id: '3a', que: 'La hoja el día 1 (bronce, con «Lo nuevo de hoy»)', abrir: () => abrirHoja(dia1), cerrar: cerrarHoja },
   { id: '3b', que: 'Una colección abierta, con sus sitios', abrir: () => abrirHoja(dia1, () => tocar('[data-coleccion="roma_antigua"] > div')), cerrar: cerrarHoja },
   { id: '3c', que: 'La hoja el último día (oro)', abrir: () => abrirHoja(ultimo), cerrar: cerrarHoja },

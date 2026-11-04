@@ -266,7 +266,7 @@ class Component extends DCLogic {
       const next=g==='diamante'?(isV?'El país entero, visto':'Lo esencial, visto'):!nx?'':(after?'Te quedan '+(nx[0]-n)+' para '+(nx[1]==='diamante'?'el diamante':nx[1]==='oro'?'el oro':nx[1]==='plata'?'la plata':'el bronce'):(nx[0]-n===1?'Te falta 1':'Te faltan '+(nx[0]-n))+' para '+(nx[1]==='diamante'?'el diamante':nx[1]==='oro'?'el oro':nx[1]==='plata'?'la plata':'empezar'));
       return{g,i:isV?'cupula':'coliseo',sh:isV?'oval':'round',sz:big?'84':'60',hs:big?'84px,84px':'60px,60px',l:big?(isV?'VATICANO':'ROMA'):'',fs:big?'20px':'16px',
         n:cur[2],gn:(g==='none'?'Por conseguir':GNAME[g])+' · '+n+' de '+tot+(isV?' sitios':' imprescindibles'),w:(n/tot*100)+'%',c:GC[g],
-        next:g==='none'?(isV?'Empieza en plata':'Empieza en bronce'):next,nc:g==='none'?'rgba(28,34,48,.55)':'oklch(0.48 0.17 5)',flt:g==='none'?'grayscale(1)':'none',op:g==='none'?'.55':'1',bg:big?'#F5EFE4':'#FFFFFF'};};
+        next:g==='none'?(isV?'Empieza en plata':'Empieza en bronce'):next,nc:g==='none'?'#8E6820':'oklch(0.48 0.17 5)',flt:g==='none'?'grayscale(.4) sepia(.3) saturate(1.2)':'none',op:g==='none'?'.9':'1',bg:big?'#F5EFE4':'#FFFFFF'};};
     const rows=COL.map((c,ci)=>{const N=c.sites.length,set=c.sites.map((x,j)=>seen.has(x)?j:-1).filter(j=>j>=0),have=set.length,inR=c.sites.every(x=>ROUTE.has(x));
       const isNew=!!(o.news&&o.news.includes(c.k)),done=have===N,isO=!!op[c.k];const car=c.k==='car';
       const r={k:c.k,isNew,done,n:c.n,cnt:have+' de '+N,w:(have/N*100)+'%',bar:done?GR:have?RS:'rgba(28,34,48,.18)',set:set.join(','),sn:c.sites.join('|'),bs:car?'86':'64',bw:car?'86px':'64px',

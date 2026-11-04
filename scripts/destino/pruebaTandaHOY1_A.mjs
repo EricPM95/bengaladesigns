@@ -336,9 +336,12 @@ await sec(async () => {
 /* ───────────── 5. H13: el atardecer y mañana ───────────── */
 await sec(async () => {
   const mut = "r.days.forEach((d) => { d.sunsetText = 'Hoy el sol se pone a las 18:26' }); const s0 = numberedStopsOf(r.days[0])[0]; s0.isSunset = true; s0.name = 'Terraza del Pincio'"
+  // LG1 (antes → ahora → decisión de Eric, 4-nov): antes la tarjeta salía a las 15:00 con «Hoy el sol se pone a las 18:26» y el sitio aparte; ahora sale desde 2 horas antes de la puesta de sol (16:26) y dice
+  // «Hoy ves el atardecer en el Pincio: el sol se pone a las 18:26. Llega un cuarto de hora antes, que es cuando más bonito está.»
   await ir(a, { dia: 0, min: 15 * 60, mut })
-  debe((await txt(a, '[data-hoy-atardecer-titulo]')) === 'Hoy el sol se pone a las 18:26', 'H13', `el sol del día (${await txt(a, '[data-hoy-atardecer-titulo]')})`)
-  debe(/Pincio/.test((await txt(a, '[data-hoy-atardecer-sitio]')) ?? ''), 'H13', 'con su sitio')
+  debe(!(await hay(a, '[data-hoy-atardecer]')), 'H13', 'a las 15:00 (más de 2 h antes de la puesta) todavía no sale el atardecer')
+  await ir(a, { dia: 0, min: 16 * 60 + 45, mut })
+  debe(/^Hoy ves el atardecer en el Pincio: el sol se pone a las 18:26. Llega un cuarto de hora antes, que es cuando más bonito está.$/.test((await txt(a, '[data-hoy-atardecer-titulo]')) ?? ''), 'H13', `el atardecer con su sitio (${await txt(a, '[data-hoy-atardecer-titulo]')})`)
   const href = await atr(a, '[data-hoy-atardecer-como-llegar]', 'href')
   debe(/google\.com\/maps\/dir/.test(href ?? '') && /travelmode=walking/.test(href ?? ''), 'H13', '[Cómo llegar] al sitio, a pie')
   await captura(a, 'H13_atardecer', '[data-hoy-atardecer]')

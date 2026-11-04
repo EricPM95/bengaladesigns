@@ -245,7 +245,9 @@ const hojaSimple = (stop, { version = 'completa', extra = {}, voces } = {}) => {
   debe(/>Coliseo</.test(html.slice(iNombre, iNombre + 400)) || /Coliseo/.test(texto), 'A1 cabecera', 'la ficha no lleva el nombre del lugar')
   debe(/font-display[^"]*text-\[33px\]/.test(html), 'A1 cabecera', 'el nombre no va en serif de 33 px (Tanda 10N4)')
   debe(/min/.test(texto) || /h\b/.test(texto), 'A1 etiquetas', 'no sale la duración')
-  debe(/data-ficha-pestanas/.test(html) && /Resumen/.test(texto) && /Entradas/.test(texto) && /Tips/.test(texto), 'A1 pestañas', 'faltan las tres pestañas con su bolita')
+  // (LG1 §1) antes: la ficha llevaba siempre tres pestañas (Resumen · Entradas · Tips) → ahora: lleva esas tres y, solo si el sitio está en alguna colección de logros, una cuarta «Logros» que llega
+  // con la respuesta del servidor (no sale en esta pintura sin servidor, así que aquí siguen siendo tres) → decisión de Eric (4-nov): la pestaña «Logros» solo sale en sitios con colección (pruebaTandaLG1_A).
+  debe(/data-ficha-pestanas/.test(html) && /Resumen/.test(texto) && /Entradas/.test(texto) && /Tips/.test(texto) && !/>Logros</.test(html), 'A1 pestañas', 'faltan las tres pestañas con su bolita (o sale «Logros» sin que el servidor diga que el sitio está en una colección)')
   // (Tanda 10N6 §1f) Fuera la cámara de encima de la foto: las fotos van en «Tus recuerdos» (entre la cabecera y las pestañas), que sale siempre.
   debe(veces(html, /aria-label="(Añadir|Cambiar) foto"/g) === 0, 'A2 recuerdos', 'la ficha aún lleva la cámara encima de la foto')
   debe(veces(html, /data-tus-recuerdos/g) === 1 && /Tus recuerdos/.test(texto), 'A2 recuerdos', 'la ficha no lleva el bloque «Tus recuerdos»')
