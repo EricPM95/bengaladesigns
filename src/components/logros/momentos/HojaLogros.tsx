@@ -58,6 +58,8 @@ export default function HojaLogros(): ReactNode {
   const [cargado, setCargado] = useState(false)
   const [abiertas, setAbiertas] = useState<Set<string>>(new Set())
   const [escena, setEscena] = useState<string | null>(null)
+  // (LZ3b) Un emblema de Lanzarote no tiene escena propia: al tocarlo sale el emblema en grande con SU nombre y SU línea, como en Roma.
+  const [escenaTexto, setEscenaTexto] = useState<{ nombre: string; linea: string } | null>(null)
   useEffect(() => {
     let vivo = true
     void pedirEstado(tripId).then((e) => {
@@ -134,7 +136,7 @@ export default function HojaLogros(): ReactNode {
                   <FilaDeColeccion key={c.id} c={c} i={i + nuevas.length} fase={fase} ciudad={estado.ciudad} abierta={abiertas.has(c.id)} alternar={() => alternar(c.id)} cerrarHoja={cerrar} />
                 ))}
               </div>
-              <Secretos fase={fase} estado={estado} verEscena={(id) => setEscena(id)} />
+              <Secretos fase={fase} estado={estado} verEscena={(id, texto) => { setEscenaTexto(texto ?? null); setEscena(id) }} />
               </div>
               {fase === 'despues' && (
                 <button
@@ -154,7 +156,7 @@ export default function HojaLogros(): ReactNode {
       </div>
       {escena && (
         <Suspense fallback={null}>
-          <EscenaDeEmblema id={escena} primeraVez={false} onSeguir={() => setEscena(null)} />
+          <EscenaDeEmblema id={escena} primeraVez={false} nombre={escenaTexto?.nombre ?? null} linea={escenaTexto?.linea ?? null} onSeguir={() => { setEscena(null); setEscenaTexto(null) }} />
         </Suspense>
       )}
     </div>
@@ -277,7 +279,7 @@ function FilaDeColeccion({ c, i, fase, ciudad, abierta, alternar, cerrarHoja }: 
   )
 }
 
-function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: EstadoLogros; verEscena: (id: string) => void }): ReactNode {
+function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: EstadoLogros; verEscena: (id: string, texto?: { nombre: string; linea: string }) => void }): ReactNode {
   const { total, encontrados_lista: lista } = estado.secretos
   const titulo = tituloDeSecretos(fase, estado.ciudad, total, lista.length)
   const nota = notaDeSecretos(fase, total, lista.length)
@@ -301,7 +303,7 @@ function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: Est
           return (
             <span key={k} style={{ width: 96, height: 96, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {e && lanza ? (
-                <button type="button" aria-label={`Volver a ver ${e.nombre}`} onClick={() => verEscena(idDeDibujoLanzarote(e.id))} style={{ width: 96, height: 96, border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <button type="button" aria-label={`Volver a ver ${e.nombre}`} onClick={() => verEscena(idDeDibujoLanzarote(e.id), { nombre: e.nombre, linea: e.linea })} style={{ width: 96, height: 96, border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Emblema id={idDeDibujoLanzarote(e.id)} tam={84} animado={false} />
                 </button>
               ) : e ? (

@@ -5125,3 +5125,63 @@ Un agente hizo el motor y los datos de Roma (hora útil única, franjas F0 a F7,
 
 - ⚠️ A medias — pruebaTandaLL_ROMA (1834) y las pruebas de llegadas, vuelta y vuelos al día con «antes → ahora → decisión de Eric»; la muestra de 60 fechas La muestra de 60 fechas (sin vuelos) sale IDÉNTICA: no hay huella nueva. Pasadas en 0: 7_llegada, 7_documento, 7_vuelta, 7_integracion, 7_reorganizar, 7_hoy, 7_reparto, 7_conexion, 7_unificado, 7_reservas, 10S7 (Q, R, S, T), 10S7b (U, V, W), 10S7c (X, Y), 10S8_B, 10S9_D, 10S11_C, 10R_C y el muestreo de 12 fechas de pruebaListas. NO he corrido el barrido completo de las 365 fechas (≈ 2 h con 4 procesos): hay que correrlo antes de fiarse del motor en cualquier fecha rara.  
   *Dónde:* No es de móvil.
+
+## LZ3b — Retoques de Lanzarote (4-nov)
+Prompt guardado en `docs/dias/PROMPT_TANDA_LZ3b.md` (llegó entero, hasta «reinicia el api-server»); va después de la LL, ya subida. Lanzarote sigue oculto (solo administrador). Un solo Vite y una API; un Chrome de prueba por la cola; cerrados al acabar. Sin migración.
+
+**Qué se ha hecho**
+1. **Design al día** (zip «DESIGN LANZAROTE»; sin `uploads/` ni `Archivo/`): la imagen nueva de «Los imprescindibles de Lanzarote» (col1: un dibujo por sitio) puesta en la app (`public/logros/lanza/col1.webp`), con cada gajo en su sitio por el dibujo: volcán = Timanfaya, cangrejo = Jameos del Agua, entrada de cueva = Cueva de los Verdes, prismáticos = Mirador del Río, burbujas = Fundación César Manrique, laguna verde = El Golfo y uvas = La Geria. Las otras 6 colecciones, como estaban. Design cambió también el emblema de Papagayo (de hexágono a elipse 132×100): puesto igual. La tabla gajo → sitio de col1 y de col6, al día en `docs/dias/_lz3_tabla_gajos.json` y en el REPASO.
+2. **Las 7 imágenes: gajos contra sitios.** Cuadran la 1 (7/7), 2 (7/7), 3 (7/7), 4 (6/6) y 5 (7/7). **No cuadran:** «Pueblos con alma» (col6) trae **4 trozos y tiene 5 sitios** (lo que veías) y «Entre viñas de ceniza» (col7) trae 3 trozos y 1 sitio (ya apuntado en la LZ3). **Captura para Design:** `docs/dias/capturas_jutrip/lz3b_col6_cuatro_trozos_1.jpg`. Mientras tanto, la col6 se pinta con sus 4 trozos desiguales (nueva opción `cortes` de la pieza de gajos): campanario = Teguise, puerta verde = Arrecife, piedra negra = El Golfo, casas y palmera = Haría; Caleta de Famara se queda sin trozo y la insignia solo sale completa con los 5 sitios.
+3. **[Abrir en Maps] de «Dónde aparcar»** busca el sitio por su nombre y su pueblo (p. ej. «Jameos del Agua, Haría»). Van por **coordenada** (9): La Geria y sus bodegas, Caletón Blanco, Ciudad Estratificada, Playa de Montaña Bermeja, Las Grietas, Mirador del Bosquecillo, Mirador de Haría, Mirador de los Helechos y Playa Blanca / Faro de Pechiguera. El texto de «Dónde aparcar» se queda y las coordenadas siguen sirviendo para los tiempos en coche.
+4. **Al tocar un emblema de Lanzarote**, sale su nombre y su línea (como en Roma).
+5. **Decisiones de Eric:** Madrugador en cualquier sitio y los dos miradores como están (sin cambios de código).
+
+**Pruebas (en 0)**
+- `pruebaTandaLZ3b` (nueva, 33): Design al día, tabla de col1, col6 con 4 trozos, Maps por nombre y por coordenada, emblema tocado con nombre y línea, hoja de logros a medias y completa con capturas.
+- `pruebaTandaLZ2b1` (55.401), `pruebaTandaLL_LZ` (1768), `pruebaJutrip` (129), `pruebaLogros2` y la muestra de 60 de Roma (idéntica).
+- `pruebaLogros1` ESTABA EN ROJO desde la LL parte 2 (hora libre de los logros = la hora útil nueva): la puse al día con «antes → ahora → decisión de Eric». Un fallo mío de la LL que no vi al subirla; ya corregido.
+- `pruebaTandaLZ3_B` al día (col6 con 4 gajos).
+
+**Dudas**
+- Col6: Design tiene que dibujar el quinto trozo (o quitar un sitio de la colección); col7, igual con sus 3 trozos y 1 sitio.
+- «Abrir en Maps» por nombre: no lo he abierto en un móvil real; mira Papagayo, Teguise y Timanfaya.
+
+### Lista de comprobación — LZ3b
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado (docs/dias/PROMPT_TANDA_LZ3b.md, llegó entero hasta «reinicia el api-server»); va después de la tanda LL, ya subida; Lanzarote sigue oculto; Roma sin cambios (muestra de 60 idéntica) Un solo agente (yo).  
+  *Dónde:* No es de móvil.
+
+**1 · Design nuevo**
+
+- ✅ Hecho — `docs/diseno/proyecto/` al día con el zip «DESIGN LANZAROTE» (sin `uploads/` ni `Archivo/`) Cambian: la imagen de col1 (y su original), la pieza «Insignia Lanza Sitios» (nueva) y el emblema de Papagayo (de hexágono 120×106 a elipse 132×100). Lo demás, igual. La página «App HOY» no ha cambiado todavía: es de la tanda HOY1.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — «Los imprescindibles de Lanzarote» (col1): cada gajo con su sitio por el dibujo Desde las 12 en sentido horario: volcán = Timanfaya, cangrejo = Jameos del Agua, entrada de cueva = Cueva de los Verdes, prismáticos = Mirador del Río, burbujas = Fundación César Manrique, laguna verde = El Golfo, uvas = La Geria. Tabla al día en `docs/dias/_lz3_tabla_gajos.json`.  
+  *Dónde:* Hoja de logros › Los imprescindibles de Lanzarote.  *Captura:* `lz3b_imprescindibles_amedias_1.jpg`
+- ✅ Hecho — Las otras 6 colecciones, como están (campanario = Teguise, palmera = Haría, cactus = Jardín de Cactus) No he tocado sus gajos.  
+  *Dónde:* Hoja de logros › colecciones.
+- ⚠️ A medias — Comprobar que cada imagen tiene tantos gajos como sitios y que se distinguen a simple vista Cuadran 1 (7/7), 2 (7/7), 3 (7/7), 4 (6/6) y 5 (7/7). NO cuadran: «Pueblos con alma» (col6) trae 4 trozos y tiene 5 sitios (es lo que veías: 4 trozos), y «Entre viñas de ceniza» (col7) trae 3 trozos y tiene 1 sitio. Para pedírselo a Design: la imagen de col6 con sus 4 trozos está en `docs/diseno/proyecto/assets/lanza/col6.png`. Mientras tanto, col6 se pinta con sus 4 trozos (campanario = Teguise, puerta verde = Arrecife, piedra negra = El Golfo, casas y palmera = Haría) y Caleta de Famara se queda sin trozo; la colección solo sale completa con los 5 sitios.  
+  *Dónde:* Hoja de logros › Pueblos con alma.  *Captura:* `lz3b_col6_cuatro_trozos_1.jpg`
+- ✅ Hecho — Si Design ha cambiado también algún emblema o alguna colección más Solo el emblema de Papagayo (ahora una elipse), puesto igual que Design.  
+  *Dónde:* Hoja de logros › emblemas.
+
+**2 · Abrir en Maps**
+
+- ✅ Hecho — [Abrir en Maps] de «Dónde aparcar» busca el sitio por su nombre y su pueblo; solo a nuestra coordenada si el nombre es ambiguo o Maps no lo conoce 25 sitios por nombre (p. ej. «Jameos del Agua, Haría»). Van por COORDENADA (9): La Geria y sus bodegas, Caletón Blanco, Ciudad Estratificada (Rofera de Teseguite), Playa de Montaña Bermeja, Las Grietas, Mirador del Bosquecillo, Mirador de Haría, Mirador de los Helechos y Playa Blanca / Faro de Pechiguera. El texto de «Dónde aparcar» se queda; las coordenadas siguen sirviendo para los tiempos. No lo he abierto en un móvil real: mira que Maps lleva al sitio correcto, sobre todo Papagayo, Teguise y Timanfaya.  
+  *Dónde:* Ficha de un sitio › Dónde aparcar › Abrir en Maps.
+
+**3 · Logros**
+
+- ✅ Hecho — Al tocar un emblema de Lanzarote, que salga su nombre y su línea, como en Roma Sale el emblema en grande con su nombre y su línea (p. ej. «El calor de la tierra · A trece metros bajo tus pies, la tierra pasa de 600 grados.»). No tiene escena propia como los de Roma.  
+  *Dónde:* Hoja de logros › secretos › tocar un emblema.  *Captura:* `lz3b_emblema_tocado_1.jpg`
+
+**4 · Decisiones de Eric**
+
+- ✅ Hecho — Madrugador en Lanzarote vale en cualquier sitio; los Helechos y Haría se quedan como están Sin cambios de código: ya era así. Los dos miradores siguen sin comprobar; los miras en tu viaje.  
+  *Dónde:* En tu viaje.
+
+**5 · La prueba**
+
+- ✅ Hecho — pruebaTandaLZ3b y las de Lanzarote en 0; Roma idéntica; Lanzarote oculto Ver el informe. Capturas de la colección de imprescindibles a medias y completa y de un emblema tocado.  
+  *Dónde:* No es de móvil.  *Captura:* `lz3b_imprescindibles_completa_1.jpg`

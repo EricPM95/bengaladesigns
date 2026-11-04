@@ -22,15 +22,21 @@ export interface GeometriaDeGajos {
   n: number
   /** Ángulo (grados, 0 = derecha, sentido horario) donde empieza el gajo 0. */
   a0: number
+  /** (LZ3b) Para una imagen cuyos gajos NO son iguales: los ángulos donde empieza cada gajo (en sentido horario; el último acaba donde empieza el primero). Si está, manda sobre `n` y `a0`. */
+  cortes?: number[]
 }
 
 const pc = (v: number, total: number) => ((v / total) * 100).toFixed(2) + '%'
 
 /** El recorte (clip-path) del gajo j. */
 export function recorteDeGajo(g: GeometriaDeGajos, j: number): string {
+  const c = g.cortes
   const st = 360 / g.n
-  const A = ((g.a0 + j * st) * Math.PI) / 180
-  const B = ((g.a0 + (j + 1) * st) * Math.PI) / 180
+  const ang0 = c ? c[j] : g.a0 + j * st
+  let ang1 = c ? c[(j + 1) % c.length] : g.a0 + (j + 1) * st
+  if (c && ang1 <= ang0) ang1 += 360
+  const A = (ang0 * Math.PI) / 180
+  const B = (ang1 * Math.PI) / 180
   const pts: [number, number][] = [[g.cx, g.cy]]
   const pasos = 6
   for (let q = 0; q <= pasos; q++) {
@@ -46,10 +52,11 @@ export function medidasDeGajos(g: GeometriaDeGajos, tam: number): { w: number; h
   return { w: Math.round(g.iw * sc), h: Math.round(g.ih * sc) }
 }
 
-export function InsigniaGajos({ geo, on, tam = 150, animada = false }: { geo: GeometriaDeGajos; on: boolean[]; tam?: number; animada?: boolean }) {
+export function InsigniaGajos({ geo, on, tam = 150, animada = false, completa: completaForzada }: { geo: GeometriaDeGajos; on: boolean[]; tam?: number; animada?: boolean; completa?: boolean }) {
   const { w, h } = medidasDeGajos(geo, tam)
   const lit = on.map((x, j) => (x && j < geo.n ? j : -1)).filter((j) => j >= 0)
-  const completa = lit.length >= geo.n
+  // (LZ3b) Una colección con más sitios que gajos dibujados (Pueblos con alma: 5 sitios y 4 trozos) solo está completa cuando están todos sus sitios.
+  const completa = completaForzada ?? lit.length >= geo.n
   const base: CSSProperties = { position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }
   const mascara: CSSProperties = { WebkitMaskImage: `url(${geo.imagen})`, maskImage: `url(${geo.imagen})`, WebkitMaskSize: '100% 100%', maskSize: '100% 100%' }
   return (

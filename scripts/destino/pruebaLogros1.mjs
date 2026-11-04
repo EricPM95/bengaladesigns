@@ -1011,6 +1011,7 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
 
 // ── La hora libre del día de llegada, la de la ruta (según el aeropuerto o la estación) ──
 {
+  // LL parte 2 (Eric, 4-nov). Antes: libre = aterrizaje + traslado del punto + 30 min de maleta (Fiumicino 60, Ciampino 50, Termini 15) y salir = vuelo − 3 h / 2 h 50 / 45 min. Ahora: la hora útil única (aterrizaje + 45 + trayecto a la zona —sin zona, Centro— + 60) y la hora de irse (vuelo − tiempo de estar allí − trayecto − 30 min de maleta): FCO 8:35 → 11:30, CIA → 11:25, Termini → 10:10; vuelo de las 20:00 → irse a las 16:20 (FCO) y 16:25 (CIA), tren de las 18:00 → 16:35.
   const R2 = datos.destinos.roma
   const aj = datos.pase.ajustes
   const dias = (n) => Array.from({ length: n }, (_, i) => ({ numero: i + 1, fecha: `2026-10-${10 + i}` }))
@@ -1019,12 +1020,12 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   const fco = libre('08:35', 'avion', 'fco')
   const cia = libre('08:35', 'avion', 'cia')
   const tren = libre('08:35', 'tren', 'termini')
-  debe(fco.libre_llegada_min === 8 * 60 + 35 + 60 + 30 && cia.libre_llegada_min === 8 * 60 + 35 + 50 + 30 && tren.libre_llegada_min === 8 * 60 + 35 + 15 + 30, 'hora_motor', 'la hora libre es la del motor: llegada + traslado del punto + maleta (Fiumicino 60, Ciampino 50, Termini 15)')
+  debe(fco.libre_llegada_min === 690 && cia.libre_llegada_min === 685 && tren.libre_llegada_min === 610, 'hora_motor', 'la hora libre es la hora útil: llegada + 45 + trayecto a la zona (Centro) + 60 (FCO 11:30, CIA 11:25, Termini 10:10)')
   debe([fco, cia, tren].every((x) => x.libre_origen === 'motor'), 'hora_motor', 'las tres vienen del motor, no del respaldo')
   const diaDe = (viaje) => elegirDiaDePrueba({ dias: dias(5), ...viaje }, aj).numero
-  debe(diaDe({ llegada: '08:35', libre_llegada_min: fco.libre_llegada_min }) === 2, 'hora_motor', 'llegada a Fiumicino a las 8:35: queda libre a las 10:05 → la prueba es el día siguiente')
-  debe(diaDe({ llegada: '08:35', libre_llegada_min: cia.libre_llegada_min }) === 1, 'hora_motor', 'la misma hora en Ciampino: queda libre a las 9:55 → la prueba es el día de llegada')
-  debe(diaDe({ llegada: '08:35', libre_llegada_min: tren.libre_llegada_min }) === 1, 'hora_motor', 'y en tren a Termini (libre a las 9:20): el día de llegada')
+  debe(diaDe({ llegada: '08:35', libre_llegada_min: fco.libre_llegada_min }) === 2, 'hora_motor', 'llegada a Fiumicino a las 8:35: queda libre a las 11:30 → la prueba es el día siguiente')
+  debe(diaDe({ llegada: '08:35', libre_llegada_min: cia.libre_llegada_min }) === 2, 'hora_motor', 'la misma hora en Ciampino: queda libre a las 11:25 → la prueba es el día siguiente (antes, el de llegada)')
+  debe(diaDe({ llegada: '08:35', libre_llegada_min: tren.libre_llegada_min }) === 2, 'hora_motor', 'y en tren a Termini (libre a las 10:10): el día siguiente (antes, el de llegada)')
   debe(diaDe({ llegada: '08:35' }) === 2, 'hora_motor', 'con los 90 minutos fijos de antes, las tres habrían dado el día siguiente (por eso había que leer la hora de la ruta)')
   // Respaldo: si el motor no da la hora (en coche, sin datos del destino), se usan los 90 minutos
   const coche = horasDelViaje({ answers: { planLlegada: { entrada: { hora: '08:35', medio: 'coche', punto_id: 'ztl' } } } }, R2, catalogo)
@@ -1035,14 +1036,14 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   debe(sinDatos.libre_origen === 'respaldo', 'hora_motor', 'sin los datos de llegada del destino: respaldo')
   // El último día: lo que hay que salir antes cambia con el aeropuerto o la estación
   const vuelta = (hora, medio, punto) => horasDelViaje({ answers: { departureFlightTime: hora, returnTransportOptionId: medio, departurePointId: punto } }, R2, catalogo)
-  debe(vuelta('20:00', 'flight', 'fco').salir_min === 20 * 60 - 180 && vuelta('20:00', 'flight', 'cia').salir_min === 20 * 60 - 170 && vuelta('18:00', 'train', 'termini').salir_min === 18 * 60 - 45 && vuelta('20:00', 'flight', 'fco').salir_origen === 'motor', 'hora_motor', 'la hora de salir el último día es la del motor: Fiumicino 3 h, Ciampino 2 h 50, tren 45 min antes')
+  debe(vuelta('20:00', 'flight', 'fco').salir_min === 980 && vuelta('20:00', 'flight', 'cia').salir_min === 985 && vuelta('18:00', 'train', 'termini').salir_min === 995 && vuelta('20:00', 'flight', 'fco').salir_origen === 'motor', 'hora_motor', 'la hora de salir el último día es la del motor (la hora de irse: 16:20 FCO, 16:25 CIA, 16:35 tren)')
   const ultimo = diasLibres({ dias: dias(3), llegada: '08:00', libre_llegada_min: 8 * 60 + 90, vuelta: '20:00', salir_min: vuelta('20:00', 'flight', 'cia').salir_min }, aj)[2]
-  debe(ultimo.hasta === 20 * 60 - 170, 'hora_motor', 'el último día acaba cuando hay que salir de verdad (Ciampino), no 3 horas antes siempre')
+  debe(ultimo.hasta === 985, 'hora_motor', 'el último día acaba cuando hay que salir de verdad (Ciampino), no 3 horas antes siempre')
   // De la ruta guardada del viajero al día de prueba, de punta a punta
   const ruta = (hora, medio, punto) => ({ ...rutaRoma('2026-10-10', '2026-10-14', RUTA_BASE.days.map((d) => d.stops.map((st) => catalogo.places.find((x) => x.name === st.name).id))), answers: { dateRange: { start: '2026-10-10', end: '2026-10-14' }, companion: 'couple', planLlegada: { entrada: { hora, medio, punto_id: punto } } } })
   const ctxFco = contextoDeViaje({ id: 'v1', route: ruta('08:35', 'avion', 'fco') }, datos, catalogos)
   const ctxCia = contextoDeViaje({ id: 'v2', route: ruta('08:35', 'avion', 'cia') }, datos, catalogos)
-  debe(ctxFco.libre_llegada_min === 605 && ctxCia.libre_llegada_min === 595 && elegirDiaDePrueba(ctxFco, aj).numero === 2 && elegirDiaDePrueba(ctxCia, aj).numero === 1, 'hora_motor', 'el viaje del viajero trae la hora libre del motor y de ella sale el día de prueba (Fiumicino día 2, Ciampino día 1)')
+  debe(ctxFco.libre_llegada_min === 690 && ctxCia.libre_llegada_min === 685 && elegirDiaDePrueba(ctxFco, aj).numero === 2 && elegirDiaDePrueba(ctxCia, aj).numero === 2, 'hora_motor', 'el viaje del viajero trae la hora libre del motor y de ella sale el día de prueba (Fiumicino y Ciampino, día 2)')
 }
 
 // ── La pregunta de las 12:00 también sin cobertura ──

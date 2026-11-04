@@ -70,7 +70,10 @@ export function InsigniaDibujo({ coleccion, ganados = [], completa = false, tam 
   const c = COLS[coleccion]
   const pintada = coleccionDeGajos(coleccion) // (en Roma solo «imprescindibles» coincide de nombre, y solo con un viaje a Lanzarote abierto es la otra)
   if (pintada)
-    return <InsigniaGajos geo={pintada} on={pintada.sitios.map((s) => completa || ganados.includes(s))} tam={tam} animada={animada} />
+    {
+    const todos = pintada.sitios.map((s) => completa || ganados.includes(s))
+    return <InsigniaGajos geo={pintada} on={todos} completa={todos.every(Boolean)} tam={tam} animada={animada} />
+  }
   if (!c) return <span style={{ width: tam, height: tam, display: 'inline-block' }} />
   const on = c.sitios.map((s) => completa || ganados.includes(s))
   let cuerpo

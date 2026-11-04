@@ -253,9 +253,12 @@ export function FichaComoLlegar({ direccion, transporte, web, onComoLlegar }: { 
  * (LZ2b1) «Dónde aparcar»: en un destino de coche (Lanzarote) sustituye a «Cómo llegar». El texto corto del aparcamiento de la parada (nuestro, de los datos; `aparcar_verificar` no sale nunca)
  * y [Abrir en Maps] a la coordenada de la parada (su aparcamiento). Sin líneas de transporte. Sin texto, la tarjeta no sale.
  */
-export function FichaDondeAparcar({ texto, lat, lng }: { texto: string | null; lat: number | null; lng: number | null }) {
+export function FichaDondeAparcar({ texto, lat, lng, consulta = null }: { texto: string | null; lat: number | null; lng: number | null; consulta?: string | null }) {
   if (!texto) return null
-  const enlace = typeof lat === 'number' && typeof lng === 'number' && (lat !== 0 || lng !== 0) ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving` : null
+  // (LZ3b) Por el nombre del sitio y su pueblo, para que Google Maps o Apple Maps lleven donde ellos saben; solo si el nombre es ambiguo o Maps no lo conoce, a nuestra coordenada.
+  const enlace = consulta
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(consulta)}`
+    : typeof lat === 'number' && typeof lng === 'number' && (lat !== 0 || lng !== 0) ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving` : null
   return (
     <div data-ficha-seccion="donde-aparcar" className={`${TARJETA} overflow-hidden`}>
       <div className="flex items-center gap-2.5 px-3.5 pb-1.5 pt-3.5">

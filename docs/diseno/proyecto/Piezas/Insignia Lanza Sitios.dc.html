@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@keyframes lsFull{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+@keyframes lsSheen{0%{transform:translateX(-160%) skewX(-18deg)}60%,100%{transform:translateX(420%) skewX(-18deg)}}
+@media (prefers-reduced-motion:reduce){.ls *{animation:none!important}}
+</style>
+</helmet>
+<div class="ls" style="position:relative;width:{{ S }}px;height:{{ S }}px;flex:none;animation:{{ anim }}">
+  <svg width="{{ S }}" height="{{ S }}" viewBox="-8 -8 216 216" fill="none" style="overflow:visible;display:block;filter:drop-shadow(0 7px 8px rgba(40,20,0,.4))">
+    <defs>
+      <clipPath id="{{ u }}c"><path d="{{ shape }}"></path></clipPath>
+      <linearGradient id="{{ u }}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6DC"></stop><stop offset=".3" stop-color="#F3D88F"></stop><stop offset=".55" stop-color="#C99A44"></stop><stop offset=".8" stop-color="#8E6820"></stop><stop offset="1" stop-color="#E9C77A"></stop></linearGradient>
+      <sc-for list="{{ ws }}" as="w" hint-placeholder-count="7"><linearGradient id="{{ w.gid }}" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0" stop-color="{{ w.c0 }}"></stop><stop offset=".55" stop-color="{{ w.c1 }}"></stop><stop offset="1" stop-color="{{ w.c2 }}"></stop></linearGradient></sc-for>
+    </defs>
+    <path d="{{ shape }}" fill="#2A1608"></path>
+    <g clip-path="url(#{{ u }}c)">
+      <sc-for list="{{ ws }}" as="w" hint-placeholder-count="7">
+        <path d="{{ w.d }}" fill="{{ w.fill }}" stroke="#2A1608" stroke-width="2.4" stroke-linejoin="round"></path>
+        <path d="{{ w.d }}" fill="none" stroke="{{ w.hi }}" stroke-width="2.6" stroke-linejoin="round" transform="translate(100 100) scale(.93) translate(-100 -100)" style="mix-blend-mode:screen"></path>
+        <g transform="translate({{ w.ix }} {{ w.iy }}) scale({{ w.k }})" stroke="{{ w.ink }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ w.ic }}"></path></g>
+      </sc-for>
+    </g>
+    <path d="{{ shape }}" stroke="#5A4010" stroke-width="12" stroke-linejoin="round"></path>
+    <path d="{{ shape }}" stroke="url(#{{ u }}g)" stroke-width="8.5" stroke-linejoin="round"></path>
+    <path d="{{ shape }}" stroke="rgba(255,255,255,.6)" stroke-width="1.3" stroke-linejoin="round" transform="translate(100 100) scale(.985) translate(-100 -100)"></path>
+    <circle cx="100" cy="100" r="15" fill="url(#{{ u }}g)" stroke="#5A4010" stroke-width="2"></circle>
+    <path d="M100 91l2.6 6.4 6.4 2.6-6.4 2.6-2.6 6.4-2.6-6.4-6.4-2.6 6.4-2.6z" fill="#FFF6DC" stroke="#5A4010" stroke-width=".8" stroke-linejoin="round"></path>
+  </svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;col&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;1&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;set&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:150,&quot;tsType&quot;:&quot;number&quot;}}">
+let UID=0;
+const IC={
+ timanfaya:'M3 20L10 8l3 4 3-6 5 14zM9 5q1-2 0-3M14 4q1-2 0-3',
+ jameos:'M3 20V13a9 9 0 0 1 18 0v7M3 17q3-2 6 0t6 0 6 0M10 14l2-1 2 1',
+ verdes:'M3 21V12a9 9 0 0 1 18 0v9M7 21v-8a5 5 0 0 1 10 0v8M10.5 21v-6a1.5 1.5 0 0 1 3 0v6',
+ mirador:'M3 6h18v12H3zM9 6v12M15 6v12M3 15q3-2 6 0t6 0 6 0',
+ fundacion:'M8 15a4 4 0 1 0 .01 0M16 14a3.5 3.5 0 1 0 .01 0M11 7.5a3 3 0 1 0 .01 0',
+ golfo:'M3 17A9 9 0 0 1 21 17zM8 13q4-2 8 0M3 20h18',
+ geria:'M5 19a7 5 0 0 1 14 0M4 19a8 8 0 0 1 8-9M12 17V11M10 12l2-1 2 1',
+ cactus:'M12 21V7M12 12H8V8M12 14h4v-4M9 21h6',
+ casa:'M3 11l9-7 9 7v9H3zM10 20v-5h4v5',
+ campesino:'M12 3v6M9 6h6M7 21V11h10v10M3 21h18',
+ castillo:'M4 21V10h3V7h2v3h6V7h2v3h3v11zM10 21v-4h4v4',
+ hervideros:'M3 20h18M5 20l3-6 3 3 3-5 4 8M9 8q1-2 0-4M15 9q1-2 0-4',
+ cuervo:'M3 21L9 8h6l6 13zM9 8q3 2 6 0',
+ caldera:'M3 20q3-9 9-9t9 9zM8 20q1-4 4-4t4 4',
+ grietas:'M3 18l5-3 3 3 4-5 6 3M8 15l-1-5M11 18l1 3',
+ estratos:'M4 8h16M4 12h16M4 16h16M4 20h16M6 4h12',
+ guinate:'M7 8a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0v-3h4v3a3 3 0 0 0 6 0v-6a3 3 0 0 0-3-3M10 8h4',
+ ermita:'M12 3v3M10.5 4.5h3M6 21V11l6-4 6 4v10zM10 21v-5h4v5',
+ bosque:'M12 21v-6M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10M8 21h8',
+ palmeras:'M12 21V10M12 10q-5-1-7 2M12 10q5-1 7 2M12 10q-3-4-6-4M12 10q3-4 6-4',
+ salinas:'M3 8h18v4H3zM3 14h18v4H3zM9 8v10M15 8v10',
+ papagayo:'M3 19q9-5 18 0M3 19v-9l6 3M21 19v-9l-6 3M8 16q4 2 8 0',
+ caleton:'M3 14q3-2 6 0t6 0 6 0M3 18q3-2 6 0t6 0 6 0M16 6a3 3 0 1 0 .01 0',
+ clicos:'M12 3q6 7 0 14-6-7 0-14M6 21h12',
+ famara:'M2 15q3-5 6 0t6 0 6 0M2 19q3-4 6 0t6 0 6 0M15 4l4 5',
+ faro:'M10 21l1-12h2l1 12zM9 9h6l-1-3h-4zM12 3v3M3 21h18',
+ garita:'M12 20L5 11a8 8 0 0 1 14 0zM12 20V7M8.5 18l1-10M15.5 18l-1-10',
+ bermeja:'M2 20L10 7l4 6 3-4 5 11zM2 20h20',
+ teguise:'M12 3v4M10 5h4M7 21V10l5-3 5 3v11M10 21v-5h4v5',
+ caleta:'M4 15h16l-2 5H6zM12 15V4l5 8z',
+ arrecife:'M3 15h18l-2 4H5zM12 15V6l5 7zM3 21q3-2 6 0t6 0 6 0',
+ copa:'M8 3h8v6a4 4 0 0 1-8 0zM12 13v8M9 21h6',
+ uvas:'M12 5q0-2 3-2M9 8a2 2 0 1 0 .01 0M15 8a2 2 0 1 0 .01 0M12 11a2 2 0 1 0 .01 0M9 14a2 2 0 1 0 .01 0M15 14a2 2 0 1 0 .01 0M12 17a2 2 0 1 0 .01 0',
+ barril:'M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM4 9h16M4 15h16'
+};
+const COLS={
+ '1':{sh:'circle',pal:['#FFB020','#F7781E','#E0361E','#C2501E','#9A5A3A','#7A4A2E','#4A3A38'],ic:['timanfaya','jameos','verdes','mirador','fundacion','golfo','geria']},
+ '2':{sh:'oct',pal:['#1F4FB0','#F2C230','#3F8F4A','#C8312B','#D9582B','#4A9AB8','#7A5AA8'],ic:['jameos','mirador','cactus','fundacion','casa','campesino','castillo']},
+ '3':{sh:'diamond',pal:['#FFB020','#FF7A1E','#E8431E','#C21E12','#8E1608','#5A1A10','#3A2A28'],ic:['timanfaya','verdes','hervideros','cuervo','caldera','grietas','estratos']},
+ '4':{sh:'arch',pal:['#4A9AD8','#2F6FC4','#6FB8E0','#3E8F8A','#7AA8D8','#5B7FB8'],ic:['mirador','guinate','ermita','bosque','palmeras','salinas']},
+ '5':{sh:'hex',pal:['#2FB5C4','#F0D28A','#1C9BC0','#E8B96A','#4AC8B0','#D8A05A','#2A7FA8'],ic:['papagayo','caleton','clicos','famara','faro','garita','bermeja']},
+ '6':{sh:'shield',pal:['#E0A25A','#C8704A','#D8C09A','#9A6A4A','#B8845A'],ic:['teguise','palmeras','caleta','golfo','arrecife']},
+ '7':{sh:'circle',pal:['#7A3A6A','#4F7A3A','#B07A2A'],ic:['copa','uvas','barril']}
+};
+const hx=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const mix=(a,b,t)=>{const A=hx(a),B=hx(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');};
+const lum=h=>{const[r,g,b]=hx(h);return (.299*r+.587*g+.114*b)/255;};
+const poly=(n,R,rot)=>'M'+Array.from({length:n},(_,i)=>{const a=(rot+i*360/n)*Math.PI/180;return (100+R*Math.cos(a)).toFixed(1)+' '+(100+R*Math.sin(a)).toFixed(1);}).join('L')+'Z';
+const SHAPES={circle:'M6 100a94 94 0 1 0 188 0a94 94 0 1 0-188 0Z',oct:poly(8,98,22.5),hex:poly(6,98,0),diamond:'M100 4L196 100L100 196L4 100Z',arch:'M12 192V100a88 88 0 0 1 176 0v92z',shield:'M100 6L184 30V104C184 150 148 180 100 196C52 180 16 150 16 104V30Z'};
+class Component extends DCLogic {
+  constructor(p){super(p);this.u='ls'+(++UID);}
+  renderVals(){
+    const p=this.props,k=String(p.col||'1'),C=COLS[k]||COLS['1'],n=C.pal.length;
+    const S=Number(p.size)||150;
+    const lit=String(p.set==null?'':p.set).split(',').filter(x=>x!=='').map(Number);
+    const full=lit.length>=n;
+    const rad=Math.PI/180,st=360/n;
+    const ik=n>=6?1.3:n>=5?1.4:1.6;
+    const ws=C.pal.map((c,j)=>{
+      const a0=(-90+j*st)*rad,a1=(-90+(j+1)*st)*rad,am=(a0+a1)/2;
+      const x0=100+240*Math.cos(a0),y0=100+240*Math.sin(a0),x1=100+240*Math.cos(a1),y1=100+240*Math.sin(a1);
+      const on=lit.includes(j);const r=n>=7?56:n>=5?54:50;
+      return{gid:this.u+'w'+j,c0:mix(c,'#ffffff',.5),c1:c,c2:mix(c,'#000000',.48),
+        d:'M100 100L'+x0.toFixed(1)+' '+y0.toFixed(1)+'A240 240 0 0 1 '+x1.toFixed(1)+' '+y1.toFixed(1)+'Z',
+        fill:on?'url(#'+this.u+'w'+j+')':'#DDD7CA',hi:on?'rgba(255,255,255,.55)':'rgba(255,255,255,.35)',
+        ix:(100+r*Math.cos(am)-12*ik).toFixed(1),iy:(100+r*Math.sin(am)-12*ik).toFixed(1),k:ik,
+        ink:on?(lum(c)<.5?'#FFF3D6':'#1C1006'):'#A39A88',ic:IC[C.ic[j]]||''};
+    });
+    return{S,u:this.u,ws,shape:SHAPES[C.sh],anim:full?'lsFull 3.2s ease-in-out infinite':'none'};
+  }
+}
+</script>
+</body>
+</html>

@@ -4285,6 +4285,8 @@ app.post('/api/destination-places', (req, res) => {
       por_que_recomendamos: typeof place.por_que_recomendamos === 'string' && place.por_que_recomendamos.trim() ? place.por_que_recomendamos : null,
       // (LZ2b1) «Dónde aparcar» (destinos de coche, Lanzarote): el texto corto del aparcamiento de la parada. el campo de «sin comprobar» NUNCA sale al viajero. Null en Roma.
       aparcar: typeof place.aparcar === 'string' && place.aparcar.trim() ? place.aparcar.trim() : null,
+      // (LZ3b) «Abrir en Maps» de «Dónde aparcar»: busca el sitio por su nombre y su pueblo («Jameos del Agua, Haría»); sin esto (nombre ambiguo o que Maps no conoce), a nuestra coordenada.
+      maps_consulta: typeof place.maps_consulta === 'string' && place.maps_consulta.trim() ? place.maps_consulta.trim() : null,
       // Los «me gusta» de partida (Tanda 6y10): las redes de Eric, aproximado por debajo del real (campo `megusta_inicial` del sitio). Se suman a los de los viajeros: la cuenta es una sola por sitio.
       likes_initial: Number.isFinite(place.megusta_inicial) ? place.megusta_inicial : 0,
       // Ruta a mano (Tanda 6y3): su puesto en la lista a mano del destino (`pool_lista`), o null; el nivel va aparte (`level`). El orden de «Añadir parada» en una ruta a mano pone primero los más

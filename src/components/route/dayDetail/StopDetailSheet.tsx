@@ -13,7 +13,7 @@ import { fetchAnchorTips, type StopTip } from '../../../lib/anchorTipsApi'
 import { fetchPlaceDetail, fichaEnMemoria, toNearbyTransit, toStopDescription, toStopTips, type PlaceDetail } from '../../../lib/placeDetailApi'
 import { fetchNearbyTransit, type NearbyTransit } from '../../../lib/nearbyTransitApi'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
-import { aparcarDe, catalogoEnMemoria, fetchDestinationPlaces, porQueRecomendamosDe } from '../../../lib/destinationPlacesApi'
+import { aparcarDe, catalogoEnMemoria, fetchDestinationPlaces, mapsConsultaDe, porQueRecomendamosDe } from '../../../lib/destinationPlacesApi'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { HowToGetThereSheet } from '../today/HowToGetThereSheet'
 import { Spinner } from '../../ui/Spinner'
@@ -172,11 +172,12 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   }, [stop?.name, city])
   // (LZ2b1) «Dónde aparcar» (destinos de coche): el texto del aparcamiento de la parada, de los datos del destino. Con él, la ficha NO lleva «Cómo llegar» ni líneas de transporte.
   const [aparcarTexto, setAparcarTexto] = useState<string | null>(() => (stop ? aparcarDe(catalogoEnMemoria(city), stop.name) : null))
+  const [mapsConsulta, setMapsConsulta] = useState<string | null>(() => (stop ? mapsConsultaDe(catalogoEnMemoria(city), stop.name) : null))
   useEffect(() => {
     if (!stop?.name) return undefined
     let cancelado = false
     fetchDestinationPlaces(city).then((catalogo) => {
-      if (!cancelado) setAparcarTexto(aparcarDe(catalogo, stop.name))
+      if (!cancelado) { setAparcarTexto(aparcarDe(catalogo, stop.name)); setMapsConsulta(mapsConsultaDe(catalogo, stop.name)) }
     })
     return () => {
       cancelado = true
@@ -675,7 +676,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                     )}
   
                     {aparcarTexto ? (
-                      <FichaDondeAparcar texto={aparcarTexto} lat={coordenadasDelSitio?.lat ?? null} lng={coordenadasDelSitio?.lng ?? null} />
+                      <FichaDondeAparcar texto={aparcarTexto} lat={coordenadasDelSitio?.lat ?? null} lng={coordenadasDelSitio?.lng ?? null} consulta={mapsConsulta} />
                     ) : (
                       <FichaComoLlegar direccion={description?.address ?? null} transporte={nearbyTransit} web={description?.officialWebsite ?? null} onComoLlegar={description?.address ? () => setDirectionsOpen(true) : null} />
                     )}

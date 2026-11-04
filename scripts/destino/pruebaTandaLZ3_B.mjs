@@ -46,7 +46,8 @@ debe(Object.keys(tabla).filter((k) => !k.startsWith('_')).length === 7, 'la tabl
     for (const m of dis[1].matchAll(/(\d):\[([^\]]*)\]/g)) {
       const [iw, ih, cx, cy, n, a0] = m[2].split(',').map(Number)
       const mine = tablaTxt.match(new RegExp(`lz${m[1]}:\\s*\\{[^}]*?iw:\\s*(\\d+),\\s*ih:\\s*(\\d+),\\s*cx:\\s*(\\d+),\\s*cy:\\s*(\\d+),\\s*n:\\s*(\\d+),\\s*a0:\\s*(-?\\d+)`))
-      debe(mine && [iw, ih, cx, cy, n, a0].every((v, i) => Number(mine[i + 1]) === v), `la geometría de lz${m[1]} no es la de Design (${m[2]})`)
+      // (LZ3b) La col6 de Design dice 5 gajos iguales, pero su imagen trae 4 trozos desiguales: la app usa n 4 con `cortes` (se lo pedimos a Design). El resto, como Design.
+      debe(mine && [iw, ih, cx, cy, n, a0].every((v, i) => (m[1] === '6' && i === 4) || Number(mine[i + 1]) === v), `la geometría de lz${m[1]} no es la de Design (${m[2]})`)
     }
   }
   for (let i = 1; i <= 7; i++) debe(fs.existsSync(`public/logros/lanza/col${i}.webp`), `falta public/logros/lanza/col${i}.webp`)
@@ -83,7 +84,7 @@ try {
   // Las 7 colecciones: 0, 3 gajos y completa.
   const cols = await a.evaluar("Array.from(document.querySelectorAll('[data-lz3=colecciones] [data-gajos]')).map((e) => [Number(e.dataset.gajos), Number(e.dataset.ganados), e.querySelectorAll('img').length])")
   debe(cols.length === 21, `salen ${cols.length} insignias de Lanzarote, no 21`)
-  const N = [7, 7, 7, 6, 7, 5, 3]
+  const N = [7, 7, 7, 6, 7, 4, 3] // (LZ3b) La colección 6 («Pueblos con alma») tiene 4 gajos dibujados y 5 sitios
   for (let c = 0; c < 7; c++) {
     const [cero, tres, todas] = cols.slice(c * 3, c * 3 + 3)
     debe(cero && cero[0] === N[c] && cero[1] === 0, `colección ${c + 1}: sin ganar tiene que tener 0 gajos en color`)

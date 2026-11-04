@@ -37,6 +37,8 @@ export interface DestinationPlace {
   por_que_recomendamos?: string | null
   /** (LZ2b1) «Dónde aparcar» (solo destinos de coche): el texto corto del aparcamiento de la parada; null o ausente en Roma. */
   aparcar?: string | null
+  /** (LZ3b) La búsqueda de «Abrir en Maps» («Jameos del Agua, Haría»); null = a nuestra coordenada. */
+  maps_consulta?: string | null
   /** Su puesto en la lista a mano del destino (`pool_lista`; 0 = el primero), SIN tener en cuenta su nivel (el nivel va aparte en `level`); null si no está. Lo usa el orden de la ruta a mano (manualPlan.ts). */
   essential_rank?: number | null
   schedule: string | null
@@ -123,6 +125,13 @@ export function catalogoEnMemoria(destination: string): DestinationCatalog | nul
 export function porQueRecomendamosDe(catalogo: DestinationCatalog | null, nombre: string | null | undefined): string | null {
   if (!catalogo || !nombre) return null
   const texto = catalogo.places.find((sitio) => sitio.kind === 'place' && sitio.name === nombre)?.por_que_recomendamos
+  return typeof texto === 'string' && texto.trim() ? texto : null
+}
+
+/** (LZ3b) La búsqueda de Maps de un sitio por su nombre y su pueblo (null si hay que abrir la coordenada). */
+export function mapsConsultaDe(catalogo: DestinationCatalog | null, nombre: string | null | undefined): string | null {
+  if (!catalogo || !nombre) return null
+  const texto = catalogo.places.find((sitio) => sitio.kind === 'place' && sitio.name === nombre)?.maps_consulta
   return typeof texto === 'string' && texto.trim() ? texto : null
 }
 

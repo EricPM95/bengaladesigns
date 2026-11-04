@@ -43,7 +43,6 @@ export function esEmblemaDeLanzarote(id: string): boolean {
 
 const OCT = 'polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)'
 const SHIELD = 'polygon(0 0,100% 0,100% 60%,50% 100%,0 60%)'
-const HEXF = 'polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)'
 const HEX = 'polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)'
 const STAR = 'polygon(' + Array.from({ length: 16 }, (_, i) => { const a = -Math.PI / 2 + (i * Math.PI) / 8, r = i % 2 ? 37 : 50; return (50 + r * Math.cos(a)).toFixed(1) + '% ' + (50 + r * Math.sin(a)).toFixed(1) + '%' }).join(',') + ')'
 const GOLD = 'linear-gradient(135deg,#F6E7BD,#B9944F 45%,#F0DCA6 70%,#A88541)'
@@ -59,7 +58,7 @@ const FORMA: Record<string, [number, number, string, string]> = {
   '6': [100, 120, '50% 50% 50% 50% / 58% 58% 42% 42%', 'none'],
   '7': [112, 112, '0', OCT],
   '8': [122, 122, '0', STAR],
-  '9': [120, 106, '0', HEXF],
+  '9': [132, 100, '50%', 'none'], // (LZ3b) Design cambió el de Papagayo: de hexágono 120×106 a elipse 132×100
   '10': [90, 90, '24px', 'none'],
   '11': [90, 90, '24px', 'none'],
 }

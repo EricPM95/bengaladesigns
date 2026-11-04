@@ -273,7 +273,8 @@
    "por_que_recomendamos": "Es el corazón volcánico de Lanzarote: un parque nacional de cráteres y lava donde la tierra todavía quema bajo tus pies.",
    "description": "El Parque Nacional de Timanfaya, nacido de las erupciones de 1730 a 1736: un paisaje de volcanes rojos, negros y ocres que no se parece a nada.",
    "aparcar": "Aparcamiento gratis en el Islote de Hilario, solo con entrada. Está en cuesta: abre la puerta con cuidado.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Parque Nacional de Timanfaya, Yaiza"
   },
   {
    "id": "jameos_del_agua",
@@ -353,7 +354,8 @@
    "por_que_recomendamos": "Es la obra más famosa de César Manrique: un tubo de lava convertido en jardín, lago, piscina y auditorio.",
    "description": "Un tubo volcánico abierto al cielo donde Manrique creó un mundo propio: un lago de agua de mar con cangrejos ciegos, una piscina blanca entre palmeras y un auditorio bajo la roca.",
    "aparcar": "Aparcamiento junto a la entrada.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Jameos del Agua, Haría"
   },
   {
    "id": "cueva_de_los_verdes",
@@ -430,7 +432,8 @@
    "por_que_recomendamos": "Es un viaje de un kilómetro por dentro de un tubo de lava, con una sorpresa al final que no te vamos a contar.",
    "description": "Parte del mismo tubo volcánico que los Jameos, recorrida con guía por galerías iluminadas en varios niveles.",
    "aparcar": "Aparcamiento grande junto a la entrada.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Cueva de los Verdes, Haría"
   },
   {
    "id": "mirador_del_rio",
@@ -497,7 +500,8 @@
    "por_que_recomendamos": "Es la mejor vista de Lanzarote: desde lo alto del Risco de Famara, La Graciosa y las islas de enfrente a tus pies.",
    "description": "Un mirador de César Manrique escondido dentro del acantilado, a 475 metros sobre el mar, frente al estrecho del Río y La Graciosa.",
    "aparcar": "Aparcamiento junto a la entrada; se llena en las horas fuertes. La subida tiene curvas y pendiente.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Mirador del Río, Haría"
   },
   {
    "id": "fundacion_cesar_manrique",
@@ -573,7 +577,8 @@
    "por_que_recomendamos": "Es la casa que César Manrique se construyó dentro de la lava: la mejor forma de entender al artista que cambió Lanzarote.",
    "description": "La antigua casa de Manrique en Tahíche, blanca por fuera y hecha por dentro con cinco burbujas de lava unidas por pasillos, hoy con su obra y su colección de arte.",
    "aparcar": "Aparcamiento gratis en el recinto.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Fundación César Manrique, Tahíche"
   },
   {
    "id": "el_golfo_y_el_charco_de_los_clicos",
@@ -624,7 +629,8 @@
    "por_que_recomendamos": "Es la postal más increíble de la isla: una laguna verde dentro de un cráter, entre la arena negra y el mar.",
    "description": "Medio volcán abierto al mar, con el Charco de los Clicos, una laguna de color verde intenso, y al lado el pueblo de pescadores de El Golfo.",
    "aparcar": "Aparcamiento arriba, al empezar el sendero del mirador (5 min a pie), y otro a la entrada del pueblo.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Charco de los Clicos, El Golfo, Yaiza"
   },
   {
    "id": "la_geria_y_sus_bodegas",
@@ -744,7 +750,8 @@
    "por_que_recomendamos": "Es el paisaje más original de Lanzarote: viñas plantadas una a una en hoyos de ceniza negra, y bodegas para probar su malvasía.",
    "description": "La comarca del vino de Lanzarote, nacida tras las erupciones del siglo XVIII: cada vid en su hoyo, protegida del viento por un muro de piedra en media luna.",
    "aparcar": "Aparcamiento pequeño de la bodega Stratvs, junto a la LZ-30. No pares en el arcén.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_por_coordenada": true
   },
   {
    "id": "playas_de_papagayo",
@@ -828,7 +835,8 @@
    "por_que_recomendamos": "Son las calas más bonitas de Lanzarote: arena dorada y agua turquesa entre acantilados, con Fuerteventura enfrente.",
    "description": "Un rosario de calas resguardadas en el Monumento Natural de Los Ajaches, al sur de Playa Blanca, para pasar el día y bañarse.",
    "aparcar": "Aparcamientos de tierra encima de las calas, después de la barrera (3 € por coche). Se llega por una pista de tierra: despacio.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Playa de Papagayo, Yaiza"
   },
   {
    "id": "caleton_blanco",
@@ -875,7 +883,8 @@
    "por_que_recomendamos": "Es la playa más fotogénica del norte: arena blanca entre lava negra, con charcos de agua turquesa.",
    "description": "Una playa de arena blanca junto a Órzola, rodeada de lava negra, con charcos resguardados para bañarse con marea baja.",
    "aparcar": "Sin aparcamiento marcado: pista de tierra desde la LZ-1 hasta la arena; se deja el coche al final.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_por_coordenada": true
   },
   {
    "id": "jardin_de_cactus",
@@ -935,7 +944,8 @@
    "por_que_recomendamos": "Es una de las últimas grandes obras de Manrique en la isla: un anfiteatro de piedra lleno de cactus de todo el mundo.",
    "description": "Una antigua cantera de picón en Guatiza convertida en jardín, con miles de cactus de cientos de especies de los cinco continentes.",
    "aparcar": "Aparcamiento junto a la entrada.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Jardín de Cactus, Guatiza"
   },
   {
    "id": "los_hervideros",
@@ -981,7 +991,8 @@
    "por_que_recomendamos": "Es el sitio donde mejor se ve la fuerza del mar contra la lava: las olas entran en las cuevas y el agua parece hervir.",
    "description": "Acantilados de lava llenos de cuevas y túneles en la costa oeste, con caminos y miradores sobre el mar.",
    "aparcar": "Aparcamiento junto a los miradores, al lado de la carretera LZ-703.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Los Hervideros, Yaiza"
   },
   {
    "id": "salinas_de_janubio",
@@ -1026,7 +1037,8 @@
    "por_que_recomendamos": "Es una de las vistas más bonitas del sur: un tablero de salinas de colores junto a una laguna y una playa negra.",
    "description": "Salinas tradicionales junto a una laguna y una playa de arena negra, vistas desde un mirador sobre la carretera.",
    "aparcar": "Aparcamiento del mirador, junto a la carretera.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Salinas de Janubio, Yaiza"
   },
   {
    "id": "teguise",
@@ -1082,7 +1094,8 @@
    "por_que_recomendamos": "Es la antigua capital de Lanzarote: el pueblo más bonito de la isla, con casas blancas, iglesias y palacios.",
    "description": "La villa que fue capital de la isla hasta el siglo XIX, con un casco de calles empedradas muy bien conservado y su famoso mercadillo de los domingos.",
    "aparcar": "Aparcamientos gratis a la entrada del pueblo. Entre semana se aparca también cerca del centro; el domingo se llenan pronto.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Villa de Teguise, Lanzarote"
   },
   {
    "id": "haria_y_la_casa_museo_cesar_manrique",
@@ -1159,7 +1172,8 @@
    "search_aliases": [
     "haria y el valle de las mil palmeras",
     "casa-museo cesar manrique (haria)"
-   ]
+   ],
+   "maps_consulta": "Casa-Museo César Manrique, Haría"
   },
   {
    "id": "casa_museo_del_campesino",
@@ -1217,7 +1231,8 @@
    "por_que_recomendamos": "Es el homenaje de Manrique a los campesinos de Lanzarote, en el centro de la isla, y la entrada es gratis.",
    "description": "Una casa campesina tradicional junto a la escultura «Fecundidad», de 15 metros, que Manrique levantó con viejos tanques de agua y piezas de barcos.",
    "aparcar": "Aparcamiento junto a la casa.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Casa Museo del Campesino, Mozaga"
   },
   {
    "id": "caleta_de_famara_y_playa_de_famara",
@@ -1266,7 +1281,8 @@
    "aparcar_verificar": false,
    "search_aliases": [
     "el atardecer en famara"
-   ]
+   ],
+   "maps_consulta": "Caleta de Famara, Teguise"
   },
   {
    "id": "arrecife_charco_de_san_gines_y_el_paseo",
@@ -1310,7 +1326,8 @@
    "por_que_recomendamos": "Es la capital de la isla: un paseo junto al mar entre barcas, castillos y terrazas.",
    "description": "El casco de Arrecife junto al Charco de San Ginés, una laguna de barcas de pescadores, y su paseo marítimo de 4 km.",
    "aparcar": "Es ciudad: hay aparcamientos y garajes a 350-500 m del Charco; busca uno cerca del paseo.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Charco de San Ginés, Arrecife"
   },
   {
    "id": "castillo_de_san_jose",
@@ -1368,7 +1385,8 @@
    "por_que_recomendamos": "Es una fortaleza del siglo XVIII convertida por Manrique en museo de arte contemporáneo, con vistas al puerto.",
    "description": "El Castillo de San José, sobre el puerto de Arrecife, con el Museo Internacional de Arte Contemporáneo (MIAC) dentro y un restaurante acristalado.",
    "aparcar": "Aparcamiento junto al castillo.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Castillo de San José, Arrecife"
   },
   {
    "id": "lagomar",
@@ -1418,7 +1436,8 @@
    "por_que_recomendamos": "Es una casa escondida en una antigua cantera, entre cuevas, túneles y estanques, en el estilo de Manrique.",
    "description": "Una casa excavada en la roca de una vieja cantera de Nazaret, con escaleras, túneles y piscinas, que según se cuenta perteneció un tiempo al actor Omar Sharif.",
    "aparcar": "Aparcamiento propio del museo, junto a la entrada.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "LagOmar, Nazaret, Teguise"
   },
   {
    "id": "ermita_de_las_nieves",
@@ -1462,7 +1481,8 @@
    "por_que_recomendamos": "Es uno de los puntos más altos de la isla, con una ermita blanca y vistas a Famara y La Graciosa.",
    "description": "Una ermita blanca a unos 650 metros, en lo alto del Risco de Famara, con vistas a la playa de Famara y a La Graciosa.",
    "aparcar": "Sin aparcamiento marcado: se deja el coche junto a la ermita, al borde de la pista de tierra.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Ermita de las Nieves, Teguise"
   },
   {
    "id": "mirador_de_guinate",
@@ -1502,7 +1522,8 @@
    "por_que_recomendamos": "Es la vista del Mirador del Río gratis y sin gente: La Graciosa y el archipiélago Chinijo a tus pies.",
    "description": "Un mirador sobre el acantilado del norte, muy cerca del Mirador del Río, con vistas a La Graciosa, Montaña Clara y Alegranza.",
    "aparcar": "Al final de la calle La Majadita, apartadero pequeño junto al mirador.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Mirador de Guinate, Haría"
   },
   {
    "id": "ciudad_estratificada_rofera_de_teseguite",
@@ -1551,7 +1572,8 @@
    "por_que_recomendamos": "Son formaciones de roca con capas, esculpidas por el viento: uno de los rincones más fotogénicos y menos conocidos de la isla.",
    "description": "Paredes y torres de toba volcánica junto a Teguise, erosionadas en capas que parecen una ciudad en ruinas.",
    "aparcar": "Sin aparcamiento marcado: explanada de tierra junto a la LZ-404, al pie de la antigua rofera.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_por_coordenada": true
   },
   {
    "id": "playa_de_montana_bermeja",
@@ -1594,7 +1616,8 @@
    "por_que_recomendamos": "Es una playa de arena negra bajo una montaña roja, de las menos visitadas de la costa oeste.",
    "description": "Una playa salvaje de arena negra a los pies de la Montaña Bermeja, entre las Salinas de Janubio y Los Hervideros.",
    "aparcar": "Aparcamiento gratuito pequeño junto a la carretera LZ-703, al lado de la playa.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_por_coordenada": true
   },
   {
    "id": "las_grietas_montana_blanca",
@@ -1651,7 +1674,8 @@
    "por_que_recomendamos": "Son cañones de lava tan estrechos que caminas entre paredes altísimas: uno de los rincones más fotogénicos de Lanzarote.",
    "description": "Grietas abiertas en la ladera de Montaña Blanca, en el centro de la isla, sin señales ni camino marcado.",
    "aparcar": "Sin aparcamiento oficial: se deja el coche en la franja de tierra junto a la LZ-35. Cabe poco: no pares en la calzada.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_por_coordenada": true
   },
   {
    "id": "mirador_del_bosquecillo",
@@ -1700,7 +1724,8 @@
    "por_que_recomendamos": "Es un mirador sin gente sobre los acantilados de Famara, con la playa y La Graciosa abajo.",
    "description": "Un mirador en los altos de Haría, al borde del Risco de Famara, al que se llega por una pista de tierra.",
    "aparcar": "Al final de la pista de tierra, junto al mirador.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_por_coordenada": true
   },
   {
    "id": "mirador_de_haria",
@@ -1744,7 +1769,8 @@
    "por_que_recomendamos": "Es la vista del valle de Haría, con su palmeral, desde la carretera que baja al pueblo.",
    "description": "Un mirador en la carretera del norte, sobre el valle de Haría.",
    "aparcar": "Aparcamiento pequeño en la curva, junto al mirador. Prohibido dejar el coche en el arcén.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_por_coordenada": true
   },
   {
    "id": "mirador_de_los_helechos",
@@ -1781,7 +1807,8 @@
    "por_que_recomendamos": "Es la mejor vista del Valle de las Mil Palmeras, a la entrada de Haría.",
    "description": "Un mirador en la carretera entre Teguise y Haría, sobre el palmeral del valle.",
    "aparcar": "Aparcamiento junto al mirador, en la carretera de Teguise a Haría.",
-   "aparcar_verificar": true
+   "aparcar_verificar": true,
+   "maps_por_coordenada": true
   },
   {
    "id": "castillo_de_santa_barbara",
@@ -1827,7 +1854,8 @@
    "por_que_recomendamos": "Es un castillo en el borde de un volcán, con vistas sobre Teguise y media isla.",
    "description": "El castillo del volcán Guanapay, sobre Teguise, que servía de refugio en los asaltos piratas. Hoy se visita por fuera, por las vistas.",
    "aparcar": "Sin aparcamiento marcado: la carretera sube hasta el pie del castillo y se deja el coche en el ensanche del final, con poco sitio.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Castillo de Santa Bárbara, Teguise"
   },
   {
    "id": "punta_mujeres_y_arrieta",
@@ -1877,7 +1905,8 @@
    "por_que_recomendamos": "Son dos pueblos del noreste con piscinas naturales en la lava y una playa tranquila para bañarse.",
    "description": "Punta Mujeres, con piscinas naturales entre la lava, y Arrieta, pueblo de pescadores con la playa de La Garita.",
    "aparcar": "Aparcamiento gratis en cada pueblo, cerca del mar.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Arrieta, Haría"
   },
   {
    "id": "playa_de_la_garita",
@@ -1922,7 +1951,8 @@
    "por_que_recomendamos": "Es una playa familiar de agua tranquila en el norte, perfecta para un baño en el día de Manrique.",
    "description": "La playa de Arrieta, de arena y agua casi siempre tranquila.",
    "aparcar": "Aparcamiento junto a la playa.",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Playa de La Garita, Arrieta, Haría"
   },
   {
    "id": "playa_blanca_y_el_faro_de_pechiguera",
@@ -1978,7 +2008,8 @@
    "search_aliases": [
     "el paseo maritimo de playa blanca",
     "faro de pechiguera"
-   ]
+   ],
+   "maps_por_coordenada": true
   },
   {
    "id": "puerto_del_carmen_puerto_viejo",
@@ -2016,7 +2047,8 @@
    "por_que_recomendamos": "Es el rincón con más encanto de Puerto del Carmen: el viejo puerto de pescadores, con sus restaurantes junto al muelle.",
    "description": "El Puerto Viejo de Puerto del Carmen, con su muelle, sus barcas y sus terrazas, y cerca la Playa Grande.",
    "aparcar": "Aparcamiento junto al Puerto Viejo (hay otro a unos 200 m: Aparcamientos El Pueblo).",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Puerto Viejo, Puerto del Carmen, Tías"
   },
   {
    "id": "volcan_del_cuervo",
@@ -2062,7 +2094,8 @@
    "por_que_recomendamos": "Es la forma más fácil de meterse dentro de un cráter: un sendero corto y llano entre lava, apto para familias.",
    "description": "Un volcán de las erupciones de Timanfaya, junto al parque nacional, con un sendero que rodea el cráter y entra en él.",
    "aparcar": "Aparcamiento gratuito mediano junto a la LZ-56, al pie del sendero. Desde noviembre de 2026 está previsto aparcar en Mancha Blanca y subir en la guagua del parque (línea P3).",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Volcán del Cuervo, Tinajo"
   },
   {
    "id": "caldera_blanca",
@@ -2106,7 +2139,8 @@
    "por_que_recomendamos": "Es la gran caminata volcánica de Lanzarote: cruzar un mar de lava y asomarse a un cráter enorme.",
    "description": "Una ruta de unos 10 km y 3 h desde Mancha Blanca, entre lava, hasta el borde de uno de los cráteres más grandes de la isla.",
    "aparcar": "Junto a la iglesia de Los Dolores, en Mancha Blanca (sale el sendero).",
-   "aparcar_verificar": false
+   "aparcar_verificar": false,
+   "maps_consulta": "Caldera Blanca, Tinajo"
   }
  ],
  "restaurants": [],

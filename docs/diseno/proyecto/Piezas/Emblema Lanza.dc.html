@@ -161,7 +161,7 @@ class Component extends DCLogic {
     const p=this.props,K=String(p.kind||'2'),k=Number(p.scale)||1,found=p.found!==false&&p.found!=='false';
     const OCT='polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)',SHIELD='polygon(0 0,100% 0,100% 60%,50% 100%,0 60%)',HEXF='polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)';
     const STAR='polygon('+Array.from({length:16},(_,i)=>{const a=-Math.PI/2+i*Math.PI/8,r=i%2?37:50;return (50+r*Math.cos(a)).toFixed(1)+'% '+(50+r*Math.sin(a)).toFixed(1)+'%';}).join(',')+')';
-    const S={'2':['104px','120px','50px 50px 14px 14px','none'],'3':['104px','120px','0',SHIELD],'4':['128px','96px','16px','none'],'5':['112px','112px','50%','none'],'6':['100px','120px','50% 50% 50% 50% / 58% 58% 42% 42%','none'],'7':['112px','112px','0',OCT],'8':['122px','122px','0',STAR],'9':['120px','106px','0',HEXF],'10':['90px','90px','24px','none'],'11':['90px','90px','24px','none']}[K]||['112px','112px','50%','none'];
+    const S={'2':['104px','120px','50px 50px 14px 14px','none'],'3':['104px','120px','0',SHIELD],'4':['128px','96px','16px','none'],'5':['112px','112px','50%','none'],'6':['100px','120px','50% 50% 50% 50% / 58% 58% 42% 42%','none'],'7':['112px','112px','0',OCT],'8':['122px','122px','0',STAR],'9':['132px','100px','50%','none'],'10':['90px','90px','24px','none'],'11':['90px','90px','24px','none']}[K]||['112px','112px','50%','none'];
     const GOLD='linear-gradient(135deg,#F6E7BD,#B9944F 45%,#F0DCA6 70%,#A88541)';
     const rot=K==='10'||K==='11';
     const rim=!found?'linear-gradient(135deg,#6A6F84,#3E4256)':K==='10'?'#F3D2A6':K==='11'?'#F4A07A':GOLD;

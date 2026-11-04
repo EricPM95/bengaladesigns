@@ -1,0 +1,76 @@
+[
+ {
+  "apartado": "0 · Antes de empezar",
+  "punto": "Prompt guardado (docs/dias/PROMPT_TANDA_LZ3b.md, llegó entero hasta «reinicia el api-server»); va después de la tanda LL, ya subida; Lanzarote sigue oculto; Roma sin cambios (muestra de 60 idéntica)",
+  "estado": "hecho",
+  "nota": "Un solo agente (yo).",
+  "donde": "No es de móvil."
+ },
+ {
+  "apartado": "1 · Design nuevo",
+  "punto": "`docs/diseno/proyecto/` al día con el zip «DESIGN LANZAROTE» (sin `uploads/` ni `Archivo/`)",
+  "estado": "hecho",
+  "nota": "Cambian: la imagen de col1 (y su original), la pieza «Insignia Lanza Sitios» (nueva) y el emblema de Papagayo (de hexágono 120×106 a elipse 132×100). Lo demás, igual. La página «App HOY» no ha cambiado todavía: es de la tanda HOY1.",
+  "donde": "No es de móvil."
+ },
+ {
+  "apartado": "1 · Design nuevo",
+  "punto": "«Los imprescindibles de Lanzarote» (col1): cada gajo con su sitio por el dibujo",
+  "estado": "hecho",
+  "nota": "Desde las 12 en sentido horario: volcán = Timanfaya, cangrejo = Jameos del Agua, entrada de cueva = Cueva de los Verdes, prismáticos = Mirador del Río, burbujas = Fundación César Manrique, laguna verde = El Golfo, uvas = La Geria. Tabla al día en `docs/dias/_lz3_tabla_gajos.json`.",
+  "donde": "Hoja de logros › Los imprescindibles de Lanzarote.",
+  "captura": "lz3b_imprescindibles_amedias_1.jpg"
+ },
+ {
+  "apartado": "1 · Design nuevo",
+  "punto": "Las otras 6 colecciones, como están (campanario = Teguise, palmera = Haría, cactus = Jardín de Cactus)",
+  "estado": "hecho",
+  "nota": "No he tocado sus gajos.",
+  "donde": "Hoja de logros › colecciones."
+ },
+ {
+  "apartado": "1 · Design nuevo",
+  "punto": "Comprobar que cada imagen tiene tantos gajos como sitios y que se distinguen a simple vista",
+  "estado": "medias",
+  "nota": "Cuadran 1 (7/7), 2 (7/7), 3 (7/7), 4 (6/6) y 5 (7/7). NO cuadran: «Pueblos con alma» (col6) trae 4 trozos y tiene 5 sitios (es lo que veías: 4 trozos), y «Entre viñas de ceniza» (col7) trae 3 trozos y tiene 1 sitio. Para pedírselo a Design: la imagen de col6 con sus 4 trozos está en `docs/diseno/proyecto/assets/lanza/col6.png`. Mientras tanto, col6 se pinta con sus 4 trozos (campanario = Teguise, puerta verde = Arrecife, piedra negra = El Golfo, casas y palmera = Haría) y Caleta de Famara se queda sin trozo; la colección solo sale completa con los 5 sitios.",
+  "donde": "Hoja de logros › Pueblos con alma.",
+  "captura": "lz3b_col6_cuatro_trozos_1.jpg"
+ },
+ {
+  "apartado": "1 · Design nuevo",
+  "punto": "Si Design ha cambiado también algún emblema o alguna colección más",
+  "estado": "hecho",
+  "nota": "Solo el emblema de Papagayo (ahora una elipse), puesto igual que Design.",
+  "donde": "Hoja de logros › emblemas."
+ },
+ {
+  "apartado": "2 · Abrir en Maps",
+  "punto": "[Abrir en Maps] de «Dónde aparcar» busca el sitio por su nombre y su pueblo; solo a nuestra coordenada si el nombre es ambiguo o Maps no lo conoce",
+  "estado": "hecho",
+  "nota": "25 sitios por nombre (p. ej. «Jameos del Agua, Haría»). Van por COORDENADA (9): La Geria y sus bodegas, Caletón Blanco, Ciudad Estratificada (Rofera de Teseguite), Playa de Montaña Bermeja, Las Grietas, Mirador del Bosquecillo, Mirador de Haría, Mirador de los Helechos y Playa Blanca / Faro de Pechiguera. El texto de «Dónde aparcar» se queda; las coordenadas siguen sirviendo para los tiempos. No lo he abierto en un móvil real: mira que Maps lleva al sitio correcto, sobre todo Papagayo, Teguise y Timanfaya.",
+  "donde": "Ficha de un sitio › Dónde aparcar › Abrir en Maps."
+ },
+ {
+  "apartado": "3 · Logros",
+  "punto": "Al tocar un emblema de Lanzarote, que salga su nombre y su línea, como en Roma",
+  "estado": "hecho",
+  "nota": "Sale el emblema en grande con su nombre y su línea (p. ej. «El calor de la tierra · A trece metros bajo tus pies, la tierra pasa de 600 grados.»). No tiene escena propia como los de Roma.",
+  "donde": "Hoja de logros › secretos › tocar un emblema.",
+  "captura": "lz3b_emblema_tocado_1.jpg"
+ },
+ {
+  "apartado": "4 · Decisiones de Eric",
+  "punto": "Madrugador en Lanzarote vale en cualquier sitio; los Helechos y Haría se quedan como están",
+  "estado": "hecho",
+  "nota": "Sin cambios de código: ya era así. Los dos miradores siguen sin comprobar; los miras en tu viaje.",
+  "donde": "En tu viaje."
+ },
+ {
+  "apartado": "5 · La prueba",
+  "punto": "pruebaTandaLZ3b y las de Lanzarote en 0; Roma idéntica; Lanzarote oculto",
+  "estado": "hecho",
+  "nota": "Ver el informe. Capturas de la colección de imprescindibles a medias y completa y de un emblema tocado.",
+  "donde": "No es de móvil.",
+  "captura": "lz3b_imprescindibles_completa_1.jpg"
+ }
+]
