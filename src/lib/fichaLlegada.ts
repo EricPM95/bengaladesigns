@@ -217,7 +217,8 @@ export function construirFicha(entrada: EntradaFicha): FichaModelo | null {
     if (resultado.mejor.tipo === 'opcion') todas.push(resultado.mejor.tramos)
     for (const otra of resultado.otras) todas.push(otra.tramos)
     todas.forEach((tramos) => otras.push(opcionDe(tramos)))
-    const desdeAqui = nombreZona || 'Termini'
+    // (LZ2b1) «Termini» solo es de Roma: en otro destino, sin zona, es «tu alojamiento».
+    const desdeAqui = nombreZona || (/^roma$/i.test(String(info.ciudad ?? '')) ? 'Termini' : 'tu alojamiento')
     if (otras.length > 0) otrasTitulo = llegada ? `Cómo llegar a ${desdeAqui}` : `Cómo ir desde ${desdeAqui}`
   } else if (resultado.mejor.tipo === 'traslado_privado') {
     mejor = { tipo: 'traslado_privado', texto: textoTraslado ?? '' }

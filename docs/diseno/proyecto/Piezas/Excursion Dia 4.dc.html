@@ -71,8 +71,8 @@ a:hover{color:#1C2230}
           <div style="display:flex;flex-direction:column;gap:12px">
             <div style="display:flex;align-items:center;gap:12px;padding:2px 4px">
               <span style="position:relative;width:46px;height:46px;flex:none">
-                <svg viewBox="0 0 36 36" width="46" height="46" style="transform:rotate(-90deg)"><circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(28,34,48,.1)" stroke-width="3"></circle><circle cx="18" cy="18" r="15.9" fill="none" stroke="oklch(0.62 0.15 45)" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="87 100" style="animation:ring 1.4s cubic-bezier(.2,.8,.2,1) both"></circle></svg>
-                <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 11px 'Geist Mono',monospace;color:oklch(0.5 0.15 45)">87%</span>
+                <svg viewBox="0 0 36 36" width="46" height="46" style="transform:rotate(-90deg)"><circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(28,34,48,.1)" stroke-width="3"></circle><circle cx="18" cy="18" r="15.9" fill="none" stroke="#B58A2E" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="87 100" style="animation:ring 1.4s cubic-bezier(.2,.8,.2,1) both"></circle></svg>
+                <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 11px 'Geist Mono',monospace;color:#6E5018">87%</span>
               </span>
               <span style="font:400 13px/1.4 'Geist';color:rgba(28,34,48,.75);text-wrap:pretty">El 87% de los viajeros que visitan Roma 5 días o más dedican uno de ellos a visitar Pompeya</span>
             </div>
@@ -96,21 +96,15 @@ a:hover{color:#1C2230}
 
               <div style="padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px;position:relative">
                 <div style="display:flex;flex-direction:column;gap:6px">
-                  <span style="font:400 28px/1.02 'Instrument Serif',serif;letter-spacing:-.01em">Excursión a <em style="color:oklch(0.52 0.15 45)">Pompeya</em> y Sorrento</span>
-                  <span style="display:flex;flex-wrap:wrap;gap:6px">
-                    <sc-for list="{{ facts }}" as="x" hint-placeholder-count="4">
-                      <span style="height:26px;padding:0 9px;border-radius:999px;background:#F5EFE4;display:inline-flex;align-items:center;gap:5px;font:500 11.5px 'Geist';color:rgba(28,34,48,.8)">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ x.i }}"></path></svg>{{ x.t }}
-                      </span>
-                    </sc-for>
-                  </span>
+                  <span style="font:400 28px/1.02 'Instrument Serif',serif;letter-spacing:-.01em">Excursión a <em style="color:#8E6820">Pompeya</em> y Sorrento</span>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;row-gap:10px;column-gap:8px;padding:12px 0;border-top:1px dotted rgba(28,34,48,.28);border-bottom:1px dotted rgba(28,34,48,.28)"><sc-for list="{{ facts }}" as="x" hint-placeholder-count="4"><span style="display:flex;align-items:center;gap:9px;font:600 13.5px 'Geist';color:#1C2230"><span style="width:30px;height:30px;flex:none;border-radius:50%;background:#F3E3B2;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ x.i }}"></path></svg></span>{{ x.t }}</span></sc-for></div>
                 </div>
 
-                <div style="border-radius:16px;background:linear-gradient(180deg,#FBF7EF,#F5EFE4);padding:14px 12px 10px">
+                <div style="border-radius:18px;background:#FBF3E2;border:1px solid rgba(181,138,46,.3);padding:14px 12px 10px">
                   <div style="position:relative;height:44px">
                     <svg viewBox="0 0 100 44" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
                       <path d="M6 30 C 22 4, 34 4, 46 22 S 68 40, 70 22 S 86 6, 94 30" fill="none" stroke="rgba(28,34,48,.18)" stroke-width="1.4" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"></path>
-                      <path d="M6 30 C 22 4, 34 4, 46 22 S 68 40, 70 22 S 86 6, 94 30" fill="none" stroke="oklch(0.62 0.15 45)" stroke-width="2.2" stroke-linecap="round" pathLength="100" stroke-dasharray="100" vector-effect="non-scaling-stroke" style="animation:drawL 2.2s cubic-bezier(.4,0,.2,1) .3s both"></path>
+                      <path d="M6 30 C 22 4, 34 4, 46 22 S 68 40, 70 22 S 86 6, 94 30" fill="none" stroke="#B58A2E" stroke-width="2.2" stroke-linecap="round" pathLength="100" stroke-dasharray="100" vector-effect="non-scaling-stroke" style="animation:drawL 2.2s cubic-bezier(.4,0,.2,1) .3s both"></path>
                     </svg>
                     <sc-for list="{{ stops }}" as="p" hint-placeholder-count="4">
                       <span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:{{ p.s }};height:{{ p.s }};margin:{{ p.m }};border-radius:50%;background:{{ p.bg }};border:2.5px solid #fff;box-shadow:0 3px 8px -2px rgba(28,34,48,.35)"></span>
@@ -119,7 +113,7 @@ a:hover{color:#1C2230}
                   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px">
                     <sc-for list="{{ stops }}" as="p" hint-placeholder-count="4">
                       <span style="display:flex;flex-direction:column;align-items:{{ p.al }};gap:1px;text-align:{{ p.ta }}">
-                        <span style="font:600 10.5px 'Geist Mono',monospace;color:oklch(0.5 0.15 45)">{{ p.h }}</span>
+                        <span style="font:600 10.5px 'Geist Mono',monospace;color:#6E5018">{{ p.h }}</span>
                         <span style="font:400 15px/1.05 'Instrument Serif',serif">{{ p.n }}</span>
                       </span>
                     </sc-for>
@@ -133,7 +127,7 @@ a:hover{color:#1C2230}
                     <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ slotsTitle }}</span>
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
                       <sc-for list="{{ slots }}" as="o" hint-placeholder-count="3">
-                        <button onClick="{{ o.pick }}" style="height:62px;border-radius:14px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:#1C2230;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:background .25s,border-color .25s">
+                        <button onClick="{{ o.pick }}" style="height:62px;border-radius:16px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:#1C2230;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:background .25s,border-color .25s">
                           <span style="font:400 20px/1 'Instrument Serif',serif">{{ o.t }}</span>
                           <span style="font:500 10px 'Geist';color:{{ o.lc }}">{{ o.l }}</span>
                         </button>
@@ -143,24 +137,21 @@ a:hover{color:#1C2230}
                 </sc-if>
 
                 <sc-if value="{{ notBooked }}" hint-placeholder-val="{{ true }}">
-                  <button onClick="{{ cta }}" style="height:56px;border:none;border-radius:999px;background:oklch(0.52 0.15 45);color:#FFFDF8;font:600 16px 'Geist';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 12px 24px -12px oklch(0.52 0.15 45)" style-active="transform:scale(.98)">{{ ctaLabel }}</button>
+                  <button onClick="{{ cta }}" style="height:56px;border:none;border-radius:16px;background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510;font:700 16px 'Geist';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 12px 24px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.55)" style-active="transform:scale(.98)">{{ ctaLabel }}</button>
                 </sc-if>
 
                 <sc-if value="{{ confOpen }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;gap:6px;animation:pop .35s ease both">
-                    <input value="{{ codeIn }}" onChange="{{ onCode }}" placeholder="Código de reserva" style="flex:1;min-width:0;height:46px;border-radius:14px;border:1.5px solid rgba(28,34,48,.14);background:#FFFDF8;padding:0 14px;font:500 15px 'Geist Mono',monospace;color:#1C2230;outline:none">
-                    <button onClick="{{ saveCode }}" style="height:46px;padding:0 16px;border:none;border-radius:14px;background:#1C2230;color:#FFFDF8;font:600 14px 'Geist';cursor:pointer;opacity:{{ saveO }}">Guardar</button>
+                    <input value="{{ codeIn }}" onChange="{{ onCode }}" placeholder="Código de reserva" style="flex:1;min-width:0;height:46px;border-radius:15px;border:1px solid rgba(28,34,48,.14);background:#FFFDF8;padding:0 14px;font:500 15px 'Geist Mono',monospace;color:#1C2230;outline:none">
+                    <button onClick="{{ saveCode }}" style="height:46px;padding:0 16px;border:none;border-radius:14px;background:#1C2230;color:#F3D88F;font:600 14px 'Geist';cursor:pointer;opacity:{{ saveO }}">Guardar</button>
                   </div>
                 </sc-if>
 
-                <button onClick="{{ toggleConf }}" style="align-self:center;border:none;background:transparent;display:flex;align-items:center;gap:7px;padding:6px 4px;font:500 13px 'Geist';color:rgba(28,34,48,.7);cursor:pointer">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg>
-                  <span style="text-decoration:underline;text-underline-offset:3px">{{ confLabel }}</span>
-                </button>
+                <button onClick="{{ toggleConf }}" style="min-height:56px;width:100%;border-radius:16px;border:1px solid rgba(181,138,46,.55);background:#FFFDF8;display:flex;align-items:center;gap:12px;padding:8px 14px 8px 10px;cursor:pointer;text-align:left;color:#1C2230;box-shadow:0 8px 16px -14px rgba(110,80,24,.5)" style-active="transform:scale(.98)"><span style="width:38px;height:38px;flex:none;border-radius:50%;background:#F3E3B2;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font:700 14.5px/1.2 'Geist'">{{ confLabel }}</span><span style="font:400 12.5px 'Geist';color:rgba(28,34,48,.58)">Con el código de tu reserva</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg></button>
               </div>
             </div>
 
-            <button style="height:56px;border-radius:18px;border:1px solid rgba(28,34,48,.1);background:#FFFDF8;display:flex;align-items:center;gap:12px;padding:0 14px 0 18px;cursor:pointer;color:#1C2230">
+            <button style="height:56px;border-radius:18px;border:1px solid rgba(181,138,46,.4);background:#FBF3E2;display:flex;align-items:center;gap:12px;padding:0 14px 0 18px;cursor:pointer;color:#1C2230">
               <span style="display:flex">
                 <sc-for list="{{ more }}" as="m" hint-placeholder-count="4">
                   <span style="width:28px;height:28px;margin-left:-8px;border-radius:50%;border:2px solid #FFFDF8;background:{{ m }}"></span>
@@ -184,7 +175,7 @@ a:hover{color:#1C2230}
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
               <button onClick="{{ stayRome }}" style="position:relative;height:118px;border-radius:18px;border:1px solid rgba(28,34,48,.08);background:#FFFFFF;overflow:hidden;padding:0;text-align:left;cursor:pointer;color:#1C2230;box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 22px -16px rgba(28,34,48,.35)" style-active="transform:scale(.98)">
                 <span style="position:absolute;left:0;right:0;top:0;height:52px;clip-path:polygon(0 0,100% 0,100% 100%,0 70%);background:{{ romeBg }}"></span>
-                <span style="position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:10px;background:rgba(255,253,248,.92);color:#1C2230;display:flex;align-items:center;justify-content:center">
+                <span style="position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:10px;background:#FBF3E2;color:#6E5018;display:flex;align-items:center;justify-content:center">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v10H3zM9 21v-6h6v6"></path></svg>
                 </span>
                 <span style="position:absolute;left:12px;right:10px;bottom:11px;display:flex;flex-direction:column;gap:2px">
@@ -194,10 +185,10 @@ a:hover{color:#1C2230}
               </button>
               <button style="position:relative;height:118px;border-radius:18px;border:none;background:#1C2230;overflow:hidden;padding:0;text-align:left;cursor:pointer;color:#F3EEE4;box-shadow:0 12px 24px -14px rgba(28,34,48,.7)" style-active="transform:scale(.98)">
                 <svg viewBox="0 0 160 62" preserveAspectRatio="none" style="position:absolute;left:0;right:0;top:0;width:100%;height:62px">
-                  <path d="M12 46 C 40 10, 64 52, 90 26 S 136 14, 150 34" fill="none" stroke="oklch(0.8 0.14 70)" stroke-width="1.6" stroke-dasharray="2 4" stroke-linecap="round"></path>
-                  <circle cx="12" cy="46" r="3.5" fill="oklch(0.8 0.14 70)"></circle><circle cx="90" cy="26" r="3" fill="#F3EEE4"></circle><circle cx="150" cy="34" r="3.5" fill="oklch(0.8 0.14 70)"></circle>
+                  <path d="M12 46 C 40 10, 64 52, 90 26 S 136 14, 150 34" fill="none" stroke="#F3D88F" stroke-width="1.6" stroke-dasharray="2 4" stroke-linecap="round"></path>
+                  <circle cx="12" cy="46" r="3.5" fill="#F3D88F"></circle><circle cx="90" cy="26" r="3" fill="#F3EEE4"></circle><circle cx="150" cy="34" r="3.5" fill="#F3D88F"></circle>
                 </svg>
-                <span style="position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:10px;background:oklch(0.8 0.14 70);color:#1C2230;display:flex;align-items:center;justify-content:center">
+                <span style="position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:10px;background:#F3D88F;color:#1C2230;display:flex;align-items:center;justify-content:center">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5l-2 5-5 2 2-5z"></path></svg>
                 </span>
                 <span style="position:absolute;left:12px;right:10px;bottom:11px;display:flex;flex-direction:column;gap:2px">
@@ -232,17 +223,17 @@ class Component extends DCLogic {
     return{
       rootPad:desk?'20px':'0',desk,scaleT:Z===1?'none':'scale('+Z+')',sw:(W*Z)+'px',sh:(H*Z)+'px',pw:W+'px',ph:H+'px',pr:desk?'52px':'0',
       psh:desk?'0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)':'none',
-      dayTag:s.rome?'Día libre en Roma':'Día de excursión',dayTagC:s.rome?'rgba(28,34,48,.55)':'oklch(0.55 0.2 25)',
+      dayTag:s.rome?'Día libre en Roma':'Día de excursión',dayTagC:s.rome?'rgba(28,34,48,.55)':'#B3262E',
       inRome:s.rome,showExc:!s.rome,backExc:()=>this.setState({rome:false}),stayRome:()=>this.setState({rome:true}),
       romeBg:bg('roma','linear-gradient(135deg,oklch(0.75 0.1 60),oklch(0.62 0.12 40))'),heroBg:bg('pompeya','linear-gradient(135deg,oklch(0.72 0.1 60),oklch(0.55 0.12 35))'),sorBg:bg('sorrento','oklch(0.7 0.1 220)'),
       facts:[{i:I.clock,t:'13h'},{i:I.bus,t:'Autobús'},{i:I.guide,t:'Guía'},{i:I.ticket,t:'Entrada incluida'}],
-      stops:[{n:'Roma',h:'07:00',x:'6%',y:'68%',s:'12px',m:'-6px 0 0 -6px',bg:'#1C2230',al:'flex-start',ta:'left'},{n:'Pompeya',h:'10:30',x:'46%',y:'50%',s:'16px',m:'-8px 0 0 -8px',bg:'oklch(0.62 0.15 45)',al:'center',ta:'center'},{n:'Sorrento',h:'14:30',x:'70%',y:'50%',s:'16px',m:'-8px 0 0 -8px',bg:'oklch(0.6 0.12 220)',al:'center',ta:'center'},{n:'Roma',h:'20:00',x:'94%',y:'68%',s:'12px',m:'-6px 0 0 -6px',bg:'#1C2230',al:'flex-end',ta:'right'}],
+      stops:[{n:'Roma',h:'07:00',x:'6%',y:'68%',s:'12px',m:'-6px 0 0 -6px',bg:'#1C2230',al:'flex-start',ta:'left'},{n:'Pompeya',h:'10:30',x:'46%',y:'50%',s:'16px',m:'-8px 0 0 -8px',bg:'#B58A2E',al:'center',ta:'center'},{n:'Sorrento',h:'14:30',x:'70%',y:'50%',s:'16px',m:'-8px 0 0 -8px',bg:'oklch(0.6 0.12 220)',al:'center',ta:'center'},{n:'Roma',h:'20:00',x:'94%',y:'68%',s:'12px',m:'-6px 0 0 -6px',bg:'#1C2230',al:'flex-end',ta:'right'}],
       showSlots:s.slots&&!booked,slotsTitle:'Sáb 22 oct · elige la salida',
-      slots:SL.map((o,i)=>{const a=s.slot===i;return{t:o.t,l:o.l,lc:o.hot?'oklch(0.55 0.2 25)':'rgba(28,34,48,.55)',bd:a?'oklch(0.55 0.15 45)':'rgba(28,34,48,.1)',bg:a?'oklch(0.8 0.14 70 / .18)':'#FFFDF8',pick:()=>this.setState({slot:i})};}),
+      slots:SL.map((o,i)=>{const a=s.slot===i;return{t:o.t,l:o.l,lc:o.hot?'#B3262E':'rgba(28,34,48,.55)',bd:a?'#B58A2E':'rgba(28,34,48,.1)',bg:a?'#FBF3E2':'#FFFDF8',pick:()=>this.setState({slot:i})};}),
       notBooked:!booked,ctaLabel:!s.slots?'Ver disponibilidad':s.slot==null?'Elige una hora':`Reservar a las ${SL[s.slot].t} · 65€`,
       cta:()=>{if(!s.slots)this.setState({slots:true});else if(s.slot!=null)this.setState({booked:'PMP-'+Math.random().toString(36).slice(2,7).toUpperCase(),slots:false,conf:false});},
       booked,code:s.booked,
-      confOpen:s.conf&&!booked,confLabel:booked?'Cambiar confirmación':'¿Ya la has reservado? Añade tu confirmación',
+      confOpen:s.conf&&!booked,confLabel:booked?'Cambiar tu confirmación':'¿Ya la has reservado? Añade tu confirmación',
       toggleConf:()=>this.setState(st=>booked?{booked:'',conf:true}:{conf:!st.conf}),
       codeIn:s.code,onCode:e=>this.setState({code:e.target.value}),saveO:s.code.trim()?1:.4,
       saveCode:()=>{if(s.code.trim())this.setState({booked:s.code.trim().toUpperCase(),conf:false,slots:false});},

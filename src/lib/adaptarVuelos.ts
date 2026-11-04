@@ -423,26 +423,30 @@ let adaptandoCoche = false
  * (con restaurantes) salen de la zona del viajero. Sin pase o sin zona no hace nada (la ruta de todos, desde la zona más lejana). Un solo `[Deshacer]`; lo que el viajero cambió a mano no se pisa.
  * Devuelve cuántos días ha cambiado.
  */
-export async function adaptarDiasDeCoche(): Promise<number> {
+export async function adaptarDiasDeCoche(opciones: { cambioDeCoche?: boolean } = {}): Promise<number> {
   if (adaptandoCoche) return 0
   const { route, reservations } = useRouteStore.getState()
   if (!route || !esDestinoDeCoche(route.destination) || !pagoActivo()) return 0
   const zona = route.accommodationZone
-  if (!zona || zona === 'nose') return 0
-  const pendientes = route.days.filter((day) => !day.isReturnLeg && sePuedeRehacer(day) && !(day.coche?.pase === true && day.coche.zona?.id === zona))
+  // (LZ2b1) El interruptor «Coche de alquiler | Mi coche» de RESERVAS: solo cambia el rato de recoger el coche el día 1 (alquiler 30-45 min, propio 20), así que se rehace ese día (con o sin zona y pase).
+  if (!opciones.cambioDeCoche && (!zona || zona === 'nose')) return 0
+  const pendientes = opciones.cambioDeCoche
+    ? route.days.filter((day) => !day.isReturnLeg && sePuedeRehacer(day)).slice(0, 1)
+    : route.days.filter((day) => !day.isReturnLeg && sePuedeRehacer(day) && !(day.coche?.pase === true && day.coche.zona?.id === zona))
   if (pendientes.length === 0) return 0
   adaptandoCoche = true
   try {
     const { vuelo } = await datosDelVuelo(route, reservations)
+    if (opciones.cambioDeCoche && !(vuelo as { llegada?: unknown }).llegada) return 0 // sin vuelo de llegada, el coche no cambia nada del día 1
     const cocheRespuesta = route.answers.coche ?? 'alquiler'
     const orden = ordenDeLosDias(route)
     const dias: DiaAdaptado[] = []
     for (const day of pendientes) {
       const cuerpo = {
         destination: route.destination,
-        answers: { ...route.answers, zona, pase: true, coche: cocheRespuesta },
-        zona,
-        pase: true,
+        answers: { ...route.answers, zona: zona ?? 'nose', pase: !opciones.cambioDeCoche || pagoActivo(), coche: cocheRespuesta },
+        zona: zona ?? 'nose',
+        pase: !opciones.cambioDeCoche || pagoActivo(),
         coche: cocheRespuesta,
         all_days: route.days.filter((other) => !other.isReturnLeg).map((other) => ({ day_number: other.dayNumber, city: other.city })),
         day_number: day.dayNumber,
@@ -464,7 +468,7 @@ export async function adaptarDiasDeCoche(): Promise<number> {
         /* sin conexión: ese día se queda como está */
       }
     }
-    return ponerDiasAdaptados(dias, 'Hemos adaptado cada día a donde duermes')
+    return ponerDiasAdaptados(dias, opciones.cambioDeCoche ? 'Hemos ajustado el día 1 a tu coche' : 'Hemos adaptado cada día a donde duermes')
   } finally {
     adaptandoCoche = false
   }

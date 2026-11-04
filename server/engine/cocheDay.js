@@ -34,9 +34,9 @@ export function buildCocheDay(destData, destKey, { totalDays, dayNumber, dateRan
   const dateIso = dateRangeStartIso ? new Date(Date.parse(`${String(dateRangeStartIso).slice(0, 10)}T12:00:00Z`) + (dayNumber - 1) * 86400000).toISOString().slice(0, 10) : null
   const plan = planCocheDia({
     destData, datos, dayId, dayNumber, contentDays, dateIso, season: options.season ?? null, experiences: experiencesPositive ?? [],
-    zona: options.zona ?? null, pase: options.pase === true, cocheModo: options.coche ?? 'alquiler',
-    llegadaMin: dayNumber === 1 && /^\d{1,2}:\d{2}$/.test(String(options.llegada?.hora ?? '')) && (options.llegada?.medio ?? 'avion') === 'avion' ? hmACoche(options.llegada.hora) + ((options.coche ?? 'alquiler') === 'alquiler' ? 45 : (options.coche === 'propio' ? 20 : 0)) : null,
-    recogerMin: (options.coche ?? 'alquiler') === 'alquiler' ? 45 : options.coche === 'propio' ? 20 : 0,
+    zona: options.zona ?? null, pase: options.pase === true, cocheModo: options.coche === 'propio' ? 'propio' : 'alquiler',
+    llegadaMin: dayNumber === 1 && /^\d{1,2}:\d{2}$/.test(String(options.llegada?.hora ?? '')) && (options.llegada?.medio ?? 'avion') === 'avion' ? hmACoche(options.llegada.hora) + (options.coche === 'propio' ? 20 : 45) : null,
+    recogerMin: options.coche === 'propio' ? 20 : 45,
     opciones: { nochesJameos: options.nochesJameos === true, cuevaPrimero: options.cuevaPrimero === true, kayak: options.kayak === true },
   })
   if (!plan) return null

@@ -1,0 +1,55 @@
+{
+  "zone": "centro_oeste",
+  "places": [
+    {
+      "name": "Montañas del Fuego (Timanfaya)",
+      "description": "El Parque Nacional de Timanfaya, nacido de las erupciones de 1730 a 1736: un paisaje de volcanes rojos, negros y ocres que no se parece a nada.",
+      "what_to_see": [
+        "Las demostraciones del Islote de Hilario: el agua que sale disparada como un géiser y las aulagas que arden solo con el calor de la tierra",
+        "La Ruta de los Volcanes en el autobús del parque (35-40 min, sin bajarse), entre cráteres y ríos de lava",
+        "La parrilla del restaurante El Diablo, donde se asa la comida sobre el calor del volcán",
+        "Las vistas desde el Islote a las Montañas del Fuego"
+      ],
+      "aparcar": "Aparcamiento gratis en el Islote de Hilario, solo con entrada. Está en cuesta: abre la puerta con cuidado.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Llega 15 minutos antes de tu hora: si llegas tarde, la entrada deja de valer, y si llegas mucho antes, no hay zona de espera.",
+        "Abre la puerta del coche con cuidado: el aparcamiento está en cuesta y es fácil dar al de al lado.",
+        "De octubre a abril, lleva algo de abrigo, que es zona de viento; en verano, gorra y crema."
+      ],
+      "historia": "Antes de nada, mira el suelo que pisas. Parece tierra quemada y quieta, pero no está fría. Debajo de este islote, a solo trece metros de profundidad, los geólogos han medido más de seiscientos grados. Y todo empezó una noche de hace casi trescientos años.\n\nEl 1 de septiembre de 1730, entre las nueve y las diez de la noche, la tierra se abrió cerca de un lugar llamado Timanfaya, a unas dos leguas de Yaiza. Lo sabemos porque el cura de Yaiza, don Andrés Lorenzo Curbelo, lo fue apuntando todo. Según su relato, la primera noche una montaña enorme se levantó del seno de la tierra, y sus llamas ardieron diecinueve días. Después vinieron más bocas, ríos de lava que bajaban hacia el mar y nubes de humo que tapaban el cielo. El cura escribió que los peces flotaban muertos sobre el agua en cantidad indescriptible.\n\nPueblos enteros desaparecieron bajo la lava, con sus casas, sus campos y sus nombres. Uno de ellos se llamaba Timanfaya, y le dio nombre a todo esto. Los vecinos fueron huyendo, y entre 1731 y 1732 muchos dejaron la isla. Las erupciones duraron casi seis años y cubrieron alrededor de una cuarta parte de Lanzarote. Y en 1824 el volcán volvió a despertar, esta vez solo unos meses.\n\nUna curiosidad: el diario original del cura se perdió. Lo conocemos porque un geólogo alemán, Leopold von Buch, lo encontró en Tenerife y publicó un extracto en 1825. Los historiadores avisan de que von Buch añadió alguna cosa de su cosecha, como que el cura huyó a Gran Canaria, y eso, según las cartas de la época, no es cierto.\n\nY ahora, la leyenda que da nombre a este sitio. Cuentan que aquí vivió un ermitaño llamado Hilario, solo, con su camella. Plantó una higuera, y la higuera echó raíces, pero nunca dio fruto. Dicen que la flor no podía alimentarse de la llama. Nadie sabe si Hilario existió, pero César Manrique, que diseñó el restaurante de lo alto, le hizo un homenaje: junto a él dejó una higuera y huesos de camello sobre la ceniza negra.\n\nFíjate en tres cosas. Cuando los guías echen agua por un tubo clavado en el suelo, en un segundo sale disparada hacia arriba, convertida en vapor, como un géiser. Mira también cómo arden las aulagas secas que meten en un agujero, sin cerilla, solo con el calor de la tierra. Y asómate a la parrilla del restaurante El Diablo: la comida se asa sobre un pozo, con el calor del volcán.\n\nMira otra vez alrededor. Hace trescientos años aquí había campos y pueblos. El cura de Yaiza los vio desaparecer. Tú estás de pie sobre lo que dejó el fuego."
+    },
+    {
+      "name": "Volcán del Cuervo",
+      "description": "Un volcán de las erupciones de Timanfaya, junto al parque nacional, con un sendero que rodea el cráter y entra en él.",
+      "what_to_see": [
+        "El interior del cráter, por el que se camina",
+        "La vuelta al cráter por fuera",
+        "El mar de lava alrededor"
+      ],
+      "aparcar": "Desde noviembre de 2026 está previsto aparcar en Mancha Blanca (aparcamiento de Los Dolores) y subir en la guagua del parque (línea P3).",
+      "aparcar_verificar": true,
+      "tips": [
+        "Mira cómo se llega: desde noviembre de 2026 está previsto aparcar en Mancha Blanca (aparcamiento de Los Dolores) y subir en guagua (línea P3).",
+        "Temprano, calzado cerrado y agua: no hay sombra, ni agua, ni baños.",
+        "No te lleves piedras ni ceniza: es un espacio protegido y multan."
+      ]
+    },
+    {
+      "name": "Caldera Blanca",
+      "description": "Una ruta de unos 10 km y 3 h desde Mancha Blanca, entre lava, hasta el borde de uno de los cráteres más grandes de la isla.",
+      "what_to_see": [
+        "El camino entre la lava hasta el volcán",
+        "El cráter enorme desde el borde",
+        "Las vistas sobre los volcanes de Timanfaya"
+      ],
+      "aparcar": "Junto a la iglesia de Los Dolores, en Mancha Blanca (sale el sendero).",
+      "aparcar_verificar": false,
+      "tips": [
+        "Sale de la iglesia de Los Dolores (Mancha Blanca). Los fines de semana, llega antes de las 9:00 para aparcar.",
+        "Botas cerradas, 1,5 l de agua y cortavientos: el último tramo es de picón suelto, y arriba sopla.",
+        "Arriba no hay barandilla: lejos del borde, y sigue los hitos de piedra."
+      ]
+    }
+  ]
+}

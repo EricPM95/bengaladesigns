@@ -127,7 +127,7 @@ if (typeof window !== 'undefined') (window as unknown as { __rutaPrueba: typeof 
  * `await window.__rutaLanzarote({ zona: 'costa_teguise', coche: 'alquiler' })`. Empieza el domingo 8-nov-2026, 5 días de ruta + el de la vuelta (13-nov), con la misma generación que el formulario.
  * Con `zona` la elige (RESERVAS › Alojamiento); lo de pago se pide con `?version=completa` en la dirección.
  */
-export async function crearRutaLanzarote(opciones: { zona?: string; coche?: 'alquiler' | 'propio' | 'no'; hoy?: string } = {}): Promise<Route> {
+export async function crearRutaLanzarote(opciones: { zona?: string; coche?: 'alquiler' | 'propio'; hoy?: string } = {}): Promise<Route> {
   const { transportContextOf } = await import('../lib/manualRoute')
   const estado = useRouteStore.getState()
   const coche = opciones.coche ?? 'alquiler'
@@ -145,7 +145,7 @@ export async function crearRutaLanzarote(opciones: { zona?: string; coche?: 'alq
     budgetLevel: 'comfortable',
     coche,
   }
-  const contexto = { ...transportContextOf(estado), vehicle_type: coche === 'no' ? null : ('car' as const), vehicle_ownership: coche === 'alquiler' ? ('rental' as const) : coche === 'propio' ? ('own' as const) : null }
+  const contexto = { ...transportContextOf(estado), vehicle_type: 'car' as const, vehicle_ownership: coche === 'alquiler' ? ('rental' as const) : ('own' as const) }
   let final: GenerationResumeState | null = null
   await runGeneration({ destination: 'Lanzarote', answers: respuestas, transportContext: contexto, mustIncludePlaces: [] }, null, async (cp) => {
     if (cp.phase === 'done') final = cp

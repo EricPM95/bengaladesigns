@@ -11,6 +11,7 @@ import { monedaElegida } from '../../lib/moneda'
 import { nombreDelPase } from '../../lib/nombrePase'
 import { useRouteStore } from '../../store/useRouteStore'
 import { SECCIONES_DE_LA_LISTA } from './lista/disenoLista'
+import { listaParaDestino } from './lista/listaDeCoche'
 
 /**
  * LA LISTA DEL PASE POR PUNTOS (Tanda 10N11, apartado 5; `Piezas/Pase Lista` de Design, pantalla 1). Antes (10N10) era la última escena de la película; ahora es un componente propio, fiel al diseño y sin el código de la película
@@ -104,7 +105,7 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
           </div>
 
           <div style={{ position: 'relative', padding: '0 22px', display: 'flex', flexDirection: 'column' }}>
-            {SECCIONES_DE_LA_LISTA.map((s) => (
+            {listaParaDestino(SECCIONES_DE_LA_LISTA, destino).map((s) => (
               <div key={s.titulo} data-lista-seccion={s.titulo} style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0 4px' }}>
                   <span style={{ flex: 1, height: 1, background: 'linear-gradient(90deg,transparent,rgba(233,199,122,.55))' }} />

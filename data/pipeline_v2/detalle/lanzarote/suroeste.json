@@ -1,0 +1,70 @@
+{
+  "zone": "suroeste",
+  "places": [
+    {
+      "name": "El Golfo y el Charco de los Clicos",
+      "description": "Medio volcán abierto al mar, con el Charco de los Clicos, una laguna de color verde intenso, y al lado el pueblo de pescadores de El Golfo.",
+      "what_to_see": [
+        "La laguna verde desde el mirador, con el mar al otro lado",
+        "La pared del cráter: rojos, ocres y negros, cada capa es un momento de la erupción",
+        "La playa de arena negra, con granitos verdes de olivino que hay que dejar donde están",
+        "El atardecer: el sol cae al mar por este lado de la isla",
+        "El pueblo de El Golfo, con sus restaurantes de pescado junto al mar"
+      ],
+      "aparcar": "Aparcamiento arriba, al empezar el sendero del mirador (5 min a pie), y otro a la entrada del pueblo.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Empieza por el mirador y luego baja a la playa negra: el charco está a unos 100 m.",
+        "Mejor por la tarde y al atardecer.",
+        "Es Reserva Natural: no salgas de los caminos y no te lleves piedras ni arena verde."
+      ],
+      "historia": "Desde el mirador, mira esa laguna. Verde. No el azul verdoso del mar de al lado: verde de verdad, como una esmeralda caída entre la arena negra y la pared roja del volcán.\n\nLo que tienes delante es medio volcán. Aquí el fuego y el mar llevan siglos peleando, y se nota. Hace mucho tiempo, aquí nació un cono volcánico pegado al mar. Cuando el magma se encuentra con el agua, explota con mucha fuerza y deja un cráter ancho. Con los siglos, el mar se ha ido comiendo la mitad del cono, y lo que queda es esa pared de capas, como las páginas de un libro, cada una de un color.\n\nEn el fondo del cráter quedó el charco. La playa lo separa del mar, pero no del todo: el agua del océano se filtra por debajo de la arena, así que es agua salada. ¿Y el verde? Viene de la vida que hay dentro, sobre todo de una pequeña planta acuática llamada Ruppia, que tiñe el agua.\n\nEl nombre tiene su historia. Clicos es como se llamaba aquí a un marisco, una especie de almeja que se cogía en la zona y tenía fama de ser muy sabrosa. De ahí, el Charco de los Clicos. Aunque mucha gente lo llama simplemente el Charco Verde.\n\nUn sitio así no podía pasar desapercibido para el cine. Pedro Almodóvar rodó aquí escenas de Los abrazos rotos, con Penélope Cruz, y antes que él vinieron otros rodajes de ciencia ficción y de aventuras, buscando un paisaje que pareciera de otro mundo.\n\nHoy todo esto es un espacio natural protegido. La laguna se mira desde arriba, sin tocarla. Así ha llegado hasta hoy, y así tiene que seguir.\n\nFíjate en tres cosas. Mira la pared del cráter: rojos, ocres y negros, cada capa es un momento de la erupción. Mira la playa: entre la arena negra brillan unos granitos verdes. Es olivino, un mineral que sale del volcán. Si lo ves, déjalo donde está. Y, si puedes, quédate hasta el atardecer: el sol cae sobre el mar por este lado de la isla, y el verde, el negro y el rojo se encienden a la vez.\n\nLuego baja al pueblo de El Golfo, a comer pescado frente al mar. Era un pueblo de pescadores, y todavía lo parece. Y mientras comes, mira hacia el cráter. Medio volcán se lo llevó el mar. La otra mitad sigue ahí, guardando su charco verde."
+    },
+    {
+      "name": "Los Hervideros",
+      "description": "Acantilados de lava llenos de cuevas y túneles en la costa oeste, con caminos y miradores sobre el mar.",
+      "what_to_see": [
+        "Las olas entrando en las cuevas y saliendo en espuma, como si el mar hirviera",
+        "Los caminos entre la lava, con miradores asomados al agua",
+        "Los colores de la roca volcánica contra el azul del mar"
+      ],
+      "aparcar": "Aparcamiento junto a los miradores, al lado de la carretera LZ-703.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Mejor con marea alta y al atardecer: es cuando el mar «hierve».",
+        "Con mar brava, mucho cuidado con los niños.",
+        "No te salgas de los caminos marcados."
+      ]
+    },
+    {
+      "name": "Salinas de Janubio",
+      "description": "Salinas tradicionales junto a una laguna y una playa de arena negra, vistas desde un mirador sobre la carretera.",
+      "what_to_see": [
+        "Las eras de sal, que cambian de color con la luz y al atardecer se ven rosadas",
+        "La laguna y la playa de arena negra de abajo",
+        "Los montones de sal blanca junto a las eras"
+      ],
+      "aparcar": "Aparcamiento del mirador, junto a la carretera.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Desde el mirador, una hora antes del atardecer: las eras se ven rosadas.",
+        "No se entra por libre: son privadas y solo se visitan con guía. Desde el mirador se ven enteras.",
+        "La playa de abajo no es de baño: corriente fuerte y sin socorrista."
+      ]
+    },
+    {
+      "name": "Playa de Montaña Bermeja",
+      "description": "Una playa salvaje de arena negra a los pies de la Montaña Bermeja, entre las Salinas de Janubio y Los Hervideros.",
+      "what_to_see": [
+        "El contraste de la montaña roja con la arena negra",
+        "El mar abierto de la costa oeste"
+      ],
+      "aparcar": "Junto a la carretera LZ-703, entre Janubio y Los Hervideros.",
+      "aparcar_verificar": true,
+      "tips": [
+        "No es de baño: viento y mar de fondo fuertes.",
+        "Sin servicios: agua y calzado cerrado."
+      ]
+    }
+  ]
+}

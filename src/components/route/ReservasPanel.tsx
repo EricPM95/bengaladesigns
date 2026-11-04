@@ -22,6 +22,8 @@ import { ResumenViaje } from './reservas/ResumenViaje'
 import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
 import { ExcursionesReservas } from './reservas/ExcursionesReservas'
 import { UtilParaElViaje } from './reservas/UtilParaElViaje'
+import { CocheDeViaje } from './reservas/CocheDeViaje'
+import { esDestinoDeCoche } from '../../lib/experienceCategoryBank'
 import { Icono } from '../ui/Icono'
 import { PiezaSegura } from '../PiezaSegura'
 import { diasDelViaje, textoDeDuracion } from '../../lib/duracionViaje'
@@ -237,6 +239,14 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
                 </div>
               )}
               <div className={hayExcursiones ? 'contents' : 'md:col-span-2'}>
+                {/* (LZ2b1) Destinos de coche (Lanzarote): el bloque del coche con su interruptor «Coche de alquiler | Mi coche». */}
+                {esDestinoDeCoche(route.destination) && unDestino && !conSuyo && (
+                  <PiezaSegura nombre="RESERVAS: Coche">
+                    <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
+                      <CocheDeViaje />
+                    </ZonaGris>
+                  </PiezaSegura>
+                )}
                 <PiezaSegura nombre="RESERVAS: Útil para el viaje">
                   <UtilParaElViaje route={route} pago={pago} />
                 </PiezaSegura>

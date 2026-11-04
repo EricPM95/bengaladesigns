@@ -1,0 +1,21 @@
+{
+  "zone": "extremo_norte",
+  "places": [
+    {
+      "name": "Caletón Blanco",
+      "description": "Una playa de arena blanca junto a Órzola, rodeada de lava negra, con charcos resguardados para bañarse con marea baja.",
+      "what_to_see": [
+        "El contraste de la arena blanca con la lava negra",
+        "Los charcos turquesa de dentro, resguardados del mar",
+        "La costa del norte y, al fondo, La Graciosa"
+      ],
+      "aparcar": "En el arcén de la LZ-1, junto a la playa (a 1,2 km del puerto de Órzola).",
+      "aparcar_verificar": true,
+      "tips": [
+        "Con la marea bajando, de 9:00 a 12:00: a partir de las 13:00 suele subir el viento.",
+        "Escarpines o cangrejeras: el borde de la lava corta.",
+        "La arena blanca está protegida: no te la lleves. Sin socorrista: con niños, en los charcos de dentro."
+      ]
+    }
+  ]
+}

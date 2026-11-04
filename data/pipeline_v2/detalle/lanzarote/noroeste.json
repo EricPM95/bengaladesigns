@@ -1,0 +1,22 @@
+{
+  "zone": "noroeste",
+  "places": [
+    {
+      "name": "Caleta de Famara y Playa de Famara",
+      "description": "Un pueblo de pescadores con calles de arena junto a una playa de varios kilómetros, bajo el Risco de Famara.",
+      "what_to_see": [
+        "Las calles de arena entre casas blancas",
+        "La playa de Famara, larga y salvaje, con los surfistas",
+        "El Risco de Famara, el gran acantilado del norte",
+        "El atardecer: el sol cae al mar"
+      ],
+      "aparcar": "Aparcamiento a la entrada del pueblo y junto a la playa.",
+      "aparcar_verificar": true,
+      "tips": [
+        "La playa tiene bandera roja todo el año: para pasear y remojarse los pies, no para bañarse.",
+        "Quédate al atardecer: el sol cae al mar.",
+        "Prueba la morena frita."
+      ]
+    }
+  ]
+}

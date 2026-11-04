@@ -7,6 +7,7 @@ import { diasEntre, filaDeHoySinPase } from '../../../lib/diaDePrueba'
 import { TextoConPase } from '../../cuenta/TextoConPase'
 import { Icono } from '../../ui/Icono'
 import { CABECERA_DE_HOY, CAJA_PRUEBA_SIN_USAR, CAJA_PRUEBA_USADA, TARJETAS_DE_HOY } from '../../pase/lista/disenoLista'
+import { tarjetasDeHoyParaDestino } from '../../pase/lista/listaDeCoche'
 import { CabeceraHoy, HoyAntesV2, ojoDeViaje } from './v2/HoyAntesV2'
 import type { EstadoPase } from '../../../lib/paseEstado'
 
@@ -93,7 +94,7 @@ export function HoySinPase({ route, startIso = null, fase = null, simulada = nul
       </div>
       <div className="relative flex flex-col" style={{ padding: '0 22px 28px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 6 }}>
-          {TARJETAS_DE_HOY.map((t) => (
+          {tarjetasDeHoyParaDestino(TARJETAS_DE_HOY, destino).map((t) => (
             <div key={t.titulo} data-hoy-sin-pase-punto={t.titulo} style={{ display: 'flex', flexDirection: 'column', gap: 11, padding: '14px 13px 15px', borderRadius: 22, background: 'linear-gradient(160deg,rgba(255,253,248,.08),rgba(255,253,248,.03))', border: '1px solid rgba(233,199,122,.28)' }}>
               <span style={{ width: 62, height: 62, borderRadius: 18, background: 'radial-gradient(circle at 35% 28%,#FFFDF8,#F3E3B2 70%,#E3C77E)', boxShadow: '0 0 0 1.5px #E9C77A,0 0 0 5px rgba(233,199,122,.15),0 8px 14px -8px rgba(0,0,0,.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span aria-hidden="true" style={{ display: 'flex' }} dangerouslySetInnerHTML={{ __html: t.icono }} />

@@ -39,14 +39,12 @@ export function trayectoDeVuelta(day: DayPlan): TrayectoCoche | null {
   return { modo: 'car', minutos: v.minutos, km: v.km, texto: `Vuelta a casa · ${min1(v.minutos)} · ${km1(v.km)}`, maps_url: v.maps_url, ...(v.llegas ? { llegada_texto: `Llegas hacia las ${v.llegas} (hora de Canarias)` } : {}) }
 }
 
-/** La cabecera del día en coche: salir de casa, el aviso de más de 3 h, la excursión «¿Sin coche?» y lo que se quitó para que el día quepa. */
+/** La cabecera del día en coche: salir de casa, el aviso de más de 3 h, y lo que se quitó (LZ2b1: ya no hay «¿Sin coche?»; en Lanzarote se da por hecho que hay coche) para que el día quepa. */
 export function CabeceraDelDiaCoche({ day }: { day: DayPlan }) {
   const coche = day.coche
   const ida = coche?.activo ? coche.ida : null
-  const sin = day.sinCoche
-  const sinCoche = coche ? !coche.activo : false
   const quitados = day.opcionalesQuitados ?? []
-  if (!coche && !sin && quitados.length === 0) return null
+  if (!coche && quitados.length === 0) return null
   return (
     <div className="flex flex-col gap-2 px-1" data-coche-cabecera>
       {ida && (
@@ -56,18 +54,6 @@ export function CabeceraDelDiaCoche({ day }: { day: DayPlan }) {
         </div>
       )}
       {coche?.aviso_tope && <p className="text-[12.5px] leading-[1.4] text-text/65" data-aviso-tope>{coche.aviso_tope.texto}</p>}
-      {sin && (
-        <div className="rounded-xl border border-text/10 bg-bg-card/70 p-3" data-sin-coche>
-          <p className="text-[13px] font-medium text-text/85">{sinCoche ? '¿Sin coche? Así lo haces' : '¿Sin coche?'}</p>
-          <p className="mt-0.5 text-[12.5px] leading-[1.4] text-text/70">{sin.excursion}</p>
-          {sin.deja_fuera && <p className="mt-0.5 text-[12.5px] leading-[1.4] text-text/55">{sin.deja_fuera}</p>}
-          {sin.civitatis?.url && (
-            <a href={sin.civitatis.url} target="_blank" rel="noopener noreferrer" className="zona-toque mt-1 inline-block text-[12.5px] font-medium text-accent underline underline-offset-[3px]">
-              Ver la excursión
-            </a>
-          )}
-        </div>
-      )}
       {quitados.length > 0 && (
         <div className="text-[12.5px] leading-[1.4] text-text/60" data-opcionales-quitados>
           {quitados.map((q) => (

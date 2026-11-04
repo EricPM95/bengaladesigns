@@ -22,13 +22,13 @@
        "tipo": "parada",
        "lugar": "Montañas del Fuego (Timanfaya)",
        "modo": "dentro",
-       "doc": "🎟 Montañas del Fuego (Timanfaya) ~90 min (turno de las 09:30)",
+       "doc": "🎟 Montañas del Fuego (Timanfaya) ~90 min (turno de las 09:00)",
        "min": 90,
        "hora_tipo": "turno",
-       "hora": "09:30",
+       "hora": "09:00",
        "hora_aprox": true,
        "notas": [
-        "Reserva online con día y hora; la web abre turnos desde las 09:00 ⚠️ (el de las 09:30 deja llegar a la bodega sin esperas). Islote de Hilario y la Ruta de los Volcanes en el autobús del parque."
+        "Reserva online con día y hora; abre a las 09:00 todos los días (9:00-16:00 desde el 1-jul-2023, último turno 15:45). Islote de Hilario y la Ruta de los Volcanes en el autobús del parque."
        ],
        "llegada_antes_min": 15
       },
@@ -215,7 +215,8 @@
        "lugar": "Haría y la Casa-Museo César Manrique",
        "modo": null,
        "doc": "Haría y el Valle de las Mil Palmeras: el pueblo y su plaza",
-       "min": 60
+       "min": 60,
+       "titulo": "Haría y el Valle de las Mil Palmeras"
       },
       {
        "tipo": "parada",
@@ -224,6 +225,7 @@
        "doc": "Casa-Museo César Manrique (Haría), taquilla hasta las 17:00 (para quien no tenga Arte, opcional) ~1 h",
        "min": 60,
        "titulo": "Casa-Museo César Manrique (Haría)",
+       "a_pie_min": 5,
        "opcional_sin_experiencia": "arte",
        "taquilla_hasta": "17:00"
       },
@@ -520,6 +522,7 @@
        "doc": "Faro de Pechiguera, al atardecer",
        "min": 45,
        "titulo": "Faro de Pechiguera",
+       "parada": "faro_de_pechiguera",
        "hasta_atardecer": true
       }
      ],
@@ -622,6 +625,7 @@
        "modo": null,
        "doc": "El atardecer en Famara",
        "titulo": "El atardecer en Famara",
+       "a_pie_min": 12,
        "hasta_atardecer": true
       }
      ],

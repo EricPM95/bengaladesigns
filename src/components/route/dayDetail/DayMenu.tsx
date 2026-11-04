@@ -1,5 +1,6 @@
 import { MenuHoja } from '../../ui/MenuHoja'
 import { useNombreDelDestino } from '../../../lib/nombreDelDestino'
+import { esDestinoDeCoche } from '../../../lib/experienceCategoryBank'
 import { ICONOS_OPCION, OpcionTarjeta, type TonoOpcion } from '../../ui/HojaOpciones'
 
 /** Las acciones de un día libre (decisión del usuario, 2026-09-28). */
@@ -45,6 +46,8 @@ interface DayMenuProps {
  */
 export function DayMenu({ onDelete, freeDay, onAddPlaces, excursion, onRestoreDay, onBackToProposed, onReorganize, titulo = 'Este día', motivoNoEliminar = 'Está fijado por una reserva' }: DayMenuProps) {
   const ciudad = useNombreDelDestino()
+  // (LZ2b1) Ningún texto de Roma en un viaje a Lanzarote: los ejemplos de abajo son los de la isla.
+  const deCoche = esDestinoDeCoche(ciudad)
   const alAnadir = freeDay?.onAddPlaces ?? onAddPlaces
   const extra = (cerrar: () => void, tono: TonoOpcion, icono: string, tit: string, linea: string, action: (() => void) | null | undefined, flecha = false) =>
     action === undefined ? null : (
@@ -68,10 +71,10 @@ export function DayMenu({ onDelete, freeDay, onAddPlaces, excursion, onRestoreDa
       {(cerrar) => (
         <>
           {onReorganize && extra(cerrar, 'arena', ICONOS_OPCION.reorganizar, 'Reorganizar este día', 'Tus paradas, en el mejor orden', onReorganize)}
-          {alAnadir && extra(cerrar, 'salvia', ICONOS_OPCION.pin, 'Añadir lugares', 'Monumentos, barrios, miradores…', alAnadir, true)}
+          {alAnadir && extra(cerrar, 'salvia', ICONOS_OPCION.pin, 'Añadir lugares', deCoche ? 'Volcanes, playas, miradores…' : 'Monumentos, barrios, miradores…', alAnadir, true)}
           {excursion &&
             (excursion.cabe
-              ? extra(cerrar, 'arena', ICONOS_OPCION.mochila, excursion.modo === 'excursion' ? `Volver a ${ciudad}` : 'Añadir una excursión', excursion.modo === 'excursion' ? 'Deja la excursión y vuelve al plan de la ciudad' : 'Pompeya, Florencia, la Costa Amalfitana…', excursion.onCambiar, true)
+              ? extra(cerrar, 'arena', ICONOS_OPCION.mochila, excursion.modo === 'excursion' ? `Volver a ${ciudad}` : 'Añadir una excursión', excursion.modo === 'excursion' ? 'Deja la excursión y vuelve al plan de la ciudad' : deCoche ? 'La Graciosa, Fuerteventura…' : 'Pompeya, Florencia, la Costa Amalfitana…', excursion.onCambiar, true)
               : extra(cerrar, 'arena', ICONOS_OPCION.mochila, 'Añadir una excursión', excursion.motivo, null))}
           {freeDay && (
             <>

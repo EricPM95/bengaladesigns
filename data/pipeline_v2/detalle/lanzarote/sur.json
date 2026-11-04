@@ -1,0 +1,38 @@
+{
+  "zone": "sur",
+  "places": [
+    {
+      "name": "Playas de Papagayo",
+      "description": "Un rosario de calas resguardadas en el Monumento Natural de Los Ajaches, al sur de Playa Blanca, para pasar el día y bañarse.",
+      "what_to_see": [
+        "La cala de Papagayo desde lo alto del acantilado",
+        "Las demás calas: Mujeres, el Pozo, La Cera y la Caleta del Congrio",
+        "Fuerteventura y la isla de Lobos al otro lado del estrecho",
+        "El agua tranquila y turquesa, perfecta para bañarse y hacer snorkel"
+      ],
+      "aparcar": "Aparcamientos de tierra encima de las calas, después de la barrera (3 € por coche). Se llega por una pista de tierra: despacio.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Pista de tierra y 3 € por coche: despacio por los baches. Antes, mira si tu seguro de alquiler cubre las pistas.",
+        "Sin socorrista: el agua es tranquila, pero nadie vigila.",
+        "Llévatelo todo: es Monumento Natural. Ni jabón en las duchas, ni piedras, ni torres de piedras."
+      ]
+    },
+    {
+      "name": "Playa Blanca y el Faro de Pechiguera",
+      "description": "El pueblo de Playa Blanca, su paseo marítimo y Marina Rubicón, y el Faro de Pechiguera en la punta.",
+      "what_to_see": [
+        "El paseo marítimo, con Fuerteventura enfrente",
+        "Marina Rubicón, el puerto deportivo",
+        "El Faro de Pechiguera, el antiguo (apagado en 1988) y el nuevo",
+        "El atardecer en el faro"
+      ],
+      "aparcar": "Aparcamiento en Marina Rubicón y junto al faro.",
+      "aparcar_verificar": true,
+      "tips": [
+        "Al faro se llega por un paseo costero, casi todo pavimentado.",
+        "La playa de Playa Blanca es de agua tranquila, pero sin socorrista."
+      ]
+    }
+  ]
+}

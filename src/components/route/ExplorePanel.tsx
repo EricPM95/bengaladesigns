@@ -24,6 +24,8 @@ import { abrirAvisoPase } from '../../lib/avisoPase'
 import { CandadoRedondo } from '../pase/Candado'
 import type { Coordinates } from '../../lib/types'
 import { useExploreAperturaStore } from '../../store/useExploreAperturaStore'
+import { esDestinoDeCoche } from '../../lib/experienceCategoryBank'
+import { CATEGORIAS_EXPLORAR_LANZAROTE, lugaresDeCategoriaLanzarote, type CategoriaExplorarLanzarote } from '../../lib/exploreLanzarote'
 
 interface ExplorePanelProps {
   route: Route
@@ -71,8 +73,8 @@ const LEGACY_FALLBACK: Partial<Record<TarjetaDeExplorar, 'food' | 'viewpoints' |
  * Una tarjeta de Explorar (diseño «Trazo Reservas», pantalla 12): el cuadro de icono de color, la franja en diagonal con la foto o el degradado,
  * el nombre en Instrument Serif y el contador pequeño.
  */
-function ExploreCard({ id, label, sub, photo, delay, wide, onClick, cerrado = false }: { id: TarjetaDeExplorar; label: string; sub: string; photo: string | null; delay: number; wide: boolean; onClick: () => void; cerrado?: boolean }) {
-  const style = CARD_STYLE[id]
+function ExploreCard({ id, estilo, label, sub, photo, delay, wide, onClick, cerrado = false }: { id: TarjetaDeExplorar; estilo?: TarjetaDeExplorar; label: string; sub: string; photo: string | null; delay: number; wide: boolean; onClick: () => void; cerrado?: boolean }) {
+  const style = CARD_STYLE[estilo ?? id]
   const diagonal = 'polygon(34px 0,100% 0,100% 100%,0 100%)'
   const background = photo ? `url("${photo}") center/cover, ${solidOf(style.color)}` : `linear-gradient(135deg,${solidOf(style.shadow)},#EFE7D8)`
   const inner = (
@@ -165,6 +167,8 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const cities = [...new Set(buildDestinationSegments(route.days).map((segment) => segment.city))]
   const [city, setCity] = useState(cities.includes(defaultCity) ? defaultCity : (cities[0] ?? defaultCity))
   const [activeCard, setActiveCard] = useState<ExploreCardId | null>(null)
+  // (LZ2b1) Lanzarote: la categoría abierta (Volcanes, César Manrique…); las demás tarjetas de siempre siguen con `activeCard`.
+  const [categoriaLz, setCategoriaLz] = useState<CategoriaExplorarLanzarote | null>(null)
   const [pendingStop, setPendingStop] = useState<Stop | null>(null)
   const [results, setResults] = useState<NearbyPlaceResult[] | null>(null)
   /** "+ Añadir" desde Explorar (decisión del usuario, 2026-09-28): la ventana pregunta a qué día. */
@@ -219,7 +223,8 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const placeExplorerOpen = activeCard !== null && hasCuratedCatalog
+  const deCoche = esDestinoDeCoche(city)
+  const placeExplorerOpen = (activeCard !== null || categoriaLz !== null) && hasCuratedCatalog
 
   // Avisa a RouteView de que hay una pantalla con mapa propio encima, para que desmonte el mapa
   // compartido mientras tanto (ver exploreFullScreen ahí).
@@ -235,6 +240,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
 
   const backToCards = () => {
     setActiveCard(null)
+    setCategoriaLz(null)
     setOrigenApertura(null)
     setAperturaCerca(false)
     setResults(null)
@@ -266,19 +272,19 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   // Destino curado: las tarjetas abren la pantalla compartida de lugares, con "+ Añadir" en cada sitio
   // (decisión del usuario, 2026-09-28): la ventana pregunta a qué día va. Los destinos sin catálogo
   // siguen con la búsqueda de Mapbox de siempre.
-  if (placeExplorerOpen && activeCard) {
+  if (placeExplorerOpen && (activeCard || categoriaLz)) {
     return (
       <>
       <PlaceExplorerScreen
         open
         destination={city}
-        places={curatedPool}
+        places={categoriaLz ? lugaresDeCategoriaLanzarote(categoriaLz, curatedPool) : curatedPool}
         toiletsEnabled={banosYFuentes}
         excursions={excursions}
         title={`Explorar ${city}`}
-        subtitle={EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null}
+        subtitle={categoriaLz ? categoriaLz.label : (EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null)}
         route={route}
-        initialFilters={[activeCard]}
+        initialFilters={activeCard ? [activeCard] : []}
         initialOrigin={origenApertura}
         initialNearby={aperturaCerca}
         onHotels={() => useAlojamientoUi.getState().abrirMapa()}
@@ -306,7 +312,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
 
   // Aún no se sabe si esta ciudad tiene catálogo — un render sin nada antes que enseñar el buscador
   // viejo medio segundo y cambiarlo por la pantalla nueva.
-  if (activeCard !== null && !curatedPoolResolved) return null
+  if ((activeCard !== null || categoriaLz !== null) && !curatedPoolResolved) return null
 
   if (!hasCuratedCatalog && (legacyCategory === 'food' || legacyCategory === 'viewpoints')) {
     return (
@@ -346,8 +352,42 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-2.5">
-        {visibleCards.map((card, index) => {
+      <div className="grid grid-cols-2 gap-2.5" data-explorar-categorias={deCoche && hasCuratedCatalog ? "lanzarote" : undefined}>
+        {deCoche && hasCuratedCatalog
+          ? [...CATEGORIAS_EXPLORAR_LANZAROTE.map((categoria) => ({ categoria })), { restaurantes: true as const }, { hoteles: true as const }].map((item, index) => {
+              if ('categoria' in item) {
+                const { categoria } = item
+                const cuantos = categoria.id === 'excursiones' ? excursions.length : lugaresDeCategoriaLanzarote(categoria, curatedPool).filter((place) => !place.fuera_de_lista || place.name === 'Charco del Palo').length
+                if (categoria.id === 'excursiones' && excursions.length === 0) return null
+                return (
+                  <ExploreCard
+                    key={categoria.id}
+                    id={categoria.estilo}
+                    label={categoria.label}
+                    sub={categoria.id === 'excursiones' ? `${cuantos} ${cuantos === 1 ? 'opción' : 'opciones'}` : `${cuantos} ${cuantos === 1 ? 'lugar' : 'lugares'}`}
+                    photo={null}
+                    delay={index * 40}
+                    wide={false}
+                    onClick={() => (categoria.id === 'excursiones' ? setActiveCard('excursiones') : setCategoriaLz(categoria))}
+                  />
+                )
+              }
+              const esRestaurantes = 'restaurantes' in item
+              return (
+                <ExploreCard
+                  key={esRestaurantes ? 'restaurantes' : 'hoteles'}
+                  id={esRestaurantes ? 'restaurantes' : 'hoteles'}
+                  label={esRestaurantes ? 'Restaurantes' : 'Hoteles'}
+                  sub={esRestaurantes ? countLabel('restaurantes') : 'Dónde dormir'}
+                  photo={null}
+                  delay={index * 40}
+                  wide={false}
+                  onClick={() => (esRestaurantes ? setActiveCard('restaurantes') : useAlojamientoUi.getState().abrirMapa())}
+                />
+              )
+            })
+          : null}
+        {!(deCoche && hasCuratedCatalog) && visibleCards.map((card, index) => {
           const label = hasCuratedCatalog ? countLabel(card.id) : 'Buscar'
           return (
             <ExploreCard

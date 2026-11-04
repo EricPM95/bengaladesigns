@@ -76,9 +76,9 @@ sitio({
   tags: ['volcan', 'parque_nacional'],
   horario: {
     schedule: '09:00-15:45', windows: ['09:00-15:45'], last_entry: '15:45', closed_on: [], closed_dates: [],
-    horario_nota: 'Son las horas de entrada (turnos): la web oficial dice «09:00–15:45, todos los días» y no da la hora de cierre ni la última entrada aparte.',
+    horario_nota: 'Son las horas de entrada (turnos): primer turno 09:00, último 15:45; cierre a las 16:00, todos los días.',
     turnos_reserva: null,
-    hours_audit: auditoria('media', URL.timanfaya, 'Web oficial del CACT: 09:00–15:45 todos los días, 365 días. Otra fuente (lanzaroteon.com) dice que abre a las 9:30, con cierre a las 17:30; Google Maps, 9:30–15:45 en fin de semana. Manda el dato oficial y la diferencia queda como duda.'),
+    hours_audit: auditoria('media', URL.timanfaya, 'Web oficial del CACT: 09:00–15:45 todos los días, 365 días. Eric lo confirma (4-nov-2026): abre a las 09:00 todos los días, horario 9:00-16:00 desde el 1-jul-2023; primer turno 09:00, último 15:45, cierre 16:00.'),
   },
   reserva: 'obligatoria',
   extra: {
@@ -90,7 +90,7 @@ sitio({
   },
   avisos: [aviso('cola', 'En julio de 2025 hubo colas de cientos de coches; las entradas con hora se crearon para evitarlo. Con todo, en temporada alta puede haber espera.', 'La Voz de Lanzarote, 1-jul-2025'), aviso('aparcamiento', 'Aparcamiento gratis en el Islote de Hilario, solo con entrada; está en cuesta y las puertas pueden dar a otros coches.', 'CACT')],
   carrito: 'dificil',
-  verificar: 'Primer turno: 09:00 (web oficial) o 09:30 (otras fuentes). Si se puede comer en El Diablo (12:00-16:00) sin tener entrada, sin confirmar.',
+  verificar: 'Si se puede comer en El Diablo (12:00-16:00) sin tener entrada, sin confirmar.',
 })
 sitio({
   id: 'jameos_del_agua', name: 'Jameos del Agua', level: 1, tier: 'imprescindible', zone: 'norte', dura: 60, type: 'interior', ver_por: 'solo_dentro', tags: ['cesar_manrique', 'cueva'],
@@ -430,6 +430,26 @@ const salida = {
   },
   tiempos_en_coche: 'data/pipeline_v2/travel/lanzarote_coche.json',
 }
+// LZ2b-1: las fichas de Eric (por_que_recomendamos, description y el texto de «Dónde aparcar»); lo demás de la ficha va en detalle/lanzarote/ (pasarFichasLanzarote.mjs).
+{
+  const fichas = JSON.parse(readFileSync('docs/destinos/lanzarote/FICHAS_LANZAROTE.json', 'utf8'))
+  for (const p of salida.places) {
+    const f = fichas[p.id]
+    if (!f) continue
+    p.por_que_recomendamos = f.por_que_recomendamos
+    p.description = f.description
+    p.aparcar = f.aparcar
+    p.aparcar_verificar = f.aparcar_verificar === true
+  }
+  // Las filas de un día con su propio nombre (Haría / Casa-Museo, Playa Blanca / Faro, Famara) encuentran la ficha de su sitio (alias ya normalizados: sin tildes ni mayúsculas).
+  const normaliza = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+  const ALIAS = {
+    haria_y_la_casa_museo_cesar_manrique: ['Haría y el Valle de las Mil Palmeras', 'Casa-Museo César Manrique (Haría)'],
+    playa_blanca_y_el_faro_de_pechiguera: ['El paseo marítimo de Playa Blanca', 'Faro de Pechiguera'],
+    caleta_de_famara_y_playa_de_famara: ['El atardecer en Famara'],
+  }
+  for (const p of salida.places) if (ALIAS[p.id]) p.search_aliases = ALIAS[p.id].map(normaliza)
+}
 mkdirSync('data/pipeline_v2', { recursive: true })
 writeFileSync('data/pipeline_v2/lanzarote.json', `${JSON.stringify(salida, null, 1)}\n`)
 
@@ -451,7 +471,7 @@ const dias = {
   D1: lista('D1', 'Fuego y mar: el sur volcánico', ['Montañas del Fuego (Timanfaya)', 'La Geria y sus bodegas', 'El Golfo y el Charco de los Clicos'], {
     partes: { unica: {
       manana: [
-        turno('montanas_del_fuego', 90, '09:30', 'Reserva online con día y hora; la web abre turnos desde las 09:00 ⚠️ (el de las 09:30 deja llegar a la bodega sin esperas). Islote de Hilario y la Ruta de los Volcanes en el autobús del parque.'),
+        turno('montanas_del_fuego', 90, '09:00', 'Reserva online con día y hora; abre a las 09:00 todos los días (9:00-16:00 desde el 1-jul-2023, último turno 15:45). Islote de Hilario y la Ruta de los Volcanes en el autobús del parque.'),
         { ...parada('la_geria_y_sus_bodegas', 60, { modo: 'fuera', doc: 'La Geria: la carretera de los viñedos (LZ-30), con parada en un mirador de los hoyos de viña y una parada corta en una bodega (Stratvs, todos los días; El Grifo, de lunes a viernes) ~1 h' }), bebida_aviso: 'Quien conduce, sin alcohol', min_fuente: 'LANZAROTE_SITIOS.md (45-60 min)' },
       ],
       comida: comida('en La Geria', '13:15', 'En La Geria, hacia las 13:15 (domingo: fuera de Bodega La Geria, que cierra a las 14:00 ⚠️)'),
@@ -485,8 +505,8 @@ const dias = {
       ],
       comida: comida('en Haría (~15 min del Mirador)', '13:45', 'En Haría (~15 min), hacia las 13:45 (sábado: también el Mercado Municipal, con reserva por WhatsApp)'),
       tarde: [
-        parada('haria_y_la_casa_museo_cesar_manrique', 60, { doc: 'Haría y el Valle de las Mil Palmeras: el pueblo y su plaza' }),
-        { ...parada('haria_y_la_casa_museo_cesar_manrique', 60, { modo: 'dentro', doc: 'Casa-Museo César Manrique (Haría), taquilla hasta las 17:00 (para quien no tenga Arte, opcional) ~1 h' }), titulo: 'Casa-Museo César Manrique (Haría)', opcional_sin_experiencia: 'arte', taquilla_hasta: '17:00' },
+        { ...parada('haria_y_la_casa_museo_cesar_manrique', 60, { doc: 'Haría y el Valle de las Mil Palmeras: el pueblo y su plaza' }), titulo: 'Haría y el Valle de las Mil Palmeras' },
+        { ...parada('haria_y_la_casa_museo_cesar_manrique', 60, { modo: 'dentro', doc: 'Casa-Museo César Manrique (Haría), taquilla hasta las 17:00 (para quien no tenga Arte, opcional) ~1 h' }), titulo: 'Casa-Museo César Manrique (Haría)', a_pie_min: 5, opcional_sin_experiencia: 'arte', taquilla_hasta: '17:00' },
         parada('mirador_de_los_helechos', 15, { doc: 'Mirador de los Helechos, la vista del valle, saliendo hacia Teguise ~15 min' }),
       ],
       cena: cena('cerca del alojamiento', 'Cerca de tu alojamiento (los restaurantes de cada zona, en RESTAURANTES_LANZAROTE.md)'),
@@ -539,7 +559,7 @@ const dias = {
       comida: comida('en Marina Rubicón o Playa Blanca', '14:00', 'En Marina Rubicón o Playa Blanca, hacia las 14:00'),
       tarde: [
         { ...parada('playa_blanca_y_el_faro_de_pechiguera', 45, { doc: 'El paseo marítimo de Playa Blanca' }), titulo: 'El paseo marítimo de Playa Blanca' },
-        { ...parada('playa_blanca_y_el_faro_de_pechiguera', 45, { doc: 'Faro de Pechiguera, al atardecer' }), titulo: 'Faro de Pechiguera', hasta_atardecer: true },
+        { ...parada('playa_blanca_y_el_faro_de_pechiguera', 45, { doc: 'Faro de Pechiguera, al atardecer' }), titulo: 'Faro de Pechiguera', parada: 'faro_de_pechiguera', hasta_atardecer: true },
       ],
       cena: cena('en Marina Rubicón', 'En Marina Rubicón (o cerca del alojamiento)'),
     } },
@@ -562,7 +582,7 @@ const dias = {
       comida: comida('en Caleta de Famara', '13:30', 'En Caleta de Famara, hacia las 13:30'),
       tarde: [
         parada('caleta_de_famara_y_playa_de_famara', 90, { doc: 'Caleta de Famara, las calles de arena y el surf; Playa de Famara: el paseo por la arena (no es de baño: bandera roja todo el año)' }),
-        { ...parada('caleta_de_famara_y_playa_de_famara', null, { doc: 'El atardecer en Famara' }), titulo: 'El atardecer en Famara', hasta_atardecer: true },
+        { ...parada('caleta_de_famara_y_playa_de_famara', null, { doc: 'El atardecer en Famara' }), titulo: 'El atardecer en Famara', a_pie_min: 12, hasta_atardecer: true },
       ],
       cena: cena('en Caleta de Famara', 'En Caleta de Famara (o cerca del alojamiento)'),
     } },

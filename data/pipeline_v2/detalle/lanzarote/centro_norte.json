@@ -1,0 +1,69 @@
+{
+  "zone": "centro_norte",
+  "places": [
+    {
+      "name": "Teguise (villa)",
+      "description": "La villa que fue capital de la isla hasta el siglo XIX, con un casco de calles empedradas muy bien conservado y su famoso mercadillo de los domingos.",
+      "what_to_see": [
+        "La plaza mayor con la iglesia de Nuestra Señora de Guadalupe, la iglesia de la antigua capital",
+        "El Palacio Spínola, una casa señorial del siglo XVIII (por fuera)",
+        "El Callejón de la Sangre, que, según se cuenta, debe su nombre a los asaltos de los piratas",
+        "Los conventos de San Francisco y de Santo Domingo",
+        "Arriba, en el borde del volcán Guanapay, el Castillo de Santa Bárbara"
+      ],
+      "aparcar": "Aparcamientos gratis a la entrada del pueblo. Entre semana se aparca también cerca del centro; el domingo se llenan pronto.",
+      "aparcar_verificar": false,
+      "tips": [
+        "El domingo de mercadillo, llega hacia las 9:00: los aparcamientos gratis de la entrada se llenan hacia las 10:30. Si están llenos, aparca fuera y camina unos 10 min.",
+        "Antes de las 11:00, cuando llegan los autobuses.",
+        "Entre semana se aparca en el centro sin problema y los museos están abiertos."
+      ],
+      "historia": "Ponte en la plaza, delante de la iglesia, y mira alrededor: casas blancas, balcones de madera, calles empedradas. Parece un pueblo tranquilo. Pero durante más de cuatrocientos años fue la capital de Lanzarote. Y también el blanco favorito de los piratas.\n\nCuando los conquistadores normandos llegaron a la isla, a principios del siglo quince, aquí había un poblado de los antiguos habitantes. La crónica de la conquista lo llama la Gran Aldea. Sobre ese lugar creció la villa. El nombre de Teguise llegó más tarde, y su origen es un misterio. Una historia muy repetida dice que Teguise era una princesa aborigen, hija del último rey de la isla, que se casó con Maciot de Béthencourt, el sobrino del conquistador. Es bonita, pero los historiadores no han encontrado ningún documento que la pruebe. Así que tómala como leyenda.\n\nLo que sí está documentado son los piratas. Teguise estaba tierra adentro, lejos de la costa, pero no bastó. En los siglos dieciséis y diecisiete, barcos del norte de África asaltaron la villa una y otra vez: en 1569, en 1586, en 1618. Saqueaban, quemaban y se llevaban a la gente para venderla como esclavos. Cuando los vigías veían velas en el mar, las campanas de la iglesia y del convento tocaban a rebato, y los vecinos corrían a refugiarse en el castillo de Santa Bárbara, arriba, en el volcán de Guanapay.\n\nBusca ahora el Callejón de la Sangre, una calle estrecha y empedrada detrás de la iglesia. Su nombre recuerda uno de esos combates. El ayuntamiento cuenta que aquí, en 1569, los vecinos hicieron frente a los asaltantes del pirata Calafat y los rechazaron. Otras fuentes hablan de otros asaltos y otros años. El nombre es seguro; el detalle cambia según quién lo cuente.\n\nTeguise fue capital hasta mediados del siglo diecinueve, cuando Arrecife, con su puerto, le quitó el puesto. La villa se quedó quieta, y gracias a eso se ha conservado tan bien.\n\nFíjate en tres cosas. La iglesia de Nuestra Señora de Guadalupe, la iglesia mayor de la antigua capital. El Palacio Spínola, una casa señorial del siglo dieciocho, que hoy guarda un museo dedicado al timple, la pequeña guitarra canaria. Y levanta la vista hacia el Guanapay: ese castillo en el borde del cráter es el que daba refugio cuando sonaban las campanas.\n\nSi vienes en domingo, la plaza se llena de puestos de mercadillo. Donde antes sonaban campanas avisando de piratas, hoy se oye a los vendedores. Es la mejor venganza que podía tener esta villa."
+    },
+    {
+      "name": "Ermita de las Nieves",
+      "description": "Una ermita blanca a unos 650 metros, en lo alto del Risco de Famara, con vistas a la playa de Famara y a La Graciosa.",
+      "what_to_see": [
+        "La ermita blanca de las Nieves",
+        "La playa de Famara y el risco desde arriba",
+        "La Graciosa al fondo, si el día está claro"
+      ],
+      "aparcar": "Aparcamiento junto a la ermita.",
+      "aparcar_verificar": true,
+      "tips": [
+        "Con niebla o viento fuerte, no se ve nada: mírala en un día claro.",
+        "Mejor al amanecer o al atardecer."
+      ]
+    },
+    {
+      "name": "Ciudad Estratificada (Rofera de Teseguite)",
+      "description": "Paredes y torres de toba volcánica junto a Teguise, erosionadas en capas que parecen una ciudad en ruinas.",
+      "what_to_see": [
+        "Las capas de la roca, una encima de otra",
+        "Las formas que ha tallado el viento",
+        "La vista sobre el campo de Teguise"
+      ],
+      "aparcar": "Aparcamiento de tierra junto a las formaciones, por la LZ-404.",
+      "aparcar_verificar": true,
+      "tips": [
+        "No te subas a las formaciones: son frágiles.",
+        "Llévate tu basura: no hay servicios."
+      ]
+    },
+    {
+      "name": "Castillo de Santa Bárbara",
+      "description": "El castillo del volcán Guanapay, sobre Teguise, que servía de refugio en los asaltos piratas. Hoy se visita por fuera, por las vistas.",
+      "what_to_see": [
+        "El castillo en el borde del cráter",
+        "Teguise a tus pies",
+        "Las vistas sobre el centro de la isla"
+      ],
+      "aparcar": "Aparcamiento pequeño junto al castillo.",
+      "aparcar_verificar": true,
+      "tips": [
+        "Por las vistas desde el volcán: dentro ya no hay museo.",
+        "El aparcamiento es pequeño."
+      ]
+    }
+  ]
+}

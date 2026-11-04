@@ -1,0 +1,333 @@
+{
+ "_nota": "LZ2b-1 (agente A, 4-nov-2026). Para el REPASO. Fuentes: Mapbox Search Box (categoría parking), los 147 de OpenStreetMap de la LZ1 y Mapbox Directions. Overpass (OpenStreetMap en vivo) no respondía y Google Maps no se ha mirado: los sitios con verificar=true siguen sin comprobar y Eric los mira en el viaje.",
+ "sitios": [
+  {
+   "id": "jameos_del_agua",
+   "sitio": "Jameos del Agua",
+   "aparcamiento_encontrado": "Aparcamiento Jameos del Agua, a 75 m de la coordenada anterior",
+   "gratis_o_pago": "sin dato (los centros del CACT dicen tener aparcamiento propio)",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 29.15805,
+    "lng": -13.43165
+   },
+   "texto_nuevo": "Aparcamiento junto a la entrada.",
+   "verificar": false
+  },
+  {
+   "id": "jardin_de_cactus",
+   "sitio": "Jardín de Cactus (Guatiza)",
+   "aparcamiento_encontrado": "Parking Jardín de Cactus, a 54 m",
+   "gratis_o_pago": "sin dato",
+   "fuente": "OpenStreetMap (los 147 aparcamientos de la LZ1)",
+   "coordenada_movida": {
+    "lat": 29.080393,
+    "lng": -13.476949
+   },
+   "texto_nuevo": "Aparcamiento junto a la entrada.",
+   "verificar": false
+  },
+  {
+   "id": "los_hervideros",
+   "sitio": "Los Hervideros",
+   "aparcamiento_encontrado": "Aparcamiento para Los Hervideros, a 98 m de la coordenada anterior",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 28.95357,
+    "lng": -13.83336
+   },
+   "texto_nuevo": "Aparcamiento junto a los miradores, al lado de la carretera LZ-703.",
+   "verificar": false
+  },
+  {
+   "id": "salinas_de_janubio",
+   "sitio": "Salinas de Janubio (mirador)",
+   "aparcamiento_encontrado": "Aparcamiento Mirador Salinas de Janubio, a 18 m (la coordenada ya estaba bien)",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento del mirador, junto a la carretera.",
+   "verificar": false
+  },
+  {
+   "id": "casa_museo_del_campesino",
+   "sitio": "Casa-Museo del Campesino (Mozaga)",
+   "aparcamiento_encontrado": "Casa Museo del Campesino Parking, a 59 m (y el de OpenStreetMap, a 83 m)",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026) + OpenStreetMap",
+   "coordenada_movida": {
+    "lat": 29.01527,
+    "lng": -13.61553
+   },
+   "texto_nuevo": "Aparcamiento junto a la casa.",
+   "verificar": false
+  },
+  {
+   "id": "mirador_del_bosquecillo",
+   "sitio": "Mirador del Bosquecillo (Risco de Famara)",
+   "aparcamiento_encontrado": "Aparcamiento El Bosquecillo, a 118 m (en la pista, junto al mirador)",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026) + OpenStreetMap (dos «Mirador del Bosquecillo» a 110-141 m)",
+   "coordenada_movida": {
+    "lat": 29.12602,
+    "lng": -13.52319
+   },
+   "texto_nuevo": "Al final de la pista de tierra, junto al mirador.",
+   "verificar": false
+  },
+  {
+   "id": "castillo_de_san_jose",
+   "sitio": "Castillo de San José (MIAC)",
+   "aparcamiento_encontrado": "Aparcamiento en el Castillo de San José, a 68 m",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 28.97159,
+    "lng": -13.53334
+   },
+   "texto_nuevo": "Aparcamiento junto al castillo.",
+   "verificar": false
+  },
+  {
+   "id": "lagomar",
+   "sitio": "LagOmar (Nazaret)",
+   "aparcamiento_encontrado": "Aparcamiento del Museo LagOmar, a 61 m (y «Museo Lagomar parking», a 50 m)",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026)",
+   "coordenada_movida": {
+    "lat": 29.0454,
+    "lng": -13.55568
+   },
+   "texto_nuevo": "Aparcamiento propio del museo, junto a la entrada.",
+   "verificar": false
+  },
+  {
+   "id": "teguise",
+   "sitio": "Teguise (villa, aparcamiento a la entrada del pueblo)",
+   "aparcamiento_encontrado": "4 aparcamientos a 150-205 m del centro («Parking Teguise» y tres «Aparcamiento»; OpenStreetMap: uno a 246 m, 8 plazas)",
+   "gratis_o_pago": "sin dato (lo de «gratis» y lo del domingo vienen de DATOS_NATURALEZA, sin comprobar)",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026) + OpenStreetMap",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamientos gratis a la entrada del pueblo. Entre semana se aparca también cerca del centro; el domingo se llenan pronto.",
+   "verificar": false
+  },
+  {
+   "id": "punta_mujeres_y_arrieta",
+   "sitio": "Punta Mujeres y Arrieta (espigón de Arrieta)",
+   "aparcamiento_encontrado": "«Aparcamiento Gratuito Punta Mujeres» y «Estacionamiento Gratuito Arrieta»; en OpenStreetMap, 12 a 32 plazas a 85-117 m",
+   "gratis_o_pago": "gratis (así se llaman los dos en Mapbox)",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026) + OpenStreetMap",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento gratis en cada pueblo, cerca del mar.",
+   "verificar": false
+  },
+  {
+   "id": "arrecife_charco_de_san_gines_y_el_paseo",
+   "sitio": "Arrecife: Charco de San Ginés y el paseo",
+   "aparcamiento_encontrado": "Garaje Único (350 m), Parking Hubara (496 m), plazas libres a 489 m; nada pegado al Charco",
+   "gratis_o_pago": "sin dato (garajes de pago y calle)",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Es ciudad: hay aparcamientos y garajes a 350-500 m del Charco; busca uno cerca del paseo.",
+   "verificar": false
+  },
+  {
+   "id": "puerto_del_carmen_puerto_viejo",
+   "sitio": "Puerto del Carmen (Puerto Viejo)",
+   "aparcamiento_encontrado": "«Aparcamiento» a 4 m y «Aparcamientos El Pueblo» a 195 m",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento junto al Puerto Viejo (hay otro a unos 200 m: Aparcamientos El Pueblo).",
+   "verificar": false
+  },
+  {
+   "id": "puerto_de_playa_blanca",
+   "sitio": "Puerto de Playa Blanca (ferry a Corralejo)",
+   "aparcamiento_encontrado": "«Aparcamiento para Las Brisas», a 12 m del puerto (y Playa Blanca 24h El Correíllo, a 157 m)",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026)",
+   "coordenada_movida": null,
+   "texto_nuevo": null,
+   "verificar": false,
+   "nota": "solo parada de coche (no es una ficha)"
+  },
+  {
+   "id": "aeropuerto_ace",
+   "sitio": "Aeropuerto de Lanzarote (ACE, T1)",
+   "aparcamiento_encontrado": "Parking P2 a 31 m (aparcamiento del aeropuerto)",
+   "gratis_o_pago": "de pago (aeropuerto)",
+   "fuente": "Mapbox Search Box (categoría parking, 4-nov-2026)",
+   "coordenada_movida": null,
+   "texto_nuevo": null,
+   "verificar": false,
+   "nota": "solo parada de coche (no es una ficha)"
+  },
+  {
+   "id": "cueva_de_los_verdes",
+   "sitio": "Cueva de los Verdes",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento junto a la entrada.",
+   "verificar": true,
+   "motivo": "Ni Mapbox ni OpenStreetMap tienen aparcamiento a menos de 600 m (el de Jameos está a ~1 km)."
+  },
+  {
+   "id": "la_geria_y_sus_bodegas",
+   "sitio": "La Geria y sus bodegas (parada en Stratvs)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "En la bodega que visites (todas tienen aparcamiento) o en los apartaderos de la carretera LZ-30. No pares en el arcén.",
+   "verificar": true,
+   "motivo": "Es una carretera de bodegas, no un aparcamiento: lo más cercano está a 504-567 m. Se comprueba en cada bodega."
+  },
+  {
+   "id": "caleton_blanco",
+   "sitio": "Caletón Blanco (LZ-1 km 30, Órzola)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "En el arcén de la LZ-1, junto a la playa (a 1,2 km del puerto de Órzola).",
+   "verificar": true,
+   "motivo": "Sin aparcamiento encontrado: la ficha dice que se aparca en el arcén de la LZ-1. Es lo único que se sabe."
+  },
+  {
+   "id": "playa_de_montana_bermeja",
+   "sitio": "Playa de Montaña Bermeja (LZ-703)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Junto a la carretera LZ-703, entre Janubio y Los Hervideros.",
+   "verificar": true,
+   "motivo": "Sin aparcamiento encontrado; la ficha dice «junto a la carretera LZ-703»."
+  },
+  {
+   "id": "castillo_de_santa_barbara",
+   "sitio": "Castillo de Santa Bárbara (volcán Guanapay)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento pequeño junto al castillo.",
+   "verificar": true,
+   "motivo": "Sin aparcamiento encontrado a menos de 600 m."
+  },
+  {
+   "id": "ciudad_estratificada_rofera_de_teseguite",
+   "sitio": "Ciudad Estratificada (Rofera de Teseguite, LZ-404)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento de tierra junto a las formaciones, por la LZ-404.",
+   "verificar": true,
+   "motivo": "Sin aparcamiento encontrado: es un apartadero de tierra por la LZ-404."
+  },
+  {
+   "id": "las_grietas_montana_blanca",
+   "sitio": "Las Grietas (Montaña Blanca, LZ-35)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "No hay aparcamiento oficial: sigue unos 200 m hasta la pista de tierra y aparca fuera de la carretera.",
+   "verificar": true,
+   "motivo": "No hay aparcamiento oficial (solo la pista de tierra): la ficha ya lo dice tal cual."
+  },
+  {
+   "id": "haria_y_la_casa_museo_cesar_manrique",
+   "sitio": "Haría y la Casa-Museo César Manrique",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento en el pueblo, a unos 300 m de la Casa-Museo: se va a pie a las dos cosas.",
+   "verificar": true,
+   "motivo": "Mapbox solo tiene el aparcamiento de autobuses, a 509 m. Casa-Museo y pueblo se hacen a pie desde el mismo sitio."
+  },
+  {
+   "id": "mirador_de_los_helechos",
+   "sitio": "Mirador de los Helechos (valle de las Mil Palmeras)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento junto al mirador, en la carretera de Teguise a Haría.",
+   "verificar": true,
+   "motivo": "Sin aparcamiento encontrado."
+  },
+  {
+   "id": "mirador_de_haria",
+   "sitio": "Mirador de Haría (Malpaso)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento pequeño junto al mirador. Prohibido dejar el coche en el arcén.",
+   "verificar": true,
+   "motivo": "Sin aparcamiento encontrado (el texto ya dice «pequeño» y «prohibido el arcén»)."
+  },
+  {
+   "id": "mirador_de_guinate",
+   "sitio": "Mirador de Guinate",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Al final de la calle La Majadita, en Guinate.",
+   "verificar": true,
+   "motivo": "Sin aparcamiento encontrado; la ficha dice «al final de la calle La Majadita»."
+  },
+  {
+   "id": "ermita_de_las_nieves",
+   "sitio": "Ermita de las Nieves",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento junto a la ermita.",
+   "verificar": true,
+   "motivo": "Sin aparcamiento encontrado."
+  },
+  {
+   "id": "caleta_de_famara_y_playa_de_famara",
+   "sitio": "Caleta de Famara y Playa de Famara",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento a la entrada del pueblo y junto a la playa.",
+   "verificar": true,
+   "motivo": "Solo un «Aparcamiento» a 331 m, en la entrada del pueblo; el de la playa no aparece."
+  },
+  {
+   "id": "playa_blanca_y_el_faro_de_pechiguera",
+   "sitio": "Playa Blanca (paseo marítimo)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Aparcamiento en Marina Rubicón y junto al faro.",
+   "verificar": true,
+   "motivo": "Paseo marítimo: Parking Varadero (132 m) y otros a 200 m. El aparcamiento del Faro (parada propia) no aparece en ninguna fuente."
+  },
+  {
+   "id": "volcan_del_cuervo",
+   "sitio": "Volcán del Cuervo (aparcamiento junto a la LZ-56)",
+   "aparcamiento_encontrado": "ninguno comprobado",
+   "gratis_o_pago": "sin dato",
+   "fuente": "Mapbox Search Box + OpenStreetMap: nada (Google Maps no se ha mirado)",
+   "coordenada_movida": null,
+   "texto_nuevo": "Desde noviembre de 2026 está previsto aparcar en Mancha Blanca (aparcamiento de Los Dolores) y subir en la guagua del parque (línea P3).",
+   "verificar": true,
+   "motivo": "Sin aparcamiento encontrado; desde nov-2026 se anuncia aparcar en Mancha Blanca y subir en guagua."
+  }
+ ]
+}

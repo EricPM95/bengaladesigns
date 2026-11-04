@@ -1,0 +1,52 @@
+{
+  "zone": "noreste",
+  "places": [
+    {
+      "name": "Jardín de Cactus",
+      "description": "Una antigua cantera de picón en Guatiza convertida en jardín, con miles de cactus de cientos de especies de los cinco continentes.",
+      "what_to_see": [
+        "El cactus gigante de metal verde de la entrada, de unos 8 metros: la firma de Manrique",
+        "Los cactus altos como columnas, redondos como cojines y retorcidos como serpientes",
+        "El molino de lo alto, donde se molía el grano para hacer gofio",
+        "Al salir, las tuneras de los campos: si tienen manchitas blancas, es la cochinilla"
+      ],
+      "aparcar": "Aparcamiento junto a la entrada.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Calzado para caminos de piedra.",
+        "En verano, gorra y crema: hay poca sombra.",
+        "No se puede entrar con comida ni bebida; hay cafetería dentro."
+      ],
+      "historia": "Mira hacia abajo desde la entrada. Este jardín está metido en un agujero, con terrazas que bajan como las gradas de un teatro. Ese agujero no lo hizo la naturaleza. Lo hicieron los campesinos, a pico y pala.\n\nEsto era una rofera, una cantera de rofe, que es como llaman aquí al picón, la arena volcánica gruesa y negra. Los agricultores la sacaban de aquí para echarla sobre sus campos. ¿Por qué? Porque esa capa de piedrecitas negras guarda la humedad de la noche y no deja que el sol seque la tierra. En una isla donde casi no llueve, eso es la diferencia entre cosechar o no. Sacaron tanto picón que dejaron este hueco enorme.\n\nY alrededor, mira los campos: están llenos de tuneras, las chumberas. No están ahí por casualidad. En el siglo diecinueve, en las islas se empezó a criar en ellas la cochinilla, un insecto pequeño cubierto de una pelusa blanca. Si lo aplastas, sale un rojo intenso. Con él se hacía un tinte que se vendía a las fábricas de tejidos de Francia y de Inglaterra. Fue el gran negocio de Canarias, hasta que se inventaron los tintes artificiales. Pero aquí, en Guatiza y en Mala, los pueblos que tienes alrededor, la gente siguió criándola. Hoy son casi el último sitio donde se mantiene esa tradición, y la Unión Europea protege su nombre: Cochinilla de Canarias. Todavía se usa para dar color a bebidas, alimentos y cosméticos.\n\nAsí que, cuando César Manrique buscó un sitio para un jardín de cactus, eligió este: un agujero viejo en medio de las tuneras. Llenó las terrazas de plantas de medio mundo, y lo inauguró en 1990. Fue la última obra que hizo para la isla. Dos años después, murió.\n\nHoy viven aquí miles de cactus de cientos de especies distintas, traídos de los cinco continentes. Los hay altos como columnas, redondos como cojines y retorcidos como serpientes.\n\nFíjate en tres cosas. A la entrada, el cactus gigante de metal verde, de unos ocho metros: es la firma de Manrique, y se ve desde la carretera. Sube luego a lo alto del jardín, al molino: en el siglo diecinueve se molía allí el grano para hacer gofio, la harina tostada que se come en Canarias. Y al salir, mira las tuneras de los campos: si ves alguna con manchitas blancas, ya sabes lo que es.\n\nAhí dentro está el rojo que durante tanto tiempo dio de comer a estos pueblos. Y aquí al lado, en el agujero que dejaron sus abuelos, un jardín."
+    },
+    {
+      "name": "Punta Mujeres y Arrieta (La Garita)",
+      "description": "Punta Mujeres, con piscinas naturales entre la lava, y Arrieta, pueblo de pescadores con la playa de La Garita.",
+      "what_to_see": [
+        "Las piscinas naturales de Punta Mujeres",
+        "El espigón de Arrieta y sus marisquerías",
+        "La playa de La Garita"
+      ],
+      "aparcar": "Aparcamiento gratis en cada pueblo, cerca del mar.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Las piscinas, mejor a media marea.",
+        "La Garita es de agua tranquila, pero sin socorrista.",
+        "En Arrieta, marisquerías en el espigón para cenar."
+      ]
+    },
+    {
+      "name": "Playa de La Garita",
+      "description": "La playa de Arrieta, de arena y agua casi siempre tranquila.",
+      "what_to_see": [
+        "La playa y el paseo junto al mar",
+        "El pueblo de Arrieta"
+      ],
+      "aparcar": "Aparcamiento junto a la playa.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Agua tranquila casi siempre, pero sin socorrista."
+      ]
+    }
+  ]
+}

@@ -357,6 +357,8 @@ interface RouteStoreState {
   resolveArchetypeChoice: (archetype: DestinationArchetype) => void
   setTransportOption: (option: TransportOption | null) => void
   setVehicleOwnership: (ownership: VehicleOwnership | null) => void
+  /** (LZ2b1) Destinos de coche: el interruptor «Coche de alquiler | Mi coche» de RESERVAS. Cambia la propiedad del vehículo (store y ruta) y `route.answers.coche`. */
+  setCocheDeViaje: (coche: 'alquiler' | 'propio') => void
   setVehicleType: (vehicleType: VehicleType | null) => void
   setVehicleResolved: (resolved: boolean) => void
   setTravelMode: (mode: TravelMode | null) => void
@@ -783,6 +785,19 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       companion_capacity_acknowledged: false,
     }),
   setVehicleOwnership: (ownership) => set({ vehicle_ownership: ownership }),
+  setCocheDeViaje: (coche) =>
+    set((state) => ({
+      vehicle_ownership: coche === 'alquiler' ? 'rental' : 'own',
+      ...(state.route
+        ? {
+            route: {
+              ...state.route,
+              transportContext: { ...state.route.transportContext, vehicle_type: state.route.transportContext.vehicle_type ?? 'car', vehicle_ownership: coche === 'alquiler' ? 'rental' : 'own' },
+              answers: { ...state.route.answers, coche },
+            },
+          }
+        : {}),
+    })),
   setVehicleType: (vehicleType) =>
     set({ vehicle_type: vehicleType, accommodation_mode: deriveAccommodationMode(vehicleType), companion_capacity_acknowledged: false }),
   setVehicleResolved: (resolved) => set({ vehicle_resolved: resolved }),

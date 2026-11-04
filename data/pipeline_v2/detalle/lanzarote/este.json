@@ -1,0 +1,38 @@
+{
+  "zone": "este",
+  "places": [
+    {
+      "name": "Arrecife: Charco de San Ginés y el paseo",
+      "description": "El casco de Arrecife junto al Charco de San Ginés, una laguna de barcas de pescadores, y su paseo marítimo de 4 km.",
+      "what_to_see": [
+        "El Charco de San Ginés, con sus barcas y sus terrazas, mejor al caer la tarde",
+        "El Puente de las Bolas y el Castillo de San Gabriel, en su islote",
+        "La playa del Reducto, la playa de la ciudad",
+        "El paseo marítimo, del Reducto al Castillo de San José"
+      ],
+      "aparcar": "Es ciudad: hay aparcamientos y garajes a 350-500 m del Charco; busca uno cerca del paseo.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Al caer la tarde, con las luces del Charco.",
+        "La playa del Reducto, mejor con marea alta o media: con marea baja salen piedras.",
+        "El paseo marítimo tiene 4 km: del Reducto al Castillo de San José."
+      ]
+    },
+    {
+      "name": "Castillo de San José (MIAC)",
+      "description": "El Castillo de San José, sobre el puerto de Arrecife, con el Museo Internacional de Arte Contemporáneo (MIAC) dentro y un restaurante acristalado.",
+      "what_to_see": [
+        "El castillo de piedra y sus vistas al puerto",
+        "Las salas del museo de arte contemporáneo",
+        "El restaurante de abajo, con un gran ventanal sobre el mar"
+      ],
+      "aparcar": "Aparcamiento junto al castillo.",
+      "aparcar_verificar": false,
+      "tips": [
+        "Fotos sin flash y a distancia de las obras.",
+        "Para cenar con vistas, de miércoles a sábado (el restaurante abre hasta las 23:00). Reserva por teléfono.",
+        "Solo la planta de entrada no tiene escaleras."
+      ]
+    }
+  ]
+}

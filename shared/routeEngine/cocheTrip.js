@@ -112,14 +112,15 @@ function pasosDelDia({ dia, variantes, ctx, datos, coche, placeByName, placeById
   const esVar = (id) => variantes.includes(id)
   const deParada = (row) => {
     const place = placeByName.get(row.lugar) ?? null
-    const p = place?.id ?? null
+    // LZ2b-1: una fila puede llevar su propia parada (`parada`: el Faro de Pechiguera tiene su aparcamiento) y su nombre (`titulo`: dos filas del mismo sitio ya no salen con el mismo nombre).
+    const p = row.parada ?? place?.id ?? null
     const ventana = place?.windows?.length ? place.windows : typeof place?.schedule === 'string' ? [place.schedule] : []
     const abre = ventana.length ? ventana.map((w) => hm(String(w).split('-')[0])).filter(Number.isFinite).sort((a, b) => a - b)[0] : null
     const cierre = ventana.length ? ventana.map((w) => hm(String(w).split('-')[1])).filter(Number.isFinite).sort((a, b) => b - a)[0] : null
     const m = row.min ?? place?.duration_minutes ?? 30
     const ult = place?.last_entry ? hm(place.last_entry) : cierre != null && place?.ver_por === 'solo_dentro' ? cierre - m : null
     return {
-      lugar: row.lugar, p, place, m, opc: Boolean(row.opcional), modo: row.modo ?? null, doc: row.doc ?? '', notas: row.notas ?? [],
+      lugar: row.lugar, titulo: row.titulo ?? null, aPie: row.a_pie_min ?? null, p, place, m, opc: Boolean(row.opcional), modo: row.modo ?? null, doc: row.doc ?? '', notas: row.notas ?? [],
       fijo: row.hora_tipo === 'turno' && row.hora ? hm(row.hora) : null, abre, ult,
       sol: Boolean(row.hasta_atardecer), llegadaAntes: row.llegada_antes_min ?? null, row,
     }
@@ -225,6 +226,8 @@ function medirDia({ pasos: pasosIn, zona, coche, domingo, sol, margenTurno, sali
     let llegada = t
     let tramo = null
     const mismoSitio = st.p == null || st.p === prev
+    // LZ2b-1: dos filas seguidas en el mismo aparcamiento (Haría y su Casa-Museo, Caleta de Famara y su atardecer): se va a pie, sin coche.
+    if (primeroHecho && mismoSitio && st.p != null && st.aPie) { llegada = t + st.aPie; tramo = { modo: 'walk', minutos: st.aPie, de: prev, a: st.p } }
     if (primeroHecho && !mismoSitio) {
       const d = coche.min(prev, st.p), ap = coche.aparcar(st.p, domingo)
       llegada = t + d + ap; cocheMin += d; conAparcar += d + ap
@@ -284,13 +287,14 @@ export function planCocheDia({ destData, datos, dayId, dayNumber, contentDays, d
   const domingo = semana === 0
   const sol = sunsetFor(destData, { dateIso, season }) ?? hm('18:20')
   const margenTurno = datos.destino?.llegadas?.turno?.min ?? MARGEN_TURNO_DEFECTO
-  const sinCoche = cocheModo === 'no'
+  // LZ2b-1 (Eric, 4-nov): en un destino en coche se da por hecho que hay coche; la ruta es siempre la misma. `cocheModo` solo cambia el rato de recoger el coche el día 1 (alquiler / propio). 'no' ya no existe (se trata como 'alquiler').
+  const sinCoche = false
   const ctx = { semana, mmdd, contentDays, experiences, opciones, verano: temporadaDe(destData, dateIso) === 'verano' }
   const variantes = variantesDelDia(dayId, ctx)
   const variante = variantes[0] ?? null
 
   const base = { dia_id: dayId, variante, variantes, title: dia.nombre, timezone: destData.timezone ?? 'Atlantic/Canary' }
-  const sin_coche = dia.sin_coche ? { excursion: dia.sin_coche.excursion ?? null, deja_fuera: dia.sin_coche.deja_fuera ?? null, civitatis: civitatisDe(datos.civitatis, dia.sin_coche.excursion, dia.id) } : null
+  const sin_coche = null // LZ2b-1: fuera el «¿Sin coche?» de cada día (las excursiones de Civitatis siguen en EXPLORAR › Excursiones)
 
   // Días de excursión (La Graciosa, Fuerteventura): sin paradas de ciudad. La ida es hasta el puerto.
   if (dia.tipo_dia === 'excursion') return excursionDia({ base, dia, coche, zona, pase, sinCoche, sin_coche, datos, destData })
@@ -349,7 +353,9 @@ export function planCocheDia({ destData, datos, dayId, dayNumber, contentDays, d
     if (st.comida) continue
     const place = st.place
     const parking = coche.punto(st.p)
-    const trayecto = !sinCoche && l.tramo && l.tramo.minutos + l.tramo.aparcar_min >= 0 && l.tramo.de !== l.tramo.a
+    const trayecto = l.tramo?.modo === 'walk'
+      ? { modo: 'walk', minutos: l.tramo.minutos, km: null, aparcar_min: 0, minutos_total: l.tramo.minutos, texto: `A pie · ${l.tramo.minutos} min`, desde: null, destino: parking, maps_url: null }
+      : !sinCoche && l.tramo && l.tramo.minutos + l.tramo.aparcar_min >= 0 && l.tramo.de !== l.tramo.a
       ? {
         modo: 'car', minutos: l.tramo.minutos, km: l.tramo.km, aparcar_min: l.tramo.aparcar_min, minutos_total: l.tramo.minutos + l.tramo.aparcar_min,
         texto: `En coche · ${l.tramo.minutos} min · ${Math.round(l.tramo.km)} km`,
@@ -359,7 +365,8 @@ export function planCocheDia({ destData, datos, dayId, dayNumber, contentDays, d
     const online = Boolean(place?.reserva_solo_online || st.llegadaAntes)
     const llegadaTxt = datos.destino?.llegadas?.por_lugar?.[st.lugar] ?? datos.destino?.llegadas?.por_lugar?.[place?.name] ?? null
     stops.push({
-      name: st.lugar,
+      name: st.titulo ?? st.lugar,
+      place_name: st.lugar,
       suggested_time: fh(l.entra),
       duration_minutes: Math.round(l.dur ?? st.m),
       latitude: place?.coordinates?.[0] ?? parking?.lat ?? null,

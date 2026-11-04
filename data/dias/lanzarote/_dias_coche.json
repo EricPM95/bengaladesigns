@@ -162,9 +162,9 @@
     "avisos": []
    },
    "costa_teguise": {
-    "salida": "09:25",
-    "coche_min": 111,
-    "con_aparcar_min": 139,
+    "salida": "09:26",
+    "coche_min": 110,
+    "con_aparcar_min": 138,
     "regreso": "17:41",
     "avisos": []
    },
@@ -210,9 +210,9 @@
     "avisos": []
    },
    "costa_teguise": {
-    "salida": "09:25",
-    "coche_min": 107,
-    "con_aparcar_min": 132,
+    "salida": "09:26",
+    "coche_min": 106,
+    "con_aparcar_min": 131,
     "regreso": "17:09",
     "avisos": []
    },
@@ -258,9 +258,9 @@
     "avisos": []
    },
    "costa_teguise": {
-    "salida": "09:25",
-    "coche_min": 105,
-    "con_aparcar_min": 135,
+    "salida": "09:26",
+    "coche_min": 104,
+    "con_aparcar_min": 134,
     "regreso": "17:22",
     "avisos": []
    },
@@ -389,54 +389,54 @@
   "zonas": {
    "puerto_del_carmen": {
     "salida": "09:35",
-    "coche_min": 109,
-    "con_aparcar_min": 149,
-    "regreso": "21:39",
+    "coche_min": 108,
+    "con_aparcar_min": 148,
+    "regreso": "21:38",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
     ]
    },
    "playa_blanca": {
     "salida": "09:10",
-    "coche_min": 152,
-    "con_aparcar_min": 192,
-    "regreso": "21:57",
+    "coche_min": 151,
+    "con_aparcar_min": 191,
+    "regreso": "21:56",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
     ]
    },
    "costa_teguise": {
     "salida": "09:45",
-    "coche_min": 94,
-    "con_aparcar_min": 134,
-    "regreso": "21:34",
+    "coche_min": 93,
+    "con_aparcar_min": 133,
+    "regreso": "21:33",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
     ]
    },
    "arrecife": {
     "salida": "09:45",
-    "coche_min": 84,
-    "con_aparcar_min": 124,
-    "regreso": "21:24",
+    "coche_min": 83,
+    "con_aparcar_min": 123,
+    "regreso": "21:23",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
     ]
    },
    "el_norte": {
     "salida": "09:35",
-    "coche_min": 118,
-    "con_aparcar_min": 158,
-    "regreso": "21:48",
+    "coche_min": 117,
+    "con_aparcar_min": 157,
+    "regreso": "21:47",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
     ]
    },
    "el_interior": {
     "salida": "09:39",
-    "coche_min": 107,
-    "con_aparcar_min": 147,
-    "regreso": "21:41",
+    "coche_min": 106,
+    "con_aparcar_min": 146,
+    "regreso": "21:40",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:21 y la última entrada es a las 17:10"
     ]
@@ -449,44 +449,44 @@
   "zonas": {
    "puerto_del_carmen": {
     "salida": "09:35",
-    "coche_min": 90,
-    "con_aparcar_min": 120,
-    "regreso": "20:25",
+    "coche_min": 88,
+    "con_aparcar_min": 118,
+    "regreso": "20:23",
     "avisos": []
    },
    "playa_blanca": {
     "salida": "09:10",
-    "coche_min": 133,
-    "con_aparcar_min": 163,
-    "regreso": "20:43",
+    "coche_min": 131,
+    "con_aparcar_min": 161,
+    "regreso": "20:41",
     "avisos": []
    },
    "costa_teguise": {
     "salida": "09:45",
-    "coche_min": 75,
-    "con_aparcar_min": 105,
-    "regreso": "20:20",
+    "coche_min": 73,
+    "con_aparcar_min": 103,
+    "regreso": "20:18",
     "avisos": []
    },
    "arrecife": {
     "salida": "09:45",
-    "coche_min": 65,
-    "con_aparcar_min": 95,
-    "regreso": "20:10",
+    "coche_min": 63,
+    "con_aparcar_min": 93,
+    "regreso": "20:08",
     "avisos": []
    },
    "el_norte": {
     "salida": "09:35",
-    "coche_min": 99,
-    "con_aparcar_min": 129,
-    "regreso": "20:34",
+    "coche_min": 97,
+    "con_aparcar_min": 127,
+    "regreso": "20:32",
     "avisos": []
    },
    "el_interior": {
     "salida": "09:39",
-    "coche_min": 88,
-    "con_aparcar_min": 118,
-    "regreso": "20:27",
+    "coche_min": 86,
+    "con_aparcar_min": 116,
+    "regreso": "20:25",
     "avisos": []
    }
   }
@@ -497,44 +497,44 @@
   "zonas": {
    "puerto_del_carmen": {
     "salida": "09:17",
-    "coche_min": 82,
-    "con_aparcar_min": 117,
-    "regreso": "20:14",
+    "coche_min": 83,
+    "con_aparcar_min": 118,
+    "regreso": "20:15",
     "avisos": []
    },
    "playa_blanca": {
     "salida": "08:57",
-    "coche_min": 120,
-    "con_aparcar_min": 155,
-    "regreso": "20:32",
+    "coche_min": 121,
+    "con_aparcar_min": 156,
+    "regreso": "20:33",
     "avisos": []
    },
    "costa_teguise": {
     "salida": "09:27",
-    "coche_min": 67,
-    "con_aparcar_min": 102,
-    "regreso": "20:09",
+    "coche_min": 68,
+    "con_aparcar_min": 103,
+    "regreso": "20:10",
     "avisos": []
    },
    "arrecife": {
     "salida": "09:27",
-    "coche_min": 57,
-    "con_aparcar_min": 92,
-    "regreso": "19:59",
+    "coche_min": 58,
+    "con_aparcar_min": 93,
+    "regreso": "20:00",
     "avisos": []
    },
    "el_norte": {
     "salida": "09:22",
-    "coche_min": 86,
-    "con_aparcar_min": 121,
-    "regreso": "20:23",
+    "coche_min": 87,
+    "con_aparcar_min": 122,
+    "regreso": "20:24",
     "avisos": []
    },
    "el_interior": {
     "salida": "09:31",
-    "coche_min": 70,
-    "con_aparcar_min": 105,
-    "regreso": "20:16",
+    "coche_min": 71,
+    "con_aparcar_min": 106,
+    "regreso": "20:17",
     "avisos": []
    }
   }
@@ -545,54 +545,54 @@
   "zonas": {
    "puerto_del_carmen": {
     "salida": "09:35",
-    "coche_min": 98,
-    "con_aparcar_min": 133,
-    "regreso": "21:38",
+    "coche_min": 97,
+    "con_aparcar_min": 132,
+    "regreso": "21:37",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:20 y la última entrada es a las 17:10"
     ]
    },
    "playa_blanca": {
     "salida": "09:10",
-    "coche_min": 141,
-    "con_aparcar_min": 176,
-    "regreso": "21:56",
+    "coche_min": 140,
+    "con_aparcar_min": 175,
+    "regreso": "21:55",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:20 y la última entrada es a las 17:10"
     ]
    },
    "costa_teguise": {
     "salida": "09:45",
-    "coche_min": 83,
-    "con_aparcar_min": 118,
-    "regreso": "21:33",
+    "coche_min": 82,
+    "con_aparcar_min": 117,
+    "regreso": "21:32",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:20 y la última entrada es a las 17:10"
     ]
    },
    "arrecife": {
     "salida": "09:45",
-    "coche_min": 73,
-    "con_aparcar_min": 108,
-    "regreso": "21:23",
+    "coche_min": 72,
+    "con_aparcar_min": 107,
+    "regreso": "21:22",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:20 y la última entrada es a las 17:10"
     ]
    },
    "el_norte": {
     "salida": "09:35",
-    "coche_min": 107,
-    "con_aparcar_min": 142,
-    "regreso": "21:47",
+    "coche_min": 106,
+    "con_aparcar_min": 141,
+    "regreso": "21:46",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:20 y la última entrada es a las 17:10"
     ]
    },
    "el_interior": {
     "salida": "09:39",
-    "coche_min": 96,
-    "con_aparcar_min": 131,
-    "regreso": "21:40",
+    "coche_min": 95,
+    "con_aparcar_min": 130,
+    "regreso": "21:39",
     "avisos": [
      "llega tarde a casa_museo_del_campesino: entra a las 17:20 y la última entrada es a las 17:10"
     ]

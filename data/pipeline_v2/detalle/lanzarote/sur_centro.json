@@ -1,0 +1,20 @@
+{
+  "zone": "sur_centro",
+  "places": [
+    {
+      "name": "Puerto del Carmen (Puerto Viejo)",
+      "description": "El Puerto Viejo de Puerto del Carmen, con su muelle, sus barcas y sus terrazas, y cerca la Playa Grande.",
+      "what_to_see": [
+        "El muelle y las barcas del Puerto Viejo",
+        "Las terrazas de pescado junto al mar",
+        "La Playa Grande, con socorristas"
+      ],
+      "aparcar": "Aparcamiento junto al Puerto Viejo (hay otro a unos 200 m: Aparcamientos El Pueblo).",
+      "aparcar_verificar": false,
+      "tips": [
+        "Para bañarse, Playa Grande, que tiene socorristas.",
+        "Para pescado, la cofradía de pescadores del Puerto Viejo."
+      ]
+    }
+  ]
+}

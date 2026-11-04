@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:34px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">LANZAROTE · LOS IMPRESCINDIBLES</span><span style="font:400 44px/1 'Instrument Serif',serif">Tres propuestas, 7 piezas</span></div>
+  <sc-for list="{{ opts }}" as="o" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:14px;padding:22px 26px;border-radius:28px;background:#FFFDF8;box-shadow:0 14px 30px -22px rgba(60,40,10,.45)">
+      <div style="display:flex;flex-direction:column;gap:3px"><span style="font:400 28px/1 'Instrument Serif',serif">{{ o.t }}</span><span style="font:400 14px/1.4 'Geist';color:rgba(28,34,48,.65)">{{ o.d }}</span></div>
+      <div style="display:flex;gap:30px;flex-wrap:wrap;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><dc-import name="Piezas/Insignia Lanza" design="{{ o.k }}" set="" size="190" hint-size="190px,190px"></dc-import><span style="font:500 12px 'Geist'">Sin empezar</span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><dc-import name="Piezas/Insignia Lanza" design="{{ o.k }}" set="0,1,2" size="190" hint-size="190px,190px"></dc-import><span style="font:500 12px 'Geist'">3 de 7</span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><dc-import name="Piezas/Insignia Lanza" design="{{ o.k }}" set="0,1,2,3,4,5,6" size="190" hint-size="190px,190px"></dc-import><span style="font:500 12px 'Geist'">Completa</span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><dc-import name="Piezas/Insignia Lanza" design="{{ o.k }}" set="0,1,2,3,4,5,6" size="96" hint-size="96px,96px"></dc-import><span style="font:500 12px 'Geist'">Tamaño de lista</span></div>
+      </div>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){return{opts:[
+    {k:'ia',t:'A · El cráter desde arriba',d:'Vista cenital del volcán: 7 gajos con torsión de remolino, del amarillo al ceniza, y el cráter ardiendo en el centro.'},
+    {k:'ib',t:'B · La isla, en 7 territorios',d:'La silueta de Lanzarote partida en 7 zonas, como un mapa de coleccionista, con el volcán marcado.'},
+    {k:'ic',t:'C · El volcán en 7 láminas',d:'Corte vertical del volcán en 7 franjas, de la ceniza al amarillo, con humo y lava en el cráter.'}]};}
+}
+</script>
+</body>
+</html>

@@ -1,4 +1,6 @@
 import { useState, type ReactNode } from 'react'
+import { useNombreDelDestino } from '../../../lib/nombreDelDestino'
+import { esDestinoDeCoche } from '../../../lib/experienceCategoryBank'
 import { Icono } from '../../ui/Icono'
 import { CampoDeHora } from '../../ui/HojaDeHora'
 import { ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
@@ -102,6 +104,7 @@ export function HojaDelVuelo({
   /** (10S5) El bloque de la tarjeta de embarque (cambiar el archivo o quitarla), debajo de los datos. */
   tarjeta?: ReactNode
 }) {
+  const nombreDelDestino = useNombreDelDestino() // (LZ2b1) el ejemplo en gris de la casilla no es de Roma en Lanzarote
   const primero = lados[ladoInicial].activo ? ladoInicial : ladoInicial === 'ida' ? 'vuelta' : 'ida'
   const [lado, setLado] = useState<'ida' | 'vuelta'>(primero)
   const [borrador, setBorrador] = useState(() => {
@@ -341,7 +344,7 @@ export function HojaDelVuelo({
         ) : l.puntoLibre ? (
           <label className="mt-5 flex flex-col gap-1.5">
             <span style={ESTILO_PREGUNTA}>{`${l.etiquetaPunto} de ${lado === 'ida' ? 'llegada' : 'salida'} (opcional)`}</span>
-            <input value={b.punto ?? ''} onChange={(e) => cambia(lado, { punto: e.target.value })} maxLength={40} placeholder="Ciampino" autoComplete="off" data-mi-vuelo-punto className={campo} />
+            <input value={b.punto ?? ''} onChange={(e) => cambia(lado, { punto: e.target.value })} maxLength={40} placeholder={esDestinoDeCoche(nombreDelDestino) ? "Aeropuerto de Lanzarote" : "Ciampino"} autoComplete="off" data-mi-vuelo-punto className={campo} />
           </label>
         ) : null}
         <div className="mt-4" data-mi-vuelo-campo-hora>

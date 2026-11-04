@@ -7,7 +7,7 @@ import type { Coordinates } from '../lib/types'
  */
 export interface AperturaExplorar {
   /** (Tanda 7: 'atracciones' es el chip de los monumentos —«Atracciones» hoy—; lo usa «Explorar monumentos» de la tarjeta «Hoy vuelves a casa».) */
-  categoria: 'banos' | 'fuentes' | 'restaurantes' | 'atracciones'
+  categoria: 'banos' | 'fuentes' | 'restaurantes' | 'atracciones' | 'excursiones'
   /** Desde dónde se ordena por cercanía (donde está el viajero, o la siguiente parada). null: la ubicación se pide como siempre. */
   origen: Coordinates | null
   /** Abrir directamente en «Cerca de mí» aunque no haya punto de partida (de pago; la ubicación se pide al entrar). Sin él, se abre en «Recomendados» (con «Cerca de mí» a un toque). */

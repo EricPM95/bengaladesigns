@@ -8,11 +8,12 @@ import { displayStopName, formatDuration } from '../../../lib/format'
 import { formatShortDateEs } from '../../../lib/dateRange'
 import { computeStopHoursTag } from '../../../lib/stopHoursTag'
 import { describeStop, type StopDescription } from '../../../lib/describeStopApi'
+import { esDestinoDeCoche } from '../../../lib/experienceCategoryBank'
 import { fetchAnchorTips, type StopTip } from '../../../lib/anchorTipsApi'
 import { fetchPlaceDetail, fichaEnMemoria, toNearbyTransit, toStopDescription, toStopTips, type PlaceDetail } from '../../../lib/placeDetailApi'
 import { fetchNearbyTransit, type NearbyTransit } from '../../../lib/nearbyTransitApi'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
-import { catalogoEnMemoria, fetchDestinationPlaces, porQueRecomendamosDe } from '../../../lib/destinationPlacesApi'
+import { aparcarDe, catalogoEnMemoria, fetchDestinationPlaces, porQueRecomendamosDe } from '../../../lib/destinationPlacesApi'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { HowToGetThereSheet } from '../today/HowToGetThereSheet'
 import { Spinner } from '../../ui/Spinner'
@@ -32,7 +33,7 @@ import { FotoCredito } from '../../ui/FotoCredito'
 import { TusRecuerdos } from '../fotos/TusRecuerdos'
 import { Escuchar } from '../hoy/Escuchar'
 import { accesoHistoria, textoHistoria } from '../../../lib/historia'
-import { FichaComoLlegar, FichaHorario, FichaPestanas, FichaPorElCamino, FichaQueVeras, FichaTip, type FilaHorario } from './FichaPiezas'
+import { FichaComoLlegar, FichaDondeAparcar, FichaHorario, FichaPestanas, FichaPorElCamino, FichaQueVeras, FichaTip, type FilaHorario } from './FichaPiezas'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -169,6 +170,18 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
       cancelado = true
     }
   }, [stop?.name, city])
+  // (LZ2b1) «Dónde aparcar» (destinos de coche): el texto del aparcamiento de la parada, de los datos del destino. Con él, la ficha NO lleva «Cómo llegar» ni líneas de transporte.
+  const [aparcarTexto, setAparcarTexto] = useState<string | null>(() => (stop ? aparcarDe(catalogoEnMemoria(city), stop.name) : null))
+  useEffect(() => {
+    if (!stop?.name) return undefined
+    let cancelado = false
+    fetchDestinationPlaces(city).then((catalogo) => {
+      if (!cancelado) setAparcarTexto(aparcarDe(catalogo, stop.name))
+    })
+    return () => {
+      cancelado = true
+    }
+  }, [stop?.name, city])
   const description = descripcionDeBase && porQueNuestro ? { ...descripcionDeBase, whyRecommended: porQueNuestro } : descripcionDeBase
   const descLoading = stop?.noAiText || stop?.isFreeWalk ? false : !curatedResolved ? true : curated ? false : externalContent ? externalContent.loading : internalDescLoading
   /** Lista de puntos concretos de la ficha curada — la versión de Claude es un párrafo suelto (`whatYoullSee`). */
@@ -243,7 +256,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // ya viene incluido en `description.localTip`, sin coste ni caché aparte.
   useEffect(() => {
     // Con ficha curada, sus `tips`/`secrets` ya son mejores que lo que devolvería la búsqueda web.
-    if (!stop || !isAnchor || !curatedResolved || curated) {
+    if (!stop || !isAnchor || !curatedResolved || curated || esDestinoDeCoche(city)) { // (LZ2b1) destino de coche: sin llamada a Claude
       setAnchorTips([])
       return
     }
@@ -261,7 +274,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // por viaje. Metro/bus vacíos = Claude no encontró nada verificable con búsqueda web — la sección
   // simplemente no se muestra, nunca se inventa una parada.
   useEffect(() => {
-    if (!stop || !curatedResolved || stop.isBreak) {
+    // (LZ2b1) Destino de coche (Lanzarote): la ficha lleva «Dónde aparcar», no transporte; no se llama a Claude.
+    if (!stop || !curatedResolved || stop.isBreak || esDestinoDeCoche(city)) {
       setNearbyTransit({ metro: [], bus: [] })
       return
     }
@@ -660,7 +674,11 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                       />
                     )}
   
-                    <FichaComoLlegar direccion={description?.address ?? null} transporte={nearbyTransit} web={description?.officialWebsite ?? null} onComoLlegar={description?.address ? () => setDirectionsOpen(true) : null} />
+                    {aparcarTexto ? (
+                      <FichaDondeAparcar texto={aparcarTexto} lat={coordenadasDelSitio?.lat ?? null} lng={coordenadasDelSitio?.lng ?? null} />
+                    ) : (
+                      <FichaComoLlegar direccion={description?.address ?? null} transporte={nearbyTransit} web={description?.officialWebsite ?? null} onComoLlegar={description?.address ? () => setDirectionsOpen(true) : null} />
+                    )}
                   </div>
                 )}
   

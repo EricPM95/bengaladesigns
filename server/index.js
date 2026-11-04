@@ -4229,6 +4229,30 @@ function avisoDeHorarioDe(place) {
   return { ver_por: verPor, aviso_nombre: nombre.frase, aviso_genero: nombre.genero, aviso_plural: nombre.plural }
 }
 
+/**
+ * (LZ2b1) Los destinos de coche (Lanzarote) no tienen el array  de Roma: sus restaurantes viven en data/dias/<destino>/_restaurantes.json (comidas y cenas por zona de los días).
+ * Para «Dónde comer» de EXPLORAR y de «Cerca de ti» salen los que tienen coordenada confirmada (el resto, sin coordenada, no se puede pintar en el mapa). Sin fichero, ninguno.
+ */
+const restaurantesCocheCache = new Map()
+function restaurantesDeCoche(destinationKey) {
+  if (!destinationKey) return []
+  if (restaurantesCocheCache.has(destinationKey)) return restaurantesCocheCache.get(destinationKey)
+  let lista = []
+  try {
+    const r = JSON.parse(readFileSync(join(__dirname, '../data/dias', destinationKey, '_restaurantes.json'), 'utf8'))
+    const vistos = new Set()
+    for (const x of [...Object.values(r.comidas ?? {}).flat(), ...Object.values(r.cenas_por_zona ?? {}).flat()]) {
+      if (!x?.nombre || vistos.has(x.nombre) || !Number.isFinite(x.lat) || !Number.isFinite(x.lng)) continue
+      vistos.add(x.nombre)
+      lista.push({ name: x.nombre, coordinates: { lat: x.lat, lng: x.lng }, address: String(x.direccion ?? '').replace(/\s*Coordenadas:.*$/, '') || null, hours: x.horario ?? null, what_to_order: x.cocina ?? null, tip: x.reserva ? `Reserva: ${x.reserva}` : null })
+    }
+  } catch {
+    // Un destino sin este fichero es normal.
+  }
+  restaurantesCocheCache.set(destinationKey, lista)
+  return lista
+}
+
 app.post('/api/destination-places', (req, res) => {
   const { destination } = req.body ?? {}
   if (!destination) {
@@ -4259,6 +4283,8 @@ app.post('/api/destination-places', (req, res) => {
       level: place.level ?? null,
       // «Por qué te lo recomendamos» (campo nuestro del sitio, escrito a mano y aprobado): la ficha lo enseña tal cual, sin IA. Null si el sitio no lo tiene (entonces escribe la IA).
       por_que_recomendamos: typeof place.por_que_recomendamos === 'string' && place.por_que_recomendamos.trim() ? place.por_que_recomendamos : null,
+      // (LZ2b1) «Dónde aparcar» (destinos de coche, Lanzarote): el texto corto del aparcamiento de la parada. el campo de «sin comprobar» NUNCA sale al viajero. Null en Roma.
+      aparcar: typeof place.aparcar === 'string' && place.aparcar.trim() ? place.aparcar.trim() : null,
       // Los «me gusta» de partida (Tanda 6y10): las redes de Eric, aproximado por debajo del real (campo `megusta_inicial` del sitio). Se suman a los de los viajeros: la cuenta es una sola por sitio.
       likes_initial: Number.isFinite(place.megusta_inicial) ? place.megusta_inicial : 0,
       // Ruta a mano (Tanda 6y3): su puesto en la lista a mano del destino (`pool_lista`), o null; el nivel va aparte (`level`). El orden de «Añadir parada» en una ruta a mano pone primero los más
@@ -4287,7 +4313,7 @@ app.post('/api/destination-places', (req, res) => {
         .filter(([theme, tags]) => theme !== 'free_tour' && (place.tags ?? []).some((tag) => tags.includes(tag)))
         .map(([theme]) => theme),
       // Días limitados y reserva obligatoria (la Domus Aurea): la ficha y la parada lo dicen.
-      booking_note: place.booking_note ?? null,
+      booking_note: place.booking_note ?? (place.nudista === true ? 'Zona nudista' : null),
       // Lo de temporada (`available`, Estaciones Parte 4) sigue en "Añadir parada", con la nota de
       // cuándo abre delante del horario.
       hours_card: [place.available ? `De temporada: solo ${availabilityLabel(place.available)}.` : null, place.card_text ?? null].filter(Boolean).join(' ') || null,
@@ -4305,7 +4331,7 @@ app.post('/api/destination-places', (req, res) => {
   // se mezclan en una sola lista porque para la pantalla de lugares son puntos del mapa igual que
   // los demás — lo que cambia (ficha propia, "Cómo llegar" en vez de "Añadir") lo decide `kind`.
   // Su `coordinates` ya viene como objeto {lat,lng}, no como el par [lat,lng] de `places`.
-  const restaurants = (data.restaurants ?? [])
+  const restaurants = [...(data.restaurants ?? []), ...(data.restaurants?.length ? [] : restaurantesDeCoche(findPipelineV2Key(destination)))]
     .filter((place) => Number.isFinite(place.coordinates?.lat) && Number.isFinite(place.coordinates?.lng))
     .map((place, index) => ({
       kind: 'restaurant',
@@ -4418,6 +4444,48 @@ app.post('/api/destination-places', (req, res) => {
         }
       : null
   res.json({ found: true, places: [...places, ...restaurants, ...toilets, ...fountains], free_tour_entry: freeTourEntry, excursions: excursionsAvailablePayload(data, null, data.excursions?.options ?? []) })
+})
+
+/**
+ * (LZ2b1) «Cerca de ti» de los destinos de coche (Lanzarote): las gasolineras y los aparcamientos más cercanos al punto pedido (OpenStreetMap, descargados en la LZ1:
+ * data/pipeline_v2/gasolineras/<destino>.json y aparcamientos/<destino>.json), en lugar de baños y fuentes. Sin ficheros, listas vacías. Solo lectura.
+ */
+const cercaCocheCache = new Map()
+function datosCercaCoche(destinationKey) {
+  if (cercaCocheCache.has(destinationKey)) return cercaCocheCache.get(destinationKey)
+  const leer = (carpeta, campo) => {
+    try {
+      return JSON.parse(readFileSync(join(__dirname, '../data/pipeline_v2', carpeta, `${destinationKey}.json`), 'utf8'))[campo] ?? []
+    } catch {
+      return []
+    }
+  }
+  const datos = { gasolineras: leer('gasolineras', 'gasolineras'), aparcamientos: leer('aparcamientos', 'aparcamientos') }
+  cercaCocheCache.set(destinationKey, datos)
+  return datos
+}
+app.post('/api/cerca-de-ti-coche', (req, res) => {
+  const { destination, lat, lng } = req.body ?? {}
+  const clave = destination ? findPipelineV2Key(destination) : null
+  if (!clave) {
+    res.json({ gasolineras: [], aparcamientos: [] })
+    return
+  }
+  const datos = datosCercaCoche(clave)
+  const hayPunto = Number.isFinite(lat) && Number.isFinite(lng)
+  const km = (a, b) => {
+    const rad = Math.PI / 180
+    const x = (b.lng - a.lng) * rad * Math.cos(((a.lat + b.lat) / 2) * rad)
+    const y = (b.lat - a.lat) * rad
+    return Math.sqrt(x * x + y * y) * 6371
+  }
+  const preparar = (lista, nombreVacio, max) =>
+    lista
+      .filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lng))
+      .map((item) => ({ id: item.id, nombre: item.name || nombreVacio, lat: item.lat, lng: item.lng, zona: item.zona ?? null, horario: item.horario ?? null, de_pago: item.de_pago ?? null, de_noche_24h: item.de_noche_24h ?? null, km: hayPunto ? km({ lat, lng }, item) : null }))
+      .sort((a, b) => (hayPunto ? a.km - b.km : String(a.nombre).localeCompare(String(b.nombre))))
+      .slice(0, max)
+  res.json({ gasolineras: preparar(datos.gasolineras, 'Gasolinera', 8), aparcamientos: preparar(datos.aparcamientos, 'Aparcamiento', 8) })
 })
 
 /** Los baños públicos de un destino (data/pipeline_v2/banos/<destino>.json), leídos una vez. Sin fichero, ninguno. */

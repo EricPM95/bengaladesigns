@@ -1,4 +1,5 @@
 import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
+import { esDestinoDeCoche } from '../../../lib/experienceCategoryBank'
 import type { Route } from '../../../lib/types'
 import { buildDestinationSegments } from '../../../lib/destinationSegments'
 import { countryDisplayName } from '../../../lib/readiness'
@@ -59,7 +60,8 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
   /** Los países del viaje, sin repetir y en orden: una eSIM por país (el estado se guarda por país, así que va igual que antes en el acordeón de cada destino). */
   const paises = [...new Set(buildDestinationSegments(route.days).flatMap((segment) => (segment.countryCode ? [segment.countryCode] : [])))]
   const isCamper = route.transportContext.vehicle_type === 'camper'
-  const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
+  // (LZ2b1) En Lanzarote el coche de alquiler va en su bloque «Coche» (con el interruptor), no aquí.
+  const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental' && !esDestinoDeCoche(route.destination)
   const alquiler = isCamper ? buildCamperRentalLink(route.days[0]?.countryCode ?? null) : buildCarRentalLink()
   const nombreAlquiler = isCamper ? 'Camper de alquiler' : 'Vehículo de alquiler'
 

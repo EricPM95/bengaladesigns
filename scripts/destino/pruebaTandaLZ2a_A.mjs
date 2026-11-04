@@ -33,7 +33,8 @@ const textoSinPermitidos = (d) => {
 function revisaDia(d, etiqueta, { pase, cocheModo, zona }) {
   eq(d && d.day_number, `${etiqueta}: sin día`)
   if (!d) return
-  const sin = cocheModo === 'no'
+  // antes → ahora → decisión de Eric (LZ2b1, 4-nov): antes había un modo 'no' (sin coche, ruta sin trayectos); ahora en Lanzarote siempre hay coche y el modo es 'alquiler' | 'propio' (ruta idéntica).
+  const sin = false
   // 1. Tope de 3 h
   if (!sin && d.coche) eq(d.coche.coche_min <= 180 || d.coche.aviso_tope, `${etiqueta}: ${d.dia_id} suma ${d.coche.coche_min} min de coche sin aviso`)
   if (!sin && d.coche?.activo) eq(d.coche.coche_min <= 180, `${etiqueta}: ${d.dia_id} pasa de 3 h de coche (${d.coche.coche_min} min desde ${d.coche.zona?.id})`)
@@ -68,7 +69,9 @@ function revisaDia(d, etiqueta, { pase, cocheModo, zona }) {
     const conTramo = (d.stops ?? []).filter((s) => s.trayecto_previo)
     for (const s of conTramo) {
       const tr = s.trayecto_previo
-      eq(tr.modo === 'car' && /^En coche · \d+ min · \d+ km$/.test(tr.texto) && /destination=-?\d/.test(tr.maps_url ?? '') && tr.destino?.lat != null, `${etiqueta}: ${d.dia_id} trayecto mal formado en ${s.name}`)
+      // antes → ahora → decisión de Eric (LZ2b1, 4-nov): dos filas seguidas en el mismo aparcamiento van a pie («A pie · N min»), sin coche ni Maps.
+      if (tr.modo === 'walk') eq(/^A pie · \d+ min$/.test(tr.texto) && tr.minutos > 0, `${etiqueta}: ${d.dia_id} trayecto a pie mal formado en ${s.name}`)
+      else eq(tr.modo === 'car' && /^En coche · \d+ min · \d+ km$/.test(tr.texto) && /destination=-?\d/.test(tr.maps_url ?? '') && tr.destino?.lat != null, `${etiqueta}: ${d.dia_id} trayecto mal formado en ${s.name}`)
     }
     eq(d.coche.ida?.salir && d.coche.vuelta?.llegas && d.coche.ida.maps_url && d.coche.vuelta.maps_url, `${etiqueta}: ${d.dia_id} sin ida o vuelta`)
     eq(d.coche.desde === (pase && zona && zona !== 'nose' ? 'zona' : 'zona_mas_lejana'), `${etiqueta}: ${d.dia_id} «desde» mal`)
@@ -83,7 +86,7 @@ for (const [nombre, fecha] of Object.entries(FECHAS)) {
   for (const total of [2, 3, 4, 5, 6, 7]) {
     for (const zona of ZONAS) {
       for (const pase of [true, false]) {
-        const cocheModos = zona === 'costa_teguise' || zona === 'el_norte' ? ['alquiler', 'no'] : ['alquiler']
+        const cocheModos = zona === 'costa_teguise' || zona === 'el_norte' ? ['alquiler', 'propio'] : ['alquiler']
         for (const cocheModo of cocheModos) {
           const ds = await dias(fecha, total, { zona, pase, coche: cocheModo })
           dias_construidos += ds.length
@@ -121,7 +124,7 @@ for (const [nombre, fecha] of Object.entries(FECHAS)) {
   const [d1] = await dias(FECHAS.domingo, 2, { zona: 'costa_teguise', pase: true })
   eq(d1.variante === 'domingo' && /Rubic/.test(d1.meals.find((m) => m.time === 'lunch')?.restaurant ?? ''), 'D1 en domingo: comida en Bodegas Rubicón')
   const g1 = await dias(FECHAS.domingo, 5, { zona: 'costa_teguise', pase: true })
-  eq(g1[0].stops[0].name.startsWith('Montañas del Fuego') && g1[0].stops[0].suggested_time === '09:30', 'Timanfaya a las 09:30')
+  eq(g1[0].stops[0].name.startsWith('Montañas del Fuego') && g1[0].stops[0].suggested_time === '09:00', 'Timanfaya a las 09:00 (LZ2b1: abre a las 9:00)')
   const sab = (await dias(FECHAS.viernes, 5, { zona: 'costa_teguise', pase: true })).find((d) => d.dia_id === 'D2')
   eq(sab?.variante === 'sabado' && sab.stops[0].name === 'Jameos del Agua' && sab.stops[0].suggested_time === '10:00' && sab.stops.find((s) => /Cueva/.test(s.name))?.suggested_time === '11:30', 'D2 en sábado: Jameos 10:00, Cueva 11:30')
   const sabMeal = sab?.meals.find((m) => m.time === 'lunch')
@@ -129,7 +132,7 @@ for (const [nombre, fecha] of Object.entries(FECHAS)) {
   const ene = await dias('2026-12-30', 3, { zona: 'costa_teguise', pase: true }) // el 1 de enero es el día 3
   const d3e = ene.find((d) => d.dia_id === 'D3'), d2e = (await dias('2026-12-31', 3, { zona: 'costa_teguise', pase: true })).find((d) => d.dia_id === 'D2')
   eq(d3e && !d3e.stops.some((s) => /Fundación/.test(s.name)) && d3e.stops.some((s) => /LagOmar/.test(s.name)), '1 de enero, D3: sin Fundación y con LagOmar')
-  eq(d2e && d2e.stops.filter((s) => /Casa-Museo/.test(s.name)).length === 1 && d2e.stops.some((s) => /Helechos/.test(s.name)), '1 de enero, D2: solo el pueblo de Haría (la Casa-Museo cierra, no hay segunda parada) y los Helechos')
+  eq(d2e && d2e.stops.filter((s) => /Casa-Museo/.test(s.place_name)).length === 1 && d2e.stops.some((s) => /Helechos/.test(s.name)), '1 de enero, D2: solo el pueblo de Haría (la Casa-Museo cierra, no hay segunda parada) y los Helechos')
   const dos = (await dias('2026-11-10', 2, { zona: 'costa_teguise', pase: true })).find((d) => d.dia_id === 'D2')
   eq(dos?.variante === 'dos_dias' && dos.stops.some((s) => /Fundación/.test(s.name)), 'viaje de 2 días: el D2 lleva la Fundación')
   const arte = (await dias('2026-11-10', 3, { zona: 'costa_teguise', pase: true }, ['imprescindibles', 'arte'])).find((d) => d.dia_id === 'D3')

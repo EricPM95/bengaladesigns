@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;width:{{ w }}px;height:{{ h }}px;flex:none">
+  <img src="{{ src }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;display:block;{{ grayStyle }}"/>
+  <sc-for list="{{ lit }}" as="l" hint-placeholder-count="3">
+    <img src="{{ src }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;display:block;clip-path:{{ l.cp }}"/>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;col&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;1&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;set&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:150,&quot;tsType&quot;:&quot;number&quot;}}">
+const IMG={1:[230,236,114,118,7,-90],2:[234,240,117,120,7,-90],3:[234,240,117,120,7,-90],4:[208,238,104,120,6,-90],5:[234,228,117,114,7,-90],6:[222,248,111,122,5,-90],7:[224,246,110,120,3,-150]};
+class Component extends DCLogic {
+  renderVals(){
+    const p=this.props,k=String(p.col||'1');const I=IMG[k]||IMG[1];
+    const [iw,ih,cx,cy,n,a0]=I;const S=Number(p.size)||150;const sc=S/Math.max(iw,ih);const w=Math.round(iw*sc),h=Math.round(ih*sc);
+    const lit=String(p.set==null?'':p.set).split(',').filter(x=>x!=='').map(Number).filter(j=>j>=0&&j<n);
+    const px=(x)=>(x/iw*100).toFixed(2)+'%',py=(y)=>(y/ih*100).toFixed(2)+'%';
+    const full=lit.length>=n;
+    const sector=(j)=>{const st=360/n,A=(a0+j*st)*Math.PI/180,B=(a0+(j+1)*st)*Math.PI/180;const pts=[[cx,cy]];const steps=6;for(let q=0;q<=steps;q++){const t=A+(B-A)*q/steps;pts.push([cx+Math.cos(t)*400,cy+Math.sin(t)*400]);}return 'polygon('+pts.map(([x,y])=>px(x)+' '+py(y)).join(',')+')';};
+    const disc='circle(34px at '+px(cx)+' '+py(cy)+')';
+    const arr=full?[{cp:'none'}]:lit.map(j=>({cp:sector(j)}));
+    if(!full&&lit.length)arr.push({cp:'circle('+(40/iw*100).toFixed(1)+'% at '+px(cx)+' '+py(cy)+')'});
+    return{src:'assets/lanza/col'+k+'.png',w,h,lit:arr,grayStyle:full?'':'filter:grayscale(1) brightness(1.18) contrast(.8);opacity:.88'};
+  }
+}
+</script>
+</body>
+</html>

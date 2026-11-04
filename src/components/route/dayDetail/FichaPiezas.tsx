@@ -250,6 +250,32 @@ export function FichaComoLlegar({ direccion, transporte, web, onComoLlegar }: { 
 }
 
 /**
+ * (LZ2b1) «Dónde aparcar»: en un destino de coche (Lanzarote) sustituye a «Cómo llegar». El texto corto del aparcamiento de la parada (nuestro, de los datos; `aparcar_verificar` no sale nunca)
+ * y [Abrir en Maps] a la coordenada de la parada (su aparcamiento). Sin líneas de transporte. Sin texto, la tarjeta no sale.
+ */
+export function FichaDondeAparcar({ texto, lat, lng }: { texto: string | null; lat: number | null; lng: number | null }) {
+  if (!texto) return null
+  const enlace = typeof lat === 'number' && typeof lng === 'number' && (lat !== 0 || lng !== 0) ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving` : null
+  return (
+    <div data-ficha-seccion="donde-aparcar" className={`${TARJETA} overflow-hidden`}>
+      <div className="flex items-center gap-2.5 px-3.5 pb-1.5 pt-3.5">
+        <Icono nombre="coche" size={18} />
+        <span className="flex-1 font-display text-[21px] leading-none">Dónde aparcar</span>
+      </div>
+      <p className="px-3.5 py-2 text-[14px] leading-[1.5]">{texto}</p>
+      {enlace ? (
+        <a href={enlace} target="_blank" rel="noopener noreferrer" className="mx-3.5 mb-3.5 mt-1 flex h-[46px] w-[calc(100%-28px)] items-center justify-center gap-2 rounded-full btn-champan text-[14px] font-semibold">
+          Abrir en Maps
+          <Icono nombre="flecha" size={15} grosor={2} />
+        </a>
+      ) : (
+        <span className="block pb-2" />
+      )}
+    </div>
+  )
+}
+
+/**
  * «No necesitas entrada» (la pestaña Entradas de un sitio que no vende entrada pero cobra por acercarse, p. ej. la tasa de la Fontana de Trevi): la tarjeta verde con su frase y, debajo, la tasa con su concepto,
  * su importe y su detalle. TODO viene del dato (`entrada_de_pago` del lugar): sin importe, el bloque va sin números; sin detalle, la tarjeta de debajo no sale.
  */

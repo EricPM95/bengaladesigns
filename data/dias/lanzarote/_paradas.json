@@ -23,11 +23,11 @@
    "zona": "norte",
    "tipo": "sitio",
    "coordinates": [
-    -13.4321,
-    29.1575
+    -13.43165,
+    29.15805
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_CENTROS_Y_MUSEOS.md §2",
+   "coord_fuente": "Mapbox Search Box (categoría parking, 4-nov-2026): Aparcamiento Jameos del Agua, a 75 m de la coordenada anterior (LZ2b-1, 4-nov-2026)",
    "verificar": false
   },
   {
@@ -166,11 +166,11 @@
    "zona": "noreste",
    "tipo": "sitio",
    "coordinates": [
-    -13.4764,
-    29.0803
+    -13.476949,
+    29.080393
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_CENTROS_Y_MUSEOS.md §5 (Wikipedia)",
+   "coord_fuente": "OpenStreetMap (los 147 aparcamientos de la LZ1): Parking Jardín de Cactus, a 54 m (LZ2b-1, 4-nov-2026)",
    "verificar": false
   },
   {
@@ -179,11 +179,11 @@
    "zona": "suroeste",
    "tipo": "sitio",
    "coordinates": [
-    -13.834287,
-    28.953901
+    -13.83336,
+    28.95357
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md",
+   "coord_fuente": "Mapbox Search Box (categoría parking, 4-nov-2026): Aparcamiento para Los Hervideros, a 98 m de la coordenada anterior (LZ2b-1, 4-nov-2026)",
    "verificar": false
   },
   {
@@ -258,11 +258,11 @@
    "zona": "centro",
    "tipo": "sitio",
    "coordinates": [
-    -13.6156,
-    29.0158
+    -13.61553,
+    29.01527
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_CENTROS_Y_MUSEOS.md §7",
+   "coord_fuente": "Mapbox Search Box (categoría parking, 4-nov-2026) + OpenStreetMap: Casa Museo del Campesino Parking, a 59 m (y el de OpenStreetMap, a 83 m) (LZ2b-1, 4-nov-2026)",
    "verificar": false
   },
   {
@@ -336,11 +336,11 @@
    "zona": "norte",
    "tipo": "sitio",
    "coordinates": [
-    -13.5242,
-    29.1266
+    -13.52319,
+    29.12602
    ],
    "aparcar_min": 8,
-   "coord_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md [blog]. Pista de tierra mal señalizada (+3 min)",
+   "coord_fuente": "Mapbox Search Box (categoría parking, 4-nov-2026) + OpenStreetMap (dos «Mirador del Bosquecillo» a 110-141 m): Aparcamiento El Bosquecillo, a 118 m (en la pista, junto al mirador) (LZ2b-1, 4-nov-2026)",
    "verificar": false
   },
   {
@@ -427,11 +427,11 @@
    "zona": "este",
    "tipo": "sitio",
    "coordinates": [
-    -13.5332,
-    28.971
+    -13.53334,
+    28.97159
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_CENTROS_Y_MUSEOS.md §6",
+   "coord_fuente": "Mapbox Search Box (categoría parking, 4-nov-2026): Aparcamiento en el Castillo de San José, a 68 m (LZ2b-1, 4-nov-2026)",
    "verificar": false
   },
   {
@@ -440,11 +440,11 @@
    "zona": "centro",
    "tipo": "sitio",
    "coordinates": [
-    -13.5551,
-    29.0452
+    -13.55568,
+    29.0454
    ],
    "aparcar_min": 5,
-   "coord_fuente": "DATOS_CENTROS_Y_MUSEOS.md §10 (ficha del restaurante, mismo recinto)",
+   "coord_fuente": "Mapbox Search Box (categoría parking, 4-nov-2026): Aparcamiento del Museo LagOmar, a 61 m (y «Museo Lagomar parking», a 50 m) (LZ2b-1, 4-nov-2026)",
    "verificar": false
   },
   {
@@ -548,8 +548,8 @@
     28.862915
    ],
    "aparcar_min": 10,
-   "coord_fuente": "Mapbox Geocoding v6 (3-nov-2026), comprobar",
-   "verificar": true
+   "coord_fuente": "Mapbox Geocoding v6 (3-nov-2026), comprobar → comprobado con Mapbox Search Box (categoría parking, 4-nov-2026): «Aparcamiento para Las Brisas», a 12 m del puerto (y Playa Blanca 24h El Correíllo, a 157 m)",
+   "verificar": false
   },
   {
    "id": "aeropuerto_ace",
@@ -561,8 +561,8 @@
     28.9529
    ],
    "aparcar_min": 0,
-   "coord_fuente": "Mapbox Geocoding v6 (3-nov-2026): la coordenada de memoria (28.9455,-13.6052) caía en una vía que daba 24 min a Puerto del Carmen; esta da 12 min. Comprobar",
-   "verificar": true
+   "coord_fuente": "Mapbox Geocoding v6 (3-nov-2026): la coordenada de memoria (28.9455,-13.6052) caía en una vía que daba 24 min a Puerto del Carmen; esta da 12 min. Comprobar → comprobado con Mapbox Search Box (categoría parking, 4-nov-2026): Parking P2 a 31 m (aparcamiento del aeropuerto)",
+   "verificar": false
   }
  ],
  "zonas_alojamiento": [
