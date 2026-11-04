@@ -1,3 +1,4 @@
+// (HOY1, 4-nov) Puesta al día de «Cerca de ti»: ANTES, Baños · Fuentes · Comer eran tres botones que abrían EXPLORAR con ese filtro → AHORA son la fila `CercaDeTiFila` (los mismos tres textos) y cada uno abre una hoja con los 4 sitios más cercanos que se tocan enteros y abren Maps a pie → DECISIÓN DE ERIC (4-nov, prompt de la HOY1, apartado 4). Esta prueba sigue mirando que los tres textos salgan de pago y no sin pase.
 // La prueba de la Tanda 6z6, parte C: HOY de pago durante el viaje (Cerca de ti, Escuchar, avisos de cierre, día completo), EXPLORAR de pago y «Devolverla a la ruta».
 //   node scripts/destino/pruebaTanda6z6c.mjs        (con el servidor de la app encendido en http://localhost:8787)
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:

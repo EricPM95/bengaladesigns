@@ -289,7 +289,8 @@ export async function enviarFotoDeGaleria(p: { tripId: string; stopId?: string |
   })
 }
 
-export async function enviarFotoDeLaCamara(p: { tripId: string; stopId?: string | null; nombre: string; fotoId?: string | null }): Promise<RespuestaDeHecho | null> {
-  const ubicacion = await ubicacionDeAhora()
-  return mandarHecho({ tipo: 'foto', cuerpo: { trip_id: p.tripId, stop_id: p.stopId ?? null, nombre: p.nombre, origen: 'app', tomada_en: new Date().toISOString(), con_camara: true, ubicacion, foto_id: p.fotoId ?? null } })
+/** (HOY1) `sitio`: el id del sitio del catálogo cuando se sabe (la tarjeta «Estás en…» y el juego); `libre`: foto SIN parada (la cámara de viaje): el servidor mira la ubicación y busca el sitio con logro donde estás. */
+export async function enviarFotoDeLaCamara(p: { tripId: string; stopId?: string | null; nombre?: string | null; fotoId?: string | null; sitio?: string | null; libre?: boolean; ubicacion?: Ubicacion | null }): Promise<RespuestaDeHecho | null> {
+  const ubicacion = p.ubicacion !== undefined ? p.ubicacion : await ubicacionDeAhora()
+  return mandarHecho({ tipo: 'foto', cuerpo: { trip_id: p.tripId, stop_id: p.stopId ?? null, nombre: p.nombre ?? null, sitio: p.sitio ?? null, libre: p.libre ?? false, origen: 'app', tomada_en: new Date().toISOString(), con_camara: true, ubicacion, foto_id: p.fotoId ?? null } })
 }

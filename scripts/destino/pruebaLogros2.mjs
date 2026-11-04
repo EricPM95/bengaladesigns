@@ -1,5 +1,6 @@
 // La prueba de la parte de la app de los logros (Tanda 8A): el interruptor, instalar la web, los sonidos y lo que no puede romper. No toca el motor de rutas.
 //   node scripts/destino/pruebaLogros2.mjs
+// PUESTA AL DÍA EN LA HOY1 (4-nov): «el service worker es mínimo, no guarda nada» → «guarda solo la web, nunca /api/ ni la nube» (apartado 9, sin internet) → decisión de Eric (4-nov).
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -46,7 +47,9 @@ console.log('1. El interruptor, instalar la web y los sonidos')
   debe(!/['"]Routy['"]/.test(codigo), 'instalar', 'el nombre de la app no está escrito en el código: solo en data/marca.json')
   debe(/api\/manifest\.webmanifest/.test(leer('server/index.js')) && /manifest/.test(leer('src/lib/instalar.ts')), 'instalar', 'el manifiesto lo da el servidor, con lo de data/marca.json')
   const sw = sinComentarios(leer('public/sw.js'))
-  debe(!/caches\.|cache\.put|respondWith|addAll/.test(sw) && /skipWaiting/.test(sw) && /addEventListener\('fetch'/.test(sw), 'instalar', 'el service worker es mínimo: no guarda ninguna respuesta del servidor (sin modo sin conexión)')
+  // HOY1 (4-nov) — ANTES: el service worker era mínimo y no guardaba nada (sin modo sin conexión). AHORA: guarda SOLO la web (página, /assets/, iconos, fuentes) para abrir sin cobertura (H15); sigue sin guardar ninguna respuesta del servidor (/api/) ni de la nube.
+  // DECISIÓN DE ERIC (4-nov): «Sin internet: lo de hoy queda guardado en el móvil». Lo de /api/ se prueba con la propia lógica del service worker en pruebaTandaHOY1_C (parte 0).
+  debe(/skipWaiting/.test(sw) && /addEventListener\('fetch'/.test(sw) && /pathname\.startsWith\('\/api\/'\)\) return null/.test(sw), 'instalar', 'el service worker guarda solo la web y NUNCA una respuesta de /api/ (antes: no guardaba nada)')
 
   const lista = JSON.parse(leer('public/sonidos/sonidos.json'))
   const momentos = ['visto', 'pedazo', 'coleccion', 'emblema', 'sello', 'pais', 'maravilla', 'patrimonio', 'viajero', 'dia_completo']

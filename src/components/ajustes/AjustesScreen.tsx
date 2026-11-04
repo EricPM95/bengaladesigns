@@ -9,6 +9,7 @@ import { marca } from '../../lib/marca'
 import { apagarAvisosDelMovil, avisosDelMovilEncendidos, encenderAvisosDelMovil } from '../../lib/permisoAvisos'
 import { misPases, type PaseMio } from '../../lib/pagoPase'
 import { ponerSonido, sonidoActivado } from '../../lib/sonidos'
+import { ponerSugerenciasDelCompanero, sugerenciasDelCompanero } from '../../lib/sugerenciasCompanero'
 import { useAjustesUi } from '../../store/useAjustesUi'
 import { useMomentosUI } from '../logros/momentos/useMomentosUI'
 import { PrivacidadScreen } from '../cuenta/PrivacidadScreen'
@@ -81,6 +82,8 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
   const [pases, setPases] = useState<PaseMio[]>(pasesIniciales ?? [])
   const [sonido, setSonido] = useState(() => sonidoActivado())
   const [avisosMovil, setAvisosMovil] = useState(avisosInicial)
+  // (HOY1, apartado 10, C27) «Sugerencias del compañero»: apaga el juego de los emblemas ocultos, el reto del día y «Estás en… / Estás junto a…» en HOY.
+  const [sugerencias, setSugerencias] = useState(() => sugerenciasDelCompanero())
   const [privacidad, setPrivacidad] = useState(false)
   const [hojaMoneda, setHojaMoneda] = useState(false)
   const { moneda: monedaViajero } = useMonedaViajero()
@@ -162,6 +165,19 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
             datos="sonido"
           />
           <Fila icono="avisos" titulo="Avisos en el móvil" sub="El resumen del viaje y «en 10 días empieza tu viaje»" interruptor={{ activo: avisosMovil, cambiar: () => void cambiarAvisos() }} datos="avisos-movil" />
+          <Fila
+            icono="destello"
+            titulo="Sugerencias del compañero"
+            sub="El juego de los emblemas ocultos, el reto del día y «Estás junto a…» en HOY"
+            interruptor={{
+              activo: sugerencias,
+              cambiar: () => {
+                ponerSugerenciasDelCompanero(!sugerencias)
+                setSugerencias(!sugerencias)
+              },
+            }}
+            datos="sugerencias-companero"
+          />
           <Fila
             icono="seguir"
             titulo="Ver otra vez el tutorial"

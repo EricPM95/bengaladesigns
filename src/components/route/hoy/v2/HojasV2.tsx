@@ -12,7 +12,7 @@ import { ParadaFoto } from './ParadaFoto'
 const OJO = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' as const, color: 'rgba(28,34,48,.55)' }
 
 /** La hoja de abajo de HOY v2 (diseño: esquinas de 28, tirador, fondo oscuro suave). Va en el body, por encima de la cabecera y de la barra. */
-export function HojaV2({ children, onCerrar, etiqueta, ancha = false }: { children: ReactNode; onCerrar: () => void; etiqueta: string; ancha?: boolean }) {
+export function HojaV2({ children, onCerrar, etiqueta, ancha = false, fondo = '#FFFDF8' }: { children: ReactNode; onCerrar: () => void; etiqueta: string; ancha?: boolean; fondo?: string }) {
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => e.key === 'Escape' && onCerrar()
     window.addEventListener('keydown', tecla)
@@ -21,7 +21,7 @@ export function HojaV2({ children, onCerrar, etiqueta, ancha = false }: { childr
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={etiqueta}>
       <div className="absolute inset-0" style={{ background: 'rgba(28,34,48,.4)' }} onClick={onCerrar} />
-      <div className={`relative flex max-h-[88dvh] w-full flex-col gap-3.5 overflow-y-auto rounded-t-[28px] bg-[#FFFDF8] px-[18px] pb-[max(2rem,env(safe-area-inset-bottom))] pt-3 md:rounded-[28px] ${ancha ? 'md:w-[520px]' : 'md:w-[440px]'}`} style={{ boxShadow: '0 -10px 30px -12px rgba(0,0,0,.4)', scrollbarWidth: 'none' }}>
+      <div className={`relative flex max-h-[88dvh] w-full flex-col gap-3.5 overflow-y-auto rounded-t-[28px] px-[18px] pb-[max(2rem,env(safe-area-inset-bottom))] pt-3 md:rounded-[28px] ${ancha ? 'md:w-[520px]' : 'md:w-[440px]'}`} style={{ background: fondo, boxShadow: '0 -10px 30px -12px rgba(0,0,0,.4)', scrollbarWidth: 'none' }}>
         <span className="h-1 w-[42px] flex-none self-center rounded bg-[rgba(28,34,48,.18)]" aria-hidden="true" />
         {children}
       </div>

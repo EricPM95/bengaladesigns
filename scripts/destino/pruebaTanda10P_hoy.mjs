@@ -1,3 +1,6 @@
+// PUESTA AL DÍA EN LA TANDA HOY1 (4-nov-2026, agente A). ANTES → AHORA → DECISIÓN DE ERIC:
+//  · el atardecer: «Al Janículo para el atardecer: el sol se pone a las 17:02» (una franja ámbar) → una tarjeta de atardecer (H13 de Design: «Hoy el sol se pone a las 17:02», el sitio debajo y [Cómo llegar]) → «el diseño, exactamente igual; los textos y los datos, los nuestros».
+//  · lo de mañana: «Mañana: {día} · empiezas a las 9:00» + «Tienes entrada a… a las 10:00» → «MAÑANA», la primera parada de mañana, «sales a las…» (o «empiezas a las…» sin zona) y «turno en… a las 10:00» (H13).
 // La prueba de la Tanda 10P (agente B): la historia de prueba (la que el viajero elija, una por destino, guardada en la cuenta) y HOY con la puesta de sol y lo de mañana.
 // Hace falta un servidor y un Vite propios:  APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/pruebaTanda10P_hoy.mjs
 import fs from 'node:fs'
@@ -216,7 +219,8 @@ const textoDe = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(s
   debe(await a.evaluar("Boolean(document.querySelector('[data-hoy-siguiente]'))"), 'hoy', 'HOY enseña la siguiente parada')
   let t = await textoDe(a, '[data-hoy-atardecer="siguiente"]')
   if (!t) console.log('DEBUG', (await a.evaluar('document.body.innerText')).slice(0, 700))
-  debe(t === 'Al Janículo para el atardecer: el sol se pone a las 17:02', 'atardecer', `con mirador del atardecer de siguiente: «${t}»`)
+  debe(/^Hoy el sol se pone a las 17:02 El Janículo, tu siguiente parada, es para verlo/.test(t ?? ''), 'atardecer', `con mirador del atardecer de siguiente: «${t}»`)
+  debe(/Cómo llegar$/.test(t ?? ''), 'atardecer', 'con su [Cómo llegar]')
   debe(await a.evaluar("Boolean(document.querySelector('[data-hoy-atardecer] svg'))"), 'atardecer', 'con el icono del sol')
   await a.evaluar("(() => { document.querySelector('[data-hoy-atardecer]')?.scrollIntoView({ block: 'center' }); return true })()")
   await a.esp(500)
@@ -227,7 +231,7 @@ const textoDe = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(s
   await a.evaluar(PREPARAR('2026-10-17', "const sig = numberedStopsOf(r.days[0])[0]; sig.time = '15:00'; const m = numberedStopsOf(r.days[1])[0]; m.isSunset = true; m.name = 'El Janículo'; m.coordinates = { lat: sig.coordinates.lat + 0.004, lng: sig.coordinates.lng }"))
   await a.esp(3000)
   t = await textoDe(a, '[data-hoy-atardecer="cerca"]')
-  debe(Boolean(t) && /^Hoy el sol se pone a las 17:02 · el Janículo está a \d+ min$/.test(t), 'atardecer', `sin mirador hoy y uno cerca: «${t}»`)
+  debe(Boolean(t) && /^Hoy el sol se pone a las 17:02 Desde el Janículo, a \d+ minutos, se ve precioso/.test(t), 'atardecer', `sin mirador hoy y uno cerca: «${t}»`)
   // (c) sin mirador cerca: nada
   await a.evaluar(PREPARAR('2026-10-17', "const sig = numberedStopsOf(r.days[0])[0]; sig.time = '15:00'"))
   await a.esp(3000)
@@ -241,12 +245,12 @@ const textoDe = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(s
   await a.evaluar(PREPARAR('2026-10-17', "numberedStopsOf(r.days[0]).forEach((s) => { s.checkedInAt = new Date().toISOString() }); numberedStopsOf(r.days[1])[0].time = '09:00'; st.setState({ reservations: [{ id: 'r-vat', kind: 'entrada', refId: 'Museos Vaticanos', name: 'Museos Vaticanos', placeNames: ['Museos Vaticanos'], dateIso: '2026-10-18', dayNumber: 2, time: '10:00' }] })"))
   await a.esp(3500)
   t = await textoDe(a, '[data-hoy-manana]')
-  debe(Boolean(t) && /^Mañana: .+ · empiezas a las 9:00/.test(t), 'manana', `al acabar el día: «${t}»`)
-  debe(Boolean(t) && /Tienes entrada a Museos Vaticanos a las 10:00/.test(t), 'manana', 'con la reserva con hora del día siguiente')
+  debe(Boolean(t) && /^MAÑANA .+ (empiezas|sales) a las \d{1,2}:\d{2}/i.test(t), 'manana', `al acabar el día: «${t}»`)
+  debe(Boolean(t) && /turno en Museos Vaticanos a las 10:00/.test(t), 'manana', 'con la reserva con hora del día siguiente')
   const tarjeta = t
   await modo(a, 'days', 0)
-  const titulos = await a.evaluar("Array.from(document.querySelectorAll('[data-titulo-del-dia]')).map((e) => e.innerText.split(/[ \\n\\t]+/).join(' ').trim())")
-  debe(titulos.length > 1 && (tarjeta ?? '').includes(titulos[1]), 'manana', `el nombre del día es el de DÍAS («${titulos[1]}»)`)
+  const primeraDeManana = await a.evaluar(`${store}.then(async (s) => { const { numberedStopsOf } = await import('/src/lib/stopKind.ts'); const { displayStopName } = await import('/src/lib/format.ts'); return displayStopName(numberedStopsOf(s.route.days[1])[0].name) })`)
+  debe(Boolean(primeraDeManana) && (tarjeta ?? '').includes(primeraDeManana), 'manana', `la tarjeta nombra la primera parada de mañana («${primeraDeManana}»)`)
   await a.evaluar(PREPARAR('2026-10-17', "numberedStopsOf(r.days[0]).forEach((s) => { s.checkedInAt = new Date().toISOString() }); numberedStopsOf(r.days[1])[0].time = '09:00'; st.setState({ reservations: [{ id: 'r-vat', kind: 'entrada', refId: 'Museos Vaticanos', name: 'Museos Vaticanos', placeNames: ['Museos Vaticanos'], dateIso: '2026-10-18', dayNumber: 2, time: '10:00' }] })"))
   await a.esp(3000)
   await a.evaluar("(() => { document.querySelector('[data-hoy-manana]')?.scrollIntoView({ block: 'center' }); return true })()")

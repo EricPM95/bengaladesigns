@@ -80,21 +80,25 @@ async function pedirProveedor(parametros, pedir) {
   return respuesta.json()
 }
 
-/** Probabilidad (%) y precipitación (mm) de cada hora 0-23 de un día; null si el proveedor no da datos. */
+/** Probabilidad (%) y precipitación (mm) de cada hora 0-23 de un día, más (HOY1, avisos del tiempo en directo) las nubes bajas (%) y las rachas de viento (km/h); null si el proveedor no da datos. */
 export async function tiempoPorHoras(coords, fecha, pedir = fetch) {
   return conCache(`h|${coords.lat},${coords.lng}|${fecha}`, async () => {
-    const data = await pedirProveedor({ latitude: coords.lat, longitude: coords.lng, hourly: 'precipitation_probability,precipitation', start_date: fecha, end_date: fecha }, pedir)
+    const data = await pedirProveedor({ latitude: coords.lat, longitude: coords.lng, hourly: 'precipitation_probability,precipitation,cloud_cover_low,wind_gusts_10m', start_date: fecha, end_date: fecha }, pedir)
     const times = data?.hourly?.time
     if (!Array.isArray(times)) return null
     const probability = new Array(24).fill(0)
     const precipitation = new Array(24).fill(0)
+    const cloud = new Array(24).fill(0)
+    const gust = new Array(24).fill(0)
     times.forEach((time, index) => {
       const hour = Number(String(time).slice(11, 13))
       if (Number.isNaN(hour) || hour < 0 || hour > 23) return
       probability[hour] = data.hourly.precipitation_probability?.[index] ?? 0
       precipitation[hour] = data.hourly.precipitation?.[index] ?? 0
+      cloud[hour] = data.hourly.cloud_cover_low?.[index] ?? 0
+      gust[hour] = data.hourly.wind_gusts_10m?.[index] ?? 0
     })
-    return { probability, precipitation }
+    return { probability, precipitation, cloud, gust }
   })
 }
 

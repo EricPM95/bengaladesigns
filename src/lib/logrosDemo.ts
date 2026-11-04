@@ -201,6 +201,8 @@ export async function responder(ruta: string, opciones: { metodo?: string; cuerp
     if (r !== undefined) return r
   }
   if (p === '/api/logros/visto') return anotarExp(entregar(visto(c)))
+  // (HOY1) La cámara de viaje: una foto SIN parada. En desarrollo, `window.__hoy1FotoDemo = 'logro'` da un emblema (como La Graciosa); sin eso, solo un recuerdo.
+  if (p === '/api/logros/foto' && c.libre) return (window as unknown as { __hoy1FotoDemo?: string }).__hoy1FotoDemo === 'logro' ? { ok: true, valida: true, cuenta: true, nuevos: [emblema('la_graciosa', 'La octava isla', 'Una isla a la que solo se llega en barco.')] } : { ok: true, valida: true, cuenta: false, motivo: 'sin_logro_aqui', nuevos: [] }
   if (p === '/api/logros/foto') return demo.foto === 'sin_cobertura' ? ((demo.foto = null), null) : anotarExp(entregar(foto(c)))
   if (p === '/api/logros/deshacer') {
     demo.vistos.delete(String(c.stop_id ?? c.nombre))

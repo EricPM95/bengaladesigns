@@ -1,18 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { logrosActivos } from '../../../../lib/logros'
-import type { Coordinates, DayPlan, MealSlot, Route, Stop } from '../../../../lib/types'
+import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { useRouteStore } from '../../../../store/useRouteStore'
-import { moverParadaAOtroDia } from '../../../../lib/cambiarParada'
 import { useDestinationExcursions } from '../../../../lib/destinationExcursions'
 import { dayOfReservation } from '../../../../lib/bookings'
 import { addDaysToIso, formatWeekdayAbbrEs } from '../../../../lib/dateRange'
 import { esDiaDeLlegada, nombreDelDia, tituloSinHorasSiYaNoEsVerdad, viajeDelDia } from '../../../../lib/tituloDelDia'
 import { numberedStopsOf } from '../../../../lib/stopKind'
-import { displayStopName, formatDuration } from '../../../../lib/format'
-import { hasRealCoordinates, haversineMeters } from '../../../../lib/distanceMock'
-import { buildGoogleMapsUrl, buildGoogleMapsUrlFromHere, buildGoogleMapsUrlToPlaceTransit } from '../../../../lib/mapsLinks'
+import { displayStopName } from '../../../../lib/format'
+import { hasRealCoordinates } from '../../../../lib/distanceMock'
 import { parseTimeToMinutes } from '../../../../lib/time'
 import { pagoActivo } from '../../../../lib/pago'
+import { buildGoogleMapsUrlToPlaceTransit } from '../../../../lib/mapsLinks'
 import { useArrivalInfo } from '../../../../lib/arrivalReturn'
 import { nombreDeZona } from '../../../../lib/fichaLlegada'
 import { destinoDelPunto, tituloDeVuelta } from '../../../../lib/llegadaVueltaHoy'
@@ -25,12 +24,11 @@ import { textoResumenDeParada, useEscuchar } from '../../../../lib/useEscuchar'
 import { useAudioDeHistoria } from '../../../../lib/escucharAudio'
 import { accesoHistoria, textoHistoria, useFichaDeSitio } from '../../../../lib/historia'
 import { useHistoriaDePrueba } from '../../../../lib/historiaDePrueba'
-import { fraseDeAtardecer, tarjetaDeManana, tocaLoDeManana } from '../../../../lib/puestaDeSolYManana'
+import { conArticuloMinuscula, fraseDeAtardecer, horaDelSol, tocaLoDeManana } from '../../../../lib/puestaDeSolYManana'
 import { useGastarHistoriaAl3s } from '../../../../lib/useGastarHistoria'
 import { useExploreAperturaStore } from '../../../../store/useExploreAperturaStore'
 import type { EstadoPase } from '../../../../lib/paseEstado'
 import { Icono } from '../../../ui/Icono'
-import { EtiquetaBarrioDeSitio } from '../../../ui/EtiquetaBarrio'
 import { BotonFoto } from '../../fotos/BotonFoto'
 import { TusFotosDeHoy } from '../../fotos/TusFotosDeHoy'
 import { RainAlert } from '../../today/RainAlert'
@@ -40,13 +38,15 @@ import { TarjetaLlegadaDias } from '../../dayDetail/TarjetaLlegadaDias'
 import { BotonAlojamientoHoy, useFichasDeHoy, type MitadDeHoy } from '../llegadaVuelta'
 import { anadirMasVisita, useMasVisitas } from '../masVisitas'
 import type { MasVisita } from '../../../../lib/masVisitas'
-import { AZUL, botonOro, clasesBotonBorde, fondoPastilla, SOMBRA_TARJETA_CLARA, VERDE } from '../piezas'
+import { AZUL, VERDE } from '../piezas'
 import { CabeceraHoy } from './HoyAntesV2'
-import { ExtraDeParada } from './ExtraDeParada'
-import { ParadaFotoDeParada } from './ParadaFoto'
-import { useFotoDeParada } from './useFotoDeParada'
-import { HojaMasParaTuDia, HojaQueHacemos, HojaSobreEsteLugar } from './HojasV2'
+import { HojaMasParaTuDia, HojaSobreEsteLugar } from './HojasV2'
 import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
+import { AvisoSaltada, CabeceraParada, LineaDelLogro, TarjetaParada, TarjetaPorLaManana, TuDia, ojoDeParada, useAhoraMin, useUltimaSuma } from './ParadaHoy'
+import { HoyVuelvesH14 } from './VueltaH14'
+import { useUbicacionHoy } from './useUbicacionHoy'
+import { cuentaDelDia, mananaH13, minutosDe, salidaDeCasa, urlComoLlegar } from '../../../../lib/hoyParada'
+import { esDestinoDeCoche } from '../../../../lib/experienceCategoryBank'
 import { abrirAvisoPase } from '../../../../lib/avisoPase'
 import { nombreDelPase } from '../../../../lib/nombrePase'
 import { Marca } from '../../../pase/Marca'
@@ -54,10 +54,11 @@ import { CandadoRedondo } from '../../../pase/Candado'
 import { filaDeHoySinPase } from '../../../../lib/diaDePrueba'
 import { useSyncStore } from '../../../../store/useSyncStore'
 import { FranjaDiaDePrueba, TarjetaDeLaPrueba } from '../TarjetaDeLaPrueba'
+import { AvisosDeCerca } from '../AvisosDeCerca'
+import { AvisosDelTiempo } from '../AvisosDelTiempo'
+import { SinConexionHoy } from '../SinConexionHoy'
+import { CercaDeTiFila } from '../CercaDeTiFila'
 
-const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined
-const METROS_POR_MINUTO = 80
-const lonLat = (p: Coordinates) => `${p.lng.toFixed(5)},${p.lat.toFixed(5)}`
 const OJO = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' as const, color: 'rgb(var(--text) / .55)' }
 
 /** Los avisos cerrados con la cruz: por viaje y día, en el móvil; no vuelven a salir ESE día. */
@@ -82,45 +83,14 @@ function LineaDeHorario({ horario, cerradoEsteDia }: { horario: HorarioDeParada 
   if (cerradoEsteDia && !horario?.cerrado) horario = { abre: null, cierra: null, ultimaEntrada: null, cerrado: true, tramos: [], texto: CERRADO_ESTE_DIA }
   if (!horario) return null
   return (
-    <span className="text-[12px] leading-[1.3]" style={{ color: horario.cerrado ? ('rgb(var(--accent-red))') : 'rgba(28,34,48,.65)'}}>
+    <span className="text-[12px] leading-[1.3]" style={{ color: horario.cerrado ? '#FFC2BA' : 'rgba(251,243,226,.7)' }}>
       {horario.texto}
     </span>
   )
 }
 
-/** La foto de arriba de la tarjeta: la foto del sitio con el mapa pequeño en la esquina (una imagen estática de Mapbox, no un mapa vivo). */
-function FotoYMapa({ parada, desde, ciudad, dateIso }: { parada: Stop; desde: Coordinates | null; ciudad: string; dateIso: string }) {
-  const foto = useFotoDeParada(parada, ciudad, dateIso)
-  const [falloMapa, setFalloMapa] = useState(false)
-  const [falloFoto, setFalloFoto] = useState(false)
-  const [verCredito, setVerCredito] = useState(false)
-  const real = hasRealCoordinates(parada.coordinates)
-  let mapa: string | null = null
-  if (TOKEN && real && !falloMapa) {
-    // Más lejos (zoom 13): se ven nombres, plazas y el río. El aviso va aparte, pequeño, con su «i» (`attribution=false`: el texto sigue disponible al tocarla).
-    const pines = desde ? `pin-s+8E96A8(${lonLat(desde)}),pin-l+A67C52(${lonLat(parada.coordinates)})` : `pin-l+A67C52(${lonLat(parada.coordinates)})`
-    mapa = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/${pines}/${lonLat(parada.coordinates)},13/192x128@2x?attribution=false&access_token=${TOKEN}`
-  }
-  return (
-    <div className="relative h-[150px] flex-none overflow-hidden rounded-[21px]" style={{ background: 'repeating-linear-gradient(135deg,#2A3141 0 12px,#252C3B 12px 24px)' }}>
-      {foto && !falloFoto && <img src={foto} alt="" className="h-full w-full object-cover" onError={() => setFalloFoto(true)} />}
-      {mapa && (
-        <div className="absolute bottom-2.5 right-2.5 h-16 w-24 overflow-hidden rounded-[14px]" style={{ border: '2px solid rgba(255,253,248,.9)' }}>
-          <img src={mapa} alt="Mapa hasta la siguiente parada" className="h-full w-full object-cover" loading="lazy" onError={() => setFalloMapa(true)} />
-          <button type="button" onClick={() => setVerCredito((v) => !v)} aria-label="Datos del mapa" aria-expanded={verCredito} className="absolute bottom-0 right-0 flex h-11 w-11 items-end justify-end">
-            <span className="flex h-[18px] w-[18px] items-center justify-center rounded-tl-md bg-white/85 text-[10px] font-bold italic leading-none text-[#1C2230]/70">i</span>
-          </button>
-          {verCredito && (
-            <span className="absolute inset-x-0 bottom-0 bg-white/90 px-1 py-px text-[7px] leading-tight text-[#1C2230]/80">© Mapbox © OpenStreetMap</span>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
 /** [Escuchar historia]: el botón largo con las ondas (solo en los sitios con historia; la historia es de pago salvo la que la ficha marca gratis). */
-function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }) {
+export function EscucharHistoria({ destino, parada, variante = 'boton' }: { destino: string; parada: Stop; /** HOY1: «boton» (el largo de siempre), «linea» (H1: «¿Te cuento la historia mientras llegas? [Escuchar]») o «pastilla» (H3). */ variante?: 'boton' | 'linea' | 'pastilla' }) {
   const ficha = useFichaDeSitio(destino, parada.name)
   const audio = useAudioDeHistoria({ destino, nombre: parada.name })
   const texto = textoHistoria(ficha)
@@ -131,6 +101,7 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
   const acceso = accesoHistoria(ficha, pagoActivo(), { destino, nombre: parada.name })
   useGastarHistoriaAl3s(destino, parada.name, estado, acceso === 'prueba')
   if (acceso === 'ninguno' || texto.trim().length === 0) return null
+  if (variante !== 'boton') return <EscucharCompacta variante={variante} candado={acceso === 'candado'} destino={destino} estado={estado} hayVoz={hayVoz} escuchar={escuchar} pausar={pausar} seguir={seguir} parar={parar} />
   // (Tanda 10H: sin el pase, el MISMO botón, con el candado dorado en el extremo derecho, dentro, sobre marfil; al tocarlo, «Incluido con el Pase Roma» y se abre el pase.)
   if (acceso === 'candado') {
     return (
@@ -192,44 +163,37 @@ function EscucharHistoria({ destino, parada }: { destino: string; parada: Stop }
   )
 }
 
-type Fila = { tipo: 'parada'; stop: Stop } | { tipo: 'comida'; meal: MealSlot } | { tipo: 'noche' }
-
-/** La lista del día: las paradas numeradas, la comida y la cena donde caen (donde el viajero las dejó, o por su hora) y la cabecera «Noche». */
-function filasDelDia(day: DayPlan, paradas: Stop[]): Fila[] {
-  const posiciones: { meal: MealSlot; despuesDe: number }[] = []
-  for (const meal of day.meals) {
-    if (meal.mealTime !== 'lunch' && meal.mealTime !== 'dinner') continue
-    const movida = day.mealAfter?.[meal.mealTime]
-    let despuesDe = movida != null && movida >= -1 && movida < paradas.length ? movida : -2
-    if (despuesDe === -2) {
-      const t = parseTimeToMinutes(meal.time)
-      despuesDe = paradas.filter((s) => s.time && !Number.isNaN(t) && parseTimeToMinutes(s.time) < t).length - 1
-    }
-    posiciones.push({ meal, despuesDe })
+/** HOY1 (H1 y H3): las dos formas pequeñas de [Escuchar historia] sobre la tarjeta oscura. Mismo estado y mismas reglas que el botón largo. */
+function EscucharCompacta({ variante, candado, destino, estado, hayVoz, escuchar, pausar, seguir, parar }: { variante: 'linea' | 'pastilla'; candado: boolean; destino: string; estado: string; hayVoz: boolean; escuchar: () => void; pausar: () => void; seguir: () => void; parar: () => void }) {
+  if (!candado && !hayVoz) return null
+  const alPulsar = candado ? () => abrirAvisoPase('escuchar_historia', { destino }) : estado === 'parado' ? escuchar : estado === 'hablando' ? pausar : seguir
+  const etiqueta = estado === 'parado' ? 'Escuchar' : estado === 'hablando' ? 'Pausar' : 'Seguir'
+  if (variante === 'linea') {
+    return (
+      <div data-hoy-escuchar-linea data-escuchar={candado ? 'candado' : estado} className="flex items-center gap-2 text-[13px] leading-[1.3]" style={{ color: 'rgba(251,243,226,.85)' }}>
+        <span className="flex-1">¿Te cuento la historia mientras llegas?</span>
+        <button type="button" onClick={alPulsar} className="flex h-11 flex-none items-center gap-1.5 rounded-full px-3.5 text-[13px] font-bold" style={{ background: 'rgba(243,216,143,.16)', border: '1px solid rgba(243,216,143,.4)', color: '#F3D88F' }}>
+          <Icono nombre={estado === 'hablando' ? 'pausa' : candado ? 'candado' : 'seguir'} size={13} grosor={1.8} />
+          {etiqueta}
+        </button>
+        {estado !== 'parado' && !candado && (
+          <button type="button" onClick={parar} aria-label="Parar" className="flex h-11 w-11 flex-none items-center justify-center rounded-full" style={{ color: '#F3D88F' }}>
+            <Icono nombre="cerrar" size={14} />
+          </button>
+        )}
+      </div>
+    )
   }
-  const filas: Fila[] = []
-  let nocheDicha = false
-  const metaComidas = (despuesDe: number) => posiciones.filter((p) => p.despuesDe === despuesDe).forEach((p) => filas.push({ tipo: 'comida', meal: p.meal }))
-  metaComidas(-1)
-  paradas.forEach((stop, i) => {
-    if (!nocheDicha && (stop.isNightExperience || stop.isNightView)) {
-      filas.push({ tipo: 'noche' })
-      nocheDicha = true
-    }
-    filas.push({ tipo: 'parada', stop })
-    metaComidas(i)
-  })
-  return filas
+  return (
+    <button type="button" onClick={alPulsar} data-hoy-pastilla="escuchar" data-escuchar={candado ? 'candado' : estado} className="flex min-h-[50px] items-center gap-[9px] rounded-2xl px-2.5 py-2 text-left" style={{ background: 'rgba(251,243,226,.08)', border: '1px solid rgba(243,216,143,.38)', color: '#FBF3E2', font: "600 12.5px/1.2 'Geist'" }}>
+      <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full" style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510' }}>
+        <Icono nombre={estado === 'hablando' ? 'pausa' : candado ? 'candado' : 'altavoz'} size={16} grosor={1.9} />
+      </span>
+      {estado === 'parado' ? 'Escuchar historia' : estado === 'hablando' ? 'Pausar' : 'Seguir escuchando'}
+    </button>
+  )
 }
 
-const tituloDeComida = (meal: MealSlot): string => {
-  const base = meal.mealTime === 'dinner' ? 'Cena' : 'Comida'
-  const sitio = meal.chosenRestaurant?.name ?? meal.recommendedRestaurant?.name
-  if (sitio) return `${base} · ${sitio}`
-  return meal.noRestaurant ? 'Comida, cerca de tu alojamiento' : meal.mealTime === 'dinner' ? 'Hora de cenar' : 'Hora de comer'
-}
-
-const ETIQUETA_VUELTA: Record<string, string> = { avion: 'Vuelo de vuelta', tren: 'Tren de vuelta', bus: 'Autobús de vuelta', barco: 'Barco de vuelta' }
 
 function TarjetaAzul({ children }: { children: React.ReactNode }) {
   return (
@@ -251,14 +215,22 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const horarioDe = useHorarioDeParadas(day.city, dateIso)
   const fichas = useFichasDeHoy(route, day, dateIso)
   const masVisitas = useMasVisitas(route, day)
-  const [hojaSaltar, setHojaSaltar] = useState(false)
   const [hojaMas, setHojaMas] = useState<MasVisita[] | null>(null)
   const [anadidas, setAnadidas] = useState<Set<string>>(new Set())
   const [hojaSobre, setHojaSobre] = useState<Stop | null>(null)
-  const [ubicacion, setUbicacion] = useState<Coordinates | null>(null)
-  const [ubicacionEstado, setUbicacionEstado] = useState<'libre' | 'pidiendo' | 'no'>('libre')
+  const { ubicacion, estado: ubicacionEstado, pedir: pedirUbicacion } = useUbicacionHoy()
+  const enCoche = esDestinoDeCoche(route.destination)
+  const [avisoSaltada, setAvisoSaltada] = useState<{ stopId: string } | null>(null)
   const [ultimoVisto, setUltimoVisto] = useState<Stop | null>(null)
+  const sumaDelVisto = useUltimaSuma(ultimoVisto?.id ?? null)
+  const ahoraMinHoy = useAhoraMin()
   const [ofrecerFoto, setOfrecerFoto] = useState<Stop | null>(null)
+
+  useEffect(() => {
+    if (!avisoSaltada) return
+    const id = window.setTimeout(() => setAvisoSaltada(null), 10000)
+    return () => window.clearTimeout(id)
+  }, [avisoSaltada])
 
   const explorar = (categoria: 'banos' | 'fuentes' | 'restaurantes' | 'atracciones', origen: Coordinates | null, cerca = false) => {
     pedirExplorar({ categoria, origen, cerca })
@@ -270,7 +242,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const vigentes = paradas.filter((s) => !s.saltada)
   const vistas = vigentes.filter((s) => s.checkedInAt).length
   const siguiente = vigentes.find((s) => !s.checkedInAt) ?? null
-  const anterior = siguiente ? paradas[paradas.indexOf(siguiente) - 1] : undefined
+  // (HOY1) La parada de antes es la última que no se ha saltado: de una saltada no se sale.
+  const anterior = siguiente ? paradas.slice(0, paradas.indexOf(siguiente)).reverse().find((s) => !s.saltada) : undefined
   const entradasDeHoy = reservations.filter((r) => dayOfReservation(route, r)?.id === day.id && r.kind === 'entrada' && !r.fueraDeRuta)
   const reservaDe = (stop: Stop) => reservations.find((r) => r.id === stop.reservedId) ?? entradasDeHoy.find((r) => r.placeNames.includes(stop.name)) ?? null
   const esLlegada = esDiaDeLlegada(route, day)
@@ -282,27 +255,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const cierres = avisosDeCierre(vigentes.filter((s) => !s.closedThisDay), horarioDe, (s) => displayStopName(s.name)).filter((a) => !cerrados.includes(a.id))
   const cerrarAviso = (id: string) => setCerrados((antes) => { const ahora = [...antes, id]; guardarCerrados(route.id, day.id, ahora); return ahora })
 
-  const pedirUbicacion = () => {
-    if (!('geolocation' in navigator)) return setUbicacionEstado('no')
-    setUbicacionEstado('pidiendo')
-    navigator.geolocation.getCurrentPosition(
-      (p) => {
-        setUbicacion({ lat: p.coords.latitude, lng: p.coords.longitude })
-        setUbicacionEstado('libre')
-      },
-      () => setUbicacionEstado('no'),
-      { enableHighAccuracy: false, timeout: 8000 },
-    )
-  }
-  const desdeAnterior = !ubicacion && anterior && hasRealCoordinates(anterior.coordinates) ? anterior.coordinates : null
-  const origen = ubicacion ?? desdeAnterior
-  const minutos = siguiente && ubicacion && hasRealCoordinates(siguiente.coordinates) ? Math.max(1, Math.round(haversineMeters(ubicacion, siguiente.coordinates) / METROS_POR_MINUTO)) : null
-  const comoLlegar =
-    siguiente && hasRealCoordinates(siguiente.coordinates)
-      ? ubicacion || !desdeAnterior
-        ? buildGoogleMapsUrlFromHere(`${siguiente.coordinates.lat},${siguiente.coordinates.lng}`)
-        : buildGoogleMapsUrl(`${desdeAnterior.lat},${desdeAnterior.lng}`, `${siguiente.coordinates.lat},${siguiente.coordinates.lng}`, 'walking')
-      : null
   const origenCerca = ubicacion ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null)
 
   // Tanda 10P (1.3): la puesta de sol y lo de mañana (con el pase y en el día de prueba; sin pase, como antes).
@@ -319,15 +271,21 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     : null
   const horaDeCena = day.meals.find((m) => m.mealTime === 'dinner')?.time
   const ahoraLocal = new Date()
+  const zonaCoords = (route.accommodationZone ? info.zonasAlojamiento.find((z) => z.id === route.accommodationZone)?.coordinates : null) ?? null
   const manana =
     conPaseOPrueba && !day.isReturnLeg && tocaLoDeManana({ paradasDeHoy: paradas.length, quedanPendientes: Boolean(siguiente), cenaMin: horaDeCena ? parseTimeToMinutes(horaDeCena) : null, ahoraMin: ahoraLocal.getHours() * 60 + ahoraLocal.getMinutes() })
-      ? tarjetaDeManana({ route, day, reservations, nombreDelDia: (d) => nombreDelDia(route, d, info.gruposDia).titulo, nombreCorto: (r) => info.nombresCortos[r.refId] ?? null })
+      ? mananaH13({ route, day, reservations, nombreDelDia: (d) => nombreDelDia(route, d, info.gruposDia).titulo, nombreCorto: (r) => info.nombresCortos[r.refId] ?? null, zona: zonaCoords, enCoche })
       : null
   const reservaSiguiente = siguiente ? reservaDe(siguiente) : null
-  const horaReservada = reservaSiguiente?.time ?? siguiente?.reservationTime ?? null
+  const cuenta = cuentaDelDia(paradas)
+  // H6 (por la mañana): con el pase y la zona (o el coche), antes de la hora de salir y sin nada hecho aún.
+  const salidaManana = conPaseOPrueba && siguiente && vistas === 0 && !esLlegada && !esVuelta ? salidaDeCasa({ day, primera: siguiente, zona: zonaCoords, enCoche }) : null
+  const minSalida = salidaManana ? minutosDe(salidaManana.hora) : null
+  const esPorLaManana = Boolean(salidaManana && minSalida != null && ahoraMinHoy < minSalida)
+  const vuelveH14 = (conPase: boolean) => (tarjetaVuelve || fichas.vuelta.hora || route.planVuelta?.hora ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} /> : null)
   const saltar = (stop: Stop) => {
     setStopSaltada(day.id, stop.id, true)
-    setHojaSaltar(false)
+    setAvisoSaltada({ stopId: stop.id })
     setUltimoVisto(null)
     setOfrecerFoto(null)
   }
@@ -343,12 +301,13 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     setUltimoVisto(null)
     setOfrecerFoto(null)
   }
-  const otrosDias = route.days.filter((c) => !c.isReturnLeg && c.id !== day.id).map((c) => ({ id: c.id, dayNumber: c.dayNumber, city: c.city }))
 
   // ── La cabecera: «jue 23» y el título del día (si es día de viaje, su trayecto al lado) ──
   const ojo = `${formatWeekdayAbbrEs(dateIso)} ${Number(dateIso.slice(8, 10))}`
   const tituloLimpio = tituloDeHoy.titulo.includes('→') ? tituloSinHorasSiYaNoEsVerdad(day.curatedTitle ?? day.city, day, null) : tituloDeHoy.titulo
-  const cabecera = info.cargado || esVuelta ? <CabeceraHoy ojo={ojo} titulo={tituloLimpio} sub={tituloDeHoy.viaje ?? viajeDelDia(route, day)} /> : <CabeceraHoy ojo={ojo} titulo=" " />
+  // (HOY1, H14) El día de vuelta sin paradas lleva la tarjeta «Hoy vuelves a casa»: la cabecera no repite el título.
+  const tituloCabecera = sinParadasDeVuelta && tarjetaVuelve ? `Último día en ${route.destination}` : tituloLimpio
+  const cabecera = info.cargado || esVuelta ? <CabeceraHoy ojo={ojo} titulo={tituloCabecera} sub={tituloDeHoy.viaje ?? viajeDelDia(route, day)} /> : <CabeceraHoy ojo={ojo} titulo=" " />
 
   // ── El pase: con cobro y sin pase, el día de llegada es la tarjeta P3 y, si la prueba ya se gastó, solo la tarjeta de la 12 ──
   const sinPase = pase.cobro && !pase.conPase
@@ -382,12 +341,13 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     return (
       <>
         {cabecera}
+        {esVuelta && vuelveH14(false)}
         <TarjetaDiaDePrueba dias={diasRestantes} fila={fila} destino={route.destination} />
+        {fichas.hoja}
       </>
     )
   }
 
-  const filas = filasDelDia(day, paradas)
   const arrivalDay = day.arrivalDay
   const comidaAlLlegar = esLlegada && (Boolean(day.meals.some((m) => m.noRestaurant)) || Boolean(arrivalDay?.comida_al_llegar))
   const llegadaTarde = esLlegada && Boolean(arrivalDay?.sin_paradas) && Boolean(arrivalDay?.de_noche)
@@ -423,16 +383,20 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         </div>
       ))}
       <RainAlert day={day} dateIso={dateIso} when="hoy" />
+      <AvisosDeCerca route={route} day={day} dateIso={dateIso} />
     </>
   )
 
   return (
     <>
-      {cabecera}
+      {paradas.length > 0 && !sinParadasDeVuelta ? <CabeceraParada ojo={ojoDeParada(dateIso, tituloLimpio)} ahora={cuenta.ahora} total={cuenta.total} hechas={cuenta.hechas} /> : cabecera}
+      <SinConexionHoy route={route} day={day} dateIso={dateIso} />
+      {/* HOY1, H12: los avisos del tiempo van arriba, entre «Parada X de Y» y la tarjeta (como en Design) */}
+      <AvisosDelTiempo route={route} day={day} dateIso={dateIso} />
       {diaCompleto && <p className="flex-none px-1 text-[12.5px] leading-[1.35] text-text/60">{TEXTO_DIA_COMPLETO}</p>}
 
       {/* 5: el día de vuelta sin paradas, «Hoy vuelves a casa» */}
-      {sinParadasDeVuelta && tarjetaVuelve && <HoyVuelvesV2 tarjeta={tarjetaVuelve} mitad={fichas.vuelta} onVerComoIr={() => fichas.abrir('vuelta')} onExplorar={() => explorar('atracciones', null, tarjetaVuelve.explorar.cerca_de_mi)} />}
+      {sinParadasDeVuelta && tarjetaVuelve && vuelveH14(true)}
 
       {/* 4: la maleta del último día */}
       {esVuelta && !sinParadasDeVuelta && pagoActivo() && infoLlegada.maleta?.texto && (
@@ -497,76 +461,66 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         </>
       )}
 
-      {alertas}
-
-      {/* Tanda 10P: la puesta de sol, con la hora real del día */}
+      {/* HOY1 (H13): el sol del día con su sitio y [Cómo llegar] */}
       {fraseAtardecer && (
-        <div data-hoy-atardecer={fraseAtardecer.tipo} className="flex min-h-14 flex-none items-center gap-3 rounded-[18px] py-[9px] pl-3 pr-3" style={{ background: 'oklch(0.96 0.04 70)', border: '1px solid oklch(0.64 0.14 60 / .3)' }}>
-          <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px]" style={{ background: 'oklch(0.8 0.14 70)', color: '#17120a' }}>
-            <Icono nombre="hoy" size={17} grosor={1.8} />
+        <div data-hoy-atardecer={fraseAtardecer.tipo} className="flex flex-none items-center gap-3.5 rounded-3xl p-4 text-white" style={{ background: 'linear-gradient(160deg,#F9C98A,#E58A5E 55%,#7A3E78)' }}>
+          <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(255,255,255,.22)' }}>
+            <Icono nombre="hoy" size={26} grosor={1.8} />
           </span>
-          <span className="min-w-0 flex-1 text-[13px] font-medium leading-[1.35]" style={{ color: 'oklch(0.32 0.07 60)' }}>{fraseAtardecer.texto}</span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <b data-hoy-atardecer-titulo style={{ font: "400 24px/1.1 'Instrument Serif',serif" }}>Hoy el sol se pone a las {horaDelSol(day)}</b>
+            <span data-hoy-atardecer-sitio className="text-[13.5px] font-medium opacity-90">
+              {fraseAtardecer.tipo === 'siguiente' ? `${displayStopName(fraseAtardecer.sitio)}, tu siguiente parada, es para verlo` : `Desde ${conArticuloMinuscula(fraseAtardecer.sitio)}, a ${fraseAtardecer.minutos} minutos, se ve precioso`}
+            </span>
+          </span>
+          {fraseAtardecer.parada && hasRealCoordinates(fraseAtardecer.parada.coordinates) && (
+            <a href={urlComoLlegar(fraseAtardecer.parada.coordinates, ubicacion, enCoche)} target="_blank" rel="noopener noreferrer" data-hoy-atardecer-como-llegar className="flex h-11 flex-none items-center rounded-xl px-3.5 text-[12.5px] font-bold no-underline" style={{ background: '#FBF3E2', color: '#4A3510' }}>
+              Cómo llegar
+            </a>
+          )}
         </div>
       )}
 
-      {/* 2: la siguiente parada, en grande */}
-      {!sinParadasDeVuelta && siguiente && (
-        <div className="flex flex-none flex-col gap-3 rounded-[28px] px-2 pb-3 pt-2 bg-[#FFFDF8] text-[#1C2230]" style={{ boxShadow: SOMBRA_TARJETA_CLARA }} data-hoy-siguiente data-tarjeta="clara">
-          <FotoYMapa parada={siguiente} desde={origen} ciudad={day.city} dateIso={dateIso} />
-          <div className="flex flex-col gap-2 px-2">
-            <span style={{ font: "400 32px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(siguiente.name)}</span>
-            <LineaDeHorario horario={horarioDe(siguiente)} cerradoEsteDia={Boolean(siguiente.closedThisDay)} />
-            <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} className="self-start" />
-            <span className="flex flex-wrap items-center gap-1.5">
-              {siguiente.durationMinutes > 0 && (
-                <span className="flex h-[30px] items-center gap-1.5 rounded-full pl-2 pr-2.5 text-[12px] font-medium" style={{ background: fondoPastilla() }}>
-                  <Icono nombre="arena" size={13} grosor={2} />
-                  {formatDuration(siguiente.durationMinutes)}
-              </span>
-              )}
-              <button type="button" onClick={pedirUbicacion} disabled={ubicacionEstado === 'pidiendo'} className={`zona-toque flex h-[30px] items-center gap-1.5 rounded-full border pl-2 pr-2.5 text-[12px] font-medium disabled:opacity-60 border-[#1C2230]/25`}>
-                <Icono nombre="ubicacion" size={13} grosor={1.9} />
-                {ubicacionEstado === 'pidiendo' ? 'Buscando…' : minutos !== null ? `${minutos} min andando` : ubicacionEstado === 'no' ? 'Sin ubicación' : 'Ubicación'}
-              </button>
-            </span>
-          </div>
-          <div className="flex flex-col gap-2 px-1">
-            <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={marcarVisto} data-boton-visto className="flex h-[46px] items-center justify-center gap-1.5 rounded-full text-[13.5px] font-semibold text-white" style={{ background: VERDE }}>
-                <Icono nombre="hecho" size={14} grosor={2.6} />
-                Visto
-              </button>
-              <button type="button" onClick={() => setHojaSaltar(true)} className={`h-[46px] whitespace-nowrap rounded-full px-2.5 text-[13px] font-semibold ${clasesBotonBorde()}`}>
-                No me da tiempo
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {comoLlegar ? (
-                <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-[46px] items-center justify-center gap-2 rounded-full text-[14px] font-bold no-underline" style={botonOro()}>
-                  <Icono nombre="explorar" size={16} grosor={1.8} />
-                  Cómo llegar
-                </a>
-              ) : (
-                <span className={`flex h-[46px] items-center justify-center rounded-full text-[14px] font-semibold bg-[#1C2230]/8 text-[#1C2230]/45`}>Cómo llegar</span>
-              )}
-              <button type="button" onClick={() => setHojaSobre(siguiente)} className={`flex h-[46px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-[12.5px] font-semibold ${clasesBotonBorde()}`}>
-                <Icono nombre="portapapeles" size={14} grosor={1.8} />
-                Sobre este lugar
-              </button>
-            </div>
-            <EscucharHistoria destino={route.destination} parada={siguiente} />
-            <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" route={route} reserva={reservaSiguiente} />
-            {masVisitas.length > 0 && (
-              <div className="flex justify-center">
-                <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: '1.5px dashed rgba(166,124,82,.6)'}}>
-                  <Icono nombre="anadir" size={13} grosor={2.4} />
-                  Más visitas
-                </button>
-              </div>
-            )}
-          </div>
+      {/* HOY1 (H4): la línea dorada del logro que acaba de ganar */}
+      {ultimoVisto && siguiente && sumaDelVisto && <LineaDelLogro texto={`+1 en ${sumaDelVisto}`} />}
+
+      {/* HOY1 (H1 a H6): la siguiente parada, por llegar o ya aquí; por la mañana, «Sal de casa a las…» */}
+      {!sinParadasDeVuelta && siguiente && esPorLaManana && salidaManana && (
+        <TarjetaPorLaManana route={route} day={day} dateIso={dateIso} primera={siguiente} hora={salidaManana.hora} trayecto={salidaManana.trayecto} comoLlegar={hasRealCoordinates(siguiente.coordinates) ? urlComoLlegar(siguiente.coordinates, zonaCoords, enCoche) : null} />
+      )}
+      {!sinParadasDeVuelta && siguiente && !esPorLaManana && (
+        <TarjetaParada
+          route={route}
+          day={day}
+          dateIso={dateIso}
+          siguiente={siguiente}
+          anterior={anterior}
+          reservaSiguiente={reservaSiguiente}
+          ubicacion={ubicacion}
+          ubicacionEstado={ubicacionEstado}
+          pedirUbicacion={pedirUbicacion}
+          enCoche={enCoche}
+          onTerminado={marcarVisto}
+          onSaltar={() => saltar(siguiente)}
+          recienTerminada={Boolean(ultimoVisto)}
+          conPase={conPaseOPrueba}
+          escuchar={(variante) => <EscucharHistoria destino={route.destination} parada={siguiente} variante={variante} />}
+          onQueVasAVer={() => setHojaSobre(siguiente)}
+          casa={zonaCoords}
+          lineaHorario={<LineaDeHorario horario={horarioDe(siguiente)} cerradoEsteDia={Boolean(siguiente.closedThisDay)} />}
+        />
+      )}
+      {!sinParadasDeVuelta && siguiente && masVisitas.length > 0 && (
+        <div className="flex flex-none justify-center">
+          <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: '1.5px dashed rgba(166,124,82,.6)' }}>
+            <Icono nombre="anadir" size={13} grosor={2.4} />
+            Más visitas
+          </button>
         </div>
       )}
+
+      {/* HOY1: los avisos (cierres, entradas, lluvia) van DEBAJO de la tarjeta: la tarjeta es lo primero que se ve, como en Design */}
+      {alertas}
       {!sinParadasDeVuelta && !siguiente && paradas.length > 0 && !mostrarPrueba && (
         <div className="flex flex-none flex-col gap-2.5 rounded-[24px] bg-[#1C2230] p-[18px] text-[#FFFDF8]" data-hoy-todo-visto>
           <span className="flex items-center gap-3">
@@ -590,10 +544,31 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       )}
 
       {/* Tanda 10P: lo de mañana (después de la última parada o a la hora de la cena; el último día, nada) */}
+      {/* HOY1 (H13): lo de mañana (después de la última parada o a la hora de la cena; el último día, nada) */}
       {manana && (
-        <div data-hoy-manana className="flex flex-none flex-col gap-1 rounded-[18px] px-3.5 py-3" style={{ background: 'oklch(0.95 0.025 230)', border: '1px solid oklch(0.56 0.1 230 / .2)' }}>
-          <span className="text-[13.5px] font-semibold leading-[1.35]" style={{ color: 'oklch(0.3 0.06 240)' }}>{manana.texto}</span>
-          {manana.reserva && <span data-hoy-manana-reserva className="text-[12.5px] leading-[1.35]" style={{ color: 'oklch(0.3 0.06 240 / .85)' }}>{manana.reserva}</span>}
+        <div data-hoy-manana className="flex flex-none flex-col gap-2 rounded-[20px] px-4 py-3.5" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }}>
+          <span style={{ ...OJO, color: '#6F4E37' }}>Mañana</span>
+          <b data-hoy-manana-titulo style={{ font: "400 24px/1.15 'Instrument Serif',serif" }}>{manana.titulo}</b>
+          <span className="flex flex-wrap gap-x-3.5 gap-y-1 text-[13px] font-medium text-[#1C2230]/70">
+            {manana.sales && (
+              <span data-hoy-manana-sales className="flex items-center gap-[5px]">
+                <Icono nombre="reloj" size={14} grosor={1.8} />
+                {manana.sales}
+              </span>
+            )}
+            {manana.turno && (
+              <span data-hoy-manana-reserva className="flex items-center gap-[5px]">
+                <Icono nombre="reservas" size={14} grosor={1.8} />
+                {manana.turno}
+              </span>
+            )}
+            {manana.consejo && (
+              <span data-hoy-manana-consejo className="flex items-center gap-[5px]">
+                <Icono nombre="info" size={14} grosor={1.8} />
+                {manana.consejo}
+              </span>
+            )}
+          </span>
         </div>
       )}
 
@@ -612,74 +587,11 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
       {mostrarPrueba && <TarjetaDiaDePrueba dias={diasRestantes} fila={fila} destino={route.destination} />}
 
-      {/* La lista del día, con «Parada con foto» */}
-      {!sinParadasDeVuelta && paradas.length > 0 && (
-        <div className="flex flex-none flex-col gap-2 pt-1.5">
-          <span className="flex justify-between px-1" style={OJO}>
-            <span>{esVuelta ? 'Esta mañana' : `Hoy · ${formatWeekdayAbbrEs(dateIso)} ${Number(dateIso.slice(8, 10))}`}</span>
-            <span>
-              {vistas} de {vigentes.length} visto
-            </span>
-          </span>
-          <div className="rounded-[22px] bg-[#FFFDF8] py-1 pl-3.5 pr-1.5" style={{ border: '1px solid rgba(28,34,48,.07)' }} data-hoy-lista>
-            {filas.map((fila, i) => {
-              const borde = i < filas.length - 1 ? '1px solid rgba(28,34,48,.07)' : 'none'
-              if (fila.tipo === 'noche')
-                return (
-                  <span key="noche" className="flex items-center gap-2 pb-1 pt-3" style={{ ...OJO, color: 'oklch(0.4 0.1 285)' }}>
-                    <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full" style={{ background: 'oklch(0.92 0.04 285)' }}>
-                      <Icono nombre="noche" size={12} grosor={2} />
-                    </span>
-                    Noche
-                  </span>
-                )
-              if (fila.tipo === 'comida')
-                return (
-                  <div key={`m-${fila.meal.id}`} className="flex min-h-[52px] items-center gap-[11px]" style={{ borderBottom: borde }}>
-                    <span className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full" style={{ border: '1.5px solid rgba(28,34,48,.25)' }}>
-                      <Icono nombre="comida" size={13} grosor={1.9} />
-                    </span>
-                    <span className="min-w-0 flex-1 py-1.5 text-[14px] leading-[1.3]">{tituloDeComida(fila.meal)}</span>
-                  </div>
-                )
-              const stop = fila.stop
-              const saltada = Boolean(stop.saltada)
-              const vista = Boolean(stop.checkedInAt) && !saltada
-              const ahora = siguiente?.id === stop.id
-              const reserva = reservaDe(stop)
-              return (
-                <div key={stop.id} data-saltada={saltada ? 'true' : undefined} className="flex min-h-[52px] items-center gap-[11px]" style={{ borderBottom: borde }}>
-                  <ParadaFotoDeParada parada={stop} ciudad={day.city} dateIso={dateIso} vista={vista} size={40} />
-                  <span className="flex min-w-0 flex-1 flex-col gap-[3px] py-1.5">
-                    <span className={saltada ? 'line-through' : undefined} style={{ font: ahora ? "400 18px/1.15 'Instrument Serif',serif" : "400 14px/1.3 'Geist'", color: saltada ? 'rgb(var(--text) / .42)' : vista ? 'rgb(var(--accent-green))' : 'rgb(var(--text))', textWrap: 'balance' as never }}>
-                      {displayStopName(stop.name)}
-                    </span>
-                    {!saltada && <EtiquetaBarrioDeSitio destination={route.destination} name={stop.name} className="self-start" />}
-                    <span className="flex flex-wrap gap-1">
-                      {stop.addedByUser && <span className="h-5 rounded-full px-[7px] text-[10px] font-semibold leading-[18px]" style={{ border: '1px dashed rgb(var(--accent) / .5)', color: 'rgb(var(--accent-hover))' }}>Añadida</span>}
-                    </span>
-                    <ExtraDeParada parada={stop} dayId={day.id} vista={vista} contexto="fila" />
-                  </span>
-                  {reserva?.time && (
-                    <span className="flex h-6 flex-none items-center rounded-full px-2" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)', color: 'oklch(0.38 0.1 150)', font: "600 11.5px 'Geist Mono',monospace" }}>
-                      ✓ {reserva.time}
-                    </span>
-                  )}
-                  {ahora && <span className="h-[22px] flex-none rounded-full px-2 text-[10.5px] font-semibold leading-[22px]" style={{ background: 'rgb(var(--accent) / .1)', color: 'rgb(var(--accent-hover))' }}>Ahora</span>}
-                  {saltada && (
-                    <button type="button" onClick={() => setStopSaltada(day.id, stop.id, false)} className="flex h-11 flex-none items-center gap-1 rounded-full px-1.5 text-[10.5px] font-semibold text-text/75">
-                      <span className="flex h-[26px] items-center gap-1 rounded-full border border-[rgba(28,34,48,.16)] bg-white pl-1.5 pr-2">
-                        <Icono nombre="recuperar" size={11} grosor={2} />
-                        Recuperar
-                      </span>
-                    </button>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
+      {/* Cerca de ti */}
+      {!sinParadasDeVuelta && !esVuelta && paradas.length > 0 && <CercaDeTiFila route={route} origen={origenCerca} conPase={pagoActivo()} />}
+
+      {/* HOY1 (H1, H4, H4b): «Tu día», la lista completa que se cierra y se abre */}
+      {!sinParadasDeVuelta && paradas.length > 0 && <TuDia route={route} day={day} dateIso={dateIso} paradas={paradas} siguienteId={siguiente?.id ?? null} reservaDe={reservaDe} onRecuperar={(s2) => setStopSaltada(day.id, s2.id, false)} />}
 
       {/* 4: la tarde del día de vuelta */}
       {esVuelta && !sinParadasDeVuelta && (
@@ -691,50 +603,18 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
               Añadir lugares
             </button>
           </div>
-          <TarjetaVueltaV2 route={route} mitad={fichas.vuelta} onVerComoIr={() => fichas.abrir('vuelta')} />
+          {/* HOY1 (H14): UNA sola tarjeta de «Hoy vuelves a casa» (con y sin pase); el billete de vuelta, debajo */}
+          {vuelveH14(true) ?? <TarjetaVueltaV2 route={route} mitad={fichas.vuelta} onVerComoIr={() => fichas.abrir('vuelta')} />}
+          {vuelveH14(true) && pagoActivo() && fichas.vuelta.billete && <BilleteDeVuelo billete={fichas.vuelta.billete} onOpen={() => fichas.abrir('vuelta')} />}
         </>
       )}
 
-      {/* Cerca de ti */}
-      {!sinParadasDeVuelta && !esVuelta && paradas.length > 0 && (
-        <div className="flex flex-none flex-col gap-2 pt-1.5">
-          <span className="px-1" style={OJO}>Cerca de ti</span>
-          <div className="grid grid-cols-3 gap-2">
-            {(
-              [
-                { c: 'banos', n: 'Baños', i: 'banos' },
-                { c: 'fuentes', n: 'Fuentes', i: 'fuente' },
-                { c: 'restaurantes', n: 'Comer', i: 'comida' },
-              ] as const
-            ).map((b) => (
-              <button key={b.c} type="button" onClick={() => explorar(b.c, origenCerca)} className="flex h-[76px] flex-col items-center justify-center gap-[7px] rounded-[18px] bg-white" style={{ border: '1px solid rgba(28,34,48,.08)' }}>
-                <Icono nombre={b.i} size={21} />
-                <span className="text-[12.5px] font-semibold">{b.n}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {tarjetaVuelve && !esVuelta && <HoyVuelvesV2 tarjeta={tarjetaVuelve} mitad={fichas.vuelta} onVerComoIr={() => fichas.abrir('vuelta')} onExplorar={() => explorar('atracciones', null, tarjetaVuelve.explorar.cerca_de_mi)} />}
+      {tarjetaVuelve && !esVuelta && vuelveH14(true)}
       {!esVuelta && <BotonAlojamientoHoy route={route} />}
       <TusFotosDeHoy day={day} />
 
       {fichas.hoja}
-      {hojaSaltar && siguiente && (
-        <HojaQueHacemos
-          nombre={displayStopName(siguiente.name)}
-          horaReservada={siguiente.reservedId || reservaSiguiente ? horaReservada : null}
-          dias={otrosDias}
-          ahora={day.dayNumber}
-          onSaltar={() => saltar(siguiente)}
-          onMover={(otro) => {
-            moverParadaAOtroDia(siguiente.id, day.id, otro)
-            setHojaSaltar(false)
-          }}
-          onCerrar={() => setHojaSaltar(false)}
-        />
-      )}
+      {avisoSaltada && <AvisoSaltada onDeshacer={() => { setStopSaltada(day.id, avisoSaltada.stopId, false); setAvisoSaltada(null) }} />}
       {hojaMas && (
         <HojaMasParaTuDia
           visitas={hojaMas}
@@ -776,49 +656,6 @@ function TarjetaVueltaV2({ route, mitad, onVerComoIr }: { route: Route; mitad: M
       </a>
       {mitad.billete && <BilleteDeVuelo billete={mitad.billete} onOpen={onVerComoIr} />}
     </TarjetaAzul>
-  )
-}
-
-/** Pantalla 5: «Hoy vuelves a casa», con la cabecera azul y los textos que da el motor. */
-function HoyVuelvesV2({ tarjeta, mitad, onVerComoIr, onExplorar }: { tarjeta: NonNullable<ReturnType<typeof tarjetaHoyVuelvesDelDia>>; mitad: MitadDeHoy; onVerComoIr: () => void; onExplorar: () => void }) {
-  const etiqueta = `${ETIQUETA_VUELTA[mitad.mode] ?? 'Vuelta'}${mitad.hora ? ` · ${mitad.hora}` : ''}`
-  return (
-    <div data-tarjeta-hoy-vuelves={tarjeta.madrugada ? 'madrugada' : 'dia'} className="relative flex-none overflow-hidden rounded-[28px] bg-[#FFFDF8]" style={{ border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 18px 34px -24px rgba(28,34,48,.5)' }}>
-      <div className="relative flex h-[120px] flex-col justify-end gap-1 px-5 py-[18px] text-white" style={{ background: 'linear-gradient(160deg,oklch(0.6 0.11 235),oklch(0.42 0.1 250))' }}>
-        <Icono nombre="avion" size={26} grosor={1.6} className="absolute right-5 top-[18px] opacity-85" />
-        <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', opacity: 0.75 }}>{etiqueta}</span>
-        <span data-hoy-vuelves-titulo style={{ font: "400 32px/1 'Instrument Serif',serif" }}>{tarjeta.titulo}</span>
-      </div>
-      <div className="flex flex-col gap-3 px-[18px] pb-[18px] pt-4">
-        <p data-hoy-vuelves-texto className="m-0 text-[14px] leading-[1.55] text-[#1C2230]/80" style={{ textWrap: 'pretty' as never }}>
-          {tarjeta.texto}
-        </p>
-        {tarjeta.desde_tu_zona && (
-          <div data-hoy-vuelves-zona className="flex items-start gap-2.5 rounded-2xl p-3" style={{ background: 'oklch(0.95 0.025 230)' }}>
-            <Icono nombre="tren" size={17} className="mt-px flex-none" style={{ color: 'oklch(0.4 0.09 240)' }} />
-            <span className="text-[13px] leading-[1.5]" style={{ color: 'oklch(0.3 0.06 240)', textWrap: 'pretty' as never }}>
-              {tarjeta.desde_tu_zona.texto}
-              {tarjeta.desde_tu_zona.aviso ? ` ${tarjeta.desde_tu_zona.aviso}` : ''}
-            </span>
-          </div>
-        )}
-        <button type="button" onClick={onVerComoIr} data-hoy-vuelves="ver-como-ir" className="flex h-12 items-center justify-center gap-2 rounded-full text-[14px] font-semibold text-white" style={{ background: 'oklch(0.5 0.12 245)' }}>
-          {tarjeta.ver_como_ir.texto}
-          <Icono nombre="flecha" size={15} grosor={2} />
-        </button>
-        <div className="h-px bg-[rgba(28,34,48,.08)]" />
-        <span data-hoy-vuelves-explorar className="text-[13.5px] leading-[1.5] text-[#1C2230]/75">
-          {tarjeta.explorar.texto}
-        </span>
-        <button type="button" onClick={onExplorar} data-hoy-vuelves="explorar-monumentos" className="flex h-11 items-center gap-[7px] self-start rounded-full border border-[rgba(28,34,48,.18)] bg-white pl-3 pr-4 text-[13.5px] font-semibold">
-          <Icono nombre="explorar" size={15} grosor={1.8} />
-          {tarjeta.explorar.boton}
-        </button>
-        <span data-hoy-vuelves-despedida className="pt-1.5" style={{ font: "italic 400 20px/1.25 'Instrument Serif',serif", color: 'rgb(var(--accent-hover))', textWrap: 'balance' as never }}>
-          {tarjeta.despedida}
-        </span>
-      </div>
-    </div>
   )
 }
 

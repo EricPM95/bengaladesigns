@@ -37,10 +37,18 @@ for (const p of sitios) {
 }
 
 // ── 3. «Cerca de ti» ─────────────────────────────────────────────
+// (HOY1, 4-nov) Puesta al día: ANTES, los botones de «Cerca de ti» de HOY eran `CercaDeTi.tsx` (Gasolineras/Aparcar abrían una hoja con [Abrir en Maps] y Comer abría EXPLORAR);
+// AHORA, HOY v2 pinta `CercaDeTiFila.tsx` (la fila de Design K5-K8: la hoja de los 4 sitios más cercanos, cada uno entero un enlace a Maps en coche en Lanzarote y a pie en Roma);
+// DECISIÓN DE ERIC (4-nov): «Cerca de ti» = Roma Baños · Fuentes · Comer, Lanzarote Gasolineras · Aparcar · Comer, cada sitio abre Maps con el camino. `CercaDeTi.tsx` se queda para el HOY de antes (HoyDurante.tsx).
 const cerca = crudo('src/components/route/hoy/CercaDeTi.tsx')
 debe(cerca.includes("etiqueta: 'Gasolineras'") && cerca.includes("etiqueta: 'Aparcar'") && cerca.includes("etiqueta: 'Comer'"), '3a', '«Cerca de ti» en Lanzarote: gasolineras, aparcamientos y dónde comer')
 debe(cerca.includes('esDestinoDeCoche(destino)') && cerca.includes("etiqueta: 'Baños'"), '3b', 'Baños y Fuentes solo en los demás destinos (Roma igual que antes)')
 debe(cerca.includes('Pocas gasolineras en el norte (Haría y Arrieta): llena el depósito antes de subir.'), '3c', 'el aviso de las gasolineras del norte')
+{
+  const fila = crudo('src/components/route/hoy/CercaDeTiFila.tsx')
+  debe(/BOTONES_COCHE[\s\S]*Gasolineras[\s\S]*Aparcar[\s\S]*Comer/.test(fila) && fila.includes('esDestinoDeCoche(route.destination)') && fila.includes("'driving'"), '3f', '(HOY1) la fila nueva de HOY: Gasolineras · Aparcar · Comer en Lanzarote, con el camino en coche')
+  debe(fila.includes('AVISO_GASOLINERAS_NORTE') && fila.includes('/api/cerca-de-ti-coche'), '3g', '(HOY1) la hoja nueva de gasolineras lleva el aviso del norte y los datos de la LZ1')
+}
 debe(/app\.post\('\/api\/cerca-de-ti-coche'/.test(servidor), '3d', 'el servidor da las gasolineras y los aparcamientos más cercanos')
 debe((leer('data/pipeline_v2/gasolineras/lanzarote.json').gasolineras ?? []).length > 10 && (leer('data/pipeline_v2/aparcamientos/lanzarote.json').aparcamientos ?? []).length > 50, '3e', 'datos de gasolineras y aparcamientos de la LZ1')
 

@@ -52,7 +52,9 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
   const revertRainPlan = useRouteStore((state) => state.revertRainPlan)
   const [part, setPart] = useState<'manana' | 'tarde' | 'dia' | null>(null)
   const [open, setOpen] = useState(false)
-  const note = day.rainPlan?.text ?? day.rainPlanB?.note ?? null
+  // (HOY1, apartado 6) En Lanzarote la lluvia la cuentan los avisos del tiempo en directo (AvisosDelTiempo), no este aviso: así no salen dos.
+  const enLanzarote = useRouteStore((state) => (state.route?.destination ?? '').toLowerCase().includes('lanzarote'))
+  const note = enLanzarote ? null : (day.rainPlan?.text ?? day.rainPlanB?.note ?? null)
 
   const relevantStops = (when === 'hoy' ? day.stops.filter((stop) => !stop.checkedInAt && !stop.saltada) : day.stops).filter((stop) => !stop.isArrival && !stop.isBreak)
   const hoursKey = hoursOf(relevantStops).join(',')

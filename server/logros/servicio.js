@@ -16,6 +16,7 @@ import { calcularExp, edicionDeAnio, entradaEnEdicion, estadoDelSorteo, expDeMom
 import { coordenadasDeSitio, datosVisiblesPara, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
 import { armarMomentos } from './momentos.js'
+import { queEnsenar, retoDelDia, sitioDeFotoLibre, sitiosCerca } from './cerca.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
 import { clavesSuperadas, vitrinaDeGanados } from './pantallas/ganados.js'
 import { coleccionesDeSitio, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen, sitiosDeLaRuta } from './vistas.js'
@@ -256,6 +257,23 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return { ok: true, anio: Number(anio), edicion: { anio: Number(edicion.anio), destino: edicion.destino ?? null, premio: edicion.premio, cierre: edicion.cierre }, cuentas: lista.length, entran: lista.filter((x) => x.entra).length, lista: lista.filter((x) => x.entra) }
   }
 
+  /**
+   * (HOY1) Lo que hay cerca de la ubicación del viajero (H8, H8b, C16, C17): sitios con algo por ganar, con la distancia al borde de su radio y qué enseñar.
+   * `sitios_hoy` (nombres de las paradas de hoy, tal como las ve el móvil) manda sobre la ruta guardada, que puede ir por detrás. La ubicación no se guarda.
+   */
+  async function cerca(userId, { trip_id, ubicacion = null, sitios_hoy = null }) {
+    const c = await cargar(userId)
+    const viaje = c.viajes[trip_id]
+    if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas', cerca: [] }
+    const hoy = hoyEn(viaje.destino)
+    const deLaRuta = (viaje.dias ?? []).filter((d) => d.fecha === hoy).flatMap((d) => d.paradas.map((p) => p.sitio).filter(Boolean))
+    const delMovil = Array.isArray(sitios_hoy) ? sitios_hoy.map((n) => sitioDeParada({ name: String(n) }, catalogos[viaje.destino])).filter(Boolean) : null
+    const sitiosHoy = new Set(delMovil ?? deLaRuta)
+    const items = aItems(c.logros)
+    const lista = sitiosCerca({ datos, catalogos, destino: viaje.destino, ubicacion, items, sitiosHoy })
+    return { ok: true, cerca: lista, ...queEnsenar(lista), reto: retoDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy }) }
+  }
+
   /** Lo que tiene un sitio por ganar (sin decir qué emblema): para que la tarjeta del Visto sepa cuál enseñar. Solo se LEE; no cambia nada. */
   function queHayEn(c, viaje, sitio) {
     if (!sitio) return { sitio_nombre: null, hay_pedazo: false, hay_emblema: false, foto_dentro: null }
@@ -337,11 +355,17 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
   }
 
   /* ── Una foto ── */
-  async function foto(userId, { trip_id, sitio = null, nombre = null, stop_id = null, origen, tomada_en = null, con_camara = false, ubicacion = null, de_amigo = false, foto_id = null, recibido_en = null }) {
+  async function foto(userId, { trip_id, sitio = null, nombre = null, stop_id = null, libre = false, origen, tomada_en = null, con_camara = false, ubicacion = null, de_amigo = false, foto_id = null, recibido_en = null }) {
     const c = await cargar(userId)
     const viaje = c.viajes[trip_id]
     if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas', mensaje: 'Este viaje no tiene fechas: los logros se ganan en las fechas del viaje.', nuevos: [] }
     if (!sitio && nombre) sitio = sitioDeParada({ name: nombre }, catalogos[viaje.destino])
+    // (HOY1) La cámara de viaje: una foto SIN parada. Cuenta para el sitio con logro en cuyo radio está el viajero (esté o no en su ruta; también La Graciosa);
+    // si no está en ninguno, o no hay ubicación, es solo un recuerdo de hoy: la foto es válida, no gana nada y no se guarda ningún hecho.
+    if (!sitio && !stop_id && libre) {
+      sitio = sitioDeFotoLibre({ datos, catalogos, destino: viaje.destino, ubicacion, items: aItems(c.logros) })
+      if (!sitio) return { ok: true, valida: true, cuenta: false, motivo: ubicacion ? 'sin_logro_aqui' : 'sin_ubicacion', nuevos: [] }
+    }
     if (!sitio) return { ok: false, motivo: 'faltan_datos', nuevos: [] }
     const recibido = recibido_en ?? ahora().toISOString()
     const info = sitioInfo(viaje.destino, sitio)
@@ -575,7 +599,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return repo.encolarAvisos(puestos)
   }
 
-  return { aItems, cargar, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
+  return { aItems, cargar, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, cerca, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
 }
 
 /** El instante (ISO, UTC) en que son las `hhmm` de esa fecha en la hora del destino. */

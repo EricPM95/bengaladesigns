@@ -94,6 +94,25 @@ export function TripSync() {
   const travelerId = useSyncStore((state) => state.travelerId)
 
   const hydratedRef = useRef(false)
+  /** (HOY1, apartado 9) Se abrió sin internet con lo que HOY había guardado en el móvil: al volver la conexión se reconecta con la nube y se sube lo hecho mientras tanto. */
+  const abiertoSinRedRef = useRef(false)
+
+  /** (HOY1, apartado 9) Sin conexión: abre el viaje de hoy con la copia que HOY guardó en el móvil (ver `lib/sinConexion.ts`). Devuelve si lo consiguió. */
+  const abrirDesdeElMovil = async (): Promise<boolean> => {
+    try {
+      if (useRouteStore.getState().screen !== 'destination') return false
+      const { leerLoDeHoy } = await import('../../lib/sinConexion')
+      const guardado = await leerLoDeHoy(todayIso())
+      if (!guardado) return false
+      useSyncStore.getState().setActiveTripId(guardado.id)
+      hydrateTrip(guardado.payload)
+      useRouteStore.getState().setMode('today')
+      abiertoSinRedRef.current = true
+      return true
+    } catch {
+      return false
+    }
+  }
 
   useEffect(() => {
     // Sin Supabase, o en el modo de pruebas (`?logrosDemo=1`, solo desarrollo): sin guardado en la nube. (Con el Supabase de verdad y sin la migración 0024, leer los viajes falla y salía «Cambios sin guardar» en las capturas.)
@@ -106,6 +125,14 @@ export function TripSync() {
     let cancelled = false
     ;(async () => {
       try {
+        // (HOY1, apartado 9) Sin red desde el principio: no se espera al servidor, se abre con lo guardado en el móvil.
+        if (typeof navigator !== 'undefined' && navigator.onLine === false && (await abrirDesdeElMovil())) {
+          if (cancelled) return
+          hydratedRef.current = true
+          useSyncStore.getState().setStatus('idle')
+          useSyncStore.getState().setCargaInicialHecha(true)
+          return
+        }
         const id = await bootstrapTraveler()
         if (cancelled) return
         useSyncStore.getState().setTravelerId(id)
@@ -174,6 +201,14 @@ export function TripSync() {
         useSyncStore.getState().setCargaInicialHecha(true) // (10S10 §8) ya se sabe si hay viaje: se quita la pantalla de carga
       } catch (err) {
         if (cancelled) return
+        // (HOY1, apartado 9) La nube no responde (sin cobertura): HOY se abre con la copia del móvil, si la hay.
+        if (await abrirDesdeElMovil()) {
+          if (cancelled) return
+          hydratedRef.current = true
+          useSyncStore.getState().setStatus('idle')
+          useSyncStore.getState().setCargaInicialHecha(true)
+          return
+        }
         olvidarViajeAAbrir()
         useSyncStore.getState().setError(err instanceof Error ? err.message : 'No se pudo conectar con el guardado en la nube.')
         // La carga inicial falló, pero seguimos permitiendo guardar en memoria hacia adelante —
@@ -211,8 +246,25 @@ export function TripSync() {
       const { status, travelerId: id } = useSyncStore.getState()
       if (status === 'error' && id) attemptSave(id)
     }
+    // (HOY1, apartado 9) Volvió la conexión tras abrir sin red: se reconecta (con `travelerId` puesto, el guardado de siempre sube lo hecho mientras tanto).
+    const reconectar = () => {
+      if (!abiertoSinRedRef.current || useSyncStore.getState().travelerId) return
+      void bootstrapTraveler()
+        .then((id) => {
+          useSyncStore.getState().setTravelerId(id)
+          abiertoSinRedRef.current = false
+          return loadAllTrips(id)
+        })
+        .then((trips) => useSyncStore.getState().setSavedTrips(trips))
+        .catch(() => undefined)
+    }
     window.addEventListener('online', retry)
-    return () => window.removeEventListener('online', retry)
+    window.addEventListener('online', reconectar)
+    return () => {
+      window.removeEventListener('online', retry)
+      window.removeEventListener('online', reconectar)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return null

@@ -481,10 +481,16 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
 {
   const piezas = leer('src/components/route/hoy/piezas.tsx')
   debe(!/useClaro/.test(piezas) && /botonChampan\(\)/.test(piezas) && /#FBF3E2 0%,#EBD9AE 100%/.test(leer('src/lib/marcaBoton.ts')) && /color: '#6F4E37'/.test(leer('src/lib/marcaBoton.ts')), 'hoy', 'la tarjeta de HOY: [Cómo llegar] en el degradado de marfil con letra de oro profundo (botonChampan), sin gancho de modo noche')
-  for (const f of ['src/components/route/hoy/HoyDurante.tsx', 'src/components/route/hoy/v2/HoyDuranteV2.tsx']) {
-    const t = leer(f)
-    debe(/bg-\[#FFFDF8\] text-\[#1C2230\]/.test(t) && /data-tarjeta="clara"/.test(t) && !/claro/.test(t.replace(/\/\/[^\n]*/g, '')), 'hoy', `${f}: la tarjeta de la siguiente parada es siempre clara`)
-    debe(/botonOro\(\)/.test(t) && /data-boton-visto/.test(t), 'hoy', `${f}: [Cómo llegar] en oro y [Visto] sigue en su sitio, con lo mismo que hace`)
+  // (HOY1, 4-nov) ANTES: en la HOY nueva (v2) la tarjeta de la siguiente parada era clara (#FFFDF8) con [Cómo llegar] en botonOro() → AHORA: la HOY v2 pinta la tarjeta OSCURA de «Hoy Estados» (apartado 04 de Design:
+  // tinta #1C2230, marfil, botón de oro) en `ParadaHoy.tsx`; la vieja (HoyDurante, hoy2=off) sigue clara → DECISIÓN DE ERIC (4-nov): el diseño, exactamente igual.
+  {
+    const t = leer('src/components/route/hoy/HoyDurante.tsx')
+    debe(/bg-\[#FFFDF8\] text-\[#1C2230\]/.test(t) && /data-tarjeta="clara"/.test(t) && !/claro/.test(t.replace(/\/\/[^\n]*/g, '')), 'hoy', 'src/components/route/hoy/HoyDurante.tsx: la tarjeta de la siguiente parada es siempre clara')
+    debe(/botonOro\(\)/.test(t) && /data-boton-visto/.test(t), 'hoy', 'src/components/route/hoy/HoyDurante.tsx: [Cómo llegar] en oro y [Visto] sigue en su sitio, con lo mismo que hace')
+    const n = leer('src/components/route/hoy/v2/ParadaHoy.tsx')
+    debe(/data-tarjeta="oscura"/.test(n) && /background: TINTA, color: MARFIL/.test(n) && /const TINTA = '#1C2230'/.test(n), 'hoy', 'ParadaHoy.tsx: la tarjeta de la siguiente parada de la HOY nueva es la oscura de «Hoy Estados» (tinta y marfil)')
+    debe(/BOTON_ORO/.test(n) && /data-boton-visto/.test(n) && /#2B7F45/.test(n), 'hoy', 'ParadaHoy.tsx: [Cómo llegar] en oro y [He terminado] (el Visto de siempre) en verde')
+    debe(/ParadaHoy/.test(leer('src/components/route/hoy/v2/HoyDuranteV2.tsx')) && /data-hoy-siguiente/.test(n), 'hoy', 'HoyDuranteV2.tsx monta la tarjeta nueva')
   }
   const app = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=on&logros=on&logrosDemo=1&hoy2=off' })
   for (let i = 0; i < 120 && !(await app.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await app.esp(500)

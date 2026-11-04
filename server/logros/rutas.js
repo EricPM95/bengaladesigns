@@ -85,6 +85,8 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
 
   app.post('/api/logros/visto', conUsuario(async (req, res, u) => res.json(await servicio.visto(u.id, req.body ?? {}))))
   app.post('/api/logros/foto', conUsuario(async (req, res, u) => res.json(await servicio.foto(u.id, req.body ?? {}))))
+  // (HOY1) Lo que hay cerca del viajero: el juego (C16/C17), «Estás en…» (H8) y «Estás junto a…» (H8b). Solo se LEE; la ubicación no se guarda.
+  app.post('/api/logros/cerca', conUsuario(async (req, res, u) => res.json(await servicio.cerca(u.id, req.body ?? {}))))
   app.post('/api/logros/deshacer', conUsuario(async (req, res, u) => res.json(await servicio.deshacer(u.id, req.body ?? {}))))
   app.get('/api/logros/estado', conUsuario(async (req, res, u) => res.json(await servicio.estado(u.id, String(req.query.trip_id ?? '')))))
   app.get('/api/logros/ficha', conUsuario(async (req, res, u) => res.json(await servicio.ficha(u.id, String(req.query.trip_id ?? ''), String(req.query.sitio ?? '')))))

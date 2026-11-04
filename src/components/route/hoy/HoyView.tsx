@@ -14,6 +14,7 @@ import { HoyDespues } from './HoyDespues'
 import { hoyV2Activo } from '../../../lib/hoyV2'
 import { HoyV2 } from './v2/HoyV2'
 import { BotonCamaHoy } from './BotonCamaHoy'
+import { BotonCamaraViaje } from './CamaraViaje'
 
 /**
  * La pestaña HOY (Tanda 6z3 y 6z6): SOLO de pago (en la gratis la pestaña no está; ver src/lib/barra.ts). Lo de dentro cambia según el momento del viaje —antes, durante o después (el día siguiente al último)— y la barra no cambia.
@@ -30,6 +31,8 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
   // (Tanda 10N4 §1) Mientras no se sabe lo del pase, HOY no se pinta ni «con pase» ni «sin pase» (sin parpadeo).
   if (pase.sabido === false) return <div className="min-h-0 flex-1" data-hoy="cargando" />
   const completa = pagoActivo()
+  // (HOY1) El título deja sitio a la derecha: a la cámara de viaje (siempre) y, durante el viaje, al botón de la cama.
+  const envoltorio = (conCama: boolean) => `relative flex min-h-0 flex-1 flex-col ${conCama ? '[&_[data-hoy-cabecera]]:pr-[112px] [&_[data-titulo-del-dia]]:pr-[112px]' : '[&_[data-hoy-cabecera]]:pr-16 [&_[data-titulo-del-dia]]:pr-16'}`
   // Sin el pase (Tanda 10C): la pestaña está, y enseña lo de antes del viaje y la invitación al pase.
   const fila = !completa
     ? filaDeHoySinPase({ fase: estado?.startIso ? (estado.phase ?? null) : null, hoyIso: simulada ?? todayIso(), inicioIso: estado?.startIso ?? null, prueba: pase.prueba ?? { estado: pase.pruebaGastada ? 'gastada' : 'pendiente' }, tripId, destino: route.destination })
@@ -37,25 +40,28 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
   // El día de la prueba (de 00:00 a 23:59, hora del destino): HOY entero y, arriba, la franja. (Se enciende ANTES de pintar lo de dentro: todo lo de pago de HOY sale abierto ese día.)
   const diaDePrueba = fila?.tipo === 'hoy_es_prueba' && pase.puede
   if (diaDePrueba) fijarDiaDePrueba(true)
-  if (!completa && !diaDePrueba) {
-    return (
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-7 pt-1" data-hoy="sin-pase">
-        <HoySinPase route={route} startIso={estado?.startIso ?? null} fase={estado?.phase ?? null} simulada={simulada} onPonFechas={onPonFechas} />
-      </div>
-    )
-  }
   // (Tanda 10N12 §4) El botón de la cama, fijo arriba a la derecha durante todos los días del viaje; el título deja sitio a su derecha.
   // (Tanda 10S §1) En el día de prueba sin pase NO sale: sin pase no hay dirección y el botón llevaría a un candado.
   const conCama = estado?.phase === 'during' && !diaDePrueba
-  const envoltorio = 'relative flex min-h-0 flex-1 flex-col [&_[data-hoy-cabecera]]:pr-12 [&_[data-titulo-del-dia]]:pr-12'
-  if (hoyV2Activo()) {
-    return conCama ? (
-      <div className={envoltorio} data-hoy-con-cama="1">
-        <HoyV2 route={route} onPonFechas={onPonFechas} />
-        <BotonCamaHoy route={route} />
+  // (HOY1) La cámara de viaje se ve SIEMPRE (antes, durante y después, con y sin pase; sin pase, con candado). A su izquierda, el botón de la cama si lo hay.
+  const camara = <BotonCamaraViaje route={route} fase={estado?.phase ?? null} conAcceso={completa || diaDePrueba} day={estado?.phase === 'during' ? estado.context.day : null} conCama={conCama && completa} />
+  if (!completa && !diaDePrueba) {
+    return (
+      <div className={envoltorio(false)} data-hoy-con-camara="1">
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-7 pt-1" data-hoy="sin-pase">
+          <HoySinPase route={route} startIso={estado?.startIso ?? null} fase={estado?.phase ?? null} simulada={simulada} onPonFechas={onPonFechas} />
+        </div>
+        {camara}
       </div>
-    ) : (
-      <HoyV2 route={route} onPonFechas={onPonFechas} />
+    )
+  }
+  if (hoyV2Activo()) {
+    return (
+      <div className={envoltorio(conCama)} data-hoy-con-cama={conCama ? '1' : undefined} data-hoy-con-camara="1">
+        <HoyV2 route={route} onPonFechas={onPonFechas} />
+        {conCama && <BotonCamaHoy route={route} />}
+        {camara}
+      </div>
     )
   }
 
@@ -74,12 +80,11 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
       )}
     </div>
   )
-  return conCama ? (
-    <div className={envoltorio} data-hoy-con-cama="1">
+  return (
+    <div className={envoltorio(conCama)} data-hoy-con-cama={conCama ? '1' : undefined} data-hoy-con-camara="1">
       {contenido}
-      <BotonCamaHoy route={route} />
+      {conCama && <BotonCamaHoy route={route} />}
+      {camara}
     </div>
-  ) : (
-    contenido
   )
 }

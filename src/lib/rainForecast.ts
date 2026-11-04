@@ -15,6 +15,10 @@ export interface HourlyRain {
   /** Hora del día (0-23) → probabilidad (%) y precipitación (mm). */
   probability: number[]
   precipitation: number[]
+  /** (HOY1) Nubes bajas (%) por hora, si el servidor las da. */
+  cloud?: number[]
+  /** (HOY1) Rachas de viento (km/h) por hora, si el servidor las da. */
+  gust?: number[]
 }
 
 const cache = new Map<string, { at: number; value: Promise<HourlyRain | null> }>()
@@ -29,9 +33,9 @@ export function fetchHourlyRain(at: Coordinates, dateIso: string): Promise<Hourl
     try {
       const response = await fetch(`/api/tiempo/horas?lat=${at.lat.toFixed(2)}&lng=${at.lng.toFixed(2)}&fecha=${encodeURIComponent(dateIso)}`)
       if (!response.ok) return null
-      const data = (await response.json()) as { ok?: boolean; probability?: number[]; precipitation?: number[] }
+      const data = (await response.json()) as { ok?: boolean; probability?: number[]; precipitation?: number[]; cloud?: number[]; gust?: number[] }
       if (!data.ok || !Array.isArray(data.probability) || !Array.isArray(data.precipitation)) return null
-      return { probability: data.probability, precipitation: data.precipitation }
+      return { probability: data.probability, precipitation: data.precipitation, cloud: Array.isArray(data.cloud) ? data.cloud : undefined, gust: Array.isArray(data.gust) ? data.gust : undefined }
     } catch {
       return null
     }

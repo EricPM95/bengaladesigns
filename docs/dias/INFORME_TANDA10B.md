@@ -5185,3 +5185,110 @@ Prompt guardado en `docs/dias/PROMPT_TANDA_LZ3b.md` (llegó entero, hasta «rein
 
 - ✅ Hecho — pruebaTandaLZ3b y las de Lanzarote en 0; Roma idéntica; Lanzarote oculto Ver el informe. Capturas de la colección de imprescindibles a medias y completa y de un emblema tocado.  
   *Dónde:* No es de móvil.  *Captura:* `lz3b_imprescindibles_completa_1.jpg`
+
+## HOY1 — El nuevo HOY, parte 1 (4-nov)
+Prompt guardado en `docs/dias/PROMPT_TANDA_HOY1.md` (llegó entero, hasta «reinicia el api-server»); va después de la LL y la LZ3b, ya subidas. Lanzarote sigue oculto (solo administrador). Tres agentes (A: 1, 2, 7 y 8; B: 3, 4 y 5; C: 6, 9 y 10) y yo; una API y un Vite, 1 Chrome por la cola. Sin migración.
+
+**AVISO sobre el Design:** el zip que dijiste («DESIGN LANZAROTE») no traía las pantallas de HOY. Las H1 a H15 y K1 a K8 están en `HOY.zip` (y `LOGROS.zip`), de hoy a las 19:04: usé `HOY.zip` (App HOY, Companero, HOY v2 y la pieza nueva «Hoy Estados»), ya copiado a `docs/diseno/proyecto/`.
+
+**Qué se ha hecho** (cada apartado en su sección de `docs/REGLAS_DE_LA_APP.md › HOY1`, con «antes → ahora»)
+1. **La siguiente parada y sus estados H1 a H6:** tarjeta oscura con «Parada X de Y», trayecto a pie o en coche, «Sal ahora…» / «Vas tarde…» (solo con hora fija), historia, «Ya estás aquí» con sus siete botones, [Necesito más tiempo] (+15/+30 con pase y [Deshacer]), completada con la línea dorada, saltada con [Recuperar] y «Sal de casa a las…» por la mañana.
+2. **«Tu día»:** lista completa y plegable que cuadra con «Parada X de Y».
+3. **Cámara de viaje** (siempre en HOY; candado sin pase; foto con logro, sin logro y sin conexión) y **fuera de ruta** (La Graciosa; «Estás junto a… ¿Lo añadimos?»).
+4. **«Cerca de ti»:** Roma Baños · Fuentes · Comer; Lanzarote Gasolineras · Aparcar · Comer; cada sitio abre Maps (a pie / en coche).
+5. **El juego:** «Algo brilla cerca…» (~500 m), «Más cerca…» (~150 m) y el reto del día; una vez por sitio y día.
+6. **Avisos del tiempo en directo (Lanzarote):** lluvia, nubes sobre los miradores del norte y viento, con alternativa y [Deshacer]. **Umbrales** (en `data/hoy/avisos_tiempo.json`): lluvia 50 % o 0,5 mm; nubes bajas ≥ 80 %; rachas ≥ 55 km/h; «ha parado» tras lluvia en las 3 horas anteriores y bajo el 30 % / 0,2 mm.
+7. **El atardecer y mañana** (H13) y 8. **«Hoy vuelves a casa»** (una sola tarjeta, con la cuenta única de la LL; en Lanzarote «Devuelve el coche en la T1»).
+9. **Sin internet:** la ruta, las fichas y los billetes de hoy quedan en el móvil; el service worker guarda ahora solo la web (nunca `/api/`).
+10. **Ajustes:** «Sonido de los momentos», «Avisos en el móvil» y la nueva «Sugerencias del compañero» (apaga el juego y el fuera de ruta).
+
+**Pruebas (todas en 0 fallos)**
+- `pruebaTandaHOY1` (nueva): 446 comprobaciones (A 118, B 195, C 124 + las comprobaciones comunes). `pruebaJutrip` 130, muestra de 60 de Roma idéntica, `pruebaTandaLL_ROMA` 1834, `pruebaTandaLL_LZ` 1768, `pruebaLogros1` 453, `pruebaLogros2` 54, `pruebaTandaLZ3_B` 157, `pruebaTandaLZ3b` 33, `pruebaTanda10N4_flotantes` 51, `pruebaTandaLZ2b1_B` 159, `pruebaTanda6z5` 116, y las de HOY que ya había (10P_hoy, 10N11, 10N12, Pantallas8b, 10N_cabecera, 7_hoy, 6z6c, 10I…).
+- Pruebas viejas puestas al día con «antes → ahora → decisión de Eric»: Jutrip, 10P_hoy, 6z6c, LZ2b1_B, Logros2 y 6z5 (su fallo B9 —«Jueves» en vez de «Jue»— era anterior a esta tanda).
+- Un fallo falso de entorno: con el Vite de desarrollo (recarga en vivo) la hoja de logros salía vacía en pruebas (módulos con versiones distintas); con el Vite estable pasan.
+
+**Dudas / lo que no cuadra**
+1. Design pone [Cambiar plan] (HOY2) junto a [Cómo llegar]; dejé [No me da tiempo], que salta la parada de una vez.
+2. El radio de «Ya estás aquí» es fijo (150 m) y el de adivinar tu sitio para la foto, 800 m (los datos dan 2.500 m a La Graciosa y Timanfaya): mira los radios.
+3. Sin pase, la fila «Cerca de ti» con candado no llega a verse (sin pase HOY es la página de promoción): una línea si la quieres.
+4. En Lanzarote el atardecer de H13 solo sale con un mirador marcado del atardecer; no inventé «El Golfo».
+5. «Sin internet»: abrir la app desde cero sin red solo se puede probar en el sitio publicado.
+6. Avisos del tiempo solo en Lanzarote (Roma sigue con «Si llueve»); ¿55 km/h y 80 % de nubes te parecen bien? Se cambian en el JSON.
+7. Al reconectar tras abrir sin red, gana lo del móvil.
+8. Entraron 3 o 4 fotos diminutas de prueba en el Supabase real mientras se depuraba.
+
+### Lista de comprobación — HOY1
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado (docs/dias/PROMPT_TANDA_HOY1.md, llegó entero hasta «reinicia el api-server»); va después de la LL y la LZ3b, ya subidas; Lanzarote sigue oculto; Roma sin cambios en las rutas Tres agentes (A: apartados 1, 2, 7 y 8; B: 3, 4 y 5; C: 6, 9 y 10) y yo. AVISO: el zip que dijiste («DESIGN LANZAROTE») no traía el diseño de HOY; las pantallas H y K están en `HOY.zip` (y `LOGROS.zip`), de hoy a las 19:04: usé `HOY.zip` (App HOY, Companero, HOY v2 y la pieza nueva «Hoy Estados»). Si querías otro, dímelo.  
+  *Dónde:* No es de móvil.
+
+**1 · La siguiente parada (H1 a H6)**
+
+- ✅ Hecho — Por llegar a pie (H1) y en coche (H2): mapa pequeño, trayecto «A pie · N min» o «En coche · 51 min · 34 km», [Cómo llegar] El trayecto sale desde donde estás si hay ubicación (con el permiso ya dado), y si no, desde la parada anterior o desde casa. La primera parada del día sin zona de alojamiento ni ubicación no tiene trayecto.  
+  *Dónde:* HOY, durante el viaje, con pase.  *Captura:* `hoy1_a_H1_roma_a_pie.jpg`
+- ✅ Hecho — «Sal ahora para llegar a tu turno de las 9:00» (solo con hora fija, desde 15 min antes) y «Vas tarde para tu turno…» en rojo Solo con turno o reserva. Probado con horas de mentira en desarrollo.  
+  *Dónde:* HOY antes de una parada con turno (Timanfaya, la Cueva de los Verdes…).
+- ✅ Hecho — La línea «¿Te cuento la historia mientras llegas? [Escuchar]» Solo si el sitio tiene historia.  
+  *Dónde:* HOY › tarjeta de la siguiente parada.
+- ⚠️ A medias — Ya estás aquí (H3): por ubicación o tocando la tarjeta, con [Tu entrada], [Qué vas a ver], [Escuchar historia], [Dónde has aparcado] (solo en coche), [Haz tu foto], [Necesito más tiempo] y [He terminado] El radio de «ya estás aquí» es fijo (150 m): los radios de los logros solo viven en el servidor y falta enchufarlos. [Tu entrada] abre la fila «Tu entrada» que ya había (dos toques hasta el código). [Dónde has aparcado] es sencillo: guarda tu ubicación y [Volver al coche] abre Maps a pie.  
+  *Dónde:* HOY, al llegar a una parada.
+- ✅ Hecho — [Necesito más tiempo] (H3b): +15 y +30 min; con pase el resto del día se corre quitando primero lo opcional, con [Deshacer]; sin pase solo se apunta No mueve paradas con reserva. Sin pase, comprobado solo con la lógica, no en pantalla.  
+  *Dónde:* HOY › Ya estás aquí › Necesito más tiempo.
+- ✅ Hecho — Completada (H4) con la línea dorada del logro; Saltada (H5) tachada con [Recuperar] y aviso con [Deshacer]; Por la mañana (H6) «Sal de casa a las…» La línea dorada se comprobó inyectando un momento de prueba, no con un Visto real contra el servidor de logros. H6: 8:52 en Roma (con pase y zona) y 7:51 en Lanzarote (hora del motor, en coche). Diferencia con Design: en lugar de [Cambiar plan] (de la HOY2) dejé [No me da tiempo], que salta la parada de una vez.  
+  *Dónde:* HOY › He terminado / saltar / primera hora del día.
+
+**2 · La lista «TU DÍA»**
+
+- ✅ Hecho — Todas las paradas en orden (hechas con ✓, «Ahora», las que vienen con su hora, comida, cena, saltadas tachadas), plegable (H4b «Tu día · 2 de 6 · ver todo») El número cuadra con «Parada X de Y»: la lista cuenta solo paradas (Design cuenta también comida y cena).  
+  *Dónde:* HOY › Tu día.  *Captura:* `hoy1_a_H4b_tu_dia_cerrada.jpg`
+
+**3 · La cámara de viaje y fuera de ruta**
+
+- ✅ Hecho — La cámara se ve SIEMPRE en HOY (antes, durante y después del viaje; sin pase con candado y «Solo disponible con el Pase {destino}»; con pase antes: «Podrás usarla durante tu viaje, del … al …»; durante: la hoja de explicación solo la primera vez) El botón redondo está en la cabecera de HOY; con la cama, queda a su izquierda. Después del viaje abre la hoja con las fechas en pasado (no estaba en el diseño).  
+  *Dónde:* HOY, arriba a la derecha.
+- ✅ Hecho — Haces la foto y la app mira tu ubicación: en un sitio con logro (esté o no en tu ruta, también La Graciosa) «¡Eh! Aquí hay algo…»; si no, «Guardada en los recuerdos de hoy»; sin conexión se guarda y se comprueba al volver El servidor adivina el sitio con un radio recortado a 800 m (los datos dan 2.500 m a La Graciosa y a Timanfaya: desde el Mirador del Río habría salido «Estás en La Graciosa»). Mira los radios en los datos de LZ3. En desarrollo la prueba usa `window.__hoy1SinAlbum` para no subir fotos; mientras se depuraba entraron 3 o 4 fotos diminutas de prueba en el Supabase real.  
+  *Dónde:* HOY › cámara.
+- ⚠️ A medias — Fuera de ruta: «Estás en La Graciosa · Haz tu foto para ganar «La octava isla»» (H8) y «Estás junto a… ¿Lo añadimos?» con [Añadir a mi ruta] / [Ahora no] (H8b) [Añadir a mi ruta] lo mete donde menos rodeo hace y lleva [Deshacer]; no lo he pulsado en un móvil real (reutiliza el Deshacer de «Más visitas»). H8 dice el nombre del emblema, como pide el prompt.  
+  *Dónde:* HOY, en un sitio con logro que no está en tu ruta.
+
+**4 · «Cerca de ti»**
+
+- ⚠️ A medias — La fila fija: Roma Baños · Fuentes · Comer; Lanzarote Gasolineras · Aparcar · Comer; cada sitio se toca entero y abre Google Maps o Apple Maps (a pie en Roma, en coche en Lanzarote) Los baños y fuentes de OpenStreetMap casi nunca traen nombre: salen como «Baño público · Testaccio». Sin tu ubicación, las distancias salen desde la siguiente parada y la hoja lo dice. SIN PASE la fila con candado no llega a verse: sin pase, HOY durante el viaje es la página de promoción y la prueba 6z6c exige que ahí no salgan Baños/Fuentes/Comer; si quieres los candados, es una línea.  
+  *Dónde:* HOY › Cerca de ti.
+
+**5 · El juego**
+
+- ✅ Hecho — «Algo brilla cerca de aquí…» (~500 m) y «Más cerca…» (~150 m); al llegar la pantalla de siempre; una vez por sitio y por día; el reto del día por la mañana Solo con pase y con «Sugerencias del compañero» encendido (por defecto sí). El reto solo antes de las 12 con la hora del móvil. Solo pregunta la ubicación si ya diste permiso. Las tarjetas salen debajo de la tarjeta de la siguiente parada (en Design ocupan su lugar).  
+  *Dónde:* HOY, cerca de un emblema oculto sin ganar.
+
+**6 · Los avisos del tiempo en directo**
+
+- ✅ Hecho — Lluvia (H12 y C14 con un sitio a cubierto; C15 cuando para), nubes sobre un mirador del norte de Lanzarote y viento en Las Grietas, Los Hervideros y los miradores de Famara UMBRALES (en `data/hoy/avisos_tiempo.json`, sin tocar código): lluvia 50 % o 0,5 mm en la hora de una parada; nubes BAJAS ≥ 80 % en las horas del mirador (Río, Guinate, Bosquecillo, Ermita de las Nieves); viento: rachas ≥ 55 km/h (con el servidor real Lanzarote da ~44 km/h habitualmente); «ha parado»: llovió en las 3 horas anteriores y esta y la siguiente quedan bajo el 30 % y 0,2 mm. Solo Lanzarote: Roma sigue con el aviso de lluvia de siempre. Probado con datos de mentira (`window.__hoy1Tiempo`); el disparo con el tiempo real solo se ve en el viaje. En C14 «SALE» va en rojo de la app, no en frambuesa (la prueba de Jutrip limita el frambuesa).  
+  *Dónde:* HOY, arriba, en Lanzarote.  *Captura:* `hoy1_lanzarote_c14_alternativa.jpg`
+
+**7 · El atardecer y mañana**
+
+- ⚠️ A medias — El sol del día con su sitio y [Cómo llegar]; al acabar el día «Mañana: … · sales a las 9:26 · turno en la Cueva a las 11:30» con un consejo si lo hay En Lanzarote el atardecer solo sale si el día trae un mirador marcado del atardecer: no puse «El Golfo» a mano para no inventar coordenadas.  
+  *Dónde:* HOY › al final del día.
+
+**8 · «Hoy vuelves a casa»**
+
+- ✅ Hecho — Una sola tarjeta, con pase y sin pase; en Lanzarote con coche: hasta qué hora, el trayecto al aeropuerto y «Devuelve el coche en la T1» Con la cuenta única de la LL (vuelo − 2 h − trayecto − 30 min). Roma: «Tienes el día libre hasta las 14:15» para un vuelo a las 18:05. En el día de vuelta con paradas, esta tarjeta sustituye a la azul «Llegada al aeropuerto de…».  
+  *Dónde:* HOY › último día.  *Captura:* `hoy1_a_H14_vuelves_con_pase.jpg`
+
+**9 · Sin internet**
+
+- ⚠️ A medias — Lo de hoy queda guardado en el móvil (ruta del día, fichas de sus paradas, texto de sus historias y billetes); la línea «Sin conexión: lo de hoy está guardado en tu móvil» Probado en desarrollo con la red cortada y la app ya abierta. NO probado: abrir la app desde cero sin red (arranque en frío con el service worker), que solo existe en el sitio publicado: pruébalo con el móvil en modo avión tras abrir la app una vez con red. Sin red no funcionan los mapas, las fotos nunca vistas ni el audio de servidor. Si el viaje se comparte y otra persona lo cambió mientras tanto, al reconectar gana lo del móvil. El service worker (`public/sw.js`) guarda ahora SOLO la web, nunca `/api/`, Supabase ni Mapbox.  
+  *Dónde:* HOY con los datos del móvil apagados.  *Captura:* `hoy1_lanzarote_h15_sin_internet.jpg`
+
+**10 · Ajustes**
+
+- ✅ Hecho — «Sonido de los momentos», «Avisos en el móvil» y «Sugerencias del compañero» (esta apaga el juego y el fuera de ruta) Las dos primeras ya existían; la tercera es nueva, encendida por defecto.  
+  *Dónde:* Perfil › Ajustes.  *Captura:* `hoy1_ajustes_c27.jpg`
+
+**11 · La prueba**
+
+- ✅ Hecho — pruebaTandaHOY1 (A + B + C), pruebaJutrip y las de HOY que ya había, en 0; capturas de Roma y de tu viaje en Lanzarote (domingo 8 y lunes 9) Ver el informe. Pruebas viejas puestas al día con «antes → ahora → decisión de Eric»: pruebaJutrip, 10P_hoy, 6z6c, LZ2b1_B, Logros2 y 6z5 (el fallo B9 era anterior a esta tanda).  
+  *Dónde:* No es de móvil.

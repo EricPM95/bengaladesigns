@@ -26,7 +26,7 @@ export function horaDelSol(day: Pick<DayPlan, 'sunsetText'>): string | null {
 }
 
 /** «el Janículo», «la Villa Borghese»: el nombre con su artículo en minúscula si no lo trae. */
-function conArticuloMinuscula(nombre: string): string {
+export function conArticuloMinuscula(nombre: string): string {
   const limpio = displayStopName(nombre).trim()
   if (/^(el|la|los|las)\s/i.test(limpio)) return limpio.replace(/^(El|La|Los|Las)\s/, (a) => a.toLowerCase())
   return limpio
@@ -44,6 +44,10 @@ export interface FraseDeAtardecer {
   texto: string
   /** Para marcar en la prueba qué sitio dice la frase. */
   sitio: string
+  /** (HOY1, H13) El mirador de la frase, para su [Cómo llegar]. */
+  parada?: Stop
+  /** (HOY1, H13) Minutos a pie hasta él (solo en el tipo «cerca»). */
+  minutos?: number
 }
 
 /**
@@ -52,7 +56,7 @@ export interface FraseDeAtardecer {
 export function fraseDeAtardecer(p: { day: DayPlan; siguiente: Stop | null; pendientes: Stop[]; otrosMiradores: Stop[]; desde?: Stop | null; ahoraMin?: number }): FraseDeAtardecer | null {
   const hora = horaDelSol(p.day)
   if (!hora || !p.siguiente) return null
-  if (p.siguiente.isSunset) return { tipo: 'siguiente', sitio: p.siguiente.name, texto: `${haciaElSitio(p.siguiente.name)} para el atardecer: el sol se pone a las ${hora}` }
+  if (p.siguiente.isSunset) return { tipo: 'siguiente', sitio: p.siguiente.name, parada: p.siguiente, texto: `${haciaElSitio(p.siguiente.name)} para el atardecer: el sol se pone a las ${hora}` }
   // Sin mirador del atardecer en lo que queda de hoy: uno cerca, a media tarde.
   if (p.pendientes.some((s) => s.isSunset)) return null
   // A media tarde: la siguiente parada es de las 14:00 en adelante, o ya son las 14:00 en el reloj del viajero y el sol aún no se ha puesto.
@@ -69,7 +73,7 @@ export function fraseDeAtardecer(p: { day: DayPlan; siguiente: Stop | null; pend
     if (min <= MINUTOS_MAXIMOS_AL_MIRADOR && (!mejor || min < mejor.min)) mejor = { stop: mirador, min }
   }
   if (!mejor) return null
-  return { tipo: 'cerca', sitio: mejor.stop.name, texto: `Hoy el sol se pone a las ${hora} · ${conArticuloMinuscula(mejor.stop.name)} está a ${mejor.min} min` }
+  return { tipo: 'cerca', sitio: mejor.stop.name, parada: mejor.stop, minutos: mejor.min, texto: `Hoy el sol se pone a las ${hora} · ${conArticuloMinuscula(mejor.stop.name)} está a ${mejor.min} min` }
 }
 
 export interface TarjetaDeManana {

@@ -865,7 +865,7 @@ export interface DayPlan {
   /** Tanda 6: la alternativa de lluvia del día (HOY la enseña si hay previsión; nunca se aplica sola). */
   rainPlan?: RainPlan | null
   /** Tanda 6: las paradas de antes de «Usar esta alternativa» de lluvia, para volver al plan original. */
-  rainBackup?: { stops: Stop[] } | null
+  rainBackup?: { stops: Stop[]; /** (HOY1) Quién hizo el cambio: los avisos del tiempo en directo de Lanzarote. Sin él, el «Si llueve» de siempre. */ motivo?: 'lluvia' | 'nubes' | 'viento' | 'descansar' } | null
   isExcursionDay?: boolean
   /** Prompt 4 — ver DayType. Ausente = 'normal' (todos los días anteriores a esta función). */
   dayType?: DayType

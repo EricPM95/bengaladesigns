@@ -611,11 +611,8 @@ class Component extends DCLogic {
     const P=[
       this.base('1a','Antes del viaje','Roma · 20 – 24 oct','Tu viaje a Roma',{wx:false,eyeC:'rgba(28,34,48,.55)',isAntes:true,hasDates:true,noDates:false}),
       this.base('1b','Antes del viaje · sin fechas','Roma','Tu viaje a Roma',{wx:false,eyeC:'rgba(28,34,48,.55)',isAntes:true,hasDates:false,noDates:true}),
-      this.base('2','Durante · día normal · de pago','jue 23','Vaticano y Trastevere',{alerts,near:true,nearL:near,...this.day('n','2',NORMAL,{listT:'Hoy · jue 23'})}),
-      this.base('3','Durante · día de llegada · de pago','lun 20','Centro histórico',{ticket:true,tk:tkA,lunch:true,...this.day('l','3',LLEGADA,{ex:EXTRA,listT:'Hoy · lun 20'})}),
       this.base('3b','Día de llegada · libre a las 16:00','lun 20','Centro histórico',{ticket:true,tk:{eye:'Llegada · Vuelo XX1234',t1:'12:05',a:'BCN',t2:'14:20',b:'FCO'},lunch:false,nearRest:true,...this.day('l2','3b',LLEGADA,{listT:'Hoy · lun 20'})}),
       this.base('3c','Día de llegada · libre a las 23:00','lun 20','Llegada',{ticket:true,tk:{eye:'Llegada · Vuelo XX1234',t1:'19:15',a:'BCN',t2:'21:40',b:'FCO'},lunch:false,late:true,listOn:false}),
-      this.base('4','Día de vuelta · con mañana','vie 24','Centro histórico',{maleta:true,tarde:true,...this.day('v','4',VUELTA,{listT:'Esta mañana'})}),
       this.base('5','Día de vuelta · sin paradas','vie 24','Día de viaje',{isHome:true,hasSub:true,sub:'Roma → Madrid'}),
       this.base('7','Hoja de «No me da tiempo»','jue 23','Vaticano y Trastevere',{...this.day('sk','7',NORMAL,{listT:'Hoy · jue 23'})}),
       this.base('8','Hoja de «Más para tu día»','lun 20','Centro histórico',{...this.day('m','8',LLEGADA,{ex:EXTRA,listT:'Hoy · lun 20'})}),

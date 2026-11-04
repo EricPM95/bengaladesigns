@@ -1,0 +1,60 @@
+{
+  "_nota": "HOY1 apartado 6 (4-nov). Los UMBRALES y los sitios de los avisos del tiempo en directo. Aquí se cambian; el código no lleva ninguno escondido. Las claves de los sitios son nombres sin tildes y en minúsculas: una parada cuenta si su nombre CONTIENE la clave.",
+  "umbrales": {
+    "lluvia": {
+      "probabilidad_pct": 50,
+      "mm_por_hora": 0.5,
+      "_por_que": "Los mismos que ya usa el aviso de lluvia de la campana y de HOY (rainForecast.ts): 50 % de probabilidad o 0,5 mm en una hora en la que hay parada. Una sola cifra para toda la app."
+    },
+    "ha_parado": {
+      "horas_seguidas": 2,
+      "llovia_en_las_ultimas_horas": 3,
+      "probabilidad_pct_menos_de": 30,
+      "mm_por_hora_menos_de": 0.2,
+      "_por_que": "C15 solo sale si ya estás usando la alternativa, si llovió en alguna de las 3 horas anteriores (si todavía no ha llovido, no «ha parado») y esta hora y la siguiente quedan por debajo de estas cifras (más estrictas que las de empezar a llover, para que no salte y vuelva a saltar con un chubasco pasajero)."
+    },
+    "nubes": {
+      "nubes_bajas_pct": 80,
+      "_por_que": "Cobertura de nubes BAJAS (hasta ~2 km, Open-Meteo cloud_cover_low) en las horas del mirador: a partir del 80 % el risco de Famara (Río, Guinate, Bosquecillo, Ermita) suele quedar dentro de la nube y no se ve La Graciosa. Con menos, casi siempre hay claros."
+    },
+    "viento": {
+      "rachas_kmh": 55,
+      "_por_que": "Rachas a 10 m (Open-Meteo wind_gusts_10m). El alisio normal en Lanzarote ronda 25-45 km/h de racha; desde 55 km/h (fuerza 7) cuesta andar por los miradores del risco, la pista de Las Grietas levanta polvo y en Los Hervideros el oleaje y el viento hacen peligroso asomarse. Por debajo, el aviso sería casi diario."
+    }
+  },
+  "lanzarote": {
+    "miradores_de_nubes": [
+      { "clave": "mirador del rio", "nombre": "Mirador del Río", "solo_si_tapado": "mirador de guinate" },
+      { "clave": "mirador de guinate", "nombre": "Mirador de Guinate" },
+      { "clave": "bosquecillo", "nombre": "Mirador del Bosquecillo" },
+      { "clave": "ermita de las nieves", "nombre": "Ermita de las Nieves" }
+    ],
+    "sitios_de_viento": [
+      { "clave": "las grietas", "nombre": "Las Grietas" },
+      { "clave": "hervideros", "nombre": "Los Hervideros" },
+      { "clave": "mirador del rio", "nombre": "Mirador del Río" },
+      { "clave": "mirador de guinate", "nombre": "Mirador de Guinate" },
+      { "clave": "bosquecillo", "nombre": "Mirador del Bosquecillo" },
+      { "clave": "ermita de las nieves", "nombre": "Ermita de las Nieves" },
+      { "clave": "famara", "nombre": "Famara" }
+    ],
+    "ya_a_cubierto_si_el_nombre_contiene": ["museo", "cueva", "jameos", "fundacion", "castillo", "centro de interpretacion", "mercado"],
+    "a_cubierto": [
+      { "clave": "cueva de los verdes", "dicho": "la Cueva de los Verdes", "nombre": "Cueva de los Verdes", "lat": 29.1609, "lng": -13.43885, "minutos": 50, "abre": "09:30", "cierra": "16:45", "reserva": true },
+      { "clave": "jameos del agua", "dicho": "los Jameos del Agua", "nombre": "Jameos del Agua", "lat": 29.15805, "lng": -13.43165, "minutos": 60, "abre": "10:00", "cierra": "18:00", "reserva": false },
+      { "clave": "fundacion cesar manrique", "dicho": "la Fundación César Manrique", "nombre": "Fundación César Manrique", "lat": 29.0021, "lng": -13.5475, "minutos": 90, "abre": "10:00", "cierra": "17:30", "reserva": false },
+      { "clave": "casa-museo del campesino", "dicho": "la Casa-Museo del Campesino", "nombre": "Casa-Museo del Campesino", "lat": 29.01527, "lng": -13.61553, "minutos": 50, "abre": "10:00", "cierra": "18:00", "reserva": false },
+      { "clave": "castillo de san jose", "dicho": "el Castillo de San José", "nombre": "Castillo de San José (MIAC)", "lat": 28.97159, "lng": -13.53334, "minutos": 60, "abre": "11:00", "cierra": "18:00", "reserva": false }
+    ],
+    "textos": {
+      "lluvia": "Va a llover {cuando}: {sitios}, a cubierto.",
+      "lluvia_sin_sitio": "Va a llover {cuando}. Hoy toca descansar.",
+      "nubes": "Hay nubes en el norte: {sitio} puede quedar tapado.",
+      "nubes_con_cambio": "Hay nubes en el norte: cambiamos {sitio} por {nuevo}.",
+      "viento": "Viento fuerte en {sitio}: te proponemos un sitio a resguardo.",
+      "ha_parado": "Ha parado de llover",
+      "ha_parado_sub": "¿Volvemos al plan de antes?",
+      "descansar": "Hoy toca descansar"
+    }
+  }
+}

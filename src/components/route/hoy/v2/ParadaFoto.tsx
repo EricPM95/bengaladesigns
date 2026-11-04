@@ -35,7 +35,7 @@ export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista }
 }
 
 /** La misma pieza para una parada de la ruta: pide su foto al servidor si viene sin ella. */
-export function ParadaFotoDeParada({ parada, ciudad, dateIso, vista, size = 40 }: { parada: Stop; ciudad: string; dateIso: string | null; vista: boolean; size?: number }) {
+export function ParadaFotoDeParada({ parada, ciudad, dateIso, vista, size = 40, marca }: { parada: Stop; ciudad: string; dateIso: string | null; vista: boolean; size?: number; marca?: boolean }) {
   const url = useFotoDeParada(parada, ciudad, dateIso)
-  return <ParadaFoto nombre={parada.name} photoUrl={url} vista={vista} size={size} />
+  return <ParadaFoto nombre={parada.name} photoUrl={url} vista={vista} size={size} marca={marca} />
 }

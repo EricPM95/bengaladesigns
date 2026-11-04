@@ -1,11 +1,73 @@
-/* El service worker mínimo (Tanda 8A, avisos en la cuentas parte 3). Hace posible instalar la web en el móvil y recibir avisos; NO guarda nada:
-   sin modo sin conexión y sin copias de las respuestas del servidor, para no enseñar datos viejos. */
+/* El service worker (Tanda 8A: instalar y avisos; HOY1 apartado 9: la web abre SIN INTERNET).
+   Guarda SOLO la propia web para poder abrirla sin cobertura: la página (HTML), el código con nombre único (/assets/), los iconos y las fuentes. NUNCA guarda respuestas de /api/ ni de la nube (Supabase,
+   Mapbox…): esos datos viejos no se enseñan; lo de hoy (ruta, fichas, historias, billetes) lo guarda la propia app en el móvil (src/lib/sinConexion.ts).
+   En localhost no guarda nada (el servidor de desarrollo cambia a cada momento); se puede probar con /sw.js?cache=1. */
+
+const CACHE = 'trazo-web-v1'
+const ENLOCAL = ['localhost', '127.0.0.1', '[::1]'].includes(self.location.hostname) && !self.location.search.includes('cache=1')
+const CARPETAS = ['/icons/', '/marca/', '/logros/', '/medalla/', '/marcos/', '/fotos/', '/pelicula/', '/sonidos/']
+
+/** Qué hacer con una petición: 'pagina' (red primero, la copia si no hay red), 'activo' (/assets/, nombre único: copia primero y no se vuelve a pedir) o 'fuente' (copia primero y se renueva por detrás); null = no tocarla. */
+function queHacer(url, peticion, origen) {
+  if (peticion.method !== 'GET') return null
+  if (url.origin === origen) {
+    if (url.pathname.startsWith('/api/')) return null
+    if (peticion.mode === 'navigate') return 'pagina'
+    if (url.pathname.startsWith('/assets/')) return 'activo'
+    if (url.pathname === '/favicon.svg' || CARPETAS.some((c) => url.pathname.startsWith(c))) return 'fuente'
+    return null
+  }
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') return 'fuente'
+  return null
+}
+self.queHacerConUnaPeticion = queHacer
 
 self.addEventListener('install', () => self.skipWaiting())
-self.addEventListener('activate', (evento) => evento.waitUntil(self.clients.claim()))
+self.addEventListener('activate', (evento) =>
+  evento.waitUntil(
+    caches
+      .keys()
+      .then((claves) => Promise.all(claves.filter((c) => c !== CACHE).map((c) => caches.delete(c))))
+      .catch(() => undefined)
+      .then(() => self.clients.claim()),
+  ),
+)
 
-// (Sin `respondWith`: cada petición va a la red como siempre.)
-self.addEventListener('fetch', () => {})
+self.addEventListener('fetch', (evento) => {
+  if (ENLOCAL) return // (Sin `respondWith`: cada petición va a la red como siempre.)
+  const url = new URL(evento.request.url)
+  const hacer = queHacer(url, evento.request, self.location.origin)
+  if (!hacer) return
+  if (hacer === 'pagina') {
+    evento.respondWith(
+      fetch(evento.request)
+        .then((respuesta) => {
+          if (respuesta.ok) {
+            const copia = respuesta.clone()
+            void caches.open(CACHE).then((c) => c.put('/', copia))
+          }
+          return respuesta
+        })
+        .catch(() => caches.match('/').then((copia) => copia || Response.error())),
+    )
+    return
+  }
+  evento.respondWith(
+    caches.open(CACHE).then((c) =>
+      c.match(evento.request).then((copia) => {
+        // Lo que tiene nombre único (/assets/, iconos…) no cambia: si hay copia, no se vuelve a pedir. Las fuentes se renuevan por detrás.
+        if (copia && hacer === 'activo') return copia
+        const red = fetch(evento.request)
+          .then((respuesta) => {
+            if (respuesta && (respuesta.ok || respuesta.type === 'opaque')) void c.put(evento.request, respuesta.clone())
+            return respuesta
+          })
+          .catch(() => copia || Response.error())
+        return copia || red
+      }),
+    ),
+  )
+})
 
 // Avisos al móvil (web push): el servidor manda { titulo, cuerpo, url }. El título es el nombre de la app (lo pone el servidor, de data/marca.json).
 self.addEventListener('push', (evento) => {
