@@ -5,6 +5,8 @@ import { sitiosDeColeccion } from '../components/logros/dibujos/Insignia'
 import { ESCALONES_DE, LOGROS_CON_CHAPA } from '../components/logros/dibujos/Chapa'
 import viajero from '../../data/logros/viajero.json'
 import roma from '../../data/logros/roma.json'
+import { GAJOS_DE_COLECCION } from '../components/logros/dibujos/gajosColecciones'
+import { IDS_EMBLEMAS_LANZA } from '../components/logros/dibujos/EmblemaLanza'
 
 const MARAVILLAS = ['coliseo', 'chichen_itza', 'cristo_redentor', 'gran_muralla', 'machu_picchu', 'petra', 'taj_mahal']
 const Titulo = ({ t }: { t: string }) => <h2 style={{ font: "600 11px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', margin: '28px 0 10px', color: 'rgba(28,34,48,.6)' }}>{t}</h2>
@@ -14,7 +16,7 @@ const Cel = ({ children, pie, oscuro = false }: { children: React.ReactNode; pie
     {pie && <span style={{ font: "500 10.5px 'Geist Mono',monospace", opacity: 0.7 }}>{pie}</span>}
   </div>
 )
-const Fila = ({ children }: { children: React.ReactNode }) => <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>{children}</div>
+const Fila = ({ children, ...resto }: { children: React.ReactNode; 'data-lz3'?: string }) => <div {...resto} style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>{children}</div>
 
 export function DibujosPrueba() {
   const [animado, setAnimado] = useState(false)
@@ -26,6 +28,26 @@ export function DibujosPrueba() {
       <h1 style={{ font: "400 34px 'Instrument Serif',serif", margin: 0 }}>Dibujos de los logros</h1>
       <label style={{ fontSize: 13 }}><input type="checkbox" checked={animado} onChange={(e) => setAnimado(e.target.checked)} /> animados</label>
       <p style={{ fontSize: 12, margin: '4px 0' }}>Logros de viajero sin chapa: {sinChapa.length ? sinChapa.join(', ') : 'ninguno'} · {ids.length} logros</p>
+
+      <Titulo t="LANZAROTE · sello (por conseguir, bronce, plata, oro, diamante)" />
+      <Fila data-lz3="sello">{(['bronce', 'plata', 'oro', 'diamante'] as const).map((g) => <Cel key={g} pie={g}><Sello id="lanzarote" grado={g} tam={110} animado={animado} /></Cel>)}<Cel pie="por conseguir"><Sello id="lanzarote" grado="bronce" apagado tam={110} /></Cel></Fila>
+      <Titulo t="LANZAROTE · las 7 colecciones (0 / 3 gajos / completa)" />
+      <Fila data-lz3="colecciones">
+        {Object.entries(GAJOS_DE_COLECCION).flatMap(([c, g]) => [
+          <Cel key={c + 0} pie={c + ' · 0'}><Insignia coleccion={c} tam={120} /></Cel>,
+          <Cel key={c + 1} pie={`${c} · 3/${g.n}`}><Insignia coleccion={c} ganados={[...new Set(g.sitios)].slice(0, 3)} tam={120} /></Cel>,
+          <Cel key={c + 2} pie={c + ' · completa'}><Insignia coleccion={c} completa tam={120} animada={animado} /></Cel>,
+        ])}
+      </Fila>
+      <Titulo t="LANZAROTE · los 11 emblemas (animado / quieto / sin ganar)" />
+      <Fila data-lz3="emblemas">
+        {IDS_EMBLEMAS_LANZA.map((id) => (
+          <Cel key={id} oscuro pie={id}>
+            <Emblema id={id} animado={animado} tam={120} />
+            <div style={{ display: 'flex', gap: 6 }}><Emblema id={id} tam={64} /><Emblema id={id} silueta tam={64} /></div>
+          </Cel>
+        ))}
+      </Fila>
 
       <Titulo t="Sellos · roma" />
       <Fila>{(['bronce', 'plata', 'oro', 'diamante'] as const).map((g) => <Cel key={g} pie={g}><Sello id="roma" grado={g} tam={110} animado={animado} /></Cel>)}<Cel pie="por conseguir"><Sello id="roma" grado="bronce" apagado tam={110} /></Cel></Fila>

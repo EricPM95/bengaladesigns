@@ -9,7 +9,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { PGlite } from '@electric-sql/pglite'
-import { cargarDatos, cargarCatalogo, validarDatos, coordenadasDeSitio } from '../../server/logros/datos.js'
+import { cargarDatos as cargarDatosTodos, cargarCatalogo, validarDatos, coordenadasDeSitio, datosVisiblesPara } from '../../server/logros/datos.js'
 import { calcular, clave, momentoDeLaHora, parteLocal } from '../../server/logros/motor.js'
 import { evaluarFoto, evaluarVisto, instanteDeToma, rangoLargo, metros, diasParaReclamar } from '../../server/logros/fotos.js'
 import { cobroActivo, diasLibres, elegirDiaDePrueba, estadoDePrueba, planParaPersonas, precioDelPase, puedeGanarLogros, repartoDelPago, tocaPreguntar, viajeDePrueba } from '../../server/logros/pase.js'
@@ -26,7 +26,8 @@ const debe = (cond, regla, texto) => {
   if (!cond) fallos.push({ regla, texto })
 }
 
-const datos = cargarDatos()
+// (LZ3) Esta prueba es la de Roma: los datos como los ve quien no es administrador (sin Lanzarote, que está oculto). Lanzarote tiene la suya (pruebaTandaLZ3_A).
+const datos = datosVisiblesPara(cargarDatosTodos(), new Set(['lanzarote']), false)
 const catalogo = cargarCatalogo('roma')
 const catalogos = { roma: catalogo }
 const R = datos.destinos.roma
@@ -1284,7 +1285,7 @@ console.log('4. Las rutas y el panel de Eric')
   // El motor solo se LEE: de él salen la hora libre del día de llegada y la de salir el último día (dos funciones suyas); no se escribe ni se importa nada más.
   const sinComentarios = codigo.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
   const importsDelMotor = [...sinComentarios.matchAll(/import[^;\n]*from '([^']*(?:routeEngine|server\/engine)[^']*)'/g)].map((m) => m[1])
-  debe(importsDelMotor.sort().join() === '../../shared/routeEngine/llegadaDia1.js,../../shared/routeEngine/vueltaDia.js', 'motor', `los logros solo leen dos funciones del motor (libreDeLlegada y datosDeVuelta): ${importsDelMotor.join()}`)
+  debe(importsDelMotor.sort().join() === '../../shared/routeEngine/llegadaDia1.js,../../shared/routeEngine/sunset.js,../../shared/routeEngine/vueltaDia.js', 'motor', `los logros solo leen dos funciones del motor (libreDeLlegada y datosDeVuelta): ${importsDelMotor.join()}`)
   debe(!/routeEngine[^\n]*\b(writeFile|appendFile)\b/.test(sinComentarios) && !/fs\.write[^\n]*(routeEngine|server\/engine)/.test(sinComentarios), 'motor', 'y no escriben nada en el motor')
   // Nunca enseña las fotos de nadie
   const rutasCodigo = fs.readFileSync('server/logros/rutas.js', 'utf8')

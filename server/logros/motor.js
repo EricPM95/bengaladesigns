@@ -15,6 +15,7 @@
  */
 
 import { datosDeSitio } from './sitios.js'
+import { sunsetMinutesOn } from '../../shared/routeEngine/sunset.js'
 
 /* ------------------------------------------------------------------ */
 /* Fechas y horas (siempre en la hora del destino)                     */
@@ -84,6 +85,26 @@ export function momentoDeLaHora(loc, ajustes) {
   const desde = aMinutos(invierno ? ajustes.nocturno_desde_invierno : ajustes.nocturno_desde)
   if (loc.minutos >= desde) return 'nocturno'
   return null
+}
+
+/**
+ * (LZ3) Los momentos que gana una foto en un destino con `momentos` (data/logros/<destino>.json):
+ *   - `madrugador`: la misma hora que en todos (ajustes.madrugador_antes_de), en los sitios que diga (`'todos'` o una lista);
+ *   - `atardecer_atlantico`: en uno de sus sitios, desde `desde_antes_min` antes de la puesta de sol hasta `hasta_despues_min` después, en la hora del destino
+ *     (la puesta de sol de ese día, de shared/routeEngine/sunset.js, en el `punto` del destino).
+ * Devuelve la lista de ids de momento ganados (puede ser vacía).
+ */
+export function momentosDeLaFoto(h, d, ajustes) {
+  const salida = []
+  const cfg = d.momentos ?? {}
+  const vale = (m) => (m.sitios === 'todos' ? true : Array.isArray(m.sitios) && m.sitios.includes(h.sitio))
+  if (cfg.madrugador && vale(cfg.madrugador) && h.loc.minutos < aMinutos(ajustes.madrugador_antes_de)) salida.push('madrugador')
+  const a = cfg.atardecer_atlantico
+  if (a && vale(a)) {
+    const sol = sunsetMinutesOn(h.loc.fecha, a.punto, d.timezone)
+    if (sol != null && h.loc.minutos >= sol - (a.desde_antes_min ?? 60) && h.loc.minutos <= sol + (a.hasta_despues_min ?? 15)) salida.push('atardecer_atlantico')
+  }
+  return salida
 }
 
 /* ------------------------------------------------------------------ */
@@ -236,11 +257,14 @@ export function calcular(e) {
     const imprescindibles = new Set(d.colecciones.find((c) => c.id === d.sellos.find((s) => s.id === d.sello_principal)?.coleccion)?.sitios ?? [])
     const diasMomento = { madrugador: new Set(), nocturno: new Set() }
     for (const h of hs) {
-      if (h.tipo !== 'foto' || !imprescindibles.has(h.sitio)) continue
-      const m = momentoDeLaHora(h.loc, ajustes)
-      if (!m) continue
-      dar(clavDestino, 'emblema', m, h.trip_id, h.instante)
-      diasMomento[m].add(h.loc.fecha)
+      if (h.tipo !== 'foto') continue
+      // (LZ3) Un destino con `momentos` en su JSON (Lanzarote) dice qué momentos hay y dónde; sin él (Roma) sigue la regla de siempre.
+      const ganados = d.momentos ? momentosDeLaFoto(h, d, ajustes) : imprescindibles.has(h.sitio) ? [momentoDeLaHora(h.loc, ajustes)].filter(Boolean) : []
+      for (const m of ganados) {
+        // El id del emblema de un momento: el de su ficha (Lanzarote: `lz_madrugador`); en Roma es el mismo nombre del momento.
+        dar(clavDestino, 'emblema', d.emblemas.find((x) => x.tipo === 'momento' && x.momento === m)?.id ?? m, h.trip_id, h.instante)
+        ;(diasMomento[m] ??= new Set()).add(h.loc.fecha)
+      }
     }
     infoDestino[clavDestino].diasMomento = diasMomento
   }

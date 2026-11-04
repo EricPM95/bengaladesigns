@@ -381,7 +381,8 @@ console.log('9. Tanda 8C1: dibujos del Dashboard, hoja de secretos, título de H
   const hoyV2 = leer('src/components/route/hoy/v2/HoyDuranteV2.tsx')
   debe(hoyV2.includes('nombreDelDia(route, day,') && hoyV2.includes('tituloLimpio'), 'hoy', 'el título del día de HOY v2 sale de nombreDelDia: el mismo que DÍAS (con el nombre del viajero si lo cambió)')
   const titulo = leer('src/lib/tituloDelDia.ts')
-  debe(titulo.includes('if (day.nameByUser ||') && titulo.indexOf('day.nameByUser') < titulo.indexOf('esDiaDeExcursion(day)) return sinTrayecto(grupos.excursion'), 'hoy', 'y si el viajero le cambió el nombre, manda el suyo')
+  // (LZ3, 4-nov) ANTES: buscaba «esDiaDeExcursion(day)) return sinTrayecto(grupos.excursion»; AHORA (desde la LZ2a la línea de la excursión mira antes curatedTitle): se busca el inicio de esa línea. Lo que se prueba, que el nombre del viajero va antes que el de la excursión, es igual de fuerte.
+  debe(titulo.includes('if (day.nameByUser ||') && titulo.indexOf('day.nameByUser') < titulo.indexOf('if (esDiaDeExcursion(day)) return sinTrayecto('), 'hoy', 'y si el viajero le cambió el nombre, manda el suyo')
   // El modo de pruebas de la EXP
   const dm = leer('src/components/logros/momentos/demoMomentos.ts')
   debe(dm.includes('exp: (preset') && dm.includes('serieViajeros') && fs.existsSync('src/dev/ExpPrueba.tsx'), 'exp', 'el modo de pruebas enseña la EXP, el nivel y el rango de un viajero de ejemplo (window.__momentos.exp) y «Y además…» con los dibujos nuevos (serieViajeros)')

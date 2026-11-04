@@ -11,6 +11,8 @@ import { useId } from 'react'
 import type { CSSProperties } from 'react'
 import { IC, ICONO_SITIO } from './iconos'
 import InsigniaPrincipal from './piezas/InsigniaPrincipal'
+import { InsigniaGajos } from './InsigniaGajos'
+import { coleccionDeGajos } from './gajosColecciones'
 import './dibujos.css'
 
 const HEX = 'polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)'
@@ -60,12 +62,15 @@ const COLS: Record<string, Col> = {
 }
 
 export function sitiosDeColeccion(coleccion: string): string[] {
-  return COLS[coleccion]?.sitios ?? []
+  return coleccionDeGajos(coleccion)?.sitios ?? COLS[coleccion]?.sitios ?? []
 }
 
 /** La insignia de una colección con sus pedazos. */
 export function InsigniaDibujo({ coleccion, ganados = [], completa = false, tam = 120, animada = false }: { coleccion: string; ganados?: string[]; completa?: boolean; tam?: number; animada?: boolean }) {
   const c = COLS[coleccion]
+  const pintada = coleccionDeGajos(coleccion) // (en Roma solo «imprescindibles» coincide de nombre, y solo con un viaje a Lanzarote abierto es la otra)
+  if (pintada)
+    return <InsigniaGajos geo={pintada} on={pintada.sitios.map((s) => completa || ganados.includes(s))} tam={tam} animada={animada} />
   if (!c) return <span style={{ width: tam, height: tam, display: 'inline-block' }} />
   const on = c.sitios.map((s) => completa || ganados.includes(s))
   let cuerpo

@@ -16,7 +16,8 @@ export { soloActivos }
 
 const leer = (ruta) => JSON.parse(fs.readFileSync(new URL(ruta, import.meta.url), 'utf8'))
 
-const DESTINOS_CON_LOGROS = ['roma']
+/** (LZ3) Lanzarote lleva logros, pero mientras esté oculto (server/destinosCurados.js › DESTINOS_OCULTOS) solo los ve el administrador: el servicio lo quita de los datos de quien no lo es (`datosVisiblesPara`). */
+const DESTINOS_CON_LOGROS = ['roma', 'lanzarote']
 
 export function cargarDatos() {
   const destinos = {}
@@ -39,7 +40,20 @@ export function cargarDatos() {
 }
 
 export function cargarCatalogo(clave) {
-  return leer(`../../data/pipeline_v2/${clave}.json`)
+  const catalogo = leer(`../../data/pipeline_v2/${clave}.json`)
+  // (LZ3) Sitios que no son parada ni están en EXPLORAR (La Graciosa) pero tienen emblema: `sitios_extra` de data/logros/<destino>.json. Solo para los logros; el motor de rutas no los ve.
+  const extra = fs.existsSync(new URL(`../../data/logros/${clave}.json`, import.meta.url)) ? leer(`../../data/logros/${clave}.json`).sitios_extra : null
+  if (!extra) return catalogo
+  return { ...catalogo, places: [...(catalogo.places ?? []), ...Object.entries(extra).map(([id, e]) => ({ id, name: e.name, coordinates: e.coordinates }))] }
+}
+
+/**
+ * (LZ3) Los datos de logros que puede ver una persona: sin los destinos ocultos si no es administrador. Roma queda exactamente igual.
+ * `ocultos`: Set de claves (DESTINOS_OCULTOS). Sin ocultos o con administrador: los mismos datos (el mismo objeto).
+ */
+export function datosVisiblesPara(datos, ocultos, esAdminCuenta) {
+  if (esAdminCuenta || !ocultos || ocultos.size === 0 || !Object.keys(datos.destinos).some((c) => ocultos.has(c))) return datos
+  return { ...datos, destinos: Object.fromEntries(Object.entries(datos.destinos).filter(([c]) => !ocultos.has(c))) }
 }
 
 /** El destino de los logros por su nombre («Roma», «roma »). null si ese destino no tiene logros. */
@@ -68,6 +82,7 @@ export function validarDatos(datos, catalogos) {
     for (const c of d.colecciones) for (const s of c.sitios) usados.add(s)
     for (const e of d.emblemas) if (e.sitio) usados.add(e.sitio)
     for (const id of Object.keys(d.sitios)) usados.add(id)
+    for (const m of Object.values(d.momentos ?? {})) for (const id of Array.isArray(m.sitios) ? m.sitios : []) usados.add(id)
     for (const p of Object.values(d.patrimonios ?? {})) for (const id of [...(p.sitios ?? []), ...(p.por_comprobar ?? [])]) usados.add(id)
     for (const v of Object.values(d.excepciones_pais ?? {})) for (const id of v.sitios ?? []) usados.add(id)
     for (const id of usados) {

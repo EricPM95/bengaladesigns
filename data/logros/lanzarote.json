@@ -1,0 +1,498 @@
+{
+  "_nota": "Los logros de Lanzarote (LZ3). Misma forma que roma.json. Nombres y líneas de docs/destinos/lanzarote/LANZAROTE_LOGROS.md. Cada sitio es un id de data/pipeline_v2/lanzarote.json (o de `sitios_extra`). Sin Patrimonios: Lanzarote es Reserva de la Biosfera, no Patrimonio de la Humanidad.",
+  "destino": "Lanzarote",
+  "clave": "lanzarote",
+  "ciudad": "Lanzarote",
+  "timezone": "Atlantic/Canary",
+  "anadido": "2026-11-04",
+  "sello_principal": "lanzarote",
+  "pionero": {
+    "activo": false,
+    "limite": 0
+  },
+  "pais_defecto": "España",
+  "capital_defecto": false,
+  "excepciones_pais": {},
+  "sitios_extra": {
+    "la_graciosa": {
+      "name": "La Graciosa",
+      "coordinates": [
+        29.2316,
+        -13.5036
+      ],
+      "coordinates_fuente": "Aproximada (Caleta de Sebo): por comprobar con Mapbox/Google Maps",
+      "nota": "No es parada de la ruta ni está en lugares_solo_lista: solo existe para ganar su emblema (foto con ubicación en la isla)."
+    }
+  },
+  "momentos": {
+    "madrugador": {
+      "sitios": "todos",
+      "_nota": "La misma hora que en el otro destino con logros (antes de las 08:00, ajustes.json), en cualquier sitio (LANZAROTE_LOGROS.md: cualquier sitio, temprano)."
+    },
+    "atardecer_atlantico": {
+      "sitios": [
+        "el_golfo_y_el_charco_de_los_clicos",
+        "los_hervideros",
+        "salinas_de_janubio",
+        "playa_de_montana_bermeja",
+        "caleta_de_famara_y_playa_de_famara",
+        "playa_blanca_y_el_faro_de_pechiguera"
+      ],
+      "punto": [
+        29,
+        -13.6
+      ],
+      "desde_antes_min": 60,
+      "hasta_despues_min": 15,
+      "_nota": "Hora de Canarias; la puesta de sol es la de shared/routeEngine/sunset.js (sunsetMinutesOn) para ese día y ese punto."
+    }
+  },
+  "sitios": {
+    "montanas_del_fuego": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 2500,
+      "motivo_radio": "Parque Nacional muy grande: centro de visitantes, restaurante El Diablo y la Ruta de los Volcanes.",
+      "foto_dentro": null
+    },
+    "jameos_del_agua": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 200,
+      "motivo_radio": "Centro de arte con los jameos y el auditorio, junto a la costa.",
+      "foto_dentro": null
+    },
+    "cueva_de_los_verdes": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 200,
+      "motivo_radio": "Entrada de la cueva y su aparcamiento.",
+      "foto_dentro": null
+    },
+    "mirador_del_rio": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 150,
+      "motivo_radio": "Edificio del mirador y su explanada, en lo alto del risco.",
+      "foto_dentro": null
+    },
+    "fundacion_cesar_manrique": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 250,
+      "motivo_radio": "Casa de Manrique y su jardín de lava.",
+      "foto_dentro": null
+    },
+    "el_golfo_y_el_charco_de_los_clicos": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 800,
+      "motivo_radio": "Pueblo, mirador del cráter y charco verde, repartidos por la costa.",
+      "foto_dentro": null
+    },
+    "la_geria_y_sus_bodegas": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 3000,
+      "motivo_radio": "Región de viñedos de más de 10 km: vale entre las bodegas y el paisaje.",
+      "foto_dentro": null
+    },
+    "jardin_de_cactus": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 200,
+      "motivo_radio": "Jardín dentro de una antigua cantera.",
+      "foto_dentro": null
+    },
+    "haria_y_la_casa_museo_cesar_manrique": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 600,
+      "motivo_radio": "Pueblo y casa-museo a las afueras.",
+      "foto_dentro": null
+    },
+    "casa_museo_del_campesino": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 200,
+      "motivo_radio": "Museo y monumento al campesino.",
+      "foto_dentro": null
+    },
+    "castillo_de_san_jose": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 150,
+      "motivo_radio": "Castillo y museo de arte contemporáneo.",
+      "foto_dentro": null
+    },
+    "los_hervideros": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 350,
+      "motivo_radio": "Acantilados y miradores a lo largo de la costa.",
+      "foto_dentro": null
+    },
+    "volcan_del_cuervo": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 500,
+      "motivo_radio": "Cráter y su sendero.",
+      "foto_dentro": null
+    },
+    "caldera_blanca": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 800,
+      "motivo_radio": "Cráter grande con su ruta.",
+      "foto_dentro": null
+    },
+    "las_grietas_montana_blanca": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 500,
+      "motivo_radio": "Montaña con grietas y su entorno.",
+      "foto_dentro": null
+    },
+    "ciudad_estratificada_rofera_de_teseguite": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 400,
+      "motivo_radio": "Cantera abierta y su entorno.",
+      "foto_dentro": null
+    },
+    "mirador_de_guinate": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 200,
+      "motivo_radio": "Mirador pequeño.",
+      "foto_dentro": null
+    },
+    "ermita_de_las_nieves": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 200,
+      "motivo_radio": "Ermita y mirador en lo alto de Famara.",
+      "foto_dentro": null
+    },
+    "mirador_del_bosquecillo": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 200,
+      "motivo_radio": "Mirador en el risco.",
+      "foto_dentro": null
+    },
+    "mirador_de_haria": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 200,
+      "motivo_radio": "Mirador y su aparcamiento.",
+      "foto_dentro": null
+    },
+    "salinas_de_janubio": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 800,
+      "motivo_radio": "Salinas muy extensas con su mirador.",
+      "foto_dentro": null
+    },
+    "playas_de_papagayo": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 1500,
+      "motivo_radio": "Varias calas repartidas por la costa.",
+      "foto_dentro": null
+    },
+    "caleton_blanco": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 300,
+      "motivo_radio": "Cala pequeña de arena blanca.",
+      "foto_dentro": null
+    },
+    "caleta_de_famara_y_playa_de_famara": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 1500,
+      "motivo_radio": "Pueblo y playa de 5 km.",
+      "foto_dentro": null
+    },
+    "punta_mujeres_y_arrieta": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 900,
+      "motivo_radio": "Dos pueblos pegados en la costa.",
+      "foto_dentro": null
+    },
+    "playa_de_la_garita": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 300,
+      "motivo_radio": "Playa pequeña con su paseo.",
+      "foto_dentro": null
+    },
+    "playa_de_montana_bermeja": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 300,
+      "motivo_radio": "Playa de arena oscura.",
+      "foto_dentro": null
+    },
+    "teguise": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 500,
+      "motivo_radio": "Villa histórica con su plaza y sus calles.",
+      "foto_dentro": null
+    },
+    "arrecife_charco_de_san_gines_y_el_paseo": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 700,
+      "motivo_radio": "Charco de San Ginés y paseo marítimo.",
+      "foto_dentro": null
+    },
+    "la_graciosa": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 2500,
+      "motivo_radio": "Isla entera (Caleta de Sebo y playas). Solo se llega en barco.",
+      "foto_dentro": null
+    }
+  },
+  "patrimonios": {},
+  "sellos": [
+    {
+      "id": "lanzarote",
+      "nombre": "Lanzarote",
+      "coleccion": "lz_imprescindibles",
+      "grados": [
+        {
+          "grado": "bronce",
+          "desde": 1,
+          "nombre": "Primeros pasos en Lanzarote",
+          "linea": "Has visto tu primer imprescindible."
+        },
+        {
+          "grado": "plata",
+          "desde": 3,
+          "nombre": "Lanzarote te atrapa",
+          "linea": "{n} de {total} imprescindibles."
+        },
+        {
+          "grado": "oro",
+          "desde": 5,
+          "nombre": "Tierra de volcanes",
+          "linea": "{n} de {total} imprescindibles."
+        },
+        {
+          "grado": "diamante",
+          "desde": 7,
+          "nombre": "Lanzarote es tuya",
+          "linea": "Todos los imprescindibles de Lanzarote."
+        }
+      ]
+    }
+  ],
+  "colecciones": [
+    {
+      "id": "lz_imprescindibles",
+      "grupo": "principales",
+      "orden": 1,
+      "nombre": "Los imprescindibles de Lanzarote",
+      "al_completar": "Lo esencial, visto",
+      "sitios": [
+        "montanas_del_fuego",
+        "jameos_del_agua",
+        "cueva_de_los_verdes",
+        "mirador_del_rio",
+        "fundacion_cesar_manrique",
+        "el_golfo_y_el_charco_de_los_clicos",
+        "la_geria_y_sus_bodegas"
+      ]
+    },
+    {
+      "id": "cesar_manrique",
+      "grupo": "de_artistas",
+      "orden": 2,
+      "nombre": "La Lanzarote de César Manrique",
+      "al_completar": "Arte y volcán, a su manera",
+      "sitios": [
+        "jameos_del_agua",
+        "mirador_del_rio",
+        "jardin_de_cactus",
+        "fundacion_cesar_manrique",
+        "haria_y_la_casa_museo_cesar_manrique",
+        "casa_museo_del_campesino",
+        "castillo_de_san_jose"
+      ]
+    },
+    {
+      "id": "tierra_de_fuego",
+      "grupo": "de_explorar",
+      "orden": 3,
+      "nombre": "Tierra de fuego",
+      "al_completar": "Lo que dejó el volcán",
+      "sitios": [
+        "montanas_del_fuego",
+        "cueva_de_los_verdes",
+        "los_hervideros",
+        "volcan_del_cuervo",
+        "caldera_blanca",
+        "las_grietas_montana_blanca",
+        "ciudad_estratificada_rofera_de_teseguite"
+      ]
+    },
+    {
+      "id": "isla_a_tus_pies",
+      "grupo": "de_explorar",
+      "orden": 4,
+      "nombre": "La isla a tus pies",
+      "al_completar": "Lanzarote desde arriba",
+      "sitios": [
+        "mirador_del_rio",
+        "mirador_de_guinate",
+        "ermita_de_las_nieves",
+        "mirador_del_bosquecillo",
+        "mirador_de_haria",
+        "salinas_de_janubio"
+      ]
+    },
+    {
+      "id": "playas_y_charcos",
+      "grupo": "de_explorar",
+      "orden": 5,
+      "nombre": "Playas y charcos",
+      "al_completar": "Sal en la piel",
+      "sitios": [
+        "playas_de_papagayo",
+        "caleton_blanco",
+        "el_golfo_y_el_charco_de_los_clicos",
+        "caleta_de_famara_y_playa_de_famara",
+        "punta_mujeres_y_arrieta",
+        "playa_de_la_garita",
+        "playa_de_montana_bermeja"
+      ]
+    },
+    {
+      "id": "pueblos_con_alma",
+      "grupo": "de_empezar",
+      "orden": 6,
+      "nombre": "Pueblos con alma",
+      "al_completar": "La isla de verdad",
+      "sitios": [
+        "teguise",
+        "haria_y_la_casa_museo_cesar_manrique",
+        "caleta_de_famara_y_playa_de_famara",
+        "el_golfo_y_el_charco_de_los_clicos",
+        "arrecife_charco_de_san_gines_y_el_paseo"
+      ]
+    },
+    {
+      "id": "entre_vinas_de_ceniza",
+      "grupo": "de_empezar",
+      "orden": 7,
+      "nombre": "Entre viñas de ceniza",
+      "al_completar": "Malvasía volcánica",
+      "sitios": [
+        "la_geria_y_sus_bodegas"
+      ]
+    }
+  ],
+  "grupos_colecciones": {
+    "principales": "Las principales",
+    "de_empezar": "Las de empezar",
+    "de_artistas": "Las de artistas",
+    "de_explorar": "Las de explorar"
+  },
+  "emblemas": [
+    {
+      "id": "timanfaya",
+      "tipo": "sitio",
+      "sitio": "montanas_del_fuego",
+      "nombre": "El calor de la tierra",
+      "linea": "A trece metros bajo tus pies, la tierra pasa de 600 grados."
+    },
+    {
+      "id": "jameos",
+      "tipo": "sitio",
+      "sitio": "jameos_del_agua",
+      "nombre": "El lago bajo el volcán",
+      "linea": "Aquí vive un cangrejo diminuto y ciego que solo existe en los tubos volcánicos de Lanzarote."
+    },
+    {
+      "id": "cueva_de_los_verdes",
+      "tipo": "sitio",
+      "sitio": "cueva_de_los_verdes",
+      "nombre": "El secreto de la cueva",
+      "linea": "Lo que has visto dentro, no se cuenta."
+    },
+    {
+      "id": "mirador_del_rio",
+      "tipo": "sitio",
+      "sitio": "mirador_del_rio",
+      "nombre": "Las islas de enfrente",
+      "linea": "Desde 475 metros, La Graciosa y el archipiélago Chinijo."
+    },
+    {
+      "id": "fundacion_manrique",
+      "tipo": "sitio",
+      "sitio": "fundacion_cesar_manrique",
+      "nombre": "Una casa en cinco burbujas",
+      "linea": "Manrique hizo su casa en cinco burbujas de lava."
+    },
+    {
+      "id": "el_golfo",
+      "tipo": "sitio",
+      "sitio": "el_golfo_y_el_charco_de_los_clicos",
+      "nombre": "El charco verde",
+      "linea": "Una laguna verde dentro de un cráter, a un paso del mar."
+    },
+    {
+      "id": "la_geria",
+      "tipo": "sitio",
+      "sitio": "la_geria_y_sus_bodegas",
+      "nombre": "Viñas en la ceniza",
+      "linea": "Cada cepa en su hoyo, protegida del viento por un muro de piedra."
+    },
+    {
+      "id": "la_graciosa",
+      "tipo": "sitio",
+      "sitio": "la_graciosa",
+      "nombre": "La octava isla",
+      "linea": "La octava isla de Canarias, reconocida en 2018."
+    },
+    {
+      "id": "papagayo",
+      "tipo": "sitio",
+      "sitio": "playas_de_papagayo",
+      "nombre": "Las calas de Papagayo",
+      "linea": "Arena dorada entre acantilados."
+    },
+    {
+      "id": "lz_madrugador",
+      "tipo": "momento",
+      "momento": "madrugador",
+      "nombre": "Madrugador",
+      "linea": "Lanzarote antes que nadie."
+    },
+    {
+      "id": "atardecer_atlantico",
+      "tipo": "momento",
+      "momento": "atardecer_atlantico",
+      "nombre": "Atardecer atlántico",
+      "linea": "El sol se ha ido al mar."
+    }
+  ],
+  "textos": {
+    "secretos": {
+      "total": "Lanzarote esconde {total} secretos",
+      "encontrados": "{n} de {total} secretos encontrados"
+    },
+    "resumen_viaje": {
+      "wow": "¡Wow! Tu viaje a Lanzarote fue increíble…",
+      "con_ganas": "Lanzarote se ha quedado con ganas de verte otra vez: aún esconde {n} secretos…",
+      "minimo_colecciones": 3,
+      "minimo_secretos": 2
+    }
+  }
+}

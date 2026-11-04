@@ -107,8 +107,9 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
 
   /* ── El servidor: los sellos recuerdo y los números ── */
   const P = await importar(ficheros.servidor)
-  const { cargarDatos } = await importar('server/logros/datos.js')
-  const datos = cargarDatos()
+  // (LZ3, 4-nov) ANTES: todos los destinos con logros (solo Roma). AHORA: los datos como los ve quien NO es administrador (sin Lanzarote, oculto; con él España sería un país «por conseguir» más). Decisión de Eric: Roma no cambia para nadie.
+  const { cargarDatos, datosVisiblesPara } = await importar('server/logros/datos.js')
+  const datos = datosVisiblesPara(cargarDatos(), new Set(['lanzarote']), false)
   const cat = P.catalogoDePaises()
   const previos = { paises: ['España', 'Italia', 'Portugal', 'Narnia', 'España'], dias: 12 }
   debe(P.paisesConocidos(previos, cat).map((p) => p.n).join('|') === 'España|Italia|Portugal', 'recuerdo', 'solo cuentan los países que el catálogo conoce, sin repetir')

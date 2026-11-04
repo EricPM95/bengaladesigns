@@ -98,7 +98,7 @@ try {
   }
   await a.captura(path.join(SALIDA, '10s7_reorganizar_R1_boton.jpg'))
 
-  // (b) La alerta; «Ahora no» lo esconde; el próximo cambio lo vuelve a sacar.
+  // (b) La alerta; «Ahora no» cierra la alerta y el botón SE QUEDA (LZ3, Eric 4-nov); el próximo cambio lo sigue pidiendo.
   await a.evaluar("document.querySelector('[data-boton-reorganizar]').click(); true")
   await a.esp(900)
   const alerta = await a.evaluar("(document.querySelector('[data-alerta-reorganizar]')?.innerText || '')")
@@ -106,7 +106,7 @@ try {
   await a.captura(path.join(SALIDA, '10s7_reorganizar_R2_alerta.jpg'))
   await a.evaluar("document.querySelector('[data-reorganizar-no]').click(); true")
   await a.esp(800)
-  debe(!(await hayBoton()) && !(await a.evaluar("Boolean(document.querySelector('[data-alerta-reorganizar]'))")), '«Ahora no» no esconde el botón y la alerta')
+  debe((await hayBoton()) && !(await a.evaluar("Boolean(document.querySelector('[data-alerta-reorganizar]'))")), '«Ahora no» (LZ3) tiene que cerrar la alerta y DEJAR el botón')
   const trasAhoraNo = await fotoDelViaje()
 
   // Un cambio nuevo que lo pide (otra parada llega al día 2): vuelve a salir.
@@ -115,7 +115,7 @@ try {
   const mover2 = dia4.stops.find((x) => !x.r)?.id
   await a.evaluar(s(`st().moveStopToDay(${JSON.stringify(mover2)}, st().route.days[2].id, st().route.days[1].id); return true`))
   void otra
-  debe(await esperaBoton(), 'tras «Ahora no», el próximo cambio no vuelve a sacar el botón')
+  debe(await esperaBoton(), 'tras «Ahora no», el botón tiene que seguir (y con el próximo cambio también)')
 
   // (c) Reorganizar: solo los días afectados, sin quitar nada, con «Deshacer» y lo movido iluminado, y un solo aviso para los demás.
   const antesReorg = await fotoDelViaje()

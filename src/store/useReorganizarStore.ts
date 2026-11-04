@@ -6,7 +6,8 @@ import type { NoCabe, PropuestaDeVuelos } from '../lib/adaptarVuelos'
  *  - `dias`: los días en los que reorganizar CAMBIARÍA algo (ya calculado). Con alguno, sale el botón flotante.
  *  - `alerta`: la alerta «¿Reorganizamos tu día?» abierta.
  *  - `iluminadas`: los ids de las paradas que se acaban de mover (se iluminan un momento).
- * «Ahora no» y el botón de la alerta lo dejan todo a cero: el botón no vuelve hasta el próximo cambio que de verdad lo pida.
+ * (LZ3, Eric 4-nov) «Ahora no» cierra la alerta pero DEJA el botón redondo: sigue hasta que el viajero reorganice o hasta que el día deje de necesitarlo (p. ej. si quita la parada que lo hizo salir; lo recalcula `ReorganizarHost`),
+ * igual que el aviso de los vuelos. Reorganizar (`terminar`) sí lo deja a cero.
  */
 interface ReorganizarState {
   dias: string[]
@@ -28,7 +29,7 @@ interface ReorganizarState {
   poner: (cambian: string[], revisados: string[]) => void
   abrirAlerta: () => void
   cerrarAlerta: () => void
-  /** «Ahora no»: el botón se esconde hasta el próximo cambio. */
+  /** «Ahora no»: cierra la alerta; el botón se queda (LZ3). */
   ahoraNo: () => void
   fijarTrabajando: (trabajando: boolean) => void
   iluminar: (ids: string[]) => void
@@ -59,7 +60,7 @@ export const useReorganizarStore = create<ReorganizarState>((set) => ({
     }),
   abrirAlerta: () => set({ alerta: true }),
   cerrarAlerta: () => set({ alerta: false }),
-  ahoraNo: () => set({ alerta: false, dias: [] }),
+  ahoraNo: () => set({ alerta: false }),
   fijarTrabajando: (trabajando) => set({ trabajando }),
   iluminar: (ids) => set({ iluminadas: ids }),
   limpiarIluminadas: () => set({ iluminadas: [] }),

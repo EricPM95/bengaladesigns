@@ -13,7 +13,7 @@ import { libreDeLlegada } from '../../shared/routeEngine/llegadaDia1.js'
 import { datosDeVuelta } from '../../shared/routeEngine/vueltaDia.js'
 import { GLOBAL, avanceViajero, calcular, clave, diferencia, diasEntre, logroActivo, parteLocal, sumarDias } from './motor.js'
 import { calcularExp, edicionDeAnio, entradaEnEdicion, estadoDelSorteo, expDeMomento, expFinal, invitacionDaExp, resumenDeExp, viajesConHoy } from './exp.js'
-import { coordenadasDeSitio, nombreDeSitio } from './datos.js'
+import { coordenadasDeSitio, datosVisiblesPara, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
 import { armarMomentos } from './momentos.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
@@ -86,7 +86,7 @@ export function contextoDeViaje({ id, route }, datos, catalogos, { esDuo = false
   }
 }
 
-export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new Date(), cobro = false, azar = Math.random }) {
+export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new Date(), cobro = false, azar = Math.random, ocultos = new Set(), esAdminDeCuenta = null }) {
   const sitioInfo = (destino, sitio) => {
     const d = datos.destinos[destino]
     const dato = d.sitios[sitio] ?? null
@@ -508,7 +508,11 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return { ok: true, ...resumen({ datos, destino: viaje.destino, items, viaje, desde: dia ?? viaje.inicio, hasta: dia ?? viaje.fin, hoy: hoyEn(viaje.destino) }) }
   }
 
+  /** (LZ3) Los datos de logros que ve esta cuenta: sin los destinos ocultos (Lanzarote) si no es administrador. Sin `esAdminDeCuenta` o sin ocultos, todo igual que antes. */
+  const datosParaCuenta = async (userId) => (ocultos.size === 0 ? datos : datosVisiblesPara(datos, ocultos, esAdminDeCuenta ? await esAdminDeCuenta(userId).catch(() => false) : false))
+
   async function pasaporteDe(userId) {
+    const datos = await datosParaCuenta(userId)
     const c = await cargar(userId)
     const perfil = await repo.perfilDe(userId)
     const items = aItems(c.logros)
@@ -526,6 +530,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
   }
 
   async function logrosDeViajero(userId) {
+    const datos = await datosParaCuenta(userId)
     const c = await cargar(userId)
     const ganados = new Map(c.logros.map((f) => [clave(f.destino, f.logro, f.escalon), f]))
     const visibles = logrosVisibles(datos, ahora())

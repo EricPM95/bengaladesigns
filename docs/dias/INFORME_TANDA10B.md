@@ -4917,3 +4917,69 @@ Por tu «Sí, mételas»: la 0071 (aún sin aplicar) borra también `lo_suyo_del
 
 - ✅ Hecho — Muestra de 60 de Roma idéntica; pruebaJutrip y pruebaTandaLZ2a en 0; pruebaTandaLZ2b1 Ver el informe.  
   *Dónde:* No es de móvil.
+
+
+## LZ3 — Los logros de Lanzarote y el botón «Reorganizar» (4-nov)
+
+**Qué se ha hecho, en palabras sencillas**
+- **Los datos** (`data/logros/lanzarote.json`, con la forma de los de Roma): el sello de Lanzarote (bronce 1, plata 3, oro 5, diamante 7), las 7 colecciones (imprescindibles, César Manrique, Tierra de fuego, La isla a tus pies, Playas y charcos, Pueblos con alma, Entre viñas de ceniza), los 11 emblemas con su nombre y su línea, y los textos con «Lanzarote»; sin patrimonios. Lanzarote está en los logros solo para el administrador.
+- **Cómo se ganan:** el mismo camino que en Roma. Madrugador antes de las 8:00 con la hora de Canarias. **Atardecer atlántico** en lugar de Nocturno: en una parada de la costa oeste, desde una hora antes de la puesta de sol hasta un cuarto de hora después.
+- **Los dibujos, como Design:** el sello con sus 5 estados; las 7 colecciones con la pieza de gajos (ganado en color, el que falta en gris, completa en color, con brillo y movimiento) y una pieza que vale para cualquier destino; los 11 emblemas, cada uno con su movimiento. La tabla gajo → sitio está en el REPASO.
+- **«Reorganizar»** (toda la app): «Ahora no» ya no esconde el botón redondo; se queda hasta que el viajero reorganice o el día deje de necesitarlo.
+- **Choque de ids:** la colección `imprescindibles` y el emblema `madrugador` de Lanzarote se llaman ahora `lz_imprescindibles` y `lz_madrugador`, para no chocar con los de Roma.
+
+**Pruebas (todas en 0 fallos):** `pruebaTandaLZ3` 55.059 comprobaciones (A 179, B 157, la LZ2a entera 54.204, `pruebaLogros1` 453 y `pruebaLogros2` 54), muestra de 60 de Roma idéntica, `pruebaJutrip` 129, `tsc` limpio, y los logros de Roma (`pruebaTanda10J`, `pruebaPantallas8b` y `8c`, `pruebaTanda10S7_R`). Pruebas viejas puestas al día con «antes → ahora → decisión de Eric»: `pruebaPantallas8c` (el pasaporte carga los datos de quien no es administrador, y los demos regenerados), `pruebaPantallas8b` (el orden de la línea de la excursión desde la LZ2a), `pruebaLogros1` y `pruebaTanda10S7_R` (Reorganizar). Sin migración.
+
+**Dudas y lo que falta:**
+1. **La Graciosa** (y Papagayo si no es parada del viaje): el emblema «La octava isla» se gana con una foto con el sitio `la_graciosa`, pero hoy la pantalla solo deja fotografiar una parada de la ruta: falta un camino para elegir ese sitio en una foto fuera de ruta.
+2. **«Entre viñas de ceniza»** tiene 1 sitio (La Geria; las bodegas no son sitios del catálogo) y la imagen 3 gajos, que se encienden juntos. Si quieres 3, hay que dar de alta El Grifo, Stratvs y Bodega La Geria como sitios.
+3. **Madrugador** en Lanzarote vale en cualquier sitio (como dice el documento); en Roma, solo en los imprescindibles. ¿Lo dejo así?
+4. **Gajo → sitio:** asignaciones por afinidad, a revisar (sobre todo las colecciones 1, 2, 6 y 3).
+5. **Escenas:** en Lanzarote no hay escena nueva: al tocar un emblema sale en grande con su movimiento, sin nombre ni línea.
+6. Las otras pantallas con insignias y emblemas (resumen del viaje, vitrina, pasaporte, página de destino) usan los mismos componentes, pero no las he capturado con Lanzarote.
+7. El radio y el motivo de cada sitio los puse yo por el tamaño del lugar: repásalos. No probado de extremo a extremo con una cuenta de administrador real ni en el flujo completo de Reorganizar en Lanzarote.
+
+**Lista de comprobación DE ESTA TANDA** (la misma, con casillas y la tabla gajo → sitio, arriba de `docs/dias/REPASO_LZ3.html`):
+
+
+**0 · Antes de empezar**
+
+- ✅ Hecho — Prompt guardado tal cual (llegó entero, acaba en «reinicia el api-server»); la LZ2b-1 y su cierre, subidos antes; Roma no cambia; Lanzarote sigue oculto; Design: el Dashboard con Lanzarote elegido, sin las propuestas A, B y C Dos agentes. Muestra de 60 de Roma idéntica, pruebaJutrip y las pruebas de logros de Roma (pruebaLogros1 y 2, pruebaTanda10J, pruebaPantallas8b y 8c) en 0.  
+  *Dónde:* No es de móvil.
+
+**1 · Los datos**
+
+- ✅ Hecho — `data/logros/lanzarote.json` con la forma de roma.json: el sello (bronce 1, plata 3, oro 5, diamante 7), las 7 colecciones, los 11 emblemas, los textos con «Lanzarote» y sin patrimonios Sello «lanzarote» sobre los imprescindibles con los nombres del documento. Siete colecciones: imprescindibles (7 sitios), César Manrique (7), Tierra de fuego (7), La isla a tus pies (6), Playas y charcos (7), Pueblos con alma (5) y Entre viñas de ceniza (1: solo La Geria; las bodegas no son sitios del catálogo, así que esa colección se completa con una visita; si quieres 3 gajos, hay que dar de alta El Grifo, Stratvs y Bodega La Geria como sitios). Los sitios repetidos entre colecciones son intencionados (una foto, varios gajos). 11 emblemas con nombre y línea tal cual: 9 de sitio (Timanfaya, Jameos, Cueva de los Verdes, Mirador del Río, Fundación Manrique, El Golfo, La Geria, La Graciosa, Papagayo) y 2 de momento (Madrugador y Atardecer atlántico). Cada sitio lleva radio y motivo que puse yo por tamaño del lugar: repásalos. Sin pionero. Los ids de Lanzarote que chocaban con los de Roma llevan prefijo: `lz_imprescindibles` y `lz_madrugador` (Roma no cambia).  
+  *Dónde:* Hoja de logros de Lanzarote (administrador).  *Captura:* `lz3_hoja_amedias_1.jpg`
+- ⚠️ A medias — Los sitios que no son parada (La Graciosa): cómo se gana su emblema La Graciosa no es una parada ni un sitio del catálogo: se añadió SOLO para los logros (`sitios_extra` en lanzarote.json: radio 2.500 m, coordenadas aproximadas (29,2316, −13,5036) «por comprobar»). El emblema «La octava isla» se gana con una FOTO hecha en la isla (sitio `la_graciosa`), como cualquier emblema de sitio (siempre foto). FALTA el camino de pantalla para elegir ese sitio al hacer la foto fuera de ruta: hoy solo se puede fotografiar una parada de la ruta. Lo mismo vale para el emblema de Papagayo si no es parada del viaje.  
+  *Dónde:* No es de móvil (pendiente de decidir).
+- ✅ Hecho — `DESTINOS_CON_LOGROS` con Lanzarote, solo para el administrador mientras esté oculto Antes Lanzarote no salía en `/api/destinos-curados` ni para el administrador (exige `data/logros/lanzarote.json`); ahora sale solo con administrador. Para quien no es administrador, el pasaporte y los logros de viajero quitan Lanzarote, así que Roma queda idéntica (sin «España» ni «Lanzarote»); el guardián de /api sigue dando 404; el pase no ofrece Lanzarote mientras esté oculto. Con administrador, sus logros de viajero y su pasaporte incluyen Lanzarote (p. ej. «Ciudades con sello» puede salir antes). No probado de extremo a extremo con una cuenta de administrador real.  
+  *Dónde:* Con tu cuenta de administrador y sin sesión.
+
+**2 · Los dibujos**
+
+- ✅ Hecho — El sello de Lanzarote como Design, con sus 5 estados (gris, bronce, plata, oro, diamante) Volcán de Design y «LANZAROTE» (icono `volcan` en `SelloLogro.tsx`).  
+  *Dónde:* Hoja de logros (arriba) o `?dibujos=1` (solo desarrollo).  *Captura:* `lz3_sello_grados_1.jpg`
+- ✅ Hecho — Las 7 colecciones con la pieza `Insignia Lanza Pro` (col1 a col7): cada gajo es un sitio (ganado en color, el que falta en gris, completa toda en color); brillo y movimiento como las insignias de Roma; pieza para cualquier destino Pieza GENÉRICA `InsigniaGajos.tsx` (imagen, centro, n gajos y ángulo; con `animada`, barrido de luz y halo que respira); para meter la Roma pintada basta una entrada nueva en `gajosColecciones.ts`. Las imágenes de Design pasadas a webp (~15 KB cada una). La tabla gajo → sitio, abajo en este REPASO (lo más dudoso son los gajos de las colecciones 1, 2, 6 y 3, asignados por afinidad; la 3 son siete gajos de lava casi iguales, por orden). La colección 7 tiene 3 gajos en la imagen y 1 sitio: los 3 gajos se encienden juntos.  
+  *Dónde:* Hoja de logros › colecciones.  *Captura:* `lz3_colecciones_0_3_completa_1.jpg`
+- ✅ Hecho — Los 11 emblemas del Dashboard, cada uno con su movimiento (ganado, sin ganar con «?» y en pequeño) Timanfaya se traza, Jameos un cangrejo, la Cueva luces, el Mirador una ventana con un barco, la Fundación burbujas de lava, El Golfo la laguna verde, La Geria el viento, La Graciosa puntos, Papagayo calas, más Madrugador y Atardecer atlántico.  
+  *Dónde:* Hoja de logros › secretos.  *Captura:* `lz3_emblemas_ganados_sin_ganar_1.jpg`
+
+**3 · Cómo se ganan**
+
+- ⚠️ A medias — El mismo camino que en Roma (emblema y gajo al estar en el sitio, vuelo al botón, hoja, vitrina, pasaporte, Mis viajes, resumen del viaje) La lógica es la de Roma con datos de Lanzarote (un destino con clave `momentos` dice qué momentos hay; Roma no la tiene y sigue su regla). Las otras pantallas con Insignia y Emblema (resumen del viaje, página de destino, colección por dentro, vitrina, pasaporte) usan los mismos componentes con el mismo despacho, pero NO las he capturado ni probado con Lanzarote (solo la hoja de logros y `?dibujos=1`). Roma tiene escenas propias al ganar emblemas (Coliseo, Madrugador y Nocturno…); en Lanzarote no hay escena nueva: al tocar un emblema sale el emblema en grande con su movimiento, sin nombre ni línea (se podrían pasar si lo quieres).  
+  *Dónde:* Hoja de logros de Lanzarote; ganar un sitio en el viaje.
+- ⚠️ A medias — Madrugador con la misma regla de hora que Roma Antes de las 08:00 (ajustes.json), hora de Canarias, y necesita foto. DIFERENCIA que debes decidir: en Lanzarote vale en CUALQUIER sitio (el documento dice «cualquier sitio, temprano»), mientras que en Roma solo vale en los imprescindibles. ¿Lo dejo así o lo limito también a los imprescindibles? Como no hay Nocturno en Lanzarote, «De sol a sol» y «Búho» nunca se ganan allí; «Alondra» sí (cuenta Madrugador).  
+  *Dónde:* Hacer una foto antes de las 8:00 en un sitio de Lanzarote.
+- ✅ Hecho — Atardecer atlántico (en lugar de Nocturno): costa oeste, desde 1 h antes de la puesta de sol hasta 15 min después, hora de Canarias Foto en El Golfo, Los Hervideros, Salinas de Janubio, Montaña Bermeja, Caleta de Famara o Playa Blanca/Faro de Pechiguera; usa `sunset.js` (punto fijo 29,0 / −13,6) en la fecha de la foto; comprobado en marzo y en verano; probado con simulación, no en el móvil.  
+  *Dónde:* Foto en la costa oeste al atardecer.
+
+**3b · El botón «Reorganizar» (toda la app)**
+
+- ✅ Hecho — «Ahora no» ya NO esconde el botón redondo: se queda hasta que el viajero reorganice o el día deje de necesitarlo Antes «Ahora no» (o ✕) vaciaba la lista de días y escondía el botón; ahora solo cierra la alerta y el botón se queda hasta reorganizar o hasta que el día deje de necesitarlo (si se quita la parada que lo hizo salir se recalcula y, si ya no cambiaría nada, se va). Código común a todos los destinos (no mira el destino). Verificado en Roma (`pruebaTanda10S7_R`, 37); en Lanzarote lo comparte el almacén pero no hice el flujo completo con pase. Reglas al día.  
+  *Dónde:* DÍAS con pase: poner una parada que lo haga salir y tocar «Ahora no».
+
+**4 · La prueba**
+
+- ✅ Hecho — Muestra de 60 de Roma idéntica; pruebaJutrip y las pruebas de logros de Roma en 0; pruebaTandaLZ3; capturas Ver el informe. Las capturas de la hoja usan un viaje de pruebas de fondo (el de Roma con el destino puesto a «Lanzarote»); el contenido de la hoja es el estado real calculado por el servidor para Lanzarote.  
+  *Dónde:* No es de móvil.

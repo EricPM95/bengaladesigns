@@ -9,6 +9,7 @@ import type { CSSProperties, ReactNode } from 'react'
 import { IC } from './iconos'
 import './dibujos.css'
 import './Emblema.css'
+import { EmblemaLanzaDibujo, esEmblemaDeLanzarote } from './EmblemaLanza'
 
 const HEX = 'polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)'
 const OCT = 'polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)'
@@ -48,7 +49,13 @@ function fechaDeLaMoneda(fecha?: string | null): string {
   return `${d.getDate()} de ${MESES_LARGOS[d.getMonth()]}|de ${d.getFullYear()}`
 }
 
-export function EmblemaDibujo({ id, animado = false, silueta = false, tam = 120, fecha = null }: { id: string; animado?: boolean; silueta?: boolean; tam?: number; fecha?: string | null }) {
+/** Los emblemas de Lanzarote (ids «lz_…») llevan su propio dibujo; los demás, los de Roma. */
+export function EmblemaDibujo(p: { id: string; animado?: boolean; silueta?: boolean; tam?: number; fecha?: string | null }) {
+  if (esEmblemaDeLanzarote(p.id)) return <EmblemaLanzaDibujo id={p.id} animado={p.animado} silueta={p.silueta} tam={p.tam} />
+  return <EmblemaRomaDibujo {...p} />
+}
+
+function EmblemaRomaDibujo({ id, animado = false, silueta = false, tam = 120, fecha = null }: { id: string; animado?: boolean; silueta?: boolean; tam?: number; fecha?: string | null }) {
   const c = EMB[id]
   const u = useId().replace(/:/g, '')
   if (!c) return <span style={{ display: 'inline-block', width: tam, height: tam }} />

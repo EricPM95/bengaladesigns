@@ -5,6 +5,7 @@ import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { abrirMapaEnOtraPestana, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { ICONOS } from '../../../lib/iconos'
 import { Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
+import { ORDEN_EMBLEMAS_LANZAROTE, idDeDibujoLanzarote } from '../dibujos/emblemasLanzarote'
 import { pedirEstado, type ColeccionDeEstado, type EstadoLogros } from './api'
 import { COLOR_DE_GRADO } from './BotonFlotanteLogros'
 import { bannerAntes, bannerDespues, etiquetaDeFase, faseDelViaje, lineaDeGrado, marcaDeColeccion, notaDeSecretos, TEXTO_AL_COMPLETAR, textoDelSiguiente, tituloDeSecretos, type FaseDelViaje } from './hoja/textosHoja'
@@ -281,10 +282,13 @@ function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: Est
   const titulo = tituloDeSecretos(fase, estado.ciudad, total, lista.length)
   const nota = notaDeSecretos(fase, total, lista.length)
   // Los encontrados van en su sitio de siempre; el resto de los huecos solo llevan un «?» (nunca se dice cuál es cuál).
-  const huecos = Math.max(total, ID_EMBLEMAS.length)
-  const posicion = (id: string) => ID_EMBLEMAS.indexOf(id)
+  // (LZ3) Lanzarote tiene sus 11 emblemas, en su orden y con su dibujo (ids «lz_…»; sin escena propia: al tocarlos sale el emblema en grande con su movimiento).
+  const lanza = estado.destino === 'lanzarote'
+  const ORDEN = lanza ? ORDEN_EMBLEMAS_LANZAROTE : ID_EMBLEMAS
+  const huecos = lanza ? ORDEN.length : Math.max(total, ID_EMBLEMAS.length)
+  const posicion = (id: string) => ORDEN.indexOf(id)
   const porSitio = new Map<number, (typeof lista)[number]>()
-  let extra = ID_EMBLEMAS.length
+  let extra = ORDEN.length
   for (const e of lista) porSitio.set(posicion(e.id) >= 0 ? posicion(e.id) : extra++, e)
   if (!(total > 0) && lista.length === 0) return null
   return (
@@ -296,12 +300,16 @@ function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: Est
           const h = FORMA_HUECO[k] ?? FORMA_HUECO[2]!
           return (
             <span key={k} style={{ width: 96, height: 96, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {e ? (
+              {e && lanza ? (
+                <button type="button" aria-label={`Volver a ver ${e.nombre}`} onClick={() => verEscena(idDeDibujoLanzarote(e.id))} style={{ width: 96, height: 96, border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Emblema id={idDeDibujoLanzarote(e.id)} tam={84} animado={false} />
+                </button>
+              ) : e ? (
                 <button type="button" aria-label={`Volver a ver ${e.nombre}`} onClick={() => verEscena(e.id)} style={{ width: 96, height: 96, border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Emblema id={e.id} tam={84} animado={false} fecha={e.en ? e.en.slice(0, 10) : null} />
                 </button>
               ) : (
-                <span aria-hidden style={{ width: h[0], height: h[1], borderRadius: h[2], transform: h[3], background: 'rgba(255,253,248,.06)', border: '1.5px dashed rgba(243,213,154,.38)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span aria-hidden data-hueco-emblema="1" style={{ width: h[0], height: h[1], borderRadius: h[2], transform: h[3], background: 'rgba(255,253,248,.06)', border: '1.5px dashed rgba(243,213,154,.38)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <span style={{ transform: h[3] === 'none' ? 'none' : 'rotate(-45deg)', font: "400 30px/1 'Instrument Serif',serif", color: 'rgba(243,213,154,.6)' }}>?</span>
                 </span>
               )}

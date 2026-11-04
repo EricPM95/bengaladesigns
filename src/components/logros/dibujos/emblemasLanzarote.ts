@@ -1,0 +1,3 @@
+/** Los 11 emblemas de Lanzarote en su orden (ids de `data/logros/lanzarote.json › emblemas`) y el id con que se dibujan (`EmblemaLanza.tsx`): el del momento de la mañana lleva prefijo porque Roma tiene el suyo. */
+export const ORDEN_EMBLEMAS_LANZAROTE = ['timanfaya', 'jameos', 'cueva_de_los_verdes', 'mirador_del_rio', 'fundacion_manrique', 'el_golfo', 'la_geria', 'la_graciosa', 'papagayo', 'lz_madrugador', 'atardecer_atlantico']
+export const idDeDibujoLanzarote = (id: string): string => (id === 'madrugador' ? 'lz_madrugador' : id) // (el id del emblema en los datos de Lanzarote ya es lz_madrugador; se acepta también el viejo)

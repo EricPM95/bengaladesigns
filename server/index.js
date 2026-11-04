@@ -4703,7 +4703,9 @@ if (logrosActivos() && salesAdmin) {
   const datosLogros = cargarDatosLogros()
   const catalogosLogros = Object.fromEntries(Object.keys(datosLogros.destinos).map((clave) => [clave, cargarCatalogoLogros(clave)]))
   const repoLogros = repoSupabase(salesAdmin, { destinosConPionero: Object.values(datosLogros.destinos).filter((d) => d.pionero?.activo).map((d) => d.clave) })
-  const servicioLogros = crearServicioLogros({ repo: repoLogros, datos: datosLogros, catalogos: catalogosLogros, cobro: cobroListo() })
+  // (LZ3) Lanzarote lleva logros pero está oculto: su pasaporte y sus logros de viajero solo los ve el administrador (mismo permiso que /api/destinos-curados).
+  const esAdminDeCuenta = async (uid) => esAdminLogros((await salesAdmin.auth.admin.getUserById(uid))?.data?.user)
+  const servicioLogros = crearServicioLogros({ repo: repoLogros, datos: datosLogros, catalogos: catalogosLogros, cobro: cobroListo(), ocultos: DESTINOS_OCULTOS, esAdminDeCuenta })
   registrarRutasLogros(app, { admin: salesAdmin, repo: repoLogros, servicio: servicioLogros })
   // (Tanda 10P) Antes de leer la campanita se mira el sorteo y las invitaciones de esa cuenta: el aviso dorado («¡Ya estás en el sorteo de 2027!») sale el día que se entra, aunque no se abra el Perfil.
   servicioAvisos?.alListar((uid) => servicioLogros.sorteoDeCuenta(uid))
@@ -4713,7 +4715,7 @@ if (logrosActivos() && salesAdmin) {
 // y la app sabe que no hay hoja de compra (/api/pase/config dice cobro: false). El pase lo crea SOLO el servidor, cuando el servicio de pago confirma el cobro.
 if (cobroListo() && salesAdmin) {
   const preciosPase = JSON.parse(readFileSync(join(__dirname, '../data/pase/precios.json'), 'utf8'))
-  const destinosConPase = Object.values(cargarDatosLogros().destinos).map((d) => d.destino)
+  const destinosConPase = Object.values(cargarDatosLogros().destinos).filter((d) => !DESTINOS_OCULTOS.has(d.clave)).map((d) => d.destino)
   const pasarela = modoDePago() === 'mentira' ? pasarelaDeMentira({ origen: process.env.APP_URL ?? 'http://localhost:5173' }) : pasarelaStripe({ clave: process.env.STRIPE_SECRET_KEY, secretoAviso: process.env.STRIPE_WEBHOOK_SECRET })
   registrarRutasPagos(app, { admin: salesAdmin, servicio: crearServicioPagos({ admin: salesAdmin, precios: preciosPase, destinos: destinosConPase, pasarela }) })
 } else {

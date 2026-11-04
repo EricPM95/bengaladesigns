@@ -21,7 +21,7 @@ import { AvisoNoCabe } from './AvisoNoCabe'
  *  - VIGILA los cambios de la ruta (añadir o pasar una parada, la hora de una entrada o del Free Tour, los vuelos, la zona del alojamiento: `diasPuestosEnDuda`) y, con pase, CALCULA si reorganizar
  *    cambiaría algo en esos días. Solo si cambia, sale el botón flotante redondo, encima del de los logros (R1). Nada se reorganiza solo.
  *  - Al tocarlo, la alerta «¿Reorganizamos tu día?» (R2): [Reorganizar] hace el cambio en los días afectados (una franja «Hemos reorganizado tu día» con [Deshacer], R3, y lo movido se ilumina);
- *    [Ahora no] (o la ✕) esconde el botón hasta el próximo cambio.
+ *    [Ahora no] (o la ✕) cierra la alerta y el botón SE QUEDA (LZ3, Eric 4-nov) hasta que reorganices o el día deje de necesitarlo (p. ej. si quitas la parada que lo hizo salir).
  *  - Solo con pase y solo para quien puede editar la ruta. Si hay dos montados (DÍAS y HOY) solo trabaja el primero.
  */
 const montados: string[] = []
@@ -83,6 +83,17 @@ export function ReorganizarHost(): ReactNode {
       if (estado.route === previo.route && estado.reservations === previo.reservations) return
       if (!pagoActivo()) return
       const dudosos = diasPuestosEnDuda({ route: previo.route, reservations: previo.reservations }, { route: estado.route, reservations: estado.reservations })
+      // (LZ3) Un día que ya tiene el botón y al que se le QUITA una parada se vuelve a calcular: si ya no cambiaría nada, el botón se va.
+      if (estado.route && previo.route) {
+        const conBoton = useReorganizarStore.getState().dias
+        for (const dayId of conBoton) {
+          const antes = previo.route.days.find((day) => day.id === dayId)
+          const ahora = estado.route.days.find((day) => day.id === dayId)
+          if (!antes || !ahora) continue
+          const siguen = new Set(ahora.stops.map((stop) => stop.id))
+          if (antes.stops.some((stop) => !siguen.has(stop.id))) dudosos.push(dayId)
+        }
+      }
       if (dudosos.length === 0) return
       for (const id of dudosos) pendientes.add(id)
       window.clearTimeout(reloj)

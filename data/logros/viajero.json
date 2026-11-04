@@ -4,6 +4,7 @@
 
   "paises": {
     "Italia": { "continente": "Europa", "microestado": false },
+    "España": { "continente": "Europa", "microestado": false },
     "Ciudad del Vaticano": { "continente": "Europa", "microestado": true },
     "San Marino": { "continente": "Europa", "microestado": true },
     "Mónaco": { "continente": "Europa", "microestado": true },
