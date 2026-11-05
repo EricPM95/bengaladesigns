@@ -33,9 +33,10 @@ export const NOMBRE_DE_AVISO = {
 }
 
 const MASCULINO = new Set(['coliseo', 'foro', 'panteon', 'castillo', 'altar', 'arco', 'puente', 'palazzo', 'teatro', 'mercado', 'templo', 'jardin', 'cementerio', 'bioparque', 'parque', 'mirador', 'museo', 'ara', 'barrio', 'circo'])
-const FEMENINO = new Set(['basilica', 'iglesia', 'galeria', 'cupula', 'domus', 'cripta', 'villa', 'catedral', 'terraza', 'fontana', 'plaza', 'trinita', 'capilla', 'isla', 'piramide'])
-const MASCULINO_PLURAL = new Set(['museos', 'mercados', 'jardines', 'foros'])
-const FEMENINO_PLURAL = new Set(['termas', 'catacumbas', 'ruinas'])
+const FEMENINO = new Set(['fundacion', 'casa', 'cueva', 'basilica', 'iglesia', 'galeria', 'cupula', 'domus', 'cripta', 'villa', 'catedral', 'terraza', 'fontana', 'plaza', 'trinita', 'capilla', 'isla', 'piramide'])
+// (HOY2b 8b: 'jameos' y 'montañas' —Lanzarote— para que las frases de HOY digan «los Jameos del Agua» y «las Montañas del Fuego».)
+const MASCULINO_PLURAL = new Set(['museos', 'mercados', 'jardines', 'foros', 'jameos'])
+const FEMENINO_PLURAL = new Set(['termas', 'catacumbas', 'ruinas', 'montanas'])
 
 const sinTildes = (texto) => String(texto ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 
@@ -49,7 +50,13 @@ export function nombreParaAviso(nombre, id) {
   const clave = id && NOMBRE_DE_AVISO[id] ? NOMBRE_DE_AVISO[id] : null
   const texto = clave ?? String(nombre ?? '').trim()
   const base = sinTildes(texto)
-  const primera = base.split(/\s+/)[0]
+  const primera = base.split(/\s+/)[0].split('-')[0]
+  // Si el nombre ya trae su artículo («La Geria»), se queda con él, en minúscula dentro de la frase.
+  if (/^(el|la|los|las)$/.test(primera) && base.split(/\s+/).length > 1) {
+    const [art, ...resto] = texto.split(/\s+/)
+    const a = art.toLowerCase()
+    return { frase: `${a} ${resto.join(' ')}`, genero: a === 'la' || a === 'las' ? 'f' : 'm', plural: a === 'los' || a === 'las' }
+  }
   let genero = 'm'
   let plural = false
   let articulo = null

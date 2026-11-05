@@ -215,6 +215,7 @@ const PREPARAR = (hoy, extra = '') => `(async () => {
 const textoDe = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(sel)})?.innerText.replace(/\\s+/g, ' ').trim() ?? null`)
 {
   const a = await conViaje(null, VOZ + RELOJ_FALSO + 'window.__horaFalsa = 15 * 60 + 30;')
+  // HOY2b 6 (agente D; antes → ahora → decisión de Eric, 5-nov): ANTES «Hoy el sol se pone a las 17:02. Si te apetece verlo, estos sitios están cerca:»; AHORA «Hoy el sol se pone a las 17:02» y, debajo, «Si te apetece verlo, te recomendamos estos sitios:» con cada sitio con su foto (las expresiones de abajo ya lo admiten).
   // LG1 (Eric, 4-nov). Antes: la tarjeta del atardecer salía a cualquier hora y decía «El Janículo, tu siguiente parada, es para verlo»; la sin mirador, «Desde el Janículo, a N minutos, se ve precioso»; sin mirador cerca no decía nada; sin la hora del sol no inventaba ninguna. Ahora (H13 del prompt de la LG1): sale desde 2 h antes de la puesta de sol (aquí 17:02, con el reloj a las 15:30) y dice «Hoy ves el atardecer en {sitio}: el sol se pone a las 17:02. Llega un cuarto de hora antes…» con [Cómo llegar]; sin parada de atardecer, «Hoy el sol se pone a las 17:02. Si te apetece verlo, estos sitios están cerca:» (o solo la hora si no hay sitios cerca); y si el día no trae la hora del sol, se calcula con la fecha. Decisión de Eric (4-nov).
   await a.evaluar('window.__horaFalsa = 15 * 60 + 30; true')
   // (a) la siguiente parada es un mirador del atardecer
@@ -235,11 +236,11 @@ const textoDe = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(s
   await a.evaluar(PREPARAR('2026-10-17', "const sig = numberedStopsOf(r.days[0])[0]; sig.isSunset = false; sig.name = 'Plaza de San Pedro'; sig.time = '15:00'; const m = numberedStopsOf(r.days[1])[0]; m.isSunset = true; m.name = 'El Janículo'; m.coordinates = { lat: sig.coordinates.lat + 0.004, lng: sig.coordinates.lng }"))
   await a.esp(3000)
   t = await textoDe(a, '[data-hoy-atardecer]')
-  debe(Boolean(t) && /^Hoy (?:ves el atardecer en .*: el sol se pone a las 17:02. Llega un cuarto de hora antes.*|el sol se pone a las 17:02.( Si te apetece verlo, estos sitios están cerca:.*)?)$/.test(t), 'atardecer', `sin parada de atardecer: la hora y, si hay sitios cerca, cuáles: «${t}»`)
+  debe(Boolean(t) && /^Hoy (?:ves el atardecer en .*: el sol se pone a las 17:02. Llega un cuarto de hora antes.*|el sol se pone a las 17:02[.]?( .*)?)$/.test(t), 'atardecer', `sin parada de atardecer: la hora y, si hay sitios cerca, cuáles: «${t}»`)
   // (c) sin mirador cerca: nada
   await a.evaluar(PREPARAR('2026-10-17', "const sig = numberedStopsOf(r.days[0])[0]; sig.isSunset = false; sig.name = 'Plaza de San Pedro'; sig.time = '15:00'"))
   await a.esp(3000)
-  { const x = await textoDe(a, '[data-hoy-atardecer]'); debe(x === null || /^Hoy (?:ves el atardecer en .*: el sol se pone a las 17:02. Llega un cuarto de hora antes.*|el sol se pone a las 17:02.( Si te apetece verlo, estos sitios están cerca:.*)?)$/.test(x), 'atardecer', `sin parada marcada: la hora, los sitios cerca o, si el día pasa por un sitio de atardecer de nuestros datos (Castillo de Sant’Angelo), ese: «${x}»`) }
+  { const x = await textoDe(a, '[data-hoy-atardecer]'); debe(x === null || /^Hoy (?:ves el atardecer en .*: el sol se pone a las 17:02. Llega un cuarto de hora antes.*|el sol se pone a las 17:02[.]?( .*)?)$/.test(x), 'atardecer', `sin parada marcada: la hora, los sitios cerca o, si el día pasa por un sitio de atardecer de nuestros datos (Castillo de Sant’Angelo), ese: «${x}»`) }
   await a.evaluar('window.__horaFalsa = null; true')
   // (d) sin la hora del sol, no inventa
   await a.evaluar(PREPARAR('2026-10-17', "r.days.forEach((d) => { delete d.sunsetText }); const sig = numberedStopsOf(r.days[0])[0]; sig.isSunset = true"))
@@ -250,7 +251,8 @@ const textoDe = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(s
   await a.esp(3500)
   t = await textoDe(a, '[data-hoy-manana]')
   debe(Boolean(t) && /^MAÑANA .+ (empiezas|sales) a las \d{1,2}:\d{2}/i.test(t), 'manana', `al acabar el día: «${t}»`)
-  debe(Boolean(t) && /turno en Museos Vaticanos a las 10:00/.test(t), 'manana', 'con la reserva con hora del día siguiente')
+  // HOY2 (5-nov; antes → ahora → decisión de Eric): lo de mañana es la tarjeta oscura «Mañana, jueves 22 · …» con cada línea empezando por mayúscula («Sales a las 8:40», «Turno en Museos Vaticanos a las 10:00»), y solo sale cuando no queda ninguna parada hoy (antes también a la hora de la cena).
+  debe(Boolean(t) && /turno en Museos Vaticanos a las 10:00/i.test(t), 'manana', 'con la reserva con hora del día siguiente')
   const tarjeta = t
   await modo(a, 'days', 0)
   const primeraDeManana = await a.evaluar(`${store}.then(async (s) => { const { numberedStopsOf } = await import('/src/lib/stopKind.ts'); const { displayStopName } = await import('/src/lib/format.ts'); return displayStopName(numberedStopsOf(s.route.days[1])[0].name) })`)

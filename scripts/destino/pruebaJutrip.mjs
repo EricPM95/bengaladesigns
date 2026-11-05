@@ -415,6 +415,8 @@ const medir = (nombre, a, b, minimo, regla = 'contraste') => {
     'src/components/route/hoy/piezas.tsx': 'Falta (la franja de la entrada sin reservar)',
     'src/components/layout/Header.tsx': 'el punto de los avisos (en la campana de arriba)',
     'src/components/route/reservas/CocheDeViaje.tsx': 'Falta (la píldora del coche, tal cual Design Coche Lanza 06a; LZ2b1, Eric 4-nov)',
+    // Antes → ahora → decisión de Eric (5-nov, HOY2b): antes el reto del día no llevaba álbum; ahora el cromo «No está en tu ruta» (lo que falta) sale en frambuesa.
+    'src/components/route/hoy/v2/RetoDelDia.tsx': 'Falta (el cromo «No está en tu ruta» del álbum del reto)',
     'src/components/ui/MeGusta.tsx': 'el corazón de «lo recomiendan»',
     'src/lib/iconos.ts': 'COLOR_ICONO.falta',
     'src/lib/exploreStyle.ts': 'el color propio de la tarjeta «Entradas» de EXPLORAR (cada tarjeta tiene el suyo)',

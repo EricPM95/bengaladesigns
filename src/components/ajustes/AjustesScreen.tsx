@@ -7,6 +7,8 @@ import { compartirEnlace } from '../../lib/compartirEnlace'
 import { enlaceDeAmigo, miCodigoDeAmigo } from '../../lib/invitaciones'
 import { marca } from '../../lib/marca'
 import { apagarAvisosDelMovil, avisosDelMovilEncendidos, encenderAvisosDelMovil } from '../../lib/permisoAvisos'
+import { enviarAvisoDePrueba } from '../../lib/avisosViaje'
+import { puedeEmpezarDeCero } from '../../lib/empezarDeCero'
 import { misPases, type PaseMio } from '../../lib/pagoPase'
 import { ponerSonido, sonidoActivado } from '../../lib/sonidos'
 import { ponerSugerenciasDelCompanero, sugerenciasDelCompanero } from '../../lib/sugerenciasCompanero'
@@ -82,6 +84,8 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
   const [pases, setPases] = useState<PaseMio[]>(pasesIniciales ?? [])
   const [sonido, setSonido] = useState(() => sonidoActivado())
   const [avisosMovil, setAvisosMovil] = useState(avisosInicial)
+  // (HOY3) Solo el administrador (lo decide el servidor) ve [Enviarme un aviso de prueba].
+  const [esAdmin, setEsAdmin] = useState(false)
   // (HOY1, apartado 10, C27) «Sugerencias del compañero»: apaga el juego de los emblemas ocultos, el reto del día y «Estás en… / Estás junto a…» en HOY.
   const [sugerencias, setSugerencias] = useState(() => sugerenciasDelCompanero())
   const [privacidad, setPrivacidad] = useState(false)
@@ -100,6 +104,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
     let vivo = true
     void misPases().then((p) => vivo && setPases(p))
     void avisosDelMovilEncendidos().then((v) => vivo && setAvisosMovil(v))
+    void puedeEmpezarDeCero().then((v) => vivo && setEsAdmin(v))
     return () => {
       vivo = false
     }
@@ -115,6 +120,10 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
     const ok = await encenderAvisosDelMovil()
     setAvisosMovil(ok)
     setMensaje(ok ? null : 'No se han podido encender los avisos en este móvil. En iPhone solo funcionan con la web añadida a la pantalla de inicio.')
+  }
+  const mandarPrueba = async () => {
+    setMensaje('Mandando el aviso de prueba…')
+    setMensaje(await enviarAvisoDePrueba())
   }
   const invitarAmigo = async () => {
     const c = await miCodigoDeAmigo()
@@ -164,7 +173,8 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
             }}
             datos="sonido"
           />
-          <Fila icono="avisos" titulo="Avisos en el móvil" sub="El resumen del viaje y «en 10 días empieza tu viaje»" interruptor={{ activo: avisosMovil, cambiar: () => void cambiarAvisos() }} datos="avisos-movil" />
+          <Fila icono="avisos" titulo="Avisos en el móvil" sub="Los avisos del viaje, también con el móvil bloqueado: la salida de cada mañana, tu turno, el tiempo y el atardecer. El resumen del viaje y «en 10 días empieza tu viaje»" interruptor={{ activo: avisosMovil, cambiar: () => void cambiarAvisos() }} datos="avisos-movil" />
+          {esAdmin && <Fila icono="avisos" titulo="Enviarme un aviso de prueba" sub="Te llega a este móvil en unos segundos: bloquéalo para comprobarlo" onClick={() => void mandarPrueba()} datos="aviso-de-prueba" />}
           <Fila
             icono="destello"
             titulo="Sugerencias del compañero"

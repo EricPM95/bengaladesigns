@@ -188,7 +188,8 @@ try {
   debe(s.sinFecha === null && s.otro === null, 'atardecerDelDestino da algo sin fecha o para otro destino')
   debe(s.parada?.tipo === 'parada' && s.parada.texto === 'Hoy ves el atardecer en El Golfo: el sol se pone a las 18:04. Llega un cuarto de hora antes, que es cuando más bonito está.', `parada de atardecer: «${s.parada?.texto}»`)
   debe(s.parada?.extra === 'Aquí el sol cae al mar.', 'Lanzarote: falta «Aquí el sol cae al mar.»')
-  debe(s.sin?.tipo === 'cerca' && s.sin.texto === 'Hoy el sol se pone a las 18:04. Si te apetece verlo, estos sitios están cerca:', `sin parada: «${s.sin?.texto}»`)
+  // HOY2b 6 (agente D; antes → ahora → decisión de Eric, 5-nov): ANTES el título decía «Hoy el sol se pone a las 18:04. Si te apetece verlo, estos sitios están cerca:» y «Aquí el sol cae al mar.» salía DESPUÉS de los dos puntos; AHORA el título es «Hoy el sol se pone a las 18:04» y debajo, de corrido, «Aquí el sol se esconde en el mar. Si te apetece verlo, te recomendamos estos sitios:» (la frase del mar, solo en Lanzarote).
+  debe(s.sin?.tipo === 'cerca' && s.sin.texto === 'Hoy el sol se pone a las 18:04' && s.sin.extra === 'Aquí el sol se esconde en el mar. Si te apetece verlo, te recomendamos estos sitios:', `sin parada: «${s.sin?.texto}» + «${s.sin?.extra}»`)
   debe(s.sin?.cerca.length >= 2 && s.sin.cerca.length <= 3, `en Lanzarote deberían salir 2 o 3 sitios cerca (${s.sin?.cerca.length})`)
   debe(s.sin?.cerca.every((c, i, l) => i === 0 || l[i - 1].minutos <= c.minutos), 'los sitios cerca no van del más cercano al más lejano')
   debe(s.sin?.cerca.every((c) => c.minutos > 0 && (c.modo === 'a_pie' || c.modo === 'coche')), 'los sitios cerca no llevan tiempo y modo')
@@ -196,7 +197,7 @@ try {
   debe(s.temprano === null, 'a las 15:00 (más de 2 h antes) ya sale la tarjeta')
   debe(s.limite !== null && s.pasado === null, 'la ventana de 2 horas: a 2 h justas tiene que salir y media hora después de la puesta, no')
   debe(s.motor?.tipo === 'parada' && /17:05/.test(s.motor.texto), `con el sol del motor y una parada isSunset: «${s.motor?.texto}»`)
-  debe(s.romaCerca?.tipo === 'cerca' && s.romaCerca.extra === null && s.romaCerca.cerca.length >= 2, `Roma sin parada de atardecer: debería enseñar 2 o 3 sitios y no «cae al mar» (${JSON.stringify(s.romaCerca)})`)
+  debe(s.romaCerca?.tipo === 'cerca' && s.romaCerca.extra === 'Si te apetece verlo, te recomendamos estos sitios:' && s.romaCerca.cerca.length >= 2, `Roma sin parada de atardecer (HOY2b: antes extra=null; ahora la frase de los sitios sin la del mar): debería enseñar 2 o 3 sitios y no «se esconde en el mar» (${JSON.stringify(s.romaCerca)})`)
   debe(s.famara === 'caleta_de_famara_y_playa_de_famara' && s.bosque == null && s.faro === 'playa_blanca_y_el_faro_de_pechiguera' && s.pincio === 'terraza_del_pincio', `qué paradas son de atardecer (Famara ${s.famara}, Bosquecillo ${s.bosque}, Faro ${s.faro}, Pincio ${s.pincio})`)
   const sit = json('src/data/sitiosDeAtardecer.json')
   debe(sit.roma.sitios.length >= 5 && sit.lanzarote.sitios.length >= 6 && sit.lanzarote.mar === true && sit.roma.mar === false, 'sitiosDeAtardecer.json no tiene los sitios de Roma y Lanzarote')

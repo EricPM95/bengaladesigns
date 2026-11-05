@@ -131,9 +131,14 @@ async function pasada(destino, sitio, imagen) {
       debe(t.nombre === c.nombre, `${destino}/${c.id}: nombre «${t.nombre}» ≠ «${c.nombre}»`)
       debe(t.cuenta === `${ganados} de ${c.sitios.length}`, `${destino}/${c.id}: «${t.cuenta}» ≠ «${ganados} de ${c.sitios.length}»`)
       debe(t.insignia, `${destino}/${c.id}: la tarjeta no lleva la insignia`)
-      const abierta = p.tarjetas[0].id === c.id
-      debe(t.abierta === abierta, `${destino}/${c.id}: la primera tarjeta sale abierta y las demás plegadas`)
-      if (t.abierta) {
+      // (LG1: la primera tarjeta salía abierta → HOY2b 8c: TODAS cerradas al abrir → decisión de Eric, 5-nov.) Se abre al tocarla y entonces se comprueba por dentro.
+      debe(t.abierta === false && t.sitios.length === 0, `${destino}/${c.id}: al abrir la pestaña TODAS las tarjetas salen cerradas (decisión de Eric, 5-nov)`)
+      await a.evaluar(`document.querySelector('[data-logros-coleccion="${c.id}"] > button')?.click(); true`)
+      await esp(500)
+      const pa = await leerPestana(a)
+      const ta = pa.tarjetas.find((x) => x.id === c.id)
+      if (ta?.abierta) {
+        const t = ta
         const faltan = c.sitios.length - ganados
         debe(t.faltan === (faltan === 1 ? 'Te falta 1 sitio' : `Te faltan ${faltan} sitios`), `${destino}/${c.id}: etiqueta «${t.faltan}»`)
         debe(t.sitios.length === c.sitios.length, `${destino}/${c.id}: ${t.sitios.length} sitios en la lista, ${c.sitios.length} en los datos`)
@@ -141,7 +146,9 @@ async function pasada(destino, sitio, imagen) {
         const este = t.sitios.filter((s) => s.estado === 'este')
         debe(este.length === 1 && este[0].id === sitio.id && /Estás aquí · te falta este/.test(este[0].texto), `${destino}/${c.id}: tiene que haber un solo «Estás aquí · te falta este» y ser ${sitio.id}`)
         debe(t.sitios.filter((s) => s.estado === 'pendiente').every((s) => /Por ver/.test(s.texto)) && t.sitios.filter((s) => s.estado === 'pendiente').length === faltan - 1, `${destino}/${c.id}: los «Por ver» no cuadran`)
-      }
+        await a.evaluar(`document.querySelector('[data-logros-coleccion="${c.id}"] > button')?.click(); true`)
+        await esp(300)
+      } else debe(false, `${destino}/${c.id}: al tocar la tarjeta no se abre`)
     }
     // Las otras tarjetas se abren y se cierran.
     if (n > 1) {

@@ -2,6 +2,7 @@
   "_que_es": "Fotos propias del destino (PARA_CODE_FOTOS, 2026-10-01): van antes que las de Unsplash y Wikipedia. Los ficheros están en public/fotos/<destino>/: <archivo> (1600 px de ancho como máximo, para la ficha) y <archivo sin .jpg>_p.jpg (640 px, para la tarjeta). `lugares`: el nombre con el que la app pide la foto; las experiencias y paseos nocturnos lo piden con « (noche)» (INVARIANTES 411: una parada lleva siempre su foto de día, aunque caiga después del atardecer). `fechas`: solo entre esas fechas (MM-DD) y solo con fechas reales de viaje. `verificar: true`: no sale hasta confirmar que ese año hay lo que se ve en la foto (una foto también es una promesa). `fuente`, `autor` y `enlace`: el crédito; mientras estén vacíos, la foto va sin línea de crédito, nunca con un autor o una web inventados.",
   "carpeta": "/fotos/roma",
   "sin_foto": [
+    "El mirador de San Pietro in Montorio",
     "Pasear por San Giovanni",
     "Terraza del Altar de la Patria"
   ],

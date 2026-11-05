@@ -3,6 +3,10 @@
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTandaHOY1_A.mjs
 // Un solo Chrome, que se cierra al acabar. Salida: «N comprobaciones · M fallos». Capturas 390x844 en docs/dias/capturas_jutrip/hoy1_a_*.jpg.
 //
+// HOY2 (5-nov, agente A; antes → ahora → decisión de Eric, 5-nov): (1) «Por llegar» lleva la FOTO del lugar arriba, ya no el mapa pequeño (el mapa se quita: «Completa 2»); (2) «Tu día» va por franjas (Mañana · Tarde · Noche) y SIN horas: solo llevan hora los turnos y reservas («✓ 11:30») y el atardecer;
+// (3) lo saltado ya no se queda tachado en «Tu día»: pasa a «Si te sobra tiempo» (abajo del todo) con [Recuperar] y [Pasar a otro día].
+//
+// HOY2 (5-nov): H5 usa ahora [Cambiar plan] › «Saltarme esta parada» en lugar de [No me da tiempo] (antes → ahora → decisión de Eric, 5-nov: ver `saltarConCambiarPlan`).
 // Pruebas viejas de HOY que cambian con esta tanda (antes → ahora → decisión de Eric, 4-nov): ver la cabecera de cada una (pruebaTanda10P_hoy, pruebaTanda10N11/12 y las de «Parada con foto»).
 import fs from 'node:fs'
 import path from 'node:path'
@@ -78,6 +82,12 @@ const txt = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(sel)}
 const hay = (a, sel) => a.evaluar(`Boolean(document.querySelector(${JSON.stringify(sel)}))`)
 const cuantos = (a, sel) => a.evaluar(`document.querySelectorAll(${JSON.stringify(sel)}).length`)
 const clic = (a, sel) => a.evaluar(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return false; e.click(); return true })()`)
+// HOY2 (B, 5-nov): ANTES [No me da tiempo] (data-hoy-no-me-da-tiempo) → AHORA [Cambiar plan] › «Saltarme esta parada» (data-hoy-cambiar-plan + data-cambiar-opcion="saltar") → decisión de Eric (5-nov): [Cambiar plan] sustituye a [No me da tiempo]; saltar sigue igual (Parada saltada · Deshacer).
+const saltarConCambiarPlan = async (a) => {
+  await clic(a, '[data-hoy-cambiar-plan]')
+  await a.esp(500)
+  await clic(a, '[data-cambiar-opcion="saltar"]')
+}
 const clicTexto = (a, re) => a.evaluar(`(() => { const b = Array.from(document.querySelectorAll('button,a')).find((x) => ${re}.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()`)
 const atr = (a, sel, nombre) => a.evaluar(`document.querySelector(${JSON.stringify(sel)})?.getAttribute(${JSON.stringify(nombre)}) ?? null`)
 const paradasDe = (a, dia = 0) => a.evaluar(`(async () => { const { numberedStopsOf } = await import('/src/lib/stopKind.ts'); const r = ${R}.getState().route; return numberedStopsOf(r.days[${dia}]).map((s) => ({ id: s.id, name: s.name, time: s.time, saltada: Boolean(s.saltada), visto: Boolean(s.checkedInAt), opt: Boolean(s.optional) })) })()`)
@@ -164,7 +174,7 @@ await sec(async () => {
   const tr = await txt(a, '[data-hoy-trayecto]')
   debe(/Desde /.test(tr ?? ''), 'H1', `«Desde» la parada de antes (${tr})`)
   debe(/^A pie · \d+ min/.test(tr ?? ''), 'H1', `el trayecto a pie con sus minutos (${tr})`)
-  debe(Boolean(await hay(a, '[data-hoy-mapa-llegada]')), 'H1', 'el mapa pequeño de arriba')
+  debe(Boolean(await hay(a, '[data-hoy-siguiente] [data-hoy-foto-parada]')) && !(await hay(a, '[data-hoy-mapa-llegada]')), 'H1', 'la foto del lugar arriba (HOY2: ya no hay mapa)')
   debe(/Cómo llegar/.test((await txt(a, '[data-hoy-siguiente]')) ?? ''), 'H1', '[Cómo llegar]')
   const href = await a.evaluar("Array.from(document.querySelectorAll('[data-hoy-siguiente] a')).find((x) => /Cómo llegar/.test(x.textContent))?.href ?? null")
   debe(/travelmode=walking/.test(href ?? ''), 'H1', 'en Roma el camino es a pie')
@@ -177,7 +187,7 @@ await sec(async () => {
   debe((await txt(a, '[data-hoy-tu-dia-cuenta]')) === `1 de ${total}`, 'TuDia', 'el número de «Tu día» cuadra con «Parada X de Y»')
   debe((await atr(a, '[data-hoy-fila-estado="ahora"]', 'data-hoy-fila')) === 'parada', 'TuDia', 'la de ahora, marcada «Ahora»')
   debe(/Ahora/.test((await txt(a, '[data-hoy-fila-estado="ahora"]')) ?? ''), 'TuDia', 'con la etiqueta «Ahora»')
-  debe(/\d{1,2}:\d{2}/.test((await txt(a, '[data-hoy-fila-estado="viene"]')) ?? ''), 'TuDia', 'las que vienen, con su hora')
+  debe(!/\d{1,2}:\d{2}/.test((await txt(a, '[data-hoy-fila-estado="viene"]')) ?? ''), 'TuDia', 'las que vienen, SIN hora (HOY2: la ruta va por franjas)')
   await captura(a, 'H1_roma_a_pie')
   await captura(a, 'H1_roma_tu_dia', '[data-hoy-tu-dia]')
 })
@@ -229,20 +239,18 @@ await sec(async () => {
   debe(await hay(a, '[data-hoy-mas-tiempo]'), 'H3b', 'la hoja «Más tiempo aquí»')
   debe(/\+15 min/.test((await txt(a, '[data-hoy-mas-tiempo-opcion="15"]')) ?? '') && /\+30 min/.test((await txt(a, '[data-hoy-mas-tiempo-opcion="30"]')) ?? ''), 'H3b', '+15 y +30 min')
   await a.captura(png('H3b_mas_tiempo'))
+  // HOY2b (E, 5-nov; antes → ahora → decisión de Eric, 5-nov): ANTES, +30 «corría» el resto del día («Hemos corrido 30 min el resto de tu día») con [Deshacer] → AHORA +15 / +30 NO mueve la ruta: la app solo mira si con ese tiempo de más llegas a algo
+  // cerrado o tarde a una reserva (aviso sin botones, o «Con 30 min más no llegas a tu entrada…» + [Ver solución]); reorganizar de verdad es «Voy con retraso». (Las cuentas, en pruebaTandaHOY2b_E.)
   const antes = await horasDe(a)
   await clic(a, '[data-hoy-mas-tiempo-opcion="30"]')
   await a.esp(900)
   const despues = await horasDe(a)
   debe(!(await hay(a, '[data-hoy-mas-tiempo]')), 'H3b', 'la hoja se cierra al elegir')
-  debe(despues[0] === antes[0] && despues[1] !== antes[1], 'H3b', `+30: la de ahora se queda y el resto se corre (${antes[1]} → ${despues[1]})`)
-  const min = (h) => Number(h.split(':')[0]) * 60 + Number(h.split(':')[1])
-  debe(min(despues[1]) - min(antes[1]) === 30, 'H3b', 'justo 30 minutos')
-  debe(await hay(a, '[data-hoy-aviso-tiempo]'), 'H3b', 'el aviso con lo que ha pasado')
-  debe(await hay(a, '[data-hoy-deshacer-tiempo]'), 'H3b', 'con [Deshacer]')
+  debe(JSON.stringify(despues) === JSON.stringify(antes), 'H3b', '+30 NO mueve la ruta: todas las horas siguen igual (HOY2b)')
+  debe(await hay(a, '[data-hoy-aviso-tiempo]'), 'H3b', 'sale un aviso con lo que pasa («Tómate 30 min más sin prisa…»)')
+  debe(/30 min más/.test((await txt(a, '[data-hoy-aviso-tiempo]')) ?? ''), 'H3b', 'el aviso nombra los 30 min')
+  debe(!(await hay(a, '[data-hoy-deshacer-tiempo]')), 'H3b', 'sin [Deshacer]: no hay nada que deshacer')
   await captura(a, 'H3b_corrido')
-  await clic(a, '[data-hoy-deshacer-tiempo]')
-  await a.esp(700)
-  debe(JSON.stringify(await horasDe(a)) === JSON.stringify(antes), 'H3b', '[Deshacer] devuelve el día como estaba, todas las horas')
   // ya estás aquí POR LA UBICACIÓN, dentro del radio del sitio
   const coord = await a.evaluar(`(async () => { const { numberedStopsOf } = await import('/src/lib/stopKind.ts'); const s = numberedStopsOf(${R}.getState().route.days[0])[0]; return s.coordinates })()`)
   await ir(a, { dia: 0, min: 8 * 60 + 30, pos: { lat: coord.lat + 0.0005, lng: coord.lng }, perm: 'granted' })
@@ -283,23 +291,25 @@ await sec(async () => {
   debe((await atr(a, '[data-hoy-tu-dia]', 'data-hoy-tu-dia')) === 'abierta' && (await hay(a, '[data-hoy-lista]')), 'H4b', 'y se abre otra vez')
   // H5: saltar la siguiente
   const nombreSig = (await paradasDe(a))[1].name
-  await clic(a, '[data-hoy-no-me-da-tiempo]')
+  await saltarConCambiarPlan(a)
   await a.esp(900)
   const p = await paradasDe(a)
   debe(p[1].saltada, 'H5', 'la parada queda saltada')
   debe((await txt(a, '[data-hoy-parada-n]')) === `Parada 2 de ${total - 1}`, 'H5', `la cuenta no cuenta la saltada (Parada 2 de ${total - 1}: ${await txt(a, '[data-hoy-parada-n]')})`)
   debe(!new RegExp(nombreSig.slice(0, 12)).test((await txt(a, '[data-hoy-siguiente]')) ?? ''), 'H5', 'la tarjeta pasa a la siguiente')
-  debe((await atr(a, '[data-saltada="true"]', 'data-hoy-fila-estado')) === 'saltada', 'H5', 'en la lista, tachada')
-  debe(/Recuperar/.test((await txt(a, '[data-saltada="true"]')) ?? ''), 'H5', 'con [Recuperar]')
+  debe(!(await hay(a, '[data-saltada="true"]')) && (await cuantos(a, '[data-hoy-sobra-item="saltada"]')) === 0, 'H5', 'en «Tu día» ya no sale tachada (HOY2: pasa a «Si te sobra tiempo», plegada)')
+  await clic(a, '[data-hoy-sobra-tiempo-cabecera]')
+  await a.esp(400)
+  debe(/Recuperar/.test((await txt(a, '[data-hoy-sobra-item="saltada"]')) ?? ''), 'H5', 'en «Si te sobra tiempo», con [Recuperar]')
   debe(/Parada saltada/.test((await txt(a, '[data-hoy-aviso-saltada]')) ?? '') && (await hay(a, '[data-hoy-deshacer-saltada]')), 'H5', 'el aviso de abajo «Parada saltada» con [Deshacer]')
-  const lineaT = (await a.evaluar("(() => { const e = document.querySelector('[data-saltada=\"true\"] .line-through'); return e ? getComputedStyle(e).textDecorationLine : '' })()")) ?? ''
-  debe(/line-through/.test(lineaT), 'H5', 'el nombre está tachado')
   await captura(a, 'H5_saltada', '[data-hoy-aviso-saltada]')
   await clic(a, '[data-hoy-deshacer-saltada]')
   await a.esp(700)
   debe(!(await paradasDe(a))[1].saltada && !(await hay(a, '[data-hoy-aviso-saltada]')), 'H5', '[Deshacer] la recupera y quita el aviso')
-  await clic(a, '[data-hoy-no-me-da-tiempo]')
+  await saltarConCambiarPlan(a)
   await a.esp(600)
+  if (!(await hay(a, '[data-hoy-sobra-lista]'))) await clic(a, '[data-hoy-sobra-tiempo-cabecera]')
+  await a.esp(300)
   await clic(a, '[data-hoy-recuperar]')
   await a.esp(600)
   debe(!(await paradasDe(a))[1].saltada, 'H5', '[Recuperar] de la lista también la trae de vuelta')
@@ -351,7 +361,7 @@ await sec(async () => {
   const siguientePrimera = await paradasDe(a, 1)
   const m = (await txt(a, '[data-hoy-manana]')) ?? ''
   debe(/MAÑANA/i.test(m) && m.includes(siguientePrimera[0].name.slice(0, 10)), 'H13', `con la primera parada de mañana (${m.slice(0, 80)})`)
-  debe(/empiezas a las|sales a las/.test(m), 'H13', 'y la hora de empezar o de salir')
+  debe(/empiezas a las|sales a las/i.test(m), 'H13', 'y la hora de empezar o de salir (HOY2: «Sales a las…» con mayúscula en la tarjeta oscura)')
   await captura(a, 'H13_manana', '[data-hoy-manana]')
   // con zona: «sales a las…»; con una entrada de mañana: «turno en… a las…» y el consejo
   const zona = await a.evaluar(`(async () => {
@@ -359,7 +369,7 @@ await sec(async () => {
     return (r?.zonas_alojamiento ?? []).find((z) => z.coordinates)?.id ?? null
   })()`)
   await ir(a, { dia: 0, min: 21 * 60, mut: `r.accommodationZone = ${JSON.stringify(zona)}; numberedStopsOf(r.days[0]).forEach((s) => { s.checkedInAt = '2026-10-17T10:00:00Z' }); numberedStopsOf(r.days[1])[0].time = '09:00'` })
-  debe(/sales a las \d{1,2}:\d{2}/.test((await txt(a, '[data-hoy-manana]')) ?? ''), 'H13', `con zona: «sales a las…» (${await txt(a, '[data-hoy-manana]')})`)
+  debe(/sales a las \d{1,2}:\d{2}/i.test((await txt(a, '[data-hoy-manana]')) ?? ''), 'H13', `con zona: «sales a las…» (${await txt(a, '[data-hoy-manana]')})`)
 })
 
 /* ───────────── 6. H14 y H14b: hoy vuelves a casa (Roma) ───────────── */

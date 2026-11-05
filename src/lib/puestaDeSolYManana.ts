@@ -130,7 +130,9 @@ export function fraseDeAtardecer(p: { day: DayPlan; pendientes: Stop[]; desde?: 
   cerca.sort((a, b) => a.minutos - b.minutos)
   const tres = cerca.slice(0, 3)
   if (tres.length === 0) return sinSitios
-  return { tipo: 'cerca', hora, sitio: '', cerca: tres, extra, texto: `Hoy el sol se pone a las ${hora}. Si te apetece verlo, estos sitios están cerca:` }
+  // (HOY2b 6, Eric 5-nov. Antes: título «Hoy el sol se pone a las 18:04. Si te apetece verlo, estos sitios están cerca:» y, DESPUÉS de los dos puntos, «Aquí el sol cae al mar.». Ahora: el título solo dice la hora; debajo, de corrido,
+  // «Aquí el sol se esconde en el mar. Si te apetece verlo, te recomendamos estos sitios:» (la frase del mar, solo en Lanzarote) y, cada sitio con su foto, su tiempo y [Cómo llegar].)
+  return { tipo: 'cerca', hora, sitio: '', cerca: tres, extra: `${mar ? 'Aquí el sol se esconde en el mar. ' : ''}Si te apetece verlo, te recomendamos estos sitios:`, texto: `Hoy el sol se pone a las ${hora}` }
 }
 
 export interface TarjetaDeManana {

@@ -33,7 +33,7 @@ export function HoyV2({ route, onPonFechas }: { route: Route; onPonFechas: () =>
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-7 pt-1" data-hoy={estado?.phase ?? 'antes-sin-fechas'} data-hoy-v2="1">
+    <div className="flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto px-[18px] pb-7 pt-1" data-hoy={estado?.phase ?? 'antes-sin-fechas'} data-hoy-v2="1">
       {!estado || estado.phase === 'before' ? (
         <>
           <CabeceraHoy ojo={ojoDeViaje(route, estado?.startIso ?? null)} titulo={`Tu viaje a ${route.destination}`} />

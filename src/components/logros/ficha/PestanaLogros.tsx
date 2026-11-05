@@ -12,7 +12,7 @@ import { coleccionesDelSitio, textoDeFaltan, TEXTO_DE_SITIO, tituloDeLogros, typ
 /**
  * LG1 §1 — LA PESTAÑA «LOGROS» DE LA FICHA (Design: `Piezas/Ficha Lugar` y `App Explorar y fichas` apartado 02).
  * `useLogrosDeLaFicha` trae lo mismo que la hoja de logros (`/api/logros/estado`) y saca las colecciones del sitio; la pestaña solo sale si hay alguna.
- * `PestanaLogros` pinta «La Fontana de Trevi suma en 3 colecciones» y una tarjeta plegable por colección (la primera, abierta).
+ * `PestanaLogros` pinta «La Fontana de Trevi suma en 3 colecciones» y una tarjeta plegable por colección (todas cerradas al abrir; se abren al tocarlas).
  */
 export interface LogrosDeLaFicha {
   estado: EstadoLogros | null
@@ -111,13 +111,13 @@ function TarjetaDeColeccionFicha({ t, ciudad, abierta, alternar, abrir }: { t: T
 
 export function PestanaLogros({ datos, nombreDelSitio, abrirSitio }: { datos: LogrosDeLaFicha; nombreDelSitio: string; abrirSitio: (nombre: string) => void }): ReactNode {
   const { estado, tarjetas } = datos
-  // La primera tarjeta sale abierta, como en el Design; el resto, plegadas.
+  // (HOY2b 8c, Eric 5-nov) TODAS las colecciones salen CERRADAS al abrir la pestaña; se abren al tocarlas. (Antes: la primera abierta, como en el Design.)
   const [abiertas, setAbiertas] = useState<Record<string, boolean>>({})
   // Gratis o pase: la misma regla que la hoja de logros (sin pase se ve cerrada, en gris, y tocarla abre el pase).
   const estadoPase = usePasePintable()
   const sinPase = estadoPase === 'sin'
   if (!estado || tarjetas.length === 0) return null
-  const alternar = (id: string, k: number) => setAbiertas((a) => ({ ...a, [id]: !(a[id] ?? k === 0) }))
+  const alternar = (id: string) => setAbiertas((a) => ({ ...a, [id]: !a[id] }))
   return (
     <div data-pestana-logros style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 6 }}>
       {sinPase && <Candado datos="logros-sin-pase" destino={estado.ciudad} titulo="Tus logros del viaje" texto="Con el {pase}, cada sitio que ves suma." />}
@@ -127,8 +127,8 @@ export function PestanaLogros({ datos, nombreDelSitio, abrirSitio }: { datos: Lo
         style={{ display: 'flex', flexDirection: 'column', gap: 10, ...(sinPase ? { filter: 'grayscale(1)', opacity: 0.55, cursor: 'pointer' } : {}), ...(estadoPase === 'pendiente' ? { visibility: 'hidden' as const } : {}) }}
       >
         <span data-logros-titulo style={{ padding: '0 4px', font: "400 13px/1.45 'Geist'", color: 'rgba(28,34,48,.65)' }}>{tituloDeLogros(estado.destino, nombreDelSitio, tarjetas.length)}</span>
-        {tarjetas.map((t, k) => (
-          <TarjetaDeColeccionFicha key={t.id} t={t} ciudad={estado.ciudad} abierta={abiertas[t.id] ?? k === 0} alternar={() => alternar(t.id, k)} abrir={abrirSitio} />
+        {tarjetas.map((t) => (
+          <TarjetaDeColeccionFicha key={t.id} t={t} ciudad={estado.ciudad} abierta={abiertas[t.id] ?? false} alternar={() => alternar(t.id)} abrir={abrirSitio} />
         ))}
       </div>
     </div>

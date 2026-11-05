@@ -13,7 +13,7 @@
 import { conArticulo } from './articulos.js'
 import { coordenadasDeSitio, nombreDeSitio } from './datos.js'
 import { metros } from './fotos.js'
-import { clave } from './motor.js'
+import { clave, parteLocal } from './motor.js'
 
 /** Distancias del juego, contadas desde el borde del radio del sitio. */
 export const METROS_BRILLA = 500
@@ -140,4 +140,48 @@ export function retoDelDia({ datos, catalogos, destino, items, sitiosHoy = new S
     if (!mejor || reto.faltan < mejor.faltan || (reto.faltan === mejor.faltan && reto.total - reto.faltan > mejor.total - mejor.faltan)) mejor = reto
   }
   return mejor
+}
+
+/**
+ * (HOY2b, apartado 4; Eric, 5-nov) LOS RETOS DEL DÍA, todos. Salen:
+ *   · TODAS las colecciones que puedes completar hoy con las paradas del día (cada pedazo que falta está en la ruta de hoy), sea cual sea el número que falte;
+ *   · y las que tienen un pedazo FUERA de tu ruta (en ningún día del viaje) pero cerca de la zona de hoy: hasta 20 min en coche o 15 a pie de alguna parada de hoy («Te falta Los Hervideros y no está en tu ruta»).
+ * Cada sitio lleva su estado: `visto` (con su fecha), `hoy` (en la ruta de hoy), `otro_dia` (en la ruta de otro día, con su fecha) o `fuera` (no está en la ruta; `cerca_de_hoy` dice si está cerca de la zona de hoy).
+ * Las que se pueden completar hoy, primero; luego las que menos faltan; a igual, la más avanzada.
+ * `diasRuta`: los días de la ruta guardada del viaje (para «En tu ruta el jueves»); `hoyFecha`: la fecha de hoy en el destino (AAAA-MM-DD); `enCoche`: 20 min en coche o 15 a pie.
+ */
+export const MIN_CERCA_DE_HOY_EN_COCHE = 20
+export const MIN_CERCA_DE_HOY_A_PIE = 15
+const minutosDeViaje = (m, enCoche) => (enCoche ? Math.max(5, Math.round((m * 1.35) / ((40 * 1000) / 60)) + 5) : Math.max(5, Math.round(m / 80)))
+
+export function retosDelDia({ datos, catalogos, destino, items, sitiosHoy = new Set(), diasRuta = [], hoyFecha = null, enCoche = false }) {
+  const d = datos.destinos[destino]
+  if (!d) return []
+  const tz = d.timezone
+  const fechaDe = (en) => (en ? (tz ? (parteLocal(en, tz)?.fecha ?? String(en).slice(0, 10)) : String(en).slice(0, 10)) : null)
+  const otroDia = new Map()
+  for (const dia of diasRuta) {
+    if (!dia || dia.fecha === hoyFecha) continue
+    for (const p of dia.paradas ?? []) if (p.sitio && !otroDia.has(p.sitio)) otroDia.set(p.sitio, dia.fecha ?? null)
+  }
+  const coordsHoy = [...sitiosHoy].map((s) => coordenadasDeSitio(catalogos, destino, s)).filter(Boolean)
+  const tope = enCoche ? MIN_CERCA_DE_HOY_EN_COCHE : MIN_CERCA_DE_HOY_A_PIE
+  const retos = []
+  for (const c of d.colecciones ?? []) {
+    const sinGanar = c.sitios.filter((s) => !items.has(clave(destino, 'pedazo', c.id + ':' + s)))
+    if (sinGanar.length === 0) continue
+    const sitios = c.sitios.map((s) => {
+      const it = items.get(clave(destino, 'pedazo', c.id + ':' + s))
+      const co = coordenadasDeSitio(catalogos, destino, s)
+      const estado = it ? 'visto' : sitiosHoy.has(s) ? 'hoy' : otroDia.has(s) ? 'otro_dia' : 'fuera'
+      let cercaDeHoy = false
+      if (estado === 'fuera' && co) cercaDeHoy = coordsHoy.some((h) => minutosDeViaje(metros(co, h), enCoche) <= tope)
+      return { sitio: s, nombre: nombreDeSitio(catalogos, destino, s), ganado: Boolean(it), hoy: sitiosHoy.has(s), estado, fecha: it ? fechaDe(it.en) : null, dia_fecha: estado === 'otro_dia' ? (otroDia.get(s) ?? null) : null, cerca_de_hoy: cercaDeHoy }
+    })
+    const completableHoy = sinGanar.every((s) => sitiosHoy.has(s))
+    const fueraCerca = sitios.filter((x) => x.estado === 'fuera' && x.cerca_de_hoy)
+    if (!completableHoy && fueraCerca.length === 0) continue
+    retos.push({ coleccion: c.id, nombre: c.nombre, faltan: sinGanar.length, total: c.sitios.length, completable_hoy: completableHoy, faltan_fuera: fueraCerca.map((x) => x.nombre), sitios })
+  }
+  return retos.sort((a, b) => Number(b.completable_hoy) - Number(a.completable_hoy) || a.faltan - b.faltan || b.total - b.faltan - (a.total - a.faltan))
 }

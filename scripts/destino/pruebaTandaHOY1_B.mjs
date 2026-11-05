@@ -257,8 +257,10 @@ if (PARTE === 'todas' || PARTE === '2') {
     await a.hasta("Boolean(document.querySelector('[data-camara-viaje=recuerdo]'))", { segundos: 15, lanzar: 'no sale «Guardada en los recuerdos de hoy»' })
     debe(/Guardada en los recuerdos de hoy/.test(await texto(ev, '[data-camara-viaje=recuerdo]')), `${destino}: K3 foto sin logro → «Guardada en los recuerdos de hoy»`)
     await cap(a, `${destino}_k3_recuerdo`)
-    await a.esp(5300)
-    debe(!(await hay(ev, '[data-camara-viaje=recuerdo]')), `${destino}: el aviso de «Guardada…» se va solo`)
+    // HOY2b 7 (agente D; antes → ahora → decisión de Eric, 5-nov): ANTES el aviso «Guardada…» se iba solo a los 5 s; AHORA lleva [Guardar en mi galería] y dura 8 s para dar tiempo a tocarlo.
+    debe(await hay(ev, '[data-guardar-en-galeria]'), `${destino}: el aviso lleva [Guardar en mi galería]`)
+    await a.esp(8600)
+    debe(!(await hay(ev, '[data-camara-viaje=recuerdo]')), `${destino}: el aviso de «Guardada…» se va solo (a los 8 s)`)
     // La segunda vez, directa a la cámara.
     await tocarCamara(e)
     debe(!(await hay(ev, '[data-camara-viaje=hoja]')) && (await hay(ev, '[data-visto=camara]')), `${destino}: la segunda vez va derecha a la cámara (la hoja solo sale una vez)`)
@@ -366,17 +368,13 @@ if (PARTE === 'todas' || PARTE === '2') {
       const despues = await ev("(async () => { const R = await import('/src/store/useRouteStore.ts'); return JSON.stringify(R.useRouteStore.getState().route.days.map((d) => d.stops.map((s) => s.id))) })()")
       debe(antes === despues, 'roma: nada se movió solo (las paradas son las mismas)')
     }
-    // ── C18: el reto del día, solo por la mañana
-    const reto = { coleccion: 'x', nombre: destino === 'lanzarote' ? 'Los imprescindibles de Lanzarote' : 'La Roma antigua', faltan: 2, total: 6, sitios: [{ sitio: 'a', nombre: 'Uno', ganado: true, hoy: false }, { sitio: 'b', nombre: 'Dos', ganado: false, hoy: true }, { sitio: 'c', nombre: 'Tres', ganado: false, hoy: true }] }
-    await ev(`window.__hoy1Cerca = ${JSON.stringify({ ...vacia, reto })}; window.__hoy1HoraLocal = 15; window.dispatchEvent(new Event('trazo:hoy1-repreguntar')); true`)
-    await a.esp(1200)
-    debe(!(await hay(ev, '[data-reto-del-dia]')), `${destino}: C18 por la tarde no sale el reto del día`)
-    await ev("window.__hoy1HoraLocal = 9; window.dispatchEvent(new Event('trazo:hoy1-repreguntar')); true")
-    await a.esp(1500)
-    // (el repintado por la hora pasa al llegar la siguiente respuesta)
-    await a.hasta("Boolean(document.querySelector('[data-reto-del-dia]'))", { segundos: 10, lanzar: 'no sale el reto del día por la mañana' })
+    // ── C18: el reto del día. HOY2b (E, 5-nov; antes → ahora → decisión de Eric, 5-nov): ANTES, una sola tarjeta «Hoy puedes completar… te faltan 2.» como aviso, solo por la mañana → AHORA, TODAS las colecciones que se pueden completar hoy
+    // (o con un pedazo fuera de la ruta pero cerca) en tarjetas debajo de la tarjeta principal, todo el día (data-reto-del-dia; el álbum y la fila con scroll, en pruebaTandaHOY2b_E).
+    const retoNuevo = { coleccion: 'x', nombre: destino === 'lanzarote' ? 'Los imprescindibles de Lanzarote' : 'La Roma antigua', faltan: 2, total: 6, completable_hoy: true, faltan_fuera: [], sitios: [{ sitio: 'a', nombre: 'Uno', ganado: true, hoy: false, estado: 'visto', fecha: '2026-11-08', dia_fecha: null, cerca_de_hoy: false }, { sitio: 'b', nombre: 'Dos', ganado: false, hoy: true, estado: 'hoy', fecha: null, dia_fecha: null, cerca_de_hoy: false }, { sitio: 'c', nombre: 'Tres', ganado: false, hoy: true, estado: 'hoy', fecha: null, dia_fecha: null, cerca_de_hoy: false }] }
+    await ev(`window.__hoy1Cerca = ${JSON.stringify({ ...vacia, retos: [retoNuevo] })}; window.__hoy1HoraLocal = 15; window.dispatchEvent(new Event('trazo:hoy1-repreguntar')); true`)
+    await a.hasta("Boolean(document.querySelector('[data-reto-del-dia]'))", { segundos: 10, lanzar: 'no sale el reto del día' })
     const rt = await texto(ev, '[data-reto-del-dia]')
-    debe(/Reto del día/i.test(rt) && /Hoy puedes completar/.test(rt) && /te faltan 2\./.test(rt), `${destino}: C18 por la mañana → «Hoy puedes completar … te faltan 2.»`)
+    debe(/RETO DEL DÍA/i.test(rt) && /Completa/.test(rt) && /te faltan 2/.test(rt), `${destino}: C18 el reto sale también por la tarde (todo el día): «Completa … 4 de 6 · te faltan 2»`)
     await ev("document.querySelector('[data-reto-del-dia]').scrollIntoView({ block: 'center' }); true")
     await a.esp(400)
     await cap(a, `${destino}_c18_reto`)

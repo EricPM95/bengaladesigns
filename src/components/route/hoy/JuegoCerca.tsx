@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import { useCamaraViajeStore } from '../../../lib/camaraViaje'
 import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { ParadaFoto } from './v2/ParadaFoto'
+import { CruzDeAviso } from './v2/AvisosHoy'
 import type { RetoDelDia, SitioCerca } from './useCercaDeAqui'
 
 /**
@@ -108,12 +109,15 @@ export function HojaLlegadaOculta({ sitio, onCerrar }: { sitio: SitioCerca; onCe
 }
 
 /** C18: «Reto del día». Tarjeta clara con las fotos de las paradas de la colección (las ganadas a color, las de hoy apagadas) y la barra de lo que ya tienes. */
-export function RetoDelDiaTarjeta({ reto }: { reto: RetoDelDia }) {
+export function RetoDelDiaTarjeta({ reto, onCerrar }: { reto: RetoDelDia; onCerrar?: () => void }) {
   const ganados = reto.total - reto.faltan
   const mostrados = reto.sitios.filter((s) => s.ganado || s.hoy).slice(0, 6)
   return (
     <div data-reto-del-dia={reto.coleccion} className="flex flex-none flex-col gap-3" style={{ borderRadius: 22, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.07)', padding: 14 }}>
-      <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'oklch(0.5 0.12 65)' }}>Reto del día</span>
+      <span className="flex items-center justify-between">
+        <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'oklch(0.5 0.12 65)' }}>Reto del día</span>
+        {onCerrar && <CruzDeAviso onClick={onCerrar} />}
+      </span>
       <span style={{ font: "400 24px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>
         Hoy puedes completar «{reto.nombre}»: {reto.faltan === 1 ? 'te falta 1' : `te faltan ${reto.faltan}`}.
       </span>

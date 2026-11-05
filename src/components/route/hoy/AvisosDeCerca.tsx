@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
+import { esDestinoDeCoche } from '../../../lib/experienceCategoryBank'
+import { useCompaneroStore } from '../../../lib/hoyCompanero'
 import type { DayPlan, Route } from '../../../lib/types'
 import { numberedStopsOf } from '../../../lib/stopKind'
 import { pagoActivo } from '../../../lib/pago'
 import { alCambiarSugerencias, sugerenciasDelCompanero } from '../../../lib/sugerenciasCompanero'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { FueraDeRuta, yaDijoAhoraNo } from './FueraDeRuta'
-import { HojaLlegadaOculta, RetoDelDiaTarjeta, TarjetaBrilla } from './JuegoCerca'
+import { AvisoDeHoy, avisoCerrado, cerrarAvisoDelDia } from './v2/AvisosHoy'
+import { HojaLlegadaOculta, TarjetaBrilla } from './JuegoCerca'
 import { useCercaDeAqui, type SitioCerca } from './useCercaDeAqui'
 
 /**
@@ -43,7 +46,7 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
   useEffect(() => alCambiarSugerencias(() => setSugerencias(sugerenciasDelCompanero())), [])
   const activo = pagoActivo() && sugerencias
   const sitiosHoy = numberedStopsOf(day).map((s) => s.name)
-  const datos = useCercaDeAqui({ tripId, sitiosHoy, activo })
+  const datos = useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche: esDestinoDeCoche(route.destination) })
   const [mostrando, setMostrando] = useState<Mostrando>(null)
   const [llegada, setLlegada] = useState<SitioCerca | null>(null)
   const [cerradas, setCerradas] = useState<Set<string>>(new Set())
@@ -81,16 +84,34 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
     setMostrando(actual.current)
   }, [datos?.juego, datos?.juego_sitio, tripId, dateIso, datos?.cerca])
 
+  // (HOY2b, E) Lo que sabe el compañero se comparte con el reto del día y con [¿Qué hago ahora?] (debajo de la tarjeta principal); aquí ya no sale el reto.
+  const sitioOfrecido = datos ? (datos.cerca?.find((s) => s.sitio === (datos.fuera_de_ruta ?? datos.junto_a))?.nombre ?? null) : null
+  useEffect(() => {
+    useCompaneroStore.getState().poner(activo ? datos : null, activo ? sitioOfrecido : null)
+  }, [activo, datos, sitioOfrecido])
+  useEffect(() => () => useCompaneroStore.getState().poner(null, null), [])
   if (!activo || !tripId || !datos) return null
   const fuera = datos.fuera_de_ruta ? datos.cerca.find((s) => s.sitio === datos.fuera_de_ruta) : null
   const junto = !fuera && datos.junto_a && !yaDijoAhoraNo(tripId, dateIso, datos.junto_a) ? datos.cerca.find((s) => s.sitio === datos.junto_a) : null
   const tarjetaFuera = fuera ?? junto ?? null
-  const cerrar = (clave: string) => setCerradas((a) => new Set(a).add(clave))
+  const diaClave = `${tripId}:${dateIso}`
+  const cerrar = (clave: string) => {
+    cerrarAvisoDelDia(diaClave, clave)
+    setCerradas((a) => new Set(a).add(clave))
+  }
+  const cerrada = (clave: string) => cerradas.has(clave) || avisoCerrado(diaClave, clave)
   return (
     <>
-      {datos.reto && esDeManana() && <RetoDelDiaTarjeta reto={datos.reto} />}
-      {mostrando && <TarjetaBrilla nivel={mostrando.nivel} onAhoraNo={() => { actual.current = null; setMostrando(null) }} />}
-      {tarjetaFuera && !cerradas.has(tarjetaFuera.sitio) && <FueraDeRuta sitio={tarjetaFuera} tipo={fuera ? 'fuera' : 'junto'} route={route} day={day} tripId={tripId} fecha={dateIso} onCerrar={() => cerrar(tarjetaFuera.sitio)} />}
+      {mostrando && (
+        <AvisoDeHoy id="cerca:brilla" prio={3}>
+          <TarjetaBrilla nivel={mostrando.nivel} onAhoraNo={() => { actual.current = null; setMostrando(null) }} />
+        </AvisoDeHoy>
+      )}
+      {tarjetaFuera && !cerrada(tarjetaFuera.sitio) && (
+        <AvisoDeHoy id="cerca:fuera" prio={3}>
+          <FueraDeRuta sitio={tarjetaFuera} tipo={fuera ? 'fuera' : 'junto'} route={route} day={day} tripId={tripId} fecha={dateIso} onCerrar={() => cerrar(tarjetaFuera.sitio)} />
+        </AvisoDeHoy>
+      )}
       {llegada && <HojaLlegadaOculta sitio={llegada} onCerrar={() => setLlegada(null)} />}
     </>
   )

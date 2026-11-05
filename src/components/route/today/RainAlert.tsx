@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react'
 import type { DayPlan, Stop } from '../../../lib/types'
 import { parseTimeToMinutes } from '../../../lib/time'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
-import { fetchHourlyRain, rainsInHours } from '../../../lib/rainForecast'
-import { displayStopName } from '../../../lib/format'
+import { fetchHourlyRain, rainsInHours, type HourlyRain } from '../../../lib/rainForecast'
+import { haParadoDeLlover } from '../../../lib/avisosDelTiempo'
+import type { Propuesta } from '../../../lib/hoyCambiarPlan'
+import { aplicarPropuesta, volverALaRutaOriginal } from '../../../lib/hoyCambiarPlanAplicar'
+import { proponerSiLlueveRoma, proponerVolverAlPlan } from '../../../lib/hoyLluvia'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { Modal } from '../../ui/Modal'
-import { Button } from '../../ui/Button'
 import { Icono } from '../../ui/Icono'
+import { AvisoDeHoy, CruzDeAviso, useAvisoCerrado } from '../hoy/v2/AvisosHoy'
+import { HojaPropuesta, useContexto } from '../hoy/v2/CambiarPlan'
 
 interface RainAlertProps {
   day: DayPlan
@@ -28,32 +31,25 @@ function hoursOf(stops: Stop[]): number[] {
   return [...hours]
 }
 
-function PlanList({ title, names }: { title: string; names: string[] }) {
-  if (names.length === 0) return null
-  return (
-    <div className="space-y-1">
-      <p className="text-caption font-semibold uppercase tracking-wide text-text-muted">{title}</p>
-      <ul className="space-y-0.5 text-small text-text">
-        {names.map((name) => (
-          <li key={name}>{name}</li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
 /**
  * Aviso de lluvia (Tanda 6, HOY): mira la previsión de Open-Meteo para las horas de las paradas que quedan; si hay lluvia en
  * una franja, lo dice y ofrece «Ver alternativa» (la línea «Si llueve» del día). NUNCA cambia el día solo: el viajero decide
  * («Usar esta alternativa») y puede volver al plan original.
  */
 export function RainAlert({ day, dateIso, when }: RainAlertProps) {
-  const applyRainPlan = useRouteStore((state) => state.applyRainPlan)
-  const revertRainPlan = useRouteStore((state) => state.revertRainPlan)
+  const route = useRouteStore((state) => state.route)
   const [part, setPart] = useState<'manana' | 'tarde' | 'dia' | null>(null)
-  const [open, setOpen] = useState(false)
+  const [rain, setRain] = useState<HourlyRain | null>(null)
+  // (HOY2, C) [Ver alternativa] abre «Plan de lluvia» con el formato común de las propuestas (Cambia… / Se mantiene… / [Aplicar] / [Ver otra opción] / «Volver a mi ruta original»); al parar de llover, «¿Volvemos al plan?».
+  const [hoja, setHoja] = useState<'plan' | 'vuelta' | null>(null)
+  const [propuestas, setPropuestas] = useState<Propuesta[]>([])
+  const [indice, setIndice] = useState(0)
+  const ctx = useContexto(route as NonNullable<typeof route>, false)
+  // (HOY2) La X: el aviso cerrado no vuelve ese día (salvo si se usa la alternativa: entonces sale «Volver al plan original»).
+  const [cerrado, cerrar] = useAvisoCerrado(`${day.id}:${dateIso}`, `lluvia-${when}`)
+  const [cerradoParo, cerrarParo] = useAvisoCerrado(`${day.id}:${dateIso}`, `lluvia-paro-${when}`)
   // (HOY1, apartado 6) En Lanzarote la lluvia la cuentan los avisos del tiempo en directo (AvisosDelTiempo), no este aviso: así no salen dos.
-  const enLanzarote = useRouteStore((state) => (state.route?.destination ?? '').toLowerCase().includes('lanzarote'))
+  const enLanzarote = (route?.destination ?? '').toLowerCase().includes('lanzarote')
   const note = enLanzarote ? null : (day.rainPlan?.text ?? day.rainPlanB?.note ?? null)
 
   const relevantStops = (when === 'hoy' ? day.stops.filter((stop) => !stop.checkedInAt && !stop.saltada) : day.stops).filter((stop) => !stop.isArrival && !stop.isBreak)
@@ -67,10 +63,11 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
     }
     let cancelled = false
     const hours = hoursKey ? hoursKey.split(',').map(Number) : []
-    fetchHourlyRain(at, dateIso).then((rain) => {
+    fetchHourlyRain(at, dateIso).then((lluvia) => {
       if (cancelled) return
-      if (!rain || hours.length === 0) return setPart(null)
-      const wet = hours.filter((hour) => rainsInHours(rain, [hour]))
+      setRain(lluvia)
+      if (!lluvia || hours.length === 0) return setPart(null)
+      const wet = hours.filter((hour) => rainsInHours(lluvia, [hour]))
       if (wet.length === 0) return setPart(null)
       setPart(wet.every((hour) => hour < 14) ? 'manana' : wet.every((hour) => hour >= 14) ? 'tarde' : 'dia')
     })
@@ -82,61 +79,60 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
 
   // Ya aplicada: se queda el aviso con el camino de vuelta al plan original, llueva o no.
   const applied = Boolean(day.rainBackup)
-  if (!note || (!part && !applied)) return null
+  if (!route || !note || (!part && !applied)) return null
+  if (cerrado && !applied) return null
+  const paro = applied && rain != null && haParadoDeLlover(rain, new Date().getHours())
+  if (applied && paro && cerradoParo) return null
 
   const when_ = part === 'manana' ? (when === 'hoy' ? 'esta mañana' : 'mañana por la mañana') : part === 'tarde' ? (when === 'hoy' ? 'esta tarde' : 'mañana por la tarde') : when === 'hoy' ? 'hoy' : 'mañana'
-  const plan = day.rainPlan
-  const canApply = Boolean(plan && (plan.remove.length > 0 || plan.add.length > 0))
+  const canApply = Boolean(day.rainPlan && (day.rainPlan.remove.length > 0 || day.rainPlan.add.length > 0))
+  const abrir = (cual: 'plan' | 'vuelta') => {
+    setPropuestas(cual === 'plan' ? proponerSiLlueveRoma({ day, ctx }) : proponerVolverAlPlan({ day, ctx }))
+    setIndice(0)
+    setHoja(cual)
+  }
 
   return (
-    <div className="mx-4 rounded-2xl border border-accent/30 bg-accent-soft/40 p-4">
-      <div className="flex items-start gap-2.5">
-        <Icono nombre="lluvia" size={18} className="mt-0.5 shrink-0 text-text/60" />
-        <div className="min-w-0 flex-1 space-y-2">
-          {applied ? (
-            <p className="text-small font-medium text-text">Estás usando la alternativa para la lluvia.</p>
-          ) : (
-            <p className="text-small font-medium text-text">Hay previsión de lluvia {when_}. Si llueve, aquí tienes una alternativa.</p>
-          )}
-          <div className="flex flex-wrap gap-2">
-            {!applied && (
-              <Button variant="secondary" onClick={() => setOpen(true)}>
-                Ver alternativa
-              </Button>
-            )}
-            {applied && (
-              <Button variant="secondary" onClick={() => revertRainPlan(day.id)}>
-                Volver al plan original
-              </Button>
-            )}
-          </div>
+    <AvisoDeHoy id="tiempo:lluvia" prio={2}>
+      <div data-aviso-lluvia data-aviso-lluvia-estado={applied ? (paro ? 'paro' : 'usando') : 'aviso'} className="flex flex-none flex-col gap-1 rounded-[18px] py-2 pl-3.5 pr-2" style={{ background: '#E7EEF6', border: '1px solid rgba(28,34,48,.1)' }}>
+        <div className="flex items-start gap-2.5">
+          <span className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full" style={{ background: '#FFFDF8' }}>
+            <Icono nombre="lluvia" size={18} className="shrink-0 text-text/60" />
+          </span>
+          <span className="min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]">
+            {applied ? (paro ? 'Ha parado de llover.' : 'Estás usando la alternativa para la lluvia.') : `Hay previsión de lluvia ${when_}. Si llueve, aquí tienes una alternativa.`}
+          </span>
+          {(!applied || paro) && <CruzDeAviso onClick={applied ? cerrarParo : cerrar} />}
         </div>
+        {!applied && canApply && (
+          <button type="button" data-ver-alternativa onClick={() => abrir('plan')} className="mb-1 ml-[48px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold" style={{ background: '#1C2230', color: '#F3D88F' }}>
+            Ver alternativa
+          </button>
+        )}
+        {applied && (
+          <button type="button" data-ver-plan onClick={() => abrir('vuelta')} className="mb-1 ml-[48px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold" style={{ background: '#1C2230', color: '#F3D88F' }}>
+            {paro ? 'Ver plan' : 'Volver al plan original'}
+          </button>
+        )}
       </div>
-
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <div className="space-y-4">
-          <h2 className="font-display text-h2 font-semibold text-text">Si llueve</h2>
-          <p className="text-small leading-relaxed text-text-soft">{note}</p>
-          {plan && <PlanList title="Sale o se acorta" names={plan.remove.map(displayStopName)} />}
-          {plan && <PlanList title="Entra" names={plan.add.map((stop) => displayStopName(stop.name))} />}
-          <p className="text-caption text-text-muted">No cambiamos nada solos: tú decides.</p>
-          <div className="flex flex-col gap-2">
-            {canApply && (
-              <Button
-                onClick={() => {
-                  applyRainPlan(day.id)
-                  setOpen(false)
-                }}
-              >
-                Usar esta alternativa
-              </Button>
-            )}
-            <Button variant="secondary" onClick={() => setOpen(false)}>
-              Seguir con el plan original
-            </Button>
-          </div>
-        </div>
-      </Modal>
-    </div>
+      {hoja && (
+        <HojaPropuesta
+          titulo={hoja === 'plan' ? 'Plan de lluvia' : '¿Volvemos al plan?'}
+          propuestas={propuestas}
+          indice={indice}
+          vacio="No hay nada que cambiar: tu día sigue igual."
+          onOtra={() => setIndice((i) => (i + 1) % propuestas.length)}
+          onAplicar={(pr) => {
+            aplicarPropuesta(route.id, dateIso, pr)
+            setHoja(null)
+          }}
+          onOriginal={() => {
+            volverALaRutaOriginal()
+            setHoja(null)
+          }}
+          onCerrar={() => setHoja(null)}
+        />
+      )}
+    </AvisoDeHoy>
   )
 }

@@ -1894,6 +1894,13 @@ export function planListasTrip(args) {
     if (Array.isArray(source.salida) && !ready.visitOutside && !ready.passThrough) ready.end_coordinates = source.salida
     const why = item.texto ?? destData.por_que_lugares?.[item.lugar] ?? written.destino?.textos?.[item.lugar] ?? null
     if (why) ready.curatedWhy = why
+    // (HOY2b 8b, Eric 5-nov) Un sitio que no se ve desde fuera (el Tempietto, en un patio) y llega cerrado pasa a su `si_cerrado`: su NOMBRE (ya puesto por `tituloSiCerrado`), su TEXTO (`cambiar_texto`) y su FOTO (`foto`, o ninguna:
+    // la del Tempietto no es la del mirador; el nombre va en `sin_foto` de _fotos.json hasta que haya una buena).
+    if (item.mirador_por_cierre) {
+      const alt = { ...(source.si_cerrado ?? {}), ...(item.si_cerrado ?? {}) }
+      if (alt.cambiar_texto) ready.curatedWhy = { texto: alt.cambiar_texto, por_fuera: alt.cambiar_texto }
+      ready.photoName = alt.foto ?? alt.cambiar_titulo ?? ready.photoName
+    }
     if (item.titulo && item.tipo !== 'tour') ready.stretchTitle = item.titulo
     const [scheduled] = placesForScheduler({ id: item.lugar, places: [ready] }, destData, null)
     return scheduled

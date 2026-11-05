@@ -16,7 +16,7 @@ import { calcularExp, edicionDeAnio, entradaEnEdicion, estadoDelSorteo, expDeMom
 import { coordenadasDeSitio, datosVisiblesPara, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
 import { armarMomentos } from './momentos.js'
-import { queEnsenar, retoDelDia, sitioDeFotoLibre, sitiosCerca } from './cerca.js'
+import { queEnsenar, retoDelDia, retosDelDia, sitioDeFotoLibre, sitiosCerca } from './cerca.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
 import { clavesSuperadas, vitrinaDeGanados } from './pantallas/ganados.js'
 import { coleccionesDeSitio, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen, sitiosDeLaRuta } from './vistas.js'
@@ -261,7 +261,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
    * (HOY1) Lo que hay cerca de la ubicación del viajero (H8, H8b, C16, C17): sitios con algo por ganar, con la distancia al borde de su radio y qué enseñar.
    * `sitios_hoy` (nombres de las paradas de hoy, tal como las ve el móvil) manda sobre la ruta guardada, que puede ir por detrás. La ubicación no se guarda.
    */
-  async function cerca(userId, { trip_id, ubicacion = null, sitios_hoy = null }) {
+  async function cerca(userId, { trip_id, ubicacion = null, sitios_hoy = null, en_coche = false }) {
     const c = await cargar(userId)
     const viaje = c.viajes[trip_id]
     if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas', cerca: [] }
@@ -280,7 +280,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
         radios_hoy[String(n)] = Number.isFinite(r) && r > 0 ? r : null
       }
     }
-    return { ok: true, cerca: lista, radios_hoy, ...queEnsenar(lista), reto: retoDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy }) }
+    return { ok: true, cerca: lista, radios_hoy, ...queEnsenar(lista), reto: retoDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy }), retos: retosDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy, diasRuta: viaje.dias ?? [], hoyFecha: hoy, enCoche: Boolean(en_coche) }) }
   }
 
   /** Lo que tiene un sitio por ganar (sin decir qué emblema): para que la tarjeta del Visto sepa cuál enseñar. Solo se LEE; no cambia nada. */

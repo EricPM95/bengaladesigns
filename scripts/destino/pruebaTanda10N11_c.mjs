@@ -181,7 +181,9 @@ const store = "import('/src/store/useRouteStore.ts').then((m) => m.useRouteStore
     if (r) {
       debe(/HOY, tu guía del día/.test(r.t) && /Cuando estés en Roma, HOY te lleva de la mano, parada a parada\./.test(r.t), 'hoy', '«HOY, tu guía del día» y su línea')
       debe(r.puntos === 8 && r.dibujos === 8, 'hoy', `8 tarjetas con su dibujo (${r.puntos}/${r.dibujos})`)
-      for (const x of ['Tu siguiente parada, en grande', 'Escucha la historia de cada sitio', 'Sobre este lugar', 'Cerca de ti', 'Más visitas, si te sobra tiempo', 'Los avisos del día', 'Tu billete, el día que toca', 'Tus logros, mientras viajas']) debe(r.t.includes(x), 'hoy', `tarjeta «${x}»`)
+      // HOY2 (5-nov; antes → ahora → decisión de Eric): las 8 tarjetas de la 10N11 (siguiente parada en grande, historias, «Sobre este lugar», «Cerca de ti», «Más visitas», avisos del día, billete, logros)
+      // → la lista nueva de lo que HOY hace ahora (`pase/lista/tarjetasDeHoy2.ts`): tu día paso a paso · «Cambiar plan» · los avisos del tiempo · «Cerca de ti» · la cámara y los logros · las historias · tus entradas sin internet · los avisos en el móvil bloqueado.
+      for (const x of ['Tu día, paso a paso', 'Cambiar plan', 'Los avisos del tiempo', 'Cerca de ti', 'La cámara y los logros', 'Las historias, para escuchar', 'Tus entradas, sin internet', 'Avisos en el móvil bloqueado']) debe(r.t.includes(x), 'hoy', `tarjeta «${x}»`)
       debe(r.caja === 'sin_usar' && r.t.includes('Tienes un día de prueba con HOY completo, gratis.') && r.t.includes('Lo usamos el día que llegas, si es antes de las 10:00; si no, el día siguiente.'), 'hoy', 'día de prueba sin usar: su caja')
       debe(!r.t.includes('Ya has usado tu día de prueba.') && r.t.includes('Ver el Pase Roma'), 'hoy', 'sin la caja de «ya usado» y con [Ver el Pase Roma]')
     }

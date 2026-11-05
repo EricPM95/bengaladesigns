@@ -69,7 +69,7 @@ self.addEventListener('fetch', (evento) => {
   )
 })
 
-// Avisos al móvil (web push): el servidor manda { titulo, cuerpo, url }. El título es el nombre de la app (lo pone el servidor, de data/marca.json).
+// Avisos al móvil (web push): el servidor manda { titulo, cuerpo, url, tag }. (HOY3: `tag` hace que un aviso repetido sustituya al anterior en vez de salir dos veces; los avisos del viaje llevan `url: '/?hoy=1'`.) El título es el nombre de la app (lo pone el servidor, de data/marca.json).
 self.addEventListener('push', (evento) => {
   let datos = { titulo: 'Aviso', cuerpo: '', url: '/' }
   try {
@@ -77,18 +77,21 @@ self.addEventListener('push', (evento) => {
   } catch (e) {
     /* sin datos */
   }
-  evento.waitUntil(self.registration.showNotification(datos.titulo, { body: datos.cuerpo, icon: '/icons/icon-192.png', badge: '/icons/icon-192.png', data: { url: datos.url } }))
+  evento.waitUntil(self.registration.showNotification(datos.titulo, { body: datos.cuerpo, icon: '/icons/icon-192.png', badge: '/icons/icon-192.png', data: { url: datos.url }, ...(datos.tag ? { tag: datos.tag } : {}) }))
 })
 
-// Al tocar el aviso se abre la app con la campanita abierta en ese aviso (`/?aviso=ID`). Si la app ya está abierta, se le dice por mensaje y no se recarga.
+// Al tocar el aviso se abre la app con la campanita abierta en ese aviso (`/?aviso=ID`); los avisos del viaje (HOY3, `/?hoy=1`) abren HOY. Si la app ya está abierta, se le dice por mensaje y no se recarga.
 self.addEventListener('notificationclick', (evento) => {
   evento.notification.close()
   const url = (evento.notification.data && evento.notification.data.url) || '/'
-  const id = new URL(url, self.location.origin).searchParams.get('aviso')
+  const parametros = new URL(url, self.location.origin).searchParams
+  const id = parametros.get('aviso')
+  const abrirHoy = parametros.get('hoy') === '1'
   evento.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((ventanas) => {
       if (ventanas[0]) {
-        ventanas[0].postMessage({ tipo: 'aviso', id })
+        if (abrirHoy) ventanas[0].postMessage({ tipo: 'hoy' })
+        else ventanas[0].postMessage({ tipo: 'aviso', id })
         return ventanas[0].focus()
       }
       return self.clients.openWindow(url)

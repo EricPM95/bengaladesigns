@@ -5268,7 +5268,7 @@
       "visible_desde_calle": false,
       "camino_alternativa": "El mirador de San Pietro in Montorio",
       "name": "San Pietro in Montorio y Tempietto de Bramante",
-      "si_cerrado": { "cambiar_titulo": "El mirador de San Pietro in Montorio" },
+      "si_cerrado": { "cambiar_titulo": "El mirador de San Pietro in Montorio", "cambiar_texto": "Desde la terraza de la iglesia, en lo alto del Janículo, Roma se te abre entera: las cúpulas, los tejados y el Tíber a tus pies. Es una de las vistas más bonitas de la ciudad y se disfruta sin entrar en ningún sitio." },
       "por_que_recomendamos": "En su patio está el Tempietto de Bramante, un pequeño templo redondo que es una obra maestra del Renacimiento. Según la tradición, aquí murió San Pedro.",
       "megusta_inicial": 52,
       "duration_minutes": 20,

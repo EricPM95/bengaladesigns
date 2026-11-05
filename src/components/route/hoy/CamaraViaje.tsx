@@ -11,6 +11,7 @@ import { useSyncStore } from '../../../store/useSyncStore'
 import { CamaraApp } from '../../logros/visto/CamaraApp'
 import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
+import { BotonGuardarEnGaleria } from '../fotos/BotonGuardarEnGaleria'
 
 /**
  * LA CÁMARA DE VIAJE EN HOY (Tanda HOY1, K1 a K4; Design «Hoy Estados», apartado 04). El botón redondo de la cabecera de HOY se ve SIEMPRE (antes, durante y después del viaje, con y sin pase);
@@ -116,11 +117,12 @@ function PantallaAlgo({ onDescubrir }: { onDescubrir: () => void }) {
 }
 
 /** K3 y K4: el aviso de abajo (sobre el menú, como todos los avisos de abajo de la app). */
-function AvisoDeFoto({ resultado, onFin }: { resultado: Extract<Resultado, { tipo: 'recuerdo' | 'sin_conexion' }>; onFin: () => void }) {
+function AvisoDeFoto({ resultado, archivo, onFin }: { resultado: Extract<Resultado, { tipo: 'recuerdo' | 'sin_conexion' }>; archivo: Blob | null; onFin: () => void }) {
+  // (HOY2b 7) Con [Guardar en mi galería] a la vista, el aviso dura más (8 s): da tiempo a tocarlo.
   useEffect(() => {
-    const t = window.setTimeout(onFin, 5000)
+    const t = window.setTimeout(onFin, archivo ? 8000 : 5000)
     return () => window.clearTimeout(t)
-  }, [onFin])
+  }, [onFin, archivo])
   const sinRed = resultado.tipo === 'sin_conexion'
   return createPortal(
     <AvisoSobreLaBarra z={86} datos={{ 'data-camara-viaje': sinRed ? 'sin-conexion' : 'recuerdo' }} className="!gap-3" estilo={{ animation: 'vistoToast .35s ease both', boxShadow: '0 0 0 1px rgba(243,216,143,.35)' }}>
@@ -130,6 +132,7 @@ function AvisoDeFoto({ resultado, onFin }: { resultado: Extract<Resultado, { tip
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <b style={{ font: "700 14.5px 'Geist'" }}>{sinRed ? 'Guardada' : 'Guardada en los recuerdos de hoy'}</b>
         {(sinRed || resultado.sub) && <span style={{ font: "400 12.5px/1.3 'Geist'", color: 'rgba(251,243,226,.7)' }}>{sinRed ? 'La comprobamos cuando vuelvas a tener conexión' : resultado.sub}</span>}
+        {!sinRed && !resultado.sub && archivo && <BotonGuardarEnGaleria foto={archivo} className="-ml-3 !min-h-[30px] !border-0 !pl-3 !pr-0 underline underline-offset-[3px]" />}
       </span>
       <span className="flex flex-none items-center justify-center" style={{ width: 34, height: 34, borderRadius: '50%', background: TINTA, border: `1.5px solid ${ORO}`, color: ORO_CLARO }}>
         <Trazo d={sinRed ? SIN_SENAL : CHECK} tam={16} grosor={2} />
@@ -157,6 +160,7 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day, conCama }: Props
   const [camara, setCamara] = useState<PedidoDeFoto | null>(null)
   const [pensando, setPensando] = useState(false)
   const [resultado, setResultado] = useState<Resultado | null>(null)
+  const [archivoDeLaFoto, setArchivoDeLaFoto] = useState<Blob | null>(null)
   const urls = useRef<string[]>([])
   const pedido = useCamaraViajeStore((s) => s.pedido)
   const modo = modoDeCamara({ conAcceso, fase, explicada: camaraExplicada() })
@@ -211,6 +215,7 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day, conCama }: Props
     setPensando(true)
     const url = URL.createObjectURL(archivo)
     urls.current.push(url)
+    setArchivoDeLaFoto(archivo)
     const r = await enviarFotoDeLaCamara({ tripId, stopId: null, nombre: ped.nombre, sitio: ped.sitio, libre: !ped.sitio })
     setPensando(false)
     // El álbum: la foto va a «los recuerdos de hoy». Se guarda PRIMERO en el móvil (así sin conexión no se pierde) y de ahí se sube al álbum; se quita del móvil cuando ya está arriba.
@@ -256,7 +261,7 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day, conCama }: Props
         </span>
       )}
       {resultado?.tipo === 'logro' && <PantallaAlgo onDescubrir={descubrir} />}
-      {resultado && resultado.tipo !== 'logro' && <AvisoDeFoto resultado={resultado} onFin={() => setResultado(null)} />}
+      {resultado && resultado.tipo !== 'logro' && <AvisoDeFoto resultado={resultado} archivo={archivoDeLaFoto} onFin={() => setResultado(null)} />}
     </>
   )
 }

@@ -77,6 +77,11 @@ export function FueraDeRuta({ sitio, tipo, route, day, tripId, fecha, onCerrar }
     <>
       <div data-fuera-de-ruta={tipo} data-sitio={sitio.sitio} className="flex-none overflow-hidden" style={{ borderRadius: 26, background: '#1C2230', color: '#FBF3E2' }}>
         <span className="relative block w-full overflow-hidden" style={{ height: 170, background: GRADIENTE(sitio.nombre) }}>
+          <button type="button" aria-label="Cerrar este aviso" data-hoy-aviso-x onClick={() => { if (esJunto) anotarAhoraNo(tripId, fecha, sitio.sitio); onCerrar() }} className="absolute right-2 top-2 z-[2] flex h-11 w-11 items-center justify-center rounded-full" style={{ background: 'rgba(28,34,48,.55)', color: '#FBF3E2' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
           {foto ? <img src={foto} alt="" className="h-full w-full object-cover" onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')} /> : <span className="absolute inset-0" style={{ background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 2px,transparent 2px 12px)' }} />}
         </span>
         <div className="flex flex-col gap-3 p-4">

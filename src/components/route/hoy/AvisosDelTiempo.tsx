@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { DayPlan, Route } from '../../../lib/types'
+import type { Coordinates, DayPlan, Route } from '../../../lib/types'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { fetchHourlyRain, type HourlyRain } from '../../../lib/rainForecast'
-import { calcularAvisos, aplicarCambio, haParadoDeLlover, listaDeNombres, motivoDelCambio, normalizar, TEXTOS, volverAlPlan, type AvisoTiempo, type TipoAviso } from '../../../lib/avisosDelTiempo'
+import { calcularAvisos, haParadoDeLlover, motivoDelCambio, normalizar, TEXTOS, volverAlPlan, type AvisoTiempo, type TipoAviso } from '../../../lib/avisosDelTiempo'
+import type { Propuesta } from '../../../lib/hoyCambiarPlan'
+import { aplicarPropuesta, deshacerUltimo, useCambiarPlanStore, volverALaRutaOriginal } from '../../../lib/hoyCambiarPlanAplicar'
+import { proponerAlternativaDelTiempo, proponerVolverAlPlan } from '../../../lib/hoyLluvia'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useSyncStore } from '../../../store/useSyncStore'
-import { ParadaFoto, ParadaFotoDeParada } from './v2/ParadaFoto'
+import { HojaPropuesta, useContexto } from './v2/CambiarPlan'
+import { AvisoDeHoy, CruzDeAviso } from './v2/AvisosHoy'
 
 /**
  * LOS AVISOS DEL TIEMPO EN DIRECTO (HOY1, apartado 6; H12, C14 y C15 de Design). Se engancha en HOY con UNA línea: `<AvisosDelTiempo route={route} day={day} dateIso={dateIso} />`.
@@ -65,140 +69,69 @@ function Icono({ d }: { d: string }) {
   )
 }
 
-const BOTON_OSCURO = 'flex h-[46px] min-h-[46px] flex-1 items-center justify-center rounded-full text-[14px] font-semibold text-[#FFFDF8]'
-/** El mismo botón, a lo ancho, cuando va en columna (sin `flex-1`, que en vertical lo encogería). */
-const BOTON_ANCHO = 'flex h-[46px] min-h-[46px] w-full flex-none items-center justify-center rounded-full text-[14px] font-semibold text-[#FFFDF8]'
-
 /** H12: el cartel de un aviso, con [Ver alternativa]. */
-function Cartel({ aviso, onVer }: { aviso: AvisoTiempo; onVer: () => void }) {
+function Cartel({ aviso, onVer, onCerrar }: { aviso: AvisoTiempo; onVer: () => void; onCerrar: () => void }) {
+  // (HOY2) Con la X, el texto y el botón no caben en una fila: arriba el icono, el texto y la X; debajo, [Ver alternativa].
   return (
-    <div data-aviso-tiempo={aviso.tipo} className="flex flex-none items-center gap-3 rounded-[18px] px-3.5 py-3" style={{ background: FONDO[aviso.tipo], border: '1px solid rgba(28,34,48,.1)' }}>
-      <Icono d={ICONO[aviso.tipo]} />
-      <span className="min-w-0 flex-1 text-[13.5px] font-medium leading-[1.35]">{aviso.texto}</span>
-      <button type="button" data-ver-alternativa onClick={onVer} className="flex h-11 flex-none items-center rounded-full px-3 text-[12px] font-bold" style={{ background: TINTA, color: DORADO_CLARO }}>
+    <div data-aviso-tiempo={aviso.tipo} className='flex flex-none flex-col gap-1 rounded-[18px] py-2 pl-3.5 pr-2' style={{ background: FONDO[aviso.tipo], border: '1px solid rgba(28,34,48,.1)' }}>
+      <div className='flex items-start gap-2.5'>
+        <Icono d={ICONO[aviso.tipo]} />
+        <span className='min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]'>{aviso.texto}</span>
+        <CruzDeAviso onClick={onCerrar} />
+      </div>
+      <button type='button' data-ver-alternativa onClick={onVer} className='mb-1 ml-[48px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold' style={{ background: TINTA, color: DORADO_CLARO }}>
         Ver alternativa
       </button>
     </div>
   )
 }
 
-/** C14: «Va a llover» con lo que entra y lo que sale, y los botones. */
-function Alternativa({ aviso, day, dateIso, onCambiar, onDescansar, onSeguir }: { aviso: AvisoTiempo; day: DayPlan; dateIso: string; onCambiar: () => void; onDescansar: () => void; onSeguir: () => void }) {
-  const salen = aviso.salen.map((s) => day.stops.find((p) => p.id === s.id)).filter((p): p is NonNullable<typeof p> => Boolean(p))
-  const hayEntra = aviso.entra.length > 0
-  const etiqueta = aviso.tipo === 'lluvia' ? 'Cambiar al plan de lluvia' : aviso.tipo === 'nubes' ? 'Hacer el cambio' : 'Cambiar de sitio'
-  const titulo = aviso.tipo === 'lluvia' ? `Va a llover ${aviso.cuando}` : aviso.tipo === 'nubes' ? 'Hay nubes en el norte' : 'Viento fuerte'
-  return (
-    <div data-alternativa-tiempo={aviso.tipo} className="flex flex-none flex-col gap-3">
-      <div className="flex items-center gap-3 rounded-[22px] px-3.5 py-3" style={{ background: 'oklch(0.95 0.025 230)', border: '1px solid oklch(0.82 0.06 230)' }}>
-        <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full text-white" style={{ background: 'oklch(0.56 0.1 230)' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d={ICONO[aviso.tipo]} />
-          </svg>
-        </span>
-        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-[14.5px] font-semibold leading-[1.2]">{titulo}</span>
-          <span className="text-[12.5px] leading-[1.35] text-text/70">{hayEntra ? 'Te proponemos:' : aviso.tipo === 'lluvia' ? TEXTOS.descansar : 'Lo dejamos a tu criterio.'}</span>
-        </span>
-      </div>
-      {(hayEntra || salen.length > 0) && (
-        <div className="flex gap-2.5">
-          {hayEntra && (
-            <div data-entra className="flex flex-1 flex-col gap-2.5 rounded-[20px] p-3" style={{ background: 'oklch(0.96 0.03 150)', border: '1px solid oklch(0.82 0.07 150)' }}>
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-[.14em]" style={{ color: 'oklch(0.55 0.11 150)' }}>
-                Entra
-              </span>
-              <span className="flex gap-1.5">
-                {aviso.entra.map((e) => (
-                  <ParadaFoto key={e.clave} nombre={e.nombre} vista={false} marca={false} size={aviso.entra.length > 1 ? 40 : 56} />
-                ))}
-              </span>
-              <span className="text-[14px] font-medium leading-[1.2]">{listaDeNombres(aviso.entra.map((e) => e.nombre))}</span>
-              <span className="text-[12px] text-text/60">
-                {aviso.entra.map((e) => `${Math.floor(e.minutos / 60) ? `${Math.floor(e.minutos / 60)} h ` : ''}${e.minutos % 60 ? `${e.minutos % 60} min` : ''}`.trim()).join(' · ')}
-                {aviso.entra.some((e) => e.reserva) ? ' · con reserva' : ''}
-              </span>
-            </div>
-          )}
-          <div data-sale className="flex flex-1 flex-col gap-2.5 rounded-[20px] p-3" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.1)' }}>
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[.14em]" style={{ color: 'rgb(var(--accent-red))' }}>
-              Sale
-            </span>
-            <span className="flex gap-1.5">
-              {salen.map((p) => (
-                <ParadaFotoDeParada key={p.id} parada={p} ciudad={day.city} dateIso={dateIso} vista={false} marca={false} size={salen.length > 1 ? 40 : 56} />
-              ))}
-            </span>
-            <span className="text-[14px] font-medium leading-[1.2]">{listaDeNombres(aviso.salen.map((s) => s.nombre))}</span>
-          </div>
-        </div>
-      )}
-      <div className="flex flex-col gap-2.5">
-        {hayEntra && (
-          <button type="button" data-cambiar-plan onClick={onCambiar} className={BOTON_ANCHO} style={{ background: TINTA }}>
-            {etiqueta}
-          </button>
-        )}
-        {aviso.tipo === 'lluvia' && (
-          <button type="button" data-hoy-descansar onClick={onDescansar} className={hayEntra ? 'self-center py-1.5 text-[13px] font-medium text-text/60 underline underline-offset-[3px]' : BOTON_ANCHO} style={hayEntra ? undefined : { background: TINTA }}>
-            {TEXTOS.descansar}
-          </button>
-        )}
-        <button type="button" data-seguir-igual onClick={onSeguir} className="min-h-11 self-center py-1 text-[13px] font-medium text-text/60 underline underline-offset-[3px]">
-          Seguir igual
-        </button>
-      </div>
-    </div>
-  )
-}
-
-/** El cartel de «lo hemos cambiado», con [Deshacer]; y C15 «Ha parado de llover». */
-function CambioHecho({ day, paro, onDeshacer, onSeguirAsi }: { day: DayPlan; paro: boolean; onDeshacer: () => void; onSeguirAsi: () => void }) {
+/** El aviso de «lo hemos cambiado», con [Deshacer]; y 32b «Ha parado de llover» con [Ver plan] (que abre «¿Volvemos al plan?»). */
+function CambioHecho({ day, paro, onDeshacer, onVerPlan, onCerrarParo }: { day: DayPlan; paro: boolean; onDeshacer: () => void; onVerPlan: () => void; onCerrarParo: () => void }) {
   const motivo = motivoDelCambio(day)
   if (paro && (motivo === 'lluvia' || motivo === 'descansar')) {
     return (
-      <div data-ha-parado-de-llover className="flex flex-none flex-col gap-3">
-        <div className="flex items-center gap-3 rounded-[22px] px-3.5 py-3" style={{ background: 'oklch(0.96 0.05 85)', border: '1px solid oklch(0.82 0.1 85)' }}>
-          <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full text-white" style={{ background: 'oklch(0.5 0.12 65)' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" />
+      <div data-ha-parado-de-llover className='flex flex-none flex-col gap-1 rounded-[18px] py-2 pl-3.5 pr-2' style={{ background: 'oklch(0.96 0.05 85)', border: '1px solid oklch(0.82 0.1 85)' }}>
+        <div className='flex items-start gap-2.5'>
+          <span className='flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full' style={{ background: '#FFFDF8' }}>
+            <svg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#8E6820' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
+              <circle cx='12' cy='12' r='4' />
+              <path d='M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4' />
             </svg>
           </span>
-          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="text-[14.5px] font-semibold leading-[1.2]">{TEXTOS.ha_parado}</span>
-            <span className="text-[12.5px] leading-[1.35] text-text/70">{TEXTOS.ha_parado_sub}</span>
-          </span>
+          <span className='min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]'>{TEXTOS.ha_parado}</span>
+          <CruzDeAviso onClick={onCerrarParo} />
         </div>
-        <div className="flex gap-2.5">
-          <button type="button" data-volver-al-plan onClick={onDeshacer} className={BOTON_OSCURO} style={{ background: TINTA }}>
-            Volver al plan
-          </button>
-          <button type="button" data-seguir-asi onClick={onSeguirAsi} className="flex h-[46px] flex-1 items-center justify-center rounded-full text-[14px] font-semibold" style={{ border: '1.5px solid rgba(28,34,48,.22)', color: TINTA }}>
-            Seguir así
-          </button>
-        </div>
+        <button type='button' data-ver-plan onClick={onVerPlan} className='mb-1 ml-[48px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold' style={{ background: TINTA, color: DORADO_CLARO }}>
+          Ver plan
+        </button>
       </div>
     )
   }
   const texto = motivo === 'descansar' ? 'Hoy toca descansar: hemos quitado lo que queda al aire libre.' : motivo === 'nubes' ? 'Hemos cambiado el mirador por otro sitio.' : motivo === 'viento' ? 'Hemos cambiado el sitio con viento por otro a resguardo.' : 'Estás usando el plan de lluvia.'
   return (
-    <div data-tiempo-cambiado={motivo ?? ''} className="flex flex-none items-center gap-3 rounded-[18px] px-3.5 py-3" style={{ background: '#EEEBE4', border: '1px solid rgba(28,34,48,.1)' }}>
+    <div data-tiempo-cambiado={motivo ?? ''} className='flex flex-none items-center gap-3 rounded-[18px] px-3.5 py-3' style={{ background: '#EEEBE4', border: '1px solid rgba(28,34,48,.1)' }}>
       <Icono d={ICONO[motivo === 'nubes' ? 'nubes' : motivo === 'viento' ? 'viento' : 'lluvia']} />
-      <span className="min-w-0 flex-1 text-[13.5px] font-medium leading-[1.35]">{texto}</span>
-      <button type="button" data-deshacer-tiempo onClick={onDeshacer} className="flex h-11 flex-none items-center rounded-full px-3 text-[12px] font-bold" style={{ background: TINTA, color: DORADO_CLARO }}>
+      <span className='min-w-0 flex-1 text-[13.5px] font-medium leading-[1.35]'>{texto}</span>
+      <button type='button' data-deshacer-tiempo onClick={onDeshacer} className='flex h-11 flex-none items-center rounded-full px-3 text-[12px] font-bold' style={{ background: TINTA, color: DORADO_CLARO }}>
         Deshacer
       </button>
     </div>
   )
 }
 
-export function AvisosDelTiempo({ route, day, dateIso }: { route: Route; day: DayPlan; dateIso: string }) {
+export function AvisosDelTiempo({ route, day, dateIso, ubicacion = null, enCoche = true }: { route: Route; day: DayPlan; dateIso: string; ubicacion?: Coordinates | null; enCoche?: boolean }) {
+  void ubicacion
   const lanza = esDeLanzarote(route)
   const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
   const [meteo, setMeteo] = useState<HourlyRain | null>(null)
+  // (HOY2, C) Lo que está abierto: la alternativa de un aviso (32, «Plan de lluvia») o «¿Volvemos al plan?» (32b), las dos con el formato común de las propuestas.
   const [abierto, setAbierto] = useState<string | null>(null)
+  const [verPlan, setVerPlan] = useState(false)
+  const [propuestas, setPropuestas] = useState<Propuesta[]>([])
+  const [indice, setIndice] = useState(0)
   const [version, setVersion] = useState(0)
+  const ctx = useContexto(route, enCoche)
   const at = day.stops.find((s) => hasRealCoordinates(s.coordinates))?.coordinates
 
   // La previsión: la de nuestro servidor (con la caché de siempre) y, cada 20 minutos, se vuelve a mirar. En desarrollo, una de mentira puesta a mano.
@@ -226,30 +159,53 @@ export function AvisosDelTiempo({ route, day, dateIso }: { route: Route; day: Da
   const avisos = useMemo(() => (meteo && lanza ? calcularAvisos(day, meteo, true) : []), [meteo, lanza, day])
   if (!lanza || !meteo) return null
 
-  const aplicar = (aviso: AvisoTiempo, descansar = false) => {
-    useRouteStore.getState().applyAdjustedDay(day.id, aplicarCambio(day, aviso, descansar))
+  const cerrarHoja = () => {
     setAbierto(null)
+    setVerPlan(false)
   }
-  const deshacer = () => {
-    useRouteStore.getState().applyAdjustedDay(day.id, volverAlPlan(day))
+  const aplicar = (pr: Propuesta) => {
+    aplicarPropuesta(route.id, dateIso, pr)
+    cerrarHoja()
     setVersion((v) => v + 1)
   }
+  const original = () => {
+    volverALaRutaOriginal()
+    cerrarHoja()
+    setVersion((v) => v + 1)
+  }
+  // [Deshacer] del aviso de «lo hemos cambiado»: si lo último del historial es el cambio del tiempo, se deshace por el historial (así «Volver a mi ruta original» sigue cuadrando); si no, como siempre.
+  const deshacer = () => {
+    const h = useCambiarPlanStore.getState().historial
+    const ultima = h[h.length - 1]
+    if (ultima && (ultima.tipo === 'lluvia' || ultima.tipo === 'vuelta_lluvia')) deshacerUltimo()
+    else useRouteStore.getState().applyAdjustedDay(day.id, volverAlPlan(day))
+    setVersion((v) => v + 1)
+  }
+  const hoja = (titulo: string) => <HojaPropuesta titulo={titulo} propuestas={propuestas} indice={indice} vacio="No hay nada que cambiar: tu día sigue igual." onOtra={() => setIndice((i) => (i + 1) % propuestas.length)} onAplicar={aplicar} onOriginal={original} onCerrar={cerrarHoja} />
 
-  // Ya hay un cambio hecho por un aviso: su [Deshacer] y, si dejó de llover, C15.
+  // Ya hay un cambio hecho por un aviso: su [Deshacer] y, si dejó de llover, 32b «Ha parado de llover» → [Ver plan] → «¿Volvemos al plan?».
   if (hecho) {
     const claveParo = clave(tripId, dateIso, 'paro')
     const paro = haParadoDeLlover(meteo, horaDeAhora()) && !yaDescartado(claveParo)
     return (
       <div key={version} className="flex flex-none flex-col gap-2.5">
-        <CambioHecho
-          day={day}
-          paro={paro}
-          onDeshacer={deshacer}
-          onSeguirAsi={() => {
-            descartar(claveParo)
-            setVersion((v) => v + 1)
-          }}
-        />
+        <AvisoDeHoy id="tiempo:hecho" prio={2}>
+          <CambioHecho
+            day={day}
+            paro={paro}
+            onDeshacer={deshacer}
+            onVerPlan={() => {
+              setPropuestas(proponerVolverAlPlan({ day, ctx }))
+              setIndice(0)
+              setVerPlan(true)
+            }}
+            onCerrarParo={() => {
+              descartar(claveParo)
+              setVersion((v) => v + 1)
+            }}
+          />
+        </AvisoDeHoy>
+        {verPlan && hoja('¿Volvemos al plan?')}
       </div>
     )
   }
@@ -258,24 +214,23 @@ export function AvisosDelTiempo({ route, day, dateIso }: { route: Route; day: Da
   if (visibles.length === 0) return null
   return (
     <div key={version} className="flex flex-none flex-col gap-2.5">
-      {visibles.map((a) =>
-        abierto === a.id ? (
-          <Alternativa
-            key={a.id}
+      {visibles.map((a) => (
+        <AvisoDeHoy key={a.id} id={`tiempo:${a.id}`} prio={2}>
+          <Cartel
             aviso={a}
-            day={day}
-            dateIso={dateIso}
-            onCambiar={() => aplicar(a)}
-            onDescansar={() => aplicar({ ...a, entra: [], salen: a.salen }, true)}
-            onSeguir={() => {
+            onVer={() => {
+              setPropuestas(proponerAlternativaDelTiempo({ day, aviso: a, ctx }))
+              setIndice(0)
+              setAbierto(a.id)
+            }}
+            onCerrar={() => {
               descartar(clave(tripId, dateIso, a.id))
-              setAbierto(null)
+              setVersion((v) => v + 1)
             }}
           />
-        ) : (
-          <Cartel key={a.id} aviso={a} onVer={() => setAbierto(a.id)} />
-        ),
-      )}
+          {abierto === a.id && hoja(a.tipo === 'lluvia' ? 'Plan de lluvia' : a.tipo === 'nubes' ? 'Cambio por las nubes' : 'Cambio por el viento')}
+        </AvisoDeHoy>
+      ))}
     </div>
   )
 }

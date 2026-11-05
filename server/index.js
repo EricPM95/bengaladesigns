@@ -51,6 +51,7 @@ import { registrarRutasAvisosDestino } from './avisosDestino.js'
 import { registrarRutasDestinosCurados, DESTINOS_OCULTOS } from './destinosCurados.js'
 import { crearGuardianDestinosOcultos } from './destinoOculto.js'
 import { crearServicioAvisos, registrarRutasAvisos } from './avisos.js'
+import { crearServicioAvisosViaje, registrarRutasAvisosViaje } from './avisosViaje.js'
 import { crearClienteCivitatis, modoDeCivitatis } from './civitatis/cliente.js'
 import { crearPermisoAdminCivitatis } from './civitatis/permiso.js'
 import { crearCache as crearCacheCivitatis } from './civitatis/cache.js'
@@ -4318,7 +4319,7 @@ app.post('/api/destination-places', (req, res) => {
       requires_ticket: !(place.is_free_access ?? place.type === 'exterior'),
       // "+ Añadir" (decisión del usuario, 2026-09-28): el horario de ese día y de esa época, con el mismo módulo que el
       // motor (shared/routeEngine/openingHours.js), para avisar de "A esa hora está cerrado".
-      hours_data: { ...Object.fromEntries(['schedule', 'type', 'windows', 'by_day', 'by_season', 'by_period', 'closed_on', 'closed_dates', 'special_hours', 'last_entry', 'last_entry_by_day', 'abierto_24h', 'restriccion_dia', 'last_sunday', 'nth_sunday', 'closed_nth_sunday', 'misas_festivos'].filter((key) => place[key] != null).map((key) => [key, place[key]])), ...avisoDeHorarioDe(place) },
+      hours_data: { ...Object.fromEntries(['schedule', 'type', 'windows', 'by_day', 'by_season', 'by_period', 'closed_on', 'closed_dates', 'special_hours', 'last_entry', 'last_entry_by_day', 'abierto_24h', 'restriccion_dia', 'si_cerrado', 'last_sunday', 'nth_sunday', 'closed_nth_sunday', 'misas_festivos'].filter((key) => place[key] != null).map((key) => [key, place[key]])), ...avisoDeHorarioDe(place) },
       // Experiencias a las que pertenece (misma tabla que el motor): "También te puede interesar".
       themes: Object.entries(TAG_INTEREST_MAP)
         .filter(([theme, tags]) => theme !== 'free_tour' && (place.tags ?? []).some((tag) => tags.includes(tag)))
@@ -4696,6 +4697,11 @@ registrarRutasAvisosDestino(app, { admin: salesAdmin })
 // La campanita de avisos (cuentas parte 3): lista, leídos, avisos con fecha (nunca de noche), aviso al móvil (con PUSH_ACTIVO) y la tarea programada de Vercel (con CRON_SECRET).
 const servicioAvisos = salesAdmin ? crearServicioAvisos({ admin: salesAdmin, destinos: cargarDatosLogros().destinos }) : null
 if (salesAdmin) registrarRutasAvisos(app, { admin: salesAdmin, servicio: servicioAvisos })
+// (HOY3) Los avisos del viaje con el móvil bloqueado (la mañana, el turno, el tiempo de la noche antes, el atardecer, la llegada y la vuelta), a su hora en la hora del destino. Los dispara cada minuto pg_cron de Supabase (migración 0075) llamando a /api/cron/avisos-viaje con CRON_SECRET.
+if (salesAdmin) {
+  const servicioAvisosViaje = crearServicioAvisosViaje({ admin: salesAdmin, destinos: cargarDatosLogros().destinos, esAdminDeCuenta: async (uid) => esAdminLogros((await salesAdmin.auth.admin.getUserById(uid))?.data?.user) })
+  registrarRutasAvisosViaje(app, { admin: salesAdmin, servicio: servicioAvisosViaje, esAdmin: esAdminLogros })
+}
 // La API de consulta (parte 1, sandbox): apagada salvo CIVITATIS_API_ACTIVA=true (para todos) o =admin (solo los emails de LOGROS_ADMIN_EMAILS, decidido aquí por petición, Tanda 10O). Todo pasa por aquí; el móvil nunca ve el usuario, la contraseña ni el token. La caché usa Supabase si está la clave (tabla `civitatis_cache`, migración 0022).
 const civitatis = crearServicioCivitatis({
   activa: modoDeCivitatis() !== 'nadie',

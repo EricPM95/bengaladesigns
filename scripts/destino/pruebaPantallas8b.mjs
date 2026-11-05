@@ -180,7 +180,9 @@ console.log('5. Tanda 8B2: el orden de las sorpresas, el pedazo con su insignia,
   const hojas = leer('src/components/logros/visto/Hojas.tsx')
   debe(/<Insignia /.test(hojas) && /Tu pedazo ya es tuyo\. La foto es para tu álbum\./.test(hojas), 'v2', 'la hoja del pedazo (V2) lleva la insignia y dice que el pedazo ya es suyo')
   const durante = leer('src/components/route/hoy/v2/HoyDuranteV2.tsx')
-  debe(/Cerrar este aviso/.test(durante) && /h-11 w-11/.test(durante), 'avisos', 'los avisos del día llevan una cruz de 44 px')
+  // HOY2 (5-nov; antes → ahora → decisión de Eric): la cruz de los avisos estaba escrita dentro de HoyDuranteV2 → ahora es una pieza compartida (`CruzDeAviso`, en `AvisosHoy.tsx`) que usan TODOS los avisos; sigue midiendo 44 px.
+  const cruz = leer('src/components/route/hoy/v2/AvisosHoy.tsx')
+  debe(/<CruzDeAviso/.test(durante) && /Cerrar este aviso/.test(cruz) && /h-11 w-11/.test(cruz), 'avisos', 'los avisos del día llevan una cruz de 44 px')
   const v2 = archivos('src/components/route/hoy/v2').map((f) => sinComentarios(leer(f))).join('\n')
   debe(!/Tu ruta empieza/.test(v2) && !/>\s*Saltada\s*</.test(v2) && !/'Saltada'/.test(v2), 'hoy', 'fuera «Tu ruta empieza en…» y la etiqueta «Saltada»')
   const visto = archivos('src/components/logros/visto').map((f) => sinComentarios(leer(f))).join('\n')

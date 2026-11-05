@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import type { FotoViaje } from '../../../lib/fotosViaje'
 import { Icono } from '../../ui/Icono'
+import { BotonGuardarEnGaleria } from './BotonGuardarEnGaleria'
 
 /**
  * Una foto del viaje en grande (Tanda 6z6): la grande («foto.url») solo se descarga aquí, al abrirla; las listas enseñan la copia pequeña. Un toque (o Escape) la cierra.
@@ -19,6 +20,10 @@ export function FotoEnGrande({ foto, onCerrar }: { foto: FotoViaje | null; onCer
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#1C2230]/90 p-3" role="dialog" aria-modal="true" aria-label="Foto en grande" onClick={onCerrar}>
       <img src={foto.url} alt={foto.stopName ?? 'Foto del viaje'} className="max-h-full max-w-full rounded-xl object-contain" />
+      {/* (HOY2b 7) Guardarla en la galería del móvil, a su calidad original. */}
+      <div className="absolute inset-x-0 bottom-5 flex justify-center" onClick={(e) => e.stopPropagation()}>
+        <BotonGuardarEnGaleria foto={foto.url} className="bg-[#1C2230]/70" />
+      </div>
       <button type="button" onClick={onCerrar} aria-label="Cerrar" className="zona-toque absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#FFFDF8] text-[#1C2230]">
         <Icono nombre="cerrar" size={16} />
       </button>

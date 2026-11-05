@@ -90,7 +90,7 @@ const vuelo = crudo('src/components/route/reservas/HojaDelVuelo.tsx')
 debe(/esDestinoDeCoche\(nombreDelDestino\) \? "Aeropuerto de Lanzarote" : "Ciampino"/.test(vuelo), '6b', 'el ejemplo en gris de los campos sin «Ciampino» en Lanzarote')
 const lista = crudo('src/components/pase/lista/listaDeCoche.ts')
 for (const t of ['o el ferry', 'los minutos en coche', 'Gasolineras, aparcamientos y dónde comer', 'los 12 sitios', 'Vuelve a Lanzarote cuando quieras', 'Los avisos del día', 'LOGROS']) debe(lista.includes(t), '6c', `la lista del pase de Lanzarote lleva «${t}»`)
-debe(crudo('src/components/pase/ListaDelPase.tsx').includes('listaParaDestino(SECCIONES_DE_LA_LISTA, destino)') && crudo('src/components/route/hoy/HoySinPase.tsx').includes('tarjetasDeHoyParaDestino(TARJETAS_DE_HOY, destino)'), '6d', 'la lista del pase y HoySinPase usan la de Lanzarote')
+debe(crudo('src/components/pase/ListaDelPase.tsx').includes('listaParaDestino(SECCIONES_DE_LA_LISTA, destino)') && crudo('src/components/route/hoy/HoySinPase.tsx').includes('tarjetasDeHoy2(destino)'), '6d', 'la lista del pase y HoySinPase usan la de Lanzarote')
 const textosLz = [lista, crudo('src/lib/exploreLanzarote.ts'), bloque, aparcarFn, cerca.slice(cerca.indexOf('deCoche ?'))].join('\n')
 debe(!/Pompeya|Florencia|Ciampino|Vaticano|Fiumicino|Coliseo/.test(sinComentarios(textosLz.replace(/'Los sellos de Roma[^']*'/g, ''))), '6e', 'los textos nuevos de Lanzarote no nombran nada de Roma')
 

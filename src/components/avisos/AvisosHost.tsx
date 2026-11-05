@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { avisoDeLaDireccion } from '../../lib/avisos'
+import { abrirHoy, hoyDeLaDireccion } from '../../lib/abrirHoyDeAviso'
 import { cuentasActivas } from '../../lib/cuentas'
 import { demoActivo } from '../../lib/logros'
 import { prepararAudioAlPrimerToque } from '../../lib/sonidos'
@@ -20,7 +21,7 @@ const hoyEnLocal = (): string => {
 /**
  * EL ANFITRIÓN DE LA CAMPANITA DE AVISOS (cuentas parte 3, punto 4). Siempre montado; con las cuentas apagadas no hace nada. Con una cuenta de verdad:
  *   · carga los avisos al empezar, al volver a la app y cada minuto mientras está a la vista (así el puntito aparece sin recargar);
- *   · si se llega por el aviso del móvil (`/?aviso=ID`, o el aviso lo toca con la app abierta) abre la campanita en ese aviso (AV6);
+ *   · si se llega por el aviso del móvil (`/?aviso=ID`, o el aviso lo toca con la app abierta) abre la campanita en ese aviso (AV6); si es un aviso del viaje (`/?hoy=1`, HOY3) abre HOY;
  *   · guarda la zona horaria de la persona (para no avisarle de noche) y deja lista la clave del aviso del móvil;
  *   · al acabar el primer día del viaje, en el primer toque, sale la ventana del móvil que pide permiso para los avisos (una sola vez en la vida).
  */
@@ -52,6 +53,17 @@ function Encendido() {
         /* sin historial */
       }
     }
+    // (HOY3) Un aviso del viaje (`/?hoy=1`) abre HOY.
+    if (hoyDeLaDireccion(window.location.search)) {
+      try {
+        const url = new URL(window.location.href)
+        url.searchParams.delete('hoy')
+        window.history.replaceState(null, '', url)
+      } catch {
+        /* sin historial */
+      }
+      abrirHoy()
+    }
     void cargar().then(() => {
       if (delAviso) abrir(delAviso)
     })
@@ -65,6 +77,7 @@ function Encendido() {
     // El aviso del móvil con la app ya abierta: el service worker avisa por mensaje.
     const alMensaje = (e: MessageEvent) => {
       if (e.data?.tipo === 'aviso') void cargar().then(() => abrir(e.data.id ?? null))
+      if (e.data?.tipo === 'hoy') abrirHoy()
     }
     navigator.serviceWorker?.addEventListener('message', alMensaje)
     return () => {

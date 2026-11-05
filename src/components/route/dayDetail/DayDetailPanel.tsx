@@ -91,8 +91,8 @@ import { FreeTimeBlock } from './FreeTimeBlock'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
-import { useDatosDeHorario, useHorarioDeParadas } from '../../../lib/horarioDeParada'
-import { avisoDeHorario, ocasoDelDia } from '../../../lib/avisoDeHorario'
+import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
+import { ocasoDelDia } from '../../../lib/avisoDeHorario'
 import { Icono } from '../../ui/Icono'
 
 /** Por debajo de esto, lo que queda antes de cenar es caminar tranquilo; por encima, tiempo libre que se dice. */
@@ -559,8 +559,7 @@ export function DayDetailPanel({
   const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null
   // El horario de cada parada ese día (Tanda 6z5): «Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy».
   const horarioDe = useHorarioDeParadas(day.city, dateIso)
-  // (10S10, apartados 2 y 3) Los datos del catálogo (cómo se ve cada sitio) y el mes del viaje, para el aviso de horario y la etiqueta de la hora de cada parada.
-  const datosDeHorario = useDatosDeHorario(day.city)
+  // (HOY2b 8b) El mes del viaje: lo usan las horas de las paradas; el aviso gris de horario ya no sale en DÍAS.
   const mesDelViaje = route?.answers.month ?? null
   // Paradas REALES del día (con coordenadas) para el mapa de StopDetailSheet — mismo orden que
   // `stops` (contenido rico mock/real), así que `realStops[index]` siempre es la pareja correcta.
@@ -1143,7 +1142,7 @@ export function DayDetailPanel({
     const ocasoDeLaParada = ocasoDelDia(dateIso, mesDelViaje, realStop?.coordinates, route?.destination ?? day.city)
     const horaDeLaParada = { inicio: inicioDeLaParada, ocaso: ocasoDeLaParada, despuesDeCena: lugarDeLaCena >= 0 && lugarDeLaParada > lugarDeLaCena }
     const horarioDeLaParada = horarioDe({ ...stop, hoursData: realStop?.hoursData })
-    const avisoDeLaParada = avisoDeHorario({ parada: { ...stop, ...realStop, name: stop.name }, datos: datosDeHorario, horario: horarioDeLaParada, inicio: inicioDeLaParada, antesDeCena: lugarDeLaCena >= 0 && lugarDeLaParada < lugarDeLaCena, ocaso: ocasoDeLaParada })
+    // (HOY2b 8b, Eric 5-nov: la línea gris «A esta hora, posiblemente… ya esté cerrado» ya NO sale en DÍAS; los avisos de horario viven en HOY (src/lib/hoyHorarios.ts). Solo se queda lo seguro, en rojo.)
     return (
       // El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia para un hueco.
       <SortableStop
@@ -1170,7 +1169,6 @@ export function DayDetailPanel({
               startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)}
               freeDayWarning={freeDay && realStop ? freeDayStopWarning(realStop, dateIso) : undefined}
               horario={horarioDeLaParada}
-              avisoHorario={avisoDeLaParada}
               horaDeParada={horaDeLaParada}
               tripWarning={(movedDay && realStop && stop.visitMode !== 'fuera' ? freeDayStopWarning({ ...realStop, time: minutesToTime(startMinutes) }, dateIso) : null)}
               addedByUser={Boolean(realStop?.addedByUser)}

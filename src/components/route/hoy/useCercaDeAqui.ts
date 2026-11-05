@@ -32,6 +32,29 @@ export interface RetoDelDia {
   sitios: { sitio: string; nombre: string; ganado: boolean; hoy: boolean }[]
 }
 
+/** (HOY2b, 4) Un sitio de un reto del día con su estado: visto (con fecha), hoy en tu ruta, en tu ruta otro día (con su fecha) o fuera de tu ruta (cerca o no de la zona de hoy). */
+export interface SitioDeReto {
+  sitio: string
+  nombre: string
+  ganado: boolean
+  hoy: boolean
+  estado: 'visto' | 'hoy' | 'otro_dia' | 'fuera'
+  fecha: string | null
+  dia_fecha: string | null
+  cerca_de_hoy: boolean
+}
+
+/** (HOY2b, 4) Una colección que se puede completar hoy, o que tiene un pedazo fuera de tu ruta pero cerca de la zona de hoy. */
+export interface RetoDeHoy {
+  coleccion: string
+  nombre: string
+  faltan: number
+  total: number
+  completable_hoy: boolean
+  faltan_fuera: string[]
+  sitios: SitioDeReto[]
+}
+
 export interface RespuestaCerca {
   ok: boolean
   cerca: SitioCerca[]
@@ -40,6 +63,8 @@ export interface RespuestaCerca {
   fuera_de_ruta: string | null
   junto_a: string | null
   reto: RetoDelDia | null
+  /** (HOY2b, 4) Todos los retos del día. */
+  retos?: RetoDeHoy[]
 }
 
 const CADA_MS = 45000
@@ -70,7 +95,7 @@ async function ubicacionConPermiso(): Promise<Ubicacion | null> {
   })
 }
 
-export function useCercaDeAqui({ tripId, sitiosHoy, activo }: { tripId: string | null; sitiosHoy: string[]; activo: boolean }): RespuestaCerca | null {
+export function useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche = false }: { tripId: string | null; sitiosHoy: string[]; activo: boolean; /** (HOY2b, 4) Para contar «cerca de la zona de hoy»: 20 min en coche o 15 a pie. */ enCoche?: boolean }): RespuestaCerca | null {
   const [datos, setDatos] = useState<RespuestaCerca | null>(null)
   const clave = sitiosHoy.join('|')
   const ultima = useRef(0)
@@ -91,7 +116,7 @@ export function useCercaDeAqui({ tripId, sitiosHoy, activo }: { tripId: string |
       }
       ultima.current = Date.now()
       const ubicacion = await ubicacionConPermiso()
-      const r = await llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo: { trip_id: tripId, ubicacion, sitios_hoy: sitiosHoy } })
+      const r = await llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo: { trip_id: tripId, ubicacion, sitios_hoy: sitiosHoy, en_coche: enCoche } })
       if (vivo && r?.ok) setDatos(r)
     }
     void preguntar()

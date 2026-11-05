@@ -1,3 +1,4 @@
+// HOY2b (agente D, 5-nov): el aviso gris de horario ya no sale en DÍAS (ver abajo, «antes → ahora → decisión de Eric, 5-nov»).
 // Tanda 10S10 (B, apartados 2 y 3): los avisos de horario («posiblemente…») y los nombres que no dependen de la hora («Fontana de Trevi» + etiqueta pequeña solo si la hora lo cumple).
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTanda10S10_B.mjs
 import fs from 'node:fs'
@@ -15,8 +16,9 @@ console.log('1. Código y datos')
   const srv = sinCom(L('server/index.js'))
   debe(/\.\.\.avisoDeHorarioDe\(place\)/.test(srv), 'ap2', 'el servidor manda cómo se ve cada sitio dentro de hours_data')
   const panel = sinCom(L('src/components/route/dayDetail/DayDetailPanel.tsx'))
-  debe(/avisoHorario=\{avisoDeLaParada\}/.test(panel) && /horaDeParada=\{horaDeLaParada\}/.test(panel), 'ap2', 'DÍAS calcula el aviso y la hora de cada parada al pintar (se quitan solos si se mueve)')
-  debe(/lugarDeLaParada < lugarDeLaCena/.test(panel), 'ap2', 'antes de la cena es por posición en el día, no por la franja guardada')
+  // HOY2b (agente D, 5-nov; antes → ahora → decisión de Eric, 5-nov): ANTES DÍAS pintaba el aviso gris de horario en cada tarjeta (`avisoHorario={avisoDeLaParada}`); AHORA no: los avisos de horario viven en HOY (src/lib/hoyHorarios.ts, prueba pruebaTandaHOY2b_D).
+  debe(!/avisoHorario=\{/.test(panel) && /horaDeParada=\{horaDeLaParada\}/.test(panel), 'ap2', 'HOY2b: DÍAS ya NO pinta el aviso gris de horario (antes sí); la hora de cada parada se calcula al pintar (se quita sola si se mueve)')
+  debe(/lugarDeLaParada > lugarDeLaCena/.test(panel), 'ap2', 'después de la cena es por posición en el día, no por la franja guardada')
   const fmt = sinCom(L('src/lib/format.ts'))
   debe(/nombreSinHora\(/.test(fmt), 'ap3', 'displayStopName quita la hora del nombre en todas las pantallas')
   const tabla = JSON.parse(L('docs/dias/_10s10_tabla_horarios.json'))
@@ -187,7 +189,10 @@ try {
     console.log('   aviso:', cand.name, '| antes:', antes, '| despues:', despues)
     const dicho = despues && /^A esta hora, posiblemente .* (ya )?est(é|én) cerrad[oa]s?, pero puedes ver(lo|la|los|las) por fuera igualmente\.$/.test(despues)
     const temprano = despues === null && antes === null
-    debe(Boolean(dicho) || temprano || /aún no ha/.test(despues ?? ''), 'ap2', `${cand.name} al final del día: «${despues}» (antes: «${antes}»)`)
+    void dicho
+    void temprano
+    // HOY2b (agente D; antes → ahora → decisión de Eric, 5-nov): ANTES, al final del día salía la línea «A esta hora, posiblemente… ya esté cerrado»; AHORA no sale nunca en DÍAS.
+    debe(despues === null && antes === null, 'ap2', `HOY2b: ${cand.name} al final del día, SIN línea gris de horario en DÍAS (antes salía «A esta hora, posiblemente…»): «${despues}» (antes: «${antes}»)`)
     await st(`s.reorderStops(${JSON.stringify(cand.id)}, ${JSON.stringify(cand.ids)}); return true`)
     await esp(2500)
     const vuelta = await aviso()

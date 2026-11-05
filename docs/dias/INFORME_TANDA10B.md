@@ -5418,3 +5418,36 @@ Prompt en `docs/dias/PROMPT_ARREGLO_CREAR_LANZAROTE.md` (llegó entero, hasta «
   *Dónde:* Crear un viaje › Barcelona › Lanzarote (con tu cuenta de administrador).  *Captura:* `arreglo_lz_ruta_creada_1.jpg`
 - ✅ Hecho — Sin administrador, Lanzarote sigue oculto; Roma, igual (muestra de 60 idéntica); pruebaJutrip y las de Lanzarote en 0 Sin sesión: Lanzarote da 404 en /api/classify-destination y no sale en la lista de destinos; Roma, 200. Ver el informe.  
   *Dónde:* No es de móvil.
+
+---
+
+# Tandas HOY2, HOY2b y HOY3 (5-nov)
+
+Repasos para el móvil: `docs/dias/REPASO_HOY2.html`, `REPASO_HOY2b.html` y `REPASO_HOY3.html`. Textos de HOY: `docs/hoy/TEXTOS_HOY.md`. Lanzarote sigue OCULTO (solo administrador). Sin migraciones aplicadas por mí: la HOY3 trae 0074 y 0075 para que las pegues tú (`docs/dias/HOY3_SQL_PARA_PEGAR.sql`).
+
+## HOY2 — HOY completa y «Cambiar plan»
+- ✅ Orden de los bloques, avisos con X (máx. 2 + «N avisos más»), «Tu día» sin horas por franjas, «Por llegar» con foto, día acabado, llegada, último día, sin pase con la lista nueva, día de prueba sin candados, ficha completa al tocar la tarjeta y «Si te sobra tiempo».
+- ✅ [Cambiar plan] con sus 5 opciones y el motor de propuestas (retraso 15/30/60, saltar, pasar a otro día en 3 casos, añadir en 2), «Plan actualizado · Deshacer» y «Volver a mi ruta original».
+- ✅ Quiero comer ahora (solo abiertos), «Tu restaurante está a N minutos», «¿Qué hacemos con…?», entrada en peligro y lluvia.
+- ⚠️ Atardecer: la tarjeta naranja y debajo la de la parada (para no perder [He terminado]). Nubes y viento (31): sin captura propia.
+
+## HOY2b — compañero, reto y retoques
+- ✅ [¿Qué hago ahora?] (iluminado y sin iluminar), «¿Cómo vais?» y Cansados en sus 4 casos, +15/+30 sin mover la ruta, reto del día con álbum de cromos con fotos, A tu aire, atardecer sin parada con fotos, avisos de horario movidos de DÍAS a HOY (tarjeta de la mañana y aviso en directo), pestaña Logros cerrada al abrir.
+- ⚠️ [Guardar en mi galería]: probado con simulación de iPhone y Android, no en un móvil real. Tempietto → mirador: texto hecho, foto neutra hasta que haya una buena.
+
+## HOY3 — avisos con el móvil bloqueado
+- ✅ Cálculo puro, servidor (`server/avisosViaje.js`), service worker, tarjeta de iPhone, Ajustes con [Enviarme un aviso de prueba] (solo admin). Los 12 avisos de tu viaje (dom 8 a vie 13) están en `REPASO_HOY3.html` y en `docs/dias/HOY3_AVISOS_DE_ERIC.md`.
+- ❌ **Pendiente de ti para que lleguen:** activar `pg_cron` y `pg_net`, pegar el SQL, crear los dos secretos del Vault y poner en Vercel `PUSH_ACTIVO`, las claves VAPID y `CRON_SECRET`.
+
+## Pruebas
+- Nuevas, cada una en 0 fallos cuando la pasó su agente: `pruebaTandaHOY2_A` 85, `_B` 128, `_C` 132, `pruebaTandaHOY2b_D` 92, `_E` 136, `pruebaTandaHOY3` 123.
+- Pasadas por mí al final con todo junto, en 0: `pruebaJutrip` 130 (API normal, Lanzarote oculto), `pruebaTanda10J` 225, `pruebaTandaLL_LZ` 1768, `pruebaTandaLL_ROMA` 1834, `pruebaTandaLZ3b` 33, `pruebaTanda7_hoy` 126, `10P_hoy` 40, `10N11_c` 47, `10N12_b` 63, `Pantallas8b` 171, `Pantallas8c` 1377, `10H` 52, `10S10_B` 41. Muestra de 60 de Roma: idéntica. Typecheck limpio.
+- `pruebaJutrip`: puesta al día (antes → ahora → decisión de Eric, 5-nov): el frambuesa del cromo «No está en tu ruta» (`RetoDelDia.tsx`) entra en la lista permitida («lo que falta»).
+- ❌ **No pude repetir al final, con todo junto, las pruebas que crean un viaje a Lanzarote** (HOY1_A/B/C, HOY2_A/B/C, HOY2b_D/E, HOY3, LG1_A): la clave de Claude de este ordenador dice «credit balance is too low» y la generación de Lanzarote llama a Claude en `generate-day-places` (el atajo sin Claude solo cubre Roma hasta 5 días). Cada una pasó en 0 con su agente un rato antes, y las de HOY de Roma pasan todas en el código final.
+- `pruebaTandaLG1_A` y `_B` editadas (Logros cerradas): `_B` 59 · 0; `_A` no ha dado resultado por el mismo motivo.
+- Sin correr, como acordamos: el barrido de 365 fechas.
+
+## Lo que necesito de ti
+1. **Saldo de Claude:** recarga el saldo (o cambia la clave). Sin él no se puede crear un viaje a Lanzarote nuevo, aquí ni, si es la misma clave, en producción. Tu viaje ya creado no cambia.
+2. Pegar el SQL de la HOY3 y poner las variables (arriba).
+3. Decisiones: ¿«¿Cómo vais?» tras comer a 1 h de empezar la comida y hasta las 18:30? ¿La hora «límite − 30» del último día es salir al aeropuerto (15:17) o la T1 (16:40)? ¿Quitamos la lista roja «X cierra hoy…» que duplica la tarjeta nueva? ¿Los miembros de un viaje compartido reciben avisos?

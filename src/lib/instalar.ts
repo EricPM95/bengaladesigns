@@ -79,3 +79,29 @@ export function prepararInstalacion(marca: { nombre: string; color_tema: string;
   meta('apple-mobile-web-app-title', marca.nombre)
   if ('serviceWorker' in navigator) void navigator.serviceWorker.register('/sw.js').catch(() => undefined)
 }
+
+/* ---------------------------------------------------------------------------------------------------------------------------------------- */
+/* HOY3 (5-nov): LA TARJETA DE HOY «Añade JUTRIP a tu pantalla de inicio para recibir los avisos del viaje».                                  */
+/* En el iPhone los avisos con el móvil bloqueado SOLO llegan si la web está añadida a la pantalla de inicio. El primer día del viaje, si es     */
+/* iPhone (o iPad) y la web no está instalada, HOY lo dice con los pasos; se cierra con la X y no vuelve.                                      */
+/* ---------------------------------------------------------------------------------------------------------------------------------------- */
+const CLAVE_TARJETA_AVISOS = 'trazo:hoy3:instalar-avisos-cerrada'
+
+/** Pura: ¿sale la tarjeta? Solo en iPhone/iPad, con la web sin instalar, el primer día del viaje, con pase (o el día de prueba) y si no se ha cerrado ya. */
+export function debeEnseñarTarjetaDeAvisos(e: { plataforma: Plataforma; instalada: boolean; esPrimerDia: boolean; conPase: boolean; cerrada: boolean }): boolean {
+  return e.plataforma === 'ios' && !e.instalada && e.esPrimerDia && e.conPase && !e.cerrada
+}
+export function tarjetaDeAvisosCerrada(): boolean {
+  try {
+    return window.localStorage.getItem(CLAVE_TARJETA_AVISOS) === 'si'
+  } catch {
+    return false
+  }
+}
+export function cerrarTarjetaDeAvisos(): void {
+  try {
+    window.localStorage.setItem(CLAVE_TARJETA_AVISOS, 'si')
+  } catch {
+    /* sin almacenamiento: puede volver a salir */
+  }
+}
