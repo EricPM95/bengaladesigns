@@ -22,7 +22,16 @@ const AQUI = dirname(fileURLToPath(import.meta.url))
 const leer = (ruta) => JSON.parse(readFileSync(join(AQUI, '..', ruta), 'utf8'))
 const marcaDe = () => leer('data/marca.json')
 /** Los datos que usa el módulo puro: los umbrales del tiempo y los sitios de atardecer (los mismos archivos que usa la app). */
-export const cargarDatosDeAvisos = () => ({ tiempo: leer('data/hoy/avisos_tiempo.json'), atardecer: leer('src/data/sitiosDeAtardecer.json') })
+// Los sitios de atardecer viven en src/ y Vercel solo sube lo que se le dice (vercel.json › includeFiles). Si faltara, NUNCA se cae toda la API (5-nov: se cayó): el aviso de atardecer se queda sin sitio y lo demás sigue.
+const leerSiExiste = (ruta, porDefecto) => {
+  try {
+    return leer(ruta)
+  } catch (e) {
+    console.warn(`[avisos-viaje] no se pudo leer ${ruta}: ${e?.code ?? e?.message}`)
+    return porDefecto
+  }
+}
+export const cargarDatosDeAvisos = () => ({ tiempo: leer('data/hoy/avisos_tiempo.json'), atardecer: leerSiExiste('src/data/sitiosDeAtardecer.json', {}) })
 
 /** Adónde mirar el tiempo de un día: la primera parada con coordenadas de verdad, adonde va el coche o el centro de la isla. */
 const CENTRO_POR_DESTINO = { lanzarote: { lat: 29.0, lng: -13.6 } }
