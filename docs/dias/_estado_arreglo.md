@@ -1,13 +1,13 @@
-# Estado de la tanda lg1
+# Estado de la tanda arreglo
 
-**Última actualización: 5/11/26, 0:44**
+**Última actualización: 5/11/26, 14:22**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-LG1 subida: pestaña Logros en la ficha, sello Por conseguir y retoques de la HOY1; todas las pruebas en 0; barrido de 365 sin correr
+Arreglo de crear un viaje a Lanzarote subido; todas las pruebas en 0
 
 ## Qué falta
-Nada: apagando el PC
+Nada: aviso a Eric; sigue la HOY2
 
 ## Procesos abiertos ahora mismo
 - node: 2
