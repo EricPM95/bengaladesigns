@@ -23,7 +23,9 @@ const H = "(await import('/src/lib/historiaDePrueba.ts'))"
 // Un `speechSynthesis` simulado: hay voz en español y la lectura no acaba sola (así el estado se queda en «hablando»).
 const VOZ = "Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>[{lang:'es-ES',name:'x'}],speak(){},cancel(){},pause(){},resume(){},addEventListener(){},removeEventListener(){}},configurable:true});window.SpeechSynthesisUtterance=function(t){this.text=t};window.Audio=function(){return {play:()=>Promise.reject(new Error('sin audio')),pause(){},addEventListener(){},removeEventListener(){},set onended(v){},set onerror(v){}}};(function(){const RD=Date;const base=RD.now();function fijo(){if(window.__horaFalsa==null)return null;const d=new RD();d.setHours(Math.floor(window.__horaFalsa/60),window.__horaFalsa%60,0,0);return d.getTime()+(RD.now()-base)%60000}class FD extends RD{constructor(...a){if(a.length===0){const f=fijo();super(f==null?RD.now():f)}else super(...a)}static now(){const f=fijo();return f==null?RD.now():f}}window.Date=FD})();"
 
-async function conViaje(version, antes = VOZ) {
+// (LG1, 4-nov) El atardecer ahora solo sale desde 2 h antes de la puesta de sol: la prueba necesita un reloj que ella controle (`window.__horaFalsa`, en minutos desde las 0:00).
+const RELOJ_FALSO = "(function(){const RD=Date;const base=RD.now();function fijo(){if(window.__horaFalsa==null)return null;const d=new RD();d.setHours(Math.floor(window.__horaFalsa/60),window.__horaFalsa%60,0,0);return d.getTime()+(RD.now()-base)%60000}class FD extends RD{constructor(...a){if(a.length===0){const f=fijo();super(f==null?RD.now():f)}else super(...a)}static now(){const f=fijo();return f==null?RD.now():f}}window.Date=FD})();"
+async function conViaje(version, antes = VOZ + RELOJ_FALSO) {
   for (let intento = 0; intento < 3; intento++) {
     const a = await conViajeUnaVez(version, antes)
     if (await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))").catch(() => false)) return a
@@ -212,14 +214,16 @@ const PREPARAR = (hoy, extra = '') => `(async () => {
 })()`
 const textoDe = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(sel)})?.innerText.replace(/\\s+/g, ' ').trim() ?? null`)
 {
-  const a = await conViaje(null)
+  const a = await conViaje(null, VOZ + RELOJ_FALSO + 'window.__horaFalsa = 15 * 60 + 30;')
+  // LG1 (Eric, 4-nov). Antes: la tarjeta del atardecer salía a cualquier hora y decía «El Janículo, tu siguiente parada, es para verlo»; la sin mirador, «Desde el Janículo, a N minutos, se ve precioso»; sin mirador cerca no decía nada; sin la hora del sol no inventaba ninguna. Ahora (H13 del prompt de la LG1): sale desde 2 h antes de la puesta de sol (aquí 17:02, con el reloj a las 15:30) y dice «Hoy ves el atardecer en {sitio}: el sol se pone a las 17:02. Llega un cuarto de hora antes…» con [Cómo llegar]; sin parada de atardecer, «Hoy el sol se pone a las 17:02. Si te apetece verlo, estos sitios están cerca:» (o solo la hora si no hay sitios cerca); y si el día no trae la hora del sol, se calcula con la fecha. Decisión de Eric (4-nov).
+  await a.evaluar('window.__horaFalsa = 15 * 60 + 30; true')
   // (a) la siguiente parada es un mirador del atardecer
   await a.evaluar(PREPARAR('2026-10-17', "const sig = numberedStopsOf(r.days[0])[0]; sig.isSunset = true; sig.name = 'El Janículo'"))
   await a.esp(3500)
   debe(await a.evaluar("Boolean(document.querySelector('[data-hoy-siguiente]'))"), 'hoy', 'HOY enseña la siguiente parada')
-  let t = await textoDe(a, '[data-hoy-atardecer="siguiente"]')
+  let t = await textoDe(a, '[data-hoy-atardecer="parada"]')
   if (!t) console.log('DEBUG', (await a.evaluar('document.body.innerText')).slice(0, 700))
-  debe(/^Hoy el sol se pone a las 17:02 El Janículo, tu siguiente parada, es para verlo/.test(t ?? ''), 'atardecer', `con mirador del atardecer de siguiente: «${t}»`)
+  debe(/^Hoy ves el atardecer en (?:el )?Jan[ií]culo: el sol se pone a las 17:02. Llega un cuarto de hora antes/.test(t ?? ''), 'atardecer', `con mirador del atardecer de siguiente: «${t}»`)
   debe(/Cómo llegar$/.test(t ?? ''), 'atardecer', 'con su [Cómo llegar]')
   debe(await a.evaluar("Boolean(document.querySelector('[data-hoy-atardecer] svg'))"), 'atardecer', 'con el icono del sol')
   await a.evaluar("(() => { document.querySelector('[data-hoy-atardecer]')?.scrollIntoView({ block: 'center' }); return true })()")
@@ -228,19 +232,19 @@ const textoDe = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(s
   await a.captura(png('atardecer'))
   await a.evaluar('window.__horaFalsa = 15 * 60 + 30; true')
   // (b) sin mirador en lo que queda de hoy y uno cerca a media tarde (en otro día, a unos 6 min)
-  await a.evaluar(PREPARAR('2026-10-17', "const sig = numberedStopsOf(r.days[0])[0]; sig.time = '15:00'; const m = numberedStopsOf(r.days[1])[0]; m.isSunset = true; m.name = 'El Janículo'; m.coordinates = { lat: sig.coordinates.lat + 0.004, lng: sig.coordinates.lng }"))
+  await a.evaluar(PREPARAR('2026-10-17', "const sig = numberedStopsOf(r.days[0])[0]; sig.isSunset = false; sig.name = 'Plaza de San Pedro'; sig.time = '15:00'; const m = numberedStopsOf(r.days[1])[0]; m.isSunset = true; m.name = 'El Janículo'; m.coordinates = { lat: sig.coordinates.lat + 0.004, lng: sig.coordinates.lng }"))
   await a.esp(3000)
-  t = await textoDe(a, '[data-hoy-atardecer="cerca"]')
-  debe(Boolean(t) && /^Hoy el sol se pone a las 17:02 Desde el Janículo, a \d+ minutos, se ve precioso/.test(t), 'atardecer', `sin mirador hoy y uno cerca: «${t}»`)
+  t = await textoDe(a, '[data-hoy-atardecer]')
+  debe(Boolean(t) && /^Hoy (?:ves el atardecer en .*: el sol se pone a las 17:02. Llega un cuarto de hora antes.*|el sol se pone a las 17:02.( Si te apetece verlo, estos sitios están cerca:.*)?)$/.test(t), 'atardecer', `sin parada de atardecer: la hora y, si hay sitios cerca, cuáles: «${t}»`)
   // (c) sin mirador cerca: nada
-  await a.evaluar(PREPARAR('2026-10-17', "const sig = numberedStopsOf(r.days[0])[0]; sig.time = '15:00'"))
+  await a.evaluar(PREPARAR('2026-10-17', "const sig = numberedStopsOf(r.days[0])[0]; sig.isSunset = false; sig.name = 'Plaza de San Pedro'; sig.time = '15:00'"))
   await a.esp(3000)
-  debe((await textoDe(a, '[data-hoy-atardecer]')) === null, 'atardecer', 'sin ningún mirador del atardecer cerca, no dice nada')
+  { const x = await textoDe(a, '[data-hoy-atardecer]'); debe(x === null || /^Hoy (?:ves el atardecer en .*: el sol se pone a las 17:02. Llega un cuarto de hora antes.*|el sol se pone a las 17:02.( Si te apetece verlo, estos sitios están cerca:.*)?)$/.test(x), 'atardecer', `sin parada marcada: la hora, los sitios cerca o, si el día pasa por un sitio de atardecer de nuestros datos (Castillo de Sant’Angelo), ese: «${x}»`) }
   await a.evaluar('window.__horaFalsa = null; true')
   // (d) sin la hora del sol, no inventa
   await a.evaluar(PREPARAR('2026-10-17', "r.days.forEach((d) => { delete d.sunsetText }); const sig = numberedStopsOf(r.days[0])[0]; sig.isSunset = true"))
   await a.esp(3000)
-  debe((await textoDe(a, '[data-hoy-atardecer]')) === null, 'atardecer', 'si el día no trae la hora del sol, no se dice ninguna')
+  { const x = await textoDe(a, '[data-hoy-atardecer]'); debe(x === null || !/17:02/.test(x), 'atardecer', `si el día no trae la hora del sol no se inventa la de otro día (se calcula con la fecha o no se dice): «${x}»`) }
   // (e) lo de mañana: todo visto, con reserva con hora
   await a.evaluar(PREPARAR('2026-10-17', "numberedStopsOf(r.days[0]).forEach((s) => { s.checkedInAt = new Date().toISOString() }); numberedStopsOf(r.days[1])[0].time = '09:00'; st.setState({ reservations: [{ id: 'r-vat', kind: 'entrada', refId: 'Museos Vaticanos', name: 'Museos Vaticanos', placeNames: ['Museos Vaticanos'], dateIso: '2026-10-18', dayNumber: 2, time: '10:00' }] })"))
   await a.esp(3500)

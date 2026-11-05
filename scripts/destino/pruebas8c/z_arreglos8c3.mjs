@@ -39,7 +39,8 @@ export default async function ({ debe, leer, sinComentarios }) {
   debe(/Execution context: el Perfil nuevo no se ha pintado/.test(perfilEsc), 'capturas', 'si el Perfil nuevo no llega, el escaparate FALLA (y se repite) en vez de fotografiar el de antes')
 
   const exp = L('src/components/logros/pantallas/perfil/ExpGanada.tsx')
-  debe(/data-boton-visto/.test(L('src/components/route/hoy/HoyDurante.tsx')) && /data-boton-visto/.test(L('src/components/route/hoy/v2/HoyDuranteV2.tsx')), 'exp', 'los dos HOY marcan su botón [✓ Visto]')
+// (HOY1, 5-nov) Antes: el botón [✓ Visto] vivía en HoyDuranteV2. Ahora la tarjeta de la parada es ParadaHoy.tsx (el botón se llama «He terminado» y sigue siendo el Visto). Decisión de Eric (4-nov).
+  debe(/data-boton-visto/.test(L('src/components/route/hoy/HoyDurante.tsx')) && /data-boton-visto/.test(L('src/components/route/hoy/v2/HoyDuranteV2.tsx') + L('src/components/route/hoy/v2/ParadaHoy.tsx')), 'exp', 'los dos HOY marcan su botón [✓ Visto]')
   debe(/querySelector\('\[data-boton-visto\]'\)/.test(exp) && /bottom: subida !== null/.test(exp), 'exp', 'el «+EXP» flota justo encima de [✓ Visto] para no taparlo')
 
   /* ── 2a. Colecciones: hueco gris mientras cargan ── */
