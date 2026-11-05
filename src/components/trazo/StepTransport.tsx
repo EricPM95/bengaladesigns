@@ -7,6 +7,7 @@ import { buildCarAccommodationMessage } from '../../lib/accommodationCopy'
 import { classifyInBackground } from '../../lib/classifyInBackground'
 import { buildTransportRows, type TransportRow } from './transportRows'
 import { followUp, type VehiclePatch } from './vehicleFlow'
+import { esDestinoDeCoche } from '../../lib/experienceCategoryBank'
 import { kmBetween } from './cityCode'
 import { ACCENT, AMBER, ConfirmedCard, Cta, Em, INK, MONO, RadioRow, Title, panelStyle } from './trazoUi'
 
@@ -129,7 +130,8 @@ export function StepTransport({ active, origin, destination, destinationName, on
   // Al terminar la carga: si solo hay una apta, se marca sola; si hay varias, la recomendada queda marcada.
   useEffect(() => {
     if (!loadDone || transportOption) return
-    const target = onlyOne ? aptRows[0] : recommended ?? aptRows[0]
+    // (Arreglo, 5-nov) Un destino en coche (Lanzarote): desde la Península, el avión.
+    const target = esDestinoDeCoche(destinationName) ? aptRows.find((row) => row.id === 'flight') ?? aptRows[0] : onlyOne ? aptRows[0] : recommended ?? aptRows[0]
     if (target) chooseRow(target)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadDone])

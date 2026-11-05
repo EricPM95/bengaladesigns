@@ -5362,3 +5362,59 @@ Prompt (versión nueva, con el apartado 3 ampliado) en `docs/dias/PROMPT_TANDA_L
 - **Fotos de prueba del Supabase real:** NO borradas. Hice la comprobación en solo lectura: las 22 son de 9 sesiones anónimas sin correo (ninguna de una cuenta con correo) y 21 de ellas son la misma foto de prueba de 720×960 y ~8,8 KB; la otra, del 11-oct, es de 1086×1448 y 400 KB (Museos Vaticanos, trip «route-roma-1791732076447»). Ids: 698807dc, 8b1ab3a6, 9bb1c8c6, 80bee801, 199a5f59, 98892afb, 45701bb8, 5ad83170, cd4fffe1, 02f5ae01, fbedb38a (octubre) y 4c6d6c0f, 014dddb1, 86f38b2e, 6fbb4a42, 8a348cf9, 90cc00f5, ee61ae7c, 3772362d, 9c559630, 742dd930, abc8dda1 (4-nov). Al lanzar el borrado, el sistema de permisos lo bloqueó («alcance del borrado no verificable») y no he intentado esquivarlo. Para hacerlo: autorizar explícitamente `node scripts/destino/_lg1_fotos_supabase.mjs borrar=1` o borrarlas tú desde el panel de Supabase (tabla `trip_photos` y almacén `fotos-viaje`).
 - **Otras pruebas puestas al día** al pasar las de HOY que no se habían vuelto a pasar: `pruebaPantallas8c` (el botón de «Visto» vive ahora en `ParadaHoy.tsx`) y `pruebaTanda10P_hoy` (el atardecer sale desde 2 h antes y con los textos nuevos; reloj falso en la prueba). Con «antes → ahora → decisión de Eric».
 - **Pruebas en 0:** `pruebaJutrip` (130), `pruebaTandaLG1` (140), `pruebaTandaHOY1` (446), `pruebaTandaLZ3` (55.443), `pruebaTandaLZ3b`, `pruebaPantallas8b` y `8c` (1348), `pruebaTanda10J`, `pruebaLogros1` y `2`, `LZ2a_B`, 6y4, 6z6c, 10N11 (a, b, c, g), 10N12 (a, b, c), 10N_cabecera, 7_hoy, 10S9 (A, D) y 10P_hoy.
+
+## ARREGLO — No se podía crear un viaje a Lanzarote (5-nov, 11:56)
+Prompt en `docs/dias/PROMPT_ARREGLO_CREAR_LANZAROTE.md` (llegó entero, hasta «reinicia el api-server»). Lanzarote sigue oculto. Sin migración. Solo yo (sin agentes); una API y un Vite; 1 Chrome por la cola.
+
+**Qué pasaba y por qué (en sencillo):** no era Claude. La API oculta Lanzarote a todo el que no es administrador: para reconocerte, la petición tiene que traer tu sesión. Las llamadas del formulario (la de «¿qué tipo de destino es?» y casi todas las demás) **no llevaban tu sesión**, así que para el servidor eras un desconocido y contestaba «Not found» (404); la app lo contaba como un fallo de la clasificación. Lo reproduje: sin sesión, `/api/classify-destination` de Lanzarote da 404 y el de Roma 200. En las pruebas nunca salió porque siempre arrancábamos la API con Lanzarote visible para todos. Y por si acaso, un destino curado tampoco debe depender de lo que conteste Claude (si dijera «ambiguous» saldría «¿Ruta panorámica en coche o explorar desde una base?»).
+
+**Qué he hecho**
+1. **Clasificación de Lanzarote** (`destination_config.classification`): `base_y_excursiones`, `is_region: true`, `requiere_coche: false`, `pase_dominante: null`, `vehiculo_altamente_recomendado: true`. Por qué: `base_y_excursiones` es el tipo «una base y excursiones» (te quedas en una zona y sales en coche); `roadtrip_exclusivo` no (el coche no ES la experiencia, no cambias de alojamiento cada noche) ni `urbano_clasico`. Con él, el avión desde la Península cuadra (`transportRows.ts` solo le quita el autobús) y el coche sale en ámbar en RESERVAS (`readiness.ts`: `vehiculo_altamente_recomendado`). `requiere_coche` solo cuenta en `urbano_clasico` y `pase_dominante` solo en `multidestino_tren_o_vuelo`.
+2. **El formulario de un destino en coche** (`vehicleFlow.ts`, `StepTransport.tsx`): avión desde la Península; coche de alquiler y base fija dados por hechos, sin la pregunta del coche ni «Base fija / Ruta itinerante» (decisión del 4-nov). Tenerife y similares siguen preguntando.
+3. **Un destino curado nunca depende de Claude** (`server/index.js`): si le faltara `classification`, valor por defecto y aviso en el log; nunca el «Reintentar».
+4. **El arreglo de fondo:** nuevo `src/lib/fetchConCuenta.ts` (instalado en `main.tsx`): toda llamada a `/api/` lleva tu sesión si la hay. Cambio global; lo pasa toda la batería de lo tocado.
+
+**Por qué parecía fallar Claude (apartado 3):** no falló. Hoy la llamada a Claude para clasificar Lanzarote contesta bien (2 s, 0,0056 $): la clave y el saldo están en orden y no hay límite. El «502» del prompt era la hipótesis; el error de pantalla sale con cualquier respuesta que no sea buena, y la que recibías era el 404 del guardián. No se ha pegado ninguna clave.
+
+**Pruebas (todas en 0)**
+- `pruebaArregloCrearLanzarote` (nueva, 32): todos los destinos curados con su clasificación; el servidor clasifica Lanzarote y Roma sin Claude; la sesión viaja en `/api/` (con sesión de mentira) y no en Mapbox ni en las fotos; el formulario real desde **Barcelona y desde Madrid** llega a «¿Cómo quieres llegar a Lanzarote?» sin «Reintentar», con avión, coche de alquiler y base fija sin preguntar; y se crea de verdad la ruta del **viaje de Eric** (ACE, dom 8-nov 08:25 → vie 13-nov 19:40, Costa Teguise, alquiler, con pase): 6 días.
+- `pruebaJutrip` (130), `pruebaTandaLZ3` (55.443), `LZ2b1` (55.415), `LZ2a_B`, `LG1` (140), `HOY1` (446), `Pantallas8b` y `8c`, `LZ3b`, `Logros1`, `LL_ROMA` (1834) y `LL_LZ` (1768). Muestra de 60 de Roma **idéntica**. Peso 300,2 KB (tope 340).
+- `pruebaTanda10G` (formulario): tenía un fallo antiguo (desde la 10S10: la franja vieja «Con el pase, tu día se ajusta a la hora de tu vuelo» ya no existe): puesta al día con «antes → ahora → decisión de Eric».
+- **Sin administrador, Lanzarote sigue oculto:** `/api/classify-destination` de Lanzarote → 404 y no sale en `/api/destinos-curados` (API normal); Roma → 200.
+
+**Dudas / lo que NO he podido comprobar**
+- Tu caso exacto (tu cuenta de administrador real contra la API con Lanzarote oculto) no se puede reproducir aquí sin tu cuenta. Lo cubren: el guardián (ya probado), la sesión que ahora viaja en cada llamada (con sesión de mentira) y el 404 real sin sesión. **Pruébalo tú en el móvil.**
+- No he recorrido a clics los pasos de DESPUÉS del transporte (fechas, compañía, experiencias…): no cambian con este arreglo.
+
+### Lista de comprobación — Arreglo de crear Lanzarote
+
+**0 · Qué pasaba**
+
+- ✅ Hecho — Al crear un viaje a Lanzarote (Barcelona → Lanzarote) salía «No hemos podido saber qué tipo de destino es Lanzarote ahora mismo. Reintentar» y no se podía seguir CAUSA REAL (distinta de la que se sospechaba): no fue Claude. Con Lanzarote oculto, el guardián de la API solo deja pasar al administrador si la petición trae su sesión, y las llamadas del formulario (clasificar el destino, la viabilidad del transporte, las experiencias, la ruta…) NO la llevaban (casi todas las llamadas a /api de la app van sin ella). El administrador era un desconocido: el servidor contestaba 404 «Not found» (comprobado: sin sesión, classify-destination de Lanzarote da 404 y el de Roma 200) y la app lo contaba como «no se pudo clasificar». En las pruebas nunca salió porque la API se arrancaba con Lanzarote visible para todos. Además, aunque hubiera llegado a Claude, un destino curado no debía depender de lo que diga.  
+  *Dónde:* No es de móvil.
+
+**1 · La clasificación de Lanzarote**
+
+- ✅ Hecho — `destination_config.classification` en lanzarote.json, como la de Roma VALORES PUESTOS: archetype `base_y_excursiones`, is_region `true` (una isla), requiere_coche `false`, pase_dominante `null`, vehiculo_altamente_recomendado `true`. POR QUÉ: `base_y_excursiones` es el tipo con una base y excursiones en coche (Lanzarote: te quedas en una zona y sales a los sitios); `roadtrip_exclusivo` no (el coche no ES la experiencia y el alojamiento no cambia cada noche) y `urbano_clasico` tampoco. Con `base_y_excursiones` el avión desde la Península cuadra (`transportRows.ts` solo le quita el autobús) y `vehiculo_altamente_recomendado: true` hace que en RESERVAS el coche salga en ámbar (`readiness.ts`). `requiere_coche` solo cuenta en `urbano_clasico`; `pase_dominante` solo en `multidestino_tren_o_vuelo`.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — El formulario da por hecho el coche, sin preguntar nada (decisión de Eric del 4-nov), y desde la Península, avión Para `base_y_excursiones` el formulario preguntaba «¿Te gustaría alquilar un vehículo?» y luego «Base fija / Ruta itinerante»: en un destino en coche (Lanzarote) ahora se resuelve solo (coche de alquiler, base fija) y sale la tarjeta «Coche de alquiler». Otro destino de este tipo (Tenerife…) sigue preguntando. En RESERVAS, el bloque «Coche de alquiler | Mi coche».  
+  *Dónde:* Crear un viaje › Lanzarote › paso del transporte.  *Captura:* `arreglo_lz_transporte_barcelona_1.jpg`
+
+**2 · Un destino curado nunca depende de Claude**
+
+- ✅ Hecho — Si a un destino curado le faltara `classification`: valor por defecto y un aviso en el log; nunca la llamada a Claude ni el «Reintentar»; y la prueba de que todos los curados la tienen Por defecto: en coche → base_y_excursiones con coche muy recomendado; el resto → urbano_clasico. Aviso en el log del servidor: «[classify-destination] AVISO: el destino curado … no tiene destination_config.classification». La prueba nueva comprueba que Roma y Lanzarote (todos los curados) la llevan.  
+  *Dónde:* No es de móvil.
+- ✅ Hecho — EL ARREGLO DE FONDO: toda llamada a /api lleva la sesión del viajero Nuevo `src/lib/fetchConCuenta.ts`, instalado en `main.tsx`: toda llamada a una dirección /api de este mismo sitio lleva `Authorization: Bearer <sesión>` si hay sesión y la llamada no trae ya el suyo; nada cambia sin sesión ni para otras direcciones (Mapbox, fotos…). Así el administrador pasa el guardián en TODAS las llamadas del formulario, no solo en la que falló. Es un cambio global: lo pasan las pruebas de toda la app.  
+  *Dónde:* No es de móvil.
+
+**3 · Por qué falló la llamada a Claude**
+
+- ✅ Hecho — Qué pasó con Claude No falló. Hoy la llamada a Claude para clasificar Lanzarote contesta bien (tardó 2 segundos y costó 0,0056 $: la clave y el saldo están en orden). El «502» de la descripción no era de Claude: el error del formulario sale de CUALQUIER respuesta que no sea buena, y la que recibía era el 404 del guardián. No afecta a otras partes de la app por Claude (destinos no curados, experiencias…); lo que sí afectaba a todo era lo de la sesión, ya arreglado. No se ha pegado ninguna clave.  
+  *Dónde:* No es de móvil.
+
+**4 · La prueba**
+
+- ⚠️ A medias — Crear de verdad hasta ver la ruta: Barcelona → Lanzarote, Madrid → Lanzarote y el viaje de Eric (ACE, domingo 8-nov 08:25 → viernes 13-nov 19:40, Costa Teguise, coche de alquiler, con pase) El formulario real (Barcelona y Madrid) se recorre hasta el paso del transporte: sale «¿Cómo quieres llegar a Lanzarote?», avión, coche de alquiler y base fija, sin pregunta y sin «Reintentar». El viaje de Eric se crea de verdad con el generador del formulario (6 días, el domingo con la llegada a las 11:25 y el viernes de vuelta). NO he recorrido a mano los pasos de después del transporte (fechas, compañía, experiencias…) con clics: eso no cambia con este arreglo, pero fíjate tú en tu móvil. Y el caso exacto de producción (tu cuenta de administrador real contra la API con Lanzarote oculto) NO se puede reproducir aquí sin tu cuenta: lo comprueban el guardián (ya probado), el arreglo de la sesión (prueba con una sesión de mentira) y la API real (404 sin sesión). Mira tú que ya entra.  
+  *Dónde:* Crear un viaje › Barcelona › Lanzarote (con tu cuenta de administrador).  *Captura:* `arreglo_lz_ruta_creada_1.jpg`
+- ✅ Hecho — Sin administrador, Lanzarote sigue oculto; Roma, igual (muestra de 60 idéntica); pruebaJutrip y las de Lanzarote en 0 Sin sesión: Lanzarote da 404 en /api/classify-destination y no sale en la lista de destinos; Roma, 200. Ver el informe.  
+  *Dónde:* No es de móvil.

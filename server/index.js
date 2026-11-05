@@ -334,6 +334,15 @@ app.post('/api/classify-destination', async (req, res) => {
     return
   }
 
+  // (Arreglo, 5-nov) Un destino CURADO (con datos propios en data/pipeline_v2/) nunca depende de lo que diga Claude: si le faltara `classification`, valor por defecto y a un aviso en el log (así no sale «No hemos podido saber qué tipo de destino es» ni la pregunta «¿Ruta panorámica o explorar desde una base?»). Por defecto: en coche → base_y_excursiones con coche muy recomendado; el resto → urbano_clasico.
+  const curado = findPipelineV2Data(destination)
+  if (curado) {
+    const enCoche = curado.destination_config?.medio === 'coche'
+    console.warn(`[classify-destination] AVISO: el destino curado «${destination}» no tiene destination_config.classification en su JSON; se usa el valor por defecto (${enCoche ? 'base_y_excursiones' : 'urbano_clasico'}). Añádesela.`)
+    res.json({ archetype: enCoche ? 'base_y_excursiones' : 'urbano_clasico', is_region: enCoche, ambiguous: false, requiere_coche: false, pase_dominante: null, vehiculo_altamente_recomendado: enCoche, curated: true, por_defecto: true })
+    return
+  }
+
   try {
     const response = await anthropic.messages.create({
       model: MODEL,

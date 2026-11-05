@@ -2350,6 +2350,14 @@
    "bono_varios_centros": false,
    "nota": "Ya no hay bono de varios centros (los blogs que lo anuncian están desfasados). Las entradas sin hora valen 3 meses.",
    "fuente": "https://cactlanzarote.com/en/preguntas-frecuentes-cact-lanzarote"
+  },
+  "classification": {
+   "_nota": "LL/arreglo (5-nov): un destino curado nunca le pregunta a Claude qué tipo de destino es. Lanzarote = isla para recorrer desde una base con excursiones, con coche (decisión de Eric, 4-nov: se da por hecho con coche, sin pregunta del coche en el formulario; en RESERVAS, el bloque «Coche de alquiler | Mi coche»). base_y_excursiones + vehiculo_altamente_recomendado: el coche sale en ámbar en RESERVAS (readiness.ts) y se da por resuelto en el formulario (vehicleFlow.ts, destinos en coche).",
+   "archetype": "base_y_excursiones",
+   "is_region": true,
+   "requiere_coche": false,
+   "pase_dominante": null,
+   "vehiculo_altamente_recomendado": true
   }
  },
  "cerca_de_mi": {

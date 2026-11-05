@@ -213,7 +213,8 @@ const cerrarPago = async (a) => {
   await g.esp(4000)
   const dias = await g.evaluar('document.body.innerText')
   debe(/LLEGADA/.test(dias), 'gratis', 'DÍAS: la barra de llegada sale')
-  debe(await g.evaluar("Boolean(document.querySelector('[data-candado=\"dia-ajuste-llegada\"]'))"), 'gratis', 'DÍAS: con el vuelo guardado, el ajuste del día sale cerrado («Con el pase, tu día se ajusta a la hora de tu vuelo»)')
+  // (Arreglo, 5-nov) Antes: con el vuelo guardado, DÍAS enseñaba el ajuste del día cerrado («Con el pase, tu día se ajusta a la hora de tu vuelo»). Ahora: esa franja ya no existe (se quitó en la 10S10: el ajuste a los vuelos se ofrece con la pregunta «¿Adaptamos tu primer y tu último día a tus vuelos?» y es del pase). Decisión de Eric (1-nov, 10S10); la prueba no se había vuelto a pasar.
+  debe(!(await g.evaluar("Boolean(document.querySelector('[data-candado=\"dia-ajuste-llegada\"]'))")), 'gratis', 'DÍAS: la franja vieja del ajuste del día ya no sale')
   debe(await g.evaluar("Boolean(document.querySelector('[data-alojamiento-dia-bloque]'))"), 'gratis', 'DÍAS (10N11): la tarjeta del alojamiento del día 1 sale (sin la caja vieja de la zona)')
   // Logros: la vitrina y las colecciones se ven, cerradas, con «Con el Pase Roma, cada sitio que ves suma».
   await g.evaluar('window.__momentos.hoja()')

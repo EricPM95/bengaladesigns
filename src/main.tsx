@@ -9,6 +9,10 @@ import { PruebaFotos } from './components/logros/PruebaFotos.tsx'
 import { logrosActivos } from './lib/logros.ts'
 import { lazy, Suspense } from 'react'
 import { precargarBanderas } from './lib/banderas.ts'
+import { instalarFetchConCuenta } from './lib/fetchConCuenta.ts'
+
+// (Arreglo, 5-nov) Toda llamada a /api lleva la sesión del viajero: sin ella, el administrador no podía crear un viaje a un destino oculto (Lanzarote).
+instalarFetchConCuenta()
 
 // Solo en desarrollo: window.__rutaPrueba() crea el viaje de pruebas de siempre (src/dev/rutaDePrueba.ts).
 if (import.meta.env.DEV) void import('./dev/rutaDePrueba.ts')
