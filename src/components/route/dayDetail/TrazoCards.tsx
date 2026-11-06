@@ -235,7 +235,7 @@ export function TimelineNote({ time, children, onClick, photoUrl }: { time?: str
  * minutos está; a la derecha, "Cambiar". El desayuno, en pequeño: más baja, el nombre en letra normal y "Cambiar" como
  * enlace.
  */
-export function MealCard({ label, reservedTime, name, sub, iconPath, onOpen, onChange, small = false, menu }: {
+export function MealCard({ label, reservedTime, name, sub, iconPath, onOpen, onChange, accion = 'Cambiar', small = false, menu }: {
   label: string
   /** Solo la hora que el viajero ha reservado en el restaurante; la franja de la comida no se enseña. */
   reservedTime?: string | null
@@ -244,17 +244,19 @@ export function MealCard({ label, reservedTime, name, sub, iconPath, onOpen, onC
   iconPath: string
   onOpen?: () => void
   onChange?: () => void
+  /** El texto del botón: «Cambiar» con un restaurante elegido; «Ver restaurantes» (6-nov, RETOQUES_TARJETAS §5) si el bloque no tiene restaurante. */
+  accion?: string
   small?: boolean
   menu?: ReactNode
 }) {
   const change = onChange ? (
     small ? (
       <button type="button" onClick={(event) => (event.stopPropagation(), onChange())} className="shrink-0 text-[12.5px] font-semibold text-accent underline underline-offset-2 hover:text-accent-hover">
-        Cambiar
+        {accion}
       </button>
     ) : (
       <button type="button" onClick={(event) => (event.stopPropagation(), onChange())} className="shrink-0 rounded-full border-[1.5px] border-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft max-[479px]:px-2.5 max-[479px]:py-1 max-[479px]:text-[11.5px]">
-        Cambiar
+        {accion}
       </button>
     )
   ) : null

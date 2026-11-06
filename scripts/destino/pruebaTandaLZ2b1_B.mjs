@@ -61,7 +61,7 @@ const nombresDeCategorias = [...exp.matchAll(/'([^']+)'/g)].map((m) => m[1]).fil
 debe(nombresDeCategorias.length > 30 && nombresDeCategorias.every((n) => nombresCatalogo.has(n)), '4c', `cada sitio de las categorías existe en el catálogo (${nombresDeCategorias.filter((n) => !nombresCatalogo.has(n)).join('; ') || 'todos'})`)
 const panelExp = crudo('src/components/route/ExplorePanel.tsx')
 debe(panelExp.includes('CATEGORIAS_EXPLORAR_LANZAROTE') && panelExp.includes('lugaresDeCategoriaLanzarote(categoriaLz, curatedPool)'), '4d', 'EXPLORAR de Lanzarote pinta sus categorías y abre cada una con sus sitios')
-debe(/\['Mirador del Río'|'Mirador del Río'/.test(exp) && (exp.match(/'Mirador del Río'/g) ?? []).length === 2, '4e', 'un sitio puede estar en dos categorías (el Mirador del Río, en Manrique y en Miradores)')
+debe(/\['Mirador del Río'|'Mirador del Río'/.test(exp) && (exp.match(/'Mirador del Río'/g) ?? []).length === 3 /* (6-nov: dos en sus listas + la foto de la tarjeta Miradores) */, '4e', 'un sitio puede estar en dos categorías (el Mirador del Río, en Manrique y en Miradores)')
 debe((D.lugares_solo_lista ?? []).some((p) => p.id === 'charco_del_palo' && p.nudista === true) && /place\.nudista === true \? 'Zona nudista'/.test(servidor), '4f', 'el Charco del Palo solo en EXPLORAR, con «Zona nudista»')
 debe(!(D.places ?? []).some((p) => p.id === 'charco_del_palo' || p.id === 'museo_atlantico'), '4g', 'el Charco del Palo y el Museo Atlántico no son paradas de la ruta')
 
@@ -76,11 +76,11 @@ debe(bloque.includes("'Coche de alquiler'") && bloque.includes("'Mi coche'") && 
 debe(bloque.includes("answers.coche === 'propio' ? 'propio' : 'alquiler'"), '5e', 'por defecto, «Coche de alquiler»')
 debe(/coche === 'propio' \? \([\s\S]{0,400}data-coche-listo/.test(bloque) && bloque.includes('Listo') && bloque.includes('Falta') && bloque.includes('Vas con tu coche por la isla.'), '5f', '«Mi coche» (06b): «Listo», sin nada que rellenar; «Coche de alquiler» (06a): «Falta» hasta poner el alquiler')
 debe(bloque.includes('Recogida y devolución') && bloque.includes('RECOGIDA') && bloque.includes('DEVOLUCIÓN') && bloque.includes('¿Para quién es?') && bloque.includes('Reservar coche') && bloque.includes('data-coche-reservar'), '5f2', 'Design 06a: filas «Recogida y devolución» con sus fechas, «¿Para quién es?» y botón «Reservar coche»')
-debe(bloque.includes('linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)') && bloque.includes('rgba(190,60,95,.12)') && bloque.includes('#EAF4EC') && !bloque.includes('RentalVehicleRow'), '5f3', 'colores de Design (botón de oro, «Falta» frambuesa, «Listo» verde) y sin la tarjeta morada de «Vehículo de alquiler»')
+debe(bloque.includes('linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)') && /<CabeceraBloque/.test(bloque) && /data-coche-estado/.test(bloque) && !bloque.includes('RentalVehicleRow'), '5f3', 'botón de oro y, como los demás bloques (RETOQUES 5c, 6-nov), la cabecera compartida con «Falta» / «Listo»; sin la tarjeta morada de «Vehículo de alquiler»')
 debe(/buildCarRentalLink/.test(bloque), '5g', 'el botón de reservar usa nuestro enlace de alquiler (vehicleRentalLinks.ts)')
 debe(bloque.includes('¿No vas a conducir?') && bloque.includes('Mira las excursiones con recogida en tu hotel') && bloque.includes("categoria: 'excursiones'"), '5h', 'la línea «¿No vas a conducir?» abre EXPLORAR › Excursiones')
 debe(bloque.includes('adaptarDiasDeCoche({ cambioDeCoche: true })') && crudo('src/lib/adaptarVuelos.ts').includes('cambioDeCoche'), '5i', 'al cambiar de coche se rehace el día 1 (el rato de recoger: alquiler 30-45, propio 20)')
-debe(crudo('src/components/route/ReservasPanel.tsx').includes('<CocheDeViaje />') && /hasRentalVehicle = [^\n]*!esDestinoDeCoche/.test(crudo('src/components/route/reservas/UtilParaElViaje.tsx')), '5j', 'el bloque del coche está en RESERVAS y no se repite en «Útil para el viaje»')
+debe(crudo('src/components/route/ReservasPanel.tsx').includes('<CocheDeViaje abierto=') && /hasRentalVehicle = [^\n]*!esDestinoDeCoche/.test(crudo('src/components/route/reservas/UtilParaElViaje.tsx')), '5j', 'el bloque del coche está en RESERVAS y no se repite en «Útil para el viaje»')
 debe(/setCocheDeViaje: \(coche\) =>/.test(crudo('src/store/useRouteStore.ts')), '5k', 'el interruptor guarda `answers.coche` y la propiedad del vehículo')
 
 // ── 6. Ningún texto de Roma en un viaje a Lanzarote ──────────────

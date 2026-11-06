@@ -1,0 +1,22 @@
+{
+  "_nota": "(6-nov, RETOQUES_TARJETAS §4) El título que se VE de una parada (tarjeta, ficha, HOY…): el nombre corto del sitio o del pueblo. SOLO cambia lo que se ve: el id y el nombre de dentro (con el que se cruzan fotos, logros, colecciones, fichas, historias y avisos) se quedan. Lo que se ve allí se explica en «Qué vas a ver». Clave: el nombre de dentro tal cual.",
+  "lanzarote": {
+    "El paseo marítimo de Playa Blanca": "Playa Blanca",
+    "Haría y el Valle de las Mil Palmeras": "Haría",
+    "Haría y la Casa-Museo César Manrique": "Haría",
+    "Teguise (villa)": "Teguise",
+    "Arrecife: Charco de San Ginés y el paseo": "Arrecife",
+    "Caleta de Famara y Playa de Famara": "Famara",
+    "Puerto del Carmen (Puerto Viejo)": "Puerto del Carmen",
+    "Punta Mujeres y Arrieta": "Punta Mujeres",
+    "Punta Mujeres y Arrieta (La Garita)": "Punta Mujeres"
+  },
+  "roma": {},
+  "_etiquetas_por_nombre": {
+    "_nota": "(6-nov, RETOQUES_TARJETAS §4) Las etiquetas que se ven de una parada cuando las del sitio entero no cuadran con esa parada (el Faro de Pechiguera salía «Pueblo», como el paseo de Playa Blanca). Solo lo que se ve; sirve también a los viajes ya creados.",
+    "Faro de Pechiguera": [
+      "faro",
+      "atardecer"
+    ]
+  }
+}

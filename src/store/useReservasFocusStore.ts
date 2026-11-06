@@ -5,7 +5,7 @@ import type { Excursion } from '../lib/types'
  * «Llévame a ese bloque de RESERVAS» (Tanda 6s): las fichas del resumen de arriba, el «+ AÑADIR VUELO» de la barra de DÍAS y el «Editar» de la ventana de llegada piden
  * un bloque; RESERVAS lo abre, baja hasta él (y, si es la llegada y vuelta, abre la mitad que se pide) y borra el pedido. Estado de pantalla: no se guarda con el viaje.
  */
-export type BloqueReservasId = 'llegada' | 'aloj' | 'entradas' | 'excursiones'
+export type BloqueReservasId = 'llegada' | 'aloj' | 'entradas' | 'excursiones' | 'coche'
 
 interface PedidoReservas {
   bloque: BloqueReservasId

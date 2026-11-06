@@ -206,13 +206,49 @@ export interface ExcursionRowData {
   reservation: Reservation | null
 }
 
+const sinTildes = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+
+/**
+ * La excursión de un día: la elegida (`selectedExcursionId`); o, en un día de excursión que aún no tiene ninguna elegida (el de Lanzarote, «La Graciosa (excursión)», nace con sus opciones y el nombre del día), la
+ * opción cuyo nombre empieza el nombre del día. Un día que no es de excursión, o sin opción que case, no tiene.
+ * (6-nov, RETOQUES_TARJETAS 5e) Una sola regla para el bloque «Excursiones» y para las fichas del «x de N listo».
+ */
+export function excursionDeUnDia(day: DayPlan): Excursion | null {
+  if (!(day.dayType === 'excursion' || day.halfDayExcursion)) return null
+  const opciones = day.excursions ?? []
+  if (day.selectedExcursionId) return opciones.find((option) => option.id === day.selectedExcursionId) ?? null
+  if (day.dayType !== 'excursion') return null
+  const nombreDelDia = sinTildes(day.curatedTitle ?? day.title ?? '')
+  if (!nombreDelDia) return null
+  return opciones.find((option) => nombreDelDia.startsWith(sinTildes(option.title.replace(/\s*\(.*$/, '')))) ?? null
+}
+
 /** La excursión del viaje: la del día de excursión (de día entero o la mañana de medio día) o la reservada. */
 export function buildExcursionRow(route: Route, reservations: Reservation[]): ExcursionRowData {
-  const day = route.days.find((candidate) => candidate.selectedExcursionId && (candidate.dayType === 'excursion' || candidate.halfDayExcursion)) ?? null
-  const excursion = day ? (day.excursions ?? []).find((option) => option.id === day.selectedExcursionId) ?? null : null
+  const day = route.days.find((candidate) => (candidate.selectedExcursionId && (candidate.dayType === 'excursion' || candidate.halfDayExcursion)) || excursionDeUnDia(candidate)) ?? null
+  const excursion = day ? excursionDeUnDia(day) : null
   const reservation = reservations.find((item) => item.kind === 'excursion' && (!excursion || item.refId === excursion.id)) ?? null
   const reservedDay = reservation ? dayOfReservation(route, reservation) : null
   return { day: reservedDay ?? day, excursion, reservation }
+}
+
+/** Todas las excursiones de la ruta (una por día de excursión), cada una con su reserva si ya la tiene. Las fichas de «x de N listo» salen de aquí: una por excursión. */
+export function excursionesDeLaRuta(route: Route, reservations: Reservation[]): { day: DayPlan; excursion: Excursion; reservation: Reservation | null }[] {
+  const vistas = new Set<string>()
+  const filas: { day: DayPlan; excursion: Excursion; reservation: Reservation | null }[] = []
+  for (const day of route.days) {
+    const excursion = excursionDeUnDia(day)
+    if (!excursion || vistas.has(excursion.id)) continue
+    vistas.add(excursion.id)
+    filas.push({ day, excursion, reservation: reservations.find((item) => item.kind === 'excursion' && item.refId === excursion.id) ?? null })
+  }
+  return filas
+}
+
+/** El nombre corto de una excursión para su ficha del resumen («Isla La Graciosa», «Fuerteventura»): el del dato si lo hay; si no, el título sin lo que va entre paréntesis ni detrás de « · » o « desde ». */
+const NOMBRES_CORTOS_EXCURSION: Record<string, string> = { la_graciosa: 'Isla La Graciosa', isla_de_lobos: 'Isla de Lobos', fuerteventura: 'Fuerteventura' }
+export function nombreCortoDeExcursion(excursion: Pick<Excursion, 'id' | 'title'>): string {
+  return NOMBRES_CORTOS_EXCURSION[excursion.id] ?? excursion.title.replace(/\s*\(.*$/, '').split(/\s+[·–-]\s+|\s+desde\s+/i)[0].trim()
 }
 
 /** ¿El viaje llega a los días que marca el destino para las excursiones (`excursiones_desde_dias`)? */

@@ -53,7 +53,7 @@ for (const t of ['data-trayecto-coche', 'Abrir en Maps', 'nombre="coche"', 'sali
 debe(!/taxi/i.test(coche), '5b', 'nunca «taxi» en lo del coche')
 debe(/if \(trayectoCoche\) \{/.test(conector) && conector.includes('<FilaCoche'), '5c', 'el hueco entre paradas pinta el trayecto en coche en lugar del paseo')
 const panel = crudo('src/components/route/dayDetail/DayDetailPanel.tsx')
-debe(panel.includes('<CabeceraDelDiaCoche day={day} />') && panel.includes('<CenaCercaBloque cena={day.cenaCerca} />') && panel.includes('trayectoDeVuelta(day)'), '5d', 'el día pinta la salida, la cena cerca y la vuelta')
+debe(panel.includes('<CabeceraDelDiaCoche day={day} />') && !panel.includes('<CenaCercaBloque') && panel.includes('trayectoDeVuelta(day)'), '5d', 'el día pinta la salida y (6-nov) ya no la cena cerca ni la vuelta a casa; solo el aeropuerto del día de vuelta')
 debe((panel.match(/\.trayectoCoche \?\? null/g) ?? []).length >= 3, '5e', 'los tres sitios que pintan huecos pasan el trayecto en coche')
 const mapa = crudo('src/lib/mapGeneratedRoute.ts')
 for (const t of ['trayecto_previo', 'llegada_texto', 'cena_cerca', 'opcionales_quitados', 'sin_coche', 'generated.coche', 'dia_id', 'timezone']) debe(mapa.includes(t), '5f', `la ruta del servidor conserva «${t}»`)

@@ -19,6 +19,7 @@ import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
 import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId, type TarjetaDeExplorar } from '../../lib/exploreStyle'
 import { Icono } from '../ui/Icono'
+import type { NombreIcono } from '../../lib/iconos'
 import { usePasePintable } from '../../lib/pago'
 import { abrirAvisoPase } from '../../lib/avisoPase'
 import { CandadoRedondo } from '../pase/Candado'
@@ -73,7 +74,7 @@ const LEGACY_FALLBACK: Partial<Record<TarjetaDeExplorar, 'food' | 'viewpoints' |
  * Una tarjeta de Explorar (diseño «Trazo Reservas», pantalla 12): el cuadro de icono de color, la franja en diagonal con la foto o el degradado,
  * el nombre en Instrument Serif y el contador pequeño.
  */
-function ExploreCard({ id, estilo, label, sub, photo, delay, wide, onClick, cerrado = false }: { id: TarjetaDeExplorar; estilo?: TarjetaDeExplorar; label: string; sub: string; photo: string | null; delay: number; wide: boolean; onClick: () => void; cerrado?: boolean }) {
+function ExploreCard({ id, estilo, icono, label, sub, photo, delay, wide, onClick, cerrado = false }: { id: TarjetaDeExplorar; estilo?: TarjetaDeExplorar; icono?: NombreIcono; label: string; sub: string; photo: string | null; delay: number; wide: boolean; onClick: () => void; cerrado?: boolean }) {
   const style = CARD_STYLE[estilo ?? id]
   const diagonal = 'polygon(34px 0,100% 0,100% 100%,0 100%)'
   const background = photo ? `url("${photo}") center/cover, ${solidOf(style.color)}` : `linear-gradient(135deg,${solidOf(style.shadow)},#EFE7D8)`
@@ -86,7 +87,7 @@ function ExploreCard({ id, estilo, label, sub, photo, delay, wide, onClick, cerr
         className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center text-white"
         style={{ borderRadius: 12, background: style.color, boxShadow: `0 6px 14px -6px ${style.shadow}` }}
       >
-        <Icono nombre={EXPLORE_ICONOS[style.icon]} size={19} />
+        <Icono nombre={icono ?? EXPLORE_ICONOS[style.icon]} size={19} />
       </span>
       <span className="absolute bottom-3 left-3 right-3 flex flex-col gap-[3px]">
         <span className="font-display text-text" style={{ fontSize: 21, lineHeight: 1, textShadow: '0 0 12px rgb(var(--bg-card)),0 0 4px rgb(var(--bg-card))' }}>
@@ -124,6 +125,25 @@ function ExploreCard({ id, estilo, label, sub, photo, delay, wide, onClick, cerr
       {inner}
     </button>
   )
+}
+
+/** (6-nov, RETOQUES §5b) La foto de cada categoría de un destino de coche: la foto PROPIA del sitio más conocido de la categoría (el servidor da la de Eric; nunca la de Wikipedia). */
+function useFotosCategoriasCoche(city: string, activo: boolean): Record<string, string> {
+  const [fotos, setFotos] = useState<Record<string, string>>({})
+  useEffect(() => {
+    if (!activo) return
+    let cancelled = false
+    for (const categoria of CATEGORIAS_EXPLORAR_LANZAROTE) {
+      if (!categoria.foto) continue
+      fetchPlacePhoto(categoria.foto, city, null, 'small').then((url) => {
+        if (!cancelled && url) setFotos((prev) => (prev[categoria.id] === url ? prev : { ...prev, [categoria.id]: url }))
+      })
+    }
+    return () => {
+      cancelled = true
+    }
+  }, [city, activo])
+  return fotos
 }
 
 /** La foto de cada tarjeta: la de un lugar representativo del propio catálogo del destino (el de menor nivel de la categoría), con el mismo servicio de fotos de siempre. */
@@ -204,6 +224,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const hasToilets = curatedPool.some((place) => place.kind === 'toilet')
   const hasFountains = curatedPool.some((place) => place.kind === 'fountain')
   const cardPhotos = useCardPhotos(city, curatedPool, excursions)
+  const fotosCategorias = useFotosCategoriasCoche(city, esDestinoDeCoche(city) && hasCuratedCatalog)
   const legacyCategory = activeCard ? LEGACY_FALLBACK[activeCard] : undefined
 
   // Solo los buscadores viejos publican marcadores hacia el mapa compartido — al salir de esa
@@ -285,6 +306,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         subtitle={categoriaLz ? categoriaLz.label : (EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null)}
         route={route}
         initialFilters={activeCard ? [activeCard] : []}
+        pinsDeLaLista={categoriaLz !== null}
         initialOrigin={origenApertura}
         initialNearby={aperturaCerca}
         onHotels={() => useAlojamientoUi.getState().abrirMapa()}
@@ -364,8 +386,9 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
                     key={categoria.id}
                     id={categoria.estilo}
                     label={categoria.label}
+                    icono={categoria.icono}
                     sub={categoria.id === 'excursiones' ? `${cuantos} ${cuantos === 1 ? 'opción' : 'opciones'}` : `${cuantos} ${cuantos === 1 ? 'lugar' : 'lugares'}`}
-                    photo={null}
+                    photo={categoria.id === 'excursiones' ? (cardPhotos.excursiones ?? null) : (fotosCategorias[categoria.id] ?? null)}
                     delay={index * 40}
                     wide={false}
                     onClick={() => (categoria.id === 'excursiones' ? setActiveCard('excursiones') : setCategoriaLz(categoria))}

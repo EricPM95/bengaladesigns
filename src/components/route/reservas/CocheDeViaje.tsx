@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useExploreAperturaStore } from '../../../store/useExploreAperturaStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
@@ -9,6 +9,8 @@ import { fechaCorta } from '../../../lib/nombreDeDia'
 import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { precioGuardado, type Importe } from '../../../lib/dinero'
 import { BotonAnadirReservaCoche, HojaReservaCoche } from './ReservaDelCoche'
+import { CabeceraBloque, ICONOS } from './BloqueReservas'
+import { BloqueClaro } from './PiezasDesignReservas'
 import type { DatosReservaCocheLeida } from '../../../lib/billeteLeer'
 
 /**
@@ -25,17 +27,6 @@ import type { DatosReservaCocheLeida } from '../../../lib/billeteLeer'
 const NEGRO = '#1C2230'
 const OSCURO = '#1C2230'
 const CREMA = '#FBF3E2'
-const TARJETA: CSSProperties = {
-  flex: 'none',
-  borderRadius: 22,
-  background: '#FFFDF8',
-  border: '1px solid rgba(181,138,46,.45)',
-  boxShadow: '0 10px 22px -16px rgba(60,40,10,.5)',
-  padding: 14,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 14,
-}
 const BOTON_BASE: CSSProperties = { flex: 1, minWidth: 0, height: 54, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, font: "600 15px 'Geist'" }
 const ELEGIDO: CSSProperties = { ...BOTON_BASE, background: OSCURO, color: CREMA, border: `1px solid ${OSCURO}` }
 const NO_ELEGIDO: CSSProperties = { ...BOTON_BASE, background: '#FFFDF8', color: NEGRO, border: '1px solid rgba(28,34,48,.14)' }
@@ -49,8 +40,12 @@ function Tic({ size = 15, color = '#F3D88F', grosor = 2.6 }: { size?: number; co
   )
 }
 
-export function CocheDeViaje() {
+export function CocheDeViaje({ abierto = false }: { abierto?: boolean }) {
   useMonedaViajero()
+  // (6-nov, RETOQUES 5c) Como «Entradas y Free Tour»: cerrado al entrar; el viajero lo abre y lo cierra, y la ficha «Alquiler coche» del resumen lo abre.
+  const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
+  useEffect(() => setDesplegadoUsuario(null), [abierto])
+  const desplegado = desplegadoUsuario ?? abierto
   const route = useRouteStore((state) => state.route)
   const coche = route?.answers.coche === 'propio' ? 'propio' : 'alquiler'
   const rentalBooking = useRouteStore((state) => state.rentalVehicleBooking)
@@ -117,29 +112,33 @@ export function CocheDeViaje() {
   }
 
   return (
-    <div data-bloque-coche={coche} style={TARJETA}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ width: 46, height: 46, flex: 'none', borderRadius: '50%', background: OSCURO, border: '1.5px solid #B58A2E', display: 'flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
-          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
-            <path d="M3 15.5V13l2-1.5 2.2-4.2A1.5 1.5 0 0 1 8.5 6.5h5.8a1.5 1.5 0 0 1 1.3.8L17.8 11.5 20.5 13v2.5H3zM8.5 6.5L7.4 11.5H17.8M12 6.5v5M7.5 15.5a2.2 2.2 0 1 0 .01 0M16.5 15.5a2.2 2.2 0 1 0 .01 0" />
-          </svg>
+    <div data-bloque-coche={coche} className="relative">
+      {/* (6-nov, RETOQUES 5c) «SÚPER RECOMENDADO»: con «Coche de alquiler» y sin reserva. Cuelga del borde de arriba a la derecha: no tapa ni el estado ni la flecha. */}
+      {coche === 'alquiler' && !rentalBooking && (
+        <span
+          data-coche-super-recomendado
+          className="absolute right-4 top-[-9px] z-[1] rounded-full px-2.5 py-[3px]"
+          style={{ background: '#F3E3B2', color: '#6B4E12', border: '1px solid rgba(181,138,46,.45)', font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase' }}
+        >
+          Súper recomendado
         </span>
-        <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
-          <span style={{ font: "400 24px/1 'Instrument Serif',serif" }}>Coche</span>
-          <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.6)' }}>{route?.destination ?? ''}</span>
+      )}
+      <BloqueClaro bloque="coche">
+        <span data-cabecera-coche className="block">
+          <CabeceraBloque
+            icono={ICONOS.coche}
+            titulo="Coche"
+            datos="coche"
+            onClick={() => setDesplegadoUsuario(!desplegado)}
+            estado={`${route?.destination ?? ''} · ${listo ? 'Listo' : 'Falta'}`}
+            hecho={listo}
+            abierto={desplegado}
+            atributos={{ 'data-coche-estado': listo ? 'listo' : 'falta' }}
+            className="px-0.5"
+          />
         </span>
-        {listo ? (
-          <span data-coche-estado="listo" style={{ height: 24, padding: '0 10px', borderRadius: 999, background: '#EAF4EC', color: '#2B7F45', display: 'inline-flex', alignItems: 'center', gap: 5, font: "600 12px 'Geist'" }}>
-            <Tic size={12} color="#2B7F45" />
-            Listo
-          </span>
-        ) : (
-          <span data-coche-estado="falta" style={{ height: 24, padding: '0 10px', borderRadius: 999, background: 'rgba(190,60,95,.12)', color: 'oklch(0.55 0.17 5)', display: 'inline-flex', alignItems: 'center', font: "600 12px 'Geist'" }}>
-            Falta
-          </span>
-        )}
-      </div>
-
+        {desplegado && (
+          <>
       <div role="radiogroup" aria-label="Tu coche" style={{ flex: 'none', display: 'flex', gap: 8 }}>
         {opcion('alquiler', 'Coche de alquiler')}
         {opcion('propio', 'Mi coche')}
@@ -235,6 +234,10 @@ export function CocheDeViaje() {
           ¿No vas a conducir? <span style={{ color: '#8E6820', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: 3 }}>Mira las excursiones con recogida en tu hotel</span>
         </span>
       </button>
+
+          </>
+        )}
+      </BloqueClaro>
 
       {hoja && (
         <HojaReservaCoche

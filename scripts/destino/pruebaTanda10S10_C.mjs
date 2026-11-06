@@ -50,7 +50,7 @@ debe(!/civitatis|getyourguide|stay22/i.test(leer('data/dias/roma/_excursiones.js
   debe(/onAddConfirmation/.test(pag) && !/Código de reserva|Por ejemplo, CIV/.test(pag), 'la página ya no guarda un código: «Añade tu confirmación» lleva a RESERVAS')
   debe(/listName: excursion\.title/.test(pag), 'la lista «Ver más excursiones» usa el nombre completo')
   const res = sinComentarios(leer('src/components/route/reservas/ExcursionesReservas.tsx'))
-  debe(/CabeceraBloque/.test(res) && /titulo="Excursiones"/.test(res) && /0 de 1 reservada/.test(res) && /Ninguna en tu ruta/.test(res), 'RESERVAS: el bloque Excursiones usa la cabecera compartida con sus dos estados')
+  debe(/CabeceraBloque/.test(res) && /titulo="Excursiones"/.test(res) && /reservada/.test(res) && /Ninguna en tu ruta/.test(res), 'RESERVAS: el bloque Excursiones usa la cabecera compartida con sus dos estados')
   debe(/data-ver-mas-excursiones/.test(res) && !/self-start border-none bg-transparent px-1 py-0\.5/.test(res), 'RESERVAS: «Ver más excursiones» va dentro del bloque, no fuera')
   debe(/excursionPedida/.test(res), 'RESERVAS: el bloque abre la hoja de la excursión pedida desde DÍAS')
 }

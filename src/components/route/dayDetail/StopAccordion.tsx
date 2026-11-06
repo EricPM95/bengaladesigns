@@ -3,8 +3,10 @@ import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { displayStopName, formatDuration } from '../../../lib/format'
 import { etiquetaDeHora, nombreSinHora, type HoraDeParada } from '../../../lib/nombreDeParada'
 import type { HorarioDeParada } from '../../../lib/horarioDeParada'
+import { horarioDeLaTarjeta } from '../../../lib/etiquetaHorario'
 import { CERRADO_ESTE_DIA } from '../../../lib/placeHoursOnDate'
 import { tagLabel, visibleTags } from '../../../lib/tagColors'
+import { etiquetasDeParada } from '../../../lib/etiquetasDeParada'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { EntradaEdgeTab, useBotonEntrada } from '../reservas/EntradaEdgeTab'
@@ -32,7 +34,7 @@ interface StopAccordionProps {
   numberColors?: { bg: string; text: string }
   /** Un aviso en rojo de la parada (un día movido a otra fecha: «Hoy cierra»…). */
   tripWarning?: string | null
-  /** Su horario ese día («Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy»), de src/lib/horarioDeParada.ts; null/undefined = sin horario (plazas, fuentes, calles). */
+  /** Su horario ese día (la tarjeta enseña solo «9:00–19:15»; la última entrada va en la ficha), de src/lib/horarioDeParada.ts; null/undefined = sin horario (plazas, fuentes, calles). */
   horario?: HorarioDeParada | null
   /** (10S10, apartado 2) El aviso de horario de la parada, ya calculado con su hora de ahora (src/lib/avisoDeHorario.ts); null/undefined = ninguno. */
   avisoHorario?: string | null
@@ -102,7 +104,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   // La parada que se queda en su día cerrada (no hay otro día en el viaje; Tanda 7, punto 15) lleva una sola marca, «Cerrado este día», en lugar del «Cerrado hoy» / «Hoy cierra» rojo.
   const cerradoEsteDia = Boolean(stop.closedThisDay)
   // (Tanda 11, punto 4: el mirador que sustituye al Tempietto cerrado no está «cerrado»: es un mirador abierto; sin aviso en rojo.)
-  if (horario && !cerradoEsteDia && !stop.isNightExperience && !stop.isFreeWalk && stop.outsideKind !== 'al_lado' && (stop.visitMode !== 'fuera' || (horario.cerrado && !['cerrado', 'ya_cerrado', 'no_abre'].includes(stop.outsideKind ?? '')))) meta.push({ icon: 'clock', text: horario.texto, warn: horario.cerrado })
+  if (horario && !cerradoEsteDia && !stop.isNightExperience && !stop.isFreeWalk && stop.outsideKind !== 'al_lado' && (stop.visitMode !== 'fuera' || (horario.cerrado && !['cerrado', 'ya_cerrado', 'no_abre'].includes(stop.outsideKind ?? '')))) meta.push({ icon: 'clock', text: horarioDeLaTarjeta(horario) ?? horario.texto, warn: horario.cerrado })
   if (cerradoEsteDia) meta.push({ text: 'Cerrado este día', warn: true })
   else if (stop.durationMinutes > 0) meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
   // Por fuera porque cierra: el motivo, en rojo (si cierra ese día ya lo dice «Cerrado hoy», una sola vez). (Por falta de tiempo no es un problema: va en la ficha.)
@@ -125,7 +127,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
 
   // Ronda 7, Issue A: la categoría genérica solo cuando no hay tags curados reales.
   // (Sin «Opcional» ni los niveles del motor — PARA_CODE_UI_DIAS, 2. «Paseo libre» sí: es una etiqueta para el viajero, decidida el 1-oct.)
-  const shownTags = visibleTags(stop.tags)
+  const shownTags = visibleTags(etiquetasDeParada(stop.name, stop.tags))
   const tags: { label: string; kind: typeof kind; green?: boolean }[] = stop.isFreeWalk
     ? [{ label: 'Paseo libre', kind }]
     : shownTags.length > 0

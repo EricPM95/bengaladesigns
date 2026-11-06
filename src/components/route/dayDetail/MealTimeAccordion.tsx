@@ -25,6 +25,8 @@ interface MealTimeAccordionProps {
   walkNote?: string | null
   /** "Cambiar": abre el mapa de restaurantes de la zona. */
   onChange?: () => void
+  /** (6-nov, RETOQUES_TARJETAS §5) Sin restaurante: [Ver restaurantes] abre EXPLORAR › Comer, cerca de la zona de esa comida. */
+  onVerRestaurantes?: () => void
   /** Abre MealDetailSheet (pantalla completa) — gestionado por DayDetailPanel.tsx, igual que StopDetailSheet/ArrivalDetailSheet, para poder desmontar el mapa de este panel mientras esa pantalla está abierta encima (ver mapHiddenBySheet). */
   onOpen: () => void
 }
@@ -40,7 +42,7 @@ interface MealTimeAccordionProps {
  * vea correcto en la fila cerrada sin tener que abrir la pantalla — MealDetailSheet vuelve a
  * resolverlo por su cuenta al abrir (mismo hook, prácticamente gratis gracias al caché).
  */
-export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, reservedTime, subtitle, chosenName = null, walkNote = null, onChange, onOpen }: MealTimeAccordionProps) {
+export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, reservedTime, subtitle, chosenName = null, walkNote = null, onChange, onVerRestaurantes, onOpen }: MealTimeAccordionProps) {
   const { zonaMostrada } = useZonaTuristica(destino, city, coordinates, curatedZone)
   const franjaLabel = franja === 'cena' ? 'Hora de cenar' : 'Hora de comer'
   // Regla E: con zona curada, el texto ya viene formateado y listo ("en el Centro Histórico") — solo
@@ -73,6 +75,8 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
       sub={subtitle ?? 'Recomendaciones de restaurantes cerca'}
       iconPath={franja === 'cena' ? KIND_ICON.moon : KIND_ICON.fork}
       onOpen={onOpen}
+      onChange={onVerRestaurantes}
+      accion="Ver restaurantes"
     />
   )
 }

@@ -6,7 +6,6 @@ import { OpenInMapsSheet } from './OpenInMapsSheet'
 import { Icono } from '../../ui/Icono'
 import { FilaCoche } from './CocheDelDia'
 import type { TrayectoCoche } from '../../../lib/types'
-import { fetchDestinationPlaces, mapsConsultaDe } from '../../../lib/destinationPlacesApi'
 
 interface StopConnectorProps {
   /** Desplazamiento a mostrar en este hueco, o `null` si aquí no hay ninguno que mostrar: el hueco
@@ -24,7 +23,7 @@ interface StopConnectorProps {
   onAddStop: () => void
   /** El tramo lo hace el día en bus o metro ("Bus 118, unos 25 min"): se enseña eso, no el paseo. */
   transitLabel?: string | null
-  /** (LZ2a) Destinos de coche: el trayecto en coche («En coche · 25 min · 18 km» + [Abrir en Maps]). Va en lugar del paseo o el bus. */
+  /** (LZ2a) Destinos de coche: el trayecto en coche («En coche · 25 min · 18 km» + [Rutas]). Va en lugar del paseo o el bus. */
   trayectoCoche?: TrayectoCoche | null
   /** (6-nov) La ciudad del día (Lanzarote): para buscar la consulta de Maps de cada sitio («Jameos del Agua, Haría») en «Rutas». */
   ciudad?: string
@@ -81,19 +80,13 @@ function parseTransitLabel(label: string): { line: string; minutes: number | nul
 export function StopConnector({ connector, fromName, toName, mode, onSelectMode, onHide, onSetDefaultForDay, onAddStop, transitLabel, trayectoCoche, ciudad }: StopConnectorProps) {
   const [modeSheetOpen, setModeSheetOpen] = useState(false)
   const [mapsSheetOpen, setMapsSheetOpen] = useState(false)
-  // «Rutas» de un trayecto en coche: la misma hoja que en Roma (Apple Maps o Google Maps), en coche, con el nombre y el pueblo de cada parada (la regla de la LZ3b); sin esa búsqueda, el nombre a secas.
-  const [rutaCoche, setRutaCoche] = useState<{ origen: string; destino: string } | null>(null)
-  const abrirRutasEnCoche = async () => {
-    const catalogo = ciudad ? await fetchDestinationPlaces(ciudad).catch(() => null) : null
-    setRutaCoche({ origen: mapsConsultaDe(catalogo, fromName) ?? fromName, destino: mapsConsultaDe(catalogo, toName) ?? toName })
-  }
   const transitRow = transitLabel && !trayectoCoche ? parseTransitLabel(transitLabel) : null
   if (trayectoCoche) {
     return (
       <div className="flex min-h-[44px] items-center gap-1.5 text-[12.5px] text-text/60">
-        <FilaCoche texto={trayectoCoche.texto} mapsUrl={trayectoCoche.maps_url} llegada={trayectoCoche.llegada_texto} onRutas={fromName && toName ? () => void abrirRutasEnCoche() : undefined} />
+        {/* (6-nov, RETOQUES_TARJETAS §1) Solo: vehículo · minutos · km · [Rutas] · [+ Añadir parada]. */}
+        <FilaCoche texto={trayectoCoche.texto} desde={fromName || null} hasta={toName || null} ciudad={ciudad} />
         <AddStopButton onAddStop={onAddStop} />
-        {rutaCoche && <OpenInMapsSheet open onClose={() => setRutaCoche(null)} origin={rutaCoche.origen} destination={rutaCoche.destino} mode="driving" />}
       </div>
     )
   }

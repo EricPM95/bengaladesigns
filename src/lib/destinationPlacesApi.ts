@@ -33,6 +33,8 @@ export interface DestinationPlace {
   fuera_de_lista?: boolean
   /** Tanda 10O: sale al final de la lista (lo que casi nadie conoce), detrás de todo lo que tenga «me gusta». */
   al_final_de_lista?: boolean
+  /** (6-nov) Los nombres con los que la ruta llama a las paradas que parten este sitio (Lanzarote: «Haría y el Valle de las Mil Palmeras» + «Casa-Museo César Manrique (Haría)»): con ellos «En tu ruta» y el aro del mapa lo reconocen. */
+  nombres_en_ruta?: string[]
   /** «Por qué te lo recomendamos»: el texto nuestro del sitio (escrito a mano, sin IA); null o ausente si no lo tiene. */
   por_que_recomendamos?: string | null
   /** (LZ2b1) «Dónde aparcar» (solo destinos de coche): el texto corto del aparcamiento de la parada; null o ausente en Roma. */

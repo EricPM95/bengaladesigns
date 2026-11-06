@@ -2,7 +2,7 @@ import { useMonedaViajero } from '../../../lib/moneda'
 import { useEffect, useState } from 'react'
 import type { Excursion, Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
-import { buildExcursionRow, dayOfReservation, hasEnoughDaysForExcursions, type Reservation } from '../../../lib/bookings'
+import { buildExcursionRow, dayOfReservation, excursionesDeLaRuta, hasEnoughDaysForExcursions, type Reservation } from '../../../lib/bookings'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useEntradasDelGrupo, useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
@@ -95,10 +95,13 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
     setTarget({ kind: 'excursion', refId: excursion.id, name: excursion.title, placeNames: [], excursion, currentDayId: dayId, ...(existing ? { existing } : {}) })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [excursionPedida])
-  const disponible = info.excursions.length > 0 && hasEnoughDaysForExcursions(route, info.fromDays)
-  if (!disponible) return null
   const fila = buildExcursionRow(route, reservations)
   const hayDiaDeExcursion = Boolean(fila.excursion && fila.day)
+  // (6-nov, RETOQUES 5e) Con un día de excursión en la ruta (Lanzarote, La Graciosa) el bloque sale aunque el destino no marque `excursiones_desde_dias`.
+  const disponible = info.excursions.length > 0 && (hasEnoughDaysForExcursions(route, info.fromDays) || hayDiaDeExcursion)
+  if (!disponible) return null
+  // Una excursión por día de excursión de la ruta: cada una con su tarjeta [Reservar excursión] mientras no esté reservada, y todas cuentan en el estado del bloque.
+  const deLaRuta = excursionesDeLaRuta(route, reservations)
   const añadidas = reservations.filter((item) => item.kind === 'excursion')
   const excursionDe = (reserva: Reservation): Excursion | null => reserva.excursionData ?? info.excursions.find((item) => item.id === reserva.refId) ?? null
   /** Guarda lo privado (personas, localizador, código) en el móvil de esta persona y la hora y el punto de encuentro en la reserva. NO toca la ruta ni el día: la excursión no cambia de sitio (regla 6j). */
@@ -111,9 +114,7 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
     if (grupo.esInvitado) useMisReservas.getState().anadir(nueva)
     else useRouteStore.setState((state) => ({ reservations: state.reservations.map((otra) => (otra.id === reserva.id ? nueva : otra)) }))
   }
-  const sinReservar = hayDiaDeExcursion && !fila.reservation
-  // (Tanda 10N5, los tres colores) Otro del grupo ya reservó esta excursión y a ti te queda elegir la tuya → azul oscuro con dorado.
-  const delGrupo = sinReservar && fila.excursion && grupo.esInvitado ? (grupo.reservasDelDueno.find((r) => r.kind === 'excursion' && r.refId === fila.excursion!.id) ?? null) : null
+  const pendientes = deLaRuta.filter((x) => !x.reservation)
 
   return (
     <>
@@ -124,28 +125,32 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
             titulo="Excursiones"
             datos="excursiones"
             onClick={() => setDesplegadoUsuario(!desplegado)}
-            estado={hayDiaDeExcursion ? (fila.reservation ? 'Listo' : '0 de 1 reservada') : 'Ninguna en tu ruta'}
-            hecho={!hayDiaDeExcursion || Boolean(fila.reservation)}
+            estado={hayDiaDeExcursion ? (deLaRuta.every((x) => x.reservation) ? 'Listo' : `${deLaRuta.filter((x) => x.reservation).length} de ${deLaRuta.length} reservada${deLaRuta.length === 1 ? '' : 's'}`) : 'Ninguna en tu ruta'}
+            hecho={!hayDiaDeExcursion || deLaRuta.every((x) => x.reservation)}
             abierto={desplegado}
             className="px-0.5"
           />
         </span>
         {desplegado && (
           <>
-        {sinReservar && fila.excursion && fila.day && (
-          <EntradaCard
-            eyebrow="Excursión"
-            when={enTuRuta(route, fila.day)}
-            name={fila.excursion.title}
-            delGrupo={Boolean(delGrupo)}
-            notes={delGrupo ? [{ text: textoQuienVa(grupo.nombreAdmin, route, delGrupo) }] : []}
-            buyLabel={delGrupo ? 'Reservar la mía' : 'Reservar excursión'}
-            buyHref={fila.excursion.page?.affiliateUrl ?? fila.excursion.bookUrl ?? buildActivitySearchUrl(`${fila.excursion.title} ${route.destination}`)}
-            reservedTime={null}
-            onAdd={() => setTarget({ kind: 'excursion', refId: fila.excursion!.id, name: fila.excursion!.title, placeNames: [], excursion: fila.excursion, currentDayId: fila.day!.id })}
-            onChange={() => undefined}
-          />
-        )}
+        {pendientes.map(({ day, excursion }) => {
+          const delGrupo = grupo.esInvitado ? (grupo.reservasDelDueno.find((r) => r.kind === 'excursion' && r.refId === excursion.id) ?? null) : null
+          return (
+            <EntradaCard
+              key={excursion.id}
+              eyebrow="Excursión"
+              when={enTuRuta(route, day)}
+              name={excursion.title}
+              delGrupo={Boolean(delGrupo)}
+              notes={delGrupo ? [{ text: textoQuienVa(grupo.nombreAdmin, route, delGrupo) }] : []}
+              buyLabel={delGrupo ? 'Reservar la mía' : 'Reservar excursión'}
+              buyHref={excursion.page?.affiliateUrl ?? excursion.bookUrl ?? buildActivitySearchUrl(`${excursion.title} ${route.destination}`)}
+              reservedTime={null}
+              onAdd={() => setTarget({ kind: 'excursion', refId: excursion.id, name: excursion.title, placeNames: [], excursion, currentDayId: day.id })}
+              onChange={() => undefined}
+            />
+          )
+        })}
         {añadidas.length > 0 && (
           <span data-seccion-reservadas style={ROTULO}>
             Reservadas · {añadidas.length}

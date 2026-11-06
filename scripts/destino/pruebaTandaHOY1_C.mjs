@@ -185,7 +185,7 @@ if (PARTE === 'todas' || PARTE === '2') {
       debe(await hay(ev, '[data-cambiar-hoja=propuesta][data-propuesta-tipo=lluvia]'), 'lanzarote: 32 — «Plan de lluvia» con Cambia y Se mantiene')
       const sale = await texto(ev, '[data-propuesta=cambia]')
       const entra = sale
-      debe(/Haría y el Valle/.test(sale) && !/Casa-Museo César Manrique/.test(sale), `lanzarote: C14 «Sale» las paradas al aire libre con lluvia (Haría…), no el museo (sale «${sale}»)`)
+      debe(/Haría/.test(sale) && !/Casa-Museo César Manrique/.test(sale) && !/Valle de las Mil Palmeras/.test(sale), `lanzarote: C14 «Sale» las paradas al aire libre con lluvia (Haría…), no el museo (sale «${sale}»)`)
       debe(/Fundación|Campesino|Castillo/.test(entra), `lanzarote: C14 «Entra» un sitio a cubierto cerca (sale «${entra}»)`)
       debe(/Aplicar/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && /Ver otra opción/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && /Volver a mi ruta original/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')), 'lanzarote: 32 [Aplicar] · [Ver otra opción] (hoy toca descansar) · «Volver a mi ruta original»')
       debe(JSON.stringify((await dia(ev, 2)).stops) === JSON.stringify(antes.stops), 'lanzarote: ver la alternativa NO cambia el día (nada se mueve solo)')

@@ -33,6 +33,7 @@ import { MeGusta } from '../../ui/MeGusta'
 import { useAbierto24h, useHorarioDeParadas } from '../../../lib/horarioDeParada'
 import { etiquetaDeHorario } from '../../../lib/etiquetaHorario'
 import { FotoCredito } from '../../ui/FotoCredito'
+import { VisorDeFotos } from '../fotos/VisorDeFotos'
 import { TusRecuerdos } from '../fotos/TusRecuerdos'
 import { Escuchar } from '../hoy/Escuchar'
 import { accesoHistoria, textoHistoria } from '../../../lib/historia'
@@ -129,6 +130,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // Prompt 5: la foto real del lugar y su procedencia. Unsplash exige atribución visible allí donde
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
   const [photo, setPhoto] = useState<PlacePhoto | null>(null)
+  // (6-nov, RETOQUES_TARJETAS §3) La foto de arriba, en grande al tocarla.
+  const [fotoGrande, setFotoGrande] = useState(false)
   // Tanda 6y4: lo que dicen los datos del destino de este lugar: si cobra por acercarse en vez de vender entrada, el bloque «No necesitas entrada». (La etiqueta de barrio ya no sale en la ficha: 6y10.)
   const infoDestino = useDestinationExcursions(city)
   const sinEntrada = stop ? (infoDestino.sinEntradaPorSitio[stop.name] ?? null) : null
@@ -392,7 +395,9 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
         ? anchorTips
         : (description?.tips ?? [])
   // El consejo del aperitivo (un spritz en una terraza) va primero, dentro de la ficha del paseo libre o de la parada que se alarga en su lugar.
-  const tips: StopTip[] = stop?.aperitivoTip ? [{ tipo: 'practico', texto: stop.aperitivoTip }, ...baseTips] : baseTips
+  // (6-nov, RETOQUES_TARJETAS §1) La nota de la llegada («Llegada a la cueva: 15 minutos antes de tu hora. La entrada se compra solo por internet…») ya no va bajo el trayecto: es el primer tip de la parada a la que vas.
+  const conAperitivo: StopTip[] = stop?.aperitivoTip ? [{ tipo: 'practico', texto: stop.aperitivoTip }, ...baseTips] : baseTips
+  const tips: StopTip[] = stop?.llegadaTexto && !conAperitivo.some((tip) => tip.texto === stop.llegadaTexto) ? [{ tipo: 'practico', texto: stop.llegadaTexto }, ...conAperitivo] : conAperitivo
   const hasTips = tips.length > 0
   // «Escuchar historia» (Tanda 6y5): la historia del sitio, de NUESTRA ficha (campo `historia`). No se escribe en ninguna pestaña: solo se escucha. Sin historia, ni barra ni botón.
   const textoDeLaHistoria = stop && !stop.isFreeTour ? textoHistoria(curated) : ''
@@ -421,6 +426,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
       : []
   const parrafosHorario: string[] = [
     ...(stop?.scheduleText ? [stop.scheduleText, 'Horarios orientativos — verificar antes de visitar'] : []),
+    // (6-nov, RETOQUES_TARJETAS §2) La tarjeta ya no dice «Última entrada»: la dice la ficha.
+    ...(horario?.ultimaEntrada && filasHorario.length === 0 ? [`Última entrada ${horario.ultimaEntrada}`] : []),
     ...(filasHorario.length > 0
       ? [...(curated?.schedule?.closed?.length ? [`Cerrado: ${curated.schedule.closed.join('; ')}`] : []), ...(curated?.schedule?.free_days?.length ? [`Entrada gratuita: ${curated.schedule.free_days.join('; ')}`] : []), ...(curated?.schedule?.notes ? [curated.schedule.notes] : [])]
       : lineasDe(hoursDetail)),
@@ -433,7 +440,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
         : { texto: hoursTag.label, tono: hoursTag.variant === 'closed' ? ('cierra' as const) : ('ok' as const) }
     : null
   const pieHorario = !(hoursTag?.variant === 'always' && !hoursDetail) ? `Los horarios pueden cambiar según temporada. Consulta la web oficial antes de tu visita${description?.officialWebsite ? ' (enlace más abajo).' : '.'}` : null
-  const hayHorario = Boolean(stop && !stop.isFreeWalk && (hoursDetail || hoursTag || stop.hoursWarning || stop.seasonNotice || stop.closedNotice))
+  const hayHorario = Boolean(stop && !stop.isFreeWalk && (hoursDetail || hoursTag || horario?.ultimaEntrada || stop.hoursWarning || stop.seasonNotice || stop.closedNotice))
   // El texto de debajo del nombre y el de «Qué vas a ver» (la ficha curada trae una lista; la de Claude, un párrafo).
   const queVerasLista = whatToSee.length > 0 ? whatToSee : description?.whatYoullSee ? [description.whatYoullSee] : []
   // La barra de «Escuchar» (de pago) ocupa el pie de la ficha: se deja sitio para que no tape el final del contenido.
@@ -478,6 +485,11 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                     <span className="absolute inset-0 overflow-hidden rounded-[22px] bg-bg-hover" style={{ backgroundImage: 'repeating-linear-gradient(135deg, rgb(var(--bg-hover)) 0 8px, rgb(var(--border) / .55) 8px 16px)' }}>
                       {(photo?.small ?? stop.photoUrl) && <img src={photo?.small ?? stop.photoUrl} alt="" className="h-full w-full object-cover" />}
                     </span>
+                    {/* (6-nov, RETOQUES_TARJETAS §3) Tocar la foto la abre en grande a pantalla completa (se cierra con la X o deslizando hacia abajo; se amplía con los dedos). */}
+                    {(photo?.regular ?? photo?.small ?? stop.photoUrl) && (
+                      <button type="button" onClick={() => setFotoGrande(true)} aria-label={`Ver la foto de ${displayStopName(stop.name)} en grande`} data-foto-ficha className="absolute inset-0 rounded-[22px]" />
+                    )}
+                    {fotoGrande && <VisorDeFotos fotos={[(photo?.regular ?? photo?.small ?? stop.photoUrl) as string]} nombre={displayStopName(stop.name)} onCerrar={() => setFotoGrande(false)} />}
                     {/* (Tanda 10N6 §1f) Fuera la cámara de la esquina de la foto: las fotos del sitio van en «Tus recuerdos», entre la cabecera y las pestañas. */}
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col gap-1.5" data-ficha-texto>

@@ -3,7 +3,7 @@ import { LineaReservaFueraDeFranja } from '../reservas/LineaReservaFueraDeFranja
 import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Coordinates, DayPlan, Stop, TrayectoCoche } from '../../../lib/types'
-import { CabeceraDelDiaCoche, CenaCercaBloque, VueltaEnCoche, trayectoDeVuelta } from './CocheDelDia'
+import { CabeceraDelDiaCoche, VueltaEnCoche, trayectoDeVuelta } from './CocheDelDia'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { addDaysToIso } from '../../../lib/dateRange'
@@ -431,6 +431,8 @@ export function DayDetailPanel({
     pedirExplorar(apertura)
     setMode('explore')
   }
+  /** (6-nov, RETOQUES_TARJETAS §5) [Ver restaurantes] de una comida o cena sin restaurante: EXPLORAR › Comer, ordenado desde la zona de esa comida. */
+  const verRestaurantesDe = (coordenadas: Coordinates | null | undefined) => () => abrirExplorar({ categoria: 'restaurantes', origen: coordenadas ?? null })
   // La tarjeta «Hoy vuelves a casa» (de pago): la del día de vuelta sin paradas y, con salida de madrugada, la del final del último día de ruta. El motor la deja en `Route.planVuelta` (`tarjeta` y `tarjetaUltimoDia`); HOY la lee con la misma función.
   const tarjetaHoyVuelves = !pago || !route ? null : tarjetaHoyVuelvesDelDia(route, day)
   const tarjetaUltimoDia = Boolean(route) && day.isReturnLeg === true && !tarjetaHoyVuelves
@@ -759,7 +761,9 @@ export function DayDetailPanel({
   const lunchInsertionIndex = movedMeal('lunch') ?? (lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW))
   const lunchCoordinates = lunchMeal?.coordinates && hasRealCoordinates(lunchMeal.coordinates) ? lunchMeal.coordinates : null
   // La ventana de cena la decide el día (20:00 o 20:30, ver dinnerWindowFor) — ya no es constante.
-  const dinnerInsertionIndex = movedMeal('dinner') ?? findMealInsertionIndex(schedule, dinnerWindowFor(day))
+  // (6-nov, RETOQUES_TARJETAS §5) El día de vuelta de un destino de coche no lleva cena (el vuelo sale por la tarde): sin comida de cena en el día, no se pinta el bloque «Hora de cenar».
+  const diaDeVueltaSinCena = day.isReturnLeg === true && Boolean(day.coche?.activo) && !day.meals.some((meal) => meal.mealTime === 'dinner')
+  const dinnerInsertionIndex = diaDeVueltaSinCena ? null : (movedMeal('dinner') ?? findMealInsertionIndex(schedule, dinnerWindowFor(day)))
   const destino = route?.destination ?? day.city
 
   /**
@@ -1062,8 +1066,8 @@ export function DayDetailPanel({
     if (item.type === 'end') {
       return (
         <div key={`${day.id}-fin-del-dia`}>
-          {day.cenaCerca && <div className="mb-1 mt-1"><CenaCercaBloque cena={day.cenaCerca} /></div>}
-          {renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, '', stops.length, dinnerInsertionIndex !== null, null, null, trayectoDeVuelta(day))}
+          {/* (6-nov, RETOQUES_TARJETAS §5) Después de la cena, nada (como Roma): fuera «Cena cerca de tu alojamiento» y «Vuelta a casa». Solo, el día de vuelta, el trayecto al aeropuerto. */}
+          {renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, trayectoDeVuelta(day) ? 'Aeropuerto de Lanzarote' : '', stops.length, dinnerInsertionIndex !== null, null, null, trayectoDeVuelta(day))}
         </div>
       )
     }
@@ -1099,6 +1103,7 @@ export function DayDetailPanel({
             chosenName={restaurantOf('lunch')?.name ?? null}
             walkNote={[mealWalkNote('lunch', index), lunchReservationNote].filter(Boolean).join(' · ') || null}
             onChange={() => openMealPicker('lunch')}
+            onVerRestaurantes={verRestaurantesDe(lunchCoordinates ?? realStops[Math.max(index, 0)].coordinates)}
             onOpen={() => setMealSheet({ franja: 'comida', stopIndex: Math.max(index, 0) })}
           />
         </SortableStop>
@@ -1118,6 +1123,7 @@ export function DayDetailPanel({
             chosenName={restaurantOf('dinner')?.name ?? null}
             walkNote={[mealWalkNote('dinner', index), dinnerReservationNote].filter(Boolean).join(' · ') || null}
             onChange={() => openMealPicker('dinner')}
+            onVerRestaurantes={verRestaurantesDe(realStops[Math.max(index, 0)].coordinates)}
             onOpen={() => setMealSheet({ franja: 'cena', stopIndex: Math.max(index, 0) })}
           />
         </SortableStop>
@@ -1458,6 +1464,7 @@ export function DayDetailPanel({
                 coordinates={halfDayLunchCoordinates}
                 franja="comida"
                 subtitle={`¿Tu excursión incluye comida? Si no, cuando vuelvas a ${day.city} aquí tienes restaurantes perfectos para ti`}
+                onVerRestaurantes={verRestaurantesDe(halfDayLunchCoordinates)}
                 onOpen={() => setMealSheet({ franja: 'comida', stopIndex: 0, coordinates: halfDayLunchCoordinates })}
               />
             </div>
@@ -1563,8 +1570,9 @@ export function DayDetailPanel({
           {route && (() => {
             const ciudad = route.days.filter((other) => !other.isReturnLeg)
             const ultimo = ciudad[ciudad.length - 1]
-            const aero = ultimo && (day.isReturnLeg || day.id === ultimo.id) ? ultimo.aeropuerto : null
-            return aero ? <VueltaEnCoche aeropuerto={aero} zona={ultimo.coche?.zona?.nombre ?? null} /> : null
+            // (6-nov, RETOQUES_TARJETAS §5) El bloque del aeropuerto solo va el día de vuelta, antes del vuelo (antes salía también el último día de ruta, detrás de la cena).
+            const aero = ultimo && day.isReturnLeg ? (day.aeropuerto ?? ultimo.aeropuerto) : null
+            return aero ? <VueltaEnCoche aeropuerto={aero} zona={ultimo.coche?.zona?.nombre ?? null} limiteT1={day.coche?.vuelta?.limite_t1 ?? null} ciudad={day.city} /> : null
           })()}
           {tarjetaHoyVuelves && (
             <TarjetaHoyVuelves

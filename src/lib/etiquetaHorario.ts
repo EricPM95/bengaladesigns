@@ -14,3 +14,15 @@ export function etiquetaDeHorario(horario: HorarioDeParada | null): string | nul
   const alAnochecer = /–\s*al anochecer/.test(horario.texto)
   return horario.tramos.map((tramo, indice) => `${conCero(tramo.abre)}–${alAnochecer && indice === horario.tramos.length - 1 ? 'anochecer' : conCero(tramo.cierra)}`).join(' y ')
 }
+
+/**
+ * (6-nov, RETOQUES_TARJETAS §2) El horario de la TARJETA de una parada: solo «10:00–18:00», sin «Abre» ni «Última entrada» (eso va dentro de la ficha). Horario partido: «9:00–13:00 / 16:00–19:00».
+ * Cerrado ese día: «Cerrado este día» (como siempre). Un parque que cierra «al anochecer» lo dice así.
+ */
+export function horarioDeLaTarjeta(horario: HorarioDeParada | null): string | null {
+  if (!horario) return null
+  if (horario.cerrado) return horario.texto
+  if (horario.tramos.length === 0) return null
+  const alAnochecer = /–\s*al anochecer/.test(horario.texto)
+  return horario.tramos.map((tramo, indice) => `${tramo.abre}–${alAnochecer && indice === horario.tramos.length - 1 ? 'anochecer' : tramo.cierra}`).join(' / ')
+}

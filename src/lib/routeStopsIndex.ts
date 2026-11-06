@@ -19,6 +19,11 @@ export function buildRouteStopEntries(route: Route): RouteStopEntry[] {
   return route.days.flatMap((day) => day.stops.filter((stop) => !stop.isFreeTime).map((stop) => ({ stop, dayId: day.id, city: day.city })))
 }
 
+/** true si el sitio (su nombre o alguno de los nombres con que la ruta llama a sus paradas, `nombres_en_ruta`) está ya en la ruta. */
+export function isPlaceInRoute(place: { name: string; nombres_en_ruta?: string[] }, entries: RouteStopEntry[]): boolean {
+  return isNameAlreadyInRoute(place.name, entries) || (place.nombres_en_ruta ?? []).some((nombre) => isNameAlreadyInRoute(nombre, entries))
+}
+
 /** true si `name` coincide (normalizado, sin acentos/mayúsculas) con el nombre de alguna parada ya presente en la ruta. */
 export function isNameAlreadyInRoute(name: string, entries: RouteStopEntry[]): boolean {
   const target = normalizeName(name)

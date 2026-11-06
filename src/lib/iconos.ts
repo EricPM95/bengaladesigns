@@ -100,6 +100,8 @@ export const ICONOS = {
   destello: 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16v4M17 18h4',
   gema: 'M6 4h12l3 5-9 11L3 9zM3 9h18M9 4L7.5 9 12 20M15 4l1.5 5L12 20',
   copa: 'M5 4h14l-7 8zM12 12v8M8 20h8',
+  // (6-nov, RETOQUES §5b) La ola: la categoría «Playas y charcos» de EXPLORAR en Lanzarote (la playa, con su sombrilla, es otra cosa).
+  ola: 'M3 8c2.2 0 2.2-2 4.5-2S9.8 8 12 8s2.2-2 4.5-2S18.8 8 21 8M3 13c2.2 0 2.2-2 4.5-2s2.3 2 4.5 2 2.2-2 4.5-2 2.3 2 4.5 2M3 18c2.2 0 2.2-2 4.5-2s2.3 2 4.5 2 2.2-2 4.5-2 2.3 2 4.5 2',
   abeto: 'M12 3l5 6h-3l4 5H6l4-5H7zM12 14v6',
   pizza: 'M3.5 7c5-3 12-3 17 0L12 21zM9 10h.01M14 10h.01M11.5 14h.01',
   helado: 'M7.5 11a4.5 4.5 0 0 1 9 0zM8 11l4 10 4-10',

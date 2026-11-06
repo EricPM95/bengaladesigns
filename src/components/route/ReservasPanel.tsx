@@ -7,7 +7,7 @@ import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
 import type { EnCambioDeVuelo } from '../../lib/cambioDeVuelo'
 import { alCambiarElVuelo } from '../../lib/adaptarVuelos'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
-import { buildEntradasBloque, hasEnoughDaysForExcursions } from '../../lib/bookings'
+import { buildEntradasBloque, excursionesDeLaRuta, hasEnoughDaysForExcursions, nombreCortoDeExcursion } from '../../lib/bookings'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useArrivalInfo } from '../../lib/arrivalReturn'
 import { legsOf, type LegKind } from '../../lib/reservasLegs'
@@ -84,7 +84,9 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
 
   const info = useDestinationExcursions(route.destination)
   // Las excursiones solo salen en los viajes de los días que marca el destino (`excursiones_desde_dias`): si no, ni el hueco.
-  const hayExcursiones = info.excursions.length > 0 && hasEnoughDaysForExcursions(route, info.fromDays)
+  // (6-nov, RETOQUES 5e) Con un día de excursión en la ruta (Lanzarote, La Graciosa) el bloque sale aunque el destino no marque `excursiones_desde_dias`.
+  const excursionesDeRuta = excursionesDeLaRuta(route, reservations)
+  const hayExcursiones = info.excursions.length > 0 && (hasEnoughDaysForExcursions(route, info.fromDays) || excursionesDeRuta.length > 0)
   const arrivalInfo = useArrivalInfo(route.destination, route.days[0]?.city ?? route.destination, route.origin)
   const segments = buildDestinationSegments(route.days)
   const unDestino = segments.length <= 1
@@ -127,11 +129,17 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   const primerTramo = segments.find((segment) => segment.nights > 0)
   // (Tanda 6y4: la misma regla que el aviso de DÍAS y el «!» de preparación, `alojamientoCubierto`.)
   const alojamientoListo = alojamientoCubierto({ pago, unDestino, selections: accommodationSelections, zona: accommodationZone, segmentDayId: primerTramo?.dayIds[0] })
+  // El bloque del coche: solo en los destinos de coche (Lanzarote), con un destino y sin ser invitado de un viaje compartido (lo del coche lo pone quien lo reserva).
+  const llevaCoche = esDestinoDeCoche(route.destination) && unDestino && !(grupo.esInvitado && grupo.compartido)
+  const cocheElegido = route.answers.coche === 'propio' ? 'propio' : 'alquiler'
   const fichas = [
     // (Tanda 10G: «Llegada y vuelta» es GRATIS —guardar el vuelo o el tren es del viajero—; lo del pase es lo que la app hace con él, y sale cerrado debajo.)
     { bloque: 'llegada' as const, nombre: 'Llegada y vuelta', hecho: legs.arrival.done && legs.departure.done },
     { bloque: 'aloj' as const, nombre: 'Alojamiento', hecho: alojamientoListo },
+    // (6-nov, RETOQUES 5e) Todo lo que se reserva cuenta: el coche (solo en los destinos de coche; con «Mi coche» ya está hecho) y una ficha por cada excursión de la ruta.
+    ...(llevaCoche ? [{ bloque: 'coche' as const, nombre: cocheElegido === 'propio' ? 'Mi coche' : 'Alquiler coche', hecho: cocheElegido === 'propio' || Boolean(rentalVehicleBooking) }] : []),
     ...(entradas.length > 0 ? [{ bloque: 'entradas' as const, nombre: `Entradas ${entradas.filter((item) => item.reservation).length}/${entradas.length}`, hecho: entradas.every((item) => item.reservation) }] : []),
+    ...(hayExcursiones ? excursionesDeRuta.map((x) => ({ id: `excursion-${x.excursion.id}`, bloque: 'excursiones' as const, nombre: nombreCortoDeExcursion(x.excursion), hecho: Boolean(x.reservation) })) : []),
   ]
 
   const adminId = grupo.gente.find((p) => p.esAdmin)?.id ?? null
@@ -240,10 +248,10 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
               )}
               <div className={hayExcursiones ? 'contents' : 'md:col-span-2'}>
                 {/* (LZ2b1) Destinos de coche (Lanzarote): el bloque del coche con su interruptor «Coche de alquiler | Mi coche». */}
-                {esDestinoDeCoche(route.destination) && unDestino && !conSuyo && (
+                {llevaCoche && (
                   <PiezaSegura nombre="RESERVAS: Coche">
                     <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
-                      <CocheDeViaje />
+                      <CocheDeViaje abierto={Boolean(abiertos.coche)} />
                     </ZonaGris>
                   </PiezaSegura>
                 )}

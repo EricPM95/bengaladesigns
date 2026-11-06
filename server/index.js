@@ -4265,6 +4265,18 @@ function restaurantesDeCoche(destinationKey) {
   return lista
 }
 
+/**
+ * (6-nov, RETOQUES §5d) La categoría de filtro de un lugar de un destino que no la trae escrita, a partir de sus etiquetas: mirador → miradores; iglesia/ermita → iglesias;
+ * museo, castillo, jardín o César Manrique → museos y arte; el resto (volcanes, playas, pueblos, calas) → monumentos (el chip «Atracciones»).
+ */
+function filtroDeCategoriaPorEtiquetas(place) {
+  const tags = new Set(Array.isArray(place.tags) ? place.tags : [])
+  if (tags.has('mirador')) return 'miradores'
+  if (tags.has('iglesia') || tags.has('ermita')) return 'iglesias'
+  if (['museo', 'castillo', 'jardin', 'cesar_manrique', 'arte'].some((tag) => tags.has(tag))) return 'museos_arte'
+  return 'monumentos'
+}
+
 app.post('/api/destination-places', (req, res) => {
   const { destination } = req.body ?? {}
   if (!destination) {
@@ -4276,8 +4288,9 @@ app.post('/api/destination-places', (req, res) => {
     res.json({ found: false, places: [] })
     return
   }
+  const destinoSinCategorias = !(data.places ?? []).some((place) => place.filter_category)
   // Tanda 10O: `lugares_solo_lista` son sitios que solo salen en EXPLORAR (la Terraza del Altar de la Patria): el motor de rutas lee `places` y nunca los ve.
-  const places = [...(data.places ?? []), ...(data.lugares_solo_lista ?? [])]
+  const places =[...(data.places ?? []), ...(data.lugares_solo_lista ?? [])]
     .filter((place) => Array.isArray(place.coordinates) && place.coordinates.length === 2)
     .map((place) => ({
       kind: 'place',
@@ -4286,7 +4299,10 @@ app.post('/api/destination-places', (req, res) => {
       al_final_de_lista: place.al_final_de_lista === true,
       name: place.name,
       coordinates: { lat: place.coordinates[0], lng: place.coordinates[1] },
-      filter_category: place.filter_category ?? null,
+      // (6-nov, RETOQUES §5d) Un destino nuevo sin `filter_category` escrito a mano (Lanzarote venía sin él: «Atracciones 0», «Miradores 0» y ningún pin) lo recibe de sus etiquetas. Roma las trae todas escritas: no cambia.
+      filter_category: place.filter_category ?? (destinoSinCategorias ? filtroDeCategoriaPorEtiquetas(place) : null),
+      // (6-nov) Los nombres con los que la ruta llama a las paradas que parten este sitio («Haría y el Valle…» + «Casa-Museo César Manrique (Haría)»): con ellos «En tu ruta» lo reconoce.
+      nombres_en_ruta: Array.isArray(place.nombres_en_ruta) ? place.nombres_en_ruta.filter((nombre) => typeof nombre === 'string') : [],
       zone: place.zone ?? null,
       zone_label: data.zones?.[place.zone]?.name ?? null,
       duration_min: Number.isFinite(place.duration_minutes) ? place.duration_minutes : null,

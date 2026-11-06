@@ -2,6 +2,8 @@ import { GR, INK } from './BloqueReservas'
 import type { BloqueReservasId } from '../../../store/useReservasFocusStore'
 
 export interface FichaResumen {
+  /** Clave propia cuando dos fichas llevan al mismo bloque (una por excursión); sin ella, el bloque. */
+  id?: string
   bloque: BloqueReservasId
   nombre: string
   hecho: boolean
@@ -24,16 +26,17 @@ export function ResumenViaje({ fichas, onFicha }: { fichas: FichaResumen[]; onFi
       </span>
       <div className="flex gap-1" aria-hidden="true">
         {fichas.map((ficha) => (
-          <span key={ficha.bloque} className="h-1 flex-1 rounded transition-colors" style={{ background: ficha.hecho ? GR : 'rgba(28,34,48,.1)' }} />
+          <span key={ficha.id ?? ficha.bloque} className="h-1 flex-1 rounded transition-colors" style={{ background: ficha.hecho ? GR : 'rgba(28,34,48,.1)' }} />
         ))}
       </div>
       <div className="flex flex-wrap gap-1.5">
         {fichas.map((ficha) => (
           <button
-            key={ficha.bloque}
+            key={ficha.id ?? ficha.bloque}
             type="button"
             onClick={() => onFicha(ficha.bloque)}
             data-ficha={ficha.bloque}
+            data-clave-resumen={ficha.id ?? ficha.bloque}
             className="zona-toque flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-3 text-[12.5px] font-medium transition-colors"
             style={{
               border: `1px solid ${ficha.hecho ? 'oklch(0.55 0.11 150 / .35)' : 'rgba(28,34,48,.12)'}`,

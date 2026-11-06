@@ -1,4 +1,5 @@
 import { formatDaySessions } from './stopHoursTag'
+import nombresCortos from '../data/nombresCortos.json'
 import { nombreSinHora } from './nombreDeParada'
 export function formatDuration(minutes: number): string {
   if (minutes < 60) return `${minutes}min`
@@ -20,8 +21,17 @@ export function formatReviewCount(count: number): string {
  */
 export function displayStopName(name: string): string {
   // (10S10, apartado 3) El nombre nunca depende de la hora: «Fontana de Trevi, sin gente» → «Fontana de Trevi» (la hora va en una etiqueta que sale solo si se cumple; src/lib/nombreDeParada.ts).
-  return nombreSinHora(name.replace(/\s*\(noche\)\s*$/i, '')).nombre
+  const sinHora = nombreSinHora(name.replace(/\s*\(noche\)\s*$/i, '')).nombre
+  // (6-nov, RETOQUES_TARJETAS §4) El título que se ve es el nombre corto del sitio o del pueblo (src/data/nombresCortos.json). Solo lo que se ve: el nombre de dentro no cambia.
+  return NOMBRES_CORTOS.get(sinHora) ?? sinHora
 }
+
+/** Nombre de dentro → título corto, de todos los destinos (los nombres no se repiten entre destinos). */
+const NOMBRES_CORTOS = new Map<string, string>(
+  Object.entries(nombresCortos as Record<string, unknown>)
+    .filter(([destino]) => !destino.startsWith('_'))
+    .flatMap(([, tabla]) => Object.entries(tabla as Record<string, string>)),
+)
 
 /**
  * Ronda 6, Fix 2: `scheduleText` trae el horario COMPLETO y legible ("Lun-Sáb 09:00-19:00, Dom

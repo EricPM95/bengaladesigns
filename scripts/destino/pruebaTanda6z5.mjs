@@ -125,8 +125,11 @@ debe(paradas.length >= 3, 'B datos', `el día 1 tiene solo ${paradas.length} par
 // ── A5. La tarjeta de DÍAS y la lista de HOY ──
 const dias = pinta(DayList, { route, activeDayId: 'd1', onSelectDay() {}, showAllDaysOnMap: false }, route, { mode: 'days' })
 const textoDias = aTexto(dias)
-const abreEnDias = textoDias.split('\n').filter((l) => /^Abre \d{1,2}:\d{2} – \d{1,2}:\d{2}/.test(l))
-debe(abreEnDias.length >= 1, 'A5 DÍAS', `la tarjeta de DÍAS no enseña ningún «Abre …» (${plano(textoDias).slice(0, 300)})`)
+// (6-nov, RETOQUES_TARJETAS §2) La tarjeta enseña solo «10:00–18:00» (partido: «9:00–13:00 / 16:00–19:00»), sin «Abre» ni «Última entrada»; esas dos van dentro de la ficha.
+const tarjetaCorta = (h) => h.tramos.map((t, i) => `${t.abre}–${/al anochecer/.test(h.texto) && i === h.tramos.length - 1 ? 'anochecer' : t.cierra}`).join(' / ')
+const abreEnDias = textoDias.split('\n').filter((l) => /^\d{1,2}:\d{2}–\d{1,2}:\d{2}/.test(l.trim()))
+debe(abreEnDias.length >= 1, 'A5 DÍAS', `la tarjeta de DÍAS no enseña ningún horario «10:00–18:00» (${plano(textoDias).slice(0, 300)})`)
+debe(!/Abre \d|Última entrada/.test(textoDias), 'A5 DÍAS', 'la tarjeta de DÍAS ya no dice «Abre» ni «Última entrada»')
 debe(!/Acceso libre/.test(textoDias), 'A5 DÍAS', 'la tarjeta de DÍAS sigue diciendo «Acceso libre» en lo que no tiene horario')
 // Cada parada con horario conocido ese día enseña SU horario, y una plaza no enseña nada: se mira el trozo de texto entre su nombre y el de la siguiente tarjeta.
 const nombres = paradas.map((s) => s.name)
@@ -145,7 +148,7 @@ for (const parada of paradas) {
   if (t === null) continue
   if (h && !parada.isNightExperience && parada.visitMode !== 'fuera') {
     conHorario++
-    debe(t.includes(h.texto), 'A5 DÍAS', `${parada.name}: la tarjeta no dice «${h.texto}» (${t.slice(0, 200)})`)
+    debe(h.cerrado ? t.includes(h.texto) : t.includes(tarjetaCorta(h)), 'A5 DÍAS', `${parada.name}: la tarjeta no dice «${h.cerrado ? h.texto : tarjetaCorta(h)}» (${t.slice(0, 200)})`)
   } else if (!h && !parada.passThrough && !parada.isNightExperience) {
     sinHorarioPintado++
     debe(!/Abre \d/.test(t) && !/Acceso libre/.test(t), 'A5 DÍAS', `${parada.name}: no tiene horario y la tarjeta enseña «Abre…» o «Acceso libre» (${t.slice(0, 200)})`)

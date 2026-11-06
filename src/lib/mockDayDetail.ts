@@ -296,6 +296,8 @@ export interface MockStopDetail {
   photoName?: string | null
   /** Foto propia fija (la del Free Tour, cuando la haya): se usa tal cual, sin buscar. */
   fixedPhotoUrl?: string | null
+  /** (6-nov) La nota de llegada de las entradas solo online: va como primer tip de la ficha. */
+  llegadaTexto?: string | null
 }
 
 /**
@@ -372,6 +374,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     nightWalkName: stop.nightWalkName ?? null,
     photoName: stop.photoName ?? null,
     fixedPhotoUrl: stop.fixedPhotoUrl ?? null,
+    llegadaTexto: stop.llegadaTexto ?? null,
   }
 }
 

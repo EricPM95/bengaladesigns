@@ -1100,6 +1100,7 @@
   {
    "id": "haria_y_la_casa_museo_cesar_manrique",
    "name": "Haría y la Casa-Museo César Manrique",
+   "nombres_en_ruta": ["Haría y el Valle de las Mil Palmeras","Casa-Museo César Manrique (Haría)"],
    "level": 2,
    "zone": "norte",
    "coordinates": [
@@ -1957,6 +1958,7 @@
   {
    "id": "playa_blanca_y_el_faro_de_pechiguera",
    "name": "Playa Blanca y el Faro de Pechiguera",
+   "nombres_en_ruta": ["El paseo marítimo de Playa Blanca","Faro de Pechiguera"],
    "level": 3,
    "zone": "sur",
    "coordinates": [

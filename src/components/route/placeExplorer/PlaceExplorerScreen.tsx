@@ -18,7 +18,7 @@ import {
 import { claveDeDestino, totalesDe, useMeGustaStore } from '../../../store/useMeGustaStore'
 import { MeGusta } from '../../ui/MeGusta'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
-import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeStopsIndex'
+import { buildRouteStopEntries, isPlaceInRoute } from '../../../lib/routeStopsIndex'
 import { haversineMeters, hasRealCoordinates } from '../../../lib/distanceMock'
 import { formatDuration } from '../../../lib/format'
 import { alDia } from '../../../lib/nombreDeDia'
@@ -72,6 +72,8 @@ interface PlaceExplorerScreenProps {
   initialFilters?: PlaceFilterId[]
   /** (10N10 §3c) «+ Añadir parada»: al abrir, solo los sitios para visitar; los restaurantes, cafés, helados y bares salen solo si el viajero toca su bloque. */
   soloSitiosParaVisitar?: boolean
+  /** (6-nov, RETOQUES §5d) Una categoría de EXPLORAR de un destino de coche (Volcanes, Playas…): la lista que llega ya ES la categoría, así que sin ningún filtro encendido el mapa enseña un pin por cada sitio de la lista (en Roma, sin filtros, solo las paradas del día). */
+  pinsDeLaLista?: boolean
   /** Desde dónde se ordena «Cerca de ti» al abrir (HOY, «Cerca de ti»: donde está el viajero o la siguiente parada). Con él se entra directo en «Cerca de ti» y no se pide la ubicación. Solo de pago. */
   initialOrigin?: Coordinates | null
   /** Abrir directamente en «Cerca de ti» (ordenado por cercanía, pidiendo la ubicación si no hay punto de partida): la tarjeta «Hoy vuelves a casa» (Tanda 7). Solo de pago. */
@@ -344,6 +346,7 @@ export function PlaceExplorerScreen({
   route = null,
   initialFilters = [],
   soloSitiosParaVisitar = false,
+  pinsDeLaLista = false,
   initialOrigin = null,
   initialNearby = false,
   excursions = [],
@@ -504,9 +507,9 @@ export function PlaceExplorerScreen({
 
   const stopEntries = useMemo(() => (route ? buildRouteStopEntries(route) : []), [route])
   /** «En tu día 2» / «En tu lun 13»: el día de la ruta a mano en que ya está el sitio (el primero, si estuviera en dos). */
-  const inRouteDayTag = (name: string): string | null => {
+  const inRouteDayTag = (place: DestinationPlace): string | null => {
     if (!route) return null
-    const entry = stopEntries.find((candidate) => isNameAlreadyInRoute(name, [candidate]))
+    const entry = stopEntries.find((candidate) => isPlaceInRoute(place, [candidate]))
     const day = entry ? route.days.find((candidate) => candidate.id === entry.dayId) : undefined
     return day ? `En tu ${diaCorto(route, day.dayNumber).toLowerCase()}` : null
   }
@@ -645,7 +648,7 @@ export function PlaceExplorerScreen({
   const alsoInteresting = useMemo(() => {
     if (!onPick || chosenThemes.size === 0) return []
     return places
-      .filter((place) => place.kind === 'place' && (place.themes ?? []).some((theme) => chosenThemes.has(theme)) && !isNameAlreadyInRoute(place.name, stopEntries))
+      .filter((place) => place.kind === 'place' && (place.themes ?? []).some((theme) => chosenThemes.has(theme)) && !isPlaceInRoute(place, stopEntries))
       .sort((a, b) => (a.level ?? 9) - (b.level ?? 9) || a.name.localeCompare(b.name, 'es'))
       .slice(0, 8)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -715,14 +718,16 @@ export function PlaceExplorerScreen({
     // Cada filtro enciende SUS pines, aparte de la lista: Atracciones los de categoría, Entradas los del icono de entrada (un mismo sitio puede llevar los dos).
     const categoryFilters = activeFilters.filter((id) => id !== 'entradas' && id !== 'excursiones')
     const categoriesOn = categoryFilters.flatMap((id) => categoriesForFilters([id]))
+    const sinFiltros = pinsDeLaLista && activeFilters.length === 0
     for (const place of poiPlaces) {
+      if (sinFiltros && place.kind === 'place' && !place.solo_entradas) ids.add(poiId(place))
       const categoryOn = place.filter_category !== null && categoriesOn.includes(place.filter_category) && (place.kind !== 'restaurant' || activeSubCategory === null || place.sub_category === activeSubCategory)
       if (categoryOn) ids.add(poiId(place))
       if (ticketsActive && place.requires_ticket && !isOsmPoint(place)) ids.add(ticketId(place))
     }
     return ids
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results, needle, queryTooShort, activeFilters, activeSubCategory, ticketsActive, poiPlaces])
+  }, [results, needle, queryTooShort, activeFilters, activeSubCategory, ticketsActive, poiPlaces, pinsDeLaLista])
 
   /** Cuánto se corre cada pin cuando un sitio lleva dos a la vez (Coliseo con Atracciones y Entradas): uno a cada lado, sin taparse. */
   const pinOffsets = useMemo(() => {
@@ -751,7 +756,7 @@ export function PlaceExplorerScreen({
   const inRouteIds = useMemo(
     () => [
       ...poiPlaces
-        .filter((place) => !isOsmPoint(place) && isNameAlreadyInRoute(place.name, stopEntries))
+        .filter((place) => !isOsmPoint(place) && isPlaceInRoute(place, stopEntries))
         .flatMap((place) => [poiId(place), ticketId(place)]),
       // Una excursión que ya está en la ruta (la elegida en su día) lleva el aro igual.
       ...excursions.filter((excursion) => route?.days.some((day) => day.selectedExcursionId === excursion.id)).map((excursion) => `excursion-${excursion.id}`),
@@ -763,7 +768,8 @@ export function PlaceExplorerScreen({
   )
   const visibleMarkerCount = dayMarkers.length + visiblePinIds.size + (excursionsActive ? excursionMarkers.length : 0)
   // Con Excursiones encendido el mapa se aleja lo justo para ver los destinos (a veces lejos de la ciudad); si hay más filtros, también sus pines.
-  const fitIds = !excursionsActive ? recenterIds : excursionsActive ? [...excursionMarkers.map((marker) => marker.id), ...(placeFiltersActive ? [...visiblePinIds] : [])] : null
+  // (6-nov, RETOQUES §5d) En una categoría de un destino de coche el mapa se encuadra en los sitios que se ven (si no, se quedaba donde estuviera y los pines caían fuera de la pantalla).
+  const fitIds = pinsDeLaLista && !excursionsActive ? (visiblePinIds.size > 0 ? [...visiblePinIds] : null) : !excursionsActive ? recenterIds : excursionsActive ? [...excursionMarkers.map((marker) => marker.id), ...(placeFiltersActive ? [...visiblePinIds] : [])] : null
 
   /** El «+» de «Añadir parada»: lo añade directo a ese día, sin preguntar (Tanda 6z). */
   const addDirect = async (place: DestinationPlace) => {
@@ -799,7 +805,7 @@ export function PlaceExplorerScreen({
     const categories = categoriesForFilters([id])
     return places.filter((place) => place.filter_category !== null && categories.includes(place.filter_category)).length
   }
-  const inRouteCount = route ? places.filter((place) => place.kind === 'place' && isNameAlreadyInRoute(place.name, stopEntries)).length : 0
+  const inRouteCount = route ? places.filter((place) => place.kind === 'place' && isPlaceInRoute(place, stopEntries)).length : 0
   const toiletsAvailable = toiletsEnabled && places.some((place) => isOsmPoint(place))
   const fountainsAvailable = toiletsEnabled && places.some((place) => place.kind === 'fountain')
   const chipRow = PLACE_FILTER_CHIPS.filter((chip) => (chip.id !== 'excursiones' || (excursions.length > 0 && !pickMode && !cambiando)) && (chip.id !== 'restaurantes' || (!pickMode && !cambiando)) && (chip.id !== 'banos' || toiletsAvailable) && (chip.id !== 'fuentes' || fountainsAvailable))
@@ -1181,7 +1187,7 @@ export function PlaceExplorerScreen({
                 const color = solidOf(style?.color ?? '#6B7280')
                 const toilet = isOsmPoint(place)
                 // El Free Tour no es una parada con su nombre: «en ruta» es que la ruta lo lleve (la hora se elige en su hoja).
-                const alreadyInRoute = !toilet && (place.solo_entradas ? Boolean(route && routeHasFreeTour(route)) : isNameAlreadyInRoute(place.name, stopEntries))
+                const alreadyInRoute = !toilet && (place.solo_entradas ? Boolean(route && routeHasFreeTour(route)) : isPlaceInRoute(place, stopEntries))
                 const distance = position && hasRealCoordinates(place.coordinates) ? haversineMeters(position, place.coordinates) : null
                 const active = toilet ? selectedToilet === poiId(place) : selected?.name === place.name
                 const addLabel = alreadyInRoute && quickAddLabel === '+ Añadir' ? '✓ En ruta' : quickAddLabel
@@ -1225,7 +1231,7 @@ export function PlaceExplorerScreen({
                             {visitable && alreadyInRoute && (
                               <span className="rounded-full px-1.5 py-0.5 text-caption font-semibold" style={{ background: 'oklch(0.96 0.035 150)', color: 'oklch(0.45 0.11 150)' }}>
                                 {/* Ruta a mano: con su día, «En tu día 2» (con fechas, «En tu lun 13»). «Cambiar parada»: «Ya en tu viaje». */}
-                                {cambiando ? '✓ En ruta' : manualOrder && !place.solo_entradas ? (inRouteDayTag(place.name) ?? '✓ En ruta') : '✓ En ruta'}
+                                {cambiando ? '✓ En ruta' : manualOrder && !place.solo_entradas ? (inRouteDayTag(place) ?? '✓ En ruta') : '✓ En ruta'}
                               </span>
                             )}
                             {isRecommended(place) && <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">Recomendado</span>}
