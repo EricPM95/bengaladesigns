@@ -169,6 +169,9 @@ async function pasada(destino, sitio, imagen) {
     // 3b. Tocar un sitio de la lista abre SU ficha.
     const otro = cols[0].sitios.find((s) => s !== sitio.id)
     const nombreOtro = d.places.find((x) => x.id === otro).name
+    // (Al día con HOY2b 8c, decisión de Eric del 5-nov: las tarjetas salen TODAS cerradas, así que para tocar un sitio de la lista hay que abrir antes su tarjeta.)
+    await a.evaluar(`document.querySelector('[data-logros-coleccion="${cols[0].id}"]')?.dataset.abierta !== '1' && document.querySelector('[data-logros-coleccion="${cols[0].id}"] > button')?.click(); true`)
+    await esp(500)
     await a.evaluar(`document.querySelector('[data-logros-sitio="${otro}"]')?.click(); true`)
     let abierta = false
     for (let i = 0; i < 40 && !abierta; i++) {
@@ -186,8 +189,11 @@ async function pasada(destino, sitio, imagen) {
     await abrirFicha(a, sitio.nombre, estadoVisto)
     await a.evaluar("Array.from(document.querySelectorAll('[data-ficha-pestanas] button')).find((b) => b.textContent.trim() === 'Logros')?.click(); true")
     await esp(1200)
+    // (HOY2b 8c: tarjetas cerradas al entrar) se abre la primera para ver sus sitios.
+    await a.evaluar("document.querySelector('[data-logros-coleccion] > button')?.click(); true")
+    await esp(500)
     p = await leerPestana(a)
-    const filaYo = p?.tarjetas[0]?.sitios.find((s) => s.id === sitio.id)
+    const filaYo =p?.tarjetas[0]?.sitios.find((s) => s.id === sitio.id)
     debe(filaYo?.estado === 'visto' && /Visto/.test(filaYo.texto) && !p.tarjetas.some((t) => t.sitios.some((s) => s.estado === 'este')), `${destino}: con ${sitio.nombre} ya visto tiene que decir «Visto» y no «Estás aquí» (${JSON.stringify(filaYo)})`)
     const verde = await a.evaluar(`(() => { const e = document.querySelector('[data-logros-sitio="${sitio.id}"]'); if (!e) return null; const marca = e.lastElementChild; return { marca: marca.textContent.trim(), fondo: getComputedStyle(marca).backgroundColor, texto: getComputedStyle(e.querySelector('span:nth-child(2) span:nth-child(2)') ?? e).color } })()`)
     debe(verde?.marca === '✓', `${destino}: la marca de «Visto» tiene que ser ✓ (${JSON.stringify(verde)})`)
