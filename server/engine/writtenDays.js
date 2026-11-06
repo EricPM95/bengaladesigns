@@ -114,6 +114,8 @@ const photosCache = new Map()
 export function fotoOculta(destinationKey, name) {
   const table = photosFor(destinationKey)
   if (!table || !name) return false
+  // (6-nov, Lanzarote) `solo_fotos_propias`: sin foto de esta tabla, la parada va SIN foto buscada (fondo de color), nunca la de Wikipedia ni la de Unsplash. Una foto PROPIA va antes (ownPhotoFile), así que no pasa por aquí.
+  if (table.solo_fotos_propias === true) return true
   if ((table.sin_foto ?? []).includes(name)) return true
   const base = String(name).replace(/\s*\(noche\)$|\s+de noche$/i, '')
   return (table.fotos_rechazadas ?? []).some((entrada) => entrada.lugar === name || entrada.lugar === base)
@@ -196,8 +198,25 @@ export function arrivalInfoFor(destinationKey) {
 export function ownPhotoFile(table, name, dateIso) {
   if (!table) return null
   const md = /^\d{4}-\d{2}-\d{2}$/.test(String(dateIso ?? '')) ? Number(dateIso.slice(5, 7)) * 100 + Number(dateIso.slice(8, 10)) : null
-  const valid = (table.fotos ?? []).filter((foto) => (foto.lugares ?? []).includes(name) && !foto.verificar && (!foto.fechas || (md != null && withinMonthDays(md, foto.fechas.desde, foto.fechas.hasta))))
+  const vale = (foto) => !foto.verificar && (!foto.fechas || (md != null && withinMonthDays(md, foto.fechas.desde, foto.fechas.hasta)))
+  let valid = (table.fotos ?? []).filter((foto) => (foto.lugares ?? []).includes(name) && vale(foto))
+  // (6-nov, Lanzarote: `cruce_normalizado`) Sin el nombre exacto, el cruce es por el nombre normalizado (sin tildes, mayúsculas ni paréntesis: «Teguise (villa)» = «Teguise») o por el id de nuestros datos, nunca a ojo. Roma no lo lleva: sigue exacto.
+  if (valid.length === 0 && table.cruce_normalizado === true) {
+    const clave = nombreNormalizado(name)
+    if (clave) valid = (table.fotos ?? []).filter((foto) => ((foto.lugares ?? []).some((lugar) => nombreNormalizado(lugar) === clave) || (foto.place_id && foto.place_id === clave.replace(/ /g, '_'))) && vale(foto))
+  }
   return valid.find((candidate) => candidate.fechas) ?? valid[0] ?? null
+}
+
+/** «Teguise (villa)» → «teguise»; «Haría y el Valle…» → «haria y el valle…». Sin tildes, mayúsculas, paréntesis ni signos. */
+export function nombreNormalizado(nombre) {
+  return String(nombre ?? '')
+    .replace(/\([^)]*\)/g, ' ')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
 }
 
 const excursionsCache = new Map()

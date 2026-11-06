@@ -453,6 +453,16 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
   } catch {
     igual = false
   }
+  // (6-nov, fotos de Lanzarote, a petición de Eric) En tagColors.ts se pueden añadir NOMBRES de etiqueta (TAG_LABELS: «César Manrique», con tilde y mayúscula), pero los COLORES (todo lo anterior a TAG_LABELS) no cambian.
+  if (!igual && f === 'src/lib/tagColors.ts') {
+    try {
+      const antes = execFileSync('git', ['show', 'HEAD:' + f], { encoding: 'utf8' }).replace(/\r\n/g, '\n')
+      const ahora = leer(f).replace(/\r\n/g, '\n')
+      igual = antes.split('const TAG_LABELS')[0] === ahora.split('const TAG_LABELS')[0]
+    } catch {
+      igual = false
+    }
+  }
   debe(igual, 'sin_cambios', `${f} no ha cambiado (colores de los días y etiquetas de tipo de las paradas)`)
 }
 // La barra de abajo: la A de Marca JUTRIP 03 (tinta con la pestaña de marfil). Es de lo poco oscuro que lleva la app (junto con la franja «Estás en Roma» de RESERVAS).

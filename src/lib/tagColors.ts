@@ -44,6 +44,19 @@ const TAG_LABELS: Record<string, string> = {
   curiosidad: 'Curiosidad',
   subterraneo: 'Subterráneo',
   mercadillo_navideno: 'Mercadillo de Navidad',
+  // (6-nov) Las etiquetas de Lanzarote: tildes y mayúscula en los nombres propios («César Manrique», no «Cesar manrique»).
+  cesar_manrique: 'César Manrique',
+  volcan: 'Volcán',
+  tubo_volcanico: 'Tubo volcánico',
+  geologia: 'Geología',
+  fotogenico: 'Fotogénico',
+  bano: 'Baño',
+  parque_nacional: 'Parque nacional',
+  pista_de_tierra: 'Pista de tierra',
+  sin_socorrista: 'Sin socorrista',
+  cena_con_vistas: 'Cena con vistas',
+  arena_negra: 'Arena negra',
+  piscinas_naturales: 'Piscinas naturales',
 }
 
 /**

@@ -1,5 +1,6 @@
 import type { AeropuertoDelDia, CenaCerca, DayPlan, TrayectoCoche } from '../../../lib/types'
 import { Icono } from '../../ui/Icono'
+import { TransportModeIcon } from './TransportModeIcons'
 
 /**
  * (LZ2a) Lo que el motor de coche pinta en un día de Lanzarote (contrato: `docs/dias/_estado_lz2a_contrato.md`): cada trayecto «En coche · 25 min · 18 km» con [Abrir en Maps],
@@ -17,7 +18,8 @@ export function FilaCoche({ texto, mapsUrl, llegada, onRutas }: { texto: string;
   return (
     <span className="flex min-w-0 flex-col gap-0.5 py-1 text-text/60" data-trayecto-coche>
       <span className="flex items-center gap-1.5">
-        <Icono nombre="coche" className="h-[15px] w-[15px] shrink-0" />
+        {/* (6-nov) «A pie · 5 min» lleva el icono de andar; el del coche, solo con «En coche». */}
+        {/^A pie/i.test(texto) ? <TransportModeIcon mode="walking" className="h-[15px] w-[15px] shrink-0" /> : <Icono nombre="coche" className="h-[15px] w-[15px] shrink-0" />}
         <span className="font-mono text-[12px] font-medium">{texto}</span>
       </span>
       {(onRutas || mapsUrl) && (

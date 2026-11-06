@@ -1,0 +1,263 @@
+[
+ {
+  "n": "01",
+  "archivo": "01_montanas_del_fuego.jpg",
+  "parada": "Montañas del Fuego (Timanfaya)",
+  "id_sugerido": "montanas_del_fuego",
+  "ancho": 1920,
+  "alto": 1280,
+  "derechos": "libre"
+ },
+ {
+  "n": "02",
+  "archivo": "02_la_geria_y_sus_bodegas.jpg",
+  "parada": "La Geria y sus bodegas",
+  "id_sugerido": "la_geria_y_sus_bodegas",
+  "ancho": 1920,
+  "alto": 1272,
+  "derechos": "libre"
+ },
+ {
+  "n": "03",
+  "archivo": "03_salinas_de_janubio.jpg",
+  "parada": "Salinas de Janubio",
+  "id_sugerido": "salinas_de_janubio",
+  "ancho": 1920,
+  "alto": 1280,
+  "derechos": "libre"
+ },
+ {
+  "n": "04",
+  "archivo": "04_playa_de_montana_bermeja.jpg",
+  "parada": "Playa de Montaña Bermeja",
+  "id_sugerido": "playa_de_montana_bermeja",
+  "ancho": 1368,
+  "alto": 912,
+  "derechos": "libre"
+ },
+ {
+  "n": "05",
+  "archivo": "05_los_hervideros.jpg",
+  "parada": "Los Hervideros",
+  "id_sugerido": "los_hervideros",
+  "ancho": 1000,
+  "alto": 563,
+  "derechos": "revisar"
+ },
+ {
+  "n": "06",
+  "archivo": "06_el_golfo_y_el_charco_de_los_clicos.jpg",
+  "parada": "El Golfo y el Charco de los Clicos",
+  "id_sugerido": "el_golfo_y_el_charco_de_los_clicos",
+  "ancho": 1920,
+  "alto": 1442,
+  "derechos": "libre"
+ },
+ {
+  "n": "07",
+  "archivo": "07_jameos_del_agua.jpg",
+  "parada": "Jameos del Agua",
+  "id_sugerido": "jameos_del_agua",
+  "ancho": 1920,
+  "alto": 1359,
+  "derechos": "libre"
+ },
+ {
+  "n": "08",
+  "archivo": "08_cueva_de_los_verdes.jpg",
+  "parada": "Cueva de los Verdes",
+  "id_sugerido": "cueva_de_los_verdes",
+  "ancho": 1920,
+  "alto": 1440,
+  "derechos": "libre"
+ },
+ {
+  "n": "09",
+  "archivo": "09_mirador_del_rio.jpg",
+  "parada": "Mirador del Río",
+  "id_sugerido": "mirador_del_rio",
+  "ancho": 1200,
+  "alto": 800,
+  "derechos": "libre"
+ },
+ {
+  "n": "10",
+  "archivo": "10_haria_y_el_valle_de_las_mil_palmeras.jpg",
+  "parada": "Haría y el Valle de las Mil Palmeras",
+  "id_sugerido": "haria_y_el_valle_de_las_mil_palmeras",
+  "ancho": 960,
+  "alto": 639,
+  "derechos": "libre"
+ },
+ {
+  "n": "11",
+  "archivo": "11_casa_museo_cesar_manrique_haria.jpg",
+  "parada": "Casa-Museo César Manrique (Haría)",
+  "id_sugerido": "casa_museo_cesar_manrique_haria",
+  "ancho": 1000,
+  "alto": 400,
+  "derechos": "revisar"
+ },
+ {
+  "n": "12",
+  "archivo": "12_mirador_de_los_helechos.jpg",
+  "parada": "Mirador de los Helechos",
+  "id_sugerido": "mirador_de_los_helechos",
+  "ancho": 800,
+  "alto": 450,
+  "derechos": "libre"
+ },
+ {
+  "n": "13",
+  "archivo": "13_fundacion_cesar_manrique.jpg",
+  "parada": "Fundación César Manrique (Tahíche)",
+  "id_sugerido": "fundacion_cesar_manrique",
+  "ancho": 1920,
+  "alto": 1280,
+  "derechos": "libre"
+ },
+ {
+  "n": "14",
+  "archivo": "14_jardin_de_cactus.jpg",
+  "parada": "Jardín de Cactus",
+  "id_sugerido": "jardin_de_cactus",
+  "ancho": 1920,
+  "alto": 1764,
+  "derechos": "libre"
+ },
+ {
+  "n": "15",
+  "archivo": "15_teguise.jpg",
+  "parada": "Teguise (villa)",
+  "id_sugerido": "teguise",
+  "ancho": 1068,
+  "alto": 712,
+  "derechos": "revisar"
+ },
+ {
+  "n": "16",
+  "archivo": "16_castillo_de_santa_barbara.jpg",
+  "parada": "Castillo de Santa Bárbara",
+  "id_sugerido": "castillo_de_santa_barbara",
+  "ancho": 1536,
+  "alto": 1152,
+  "derechos": "libre"
+ },
+ {
+  "n": "17",
+  "archivo": "17_ciudad_estratificada.jpg",
+  "parada": "Ciudad Estratificada (Rofera de Teseguite)",
+  "id_sugerido": "ciudad_estratificada",
+  "ancho": 1440,
+  "alto": 960,
+  "derechos": "revisar"
+ },
+ {
+  "n": "18",
+  "archivo": "18_casa_museo_del_campesino.jpg",
+  "parada": "Casa-Museo del Campesino (Mozaga)",
+  "id_sugerido": "casa_museo_del_campesino",
+  "ancho": 796,
+  "alto": 530,
+  "derechos": "revisar"
+ },
+ {
+  "n": "19",
+  "archivo": "19_las_grietas.jpg",
+  "parada": "Las Grietas (Montaña Blanca)",
+  "id_sugerido": "las_grietas",
+  "ancho": 1920,
+  "alto": 1280,
+  "derechos": "libre"
+ },
+ {
+  "n": "20",
+  "archivo": "20_arrecife_charco_de_san_gines.jpg",
+  "parada": "Arrecife: Charco de San Ginés y el paseo",
+  "id_sugerido": "arrecife_charco_de_san_gines",
+  "ancho": 1068,
+  "alto": 1068,
+  "derechos": "libre"
+ },
+ {
+  "n": "21",
+  "archivo": "21_playas_de_papagayo.jpg",
+  "parada": "Playas de Papagayo",
+  "id_sugerido": "playas_de_papagayo",
+  "ancho": 870,
+  "alto": 580,
+  "derechos": "libre"
+ },
+ {
+  "n": "22",
+  "archivo": "22_paseo_maritimo_de_playa_blanca.jpg",
+  "parada": "El paseo marítimo de Playa Blanca",
+  "id_sugerido": "paseo_maritimo_de_playa_blanca",
+  "ancho": 1920,
+  "alto": 1281,
+  "derechos": "revisar"
+ },
+ {
+  "n": "23",
+  "archivo": "23_faro_de_pechiguera.jpg",
+  "parada": "Faro de Pechiguera",
+  "id_sugerido": "faro_de_pechiguera",
+  "ancho": 1536,
+  "alto": 1061,
+  "derechos": "revisar"
+ },
+ {
+  "n": "24",
+  "archivo": "24_volcan_del_cuervo.jpg",
+  "parada": "Volcán del Cuervo",
+  "id_sugerido": "volcan_del_cuervo",
+  "ancho": 1473,
+  "alto": 800,
+  "derechos": "libre"
+ },
+ {
+  "n": "25",
+  "archivo": "25_ermita_de_las_nieves.jpg",
+  "parada": "Ermita de las Nieves",
+  "id_sugerido": "ermita_de_las_nieves",
+  "ancho": 1200,
+  "alto": 1200,
+  "derechos": "revisar"
+ },
+ {
+  "n": "26",
+  "archivo": "26_caleta_de_famara_y_playa_de_famara.jpg",
+  "parada": "Caleta de Famara y Playa de Famara",
+  "id_sugerido": "caleta_de_famara_y_playa_de_famara",
+  "ancho": 1191,
+  "alto": 800,
+  "derechos": "revisar"
+ },
+ {
+  "n": "27",
+  "archivo": "27_la_graciosa.jpg",
+  "parada": "La Graciosa",
+  "id_sugerido": "la_graciosa",
+  "ancho": 1400,
+  "alto": 934,
+  "derechos": "revisar"
+ },
+ {
+  "n": "X1",
+  "archivo": "X1_mirador_del_rio_atardecer.jpg",
+  "parada": "Mirador del Río al atardecer (de reserva)",
+  "id_sugerido": "mirador_del_rio_atardecer",
+  "ancho": 1444,
+  "alto": 1288,
+  "derechos": "libre"
+ },
+ {
+  "n": "X2",
+  "archivo": "X2_caleta_de_famara_atardecer.jpg",
+  "parada": "Famara al atardecer (de reserva)",
+  "id_sugerido": "caleta_de_famara_atardecer",
+  "ancho": 1202,
+  "alto": 800,
+  "derechos": "revisar"
+ }
+]

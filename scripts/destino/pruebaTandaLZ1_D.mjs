@@ -70,6 +70,11 @@ for (const c of fotos.portadas_candidatas ?? []) debe(fs.existsSync(c.ruta) && f
 const LIBRE = /^(CC0|Public domain|CC BY(-SA)? \d)/
 for (const f of fotos.fotos) {
   debe(fs.existsSync(`public/fotos/lanzarote/${f.archivo}`) && fs.existsSync(`public/fotos/lanzarote/${f.archivo.replace('.jpg', '_p.jpg')}`), 'F4', `${f.archivo}: falta el fichero (grande o _p)`)
+  // (6-nov) Las fotos de Eric (`origen: "Eric"`) van SIN crédito en la app: se comprueba que lleven sus derechos y ningún crédito.
+  if (f.origen === 'Eric') {
+    debe(['libre', 'revisar antes del lanzamiento'].includes(f.derechos) && !f.credito, 'F5', `${f.archivo}: foto de Eric sin crédito y con sus derechos`)
+    continue
+  }
   debe(f.credito?.autor && f.credito?.licencia && /^https:\/\/commons\.wikimedia\.org\//.test(f.credito?.enlace ?? ''), 'F5', `${f.archivo}: sin crédito completo`)
   debe(LIBRE.test(f.credito?.licencia ?? ''), 'F6', `${f.archivo}: licencia no libre (${f.credito?.licencia})`)
 }

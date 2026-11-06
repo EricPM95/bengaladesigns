@@ -69,6 +69,10 @@
     {
       "lugar": "Mirador del Bosquecillo (Risco de Famara)",
       "motivo": "En Commons no hay una foto con ese nombre y licencia libre; no se pone una de «Risco de Famara» a ojo."
+    },
+    {
+      "lugar": "Puerto del Carmen (Puerto Viejo)",
+      "motivo": "La de Commons es un aloe en una maceta, no el Puerto Viejo: sin foto antes que una equivocada."
     }
   ],
   "fotos_rechazadas": [],
@@ -91,138 +95,335 @@
     {
       "archivo": "montanas_del_fuego.jpg",
       "lugares": [
+        "Montañas del Fuego (Timanfaya)",
         "Montañas del Fuego"
       ],
+      "place_id": "montanas_del_fuego",
       "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "H. Zell",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Monta%C3%B1a_del_Selado_-_Caldera_del_Corazoncillo_-_Lanzarote.jpg",
-      "nota": "Wikimedia Commons, Montaña del Selado - Caldera del Corazoncillo - Lanzarote.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "H. Zell",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Monta%C3%B1a_del_Selado_-_Caldera_del_Corazoncillo_-_Lanzarote.jpg"
-      }
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
     },
     {
-      "archivo": "jameos_del_agua.jpg",
+      "archivo": "la_geria_y_sus_bodegas_eric.jpg",
       "lugares": [
-        "Jameos del Agua"
+        "La Geria y sus bodegas"
       ],
+      "place_id": "la_geria_y_sus_bodegas",
       "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Amargeddon6",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Jameos_del_Agua_3.JPG",
-      "nota": "Wikimedia Commons, Jameos del Agua 3.JPG, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Amargeddon6",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Jameos_del_Agua_3.JPG"
-      }
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
     },
     {
-      "archivo": "cueva_de_los_verdes.jpg",
+      "archivo": "salinas_de_janubio.jpg",
       "lugares": [
-        "Cueva de los Verdes"
+        "Salinas de Janubio"
       ],
+      "place_id": "salinas_de_janubio",
       "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Luis Miguel Bugallo Sánchez (Lmbuga)",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Cueva_de_los_Verdes_-_Lanzarote_-_CV01.jpg",
-      "nota": "Wikimedia Commons, Cueva de los Verdes - Lanzarote - CV01.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Luis Miguel Bugallo Sánchez (Lmbuga)",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Cueva_de_los_Verdes_-_Lanzarote_-_CV01.jpg"
-      }
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
     },
     {
-      "archivo": "mirador_del_rio.jpg",
+      "archivo": "playa_de_montana_bermeja.jpg",
       "lugares": [
-        "Mirador del Río"
+        "Playa de Montaña Bermeja"
       ],
+      "place_id": "playa_de_montana_bermeja",
       "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Amargeddon6",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Mirador_del_Rio_outside.JPG",
-      "nota": "Wikimedia Commons, Mirador del Rio outside.JPG, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Amargeddon6",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Mirador_del_Rio_outside.JPG"
-      }
+      "ancho": 1368,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
     },
     {
-      "archivo": "fundacion_cesar_manrique.jpg",
+      "archivo": "los_hervideros_eric.jpg",
       "lugares": [
-        "Fundación César Manrique"
+        "Los Hervideros"
       ],
+      "place_id": "los_hervideros",
       "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "H. Zell",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Fundaci%C3%B3n_C%C3%A9sar_Manrique_-_Entrance.jpg",
-      "nota": "Wikimedia Commons, Fundación César Manrique - Entrance.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "H. Zell",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Fundaci%C3%B3n_C%C3%A9sar_Manrique_-_Entrance.jpg"
-      }
+      "ancho": 1000,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
     },
     {
       "archivo": "el_golfo_y_el_charco_de_los_clicos.jpg",
       "lugares": [
         "El Golfo y el Charco de los Clicos"
       ],
+      "place_id": "el_golfo_y_el_charco_de_los_clicos",
       "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Luis Miguel Bugallo Sánchez (Lmbuga)",
-      "enlace": "https://commons.wikimedia.org/wiki/File:El_Golfo_-_Charco_de_los_Clicos_-Lanzarote_-_G10.jpg",
-      "nota": "Wikimedia Commons, El Golfo - Charco de los Clicos -Lanzarote - G10.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Luis Miguel Bugallo Sánchez (Lmbuga)",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:El_Golfo_-_Charco_de_los_Clicos_-Lanzarote_-_G10.jpg"
-      }
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
     },
     {
-      "archivo": "la_geria_y_sus_bodegas.jpg",
+      "archivo": "jameos_del_agua.jpg",
       "lugares": [
-        "La Geria y sus bodegas"
+        "Jameos del Agua"
       ],
+      "place_id": "jameos_del_agua",
       "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Luis Miguel Bugallo Sánchez",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Bodega_Su%C3%A1rez_-_Diama_-_La_Geria_-_Lanzarote_-_BS05.jpg",
-      "nota": "Wikimedia Commons, Bodega Suárez - Diama - La Geria - Lanzarote - BS05.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Luis Miguel Bugallo Sánchez",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Bodega_Su%C3%A1rez_-_Diama_-_La_Geria_-_Lanzarote_-_BS05.jpg"
-      }
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
     },
     {
-      "archivo": "playas_de_papagayo.jpg",
+      "archivo": "cueva_de_los_verdes.jpg",
+      "lugares": [
+        "Cueva de los Verdes"
+      ],
+      "place_id": "cueva_de_los_verdes",
+      "cuando": "dia",
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
+    },
+    {
+      "archivo": "mirador_del_rio.jpg",
+      "lugares": [
+        "Mirador del Río"
+      ],
+      "place_id": "mirador_del_rio",
+      "cuando": "dia",
+      "ancho": 1200,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
+    },
+    {
+      "archivo": "haria_y_el_valle_de_las_mil_palmeras.jpg",
+      "lugares": [
+        "Haría y el Valle de las Mil Palmeras"
+      ],
+      "place_id": "haria_y_el_valle_de_las_mil_palmeras",
+      "cuando": "dia",
+      "ancho": 960,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
+    },
+    {
+      "archivo": "casa_museo_cesar_manrique_haria.jpg",
+      "lugares": [
+        "Casa-Museo César Manrique (Haría)",
+        "Haría y la Casa-Museo César Manrique"
+      ],
+      "place_id": "casa_museo_cesar_manrique_haria",
+      "cuando": "dia",
+      "ancho": 711,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento",
+      "recorte_16_9": "el patio con la cocina de leña"
+    },
+    {
+      "archivo": "mirador_de_los_helechos.jpg",
+      "lugares": [
+        "Mirador de los Helechos"
+      ],
+      "place_id": "mirador_de_los_helechos",
+      "cuando": "dia",
+      "ancho": 800,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
+    },
+    {
+      "archivo": "fundacion_cesar_manrique.jpg",
+      "lugares": [
+        "Fundación César Manrique (Tahíche)",
+        "Fundación César Manrique"
+      ],
+      "place_id": "fundacion_cesar_manrique",
+      "cuando": "dia",
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
+    },
+    {
+      "archivo": "jardin_de_cactus.jpg",
+      "lugares": [
+        "Jardín de Cactus"
+      ],
+      "place_id": "jardin_de_cactus",
+      "cuando": "dia",
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre",
+      "recorte_16_9": "el molino"
+    },
+    {
+      "archivo": "teguise.jpg",
+      "lugares": [
+        "Teguise (villa)",
+        "Teguise"
+      ],
+      "place_id": "teguise",
+      "cuando": "dia",
+      "ancho": 1068,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "castillo_de_santa_barbara.jpg",
+      "lugares": [
+        "Castillo de Santa Bárbara"
+      ],
+      "place_id": "castillo_de_santa_barbara",
+      "cuando": "dia",
+      "ancho": 1536,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
+    },
+    {
+      "archivo": "ciudad_estratificada.jpg",
+      "lugares": [
+        "Ciudad Estratificada (Rofera de Teseguite)"
+      ],
+      "place_id": "ciudad_estratificada_rofera_de_teseguite",
+      "cuando": "dia",
+      "ancho": 1440,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "casa_museo_del_campesino.jpg",
+      "lugares": [
+        "Casa-Museo del Campesino (Mozaga)",
+        "Casa-Museo del Campesino"
+      ],
+      "place_id": "casa_museo_del_campesino",
+      "cuando": "dia",
+      "ancho": 796,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "las_grietas.jpg",
+      "lugares": [
+        "Las Grietas (Montaña Blanca)"
+      ],
+      "place_id": "las_grietas_montana_blanca",
+      "cuando": "dia",
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
+    },
+    {
+      "archivo": "arrecife_charco_de_san_gines.jpg",
+      "lugares": [
+        "Arrecife: Charco de San Ginés y el paseo"
+      ],
+      "place_id": "arrecife_charco_de_san_gines_y_el_paseo",
+      "cuando": "dia",
+      "ancho": 1068,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre",
+      "recorte_16_9": "el charco con las barcas y las casas"
+    },
+    {
+      "archivo": "playas_de_papagayo_eric.jpg",
       "lugares": [
         "Playas de Papagayo"
       ],
+      "place_id": "playas_de_papagayo",
       "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Lviatour",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Lanzarote_1_Luc_Viatour.jpg",
-      "nota": "Wikimedia Commons, Lanzarote 1 Luc Viatour.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Lviatour",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Lanzarote_1_Luc_Viatour.jpg"
-      }
+      "ancho": 870,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
+    },
+    {
+      "archivo": "paseo_maritimo_de_playa_blanca.jpg",
+      "lugares": [
+        "El paseo marítimo de Playa Blanca"
+      ],
+      "place_id": "playa_blanca_y_el_faro_de_pechiguera",
+      "cuando": "dia",
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "faro_de_pechiguera.jpg",
+      "lugares": [
+        "Faro de Pechiguera"
+      ],
+      "place_id": "playa_blanca_y_el_faro_de_pechiguera",
+      "cuando": "dia",
+      "ancho": 1536,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "volcan_del_cuervo.jpg",
+      "lugares": [
+        "Volcán del Cuervo"
+      ],
+      "place_id": "volcan_del_cuervo",
+      "cuando": "dia",
+      "ancho": 1473,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre"
+    },
+    {
+      "archivo": "ermita_de_las_nieves.jpg",
+      "lugares": [
+        "Ermita de las Nieves"
+      ],
+      "place_id": "ermita_de_las_nieves",
+      "cuando": "dia",
+      "ancho": 1200,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento",
+      "recorte_16_9": "la ermita y la escalinata"
+    },
+    {
+      "archivo": "caleta_de_famara_y_playa_de_famara.jpg",
+      "lugares": [
+        "Caleta de Famara y Playa de Famara"
+      ],
+      "place_id": "caleta_de_famara_y_playa_de_famara",
+      "cuando": "dia",
+      "ancho": 1191,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "la_graciosa.jpg",
+      "lugares": [
+        "La Graciosa"
+      ],
+      "place_id": "la_graciosa",
+      "cuando": "dia",
+      "ancho": 1400,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
     },
     {
       "archivo": "caleton_blanco.jpg",
@@ -239,142 +440,6 @@
         "autor": "Ein Dahmer",
         "licencia": "CC BY-SA 4.0",
         "enlace": "https://commons.wikimedia.org/wiki/File:Caleton_Blanco_8275.jpg"
-      }
-    },
-    {
-      "archivo": "jardin_de_cactus.jpg",
-      "lugares": [
-        "Jardín de Cactus"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Jard%C3%ADn_de_cactus_7049.jpg",
-      "nota": "Wikimedia Commons, Jardín de cactus 7049.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Jard%C3%ADn_de_cactus_7049.jpg"
-      }
-    },
-    {
-      "archivo": "los_hervideros.jpg",
-      "lugares": [
-        "Los Hervideros"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Lviatour",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Lanzarote_4_Luc_Viatour.jpg",
-      "nota": "Wikimedia Commons, Lanzarote 4 Luc Viatour.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Lviatour",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Lanzarote_4_Luc_Viatour.jpg"
-      }
-    },
-    {
-      "archivo": "salinas_de_janubio.jpg",
-      "lugares": [
-        "Salinas de Janubio"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Salinas_de_Janubio_at_Lanzarote.jpg",
-      "nota": "Wikimedia Commons, Salinas de Janubio at Lanzarote.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Salinas_de_Janubio_at_Lanzarote.jpg"
-      }
-    },
-    {
-      "archivo": "teguise.jpg",
-      "lugares": [
-        "Teguise"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "H. Zell",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Teguise_-_Plaza_-_Iglesia.jpg",
-      "nota": "Wikimedia Commons, Teguise - Plaza - Iglesia.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "H. Zell",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Teguise_-_Plaza_-_Iglesia.jpg"
-      }
-    },
-    {
-      "archivo": "haria_y_la_casa_museo_cesar_manrique.jpg",
-      "lugares": [
-        "Haría y la Casa-Museo César Manrique"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Lmbuga",
-      "enlace": "https://commons.wikimedia.org/wiki/File:%C3%93rzola_-_Har%C3%ADa_-_Lanzarote_-OH03.jpg",
-      "nota": "Wikimedia Commons, Órzola - Haría - Lanzarote -OH03.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Lmbuga",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:%C3%93rzola_-_Har%C3%ADa_-_Lanzarote_-OH03.jpg"
-      }
-    },
-    {
-      "archivo": "casa_museo_del_campesino.jpg",
-      "lugares": [
-        "Casa-Museo del Campesino"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Frank Härtelt",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Monumento-al-Campesino.JPG",
-      "nota": "Wikimedia Commons, Monumento-al-Campesino.JPG, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Frank Härtelt",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Monumento-al-Campesino.JPG"
-      }
-    },
-    {
-      "archivo": "caleta_de_famara_y_playa_de_famara.jpg",
-      "lugares": [
-        "Caleta de Famara y Playa de Famara"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC0",
-      "autor": "Wiki05",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Famara_Playa.JPG",
-      "nota": "Wikimedia Commons, Famara Playa.JPG, CC0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Wiki05",
-        "licencia": "CC0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Famara_Playa.JPG"
-      }
-    },
-    {
-      "archivo": "arrecife_charco_de_san_gines.jpg",
-      "lugares": [
-        "Arrecife: Charco de San Ginés y el paseo"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
-      "autor": "Canario1",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Charco_de_San_Gin%C3%A9s.JPG",
-      "nota": "Wikimedia Commons, Charco de San Ginés.JPG, CC BY-SA 4.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Canario1",
-        "licencia": "CC BY-SA 4.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Charco_de_San_Gin%C3%A9s.JPG"
       }
     },
     {
@@ -412,23 +477,6 @@
       }
     },
     {
-      "archivo": "ermita_de_las_nieves.jpg",
-      "lugares": [
-        "Ermita de las Nieves"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY 3.0",
-      "autor": "Marc Ryckaert (MJJR)",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Lanzarote_Ermita_de_las_Nieves_R01.jpg",
-      "nota": "Wikimedia Commons, Lanzarote Ermita de las Nieves R01.jpg, CC BY 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Marc Ryckaert (MJJR)",
-        "licencia": "CC BY 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Lanzarote_Ermita_de_las_Nieves_R01.jpg"
-      }
-    },
-    {
       "archivo": "mirador_de_guinate.jpg",
       "lugares": [
         "Mirador de Guinate"
@@ -446,57 +494,6 @@
       }
     },
     {
-      "archivo": "ciudad_estratificada.jpg",
-      "lugares": [
-        "Ciudad Estratificada (Rofera de Teseguite)"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY 4.0",
-      "autor": "Alberto-g-rovi",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Ciudad_Estratificada_(1).jpg",
-      "nota": "Wikimedia Commons, Ciudad Estratificada (1).jpg, CC BY 4.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Alberto-g-rovi",
-        "licencia": "CC BY 4.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Ciudad_Estratificada_(1).jpg"
-      }
-    },
-    {
-      "archivo": "playa_de_montana_bermeja.jpg",
-      "lugares": [
-        "Playa de Montaña Bermeja"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY 4.0",
-      "autor": "Alexander Klink",
-      "enlace": "https://commons.wikimedia.org/wiki/File:La_Graciosa_Playa_de_los_Conchas_from_Monta%C3%B1a_Bermeja1.jpg",
-      "nota": "Wikimedia Commons, La Graciosa Playa de los Conchas from Montaña Bermeja1.jpg, CC BY 4.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Alexander Klink",
-        "licencia": "CC BY 4.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:La_Graciosa_Playa_de_los_Conchas_from_Monta%C3%B1a_Bermeja1.jpg"
-      }
-    },
-    {
-      "archivo": "las_grietas_montana_blanca.jpg",
-      "lugares": [
-        "Las Grietas (Montaña Blanca)"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
-      "autor": "Fry72 (Karel Frydrýšek)",
-      "enlace": "https://commons.wikimedia.org/wiki/File:L%C3%A1vov%C3%A9_formace_Las_Grietas,_T%C3%ADas,_Lanzarote,_Kan%C3%A1rsk%C3%A9_ostrovy,_%C5%A0pan%C4%9Blsko_11.jpg",
-      "nota": "Wikimedia Commons, Lávové formace Las Grietas, Tías, Lanzarote, Kanárské ostrovy, Španělsko 11.jpg, CC BY-SA 4.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Fry72 (Karel Frydrýšek)",
-        "licencia": "CC BY-SA 4.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:L%C3%A1vov%C3%A9_formace_Las_Grietas,_T%C3%ADas,_Lanzarote,_Kan%C3%A1rsk%C3%A9_ostrovy,_%C5%A0pan%C4%9Blsko_11.jpg"
-      }
-    },
-    {
       "archivo": "mirador_de_haria.jpg",
       "lugares": [
         "Mirador de Haría"
@@ -511,23 +508,6 @@
         "autor": "Frank Vincentz",
         "licencia": "CC BY-SA 3.0",
         "enlace": "https://commons.wikimedia.org/wiki/File:Har%C3%ADa_-_Calle_Ramon_Y_Cajal-LZ-10_-_Mirador_de_Har%C3%ADa_01_ies.jpg"
-      }
-    },
-    {
-      "archivo": "castillo_de_santa_barbara.jpg",
-      "lugares": [
-        "Castillo de Santa Bárbara"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Frank Vincentz",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Teguise_-_Guanapay_-_Castillo_des_Santa_B%C3%A1rbara_01_ies.jpg",
-      "nota": "Wikimedia Commons, Teguise - Guanapay - Castillo des Santa Bárbara 01 ies.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Frank Vincentz",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Teguise_-_Guanapay_-_Castillo_des_Santa_B%C3%A1rbara_01_ies.jpg"
       }
     },
     {
@@ -565,40 +545,6 @@
       }
     },
     {
-      "archivo": "puerto_del_carmen_puerto_viejo.jpg",
-      "lugares": [
-        "Puerto del Carmen (Puerto Viejo)"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "Luis Miguel Bugallo Sánchez (Lmbuga)",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Puerto_del_Carmen-_Lanzarote-_Spain_PC04.jpg",
-      "nota": "Wikimedia Commons, Puerto del Carmen- Lanzarote- Spain PC04.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Luis Miguel Bugallo Sánchez (Lmbuga)",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Puerto_del_Carmen-_Lanzarote-_Spain_PC04.jpg"
-      }
-    },
-    {
-      "archivo": "volcan_del_cuervo.jpg",
-      "lugares": [
-        "Volcán del Cuervo"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
-      "autor": "H. Zell",
-      "enlace": "https://commons.wikimedia.org/wiki/File:Volc%C3%A1n_del_Cuervo_01.jpg",
-      "nota": "Wikimedia Commons, Volcán del Cuervo 01.jpg, CC BY-SA 3.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "H. Zell",
-        "licencia": "CC BY-SA 3.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:Volc%C3%A1n_del_Cuervo_01.jpg"
-      }
-    },
-    {
       "archivo": "caldera_blanca.jpg",
       "lugares": [
         "Caldera Blanca"
@@ -614,28 +560,32 @@
         "licencia": "CC BY-SA 3.0",
         "enlace": "https://commons.wikimedia.org/wiki/File:Tuff_ring_Caldera_Blanca_on_Lanzarote,_June_2013_(1).jpg"
       }
-    },
-    {
-      "archivo": "la_graciosa.jpg",
-      "lugares": [
-        "La Graciosa"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY 4.0",
-      "autor": "Gerd Eichmann",
-      "enlace": "https://commons.wikimedia.org/wiki/File:La_Graciosa-04-Blick_nach_Caleta_del_Sebo-2015-gje.jpg",
-      "nota": "Wikimedia Commons, La Graciosa-04-Blick nach Caleta del Sebo-2015-gje.jpg, CC BY 4.0, pide crédito (LZ1, 3-nov-2026). Elegida por el título y la miniatura; Eric la confirma en el REPASO.",
-      "credito": {
-        "autor": "Gerd Eichmann",
-        "licencia": "CC BY 4.0",
-        "enlace": "https://commons.wikimedia.org/wiki/File:La_Graciosa-04-Blick_nach_Caleta_del_Sebo-2015-gje.jpg"
-      }
     }
   ],
   "huecos": [
     "Faltan fotos propias (Commons) de: Mirador del Bosquecillo (Risco de Famara).",
     "Los sitios que NO están en LANZAROTE_SITIOS.md como parada de la ruta (Fuerteventura, Isla de Lobos, Charco del Palo) no llevan foto propia: Fuerteventura e Isla de Lobos usan la de su excursión de Civitatis; Charco del Palo no va en la ruta.",
     "Las fotos de cada sitio se eligieron por el título del fichero y la miniatura; conviene que Eric las mire en el REPASO (sobre todo Mirador del Río, Castillo de San José y La Graciosa)."
-  ]
+  ],
+  "reserva": [
+    {
+      "archivo": "reserva/reserva_mirador_del_rio_atardecer.jpg",
+      "parada": "Mirador del Río al atardecer (de reserva)",
+      "ancho": 1444,
+      "origen": "Eric",
+      "derechos": "libre",
+      "nota": "De reserva: se guarda y NO se usa."
+    },
+    {
+      "archivo": "reserva/reserva_caleta_de_famara_atardecer.jpg",
+      "parada": "Famara al atardecer (de reserva)",
+      "ancho": 1202,
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento",
+      "nota": "De reserva: se guarda y NO se usa."
+    }
+  ],
+  "cruce_normalizado": true,
+  "solo_fotos_propias": true,
+  "_notas_6nov": "Fotos de Eric (6-nov, scripts/destino/fotosLanzarote.mjs): `origen: \"Eric\"`, sin crédito en la app; `derechos` «libre» o «revisar antes del lanzamiento». Las pequeñas (_p) miden 960 px de ancho como las de antes. `cruce_normalizado`: el nombre de la parada se cruza con `lugares` sin mirar tildes, mayúsculas ni paréntesis. `solo_fotos_propias`: sin foto de esta tabla, la parada va con el fondo de color, nunca con Wikipedia ni Unsplash."
 }
