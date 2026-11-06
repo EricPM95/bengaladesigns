@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { franjaDe, type AvisoDeCuenta, type DatosDeFranja } from '../lib/avisos'
 import { sonar } from '../lib/sonidos'
+import { useRouteStore } from './useRouteStore'
 
 /**
  * LA FRANJA DE AVISO NUEVO (Tanda 10N4 §4b, Design `Piezas/Avisos Franja`, la 11). La franja oscura que sale arriba un par de segundos y se va sola con CUALQUIER aviso nuevo que llegue
@@ -56,9 +57,18 @@ const claveDe = (aviso: AvisoDeCuenta): string | undefined => (aviso.tipo === 'g
 
 export const itemDeAviso = (aviso: AvisoDeCuenta): ItemDeFranja => ({ ...franjaDe(aviso), id: aviso.id, quien: aviso.quien, aviso, clave: claveDe(aviso) })
 
+/** (Arreglo, 6-nov) La franja solo sale con la ruta abierta: nunca encima de «Trazando tu ruta…» ni del formulario. Lo que llega antes espera aquí y sale UNA vez, al abrir la ruta ([Ver mi ruta]). */
+const hayRutaAbierta = (): boolean => useRouteStore.getState().screen === 'route'
+let pendientes: ItemDeFranja[] = []
+
 export const useFranjaStore = create<FranjaState>((set, get) => ({
   franja: null,
   mostrar: (items) => {
+    if (!hayRutaAbierta()) {
+      const ya = new Set(pendientes.map((i) => i.id))
+      pendientes = [...pendientes, ...items.filter((i) => !ya.has(i.id) && !yaSalieron.has(i.id))]
+      return
+    }
     const ahora = Date.now()
     // Los que llegan casi a la vez se juntan en una franja («3 avisos nuevos»); uno que llega cuando la anterior ya se estaba leyendo la sustituye.
     const actual = get().franja && ahora - get().franja!.desde < JUNTAR_MS ? get().franja : null
@@ -85,5 +95,14 @@ export function anunciarAvisosNuevos(antes: AvisoDeCuenta[], despues: AvisoDeCue
   const nuevos = avisosNuevos(antes, despues).filter((a) => !escondidos.includes(a.id))
   if (nuevos.length > 0) useFranjaStore.getState().mostrar(nuevos.map(itemDeAviso))
 }
+
+// Al abrir la ruta, sale lo que estaba esperando (una sola franja).
+useRouteStore.subscribe((estado, antes) => {
+  if (estado.screen === 'route' && antes.screen !== 'route' && pendientes.length > 0) {
+    const listos = pendientes
+    pendientes = []
+    useFranjaStore.getState().mostrar(listos)
+  }
+})
 
 if (import.meta.env.DEV && typeof window !== 'undefined') (window as unknown as { __franja: typeof useFranjaStore }).__franja = useFranjaStore

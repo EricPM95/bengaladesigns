@@ -13,7 +13,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
  *   · `PapeleraRoja`: la papelera roja de 44 × 44 abajo a la derecha que sustituye a «Eliminar vuelo», «Eliminar alojamiento» y «Quitar entrada».
  *   · `LapizDeReserva`: el lápiz (botón de 44 × 44 con el círculo azul noche de 30 y el lápiz dorado).
  */
-export type ClaveDocumento = 'documento_vuelo' | 'documento_tren' | 'documento_barco' | 'documento_entrada' | 'documento_excursion' | 'documento_alojamiento'
+export type ClaveDocumento = 'documento_vuelo' | 'documento_tren' | 'documento_barco' | 'documento_entrada' | 'documento_excursion' | 'documento_alojamiento' | 'documento_coche'
 
 /** La clave del aviso del pase para el documento de un medio de transporte. */
 export const claveDocumentoDeMedio = (mode: string): ClaveDocumento => (mode === 'avion' ? 'documento_vuelo' : mode === 'ferry' ? 'documento_barco' : 'documento_tren')

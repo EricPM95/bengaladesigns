@@ -8,13 +8,17 @@ import { buildCarRentalLink } from '../../../lib/vehicleRentalLinks'
 import { fechaCorta } from '../../../lib/nombreDeDia'
 import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { precioGuardado, type Importe } from '../../../lib/dinero'
-import { GeneralBookingModal } from './GeneralBookingModal'
+import { BotonAnadirReservaCoche, HojaReservaCoche } from './ReservaDelCoche'
+import type { DatosReservaCocheLeida } from '../../../lib/billeteLeer'
 
 /**
  * (LZ2b1, Eric 4-nov; Design `Coche Lanza` 06a y 06b, copiado tal cual: medidas, colores y textos) El bloque «Coche» de RESERVAS en los destinos de coche (Lanzarote): ya no se pregunta «¿Vas a moverte en coche?» en el formulario;
  * aquí hay un interruptor «Coche de alquiler | Mi coche» (por defecto, alquiler).
  * - «Mi coche» (06b): el bloque sale «Listo», sin nada que rellenar; el día 1 el rato de recoger el coche baja a 20 min.
  * - «Coche de alquiler» (06a): «Falta» hasta que se pone el alquiler; filas «Recogida y devolución» (con sus fechas) y «¿Para quién es?», y el botón «Reservar coche» con nuestro enlace de alquiler; el día 1, de 30 a 45 min para recogerlo.
+ * (6-nov) «¿Para quién es?» solo con 2 personas o más en el viaje (la regla de todo RESERVAS). [Añadir tu reserva] a la vista, como en el alojamiento (A1): «Desde el PDF, una foto o una captura.»; la app lee la confirmación (compañía, coche,
+ * recogida y devolución con su sitio, día y hora, precio y código) y todo se corrige a mano. Con la reserva puesta, «Listo» con compañía · coche · precio y las dos filas (recogida y devolución); con pase, la hora de recogida cuenta en el día de llegada y
+ * la de devolución en el último día (la hora límite de la LL).
  * Debajo, la línea «¿No vas a conducir?», que abre EXPLORAR › Excursiones. La ruta y los trayectos son los mismos con los dos.
  * Las piezas de Design usan el oro y el frambuesa de «Falta» tal cual (la regla de «frambuesa solo en piezas permitidas» no aplica a lo que Design pone).
  */
@@ -57,6 +61,12 @@ export function CocheDeViaje() {
   const pedir = useExploreAperturaStore((state) => state.pedir)
   const gente = useViajeCompartido((s) => s.gente)
   const [hoja, setHoja] = useState(false)
+  /** Lo que acaba de leer la app de un archivo (para rellenar la hoja); null si la hoja se abre a mano o para cambiar lo guardado. */
+  const [leidos, setLeidos] = useState<DatosReservaCocheLeida | null>(null)
+  const abrirHoja = (datosLeidos: DatosReservaCocheLeida | null) => {
+    setLeidos(datosLeidos)
+    setHoja(true)
+  }
   const listo = coche === 'propio' || Boolean(rentalBooking)
   const { url } = buildCarRentalLink()
   const elegir = (nuevo: 'alquiler' | 'propio') => {
@@ -75,16 +85,19 @@ export function CocheDeViaje() {
   const recogida = rentalBooking?.startDate || route?.answers.dateRange?.start || ''
   const devolucion = rentalBooking?.endDate || route?.answers.dateRange?.end || ''
   const fecha = (iso: string) => (iso ? `${fechaCorta(iso).slice(0, 3)} ${Number(iso.slice(8, 10))} ${MESES[Number(iso.slice(5, 7)) - 1] ?? ''}` : 'Elegir fecha')
-  const celdaFecha = (etiqueta: string, iso: string, clave: string) => (
+  const celdaFecha = (etiqueta: string, iso: string, clave: string, hora?: string | null) => (
     <button
       type="button"
       data-coche-fecha={clave}
-      onClick={() => setHoja(true)}
+      onClick={() => abrirHoja(null)}
       style={{ flex: 1, minWidth: 0, height: 54, borderRadius: 15, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)', padding: '0 14px', display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left' }}
     >
       <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1, minWidth: 0 }}>
         <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)' }}>{etiqueta}</span>
-        <span style={{ font: "500 15px 'Geist'" }}>{fecha(iso)}</span>
+        <span style={{ font: "500 15px 'Geist'" }}>
+          {fecha(iso)}
+          {hora ? ` · ${hora}` : ''}
+        </span>
       </span>
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.4)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
         <path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4" />
@@ -141,30 +154,44 @@ export function CocheDeViaje() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }} data-coche-fila="recogida">
             <span style={TITULO_FILA}>Recogida y devolución</span>
             <div style={{ display: 'flex', gap: 8 }}>
-              {celdaFecha('RECOGIDA', recogida, 'recogida')}
-              {celdaFecha('DEVOLUCIÓN', devolucion, 'devolucion')}
+              {celdaFecha('RECOGIDA', recogida, 'recogida', rentalBooking?.horaRecogida)}
+              {celdaFecha('DEVOLUCIÓN', devolucion, 'devolucion', rentalBooking?.horaDevolucion)}
             </div>
             {rentalBooking && (
-              <span data-coche-reserva style={{ font: "400 13px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' }}>
-                {[rentalBooking.provider, precioGuardado(rentalBooking) ? precioEnVista(precioGuardado(rentalBooking) as Importe) : null].filter(Boolean).join(' · ')}
-              </span>
+              <>
+                <span data-coche-reserva style={{ font: "500 14px/1.4 'Geist'", color: 'rgba(28,34,48,.8)' }}>
+                  {[rentalBooking.provider, rentalBooking.coche, precioGuardado(rentalBooking) ? precioEnVista(precioGuardado(rentalBooking) as Importe) : null].filter(Boolean).join(' · ')}
+                </span>
+                {(rentalBooking.lugarRecogida || rentalBooking.lugarDevolucion) && (
+                  <span data-coche-lugares style={{ font: "400 13px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' }}>
+                    {[rentalBooking.lugarRecogida ? `Recoges: ${rentalBooking.lugarRecogida}` : null, rentalBooking.lugarDevolucion ? `Devuelves: ${rentalBooking.lugarDevolucion}` : null].filter(Boolean).join(' · ')}
+                  </span>
+                )}
+                <button type="button" data-coche-cambiar-reserva onClick={() => abrirHoja(null)} className="zona-toque self-start border-none bg-transparent p-0 text-[13px] font-semibold underline underline-offset-2" style={{ color: '#8E6820' }}>
+                  Cambiar los datos
+                </button>
+              </>
             )}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }} data-coche-fila="para-quien">
-            <span style={TITULO_FILA}>¿Para quién es?</span>
-            <div style={{ display: 'flex', gap: 8 }}>
-              {personas.map((p) => {
-                const on = marcadas.includes(p.id)
-                return (
-                  <button key={p.id} type="button" data-coche-persona={p.id} aria-pressed={on} onClick={() => alternar(p.id)} style={on ? ELEGIDO : NO_ELEGIDO}>
-                    {on && <Tic />}
-                    {p.nombre}
-                  </button>
-                )
-              })}
+          {/* (6-nov) La regla de todo RESERVAS: «¿Para quién es?» solo si en el viaje hay 2 personas o más (antes el coche se la saltaba y salía «Tú» solo). */}
+          {gente.length >= 2 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }} data-coche-fila="para-quien">
+              <span style={TITULO_FILA}>¿Para quién es?</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {personas.map((p) => {
+                  const on = marcadas.includes(p.id)
+                  return (
+                    <button key={p.id} type="button" data-coche-persona={p.id} aria-pressed={on} onClick={() => alternar(p.id)} style={on ? ELEGIDO : NO_ELEGIDO}>
+                      {on && <Tic />}
+                      {p.nombre}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
-          </div>
+          )}
+
 
           <a
             href={url}
@@ -185,6 +212,10 @@ export function CocheDeViaje() {
           >
             Reservar coche
           </a>
+          {/* (6-nov) «¿Ya lo has reservado?» [Añadir tu reserva], a la vista y sin reserva (A1 del alojamiento); con la reserva puesta se cambia con «Cambiar los datos». */}
+          {!rentalBooking && <span style={TITULO_FILA} data-coche-ya-reservado>¿Ya lo has reservado?</span>}
+          {!rentalBooking && <BotonAnadirReservaCoche año={Number(route?.answers.dateRange?.start?.slice(0, 4)) || undefined} onLeida={(datosLeidos) => abrirHoja(datosLeidos)} onAMano={() => abrirHoja(null)} />}
+
         </>
       )}
 
@@ -205,17 +236,35 @@ export function CocheDeViaje() {
         </span>
       </button>
 
-      <GeneralBookingModal
-        open={hoja}
-        title="Coche de alquiler"
-        itemLabel="el coche de alquiler"
-        providerLabel="Empresa de alquiler"
-        providerPlaceholder="Hertz, Cicar, Goldcar…"
-        initial={rentalBooking}
-        onSave={setRentalVehicleBooking}
-        onRemove={() => quitarConDeshacer('Alquiler quitado del viaje', () => setRentalVehicleBooking(null))}
-        onClose={() => setHoja(false)}
-      />
+      {hoja && (
+        <HojaReservaCoche
+          key={leidos ? 'leida' : 'manual'}
+          reserva={rentalBooking}
+          leidos={leidos}
+          fechasDelViaje={{ start: route?.answers.dateRange?.start ?? '', end: route?.answers.dateRange?.end ?? '' }}
+          onGuardar={(reserva) => {
+            const cambiaLaHora = reserva.horaRecogida !== (rentalBooking?.horaRecogida ?? null) || reserva.horaDevolucion !== (rentalBooking?.horaDevolucion ?? null)
+            setRentalVehicleBooking(reserva)
+            setHoja(false)
+            setLeidos(null)
+            // Con pase, la hora de recogida cuenta en el día de llegada y la de devolución en el último día: se rehacen.
+            if (cambiaLaHora) void adaptarDiasDeCoche({ cambioDeCoche: true })
+          }}
+          onQuitar={
+            rentalBooking
+              ? () => {
+                  setHoja(false)
+                  setLeidos(null)
+                  quitarConDeshacer('Alquiler quitado del viaje', () => setRentalVehicleBooking(null))
+                }
+              : undefined
+          }
+          onClose={() => {
+            setHoja(false)
+            setLeidos(null)
+          }}
+        />
+      )}
     </div>
   )
 }

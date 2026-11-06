@@ -42,6 +42,7 @@ import { halfDayExcursions } from './engine/excursions.js'
 // Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
 import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
 import { horasDeEntrada, planDeReservas } from './engine/reservationPlan.js'
+import { esDestinoEnCoche } from './engine/cocheDay.js'
 import { audioVigente } from '../shared/audio/historiasAudio.js'
 import { periodosParaFicha } from '../shared/routeEngine/horarioDeLaFecha.js'
 import { cambioDelDia } from './cambio.js'
@@ -2651,7 +2652,7 @@ function engineExtrasFromRequest(body, answers, dayNumber, destData) {
   // La llegada con horas (Tanda 7, de pago): `body.llegada` = { hora: 'HH:MM', medio: 'avion'|'tren'|'bus'|'ferry', puntoId?, zona?, aMano? }. Sin ella, con `pago: false`, en coche o con la ruta a mano, el motor no la usa.
   const ll = body?.llegada
   const llegada = ll && typeof ll === 'object' && ll.pago !== false && ll.aMano !== true && /^\d{1,2}:\d{2}$/.test(String(ll.hora ?? ''))
-    ? { hora: String(ll.hora).length === 4 ? `0${ll.hora}` : String(ll.hora), medio: ['avion', 'tren', 'bus', 'ferry'].includes(ll.medio) ? ll.medio : 'avion', puntoId: typeof ll.puntoId === 'string' ? ll.puntoId : null, zona: typeof ll.zona === 'string' ? ll.zona : null, excursionReservada: ll.excursionReservada && typeof ll.excursionReservada === 'object' ? ll.excursionReservada : null }
+    ? { hora: String(ll.hora).length === 4 ? `0${ll.hora}` : String(ll.hora), medio: ['avion', 'tren', 'bus', 'ferry'].includes(ll.medio) ? ll.medio : 'avion', puntoId: typeof ll.puntoId === 'string' ? ll.puntoId : null, zona: typeof ll.zona === 'string' ? ll.zona : null, excursionReservada: ll.excursionReservada && typeof ll.excursionReservada === 'object' ? ll.excursionReservada : null, ...(/^\d{1,2}:\d{2}$/.test(String(ll.recogida ?? '')) ? { recogida: String(ll.recogida) } : {}) }
     : null
   // El día de vuelta con horas (Tanda 7): solo de pago. El cliente manda `vuelta` { hora, modo, puntoId, zona, aMano, diaCaidoAlLlegar, excursion } cuando el viajero ha puesto la hora de su vuelta en RESERVAS; sin ella (sin vuelos, la gratis), nada cambia.
   const vb = body?.vuelta
@@ -2661,6 +2662,7 @@ function engineExtrasFromRequest(body, answers, dayNumber, destData) {
         hora: String(vb.hora), modo: typeof vb.modo === 'string' ? vb.modo : 'flight', puntoId: typeof vb.puntoId === 'string' ? vb.puntoId : null, zona: typeof vb.zona === 'string' ? vb.zona : null, aMano: vb.aMano === true,
         diaCaidoAlLlegar: typeof vb.diaCaidoAlLlegar === 'string' || Array.isArray(vb.diaCaidoAlLlegar) ? vb.diaCaidoAlLlegar : null,
         excursion: vb.excursion && typeof vb.excursion === 'object' && typeof vb.excursion.nombre === 'string' ? { nombre: vb.excursion.nombre.slice(0, 60), vuelve: /^\d{1,2}:\d{2}$/.test(String(vb.excursion.vuelve ?? '')) ? String(vb.excursion.vuelve) : null, medioDia: vb.excursion.medioDia === true, dateIso: typeof vb.excursion.dateIso === 'string' ? vb.excursion.dateIso : null, dayNumber: Number.isInteger(Number(vb.excursion.dayNumber)) ? Number(vb.excursion.dayNumber) : null } : null,
+        ...(/^\d{1,2}:\d{2}$/.test(String(vb.devolucion ?? '')) ? { devolucion: String(vb.devolucion) } : {}),
       }
     : null
   // (LZ2a) Un destino en coche (`destination_config.medio === 'coche'`, Lanzarote): dónde duerme (`answers.zona`), si lleva pase (`body.pase`) y cómo se mueve (`answers.coche`: 'alquiler' | 'propio' | 'no'). Contrato: docs/dias/_estado_lz2a_contrato.md. Roma no recibe nada de esto.
@@ -4897,6 +4899,13 @@ app.post('/api/generate-day-places', async (req, res) => {
   // en concreto), se salta solo ese día y se sigue con el resto — no debería pasar en la práctica
   // ya que el esqueleto que originó esta petición ya vino del mismo v2, pero por si acaso.
   const pipelineV2Data = findPipelineV2Data(destination)
+  // Un destino curado NUNCA depende de Claude (Eric, 5-nov). Un destino que se recorre en coche (Lanzarote) monta sus días con su propio motor (cocheTrip.js) y generate-day-block
+  // recalcula todo desde sus datos: esta lista de la Fase 1 no la lee nadie (antes la elegía Claude: una llamada de pago y varios segundos de espera por viaje, y sin saldo no se podía crear el viaje).
+  if (esDestinoEnCoche(pipelineV2Data)) {
+    console.log(`[coche] "${destination}" — Fase 1 sin llamada a Claude (el motor en coche monta los días con sus datos)`)
+    res.json({ days: listDayNumbers.map((dayNumber) => ({ day_number: dayNumber, places: [] })), recommended_revisits: [] })
+    return
+  }
   if (pipelineV2Data) {
     const hasFreeTour = hasFreeTourFromAnswers(answers)
     const v2Days = listDayNumbers

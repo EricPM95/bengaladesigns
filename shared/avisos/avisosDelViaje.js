@@ -315,7 +315,10 @@ export function planDelViaje({ route, reservations = [], zona, datos = {}, meteo
     if (esVuelta) {
       const v = day.coche?.vuelta
       const sale = aMin(v?.sale) ?? (aMin(v?.limite_t1) != null && Number.isFinite(v?.minutos) ? aMin(v.limite_t1) - v.minutos : null)
-      if (sale != null) poner('vuelta_salir', fecha, sale - VUELTA_ANTES_MIN, fecha, 'En media hora tienes que salir hacia el aeropuerto.')
+      // (Arreglo, 6-nov; decisión de Eric) Con la hora límite de la T1 (devolver el coche): a la hora de la T1 menos 30 min, «En media hora tienes que dejar el coche en la T1 (antes de las 17:10).»; fuera el de «salir hacia el aeropuerto» (era una hora antes y no servía). Sin esa hora (sin coche), el de siempre.
+      const limiteT1 = aMin(v?.limite_t1)
+      if (limiteT1 != null) poner('vuelta_salir', fecha, limiteT1 - VUELTA_ANTES_MIN, fecha, `En media hora tienes que dejar el coche en la T1 (antes de las ${horaCorta(limiteT1)}).`)
+      else if (sale != null) poner('vuelta_salir', fecha, sale - VUELTA_ANTES_MIN, fecha, 'En media hora tienes que salir hacia el aeropuerto.')
     }
 
     // 2. Los turnos y las reservas: a la hora de salir hacia ellos.

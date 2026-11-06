@@ -9,21 +9,29 @@ import { Icono } from '../../ui/Icono'
 const km1 = (km: number) => `${Math.round(km)} km`
 const min1 = (m: number) => (m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')} min` : `${m} min`)
 
-/** Un trayecto en coche en una fila: icono de coche, el texto del motor y [Abrir en Maps] (a la coordenada de la parada, su aparcamiento). */
-export function FilaCoche({ texto, aparcar, mapsUrl, llegada }: { texto: string; aparcar?: number; mapsUrl?: string; llegada?: string }) {
+/**
+ * Un trayecto en coche en una fila: icono de coche, el texto del motor y, o «Rutas» (entre dos paradas: abre la hoja de Roma, Apple Maps o Google Maps, con la ruta en coche de una a otra por su nombre y su pueblo), o [Abrir en Maps] (a la coordenada, cuando no hay dos nombres).
+ * (6-nov; decisión de Eric) Fuera la línea «+5 min para aparcar»: esos minutos siguen contando por dentro (el motor los suma al trayecto), pero no se enseñan.
+ */
+export function FilaCoche({ texto, mapsUrl, llegada, onRutas }: { texto: string; /** Ya no se enseña (los minutos de aparcar cuentan por dentro). */ aparcar?: number; mapsUrl?: string; llegada?: string; onRutas?: () => void }) {
   return (
     <span className="flex min-w-0 flex-col gap-0.5 py-1 text-text/60" data-trayecto-coche>
       <span className="flex items-center gap-1.5">
         <Icono nombre="coche" className="h-[15px] w-[15px] shrink-0" />
         <span className="font-mono text-[12px] font-medium">{texto}</span>
       </span>
-      {(aparcar || mapsUrl) && (
+      {(onRutas || mapsUrl) && (
         <span className="flex items-center gap-2 pl-[21px] text-[12px]">
-          {aparcar ? <span>+{aparcar} min para aparcar</span> : null}
-          {mapsUrl && (
+          {onRutas ? (
+            <button type="button" onClick={onRutas} data-rutas-coche className="zona-toque text-[12.5px] font-medium text-accent underline underline-offset-[3px] hover:text-accent-hover">
+              Rutas
+            </button>
+          ) : (
+            mapsUrl && (
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="zona-toque text-[12.5px] font-medium text-accent underline underline-offset-[3px] hover:text-accent-hover">
               Abrir en Maps
             </a>
+            )
           )}
         </span>
       )}

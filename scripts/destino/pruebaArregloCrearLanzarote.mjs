@@ -71,7 +71,9 @@ try {
   })()`)
   const f = JSON.parse(flujo)
   debe(f.lz.pregunta === null && f.lz.auto && f.lz.auto.vehicle_ownership === 'rental' && f.lz.auto.vehicle_type === 'car' && f.lz.auto.vehicle_resolved === true && f.lz.auto.travel_mode === 'base_fija', `Lanzarote en avión: coche de alquiler, base fija, sin preguntar nada (${JSON.stringify(f.lz)})`)
-  debe(f.hecho.pregunta === null && f.hecho.tarjetas.includes('Coche de alquiler'), 'resuelto, sale la tarjeta «Coche de alquiler» y ninguna pregunta')
+  debe(f.hecho.pregunta === null && f.hecho.tarjetas.length === 0, 'resuelto, NO sale ninguna tarjeta «Para moverte» ni pregunta (el coche va en RESERVAS; arreglo del 6-nov)')
+  const ace = await ev("import('/src/components/trazo/cityCode.ts').then((m) => JSON.stringify([m.cityCode({ name: 'Lanzarote' }), m.cityCode({ name: 'Barcelona' })]))")
+  debe(ace === JSON.stringify(['ACE', 'BCN']), 'el código de Lanzarote es ACE (no LAN) y el de Barcelona, BCN (' + ace + ')')
   debe(/alquilar un vehículo/i.test(f.tenerife.pregunta ?? ''), 'otro destino base_y_excursiones (Tenerife) sigue preguntando «¿Te gustaría alquilar un vehículo?»')
 
   // 3c. El formulario de verdad, hasta el paso del transporte, desde Barcelona y desde Madrid
@@ -105,6 +107,14 @@ try {
     const est2 = JSON.parse(await ev("import('/src/store/useRouteStore.ts').then((m) => { const s = m.useRouteStore.getState(); return JSON.stringify({ tipo: s.vehicle_type, dueno: s.vehicle_ownership, resuelto: s.vehicle_resolved, modo: s.travel_mode }) })"))
     debe(est2.tipo === 'car' && est2.dueno === 'rental' && est2.resuelto === true && est2.modo === 'base_fija', `${origen}: coche de alquiler dado por hecho, sin pregunta (${JSON.stringify(est2)})`)
     debe(!/¿Te gustaría alquilar un vehículo|Base fija|Ruta itinerante/.test(await ev('document.body.innerText')), `${origen}: el formulario no pregunta por el coche ni por «Base fija / Ruta itinerante»`)
+    await a.esp(900)
+    debe(!/Para moverte/.test(await ev('document.body.innerText')), `${origen}: no sale la caja «Para moverte» (arreglo del 6-nov)`)
+    // El avión, la primera fila, encendida y a la vista SIN hacer scroll (ni en la pantalla ni dentro del panel).
+    const avion = JSON.parse(await ev(`(() => { const panel = document.querySelector('[data-transportes]'); const fila = Array.from(document.querySelectorAll('[data-transportes] button')).find((b) => /^Avión/.test((b.innerText || '').trim())); if (!panel || !fila) return JSON.stringify({ hay: false }); const r = fila.getBoundingClientRect(), p = panel.getBoundingClientRect(); return JSON.stringify({ hay: true, visible: r.top >= p.top - 1 && r.bottom <= p.bottom + 1 && r.top >= 0 && r.bottom <= window.innerHeight, texto: fila.innerText.replace(/\s+/g, ' '), apagada: fila.disabled }) })()`))
+    debe(avion.hay && avion.visible && avion.apagada === false && /4|5|h/.test(avion.texto), `${origen}: la fila «Avión» (con su tiempo) se ve sin hacer scroll y está encendida (${JSON.stringify(avion)})`)
+    const frase = (await ev('document.body.innerText')).replace(/\s+/g, ' ')
+    debe(new RegExp('Desde ' + origen + ' solo tiene sentido llegar en avión').test(frase) && /Ir en avión · Continuar/.test(frase), `${origen}: «Desde ${origen} solo tiene sentido llegar en avión.» y «Ir en avión · Continuar»`)
+    debe(!/LAN/.test(await ev('document.body.innerText')), `${origen}: no sale «LAN» en ningún sitio`)
     await a.captura(path.join(SALIDA, `arreglo_lz_transporte_${origen.toLowerCase()}_1.jpg`))
   }
 

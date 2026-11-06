@@ -173,7 +173,8 @@ export function StepTransport({ active, origin, destination, destinationName, on
   const panelRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const el = panelRef.current
-    if (el) setTimeout(() => el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }), 60)
+    // (Arreglo, 6-nov) Solo baja hasta el final si hay una pregunta nueva que ver; si no, la lista se queda arriba y la primera fila (el avión) siempre se ve.
+    if (el) setTimeout(() => el.scrollTo({ top: flow.question ? el.scrollHeight : 0, behavior: 'smooth' }), 60)
   }, [vehicleType, vehicleOwnership, vehicleResolved, travelMode, transportOption?.id])
 
   const enTarjeta = modo === 'tarjeta'
@@ -198,7 +199,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
       </Title>
       )}
       {!enTarjeta && <div style={{ flex: 1 }} />}
-      <div ref={panelRef} data-transportes={enTarjeta ? '' : undefined} className="trazo-noscroll" style={{ ...panelStyle, padding: '18px 18px 12px', minHeight: 0, overflow: 'auto', ...(enTarjeta ? { maxHeight: 'min(46dvh, 360px)', background: 'rgba(255,255,255,.7)', border: '1px solid rgba(166,124,82,.2)' } : {}) }}>
+      <div ref={panelRef} data-transportes={enTarjeta ? '' : undefined} className="trazo-noscroll" style={{ ...panelStyle, padding: '18px 18px 12px', minHeight: 0, overflow: 'auto', ...(enTarjeta ? { maxHeight: 'min(52dvh, 400px)', background: 'rgba(255,255,255,.7)', border: '1px solid rgba(166,124,82,.2)' } : {}) }}>
         <div
           style={{
             display: 'flex',
@@ -251,7 +252,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
                   alignItems: 'center',
                   gap: 12,
                   padding: '0 10px',
-                  height: 52,
+                  height: enTarjeta ? 44 : 52,
                   border: 'none',
                   borderRadius: 14,
                   background: selected ? 'rgba(166,124,82,.08)' : 'transparent',

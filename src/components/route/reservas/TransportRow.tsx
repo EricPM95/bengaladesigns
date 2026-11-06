@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { ReservasItemRow } from './ReservasItemRow'
+import { enlaceBuscarVuelos } from '../../../lib/enlacesAfiliado'
 import { TransportBookingModal } from './TransportBookingModal'
 
 interface TransportRowProps {
@@ -28,7 +29,8 @@ export function TransportRow({ dayId, label }: TransportRowProps) {
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Reservar',
-          href: 'https://www.skyscanner.net',
+          // (6-nov) El enlace de afiliado, en un solo archivo. Esta fila no sabe de qué ciudades es el trayecto (solo su etiqueta): sin búsqueda, el enlace a secas; el vuelo del viaje tiene su [Buscar vuelos] con origen, destino y fechas.
+          href: enlaceBuscarVuelos(),
           onGet: () => undefined, // (pulsar abre el buscador y nada más: se añade con «Añadir», Tanda 6z3)
         }}
       />

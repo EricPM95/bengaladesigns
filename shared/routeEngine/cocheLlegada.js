@@ -14,9 +14,14 @@ export function zonaParaLlegada({ coche, zona, zonas }) {
   return [...zonas].filter((z) => coche.tiene(z)).sort((a, b) => coche.min('aeropuerto_ace', b) - coche.min('aeropuerto_ace', a))[0] ?? null
 }
 
-/** Hora útil en minutos. */
-export function horaUtilMin({ aterrizaMin, alquiler, aZonaMin, k = CONSTANTES_LL }) {
-  return aterrizaMin + k.salir_aeropuerto_min + (alquiler ? k.recoger_coche_min : 0) + aZonaMin + k.instalarse_min
+/**
+ * Hora útil en minutos. (6-nov) `recogidaMin`: la hora de recogida de la RESERVA del coche (RESERVAS). El coche no se recoge antes de que el viajero salga con el equipaje ni antes de la hora de su reserva: si la reserva es
+ * más tarde que aterrizaje + salir, la hora útil cuenta desde la hora de la reserva. Sin reserva con hora (o con coche propio), igual que siempre.
+ */
+export function horaUtilMin({ aterrizaMin, alquiler, aZonaMin, k = CONSTANTES_LL, recogidaMin = null }) {
+  const sale = aterrizaMin + k.salir_aeropuerto_min
+  const empiezaARecoger = alquiler && Number.isFinite(recogidaMin) ? Math.max(sale, recogidaMin) : sale
+  return empiezaARecoger + (alquiler ? k.recoger_coche_min : 0) + aZonaMin + k.instalarse_min
 }
 
 /** A (antes de las 11), B (11-13:59), C (hasta 1 h antes del atardecer), D (1 h a 30 min antes), E (hasta las 21:59), F (22:00 o más tarde). */
@@ -43,12 +48,13 @@ export function filaDeVueltaLL(vueloMin) {
  * El plan de la llegada: { aterrizaMin, horaUtil, fila, zona, absorbe ('D3'|'D4'|null), nocheLlegada }.
  * `aterriza` 'HH:MM'. null si no hay hora.
  */
-export function planDeLlegadaLL({ aterriza, alquiler = true, coche, zona, zonas, sol, k = CONSTANTES_LL }) {
+export function planDeLlegadaLL({ aterriza, alquiler = true, coche, zona, zonas, sol, k = CONSTANTES_LL, recogida = null }) {
   if (!/^\d{1,2}:\d{2}$/.test(String(aterriza ?? ''))) return null
   const z = zonaParaLlegada({ coche, zona, zonas })
   if (!z) return null
   const aterrizaMin = hm(aterriza)
-  const util = horaUtilMin({ aterrizaMin, alquiler, aZonaMin: coche.min('aeropuerto_ace', z), k })
+  const recogidaMin = /^\d{1,2}:\d{2}$/.test(String(recogida ?? '')) ? hm(recogida) : null
+  const util = horaUtilMin({ aterrizaMin, alquiler, aZonaMin: coche.min('aeropuerto_ace', z), k, recogidaMin })
   const fila = filaDeLlegadaLL(util, sol)
   const absorbe = fila === 'A' || fila === 'B' ? (z === 'playa_blanca' ? 'D4' : 'D3') : null
   return { aterrizaMin, horaUtil: util, fila, zona: z, absorbe, nocheLlegada: fila === 'E' || fila === 'F' }
@@ -58,10 +64,14 @@ export function planDeLlegadaLL({ aterriza, alquiler = true, coche, zona, zonas,
  * El plan de la vuelta: { vueloMin, fila, zona, salirAntesMin, salirMin, limiteT1 (hora tope de estar con el coche devuelto en la T1), d3Corto }.
  * `d3Corto`: con el vuelo a las 17:00 o más tarde y el D3 aún dentro del viaje, su versión corta va el día de vuelta.
  */
-export function planDeVueltaLL({ vuelo, coche, zona, zonas, salirAntesPorZona = {}, salirAntesDefecto = 165, k = CONSTANTES_LL }) {
+export function planDeVueltaLL({ vuelo, coche, zona, zonas, salirAntesPorZona = {}, salirAntesDefecto = 165, k = CONSTANTES_LL, devolucion = null }) {
   if (!/^\d{1,2}:\d{2}$/.test(String(vuelo ?? ''))) return null
   const z = zonaParaLlegada({ coche, zona, zonas })
   const vueloMin = hm(vuelo)
   const salirAntesMin = (z && salirAntesPorZona[z]) ?? salirAntesDefecto
-  return { vueloMin, fila: filaDeVueltaLL(vueloMin), zona: z, salirAntesMin, salirMin: vueloMin - salirAntesMin, limiteT1: vueloMin - k.aeropuerto_min - k.devolver_coche_min, d3Corto: vueloMin >= hm('17:00') }
+  // (6-nov) Con la hora de devolución de la reserva del coche, el coche tiene que estar devuelto ANTES de esa hora: si es más temprana que la que sale del vuelo, manda la de la reserva.
+  const limiteDelVuelo = vueloMin - k.aeropuerto_min - k.devolver_coche_min
+  const devolucionMin = /^\d{1,2}:\d{2}$/.test(String(devolucion ?? '')) ? hm(devolucion) : null
+  const limiteT1 = devolucionMin != null ? Math.min(limiteDelVuelo, devolucionMin) : limiteDelVuelo
+  return { vueloMin, fila: filaDeVueltaLL(vueloMin), zona: z, salirAntesMin, salirMin: vueloMin - salirAntesMin, limiteT1, ...(devolucionMin != null ? { devolucionMin } : {}), d3Corto: vueloMin >= hm('17:00') }
 }

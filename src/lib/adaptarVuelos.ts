@@ -155,7 +155,7 @@ async function pedirDiaAlMotor(route: Route, reservations: Reservation[], vuelo:
 
 async function datosDelVuelo(route: Route, reservations: Reservation[]): Promise<{ vuelo: DatosParaMotor; info: ArrivalInfo | null }> {
   const info = await fetchArrivalInfo(route.destination).catch(() => null)
-  return { vuelo: datosParaMotor(route, reservations, info, { paraAvisos: true }), info }
+  return { vuelo: datosParaMotor(route, reservations, info, { paraAvisos: true, coche: useRouteStore.getState().rentalVehicleBooking }), info }
 }
 
 function movidasDe(antes: DayPlan, despues: DayPlan): string[] {

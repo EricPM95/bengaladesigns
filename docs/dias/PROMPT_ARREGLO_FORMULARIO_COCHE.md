@@ -1,4 +1,9 @@
-Hola. ARREGLOS PEQUEÑOS DEL FORMULARIO Y DE RESERVAS (Eric, 5-nov, 15:13 y 15:33). Va después de la HOY3 (ya subida, ab2cc25). Este mensaje acaba con «reinicia el api-server»: si no te llega hasta ahí, dímelo antes de empezar.
+Hola. ARREGLOS PEQUEÑOS DEL FORMULARIO Y DE RESERVAS (Eric, 5-nov, 15:13 y 15:33). Va después de la HOY3 (ab2cc25), de la activación de los avisos y del arreglo de la web en el iPhone. Este mensaje acaba con «reinicia el api-server»: si no te llega hasta ahí, dímelo antes de empezar.
+
+**Antes de empezar:** si al activar los avisos no comprobasteis la migración 0073 (contador de lecturas de documentos), guía a Eric:
+- que pegue `docs/dias/COMPROBAR_0073.sql` en el SQL Editor;
+- si sale «FALTA», que pegue `supabase/migrations/0073_lecturas_de_documentos.sql`.
+Hace falta para [Añadir tu reserva] del coche.
 
 ## 0. LO PRIMERO: Lanzarote sin Claude
 En tu informe de la HOY3 dices que `generate-day-places` llama a Claude para Lanzarote: el atajo sin Claude solo cubre Roma hasta 5 días. Sin saldo, no se puede crear un viaje a Lanzarote, y las pruebas gastan saldo.
@@ -9,13 +14,8 @@ En tu informe de la HOY3 dices que `generate-day-places` llama a Claude para Lan
 - **Si es grande** (más de unas 2 h), dímelo y lo dejamos para después del viaje.
 - **El viaje de Eric tiene que salir IGUAL que ahora** (`docs/dias/_hoy3_ruta_eric.json`).
 - **Roma de 6 días o más:** dime qué hace Claude, pero no lo cambies ahora.
-- **Después, corre todas las pruebas que crean un viaje a Lanzarote** y deben dar 0: HOY1_A/B/C, HOY2_A/B/C, HOY2b_D/E, HOY3 y LG1_A.
 
-Eric ha creado su viaje (Barcelona → Lanzarote) y en «¿Cómo quieres llegar a Lanzarote?» ve:
-- Tren, Autobús, Ferry y En tu coche en gris, con «Sin ruta»;
-- «Desde Barcelona solo tiene sentido llegar en avión.»;
-- la caja «Para moverte: Coche de alquiler ✓ [Cambiar]»;
-- el botón «Ir en avión · Continuar».
+Eric ha creado su viaje (Barcelona → Lanzarote). En «¿Cómo quieres llegar a Lanzarote?» ve el resto en gris, la caja «Para moverte: Coche de alquiler ✓ [Cambiar]» y «Ir en avión · Continuar», pero no la fila del avión.
 
 ## 1. Fuera la caja «Para moverte» (decisión de Eric)
 - **La regla, para todos los destinos:** el formulario solo pregunta cómo llegas y, si cambia la ruta, cómo quieres vivir el destino (la pregunta de «ruta en coche» o «desde una base», cuando el destino es dudoso). El vehículo para moverte allí (alquiler, el tuyo, una caravana) NO va en el formulario: va en RESERVAS, con el valor por defecto del destino.
@@ -57,10 +57,12 @@ Eric ha creado su viaje (Barcelona → Lanzarote) y en «¿Cómo quieres llegar 
 
 ## 7. RESERVAS: [Buscar vuelos] en el vuelo (Eric)
 - **El botón:** como el alojamiento tiene su [Buscar], el vuelo sin reservar lleva [Buscar vuelos]. Abre el buscador con el origen, el destino y las fechas del viaje (BCN → ACE, 8-13 nov). Nunca el nombre de la web en el botón.
-- **Los enlaces de afiliado:** hoy los de vuelos (`TransportRow.tsx`, `UtilParaElViaje.tsx`) y el del coche (`vehicleRentalLinks.ts`) van SIN nuestro código.
-  - Ponlos en un solo sitio, preparados para llevar el código.
-  - Pídeme el enlace o el código de cada uno: Eric lo saca de su panel de afiliados.
-  - Mientras no lo tengamos, el enlace sin código, como ahora.
+- **Los enlaces de afiliado (Eric, 5-nov):** hoy van todos SIN nuestro código. Ponlos en UN solo archivo (por ejemplo `src/lib/enlacesAfiliado.ts`) y úsalos en todos los sitios donde salen:
+  - **vuelos (Skyscanner):** `https://skyscanner.pxf.io/B539xL`. Para [Buscar vuelos] con origen, destino y fechas, usa el enlace profundo de su red (`?u=` + la dirección de la búsqueda, codificada). Comprueba de verdad que acaba en la búsqueda buena (BCN → ACE, 8-13 nov) y no en la portada;
+  - **seguro (IATI):** `https://www.iatiseguros.com/?r=60565847640308`;
+  - **eSIM (Holafly):** `https://holafly.sjv.io/NGxJQK`;
+  - **coche (DiscoverCars):** `https://www.discovercars.com/es?a_aid=JUTRIP`. Si se puede, con el destino y las fechas del viaje (recogida y devolución) sin perder el `a_aid`; compruébalo;
+  - Comprueba que cada enlace abre bien y dime cuáles has cambiado. El nombre de la web, nunca en el texto del botón.
 
 ## 7b. «Útil para el viaje» (`UtilParaElViaje.tsx`)
 - Fuera la fila de vuelos: el vuelo ya tiene su bloque con [Buscar vuelos].
@@ -73,6 +75,10 @@ Eric ha creado su viaje (Barcelona → Lanzarote) y en «¿Cómo quieres llegar 
 3. **La lista roja «X cierra hoy…»:** fuera, porque repite la tarjeta de la mañana.
 4. **Los compañeros de un viaje compartido** reciben los avisos, y cada uno los puede apagar en Ajustes.
 
+## 7d. DÍAS de Lanzarote (Eric, 6-nov)
+- **Las fotos** van en un mensaje aparte (`PROMPT_FOTOS_LANZAROTE`), después de este.
+- **El trayecto en coche, como en Roma:** en vez de [Abrir en Maps] (que va solo a la parada), el enlace **«Rutas»**. Abre la misma hoja de Roma (`OpenInMapsSheet`, Google Maps o Apple Maps) con la ruta de una parada a la siguiente, **en coche**, con los nombres y el pueblo (la regla de la LZ3b). **Fuera la línea «+5 min para aparcar»** (Eric no la quiere ver); esos minutos siguen contando por dentro.
+
 ## 8. La prueba (corta, decisión de Eric: sin la batería entera)
 - **Solo estas:**
   - `pruebaJutrip`;
@@ -84,6 +90,12 @@ Eric ha creado su viaje (Barcelona → Lanzarote) y en «¿Cómo quieres llegar 
 - **En el REPASO, capturas de móvil:**
   - el paso del transporte desde Barcelona;
   - el coche sin reserva y con ella;
-  - el vuelo con [Buscar vuelos].
+  - el vuelo con [Buscar vuelos];
+  - un trayecto en coche con «Rutas».
+
+**Después del push, comprueba PRODUCCIÓN** (lo de anoche, 2b2b145, tiró toda la API sin que ninguna prueba local lo viera):
+- espera a que Vercel acabe de desplegar;
+- abre bengaladesigns.vercel.app en modo iPhone;
+- comprueba que responden `/api` (la clasificación de Lanzarote como administrador y el clima, por ejemplo) y que la app carga. Si algo falla, avísame enseguida.
 
 Cuando acabe, con la prueba en 0 fallos, git status limpio y nada privado, haz push de main a origin, sin --force. Si algo falla, no hagas push y explícalo. Al final, reinicia el api-server.

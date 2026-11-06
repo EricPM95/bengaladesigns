@@ -796,6 +796,7 @@ export function DayDetailPanel({
         connector={hiddenConnectors.has(connectorKey) ? null : connector}
         transitLabel={transitLabel}
         trayectoCoche={trayectoCoche}
+        ciudad={day.city}
         fromName={fromName}
         toName={toName}
         mode={resolvedMode}

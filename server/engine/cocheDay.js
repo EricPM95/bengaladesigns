@@ -27,11 +27,11 @@ export function planesLL(destData, datos, { startIso, contentDays, options = {} 
   let ll = null
   if (horaValida(options.llegada?.hora) && (options.llegada?.medio ?? 'avion') === 'avion') {
     const sol = sunsetFor(destData, { dateIso: startIso ? sumaDias(startIso, 0) : null, season }) ?? hmACoche('18:20')
-    ll = planDeLlegadaLL({ aterriza: options.llegada.hora, alquiler, coche, zona: options.zona ?? options.llegada?.zona ?? null, zonas: ZONAS_COCHE, sol, k })
+    ll = planDeLlegadaLL({ aterriza: options.llegada.hora, alquiler, coche, zona: options.zona ?? options.llegada?.zona ?? null, zonas: ZONAS_COCHE, sol, k, recogida: options.llegada?.recogida ?? null })
   }
   const salida = datos.llegadaInfo?.medios?.avion
   const vl = horaValida(options.vuelta?.hora) && /flight|avion|plane/i.test(String(options.vuelta?.modo ?? 'flight'))
-    ? planDeVueltaLL({ vuelo: options.vuelta.hora, coche, zona: options.zona ?? options.vuelta?.zona ?? null, zonas: ZONAS_COCHE, salirAntesPorZona: salida?.salir_antes_por_zona ?? {}, salirAntesDefecto: salida?.salir_antes_min ?? 165, k })
+    ? planDeVueltaLL({ vuelo: options.vuelta.hora, coche, zona: options.zona ?? options.vuelta?.zona ?? null, zonas: ZONAS_COCHE, salirAntesPorZona: salida?.salir_antes_por_zona ?? {}, salirAntesDefecto: salida?.salir_antes_min ?? 165, k, devolucion: options.vuelta?.devolucion ?? null })
     : null
   return { ll, vl }
 }

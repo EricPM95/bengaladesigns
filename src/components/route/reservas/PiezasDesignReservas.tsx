@@ -26,6 +26,7 @@ const NOMBRE_TRAZOS = {
   candado: 'M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z',
   llegar: 'M13 4a1 1 0 1 0 0 .01M10 21l2-7-3-3 1-5 4 2 3 1M7 12l3-1',
   check: 'M5 12.5l4.5 4.5L19 7.5',
+  coche: 'M3 15.5V13l2-1.5 2.2-4.2A1.5 1.5 0 0 1 8.5 6.5h5.8a1.5 1.5 0 0 1 1.3.8L17.8 11.5 20.5 13v2.5H3zM8.5 6.5L7.4 11.5H17.8M12 6.5v5M7.5 15.5a2.2 2.2 0 1 0 .01 0M16.5 15.5a2.2 2.2 0 1 0 .01 0',
 } as const
 export type TrazoDesign = keyof typeof NOMBRE_TRAZOS
 

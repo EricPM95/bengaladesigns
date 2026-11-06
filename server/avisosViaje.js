@@ -86,6 +86,20 @@ export function crearServicioAvisosViaje({ admin, destinos = {}, ahora = () => n
     return data ?? []
   }
 
+  /** Los compañeros de cada viaje compartido (trip_id → [user_id]). Sin la tabla o con un fallo, nadie más: el dueño sigue recibiendo los suyos. */
+  const miembrosDeLosViajes = async (ids) => {
+    const porViaje = new Map()
+    if (ids.length === 0) return porViaje
+    try {
+      const { data, error } = await admin.from('trip_members').select('trip_id, user_id').in('trip_id', ids)
+      if (error) throw new Error(error.message)
+      for (const m of data ?? []) porViaje.set(m.trip_id, [...(porViaje.get(m.trip_id) ?? []), m.user_id])
+    } catch (error) {
+      log.warn?.('[avisos-viaje] no se pudieron leer los compañeros de los viajes:', error.message)
+    }
+    return porViaje
+  }
+
   /** ¿Con qué días se avisa a esta persona en este viaje? null = a ninguno; [] = todos; [fecha] = solo el día de prueba. */
   async function diasConAviso(uid, viaje, caches) {
     const destino = String(viaje.route?.destination ?? '').toLowerCase()
@@ -108,13 +122,16 @@ export function crearServicioAvisosViaje({ admin, destinos = {}, ahora = () => n
     const caches = { pases: new Map(), admins: new Map() }
     let enviados = 0
     let revisados = 0
+    // (Arreglo, 6-nov; decisión de Eric) Los compañeros de un viaje compartido reciben los avisos igual que el dueño, cada uno en su móvil, con su pase y con SU interruptor «Avisos en el móvil» (su suscripción): cada uno puede apagarlos en Ajustes.
+    const miembros = await miembrosDeLosViajes(viajes.map((v) => v.trip_id))
     for (const viaje of viajes) {
+      const route = viaje.route
+      if (!route?.answers?.dateRange?.start) continue
+      for (const uid of [...new Set([viaje.user_id, ...(miembros.get(viaje.trip_id) ?? [])])]) {
       try {
-        const route = viaje.route
-        if (!route?.answers?.dateRange?.start) continue
-        const subs = await suscripcionesDe(viaje.user_id)
+        const subs = await suscripcionesDe(uid)
         if (subs.length === 0) continue // el interruptor «Avisos en el móvil» está apagado (o nunca se encendió)
-        const soloDias = await diasConAviso(viaje.user_id, viaje, caches)
+        const soloDias = await diasConAviso(uid, viaje, caches)
         if (soloDias === null) continue // sin pase
         revisados++
         const zona = route.days?.find((d) => d.zonaHorariaDia)?.zonaHorariaDia ?? zonaDelDestino(route.destination) ?? ZONA_POR_DEFECTO
@@ -135,14 +152,15 @@ export function crearServicioAvisosViaje({ admin, destinos = {}, ahora = () => n
         }
         for (const a of debidos) {
           const clave = `${viaje.trip_id}|${a.clave}`
-          const nuevo = await rpc('avisos_viaje_reservar', { p_uid: viaje.user_id, p_trip: viaje.trip_id, p_clave: clave, p_tipo: a.tipo, p_para: a.instante.toISOString() })
+          const nuevo = await rpc('avisos_viaje_reservar', { p_uid: uid, p_trip: viaje.trip_id, p_clave: clave, p_tipo: a.tipo, p_para: a.instante.toISOString() })
           if (!nuevo) continue // ya se mandó (o lo está mandando otra vuelta de la tarea)
           const llegados = await mandar(envio.webpush, subs, a.texto, { tag: clave })
           if (llegados > 0) enviados++
-          else await rpc('avisos_viaje_liberar', { p_uid: viaje.user_id, p_clave: clave }) // no llegó a ningún móvil: se reintenta al minuto siguiente
+          else await rpc('avisos_viaje_liberar', { p_uid: uid, p_clave: clave }) // no llegó a ningún móvil: se reintenta al minuto siguiente
         }
       } catch (error) {
         log.warn?.('[avisos-viaje] no se pudo revisar un viaje:', error.message)
+      }
       }
     }
     return { ok: true, viajes: viajes.length, revisados, enviados }

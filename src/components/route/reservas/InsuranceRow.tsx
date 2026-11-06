@@ -3,6 +3,7 @@ import { precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
+import { ENLACE_SEGURO } from '../../../lib/enlacesUtil'
 import { ReservasItemRow } from './ReservasItemRow'
 import { GeneralBookingModal } from './GeneralBookingModal'
 
@@ -23,7 +24,7 @@ export function InsuranceRow() {
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Obtener con 5% dto.',
-          href: 'https://www.iatiseguros.com',
+          href: ENLACE_SEGURO,
           onGet: () => undefined, // (pulsar abre la tienda y nada más: se añade con «Añadir», Tanda 6z3)
         }}
       />

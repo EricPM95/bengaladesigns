@@ -25,6 +25,8 @@ export interface LlegadaParaMotor {
   puntoId: string | null
   zona: string | null
   excursionReservada?: { dateIso: string | null; dayNumber: number | null; salida: string; vuelta: string | null; nombre: string }
+  /** (6-nov) La hora de recogida del coche de alquiler, de su reserva en RESERVAS (solo Lanzarote y su reserva con hora). */
+  recogida?: string
 }
 
 export interface VueltaParaMotor {
@@ -33,6 +35,8 @@ export interface VueltaParaMotor {
   puntoId: string | null
   zona: string | null
   excursion?: { nombre: string; vuelve: string | null; medioDia: boolean; dateIso: string | null; dayNumber: number | null }
+  /** (6-nov) La hora de devolución del coche de alquiler, de su reserva en RESERVAS: el coche tiene que estar devuelto antes. */
+  devolucion?: string
 }
 
 export interface DatosParaMotor {
@@ -82,7 +86,12 @@ function excursionDeLaVuelta(route: Route, reservas: Reservation[]): VueltaParaM
  * La llegada y la vuelta que se mandan al motor. `paraAvisos`: la ruta a mano también se manda, solo para los avisos de reservas contra el vuelo (el servidor no devuelve ningún día).
  * Devuelve `{}` en la gratis, sin ruta, en la ruta a mano (salvo `paraAvisos`) y en coche; cada mitad sin hora se deja fuera.
  */
-export function datosParaMotor(route: Route | null | undefined, reservas: Reservation[], info: ArrivalInfo | null, opciones: { paraAvisos?: boolean } = {}): DatosParaMotor {
+export function datosParaMotor(
+  route: Route | null | undefined,
+  reservas: Reservation[],
+  info: ArrivalInfo | null,
+  opciones: { paraAvisos?: boolean; /** (6-nov) Las horas de la reserva del coche de alquiler (RESERVAS): la de recogida cuenta en el día de llegada y la de devolución en el último día. */ coche?: { horaRecogida?: string | null; horaDevolucion?: string | null } | null } = {},
+): DatosParaMotor {
   // (Tanda 10G: con `paraAvisos` se manda también en la gratis: el aviso de «tu entrada no cuadra con tu vuelo» es gratis —evita perder una entrada pagada—; lo que no se hace en la gratis es ajustar los días.)
   if (!route || (!pagoActivo() && !opciones.paraAvisos)) return {}
   const aMano = isManualRoute(route)
@@ -101,6 +110,7 @@ export function datosParaMotor(route: Route | null | undefined, reservas: Reserv
       puntoId: info && point ? point.id : null,
       zona,
       ...(excursionReservada ? { excursionReservada } : {}),
+      ...(esHora(opciones.coche?.horaRecogida) ? { recogida: opciones.coche?.horaRecogida } : {}),
     }
   }
   if (modos.departure !== 'coche' && esHora(route.departureFlightTime)) {
@@ -112,6 +122,7 @@ export function datosParaMotor(route: Route | null | undefined, reservas: Reserv
       puntoId: info && point ? point.id : null,
       zona,
       ...(excursion ? { excursion } : {}),
+      ...(esHora(opciones.coche?.horaDevolucion) ? { devolucion: opciones.coche?.horaDevolucion } : {}),
     }
   }
   return salida
@@ -123,11 +134,11 @@ export function datosParaMotor(route: Route | null | undefined, reservas: Reserv
  */
 export async function llegadaVueltaActuales(opciones: { soloSiRehace?: boolean; paraAvisos?: boolean } = {}): Promise<DatosParaMotor> {
   const { useRouteStore } = await import('../store/useRouteStore')
-  const { route, reservations, keepBookingsOnNextRoute } = useRouteStore.getState()
+  const { route, reservations, keepBookingsOnNextRoute, rentalVehicleBooking } = useRouteStore.getState()
   if (!route || (opciones.soloSiRehace && !keepBookingsOnNextRoute)) return {}
   if (!pagoActivo() && !opciones.paraAvisos) return {}
   const info = await fetchArrivalInfo(route.destination).catch(() => null)
-  return datosParaMotor(route, reservations, info, { paraAvisos: opciones.paraAvisos })
+  return datosParaMotor(route, reservations, info, { paraAvisos: opciones.paraAvisos, coche: rentalVehicleBooking })
 }
 
 /** Lo mismo para una ruta y unas reservas que ya se tienen (los sitios que no leen el estado). */

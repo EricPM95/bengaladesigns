@@ -13,7 +13,6 @@ import { pagoActivo } from '../../../../lib/pago'
 import { buildGoogleMapsUrlToPlaceTransit } from '../../../../lib/mapsLinks'
 import { tripModes, useArrivalInfo } from '../../../../lib/arrivalReturn'
 import { destinoDelPunto, tituloDeVuelta } from '../../../../lib/llegadaVueltaHoy'
-import { avisosDeCierre } from '../../../../lib/avisosDeHoy'
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../../../lib/diaCompleto'
 import { CERRADO_ESTE_DIA } from '../../../../lib/placeHoursOnDate'
 import { tarjetaHoyVuelvesDelDia } from '../../../../lib/planLlegadaVuelta'
@@ -63,7 +62,6 @@ import { TarjetaDeComida, useComidaDeAhora } from './ComerAhora'
 import { SitioDeAtardecer } from './SitioDeAtardecer'
 import { ATuAire } from './ATuAire'
 import { AvisoDeHorarioEnDirecto, TarjetaDeHorariosDeHoy, useVentanasDeHoy } from './HorarioHoy'
-import { paradasJustasDeHoy } from '../../../../lib/hoyHorarios'
 import { AvisoDePeligro, PreguntaParadaNoMarcada } from './PeligroHoy'
 import { ComoVais } from './ComoVais'
 import { QueHagoAhora } from './QueHagoAhora'
@@ -267,7 +265,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const tarjetaVuelve = tarjetaHoyVuelvesDelDia(route, day)
   const diaCompleto = esDiaCompleto(route, day, reservations)
   const [cerrados, setCerrados] = useState<string[]>(() => leerCerrados(route.id, day.id))
-  const cierres = avisosDeCierre(vigentes.filter((s) => !s.closedThisDay), horarioDe, (s) => displayStopName(s.name)).filter((a) => !cerrados.includes(a.id))
   const cerrarAviso = (id: string) => setCerrados((antes) => { const ahora = [...antes, id]; guardarCerrados(route.id, day.id, ahora); return ahora })
 
   const origenCerca = ubicacion ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null)
@@ -300,8 +297,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const salidaManana = conPaseOPrueba && siguiente && vistas === 0 && !esLlegada && !esVuelta ? salidaDeCasa({ day, primera: siguiente, zona: zonaCoords, enCoche }) : null
   const minSalida = salidaManana ? minutosDe(salidaManana.hora) : null
   const esPorLaManana = Boolean(salidaManana && minSalida != null && ahoraMinHoy < minSalida)
-  // (HOY2b 8b) Lo que la tarjeta tranquila de la mañana ya dice («Para hoy: … cierra a las …»), no se repite en la lista roja de «cierra hoy a las…».
-  const idsJustosDeLaManana = new Set(esPorLaManana ? paradasJustasDeHoy(ventanasDeHoy).map((j) => j.v.stop.id) : [])
   const vuelveH14 = (conPase: boolean) => (tarjetaVuelve || fichas.vuelta.hora || route.planVuelta?.hora ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} /> : null)
   const saltar = (stop: Stop) => {
     setStopSaltada(day.id, stop.id, true)
@@ -425,17 +420,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* HOY2b (8b): los horarios, en HOY. Por la mañana, «Para hoy: … cierra a las …»; en directo, «A este ritmo llegarías a … cuando ya ha cerrado» */}
       <TarjetaDeHorariosDeHoy day={day} dateIso={dateIso} ventanas={ventanasDeHoy} visible={esPorLaManana} />
       <AvisoDeHorarioEnDirecto route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} ventanas={ventanasDeHoy} />
-      {cierres.filter((a) => !idsJustosDeLaManana.has(a.id)).map((a) => (
-        <AvisoDeHoy key={a.id} id={`cierre:${a.id}`} prio={5}>
-          <div className="flex min-h-14 flex-none items-center gap-3 rounded-[18px] py-[9px] pl-3 pr-2.5" style={{ background: 'rgb(var(--accent-red) / .07)', border: '1px solid rgb(var(--accent-red) / .25)' }} data-avisos-de-cierre>
-            <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] text-white" style={{ background: 'rgb(var(--accent-red))' }}>
-              <Icono nombre="reloj" size={16} />
-            </span>
-            <span className="min-w-0 flex-1 text-[13px] font-medium leading-[1.35]">{a.texto}</span>
-            <CruzDeAviso onClick={() => cerrarAviso(a.id)} />
-          </div>
-        </AvisoDeHoy>
-      ))}
+      {/* (Arreglo, 6-nov; decisión de Eric) Fuera la lista roja «X cierra hoy a las…»: repite la tarjeta de horarios de la mañana y el aviso en directo. */}
       <AvisosDelTiempo route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} />
       <RainAlert day={day} dateIso={dateIso} when="hoy" />
       {/* HOY2b (E): «¿Cómo vais?» una vez al día, después de comer (prioridad 3, lo que sugiere el compañero) */}

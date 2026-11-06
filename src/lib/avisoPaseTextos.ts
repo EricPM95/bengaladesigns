@@ -78,6 +78,10 @@ export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
     linea1: '',
     linea2: 'Con el {pase}, guardas tu reserva y tienes la dirección, las horas y el teléfono a mano, aunque no haya internet.',
   },
+  documento_coche: {
+    linea1: '',
+    linea2: 'Con el {pase}, guardas tu reserva del coche y ajustamos tu día de llegada y tu último día a las horas de recogida y de devolución.',
+  },
   generico: {
     linea1: '',
     linea2: 'Desbloquea todo lo que el {pase} añade a tu viaje.',

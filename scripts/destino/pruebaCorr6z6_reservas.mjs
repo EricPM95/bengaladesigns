@@ -259,7 +259,8 @@ for (const [clave, route] of Object.entries(rutas)) {
       const html = pintaHtml(UtilParaElViaje, { route: alquiler, pago: version === 'completa' }, alquiler, { version, extra })
       const texto = aTexto(html)
       const ids = [...html.matchAll(/data-util-tarjeta="(\w+)"/g)].map((x) => x[1])
-      const esperadas = version === 'gratis' ? [...esperadasPago, 'vuelos'] : esperadasPago
+      // (6-nov, Eric) Fuera la tarjeta «Buscar vuelos» también en la gratis: el vuelo ya tiene su bloque con [Buscar vuelos] (LlegadaYVuelta). Antes: `[...esperadasPago, 'vuelos']` en la gratis.
+      const esperadas = esperadasPago
       debe(ids.join() === esperadas.join(), '3 tarjetas', `${nombre}: las tarjetas son ${ids.join()} y deberían ser ${esperadas.join()}`)
       // 3a. Sin la lista de debajo.
       debe(!/¿Ya (lo|la) tienes\?|Añádelo|Añádela|min-h-\[40px\]/.test(html) && !/¿Ya (lo|la) tienes/.test(texto), '3a sin lista', `${nombre}: queda la lista de debajo (${plano(texto).slice(0, 300)})`)

@@ -58,7 +58,7 @@ const LISTA = plan()
     ['2026-11-12', 'manana', '08:17', 'Buenos días. Hoy toca Papagayo y Playa Blanca: sal de casa a las 8:47.'],
     ['2026-11-12', 'atardecer', '17:02', 'Hoy el sol se pone a las 18:02. Desde el Faro de Pechiguera se ve precioso.'],
     ['2026-11-13', 'vuelta_manana', '09:08', 'Hoy vuelves a casa. Devuelve el coche en la T1 antes de las 17:10.'],
-    ['2026-11-13', 'vuelta_salir', '15:17', 'En media hora tienes que salir hacia el aeropuerto.'],
+    ['2026-11-13', 'vuelta_salir', '16:40', 'En media hora tienes que dejar el coche en la T1 (antes de las 17:10).'],
   ]
   for (const [fecha, tipo, hora, texto] of esperado) {
     const a = LISTA.find((x) => x.tipo === tipo && x.fecha === fecha)
@@ -220,7 +220,7 @@ console.log('5. Si la ruta cambia, los avisos del día se recalculan')
 /* ─────────────────────────── 6. El servicio ─────────────────────────── */
 console.log('6. El servicio: pase, interruptor, nada repetido, reintentos, día de prueba, rutas')
 const ENV = { PUSH_ACTIVO: 'true', VAPID_PUBLIC_KEY: 'clave-publica-de-mentira', VAPID_PRIVATE_KEY: 'clave-privada-de-mentira', VAPID_CONTACTO: 'mailto:prueba@example.test', CRON_SECRET: 'secreto-de-mentira' }
-function mundo({ pases = [{ estado: 'activo', destino: 'Lanzarote' }], subs = [{ endpoint: 'https://push.example.test/1', claves: { p256dh: 'a', auth: 'b' } }], prueba = null, admins = [], route = ERIC, reservations = RESERVAS_ERIC, env = ENV, falloDeEnvio = null, meteos = {}, viajes = null } = {}) {
+function mundo({ pases = [{ estado: 'activo', destino: 'Lanzarote' }], subs = [{ endpoint: 'https://push.example.test/1', claves: { p256dh: 'a', auth: 'b' } }], prueba = null, admins = [], route = ERIC, reservations = RESERVAS_ERIC, env = ENV, falloDeEnvio = null, meteos = {}, viajes = null, miembros = [] } = {}) {
   const reservados = new Set()
   const enviados = []
   const borradas = []
@@ -230,8 +230,9 @@ function mundo({ pases = [{ estado: 'activo', destino: 'Lanzarote' }], subs = [{
     const b = {
       select: () => b,
       eq: () => b,
+      in: () => b,
       maybeSingle: async () => ({ data: tabla === 'hoy_prueba' ? prueba : null, error: null }),
-      then: (ok) => ok({ data: tabla === 'push_suscripciones' ? subs : [], error: null }),
+      then: (ok) => ok({ data: tabla === 'push_suscripciones' ? subs : tabla === 'trip_members' ? miembros : [], error: null }),
     }
     return b
   }
@@ -298,8 +299,20 @@ const en = (iso) => new Date(iso)
   debe(cuerpos.length === 2 && /Papagayo/.test(cuerpos[0]) && /18:02/.test(cuerpos[1]), 'servicio', `un día entero minuto a minuto (jueves 12): solo 2 avisos, mañana y atardecer (${cuerpos.length})`)
   const viernes = mundo()
   for (let t = Date.parse('2026-11-13T06:00:00Z'); t < Date.parse('2026-11-13T22:00:00Z'); t += 60000) await viernes.servicio.tick(new Date(t))
-  debe(viernes.enviados.map((e) => e.payload.cuerpo).join('|') === 'Hoy vuelves a casa. Devuelve el coche en la T1 antes de las 17:10.|En media hora tienes que salir hacia el aeropuerto.', 'servicio', 'el último día, minuto a minuto: «Hoy vuelves a casa…» y «En media hora tienes que salir…», en ese orden y nada más')
+  debe(viernes.enviados.map((e) => e.payload.cuerpo).join('|') === 'Hoy vuelves a casa. Devuelve el coche en la T1 antes de las 17:10.|En media hora tienes que dejar el coche en la T1 (antes de las 17:10).', 'servicio', 'el último día, minuto a minuto: «Hoy vuelves a casa…» y «En media hora tienes que salir…», en ese orden y nada más')
   debe(m.reservados.size >= 1 && [...m.reservados][0].startsWith('u1|t1|'), 'servicio', 'la clave reservada lleva la persona y el viaje (un aviso por viaje)')
+
+  // (Arreglo, 6-nov; decisión de Eric) Los compañeros de un viaje compartido reciben los avisos, cada uno con su móvil, su pase y su interruptor.
+  {
+    const conCompi = mundo({ miembros: [{ trip_id: 't1', user_id: 'u2' }] })
+    for (let t = Date.parse('2026-11-13T06:00:00Z'); t < Date.parse('2026-11-13T22:00:00Z'); t += 60000) await conCompi.servicio.tick(new Date(t))
+    const porPersona = (u) => [...conCompi.reservados].filter((k) => k.startsWith(u + '|t1|')).length
+    debe(porPersona('u1') === 2 && porPersona('u2') === 2, 'compañeros', 'el dueño y el compañero reciben los mismos 2 avisos del último día, cada uno el suyo (' + porPersona('u1') + ' y ' + porPersona('u2') + ')')
+    const sinInterruptor = mundo({ miembros: [{ trip_id: 't1', user_id: 'u2' }], subs: [] })
+    await sinInterruptor.servicio.tick(new Date('2026-11-13T09:10:00Z'))
+    debe(sinInterruptor.enviados.length === 0, 'compañeros', 'con el interruptor «Avisos en el móvil» apagado (sin suscripción) no se manda nada, ni al dueño ni al compañero')
+    debe(/avisos_viaje_hay_que_mirar[^]*trip_members/.test(leer('supabase/migrations/0076_avisos_viaje_companeros.sql')) && /trip_members/.test(leer('docs/dias/COMPROBAR_0076.sql')), 'compañeros', 'la 0076 y su comprobación miran a los compañeros del viaje')
+  }
 
   // Sin pase: ninguno.
   const sinPase = mundo({ pases: [] })

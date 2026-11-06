@@ -342,7 +342,7 @@ interface RespuestaServidor<T> {
   aviso: string | null
 }
 
-async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete, tipo?: 'entrada' | 'alojamiento' | 'excursion'): Promise<RespuestaServidor<T>> {
+async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete, tipo?: 'entrada' | 'alojamiento' | 'excursion' | 'coche'): Promise<RespuestaServidor<T>> {
   // (10S8) Antes de nada, sin gastar una llamada: el tamaño. La sesión se manda siempre que haya; si no hay (o no vale), el servidor contesta 401 con su texto y sin llamar a Claude.
   if (archivo.size > MAX_ARCHIVO_LECTURA_BYTES) return { datos: null, aviso: AVISO_ARCHIVO_GRANDE }
   // (La sesión se pide al cargar el cliente de Supabase solo ahora, no al importar este archivo: así las pruebas del lector en Node, sin Vite, siguen funcionando.)
@@ -650,6 +650,57 @@ export async function leerReservaAlojamiento(archivo: File, opciones: OpcionesLe
     return {
       nombre: s.nombre ?? null, direccion: s.direccion ?? null, entrada: s.entrada ?? null, salida: s.salida ?? null, noches: s.noches ?? null,
       horaEntrada: s.hora_entrada ?? null, horaSalida: s.hora_salida ?? null, telefono: s.telefono ?? null, localizador: s.localizador ?? null,
+      leida: Object.values(s).some((v) => v != null),
+      aviso: null,
+    }
+  } catch {
+    return vacio
+  }
+}
+
+// ── El coche de alquiler (6-nov) ─────────────────────────────────────────────────────────────────────────────────────────────
+
+/** Lo que sale de leer la reserva de un coche de alquiler. Sin nombre del conductor ni datos de pago. Lo que no se sepa, `null`. */
+export interface DatosReservaCocheLeida {
+  compania: string | null
+  coche: string | null
+  lugarRecogida: string | null
+  /** `YYYY-MM-DD`. */
+  fechaRecogida: string | null
+  /** `HH:MM`. */
+  horaRecogida: string | null
+  lugarDevolucion: string | null
+  fechaDevolucion: string | null
+  horaDevolucion: string | null
+  /** El precio total, tal cual lo pone la reserva. */
+  precio: number | null
+  moneda: string | null
+  codigo: string | null
+  /** `false` si no se pudo leer nada (sin servidor, archivo ilegible…): la hoja sale vacía para escribirla a mano. */
+  leida: boolean
+  /** Como en las demás: el texto de lo que impidió leerla con IA (sesión, pase, límite, tamaño). */
+  aviso?: string | null
+}
+
+/** PDF, foto o captura de la reserva de un coche de alquiler → datos. Nunca lanza: si no se puede leer, devuelve todo `null` y `leida: false`. */
+export async function leerReservaCoche(archivo: File, opciones: OpcionesLeerBillete = {}): Promise<DatosReservaCocheLeida> {
+  const vacio: DatosReservaCocheLeida = { compania: null, coche: null, lugarRecogida: null, fechaRecogida: null, horaRecogida: null, lugarDevolucion: null, fechaDevolucion: null, horaDevolucion: null, precio: null, moneda: null, codigo: null, leida: false }
+  try {
+    let paginas: HTMLCanvasElement[] = []
+    try {
+      paginas = await paginasDe(archivo)
+    } catch {
+      paginas = []
+    }
+    const r = await leerEnServidor<{
+      compania: string | null; coche: string | null; lugar_recogida: string | null; fecha_recogida: string | null; hora_recogida: string | null
+      lugar_devolucion: string | null; fecha_devolucion: string | null; hora_devolucion: string | null; precio: number | null; moneda: string | null; codigo: string | null
+    }>(archivo, paginas, opciones, 'coche').catch(() => ({ datos: null, aviso: null }))
+    const s = r.datos
+    if (!s) return { ...vacio, aviso: r.aviso }
+    return {
+      compania: s.compania ?? null, coche: s.coche ?? null, lugarRecogida: s.lugar_recogida ?? null, fechaRecogida: s.fecha_recogida ?? null, horaRecogida: s.hora_recogida ?? null,
+      lugarDevolucion: s.lugar_devolucion ?? null, fechaDevolucion: s.fecha_devolucion ?? null, horaDevolucion: s.hora_devolucion ?? null, precio: s.precio ?? null, moneda: s.moneda ?? null, codigo: s.codigo ?? null,
       leida: Object.values(s).some((v) => v != null),
       aviso: null,
     }

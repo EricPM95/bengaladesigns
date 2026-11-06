@@ -1,3 +1,5 @@
+import { enlaceAlquilerDeCoche } from './enlacesAfiliado'
+
 /**
  * Broker de alquiler de camper/autocaravana, según destino — igual que Booking/Civitatis en
  * DestinationDetailModal.tsx: enlace real a la home del sitio, sin integración de afiliación real.
@@ -10,7 +12,7 @@ export function buildCamperRentalLink(countryCode: string | null): { url: string
   return { url: 'https://www.motorhomerepublic.com', label: 'MotorhomeRepublic' }
 }
 
-/** Coche de alquiler (no camper) — DiscoverCars vía Travelpayouts, mismo "enlace real, sin integración de afiliación real" que el resto de la app. */
+/** Coche de alquiler (no camper) — DiscoverCars con nuestro código de afiliado (6-nov: la dirección vive en `enlacesAfiliado.ts`, el único sitio donde se cambian los códigos). `label` es interno: nunca va en un botón. */
 export function buildCarRentalLink(): { url: string; label: string } {
-  return { url: 'https://www.discovercars.com', label: 'DiscoverCars' }
+  return { url: enlaceAlquilerDeCoche(), label: 'DiscoverCars' }
 }

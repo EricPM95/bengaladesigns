@@ -22,6 +22,14 @@ export interface GeneralBooking {
   startDate: string
   endDate: string
   precio: Importe | null
+  /** (6-nov, el coche de alquiler; todo opcional) El coche (modelo o grupo), dónde y a qué hora se recoge y se devuelve, y el código de la reserva. */
+  coche?: string | null
+  lugarRecogida?: string | null
+  /** `HH:MM`. */
+  horaRecogida?: string | null
+  lugarDevolucion?: string | null
+  horaDevolucion?: string | null
+  codigo?: string | null
 }
 
 export type EsimStatus = 'have' | 'booked'

@@ -15,7 +15,7 @@ Cada aviso del móvil lleva como título el nombre de la app (JUTRIP) y, al toca
 | El atardecer | 1 h antes de la puesta de sol | «Hoy el sol se pone a las 18:04. Desde El Golfo se ve precioso.» (sin ningún sitio cerca: «Hoy el sol se pone a las 18:04.») |
 | La llegada | aterrizaje + 10 min | «Bienvenido a Lanzarote. Cuando tengas el coche, empiezas hacia las 11:25.» (sin coche: «…Cuando llegues a tu alojamiento, empiezas hacia las…»; sin hora útil: «Bienvenido a Lanzarote. Abre HOY para ver tu primer día.») |
 | El último día, por la mañana | como la mañana | «Hoy vuelves a casa. Devuelve el coche en la T1 antes de las 17:10.» (sin coche: «Hoy vuelves a casa. Tu vuelo sale a las 19:40.») |
-| El último día, antes de salir | media hora antes de salir hacia el aeropuerto | «En media hora tienes que salir hacia el aeropuerto.» |
+| El último día, antes de dejar el coche | la hora límite de la T1 menos 30 min (decisión de Eric, 6-nov) | «En media hora tienes que dejar el coche en la T1 (antes de las 17:10).» (sin coche, el de siempre: «En media hora tienes que salir hacia el aeropuerto.») |
 | Aviso de prueba (solo administrador) | al tocar [Enviarme un aviso de prueba] | «Esto es un aviso de prueba. Si lo ves con el móvil bloqueado, los avisos del viaje te van a llegar.» |
 
 ### Tarjeta de HOY para iPhone sin instalar (primer día del viaje)

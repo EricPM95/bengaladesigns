@@ -148,7 +148,7 @@ export function followUp(input: FollowUpInput): { question: FollowUpQuestion | n
     // (Arreglo, 5-nov; decisión de Eric del 4-nov) Un destino que se recorre en coche (Lanzarote): se da por hecho el coche de alquiler y la base fija, SIN preguntar nada. En RESERVAS, el bloque «Coche de alquiler | Mi coche» lo cambia.
     if (esDestinoDeCoche(d) && flightOrTrain) {
       if (!input.vehicle_resolved || input.vehicle_type !== 'car' || input.vehicle_ownership !== 'rental' || input.travel_mode !== 'base_fija') return { question: null, cards, auto: { vehicle_ownership: 'rental', vehicle_type: 'car', vehicle_resolved: true, travel_mode: 'base_fija' } }
-      cards.push({ label: 'Para moverte', value: 'Coche de alquiler', reset: { vehicle_type: null, vehicle_ownership: null, vehicle_resolved: false, travel_mode: null } })
+      // (Arreglo, 6-nov; decisión de Eric) SIN tarjeta «Para moverte»: el vehículo no se enseña en el formulario, va en RESERVAS (bloque «Coche de alquiler | Mi coche»).
       return { question: null, cards, auto: null }
     }
     if (!input.vehicle_resolved) {

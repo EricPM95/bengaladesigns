@@ -23,8 +23,6 @@ interface Tarjeta {
   etiqueta?: string
   icono: NombreIcono
   enlace: string
-  /** «Buscar vuelos» (gratis) solo busca: no se compra ni se añade. */
-  soloBuscar?: boolean
   articulo: 'lo' | 'la'
   anadida: boolean
   precio: Importe | null
@@ -41,7 +39,7 @@ interface Tarjeta {
  * con nuestro enlace y nada más (**comprar no marca nada como añadido**). [Añadir] es para quien ya lo tiene: abre la hoja de precio opcional (`HojaPrecio`), que suma al presupuesto. Ya añadida, la tarjeta dice
  * «✓ Lo tienes» (con su precio) en vez de los botones; al tocarla se cambia o se elimina. Igual en la gratis y en la de pago. Nunca el nombre de un proveedor en los textos.
  */
-export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }) {
+export function UtilParaElViaje({ route }: { route: Route; /** (Ya no se usa: «Buscar vuelos» salió de aquí.) */ pago?: boolean }) {
   useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const dateRange = route.answers.dateRange
   const insurance = useRouteStore((state) => state.insuranceBooking)
@@ -147,26 +145,9 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
           },
         ]
       : []),
-    ...(!pago
-      ? [
-          {
-            id: 'vuelos',
-            nombre: 'Buscar vuelos',
-            sirve: 'Compara precios y fechas de vuelos.',
-            icono: ICONOS.avion,
-            enlace: 'https://www.skyscanner.net',
-            soloBuscar: true,
-            articulo: 'lo' as const,
-            anadida: false,
-            precio: null,
-            conPrecio: false,
-            guardar: () => undefined,
-            quitar: () => undefined,
-          },
-        ]
-      : []),
+    // (6-nov, Eric) Fuera la tarjeta «Buscar vuelos»: el vuelo ya tiene su bloque con [Buscar vuelos] (LlegadaYVuelta). En los destinos con el bloque del coche (Lanzarote) tampoco sale la del alquiler: está repetida.
   ]
-  const abierta = tarjetas.find((tarjeta) => tarjeta.id === hojaPrecio && !tarjeta.soloBuscar) ?? null
+  const abierta = tarjetas.find((tarjeta) => tarjeta.id === hojaPrecio) ?? null
   /** [Añadir] o tocar la tarjeta ya añadida: con precio, la hoja; sin precio (la tarjeta sin comisiones), se marca o se quita directamente. */
   // (Tanda 6y4: también la tarjeta sin comisiones abre su hoja, que es solo el campo «¿Dónde lo has comprado?».)
   const gestionar = (tarjeta: Tarjeta) => setHojaPrecio(tarjeta.id)
@@ -216,10 +197,6 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
                 {/* Con el lugar y el precio juntos («Lo tienes · Mi banco · 30 €») no cabe la palabra «Cambiar» en 220 px: la tarjeta entera sigue siendo el botón. */}
                 {!(dondeDe(tarjeta) && tarjeta.precio) && <span className="flex-none text-[12px] font-medium underline underline-offset-2">Cambiar</span>}
               </button>
-            ) : tarjeta.soloBuscar ? (
-              <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="zona-toque mt-auto flex h-10 w-full items-center justify-center rounded-full btn-champan text-[13.5px] font-semibold no-underline">
-                Buscar
-              </a>
             ) : (
               <span className="mt-auto flex gap-2">
                 <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="zona-toque flex h-10 flex-1 items-center justify-center rounded-full btn-champan text-[13.5px] font-semibold no-underline">

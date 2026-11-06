@@ -29,6 +29,7 @@ import { etiquetaDeCiudadConEstacion, etiquetaDeCiudadConPunto, ejemploDeCiudadC
 import { HojaDatosDelBillete } from './HojaDatosDelBillete'
 import { CabeceraDeMitad, CodigoPantallaCompleta, TarjetaBillete, filasDelBillete } from './TarjetaBillete'
 import { LapizDeReserva, claveDocumentoDeMedio } from './BotonesDeReserva'
+import { BuscarVuelos } from './BuscarVuelos'
 import { HojaPrecio } from './HojaPrecio'
 import { fechaEnProsa } from '../../../lib/nombreDeDia'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
@@ -400,6 +401,8 @@ export function LlegadaYVuelta({
   const ciudad = route.days[0]?.city ?? route.destination
   const hecho = ida.done && vuelta.done
   const algoHecho = ida.done || vuelta.done
+  // (6-nov) [Buscar vuelos]: mientras falte una mitad que se hace en avión, el botón del buscador (origen, destino y fechas del viaje).
+  const faltaAvion = [ida, vuelta].some((l) => !l.done && l.mode === 'avion')
   // (10S4 §2) Listo = plegado (se abre al tocar la cabecera); mientras falta algo, abierto. Al quedar listo se vuelve a plegar solo.
   const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
   // (10S10 §5, decisión de Eric, 1-nov) Cerrado al entrar SIEMPRE, falte lo que falte; solo se abre si el viajero toca la cabecera o el panel lo pide.
@@ -536,7 +539,10 @@ export function LlegadaYVuelta({
     <>
       <BloqueShell bloque="llegada">
         {!algoHecho ? (
-          <CabeceraBloque icono={iconoDeMedio(ida.mode)} titulo="Llegada y vuelta" estado={etiqueta} hecho={false} abierto={false} onClick={() => abrirHoja(primeraLibre)} atributos={{ 'data-llegada-vacia': '' }} className="p-4" />
+          <>
+            <CabeceraBloque icono={iconoDeMedio(ida.mode)} titulo="Llegada y vuelta" estado={etiqueta} hecho={false} abierto={false} onClick={() => abrirHoja(primeraLibre)} atributos={{ 'data-llegada-vacia': '' }} className="p-4" />
+            {faltaAvion && <BuscarVuelos route={route} className="mx-4 mb-4 w-[calc(100%-2rem)]" />}
+          </>
         ) : (
           <>
             {/* (10S9 §1) La cabecera compartida, y SIEMPRE se puede cerrar, falte lo que falte (antes, con un vuelo sin poner no se cerraba). */}
@@ -545,6 +551,7 @@ export function LlegadaYVuelta({
               <>
             <MitadGuardada route={route} leg={ida} ciudad={ciudad} onCambiar={() => abrirHoja('arrival')} onQuitar={() => quitar(ida)} onAnadirTarjeta={pedirArchivo} onCambioDeVuelo={onCambioDeVuelo} />
             <MitadGuardada route={route} leg={vuelta} ciudad={ciudad} onCambiar={() => abrirHoja('departure')} onQuitar={() => quitar(vuelta)} onAnadirTarjeta={pedirArchivo} onCambioDeVuelo={onCambioDeVuelo} />
+            {faltaAvion && <BuscarVuelos route={route} className="mx-4 mb-3 w-[calc(100%-2rem)]" />}
             {hayVuelo && g.gente.length >= 2 && g.esAdmin && (
               <div className="flex flex-col gap-2.5 px-4 pb-3 pt-1" data-en-este-vuelo>
                 <span className="flex items-center justify-between text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
