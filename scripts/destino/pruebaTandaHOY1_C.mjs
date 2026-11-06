@@ -74,7 +74,7 @@ if (PARTE === 'todas' || PARTE === '0') {
   const q = (url, mode = 'cors', method = 'GET') => sw.queHacerConUnaPeticion(new URL(url), { method, mode }, 'https://trazo.app')
   debe(q('https://trazo.app/') === null && q('https://trazo.app/', 'navigate') === 'pagina', 'sw: la página (navegación) se guarda con «red primero»')
   debe(q('https://trazo.app/assets/index-abc123.js') === 'activo', 'sw: el código con nombre único (/assets/) se guarda y no se vuelve a pedir')
-  debe(q('https://trazo.app/icons/icon-192.png') === 'fuente' && q('https://trazo.app/fotos/roma/x.jpg') === 'fuente', 'sw: iconos y fotos propias, copia primero y se renuevan por detrás')
+  debe(q('https://trazo.app/icons/icon-192.png') === 'fuente' && q('https://trazo.app/fotos/roma/x.jpg?v=ab12cd34') === 'activo' && q('https://trazo.app/fotos/roma/x.jpg') === 'foto', 'sw: iconos, copia primero y se renuevan por detrás; fotos propias con ?v= copia primero, sin versión red primero (ARREGLO_FOTOS_VIAJE)')
   debe(q('https://fonts.googleapis.com/css2?family=Geist') === 'fuente' && q('https://fonts.gstatic.com/s/geist.woff2') === 'fuente', 'sw: las fuentes de Google se guardan')
   debe(q('https://trazo.app/api/tiempo/horas?lat=1') === null && q('https://trazo.app/api/place-detail', 'cors', 'POST') === null, 'sw: NUNCA toca /api/ (ni GET ni POST)')
   debe(q('https://abc.supabase.co/rest/v1/trips') === null && q('https://api.mapbox.com/styles/v1/x') === null, 'sw: nunca guarda la nube (Supabase) ni Mapbox')

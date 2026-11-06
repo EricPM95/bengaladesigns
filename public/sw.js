@@ -3,17 +3,20 @@
    Mapbox…): esos datos viejos no se enseñan; lo de hoy (ruta, fichas, historias, billetes) lo guarda la propia app en el móvil (src/lib/sinConexion.ts).
    En localhost no guarda nada (el servidor de desarrollo cambia a cada momento); se puede probar con /sw.js?cache=1. */
 
-const CACHE = 'trazo-web-v1'
+// (6-nov, ARREGLO_FOTOS_VIAJE: v2 tira las copias de fotos de antes, que podían ser las viejas de una foto cambiada con el mismo nombre.)
+const CACHE = 'trazo-web-v2'
 const ENLOCAL = ['localhost', '127.0.0.1', '[::1]'].includes(self.location.hostname) && !self.location.search.includes('cache=1')
 const CARPETAS = ['/icons/', '/marca/', '/logros/', '/medalla/', '/marcos/', '/fotos/', '/pelicula/', '/sonidos/']
 
-/** Qué hacer con una petición: 'pagina' (red primero, la copia si no hay red), 'activo' (/assets/, nombre único: copia primero y no se vuelve a pedir) o 'fuente' (copia primero y se renueva por detrás); null = no tocarla. */
+/** Qué hacer con una petición: 'pagina' (red primero, la copia si no hay red), 'foto' (una foto propia SIN versión: red primero y la copia si no hay red; con `?v=` es como un 'activo'), 'activo' (/assets/, nombre único: copia primero y no se vuelve a pedir) o 'fuente' (copia primero y se renueva por detrás); null = no tocarla. */
 function queHacer(url, peticion, origen) {
   if (peticion.method !== 'GET') return null
   if (url.origin === origen) {
     if (url.pathname.startsWith('/api/')) return null
     if (peticion.mode === 'navigate') return 'pagina'
     if (url.pathname.startsWith('/assets/')) return 'activo'
+    // Una foto propia con `?v=` (el resumen de su contenido) no cambia nunca bajo esa dirección: copia primero. Sin versión podría ser una foto cambiada con el mismo nombre: red primero.
+    if (url.pathname.startsWith('/fotos/')) return url.searchParams.has('v') ? 'activo' : 'foto'
     if (url.pathname === '/favicon.svg' || CARPETAS.some((c) => url.pathname.startsWith(c))) return 'fuente'
     return null
   }
@@ -49,6 +52,20 @@ self.addEventListener('fetch', (evento) => {
           return respuesta
         })
         .catch(() => caches.match('/').then((copia) => copia || Response.error())),
+    )
+    return
+  }
+  if (hacer === 'foto') {
+    evento.respondWith(
+      fetch(evento.request)
+        .then((respuesta) => {
+          if (respuesta && respuesta.ok) {
+            const copia = respuesta.clone()
+            void caches.open(CACHE).then((c) => c.put(evento.request, copia))
+          }
+          return respuesta
+        })
+        .catch(() => caches.match(evento.request).then((copia) => copia || Response.error())),
     )
     return
   }

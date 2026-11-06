@@ -96,6 +96,7 @@ import { CERRADO_ESTE_DIA } from '../lib/placeHoursOnDate'
 import { camposDelViajero, sellarVueltaAlAbrir } from '../lib/datosDelViajero'
 import { avisosDeFechaLeidos, dateNoticesKey } from '../lib/dateNotices'
 import { cardSeasonOfNote } from '../lib/seasonCard'
+import { conLasFotosNuevas, fotosNuevasDelViaje } from '../lib/refrescarFotosViaje'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
 function deriveAccommodationMode(vehicleType: VehicleType | null): AccommodationMode {
@@ -1211,6 +1212,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     })
     // (Tanda 10N) Ha llegado un viaje: la propuesta de quien solo recomienda se ajusta a la ruta nueva del administrador.
     alHidratarViaje.fn?.()
+    // (6-nov, ARREGLO_FOTOS_VIAJE) Las fotos de cada parada se toman de NUESTROS datos al abrir el viaje: un viaje creado antes de que cambiaran las fotos las enseña nuevas.
+    const abierto = get().route
+    if (abierto) {
+      void fotosNuevasDelViaje(abierto).then((cambios) => {
+        if (cambios.size > 0) set((state) => (state.route && state.route.id === abierto.id ? { route: conLasFotosNuevas(state.route, cambios) } : state))
+      })
+    }
   },
 
   setRouteDateRange: (dateRange) =>

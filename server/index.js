@@ -5609,11 +5609,21 @@ function dataVersionFor(destinationKey) {
   return version
 }
 
-/** El fichero de una foto propia cambia de versión cuando cambia el fichero (`?v=`): así el navegador puede guardarlo para siempre. */
+/**
+ * El fichero de una foto propia lleva su versión (`?v=`) y cambia cuando cambia el CONTENIDO del fichero: así el navegador puede guardarlo para siempre y, si la foto se sustituye con el mismo
+ * nombre, la dirección cambia y se descarga de nuevo. (6-nov: antes era la fecha del fichero, que en Vercel puede ser la misma en cada subida: una foto cambiada no cambiaba de dirección.)
+ */
+const versionDeFoto = new Map()
 function versionedPhotoUrl(url) {
   try {
-    const info = statSync(join(__dirname, '../public', url))
-    return `${url}?v=${Math.floor(info.mtimeMs / 1000).toString(36)}`
+    const ruta = join(__dirname, '../public', url)
+    const info = statSync(ruta)
+    const clave = `${info.size}-${Math.floor(info.mtimeMs)}`
+    const guardada = versionDeFoto.get(url)
+    if (guardada?.clave === clave) return `${url}?v=${guardada.v}`
+    const v = createHash('sha1').update(readFileSync(ruta)).digest('hex').slice(0, 8)
+    versionDeFoto.set(url, { clave, v })
+    return `${url}?v=${v}`
   } catch {
     return url
   }
@@ -5777,6 +5787,30 @@ app.post('/api/place-photo', async (req, res) => {
     console.error('[foto] fallo resolviendo la foto de', name, error)
     res.json({ photo_source: 'none' })
   }
+})
+
+/**
+ * (6-nov, ARREGLO_FOTOS_VIAJE) Las fotos PROPIAS de un viaje ya creado. El viaje guarda la foto de cada parada al crearse; si después cambian nuestras fotos, el viaje se quedaba con las viejas.
+ * Al abrir un viaje, el cliente pregunta aquí por sus paradas y recibe, para cada una, lo que decide `/api/place-photo` ANTES de buscar nada: la foto propia (`propia`), «sin foto» (`none`:
+ * restaurantes, `sin_foto`, Lanzarote sin foto nuestra) o `null` (no se decide aquí: se queda la que tenía). Nunca busca en Unsplash ni en Wikipedia.
+ */
+app.post('/api/fotos-viaje', (req, res) => {
+  const items = Array.isArray(req.body?.items) ? req.body.items.slice(0, 400) : []
+  const resultados = items.map((item) => {
+    const name = typeof item?.name === 'string' ? item.name : ''
+    const city = typeof item?.city === 'string' ? item.city : ''
+    if (!name || !city) return null
+    try {
+      const own = item.exclude_own ? null : ownPhotoFor(name, city, typeof item.date === 'string' ? item.date : null)
+      if (own) return { photo_source: 'propia', photo_url: own.photo_url, photo_small: own.photo_small, photo_mini: own.photo_mini }
+      if (fotoOculta(findPipelineV2Key(city) ?? '', name) || isRestaurantName(city, name)) return { photo_source: 'none' }
+      if (!item.exclude_own && soloFotoDeFechas(name, city)) return { photo_source: 'none' }
+      return null
+    } catch {
+      return null
+    }
+  })
+  res.json({ resultados })
 })
 
 /**
