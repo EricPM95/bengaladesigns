@@ -4,9 +4,10 @@ import ajustes from '../../../../data/logros/ajustes.json'
 /**
  * El reparto en pantallas de las sorpresas (Tanda 8B2). Pura: sin React. NO reordena: el orden lo manda el servidor (`ajustes.json › orden_momentos`, el único
  * sitio donde se decide) y aquí solo se AGRUPA lo que llega, en ese mismo orden:
- *   1) los pedazos nuevos, todos en una sola pantalla (en el sitio del primero);
- *   2) cada colección completada, una pantalla por colección;
- *   3) el Emblema Oculto (si es de una maravilla, su película; la maravilla va en «Y además…» como una tarjeta pequeña, 8B4);
+ *   (V3, regla de Eric, de uno en uno: lo del SITIO primero, lo GENERAL después; nunca dos pantallas a la vez)
+ *   1) los pedazos nuevos: los de una MISMA colección, juntos en una pantalla; cada colección con pedazos nuevos, la suya;
+ *   2) el Emblema Oculto (si es de una maravilla, su película; la maravilla va en «Y además…» como una tarjeta pequeña, 8B4);
+ *   3) cada colección completada, una pantalla por colección;
  *   4) el sello, si sube;
  *   5) «Y además…» (país, destino, continente, maravilla, Patrimonio, logros de viajero), en el sitio del primero;
  *   6) la SÉPTIMA maravilla tiene su propia pantalla: «El final de las 7 maravillas» (la única animación de la medalla).
@@ -40,12 +41,19 @@ export function ordenarComoElServidor(momentos: Momento[]): Momento[] {
 
 export function planificar(momentos: Momento[]): Pantalla[] {
   const salida: Pantalla[] = []
-  let pedazos: Pantalla | null = null
+  const pedazos = new Map<string, Pantalla>()
   let ademas: Pantalla | null = null
   momentos.forEach((m, i) => {
     if (m.tipo === 'suma') {
-      if (!pedazos) salida.push((pedazos = { id: 'pedazos', tipo: 'pedazos', momentos: [] }))
-      pedazos.momentos.push(m)
+      // Los pedazos de una misma colección salen juntos, en el mismo momento; los de otra colección, en el suyo.
+      const col = texto(m, 'coleccion')
+      let p = pedazos.get(col)
+      if (!p) {
+        p = { id: pedazos.size === 0 ? 'pedazos' : `pedazos${col}`, tipo: 'pedazos', momentos: [] }
+        pedazos.set(col, p)
+        salida.push(p)
+      }
+      p.momentos.push(m)
     } else if (m.tipo === 'suma_sello') {
       // El avance del sello ya se ve en las insignias y en el propio sello: sin pantalla.
     } else if (m.tipo === 'maravilla' && Number(m.n ?? 0) >= 7) {

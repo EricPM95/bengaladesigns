@@ -57,13 +57,16 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
 
   // --- El código ---
   const exph = sinComentarios(leer('src/components/logros/momentos/ExpHost.tsx'))
-  debe(/ronda/.test(exph) && /resumenDia/.test(exph) && /resumenViaje/.test(exph) && /hojaAbierta/.test(exph) && /visibilityState/.test(exph), 'exp', 'la EXP espera a que acaben las sorpresas, el resumen y las hojas, y a que la app se vea')
+  const fila = sinComentarios(leer('src/components/logros/momentos/fila.ts')) + sinComentarios(leer('src/components/logros/momentos/useMomentosUI.ts'))
+  debe(/ronda/.test(exph) && /hayMomentos/.test(exph) && /pedir\('exp'\)/.test(exph) && /visibilityState/.test(exph) && /resumenDia/.test(fila) && /resumenViaje/.test(fila) && /hojaLogros/.test(fila) && /hojaAbierta/.test(fila), 'exp', '(V3) la EXP pide su turno en la fila: espera a que acaben las sorpresas, el resumen y las hojas (la fila), y a que la app se vea')
   debe(/ESPERA_TRAS_EL_VUELO_MS/.test(exph), 'exp', 'primero el vuelo del dibujo y luego el «+EXP»')
   const host = leer('src/components/logros/momentos/MomentosHost.tsx')
   debe(/<ExpHost \/>/.test(host), 'exp', 'ExpHost está montado')
   const visibles = archivos('src/components/logros/momentos').filter((f) => !/demoMomentos|ExpHost/.test(f))
   const pintaExp = visibles.filter((f) => /\bEXP\b|despues\.exp|\.exp\b/.test(sinComentarios(leer(f)).replace(/data-exp|ExpHost/g, '')))
-  debe(pintaExp.length === 0, 'exp', `ni las sorpresas ni los resúmenes enseñan EXP (solo ExpHost): ${pintaExp.join(', ')}`)
+  // (V3, orden de Eric) La EXP de la ronda va como UNA línea pequeña dentro de la primera pantalla de las sorpresas (la pinta el Reproductor y la coge el anfitrión); el resumen y el resto de pantallas siguen sin enseñarla.
+  const permitidos = pintaExp.filter((f) => !/MomentosHost|Reproductor|useMomentosUI/.test(f))
+  debe(permitidos.length === 0, 'exp', `fuera del cartel de ExpHost y de la línea «+N EXP» de la primera pantalla, nada enseña EXP: ${permitidos.join(', ')}`)
   const store = leer('src/store/useLogrosStore.ts')
   debe(/tomarExp/.test(store) && /s\.exp\.antes/.test(store), 'exp', 'la EXP se suma en el almacén, con el «antes» del primero')
   // --- La hoja ---

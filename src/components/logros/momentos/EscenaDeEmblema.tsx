@@ -24,15 +24,18 @@ export interface PropsEscena {
 
 const Pelicula = lazy(() => import('./escenas/coliseo'))
 const Cine = lazy(() => import('./escenas/cine'))
+const CineLanza = lazy(() => import('./escenas/cineLanza'))
 
 const ESCENAS = () => import('./escenas/index')
+// Solo los ids (un array corto, aquí para no cargar `escenas/index` antes de hacer falta); pruebaV3 comprueba que coinciden con las escenas de `escenas/lanza/`.
+const ESCENAS_LANZAROTE = ['timanfaya', 'jameos', 'cueva_de_los_verdes', 'mirador_del_rio', 'fundacion_manrique', 'el_golfo', 'la_geria', 'la_graciosa', 'papagayo', 'lz_madrugador', 'atardecer_atlantico']
 
 function Negro(): ReactNode {
   return <div style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#0C0A08' }} />
 }
 
-function Escena({ id, nombre, linea, onSeguir, onSaltarTodo }: PropsEscena): ReactNode {
-  const [config, setConfig] = useState<import('./escenas/cine').ConfigEscena | null | undefined>(undefined)
+function Escena({ id, nombre, linea, primeraVez, onSeguir, onSaltarTodo }: PropsEscena): ReactNode {
+  const [config, setConfig] = useState<import('./escenas/cine').ConfigEscena | import('./escenas/cineLanza').ConfigLanza | null | undefined>(undefined)
   useEffect(() => {
     let vivo = true
     void ESCENAS().then(async (m) => {
@@ -46,7 +49,9 @@ function Escena({ id, nombre, linea, onSeguir, onSaltarTodo }: PropsEscena): Rea
     }
   }, [id])
   if (config === undefined) return <Negro />
-  const base: import('./escenas/cine').ConfigEscena = config ?? { fondo: 'radial-gradient(circle at 50% 40%,#2E3550 0%,#141826 70%)', frases: [], y: 700, Arte: () => null }
+  // Las de Lanzarote (V3) tienen su propia línea de tiempo (la frase de suspense de Design va dentro).
+  if (config && 'tipo' in config) return <CineLanza config={{ ...config, nombre: nombre || config.nombre, linea: linea || config.linea }} primeraVez={primeraVez} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} />
+  const base: import('./escenas/cine').ConfigEscena = (config as import('./escenas/cine').ConfigEscena | null) ?? { fondo: 'radial-gradient(circle at 50% 40%,#2E3550 0%,#141826 70%)', frases: [], y: 700, Arte: () => null }
   return <Cine id={id} config={base} nombre={nombre} linea={linea} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} />
 }
 
@@ -67,7 +72,7 @@ function Suspense3({ frase, alTerminar }: { frase: string; alTerminar: () => voi
     return () => window.clearTimeout(h)
   }, [alTerminar])
   return (
-    <div className="mo" onClick={alTerminar} style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#0C0A08', color: '#FFFDF8', cursor: 'pointer', overflow: 'hidden' }} aria-live="polite">
+    <div className="mo" data-suspense="" onClick={alTerminar} style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#0C0A08', color: '#FFFDF8', cursor: 'pointer', overflow: 'hidden' }} aria-live="polite">
       {/* Los rayos que giran (van creciendo con la espera) y el viñeteado que oscurece los bordes, como en «Logros · Momentos» */}
       <span aria-hidden className="mo-con-mov" style={{ position: 'absolute', left: '50%', top: '55%', width: 760, height: 760, margin: '-380px 0 0 -380px', borderRadius: '50%', background: 'repeating-conic-gradient(rgba(243,213,154,.16) 0 5deg,transparent 5deg 18deg)', WebkitMaskImage: 'radial-gradient(circle,#000 8%,transparent 62%)', maskImage: 'radial-gradient(circle,#000 8%,transparent 62%)', opacity: 0, animation: 'ecIRays 3.2s ease-in both, moRays 14s linear infinite' }} />
       <span aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 55%,transparent 38%,rgba(0,0,0,.72) 100%)', pointerEvents: 'none' }} />
@@ -89,7 +94,7 @@ function Suspense3({ frase, alTerminar }: { frase: string; alTerminar: () => voi
 export function EscenaDeEmblema(props: PropsEscena): ReactNode {
   const { id, primeraVez = false, frase = null } = props
   const sinMov = typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
-  const conSuspense = primeraVez && Boolean(frase) && id !== 'coliseo' && !sinMov
+  const conSuspense = primeraVez && Boolean(frase) && id !== 'coliseo' && !sinMov && !ESCENAS_LANZAROTE.includes(id)
   const [espera, setEspera] = useState(conSuspense)
   if (espera && frase) return <Suspense3 frase={frase} alTerminar={() => setEspera(false)} />
   return (

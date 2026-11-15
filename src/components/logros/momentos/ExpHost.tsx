@@ -12,6 +12,8 @@ import { useMomentosUI } from './useMomentosUI'
  *   - Si un dibujo vuela al botón flotante, primero el vuelo (y su latido) y luego el «+EXP».
  * Aquí solo está CUÁNDO sale; cómo se ve es de `pantallas/perfil/` (`ExpGanada`, `SubeDeNivel`, `CambioDeRango`), que se baja solo al hacer falta. La EXP la cuenta siempre el servidor
  * (viene en `exp` de la respuesta de cada Visto y foto; `useLogrosStore` la va sumando): el móvil no calcula nada.
+ * DE UNO EN UNO (V3): la «+EXP», la subida de nivel y el cambio de rango piden su turno en la fila (`fila.ts`) como cualquier otra pantalla de los momentos; si llegan sorpresas nuevas
+ * mientras esperan, las sorpresas van primero, y nunca salen encima de otra cosa. Las tres van pegadas (un solo turno: «+EXP», después el nivel o el rango).
  */
 const ExpGanada = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.ExpGanada })))
 const SubeDeNivel = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.SubeDeNivel })))
@@ -23,13 +25,9 @@ export const ESPERA_TRAS_EL_VUELO_MS = 1400
 
 export function ExpHost(): ReactNode {
   const exp = useLogrosStore((s) => s.exp)
-  const hojaAbierta = useLogrosStore((s) => s.hojaAbierta)
   const hayMomentos = useLogrosStore((s) => s.momentos.length > 0)
   const ronda = useMomentosUI((s) => s.ronda)
-  const resumenDia = useMomentosUI((s) => s.resumenDia)
-  const resumenViaje = useMomentosUI((s) => s.resumenViaje)
-  const hojaLogros = useMomentosUI((s) => s.hojaLogros)
-  const compartir = useMomentosUI((s) => s.compartir)
+  const mostrando = useMomentosUI((s) => s.fila.mostrando)
   const [info, setInfo] = useState<ExpDeRespuesta | null>(null)
   const [paso, setPaso] = useState<Paso | null>(null)
   const [visible, setVisible] = useState(typeof document === 'undefined' || document.visibilityState === 'visible')
@@ -48,18 +46,37 @@ export function ExpHost(): ReactNode {
     return () => document.removeEventListener('visibilitychange', alCambiar)
   }, [])
 
-  const libre = !ronda && !resumenDia && !resumenViaje && !hojaAbierta && !hayMomentos && !hojaLogros && !compartir && !paso
+  // Con EXP por enseñar (y la app a la vista, y sin sorpresas por delante), pide su turno; tras el vuelo del dibujo al botón.
+  const quiere = Boolean(exp) && visible && !hayMomentos && !ronda
   useEffect(() => {
-    if (!exp || !libre || !visible) return undefined
+    if (!quiere || paso) return undefined
     const espera = Math.max(0, ESPERA_TRAS_EL_VUELO_MS - (Date.now() - finDeRonda.current))
     const h = window.setTimeout(() => {
-      const e = useLogrosStore.getState().tomarExp()
-      if (!e) return
-      setInfo(e)
-      setPaso('exp')
+      if (useLogrosStore.getState().momentos.length === 0) useMomentosUI.getState().pedir('exp')
     }, Math.max(espera, 250))
     return () => window.clearTimeout(h)
-  }, [exp, libre, visible])
+  }, [quiere, paso])
+  // Cuando le toca, coge la EXP y la enseña. Si por el camino llegaron sorpresas (o ya no hay EXP), suelta el turno: las sorpresas van primero.
+  useEffect(() => {
+    if (mostrando !== 'exp' || paso) return
+    const e = useLogrosStore.getState().momentos.length === 0 ? useLogrosStore.getState().tomarExp() : null
+    if (!e) {
+      useMomentosUI.getState().soltar('exp')
+      return
+    }
+    // (V3) Si la «+EXP» ya se vio como línea dentro de las sorpresas, solo queda el nivel o el rango (si suben).
+    const primero: Paso | null = e.sinCartel ? pasoTrasLaExp(e) : 'exp'
+    if (!primero) {
+      useMomentosUI.getState().soltar('exp')
+      return
+    }
+    setInfo(e)
+    setPaso(primero)
+  }, [mostrando, paso])
+  // Al acabar el último paso (`+EXP`, nivel o rango), suelta el turno y sale lo que esperaba.
+  useEffect(() => {
+    if (paso === null && info) useMomentosUI.getState().soltar('exp')
+  }, [paso, info])
 
   if (!info || !paso) return null
   const seguir = () => {

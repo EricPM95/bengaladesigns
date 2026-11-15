@@ -1,0 +1,16 @@
+// GENERADO por scripts/destino/generarEscenasLanza.mjs desde «Piezas/Emblema Cine Lanza» de Design (escena 7: Viñas en la ceniza). No se edita a mano: se vuelve a generar.
+import type { ConfigLanza } from '../cineLanza'
+
+const config: ConfigLanza = {
+  tipo: 'lanza',
+  id: "la_geria",
+  nombre: "Viñas en la ceniza",
+  linea: "Cada cepa en su hoyo, protegida del viento por un muro de piedra.",
+  bg: "linear-gradient(180deg,#1A1410 0%,#3E3028 50%,#120C09 100%)",
+  halo: "rgba(243,213,154,.5)",
+  frase: "Nada crece aquí… y sin embargo crece…",
+  c1: "Hoyos en la ceniza negra, cada uno con su muro…",
+  c2: "…y dentro, una sola cepa.",
+  svg: "<defs><linearGradient id=\"§a\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#3A322C\"/><stop offset=\"1\" stop-color=\"#0C0908\"/></linearGradient></defs><g style=\"opacity:0;animation:lzFadeIn 1.6s 3.2s ease both\"><path d=\"M0 540Q195 500 390 540V860H0Z\" fill=\"url(#§a)\"/></g><g style=\"opacity:0;animation:lzRiseIn 1.8s 3.8s cubic-bezier(.2,.8,.2,1) both\"><ellipse cx=\"110\" cy=\"610\" rx=\"46\" ry=\"20.7\" fill=\"#0A0807\"/><path d=\"M64 610A46 36.800000000000004 0 0 0 156 610\" stroke=\"#A89478\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M64 610A46 36.800000000000004 0 0 0 156 610\" stroke=\"#5A4C3C\" stroke-width=\"2\" fill=\"none\" stroke-dasharray=\"6 5\" stroke-linecap=\"round\"/></g><g style=\"opacity:0;animation:lzRiseIn 1.8s 5s cubic-bezier(.2,.8,.2,1) both\"><ellipse cx=\"280\" cy=\"600\" rx=\"40\" ry=\"18\" fill=\"#0A0807\"/><path d=\"M240 600A40 32 0 0 0 320 600\" stroke=\"#A89478\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M240 600A40 32 0 0 0 320 600\" stroke=\"#5A4C3C\" stroke-width=\"2\" fill=\"none\" stroke-dasharray=\"6 5\" stroke-linecap=\"round\"/></g><g style=\"opacity:0;animation:lzRiseIn 1.8s 6.2s cubic-bezier(.2,.8,.2,1) both\"><ellipse cx=\"196\" cy=\"704\" rx=\"58\" ry=\"26.1\" fill=\"#0A0807\"/><path d=\"M138 704A58 46.400000000000006 0 0 0 254 704\" stroke=\"#A89478\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M138 704A58 46.400000000000006 0 0 0 254 704\" stroke=\"#5A4C3C\" stroke-width=\"2\" fill=\"none\" stroke-dasharray=\"6 5\" stroke-linecap=\"round\"/></g><g style=\"opacity:0;animation:lzFadeIn 1.6s 7.2s ease both\"><g stroke=\"#4FB070\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"><path d=\"M110 616V598M110 606q8-4 12-12M110 610q-8-4-12-10\"/><path d=\"M280 606V590M280 598q7-3 10-10M280 602q-7-3-10-9\"/><path d=\"M196 712V686M196 698q11-5 16-16M196 704q-11-5-16-15\"/></g></g><path d=\"M-90 560h80\" stroke=\"rgba(255,240,210,.7)\" stroke-width=\"1.6\" stroke-linecap=\"round\" style=\"opacity:0;animation:lzWind 4s 8s ease-in-out infinite\"/><path d=\"M-90 594h80\" stroke=\"rgba(255,240,210,.7)\" stroke-width=\"1.6\" stroke-linecap=\"round\" style=\"opacity:0;animation:lzWind 4.5s 8.9s ease-in-out infinite\"/><path d=\"M-90 628h80\" stroke=\"rgba(255,240,210,.7)\" stroke-width=\"1.6\" stroke-linecap=\"round\" style=\"opacity:0;animation:lzWind 5s 9.8s ease-in-out infinite\"/><path d=\"M-90 662h80\" stroke=\"rgba(255,240,210,.7)\" stroke-width=\"1.6\" stroke-linecap=\"round\" style=\"opacity:0;animation:lzWind 5.5s 10.7s ease-in-out infinite\"/>",
+}
+export default config

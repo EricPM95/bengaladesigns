@@ -1,6 +1,7 @@
 import type { Momento } from '../../../lib/logros'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { datosDePrueba, datosDePruebaViajero, type EstadoLogros, type ResumenLogros } from './api'
+import { filaVacia } from './fila'
 import { useMomentosUI } from './useMomentosUI'
 import romaLogros from '../../../../data/logros/roma.json'
 
@@ -112,6 +113,12 @@ for (const id of ['foro_romano', 'museos_vaticanos', 'plaza_san_pedro', 'basilic
   MOMENTOS[`emblema:${id}`] = () => [m({ tipo: 'emblema', cat: 'emblema', clave: `roma|emblema|${id}`, id, destino: 'roma', nombre: '', linea: '', momento: id === 'madrugador' || id === 'nocturno', frase: 'Pero… ¿qué es esto?', en })]
 }
 
+// (V3) Los 11 emblemas de Lanzarote: lo mismo que manda el servidor (el id de `data/logros/lanzarote.json`; nombre y línea vacíos = los de la escena).
+for (const id of ['timanfaya', 'jameos', 'cueva_de_los_verdes', 'mirador_del_rio', 'fundacion_manrique', 'el_golfo', 'la_geria', 'la_graciosa', 'papagayo', 'lz_madrugador', 'atardecer_atlantico']) {
+  MOMENTOS[`emblema:${id}`] = () => [m({ tipo: 'emblema', cat: 'emblema', clave: `lanzarote|emblema|${id}`, id, destino: 'lanzarote', nombre: '', linea: '', momento: id === 'lz_madrugador' || id === 'atardecer_atlantico', frase: '¡Eh! Aquí hay algo…', en })]
+}
+const resumenExp = (nivel: number, en_nivel: number): import('../../../lib/logros').ResumenDeExpMovil => ({ exp: nivel * 1000 + en_nivel, nivel, rango: 'Explorador', rango_ix: 1, estrellas: 1, leyenda_estrellas: 0, exp_en_nivel: en_nivel, exp_para_siguiente: 1000, falta: 1000 - en_nivel })
+
 function ponerDatos(acabado = false, tipo: 'wow' | 'con_ganas' = 'wow', escenario: Escenario = 'viaje') {
   datosDePrueba.estado = estadoBase(acabado, escenario)
   // El resumen del día sale de lo que se enseña en cada serie; solo el del viaje lleva el suyo hecho.
@@ -148,6 +155,17 @@ const api = {
     const todo = [...sumas, emblema, ...MOMENTOS.sello(), ...MOMENTOS.pais(), ...MOMENTOS.destino(), maravilla, ...MOMENTOS.patrimonio()]
     useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
     return todo.length
+  },
+  /** (V3) La fila de los momentos de uno en uno: 2 pedazos de la MISMA colección y una subida de nivel. Salen 2 cosas, no 3: los 2 pedazos juntos y, al cerrar, la subida de nivel (tras el resumen del día de la ronda). */
+  serieFila: () => {
+    ponerDatos(false, 'wow', 'viaje')
+    datosDePrueba.resumen = null
+    const sumas = [
+      m({ tipo: 'suma', cat: 'pedazo', coleccion: 'imprescindibles', destino: 'roma', nombre: 'Los imprescindibles de Roma', n: 2, total: 8, sitios: ['coliseo'], linea: '2 de 8' }),
+      m({ tipo: 'suma', cat: 'pedazo', coleccion: 'imprescindibles', destino: 'roma', nombre: 'Los imprescindibles de Roma', n: 3, total: 8, sitios: ['panteon'], linea: '3 de 8' }),
+    ]
+    useLogrosStore.getState().recibir({ ok: true, nuevos: sumas, exp: { ganada: 405, antes: resumenExp(1, 800), despues: resumenExp(2, 205), sube_de_nivel: true } })
+    return sumas.length
   },
   /** (8B5) «Y además…» con una SEGUNDA maravilla (Petra, 2 de 7): la medalla con el Coliseo y Petra en oro, «Tu segunda maravilla» y el Patrimonio número 2. */
   serieSegundaMaravilla: () => {
@@ -217,6 +235,7 @@ const api = {
   cerrar: () => {
     const u = useMomentosUI.getState()
     u.terminarRonda()
+    useMomentosUI.setState({ fila: filaVacia() }) // (V3) también se vacía la fila: nada espera ni se está enseñando
     u.cerrarResumenDia()
     u.cerrarResumenViaje()
     u.cerrarCompartir()

@@ -58,7 +58,7 @@ export default function HojaLogros(): ReactNode {
   const [cargado, setCargado] = useState(false)
   const [abiertas, setAbiertas] = useState<Set<string>>(new Set())
   const [escena, setEscena] = useState<string | null>(null)
-  // (LZ3b) Un emblema de Lanzarote no tiene escena propia: al tocarlo sale el emblema en grande con SU nombre y SU línea, como en Roma.
+  // (LZ3b, V3) Al tocar un emblema de Lanzarote sale SU escena (la de Design, directo al sitio, sin frase de suspense) con SU nombre y SU línea, como en Roma.
   const [escenaTexto, setEscenaTexto] = useState<{ nombre: string; linea: string } | null>(null)
   useEffect(() => {
     let vivo = true
@@ -286,7 +286,7 @@ function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: Est
   const titulo = tituloDeSecretos(fase, estado.ciudad, total, lista.length)
   const nota = notaDeSecretos(fase, total, lista.length)
   // Los encontrados van en su sitio de siempre; el resto de los huecos solo llevan un «?» (nunca se dice cuál es cuál).
-  // (LZ3) Lanzarote tiene sus 11 emblemas, en su orden y con su dibujo (ids «lz_…»; sin escena propia: al tocarlos sale el emblema en grande con su movimiento).
+  // (LZ3) Lanzarote tiene sus 11 emblemas, en su orden y con su dibujo (ids «lz_…»; V3: cada uno con su escena, que se abre al tocarlo).
   const lanza = estado.destino === 'lanzarote'
   const ORDEN = lanza ? ORDEN_EMBLEMAS_LANZAROTE : ID_EMBLEMAS
   const huecos = lanza ? ORDEN.length : Math.max(total, ID_EMBLEMAS.length)

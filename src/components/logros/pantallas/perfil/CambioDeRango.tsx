@@ -43,6 +43,7 @@ export function CambioDeRango({ antes, despues, onFin, inicial = 'V' }: { antes:
       onClick={acabar}
       style={{ position: 'fixed', inset: 0, zIndex: 9100, background: 'radial-gradient(circle at 50% 38%,#2E3550 0%,#10131F 74%)', color: '#FFFDF8', overflow: 'hidden', cursor: 'pointer', fontFamily: "'Geist',system-ui,sans-serif", WebkitTapHighlightColor: 'transparent', ...(quieto ? {} : { animation: 'pfEntra .4s ease both' }) }}
     >
+      <button type="button" aria-label="Cerrar" data-cerrar-momento onClick={(e) => { e.stopPropagation(); acabar() }} style={{ position: 'absolute', right: 8, top: 'calc(env(safe-area-inset-top,0px) + 10px)', width: 48, height: 48, border: 'none', background: 'transparent', color: 'rgba(255,253,248,.8)', font: "400 26px 'Geist'", cursor: 'pointer', zIndex: 5 }}>×</button>
       <span aria-hidden="true" style={{ position: 'absolute', top: 70, left: '50%', width: 520, height: 520, marginLeft: -260, borderRadius: '50%', background: 'repeating-conic-gradient(rgba(243,213,154,.18) 0 5deg,transparent 5deg 16deg)', WebkitMaskImage: 'radial-gradient(circle,#000 18%,transparent 64%)', maskImage: 'radial-gradient(circle,#000 18%,transparent 64%)', ...(quieto ? {} : { animation: `pfRayos 20s linear infinite, pfBrillo ${SEGUNDOS}s ease both` }) }} />
       <div style={{ position: 'absolute', left: '50%', top: 150, width: 0, height: 0 }}>
         <span style={{ position: 'absolute', left: -125, top: -136, ...(quieto ? { opacity: 0 } : a('pfRangoViejo')) }}>{marco(antes)}</span>

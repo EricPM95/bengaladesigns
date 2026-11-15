@@ -1,0 +1,21 @@
+/* GENERADO por scripts/destino/generarEscenasLanza.mjs desde «Piezas/Emblema Cine Lanza» de Design. */
+@keyframes lzPhrase{0%{opacity:0;transform:translateY(10px);filter:blur(6px)}22%,72%{opacity:1;transform:none;filter:none}100%{opacity:0;transform:translateY(-8px);filter:blur(4px)}}
+@keyframes lzRiseIn{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
+@keyframes lzFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes lzCap{0%{opacity:0;transform:translateY(8px)}12%,82%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
+@keyframes lzRise{from{transform:translateY(var(--y0))}to{transform:translateY(var(--y1))}}
+@keyframes lzRecede{from{opacity:1;transform:scale(1);filter:none}to{opacity:.1;transform:scale(.9);filter:blur(3px)}}
+@keyframes lzConv{0%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4)}25%{opacity:1}100%{opacity:0;transform:translate(0,0) scale(1.2)}}
+@keyframes lzCore{0%{opacity:0;transform:scale(.2)}60%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
+@keyframes lzEmerge{0%{opacity:0;transform:scale(.25);filter:blur(12px) brightness(2.4)}60%{opacity:1;filter:blur(0) brightness(1.4)}100%{opacity:1;transform:scale(1);filter:none}}
+@keyframes lzHalo{0%{opacity:0;transform:scale(.5)}50%{opacity:1}100%{opacity:.55;transform:scale(1.15)}}
+@keyframes lzUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes lzHeat{0%{transform:translateY(0);opacity:0}20%{opacity:.8}100%{transform:translateY(-70px);opacity:0}}
+@keyframes lzTw{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes lzPulse{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes lzWave{0%{transform:translateX(-16px)}50%{transform:translateX(16px)}100%{transform:translateX(-16px)}}
+@keyframes lzBoat{from{transform:translateX(-60px)}to{transform:translateX(380px)}}
+@keyframes lzCrab{0%,100%{transform:translateX(0)}30%{transform:translateX(26px)}45%{transform:translateX(26px)}75%{transform:translateX(-14px)}}
+@keyframes lzWind{0%{transform:translateX(-90px);opacity:0}30%{opacity:.8}100%{transform:translateX(420px);opacity:0}}
+@keyframes lzGlint{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes lzLamp{from{opacity:.05}to{opacity:1}}

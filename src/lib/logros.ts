@@ -81,6 +81,8 @@ export interface ExpDeRespuesta {
   antes: ResumenDeExpMovil
   despues: ResumenDeExpMovil
   sube_de_nivel: boolean
+  /** (V3) La «+EXP» ya se enseñó como una línea dentro de la pantalla de las sorpresas: solo falta, si sube, el nivel o el rango. */
+  sinCartel?: boolean
 }
 export interface ResumenDeExpMovil {
   exp: number
