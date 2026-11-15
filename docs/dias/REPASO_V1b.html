@@ -24,21 +24,20 @@
 <li><b>Un hallazgo extra:</b> al entrar con una cuenta, la app bajaba <i>otra vez</i> todas las rutas enteras («copiar los vistos del viaje»), en cada apertura y en cada renovación de la sesión (cada hora). Ahora se hace una sola vez por cuenta y móvil.</li>
 </ul>
 
-<h2>La cuenta, antes y después</h2>
-<p>Con la prueba (7 viajes, 6 de ~155 kB y el de Lanzarote): al abrir bajaba 1.953 kB (la lista entera y, aparte, la copia de los vistos) y ahora baja 265 kB (la lista, ~110 kB, y el viaje activo). <b>El 14 %.</b> La lista pesa unos 15 kB por viaje.</p>
-<p><b>Con tu cuenta</b> depende de cuántos viajes tengas; pásame el resultado de <code>docs/dias/V1b_MIRAR.sql</code> y lo calculo exacto. Mientras, para 3 usuarios abriendo la app 20 veces al día (1.800 aperturas al mes), con rutas de ~100 kB (lo que midió el SQL de la V1):</p>
-<table><tr><th>Viajes por cuenta</th><th>Al abrir antes</th><th>Al abrir ahora</th><th>Al mes antes</th><th>Al mes ahora</th></tr>
-<tr><td>10</td><td>~2,0 MB</td><td>~0,25 MB</td><td>~3,6 GB</td><td>~0,45 GB</td></tr>
-<tr><td>40</td><td>~8 MB</td><td>~0,7 MB</td><td>~14 GB</td><td>~1,3 GB</td></tr>
-<tr><td>100</td><td>~20 MB</td><td>~1,6 MB</td><td>~36 GB</td><td>~2,9 GB</td></tr></table>
-<p><b>Total de salida de datos al mes después de la V1 y la V1b</b> (aperturas + sondeo de 30 s + tarea de avisos): unos <b>1,4 GB con 40 viajes</b> y ~3,0 GB con 100 viajes, frente a los 5 GB. Son estimaciones; el panel (Usage › Egress por servicio) lo confirmará en unos días. Si una cuenta llegara a cientos de viajes, el siguiente paso sería paginar la lista.</p>
+<h2>La cuenta, antes y después (con tus números reales)</h2>
+<p>Lo que salió de <code>V1b_MIRAR.sql</code>: hay <b>535 cuentas</b> y casi todas tienen <b>1 viaje</b> (son las cuentas de las pruebas automáticas contra Supabase). Las que más viajes tienen: dos de 26 viajes (250 kB las rutas), una de 25, una de 15, una de 13, <b>una de 12 viajes (391 kB)</b> y <b>una de 6 viajes con uno de Lanzarote (338 kB)</b>, que por lo que parece es la tuya. <b>Ninguna cuenta pasa de 26 viajes ni de ~425 kB</b> (el tamaño que da Postgres está comprimido; lo que viaja por la red es más, entre 1 y 3 veces más: lo cuento como rango).</p>
+<table><tr><th>Con la cuenta de 6 viajes (338 kB)</th><th>Antes</th><th>Ahora</th></tr>
+<tr><td>Al abrir la app</td><td>~0,7–2 MB (todos los viajes, y otra vez para copiar los vistos)</td><td>~0,15–0,26 MB (la lista y el viaje activo)</td></tr>
+<tr><td>Al mes, 3 usuarios como tú, 20 aperturas al día (1.800)</td><td>~1,2–3,6 GB</td><td>~0,3–0,5 GB</td></tr></table>
+<p><b>Total de salida de datos al mes después de la V1 y la V1b:</b> unos <b>0,4–0,6 GB</b> (aperturas + sondeo de 30 s + tarea de avisos), muy por debajo de los 5 GB. Es una estimación; el panel (Usage › Egress por servicio) lo confirmará en unos días.</p>
+<p><b>Sé honesto contigo:</b> en la V1b había calculado con cuentas de hasta 100 viajes; las reales son mucho más pequeñas, así que esta mejora pesa menos de lo que dije. Lo grande de la V1 era la tarea de avisos y el sondeo de 30 s. Esto de ahora es el remate.</p>
+<p><b>Una cosa que sí cambia el panorama:</b> las 535 cuentas casi todas de 1 viaje son de pruebas automáticas. Los datos de prueba no cuestan salida de datos a nadie, pero cada prueba contra Supabase sí descarga cosas. Si quieres, otro día se pueden limpiar esas cuentas de prueba (decisión tuya; no he borrado nada).</p>
 
 <h2>Qué he cambiado en Vercel o Supabase</h2>
 <p><b>Nada.</b> La migración 0078 va <b>sin aplicar</b>: la pega Eric.</p>
 
 <h2>Lista de comprobación de ESTA tanda</h2>
 <label><input type="checkbox"> Pegué <code>0078_viajes_lista_ligera.sql</code> y <code>COMPROBAR_0078.sql</code> dice «Aplicada»</label>
-<label><input type="checkbox"> Pegué <code>V1b_MIRAR.sql</code> y pasé cuántos viajes tiene cada cuenta</label>
 <label><input type="checkbox"> En producción, en el iPhone: la app carga, «Mis viajes» sale entero (todos los viajes, con su destino y fechas)</label>
 <label><input type="checkbox"> Abro un viaje que NO es el activo y se ve bien (RUTA, DÍAS, mapa, reservas)</label>
 <label><input type="checkbox"> Sin cobertura (modo avión): «Mis viajes» sigue con todos los viajes y HOY de hoy se ve</label>
