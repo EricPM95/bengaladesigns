@@ -13,6 +13,7 @@ import fs from 'node:fs'
 import vm from 'node:vm'
 import { crearServicioAvisosViaje, registrarRutasAvisosViaje } from '../../server/avisosViaje.js'
 import { addDias, avisosDebidos, avisosDelTiempoDeUnDia, fraseDelTiempo, horaCorta, instanteDe, localDe, MAX_AL_DIA, planDelViaje, tituloDelDia } from '../../shared/avisos/avisosDelViaje.js'
+import { crearBaseDeAvisos } from './_baseDeAvisosDeMentira.mjs'
 
 let comprobaciones = 0
 const fallos = []
@@ -221,40 +222,11 @@ console.log('5. Si la ruta cambia, los avisos del día se recalculan')
 console.log('6. El servicio: pase, interruptor, nada repetido, reintentos, día de prueba, rutas')
 const ENV = { PUSH_ACTIVO: 'true', VAPID_PUBLIC_KEY: 'clave-publica-de-mentira', VAPID_PRIVATE_KEY: 'clave-privada-de-mentira', VAPID_CONTACTO: 'mailto:prueba@example.test', CRON_SECRET: 'secreto-de-mentira' }
 function mundo({ pases = [{ estado: 'activo', destino: 'Lanzarote' }], subs = [{ endpoint: 'https://push.example.test/1', claves: { p256dh: 'a', auth: 'b' } }], prueba = null, admins = [], route = ERIC, reservations = RESERVAS_ERIC, env = ENV, falloDeEnvio = null, meteos = {}, viajes = null, miembros = [] } = {}) {
-  const reservados = new Set()
   const enviados = []
-  const borradas = []
   const llamadasTiempo = []
   const viaje = { trip_id: 't1', user_id: 'u1', route, bookings: { reservations } }
-  const builder = (tabla) => {
-    const b = {
-      select: () => b,
-      eq: () => b,
-      in: () => b,
-      maybeSingle: async () => ({ data: tabla === 'hoy_prueba' ? prueba : null, error: null }),
-      then: (ok) => ok({ data: tabla === 'push_suscripciones' ? subs : tabla === 'trip_members' ? miembros : [], error: null }),
-    }
-    return b
-  }
-  const rpcs = {
-    pases_de: () => pases,
-    viajes_en_curso_para_avisos: () => viajes ?? [viaje],
-    avisos_viaje_reservar: (a) => {
-      const k = `${a.p_uid}|${a.p_clave}`
-      if (reservados.has(k)) return false
-      reservados.add(k)
-      return true
-    },
-    avisos_viaje_liberar: (a) => {
-      reservados.delete(`${a.p_uid}|${a.p_clave}`)
-      return null
-    },
-    borrar_suscripcion: (a) => {
-      borradas.push(a.p_endpoint)
-      return null
-    },
-  }
-  const admin = { rpc: async (n, a) => ({ data: rpcs[n](a), error: null }), from: builder, auth: { getUser: async (t) => (t === 'token-admin' ? { data: { user: { id: 'u1', email: 'admin@example.test', is_anonymous: false } } } : t === 'token-otro' ? { data: { user: { id: 'u2', email: 'otro@example.test', is_anonymous: false } } } : { data: { user: null }, error: { message: 'no' } }) } }
+  const base = crearBaseDeAvisos({ viajes: viajes ?? [viaje], pases, subs, prueba, miembros, usuarios: { 'token-admin': { id: 'u1', email: 'admin@example.test', is_anonymous: false }, 'token-otro': { id: 'u2', email: 'otro@example.test', is_anonymous: false } } })
+  const { admin, reservados, borradas } = base
   const webpush = { setVapidDetails() {}, sendNotification: async (sub, payload) => {
     if (falloDeEnvio) throw Object.assign(new Error('fallo'), falloDeEnvio)
     enviados.push({ sub, payload: JSON.parse(payload) })
@@ -273,7 +245,12 @@ function mundo({ pases = [{ estado: 'activo', destino: 'Lanzarote' }], subs = [{
     marca: () => ({ nombre: 'JUTRIP' }),
     log: { warn() {} },
   })
-  return { servicio, enviados, borradas, reservados, llamadasTiempo, admin }
+  const tickReal = servicio.tick
+  servicio.tick = (instante) => {
+    base.estado.reloj = instante ?? new Date()
+    return tickReal(instante)
+  }
+  return { servicio, enviados, borradas, reservados, llamadasTiempo, admin, base }
 }
 const en = (iso) => new Date(iso)
 {
@@ -365,7 +342,8 @@ const en = (iso) => new Date(iso)
   const sol = mundo()
   await sol.servicio.tick(en('2026-11-10T13:00:00Z'))
   await sol.servicio.tick(en('2026-11-10T17:04:00Z'))
-  debe(sol.llamadasTiempo.length === 0, 'tiempo', 'a mediodía y a la hora del atardecer no se pide la previsión del tiempo')
+  // (V1, 15-nov) La previsión se pide UNA vez al hacer el plan del viaje (hoy y mañana), no en cada vuelta de la tarea.
+  debe(sol.llamadasTiempo.length === 2, 'tiempo', `la previsión se pide al hacer el plan (hoy y mañana: 2 llamadas) y no se vuelve a pedir en las vueltas siguientes (${sol.llamadasTiempo.length})`)
   const lluvia = mundo({ meteos: { '2026-11-09': meteoCon(), '2026-11-10': meteoCon({ nubes: [12, 13] }) } })
   await lluvia.servicio.tick(en('2026-11-09T21:00:00Z'))
   debe(lluvia.enviados.length === 1 && lluvia.enviados[0].payload.cuerpo === 'Mañana habrá nubes en el Mirador del Río. Te hemos preparado una alternativa en HOY.', 'tiempo', `a las 21:00 de Lanzarote del lunes sale el aviso del tiempo de mañana (${lluvia.enviados[0]?.payload.cuerpo})`)

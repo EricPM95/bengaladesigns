@@ -9,7 +9,7 @@ import { demoActivo } from '../../lib/logros'
 import { dondeAbrir } from '../../lib/dondeAbrir'
 import { olvidarViajeAAbrir, viajeAAbrir } from '../../lib/invitaciones'
 import { esEcoRemoto } from '../../lib/viajeEnDirecto'
-import { cuentasActivas } from '../../lib/cuentas'
+import { cuentasActivas, esFalloDeServidor, hayRespaldoDeSesion } from '../../lib/cuentas'
 import { limpiarPropuestasHuerfanas } from '../../lib/propuestasHuerfanas'
 
 const SAVE_DEBOUNCE_MS = 1500
@@ -99,6 +99,10 @@ export function TripSync() {
 
   /** (HOY1, apartado 9) Sin conexión: abre el viaje de hoy con la copia que HOY guardó en el móvil (ver `lib/sinConexion.ts`). Devuelve si lo consiguió. */
   const abrirDesdeElMovil = async (): Promise<boolean> => {
+    // (V1) Con un tope de 4 s: si la lectura del móvil se cuelga, se sigue como si no hubiera copia (no se deja la app en el logo para siempre).
+    return Promise.race([abrirDesdeElMovilSinTope(), new Promise<boolean>((resolver) => window.setTimeout(() => resolver(false), 4000))])
+  }
+  const abrirDesdeElMovilSinTope = async (): Promise<boolean> => {
     try {
       if (useRouteStore.getState().screen !== 'destination') return false
       const { leerLoDeHoy } = await import('../../lib/sinConexion')
@@ -123,7 +127,8 @@ export function TripSync() {
     }
 
     let cancelled = false
-    ;(async () => {
+    let reintento: number | undefined
+    const arrancar = async (): Promise<void> => {
       try {
         // (HOY1, apartado 9) Sin red desde el principio: no se espera al servidor, se abre con lo guardado en el móvil.
         if (typeof navigator !== 'undefined' && navigator.onLine === false && (await abrirDesdeElMovil())) {
@@ -197,16 +202,28 @@ export function TripSync() {
         }
 
         hydratedRef.current = true
+        useSyncStore.getState().setSinServidor(false)
         useSyncStore.getState().setStatus('idle')
         useSyncStore.getState().setCargaInicialHecha(true) // (10S10 §8) ya se sabe si hay viaje: se quita la pantalla de carga
       } catch (err) {
         if (cancelled) return
+        // (V1, 15-nov) El servidor no contesta (tiempo de espera, «upstream request timeout», sin red): NO se enseña el formulario de crear viaje a quien ya tiene cuenta, ni se cierra su sesión. Se enseña lo guardado en el móvil (HOY de hoy) con «No llegamos al servidor…» y se reintenta sola cada 20 s.
+        const sinServidor = esFalloDeServidor(err)
+        if (sinServidor) {
+          useSyncStore.getState().setSinServidor(true)
+          reintento = window.setTimeout(() => void arrancar(), 20000)
+        }
         // (HOY1, apartado 9) La nube no responde (sin cobertura): HOY se abre con la copia del móvil, si la hay.
         if (await abrirDesdeElMovil()) {
           if (cancelled) return
           hydratedRef.current = true
           useSyncStore.getState().setStatus('idle')
           useSyncStore.getState().setCargaInicialHecha(true)
+          return
+        }
+        // Sin copia en el móvil y con cuenta (o respaldo de una): se queda el logo y se reintenta; el formulario solo sale a quien no tiene cuenta (o si el fallo no es del servidor).
+        if (sinServidor && hayRespaldoDeSesion()) {
+          useSyncStore.getState().setStatus('idle')
           return
         }
         olvidarViajeAAbrir()
@@ -216,10 +233,12 @@ export function TripSync() {
         hydratedRef.current = true
         useSyncStore.getState().setCargaInicialHecha(true)
       }
-    })()
+    }
+    void arrancar()
 
     return () => {
       cancelled = true
+      if (reintento) window.clearTimeout(reintento)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -253,6 +272,7 @@ export function TripSync() {
         .then((id) => {
           useSyncStore.getState().setTravelerId(id)
           abiertoSinRedRef.current = false
+          useSyncStore.getState().setSinServidor(false)
           return loadAllTrips(id)
         })
         .then((trips) => useSyncStore.getState().setSavedTrips(trips))
@@ -260,7 +280,12 @@ export function TripSync() {
     }
     window.addEventListener('online', retry)
     window.addEventListener('online', reconectar)
+    // (V1) Abierta con la copia del móvil porque el servidor no contestaba: se vuelve a llamar cada 20 s hasta que conteste.
+    const reloj = window.setInterval(() => {
+      if (abiertoSinRedRef.current && useSyncStore.getState().sinServidor) reconectar()
+    }, 20000)
     return () => {
+      window.clearInterval(reloj)
       window.removeEventListener('online', retry)
       window.removeEventListener('online', reconectar)
     }

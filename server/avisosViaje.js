@@ -3,11 +3,12 @@
  * la mañana, «Sal ahora para tu turno», el tiempo de la noche antes, el atardecer, la llegada y la vuelta. Las cuentas están en `shared/avisos/avisosDelViaje.js` (módulo puro, probado con reloj de mentira); aquí solo
  * está lo que toca la base de datos, la previsión del tiempo y el envío.
  *
- *   GET|POST /api/cron/avisos-viaje     la tarea de CADA MINUTO (con CRON_SECRET en `Authorization: Bearer …`); la dispara `pg_cron` + `pg_net` de Supabase (migración 0075), porque el plan gratis de Vercel solo deja un cron al día.
+ *   GET|POST /api/cron/avisos-viaje     la tarea de CADA 5 MINUTOS (con CRON_SECRET en `Authorization: Bearer …`); la dispara `pg_cron` + `pg_net` de Supabase (migraciones 0075 y 0077), porque el plan gratis de Vercel solo deja un cron al día.
+ *                                       (V1, 15-nov) Lee lo MÍNIMO: el plan de cada viaje vive en `avisos_programados` (0077) y solo se rehace cuando el viaje cambia o cada 6 h; cada vuelta lee solo los avisos que tocan (nunca la ruta entera).
  *   POST     /api/admin/avisos-viaje/prueba   [Enviarme un aviso de prueba] (Ajustes, solo el administrador): manda un aviso al móvil de quien lo pide.
  *
  * Cómo no se repite nada: cada aviso se «reserva» ANTES de mandarse en `avisos_viaje_enviados` (clave única por persona, viaje y aviso; migración 0074): si ya estaba, no se manda. Si no se pudo entregar a ningún móvil, se libera y se
- * reintenta al minuto siguiente (hasta 30 min tarde: pasado eso el aviso ya no vale). Si el viajero cambia la ruta, el siguiente minuto vuelve a calcular el día con la ruta nueva (no hay nada guardado que recalcular).
+ * reintenta al minuto siguiente (hasta 30 min tarde: pasado eso el aviso ya no vale). Si el viajero cambia la ruta, la huella del viaje cambia y la vuelta siguiente rehace su plan (V1: antes se recalculaba entero en cada minuto).
  * Quién recibe: el dueño del viaje, con el pase de ese destino (o el administrador, o el día de prueba, y solo ese día), con el interruptor «Avisos en el móvil» encendido (= tiene una suscripción) y con PUSH_ACTIVO=true.
  */
 import { readFileSync } from 'node:fs'
@@ -113,57 +114,83 @@ export function crearServicioAvisosViaje({ admin, destinos = {}, ahora = () => n
     return null
   }
 
-  /** La tarea de cada minuto. */
-  async function tick(instante = ahora()) {
-    const envio = await prepararEnvio()
-    if (!envio.webpush) return { ok: true, enviados: 0, motivo: envio.motivo }
+  /**
+   * (V1, 15-nov) Rehace el plan de los viajes que lo necesitan: los que han cambiado (huella distinta), los que no tienen plan y los que lo tienen de hace más de 6 h (el tiempo). Es lo ÚNICO que baja la ruta entera,
+   * y solo la de ese viaje. El plan se guarda en `avisos_programados` (migración 0077): una fila pequeña por aviso, con su texto ya hecho (incluida la frase del tiempo de hoy y de mañana).
+   */
+  async function planificar(instante) {
     const hoyUtc = instante.toISOString().slice(0, 10)
-    const viajes = (await rpc('viajes_en_curso_para_avisos', { p_desde: addDias(hoyUtc, -1), p_hasta: addDias(hoyUtc, 1) })) ?? []
-    const caches = { pases: new Map(), admins: new Map() }
-    let enviados = 0
-    let revisados = 0
-    // (Arreglo, 6-nov; decisión de Eric) Los compañeros de un viaje compartido reciben los avisos igual que el dueño, cada uno en su móvil, con su pase y con SU interruptor «Avisos en el móvil» (su suscripción): cada uno puede apagarlos en Ajustes.
-    const miembros = await miembrosDeLosViajes(viajes.map((v) => v.trip_id))
-    for (const viaje of viajes) {
-      const route = viaje.route
-      if (!route?.answers?.dateRange?.start) continue
-      for (const uid of [...new Set([viaje.user_id, ...(miembros.get(viaje.trip_id) ?? [])])]) {
+    const lista = (await rpc('avisos_viajes_por_planificar', { p_desde: addDias(hoyUtc, -1), p_hasta: addDias(hoyUtc, 1) })) ?? []
+    let replanificados = 0
+    for (const item of lista) {
       try {
-        const subs = await suscripcionesDe(uid)
-        if (subs.length === 0) continue // el interruptor «Avisos en el móvil» está apagado (o nunca se encendió)
-        const soloDias = await diasConAviso(uid, viaje, caches)
-        if (soloDias === null) continue // sin pase
-        revisados++
-        const zona = route.days?.find((d) => d.zonaHorariaDia)?.zonaHorariaDia ?? zonaDelDestino(route.destination) ?? ZONA_POR_DEFECTO
-        const reservations = viaje.bookings?.reservations ?? []
-        const entrada = { route, reservations, zona, datos, soloDias: soloDias.length ? soloDias : null }
-        // Primero sin el tiempo: la previsión solo se pide si hay algo que la use (la mañana, o las 21:00 de la noche antes).
-        let debidos = avisosDebidos(planDelViaje(entrada), instante)
-        const local = localDe(instante, zona)
-        const hacePrevision = debidos.some((a) => a.tipo === 'manana') || (local.min >= TIEMPO_NOCHE_MIN && local.min < TIEMPO_NOCHE_MIN + MAX_RETRASO_MIN)
-        if (hacePrevision) {
+        const viaje = await rpc('avisos_viaje_para_plan', { p_trip: item.trip_id })
+        const route = viaje?.route
+        let filas = []
+        if (route?.answers?.dateRange?.start) {
+          const zona = route.days?.find((d) => d.zonaHorariaDia)?.zonaHorariaDia ?? zonaDelDestino(route.destination) ?? ZONA_POR_DEFECTO
+          const entrada = { route, reservations: viaje.bookings?.reservations ?? [], zona, datos }
+          // La previsión del tiempo de hoy y de mañana (hora del destino), una sola vez por plan.
+          const local = localDe(instante, zona)
           const previsiones = new Map()
           for (const fecha of [local.fecha, addDias(local.fecha, 1)]) {
             const dia = route.days?.find((d) => addDias(route.answers.dateRange.start, d.dayNumber - 1) === fecha)
             const coords = dia ? coordenadasDelDia(dia, route.destination) : null
-            if (coords) previsiones.set(fecha, (await tiempo(coords, fecha))?.value ?? null)
+            if (coords) previsiones.set(fecha, (await tiempo(coords, fecha).catch(() => null))?.value ?? null)
           }
-          debidos = avisosDebidos(planDelViaje({ ...entrada, meteo: (f) => previsiones.get(f) ?? null }), instante)
+          filas = planDelViaje({ ...entrada, meteo: (f) => previsiones.get(f) ?? null }).map((a) => ({ clave: a.clave, tipo: a.tipo, para: a.instante.toISOString(), dia_fecha: a.diaFecha, texto: a.texto }))
         }
-        for (const a of debidos) {
-          const clave = `${viaje.trip_id}|${a.clave}`
-          const nuevo = await rpc('avisos_viaje_reservar', { p_uid: uid, p_trip: viaje.trip_id, p_clave: clave, p_tipo: a.tipo, p_para: a.instante.toISOString() })
-          if (!nuevo) continue // ya se mandó (o lo está mandando otra vuelta de la tarea)
-          const llegados = await mandar(envio.webpush, subs, a.texto, { tag: clave })
-          if (llegados > 0) enviados++
-          else await rpc('avisos_viaje_liberar', { p_uid: uid, p_clave: clave }) // no llegó a ningún móvil: se reintenta al minuto siguiente
-        }
+        await rpc('avisos_programados_guardar', { p_trip: item.trip_id, p_huella: viaje?.huella ?? item.huella, p_filas: filas })
+        replanificados++
       } catch (error) {
-        log.warn?.('[avisos-viaje] no se pudo revisar un viaje:', error.message)
-      }
+        log.warn?.('[avisos-viaje] no se pudo hacer el plan de un viaje:', error.message)
       }
     }
-    return { ok: true, viajes: viajes.length, revisados, enviados }
+    return replanificados
+  }
+
+  /** La tarea de cada 5 minutos: rehace los planes que toquen y manda los avisos que tocan ahora (leyendo solo esos avisos, nunca los viajes enteros). */
+  async function tick(instante = ahora()) {
+    const envio = await prepararEnvio()
+    if (!envio.webpush) return { ok: true, enviados: 0, motivo: envio.motivo }
+    const replanificados = await planificar(instante)
+    const debidos = (await rpc('avisos_programados_debidos', { p_ahora: instante.toISOString(), p_retraso_min: MAX_RETRASO_MIN })) ?? []
+    const caches = { pases: new Map(), admins: new Map(), subs: new Map() }
+    let enviados = 0
+    let revisados = 0
+    // (Arreglo, 6-nov; decisión de Eric) Los compañeros de un viaje compartido reciben los avisos igual que el dueño, cada uno en su móvil, con su pase y con SU interruptor «Avisos en el móvil» (su suscripción): cada uno puede apagarlos en Ajustes.
+    const miembros = await miembrosDeLosViajes([...new Set(debidos.map((a) => a.trip_id))])
+    const subsDe = async (uid) => {
+      if (!caches.subs.has(uid)) caches.subs.set(uid, await suscripcionesDe(uid))
+      return caches.subs.get(uid)
+    }
+    for (const aviso of debidos) {
+      let terminado = true
+      for (const uid of [...new Set([aviso.user_id, ...(miembros.get(aviso.trip_id) ?? [])])]) {
+        try {
+          const subs = await subsDe(uid)
+          if (subs.length === 0) continue // el interruptor «Avisos en el móvil» está apagado (o nunca se encendió)
+          const soloDias = await diasConAviso(uid, { route: { destination: aviso.destino }, trip_id: aviso.trip_id }, caches)
+          if (soloDias === null) continue // sin pase
+          revisados++
+          if (soloDias.length && !soloDias.includes(String(aviso.dia_fecha).slice(0, 10))) continue // el día de prueba: solo los avisos de ese día
+          const clave = `${aviso.trip_id}|${aviso.clave}`
+          const nuevo = await rpc('avisos_viaje_reservar', { p_uid: uid, p_trip: aviso.trip_id, p_clave: clave, p_tipo: aviso.tipo, p_para: new Date(aviso.para).toISOString() })
+          if (!nuevo) continue // ya se mandó (o lo está mandando otra vuelta de la tarea)
+          const llegados = await mandar(envio.webpush, subs, aviso.texto, { tag: clave })
+          if (llegados > 0) enviados++
+          else {
+            await rpc('avisos_viaje_liberar', { p_uid: uid, p_clave: clave }) // no llegó a ningún móvil: se reintenta en la vuelta siguiente
+            terminado = false
+          }
+        } catch (error) {
+          terminado = false
+          log.warn?.('[avisos-viaje] no se pudo mandar un aviso:', error.message)
+        }
+      }
+      if (terminado) await rpc('avisos_programados_listo', { p_trip: aviso.trip_id, p_clave: aviso.clave }).catch(() => undefined)
+    }
+    return { ok: true, viajes: replanificados, avisos: debidos.length, revisados, enviados }
   }
 
   /** [Enviarme un aviso de prueba] (Ajustes, administrador): un aviso de verdad al móvil de quien lo pide. */

@@ -110,6 +110,84 @@ function leerAnonima(): AnonimaGuardada | null {
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* (V1, 15-nov) El respaldo de la sesión: una caída del servidor no echa */
+/* ------------------------------------------------------------------ */
+
+/**
+ * El 11-nov el servidor (Supabase) dejó de contestar y la app del iPhone de Eric «cerró la sesión»: al renovar el token con el servidor caído, la librería dio la sesión por perdida y la app pidió el correo.
+ * Para que una caída NO eche a nadie, la sesión de una cuenta de verdad se copia aparte (como ya se hacía con la anónima) y, si al abrir la app la librería no tiene sesión, se intenta recuperar con esa copia.
+ * Solo se borra al cerrar la sesión A PROPÓSITO (cerrarSesion, borrar la cuenta, empezar de cero) o si el servidor contesta que la sesión ya no vale.
+ */
+const CLAVE_RESPALDO = 'trazo:cuenta:respaldo'
+interface RespaldoDeSesion {
+  uid: string
+  access_token: string
+  refresh_token: string
+}
+
+function guardarRespaldo(sesion: Session | null): void {
+  try {
+    if (sesion?.user && !esAnonimo(sesion.user) && sesion.refresh_token) {
+      window.localStorage.setItem(CLAVE_RESPALDO, JSON.stringify({ uid: sesion.user.id, access_token: sesion.access_token, refresh_token: sesion.refresh_token } satisfies RespaldoDeSesion))
+    }
+  } catch {
+    /* sin almacenamiento: no habrá respaldo */
+  }
+}
+
+function leerRespaldo(): RespaldoDeSesion | null {
+  try {
+    const crudo = window.localStorage.getItem(CLAVE_RESPALDO)
+    const dato = crudo ? (JSON.parse(crudo) as Partial<RespaldoDeSesion>) : null
+    return dato && typeof dato.uid === 'string' && typeof dato.access_token === 'string' && typeof dato.refresh_token === 'string' ? (dato as RespaldoDeSesion) : null
+  } catch {
+    return null
+  }
+}
+
+/** Para cerrar la sesión a propósito: sin respaldo, la app no la recupera. */
+export function olvidarRespaldoDeSesion(): void {
+  try {
+    window.localStorage.removeItem(CLAVE_RESPALDO)
+  } catch {
+    /* nada que quitar */
+  }
+}
+
+export const hayRespaldoDeSesion = (): boolean => leerRespaldo() !== null
+
+/** ¿El fallo es de que el servidor no contesta (y no de que la sesión no valga)? Tiempo de espera, 5xx, sin red. */
+export function esFalloDeServidor(error: unknown): boolean {
+  if (!error) return false
+  const e = error as { status?: number; name?: string; message?: string; originalError?: { status?: number }; cause?: { status?: number } }
+  const origen = e.originalError?.status ?? e.cause?.status
+  if (typeof origen === 'number' && origen >= 500) return true
+  if (typeof e.status === 'number' && (e.status >= 500 || e.status === 0 || e.status === 408 || e.status === 429)) return true
+  if (e.name === 'AuthRetryableFetchError') return true
+  return /timeout|timed out|upstream|failed to fetch|load failed|network|fetch|unavailable|bad gateway|gateway|econn|offline/i.test(String(e.message ?? error))
+}
+
+/**
+ * Intenta recuperar la sesión de una cuenta con el respaldo. 'ok' = recuperada; 'sin_servidor' = el servidor no contesta (el respaldo se queda y se reintenta); 'invalida' = el servidor dice que ya no vale (se borra el respaldo);
+ * 'no_hay' = nunca hubo respaldo.
+ */
+export async function recuperarSesionDeRespaldo(): Promise<'ok' | 'sin_servidor' | 'invalida' | 'no_hay'> {
+  const respaldo = leerRespaldo()
+  if (!respaldo || !supabase) return 'no_hay'
+  try {
+    const { data, error } = await supabase.auth.setSession({ access_token: respaldo.access_token, refresh_token: respaldo.refresh_token })
+    if (data?.session) return 'ok'
+    if (error && esFalloDeServidor(error)) return 'sin_servidor'
+    olvidarRespaldoDeSesion()
+    return 'invalida'
+  } catch (error) {
+    if (esFalloDeServidor(error)) return 'sin_servidor'
+    olvidarRespaldoDeSesion()
+    return 'invalida'
+  }
+}
+
 function olvidarAnonima(): void {
   try {
     window.localStorage.removeItem(CLAVE_ANONIMA)
@@ -416,12 +494,46 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
   }
   recogerInvitacionDeLaDireccion()
   void alVolverDelEnlace()
-  void supabase.auth.getSession().then(({ data }) => {
-    alCambiar(estadoDeSesion(data.session))
-    guardarAnonima(data.session)
-    if (data.session && !esAnonimo(data.session.user)) escribirSesionStorage(CLAVE_REINTENTO_GOOGLE, null)
-    if (data.session) void completarEntrada(data.session)
-  })
+  let parado = false
+  let reintento: number | undefined
+  // (V1) Sin sesión en la librería pero con respaldo de una cuenta: se recupera con el respaldo. Con el servidor caído NO se enseña «Entrar»: se queda cargando y se reintenta cada 15 s.
+  const recuperar = async (): Promise<void> => {
+    const r = await recuperarSesionDeRespaldo()
+    if (parado) return
+    if (r === 'ok') {
+      const { data } = await supabase!.auth.getSession()
+      if (parado) return
+      alCambiar(estadoDeSesion(data.session))
+      guardarAnonima(data.session)
+      guardarRespaldo(data.session)
+      if (data.session) void completarEntrada(data.session)
+    } else if (r === 'sin_servidor') {
+      alCambiar({ tipo: 'cargando' })
+      reintento = window.setTimeout(() => void recuperar(), 15000)
+    } else {
+      alCambiar({ tipo: 'sin_sesion' })
+    }
+  }
+  void supabase.auth
+    .getSession()
+    .then(({ data, error }) => {
+      if (!data.session && (hayRespaldoDeSesion() || (error && esFalloDeServidor(error)))) {
+        if (hayRespaldoDeSesion()) return recuperar()
+        alCambiar({ tipo: 'cargando' })
+        reintento = window.setTimeout(() => void supabase!.auth.getSession().then(() => undefined), 15000)
+        return undefined
+      }
+      alCambiar(estadoDeSesion(data.session))
+      guardarAnonima(data.session)
+      guardarRespaldo(data.session)
+      if (data.session && !esAnonimo(data.session.user)) escribirSesionStorage(CLAVE_REINTENTO_GOOGLE, null)
+      if (data.session) void completarEntrada(data.session)
+      return undefined
+    })
+    .catch(() => {
+      if (hayRespaldoDeSesion()) void recuperar()
+      else alCambiar({ tipo: 'sin_sesion' })
+    })
   // (Tanda 10G) Si el enlace del email se abrió en otro navegador, el servidor ya sabe que esta cuenta es de verdad pero esta sesión lo ignora hasta renovarse: al volver a la app (con la sesión anónima) se renueva ahora.
   const alVolver = () => {
     if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return
@@ -432,7 +544,14 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
   document.addEventListener('visibilitychange', alVolver)
   window.addEventListener('focus', alVolver)
   const { data } = supabase.auth.onAuthStateChange((_evento, sesion) => {
+    // (V1) La librería se quedó sin sesión pero NO fue a propósito (hay respaldo): no se enseña «Entrar»; se recupera con el respaldo.
+    if (!sesion && hayRespaldoDeSesion()) {
+      alCambiar({ tipo: 'cargando' })
+      setTimeout(() => void recuperar(), 0)
+      return
+    }
     alCambiar(estadoDeSesion(sesion))
+    guardarRespaldo(sesion)
     // El token de la sesión anónima se mantiene al día (Supabase lo cambia al renovarlo): si luego hay que pasar lo suyo a una cuenta, el guardado sirve.
     guardarAnonima(sesion)
     if (sesion && !esAnonimo(sesion.user)) escribirSesionStorage(CLAVE_REINTENTO_GOOGLE, null)
@@ -440,6 +559,8 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
     if (sesion) setTimeout(() => void completarEntrada(sesion), 0)
   })
   return () => {
+    parado = true
+    if (reintento) window.clearTimeout(reintento)
     data.subscription.unsubscribe()
     document.removeEventListener('visibilitychange', alVolver)
     window.removeEventListener('focus', alVolver)
@@ -466,6 +587,7 @@ function limpiarElMovil(): void {
 }
 
 export async function cerrarSesion(): Promise<void> {
+  olvidarRespaldoDeSesion() // (V1) a propósito: sin respaldo, la app no la recupera
   try {
     await supabase?.auth.signOut()
   } finally {
@@ -493,6 +615,7 @@ export async function borrarMiCuenta(): Promise<string | null> {
       const cuerpo = (await respuesta.json().catch(() => null)) as { error?: string } | null
       return cuerpo?.error ?? 'No se ha podido borrar la cuenta. Inténtalo de nuevo.'
     }
+    olvidarRespaldoDeSesion()
     await supabase.auth.signOut({ scope: 'local' }).catch(() => undefined)
     limpiarElMovil()
     recargarLimpio('/')

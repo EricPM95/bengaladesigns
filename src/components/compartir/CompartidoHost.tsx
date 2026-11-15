@@ -78,7 +78,7 @@ function Encendido() {
     // El refresco de siempre, por si Realtime no está o se cayó.
     const sondear = () => {
       if (document.visibilityState !== 'visible') return
-      void refrescarViajeActivo().then((r) => {
+      void refrescarViajeActivo({ sondeo: true }).then((r) => {
         if (!vivo) return
         if (r === 'cambiado') void anfitrion.alSondeo()
         else if (r === 'fuera') {

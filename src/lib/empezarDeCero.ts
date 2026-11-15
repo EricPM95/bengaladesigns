@@ -1,5 +1,6 @@
 import { llamar } from './logros'
 import { supabase } from './supabaseClient'
+import { olvidarRespaldoDeSesion } from './cuentas'
 
 /**
  * EMPEZAR DE CERO (Tanda 10J, solo para la cuenta de administrador; lo decide el servidor). El servidor borra lo de la cuenta; aquí se borra lo del móvil y se vuelve a la pantalla de inicio
@@ -60,6 +61,7 @@ export async function empezarDeCero(): Promise<string | null> {
   const r = await llamar<{ ok: boolean; error?: string }>('/api/admin/empezar-de-cero', { cuerpo: { confirmar: true } })
   if (!r?.ok) return r?.error ?? 'No se ha podido empezar de cero. Vuelve a probar.'
   try {
+    olvidarRespaldoDeSesion() // (V1) a propósito: sin respaldo, la app no recupera la sesión
     await supabase?.auth.signOut({ scope: 'local' })
   } catch {
     /* sin sesión que cerrar */

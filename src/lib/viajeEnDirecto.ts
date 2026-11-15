@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Route } from './types'
 import { usePropuestaStore } from '../store/usePropuestaStore'
-import { fueGuardadaAqui, loadOneTrip, rutaGuardadaAqui, rutaVista } from './tripPersistence'
+import { fueGuardadaAqui, loadOneTrip, rutaGuardadaAqui, rutaVista, SELLO_CADUCA_MS, selloConocido, selloDelViaje } from './tripPersistence'
 import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
 
@@ -77,12 +77,22 @@ export const EVENTO_VIAJE_CAMBIADO = 'trazo:viaje-cambiado-en-directo'
 let enCurso: Promise<ResultadoRefresco> | null = null
 
 /** Vuelve a pedir el viaje abierto a la nube y, si lo cambió otra persona, lo pone. 'fuera': ya no se puede ver (te han quitado). */
-export function refrescarViajeActivo(): Promise<ResultadoRefresco> {
+export function refrescarViajeActivo(opciones: { sondeo?: boolean } = {}): Promise<ResultadoRefresco> {
   if (enCurso) return enCurso
   enCurso = (async (): Promise<ResultadoRefresco> => {
     const sync = useSyncStore.getState()
     const tripId = sync.activeTripId
     if (!tripId || !sync.travelerId) return 'sin_datos'
+    // (V1, 15-nov) El sondeo de cada 30 s pregunta solo por el sello del viaje (unos 100 bytes) y no baja la ruta entera si no ha cambiado. Sin sello conocido, o con el último bajado de hace más de 10 min, baja el viaje como siempre.
+    if (opciones.sondeo) {
+      const conocido = selloConocido(tripId)
+      if (conocido && Date.now() - conocido.en < SELLO_CADUCA_MS) {
+        const ahora = await selloDelViaje(tripId)
+        if (ahora === undefined) return 'sin_datos'
+        if (ahora === null) return 'fuera'
+        if (ahora === conocido.sello) return 'igual'
+      }
+    }
     const r = await loadOneTrip(sync.travelerId, tripId)
     if (r === undefined) return 'sin_datos'
     if (r === null) return 'fuera'

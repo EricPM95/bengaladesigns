@@ -12,6 +12,9 @@ import { buildTripPayload } from '../../sync/TripSync'
  */
 const TEXTO_GUARDADO = 'Sin conexión: lo de hoy está guardado en tu móvil.'
 const TEXTO_SIN_GUARDAR = 'Sin conexión: algunas cosas no se verán hasta que vuelva.'
+// (V1, 15-nov) Con red pero con el servidor sin contestar (la caída del 11-nov).
+const TEXTO_SIN_SERVIDOR = 'No llegamos al servidor. Lo de hoy está guardado en tu móvil.'
+const TEXTO_SIN_SERVIDOR_SIN_GUARDAR = 'No llegamos al servidor. Algunas cosas no se verán hasta que vuelva.'
 
 function useConectado(): boolean {
   const [conectado, setConectado] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine !== false))
@@ -30,6 +33,7 @@ function useConectado(): boolean {
 
 export function SinConexionHoy({ route, day, dateIso }: { route: Route; day: DayPlan; dateIso: string }) {
   const conectado = useConectado()
+  const sinServidor = useSyncStore((s) => s.sinServidor)
   const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
   const [guardado, setGuardado] = useState(false)
 
@@ -65,13 +69,13 @@ export function SinConexionHoy({ route, day, dateIso }: { route: Route; day: Day
     }
   }, [conectado, guardado, tripId])
 
-  if (conectado) return null
+  if (conectado && !sinServidor) return null
   return (
-    <div data-sin-conexion={guardado ? 'guardado' : 'sin-guardar'} role="status" className="flex flex-none items-center gap-[9px] text-[12.5px] font-medium" style={{ color: 'rgba(28,34,48,.7)' }}>
+    <div data-sin-conexion={guardado ? 'guardado' : 'sin-guardar'} data-sin-servidor={sinServidor && conectado ? '' : undefined} role="status" className="flex flex-none items-center gap-[9px] text-[12.5px] font-medium" style={{ color: 'rgba(28,34,48,.7)' }}>
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8E6820" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none">
         <path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01M3 3l18 18" />
       </svg>
-      {guardado ? TEXTO_GUARDADO : TEXTO_SIN_GUARDAR}
+      {sinServidor && conectado ? (guardado ? TEXTO_SIN_SERVIDOR : TEXTO_SIN_SERVIDOR_SIN_GUARDAR) : guardado ? TEXTO_GUARDADO : TEXTO_SIN_GUARDAR}
     </div>
   )
 }

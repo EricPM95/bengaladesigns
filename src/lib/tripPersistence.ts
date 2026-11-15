@@ -10,7 +10,7 @@ import { mapGeneratedRouteToRoute } from './mapGeneratedRoute'
 import type { GenerationResumeState } from './routeGenerationOrchestrator'
 import { supabase } from './supabaseClient'
 import { CENTRAL_MONTH } from './season'
-import { cuentasActivas } from './cuentas'
+import { cuentasActivas, hayRespaldoDeSesion, recuperarSesionDeRespaldo } from './cuentas'
 import { useViajeCompartido } from '../store/useViajeCompartido'
 import { useSyncStore } from '../store/useSyncStore'
 import { recordarBase, sellarRuta } from './sellarCambio'
@@ -92,6 +92,13 @@ async function bootstrapTravelerUncached(): Promise<string> {
 
   let userId = sessionData.session?.user.id ?? null
 
+  // (V1, 15-nov) Sin sesión pero con el respaldo de una cuenta: se recupera ESA sesión; con el servidor caído NO se crea una cuenta anónima nueva (se perdería lo suyo): falla y la app reintenta.
+  if (!userId && hayRespaldoDeSesion()) {
+    const r = await recuperarSesionDeRespaldo()
+    if (r === 'sin_servidor') throw new Error('No llegamos al servidor (timeout).')
+    if (r === 'ok') userId = (await supabase.auth.getSession()).data.session?.user.id ?? null
+  }
+
   if (!userId) {
     const { data, error } = await supabase.auth.signInAnonymously()
     if (error) throw error
@@ -120,9 +127,13 @@ async function bootstrapTravelerUncached(): Promise<string> {
  */
 let bootstrapPromise: Promise<string> | null = null
 
+/** (V1, 15-nov) Con el servidor caído («upstream request timeout») la librería de Supabase reintenta renovar la sesión durante minutos: la app no puede esperar tanto con el logo. A los 8 s se da por «servidor sin contestar» (la sesión NO se toca) y la app sigue con lo guardado en el móvil y reintenta. */
+export const TOPE_ARRANQUE_MS = 8000
+const sinRespuesta = (): Promise<never> => new Promise((_, rechazar) => window.setTimeout(() => rechazar(new Error('No llegamos al servidor (timeout).')), TOPE_ARRANQUE_MS))
+
 export function bootstrapTraveler(): Promise<string> {
   if (!bootstrapPromise) {
-    bootstrapPromise = bootstrapTravelerUncached().catch((error) => {
+    bootstrapPromise = Promise.race([bootstrapTravelerUncached(), sinRespuesta()]).catch((error) => {
       // Un intento fallido no debe dejar el módulo bloqueado para siempre — el siguiente montaje
       // (o un reintento manual) debe poder volver a intentarlo desde cero.
       bootstrapPromise = null
@@ -138,11 +149,13 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
 
   // Con las cuentas encendidas se piden también los viajes donde esta persona es invitada (la base de datos solo deja ver los suyos y esos); si no, solo los suyos, como siempre.
   const conInvitados = cuentasActivas()
-  let consulta = supabase.from('trips').select(conInvitados ? 'id, traveler_id, guardado_en, route, bookings, wishlist, ui_state, generation_state' : 'id, route, bookings, wishlist, ui_state, generation_state')
+  let consulta = supabase.from('trips').select(conInvitados ? 'id, traveler_id, guardado_en, updated_at, route, bookings, wishlist, ui_state, generation_state' : 'id, route, bookings, wishlist, ui_state, generation_state')
   if (!conInvitados) consulta = consulta.eq('traveler_id', travelerId)
   const { data: filas, error } = await consulta.order('updated_at', { ascending: false })
   if (error) throw error
-  const data = (filas ?? []) as unknown as { id: string; traveler_id?: string; guardado_en?: string | null; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }[]
+  const data = (filas ?? []) as unknown as { id: string; traveler_id?: string; guardado_en?: string | null; updated_at?: string | null; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }[]
+  // (V1, 15-nov) Lo que se acaba de bajar es lo más reciente: se apunta su «sello» para que el sondeo no vuelva a bajar el viaje entero si no ha cambiado.
+  for (const row of data) recordarSello(row.id, row.updated_at, row.guardado_en)
 
   // (Tanda 10N §10) Lo que se cargó es la «línea base»: un viaje igual en la nube no es un cambio de otra persona.
   for (const row of data) {
@@ -154,7 +167,7 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
   return viajes
 }
 
-type FilaDeViaje = { id: string; traveler_id?: string; guardado_en?: string | null; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }
+type FilaDeViaje = { id: string; traveler_id?: string; guardado_en?: string | null; updated_at?: string | null; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }
 
 function filaAViaje(row: FilaDeViaje, travelerId: string, conInvitados: boolean): SavedTrip {
   const generationState = row.generation_state as GenerationResumeState | null
@@ -176,13 +189,35 @@ function filaAViaje(row: FilaDeViaje, travelerId: string, conInvitados: boolean)
  */
 export async function loadOneTrip(travelerId: string, tripId: string): Promise<{ viaje: SavedTrip; canonica: string } | null | undefined> {
   if (!supabase) return undefined
-  const { data, error } = await supabase.from('trips').select('id, traveler_id, guardado_en, route, bookings, wishlist, ui_state, generation_state').eq('id', tripId).maybeSingle()
+  const { data, error } = await supabase.from('trips').select('id, traveler_id, guardado_en, updated_at, route, bookings, wishlist, ui_state, generation_state').eq('id', tripId).maybeSingle()
   if (error) return undefined
   if (!data) return null
   const fila = data as unknown as FilaDeViaje
+  recordarSello(tripId, fila.updated_at, fila.guardado_en)
   const viaje = filaAViaje(fila, travelerId, cuentasActivas())
   recordarBase(tripId, viaje.route)
   return { viaje, canonica: canonico(fila.route) }
+}
+
+/**
+ * (V1, 15-nov) EL SELLO DE UN VIAJE: lo último que se vio de él en la nube (`updated_at` + `guardado_en`) y cuándo se bajó entero. El sondeo de cada 30 s de un viaje compartido ya NO baja la ruta entera: pregunta solo por el sello
+ * (unos 100 bytes) y baja el viaje únicamente si el sello es distinto (o si hace más de 10 min que no se baja, por si algo cambió sin tocar `updated_at`).
+ */
+const sellos = new Map<string, { sello: string; en: number }>()
+export const SELLO_CADUCA_MS = 10 * 60 * 1000
+const selloDe = (actualizado: string | null | undefined, guardado: string | null | undefined): string => `${actualizado ?? ''}|${guardado ?? ''}`
+export function recordarSello(tripId: string, actualizado: string | null | undefined, guardado: string | null | undefined): void {
+  if (actualizado) sellos.set(tripId, { sello: selloDe(actualizado, guardado), en: Date.now() })
+}
+export const selloConocido = (tripId: string): { sello: string; en: number } | undefined => sellos.get(tripId)
+/** Solo el sello del viaje en la nube. `null` = ya no se puede ver; `undefined` = no se pudo preguntar. */
+export async function selloDelViaje(tripId: string): Promise<string | null | undefined> {
+  if (!supabase) return undefined
+  const { data, error } = await supabase.from('trips').select('updated_at, guardado_en').eq('id', tripId).maybeSingle()
+  if (error) return undefined
+  if (!data) return null
+  const fila = data as unknown as { updated_at?: string | null; guardado_en?: string | null }
+  return selloDe(fila.updated_at, fila.guardado_en)
 }
 
 /** El mismo texto para la misma ruta aunque las claves vengan en otro orden (la base de datos las reordena): así se reconoce el eco del propio guardado. */

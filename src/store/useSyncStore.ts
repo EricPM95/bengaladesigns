@@ -29,6 +29,9 @@ interface SyncStoreState {
   /** (10S10 §8) false hasta que TripSync sabe si hay un viaje que abrir (o no hay guardado en la nube): mientras, App.tsx pone la pantalla de carga con el logo y nunca la de crear viaje. */
   cargaInicialHecha: boolean
   setCargaInicialHecha: (value: boolean) => void
+  /** (V1, 15-nov) true mientras el servidor (Supabase) no contesta (tiempo de espera, «upstream request timeout», sin red): la app NO cierra la sesión, enseña lo guardado en el móvil con «No llegamos al servidor…» y reintenta sola. */
+  sinServidor: boolean
+  setSinServidor: (value: boolean) => void
   setStatus: (status: SyncStatus) => void
   setTravelerId: (id: string | null) => void
   /** message = intento fallido (pone status en 'error'); null = limpia el error. */
@@ -59,6 +62,8 @@ export const useSyncStore = create<SyncStoreState>((set) => ({
   generationComplete: false,
   cargaInicialHecha: false,
   setCargaInicialHecha: (value) => set({ cargaInicialHecha: value }),
+  sinServidor: false,
+  setSinServidor: (value) => set({ sinServidor: value }),
   setStatus: (status) => set({ status }),
   setTravelerId: (id) => set({ travelerId: id }),
   setError: (message) => set({ lastError: message, status: message ? 'error' : 'idle' }),

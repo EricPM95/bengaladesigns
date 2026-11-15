@@ -76,7 +76,11 @@ function App() {
   const cargaHecha = useSyncStore((state) => state.cargaInicialHecha)
   useEffect(() => {
     if (cargaHecha) return
-    const aviso = window.setTimeout(() => useSyncStore.getState().setCargaInicialHecha(true), 12000)
+    // (V1, 15-nov) Con el servidor sin contestar y una cuenta, NO se saca el formulario a los 12 s: el logo se queda y TripSync reintenta (o abre lo guardado en el móvil).
+    const aviso = window.setTimeout(() => {
+      if (useSyncStore.getState().sinServidor) return
+      useSyncStore.getState().setCargaInicialHecha(true)
+    }, 12000)
     return () => window.clearTimeout(aviso)
   }, [cargaHecha])
   const setDestination = useRouteStore((state) => state.setDestination)
