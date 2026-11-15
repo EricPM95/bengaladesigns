@@ -5525,6 +5525,8 @@ Prompt guardado en `docs/dias/PROMPT_RETOQUES_TARJETAS.md`. Lo de DÍAS (apartad
 
 
 ## Pase de cortesía de Eric (7-nov): NO es una venta
+> **DESCARTADO (15-nov, Eric):** nunca se creó (no hay ningún pase en la base de datos) y no hace falta. Su SQL (`PASE_CORTESIA_ERIC_LANZAROTE.sql`) falló además por usar `trips.created_at`, que no existe (era `updated_at`); se ha borrado del repo.
+
 Para leer sus documentos en Lanzarote con el cobro apagado, se le da un Pase Lanzarote DÚO de cortesía con `registrar_pago` (0026): proveedor «cortesia», importe 0 €, plan «duo», 2 personas, referencia `cortesia-eric-lanzarote-2026-11`, viaje a Lanzarote más reciente de su cuenta. SQL en `docs/dias/PASE_CORTESIA_ERIC_LANZAROTE.sql` (incluye ampliar el `check` de `pagos_registro.proveedor` a «cortesia»). **Es un regalo, no una venta: no cuenta como ingreso ni lleva recibo de Stripe.** Su pareja se cubre invitándola al viaje (la plaza 2 del Dúo).
 
 
@@ -5535,3 +5537,10 @@ Para leer sus documentos en Lanzarote con el cobro apagado, se le da un Pase Lan
 - **Sesión y arranque:** respaldo de la sesión de una cuenta (`trazo:cuenta:respaldo`, solo se borra al cerrar sesión a propósito), recuperación con él, sin cuenta anónima nueva con el servidor caído, tope de 8 s al arranque (`TOPE_ARRANQUE_MS`), HOY con lo guardado y «No llegamos al servidor. Lo de hoy está guardado en tu móvil.», reintento cada 20 s, logo con «No llegamos al servidor. Reintentando…» en vez del formulario.
 - **Pruebas:** `pruebaEstabilidad` 55·0 (incluye el navegador con Supabase caído simulado); `pruebaTandaHOY3` adaptada a la base de mentira nueva (`_baseDeAvisosDeMentira.mjs`).
 - **Producción:** no se ha tocado Vercel ni Supabase. Pendiente de Eric: pegar `V1_MIRAR.sql` y la 0077.
+
+### Cierre de la V1 (15-nov, con lo que salió de V1_MIRAR)
+- **0077 aplicada** (COMPROBAR: «Aplicada»); `avisos-viaje` activa a `*/5 * * * *` con las vueltas en «succeeded».
+- **`net._http_response`:** 172 filas, 216 kB (11-nov 12:37 → 18:06 UTC): nada que limpiar.
+- **Peso de las rutas reales:** 96–138 kB cada una (Roma), 2–3 veces más que la de Lanzarote del cálculo (48 kB). Tabla `trips`: 37 MB (la base entera, ~85 MB).
+- **Pendiente (no tocado):** `loadAllTrips` baja TODOS los viajes enteros de la cuenta cada vez que se abre la app (a ~100 kB cada uno). Es lo que queda de salida de datos por usuario; propuesta: bajar al abrir solo la lista y el viaje activo.
+- Administradores (`LOGROS_ADMIN_EMAILS`): bien, solo el de Eric (app) y el de Alicia.

@@ -23,7 +23,7 @@ select relname as tabla, pg_size_pretty(pg_total_relation_size(oid)) as tamano
 from pg_class where relkind = 'r' and relnamespace = 'public'::regnamespace
 order by pg_total_relation_size(oid) desc limit 8;
 
--- 6) ¿Llegó a crearse el Pase Dúo de cortesía (7-nov)? Si sale una fila: ya está (no lo pegues otra vez). Si sale vacío: pega docs/dias/PASE_CORTESIA_ERIC_LANZAROTE.sql.
+-- 6) ¿Llegó a crearse el Pase Dúo de cortesía (7-nov)? Si sale una fila: ya está (no lo pegues otra vez). Salió vacío y se descartó (15-nov).
 select p.id, p.destino, p.tipo, p.usos_max, p.usos_usados, p.estado, r.proveedor, r.importe_cent, r.pago_ref
 from public.passes p left join public.pagos_registro r on r.pago_ref = p.pago_ref
 where p.pago_ref = 'cortesia-eric-lanzarote-2026-11';
