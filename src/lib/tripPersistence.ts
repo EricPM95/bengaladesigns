@@ -76,6 +76,8 @@ export interface SavedTrip extends TripPayload {
   esInvitado?: boolean
   /** «Sustituir el anterior» no borra (Tanda 8A2): el viaje de antes pasa a «Viajes guardados» y aquí lleva la fecha en que pasó. null/ausente = un viaje de siempre. Solo con las cuentas encendidas (migración 0024). */
   guardadoEn?: string | null
+  /** (V1b) La ruta es la LIGERA de la lista de viajes (sin el detalle de los días): para abrir el viaje hay que pedir el entero (`viajeEntero`). */
+  ligero?: true
 }
 
 /**
@@ -143,9 +145,30 @@ export function bootstrapTraveler(): Promise<string> {
   return bootstrapPromise
 }
 
-/** Todos los viajes guardados de este traveler, más recientes primero — [] si todavía no tiene ninguno. */
+/**
+ * (V1b, 15-nov) LA LISTA DE VIAJES, LIGERA: al abrir la app solo se baja la lista (nombre, destino, fechas, días y paradas con su nombre y coordenadas) y no cada viaje entero; el entero se pide al abrirlo (`viajeEntero`).
+ * Usa la función `viajes_lista` de la migración 0078; si no existe (aún sin pegar) o falla, sigue con la consulta de siempre. `null` = no se pudo ligera.
+ */
+async function loadTripList(travelerId: string, conInvitados: boolean): Promise<SavedTrip[] | null> {
+  if (!supabase) return null
+  const { data, error } = await supabase.rpc('viajes_lista', { p_solo_mios: !conInvitados })
+  if (error || !Array.isArray(data)) return null
+  const filas = data as unknown as FilaDeViaje[]
+  return filas.map((fila) => {
+    const viaje = filaAViaje(fila, travelerId, conInvitados)
+    return (fila.route as { ligero?: boolean } | null)?.ligero ? { ...viaje, ligero: true as const } : viaje
+  })
+}
+
+/** Todos los viajes guardados de este traveler, más recientes primero — [] si todavía no tiene ninguno. Con la 0078, en versión ligera (ver `loadTripList`). */
 export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
   if (!supabase) return []
+
+  const ligeros = await loadTripList(travelerId, cuentasActivas())
+  if (ligeros) {
+    for (const v of ligeros) if (!v.ligero) recordarBase(v.id, v.route)
+    return ligeros
+  }
 
   // Con las cuentas encendidas se piden también los viajes donde esta persona es invitada (la base de datos solo deja ver los suyos y esos); si no, solo los suyos, como siempre.
   const conInvitados = cuentasActivas()
@@ -187,6 +210,18 @@ function filaAViaje(row: FilaDeViaje, travelerId: string, conInvitados: boolean)
  * (Tanda 10N §10) UN viaje, tal como está ahora en la nube: lo que llega en directo cuando otra persona del viaje lo cambia. `null` si ya no se puede ver (te han quitado, o se borró);
  * `undefined` si no se pudo preguntar (sin conexión: se sigue con lo que hay).
  */
+/** El viaje ENTERO de una lista ligera (lo pide la app al abrirlo). Si ya es entero, el mismo; el de la lista se sustituye por el entero. Lanza si no se puede (sin red / servidor caído): quien llama decide. */
+export async function viajeEntero(viaje: SavedTrip): Promise<SavedTrip> {
+  if (!viaje.ligero) return viaje
+  const r = await loadOneTrip(useSyncStore.getState().travelerId ?? '', viaje.id)
+  if (r === undefined) throw new Error('No llegamos al servidor (timeout).')
+  if (r === null) throw new Error('Ese viaje ya no se puede ver.')
+  const lista = useSyncStore.getState().savedTrips
+  if (lista) useSyncStore.getState().setSavedTrips(lista.map((v) => (v.id === viaje.id ? r.viaje : v)))
+  rutaVista.set(viaje.id, r.canonica)
+  return r.viaje
+}
+
 export async function loadOneTrip(travelerId: string, tripId: string): Promise<{ viaje: SavedTrip; canonica: string } | null | undefined> {
   if (!supabase) return undefined
   const { data, error } = await supabase.from('trips').select('id, traveler_id, guardado_en, updated_at, route, bookings, wishlist, ui_state, generation_state').eq('id', tripId).maybeSingle()
@@ -248,6 +283,8 @@ export const rutaGuardadaAqui = (tripId: string): string | undefined => ultimoGu
  */
 export async function saveTrip(travelerId: string, tripId: string | null, payload: TripPayload): Promise<string> {
   if (!supabase) throw new Error('Supabase no configurado.')
+  // (V1b) La ruta ligera de la lista de viajes NUNCA se guarda: pisaría el viaje de verdad con uno sin detalle.
+  if (payload.route?.ligero) throw new Error('Esa ruta es la ligera de la lista de viajes: no se guarda.')
 
   const row = {
     route: payload.route,

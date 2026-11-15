@@ -967,6 +967,8 @@ export type TripDefaultTransport = 'public' | 'car'
 
 export interface Route {
   id: string
+  /** (V1b) true en la ruta LIGERA que baja la lista de viajes al abrir la app (sin el detalle de cada día): sirve para «Mis viajes» y el Perfil, NUNCA se abre ni se guarda; el viaje entero se pide al abrirlo. */
+  ligero?: boolean
   destination: string
   country: string
   origin: string

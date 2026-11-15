@@ -1,6 +1,6 @@
 import { fetchPlaceDetail } from './placeDetailApi'
 import { numberedStopsOf } from './stopKind'
-import type { TripPayload } from './tripPersistence'
+import type { SavedTrip, TripPayload } from './tripPersistence'
 import type { DayPlan, Route } from './types'
 
 /**
@@ -45,6 +45,68 @@ const envolver = <T,>(pet: IDBRequest<T>): Promise<T | null> =>
     pet.onsuccess = () => resolver(pet.result)
     pet.onerror = () => resolver(null)
   })
+
+/**
+ * (V1b, 15-nov) LA LISTA DE «MIS VIAJES», GUARDADA EN EL MÓVIL (la versión ligera que baja la app al abrir): sin red o con el servidor caído, «Mis viajes» sigue enseñando todos los viajes. Base aparte
+ * (`trazo-lista-viajes`) para no tocar la de HOY. Se borra al cerrar sesión.
+ */
+const BASE_LISTA = 'trazo-lista-viajes'
+const TABLA_LISTA = 'lista'
+
+function abrirBaseLista(): Promise<IDBDatabase | null> {
+  return new Promise((resolver) => {
+    if (typeof indexedDB === 'undefined') return resolver(null)
+    try {
+      const pet = indexedDB.open(BASE_LISTA, 1)
+      pet.onupgradeneeded = () => pet.result.createObjectStore(TABLA_LISTA, { keyPath: 'clave' })
+      pet.onsuccess = () => resolver(pet.result)
+      pet.onerror = () => resolver(null)
+    } catch {
+      resolver(null)
+    }
+  })
+}
+
+export async function guardarListaDeViajes(viajes: SavedTrip[]): Promise<boolean> {
+  const bd = await abrirBaseLista()
+  if (!bd) return false
+  try {
+    return await new Promise<boolean>((resolver) => {
+      const tx = bd.transaction(TABLA_LISTA, 'readwrite')
+      tx.objectStore(TABLA_LISTA).put({ clave: 'lista', guardadoEn: new Date().toISOString(), viajes })
+      tx.oncomplete = () => resolver(true)
+      tx.onerror = () => resolver(false)
+      tx.onabort = () => resolver(false)
+    })
+  } finally {
+    bd.close()
+  }
+}
+
+export async function leerListaDeViajes(): Promise<SavedTrip[] | null> {
+  const bd = await abrirBaseLista()
+  if (!bd) return null
+  try {
+    const fila = (await envolver(bd.transaction(TABLA_LISTA, 'readonly').objectStore(TABLA_LISTA).get('lista'))) as { viajes?: SavedTrip[] } | null
+    return Array.isArray(fila?.viajes) ? fila.viajes : null
+  } finally {
+    bd.close()
+  }
+}
+
+export async function borrarListaDeViajes(): Promise<void> {
+  if (typeof indexedDB === 'undefined') return
+  await new Promise<void>((resolver) => {
+    try {
+      const pet = indexedDB.deleteDatabase(BASE_LISTA)
+      pet.onsuccess = () => resolver()
+      pet.onerror = () => resolver()
+      pet.onblocked = () => resolver()
+    } catch {
+      resolver()
+    }
+  })
+}
 
 /** Pura: ¿hoy cae dentro del viaje (con unos días de gracia por detrás)? */
 export function hoyCaeEnElViaje(desde: string | null, hasta: string | null, hoyIso: string): boolean {

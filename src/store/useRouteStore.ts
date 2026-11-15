@@ -1181,6 +1181,16 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     }),
 
   hydrateTrip: (payload) => {
+    // (V1b, 15-nov) Un viaje de la lista ligera (sin el detalle de los días) NO se abre tal cual: se pide el viaje entero y se abre ese. Así ninguna ruta ligera llega nunca a la pantalla ni al guardado.
+    if (payload.route?.ligero) {
+      void import('../lib/tripPersistence')
+        .then((m) => m.viajeEntero(payload as import('../lib/tripPersistence').SavedTrip))
+        .then((entero) => get().hydrateTrip(entero))
+        .catch(() => {
+          void import('./useSyncStore').then((s) => s.useSyncStore.getState().setError('No se ha podido abrir el viaje. Comprueba la conexión e inténtalo de nuevo.'))
+        })
+      return
+    }
     const reservas = reservasConDefectos(payload.bookings)
     const ui = uiConDefectos(payload.uiState)
     set({

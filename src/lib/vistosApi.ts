@@ -59,14 +59,32 @@ export async function listarMisVistos(tripId: string): Promise<VistoDeParada[]> 
  */
 export async function copiarVistosDeLosViajes(uid: string): Promise<number> {
   if (!supabase) return 0
+  // (V1b, 15-nov) Se hace UNA vez por cuenta y móvil: antes se bajaban TODAS las rutas enteras en cada entrada y en cada renovación de la sesión (cada hora).
+  const marca = `trazo:vistos:copiados:${uid}`
+  try {
+    if (window.localStorage.getItem(marca)) return 0
+  } catch {
+    /* sin almacenamiento: se hace igual */
+  }
   try {
     const { data, error } = await supabase.from('trips').select('id, route').eq('traveler_id', uid)
     if (error || !data) return 0
     const filas = (data as { id: string; route: Route }[]).flatMap((viaje) =>
       vistosDeLaRuta(viaje.id, viaje.route).map((v) => ({ trip_id: v.tripId, day_id: v.dayId, stop_id: v.stopId, visto_en: v.vistoEn })),
     )
-    if (filas.length === 0) return 0
+    const hecho = () => {
+      try {
+        window.localStorage.setItem(marca, new Date().toISOString())
+      } catch {
+        /* sin almacenamiento: se repetirá */
+      }
+    }
+    if (filas.length === 0) {
+      hecho()
+      return 0
+    }
     const { error: errorCopia } = await supabase.from('stop_visits').upsert(filas, { onConflict: 'user_id,trip_id,stop_id', ignoreDuplicates: true })
+    if (!errorCopia) hecho()
     return errorCopia ? 0 : filas.length
   } catch {
     return 0

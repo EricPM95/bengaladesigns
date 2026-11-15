@@ -588,6 +588,7 @@ function limpiarElMovil(): void {
 
 export async function cerrarSesion(): Promise<void> {
   olvidarRespaldoDeSesion() // (V1) a propósito: sin respaldo, la app no la recupera
+  await import('./sinConexion').then((m) => m.borrarListaDeViajes()).catch(() => undefined) // (V1b) la lista de viajes del móvil es de esta cuenta
   try {
     await supabase?.auth.signOut()
   } finally {

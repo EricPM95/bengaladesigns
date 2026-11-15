@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
-import { bootstrapTraveler, loadAllTrips, saveTrip, type TripPayload } from '../../lib/tripPersistence'
+import { bootstrapTraveler, loadAllTrips, saveTrip, viajeEntero, type TripPayload } from '../../lib/tripPersistence'
 import { supabase } from '../../lib/supabaseClient'
 import { getTodayTripContext, getTodayTripStatus } from '../../lib/todayMode'
 import { todayIso } from '../../lib/dateRange'
@@ -118,6 +118,18 @@ export function TripSync() {
     }
   }
 
+  /** (V1b) Sin red o con el servidor caído: «Mis viajes» sigue con la lista guardada en el móvil (ningún viaje desaparece). */
+  const ponerListaDelMovil = async (): Promise<void> => {
+    try {
+      if (useSyncStore.getState().savedTrips) return
+      const { leerListaDeViajes } = await import('../../lib/sinConexion')
+      const lista = await Promise.race([leerListaDeViajes(), new Promise<null>((resolver) => window.setTimeout(() => resolver(null), 3000))])
+      if (lista && lista.length > 0 && !useSyncStore.getState().savedTrips) useSyncStore.getState().setSavedTrips(lista)
+    } catch {
+      /* sin lista guardada */
+    }
+  }
+
   useEffect(() => {
     // Sin Supabase, o en el modo de pruebas (`?logrosDemo=1`, solo desarrollo): sin guardado en la nube. (Con el Supabase de verdad y sin la migración 0024, leer los viajes falla y salía «Cambios sin guardar» en las capturas.)
     if (!supabase || demoActivo()) {
@@ -133,6 +145,7 @@ export function TripSync() {
         // (HOY1, apartado 9) Sin red desde el principio: no se espera al servidor, se abre con lo guardado en el móvil.
         if (typeof navigator !== 'undefined' && navigator.onLine === false && (await abrirDesdeElMovil())) {
           if (cancelled) return
+          void ponerListaDelMovil()
           hydratedRef.current = true
           useSyncStore.getState().setStatus('idle')
           useSyncStore.getState().setCargaInicialHecha(true)
@@ -148,6 +161,8 @@ export function TripSync() {
         const trips = await loadAllTrips(id)
         if (cancelled) return
         useSyncStore.getState().setSavedTrips(trips)
+        // (V1b) La lista (ligera) se guarda en el móvil para verla sin red.
+        void import('../../lib/sinConexion').then((m) => m.guardarListaDeViajes(trips)).catch(() => undefined)
         // (Tanda 10N3 §2.3) La propuesta sin enviar de un viaje que ya no se ve (te quitaron, o saliste) se borra de este móvil.
         if (cuentasActivas()) limpiarPropuestasHuerfanas(trips.map((trip) => trip.id))
 
@@ -173,7 +188,7 @@ export function TripSync() {
 
           if (delEnlace) {
             useSyncStore.getState().setActiveTripId(delEnlace.id)
-            hydrateTrip(delEnlace)
+            hydrateTrip(await viajeEntero(delEnlace)) // (V1b) la lista es ligera: el viaje que se abre se pide entero
             useRouteStore.getState().setMode('route')
             useRouteStore.getState().setActiveDayId(null)
           } else if (resumable && resumable.generationState) {
@@ -186,13 +201,13 @@ export function TripSync() {
             setScreen('loading')
           } else if (todayTrip) {
             useSyncStore.getState().setActiveTripId(todayTrip.id)
-            hydrateTrip(todayTrip)
+            hydrateTrip(await viajeEntero(todayTrip))
             // (Tanda 10G: si hoy es un día del viaje, al abrir la app sale HOY, aunque antes estuvieras en otra pestaña.)
             useRouteStore.getState().setMode('today')
           } else if (donde.tipo === 'ruta') {
             // (Tanda 10K: el viaje POR DELANTE más cercano en fecha, en RUTA y sin día elegido; sin fechas cuenta como por delante: el último que tocó.)
             useSyncStore.getState().setActiveTripId(donde.viaje.id)
-            hydrateTrip(donde.viaje)
+            hydrateTrip(await viajeEntero(donde.viaje))
             useRouteStore.getState().setMode(donde.modo)
             useRouteStore.getState().setActiveDayId(null)
           } else if (donde.tipo === 'misViajes') {
@@ -209,6 +224,7 @@ export function TripSync() {
         if (cancelled) return
         // (V1, 15-nov) El servidor no contesta (tiempo de espera, «upstream request timeout», sin red): NO se enseña el formulario de crear viaje a quien ya tiene cuenta, ni se cierra su sesión. Se enseña lo guardado en el móvil (HOY de hoy) con «No llegamos al servidor…» y se reintenta sola cada 20 s.
         const sinServidor = esFalloDeServidor(err)
+        void ponerListaDelMovil()
         if (sinServidor) {
           useSyncStore.getState().setSinServidor(true)
           reintento = window.setTimeout(() => void arrancar(), 20000)
@@ -275,7 +291,10 @@ export function TripSync() {
           useSyncStore.getState().setSinServidor(false)
           return loadAllTrips(id)
         })
-        .then((trips) => useSyncStore.getState().setSavedTrips(trips))
+        .then((trips) => {
+          useSyncStore.getState().setSavedTrips(trips)
+          void import('../../lib/sinConexion').then((m) => m.guardarListaDeViajes(trips)).catch(() => undefined)
+        })
         .catch(() => undefined)
     }
     window.addEventListener('online', retry)

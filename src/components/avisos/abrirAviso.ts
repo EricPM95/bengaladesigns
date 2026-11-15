@@ -28,7 +28,10 @@ export async function abrirAviso(aviso: AvisoDeCuenta): Promise<string | null> {
       const viaje = sync.savedTrips?.find((v) => v.id === tripId)
       if (!viaje) return 'No encontramos ese viaje.'
       sync.setActiveTripId(tripId)
-      useRouteStore.getState().hydrateTrip(viaje)
+      // (V1b) Con la lista ligera, el viaje entero se pide antes de abrirlo.
+      const entero = viaje.ligero ? await import('../../lib/tripPersistence').then((m) => m.viajeEntero(viaje)).catch(() => null) : viaje
+      if (!entero) return 'No se ha podido abrir el viaje. Comprueba la conexión e inténtalo de nuevo.'
+      useRouteStore.getState().hydrateTrip(entero)
     }
     await useViajeCompartido.getState().cargar(tripId)
     const rec = useViajeCompartido.getState().recomendaciones.find((r) => r.id === p.rec_id)

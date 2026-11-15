@@ -220,7 +220,7 @@ console.log('5. Si la ruta cambia, los avisos del día se recalculan')
 
 /* ─────────────────────────── 6. El servicio ─────────────────────────── */
 console.log('6. El servicio: pase, interruptor, nada repetido, reintentos, día de prueba, rutas')
-const ENV = { PUSH_ACTIVO: 'true', VAPID_PUBLIC_KEY: 'clave-publica-de-mentira', VAPID_PRIVATE_KEY: 'clave-privada-de-mentira', VAPID_CONTACTO: 'mailto:prueba@example.test', CRON_SECRET: 'secreto-de-mentira' }
+const ENV = { PASES_COBRO_ACTIVO: 'true', PUSH_ACTIVO: 'true', VAPID_PUBLIC_KEY: 'clave-publica-de-mentira', VAPID_PRIVATE_KEY: 'clave-privada-de-mentira', VAPID_CONTACTO: 'mailto:prueba@example.test', CRON_SECRET: 'secreto-de-mentira' }
 function mundo({ pases = [{ estado: 'activo', destino: 'Lanzarote' }], subs = [{ endpoint: 'https://push.example.test/1', claves: { p256dh: 'a', auth: 'b' } }], prueba = null, admins = [], route = ERIC, reservations = RESERVAS_ERIC, env = ENV, falloDeEnvio = null, meteos = {}, viajes = null, miembros = [] } = {}) {
   const enviados = []
   const llamadasTiempo = []

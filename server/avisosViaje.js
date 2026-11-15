@@ -9,12 +9,13 @@
  *
  * Cómo no se repite nada: cada aviso se «reserva» ANTES de mandarse en `avisos_viaje_enviados` (clave única por persona, viaje y aviso; migración 0074): si ya estaba, no se manda. Si no se pudo entregar a ningún móvil, se libera y se
  * reintenta al minuto siguiente (hasta 30 min tarde: pasado eso el aviso ya no vale). Si el viajero cambia la ruta, la huella del viaje cambia y la vuelta siguiente rehace su plan (V1: antes se recalculaba entero en cada minuto).
- * Quién recibe: el dueño del viaje, con el pase de ese destino (o el administrador, o el día de prueba, y solo ese día), con el interruptor «Avisos en el móvil» encendido (= tiene una suscripción) y con PUSH_ACTIVO=true.
+ * (V1b) Con el cobro apagado (PASES_COBRO_ACTIVO=false) reciben todos los que tengan «Avisos en el móvil» activado. Con el cobro encendido: el dueño del viaje, con el pase de ese destino (o el administrador, o el día de prueba, y solo ese día), con el interruptor «Avisos en el móvil» encendido (= tiene una suscripción) y con PUSH_ACTIVO=true.
  */
 import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { tokenDe, quienEs } from './cuentas.js'
+import { cobroActivo } from './logros/pase.js'
 import { pushEncendido } from './avisos.js'
 import { tiempoPorHoras, coordenadasValidas } from './tiempo.js'
 import { addDias, avisosDebidos, localDe, MAX_RETRASO_MIN, planDelViaje, TIEMPO_NOCHE_MIN, ZONA_POR_DEFECTO } from '../shared/avisos/avisosDelViaje.js'
@@ -103,6 +104,8 @@ export function crearServicioAvisosViaje({ admin, destinos = {}, ahora = () => n
 
   /** ¿Con qué días se avisa a esta persona en este viaje? null = a ninguno; [] = todos; [fecha] = solo el día de prueba. */
   async function diasConAviso(uid, viaje, caches) {
+    // (V1b, 15-nov; la regla del 7-nov) Con PASES_COBRO_ACTIVO=false todo está abierto menos leer documentos: los avisos también. Con el cobro encendido, como siempre: pase del destino, administrador o día de prueba.
+    if (!cobroActivo(env)) return []
     const destino = String(viaje.route?.destination ?? '').toLowerCase()
     if (!caches.pases.has(uid)) caches.pases.set(uid, (await rpc('pases_de', { p_uid: uid }).catch(() => [])) ?? [])
     if (caches.pases.get(uid).some((p) => p.estado === 'activo' && String(p.destino).toLowerCase() === destino)) return []
