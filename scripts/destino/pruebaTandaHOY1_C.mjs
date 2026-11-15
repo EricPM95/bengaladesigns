@@ -346,7 +346,7 @@ if (PARTE === 'todas' || PARTE === '2') {
       debe(fichas >= 3, `sin internet: las fichas de las paradas de hoy quedan guardadas en el móvil (${fichas})`)
       const conHistoria = await ev("Object.keys(localStorage).filter((k) => k.startsWith('place-detail:v2:lanzarote')).filter((k) => { try { return JSON.parse(localStorage.getItem(k))?.historia } catch { return false } }).length")
       debe(conHistoria >= 1, `sin internet: …y el texto de las historias va dentro de la ficha (${conHistoria} con historia)`)
-      debe(!(await hay(ev, '[data-sin-conexion]')), 'sin internet: con conexión la línea no sale')
+      debe(!(await hay(ev, '[data-sin-conexion]:not([data-sin-servidor])')), 'sin internet: con conexión la línea no sale')
 
       // Sin cobertura (el Chrome de prueba, sin red)
       await a.cdp('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0 })
@@ -368,7 +368,7 @@ if (PARTE === 'todas' || PARTE === '2') {
       const fuera = await ev(`(async () => { const S = await import('/src/lib/sinConexion.ts'); return { dentro: S.hoyCaeEnElViaje('2026-11-08', '2026-11-13', '2026-11-10'), gracia: S.hoyCaeEnElViaje('2026-11-08', '2026-11-13', '2026-11-15'), pasado: S.hoyCaeEnElViaje('2026-11-08', '2026-11-13', '2026-11-16'), antes: S.hoyCaeEnElViaje('2026-11-08', '2026-11-13', '2026-11-07'), sin: S.hoyCaeEnElViaje(null, null, '2026-11-10'), nada: await S.leerLoDeHoy('2030-01-01') } })()`)
       debe(fuera.dentro && fuera.gracia && !fuera.pasado && !fuera.antes && !fuera.sin && fuera.nada === null, 'sin internet: solo se abre el viaje al que pertenece hoy (con 2 días de gracia por detrás)')
       await a.cdp('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 })
-      await a.hasta("!document.querySelector('[data-sin-conexion]')", { segundos: 15, lanzar: 'la línea no se va al volver la conexión' })
+      await a.hasta("!document.querySelector('[data-sin-conexion]:not([data-sin-servidor])')", { segundos: 15, lanzar: 'la línea no se va al volver la conexión' })
       debe(true, 'sin internet: al volver la conexión la línea se va')
       // Sin nada guardado, no se promete
       await ev("new Promise((r) => { const p = indexedDB.deleteDatabase('trazo-hoy-offline'); p.onsuccess = () => r(true); p.onerror = () => r(false); p.onblocked = () => r(true) })")

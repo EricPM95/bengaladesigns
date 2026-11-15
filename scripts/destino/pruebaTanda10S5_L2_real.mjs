@@ -7,6 +7,11 @@
 //   node scripts/destino/pruebaTanda10S5_L2_real.mjs
 import fs from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
+// (15-nov, limpieza de cuentas de prueba) Esta prueba usa el Supabase REAL (crea cuentas y viajes en producción): solo corre a mano, con PERMITIR_SUPABASE_REAL=1.
+if (process.env.PERMITIR_SUPABASE_REAL !== '1') {
+  console.log('SALTADA: usa el Supabase real. Solo corre a mano con PERMITIR_SUPABASE_REAL=1 (crea cuentas y viajes de prueba en producción).')
+  process.exit(0)
+}
 
 const env = { ...process.env }
 try {

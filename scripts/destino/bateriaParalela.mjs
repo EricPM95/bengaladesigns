@@ -91,8 +91,13 @@ function usaChrome(f, visitando = new Set()) {
 }
 /** Comparten el Supabase real (altas anónimas, cuentas de prueba, filas de verdad): van solas y al final. */
 // (Una prueba con Chrome que use el Supabase real —altas anónimas por cada Chrome nuevo, subida de fotos…— lo dice con la marca «USA EL SUPABASE REAL» en su cabecera: mirando solo el texto no se puede saber de otro modo.)
+/** (15-nov, limpieza de cuentas de prueba) Lo que usa el Supabase real NO se corre salvo con PERMITIR_SUPABASE_REAL=1: nunca más cuentas ni viajes de prueba en producción. */
+const usaSupabaseReal = (f) => /(_real|Real)\.mjs$/.test(f) || /USA EL SUPABASE REAL|admin\.createUser|signInAnonymously\(/.test(leer(f))
 const comparteAlgo = (f) => /(_real|Real)\.mjs$/.test(f) || /USA EL SUPABASE REAL|createClient\(|admin\.createUser|signInAnonymously\(|storage\.from\(/.test(leer(f))
-const compartidas = lista.filter(comparteAlgo)
+const permitirReal = process.env.PERMITIR_SUPABASE_REAL === '1'
+const saltadasPorReal = permitirReal ? [] : lista.filter(usaSupabaseReal)
+if (saltadasPorReal.length) console.log(`(Saltadas por usar el Supabase real, que ya no se toca desde las pruebas: ${saltadasPorReal.join(', ')}. Con PERMITIR_SUPABASE_REAL=1 corren a mano.)`)
+const compartidas = lista.filter(comparteAlgo).filter((f) => permitirReal || !usaSupabaseReal(f))
 const normales = lista.filter((f) => !comparteAlgo(f))
 const deNavegador = normales.filter((f) => usaChrome(f))
 const deNode = normales.filter((f) => !deNavegador.includes(f))

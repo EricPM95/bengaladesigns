@@ -12,6 +12,11 @@
 // Los miembros se meten con la clave de servicio (lo que hace `canjear_invitacion` por dentro) y el resto de funciones se llaman COMO cada cuenta, con sus reglas de seguridad reales.
 import fs from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
+// (15-nov, limpieza de cuentas de prueba) Esta prueba usa el Supabase REAL (crea cuentas y viajes en producción): solo corre a mano, con PERMITIR_SUPABASE_REAL=1.
+if (process.env.PERMITIR_SUPABASE_REAL !== '1') {
+  console.log('SALTADA: usa el Supabase real. Solo corre a mano con PERMITIR_SUPABASE_REAL=1 (crea cuentas y viajes de prueba en producción).')
+  process.exit(0)
+}
 
 const leerEnv = () => {
   const env = { ...process.env }

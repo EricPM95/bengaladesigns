@@ -118,6 +118,8 @@ export async function abrirApp(baseIn = 'http://localhost:5173', opciones = {}) 
   }
   await cdp('Page.enable')
   await cdp('Network.enable')
+  // (15-nov, limpieza de cuentas de prueba) Red de seguridad: este Chrome NO habla con Supabase de verdad (se crearían cuentas y viajes en producción). Con PERMITIR_SUPABASE_REAL=1 (a mano) sí.
+  if (process.env.PERMITIR_SUPABASE_REAL !== '1') await cdp('Network.setBlockedURLs', { urls: ['*://*.supabase.co/*'] })
   await cdp('Emulation.setFocusEmulationEnabled', { enabled: true })
   await cdp('Runtime.enable')
   await cdp('Emulation.setDeviceMetricsOverride', { width: opciones.ancho ?? 390, height: opciones.alto ?? 844, deviceScaleFactor: opciones.escala ?? 1, mobile: (opciones.ancho ?? 390) < 700 })
