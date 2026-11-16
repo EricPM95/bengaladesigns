@@ -60,10 +60,10 @@ function TarjetaDeReto({ reto, ancho, onAbrir }: { reto: RetoDeHoy; ancho: 'comp
         <span className="flex min-w-0 flex-1 flex-col gap-1.5">
           <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: ORO_TEXTO }}>RETO DEL DÍA</span>
           <b data-reto-nombre style={{ font: "400 22px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>
-            {reto.completable_hoy ? `Completa «${reto.nombre}»` : `«${reto.nombre}»`}
+            {reto.completable_hoy ? `Hoy puedes completar «${reto.nombre}»` : `«${reto.nombre}»`}
           </b>
-          <span data-reto-cuenta className="text-[13px] font-semibold" style={{ color: '#6E5018' }}>
-            {tengo} de {reto.total} · te {reto.faltan === 1 ? 'falta 1' : `faltan ${reto.faltan}`}
+          <span data-reto-cuenta className="text-[13px] font-bold" style={{ color: '#5A3E0C' }}>
+            {tengo} de {reto.total}
           </span>
         </span>
       </span>
@@ -79,21 +79,66 @@ function TarjetaDeReto({ reto, ancho, onAbrir }: { reto: RetoDeHoy; ancho: 'comp
   )
 }
 
-/** Debajo de la tarjeta principal: todos los retos del día; con más de uno, en fila con scroll horizontal. */
+/** «Y 3 colecciones más avanzan hoy» (el número real; «Y 1 colección más avanza hoy»). */
+export const textoColeccionesMas = (n: number): string => `Y ${n} ${n === 1 ? 'colección más avanza' : 'colecciones más avanzan'} hoy`
+
+/**
+ * (Tanda V2, H3) UN SOLO reto a la vista: el primero de la lista (el servidor ya la manda ordenada y sin colecciones de menos de 3 sitios:
+ * `elegirRetos` en server/logros/cerca.js). Debajo, «Y N colecciones más avanzan hoy ›» abre la lista de las demás; tocar una abre su álbum.
+ */
 export function RetoDelDia({ route }: { route: Route }) {
   const retos = useCompaneroStore((s) => s.cerca?.retos) ?? []
   const [abierto, setAbierto] = useState<string | null>(null)
+  const [lista, setLista] = useState(false)
   if (retos.length === 0) return null
+  const [principal, ...demas] = retos
   const reto = retos.find((r) => r.coleccion === abierto) ?? null
   return (
     <>
-      <div data-hoy-retos={retos.length} className={`flex flex-none gap-3 ${retos.length > 1 ? 'snap-x snap-mandatory overflow-x-auto pb-1' : ''}`} style={{ scrollbarWidth: 'none' }}>
-        {retos.map((r) => (
-          <TarjetaDeReto key={r.coleccion} reto={r} ancho={retos.length > 1 ? 'fila' : 'completa'} onAbrir={() => setAbierto(r.coleccion)} />
-        ))}
+      <div data-hoy-retos={retos.length} className="flex flex-none flex-col gap-3">
+        <TarjetaDeReto reto={principal} ancho="completa" onAbrir={() => setAbierto(principal.coleccion)} />
+        {demas.length > 0 && (
+          <button type="button" data-reto-mas={demas.length} onClick={() => setLista(true)} aria-label={`${textoColeccionesMas(demas.length)}: ver la lista`} className="flex min-h-11 items-center justify-center gap-1.5 text-[13px] font-semibold" style={{ color: ORO_TEXTO }}>
+            {textoColeccionesMas(demas.length)}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+        )}
       </div>
+      {lista && <ListaDeColecciones retos={demas} onElegir={(c) => { setLista(false); setAbierto(c) }} onCerrar={() => setLista(false)} />}
       {reto && <AlbumDeColeccion reto={reto} ciudad={route.destination} onCerrar={() => setAbierto(null)} />}
     </>
+  )
+}
+
+/** La hoja con las demás colecciones que avanzan hoy: insignia, nombre y «2 de 5». */
+function ListaDeColecciones({ retos, onElegir, onCerrar }: { retos: RetoDeHoy[]; onElegir: (coleccion: string) => void; onCerrar: () => void }) {
+  return createPortal(
+    <div data-reto-lista role="dialog" aria-modal="true" aria-label="Más colecciones de hoy" className="fixed inset-0 z-[90] flex items-end justify-center">
+      <div className="absolute inset-0" style={{ background: 'rgba(28,34,48,.4)' }} onClick={onCerrar} />
+      <div className="relative flex max-h-[80dvh] w-full max-w-[520px] flex-col gap-2.5 overflow-y-auto rounded-t-[28px] px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3" style={{ background: '#FBF3E2', boxShadow: '0 -10px 30px -12px rgba(0,0,0,.4)', scrollbarWidth: 'none' }}>
+        <span className="h-1 w-[42px] flex-none self-center rounded bg-[rgba(28,34,48,.18)]" aria-hidden="true" />
+        <button type="button" onClick={onCerrar} aria-label="Cerrar" className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#1C2230]/8">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+        <span style={{ font: "400 26px/1.1 'Instrument Serif',serif" }} className="pr-12 pt-1">{textoColeccionesMas(retos.length)}</span>
+        {retos.map((r) => (
+          <button key={r.coleccion} type="button" data-reto-lista-item={r.coleccion} onClick={() => onElegir(r.coleccion)} className="flex min-h-14 items-center gap-3 rounded-[20px] p-2.5 text-left" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)' }}>
+            <span className="flex flex-none items-center justify-center" style={{ width: 48, height: 48 }}>
+              <Insignia coleccion={r.coleccion} ganados={r.sitios.filter((s) => s.ganado).map((s) => s.sitio)} completa={false} tam={48} />
+            </span>
+            <b className="min-w-0 flex-1 text-[15px] font-semibold leading-[1.2]">{r.nombre}</b>
+            <span data-reto-lista-cuenta className="flex-none text-[13px] font-bold" style={{ color: '#5A3E0C' }}>
+              {r.total - r.faltan} de {r.total}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>,
+    document.body,
   )
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { createPortal } from 'react-dom'
+import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { catalogoEnMemoria } from '../../../../lib/destinationPlacesApi'
 import { addDaysToIso } from '../../../../lib/dateRange'
@@ -38,7 +38,6 @@ import { HojaComerAhora } from './ComerAhora'
 
 const TINTA = '#1C2230'
 const MARFIL = '#FBF3E2'
-const ORO_CLARO = '#F3D88F'
 const BOTON_ORO = { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }
 const BOTON_MARFIL = { background: MARFIL, border: '1px solid rgba(181,138,46,.55)', color: '#4A3510' }
 
@@ -158,28 +157,15 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
   )
 }
 
-/** «Plan actualizado · Deshacer» (30): el aviso de abajo después de cada cambio. Se va solo a los 12 segundos. */
+/** «Plan actualizado · Deshacer» (30): el aviso de abajo después de cada cambio. (V2, H5) Ya no se pinta aquí: entra en la cola de avisos de abajo (uno a la vez) y lo enseña `AvisoDeAbajoHost`. */
 export function AvisoPlanActualizado({ texto, conDeshacer }: { texto: string; conDeshacer: boolean }) {
   useEffect(() => {
-    const id = window.setTimeout(cerrarAviso, 12000)
-    return () => window.clearTimeout(id)
-  }, [texto])
-  return createPortal(
-    <div className="pointer-events-none fixed inset-x-0 bottom-24 z-[80] flex justify-center px-[18px]">
-      <div data-plan-actualizado className="pointer-events-auto flex min-h-12 w-full max-w-[430px] items-center rounded-[14px] px-3.5 text-[13.5px] font-medium" style={{ background: TINTA, color: MARFIL }}>
-        <span className="flex-1">{texto}</span>
-        {conDeshacer && (
-          <button type="button" onClick={() => deshacerUltimo()} data-plan-deshacer className="flex h-11 items-center font-bold" style={{ color: ORO_CLARO }}>
-            Deshacer
-          </button>
-        )}
-      </div>
-    </div>,
-    document.body,
-  )
+    avisarAbajo({ id: `plan:${texto}`, texto, ms: 12000, accion: conDeshacer ? { etiqueta: 'Deshacer', alTocar: () => deshacerUltimo() } : undefined, alIrse: cerrarAviso })
+  }, [texto, conDeshacer])
+  return null
 }
 
-/** (HOY2, C) El «Plan actualizado · Deshacer» de abajo, UNO solo para todo HOY (lo montan HoyDuranteV2 y nadie más): lo usan [Cambiar plan], «Quiero comer ahora», la solución de una entrada en peligro y el plan de lluvia. */
+/** (HOY2, C) El «Plan actualizado · Deshacer» de abajo, UNO solo para todo HOY (lo montan HoyDuranteV2 y nadie más): lo usan [Cambiar plan], «Quiero comer ahora», la solución de una entrada en peligro y el plan d… */
 export function AvisoPlanActualizadoGlobal() {
   const aviso = useCambiarPlanStore((s) => s.aviso)
   return aviso ? <AvisoPlanActualizado texto="Plan actualizado" conDeshacer /> : null

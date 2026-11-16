@@ -13,7 +13,6 @@ import { HoyDurante } from './HoyDurante'
 import { HoyDespues } from './HoyDespues'
 import { hoyV2Activo } from '../../../lib/hoyV2'
 import { HoyV2 } from './v2/HoyV2'
-import { BotonCamaHoy } from './BotonCamaHoy'
 import { BotonCamaraViaje } from './CamaraViaje'
 
 /**
@@ -31,8 +30,8 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
   // (Tanda 10N4 §1) Mientras no se sabe lo del pase, HOY no se pinta ni «con pase» ni «sin pase» (sin parpadeo).
   if (pase.sabido === false) return <div className="min-h-0 flex-1" data-hoy="cargando" />
   const completa = pagoActivo()
-  // (HOY1) El título deja sitio a la derecha: a la cámara de viaje (siempre) y, durante el viaje, al botón de la cama.
-  const envoltorio = (conCama: boolean) => `relative flex min-h-0 flex-1 flex-col ${conCama ? '[&_[data-hoy-cabecera]]:pr-[112px] [&_[data-titulo-del-dia]]:pr-[112px]' : '[&_[data-hoy-cabecera]]:pr-16 [&_[data-titulo-del-dia]]:pr-16'}`
+  // (V2) Encima de la foto, nada: ni la cámara ni la cama van ya arriba; la cámara es un flotante (CamaraViaje.tsx) y la cama es la fila «Volver al alojamiento» al final de HOY.
+  const envoltorio = (conCama: boolean) => (conCama ? 'relative flex min-h-0 flex-1 flex-col' : 'relative flex min-h-0 flex-1 flex-col')
   // Sin el pase (Tanda 10C): la pestaña está, y enseña lo de antes del viaje y la invitación al pase.
   const fila = !completa
     ? filaDeHoySinPase({ fase: estado?.startIso ? (estado.phase ?? null) : null, hoyIso: simulada ?? todayIso(), inicioIso: estado?.startIso ?? null, prueba: pase.prueba ?? { estado: pase.pruebaGastada ? 'gastada' : 'pendiente' }, tripId, destino: route.destination })
@@ -59,7 +58,6 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
     return (
       <div className={envoltorio(conCama)} data-hoy-con-cama={conCama ? '1' : undefined} data-hoy-con-camara="1">
         <HoyV2 route={route} onPonFechas={onPonFechas} />
-        {conCama && <BotonCamaHoy route={route} />}
         {camara}
       </div>
     )
@@ -83,7 +81,6 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
   return (
     <div className={envoltorio(conCama)} data-hoy-con-cama={conCama ? '1' : undefined} data-hoy-con-camara="1">
       {contenido}
-      {conCama && <BotonCamaHoy route={route} />}
       {camara}
     </div>
   )

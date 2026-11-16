@@ -16,7 +16,8 @@ import { useRouteStore } from '../../store/useRouteStore'
  * Una pantalla entera nueva que deba llevar los botones encima solo tiene que llevar `data-flotantes`. Las que no lo llevan los esconden (Perfil, Ajustes, películas…).
  */
 const HOJAS = '[role="dialog"]:not([data-flotantes]), [role="alertdialog"], [data-hoja], .map-cover-overlay.items-end'
-const BOTONES_A_ESQUIVAR = '[data-hoy-siguiente] button, [data-hoy-siguiente] a, [data-hoy-llegada-tarde] button, [data-hoy-todo-visto] button, [data-hoy-llegada] button, [data-escuchar-barra], [data-evitar-flotantes]'
+// (V2) HOY ya no esquiva: los flotantes se quedan quietos y HOY deja espacio libre al final para que con el scroll nada quede tapado.
+const BOTONES_A_ESQUIVAR = '[data-evitar-flotantes]'
 /** Lo que sube el lápiz sobre el botón de los logros (58 px de botón + 12 de aire). */
 export const SOBRE_LOS_LOGROS = 70
 const LADO = 58

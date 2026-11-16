@@ -86,8 +86,18 @@ async function ir(a, { min = 715, mut = '', pos = null, perm = 'denied', tiempo 
   await ev(`${R}.getState().setMode('today')`)
   await a.esp(2800)
 }
-const txt = (a, sel) => a.evaluar(`document.querySelector(${JSON.stringify(sel)})?.innerText.replace(/\\s+/g, ' ').trim() ?? null`)
-const hay = (a, sel) => a.evaluar(`Boolean(document.querySelector(${JSON.stringify(sel)}))`)
+// V2 (apartado 4): arriba solo se ve 1 aviso; el resto espera en «N avisos más». Para leer un aviso concreto se despliega esa lista antes (si hay algo plegado).
+const desplegar = async (a) => {
+  if (await a.evaluar("(() => { const b = document.querySelector('[data-hoy-aviso-mas]'); if (!b) return false; b.click(); return true })()")) await a.esp(350)
+}
+const txt = async (a, sel) => {
+  await desplegar(a)
+  return a.evaluar(`document.querySelector(${JSON.stringify(sel)})?.innerText.replace(/\\s+/g, ' ').trim() ?? null`)
+}
+const hay = async (a, sel) => {
+  await desplegar(a)
+  return a.evaluar(`Boolean(document.querySelector(${JSON.stringify(sel)}))`)
+}
 const cuantos = (a, sel) => a.evaluar(`document.querySelectorAll(${JSON.stringify(sel)}).length`)
 const clic = (a, sel) => a.evaluar(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return false; e.click(); return true })()`)
 const hoja = async (a) => {
@@ -243,10 +253,10 @@ try {
     // Lo imprescindible no se quita sin preguntar
     const quitadas = d.stops.filter((s) => s.saltada).map((s) => s.n)
     debe(!quitadas.some((n) => /Mirador del R[ií]o/.test(n)), '24 prioridad', `lo que se quita no es lo imprescindible (${quitadas.join(', ') || 'nada'})`)
-    const aviso = (await txt(a, '[data-plan-actualizado]')) ?? ''
+    const aviso = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
     debe(/Plan actualizado/.test(aviso) && /Deshacer/.test(aviso), '30 aviso', `«Plan actualizado · Deshacer» (${aviso})`)
-    debe((await cuantos(a, '[data-plan-actualizado]')) === 1, '30 aviso', 'y solo uno')
-    await clic(a, '[data-plan-deshacer]')
+    debe((await cuantos(a, '[data-aviso-de-abajo]')) === 1, '30 aviso', 'y solo uno')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(800)
     debe((await snap()) === inicio, 'deshacer', '[Deshacer] deja el día (y los demás) como estaba')
     // Volver a mi ruta original (dos cambios)
@@ -295,8 +305,8 @@ try {
     debe(/29\.23045/.test(href) && /driving/.test(href), 'Completa 4', `[Cómo llegar] va al restaurante en coche (${href.slice(0, 90)})`)
     debe(await hay(a, '[data-hoy-comida-cambiar]'), 'Completa 4', 'lleva [Cambiar]')
     debe(!ROMA.test((await txt(a, '[data-hoy-comida]')) ?? ''), 'sin_roma', 'sin textos de Roma')
-    const orden = await a.evaluar(`(() => { const r = document.querySelector('[data-hoy-v2]'); const t = Array.from(r.querySelectorAll('*')); const q = (s) => t.indexOf(r.querySelector(s)); return [q('[data-hoy-cabecera]'), q('[data-hoy-comida]'), q('[data-cerca-de-ti]'), q('[data-hoy-tu-dia]')] })()`)
-    debe(orden.every((x) => x >= 0) && orden.every((x, i) => i === 0 || x > orden[i - 1]), 'Completa 4', `orden: cabecera · comida · Cerca de ti · Tu día (${orden.join(',')})`)
+    const orden = await a.evaluar(`(() => { const r = document.querySelector('[data-hoy-v2]'); const t = Array.from(r.querySelectorAll('*')); const q = (s) => t.indexOf(r.querySelector(s)); return [q('[data-hoy-cabecera]'), q('[data-hoy-comida]'), q('[data-hoy-tu-dia]'), q('[data-cerca-de-ti]')] })()`)
+    debe(orden.every((x) => x >= 0) && orden.every((x, i) => i === 0 || x > orden[i - 1]), 'Completa 4', `orden (V2: antes Cerca de ti › Tu día): cabecera · comida · Tu día · Cerca de ti (${orden.join(',')})`)
     await capturaEntera(a, 'comer_c4_hora_de_comer')
     // [Cambiar] abre la misma hoja
     await clic(a, '[data-hoy-comida-cambiar]')
@@ -307,7 +317,7 @@ try {
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(1000)
     debe(/en .+/.test((await txt(a, '[data-hoy-comida-trayecto]')) ?? '') || (await hay(a, '[data-hoy-comida]')), 'Completa 4 cambiar', 'tras aplicarlo, la tarjeta sigue con el sitio nuevo')
-    await clic(a, '[data-plan-deshacer]')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(700)
     // Ya he comido: vuelve la parada
     await clic(a, '[data-hoy-comida-hecha]')
@@ -409,8 +419,8 @@ try {
     const jameos = d.stops.find((s) => s.n.startsWith('Jameos'))
     debe(jameos.saltada || jameos.t !== '10:00' || d.spare.length > 0, '29b aplicar', `Jameos ya no estorba antes del turno (${jameos.t}, saltada ${jameos.saltada}; spare ${d.spare.join(',')}; pregunta ${pregunta})`)
     debe(!(await hay(a, '[data-hoy-peligro]')), '29b resuelto', 'tras aplicarlo, el peligro se va')
-    debe(/Plan actualizado/.test((await txt(a, '[data-plan-actualizado]')) ?? ''), '30 aviso', '«Plan actualizado · Deshacer»')
-    await clic(a, '[data-plan-deshacer]')
+    debe(/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), '30 aviso', '«Plan actualizado · Deshacer»')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(800)
     debe((await snap()) === inicio, 'deshacer', '[Deshacer] deja el día como estaba')
     debe(await hay(a, '[data-hoy-peligro]'), '29 vuelve', 'y el peligro vuelve a avisar, porque sigue siendo verdad')
@@ -466,9 +476,9 @@ try {
     debe(d.backup === 'lluvia', '32 aplicar', `se guarda la copia del día (${d.backup})`)
     debe(d.stops.find((s) => s.n.startsWith('Casa-Museo')).t === '16:14' && !d.stops.find((s) => s.n.startsWith('Casa-Museo')).saltada, '32 fija', 'la entrada reservada no se toca')
     debe(!d.stops.some((s) => /Har[ií]a y el Valle/.test(s.n)), '32 aplicar', 'lo que estaba al aire libre sale')
-    debe(/Plan actualizado/.test((await txt(a, '[data-plan-actualizado]')) ?? ''), '30 aviso', '«Plan actualizado · Deshacer»')
+    debe(/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), '30 aviso', '«Plan actualizado · Deshacer»')
     debe(await hay(a, '[data-tiempo-cambiado="lluvia"]'), '32 usando', 'y el aviso «Estás usando el plan de lluvia»')
-    await clic(a, '[data-plan-deshacer]')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(800)
     debe((await snap()) === inicio, 'deshacer', '[Deshacer] deja el día como estaba')
     // Aplicar de nuevo y dejar de llover: 32b
@@ -497,7 +507,7 @@ try {
     await a.esp(1000)
     d = await dia3()
     debe(d.backup === null && d.stops.some((s) => /Har[ií]a y el Valle/.test(s.n)), '32b aplicar', 'el plan de antes vuelve')
-    await clic(a, '[data-plan-deshacer]')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(800)
     debe((await snap()) === conLluvia, '32b deshacer', '[Deshacer] vuelve al plan de lluvia')
     // «Volver a mi ruta original» deja el día como estaba al empezar
@@ -565,9 +575,9 @@ try {
     await a.esp(900)
     const cambiado = await ev(`(async () => { const r = ${R}.getState().route; return JSON.stringify({ b: Boolean(r.days[0].rainBackup), n: r.days[0].stops.map((s) => s.name) }) })()`).then((x) => JSON.parse(x))
     debe(cambiado.b && cambiado.n.includes('Museo de prueba cubierto') && !cambiado.n.includes(await ev('window.__romaSale')), 'roma aplicar', 'Aplicar cambia el día y guarda la copia')
-    debe(/Plan actualizado/.test((await txt(a, '[data-plan-actualizado]')) ?? ''), 'roma 30', '«Plan actualizado · Deshacer»')
+    debe(/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), 'roma 30', '«Plan actualizado · Deshacer»')
     debe((await a.evaluar("document.querySelector('[data-aviso-lluvia]')?.getAttribute('data-aviso-lluvia-estado')")) === 'usando', 'roma usando', '«Estás usando la alternativa para la lluvia»')
-    await clic(a, '[data-plan-deshacer]')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(800)
     debe((await snap()) === roma0, 'roma deshacer', '[Deshacer] deja el día como estaba')
     await clic(a, '[data-aviso-lluvia] [data-ver-alternativa]')
@@ -581,7 +591,7 @@ try {
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(900)
     debe((await ev(`${R}.getState().route.days[0].rainBackup ? 1 : 0`)) === 0 && (await ev(`${R}.getState().route.days[0].stops.map((s) => s.name).includes(window.__romaSale)`)), 'roma 32b', 'el plan de antes vuelve')
-    await clic(a, '[data-plan-deshacer]')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(700)
     await clic(a, '[data-ver-plan]')
     await a.esp(600)

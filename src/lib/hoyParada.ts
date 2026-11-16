@@ -79,14 +79,14 @@ export function trayectoHasta(p: { siguiente: Stop; ubicacion: Coordinates | nul
     if (t && Number.isFinite(t.minutos) && !ubicacion) {
       const aparcar = t.aparcar_min ?? 0
       const km = Number.isFinite(t.km) ? Math.round(t.km) : null
-      return { modo: 'coche', min: t.minutos, km, aparcar, titulo: `En coche · ${t.minutos} min`, detalle: [km != null ? `${km} km` : null, aparcar ? `+${aparcar} min para aparcar` : null].filter(Boolean).join(' · ') || nombreDesde, totalMin: t.minutos + aparcar, desdeUbicacion: false }
+      return { modo: 'coche', min: t.minutos, km, aparcar, titulo: `En coche · ${t.minutos} min`, detalle: [km != null ? `${km} km` : null].filter(Boolean).join(' · ') || nombreDesde, totalMin: t.minutos + aparcar, desdeUbicacion: false }
     }
     if (reales && desde) {
       const m = haversineMeters(desde, siguiente.coordinates) * RODEO_COCHE
       const min = Math.max(1, Math.round(m / ((KM_POR_HORA_COCHE * 1000) / 60)))
       const km = Math.max(1, Math.round(m / 1000))
       const aparcar = siguiente.trayectoCoche?.aparcar_min ?? p.ida?.aparcar_min ?? 0
-      return { modo: 'coche', min, km, aparcar, titulo: `En coche · ${min} min`, detalle: [`${km} km`, aparcar ? `+${aparcar} min para aparcar` : null].filter(Boolean).join(' · '), totalMin: min + aparcar, desdeUbicacion: Boolean(ubicacion) }
+      return { modo: 'coche', min, km, aparcar, titulo: `En coche · ${min} min`, detalle: [`${km} km`].filter(Boolean).join(' · '), totalMin: min + aparcar, desdeUbicacion: Boolean(ubicacion) }
     }
     return null
   }
@@ -364,7 +364,7 @@ export function salidaDeCasa(p: { day: DayPlan; primera: Stop; zona: Coordinates
     if (!hora || !t) return null
     const aparcar = t.aparcar_min ?? 0
     const km = Number.isFinite(t.km) ? Math.round(t.km) : null
-    return { hora: horaCorta(hora), trayecto: { modo: 'coche', min: t.minutos, km, aparcar, titulo: `En coche · ${t.minutos} min`, detalle: [km != null ? `${km} km` : null, aparcar ? `+${aparcar} min para aparcar` : null].filter(Boolean).join(' · ') || null, totalMin: t.minutos + aparcar, desdeUbicacion: false } }
+    return { hora: horaCorta(hora), trayecto: { modo: 'coche', min: t.minutos, km, aparcar, titulo: `En coche · ${t.minutos} min`, detalle: [km != null ? `${km} km` : null].filter(Boolean).join(' · ') || null, totalMin: t.minutos + aparcar, desdeUbicacion: false } }
   }
   const inicio = minutosDe(primera.time)
   if (inicio == null || !zona || !hasRealCoordinates(zona) || !hasRealCoordinates(primera.coordinates)) return null

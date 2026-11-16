@@ -1,14 +1,13 @@
 import { Fragment, useEffect, useState, type ReactNode } from 'react'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import type { Reservation } from '../../../../lib/bookings'
-import { displayStopName, formatDuration } from '../../../../lib/format'
+import { displayStopName } from '../../../../lib/format'
 import { hasRealCoordinates } from '../../../../lib/distanceMock'
 import { formatWeekdayAbbrEs } from '../../../../lib/dateRange'
 import { logrosActivos } from '../../../../lib/logros'
 import { useRadioDeParada } from '../../../../lib/radiosDeHoy'
 import { useSyncStore } from '../../../../store/useSyncStore'
 import {
-  aplicarCambio,
   avisoDeSalida,
   cuentaDelDia,
   estaAqui,
@@ -19,14 +18,17 @@ import {
   tituloDeComida,
   trayectoHasta,
   urlComoLlegar,
-  type CambioDelDia,
   type FilaDeTuDia,
   type TrayectoDeParada,
 } from '../../../../lib/hoyParada'
 import { useLogrosStore } from '../../../../store/useLogrosStore'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { Icono } from '../../../ui/Icono'
-import { BotonFoto } from '../../fotos/BotonFoto'
+import type { HorarioDeParada } from '../../../../lib/horarioDeParada'
+import { abrirAvisoPase } from '../../../../lib/avisoPase'
+import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
+import { useHistoriaDeParada, type HistoriaDeParada } from './useHistoriaDeParada'
+import { textoDePedazos, usePedazosDeParada } from './usePedazosDeParada'
 import { fotoDeParada } from '../../../logros/visto/VistoFlujo'
 import { TuEntradaEnHoy } from '../TuEntradaEnHoy'
 import { HojaV2 } from './HojasV2'
@@ -44,7 +46,6 @@ const ORO = '#B58A2E'
 const ORO_TEXTO = '#8E6820'
 const OJO_MONO = { font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#6F4E37', textTransform: 'uppercase' as const }
 const BOTON_ORO = { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }
-const BOTON_MARFIL = { background: MARFIL, border: '1px solid rgba(181,138,46,.55)', color: '#4A3510' }
 
 /** La hora de ahora en minutos, al día (se refresca cada 30 s). */
 export function useAhoraMin(): number {
@@ -123,110 +124,90 @@ export function LineaDelLogro({ texto }: { texto: string }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* La tarjeta oscura de la siguiente parada                             */
+/* La tarjeta de la siguiente parada (V2: «Ya estás aquí» y «De camino») */
 /* ------------------------------------------------------------------ */
 
-function Insignia({ texto }: { texto: string }) {
-  return (
-    <span data-hoy-insignia className="absolute left-3.5 top-3 flex h-6 items-center rounded-full px-2.5" style={{ background: 'rgba(28,34,48,.72)', border: '1px solid rgba(243,216,143,.5)', color: ORO_CLARO, font: "700 10.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>
-      {texto}
-    </span>
-  )
-}
-
-/** (HOY2) La foto del lugar de arriba de la tarjeta (en «Por llegar» y en «Ya estás aquí»: ya no hay mapa); sin foto, el fondo de color de siempre. */
-function FotoDeLaParada({ parada, ciudad, dateIso }: { parada: Stop; ciudad: string; dateIso: string }) {
+/** La foto de la parada de arriba de la tarjeta (nunca el mapa; sin foto, el fondo de color de siempre) con su degradado. */
+function FotoDeLaParada({ parada, ciudad, dateIso, alto, children }: { parada: Stop; ciudad: string; dateIso: string; alto: number; children?: ReactNode }) {
   const foto = useFotoDeParada(parada, ciudad, dateIso)
   const [fallo, setFallo] = useState(false)
   return (
-    <div data-hoy-foto-parada className="relative h-[96px] overflow-hidden" style={{ background: 'linear-gradient(150deg,#6B5A44,#2A3141)' }}>
+    <div data-hoy-foto-parada className="relative overflow-hidden" style={{ height: alto, background: 'linear-gradient(150deg,#6B5A44,#2A3141)' }}>
       {foto && !fallo && <img src={foto} alt="" className="h-full w-full object-cover" onError={() => setFallo(true)} />}
-      <span className="absolute inset-0" style={{ background: 'linear-gradient(180deg,rgba(28,34,48,.1),rgba(28,34,48,.75))' }} />
+      <span className="absolute inset-0" style={{ background: 'linear-gradient(180deg,rgba(20,16,10,.4) 0%,rgba(20,16,10,0) 38%,rgba(20,16,10,.78) 100%)' }} />
+      {children}
     </div>
   )
 }
 
-function PastillaAqui({ icono, texto, onClick, dato }: { icono: Parameters<typeof Icono>[0]['nombre']; texto: string; onClick: () => void; dato: string }) {
+const PILDORA_FOTO = { background: 'rgba(28,34,48,.5)', border: '1px solid rgba(255,255,255,.28)', backdropFilter: 'blur(10px)', color: '#fff' } as const
+const NOMBRE_SOBRE_FOTO = { font: "400 38px/1 'Instrument Serif',serif", color: '#fff', textShadow: '0 2px 16px rgba(0,0,0,.55)', textWrap: 'balance' as never }
+const BOTON_ORO_A = { background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', color: '#3E2A0C', border: '1px solid #9A7228', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.7),0 10px 16px -10px rgba(110,80,24,.8)' }
+const BOTON_BLANCO_A = { background: '#fff', border: '1px solid rgba(28,34,48,.2)', color: TINTA }
+const BOTON_ICONO = { background: 'linear-gradient(180deg,#FFFDF8,#F3EBDB)', border: '1px solid rgba(181,138,46,.4)', boxShadow: 'inset 0 1px 0 #fff,0 6px 10px -8px rgba(110,80,24,.5)' }
+
+/** «9:30–16:45»: del primer tramo que abre al último que cierra (null si no hay horario o ese día no abre). */
+export function rangoDeHorario(h: HorarioDeParada | null): string | null {
+  if (!h || h.cerrado || h.tramos.length === 0) return null
+  return `${h.tramos[0].abre}–${h.tramos[h.tramos.length - 1].cierra}`
+}
+
+/** Minutos que faltan para que cierre (el cierre del tramo en el que estamos, o la última entrada si ya solo queda esa); null si no se sabe o ya cerró. */
+export function minutosParaCerrar(h: HorarioDeParada | null, ahoraMin: number): number | null {
+  if (!h || h.cerrado || h.tramos.length === 0) return null
+  const aMin = (t: string) => {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(t)
+    return m ? Number(m[1]) * 60 + Number(m[2]) : null
+  }
+  for (const t of h.tramos) {
+    const a = aMin(t.abre)
+    const c = aMin(t.cierra)
+    if (a != null && c != null && ahoraMin >= a && ahoraMin <= c) return c - ahoraMin
+  }
+  return null
+}
+
+/** La barrita con las ondas y [Pausa] de la historia sonando (A4). */
+function BarraDeHistoria({ h }: { h: HistoriaDeParada }) {
+  const sonando = h.estado === 'hablando'
   return (
-    <button type="button" onClick={onClick} data-hoy-pastilla={dato} className="flex min-h-[50px] items-center gap-[9px] rounded-2xl px-2.5 py-2 text-left" style={{ background: 'rgba(251,243,226,.08)', border: '1px solid rgba(243,216,143,.38)', color: MARFIL, font: "600 12.5px/1.2 'Geist'" }}>
-      <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full" style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510' }}>
-        <Icono nombre={icono} size={16} grosor={1.9} />
+    <div data-escuchar-barra data-escuchar={h.estado} className="flex h-[54px] items-center gap-3 rounded-2xl pl-2 pr-3.5" style={{ background: TINTA, color: MARFIL }}>
+      <button type="button" onClick={sonando ? h.pausar : h.seguir} aria-label={sonando ? 'Pausar la historia' : 'Seguir con la historia'} className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full" style={{ background: ORO_CLARO, color: '#3E2A0C' }}>
+        <Icono nombre={sonando ? 'pausa' : 'seguir'} size={15} relleno grosor={1.6} />
+      </button>
+      <span className="flex flex-1 flex-col gap-1.5">
+        <span className="flex h-3.5 items-center gap-[3px]" aria-hidden="true">
+          {Array.from({ length: 24 }, (_, i) => (
+            <span key={i} style={{ width: 3, height: 14, borderRadius: 2, background: i < Math.round(h.progreso * 24) + 6 ? ORO_CLARO : 'rgba(251,243,226,.28)', animation: sonando ? `hoyYaBar ${(0.8 + (i % 5) * 0.15).toFixed(2)}s ease-in-out infinite` : undefined }} />
+          ))}
+        </span>
+        <span className="h-[3px] rounded-sm" style={{ background: 'rgba(251,243,226,.2)' }}>
+          <span className="block h-full rounded-sm" style={{ width: `${Math.round(h.progreso * 100)}%`, background: ORO_CLARO }} />
+        </span>
       </span>
-      {texto}
+      <button type="button" onClick={sonando ? h.pausar : h.seguir} className="text-[13px] font-bold" style={{ color: ORO_CLARO }}>{sonando ? 'Pausa' : 'Seguir'}</button>
+      <button type="button" onClick={h.parar} aria-label="Parar la historia" className="flex h-8 w-8 flex-none items-center justify-center" style={{ color: 'rgba(251,243,226,.7)' }}>
+        <Icono nombre="cerrar" size={13} grosor={2} />
+      </button>
+    </div>
+  )
+}
+
+/** Un icono de acción SIN texto (decisión de Eric): lleva su `aria-label`. */
+function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = false }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; dato: string; onClick: () => void; oro?: boolean; candado?: boolean }) {
+  return (
+    <button type="button" onClick={onClick} aria-label={etiqueta} data-hoy-icono={dato} className="relative flex h-[60px] min-w-0 flex-1 items-center justify-center rounded-[18px]" style={oro ? { background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', border: '1px solid #9A7228', color: '#3E2A0C', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.75),0 10px 16px -10px rgba(110,80,24,.85)' } : { ...BOTON_ICONO, color: TINTA }}>
+      <Icono nombre={icono} size={26} grosor={1.6} />
+      {candado && (
+        <span className="absolute right-1.5 top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full" style={{ background: TINTA, color: ORO_CLARO }}>
+          <Icono nombre="candado" size={10} grosor={2.2} />
+        </span>
+      )}
     </button>
   )
 }
 
-/** «Dónde has aparcado» (solo en coche): guarda dónde se dejó el coche y, al volver, abre el camino a pie hasta él. */
-function DondeAparcado({ rutaId, onCerrar }: { rutaId: string; onCerrar: () => void }) {
-  const clave = `trazo:hoy:aparcado:${rutaId}`
-  const leer = (): { lat: number; lng: number; hora: string } | null => {
-    try {
-      const x = JSON.parse(window.localStorage.getItem(clave) ?? 'null')
-      return x && Number.isFinite(x.lat) && Number.isFinite(x.lng) ? x : null
-    } catch {
-      return null
-    }
-  }
-  const [guardado, setGuardado] = useState(leer)
-  const [pidiendo, setPidiendo] = useState(false)
-  const [error, setError] = useState(false)
-  const guardar = () => {
-    setPidiendo(true)
-    setError(false)
-    navigator.geolocation.getCurrentPosition(
-      (p) => {
-        const d = new Date()
-        const dato = { lat: p.coords.latitude, lng: p.coords.longitude, hora: `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}` }
-        try {
-          window.localStorage.setItem(clave, JSON.stringify(dato))
-        } catch {
-          /* sin almacenamiento: vale hasta cerrar */
-        }
-        setGuardado(dato)
-        setPidiendo(false)
-      },
-      () => {
-        setPidiendo(false)
-        setError(true)
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    )
-  }
-  return (
-    <HojaV2 onCerrar={onCerrar} etiqueta="Dónde has aparcado" fondo={MARFIL}>
-      <div className="flex items-start gap-3" data-hoy-donde-aparcado>
-        <span className="flex-1" style={{ font: "400 30px/1 'Instrument Serif',serif" }}>Dónde has aparcado</span>
-        <button type="button" onClick={onCerrar} aria-label="Cerrar" className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#1C2230]/8">
-          <Icono nombre="cerrar" size={15} grosor={2} />
-        </button>
-      </div>
-      {guardado ? (
-        <>
-          <p className="m-0 text-[14px] leading-[1.45] text-[#1C2230]/80">Aparcaste hacia las {guardado.hora}. Así vuelves al coche cuando termines.</p>
-          <a href={urlComoLlegar({ lat: guardado.lat, lng: guardado.lng }, null, false)} target="_blank" rel="noopener noreferrer" className="flex h-12 items-center justify-center gap-2 rounded-2xl text-[14px] font-bold no-underline" style={BOTON_ORO}>
-            <Icono nombre="coche" size={17} grosor={1.9} />
-            Volver al coche
-          </a>
-          <button type="button" onClick={guardar} disabled={pidiendo} className="h-11 rounded-2xl text-[13px] font-semibold" style={BOTON_MARFIL}>
-            {pidiendo ? 'Buscando…' : 'He aparcado en otro sitio: guardar aquí'}
-          </button>
-        </>
-      ) : (
-        <>
-          <p className="m-0 text-[14px] leading-[1.45] text-[#1C2230]/80">Guarda el sitio donde has dejado el coche y luego te llevamos hasta él.</p>
-          <button type="button" onClick={guardar} disabled={pidiendo} data-hoy-guardar-aparcamiento className="flex h-12 items-center justify-center gap-2 rounded-2xl text-[14px] font-bold" style={BOTON_ORO}>
-            <Icono nombre="ubicacion" size={17} grosor={1.9} />
-            {pidiendo ? 'Buscando…' : 'Guardar dónde he aparcado'}
-          </button>
-        </>
-      )}
-      {error && <p className="m-0 text-[12.5px] text-[#B23B2E]">No hemos podido saber dónde estás. Activa la ubicación y vuelve a probar.</p>}
-    </HojaV2>
-  )
-}
-
-/** H3b: la hoja «Más tiempo aquí» con +15 y +30. */
+/** La hoja «Más tiempo aquí» con +15 y +30 (H3b). */
 function HojaMasTiempo({ onElegir, onCerrar }: { onElegir: (min: 15 | 30) => void; onCerrar: () => void }) {
   return (
     <HojaV2 onCerrar={onCerrar} etiqueta="Más tiempo aquí" fondo={MARFIL}>
@@ -240,7 +221,7 @@ function HojaMasTiempo({ onElegir, onCerrar }: { onElegir: (min: 15 | 30) => voi
         [15, '+15 min', 'Un poco más, sin prisa'],
         [30, '+30 min', 'Un buen rato más, sin prisa'],
       ] as const).map(([min, titulo, sub]) => (
-        <button key={min} type="button" onClick={() => onElegir(min)} data-hoy-mas-tiempo-opcion={min} className="flex items-center gap-3.5 rounded-[22px] py-3 pl-3 pr-3.5 text-left" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)' }}>
+        <button key={min} type="button" onClick={() => onElegir(min)} data-hoy-mas-tiempo-opcion={min} className="flex items-center gap-3.5 rounded-[22px] py-3 pl-3 pr-3.5 text-left" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }}>
           <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-2xl" style={{ background: '#F3E3B2', color: '#4A3510' }}>
             <Icono nombre="reloj" size={24} grosor={1.8} />
           </span>
@@ -268,177 +249,221 @@ export interface PropsParada {
   enCoche: boolean
   /** Al tocar [He terminado] (= el Visto de siempre). */
   onTerminado: () => void
+  /** «Saltar parada» y [Cambiar plan] › saltar: la parada se salta y pasa a «Lugares pendientes» (sin hoja ni pregunta en el enlace). */
   onSaltar: () => void
-  /** Acaba de marcarse una parada como vista: esta es «SIGUIENTE» (H4). */
-  recienTerminada: boolean
   /** El pase (o el día de prueba) está abierto. */
   conPase: boolean
-  /** El botón [Escuchar] en sus dos formas (la línea de «mientras llegas» y la pastilla). Null si el sitio no tiene historia. */
-  escuchar: (variante: 'linea' | 'pastilla') => ReactNode
   onQueVasAVer: () => void
-  /** La línea del horario del sitio («Abre de 9:00 a 19:00», «Cerrado este día»). */
-  lineaHorario?: ReactNode
+  /** El horario de hoy de la parada (para «9:30–16:45» y «Cierra en 25 min»). */
+  horario: HorarioDeParada | null
   /** La zona del alojamiento: de dónde sale la primera parada del día. */
   casa?: Coordinates | null
 }
 
-/** H1, H1b, H2 (por llegar), H3, H3b (ya estás aquí) y H4 (completada: «SIGUIENTE» con la línea dorada). */
+/**
+ * LA TARJETA DE LA PARADA (V2; `Piezas/Hoy Aqui` de Design, A1 a A9). Dos formas:
+ *  · «YA ESTÁS AQUÍ» (A1 a A4, A7): la foto con la etiqueta y el nombre; «Visita de unos 50 min» (y «Cierra en 25 min» solo si cierra en menos de 45 min); «Aquí ganas 2 pedazos: …» (los emblemas
+ *    ocultos NUNCA se anuncian); los iconos SIN texto (Qué vas a ver, Escuchar historia, Tu entrada si hay reserva y Haz tu foto, en oro); [He terminado] y [Necesito más tiempo]; y «Saltar parada».
+ *    Fuera de aquí: [Dónde has aparcado], [Cambiar plan], el horario, el trayecto y los minutos de aparcar.
+ *  · «SIGUIENTE PARADA» / «PRIMERA PARADA» (A5, A6, A9): la foto con el nombre; el reloj y «9:30–16:45»; el trayecto «En coche · 22 min · 17 km»; «Escucha su historia por el camino · 3 min»;
+ *    [Cómo llegar] y [Cambiar plan]; y «¿No te detecta el GPS? Ya he llegado». Sin «+10 min para aparcar» (esos minutos siguen contando por dentro).
+ */
 export function TarjetaParada(p: PropsParada) {
   const { route, day, dateIso, siguiente, anterior, reservaSiguiente, ubicacion, enCoche } = p
   const [forzada, setForzada] = useState<string | null>(null)
   const [hojaTiempo, setHojaTiempo] = useState(false)
-  const [hojaAparcado, setHojaAparcado] = useState(false)
   const [verEntrada, setVerEntrada] = useState(false)
-  const [aviso, setAviso] = useState<{ cambio: CambioDelDia | null; texto: string } | null>(null)
   const ahoraMin = useAhoraMin()
   // (LG1) «Ya estás aquí» con el radio de cada sitio en los datos de logros (La Graciosa y Timanfaya, 2.500 m); sin radio, 150 m.
-  const radioAqui = useRadioDeParada(useSyncStore((s) => s.activeTripId) ?? route.id, siguiente.name)
+  const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
+  const radioAqui = useRadioDeParada(tripId, siguiente.name)
   const aqui = forzada === siguiente.id || estaAqui(ubicacion, siguiente, radioAqui)
   const trayecto: TrayectoDeParada | null = trayectoHasta({ siguiente, ubicacion, anterior, enCoche, casa: p.casa, ida: day.coche?.activo ? day.coche.ida : null })
   const fija = horaFijaDe(siguiente, reservaSiguiente)
   const salida = aqui ? null : avisoDeSalida(ahoraMin, fija, trayecto?.totalMin ?? null)
   const desde = ubicacion ?? (anterior && hasRealCoordinates(anterior.coordinates) ? anterior.coordinates : null) ?? p.casa ?? null
   const comoLlegar = hasRealCoordinates(siguiente.coordinates) ? urlComoLlegar(siguiente.coordinates, ubicacion ? null : desde, enCoche) : null
-
-  // El aviso de «Más tiempo» (y su [Deshacer]) se va solo a los 12 s.
-  useEffect(() => {
-    if (!aviso) return
-    const id = window.setTimeout(() => setAviso(null), 12000)
-    return () => window.clearTimeout(id)
-  }, [aviso])
-
-  // (HOY2b, E; Eric, 5-nov) +15 / +30 NO mueve la ruta: la app solo mira si con ese tiempo de más llegas a algo cerrado o tarde a una reserva (v2/MasTiempo.tsx). Antes, «Hemos corrido 30 min el resto de tu día» con [Deshacer].
+  const historia = useHistoriaDeParada(route.destination, siguiente)
+  const pedazos = textoDePedazos(usePedazosDeParada(tripId, siguiente, aqui))
   const [masTiempo, setMasTiempo] = useState<15 | 30 | null>(null)
+
+  // (HOY2b, E; Eric, 5-nov) +15 / +30 NO mueve la ruta: la app solo mira si con ese tiempo de más llegas a algo cerrado o tarde a una reserva (v2/MasTiempo.tsx).
   const elegirTiempo = (min: 15 | 30) => {
     setHojaTiempo(false)
     if (!p.conPase) {
       // Sin el pase solo se apunta: el día no se toca.
       useRouteStore.getState().noteStopDelay(day.id, siguiente.id)
-      setAviso({ cambio: null, texto: `Anotado: +${min} min aquí. Con el pase te avisamos si algo se te cierra.` })
+      avisarAbajo({ id: `tiempo:${siguiente.id}:${min}`, texto: `Anotado: +${min} min aquí. Con el pase te avisamos si algo se te cierra.` })
       return
     }
     setMasTiempo(min)
   }
-  const deshacer = () => {
-    if (aviso?.cambio) aplicarCambio(aviso.cambio, 'antes')
-    setAviso(null)
-  }
-
   const hacerFoto = () => {
     if (logrosActivos()) fotoDeParada({ tripId: route.id, dayId: day.id, dayNumber: day.dayNumber, stopId: siguiente.id, nombre: siguiente.name }, 'pedazo')
   }
+  const alEscuchar = () => {
+    if (historia.candado) abrirAvisoPase('escuchar_historia', { destino: route.destination })
+    else if (historia.estado === 'parado') historia.escuchar()
+    else if (historia.estado === 'hablando') historia.pausar()
+    else historia.seguir()
+  }
+  const duracion = siguiente.durationMinutes > 0 ? `Visita de unos ${Math.round(siguiente.durationMinutes)} min` : null
+  const cierraEn = aqui ? minutosParaCerrar(p.horario, ahoraMin) : null
+  const nombre = displayStopName(siguiente.name)
 
-  const insignia = aqui ? 'YA ESTÁS AQUÍ' : p.recienTerminada ? 'SIGUIENTE' : 'POR LLEGAR'
-  const duracion = siguiente.durationMinutes > 0 ? formatDuration(siguiente.durationMinutes) : null
-  return (
+  const dialogos = (
     <>
-      <div data-hoy-siguiente data-hoy-estado={aqui ? 'aqui' : 'llegar'} data-tarjeta="oscura" className="flex-none overflow-hidden rounded-[26px]" style={{ background: TINTA, color: MARFIL, boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
-        <div className="relative" onClick={!aqui ? p.onQueVasAVer : undefined} data-hoy-abrir-ficha={!aqui ? '1' : undefined}>
-          <FotoDeLaParada parada={siguiente} ciudad={day.city} dateIso={dateIso} />
-          <Insignia texto={insignia} />
-        </div>
-        <div className="flex flex-col gap-[9px] px-4 pb-4 pt-3">
-          <button type="button" onClick={aqui ? () => setForzada(siguiente.id) : p.onQueVasAVer} aria-label={aqui ? displayStopName(siguiente.name) : `Abrir la ficha de ${displayStopName(siguiente.name)}`} data-hoy-titulo className="text-left" style={{ font: "400 30px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>
-            {displayStopName(siguiente.name)}
-          </button>
-          {duracion && !aqui && <span className="-mt-1 text-[12px]" style={{ color: 'rgba(251,243,226,.65)' }}>{duracion} de visita</span>}
-          {!aqui && p.lineaHorario}
-          {aqui ? (
-            <>
-              <span className="text-[14.5px] leading-[1.3]" style={{ color: ORO_CLARO }}>Ya estás aquí. ¿Empezamos?</span>
-              <div className="grid grid-cols-2 gap-2">
-                {reservaSiguiente && <PastillaAqui icono="reservas" texto="Tu entrada" dato="entrada" onClick={() => setVerEntrada((v) => !v)} />}
-                <PastillaAqui icono="ojo" texto="Qué vas a ver" dato="que-vas-a-ver" onClick={p.onQueVasAVer} />
-                {p.escuchar('pastilla')}
-                {enCoche && <PastillaAqui icono="coche" texto="Dónde has aparcado" dato="aparcado" onClick={() => setHojaAparcado(true)} />}
-              </div>
-              {verEntrada && reservaSiguiente && <TuEntradaEnHoy route={route} reserva={reservaSiguiente} />}
-              <div className="grid grid-cols-2 gap-2">
-                {logrosActivos() ? (
-                  <button type="button" onClick={hacerFoto} data-hoy-haz-tu-foto className="flex h-[52px] items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[14px] font-bold" style={BOTON_ORO}>
-                    <Icono nombre="camara" size={17} grosor={1.9} />
-                    Haz tu foto
-                  </button>
-                ) : (
-                  <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={siguiente.name} etiqueta="Haz tu foto" className="flex h-[52px] w-full items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[14px] font-bold" style={BOTON_ORO} claseContenedor="block w-full">
-                    <Icono nombre="camara" size={17} grosor={1.9} />
-                    Haz tu foto
-                  </BotonFoto>
-                )}
-                <button type="button" onClick={() => setHojaTiempo(true)} data-hoy-necesito-mas-tiempo className="min-h-[52px] rounded-2xl px-2.5 text-center text-[13px] font-bold leading-[1.15]" style={BOTON_MARFIL}>
-                  Necesito más tiempo
-                </button>
-              </div>
-              <button type="button" onClick={p.onTerminado} data-boton-visto data-hoy-he-terminado className="flex h-[50px] items-center justify-center gap-1.5 rounded-2xl text-[13.5px] font-bold text-white" style={{ background: '#2B7F45', boxShadow: '0 10px 20px -14px rgba(31,98,54,.7),inset 0 1px 0 rgba(255,255,255,.25)' }}>
-                <Icono nombre="hecho" size={16} grosor={2.4} />
-                He terminado
-              </button>
-            </>
-          ) : (
-            <>
-              {trayecto && (
-                <div className="flex items-center gap-2.5" data-hoy-trayecto={trayecto.modo}>
-                  <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full" style={{ background: 'rgba(251,243,226,.1)', color: ORO_CLARO }}>
-                    <Icono nombre={trayecto.modo === 'coche' ? 'coche' : 'andando'} size={17} grosor={1.8} />
-                  </span>
-                  <span className="flex min-w-0 flex-col gap-px">
-                    <b style={{ font: "700 14.5px 'Geist'" }}>{trayecto.titulo}</b>
-                    <span className="text-[12px]" style={{ color: 'rgba(251,243,226,.65)' }}>
-                      {trayecto.detalle}
-                      {!ubicacion && p.ubicacionEstado !== 'no' && (
-                        <>
-                          {trayecto.detalle ? ' · ' : ''}
-                          <button type="button" onClick={p.pedirUbicacion} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="inline-flex min-h-6 items-center underline underline-offset-2" style={{ color: ORO_CLARO }}>
-                            {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'usar mi ubicación'}
-                          </button>
-                        </>
-                      )}
-                    </span>
-                  </span>
-                </div>
-              )}
-              {salida && fija != null && (
-                <div data-hoy-salida={salida} className="flex items-center gap-2 rounded-xl px-3 py-2 text-[13px] font-semibold leading-[1.3]" style={salida === 'tarde' ? { background: 'rgba(214,70,60,.22)', border: '1px solid #E5766B', color: '#FFC2BA' } : { background: 'rgba(243,216,143,.14)', border: '1px solid rgba(243,216,143,.35)', color: ORO_CLARO }}>
-                  <Icono nombre="reloj" size={15} grosor={2} />
-                  {textoDeSalida(salida, fija)}
-                </div>
-              )}
-              {p.escuchar('linea')}
-              <div className="grid grid-cols-2 gap-2">
-                {comoLlegar ? (
-                  <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-12 items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13.5px] font-bold no-underline" style={BOTON_ORO}>
-                    <Icono nombre="localizar" size={17} grosor={1.9} />
-                    Cómo llegar
-                  </a>
-                ) : (
-                  <span className="flex h-12 items-center justify-center rounded-2xl text-[13.5px] font-bold opacity-50" style={BOTON_ORO}>Cómo llegar</span>
-                )}
-                {/* HOY2 (B): [Cambiar plan] sustituye a [No me da tiempo] (v2/CambiarPlan.tsx) */}
-                <BotonCambiarPlan route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onSaltar={p.onSaltar} />
-
-              </div>
-              <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" route={route} reserva={reservaSiguiente} />
-              {/* (LG1) Si el GPS no lo detecta, una línea pequeña para pasar a mano a «Ya estás aquí». */}
-              <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${displayStopName(siguiente.name)}`} className="flex min-h-11 items-center justify-center text-[12.5px] underline underline-offset-2" style={{ color: 'rgba(251,243,226,.7)' }}>
-                ¿No te detecta el GPS? Ya he llegado
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-      {aviso && (
-        <div data-hoy-aviso-tiempo className="sticky bottom-24 z-10 flex min-h-[46px] flex-none items-center gap-3 rounded-[14px] px-3.5 py-2.5 text-[13px] font-medium" style={{ background: TINTA, color: MARFIL }}>
-          <span className="flex-1 leading-[1.35]">{aviso.texto}</span>
-          {aviso.cambio && (
-            <button type="button" onClick={deshacer} data-hoy-deshacer-tiempo className="flex h-11 flex-none items-center font-bold" style={{ color: ORO_CLARO }}>
-              Deshacer
-            </button>
-          )}
-        </div>
-      )}
       {masTiempo && <AvisoMasTiempo route={route} day={day} dateIso={dateIso} paradaId={siguiente.id} minutos={masTiempo} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={() => setMasTiempo(null)} />}
       {hojaTiempo && <HojaMasTiempo onElegir={elegirTiempo} onCerrar={() => setHojaTiempo(false)} />}
-      {hojaAparcado && <DondeAparcado rutaId={route.id} onCerrar={() => setHojaAparcado(false)} />}
+    </>
+  )
+
+  if (aqui) {
+    return (
+      <>
+        <div data-hoy-siguiente data-hoy-estado="aqui" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[30px]" style={{ background: '#FFFDF8', boxShadow: '0 24px 40px -26px rgba(28,34,48,.55)' }}>
+          <FotoDeLaParada parada={siguiente} ciudad={day.city} dateIso={dateIso} alto={236}>
+            <div className="absolute inset-x-5 bottom-4 flex flex-col gap-[9px]">
+              <span data-hoy-insignia className="flex h-[30px] items-center gap-2 self-start rounded-full pl-[11px] pr-3.5" style={{ ...PILDORA_FOTO, font: "700 11.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>
+                <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#5BD07A', animation: 'hoyYaPulse 2s infinite' }} />
+                YA ESTÁS AQUÍ
+              </span>
+              <button type="button" onClick={p.onQueVasAVer} data-hoy-titulo aria-label={`Qué vas a ver en ${nombre}`} className="text-left" style={{ ...NOMBRE_SOBRE_FOTO, font: "400 40px/1 'Instrument Serif',serif" }}>
+                {nombre}
+              </button>
+            </div>
+          </FotoDeLaParada>
+          <div className="flex flex-col gap-3.5 px-4 pb-4 pt-[18px]">
+            {(duracion || cierraEn != null) && (
+              <>
+                <div className="flex flex-nowrap gap-1.5">
+                  {duracion && (
+                    <span data-hoy-visita className="inline-flex h-8 min-w-0 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-2.5 text-[12px] font-semibold" style={{ background: '#F6F0E2', border: '1px solid rgba(181,138,46,.3)', color: '#3A2E1A' }}>
+                      <Icono nombre="reloj" size={14} grosor={1.8} />
+                      {duracion}
+                    </span>
+                  )}
+                  {cierraEn != null && cierraEn < 45 && (
+                    <span data-hoy-cierra-pronto className="inline-flex h-8 min-w-0 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-2.5 text-[12px] font-semibold" style={{ background: '#FBE6E2', border: '1px solid #E5766B', color: '#8A2A1F' }}>
+                      <Icono nombre="alerta" size={14} grosor={1.9} />
+                      Cierra en {cierraEn} min
+                    </span>
+                  )}
+                </div>
+                <span className="h-px" style={{ background: 'rgba(28,34,48,.1)' }} />
+              </>
+            )}
+            {pedazos && (
+              <div data-hoy-pedazos className="flex items-center gap-3 rounded-[20px] px-3.5 py-3" style={{ background: 'linear-gradient(135deg,#FBF1D2,#F2DEA6)', border: '1px solid #D2B26A' }}>
+                <Icono nombre="estrella" size={20} grosor={1.8} style={{ color: '#8E6820', flex: 'none' }} />
+                <span className="flex-1 text-[13px] font-semibold leading-[1.3]" style={{ color: '#5A3E0C' }}>{pedazos}</span>
+              </div>
+            )}
+            {historia.hay && !historia.candado && historia.estado !== 'parado' && <BarraDeHistoria h={historia} />}
+            <div className="flex gap-[9px]">
+              <BotonIcono icono="ojo" etiqueta="Qué vas a ver" dato="que-vas-a-ver" onClick={p.onQueVasAVer} />
+              {historia.hay && <BotonIcono icono={historia.estado === 'hablando' ? 'pausa' : 'altavoz'} etiqueta={historia.estado === 'parado' ? 'Escuchar historia' : historia.estado === 'hablando' ? 'Pausar la historia' : 'Seguir con la historia'} dato="escuchar" candado={historia.candado} onClick={alEscuchar} />}
+              {reservaSiguiente && <BotonIcono icono="reservas" etiqueta="Tu entrada" dato="entrada" onClick={() => setVerEntrada((v) => !v)} />}
+              <BotonIcono icono="camara" etiqueta="Haz tu foto" dato="haz-tu-foto" oro onClick={hacerFoto} />
+            </div>
+            {verEntrada && reservaSiguiente && <TuEntradaEnHoy route={route} reserva={reservaSiguiente} />}
+            <div className="flex gap-[9px]">
+              <button type="button" onClick={p.onTerminado} data-boton-visto data-hoy-he-terminado className="flex h-[52px] flex-[1.1] items-center justify-center gap-[7px] whitespace-nowrap rounded-2xl text-[14.5px] font-bold text-white" style={{ background: 'linear-gradient(180deg,#3F9A5C,#2B7F45)', border: '1px solid #1F6236', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.3),0 10px 16px -10px rgba(31,98,54,.8)' }}>
+                <Icono nombre="hecho" size={17} grosor={2.4} />
+                He terminado
+              </button>
+              <button type="button" onClick={() => setHojaTiempo(true)} data-hoy-necesito-mas-tiempo className="flex h-[52px] flex-1 items-center justify-center whitespace-nowrap rounded-2xl text-[13.5px] font-semibold" style={BOTON_BLANCO_A}>
+                Necesito más tiempo
+              </button>
+            </div>
+            <button type="button" onClick={p.onSaltar} data-hoy-saltar-parada className="-mt-0.5 flex min-h-11 items-center justify-center gap-1.5 text-[12.5px] font-semibold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
+              <Icono nombre="adelante" size={14} grosor={2} />
+              Saltar parada
+            </button>
+          </div>
+        </div>
+        {dialogos}
+      </>
+    )
+  }
+
+  const etiqueta = anterior ? 'SIGUIENTE PARADA' : 'PRIMERA PARADA'
+  const rango = rangoDeHorario(p.horario)
+  const lineaTrayecto = trayecto ? [trayecto.titulo, trayecto.detalle].filter(Boolean).join(' · ') : null
+  return (
+    <>
+      <div data-hoy-siguiente data-hoy-estado="llegar" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[30px]" style={{ background: '#FFFDF8', boxShadow: '0 24px 40px -26px rgba(28,34,48,.55)' }}>
+        <div onClick={p.onQueVasAVer} data-hoy-abrir-ficha="1">
+          <FotoDeLaParada parada={siguiente} ciudad={day.city} dateIso={dateIso} alto={210}>
+            <span data-hoy-insignia className="absolute left-4 top-4 flex h-[30px] items-center rounded-full px-3.5" style={{ ...PILDORA_FOTO, font: "700 11.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>{etiqueta}</span>
+            <span data-hoy-titulo className="absolute inset-x-5 bottom-4 text-left" style={NOMBRE_SOBRE_FOTO}>{nombre}</span>
+          </FotoDeLaParada>
+        </div>
+        <div className="flex flex-col gap-3.5 px-4 pb-3.5 pt-4">
+          <div className="flex flex-col gap-[9px]">
+            {rango && (
+              <div data-hoy-horario className="flex items-center gap-[9px] text-[13.5px] font-medium" style={{ color: 'rgba(28,34,48,.72)' }}>
+                <Icono nombre="reloj" size={17} grosor={1.7} />
+                {rango}
+              </div>
+            )}
+            {lineaTrayecto && trayecto && (
+              <div data-hoy-trayecto={trayecto.modo} className="flex items-center gap-[9px] text-[14px] font-semibold">
+                <Icono nombre={trayecto.modo === 'coche' ? 'coche' : 'andando'} size={17} grosor={1.7} />
+                <span className="min-w-0 flex-1">
+                  {lineaTrayecto}
+                  {!ubicacion && p.ubicacionEstado !== 'no' && (
+                    <>
+                      {' · '}
+                      <button type="button" onClick={p.pedirUbicacion} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="inline-flex min-h-6 items-center text-[12px] font-medium underline underline-offset-2" style={{ color: ORO_TEXTO }}>
+                        {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'usar mi ubicación'}
+                      </button>
+                    </>
+                  )}
+                </span>
+              </div>
+            )}
+          </div>
+          {salida && fija != null && (
+            <div data-hoy-salida={salida} className="flex items-center gap-2 rounded-xl px-3 py-2 text-[13px] font-semibold leading-[1.3]" style={salida === 'tarde' ? { background: '#FBE6E2', border: '1px solid #E5766B', color: '#8A2A1F' } : { background: '#F6F0E2', border: '1px solid rgba(181,138,46,.4)', color: '#6E5018' }}>
+              <Icono nombre="reloj" size={15} grosor={2} />
+              {textoDeSalida(salida, fija)}
+            </div>
+          )}
+          {historia.hay && historia.estado !== 'parado' && !historia.candado ? (
+            <BarraDeHistoria h={historia} />
+          ) : (
+            historia.hay && (
+              <button type="button" onClick={alEscuchar} data-hoy-escuchar-camino data-escuchar={historia.candado ? 'candado' : historia.estado} className="flex min-h-11 items-center gap-2 text-left text-[13px] font-medium" style={{ color: '#6E5018' }}>
+                <Icono nombre="altavoz" size={18} grosor={1.7} />
+                <span>Escucha su historia por el camino · {historia.minutos} min</span>
+                {historia.candado && <Icono nombre="candado" size={13} grosor={2} />}
+              </button>
+            )
+          )}
+          <div className="flex gap-[9px]">
+            {comoLlegar ? (
+              <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-[50px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[14.5px] font-bold no-underline" style={BOTON_ORO_A}>
+                <Icono nombre="localizar" size={17} grosor={1.9} />
+                Cómo llegar
+              </a>
+            ) : (
+              <span className="flex h-[50px] flex-1 items-center justify-center rounded-2xl text-[14.5px] font-bold opacity-50" style={BOTON_ORO_A}>Cómo llegar</span>
+            )}
+            {/* HOY2 (B): [Cambiar plan] sustituye a [No me da tiempo] (v2/CambiarPlan.tsx) */}
+            <BotonCambiarPlan route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onSaltar={p.onSaltar} />
+          </div>
+          <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" route={route} reserva={reservaSiguiente} />
+          {/* (LG1) Si el GPS no lo detecta, una línea pequeña para pasar a mano a «Ya estás aquí». */}
+          <div className="text-center text-[12.5px] font-medium" style={{ color: 'rgba(28,34,48,.55)' }}>
+            ¿No te detecta el GPS?{' '}
+            <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
+              Ya he llegado
+            </button>
+          </div>
+        </div>
+      </div>
+      {dialogos}
     </>
   )
 }
@@ -480,12 +505,12 @@ export function TarjetaPorLaManana({ route, day, dateIso, primera, hora, trayect
 /* «Tu día»: la lista que se cierra y se abre                           */
 /* ------------------------------------------------------------------ */
 
-export type FranjaDeTuDia = 'manana' | 'tarde' | 'noche'
-const ETIQUETA_FRANJA: Record<FranjaDeTuDia, string> = { manana: 'Mañana', tarde: 'Tarde', noche: 'Noche' }
+export type FranjaDeTuDia = 'manana' | 'mediodia' | 'tarde' | 'noche'
+const ETIQUETA_FRANJA: Record<FranjaDeTuDia, string> = { manana: 'Mañana', mediodia: 'Mediodía', tarde: 'Tarde', noche: 'Noche' }
 
 /**
- * HOY2: las filas de «Tu día» con su franja, como en DÍAS (10S10: lo de antes de la comida es MAÑANA; entre la comida y la cena, TARDE; después de la cena, NOCHE). La cabecera de TARDE va antes de la comida y la de NOCHE antes de la cena.
- * Sin comida ni cena, las paradas nocturnas abren NOCHE. Las paradas saltadas ya no salen aquí: están en «Si te sobra tiempo».
+ * (V2; `Piezas/Hoy Entero`, H2) Las filas de «Tu día» por franjas: MAÑANA (lo de antes de la comida), MEDIODÍA (la comida), TARDE (entre la comida y la cena) y NOCHE (la cena y lo nocturno).
+ * La cabecera de cada franja sale cuando cambia. Sin comida ni cena, las paradas nocturnas abren NOCHE. Las paradas saltadas o cerradas ya no salen aquí: están en «Lugares pendientes».
  */
 export type FilaConFranja = FilaDeTuDia & { franja: FranjaDeTuDia; cabecera: boolean }
 export function filasConFranja(day: DayPlan, paradas: Stop[]): FilaConFranja[] {
@@ -495,38 +520,55 @@ export function filasConFranja(day: DayPlan, paradas: Stop[]): FilaConFranja[] {
   const salida: FilaConFranja[] = []
   let ultima: FranjaDeTuDia | null = null
   for (const f of filas) {
-    if (f.tipo === 'comida') franja = f.meal.mealTime === 'dinner' ? 'noche' : franja === 'noche' ? 'noche' : 'tarde'
-    else if (f.tipo === 'parada' && (f.stop.isNightExperience || f.stop.isNightView)) franja = 'noche'
-    salida.push({ ...f, franja, cabecera: ultima !== franja })
-    ultima = franja
+    let esta: FranjaDeTuDia = franja
+    if (f.tipo === 'comida') {
+      const cena = f.meal.mealTime === 'dinner'
+      esta = cena ? 'noche' : franja === 'noche' ? 'noche' : 'mediodia'
+      franja = cena || franja === 'noche' ? 'noche' : 'tarde'
+    } else if (f.tipo === 'parada' && (f.stop.isNightExperience || f.stop.isNightView)) {
+      franja = 'noche'
+      esta = 'noche'
+    }
+    salida.push({ ...f, franja: esta, cabecera: ultima !== esta })
+    ultima = esta
   }
   return salida
 }
 
 export function TuDia({ route, day, dateIso, paradas, siguienteId, reservaDe, horaDelSol = null, inicialAbierta = true, onAbrirParada }: { route: Route; day: DayPlan; dateIso: string; paradas: Stop[]; siguienteId: string | null; reservaDe: (s: Stop) => Reservation | null; /** «18:04»: la hora del atardecer, que es de las pocas que se enseñan (con la de las reservas y los turnos). */ horaDelSol?: string | null; /** Abierta o cerrada al montarse (el día acabado, cerrada). */ inicialAbierta?: boolean; onAbrirParada?: (s: Stop) => void }) {
-  const [abierta, setAbierta] = useState(inicialAbierta)
-  const vigentes = paradas.filter((s) => !s.saltada)
+  // (V2, apartado 4) ABIERTO por defecto; si se cierra, se recuerda (en el móvil).
+  const [abierta, setAbiertaEstado] = useState(() => {
+    try {
+      const g = window.localStorage.getItem('trazo:hoy:tu-dia')
+      return g === 'cerrado' ? false : g === 'abierto' ? true : inicialAbierta
+    } catch {
+      return inicialAbierta
+    }
+  })
+  const alternar = () =>
+    setAbiertaEstado((v) => {
+      const n = !v
+      try {
+        window.localStorage.setItem('trazo:hoy:tu-dia', n ? 'abierto' : 'cerrado')
+      } catch {
+        /* sin almacenamiento */
+      }
+      return n
+    })
   const { total, hechas } = cuentaDelDia(paradas)
   const filas = filasConFranja(day, paradas)
   void route
   return (
-    <div data-hoy-tu-dia={abierta ? 'abierta' : 'cerrada'} className="flex flex-none flex-col gap-[7px]">
-      <button type="button" onClick={() => setAbierta((v) => !v)} aria-expanded={abierta} data-hoy-tu-dia-cabecera className="flex min-h-12 items-center gap-2.5 rounded-2xl px-3.5" style={abierta ? { background: 'transparent' } : { background: '#FFFDF8', border: '1px solid rgba(181,138,46,.45)' }}>
-        <span style={OJO_MONO}>Tu día</span>
-        <span className="flex-1 text-left text-[13.5px] font-semibold" data-hoy-tu-dia-cuenta>{hechas} de {total}</span>
-        <span className="text-[13px] font-semibold" style={{ color: ORO_TEXTO }}>{abierta ? 'ocultar' : 'ver todo'}</span>
-        <Icono nombre={abierta ? 'arriba' : 'abajo'} size={15} grosor={2} style={{ color: ORO_TEXTO }} />
+    <div data-hoy-tu-dia={abierta ? 'abierta' : 'cerrada'} className="flex flex-none flex-col gap-3 rounded-[22px] px-3.5 pb-2.5 pt-3.5" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.1)' }}>
+      <button type="button" onClick={alternar} aria-expanded={abierta} data-hoy-tu-dia-cabecera className="-my-1 flex min-h-11 items-center gap-2.5 text-left">
+        <b className="flex-1 text-[14px] font-semibold" data-hoy-tu-dia-cuenta>Tu día · {hechas} de {total} hechas</b>
+        <Icono nombre={abierta ? 'arriba' : 'abajo'} size={15} grosor={2} style={{ color: 'rgba(28,34,48,.55)' }} />
       </button>
       {abierta && (
-        <div className="flex flex-col gap-[7px]" data-hoy-lista>
+        <div className="flex flex-col gap-3" data-hoy-lista>
           {filas.map((fila, i) => {
             const cabecera = fila.cabecera && (
-              <span data-hoy-franja={fila.franja} className="flex items-center gap-2 px-1 pt-2" style={{ ...OJO_MONO, color: fila.franja === 'noche' ? 'oklch(0.4 0.1 285)' : OJO_MONO.color }}>
-                {fila.franja === 'noche' && (
-                  <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full" style={{ background: 'oklch(0.92 0.04 285)' }}>
-                    <Icono nombre="noche" size={12} grosor={2} />
-                  </span>
-                )}
+              <span data-hoy-franja={fila.franja} style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', color: 'rgba(28,34,48,.45)', textTransform: 'uppercase' }}>
                 {ETIQUETA_FRANJA[fila.franja]}
               </span>
             )
@@ -535,12 +577,11 @@ export function TuDia({ route, day, dateIso, paradas, siguienteId, reservaDe, ho
                 <Fragment key={`m-${fila.meal.id}-${i}`}>
                   {cabecera}
                   {/* La comida y la cena, sin hora: se hacen en su franja, cuando toque. */}
-                  <div data-hoy-fila="comida" className="flex min-h-[44px] items-center gap-2.5 px-1">
-                    <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full" style={{ background: '#FFFDF8', border: `1.5px solid ${ORO}`, color: ORO_TEXTO }}>
-                      <Icono nombre="comida" size={12} grosor={1.9} />
+                  <div data-hoy-fila="comida" className="flex items-center gap-3 py-1.5">
+                    <span className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-[14px]" style={{ background: '#F3E3B2', color: '#6E5018' }}>
+                      <Icono nombre="comida" size={20} grosor={1.8} />
                     </span>
-                    <span className="flex h-[30px] w-[30px] flex-none rounded-[9px]" style={{ background: '#F3E3B2' }} />
-                    <span className="min-w-0 flex-1 truncate text-[14px] font-semibold">{tituloDeComida(fila.meal)}</span>
+                    <span className="min-w-0 flex-1 truncate text-[14.5px] font-semibold">{tituloDeComida(fila.meal)}</span>
                   </div>
                 </Fragment>
               )
@@ -548,45 +589,40 @@ export function TuDia({ route, day, dateIso, paradas, siguienteId, reservaDe, ho
             const s = fila.stop
             const hecha = Boolean(s.checkedInAt)
             const ahora = siguienteId === s.id
-            const n = vigentes.findIndex((x) => x.id === s.id) + 1
             const reserva = reservaDe(s)
             const hora = reserva?.time ? horaCorta(reserva.time) : null
             const alAtardecer = Boolean(s.isSunset) && horaDelSol
             return (
               <Fragment key={s.id}>
                 {cabecera}
-                <div data-hoy-fila="parada" data-hoy-fila-estado={hecha ? 'hecha' : ahora ? 'ahora' : 'viene'} onClick={onAbrirParada ? () => onAbrirParada(s) : undefined} className="flex min-h-[44px] items-center gap-2.5 py-[3px] pl-1 pr-2" style={ahora ? { borderRadius: 14, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.5)' } : undefined}>
-                  <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-[11.5px] font-bold" style={hecha ? { background: ORO, color: '#fff' } : ahora ? { background: TINTA, color: ORO_CLARO } : { background: '#FFFDF8', border: `1.5px solid ${ORO}`, color: ORO_TEXTO }}>
-                    {hecha ? <Icono nombre="hecho" size={12} grosor={3} /> : n}
+                <div
+                  data-hoy-fila="parada"
+                  data-hoy-fila-estado={hecha ? 'hecha' : ahora ? 'ahora' : 'viene'}
+                  onClick={onAbrirParada ? () => onAbrirParada(s) : undefined}
+                  className="flex items-center gap-3 py-1.5"
+                  style={ahora ? { margin: '0 -4px', padding: '6px 10px 6px 6px', borderRadius: 16, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.5)' } : undefined}
+                >
+                  <span style={{ opacity: hecha ? 0.55 : 1 }} className="flex flex-none">
+                    <ParadaFotoDeParada parada={s} ciudad={day.city} dateIso={dateIso} vista marca={false} size={46} carga="eager" />
                   </span>
-                  <span style={{ opacity: hecha ? 0.5 : 1 }}>
-                    <ParadaFotoDeParada parada={s} ciudad={day.city} dateIso={dateIso} vista={false} size={30} />
-                  </span>
-                  <span className="min-w-0 flex-1 truncate" style={{ font: ahora ? "700 14px 'Geist'" : "600 14px 'Geist'", color: hecha ? 'rgba(28,34,48,.55)' : TINTA }}>
+                  <span className="min-w-0 flex-1 truncate" style={{ font: ahora ? "700 14.5px 'Geist'" : "600 14.5px 'Geist'", color: hecha ? 'rgba(28,34,48,.5)' : TINTA }}>
                     {displayStopName(s.name)}
                   </span>
                   {/* Solo llevan hora lo fijo (un turno o una reserva) y el atardecer. */}
-                  {hora && <span data-hoy-fila-hora="reserva" className="flex h-6 flex-none items-center rounded-full px-2 text-[11px] font-semibold" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)', color: 'oklch(0.38 0.1 150)', fontFamily: "'Geist Mono',monospace" }}>✓ {hora}</span>}
+                  {hora && <span data-hoy-fila-hora="reserva" className="flex h-6 flex-none items-center rounded-full px-2 text-[11px] font-semibold" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)', color: 'oklch(0.3 0.08 150)' }}>{hora}</span>}
                   {!hora && alAtardecer && <span data-hoy-fila-hora="atardecer" className="text-[12px] font-semibold text-[#1C2230]/55" style={{ fontFamily: "'Geist Mono',monospace" }}>{horaDelSol}</span>}
-                  {ahora && <span className="h-[22px] flex-none rounded-full px-[9px] text-[10.5px] font-bold leading-[22px]" style={{ background: ORO, color: '#fff' }}>Ahora</span>}
+                  {hecha && (
+                    <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-white" style={{ background: ORO }} aria-label="Hecha">
+                      <Icono nombre="hecho" size={13} grosor={3} />
+                    </span>
+                  )}
+                  {ahora && <span className="flex h-[22px] flex-none items-center rounded-full px-2.5 text-[10.5px] font-bold text-white" style={{ background: ORO }}>Ahora</span>}
                 </div>
               </Fragment>
             )
           })}
         </div>
       )}
-    </div>
-  )
-}
-
-/** El aviso de abajo de H5: «Parada saltada · Deshacer». */
-export function AvisoSaltada({ onDeshacer }: { onDeshacer: () => void }) {
-  return (
-    <div data-hoy-aviso-saltada className="sticky bottom-24 z-10 flex min-h-[46px] flex-none items-center rounded-[14px] px-3.5 text-[13px] font-medium" style={{ background: TINTA, color: MARFIL }}>
-      <span className="flex-1">Parada saltada</span>
-      <button type="button" onClick={onDeshacer} data-hoy-deshacer-saltada className="flex h-11 items-center font-bold" style={{ color: ORO_CLARO }}>
-        Deshacer
-      </button>
     </div>
   )
 }

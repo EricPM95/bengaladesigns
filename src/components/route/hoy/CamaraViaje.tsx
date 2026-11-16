@@ -12,6 +12,10 @@ import { CamaraApp } from '../../logros/visto/CamaraApp'
 import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
 import { BotonGuardarEnGaleria } from '../fotos/BotonGuardarEnGaleria'
+import { SOBRE_LOS_LOGROS, useFlotantes } from '../../flotantes/flotantes'
+import { useBotonReorganizarVisible } from '../../reorganizar/useBotonReorganizarVisible'
+import { useLapizVisible } from '../../propuesta/BotonDePropuesta'
+import { useRouteStore } from '../../../store/useRouteStore'
 
 /**
  * LA CÁMARA DE VIAJE EN HOY (Tanda HOY1, K1 a K4; Design «Hoy Estados», apartado 04). El botón redondo de la cabecera de HOY se ve SIEMPRE (antes, durante y después del viaje, con y sin pase);
@@ -149,12 +153,19 @@ export interface PropsBotonCamara {
   conAcceso: boolean
   /** El día de hoy del viaje (para el álbum), si lo hay. */
   day: DayPlan | null
-  /** El botón de la cama ocupa el sitio de la derecha: la cámara se pone a su izquierda. */
-  conCama: boolean
+  /** (V2) Ya no hay botón de la cama arriba: se ignora. */
+  conCama?: boolean
 }
 
 /** El botón de la cámara de HOY y todo lo que abre (hoja, cámara, aviso). Un solo componente montado una vez por HoyView. */
-export function BotonCamaraViaje({ route, fase, conAcceso, day, conCama }: PropsBotonCamara) {
+export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCamara) {
+  // (V2) FLOTANTE: la cámara de viaje es uno de los DOS botones flotantes de HOY (el otro es el de los logros, debajo). Va encima del de los logros (y de «Reorganizar» o el lápiz, si salen).
+  const { debajo, alto } = useFlotantes()
+  const modoApp = useRouteStore((s) => s.mode)
+  const hayReorganizar = useBotonReorganizarVisible()
+  const hayLapiz = useLapizVisible().visible
+  const hayOtroFlotante = hayReorganizar || hayLapiz
+  const sueloLogros = alto !== null ? `${alto}px` : `calc(env(safe-area-inset-bottom,0px) + ${modoApp === 'today' ? 120 : 88}px)`
   const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
   const [hoja, setHoja] = useState<ModoDeCamara | null>(null)
   const [camara, setCamara] = useState<PedidoDeFoto | null>(null)
@@ -243,8 +254,8 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day, conCama }: Props
         data-camara-viaje="boton"
         data-modo={modo}
         aria-label={modo === 'sin_pase' ? 'Tu cámara de viaje (con el pase)' : 'Tu cámara de viaje'}
-        className={`zona-toque absolute top-1 z-10 flex items-center justify-center transition-transform active:scale-95 ${conCama ? 'right-[64px]' : 'right-4'}`}
-        style={{ width: 42, height: 42, borderRadius: '50%', background: TINTA, border: `1.5px solid ${ORO}`, boxSizing: 'border-box', color: ORO_CLARO }}
+        className="zona-toque flex items-center justify-center transition-transform active:scale-95"
+        style={{ position: 'fixed', right: 14, bottom: `calc(${sueloLogros} + ${SOBRE_LOS_LOGROS + (hayOtroFlotante ? SOBRE_LOS_LOGROS : 0)}px)`, zIndex: debajo ? 40 : 85, width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', border: '1.5px solid #9A7228', boxShadow: '0 12px 22px -8px rgba(60,40,10,.6),inset 0 1px 0 rgba(255,255,255,.7)', boxSizing: 'border-box', color: '#3E2A0C' }}
       >
         <Trazo d={CAMARA} tam={19} />
         {modo === 'sin_pase' && (

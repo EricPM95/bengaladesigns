@@ -167,7 +167,7 @@ await sec(async () => {
   const total = p.length
   const estado = await atr(a, '[data-hoy-siguiente]', 'data-hoy-estado')
   debe(estado === 'llegar', 'H1', `la siguiente parada, por llegar (${estado})`)
-  debe((await txt(a, '[data-hoy-insignia]')) === 'POR LLEGAR', 'H1', 'insignia «POR LLEGAR»')
+  debe((await txt(a, '[data-hoy-insignia]')) === 'SIGUIENTE PARADA', 'H1', 'insignia «SIGUIENTE PARADA» (V2: antes «POR LLEGAR»)')
   const cab = await txt(a, '[data-hoy-parada-n]')
   debe(cab === `Parada 2 de ${total}`, 'H1', `«Parada 2 de ${total}» (${cab})`)
   debe((await cuantos(a, '[data-hoy-progreso] span')) === total, 'H1', 'la barra de progreso tiene un tramo por parada')
@@ -178,13 +178,13 @@ await sec(async () => {
   debe(/Cómo llegar/.test((await txt(a, '[data-hoy-siguiente]')) ?? ''), 'H1', '[Cómo llegar]')
   const href = await a.evaluar("Array.from(document.querySelectorAll('[data-hoy-siguiente] a')).find((x) => /Cómo llegar/.test(x.textContent))?.href ?? null")
   debe(/travelmode=walking/.test(href ?? ''), 'H1', 'en Roma el camino es a pie')
-  debe(await hay(a, '[data-hoy-escuchar-linea]'), 'H1', '«¿Te cuento la historia mientras llegas? [Escuchar]» (el sitio tiene historia)')
+  debe(await hay(a, '[data-hoy-escuchar-camino]'), 'H1', '«Escucha su historia por el camino» (el sitio tiene historia; V2: antes «¿Te cuento la historia mientras llegas? [Escuchar]»)')
   debe(!(await hay(a, '[data-hoy-salida]')), 'H1', 'sin hora fija no hay «Sal ahora»')
   // TU DÍA
   const filas = await cuantos(a, '[data-hoy-fila="parada"]')
   const comidas = await cuantos(a, '[data-hoy-fila="comida"]')
   debe(filas === total && comidas >= 1, 'TuDia', `la lista tiene todas las paradas (${filas}/${total}) y la comida y la cena (${comidas})`)
-  debe((await txt(a, '[data-hoy-tu-dia-cuenta]')) === `1 de ${total}`, 'TuDia', 'el número de «Tu día» cuadra con «Parada X de Y»')
+  debe((await txt(a, '[data-hoy-tu-dia-cuenta]')) === `Tu día · 1 de ${total} hechas`, 'TuDia', `el número de «Tu día» cuadra con «Parada X de Y» (V2: «Tu día · 1 de ${total} hechas»; ${await txt(a, '[data-hoy-tu-dia-cuenta]')})`)
   debe((await atr(a, '[data-hoy-fila-estado="ahora"]', 'data-hoy-fila')) === 'parada', 'TuDia', 'la de ahora, marcada «Ahora»')
   debe(/Ahora/.test((await txt(a, '[data-hoy-fila-estado="ahora"]')) ?? ''), 'TuDia', 'con la etiqueta «Ahora»')
   debe(!/\d{1,2}:\d{2}/.test((await txt(a, '[data-hoy-fila-estado="viene"]')) ?? ''), 'TuDia', 'las que vienen, SIN hora (HOY2: la ruta va por franjas)')
@@ -210,7 +210,7 @@ await sec(async () => {
   debe((await atr(a, '[data-hoy-salida]', 'data-hoy-salida')) === 'tarde', 'H1b', 'si ya no llega: «Vas tarde…»')
   debe((await txt(a, '[data-hoy-salida]')) === 'Vas tarde para tu turno de las 9:00', 'H1b', 'con su texto')
   const colorTarde = await a.evaluar("(() => { const e = document.querySelector('[data-hoy-salida]'); return e ? getComputedStyle(e).color : null })()")
-  debe(colorTarde !== colorSal && /rgb\(255, 194, 186\)/.test(colorTarde ?? ''), 'H1b', `en rojo (${colorTarde})`)
+  debe(colorTarde !== colorSal && /rgb\(138, 42, 31\)/.test(colorTarde ?? ''), 'H1b', `en rojo (V2: texto #8A2A1F sobre fondo rosado; ${colorTarde})`)
   await captura(a, 'H1b_vas_tarde')
   // una parada SIN hora fija en el mismo momento: nada
   await ir(a, { dia: 0, min: 540 - min + 4, mut: "numberedStopsOf(r.days[0])[0].checkedInAt = '2026-10-17T07:00:00Z'" })
@@ -225,12 +225,13 @@ await sec(async () => {
   debe((await atr(a, '[data-hoy-siguiente]', 'data-hoy-estado')) === 'aqui', 'H3', 'tocando la tarjeta: «Ya estás aquí»')
   debe((await txt(a, '[data-hoy-insignia]')) === 'YA ESTÁS AQUÍ', 'H3', 'insignia «YA ESTÁS AQUÍ»')
   const t = (await txt(a, '[data-hoy-siguiente]')) ?? ''
-  debe(/Ya estás aquí\. ¿Empezamos\?/.test(t), 'H3', '«Ya estás aquí. ¿Empezamos?»')
-  debe(await hay(a, '[data-hoy-pastilla="que-vas-a-ver"]'), 'H3', '[Qué vas a ver]')
-  debe(await hay(a, '[data-hoy-pastilla="escuchar"]'), 'H3', '[Escuchar historia] (el sitio tiene historia)')
-  debe(!(await hay(a, '[data-hoy-pastilla="aparcado"]')), 'H3', '[Dónde has aparcado] solo en coche: en Roma no sale')
-  debe(!(await hay(a, '[data-hoy-pastilla="entrada"]')), 'H3', '[Tu entrada] solo si la hay')
-  debe(/Haz tu foto/.test(t) && /Necesito más tiempo/.test(t) && /He terminado/.test(t), 'H3', '[Haz tu foto], [Necesito más tiempo] y [He terminado]')
+  // V2: fuera «Ya estás aquí. ¿Empezamos?» y fuera [Dónde has aparcado]; los iconos (data-hoy-icono) llevan solo aria-label.
+  debe(!/¿Empezamos\?/.test(t), 'H3', 'sin «Ya estás aquí. ¿Empezamos?» (V2)')
+  debe(await hay(a, '[data-hoy-icono="que-vas-a-ver"]'), 'H3', '[Qué vas a ver]')
+  debe(await hay(a, '[data-hoy-icono="escuchar"]'), 'H3', '[Escuchar historia] (el sitio tiene historia)')
+  debe(!(await hay(a, '[data-hoy-icono="aparcado"]')) && !(await hay(a, '[data-hoy-pastilla="aparcado"]')), 'H3', 'sin [Dónde has aparcado] (V2: fuera de HOY, también en coche)')
+  debe(!(await hay(a, '[data-hoy-icono="entrada"]')), 'H3', '[Tu entrada] solo si la hay')
+  debe((await hay(a, '[data-hoy-icono="haz-tu-foto"]')) && /Necesito más tiempo/.test(t) && /He terminado/.test(t) && (await hay(a, '[data-hoy-saltar-parada]')), 'H3', '[Haz tu foto], [Necesito más tiempo], [He terminado] y «Saltar parada»')
   debe(await hay(a, '[data-boton-visto]'), 'H3', '[He terminado] es el Visto de siempre')
   await captura(a, 'H3_ya_estas_aqui')
   // H3b
@@ -274,17 +275,17 @@ await sec(async () => {
   await a.esp(900)
   const total = antes.length
   debe((await txt(a, '[data-hoy-parada-n]')) === `Parada 2 de ${total}`, 'H4', `completada: «Parada 2 de ${total}» (${await txt(a, '[data-hoy-parada-n]')})`)
-  debe((await txt(a, '[data-hoy-insignia]')) === 'SIGUIENTE', 'H4', 'la tarjeta pasa a la siguiente, con «SIGUIENTE»')
+  debe((await txt(a, '[data-hoy-insignia]')) === 'SIGUIENTE PARADA', 'H4', 'la tarjeta pasa a la siguiente, con «SIGUIENTE PARADA»')
   debe((await txt(a, '[data-hoy-linea-logro]')) === '+1 en Los imprescindibles de Roma', 'H4', `la línea dorada del logro (${await txt(a, '[data-hoy-linea-logro]')})`)
   debe((await atr(a, '[data-hoy-fila-estado="hecha"]', 'data-hoy-fila')) === 'parada', 'H4', 'en la lista, la hecha con ✓ y apagada')
-  debe((await txt(a, '[data-hoy-tu-dia-cuenta]')) === `1 de ${total}`, 'H4', `«Tu día» dice 1 de ${total} y «Parada 2 de ${total}» (cuadran)`)
+  debe((await txt(a, '[data-hoy-tu-dia-cuenta]')) === `Tu día · 1 de ${total} hechas`, 'H4', `«Tu día» dice 1 de ${total} hechas y «Parada 2 de ${total}» (cuadran)`)
   await captura(a, 'H4_completada')
   // H4b: la lista se cierra y se abre
   await clic(a, '[data-hoy-tu-dia-cabecera]')
   await a.esp(500)
   debe((await atr(a, '[data-hoy-tu-dia]', 'data-hoy-tu-dia')) === 'cerrada', 'H4b', '«Tu día» se cierra')
   debe(!(await hay(a, '[data-hoy-lista]')), 'H4b', 'cerrada no enseña las filas')
-  debe(/Tu día\s*1 de \d+\s*ver todo/i.test((await txt(a, '[data-hoy-tu-dia-cabecera]')) ?? ''), 'H4b', `«Tu día · 1 de ${total} · ver todo» (${await txt(a, '[data-hoy-tu-dia-cabecera]')})`)
+  debe(/Tu día · 1 de \d+ hechas/i.test((await txt(a, '[data-hoy-tu-dia-cabecera]')) ?? ''), 'H4b', `«Tu día · 1 de ${total} hechas» (${await txt(a, '[data-hoy-tu-dia-cabecera]')})`)
   await captura(a, 'H4b_tu_dia_cerrada', '[data-hoy-tu-dia]')
   await clic(a, '[data-hoy-tu-dia-cabecera]')
   await a.esp(400)
@@ -297,22 +298,25 @@ await sec(async () => {
   debe(p[1].saltada, 'H5', 'la parada queda saltada')
   debe((await txt(a, '[data-hoy-parada-n]')) === `Parada 2 de ${total - 1}`, 'H5', `la cuenta no cuenta la saltada (Parada 2 de ${total - 1}: ${await txt(a, '[data-hoy-parada-n]')})`)
   debe(!new RegExp(nombreSig.slice(0, 12)).test((await txt(a, '[data-hoy-siguiente]')) ?? ''), 'H5', 'la tarjeta pasa a la siguiente')
-  debe(!(await hay(a, '[data-saltada="true"]')) && (await cuantos(a, '[data-hoy-sobra-item="saltada"]')) === 0, 'H5', 'en «Tu día» ya no sale tachada (HOY2: pasa a «Si te sobra tiempo», plegada)')
-  await clic(a, '[data-hoy-sobra-tiempo-cabecera]')
+  debe(!(await hay(a, '[data-saltada="true"]')) && (await cuantos(a, '[data-hoy-sobra-item="saltada"]')) === 0, 'H5', 'en «Tu día» ya no sale tachada y «Si te sobra tiempo» no lleva lo saltado')
+  // V2 (antes → ahora): lo saltado ya no va a «Si te sobra tiempo» sino a «Lugares pendientes» (data-hoy-pendientes, plegado); el aviso de abajo es de la cola única (data-aviso-de-abajo) y SIN [Deshacer].
+  await clic(a, '[data-hoy-pendientes-cabecera]')
   await a.esp(400)
-  debe(/Recuperar/.test((await txt(a, '[data-hoy-sobra-item="saltada"]')) ?? ''), 'H5', 'en «Si te sobra tiempo», con [Recuperar]')
-  debe(/Parada saltada/.test((await txt(a, '[data-hoy-aviso-saltada]')) ?? '') && (await hay(a, '[data-hoy-deshacer-saltada]')), 'H5', 'el aviso de abajo «Parada saltada» con [Deshacer]')
-  await captura(a, 'H5_saltada', '[data-hoy-aviso-saltada]')
-  await clic(a, '[data-hoy-deshacer-saltada]')
+  debe(/Recuperar/.test((await txt(a, '[data-hoy-pendiente="saltada"]')) ?? ''), 'H5', 'en «Lugares pendientes», con [Recuperar]')
+  const avisoS = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
+  debe(/Parada saltada · la tienes en Lugares pendientes/.test(avisoS) && !(await hay(a, '[data-aviso-de-abajo-accion]')), 'H5', `el aviso de abajo «Parada saltada · la tienes en Lugares pendientes» SIN [Deshacer] (${avisoS})`)
+  await captura(a, 'H5_saltada', '[data-hoy-pendientes]')
+  await clic(a, '[data-hoy-pendiente-recuperar]')
   await a.esp(700)
-  debe(!(await paradasDe(a))[1].saltada && !(await hay(a, '[data-hoy-aviso-saltada]')), 'H5', '[Deshacer] la recupera y quita el aviso')
+  debe(!(await paradasDe(a))[1].saltada, 'H5', '[Recuperar] de «Lugares pendientes» la trae de vuelta')
   await saltarConCambiarPlan(a)
   await a.esp(600)
-  if (!(await hay(a, '[data-hoy-sobra-lista]'))) await clic(a, '[data-hoy-sobra-tiempo-cabecera]')
+  if (!(await hay(a, '[data-hoy-pendientes-lista]'))) await clic(a, '[data-hoy-pendientes-cabecera]')
   await a.esp(300)
-  await clic(a, '[data-hoy-recuperar]')
+  debe((await paradasDe(a))[1].saltada, 'H5', 'saltada otra vez, queda en «Lugares pendientes»')
+  await clic(a, '[data-hoy-pendiente-recuperar]')
   await a.esp(600)
-  debe(!(await paradasDe(a))[1].saltada, 'H5', '[Recuperar] de la lista también la trae de vuelta')
+  debe(!(await paradasDe(a))[1].saltada, 'H5', '[Recuperar] otra vez la trae de vuelta')
   // las reservas no se tocan: saltar una parada con entrada no borra la entrada
   const res = await ev(`${R}.getState().reservations.length`)
   debe(typeof res === 'number', 'reservas', 'las reservas siguen ahí (no se tocan)')
@@ -327,20 +331,19 @@ await sec(async () => {
   debe(Boolean(zona), 'H6', `Roma tiene zonas de alojamiento con coordenadas (${zona})`)
   const mut = `r.accommodationZone = ${JSON.stringify(zona)}; numberedStopsOf(r.days[1])[0].time = '09:00'`
   await ir(a, { dia: 1, min: 6 * 60, mut })
-  debe(await hay(a, '[data-hoy-por-la-manana]'), 'H6', 'por la mañana, con pase y zona: «Sal de casa a las…»')
-  const t = (await txt(a, '[data-hoy-por-la-manana]')) ?? ''
-  const hora = /Sal de casa a las (\d{1,2}:\d{2})/.exec(t)?.[1]
-  debe(Boolean(hora) && /A pie · \d+ min/.test(t), 'H6', `con su hora y su trayecto a pie (${t.slice(0, 90)})`)
-  debe(/PRIMERA PARADA/i.test(t) || /Primera parada/i.test(t), 'H6', '«PRIMERA PARADA»')
-  const h = hora.split(':').map(Number)
-  debe(h[0] * 60 + h[1] < 9 * 60, 'H6', 'sales ANTES de la hora de la parada')
+  // V2 (antes → ahora → Design `Hoy Entero`): ya NO sale la tarjeta «Sal de casa a las…» (data-hoy-por-la-manana): la primera parada usa la tarjeta de camino normal con la etiqueta «PRIMERA PARADA».
+  debe(!(await hay(a, '[data-hoy-por-la-manana]')), 'H6', 'por la mañana ya no sale la tarjeta «Sal de casa a las…» (V2)')
+  debe((await atr(a, '[data-hoy-siguiente]', 'data-hoy-estado')) === 'llegar', 'H6', 'por la mañana, la tarjeta de camino de la primera parada')
+  const t = (await txt(a, '[data-hoy-siguiente]')) ?? ''
+  debe((await txt(a, '[data-hoy-insignia]')) === 'PRIMERA PARADA', 'H6', '«PRIMERA PARADA»')
+  debe(/A pie · \d+ min/.test((await txt(a, '[data-hoy-trayecto]')) ?? ''), 'H6', `con su trayecto a pie (${(await txt(a, '[data-hoy-trayecto]')) ?? t.slice(0, 90)})`)
   await captura(a, 'H6_por_la_manana')
-  // pasada la hora de salir, la tarjeta de siempre (por llegar)
+  // más tarde, la misma tarjeta (ya no cambia a «SIGUIENTE PARADA» mientras no se haya hecho ninguna)
   await ir(a, { dia: 1, min: 8 * 60 + 55, mut })
-  debe(!(await hay(a, '[data-hoy-por-la-manana]')) && (await hay(a, '[data-hoy-siguiente]')), 'H6', 'pasada la hora de salir, la tarjeta de la siguiente parada')
-  // sin zona no se inventa la hora
+  debe(!(await hay(a, '[data-hoy-por-la-manana]')) && (await hay(a, '[data-hoy-siguiente]')) && (await txt(a, '[data-hoy-insignia]')) === 'PRIMERA PARADA', 'H6', 'pasada la hora de salir, la misma tarjeta «PRIMERA PARADA»')
+  // sin zona no se inventa nada
   await ir(a, { dia: 1, min: 6 * 60, mut: "delete r.accommodationZone; numberedStopsOf(r.days[1])[0].time = '09:00'" })
-  debe(!(await hay(a, '[data-hoy-por-la-manana]')), 'H6', 'sin zona de alojamiento no se dice ninguna hora de salir')
+  debe(!(await hay(a, '[data-hoy-por-la-manana]')), 'H6', 'sin zona de alojamiento no sale ninguna hora de salir')
 })
 
 /* ───────────── 5. H13: el atardecer y mañana ───────────── */
@@ -434,19 +437,15 @@ await sec(async () => {
     await ir(a, { dia: lunes, min: 9 * 60 + 30 })
     const tr = (await txt(a, '[data-hoy-trayecto]')) ?? ''
     debe((await atr(a, '[data-hoy-trayecto]', 'data-hoy-trayecto')) === 'coche' && /En coche · \d+ min/.test(tr), 'H2', `por llegar en coche: «En coche · N min» (${tr})`)
-    debe(/\d+ km/.test(tr) || /para aparcar/.test(tr), 'H2', `con los km o «+N min para aparcar» (${tr})`)
+    debe(/\d+ km/.test(tr) && !/para aparcar/.test(tr), 'H2', `con los km y sin «+N min para aparcar» (V2: fuera; ${tr})`)
     const href = await a.evaluar("Array.from(document.querySelectorAll('[data-hoy-siguiente] a')).find((x) => /Cómo llegar/.test(x.textContent))?.href ?? null")
     debe(/travelmode=driving/.test(href ?? ''), 'H2', 'en Lanzarote el camino es en coche')
     await captura(a, 'H2_lanzarote_lunes_9')
     // H3 en coche: [Dónde has aparcado]
     await clic(a, '[data-hoy-ya-he-llegado]')
     await a.esp(800)
-    debe(await hay(a, '[data-hoy-pastilla="aparcado"]'), 'H3', 'en coche sale [Dónde has aparcado]')
+    debe(!(await hay(a, '[data-hoy-pastilla="aparcado"]')) && !(await hay(a, '[data-hoy-icono="aparcado"]')) && !(await hay(a, '[data-hoy-donde-aparcado]')), 'H3', 'en coche tampoco sale [Dónde has aparcado] (V2: fuera de HOY)')
     await captura(a, 'H3_lanzarote_lunes_9')
-    await clic(a, '[data-hoy-pastilla="aparcado"]')
-    await a.esp(600)
-    debe(await hay(a, '[data-hoy-donde-aparcado]'), 'H3', 'su hoja para guardar dónde has aparcado')
-    await a.evaluar("(() => { document.querySelector('[role=\"dialog\"] button[aria-label=\"Cerrar\"]')?.click(); return true })()")
     // sin textos de Roma
     await ir(a, { dia: lunes, min: 9 * 60 + 30 })
     const todo = (await txt(a, '[data-hoy]')) ?? ''
@@ -458,13 +457,11 @@ await sec(async () => {
     await captura(a, 'H1_lanzarote_domingo_8')
     // H6 en coche: «Sal de casa a las…» con la hora del motor
     await ir(a, { dia: lunes, min: 6 * 60 })
-    const hayH6 = await hay(a, '[data-hoy-por-la-manana]')
-    debe(hayH6, 'H6', 'el lunes 9 a las 6:00, en coche: la tarjeta «Sal de casa a las…»')
-    if (hayH6) {
-      const t6 = (await txt(a, '[data-hoy-por-la-manana]')) ?? ''
-      debe(/Sal de casa a las \d{1,2}:\d{2}/.test(t6) && /En coche/.test(t6), 'H6', `por la mañana en coche: «Sal de casa a las…» y «En coche» (${t6.slice(0, 80)})`)
-      await captura(a, 'H6_lanzarote_lunes_9')
-    }
+    // V2: ya no hay «Sal de casa a las…»; la primera parada sale como «PRIMERA PARADA» con su trayecto en coche.
+    debe(!(await hay(a, '[data-hoy-por-la-manana]')), 'H6', 'el lunes 9 a las 6:00, en coche: ya no sale la tarjeta «Sal de casa a las…» (V2)')
+    const t6 = (await txt(a, '[data-hoy-siguiente]')) ?? ''
+    debe((await txt(a, '[data-hoy-insignia]')) === 'PRIMERA PARADA' && /En coche · \d+ min/.test((await txt(a, '[data-hoy-trayecto]')) ?? ''), 'H6', `por la mañana en coche: «PRIMERA PARADA» y «En coche · N min» (${t6.slice(0, 80)})`)
+    await captura(a, 'H6_lanzarote_lunes_9')
     // H14 en Lanzarote: el día de vuelta
     const vuelta = diasLz.findIndex((d) => d.vuelta)
     if (vuelta >= 0) {

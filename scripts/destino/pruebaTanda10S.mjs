@@ -47,7 +47,8 @@ async function conViaje(pase, ancho = 390, alto = 844, ruta = '/?cuentas=off&log
 
 const SIN = { cobro: true, conPase: false, puede: true, pruebaGastada: false }
 const CON = { cobro: true, conPase: true, puede: true, pruebaGastada: false }
-const camaEn = (a) => a.evaluar("(() => { const e = document.querySelector('[data-boton-cama-hoy]'); return e ? e.getAttribute('data-boton-cama-hoy') : null })()")
+// V2 (15-nov): el botón de la cama de arriba (data-boton-cama-hoy) está BORRADO (y la fila solo existe en el HOY V2: estas pruebas abren con ?hoy2=on); lo que lo sustituye es la fila «Volver al alojamiento» de abajo (data-alojamiento-hoy, solo con pase). El nombre «camaEn» se queda para no tocar el resto.
+const camaEn = (a) => a.evaluar("(() => { const e = document.querySelector('[data-alojamiento-hoy]'); return e ? e.getAttribute('data-alojamiento-hoy') : null })()")
 const hoyEn = async (a, pase, iso, rango) => {
   await a.evaluar(`window.__pruebaDelPase = ${JSON.stringify(pase)}; true`)
   await a.evaluar(`${store}.then((s) => { ${rango ? `s.setRouteDateRange(${JSON.stringify(rango)});` : ''} s.setDevSimulatedTodayIso(${JSON.stringify(iso)}); s.setMode('today'); return true })`)
@@ -70,18 +71,18 @@ console.log('2. La cama en HOY')
 {
   const c = leer('src/components/route/hoy/HoyView.tsx')
   debe(/conCama\s*=\s*estado\?\.phase === 'during' && !diaDePrueba/.test(c), 'codigo', 'HoyView no pinta la cama en el día de prueba')
-  const a = await conViaje(CON, 390, 844, '/?cuentas=off&logros=on&logrosDemo=1&version=completa&apertura=0')
+  const a = await conViaje(CON, 390, 844, '/?cuentas=off&logros=on&logrosDemo=1&version=completa&apertura=0&hoy2=on')
   try {
     await hoyEn(a, CON, '2026-10-18', { start: '2026-10-17', end: '2026-10-20' })
     debe((await camaEn(a)) !== null, 'con pase', 'con pase, en un día del viaje, la cama sale')
   } finally {
     a.cerrar()
   }
-  const b = await conViaje({ ...SIN, prueba: { estado: 'pendiente', fecha: '2026-10-18', tripId: null } })
+  const b = await conViaje({ ...SIN, prueba: { estado: 'pendiente', fecha: '2026-10-18', tripId: null } }, 390, 844, '/?cuentas=off&logros=on&logrosDemo=1&version=gratis&apertura=0&hoy2=on')
   try {
     // Día 17: durante el viaje y SIN ser el día de prueba (es el 18): HOY sin pase completo, sin cama.
     await hoyEn(b, { ...SIN, prueba: { estado: 'pendiente', fecha: '2026-10-18', tripId: null } }, '2026-10-18', { start: '2026-10-17', end: '2026-10-20' })
-    const diaPrueba = await b.evaluar("Boolean(document.querySelector('[data-hoy-con-cama], [data-hoy]:not([data-hoy=\"sin-pase\"])'))")
+    const diaPrueba = await b.evaluar("Boolean(document.querySelector('[data-hoy]:not([data-hoy=\"sin-pase\"])'))")
     debe(diaPrueba, 'dia de prueba', 'el día de prueba HOY sale entero (no el HOY sin pase)')
     debe((await camaEn(b)) === null, 'dia de prueba', 'en el día de prueba sin pase la cama NO sale')
     await b.captura(foto('cama_dia_de_prueba'))
@@ -183,7 +184,8 @@ console.log('4b. Zona de toque de 44 × 44 sin cambiar lo que se ve (Ajustes y l
   try {
     await b.evaluar(`${modulo('/src/store/useRouteStore.ts')}.then((m) => { const e = m.useRouteStore.getState(); const n = e.route.days.length; const d = (k) => { const f = new Date('2026-12-01T12:00:00Z'); f.setUTCDate(f.getUTCDate() + k); return f.toISOString().slice(0, 10) }; e.setRouteDateRange({ start: '2026-12-01', end: d(n - 1) }); e.setDevSimulatedTodayIso(d(1)); e.setMode('today'); return true })`)
     await espComun(3000)
-    juzga(await b.evaluar(medirZonaToque('[data-boton-cama-hoy]')), 'la cama de HOY')
+    // V2: la cama de HOY (data-boton-cama-hoy) ya no existe (la sustituye la fila «Volver al alojamiento», con su [Cómo llegar] de 44 px); solo se mide Ajustes.
+    debe((await b.evaluar("document.querySelector('[data-boton-cama-hoy]')")) === null, 'toque', 'la cama de arriba de HOY ya no existe (V2)')
     await b.evaluar(`${modulo('/src/store/useRouteStore.ts')}.then((m) => { m.useRouteStore.getState().setMode('route'); return true })`)
     await b.evaluar(`${modulo('/src/store/usePerfilUi.ts')}.then((m) => { m.usePerfilUi.getState().abrir(); return true })`)
     await cuandoComun(b, "Boolean(document.querySelector('[data-ajustes]'))", 60)

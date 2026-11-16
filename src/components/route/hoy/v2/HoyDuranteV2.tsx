@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { logrosActivos } from '../../../../lib/logros'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { useRouteStore } from '../../../../store/useRouteStore'
@@ -14,10 +14,9 @@ import { buildGoogleMapsUrlToPlaceTransit } from '../../../../lib/mapsLinks'
 import { tripModes, useArrivalInfo } from '../../../../lib/arrivalReturn'
 import { destinoDelPunto, tituloDeVuelta } from '../../../../lib/llegadaVueltaHoy'
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../../../lib/diaCompleto'
-import { CERRADO_ESTE_DIA } from '../../../../lib/placeHoursOnDate'
 import { tarjetaHoyVuelvesDelDia } from '../../../../lib/planLlegadaVuelta'
 import { horaUtilDeBillete } from '../../../../../shared/arrival/horaUtil.js'
-import { useHorarioDeParadas, type HorarioDeParada } from '../../../../lib/horarioDeParada'
+import { useHorarioDeParadas } from '../../../../lib/horarioDeParada'
 import { textoResumenDeParada, useEscuchar } from '../../../../lib/useEscuchar'
 import { useAudioDeHistoria } from '../../../../lib/escucharAudio'
 import { accesoHistoria, textoHistoria, useFichaDeSitio } from '../../../../lib/historia'
@@ -32,17 +31,17 @@ import { TusFotosDeHoy } from '../../fotos/TusFotosDeHoy'
 import { RainAlert } from '../../today/RainAlert'
 import { TodayExcursion } from '../../today/TodayExcursion'
 import { BilleteDeVuelo } from '../../dayDetail/BilleteDeVuelo'
-import { BotonAlojamientoHoy, useFichasDeHoy, type MitadDeHoy } from '../llegadaVuelta'
+import { useFichasDeHoy, type MitadDeHoy } from '../llegadaVuelta'
 import { anadirMasVisita, useMasVisitas } from '../masVisitas'
 import type { MasVisita } from '../../../../lib/masVisitas'
 import { AZUL, VERDE } from '../piezas'
 import { CabeceraHoy } from './HoyAntesV2'
 import { HojaMasParaTuDia } from './HojasV2'
 import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
-import { AvisoSaltada, CabeceraParada, LineaDelLogro, TarjetaParada, TarjetaPorLaManana, TuDia, ojoDeParada, useAhoraMin, useUltimaSuma } from './ParadaHoy'
+import { CabeceraParada, LineaDelLogro, TarjetaParada, TuDia, ojoDeParada, useAhoraMin, useUltimaSuma } from './ParadaHoy'
 import { HoyVuelvesH14 } from './VueltaH14'
 import { useUbicacionHoy } from './useUbicacionHoy'
-import { cuentaDelDia, horaCorta, mananaH13, minutosDe, salidaDeCasa, urlComoLlegar } from '../../../../lib/hoyParada'
+import { cuentaDelDia, horaCorta, mananaH13, minutosDe, salidaDeCasa, trayectoHasta, urlComoLlegar } from '../../../../lib/hoyParada'
 import { esDestinoDeCoche } from '../../../../lib/experienceCategoryBank'
 import { abrirAvisoPase } from '../../../../lib/avisoPase'
 import { nombreDelPase } from '../../../../lib/nombrePase'
@@ -56,6 +55,11 @@ import { AvisosDelTiempo } from '../AvisosDelTiempo'
 import { SinConexionHoy } from '../SinConexionHoy'
 import { TarjetaInstalarAvisos } from './TarjetaInstalarAvisos'
 import { CercaDeTiFila } from '../CercaDeTiFila'
+import { AvisoDeAbajoHost } from './AvisoDeAbajo'
+import { LugaresPendientes } from './LugaresPendientes'
+import { VolverAlAlojamiento } from './VolverAlAlojamiento'
+import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
+import { AVISO_SALTADA, avisoDeCerrada, cerradasDeHoy, lugaresPendientes } from '../../../../lib/hoyPendientes'
 import { AvisoDeHoy, CruzDeAviso, ZonaDeAvisos } from './AvisosHoy'
 import { AvisoPlanActualizadoGlobal } from './CambiarPlan'
 import { TarjetaDeComida, useComidaDeAhora } from './ComerAhora'
@@ -85,16 +89,6 @@ function guardarCerrados(rutaId: string, diaId: string, ids: string[]) {
   } catch {
     /* sin almacenamiento: vale hasta cerrar la pantalla */
   }
-}
-
-function LineaDeHorario({ horario, cerradoEsteDia }: { horario: HorarioDeParada | null; cerradoEsteDia: boolean }) {
-  if (cerradoEsteDia && !horario?.cerrado) horario = { abre: null, cierra: null, ultimaEntrada: null, cerrado: true, tramos: [], texto: CERRADO_ESTE_DIA }
-  if (!horario) return null
-  return (
-    <span className="text-[12px] leading-[1.3]" style={{ color: horario.cerrado ? '#FFC2BA' : 'rgba(251,243,226,.7)' }}>
-      {horario.texto}
-    </span>
-  )
 }
 
 /** [Escuchar historia]: el botón largo con las ondas (solo en los sitios con historia; la historia es de pago salvo la que la ficha marca gratis). */
@@ -229,17 +223,12 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const [fichaCompleta, setFichaCompleta] = useState<Stop | null>(null)
   const { ubicacion, estado: ubicacionEstado, pedir: pedirUbicacion } = useUbicacionHoy()
   const enCoche = esDestinoDeCoche(route.destination)
-  const [avisoSaltada, setAvisoSaltada] = useState<{ stopId: string } | null>(null)
   const [ultimoVisto, setUltimoVisto] = useState<Stop | null>(null)
   const sumaDelVisto = useUltimaSuma(ultimoVisto?.id ?? null)
   const ahoraMinHoy = useAhoraMin()
+  const conPaseOPrueba0 = pagoActivo()
+  const anunciadas = useRef<Set<string>>(new Set())
   const [ofrecerFoto, setOfrecerFoto] = useState<Stop | null>(null)
-
-  useEffect(() => {
-    if (!avisoSaltada) return
-    const id = window.setTimeout(() => setAvisoSaltada(null), 10000)
-    return () => window.clearTimeout(id)
-  }, [avisoSaltada])
 
   const explorar = (categoria: 'banos' | 'fuentes' | 'restaurantes' | 'atracciones', origen: Coordinates | null, cerca = false) => {
     pedirExplorar({ categoria, origen, cerca })
@@ -247,8 +236,20 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   }
 
   const tituloDeHoy = nombreDelDia(route, day, info.gruposDia)
-  const paradas = numberedStopsOf(day)
+  const paradasDelDia = numberedStopsOf(day)
+  // (V2, 9) NUNCA MANDAR A UN SITIO CERRADO: si la siguiente parada ya está cerrada (o lo estará al llegar), no sale como siguiente: pasa sola a «Lugares pendientes» y sale la siguiente abierta.
+  const cerradas = conPaseOPrueba0 ? cerradasDeHoy({ day, horarioDe, ahoraMin: ahoraMinHoy, trayectoMin: (st) => trayectoHasta({ siguiente: st, ubicacion, anterior: null, enCoche, casa: null, ida: null })?.totalMin ?? 0 }) : new Set<string>()
+  const paradas = paradasDelDia.map((st) => (cerradas.has(st.id) ? { ...st, saltada: true } : st))
   const vigentes = paradas.filter((s) => !s.saltada)
+  useEffect(() => {
+    for (const st of paradasDelDia) {
+      if (cerradas.has(st.id) && !anunciadas.current.has(st.id)) {
+        anunciadas.current.add(st.id)
+        avisarAbajo({ id: `cerrada:${st.id}`, texto: avisoDeCerrada(displayStopName(st.name)) })
+      }
+    }
+  })
+  const pendientes = lugaresPendientes({ route, day, cerradas })
   // (HOY2b 8b) Los horarios de lo que queda por hacer hoy: la tarjeta de la mañana y el aviso en directo.
   const ventanasDeHoy = useVentanasDeHoy(route, day, dateIso)
   const vistas = vigentes.filter((s) => s.checkedInAt).length
@@ -300,7 +301,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const vuelveH14 = (conPase: boolean) => (tarjetaVuelve || fichas.vuelta.hora || route.planVuelta?.hora ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} /> : null)
   const saltar = (stop: Stop) => {
     setStopSaltada(day.id, stop.id, true)
-    setAvisoSaltada({ stopId: stop.id })
+    avisarAbajo({ id: `saltada:${stop.id}`, texto: AVISO_SALTADA })
     setUltimoVisto(null)
     setOfrecerFoto(null)
   }
@@ -339,7 +340,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       <>
         {cabecera}
         <TodayExcursion route={route} day={day} />
-        <BotonAlojamientoHoy route={route} />
+        {!sinPase && <VolverAlAlojamiento route={route} desde={ubicacion ?? origenCerca} casa={zonaCoords} enCoche={enCoche} />}
       </>
     )
   }
@@ -398,10 +399,10 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     <CabeceraHoy ojo={`${ojo} · llegada a ${route.destination}`} titulo={`Bienvenido a ${route.destination}`} />
   ) : esVuelta && (tarjetaDeVuelta || tarjetaVuelve) ? (
     <CabeceraHoy ojo={`${ojo} · último día`} titulo="Hoy vuelves a casa" />
-  ) : comidaDeAhora && siguiente && !esPorLaManana ? (
+  ) : comidaDeAhora && siguiente ? (
     <CabeceraHoy ojo={ojoDeParada(dateIso, tituloLimpio)} titulo={comidaDeAhora.mealTime === 'dinner' ? 'Hora de cenar' : 'Hora de comer'} />
   ) : paradas.length > 0 ? (
-    <CabeceraParada ojo={diaTerminado ? `${ojo} · al acabar el día` : ojoDeParada(dateIso, tituloLimpio)} ahora={cuenta.ahora} total={cuenta.total} hechas={cuenta.hechas} />
+    <CabeceraParada ojo={diaTerminado ? `${ojo} · al acabar el día` : ojoDeParada(dateIso, esPorLaManana ? 'Buenos días' : tituloLimpio)} ahora={cuenta.ahora} total={cuenta.total} hechas={cuenta.hechas} />
   ) : (
     cabecera
   )
@@ -535,15 +536,11 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* HOY1 (H4): la línea dorada del logro que acaba de ganar */}
       {ultimoVisto && siguiente && sumaDelVisto && <LineaDelLogro texto={`+1 en ${sumaDelVisto}`} />}
 
-      {/* HOY1 (H1 a H6): la siguiente parada, por llegar o ya aquí; por la mañana, «Sal de casa a las…» */}
-      {!sinParadasDeVuelta && !bienvenida && siguiente && esPorLaManana && salidaManana && (
-        <TarjetaPorLaManana route={route} day={day} dateIso={dateIso} primera={siguiente} hora={salidaManana.hora} trayecto={salidaManana.trayecto} comoLlegar={hasRealCoordinates(siguiente.coordinates) ? urlComoLlegar(siguiente.coordinates, zonaCoords, enCoche) : null} />
-      )}
       {/* HOY2 (Completa 4): a la hora de comer, la tarjeta de la comida en lugar de la de la parada */}
-      {!sinParadasDeVuelta && !bienvenida && siguiente && !esPorLaManana && comidaDeAhora && !esVuelta && (
+      {!sinParadasDeVuelta && !bienvenida && siguiente && comidaDeAhora && !esVuelta && (
         <TarjetaDeComida route={route} day={day} dateIso={dateIso} meal={comidaDeAhora} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} onHecha={comidaHecha} />
       )}
-      {!sinParadasDeVuelta && !bienvenida && siguiente && !esPorLaManana && !(comidaDeAhora && !esVuelta) && (
+      {!sinParadasDeVuelta && !bienvenida && siguiente && !(comidaDeAhora && !esVuelta) && (
         <TarjetaParada
           route={route}
           day={day}
@@ -557,12 +554,10 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           enCoche={enCoche}
           onTerminado={marcarVisto}
           onSaltar={() => saltar(siguiente)}
-          recienTerminada={Boolean(ultimoVisto)}
           conPase={conPaseOPrueba}
-          escuchar={(variante) => <EscucharHistoria destino={route.destination} parada={siguiente} variante={variante} />}
           onQueVasAVer={() => setFichaCompleta(siguiente)}
           casa={zonaCoords}
-          lineaHorario={<LineaDeHorario horario={horarioDe(siguiente)} cerradoEsteDia={Boolean(siguiente.closedThisDay)} />}
+          horario={horarioDe(siguiente)}
         />
       )}
 
@@ -601,15 +596,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
       {/* 3 · la tarjeta principal */}
       {principal}
-      {!sinParadasDeVuelta && !diaTerminado && siguiente && masVisitas.length > 0 && !bienvenida && (
-        <div className="flex flex-none justify-center">
-          <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold" style={{ border: '1.5px dashed rgba(166,124,82,.6)' }}>
-            <Icono nombre="anadir" size={13} grosor={2.4} />
-            Más visitas
-          </button>
-        </div>
-      )}
-
       {ofrecerFoto && !logrosActivos() && (
         <div className="flex flex-none items-center gap-2 rounded-2xl bg-white px-3.5 py-2.5" style={{ border: '1px solid rgba(28,34,48,.08)' }}>
           <span className="min-w-0 flex-1 truncate text-[13px] text-text/70">Visto: {displayStopName(ofrecerFoto.name)}</span>
@@ -632,9 +618,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         {conPaseOPrueba && !sinParadasDeVuelta && !esVuelta && !bienvenida && paradas.length > 0 && <QueHagoAhora route={route} day={day} dateIso={dateIso} siguiente={siguiente} anterior={anterior} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} comida={comidaDeAhora} fraseAtardecer={fraseAtardecer} casa={zonaCoords} />}
       </div>
 
-      {/* 5 · Cerca de ti */}
-      {!sinParadasDeVuelta && paradas.length > 0 && !diaTerminado && <CercaDeTiFila route={route} origen={origenCerca} conPase={pagoActivo()} />}
-
       {/* 6 · «Tu día», por franjas y sin horas */}
       {!sinParadasDeVuelta && paradas.length > 0 && <TuDia key={diaTerminado ? 'fin' : 'dia'} route={route} day={day} dateIso={dateIso} paradas={paradas} siguienteId={siguiente?.id ?? null} reservaDe={reservaDe} horaDelSol={horaSolHoy} inicialAbierta={!diaTerminado} onAbrirParada={(s) => setFichaCompleta(s)} />}
 
@@ -645,6 +628,9 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           <TarjetaMananaOscura cuando={`Mañana, ${diaDeManana}`} titulo={manana.titulo} sales={manana.sales} turno={manana.turno} consejo={manana.consejo} />
         </>
       )}
+
+      {/* 7 · Cerca de ti (V2: debajo de «Tu día») */}
+      {!sinParadasDeVuelta && paradas.length > 0 && !diaTerminado && <CercaDeTiFila route={route} origen={origenCerca} conPase={pagoActivo()} />}
 
       {/* 4: la tarde del último día */}
       {esVuelta && !sinParadasDeVuelta && (
@@ -657,18 +643,20 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         </div>
       )}
 
-      {tarjetaVuelve && !esVuelta && vuelveH14(true)}
-      {!esVuelta && <BotonAlojamientoHoy route={route} />}
       <TusFotosDeHoy day={day} />
+      {!esVuelta && !sinPase && <VolverAlAlojamiento route={route} desde={ubicacion ?? origenCerca} casa={zonaCoords} enCoche={enCoche} />}
+      {tarjetaVuelve && !esVuelta && vuelveH14(true)}
 
       {/* 7 · «Si te sobra tiempo», abajo del todo (la lista de DÍAS plegada, solo si hay algo) */}
       <SiTeSobraTiempoHoy route={route} day={day} dateIso={dateIso} />
+      {/* 8 · «Lugares pendientes», al final de HOY (solo si hay) */}
+      <LugaresPendientes route={route} day={day} dateIso={dateIso} pendientes={pendientes} />
 
       {fichas.hoja}
       {/* HOY2 (C): «Plan actualizado · Deshacer» (uno solo para todo HOY) y «¿Qué hacemos con…?» de la parada que se dejó sin marcar */}
       <AvisoPlanActualizadoGlobal />
+      <AvisoDeAbajoHost />
       <PreguntaParadaNoMarcada route={route} day={day} siguiente={siguiente} ubicacion={ubicacion} onVisto={(s) => { setStopVisto(day.id, s.id, true); setUltimoVisto(s) }} />
-      {avisoSaltada && <AvisoSaltada onDeshacer={() => { setStopSaltada(day.id, avisoSaltada.stopId, false); setAvisoSaltada(null) }} />}
       {hojaMas && (
         <HojaMasParaTuDia
           visitas={hojaMas}

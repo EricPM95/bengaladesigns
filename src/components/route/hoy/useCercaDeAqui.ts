@@ -22,6 +22,8 @@ export interface SitioCerca {
   emblema_nombre: string | null
   hay_pedazo: boolean
   coleccion_nombre: string | null
+  /** Los nombres de todas las colecciones donde este sitio da un pedazo por ganar (sin emblemas). */
+  pedazos_nombres?: string[]
 }
 
 export interface RetoDelDia {

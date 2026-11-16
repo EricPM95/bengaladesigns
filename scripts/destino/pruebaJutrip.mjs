@@ -499,7 +499,8 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
     debe(/bg-\[#FFFDF8\] text-\[#1C2230\]/.test(t) && /data-tarjeta="clara"/.test(t) && !/claro/.test(t.replace(/\/\/[^\n]*/g, '')), 'hoy', 'src/components/route/hoy/HoyDurante.tsx: la tarjeta de la siguiente parada es siempre clara')
     debe(/botonOro\(\)/.test(t) && /data-boton-visto/.test(t), 'hoy', 'src/components/route/hoy/HoyDurante.tsx: [Cómo llegar] en oro y [Visto] sigue en su sitio, con lo mismo que hace')
     const n = leer('src/components/route/hoy/v2/ParadaHoy.tsx')
-    debe(/data-tarjeta="oscura"/.test(n) && /background: TINTA, color: MARFIL/.test(n) && /const TINTA = '#1C2230'/.test(n), 'hoy', 'ParadaHoy.tsx: la tarjeta de la siguiente parada de la HOY nueva es la oscura de «Hoy Estados» (tinta y marfil)')
+    // (V2, 16-nov) AHORA: «Hoy Aqui»/«Hoy Recorrido» de Design la pintan CLARA (marfil con foto, tinta solo en la barra de la historia): el diseño nuevo manda.
+    debe(/data-tarjeta="clara"/.test(n) && /background: '#FFFDF8'/.test(n) && /const TINTA = '#1C2230'/.test(n) && !/data-tarjeta="oscura"/.test(n), 'hoy', 'ParadaHoy.tsx: la tarjeta de la siguiente parada de la HOY nueva es la clara de «Hoy Aqui» y «Hoy Recorrido» (marfil con foto)')
     debe(/BOTON_ORO/.test(n) && /data-boton-visto/.test(n) && /#2B7F45/.test(n), 'hoy', 'ParadaHoy.tsx: [Cómo llegar] en oro y [He terminado] (el Visto de siempre) en verde')
     debe(/ParadaHoy/.test(leer('src/components/route/hoy/v2/HoyDuranteV2.tsx')) && /data-hoy-siguiente/.test(n), 'hoy', 'HoyDuranteV2.tsx monta la tarjeta nueva')
   }

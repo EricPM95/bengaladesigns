@@ -16,7 +16,7 @@ import { calcularExp, edicionDeAnio, entradaEnEdicion, estadoDelSorteo, expDeMom
 import { coordenadasDeSitio, datosVisiblesPara, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
 import { armarMomentos } from './momentos.js'
-import { queEnsenar, retoDelDia, retosDelDia, sitioDeFotoLibre, sitiosCerca } from './cerca.js'
+import { elegirRetos, queEnsenar, retoDelDia, retosDelDia, sitioDeFotoLibre, sitiosCerca } from './cerca.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
 import { clavesSuperadas, vitrinaDeGanados } from './pantallas/ganados.js'
 import { coleccionesDeSitio, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen, sitiosDeLaRuta } from './vistas.js'
@@ -280,7 +280,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
         radios_hoy[String(n)] = Number.isFinite(r) && r > 0 ? r : null
       }
     }
-    return { ok: true, cerca: lista, radios_hoy, ...queEnsenar(lista), reto: retoDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy }), retos: retosDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy, diasRuta: viaje.dias ?? [], hoyFecha: hoy, enCoche: Boolean(en_coche) }) }
+    return { ok: true, cerca: lista, radios_hoy, ...queEnsenar(lista), reto: retoDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy }), retos: elegirRetos(retosDelDia({ datos, catalogos, destino: viaje.destino, items, sitiosHoy, diasRuta: viaje.dias ?? [], hoyFecha: hoy, enCoche: Boolean(en_coche) })) }
   }
 
   /** Lo que tiene un sitio por ganar (sin decir qué emblema): para que la tarjeta del Visto sepa cuál enseñar. Solo se LEE; no cambia nada. */

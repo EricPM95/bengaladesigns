@@ -10,7 +10,7 @@ function tono(nombre: string): string {
 }
 
 /** La pieza «Parada con foto» (Piezas/Parada Foto): la miniatura del sitio; a color con ✓ si está vista, más apagada si está por ver. */
-export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista }: { nombre: string; photoUrl?: string | null; vista: boolean; size?: number; marca?: boolean }) {
+export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista, carga = 'lazy' }: { nombre: string; photoUrl?: string | null; vista: boolean; size?: number; marca?: boolean; /** (V2) «Tu día» las pide ya (son miniaturas de 4 KB): con `lazy`, dentro de la pantalla que se desplaza, a veces no llegaban a pintarse. */ carga?: 'lazy' | 'eager' }) {
   const mini = urlMiniatura(photoUrl) ?? (photoUrl || null)
   const hu = tono(nombre)
   const fondo = `linear-gradient(150deg,oklch(0.86 0.06 ${hu}),oklch(0.6 0.08 ${hu}) 60%,oklch(0.38 0.06 ${hu}))`
@@ -21,7 +21,7 @@ export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista }
         className="absolute inset-0 overflow-hidden"
         style={{ borderRadius: Math.round(size * 0.28), background: mini ? '#E9DFCB' : fondo, filter: vista ? 'none' : 'grayscale(.75)', opacity: vista ? 1 : 0.5, boxShadow: 'inset 0 0 0 1px rgba(28,34,48,.08)' }}
       >
-        {mini && <img src={mini} alt="" loading="lazy" className="h-full w-full object-cover" onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')} />}
+        {mini && <img src={mini} alt="" loading={carga} className="h-full w-full object-cover" onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')} />}
       </span>
       {marca && (
         <span className="absolute flex items-center justify-center rounded-full" style={{ right: -4, bottom: -4, width: ck, height: ck, background: 'oklch(0.55 0.11 150)', boxShadow: '0 0 0 2px #FFFDF8' }}>
@@ -35,7 +35,7 @@ export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista }
 }
 
 /** La misma pieza para una parada de la ruta: pide su foto al servidor si viene sin ella. */
-export function ParadaFotoDeParada({ parada, ciudad, dateIso, vista, size = 40, marca }: { parada: Stop; ciudad: string; dateIso: string | null; vista: boolean; size?: number; marca?: boolean }) {
+export function ParadaFotoDeParada({ parada, ciudad, dateIso, vista, size = 40, marca, carga }: { parada: Stop; ciudad: string; dateIso: string | null; vista: boolean; size?: number; marca?: boolean; carga?: 'lazy' | 'eager' }) {
   const url = useFotoDeParada(parada, ciudad, dateIso)
-  return <ParadaFoto nombre={parada.name} photoUrl={url} vista={vista} size={size} marca={marca} />
+  return <ParadaFoto nombre={parada.name} photoUrl={url} vista={vista} size={size} marca={marca} carga={carga} />
 }

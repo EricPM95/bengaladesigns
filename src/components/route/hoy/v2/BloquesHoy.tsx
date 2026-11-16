@@ -65,8 +65,8 @@ interface ItemSobra {
 /** Lo que va en «Si te sobra tiempo» de HOY: lo que ya estaba en la lista de DÍAS y lo saltado de hoy. */
 export function itemsDeSobraTiempo(day: DayPlan): ItemSobra[] {
   const sobra = (day.spareStops ?? []).map((stop): ItemSobra => ({ stop, origen: 'sobra' }))
-  const saltadas = day.stops.filter((s) => s.saltada && !s.isArrival && !s.isBreak).map((stop): ItemSobra => ({ stop, origen: 'saltada' }))
-  return [...saltadas, ...sobra]
+  // (V2) Lo saltado ya no va aquí: está en «Lugares pendientes».
+  return sobra
 }
 
 export function SiTeSobraTiempoHoy({ route, day, dateIso }: { route: Route; day: DayPlan; dateIso: string }) {
@@ -89,7 +89,7 @@ export function SiTeSobraTiempoHoy({ route, day, dateIso }: { route: Route; day:
     <div data-hoy-sobra-tiempo={items.length} className="flex flex-none flex-col rounded-2xl" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.1)' }}>
       <button type="button" onClick={() => setAbierta((v) => !v)} aria-expanded={abierta} data-hoy-sobra-tiempo-cabecera className="flex min-h-12 items-center gap-2.5 px-4 text-left">
         <span className="flex-1 text-[14px] font-medium text-[#1C2230]">
-          Si te sobra tiempo <span className="font-normal text-[#1C2230]/50">· {items.length === 1 ? '1 sitio' : `${items.length} sitios`}</span>
+          Si te sobra tiempo <span className="font-normal text-[#1C2230]/50">· {items.length === 1 ? '1 opcional' : `${items.length} opcionales`}</span>
         </span>
         <Icono nombre={abierta ? 'arriba' : 'abajo'} size={15} grosor={2} style={{ color: 'rgba(28,34,48,.5)' }} />
       </button>

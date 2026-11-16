@@ -241,8 +241,9 @@ export function CercaDeTiFila({ route, origen, conPase }: { route: Route; origen
             data-cerca-boton={b.clave}
             data-candado={conPase ? undefined : `cerca-${b.clave}`}
             onClick={() => (conPase ? setAbierta(b.clave) : abrirAvisoPase(b.aviso, { destino: route.destination }))}
-            className="relative flex min-w-0 flex-1 flex-col items-center justify-center gap-[5px]"
-            style={{ height: 62, borderRadius: 18, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.5)', boxShadow: '0 6px 12px -10px rgba(110,80,24,.5)', font: "600 12.5px 'Geist'", color: TINTA }}
+            aria-label={`${b.etiqueta} cerca${conPase ? '' : ' (con el Pase)'}`}
+            className="relative flex min-w-0 flex-1 flex-col items-center justify-center gap-[7px]"
+            style={{ height: 78, borderRadius: 20, background: 'linear-gradient(180deg,#FFFDF8,#F6EFDF)', border: '1px solid rgba(181,138,46,.45)', boxShadow: 'inset 0 1px 0 #fff,0 8px 14px -10px rgba(110,80,24,.55)', font: "600 13px 'Geist'", color: TINTA }}
           >
             <span className="flex items-center justify-center" style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(145deg,#FFF6DC,#D9BC6E 60%,#B58A2E)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.7)', color: TINTA }}>
               <Trazo d={ICONOS[b.clave]} tam={16} />

@@ -388,3 +388,13 @@ html[data-solo-ver] [data-edit-tool] { display: none !important; }
   border-radius: 18px;
   animation: parada-marcada 2s ease-out 1;
 }
+
+/* HOY (V2): «Ya estás aquí» y la barra de la historia sonando (Piezas/Hoy Aqui de Design). */
+@keyframes hoyYaPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(91, 208, 122, 0.55); }
+  50% { box-shadow: 0 0 0 6px rgba(91, 208, 122, 0); }
+}
+@keyframes hoyYaBar {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}

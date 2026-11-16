@@ -61,11 +61,11 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   // (10S) Ajustes (ahora en PerfilSheet, 40 px a la vista) y la cama de HOY: lo VISIBLE sigue en 40 × 40 y la ZONA DE TOQUE llega a 44 × 44 con la clase `zona-toque` (index.css: un ::after centrado de al menos 44 × 44).
   // La medida real (getBoundingClientRect 40 × 40 y elementFromPoint en las 4 esquinas y el centro del cuadrado de 44 × 44, y 1 px fuera no devuelve el botón) está en pruebaTanda10S.mjs; aquí, el código que la hace posible.
   const ajustes = sinComentarios(leer(ruta('src/components/layout/PerfilSheet.tsx'))).match(/data-ajustes[\s\S]{0,300}/)?.[0] ?? ''
-  const cama = sinComentarios(leer(ruta('src/components/route/hoy/BotonCamaHoy.tsx')))
+  // V2 (15-nov): BotonCamaHoy.tsx está BORRADO (la cama de arriba de HOY ya no existe; la sustituye la fila «Volver al alojamiento»); la zona de toque de 44 px ya solo se exige a Ajustes.
   const css = leer(ruta('src/index.css'))
   debe(/\.zona-toque::after\s*\{[^}]*width:\s*max\(100%,\s*44px\)[^}]*height:\s*max\(100%,\s*44px\)/.test(css), '44px', 'la clase zona-toque crea una zona de toque invisible de 44 × 44 como mínimo')
   debe(/zona-toque/.test(ajustes) && /\bh-10 w-10\b/.test(ajustes), '44px', 'Ajustes tiene zona de toque de 44 px y a la vista sigue de 40 × 40')
-  debe(/zona-toque/.test(cama) && /\bh-10 w-10\b/.test(cama), '44px', 'la cama de HOY tiene zona de toque de 44 px y a la vista sigue de 40 × 40')
+  debe(!fs.existsSync(ruta('src/components/route/hoy/BotonCamaHoy.tsx')), '44px', 'la cama de arriba de HOY ya no existe (V2)')
   // Emblemas ocultos: el Perfil solo dibuja lo que el servidor manda como ganado.
   debe(/CON_HORA/.test(leer(ruta(carpeta, 'piezasDelViaje.ts'))), 'emblemas', 'las piezas del viaje no dibujan Madrugador ni Nocturno')
 

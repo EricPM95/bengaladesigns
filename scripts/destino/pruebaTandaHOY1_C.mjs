@@ -143,6 +143,9 @@ if (PARTE === 'todas' || PARTE === '2') {
   const poner = async ({ a, ev }, meteo, hora = 12) => {
     await ev(`window.__hoy1HoraLocal = ${hora}; window.__hoy1Tiempo = ${JSON.stringify({ ...SECO, ...meteo })}; window.dispatchEvent(new Event('hoy1-tiempo')); true`)
     await a.esp(700)
+    // V2 (apartado 4: arriba solo se ve 1 aviso): si otro aviso más urgente ocupa el sitio, el del tiempo espera en «1 aviso más»; se despliega para poder verlo y tocarlo.
+    await ev("(() => { document.querySelector('[data-hoy-aviso-mas]')?.click(); return true })()")
+    await a.esp(300)
   }
   const hay = (ev, sel) => ev(`Boolean(document.querySelector(${JSON.stringify(sel)}))`)
   const texto = (ev, sel) => ev(`(document.querySelector(${JSON.stringify(sel)})?.innerText ?? '').replace(/\\s+/g, ' ').trim()`)

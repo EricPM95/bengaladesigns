@@ -97,7 +97,7 @@ const diasDe = (a) => a.evaluar(`(async () => ${R}.getState().route.days.map((d)
 /** Los bloques de HOY en el orden en que salen en pantalla (por la posición en el DOM). */
 const ordenDeBloques = (a) =>
   a.evaluar(`(() => {
-    const sels = { cabecera: '[data-hoy-parada-cabecera],[data-hoy-cabecera]', avisos: '[data-hoy-avisos]', principal: '[data-hoy-siguiente],[data-hoy-por-la-manana],[data-hoy-bienvenida],[data-hoy-vuelves-h14],[data-hoy-todo-visto]', hueco: '[data-hoy-hueco-que-hago-ahora]', cerca: '[data-cerca-de-ti]', tuDia: '[data-hoy-tu-dia]', sobra: '[data-hoy-sobra-tiempo]' }
+    const sels = { cabecera: '[data-hoy-parada-cabecera],[data-hoy-cabecera]', avisos: '[data-hoy-avisos]', principal: '[data-hoy-siguiente],[data-hoy-por-la-manana],[data-hoy-bienvenida],[data-hoy-vuelves-h14],[data-hoy-todo-visto]', hueco: '[data-hoy-hueco-que-hago-ahora]', cerca: '[data-cerca-de-ti]', tuDia: '[data-hoy-tu-dia]', sobra: '[data-hoy-sobra-tiempo]', pendientes: '[data-hoy-pendientes]' }
     const raiz = document.querySelector('[data-hoy-v2]')
     const todos = Array.from(raiz.querySelectorAll('*'))
     const out = []
@@ -132,7 +132,8 @@ await sec(async () => {
   debe(/conPase=\{pagoActivo\(\)\}/.test(hoy), 'prueba', 'HoyDuranteV2: «Cerca de ti» con `conPase={pagoActivo()}` (el día de prueba, sin candados)')
   debe(!/MapaDeLlegada|data-hoy-mapa-llegada/.test(parada) && /FotoDeLaParada/.test(parada), 'por_llegar', 'ParadaHoy: fuera `MapaDeLlegada`; la foto del lugar `FotoDeLaParada`')
   debe(!/HojaSobreEsteLugar/.test(hoy) && /FichaCompletaDeHoy/.test(hoy), 'ficha', 'HoyDuranteV2: tocar la tarjeta abre `FichaCompletaDeHoy`, no «Sobre este lugar»')
-  const nuevoOrden = ['{cabeceraDeHoy}', '{zonaDeAvisos}', '{principal}', 'data-hoy-hueco-que-hago-ahora', '<CercaDeTiFila', '<TuDia', '<SiTeSobraTiempoHoy']
+  // V2 (antes → ahora → Design «Hoy Entero»): ANTES … ¿Qué hago ahora? › Cerca de ti › Tu día › Si te sobra tiempo; AHORA … reto del día › ¿Qué hago ahora? › Tu día › Cerca de ti › Tus fotos › Volver al alojamiento › Si te sobra tiempo › Lugares pendientes.
+  const nuevoOrden = ['{cabeceraDeHoy}', '{zonaDeAvisos}', '{principal}', '<RetoDelDia', 'data-hoy-hueco-que-hago-ahora', '<TuDia', '<CercaDeTiFila', '<TusFotosDeHoy', '<VolverAlAlojamiento', '<SiTeSobraTiempoHoy', '<LugaresPendientes']
   const pos = nuevoOrden.map((t) => hoy.lastIndexOf(t))
   debe(pos.every((p, i) => p > 0 && (i === 0 || p > pos[i - 1])), 'orden', `HoyDuranteV2: el orden de los bloques en el código (${pos.join(' < ')})`)
   const sin = leer('src/components/route/hoy/HoySinPase.tsx')
@@ -158,16 +159,16 @@ await sec(async () => {
   // ── Completa 2: martes 10, por llegar, en coche, a media mañana ──
   await ir(a, { dia: idxMartes, min: 10 * 60 })
   const orden = await ordenDeBloques(a)
-  debe(orden.join(' ') === 'cabecera avisos principal hueco cerca tuDia' || orden.join(' ') === 'cabecera principal hueco cerca tuDia', 'orden', `Completa 2: cabecera · avisos · tarjeta · ¿Qué hago ahora? · Cerca de ti · Tu día (sale: ${orden.join(' · ')})`)
+  debe(orden.join(' ') === 'cabecera avisos principal hueco tuDia cerca' || orden.join(' ') === 'cabecera principal hueco tuDia cerca', 'orden', `Completa 2 (V2): cabecera · avisos · tarjeta · ¿Qué hago ahora? · Tu día · Cerca de ti (sale: ${orden.join(' · ')})`)
   debe(await hay(a, '[data-hoy-siguiente] [data-hoy-foto-parada]'), 'por_llegar', 'Por llegar: arriba de la tarjeta, la foto del lugar')
   debe(!(await hay(a, '[data-hoy-mapa-llegada]')) && (await cuantos(a, '[data-hoy-siguiente] img[alt*="Mapa"]')) === 0, 'por_llegar', 'Por llegar: sin mapa')
-  debe(/POR LLEGAR/.test((await txt(a, '[data-hoy-siguiente]')) ?? ''), 'por_llegar', 'Por llegar: la etiqueta «POR LLEGAR» sobre la foto')
+  debe(/SIGUIENTE PARADA|PRIMERA PARADA/.test((await txt(a, '[data-hoy-insignia]')) ?? '') && !/POR LLEGAR/.test((await txt(a, '[data-hoy-siguiente]')) ?? ''), 'por_llegar', 'Por llegar (V2): la etiqueta «SIGUIENTE PARADA»/«PRIMERA PARADA» sobre la foto (ya no «POR LLEGAR»)')
   const t = (await txt(a, '[data-hoy-siguiente]')) ?? ''
   debe(/Cómo llegar/.test(t) && /ya he llegado/i.test(t), 'por_llegar', 'Por llegar lleva [Cómo llegar] y la línea [Ya he llegado] (LG1)')
   debe(!ROMA_EN_LANZAROTE.test((await txt(a, '[data-hoy-v2]')) ?? ''), 'LZ', 'Lanzarote, martes 10: ni un nombre de Roma')
   // Tu día: franjas, sin horas
   const franjas = await a.evaluar("Array.from(document.querySelectorAll('[data-hoy-franja]')).map((e) => e.getAttribute('data-hoy-franja'))")
-  debe(franjas[0] === 'manana' && franjas.includes('tarde') && franjas.every((f, i) => i === 0 || ['manana', 'tarde', 'noche'].indexOf(f) > ['manana', 'tarde', 'noche'].indexOf(franjas[i - 1])), 'tu_dia', `«Tu día» por franjas, en orden (${franjas.join(', ')})`)
+  debe(franjas[0] === 'manana' && franjas.includes('tarde') && franjas.every((f, i) => i === 0 || ['manana', 'mediodia', 'tarde', 'noche'].indexOf(f) > ['manana', 'mediodia', 'tarde', 'noche'].indexOf(franjas[i - 1])), 'tu_dia', `«Tu día» por franjas, en orden (${franjas.join(', ')})`)
   const lista = (await txt(a, '[data-hoy-lista]')) ?? ''
   const horas = lista.match(HORA_EN_TEXTO) ?? []
   const hechoRes = await a.evaluar("Array.from(document.querySelectorAll('[data-hoy-lista] [data-hoy-fila-hora]')).map((e) => e.getAttribute('data-hoy-fila-hora'))")
@@ -178,12 +179,13 @@ await sec(async () => {
   debe((await a.evaluar("getComputedStyle(document.querySelector('[data-hoy-v2]')).rowGap")) === '18px', 'aire', 'aire entre bloques: 18 px, como en Design')
   await capturaEntera(a, '02_lz_martes10_por_llegar')
 
-  // ── Completa 1: por la mañana, «Sal de casa a las…» ──
+  // ── Completa 1: por la mañana ──
+  // V2 (antes → ahora → Design «Hoy Entero»): ANTES la tarjeta «Sal de casa a las…» (data-hoy-por-la-manana); AHORA la primera parada usa la tarjeta de camino normal con la etiqueta «PRIMERA PARADA».
   await ir(a, { dia: idxMartes, min: 6 * 60 })
-  debe(await hay(a, '[data-hoy-por-la-manana]'), 'por_la_manana', 'Completa 1: por la mañana, la tarjeta «Sal de casa a las…»')
+  debe(!(await hay(a, '[data-hoy-por-la-manana]')) && (await txt(a, '[data-hoy-insignia]')) === 'PRIMERA PARADA', 'por_la_manana', 'Completa 1 (V2): por la mañana, la tarjeta «PRIMERA PARADA» (ya no «Sal de casa a las…»)')
   const ord1 = await ordenDeBloques(a)
-  debe(ord1[0] === 'cabecera' && ord1.indexOf('principal') < ord1.indexOf('cerca') && ord1.indexOf('cerca') < ord1.indexOf('tuDia'), 'orden', `Completa 1: el mismo orden (${ord1.join(' · ')})`)
-  debe(/Sal de casa a las \d{1,2}:\d{2}/.test((await txt(a, '[data-hoy-por-la-manana]')) ?? ''), 'por_la_manana', '«Sal de casa a las…» con su hora')
+  debe(ord1[0] === 'cabecera' && ord1.indexOf('principal') < ord1.indexOf('tuDia') && ord1.indexOf('tuDia') < ord1.indexOf('cerca'), 'orden', `Completa 1: el mismo orden (${ord1.join(' · ')})`)
+  debe(/En coche · \d+ min/.test((await txt(a, '[data-hoy-trayecto]')) ?? ''), 'por_la_manana', '«PRIMERA PARADA» con su trayecto en coche')
   await capturaEntera(a, '01_lz_martes10_por_la_manana')
   await ir(a, { dia: idxMartes, min: 10 * 60 })
 
@@ -191,7 +193,7 @@ await sec(async () => {
   await clic(a, '[data-hoy-ya-he-llegado]')
   await a.esp(900)
   debe((await atrEstado(a)) === 'aqui' && (await hay(a, '[data-hoy-siguiente] [data-hoy-foto-parada]')), 'ya_aqui', 'Ya estás aquí: con la foto arriba, sin mapa')
-  debe((await cuantos(a, '[data-hoy-pastilla]')) >= 2 && (await hay(a, '[data-hoy-he-terminado]')) && (await hay(a, '[data-hoy-haz-tu-foto],[data-hoy-siguiente] button')), 'ya_aqui', 'Ya estás aquí: las pastillas de la H3 y [He terminado]')
+  debe((await cuantos(a, '[data-hoy-icono]')) >= 2 && (await hay(a, '[data-hoy-he-terminado]')) && (await hay(a, '[data-hoy-icono="haz-tu-foto"]')), 'ya_aqui', 'Ya estás aquí (V2): los iconos (data-hoy-icono) y [He terminado]')
   await capturaEntera(a, '03_lz_martes10_ya_estas_aqui')
 
   // ── La ficha completa (tocar la tarjeta) ──
@@ -293,7 +295,7 @@ await sec(async () => {
   debe(/google\.com\/maps/.test(href8 ?? '') && /Alquiler/i.test(decodeURIComponent(href8 ?? '')), 'llegada', '[Cómo llegar al coche de alquiler] abre Maps')
   debe(/Cómo llegar al coche de alquiler/.test(b8), 'llegada', 'el botón dice «Cómo llegar al coche de alquiler»')
   const ord8 = await ordenDeBloques(a)
-  debe(ord8[0] === 'cabecera' && ord8.includes('principal') && ord8.indexOf('cerca') > ord8.indexOf('principal') && ord8.indexOf('tuDia') > ord8.indexOf('cerca'), 'orden', `el día de llegada sigue el orden (${ord8.join(' · ')})`)
+  debe(ord8[0] === 'cabecera' && ord8.includes('principal') && ord8.indexOf('tuDia') > ord8.indexOf('principal') && ord8.indexOf('cerca') > ord8.indexOf('tuDia'), 'orden', `el día de llegada sigue el orden (${ord8.join(' · ')})`)
   debe(!ROMA_EN_LANZAROTE.test((await txt(a, '[data-hoy-v2]')) ?? ''), 'LZ', 'domingo 8: ni un nombre de Roma')
   await capturaEntera(a, '08_lz_domingo8_llegada')
   // en cuanto llega la hora útil, empieza la primera parada
@@ -315,38 +317,43 @@ await sec(async () => {
     await capturaEntera(a, '09_lz_ultimo_dia')
   }
 
-  // ── «Si te sobra tiempo»: abajo del todo, plegada, solo si hay algo; lo saltado y lo quitado con [Recuperar] y [Pasar a otro día] ──
+  // ── «Si te sobra tiempo» y «Lugares pendientes» ──
+  // V2 (antes → ahora → Design «Hoy Entero»): ANTES «Si te sobra tiempo» llevaba lo saltado Y lo quitado por el motor (2 items, cada uno con [Recuperar] y [Pasar a otro día]);
+  // AHORA «Si te sobra tiempo» solo lleva lo quitado/opcional (spareStops) y lo saltado va a «Lugares pendientes» (data-hoy-pendientes), el último bloque de HOY (el detalle y el cierre solo: pruebaV2Hoy).
   await ir(a, { dia: idxMartes, min: 9 * 60 + 30 })
-  debe(!(await hay(a, '[data-hoy-sobra-tiempo]')), 'sobra', 'sin nada saltado ni quitado, no sale «Si te sobra tiempo»')
+  debe(!(await hay(a, '[data-hoy-sobra-tiempo]')) && !(await hay(a, '[data-hoy-pendientes]')), 'sobra', 'sin nada saltado ni quitado, no sale «Si te sobra tiempo» ni «Lugares pendientes»')
   await ir(a, {
     dia: idxMartes,
     min: 9 * 60 + 30,
     mut: `const dd = r.days[${idxMartes}]; const ps = numberedStopsOf(dd); ps[1].saltada = true; const q = structuredClone(ps[ps.length - 1]); q.id = 'sobra-x'; q.name = 'Mirador de prueba'; q.spareReason = 'No cabía en tu tarde'; dd.spareStops = [q]`,
   })
-  debe(await hay(a, '[data-hoy-sobra-tiempo]'), 'sobra', 'con algo saltado o quitado sale «Si te sobra tiempo»')
+  debe((await hay(a, '[data-hoy-sobra-tiempo]')) && (await hay(a, '[data-hoy-pendientes]')), 'sobra', 'con algo quitado sale «Si te sobra tiempo» y con algo saltado «Lugares pendientes»')
   const ordS = await ordenDeBloques(a)
-  debe(ordS[ordS.length - 1] === 'sobra', 'sobra', `abajo del todo (${ordS.join(' · ')})`)
-  const rcSobra = await a.evaluar("(() => { const e = document.querySelector('[data-hoy-sobra-tiempo]'); const r = document.querySelector('[data-hoy-v2]'); const t = document.querySelector('[data-hoy-tu-dia]'); return { plegada: !document.querySelector('[data-hoy-sobra-lista]'), debajoDeTuDia: e.getBoundingClientRect().top > t.getBoundingClientRect().bottom - 1, n: e.getAttribute('data-hoy-sobra-tiempo') } })()")
-  debe(rcSobra.plegada && rcSobra.debajoDeTuDia && rcSobra.n === '2', 'sobra', `plegada y debajo de «Tu día» (${JSON.stringify(rcSobra)})`)
+  debe(ordS.indexOf('sobra') > ordS.indexOf('tuDia') && ordS[ordS.length - 1] === 'pendientes' && ordS[ordS.length - 2] === 'sobra', 'sobra', `«Si te sobra tiempo» debajo de «Tu día» y «Lugares pendientes» al final de todo (${ordS.join(' · ')})`)
+  const rcSobra = await a.evaluar("(() => { const e = document.querySelector('[data-hoy-sobra-tiempo]'); const t = document.querySelector('[data-hoy-tu-dia]'); return { plegada: !document.querySelector('[data-hoy-sobra-lista]'), debajoDeTuDia: e.getBoundingClientRect().top > t.getBoundingClientRect().bottom - 1, n: e.getAttribute('data-hoy-sobra-tiempo') } })()")
+  debe(rcSobra.plegada && rcSobra.debajoDeTuDia && rcSobra.n === '1', 'sobra', `«Si te sobra tiempo» plegada, debajo de «Tu día» y solo con lo opcional (1) (${JSON.stringify(rcSobra)})`)
   await clic(a, '[data-hoy-sobra-tiempo-cabecera]')
   await a.esp(500)
-  debe((await cuantos(a, '[data-hoy-sobra-item]')) === 2 && (await cuantos(a, '[data-hoy-sobra-item] [data-hoy-recuperar]')) === 2 && (await cuantos(a, '[data-hoy-sobra-item] [data-hoy-pasar-otro-dia]')) === 2, 'sobra', 'lo saltado y lo quitado, cada uno con [Recuperar] y [Pasar a otro día]')
+  debe((await cuantos(a, '[data-hoy-sobra-item]')) === 1 && (await cuantos(a, '[data-hoy-sobra-item="saltada"]')) === 0 && (await cuantos(a, '[data-hoy-sobra-item] [data-hoy-recuperar]')) === 1 && (await cuantos(a, '[data-hoy-sobra-item] [data-hoy-pasar-otro-dia]')) === 1, 'sobra', 'en «Si te sobra tiempo» solo lo quitado (no lo saltado), con [Recuperar] y [Pasar a otro día]')
   debe(!(await hay(a, '[data-hoy-fila-estado="saltada"]')), 'sobra', 'lo saltado ya no se queda tachado en «Tu día»')
+  await clic(a, '[data-hoy-pendientes-cabecera]')
+  await a.esp(500)
+  debe((await cuantos(a, '[data-hoy-pendiente="saltada"]')) === 1 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-recuperar]')) === 1 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-pasar]')) === 1, 'sobra', 'lo saltado está en «Lugares pendientes», con [Recuperar] y [Pasar a otro día]')
   await capturaEntera(a, '10_lz_sobra_tiempo_abierta')
-  await clic(a, '[data-hoy-sobra-item="saltada"] [data-hoy-recuperar]')
+  await clic(a, '[data-hoy-pendiente="saltada"] [data-hoy-pendiente-recuperar]')
   await a.esp(600)
   const trasRec = await paradasDe(a, idxMartes)
-  debe(trasRec.every((s) => !s.saltada), 'sobra', '[Recuperar] devuelve lo saltado a su sitio')
+  debe(trasRec.every((s) => !s.saltada) && !(await hay(a, '[data-hoy-pendientes]')), 'sobra', '[Recuperar] devuelve lo saltado a su sitio y «Lugares pendientes» desaparece al quedarse vacía')
   await clic(a, '[data-hoy-sobra-item="sobra"] [data-hoy-recuperar]')
   await a.esp(600)
   const trasRec2 = await paradasDe(a, idxMartes)
   debe(trasRec2.some((s) => s.name === 'Mirador de prueba') && !(await hay(a, '[data-hoy-sobra-tiempo]')), 'sobra', '[Recuperar] de lo quitado lo añade al día y la lista desaparece cuando se queda vacía')
-  // [Pasar a otro día] de lo saltado
+  // [Pasar a otro día] de lo saltado (ahora desde «Lugares pendientes»)
   await ir(a, { dia: idxMartes, min: 9 * 60 + 30, mut: `numberedStopsOf(r.days[${idxMartes}])[1].saltada = true` })
-  await clic(a, '[data-hoy-sobra-tiempo-cabecera]')
+  await clic(a, '[data-hoy-pendientes-cabecera]')
   await a.esp(400)
   const antesN = (await paradasDe(a, idxMartes)).length
-  await clic(a, '[data-hoy-pasar-otro-dia]')
+  await clic(a, '[data-hoy-pendiente-pasar]')
   await a.esp(800)
   debe(await hay(a, '[data-lista-de-dias]'), 'sobra', '[Pasar a otro día] abre la lista de días de siempre')
   await a.evaluar("(() => { const b = document.querySelector('[data-dia-de-la-lista]:not([disabled])'); if (b) b.click(); return true })()")
@@ -362,7 +369,7 @@ await sec(async () => {
   _dest = 'roma'
   await ir(r, { dia: 1, min: 10 * 60 })
   const o = await ordenDeBloques(r)
-  debe(o[0] === 'cabecera' && o.indexOf('principal') < o.indexOf('cerca') && o.indexOf('cerca') < o.indexOf('tuDia'), 'orden', `Roma: el mismo orden (${o.join(' · ')})`)
+  debe(o[0] === 'cabecera' && o.indexOf('principal') < o.indexOf('tuDia') && o.indexOf('tuDia') < o.indexOf('cerca'), 'orden', `Roma: el mismo orden (${o.join(' · ')})`)
   const lista = (await txt(r, '[data-hoy-lista]')) ?? ''
   debe((lista.match(HORA_EN_TEXTO) ?? []).length === (await cuantos(r, '[data-hoy-lista] [data-hoy-fila-hora]')), 'tu_dia', 'Roma: «Tu día» sin horas salvo lo fijo')
   await capturaEntera(r, '11_roma_por_llegar')

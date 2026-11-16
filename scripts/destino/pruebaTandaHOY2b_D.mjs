@@ -157,6 +157,9 @@ await sec('2. HOY, por la mañana: «Para hoy: …»', async () => {
 
   // Con 3 sitios justos, como mucho 2.
   await ir({ dia: 2, min: 450, mut: poner(0, 'Jameos del Agua', '17:00') + poner(1, 'Cueva de los Verdes', '16:30') + poner(2, 'Mirador del Río', '16:20') + resto(3) })
+  // V2 (apartado 4): arriba solo se ve 1 aviso; si otro más urgente ocupa el sitio, la tarjeta «Para hoy» espera en «N avisos más» y se despliega para verla.
+  await a.evaluar("(() => { document.querySelector('[data-hoy-aviso-mas]')?.click(); return true })()")
+  await a.esp(500)
   const t3 = await txt('[data-hoy-horarios-manana]')
   const n = await cuantos('[data-hoy-horarios-parrafo]')
   console.log('   mañana (3 justos):', t3)

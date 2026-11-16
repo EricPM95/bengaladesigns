@@ -280,15 +280,16 @@ try {
     debe(!(await hay(a, '[data-cambiar-hoja]')), 'aplicar', '[Aplicar] cierra la hoja')
     const casa = await ev(`(async () => { const d = ${R}.getState().route.days.find((x) => x.dayNumber === 3); const s = d.stops.find((x) => x.name.startsWith('Casa-Museo')); return [s.time, s.reservationTime, Boolean(s.saltada)] })()`)
     debe(casa[0] === '15:40' && casa[1] === '15:40' && casa[2] === false, 'aplicar', `el turno de las 15:40 sigue donde estaba (${casa})`)
-    const aviso = (await txt(a, '[data-plan-actualizado]')) ?? ''
+    const aviso = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
     debe(/Plan actualizado/.test(aviso) && /Deshacer/.test(aviso), '30 aviso', `«Plan actualizado · Deshacer» (${aviso})`)
     await foto(a, '30')
     const cambiado = await foto3(a, 0)
     debe(cambiado !== inicio, 'aplicar', 'el día ha cambiado de verdad')
-    await clic(a, '[data-plan-deshacer]')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(700)
     debe((await foto3(a, 0)) === inicio, 'deshacer', '[Deshacer] deja el día (y los demás) como estaba')
-    debe(!(await hay(a, '[data-plan-actualizado]')), 'deshacer', 'y quita el aviso')
+    // V2: el aviso es el de la cola única de abajo (data-aviso-de-abajo, un solo aviso a la vez) y su [Deshacer] es data-aviso-de-abajo-accion (antes data-plan-actualizado / data-plan-deshacer).
+    debe(!/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), 'deshacer', 'y quita el aviso')
     // Dos cambios seguidos y «Volver a mi ruta original»
     for (let i = 0; i < 2; i++) {
       await clic(a, '[data-hoy-cambiar-plan]')
@@ -306,7 +307,9 @@ try {
     await clic(a, '[data-propuesta-original]')
     await a.esp(800)
     debe((await foto3(a, 0)) === inicio, 'original', '«Volver a mi ruta original» deja todos los días como estaban al empezar')
-    debe(/original/.test((await txt(a, '[data-plan-actualizado]')) ?? ''), 'original', 'y lo dice')
+    // V2: el aviso «has vuelto a tu ruta original» entra en la cola única de avisos de abajo y espera su turno detrás del «Plan actualizado» que aún se ve (hasta 12 s); se espera a que salga.
+    const dicho = await a.hasta("/original/.test(document.querySelector('[data-aviso-de-abajo]')?.innerText ?? '')", { segundos: 16 })
+    debe(dicho, 'original', 'y lo dice (V2: en la cola de avisos de abajo, tras el «Plan actualizado» que ya se veía)')
   })
 
   /* ───────────── 3. Saltarme esta parada (25) ───────────── */
@@ -330,12 +333,16 @@ try {
     await a.esp(900)
     const saltada = await ev(`${R}.getState().route.days[2].stops.find((s) => s.name.startsWith('Cueva')).saltada ? 1 : 0`)
     debe(saltada === 1, '25 saltar', '[Saltar igual] salta la parada')
-    debe(/Parada saltada/.test((await txt(a, '[data-hoy-aviso-saltada]')) ?? '') && (await hay(a, '[data-hoy-deshacer-saltada]')), '25 aviso', '«Parada saltada · Deshacer»')
+    // V2 (antes → ahora → Design «Hoy Entero»): ANTES «Parada saltada · Deshacer» (data-hoy-aviso-saltada + data-hoy-deshacer-saltada); AHORA «Parada saltada · la tienes en Lugares pendientes» SIN [Deshacer], en la cola de avisos de abajo; se recupera desde «Lugares pendientes».
+    const avisoSaltada = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
+    debe(/Parada saltada · la tienes en Lugares pendientes/.test(avisoSaltada) && !(await hay(a, '[data-aviso-de-abajo-accion]')), '25 aviso', `«Parada saltada · la tienes en Lugares pendientes» sin [Deshacer] (${avisoSaltada})`)
     debe(!/Cueva de los Verdes/.test((await txt(a, '[data-hoy-siguiente]')) ?? ''), '25 tarjeta', 'la tarjeta pasa a la siguiente')
     await foto(a, '25')
-    await clic(a, '[data-hoy-deshacer-saltada]')
+    await clic(a, '[data-hoy-pendientes-cabecera]')
+    await a.esp(400)
+    await clic(a, '[data-hoy-pendiente-recuperar]')
     await a.esp(600)
-    debe((await ev(`${R}.getState().route.days[2].stops.find((s) => s.name.startsWith('Cueva')).saltada ? 1 : 0`)) === 0, '25 deshacer', '[Deshacer] la trae de vuelta')
+    debe((await ev(`${R}.getState().route.days[2].stops.find((s) => s.name.startsWith('Cueva')).saltada ? 1 : 0`)) === 0, '25 deshacer', '[Recuperar] de «Lugares pendientes» la trae de vuelta (V2: la parada saltada ya no lleva [Deshacer])')
     // sin reserva: salta directo
     await ir(a, { min: 715, mut: MUT_MIRADOR })
     await clic(a, '[data-hoy-cambiar-plan]')
@@ -375,8 +382,8 @@ try {
     const enJueves = await ev(`${R}.getState().route.days.find((d) => d.id === ${JSON.stringify(jueves)}).stops.some((s) => s.name.startsWith('Mirador del R'))`)
     const enMartes = await ev(`${R}.getState().route.days[2].stops.some((s) => s.name.startsWith('Mirador del R'))`)
     debe(enJueves && !enMartes, '26a aplicar', 'la parada pasa al jueves y deja el martes')
-    debe(/Plan actualizado/.test((await txt(a, '[data-plan-actualizado]')) ?? ''), '26a aviso', '«Plan actualizado · Deshacer»')
-    await clic(a, '[data-plan-deshacer]')
+    debe(/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), '26a aviso', '«Plan actualizado · Deshacer»')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(700)
     debe(!(await ev(`${R}.getState().route.days.find((d) => d.id === ${JSON.stringify(jueves)}).stops.some((s) => s.name.startsWith('Mirador del R'))`)) && (await ev(`${R}.getState().route.days[2].stops.some((s) => s.name.startsWith('Mirador del R'))`)), '26a deshacer', '[Deshacer] la devuelve al martes')
     void antes
@@ -388,7 +395,7 @@ try {
     await a.esp(800)
     const r = await ev(`(async () => { const d = ${R}.getState().route.days.find((x) => x.id === ${JSON.stringify(jueves)}); return [d.stops.some((s) => s.name.startsWith('Mirador del R')), (d.spareStops ?? []).some((s) => s.name.startsWith('El paseo')), d.stops.some((s) => s.name.startsWith('El paseo'))] })()`)
     debe(r[0] && r[1] && !r[2], '26b aplicar', `entra el Mirador, sale el paseo a «Si te sobra tiempo» (${r})`)
-    await clic(a, '[data-plan-deshacer]')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(600)
   })
   await sec(async () => {
@@ -398,7 +405,7 @@ try {
     await a.esp(800)
     const r = await ev(`(async () => { const d = ${R}.getState().route.days.find((x) => x.id === ${JSON.stringify(jueves)}); return [d.stops.some((s) => s.name.startsWith('Mirador del R')), (d.spareStops ?? []).some((s) => s.name.startsWith('Mirador del R'))] })()`)
     debe(!r[0] && r[1], '26c aplicar', `queda al final del jueves, en «Si te sobra tiempo» (${r})`)
-    await clic(a, '[data-plan-deshacer]')
+    await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(600)
     // una parada con su entrada reservada no se pasa a otro día
     await ir(a, { min: 715, mut: MUT_CUEVA })
@@ -442,7 +449,7 @@ try {
         await clic(a, '[data-propuesta-aplicar]')
         await a.esp(800)
         debe((await foto3(a, 0)) !== antes, '27a aplicar', 'el sitio entra en el día')
-        await clic(a, '[data-plan-deshacer]')
+        await clic(a, '[data-aviso-de-abajo-accion]')
         await a.esp(600)
         debe((await foto3(a, 0)) === antes, '27a deshacer', '[Deshacer] deja el día como estaba')
       } else debe(false, '27a', `en el viaje de Eric el primer sitio debería encajar (caso ${caso}: ${t.slice(0, 120)})`)
@@ -482,7 +489,7 @@ try {
       await a.esp(800)
       const turno = await ev(`${R}.getState().route.days[2].stops.find((s) => s.name.startsWith('Mirador de los')).time`)
       debe(turno === '15:00', '27b turno', `el turno de las 15:00 no se mueve (${turno})`)
-      await clic(a, '[data-plan-deshacer]')
+      await clic(a, '[data-aviso-de-abajo-accion]')
       await a.esp(600)
     }
   })

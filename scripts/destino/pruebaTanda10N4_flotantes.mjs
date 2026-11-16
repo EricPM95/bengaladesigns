@@ -198,7 +198,11 @@ const inv = await abrir({ invitado: true })
 
   // Los botones de abajo no los tapan: [Visto] de HOY (lo esquivaba antes) y el pie de la ficha ya van marcados.
   const fuentes = leer('src/components/flotantes/flotantes.ts')
-  debe(/data-evitar-flotantes/.test(fuentes) && /data-hoy-siguiente/.test(fuentes), 'botones', 'los botones de abajo de cada pantalla se esquivan (selector común en flotantes.ts)')
+  // V2 (antes → ahora → Design «Hoy Entero»): ANTES los botones de la tarjeta de HOY (data-hoy-siguiente…) se esquivaban; AHORA HOY no esquiva nada: los flotantes se quedan quietos y HOY deja espacio libre al final (pb-[190px]);
+  // el selector común (`data-evitar-flotantes`, p. ej. el pie de la ficha) sigue siendo lo único que se esquiva.
+  const sel = /BOTONES_A_ESQUIVAR\s*=\s*'([^']*)'/.exec(fuentes)?.[1] ?? ''
+  debe(sel === '[data-evitar-flotantes]' && !/data-hoy-/.test(sel), 'botones', `los botones de abajo marcados con data-evitar-flotantes se esquivan (selector común en flotantes.ts) y HOY ya no esquiva (${sel})`)
+  debe(/pb-\[190px\]/.test(leer('src/components/route/hoy/v2/HoyV2.tsx')), 'botones', 'HOY deja espacio libre al final (pb-[190px]) para que con el scroll nada quede tapado por los flotantes')
   debe(/data-evitar-flotantes/.test(leer('src/components/route/dayDetail/StopDetailSheet.tsx')) && /data-evitar-flotantes/.test(leer('src/components/route/placeExplorer/PlaceExplorerScreen.tsx')), 'botones', 'el pie de la ficha y la barra de elegir varios llevan data-evitar-flotantes')
   inv.app.cerrar()
 }

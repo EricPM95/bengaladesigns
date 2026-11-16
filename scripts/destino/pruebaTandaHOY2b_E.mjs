@@ -7,7 +7,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'
 import { cargarCatalogo, cargarDatos } from '../../server/logros/datos.js'
-import { retosDelDia } from '../../server/logros/cerca.js'
+import { elegirRetos, retosDelDia, sitiosCerca } from '../../server/logros/cerca.js'
 import { clave } from '../../server/logros/motor.js'
 import { crearServicioLogros } from '../../server/logros/servicio.js'
 
@@ -154,6 +154,29 @@ console.log('0. Código y servidor')
   const visto = new Map([[clave('lanzarote', 'pedazo', 'cesar_manrique:jameos_del_agua'), { en: '2026-11-08T10:00:00Z' }]])
   const rv = retosDelDia({ datos, catalogos, destino: 'lanzarote', items: visto, sitiosHoy: hoyLz, diasRuta, hoyFecha: '2026-11-10', enCoche: true }).find((r) => r.coleccion === 'cesar_manrique')
   debe(rv?.sitios.find((s) => s.sitio === 'jameos_del_agua')?.estado === 'visto' && rv.sitios.find((s) => s.sitio === 'jameos_del_agua')?.fecha === '2026-11-08', '4', 'lo visto lleva su fecha (en la hora del destino)')
+  // (Tanda V2, H3) elegirRetos: uno solo a la vista, las demás detrás.
+  {
+    const R = (coleccion, nombre, total, completable_hoy, nHoy) => ({ coleccion, nombre, total, faltan: total, completable_hoy, faltan_fuera: [], sitios: Array.from({ length: total }, (_, i) => ({ sitio: coleccion + i, nombre: 'x', ganado: false, hoy: i < nHoy, estado: i < nHoy ? 'hoy' : 'fuera' })) })
+    const e1 = elegirRetos([R('a', 'Zeta', 5, false, 4), R('b', 'Beta', 5, true, 1), R('c', 'Gamma', 5, false, 2)])
+    debe(e1[0].coleccion === 'b', 'V2-H3', 'primero la colección que se completa hoy, aunque tenga menos pedazos de hoy')
+    const e2 = elegirRetos([R('a', 'Alfa', 5, false, 1), R('b', 'Beta', 6, false, 3), R('c', 'Gamma', 5, false, 2)])
+    debe(e2.map((r) => r.coleccion).join('') === 'bca', 'V2-H3', 'si no hay ninguna completable, la que tiene MÁS pedazos de hoy; luego las demás por ese orden')
+    const e3 = elegirRetos([R('a', 'Uno', 1, true, 1), R('b', 'Dos', 2, true, 2), R('c', 'Tres', 3, false, 1)])
+    debe(e3.length === 1 && e3[0].coleccion === 'c', 'V2-H3', 'una colección de menos de 3 sitios queda fuera (adiós al «0 de 1»)')
+    const e4 = elegirRetos([R('b', 'Beta', 4, false, 2), R('a', 'Alfa', 4, false, 2)])
+    debe(e4[0].coleccion === 'a', 'V2-H3', 'a igualdad, desempate estable por nombre')
+    debe(elegirRetos([]).length === 0 && elegirRetos([R('a', 'A', 3, true, 3), R('b', 'B', 3, false, 1), R('c', 'C', 4, false, 1)]).slice(1).length === 2, 'V2-H3', '«Y N colecciones más»: N = las demás (3 retos → 2 más; 0 → nada)')
+    const real = elegirRetos(retosDelDia({ datos, catalogos, destino: 'lanzarote', items: vacio, sitiosHoy: hoyLz, diasRuta, hoyFecha: '2026-11-10', enCoche: true }))
+    debe(real.length > 0 && real.every((r) => r.total >= 3) && real[0].completable_hoy === real.some((r) => r.completable_hoy), 'V2-H3', 'con los datos reales de Lanzarote: ninguna de menos de 3 sitios y, si hay completable, va la primera')
+  }
+  // (Tanda V2) sitiosCerca lleva `pedazos_nombres`: todas las colecciones con pedazo por ganar en ese sitio.
+  {
+    const cols = datos.destinos.lanzarote.colecciones.filter((c) => c.sitios.includes('jameos_del_agua'))
+    const cat = catalogos.lanzarote
+    const co = (cat.sitios_extra?.jameos_del_agua ?? (cat.sitios ?? cat).jameos_del_agua ?? null)
+    const sc = sitiosCerca({ datos, catalogos, destino: 'lanzarote', ubicacion: { lat: co?.lat ?? co?.coordenadas?.lat ?? 29.1569, lng: co?.lng ?? co?.coordenadas?.lng ?? -13.4325 }, items: vacio, sitiosHoy: hoyLz, margenM: 100000, sinTope: true }).find((x) => x.sitio === 'jameos_del_agua')
+    debe(Boolean(sc) && Array.isArray(sc.pedazos_nombres) && sc.pedazos_nombres.join('|') === cols.map((c) => c.nombre).join('|') && sc.coleccion_nombre === sc.pedazos_nombres[0], 'V2', `sitiosCerca: pedazos_nombres = todas las colecciones del sitio en su orden (${sc?.pedazos_nombres?.length}/${cols.length}) y coleccion_nombre sigue siendo la primera`)
+  }
   // El servicio entero: `servicio.cerca` manda `retos` y respeta `en_coche`.
   {
     const viaje = { id: 'v1', route: { destination: 'Lanzarote', answers: { dateRange: { start: '2026-11-08', end: '2026-11-13' }, companion: 'solo' }, days: [{ dayNumber: 3, stops: [{ id: 's1', name: 'Mirador del Río' }, { id: 's2', name: 'Jameos del Agua' }] }] } }
@@ -270,8 +293,11 @@ await sec('1. Cuentas puras (cliente)', async () => {
 /* ───────────── 2. +15 / +30 en [Necesito más tiempo] ───────────── */
 await sec('2. [Necesito más tiempo]: +15 / +30 sin mover la ruta', async () => {
   // La Cueva (renombrada Casa-Museo del Campesino, 10:00-18:00, se ve por fuera) a las 17:20: son las 17:30 y llegas a las 17:41; con +30, a las 18:11: cerrada.
-  const mutFuera = poner(0, 'Jameos del Agua', '16:00', 's.durationMinutes = 30;') + poner(1, 'Casa-Museo del Campesino', '17:20', 's.durationMinutes = 30;') + soloDos
-  await ir({ min: 17 * 60 + 30, mut: mutFuera })
+  // V2 (antes → ahora → «nunca mandar a un sitio cerrado», hoyPendientes.ts): ANTES la hora era las 17:30 y los Jameos (última entrada 17:15) seguían siendo «la siguiente»; AHORA un sitio ya cerrado al llegar pasa solo a «Lugares pendientes»
+  // y la siguiente sería la Casa-Museo (sin nada detrás: «tu ruta sigue igual»). Para conservar el caso (estás en una parada, y con +30 llegarías cerrado a la de después) la hora pasa a las 16:00 y la visita a los Jameos dura 90 min
+  // (16:00 → 17:30; con +30, 18:00 y la Casa-Museo cierra a las 18:00).
+  const mutFuera = poner(0, 'Jameos del Agua', '16:00', 's.durationMinutes = 90;') + poner(1, 'Casa-Museo del Campesino', '17:20', 's.durationMinutes = 30;') + soloDos
+  await ir({ min: 16 * 60, mut: mutFuera })
   const horas = await paradasDe()
   if (process.env.DEBUG) console.log('   DEBUG:', (await cuerpo()).slice(0, 700))
   await clic('[data-hoy-ya-he-llegado]')
@@ -367,7 +393,8 @@ await sec('3. ¿Qué hago ahora?', async () => {
   const f1 = await txt('[data-que-hago-frase]')
   console.log('   iluminado:', f1)
   debe(/^Tienes (media hora|una hora|un par de horas) libres?: la Casa-Museo|^Tienes (media hora|una hora|un par de horas) libres?: .+ está a \d+ minutos?\. ¿Vamos\?$/.test(f1 ?? ''), '1', `«Tienes media hora libre: … está a N minutos. ¿Vamos?» («${f1}»)`)
-  debe(/Haría y la Casa-Museo César Manrique/.test(f1 ?? ''), '1', 'primero lo que da pedazo de colección (aunque haya otro más cerca)')
+  // (6-nov, RETOQUES_TARJETAS §4: «títulos cortos»; antes → ahora) el sitio sale con su título corto: «Haría», no «Haría y la Casa-Museo César Manrique» (displayStopName; solo lo que se ve). Se distingue del otro, más cerca, que es «el Mirador de Haría».
+  debe(/: Haría está a \d+ minutos?\. ¿Vamos\?$/.test(f1 ?? ''), '1', 'primero lo que da pedazo de colección (aunque haya otro más cerca): «Haría», no «el Mirador de Haría»')
   debe(/isla a tus pies/.test((await txt('[data-que-hago-coleccion]')) ?? ''), '1', 'dice la colección a la que suma')
   debe((await hay('[data-que-hago-como-llegar]')) && (await hay('[data-que-hago-anadir]')), '1', '[Cómo llegar] y [Añadir]')
   await captura('quehago_iluminado_hoja')
@@ -488,8 +515,9 @@ await sec('4. ¿Cómo vais? y Cansados', async () => {
   await a.esp(1200)
   const trasCalma = await paradasDe()
   debe(trasCalma[5].saltada === true && trasCalma.slice(0, 5).every((s, i) => s.time === horasCalma[i].time), '2', '(1) [Aplicar] deja el opcional en «Si te sobra tiempo» y no toca nada más')
-  debe(await hay('[data-plan-actualizado]'), '2', '(1) sale «Plan actualizado · Deshacer»')
-  await clic('[data-plan-deshacer]')
+  // V2: el aviso es el de la cola única de abajo (data-aviso-de-abajo) y su [Deshacer] es data-aviso-de-abajo-accion (antes data-plan-actualizado / data-plan-deshacer).
+  debe(/Plan actualizado/.test((await txt('[data-aviso-de-abajo]')) ?? '') && (await hay('[data-aviso-de-abajo-accion]')), '2', '(1) sale «Plan actualizado · Deshacer»')
+  await clic('[data-aviso-de-abajo-accion]')
   await a.esp(800)
   debe(JSON.stringify(await paradasDe()) === JSON.stringify(horasCalma), '2', '(1) [Deshacer] lo deja como estaba')
 
@@ -528,7 +556,7 @@ await sec('4. ¿Cómo vais? y Cansados', async () => {
   await a.esp(1200)
   const trasV = await paradasDe()
   debe(trasV.find((s) => /Haría y el Valle/.test(s.name))?.time === '17:00' && trasV.find((s) => /Haría y el Valle/.test(s.name))?.saltada === false, '2', '(3) la reserva sigue en su hora')
-  await clic('[data-plan-deshacer]')
+  await clic('[data-aviso-de-abajo-accion]')
   await a.esp(600)
 
   // (4) Solo queda lo opcional: [Terminar el día] / [Seguimos].
@@ -569,7 +597,7 @@ await sec('5. El reto del día', async () => {
   debe((await cuantos('[data-reto-del-dia]')) === 1, '4', 'con 1 colección, una tarjeta (a las 16:00: se ve todo el día, ya no solo por la mañana)')
   const c1 = await txt('[data-reto-del-dia]')
   console.log('   reto (1):', c1)
-  debe(/RETO DEL DÍA/.test(c1 ?? '') && /5 de 7 · te faltan 2/.test(c1 ?? ''), '4', `la tarjeta: nombre, «5 de 7 · te faltan 2» y su barra («${c1}»)`)
+  debe(/RETO DEL DÍA/.test(c1 ?? '') && /5 de 7/.test(c1 ?? '') && !/te faltan/.test(c1 ?? ''), '4', `la tarjeta: nombre, «5 de 7» y su barra («${c1}»)`)
   const bar = await a.evaluar("document.querySelector('[data-reto-barra]')?.style.width")
   debe(bar === '71%', '4', `la barra marca 5 de 7 (${bar})`)
   const orden = await a.evaluar("(() => { const r = document.querySelector('[data-hoy-retos]'); const p = document.querySelector('[data-hoy-siguiente],[data-hoy-comida]'); const q = document.querySelector('[data-hoy-hueco-que-hago-ahora]'); if (!r || !p || !q) return 'falta'; return (p.compareDocumentPosition(r) & 4) && (r.compareDocumentPosition(q) & 4) ? 'bien' : 'mal' })()")
@@ -579,18 +607,19 @@ await sec('5. El reto del día', async () => {
   debe(!(await hay('[data-reto-fuera]')), '4', 'sin pedazos fuera de la ruta, sin la línea «no está en tu ruta»')
   // 3 colecciones, una con un pedazo fuera de la ruta.
   await ir({ min: 11 * 60, cerca: falsa([manrique, volcanes, isla]) })
-  debe((await cuantos('[data-reto-del-dia]')) === 3, '4', 'con 3 colecciones, tres tarjetas')
-  const fila = await a.evaluar("(() => { const f = document.querySelector('[data-hoy-retos]'); const s = getComputedStyle(f); return { ox: s.overflowX, sw: f.scrollWidth, cw: f.clientWidth } })()")
-  debe(fila.ox === 'auto' && fila.sw > fila.cw, '4', `en una fila con scroll horizontal (overflow-x ${fila.ox}, ${fila.sw} > ${fila.cw})`)
-  debe((await cuantos('[data-reto-cuenta]')) === 3 && (await cuantos('[data-reto-barra]')) === 3, '4', 'cada tarjeta: «N de M · te faltan K» y su barra')
-  const fuera = await txt('[data-reto-fuera]')
-  debe(/^Te falta Los Hervideros y no está en tu ruta$/.test(fuera ?? ''), '4', `«${fuera}»`)
-  const fuera2 = await a.evaluar("Array.from(document.querySelectorAll('[data-reto-fuera]')).map((e) => e.innerText.trim())")
-  debe(fuera2.includes('Te faltan Mirador de Guinate y Mirador de Haría y no están en tu ruta'), '4', `con varios fuera: «${fuera2[1]}»`)
+  // (Tanda V2, H3) UN SOLO reto a la vista; las demás, detrás de «Y N colecciones más avanzan hoy».
+  debe((await cuantos('[data-reto-del-dia]')) === 1 && (await hay('[data-reto-del-dia="cesar_manrique"]')), '4', 'con 3 colecciones, UNA tarjeta (la primera: la que se completa hoy)')
+  debe((await cuantos('[data-reto-cuenta]')) === 1 && (await cuantos('[data-reto-barra]')) === 1, '4', 'la tarjeta: «N de M» y su barra')
+  const mas = await txt('[data-reto-mas]')
+  debe(/^Y 2 colecciones más avanzan hoy$/.test((mas ?? '').trim()), '4', `«${mas}»`)
   await capturaCompleta('reto_3')
-  await a.evaluar("(() => { const f = document.querySelector('[data-hoy-retos]'); f.scrollLeft = f.scrollWidth; return true })()")
-  await captura('reto_3_scroll_lado')
-  await a.evaluar("(() => { const f = document.querySelector('[data-hoy-retos]'); f.scrollLeft = 0; return true })()")
+  await clic('[data-reto-mas]')
+  await a.esp(800)
+  debe((await cuantos('[data-reto-lista-item]')) === 2 && /3 de 7/.test((await txt('[data-reto-lista-item="tierra_de_fuego"]')) ?? ''), '4', 'la lista de las demás: cada una con su «N de M»')
+  await captura('reto_3_lista')
+  await clic('[data-reto-lista-item="tierra_de_fuego"]')
+  await a.esp(500)
+  await a.evaluar('true')
   // El álbum.
   await clic('[data-reto-del-dia="tierra_de_fuego"]')
   await a.esp(1500)

@@ -158,11 +158,12 @@ const api = {
   },
   /** (V3) La fila de los momentos de uno en uno: 2 pedazos de la MISMA colección y una subida de nivel. Salen 2 cosas, no 3: los 2 pedazos juntos y, al cerrar, la subida de nivel (tras el resumen del día de la ronda). */
   serieFila: () => {
-    ponerDatos(false, 'wow', 'viaje')
+    // (V2) Coherente: el estado de ejemplo «s2» ya tiene 4 imprescindibles vistos (el Coliseo, el Foro, Trevi y el Panteón), así que el centro de la insignia y el pie dicen «4 de 8».
+    ponerDatos(false, 'wow', 's2')
     datosDePrueba.resumen = null
     const sumas = [
-      m({ tipo: 'suma', cat: 'pedazo', coleccion: 'imprescindibles', destino: 'roma', nombre: 'Los imprescindibles de Roma', n: 2, total: 8, sitios: ['coliseo'], linea: '2 de 8' }),
-      m({ tipo: 'suma', cat: 'pedazo', coleccion: 'imprescindibles', destino: 'roma', nombre: 'Los imprescindibles de Roma', n: 3, total: 8, sitios: ['panteon'], linea: '3 de 8' }),
+      m({ tipo: 'suma', cat: 'pedazo', coleccion: 'imprescindibles', destino: 'roma', nombre: 'Los imprescindibles de Roma', n: 3, total: 8, sitios: ['fontana_de_trevi'], linea: '3 de 8' }),
+      m({ tipo: 'suma', cat: 'pedazo', coleccion: 'imprescindibles', destino: 'roma', nombre: 'Los imprescindibles de Roma', n: 4, total: 8, sitios: ['panteon'], linea: '4 de 8' }),
     ]
     useLogrosStore.getState().recibir({ ok: true, nuevos: sumas, exp: { ganada: 405, antes: resumenExp(1, 800), despues: resumenExp(2, 205), sube_de_nivel: true } })
     return sumas.length

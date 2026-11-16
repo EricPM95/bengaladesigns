@@ -338,7 +338,12 @@ if (PARTE === 'todas' || PARTE === '2') {
 
     // ── H8 / H8b: fuera de ruta
     await ev(`window.__hoy1Cerca = ${JSON.stringify({ ok: true, cerca: [sitioFuera], juego: null, juego_sitio: null, fuera_de_ruta: destino === 'lanzarote' ? sitioFuera.sitio : null, junto_a: destino === 'lanzarote' ? null : sitioFuera.sitio, reto: null })}; window.dispatchEvent(new Event('trazo:hoy1-repreguntar')); true`)
-    await a.hasta("Boolean(document.querySelector('[data-fuera-de-ruta]'))", { segundos: 15, lanzar: 'no sale la tarjeta de fuera de ruta' })
+    // V2 (apartado 4): arriba solo se ve 1 aviso (el más urgente; en Roma, «A este ritmo llegarías… cuando ya han cerrado»); el resto espera en «1 aviso más». Si fuera de ruta no es el primero, se despliega.
+    await a.hasta("Boolean(document.querySelector('[data-fuera-de-ruta]')) || Boolean(document.querySelector('[data-hoy-aviso-mas]'))", { segundos: 15, lanzar: 'no sale la tarjeta de fuera de ruta' })
+    if (!(await hay(ev, '[data-fuera-de-ruta]'))) {
+      await clic(ev, '[data-hoy-aviso-mas]')
+      await a.hasta("Boolean(document.querySelector('[data-fuera-de-ruta]'))", { segundos: 10, lanzar: 'no sale la tarjeta de fuera de ruta (ni desplegando «aviso más»)' })
+    }
     const tf = await texto(ev, '[data-fuera-de-ruta]')
     if (destino === 'lanzarote') {
       debe(/CERCA DE TI/.test(tf) && /Estás en La Graciosa/.test(tf) && /Haz tu foto para ganar «La octava isla»\./.test(tf) && /Hacer la foto/.test(tf), 'lanzarote: H8 «Estás en La Graciosa · Haz tu foto para ganar "La octava isla"» + [Hacer la foto]')
@@ -374,7 +379,7 @@ if (PARTE === 'todas' || PARTE === '2') {
     await ev(`window.__hoy1Cerca = ${JSON.stringify({ ...vacia, retos: [retoNuevo] })}; window.__hoy1HoraLocal = 15; window.dispatchEvent(new Event('trazo:hoy1-repreguntar')); true`)
     await a.hasta("Boolean(document.querySelector('[data-reto-del-dia]'))", { segundos: 10, lanzar: 'no sale el reto del día' })
     const rt = await texto(ev, '[data-reto-del-dia]')
-    debe(/RETO DEL DÍA/i.test(rt) && /Completa/.test(rt) && /te faltan 2/.test(rt), `${destino}: C18 el reto sale también por la tarde (todo el día): «Completa … 4 de 6 · te faltan 2»`)
+    debe(/RETO DEL DÍA/i.test(rt) && /Hoy puedes completar/.test(rt) && /4 de 6/.test(rt), `${destino}: C18 el reto sale también por la tarde (todo el día): «Completa … 4 de 6 · te faltan 2»`)
     await ev("document.querySelector('[data-reto-del-dia]').scrollIntoView({ block: 'center' }); true")
     await a.esp(400)
     await cap(a, `${destino}_c18_reto`)

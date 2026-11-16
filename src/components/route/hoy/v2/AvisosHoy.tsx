@@ -8,7 +8,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
  *  - `CruzDeAviso` es la X de TODOS los avisos: el que se cierra no vuelve ese día salvo que pase algo nuevo (cada aviso guarda su cierre con la clave de lo que lo provocó).
  * Fuera de una `ZonaDeAvisos`, `AvisoDeHoy` pinta tal cual (sin límite).
  */
-export const MAX_AVISOS_A_LA_VISTA = 2
+export const MAX_AVISOS_A_LA_VISTA = 1 // (V2, apartado 4) como mucho 1 a la vista
 
 interface Contexto {
   visibles: Set<string>

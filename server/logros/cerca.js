@@ -90,6 +90,8 @@ export function sitiosCerca({ datos, catalogos, destino, ubicacion, items, sitio
       emblema_nombre: emblemas[0]?.nombre ?? null,
       hay_pedazo: pedazos.length > 0,
       coleccion_nombre: pedazos[0]?.nombre ?? null,
+      // (Tanda V2) los nombres de TODAS las colecciones donde este sitio da un pedazo por ganar, en su orden. Sin emblemas: los ocultos nunca se anuncian.
+      pedazos_nombres: pedazos.map((p) => p.nombre),
     })
   }
   return salida.sort((a, b) => a.al_borde_m - b.al_borde_m || a.metros - b.metros)
@@ -150,6 +152,20 @@ export function retoDelDia({ datos, catalogos, destino, items, sitiosHoy = new S
  * Las que se pueden completar hoy, primero; luego las que menos faltan; a igual, la más avanzada.
  * `diasRuta`: los días de la ruta guardada del viaje (para «En tu ruta el jueves»); `hoyFecha`: la fecha de hoy en el destino (AAAA-MM-DD); `enCoche`: 20 min en coche o 15 a pie.
  */
+/**
+ * (Tanda V2, H3) EL RETO DEL DÍA: UNO SOLO. Función pura sobre la lista de `retosDelDia`:
+ *   · fuera las colecciones de menos de 3 sitios (adiós al «0 de 1»);
+ *   · primero la que puedes completar hoy; si no, la que tiene MÁS pedazos de hoy (sitios `hoy` por ganar); desempate estable por nombre.
+ * Devuelve la lista ordenada: el primero es EL reto; el resto, «las demás».
+ */
+export const MIN_SITIOS_RETO = 3
+export function elegirRetos(retos) {
+  const pedazosHoy = (r) => (r.sitios ?? []).filter((s) => s.estado === 'hoy' && !s.ganado).length
+  return (retos ?? [])
+    .filter((r) => (r.total ?? 0) >= MIN_SITIOS_RETO)
+    .sort((a, b) => Number(Boolean(b.completable_hoy)) - Number(Boolean(a.completable_hoy)) || pedazosHoy(b) - pedazosHoy(a) || String(a.nombre).localeCompare(String(b.nombre), 'es'))
+}
+
 export const MIN_CERCA_DE_HOY_EN_COCHE = 20
 export const MIN_CERCA_DE_HOY_A_PIE = 15
 const minutosDeViaje = (m, enCoche) => (enCoche ? Math.max(5, Math.round((m * 1.35) / ((40 * 1000) / 60)) + 5) : Math.max(5, Math.round(m / 80)))
