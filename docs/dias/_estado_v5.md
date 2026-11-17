@@ -1,13 +1,13 @@
 # Estado de la tanda v5
 
-**Última actualización: 17/11/26, 21:24**
+**Última actualización: 17/11/26, 21:37**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V5 hecha y probada en 0 (pruebaV5 88, Jutrip, V3, logros, HOY, muestra de 60); REPASO e informe listos
+TANDA V5 TERMINADA: subida a main (0927b600 y 37952608), producción comprobada, api-server reiniciado
 
 ## Qué falta
-Commit, push a main, producción en modo iPhone (botón en Logros), cerrar servidores y reiniciar el api-server
+Nada: solo queda que Eric pruebe con fotos reales del iPhone (punto 0 del repaso)
 
 ## Procesos abiertos ahora mismo
 - node: 2
