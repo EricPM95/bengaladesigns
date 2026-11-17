@@ -17,7 +17,7 @@ import { coordenadasDeSitio, datosVisiblesPara, nombreDeSitio } from './datos.js
 import { dondeEstoy, evaluarFoto, evaluarVisto, metros } from './fotos.js'
 import { sitiosDeId, sitiosDeLaParada } from './sitios.js'
 import { armarMomentos } from './momentos.js'
-import { elegirRetos, queEnsenar, retoDelDia, retosDelDia, sitioDeFotoLibre, sitiosCerca } from './cerca.js'
+import { elegirRetos, queEnsenar, retoDelDia, retosDelDia, sitioDeFotoLibre, sitiosCerca, sitiosConLogro, sitiosDeFotoLibre } from './cerca.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
 import { clavesSuperadas, vitrinaDeGanados } from './pantallas/ganados.js'
 import { coleccionesDeSitio, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen, sitiosDeLaRuta } from './vistas.js'
@@ -395,6 +395,9 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     if (!sitio && nombre) sitio = sitioDeParada({ name: nombre }, catalogos[viaje.destino])
     // (HOY1) La cámara de viaje: una foto SIN parada. Cuenta para el sitio con logro en cuyo radio está el viajero (esté o no en su ruta; también La Graciosa);
     // si no está en ninguno, o no hay ubicación, es solo un recuerdo de hoy: la foto es válida, no gana nada y no se guarda ningún hecho.
+    // (V5) «Reclamar con tus fotos»: una foto de la GALERÍA sin parada ni sitio (`libre`). Pasa por `evaluarFoto` (cámara del móvil, fecha del viaje, plazo) y, con ubicación, cuenta para CADA sitio con logro
+    // en cuyo radio cae (esté o no en la ruta; si cae en dos, para los dos). Sin ubicación devuelve `sin_ubicacion`: la app pregunta de qué sitio es. Varias fotos de un sitio cuentan una vez (lo decide el motor).
+    if (!sitio && !stop_id && libre && origen === 'galeria') return fotoLibreDeGaleria(userId, c, viaje, { tomada_en, con_camara, ubicacion, foto_id, recibido_en })
     if (!sitio && !stop_id && libre) {
       sitio = sitioDeFotoLibre({ datos, catalogos, destino: viaje.destino, ubicacion, items: aItems(c.logros) })
       if (!sitio) return { ok: true, valida: true, cuenta: false, motivo: ubicacion ? 'sin_logro_aqui' : 'sin_ubicacion', nuevos: [] }
@@ -417,6 +420,28 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const despues = calcularCon(c, [...c.hechos, fila], await repo.ordenPionero(userId))
     const { nuevos, exp } = await respuestaDeNuevos(userId, antes, despues, c, [...c.hechos, fila])
     return { ok: true, valida: true, cuenta: true, nuevos, exp, id: fila.id }
+  }
+
+  /** (V5) Ver el comentario de `foto`. `sitios`: los sitios con logro donde cayó la foto, con su nombre; `sin_ubicacion` si no trae ubicación (la app pregunta). */
+  async function fotoLibreDeGaleria(userId, c, viaje, { tomada_en, con_camara, ubicacion, foto_id, recibido_en }) {
+    const recibido = recibido_en ?? ahora().toISOString()
+    const destinoDatos = datos.destinos[viaje.destino]
+    const sinSitio = { coords: null, radio_m: 150 }
+    const e = evaluarFoto({ origen: 'galeria', tomadaEn: tomada_en, conCamara: Boolean(con_camara), ubicacion, sitio: sinSitio, viaje, destino: destinoDatos, nombreSitio: '', recibidoEn: recibido, ajustes: datos.ajustes })
+    if (!e.valida) return { ok: true, valida: false, motivo: e.motivo, mensaje: e.mensaje, nuevos: [] }
+    const tiene = ubicacion && Number.isFinite(ubicacion.lat) && Number.isFinite(ubicacion.lng)
+    if (!tiene) return { ok: true, valida: true, cuenta: false, motivo: 'sin_ubicacion', instante: e.instante, nuevos: [] }
+    const ids = sitiosDeFotoLibre({ datos, catalogos, destino: viaje.destino, ubicacion, items: aItems(c.logros) })
+    if (ids.length === 0) return { ok: true, valida: true, cuenta: false, motivo: 'sin_logro_aqui', instante: e.instante, nuevos: [] }
+    const fecha = horaLocalDe(viaje.destino, recibido).fecha
+    const pase = await puedeGanar(userId, c, viaje, fecha)
+    if (!pase.puede) return { ok: true, valida: true, cuenta: false, motivo: pase.motivo, instante: e.instante, nuevos: [] }
+    const antes = calcularCon(c)
+    const filas = []
+    for (const s of ids) filas.push(await repo.insertarHecho({ user_id: userId, trip_id: viaje.id, destino: viaje.destino, tipo: 'foto', sitio: s, stop_id: null, instante: e.instante, recibido_en: recibido, ubic: 'cerca', valido: true, origen: 'galeria', foto_id: foto_id ?? null, inicio: viaje.inicio, fin: viaje.fin }))
+    const despues = calcularCon(c, [...c.hechos, ...filas], await repo.ordenPionero(userId))
+    const { nuevos, exp } = await respuestaDeNuevos(userId, antes, despues, c, [...c.hechos, ...filas])
+    return { ok: true, valida: true, cuenta: true, instante: e.instante, sitios: ids.map((s) => ({ sitio: s, nombre: nombreDeSitio(catalogos, viaje.destino, s) })), nuevos, exp, id: filas[0]?.id }
   }
 
   /* ── El pase y la prueba de HOY ── */
@@ -561,6 +586,25 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return { ok: true, ...pendientes({ datos, destino: viaje.destino, viaje, items, hoy: hoyEn(viaje.destino) }) }
   }
 
+  /**
+   * (V5) Los sitios con logro del destino de un viaje, para «¿De qué sitio es esta foto?» (una foto de la galería sin ubicación): cada uno con su nombre, los días de la ruta en que aparece
+   * (`dias`: fechas) y si aún tiene algo por ganar (`pendiente`). Sin el viaje, `ok: false`.
+   */
+  async function sitiosParaReclamar(userId, tripId) {
+    const c = await cargar(userId)
+    const viaje = c.viajes[tripId]
+    if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas' }
+    const d = datos.destinos[viaje.destino]
+    const items = aItems(c.logros)
+    const dias = new Map()
+    for (const dia of viaje.dias ?? []) for (const p of dia.paradas ?? []) for (const s of sitiosDeLaParada(p)) { if (!dias.has(s)) dias.set(s, []); if (!dias.get(s).includes(dia.fecha)) dias.get(s).push(dia.fecha) }
+    const sitios = sitiosConLogro(d).map((s) => {
+      const pendiente = d.colecciones.some((x) => x.sitios.includes(s) && !items.get(clave(viaje.destino, 'pedazo', x.id + ':' + s))) || d.emblemas.some((e) => e.sitio === s && !items.get(clave(viaje.destino, 'emblema', e.id)))
+      return { sitio: s, nombre: nombreDeSitio(catalogos, viaje.destino, s), dias: dias.get(s) ?? [], pendiente }
+    })
+    return { ok: true, destino: viaje.destino, inicio: viaje.inicio, fin: viaje.fin, sitios }
+  }
+
   async function resumenDe(userId, tripId, { dia = null } = {}) {
     const c = await cargar(userId)
     const viaje = c.viajes[tripId]
@@ -635,7 +679,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return repo.encolarAvisos(puestos)
   }
 
-  return { aItems, cargar, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, cerca, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
+  return { aItems, cargar, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, cerca, deshacer, recalcular, estado, ficha, loDeAyer, sitiosParaReclamar, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
 }
 
 /** El instante (ISO, UTC) en que son las `hhmm` de esa fecha en la hora del destino. */

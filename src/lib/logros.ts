@@ -114,6 +114,8 @@ export interface RespuestaDeHecho {
   foto_dentro?: string | null
   repetido?: boolean
   sitio?: string | null
+  /** (V5) De una foto de la galería sin parada: los sitios con logro donde cayó, con su nombre. */
+  sitios?: { sitio: string; nombre: string }[]
   nuevos: Momento[]
   /** (8C2) La EXP ganada con este hecho. Se suma en  y sale UNA sola vez, al acabar las sorpresas (nunca durante ellas ni en el resumen del día). */
   exp?: ExpDeRespuesta | null
@@ -283,11 +285,12 @@ export async function datosDeFotoDeLaGaleria(archivo: Blob): Promise<DatosDeFoto
   return leerDatosDeFoto(new Uint8Array(await archivo.arrayBuffer()))
 }
 
-export async function enviarFotoDeGaleria(p: { tripId: string; stopId?: string | null; nombre: string; archivo: Blob; fotoId?: string | null }): Promise<RespuestaDeHecho | null> {
+/** (V5) `libre`: foto SIN parada (Reclamar con tus fotos): el servidor mira la ubicación de la foto y la cuenta para cada sitio con logro donde cae; `sitio`: el sitio que ha elegido la persona (foto sin ubicación). */
+export async function enviarFotoDeGaleria(p: { tripId: string; stopId?: string | null; nombre: string; archivo: Blob; fotoId?: string | null; libre?: boolean; sitio?: string | null }): Promise<RespuestaDeHecho | null> {
   const datos = await datosDeFotoDeLaGaleria(p.archivo)
   return mandarHecho({
     tipo: 'foto',
-    cuerpo: { trip_id: p.tripId, stop_id: p.stopId ?? null, nombre: p.nombre, origen: 'galeria', tomada_en: datos.tomadaEn, con_camara: datos.conCamara, ubicacion: datos.lat != null && datos.lng != null ? { lat: datos.lat, lng: datos.lng } : null, foto_id: p.fotoId ?? null },
+    cuerpo: { trip_id: p.tripId, stop_id: p.stopId ?? null, nombre: p.nombre || null, sitio: p.sitio ?? null, libre: p.libre ?? false, origen: 'galeria', tomada_en: datos.tomadaEn, con_camara: datos.conCamara, ubicacion: datos.lat != null && datos.lng != null ? { lat: datos.lat, lng: datos.lng } : null, foto_id: p.fotoId ?? null },
   })
 }
 

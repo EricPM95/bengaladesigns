@@ -12,11 +12,11 @@ import type { DestinoDeFoto, Hoja } from './vistoStore'
  * LAS PANTALLAS DEL VISTO Y LAS FOTOS (Tanda 8b), dibujadas como en «Visto Fotos» y «Ayudas» (docs/diseno/proyecto/Piezas/). Solo pintan: lo que hacen lo decide `VistoFlujo.tsx`.
  * Todas las tarjetas son HOJA desde abajo con su cruz; abajo de las del Visto, «¿No estás aquí? Desmarcar visto».
  */
-const TINTA = '#1C2230'
+export const TINTA = '#1C2230'
 /** El rojo de los avisos (los errores): no es el frambuesa, que queda para lo que falta y lo que se resalta. */
 const ROJO = 'rgb(var(--accent-red))'
-const SERIF = "'Instrument Serif',serif"
-const MONO = "'Geist Mono',monospace"
+export const SERIF = "'Instrument Serif',serif"
+export const MONO = "'Geist Mono',monospace"
 
 export function EstilosDelVisto() {
   return (
@@ -34,7 +34,7 @@ export function EstilosDelVisto() {
 }
 
 /** El fondo oscuro y la hoja que sube de abajo. `onCerrar` cierra con la cruz y tocando fuera. */
-function Capa({ children, onCerrar, etiqueta, z = 80 }: { children: ReactNode; onCerrar: () => void; etiqueta: string; z?: number }) {
+export function Capa({ children, onCerrar, etiqueta, z = 80 }: { children: ReactNode; onCerrar: () => void; etiqueta: string; z?: number }) {
   return createPortal(
     <div data-visto="capa" role="dialog" aria-label={etiqueta} className="fixed inset-0 flex flex-col justify-end" style={{ zIndex: z }}>
       <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: 'rgba(28,34,48,.42)', animation: 'vistoFade .3s ease both' }} />
@@ -46,7 +46,7 @@ function Capa({ children, onCerrar, etiqueta, z = 80 }: { children: ReactNode; o
   )
 }
 
-function Cruz({ onCerrar, oscura = false }: { onCerrar: () => void; oscura?: boolean }) {
+export function Cruz({ onCerrar, oscura = false }: { onCerrar: () => void; oscura?: boolean }) {
   return (
     <button type="button" onClick={onCerrar} aria-label="Cerrar" className="absolute right-2.5 top-2.5 z-[2] flex h-11 w-11 items-center justify-center rounded-full border-0" style={{ background: oscura ? 'rgba(255,253,248,.12)' : '#F1EADC', color: oscura ? '#FFFDF8' : TINTA }}>
       <Trazo d={TRAZO.cerrar} tam={13} grosor={2.2} />
@@ -66,7 +66,7 @@ function Boton({ icono, texto, onClick, estilo, disabled }: { icono: string; tex
 // (Tanda 10) El botón de la cámara, en oro (lo pidió Eric).
 const BTN_CAM: CSSProperties = { ...botonChampan(), border: 'none' }
 const BTN_GAL: CSSProperties = { background: '#FFFFFF', color: TINTA, border: '1px solid rgba(28,34,48,.16)' }
-const BTN_CAM_ORO: CSSProperties = { background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', border: 'none' }
+export const BTN_CAM_ORO: CSSProperties = { background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', border: 'none' }
 const BTN_GAL_OSCURO: CSSProperties = { background: 'transparent', color: '#FFFDF8', border: '1px solid rgba(255,253,248,.3)' }
 
 /** El pedazo ganado (V2): la tarjeta oscura de arriba con la INSIGNIA de su colección y el pedazo de este sitio encendido (el dibujo de verdad de «Logros · Modelos»). */
@@ -133,11 +133,13 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
       </>
     )
   } else if (tipo === 'lejos') {
-    titulo = `Parece que no estás ${enSitio(nombre)}. Tu pedazo te espera allí.`
-    subtitulo = 'La parada queda como vista.'
+    // (V5) `Parece que no estás…` pasa a preguntar si ya estuvo: lo de hoy también se puede ganar con una foto de la galería.
+    titulo = `¿Ya has estado hoy ${enSitio(nombre)}?`
+    subtitulo = 'Sube una foto que hiciste allí y gana tu pedazo.'
     icono = TRAZO.lejos
     iconoFondo = 'rgb(var(--accent-soft))'
     iconoColor = 'rgb(var(--accent))'
+    botones = <Boton icono={TRAZO.gal} texto="Elegir de la galería" onClick={acciones.onGaleria} estilo={BTN_CAM} />
   } else if (tipo === 'oculto') {
     titulo = '¡Aquí se esconde un Emblema Oculto!'
     subtitulo = `Sube una foto ${enSitio(nombre)} y descúbrelo.`
@@ -324,7 +326,7 @@ export interface ParadaDeAyer {
 }
 
 /** V8: «Lo de ayer también cuenta». Con [Subir mis fotos] pasa a la lista de paradas, cada una con su botón para elegir foto. */
-export function HojaLoDeAyer({ paradas, plazo, miniaturas, onElegir, onCerrar }: { paradas: ParadaDeAyer[]; plazo: string | null; miniaturas: Record<string, string>; onElegir: (p: ParadaDeAyer) => void; onCerrar: () => void }) {
+export function HojaLoDeAyer({ paradas, plazo, miniaturas, texto, onReclamar, onElegir, onCerrar }: { paradas: ParadaDeAyer[]; plazo: string | null; miniaturas: Record<string, string>; /** (V5) «Ayer tenías en tu ruta: …» durante el viaje; «En tu viaje tenías: …» después. */ texto?: string; onReclamar?: () => void; onElegir: (p: ParadaDeAyer) => void; onCerrar: () => void }) {
   const [lista, setLista] = useState(false)
   const nombres = paradas.slice(0, 3).map((p) => displayStopName(p.nombre))
   const quedan = paradas.length - nombres.length
@@ -337,9 +339,8 @@ export function HojaLoDeAyer({ paradas, plazo, miniaturas, onElegir, onCerrar }:
         <span className="pr-10" style={{ font: `400 30px/1.05 ${SERIF}` }}>Lo de ayer también cuenta.</span>
         {!lista ? (
           <>
-            <span style={{ font: "400 14px/1.5 'Geist'", color: 'rgba(255,253,248,.8)' }}>
-              Ayer tenías en tu ruta: {nombres.join(', ')}
-              {quedan > 0 ? ` y ${quedan} más` : ''}…
+            <span data-visto="lo-de-ayer-texto" style={{ font: "400 14px/1.5 'Geist'", color: 'rgba(255,253,248,.8)' }}>
+              {texto ?? `Ayer tenías en tu ruta: ${nombres.join(', ')}${quedan > 0 ? ` y ${quedan} más` : ''}…`}
             </span>
             <div className="flex gap-1.5">
               {paradas.slice(0, 4).map((p, i) => (
@@ -348,10 +349,22 @@ export function HojaLoDeAyer({ paradas, plazo, miniaturas, onElegir, onCerrar }:
             </div>
             <span style={{ font: "400 14px/1.5 'Geist'", color: 'rgba(255,253,248,.8)' }}>Sube tus fotos y descubre lo que ganaste.</span>
             {plazo && <span style={{ font: `600 11px ${MONO}`, color: 'oklch(0.86 0.12 85)' }}>{plazo}</span>}
-            <button type="button" onClick={() => setLista(true)} className="flex h-[52px] items-center justify-center gap-2 rounded-full border-0" style={{ ...BTN_CAM_ORO, font: "700 15px 'Geist'" }}>
-              <Trazo d={TRAZO.gal} tam={17} grosor={1.9} />
-              Subir mis fotos
-            </button>
+            {onReclamar ? (
+              <>
+                <button type="button" data-visto="lo-de-ayer-reclamar" onClick={onReclamar} className="flex h-[52px] items-center justify-center gap-2 rounded-full border-0" style={{ ...BTN_CAM_ORO, font: "700 15px 'Geist'" }}>
+                  <Trazo d={TRAZO.gal} tam={17} grosor={1.9} />
+                  Reclamar con tus fotos
+                </button>
+                <button type="button" onClick={() => setLista(true)} className="min-h-11 self-center px-3 underline underline-offset-[3px]" style={{ font: "400 12.5px 'Geist'", color: 'rgba(255,253,248,.6)', background: 'none', border: 'none' }}>
+                  Elegir la foto de cada sitio
+                </button>
+              </>
+            ) : (
+              <button type="button" onClick={() => setLista(true)} className="flex h-[52px] items-center justify-center gap-2 rounded-full border-0" style={{ ...BTN_CAM_ORO, font: "700 15px 'Geist'" }}>
+                <Trazo d={TRAZO.gal} tam={17} grosor={1.9} />
+                Subir mis fotos
+              </button>
+            )}
           </>
         ) : (
           <>

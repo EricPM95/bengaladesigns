@@ -47,7 +47,7 @@ export function hojaSegunRespuesta(r: RespuestaParaDecidir | null, nombreParada:
   const nombreSitio = nombreDeParada(nombreParada)
   const base = { nombreSitio, fotoDentro: r.foto_dentro ?? null, pedazo: null, mensaje: null }
   if (r.motivo === 'pregunta_medio_dia' || r.repetido) return null
-  if (r.motivo === 'lejos' && (r.hay_pedazo || r.hay_emblema)) return { ...base, tipo: 'lejos', mensaje: `Parece que no estás ${enSitio(nombreSitio)}. Tu pedazo te espera allí.` }
+  if (r.motivo === 'lejos' && (r.hay_pedazo || r.hay_emblema)) return { ...base, tipo: 'lejos', mensaje: `¿Ya has estado hoy ${enSitio(nombreSitio)}? Sube una foto que hiciste allí y gana tu pedazo.` }
   if (r.motivo === 'lejos') return { ...base, tipo: 'recuerdo' }
   if (r.cuenta === false) return { ...base, tipo: 'recuerdo' }
   if (r.hay_emblema) return { ...base, tipo: 'oculto' }

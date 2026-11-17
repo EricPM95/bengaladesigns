@@ -97,8 +97,9 @@ export function useHuecoAlFinal(minimo = 40): number {
   const visible = lapiz || reorganizar
   // (10S5) El hueco sale de DÓNDE están de verdad los botones (con la barra de abajo del móvil, que sube el botón de los logros): su borde de arriba más un poco de aire.
   const { suelo } = useFlotantes()
-  if (!logrosActivos() && !visible) return minimo
-  return Math.max(minimo, suelo + (visible ? SOBRE_LOS_LOGROS + ALTO_DEL_LAPIZ : 58) + AIRE_BAJO_LOS_BOTONES)
+  // (V5) La cámara de viaje va ahora en TODAS las pantallas, encima del botón de los logros: el hueco cuenta los dos botones (52 + 12 de aire cada uno) y, si está, el lápiz.
+  void logrosActivos
+  return Math.max(minimo, suelo + (visible ? SOBRE_LOS_LOGROS + ALTO_DEL_LAPIZ : 0) + SOBRE_LOS_LOGROS + 52 + AIRE_BAJO_LOS_BOTONES)
 }
 
 /** El hueco que se deja al final de DÍAS y EXPLORAR cuando el lápiz está a la vista, para que no tape la última parada ni la última tarjeta. */

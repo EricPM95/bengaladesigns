@@ -21,6 +21,10 @@ export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
     linea1: 'Ya has escuchado tu historia de prueba.',
     linea2: 'Con el {pase}, podrás escuchar todas las historias que quieras, sin límite.',
   },
+  reclamar: {
+    linea1: '',
+    linea2: 'Con el {pase}, reclama con tus fotos todos los sitios que viste en tu viaje.',
+  },
   cerca_de_ti: {
     linea1: '',
     linea2: 'Con el {pase}, descubre todo lo que tienes cerca, estés donde estés.',

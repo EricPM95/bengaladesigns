@@ -8,6 +8,8 @@ import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { CamaraApp } from './CamaraApp'
 import { fechasDelViaje, hoyLocal, lineaDeGaleria, textoDelPlazo } from './fechas'
+import { abrirGaleriaDeReclamo, HostDeReclamar } from '../reclamar/Reclamar'
+import { faseDeReclamo, textoDeLoDeAyer } from '../../../lib/reclamar'
 import { AvisoDeVisto, EstilosDelVisto, FranjaSinConexion, HojaDePermisos, HojaDelVisto, HojaFotoDentro, HojaGaleria, HojaLoDeAyer, NotaCorta, type ParadaDeAyer } from './Hojas'
 import { faltaDe, hojaSegunRespuesta as decidirHoja } from './decidir'
 import { deSitio, enSitio } from '../../../lib/articulos'
@@ -387,6 +389,11 @@ export function VistoFlujo({ tripId }: { tripId: string | null }) {
         <HojaLoDeAyer
           paradas={s.paradasAyer}
           plazo={textoDelPlazo(route)}
+          texto={textoDeLoDeAyer(faseDeReclamo(route), s.paradasAyer.map((p) => displayStopName(p.nombre)), s.paradasAyer.length)}
+          onReclamar={() => {
+            useVistoStore.getState().poner({ ayer: false })
+            abrirGaleriaDeReclamo()
+          }}
           miniaturas={miniaturas}
           onElegir={(p) => {
             const parada = paradaDeLaRuta(p.stopId, tripId ?? '')
@@ -396,6 +403,7 @@ export function VistoFlujo({ tripId }: { tripId: string | null }) {
           onCerrar={() => useVistoStore.getState().poner({ ayer: false })}
         />
       )}
+      <HostDeReclamar />
       {s.nota && <NotaCorta texto={s.nota} onFin={() => useVistoStore.getState().poner({ nota: null })} />}
       <input
         ref={entradaDeGaleria}

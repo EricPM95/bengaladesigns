@@ -1,0 +1,87 @@
+[
+ {
+  "nombre": "pruebaV5 (nueva)",
+  "comprobaciones": 88,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaJutrip",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaV3",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaLogros1 (Roma)",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaLogros2",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaV4",
+  "comprobaciones": 149,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaLZ3_A / LZ3_B / LZ3b (Lanzarote)",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaLL_LZ",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaV2Hoy",
+  "comprobaciones": 149,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaHOY1_A / HOY1_B / HOY1_C",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaHOY2_A / HOY2_B / HOY2_C",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaHOY2b_D / HOY2b_E",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaHOY3",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTanda10N4 (flotantes, franja, entradas, menús, campana, perfil)",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTanda10N12 (a, b, c)",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTanda10P_hoy / 10S / 10N_cabecera / Pantallas8b / LG1_A / LG1_B / Tanda6z6c",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "Muestra de 60 viajes de Roma (idéntica)",
+  "comprobaciones": 60,
+  "fallos": 0
+ }
+]

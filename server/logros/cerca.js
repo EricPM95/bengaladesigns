@@ -103,6 +103,16 @@ export function sitiosCerca({ datos, catalogos, destino, ubicacion, items, sitio
  * Si está dentro de varios, el que tiene un emblema por ganar antes que el que solo tiene pedazo, y luego el más cercano.
  * null si no está en ninguno (la foto solo es un recuerdo).
  */
+/**
+ * (V5) TODOS los sitios con logro en cuyo radio cae una foto de la galería (esté o no en la ruta, tenga o no algo por ganar): si cae en dos, cuenta para los dos. Con las mismas reglas que
+ * `sitioDeFotoLibre` para los sitios que se apartan (`aparta_de`). Vacía si no cae en ninguno.
+ */
+export function sitiosDeFotoLibre({ datos, catalogos, destino, ubicacion, items = new Map() }) {
+  const todos = sitiosCerca({ datos, catalogos, destino, ubicacion, items, margenM: 0, sinTope: true, radioSinDatos: RADIO_SIN_DATOS_FOTO_M }).filter((s) => s.dentro)
+  const apartados = new Set(todos.flatMap((s) => datos.destinos[destino]?.sitios?.[s.sitio]?.aparta_de ?? []))
+  return todos.filter((s) => !apartados.has(s.sitio)).sort((a, b) => a.metros - b.metros).map((s) => s.sitio)
+}
+
 export function sitioDeFotoLibre({ datos, catalogos, destino, ubicacion, items }) {
   const todos = sitiosCerca({ datos, catalogos, destino, ubicacion, items, margenM: 0, sinTope: true, radioSinDatos: RADIO_SIN_DATOS_FOTO_M }).filter((s) => s.dentro)
   // (V4) `aparta_de`: dentro de este sitio (una bodega), los sitios que se listan (La Geria, de 3.000 m) no cuentan para una foto libre: una foto en una bodega no da La Geria sin querer.

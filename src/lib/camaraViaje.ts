@@ -35,8 +35,11 @@ export function marcarCamaraExplicada(): void {
   }
 }
 
+/**
+ * (V5, 4b) La cámara de viaje ya NO va con candado sin pase: sin pase solo hace fotos (una por parada, al álbum, sin logros); con pase, sin límite y con recompensas. El modo es el mismo con y sin pase;
+ * lo que cambia es el texto de la hoja (`conAcceso`).
+ */
 export function modoDeCamara(p: { conAcceso: boolean; fase: FaseDelViaje; explicada: boolean }): ModoDeCamara {
-  if (!p.conAcceso) return 'sin_pase'
   if (p.fase === 'during') return p.explicada ? 'abrir' : 'primera_vez'
   return p.fase === 'after' ? 'despues' : 'antes'
 }
@@ -200,4 +203,31 @@ export function urlDeCamino(p: { lat: number; lng: number; consulta?: string | n
   const destino = p.consulta?.trim() ? p.consulta.trim() : `${p.lat},${p.lng}`
   if (esDeApple()) return `https://maps.apple.com/?${new URLSearchParams({ daddr: destino, dirflg: p.modo === 'walking' ? 'w' : 'd' }).toString()}`
   return `https://www.google.com/maps/dir/?${new URLSearchParams({ api: '1', destination: destino, travelmode: p.modo }).toString()}`
+}
+
+/* ------------------------------------------------------------------ */
+/* La parada de una foto                                               */
+/* ------------------------------------------------------------------ */
+
+/** Hasta dónde se cree que alguien «está en» una parada (metros). */
+export const METROS_EN_LA_PARADA = 400
+
+/**
+ * (V5, 4b) A qué parada va una foto de la cámara de viaje: la del día de hoy donde estás (la más cercana a menos de 400 m) o, si no se sabe dónde estás, la del momento del día (la primera de hoy
+ * que aún no está hecha ni saltada). Sin día de hoy en la ruta, null: la foto va a «el día» (una sola por día en la gratis).
+ */
+export function paradaDeLaFoto(dia: { stops: { id: string; name: string; coordinates?: { lat: number; lng: number }; checkedInAt?: string | null; saltada?: boolean; isBreak?: boolean; isFreeTime?: boolean; isFreeWalk?: boolean; isZoneWalk?: boolean; passThrough?: boolean }[] } | null, donde: { lat: number; lng: number } | null, distancia: (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => number): { stopId: string; nombre: string } | null {
+  if (!dia) return null
+  const reales = dia.stops.filter((s) => !s.isBreak && !s.isFreeTime && !s.isFreeWalk && !s.isZoneWalk && !s.passThrough)
+  if (donde) {
+    let mejor: { s: (typeof reales)[number]; m: number } | null = null
+    for (const s of reales) {
+      if (!s.coordinates || (s.coordinates.lat === 0 && s.coordinates.lng === 0)) continue
+      const m = distancia(donde, s.coordinates)
+      if (m <= METROS_EN_LA_PARADA && (!mejor || m < mejor.m)) mejor = { s, m }
+    }
+    if (mejor) return { stopId: mejor.s.id, nombre: mejor.s.name }
+  }
+  const siguiente = reales.find((s) => !s.checkedInAt && !s.saltada) ?? null
+  return siguiente ? { stopId: siguiente.id, nombre: siguiente.name } : null
 }

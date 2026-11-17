@@ -13,7 +13,6 @@ import { HoyDurante } from './HoyDurante'
 import { HoyDespues } from './HoyDespues'
 import { hoyV2Activo } from '../../../lib/hoyV2'
 import { HoyV2 } from './v2/HoyV2'
-import { BotonCamaraViaje } from './CamaraViaje'
 
 /**
  * La pestaña HOY (Tanda 6z3 y 6z6): SOLO de pago (en la gratis la pestaña no está; ver src/lib/barra.ts). Lo de dentro cambia según el momento del viaje —antes, durante o después (el día siguiente al último)— y la barra no cambia.
@@ -43,7 +42,8 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
   // (Tanda 10S §1) En el día de prueba sin pase NO sale: sin pase no hay dirección y el botón llevaría a un candado.
   const conCama = estado?.phase === 'during' && !diaDePrueba
   // (HOY1) La cámara de viaje se ve SIEMPRE (antes, durante y después, con y sin pase; sin pase, con candado). A su izquierda, el botón de la cama si lo hay.
-  const camara = <BotonCamaraViaje route={route} fase={estado?.phase ?? null} conAcceso={completa || diaDePrueba} day={estado?.phase === 'during' ? estado.context.day : null} conCama={conCama && completa} />
+  // (V5, 4b) La cámara de viaje ya no la monta HOY: es un flotante de TODAS las pantallas del viaje (RouteScreen › CamaraDeViajeGlobal).
+  const camara = null
   if (!completa && !diaDePrueba) {
     return (
       <div className={envoltorio(false)} data-hoy-con-camara="1">

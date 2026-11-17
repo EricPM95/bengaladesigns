@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { DayPlan, Route } from '../../../lib/types'
-import { enviarFotoDeLaCamara, type RespuestaDeHecho } from '../../../lib/logros'
+import { enviarFotoDeLaCamara, ubicacionDeAhora, type RespuestaDeHecho } from '../../../lib/logros'
+import { fotosDelSitio, listarFotos, modoDeFoto } from '../../../lib/fotosViaje'
+import { haversineMeters } from '../../../lib/distanceMock'
 import { abrirPase } from '../../../lib/pago'
 import { nombreDelPase } from '../../../lib/nombrePase'
 import { reproducirMomentos } from '../../../lib/sonidos'
-import { camaraExplicada, guardarFotoSinSubir, marcarCamaraExplicada, modoDeCamara, rangoDelViaje, subirFotosPendientes, useCamaraViajeStore, type FaseDelViaje, type ModoDeCamara, type PedidoDeFoto } from '../../../lib/camaraViaje'
+import { camaraExplicada, guardarFotoSinSubir, marcarCamaraExplicada, modoDeCamara, paradaDeLaFoto, rangoDelViaje, subirFotosPendientes, useCamaraViajeStore, type FaseDelViaje, type ModoDeCamara, type PedidoDeFoto } from '../../../lib/camaraViaje'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { CamaraApp } from '../../logros/visto/CamaraApp'
+import { abrirGaleriaDeReclamo } from '../../logros/reclamar/Reclamar'
 import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
 import { BotonGuardarEnGaleria } from '../fotos/BotonGuardarEnGaleria'
@@ -44,10 +47,12 @@ function Trazo({ d, tam, color = 'currentColor', grosor = 1.9 }: { d: string; ta
 
 type Resultado = { tipo: 'logro'; respuesta: RespuestaDeHecho } | { tipo: 'recuerdo'; url: string; sub: string | null } | { tipo: 'sin_conexion'; url: string }
 
-/** La hoja de abajo: «Tu cámara de viaje» (K1), con el candado (K1b) o con las fechas (K1c). */
-function HojaCamara({ modo, destino, rango, onCerrar, onAbrir, onVerPase }: { modo: ModoDeCamara; destino: string; rango: string | null; onCerrar: () => void; onAbrir: () => void; onVerPase: () => void }) {
+/** La hoja de abajo: «Tu cámara de viaje» (V5, 4b): el mismo texto para todos («Una foto por cada lugar» sin pase) y, debajo, lo del pase; antes y después del viaje, además, las fechas. */
+function HojaCamara({ modo, conAcceso, destino, rango, onCerrar, onAbrir, onVerPase }: { modo: ModoDeCamara; conAcceso: boolean; destino: string; rango: string | null; onCerrar: () => void; onAbrir: () => void; onVerPase: () => void }) {
+  const pase = nombreDelPase(destino)
+  const BOTON = { height: 54, borderRadius: 16, font: "700 16px 'Geist'", background: DEGRADADO_ORO, color: '#4A3510', border: 'none', cursor: 'pointer' } as const
   return createPortal(
-    <div data-camara-viaje="hoja" data-modo={modo} role="dialog" aria-label="Tu cámara de viaje" className="fixed inset-0 z-[80] flex flex-col justify-end">
+    <div data-camara-viaje="hoja" data-modo={modo} data-con-pase={conAcceso ? '1' : '0'} role="dialog" aria-label="Tu cámara de viaje" className="fixed inset-0 z-[80] flex flex-col justify-end">
       <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: 'rgba(20,16,10,.5)', animation: 'vistoFade .3s ease both' }} />
       <div className="relative mx-auto flex w-full max-w-[520px] flex-col gap-3.5 px-[18px] pb-[26px] pt-2.5" style={{ borderRadius: '32px 32px 0 0', background: '#FBF3E2', boxShadow: '0 -20px 40px rgba(0,0,0,.25)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both', color: TINTA }}>
         <span className="self-center" style={{ width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
@@ -61,17 +66,23 @@ function HojaCamara({ modo, destino, rango, onCerrar, onAbrir, onVerPase }: { mo
           <span className="flex h-[52px] w-[52px] flex-none items-center justify-center" style={{ borderRadius: 16, background: '#F3E3B2', color: '#6E5018' }}>
             <Trazo d={CAMARA} tam={26} grosor={1.7} />
           </span>
-          <span style={{ font: "400 15px/1.45 'Geist'", color: 'rgba(28,34,48,.78)' }}>Guarda tus recuerdos del viaje. Y si estás en un lugar especial, aunque no esté en tu ruta, haz tu foto: puede que te espere una recompensa.</span>
+          <span data-camara-viaje="texto" style={{ font: "400 15px/1.45 'Geist'", color: 'rgba(28,34,48,.78)' }}>
+            Las fotos que hagas con ella se guardan en el álbum de tu viaje, día a día, para que tengas todos tus recuerdos juntos.{conAcceso ? '' : ' Una foto por cada lugar.'}
+          </span>
         </div>
-        {modo === 'sin_pase' && (
-          <div data-camara-viaje="candado" className="flex items-center gap-2.5" style={{ padding: '11px 14px', borderRadius: 16, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.45)', font: "500 14px/1.35 'Geist'" }}>
-            <span className="flex flex-none items-center justify-center" style={{ width: 26, height: 26, borderRadius: '50%', background: TINTA, border: `1.5px solid ${ORO}`, boxSizing: 'border-box' }}>
-              <Trazo d={CANDADO} tam={12} color={ORO_CLARO} grosor={2.4} />
+        {conAcceso ? (
+          <span data-camara-viaje="pase" style={{ font: "400 14px/1.45 'Geist'", color: 'rgba(28,34,48,.78)', marginTop: 4 }}>
+            Con tu <b style={{ color: '#8E6820' }}>{pase}</b>, fotos sin límite. Y además, podrás coleccionar recompensas: pedazos de colección y emblemas ocultos.
+          </span>
+        ) : (
+          <button type="button" onClick={onVerPase} data-camara-viaje="ver-pase" className="flex items-start gap-2.5 text-left" style={{ marginTop: 4, padding: '11px 14px', borderRadius: 16, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.45)', font: "400 14px/1.45 'Geist'", color: 'rgba(28,34,48,.82)', cursor: 'pointer' }}>
+            <span className="flex flex-none items-center justify-center" style={{ width: 22, height: 22, marginTop: 1, borderRadius: '50%', background: TINTA, border: `1.5px solid ${ORO}`, boxSizing: 'border-box' }}>
+              <Trazo d={CANDADO} tam={11} color={ORO_CLARO} grosor={2.4} />
             </span>
             <span>
-              Solo disponible con el <b style={{ color: '#8E6820' }}>{nombreDelPase(destino)}</b>
+              Con el <b style={{ color: '#8E6820' }}>{pase}</b>, fotos sin límite. Y además, podrás coleccionar recompensas: pedazos de colección y emblemas ocultos.
             </span>
-          </div>
+          </button>
         )}
         {(modo === 'antes' || modo === 'despues') && (
           <div data-camara-viaje="fechas" className="flex items-center gap-2.5" style={{ padding: '11px 14px', borderRadius: 16, background: '#F3E3B2', font: "500 14px/1.35 'Geist'" }}>
@@ -80,21 +91,57 @@ function HojaCamara({ modo, destino, rango, onCerrar, onAbrir, onVerPase }: { mo
           </div>
         )}
         {modo === 'primera_vez' && (
-          <button type="button" onClick={onAbrir} data-camara-viaje="abrir" className="flex items-center justify-center gap-2" style={{ height: 54, borderRadius: 16, font: "700 16px 'Geist'", background: DEGRADADO_ORO, color: '#4A3510', border: 'none', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }}>
+          <button type="button" onClick={onAbrir} data-camara-viaje="abrir" className="flex items-center justify-center gap-2" style={BOTON}>
             <Trazo d={CAMARA} tam={19} color="#4A3510" grosor={2} />
             Abrir cámara
           </button>
         )}
-        {modo === 'sin_pase' && (
-          <button type="button" onClick={onVerPase} data-camara-viaje="ver-pase" className="flex items-center justify-center" style={{ height: 54, borderRadius: 16, font: "700 16px 'Geist'", background: DEGRADADO_ORO, color: '#4A3510', border: 'none', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }}>
-            Ver el pase
-          </button>
-        )}
         {(modo === 'antes' || modo === 'despues') && (
-          <button type="button" onClick={onCerrar} data-camara-viaje="entendido" className="flex items-center justify-center" style={{ height: 54, borderRadius: 16, font: "700 16px 'Geist'", background: '#FBF3E2', border: '1px solid rgba(181,138,46,.55)', color: '#4A3510' }}>
+          <button type="button" onClick={onCerrar} data-camara-viaje="entendido" className="flex items-center justify-center" style={{ ...BOTON, background: '#FBF3E2', border: '1px solid rgba(18,22,32,.16)', color: TINTA }}>
             Entendido
           </button>
         )}
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+/** (V5, 4) Con pase y durante el viaje, el botón ofrece [Hacer foto] y [Subir de la galería] (esta usa lo de «Reclamar con tus fotos»: varias a la vez, con su resumen). */
+function ElegirCamaraOGaleria({ onCamara, onGaleria, onCerrar }: { onCamara: () => void; onGaleria: () => void; onCerrar: () => void }) {
+  const BOTON = { height: 54, borderRadius: 16, font: "700 16px 'Geist'", border: 'none', cursor: 'pointer' } as const
+  return createPortal(
+    <div data-camara-viaje="elegir" role="dialog" aria-label="Tu cámara de viaje" className="fixed inset-0 z-[80] flex flex-col justify-end">
+      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: 'rgba(20,16,10,.5)', animation: 'vistoFade .3s ease both' }} />
+      <div className="relative mx-auto flex w-full max-w-[520px] flex-col gap-3 px-[18px] pb-[26px] pt-2.5" style={{ borderRadius: '32px 32px 0 0', background: '#FBF3E2', boxShadow: '0 -20px 40px rgba(0,0,0,.25)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both', color: TINTA }}>
+        <span className="self-center" style={{ width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
+        <span style={{ font: `400 28px/1 ${SERIF}` }}>Tu cámara de viaje</span>
+        <button type="button" onClick={onCamara} data-camara-viaje="hacer-foto" className="flex items-center justify-center gap-2" style={{ ...BOTON, background: DEGRADADO_ORO, color: '#4A3510' }}>
+          <Trazo d={CAMARA} tam={19} color="#4A3510" grosor={2} />
+          Hacer foto
+        </button>
+        <button type="button" onClick={onGaleria} data-camara-viaje="subir-galeria" className="flex items-center justify-center gap-2" style={{ ...BOTON, background: '#FFFDF8', color: TINTA, border: '1px solid rgba(28,34,48,.16)' }}>
+          <Trazo d="M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5h.01" tam={19} color={TINTA} grosor={1.9} />
+          Subir de la galería
+        </button>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+/** (V5) Sin pase, una foto por lugar: si el lugar ya tiene la suya, se pregunta antes de cambiarla. */
+function PreguntaDeCambio({ onCambiar, onDejar }: { onCambiar: () => void; onDejar: () => void }) {
+  return createPortal(
+    <div data-camara-viaje="cambiar" role="dialog" aria-label="Una foto por lugar" className="fixed inset-0 z-[88] flex items-center justify-center px-[22px]" style={{ background: 'rgba(20,16,10,.55)', animation: 'vistoFade .3s ease both' }}>
+      <div className="flex w-full max-w-[400px] flex-col gap-3.5" style={{ borderRadius: 26, background: '#FBF3E2', color: TINTA, padding: '22px 20px 18px', boxShadow: '0 30px 60px -20px rgba(0,0,0,.6)' }}>
+        <span style={{ font: `400 26px/1.1 ${SERIF}` }}>Sin el Pase, una foto por lugar. ¿Cambias la que tenías?</span>
+        <button type="button" onClick={onCambiar} data-camara-viaje="cambiar-si" style={{ height: 50, borderRadius: 16, font: "700 15px 'Geist'", background: DEGRADADO_ORO, color: '#4A3510', border: 'none' }}>
+          Cambiarla
+        </button>
+        <button type="button" onClick={onDejar} data-camara-viaje="cambiar-no" style={{ height: 50, borderRadius: 16, font: "600 15px 'Geist'", background: '#FFFDF8', color: TINTA, border: '1px solid rgba(28,34,48,.16)' }}>
+          Dejar la que tenía
+        </button>
       </div>
     </div>,
     document.body,
@@ -171,6 +218,8 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
   const [camara, setCamara] = useState<PedidoDeFoto | null>(null)
   const [pensando, setPensando] = useState(false)
   const [resultado, setResultado] = useState<Resultado | null>(null)
+  const [elegir, setElegir] = useState(false)
+  const [preguntaDeCambio, setPreguntaDeCambio] = useState<((cambiar: boolean) => void) | null>(null)
   const [archivoDeLaFoto, setArchivoDeLaFoto] = useState<Blob | null>(null)
   const urls = useRef<string[]>([])
   const pedido = useCamaraViajeStore((s) => s.pedido)
@@ -209,7 +258,10 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
   )
 
   const tocar = () => {
-    if (modo === 'abrir') setCamara({ sitio: null, nombre: null, oculto: false })
+    if (modo === 'abrir') {
+      if (conAcceso && fase === 'during') setElegir(true)
+      else setCamara({ sitio: null, nombre: null, oculto: false })
+    }
     else setHoja(modo)
   }
 
@@ -227,6 +279,23 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
     const url = URL.createObjectURL(archivo)
     urls.current.push(url)
     setArchivoDeLaFoto(archivo)
+    // (V5, 4b) SIN PASE: la cámara solo hace fotos. Una por parada (donde estás o la del momento del día), al álbum, y NUNCA da pedazos ni emblemas (no se manda nada al servidor de los logros).
+    if (!conAcceso) {
+      const donde = day ? await ubicacionDeAhora(2500).catch(() => null) : null
+      const parada = paradaDeLaFoto(day, donde, (a, b) => haversineMeters(a as never, b as never))
+      const nombreParada = ped.nombre ?? parada?.nombre ?? null
+      const dayNumber = day?.dayNumber ?? 1
+      setPensando(false)
+      const fotos = await listarFotos(tripId).catch(() => [])
+      if (modoDeFoto(fotos, dayNumber, nombreParada) === 'cambiar' && fotosDelSitio(fotos, dayNumber, nombreParada).length > 0) {
+        const cambiar = await new Promise<boolean>((resolver) => setPreguntaDeCambio(() => (c: boolean) => resolver(c)))
+        setPreguntaDeCambio(null)
+        if (!cambiar) return
+      }
+      void guardarFotoSinSubir({ id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, tripId, dayId: day?.id ?? '', dayNumber, stopName: nombreParada, blob: archivo }).then(() => subirFotosPendientes())
+      setResultado({ tipo: 'recuerdo', url, sub: nombreParada ? `Guardada en ${nombreParada}` : null })
+      return
+    }
     const r = await enviarFotoDeLaCamara({ tripId, stopId: null, nombre: ped.nombre, sitio: ped.sitio, libre: !ped.sitio })
     setPensando(false)
     // El álbum: la foto va a «los recuerdos de hoy». Se guarda PRIMERO en el móvil (así sin conexión no se pierde) y de ahí se sube al álbum; se quita del móvil cuando ya está arriba.
@@ -253,24 +322,33 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
         onClick={tocar}
         data-camara-viaje="boton"
         data-modo={modo}
-        aria-label={modo === 'sin_pase' ? 'Tu cámara de viaje (con el pase)' : 'Tu cámara de viaje'}
+        aria-label="Tu cámara de viaje"
         className="zona-toque flex items-center justify-center transition-transform active:scale-95"
         style={{ position: 'fixed', right: 14, bottom: `calc(${sueloLogros} + ${SOBRE_LOS_LOGROS + (hayOtroFlotante ? SOBRE_LOS_LOGROS : 0)}px)`, zIndex: debajo ? 40 : 85, width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', border: '1.5px solid #9A7228', boxShadow: '0 12px 22px -8px rgba(60,40,10,.6),inset 0 1px 0 rgba(255,255,255,.7)', boxSizing: 'border-box', color: '#3E2A0C' }}
       >
         <Trazo d={CAMARA} tam={19} />
-        {modo === 'sin_pase' && (
-          <span data-camara-viaje="candado-boton" className="absolute flex items-center justify-center" style={{ right: -6, top: -6, width: 20, height: 20, borderRadius: '50%', background: TINTA, border: `1.5px solid ${ORO}`, boxSizing: 'border-box' }}>
-            <Trazo d={CANDADO} tam={12} color={ORO_CLARO} grosor={2.4} />
-          </span>
-        )}
       </button>
-      {hoja && <HojaCamara modo={hoja} destino={route.destination} rango={rango} onCerrar={() => setHoja(null)} onAbrir={abrirDesdeLaHoja} onVerPase={() => { setHoja(null); abrirPase() }} />}
+      {hoja && <HojaCamara modo={hoja} conAcceso={conAcceso} destino={route.destination} rango={rango} onCerrar={() => setHoja(null)} onAbrir={abrirDesdeLaHoja} onVerPase={() => { setHoja(null); abrirPase() }} />}
       {camara && <CamaraApp nombre={camara.nombre ?? 'Tu recuerdo de hoy'} oculto={camara.oculto} alFoto={(f) => void hacerFoto(f)} alCerrar={() => setCamara(null)} />}
       {pensando && (
         <span data-camara-viaje="mirando" className="pointer-events-none fixed inset-x-0 bottom-24 z-[86] mx-auto w-fit rounded-full px-4 py-2" style={{ background: TINTA, color: '#FBF3E2', font: `600 10.5px ${MONO}`, letterSpacing: '.14em' }}>
           MIRANDO DÓNDE ESTÁS…
         </span>
       )}
+      {elegir && (
+        <ElegirCamaraOGaleria
+          onCerrar={() => setElegir(false)}
+          onCamara={() => {
+            setElegir(false)
+            setCamara({ sitio: null, nombre: null, oculto: false })
+          }}
+          onGaleria={() => {
+            setElegir(false)
+            abrirGaleriaDeReclamo()
+          }}
+        />
+      )}
+      {preguntaDeCambio && <PreguntaDeCambio onCambiar={() => preguntaDeCambio(true)} onDejar={() => preguntaDeCambio(false)} />}
       {resultado?.tipo === 'logro' && <PantallaAlgo onDescubrir={descubrir} />}
       {resultado && resultado.tipo !== 'logro' && <AvisoDeFoto resultado={resultado} archivo={archivoDeLaFoto} onFin={() => setResultado(null)} />}
     </>

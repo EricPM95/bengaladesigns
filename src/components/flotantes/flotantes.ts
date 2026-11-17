@@ -18,9 +18,10 @@ import { useRouteStore } from '../../store/useRouteStore'
 const HOJAS = '[role="dialog"]:not([data-flotantes]), [role="alertdialog"], [data-hoja], .map-cover-overlay.items-end'
 // (V2) HOY ya no esquiva: los flotantes se quedan quietos y HOY deja espacio libre al final para que con el scroll nada quede tapado.
 const BOTONES_A_ESQUIVAR = '[data-evitar-flotantes]'
-/** Lo que sube el lápiz sobre el botón de los logros (58 px de botón + 12 de aire). */
-export const SOBRE_LOS_LOGROS = 70
-const LADO = 58
+/** (V5, 4c) El botón de los logros y la cámara miden lo mismo (52 px): lo que sube el de encima es 52 de botón + 12 de aire. */
+export const LADO_DE_LOS_FLOTANTES = 52
+export const SOBRE_LOS_LOGROS = 64
+const LADO = 52
 /** (10S5) Lo que mide el lápiz y el aire que se deja entre el último contenido y los botones flotantes. */
 export const LADO_DEL_LAPIZ = 56
 export const AIRE_BAJO_LOS_BOTONES = 16

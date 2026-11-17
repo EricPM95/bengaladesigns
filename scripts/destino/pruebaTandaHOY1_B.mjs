@@ -139,7 +139,7 @@ if (PARTE === 'todas' || PARTE === '1') {
   const rutas = f('server/logros/rutas.js')
 
   // Los textos de Design (Hoy Estados y Companero), tal cual.
-  for (const t of ['Tu cámara de viaje', 'Guarda tus recuerdos del viaje. Y si estás en un lugar especial, aunque no esté en tu ruta, haz tu foto: puede que te espere una recompensa.', 'Abrir cámara', 'Solo disponible con el', 'Ver el pase', 'Podrás usarla durante tu viaje', 'Entendido', '¡Eh! Aquí hay', 'Tu foto ha desbloqueado un logro de este sitio.', 'Descubrirlo', 'Guardada en los recuerdos de hoy', 'La comprobamos cuando vuelvas a tener conexión']) debe(cam.includes(t), `CamaraViaje.tsx: falta el texto de Design «${t}»`)
+  for (const t of ['Tu cámara de viaje', 'Las fotos que hagas con ella se guardan en el álbum de tu viaje, día a día, para que tengas todos tus recuerdos juntos.', 'Una foto por cada lugar.', 'Abrir cámara', 'fotos sin límite', 'Podrás usarla durante tu viaje', 'Entendido', '¡Eh! Aquí hay', 'Tu foto ha desbloqueado un logro de este sitio.', 'Descubrirlo', 'Guardada en los recuerdos de hoy', 'La comprobamos cuando vuelvas a tener conexión']) debe(cam.includes(t), `CamaraViaje.tsx: falta el texto de Design «${t}»`)
   for (const t of ['CERCA DE TI', 'Baños', 'Fuentes', 'Comer', 'Gasolineras', 'Aparcar', 'Baños cerca', 'Gasolineras cerca', 'a pie', 'en coche', 'Maps']) debe(cerca.includes(t), `CercaDeTiFila.tsx: falta el texto de Design «${t}»`)
   for (const t of ['CERCA DE TI', 'Estás junto', 'Estás ${sitio.en_sitio}', 'Haz tu foto para ganar «', '¿Lo añadimos?', 'Añadir a mi ruta', 'Ahora no', 'Hacer la foto', 'También puedes hacerla desde el botón de la cámara.']) debe(fuera.includes(t), `FueraDeRuta.tsx: falta el texto de Design «${t}»`)
   for (const t of ['Algo brilla cerca de aquí…', 'Hay un emblema secreto por esta zona.', 'Más cerca…', 'Sigue por aquí.', '¡Aquí se esconde un Emblema Oculto!', 'Reto del día', 'Hoy puedes completar']) debe(juego.includes(t), `JuegoCerca.tsx: falta el texto de Design «${t}»`)
@@ -159,9 +159,10 @@ if (PARTE === 'todas' || PARTE === '1') {
   debe(cerca.includes('abrirAvisoPase') && /conPase \?/.test(cerca), 'CercaDeTiFila.tsx: sin pase, cada botón lleva su candado y abre el aviso del pase')
 
   // Reglas que no se discuten.
-  debe(vista.includes('BotonCamaraViaje') && !/pagoActivo\(\)\s*&&[^\n]*BotonCamaraViaje/.test(vista), 'HoyView.tsx: la cámara se pinta SIEMPRE (con y sin pase)')
-  debe((vista.match(/\{camara\}/g) ?? []).length >= 3, 'HoyView.tsx: la cámara está en los tres caminos de HOY (sin pase, HOY v2 y el de siempre)')
-  debe(/if \(!p\.conAcceso\) return 'sin_pase'/.test(lib) && /fase === 'during'/.test(lib), 'camaraViaje.ts: sin pase = candado; durante = cámara; antes y después = hoja con las fechas')
+  // (V5, 4b) La cámara ya no la monta HOY: es un flotante de TODAS las pantallas del viaje (RouteScreen › CamaraDeViajeGlobal), con y sin pase.
+  debe(fs.readFileSync('src/components/route/RouteScreen.tsx', 'utf8').includes('CamaraDeViajeGlobal') && !/pagoActivo\(\)\s*&&[^\n]*BotonCamaraViaje/.test(fs.readFileSync('src/components/route/CamaraDeViajeGlobal.tsx', 'utf8')), 'RouteScreen.tsx: la cámara se pinta SIEMPRE (con y sin pase) en todas las pantallas')
+  debe((vista.match(/\{camara\}/g) ?? []).length >= 3, 'HoyView.tsx: HOY conserva su sitio para la cámara en los tres caminos (sin pase, HOY v2 y el de siempre)')
+  debe(!/if \(!p\.conAcceso\) return 'sin_pase'/.test(lib) && /fase === 'during'/.test(lib), 'camaraViaje.ts: ya sin candado (V5): durante = cámara; antes y después = hoja con las fechas')
   debe(lib.includes('marcarCamaraExplicada') && cam.includes('marcarCamaraExplicada()') && /explicada: camaraExplicada\(\)/.test(cam), 'CamaraViaje.tsx: la hoja de explicación solo sale la primera vez')
   debe(!/setStopVisto|addReservation|removeReservation|reservations/.test(sinComentarios(cam + fuera + juego + avisos + cerca)), 'las reservas y los vistos no se tocan desde la cámara, fuera de ruta, el juego ni Cerca de ti')
   debe(/withUndo\(/.test(fuera) && /insertStopAt/.test(fuera) && !/\.setState\(/.test(sinComentarios(fuera)), 'FueraDeRuta.tsx: [Añadir a mi ruta] es lo único que cambia el día, solo al pulsarlo y con [Deshacer] (withUndo)')
@@ -222,6 +223,11 @@ if (PARTE === 'todas' || PARTE === '2') {
   const tocarCamara = async ({ a, ev }) => {
     await clic(ev, '[data-camara-viaje=boton]')
     await a.esp(500)
+    // (V5, 4) Con pase y durante el viaje, el botón ofrece [Hacer foto] / [Subir de la galería]: aquí se elige [Hacer foto].
+    if (await hay(ev, '[data-camara-viaje=elegir]')) {
+      await clic(ev, '[data-camara-viaje=hacer-foto]')
+      await a.esp(400)
+    }
   }
   // Un viaje de Roma y uno de Lanzarote: lo mismo, dos destinos.
   const escenario = async (destino, hoyFecha) => {
@@ -245,7 +251,7 @@ if (PARTE === 'todas' || PARTE === '2') {
     await tocarCamara(e)
     debe(await hay(ev, '[data-camara-viaje=hoja]'), `${destino}: tocar la cámara la primera vez abre la hoja`)
     const hoja = await texto(ev, '[data-camara-viaje=hoja]')
-    debe(/Tu cámara de viaje/.test(hoja) && /Abrir cámara/.test(hoja) && /haz tu foto: puede que te espere una recompensa/.test(hoja), `${destino}: la hoja K1 tiene el título, el texto de Design y [Abrir cámara]`)
+    debe(/Tu cámara de viaje/.test(hoja) && /Abrir cámara/.test(hoja) && /Las fotos que hagas con ella se guardan en el álbum de tu viaje, día a día/.test(hoja), `${destino}: la hoja K1 tiene el título, el texto nuevo (V5) y [Abrir cámara]`)
     debe(!NOMBRES_AJENOS.test(hoja), `${destino}: la hoja de la cámara no lleva nombres del otro destino`)
     await cap(a, `${destino}_k1_hoja`)
     // ── K3: foto sin logro
@@ -263,7 +269,8 @@ if (PARTE === 'todas' || PARTE === '2') {
     debe(!(await hay(ev, '[data-camara-viaje=recuerdo]')), `${destino}: el aviso de «Guardada…» se va solo (a los 8 s)`)
     // La segunda vez, directa a la cámara.
     await tocarCamara(e)
-    debe(!(await hay(ev, '[data-camara-viaje=hoja]')) && (await hay(ev, '[data-visto=camara]')), `${destino}: la segunda vez va derecha a la cámara (la hoja solo sale una vez)`)
+    // (V5, 4) Con pase y durante el viaje, la segunda vez no sale la hoja de explicación: sale el selector [Hacer foto] / [Subir de la galería] (tocarCamara ya elige [Hacer foto]).
+    debe(!(await hay(ev, '[data-camara-viaje=hoja]')) && (await hay(ev, '[data-visto=camara]')), `${destino}: la segunda vez va a la cámara por [Hacer foto] (la hoja solo sale una vez)`)
     // ── K2: foto en un sitio con logro (aunque no esté en tu ruta)
     await ev("window.__hoy1FotoDemo = 'logro'; true")
     await disparar(e)
@@ -442,14 +449,17 @@ if (PARTE === 'todas' || PARTE === '2') {
     const { a, ev } = e
     await irAHoy(e, '2026-11-09')
     debe(await hay(ev, '[data-camara-viaje=boton]'), 'sin pase: la cámara se ve SIEMPRE en HOY (también sin pase)')
-    debe(await hay(ev, '[data-camara-viaje=candado-boton]'), 'sin pase: la cámara lleva su candado')
-    debe((await ev("document.querySelector('[data-camara-viaje=boton]').getAttribute('data-modo')")) === 'sin_pase', 'sin pase: modo sin_pase')
+    // (V5, 4b) Sin pase ya no lleva candado: solo hace fotos (una por parada, sin logros).
+    debe(!(await hay(ev, '[data-camara-viaje=candado-boton]')), 'sin pase: la cámara ya NO lleva candado (V5)')
+    debe((await ev("document.querySelector('[data-camara-viaje=boton]').getAttribute('data-modo')")) === 'primera_vez', 'sin pase: durante el viaje, la primera vez enseña la hoja (modo primera_vez)')
     await cap(a, 'lanzarote_k1b_boton_sin_pase')
     await tocarCamara(e)
     const h = await texto(ev, '[data-camara-viaje=hoja]')
-    debe(/Solo disponible con el\s*Pase Lanzarote/.test(h) && /Ver el pase/.test(h) && !/Abrir cámara/.test(h), 'sin pase: K1b «Solo disponible con el Pase Lanzarote» + [Ver el pase], sin [Abrir cámara]')
+    debe(/Una foto por cada lugar\./.test(h) && /Con el\s+Pase Lanzarote, fotos sin límite/.test(h.replace(/\n/g, ' ')) && /Abrir cámara/.test(h), 'sin pase: la hoja dice «Una foto por cada lugar.» y «Con el Pase Lanzarote, fotos sin límite…» y deja [Abrir cámara]')
     await cap(a, 'lanzarote_k1b_hoja_sin_pase')
-    debe(!(await hay(ev, '[data-visto=camara]')), 'sin pase: la cámara no se abre')
+    await clic(ev, '[data-camara-viaje=abrir]')
+    await a.esp(600)
+    debe(await hay(ev, '[data-visto=camara]'), 'sin pase: la cámara SÍ se abre (solo hace fotos)')
     await a.cerrar()
   }
 
