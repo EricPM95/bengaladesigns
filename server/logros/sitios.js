@@ -28,3 +28,19 @@ export function paisesDelDestino(destino) {
   for (const s of Object.values(destino.sitios ?? {})) if (s.pais) paises.add(s.pais)
   return paises
 }
+
+/**
+ * (V4) Los sitios de logro a los que lleva un id del catálogo: él mismo, o los sitios en que se separó (`sitios_de_parada` de data/logros/<destino>.json:
+ * «Caleta de Famara y Playa de Famara» lleva a la Caleta y a la Playa). Una parada de los días no se separa; sus hechos (un Visto, una foto sin ubicación o lo ganado
+ * antes de la separación) valen para todos sus sitios, con la misma fecha.
+ */
+export function sitiosDeId(destino, id) {
+  const lista = destino?.sitios_de_parada?.[id]
+  return Array.isArray(lista) && lista.length > 0 ? lista : [id]
+}
+
+/** (V4) Los sitios de logro de una parada de un viaje (`contextoDeViaje`): `sitios` si la parada lleva a varios; si no, su `sitio`; si no tiene, ninguno. */
+export function sitiosDeLaParada(p) {
+  if (Array.isArray(p?.sitios) && p.sitios.length > 0) return p.sitios
+  return p?.sitio ? [p.sitio] : []
+}

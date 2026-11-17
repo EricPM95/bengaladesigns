@@ -14,7 +14,8 @@ import { datosDeVuelta } from '../../shared/routeEngine/vueltaDia.js'
 import { GLOBAL, avanceViajero, calcular, clave, diferencia, diasEntre, logroActivo, parteLocal, sumarDias } from './motor.js'
 import { calcularExp, edicionDeAnio, entradaEnEdicion, estadoDelSorteo, expDeMomento, expFinal, invitacionDaExp, resumenDeExp, viajesConHoy } from './exp.js'
 import { coordenadasDeSitio, datosVisiblesPara, nombreDeSitio } from './datos.js'
-import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
+import { dondeEstoy, evaluarFoto, evaluarVisto, metros } from './fotos.js'
+import { sitiosDeId, sitiosDeLaParada } from './sitios.js'
 import { armarMomentos } from './momentos.js'
 import { elegirRetos, queEnsenar, retoDelDia, retosDelDia, sitioDeFotoLibre, sitiosCerca } from './cerca.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
@@ -71,7 +72,12 @@ export function contextoDeViaje({ id, route }, datos, catalogos, { esDuo = false
   const dias = (route.days ?? []).map((dia) => ({
     numero: dia.dayNumber,
     fecha: sumarDias(rango.start, dia.dayNumber - 1),
-    paradas: (dia.stops ?? []).filter(cuentaComoParada).map((s) => ({ stop_id: s.id, sitio: sitioDeParada(s, catalogo), nombre: s.name })),
+    paradas: (dia.stops ?? []).filter(cuentaComoParada).map((s) => {
+      const sitio = sitioDeParada(s, catalogo)
+      // (V4) Una parada que lleva a varios sitios de logro (Caleta y Playa de Famara…) los lleva en `sitios`; `sitio` sigue siendo el id de la parada.
+      const sitios = sitio ? sitiosDeId(destino, sitio) : []
+      return { stop_id: s.id, sitio, ...(sitios.length > 1 ? { sitios } : {}), nombre: s.name }
+    }),
   }))
   return {
     id,
@@ -94,6 +100,22 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const dato = d.sitios[sitio] ?? null
     const coords = coordenadasDeSitio(catalogos, destino, sitio)
     return { coords, radio_m: dato?.radio_m ?? radioSinDatos, dato, nombre: nombreDeSitio(catalogos, destino, sitio) }
+  }
+  /**
+   * (V4) Como `sitioInfo`, pero para una parada que lleva a varios sitios (`sitios_de_parada`): con ubicación, el sitio de los que está más metido (o más cerca de su borde), y `sitioId` dice cuál;
+   * sin ubicación, la parada entera (su nombre y su coordenada, con el radio mayor): vale para todos sus sitios.
+   */
+  const sitioInfoUbic = (destino, sitio, ubicacion, radioSinDatos = 150) => {
+    const base = sitioInfo(destino, sitio, radioSinDatos)
+    const todos = sitiosDeId(datos.destinos[destino], sitio)
+    if (todos.length <= 1) return { ...base, sitioId: sitio }
+    const infos = todos.map((s) => ({ ...sitioInfo(destino, s, radioSinDatos), sitioId: s }))
+    if (!ubicacion || !Number.isFinite(ubicacion.lat) || !Number.isFinite(ubicacion.lng)) return { ...base, radio_m: Math.max(...infos.map((i) => i.radio_m)), sitioId: null }
+    // El más cercano de los que tienen su radio alrededor (como la foto sin parada); si no está en ninguno, el que tiene el borde más cerca.
+    const conCoords = infos.filter((i) => i.coords).map((i) => ({ ...i, m: metros(ubicacion, i.coords) }))
+    const dentro = conCoords.filter((i) => i.m <= i.radio_m)
+    const mejor = (dentro.length > 0 ? dentro.sort((a, b) => a.m - b.m) : conCoords.sort((a, b) => a.m - a.radio_m - (b.m - b.radio_m)))[0]
+    return mejor ? { ...base, coords: mejor.coords, radio_m: mejor.radio_m, sitioId: mejor.sitioId } : { ...base, sitioId: null }
   }
   const hoyEn = (destino) => parteLocal(ahora(), datos.destinos[destino].timezone).fecha
 
@@ -266,8 +288,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const viaje = c.viajes[trip_id]
     if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas', cerca: [] }
     const hoy = hoyEn(viaje.destino)
-    const deLaRuta = (viaje.dias ?? []).filter((d) => d.fecha === hoy).flatMap((d) => d.paradas.map((p) => p.sitio).filter(Boolean))
-    const delMovil = Array.isArray(sitios_hoy) ? sitios_hoy.map((n) => sitioDeParada({ name: String(n) }, catalogos[viaje.destino])).filter(Boolean) : null
+    const deLaRuta = (viaje.dias ?? []).filter((d) => d.fecha === hoy).flatMap((d) => d.paradas.flatMap((p) => sitiosDeLaParada(p)))
+    const delMovil = Array.isArray(sitios_hoy) ? sitios_hoy.map((n) => sitioDeParada({ name: String(n) }, catalogos[viaje.destino])).filter(Boolean).flatMap((s) => sitiosDeId(datos.destinos[viaje.destino], s)) : null
     const sitiosHoy = new Set(delMovil ?? deLaRuta)
     const items = aItems(c.logros)
     const lista = sitiosCerca({ datos, catalogos, destino: viaje.destino, ubicacion, items, sitiosHoy })
@@ -276,7 +298,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     if (Array.isArray(sitios_hoy)) {
       for (const n of sitios_hoy) {
         const s = sitioDeParada({ name: String(n) }, catalogos[viaje.destino])
-        const r = s ? datos.destinos[viaje.destino].sitios?.[s]?.radio_m : null
+        const radiosDe = s ? sitiosDeId(datos.destinos[viaje.destino], s).map((x) => datos.destinos[viaje.destino].sitios?.[x]?.radio_m).filter((x) => Number.isFinite(x) && x > 0) : []
+        const r = radiosDe.length > 0 ? Math.max(...radiosDe) : null // (V4) una parada con varios sitios: el mayor de sus radios
         radios_hoy[String(n)] = Number.isFinite(r) && r > 0 ? r : null
       }
     }
@@ -288,11 +311,12 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     if (!sitio) return { sitio_nombre: null, hay_pedazo: false, hay_emblema: false, foto_dentro: null }
     const d = datos.destinos[viaje.destino]
     const items = aItems(c.logros)
+    const sitios = sitiosDeId(d, sitio) // (V4) una parada con varios sitios: lo que falte en cualquiera
     return {
       sitio_nombre: nombreDeSitio(catalogos, viaje.destino, sitio),
-      hay_pedazo: d.colecciones.some((x) => x.sitios.includes(sitio) && !items.get(clave(viaje.destino, 'pedazo', x.id + ':' + sitio))),
-      hay_emblema: d.emblemas.some((e) => e.sitio === sitio && !items.get(clave(viaje.destino, 'emblema', e.id))),
-      foto_dentro: d.sitios[sitio]?.foto_dentro ?? null,
+      hay_pedazo: sitios.some((s) => d.colecciones.some((x) => x.sitios.includes(s) && !items.get(clave(viaje.destino, 'pedazo', x.id + ':' + s)))),
+      hay_emblema: sitios.some((s) => d.emblemas.some((e) => e.sitio === s && !items.get(clave(viaje.destino, 'emblema', e.id)))),
+      foto_dentro: sitios.map((s) => d.sitios[s]?.foto_dentro).find(Boolean) ?? null,
     }
   }
 
@@ -342,7 +366,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     if (!sitio && !stop_id) return { ok: false, motivo: 'faltan_datos', nuevos: [] }
     const recibido = recibido_en ?? ahora().toISOString()
     const hay = queHayEn(c, viaje, sitio)
-    const info = sitio ? sitioInfo(viaje.destino, sitio) : { coords: null, radio_m: 150, nombre: stop_id }
+    const info = sitio ? sitioInfoUbic(viaje.destino, sitio, ubicacion) : { coords: null, radio_m: 150, nombre: stop_id }
     const e = evaluarVisto({ instante, recibidoEn: recibido, ubicacion, sitio: info, viaje, destino: datos.destinos[viaje.destino], nombreSitio: info.nombre, ajustes: datos.ajustes })
     if (!e.cuenta) return { ok: true, cuenta: false, motivo: e.motivo, mensaje: e.mensaje, ubic: e.ubic, ...hay, nuevos: [] }
     const fecha = parteLocal(instante, datos.destinos[viaje.destino].timezone).fecha
@@ -378,7 +402,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     if (!sitio) return { ok: false, motivo: 'faltan_datos', nuevos: [] }
     const recibido = recibido_en ?? ahora().toISOString()
     // (LG1) La foto usa el radio de cada sitio; sin radio en los datos, 800 m (el Visto y «Ya estás aquí» siguen en 150).
-    const info = sitioInfo(viaje.destino, sitio, 800)
+    const info = sitioInfoUbic(viaje.destino, sitio, ubicacion, 800)
     const e = evaluarFoto({ origen, tomadaEn: tomada_en, conCamara: origen === 'app' ? true : Boolean(con_camara), ubicacion, sitio: info, viaje, destino: datos.destinos[viaje.destino], nombreSitio: info.nombre, recibidoEn: recibido, ajustes: datos.ajustes })
     void de_amigo // (la foto de un amigo del grupo vale igual: no se mira quién la hizo)
     if (!e.valida) return { ok: true, valida: false, motivo: e.motivo, mensaje: e.mensaje, nuevos: [] }
@@ -387,7 +411,9 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const pase = await puedeGanar(userId, c, viaje, fecha)
     if (!pase.puede) return { ok: true, valida: true, cuenta: false, motivo: pase.motivo, nuevos: [] }
     const antes = calcularCon(c)
-    const fila = await repo.insertarHecho({ user_id: userId, trip_id, destino: viaje.destino, tipo: 'foto', sitio, stop_id, instante: e.instante, recibido_en: recibido, ubic: e.ubic, valido: true, origen, foto_id, inicio: viaje.inicio, fin: viaje.fin })
+    // (V4) Una foto con ubicación hecha en una parada que lleva a varios sitios vale para el sitio donde está (la Caleta o la Playa), no para los dos; sin ubicación, para la parada entera.
+    const sitioDeLaFoto = info.sitioId ?? sitio
+    const fila = await repo.insertarHecho({ user_id: userId, trip_id, destino: viaje.destino, tipo: 'foto', sitio: sitioDeLaFoto, stop_id, instante: e.instante, recibido_en: recibido, ubic: e.ubic, valido: true, origen, foto_id, inicio: viaje.inicio, fin: viaje.fin })
     const despues = calcularCon(c, [...c.hechos, fila], await repo.ordenPionero(userId))
     const { nuevos, exp } = await respuestaDeNuevos(userId, antes, despues, c, [...c.hechos, fila])
     return { ok: true, valida: true, cuenta: true, nuevos, exp, id: fila.id }

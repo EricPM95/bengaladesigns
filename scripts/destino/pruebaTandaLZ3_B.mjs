@@ -23,7 +23,8 @@ const json = (f) => JSON.parse(leer(f))
 // ── 0. Lo que se ve en el código y en los datos ───────────────────────────────────────────────────────────────────────────────
 const lz = json('data/logros/lanzarote.json')
 const pipe = json('data/pipeline_v2/lanzarote.json')
-const idsDeSitio = new Set(pipe.places.map((p) => p.id))
+// (V4) Los sitios nuevos que no son paradas (Caleta y Playa de Famara, El Golfo, el Charco, Haría, la Casa-Museo, las bodegas) viven en `sitios_extra` de data/logros/lanzarote.json.
+const idsDeSitio = new Set([...pipe.places.map((p) => p.id), ...Object.keys(JSON.parse(fs.readFileSync('data/logros/lanzarote.json', 'utf8')).sitios_extra ?? {})])
 const tablaTxt = leer('src/components/logros/dibujos/gajosColecciones.ts')
 const tabla = json('docs/dias/_lz3_tabla_gajos.json')
 debe(Object.keys(tabla).filter((k) => !k.startsWith('_')).length === 7, 'la tabla gajo → sitio (docs/dias/_lz3_tabla_gajos.json) no tiene las 7 colecciones')
@@ -34,7 +35,7 @@ debe(Object.keys(tabla).filter((k) => !k.startsWith('_')).length === 7, 'la tabl
   debe(Object.keys(filas).length === 7, 'gajosColecciones.ts no tiene lz1 a lz7')
   const DE = { lz1: 'lz_imprescindibles', lz2: 'cesar_manrique', lz3: 'tierra_de_fuego', lz4: 'isla_a_tus_pies', lz5: 'playas_y_charcos', lz6: 'pueblos_con_alma', lz7: 'entre_vinas_de_ceniza' }
   for (const [k, sitios] of Object.entries(filas)) {
-    for (const s of sitios) debe(idsDeSitio.has(s), `${k}: «${s}» no es un id de data/pipeline_v2/lanzarote.json`)
+    for (const s of sitios) debe(idsDeSitio.has(s), `${k}: «${s}» no es un id de data/pipeline_v2/lanzarote.json ni de sitios_extra`)
     const col = lz.colecciones.find((c) => c.id === DE[k])
     debe(Boolean(col), `${k}: no hay colección «${DE[k]}» en data/logros/lanzarote.json`)
     if (col) debe(JSON.stringify([...new Set(sitios)].sort()) === JSON.stringify([...col.sitios].sort()), `${k}: los sitios de los gajos no son los de «${DE[k]}» en lanzarote.json`)
@@ -84,7 +85,7 @@ try {
   // Las 7 colecciones: 0, 3 gajos y completa.
   const cols = await a.evaluar("Array.from(document.querySelectorAll('[data-lz3=colecciones] [data-gajos]')).map((e) => [Number(e.dataset.gajos), Number(e.dataset.ganados), e.querySelectorAll('img').length])")
   debe(cols.length === 21, `salen ${cols.length} insignias de Lanzarote, no 21`)
-  const N = [7, 7, 7, 6, 7, 4, 3] // (LZ3b) La colección 6 («Pueblos con alma») tiene 4 gajos dibujados y 5 sitios
+  const N = [7, 7, 7, 6, 7, 6, 3] // (V4) «Pueblos con alma» tiene 6 gajos iguales (la col6 nueva de Design) y 6 sitios; «Entre viñas», 3 gajos y 3 sitios
   for (let c = 0; c < 7; c++) {
     const [cero, tres, todas] = cols.slice(c * 3, c * 3 + 3)
     debe(cero && cero[0] === N[c] && cero[1] === 0, `colección ${c + 1}: sin ganar tiene que tener 0 gajos en color`)

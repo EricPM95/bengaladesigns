@@ -11,6 +11,7 @@
 
 import { GLOBAL, clave, parteLocal } from '../motor.js'
 import { estadoDestino } from '../vistas.js'
+import { sitiosDeLaParada } from '../sitios.js'
 
 /** La fecha (AAAA-MM-DD) de un instante, en la hora del sitio; si no hay hora de sitio, la del instante. */
 const fechaDe = (en, tz) => (en ? (tz ? (parteLocal(en, tz)?.fecha ?? String(en).slice(0, 10)) : String(en).slice(0, 10)) : null)
@@ -106,7 +107,7 @@ export function coleccionPorDentro({ datos, destino, coleccion, items, viaje = n
   const tz = d.timezone
   const v = viajeValido(viaje, destino)
   const diaDe = (sitio) => {
-    for (const dia of v?.dias ?? []) if ((dia.paradas ?? []).some((p) => p.sitio === sitio)) return { numero: dia.numero ?? null, fecha: dia.fecha ?? null }
+    for (const dia of v?.dias ?? []) if ((dia.paradas ?? []).some((p) => sitiosDeLaParada(p).includes(sitio))) return { numero: dia.numero ?? null, fecha: dia.fecha ?? null }
     return null
   }
   const sitios = c.sitios.map((s) => {

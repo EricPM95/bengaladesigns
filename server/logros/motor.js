@@ -14,7 +14,7 @@
  * No tiene nada que ver con el motor de rutas.
  */
 
-import { datosDeSitio } from './sitios.js'
+import { datosDeSitio, sitiosDeId } from './sitios.js'
 import { sunsetMinutesOn } from '../../shared/routeEngine/sunset.js'
 
 /* ------------------------------------------------------------------ */
@@ -97,7 +97,7 @@ export function momentoDeLaHora(loc, ajustes) {
 export function momentosDeLaFoto(h, d, ajustes) {
   const salida = []
   const cfg = d.momentos ?? {}
-  const vale = (m) => (m.sitios === 'todos' ? true : Array.isArray(m.sitios) && m.sitios.includes(h.sitio))
+  const vale = (m) => (m.sitios === 'todos' ? true : Array.isArray(m.sitios) && sitiosDeId(d, h.sitio).some((s) => m.sitios.includes(s)))
   if (cfg.madrugador && vale(cfg.madrugador) && h.loc.minutos < aMinutos(ajustes.madrugador_antes_de)) salida.push('madrugador')
   const a = cfg.atardecer_atlantico
   if (a && vale(a)) {
@@ -209,8 +209,11 @@ export function calcular(e) {
     const fotoPorSitio = new Map() // sitio → primera foto válida
     for (const h of hs) {
       if (!h.sitio) continue
-      if (h.evPieza && !primerPorSitio.has(h.sitio)) primerPorSitio.set(h.sitio, h)
-      if (h.tipo === 'foto' && !fotoPorSitio.has(h.sitio)) fotoPorSitio.set(h.sitio, h)
+      // (V4) Un hecho con el id de una parada que lleva a varios sitios vale para todos ellos.
+      for (const s of sitiosDeId(d, h.sitio)) {
+        if (h.evPieza && !primerPorSitio.has(s)) primerPorSitio.set(s, h)
+        if (h.tipo === 'foto' && !fotoPorSitio.has(s)) fotoPorSitio.set(s, h)
+      }
     }
     const completas = []
     for (const c of d.colecciones) {
@@ -259,7 +262,7 @@ export function calcular(e) {
     for (const h of hs) {
       if (h.tipo !== 'foto') continue
       // (LZ3) Un destino con `momentos` en su JSON (Lanzarote) dice qué momentos hay y dónde; sin él (Roma) sigue la regla de siempre.
-      const ganados = d.momentos ? momentosDeLaFoto(h, d, ajustes) : imprescindibles.has(h.sitio) ? [momentoDeLaHora(h.loc, ajustes)].filter(Boolean) : []
+      const ganados = d.momentos ? momentosDeLaFoto(h, d, ajustes) : sitiosDeId(d, h.sitio).some((s) => imprescindibles.has(s)) ? [momentoDeLaHora(h.loc, ajustes)].filter(Boolean) : []
       for (const m of ganados) {
         // El id del emblema de un momento: el de su ficha (Lanzarote: `lz_madrugador`); en Roma es el mismo nombre del momento.
         dar(clavDestino, 'emblema', d.emblemas.find((x) => x.tipo === 'momento' && x.momento === m)?.id ?? m, h.trip_id, h.instante)
@@ -359,7 +362,7 @@ function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoD
     const info = viajes[v.trip_id]
     if (!info?.dias) continue
     const hs = hechosPorViaje.get(v.trip_id) ?? []
-    const vistas = (p) => hs.filter((h) => (p.stop_id && h.stop_id === p.stop_id) || (p.sitio && h.sitio === p.sitio))
+    const vistas = (p) => hs.filter((h) => (p.stop_id && h.stop_id === p.stop_id) || (p.sitio && h.sitio === p.sitio) || (h.sitio && p.sitios?.includes(h.sitio)))
     const perfectosDelViaje = []
     for (const dia of info.dias) {
       if (!dia.paradas?.length) continue
@@ -599,9 +602,9 @@ function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoD
           if (!primero) continue
           const sello = d.sellos.find((s) => s.id === d.sello_principal)
           const col = d.colecciones.find((c) => c.id === sello.coleccion)
-          const delPrimero = cuentan.filter((h) => h.destino === clavDestino && h.trip_id === primero.trip_id && h.evPieza && col.sitios.includes(h.sitio))
+          const delPrimero = cuentan.filter((h) => h.destino === clavDestino && h.trip_id === primero.trip_id && h.evPieza && sitiosDeId(d, h.sitio).some((s) => col.sitios.includes(s)))
           const sitios = new Map()
-          for (const h of delPrimero) if (!sitios.has(h.sitio)) sitios.set(h.sitio, h)
+          for (const h of delPrimero) for (const s of sitiosDeId(d, h.sitio)) if (col.sitios.includes(s) && !sitios.has(s)) sitios.set(s, h)
           const ultimo = sello.grados[sello.grados.length - 1]
           if (sitios.size >= ultimo.desde) {
             const t = [...sitios.values()].sort((a, b) => new Date(a.instante) - new Date(b.instante))[ultimo.desde - 1]

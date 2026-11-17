@@ -1,19 +1,19 @@
 {
- "_nota": "LZ3 · tabla gajo -> sitio de las 7 colecciones de Lanzarote (el gajo 0 empieza arriba y se cuenta en sentido horario; en la 7, a -150 grados). Fuente de verdad en codigo: src/components/logros/dibujos/gajosColecciones.ts. Ids de sitio = data/pipeline_v2/lanzarote.json (los de las 3 bodegas son provisionales). LZ3b (4-nov): col1 con la imagen nueva (cada gajo dibuja su sitio) y col6 con 4 trozos desiguales.",
+ "_nota": "LZ3 · tabla gajo -> sitio de las 7 colecciones de Lanzarote (el gajo 0 empieza arriba y se cuenta en sentido horario; en la 7, a -150 grados). Fuente de verdad en codigo: src/components/logros/dibujos/gajosColecciones.ts. Ids de sitio = data/pipeline_v2/lanzarote.json (los de las 3 bodegas son provisionales). LZ3b (4-nov): col1 con la imagen nueva (cada gajo dibuja su sitio) y col6 con 4 trozos desiguales. V4 (17-nov): los «dos en uno» se separan (Caleta/Playa de Famara, El Golfo/Charco de los Clicos, Haría/Casa-Museo), Pueblos con alma pasa a 6 gajos iguales (col6 nueva de Design, 726×812) y Entre viñas a 3 sitios (las dos bodegas).",
  "lz1_imprescindibles": [
   "0 volcan -> montanas_del_fuego (Timanfaya)",
   "1 cangrejo -> jameos_del_agua",
   "2 entrada de cueva -> cueva_de_los_verdes",
   "3 prismaticos -> mirador_del_rio",
   "4 burbujas -> fundacion_cesar_manrique",
-  "5 laguna verde -> el_golfo_y_el_charco_de_los_clicos",
+  "5 laguna verde -> charco_de_los_clicos",
   "6 uvas -> la_geria_y_sus_bodegas"
  ],
  "lz2_manrique": [
   "0 sol rojo -> mirador_del_rio",
   "1 cactus -> jardin_de_cactus",
   "2 lava y cumbre -> casa_museo_del_campesino",
-  "3 casa blanca -> haria_y_la_casa_museo_cesar_manrique",
+  "3 casa blanca -> casa_museo_cesar_manrique",
   "4 lava agrietada -> fundacion_cesar_manrique",
   "5 agua azul -> jameos_del_agua",
   "6 arco blanco -> castillo_de_san_jose"
@@ -37,24 +37,25 @@
  ],
  "lz5_playas_y_charcos": [
   "0 concha -> playas_de_papagayo",
-  "1 ola grande -> caleta_de_famara_y_playa_de_famara",
+  "1 ola grande -> playa_de_famara",
   "2 coral -> punta_mujeres_y_arrieta",
   "3 ola pequena -> caleton_blanco",
   "4 ola rompiendo -> playa_de_la_garita",
   "5 ola -> playa_de_montana_bermeja",
-  "6 espiral de ola -> el_golfo_y_el_charco_de_los_clicos"
+  "6 espiral de ola -> charco_de_los_clicos"
  ],
  "lz6_pueblos_con_alma": [
-  "LZ3b: la imagen de Design trae 4 trozos y la coleccion 5 sitios (se pide a Design el quinto). Cortes: -90, 14, 90 y 172 grados.",
+  "V4: la imagen de Design trae 6 trozos iguales (726×812, centro 363,382, desde las 12 en sentido horario).",
   "0 campanario -> teguise",
-  "1 puerta verde -> arrecife_charco_de_san_gines_y_el_paseo",
-  "2 piedra negra -> el_golfo_y_el_charco_de_los_clicos",
-  "3 casas y palmera -> haria_y_la_casa_museo_cesar_manrique",
-  "(sin gajo) -> caleta_de_famara_y_playa_de_famara"
+  "1 ventana con contraventanas verdes y buganvilla (la pieza nueva) -> puerto_del_carmen_puerto_viejo",
+  "2 puerta verde -> arrecife_charco_de_san_gines_y_el_paseo",
+  "3 piedra negra -> el_golfo_pueblo",
+  "4 palmera -> haria_pueblo",
+  "5 casas blancas -> caleta_de_famara"
  ],
  "lz7_vinas_de_ceniza": [
   "0 volcan -> la_geria_y_sus_bodegas",
-  "1 muro de piedra -> la_geria_y_sus_bodegas",
-  "2 vinas -> la_geria_y_sus_bodegas"
+  "1 muro de piedra -> bodega_la_geria",
+  "2 vinas -> bodega_el_grifo"
  ]
 }

@@ -82,6 +82,15 @@ export function validarDatos(datos, catalogos) {
     for (const c of d.colecciones) for (const s of c.sitios) usados.add(s)
     for (const e of d.emblemas) if (e.sitio) usados.add(e.sitio)
     for (const id of Object.keys(d.sitios)) usados.add(id)
+    // (V4) Las paradas que llevan a varios sitios: la parada es del catálogo y cada sitio tiene sus datos (radio, país…).
+    for (const [parada, lista] of Object.entries(d.sitios_de_parada ?? {})) {
+      usados.add(parada)
+      for (const s of lista) {
+        usados.add(s)
+        if (!d.sitios[s]) error(`${clave}/${parada}`, `La parada lleva al sitio ${s}, que no tiene sus datos (radio, país…).`)
+      }
+    }
+    for (const [id, s] of Object.entries(d.sitios)) for (const otro of s.aparta_de ?? []) if (!d.sitios[otro]) error(`${clave}/${id}`, `Aparta de ${otro}, que no es un sitio con datos.`)
     for (const m of Object.values(d.momentos ?? {})) for (const id of Array.isArray(m.sitios) ? m.sitios : []) usados.add(id)
     for (const p of Object.values(d.patrimonios ?? {})) for (const id of [...(p.sitios ?? []), ...(p.por_comprobar ?? [])]) usados.add(id)
     for (const v of Object.values(d.excepciones_pais ?? {})) for (const id of v.sitios ?? []) usados.add(id)

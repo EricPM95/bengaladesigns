@@ -27,11 +27,11 @@ const paquete = JSON.parse(leer('docs/dias/_fotos_eric.json'))
 const datos = JSON.parse(leer('data/pipeline_v2/lanzarote.json'))
 const ruta = JSON.parse(leer('docs/dias/_hoy3_ruta_eric.json')).route
 
-// ── 1. Las 27 de Eric ──
+// ── 1. Las 28 de Eric (las 27 del paquete y, en la V4, la del Puerto Viejo) ──
 const deEric = tabla.fotos.filter((f) => f.origen === 'Eric')
 const numeradas = paquete.filter((f) => /^\d+$/.test(f.n))
-debe(numeradas.length === 27 && deEric.length === 27, '1a', `27 fotos de Eric en la tabla (hay ${deEric.length}, el paquete trae ${numeradas.length})`)
-debe(new Set(deEric.map((f) => f.archivo)).size === 27, '1b', 'cada una con su archivo, sin repetir')
+debe(numeradas.length === 28 && deEric.length === 28, '1a', `28 fotos de Eric en la tabla (hay ${deEric.length}, el paquete trae ${numeradas.length})`)
+debe(new Set(deEric.map((f) => f.archivo)).size === 28, '1b', 'cada una con su archivo, sin repetir')
 for (const p of numeradas) {
   const f = ownPhotoFile(tabla, p.parada, null)
   debe(f && f.origen === 'Eric', '1c', `«${p.parada}» lleva la foto de Eric (${f?.archivo ?? 'ninguna'})`)

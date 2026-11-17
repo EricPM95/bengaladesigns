@@ -28,20 +28,20 @@ const md5 = (f) => crypto.createHash('md5').update(fs.readFileSync(f)).digest('h
 {
   const t = leer('src/components/logros/dibujos/gajosColecciones.ts')
   const lz1 = /lz1: \{[^\n]*sitios: \[([^\]]*)\]/.exec(t)?.[1].replace(/'/g, '').split(',').map((x) => x.trim())
-  debe(JSON.stringify(lz1) === JSON.stringify(['montanas_del_fuego', 'jameos_del_agua', 'cueva_de_los_verdes', 'mirador_del_rio', 'fundacion_cesar_manrique', 'el_golfo_y_el_charco_de_los_clicos', 'la_geria_y_sus_bodegas']), `col1: cada gajo con su sitio (volcán = Timanfaya, cangrejo = Jameos, cueva = Cueva de los Verdes, prismáticos = Mirador del Río, burbujas = Fundación, laguna verde = El Golfo, uvas = La Geria): ${JSON.stringify(lz1)}`)
+  debe(JSON.stringify(lz1) === JSON.stringify(['montanas_del_fuego', 'jameos_del_agua', 'cueva_de_los_verdes', 'mirador_del_rio', 'fundacion_cesar_manrique', 'charco_de_los_clicos', 'la_geria_y_sus_bodegas']), `col1: cada gajo con su sitio (volcán = Timanfaya, cangrejo = Jameos, cueva = Cueva de los Verdes, prismáticos = Mirador del Río, burbujas = Fundación, laguna verde = El Golfo, uvas = La Geria): ${JSON.stringify(lz1)}`)
   debe(fs.statSync('public/logros/lanza/col1.webp').size > 5000, 'public/logros/lanza/col1.webp falta o está vacía')
   const tabla = json('docs/dias/_lz3_tabla_gajos.json')
   debe(tabla.lz1_imprescindibles[0].includes('volcan') && tabla.lz1_imprescindibles[1].includes('cangrejo') && tabla.lz1_imprescindibles[6].includes('uvas'), 'la tabla gajo → sitio de col1 no está al día')
-  debe(/lz6: \{[^\n]*n: 4,[^\n]*cortes: \[-90, 14, 90, 172\]/.test(t), 'col6 (Pueblos con alma) tiene que ir con sus 4 trozos desiguales')
-  debe(/teguise/.test(/lz6: \{[^\n]*\}/.exec(t)?.[0] ?? '') && /haria_y_la_casa_museo_cesar_manrique/.test(t), 'col6: campanario = Teguise y palmera = Haría')
+  debe(/lz6: \{[^\n]*n: 6,/.test(t) && !/lz6: \{[^\n]*cortes:/.test(t), 'col6 (Pueblos con alma) tiene que ir con sus 6 trozos iguales (V4: la imagen nueva de Design)')
+  debe(/teguise/.test(/lz6: \{[^\n]*\}/.exec(t)?.[0] ?? '') && /haria_pueblo/.test(t), 'col6: campanario = Teguise y palmera = Haría (V4: el pueblo)')
   // Las 7 imágenes: tamaño del dibujo y gajos (la cuenta de trozos de cada imagen la mira una persona; se deja escrita aquí).
-  const TROZOS = { 1: 7, 2: 7, 3: 7, 4: 6, 5: 7, 6: 4, 7: 3 }
-  const SITIOS = { 1: 7, 2: 7, 3: 7, 4: 6, 5: 7, 6: 5, 7: 1 }
+  const TROZOS = { 1: 7, 2: 7, 3: 7, 4: 6, 5: 7, 6: 6, 7: 3 } // (V4) la col6 son 6 trozos iguales y la col7 tiene 3 sitios
+  const SITIOS = { 1: 7, 2: 7, 3: 7, 4: 6, 5: 7, 6: 6, 7: 3 }
   const sin = Object.keys(TROZOS).filter((n) => TROZOS[n] !== SITIOS[n]).map(Number)
-  debe(JSON.stringify(sin) === JSON.stringify([6, 7]), `solo la 6 (4 trozos y 5 sitios) y la 7 (3 trozos y 1 sitio) no cuadran (${sin})`)
+  debe(sin.length === 0, `en la V4 las 7 colecciones cuadran: tantos trozos como sitios (${sin})`)
   const lanz = json('data/logros/lanzarote.json')
   const col = (id) => lanz.colecciones.find((c) => c.id === id)
-  debe(col('pueblos_con_alma').sitios.length === 5 && col('lz_imprescindibles').sitios.length === 7, 'los sitios de las colecciones han cambiado: pueblos 5 e imprescindibles 7')
+  debe(col('pueblos_con_alma').sitios.length === 6 && col('lz_imprescindibles').sitios.length === 7 && col('entre_vinas_de_ceniza').sitios.length === 3, 'los sitios de las colecciones han cambiado: pueblos 6, entre viñas 3 e imprescindibles 7')
 }
 
 // ── 3. «Abrir en Maps» por el nombre y el pueblo ──

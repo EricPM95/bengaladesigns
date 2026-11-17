@@ -51,7 +51,7 @@ debe(Boolean(L), 'datos', 'Lanzarote tiene logros (DESTINOS_CON_LOGROS)')
 }
 {
   debe(L.colecciones.length === 7, 'colecciones', `7 colecciones (hay ${L.colecciones.length})`)
-  const esperadas = { lz_imprescindibles: 7, cesar_manrique: 7, tierra_de_fuego: 7, isla_a_tus_pies: 6, playas_y_charcos: 7, pueblos_con_alma: 5, entre_vinas_de_ceniza: 1 }
+  const esperadas = { lz_imprescindibles: 7, cesar_manrique: 7, tierra_de_fuego: 7, isla_a_tus_pies: 6, playas_y_charcos: 7, pueblos_con_alma: 6, entre_vinas_de_ceniza: 3 }; // (V4) Pueblos con alma 6 (Puerto del Carmen) y Entre viñas 3 (las dos bodegas)
   for (const [id, n] of Object.entries(esperadas)) debe(L.colecciones.find((c) => c.id === id)?.sitios.length === n, 'colecciones', `${id} con ${n} sitios`)
   for (const c of L.colecciones) {
     debe(Boolean(c.nombre && c.al_completar && c.grupo && L.grupos_colecciones[c.grupo]), 'colecciones', `${c.id}: nombre, frase al completar y grupo`)
@@ -138,8 +138,9 @@ const tiene = (items, logro, escalon) => items.has(clave('lanzarote', logro, esc
 }
 {
   // Atardecer atlántico: la hora de la puesta de sol de ese día (sunset.js, hora de Canarias); de 60 min antes a 15 después; solo en la costa oeste.
-  const oeste = ['el_golfo_y_el_charco_de_los_clicos', 'los_hervideros', 'salinas_de_janubio', 'playa_de_montana_bermeja', 'caleta_de_famara_y_playa_de_famara', 'playa_blanca_y_el_faro_de_pechiguera']
-  debe(JSON.stringify(L.momentos.atardecer_atlantico.sitios) === JSON.stringify(oeste), 'atardecer', 'los 6 sitios de la costa oeste del documento')
+  // (V4) Los 6 del documento; El Golfo y Famara, que eran «dos en uno», cuentan ahora por sus dos sitios cada uno.
+  const oeste = ['el_golfo_pueblo', 'charco_de_los_clicos', 'los_hervideros', 'salinas_de_janubio', 'playa_de_montana_bermeja', 'caleta_de_famara', 'playa_de_famara', 'playa_blanca_y_el_faro_de_pechiguera']
+  debe(JSON.stringify(L.momentos.atardecer_atlantico.sitios) === JSON.stringify(oeste), 'atardecer', 'los sitios de la costa oeste del documento (6, con El Golfo y Famara en sus dos sitios)')
   const fecha = '2027-03-11'
   const sol = sunsetMinutesOn(fecha, L.momentos.atardecer_atlantico.punto, 'Atlantic/Canary')
   debe(sol > 17 * 60 && sol < 21 * 60, 'atardecer', `la puesta de sol de marzo es plausible (${sol} min)`)

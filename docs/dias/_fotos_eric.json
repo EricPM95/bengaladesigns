@@ -243,6 +243,15 @@
   "derechos": "revisar"
  },
  {
+  "n": "28",
+  "archivo": "28_puerto_del_carmen_puerto_viejo.jpg",
+  "parada": "Puerto del Carmen (Puerto Viejo)",
+  "id_sugerido": "puerto_del_carmen_puerto_viejo",
+  "ancho": 1200,
+  "alto": 800,
+  "derechos": "libre"
+ },
+ {
   "n": "X1",
   "archivo": "X1_mirador_del_rio_atardecer.jpg",
   "parada": "Mirador del Río al atardecer (de reserva)",

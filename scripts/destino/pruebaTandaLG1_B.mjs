@@ -57,7 +57,7 @@ const json = (f) => JSON.parse(leer(f))
   const cerca200 = sitiosCerca({ datos: sinRadio, catalogos, destino: 'roma', ubicacion: aMetros(200), items: new Map(), margenM: 0 }).find((s) => s.sitio === idSin)
   debe(cerca150?.dentro === true && !cerca200?.dentro, 'sin radio, «dentro» tiene que ser 150 m')
   const servicio = leer('server/logros/servicio.js')
-  debe(/radios_hoy/.test(servicio) && /sitioInfo\(viaje\.destino, sitio, 800\)/.test(servicio), 'servicio.js no manda radios_hoy ni usa 800 m para la foto')
+  debe(/radios_hoy/.test(servicio) && /sitioInfoUbic\(viaje\.destino, sitio, ubicacion, 800\)/.test(servicio), 'servicio.js no manda radios_hoy ni usa 800 m para la foto')
 }
 
 // ── 1. En pantalla ────────────────────────────────────────────────────────────────────────────────────────────────────────────

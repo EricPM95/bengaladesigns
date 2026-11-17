@@ -69,10 +69,6 @@
     {
       "lugar": "Mirador del Bosquecillo (Risco de Famara)",
       "motivo": "En Commons no hay una foto con ese nombre y licencia libre; no se pone una de «Risco de Famara» a ojo."
-    },
-    {
-      "lugar": "Puerto del Carmen (Puerto Viejo)",
-      "motivo": "La de Commons es un aloe en una maceta, no el Puerto Viejo: sin foto antes que una equivocada."
     }
   ],
   "fotos_rechazadas": [],
@@ -156,7 +152,9 @@
     {
       "archivo": "el_golfo_y_el_charco_de_los_clicos.jpg",
       "lugares": [
-        "El Golfo y el Charco de los Clicos"
+        "El Golfo y el Charco de los Clicos",
+        "El Golfo",
+        "Charco de los Clicos"
       ],
       "place_id": "el_golfo_y_el_charco_de_los_clicos",
       "cuando": "dia",
@@ -204,7 +202,8 @@
     {
       "archivo": "haria_y_el_valle_de_las_mil_palmeras.jpg",
       "lugares": [
-        "Haría y el Valle de las Mil Palmeras"
+        "Haría y el Valle de las Mil Palmeras",
+        "Haría"
       ],
       "place_id": "haria_y_el_valle_de_las_mil_palmeras",
       "cuando": "dia",
@@ -217,7 +216,8 @@
       "archivo": "casa_museo_cesar_manrique_haria.jpg",
       "lugares": [
         "Casa-Museo César Manrique (Haría)",
-        "Haría y la Casa-Museo César Manrique"
+        "Haría y la Casa-Museo César Manrique",
+        "Casa-Museo César Manrique"
       ],
       "place_id": "casa_museo_cesar_manrique_haria",
       "cuando": "dia",
@@ -404,7 +404,9 @@
     {
       "archivo": "caleta_de_famara_y_playa_de_famara.jpg",
       "lugares": [
-        "Caleta de Famara y Playa de Famara"
+        "Caleta de Famara y Playa de Famara",
+        "Caleta de Famara",
+        "Playa de Famara"
       ],
       "place_id": "caleta_de_famara_y_playa_de_famara",
       "cuando": "dia",
@@ -560,6 +562,19 @@
         "licencia": "CC BY-SA 3.0",
         "enlace": "https://commons.wikimedia.org/wiki/File:Tuff_ring_Caldera_Blanca_on_Lanzarote,_June_2013_(1).jpg"
       }
+    },
+    {
+      "archivo": "puerto_del_carmen_puerto_viejo.jpg",
+      "lugares": [
+        "Puerto del Carmen (Puerto Viejo)"
+      ],
+      "place_id": "puerto_del_carmen_puerto_viejo",
+      "cuando": "dia",
+      "ancho": 1200,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "libre",
+      "nota": "El paseo marítimo del Puerto Viejo (V4, 17-nov): foto propia de Eric, sin problema de derechos."
     }
   ],
   "huecos": [

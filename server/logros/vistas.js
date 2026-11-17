@@ -4,7 +4,7 @@
  */
 
 import { GLOBAL, categoriaDe, clave, diasEntre, parteLocal, sumarDias } from './motor.js'
-import { paisesDelDestino } from './sitios.js'
+import { paisesDelDestino, sitiosDeLaParada } from './sitios.js'
 
 const rellenar = (texto, valores) => String(texto).replace(/\{(\w+)\}/g, (_, k) => (valores[k] ?? `{${k}}`))
 const porEn = (a, b) => new Date(a.en) - new Date(b.en)
@@ -124,7 +124,7 @@ export function logrosYVisibilidad(datos, ahora = new Date()) {
 
 /** Los sitios que tiene el viaje en sus días (sin «Si te sobra tiempo» ni «Cerrado este día»: ya vienen sin ellos en `viaje.dias[].paradas`). */
 export function sitiosDeLaRuta(viaje) {
-  return new Set((viaje?.dias ?? []).flatMap((d) => (d.paradas ?? []).map((p) => p.sitio).filter(Boolean)))
+  return new Set((viaje?.dias ?? []).flatMap((d) => (d.paradas ?? []).flatMap((p) => sitiosDeLaParada(p))))
 }
 
 export function estadoDestino({ datos, destino, items, viaje = null, hoy = null }) {
@@ -231,10 +231,13 @@ export function pendientes({ datos, destino, viaje, items, hoy }) {
     for (const dia of viaje.dias ?? []) {
       if (dia.fecha >= hoy && !acabado) continue // el día de hoy y los que vienen no son «de ayer»
       for (const p of dia.paradas ?? []) {
-        if (!p.sitio || !d.sitios[p.sitio]) continue
-        const faltaPedazo = d.colecciones.some((c) => c.sitios.includes(p.sitio) && !items.get(clave(destino, 'pedazo', `${c.id}:${p.sitio}`)))
-        const faltaEmblema = d.emblemas.some((e) => e.sitio === p.sitio && !items.get(clave(destino, 'emblema', e.id)))
-        if (faltaPedazo || faltaEmblema) lista.push({ fecha: dia.fecha, dia: dia.numero ?? null, sitio: p.sitio, stop_id: p.stop_id ?? null, nombre: p.nombre ?? null, foto_dentro: d.sitios[p.sitio].foto_dentro ?? null, falta: [faltaPedazo && 'pedazo', faltaEmblema && 'emblema'].filter(Boolean) })
+        // (V4) Una parada que lleva a varios sitios sale UNA vez, con lo que falte en cualquiera de ellos.
+        const faltan = sitiosDeLaParada(p).filter((s) => d.sitios[s]).map((s) => ({
+          s,
+          faltaPedazo: d.colecciones.some((c) => c.sitios.includes(s) && !items.get(clave(destino, 'pedazo', `${c.id}:${s}`))),
+          faltaEmblema: d.emblemas.some((e) => e.sitio === s && !items.get(clave(destino, 'emblema', e.id))),
+        })).filter((x) => x.faltaPedazo || x.faltaEmblema)
+        if (faltan.length > 0) lista.push({ fecha: dia.fecha, dia: dia.numero ?? null, sitio: faltan[0].s, stop_id: p.stop_id ?? null, nombre: p.nombre ?? null, foto_dentro: d.sitios[faltan[0].s].foto_dentro ?? null, falta: [faltan.some((x) => x.faltaPedazo) && 'pedazo', faltan.some((x) => x.faltaEmblema) && 'emblema'].filter(Boolean) })
       }
     }
   }

@@ -1,0 +1,129 @@
+{
+ "radios": [
+  {
+   "id": "caleta_de_famara",
+   "nombre": "Caleta de Famara",
+   "radio_m": 450,
+   "lat": 29.115758,
+   "lng": -13.563593
+  },
+  {
+   "id": "playa_de_famara",
+   "nombre": "Playa de Famara",
+   "radio_m": 500,
+   "lat": 29.115813,
+   "lng": -13.553589
+  },
+  {
+   "id": "el_golfo_pueblo",
+   "nombre": "El Golfo",
+   "radio_m": 350,
+   "lat": 28.982748,
+   "lng": -13.830632
+  },
+  {
+   "id": "charco_de_los_clicos",
+   "nombre": "Charco de los Clicos",
+   "radio_m": 300,
+   "lat": 28.977147,
+   "lng": -13.827658
+  },
+  {
+   "id": "haria_pueblo",
+   "nombre": "Haría",
+   "radio_m": 300,
+   "lat": 29.1423,
+   "lng": -13.50293
+  },
+  {
+   "id": "casa_museo_cesar_manrique",
+   "nombre": "Casa-Museo César Manrique",
+   "radio_m": 150,
+   "lat": 29.1418,
+   "lng": -13.5037
+  },
+  {
+   "id": "bodega_el_grifo",
+   "nombre": "Bodega El Grifo",
+   "radio_m": 250,
+   "lat": 28.998,
+   "lng": -13.618
+  },
+  {
+   "id": "bodega_la_geria",
+   "nombre": "Bodega La Geria",
+   "radio_m": 250,
+   "lat": 28.968,
+   "lng": -13.703
+  },
+  {
+   "id": "puerto_del_carmen_puerto_viejo",
+   "nombre": "Puerto del Carmen (Puerto Viejo)",
+   "radio_m": 400,
+   "lat": 28.920847,
+   "lng": -13.672629
+  }
+ ],
+ "sin_coleccion": [
+  {
+   "id": "playa_de_mujeres",
+   "nombre": "Playa de Mujeres (Papagayo)",
+   "tipo": "playa"
+  },
+  {
+   "id": "castillo_de_santa_barbara",
+   "nombre": "Castillo de Santa Bárbara (volcán Guanapay)",
+   "tipo": "sitio"
+  },
+  {
+   "id": "mirador_de_los_helechos",
+   "nombre": "Mirador de los Helechos (valle de las Mil Palmeras)",
+   "tipo": "sitio"
+  },
+  {
+   "id": "playa_del_reducto",
+   "nombre": "Playa del Reducto (Arrecife)",
+   "tipo": "playa"
+  },
+  {
+   "id": "lagomar",
+   "nombre": "LagOmar (Nazaret)",
+   "tipo": "sitio"
+  },
+  {
+   "id": "playa_blanca_y_el_faro_de_pechiguera",
+   "nombre": "Playa Blanca (paseo marítimo)",
+   "tipo": "pueblo"
+  },
+  {
+   "id": "faro_de_pechiguera",
+   "nombre": "Faro de Pechiguera",
+   "tipo": "sitio"
+  },
+  {
+   "id": "marina_rubicon",
+   "nombre": "Marina Rubicón (comida y cena)",
+   "tipo": "pueblo"
+  },
+  {
+   "id": "mancha_blanca",
+   "nombre": "Mancha Blanca (iglesia de Los Dolores: salida de Caldera Blanca y guagua del Volcán del Cuervo)",
+   "tipo": "pueblo"
+  },
+  {
+   "id": "orzola_puerto_de_la_graciosa",
+   "nombre": "Órzola (puerto del ferry a La Graciosa)",
+   "tipo": "puerto"
+  },
+  {
+   "id": "puerto_de_playa_blanca",
+   "nombre": "Puerto de Playa Blanca (ferry a Corralejo)",
+   "tipo": "puerto"
+  },
+  {
+   "id": "aeropuerto_ace",
+   "nombre": "Aeropuerto de Lanzarote (ACE, T1)",
+   "tipo": "aeropuerto"
+  }
+ ]
+}

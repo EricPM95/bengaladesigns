@@ -14,6 +14,7 @@ import { conArticulo } from './articulos.js'
 import { coordenadasDeSitio, nombreDeSitio } from './datos.js'
 import { metros } from './fotos.js'
 import { clave, parteLocal } from './motor.js'
+import { sitiosDeLaParada } from './sitios.js'
 
 /** Distancias del juego, contadas desde el borde del radio del sitio. */
 export const METROS_BRILLA = 500
@@ -103,7 +104,11 @@ export function sitiosCerca({ datos, catalogos, destino, ubicacion, items, sitio
  * null si no está en ninguno (la foto solo es un recuerdo).
  */
 export function sitioDeFotoLibre({ datos, catalogos, destino, ubicacion, items }) {
-  const dentro = sitiosCerca({ datos, catalogos, destino, ubicacion, items, margenM: 0, sinTope: true, radioSinDatos: RADIO_SIN_DATOS_FOTO_M }).filter((s) => s.dentro && (s.hay_emblema || s.hay_pedazo))
+  const todos = sitiosCerca({ datos, catalogos, destino, ubicacion, items, margenM: 0, sinTope: true, radioSinDatos: RADIO_SIN_DATOS_FOTO_M }).filter((s) => s.dentro)
+  // (V4) `aparta_de`: dentro de este sitio (una bodega), los sitios que se listan (La Geria, de 3.000 m) no cuentan para una foto libre: una foto en una bodega no da La Geria sin querer.
+  // Se mira con TODOS los sitios en cuyo radio estás, tengan o no algo por ganar (si ya ganaste la bodega, la foto en ella tampoco da La Geria).
+  const apartados = new Set(todos.flatMap((s) => datos.destinos[destino]?.sitios?.[s.sitio]?.aparta_de ?? []))
+  const dentro = todos.filter((s) => !apartados.has(s.sitio) && (s.hay_emblema || s.hay_pedazo))
   if (dentro.length === 0) return null
   dentro.sort((a, b) => Number(b.hay_emblema) - Number(a.hay_emblema) || a.metros - b.metros)
   return dentro[0].sitio
@@ -179,7 +184,7 @@ export function retosDelDia({ datos, catalogos, destino, items, sitiosHoy = new 
   const otroDia = new Map()
   for (const dia of diasRuta) {
     if (!dia || dia.fecha === hoyFecha) continue
-    for (const p of dia.paradas ?? []) if (p.sitio && !otroDia.has(p.sitio)) otroDia.set(p.sitio, dia.fecha ?? null)
+    for (const p of dia.paradas ?? []) for (const s of sitiosDeLaParada(p)) if (!otroDia.has(s)) otroDia.set(s, dia.fecha ?? null)
   }
   const coordsHoy = [...sitiosHoy].map((s) => coordenadasDeSitio(catalogos, destino, s)).filter(Boolean)
   const tope = enCoche ? MIN_CERCA_DE_HOY_EN_COCHE : MIN_CERCA_DE_HOY_A_PIE

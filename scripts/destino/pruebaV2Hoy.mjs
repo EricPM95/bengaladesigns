@@ -305,13 +305,17 @@ console.log('4. V2b')
       // La línea de los pedazos en la primera parada (la que sale en «Ya estás aquí»).
       const primera = nombres[0]
       const idPrimera = sitioDeParada({ name: primera }, catalogos[destino])
-      const esperados = idPrimera ? datos.destinos[destino].colecciones.filter((c) => c.sitios.includes(idPrimera)).map((c) => c.nombre) : []
-      await app.evaluar(`window.__pedazosDemo = { ${JSON.stringify(primera)}: ${JSON.stringify(esperados)} }; true`)
+      void idPrimera
+      // (V4) La parada que sale en «Ya estás aquí» no es siempre la primera de la lista: a ciertas horas del día real el primer sitio ya ha cerrado y pasa solo a «Lugares pendientes». Se pone lo que diría el servidor para TODAS las paradas de hoy y se mira la que sale en pantalla.
+      const colDe = (n) => { const id = sitioDeParada({ name: n }, catalogos[destino]); return id ? datos.destinos[destino].colecciones.filter((c) => c.sitios.includes(id)).map((c) => c.nombre) : [] }
+      await app.evaluar(`window.__pedazosDemo = ${JSON.stringify(Object.fromEntries(nombres.map((n) => [n, colDe(n)])))}; true`)
       await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = 0; document.querySelector('[data-hoy-ya-he-llegado]')?.click(); return true })()")
       await app.esp(2200)
       const aqui = await pantallaV2b(app)
-      if (esperados.length > 0) debe(aqui.includes(textoDePedazosDe(esperados)), 'pedazos', `${etq}: «${primera}» dice «${textoDePedazosDe(esperados)}»`)
-      else debe(!/Aquí ganas/.test(aqui), 'pedazos', `${etq}: «${primera}» no está en ninguna colección: sin línea de pedazos`)
+      const actual = (/YA ESTÁS AQUÍ\s*\n([^\n]+)/.exec(aqui)?.[1] ?? primera).trim()
+      const esperados = colDe(actual)
+      if (esperados.length > 0) debe(aqui.includes(textoDePedazosDe(esperados)), 'pedazos', `${etq}: «${actual}» dice «${textoDePedazosDe(esperados)}»`)
+      else debe(!/Aquí ganas/.test(aqui), 'pedazos', `${etq}: «${actual}» no está en ninguna colección: sin línea de pedazos`)
       debe(!/emblema/i.test(await app.evaluar("document.querySelector('[data-hoy-pedazos]')?.innerText ?? ''")), 'pedazos', `${etq}: la línea de pedazos nunca nombra emblemas ocultos`)
       if (destino === 'roma') await app.captura(`${CAPTURAS}/roma_aqui_pedazos.jpg`)
       // «Tus fotos de hoy»: sin fotos, no sale.

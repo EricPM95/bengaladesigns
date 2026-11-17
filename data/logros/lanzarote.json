@@ -22,6 +22,70 @@
       ],
       "coordinates_fuente": "Aproximada (Caleta de Sebo): por comprobar con Mapbox/Google Maps",
       "nota": "No es parada de la ruta ni está en lugares_solo_lista: solo existe para ganar su emblema (foto con ubicación en la isla)."
+    },
+    "caleta_de_famara": {
+      "name": "Caleta de Famara",
+      "coordinates": [
+        29.115758,
+        -13.563593
+      ],
+      "coordinates_fuente": "La del pueblo en data/pipeline_v2/lanzarote.json (DATOS_NATURALEZA_PUEBLOS_COCHE.md); Mapbox pone el pueblo a 230 m al noroeste."
+    },
+    "playa_de_famara": {
+      "name": "Playa de Famara",
+      "coordinates": [
+        29.115813,
+        -13.553589
+      ],
+      "coordinates_fuente": "La playa, según el mismo documento (a unos 1.000 m al este del pueblo). La playa mide unos 5 km: este es el punto de acceso."
+    },
+    "el_golfo_pueblo": {
+      "name": "El Golfo",
+      "coordinates": [
+        28.982748,
+        -13.830632
+      ],
+      "coordinates_fuente": "Mapbox (localidad El Golfo, 4-nov-2026 → V4, 17-nov). A unos 750 m del Charco."
+    },
+    "charco_de_los_clicos": {
+      "name": "Charco de los Clicos",
+      "coordinates": [
+        28.977147,
+        -13.827658
+      ],
+      "coordinates_fuente": "La coordenada que ya tenía la parada (mirador del charco); OpenStreetMap pone el Charco a 75 m (28.97647, -13.82785)."
+    },
+    "haria_pueblo": {
+      "name": "Haría",
+      "coordinates": [
+        29.1423,
+        -13.50293
+      ],
+      "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §9 (el pueblo, a unos 100 m de la Casa-Museo)."
+    },
+    "casa_museo_cesar_manrique": {
+      "name": "Casa-Museo César Manrique",
+      "coordinates": [
+        29.1418,
+        -13.5037
+      ],
+      "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §9 (Casa-Museo)."
+    },
+    "bodega_el_grifo": {
+      "name": "Bodega El Grifo",
+      "coordinates": [
+        28.998,
+        -13.618
+      ],
+      "coordinates_fuente": "Aproximada: la de la parada de aparcar de data/dias/lanzarote/_paradas.json (verificar:true). Por comprobar con Google Maps."
+    },
+    "bodega_la_geria": {
+      "name": "Bodega La Geria",
+      "coordinates": [
+        28.968,
+        -13.703
+      ],
+      "coordinates_fuente": "Aproximada: la de la parada de aparcar de data/dias/lanzarote/_paradas.json (verificar:true). Por comprobar con Google Maps."
     }
   },
   "momentos": {
@@ -31,11 +95,13 @@
     },
     "atardecer_atlantico": {
       "sitios": [
-        "el_golfo_y_el_charco_de_los_clicos",
+        "el_golfo_pueblo",
+        "charco_de_los_clicos",
         "los_hervideros",
         "salinas_de_janubio",
         "playa_de_montana_bermeja",
-        "caleta_de_famara_y_playa_de_famara",
+        "caleta_de_famara",
+        "playa_de_famara",
         "playa_blanca_y_el_faro_de_pechiguera"
       ],
       "punto": [
@@ -83,13 +149,6 @@
       "motivo_radio": "Casa de Manrique y su jardín de lava.",
       "foto_dentro": null
     },
-    "el_golfo_y_el_charco_de_los_clicos": {
-      "pais": "España",
-      "capital": false,
-      "radio_m": 800,
-      "motivo_radio": "Pueblo, mirador del cráter y charco verde, repartidos por la costa.",
-      "foto_dentro": null
-    },
     "la_geria_y_sus_bodegas": {
       "pais": "España",
       "capital": false,
@@ -102,13 +161,6 @@
       "capital": false,
       "radio_m": 200,
       "motivo_radio": "Jardín dentro de una antigua cantera.",
-      "foto_dentro": null
-    },
-    "haria_y_la_casa_museo_cesar_manrique": {
-      "pais": "España",
-      "capital": false,
-      "radio_m": 600,
-      "motivo_radio": "Pueblo y casa-museo a las afueras.",
       "foto_dentro": null
     },
     "casa_museo_del_campesino": {
@@ -209,13 +261,6 @@
       "motivo_radio": "Cala pequeña de arena blanca.",
       "foto_dentro": null
     },
-    "caleta_de_famara_y_playa_de_famara": {
-      "pais": "España",
-      "capital": false,
-      "radio_m": 1500,
-      "motivo_radio": "Pueblo y playa de 5 km.",
-      "foto_dentro": null
-    },
     "punta_mujeres_y_arrieta": {
       "pais": "España",
       "capital": false,
@@ -256,6 +301,75 @@
       "capital": false,
       "radio_m": 2500,
       "motivo_radio": "Isla entera (Caleta de Sebo y playas). Solo se llega en barco.",
+      "foto_dentro": null
+    },
+    "caleta_de_famara": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 450,
+      "motivo_radio": "El pueblo, con su paseo marítimo y sus casas bajas. La playa (a 950 m) es otro sitio.",
+      "foto_dentro": null
+    },
+    "playa_de_famara": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 500,
+      "motivo_radio": "La playa, desde el acceso principal. Es larga (5 km) pero el sitio es el tramo de siempre, a 950 m del pueblo: así una foto en una no vale para la otra.",
+      "foto_dentro": null
+    },
+    "el_golfo_pueblo": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 350,
+      "motivo_radio": "El pueblo pesquero de El Golfo. El Charco queda a 750 m: otro sitio.",
+      "foto_dentro": null
+    },
+    "charco_de_los_clicos": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 300,
+      "motivo_radio": "El Charco y su mirador del cráter.",
+      "foto_dentro": null
+    },
+    "haria_pueblo": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 300,
+      "motivo_radio": "El pueblo, con su plaza y su iglesia. La Casa-Museo cae a unos 100 m, dentro: en esa zona manda el sitio más cercano (la foto cuenta para el que tienes más cerca).",
+      "foto_dentro": null
+    },
+    "casa_museo_cesar_manrique": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 150,
+      "motivo_radio": "La casa y su jardín, a las afueras del pueblo.",
+      "foto_dentro": null
+    },
+    "bodega_el_grifo": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 250,
+      "motivo_radio": "Una bodega: el edificio y su patio. La coordenada es aproximada (por comprobar): por eso 250 m y no 200.",
+      "foto_dentro": null,
+      "aparta_de": [
+        "la_geria_y_sus_bodegas"
+      ]
+    },
+    "bodega_la_geria": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 250,
+      "motivo_radio": "Una bodega junto a la carretera de La Geria, con su bar. Cae dentro del radio de La Geria (3.000 m): una foto aquí no cuenta para La Geria, solo para la bodega.",
+      "foto_dentro": null,
+      "aparta_de": [
+        "la_geria_y_sus_bodegas"
+      ]
+    },
+    "puerto_del_carmen_puerto_viejo": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 400,
+      "motivo_radio": "El Puerto Viejo (La Tiñosa) y su paseo marítimo, hasta los restaurantes del muelle.",
       "foto_dentro": null
     }
   },
@@ -306,7 +420,7 @@
         "cueva_de_los_verdes",
         "mirador_del_rio",
         "fundacion_cesar_manrique",
-        "el_golfo_y_el_charco_de_los_clicos",
+        "charco_de_los_clicos",
         "la_geria_y_sus_bodegas"
       ]
     },
@@ -321,7 +435,7 @@
         "mirador_del_rio",
         "jardin_de_cactus",
         "fundacion_cesar_manrique",
-        "haria_y_la_casa_museo_cesar_manrique",
+        "casa_museo_cesar_manrique",
         "casa_museo_del_campesino",
         "castillo_de_san_jose"
       ]
@@ -366,8 +480,8 @@
       "sitios": [
         "playas_de_papagayo",
         "caleton_blanco",
-        "el_golfo_y_el_charco_de_los_clicos",
-        "caleta_de_famara_y_playa_de_famara",
+        "charco_de_los_clicos",
+        "playa_de_famara",
         "punta_mujeres_y_arrieta",
         "playa_de_la_garita",
         "playa_de_montana_bermeja"
@@ -381,10 +495,11 @@
       "al_completar": "La isla de verdad",
       "sitios": [
         "teguise",
-        "haria_y_la_casa_museo_cesar_manrique",
-        "caleta_de_famara_y_playa_de_famara",
-        "el_golfo_y_el_charco_de_los_clicos",
-        "arrecife_charco_de_san_gines_y_el_paseo"
+        "arrecife_charco_de_san_gines_y_el_paseo",
+        "el_golfo_pueblo",
+        "haria_pueblo",
+        "caleta_de_famara",
+        "puerto_del_carmen_puerto_viejo"
       ]
     },
     {
@@ -394,7 +509,9 @@
       "nombre": "Entre viñas de ceniza",
       "al_completar": "Malvasía volcánica",
       "sitios": [
-        "la_geria_y_sus_bodegas"
+        "la_geria_y_sus_bodegas",
+        "bodega_la_geria",
+        "bodega_el_grifo"
       ]
     }
   ],
@@ -443,7 +560,7 @@
     {
       "id": "el_golfo",
       "tipo": "sitio",
-      "sitio": "el_golfo_y_el_charco_de_los_clicos",
+      "sitio": "charco_de_los_clicos",
       "nombre": "El charco verde",
       "linea": "Una laguna verde dentro de un cráter, a un paso del mar."
     },
@@ -494,5 +611,20 @@
       "minimo_colecciones": 3,
       "minimo_secretos": 2
     }
+  },
+  "_nota_sitios_de_parada": "V4 (17-nov). Una parada del catálogo (la de los días) que lleva a más de un sitio de logro. Un Visto en la parada vale para todos; una foto con ubicación vale solo para el sitio donde está; lo ganado ANTES de separarlos (hechos con el id viejo) vale para todos, con la misma fecha.",
+  "sitios_de_parada": {
+    "caleta_de_famara_y_playa_de_famara": [
+      "caleta_de_famara",
+      "playa_de_famara"
+    ],
+    "el_golfo_y_el_charco_de_los_clicos": [
+      "el_golfo_pueblo",
+      "charco_de_los_clicos"
+    ],
+    "haria_y_la_casa_museo_cesar_manrique": [
+      "haria_pueblo",
+      "casa_museo_cesar_manrique"
+    ]
   }
 }

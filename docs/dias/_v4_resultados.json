@@ -1,0 +1,122 @@
+[
+ {
+  "nombre": "pruebaV4 (nueva)",
+  "comprobaciones": 149,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaJutrip",
+  "comprobaciones": 130,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaLogros1 (Roma)",
+  "comprobaciones": 453,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaLogros2",
+  "comprobaciones": 54,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaLZ3_A (Lanzarote)",
+  "comprobaciones": 187,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaLZ3_B (dibujos)",
+  "comprobaciones": 158,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaLZ3b",
+  "comprobaciones": 33,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaLG1_B",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaLL_LZ",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaLZ1_B",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaLZ1_C",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaFotosLanzarote (28 de Eric)",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaV2Hoy",
+  "comprobaciones": 149,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaV3",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaHOY1_B",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTandaHOY2b_E",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaPantallas8b",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaCuentas3",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTanda10B",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTanda10N_cabecera",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTanda10N_compartir",
+  "comprobaciones": 97,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTanda10O_api",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "pruebaTanda10P_sorteo",
+  "comprobaciones": null,
+  "fallos": 0
+ },
+ {
+  "nombre": "Muestra de 60 viajes de Roma (idéntica)",
+  "comprobaciones": 60,
+  "fallos": 0
+ }
+]
