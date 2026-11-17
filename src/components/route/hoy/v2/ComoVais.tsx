@@ -124,7 +124,7 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
         <HojaV2 onCerrar={cerrarHoja} etiqueta="Por hoy" fondo={MARFIL}>
           <div data-cansados-caso="opcional" className="flex flex-col gap-3">
             <Titulo texto="¿Y si por hoy lo dejáis aquí?" onCerrar={cerrarHoja} />
-            <span data-cansados-texto className="text-[14.5px] font-medium leading-[1.4]">Lo que queda no es imprescindible. Lo dejamos en «Si te sobra tiempo» por si luego os apetece.</span>
+            <span data-cansados-texto className="text-[14.5px] font-medium leading-[1.4]">Lo que queda no es imprescindible. Lo dejamos en «Lugares pendientes» por si luego os apetece.</span>
             <button
               type="button"
               onClick={() => {

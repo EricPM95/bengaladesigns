@@ -162,7 +162,8 @@ export const MIN_SITIOS_RETO = 3
 export function elegirRetos(retos) {
   const pedazosHoy = (r) => (r.sitios ?? []).filter((s) => s.estado === 'hoy' && !s.ganado).length
   return (retos ?? [])
-    .filter((r) => (r.total ?? 0) >= MIN_SITIOS_RETO)
+    // (V2b) «Avanzan hoy»: solo las colecciones con algún sitio en la ruta de hoy sin ganar (o que se completan hoy); una que solo tiene un sitio cerca de la zona no avanza hoy.
+    .filter((r) => (r.total ?? 0) >= MIN_SITIOS_RETO && (Boolean(r.completable_hoy) || pedazosHoy(r) >= 1))
     .sort((a, b) => Number(Boolean(b.completable_hoy)) - Number(Boolean(a.completable_hoy)) || pedazosHoy(b) - pedazosHoy(a) || String(a.nombre).localeCompare(String(b.nombre), 'es'))
 }
 

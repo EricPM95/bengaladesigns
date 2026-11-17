@@ -248,9 +248,108 @@ for (const [destino, hoy, coche] of [['roma', '2026-10-17', false], ['lanzarote'
       if (!/ya ha cerrado/.test(aviso)) await app.esp(500)
     }
     debe(/ya ha cerrado · la tienes en Lugares pendientes/.test(aviso), 'cerrado', `el aviso de abajo: «… ya ha cerrado · la tienes en Lugares pendientes» (${aviso})`)
+    // (V2b) El aviso de arriba solo habla de paradas de hoy por hacer: nunca de la que acaba de pasar a «Lugares pendientes».
+    const arriba = await app.evaluar("Array.from(document.querySelectorAll('[data-hoy-horario-vivo-texto]')).map((e) => e.innerText).join(' | ')")
+    debe(!String(arriba).toLowerCase().includes(String(nombre).toLowerCase().slice(0, 12)), 'aviso', `el aviso de arriba no habla del sitio ya cerrado («${nombre}»): «${arriba}»`)
+    const idsAviso = await app.evaluar("Array.from(document.querySelectorAll('[data-hoy-horario-vivo]')).map((e) => e.getAttribute('data-hoy-horario-vivo'))")
+    await app.evaluar("document.querySelector('[data-hoy-pendientes-estado=\"cerrada\"] [data-hoy-pendientes-cabecera]')?.click()")
+    await app.esp(600)
+    const idsPend = await app.evaluar("Array.from(document.querySelectorAll('[data-hoy-pendiente-id]')).map((e) => e.getAttribute('data-hoy-pendiente-id'))")
+    debe(!idsAviso.some((id) => idsPend.includes(id)), 'aviso', 'ningún aviso de horario es de una parada que está en «Lugares pendientes»')
     await app.captura(`${CAPTURAS}/lanzarote_cerrado.jpg`)
   } finally {
     app.cerrar()
+  }
+}
+
+/* ───────────────────────── 4. V2b (17-nov): aviso de arriba, pedazos, reto, pendientes con foto, textos, fotos de hoy ───────────────────────── */
+console.log('4. V2b')
+{
+  // Código: el texto de fin de día y «Tus fotos de hoy».
+  const bloques = sinComentarios(leer('src/components/route/hoy/v2/BloquesHoy.tsx'))
+  debe(/Lo que dejaste para luego está abajo, en «Lugares pendientes»/.test(bloques) && !/Lo que dejaste para luego está abajo, en «Si te sobra/.test(bloques), 'textos', 'al acabar el día: «…está abajo, en «Lugares pendientes»»')
+  const fotosCod = sinComentarios(leer('src/components/route/fotos/TusFotosDeHoy.tsx'))
+  debe(/if \(deHoy\.length === 0\) return null/.test(fotosCod) && !/BotonFoto/.test(fotosCod), 'fotos de hoy', '«Tus fotos de hoy» solo sale con fotos de hoy y sin botón [+ Foto] (la cámara flotante ya está)')
+  const hor = sinComentarios(leer('src/components/route/hoy/v2/HorarioHoy.tsx'))
+  debe(/#FFF1D6/.test(hor) && /#E5B565/.test(hor) && !/accent-red/.test(hor.slice(hor.indexOf('AvisoDeHorarioEnDirecto'))), 'aviso', 'el aviso «A este ritmo…» es la tarjeta pequeña en ámbar de Design (no la roja grande)')
+  debe(/diaVivo/.test(sinComentarios(duranteV2)) && /<AvisoDeHorarioEnDirecto[^>]*day=\{diaVivo\}/.test(sinComentarios(duranteV2)), 'aviso', 'el aviso de horario mira el día SIN lo cerrado/saltado (diaVivo)')
+  // Servidor: los datos reales de Roma y de Lanzarote (la misma lógica que contesta el servidor).
+  const { cargarDatos, cargarCatalogo } = await import('../../server/logros/datos.js')
+  const { sitiosCerca, retosDelDia, elegirRetos } = await import('../../server/logros/cerca.js')
+  const { sitioDeParada } = await import('../../server/logros/servicio.js')
+  const { textoDePedazosDe } = { textoDePedazosDe: (n) => (n.length === 0 ? null : `Aquí ${n.length === 1 ? 'ganas 1 pedazo' : `ganas ${n.length} pedazos`}: ${n.length === 1 ? `«${n[0]}»` : `${n.slice(0, -1).map((x) => `«${x}»`).join(', ')} y «${n[n.length - 1]}»`}`) }
+  const datos = cargarDatos()
+  const catalogos = Object.fromEntries(Object.keys(datos.destinos).map((c) => [c, cargarCatalogo(c)]))
+  const pantallaV2b = (app) => app.evaluar("document.querySelector('[data-hoy]')?.innerText ?? ''")
+  for (const [destino, hoy] of [['roma', '2026-10-17'], ['lanzarote', '2026-11-09']]) {
+    const app = await nuevaApp(destino, hoy)
+    const etq = destino === 'roma' ? 'Roma a pie' : 'Lanzarote en coche'
+    try {
+      const nombres = await app.evaluar(`(async () => { const R = await import('/src/store/useRouteStore.ts'); const T = await import('/src/lib/todayMode.ts'); const { numberedStopsOf } = await import('/src/lib/stopKind.ts'); const r = R.useRouteStore.getState().route; const h = T.getTodayTripContext(r, '${hoy}'); return numberedStopsOf(h.day).map((s) => s.name) })()`)
+      const sitiosHoy = new Set(nombres.map((n) => sitioDeParada({ name: n }, catalogos[destino])).filter(Boolean))
+      // El reto del día: el que daría el servidor con los datos reales de ESE día.
+      const retos = elegirRetos(retosDelDia({ datos, catalogos, destino, items: new Map(), sitiosHoy }))
+      debe(retos.length >= 1 && retos.every((r) => r.total >= 3 && (r.completable_hoy || r.sitios.some((s) => s.estado === 'hoy'))), 'reto', `${etq}: con los datos reales del día (${[...sitiosHoy].length} sitios con logro) el servidor da ${retos.length} retos, todos de colecciones que avanzan hoy`)
+      if (destino === 'roma') debe(retos.length >= 2, 'reto', `${etq}: ese día de Roma tiene reto (${retos.map((r) => r.nombre).join(' · ')})`)
+      await app.evaluar(`window.__hoy1Cerca = ${JSON.stringify({ ok: true, cerca: [], juego: null, juego_sitio: null, fuera_de_ruta: null, junto_a: null, reto: null, retos })}; window.dispatchEvent(new Event('trazo:hoy1-repreguntar')); true`)
+      await app.esp(3500)
+      const t = await pantallaV2b(app)
+      const n = await app.evaluar("document.querySelector('[data-hoy-retos]')?.getAttribute('data-hoy-retos')")
+      debe(Number(n) === retos.length && /RETO DEL D[ÍI]A/i.test(t), 'reto', `${etq}: sale UN reto del día (${n} colecciones) con su tarjeta`)
+      if (retos.length > 1) debe(new RegExp(`Y ${retos.length - 1} colecci`).test(t), 'reto', `${etq}: «Y ${retos.length - 1} colecciones más avanzan hoy ›»`)
+      await app.evaluar("(() => { const e = Array.from(document.querySelectorAll('[data-hoy-reto-mas]')).pop(); e?.click(); return true })()")
+      await app.esp(1200)
+      await app.captura(`${CAPTURAS}/${destino}_reto_lista.jpg`)
+      await app.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Cerrar|Cerrar lista)$/.test(x.getAttribute('aria-label') || '')); b?.click(); return true })()")
+      await app.esp(600)
+      // La línea de los pedazos en la primera parada (la que sale en «Ya estás aquí»).
+      const primera = nombres[0]
+      const idPrimera = sitioDeParada({ name: primera }, catalogos[destino])
+      const esperados = idPrimera ? datos.destinos[destino].colecciones.filter((c) => c.sitios.includes(idPrimera)).map((c) => c.nombre) : []
+      await app.evaluar(`window.__pedazosDemo = { ${JSON.stringify(primera)}: ${JSON.stringify(esperados)} }; true`)
+      await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = 0; document.querySelector('[data-hoy-ya-he-llegado]')?.click(); return true })()")
+      await app.esp(2200)
+      const aqui = await pantallaV2b(app)
+      if (esperados.length > 0) debe(aqui.includes(textoDePedazosDe(esperados)), 'pedazos', `${etq}: «${primera}» dice «${textoDePedazosDe(esperados)}»`)
+      else debe(!/Aquí ganas/.test(aqui), 'pedazos', `${etq}: «${primera}» no está en ninguna colección: sin línea de pedazos`)
+      debe(!/emblema/i.test(await app.evaluar("document.querySelector('[data-hoy-pedazos]')?.innerText ?? ''")), 'pedazos', `${etq}: la línea de pedazos nunca nombra emblemas ocultos`)
+      if (destino === 'roma') await app.captura(`${CAPTURAS}/roma_aqui_pedazos.jpg`)
+      // «Tus fotos de hoy»: sin fotos, no sale.
+      debe(!(await app.evaluar("Boolean(document.querySelector('[data-fotos-de-hoy]'))")) && !/Tus fotos de hoy/i.test(aqui), 'fotos de hoy', `${etq}: sin fotos de hoy no sale «Tus fotos de hoy» ni [+ Foto]`)
+      // (V2b, 2) La Plaza de San Pedro (en dos colecciones: «El país más pequeño del mundo» y «La Roma de Bernini»): con las paradas de antes hechas, «Ya estás aquí» dice sus 2 pedazos.
+      if (destino === 'roma' && nombres.includes('Plaza de San Pedro')) {
+        const idPlaza = sitioDeParada({ name: 'Plaza de San Pedro' }, catalogos.roma)
+        const colPlaza = datos.destinos.roma.colecciones.filter((c) => c.sitios.includes(idPlaza)).map((c) => c.nombre)
+        debe(colPlaza.length === 2 && colPlaza.includes('El país más pequeño del mundo') && colPlaza.includes('La Roma de Bernini'), 'pedazos', 'la Plaza de San Pedro está en 2 colecciones: «El país más pequeño del mundo» y «La Roma de Bernini»')
+        await app.evaluar(`(async () => { const R = await import('/src/store/useRouteStore.ts'); const T = await import('/src/lib/todayMode.ts'); const { numberedStopsOf } = await import('/src/lib/stopKind.ts'); const st = R.useRouteStore.getState(); const h = T.getTodayTripContext(st.route, '${hoy}'); for (const s of numberedStopsOf(h.day)) { if (s.name === 'Plaza de San Pedro') break; st.setStopVisto(h.day.id, s.id, true) } window.__pedazosDemo = { 'Plaza de San Pedro': ${JSON.stringify(colPlaza)} }; return true })()`)
+        await app.esp(2000)
+        await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = 0; document.querySelector('[data-hoy-ya-he-llegado]')?.click(); return true })()")
+        await app.esp(2200)
+        const plaza = await pantallaV2b(app)
+        debe(/Plaza de San Pedro/.test(plaza) && plaza.includes(textoDePedazosDe(colPlaza)), 'pedazos', `Roma: en la Plaza de San Pedro sale «${textoDePedazosDe(colPlaza)}»`)
+        await app.captura(`${CAPTURAS}/roma_plaza_san_pedro.jpg`)
+      }
+      // El día se acaba: todo hecho menos lo último, que se salta.
+      await app.evaluar(`(async () => { const R = await import('/src/store/useRouteStore.ts'); const T = await import('/src/lib/todayMode.ts'); const { numberedStopsOf } = await import('/src/lib/stopKind.ts'); const st = R.useRouteStore.getState(); const h = T.getTodayTripContext(st.route, '${hoy}'); const ps = numberedStopsOf(h.day); ps.forEach((s, i) => { if (i < ps.length - 1) st.setStopVisto(h.day.id, s.id, true) }); st.setStopSaltada(h.day.id, ps[ps.length - 1].id, true); return true })()`)
+      await app.esp(2500)
+      const fin = await pantallaV2b(app)
+      debe(/Lo que dejaste para luego está abajo, en «Lugares pendientes»/.test(fin) && !/en «Si te sobra tiempo»/.test(fin), 'textos', `${etq}: al acabar el día, «Lo que dejaste para luego está abajo, en «Lugares pendientes»»`)
+      debe(!(await app.evaluar("Boolean(document.querySelector('[data-hoy-horario-vivo]'))")), 'aviso', `${etq}: con el día terminado no sale el aviso «A este ritmo llegarías…»`)
+      await app.captura(`${CAPTURAS}/${destino}_fin_del_dia.jpg`)
+      // «Lugares pendientes» como Design: foto, pastilla y los 4 botones en dos filas.
+      await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = e.scrollHeight; if (document.querySelector('[data-hoy-pendientes-estado=\"cerrada\"]')) document.querySelector('[data-hoy-pendientes-cabecera]')?.click(); return true })()")
+      await app.esp(900)
+      await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = e.scrollHeight; return true })()")
+      await app.esp(700)
+      const pend = await app.evaluar(`(() => { const li = document.querySelector('[data-hoy-pendiente]'); if (!li) return null; const r = (s) => { const e = li.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect(); return { x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height) } }; const foto = li.querySelector('[data-hoy-pendiente-foto] > span > span'); return { foto: r('[data-hoy-pendiente-foto]'), opacidad: foto ? getComputedStyle(foto).opacity : null, pastilla: r('[data-hoy-pendiente-pastilla]'), pasar: r('[data-hoy-pendiente-pasar]'), recuperar: r('[data-hoy-pendiente-recuperar]'), visitado: r('[data-hoy-pendiente-visitado]'), quitar: r('[data-hoy-pendiente-quitar]'), iconos: li.querySelectorAll('[data-hoy-pendiente-botones] svg').length, pasarFondo: getComputedStyle(li.querySelector('[data-hoy-pendiente-pasar]') ?? li).backgroundImage.slice(0, 20) } })()`)
+      debe(pend && pend.foto && pend.foto.w >= 88 && pend.opacidad === '1', 'pendientes', `${etq}: cada sitio de «Lugares pendientes» lleva su FOTO a todo color (${pend?.foto?.w}px, opacidad ${pend?.opacidad})`)
+      debe(pend && pend.pastilla && /Saltada|cerrado|No dio/.test(await app.evaluar("document.querySelector('[data-hoy-pendiente-pastilla]')?.innerText ?? ''")), 'pendientes', `${etq}: la pastilla con el motivo («Saltada hoy»)`)
+      debe(pend && pend.pasar && pend.recuperar && pend.visitado && pend.quitar && pend.pasar.y === pend.recuperar.y && pend.visitado.y === pend.quitar.y && pend.visitado.y > pend.pasar.y && Math.abs(pend.pasar.w - pend.recuperar.w) <= 2 && Math.abs(pend.visitado.w - pend.quitar.w) <= 2 && Math.abs(pend.pasar.w - pend.visitado.w) <= 2, 'pendientes', `${etq}: los botones en dos filas, mitad y mitad (${JSON.stringify([pend?.pasar, pend?.recuperar, pend?.visitado, pend?.quitar].map((b) => b && `${b.x},${b.y} ${b.w}x${b.h}`))})`)
+      debe(pend && pend.iconos >= 4 && /linear-gradient/.test(pend.pasarFondo), 'pendientes', `${etq}: cada botón con su icono y [Pasar a otro día] en oro (${pend?.iconos} iconos)`)
+      await app.captura(`${CAPTURAS}/${destino}_pendientes_v2b.jpg`)
+    } finally {
+      app.cerrar()
+    }
   }
 }
 

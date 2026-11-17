@@ -16,7 +16,6 @@ import { HojaPropuesta, useContexto } from './CambiarPlan'
  *  · `AvisoDeHorarioEnDirecto` (con la hora real, prioridad 2): «A este ritmo llegarías a la Cueva de los Verdes cuando ya ha cerrado» + [Ver solución] (adelantarla quitando antes algo flexible; propuesta con vista previa y Deshacer). Una vez por sitio y día; si se ve por fuera, no avisa.
  */
 const TINTA = '#1C2230'
-const DORADO_CLARO = '#F3D88F'
 
 /** Las ventanas de horario de lo que queda por hacer hoy (solo visitas por dentro con horario de verdad). */
 export function useVentanasDeHoy(route: Route, day: DayPlan, dateIso: string): VentanaDeHorario[] {
@@ -76,18 +75,19 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
     <>
       {!cerrado && (
         <AvisoDeHoy id={`horario-vivo:${tarde.v.stop.id}`} prio={2}>
-          <div data-hoy-horario-vivo={tarde.v.stop.id} data-hoy-horario-vivo-tipo={tarde.tipo} className="flex flex-none flex-col gap-1 rounded-[18px] py-2 pl-3.5 pr-2" style={{ background: 'rgb(var(--accent-red) / .07)', border: '1px solid rgb(var(--accent-red) / .3)' }}>
+          {/* (V2b, H2 de Design) Tarjeta pequeña en ámbar, con su icono, el texto en una o dos líneas y su X; [Ver solución] como enlace pequeño dentro. */}
+          <div data-hoy-horario-vivo={tarde.v.stop.id} data-hoy-horario-vivo-tipo={tarde.tipo} className="flex flex-none flex-col rounded-2xl py-2.5 pl-3.5 pr-2.5" style={{ background: '#FFF1D6', border: '1px solid #E5B565', color: '#8A4F08' }}>
             <div className="flex items-start gap-2.5">
-              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] text-white" style={{ background: 'rgb(var(--accent-red))' }}>
-                <Icono nombre="reloj" size={16} />
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9801C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 flex-none">
+                <path d="M12 8v5M12 16.5h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 2-2L13.7 3.9a2 2 0 0 0-3.4 0z" />
+              </svg>
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span data-hoy-horario-vivo-texto className="text-[13px] font-medium leading-[1.35]">{titulo}</span>
+                <span data-hoy-horario-vivo-hora className="text-[12px] leading-[1.3]" style={{ color: 'rgba(138,79,8,.8)' }}>{hora}</span>
               </span>
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5 pt-1">
-                <span data-hoy-horario-vivo-texto className="text-[13.5px] font-medium leading-[1.35]">{titulo}</span>
-                <span data-hoy-horario-vivo-hora className="text-[12.5px] leading-[1.3] text-text/65">{hora}</span>
-              </span>
-              <CruzDeAviso onClick={cerrar} />
+              <span className="-my-2 flex flex-none"><CruzDeAviso onClick={cerrar} /></span>
             </div>
-            <button type="button" onClick={ver} data-horario-ver-solucion className="mb-1 ml-[42px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold" style={{ background: TINTA, color: DORADO_CLARO }}>
+            <button type="button" onClick={ver} data-horario-ver-solucion className="-mb-1 -mt-0.5 ml-7 flex h-11 flex-none items-center self-start text-[12.5px] font-bold underline underline-offset-2" style={{ color: '#8A4F08' }}>
               Ver solución
             </button>
           </div>

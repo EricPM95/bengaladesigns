@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { logrosActivos } from '../../../../lib/logros'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { useRouteStore } from '../../../../store/useRouteStore'
@@ -251,7 +251,11 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   })
   const pendientes = lugaresPendientes({ route, day, cerradas })
   // (HOY2b 8b) Los horarios de lo que queda por hacer hoy: la tarjeta de la mañana y el aviso en directo.
-  const ventanasDeHoy = useVentanasDeHoy(route, day, dateIso)
+  const ventanasTodas = useVentanasDeHoy(route, day, dateIso)
+  // (V2b) Los avisos de horario solo hablan de lo que queda por hacer HOY: lo ya hecho, lo saltado y lo que ha pasado a «Lugares pendientes» por cerrado no cuenta (ni en la cuenta del ritmo).
+  const claveCerradas = [...cerradas].join(',')
+  const diaVivo = useMemo(() => (cerradas.size === 0 ? day : { ...day, stops: day.stops.map((st) => (cerradas.has(st.id) ? { ...st, saltada: true } : st)) }), [day, claveCerradas]) // eslint-disable-line react-hooks/exhaustive-deps
+  const ventanasDeHoy = useMemo(() => ventanasTodas.filter((v) => !cerradas.has(v.stop.id) && !v.stop.saltada && !v.stop.checkedInAt), [ventanasTodas, claveCerradas]) // eslint-disable-line react-hooks/exhaustive-deps
   const vistas = vigentes.filter((s) => s.checkedInAt).length
   const siguiente = vigentes.find((s) => !s.checkedInAt) ?? null
   // (HOY2, C) A la hora de comer, la tarjeta de arriba es «Tu restaurante está a N minutos» (Completa 4) hasta que se da por comido.
@@ -419,8 +423,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* HOY2 (C): lo que corre peligro ya, el primero de los avisos (prioridad 1) */}
       <AvisoDePeligro route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} />
       {/* HOY2b (8b): los horarios, en HOY. Por la mañana, «Para hoy: … cierra a las …»; en directo, «A este ritmo llegarías a … cuando ya ha cerrado» */}
-      <TarjetaDeHorariosDeHoy day={day} dateIso={dateIso} ventanas={ventanasDeHoy} visible={esPorLaManana} />
-      <AvisoDeHorarioEnDirecto route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} ventanas={ventanasDeHoy} />
+      <TarjetaDeHorariosDeHoy day={diaVivo} dateIso={dateIso} ventanas={ventanasDeHoy} visible={esPorLaManana} />
+      <AvisoDeHorarioEnDirecto route={route} day={diaVivo} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} ventanas={ventanasDeHoy} />
       {/* (Arreglo, 6-nov; decisión de Eric) Fuera la lista roja «X cierra hoy a las…»: repite la tarjeta de horarios de la mañana y el aviso en directo. */}
       <AvisosDelTiempo route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} />
       <RainAlert day={day} dateIso={dateIso} when="hoy" />

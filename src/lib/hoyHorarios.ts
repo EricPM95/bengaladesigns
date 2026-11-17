@@ -223,7 +223,7 @@ export function proponerAdelantar(p: { day: DayPlan; tarde: LlegadaTarde; ctx: C
       const aSobraN = quitadas.filter((q) => q.destino === 'sobra').map((q) => q.nombre)
       const partes: string[] = []
       if (aTarde.length) partes.push(`${unir(aTarde)} pasa${aTarde.length > 1 ? 'n' : ''} a la tarde`)
-      if (aSobraN.length) partes.push(`${unir(aSobraN)} pasa${aSobraN.length > 1 ? 'n' : ''} a «Si te sobra tiempo»`)
+      if (aSobraN.length) partes.push(`${unir(aSobraN)} pasa${aSobraN.length > 1 ? 'n' : ''} a «Lugares pendientes»`)
       const titulo = partes.join(' y ')
       pr = { ...pr, ops, quitadas, cambia: { ...pr.cambia, titulo: titulo.charAt(0).toUpperCase() + titulo.slice(1) } }
     }

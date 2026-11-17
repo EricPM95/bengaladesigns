@@ -338,15 +338,15 @@ console.error = consolaError
 // ── «Tus fotos de hoy» (Tanda 6z6): al final de HOY de pago, durante el viaje ──
 {
   const durante = hoyEn(route, { version: 'completa' })
-  debe(/Tus fotos de hoy/.test(durante) && durante.split('\n').includes('Foto'),'8 fotos de hoy', 'en HOY de pago, durante el viaje, falta «Tus fotos de hoy» con su botón [+ Foto]')
-  debe(durante.lastIndexOf('Tus fotos de hoy') > durante.lastIndexOf('Hoy ·'), '8 fotos de hoy', '«Tus fotos de hoy» no está al final de HOY (después de la lista del día)')
+  // (V2b, 17-nov) «Tus fotos de hoy» solo sale si hay fotos de hoy (y sin [+ Foto]: la cámara flotante ya está): en este viaje sin fotos, no sale.
+  debe(!/Tus fotos de hoy/.test(durante) && !/^Foto$/m.test(durante), '8 fotos de hoy', 'sin fotos de hoy, en HOY de pago no sale «Tus fotos de hoy» ni [+ Foto]')
   debe(!/Guarda tus recuerdos/.test(durante), '8 fotos de hoy', 'durante el viaje sale el bloque grande «Guarda tus recuerdos» (es solo para después)')
   const antes = hoyEn(route, { version: 'completa', hoy: '2027-03-01' })
   debe(!/Tus fotos de hoy/.test(antes), '8 fotos de hoy', 'antes del viaje sale «Tus fotos de hoy»')
   const despues = hoyEn(route, { version: 'completa', hoy: '2027-04-30' })
   debe(!/Tus fotos de hoy/.test(despues) && /Guarda tus recuerdos/.test(despues), '8 fotos de hoy', 'después del viaje no sale «Guarda tus recuerdos» solo, o sigue saliendo «Tus fotos de hoy»')
   const codigo = fs.readFileSync('src/components/route/fotos/TusFotosDeHoy.tsx', 'utf8')
-  debe(!/stopName=/.test(codigo) && /multiple/.test(codigo) && /pagoActivo\(\)/.test(codigo) && /dayNumber === day\.dayNumber/.test(codigo), '8 fotos de hoy', 'el bloque sube las fotos sueltas sin parada, varias a la vez, solo de pago y solo las del día')
+  debe(!/stopName=/.test(codigo) && /pagoActivo\(\)/.test(codigo) && /dayNumber === day\.dayNumber/.test(codigo) && /deHoy\.length === 0\) return null/.test(codigo), '8 fotos de hoy', 'el bloque es solo de pago, solo con las fotos del día y no sale sin fotos')
 }
 
 if (fallos.length === 0) console.log(`6z6c: ${comprobaciones} comprobaciones, 0 fallos.`)

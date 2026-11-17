@@ -11,6 +11,14 @@ import type { RespuestaCerca } from '../useCercaDeAqui'
 export function usePedazosDeParada(tripId: string | null, parada: Stop, activo: boolean): string[] {
   const [nombres, setNombres] = useState<{ id: string; lista: string[] } | null>(null)
   useEffect(() => {
+    // Solo desarrollo: `window.__pedazosDemo = { 'Plaza de San Pedro': ['A', 'B'] }` pone lo que diría el servidor para esa parada (en la demo no hay servidor que conteste).
+    if (import.meta.env.DEV && activo) {
+      const falso = (window as unknown as { __pedazosDemo?: Record<string, string[]> }).__pedazosDemo?.[parada.name]
+      if (falso) {
+        setNombres({ id: parada.id, lista: falso })
+        return undefined
+      }
+    }
     if (!activo || !tripId || !logrosActivos() || !hasRealCoordinates(parada.coordinates)) return undefined
     let vivo = true
     void llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo: { trip_id: tripId, ubicacion: { lat: parada.coordinates.lat, lng: parada.coordinates.lng }, sitios_hoy: [parada.name], en_coche: false } }).then((r) => {

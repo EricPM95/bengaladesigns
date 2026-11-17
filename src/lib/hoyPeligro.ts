@@ -127,7 +127,7 @@ export function proponerSolucion(p: { day: DayPlan; peligro: Peligro; ctx: Conte
     const aSobra = quitadas.filter((q) => q.destino === 'sobra').map((q) => q.nombre)
     const partes: string[] = []
     if (aTarde.length) partes.push(`${unir(aTarde)} pasa${aTarde.length > 1 ? 'n' : ''} a la tarde`)
-    if (aSobra.length) partes.push(`${unir(aSobra)} pasa${aSobra.length > 1 ? 'n' : ''} a «Si te sobra tiempo»`)
+    if (aSobra.length) partes.push(`${unir(aSobra)} pasa${aSobra.length > 1 ? 'n' : ''} a «Lugares pendientes»`)
     const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
     const esTurno = Boolean(peligro.stop.isFreeTour)
     return {

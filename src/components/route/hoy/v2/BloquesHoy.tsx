@@ -226,7 +226,7 @@ export function fraseDeCierre(day: DayPlan, paradas: Stop[]): { titulo: string; 
   if (sol) return { titulo: 'Hoy has visto el atardecer', sub: `Un cierre perfecto en ${displayStopName(sol.name)}.` }
   const hechas = paradas.filter((s) => s.checkedInAt && !s.saltada).length
   void day
-  return { titulo: hechas === 1 ? 'Has hecho 1 parada hoy' : `Has hecho ${hechas} paradas hoy`, sub: paradas.some((s) => s.saltada) ? 'Lo que dejaste para luego está abajo, en «Si te sobra tiempo».' : null }
+  return { titulo: hechas === 1 ? 'Has hecho 1 parada hoy' : `Has hecho ${hechas} paradas hoy`, sub: paradas.some((s) => s.saltada) ? 'Lo que dejaste para luego está abajo, en «Lugares pendientes».' : null }
 }
 
 

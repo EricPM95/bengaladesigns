@@ -1,0 +1,491 @@
+{
+ "roma": {
+  "con_pedazo": [
+   {
+    "nombre": "Coliseo",
+    "colecciones": [
+     "Los imprescindibles de Roma",
+     "Las 4 joyas de Roma",
+     "La Roma antigua"
+    ]
+   },
+   {
+    "nombre": "Foro Romano y Palatino",
+    "colecciones": [
+     "Los imprescindibles de Roma",
+     "La Roma antigua"
+    ]
+   },
+   {
+    "nombre": "Circo Máximo",
+    "colecciones": [
+     "La Roma antigua"
+    ]
+   },
+   {
+    "nombre": "Fontana de Trevi",
+    "colecciones": [
+     "Los imprescindibles de Roma",
+     "Las 4 joyas de Roma",
+     "Plazas y fuentes de Roma"
+    ]
+   },
+   {
+    "nombre": "Panteón",
+    "colecciones": [
+     "Los imprescindibles de Roma",
+     "Las 4 joyas de Roma"
+    ]
+   },
+   {
+    "nombre": "Piazza Navona",
+    "colecciones": [
+     "Los imprescindibles de Roma",
+     "La Roma de Bernini",
+     "Plazas y fuentes de Roma"
+    ]
+   },
+   {
+    "nombre": "Plaza de España",
+    "colecciones": [
+     "Los imprescindibles de Roma",
+     "Plazas y fuentes de Roma"
+    ]
+   },
+   {
+    "nombre": "Piazza del Popolo",
+    "colecciones": [
+     "Plazas y fuentes de Roma"
+    ]
+   },
+   {
+    "nombre": "Largo di Torre Argentina",
+    "colecciones": [
+     "La Roma antigua"
+    ]
+   },
+   {
+    "nombre": "Museos Vaticanos y Capilla Sixtina",
+    "colecciones": [
+     "El país más pequeño del mundo",
+     "Las 4 joyas de Roma",
+     "La Roma de Miguel Ángel"
+    ]
+   },
+   {
+    "nombre": "Basílica de San Pedro",
+    "colecciones": [
+     "El país más pequeño del mundo",
+     "La Roma de Miguel Ángel",
+     "La Roma de Bernini"
+    ]
+   },
+   {
+    "nombre": "Plaza de San Pedro",
+    "colecciones": [
+     "El país más pequeño del mundo",
+     "La Roma de Bernini"
+    ]
+   },
+   {
+    "nombre": "Castillo de Sant'Angelo",
+    "colecciones": [
+     "Los imprescindibles de Roma",
+     "La Roma antigua"
+    ]
+   },
+   {
+    "nombre": "Mirador del Janículo",
+    "colecciones": [
+     "Los miradores"
+    ]
+   },
+   {
+    "nombre": "Galería Borghese",
+    "colecciones": [
+     "Tras los pasos de Caravaggio"
+    ]
+   },
+   {
+    "nombre": "Puente Sant'Angelo",
+    "colecciones": [
+     "La Roma de Bernini"
+    ]
+   },
+   {
+    "nombre": "Isla Tiberina",
+    "colecciones": [
+     "El alma de Trastevere"
+    ]
+   },
+   {
+    "nombre": "Plaza Venecia",
+    "colecciones": [
+     "Plazas y fuentes de Roma"
+    ]
+   },
+   {
+    "nombre": "Iglesia de San Luigi dei Francesi",
+    "colecciones": [
+     "Tras los pasos de Caravaggio"
+    ]
+   },
+   {
+    "nombre": "Iglesia de Santa Maria sopra Minerva",
+    "colecciones": [
+     "La Roma de Miguel Ángel"
+    ]
+   },
+   {
+    "nombre": "Elefantino de Bernini",
+    "colecciones": [
+     "La Roma de Bernini"
+    ]
+   },
+   {
+    "nombre": "Fuente de las Tortugas",
+    "colecciones": [
+     "La Roma secreta"
+    ]
+   },
+   {
+    "nombre": "Fuente del Tritón",
+    "colecciones": [
+     "Plazas y fuentes de Roma"
+    ]
+   },
+   {
+    "nombre": "Plaza del Campidoglio",
+    "colecciones": [
+     "La Roma de Miguel Ángel"
+    ]
+   },
+   {
+    "nombre": "Basílica de San Clemente",
+    "colecciones": [
+     "La Roma secreta"
+    ]
+   },
+   {
+    "nombre": "Termas de Caracalla",
+    "colecciones": [
+     "La Roma antigua"
+    ]
+   },
+   {
+    "nombre": "Jardín de los Naranjos",
+    "colecciones": [
+     "Los miradores"
+    ]
+   },
+   {
+    "nombre": "Ojo de la Cerradura del Aventino",
+    "colecciones": [
+     "La Roma secreta"
+    ]
+   },
+   {
+    "nombre": "Pirámide Cestia",
+    "colecciones": [
+     "La Roma secreta"
+    ]
+   },
+   {
+    "nombre": "Iglesia de Santa Maria in Trastevere",
+    "colecciones": [
+     "El alma de Trastevere"
+    ]
+   },
+   {
+    "nombre": "Terraza del Pincio",
+    "colecciones": [
+     "Los miradores"
+    ]
+   },
+   {
+    "nombre": "San Pietro in Montorio y Tempietto de Bramante",
+    "colecciones": [
+     "El alma de Trastevere",
+     "La Roma secreta"
+    ]
+   },
+   {
+    "nombre": "Fontana dell'Acqua Paola",
+    "colecciones": [
+     "Plazas y fuentes de Roma"
+    ]
+   },
+   {
+    "nombre": "Trastevere",
+    "colecciones": [
+     "Los imprescindibles de Roma",
+     "El alma de Trastevere"
+    ]
+   },
+   {
+    "nombre": "Santa Maria del Popolo",
+    "colecciones": [
+     "Tras los pasos de Caravaggio"
+    ]
+   }
+  ],
+  "sin_pedazo": [
+   "Arco de Constantino",
+   "Boca de la Verdad",
+   "Via del Corso",
+   "Via di Ripetta",
+   "Via della Conciliazione",
+   "Lungotevere",
+   "Parque de Villa Borghese",
+   "Bioparque de Roma",
+   "Galería Nacional de Arte Moderno",
+   "Altar de la Patria",
+   "Via dei Fori Imperiali",
+   "Campo de' Fiori",
+   "Borgo Pio",
+   "Mercados de Trajano",
+   "Cúpula de San Pedro",
+   "Iglesia del Gesù",
+   "Ara Pacis",
+   "Barrio Judío",
+   "Iglesia de San Ignacio de Loyola",
+   "Plaza del Quirinal",
+   "Via dei Coronari",
+   "Via Condotti",
+   "Templo de Adriano",
+   "Piazza Colonna",
+   "Plaza Farnese",
+   "Museos Capitolinos",
+   "Iglesia de San Pietro in Vincoli",
+   "Domus Aurea",
+   "Basílica de Santa María la Mayor",
+   "Columna de Trajano",
+   "Teatro de Marcelo",
+   "Iglesia de Santa Maria della Vittoria",
+   "Villa Farnesina",
+   "Ponte Sisto",
+   "Plaza Trilussa",
+   "Basílica de San Juan de Letrán",
+   "Quartiere Coppedè",
+   "Mercado de Testaccio",
+   "Palazzo Doria Pamphilj",
+   "Via Appia Antica",
+   "Catacumbas de San Calixto",
+   "Cementerio Protestante",
+   "Basílica de Santa Cecilia in Trastevere",
+   "Monti",
+   "Testaccio",
+   "Trinità dei Monti",
+   "Cripta de los Capuchinos",
+   "Terraza de Largo Gaetana Agnesi",
+   "Mirador de San Pietro in Montorio",
+   "Colle Oppio",
+   "Via Veneto",
+   "Via del Babuino",
+   "Via Margutta",
+   "Porta Pinciana",
+   "Jardines del Pincio",
+   "Mercadillo de Navidad de Piazza Navona",
+   "100 Presepi in Vaticano",
+   "Santo Bambino de Aracoeli",
+   "Luces de Navidad del Tridente"
+  ]
+ },
+ "lanzarote": {
+  "con_pedazo": [
+   {
+    "nombre": "Montañas del Fuego (Timanfaya)",
+    "colecciones": [
+     "Los imprescindibles de Lanzarote",
+     "Tierra de fuego"
+    ]
+   },
+   {
+    "nombre": "Jameos del Agua",
+    "colecciones": [
+     "Los imprescindibles de Lanzarote",
+     "La Lanzarote de César Manrique"
+    ]
+   },
+   {
+    "nombre": "Cueva de los Verdes",
+    "colecciones": [
+     "Los imprescindibles de Lanzarote",
+     "Tierra de fuego"
+    ]
+   },
+   {
+    "nombre": "Mirador del Río",
+    "colecciones": [
+     "Los imprescindibles de Lanzarote",
+     "La Lanzarote de César Manrique",
+     "La isla a tus pies"
+    ]
+   },
+   {
+    "nombre": "Fundación César Manrique",
+    "colecciones": [
+     "Los imprescindibles de Lanzarote",
+     "La Lanzarote de César Manrique"
+    ]
+   },
+   {
+    "nombre": "El Golfo y el Charco de los Clicos",
+    "colecciones": [
+     "Los imprescindibles de Lanzarote",
+     "Playas y charcos",
+     "Pueblos con alma"
+    ]
+   },
+   {
+    "nombre": "La Geria y sus bodegas",
+    "colecciones": [
+     "Los imprescindibles de Lanzarote",
+     "Entre viñas de ceniza"
+    ]
+   },
+   {
+    "nombre": "Playas de Papagayo",
+    "colecciones": [
+     "Playas y charcos"
+    ]
+   },
+   {
+    "nombre": "Caletón Blanco",
+    "colecciones": [
+     "Playas y charcos"
+    ]
+   },
+   {
+    "nombre": "Jardín de Cactus",
+    "colecciones": [
+     "La Lanzarote de César Manrique"
+    ]
+   },
+   {
+    "nombre": "Los Hervideros",
+    "colecciones": [
+     "Tierra de fuego"
+    ]
+   },
+   {
+    "nombre": "Salinas de Janubio",
+    "colecciones": [
+     "La isla a tus pies"
+    ]
+   },
+   {
+    "nombre": "Teguise (villa)",
+    "colecciones": [
+     "Pueblos con alma"
+    ]
+   },
+   {
+    "nombre": "Haría y la Casa-Museo César Manrique",
+    "colecciones": [
+     "La Lanzarote de César Manrique",
+     "Pueblos con alma"
+    ]
+   },
+   {
+    "nombre": "Casa-Museo del Campesino",
+    "colecciones": [
+     "La Lanzarote de César Manrique"
+    ]
+   },
+   {
+    "nombre": "Caleta de Famara y Playa de Famara",
+    "colecciones": [
+     "Playas y charcos",
+     "Pueblos con alma"
+    ]
+   },
+   {
+    "nombre": "Arrecife: Charco de San Ginés y el paseo",
+    "colecciones": [
+     "Pueblos con alma"
+    ]
+   },
+   {
+    "nombre": "Castillo de San José (MIAC)",
+    "colecciones": [
+     "La Lanzarote de César Manrique"
+    ]
+   },
+   {
+    "nombre": "Ermita de las Nieves",
+    "colecciones": [
+     "La isla a tus pies"
+    ]
+   },
+   {
+    "nombre": "Mirador de Guinate",
+    "colecciones": [
+     "La isla a tus pies"
+    ]
+   },
+   {
+    "nombre": "Ciudad Estratificada (Rofera de Teseguite)",
+    "colecciones": [
+     "Tierra de fuego"
+    ]
+   },
+   {
+    "nombre": "Playa de Montaña Bermeja",
+    "colecciones": [
+     "Playas y charcos"
+    ]
+   },
+   {
+    "nombre": "Las Grietas (Montaña Blanca)",
+    "colecciones": [
+     "Tierra de fuego"
+    ]
+   },
+   {
+    "nombre": "Mirador del Bosquecillo (Risco de Famara)",
+    "colecciones": [
+     "La isla a tus pies"
+    ]
+   },
+   {
+    "nombre": "Mirador de Haría",
+    "colecciones": [
+     "La isla a tus pies"
+    ]
+   },
+   {
+    "nombre": "Punta Mujeres y Arrieta (La Garita)",
+    "colecciones": [
+     "Playas y charcos"
+    ]
+   },
+   {
+    "nombre": "Playa de La Garita",
+    "colecciones": [
+     "Playas y charcos"
+    ]
+   },
+   {
+    "nombre": "Volcán del Cuervo",
+    "colecciones": [
+     "Tierra de fuego"
+    ]
+   },
+   {
+    "nombre": "Caldera Blanca",
+    "colecciones": [
+     "Tierra de fuego"
+    ]
+   }
+  ],
+  "sin_pedazo": [
+   "LagOmar",
+   "Mirador de los Helechos",
+   "Castillo de Santa Bárbara",
+   "Playa Blanca y el Faro de Pechiguera",
+   "Puerto del Carmen (Puerto Viejo)",
+   "La Graciosa"
+  ]
+ }
+}

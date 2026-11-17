@@ -201,6 +201,8 @@ if (PARTE === 'todas' || PARTE === '2') {
       debe(despues.stops.length === antes.stops.length, 'lanzarote: el día no crece ni se encoge (uno por uno)')
       debe(antes.stops.filter((s) => s.r).every((s) => despues.stops.some((x) => x.id === s.id)), 'lanzarote: las paradas con reserva no se tocan')
       debe(despues.stops.filter((s) => /Jameos|Cueva|Mirador del Río|Manrique|Helechos/.test(s.n)).length === 5, 'lanzarote: el resto del día se queda como estaba')
+      await ev("(() => { document.querySelector('[data-hoy-aviso-mas]')?.click(); return true })()")
+      await a.esp(300)
       debe(await hay(ev, '[data-tiempo-cambiado=lluvia]'), 'lanzarote: tras el cambio sale el aviso con [Deshacer]')
       await cap(a, 'lanzarote_c14_cambiado')
       await clic(ev, '[data-deshacer-tiempo]')

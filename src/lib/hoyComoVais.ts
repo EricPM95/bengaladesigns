@@ -145,7 +145,7 @@ function frasePasa(q: Quitado): string {
   const partes: string[] = []
   if (a.length) partes.push(`${unir(a)} pasa${a.length > 1 ? 'n' : ''} ${q.aDia}`)
   if (b.length) partes.push(`${unir(b)} pasa${b.length > 1 ? 'n' : ''} a «Si te sobra tiempo» ${q.aDia.replace('a mañana', 'de mañana').replace(/^al /, 'del ')}`)
-  if (c.length) partes.push(`${unir(c)} pasa${c.length > 1 ? 'n' : ''} a «Si te sobra tiempo»`)
+  if (c.length) partes.push(`${unir(c)} pasa${c.length > 1 ? 'n' : ''} a «Lugares pendientes»`)
   return cap(partes.join(' y '))
 }
 
@@ -171,7 +171,7 @@ export function responderCansados(p: { route: Route; day: DayPlan; ctx: Contexto
       id: `cansados-opcional-${items.map((i) => i.stop.id).join('+')}`,
       tipo: 'cansados',
       intro: '¿Y si por hoy lo dejáis aquí? Lo que queda no es imprescindible.',
-      cambia: { titulo: `${unir(nombres)} ${nombres.length > 1 ? 'pasan' : 'pasa'} a «Si te sobra tiempo»`, detalle: 'Lo podéis recuperar cuando queráis.' },
+      cambia: { titulo: `${unir(nombres)} ${nombres.length > 1 ? 'pasan' : 'pasa'} a «Lugares pendientes»`, detalle: 'Lo podéis recuperar cuando queráis.' },
       mantiene: { titulo: 'todo lo que ya habéis visto', detalle: 'Nada se pierde.' },
       ops: q.ops,
       caso: undefined,

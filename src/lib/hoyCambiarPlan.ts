@@ -512,7 +512,7 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
     if (soloOpc.length) partes.push(`quitamos ${unir(soloOpc)}`)
     if (aManana.length) partes.push(`${unir(aManana)} pasa${aManana.length > 1 ? 'n' : ''} ${aDia}`)
     if (aSobraM.length) partes.push(`${unir(aSobraM)} pasa${aSobraM.length > 1 ? 'n' : ''} a «Si te sobra tiempo» ${aDia.replace('a mañana', 'de mañana').replace(/^al /, 'del ')}`)
-    if (aSobraHoy.length) partes.push(`${unir(aSobraHoy)} pasa${aSobraHoy.length > 1 ? 'n' : ''} a «Si te sobra tiempo»`)
+    if (aSobraHoy.length) partes.push(`${unir(aSobraHoy)} pasa${aSobraHoy.length > 1 ? 'n' : ''} a «Lugares pendientes»`)
     const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
     const titulo = partes.length ? cap(partes.join(' y ')) : 'Tus siguientes paradas se retrasan un poco'
     const detalle = v.pregunta ? 'Es de lo más importante: solo lo hacemos si tú quieres.' : soloOpc.length && !aManana.length && !aSobraM.length && !aSobraHoy.length ? 'Es opcional: queda en «Si te sobra tiempo».' : aSobraHoy.length && !aManana.length && !aSobraM.length ? 'La puedes recuperar de «Si te sobra tiempo» cuando quieras.' : partes.length ? 'Así llegas bien al resto de la tarde.' : 'Todo cabe: no quitamos nada.'

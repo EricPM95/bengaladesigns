@@ -1,0 +1,179 @@
+{
+ "roma": {
+  "total": 94,
+  "con_foto_propia": 64,
+  "sin_foto_propia": [
+   {
+    "nombre": "Largo di Torre Argentina",
+    "id": "largo_di_torre_argentina",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Via del Corso",
+    "id": "via_del_corso",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Via di Ripetta",
+    "id": "via_di_ripetta",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Lungotevere",
+    "id": "lungotevere",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Bioparque de Roma",
+    "id": "bioparque_de_roma",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Isla Tiberina",
+    "id": "isla_tiberina",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Campo de' Fiori",
+    "id": "campo_de_fiori",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Borgo Pio",
+    "id": "borgo_pio",
+    "motivo": "sin_foto a propósito (decisión de Eric/regla)"
+   },
+   {
+    "nombre": "Iglesia del Gesù",
+    "id": "iglesia_del_gesu",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Iglesia de San Luigi dei Francesi",
+    "id": "iglesia_de_san_luigi_dei_francesi",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Iglesia de Santa Maria sopra Minerva",
+    "id": "iglesia_de_santa_maria_sopra_minerva",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Iglesia de San Ignacio de Loyola",
+    "id": "iglesia_de_san_ignacio_de_loyola",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Elefantino de Bernini",
+    "id": "elefantino_de_bernini",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Fuente de las Tortugas",
+    "id": "fuente_de_las_tortugas",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Plaza del Quirinal",
+    "id": "plaza_del_quirinal",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Via dei Coronari",
+    "id": "via_dei_coronari",
+    "motivo": "sin_foto a propósito (decisión de Eric/regla)"
+   },
+   {
+    "nombre": "Plaza Farnese",
+    "id": "plaza_farnese",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Iglesia de Santa Maria della Vittoria",
+    "id": "iglesia_de_santa_maria_della_vittoria",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Ponte Sisto",
+    "id": "ponte_sisto",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Plaza Trilussa",
+    "id": "plaza_trilussa",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Quartiere Coppedè",
+    "id": "quartiere_coppede",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "San Pietro in Montorio y Tempietto de Bramante",
+    "id": "san_pietro_in_montorio_y_tempietto_de_bramante",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Monti",
+    "id": "monti",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Testaccio",
+    "id": "testaccio",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Cripta de los Capuchinos",
+    "id": "cripta_de_los_capuchinos",
+    "motivo": "sin_foto a propósito (decisión de Eric/regla)"
+   },
+   {
+    "nombre": "Terraza de Largo Gaetana Agnesi",
+    "id": "terraza_largo_gaetana_agnesi",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Mirador de San Pietro in Montorio",
+    "id": "mirador_de_san_pietro_in_montorio",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Colle Oppio",
+    "id": "colle_oppio",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Via del Babuino",
+    "id": "via_del_babuino",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   },
+   {
+    "nombre": "Mercadillo de Navidad de Piazza Navona",
+    "id": "mercadillo_de_navidad_de_piazza_navona",
+    "motivo": "sin foto propia: la busca Unsplash/Wikipedia"
+   }
+  ]
+ },
+ "lanzarote": {
+  "total": 35,
+  "con_foto_propia": 32,
+  "sin_foto_propia": [
+   {
+    "nombre": "Mirador del Bosquecillo (Risco de Famara)",
+    "id": "mirador_del_bosquecillo",
+    "motivo": "sin_foto a propósito (decisión de Eric/regla)"
+   },
+   {
+    "nombre": "Playa de La Garita",
+    "id": "playa_de_la_garita",
+    "motivo": "sin_foto a propósito (decisión de Eric/regla)"
+   },
+   {
+    "nombre": "Puerto del Carmen (Puerto Viejo)",
+    "id": "puerto_del_carmen_puerto_viejo",
+    "motivo": "sin_foto a propósito (decisión de Eric/regla)"
+   }
+  ]
+ }
+}

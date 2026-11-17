@@ -502,7 +502,7 @@ await sec('4. ¿Cómo vais? y Cansados', async () => {
   const cambia = await txt('[data-propuesta="cambia"]')
   console.log('   calma:', i1, '|', cambia)
   debe(/^Os proponemos aflojar un poco el día\.$/.test(i1 ?? ''), '2', `(1) «Vamos con calma»: «${i1}»`)
-  debe(/Mirador de los Helechos pasa a «Si te sobra tiempo»/.test(cambia ?? ''), '2', `(1) lo que se quita: «${cambia}»`)
+  debe(/Mirador de los Helechos pasa a «Lugares pendientes»/.test(cambia ?? ''), '2', `(1) lo que se quita: «${cambia}»`)
   debe(await hay('[data-cansados-pausa]'), '2', '(1) con una pausa cerca, abierta ahora (en Lanzarote, un mirador o una playa: no hay cafés en los datos)')
   const pausa = await txt('[data-cansados-pausa]')
   debe(/mirador|playa|Playa|Mirador/.test(pausa ?? ''), '2', `(1) en Lanzarote, sin café: la pausa es un mirador o una playa («${pausa}»)`)
