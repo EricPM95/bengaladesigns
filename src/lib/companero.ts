@@ -1,5 +1,7 @@
 import { create } from 'zustand'
-import { datosDeFotoDeLaGaleria, enviarFotoDeGaleria, llamar, type RespuestaDeHecho } from './logros'
+import { datosDeFotoDeLaGaleria, enviarFotoDeGaleria, llamar, llamarCrudo, type RespuestaDeHecho } from './logros'
+import { useSyncStore } from '../store/useSyncStore'
+import { useRouteStore } from '../store/useRouteStore'
 import { alAlbum } from './reclamar'
 import { useLogrosStore } from '../store/useLogrosStore'
 import { useMomentosUI } from '../components/logros/momentos/useMomentosUI'
@@ -63,8 +65,25 @@ export function lineaDeLaTarjeta(p: PendienteDeCompanero[]): string {
 }
 
 /** Pide al servidor lo que el compañero ganó y yo no (vacío durante el viaje y fuera del plazo). Con la señal del punto del botón de logros si hay algo. */
+/** (V15b) Lo último que mandó la app a `/api/logros/companero` y lo que contestó, tal cual (el panel `?admin=logros` lo enseña): qué viaje mandó (el de la nube y el de la ruta) y qué estado y cuerpo volvieron. */
+export const CLAVE_ULTIMO_COMPANERO = 'jutrip.ultimo_companero'
+
 export async function cargarCompanero(tripId: string): Promise<PendienteDeCompanero[]> {
-  const r = await llamar<{ ok: boolean; pendientes?: PendienteDeCompanero[]; sin_pase?: boolean }>(`/api/logros/companero?trip_id=${encodeURIComponent(tripId)}`)
+  const cruda = await llamarCrudo(`/api/logros/companero?trip_id=${encodeURIComponent(tripId)}`)
+  let r: { ok: boolean; pendientes?: PendienteDeCompanero[]; sin_pase?: boolean } | null = null
+  try {
+    r = cruda.estado === 200 ? (JSON.parse(cruda.cuerpo) as typeof r) : null
+  } catch {
+    r = null
+  }
+  try {
+    localStorage.setItem(
+      CLAVE_ULTIMO_COMPANERO,
+      JSON.stringify({ en: new Date().toISOString(), enviado: tripId, viaje_de_la_nube: useSyncStore.getState().activeTripId, id_de_la_ruta: useRouteStore.getState().route?.id ?? null, estado: cruda.estado, error: cruda.error ?? null, cuerpo: cruda.cuerpo.slice(0, 1500) }),
+    )
+  } catch {
+    /* sin almacenamiento */
+  }
   const lista = r?.ok ? (r.pendientes ?? []) : []
   useCompaneroStore.setState({ tripId, pendientes: lista, sinPase: Boolean(r?.sin_pase), cargado: true })
   return lista

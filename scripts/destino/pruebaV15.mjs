@@ -122,6 +122,13 @@ console.log('1b. Una copia propia del viaje y el viaje compartido son el mismo v
   const pE = await servicio.companeroPendientes('E', 'lz1')
   debe(pA.pendientes.some((p) => p.sitio === 'montanas_del_fuego'), 'copia', `a Alicia le sale lo de Eric aunque lo ganara en su copia (${pA.pendientes.map((p) => p.sitio).join(', ')})`)
   debe(['cueva_de_los_verdes', 'jameos_del_agua', 'mirador_del_rio'].some((s) => pE.pendientes.some((p) => p.sitio === s)), 'copia', `y a Eric le sale lo de Alicia (${pE.pendientes.map((p) => p.sitio).join(', ')})`)
+  // Los pasos del servidor (el diagnóstico): con un id que no es de ninguno de sus viajes se queda vacío en el paso 3 y lo dice; con el de la copia, sigue hasta el final.
+  const trazaMala = []
+  const malo = await servicio.companeroPendientes('A', 'id-que-no-existe', null, trazaMala)
+  debe(malo.ok === false && trazaMala.some((t) => /SE QUEDA VACÍO AQUÍ/.test(t) && /no encuentra ese viaje/.test(t)), 'pasos', `con un id de viaje que no es suyo, los pasos dicen en cuál se queda vacío (${trazaMala.slice(-1)[0]?.slice(0, 80)})`)
+  const trazaBuena = []
+  await servicio.companeroPendientes('A', 'lz-alicia', null, trazaBuena)
+  debe(trazaBuena.length >= 7 && /pendientes que salen: montanas_del_fuego/.test(trazaBuena.join(' ')) && /miembros de lz1/.test(trazaBuena.join(' ')), 'pasos', `con la copia de Alicia, los pasos llegan al final y nombran lo pendiente (${trazaBuena.length} pasos)`)
   // «llevas N» cuenta lo ganado en la copia: con 2 sitios (de 3 que pide el sello) dice 2, no 0.
   const dosHechos = hechos.filter((h) => h.user_id === 'A').slice(0, 2)
   const ids2 = new Set(dosHechos.map((h) => h.trip_id))
@@ -281,6 +288,21 @@ try {
   const r2 = await abrirResumen()
   debe(!r2.preparando && r2.muestras > 20, 'resumen', `la segunda vez, el resumen abre al momento, sin «Preparando tu resumen…» (primera vez: ${r1.preparando ? 'sí salió' : 'no salió'}; segunda: ${r2.preparando ? 'salió' : 'no salió'})`)
   await ev("__imp('/src/components/logros/momentos/useMomentosUI.ts').then((ui) => { ui.useMomentosUI.getState().cerrarResumenViaje(); return true })")
+
+  /* 3f. El panel ?admin=logros lleva el diagnóstico de «Yo también estaba» (también sin ser administrador). */
+  await ev("__imp('/src/lib/companero.ts').then((m) => m.cargarCompanero('viaje-de-prueba-123')).then(() => true)")
+  const guardado = await ev("JSON.parse(localStorage.getItem('jutrip.ultimo_companero') ?? 'null')")
+  debe(guardado && guardado.enviado === 'viaje-de-prueba-123' && 'viaje_de_la_nube' in guardado && 'id_de_la_ruta' in guardado && guardado.estado === 200, 'diagnostico', `la app apunta qué viaje mandó, los dos ids y lo que contestó (${JSON.stringify(guardado)?.slice(0, 160)})`)
+  await ev("location.href = '/?cuentas=off&logros=on&logrosDemo=1&version=completa&apertura=0&admin=logros'; true")
+  await esperar("Boolean(document.querySelector('[data-diagnostico-companero]'))", 60, 300)
+  await app.esp(1500)
+  const panel = await ev("document.querySelector('[data-diagnostico-companero]')?.innerText ?? ''")
+  debe(/Yo también estaba · diagnóstico/.test(panel) && /Versión del servidor/.test(panel) && /mandó trip_id = viaje-de-prueba-123/.test(panel), 'diagnostico', 'el panel enseña la versión del servidor y lo último que mandó la app, con su id')
+  await ev("Array.from(document.querySelectorAll('[data-diagnostico-companero] button')).find((b) => /Preguntar ahora/.test(b.innerText))?.click(); true")
+  await esperar("/Pasos del servidor/.test(document.querySelector('[data-diagnostico-companero]')?.innerText ?? '')", 30, 300)
+  const panel2 = await ev("document.querySelector('[data-diagnostico-companero]')?.innerText ?? ''")
+  debe(panel2.includes('Respuesta de /api/logros/companero?trip_id=viaje-de-prueba-123') && /estado: 200/.test(panel2) && /Pasos del servidor/.test(panel2), 'diagnostico', 'al preguntar, enseña la respuesta tal cual (estado y cuerpo) y los pasos')
+  await app.captura(`${CAPTURAS}/panel_diagnostico.jpg`)
 } finally {
   await app.cerrar()
 }

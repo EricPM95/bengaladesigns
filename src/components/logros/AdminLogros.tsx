@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { logrosActivos, llamar } from '../../lib/logros'
 import { useSinPasePrueba } from '../../store/useSinPasePrueba'
 import { empezarDeCero, puedeEmpezarDeCero } from '../../lib/empezarDeCero'
+import { DiagnosticoCompanero } from './DiagnosticoCompanero'
 
 /**
  * /admin/logros (Tanda 8A, apartado 10): una página solo para Eric (la cuenta de administrador sale de una variable del servidor, LOGROS_ADMIN_EMAILS).
@@ -44,12 +45,14 @@ export function AdminLogros() {
     void llamar<Panel>('/api/admin/logros/datos').then((r) => (r?.ok ? setPanel(r) : setError('No tienes permiso, o no has entrado con tu cuenta de administrador.')))
   }, [])
   if (!logrosActivos()) return <p className="p-6 text-[14px]">Los logros están apagados.</p>
-  if (error) return <p className="p-6 text-[14px]">{error}</p>
+  // (V15b) El diagnóstico de «Yo también estaba» sale SIEMPRE (también sin ser administrador: solo habla de la propia cuenta).
+  if (error) return <main className="mx-auto max-w-3xl p-5 text-text"><DiagnosticoCompanero /><p className="text-[14px]">{error}</p></main>
   if (!panel) return <p className="p-6 text-[14px]">Cargando…</p>
   const destino = Object.values(panel.destinos)[0]
   return (
     <main className="mx-auto max-w-3xl p-5 text-text" data-admin-logros>
       <h1 className="font-display text-[26px]">Logros · panel</h1>
+      <div className="mt-3"><DiagnosticoCompanero /></div>
       <p className="mt-1 text-[13px] text-text/60">Solo para ti. Nunca se ven las fotos de nadie. Interruptores: logros {panel.interruptores.logros ? 'sí' : 'no'} · avisos al móvil {panel.interruptores.push ? 'sí' : 'no'} · cobro {panel.interruptores.cobro ? 'sí' : 'no'}.</p>
       <nav className="mt-4 flex flex-wrap gap-2">
         {PESTANAS.map((p) => (

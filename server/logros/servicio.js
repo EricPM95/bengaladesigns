@@ -483,18 +483,35 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
    *   · solo si esta persona NO tiene ya ese sitio (ni el pedazo ni el emblema que falten).
    * Devuelve `{ ok, pendientes: [{ sitio, nombre, de, de_nombre, falta, colecciones, emblema, foto_url, instante }], sin_pase }`.
    */
-  async function companeroPendientes(userId, tripId, c0 = null) {
+  async function companeroPendientes(userId, tripId, c0 = null, traza = null) {
+    // `traza`: (V15b) si es una lista, se van apuntando los pasos que da el servidor (para el panel de diagnóstico: en qué paso se queda vacío).
+    const paso = (t) => { if (Array.isArray(traza)) traza.push(t) }
     const c = c0 ?? (await cargar(userId))
+    const corto = (x) => String(x ?? '').slice(0, 8)
+    paso(`1. viaje pedido: ${tripId || '(vacío)'}`)
+    paso(`2. viajes que ve el servidor para esta cuenta: ${Object.entries(c.viajes).map(([k, v]) => `${corto(k)} ${v.destino} ${v.inicio}→${v.fin}`).join(' | ') || '(ninguno)'}${Object.getOwnPropertyNames(c.viajes).filter((k) => !(k in Object.fromEntries(Object.entries(c.viajes)))).length ? ` | copias unidas al compartido: ${Object.getOwnPropertyNames(c.viajes).filter((k) => !Object.keys(c.viajes).includes(k)).map(corto).join(',')}` : ''}`)
     const viaje = c.viajes[tripId]
-    if (!viaje || typeof repo.miembrosDe !== 'function') return { ok: false, motivo: 'viaje_sin_fechas', pendientes: [] }
+    if (!viaje || typeof repo.miembrosDe !== 'function') {
+      paso('3. SE QUEDA VACÍO AQUÍ: el servidor no encuentra ese viaje entre los de esta cuenta (viaje_sin_fechas): el id que manda la app no es el de ninguno de sus viajes con fechas y destino de logros')
+      return { ok: false, motivo: 'viaje_sin_fechas', pendientes: [] }
+    }
+    paso(`3. viaje usado: ${corto(viaje.id)} (${viaje.destino}) ${viaje.inicio}→${viaje.fin}`)
     const hoy = hoyEn(viaje.destino)
-    if (hoy <= viaje.fin || hoy > sumarDias(viaje.fin, datos.ajustes.plazo_reclamar_dias)) return { ok: true, pendientes: [], fuera_de_fechas: true, sin_pase: false }
+    paso(`4. hoy en el destino: ${hoy}; plazo: del ${sumarDias(viaje.fin, 1)} al ${sumarDias(viaje.fin, datos.ajustes.plazo_reclamar_dias)}`)
+    if (hoy <= viaje.fin || hoy > sumarDias(viaje.fin, datos.ajustes.plazo_reclamar_dias)) {
+      paso('5. SE QUEDA VACÍO AQUÍ: hoy está FUERA del plazo (solo sale cuando el viaje ha terminado y dentro de los días de plazo)')
+      return { ok: true, pendientes: [], fuera_de_fechas: true, sin_pase: false }
+    }
     // (V15) Si piden la COPIA propia del viaje, se trabaja con el viaje compartido al que equivale (su id manda para los miembros y lo ganado).
     const tid = viaje.id ?? tripId
     const miembros = await repo.miembrosDe(tid)
     const yo = miembros.find((m) => m.user_id === userId)
     const alDia = () => true // (V15) ya no importa cuándo se unió: cuenta cualquier miembro dentro del plazo
-    if (!yo) return { ok: true, pendientes: [], sin_pase: false }
+    paso(`5. miembros de ${corto(tid)}: ${miembros.map((m) => `${corto(m.user_id)}${m.desde ? ` (desde ${String(m.desde).slice(0, 10)})` : ' (dueño)'}`).join(', ') || '(ninguno)'}; yo = ${corto(userId)}`)
+    if (!yo) {
+      paso('6. SE QUEDA VACÍO AQUÍ: esta cuenta no figura como miembro de ese viaje en el servidor')
+      return { ok: true, pendientes: [], sin_pase: false }
+    }
     const d = datos.destinos[viaje.destino]
     const mios = aItems(c.logros)
     const por = new Map()
@@ -506,6 +523,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
       }
       const logros = (await repo.logrosDe(m.user_id)).filter((l) => (l.trip_id === tid || (l.destino === viaje.destino && enElViaje(l.ganado_en))) && l.destino === viaje.destino && l.detalle?.origen !== 'companero')
       const hechos = (await repo.hechosDe(m.user_id)).filter((h) => (h.trip_id === tid || (h.destino === viaje.destino && enElViaje(h.instante))) && h.motivo !== 'companero')
+      paso(`6. compañero ${corto(m.user_id)}: ${logros.length} logros y ${hechos.length} hechos de este viaje (por id de viaje o por destino y días)`)
       const ganados = new Map()
       const de = (s) => {
         if (!ganados.has(s)) ganados.set(s, { colecciones: new Set(), emblema: false })
@@ -539,6 +557,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
       for (const p of lista) p.de_nombre = nombres.get(p.de) ?? null
     }
     const pase = await puedeGanar(userId, c, viaje, hoy)
+    paso(`7. ya tengo ${mios.size} cosas; pendientes que salen: ${lista.map((p) => p.sitio).join(', ') || 'NINGUNA'}${lista.length === 0 ? ' (SE QUEDA VACÍO AQUÍ: nada de lo del compañero me falta, o el compañero no tiene nada de este viaje)' : ''}; pase: ${pase.puede ? 'puede ganar' : `NO (${pase.motivo})`}`)
     return { ok: true, pendientes: lista, sin_pase: !pase.puede }
   }
 

@@ -129,6 +129,22 @@ async function cabeceras(): Promise<Record<string, string> | null> {
   return { 'Content-Type': 'application/json', Authorization: `Bearer ${sesion.access_token}` }
 }
 
+/** (V15b) Una llamada GET tal cual: el estado HTTP y el cuerpo sin tocar (`llamar` convierte cualquier fallo en «sin respuesta»). Para el panel de diagnóstico. */
+export async function llamarCrudo(ruta: string): Promise<{ estado: number | null; cuerpo: string; error?: string }> {
+  if (import.meta.env.DEV && demoActivo()) {
+    const demo = await import('./logrosDemo')
+    return { estado: 200, cuerpo: JSON.stringify(await demo.responder(ruta, {})) }
+  }
+  try {
+    const cab = await cabeceras()
+    if (!cab) return { estado: null, cuerpo: '', error: 'sin sesión (no has entrado con tu cuenta en este navegador)' }
+    const r = await fetch(ruta, { method: 'GET', headers: cab })
+    return { estado: r.status, cuerpo: await r.text() }
+  } catch (e) {
+    return { estado: null, cuerpo: '', error: String((e as Error)?.message ?? e) }
+  }
+}
+
 export async function llamar<T = unknown>(ruta: string, opciones: { metodo?: string; cuerpo?: unknown } = {}): Promise<T | null> {
   if (import.meta.env.DEV && demoActivo()) {
     const demo = await import('./logrosDemo')
