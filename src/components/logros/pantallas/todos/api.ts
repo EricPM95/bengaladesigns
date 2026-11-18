@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { llamar, type Momento } from '../../../../lib/logros'
+import { guardarEnCache, leerEnCache, mismaRespuesta } from '../../../../lib/logrosEnCache'
 
 /**
  * Lo que devuelve `GET /api/logros/ganados` (server/logros/pantallas/ganados.js): todo lo que se ve en «Mi vitrina» y «Todos mis logros». Los números y los textos los pone el servidor.
@@ -104,16 +105,25 @@ interface Almacen {
 
 /** Lo ganado, compartido por «Mi vitrina», «Todos mis logros» y la ficha: se pide una vez al abrir y se vuelve a pedir tras cada cambio. */
 export const useGanados = create<Almacen>((set, get) => ({
-  datos: null,
+  // (V9) Lo último que se vio (guardado en el móvil), para abrir AL INSTANTE; lo nuevo llega por detrás y solo cambia lo que cambie.
+  datos: ((): Ganados | null => {
+    const g = leerEnCache<Ganados>('ganados')
+    return g?.ok ? g : null
+  })(),
   estado: 'sin_pedir',
   cargar: async (forzar = false) => {
     if (get().estado === 'cargando' || (!forzar && get().estado === 'listo')) return
     set({ estado: 'cargando' })
     const r = await llamar<Ganados>('/api/logros/ganados')
-    if (r?.ok) set({ datos: r, estado: 'listo' })
-    else set({ estado: get().datos ? 'listo' : 'error' })
+    if (r?.ok) {
+      guardarEnCache('ganados', r)
+      set((s) => ({ datos: mismaRespuesta(s.datos, r) ? s.datos : r, estado: 'listo' }))
+    } else set({ estado: get().datos ? 'listo' : 'error' })
   },
-  poner: (g) => set({ datos: g, estado: 'listo' }),
+  poner: (g) => {
+    guardarEnCache('ganados', g)
+    set({ datos: g, estado: 'listo' })
+  },
 }))
 
 export const ORDEN_BALDAS: Balda[] = ['viajero', 'sellos', 'colecciones', 'emblemas']

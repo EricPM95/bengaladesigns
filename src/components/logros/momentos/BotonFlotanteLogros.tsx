@@ -85,6 +85,8 @@ function Boton({ soloEn }: { soloEn: string[] | null }): ReactNode {
   useEffect(() => {
     let vivo = true
     void pedirEstado(tripId).then((e) => vivo && setEstado(e))
+    // (V9) Al abrir el viaje se piden ya, por detrás, lo de la hoja de logros (arriba) y «Todos mis logros», para que la primera vez tampoco haya espera.
+    if (tripId) void import('../pantallas/todos/api').then((m) => m.useGanados.getState().cargar(false)).catch(() => undefined)
     return () => {
       vivo = false
     }

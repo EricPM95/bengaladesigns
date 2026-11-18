@@ -7,7 +7,8 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { alDia, diaConFecha, ElDia, fechaDelDia } from '../../../lib/nombreDeDia'
 import { tituloSimpleDelDia } from '../../../lib/tituloDelDia'
 import { cierraElSitio } from '../../../lib/articulos'
-import { mejorHuecoEnElDia } from '../../../lib/mejorHueco'
+import { diaDeCamino, hoyParaDias, mejorHuecoEnElDia } from '../../../lib/mejorHueco'
+import { todayIso } from '../../../lib/dateRange'
 import { placeholderPhoto, stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
 import { HojaDia, filasDeDias } from '../../ui/HojaDia'
 import { ponerParadaEnElDia } from '../../../lib/cambiarParada'
@@ -58,9 +59,20 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
   const addExcursionToDay = useRouteStore((state) => state.addExcursionToDay)
 
   const days = route.days.filter((day) => !day.isReturnLeg)
-  const firstFree = days.find((day) => !blockedReason(route, item, day))
+  const pasado = (day: DayPlan): string | null => {
+    const f = fechaDelDia(route, day.dayNumber)
+    const hoy = hoyParaDias(route, todayIso())
+    return hoy && f && f < hoy ? 'Ese día ya ha pasado.' : null
+  }
+  const firstFree = days.find((day) => !blockedReason(route, item, day) && !pasado(day))
+  // (V9) El día «que te pilla de camino» (el que pasa más cerca del sitio y al que aún le cabe, solo días que quedan): sale marcado y, si no se viene de un día, ya elegido.
+  const placeParaDia = item.kind === 'place' && item.place.kind !== 'restaurant' ? item.place : null
+  const deCamino = useMemo(
+    () => (placeParaDia ? diaDeCamino(route, stopFromPlace(placeParaDia, placeholderPhoto(placeParaDia.name)), hoyParaDias(route, todayIso())) : null),
+    [route, placeParaDia],
+  )
   const [dayId, setDayId] = useState<string | null>(
-    initialDayId && days.some((day) => day.id === initialDayId && !blockedReason(route, item, day)) ? initialDayId : (firstFree?.id ?? null),
+    initialDayId && days.some((day) => day.id === initialDayId && !blockedReason(route, item, day) && !pasado(day)) ? initialDayId : (deCamino?.dayId ?? firstFree?.id ?? null),
   )
   const day = days.find((candidate) => candidate.id === dayId) ?? null
   const isRestaurant = item.kind === 'place' && item.place.kind === 'restaurant'
@@ -112,7 +124,8 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
   const anadirAlDia = (destino: DayPlan) => {
     if (!draft || !place) return
     const stop = { ...draft, durationMinutes: minutes, addedByUser: true }
-    ponerParadaEnElDia(destino.id, stop)
+    // (V9) En el mejor hueco del día (menor rodeo, abierto), ya no «de primera».
+    ponerParadaEnElDia(destino.id, stop, { mejorHueco: true })
     onAdded({ dayId: destino.id, stopId: stop.id })
   }
 
@@ -120,7 +133,7 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
     <HojaDia
       etiqueta={name}
       titulo={item.kind === 'excursion' ? '¿A qué día la añadimos?' : '¿A qué día lo añadimos?'}
-      filas={filasDeDias(route, days, (candidate) => blockedReason(route, item, candidate))}
+      filas={filasDeDias(route, days, (candidate) => blockedReason(route, item, candidate) ?? pasado(candidate), (candidate) => (deCamino?.dayId === candidate.id ? 'Te pilla de camino' : null))}
       elegido={dayId}
       onElegir={setDayId}
       boton={day ? `Añadir ${alDia(route, day.dayNumber)}` : 'Ningún día libre para esto'}

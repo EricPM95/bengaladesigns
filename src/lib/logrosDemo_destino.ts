@@ -185,7 +185,9 @@ export function responder(ruta: string, url: URL): unknown {
   if (ruta === '/api/logros/coleccion') {
     const destino = url.searchParams.get('destino') ?? ''
     if (destino !== 'roma') return { ok: false, motivo: 'destino_sin_logros' }
-    return coleccionPorDentro({ datos, destino, coleccion: url.searchParams.get('coleccion') ?? '', items: itemsDeEjemplo(), viaje, nombreDe: (s: string) => NOMBRES[s] ?? s }) ?? { ok: false, motivo: 'coleccion_sin_logros' }
+    const r = coleccionPorDentro({ datos, destino, coleccion: url.searchParams.get('coleccion') ?? '', items: itemsDeEjemplo(), viaje, nombreDe: (s: string) => NOMBRES[s] ?? s })
+    // (V9) Como el servidor: el momento del viaje (para saber si ha terminado); en el demo sin fotos suyas (sale la del sitio).
+    return r ? { ...r, viaje: viaje ? { inicio: viaje.inicio, fin: viaje.fin, hoy: estado.modo === 'completo' ? '2026-10-14' : '2026-10-12' } : null } : { ok: false, motivo: 'coleccion_sin_logros' }
   }
   if (ruta === '/api/logros/mi-coleccion') {
     const items = itemsDeEjemplo()

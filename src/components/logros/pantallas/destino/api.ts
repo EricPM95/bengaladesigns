@@ -45,8 +45,10 @@ export interface ColeccionDentroDatos {
   destino: string
   ciudad: string
   coleccion: { id: string; nombre: string; n: number; total: number; completa: boolean; fecha: string | null; al_completar: string | null }
-  sitios: { sitio: string; nombre: string; visto: boolean; fecha: string | null; en_ruta: boolean; dia: { numero: number | null; fecha: string | null } | null }[]
+  sitios: { sitio: string; nombre: string; visto: boolean; fecha: string | null; en_ruta: boolean; dia: { numero: number | null; fecha: string | null } | null; foto_url?: string | null }[]
   con_ruta: boolean
+  /** (V9) El viaje abierto y el día de hoy en el destino: con `hoy > fin` el viaje ha terminado y las tarjetas sin ganar no llevan botón. */
+  viaje?: { inicio: string; fin: string; hoy: string } | null
 }
 
 /** «Mi colección» (GET /api/logros/mi-coleccion). */

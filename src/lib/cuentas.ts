@@ -595,6 +595,7 @@ export async function cerrarSesion(): Promise<void> {
     olvidarAnonima()
     try {
       window.localStorage.removeItem('trazo:perfil:ultimo:v1') // (Tanda 10N5) lo último que se vio del Perfil es de la cuenta que sale
+      void import('./logrosEnCache').then((m) => m.olvidarCacheDeLogros()) // (V9) y lo último que se vio de los logros
     } catch {
       /* nada que quitar */
     }

@@ -1,4 +1,5 @@
 import { llamar } from '../../../lib/logros'
+import { guardarEnCache, leerEnCache } from '../../../lib/logrosEnCache'
 
 /** Lo que el servidor cuenta del destino (GET /api/logros/estado): sellos, colecciones (con sus sitios vistos), secretos, lo pendiente y el puntito. */
 export interface EstadoLogros {
@@ -69,11 +70,30 @@ function completar(e: EstadoLogros): EstadoLogros {
   }
 }
 
+/** (V9) Lo último que se vio del estado de este viaje (memoria o móvil), para enseñarlo AL INSTANTE al abrir la hoja de logros mientras llega lo nuevo. Con datos puestos a mano (pruebas), esos. */
+export function estadoGuardado(tripId: string | null): EstadoLogros | null {
+  if (datosDePrueba.estado) return completar(datosDePrueba.estado)
+  if (!tripId) return null
+  const g = leerEnCache<EstadoLogros>(`estado:${tripId}`)
+  return g?.ok ? completar(g) : null
+}
+
+/** Las peticiones en vuelo, para que el botón flotante (que pide el estado al abrir el viaje) y la hoja (al abrirse) no pregunten dos veces lo mismo a la vez. */
+const enVuelo = new Map<string, Promise<EstadoLogros | null>>()
+
 export async function pedirEstado(tripId: string | null): Promise<EstadoLogros | null> {
   if (datosDePrueba.estado) return completar(datosDePrueba.estado)
   if (!tripId) return null
-  const r = await llamar<EstadoLogros>(`/api/logros/estado?trip_id=${encodeURIComponent(tripId)}`)
-  return r?.ok ? completar(r) : null
+  const ya = enVuelo.get(tripId)
+  if (ya) return ya
+  const p = (async () => {
+    const r = await llamar<EstadoLogros>(`/api/logros/estado?trip_id=${encodeURIComponent(tripId)}`)
+    if (!r?.ok) return null
+    guardarEnCache(`estado:${tripId}`, r)
+    return completar(r)
+  })().finally(() => enVuelo.delete(tripId))
+  enVuelo.set(tripId, p)
+  return p
 }
 
 export async function pedirResumen(tripId: string | null, dia: string | null): Promise<ResumenLogros | null> {

@@ -105,3 +105,58 @@ export function otroDiaAbierto(route: Route, day: DayPlan, draft: Stop, place: D
   }
   return null
 }
+
+/** (V9) Un `DestinationPlace` mínimo con lo que `mejorHuecoEnElDia` mira (el horario), sacado de la propia parada: así sirve para EXPLORAR y para la colección, que solo traen la parada. */
+function lugarDeLaParada(parada: Stop): DestinationPlace {
+  return { hours_data: parada.hoursData ?? null, schedule: parada.scheduleText ?? parada.hours ?? null, name: parada.name } as unknown as DestinationPlace
+}
+
+/**
+ * (V9, apartado 4) EL MEJOR HUECO DE UNA PARADA EN UN DÍA, para [Añadir a mi viaje] (desde la colección y desde EXPLORAR): entre las dos paradas más cercanas, con el menor rodeo; si a esa hora está cerrada,
+ * en el siguiente hueco en que esté abierta (mejorHuecoEnElDia). Las comidas y lo de hora fija no se mueven: solo se inserta, el orden de las demás no cambia.
+ */
+export function mejorHuecoDeLaParada(route: Route, dia: DayPlan, parada: Stop): Colocacion {
+  const minutos = Math.max(5, parada.durationMinutes || 60)
+  return mejorHuecoEnElDia(dia, parada, lugarDeLaParada(parada), fechaDelDia(route, dia.dayNumber), minutos)
+}
+
+/** El máximo de paradas con el que a un día aún le «cabe» otra. */
+const PARADAS_MAXIMAS_POR_DIA = 8
+
+export interface DiaDeCamino {
+  dayId: string
+  /** Lo que se añadiría al camino de ese día (metros). */
+  extraMetros: number
+}
+
+/**
+ * (V9, apartado 4) EL DÍA «QUE TE PILLA DE CAMINO»: el día cuya ruta pasa más cerca del sitio y al que aún le cabe. SOLO días que quedan (nunca los ya pasados: `hoyIso`, el día de hoy en el destino; sin
+ * fechas, todos), sin excursión de día entero, con paradas de verdad (con coordenadas), con hueco en que el sitio esté abierto y sin tener ya el sitio. Null si ninguno encaja.
+ */
+export function diaDeCamino(route: Route, parada: Stop, hoyIso: string | null): DiaDeCamino | null {
+  let mejor: DiaDeCamino | null = null
+  for (const dia of route.days) {
+    if (dia.isReturnLeg || hasFullDayExcursion(dia) || isFreeDay(dia)) continue
+    const fecha = fechaDelDia(route, dia.dayNumber)
+    if (hoyIso && fecha && fecha < hoyIso) continue
+    if (dia.stops.some((s) => s.name === parada.name)) continue
+    const reales = dia.stops.filter((s) => !s.isZoneWalk && s.coordinates && hasRealCoordinates(s.coordinates))
+    if (reales.length === 0 || reales.length >= PARADAS_MAXIMAS_POR_DIA) continue
+    const c = mejorHuecoDeLaParada(route, dia, parada)
+    if (c.cierra) continue
+    if (!mejor || c.hueco.extraMetros < mejor.extraMetros) mejor = { dayId: dia.id, extraMetros: c.hueco.extraMetros }
+  }
+  return mejor
+}
+
+/**
+ * (V9) El día de hoy para decidir qué días «quedan» (nunca se marca ni se deja elegir un día ya pasado). Si el viaje no tiene fechas, o ya ha terminado entero (no queda ningún día), null: la regla no se aplica.
+ */
+export function hoyParaDias(route: Route, hoyIso: string): string | null {
+  if (!route.answers.dateRange?.start) return null
+  const quedan = route.days.some((d) => {
+    const f = fechaDelDia(route, d.dayNumber)
+    return Boolean(f) && (f as string) >= hoyIso
+  })
+  return quedan ? hoyIso : null
+}

@@ -39,14 +39,21 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
       ok(await admin.from('logro_hechos').update({ deshecho_en: cuando }).eq('id', id), 'deshacerHecho')
     },
     async viajesDe(userId) {
-      const propios = ok(await admin.from('trips').select('id, route, traveler_id').eq('traveler_id', userId), 'viajesDe')
-      const miembros = ok(await admin.from('trip_members').select('trip_id').eq('user_id', userId), 'viajesDe(miembro)')
-      let ajenos = []
-      if (miembros.length > 0) ajenos = ok(await admin.from('trips').select('id, route, traveler_id').in('id', miembros.map((m) => m.trip_id)), 'viajesDe(ajenos)')
+      // (V9) Menos rondas: los propios y los de miembro a la vez; y luego los ajenos y las invitaciones (de los ids ya conocidos) a la vez. Antes eran cuatro rondas seguidas.
+      const [propiosR, miembrosR] = await Promise.all([admin.from('trips').select('id, route, traveler_id').eq('traveler_id', userId), admin.from('trip_members').select('trip_id').eq('user_id', userId)])
+      const propios = ok(propiosR, 'viajesDe')
+      const miembros = ok(miembrosR, 'viajesDe(miembro)')
+      const idsAjenos = miembros.map((m) => m.trip_id).filter((id) => !propios.some((p) => p.id === id))
+      if (propios.length === 0 && miembros.length === 0) return []
+      // Con el Pase Dúo, el viaje es «en pareja» para los dos: hay una invitación con un pase Dúo en ese viaje.
+      const [ajenosR, invitacionesR] = await Promise.all([
+        idsAjenos.length > 0 ? admin.from('trips').select('id, route, traveler_id').in('id', idsAjenos) : Promise.resolve({ data: [], error: null }),
+        admin.from('trip_invitations').select('trip_id, pass_id').in('trip_id', [...propios.map((t) => t.id), ...idsAjenos]).not('pass_id', 'is', null),
+      ])
+      const ajenos = idsAjenos.length > 0 ? ok(ajenosR, 'viajesDe(ajenos)') : []
       const todos = [...propios, ...ajenos]
       if (todos.length === 0) return []
-      // Con el Pase Dúo, el viaje es «en pareja» para los dos: hay una invitación con un pase Dúo en ese viaje.
-      const invitaciones = ok(await admin.from('trip_invitations').select('trip_id, pass_id').in('trip_id', todos.map((t) => t.id)).not('pass_id', 'is', null), 'viajesDe(invitaciones)')
+      const invitaciones = ok(invitacionesR, 'viajesDe(invitaciones)')
       let duo = new Set()
       if (invitaciones.length > 0) {
         const pases = ok(await admin.from('passes').select('id, tipo').in('id', invitaciones.map((i) => i.pass_id)), 'viajesDe(pases)')

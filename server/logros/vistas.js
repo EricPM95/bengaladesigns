@@ -220,6 +220,11 @@ export function coleccionesDeSitio({ datos, destino, sitio, items, nombreDe }) {
  * Las paradas de los días anteriores del viaje que todavía no tienen su pedazo o su emblema. `hoy`: la fecha de hoy en el destino.
  * Después del último día, quedan `dias_para_reclamar` (null si el plazo ya pasó o el viaje no ha acabado).
  */
+/** (V9) Las colecciones a las que aún les falta el pedazo de ese sitio («Tierra de fuego · Los imprescindibles»): lo que da. Un emblema oculto nunca se nombra. */
+function nombresDeLoQueDa(d, destino, items, sitio) {
+  return d.colecciones.filter((c) => c.sitios.includes(sitio) && !items.get(clave(destino, 'pedazo', `${c.id}:${sitio}`))).map((c) => c.nombre)
+}
+
 export function pendientes({ datos, destino, viaje, items, hoy }) {
   const d = datos.destinos[destino]
   const plazo = datos.ajustes.plazo_reclamar_dias
@@ -237,7 +242,7 @@ export function pendientes({ datos, destino, viaje, items, hoy }) {
           faltaPedazo: d.colecciones.some((c) => c.sitios.includes(s) && !items.get(clave(destino, 'pedazo', `${c.id}:${s}`))),
           faltaEmblema: d.emblemas.some((e) => e.sitio === s && !items.get(clave(destino, 'emblema', e.id))),
         })).filter((x) => x.faltaPedazo || x.faltaEmblema)
-        if (faltan.length > 0) lista.push({ fecha: dia.fecha, dia: dia.numero ?? null, sitio: faltan[0].s, stop_id: p.stop_id ?? null, nombre: p.nombre ?? null, foto_dentro: d.sitios[faltan[0].s].foto_dentro ?? null, falta: [faltan.some((x) => x.faltaPedazo) && 'pedazo', faltan.some((x) => x.faltaEmblema) && 'emblema'].filter(Boolean) })
+        if (faltan.length > 0) lista.push({ fecha: dia.fecha, dia: dia.numero ?? null, sitio: faltan[0].s, stop_id: p.stop_id ?? null, nombre: p.nombre ?? null, foto_dentro: d.sitios[faltan[0].s].foto_dentro ?? null, falta: [faltan.some((x) => x.faltaPedazo) && 'pedazo', faltan.some((x) => x.faltaEmblema) && 'emblema'].filter(Boolean), colecciones: nombresDeLoQueDa(d, destino, items, faltan[0].s) })
       }
     }
   }

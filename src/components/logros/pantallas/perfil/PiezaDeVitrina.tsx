@@ -10,6 +10,6 @@ export function PiezaDeVitrina({ pieza, tam }: { pieza: PiezaReciente; tam: numb
   }
   if (pieza.logro === 'emblema') return <Emblema id={pieza.escalon} tam={tam} />
   if (pieza.logro === 'coleccion') return <Insignia coleccion={pieza.escalon} completa tam={tam} />
-  if (pieza.logro.startsWith('viajero:')) return <Chapa logro={pieza.logro.slice('viajero:'.length)} escalon={pieza.escalon === '' ? undefined : pieza.escalon} tam={tam} />
+  if (pieza.logro.startsWith('viajero:')) return <Chapa logro={pieza.logro.slice('viajero:'.length)} escalon={pieza.escalon === '' ? undefined : pieza.escalon} destino={pieza.destino} tam={tam} />
   return null
 }

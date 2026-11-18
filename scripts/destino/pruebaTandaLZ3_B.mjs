@@ -169,6 +169,9 @@ try {
       const huecos = await b.evaluar("document.querySelector('[data-secretos]')?.querySelectorAll('[data-hueco-emblema]').length ?? -1")
       debe(sec === esperados.enc, `hoja ${nombre}: salen ${sec} emblemas ganados de Lanzarote, no ${esperados.enc}`)
       debe(huecos === 11 - esperados.enc, `hoja ${nombre}: ${huecos} emblemas sin ganar, debían ser ${11 - esperados.enc}`)
+      // (V9) Las colecciones a 0 van plegadas en «Más colecciones de …»: se abren para contarlas todas.
+      await b.evaluar("document.querySelector('[data-mas-colecciones][data-mas-colecciones=plegado] button')?.click(); true")
+      await b.esp(500)
       const gajos = await b.evaluar("document.querySelectorAll('[data-gajos]').length")
       debe(gajos === 7, `hoja ${nombre}: salen ${gajos} insignias en gajos, no 7`)
       await b.captura(path.join(SALIDA, `lz3_hoja_${nombre}_1.jpg`))

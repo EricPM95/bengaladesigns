@@ -1,4 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { diaDeCamino, hoyParaDias } from '../../../lib/mejorHueco'
+import { todayIso } from '../../../lib/dateRange'
+import { fechaDelDia } from '../../../lib/nombreDeDia'
 import type { Route, Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { resolveDisplayStops, seedStopsFromTemplate } from '../../../lib/mockDayDetail'
@@ -23,7 +26,10 @@ interface DayPositionPickerProps {
  */
 export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPositionPickerProps) {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null)
-  const [elegido, setElegido] = useState<string | null>(null)
+  // (V9) El día «que te pilla de camino»: el que pasa más cerca del sitio y al que aún le cabe (solo días que quedan). Sale marcado y ya elegido.
+  const deCamino = useMemo(() => (stop ? diaDeCamino(route, stop, hoyParaDias(route, todayIso())) : null), [route, stop])
+  const [elegidoAMano, setElegido] = useState<string | null>(null)
+  const elegido = elegidoAMano ?? deCamino?.dayId ?? null
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
 
@@ -48,7 +54,8 @@ export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPosit
     if (!stop) return
     const dia = route.days.find((d) => d.id === dayId)
     if (dia && dia.stops.length === 0) seedDayStops(dia.id, seedStopsFromTemplate(dia))
-    const id = ponerParadaEnElDia(dayId, { ...stop, addedByUser: true })
+    // (V9) En el mejor hueco del día (menor rodeo, abierto), ya no «de primera».
+    const id = ponerParadaEnElDia(dayId, { ...stop, addedByUser: true }, { mejorHueco: true })
     setSelectedDayId(null)
     setElegido(null)
     onInserted()
@@ -61,7 +68,17 @@ export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPosit
       <HojaDia
         etiqueta={stop.name}
         titulo="¿A qué día lo añadimos?"
-        filas={filasDeDias(route, route.days.filter((day) => !day.isReturnLeg))}
+        filas={filasDeDias(
+          route,
+          route.days.filter((day) => !day.isReturnLeg),
+          // (V9) Solo días que quedan: nunca un día ya pasado.
+          (day) => {
+            const f = fechaDelDia(route, day.dayNumber)
+            const hoy = hoyParaDias(route, todayIso())
+            return hoy && f && f < hoy ? 'Ese día ya ha pasado.' : null
+          },
+          (day) => (deCamino?.dayId === day.id ? 'Te pilla de camino' : null),
+        )}
         elegido={elegido}
         onElegir={setElegido}
         boton={elegido ? 'Añadir a este día' : 'Elige un día'}

@@ -121,15 +121,25 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
 
   /** Todo lo de una persona que hace falta para calcular. */
   async function cargar(userId) {
-    const [hechos, filas, logros, cuenta, pionero, probador] = await Promise.all([repo.hechosDe(userId), repo.viajesDe(userId), repo.logrosDe(userId), repo.cuentaDe(userId), repo.ordenPionero(userId), repo.probadorDe(userId)])
+    // (V9) TODAS las lecturas a la vez, en una sola ronda (antes el perfil y los referidos esperaban a las otras seis y la invitación, a todas): cada ronda al servidor de datos son ~150-300 ms.
+    const [hechos, filas, logros, cuenta, pionero, probador, perfil, referidos, invitador] = await Promise.all([
+      repo.hechosDe(userId),
+      repo.viajesDe(userId),
+      repo.logrosDe(userId),
+      repo.cuentaDe(userId),
+      repo.ordenPionero(userId),
+      repo.probadorDe(userId),
+      repo.perfilDe(userId),
+      repo.referidosDe ? repo.referidosDe(userId) : [],
+      repo.invitadorDe ? repo.invitadorDe(userId).catch(() => undefined) : undefined,
+    ])
     const viajes = {}
     for (const fila of filas) {
       const ctx = contextoDeViaje(fila, datos, catalogos, { esDuo: fila.es_duo === true })
       if (ctx) viajes[fila.id] = ctx
     }
-    // (8C1) La EXP que ya tenía (nunca baja) y los amigos que ha invitado.
-    const [perfil, referidos] = await Promise.all([repo.perfilDe(userId), repo.referidosDe ? repo.referidosDe(userId) : []])
-    return { hechos, viajes, logros, cuenta, pionero, probador, perfil, referidos }
+    // (8C1) La EXP que ya tenía (nunca baja) y los amigos que ha invitado; (V9) y quién le invitó, ya leído.
+    return { hechos, viajes, logros, cuenta, pionero, probador, perfil, referidos, invitador }
   }
   const calcularCon = (c, hechos = c.hechos, pionero = c.pionero) => calcular({ datos, hechos, viajes: c.viajes, cuenta: c.cuenta, ahora: ahora(), pionero, probador: aIso(c.probador) })
   const aMapa = (filas) => new Map(filas.map((f) => [clave(f.destino, f.logro, f.escalon), f]))
@@ -202,7 +212,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
    */
   async function resolverInvitacion(invitadoId, c) {
     if (!repo.invitadorDe) return { ok: true, cumplida: false }
-    const fila = await repo.invitadorDe(invitadoId)
+    // (V9) Ya viene leído con el resto (`cargar`); solo se lee otra vez si quien llama no lo trae.
+    const fila = c.invitador !== undefined ? c.invitador : await repo.invitadorDe(invitadoId)
     if (!fila || fila.viaje_acabado_en) return { ok: true, cumplida: Boolean(fila?.viaje_acabado_en) }
     const buenos = viajesConHoy({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() }).filter((v) => v.cumple)
     if (buenos.length === 0) return { ok: true, cumplida: false }
@@ -652,6 +663,20 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     }
   }
 
+  /**
+   * (V9) La foto con la que se ganó cada sitio (la de la foto o el Visto que lo dio; sin foto suya —un Visto, «Yo también estaba»— no hay: la pantalla usa la del sitio de nuestros datos).
+   * `c`: lo ya cargado de la cuenta (`cargar`). Devuelve { sitio: url }.
+   */
+  async function fotosDeSitios(c, sitios) {
+    const fotos = {}
+    if (typeof repo.fotoUrl !== 'function') return fotos
+    for (const s of sitios) {
+      const h = c.hechos.find((x) => !x.deshecho_en && x.foto_id && (x.sitio === s || (Array.isArray(x.sitios) && x.sitios.includes(s))))
+      if (h) fotos[s] = await repo.fotoUrl(h.foto_id).catch(() => null)
+    }
+    return fotos
+  }
+
   async function ficha(userId, tripId, sitio) {
     const c = await cargar(userId)
     const viaje = c.viajes[tripId]
@@ -761,7 +786,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return repo.encolarAvisos(puestos)
   }
 
-  return { aItems, cargar, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, cerca, deshacer, recalcular, estado, ficha, loDeAyer, sitiosParaReclamar, companeroPendientes, yoTambien, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
+  return { aItems, cargar, fotosDeSitios, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, cerca, deshacer, recalcular, estado, ficha, loDeAyer, sitiosParaReclamar, companeroPendientes, yoTambien, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
 }
 
 /** El instante (ISO, UTC) en que son las `hhmm` de esa fecha en la hora del destino. */

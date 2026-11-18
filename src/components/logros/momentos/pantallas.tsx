@@ -253,7 +253,7 @@ function PantallaChapa({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePantal
       <Centro>
         <Vuelo estilo={{ marginBottom: 10 }}>
           <div style={{ opacity: 0, animation: 'moDrop .9s .3s cubic-bezier(.2,.8,.2,1) both' }}>
-            <Chapa logro={ch.logro} escalon={ch.escalon} tam={220} />
+            <Chapa logro={ch.logro} escalon={ch.escalon} destino={typeof m.destino === 'string' ? m.destino : undefined} tam={220} />
           </div>
         </Vuelo>
         <Ojo en="1.5s">{TITULO_CHAPA[m.tipo] ?? 'Logro'}</Ojo>
@@ -276,7 +276,7 @@ function PantallaAdemas({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePanta
             const ch = chapaDe(m)
             return (
               <div key={`${m.tipo}${i}`} style={{ display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', opacity: 0, animation: `moUp .7s ${(0.5 + i * 0.3).toFixed(1)}s ease both` }}>
-                {m.tipo === 'maravilla' ? <MedallaDeSiete encendidas={Array.isArray(m.maravillas) ? (m.maravillas as string[]) : [s(m, 'id')]} tam={96} /> : <Chapa logro={ch.logro} escalon={ch.escalon} tam={78} />}
+                {m.tipo === 'maravilla' ? <MedallaDeSiete encendidas={Array.isArray(m.maravillas) ? (m.maravillas as string[]) : [s(m, 'id')]} tam={96} /> : <Chapa logro={ch.logro} escalon={ch.escalon} destino={typeof m.destino === 'string' ? m.destino : undefined} tam={78} />}
                 <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
                   <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: ORO }}>{TITULO_CHAPA[m.tipo] ?? 'Logro'}</span>
                   <span style={{ font: "400 22px/1.05 'Instrument Serif',serif" }}>{tituloDeMomento(m)}</span>

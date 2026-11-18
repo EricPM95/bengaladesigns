@@ -73,9 +73,15 @@ export const LOGROS_CON_CHAPA: string[] = [
 /** Escalones de cada familia con escalones (para la página de prueba). */
 export const ESCALONES_DE: Record<string, (string | number)[]> = { ...Object.fromEntries(Object.entries(ESCALONADOS).map(([k, v]) => [k, v.pasos])), maravillas: [1, 2, 3, 4, 5, 6, 7] }
 
+/** (V9) «lanzarote» → «Lanzarote»; «roma» → «Roma» (el nombre de la ciudad para la moneda `{ciudad} {anio}`); sin destino, Roma como siempre. */
+export function nombreDeCiudadDeDestino(destino?: string | null): string {
+  if (!destino || destino === '*') return 'Roma'
+  return destino.split(/[_s]+/).map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(' ')
+}
+
 export function ChapaDibujo({
-  logro, escalon, tam = 88, bloqueado = false, animada = false, progreso, ciudad,
-}: { ciudad?: string; logro: string; escalon?: string | number | null; tam?: number; bloqueado?: boolean; animada?: boolean; progreso?: number | string }) {
+  logro, escalon, tam = 88, bloqueado = false, animada = false, progreso, ciudad: ciudadDada, destino,
+}: { ciudad?: string; destino?: string; logro: string; escalon?: string | number | null; tam?: number; bloqueado?: boolean; animada?: boolean; progreso?: number | string }) {
   const n = escalon == null ? null : Number(escalon)
   let dibujo: ReactNode = null
   let alto = tam
@@ -103,7 +109,7 @@ export function ChapaDibujo({
   } else if (logro === 'cuatro_estaciones') {
     dibujo = <CuatroEstaciones got={progreso != null ? Number(progreso) : 4} size={tam} />
   } else if (EXCLUSIVOS[logro]) {
-    dibujo = <ExclusivoHolo kind={EXCLUSIVOS[logro]} size={tam} anio={escalon ?? undefined} ciudad={ciudad} />
+    dibujo = <ExclusivoHolo kind={EXCLUSIVOS[logro]} size={tam} anio={escalon ?? undefined} ciudad={ciudadDada ?? nombreDeCiudadDeDestino(destino)} />
   } else if (logro === 'continentes') {
     alto = (tam * 154) / 140
     dibujo = <Continentes got={progreso != null ? String(progreso) : 'eu,na,sa'} size={tam} anim={animada} />

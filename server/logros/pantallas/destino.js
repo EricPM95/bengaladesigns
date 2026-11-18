@@ -211,7 +211,10 @@ export function registrar(app, ctx) {
     const c = await servicio.cargar(u.id)
     const viaje = req.query.trip_id ? (c.viajes[String(req.query.trip_id)] ?? null) : null
     const r = coleccionPorDentro({ datos, destino, coleccion: String(req.query.coleccion ?? ''), items: servicio.aItems(c.logros), viaje, nombreDe: (s) => nombreDeSitio(catalogos, destino, s) })
-    return res.json(r ?? { ok: false, motivo: 'coleccion_sin_logros' })
+    if (!r) return res.json({ ok: false, motivo: 'coleccion_sin_logros' })
+    // (V9) La foto con la que se ganó cada sitio visto, y el momento del viaje (para saber si ya ha terminado).
+    const fotos = await servicio.fotosDeSitios(c, r.sitios.filter((s) => s.visto).map((s) => s.sitio))
+    return res.json({ ...r, sitios: r.sitios.map((s) => ({ ...s, foto_url: fotos[s.sitio] ?? null })), viaje: viaje ? { inicio: viaje.inicio, fin: viaje.fin, hoy: hoyEn(destino) } : null })
   }))
 
   app.get('/api/logros/mi-coleccion', conUsuario(async (_req, res, u) => {

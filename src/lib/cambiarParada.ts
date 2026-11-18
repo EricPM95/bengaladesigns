@@ -3,6 +3,8 @@ import { useRouteStore } from '../store/useRouteStore'
 import { cambiarConDeshacer, useAddFlowStore } from '../store/useAddFlowStore'
 import { alDia } from './nombreDeDia'
 import { dondeQueda, sinSuFranja } from './dondeQuedaLaParada'
+import { isFreeDay } from './freeDays'
+import { mejorHuecoDeLaParada } from './mejorHueco'
 
 /** Lo único que se queda del hueco de la parada que se cambia: su sitio en el día (su hora y su franja). */
 const DEL_HUECO = new Set<string>(['time', 'franja'])
@@ -86,12 +88,13 @@ export function moverParadaAOtroDia(stopId: string, deDiaId: string, aDiaId: str
  * (10N8, 3f) Pone una parada NUEVA en un día donde dice `dondeQueda` (el Free Tour de primero por la mañana; lo demás de primero sin pase y donde mejor encaja con pase), sin la franja que traiga. Si entra
  * de primera, coge la hora de la que era primera y las de detrás se empujan lo justo si se pisan. Sin aviso ni [Deshacer]: eso lo pone quien llama. Devuelve el id de la parada, o null si no hay ese día.
  */
-export function ponerParadaEnElDia(dayId: string, parada: Stop, opciones: { conPase?: boolean } = {}): string | null {
+export function ponerParadaEnElDia(dayId: string, parada: Stop, opciones: { conPase?: boolean; /** (V9) El hueco ya calculado. */ indice?: number; /** (V9) Donde mejor encaja (menor rodeo y abierto), en vez de «de primera». */ mejorHueco?: boolean } = {}): string | null {
   const state = useRouteStore.getState()
   const route = state.route
   const dia = route?.days.find((d) => d.id === dayId)
   if (!route || !dia) return null
-  const { indice } = dondeQueda(route, dia, parada, opciones)
+  // (V9) [Añadir a mi viaje] (colección y EXPLORAR): en el mejor hueco del día, no de primera (en Lanzarote eso mandaba a la otra punta de la isla a primera hora). El Free Tour sigue de primero.
+  const indice = parada.isFreeTour || isFreeDay(dia) ? dondeQueda(route, dia, parada, opciones).indice : opciones.indice != null ? opciones.indice : opciones.mejorHueco ? mejorHuecoDeLaParada(route, dia, parada).hueco.indice : dondeQueda(route, dia, parada, opciones).indice
   const conFranja = sinSuFranja(dia, parada, indice)
   const hora = indice === 0 && dia.stops[0] ? dia.stops[0].time : conFranja.time
   state.insertStopAt(dayId, indice, { ...conFranja, time: hora, addedByUser: parada.addedByUser ?? true }, indice === 0 ? { alPrincipio: true } : undefined)

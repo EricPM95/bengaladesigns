@@ -84,7 +84,7 @@ export function bannerDespues(ciudad: string, selloPrincipal: { grado: string | 
 export function marcaDeColeccion(p: { fase: FaseDelViaje; completa: boolean; nuevo: boolean; enTuRuta: boolean; ciudad: string }): { etiqueta: 'completa' | 'nuevo' | 'en_ruta' | null; texto: string | null; faltaParaOtroViaje: string | null } {
   if (p.fase === 'antes') return p.enTuRuta ? { etiqueta: 'en_ruta', texto: 'En tu ruta', faltaParaOtroViaje: null } : { etiqueta: null, texto: null, faltaParaOtroViaje: null }
   if (p.completa) return { etiqueta: 'completa', texto: '✓ Completa', faltaParaOtroViaje: null }
-  const aparte = p.fase === 'despues' ? `Para tu próximo viaje a ${p.ciudad}` : null
+  const aparte = null // (V9) fuera «Para tu próximo viaje a …» de debajo de cada colección
   if (p.nuevo) return { etiqueta: 'nuevo', texto: 'Nuevo', faltaParaOtroViaje: aparte }
   if (p.fase === 'durante' && p.enTuRuta) return { etiqueta: 'en_ruta', texto: 'En tu ruta', faltaParaOtroViaje: null }
   return { etiqueta: null, texto: null, faltaParaOtroViaje: aparte }
@@ -104,4 +104,17 @@ export function tituloDeSecretos(fase: FaseDelViaje, ciudad: string, total: numb
 export function notaDeSecretos(fase: FaseDelViaje, total: number, encontrados: number): string | null {
   if (total - encontrados <= 0) return null
   return fase === 'despues' ? 'Los que faltan te esperan en tu próximo viaje.' : 'Nunca sabrás cuáles son ni dónde están: se descubren en el sitio.'
+}
+
+/**
+ * (V9) Lo que dice la tarjeta de la medalla debajo de su barra, en UNA sola línea: «Te quedan 2 para la plata · 6 para el diamante» (si el siguiente grado ya es el diamante, solo «Te quedan 6 para el diamante»).
+ * Antes del viaje o sin grado, como siempre («Empieza en bronce»); con el diamante, lo que dice el destino. Los números salen del servidor: el diamante es llevar todos (total − n).
+ */
+export function textoDeLoQueQueda(p: { fase: FaseDelViaje; grado: string | null; siguiente: { grado: string; faltan: number } | null; n: number; total: number; alCompletar?: string | null }): string {
+  if (p.fase === 'antes' || !p.grado || !p.siguiente) return textoDelSiguiente({ fase: p.fase, grado: p.grado, siguiente: p.siguiente, alCompletar: p.alCompletar })
+  const hastaDiamante = Math.max(0, p.total - p.n)
+  const quedan = (n: number) => (n === 1 ? 'Te queda 1' : `Te quedan ${n}`)
+  if (p.siguiente.grado === 'diamante' || hastaDiamante <= p.siguiente.faltan) return `${quedan(hastaDiamante)} para el diamante`
+  const hasta = ARTICULO[p.siguiente.grado] ?? p.siguiente.grado
+  return `${quedan(p.siguiente.faltan)} para ${hasta} · ${hastaDiamante} para el diamante`
 }
