@@ -7,6 +7,7 @@ import { pedirEstado, pedirResumen, type EstadoLogros, type ResumenLogros } from
 import './momentos.css'
 import { fila, lineaDeSecretos, ORDEN_FILAS, textoDeSello } from './textosResumen'
 import { useMomentosUI } from './useMomentosUI'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 
 /**
  * EL RESUMEN DEL DÍA (Tanda 8B). El mismo al acabar la ruta y al final de las sorpresas. Cuenta lo ganado hoy (del servidor, `GET /api/logros/resumen`; si no
@@ -90,6 +91,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
   const acabado = estado?.viaje?.hoy && estado.viaje.fin ? estado.viaje.hoy > estado.viaje.fin : false
   return (
     <div className="mo" role="dialog" aria-modal="true" aria-label="Resumen del día" style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#F5EFE4', color: '#1C2230', fontFamily: "'Geist',system-ui,sans-serif", display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+      <CruzDeHoja onCerrar={alCerrar} estilo={{ position: 'fixed', top: 'calc(env(safe-area-inset-top,0px) + 8px)', right: 8 }} />
       <div style={{ padding: 'calc(env(safe-area-inset-top,0px) + 34px) 24px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
         <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)', animation: 'moUp .6s ease both' }}>{ciudad ? `Tu día en ${ciudad}` : 'Tu día'}</span>
         <span style={{ font: "400 36px/1.05 'Instrument Serif',serif", animation: 'moUp .6s .1s ease both' }}>{hayAlgo ? 'Lo que te llevas de hoy' : 'Aún no has ganado nada hoy'}</span>

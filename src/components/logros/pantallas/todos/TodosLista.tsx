@@ -206,7 +206,7 @@ function TarjetaDeFila({ f, enVitrina, abrir }: { f: FilaDeViajero; enVitrina: b
           <circle cx="42" cy="42" r="39" fill="none" stroke="rgba(28,34,48,.09)" strokeWidth="3.5" />
           <circle cx="42" cy="42" r="39" fill="none" stroke={f.ganado ? color : 'rgba(28,34,48,.25)'} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="245" strokeDashoffset={Math.round(245 * (1 - p))} />
         </svg>
-        <ChapaDeFila fila={f} tam={72} />
+        <ChapaDeFila fila={f} tam={80} />
       </span>
       <span style={{ marginTop: 4, font: "500 11.5px/1.2 'Geist'", color: f.ganado ? '#1C2230' : 'rgba(28,34,48,.5)', textWrap: 'balance' as never, textAlign: 'center' }}>{f.nombre}</span>
     </button>

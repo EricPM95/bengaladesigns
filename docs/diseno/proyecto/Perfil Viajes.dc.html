@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}::-webkit-scrollbar{display:none}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">PERFIL · MIS VIAJES Y MI VITRINA</span><span style="font:400 40px/1 'Instrument Serif',serif">El Perfil, con las tarjetas de viaje nuevas</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:10px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">P1 · EL PERFIL ENTERO</span>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;background:#F6EFE0;box-shadow:0 0 0 9px #14161C,0 30px 70px -20px rgba(60,40,10,.45)">
+        <div style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;padding:56px 16px 40px;display:flex;flex-direction:column;gap:34px">
+          <div style="flex:none;display:flex;flex-direction:column;gap:14px;padding:16px 18px 16px;border-radius:30px;background:#FFFDF8;box-shadow:0 14px 30px -20px rgba(28,34,48,.4)">
+            <div style="display:flex;align-items:center;gap:14px"><span style="position:relative;width:110px;height:110px;flex:none"><span style="position:absolute;left:25.5%;top:25.5%;width:49%;height:49%;border-radius:50%;background:linear-gradient(150deg,#C9B8A2,#6E5A48);color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:400 30px/1 'Instrument Serif',serif">E</span><span style="position:absolute;inset:0;background-image:url(assets/marco-nivel2.png);background-size:contain;background-repeat:no-repeat"></span></span><div style="display:flex;flex-direction:column;gap:4px;min-width:0"><span style="font:400 32px/1 'Instrument Serif',serif">Hola, <em>Eric</em></span><span style="font:600 13px 'Geist';color:rgba(28,34,48,.7)">Nivel 2 · Soñador</span><span style="align-self:flex-start;height:26px;padding:0 11px;border-radius:999px;background:#F3E6C8;color:#6E5018;display:flex;align-items:center;font:italic 400 14px 'Instrument Serif',serif">Todos a bordo</span></div></div>
+            <div style="display:flex;flex-direction:column;gap:6px"><span style="height:6px;border-radius:3px;background:rgba(28,34,48,.1);overflow:hidden"><span style="display:block;height:100%;width:11%;border-radius:3px;background:linear-gradient(90deg,#C99A44,#F3D88F)"></span></span><span style="display:flex;justify-content:space-between;font:500 12px 'Geist';color:rgba(28,34,48,.6)"><span>100 / 900</span><span style="font-weight:600;color:#6E4A2A">Te faltan 800 EXP para el nivel 3</span></span></div>
+          </div>
+          <div style="flex:none;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px"><span style="display:flex;align-items:center;gap:10px"><span style="font:400 28px/1 'Instrument Serif',serif">Mis viajes</span><span style="width:34px;height:34px;border-radius:50%;background:#FFFDF8;border:1px solid rgba(28,34,48,.12);display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"></path></svg></span></span><span style="font:600 14px 'Geist';color:#6E4A2A">Ver todos (2) ›</span></div>
+            <div style="margin:0 -16px;padding:0 16px 8px;display:flex;gap:12px;overflow-x:auto;scrollbar-width:none">
+              <sc-for list="{{ trips }}" as="t" hint-placeholder-count="2">
+                <div style="flex:none;width:300px;border-radius:26px;overflow:hidden;background:#FFFDF8;box-shadow:0 12px 26px -16px rgba(28,34,48,.5)">
+                  <div style="position:relative;height:160px;background:{{ t.ph }}"><span style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.08) 0 2px,transparent 2px 12px)"></span><span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,12,20,.05) 35%,rgba(10,12,20,.72))"></span>
+                    <sc-if value="{{ t.soon }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:14px;top:14px;height:24px;padding:0 10px;border-radius:999px;background:rgba(255,248,230,.92);color:#6E5018;display:flex;align-items:center;font:500 11.5px 'Geist';letter-spacing:.01em">En 7 días</span><span style="position:absolute;left:14px;top:44px;font:400 8.5px 'Geist Mono',monospace;letter-spacing:.04em;color:rgba(255,255,255,.65)">Foto: David Libeert · Unsplash</span></sc-if>
+                    <span style="position:absolute;right:12px;top:12px;width:34px;height:34px;border-radius:50%;background:rgba(255,253,248,.92);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path></svg></span>
+                    <span style="position:absolute;left:16px;bottom:14px;display:flex;flex-direction:column;gap:4px"><span style="font:400 38px/1 'Instrument Serif',serif;color:#fff">{{ t.n }}</span><span style="font:500 13px 'Geist Mono',monospace;color:rgba(255,255,255,.9)">{{ t.d }}</span></span>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px 12px 16px"><span style="white-space:nowrap;font:500 14px 'Geist';color:rgba(28,34,48,.62)">{{ t.s }}</span><span aria-label="Recuerdos del viaje" style="flex:none;width:38px;height:38px;border-radius:50%;background:#F3E6C8;color:#6E5018;display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3.5" width="13.5" height="13.5" rx="3"></rect><path d="M4 7.5v10A3.5 3.5 0 0 0 7.5 21h10M7 14l3.5-3.5L14 14l2-2 4.5 4.5M16 8.2h.01"></path></svg></span></div>
+                </div>
+              </sc-for>
+              <span style="flex:none;width:4px"></span>
+            </div>
+          </div>
+          <div style="flex:none;position:relative;overflow:hidden;border-radius:30px;background:radial-gradient(120% 120% at 50% 0%,#1E2548 0%,#12172E 60%,#0B0F1F 100%);padding:18px 16px 22px;display:flex;flex-direction:column;gap:6px;box-shadow:0 16px 30px -18px rgba(10,14,31,.8)">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px"><span style="font:400 28px/1 'Instrument Serif',serif;color:#FFFDF8">Mi vitrina</span><span style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;border-radius:50%;background:rgba(243,213,154,.14);border:1px solid rgba(243,213,154,.5);color:#F3D59A;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span><span style="height:32px;padding:0 12px;border-radius:999px;border:1px solid rgba(243,213,154,.5);color:#F3D59A;display:flex;align-items:center;font:600 14px 'Geist'">10 logros ›</span></span></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:4px">
+              <sc-for list="{{ slots }}" as="s" hint-placeholder-count="3"><div style="position:relative;height:150px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12px"><span style="position:absolute;left:50%;top:0;margin-left:-44px;width:88px;height:130px;clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);background:linear-gradient(180deg,rgba(243,213,154,.3),transparent)"></span><dc-import name="Piezas/Emblema Lanza" kind="{{ s }}" found="{{ true }}" scale="{{ 0.62 }}" hint-size="93px,93px"></dc-import><span style="width:70px;height:8px;border-radius:50%;background:rgba(0,0,0,.45);margin-top:-2px"></span></div></sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">P2 · LOS RECUERDOS DE UN VIAJE</span>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;background:#F6EFE0;box-shadow:0 0 0 9px #14161C,0 30px 70px -20px rgba(60,40,10,.45)">
+        <div style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:22px;padding-bottom:40px">
+          <div style="flex:none;position:relative;height:280px;background:linear-gradient(160deg,#6FB6D8,#2C5A78 55%,#1C2230)"><span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,12,20,.15),rgba(10,12,20,.7))"></span>
+            <span style="position:absolute;left:16px;top:54px;width:40px;height:40px;border-radius:50%;background:rgba(255,253,248,.92);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></span>
+            <span style="position:absolute;left:20px;bottom:18px;display:flex;flex-direction:column;gap:6px"><span style="font:400 46px/1 'Instrument Serif',serif;color:#fff">Lanzarote</span><span style="font:500 13px 'Geist Mono',monospace;color:rgba(255,255,255,.9)">8 - 13 nov 2026 · 6 días</span></span></div>
+          <div style="flex:none;padding:0 16px"><span style="height:54px;border-radius:999px;background:#1C2230;box-shadow:inset 0 0 0 1.5px rgba(243,213,154,.5);color:#FFFDF8;display:flex;align-items:center;justify-content:center;gap:10px;font:600 15px 'Geist'">Abrir el viaje<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3D59A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></span></div>
+          <div style="flex:none;display:flex;flex-direction:column;gap:12px"><span style="padding:0 20px;font:400 28px/1 'Instrument Serif',serif">Tus días</span>
+            <div style="padding:0 16px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none"><sc-for list="{{ days }}" as="d" hint-placeholder-count="4"><div style="flex:none;width:150px;height:92px;padding:12px 14px;border-radius:20px;background:#FFFDF8;box-shadow:0 8px 18px -14px rgba(28,34,48,.45);display:flex;flex-direction:column;gap:6px"><span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.1em;color:#8A6A2C">{{ d.n }}</span><span style="font:400 17px/1.1 'Instrument Serif',serif">{{ d.t }}</span></div></sc-for></div></div>
+          <div style="flex:none;display:flex;flex-direction:column;gap:12px"><span style="padding:0 20px;font:400 28px/1 'Instrument Serif',serif">Tus fotos</span>
+            <div style="padding:0 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><sc-for list="{{ photos }}" as="p" hint-placeholder-count="9"><span style="aspect-ratio:1;border-radius:16px;background:{{ p }}"></span></sc-for></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){return{
+    trips:[{n:'Roma',d:'25 - 29 nov 2026',s:'5 días · 49 paradas',ph:'linear-gradient(160deg,#9CC4E4,#C99A6C 55%,#6E4A2A)',soon:true},{n:'Lanzarote',d:'8 - 13 nov 2026',s:'6 días · 16 paradas',ph:'linear-gradient(160deg,#6FB6D8,#2C5A78 55%,#4E2C14)',soon:false}],
+    slots:['1','3','4'],
+    days:[['DÍA 1','Tu llegada a Lanzarote'],['DÍA 2','Fuego y mar: el sur volcánico'],['DÍA 3','El norte de Manrique'],['DÍA 4','La Graciosa (excursión)']].map(([n,t])=>({n,t})),
+    photos:['#6FB6D8,#1F4E6E','#6FB6D8,#2C5A78','#9CC4E4,#4A5A6E','#B8A07A,#4A3A24','#9AA4B4,#4A4E5E','#C98A4E,#6B2E1E','#76C4A0,#1C5A44','#E8B796,#8E4A2C','#8BB4D6,#3A5E86'].map(g=>'linear-gradient(160deg,'+g+')')
+  };}
+}
+</script>
+</body>
+</html>

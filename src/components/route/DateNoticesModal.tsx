@@ -5,6 +5,7 @@ import { seasonCardPending } from '../../lib/seasonCard'
 import { useRouteStore } from '../../store/useRouteStore'
 import { AvisoDeFechaTarjeta, AvisosMasTarjeta } from './AvisoDeFechaTarjeta'
 import { Icono } from '../ui/Icono'
+import { CruzDeHoja } from '../ui/CruzDeHoja'
 
 /**
  * La ventana de fechas especiales (PROMPT_AVISO_FECHAS, Parte B; Tanda 10M). Sale sola la PRIMERA vez que el viajero abre su ruta si hay algún
@@ -65,6 +66,7 @@ export function DateNoticesModal({ route }: { route: Route }) {
     <div className="fixed inset-0 z-[80] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-label="Avisos de tus fechas" data-ventana-avisos={single ? 'uno' : 'todos'}>
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={close} />
       <div className="trazo-notice-panel relative flex max-h-[94dvh] w-full max-w-[390px] flex-col overflow-hidden rounded-[30px] bg-[#FFFDF8] shadow-[0_30px_70px_-30px_rgba(40,25,5,.45)]">
+        <CruzDeHoja onCerrar={close} />
         <NoticeCarousel slides={slides} trackRef={trackRef} active={active} onActive={setActive} goTo={goTo} />
         <div className="px-7 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-2">
           <button

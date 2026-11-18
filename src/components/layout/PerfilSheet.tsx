@@ -8,6 +8,7 @@ import { useUnirseUi } from '../../store/useUnirseUi'
 import { useLogrosPantallas } from '../logros/pantallas/useLogrosPantallas'
 import { logrosActivos } from '../../lib/logros'
 import { empezarViajeNuevo } from '../../lib/nuevoViaje'
+import { abrirViajeEnRuta } from '../../lib/abrirViaje'
 import { useNumeroFotos } from '../../lib/useNumeroFotos'
 import { viajePorId, viajesDelPerfil, type ResumenViaje } from '../../lib/viajesPerfil'
 import { Icono } from '../ui/Icono'
@@ -73,9 +74,9 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
   // (Tanda 6y5) [Abrir este viaje]: carga el viaje guardado en la app y cierra el Perfil. El que ya está abierto, solo cierra el Perfil.
   const abrirViaje = (viaje: ResumenViaje) => {
     onClose()
-    if (!viaje.guardado || viaje.id === rutaAbierta?.id) return
+    // (V12) Un viaje terminado, uno en curso y uno por empezar se abren igual, en RUTA (`abrirViajeEnRuta` también pide el viaje entero si en la lista solo está el resumen).
+    if (abrirViajeEnRuta(viaje) || !viaje.guardado) return
     useSyncStore.getState().setActiveTripId(viaje.guardado.id)
-    useSyncStore.getState().setResumeTrip(null)
     hydrateTrip(viaje.guardado)
   }
 

@@ -16,6 +16,7 @@ import { SelloPasaporte } from './mundo/SelloPasaporte'
 import { aspectoDeSello, fechaDeSello } from './mundo/selloDatos'
 import './mundo/mundo.css'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 
 const BURDEOS = 'linear-gradient(150deg,#7A2034,#4A1220 60%,#36101A)'
 const ORO = 'oklch(0.8 0.14 70)'
@@ -31,6 +32,24 @@ const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno
 const realesDe = (p: PaginaDePasaporte) => p.sellos.filter((s) => !s.vacio)
 /** (V11) Dónde está cada destino (el punto de cada viaje en el globo). */
 const COORDENADAS_DE_DESTINO: Record<string, { lat: number; lng: number }> = { roma: { lat: 41.9, lng: 12.5 }, lanzarote: { lat: 29.0, lng: -13.6 } }
+
+function distanciaKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  const rad = (g: number) => (g * Math.PI) / 180
+  const h = Math.sin(rad(b.lat - a.lat) / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(rad(b.lng - a.lng) / 2) ** 2
+  return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(h)))
+}
+
+/**
+ * (V12) Adónde mira el globo al abrir la página de un país: a su centro de siempre, salvo si el viaje de esa página está MUY lejos de ese centro (Lanzarote, en las Canarias, a más de 1.000 km del centro de España):
+ * entonces se acerca a la ciudad del viaje, para que se vean las islas.
+ */
+function puntoDeLaPagina(p: PaginaDePasaporte, c: Pais): { lat: number; lng: number; z: number } {
+  const lejos = p.sellos
+    .filter((s) => !s.vacio && COORDENADAS_DE_DESTINO[s.destino])
+    .map((s) => COORDENADAS_DE_DESTINO[s.destino])
+    .find((d) => distanciaKm(c, d) > 1000)
+  return lejos ? { lat: lejos.lat, lng: lejos.lng, z: zoomParaPais(true) } : { lat: c.lat, lng: c.lng, z: zoomParaPais(c.p === 1) }
+}
 
 /** Qué dice cada país en la lista. */
 function textoDeLista(p: PaginaDePasaporte): string {
@@ -105,7 +124,8 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
     setSub(0)
     setLista(false)
     setAviso(null)
-    if (c) setObjetivo((o) => ({ lat: c.lat, lng: c.lng, z: zoomParaPais(c.p === 1), n: (o?.n ?? 0) + 1 }))
+    const v = c ? puntoDeLaPagina(p, c) : null
+    if (v) setObjetivo((o) => ({ ...v, n: (o?.n ?? 0) + 1 }))
   }
 
   // Cuando llegan los datos y el catálogo, se abre donde pide `pagina` (una sola vez).
@@ -145,7 +165,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
     setSub(s)
     // Al abrirlo sin pedir nada, el mapa se centra en los países VISITADOS (sin ninguno, en Europa); si piden un país o un sello, en ese.
     if (!pedida) setInicial(mapaDeVisitados(catalogo, paginas.filter((p) => p.estado !== 'por_conseguir' && p.iso).map((p) => p.iso as string)).inicial)
-    else if (c) setInicial({ lat: c.lat, lng: c.lng, z: zoomParaPais(c.p === 1) })
+    else if (c) setInicial(puntoDeLaPagina(paginas[i], c))
     else setInicial({ lat: 36, lng: 8, z: 1 })
   }, [catalogo, paginas, porIso, pantalla.pagina])
 
@@ -302,6 +322,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
           <>
             <div onClick={() => setLista(false)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
             <div role="dialog" aria-label="Países del pasaporte" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '26px 26px 0 0', background: '#FFFDF8', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
+              <CruzDeHoja onCerrar={() => setLista(false)} estilo={{ top: 8, right: 8 }} />
               <span style={{ alignSelf: 'center', width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
               <div style={{ maxHeight: 560, overflowY: 'auto', scrollbarWidth: 'none', display: 'flex', flexDirection: 'column' }}>
                 {([['Tus países', (p: PaginaDePasaporte) => p.estado !== 'por_conseguir'], ['Por descubrir', (p: PaginaDePasaporte) => p.estado === 'por_conseguir']] as const).map(([titulo, filtro]) => {
@@ -331,6 +352,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
           <>
             <div onClick={() => setAviso(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
             <div role="dialog" aria-label={`Aún no has estado en ${aviso.ciudad}`} data-hoja-por-conseguir style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '26px 26px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
+              <CruzDeHoja onCerrar={() => setAviso(null)} />
               <span style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
               <span style={{ marginTop: 8, font: "400 26px/1.1 'Instrument Serif',serif" }}>Aún no has estado en {aviso.ciudad}</span>
               {/* (V11) Tocar «Por conseguir» NUNCA crea un viaje: [Planear un viaje] solo abre el formulario de siempre. */}
@@ -345,9 +367,11 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
           <>
             <div onClick={() => setSinSello(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
             <div role="dialog" aria-label={`El sello de ${sinSello.ciudad}`} data-hoja-sin-sello style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '26px 26px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
+              <CruzDeHoja onCerrar={() => setSinSello(null)} />
               <span style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
               <span style={{ marginTop: 8, font: "400 26px/1.1 'Instrument Serif',serif" }}>Tu sello de {sinSello.ciudad} aún no está</span>
               <span style={{ font: "400 14px/1.45 'Geist'", color: 'rgba(28,34,48,.7)' }}>
+                {sinSello.vistas < sinSello.minimas ? `Te ${sinSello.minimas - sinSello.vistas === 1 ? 'falta 1 sitio' : `faltan ${sinSello.minimas - sinSello.vistas} sitios`} para tu sello. ` : ''}
                 {`El sello se estampa al acabar el viaje con al menos ${sinSello.minimas} sitios vistos (con tu ubicación o con una foto). En este viaje llevas ${sinSello.vistas}.`}
                 {sinSello.plazo_abierto ? ' Todavía puedes sumar los que te faltan con las fotos que hiciste: el plazo acaba el ' + fechaLarga(sinSello.hasta) + '.' : ''}
               </span>

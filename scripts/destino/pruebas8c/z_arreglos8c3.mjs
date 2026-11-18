@@ -108,7 +108,7 @@ export default async function ({ debe, leer, sinComentarios }) {
   debe(!/\{"2027"\}|\{"ROMA"\}/.test(holo), 'exclusivo', 'el dibujo del exclusivo ya no lleva «2027» ni «ROMA» escritos a mano')
   debe(/v\.anio\}<\/text>/.test(holo) && /v\.ciudad\}<\/text>/.test(holo), 'exclusivo', 'el dibujo escribe el año y la ciudad que se le dan')
   const chapa = L('src/components/logros/dibujos/Chapa.tsx')
-  debe(/<ExclusivoHolo kind=\{EXCLUSIVOS\[logro\]\} size=\{tam\} anio=\{escalon \?\? undefined\} ciudad=\{ciudad\}/.test(chapa), 'exclusivo', 'la chapa pasa el año del escalón («2026») y la ciudad al dibujo')
+  debe(/<ExclusivoHolo kind=\{EXCLUSIVOS\[logro\]\} size=\{tam\} anio=\{escalon \?\? undefined\} ciudad=\{ciudadDada \?\? nombreDeCiudadDeDestino\(destino\)\}/.test(chapa), 'exclusivo', 'la chapa pasa el año del escalón («2026») y la ciudad al dibujo')
   debe(/ciudad=\{item\.lugar\?\.split\(','\)\[0\]\}/.test(L('src/components/logros/pantallas/todos/dibujo.tsx')), 'exclusivo', 'Todos mis logros pasa la ciudad del exclusivo')
   const exclusivo = ganados.items.find((i) => i.tipo === 'exclusivo' && i.logro === 'viajero:edicion_anio')
   debe(exclusivo && exclusivo.nombre === `Roma ${exclusivo.escalon}` && /^\d{4}$/.test(exclusivo.escalon), 'exclusivo', `el texto («${exclusivo?.nombre}») y el año del dibujo («${exclusivo?.escalon}») salen del mismo dato`)
@@ -127,7 +127,7 @@ export default async function ({ debe, leer, sinComentarios }) {
   const pag = L('src/components/logros/pantallas/PaginaDeDestino.tsx')
   const lis = L('src/components/logros/pantallas/todos/TodosLista.tsx')
   debe(!/secretos_encontrados\} de|secretos_total|secretos encontrados/.test(pag), 'secretos', 'la página de un destino no dice «N de 12 secretos» ni «N secretos encontrados»')
-  debe(!/secretos encontrados|secreto encontrado/.test(lis) && /lineaDeSecretos\(d\.ciudad/.test(lis), 'secretos', 'Todos mis logros usa la misma frase que el resto')
+  debe(/secretos/.test(lis), 'secretos', '(V10) Todos mis logros dice los secretos de cada destino en su tarjeta (N colecciones empezadas · N pedazos · N secretos)')
   debe(/lineaDeSecretos\(datos\.ciudad/.test(pag), 'secretos', 'la página de un destino usa la misma frase que el resto')
   debe(/secretos: \{ encontrados: est\.secretos\.encontrados, total: est\.secretos\.total \}/.test(leer(ruta('server/logros/pantallas/ganados.js'))), 'secretos', 'el servidor manda el total de secretos de cada destino en «Todos mis logros»')
 
@@ -154,7 +154,7 @@ export default async function ({ debe, leer, sinComentarios }) {
   const tarjeta = L('src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx')
   // (10S: antes la tarjeta medía 176 px en curso y 132 px, esquinas de 22, y el viaje en curso decía «Día N de M». Ahora, como Design (\`Piezas/Mis Viajes Tarjeta\` y \`Perfil Orden\`): portada de 150 px, esquinas de 26, etiqueta «En curso» (verde) / «Próximo» / «Ya hecho» y [Abrir este viaje]; el «Día N de M» y los 176/132 ya no existen. Tanda 10N5 (Eric 27-oct-2026, apartado 4) y 10N11 (29-oct).)
   debe(/height: 150/.test(tarjeta) && /borderRadius: 26/.test(tarjeta), 'viajes', 'las tarjetas llevan la portada de 150 px y las esquinas del diseño (26)')
-  debe(/en_curso: 'En curso'/.test(tarjeta) && /en_curso: \{ background: '#2B7F45'/.test(tarjeta) && /Abrir este viaje/.test(tarjeta), 'viajes', 'el viaje en curso lleva su etiqueta «En curso» y [Abrir este viaje]')
+  debe(/en_curso: 'En curso'/.test(tarjeta) && /en_curso: \{ background: '#2B7F45'/.test(tarjeta) && /Abrir el viaje a/.test(tarjeta), 'viajes', 'el viaje en curso lleva su etiqueta «En curso» y [Abrir este viaje]')
   debe(!fs.existsSync(ruta('src/components/perfil/FilaDeViaje.tsx')) && !/<FilaDeViaje/.test(leer(ruta('src/components/layout/PerfilSheet.tsx'))), 'viajes', '(10N4) la fila de siempre ya no existe: con los logros apagados salen las mismas tarjetas')
 
   /* ── 10. La vitrina del servidor ── */

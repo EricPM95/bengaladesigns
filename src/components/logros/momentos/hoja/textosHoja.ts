@@ -90,14 +90,14 @@ export function marcaDeColeccion(p: { fase: FaseDelViaje; completa: boolean; nue
   return { etiqueta: null, texto: null, faltaParaOtroViaje: aparte }
 }
 
-/** El título del bloque oscuro de los secretos: antes del viaje «Roma esconde 14 secretos»; durante y después «Roma aún esconde 9 secretos.» (lo que decidió Eric: nunca «N de 12 encontrados»). */
+/** El título del bloque oscuro de los secretos (V12, `Hoja Logros Destino` de Design): antes del viaje, o sin ninguno encontrado, «Roma esconde 14 secretos»; durante y después, «3 de 11 secretos encontrados»; con todos, «Has encontrado todos…». Encima va «EMBLEMAS OCULTOS». */
 export function tituloDeSecretos(fase: FaseDelViaje, ciudad: string, total: number, encontrados: number): string | null {
   if (!(total > 0)) return null
   const lugar = ciudad || 'este destino'
-  if (fase === 'antes') return `${lugar} esconde ${total} ${total === 1 ? 'secreto' : 'secretos'}`
+  if (fase === 'antes' || encontrados <= 0) return `${lugar} esconde ${total} ${total === 1 ? 'secreto' : 'secretos'}`
   const quedan = total - encontrados
   if (quedan <= 0) return `Has encontrado todos los secretos de ${lugar}.`
-  return `${lugar} aún esconde ${quedan} ${quedan === 1 ? 'secreto' : 'secretos'}.`
+  return `${encontrados} de ${total} ${total === 1 ? 'secreto encontrado' : 'secretos encontrados'}`
 }
 
 /** La nota de abajo del bloque de secretos. Con todos encontrados, ninguna. */

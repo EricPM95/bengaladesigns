@@ -81,7 +81,7 @@ function Paginas({ datos, grupo, abrir }: { datos: MiColeccionDatos; grupo?: str
 /** La chapa de un logro con lo que lleva (el escalón más alto, o lo avanzado poco a poco). */
 function ChapaDe({ l, tam, bloqueada = false }: { l: LogroDeColeccion; tam: number; bloqueada?: boolean }): ReactNode {
   const progreso = l.id === 'doce_meses' ? (l.avance?.meses ?? []).join(',') : l.id === 'cuatro_estaciones' ? l.avance?.n : undefined
-  return <Chapa logro={l.id} escalon={l.escalones.length ? (l.escalon_actual ?? l.escalones[0]?.n) : undefined} tam={tam} bloqueado={bloqueada} progreso={progreso} />
+  return <Chapa logro={l.id} escalon={l.escalones.length ? (l.escalon_actual ?? l.escalones[0]?.n) : undefined} tam={tam} bloqueado={bloqueada} progreso={progreso} igual />
 }
 
 function Hueco({ l, abrir }: { l: LogroDeColeccion; abrir: () => void }): ReactNode {

@@ -54,7 +54,7 @@ console.log('Pastilla')
 {
   const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-6z6c-'))
   const salida = path.join(carpeta, 'precioVuela.cjs')
-  await build({ entryPoints: ['src/lib/precioVuela.ts'], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'silent', define: { 'import.meta.env.DEV': 'false' } })
+  await build({ entryPoints: ['src/lib/precioVuela.ts'], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'silent', define: { 'import.meta.env.DEV': 'false', 'import.meta.env': '{}' } })
   const V = require(salida)
   const eur = (amount) => ({ amount, currency: 'EUR' })
   const dia = (n) => ({ id: `d${n}`, dayNumber: n, city: 'Roma', countryCode: 'it', stops: [] })

@@ -57,6 +57,14 @@ export function urlParaMostrar(foto: Pick<FotoViaje, 'url' | 'urlMin'>): string 
   return foto.urlMin || foto.url
 }
 
+/**
+ * (V12) Donde la foto se ve GRANDE (portadas, cabeceras, foto en grande): la grande. Con la pequeña (400 px) estirada a todo el ancho salía pixelada.
+ * `urlParaMostrar` (la pequeña) queda SOLO para las miniaturas de las cuadrículas.
+ */
+export function urlGrande(foto: Pick<FotoViaje, 'url' | 'urlMin'>): string {
+  return foto.url || foto.urlMin
+}
+
 /* ------------------------------------------------------------------ */
 /* Cuántas fotos (Tanda 6z6): la regla, en UN solo sitio               */
 /* ------------------------------------------------------------------ */
@@ -365,7 +373,44 @@ export async function subirFoto(args: SubirFotoArgs): Promise<ResultadoSubida> {
  * La parte de «cuántas fotos» de subirFoto, aparte para poder probarla sin navegador. Gratis, con su foto ya puesta en ese sitio: primero se sube la nueva y solo si sale bien
  * se borra la vieja (nunca se queda sin ninguna). De pago: se sube y ya.
  */
+export const MENSAJE_FOTO_REPETIDA = 'Esta foto ya está en tu viaje.'
+
+/**
+ * (V12) ¿Esa foto ya está en ese viaje? La misma foto subida dos veces: mismo tamaño y mismos bytes (la preparación es la misma para la misma foto) y, si la foto traía la fecha y la hora de la cámara,
+ * la misma fecha y hora. Cualquier fallo de red o de tabla = «no se sabe» = false (la foto se sube como siempre).
+ */
+/**
+ * Pura: dadas las fotos del viaje con el mismo tamaño exacto (`tomadaEn`: la fecha y hora de cámara que se guardó con cada una; null = no se guardó), ¿es esta la misma foto?
+ * Con fecha de cámara en la nueva, tiene que coincidir con la de alguna (o alguna no tener fecha guardada); sin fecha de cámara, el tamaño exacto basta.
+ */
+export function esLaMismaFoto(mismoTamano: { tomadaEn: string | null }[], tomadaEnLaNueva: string | null): boolean {
+  if (mismoTamano.length === 0) return false
+  if (!tomadaEnLaNueva) return true
+  const mismoInstante = (a: string, b: string) => Math.abs(Date.parse(a) - Date.parse(b)) < 1000
+  return mismoTamano.some((f) => !f.tomadaEn || mismoInstante(f.tomadaEn, tomadaEnLaNueva))
+}
+
+export async function yaEstaLaFoto(tripId: string, preparada: Pick<FotoPreparada, 'width' | 'height' | 'bytes' | 'datos'>): Promise<boolean> {
+  if (!supabase) return false
+  try {
+    const userId = await bootstrapTraveler().catch(() => null)
+    if (!userId) return false
+    const { data, error } = await supabase.from('trip_photos').select('id, width, height, bytes').eq('user_id', userId).eq('trip_id', tripId).eq('bytes', preparada.bytes).eq('width', preparada.width).eq('height', preparada.height)
+    if (error || !Array.isArray(data) || data.length === 0) return false
+    const cuando = preparada.datos?.tomadaEn ?? null
+    if (!cuando) return esLaMismaFoto([{ tomadaEn: null }], null)
+    const { data: metas, error: errorMeta } = await supabase.from('trip_photo_meta').select('photo_id, taken_at').in('photo_id', (data as { id: string }[]).map((f) => f.id))
+    // Sin poder leer la fecha de las candidatas, el tamaño exacto ya es casi una huella.
+    if (errorMeta || !Array.isArray(metas)) return true
+    const fechas = new Map((metas as { photo_id: string; taken_at: string | null }[]).map((m) => [m.photo_id, m.taken_at]))
+    return esLaMismaFoto((data as { id: string }[]).map((f) => ({ tomadaEn: fechas.get(f.id) ?? null })), cuando)
+  } catch {
+    return false
+  }
+}
+
 export async function subirRespetandoLimite(args: Omit<SubirFotoArgs, 'file'>, preparada: FotoPreparada): Promise<ResultadoSubida> {
+  if (await yaEstaLaFoto(args.tripId, preparada)) return { foto: null, error: MENSAJE_FOTO_REPETIDA }
   const { porParada } = limiteDeFotos()
   const previas = porParada === null ? [] : fotosDelSitio(await listarFotos(args.tripId), args.dayNumber, args.stopName)
   const resultado = await subirFotoPreparada(args, preparada)

@@ -196,7 +196,8 @@ function archivos(dir) {
 const PROSA = /\b(el|al|del|tu|en el|en tu|de|a)\s+d[ií]a\s+(\$\{|\{)\s*[\w.?[\]]*(dayNumber|\bn\b|visitedDay|blocked|dayNumbers)/i
 // El patrón tiene que cazar lo de antes.
 for (const antes of ['`el día ${n}`', 'del día ${day.dayNumber}', 'Añadir al Día {dayNumber}', 'en el día ${blocked}']) debe(PROSA.test(antes), '0 patrón', `la plantilla no caza «${antes}»`)
-const FUERA = [/lib[\\/]nombreDeDia\.ts$/, /components[\\/]dev[\\/]/, /components[\\/]loading[\\/]/, /components[\\/]route[\\/]today[\\/]/, /components[\\/]layout[\\/]/]
+// (V12) También fuera: AvisoNoCabe (ya decide solo entre «el jueves» y «el día N» según haya fechas) y hoyPendientes (lugares pendientes de HOY, durante el viaje: «Saltada el día N» es su texto de lista, sin fechas de por medio).
+const FUERA = [/reorganizar[\\/]AvisoNoCabe\.tsx$/, /lib[\\/]hoyPendientes\.ts$/, /lib[\\/]nombreDeDia\.ts$/, /components[\\/]dev[\\/]/, /components[\\/]loading[\\/]/, /components[\\/]route[\\/]today[\\/]/, /components[\\/]layout[\\/]/]
 for (const archivo of archivos('src')) {
   if (FUERA.some((re) => re.test(archivo))) continue
   fs.readFileSync(archivo, 'utf8').split('\n').forEach((linea, i) => {

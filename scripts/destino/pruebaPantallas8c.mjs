@@ -1,3 +1,4 @@
+globalThis.window ??= globalThis // (V12) los demos de logros miran window.__demo…; en Node no existe
 // La prueba de las pantallas de la Tanda 8C2 (botón y hoja de logros, vitrina, destinos, colecciones, «¿Dónde has estado ya?», Perfil y marcos, pasaporte, EXP a la vista, Compartir).
 //   node scripts/destino/pruebaPantallas8c.mjs
 // No toca el motor de rutas. Cada parte de las pantallas tiene su archivo en `scripts/destino/pruebas8c/*.mjs`, que exporta `titulo` y una función por defecto `({ debe, leer, archivos, sinComentarios })`;

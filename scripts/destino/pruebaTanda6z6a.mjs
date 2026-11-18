@@ -164,7 +164,7 @@ for (const [clave, route] of Object.entries(rutas)) {
       }
       if (m.clave.startsWith('durante')) {
         const n = Number(m.clave.slice(-1))
-        const fecha = n === 1 ? 'mié 10' : 'jue 11'
+        const fecha = n === 1 ? 'Miércoles 10' : 'Jueves 11'
         debe(/Estás en/.test(texto) && /Roma/.test(texto) && texto.includes(fecha) && new RegExp(`${n} de 3`).test(texto) && !DIA_N.test(texto.slice(0, texto.indexOf('Presupuesto') > 0 ? texto.indexOf('Presupuesto') : 400)), '2 tarjeta', `${nombre}: «durante» no es «Estás en Roma · ${fecha} · ${n} de 3» (${plano(texto).slice(0, 300)})`)
         debe(!/empieza en|Pon tus fechas/.test(texto), '2 tarjeta', `${nombre}: durante el viaje sale la cuenta atrás`)
       }
@@ -326,7 +326,7 @@ for (const [clave, route] of Object.entries(rutas)) {
     debe(/data-panel-pruebas/.test(cerrado) && />Pruebas</.test(cerrado), '6 panel', `${host}: falta el botón «Pruebas»`)
     debe(/bottom-\[92px\]/.test(cerrado) && /left-3/.test(cerrado), '6 panel', `${host}: el botón no está abajo a la izquierda por encima de la barra`)
     const abierto = aTexto(pinta2(host, true))
-    for (const trozo of ['Versión', 'Gratis', 'De pago', 'Momento del viaje', 'Antes del viaje', 'Durante · mié 10', 'Durante · jue 11', 'Durante · vie 12', 'Después del viaje', 'Fecha real']) {
+    for (const trozo of ['Versión', 'Gratis', 'De pago', 'Momento del viaje', 'Antes del viaje', 'Durante · Miércoles 10', 'Durante · Jueves 11', 'Durante · Viernes 12', 'Después del viaje', 'Fecha real']) {
       debe(abierto.includes(trozo), '6 panel', `${host}: la hoja de pruebas no tiene «${trozo}» (${plano(abierto).slice(0, 300)})`)
     }
     debe(!/\bDía \d/.test(abierto), '6 panel', `${host}: la hoja dice «Día n» con fechas`)

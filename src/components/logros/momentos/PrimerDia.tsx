@@ -4,6 +4,7 @@ import { pedirEstado } from './api'
 import { FONDO_NOCHE, ORO } from './base'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 
 /**
  * «HOY EMPIEZAS A GANAR LOGROS» (Tanda 8B, pantalla L0 de «Ayudas»). Sale una sola vez, al empezar el primer día del viaje con logros; se recuerda en el móvil.
@@ -50,6 +51,7 @@ export default function PrimerDia(): ReactNode {
   ]
   return (
     <div className="mo" role="dialog" aria-modal="true" aria-label="Hoy empiezas a ganar logros" style={{ position: 'fixed', inset: 0, zIndex: 9000, background: FONDO_NOCHE, color: '#FFFDF8', fontFamily: "'Geist',system-ui,sans-serif", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 28px', textAlign: 'center' }}>
+      <CruzDeHoja onCerrar={cerrar} oscura estilo={{ position: 'fixed', top: 'calc(env(safe-area-inset-top,0px) + 8px)', right: 8 }} />
       <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.2em', textTransform: 'uppercase', color: ORO, animation: 'moUp .6s ease both' }}>Tu primer día</span>
       <span style={{ font: "400 40px/1.05 'Instrument Serif',serif", margin: '10px 0 26px', textWrap: 'balance', animation: 'moUp .6s .1s ease both' }}>Hoy empiezas a ganar logros</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, width: '100%', maxWidth: 360 }}>

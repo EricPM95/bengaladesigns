@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
+import { usePerfilUi } from '../../../store/usePerfilUi'
+import { urlGrande, urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
 import { useFotosViaje } from '../../../lib/useFotosViaje'
 import { viajePorId, viajesDelPerfil } from '../../../lib/viajesPerfil'
+import { diasDelViaje, textoDeDias } from '../../../lib/duracionViaje'
+import { abrirDiaDelViaje, abrirViajeEnRuta } from '../../../lib/abrirViaje'
 import { tituloSinHorasSiYaNoEsVerdad } from '../../../lib/tituloDelDia'
 import { FotoEnGrande } from '../../route/fotos/FotoEnGrande'
 import { Icono } from '../../ui/Icono'
@@ -14,11 +17,12 @@ import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
 import type { PiezaReciente } from './perfil/api'
 
 /**
- * MIS VIAJES → UN VIAJE (TR de «Mi Vitrina» en Design, Tanda 8C2): arriba su portada con el destino y las fechas, «Sus días», «Sus fotos» y «Lo que ganaste en este viaje» con [Ver todo Roma].
+ * LOS RECUERDOS DE UN VIAJE (`Perfil Viajes` P2 de Design, V12; antes «Mis viajes → un viaje», TR de «Mi Vitrina»): arriba su portada con el destino y «8 - 13 nov 2026 · 6 días», debajo [Abrir el viaje ›] (oscuro, a todo el ancho),
+ * «Tus días» (tocar uno abre ESE día del viaje), «Tus fotos» y «Lo que ganaste en este viaje» con [Ver todo Roma].
  * Los días y las fechas salen del viaje guardado en este dispositivo; las fotos, de las del viaje (las mismas del álbum); lo ganado, de `GET /api/logros/resumen?trip_id=` (lo ganado en las fechas del viaje).
- * Un emblema oculto solo sale si ya se encontró (el servidor no manda los demás).
+ * Un emblema oculto solo sale si ya se encontró (el servidor no manda los demás). La portada es la foto GRANDE (la pequeña, de 400 px, solo vale para las miniaturas de la cuadrícula).
  */
-const TITULO = { font: "400 22px/1 'Instrument Serif',serif" } as const
+const TITULO = { font: "400 28px/1 'Instrument Serif',serif" } as const
 
 export default function ViajeGuardado({ pantalla }: { pantalla: PantallaDe<'viaje'> }): ReactNode {
   const savedTrips = useSyncStore((s) => s.savedTrips)
@@ -44,61 +48,80 @@ export default function ViajeGuardado({ pantalla }: { pantalla: PantallaDe<'viaj
   }, [viaje?.id, pantalla.tripId])
 
   const dias = (viaje?.route.days ?? []).filter((d) => !d.isReturnLeg)
-  const portada = fotos[0] ? urlParaMostrar(fotos[0]) : ''
+  const portada = fotos[0] ? urlGrande(fotos[0]) : ''
+  const totalDias = viaje ? diasDelViaje(viaje.route) : 0
+  // [Abrir el viaje] y tocar un día: las pantallas de logros y el Perfil se cierran y se ve el viaje.
+  const salirAlViaje = (abrir: () => boolean) => {
+    if (!viaje) return
+    if (!abrir()) return
+    useLogrosPantallas.getState().cerrarTodo()
+    usePerfilUi.getState().cerrar()
+  }
   return (
     <Capa etiqueta="ViajeGuardado">
-      <main className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pb-10" style={{ scrollbarWidth: 'none' }} data-viaje-guardado={pantalla.tripId}>
-        <div className="relative flex-none text-[#FFFDF8]" style={{ height: 180, background: 'linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)' }}>
-          {portada && <img src={portada} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-          <span aria-hidden="true" className="absolute inset-0" style={{ background: 'linear-gradient(180deg,rgba(10,12,20,.25),transparent 30%,transparent 40%,rgba(10,12,20,.65))' }} />
+      <main className="relative flex min-h-0 flex-1 flex-col gap-[22px] overflow-y-auto pb-10" style={{ scrollbarWidth: 'none' }} data-viaje-guardado={pantalla.tripId}>
+        <div className="relative flex-none text-[#FFFDF8]" style={{ height: 280, background: 'linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)' }}>
+          {portada && <img src={portada} alt="" data-portada-grande className="absolute inset-0 h-full w-full object-cover" />}
+          <span aria-hidden="true" className="absolute inset-0" style={{ background: 'linear-gradient(180deg,rgba(10,12,20,.25),transparent 30%,transparent 40%,rgba(10,12,20,.7))' }} />
           <button type="button" onClick={() => useLogrosPantallas.getState().volver()} aria-label="Volver" className="absolute left-2 top-2 flex h-11 w-11 items-center justify-center rounded-full bg-[#FFFDF8]/90 text-[#1C2230]">
             <Icono nombre="atras" size={18} />
           </button>
-          <span className="absolute bottom-3.5 left-[18px] flex flex-col gap-[3px]">
-            <span style={{ font: "400 34px/1 'Instrument Serif',serif" }}>{viaje?.destino ?? ''}</span>
+          <span className="absolute bottom-[18px] left-5 flex flex-col gap-1.5">
+            <span style={{ font: "400 46px/1 'Instrument Serif',serif" }}>{viaje?.destino ?? ''}</span>
             {viaje && (
-              <span style={{ font: "500 12px 'Geist Mono',monospace" }}>
-                {[viaje.cuando, viaje.duracion.split(' · ')[0]].filter(Boolean).join(' · ')}
+              <span data-fechas-y-dias style={{ font: "500 13px 'Geist Mono',monospace" }}>
+                {[viaje.cuando, totalDias > 0 ? textoDeDias(totalDias) : ''].filter(Boolean).join(' · ')}
               </span>
             )}
           </span>
         </div>
 
+        {viaje && (
+          <div className="flex-none px-4">
+            <button type="button" onClick={() => salirAlViaje(() => abrirViajeEnRuta(viaje))} data-abrir-el-viaje className="flex h-[54px] w-full items-center justify-center gap-2.5 rounded-full text-[15px] font-semibold text-[#FFFDF8]" style={{ background: '#1C2230', boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.5)' }}>
+              Abrir el viaje
+              <Icono nombre="adelante" size={16} grosor={2.2} />
+            </button>
+          </div>
+        )}
+
         {dias.length > 0 && (
-          <>
-            <span className="px-[18px]" style={TITULO}>
-              Sus días
+          <div className="flex flex-none flex-col gap-3">
+            <span className="px-5" style={TITULO} data-titulo-tus-dias>
+              Tus días
             </span>
-            <div className="flex gap-2 overflow-x-auto px-5" style={{ scrollbarWidth: 'none' }} data-sus-dias>
+            <div className="flex gap-2.5 overflow-x-auto px-4" style={{ scrollbarWidth: 'none' }} data-tus-dias>
               {dias.map((d) => (
-                <span key={d.id} className="flex w-[118px] flex-none flex-col gap-[3px] rounded-2xl border border-[#1C2230]/[.07] bg-[#FFFDF8] px-3 py-2.5">
-                  <span style={{ font: "600 10px 'Geist Mono',monospace", color: 'rgba(28,34,48,.55)' }}>DÍA {d.dayNumber}</span>
-                  <span style={{ font: "400 16px/1.15 'Instrument Serif',serif" }}>{tituloSinHorasSiYaNoEsVerdad(d.curatedTitle ?? d.title, d, null)}</span>
-                </span>
+                <button key={d.id} type="button" onClick={() => viaje && salirAlViaje(() => abrirDiaDelViaje(viaje, d.id))} data-dia-del-viaje={d.dayNumber} className="flex h-[92px] w-[150px] flex-none flex-col items-start gap-1.5 rounded-[20px] bg-[#FFFDF8] px-3.5 py-3 text-left" style={{ boxShadow: '0 8px 18px -14px rgba(28,34,48,.45)' }}>
+                  <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.1em', color: '#8A6A2C' }}>DÍA {d.dayNumber}</span>
+                  <span className="overflow-hidden" style={{ font: "400 17px/1.1 'Instrument Serif',serif", display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                    {tituloSinHorasSiYaNoEsVerdad(d.curatedTitle ?? d.title, d, null)}
+                  </span>
+                </button>
               ))}
-              <span className="w-3 flex-none" />
+              <span className="w-2 flex-none" />
             </div>
-          </>
+          </div>
         )}
 
         {fotos.length > 0 && (
-          <>
-            <span className="px-[18px]" style={TITULO}>
-              Sus fotos
+          <div className="flex flex-none flex-col gap-3">
+            <span className="px-5" style={TITULO} data-titulo-tus-fotos>
+              Tus fotos
             </span>
-            <div className="grid grid-cols-3 gap-1 px-4" data-sus-fotos>
+            <div className="grid grid-cols-3 gap-2 px-4" data-tus-fotos>
               {fotos.map((f) => (
-                <button key={f.id} type="button" onClick={() => setGrande(f)} aria-label={f.stopName ?? 'Foto del viaje'} className="aspect-square overflow-hidden rounded-[10px] bg-[#1C2230]/10 p-0">
+                <button key={f.id} type="button" onClick={() => setGrande(f)} aria-label={f.stopName ?? 'Foto del viaje'} className="aspect-square overflow-hidden rounded-2xl bg-[#1C2230]/10 p-0">
                   {urlParaMostrar(f) && <img src={urlParaMostrar(f)} alt="" loading="lazy" className="h-full w-full object-cover" />}
                 </button>
               ))}
             </div>
-          </>
+          </div>
         )}
 
         {ganado.length > 0 && (
-          <>
-            <span className="px-[18px]" style={TITULO}>
+          <div className="flex flex-none flex-col gap-3">
+            <span className="px-5" style={TITULO}>
               Lo que ganaste en este viaje
             </span>
             <div className="flex flex-wrap items-end gap-2.5 px-4" data-lo-ganado-del-viaje>
@@ -113,7 +136,7 @@ export default function ViajeGuardado({ pantalla }: { pantalla: PantallaDe<'viaj
                 Ver todo {viaje.destino}
               </button>
             )}
-          </>
+          </div>
         )}
       </main>
       <FotoEnGrande foto={grande} onCerrar={() => setGrande(null)} />

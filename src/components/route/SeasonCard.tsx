@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { Route } from '../../lib/types'
 import { cardSeasonOfNote, type CardSeason } from '../../lib/seasonCard'
 import { useRouteStore } from '../../store/useRouteStore'
+import { CruzDeHoja } from '../ui/CruzDeHoja'
 
 /**
  * Las tarjetas especiales (PROMPT_TARJETA_TEMPORADA, INVARIANTES 415; Tanda 10M): Navidad, Semana Santa y el cumpleaños de la ciudad. Una sola
@@ -316,6 +317,7 @@ export function SeasonCard({ route }: { route: Route }) {
     <div className="fixed inset-0 z-[85] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="season-card-title" data-tarjeta-especial={season}>
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={dismissSeasonNote} />
       <div className="trazo-notice-panel relative w-full max-w-[390px] overflow-hidden rounded-[30px] bg-[#FFFDF8] shadow-[0_30px_70px_-30px_rgba(40,25,5,.45)]">
+        <CruzDeHoja onCerrar={dismissSeasonNote} oscura />
         <div className="relative h-[300px]" style={{ background: scene.sky }}>
           <div
             className="absolute left-1/2 rounded-full"

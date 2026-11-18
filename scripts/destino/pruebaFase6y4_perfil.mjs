@@ -382,7 +382,9 @@ debe(/if \(!conLogros \|\| perfilInicial/.test(fuenteCuerpo) && /logrosActivos\(
           }),
           delete: () => ({ eq: async (_c, id) => (estado.filas.delete(id), { error: null }) }),
           select: () => {
-            const q = { eq: () => q, in: () => q, order: () => q, then: (res) => res({ data: [...estado.filas.values()], error: null }) }
+            // (V12) `eq` ya filtra (el aviso de «foto repetida» pregunta por el tamaño exacto): solo por las columnas que la fila tiene.
+            const filtros = []
+            const q = { eq: (c, v) => (filtros.push([c, v]), q), in: () => q, order: () => q, then: (res) => res({ data: [...estado.filas.values()].filter((f) => filtros.every(([c, v]) => !(c in f) || f[c] === v)), error: null }) }
             return q
           },
         }),
@@ -392,6 +394,8 @@ debe(/if \(!conLogros \|\| perfilInicial/.test(fuenteCuerpo) && /logrosActivos\(
   const blob = (n) => new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xd9, n])], { type: 'image/jpeg' })
   const grande = { blob: blob(1), width: 1600, height: 1200, bytes: 5, miniatura: { blob: blob(2), bytes: 5 } }
   const args = { tripId: 'viaje-1', dayId: 'd2', dayNumber: 2, stopName: 'Coliseo' }
+  // (V12) La MISMA foto subida dos veces ya no se duplica: para probar varias subidas, cada una de un tamaño distinto.
+  const otra = (n) => ({ ...grande, bytes: 100 + n })
   let f = falso()
   globalThis.__sb = f.cliente
   globalThis.__fallaFila = false
@@ -416,14 +420,18 @@ debe(/if \(!conLogros \|\| perfilInicial/.test(fuenteCuerpo) && /logrosActivos\(
   // Gratis: la foto nueva sustituye a la vieja (se sube la nueva y se borra la vieja) y cuenta como UNA foto añadida.
   globalThis.__pago = false
   const antesSust = eventos.length
-  await F.subirRespetandoLimite(args, grande)
+  await F.subirRespetandoLimite(args, otra(1))
   debe(eventos.length === antesSust + 1, 'E', `gratis, cambiar una foto: ${eventos.length - antesSust} avisos en vez de 1`)
   // De pago, tres fotos seguidas = tres avisos.
   globalThis.__pago = true
   const antesPago = eventos.length
-  await F.subirRespetandoLimite({ ...args, stopName: null }, grande)
-  await F.subirRespetandoLimite({ ...args, stopName: null }, grande)
-  await F.subirRespetandoLimite({ ...args, stopName: null }, grande)
+  await F.subirRespetandoLimite({ ...args, stopName: null }, otra(2))
+  await F.subirRespetandoLimite({ ...args, stopName: null }, otra(3))
+  await F.subirRespetandoLimite({ ...args, stopName: null }, otra(4))
+  // La misma foto otra vez: no se duplica ni avisa.
+  const antesRep = eventos.length
+  const rep = await F.subirRespetandoLimite({ ...args, stopName: null }, otra(4))
+  debe(!rep.foto && rep.error === 'Esta foto ya está en tu viaje.' && eventos.length === antesRep, 'E', 'la misma foto subida dos veces dice «Esta foto ya está en tu viaje.» y no se duplica')
   debe(eventos.length === antesPago + 3, 'E', `de pago, tres fotos seguidas: ${eventos.length - antesPago} avisos en vez de 3`)
   // Quien se da de baja deja de enterarse; un oyente que revienta no rompe la subida.
   quitar()
@@ -456,10 +464,11 @@ debe(/if \(!conLogros \|\| perfilInicial/.test(fuenteCuerpo) && /logrosActivos\(
   debe((fotos.match(/avisarAnadida\(/g) ?? []).length === 2 && /avisarAnadida\(\{ foto, miniatura/.test(fotos), 'E', 'el aviso de foto añadida no sale solo desde subirFotoPreparada (UNA vez)')
   debe(!/alAnadirFoto/.test(leer('src/lib/useFotosViaje.ts')), 'E', 'cargar las fotos escucha el aviso de «foto añadida»')
   // Todas las vías de subida pasan por subirFoto (la ficha, ✓ Visto, Tus fotos de hoy, Guarda tus recuerdos, el álbum).
-  const usanBoton = ['src/components/route/fotos/BotonFotoParada.tsx', 'src/components/route/fotos/TusFotosDeHoy.tsx', 'src/components/route/fotos/TarjetaRecuerdos.tsx', 'src/components/perfil/AlbumDeViaje.tsx']
+  const usanBoton = ['src/components/route/fotos/BotonFotoParada.tsx', 'src/components/route/fotos/TarjetaRecuerdos.tsx', 'src/components/perfil/AlbumDeViaje.tsx']
   for (const p of usanBoton) debe(/BotonFoto/.test(leer(p)), 'E', `${p} no sube las fotos con BotonFoto (que pasa por subirFoto)`)
   const subidores = fs.readdirSync('src', { recursive: true }).map(String).filter((p) => /\.tsx?$/.test(p) && /\bsubir(Foto|FotoPreparada|RespetandoLimite)\(/.test(leer(path.join('src', p))) && !/lib[\\/]fotosViaje\.ts$/.test(p))
-  debe(subidores.length === 3 && subidores.some((p) => /BotonFoto\.tsx$/.test(p)) && subidores.some((p) => /TusRecuerdos\.tsx$/.test(p)) && subidores.some((p) => /logros[\\/]visto[\\/]VistoFlujo\.tsx$/.test(p)), 'E', `hay formas de subir fotos que no pasan por BotonFoto (salvo la hoja del Visto, que la 8B guarda en el álbum con la misma subirFoto, y «Tus recuerdos» de la ficha, 10N6, que usa la misma subirFoto): ${subidores.join(', ')}`)
+  // (V12) Desde la V2b «Tus fotos de hoy» ya no tiene [+ Foto] (solo enseña las fotos), y la cámara de la app (`camaraViaje`) y «Reclamar con tus fotos» (`reclamar`, V5) también suben por subirFoto.
+  debe(subidores.length === 5 && subidores.some((p) => /camaraViaje\.ts$/.test(p)) && subidores.some((p) => /reclamar\.ts$/.test(p)) && subidores.some((p) => /BotonFoto\.tsx$/.test(p)) && subidores.some((p) => /TusRecuerdos\.tsx$/.test(p)) && subidores.some((p) => /logros[\\/]visto[\\/]VistoFlujo\.tsx$/.test(p)), 'E', `hay formas de subir fotos que no pasan por BotonFoto (salvo la hoja del Visto, que la 8B guarda en el álbum con la misma subirFoto, y «Tus recuerdos» de la ficha, 10N6, que usa la misma subirFoto): ${subidores.join(', ')}`)
 }
 
 /* ---------------- Emojis ---------------- */

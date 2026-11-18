@@ -1,11 +1,10 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { usePortadaDeViaje } from '../../../../hooks/usePortadaDeViaje'
 import { HojaPortada } from '../../../perfil/HojaPortada'
 import { plural, type ResumenViaje } from '../../../../lib/viajesPerfil'
 import { Icono } from '../../../ui/Icono'
-import { contarFotos } from '../../../../lib/fotosViaje'
 import { todayIso } from '../../../../lib/dateRange'
-import { textoDeDias, textoDeNoches } from '../../../../lib/duracionViaje'
+import { diasDelViaje, textoDeDias } from '../../../../lib/duracionViaje'
 
 /**
  * (TANDA V8, `Perfil Zona` de Design: sin la etiqueta «Hecho»; debajo de la foto, «11 paradas · 5 fotos» y una flecha redonda pequeña en vez de [Abrir este viaje]; TODA la tarjeta abre el viaje (como [Abrir este viaje] de antes: un viaje ya hecho, por dentro; los demás, en la app), menos la cámara.)
@@ -39,12 +38,10 @@ export function cuentaAtras(inicioIso: string | null, hoyIso: string = todayIso(
   return n === 1 ? 'Mañana' : `En ${n} días`
 }
 
-/** Los chips de debajo: «4 días · 3 noches · 10 paradas»; en un viaje hecho, «12 paradas · 41 fotos» (las fotos solo si hay). */
-export function chipsDeViaje(v: Pick<ResumenViaje, 'dias' | 'paradas' | 'route'>, hecho: boolean, fotos: number): string[] {
-  const total = v.route.days.length || v.dias
-  const paradas = plural(v.paradas, 'parada', 'paradas')
-  if (hecho) return [paradas, ...(fotos > 0 ? [plural(fotos, 'foto', 'fotos')] : [])]
-  return [...(total > 0 ? [textoDeDias(total), ...(total > 1 ? [textoDeNoches(total - 1)] : [])] : []), paradas]
+/** (V12, `Perfil Viajes` de Design) Una sola línea debajo de la foto, igual para todos: «5 días · 49 paradas» (los días son los de las fechas del viaje; sin noches ni fotos). `hecho` y `fotos` se quedan por compatibilidad. */
+export function chipsDeViaje(v: Pick<ResumenViaje, 'dias' | 'paradas' | 'route'>, _hecho: boolean = false, _fotos: number = 0): string[] {
+  const total = diasDelViaje(v.route) || v.dias
+  return [...(total > 0 ? [textoDeDias(total)] : []), plural(v.paradas, 'parada', 'paradas')]
 }
 
 const ESTILO_ETIQUETA: Record<EtiquetaDeViaje, { background: string; color: string }> = {
@@ -54,23 +51,16 @@ const ESTILO_ETIQUETA: Record<EtiquetaDeViaje, { background: string; color: stri
 }
 
 
-export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, editando = false, onEliminar, ancho = '60%' }: { viaje: ResumenViaje; etiqueta: EtiquetaDeViaje; onAbrirViaje: () => void; editando?: boolean; onEliminar?: () => void; ancho?: string }): ReactNode {
+export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, onRecuerdos, editando = false, onEliminar, ancho = '60%' }: { viaje: ResumenViaje; etiqueta: EtiquetaDeViaje; onAbrirViaje: () => void; onRecuerdos: () => void; editando?: boolean; onEliminar?: () => void; ancho?: string }): ReactNode {
   const esInvitado = Boolean(viaje.guardado?.esInvitado)
   // La portada: la que eligió; si no, la primera foto suya al acabar el viaje; y si no, la del destino (o el degradado de siempre).
   const portada = usePortadaDeViaje(viaje.id, viaje.destino, viaje.fase === 'hecho')
   const [cambiandoPortada, setCambiandoPortada] = useState(false)
-  const [fotos, setFotos] = useState(0)
   const hecho = etiqueta === 'hecho'
-  useEffect(() => {
-    if (!hecho) return
-    let vivo = true
-    void contarFotos([viaje.id]).then((m) => { if (vivo) setFotos(m.get(viaje.id) ?? 0) }).catch(() => undefined)
-    return () => { vivo = false }
-  }, [hecho, viaje.id])
   // (10S) La línea de fechas lleva SOLO las fechas («26 – 29 nov 2026»); los días ya van en los chips de debajo.
   const fechas = viaje.cuando
   const textoEtiqueta = etiqueta === 'proximo' ? cuentaAtras(viaje.inicioIso) : TEXTO_DE_ETIQUETA[etiqueta]
-  const chips = chipsDeViaje(viaje, hecho, fotos)
+  const chips = chipsDeViaje(viaje)
   return (
     <div data-tarjeta-de-viaje={viaje.id} data-etiqueta-de-viaje={etiqueta} data-portada-origen={portada.url ? portada.origen : 'degradado'} style={{ flex: 'none', width: ancho, scrollSnapAlign: 'start', borderRadius: 26, overflow: 'hidden', background: '#FFFDF8', boxShadow: '0 12px 24px -14px rgba(28,34,48,.5)' }}>
       <div style={{ position: 'relative' }}>
@@ -83,7 +73,7 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, editando = false
         </div>
         <button type="button" onClick={editando ? undefined : onAbrirViaje} data-viaje-del-perfil={viaje.id} aria-label={`${viaje.destino}, ${fechas}`} style={{ position: 'absolute', inset: 0, width: '100%', border: 'none', padding: 0, background: 'linear-gradient(180deg,rgba(10,12,20,.1) 25%,rgba(10,12,20,.7))', cursor: 'pointer' }} />
         {!hecho && (
-          <span data-etiqueta-texto style={{ position: 'absolute', left: 14, top: 14, height: 26, padding: '0 11px', borderRadius: 999, ...ESTILO_ETIQUETA[etiqueta], display: 'flex', alignItems: 'center', font: "600 12px 'Geist'", pointerEvents: 'none' }}>
+          <span data-etiqueta-texto style={{ position: 'absolute', left: 14, top: 14, height: 24, padding: '0 10px', borderRadius: 999, ...ESTILO_ETIQUETA[etiqueta], display: 'flex', alignItems: 'center', font: "500 11.5px 'Geist'", letterSpacing: '.01em', pointerEvents: 'none' }}>
             {textoEtiqueta}
           </span>
         )}
@@ -106,7 +96,7 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, editando = false
           </button>
         )}
         {portada.credito && (
-          <span data-credito-portada style={{ position: 'absolute', right: 14, bottom: 3, font: "500 8.5px 'Geist'", color: 'rgba(255,253,248,.62)', pointerEvents: 'none' }}>
+          <span data-credito-portada style={{ position: 'absolute', left: 14, top: hecho ? 16 : 44, maxWidth: 'calc(100% - 70px)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', font: "400 8.5px 'Geist Mono',monospace", letterSpacing: '.04em', color: 'rgba(255,253,248,.65)', pointerEvents: 'none' }}>
             {portada.credito}
           </span>
         )}
@@ -115,21 +105,24 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, editando = false
           <span data-fechas-del-viaje style={{ font: "500 12px 'Geist Mono',monospace", opacity: 0.9 }}>{fechas}</span>
         </span>
       </div>
-      <button type="button" onClick={onAbrirViaje} disabled={editando} data-abrir-este-viaje aria-label={`Abrir el viaje a ${viaje.destino}`} data-chips-del-viaje style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, padding: '11px 12px 11px 16px', font: "500 12.5px 'Geist'", color: 'rgba(28,34,48,.6)', textAlign: 'left', opacity: editando ? 0.45 : 1 }}>
-        <span style={{ flex: 1, minWidth: 0, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 8px' }}>
-        {chips.map((c, i) => (
-          <span key={c} style={{ display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}>
-            {i > 0 && <span aria-hidden="true" style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(28,34,48,.3)' }} />}
-            <span data-chip-del-viaje>{c}</span>
+      <div data-chips-del-viaje style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px 4px 0' }}>
+        <button type="button" onClick={onAbrirViaje} disabled={editando} data-abrir-este-viaje aria-label={`Abrir el viaje a ${viaje.destino}`} style={{ flex: 1, minWidth: 0, minHeight: 44, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0 0 0 16px', font: "500 14px 'Geist'", color: 'rgba(28,34,48,.62)', textAlign: 'left', opacity: editando ? 0.45 : 1 }}>
+          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {chips.map((c, i) => (
+              <span key={c} data-chip-del-viaje>
+                {i > 0 ? ' · ' : ''}
+                {c}
+              </span>
+            ))}
           </span>
-        ))}
-        </span>
-        <span aria-hidden="true" data-flecha-del-viaje style={{ marginLeft: 'auto', width: 30, height: 30, borderRadius: '50%', background: 'rgba(28,34,48,.06)', color: '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 6l6 6-6 6" />
+        </button>
+        <button type="button" onClick={onRecuerdos} disabled={editando} data-recuerdos-del-viaje={viaje.id} aria-label="Recuerdos del viaje" title="Recuerdos del viaje" style={{ flex: 'none', width: 38, height: 38, borderRadius: '50%', border: 'none', padding: 0, background: '#F3E6C8', color: '#6E5018', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: editando ? 0.45 : 1 }}>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="7" y="3.5" width="13.5" height="13.5" rx="3" />
+            <path d="M4 7.5v10A3.5 3.5 0 0 0 7.5 21h10M7 14l3.5-3.5L14 14l2-2 4.5 4.5M16 8.2h.01" />
           </svg>
-        </span>
-      </button>
+        </button>
+      </div>
       {cambiandoPortada && <HojaPortada tripId={viaje.id} destino={viaje.destino} onCerrar={() => setCambiandoPortada(false)} />}
     </div>
   )

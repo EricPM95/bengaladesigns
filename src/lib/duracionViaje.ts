@@ -29,7 +29,21 @@ export function textoDeDuracion(dias: number, noches: number = dias - 1): string
 
 /** Los días del viaje entero, el de vuelta incluido: los de la ruta o, si aún no la hay, los que eligió el viajero (`answers.days`). 0 si no se sabe. */
 export function diasDelViaje(route: Pick<Route, 'days' | 'answers'>): number {
+  // (V12) Si el viaje tiene fechas, los días son los del calendario (del 8 al 13 de noviembre, 6): así lo que dice la tarjeta, los recuerdos, el resumen y el pasaporte coincide con las fechas que se ven.
+  const rango = route.answers?.dateRange
+  if (rango?.start && rango?.end) {
+    const n = diasEntreFechas(rango.start, rango.end)
+    if (n) return n
+  }
   return route.days.length || (route.answers?.days ?? 0)
+}
+
+function diasEntreFechas(inicio: string, fin: string): number | null {
+  const a = Date.parse(`${inicio}T00:00:00Z`)
+  const b = Date.parse(`${fin}T00:00:00Z`)
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null
+  const n = Math.round((b - a) / 86400000) + 1
+  return n > 0 ? n : null
 }
 
 // ── La duración de un TRAYECTO (10S5, M): la calcula la app con las dos horas ─────────────────────────────────────────────────────────────

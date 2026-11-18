@@ -21,8 +21,8 @@ if (toca('viajes')) {
   const cuerpo = leer('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx')
   debe(/enFila\.length \+ \(antes > 0 \? 1 : 0\) <= 1 \? '100%' : '60%'/.test(cuerpo), 'ancho', 'un viaje = 100 %, varios = 60 %')
   debe(/height: 150/.test(t) && /width: 38, height: 38/.test(t) && /400 34px\/1 'Instrument Serif'/.test(t), 'medidas', 'portada 150, cámara 38, destino 34 px serif')
-  debe(/data-flecha-del-viaje/.test(t) && /width: 30, height: 30/.test(t), 'boton', '(V8) la flecha redonda de 30 px en vez del botón dorado')
-  debe(/500 12\.5px 'Geist'/.test(t) && /rgba\(28,34,48,\.6\)/.test(t), 'chips', '(V8) «11 paradas · 5 fotos» en texto de 12,5 px')
+  debe(/data-recuerdos-del-viaje/.test(t) && /width: 38, height: 38/.test(t), 'boton', '(V12) el botón redondo de recuerdos de 38 px en vez de la flecha')
+  debe(/500 14px 'Geist'/.test(t) && /rgba\(28,34,48,\.62\)/.test(t), 'chips', '(V12) «5 días · 49 paradas» en una línea de 14 px')
   debe(/En \$\{n\} días/.test(t), 'chips', '«En N días» en la etiqueta')
 }
 
@@ -54,13 +54,10 @@ if (toca('viajes')) {
     if (c) {
       debe(c.portadaAlto === 150 && c.camAncho === 38 && c.nombreSize === '34px', 'medidas', `medidas de Design: portada 150, cámara 38, destino 34 (${c.portadaAlto}/${c.camAncho}/${c.nombreSize})`)
       if (c.etiq === 'hecho') {
-        debe(c.chips.length >= 1 && /^\d+ paradas?$/.test(c.chips[0]) && c.chips.slice(1).every((x) => /^\d+ fotos?$/.test(x)), 'chips', `viaje ya hecho: «N paradas» y, si hay, «N fotos» (${JSON.stringify(c.chips)})`)
+        debe(c.chips.length === 2 && /^\d+ días?$/.test(c.chips[0]) && /paradas?$/.test(c.chips[1]), 'chips', `(V12) viaje ya hecho: «N días · N paradas» en una línea (${JSON.stringify(c.chips)})`)
         debe(!c.etiqueta, 'boton', `(V8) viaje ya hecho: sin etiqueta «Hecho» (${c.etiqueta})`)
       } else {
-        debe(c.chips.length === 3 && /^\d+ días?$/.test(c.chips[0]) && /^\d+ noches?$/.test(c.chips[1]) && /^\d+ paradas?$/.test(c.chips[2]), 'chips', `chips «N días · N noches · N paradas» (${JSON.stringify(c.chips)})`)
-        const nDias = Number((/^(\d+)/.exec(c.chips[0]) ?? [])[1])
-        const nNoches = Number((/^(\d+)/.exec(c.chips[1]) ?? [])[1])
-        debe(nNoches === nDias - 1, 'chips', `las noches son los días menos uno (${nDias} / ${nNoches})`)
+        debe(c.chips.length === 2 && /^\d+ días?$/.test(c.chips[0]) && /paradas?$/.test(c.chips[1]), "chips", "(V12) chips «N días · N paradas» (sin noches) " + JSON.stringify(c.chips))
         debe(/^(En \d+ días|Mañana|Hoy|Próximo|En curso)$/.test(c.etiqueta ?? ''), 'chips', `la etiqueta de arriba (${c.etiqueta})`)
       }
       debe(/paradas?/.test(c.botonTxt ?? ''), 'boton', `(V8) la fila de abajo (toda ella abre el viaje) dice las paradas (${c.botonTxt})`)
@@ -95,7 +92,7 @@ if (toca('viajes')) {
     const por = (e) => varios?.tarjetas.find((x) => x.etiq === e)
     debe(por('en_curso')?.etiqueta === 'En curso', 'chips', `el viaje en curso: «${por('en_curso')?.etiqueta}»`)
     debe(por('proximo')?.etiqueta === 'En 12 días', 'chips', `el próximo, dentro de 12 días: «${por('proximo')?.etiqueta}» (cuenta atrás hasta el primer día)`)
-    debe(por('proximo')?.chips.length === 3 && /^4 días$/.test(por('proximo').chips[0]) && /^3 noches$/.test(por('proximo').chips[1]), 'chips', `el próximo: «4 días · 3 noches · N paradas» (${JSON.stringify(por('proximo')?.chips)})`)
+    debe(por('proximo')?.chips.length === 2 && /^4 días$/.test(por('proximo').chips[0]) && /paradas?$/.test(por('proximo').chips[1]), 'chips', `el próximo: «4 días · N paradas» (${JSON.stringify(por('proximo')?.chips)})`)
     debe(!por('hecho')?.etiqueta && por('hecho')?.chips.some((x) => /parada/.test(x)), 'chips', `el ya hecho: sin «Hecho» y con sus paradas (${JSON.stringify(por('hecho')?.chips)})`)
     await a.captura(foto('mis_viajes_varios'))
   } catch (e) {

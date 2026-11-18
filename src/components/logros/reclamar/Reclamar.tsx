@@ -26,7 +26,7 @@ export function BotonDeReclamar({ ciudad }: { ciudad?: string }): ReactNode {
   const sinPase = pase === 'sin'
   const plazo = fraseDelPlazo(route)
   return (
-    <div data-reclamar="boton-zona" className="flex flex-none flex-col items-center gap-1.5" style={{ padding: '0 16px 8px' }}>
+    <div data-reclamar="boton-zona" className="flex flex-none flex-col items-center gap-1.5" style={{ padding: '0 16px 24px' }}>
       <button
         type="button"
         data-reclamar="boton"

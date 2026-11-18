@@ -6,6 +6,7 @@ import { ConfirmDialog, changedDaysText } from './ConfirmDialog'
 import { isManualRoute } from '../../lib/manualPlan'
 import { manualShrinkNotice, type ManualShrinkNotice } from '../../lib/manualDuration'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
+import { CruzDeHoja } from '../ui/CruzDeHoja'
 
 /**
  * Fechas puestas desde el botón del mapa (PROMPT_PENDIENTE G). En los destinos curados (horas del motor), la ruta se
@@ -84,6 +85,7 @@ export function useDatesChange(route: Route | null) {
         <div className="fixed inset-0 z-[80] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="dates-change-heading">
           <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={() => setPending(null)} />
           <div className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[420px] md:rounded-[28px]">
+            <CruzDeHoja onCerrar={() => setPending(null)} />
             <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent">Tus fechas</p>
             <h2 id="dates-change-heading" className="mt-2 font-display text-[24px] leading-[1.15] text-text">
               Vamos a ajustar tu ruta a estas fechas y algunos días pueden cambiar. ¿Seguimos?

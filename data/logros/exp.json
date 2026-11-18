@@ -10,7 +10,7 @@
   "destino_nuevo": 75,
   "continente": 150,
   "patrimonio": 40,
-  "viaje_acabado": { "exp": 100, "paradas_minimas": 5 },
+  "viaje_acabado": { "exp": 100, "paradas_minimas": 3 },
   "viaje_previo": 0,
   "sello": {
     "por_defecto": { "bronce": 50, "plata": 75, "oro": 125, "diamante": 200 },

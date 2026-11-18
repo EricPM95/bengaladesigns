@@ -59,9 +59,9 @@ console.log('1. El servidor: el sello de un viaje terminado y los días viajando
   let r = await calcula()
   debe(r.acabados.length === 0 && !r.paginas.some((p) => p.sellos.some((s) => s.trip_id === 'lz1')), 'sello', 'sin ningún sitio visto, el viaje no da sello')
   const falta = r.sin.find((v) => v.trip_id === 'lz1')
-  debe(falta && falta.vistas === 0 && falta.minimas === 5 && falta.plazo_abierto && falta.hasta === '2026-12-13', 'sello', `el servidor dice que faltan sitios (${JSON.stringify(falta)})`)
-  // (b) Con 5 sitios vistos (fotos de la galería reclamadas, V5) en dos días: sello con la fecha del viaje.
-  const ids = Object.keys(datos.destinos.lanzarote.sitios).filter((s) => coordenadasDeSitio(catalogos, 'lanzarote', s)).slice(0, 5)
+  debe(falta && falta.vistas === 0 && falta.minimas === 3 && falta.plazo_abierto && falta.hasta === '2026-12-13', 'sello', `el servidor dice que faltan sitios (${JSON.stringify(falta)})`)
+  // (b) Con 3 sitios vistos (fotos de la galería reclamadas, V5) en dos días: sello con la fecha del viaje.
+  const ids = Object.keys(datos.destinos.lanzarote.sitios).filter((s) => coordenadasDeSitio(catalogos, 'lanzarote', s)).slice(0, 3)
   for (const [k, id] of ids.entries()) {
     const c = coordenadasDeSitio(catalogos, 'lanzarote', id)
     await servicio.foto('U', { trip_id: 'lz1', libre: true, origen: 'galeria', con_camara: true, tomada_en: k < 3 ? '2026-11-10T10:00:00' : '2026-11-11T10:00:00', ubicacion: { lat: c.lat + 5 / 111000, lng: c.lng } })
@@ -69,7 +69,7 @@ console.log('1. El servidor: el sello de un viaje terminado y los días viajando
   r = await calcula()
   const pag = r.paginas.find((p) => p.sellos.some((s) => s.trip_id === 'lz1'))
   const sello = pag?.sellos.find((s) => s.trip_id === 'lz1')
-  debe(r.acabados.some((a) => a.trip_id === 'lz1') && sello && sello.fecha === '2026-11-13' && pag.pais === 'España', 'sello', `con 5 sitios vistos reclamados, el viaje da su sello de España con la fecha del viaje (${sello?.fecha}; vistas: ${hechos.length})`)
+  debe(r.acabados.some((a) => a.trip_id === 'lz1') && sello && sello.fecha === '2026-11-13' && pag.pais === 'España', 'sello', `con 3 sitios vistos reclamados, el viaje da su sello de España con la fecha del viaje (${sello?.fecha}; vistas: ${hechos.length})`)
   debe(!r.sin.some((v) => v.trip_id === 'lz1'), 'sello', 'ya no sale como viaje sin sello')
   // (c) Los días viajando: los DÍAS DEL VIAJE (5), no los 2 en que se tocó algo.
   // (d) Los puntos del globo: los viajes por hacer, aparte de los hechos.
@@ -119,11 +119,11 @@ try {
   await b.captura(`${CAPTURAS}/pasaporte.jpg`)
 
   // 2b. [Estampar mi sello] de un viaje terminado SIN sello: no se queda mudo; dice qué hace falta y ofrece reclamar con fotos. No crea ningún viaje.
-  await ev("window.__demoMundo = { viajesSinSello: [{ trip_id: 'lz-alicia', destino: 'roma', ciudad: 'Lanzarote', inicio: '2026-11-09', fin: '2026-11-13', vistas: 2, minimas: 5, hasta: '2026-12-13', plazo_abierto: true }] }; import('/src/lib/logrosEnCache.ts').then((c) => c.olvidarCacheDeLogros()); true")
+  await ev("window.__demoMundo = { viajesSinSello: [{ trip_id: 'lz-alicia', destino: 'roma', ciudad: 'Lanzarote', inicio: '2026-11-09', fin: '2026-11-13', vistas: 2, minimas: 3, hasta: '2026-12-13', plazo_abierto: true }] }; import('/src/lib/logrosEnCache.ts').then((c) => c.olvidarCacheDeLogros()); true")
   await abrirPasaporte('sello:lz-alicia')
   for (let i = 0; i < 40 && !(await ev("Boolean(document.querySelector('[data-hoja-sin-sello]'))")); i++) await b.esp(300)
   const hs = await ev("document.querySelector('[data-hoja-sin-sello]')?.innerText.split(String.fromCharCode(10)).join(' | ') ?? null")
-  debe(hs && /Tu sello de Lanzarote aún no está/.test(hs) && /al menos 5 sitios vistos/.test(hs) && /llevas 2/.test(hs) && /13 de diciembre/.test(hs) && /Reclamar con tus fotos/.test(hs), 'sello', `el pasaporte dice por qué el sello aún no está («${hs}»)`)
+  debe(hs && /Tu sello de Lanzarote aún no está/.test(hs) && /al menos 3 sitios vistos/.test(hs) && /Te falta 1 sitio para tu sello/.test(hs) && /llevas 2/.test(hs) && /13 de diciembre/.test(hs) && /Reclamar con tus fotos/.test(hs), 'sello', `el pasaporte dice por qué el sello aún no está («${hs}»)`)
   await b.captura(`${CAPTURAS}/sello_aun_no.jpg`)
   const despues1 = await viajes()
   debe(despues1.n === antes.n && despues1.activo === antes.activo, 'sin crear', `[Estampar mi sello] no crea ningún viaje (${antes.n} → ${despues1.n})`)

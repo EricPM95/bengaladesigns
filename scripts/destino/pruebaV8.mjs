@@ -31,7 +31,7 @@ console.log('1. El código')
   debe(/Te faltan \$\{miles\(exp\.falta\)\} EXP para el nivel/.test(leer('src/components/logros/pantallas/perfil/NivelYBarra.tsx')), 'barra', '«Te faltan N EXP para el nivel N»')
   debe(/width: 34, height: 34/.test(lapiz) && /M4 20l1-4L16\.5 4\.5/.test(lapiz) && !/>\s*\{editando \? 'Hecho' : 'Editar'\}\s*</.test(lapiz), 'lápiz', 'el lápiz redondo de 34 px (no el texto «Editar»)')
   debe(!/'Hecho' : TEXTO_DE_ETIQUETA/.test(tarjeta) && /\{!hecho && \(/.test(tarjeta), 'tarjeta', 'sin la etiqueta «Hecho»')
-  debe(!/Abrir este viaje\s*$/m.test(tarjeta.replace(/aria-label[^\n]*/g, '')) && /data-flecha-del-viaje/.test(tarjeta), 'tarjeta', 'la flecha redonda sustituye al botón [Abrir este viaje]')
+  debe(!/Abrir este viaje\s*$/m.test(tarjeta.replace(/aria-label[^\n]*/g, '')) && /data-recuerdos-del-viaje/.test(tarjeta), 'tarjeta', '(V12) el botón redondo de recuerdos sustituye a la flecha')
   debe(/data-mas-de-vitrina/.test(cuerpo) && /h-\[38px\] w-\[38px\]/.test(cuerpo) && /dashed rgba\(243,213,154,\.4\)/.test(cuerpo), 'vitrina', 'el [+] de 38 px y los huecos con borde de puntos')
   debe(/marginTop: 40/.test(cuerpo) && /margin: '40px 20px 0'/.test(cuerpo), 'aire', 'más aire entre bloques que en Design (40 px; Design deja 14)')
 }
@@ -108,7 +108,7 @@ const foto = async (app, nombre) => {
         viajes: r('[data-mis-viajes]'), filaViajes: r('[data-fila-de-viajes]'), vitrina: r('[data-vitrina-del-perfil]'),
         lapiz: r('[data-editar-viajes]'), lapizLabel: d.querySelector('[data-editar-viajes]')?.getAttribute('aria-label'), lapizTexto: d.querySelector('[data-editar-viajes]')?.innerText,
         ver: d.querySelector('[data-numero-de-viajes]')?.innerText,
-        tarjetas: Array.from(d.querySelectorAll('[data-tarjeta-de-viaje]')).map((c) => ({ id: c.dataset.tarjetaDeViaje, etiqueta: c.querySelector('[data-etiqueta-texto]')?.innerText ?? null, texto: c.innerText.split(String.fromCharCode(10)).join(' | '), flecha: (() => { const f = c.querySelector('[data-flecha-del-viaje]'); if (!f) return null; const b = f.getBoundingClientRect(); return { w: Math.round(b.width), h: Math.round(b.height) } })(), boton: Boolean(c.querySelector('[data-abrir-este-viaje]')), camara: Boolean(c.querySelector('[data-cambiar-portada]')) })),
+        tarjetas: Array.from(d.querySelectorAll('[data-tarjeta-de-viaje]')).map((c) => ({ id: c.dataset.tarjetaDeViaje, etiqueta: c.querySelector('[data-etiqueta-texto]')?.innerText ?? null, texto: c.innerText.split(String.fromCharCode(10)).join(' | '), flecha: (() => { const f = c.querySelector('[data-recuerdos-del-viaje]'); if (!f) return null; const b = f.getBoundingClientRect(); return { w: Math.round(b.width), h: Math.round(b.height) } })(), boton: Boolean(c.querySelector('[data-abrir-este-viaje]')), camara: Boolean(c.querySelector('[data-cambiar-portada]')) })),
         huecos: Array.from(d.querySelectorAll('[data-hueco-de-vitrina]')).map((h) => h.dataset.huecoDeVitrina),
         horizontal: d.scrollWidth <= d.clientWidth + 1,
       }
@@ -121,7 +121,7 @@ const foto = async (app, nombre) => {
     debe(o.vitrina.t - o.filaViajes.b >= 32, 'aire', `entre «Mis viajes» y «Mi vitrina» hay ${o.vitrina.t - o.filaViajes.b} px (≥ 32; Design deja 14)`)
     debe(o.lapiz && o.lapiz.w === 34 && o.lapiz.h === 34 && o.lapizLabel === 'Editar' && !/Editar/.test(o.lapizTexto ?? ''), 'lápiz', `el lápiz redondo junto al título (${JSON.stringify(o.lapiz)}, «${o.lapizLabel}»)`)
     debe(/^Ver todos \(\d+\)$/.test(o.ver ?? ''), 'viajes', `«${o.ver}» a la derecha`)
-    debe(o.tarjetas.length >= 3 && o.tarjetas.every((t) => t.flecha && t.flecha.w === 30 && !t.boton === false && t.camara), 'viajes', `cada tarjeta lleva la flecha redonda de 30 y la cámara (${o.tarjetas.length} tarjetas)`)
+    debe(o.tarjetas.length >= 3 && o.tarjetas.every((t) => t.flecha && t.flecha.w === 38 && !t.boton === false && t.camara), 'viajes', `cada tarjeta lleva el botón de recuerdos de 38 y la cámara (${o.tarjetas.length} tarjetas)`)
     const hecho = o.tarjetas.find((t) => t.id === 't-hecho')
     debe(hecho && hecho.etiqueta === null && !/Hecho|Abrir este viaje/.test(hecho.texto), 'viajes', `el viaje hecho: sin etiqueta «Hecho» ni botón (${hecho?.texto})`)
     debe(o.tarjetas.filter((t) => t.id === 't-curso' || t.id === 't-prox').every((t) => t.etiqueta), 'viajes', 'el en curso y el próximo conservan su etiqueta')
@@ -167,7 +167,12 @@ const foto = async (app, nombre) => {
     await ev("document.querySelector('[data-tarjeta-de-viaje=\"t-hecho\"] [data-viaje-del-perfil]').click(); true")
     await app.esp(1500)
     const pilaHecho = await ev("__imp('/src/components/logros/pantallas/useLogrosPantallas.ts').then((m) => m.useLogrosPantallas.getState().pila.length)")
-    debe(pilaHecho >= 1, 'tarjeta', `tocar la foto de un viaje ya hecho lo abre por dentro, como [Abrir este viaje] de antes (pila ${pilaHecho})`)
+    debe(pilaHecho === 0, 'tarjeta', `(V12) tocar la foto de un viaje ya hecho lo abre en RUTA, no por dentro (pila ${pilaHecho})`)
+    await abrirPerfil(P)
+    await ev("document.querySelector('[data-tarjeta-de-viaje=\"t-hecho\"] [data-recuerdos-del-viaje]').click(); true")
+    await app.esp(1200)
+    const pilaRec = await ev("__imp('/src/components/logros/pantallas/useLogrosPantallas.ts').then((m) => m.useLogrosPantallas.getState().pila.length)")
+    debe(pilaRec >= 1, 'tarjeta', `el botón de recuerdos de un viaje ya hecho abre sus recuerdos (pila ${pilaRec})`)
     await ev("__imp('/src/components/logros/pantallas/useLogrosPantallas.ts').then((m) => { m.useLogrosPantallas.getState().cerrarTodo(); return true })").catch(() => undefined)
     // y la flecha (la fila de abajo) también.
     await abrirPerfil(P)

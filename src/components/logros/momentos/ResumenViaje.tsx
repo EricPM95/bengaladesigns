@@ -15,6 +15,7 @@ import { lineaDeSecretos } from './textosResumen'
 import { pedirEstado, pedirResumen, pedirViajero, type EstadoLogros, type LogrosViajero, type ResumenLogros } from './api'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 
 /**
  * EL RESUMEN DEL VIAJE, REHECHO (Tanda V9, apartado 6; «Resumen del viaje» de Design, la versión con la foto arriba). Es el RECUERDO de lo ganado en ESTE viaje (no la hoja de logros, que dice cómo vas):
@@ -229,7 +230,7 @@ export default function ResumenViaje(): ReactNode {
                 {nuevos.map((n, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
                     <span style={{ width: 92, height: 92, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Chapa logro={n.id} escalon={n.escalon} destino={n.destino} ciudad={n.id === 'edicion_anio' ? ciudad : undefined} tam={92} />
+                      <Chapa logro={n.id} escalon={n.escalon} destino={n.destino} ciudad={n.id === "edicion_anio" ? ciudad : undefined} tam={92} igual />
                     </span>
                     <span style={{ font: "400 15px/1.12 'Instrument Serif',serif", textAlign: 'center', textWrap: 'balance' as never, maxWidth: 104 }}>{n.nombre}</span>
                   </div>
@@ -300,6 +301,7 @@ function HojaDeSorpresas({ lista, ciudad, tripId, quedanSecretos, onCerrar, onCe
     <div role="dialog" aria-modal="true" aria-label="Sorpresas por reclamar" data-hoja-sorpresas style={{ position: 'fixed', inset: 0, zIndex: 9100 }}>
       <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.5)' }} />
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '88vh', borderRadius: '30px 30px 0 0', background: '#FFFDF8', padding: '12px 0 calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#1C2230' }}>
+        <CruzDeHoja onCerrar={onCerrar} />
         <span style={{ flex: 'none', width: 40, height: 5, borderRadius: 3, background: 'rgba(28,34,48,.2)' }} />
         <span style={{ font: "400 26px/1.1 'Instrument Serif',serif", textAlign: 'center', padding: '0 20px' }}>{`Te quedan ${lista.length} ${lista.length === 1 ? 'sorpresa' : 'sorpresas'} por reclamar`}</span>
         <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.6)', textAlign: 'center', padding: '0 24px' }}>{`Sitios de tu ruta${ciudad ? ` en ${ciudad}` : ''} que se quedaron sin su pedazo.${plazo ? ` ${plazo}.` : ''}`}</span>

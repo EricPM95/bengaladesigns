@@ -310,7 +310,7 @@ class Component extends DCLogic {
         stop('Basílica de San Pedro','✓ Visto',{sc:'oklch(0.42 0.09 150)',...pend('Te espera una sorpresa: sube tu foto','',{pbg:'linear-gradient(120deg,#2A3146,#1C2230)',pfg:'#FFFDF8',cb:'linear-gradient(110deg,#E4C58A,#F7E6BE)',cf:'#2A1D10'})}),
         stop('Plaza Navona','✓ Visto',{sc:'oklch(0.42 0.09 150)',...pend('Haz una foto y gana tu pedazo','')}),
         stop('Panteón','✓ Visto',{sc:'oklch(0.42 0.09 150)',...pend('Guarda un recuerdo','',{pbg:'#F5EFE4',cb:'#FFFFFF',cf:INK})}),list[3]]}),
-      B('V7','Fotos que no valen',{hoy:true,stops:list,galOn:true,errs:[['Esta foto es del 2 de septiembre. Elige una del 10 al 14 de octubre.',PH[0]],['Esta foto no está hecha con tu móvil.','repeating-linear-gradient(0deg,#DDE3EA 0 6px,#C9D2DC 6px 12px)'],['Esta foto no es de la Fontana de Trevi.',PH[2]]].map(([t,ph])=>({t,ph}))}),
+      B('V7','Fotos que no valen',{hoy:true,stops:list,galOn:true,errs:[['Esta foto es del 2 de septiembre. Elige una del 10 al 14 de octubre.',PH[0]],['Ha perdido sus datos.','repeating-linear-gradient(0deg,#DDE3EA 0 6px,#C9D2DC 6px 12px)'],['Esta foto no es de la Fontana de Trevi.',PH[2]]].map(([t,ph])=>({t,ph}))}),
       B('V8','Lo de ayer también cuenta',{hoy:true,stops:list,ayer:true,day:'mar 14',note:'Sale al empezar el día de prueba o al comprar el pase, si ya había paradas en la ruta.'})];
     if(md==='mom')boards=[B('M1','6 sorpresas seguidas, una a una',{serie:true,bg:'#141826',fg:'#FFFDF8',note:'Tocando se pasa a la siguiente; con [Saltar todo], directo al resumen. Aquí avanza solo para verlo.'}),
       B('M2','El resumen del día',{res:true,note:'El mismo resumen que sale al acabar la ruta de cada día.'}),

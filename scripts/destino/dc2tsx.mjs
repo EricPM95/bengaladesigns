@@ -16,7 +16,7 @@ const entre = (texto, abre, cierra) => {
   const j = texto.indexOf(cierra, i + abre.length)
   return j < 0 ? null : texto.slice(i + abre.length, j)
 }
-const dc = src.slice(src.indexOf('<x-dc>') + 6, src.lastIndexOf('</x-dc>'))
+const dc = src.slice(src.indexOf('<x-dc>') + 6, src.indexOf('</x-dc>'))
 const helmet = entre(dc, '<helmet>', '</helmet>') ?? ''
 const css = [...helmet.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1].trim()).join('\n')
 const plantilla = dc.replace(/<helmet>[\s\S]*?<\/helmet>/, '').trim()

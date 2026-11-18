@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { Icono } from './Icono'
 import { RuedaDeHora } from './RuedaDeHora'
 import { TimeListWheel } from './TimeListWheel'
+import { CruzDeHoja } from './CruzDeHoja'
 
 /**
  * ELEGIR UNA HORA, SIEMPRE IGUAL EN TODA LA APP (Tanda 10S6, apartado 2; regla en `docs/REGLAS_DE_LA_APP.md`).
@@ -75,6 +76,7 @@ export function HojaDeHora({
     <div className="fixed inset-0 z-[140] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={titulo} data-hoja-de-hora>
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={() => guardar(false)} data-hoja-de-hora-fondo />
       <div className="trazo-notice-panel relative flex w-full flex-col rounded-t-[28px] bg-bg-card pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[400px] md:rounded-[28px]">
+        <CruzDeHoja onCerrar={() => guardar(false)} />
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>

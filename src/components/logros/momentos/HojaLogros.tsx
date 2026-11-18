@@ -1,4 +1,3 @@
-import { botonChampan } from '../../../lib/marcaBoton'
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
@@ -101,8 +100,8 @@ export default function HojaLogros(): ReactNode {
       <div onClick={cerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.45)', animation: 'moFade .3s ease both' }} />
       <div role="dialog" aria-modal="true" aria-label="Tus logros" data-hoja-logros={fase} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 64, display: 'flex', flexDirection: 'column', borderRadius: '28px 28px 0 0', background: '#FFFDF8', color: '#1C2230', animation: 'moSube .45s cubic-bezier(.2,.8,.2,1) both' }}>
         <span style={{ alignSelf: 'center', margin: '10px 0 2px', width: 42, height: 4, flex: 'none', borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
-        <div style={{ flex: 'none', display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 10px 10px 20px' }}>
-          <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ flex: 'none', display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 10px 22px 20px' }}>
+          <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {/* (LG1, 5-nov) Los colores de «Logros Boton» de Design: la cabecera de fase en frambuesa oklch(0.5 0.17 5) (antes marrón #6F4E37). */}
             {etiqueta && (
               <span data-etiqueta-de-fase style={{ ...ETIQUETA, alignSelf: 'flex-start', height: 22, padding: '0 10px', borderRadius: 999, background: 'oklch(0.55 0.17 5 / .1)', color: 'oklch(0.48 0.17 5)', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', fontSize: 9 }}>
@@ -177,9 +176,18 @@ export default function HojaLogros(): ReactNode {
                     cerrar()
                     useMomentosUI.getState().abrirResumenViaje()
                   }}
-                  style={{ width: '100%', height: 50, marginTop: 4, border: 'none', borderRadius: 999, ...botonChampan(), font: "700 14.5px 'Geist'", cursor: 'pointer' }}
+                  data-ver-resumen-del-viaje
+                  style={{ flex: 'none', position: 'relative', overflow: 'hidden', width: '100%', height: 52, minHeight: 52, marginTop: 4, border: 'none', borderRadius: 999, background: '#1C2230', boxShadow: '0 14px 24px -14px rgba(28,34,48,.8), inset 0 0 0 1.5px rgba(243,213,154,.55)', color: '#FFFDF8', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, font: "600 15px 'Geist'", cursor: 'pointer' }}
                 >
+                  <span aria-hidden="true" style={{ width: 30, height: 30, flex: 'none', borderRadius: '50%', background: 'linear-gradient(140deg,#F8E7BC,#C99A4C)', color: '#2A1D10', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 4h14v16l-3-2-2 2-2-2-2 2-2-2-3 2zM9 9h6M9 13h6" />
+                    </svg>
+                  </span>
                   Ver el resumen del viaje
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3D59A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6" />
+                  </svg>
                 </button>
               )}
             </>
@@ -357,7 +365,12 @@ function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: Est
   if (!(total > 0) && lista.length === 0) return null
   return (
     <div data-secretos="1" style={{ marginTop: 6, borderRadius: 24, background: '#1C2230', color: '#FFFDF8', padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {titulo && <span style={{ padding: '0 4px', font: "400 22px/1.1 'Instrument Serif',serif" }}>{titulo}</span>}
+      {titulo && (
+        <span style={{ flex: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center' }}>
+          <span style={{ whiteSpace: 'nowrap', font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3D59A' }}>EMBLEMAS OCULTOS</span>
+          <span data-titulo-secretos style={{ padding: '0 4px', font: "400 24px/1.1 'Instrument Serif',serif" }}>{titulo}</span>
+        </span>
+      )}
       <div data-rejilla-de-emblemas style={{ display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: '10px 4px', justifyItems: 'center' }}>
         {Array.from({ length: huecos }, (_, k) => {
           const e = porSitio.get(k)

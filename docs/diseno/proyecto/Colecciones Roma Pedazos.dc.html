@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:30px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">LOGROS · ROMA, PEDAZO A PEDAZO</span><span style="font:400 40px/1 'Instrument Serif',serif">Las 11 colecciones de Roma, completas</span></div>
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:12px"><span style="font:400 28px/1 'Instrument Serif',serif">{{ g.t }}</span>
+      <div style="display:flex;flex-wrap:wrap;gap:16px"><sc-for list="{{ g.items }}" as="a" hint-placeholder-count="3"><div style="width:{{ g.w }}px;border-radius:26px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:10px"><sc-if value="{{ a.pz }}" hint-placeholder-val="{{ false }}"><div style="position:relative;width:{{ g.sz }}px;height:{{ g.sz }}px;display:flex;align-items:center;justify-content:center"><dc-import name="Piezas/Insignia Pieza" kind="{{ a.pk }}" have="{{ a.have }}" neu="{{ -1 }}" dark="{{ false }}" delay="{{ -30 }}" scale="{{ g.ps }}" hint-size="230px,230px"></dc-import><div style="position:absolute;left:50%;top:50%;width:{{ g.ms }}px;height:{{ g.ms }}px;margin:{{ g.mm }};pointer-events:none"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ a.k }}" set="{{ a.set }}" med="{{ true }}" size="{{ g.ms }}" hint-size="100px,100px"></dc-import></div></div></sc-if><sc-if value="{{ a.np }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ a.k }}" set="{{ a.set }}" size="{{ g.sz }}" hint-size="230px,230px"></dc-import></sc-if><span style="font:400 20px/1.1 'Instrument Serif',serif;text-align:center">{{ a.n }}</span><span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.1em;color:#8A6A2C">{{ a.c }}</span></div></sc-for></div>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const D=[['r1','Los imprescindibles de Roma',8],['r2','El país más pequeño del mundo',3],['r3','Las 4 joyas de Roma',4],['r4','El alma de Trastevere',4],['r5','La Roma de Miguel Ángel',4],['r6','La Roma de Bernini',5],['r7','Tras los pasos de Caravaggio',3],['r8','La Roma antigua',6],['r9','Los miradores',3],['r10','Plazas y fuentes de Roma',7],['r11','La Roma secreta',5]];
+const rng=n=>Array.from({length:n},(_,i)=>i).join(',');
+const mk=(i,set)=>{const [k,n,t]=[D[i][0],D[i][1],D[i][2]];const s=set==null?rng(t):set;const cnt=s===''?0:s.split(',').length;const pz=i===0||i===2;return{k,n,set:s,pz,np:!pz,pk:i===0?'impr':'joyas',have:cnt,c:s===''?'SIN EMPEZAR':(s.split(',').length===t?'COMPLETA · '+t+' DE '+t:s.split(',').length+' DE '+t)};};
+class Component extends DCLogic {
+  renderVals(){return{groups:[
+    {t:'Las principales: tres estados',w:300,sz:250,ps:1.65,ms:150,mm:'-75px 0 0 -75px',items:[0,1,2].flatMap(i=>[mk(i,''),mk(i,rng(D[i][2]-Math.ceil(D[i][2]/2))),mk(i)])},
+    {t:'Todas, completas',w:260,sz:220,ps:1.45,ms:130,mm:'-65px 0 0 -65px',items:D.map((_,i)=>mk(i))}
+  ]};}
+}
+</script>
+</body>
+</html>

@@ -656,7 +656,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
       ...est,
       colecciones,
       exp: resumenDeExp(expFinal(expCalculada(c, calcularCon(c), c.hechos).total, c.perfil?.exp_max ?? 0), datos.exp),
-      pendiente: pendientes({ datos, destino: viaje.destino, viaje, items: itemsMapa, hoy }),
+      pendiente: pendientes({ datos, destino: viaje.destino, viaje, items: itemsMapa, hoy, nombreDe: (s) => nombreDeSitio(catalogos, viaje.destino, s) }),
       // El puntito del botón: algo ganado cuya animación no se vio (se saltó).
       puntito: c.logros.some((f) => f.animacion_vista === false && (f.destino === viaje.destino || f.destino === GLOBAL)),
       viaje: { id: viaje.id, inicio: viaje.inicio, fin: viaje.fin, hoy },
@@ -690,7 +690,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const viaje = c.viajes[tripId]
     if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas' }
     const items = aItems(c.logros)
-    return { ok: true, ...pendientes({ datos, destino: viaje.destino, viaje, items, hoy: hoyEn(viaje.destino) }) }
+    return { ok: true, ...pendientes({ datos, destino: viaje.destino, viaje, items, hoy: hoyEn(viaje.destino), nombreDe: (s) => nombreDeSitio(catalogos, viaje.destino, s) }) }
   }
 
   /**
@@ -717,7 +717,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const viaje = c.viajes[tripId]
     if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas' }
     const items = aItems(c.logros)
-    return { ok: true, ...resumen({ datos, destino: viaje.destino, items, viaje, desde: dia ?? viaje.inicio, hasta: dia ?? viaje.fin, hoy: hoyEn(viaje.destino) }) }
+    return { ok: true, ...resumen({ datos, destino: viaje.destino, items, viaje, desde: dia ?? viaje.inicio, hasta: dia ?? viaje.fin, hoy: hoyEn(viaje.destino), nombreDe: (s) => nombreDeSitio(catalogos, viaje.destino, s) }) }
   }
 
   /** (LZ3) Los datos de logros que ve esta cuenta: sin los destinos ocultos (Lanzarote) si no es administrador. Sin `esAdminDeCuenta` o sin ocultos, todo igual que antes. */
@@ -793,7 +793,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
       // El resumen del viaje, al día siguiente del último día (a las 10:00 de la hora del destino).
       puestos.push({ user_id: userId, trip_id: viaje.id, tipo: 'resumen_viaje', enviar_en: instanteLocal(sumarDias(finDate, aviso.resumen_viaje_dias_despues), '10:00', tz), payload: { destino: viaje.destino } })
       // «Te quedan 3 días…», 3 días antes de que acabe el plazo, solo si queda algo por reclamar.
-      const pend = pendientes({ datos, destino: viaje.destino, viaje, items, hoy: sumarDias(finDate, datos.ajustes.plazo_reclamar_dias - aviso.quedan_dias_antes) })
+      const pend = pendientes({ datos, destino: viaje.destino, viaje, items, hoy: sumarDias(finDate, datos.ajustes.plazo_reclamar_dias - aviso.quedan_dias_antes), nombreDe: (s) => nombreDeSitio(catalogos, viaje.destino, s) })
       if (pend.sorpresas + pend.pedazos > 0) {
         puestos.push({ user_id: userId, trip_id: viaje.id, tipo: 'quedan_dias', enviar_en: instanteLocal(sumarDias(finDate, datos.ajustes.plazo_reclamar_dias - aviso.quedan_dias_antes), '10:00', tz), payload: { destino: viaje.destino, dias: aviso.quedan_dias_antes, sorpresas: pend.sorpresas, ciudad: d.ciudad, texto: `Te quedan ${aviso.quedan_dias_antes} días para reclamar tus ${pend.sorpresas || pend.pedazos} sorpresas de ${d.ciudad}` } })
       }

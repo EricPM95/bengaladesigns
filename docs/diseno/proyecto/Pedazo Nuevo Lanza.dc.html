@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">LOGROS · LANZAROTE, PIEZA A PIEZA</span><span style="font:400 40px/1 'Instrument Serif',serif">Las 7 insignias y el momento «Un pedazo nuevo»</span></div>
+  <div style="display:flex;flex-direction:column;gap:12px"><span style="font:400 28px/1 'Instrument Serif',serif">Las 7 insignias, dibujadas por partes</span>
+    <div style="display:flex;flex-wrap:wrap;gap:14px"><sc-for list="{{ all }}" as="a" hint-placeholder-count="7"><div style="width:230px;border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ a.k }}" set="{{ a.set }}" size="{{ 190 }}" hint-size="190px,190px"></dc-import><span style="font:400 17px/1.1 'Instrument Serif',serif;text-align:center">{{ a.n }}</span><span style="font:500 11px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ a.c }}</span></div></sc-for></div></div>
+  <div style="display:flex;flex-direction:column;gap:12px"><span style="font:400 28px/1 'Instrument Serif',serif">Completas</span>
+    <div style="display:flex;flex-wrap:wrap;gap:16px"><sc-for list="{{ full }}" as="a" hint-placeholder-count="3"><div style="width:300px;border-radius:26px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:10px"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ a.k }}" set="{{ a.set }}" size="{{ 250 }}" hint-size="250px,250px"></dc-import><span style="font:400 20px/1.1 'Instrument Serif',serif;text-align:center">{{ a.n }}</span><span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.1em;color:#8A6A2C">{{ a.c }}</span></div></sc-for></div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start">
+    <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
+      <div style="display:flex;flex-direction:column;gap:10px;width:390px">
+        <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ b.cap }}</span>
+        <div style="position:relative;width:390px;height:700px;border-radius:40px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,#3A1E18 0%,#1A0E0C 70%);box-shadow:0 30px 60px -30px rgba(28,34,48,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:30px 16px">
+          <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.18em;color:#F3D59A">{{ b.head }}</span>
+          <div style="display:flex;gap:{{ b.gap }}px;align-items:flex-start;justify-content:center">
+            <sc-for list="{{ b.items }}" as="it" hint-placeholder-count="1"><div style="display:flex;flex-direction:column;align-items:center;gap:10px;width:{{ b.w }}px;opacity:{{ it.op }};transition:opacity .5s"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ it.k }}" set="{{ it.set }}" nw="{{ it.nw }}" ph="{{ it.ph }}" size="{{ b.sz }}" hint-size="150px,150px"></dc-import><span style="font:400 {{ b.fs }}px/1.1 'Instrument Serif',serif;color:#FFFDF8;text-align:center">{{ it.n }}</span><span style="font:600 {{ b.cs }}px 'Geist Mono',monospace;color:#F3D59A;letter-spacing:.08em">{{ it.cnt }}</span></div></sc-for>
+          </div>
+          <span style="height:50px;padding:0 40px;border-radius:999px;background:linear-gradient(105deg,#D9B26A,#F8E7BC 45%,#E2BD7A 70%,#C99A4C);color:#2A1D10;display:flex;align-items:center;font:700 15px 'Geist';opacity:{{ b.btn }};transition:opacity .5s">Seguir</span>
+        </div>
+        <button onClick="{{ b.replay }}" style="align-self:flex-start;height:40px;padding:0 18px;border-radius:999px;border:1px solid rgba(28,34,48,.25);background:#FFFDF8;font:600 13.5px 'Geist';cursor:pointer">Repetir la animación</button>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const NAMES={1:'Los imprescindibles de Lanzarote',2:'La Lanzarote de César Manrique',3:'Tierra de fuego',4:'La isla a tus pies',5:'Playas y charcos',6:'Pueblos con alma',7:'Entre viñas de ceniza'};
+const TOT={1:7,2:7,3:7,4:6,5:7,6:6,7:3};
+class Component extends DCLogic {
+  state={a:{ph:-1,done:false},b:[{ph:-1},{ph:-1},{ph:-1}],bd:false};
+  T=[];
+  componentDidMount(){this.runA();this.runB();}
+  componentWillUnmount(){this.T.forEach(clearTimeout);}
+  at(ms,fn){this.T.push(setTimeout(fn,ms));}
+  seq(set0,base){[[0,0],[600,1],[1500,2],[1680,3],[2700,4]].forEach(([ms,ph])=>this.at(base+ms,()=>set0(ph)));}
+  runA(){this.setState({a:{ph:-1,done:false}});this.at(400,()=>this.setState({a:{ph:0,done:false}}));this.seq(ph=>this.setState({a:{ph,done:false}}),400);this.at(400+3300,()=>this.setState(s=>({a:{ph:s.a.ph,done:true}})));}
+  runB(){this.setState({b:[{ph:-1},{ph:-1},{ph:-1}],bd:false});[0,1,2].forEach(i=>{const base=400+i*3200;this.at(base,()=>this.setState(s=>({b:s.b.map((x,j)=>j===i?{ph:0}:x)})));this.seq(ph=>this.setState(s=>({b:s.b.map((x,j)=>j===i?{ph}:x)})),base);});this.at(400+2*3200+3300,()=>this.setState({bd:true}));}
+  replayA=()=>{this.T.forEach(clearTimeout);this.T=[];this.runA();this.runB();}
+  renderVals(){
+    const mk=(k,set,nw,ph,show)=>({k:String(k),set:set.join(','),nw:show?nw:-1,ph:show?ph:4,n:NAMES[k],op:show?1:.35,cnt:(set.length+(ph>=4&&show?1:0))+' de '+TOT[k]});
+    const A=this.state.a;
+    const boards=[
+      {cap:'M1 · Un pedazo nuevo · «La isla a tus pies»',head:'¡UN PEDAZO NUEVO!',gap:0,w:300,sz:230,fs:24,cs:15,btn:A.done?1:0,items:[mk(4,[0,1],2,A.ph,A.ph>=0)].map(x=>({...x,ph:Math.max(A.ph,0)})),replay:this.replayA},
+      {cap:'M2 · Tres colecciones a la vez, una detrás de otra',head:'¡TRES PEDAZOS NUEVOS!',gap:6,w:118,sz:112,fs:13,cs:11,btn:this.state.bd?1:0,items:[[4,[0,1],2],[1,[0,1,2],3],[6,[0,1,2],3]].map(([k,s,n],i)=>{const p=this.state.b[i].ph;return{...mk(k,s,n,p,p>=0),ph:Math.max(p,0)};}),replay:this.replayA}
+    ];
+    return{boards,full:[[1,[0,1,2,3,4,5,6]],[2,[0,1,2,3,4,5,6]],[3,[0,1,2,3,4,5,6]],[4,[0,1,2,3,4,5]],[5,[0,1,2,3,4,5,6]],[6,[0,1,2,3,4,5]],[7,[0,1,2]]].map(([k,s])=>({k:String(k),set:s.join(','),n:NAMES[k],c:'COMPLETA · '+s.length+' DE '+TOT[k]})),all:[[1,[0,1,2]],[2,[0,1]],[3,[0,1,2]],[4,[0,1]],[5,[0,1,2]],[6,[0,1,2]],[7,[0]]].map(([k,s])=>({k:String(k),set:s.join(','),n:NAMES[k],c:s.length+' de '+TOT[k]}))};
+  }
+}
+</script>
+</body>
+</html>

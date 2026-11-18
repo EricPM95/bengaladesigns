@@ -225,7 +225,7 @@ function nombresDeLoQueDa(d, destino, items, sitio) {
   return d.colecciones.filter((c) => c.sitios.includes(sitio) && !items.get(clave(destino, 'pedazo', `${c.id}:${sitio}`))).map((c) => c.nombre)
 }
 
-export function pendientes({ datos, destino, viaje, items, hoy }) {
+export function pendientes({ datos, destino, viaje, items, hoy, nombreDe = null }) {
   const d = datos.destinos[destino]
   const plazo = datos.ajustes.plazo_reclamar_dias
   const acabado = hoy > viaje.fin
@@ -242,7 +242,11 @@ export function pendientes({ datos, destino, viaje, items, hoy }) {
           faltaPedazo: d.colecciones.some((c) => c.sitios.includes(s) && !items.get(clave(destino, 'pedazo', `${c.id}:${s}`))),
           faltaEmblema: d.emblemas.some((e) => e.sitio === s && !items.get(clave(destino, 'emblema', e.id))),
         })).filter((x) => x.faltaPedazo || x.faltaEmblema)
-        if (faltan.length > 0) lista.push({ fecha: dia.fecha, dia: dia.numero ?? null, sitio: faltan[0].s, stop_id: p.stop_id ?? null, nombre: p.nombre ?? null, foto_dentro: d.sitios[faltan[0].s].foto_dentro ?? null, falta: [faltan.some((x) => x.faltaPedazo) && 'pedazo', faltan.some((x) => x.faltaEmblema) && 'emblema'].filter(Boolean), colecciones: nombresDeLoQueDa(d, destino, items, faltan[0].s) })
+        // (V12) Una parada de «dos en uno» («Haría y la Casa-Museo César Manrique») sale en SUS filas: una por cada sitio de logro que falta, con el nombre del sitio y su colección.
+        const dosEnUno = sitiosDeLaParada(p).filter((s) => d.sitios[s]).length > 1
+        for (const x of faltan) {
+          lista.push({ fecha: dia.fecha, dia: dia.numero ?? null, sitio: x.s, stop_id: p.stop_id ?? null, nombre: dosEnUno ? (nombreDe?.(x.s) ?? p.nombre ?? null) : (p.nombre ?? null), foto_dentro: d.sitios[x.s].foto_dentro ?? null, falta: [x.faltaPedazo && 'pedazo', x.faltaEmblema && 'emblema'].filter(Boolean), colecciones: nombresDeLoQueDa(d, destino, items, x.s) })
+        }
       }
     }
   }
@@ -267,7 +271,7 @@ export function pendientes({ datos, destino, viaje, items, hoy }) {
 /* Resumen del día y del viaje                                         */
 /* ------------------------------------------------------------------ */
 
-export function resumen({ datos, destino, items, viaje, desde = null, hasta = null, hoy }) {
+export function resumen({ datos, destino, items, viaje, desde = null, hasta = null, hoy, nombreDe = null }) {
   const d = datos.destinos[destino]
   const dentro = (it) => {
     if (!desde) return true
@@ -285,7 +289,7 @@ export function resumen({ datos, destino, items, viaje, desde = null, hasta = nu
   return {
     ganado: ganado.map((it) => ({ clave: it.clave, logro: it.logro, escalon: it.escalon, destino: it.destino, en: it.en })),
     por_categoria: Object.fromEntries(Object.entries(porCategoria).map(([k, v]) => [k, v.length])),
-    pendiente: pendientes({ datos, destino, viaje, items, hoy }),
+    pendiente: pendientes({ datos, destino, viaje, items, hoy, nombreDe }),
     // Cuál de los dos textos del resumen del viaje toca.
     texto_viaje: completas >= t.minimo_colecciones && secretos >= t.minimo_secretos ? t.wow : rellenar(t.con_ganas.replace('{n} secretos', '{n} {secretos}'), { n: queda, secretos: queda === 1 ? 'secreto' : 'secretos' }),
     texto_viaje_tipo: completas >= t.minimo_colecciones && secretos >= t.minimo_secretos ? 'wow' : 'con_ganas',

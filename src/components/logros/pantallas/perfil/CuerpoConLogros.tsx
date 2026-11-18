@@ -61,7 +61,8 @@ const CHEVRON = 'M9 5l7 7-7 7'
 function huecosDeVitrina(recientes: PerfilLogros['vitrina']['recientes']): { p: PerfilLogros['vitrina']['recientes'][number] | null; mas: boolean }[] {
   const rec = recientes.slice(0, 3)
   if (rec.length === 0) return [{ p: null, mas: false }, { p: null, mas: true }, { p: null, mas: false }]
-  return Array.from({ length: 3 }, (_, i) => ({ p: rec[i] ?? null, mas: i === rec.length }))
+  // (V12) Con algún logro, el [+] ya no ocupa un hueco (tapaba al del medio): va pequeño en la cabecera, junto a «N logros». Los huecos libres, con su borde de puntos.
+  return Array.from({ length: 3 }, (_, i) => ({ p: rec[i] ?? null, mas: false }))
 }
 
 export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirViaje, perfilInicial = null }: PropsCuerpoConLogros): ReactNode {
@@ -152,7 +153,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
       {(viajes.length > 0 || antes > 0) && (
         <div data-fila-de-viajes data-ancho-tarjeta={anchoDeTarjeta} className="trazo-noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollPaddingLeft: 20, padding: '14px 20px 6px 20px', scrollbarWidth: 'none' }}>
           {enFila.map(({ viaje, etiqueta }) => (
-            <TarjetaDeViaje key={viaje.id} viaje={viaje} etiqueta={etiqueta} onAbrirViaje={() => (etiqueta === 'hecho' ? abrirDentro(viaje) : onAbrirViaje(viaje))} editando={editando} onEliminar={() => eliminar(viaje)} ancho={anchoDeTarjeta} />
+            <TarjetaDeViaje key={viaje.id} viaje={viaje} etiqueta={etiqueta} onAbrirViaje={() => onAbrirViaje(viaje)} onRecuerdos={() => abrirDentro(viaje)} editando={editando} onEliminar={() => eliminar(viaje)} ancho={anchoDeTarjeta} />
           ))}
           {antes > 0 && (
             <button type="button" onClick={() => abrir({ t: 'previos' })} data-viajes-de-antes style={{ flex: 'none', width: anchoDeTarjeta, minHeight: 190, scrollSnapAlign: 'start', borderRadius: 26, background: '#F1E8D6', border: '1.5px dashed rgba(28,34,48,.25)', padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 10, boxSizing: 'border-box', textAlign: 'left', color: '#1C2230', cursor: 'pointer' }}>
@@ -178,7 +179,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
       grupos={grupos}
       antesDeLaApp={antes}
       onVolver={() => setVerTodos(false)}
-      onAbrirViaje={(v, etiqueta) => (etiqueta === 'hecho' ? abrirDentro(v) : onAbrirViaje(v))}
+      onAbrirViaje={(v) => onAbrirViaje(v)}
       onAbrirAntes={() => abrir({ t: 'previos' })}
       editando={editando}
       onEliminar={eliminar}
@@ -256,12 +257,19 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
         <section className="relative flex flex-none flex-col overflow-hidden rounded-[26px] px-[18px] py-3.5 text-[#FFFDF8]" style={{ background: 'radial-gradient(circle at 50% 0%,#1E2648 0%,#0B0E1C 70%)', minHeight: 200 }} aria-label="Mi vitrina" data-vitrina-del-perfil>
           <span className="flex items-baseline justify-between">
             <span className="font-display text-[26px] leading-none">Mi vitrina</span>
+            <span className="flex items-center gap-2">
+            {perfil.vitrina.recientes.length > 0 && (
+              <button type="button" onClick={() => abrir({ t: 'todos', pestana: 'vitrina' })} aria-label="Poner un logro en mi vitrina" data-mas-de-vitrina-cabecera className="flex h-[28px] w-[28px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(243,213,154,.14)', border: '1px solid rgba(243,213,154,.5)', color: DORADO }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+              </button>
+            )}
             <button type="button" onClick={() => abrir({ t: 'todos', pestana: 'vitrina' })} data-abrir-vitrina className="-my-2 flex h-11 flex-none items-center gap-1 whitespace-nowrap rounded-full px-1 text-[12px] font-semibold" style={{ color: DORADO }}>
               <span className="flex h-[30px] items-center gap-1 rounded-full border pl-3 pr-2" style={{ borderColor: 'rgba(243,213,154,.45)', background: 'rgba(243,213,154,.12)' }}>
                 {plural(perfil.vitrina.logros, 'logro', 'logros')}
                 <Icono nombre="adelante" size={15} grosor={2.4} />
               </span>
             </button>
+            </span>
           </span>
           <div className="relative grid flex-1 grid-cols-3 items-end px-1 pb-3 pt-2">
             {huecosDeVitrina(perfil.vitrina.recientes).map((it, i) => (

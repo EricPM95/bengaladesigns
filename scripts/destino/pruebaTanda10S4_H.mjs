@@ -72,7 +72,7 @@ try {
   const abrirBloque = async () => {
     await ev("st().setMode('bookings'); return true")
     await app.esp(1800)
-    await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); if (b && b.children.length < 2) b.firstElementChild?.click(); return true })()`)
+    await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); if (b && !/Añadir otra reserva/.test(b.innerText)) (b.querySelector('button') ?? b.firstElementChild)?.click(); return true })()`)
     await app.esp(1200)
   }
   const sitioSinCapitolinos = await ev(`const r = route(); return !r.days.some((d) => d.stops.some((s) => s.name === 'Museos Capitolinos'))`)

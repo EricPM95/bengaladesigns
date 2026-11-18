@@ -253,7 +253,7 @@ function PantallaChapa({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePantal
       <Centro>
         <Vuelo estilo={{ marginBottom: 10 }}>
           <div style={{ opacity: 0, animation: 'moDrop .9s .3s cubic-bezier(.2,.8,.2,1) both' }}>
-            <Chapa logro={ch.logro} escalon={ch.escalon} destino={typeof m.destino === 'string' ? m.destino : undefined} tam={220} />
+            <Chapa logro={ch.logro} escalon={ch.escalon} destino={typeof m.destino === 'string' ? m.destino : undefined} tam={220} igual />
           </div>
         </Vuelo>
         <Ojo en="1.5s">{TITULO_CHAPA[m.tipo] ?? 'Logro'}</Ojo>

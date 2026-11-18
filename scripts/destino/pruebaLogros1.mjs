@@ -1368,8 +1368,8 @@ console.log('5. Tanda 8C1: la Versión 1, los escalones del Dashboard, la EXP, l
   debe(rParadas.entradas.filter((x) => x.tipo === 'parada').length === 10 && rParadas.total === 50, 'exp', 'parada vista: 5 cada una, como mucho 50 al día (14 paradas el mismo día dan 50)')
   const sinUbic = [{ ...hechoRoma, tipo: 'visto', ubic: 'sin' }]
   debe(E.calcularExp({ datos, items: new Map(), hechos: sinUbic, viajes: { v: viajeV }, ahora: new Date('2026-10-12') }).total === 0, 'exp', 'un Visto sin ubicación ni foto no da EXP de parada (solo cuenta lo comprobado)')
-  const cinco = Array.from({ length: 5 }, (_, i) => ({ ...hechoRoma, id: `c${i}`, stop_id: `q${i}`, sitio: 'coliseo', instante: `2026-10-1${i}T09:00:00Z`, recibido_en: `2026-10-1${i}T09:00:00Z` }))
-  debe(E.viajesAcabados({ datos, hechos: cinco, viajes: { v: viajeV }, ahora: new Date('2026-10-20') }).length === 1 && E.viajesAcabados({ datos, hechos: cinco, viajes: { v: viajeV }, ahora: new Date('2026-10-12') }).length === 0 && E.viajesAcabados({ datos, hechos: cinco.slice(0, 4), viajes: { v: viajeV }, ahora: new Date('2026-10-20') }).length === 0, 'exp', 'viaje acabado (100): 5 paradas vistas o más y el último día ya pasado; con 4, o sin acabar, no')
+  const cinco = Array.from({ length: 3 }, (_, i) => ({ ...hechoRoma, id: `c${i}`, stop_id: `q${i}`, sitio: 'coliseo', instante: `2026-10-1${i}T09:00:00Z`, recibido_en: `2026-10-1${i}T09:00:00Z` }))
+  debe(E.viajesAcabados({ datos, hechos: cinco, viajes: { v: viajeV }, ahora: new Date('2026-10-20') }).length === 1 && E.viajesAcabados({ datos, hechos: cinco, viajes: { v: viajeV }, ahora: new Date('2026-10-12') }).length === 0 && E.viajesAcabados({ datos, hechos: cinco.slice(0, 2), viajes: { v: viajeV }, ahora: new Date('2026-10-20') }).length === 0, 'exp', 'viaje acabado (100): 3 paradas vistas o más (V12; antes 5) y el último día ya pasado; con 2, o sin acabar, no')
   const prev = await persona('exp-previos@correo.es')
   await V(prev, 'coliseo', dia(1))
   const sinPrev = (await servicio.expDe(prev.uid)).exp

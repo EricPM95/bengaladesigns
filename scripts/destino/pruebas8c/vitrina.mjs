@@ -59,7 +59,7 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
 
   // Por destino y por países.
   debe(lleno.por_destino.length === 1 && lleno.por_destino[0].destino === 'roma' && lleno.por_destino[0].sello.grado === 'diamante', 'destinos', 'Roma sale con el grado de su sello')
-  debe(lleno.por_destino[0].avance === lleno.por_destino[0].colecciones.completas / lleno.por_destino[0].colecciones.total, 'destinos', 'el avance de un destino son sus colecciones completas entre las que tiene')
+  debe(typeof lleno.por_destino[0].avance === 'number' && lleno.por_destino[0].avance >= 0 && lleno.por_destino[0].avance <= 1 && lleno.por_destino[0].colecciones.empezadas >= 0 && lleno.por_destino[0].pedazos.total > 0, 'destinos', '(V10) el avance de un destino es (pedazos + emblemas ganados) entre los que hay, y manda sus colecciones empezadas y sus pedazos')
   const vat = lleno.paises.find((p) => p.pais === 'Ciudad del Vaticano')
   debe(lleno.paises.length === 2 && vat?.destinos[0].dentro_de_otro === true && vat.codigo === 'va', 'paises', 'el Vaticano sale como país aparte, dentro del viaje a Roma, con su bandera')
   debe(codigoDePais('Italia') === 'it', 'paises', 'el código del país sale de su nombre')

@@ -16,14 +16,14 @@ export function DibujoDeItem({ item, tam, apagado = false }: { item: ItemGanado;
       return <MedallaDeSiete encendidas={[item.maravilla ?? '']} tam={tam} />
     case 'viajero':
     case 'exclusivo':
-      return <Chapa logro={item.def ?? ''} escalon={item.escalon === '' ? null : item.escalon} tam={tam} bloqueado={apagado} ciudad={item.lugar?.split(',')[0]} />
+      return <Chapa logro={item.def ?? ''} escalon={item.escalon === '' ? null : item.escalon} tam={tam} bloqueado={apagado} ciudad={item.lugar?.split(',')[0]} igual />
   }
 }
 
 /** La chapa de una fila de logro de viajero: la del escalón más alto que tiene (o la primera, en gris, si aún no tiene ninguno). */
 export function ChapaDeFila({ fila, tam }: { fila: FilaDeViajero; tam: number }): ReactNode {
   const progreso = fila.id === 'cuatro_estaciones' || fila.id === 'doce_meses' ? (fila.progreso ?? (fila.id === 'doce_meses' ? '' : 0)) : undefined
-  return <Chapa logro={fila.id} escalon={fila.escalon} tam={tam} bloqueado={!fila.ganado} progreso={progreso} />
+  return <Chapa logro={fila.id} escalon={fila.escalon} tam={tam} bloqueado={!fila.ganado} progreso={progreso} igual />
 }
 
 /** La caja que da el alto verdadero de un dibujo (las medallas de las 7 maravillas son más altas que anchas). */
