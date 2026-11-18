@@ -15,6 +15,13 @@ const ORO_CLARO = 'rgba(243,213,154,.85)'
 
 type Abierta = { clave: string | null; pedestal?: boolean }
 
+/**
+ * (V14) TODO DEL MISMO TAMAÑO que los «Sellos de ciudad»: lo que se VE de cada pieza (su cuerpo, no el aire de su dibujo) mide ~68 px en todas las baldas. Cada dibujo ocupa un poco distinto de su caja
+ * (las chapas de viajero ~85 %, las insignias ~90 %, los emblemas ~72 %), así que el `tam` de cada balda compensa ese aire. Y los huecos vacíos miden lo mismo (68 px), no 62.
+ */
+export const TAM_POR_BALDA: Record<Balda, number> = { viajero: 80, sellos: 66, colecciones: 74, emblemas: 90 }
+export const HUECO_VACIO = 68
+
 export function Vitrina({ g, abiertaInicial = null }: { g: Ganados; abiertaInicial?: Abierta | null }): ReactNode {
   const porClave = useMemo(() => new Map(g.items.map((i) => [i.clave, i])), [g.items])
   const [abierta, setAbierta] = useState<Abierta | null>(abiertaInicial)
@@ -83,12 +90,12 @@ function BaldaDeVitrina({ balda, huecos, abrir }: { balda: Balda; huecos: ItemGa
                 {it ? (
                   <>
                     <button type="button" aria-label={it.nombre} onClick={() => abrir(it.clave)} style={{ position: 'relative', border: 'none', background: 'transparent', padding: 0, marginBottom: 4, cursor: 'pointer', width: 72, height: 72, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <DibujoDeItem item={it} tam={balda === 'viajero' ? 68 : 66} />
+                      <DibujoDeItem item={it} tam={TAM_POR_BALDA[balda]} />
                     </button>
                     <span aria-hidden style={{ width: 52, height: 7, borderRadius: '50%', background: 'rgba(0,0,0,.5)' }} />
                   </>
                 ) : (
-                  <span aria-hidden style={{ width: 62, height: 62, marginBottom: 10, borderRadius: balda === 'colecciones' ? 18 : '50%', border: '1.5px dashed rgba(243,213,154,.3)' }} />
+                  <span aria-hidden data-hueco-vacio-de-balda style={{ width: HUECO_VACIO, height: HUECO_VACIO, marginBottom: 6, borderRadius: balda === 'colecciones' ? 20 : '50%', border: '1.5px dashed rgba(243,213,154,.3)' }} />
                 )}
               </div>
             )

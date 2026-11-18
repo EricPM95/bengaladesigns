@@ -120,10 +120,8 @@ try {
   await E(`window.__perfilUi.getState().abrir(); true`)
   await esp(2500)
   const muestra = await sellosCon()
-  debe(muestra.length === 2 && muestra.every((s) => s.tipo === 'muestra' && s.svg), 'sellos', 'sin sellos del viajero, la esquina lleva dos sellos de muestra (no queda en blanco)')
-  debe(muestra.every((s) => /ROMA/i.test(s.texto)), 'sellos', 'los de muestra son los del diseño: dos sellos de Roma')
-  const formas = await E(`Array.from(document.querySelectorAll('[data-abrir-pasaporte] [data-sello-asomando] svg')).map((s) => s.querySelectorAll('circle').length > 0 ? 'redondo' : 'cuadrado')`)
-  debe(formas[0] === 'redondo' && formas[1] === 'cuadrado', 'sellos', `el primero es redondo y el segundo cuadrado, como en el diseño P1 (${formas.join(', ')})`)
+  // (V14) Ya no hay sellos de muestra: sin sellos del viajero, la página queda vacía.
+  debe(muestra.length === 0, 'sellos', 'sin sellos del viajero, la página de la esquina queda vacía (sin sellos de muestra)')
   await E(`document.querySelector('[data-abrir-pasaporte]').scrollIntoView({ block: 'center' }); true`)
   await esp(600)
   await cap('02_pasaporte_sin_sellos')
@@ -134,7 +132,7 @@ try {
   await E(`window.__perfilUi.getState().abrir(); true`)
   await esp(2500)
   const uno = await sellosCon()
-  debe(uno.length === 2 && uno[0].tipo === 'suyo' && uno[1].tipo === 'muestra', 'sellos', 'con un solo sello ganado: el suyo y uno de muestra')
+  debe(uno.length === 1 && uno[0].tipo === 'suyo', 'sellos', 'con un solo sello ganado: solo el suyo (V14, sin muestra)')
   const pisa = await E(`Array.from(document.querySelectorAll('[data-abrir-pasaporte] [data-sello-asomando]')).map((e) => e.textContent).join('|')`)
   debe(/PISA/i.test(pisa), 'sellos', 'el sello suyo es el que ganó (Pisa)')
   // El mapa se va pintando con lo visitado: con 'it' hay un país con color; sin países, ninguno.

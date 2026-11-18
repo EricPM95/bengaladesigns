@@ -42,6 +42,8 @@ export function Globo({
   interactivo = true,
   onPais,
   onMarca,
+  onArrastrado,
+  onGiro,
   etiqueta,
 }: {
   tierra: Tierra | null
@@ -56,6 +58,10 @@ export function Globo({
   interactivo?: boolean
   onPais?: (iso: string) => void
   onMarca?: (clave: string) => void
+  /** (V14) Se llama al soltar el dedo tras ARRASTRAR el globo (no al tocar): sirve para no tomar ese gesto por un toque. */
+  onArrastrado?: () => void
+  /** (V14) Dónde quedó el centro del globo tras arrastrarlo (se llama un instante después de soltar). */
+  onGiro?: (centro: { lat: number; lng: number }) => void
   etiqueta: string
 }): ReactNode {
   const id = useId().replace(/:/g, '')
@@ -138,6 +144,10 @@ export function Globo({
   const arriba = (e: PE<HTMLDivElement>) => {
     punteros.current.delete(e.pointerId)
     if (punteros.current.size < 2) distPellizco.current = null
+    if (punteros.current.size === 0 && movido.current > 6) {
+      onArrastrado?.()
+      if (onGiro) window.setTimeout(() => onGiro({ lat: -estado.current.rot[1], lng: -estado.current.rot[0] }), 90)
+    }
   }
   const tocar = (alTocar: () => void) => () => {
     if (movido.current > 6) return

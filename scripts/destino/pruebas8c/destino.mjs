@@ -62,7 +62,7 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   // Ningún número escrito a mano: los que se ven salen de los datos.
   debe(!/\b(de 11|de 12|de 8)\b/.test(visible), 'numeros', 'ningún «N de 11/12/8» escrito a mano en el código')
   // Los demás nombres de pantalla del encargo (se abren con las firmas de la base).
-  debe(/abrir\(\{ t: 'coleccion'/.test(pag), 'navegacion', 'cada colección abre su álbum con abrir({ t: «coleccion», … })')
+  debe(/abrir\(\{ t: 'coleccion'/.test(pag + fs.readFileSync('src/components/logros/ficha/ListaDeColeccion.tsx', 'utf8')), 'navegacion', 'cada colección abre su álbum con abrir({ t: «coleccion», … })')
   debe(/abrir\(\{ t: 'ficha', clave: l\.clave/.test(texto(ficheros.mi)), 'navegacion', 'tocar un logro ganado abre su ficha con su clave')
   debe(/setAbierto\(l\)/.test(texto(ficheros.mi)), 'navegacion', 'tocar un hueco abre la hoja de «cómo conseguirlo»')
   debe(/como/.test(texto(ficheros.mi)) && !/linea}/.test(texto(ficheros.mi).split('ComoConseguirlo')[2] ?? ''), 'como', 'la hoja de un hueco solo dice la línea «como»')

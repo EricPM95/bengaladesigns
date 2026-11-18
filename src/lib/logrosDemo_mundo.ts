@@ -36,7 +36,13 @@ const VISITADOS = [
 ]
 const POR_CONSEGUIR = [{ pais: 'México', sellos: [vacio('cancun', 'Cancún')] }]
 
-const visitadosConLaApp = () => new Set(VISITADOS.map((v) => v.pais))
+/** (V14) Solo para las pruebas: `window.__demoMundo.lanzarote = <id del viaje>` añade una página de España con el sello de Lanzarote (8 nov 2026, el primer día del viaje). */
+const extraLanzarote = (): { pais: string; entrada: string; sellos: Sello[] } | null => {
+  const id = (window as unknown as { __demoMundo?: { lanzarote?: string } }).__demoMundo?.lanzarote
+  return id ? { pais: 'España', entrada: '2026-11-08', sellos: [real(String(id), 'lanzarote', 'Lanzarote', '2026-11-08')] } : null
+}
+const todosLosVisitados = () => [...VISITADOS, ...(extraLanzarote() ? [extraLanzarote() as NonNullable<ReturnType<typeof extraLanzarote>>] : [])]
+const visitadosConLaApp = () => new Set(todosLosVisitados().map((v) => v.pais))
 const conocidos = () => estado.paises.map((n) => porNombre.get(n)).filter(Boolean) as PaisCat[]
 const recuerdos = () => conocidos().filter((p) => !visitadosConLaApp().has(p.n)).map((p) => ({ pais: p.n, iso: p.i, continente: p.c }))
 
@@ -57,7 +63,7 @@ export function mapaDelPasaporte(): { paises_iso: string[]; sellos_recientes: { 
 function paginas() {
   const ficha = (n: string) => ({ iso: porNombre.get(n)?.i ?? null, continente: porNombre.get(n)?.c ?? null })
   return [
-    ...VISITADOS.map((v) => ({ pais: v.pais, ...ficha(v.pais), estado: 'visitado', entrada: v.entrada, sellos: v.sellos })),
+    ...todosLosVisitados().map((v) => ({ pais: v.pais, ...ficha(v.pais), estado: 'visitado', entrada: v.entrada, sellos: v.sellos })),
     ...recuerdos().map((r) => ({ pais: r.pais, iso: r.iso, continente: r.continente, estado: 'recuerdo', entrada: null, sellos: [] as Sello[] })),
     ...POR_CONSEGUIR.map((v) => ({ pais: v.pais, ...ficha(v.pais), estado: 'por_conseguir', entrada: null, sellos: v.sellos })),
   ]

@@ -17,17 +17,22 @@ import { aspectoDeSello, fechaDeSello } from './mundo/selloDatos'
 import './mundo/mundo.css'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { marcarSelloEstampado, selloYaEstampado } from '../../../lib/selloEstampado'
 
 const BURDEOS = 'linear-gradient(150deg,#7A2034,#4A1220 60%,#36101A)'
 const ORO = 'oklch(0.8 0.14 70)'
 const SUAVES = ['oklch(0.74 0.14 65)', 'oklch(0.68 0.12 150)', 'oklch(0.66 0.1 240)', 'oklch(0.66 0.1 300)', 'oklch(0.72 0.13 35)', 'oklch(0.68 0.1 195)']
-/** Dónde cae cada sello en la página (de 4 en 4): x, y, giro. */
-const HUECOS: Array<[number, number, number]> = [
-  [10, 10, -9],
-  [150, 40, 7],
-  [20, 170, -4],
-  [160, 200, 5],
-]
+/** (V14) Cada página del pasaporte lleva 3 sellos, como en uno de verdad: el 1.º arriba a la izquierda, el 2.º arriba a la derecha y el 3.º abajo en el centro, cada uno un poco girado. */
+export const SELLOS_POR_PAGINA = 3
+/** (V14) Cada sello mide ~45 % del ancho de la página (llenan la página, sin salirse ni taparse más que en las puntas). */
+export const tamDeSello = (ancho: number): number => Math.round(ancho * 0.45)
+/** Dónde cae cada sello de la página: x, y (con el ancho de la página) y giro. */
+export function huecoDeSello(i: number, ancho: number): { x: number; y: number; r: number } {
+  const tam = tamDeSello(ancho)
+  if (i === 0) return { x: 10, y: 4, r: -8 }
+  if (i === 1) return { x: Math.max(0, ancho - tam - 10), y: 20, r: 7 }
+  return { x: Math.max(0, (ancho - tam) / 2), y: Math.min(146, 326 - tam - 6), r: -4 }
+}
 const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
 const realesDe = (p: PaginaDePasaporte) => p.sellos.filter((s) => !s.vacio)
 /** (V11) Dónde está cada destino (el punto de cada viaje en el globo). */
@@ -70,10 +75,9 @@ const Banderita = ({ iso, ancho = 26 }: { iso: string | null; ancho?: number }):
   )
 }
 
-/** Dónde se pone cada sello de la página `sub`: en el hueco (4 por página) o, si es el único, más grande y en el centro. */
-function colocar(sellos: SelloDePagina[], sub: number): Array<{ s: SelloDePagina; x: number; y: number; r: number; tam: number }> {
-  if (sellos.length === 1) return [{ s: sellos[0], x: 70, y: 60, r: -5, tam: 150 }]
-  return sellos.slice(sub * 4, sub * 4 + 4).map((s, i) => ({ s, x: HUECOS[i][0], y: HUECOS[i][1], r: HUECOS[i][2], tam: 124 }))
+/** Dónde se pone cada sello de la página `sub` (3 por página; el primero, arriba a la izquierda, aunque sea el único). */
+function colocar(sellos: SelloDePagina[], sub: number, ancho: number): Array<{ s: SelloDePagina; x: number; y: number; r: number; tam: number }> {
+  return sellos.slice(sub * SELLOS_POR_PAGINA, sub * SELLOS_POR_PAGINA + SELLOS_POR_PAGINA).map((s, i) => ({ s, ...huecoDeSello(i, ancho), tam: tamDeSello(ancho) }))
 }
 
 /**
@@ -82,7 +86,7 @@ function colocar(sellos: SelloDePagina[], sub: number): Array<{ s: SelloDePagina
  * un país («Italia»), un país y su página de sellos («Italia:2»), «lista» (abre la lista) o «sello:<id del viaje>» (estampa el sello de ese viaje).
  */
 export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pasaporte'> }): ReactNode {
-  const { paises: catalogo, tierra } = usePaisesYTierra()
+  const { paises: catalogo, tierra } = usePaisesYTierra(true)
   // (V11) Abre AL INSTANTE con lo último que se vio del pasaporte (países, sellos y el globo); lo nuevo llega por detrás y solo cambia lo que cambie.
   const [datos, setDatos] = useState<RespuestaPasaporte | 'error' | null>(() => pasaporteGuardado())
   const [idx, setIdx] = useState(0)
@@ -98,7 +102,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
   const reducido = reducirMovimiento()
   // (10P, 1.8) «Pasaporte de {nombre}» y un mapa MUCHO más grande: ocupa casi todo el ancho del móvil (346 px en un iPhone de 390; el del diseño P2) en vez de los 254 de antes.
   const yo = useMiNombreYFoto()
-  const lado = Math.max(220, Math.min(346, (typeof window !== 'undefined' ? window.innerWidth : 390) - 44))
+  const lado = Math.max(220, Math.min(322, (typeof window !== 'undefined' ? window.innerWidth : 390) - 44))
 
   useEffect(() => {
     let vivo = true
@@ -136,13 +140,17 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
     const pedida = pantalla.pagina
     let i = 0
     let s = 0
-    if (pedida?.startsWith('sello:')) {
-      const trip = pedida.slice(6)
+    if (pedida?.startsWith('sello:') || pedida?.startsWith('ver-sello:')) {
+      const trip = pedida.slice(pedida.indexOf(':') + 1)
       const k = paginas.findIndex((p) => p.sellos.some((x) => x.trip_id === trip))
       if (k >= 0) {
         i = k
-        setEstampar(trip)
-        s = Math.floor(paginas[k].sellos.findIndex((x) => x.trip_id === trip) / 4)
+        // (V14) El sello se estampa UNA sola vez por viaje: si ya se estampó (o se pide [Ver mi sello]), la página se abre en su sitio sin estampar otra vez.
+        if (pedida.startsWith('sello:') && !selloYaEstampado(trip)) {
+          setEstampar(trip)
+          marcarSelloEstampado(trip)
+        }
+        s = Math.floor(paginas[k].sellos.findIndex((x) => x.trip_id === trip) / SELLOS_POR_PAGINA)
       } else {
         // (V11) Ese viaje aún no tiene sello: se abre la página de su país y se dice qué hace falta (no se deja el sello «Por conseguir» sin explicación).
         const falta = (datos && datos !== 'error' ? datos.viajes_sin_sello : undefined)?.find((v) => v.trip_id === trip)
@@ -210,8 +218,9 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
     empezarViajeNuevo()
   }
 
-  const nSubs = Math.max(1, pagina ? Math.ceil(pagina.sellos.length / 4) : 1)
-  const colocados = pagina ? colocar(pagina.sellos, sub) : []
+  const nSubs = Math.max(1, pagina ? Math.ceil(pagina.sellos.length / SELLOS_POR_PAGINA) : 1)
+  const anchoDePagina = Math.max(220, Math.min(typeof window !== 'undefined' ? window.innerWidth : 390, 430) - 72)
+  const colocados = pagina ? colocar(pagina.sellos, sub, anchoDePagina) : []
   const estampando = estampar && !reducido ? colocados.find((c) => c.s.trip_id === estampar) : undefined
   const numeros = datos && datos !== 'error' ? datos.numeros : null
 
@@ -219,7 +228,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
     <Capa etiqueta="PasaporteScreen" fondo="#F1E8D6">
       <div data-mundo="" style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', paddingBottom: 'calc(26px + env(safe-area-inset-bottom))' }}>
-          <div style={{ position: 'relative', borderRadius: '0 0 26px 26px', background: BURDEOS, boxShadow: '0 18px 30px -16px rgba(54,16,26,.7)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0 36px', color: '#F3D59A', zIndex: 2 }}>
+          <div style={{ position: 'relative', borderRadius: '0 0 26px 26px', background: BURDEOS, boxShadow: '0 18px 30px -16px rgba(54,16,26,.7)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '12px 0 24px', color: '#F3D59A', zIndex: 2 }}>
             <button type="button" onClick={cerrar} aria-label="Cerrar" style={{ position: 'absolute', left: 10, top: 10, width: 44, height: 44, border: 'none', background: 'transparent', color: '#F3D59A', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <span style={{ width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(243,213,154,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -231,7 +240,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
               <span style={{ font: "300 11px/1 'Geist'", letterSpacing: '.34em', textTransform: 'uppercase' }}>Pasaporte</span>{' '}
               {yo.tieneNombre && <span style={{ font: "italic 400 24px/1 'Instrument Serif',serif", color: '#FFF1D6' }}>de {yo.nombre}</span>}
             </span>
-            <div data-mapa-grande style={{ position: 'relative', marginTop: 14, width: lado + 18, height: lado + 18, borderRadius: '50%', padding: 9, background: 'conic-gradient(from 200deg,#F6E3A8,#B8903E,#F3D59A,#8E6A26,#F6E3A8)', boxShadow: '0 10px 24px -10px rgba(0,0,0,.6)' }}>
+            <div data-mapa-grande style={{ position: 'relative', marginTop: 8, width: lado + 18, height: lado + 18, borderRadius: '50%', padding: 9, background: 'conic-gradient(from 200deg,#F6E3A8,#B8903E,#F3D59A,#8E6A26,#F6E3A8)', boxShadow: '0 10px 24px -10px rgba(0,0,0,.6)' }}>
               {inicial ? (
                 <Globo tierra={tierra} rellenos={rellenos} marcas={marcas} objetivo={objetivo} inicial={inicial} estilo="papel" lado={lado} zoomMax={9} onPais={alPais} onMarca={(c) => ir(Number(c))} etiqueta="El globo de tu pasaporte" />
               ) : (
@@ -421,7 +430,7 @@ function Golpe({ x, y, r, tam, s }: { x: number; y: number; r: number; tam: numb
     const d = 54 + (i % 3) * 12
     return { x: `${Math.round(Math.cos(ang) * d)}px`, y: `${Math.round(Math.sin(ang) * d)}px`, s: `${4 + (i % 3)}px` }
   })
-  const tinta = 'oklch(0.42 0.1 155)'
+  const tinta = a.tinta
   return (
     <div aria-hidden="true" style={{ position: 'absolute', left: x + tam / 2, top: y + tam / 2, width: 0, height: 0, pointerEvents: 'none' }}>
       <span style={{ position: 'absolute', left: -70, top: -70, width: 140, height: 140, borderRadius: '50%', border: `3px solid ${tinta.replace(')', ' / .6)')}`, opacity: 0, animation: 'muRing 1.1s 2.15s ease-out both' }} />
@@ -430,7 +439,7 @@ function Golpe({ x, y, r, tam, s }: { x: number; y: number; r: number; tam: numb
         <span key={i} style={{ position: 'absolute', left: -3, top: -3, width: g.s, height: g.s, borderRadius: '50%', background: tinta, opacity: 0, ['--dx' as string]: g.x, ['--dy' as string]: g.y, animation: 'muDrop .6s 2.12s ease-out both' }} />
       ))}
       <span style={{ position: 'absolute', left: -tam / 2, top: -tam / 2, width: tam, height: tam, transformOrigin: '50% 50%', animation: 'muSlam 2.3s cubic-bezier(.5,0,.3,1) both', ['--giro' as string]: `${r}deg` }}>
-        <SelloPasaporte forma={a.forma} sitio={s.ciudad} fecha={fechaDeSello(s.fecha)} tinta={tinta} tam={tam} />
+        <SelloPasaporte forma={a.forma} sitio={s.ciudad} fecha={fechaDeSello(s.fecha)} tinta={a.tinta} tam={tam} />
       </span>
     </div>
   )

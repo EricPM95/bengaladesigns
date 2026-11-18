@@ -55,6 +55,8 @@ export async function precalentarPerfil(): Promise<void> {
   if (p) guardarPerfil(await uidDeLaSesion(), p)
 }
 
+/** (V14) Los 3 logros de la vitrina, más grandes: cada uno llena su hueco (la vitrina se ve llena y completa) y todos del mismo tamaño entre sí. */
+export const TAM_DE_VITRINA = 96
 const CHEVRON = 'M9 5l7 7-7 7'
 
 /** (V8) Los tres huecos de la vitrina como en Design: lo ganado primero; el siguiente hueco es el [+] (más pequeño, para poner un logro) y los demás, con su borde de puntos. Sin logros: vacío, [+], vacío. */
@@ -275,18 +277,18 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
             {huecosDeVitrina(perfil.vitrina.recientes).map((it, i) => (
               <div key={it.p ? it.p.clave : `hueco${i}`} className="relative flex flex-col items-center" data-hueco-de-vitrina={it.p ? 'pieza' : it.mas ? 'mas' : 'vacio'}>
                 <span aria-hidden="true" className="absolute left-1/2 -top-[22px] -ml-12 h-[130px] w-24" style={{ background: 'radial-gradient(ellipse 50% 90% at 50% 0%,rgba(255,226,170,.36),transparent 72%)', clipPath: 'polygon(36% 0,64% 0,100% 100%,0 100%)' }} />
-                <span className="relative flex h-[92px] items-end justify-center">
+                <span className="relative flex h-[116px] items-end justify-center" data-pieza-de-vitrina-caja>
                   {it.p ? (
-                    <PiezaDeVitrina pieza={it.p} tam={74} />
+                    <PiezaDeVitrina pieza={it.p} tam={TAM_DE_VITRINA} />
                   ) : it.mas ? (
-                    <button type="button" onClick={() => abrir({ t: 'todos', pestana: 'vitrina' })} aria-label="Poner un logro en mi vitrina" data-mas-de-vitrina className="mb-[22px] flex h-[38px] w-[38px] items-center justify-center rounded-full" style={{ background: 'radial-gradient(circle at 35% 25%,rgba(255,253,248,.2),rgba(255,253,248,.06))', border: '1px solid rgba(243,213,154,.55)', color: DORADO, boxShadow: '0 6px 16px -6px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,253,248,.25)' }}>
+                    <button type="button" onClick={() => abrir({ t: 'todos', pestana: 'vitrina' })} aria-label="Poner un logro en mi vitrina" data-mas-de-vitrina className="mb-[36px] flex h-[38px] w-[38px] items-center justify-center rounded-full" style={{ background: 'radial-gradient(circle at 35% 25%,rgba(255,253,248,.2),rgba(255,253,248,.06))', border: '1px solid rgba(243,213,154,.55)', color: DORADO, boxShadow: '0 6px 16px -6px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,253,248,.25)' }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
                     </button>
                   ) : (
-                    <span aria-hidden="true" className="mb-2.5 h-[58px] w-[58px] rounded-full" style={{ border: '1.5px dashed rgba(243,213,154,.4)' }} />
+                    <span aria-hidden="true" className="mb-2.5 h-[84px] w-[84px] rounded-full" style={{ border: '1.5px dashed rgba(243,213,154,.4)' }} />
                   )}
                 </span>
-                <span aria-hidden="true" className="mt-[3px] h-2 w-[58px] rounded-[50%] bg-black/50" />
+                <span aria-hidden="true" className="mt-[3px] h-2 w-[76px] rounded-[50%] bg-black/50" />
               </div>
             ))}
             <span aria-hidden="true" className="absolute inset-x-0 bottom-1.5 h-0.5 rounded-sm" style={{ background: 'linear-gradient(90deg,transparent,rgba(220,230,255,.55),transparent)' }} />

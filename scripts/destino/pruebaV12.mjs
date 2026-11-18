@@ -311,8 +311,8 @@ const medirChapas = (raiz) => `(() => {
       const tit = d.querySelector('[data-titulo-secretos]')
       return { et: r(et), titulo: r(titulo), boton: r(boton), plazo: r(plazo), sello: r(sello), ver: r(ver), desborda, secretos: tit?.innerText, ocultos: /EMBLEMAS OCULTOS/.test(d.innerText), llaves: /\\{[a-z_]+\\}/i.test(d.innerText), fase: d.dataset.hojaLogros }
     })()`)
-    debe(h.et && h.titulo && h.titulo.t - h.et.b >= 10, 'aire', `entre la etiqueta y el título hay ${h.titulo && h.et ? h.titulo.t - h.et.b : '?'} px (≈12)`)
-    debe(h.boton && h.titulo && h.boton.t - h.titulo.b >= 18, 'aire', `entre el título y [Reclamar con tus fotos] hay ${h.boton && h.titulo ? h.boton.t - h.titulo.b : '?'} px (≈20)`)
+    // (V14) La cabecera ya no es un bloque grande fijo: solo una barra fina con el título y la X; la etiqueta de fase y el botón de reclamar van dentro del scroll (lo mira pruebaV14).
+    debe(h.et && h.boton && h.boton.t - h.et.b >= 10, 'aire', `entre la etiqueta de fase y [Reclamar con tus fotos] hay ${h.boton && h.et ? h.boton.t - h.et.b : '?'} px`)
     debe(h.plazo && h.sello && h.sello.t - h.plazo.b >= 22, 'aire', `entre «Puedes reclamar hasta…» y la tarjeta de la medalla hay ${h.plazo && h.sello ? h.sello.t - h.plazo.b : '?'} px (≈24)`)
     debe(/3 de 11 secretos encontrados/.test(h.secretos ?? '') && h.ocultos, 'emblemas', `el bloque dice «EMBLEMAS OCULTOS» y «${h.secretos}»`)
     debe(!h.llaves, 'llaves', 'ningún texto con {…} en la hoja de logros')

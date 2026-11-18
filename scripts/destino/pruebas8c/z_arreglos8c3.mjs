@@ -176,7 +176,7 @@ export default async function ({ debe, leer, sinComentarios }) {
 
   /* ── 11. El sello estampado al acabar el viaje ── */
   const rv = L('src/components/logros/momentos/ResumenViaje.tsx')
-  debe(/pagina: `sello:\$\{tripId\}`/.test(rv) && /data-estampar-sello/.test(rv) && /Estampar mi sello/.test(rv), 'sello', 'el aviso de viaje acabado abre el pasaporte con el sello del viaje estampándose')
+  debe(/'ver-sello' : 'sello'\}:\$\{tripId\}/.test(rv) && /data-estampar-sello/.test(rv) && /Estampar mi sello/.test(rv), 'sello', 'el aviso de viaje acabado abre el pasaporte con el sello del viaje estampándose')
   debe(/cerrar\(\)[\s\S]{0,80}abrir\(\{ t: 'pasaporte'/.test(rv), 'sello', 'primero se cierra el aviso y luego se abre el pasaporte')
   debe(/pedida\?\.startsWith\('sello:'\)/.test(L('src/components/logros/pantallas/PasaporteScreen.tsx')), 'sello', 'el pasaporte sabe abrirse en el sello de un viaje')
 

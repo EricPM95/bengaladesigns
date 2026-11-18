@@ -45,6 +45,9 @@ export interface FotoViaje {
   url: string
   /** La de la copia pequeña («_min»); '' si esta foto no la tiene (las anteriores a la 6z6): entonces se enseña la grande. */
   urlMin: string
+  /** (V14) Dónde se hizo (lo que se leyó de la foto al subirla, `trip_photo_meta`); solo si se pidió con `ubicacionesDeFotos` (o viene puesto en las pruebas). */
+  lat?: number | null
+  lng?: number | null
 }
 
 /** El nombre de la copia pequeña sale del de la grande («…/abc.jpg» → «…/abc_min.jpg»): sin tocar la tabla ni hacer migración. */
@@ -319,6 +322,20 @@ function avisarAnadida(evento: FotoAnadida) {
       console.warn('[fotos] fallo en un oyente de «foto añadida»:', error)
     }
   })
+}
+
+/** (V14) Dónde se hizo cada foto (la ubicación que se leyó al subirla): solo las que la tienen. Sin Supabase o sin la migración: vacío. */
+export async function ubicacionesDeFotos(ids: string[]): Promise<Map<string, { lat: number; lng: number }>> {
+  const salida = new Map<string, { lat: number; lng: number }>()
+  if (!supabase || ids.length === 0) return salida
+  try {
+    const { data, error } = await supabase.from('trip_photo_meta').select('photo_id, lat, lng').in('photo_id', ids)
+    if (error || !data) return salida
+    for (const m of data as { photo_id: string; lat: number | null; lng: number | null }[]) if (typeof m.lat === 'number' && typeof m.lng === 'number') salida.set(m.photo_id, { lat: m.lat, lng: m.lng })
+  } catch {
+    /* sin ubicaciones: se elige por otra vía */
+  }
+  return salida
 }
 
 /** Cuántas fotos tiene cada viaje (para «155 fotos» de «Mis viajes»): una sola consulta ligera, sin firmar URLs. Sin Supabase o sin la migración: todo a 0. */

@@ -16,6 +16,7 @@ export const sinTildes = (s: string): string => s.normalize('NFD').replace(/[̀-
 
 let catalogo: Promise<Pais[]> | null = null
 let tierra: Promise<Tierra> | null = null
+let tierraDetallada: Promise<Tierra> | null = null
 
 /** El catálogo de países: se baja solo al abrir estas pantallas (va en su propio trozo, aparte del resto de la app). */
 export function cargarPaises(): Promise<Pais[]> {
@@ -29,17 +30,30 @@ export function cargarTierra(): Promise<Tierra> {
   return tierra
 }
 
-export function usePaisesYTierra(): { paises: Pais[] | null; tierra: Tierra | null } {
+/**
+ * (V14) Las costas con las islas pequeñas (Canarias, Baleares, las griegas…; world-atlas 50m, ~270 KB comprimidas): van aparte y SOLO se bajan al abrir el pasaporte, no en el Perfil.
+ */
+export function cargarTierraDetallada(): Promise<Tierra> {
+  tierraDetallada ??= import('./tierra50.json').then((m) => {
+    const d = m.default as unknown as { k: number; t: Record<string, number[][]> }
+    return prepararTierra(d.t, d.k)
+  })
+  return tierraDetallada
+}
+
+/** `detalle`: en el pasaporte, primero salen las costas de siempre (al instante) y, cuando llegan, las que llevan las islas. */
+export function usePaisesYTierra(detalle = false): { paises: Pais[] | null; tierra: Tierra | null } {
   const [paises, setPaises] = useState<Pais[] | null>(null)
   const [t, setT] = useState<Tierra | null>(null)
   useEffect(() => {
     let vivo = true
     void cargarPaises().then((p) => vivo && setPaises(p))
-    void cargarTierra().then((x) => vivo && setT(x))
+    void cargarTierra().then((x) => vivo && setT((prev) => prev ?? x))
+    if (detalle) void cargarTierraDetallada().then((x) => vivo && setT(x))
     return () => {
       vivo = false
     }
-  }, [])
+  }, [detalle])
   return { paises, tierra: t }
 }
 

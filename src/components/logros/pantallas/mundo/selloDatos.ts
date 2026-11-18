@@ -13,6 +13,8 @@ const MON: Record<string, string> = {
   pisa: 'M3 38H57M25 38L28 8M35 38L38 8M25.6 31H35.6M26.3 24H36.3M27 17H37M27.6 10H37.6M30 8V5H36V8',
 }
 // El Vaticano lleva su propio monumento (la cúpula de San Pedro con su linterna y su cruz), no el Coliseo.
+// (V14) Lanzarote: el volcán con su humo y el mar (el dibujo de Design, `Piezas/Perfil`).
+MON.lanzarote = 'M3 38H57M7 38L24 15L28 19L33 12L53 38M24 15L21.5 25M28 19L30 29M33 12L36.5 22M19 9q3-3 0-6M26 7q3-3 0-6M34 7q3-3 0-6M5 41q4-2 8 0t8 0t8 0t8 0t8 0t8 0'
 MON.vaticano = 'M5 38 H55 M9 38 V27 H51 V38 M13 27 V23 H47 V27 M18 23 V18 H42 V23 M20 18 Q30 0 40 18 M30 9 V3 M28 5 H32 M24 38 V32 Q26 29.5 28 32 V38 M32 38 V32 Q34 29.5 36 32 V38 M20 23 V38 M40 23 V38'
 
 /** «Ciudad del Vaticano» cabe en un sello como «Vaticano». */
@@ -22,16 +24,19 @@ export const corto = (s: string): string => s.replace(/^Ciudad del /i, '')
 export const monumentoDe = (sitio: string): string => MON[sinTildes(corto(sitio))] ?? ''
 
 export const TINTAS = ['oklch(0.42 0.11 255)', 'oklch(0.42 0.1 155)', 'oklch(0.42 0.07 45)', 'oklch(0.4 0.09 320)', 'oklch(0.44 0.08 200)']
+export const TINTA_LAVA = 'oklch(0.44 0.15 35)'
 const FORMAS: FormaDeSello[] = ['round', 'rect', 'oval']
 
 /** La forma y la tinta de un sello salen de su sitio y de su fecha: siempre las mismas, sin guardar nada. */
 export function aspectoDeSello(sitio: string, fecha: string | null): { forma: FormaDeSello; tinta: string } {
+  // (V14) El sello de Lanzarote es el de Design: ovalado, en tinta de lava y con el volcán.
+  if (sinTildes(corto(sitio)) === 'lanzarote') return { forma: 'oval', tinta: TINTA_LAVA }
   let h = 0
   for (const ch of `${sitio}|${fecha ?? ''}`) h = (h * 31 + ch.charCodeAt(0)) >>> 0
   return { forma: FORMAS[h % FORMAS.length], tinta: TINTAS[(h >>> 3) % TINTAS.length] }
 }
 
 const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC']
-/** «2026-10-13» → «13 OCT 2026». */
-export const fechaDeSello = (f: string | null): string => (f ? `${Number(f.slice(8, 10))} ${MESES[Number(f.slice(5, 7)) - 1]} ${f.slice(0, 4)}` : '')
+/** «2026-11-08» → «08 NOV 2026» (el día siempre con dos cifras). */
+export const fechaDeSello = (f: string | null): string => (f ? `${f.slice(8, 10)} ${MESES[Number(f.slice(5, 7)) - 1]} ${f.slice(0, 4)}` : '')
 

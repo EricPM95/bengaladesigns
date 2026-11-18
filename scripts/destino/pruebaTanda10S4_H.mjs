@@ -1,3 +1,4 @@
+// (V14) abrirBloque: la cabecera del bloque (10S9) es un div [data-cabecera-bloque] que se toca (ya no hay un button dentro); la prueba clicaba otra cosa y el panel nunca se abría.
 // Tanda 10S4 (agente H): apartados 3 y 4 (Entradas y Free Tour solo «En tu ruta» y al día; [Añadir otra reserva] con su buscador) y la utilidad de búsqueda compartida (apartado 5, parte de H).
 //   1 · el buscador (`src/lib/busqueda.ts`) con los datos reales de Roma: «cupula», «capito», «cupla», «Cupola», «Musei Capitolini».
 //   2 · el código (sin «Ver n más», con [Añadir otra reserva], la lista abierta a cualquier sitio con entrada).
@@ -72,7 +73,7 @@ try {
   const abrirBloque = async () => {
     await ev("st().setMode('bookings'); return true")
     await app.esp(1800)
-    await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); if (b && !/Añadir otra reserva/.test(b.innerText)) (b.querySelector('button') ?? b.firstElementChild)?.click(); return true })()`)
+    await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); if (b && !/Añadir otra reserva/.test(b.innerText)) (b.querySelector('[data-cabecera-bloque]') ?? b.firstElementChild)?.click(); return true })()`)
     await app.esp(1200)
   }
   const sitioSinCapitolinos = await ev(`const r = route(); return !r.days.some((d) => d.stops.some((s) => s.name === 'Museos Capitolinos'))`)

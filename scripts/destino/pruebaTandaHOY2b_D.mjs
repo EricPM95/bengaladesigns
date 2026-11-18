@@ -445,7 +445,7 @@ const fichaLogros = async (destino) => {
   if (!tabs.some((t) => /^Logros/.test(t))) return { r, tabs, tarjetas: null }
   await a.evaluar("Array.from(document.querySelectorAll('[data-ficha-pestanas] button')).find((b) => /^Logros/.test(b.textContent.trim()))?.click(); true")
   await a.esp(1200)
-  const leer = () => a.evaluar("Array.from(document.querySelectorAll('[data-logros-coleccion]')).map((c) => ({ id: c.dataset.logrosColeccion, abierta: c.dataset.abierta === '1', sitios: c.querySelectorAll('[data-logros-sitio]').length }))")
+  const leer = () => a.evaluar("Array.from(document.querySelectorAll('[data-logros-coleccion]')).map((c) => ({ id: c.dataset.logrosColeccion, abierta: c.dataset.abierta === '1', sitios: c.querySelectorAll('[data-sitio-de-lista]').length }))")
   const antes = await leer()
   let despues = null, vuelta = null
   if (antes.length > 0) {

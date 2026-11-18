@@ -80,7 +80,7 @@ export function expDeMomento(datos, m) {
 
 /**
  * Los viajes acabados con la app: los que tienen al menos `paradas_minimas` paradas vistas (con ubicación o foto) y cuyo último día ya pasó.
- * @returns {Array<{ trip_id, fin }>} (la `fin` es el último día del viaje, AAAA-MM-DD)
+ * @returns {Array<{ trip_id, inicio, fin }>} (`inicio` es el primer día del viaje y `fin` el último, AAAA-MM-DD)
  */
 export function viajesAcabados({ datos, hechos, viajes, ahora }) {
   const T = datos.exp.viaje_acabado
@@ -97,7 +97,7 @@ export function viajesAcabados({ datos, hechos, viajes, ahora }) {
     if (!v || paradas.size < T.paradas_minimas) continue
     const tz = datos.destinos[v.destino]?.timezone ?? 'UTC'
     const hoy = parteLocal(ahora, tz)?.fecha
-    if (hoy && hoy > v.fin) salida.push({ trip_id: trip, fin: v.fin })
+    if (hoy && hoy > v.fin) salida.push({ trip_id: trip, inicio: v.inicio, fin: v.fin })
   }
   return salida
 }

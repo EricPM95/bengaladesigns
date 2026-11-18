@@ -90,3 +90,42 @@ export async function subirPortadaDeGaleria(tripId: string, archivo: Blob): Prom
     return { portada: null, error: 'No se ha podido guardar esa foto. Inténtalo de nuevo.' }
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* (V14) La foto de portada del RESUMEN del viaje                      */
+/* ------------------------------------------------------------------ */
+
+const norma = (t: string): string => sinAcentos(t.replace(/\s*\((noche|de noche)\)\s*$/i, ''))
+const distanciaEnKm = (a: { lat: number; lng: number }, b: { lat: number; lng: number }): number => {
+  const rad = (g: number) => (g * Math.PI) / 180
+  const h = Math.sin(rad(b.lat - a.lat) / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(rad(b.lng - a.lng) / 2) ** 2
+  return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(h)))
+}
+
+/** El centro de las paradas de la ruta y hasta dónde llega el destino (la parada más lejana del centro, con un margen): «dentro del destino». */
+export function zonaDelDestino(paradas: { lat: number; lng: number }[]): { centro: { lat: number; lng: number }; radioKm: number } | null {
+  const ps = paradas.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng) && !(p.lat === 0 && p.lng === 0))
+  if (ps.length === 0) return null
+  const centro = { lat: ps.reduce((n, p) => n + p.lat, 0) / ps.length, lng: ps.reduce((n, p) => n + p.lng, 0) / ps.length }
+  const lejos = Math.max(...ps.map((p) => distanciaEnKm(centro, p)))
+  return { centro, radioKm: Math.max(15, lejos * 1.5 + 5) }
+}
+
+/**
+ * Qué foto sale de portada en el resumen del viaje: una hecha EN el destino (con su ubicación dentro de la zona del viaje) y, mejor, la de un sitio con logro (la foto es de una parada que es de alguna colección;
+ * antes la de un sitio ya visto). Una foto sin ubicación, o hecha fuera del destino (la maleta en casa), no vale. Sin ninguna: null (y se pone la del destino de nuestros datos).
+ * sitiosConLogro: los nombres de los sitios de las colecciones, con si ya se han visto.
+ */
+export function elegirFotoDePortada(fotos: FotoViaje[], zona: { centro: { lat: number; lng: number }; radioKm: number } | null, sitiosConLogro: { nombre: string; visto: boolean }[]): FotoViaje | null {
+  if (!zona) return null
+  const logro = new Map<string, boolean>()
+  for (const s of sitiosConLogro) logro.set(norma(s.nombre), (logro.get(norma(s.nombre)) ?? false) || s.visto)
+  const candidatas = fotos
+    .filter((f) => typeof f.lat === 'number' && typeof f.lng === 'number' && distanciaEnKm(zona.centro, { lat: f.lat as number, lng: f.lng as number }) <= zona.radioKm)
+    .map((f) => {
+      const k = f.stopName ? logro.get(norma(f.stopName)) : undefined
+      return { f, puntos: k === undefined ? 0 : k ? 2 : 1 }
+    })
+  candidatas.sort((a, b) => b.puntos - a.puntos || a.f.dayNumber - b.f.dayNumber || a.f.createdAt.localeCompare(b.f.createdAt))
+  return candidatas[0]?.f ?? null
+}

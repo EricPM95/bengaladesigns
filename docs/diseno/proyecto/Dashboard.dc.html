@@ -78,8 +78,9 @@ input::placeholder{color:rgba(28,34,48,.42)}
               <div style="border-radius:22px;background:{{ it.bg }};border:1px solid rgba(28,34,48,.07);padding:18px 12px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:{{ it.fg }}">
                 <span style="height:130px;display:flex;align-items:center;justify-content:center">
                   <sc-if value="{{ it.isS }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Sello Logro" grade="{{ it.g }}" icon="{{ it.i }}" shape="{{ it.sh }}" size="118" label="{{ it.l }}" hint-size="118px,118px"></dc-import></sc-if>
-                  <sc-if value="{{ it.isQ }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza Pro" col="{{ it.q }}" set="{{ it.set }}" size="{{ 150 }}" hint-size="150px,150px"></dc-import></sc-if><sc-if value="{{ it.isL }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza" design="{{ it.dz }}" set="{{ it.set }}" size="{{ 136 }}" hint-size="136px,136px"></dc-import></sc-if>
-                  <sc-if value="{{ it.isP }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Coleccion" col="{{ it.col }}" set="{{ it.set }}" sites="" size="{{ 128 }}" hint-size="128px,128px"></dc-import></sc-if>
+                  <sc-if value="{{ it.isQ }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ it.q }}" set="{{ it.set }}" size="{{ 128 }}" hint-size="150px,150px"></dc-import></sc-if><sc-if value="{{ it.isL }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza" design="{{ it.dz }}" set="{{ it.set }}" size="{{ 136 }}" hint-size="136px,136px"></dc-import></sc-if>
+                  <sc-if value="{{ it.isLC }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ it.rk }}" set="{{ it.set }}" size="{{ 128 }}" hint-size="128px,128px"></dc-import></sc-if>
+                  <sc-if value="{{ it.isPZ }}" hint-placeholder-val="{{ false }}"><div style="position:relative;width:128px;height:128px;display:flex;align-items:center;justify-content:center"><dc-import name="Piezas/Insignia Pieza" kind="{{ it.pk }}" have="{{ it.cnt }}" neu="{{ -1 }}" dark="{{ false }}" delay="{{ -30 }}" scale="{{ 0.85 }}" hint-size="128px,128px"></dc-import><div style="position:absolute;left:50%;top:50%;width:77px;height:77px;margin:-38px 0 0 -38px;pointer-events:none"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ it.rk }}" set="{{ it.set }}" med="{{ true }}" size="{{ 77 }}" hint-size="77px,77px"></dc-import></div></div></sc-if>
                   <sc-if value="{{ it.isLQ }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Lanza" kind="{{ it.lqk }}" scale="0.84" hint-size="126px,126px"></dc-import></sc-if>
                   <sc-if value="{{ it.isE }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Secreto" kind="{{ it.k }}" shape="{{ it.shp }}" glyph="{{ it.gd }}" scale="0.84" delay="0" hint-size="126px,126px"></dc-import></sc-if>
                 </span>
@@ -205,7 +206,7 @@ class Component extends DCLogic {
     const dSecsR=[
       {t:'Sello de Roma',k:'5 grados',items:grade.map(([g,n])=>({...base,isS:true,g,i:'coliseo',sh:'round',l:'ROMA',n,s:g==='none'?'Gris':g[0].toUpperCase()+g.slice(1)}))},
       {t:'Sello del Vaticano',k:'3 grados',items:vgr.map(([g,n])=>({...base,isS:true,g,i:'cupula',sh:'oval',l:'VATICANO',n,s:g[0].toUpperCase()+g.slice(1)}))},
-      {t:'Colecciones',k:'11',items:CO.map(([n,kind,n2,pal,ics,cen,line],i)=>{const col=['impr','vati','joyas','tras','mig','ber','car','ant','mir','pyf','sec'][i];return{...base,isP:true,col,set:Array.from({length:+n2},(_,j)=>j).join(','),n,s:n2+' sitios · '+line};})},
+      {t:'Colecciones',k:'11',items:CO.map(([n,kind,n2,pal,ics,cen,line],i)=>{const col=['impr','vati','joyas','tras','mig','ber','car','ant','mir','pyf','sec'][i];const pz=i===0||i===2;return{...base,isLC:!pz,isPZ:pz,pk:i===0?'impr':'joyas',cnt:+n2,rk:'r'+(i+1),col,set:Array.from({length:+n2},(_,j)=>j).join(','),n,s:n2+' sitios · '+line};})},
       {t:'Emblemas Ocultos',k:'12',items:EM.map(([k,n,s2])=>({...base,isE:true,k,n,s:s2,bg:'#1C2230',fg:'#FFFDF8'}))}];
 const cr=(x,y,r)=>'M'+(x-r)+' '+y+'a'+r+' '+r+' 0 1 0 '+(2*r)+' 0a'+r+' '+r+' 0 1 0 '+(-2*r)+' 0';
     const GRL=[['none','Por conseguir'],['bronce','Primeros pasos en Lanzarote'],['plata','Lanzarote te atrapa'],['oro','Tierra de volcanes'],['diamante','Lanzarote es tuya']];
@@ -214,7 +215,7 @@ const cr=(x,y,r)=>'M'+(x-r)+' '+y+'a'+r+' '+r+' 0 1 0 '+(2*r)+' 0a'+r+' '+r+' 0 
     const dSecsL=[
       {t:'Sello de Lanzarote',k:'5 grados',items:GRL.map(([g,n])=>({...base,isS:true,g,i:'volcan',sh:'round',l:'LANZAROTE',n,s:g==='none'?'Gris':g[0].toUpperCase()+g.slice(1)}))},
       {t:'Colecciones',k:'7',items:COL.map(([n,col,n2,line])=>({...base,...({isQ:true,q:+col.slice(2)}),col,set:Array.from({length:n2},(_,j)=>j).join(','),n,s:n2+' sitios · '+line}))},
-      {t:'Emblemas Ocultos',k:'11',items:ELZ.map(([k,shp,n,s2,gd])=>({...base,isE:k!=='lq',isLQ:k==='lq',lqk:shp,k,shp,gd,n,s:s2,bg:'#1C2230',fg:'#FFFDF8'}))}];
+      {t:'Emblemas Ocultos',k:'11',items:ELZ.map(([k,shp,n,s2,gd],ix)=>({...base,isE:ix===0,isLQ:ix>0,lqk:String(ix+1),k,shp,gd,n,s:s2,bg:'#1C2230',fg:'#FFFDF8'}))}];
     const lz=s.dest==='lanza';
     const dSecs=lz?dSecsL:dSecsR;
     const hFl=lz?'linear-gradient(180deg,#C8312B 0 25%,#F2C230 25% 75%,#C8312B 75%)':'linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)';

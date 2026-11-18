@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { usePortadaDeViaje } from '../../../hooks/usePortadaDeViaje'
-import { contarFotos } from '../../../lib/fotosViaje'
+import { urlParaMostrar, ubicacionesDeFotos, type FotoViaje } from '../../../lib/fotosViaje'
+import { useNumeroFotos } from '../../../lib/useNumeroFotos'
+import { elegirFotoDePortada, fotosParaPortada, zonaDelDestino } from '../../../lib/portadaViaje'
+import { usePortadas } from '../../../store/usePortadas'
+import { ListaDeColeccion } from '../ficha/ListaDeColeccion'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { fraseDelPlazo } from '../../../lib/reclamar'
 import { subirMiFoto } from '../../../lib/companero'
@@ -16,6 +20,7 @@ import { pedirEstado, pedirResumen, pedirViajero, type EstadoLogros, type Logros
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { selloYaEstampado } from '../../../lib/selloEstampado'
 
 /**
  * EL RESUMEN DEL VIAJE, REHECHO (Tanda V9, apartado 6; «Resumen del viaje» de Design, la versión con la foto arriba). Es el RECUERDO de lo ganado en ESTE viaje (no la hoja de logros, que dice cómo vas):
@@ -68,6 +73,40 @@ interface SitioPorReclamar {
   falta: string[]
 }
 
+/**
+ * (V14) La foto de portada del resumen: de las fotos del viaje, una hecha EN el destino (con su ubicación dentro de él) y, mejor, la de un sitio con logro. Devuelve su URL, o null si no hay ninguna (entonces
+ * sale la del destino de nuestros datos). Las ubicaciones salen de lo que se leyó de cada foto al subirla (`trip_photo_meta`).
+ */
+function useFotoDePortadaDelResumen(idDeFotos: string, estado: EstadoLogros | null): string | null {
+  const route = useRouteStore((s) => s.route)
+  const [url, setUrl] = useState<string | null>(null)
+  useEffect(() => {
+    if (!idDeFotos || !estado) return undefined
+    let vivo = true
+    void (async () => {
+      const lista: FotoViaje[] = await fotosParaPortada(idDeFotos)
+      if (!lista.length) return
+      const paradas = (route?.days ?? []).flatMap((d) => (d.stops ?? []).filter((s) => !s.isZoneWalk && s.coordinates).map((s) => ({ lat: Number(s.coordinates.lat), lng: Number(s.coordinates.lng) })))
+      const zona = zonaDelDestino(paradas)
+      const sitios = estado.colecciones.flatMap((c) => c.sitios.map((s) => ({ nombre: s.nombre ?? s.sitio, visto: s.visto })))
+      // Primero con lo que ya se sabe de cada foto (su ubicación); solo si no sirve ninguna se piden las ubicaciones guardadas (sin esperar: si tardan, se queda la del destino).
+      let f = elegirFotoDePortada(lista, zona, sitios)
+      if (!f) {
+        const sinUbicacion = lista.filter((x) => typeof x.lat !== 'number').map((x) => x.id)
+        if (sinUbicacion.length) {
+          const ubic = await Promise.race([ubicacionesDeFotos(sinUbicacion), new Promise<Map<string, { lat: number; lng: number }>>((r) => window.setTimeout(() => r(new Map()), 4000))])
+          f = elegirFotoDePortada(lista.map((x) => (typeof x.lat === 'number' ? x : { ...x, lat: ubic.get(x.id)?.lat ?? null, lng: ubic.get(x.id)?.lng ?? null })), zona, sitios)
+        }
+      }
+      if (vivo) setUrl(f ? f.url || urlParaMostrar(f) : null)
+    })()
+    return () => {
+      vivo = false
+    }
+  }, [idDeFotos, estado, route])
+  return url
+}
+
 export default function ResumenViaje(): ReactNode {
   const route = useRouteStore((s) => s.route)
   const tripId = useSyncStore((s) => s.activeTripId) ?? route?.id ?? null
@@ -75,7 +114,7 @@ export default function ResumenViaje(): ReactNode {
   const [resumen, setResumen] = useState<ResumenLogros | null>(null)
   const [viajero, setViajero] = useState<LogrosViajero | null>(null)
   const [cargado, setCargado] = useState(false)
-  const [fotos, setFotos] = useState(0)
+  const [coleccionAbierta, setColeccionAbierta] = useState<string | null>(null)
   const [hojaSorpresas, setHojaSorpresas] = useState(false)
   useEffect(() => {
     let vivo = true
@@ -90,20 +129,23 @@ export default function ResumenViaje(): ReactNode {
       vivo = false
     }
   }, [tripId])
-  useEffect(() => {
-    if (!tripId) return
-    let vivo = true
-    void contarFotos([tripId]).then((m) => vivo && setFotos(m.get(tripId) ?? 0)).catch(() => undefined)
-    return () => {
-      vivo = false
-    }
-  }, [tripId])
+  // (V14) Las fotos del viaje se cuentan y se buscan con el id de la RUTA (`route.id`), que es con el que se guardan (y con el que las cuenta el Perfil). Antes se contaban con el id del viaje en la nube,
+  // que no es el mismo, y salían «2 fotos» donde el Perfil decía «6». Las dos cuentas son ahora la misma: TODAS las fotos del viaje.
+  const idDeFotos = route?.id ?? tripId ?? ''
+  const cuentaDeFotos = useNumeroFotos(idDeFotos ? [idDeFotos] : [])
+  const fotos = cuentaDeFotos?.get(idDeFotos) ?? 0
   const ciudad = estado?.ciudad ?? ''
-  const portada = usePortadaDeViaje(tripId ?? '', route?.destination ?? ciudad, true)
+  // (V14) La portada: lo que eligió el viajero; si no eligió, una foto hecha EN el destino (mejor la de un sitio con logro); y si no hay ninguna, la del destino de nuestros datos.
+  const elegidaPropia = usePortadas((x) => x.porViaje[idDeFotos])
+  const portadaBase = usePortadaDeViaje(idDeFotos, route?.destination ?? ciudad, false)
+  const fotoDelDestino = useFotoDePortadaDelResumen(idDeFotos, estado)
+  const portada = elegidaPropia === undefined && fotoDelDestino ? { ...portadaBase, url: fotoDelDestino } : portadaBase
   const cerrar = () => useMomentosUI.getState().cerrarResumenViaje()
+  // (V14) Estampar solo UNA vez: con el sello ya estampado, el botón es [Ver mi sello] y abre el pasaporte en su página sin estampar.
+  const yaEstampado = selloYaEstampado(tripId)
   const estampar = () => {
     cerrar()
-    useLogrosPantallas.getState().abrir({ t: 'pasaporte', pagina: `sello:${tripId}` })
+    useLogrosPantallas.getState().abrir({ t: 'pasaporte', pagina: `${yaEstampado ? 'ver-sello' : 'sello'}:${tripId}` })
   }
 
   // Lo ganado EN ESTE VIAJE (`resumen.ganado`).
@@ -194,12 +236,23 @@ export default function ResumenViaje(): ReactNode {
             <div data-resumen-colecciones style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <span style={ETIQUETA}>Colecciones</span>
               {sumadas.map(({ id, mas, c }) => (
-                <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px 10px 10px', borderRadius: 22, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.08)', boxShadow: '0 8px 20px -16px rgba(28,34,48,.35)' }}>
-                  <Insignia coleccion={id} ganados={c!.sitios.filter((s) => s.visto).map((s) => s.sitio)} completa={c!.completa} tam={64} />
-                  <span style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ flex: 'none', minWidth: 36, height: 26, padding: '0 9px', borderRadius: 999, background: 'oklch(0.55 0.17 5 / .12)', color: 'oklch(0.48 0.17 5)', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 13px 'Geist Mono',monospace" }}>+{mas}</span>
-                    <span style={{ flex: 1, font: "400 19px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{c!.nombre}</span>
-                  </span>
+                <div key={id} data-coleccion-del-resumen={id} data-abierta={coleccionAbierta === id ? '1' : '0'} style={{ borderRadius: 22, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.08)', boxShadow: '0 8px 20px -16px rgba(28,34,48,.35)' }}>
+                  {/* (V14) Tocar una colección abre su lista (✓ lo que tienes, ○ lo que falta) y, al final, [Ver la colección ›]. */}
+                  <button type="button" aria-expanded={coleccionAbierta === id} onClick={() => setColeccionAbierta((a) => (a === id ? null : id))} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px 10px 10px', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', color: 'inherit', font: 'inherit' }}>
+                    <Insignia coleccion={id} ganados={c!.sitios.filter((s) => s.visto).map((s) => s.sitio)} completa={c!.completa} tam={64} />
+                    <span style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ flex: 'none', minWidth: 36, height: 26, padding: '0 9px', borderRadius: 999, background: 'oklch(0.55 0.17 5 / .12)', color: 'oklch(0.48 0.17 5)', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 13px 'Geist Mono',monospace" }}>+{mas}</span>
+                      <span style={{ flex: 1, font: "400 19px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{c!.nombre}</span>
+                    </span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', transform: coleccionAbierta === id ? 'rotate(180deg)' : 'none', transition: 'transform .25s' }} aria-hidden="true">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  {coleccionAbierta === id && (
+                    <div style={{ margin: '0 12px 10px', padding: '8px 8px 2px', borderRadius: 14, background: '#F5EFE4' }}>
+                      <ListaDeColeccion destino={estado.destino} coleccion={id} ciudad={ciudad} sitios={c!.sitios.map((s) => ({ sitio: s.sitio, nombre: s.nombre ?? s.sitio, visto: s.visto }))} antesDeVer={cerrar} />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -254,8 +307,8 @@ export default function ResumenViaje(): ReactNode {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto' }}>
             {tripId && (
-              <button type="button" onClick={estampar} data-estampar-sello style={{ height: 56, border: 'none', borderRadius: 999, background: 'linear-gradient(105deg,#D9B26A,#F8E7BC 45%,#E2BD7A 70%,#C99A4C)', boxShadow: '0 12px 22px -12px rgba(150,105,30,.75), inset 0 1px 0 rgba(255,255,255,.7)', color: '#2A1D10', font: "700 15.5px 'Geist'", cursor: 'pointer' }}>
-                Estampar mi sello
+              <button type="button" onClick={estampar} data-estampar-sello={yaEstampado ? 'ver' : 'estampar'} style={{ height: 56, border: 'none', borderRadius: 999, background: 'linear-gradient(105deg,#D9B26A,#F8E7BC 45%,#E2BD7A 70%,#C99A4C)', boxShadow: '0 12px 22px -12px rgba(150,105,30,.75), inset 0 1px 0 rgba(255,255,255,.7)', color: '#2A1D10', font: "700 15.5px 'Geist'", cursor: 'pointer' }}>
+                {yaEstampado ? 'Ver mi sello' : 'Estampar mi sello'}
               </button>
             )}
             <div style={{ display: 'flex', gap: 10 }}>

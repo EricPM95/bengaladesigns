@@ -184,6 +184,9 @@ export function responder(ruta: string, url: URL): unknown {
   }
   if (ruta === '/api/logros/coleccion') {
     const destino = url.searchParams.get('destino') ?? ''
+    // (V14) Solo para las pruebas: `window.__demoColeccion[<id>]` pone la respuesta de esa colección (con las fotos con que se ganó cada sitio).
+    const puesta = (window as unknown as { __demoColeccion?: Record<string, unknown> }).__demoColeccion?.[url.searchParams.get('coleccion') ?? '']
+    if (puesta) return puesta
     if (destino !== 'roma') return { ok: false, motivo: 'destino_sin_logros' }
     const r = coleccionPorDentro({ datos, destino, coleccion: url.searchParams.get('coleccion') ?? '', items: itemsDeEjemplo(), viaje, nombreDe: (s: string) => NOMBRES[s] ?? s })
     // (V9) Como el servidor: el momento del viaje (para saber si ha terminado); en el demo sin fotos suyas (sale la del sitio).

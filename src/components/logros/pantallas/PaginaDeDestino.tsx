@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
 import { lineaDeSecretos } from '../momentos/textosResumen'
@@ -10,6 +10,7 @@ import './destino/destino.css'
 import { Capa } from './Capa'
 import { useGanados } from './todos/api'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
+import { ListaDeColeccionPedida } from '../ficha/ListaDeColeccion'
 
 /**
  * LA PÁGINA DE UN DESTINO (8C2; G1, G2 y T3 de «Mi vitrina»): su cabecera con el sello principal, sus sellos de ciudad, sus colecciones y sus emblemas secretos.
@@ -46,7 +47,9 @@ export default function PaginaDeDestino({ pantalla }: { pantalla: Pagina }): Rea
 
 function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; resaltar: string | null; volver: () => void }): ReactNode {
   const foto = useFotoDeDestino(datos.destino, datos.ciudad)
-  const abrirColeccion = (coleccion: string) => useLogrosPantallas.getState().abrir({ t: 'coleccion', destino: datos.destino, coleccion })
+  // (V14) Tocar una colección abre su lista (✓ lo que tienes, ○ lo que falta) con [Ver la colección ›] al final; ya no salta directo a la pantalla de la colección.
+  const [abierta, setAbierta] = useState<string | null>(null)
+  const abrirColeccion = (coleccion: string) => setAbierta((a) => (a === coleccion ? null : coleccion))
   const principal = datos.sellos.find((s) => s.principal) ?? datos.sellos[0] ?? null
   const grado = principal?.grado ?? null
   const color = grado ? COLOR_DE_GRADO[grado] : 'rgba(28,34,48,.45)'
@@ -86,6 +89,12 @@ function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; r
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
           {datos.colecciones.map((c) => <TarjetaDeColeccion key={c.id} c={c} abrir={() => abrirColeccion(c.id)} pin={c.completa ? enVitrina(`${datos.destino}|coleccion|${c.id}`) : undefined} />)}
         </div>
+        {abierta && (
+          <div data-coleccion-abierta={abierta} style={{ borderRadius: 18, background: '#F5EFE4', padding: '10px 10px 2px' }}>
+            <span style={{ display: 'block', padding: '0 4px 8px', font: "400 20px/1.1 'Instrument Serif',serif" }}>{datos.colecciones.find((c) => c.id === abierta)?.nombre}</span>
+            <ListaDeColeccionPedida destino={datos.destino} coleccion={abierta} ciudad={datos.ciudad} />
+          </div>
+        )}
 
         <Titulo>Emblemas secretos</Titulo>
         <div style={{ borderRadius: 24, background: '#1C2230', color: '#FFFDF8', padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>

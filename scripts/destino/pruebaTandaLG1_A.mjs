@@ -99,7 +99,7 @@ const leerPestana = (a) => a.evaluar(`(() => {
   return { titulo: r.querySelector('[data-logros-titulo]')?.textContent ?? null, cerrada: Boolean(r.querySelector('[data-logros-cerrados]')),
     tarjetas: Array.from(r.querySelectorAll('[data-logros-coleccion]')).map((c) => ({ id: c.dataset.logrosColeccion, abierta: c.dataset.abierta === '1', nombre: c.querySelector('[data-logros-nombre]')?.textContent, cuenta: c.querySelector('[data-logros-cuenta]')?.textContent, faltan: c.querySelector('[data-logros-faltan]')?.textContent ?? null,
       insignia: Boolean(c.querySelector('svg, img, canvas, [data-gajos], [data-insignia], [data-hueco-insignia]')),
-      sitios: Array.from(c.querySelectorAll('[data-logros-sitio]')).map((s) => ({ id: s.dataset.logrosSitio, estado: s.dataset.estado, texto: s.innerText.replace(/\\s+/g, ' ').trim() })) })) }
+      sitios: Array.from(c.querySelectorAll('[data-sitio-de-lista]')).map((s) => ({ id: s.dataset.sitioDeLista, estado: s.dataset.estado, texto: s.innerText.replace(/\\s+/g, ' ').trim() })) })) }
 })()`)
 
 async function pasada(destino, sitio, imagen) {
@@ -172,7 +172,7 @@ async function pasada(destino, sitio, imagen) {
     // (Al día con HOY2b 8c, decisión de Eric del 5-nov: las tarjetas salen TODAS cerradas, así que para tocar un sitio de la lista hay que abrir antes su tarjeta.)
     await a.evaluar(`document.querySelector('[data-logros-coleccion="${cols[0].id}"]')?.dataset.abierta !== '1' && document.querySelector('[data-logros-coleccion="${cols[0].id}"] > button')?.click(); true`)
     await esp(500)
-    await a.evaluar(`document.querySelector('[data-logros-sitio="${otro}"]')?.click(); true`)
+    await a.evaluar(`document.querySelector('[data-sitio-de-lista="${otro}"] button')?.click(); true`)
     let abierta = false
     for (let i = 0; i < 40 && !abierta; i++) {
       await esp(500)
@@ -195,7 +195,7 @@ async function pasada(destino, sitio, imagen) {
     p = await leerPestana(a)
     const filaYo =p?.tarjetas[0]?.sitios.find((s) => s.id === sitio.id)
     debe(filaYo?.estado === 'visto' && /Visto/.test(filaYo.texto) && !p.tarjetas.some((t) => t.sitios.some((s) => s.estado === 'este')), `${destino}: con ${sitio.nombre} ya visto tiene que decir «Visto» y no «Estás aquí» (${JSON.stringify(filaYo)})`)
-    const verde = await a.evaluar(`(() => { const e = document.querySelector('[data-logros-sitio="${sitio.id}"]'); if (!e) return null; const marca = e.lastElementChild; return { marca: marca.textContent.trim(), fondo: getComputedStyle(marca).backgroundColor, texto: getComputedStyle(e.querySelector('span:nth-child(2) span:nth-child(2)') ?? e).color } })()`)
+    const verde = await a.evaluar(`(() => { const e = document.querySelector('[data-sitio-de-lista="${sitio.id}"]'); if (!e) return null; const marca = e.lastElementChild; return { marca: marca.textContent.trim(), fondo: getComputedStyle(marca).backgroundColor, texto: getComputedStyle(e.querySelector('span:nth-child(2) span:nth-child(2)') ?? e).color } })()`)
     debe(verde?.marca === '✓', `${destino}: la marca de «Visto» tiene que ser ✓ (${JSON.stringify(verde)})`)
     await cerrarFicha(a)
 

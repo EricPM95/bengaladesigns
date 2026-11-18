@@ -69,7 +69,7 @@ console.log('1. El servidor: el sello de un viaje terminado y los días viajando
   r = await calcula()
   const pag = r.paginas.find((p) => p.sellos.some((s) => s.trip_id === 'lz1'))
   const sello = pag?.sellos.find((s) => s.trip_id === 'lz1')
-  debe(r.acabados.some((a) => a.trip_id === 'lz1') && sello && sello.fecha === '2026-11-13' && pag.pais === 'España', 'sello', `con 3 sitios vistos reclamados, el viaje da su sello de España con la fecha del viaje (${sello?.fecha}; vistas: ${hechos.length})`)
+  debe(r.acabados.some((a) => a.trip_id === 'lz1') && sello && sello.fecha === '2026-11-09' && pag.pais === 'España', 'sello', `con 3 sitios vistos reclamados, el viaje da su sello de España con la fecha del PRIMER día del viaje (V14) (${sello?.fecha}; vistas: ${hechos.length})`)
   debe(!r.sin.some((v) => v.trip_id === 'lz1'), 'sello', 'ya no sale como viaje sin sello')
   // (c) Los días viajando: los DÍAS DEL VIAJE (5), no los 2 en que se tocó algo.
   // (d) Los puntos del globo: los viajes por hacer, aparte de los hechos.

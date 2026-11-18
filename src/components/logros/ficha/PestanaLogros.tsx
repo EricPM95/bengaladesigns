@@ -1,13 +1,13 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Insignia } from '../dibujos'
-import { ParadaFoto } from '../../route/hoy/v2/ParadaFoto'
-import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { usePasePintable } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { Candado } from '../../pase/Candado'
-import { pedirEstado, type EstadoLogros } from '../momentos/api'
+import { estadoGuardado, pedirEstado, type EstadoLogros } from '../momentos/api'
+import { mismaRespuesta } from '../../../lib/logrosEnCache'
+import { ListaDeColeccion } from './ListaDeColeccion'
 import { logrosActivos } from '../../../lib/logros'
-import { coleccionesDelSitio, textoDeFaltan, TEXTO_DE_SITIO, tituloDeLogros, type EstadoDeSitio, type SitioDeTarjeta, type TarjetaDeColeccion } from './coleccionesDelSitio'
+import { coleccionesDelSitio, textoDeFaltan, tituloDeLogros, type TarjetaDeColeccion } from './coleccionesDelSitio'
 
 /**
  * LG1 §1 — LA PESTAÑA «LOGROS» DE LA FICHA (Design: `Piezas/Ficha Lugar` y `App Explorar y fichas` apartado 02).
@@ -20,13 +20,17 @@ export interface LogrosDeLaFicha {
 }
 
 export function useLogrosDeLaFicha(tripId: string | null, nombreDelSitio: string | null): LogrosDeLaFicha {
-  const [estado, setEstado] = useState<EstadoLogros | null>(null)
+  // (V14) Sale AL INSTANTE, como las demás pestañas: con lo último que se vio de este viaje (lo guardado en el móvil, o lo que ya cargó la hoja de logros) y lo nuevo llega por detrás: solo cambia lo que cambie.
+  const [estado, setEstado] = useState<EstadoLogros | null>(() => (nombreDelSitio && logrosActivos() ? estadoGuardado(tripId) : null))
   useEffect(() => {
-    setEstado(null)
-    if (!nombreDelSitio || !logrosActivos()) return undefined
+    if (!nombreDelSitio || !logrosActivos()) {
+      setEstado(null)
+      return undefined
+    }
+    setEstado((prev) => prev ?? estadoGuardado(tripId))
     let vivo = true
     void pedirEstado(tripId).then((e) => {
-      if (vivo) setEstado(e)
+      if (vivo) setEstado((prev) => (prev && e && mismaRespuesta(prev, e) ? prev : e ?? prev))
     })
     return () => {
       vivo = false
@@ -35,52 +39,7 @@ export function useLogrosDeLaFicha(tripId: string | null, nombreDelSitio: string
   return { estado, tarjetas: nombreDelSitio ? coleccionesDelSitio(estado, nombreDelSitio) : [] }
 }
 
-const VERDE = 'oklch(0.55 0.11 150)'
-const NARANJA = 'oklch(0.8 0.14 70)'
-
-/** El color de cada estado de un sitio (tal cual el Design). */
-const ESTILO: Record<EstadoDeSitio, { fondo: string; borde: string; nombre: string; texto: string; punto: string }> = {
-  visto: { fondo: 'oklch(0.96 0.035 150)', borde: '1px solid rgba(28,34,48,.1)', nombre: 'oklch(0.36 0.09 150)', texto: 'oklch(0.45 0.11 150)', punto: VERDE },
-  este: { fondo: 'oklch(0.8 0.14 70 / .16)', borde: `1.5px solid ${NARANJA}`, nombre: '#1C2230', texto: '#8E6820', punto: 'rgba(28,34,48,.18)' },
-  pendiente: { fondo: '#FFFFFF', borde: '1px solid rgba(28,34,48,.1)', nombre: '#1C2230', texto: 'rgba(28,34,48,.5)', punto: 'rgba(28,34,48,.18)' },
-}
-
-function FotoDeSitio({ nombre, ciudad, visto }: { nombre: string; ciudad: string; visto: boolean }): ReactNode {
-  const [url, setUrl] = useState<string | null>(null)
-  useEffect(() => {
-    let vivo = true
-    void fetchPlacePhoto(nombre, ciudad, null, 'thumb').then((u) => {
-      if (vivo && u) setUrl(u)
-    })
-    return () => {
-      vivo = false
-    }
-  }, [nombre, ciudad])
-  return <ParadaFoto nombre={nombre} photoUrl={url} vista={visto} size={52} />
-}
-
-function FilaDeSitio({ s, ciudad, abrir }: { s: SitioDeTarjeta; ciudad: string; abrir: (nombre: string) => void }): ReactNode {
-  const e = ESTILO[s.estado]
-  const contenido = (
-    <>
-      <FotoDeSitio nombre={s.nombre} ciudad={ciudad} visto={s.estado === 'visto'} />
-      <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3, textAlign: 'left' }}>
-        <span style={{ font: "400 19px/1.1 'Instrument Serif',serif", color: e.nombre }}>{s.nombre}</span>
-        <span style={{ font: "600 12px 'Geist'", color: e.texto }}>{TEXTO_DE_SITIO[s.estado]}</span>
-      </span>
-      <span style={{ width: 30, height: 30, flex: 'none', borderRadius: '50%', background: e.punto, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 14px 'Geist'", boxShadow: 'inset 0 1px 0 rgba(255,255,255,.35)' }}>{s.estado === 'visto' ? '✓' : ''}</span>
-    </>
-  )
-  const estilo = { display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px 8px 8px', borderRadius: 18, background: e.fondo, border: e.borde, width: '100%', minHeight: 52 } as const
-  // El de esta misma ficha no se abre (ya estás en ella); los demás abren la suya.
-  return s.estado === 'este' ? (
-    <div data-logros-sitio={s.sitio} data-estado={s.estado} style={estilo}>{contenido}</div>
-  ) : (
-    <button type="button" data-logros-sitio={s.sitio} data-estado={s.estado} onClick={() => abrir(s.nombre)} style={{ ...estilo, cursor: 'pointer', font: 'inherit', color: 'inherit' }}>{contenido}</button>
-  )
-}
-
-function TarjetaDeColeccionFicha({ t, ciudad, abierta, alternar, abrir }: { t: TarjetaDeColeccion; ciudad: string; abierta: boolean; alternar: () => void; abrir: (nombre: string) => void }): ReactNode {
+function TarjetaDeColeccionFicha({ t, ciudad, destino, abierta, alternar, abrir }: { t: TarjetaDeColeccion; ciudad: string; destino: string; abierta: boolean; alternar: () => void; abrir: (nombre: string) => void }): ReactNode {
   return (
     <div data-logros-coleccion={t.id} data-abierta={abierta ? '1' : '0'} style={{ borderRadius: 20, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.07)', padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
       <button type="button" aria-expanded={abierta} onClick={alternar} style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', border: 'none', background: 'transparent', padding: 0, width: '100%', minHeight: 64, font: 'inherit', color: 'inherit', textAlign: 'left' }}>
@@ -98,11 +57,7 @@ function TarjetaDeColeccionFicha({ t, ciudad, abierta, alternar, abrir }: { t: T
       {abierta && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8, borderTop: '1px solid rgba(28,34,48,.07)' }}>
           <span data-logros-faltan style={{ alignSelf: 'flex-start', height: 26, padding: '0 11px', borderRadius: 999, background: t.completa || t.n >= t.total ? 'oklch(0.96 0.035 150)' : '#F3E3B2', color: t.completa || t.n >= t.total ? 'oklch(0.38 0.1 150)' : '#6E5018', display: 'flex', alignItems: 'center', font: "700 12px 'Geist'" }}>{textoDeFaltan(t)}</span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {t.sitios.map((s) => (
-              <FilaDeSitio key={s.sitio} s={s} ciudad={ciudad} abrir={abrir} />
-            ))}
-          </div>
+          <ListaDeColeccion destino={destino} coleccion={t.id} ciudad={ciudad} sitios={t.sitios.map((s) => ({ sitio: s.sitio, nombre: s.nombre, visto: s.estado === 'visto', este: s.estado === 'este' }))} alTocar={(x) => (x.este ? undefined : () => abrir(x.nombre))} />
         </div>
       )}
     </div>
@@ -128,7 +83,7 @@ export function PestanaLogros({ datos, nombreDelSitio, abrirSitio }: { datos: Lo
       >
         <span data-logros-titulo style={{ padding: '0 4px', font: "400 13px/1.45 'Geist'", color: 'rgba(28,34,48,.65)' }}>{tituloDeLogros(estado.destino, nombreDelSitio, tarjetas.length)}</span>
         {tarjetas.map((t) => (
-          <TarjetaDeColeccionFicha key={t.id} t={t} ciudad={estado.ciudad} abierta={abiertas[t.id] ?? false} alternar={() => alternar(t.id)} abrir={abrirSitio} />
+          <TarjetaDeColeccionFicha key={t.id} t={t} ciudad={estado.ciudad} destino={estado.destino} abierta={abiertas[t.id] ?? false} alternar={() => alternar(t.id)} abrir={abrirSitio} />
         ))}
       </div>
     </div>

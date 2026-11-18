@@ -13,16 +13,16 @@ export type Tierra = Record<string, Anillo[]>
 
 const RAD = Math.PI / 180
 
-/** De `{ it: [[x0,y0,x1,y1,…], …] }` (décimas de grado) a los anillos preparados. */
-export function prepararTierra(crudo: Record<string, number[][]>): Tierra {
+/** De `{ it: [[x0,y0,x1,y1,…], …] }` (en 1/`k` de grado: décimas por defecto) a los anillos preparados. */
+export function prepararTierra(crudo: Record<string, number[][]>, k = 10): Tierra {
   const salida: Tierra = {}
   for (const [iso, anillos] of Object.entries(crudo)) {
     salida[iso] = anillos.map((a) => {
       const n = a.length / 2
       const r: Anillo = { cl: new Float32Array(n), sl: new Float32Array(n), cp: new Float32Array(n), sp: new Float32Array(n) }
       for (let i = 0; i < n; i++) {
-        const lon = (a[2 * i] / 10) * RAD
-        const lat = (a[2 * i + 1] / 10) * RAD
+        const lon = (a[2 * i] / k) * RAD
+        const lat = (a[2 * i + 1] / k) * RAD
         r.cl[i] = Math.cos(lon)
         r.sl[i] = Math.sin(lon)
         r.cp[i] = Math.cos(lat)

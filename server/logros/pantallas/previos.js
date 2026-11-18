@@ -82,7 +82,7 @@ export function paginasDelPasaporte({ datos, base, previos, catalogo, hechos, vi
       if (!entradas.has(`${tripId}|${v.pais}`)) continue
       const viaje = viajes[tripId]
       const destino = datos.destinos[viaje.destino]
-      sellos.push({ trip_id: tripId, destino: viaje.destino, ciudad: v.pais === destino.pais_defecto ? destino.ciudad : v.pais, fecha: a.fin, vacio: false })
+      sellos.push({ trip_id: tripId, destino: viaje.destino, ciudad: v.pais === destino.pais_defecto ? destino.ciudad : v.pais, fecha: a.inicio ?? a.fin, vacio: false })
     }
     const hechos_ = new Set(sellos.map((s) => s.destino))
     const vacios = v.destinos.filter((d) => !hechos_.has(d.destino) && datos.destinos[d.destino]?.pais_defecto === v.pais).map((d) => ({ trip_id: null, destino: d.destino, ciudad: d.ciudad, fecha: null, vacio: true, nuevo: Boolean(d.nuevo) }))

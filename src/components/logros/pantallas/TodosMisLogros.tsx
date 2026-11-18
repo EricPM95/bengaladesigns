@@ -30,7 +30,7 @@ export default function TodosMisLogros({ pantalla }: { pantalla: PantallaDe<'tod
   return (
     <Capa etiqueta="TodosMisLogros" oscura={oscura} fondo={oscura ? 'radial-gradient(circle at 50% 0%,#1E2648 0%,#0B0E1C 62%)' : '#F5EFE4'}>
       <div className="vt" style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', color: oscura ? '#FFFDF8' : '#1C2230' }}>
-        <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px 12px 10px' }}>
+        <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px 20px 16px' }} data-cabecera-de-logros>
           <button type="button" aria-label="Volver" onClick={() => useLogrosPantallas.getState().volver()} style={{ width: 48, height: 48, flex: 'none', border: 'none', background: 'transparent', color: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ width: 40, height: 40, borderRadius: '50%', border: `1px solid ${oscura ? 'rgba(255,253,248,.2)' : 'rgba(28,34,48,.16)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

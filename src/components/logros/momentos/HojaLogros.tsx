@@ -17,6 +17,7 @@ import { useMomentosUI } from './useMomentosUI'
 import { usePasePintable } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { Candado } from '../../pase/Candado'
+import { ListaDeColeccion } from '../ficha/ListaDeColeccion'
 
 const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
 
@@ -100,24 +101,16 @@ export default function HojaLogros(): ReactNode {
       <div onClick={cerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.45)', animation: 'moFade .3s ease both' }} />
       <div role="dialog" aria-modal="true" aria-label="Tus logros" data-hoja-logros={fase} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 64, display: 'flex', flexDirection: 'column', borderRadius: '28px 28px 0 0', background: '#FFFDF8', color: '#1C2230', animation: 'moSube .45s cubic-bezier(.2,.8,.2,1) both' }}>
         <span style={{ alignSelf: 'center', margin: '10px 0 2px', width: 42, height: 4, flex: 'none', borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
-        <div style={{ flex: 'none', display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 10px 22px 20px' }}>
-          <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {/* (LG1, 5-nov) Los colores de «Logros Boton» de Design: la cabecera de fase en frambuesa oklch(0.5 0.17 5) (antes marrón #6F4E37). */}
-            {etiqueta && (
-              <span data-etiqueta-de-fase style={{ ...ETIQUETA, alignSelf: 'flex-start', height: 22, padding: '0 10px', borderRadius: 999, background: 'oklch(0.55 0.17 5 / .1)', color: 'oklch(0.48 0.17 5)', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', fontSize: 9 }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: FRAMBUESA }} />
-                {etiqueta}
-              </span>
+        {/* (V14) Lo único fijo es una barra fina con el título y la X: la medalla y el botón de reclamar se mueven con el resto al bajar (antes la cabecera quedaba quieta y tapaba la tarjeta de la medalla). */}
+        <div data-barra-de-logros style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 10, minHeight: 52, padding: '0 10px 0 20px', borderBottom: '1px solid rgba(28,34,48,.06)' }}>
+          <span data-titulo-de-logros style={{ flex: 1, minWidth: 0, font: "400 24px/1.05 'Instrument Serif',serif", letterSpacing: '-.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {estado?.ciudad ? (
+              <>
+                Tus logros en <em style={{ fontStyle: 'italic', color: '#8A6A2C' }}>{estado.ciudad}</em>
+              </>
+            ) : (
+              'Tus logros'
             )}
-            <span style={{ font: "400 34px/1 'Instrument Serif',serif", letterSpacing: '-.01em' }}>
-              {estado?.ciudad ? (
-                <>
-                  Tus logros en <em style={{ fontStyle: 'italic', color: '#8A6A2C' }}>{estado.ciudad}</em>
-                </>
-              ) : (
-                'Tus logros'
-              )}
-            </span>
           </span>
           <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ width: 48, height: 48, flex: 'none', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ width: 40, height: 40, borderRadius: '50%', background: '#F1EADC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -127,9 +120,18 @@ export default function HojaLogros(): ReactNode {
             </span>
           </button>
         </div>
-        <BotonDeReclamar ciudad={estado?.ciudad} />
-        <TarjetaDeCompanero />
-        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '2px 20px calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div data-cuerpo-de-logros style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '14px 20px calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {/* (LG1, 5-nov) Los colores de «Logros Boton» de Design: la cabecera de fase en frambuesa oklch(0.5 0.17 5) (antes marrón #6F4E37). */}
+          {etiqueta && (
+            <span data-etiqueta-de-fase style={{ ...ETIQUETA, flex: 'none', alignSelf: 'flex-start', height: 22, padding: '0 10px', borderRadius: 999, background: 'oklch(0.55 0.17 5 / .1)', color: 'oklch(0.48 0.17 5)', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', fontSize: 9 }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: FRAMBUESA }} />
+              {etiqueta}
+            </span>
+          )}
+          <div data-cabeza-de-logros style={{ flex: 'none', margin: '-8px -20px -6px' }}>
+            <BotonDeReclamar ciudad={estado?.ciudad} />
+            <TarjetaDeCompanero />
+          </div>
           {!estado ? (
             cargado ? (
               <p style={{ textAlign: 'center', font: "400 13.5px 'Geist'", color: 'rgba(28,34,48,.6)', margin: '24px 0' }}>Todavía no hay logros que enseñar.</p>
@@ -151,7 +153,7 @@ export default function HojaLogros(): ReactNode {
               <Franja fase={fase} estado={estado} hayViaje={hayViaje} />
               <div data-colecciones-con-algo="1" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {(plegar ? conAlgo : estado.colecciones).map((c, i) => (
-                  <FilaDeColeccion key={c.id} c={c} i={i} fase={fase} ciudad={estado.ciudad} abierta={abiertas.has(c.id)} alternar={() => alternar(c.id)} cerrarHoja={cerrar} />
+                  <FilaDeColeccion key={c.id} c={c} i={i} fase={fase} ciudad={estado.ciudad} destino={estado.destino} abierta={abiertas.has(c.id)} alternar={() => alternar(c.id)} cerrarHoja={cerrar} />
                 ))}
               </div>
               {plegar && (
@@ -164,7 +166,7 @@ export default function HojaLogros(): ReactNode {
                     </svg>
                   </button>
                   {masAbierto &&
-                    aCero.map((c, i) => <FilaDeColeccion key={c.id} c={c} i={i} fase={fase} ciudad={estado.ciudad} abierta={abiertas.has(c.id)} alternar={() => alternar(c.id)} cerrarHoja={cerrar} />)}
+                    aCero.map((c, i) => <FilaDeColeccion key={c.id} c={c} i={i} fase={fase} ciudad={estado.ciudad} destino={estado.destino} abierta={abiertas.has(c.id)} alternar={() => alternar(c.id)} cerrarHoja={cerrar} />)}
                 </div>
               )}
               <Secretos fase={fase} estado={estado} verEscena={(id, texto) => { setEscenaTexto(texto ?? null); setEscena(id) }} />
@@ -272,7 +274,7 @@ function Franja({ fase, estado, hayViaje }: { fase: FaseDelViaje; estado: Estado
   )
 }
 
-function FilaDeColeccion({ c, i, fase, ciudad, abierta, alternar, cerrarHoja }: { c: ColeccionDeEstado; i: number; fase: FaseDelViaje; ciudad: string; abierta: boolean; alternar: () => void; cerrarHoja: () => void }): ReactNode {
+function FilaDeColeccion({ c, i, fase, ciudad, destino, abierta, alternar, cerrarHoja }: { c: ColeccionDeEstado; i: number; fase: FaseDelViaje; ciudad: string; destino: string; abierta: boolean; alternar: () => void; cerrarHoja: () => void }): ReactNode {
   const marca = marcaDeColeccion({ fase, completa: c.completa, nuevo: c.nuevo_hoy, enTuRuta: c.en_tu_ruta, ciudad })
   const nuevo = marca.etiqueta === 'nuevo'
   const verdeMarca = marca.etiqueta === 'completa' || marca.etiqueta === 'en_ruta'
@@ -321,12 +323,18 @@ function FilaDeColeccion({ c, i, fase, ciudad, abierta, alternar, cerrarHoja }: 
         )}
       </div>
       {abierta && puedeAbrir && (
-        <div style={{ margin: '0 12px 10px', padding: '2px 10px', borderRadius: 14, background: '#F5EFE4', animation: 'moPop .3s ease both' }}>
-          {c.sitios.map((s, j) => (
-            <div key={s.sitio} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 46, borderBottom: j < c.sitios.length - 1 ? '1px solid rgba(28,34,48,.08)' : 'none' }}>
-              <span style={{ width: 22, height: 22, flex: 'none', borderRadius: '50%', background: s.visto ? VERDE : 'transparent', border: s.visto ? 'none' : `1.5px dashed ${s.en_ruta ? 'rgba(28,34,48,.3)' : FRAMBUESA}`, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 10px 'Geist'" }}>{s.visto ? '✓' : ''}</span>
-              <span style={{ flex: 1, minWidth: 0, font: "500 13px/1.3 'Geist'", color: s.visto ? 'oklch(0.36 0.09 150)' : '#1C2230' }}>{s.nombre ?? s.sitio}</span>
-              {!s.visto && fase !== 'despues' && (
+        <div data-lista-abierta={c.id} style={{ margin: '0 12px 10px', padding: '8px 8px 2px', borderRadius: 14, background: '#F5EFE4', animation: 'moPop .3s ease both' }}>
+          {/* (V14) La lista se queda al tocar la colección (✓ lo que tienes, ○ lo que falta) y, al final, [Ver la colección ›] abre la pantalla de la colección. */}
+          <ListaDeColeccion
+            destino={destino}
+            coleccion={c.id}
+            ciudad={ciudad}
+            sitios={c.sitios.map((s) => ({ sitio: s.sitio, nombre: s.nombre ?? s.sitio, visto: s.visto }))}
+            antesDeVer={cerrarHoja}
+            accion={(x) => {
+              const s = c.sitios.find((y) => y.sitio === x.sitio)
+              if (!s || s.visto || fase === 'despues') return null
+              return (
                 <button
                   type="button"
                   onClick={() => {
@@ -336,13 +344,13 @@ function FilaDeColeccion({ c, i, fase, ciudad, abierta, alternar, cerrarHoja }: 
                       useAddFlowStore.getState().openAddFlow(null, s.nombre ?? s.sitio)
                     }
                   }}
-                  style={{ flex: 'none', minHeight: 44, padding: '0 11px', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                  style={{ flex: 'none', minHeight: 44, padding: 0, border: 'none', background: 'transparent', cursor: 'pointer' }}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', height: 32, padding: '0 11px', borderRadius: 999, border: s.en_ruta ? '1px solid rgba(28,34,48,.16)' : 'none', background: s.en_ruta ? '#FFFFFF' : '#1C2230', color: s.en_ruta ? '#1C2230' : '#FFFDF8', font: "600 11.5px 'Geist'", whiteSpace: 'nowrap' }}>{s.en_ruta ? 'Cómo llegar' : 'Añadir a mi ruta'}</span>
                 </button>
-              )}
-            </div>
-          ))}
+              )
+            }}
+          />
         </div>
       )}
     </div>
