@@ -92,6 +92,9 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
   app.get('/api/logros/ficha', conUsuario(async (req, res, u) => res.json(await servicio.ficha(u.id, String(req.query.trip_id ?? ''), String(req.query.sitio ?? '')))))
   // (V5) Los sitios con logro del destino del viaje, para elegir de qué sitio es una foto de la galería sin ubicación.
   app.get('/api/logros/sitios', conUsuario(async (req, res, u) => res.json(await servicio.sitiosParaReclamar(u.id, String(req.query.trip_id ?? '')))))
+  // (V7) «Yo también estaba»: lo que un compañero del viaje ganó y yo no (solo con el viaje acabado), y ganarlo.
+  app.get('/api/logros/companero', conUsuario(async (req, res, u) => res.json(await servicio.companeroPendientes(u.id, String(req.query.trip_id ?? '')))))
+  app.post('/api/logros/yo-tambien', conUsuario(async (req, res, u) => res.json(await servicio.yoTambien(u.id, req.body ?? {}))))
   app.get('/api/logros/lo-de-ayer', conUsuario(async (req, res, u) => res.json(await servicio.loDeAyer(u.id, String(req.query.trip_id ?? '')))))
   app.get('/api/logros/resumen', conUsuario(async (req, res, u) => res.json(await servicio.resumenDe(u.id, String(req.query.trip_id ?? ''), { dia: req.query.dia ? String(req.query.dia) : null }))))
   app.get('/api/logros/viajero', conUsuario(async (_req, res, u) => res.json(await servicio.logrosDeViajero(u.id))))

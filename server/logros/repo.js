@@ -14,6 +14,24 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
     async hechosDe(userId) {
       return ok(await admin.from('logro_hechos').select('*').eq('user_id', userId).is('deshecho_en', null), 'hechosDe')
     },
+    /** (V7) Los miembros de un viaje compartido (el dueño y los invitados), con cuándo se unieron. */
+    async miembrosDe(tripId) {
+      const viaje = ok(await admin.from('trips').select('traveler_id, created_at').eq('id', tripId).maybeSingle(), 'miembrosDe(viaje)')
+      const otros = ok(await admin.from('trip_members').select('user_id, created_at').eq('trip_id', tripId), 'miembrosDe(miembros)')
+      return [...(viaje ? [{ user_id: viaje.traveler_id, desde: null }] : []), ...otros.map((m) => ({ user_id: m.user_id, desde: m.created_at }))]
+    },
+    /** (V7) El nombre del perfil de cada persona: Map id → nombre. */
+    async nombresDe(ids) {
+      const filas = ok(await admin.from('travelers').select('id, nombre').in('id', ids), 'nombresDe')
+      return new Map(filas.map((f) => [f.id, f.nombre ?? null]))
+    },
+    /** (V7) Una dirección firmada (1 hora) de una foto del compañero, o null. */
+    async fotoUrl(fotoId) {
+      const f = ok(await admin.from('trip_photos').select('storage_path').eq('id', fotoId).maybeSingle(), 'fotoUrl')
+      if (!f?.storage_path) return null
+      const r = await admin.storage.from('fotos-viaje').createSignedUrl(f.storage_path, 3600)
+      return r.data?.signedUrl ?? null
+    },
     async insertarHecho(fila) {
       return ok(await admin.from('logro_hechos').insert(fila).select().single(), 'insertarHecho')
     },

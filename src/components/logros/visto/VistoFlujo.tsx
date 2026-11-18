@@ -9,6 +9,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { CamaraApp } from './CamaraApp'
 import { fechasDelViaje, hoyLocal, lineaDeGaleria, textoDelPlazo } from './fechas'
 import { abrirGaleriaDeReclamo, HostDeReclamar } from '../reclamar/Reclamar'
+import { HostDeCompanero } from '../companero/Companero'
 import { faseDeReclamo, textoDeLoDeAyer } from '../../../lib/reclamar'
 import { AvisoDeVisto, EstilosDelVisto, FranjaSinConexion, HojaDePermisos, HojaDelVisto, HojaFotoDentro, HojaGaleria, HojaLoDeAyer, NotaCorta, type ParadaDeAyer } from './Hojas'
 import { faltaDe, hojaSegunRespuesta as decidirHoja } from './decidir'
@@ -404,6 +405,7 @@ export function VistoFlujo({ tripId }: { tripId: string | null }) {
         />
       )}
       <HostDeReclamar />
+      <HostDeCompanero />
       {s.nota && <NotaCorta texto={s.nota} onFin={() => useVistoStore.getState().poner({ nota: null })} />}
       <input
         ref={entradaDeGaleria}

@@ -260,7 +260,8 @@ export function calcular(e) {
     const imprescindibles = new Set(d.colecciones.find((c) => c.id === d.sellos.find((s) => s.id === d.sello_principal)?.coleccion)?.sitios ?? [])
     const diasMomento = { madrugador: new Set(), nocturno: new Set() }
     for (const h of hs) {
-      if (h.tipo !== 'foto') continue
+      // (V7) Lo que se gana con «Yo también estaba» no tiene foto propia: no da Madrugador ni el Atardecer (son de quien hizo la foto a esa hora).
+      if (h.tipo !== 'foto' || h.motivo === 'companero') continue
       // (LZ3) Un destino con `momentos` en su JSON (Lanzarote) dice qué momentos hay y dónde; sin él (Roma) sigue la regla de siempre.
       const ganados = d.momentos ? momentosDeLaFoto(h, d, ajustes) : sitiosDeId(d, h.sitio).some((s) => imprescindibles.has(s)) ? [momentoDeLaHora(h.loc, ajustes)].filter(Boolean) : []
       for (const m of ganados) {

@@ -31,6 +31,7 @@ import { usePermisosDelViaje } from './usePermisosDelViaje'
 import { diaDeLaReservaEnPalabras, entradasQueNoCuadran, sitioCorto } from '../lib/reservasGrupo'
 import { textoDelAviso } from '../../shared/avisos/textos.js'
 import { bannerDeContextoVigente } from '../lib/contextBannerVigente'
+import { useCompaneroStore } from '../lib/companero'
 
 export interface AppNotice {
   id: string
@@ -122,8 +123,13 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
     useNoticesStore.getState().markAllRead(ids)
   }, [route, reservations, grupo.esInvitado, grupo.yoId, idDeViaje])
 
+  // (V7, Y5) «Eric ha conseguido Jameos del Agua. ¿Estabais juntos?» (solo cuando el viaje ha terminado: el servidor no manda nada durante el viaje).
+  const companeros = useCompaneroStore((s) => s.pendientes)
   return useMemo(() => {
     const items: AppNotice[] = []
+    for (const p of companeros.slice(0, 5)) {
+      items.push({ id: `companero:${p.sitio}`, kind: 'friend', title: `${p.de_nombre ?? 'Tu compañero'} ha conseguido ${p.nombre}`, text: '¿Estabais juntos?', acciones: [{ label: 'Ahora', run: () => useCompaneroStore.getState().abrirSitio(p.sitio) }], read: false, canMarkRead: false })
+    }
 
     if (syncStatus === 'error') {
       items.push({ id: 'sync-error', kind: 'error', title: 'Cambios sin guardar', text: 'No se ha podido guardar tu viaje. Revisa tu conexión: lo volvemos a intentar solos.', read: false, canMarkRead: false })
@@ -287,5 +293,5 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
     const order: Record<NoticeKind, number> = { error: 0, warning: 1, friend: 2, info: 3 }
     aMostrar.sort((a, b) => Number(a.read) - Number(b.read) || order[a.kind] - order[b.kind])
     return { items: aMostrar, unreadCount: aMostrar.filter((item) => !item.read).length }
-  }, [hiddenIds, unreadIds, route, reservations, grupo.esInvitado, grupo.compartido, grupo.mias, grupo.gente, grupo.yoId, grupo.nombreAdmin, rol, avisosDelServidor, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias, avisosVuelo])
+  }, [companeros, hiddenIds, unreadIds, route, reservations, grupo.esInvitado, grupo.compartido, grupo.mias, grupo.gente, grupo.yoId, grupo.nombreAdmin, rol, avisosDelServidor, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias, avisosVuelo])
 }

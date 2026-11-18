@@ -138,21 +138,21 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
   const aItems = (logros) => new Map(logros.filter((f) => logroActivo(datos, f.logro)).map((f) => [clave(f.destino, f.logro, f.escalon), { clave: clave(f.destino, f.logro, f.escalon), logro: f.logro, escalon: String(f.escalon), destino: f.destino, trip_id: f.trip_id ?? null, en: aIso(f.ganado_en), animacion_vista: f.animacion_vista }]))
 
   /** Concede lo nuevo (ya calculado) guardándolo; devuelve solo lo que de verdad se ha insertado (nunca da dos veces lo mismo). */
-  async function conceder(userId, nuevos, extra = {}) {
+  async function conceder(userId, nuevos, extra = {}, global = {}) {
     if (nuevos.length === 0) return []
-    const filas = nuevos.map((it) => ({ logro: it.logro, escalon: it.escalon, destino: it.destino, trip_id: it.trip_id, ganado_en: it.en, ...(extra[it.clave] ?? {}) }))
+    const filas = nuevos.map((it) => ({ logro: it.logro, escalon: it.escalon, destino: it.destino, trip_id: it.trip_id, ganado_en: it.en, ...(extra[it.clave] ?? {}), ...global }))
     const insertadas = await repo.insertarLogros(userId, filas)
     const claves = new Set(insertadas.map((f) => clave(f.destino, f.logro, f.escalon)))
     return nuevos.filter((it) => claves.has(it.clave))
   }
 
   /** Lo que hay que enseñar tras un hecho: lo nuevo, con su frase de suspense (solo la primera vez). */
-  async function respuestaDeNuevos(userId, antes, despues, c, hechosDespues = c.hechos) {
+  async function respuestaDeNuevos(userId, antes, despues, c, hechosDespues = c.hechos, global = {}) {
     const nuevos = diferencia(antes, despues, datos.ajustes)
     const ultima = await repo.ultimaFrase(userId)
     const momentos = armarMomentos({ datos, nuevos, despues, antes, ultimaFrase: ultima, azar })
     const frases = Object.fromEntries(momentos.filter((m) => m.tipo === 'emblema').map((m) => [m.clave, { frase: m.frase }]))
-    const concedidos = await conceder(userId, nuevos, frases)
+    const concedidos = await conceder(userId, nuevos, frases, global)
     const claves = new Set(concedidos.map((it) => it.clave))
     // Lo que ya estaba guardado (por ejemplo, ganado antes de que cambiaran los datos) no se enseña otra vez.
     const mostrados = momentos.filter((m) => !m.clave || claves.has(m.clave))
@@ -444,6 +444,88 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return { ok: true, valida: true, cuenta: true, instante: e.instante, sitios: ids.map((s) => ({ sitio: s, nombre: nombreDeSitio(catalogos, viaje.destino, s) })), nuevos, exp, id: filas[0]?.id }
   }
 
+  /* ── (V7) «Yo también estaba» ── */
+
+  /**
+   * Lo que un compañero del viaje ha ganado y esta persona aún no tiene (pedazos y emblemas ocultos de sitios), para «Yo también estaba». Reglas (Eric):
+   *   · SOLO cuando el viaje ya ha terminado (y dentro del plazo de 30 días): durante el viaje, nada;
+   *   · solo miembros del viaje compartido que ya estaban en él (no los que se unieron después del último día);
+   *   · solo lo ganado en ese viaje por una foto, un Visto o la galería (nunca lo que el compañero ganó a su vez con «Yo también estaba»);
+   *   · solo si esta persona NO tiene ya ese sitio (ni el pedazo ni el emblema que falten).
+   * Devuelve `{ ok, pendientes: [{ sitio, nombre, de, de_nombre, falta, colecciones, emblema, foto_url, instante }], sin_pase }`.
+   */
+  async function companeroPendientes(userId, tripId, c0 = null) {
+    const c = c0 ?? (await cargar(userId))
+    const viaje = c.viajes[tripId]
+    if (!viaje || typeof repo.miembrosDe !== 'function') return { ok: false, motivo: 'viaje_sin_fechas', pendientes: [] }
+    const hoy = hoyEn(viaje.destino)
+    if (hoy <= viaje.fin || hoy > sumarDias(viaje.fin, datos.ajustes.plazo_reclamar_dias)) return { ok: true, pendientes: [], fuera_de_fechas: true, sin_pase: false }
+    const miembros = await repo.miembrosDe(tripId)
+    const yo = miembros.find((m) => m.user_id === userId)
+    const alDia = (m) => !m.desde || String(m.desde).slice(0, 10) <= viaje.fin
+    if (!yo || !alDia(yo)) return { ok: true, pendientes: [], sin_pase: false }
+    const d = datos.destinos[viaje.destino]
+    const mios = aItems(c.logros)
+    const por = new Map()
+    for (const m of miembros.filter((x) => x.user_id !== userId && alDia(x))) {
+      const logros = (await repo.logrosDe(m.user_id)).filter((l) => l.trip_id === tripId && l.destino === viaje.destino && l.detalle?.origen !== 'companero')
+      const hechos = (await repo.hechosDe(m.user_id)).filter((h) => h.trip_id === tripId && h.motivo !== 'companero')
+      const ganados = new Map()
+      const de = (s) => {
+        if (!ganados.has(s)) ganados.set(s, { colecciones: new Set(), emblema: false })
+        return ganados.get(s)
+      }
+      for (const l of logros) {
+        if (l.logro === 'pedazo') {
+          const [col, sitio] = String(l.escalon).split(':')
+          if (sitio) de(sitio).colecciones.add(col)
+        } else if (l.logro === 'emblema') {
+          const e = d.emblemas.find((x) => x.id === l.escalon)
+          if (e?.sitio) de(e.sitio).emblema = true
+        }
+      }
+      for (const [sitio, g] of ganados) {
+        const faltan = []
+        const colsFaltan = [...g.colecciones].filter((col) => !mios.has(clave(viaje.destino, 'pedazo', `${col}:${sitio}`)))
+        if (colsFaltan.length > 0) faltan.push('pedazo')
+        const em = d.emblemas.find((x) => x.sitio === sitio)
+        if (g.emblema && em && !mios.has(clave(viaje.destino, 'emblema', em.id))) faltan.push('emblema')
+        if (faltan.length === 0 || por.has(sitio)) continue
+        const delSitio = hechos.filter((h) => sitiosDeId(d, h.sitio).includes(sitio))
+        const hecho = delSitio.filter((h) => h.tipo === 'foto').sort((a, b) => new Date(a.instante) - new Date(b.instante))[0] ?? delSitio[0] ?? null
+        const foto_url = hecho?.foto_id && typeof repo.fotoUrl === 'function' ? await repo.fotoUrl(hecho.foto_id).catch(() => null) : null
+        por.set(sitio, { sitio, nombre: nombreDeSitio(catalogos, viaje.destino, sitio), de: m.user_id, de_nombre: null, falta: faltan, colecciones: colsFaltan.map((col) => d.colecciones.find((x) => x.id === col)?.nombre ?? col), emblema: faltan.includes('emblema'), foto_url, instante: hecho?.instante ?? null })
+      }
+    }
+    const lista = [...por.values()]
+    if (lista.length > 0 && typeof repo.nombresDe === 'function') {
+      const nombres = await repo.nombresDe([...new Set(lista.map((p) => p.de))])
+      for (const p of lista) p.de_nombre = nombres.get(p.de) ?? null
+    }
+    const pase = await puedeGanar(userId, c, viaje, hoy)
+    return { ok: true, pendientes: lista, sin_pase: !pase.puede }
+  }
+
+  /** «Yo también estaba»: gana, con su propio momento, lo que el compañero consiguió (`sitios` = ids, o 'todos'). El origen queda apuntado como «compañero» (hecho con motivo 'companero' y `detalle.origen` del logro). */
+  async function yoTambien(userId, { trip_id, sitios = 'todos' }) {
+    const c = await cargar(userId)
+    const viaje = c.viajes[trip_id]
+    if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas', nuevos: [] }
+    const pr = await companeroPendientes(userId, trip_id, c)
+    const elegidos = sitios === 'todos' ? pr.pendientes : pr.pendientes.filter((p) => (Array.isArray(sitios) ? sitios : [sitios]).includes(p.sitio))
+    if (elegidos.length === 0) return { ok: true, cuenta: false, motivo: 'nada_pendiente', nuevos: [] }
+    const pase = await puedeGanar(userId, c, viaje, hoyEn(viaje.destino))
+    if (!pase.puede) return { ok: true, cuenta: false, motivo: pase.motivo, nuevos: [] }
+    const antes = calcularCon(c)
+    const filas = []
+    for (const p of elegidos) {
+      filas.push(await repo.insertarHecho({ user_id: userId, trip_id, destino: viaje.destino, tipo: 'foto', sitio: p.sitio, stop_id: null, instante: p.instante ?? new Date(`${viaje.inicio}T12:00:00Z`).toISOString(), recibido_en: ahora().toISOString(), ubic: 'cerca', valido: true, motivo: 'companero', origen: 'galeria', foto_id: null, inicio: viaje.inicio, fin: viaje.fin }))
+    }
+    const despues = calcularCon(c, [...c.hechos, ...filas], await repo.ordenPionero(userId))
+    const { nuevos, exp } = await respuestaDeNuevos(userId, antes, despues, c, [...c.hechos, ...filas], { detalle: { origen: 'companero' } })
+    return { ok: true, cuenta: true, sitios: elegidos.map((p) => ({ sitio: p.sitio, nombre: p.nombre })), nuevos, exp }
+  }
+
   /* ── El pase y la prueba de HOY ── */
 
   /** Lo que necesita HOY para saber qué enseñar: si puede usarse, y si no, la tarjeta del pase (la pantalla 12 de Design, sin alertas). */
@@ -679,7 +761,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return repo.encolarAvisos(puestos)
   }
 
-  return { aItems, cargar, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, cerca, deshacer, recalcular, estado, ficha, loDeAyer, sitiosParaReclamar, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
+  return { aItems, cargar, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, cerca, deshacer, recalcular, estado, ficha, loDeAyer, sitiosParaReclamar, companeroPendientes, yoTambien, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
 }
 
 /** El instante (ISO, UTC) en que son las `hhmm` de esa fecha en la hora del destino. */

@@ -160,7 +160,7 @@ let siguienteId = 1
 let respuestasGuardadas: RespuestaDeHecho[] = []
 
 /** La foto pasa a los recuerdos del día en que se hizo (si hay álbum; sin red o sin cuenta, no pasa nada). */
-async function alAlbum(archivo: File, fecha: string | null) {
+export async function alAlbum(archivo: File, fecha: string | null) {
   const route = useRouteStore.getState().route
   const dia = diaDeLaFecha(route, fecha)
   if (!route || !dia) return

@@ -36,7 +36,7 @@ const sacarDesign = process.env.SIN_DESIGN !== '1'
 }
 
 /* ───────────── 2. La campana en la app ───────────── */
-const a = await abrirApp(APP, { ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0' })
+const a = await abrirApp(APP, { ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0&sinCompanero=1' })
 const ev = (js) => a.evaluar(js)
 for (let i = 0; i < 120 && !(await ev("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await a.esp(500)
 for (let i = 0; i < 60 && !(await ev("typeof window.__rutaPrueba === 'function'").catch(() => false)); i++) await a.esp(500)

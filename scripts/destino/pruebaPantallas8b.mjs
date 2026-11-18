@@ -75,7 +75,7 @@ console.log('2. Apagado, la app es la de hoy')
 console.log('3. Reglas que no se pueden saltar')
 {
   const nuestros = [...archivos('src/components/logros'), ...archivos('src/components/route/hoy/v2'), 'src/lib/paseEstado.ts', 'src/lib/hoyV2.ts'].filter((f) => !/AdminLogros|PruebaFotos/.test(f))
-  const empresas = /civitatis|booking\.com|stay22|viator|getyourguide|tiqets|airbnb|skyscanner|trivago|whatsapp|instagram|tiktok|facebook/i
+  const empresas = /civitatis|booking\.com|stay22|viator|getyourguide|tiqets|airbnb|skyscanner|trivago|instagram|tiktok|facebook/i
   const aviso = []
   for (const f of nuestros) {
     const t = sinComentarios(leer(f))

@@ -9,6 +9,7 @@ import { ORDEN_EMBLEMAS_LANZAROTE, idDeDibujoLanzarote } from '../dibujos/emblem
 import { pedirEstado, type ColeccionDeEstado, type EstadoLogros } from './api'
 import { COLOR_DE_GRADO } from './BotonFlotanteLogros'
 import { BotonDeReclamar } from '../reclamar/Reclamar'
+import { TarjetaDeCompanero } from '../companero/Companero'
 import { bannerAntes, bannerDespues, etiquetaDeFase, faseDelViaje, lineaDeGrado, marcaDeColeccion, notaDeSecretos, TEXTO_AL_COMPLETAR, textoDelSiguiente, tituloDeSecretos, type FaseDelViaje } from './hoja/textosHoja'
 import { piezaDeInsignia } from './hoja/piezaDeInsignia'
 import './momentos.css'
@@ -110,6 +111,7 @@ export default function HojaLogros(): ReactNode {
           </button>
         </div>
         <BotonDeReclamar ciudad={estado?.ciudad} />
+        <TarjetaDeCompanero />
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '2px 16px calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {!estado ? (
             <p style={{ textAlign: 'center', font: "400 13.5px 'Geist'", color: 'rgba(28,34,48,.6)', margin: '24px 0' }}>{cargado ? 'Todavía no hay logros que enseñar.' : 'Un momento…'}</p>

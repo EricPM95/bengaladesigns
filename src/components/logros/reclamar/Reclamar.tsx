@@ -141,6 +141,19 @@ function Resumen() {
         )}
         {s.noValen.length > 0 && (
           <div data-reclamar="no-valen" className="flex flex-col gap-1.5">
+            {/* (V7, Y4) Las fotos que pierden sus datos (WhatsApp, capturas): la tarjeta de ayuda, encima de la lista. */}
+            {s.noValen.some((n) => n.motivo === 'no_camara') && (
+              <div data-reclamar="ayuda-sin-datos" className="mb-1 flex flex-col gap-1.5 rounded-2xl p-3.5" style={{ background: 'rgba(255,253,248,.1)', font: "400 13px/1.45 'Geist'", color: 'rgba(255,253,248,.88)' }}>
+                <b style={{ font: "700 14px 'Geist'", color: '#FFFDF8' }}>¿Por qué no cuentan?</b>
+                <span>Las fotos enviadas por WhatsApp y las capturas de pantalla pierden los datos que dicen dónde y cuándo se hicieron.</span>
+                <span>
+                  <b>¿Las hizo tu compañero de viaje?</b> Cuando él las suba desde su móvil, podrás ganar el mismo pedazo con <b>Yo también estaba</b>.
+                </span>
+                <span>
+                  <b>También puede pasártelas</b> por AirDrop o por WhatsApp como documento: así no pierden nada.
+                </span>
+              </div>
+            )}
             <span style={{ ...ETIQUETA, color: 'rgba(255,253,248,.6)' }}>{s.noValen.length === 1 ? 'Una foto que no cuenta' : `${s.noValen.length} fotos que no cuentan`}</span>
             {s.noValen.map((n) => (
               <div key={n.id} className="flex items-center gap-2.5 rounded-xl py-1.5 pl-1.5 pr-3" style={{ background: 'rgba(255,253,248,.06)' }}>
