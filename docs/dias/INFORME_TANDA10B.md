@@ -5656,3 +5656,9 @@ Para leer sus documentos en Lanzarote con el cobro apagado, se le da un Pase Lan
 - **«Sello de plata»:** era la medalla del destino con otra redacción (y «bronce» por defecto sin grado); ahora igual que la hoja: «Bronce · Primeros pasos en Roma» / «Por conseguir».
 - **Logros de viajero:** todos 120×156, dibujo de 72. **Resto:** tarjeta oscura de arriba con el título (el mismo del Perfil) y más aire (22 px).
 - **Pruebas:** `pruebaV10` (nueva) 16·0 con las de logros, pantallas, Perfil y `pruebaJutrip`. `pruebaTandaHOY1_B` y `HOY2b_E` piden la API con `DESTINOS_OCULTOS='-'` (no es de esta tanda).
+
+## TANDA V11 · Estampar el pasaporte (18-nov)
+- **1. Abrir al instante:** el pasaporte guarda lo último (`pasaporte2`) con `logrosEnCache` y abre con eso; el globo sin datos sale con un esqueleto suave, no en blanco.
+- **2. [Estampar mi sello]:** el sello de un viaje exige viaje ACABADO y ≥ 5 sitios vistos (Visto cerca o foto válida; `exp.json › viaje_acabado`). El viaje de Alicia no tenía ninguno con la app, por eso no había sello (y España salía «Por conseguir»): lo reproduce `pruebaV11`. Ahora, si aún no hay sello, `pasaporte2` manda `viajes_sin_sello` (cuántos lleva, plazo) y el pasaporte lo dice con [Reclamar con tus fotos] (las fotos de la V5 y lo ganado en la V7 cuentan). «Por conseguir» → «Aún no has estado en …» + [Planear un viaje] (solo abre el formulario; nunca crea un viaje).
+- **3. Números y globo:** «días viajando» cuenta los días del viaje (antes, los días con algún hecho: 2 en un viaje de 5); punto por viaje en su destino: lleno si está hecho, suave si está por hacer (`viajes_por_hacer`), también Lanzarote (Canarias).
+- **Pruebas:** `pruebaV11` (nueva) 15·0; `pruebaLogros1` puesta al día (44 días viajando = 40 de antes + 4 del viaje); resto en 0.

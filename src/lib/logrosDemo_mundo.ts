@@ -89,6 +89,8 @@ export function responder(ruta: string, _url: URL, c: Record<string, unknown>, o
       por_descubrir: [],
       numeros,
       paginas: pgs,
+      // (V11) Solo para las pruebas: `window.__demoMundo.viajesSinSello = [...]` pone viajes terminados sin sello.
+      viajes_sin_sello: (window as unknown as { __demoMundo?: { viajesSinSello?: unknown[] } }).__demoMundo?.viajesSinSello ?? [],
     }
   }
   return undefined

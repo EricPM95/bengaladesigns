@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { flagDots } from '../../../lib/flagColors'
 import { empezarViajeNuevo } from '../../../lib/nuevoViaje'
+import { mismaRespuesta } from '../../../lib/logrosEnCache'
+import { fechaLarga } from '../../../lib/reclamar'
+import { abrirGaleriaDeReclamo } from '../reclamar/Reclamar'
 import { usePerfilUi } from '../../../store/usePerfilUi'
 import { Capa } from './Capa'
 import { Globo, type Marca, type Objetivo, type Relleno } from './mundo/Globo'
-import { pedirPasaporte, type PaginaDePasaporte, type RespuestaPasaporte, type SelloDePagina } from './mundo/api'
+import { pasaporteGuardado, pedirPasaporte, type PaginaDePasaporte, type RespuestaPasaporte, type SelloDePagina, type ViajeSinSello } from './mundo/api'
 import { zoomParaPais } from './mundo/proyeccion'
 import { mapaDeVisitados } from './mundo/mapaDeVisitados'
 import { useMiNombreYFoto } from '../../../store/useMiPerfil'
@@ -26,6 +29,8 @@ const HUECOS: Array<[number, number, number]> = [
 ]
 const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
 const realesDe = (p: PaginaDePasaporte) => p.sellos.filter((s) => !s.vacio)
+/** (V11) Dónde está cada destino (el punto de cada viaje en el globo). */
+const COORDENADAS_DE_DESTINO: Record<string, { lat: number; lng: number }> = { roma: { lat: 41.9, lng: 12.5 }, lanzarote: { lat: 29.0, lng: -13.6 } }
 
 /** Qué dice cada país en la lista. */
 function textoDeLista(p: PaginaDePasaporte): string {
@@ -59,7 +64,8 @@ function colocar(sellos: SelloDePagina[], sub: number): Array<{ s: SelloDePagina
  */
 export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pasaporte'> }): ReactNode {
   const { paises: catalogo, tierra } = usePaisesYTierra()
-  const [datos, setDatos] = useState<RespuestaPasaporte | 'error' | null>(null)
+  // (V11) Abre AL INSTANTE con lo último que se vio del pasaporte (países, sellos y el globo); lo nuevo llega por detrás y solo cambia lo que cambie.
+  const [datos, setDatos] = useState<RespuestaPasaporte | 'error' | null>(() => pasaporteGuardado())
   const [idx, setIdx] = useState(0)
   const [sub, setSub] = useState(0)
   const [lista, setLista] = useState(false)
@@ -67,6 +73,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
   const [cubierta, setCubierta] = useState(pantalla.pagina === undefined && !reducirMovimiento())
   const [objetivo, setObjetivo] = useState<Objetivo | undefined>(undefined)
   const [estampar, setEstampar] = useState<string | null>(null)
+  const [sinSello, setSinSello] = useState<ViajeSinSello | null>(null)
   const [golpe, setGolpe] = useState(0)
   const sembrado = useRef(false)
   const reducido = reducirMovimiento()
@@ -76,7 +83,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
 
   useEffect(() => {
     let vivo = true
-    void pedirPasaporte().then((r) => vivo && setDatos(r?.ok ? r : 'error'))
+    void pedirPasaporte().then((r) => vivo && setDatos((prev) => (r?.ok ? (prev && prev !== 'error' && mismaRespuesta(prev, r) ? prev : r) : prev && prev !== 'error' ? prev : 'error')))
     return () => {
       vivo = false
     }
@@ -116,6 +123,14 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
         i = k
         setEstampar(trip)
         s = Math.floor(paginas[k].sellos.findIndex((x) => x.trip_id === trip) / 4)
+      } else {
+        // (V11) Ese viaje aún no tiene sello: se abre la página de su país y se dice qué hace falta (no se deja el sello «Por conseguir» sin explicación).
+        const falta = (datos && datos !== 'error' ? datos.viajes_sin_sello : undefined)?.find((v) => v.trip_id === trip)
+        if (falta) {
+          const kk = paginas.findIndex((p) => p.sellos.some((x) => x.destino === falta.destino))
+          if (kk >= 0) i = kk
+          setSinSello(falta)
+        }
       }
     } else if (pedida && pedida !== 'lista') {
       const [nombre, num] = pedida.split(':')
@@ -149,6 +164,11 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
   }, [paginas, pagina])
   const marcas = useMemo(() => {
     const m: Marca[] = []
+    // (V11) Un punto por viaje, en su destino: LLENO si ya está hecho (sello), HUECO (más suave) si está por hacer, para que no parezca que ya se ha estado. Lanzarote tiene el suyo (así se ve Canarias).
+    const porDestino = (d: string) => COORDENADAS_DE_DESTINO[d]
+    const puntosDeViaje: Marca[] = []
+    paginas.forEach((p) => p.sellos.filter((s) => !s.vacio && porDestino(s.destino)).forEach((s) => puntosDeViaje.push({ clave: `hecho-${s.trip_id}`, lat: porDestino(s.destino).lat, lng: porDestino(s.destino).lng, tipo: 'oro' })))
+    for (const v of datos && datos !== 'error' ? (datos.viajes_por_hacer ?? []) : []) if (porDestino(v.destino)) puntosDeViaje.push({ clave: `hueco-${v.trip_id}`, lat: porDestino(v.destino).lat, lng: porDestino(v.destino).lng, tipo: 'gris' })
     paginas.forEach((p, k) => {
       const c = p.iso ? porIso.get(p.iso) : undefined
       if (!c) return
@@ -156,8 +176,8 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
       else if (realesDe(p).length) m.push({ clave: String(k), lat: c.lat, lng: c.lng, tipo: 'oro', brillo: k === idx })
       else if (c.p === 1) m.push({ clave: String(k), lat: c.lat, lng: c.lng, tipo: 'tinta' })
     })
-    return m
-  }, [paginas, porIso, idx])
+    return [...m, ...puntosDeViaje]
+  }, [paginas, porIso, idx, datos])
 
   const alPais = (iso: string) => {
     const k = paginas.findIndex((p) => p.iso === iso)
@@ -195,7 +215,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
               {inicial ? (
                 <Globo tierra={tierra} rellenos={rellenos} marcas={marcas} objetivo={objetivo} inicial={inicial} estilo="papel" lado={lado} zoomMax={9} onPais={alPais} onMarca={(c) => ir(Number(c))} etiqueta="El globo de tu pasaporte" />
               ) : (
-                <div style={{ width: lado, height: lado, borderRadius: '50%', background: '#F7F1E4' }} />
+                <div data-globo-esqueleto aria-hidden="true" style={{ width: lado, height: lado, borderRadius: '50%', background: 'radial-gradient(circle at 38% 32%,#FBF6EA 0%,#EADFC6 55%,#D9CBAB 100%)', boxShadow: 'inset 0 0 0 1px rgba(28,34,48,.08)', animation: 'muFade 1.2s ease-in-out infinite alternate' }} />
               )}
             </div>
             {numeros && (
@@ -247,7 +267,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
                             </span>
                             {s.vacio && (
                               <>
-                                <button type="button" onClick={() => setAviso(s)} aria-label={`${s.ciudad}, por conseguir`} style={{ position: 'absolute', inset: 0, border: 'none', background: 'transparent', cursor: 'pointer' }} />
+                                <button type="button" data-sello-por-conseguir={s.destino} onClick={() => { const falta = (datos && datos !== 'error' ? datos.viajes_sin_sello : undefined)?.find((v) => v.destino === s.destino); if (falta) setSinSello(falta); else setAviso(s) }} aria-label={`${s.ciudad}, por conseguir`} style={{ position: 'absolute', inset: 0, border: 'none', background: 'transparent', cursor: 'pointer' }} />
                                 <span style={{ position: 'absolute', left: '50%', bottom: -6, transform: 'translateX(-50%)', height: 20, padding: '0 8px', borderRadius: 999, background: '#FFFDF8', border: '1px dashed rgba(28,34,48,.3)', color: 'rgba(28,34,48,.6)', font: "600 10px/18px 'Geist'", whiteSpace: 'nowrap', pointerEvents: 'none' }}>Por conseguir</span>
                               </>
                             )}
@@ -310,12 +330,32 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
         {aviso && (
           <>
             <div onClick={() => setAviso(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
-            <div role="dialog" aria-label={`${aviso.ciudad} ya está en la app`} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '26px 26px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
+            <div role="dialog" aria-label={`Aún no has estado en ${aviso.ciudad}`} data-hoja-por-conseguir style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '26px 26px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
               <span style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
-              <span style={{ marginTop: 8, font: "400 26px/1.1 'Instrument Serif',serif" }}>{aviso.ciudad} ya está en la app</span>
-              <button type="button" onClick={crearViaje} style={{ marginTop: 6, width: '100%', height: 52, border: 'none', borderRadius: 999, background: ORO, color: '#17120a', font: "700 15px 'Geist'", cursor: 'pointer' }}>
-                Crear viaje
+              <span style={{ marginTop: 8, font: "400 26px/1.1 'Instrument Serif',serif" }}>Aún no has estado en {aviso.ciudad}</span>
+              {/* (V11) Tocar «Por conseguir» NUNCA crea un viaje: [Planear un viaje] solo abre el formulario de siempre. */}
+              <button type="button" data-planear-un-viaje onClick={crearViaje} style={{ marginTop: 6, width: '100%', height: 52, border: 'none', borderRadius: 999, background: ORO, color: '#17120a', font: "700 15px 'Geist'", cursor: 'pointer' }}>
+                Planear un viaje
               </button>
+            </div>
+          </>
+        )}
+
+        {sinSello && (
+          <>
+            <div onClick={() => setSinSello(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
+            <div role="dialog" aria-label={`El sello de ${sinSello.ciudad}`} data-hoja-sin-sello style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '26px 26px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
+              <span style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+              <span style={{ marginTop: 8, font: "400 26px/1.1 'Instrument Serif',serif" }}>Tu sello de {sinSello.ciudad} aún no está</span>
+              <span style={{ font: "400 14px/1.45 'Geist'", color: 'rgba(28,34,48,.7)' }}>
+                {`El sello se estampa al acabar el viaje con al menos ${sinSello.minimas} sitios vistos (con tu ubicación o con una foto). En este viaje llevas ${sinSello.vistas}.`}
+                {sinSello.plazo_abierto ? ' Todavía puedes sumar los que te faltan con las fotos que hiciste: el plazo acaba el ' + fechaLarga(sinSello.hasta) + '.' : ''}
+              </span>
+              {sinSello.plazo_abierto && (
+                <button type="button" data-reclamar-para-el-sello onClick={() => { setSinSello(null); useLogrosPantallas.getState().cerrarTodo(); abrirGaleriaDeReclamo() }} style={{ marginTop: 6, width: '100%', height: 52, border: 'none', borderRadius: 999, background: ORO, color: '#17120a', font: "700 15px 'Geist'", cursor: 'pointer' }}>
+                  Reclamar con tus fotos
+                </button>
+              )}
             </div>
           </>
         )}

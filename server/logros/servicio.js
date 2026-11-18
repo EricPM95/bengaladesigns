@@ -11,7 +11,7 @@
 
 import { libreDeLlegada } from '../../shared/routeEngine/llegadaDia1.js'
 import { datosDeVuelta } from '../../shared/routeEngine/vueltaDia.js'
-import { GLOBAL, avanceViajero, calcular, clave, diferencia, diasEntre, logroActivo, parteLocal, sumarDias } from './motor.js'
+import { GLOBAL, avanceViajero, calcular, clave, diferencia, diasEntre, hechosQueCuentan, logroActivo, parteLocal, sumarDias } from './motor.js'
 import { calcularExp, edicionDeAnio, entradaEnEdicion, estadoDelSorteo, expDeMomento, expFinal, invitacionDaExp, resumenDeExp, viajesConHoy } from './exp.js'
 import { coordenadasDeSitio, datosVisiblesPara, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto, metros } from './fotos.js'
@@ -731,7 +731,22 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const dias = new Set(calcularConDias(c))
     return { ok: true, ...pasaporte({ datos, items, previos: perfil.previos, ahora: ahora(), salida: c.cuenta?.salida ?? null, diasConLaApp: dias.size }) }
   }
-  const calcularConDias = (c) => c.hechos.filter((h) => !h.deshecho_en && h.valido).map((h) => `${h.destino}|${parteLocal(h.instante, datos.destinos[h.destino]?.timezone ?? 'UTC')?.fecha}`)
+  /**
+   * (V11) Los DÍAS VIAJANDO: los días de cada viaje en que se ha estado con la app (los viajes con algo que cuenta), del primero al último (o hasta hoy si aún no ha acabado). Antes contaba solo los días con algún hecho
+   * («2 días viajando» en un viaje de 5). Sin repetir un día de un mismo destino.
+   */
+  const calcularConDias = (c) => {
+    const dias = []
+    const viajesConAlgo = new Set(hechosQueCuentan(c.hechos, c.viajes, datos).map((h) => h.trip_id))
+    for (const id of viajesConAlgo) {
+      const v = c.viajes[id]
+      if (!v) continue
+      const hoy = parteLocal(ahora(), datos.destinos[v.destino]?.timezone ?? 'UTC')?.fecha ?? v.fin
+      const hasta = hoy < v.fin ? hoy : v.fin
+      for (let d = v.inicio; d <= hasta; d = sumarDias(d, 1)) dias.push(`${v.destino}|${d}`)
+    }
+    return dias
+  }
 
   async function vitrinaDe(userId) {
     const c = await cargar(userId)

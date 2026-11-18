@@ -9,7 +9,7 @@
  * Las funciones puras de aquí abajo se prueban en `scripts/destino/pruebas8c/mundo.mjs`.
  */
 import fs from 'node:fs'
-import { GLOBAL, clave, hechosQueCuentan } from '../motor.js'
+import { GLOBAL, clave, hechosQueCuentan, parteLocal, sumarDias } from '../motor.js'
 import { viajesAcabados } from '../exp.js'
 import { datosDeSitio } from '../sitios.js'
 
@@ -119,6 +119,40 @@ export function resumenDePasaporte({ base, paginas }) {
   }
 }
 
+/**
+ * (V11) Los viajes YA TERMINADOS que todavía no tienen su sello, y por qué: el sello de un viaje se gana al acabarlo con al menos `paradas_minimas` sitios vistos (con ubicación o con foto); `vistas` son los que lleva.
+ * `plazo_abierto`: aún se pueden reclamar fotos (V5) o ganar con un compañero (V7), que cuentan igual. Sirve para decirlo en el pasaporte en vez de dejar el sello «Por conseguir» sin explicación.
+ */
+export function viajesSinSello({ datos, hechos, viajes, acabados, ahora }) {
+  const T = datos.exp.viaje_acabado
+  const conSello = new Set(acabados.map((a) => a.trip_id))
+  const cuentan = hechosQueCuentan(hechos ?? [], viajes ?? {}, datos)
+  const salida = []
+  for (const [id, v] of Object.entries(viajes ?? {})) {
+    if (conSello.has(id)) continue
+    const d = datos.destinos[v.destino]
+    if (!d) continue
+    const hoy = parteLocal(ahora, d.timezone)?.fecha
+    if (!hoy || hoy <= v.fin) continue
+    const vistas = new Set(cuentan.filter((h) => h.trip_id === id && h.evPieza).map((h) => h.stop_id ?? h.sitio)).size
+    const hasta = sumarDias(v.fin, datos.ajustes.plazo_reclamar_dias)
+    salida.push({ trip_id: id, destino: v.destino, ciudad: d.ciudad, inicio: v.inicio, fin: v.fin, vistas, minimas: T.paradas_minimas, hasta, plazo_abierto: hoy <= hasta })
+  }
+  return salida
+}
+
+/** (V11) Los viajes CREADOS que aún no han terminado (por hacer o en curso): en el globo van con un punto hueco, para que no parezca que ya se ha estado. */
+export function viajesPorHacer({ datos, viajes, ahora }) {
+  const salida = []
+  for (const [id, v] of Object.entries(viajes ?? {})) {
+    const d = datos.destinos[v.destino]
+    if (!d) continue
+    const hoy = parteLocal(ahora, d.timezone)?.fecha
+    if (hoy && hoy <= v.fin) salida.push({ trip_id: id, destino: v.destino, ciudad: d.ciudad, inicio: v.inicio, fin: v.fin })
+  }
+  return salida
+}
+
 export function registrar(app, ctx) {
   const { conUsuario, servicio, repo, datos } = ctx
   const ahora = () => (typeof ctx.ahora === 'function' ? ctx.ahora() : (ctx.ahora ?? new Date()))
@@ -148,7 +182,7 @@ export function registrar(app, ctx) {
       const acabados = viajesAcabados({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() })
       const paginas = paginasDelPasaporte({ datos, base, previos, catalogo, hechos: c.hechos, viajes: c.viajes, acabados })
       const { paises_iso: _i, sellos_recientes: _s, ...numeros } = resumenDePasaporte({ base, paginas })
-      return res.json({ ok: true, ...base, numeros, paginas })
+      return res.json({ ok: true, ...base, numeros, paginas, viajes_sin_sello: viajesSinSello({ datos, hechos: c.hechos, viajes: c.viajes, acabados, ahora: ahora() }), viajes_por_hacer: viajesPorHacer({ datos, viajes: c.viajes, ahora: ahora() }) })
     }),
   )
 }
