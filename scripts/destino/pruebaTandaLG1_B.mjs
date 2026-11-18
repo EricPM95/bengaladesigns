@@ -86,7 +86,7 @@ try {
     a.evaluar(`(() => {
       const sellos = Array.from(document.querySelectorAll('[data-sello]')).map((e) => ({ id: e.dataset.sello, texto: e.innerText, filtro: e.querySelector('span')?.style.filter || '', opacidad: e.querySelector('span')?.style.opacity || '' }))
       const filas = Array.from(document.querySelectorAll('[data-coleccion]'))
-      return { fase: document.querySelector('[data-hoja-logros]')?.dataset.hojaLogros, sellos, banner: Array.from(document.querySelectorAll('svg path')).length ? (document.body.innerText.match(/Con tu ruta puedes completar[^\\n]*/) || [''])[0] : '', enRuta: filas.filter((f) => /En tu ruta/.test(f.innerText)).length, filas: filas.length, abiertas: filas.filter((f) => f.querySelector('[style*="F5EFE4"]') && f.innerText.includes('Cómo llegar')).length, gajos: document.querySelectorAll('[data-gajos]').length, titulo: document.querySelector('[role=dialog]')?.innerText.split('\\n').slice(0, 3).join(' | '), secretos: document.querySelector('[data-secretos]')?.innerText.split('\\n')[0] || '', secretosHuecos: document.querySelectorAll('[data-hueco-emblema]').length, cuenta: Array.from(document.querySelectorAll('[data-secretos] [data-emblema], [data-secretos] [data-emblema-lanza]')).length }
+      return { fase: document.querySelector('[data-hoja-logros]')?.dataset.hojaLogros, sellos, banner: Array.from(document.querySelectorAll('svg path')).length ? (document.body.innerText.match(/Con tu ruta puedes completar[^\\n]*/) || [''])[0] : '', enRuta: filas.filter((f) => /En tu ruta/.test(f.innerText)).length, filas: filas.length, abiertas: filas.filter((f) => f.querySelector('[style*="F5EFE4"]') && f.innerText.includes('Cómo llegar')).length, gajos: document.querySelectorAll('[data-insignia-partes]').length, titulo: document.querySelector('[role=dialog]')?.innerText.split('\\n').slice(0, 3).join(' | '), secretos: document.querySelector('[data-titulo-secretos]')?.innerText || '', secretosHuecos: document.querySelectorAll('[data-hueco-emblema]').length, cuenta: Array.from(document.querySelectorAll('[data-secretos] [data-emblema], [data-secretos] [data-emblema-lanza]')).length }
     })()`)
 
   // ── Roma ──
@@ -122,7 +122,7 @@ try {
   debe(lan && /sepia\(0\.3\)/.test(lan.filtro), 'Lanzarote: el sello gris no lleva el filtro del Design')
   debe(h.banner === `Con tu ruta puedes completar ${antesLz.con_tu_ruta_puedes_completar} de las ${antesLz.colecciones.length} colecciones`, `Lanzarote: la línea verde no dice los números de verdad: «${h.banner}»`)
   debe(h.enRuta === antesLz.colecciones.filter((c) => c.en_tu_ruta).length, `Lanzarote: «En tu ruta» sale en ${h.enRuta} colecciones, son ${antesLz.colecciones.filter((c) => c.en_tu_ruta).length}`)
-  debe(h.filas === 7 && h.gajos === 7, `Lanzarote: ${h.filas} colecciones y ${h.gajos} insignias de gajos, tienen que ser 7 y 7`)
+  debe(h.filas === 7 && h.gajos === 7, `Lanzarote: ${h.filas} colecciones y ${h.gajos} insignias por partes (V13), tienen que ser 7 y 7`)
   debe(!/Roma|Coliseo|Vaticano/.test(await a.evaluar("document.querySelector('[role=dialog]').innerText")), 'Lanzarote: la hoja nombra algo de Roma')
   await a.captura(path.join(SALIDA, 'lg1_hoja_antes_lanzarote_1.jpg'))
   await cerrar()

@@ -43,8 +43,8 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   // Tocar un pedazo: la forma de cada insignia
   debe(T.piezaDeInsignia('imprescindibles', 8, 0.5, 0.05) === 0 || T.piezaDeInsignia('imprescindibles', 8, 0.5, 0.05) === 7, 'pieza', 'octógono: arriba es la primera o la última teselas')
   debe(T.piezaDeInsignia('imprescindibles', 8, 0.5, 0.5) === null, 'pieza', 'el centro del octógono no es ningún pedazo')
-  debe(T.piezaDeInsignia('cuatro_joyas', 4, 0.5, 0.05) === 0 && T.piezaDeInsignia('cuatro_joyas', 4, 0.95, 0.5) === 1 && T.piezaDeInsignia('cuatro_joyas', 4, 0.05, 0.5) === 2 && T.piezaDeInsignia('cuatro_joyas', 4, 0.5, 0.95) === 3, 'pieza', 'las 4 joyas: arriba, derecha, izquierda, abajo')
-  debe(T.piezaDeInsignia('caravaggio', 3, 0.1, 0.5) === 0 && T.piezaDeInsignia('caravaggio', 3, 0.9, 0.5) === 2, 'pieza', 'la cinta: de izquierda a derecha')
+  debe(T.piezaDeInsignia('cuatro_joyas', 4, 0.5, 0.05) === 0 && T.piezaDeInsignia('cuatro_joyas', 4, 0.95, 0.5) === 1 && T.piezaDeInsignia('cuatro_joyas', 4, 0.05, 0.5) === 3 && T.piezaDeInsignia('cuatro_joyas', 4, 0.5, 0.95) === 2, 'pieza', '(V13) las 4 joyas, por sectores desde las 12 en el sentido del reloj: arriba, derecha, abajo, izquierda')
+  debe(T.piezaDeInsignia('caravaggio', 3, 0.9, 0.5) === 0 && T.piezaDeInsignia('caravaggio', 3, 0.5, 0.9) === 1 && T.piezaDeInsignia('caravaggio', 3, 0.1, 0.5) === 2, 'pieza', '(V13) tres trozos: de las 12 a las 4, de las 4 a las 8 y de las 8 a las 12')
   debe(T.piezaDeInsignia('roma_antigua', 6, 2, 0.5) === null, 'pieza', 'fuera del dibujo, nada')
   const todas = new Set()
   for (let a = 0; a < 360; a += 5) todas.add(T.piezaDeInsignia('roma_antigua', 6, 0.5 + 0.4 * Math.cos((a * Math.PI) / 180), 0.5 + 0.4 * Math.sin((a * Math.PI) / 180)))

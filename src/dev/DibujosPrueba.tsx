@@ -5,7 +5,7 @@ import { sitiosDeColeccion } from '../components/logros/dibujos/Insignia'
 import { ESCALONES_DE, LOGROS_CON_CHAPA } from '../components/logros/dibujos/Chapa'
 import viajero from '../../data/logros/viajero.json'
 import roma from '../../data/logros/roma.json'
-import { GAJOS_DE_COLECCION } from '../components/logros/dibujos/gajosColecciones'
+import { COLECCIONES_POR_PARTES } from '../components/logros/dibujos/partes'
 import { IDS_EMBLEMAS_LANZA } from '../components/logros/dibujos/EmblemaLanza'
 
 const MARAVILLAS = ['coliseo', 'chichen_itza', 'cristo_redentor', 'gran_muralla', 'machu_picchu', 'petra', 'taj_mahal']
@@ -33,9 +33,9 @@ export function DibujosPrueba() {
       <Fila data-lz3="sello">{(['bronce', 'plata', 'oro', 'diamante'] as const).map((g) => <Cel key={g} pie={g}><Sello id="lanzarote" grado={g} tam={110} animado={animado} /></Cel>)}<Cel pie="por conseguir"><Sello id="lanzarote" grado="bronce" apagado tam={110} /></Cel></Fila>
       <Titulo t="LANZAROTE · las 7 colecciones (0 / 3 gajos / completa)" />
       <Fila data-lz3="colecciones">
-        {Object.entries(GAJOS_DE_COLECCION).flatMap(([c, g]) => [
+        {Object.entries(COLECCIONES_POR_PARTES).filter(([, g]) => g.destino === 'lanzarote').flatMap(([c, g]) => [
           <Cel key={c + 0} pie={c + ' · 0'}><Insignia coleccion={c} tam={120} /></Cel>,
-          <Cel key={c + 1} pie={`${c} · 3/${g.n}`}><Insignia coleccion={c} ganados={[...new Set(g.sitios)].slice(0, 3)} tam={120} /></Cel>,
+          <Cel key={c + 1} pie={`${c} · 3/${g.sitios.length}`}><Insignia coleccion={c} ganados={[...new Set(g.sitios)].slice(0, Math.min(3, g.sitios.length - 1))} tam={120} /></Cel>,
           <Cel key={c + 2} pie={c + ' · completa'}><Insignia coleccion={c} completa tam={120} animada={animado} /></Cel>,
         ])}
       </Fila>

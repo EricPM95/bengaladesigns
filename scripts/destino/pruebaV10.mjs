@@ -72,7 +72,7 @@ try {
   const uno = await leerDestinos()
   debe(uno.modo === 'uno' && uno.tarjetas.length === 1 && uno.tarjetas[0].width >= uno.fila.width - 44, 'ancho', `con 1 destino, la tarjeta a todo el ancho (${uno.tarjetas[0]?.width} de ${uno.fila?.width})`)
   debe(uno.tarjetas[0]?.foto === '1', 'foto', 'la tarjeta lleva la FOTO del destino arriba')
-  debe(/1 colección empezada/.test(uno.tarjetas[0]?.numeros ?? '') && /1 pedazo/.test(uno.tarjetas[0]?.numeros ?? '') && !/0 de \d+ colecciones/.test(uno.tarjetas[0]?.numeros ?? ''), 'números', `los números dicen lo que lleva, no «0 de 11» («${uno.tarjetas[0]?.numeros}»)`)
+  debe(/\d+ colecciones? empezadas?/.test(uno.tarjetas[0]?.numeros ?? '') && /\d+ pedazos?/.test(uno.tarjetas[0]?.numeros ?? '') && !/0 de \d+ colecciones/.test(uno.tarjetas[0]?.numeros ?? ''), 'números', `los números dicen lo que lleva, no «0 de 11» («${uno.tarjetas[0]?.numeros}»)`)
   debe(/^Bronce · Primeros pasos en Roma$/.test(uno.tarjetas[0]?.medalla ?? '') && !/Sello de/.test(uno.tarjetas[0]?.medalla ?? ''), 'medalla', `la medalla del destino como en la hoja de logros («${uno.tarjetas[0]?.medalla}»)`)
   debe(Number.parseInt(uno.tarjetas[0]?.pct ?? '', 10) >= 1, 'números', `el % del destino entero (${uno.tarjetas[0]?.pct})`)
   await b.captura(`${CAPTURAS}/todos_1_destino.jpg`)

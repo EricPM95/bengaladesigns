@@ -369,20 +369,11 @@ console.log('6. Las fotos y la insignia')
   for (const n of conFoto) debe(ownPhotoFile(tabla, n, null), 'fotos', `«${n}» tiene foto propia (la de su parada)`)
   const sinFoto = ['Bodega El Grifo', 'Bodega La Geria'].filter((n) => !ownPhotoFile(tabla, n, null))
   debe(sinFoto.length === 2, 'fotos', 'las dos bodegas siguen sin foto propia (fondo de color; se lo digo a Eric)')
-  // La insignia de Design y la geometría de la app.
-  const dis = leer('docs/diseno/proyecto/Piezas/Insignia Lanza Pro.dc.html').match(/6:\[([^\]]*)\]/)
-  const app = leer('src/components/logros/dibujos/gajosColecciones.ts').match(/lz6:\s*\{[^}]*?iw:\s*(\d+),\s*ih:\s*(\d+),\s*cx:\s*(\d+),\s*cy:\s*(\d+),\s*n:\s*(\d+),\s*a0:\s*(-?\d+)/)
-  debe(dis && app && dis[1].split(',').map(Number).join() === app.slice(1).map(Number).join(), 'insignia', `la geometría de la col6 de la app es la de Design (${dis?.[1]})`)
-  debe(!/cortes:/.test(leer('src/components/logros/dibujos/gajosColecciones.ts').split('\n').find((l) => l.startsWith('  lz6:'))), 'insignia', 'la col6 ya no usa los trozos desiguales (cortes): son 6 iguales')
-  const gajos = leer('src/components/logros/dibujos/gajosColecciones.ts')
-  const sitiosDeGajos = (k) => [...(gajos.split('\n').find((l) => l.startsWith(`  ${k}:`)) ?? '').match(/sitios:\s*\[([^\]]*)\]/)[1].matchAll(/'([^']+)'/g)].map((x) => x[1])
-  debe(JSON.stringify(sitiosDeGajos('lz6')) === JSON.stringify(['teguise', 'puerto_del_carmen_puerto_viejo', 'arrecife_charco_de_san_gines_y_el_paseo', 'el_golfo_pueblo', 'haria_pueblo', 'caleta_de_famara']), 'insignia', 'los 6 gajos de Pueblos con alma, uno por sitio (el trozo nuevo, la ventana con contraventanas verdes, es el Puerto Viejo)')
-  debe(JSON.stringify(sitiosDeGajos('lz7')) === JSON.stringify(['la_geria_y_sus_bodegas', 'bodega_la_geria', 'bodega_el_grifo']), 'insignia', 'los 3 gajos de Entre viñas, uno por sitio (ya no «los tres a la vez»)')
-  for (const [k, c] of [['lz1', 'lz_imprescindibles'], ['lz2', 'cesar_manrique'], ['lz5', 'playas_y_charcos']]) debe(JSON.stringify([...sitiosDeGajos(k)].sort()) === JSON.stringify([...sitiosDe(c)].sort()), 'insignia', `${k}: los gajos son los sitios de «${c}»`)
-  const geo = (k) => { const m = gajos.split('\n').find((l) => l.startsWith(`  ${k}:`)).match(/n:\s*(\d+)/); return Number(m[1]) }
-  debe(geo('lz6') === sitiosDe('pueblos_con_alma').length && geo('lz7') === sitiosDe('entre_vinas_de_ceniza').length, 'insignia', 'tantos gajos como sitios en las dos colecciones nuevas')
-  debe(fs.existsSync('public/logros/lanza/col6.webp') && fs.statSync('public/logros/lanza/col6.webp').size > 30000, 'insignia', 'public/logros/lanza/col6.webp es la imagen nueva de 6 trozos (la vieja pesaba 13 KB)')
-  debe(fs.existsSync('docs/diseno/proyecto/screenshots/col6-new.png') && /'Pueblos con alma','lz6',6,/.test(leer('docs/diseno/proyecto/Dashboard.dc.html')) && /6 sitios · La isla de verdad|La isla de verdad/.test(leer('docs/diseno/proyecto/Colecciones Lanza.dc.html')), 'insignia', 'docs/diseno/proyecto al día (Dashboard con 6, Colecciones Lanza, col6-new.png)')
+  // (V13) Las insignias de Lanzarote ya no son imágenes con «gajos»: son las piezas por partes de Design (`partes.ts`, un trozo por sitio en el orden de los datos).
+  const partesTs = leer('src/components/logros/dibujos/partes.ts')
+  const sitiosDeParte = (id) => JSON.parse(new RegExp(String.raw`"${id}": \{ destino: "[a-z]+", col: "[^"]+", sitios: (\[[^\]]*\])`).exec(partesTs)?.[1] ?? '[]')
+  debe(JSON.stringify(sitiosDeParte('entre_vinas_de_ceniza')) === JSON.stringify(['la_geria_y_sus_bodegas', 'bodega_la_geria', 'bodega_el_grifo']), 'insignia', 'los 3 trozos de Entre viñas, uno por sitio')
+  for (const c of ['lz_imprescindibles', 'cesar_manrique', 'playas_y_charcos', 'pueblos_con_alma', 'entre_vinas_de_ceniza']) debe(JSON.stringify(sitiosDeParte(c)) === JSON.stringify(sitiosDe(c)), 'insignia', `${c}: los trozos son sus sitios, en el orden de los datos`)
   debe(!fs.existsSync('docs/diseno/proyecto/uploads') || true, 'insignia', '(sin uploads/ ni Archivo/: no se tocan)')
 }
 

@@ -68,6 +68,8 @@ const valor = (s) => {
   return { tipo: 'plantilla', codigo: '`' + partes.map((p) => (p.startsWith('{{') ? '${' + expr(p.slice(2, -2)) + '}' : esc(p))).join('') + '`' }
 }
 const estilo = (texto) => {
+  // (V13) Un style que es una sola expresión (style="{{ p.graySt }}", un texto CSS que calcula la pieza) se pasa a objeto al pintar: antes se perdía entero.
+  if (/^{{[^}]*}}$/.test(texto.trim())) return `{__css(${expr(texto.trim().slice(2, -2))})}`
   const decl = []
   let actual = ''
   let prof = 0
@@ -163,6 +165,7 @@ import React from 'react'
 import './${nombre}.css'
 
 const DCLogic: any = React.Component
+const __css = (t: any): React.CSSProperties => { if (!t || typeof t !== "string") return (t || {}) as React.CSSProperties; const o: any = {}; for (const d of t.split(";")) { const i = d.indexOf(":"); if (i < 0) continue; const k = d.slice(0, i).trim(); if (!k) continue; o[k.startsWith("--") ? k : k.replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = d.slice(i + 1).trim() } return o }
 const T = (v) => (<>${jsx}</>)
 
 ${cuerpo.trim()}

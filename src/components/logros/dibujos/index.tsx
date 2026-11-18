@@ -25,8 +25,8 @@ export function Sello({ id, grado, tam = 96, apagado = false, animado = true, et
 }
 
 /** La insignia de una colección con sus pedazos. `coleccion`: id de `data/logros/roma.json › colecciones`; `ganados`: ids de los sitios ya vistos (los pedazos de color); sin `ganados` sale en gris. `completa` la enseña entera. Opcional: `animada`. */
-export function Insignia({ coleccion, ganados = [], completa = false, tam = 120, animada = false }: { coleccion: string; ganados?: string[]; completa?: boolean; tam?: number; animada?: boolean }): ReactNode {
-  return <InsigniaPerezosa coleccion={coleccion} ganados={ganados} completa={completa} tam={tam} animada={animada} />
+export function Insignia({ coleccion, ganados = [], completa = false, tam = 120, animada = false, nuevos, fase }: { coleccion: string; ganados?: string[]; completa?: boolean; tam?: number; animada?: boolean; nuevos?: string[]; fase?: 0 | 1 | 2 | 3 | 4 }): ReactNode {
+  return <InsigniaPerezosa coleccion={coleccion} ganados={ganados} completa={completa} tam={tam} animada={animada} nuevos={nuevos} fase={fase} />
 }
 
 /** El emblema oculto. `id`: id de `data/logros/roma.json › emblemas` (coliseo, foro_romano, … madrugador, nocturno). `animado`: la animación en bucle de «encontrado»; sin ella, estático. `silueta`: el «?» de los que faltan. Pensado para fondo oscuro. `fecha` (AAAA-MM-DD): el día en que se encontró; solo la moneda de oro del Coliseo la enseña (sin ella, la de hoy). */

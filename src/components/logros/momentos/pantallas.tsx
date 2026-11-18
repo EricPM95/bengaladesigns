@@ -83,27 +83,35 @@ function unaPorColeccion<T extends { id: string; n: number; completa: boolean; v
 }
 
 /* ── Los pedazos nuevos (todos en una pantalla) y las colecciones completadas (una por colección) ── */
-/** La insignia de una colección con su pedazo nuevo encendiéndose: sale con lo que ya tenía y, a los ~0,9 s, se enciende el nuevo con un destello. */
+/**
+ * (V13, Design `Pedazo Nuevo Lanza` M1 y M2) La insignia de una colección con su pedazo nuevo, con su tiempo (~2 s hasta que sale [Seguir]): 0 la insignia con lo que ya tenías; 1 el trozo nuevo llega volando con un brillo;
+ * 2 encaja en su hueco; 3 se llena de color con un destello en el borde; 4 queda y el número sube («2 de 6 → 3 de 6»). Con «Reducir movimiento» del iPhone, sin vuelo: solo el color.
+ */
+export const TIEMPOS_DE_PEDAZO = { llega: 0.3, encaja: 1.2, color: 1.35, fin: 2.0 } as const
 function InsigniaEncendiendo({ coleccion, vistos, nuevos, completa = false, tam, retraso = 0.9, pie }: { coleccion: string; vistos: string[]; nuevos: string[]; completa?: boolean; tam: number; retraso?: number; pie?: { nombre: string; n: number; total: number; grande: boolean } }): ReactNode {
   const antes = vistos.filter((x) => !nuevos.includes(x))
-  const [encendido, setEncendido] = useState(false)
+  const [fase, setFase] = useState<0 | 1 | 2 | 3 | 4>(0)
   // (solo desarrollo) `window.__retrasoInsignia = 99` deja la insignia apagada para poder capturar el principio.
   const espera = import.meta.env.DEV ? ((window as unknown as { __retrasoInsignia?: number }).__retrasoInsignia ?? retraso) : retraso
+  const sinMovimiento = typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => {
-    const h = window.setTimeout(() => setEncendido(true), espera * 1000)
-    return () => window.clearTimeout(h)
-  }, [espera])
+    const t = TIEMPOS_DE_PEDAZO
+    const pasos: [number, 0 | 1 | 2 | 3 | 4][] = sinMovimiento ? [[0, 3], [t.fin - 1.2, 4]] : [[t.llega, 1], [t.encaja, 2], [t.color, 3], [t.fin, 4]]
+    const hs = pasos.map(([seg, f]) => window.setTimeout(() => setFase(f), (espera + seg) * 1000))
+    return () => hs.forEach((h) => window.clearTimeout(h))
+  }, [espera, sinMovimiento])
+  const hecho = fase >= 4
   return (
     <>
-      <span style={{ position: 'relative', display: 'inline-flex', animation: encendido ? 'moLate2 .7s ease both' : 'none' }}>
-        <Insignia coleccion={coleccion} ganados={encendido ? vistos : antes} completa={completa && encendido} tam={tam} animada />
-        <span aria-hidden className="mo-con-mov" style={{ position: 'absolute', inset: -tam * 0.1, borderRadius: '50%', background: 'radial-gradient(circle,rgba(255,236,190,.65),transparent 62%)', opacity: 0, animation: `moDestello 1s ${retraso}s ease-out both` }} />
+      <span data-pedazo-fase={fase} style={{ position: 'relative', display: 'inline-flex', animation: fase >= 3 ? 'moLate2 .7s ease both' : 'none' }}>
+        <Insignia coleccion={coleccion} ganados={antes} completa={completa && hecho} tam={tam} nuevos={nuevos} fase={fase} />
+        <span aria-hidden className="mo-con-mov" style={{ position: 'absolute', inset: -tam * 0.1, borderRadius: '50%', background: 'radial-gradient(circle,rgba(255,236,190,.65),transparent 62%)', opacity: 0, animation: `moDestello 1s ${espera + TIEMPOS_DE_PEDAZO.color}s ease-out both` }} />
       </span>
       {pie && (
         <>
           <span style={{ font: `400 ${pie.grande ? 30 : 17}px/1.05 'Instrument Serif',serif`, textWrap: 'balance' }}>{pie.nombre}</span>
-          {/* La cuenta de debajo dice lo mismo que la insignia: antes de encenderse, una menos por cada pedazo nuevo. */}
-          <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3B7C4' }}>{`${encendido ? pie.n : Math.max(0, pie.n - nuevos.length)} DE ${pie.total}`}</span>
+          {/* La cuenta de debajo dice lo mismo que la insignia: antes de encajarse, una menos por cada pedazo nuevo. */}
+          <span data-cuenta-del-pedazo style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3B7C4' }}>{`${hecho ? pie.n : Math.max(0, pie.n - nuevos.length)} DE ${pie.total}`}</span>
         </>
       )}
     </>
@@ -126,14 +134,14 @@ function PantallaPedazos({ pantalla, estado, onSeguir, onSaltarTodo, paso }: Pro
   const solo = filas.length === 1
   const ojo = solo ? 'Un pedazo nuevo' : 'Pedazos nuevos'
   return (
-    <PantallaOscura etiqueta={ojo} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn={solo ? '2.6s' : `${(1.8 + filas.length * 0.6).toFixed(1)}s`}>
+    <PantallaOscura etiqueta={ojo} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn={`${(0.6 + (filas.length - 1) * 1.6 + 2.4).toFixed(1)}s`}>
       <Rayos color="rgba(255,225,170,.16)" halo="rgba(255,215,160,.32)" />
       <Centro estilo={{ gap: solo ? 10 : 14 }}>
         <Ojo en=".3s">{ojo}</Ojo>
         <Vuelo estilo={{ flexDirection: solo ? 'column' : 'row', flexWrap: 'wrap', gap: solo ? 8 : 18, justifyContent: 'center', maxWidth: 360, padding: '0 14px' }}>
           {filas.map((f, i) => (
             <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: solo ? 'auto' : 150, opacity: 0, animation: `moIn .8s ${(0.2 + i * 0.5).toFixed(1)}s cubic-bezier(.3,1.3,.5,1) both` }}>
-              <InsigniaEncendiendo coleccion={f.id} vistos={f.vistos} nuevos={f.nuevos} tam={solo ? 220 : 124} retraso={1 + i * 0.5} pie={{ nombre: f.nombre, n: f.n, total: f.total, grande: solo }} />
+              <InsigniaEncendiendo coleccion={f.id} vistos={f.vistos} nuevos={f.nuevos} tam={solo ? 220 : 124} retraso={0.6 + i * 1.6} pie={{ nombre: f.nombre, n: f.n, total: f.total, grande: solo }} />
             </div>
           ))}
         </Vuelo>
@@ -156,7 +164,7 @@ function PantallaColeccion({ pantalla, estado, onSeguir, onSaltarTodo, paso }: P
       <Centro>
         <Ojo en=".3s" color="#9FE0B4">¡Colección completa!</Ojo>
         <Vuelo>
-          <InsigniaEncendiendo coleccion={id} vistos={vistos} nuevos={ultimo} completa tam={230} retraso={1.2} />
+          <InsigniaEncendiendo coleccion={id} vistos={vistos} nuevos={ultimo} completa tam={230} retraso={1.0} />
         </Vuelo>
         <Titulo en="2.4s">{m.nombre}</Titulo>
         <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#9FE0B4', opacity: 0, animation: 'moUp .7s 2.6s ease both' }}>{`${total || vistos.length} DE ${total || vistos.length} · COMPLETA`}</span>

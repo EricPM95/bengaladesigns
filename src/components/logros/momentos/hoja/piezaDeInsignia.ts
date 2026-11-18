@@ -1,44 +1,30 @@
-/**
- * «Tocar un pedazo dice su nombre» (Tanda 8C2). Dado un toque dentro del dibujo de una insignia de colección, dice qué pedazo (el número de su sitio en la colección) es. Cada pedazo es siempre su
- * sitio, en el orden de `sitios` de la colección (data/logros/roma.json); las formas son las de `dibujos/Insignia.tsx`, así que si allí cambia la forma de una colección, hay que cambiarla aquí.
- * Función pura: `x` e `y` van de 0 a 1 dentro del cuadrado de la insignia (0,0 = esquina de arriba a la izquierda).
- */
-export type FormaDeInsignia = 'octogono' | 'vati' | 'joyas' | 'cinta' | 'cuna'
+import { COLECCIONES_POR_PARTES } from '../../dibujos/partes'
 
-/** Las colecciones con una forma propia; el resto son «cuñas» (la insignia partida en tantos trozos como sitios). */
-export const FORMA_POR_COLECCION: Record<string, FormaDeInsignia> = {
-  imprescindibles: 'octogono',
-  pais_mas_pequeno: 'vati',
-  cuatro_joyas: 'joyas',
-  caravaggio: 'cinta',
+/**
+ * «Tocar un pedazo dice su nombre» (Tanda 8C2; V13: las insignias por partes). Dado un toque dentro del dibujo de una insignia de colección, dice qué pedazo (el número de su sitio en la colección) es.
+ * Cada pedazo es siempre su sitio, en el orden de los datos (`dibujos/partes.ts`). Las insignias de Design (`Piezas/Insignia Lanza Codigo`) están partidas en tantos SECTORES como sitios, desde las 12 y en el
+ * sentido de las agujas del reloj, alrededor del centro de su forma: el trozo `k` es el sector `k`. Función pura: `x` e `y` van de 0 a 1 dentro del cuadrado de la insignia (0,0 = arriba a la izquierda).
+ */
+
+/** El centro de cada forma, en tanto por uno del cuadrado (el `c` de `SHAPES` de la pieza de Design, entre 200). */
+const CENTRO: Record<string, [number, number]> = {
+  r2: [0.5, 0.49],
+  r5: [0.5, 0.56],
+  r8: [0.5, 0.53],
+  '4': [0.5, 0.56],
+  '6': [0.5, 0.53],
 }
 
-const grados = (dx: number, dy: number) => (Math.atan2(dy, dx) * 180) / Math.PI
 const mod = (a: number, n: number) => ((a % n) + n) % n
 
 export function piezaDeInsignia(coleccion: string, total: number, x: number, y: number): number | null {
   if (!(total > 0) || x < 0 || x > 1 || y < 0 || y > 1) return null
-  const forma = FORMA_POR_COLECCION[coleccion] ?? 'cuna'
-  const dx = x - 0.5
-  const dy = y - 0.5
-  const radio = Math.hypot(dx, dy)
-  if (forma === 'cinta') return Math.min(total - 1, Math.max(0, Math.floor(((x - 0.01) / 0.98) * total)))
-  if (radio < 0.08 && forma !== 'joyas') return null
-  const a = grados(dx, dy)
-  if (forma === 'octogono') return radio < 0.2 ? null : Math.floor(mod(a + 112.5, 360) / 45) % 8
-  if (forma === 'joyas') {
-    // El rombo: arriba, derecha, izquierda, abajo (las 4 joyas giradas 45°).
-    if (a >= -135 && a < -45) return 0
-    if (a >= -45 && a < 45) return 1
-    if (a >= 45 && a < 135) return 3
-    return 2
-  }
-  if (forma === 'vati') {
-    // El escudo partido en dos mitades (museos a la izquierda, basílica a la derecha) y las llaves cruzadas en el centro (la plaza).
-    if (Math.abs(dx) < 0.17 && y > 0.3 && y < 0.9) return Math.min(2, total - 1)
-    return dx < 0 ? 0 : Math.min(1, total - 1)
-  }
-  // Cuñas: la primera empieza arriba y gira a la derecha (+0,3 rad), como `cuña(j, n)` del dibujo.
-  const paso = 360 / total
-  return Math.floor(mod(a - (-90 + (0.3 * 180) / Math.PI), 360) / paso) % total
+  const clave = COLECCIONES_POR_PARTES[coleccion]?.col
+  const [cx, cy] = (clave && CENTRO[clave]) || [0.5, 0.5]
+  const dx = x - cx
+  const dy = y - cy
+  // El centro es la medalla (no es ningún trozo).
+  if (Math.hypot(dx, dy) < 0.13) return null
+  const grados = (Math.atan2(dy, dx) * 180) / Math.PI
+  return Math.floor(mod(grados + 90, 360) / (360 / total)) % total
 }

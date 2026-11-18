@@ -1,0 +1,34 @@
+// Genera docs/dias/REPASO_V13.html (después de pruebaV13, que saca las capturas en docs/dias/V13_capturas): node scripts/destino/generarRepasoV13.mjs
+import fs from 'node:fs'
+
+const img = (n) => (fs.existsSync(`docs/dias/V13_capturas/${n}.jpg`) ? `data:image/jpeg;base64,${fs.readFileSync(`docs/dias/V13_capturas/${n}.jpg`).toString('base64')}` : null)
+const fig = (n, pie) => `<figure>${img(n) ? `<img alt="${pie}" src="${img(n)}">` : '<div class="no">sin captura</div>'}<figcaption>${pie}</figcaption></figure>`
+const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Repaso de la tanda V13 · Insignias por partes</title>
+<style>:root{--bg:#FBF6EC;--tx:#1C2230;--bd:rgba(28,34,48,.15)}@media (prefers-color-scheme:dark){:root{--bg:#1C2230;--tx:#FFFDF8;--bd:rgba(255,253,248,.2)}}body{margin:0;padding:16px;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,sans-serif;max-width:900px;margin-inline:auto}h1{font:400 30px/1.1 Georgia,serif}h2{font:400 22px/1.2 Georgia,serif;margin-top:28px;border-top:1px solid var(--bd);padding-top:14px}figure{margin:8px 10px 8px 0;display:inline-block;vertical-align:top;max-width:420px}img{max-width:100%;height:auto;border:1px solid var(--bd);border-radius:10px}figcaption{font-size:12px;opacity:.7}.no{padding:30px;border:1px dashed var(--bd)}label{display:block;margin:6px 0}code{font-size:12.5px;background:rgba(127,127,127,.15);padding:1px 4px;border-radius:4px}li{margin:3px 0}</style></head><body>
+<h1>Las insignias de las colecciones, por partes (V13)</h1>
+<p>Probado con <code>pruebaV13</code> (nueva, 22 comprobaciones: datos, código y pantalla en Chrome), <code>pruebaJutrip</code>, <code>pruebaV6</code>, <code>pruebaV9</code>, <code>pruebaV12</code>, las de logros de Roma y de Lanzarote y las de pantallas. Ninguna prueba toca el Supabase de producción.</p>
+<h2>1. Las 18 insignias, de Design y por partes</h2>
+<p><b>Antes:</b> las de Lanzarote eran una imagen entera recortada a ojo (el trozo ganado era una mancha en diagonal que pisaba los vecinos) y las de Roma, a medias, se llenaban en diagonal. <b>Ahora</b> las 11 de Roma y las 7 de Lanzarote son las piezas de Design (<code>Piezas/Insignia Lanza Codigo</code>; «Los imprescindibles» y «Las 4 joyas» además con la pieza de iconos <code>Piezas/Insignia Pieza</code> y la medalla del centro encima): cada trozo es su propia forma, <b>un trozo por sitio en el orden de los datos</b>; ganado = entero en color, el que falta = entero en gris. Un solo componente (<code>InsigniaPartes</code>) para la hoja de logros, la colección por dentro, el resumen, «Todos mis logros», la vitrina, los momentos y compartir.</p>
+<p><b>¿Cuadra cada colección con Design? Sí, las 18.</b> Roma: Imprescindibles 8, País más pequeño 3, 4 joyas 4, Alma de Trastevere 4, Miguel Ángel 4, Bernini 5, Caravaggio 3, Roma antigua 6, Miradores 3, Plazas y fuentes 7, Roma secreta 5. Lanzarote: Imprescindibles 7, Manrique 7, Tierra de fuego 7, La isla a tus pies 6, Playas y charcos 7, Pueblos con alma 6, Entre viñas 3. El orden de los sitios sale de <code>data/logros/roma.json</code> y <code>lanzarote.json</code> con <code>scripts/destino/generarPartes.mjs</code> (<code>partes.ts</code>; la prueba lo compara).</p>
+<p><b>Las tres de Lanzarote que Eric cambió</b> (la versión buena está en <code>COLECCION_LANZAROTE.zip</code>): <b>La isla a tus pies</b>, <b>Playas y charcos</b> y <b>Pueblos con alma</b> (forma y colores de los trozos: arco, círculo y hexágono, en vez de arco, óvalo y pentágono). Usadas esas; el resto, de <code>COLECCIONES_CAPAS.zip</code>. Las 7 siguen con 7·7·7·6·7·6·3 trozos.</p>
+<p><b>Iconos:</b> solo en Imprescindibles y 4 joyas (como Design); el mismo sitio, el mismo icono en las dos (Coliseo, Trevi, Panteón: <code>iconosSitios.ts</code> es la copia de <code>iconos-sitios.js</code> de Design). <b>Tocar un trozo</b> dice su sitio: ahora por sectores (los de Design), y el trozo de la tarjeta de cada sitio en la colección por dentro sale de la misma regla. <b>Se ha borrado</b> lo viejo: <code>InsigniaGajos</code>, <code>gajosColecciones</code> y las 7 imágenes <code>public/logros/lanza/col*.webp</code>.</p>
+${fig('insignias_1', 'Las 18, sin empezar / a medias / completas (1)')}${fig('insignias_2', '(2)')}${fig('insignias_3', '(3)')}${fig('insignias_4', '(4)')}
+<h2>2. El momento «Un pedazo nuevo»</h2>
+<p>Unos 2 segundos antes de [Seguir]: 0 la insignia con lo que ya tenías → 1 el trozo nuevo llega volando con brillo → 2 encaja → 3 se llena de color con destello → 4 queda y el número sube («1 DE 4 → 2 DE 4»). Con varias colecciones, la misma pantalla de la V6 («Pedazos nuevos») con cada insignia haciendo su trozo una detrás de otra (1,6 s entre una y otra). [Saltar todo] y la X, como en la V6. Con «Reducir movimiento» del iPhone: sin vuelo ni encaje, solo el color.</p>
+${fig('momento_1', '0 · lo que ya tenías')}${fig('momento_2', '1 · llega volando')}${fig('momento_3', '2 · encaja')}${fig('momento_4', '3 · color')}${fig('momento_5', '4 · queda')}${fig('momento_tres', 'Tres colecciones a la vez')}
+<h2>Lo que queda sin hacer o por mirar</h2>
+<ul><li>No he sacado capturas «al lado de Design» de las 18 (las de arriba son de la app); Design está en <code>docs/diseno/proyecto/Colecciones Roma Pedazos.dc.html</code> y <code>Pedazo Nuevo Lanza.dc.html</code>.</li>
+<li>El vídeo del momento no existe: capturas por pasos (arriba). Las 5 se sacan a las marcas 0,2 / 0,9 / 1,45 / 1,8 / 2,6 s.</li>
+<li>Las pruebas de la época de las insignias pintadas de Lanzarote (<code>LZ3</code>, <code>LZ3b</code>, <code>V4</code>…) miraban cosas que ya no existen; ver el informe.</li></ul>
+<h2>Lista de comprobación de ESTA tanda</h2>
+<label><input type="checkbox"> En la hoja de logros de Lanzarote, las 7 insignias salen por partes (nada de imagen recortada)</label>
+<label><input type="checkbox"> Ganar un sitio colorea solo su trozo, entero; los que faltan, en gris</label>
+<label><input type="checkbox"> «Los imprescindibles de Roma» y «Las 4 joyas» llevan iconos en los trozos; las demás no</label>
+<label><input type="checkbox"> La colección por dentro: el trozo de cada tarjeta es el de su sitio</label>
+<label><input type="checkbox"> El momento «Un pedazo nuevo»: llega, encaja, se llena de color y el número sube; sale [Seguir] a los ~2 s</label>
+<label><input type="checkbox"> Con varias colecciones, una pantalla y una insignia detrás de otra</label>
+<label><input type="checkbox"> Con «Reducir movimiento» en el iPhone, solo el color</label>
+<label><input type="checkbox"> Las 3 de Lanzarote que cambié (La isla a tus pies, Playas y charcos, Pueblos con alma) son las buenas</label>
+</body></html>`
+fs.writeFileSync('docs/dias/REPASO_V13.html', html)
+console.log('docs/dias/REPASO_V13.html', Math.round(html.length / 1024), 'KB')

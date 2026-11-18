@@ -6,10 +6,10 @@ import { lazy, Suspense, type ReactNode } from 'react'
  */
 const InsigniaDibujo = lazy(() => import('./Insignia').then((m) => ({ default: m.InsigniaDibujo })))
 
-export function Insignia({ coleccion, ganados = [], completa = false, tam = 120, animada = false }: { coleccion: string; ganados?: string[]; completa?: boolean; tam?: number; animada?: boolean }): ReactNode {
+export function Insignia({ coleccion, ganados = [], completa = false, tam = 120, animada = false, nuevos, fase }: { coleccion: string; ganados?: string[]; completa?: boolean; tam?: number; animada?: boolean; nuevos?: string[]; fase?: 0 | 1 | 2 | 3 | 4 }): ReactNode {
   return (
     <Suspense fallback={<span data-hueco-insignia="1" style={{ display: 'inline-block', width: tam * 0.86, height: tam * 0.86, margin: tam * 0.07, borderRadius: '28%', background: 'rgba(28,34,48,.1)' }} aria-hidden="true" />}>
-      <InsigniaDibujo coleccion={coleccion} ganados={ganados} completa={completa} tam={tam} animada={animada} />
+      <InsigniaDibujo coleccion={coleccion} ganados={ganados} completa={completa} tam={tam} animada={animada} nuevos={nuevos} fase={fase} />
     </Suspense>
   )
 }

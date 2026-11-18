@@ -1,0 +1,12 @@
+@keyframes ipIn{0%{opacity:0;transform:translate(var(--fx),var(--fy)) scale(1.6) rotate(-40deg)}60%{opacity:1;transform:scale(.94)}80%{transform:scale(1.05)}100%{opacity:1;transform:none}}
+@keyframes ipFlash{0%{opacity:0}30%{opacity:.95}100%{opacity:0}}
+@keyframes ipRing{to{stroke-dashoffset:0}}
+@keyframes ipCore{0%{opacity:0;transform:scale(2.4)}70%{opacity:1;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
+@keyframes ipShock{0%{opacity:0;transform:scale(.5)}5%{opacity:.95}100%{opacity:0;transform:scale(2.6)}}
+@keyframes ipGlow{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes ipSpin{0%{transform:perspective(700px) rotateY(0)}100%{transform:perspective(700px) rotateY(360deg)}}
+@keyframes ipShine{0%{transform:translateX(-200%) skewX(-18deg)}50%,100%{transform:translateX(560%) skewX(-18deg)}}
+@keyframes ipBeam{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+[data-ip="0"] *{animation-play-state:paused!important}
+@media (prefers-reduced-motion: reduce){.dib *,.dib *::before,.dib *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
