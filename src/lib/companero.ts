@@ -30,6 +30,8 @@ interface Estado {
   pendientes: PendienteDeCompanero[]
   sinPase: boolean
   cargado: boolean
+  /** (V15b) La última pregunta no se pudo contestar bien (sin sesión, sin red, error o «viaje sin fechas»): conviene volver a preguntar. */
+  fallo: boolean
   abierta: Abierta
   error: string | null
   ocupado: boolean
@@ -43,6 +45,7 @@ export const useCompaneroStore = create<Estado>((set) => ({
   pendientes: [],
   sinPase: false,
   cargado: false,
+  fallo: false,
   abierta: null,
   error: null,
   ocupado: false,
@@ -85,7 +88,7 @@ export async function cargarCompanero(tripId: string): Promise<PendienteDeCompan
     /* sin almacenamiento */
   }
   const lista = r?.ok ? (r.pendientes ?? []) : []
-  useCompaneroStore.setState({ tripId, pendientes: lista, sinPase: Boolean(r?.sin_pase), cargado: true })
+  useCompaneroStore.setState({ tripId, pendientes: lista, sinPase: Boolean(r?.sin_pase), cargado: true, fallo: !r?.ok })
   return lista
 }
 

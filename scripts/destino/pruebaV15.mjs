@@ -149,6 +149,8 @@ console.log('2. El código')
   for (const f of ['src/components/logros/momentos/ResumenViaje.tsx', 'src/components/logros/pantallas/ViajeGuardado.tsx', 'src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx', 'src/components/logros/pantallas/perfil/ListaDeViajes.tsx']) {
     debe(/usePortadaDeViaje\(/.test(leer(f)), 'portada', `${f.split('/').pop()} usa la misma regla de portada`)
   }
+  const host = leer('src/components/logros/companero/Companero.tsx')
+  debe(/reintentos = \[3000, 10000, 25000\]/.test(host) && /visibilitychange/.test(host), 'reintento', 'la app vuelve a preguntar por el compañero si la respuesta no fue buena, al volver a la app y al volver la red')
   debe(!/desde\)\.slice\(0, 10\) <= viaje\.fin/.test(leer('server/logros/servicio.js')), 'alicia', 'el servidor ya no deja fuera a quien se unió después del último día')
 }
 

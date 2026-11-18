@@ -125,11 +125,32 @@ export function HostDeCompanero(): ReactNode {
   const pendientes = useCompaneroStore((s) => s.pendientes)
   const entrada = useRef<HTMLInputElement>(null)
   useEffect(() => {
-    if (!tripId) return
-    void cargarCompanero(tripId).then((lista) => {
-      // Y5: el punto del botón de logros, mientras haya algo pendiente.
-      if (lista.length > 0) useLogrosStore.getState().ponerPuntito(true)
-    })
+    if (!tripId) return undefined
+    let vivo = true
+    let temporizador: number | undefined
+    // (V15b) Se pregunta al abrir el viaje y, si la respuesta no fue buena (sin sesión aún, sin red, «viaje sin fechas» porque el id de la nube llegó después…), se vuelve a preguntar a los 3, 10 y 25 s,
+    // al volver a la app (de segundo plano) y al volver la red. Antes se preguntaba UNA sola vez por viaje abierto y, si fallaba, no se reintentaba hasta cerrar y abrir.
+    const preguntar = (intento: number) => {
+      void cargarCompanero(tripId).then((lista) => {
+        if (!vivo) return
+        // Y5: el punto del botón de logros, mientras haya algo pendiente.
+        if (lista.length > 0) useLogrosStore.getState().ponerPuntito(true)
+        const reintentos = [3000, 10000, 25000]
+        if (useCompaneroStore.getState().fallo && intento < reintentos.length) temporizador = window.setTimeout(() => preguntar(intento + 1), reintentos[intento])
+      })
+    }
+    preguntar(0)
+    const alVolver = () => {
+      if (document.visibilityState === 'visible') preguntar(3)
+    }
+    document.addEventListener('visibilitychange', alVolver)
+    window.addEventListener('online', alVolver)
+    return () => {
+      vivo = false
+      window.clearTimeout(temporizador)
+      document.removeEventListener('visibilitychange', alVolver)
+      window.removeEventListener('online', alVolver)
+    }
   }, [tripId])
   const uno = abierta?.tipo === 'sitio' ? pendientes.find((p) => p.sitio === abierta.sitio) : null
   return (
