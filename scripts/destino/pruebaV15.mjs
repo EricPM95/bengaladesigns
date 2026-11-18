@@ -95,7 +95,7 @@ console.log('1b. Una copia propia del viaje y el viaje compartido son el mismo v
     borrarLogros: async () => {}, cuentaDe: async () => ({ alta_cuenta: '2026-10-01T10:00:00.000Z', salida: null }), ordenPionero: async () => ({}), probadorDe: async () => null, ultimaFrase: async () => null,
     sinPaseDe: async () => false, pasesDe: async () => [], pruebaDe: async () => null, guardarPrueba: async () => {},
     perfilDe: async () => ({ previos: { paises: [], dias: 0 }, vitrina: { baldas: {}, titulo: null }, exp_max: 0 }), guardarPerfil: async () => {}, referidosDe: async () => [], invitadorDe: async () => null, marcarAnimacion: async () => {},
-    fotoUrl: async () => null, miembrosDe: async () => miembros, nombresDe: async (ids) => new Map(ids.map((i) => [i, i === 'E' ? 'Eric' : 'Alicia'])),
+    fotoUrl: async () => null, miembrosDe: async (t) => (t === 'lz1' ? miembros : [{ user_id: 'A', desde: null }]), nombresDe: async (ids) => new Map(ids.map((i) => [i, i === 'E' ? 'Eric' : 'Alicia'])),
   }
   const reloj = new Date('2026-11-18T12:00:00Z')
   const servicio = crearServicioLogros({ repo, datos, catalogos, ahora: () => reloj, cobro: false, azar: () => 0 })

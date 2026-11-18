@@ -489,7 +489,9 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     if (!viaje || typeof repo.miembrosDe !== 'function') return { ok: false, motivo: 'viaje_sin_fechas', pendientes: [] }
     const hoy = hoyEn(viaje.destino)
     if (hoy <= viaje.fin || hoy > sumarDias(viaje.fin, datos.ajustes.plazo_reclamar_dias)) return { ok: true, pendientes: [], fuera_de_fechas: true, sin_pase: false }
-    const miembros = await repo.miembrosDe(tripId)
+    // (V15) Si piden la COPIA propia del viaje, se trabaja con el viaje compartido al que equivale (su id manda para los miembros y lo ganado).
+    const tid = viaje.id ?? tripId
+    const miembros = await repo.miembrosDe(tid)
     const yo = miembros.find((m) => m.user_id === userId)
     const alDia = () => true // (V15) ya no importa cuándo se unió: cuenta cualquier miembro dentro del plazo
     if (!yo) return { ok: true, pendientes: [], sin_pase: false }
@@ -502,8 +504,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
         const dia = String(cuando ?? '').slice(0, 10)
         return dia >= sumarDias(viaje.inicio, -1) && dia <= sumarDias(viaje.fin, 1)
       }
-      const logros = (await repo.logrosDe(m.user_id)).filter((l) => (l.trip_id === tripId || (l.destino === viaje.destino && enElViaje(l.ganado_en))) && l.destino === viaje.destino && l.detalle?.origen !== 'companero')
-      const hechos = (await repo.hechosDe(m.user_id)).filter((h) => (h.trip_id === tripId || (h.destino === viaje.destino && enElViaje(h.instante))) && h.motivo !== 'companero')
+      const logros = (await repo.logrosDe(m.user_id)).filter((l) => (l.trip_id === tid || (l.destino === viaje.destino && enElViaje(l.ganado_en))) && l.destino === viaje.destino && l.detalle?.origen !== 'companero')
+      const hechos = (await repo.hechosDe(m.user_id)).filter((h) => (h.trip_id === tid || (h.destino === viaje.destino && enElViaje(h.instante))) && h.motivo !== 'companero')
       const ganados = new Map()
       const de = (s) => {
         if (!ganados.has(s)) ganados.set(s, { colecciones: new Set(), emblema: false })
