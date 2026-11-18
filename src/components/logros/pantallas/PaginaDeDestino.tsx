@@ -3,6 +3,7 @@ import { useSyncStore } from '../../../store/useSyncStore'
 import { Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
 import { lineaDeSecretos } from '../momentos/textosResumen'
 import { pedirDestino, type ColeccionDePagina, type PaginaDeDestinoDatos, type SelloDePagina } from './destino/api'
+import { useFotoDeDestino } from './destino/useFotoDeDestino'
 import { COLOR_DE_GRADO, FONDO_DE_DESTINO, FONDO_POR_DEFECTO, conDe } from './destino/formato'
 import { BotonVolver, Esperando, FONDO_PAPEL, useCarga } from './destino/piezas'
 import './destino/destino.css'
@@ -44,6 +45,7 @@ export default function PaginaDeDestino({ pantalla }: { pantalla: Pagina }): Rea
 }
 
 function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; resaltar: string | null; volver: () => void }): ReactNode {
+  const foto = useFotoDeDestino(datos.destino, datos.ciudad)
   const abrirColeccion = (coleccion: string) => useLogrosPantallas.getState().abrir({ t: 'coleccion', destino: datos.destino, coleccion })
   const principal = datos.sellos.find((s) => s.principal) ?? datos.sellos[0] ?? null
   const grado = principal?.grado ?? null
@@ -56,7 +58,7 @@ function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; r
   return (
     <main style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 40px)', display: 'flex', flexDirection: 'column', gap: 12 }}>
       {/* La cabecera: el color del destino y el sello principal en una tarjeta que sube sobre él. */}
-      <div style={{ position: 'relative', flex: 'none', height: 170, background: FONDO_DE_DESTINO[datos.destino] ?? FONDO_POR_DEFECTO }}>
+      <div data-foto-de-destino={foto ? '1' : '0'} style={{ position: 'relative', flex: 'none', height: 170, background: foto ? `center/cover url(${foto})` : (FONDO_DE_DESTINO[datos.destino] ?? FONDO_POR_DEFECTO) }}>
         <div style={{ position: 'absolute', left: 8, top: 4 }}>
           <button type="button" onClick={volver} style={{ height: 44, padding: '0 14px 0 12px', border: 'none', borderRadius: 999, background: 'rgba(28,34,48,.55)', color: '#FFFDF8', display: 'flex', alignItems: 'center', gap: 6, font: "600 12px 'Geist'", cursor: 'pointer' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>

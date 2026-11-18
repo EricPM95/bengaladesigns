@@ -64,7 +64,9 @@ export interface DestinoGanado {
   codigo_pais: string | null
   sello: { id: string; nombre: string; grado: string | null; nombre_grado: string | null; linea: string | null }
   sellos: { id: string; nombre: string; grado: string | null }[]
-  colecciones: { completas: number; total: number }
+  /** (V10) `empezadas`: colecciones con algún pedazo; `pedazos`: los ganados de los que hay; `avance`: pedazos y emblemas ganados entre el total del destino. */
+  colecciones: { completas: number; total: number; empezadas?: number }
+  pedazos?: { ganados: number; total: number }
   secretos: { encontrados: number; total?: number }
   avance: number
   desde: string | null

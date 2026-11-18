@@ -5649,3 +5649,10 @@ Para leer sus documentos en Lanzarote con el cobro apagado, se le da un Pase Lan
 - **4. [Añadir a mi viaje]:** `diaDeCamino`/`mejorHuecoDeLaParada` (`src/lib/mejorHueco.ts`), «Te pilla de camino» en las dos hojas «¿A qué día?», solo días que quedan, mejor hueco y no de primero (`ponerParadaEnElDia` con `mejorHueco`).
 - **5-6. Emblemas y resumen:** rejilla de 4 columnas sin cortes; resumen rehecho (foto, cifras, medalla, «+N», emblemas descubiertos, logros nuevos 3 en 3); `{ciudad} {anio}` rellenado y moneda por destino con el nombre dentro (`ExclusivoHolo`, `Chapa destino`); tarjeta «Te quedan N sorpresas» → hoja con los sitios (N = la lista; sin emblemas); `pendientes()` manda lo que da cada sitio.
 - **Pruebas:** `pruebaV9` (nueva) 45·0 y puestas al día con el diseño nuevo `pruebaTandaLG1_B`, `LZ3_B`. Ya fallaban antes de la V9 y siguen igual: `pruebaTanda6z3_dias`, `6z6a`, `LG1_A`, `10S4_H`, `Fase6y4_perfil`.
+
+## TANDA V10 · «Todos mis logros» (18-nov)
+- **Por destino:** un solo destino = tarjeta a todo el ancho; varios = fila y el siguiente asoma; selector pequeño «Destinos · Países» (pastilla oscura); la tarjeta lleva la FOTO del destino (`useFotoDeDestino`: propia de la app o del servidor de fotos), y también la cabecera de la página del destino (G1).
+- **Números:** `GET /api/logros/ganados` manda por destino `colecciones.empezadas`, `pedazos {ganados,total}` y `avance` = (pedazos + emblemas ganados) ÷ (los que hay); la tarjeta dice «2 colecciones empezadas · 3 pedazos · 2 secretos» (antes «0 de 7 · 0%» con pedazos).
+- **«Sello de plata»:** era la medalla del destino con otra redacción (y «bronce» por defecto sin grado); ahora igual que la hoja: «Bronce · Primeros pasos en Roma» / «Por conseguir».
+- **Logros de viajero:** todos 120×156, dibujo de 72. **Resto:** tarjeta oscura de arriba con el título (el mismo del Perfil) y más aire (22 px).
+- **Pruebas:** `pruebaV10` (nueva) 16·0 con las de logros, pantallas, Perfil y `pruebaJutrip`. `pruebaTandaHOY1_B` y `HOY2b_E` piden la API con `DESTINOS_OCULTOS='-'` (no es de esta tanda).

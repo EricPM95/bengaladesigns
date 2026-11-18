@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
+import { useFotoDeDestino } from '../destino/useFotoDeDestino'
 import { MedallaDeSiete, Sello, type GradoDeSello } from '../../dibujos'
 import { flagStripesGradient } from '../../../../lib/flagColors'
-import { lineaDeSecretos } from '../../momentos/textosResumen'
 import { useLogrosPantallas } from '../useLogrosPantallas'
 import { useHojasDeLogros, type DestinoGanado, type FilaDeViajero, type Ganados, type ItemGanado, type PaisGanado } from './api'
 import { ChapaDeFila, DibujoDeItem } from './dibujo'
@@ -21,13 +21,13 @@ export function TodosLista({ g, vistaInicial = 'destinos' }: { g: Ganados; vista
   const titulo = g.titulo ? g.items.find((i) => i.clave === g.titulo?.clave) : null
   const enVitrina = new Set([...Object.values(g.vitrina.baldas).flatMap((b) => b.huecos)])
   return (
-    <main className="vt-oculto" data-todos style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '0 0 calc(env(safe-area-inset-bottom,0px) + 40px)', display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ margin: '0 16px', flex: 'none', borderRadius: 24, background: '#FFFDF8', color: '#1C2230', boxShadow: 'inset 0 0 0 1px rgba(166,124,82,.22)', padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+    <main className="vt-oculto" data-todos style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '0 0 calc(env(safe-area-inset-bottom,0px) + 40px)', display: 'flex', flexDirection: 'column', gap: 22 }}>
+      <div style={{ margin: '0 16px', flex: 'none', borderRadius: 24, background: '#1C2230', color: '#FFFDF8', padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
         <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
           <span style={{ font: "400 30px/1 'Instrument Serif',serif" }}>
-            {g.total} <span style={{ fontSize: 18, color: 'rgba(28,34,48,.6)' }}>{g.total === 1 ? 'logro conseguido' : 'logros conseguidos'}</span>
+            {g.total} <span style={{ fontSize: 18, color: 'rgba(255,253,248,.7)' }}>{g.total === 1 ? 'logro conseguido' : 'logros conseguidos'}</span>
           </span>
-          {g.titulo && <span style={{ font: "500 13px 'Geist'", color: '#6F4E37' }}>{g.titulo.nombre}</span>}
+          {g.titulo && <span data-titulo-del-resumen style={{ font: "500 13px 'Geist'", color: '#F3D59A' }}>{g.titulo.nombre}</span>}
         </span>
         {titulo && <DibujoDeItem item={titulo} tam={58} />}
       </div>
@@ -36,23 +36,20 @@ export function TodosLista({ g, vistaInicial = 'destinos' }: { g: Ganados; vista
         <>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 20px 0' }}>
             <span style={TITULO}>Por destino</span>
-            <span role="tablist" aria-label="Vista" style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              {(['destinos', 'paises'] as const).map((k, j) => (
-                <span key={k} style={{ display: 'flex', alignItems: 'center' }}>
-                  {j > 0 && <span aria-hidden style={{ padding: '0 4px', font: "500 13px 'Geist'", color: 'rgba(28,34,48,.35)' }}>·</span>}
-                  <button type="button" role="tab" aria-selected={vista === k} onClick={() => setVista(k)} style={{ minHeight: 44, padding: '0 4px', border: 'none', background: 'transparent', font: `${vista === k ? 600 : 500} 13px 'Geist'`, color: vista === k ? '#1C2230' : 'rgba(28,34,48,.55)', textDecorationLine: vista === k ? 'underline' : 'none', textDecorationColor: DORADO, textDecorationThickness: '2.5px', textUnderlineOffset: 6, cursor: 'pointer' }}>
-                    {k === 'destinos' ? 'Destinos' : 'Países'}
-                  </button>
-                </span>
+            <span role="tablist" aria-label="Vista" data-selector-destinos-paises style={{ display: 'flex', alignItems: 'center', gap: 2, padding: 3, borderRadius: 999, background: '#EDE4D3' }}>
+              {(['destinos', 'paises'] as const).map((k) => (
+                <button key={k} type="button" role="tab" aria-selected={vista === k} onClick={() => setVista(k)} style={{ height: 32, minWidth: 74, padding: '0 14px', border: 'none', borderRadius: 999, background: vista === k ? '#1C2230' : 'transparent', color: vista === k ? '#FFFDF8' : 'rgba(28,34,48,.65)', boxShadow: vista === k ? '0 4px 10px -4px rgba(28,34,48,.5)' : 'none', font: `${vista === k ? 600 : 500} 13px 'Geist'`, cursor: 'pointer' }}>
+                  {k === 'destinos' ? 'Destinos' : 'Países'}
+                </button>
               ))}
             </span>
           </div>
           {vista === 'destinos' ? (
-            <div className="vt-oculto" style={{ flex: 'none', display: 'flex', gap: 10, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollPaddingInline: 20, scrollbarWidth: 'none', padding: '0 20px 6px' }}>
+            <div className="vt-oculto" data-fila-de-destinos={g.por_destino.length === 1 ? 'uno' : 'varios'} style={{ flex: 'none', display: 'flex', gap: 10, overflowX: g.por_destino.length === 1 ? 'hidden' : 'auto', scrollSnapType: 'x mandatory', scrollPaddingInline: 20, scrollbarWidth: 'none', padding: '0 20px 6px' }}>
               {g.por_destino.map((d) => (
-                <TarjetaDeDestino key={d.destino} d={d} />
+                <TarjetaDeDestino key={d.destino} d={d} sola={g.por_destino.length === 1} />
               ))}
-              <span style={{ flex: 'none', width: 10 }} />
+              {g.por_destino.length > 1 && <span style={{ flex: 'none', width: 10 }} />}
             </div>
           ) : (
             <div style={{ flex: 'none', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: '0 16px' }}>
@@ -122,25 +119,41 @@ function VerTodo({ grupo, pequeno = false, style }: { grupo: string; pequeno?: b
   )
 }
 
-function TarjetaDeDestino({ d }: { d: DestinoGanado }): ReactNode {
+/** «2 colecciones empezadas · 3 pedazos · 2 secretos»: lo que lleva el destino (nunca «0 de 7 colecciones» a quien ya tiene pedazos). */
+export function resumenDeDestino(d: DestinoGanado): string {
+  const n = (x: number, uno: string, varios: string) => `${x} ${x === 1 ? uno : varios}`
+  const empezadas = d.colecciones.empezadas ?? d.colecciones.completas
+  const pedazos = d.pedazos?.ganados ?? 0
+  const partes = [
+    ...(empezadas > 0 ? [n(empezadas, 'colección empezada', 'colecciones empezadas')] : []),
+    ...(pedazos > 0 ? [n(pedazos, 'pedazo', 'pedazos')] : []),
+    ...(d.secretos.encontrados > 0 ? [n(d.secretos.encontrados, 'secreto', 'secretos')] : []),
+  ]
+  return partes.length > 0 ? partes.join(' · ') : 'Aún sin pedazos'
+}
+
+function TarjetaDeDestino({ d, sola = false }: { d: DestinoGanado; sola?: boolean }): ReactNode {
   const grado = d.sello.grado ?? 'bronce'
-  const color = COLOR_DE_GRADO[grado]
+  const color = d.sello.grado ? COLOR_DE_GRADO[grado] : 'rgba(28,34,48,.45)'
   const pct = Math.round(d.avance * 100)
-  const linea = lineaDeSecretos(d.ciudad, d.secretos.total ?? 0, d.secretos.encontrados, !d.sello.grado)
-  const resumen = `${d.colecciones.completas} de ${d.colecciones.total} colecciones${linea ? ` · ${linea}` : ''}`
+  const foto = useFotoDeDestino(d.destino, d.ciudad)
+  // La medalla del destino, con el nombre y el grado de la hoja de logros («Primeros pasos en Roma · Bronce»): es la misma cosa (el sello principal del destino), no «Sello de plata».
+  const medalla = d.sello.grado ? `${NOMBRE_DE_GRADO[grado]} · ${d.sello.nombre_grado ?? d.sello.nombre}` : 'Por conseguir'
   return (
-    <button type="button" onClick={() => useLogrosPantallas.getState().abrir({ t: 'destino', destino: d.destino })} style={{ flex: 'none', width: 286, scrollSnapAlign: 'start', position: 'relative', padding: 0, textAlign: 'left', borderRadius: 24, overflow: 'hidden', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 14px 28px -22px rgba(28,34,48,.5)', cursor: 'pointer', color: '#1C2230' }}>
-      <span style={{ display: 'block', height: 110, background: FONDO_DE_GRADO[grado] }} />
-      <span style={{ position: 'absolute', left: 14, top: 70, filter: 'drop-shadow(0 6px 10px rgba(0,0,0,.35))' }}>
+    <button type="button" data-tarjeta-de-destino={d.destino} onClick={() => useLogrosPantallas.getState().abrir({ t: 'destino', destino: d.destino })} style={{ flex: 'none', width: sola ? '100%' : 292, scrollSnapAlign: 'start', position: 'relative', padding: 0, textAlign: 'left', cursor: 'pointer', borderRadius: 24, overflow: 'hidden', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 14px 28px -22px rgba(28,34,48,.5)', color: 'inherit' }}>
+      <span data-foto-de-destino={foto ? '1' : '0'} style={{ display: 'block', position: 'relative', height: sola ? 170 : 120, background: foto ? `center/cover url(${foto})` : FONDO_DE_GRADO[grado] }}>
+        <span aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(120% 90% at 85% 0%,rgba(255,255,255,.35),transparent 55%),linear-gradient(to top,rgba(20,16,26,.5),transparent 60%)' }} />
+      </span>
+      <span style={{ position: 'absolute', left: 14, top: sola ? 130 : 80, filter: 'drop-shadow(0 6px 10px rgba(0,0,0,.35))' }}>
         <Sello id={d.sello.id} grado={grado as GradoDeSello} tam={70} animado={false} />
       </span>
       <span style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px 14px 94px' }}>
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <span style={{ font: "400 24px/1 'Instrument Serif',serif" }}>{d.ciudad}</span>
-          <span style={{ font: "600 10.5px 'Geist Mono',monospace", color }}>Sello de {NOMBRE_DE_GRADO[grado].toLowerCase()}</span>
-          <span style={{ font: "500 11.5px/1.3 'Geist'", color: 'rgba(28,34,48,.62)' }}>{resumen}</span>
+          <span data-medalla-del-destino style={{ font: "600 10.5px/1.25 'Geist Mono',monospace", color }}>{medalla}</span>
+          <span data-numeros-del-destino style={{ font: "500 11.5px/1.3 'Geist'", color: 'rgba(28,34,48,.62)' }}>{resumenDeDestino(d)}</span>
         </span>
-        <span aria-label={`${pct} por ciento`} style={{ position: 'relative', width: 44, height: 44, flex: 'none' }}>
+        <span aria-label={`${pct} por ciento del destino`} style={{ position: 'relative', width: 44, height: 44, flex: 'none' }}>
           <svg width="44" height="44" viewBox="0 0 44 44" style={{ transform: 'rotate(-90deg)' }} aria-hidden>
             <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(28,34,48,.1)" strokeWidth="4" />
             <circle cx="22" cy="22" r="18" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeDasharray="113" strokeDashoffset={Math.round(113 * (1 - d.avance))} />
@@ -180,7 +193,7 @@ function TarjetaDeFila({ f, enVitrina, abrir }: { f: FilaDeViajero; enVitrina: b
   const color = GRUPO[f.grupo]?.color ?? '#1C2230'
   const p = f.objetivo > 0 ? Math.min(1, f.actual / f.objetivo) : 0
   return (
-    <button type="button" data-fila={f.id} aria-label={`${f.nombre}${f.ganado ? '' : ' (por conseguir)'}`} onClick={abrir} style={{ flex: 'none', width: 108, scrollSnapAlign: 'start', position: 'relative', border: 'none', borderRadius: 20, background: '#FFFDF8', boxShadow: '0 0 0 1px rgba(28,34,48,.07)', padding: '12px 6px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer', color: '#1C2230' }}>
+    <button type="button" data-fila={f.id} aria-label={`${f.nombre}${f.ganado ? '' : ' (por conseguir)'}`} onClick={abrir} data-tarjeta-de-viajero style={{ flex: 'none', width: 120, minHeight: 156, scrollSnapAlign: 'start', position: 'relative', border: 'none', borderRadius: 20, background: '#FFFDF8', boxShadow: '0 0 0 1px rgba(28,34,48,.07)', padding: '12px 6px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer', color: '#1C2230' }}>
       {f.ganado && (
         <span aria-hidden style={{ position: 'absolute', top: 6, right: 6, width: 26, height: 26, borderRadius: '50%', background: enVitrina ? VERDE : DORADO, color: enVitrina ? '#fff' : '#17120a', boxShadow: '0 0 0 2px #FFFDF8,0 4px 10px -4px rgba(0,0,0,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -188,12 +201,12 @@ function TarjetaDeFila({ f, enVitrina, abrir }: { f: FilaDeViajero; enVitrina: b
           </svg>
         </span>
       )}
-      <span style={{ position: 'relative', width: 84, height: 84, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <svg width="84" height="84" viewBox="0 0 84 84" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }} aria-hidden>
+      <span style={{ position: 'relative', width: 92, height: 92, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg width="92" height="92" viewBox="0 0 84 84" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }} aria-hidden>
           <circle cx="42" cy="42" r="39" fill="none" stroke="rgba(28,34,48,.09)" strokeWidth="3.5" />
           <circle cx="42" cy="42" r="39" fill="none" stroke={f.ganado ? color : 'rgba(28,34,48,.25)'} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="245" strokeDashoffset={Math.round(245 * (1 - p))} />
         </svg>
-        <ChapaDeFila fila={f} tam={64} />
+        <ChapaDeFila fila={f} tam={72} />
       </span>
       <span style={{ marginTop: 4, font: "500 11.5px/1.2 'Geist'", color: f.ganado ? '#1C2230' : 'rgba(28,34,48,.5)', textWrap: 'balance' as never, textAlign: 'center' }}>{f.nombre}</span>
     </button>

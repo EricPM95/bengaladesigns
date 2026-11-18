@@ -307,6 +307,12 @@ export function construirGanados({ datos, catalogos, items, cuentan = [], viajes
       const est = estadoDestino({ datos, destino: d.clave, items })
       const principal = est.sellos.find((s) => s.id === d.sello_principal) ?? est.sellos[0]
       const completas = est.colecciones.filter((c) => c.completa).length
+      // (V10) Lo que lleva: colecciones empezadas, pedazos (ganados de los que hay) y emblemas; el % es del destino ENTERO (pedazos y emblemas ganados entre el total).
+      const empezadas = est.colecciones.filter((c) => c.n > 0).length
+      const pedazosGanados = est.colecciones.reduce((n, c) => n + c.n, 0)
+      const pedazosTotal = est.colecciones.reduce((n, c) => n + c.total, 0)
+      const hechos = pedazosGanados + est.secretos.encontrados
+      const posibles = pedazosTotal + (est.secretos.total ?? 0)
       const primero = todos.filter((it) => it.destino === d.clave).map((it) => it.en).sort()[0] ?? null
       return {
         destino: d.clave,
@@ -315,9 +321,10 @@ export function construirGanados({ datos, catalogos, items, cuentan = [], viajes
         codigo_pais: codigoDePais(d.pais_defecto),
         sello: { id: principal.id, nombre: principal.nombre, grado: principal.grado, nombre_grado: principal.nombre_grado, linea: principal.linea },
         sellos: est.sellos.map((s) => ({ id: s.id, nombre: s.nombre, grado: s.grado })),
-        colecciones: { completas, total: est.colecciones.length },
+        colecciones: { completas, total: est.colecciones.length, empezadas },
+        pedazos: { ganados: pedazosGanados, total: pedazosTotal },
         secretos: { encontrados: est.secretos.encontrados, total: est.secretos.total },
-        avance: est.colecciones.length > 0 ? completas / est.colecciones.length : 0,
+        avance: posibles > 0 ? hechos / posibles : 0,
         desde: primero,
       }
     })
