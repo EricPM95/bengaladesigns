@@ -1,13 +1,13 @@
 # Estado de la tanda cola
 
-**Última actualización: 18/11/26, 17:00**
+**Última actualización: 18/11/26, 17:19**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V10 subida (b98b4675). Empiezo V11
+COLA ACABADA: V6 db8d7cf3, V7 d7cd8ced, V8 f5606617, V9 a0725042, V10 b98b4675, V11 09608bf9 (todas en main)
 
 ## Qué falta
-V11
+nada: solo revisar la lista PARA ERIC
 
 ## Procesos abiertos ahora mismo
 - node: 2
