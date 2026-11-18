@@ -18,6 +18,7 @@
 @keyframes pfRing{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.9)}}
 @keyframes pfDrop{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
 @keyframes pfInk{0%{background:rgba(28,34,48,.12)}100%{background:rgba(28,34,48,0)}}
+@keyframes pfSk{0%,100%{opacity:.55}50%{opacity:1}}
 @keyframes pfStamp{0%{opacity:0;transform:scale(1.8) rotate(-8deg)}60%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:none}}
 @keyframes pfSwap{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes pfCovUp{0%{transform:none}100%{transform:translateY(-100%)}}
@@ -146,10 +147,10 @@
                       <radialGradient id="{{ b.id }}gris" cx="35%" cy="30%"><stop offset="0" stop-color="#F2F2F0"></stop><stop offset=".6" stop-color="#B4B4B0"></stop><stop offset="1" stop-color="#7A7A76"></stop></radialGradient>
                       <filter id="{{ b.id }}ms" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.4" flood-color="#1C2230" flood-opacity=".45"></feDropShadow></filter>
                     </defs>
-                    <circle cx="144" cy="144" r="144" fill="#F7F1E4"></circle>
+                    <circle cx="144" cy="144" r="144" fill="#F7F1E4"></circle><sc-if value="{{ b.gb.loading }}" hint-placeholder-val="{{ false }}"><g style="animation:pfSk 1.4s ease-in-out infinite"><circle cx="144" cy="144" r="144" fill="#E4DAC4"></circle><path d="M70 90q30-30 62-14t20 40q-26 24-48 10t-34-36zM160 150q26-10 46 8t-10 44q-30 0-42-26zM100 190q16-4 22 12t-14 20q-14-10-8-32z" fill="#D8CCB2"></path></g></sc-if>
                     <path d="{{ b.gb.grat }}" fill="none" stroke="rgba(28,34,48,.08)" stroke-width="1"></path>
                     <sc-for list="{{ b.gb.feats }}" as="c" hint-placeholder-count="0"><path d="{{ c.d }}" fill="{{ c.f }}" stroke="{{ c.s }}" stroke-width="{{ c.w }}" onClick="{{ c.tap }}" style="cursor:{{ c.cur }};transition:fill .4s"></path></sc-for>
-                    <sc-for list="{{ b.gb.marks }}" as="m" hint-placeholder-count="0"><g transform="translate({{ m.x }} {{ m.y }})" onClick="{{ m.tap }}" style="cursor:pointer"><circle r="{{ m.gr }}" fill="#FFF3D0" opacity="{{ m.go }}" style="transition:opacity .5s"></circle><circle r="6" fill="url(#{{ b.id }}{{ m.g }})" stroke="#FFFDF8" stroke-width="1.4" filter="url(#{{ b.id }}ms)"></circle></g></sc-for>
+                    <sc-for list="{{ b.gb.marks }}" as="m" hint-placeholder-count="0"><g transform="translate({{ m.x }} {{ m.y }})" onClick="{{ m.tap }}" style="cursor:pointer"><circle r="{{ m.gr }}" fill="#FFF3D0" opacity="{{ m.go }}" style="transition:opacity .5s"></circle><circle r="{{ m.r }}" fill="{{ m.fl }}" fill-opacity="{{ m.fo }}" stroke="{{ m.st }}" stroke-width="{{ m.sw }}" stroke-dasharray="{{ m.da }}" filter="url(#{{ b.id }}ms)"></circle></g></sc-for>
                     <circle cx="144" cy="144" r="144" fill="url(#{{ b.id }}gs)" style="pointer-events:none"></circle>
                   </svg>
                 </div>
@@ -200,8 +201,8 @@
               <div onClick="{{ b.closeN }}" style="position:absolute;inset:0;z-index:30;background:rgba(28,34,48,.4);animation:pfFade .25s ease both"></div>
               <div style="position:absolute;left:0;right:0;bottom:0;z-index:31;border-radius:26px 26px 0 0;background:#FFFDF8;padding:10px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;animation:pfUp .35s cubic-bezier(.2,.8,.2,1) both">
                 <span style="width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
-                <span style="margin-top:8px;font:400 26px/1.1 'Instrument Serif',serif">{{ b.newT }} ya está en la app</span>
-                <button style="margin-top:6px;width:100%;height:52px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:700 15px 'Geist';cursor:pointer">Crear viaje</button>
+                <span style="margin-top:8px;font:400 26px/1.1 'Instrument Serif',serif">{{ b.newMsg }}</span>
+                <button style="margin-top:6px;width:100%;height:52px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:700 15px 'Geist';cursor:pointer">{{ b.newBtn }}</button>
               </div>
             </sc-if>
             <sc-if value="{{ b.coverOn }}" hint-placeholder-val="{{ false }}">
@@ -333,7 +334,7 @@ const SOFT=['oklch(0.74 0.14 65)','oklch(0.68 0.12 150)','oklch(0.66 0.1 240)','
 const VIS={380:0,250:1,620:2,300:3,528:4,724:5};
 const CITY={Roma:[12.5,41.9],Pisa:[10.4,43.72],'París':[2.35,48.86],Lisboa:[-9.14,38.72],Atenas:[23.73,37.98],'Ámsterdam':[4.9,52.37],Madrid:[-3.7,40.4]};
 class Component extends DCLogic {
-  state={geo:null,toast:null,rot:[-10,-42],zoom:1,pm:{P2:{p:0,rot:[-12,-44],z:2.1,hi:0,cov:true},P2l:{p:0,rot:[-12,-44],z:2.1,hi:0,cov:false,list:true},P2v:{p:1,rot:[-12.45,-41.9],z:9,hi:1,cov:false},P2i2:{p:0,sp:1,rot:[-12,-44],z:2.1,hi:0,cov:false},P2m:{p:7,rot:[89,-21],z:1.6,hi:7,cov:false},P2e:{p:0,rot:[-12,-44],z:2.1,hi:0,cov:false,sk:0,hide:'Roma|13 OCT 2026'}}};
+  state={geo:null,toast:null,rot:[-10,-42],zoom:1,pm:{P2:{p:0,rot:[-12,-44],z:2.1,hi:0,cov:true},P2l:{p:0,rot:[-12,-44],z:2.1,hi:0,cov:false,list:true},P2v:{p:1,rot:[-12.45,-41.9],z:9,hi:1,cov:false},P2i2:{p:0,sp:1,rot:[-12,-44],z:2.1,hi:0,cov:false},P2m:{p:7,rot:[89,-21],z:1.6,hi:7,cov:false},P2h:{p:3,rot:[2,-34],z:1.9,hi:3,cov:false},P2s:{p:3,rot:[2,-34],z:1.9,hi:3,cov:false,nw:'x:Lanzarote'},P2e:{p:0,rot:[-12,-44],z:2.1,hi:0,cov:false,sk:0,hide:'Roma|13 OCT 2026'}}};
   PMC=[[12.5,42.6],[12.45,41.9],[2.3,46.6],[-3.7,40.2],[-8,39.6],[22,39.2],[5.3,52.2],[-89,21]];
   pmSet(id,o){this.setState(s=>({pm:{...s.pm,[id]:{...s.pm[id],...o}}}));}
   pmRot(id,to){const from=this.state.pm[id].rot,t0=performance.now();const dl=((to[0]-from[0]+540)%360)-180;
@@ -388,6 +389,7 @@ class Component extends DCLogic {
     const pref=id=>this.rf&&this.rf[id]||((this.rf=this.rf||{})[id]=el=>{this.pr[id]=el;if(el&&id==='P2c'&&!this.didC){this.didC=true;setTimeout(()=>{el.style.scrollBehavior='auto';el.scrollLeft=348;el.style.scrollBehavior='smooth';},60);}});
     const dots=on=>Array.from({length:7},(_,i)=>({w:i===on?'20px':'6px',c:i===on?'oklch(0.8 0.14 70)':'rgba(255,253,248,.3)'}));
     MON.pisa=MON.pisa||'M3 38H57M25 38L28 8M35 38L38 8M25.6 31H35.6M26.3 24H36.3M27 17H37M27.6 10H37.6M30 8V5H36V8';
+    const ESP={n:'España',fl:FL.es,k:'1 sello por conseguir',before:false,L:[S('round','Lanzarote','','','',0,0,0,140,true)]};
     const DEST=[['Roma',[12.5,41.9],'oro',0,0],['Vaticano',[12.45,41.9],'oro',1,-12],['Pisa',[10.4,43.72],'oro',0,0],['Venecia',[12.33,45.44],'oro',0,0],['Nápoles',[14.25,40.85],'oro',0,0],['París',[2.35,48.86],'oro',2,0],['Cancún',[-86.85,21.16],'gris',7,0]];
     const PIDX2={380:0,250:2,724:3,620:4,300:5,528:6,484:7};
     const SLOT=[[10,10,-9],[150,40,7],[20,170,-4],[160,200,5]];
@@ -398,21 +400,21 @@ class Component extends DCLogic {
       {n:'España',fl:FL.es,k:'antes de la app',before:true,L:[]},{n:'Portugal',fl:FL.pt,k:'antes de la app',before:true,L:[]},
       {n:'Grecia',fl:FL.gr,k:'antes de la app',before:true,L:[]},{n:'Países Bajos',fl:FL.nl,k:'antes de la app',before:true,L:[]},
       {n:'México',fl:'linear-gradient(90deg,#2E7D46 0 33%,#F4F1EA 33% 66%,#C8352B 66%)',k:'1 sello por conseguir',todo:true,before:false,L:[S('round','Cancún','','','',0,0,0,140,true)]}];
-    const pmB=(id,cap,o)=>{const P=s.pm[id];const pg=pmPages[P.p];
-      const sub=P.sp||0;const lightSt=arr=>arr.slice(sub*4,sub*4+4).filter(t=>!(o.stamp&&t.place==='Roma'&&t.date==='13 OCT 2026')).map((t,i)=>{const[x,y,r]=SLOT[i];return{...t,tap:()=>this.pmSet(id,{nw:t.place}),x:x+'px',y:y+'px',r:(t.r==='0deg'||!t.r?r:parseFloat(t.r))+'deg',glow:P.gl&&t.place===P.gl?'1':'0',d:(0.15+i*0.22).toFixed(2)+'s'};});
+    const pmB=(id,cap,o)=>{const P=s.pm[id];const pg=o.pg||pmPages[P.p];
+      const sub=P.sp||0;const lightSt=arr=>arr.slice(sub*4,sub*4+4).filter(t=>!(o.stamp&&t.place==='Roma'&&t.date==='13 OCT 2026')).map((t,i)=>{const[x,y,r]=SLOT[i];return{...t,tap:()=>this.pmSet(id,{nw:t.isNew?t.place:'x:'+t.place}),x:x+'px',y:y+'px',r:(t.r==='0deg'||!t.r?r:parseFloat(t.r))+'deg',glow:P.gl&&t.place===P.gl?'1':'0',d:(0.15+i*0.22).toFixed(2)+'s'};});
       const nPg=Math.max(1,Math.ceil(pg.L.length/4));
-      let gb={grat:'',feats:[],marks:[]};
+      let gb={grat:'',feats:[],marks:[],loading:true};
       if(this.gl&&this.raw){const pj=this.gl.geoOrthographic().scale(143*P.z).translate([144,144]).rotate(P.rot).clipAngle(90);const pa=this.gl.geoPath(pj);
         const vis=ll=>this.gl.geoDistance(ll,[-P.rot[0],-P.rot[1]])<Math.PI/2-.05;
-        gb={grat:pa(this.gl.geoGraticule10())||'',feats:this.raw.map(ft=>{const d=pa(ft);if(!d)return null;const id2=+ft.id,v=VIS[id2];const on=v!==undefined;const hi=on&&PIDX2[id2]===P.hi;
+        gb={loading:false,grat:pa(this.gl.geoGraticule10())||'',feats:this.raw.map(ft=>{const d=pa(ft);if(!d)return null;const id2=+ft.id,v=VIS[id2];const on=v!==undefined;const hi=on&&PIDX2[id2]===P.hi;
           const td=id2===484;return{d,f:on?SOFT[v]:'#E6DCC6',s:hi?'#1C2230':on?'rgba(28,34,48,.5)':td?'rgba(28,34,48,.45)':'rgba(28,34,48,.16)',w:hi?'2':td?'1.2':'.8',cur:on||td?'pointer':'grab',tap:()=>{if(this.moved||!(on||td))return;this.pmGo(id,PIDX2[id2]);}};}).filter(Boolean),
-          marks:DEST.filter(d=>vis(d[1])).map(([n,ll,g,pi,dx])=>{const[x,y]=pj(ll);const lit=P.gl===n;return{x:(x+dx).toFixed(1),y:y.toFixed(1),g:g==='gris'?'gris':g,gr:lit?'15':'0',go:lit?'.85':'0',tap:()=>this.pmGo(id,pi,n)};})};}
+          marks:(o.dest||DEST).filter(d=>vis(d[1])).map(([n,ll,g,pi,dx])=>{const[x,y]=pj(ll);const lit=P.gl===n;const hol=g==='gris';return{x:(x+dx).toFixed(1),y:y.toFixed(1),g:g==='gris'?'gris':g,r:hol?'5':'6',fl:hol?'#FFFDF8':'url(#'+id+g+')',fo:hol?'.55':'1',st:hol?'#B8964F':'#FFFDF8',sw:hol?'1.6':'1.4',da:hol?'2.2 2':'none',gr:lit?'15':'0',go:lit?'.85':'0',tap:()=>this.pmGo(id,pi,n)};})};}
       const fl=P.fl;
       return base(id,cap,{isPM:true,bg:'#F1E8D6',gb,legend:!!o.legend,coverOn:!!P.cov,skip:()=>this.pmSet(id,{cov:false}),pg:(P.p+1)+' / 6',
         hasPg:nPg>1,canPrev:sub>0,canNext:sub<nPg-1,pgTxt:(sub+1)+' / '+nPg,
         prev:()=>this.pmSet(id,{sp:Math.max(0,sub-1),v:(P.v||0)+1}),next:()=>this.pmSet(id,{sp:Math.min(nPg-1,sub+1),v:(P.v||0)+1}),
         stampOn:!!o.stamp,sk:String(P.sk||0),monR:MON.roma,replay:()=>this.pmSet(id,{sk:(P.sk||0)+1}),drops:Array.from({length:8},(_,i)=>{const a=i/8*Math.PI*2;return{x:(Math.cos(a)*(54+(i%3)*12)).toFixed(0)+'px',y:(Math.sin(a)*(54+(i%3)*12)).toFixed(0)+'px',s:(4+(i%3))+'px'};}),
-        newOn:!!P.nw,newT:P.nw||'',closeN:()=>this.pmSet(id,{nw:null}),
+        newOn:!!P.nw,newT:P.nw||'',newMsg:!P.nw?'':P.nw.startsWith('x:')?'Aún no has estado en '+P.nw.slice(2):P.nw+' ya está en la app',newBtn:P.nw&&P.nw.startsWith('x:')?'Planear un viaje':'Crear viaje',closeN:()=>this.pmSet(id,{nw:null}),
         lgroups:[['Tus países',pmPages.map((p,i)=>[p,i]).filter(([p])=>!p.todo)],['Por descubrir',pmPages.map((p,i)=>[p,i]).filter(([p])=>p.todo)]].map(([t,rs])=>({t,rows:rs.map(([p,i])=>({n:p.n,fl:p.fl,k:p.k,kc:p.todo?'oklch(0.48 0.17 5)':'rgba(28,34,48,.55)',nc:p.todo?'rgba(28,34,48,.65)':'#1C2230',ff:p.todo?'grayscale(.6)':'none',bg:i===P.p?'oklch(0.8 0.14 70 / .14)':'transparent',go:()=>this.pmGo(id,i)}))})),
         listOn:!!P.list,openL:()=>this.pmSet(id,{list:true}),closeL:()=>this.pmSet(id,{list:false}),
         list:pmPages.map((p,i)=>({n:p.n,fl:p.fl,k:p.k,bg:i===P.p?'oklch(0.8 0.14 70 / .14)':'transparent',go:()=>this.pmGo(id,i)})),
@@ -443,7 +445,7 @@ class Component extends DCLogic {
           rows:[['Comprado el','2 sep 2026'],['Precio','10,99 €'],['Viaje','10 – 14 oct 2026']].map(([k,v])=>({k,v})),
           mates:[['E','Elena · tú','oklch(0.3 0.03 250)','Quien lo compró','rgba(28,34,48,.55)'],['L','Laura','oklch(0.55 0.17 5)','✓ Dentro','oklch(0.42 0.1 150)']].map(([i,n,bg,st,sc])=>({i,n,bg,s:st,sc}))},
         {k:'PASE · 1 PERSONA',n:'Lisboa',ph:'linear-gradient(160deg,#F2D3A6,#D98A5E 55%,#7A3E34)',st:'Próximo',duo:false,rows:[['Comprado el','30 sep 2026'],['Precio','6,99 €'],['Viaje','12 – 15 dic 2026']].map(([k,v])=>({k,v})),mates:[]}],
-      boards:[P1,base('P1b','Al tocar el título',{isP:true,titles:true}),pmB('P2','Italia',{}),pmB('P2l','La lista de países, abierta',{}),pmB('P2v','El Vaticano, elegido desde la lista',{}),pmB('P2i2','Italia · segunda página',{}),pmB('P2m','México · Cancún por conseguir',{}),pmB('P2e','Al acabar el viaje · el sello se estampa',{stamp:true}),
+      boards:[P1,base('P1b','Al tocar el título',{isP:true,titles:true}),pmB('P2','Italia',{}),pmB('P2l','La lista de países, abierta',{}),pmB('P2v','El Vaticano, elegido desde la lista',{}),pmB('P2i2','Italia · segunda página',{}),pmB('P2m','México · Cancún por conseguir',{}),pmB('P2h','Globo · Lanzarote hecho (punto lleno) y Roma por hacer (punto hueco)',{pg:ESP,dest:[['Lanzarote',[-13.63,29.04],'oro',3,0],['Roma',[12.5,41.9],'gris',0,0]]}),pmB('P2s','Al tocar «Por conseguir»',{pg:ESP,dest:[['Lanzarote',[-13.63,29.04],'oro',3,0],['Roma',[12.5,41.9],'gris',0,0]]}),pmB('P2e','Al acabar el viaje · el sello se estampa',{stamp:true}),
         base('P3','Ajustes',{isA:true,title:'Ajustes',groups:ajustes,hasDel:true}),base('P4','Mis pases · un Pase Dúo',{isPs:true}),
         base('P5','Borrar la cuenta',{isA:true,title:'Ajustes',groups:ajustes,hasDel:true,del:true}),base('P6','La invitación al pase',{isInv:true})]};}
 }

@@ -166,9 +166,9 @@ console.log('5. Tanda 8B2: el orden de las sorpresas, el pedazo con su insignia,
     m('pais'), m('maravilla', { id: 'coliseo', n: 1 }), m('patrimonio'), m('viajero'),
   ]
   const pantallas = P.planificar(lista)
-  debe(pantallas.map((p) => p.tipo).join() === 'pedazos,pedazos,coleccion,coleccion,emblema,sello,ademas', 'orden', `(8B4, V3) las pantallas (la lista de la prueba va tal cual, sin ordenar): los pedazos de cada colección juntos y una pantalla por colección, una por colección completada, emblema, sello, «Y además…» (con la maravilla dentro), sin pantalla de la medalla: ${pantallas.map((p) => p.tipo).join()}`)
-  debe(pantallas[0].momentos.length === 1 && pantallas[1].momentos.length === 1 && pantallas[6].momentos.length === 4, 'orden', '(V3) los pedazos de cada colección, en su pantalla (los de una misma colección, juntos) y «Y además…» con país, maravilla, Patrimonio y logro de viajero')
-  debe(pantallas[6].momentos.some((x) => x.tipo === 'maravilla'), 'orden', 'la maravilla va como tarjetita dentro de «Y además…»')
+  debe(pantallas.map((p) => p.tipo).join() === 'pedazos,coleccion,coleccion,emblema,sello,ademas' /* (V6) todas las colecciones que avanzan, en UNA pantalla; luego las completas, el emblema, el sello */, 'orden', `(8B4, V3) las pantallas (la lista de la prueba va tal cual, sin ordenar): los pedazos de cada colección juntos y una pantalla por colección, una por colección completada, emblema, sello, «Y además…» (con la maravilla dentro), sin pantalla de la medalla: ${pantallas.map((p) => p.tipo).join()}`)
+  debe(pantallas[0].momentos.length === 2 && pantallas[5].momentos.length === 4, 'orden', '(V3) los pedazos de cada colección, en su pantalla (los de una misma colección, juntos) y «Y además…» con país, maravilla, Patrimonio y logro de viajero')
+  debe(pantallas[5].momentos.some((x) => x.tipo === 'maravilla'), 'orden', 'la maravilla va como tarjetita dentro de «Y además…»')
   debe(P.planificar([m('maravilla', { id: 'gran_muralla', n: 2 })]).map((p) => p.tipo).join() === 'ademas' && P.planificar([m('maravilla', { id: 'taj_mahal', n: 7 })]).map((p) => p.tipo).join() === 'final7', 'orden', 'una maravilla sola sigue siendo la tarjetita; solo la séptima tiene su pantalla: «El final de las 7 maravillas»')
   const momentos = archivos('src/components/logros/momentos').map((f) => sinComentarios(leer(f))).join('\n')
   debe(!/Una foto, \$\{/.test(momentos) && !/Una foto, \d/.test(momentos) && !/Una foto,/.test(momentos), 'texto', 'fuera «Una foto, 3 colecciones»')

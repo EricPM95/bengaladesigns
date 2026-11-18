@@ -18,6 +18,7 @@ import { useMomentosUI } from './useMomentosUI'
 const ExpGanada = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.ExpGanada })))
 const SubeDeNivel = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.SubeDeNivel })))
 const CambioDeRango = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.CambioDeRango })))
+const ExpYNivel = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.ExpYNivel })))
 
 /** Lo que tarda el dibujo en volar al botón flotante y que éste dé su latido (vuelo.ts: 800 ms + 420 ms), con un respiro. */
 export const ESPERA_TRAS_EL_VUELO_MS = 1400
@@ -65,7 +66,8 @@ export function ExpHost(): ReactNode {
       return
     }
     // (V3) Si la «+EXP» ya se vio como línea dentro de las sorpresas, solo queda el nivel o el rango (si suben).
-    const primero: Paso | null = e.sinCartel ? pasoTrasLaExp(e) : 'exp'
+    // (V6) La EXP de una ronda de sorpresas sale al final, en UNA pantalla con la subida de nivel; la EXP suelta (un Visto sin nada más) sigue con su cartel pequeño.
+    const primero: Paso | null = e.final ? 'final' : e.sinCartel ? pasoTrasLaExp(e) : 'exp'
     if (!primero) {
       useMomentosUI.getState().soltar('exp')
       return
@@ -79,12 +81,18 @@ export function ExpHost(): ReactNode {
   }, [paso, info])
 
   if (!info || !paso) return null
+  const saltarTodo = () => {
+    useMomentosUI.getState().saltarTodoYAbrirLogros()
+    setPaso(null)
+  }
   const seguir = () => {
-    if (paso === 'exp') setPaso(pasoTrasLaExp(info))
+    if (paso === 'final') setPaso(info.despues.rango_ix > info.antes.rango_ix ? 'rango' : null)
+    else if (paso === 'exp') setPaso(pasoTrasLaExp(info))
     else setPaso(null)
   }
   return (
     <Suspense fallback={null}>
+      {paso === 'final' && <ExpYNivel key="final" ganada={info.ganada} antes={info.antes} despues={info.despues} onSeguir={seguir} onSaltarTodo={saltarTodo} />}
       {paso === 'exp' && <ExpGanada key="exp" ganada={info.ganada} antes={info.antes} despues={info.despues} onFin={seguir} />}
       {paso === 'nivel' && <SubeDeNivel key="nivel" antes={info.antes} despues={info.despues} onFin={seguir} />}
       {paso === 'rango' && <CambioDeRango key="rango" antes={info.antes} despues={info.despues} onFin={seguir} />}

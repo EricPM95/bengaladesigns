@@ -5,7 +5,7 @@ import ajustes from '../../../../data/logros/ajustes.json'
  * El reparto en pantallas de las sorpresas (Tanda 8B2). Pura: sin React. NO reordena: el orden lo manda el servidor (`ajustes.json › orden_momentos`, el único
  * sitio donde se decide) y aquí solo se AGRUPA lo que llega, en ese mismo orden:
  *   (V3, regla de Eric, de uno en uno: lo del SITIO primero, lo GENERAL después; nunca dos pantallas a la vez)
- *   1) los pedazos nuevos: los de una MISMA colección, juntos en una pantalla; cada colección con pedazos nuevos, la suya;
+ *   (V6) 1) los pedazos nuevos de TODAS las colecciones que avanzan sin completarse, en UNA pantalla;
  *   2) el Emblema Oculto (si es de una maravilla, su película; la maravilla va en «Y además…» como una tarjeta pequeña, 8B4);
  *   3) cada colección completada, una pantalla por colección;
  *   4) el sello, si sube;
@@ -39,21 +39,25 @@ export function ordenarComoElServidor(momentos: Momento[]): Momento[] {
   return lista
 }
 
+/** (V6, regla de Eric) El orden de las pantallas: las colecciones que avanzan (todas juntas) → cada colección completa → cada emblema oculto → el sello → lo demás (lo del viajero). */
+const RANGO: Partial<Record<TipoPantalla, number>> = { pedazos: 0, coleccion: 1, emblema: 2, sello: 3, final7: 4 }
+
 export function planificar(momentos: Momento[]): Pantalla[] {
   const salida: Pantalla[] = []
-  const pedazos = new Map<string, Pantalla>()
+  let pedazos: Pantalla | null = null
   let ademas: Pantalla | null = null
+  // (V6) Una colección que se COMPLETA tiene su pantalla: su último pedazo no sale en la de los pedazos nuevos (se marca como visto con la de la colección).
+  const completadas = new Set(momentos.filter((m) => m.tipo === 'coleccion').map((m) => texto(m, 'id')))
+  const sueltos: Momento[] = []
   momentos.forEach((m, i) => {
     if (m.tipo === 'suma') {
-      // Los pedazos de una misma colección salen juntos, en el mismo momento; los de otra colección, en el suyo.
-      const col = texto(m, 'coleccion')
-      let p = pedazos.get(col)
-      if (!p) {
-        p = { id: pedazos.size === 0 ? 'pedazos' : `pedazos${col}`, tipo: 'pedazos', momentos: [] }
-        pedazos.set(col, p)
-        salida.push(p)
+      // (V6) TODAS las colecciones que avanzan sin completarse, en UNA sola pantalla (cada insignia con su trozo nuevo).
+      if (completadas.has(texto(m, 'coleccion'))) {
+        sueltos.push(m)
+        return
       }
-      p.momentos.push(m)
+      if (!pedazos) salida.push((pedazos = { id: 'pedazos', tipo: 'pedazos', momentos: [] }))
+      pedazos.momentos.push(m)
     } else if (m.tipo === 'suma_sello') {
       // El avance del sello ya se ve en las insignias y en el propio sello: sin pantalla.
     } else if (m.tipo === 'maravilla' && Number(m.n ?? 0) >= 7) {
@@ -68,7 +72,8 @@ export function planificar(momentos: Momento[]): Pantalla[] {
     ademas.tipo = ademas.momentos[0].tipo as TipoPantalla
     ademas.id = 'uno'
   }
-  return salida
+  for (const m of sueltos) salida.find((p) => p.tipo === 'coleccion' && texto(p.momentos[0], 'id') === texto(m, 'coleccion'))?.momentos.push(m)
+  return salida.map((p, i) => ({ p, i })).sort((a, b) => (RANGO[a.p.tipo] ?? 5) - (RANGO[b.p.tipo] ?? 5) || a.i - b.i).map(({ p }) => p)
 }
 
 /** Las claves (destino|logro|escalon) de lo que se ha visto en una pantalla, para `animacion-vista`. */

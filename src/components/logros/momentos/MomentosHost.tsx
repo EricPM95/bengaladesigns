@@ -143,7 +143,8 @@ function Encendido() {
         // Si la EXP de la ronda subía de nivel o de rango, eso sale después (sin el cartel «+EXP»: ya se vio como línea).
         const e = ui.getState().rondaExp
         ui.getState().terminarRonda()
-        if (e && (e.despues.nivel > e.antes.nivel || e.despues.rango_ix > e.antes.rango_ix)) useLogrosStore.setState((s) => ({ exp: s.exp ? { ...s.exp, antes: e.antes, sinCartel: true } : { ...e, sinCartel: true } }))
+        // (V6) La EXP de la ronda sale AL FINAL, en una pantalla con la subida de nivel (`ExpYNivel`).
+        if (e && e.ganada > 0) useLogrosStore.setState((s) => ({ exp: s.exp ? { ...s.exp, antes: e.antes, final: true } : { ...e, final: true } }))
         ui.getState().soltar('ronda')
       }} />}
       {tocaResumenDia && <ResumenDia ganado={[]} estado={null} alCerrar={() => ui.getState().cerrarResumenDia()} />}

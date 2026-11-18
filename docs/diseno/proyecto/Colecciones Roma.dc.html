@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 90px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:30px">
+  <div style="display:flex;flex-direction:column;gap:8px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">ROMA</span><span style="font:400 46px/1 'Instrument Serif',serif">Las 11 colecciones</span><span style="font:400 15px/1.5 'Geist';color:rgba(28,34,48,.7)">Cada pieza es un sitio. Sin empezar, a medias y completa.</span></div>
+  <sc-for list="{{ cols }}" as="c" hint-placeholder-count="11">
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;padding:22px 26px;border-radius:28px;background:#FFFDF8;border:1px solid rgba(181,138,46,.35);box-shadow:0 14px 30px -22px rgba(28,34,48,.4)">
+      <div style="width:250px;display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:#6F4E37">{{ c.k }}</span><span style="font:400 30px/1.05 'Instrument Serif',serif">{{ c.n }}</span><span style="font:600 13.5px 'Geist';color:#8E6820">{{ c.s }}</span><span style="font:400 12.5px/1.45 'Geist';color:rgba(28,34,48,.6)">{{ c.l }}</span></div>
+      <sc-for list="{{ c.st }}" as="x" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;align-items:center;gap:8px"><dc-import name="Piezas/Insignia Coleccion" col="{{ c.i }}" set="{{ x.set }}" sites="" size="{{ 170 }}" hint-size="170px,170px"></dc-import><span style="font:600 11.5px 'Geist';color:rgba(28,34,48,.6)">{{ x.t }}</span></div></sc-for>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    const D=[[1,'Los imprescindibles de Roma',8,'Lo esencial, visto','Coliseo · Foro Romano y Palatino · Fontana de Trevi · Panteón · Piazza Navona · Plaza de España · Castillo de Sant’Angelo · Trastevere'],
+    [2,'El país más pequeño del mundo',3,'Un Estado dentro de Roma','Museos Vaticanos y Capilla Sixtina · Basílica de San Pedro · Plaza de San Pedro'],
+    [3,'Las 4 joyas de Roma',4,'Las cuatro joyas, en tu mano.','Coliseo · Fontana de Trevi · Panteón · Museos Vaticanos'],
+    [4,'El alma de Trastevere',4,'Su esencia, calle a calle','Isla Tiberina · Santa Maria in Trastevere · San Pietro in Montorio y el Tempietto · Trastevere'],
+    [5,'La Roma de Miguel Ángel',4,'Arte y genio en Roma','Museos Vaticanos · Basílica de San Pedro · Plaza del Campidoglio · Santa Maria sopra Minerva'],
+    [6,'La Roma de Bernini',5,'Barroco en estado puro','Piazza Navona · Elefantino · Plaza de San Pedro · Basílica de San Pedro · Puente Sant’Angelo'],
+    [7,'Tras los pasos de Caravaggio',3,'Luz, sombra y genio','San Luigi dei Francesi · Santa Maria del Popolo · Galería Borghese'],
+    [8,'La Roma antigua',6,'Ecos del Imperio','Coliseo · Foro Romano y Palatino · Largo di Torre Argentina · Castillo de Sant’Angelo · Circo Máximo · Termas de Caracalla'],
+    [9,'Los miradores',3,'Roma desde arriba','Mirador del Janículo · Terraza del Pincio · Jardín de los Naranjos'],
+    [10,'Plazas y fuentes de Roma',7,'Agua, piedra y vida','Piazza Navona · Piazza del Popolo · Plaza de España · Plaza Venecia · Fontana de Trevi · Fontana dell’Acqua Paola · Fuente del Tritón'],
+    [11,'La Roma secreta',5,'La ciudad que se esconde','Ojo de la cerradura del Aventino · Pirámide Cestia · Basílica de San Clemente · Tempietto de Bramante · Fuente de las Tortugas']];
+    return{cols:D.map(([i0,n,m,ln,l])=>{const i=['impr','vati','joyas','tras','mig','ber','car','ant','mir','pyf','sec'][i0-1];const i1=i0;const half=Math.ceil(m/2);return{i,k:'COLECCIÓN '+String(i1).padStart(2,'0'),n,s:m+' sitios · '+ln,l,st:[{set:'',t:'Sin empezar'},{set:Array.from({length:half},(_,j)=>j).join(','),t:half+' de '+m},{set:Array.from({length:m},(_,j)=>j).join(','),t:'Completa'}]};})};
+  }
+}
+</script>
+</body>
+</html>

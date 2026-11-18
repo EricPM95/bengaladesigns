@@ -10,6 +10,7 @@
  */
 export { ExpGanada, DURACION_EXP_GANADA } from './ExpGanada'
 export { SubeDeNivel } from './SubeDeNivel'
+export { ExpYNivel } from './ExpYNivel'
 export { CambioDeRango } from './CambioDeRango'
 export { MarcoDeRango, InicialEnMarco, NUMERO_DE_RANGOS, urlDeMarco, urlDeHueco } from './MarcoDeRango'
 export { NivelYBarra } from './NivelYBarra'

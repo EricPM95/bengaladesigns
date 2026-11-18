@@ -7,6 +7,7 @@ import { marcarAnimacionVista, pedirEstado, type EstadoLogros } from './api'
 import { PantallaDeMomento } from './pantallas'
 import { clavesDe, destinoDelVuelo, ordenarComoElServidor, planificar, sonidoDePantalla } from './plan'
 import { volar, type DestinoVuelo } from './vuelo'
+import { useMomentosUI } from './useMomentosUI'
 
 /**
  * EL REPRODUCTOR DE SORPRESAS (Tanda 8B). Enseña lo ganado una pantalla tras otra (el orden está en `plan.ts`):
@@ -16,7 +17,7 @@ import { volar, type DestinoVuelo } from './vuelo'
  *   - la EXP ganada va como una línea pequeña («+40 EXP») dentro de la primera pantalla.
  * Lo que se ha visto entero se marca como visto en el servidor (el botón late y no hay puntito); lo que se salta deja el puntito.
  */
-export default function Reproductor({ momentos, exp = null, onTerminar }: { momentos: Momento[]; exp?: { ganada: number } | null; onTerminar: () => void }): ReactNode {
+export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: { momentos: Momento[]; exp?: { ganada: number } | null; onTerminar: () => void }): ReactNode {
   const pantallas = useMemo(() => planificar(ordenarComoElServidor(momentos)), [momentos])
   const tripId = useSyncStore((s) => s.activeTripId)
   const [i, setI] = useState(0)
@@ -65,6 +66,8 @@ export default function Reproductor({ momentos, exp = null, onTerminar }: { mome
 
   const saltarTodo = useCallback(() => {
     saltadas.current = true
+    // (V6) [Saltar todo] cierra la fila entera (también la EXP del final) y lleva a la hoja de logros.
+    useMomentosUI.getState().saltarTodoYAbrirLogros()
     cerrar()
   }, [cerrar])
 
@@ -77,9 +80,6 @@ export default function Reproductor({ momentos, exp = null, onTerminar }: { mome
   return (
     <div ref={contenedor}>
       <PantallaDeMomento key={`${p.id}${i}`} pantalla={p} estado={estado} onSeguir={avanzar} onSaltarTodo={saltarTodo} paso={{ actual: i, total: pantallas.length }} />
-      {i === 0 && exp && exp.ganada > 0 && (
-        <span data-exp-linea="" style={{ position: 'fixed', left: 0, right: 0, bottom: 'calc(env(safe-area-inset-bottom,0px) + 112px)', zIndex: 9001, textAlign: 'center', pointerEvents: 'none', font: "700 13px 'Geist Mono',monospace", letterSpacing: '.12em', color: '#F3D59A', opacity: 0, animation: 'moUp .6s 1.6s ease both' }}>+{exp.ganada.toLocaleString('es-ES')} EXP</span>
-      )}
     </div>
   )
 }

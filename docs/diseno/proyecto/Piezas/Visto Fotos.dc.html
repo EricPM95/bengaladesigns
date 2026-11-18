@@ -178,6 +178,82 @@
     </main>
    </sc-if>
 
+   <sc-if value="{{ b.hj }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:0;right:0;top:52px;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#F5EFE4"><span style="font:300 26px/1 'Instrument Serif',serif;letter-spacing:.32em;color:#8A6A2C">JUTRIP</span><span style="display:flex;align-items:center;gap:16px"><span style="width:22px;height:22px;border:2px solid #1C2230;border-radius:6px"></span><span style="position:relative;width:22px;height:22px;border:2px solid #1C2230;border-radius:11px 11px 4px 4px"><span style="position:absolute;right:-6px;top:-6px;width:10px;height:10px;border-radius:50%;background:oklch(0.55 0.17 5)"></span></span><span style="width:38px;height:38px;border-radius:50%;background:#1C2230;box-shadow:0 0 0 2px #B8903E"></span></span></div>
+    <div style="position:absolute;inset:0;background:rgba(28,34,48,.45);z-index:5"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;top:112px;z-index:6;border-radius:30px 30px 0 0;background:#FFFDF8;padding:10px 16px 0;display:flex;flex-direction:column;gap:10px;overflow:hidden">
+     <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+     <div style="position:relative;display:flex;flex-direction:column;gap:2px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:oklch(0.5 0.17 5)">VIAJE TERMINADO · 8 – 13 NOV</span><span style="font:400 28px/1.05 'Instrument Serif',serif;padding-right:50px">Tus logros en Lanzarote</span><span style="position:absolute;right:0;top:4px;width:36px;height:36px;border-radius:50%;background:#F1EADC;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+     <span style="height:46px;flex:none;border-radius:999px;background:linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A);color:#2A1D10;display:flex;align-items:center;justify-content:center;gap:8px;font:700 14px 'Geist'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.gal }}"></path></svg>Reclamar con tus fotos</span>
+     <span style="text-align:center;font:400 12px 'Geist';color:rgba(28,34,48,.55)">Puedes reclamar hasta el 13 de diciembre</span>
+     <sc-if value="{{ b.hjCard }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:#F5EFE4;border:1px solid rgba(28,34,48,.08)"><span style="display:flex;flex:none"><sc-for list="{{ b.hjThumbs }}" as="p" hint-placeholder-count="3"><span style="width:28px;height:28px;margin-left:-8px;border-radius:50%;border:2px solid #F5EFE4;background:{{ p }}"></span></sc-for></span><span style="flex:1;font:400 13.5px/1.3 'Geist'">{{ b.hjTxt }}</span><span style="font:400 20px/1 'Geist';color:rgba(28,34,48,.5)">›</span></div></sc-if>
+     <div style="flex:none;border-radius:22px;background:#F5EFE4;border:1px solid rgba(28,34,48,.08);padding:14px;display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#E6A878,#9A5A34 70%);box-shadow:0 8px 16px -8px rgba(90,50,20,.6)"></span><span style="font:400 21px/1.1 'Instrument Serif',serif">Primeros pasos en Lanzarote</span><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;color:#9A5A34">BRONCE · 1 DE 7 IMPRESCINDIBLES</span></div>
+     <div style="flex:none;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;background:#F5EFE4;border:1px solid rgba(28,34,48,.08)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="{{ ic.star }}"></path></svg><span style="font:400 13px/1.35 'Geist'">Te quedan 6 para el diamante de Lanzarote.</span></div>
+     <div style="flex:none;display:flex;align-items:center;gap:12px;padding:10px;border-radius:18px;border:1px solid rgba(28,34,48,.08)"><span style="width:46px;height:46px;border-radius:50%;background:conic-gradient(#8F969E,#D7DBE0,#8F969E)"></span><span style="font:400 18px 'Instrument Serif',serif">Los imprescindibles de Lanzarote</span></div>
+     <sc-if value="{{ b.hjSheet }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:rgba(28,34,48,.5);z-index:3"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;z-index:4;border-radius:28px 28px 0 0;background:#FFFDF8;padding:10px 16px 26px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -12px 34px -18px rgba(0,0,0,.5);animation:vfSheet .5s cubic-bezier(.2,.8,.2,1) both">
+       <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+       <sc-if value="{{ b.shHasT }}" hint-placeholder-val="{{ true }}"><span style="font:400 26px/1.05 'Instrument Serif',serif;padding-right:44px">{{ b.shT }}</span></sc-if>
+       <span style="position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;background:#F1EADC;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+       <sc-if value="{{ b.shAll }}" hint-placeholder-val="{{ false }}"><span style="height:46px;border-radius:999px;background:linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A);color:#2A1D10;display:flex;align-items:center;justify-content:center;font:700 14px 'Geist'">Yo también estaba en todos</span></sc-if>
+       <sc-if value="{{ b.shOne }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:12px"><div style="position:relative;height:280px;border-radius:22px;background:{{ b.shPh }}"><span style="position:absolute;left:12px;top:12px;height:24px;padding:0 10px;border-radius:999px;background:rgba(28,34,48,.72);color:#FFFDF8;display:flex;align-items:center;font:600 11px 'Geist'">Foto de Eric</span></div><span style="font:400 15px/1.4 'Geist';text-wrap:pretty">Eric lo consiguió en Jameos del Agua. ¿Estabais juntos?</span><span style="height:52px;border-radius:999px;background:linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A);color:#2A1D10;display:flex;align-items:center;justify-content:center;font:700 15px 'Geist'">Yo también estaba</span><span style="height:48px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.18);color:#1C2230;display:flex;align-items:center;justify-content:center;gap:8px;font:600 14px 'Geist'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4"></path></svg>Subir mi foto</span></div></sc-if>
+       <sc-for list="{{ b.shRows }}" as="y" hint-placeholder-count="1">
+        <div style="display:flex;align-items:center;gap:12px;padding:{{ b.shPad }};border-radius:20px;background:#F5EFE4;border:1px solid rgba(28,34,48,.08)">
+         <span style="width:{{ b.shImg }}px;height:{{ b.shImg }}px;flex:none;border-radius:14px;background:{{ y.ph }}"></span>
+         <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 18px/1.1 'Instrument Serif',serif">{{ y.n }}</span><span style="font:400 12px/1.35 'Geist';color:rgba(28,34,48,.62)">{{ b.shSub }}</span></span>
+         <span style="height:40px;padding:0 14px;border-radius:999px;background:#1C2230;color:#F3D59A;display:flex;align-items:center;font:600 12.5px 'Geist'">Yo también estaba</span>
+        </div>
+       </sc-for>
+       <sc-if value="{{ b.shAll }}" hint-placeholder-val="{{ false }}"><span style="height:48px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.18);color:#1C2230;display:flex;align-items:center;justify-content:center;gap:8px;font:600 14px 'Geist'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4"></path></svg>Subir mis fotos</span></sc-if>
+      </div>
+     </sc-if>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.camp }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:0;right:0;top:52px;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#F5EFE4"><span style="font:300 26px/1 'Instrument Serif',serif;letter-spacing:.32em;color:#8A6A2C">JUTRIP</span><span style="display:flex;align-items:center;gap:16px"><span style="width:22px;height:22px;border:2px solid #1C2230;border-radius:6px"></span><span style="position:relative;width:22px;height:22px;border:2px solid #1C2230;border-radius:11px 11px 4px 4px"><span style="position:absolute;right:-6px;top:-6px;width:10px;height:10px;border-radius:50%;background:oklch(0.55 0.17 5)"></span></span><span style="width:38px;height:38px;border-radius:50%;background:#1C2230;box-shadow:0 0 0 2px #B8903E"></span></span></div>
+    <div style="position:absolute;inset:0;background:rgba(28,34,48,.35);z-index:5"></div>
+    <div style="position:absolute;left:12px;right:12px;top:118px;z-index:6;border-radius:24px;background:#FFFDF8;padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 24px 50px -16px rgba(28,34,48,.5)">
+     <span style="font:400 24px/1 'Instrument Serif',serif;padding:2px 4px 6px">Avisos</span>
+     <sc-for list="{{ b.avs }}" as="v" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:{{ v.bg }};border:1px solid {{ v.bd }}"><span style="width:38px;height:38px;flex:none;border-radius:50%;background:{{ v.ib }};color:{{ v.ic }};display:flex;align-items:center;justify-content:center;font:600 15px 'Geist'">{{ v.l }}</span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:500 13.5px/1.35 'Geist'">{{ v.t }}</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.55)">{{ v.w }}</span></span><sc-if value="{{ v.dot }}" hint-placeholder-val="{{ false }}"><span style="width:9px;height:9px;border-radius:50%;background:oklch(0.55 0.17 5)"></span></sc-if></div></sc-for>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.yo3 }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,#2E3550 0%,#141826 70%);color:#FFFDF8">
+     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:0 28px;text-align:center">
+      <span style="position:absolute;top:190px;left:50%;width:300px;height:300px;margin-left:-150px;border-radius:50%;background:repeating-conic-gradient(oklch(0.86 0.09 85 / .22) 0 7deg,transparent 7deg 22deg);-webkit-mask-image:radial-gradient(circle,#000 25%,transparent 68%);mask-image:radial-gradient(circle,#000 25%,transparent 68%);animation:vfRays 24s linear infinite"></span>
+      <span style="position:relative;height:170px;display:flex;align-items:center;justify-content:center">
+       <sc-if value="{{ b.yoEmb }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Lanza" kind="2" scale="1" delay="0" hint-size="150px,150px"></dc-import></sc-if>
+       <sc-if value="{{ b.yoPz }}" hint-placeholder-val="{{ false }}"><svg width="140" height="140" viewBox="0 0 70 70"><defs><linearGradient id="yopz" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE7A8"></stop><stop offset="1" stop-color="#B8903E"></stop></linearGradient></defs><path d="M35 4L64 20V50L35 66L6 50V20Z" fill="url(#yopz)" stroke="#FFF3D0" stroke-width="1.2"></path><g transform="translate(23 23)" fill="none" stroke="#4A3612" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.gem }}"></path></g></svg></sc-if>
+      </span>
+      <span style="position:relative;font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:oklch(0.86 0.12 85)">{{ b.yoEye }}</span>
+      <span style="position:relative;font:400 34px/1.05 'Instrument Serif',serif;text-wrap:balance">{{ b.yoName }}</span>
+      <span style="position:relative;font:italic 400 17px/1.35 'Instrument Serif',serif;color:rgba(255,253,248,.78)">{{ b.yoSub }}</span>
+     </div>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.rec }}" hint-placeholder-val="{{ false }}">
+    <main style="flex:1;min-height:0;overflow:hidden;padding:4px 16px 0;display:flex;flex-direction:column;gap:8px"><sc-for list="{{ b.stops }}" as="s" hint-placeholder-count="2"><div style="flex:none;height:64px;border-radius:18px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07)"></div></sc-for></main>
+    <div style="position:absolute;inset:0;background:rgba(28,34,48,.5);z-index:20"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:21;border-radius:30px 30px 0 0;background:radial-gradient(120% 70% at 50% 0%,#2E2A48 0%,#1C2230 60%);color:#FFFDF8;padding:12px 18px 26px;display:flex;flex-direction:column;gap:12px;animation:vfSheet .5s cubic-bezier(.2,.8,.2,1) both">
+     <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:rgba(255,253,248,.25)"></span>
+     <span style="font:400 30px/1.05 'Instrument Serif',serif;padding-right:40px;text-wrap:balance">Esta vez no has ganado nada nuevo</span>
+     <div style="display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:18px;background:rgba(243,213,154,.1);border:1px solid rgba(243,213,154,.28)">
+      <span style="font:400 19px/1.1 'Instrument Serif',serif;color:#F3D59A">¿Por qué no cuentan?</span>
+      <span style="font:400 12.5px/1.45 'Geist';color:rgba(255,253,248,.85);text-wrap:pretty">Las fotos enviadas por WhatsApp y las capturas de pantalla pierden los datos que dicen dónde y cuándo se hicieron.</span>
+      <span style="font:400 12.5px/1.45 'Geist';color:rgba(255,253,248,.85);text-wrap:pretty"><b style="font-weight:600;color:#FFFDF8">¿Las hizo tu compañero de viaje?</b> Cuando él las suba desde su móvil, podrás ganar el mismo pedazo con <b style="font-weight:600;color:#F3D59A">Yo también estaba</b>.</span>
+      <span style="font:400 12.5px/1.45 'Geist';color:rgba(255,253,248,.85);text-wrap:pretty"><b style="font-weight:600;color:#FFFDF8">También puede pasártelas</b> por AirDrop o por WhatsApp como documento: así no pierden nada.</span>
+     </div>
+     <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(255,253,248,.6)">4 FOTOS QUE NO CUENTAN</span>
+     <sc-for list="{{ b.recRows }}" as="r" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:12px;padding:8px 12px 8px 8px;border-radius:14px;background:rgba(255,253,248,.08)"><span style="width:42px;height:42px;flex:none;border-radius:50%;background:{{ r }}"></span><span style="font:400 13.5px 'Geist';color:rgba(255,253,248,.88)">Esta foto no está hecha con tu móvil</span></div></sc-for>
+     <span style="height:52px;border-radius:999px;background:linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A);color:#2A1D10;display:flex;align-items:center;justify-content:center;font:700 15px 'Geist'">Listo</span>
+     <span style="position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;background:rgba(255,253,248,.12);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+    </div>
+   </sc-if>
+
    <sc-if value="{{ b.lock }}" hint-placeholder-val="{{ false }}">
     <div style="position:absolute;inset:0;background:linear-gradient(180deg,#2A3150,#141826);color:#FFFDF8;display:flex;flex-direction:column;align-items:center;padding-top:110px;gap:4px">
      <span style="font:300 72px/1 'Geist'">9:41</span><span style="font:500 15px 'Geist';color:rgba(255,253,248,.75)">sábado, 8 de noviembre</span>
@@ -194,7 +270,7 @@
 </sc-for>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1000},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;hoy&quot;,&quot;mom&quot;,&quot;perfil&quot;],&quot;default&quot;:&quot;hoy&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1000},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;hoy&quot;,&quot;mom&quot;,&quot;perfil&quot;,&quot;yo&quot;],&quot;default&quot;:&quot;hoy&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 const IC={cam:'M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
 gal:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5h.01',loc:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
 far:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM9.5 7.5l5 5M14.5 7.5l-5 5',pin:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
@@ -234,11 +310,21 @@ class Component extends DCLogic {
         stop('Basílica de San Pedro','✓ Visto',{sc:'oklch(0.42 0.09 150)',...pend('Te espera una sorpresa: sube tu foto','',{pbg:'linear-gradient(120deg,#2A3146,#1C2230)',pfg:'#FFFDF8',cb:'linear-gradient(110deg,#E4C58A,#F7E6BE)',cf:'#2A1D10'})}),
         stop('Plaza Navona','✓ Visto',{sc:'oklch(0.42 0.09 150)',...pend('Haz una foto y gana tu pedazo','')}),
         stop('Panteón','✓ Visto',{sc:'oklch(0.42 0.09 150)',...pend('Guarda un recuerdo','',{pbg:'#F5EFE4',cb:'#FFFFFF',cf:INK})}),list[3]]}),
-      B('V7','Fotos que no valen',{hoy:true,stops:list,galOn:true,errs:[['Esta foto es del 2 de septiembre. Elige una del 10 al 14 de octubre.',PH[0]],['Esta foto no está hecha con una cámara.','repeating-linear-gradient(0deg,#DDE3EA 0 6px,#C9D2DC 6px 12px)'],['Esta foto no es de la Fontana de Trevi.',PH[2]]].map(([t,ph])=>({t,ph}))}),
+      B('V7','Fotos que no valen',{hoy:true,stops:list,galOn:true,errs:[['Esta foto es del 2 de septiembre. Elige una del 10 al 14 de octubre.',PH[0]],['Esta foto no está hecha con tu móvil.','repeating-linear-gradient(0deg,#DDE3EA 0 6px,#C9D2DC 6px 12px)'],['Esta foto no es de la Fontana de Trevi.',PH[2]]].map(([t,ph])=>({t,ph}))}),
       B('V8','Lo de ayer también cuenta',{hoy:true,stops:list,ayer:true,day:'mar 14',note:'Sale al empezar el día de prueba o al comprar el pase, si ya había paradas en la ruta.'})];
     if(md==='mom')boards=[B('M1','6 sorpresas seguidas, una a una',{serie:true,bg:'#141826',fg:'#FFFDF8',note:'Tocando se pasa a la siguiente; con [Saltar todo], directo al resumen. Aquí avanza solo para verlo.'}),
       B('M2','El resumen del día',{res:true,note:'El mismo resumen que sale al acabar la ruta de cada día.'}),
       B('M3','El resumen del viaje · lo pendiente',{viaje:true,vEye:'Viaje terminado',cd:'30 días',vNote:'Te quedan 30 días para reclamarlas.'})];
+    if(md==='yo'){const JP=[['Jameos del Agua',PH[1]],['Cueva de los Verdes',PH[2]],['Mirador del Río',PH[0]],['Timanfaya',PH[3]]];const base={yo1:false,yo2:false,yo3:false,rec:false,hj:false,camp:false};
+      const sh=(o)=>({...base,hj:true,hjSheet:false,hjCard:true,hjThumbs:[PH[1],PH[2],PH[0],PH[3]],hjTxt:'Eric consiguió 4 sitios donde estabais juntos',...o});
+      boards=[B('Y0','La hoja «Tus logros» con la tarjeta (solo si hay algo pendiente)',sh({note:'Si no queda nada pendiente, la tarjeta no sale y la hoja queda como siempre.'})),
+       B('Y0b','La hoja sin nada pendiente',sh({hjCard:false})),
+       B('Y1','Al tocar la tarjeta: un solo sitio',sh({hjThumbs:[PH[1]],hjTxt:'Eric consiguió Jameos del Agua donde estabais juntos',hjSheet:true,shHasT:false,shOne:true,shPh:JP[0][1],shAll:false,shRows:[]})),
+       B('Y2','Al tocar la tarjeta: varios sitios',sh({hjSheet:true,shHasT:true,shOne:false,shT:'Lo que conseguisteis juntos',shAll:true,shRows:JP.map(([n,ph])=>({n,ph})),shPad:'8px',shImg:52,shSub:'Lo consiguió Eric',note:'Al tocar un sitio se abre su Y1, con los dos botones. Solo con el viaje terminado: durante el viaje no hay aviso ni tarjeta.'})),
+       B('Y5','La notificación en la campana',{...base,camp:true,avs:[{l:'E',t:'Eric ha conseguido Jameos del Agua. ¿Estabais juntos?',w:'Ahora',bg:'oklch(0.55 0.17 5 / .07)',bd:'oklch(0.55 0.17 5 / .3)',ib:'#1C2230',ic:'#F3D59A',dot:true},{l:'i',t:'Tu resumen del viaje está listo',w:'Hace 2 días',bg:'#F5EFE4',bd:'rgba(28,34,48,.06)',ib:'#E5E8EC',ic:'#3A4048',dot:false},{l:'E',t:'Eric ha aceptado tu cambio en el día 2',w:'Hace 3 días',bg:'#F5EFE4',bd:'rgba(28,34,48,.06)',ib:'#1C2230',ic:'#F3D59A',dot:false}],note:'Además, un punto en el botón de logros.'}),
+       B('Y3a','Al tocar: un pedazo',{...base,yo3:true,bg:'#141826',fg:'#FFFDF8',yoPz:true,yoEmb:false,yoEye:'Nuevo pedazo',yoName:'Jameos del Agua',yoSub:'Los imprescindibles de Lanzarote · 1 de 7',note:'El momento de siempre, como si hubiera hecho la foto él.'}),
+       B('Y3b','Al tocar: un emblema oculto',{...base,yo3:true,bg:'#141826',fg:'#FFFDF8',yoPz:false,yoEmb:true,yoEye:'¡Has descubierto un Emblema Oculto!',yoName:'El lago bajo el volcán',yoSub:'Jameos del Agua',note:'Antes sale la escena completa, con su frase de suspense.'}),
+       B('Y4','Reclamar con tus fotos · resumen',{...base,rec:true,hoy:false,stops:[1,2,3,4],recRows:[PH[0],PH[1],PH[2],PH[3]]})];}
     if(md==='perfil')boards=[B('P5','Mis viajes · Roma, con 2 sorpresas pendientes',{viaje:true,vEye:'Mis viajes',cd:'10 días',vNote:'Te quedan 10 días para reclamar tu premio.'}),B('P6','El aviso, 3 días antes',{lock:true,bg:'#141826',fg:'#FFFDF8'})];
     const N=SER.length;const si=s.si;const isR=si>=N;const sc=SER[Math.min(si,N-1)];
     return{ic:IC,boards,ayer:PH,got:[['Plaza Navona',IC.obelisco,'#F3E3B8','#5A4426'],['Fontana de Trevi',IC.fuente,'#F3E3B8','#5A4426'],['Volverás a Roma',IC.gem,'#1C2230','#F3D59A'],['Sello en plata',IC.star,'#E5E8EC','#3A4048']].map(([n,i,bg,fg])=>({n,i,bg,fg})),

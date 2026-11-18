@@ -2,7 +2,6 @@ import { useMemo, useRef, useState, type ReactNode } from 'react'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { usePasePintable } from '../../../lib/pago'
 import { cerrarResumen, fraseDelPlazo, fraseDelResumen, hayBotonDeReclamar, reclamarConFotos, responderPregunta, useReclamarStore, type FotoDelReclamo } from '../../../lib/reclamar'
-import { useMomentosUI } from '../momentos/useMomentosUI'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { BTN_CAM_ORO, Capa, Cruz, EstilosDelVisto, MONO, SERIF, TINTA } from '../visto/Hojas'
@@ -119,10 +118,6 @@ function Pregunta({ foto, tripId }: { foto: FotoDelReclamo; tripId: string }) {
 
 function Resumen() {
   const s = useReclamarStore()
-  const verTodo = () => {
-    cerrarResumen()
-    useMomentosUI.getState().abrirHojaLogros()
-  }
   return (
     <Capa onCerrar={cerrarResumen} etiqueta="Resumen de tus fotos" z={90}>
       <div data-reclamar="resumen" className="relative flex max-h-[88vh] flex-col gap-3 overflow-y-auto rounded-t-[28px] px-[18px] pb-[26px] pt-5 text-[#FFFDF8]" style={{ background: 'radial-gradient(120% 80% at 50% 0%,#3A3550 0%,#1C2230 65%)' }}>
@@ -155,13 +150,13 @@ function Resumen() {
             ))}
           </div>
         )}
-        {s.muchos ? (
-          <button type="button" data-reclamar="ver-todo" onClick={verTodo} className="flex h-[52px] items-center justify-center rounded-full border-0" style={{ ...BTN_CAM_ORO, font: "700 15px 'Geist'" }}>
-            Ver todo en Logros
+        {s.sitios.length > 0 ? (
+          <button type="button" data-reclamar="ver-lo-ganado" onClick={cerrarResumen} className="flex h-[52px] items-center justify-center rounded-full border-0" style={{ ...BTN_CAM_ORO, font: "700 15px 'Geist'" }}>
+            Ver lo que has ganado
           </button>
         ) : (
           <button type="button" data-reclamar="seguir" onClick={cerrarResumen} className="flex h-[52px] items-center justify-center rounded-full border-0" style={{ ...BTN_CAM_ORO, font: "700 15px 'Geist'" }}>
-            {s.sitios.length > 0 ? 'Ver mis sorpresas' : 'Listo'}
+            Listo
           </button>
         )}
       </div>

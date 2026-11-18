@@ -20,6 +20,10 @@ interface MomentosUI {
   hojaLogros: boolean
   compartir: QueCompartir | null
   primerDia: boolean
+  /** (V6) Al acabar la última animación de lo reclamado (o al tocar [Saltar todo]), se abre la hoja de logros con todo puesto. */
+  hojaAlFinal: boolean
+  pedirHojaAlFinal: () => void
+  saltarTodoYAbrirLogros: () => void
   /** La fila de lo que ocupa la pantalla (ver `fila.ts`): de uno en uno. */
   fila: Fila
   empezarRonda: (m: Momento[], exp?: ExpDeRespuesta | null) => void
@@ -47,6 +51,12 @@ export const useMomentosUI = create<MomentosUI>((set) => ({
   compartir: null,
   primerDia: false,
   fila: filaVacia(),
+  hojaAlFinal: false,
+  pedirHojaAlFinal: () => set({ hojaAlFinal: true }),
+  saltarTodoYAbrirLogros: () => {
+    useLogrosStore.setState({ exp: null, momentos: [] })
+    set({ ronda: null, rondaExp: null, hojaAlFinal: true })
+  },
   empezarRonda: (m, exp = null) => set({ ronda: m, rondaExp: exp }),
   terminarRonda: () => set({ ronda: null, rondaExp: null }),
   abrirResumenDia: () => set({ resumenDia: true }),
@@ -72,3 +82,19 @@ useMomentosUI.subscribe((e, previo) => {
   if (previo.compartir !== null && e.compartir === null) useMomentosUI.setState((u) => ({ fila: repartir(u.fila, bloqueado()) }))
 })
 
+
+// (V6) Cuando acaba todo lo que se estaba enseñando (las sorpresas y la EXP del final), si se pidió, se abre la hoja de logros. Se espera un momento: entre la ronda y la EXP hay un respiro.
+let relojHoja = 0
+function comprobarHojaAlFinal(): void {
+  window.clearTimeout(relojHoja)
+  if (!useMomentosUI.getState().hojaAlFinal) return
+  relojHoja = window.setTimeout(() => {
+    const u = useMomentosUI.getState()
+    const l = useLogrosStore.getState()
+    if (!u.hojaAlFinal || u.ronda || u.fila.mostrando || u.fila.esperan.length > 0 || l.momentos.length > 0 || l.exp) return
+    useMomentosUI.setState({ hojaAlFinal: false })
+    u.abrirHojaLogros()
+  }, 2600)
+}
+useMomentosUI.subscribe(comprobarHojaAlFinal)
+useLogrosStore.subscribe(comprobarHojaAlFinal)

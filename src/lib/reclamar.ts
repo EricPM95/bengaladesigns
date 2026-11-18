@@ -15,8 +15,6 @@ import type { Route } from './types'
 
 export const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 export const PLAZO_DIAS = 30
-/** Más sorpresas que esto en un solo reclamo: no se enseñan de una en una, se manda a Logros. */
-export const TOPE_DE_ANIMACIONES = 6
 
 const aDias = (iso: string) => Math.round(Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10))) / 86400000)
 const deDias = (n: number) => new Date(n * 86400000).toISOString().slice(0, 10)
@@ -255,18 +253,22 @@ export async function responderPregunta(tripId: string, foto: FotoDelReclamo, si
 
 function mostrarResumen() {
   const total = respuestasGuardadas.reduce((n, r) => n + (r.nuevos?.length ?? 0), 0)
-  poner({ fase: 'resumen', ocupado: false, muchos: total > TOPE_DE_ANIMACIONES })
+  void total
+  // (V6) Ya no hay tope de «más de 6 → Ver todo en Logros»: la fila agrupa (una pantalla con todas las colecciones que avanzan) y no salen tantas.
+  poner({ fase: 'resumen', ocupado: false, muchos: false })
 }
 
 /** Al cerrar el resumen: si son pocas, sus sorpresas pasan a la fila de momentos (de una en una); si son muchas, se quedan en Logros (con su puntito). */
 export function cerrarResumen(): void {
   const s = useReclamarStore.getState()
   const logros = useLogrosStore.getState()
-  if (!s.muchos) for (const r of respuestasGuardadas) logros.recibir(r)
-  else for (const r of respuestasGuardadas) logros.recibir({ ...r, nuevos: [], exp: null })
+  // (V6) [Ver lo que has ganado]: lo ganado pasa a la fila de momentos (colecciones que avanzan juntas → colecciones completas → emblemas → sello → EXP y nivel) y, al acabar la última
+  // animación (o con [Saltar todo]), se abre la hoja «Tus logros en …» con todo ya puesto.
+  for (const r of respuestasGuardadas) logros.recibir(r)
   logros.ponerPuntito(respuestasGuardadas.some((r) => (r.nuevos?.length ?? 0) > 0))
   respuestasGuardadas = []
   s.cerrar()
+  useMomentosUI.getState().pedirHojaAlFinal()
 }
 
 /** Para las pruebas: «N pedazos y M emblemas» como lo dice el resumen. */

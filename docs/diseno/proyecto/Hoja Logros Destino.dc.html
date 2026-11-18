@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">LOGROS · BOTÓN DEL VIAJE</span><span style="font:400 40px/1 'Instrument Serif',serif">Tus logros en el destino</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="4">
+    <div style="display:flex;flex-direction:column;gap:10px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;background:#F5EFE4;box-shadow:0 30px 60px -30px rgba(28,34,48,.5)">
+        <div style="position:absolute;left:0;right:0;top:0;height:84px;background:#F5EFE4;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 0"><span style="font:300 26px/1 'Instrument Serif',serif;letter-spacing:.32em;color:#8A6A2C">JUTRIP</span><span style="display:flex;align-items:center;gap:16px;color:#1C2230"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM16 13h4v3h-4a1.5 1.5 0 0 1 0-3zM4 8l12-3"></path></svg><span style="position:relative;display:flex"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5h4"></path></svg><span style="position:absolute;right:-2px;top:-2px;width:9px;height:9px;border-radius:50%;background:oklch(0.55 0.17 5)"></span></span><span style="width:38px;height:38px;border-radius:50%;background:#1C2230;box-shadow:0 0 0 2px #B8903E;display:flex;align-items:center;justify-content:center;color:#F3D59A"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 20a7 7 0 0 1 14 0"></path></svg></span></span></div>
+        <div style="position:absolute;inset:0;background:rgba(28,34,48,.45)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;top:84px;border-radius:30px 30px 0 0;background:#FFFDF8;display:flex;flex-direction:column;overflow:hidden">
+          <span style="align-self:center;margin-top:10px;width:42px;height:4px;flex:none;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+          <div style="flex:none;position:relative;padding:16px 20px 10px;display:flex;flex-direction:column;gap:8px"><span style="align-self:flex-start;height:22px;padding:0 10px;border-radius:999px;background:oklch(0.55 0.17 5 / .1);color:oklch(0.48 0.17 5);display:flex;align-items:center;gap:6px;white-space:nowrap;font:600 9px 'Geist Mono',monospace;letter-spacing:.1em"><span style="width:5px;height:5px;border-radius:50%;background:oklch(0.55 0.17 5)"></span>{{ b.eye }}</span><span style="font:400 34px/1 'Instrument Serif',serif;padding-right:48px;letter-spacing:-.01em">Tus logros en <em style="font-style:italic;color:#8A6A2C">Lanzarote</em></span><span style="position:absolute;right:18px;top:14px;width:36px;height:36px;border-radius:50%;background:#F1EADC;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+          <div style="flex:1;min-height:0;overflow:hidden;padding:4px 20px 28px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;scrollbar-width:none">
+            <sc-if value="{{ b.claim }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:none;display:flex;flex-direction:column;gap:7px"><span style="position:relative;overflow:hidden;height:54px;border-radius:999px;background:linear-gradient(105deg,#D9B26A,#F8E7BC 45%,#E2BD7A 70%,#C99A4C);box-shadow:0 12px 22px -12px rgba(150,105,30,.75),inset 0 1px 0 rgba(255,255,255,.7);color:#2A1D10;display:flex;align-items:center;justify-content:center;gap:10px;font:700 15px 'Geist'"><span style="width:30px;height:30px;border-radius:50%;background:rgba(42,29,16,.9);color:#F3D59A;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4"></path></svg></span>Reclamar con tus fotos</span><span style="text-align:center;font:400 12px 'Geist';color:rgba(28,34,48,.55)">Puedes reclamar hasta el 13 de diciembre</span></div>
+              <sc-if value="{{ b.card }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:#F5EFE4;border:1px solid rgba(28,34,48,.06)"><span style="display:flex;flex:none"><span style="width:28px;height:28px;border-radius:50%;border:2px solid #F5EFE4;background:linear-gradient(140deg,#6FA8C8,#2F5F7E)"></span><span style="width:28px;height:28px;margin-left:-8px;border-radius:50%;border:2px solid #F5EFE4;background:linear-gradient(140deg,#C08A5A,#6E3C1E)"></span><span style="width:28px;height:28px;margin-left:-8px;border-radius:50%;border:2px solid #F5EFE4;background:linear-gradient(140deg,#8CB86A,#3E6A2A)"></span></span><span style="flex:1;font:400 13.5px/1.3 'Geist'">Eric consiguió 4 sitios donde estabais juntos</span><span style="font:400 20px/1 'Geist';color:rgba(28,34,48,.5)">›</span></div>
+            </sc-if></sc-if>
+            <div style="flex:none;position:relative;overflow:hidden;border-radius:26px;background:radial-gradient(120% 140% at 0% 0%,#3A3F5C 0%,#232840 45%,#1C2230 100%);border:1px solid rgba(243,213,154,.35);box-shadow:0 16px 28px -18px rgba(28,34,48,.8);padding:14px 16px;display:flex;align-items:center;gap:14px"><span style="position:absolute;left:-30px;top:-50px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(243,213,154,.22),transparent 68%)"></span>
+              <span style="position:relative;flex:none;width:78px;height:78px;border-radius:50%;background:{{ b.medBg }};box-shadow:{{ b.medSh }},0 0 0 3px rgba(243,213,154,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px"><span style="position:absolute;inset:5px;border-radius:50%;border:1.5px dotted {{ b.medFg }};opacity:.5"></span><svg width="34" height="29" viewBox="0 0 30 26" fill="none" stroke="{{ b.medFg }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22L11 8l4 6 4-9 8 17M12.5 3.5c0-1.4 1.4-1.4 1.4-2.8"></path></svg><span style="font:600 7px 'Geist Mono',monospace;letter-spacing:.14em;color:{{ b.medFg }}">LANZAROTE</span></span>
+              <span style="position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:5px"><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:#F3D59A">{{ b.medS }}</span><span style="font:400 23px/1.05 'Instrument Serif',serif;color:#FFFDF8;text-wrap:balance">{{ b.medT }}</span><span style="height:5px;border-radius:5px;background:rgba(255,253,248,.16);overflow:hidden;margin-top:2px"><span style="display:block;height:100%;width:{{ b.medP }}%;border-radius:5px;background:linear-gradient(90deg,#E4C58A,#F8E7BC)"></span></span><span style="font:400 12.5px/1.3 'Geist';color:rgba(255,253,248,.82)">{{ b.medL }}</span></span>
+            </div>
+            <sc-for list="{{ b.rows }}" as="c" hint-placeholder-count="2">
+              <div style="flex:none;display:flex;align-items:center;gap:14px;padding:10px 14px 10px 10px;border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);box-shadow:0 8px 20px -16px rgba(28,34,48,.35)">
+                <dc-import name="Piezas/Insignia Lanza Pro" col="{{ c.col }}" set="{{ c.set }}" size="{{ 76 }}" hint-size="76px,76px"></dc-import>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+                  <span style="display:flex;align-items:center;gap:8px"><span style="flex:1;font:400 19px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ c.n }}</span><sc-if value="{{ c.hoy }}" hint-placeholder-val="{{ false }}"><span style="height:20px;padding:0 8px;border-radius:999px;background:oklch(0.55 0.17 5 / .12);color:oklch(0.48 0.17 5);display:flex;align-items:center;font:600 10px 'Geist Mono',monospace;letter-spacing:.08em">HOY</span></sc-if></span>
+                  <span style="display:flex;align-items:center;gap:10px"><span style="flex:1;height:5px;border-radius:5px;background:rgba(28,34,48,.09);overflow:hidden"><span style="display:block;height:100%;width:{{ c.pct }}%;border-radius:5px;background:oklch(0.55 0.17 5)"></span></span><span style="font:500 12px 'Geist Mono',monospace;color:rgba(28,34,48,.6)">{{ c.cnt }}</span></span>
+                </span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+              </div>
+            </sc-for>
+            <sc-if value="{{ b.more }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:none;display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:18px;background:#F5EFE4;border:1px solid rgba(28,34,48,.06)"><span style="flex:1;font:500 14.5px 'Geist'">Más colecciones de Lanzarote</span><span style="min-width:26px;height:26px;padding:0 8px;border-radius:999px;background:#1C2230;color:#F3D59A;display:flex;align-items:center;justify-content:center;font:600 12px 'Geist Mono',monospace">{{ b.moreN }}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ b.chev }}"><path d="M6 9l6 6 6-6"></path></svg></div>
+            </sc-if>
+            <sc-for list="{{ b.rows2 }}" as="c" hint-placeholder-count="2">
+              <div style="flex:none;display:flex;align-items:center;gap:14px;padding:10px 14px 10px 10px;border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08)">
+                <dc-import name="Piezas/Insignia Lanza Pro" col="{{ c.col }}" set="" size="{{ 76 }}" hint-size="76px,76px"></dc-import>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><span style="font:400 19px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ c.n }}</span><span style="display:flex;align-items:center;gap:10px"><span style="flex:1;height:5px;border-radius:5px;background:rgba(28,34,48,.09)"></span><span style="font:500 12px 'Geist Mono',monospace;color:rgba(28,34,48,.6)">{{ c.cnt }}</span></span></span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+              </div>
+            </sc-for>
+            <div style="flex:none;position:relative;overflow:hidden;border-radius:26px;background:radial-gradient(120% 100% at 50% 0%,#2A3050 0%,#1C2230 60%,#161B28 100%);border:1px solid rgba(243,213,154,.3);padding:18px 14px 22px;display:flex;flex-direction:column;gap:14px;margin-top:6px"><span style="position:absolute;left:50%;top:-70px;margin-left:-110px;width:220px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(243,213,154,.2),transparent 70%)"></span>
+              <div style="flex:none;position:relative;display:flex;flex-direction:column;align-items:center;gap:6px"><span style="white-space:nowrap;font:600 9.5px 'Geist Mono',monospace;letter-spacing:.16em;color:#F3D59A">EMBLEMAS OCULTOS</span><span style="font:400 24px/1.1 'Instrument Serif',serif;color:#FFFDF8;text-align:center">{{ b.embT }}</span></div>
+              <div style="flex:none;position:relative;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:92px;gap:6px;justify-items:center;align-items:center;padding:6px 0">
+                <sc-for list="{{ b.embs }}" as="e" hint-placeholder-count="11"><dc-import name="Piezas/Emblema Lanza" kind="{{ e.k }}" found="{{ e.f }}" scale="{{ 0.56 }}" hint-size="84px,84px"></dc-import></sc-for>
+              </div>
+              <span style="flex:none;position:relative;text-align:center;font:italic 400 15px/1.3 'Instrument Serif',serif;color:rgba(255,253,248,.7)">Los que faltan te esperan en tu próximo viaje.</span>
+            </div>
+            <sc-if value="{{ b.fin }}" hint-placeholder-val="{{ false }}"><span style="flex:none;position:relative;overflow:hidden;height:56px;border-radius:999px;background:#1C2230;box-shadow:0 14px 24px -14px rgba(28,34,48,.8),inset 0 0 0 1.5px rgba(243,213,154,.55);color:#FFFDF8;display:flex;align-items:center;justify-content:center;gap:12px;font:600 15px 'Geist';margin-top:4px"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(140deg,#F8E7BC,#C99A4C);color:#2A1D10;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16l-3-2-2 2-2-2-2 2-2-2-3 2zM9 9h6M9 13h6"></path></svg></span>Ver el resumen del viaje<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3D59A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></span></sc-if>
+          </div>
+          <sc-if value="{{ b.fade }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:0;right:0;bottom:0;height:56px;background:linear-gradient(to top,#FFFDF8 20%,rgba(255,253,248,0));pointer-events:none"></div></sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const COL=[[1,'Los imprescindibles de Lanzarote',7],[2,'La Lanzarote de César Manrique',7],[3,'Tierra de fuego',7],[4,'La isla a tus pies',6],[5,'Playas y charcos',7],[6,'Pueblos con alma',6],[7,'Entre viñas de ceniza',3]];
+class Component extends DCLogic {
+  renderVals(){
+    const mk=(i,n,t,k,x={})=>({col:i,n,cnt:k+' de '+t,pct:Math.round(k/t*100),set:Array.from({length:k},(_,j)=>j).join(','),...x});
+    const started=[mk(1,COL[0][1],7,1),mk(2,COL[1][1],7,1)];
+    const zero=COL.slice(2).map(([i,n,t])=>({col:i,n,cnt:'0 de '+t}));
+    const bronze={medBg:'radial-gradient(circle at 35% 28%,#E8B48A,#A8683A 65%,#7A4522)',medSh:'0 10px 18px -8px rgba(110,60,25,.65),inset 0 2px 0 rgba(255,235,210,.5)',medFg:'#4A2812',medT:'Primeros pasos en Lanzarote',medS:'BRONCE · 1 DE 7',medP:14,medL:'Te quedan 2 para la plata · 6 para el diamante'};
+    const empty={medBg:'radial-gradient(circle at 35% 28%,#ECE6DA,#CFC7B6 70%)',medSh:'inset 0 2px 0 rgba(255,255,255,.6)',medFg:'rgba(28,34,48,.35)',medT:'Primeros pasos en Lanzarote',medS:'POR CONSEGUIR · 0 DE 7',medP:0,medL:'Te quedan 1 para el bronce · 7 para el diamante'};
+    const E=(n)=>Array.from({length:11},(_,i)=>({k:String(i+1),f:i<n}));
+    const base={rows2:[],more:false,claim:false,hoy:false,embs:E(3),embT:'3 de 11 secretos encontrados',fin:false};
+    return{boards:[
+      {...base,...bronze,id:'H1',fin:true,card:true,cap:'Con 2 colecciones empezadas y 5 a 0, plegadas',eye:'VIAJE TERMINADO · 8 – 13 NOV',claim:true,rows:started,more:true,moreN:5,chev:''},
+      {...base,...bronze,id:'H2',fin:true,card:true,fade:true,cap:'«Más colecciones de Lanzarote» abierto',eye:'VIAJE TERMINADO · 8 – 13 NOV',claim:true,rows:started.slice(0,1),more:true,moreN:5,chev:'transform:rotate(180deg)',rows2:zero.slice(0,2)},
+      {...base,...bronze,id:'H3',embs:E(1),embT:'1 de 11 secretos encontrados',claim:true,cap:'Durante el viaje (sin plazo, con «Hoy»)',eye:'VIAJE EN CURSO · DÍA 3',rows:[mk(1,COL[0][1],7,1,{hoy:true}),mk(2,COL[1][1],7,1)],more:true,moreN:5,chev:''},
+      {...base,...empty,id:'H4',embs:E(0),embT:'Lanzarote esconde 11 secretos',cap:'Sin ningún pedazo todavía',eye:'VIAJE EN CURSO · DÍA 1',rows:COL.slice(0,4).map(([i,n,t])=>({col:i,n,cnt:'0 de '+t,pct:0,set:''})),rows2:[]}
+    ]};
+  }
+}
+</script>
+</body>
+</html>

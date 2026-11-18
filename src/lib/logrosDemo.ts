@@ -141,7 +141,7 @@ function foto(c: Record<string, unknown>): RespuestaDeHecho {
     if (dia < inicio || dia > fin) motivo = 'otra_fecha'
   }
   const rango = rangoLargo(inicio, fin)
-  if (motivo === 'no_camara') return { ok: true, valida: false, motivo: 'no_camara', mensaje: 'Esta foto no está hecha con una cámara.', nuevos: [] }
+  if (motivo === 'no_camara') return { ok: true, valida: false, motivo: 'no_camara', mensaje: 'Esta foto no está hecha con tu móvil.', nuevos: [] }
   if (motivo === 'otro_sitio') return { ok: true, valida: false, motivo: 'otro_sitio', mensaje: `Esta foto no es ${deSitio(nombre)}.`, nuevos: [] }
   if (motivo === 'otra_fecha') {
     const [d, h] = rango.includes(' al ') ? rango.split(' al ') : [rango, rango]

@@ -55,7 +55,7 @@ export function responder(ruta: string, url: URL, c: Record<string, unknown>): u
     return { ok: true, valida: true, cuenta: true, sitios: [{ sitio: s.sitio, nombre: s.nombre }], nuevos: nuevo ? [pedazo(s)] : [] }
   }
   if (!c.libre) return undefined
-  if (!c.con_camara) return { ok: true, valida: false, motivo: 'no_camara', mensaje: 'Esta foto no parece de la cámara de tu móvil (las capturas y las fotos recibidas no valen).', nuevos: [] }
+  if (!c.con_camara) return { ok: true, valida: false, motivo: 'no_camara', mensaje: 'Esta foto no está hecha con tu móvil.', nuevos: [] }
   if (!tomada) return { ok: true, valida: false, motivo: 'sin_fecha', mensaje: 'Esta foto no trae la fecha en que se hizo.', nuevos: [] }
   const fecha = tomada.slice(0, 10)
   if (rango?.start && rango?.end && (fecha < rango.start || fecha > rango.end)) return { ok: true, valida: false, motivo: 'otra_fecha', mensaje: `Esta foto es del ${Number(fecha.slice(8, 10))}/${Number(fecha.slice(5, 7))}: no es de los días de tu viaje.`, nuevos: [] }
