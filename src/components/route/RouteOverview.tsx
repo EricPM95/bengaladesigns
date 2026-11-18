@@ -16,7 +16,7 @@ import { Icono } from '../ui/Icono'
 import { BanderaDestino } from '../ui/BanderaDestino'
 import { TarjetaRecuerdosEnRuta } from './fotos/TarjetaRecuerdos'
 import { BotonCompartirViaje } from '../propuesta/BotonesDeViaje'
-import { textoDeDuracion } from '../../lib/duracionViaje'
+import { diasEntreFechas, textoDeDuracion } from '../../lib/duracionViaje'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
 
 interface RouteOverviewProps {
@@ -87,8 +87,18 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
         const esElUltimo = index === segments.length - 1
         const conVuelta = esElUltimo && route.days.some((day) => day.isReturnLeg)
         // (Un tramo que no es el último duerme todos sus días; el último, uno menos si no lleva el día de vuelta aparte.)
-        const duracion = textoDeDuracion(count + (conVuelta ? 1 : 0), esElUltimo && !conVuelta ? count - 1 : count)
-        const dates = tripStart ? `${shortDate(addDaysToIso(tripStart, firstNumber - 1))} – ${shortDate(addDaysToIso(tripStart, lastNumber - 1 + (conVuelta ? 1 : 0)))}` : null
+        let duracion = textoDeDuracion(count + (conVuelta ? 1 : 0), esElUltimo && !conVuelta ? count - 1 : count)
+        let dates = tripStart ? `${shortDate(addDaysToIso(tripStart, firstNumber - 1))} – ${shortDate(addDaysToIso(tripStart, lastNumber - 1 + (conVuelta ? 1 : 0)))}` : null
+        // (V15) Las fechas del viaje mandan: el último tramo acaba el día que acaba el viaje (dateRange.end), no donde acabe la cuenta de los días de la ruta guardada (que podía llevar un día de más: «08 – 14 nov» en un viaje del 8 al 13).
+        const rangoDelViaje = route.answers.dateRange
+        if (esElUltimo && tripStart && rangoDelViaje?.end) {
+          const inicioDelTramo = addDaysToIso(tripStart, firstNumber - 1)
+          const n = diasEntreFechas(inicioDelTramo, rangoDelViaje.end)
+          if (n) {
+            duracion = textoDeDuracion(n)
+            dates = `${shortDate(inicioDelTramo)} – ${shortDate(rangoDelViaje.end)}`
+          }
+        }
         return (
           <div key={segment.id}>
             {index > 0 && <DestinationDistanceConnector from={segmentCentroid(segments[index - 1], route.days)} to={segmentCentroid(segment, route.days)} />}

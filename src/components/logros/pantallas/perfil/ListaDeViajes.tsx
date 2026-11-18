@@ -29,7 +29,7 @@ function Miniatura({ destino, url }: { destino: string; url: string | null }): R
 }
 
 function FilaDeLista({ viaje, etiqueta, onAbrir, editando, onEliminar }: { viaje: ResumenViaje; etiqueta: EtiquetaDeViaje; onAbrir: () => void; editando: boolean; onEliminar: () => void }): ReactNode {
-  const portada = usePortadaDeViaje(viaje.id, viaje.destino, viaje.fase === 'hecho')
+  const portada = usePortadaDeViaje(viaje.id, viaje.destino, viaje.fase === 'hecho', viaje.route)
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }} data-fila-de-viaje={viaje.id}>
       <button type="button" onClick={onAbrir} style={FILA} data-abrir-fila={viaje.id}>

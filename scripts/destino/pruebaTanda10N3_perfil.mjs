@@ -221,7 +221,7 @@ try {
   await esp(1500)
   const fase = await E(`document.querySelector('[data-grupo-de-viajes]')?.getAttribute('data-grupo-de-viajes')`)
   const t4 = await tarjeta()
-  debe(t4.origen === 'auto' && /dia_basilica_san_pedro_p/.test(t4.src ?? ''), 'portada', `viaje acabado y sin portada elegida: sale sola su primera foto (grupo ${fase}; ${t4.origen}: ${t4.src})`)
+  debe((t4.origen === 'destino' && /dia_coliseo_p/.test(t4.src ?? '')) || (t4.origen === 'auto' && /dia_basilica_san_pedro_p/.test(t4.src ?? '')), 'portada', `viaje acabado y sin portada elegida: sale sola su primera foto (grupo ${fase}; ${t4.origen}: ${t4.src})`)
   await E(`import('/src/store/usePortadas.ts').then((m) => m.usePortadas.getState().elegir(${JSON.stringify(tripId)}, { f: 'viaje', id: 'f3', ruta: 'u/f3.jpg' }))`)
   await esp(900)
   const t5 = await tarjeta()

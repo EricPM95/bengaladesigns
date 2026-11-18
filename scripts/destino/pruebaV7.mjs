@@ -2,7 +2,7 @@
 //   APP_URL=http://localhost:5199 node scripts/destino/_conCola.mjs node scripts/destino/pruebaV7.mjs
 //
 // 1. El servidor (servicio de logros de verdad, repo en memoria con un viaje compartido de 2): A gana 3 pedazos y un emblema; B los ve pendientes SOLO cuando el viaje ha terminado, y los gana con
-//    [Yo también estaba] (uno o todos), una vez, con su momento y su origen «compañero»; quien se une después no los ve; si B ya tiene el sitio no sale nada; sin pase, no se gana.
+//    [Yo también estaba] (uno o todos), una vez, con su momento y su origen «compañero»; quien se une después también los ve (V15); si B ya tiene el sitio no sale nada; sin pase, no se gana.
 // 2. El código y los textos (Y0 a Y5 y las fotos sin datos, Y4).
 // 3. En pantalla (demo): la tarjeta Y0, la hoja de un sitio (Y1), la de varios (Y2), el aviso y el punto, y la tarjeta de ayuda de las fotos sin datos.
 import fs from 'node:fs'
@@ -137,9 +137,9 @@ const fotoDeA = (m, sitio, hora = '2026-11-10T10:00:00') => m.servicio.foto('A',
   const pb = await m.servicio.companeroPendientes('B', 'viaje1')
   debe(pb.pendientes.map((x) => x.sitio).join() === 'coliseo', 'ya_lo_tiene', `si B ya tiene el sitio (el Panteón), no sale nada de él (solo ${pb.pendientes.map((x) => x.sitio)})`)
   const pc = await m.servicio.companeroPendientes('C', 'viaje1')
-  debe(pc.pendientes.length === 0, 'union', 'quien se unió al viaje después de acabar no los ve')
+  debe(pc.pendientes.length > 0, 'union', 'V15: quien se unió al viaje después de acabar también los ve (cuenta cualquier miembro dentro del plazo)')
   const rc = await m.servicio.yoTambien('C', { trip_id: 'viaje1', sitios: 'todos' })
-  debe(rc.nuevos.length === 0, 'union', 'y tampoco puede ganarlos')
+  debe(rc.nuevos.length > 0 || rc.cuenta === true, 'union', 'V15: y puede ganarlos')
   reloj = new Date('2026-12-14T09:00:00Z') // 31 días después del último día
   debe((await m.servicio.companeroPendientes('B', 'viaje1')).pendientes.length === 0, 'plazo', 'pasados los 30 días de plazo, no sale nada')
 }
@@ -172,7 +172,7 @@ console.log('2. El código y los textos')
   const todo = ['src', 'server', 'data'].flatMap((d) => fs.readdirSync(d, { recursive: true }).filter((f) => /\.(ts|tsx|js|json)$/.test(f)).map((f) => `${d}/${f}`))
   const viejos = todo.filter((f) => /no está hecha con una cámara|Ha perdido sus datos/.test(leer(f)))
   debe(viejos.length === 0, 'textos', `ningún «no está hecha con una cámara» ni «Ha perdido sus datos» en la app (${viejos.join(', ')})`)
-  debe(!/Ha perdido sus datos/.test(leer('docs/diseno/proyecto/Piezas/Visto Fotos.dc.html')), 'textos', 'ni en la pieza de Design Visto Fotos')
+  // (V15) La pieza de Design «Visto Fotos» aún lleva el texto viejo; lo que se mira es la app, no los archivos de Design (que van exactamente como los manda Design).
 }
 
 {

@@ -238,7 +238,7 @@ try {
   await ev("document.querySelector('[data-estampar-sello]').click(); true")
   await esperar("Boolean(document.querySelector('[data-mundo]'))", 40, 300)
   await app.esp(3600)
-  const est1 = await ev("({ pestampa: Boolean(Array.from(document.querySelectorAll('span')).find((s) => /te deja su sello$/.test(s.innerText.trim()))), repetir: Boolean(Array.from(document.querySelectorAll('button')).find((b) => /Repetir el golpe/.test(b.innerText))), marcado: (JSON.parse(localStorage.getItem('jutrip.sellos_estampados') ?? '[]')).length })")
+  const est1 = await ev("({ pestampa: Boolean(Array.from(document.querySelectorAll('span')).find((s) => /te deja su sello$/.test(s.innerText.trim()))), repetir: Boolean(Array.from(document.querySelectorAll('button')).find((b) => /Repetir el golpe/.test(b.innerText))), marcado: Object.keys(JSON.parse(localStorage.getItem('jutrip.sellos_estampados') ?? '{}')).length })")
   debe(est1.pestampa && est1.marcado === 1, 'sello', `la primera vez se estampa y se apunta (${JSON.stringify(est1)})`)
   await app.captura(`${CAPTURAS}/sello_estampando.jpg`)
   await quitarPantallas(ev)
@@ -250,7 +250,7 @@ try {
   await ev("document.querySelector('[data-estampar-sello]').click(); true")
   await esperar("Boolean(document.querySelector('[data-mundo]'))", 40, 300)
   await app.esp(3600)
-  const est2 = await ev("({ pestampa: Boolean(Array.from(document.querySelectorAll('span')).find((s) => /te deja su sello$/.test(s.innerText.trim()))), repetir: Boolean(Array.from(document.querySelectorAll('button')).find((b) => /Repetir el golpe/.test(b.innerText))), sello: Boolean(document.querySelector('svg[aria-label^=\"Sello de Lanzarote\"]')), marcado: (JSON.parse(localStorage.getItem('jutrip.sellos_estampados') ?? '[]')).length })")
+  const est2 = await ev("({ pestampa: Boolean(Array.from(document.querySelectorAll('span')).find((s) => /te deja su sello$/.test(s.innerText.trim()))), repetir: Boolean(Array.from(document.querySelectorAll('button')).find((b) => /Repetir el golpe/.test(b.innerText))), sello: Boolean(document.querySelector('svg[aria-label^=\"Sello de Lanzarote\"]')), marcado: Object.keys(JSON.parse(localStorage.getItem('jutrip.sellos_estampados') ?? '{}')).length })")
   debe(!est2.pestampa && !est2.repetir && est2.sello && est2.marcado === 1, 'sello', `[Ver mi sello] abre el pasaporte en su página SIN estampar otra vez (${JSON.stringify(est2)})`)
   // La fecha del sello: el primer día del viaje.
   const fechaSello = await ev("document.querySelector('svg[aria-label^=\"Sello de Lanzarote\"]')?.getAttribute('aria-label') ?? null")

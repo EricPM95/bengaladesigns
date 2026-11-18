@@ -2,10 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { usePortadaDeViaje } from '../../../hooks/usePortadaDeViaje'
-import { urlParaMostrar, ubicacionesDeFotos, type FotoViaje } from '../../../lib/fotosViaje'
 import { useNumeroFotos } from '../../../lib/useNumeroFotos'
-import { elegirFotoDePortada, fotosParaPortada, zonaDelDestino } from '../../../lib/portadaViaje'
-import { usePortadas } from '../../../store/usePortadas'
 import { ListaDeColeccion } from '../ficha/ListaDeColeccion'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { fraseDelPlazo } from '../../../lib/reclamar'
@@ -16,7 +13,7 @@ import { ORDEN_EMBLEMAS_LANZAROTE, idDeDibujoLanzarote } from '../dibujos/emblem
 import { abrirGaleriaDeReclamo } from '../reclamar/Reclamar'
 import { BTN_CAM_ORO } from '../visto/Hojas'
 import { lineaDeSecretos } from './textosResumen'
-import { pedirEstado, pedirResumen, pedirViajero, type EstadoLogros, type LogrosViajero, type ResumenLogros } from './api'
+import { estadoGuardado, pedirEstado, pedirResumen, pedirViajero, resumenGuardado, viajeroGuardado, type EstadoLogros, type LogrosViajero, type ResumenLogros } from './api'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
@@ -73,46 +70,13 @@ interface SitioPorReclamar {
   falta: string[]
 }
 
-/**
- * (V14) La foto de portada del resumen: de las fotos del viaje, una hecha EN el destino (con su ubicación dentro de él) y, mejor, la de un sitio con logro. Devuelve su URL, o null si no hay ninguna (entonces
- * sale la del destino de nuestros datos). Las ubicaciones salen de lo que se leyó de cada foto al subirla (`trip_photo_meta`).
- */
-function useFotoDePortadaDelResumen(idDeFotos: string, estado: EstadoLogros | null): string | null {
-  const route = useRouteStore((s) => s.route)
-  const [url, setUrl] = useState<string | null>(null)
-  useEffect(() => {
-    if (!idDeFotos || !estado) return undefined
-    let vivo = true
-    void (async () => {
-      const lista: FotoViaje[] = await fotosParaPortada(idDeFotos)
-      if (!lista.length) return
-      const paradas = (route?.days ?? []).flatMap((d) => (d.stops ?? []).filter((s) => !s.isZoneWalk && s.coordinates).map((s) => ({ lat: Number(s.coordinates.lat), lng: Number(s.coordinates.lng) })))
-      const zona = zonaDelDestino(paradas)
-      const sitios = estado.colecciones.flatMap((c) => c.sitios.map((s) => ({ nombre: s.nombre ?? s.sitio, visto: s.visto })))
-      // Primero con lo que ya se sabe de cada foto (su ubicación); solo si no sirve ninguna se piden las ubicaciones guardadas (sin esperar: si tardan, se queda la del destino).
-      let f = elegirFotoDePortada(lista, zona, sitios)
-      if (!f) {
-        const sinUbicacion = lista.filter((x) => typeof x.lat !== 'number').map((x) => x.id)
-        if (sinUbicacion.length) {
-          const ubic = await Promise.race([ubicacionesDeFotos(sinUbicacion), new Promise<Map<string, { lat: number; lng: number }>>((r) => window.setTimeout(() => r(new Map()), 4000))])
-          f = elegirFotoDePortada(lista.map((x) => (typeof x.lat === 'number' ? x : { ...x, lat: ubic.get(x.id)?.lat ?? null, lng: ubic.get(x.id)?.lng ?? null })), zona, sitios)
-        }
-      }
-      if (vivo) setUrl(f ? f.url || urlParaMostrar(f) : null)
-    })()
-    return () => {
-      vivo = false
-    }
-  }, [idDeFotos, estado, route])
-  return url
-}
-
 export default function ResumenViaje(): ReactNode {
   const route = useRouteStore((s) => s.route)
   const tripId = useSyncStore((s) => s.activeTripId) ?? route?.id ?? null
-  const [estado, setEstado] = useState<EstadoLogros | null>(null)
-  const [resumen, setResumen] = useState<ResumenLogros | null>(null)
-  const [viajero, setViajero] = useState<LogrosViajero | null>(null)
+  // (V15) Abre AL INSTANTE con lo último que se vio de este viaje (lo guardado en el móvil); solo la primera vez sale «Preparando tu resumen…». Lo nuevo llega por detrás.
+  const [estado, setEstado] = useState<EstadoLogros | null>(() => estadoGuardado(tripId))
+  const [resumen, setResumen] = useState<ResumenLogros | null>(() => resumenGuardado(tripId))
+  const [viajero, setViajero] = useState<LogrosViajero | null>(() => viajeroGuardado())
   const [cargado, setCargado] = useState(false)
   const [coleccionAbierta, setColeccionAbierta] = useState<string | null>(null)
   const [hojaSorpresas, setHojaSorpresas] = useState(false)
@@ -120,9 +84,9 @@ export default function ResumenViaje(): ReactNode {
     let vivo = true
     void Promise.all([pedirEstado(tripId), pedirResumen(tripId, null), pedirViajero()]).then(([e, r, v]) => {
       if (!vivo) return
-      setEstado(e)
-      setResumen(r)
-      setViajero(v)
+      setEstado((p) => e ?? p)
+      setResumen((p) => r ?? p)
+      setViajero((p) => v ?? p)
       setCargado(true)
     })
     return () => {
@@ -136,10 +100,9 @@ export default function ResumenViaje(): ReactNode {
   const fotos = cuentaDeFotos?.get(idDeFotos) ?? 0
   const ciudad = estado?.ciudad ?? ''
   // (V14) La portada: lo que eligió el viajero; si no eligió, una foto hecha EN el destino (mejor la de un sitio con logro); y si no hay ninguna, la del destino de nuestros datos.
-  const elegidaPropia = usePortadas((x) => x.porViaje[idDeFotos])
-  const portadaBase = usePortadaDeViaje(idDeFotos, route?.destination ?? ciudad, false)
-  const fotoDelDestino = useFotoDePortadaDelResumen(idDeFotos, estado)
-  const portada = elegidaPropia === undefined && fotoDelDestino ? { ...portadaBase, url: fotoDelDestino } : portadaBase
+  // (V15) La misma regla de portada que el Perfil y los recuerdos (una sola para toda la app): lo que eligió el viajero; si no, una foto hecha en el destino (mejor la de un sitio con logro); si no, la del destino.
+  const sitiosConLogro = (estado?.colecciones ?? []).flatMap((c) => c.sitios.map((x) => ({ nombre: x.nombre ?? x.sitio, visto: x.visto })))
+  const portada = usePortadaDeViaje(idDeFotos, route?.destination ?? ciudad, true, route, sitiosConLogro)
   const cerrar = () => useMomentosUI.getState().cerrarResumenViaje()
   // (V14) Estampar solo UNA vez: con el sello ya estampado, el botón es [Ver mi sello] y abre el pasaporte en su página sin estampar.
   const yaEstampado = selloYaEstampado(tripId)

@@ -148,7 +148,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
         // (V14) El sello se estampa UNA sola vez por viaje: si ya se estampó (o se pide [Ver mi sello]), la página se abre en su sitio sin estampar otra vez.
         if (pedida.startsWith('sello:') && !selloYaEstampado(trip)) {
           setEstampar(trip)
-          marcarSelloEstampado(trip)
+          marcarSelloEstampado(trip, paginas[k].sellos.find((x) => x.trip_id === trip)?.fecha ?? null)
         }
         s = Math.floor(paginas[k].sellos.findIndex((x) => x.trip_id === trip) / SELLOS_POR_PAGINA)
       } else {
@@ -191,21 +191,18 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
     return r
   }, [paginas, pagina])
   const marcas = useMemo(() => {
-    const m: Marca[] = []
-    // (V11) Un punto por viaje, en su destino: LLENO si ya está hecho (sello), HUECO (más suave) si está por hacer, para que no parezca que ya se ha estado. Lanzarote tiene el suyo (así se ve Canarias).
+    // (V15) Solo hay puntos en las CIUDADES con viaje (Lanzarote en Lanzarote), nunca en el centro de un país: antes cada país visitado llevaba un punto en su centro (en España, cerca de Madrid, sin ningún viaje allí).
+    // LLENO si el viaje ya está hecho (sello), HUECO (más suave) si está por hacer. Tocar un punto lleva a la página de su país. La clave empieza por el número de esa página.
     const porDestino = (d: string) => COORDENADAS_DE_DESTINO[d]
-    const puntosDeViaje: Marca[] = []
-    paginas.forEach((p) => p.sellos.filter((s) => !s.vacio && porDestino(s.destino)).forEach((s) => puntosDeViaje.push({ clave: `hecho-${s.trip_id}`, lat: porDestino(s.destino).lat, lng: porDestino(s.destino).lng, tipo: 'oro' })))
-    for (const v of datos && datos !== 'error' ? (datos.viajes_por_hacer ?? []) : []) if (porDestino(v.destino)) puntosDeViaje.push({ clave: `hueco-${v.trip_id}`, lat: porDestino(v.destino).lat, lng: porDestino(v.destino).lng, tipo: 'gris' })
-    paginas.forEach((p, k) => {
-      const c = p.iso ? porIso.get(p.iso) : undefined
-      if (!c) return
-      if (p.estado === 'por_conseguir') m.push({ clave: String(k), lat: c.lat, lng: c.lng, tipo: 'gris', brillo: k === idx })
-      else if (realesDe(p).length) m.push({ clave: String(k), lat: c.lat, lng: c.lng, tipo: 'oro', brillo: k === idx })
-      else if (c.p === 1) m.push({ clave: String(k), lat: c.lat, lng: c.lng, tipo: 'tinta' })
-    })
-    return [...m, ...puntosDeViaje]
-  }, [paginas, porIso, idx, datos])
+    const m: Marca[] = []
+    paginas.forEach((p, k) => p.sellos.filter((s) => !s.vacio && porDestino(s.destino)).forEach((s) => m.push({ clave: `${k}|hecho-${s.trip_id}`, lat: porDestino(s.destino).lat, lng: porDestino(s.destino).lng, tipo: 'oro', brillo: k === idx })))
+    for (const v of datos && datos !== 'error' ? (datos.viajes_por_hacer ?? []) : []) {
+      if (!porDestino(v.destino)) continue
+      const k = paginas.findIndex((p) => p.sellos.some((x) => x.destino === v.destino))
+      m.push({ clave: `${k}|hueco-${v.trip_id}`, lat: porDestino(v.destino).lat, lng: porDestino(v.destino).lng, tipo: 'gris', brillo: k === idx })
+    }
+    return m
+  }, [paginas, idx, datos])
 
   const alPais = (iso: string) => {
     const k = paginas.findIndex((p) => p.iso === iso)
@@ -242,7 +239,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
             </span>
             <div data-mapa-grande style={{ position: 'relative', marginTop: 8, width: lado + 18, height: lado + 18, borderRadius: '50%', padding: 9, background: 'conic-gradient(from 200deg,#F6E3A8,#B8903E,#F3D59A,#8E6A26,#F6E3A8)', boxShadow: '0 10px 24px -10px rgba(0,0,0,.6)' }}>
               {inicial ? (
-                <Globo tierra={tierra} rellenos={rellenos} marcas={marcas} objetivo={objetivo} inicial={inicial} estilo="papel" lado={lado} zoomMax={9} onPais={alPais} onMarca={(c) => ir(Number(c))} etiqueta="El globo de tu pasaporte" />
+                <Globo tierra={tierra} rellenos={rellenos} marcas={marcas} objetivo={objetivo} inicial={inicial} estilo="papel" lado={lado} zoomMax={9} onPais={alPais} onMarca={(c) => { const k = Number(String(c).split('|')[0]); if (Number.isFinite(k) && k >= 0) ir(k) }} etiqueta="El globo de tu pasaporte" />
               ) : (
                 <div data-globo-esqueleto aria-hidden="true" style={{ width: lado, height: lado, borderRadius: '50%', background: 'radial-gradient(circle at 38% 32%,#FBF6EA 0%,#EADFC6 55%,#D9CBAB 100%)', boxShadow: 'inset 0 0 0 1px rgba(28,34,48,.08)', animation: 'muFade 1.2s ease-in-out infinite alternate' }} />
               )}

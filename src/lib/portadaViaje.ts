@@ -1,4 +1,5 @@
-import { listarFotos, type FotoViaje } from './fotosViaje'
+import { listarFotos, ubicacionesDeFotos, type FotoViaje } from './fotosViaje'
+import type { Route } from './types'
 import { BUCKET_PERFILES, firmarFotosDePerfil } from './miPerfil'
 import { supabase } from './supabaseClient'
 import { cuentasActivas } from './cuentas'
@@ -128,4 +129,40 @@ export function elegirFotoDePortada(fotos: FotoViaje[], zona: { centro: { lat: n
     })
   candidatas.sort((a, b) => b.puntos - a.puntos || a.f.dayNumber - b.f.dayNumber || a.f.createdAt.localeCompare(b.f.createdAt))
   return candidatas[0]?.f ?? null
+}
+
+/**
+ * (V15) LA REGLA DE LA PORTADA, UNA SOLA PARA TODA LA APP (la de la V14): de las fotos del viajero, una hecha EN el destino y, mejor, la de un sitio con logro; si no hay ninguna, null (y sale la del
+ * destino de nuestros datos). La usan el Perfil, el resumen y los recuerdos. Las ubicaciones guardadas solo se piden si con lo que ya se sabe no sirve ninguna (y sin esperar más de 4 s).
+ */
+export async function fotoDePortadaPorRegla(idDeFotos: string, route: Route | null | undefined, sitios: { nombre: string; visto: boolean }[] = [], lista?: FotoViaje[]): Promise<FotoViaje | null> {
+  const fotos = lista ?? (await fotosParaPortada(idDeFotos))
+  if (!fotos.length || !route) return null
+  const paradas = (route.days ?? []).flatMap((d) => (d.stops ?? []).filter((s) => !s.isZoneWalk && s.coordinates).map((s) => ({ lat: Number(s.coordinates.lat), lng: Number(s.coordinates.lng) })))
+  const zona = zonaDelDestino(paradas)
+  let f = elegirFotoDePortada(fotos, zona, sitios)
+  if (!f) {
+    const sinUbicacion = fotos.filter((x) => typeof x.lat !== 'number').map((x) => x.id)
+    if (sinUbicacion.length) {
+      const ubic = await Promise.race([ubicacionesDeFotos(sinUbicacion), new Promise<Map<string, { lat: number; lng: number }>>((r) => setTimeout(() => r(new Map()), 4000))])
+      f = elegirFotoDePortada(fotos.map((x) => (typeof x.lat === 'number' ? x : { ...x, lat: ubic.get(x.id)?.lat ?? null, lng: ubic.get(x.id)?.lng ?? null })), zona, sitios)
+    }
+  }
+  return f
+}
+
+/** Una miniatura (data URL) de una foto, para guardarla en el móvil y enseñarla AL INSTANTE la próxima vez (las direcciones firmadas caducan). null si no se pudo. */
+export async function miniaturaEnTexto(url: string, ancho = 420): Promise<string | null> {
+  try {
+    const blob = await (await fetch(url)).blob()
+    const bitmap = await createImageBitmap(blob)
+    const k = Math.min(1, ancho / bitmap.width)
+    const lienzo = document.createElement('canvas')
+    lienzo.width = Math.max(16, Math.round(bitmap.width * k))
+    lienzo.height = Math.max(16, Math.round(bitmap.height * k))
+    lienzo.getContext('2d')?.drawImage(bitmap, 0, 0, lienzo.width, lienzo.height)
+    return lienzo.toDataURL('image/jpeg', 0.7)
+  } catch {
+    return null
+  }
 }

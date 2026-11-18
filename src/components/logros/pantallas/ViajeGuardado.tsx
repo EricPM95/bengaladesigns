@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { usePerfilUi } from '../../../store/usePerfilUi'
-import { urlGrande, urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
+import { usePortadaDeViaje } from '../../../hooks/usePortadaDeViaje'
+import { urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
 import { useFotosViaje } from '../../../lib/useFotosViaje'
 import { viajePorId, viajesDelPerfil } from '../../../lib/viajesPerfil'
 import { diasDelViaje, textoDeDias } from '../../../lib/duracionViaje'
@@ -48,7 +49,9 @@ export default function ViajeGuardado({ pantalla }: { pantalla: PantallaDe<'viaj
   }, [viaje?.id, pantalla.tripId])
 
   const dias = (viaje?.route.days ?? []).filter((d) => !d.isReturnLeg)
-  const portada = fotos[0] ? urlGrande(fotos[0]) : ''
+  // (V15) La misma regla de portada que el Perfil y el resumen: lo que eligió el viajero; si no, una foto hecha en el destino (mejor de un sitio con logro); si no, la del destino. La foto, en grande.
+  const reglaDePortada = usePortadaDeViaje(viaje?.id ?? pantalla.tripId, viaje?.destino ?? '', true, viaje?.route)
+  const portada = reglaDePortada.url ?? ''
   const totalDias = viaje ? diasDelViaje(viaje.route) : 0
   // [Abrir el viaje] y tocar un día: las pantallas de logros y el Perfil se cierran y se ve el viaje.
   const salirAlViaje = (abrir: () => boolean) => {

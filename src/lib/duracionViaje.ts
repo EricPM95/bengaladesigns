@@ -38,7 +38,7 @@ export function diasDelViaje(route: Pick<Route, 'days' | 'answers'>): number {
   return route.days.length || (route.answers?.days ?? 0)
 }
 
-function diasEntreFechas(inicio: string, fin: string): number | null {
+export function diasEntreFechas(inicio: string, fin: string): number | null {
   const a = Date.parse(`${inicio}T00:00:00Z`)
   const b = Date.parse(`${fin}T00:00:00Z`)
   if (!Number.isFinite(a) || !Number.isFinite(b)) return null

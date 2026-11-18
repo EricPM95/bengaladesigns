@@ -104,7 +104,7 @@ console.log('2. El código')
   const fotos = leer('src/lib/fotosViaje.ts')
   debe(/urlGrande/.test(fotos) && /MENSAJE_FOTO_REPETIDA/.test(fotos), 'fotos', 'la foto grande y el aviso de foto repetida existen')
   const guardado = leer('src/components/logros/pantallas/ViajeGuardado.tsx')
-  debe(/urlGrande\(fotos\[0\]\)/.test(guardado) && !/urlParaMostrar\(fotos\[0\]\)/.test(guardado), 'portada', 'la portada de los recuerdos usa la foto grande')
+  debe(/usePortadaDeViaje\(/.test(guardado) && !/urlParaMostrar\(fotos\[0\]\)/.test(guardado), 'portada', 'la portada de los recuerdos sigue la regla única de portada (V15), no la miniatura de la primera foto')
   const conX = [
     'src/components/layout/NewTripSheet.tsx', 'src/components/route/dayDetail/WantInsideDialog.tsx', 'src/components/route/freeDay/DayNameSheet.tsx', 'src/components/route/DatesChangeDialog.tsx',
     'src/components/route/reservas/ReservedMarks.tsx', 'src/components/ui/HojaDeHora.tsx', 'src/components/route/DateNoticesModal.tsx', 'src/components/route/SeasonCard.tsx',
@@ -240,7 +240,7 @@ const medirChapas = (raiz) => `(() => {
     })()`)
     debe(/6 días/.test(g.fechas ?? '') && !/7 días/.test(g.fechas ?? '') && /8 – 13 nov/.test(g.fechas ?? ''), 'días', `la portada dice «${g.fechas}» (del 8 al 13 = 6 días)`)
     debe(g.dias === 'Tus días' && g.fotos === 'Tus fotos' && !g.sus, 'recuerdos', `«${g.dias}» y «${g.fotos}» (ya no «Sus»)`)
-    debe(g.portada === '/fotos/roma/dia_coliseo.jpg', 'portada', `la portada es la foto GRANDE, no la miniatura (${g.portada})`)
+    debe(g.portada === '/fotos/lanzarote/playas_de_papagayo_p.jpg', 'portada', `V15: sin fotos hechas en el destino con ubicación, la portada es la del destino (${g.portada})`)
     debe(g.miniaturaEnCuadricula, 'portada', 'la cuadrícula de «Tus fotos» sigue con las miniaturas')
     debe(g.boton && g.boton.h === 54 && g.boton.debajo && /28, 34, 48/.test(g.boton.oscuro), 'abrir', `[Abrir el viaje ›] oscuro, de 54 px y debajo de la portada (${JSON.stringify(g.boton)})`)
     debe(!g.llaves, 'llaves', 'ningún texto con {…} en los recuerdos')

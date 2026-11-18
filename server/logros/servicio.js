@@ -138,8 +138,26 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
       const ctx = contextoDeViaje(fila, datos, catalogos, { esDuo: fila.es_duo === true })
       if (ctx) viajes[fila.id] = ctx
     }
+    // (V15) UN viaje compartido = UN viaje: si esta persona tiene su propia copia del viaje (mismo destino, fechas que se pisan) además del viaje compartido del que es miembro, las dos son el MISMO viaje.
+    // Lo que ganó en la copia cuenta en el compartido (sus hechos y logros pasan a llevar su id) y las fechas son las del compartido (las del dueño). Antes cada una contaba por su lado: el sello de Alicia ponía
+    // «09 NOV» y «5 días viajando» cuando el viaje de Eric era del 8 al 13, su pasaporte decía «aún no está» con el sello hecho y «llevas 0», y «Yo también estaba» no salía (los ids no coincidían).
+    // La copia sigue pudiéndose pedir por su id (propiedad NO enumerable: no se cuenta dos veces en las listas).
+    const alias = new Map()
+    for (const fila of filas) {
+      const ctx = viajes[fila.id]
+      if (!ctx || !fila.traveler_id || fila.traveler_id !== userId) continue
+      const compartido = filas.find((o) => o.id !== fila.id && o.traveler_id && o.traveler_id !== userId && viajes[o.id] && viajes[o.id].destino === ctx.destino && viajes[o.id].inicio <= ctx.fin && ctx.inicio <= viajes[o.id].fin)
+      if (compartido) alias.set(fila.id, compartido.id)
+    }
+    for (const [copia, compartido] of alias) {
+      delete viajes[copia]
+      Object.defineProperty(viajes, copia, { value: viajes[compartido], enumerable: false, configurable: true })
+    }
+    const canon = (id) => alias.get(id) ?? id
+    const hechosCanon = alias.size ? hechos.map((h) => (alias.has(h.trip_id) ? { ...h, trip_id: canon(h.trip_id) } : h)) : hechos
+    const logrosCanon = alias.size ? logros.map((l) => (alias.has(l.trip_id) ? { ...l, trip_id: canon(l.trip_id) } : l)) : logros
     // (8C1) La EXP que ya tenía (nunca baja) y los amigos que ha invitado; (V9) y quién le invitó, ya leído.
-    return { hechos, viajes, logros, cuenta, pionero, probador, perfil, referidos, invitador }
+    return { hechos: hechosCanon, viajes, logros: logrosCanon, cuenta, pionero, probador, perfil, referidos, invitador }
   }
   const calcularCon = (c, hechos = c.hechos, pionero = c.pionero) => calcular({ datos, hechos, viajes: c.viajes, cuenta: c.cuenta, ahora: ahora(), pionero, probador: aIso(c.probador) })
   const aMapa = (filas) => new Map(filas.map((f) => [clave(f.destino, f.logro, f.escalon), f]))
@@ -460,7 +478,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
   /**
    * Lo que un compañero del viaje ha ganado y esta persona aún no tiene (pedazos y emblemas ocultos de sitios), para «Yo también estaba». Reglas (Eric):
    *   · SOLO cuando el viaje ya ha terminado (y dentro del plazo de 30 días): durante el viaje, nada;
-   *   · solo miembros del viaje compartido que ya estaban en él (no los que se unieron después del último día);
+   *   · miembros del viaje compartido, entraran cuando entraran (V15, Eric 18-nov: antes se dejaba fuera a quien se unió tras el último día, y por eso no salía entre dos compañeros que se unieron al compartir el viaje ya acabado); sigue valiendo solo dentro del plazo;
    *   · solo lo ganado en ese viaje por una foto, un Visto o la galería (nunca lo que el compañero ganó a su vez con «Yo también estaba»);
    *   · solo si esta persona NO tiene ya ese sitio (ni el pedazo ni el emblema que falten).
    * Devuelve `{ ok, pendientes: [{ sitio, nombre, de, de_nombre, falta, colecciones, emblema, foto_url, instante }], sin_pase }`.
@@ -473,14 +491,19 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     if (hoy <= viaje.fin || hoy > sumarDias(viaje.fin, datos.ajustes.plazo_reclamar_dias)) return { ok: true, pendientes: [], fuera_de_fechas: true, sin_pase: false }
     const miembros = await repo.miembrosDe(tripId)
     const yo = miembros.find((m) => m.user_id === userId)
-    const alDia = (m) => !m.desde || String(m.desde).slice(0, 10) <= viaje.fin
-    if (!yo || !alDia(yo)) return { ok: true, pendientes: [], sin_pase: false }
+    const alDia = () => true // (V15) ya no importa cuándo se unió: cuenta cualquier miembro dentro del plazo
+    if (!yo) return { ok: true, pendientes: [], sin_pase: false }
     const d = datos.destinos[viaje.destino]
     const mios = aItems(c.logros)
     const por = new Map()
     for (const m of miembros.filter((x) => x.user_id !== userId && alDia(x))) {
-      const logros = (await repo.logrosDe(m.user_id)).filter((l) => l.trip_id === tripId && l.destino === viaje.destino && l.detalle?.origen !== 'companero')
-      const hechos = (await repo.hechosDe(m.user_id)).filter((h) => h.trip_id === tripId && h.motivo !== 'companero')
+      // (V15) Lo del compañero cuenta si es de ESTE viaje o, si lo guardó con otro id del mismo viaje (su propia copia), si es del mismo destino y de los días del viaje (con un día de margen).
+      const enElViaje = (cuando) => {
+        const dia = String(cuando ?? '').slice(0, 10)
+        return dia >= sumarDias(viaje.inicio, -1) && dia <= sumarDias(viaje.fin, 1)
+      }
+      const logros = (await repo.logrosDe(m.user_id)).filter((l) => (l.trip_id === tripId || (l.destino === viaje.destino && enElViaje(l.ganado_en))) && l.destino === viaje.destino && l.detalle?.origen !== 'companero')
+      const hechos = (await repo.hechosDe(m.user_id)).filter((h) => (h.trip_id === tripId || (h.destino === viaje.destino && enElViaje(h.instante))) && h.motivo !== 'companero')
       const ganados = new Map()
       const de = (s) => {
         if (!ganados.has(s)) ganados.set(s, { colecciones: new Set(), emblema: false })

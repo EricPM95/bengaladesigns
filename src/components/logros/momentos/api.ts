@@ -101,7 +101,16 @@ export async function pedirResumen(tripId: string | null, dia: string | null): P
   if (datosDePrueba.estado) return null // series de prueba propias: el resumen sale de lo que se acaba de enseñar
   if (!tripId) return null
   const r = await llamar<ResumenLogros>(`/api/logros/resumen?trip_id=${encodeURIComponent(tripId)}${dia ? `&dia=${encodeURIComponent(dia)}` : ''}`)
+  if (r?.ok && !dia) guardarEnCache(`resumen:${tripId}`, r)
   return r?.ok ? r : null
+}
+
+/** (V15) Lo último que se vio del resumen de este viaje, para abrir el resumen AL INSTANTE (solo la primera vez en un móvil sale «Preparando tu resumen…»). */
+export function resumenGuardado(tripId: string | null): ResumenLogros | null {
+  if (datosDePrueba.resumen) return datosDePrueba.resumen
+  if (!tripId || datosDePrueba.estado) return null
+  const g = leerEnCache<ResumenLogros>(`resumen:${tripId}`)
+  return g?.ok ? g : null
 }
 
 export async function marcarAnimacionVista(claves: { destino: string; logro: string; escalon: string }[], vista = true): Promise<void> {
@@ -118,5 +127,11 @@ export const datosDePruebaViajero: { v: LogrosViajero | null } = { v: null }
 export async function pedirViajero(): Promise<LogrosViajero | null> {
   if (datosDePruebaViajero.v) return datosDePruebaViajero.v
   const r = await llamar<LogrosViajero>('/api/logros/viajero')
+  if (r?.ok) guardarEnCache('viajero', r)
   return r?.ok ? r : null
+}
+export function viajeroGuardado(): LogrosViajero | null {
+  if (datosDePruebaViajero.v) return datosDePruebaViajero.v
+  const g = leerEnCache<LogrosViajero>('viajero')
+  return g?.ok ? g : null
 }

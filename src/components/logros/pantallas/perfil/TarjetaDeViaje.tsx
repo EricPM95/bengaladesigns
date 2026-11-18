@@ -54,7 +54,7 @@ const ESTILO_ETIQUETA: Record<EtiquetaDeViaje, { background: string; color: stri
 export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, onRecuerdos, editando = false, onEliminar, ancho = '60%' }: { viaje: ResumenViaje; etiqueta: EtiquetaDeViaje; onAbrirViaje: () => void; onRecuerdos: () => void; editando?: boolean; onEliminar?: () => void; ancho?: string }): ReactNode {
   const esInvitado = Boolean(viaje.guardado?.esInvitado)
   // La portada: la que eligió; si no, la primera foto suya al acabar el viaje; y si no, la del destino (o el degradado de siempre).
-  const portada = usePortadaDeViaje(viaje.id, viaje.destino, viaje.fase === 'hecho')
+  const portada = usePortadaDeViaje(viaje.id, viaje.destino, viaje.fase === 'hecho', viaje.route)
   const [cambiandoPortada, setCambiandoPortada] = useState(false)
   const hecho = etiqueta === 'hecho'
   // (10S) La línea de fechas lleva SOLO las fechas («26 – 29 nov 2026»); los días ya van en los chips de debajo.
