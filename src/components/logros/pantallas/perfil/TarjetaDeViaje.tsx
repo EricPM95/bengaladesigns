@@ -8,6 +8,7 @@ import { todayIso } from '../../../../lib/dateRange'
 import { textoDeDias, textoDeNoches } from '../../../../lib/duracionViaje'
 
 /**
+ * (TANDA V8, `Perfil Zona` de Design: sin la etiqueta «Hecho»; debajo de la foto, «11 paradas · 5 fotos» y una flecha redonda pequeña en vez de [Abrir este viaje]; TODA la tarjeta abre el viaje (como [Abrir este viaje] de antes: un viaje ya hecho, por dentro; los demás, en la app), menos la cámara.)
  * UN VIAJE DE «MIS VIAJES» EN FILA PARA DESLIZAR (Tanda 10N5, apartado 4, `Piezas/Perfil Orden` 01 a 04 y `Piezas/Mis Viajes Tarjeta`, exactamente igual): una tarjeta de 330 px con la portada arriba (142 px), la etiqueta
  * («Próximo», «En curso», «Ya hecho») arriba a la izquierda, SOLO el icono de la cámara arriba a la derecha para cambiar la portada (sin texto), el destino en grande con «26 – 29 nov 2026» abajo a la
  * izquierda y, debajo, el botón «Abrir este viaje» bien visible. Sin foto del destino, el degradado de Design (uno por destino, siempre el mismo). Fuera la pastilla de las fotos.
@@ -53,9 +54,7 @@ const ESTILO_ETIQUETA: Record<EtiquetaDeViaje, { background: string; color: stri
 }
 
 
-const CHIP = { height: 26, padding: '0 11px', borderRadius: 999, background: '#F1EADC', display: 'flex', alignItems: 'center', font: "600 12px 'Geist'", color: '#4A3C28' } as const
-
-export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editando = false, onEliminar, ancho = '60%' }: { viaje: ResumenViaje; etiqueta: EtiquetaDeViaje; onAbrir: () => void; onAbrirViaje: () => void; editando?: boolean; onEliminar?: () => void; ancho?: string }): ReactNode {
+export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, editando = false, onEliminar, ancho = '60%' }: { viaje: ResumenViaje; etiqueta: EtiquetaDeViaje; onAbrirViaje: () => void; editando?: boolean; onEliminar?: () => void; ancho?: string }): ReactNode {
   const esInvitado = Boolean(viaje.guardado?.esInvitado)
   // La portada: la que eligió; si no, la primera foto suya al acabar el viaje; y si no, la del destino (o el degradado de siempre).
   const portada = usePortadaDeViaje(viaje.id, viaje.destino, viaje.fase === 'hecho')
@@ -70,7 +69,7 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editand
   }, [hecho, viaje.id])
   // (10S) La línea de fechas lleva SOLO las fechas («26 – 29 nov 2026»); los días ya van en los chips de debajo.
   const fechas = viaje.cuando
-  const textoEtiqueta = etiqueta === 'proximo' ? cuentaAtras(viaje.inicioIso) : etiqueta === 'hecho' ? 'Hecho' : TEXTO_DE_ETIQUETA[etiqueta]
+  const textoEtiqueta = etiqueta === 'proximo' ? cuentaAtras(viaje.inicioIso) : TEXTO_DE_ETIQUETA[etiqueta]
   const chips = chipsDeViaje(viaje, hecho, fotos)
   return (
     <div data-tarjeta-de-viaje={viaje.id} data-etiqueta-de-viaje={etiqueta} data-portada-origen={portada.url ? portada.origen : 'degradado'} style={{ flex: 'none', width: ancho, scrollSnapAlign: 'start', borderRadius: 26, overflow: 'hidden', background: '#FFFDF8', boxShadow: '0 12px 24px -14px rgba(28,34,48,.5)' }}>
@@ -82,10 +81,12 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editand
             <span aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 2px,transparent 2px 12px)' }} />
           )}
         </div>
-        <button type="button" onClick={onAbrir} data-viaje-del-perfil={viaje.id} aria-label={`${viaje.destino}, ${fechas}`} style={{ position: 'absolute', inset: 0, width: '100%', border: 'none', padding: 0, background: 'linear-gradient(180deg,rgba(10,12,20,.1) 25%,rgba(10,12,20,.7))', cursor: 'pointer' }} />
-        <span data-etiqueta-texto style={{ position: 'absolute', left: 14, top: 14, height: 26, padding: '0 11px', borderRadius: 999, ...ESTILO_ETIQUETA[etiqueta], display: 'flex', alignItems: 'center', font: "600 12px 'Geist'", pointerEvents: 'none' }}>
-          {textoEtiqueta}
-        </span>
+        <button type="button" onClick={editando ? undefined : onAbrirViaje} data-viaje-del-perfil={viaje.id} aria-label={`${viaje.destino}, ${fechas}`} style={{ position: 'absolute', inset: 0, width: '100%', border: 'none', padding: 0, background: 'linear-gradient(180deg,rgba(10,12,20,.1) 25%,rgba(10,12,20,.7))', cursor: 'pointer' }} />
+        {!hecho && (
+          <span data-etiqueta-texto style={{ position: 'absolute', left: 14, top: 14, height: 26, padding: '0 11px', borderRadius: 999, ...ESTILO_ETIQUETA[etiqueta], display: 'flex', alignItems: 'center', font: "600 12px 'Geist'", pointerEvents: 'none' }}>
+            {textoEtiqueta}
+          </span>
+        )}
         {editando && onEliminar ? (
           <button className="zona-toque"
             type="button"
@@ -114,27 +115,21 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrir, onAbrirViaje, editand
           <span data-fechas-del-viaje style={{ font: "500 12px 'Geist Mono',monospace", opacity: 0.9 }}>{fechas}</span>
         </span>
       </div>
-      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <span data-chips-del-viaje style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {chips.map((c) => (
-            <span key={c} data-chip-del-viaje style={CHIP}>
-              {c}
-            </span>
-          ))}
+      <button type="button" onClick={onAbrirViaje} disabled={editando} data-abrir-este-viaje aria-label={`Abrir el viaje a ${viaje.destino}`} data-chips-del-viaje style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, padding: '11px 12px 11px 16px', font: "500 12.5px 'Geist'", color: 'rgba(28,34,48,.6)', textAlign: 'left', opacity: editando ? 0.45 : 1 }}>
+        <span style={{ flex: 1, minWidth: 0, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 8px' }}>
+        {chips.map((c, i) => (
+          <span key={c} style={{ display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}>
+            {i > 0 && <span aria-hidden="true" style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(28,34,48,.3)' }} />}
+            <span data-chip-del-viaje>{c}</span>
+          </span>
+        ))}
         </span>
-        <button
-          type="button"
-          onClick={onAbrirViaje}
-          disabled={editando}
-          data-abrir-este-viaje
-          style={{ height: 52, borderRadius: 16, border: 'none', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, font: "700 15.5px 'Geist'", cursor: 'pointer', ...(hecho ? { background: '#1C2230', color: '#F3D88F', boxShadow: '0 10px 20px -12px rgba(14,21,48,.8), inset 0 0 0 1px rgba(233,199,122,.4)' } : { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -12px rgba(110,80,24,.7), inset 0 1px 0 rgba(255,255,255,.55)' }), opacity: editando ? 0.45 : 1 }}
-        >
-          Abrir este viaje
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={hecho ? '#F3D88F' : '#4A3510'} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
-            <path d="M9 5l7 7-7 7" />
+        <span aria-hidden="true" data-flecha-del-viaje style={{ marginLeft: 'auto', width: 30, height: 30, borderRadius: '50%', background: 'rgba(28,34,48,.06)', color: '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 6l6 6-6 6" />
           </svg>
-        </button>
-      </div>
+        </span>
+      </button>
       {cambiandoPortada && <HojaPortada tripId={viaje.id} destino={viaje.destino} onCerrar={() => setCambiandoPortada(false)} />}
     </div>
   )

@@ -57,6 +57,13 @@ export async function precalentarPerfil(): Promise<void> {
 
 const CHEVRON = 'M9 5l7 7-7 7'
 
+/** (V8) Los tres huecos de la vitrina como en Design: lo ganado primero; el siguiente hueco es el [+] (más pequeño, para poner un logro) y los demás, con su borde de puntos. Sin logros: vacío, [+], vacío. */
+function huecosDeVitrina(recientes: PerfilLogros['vitrina']['recientes']): { p: PerfilLogros['vitrina']['recientes'][number] | null; mas: boolean }[] {
+  const rec = recientes.slice(0, 3)
+  if (rec.length === 0) return [{ p: null, mas: false }, { p: null, mas: true }, { p: null, mas: false }]
+  return Array.from({ length: 3 }, (_, i) => ({ p: rec[i] ?? null, mas: i === rec.length }))
+}
+
 export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirViaje, perfilInicial = null }: PropsCuerpoConLogros): ReactNode {
   // (Tanda 10N4) UN solo Perfil: con los logros apagados es este mismo, sin lo de los logros y sin pedir NADA de logros al servidor.
   const conLogros = logrosActivos()
@@ -106,8 +113,14 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
       setEligiendo(false)
       if (!perfil) return
       const nuevo = clave ? (perfil.titulos.find((t) => t.clave === clave) ?? null) : null
-      setPerfil({ ...perfil, titulo: nuevo })
-      if (!(await elegirTitulo(clave))) setPerfil(perfil)
+      const cambiado = { ...perfil, titulo: nuevo }
+      setPerfil(cambiado)
+      if (!(await elegirTitulo(clave))) {
+        setPerfil(perfil)
+        return
+      }
+      // (V8) Se guarda también en lo último que se vio, para que al volver a abrir el Perfil salga ya el título nuevo (y no el viejo hasta que llegan los datos).
+      guardarPerfil(await uidDeLaSesion(), cambiado)
     },
     [perfil],
   )
@@ -120,10 +133,10 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
 
   // «Mis viajes»: sale igual con y sin los datos del servidor.
   const misViajes = (
-    <section data-mis-viajes style={{ marginTop: 38 }}>
-      <div style={{ padding: '0 20px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
-        <span style={{ display: 'flex', alignItems: 'baseline', gap: 10, minWidth: 0 }}>
-          <h3 style={{ margin: 0, font: "400 34px/1 'Instrument Serif',serif" }}>Mis viajes</h3>
+    <section data-mis-viajes style={{ marginTop: 40 }}>
+      <div style={{ padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          <h3 style={{ margin: 0, font: "400 30px/1 'Instrument Serif',serif" }}>Mis viajes</h3>
           {viajes.length > 0 && <BotonEditarViajes />}
         </span>
         {viajes.length > 0 && (
@@ -137,9 +150,9 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
       </div>
       {viajes.length === 0 && antes === 0 && <p style={{ margin: '12px 20px 0', font: "400 13px 'Geist'", color: 'rgba(28,34,48,.6)' }}>Aún no tienes viajes guardados en este dispositivo.</p>}
       {(viajes.length > 0 || antes > 0) && (
-        <div data-fila-de-viajes data-ancho-tarjeta={anchoDeTarjeta} className="trazo-noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollPaddingLeft: 20, padding: '12px 20px 6px 20px', scrollbarWidth: 'none' }}>
+        <div data-fila-de-viajes data-ancho-tarjeta={anchoDeTarjeta} className="trazo-noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollPaddingLeft: 20, padding: '14px 20px 6px 20px', scrollbarWidth: 'none' }}>
           {enFila.map(({ viaje, etiqueta }) => (
-            <TarjetaDeViaje key={viaje.id} viaje={viaje} etiqueta={etiqueta} onAbrir={() => abrirDentro(viaje)} onAbrirViaje={() => onAbrirViaje(viaje)} editando={editando} onEliminar={() => eliminar(viaje)} ancho={anchoDeTarjeta} />
+            <TarjetaDeViaje key={viaje.id} viaje={viaje} etiqueta={etiqueta} onAbrirViaje={() => (etiqueta === 'hecho' ? abrirDentro(viaje) : onAbrirViaje(viaje))} editando={editando} onEliminar={() => eliminar(viaje)} ancho={anchoDeTarjeta} />
           ))}
           {antes > 0 && (
             <button type="button" onClick={() => abrir({ t: 'previos' })} data-viajes-de-antes style={{ flex: 'none', width: anchoDeTarjeta, minHeight: 190, scrollSnapAlign: 'start', borderRadius: 26, background: '#F1E8D6', border: '1.5px dashed rgba(28,34,48,.25)', padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 10, boxSizing: 'border-box', textAlign: 'left', color: '#1C2230', cursor: 'pointer' }}>
@@ -209,36 +222,37 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
   return (
     <>
       <div style={{ padding: '0 20px' }} data-cabecera-con-marco>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6 }}>
-          <button type="button" onClick={() => editarPerfil(true)} aria-label="Cambiar mi foto y mi nombre" data-editar-perfil className="flex-none rounded-full">
-            <MarcoDeRango rango={exp.rango_ix} estrellas={exp.estrellas} leyenda={exp.leyenda_estrellas} tam={118} etiqueta={`Marco ${exp.rango}, nivel ${exp.estrellas} de 5`}>
-              <InicialEnMarco letra={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={118} foto={yo.foto} encuadre={yo.encuadre} />
-            </MarcoDeRango>
-          </button>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>
-            <h2 style={{ margin: 0, font: "400 34px/1 'Instrument Serif',serif", overflowWrap: 'anywhere' }}>
-              Hola, <em>{nombre}</em>
-            </h2>
-            <span data-nivel-y-rango style={{ font: "600 14px 'Geist'", color: 'rgba(28,34,48,.75)' }}>
-              {textoDeNivel(exp)}
-            </span>
-            {perfil.titulos.length > 0 && (
-              <button type="button" onClick={() => setEligiendo(true)} data-titulo-del-perfil className="-my-1.5 flex min-h-[44px] items-center self-start">
-                <span className="flex h-[30px] items-center gap-1.5 rounded-full border border-text/10 bg-white py-0 pl-1 pr-2.5 text-[13px] font-medium text-text">
-                  {perfil.titulo ? <Chapa logro={perfil.titulo.id} escalon={perfil.titulo.escalon ?? undefined} tam={22} /> : <span className="w-2" />}
-                  {perfil.titulo ? perfil.titulo.nombre : 'Elige tu título'}
-                  <Icono nombre="abajo" size={12} className="text-text/55" />
-                </span>
-              </button>
-            )}
+        <div data-tarjeta-del-viajero style={{ marginTop: 6, borderRadius: 30, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.06)', boxShadow: '0 16px 30px -22px rgba(28,34,48,.5)', padding: '18px 18px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <button type="button" onClick={() => editarPerfil(true)} aria-label="Cambiar mi foto y mi nombre" data-editar-perfil className="flex-none rounded-full">
+              <MarcoDeRango rango={exp.rango_ix} estrellas={exp.estrellas} leyenda={exp.leyenda_estrellas} tam={118} etiqueta={`Marco ${exp.rango}, nivel ${exp.estrellas} de 5`}>
+                <InicialEnMarco letra={inicialDeNombre(yo.tieneNombre ? yo.nombre : null)} tam={118} foto={yo.foto} encuadre={yo.encuadre} />
+              </MarcoDeRango>
+            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5, minWidth: 0, flex: 1 }}>
+              <h2 style={{ margin: 0, font: "400 36px/1 'Instrument Serif',serif", overflowWrap: 'anywhere' }}>
+                Hola, <em>{nombre}</em>
+              </h2>
+              <span data-nivel-y-rango style={{ font: "600 13px 'Geist'", color: 'rgba(28,34,48,.6)' }}>
+                {textoDeNivel(exp)}
+              </span>
+              {perfil.titulos.length > 0 && (
+                <button type="button" onClick={() => setEligiendo(true)} data-titulo-del-perfil className="-my-2 flex min-h-[44px] items-center self-start">
+                  <span className="flex h-[26px] items-center gap-1.5 rounded-full py-0 pl-[5px] pr-[11px]" style={{ background: 'rgba(201,154,68,.16)', color: '#6F4E37', font: "italic 400 15px/1 'Instrument Serif',serif" }}>
+                    {perfil.titulo ? <Chapa logro={perfil.titulo.id} escalon={perfil.titulo.escalon ?? undefined} tam={18} /> : <span aria-hidden="true" style={{ width: 16, height: 16, borderRadius: '50%', border: '1.5px dashed rgba(111,78,55,.5)' }} />}
+                    {perfil.titulo ? perfil.titulo.nombre : 'Elige tu título'}
+                  </span>
+                </button>
+              )}
+            </div>
           </div>
+          <ExpEnPequeno exp={exp} />
         </div>
-        <ExpEnPequeno exp={exp} />
       </div>
 
       {misViajes}
 
-      <div style={{ margin: '20px 20px 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ margin: '40px 20px 0', display: 'flex', flexDirection: 'column', gap: 22 }}>
         <section className="relative flex flex-none flex-col overflow-hidden rounded-[26px] px-[18px] py-3.5 text-[#FFFDF8]" style={{ background: 'radial-gradient(circle at 50% 0%,#1E2648 0%,#0B0E1C 70%)', minHeight: 200 }} aria-label="Mi vitrina" data-vitrina-del-perfil>
           <span className="flex items-baseline justify-between">
             <span className="font-display text-[26px] leading-none">Mi vitrina</span>
@@ -250,16 +264,23 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
             </button>
           </span>
           <div className="relative grid flex-1 grid-cols-3 items-end px-1 pb-3 pt-2">
-            {perfil.vitrina.recientes.map((p) => (
-              <div key={p.clave} className="relative flex flex-col items-center">
+            {huecosDeVitrina(perfil.vitrina.recientes).map((it, i) => (
+              <div key={it.p ? it.p.clave : `hueco${i}`} className="relative flex flex-col items-center" data-hueco-de-vitrina={it.p ? 'pieza' : it.mas ? 'mas' : 'vacio'}>
                 <span aria-hidden="true" className="absolute left-1/2 -top-[22px] -ml-12 h-[130px] w-24" style={{ background: 'radial-gradient(ellipse 50% 90% at 50% 0%,rgba(255,226,170,.36),transparent 72%)', clipPath: 'polygon(36% 0,64% 0,100% 100%,0 100%)' }} />
-                <span className="relative flex h-[92px] items-end">
-                  <PiezaDeVitrina pieza={p} tam={74} />
+                <span className="relative flex h-[92px] items-end justify-center">
+                  {it.p ? (
+                    <PiezaDeVitrina pieza={it.p} tam={74} />
+                  ) : it.mas ? (
+                    <button type="button" onClick={() => abrir({ t: 'todos', pestana: 'vitrina' })} aria-label="Poner un logro en mi vitrina" data-mas-de-vitrina className="mb-[22px] flex h-[38px] w-[38px] items-center justify-center rounded-full" style={{ background: 'radial-gradient(circle at 35% 25%,rgba(255,253,248,.2),rgba(255,253,248,.06))', border: '1px solid rgba(243,213,154,.55)', color: DORADO, boxShadow: '0 6px 16px -6px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,253,248,.25)' }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                    </button>
+                  ) : (
+                    <span aria-hidden="true" className="mb-2.5 h-[58px] w-[58px] rounded-full" style={{ border: '1.5px dashed rgba(243,213,154,.4)' }} />
+                  )}
                 </span>
                 <span aria-hidden="true" className="mt-[3px] h-2 w-[58px] rounded-[50%] bg-black/50" />
               </div>
             ))}
-            {perfil.vitrina.recientes.length === 0 && <p className="col-span-3 m-0 self-center pb-4 text-center font-display text-[18px] italic text-white/60">Tu primer logro irá aquí</p>}
             <span aria-hidden="true" className="absolute inset-x-0 bottom-1.5 h-0.5 rounded-sm" style={{ background: 'linear-gradient(90deg,transparent,rgba(220,230,255,.55),transparent)' }} />
           </div>
         </section>

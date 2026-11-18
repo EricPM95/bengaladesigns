@@ -33,12 +33,17 @@ export function NivelYBarra({ exp }: { exp: ExpDelPerfil }): ReactNode {
 export function ExpEnPequeno({ exp }: { exp: ExpDelPerfil }): ReactNode {
   const pct = exp.exp_para_siguiente > 0 ? Math.max(0, Math.min(100, (exp.exp_en_nivel / exp.exp_para_siguiente) * 100)) : 0
   return (
-    <div data-exp-pequena style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
-      <span role="progressbar" aria-valuemin={0} aria-valuemax={exp.exp_para_siguiente} aria-valuenow={exp.exp_en_nivel} style={{ display: 'block', height: 6, borderRadius: 3, background: 'rgba(28,34,48,.12)', overflow: 'hidden' }}>
-        <span style={{ display: 'block', height: '100%', width: `${pct}%`, borderRadius: 3, background: 'linear-gradient(90deg,#C99A44,#F3D88F)' }} />
+    <div data-exp-pequena style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+      <span role="progressbar" aria-valuemin={0} aria-valuemax={exp.exp_para_siguiente} aria-valuenow={exp.exp_en_nivel} style={{ display: 'block', height: 9, borderRadius: 5, background: 'rgba(28,34,48,.1)', overflow: 'hidden' }}>
+        <span style={{ display: 'block', height: '100%', width: `${pct}%`, borderRadius: 5, background: 'linear-gradient(90deg,#C99A44,#F3D88F)' }} />
       </span>
-      <span data-exp-linea style={{ font: "500 12px 'Geist'", color: 'rgba(28,34,48,.65)' }}>
-        {miles(exp.exp_en_nivel)} / {miles(exp.exp_para_siguiente)} · {exp.maximo ? `Te faltan ${miles(exp.falta)} para la siguiente estrella` : `Te faltan ${miles(exp.falta)} para el nivel ${exp.nivel + 1}`}
+      <span data-exp-linea style={{ display: 'flex', justifyContent: 'space-between', gap: 8, font: "500 12px 'Geist'", color: 'rgba(28,34,48,.65)' }}>
+        <span data-exp-numeros style={{ whiteSpace: 'nowrap' }}>
+          {miles(exp.exp_en_nivel)} / {miles(exp.exp_para_siguiente)}
+        </span>
+        <span data-exp-falta style={{ color: '#6F4E37', fontWeight: 600, textAlign: 'right' }}>
+          {exp.maximo ? `Te faltan ${miles(exp.falta)} EXP para la siguiente estrella` : `Te faltan ${miles(exp.falta)} EXP para el nivel ${exp.nivel + 1}`}
+        </span>
       </span>
     </div>
   )

@@ -91,6 +91,10 @@ export function ponerPerfilDemo(p: Partial<PerfilLogros>): void {
   for (const k of Object.keys(p)) puestoAMano.add(k)
   perfil = { ...perfil, ...p }
 }
+/** (V8) Pone (o quita) el título del Perfil del demo: lo llama el demo de «Todos mis logros», que es quien contesta antes al PUT del título. */
+export function ponerTituloDelPerfil(clave: string | null): void {
+  perfil = { ...perfil, titulo: clave ? (perfil.titulos.find((t) => t.clave === clave) ?? null) : null }
+}
 export function reiniciarPerfilDemo(): void {
   puestoAMano.clear()
   perfil = perfilDeEjemplo()

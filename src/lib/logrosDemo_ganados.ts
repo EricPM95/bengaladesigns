@@ -10,6 +10,7 @@
  * Cambiar de viajero: `window.__demoGanados.poner('lleno' | 'poco' | 'vacio')` (y los escaparates lo hacen solos).
  */
 import datos from './logrosDemo_ganados_datos.json'
+import { ponerTituloDelPerfil } from './logrosDemo_perfil'
 import type { Ganados, ItemGanado } from '../components/logros/pantallas/todos/api'
 
 export type EscenarioGanados = 'lleno' | 'poco' | 'vacio'
@@ -43,6 +44,8 @@ export function responder(ruta: string, _url: URL, c: Record<string, unknown>, o
     const it = typeof c.titulo === 'string' ? actual.items.find((i) => i.clave === c.titulo && i.titulable) : null
     actual.titulo = it ? { clave: it.clave, nombre: it.nombre } : null
     actual.vitrina.titulo = it ? it.clave : null
+    // (V8) El Perfil del demo (otro archivo) lleva el mismo título, para que al volver a abrirlo salga el elegido.
+    ponerTituloDelPerfil(typeof c.titulo === 'string' ? c.titulo : null)
     return { ok: true, ...JSON.parse(JSON.stringify(actual.vitrina)) }
   }
   return undefined

@@ -17,7 +17,8 @@ export function PerfilEsqueleto({ nombre = null, titulo = true }: { nombre?: str
   const visible = nombre ? nombreVisible(nombre) || nombre : null
   return (
     <div data-perfil-cargando="1" aria-busy="true" style={{ padding: '0 20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6 }}>
+      <div style={{ marginTop: 6, borderRadius: 30, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.06)', boxShadow: '0 16px 30px -22px rgba(28,34,48,.5)', padding: '18px 18px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         <Hueco w={118} h={118} r="50%" />
         <div style={{ display: 'flex', minWidth: 0, flex: 1, flexDirection: 'column', gap: 10 }}>
           {visible ? (
@@ -30,11 +31,12 @@ export function PerfilEsqueleto({ nombre = null, titulo = true }: { nombre?: str
           <Hueco w="52%" h={14} r={7} />
         </div>
       </div>
-      <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
-        <Hueco w="100%" h={6} r={3} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        <Hueco w="100%" h={9} r={5} />
         <Hueco w="60%" h={12} r={6} />
       </div>
-      {titulo && <Hueco w={140} h={30} r={8} style={{ marginTop: 38 }} />}
+      </div>
+      {titulo && <Hueco w={140} h={30} r={8} style={{ marginTop: 40 }} />}
     </div>
   )
 }

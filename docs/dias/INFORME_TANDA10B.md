@@ -5633,3 +5633,11 @@ Para leer sus documentos en Lanzarote con el cobro apagado, se le da un Pase Lan
 - **Sin migración:** hecho de foto con `origen: 'galeria'`, `motivo: 'companero'` y `detalle.origen = 'companero'`; no hay tabla nueva (ni `empezar_de_cero` ni `pruebaTanda10J`).
 - **Textos:** «Esta foto no está hecha con tu móvil» también en la pieza de Design `Visto Fotos`.
 - **Pruebas:** `pruebaV7` (nueva) 46·0, más las de lo tocado y `pruebaJutrip`.
+
+## TANDA V8 · Retoques del Perfil (18-nov)
+- **Aire entre bloques (regla de Eric):** 40 px entre el bloque del viajero y «Mis viajes» y entre «Mis viajes» y «Mi vitrina» (Design deja 14); 22 entre la vitrina, el pasaporte y el billete.
+- **Bloque del viajero** (`CuerpoConLogros.tsx`, `NivelYBarra.tsx › ExpEnPequeno`): tarjeta blanca con avatar y marco, «Hola, Alice», «Nivel N · Rango», título como distintivo pequeño con su chapa (sin la flecha; sin títulos, no sale) y la barra con «285 / 900» a la izquierda y «Te faltan 615 EXP para el nivel 3» a la derecha. También el esqueleto de carga (`PerfilEsqueleto`). Elegir un título se guarda en lo último que se vio del Perfil (`guardarPerfil`).
+- **«Mis viajes»:** lápiz redondo de 34 px (`BotonEditarViajes`, mismo `data-editar-viajes`; en el modo editar, una marca), «Ver todos (N) ›». Tarjetas sin la etiqueta «Hecho» (en curso y próximo la conservan), con «11 paradas · 5 fotos» y la flecha redonda de 30 px en vez de [Abrir este viaje]; toda la tarjeta abre el viaje (decisión mía: igual que el botón de antes, un viaje ya hecho por dentro, los demás en la app).
+- **«Mi vitrina»:** tres huecos (`huecosDeVitrina`): lo ganado, el «+» de 38 px en el primer hueco libre y el resto con borde de puntos; sin logros, puntos / «+» / puntos. Fuera «Tu primer logro irá aquí».
+- **Demo:** el demo de «Todos mis logros» pasa el título elegido al demo del Perfil (`ponerTituloDelPerfil`).
+- **Pruebas:** `pruebaV8` (nueva) y puestas al día con el diseño nuevo `pruebaTanda10F`, `10N5_perfil`, `10N9_pantallas`, `10S`, `Fase6y5_pantallas`. `pruebaFase6y4_perfil` falla en 2 comprobaciones de fotos (BotonFoto) que ya fallaban antes de la V8 (V5/V6); no es del Perfil.

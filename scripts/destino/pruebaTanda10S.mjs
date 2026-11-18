@@ -161,7 +161,7 @@ console.log('4. La línea de fechas de la tarjeta de Mis viajes, sin «N días»
     debe(r.length >= 1, 'tarjeta', 'hay una tarjeta en Mis viajes')
     for (const c of r) {
       debe(Boolean(c.fechas) && !/\d+ días?/.test(c.fechas), 'tarjeta', `la línea de fechas de la tarjeta lleva solo las fechas, sin «N días» (${c.fechas})`)
-      if (!/Hecho/.test(c.etiqueta ?? '')) debe(c.chips.some((x) => /^\d+ días?$/.test(x)), 'tarjeta', 'los chips de debajo siguen diciendo «N días»')
+      if (c.etiqueta) debe(c.chips.some((x) => /^\d+ días?$/.test(x)), 'tarjeta', 'los chips de debajo siguen diciendo «N días»')
     }
     await b.captura(foto('mis_viajes_fechas'))
   } finally {

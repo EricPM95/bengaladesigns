@@ -42,7 +42,7 @@ console.log('1. El código')
   debe(/leerPerfilGuardado/.test(cuerpo) && /guardarPerfil/.test(cuerpo) && /mismoPerfil/.test(cuerpo), 'rápido', 'lo último que se vio se guarda y se enseña al instante; lo nuevo solo cambia si cambia')
   debe(/Ver todos \(\{viajes\.length\}\)/.test(cuerpo) && /scrollSnapType: 'x mandatory'/.test(cuerpo), 'viajes', '«Ver todos (N)» y la fila con deslizar de lado')
   const tarjeta = sinComentarios(leer('src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx'))
-  debe(/width: ancho/.test(tarjeta) && /height: 150/.test(tarjeta) && /borderRadius: 26/.test(tarjeta) && /Abrir este viaje/.test(tarjeta), 'tarjeta', 'la tarjeta: ancho por modo (10N8: 100 % o 60 %), portada de 150 (10N9, Design), radio 26 y «Abrir este viaje»')
+  debe(/width: ancho/.test(tarjeta) && /height: 150/.test(tarjeta) && /borderRadius: 26/.test(tarjeta) && /Abrir el viaje a/.test(tarjeta), 'tarjeta', 'la tarjeta: ancho por modo (10N8: 100 % o 60 %), portada de 150 (10N9, Design), radio 26 y «Abrir este viaje»')
   debe(!/Sin fotos|textoDeFotos|Cambiar portada\s*<\/button>|Cambiar portada\n/.test(tarjeta.replace(/aria-label=\{`Cambiar la portada[^`]*`\}/, '')), 'tarjeta', 'sin pastilla de fotos y sin el texto «Cambiar portada» (solo el icono de la cámara)')
   debe(!/marginTop: 52|\+ 52/.test(cuerpo), 'orden', 'los 70 px de aire de la 10N3 ya no están')
   const lista = sinComentarios(leer('src/components/logros/pantallas/perfil/ListaDeViajes.tsx'))
@@ -117,7 +117,7 @@ const T = (ev, sel) => ev(`(() => { const e = document.querySelector(${JSON.stri
         nivel: d.querySelector('[data-nivel-y-rango]')?.innerText,
         expLinea: d.querySelector('[data-exp-linea]')?.innerText,
         ver: d.querySelector('[data-numero-de-viajes]')?.innerText,
-        tarjetas: Array.from(d.querySelectorAll('[data-tarjeta-de-viaje]')).map((c) => ({ id: c.dataset.tarjetaDeViaje, etiqueta: c.querySelector('[data-etiqueta-texto]').innerText, destino: c.querySelector('[data-fechas-del-viaje]').previousElementSibling.innerText, fechas: c.querySelector('[data-fechas-del-viaje]').innerText, ancho: Math.round(c.getBoundingClientRect().width), x: Math.round(c.getBoundingClientRect().left), camara: c.querySelector('[data-cambiar-portada]')?.innerText, boton: c.querySelector('[data-abrir-este-viaje]')?.innerText })),
+        tarjetas: Array.from(d.querySelectorAll('[data-tarjeta-de-viaje]')).map((c) => ({ id: c.dataset.tarjetaDeViaje, etiqueta: c.querySelector('[data-etiqueta-texto]')?.innerText ?? null, destino: c.querySelector('[data-fechas-del-viaje]').previousElementSibling.innerText, fechas: c.querySelector('[data-fechas-del-viaje]').innerText, ancho: Math.round(c.getBoundingClientRect().width), x: Math.round(c.getBoundingClientRect().left), camara: c.querySelector('[data-cambiar-portada]')?.innerText, boton: c.querySelector('[data-abrir-este-viaje]')?.innerText })),
         fila: (() => { const f = d.querySelector('[data-fila-de-viajes]'); return { desborda: f.scrollWidth > f.clientWidth, overflow: getComputedStyle(f).overflowX } })(),
         antes: d.querySelector('[data-viajes-de-antes]')?.innerText.split(String.fromCharCode(10)).join(' | '),
         mas: (() => { const b = d.querySelector('[data-anadir-viaje]').getBoundingClientRect(); return { w: Math.round(b.width), h: Math.round(b.height), cx: Math.round(b.left + b.width / 2), bajo: Math.round(window.innerHeight - b.bottom) } })(),
@@ -128,14 +128,14 @@ const T = (ev, sel) => ev(`(() => { const e = document.querySelector(${JSON.stri
     debe(o.ajustes.w === 40 && o.cerrar.w === 40 && o.ajustes.x > 300 && o.cerrar.x > 360 && o.ajustes.y < 40 && o.cerrar.y < 40, 'arriba', `solo los ajustes y la ✕ arriba a la derecha (ajustes ${JSON.stringify(o.ajustes)}, ✕ ${JSON.stringify(o.cerrar)})`)
     debe(o.hola === 'Hola, Viajes', 'nombre', `«Hola, Viajes» con la primera en mayúscula (sale «${o.hola}»)`)
     debe(/^Nivel \d+ · \S+/.test(o.nivel ?? ''), 'cabecera', `«${o.nivel}» (nivel y rango de verdad)`)
-    debe(/^[\d.]+ \/ [\d.]+ · Te faltan [\d.]+ para el nivel \d+$/.test(o.expLinea ?? ''), 'EXP', `la EXP en pequeño: «${o.expLinea}»`)
+    debe(/^[\d.]+ \/ [\d.]+ Te faltan [\d.]+ EXP para el nivel \d+$/.test((o.expLinea ?? '').replace(/\s+/g, ' ')), 'EXP', `la EXP en pequeño (V8): «${o.expLinea}»`)
     debe(o.cabecera < o.exp && o.exp < o.viajes && o.viajes < o.vitrina && o.vitrina < o.pasaporte && o.pasaporte < o.billete, 'orden', `orden de arriba abajo: cabecera ${o.cabecera} < EXP ${o.exp} < Mis viajes ${o.viajes} < vitrina ${o.vitrina} < pasaporte ${o.pasaporte} < sorteo ${o.billete}`)
     debe(o.mas.w === 64 && o.mas.h === 64 && Math.abs(o.mas.cx - 195) <= 1 && o.mas.bajo >= 26 && o.mas.bajo <= 30, '[+]', `el [+] mide 64, va en medio y a 28 del borde de abajo (${JSON.stringify(o.mas)})`)
     debe(o.fila.desborda && o.fila.overflow === 'auto', 'viajes', '«Mis viajes» se desliza de lado')
     debe(o.tarjetas.length === 4 && o.tarjetas.every((t) => t.ancho === 210), 'viajes', `4 tarjetas de 210 de ancho (10N8: con varios viajes, el 60 %) (las 3 de la prueba y el viaje abierto; salen ${o.tarjetas.length})`)
-    debe(o.tarjetas[0]?.etiqueta === 'En curso' && /^(En \d+ días|Mañana|Hoy|Próximo)$/.test(o.tarjetas[1]?.etiqueta ?? '') && o.tarjetas[2]?.etiqueta === 'Hecho', 'viajes', `el en curso primero, luego el próximo y luego el ya hecho (${o.tarjetas.map((t) => t.etiqueta).join(', ')})`)
+    debe(o.tarjetas[0]?.etiqueta === 'En curso' && /^(En \d+ días|Mañana|Hoy|Próximo)$/.test(o.tarjetas[1]?.etiqueta ?? '') && o.tarjetas[2]?.etiqueta == null, 'viajes', `(V8: el ya hecho sin etiqueta) el en curso primero, luego el próximo y luego el ya hecho (${o.tarjetas.map((t) => t.etiqueta).join(', ')})`)
     debe(o.tarjetas[0]?.x === 20 && o.tarjetas[1]?.x < 390 && o.tarjetas[1]?.x > 210, 'viajes', 'la siguiente tarjeta asoma por la derecha')
-    debe(o.tarjetas.every((t) => /^(\d+ – \d+ \w+ \d{4}|[^·]+)$/.test(t.fechas) && t.boton === 'Abrir este viaje' && t.camara === ''), 'viajes', `cada tarjeta: fechas y días («${o.tarjetas[0]?.fechas}»), «Abrir este viaje» y la cámara sin texto`)
+    debe(o.tarjetas.every((t) => /^(\d+ – \d+ \w+ \d{4}|[^·]+)$/.test(t.fechas) && /paradas?/.test(t.boton ?? '') && t.camara === ''), 'viajes', `cada tarjeta: fechas y días («${o.tarjetas[0]?.fechas}»), la fila de abajo con las paradas (V8) y la cámara sin texto`)
     debe(o.ver === 'Ver todos (4)', 'viajes', `«${o.ver}»`)
     debe(/^Antes de la app \| \d+ países?$/.test(o.antes ?? ''), 'viajes', `«Antes de la app» como una tarjeta más, al final (${o.antes})`)
     debe(!/Sin fotos/.test(o.texto), 'viajes', 'fuera la pastilla «Sin fotos»')
