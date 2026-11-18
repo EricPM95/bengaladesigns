@@ -128,7 +128,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
   return useMemo(() => {
     const items: AppNotice[] = []
     for (const p of companeros.slice(0, 5)) {
-      items.push({ id: `companero:${p.sitio}`, kind: 'friend', title: `${p.de_nombre ?? 'Tu compañero'} ha conseguido ${p.nombre}`, text: '¿Estabais juntos?', acciones: [{ label: 'Ahora', run: () => useCompaneroStore.getState().abrirSitio(p.sitio) }], read: false, canMarkRead: false })
+      items.push({ id: `companero:${p.viaje ?? ''}:${p.sitio}`, kind: 'friend', title: `${p.de_nombre ?? 'Tu compañero'} ha conseguido ${p.nombre}`, text: '¿Estabais juntos?', acciones: [{ label: 'Ahora', run: () => useCompaneroStore.getState().abrirSitio(p.sitio, p.viaje) }], read: false, canMarkRead: false })
     }
 
     if (syncStatus === 'error') {

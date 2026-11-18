@@ -1,3 +1,4 @@
+import { todayIso } from '../../../lib/dateRange'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { enSitio } from '../../../lib/articulos'
@@ -15,17 +16,33 @@ import { TRAZO, Trazo } from '../visto/trazos'
  * punto del botón de logros (Y5). Los momentos (Y3a, Y3b) salen por la fila de la V6. Con el pase, como todos los logros; sin pase, con el candado pequeño (lleva al pase).
  */
 
+/** Los plazos de reclamar son de 30 días (data/logros/ajustes.json `plazo_reclamar_dias`; el servidor es quien decide de verdad, esto solo evita preguntar por viajes viejos). */
+const PLAZO_DE_RECLAMAR_DIAS = 30
+/** (V15b) Los ids de los viajes guardados de esta cuenta que YA terminaron y están dentro del plazo: por todos ellos se pregunta «Yo también estaba», no solo por el viaje abierto. */
+export function viajesTerminadosEnPlazo(): string[] {
+  const hoy = todayIso()
+  const sumar = (iso: string, n: number): string => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
+  return (useSyncStore.getState().savedTrips ?? [])
+    .filter((t) => {
+      const fin = t.route?.answers?.dateRange?.end
+      return Boolean(t.id && fin && fin < hoy && hoy <= sumar(fin, PLAZO_DE_RECLAMAR_DIAS))
+    })
+    .map((t) => t.id)
+}
+
 const fotoDe = (url: string | null) => (url ? `center/cover url(${url})` : 'linear-gradient(140deg,#E2C6A8,#A8734A)')
 
 /** Y0: la tarjeta pequeña, solo si hay algo pendiente. Va en la hoja «Tus logros en …», debajo del plazo de «Reclamar con tus fotos». */
-export function TarjetaDeCompanero(): ReactNode {
-  const pendientes = useCompaneroStore((s) => s.pendientes)
+export function TarjetaDeCompanero({ tripId }: { tripId?: string | null } = {}): ReactNode {
+  // (V15b) Con `tripId` (la hoja «Tus logros en Lanzarote»), solo lo de ESE viaje; sin él, todo.
+  const todos = useCompaneroStore((s) => s.pendientes)
+  const pendientes = tripId ? todos.filter((p) => p.viaje === tripId) : todos
   const sinPase = useCompaneroStore((s) => s.sinPase)
   if (pendientes.length === 0) return null
   const abrir = () => {
     if (sinPase) return abrirAvisoPase('reclamar')
-    if (pendientes.length === 1) useCompaneroStore.getState().abrirSitio(pendientes[0].sitio)
-    else useCompaneroStore.getState().abrirLista()
+    if (pendientes.length === 1) useCompaneroStore.getState().abrirSitio(pendientes[0].sitio, pendientes[0].viaje)
+    else useCompaneroStore.getState().abrirLista(tripId ?? pendientes[0]?.viaje)
   }
   return (
     <button type="button" data-companero="tarjeta" onClick={abrir} className="mx-4 mb-2 flex flex-none items-center gap-3 rounded-2xl border px-3 py-2.5 text-left" style={{ background: '#FFFDF8', borderColor: 'rgba(181,138,46,.45)', color: TINTA, cursor: 'pointer' }}>
@@ -131,10 +148,12 @@ export function HostDeCompanero(): ReactNode {
     // (V15b) Se pregunta al abrir el viaje y, si la respuesta no fue buena (sin sesión aún, sin red, «viaje sin fechas» porque el id de la nube llegó después…), se vuelve a preguntar a los 3, 10 y 25 s,
     // al volver a la app (de segundo plano) y al volver la red. Antes se preguntaba UNA sola vez por viaje abierto y, si fallaba, no se reintentaba hasta cerrar y abrir.
     const preguntar = (intento: number) => {
-      void cargarCompanero(tripId).then((lista) => {
+      // (V15b) El viaje abierto Y todos los demás viajes de esta cuenta ya terminados y dentro del plazo de reclamar: el punto del botón y la campana cuentan los de todos, no solo el activo.
+      const otros = viajesTerminadosEnPlazo().filter((id) => id !== tripId)
+      void Promise.all([cargarCompanero(tripId), ...otros.map((id) => cargarCompanero(id))]).then(() => {
         if (!vivo) return
         // Y5: el punto del botón de logros, mientras haya algo pendiente.
-        if (lista.length > 0) useLogrosStore.getState().ponerPuntito(true)
+        if (useCompaneroStore.getState().pendientes.length > 0) useLogrosStore.getState().ponerPuntito(true)
         const reintentos = [3000, 10000, 25000]
         if (useCompaneroStore.getState().fallo && intento < reintentos.length) temporizador = window.setTimeout(() => preguntar(intento + 1), reintentos[intento])
       })
@@ -152,7 +171,9 @@ export function HostDeCompanero(): ReactNode {
       window.removeEventListener('online', alVolver)
     }
   }, [tripId])
-  const uno = abierta?.tipo === 'sitio' ? pendientes.find((p) => p.sitio === abierta.sitio) : null
+  const viajeAbierto = abierta?.viaje ?? tripId
+  const uno = abierta?.tipo === 'sitio' ? pendientes.find((p) => p.sitio === abierta.sitio && (!abierta.viaje || p.viaje === abierta.viaje)) : null
+  const deEseViaje = abierta?.tipo === 'lista' ? pendientes.filter((p) => !abierta.viaje || p.viaje === abierta.viaje) : []
   return (
     <>
       <EstilosDelVisto />
@@ -165,11 +186,11 @@ export function HostDeCompanero(): ReactNode {
         onChange={(e) => {
           const f = e.target.files?.[0]
           e.target.value = ''
-          if (f && tripId && abierta?.tipo === 'sitio') void subirMiFoto(tripId, abierta.sitio, f)
+          if (f && viajeAbierto && abierta?.tipo === 'sitio') void subirMiFoto(viajeAbierto, abierta.sitio, f)
         }}
       />
-      {tripId && uno && <HojaDeUnSitio p={uno} tripId={tripId} />}
-      {tripId && abierta?.tipo === 'lista' && pendientes.length > 0 && <HojaDeVarios pendientes={pendientes} tripId={tripId} />}
+      {viajeAbierto && uno && <HojaDeUnSitio p={uno} tripId={viajeAbierto} />}
+      {viajeAbierto && abierta?.tipo === 'lista' && deEseViaje.length > 0 && <HojaDeVarios pendientes={deEseViaje} tripId={viajeAbierto} />}
     </>
   )
 }

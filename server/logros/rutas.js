@@ -96,8 +96,15 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
   // (V15b) `?pasos=1` añade los pasos que da el servidor (para el panel de diagnóstico; solo habla de los viajes de esa misma cuenta).
   app.get('/api/logros/companero', conUsuario(async (req, res, u) => {
     const traza = req.query.pasos ? [] : null
-    const r = await servicio.companeroPendientes(u.id, String(req.query.trip_id ?? ''), null, traza)
-    res.json(traza ? { ...r, pasos: traza, servidor: { commit: env.VERCEL_GIT_COMMIT_SHA ?? null, ahora: new Date().toISOString() } } : r)
+    try {
+      const r = await servicio.companeroPendientes(u.id, String(req.query.trip_id ?? ''), null, traza)
+      res.json(traza ? { ...r, pasos: traza, servidor: { commit: env.VERCEL_GIT_COMMIT_SHA ?? null, ahora: new Date().toISOString() } } : r)
+    } catch (e) {
+      // Con `pasos=1` (el diagnóstico) se enseña el error de verdad; sin él, el mensaje de siempre.
+      if (!traza) throw e
+      traza.push(`ERROR: ${String(e?.message ?? e)}`)
+      res.json({ ok: false, error_interno: String(e?.message ?? e), pasos: traza, servidor: { commit: env.VERCEL_GIT_COMMIT_SHA ?? null, ahora: new Date().toISOString() } })
+    }
   }))
   // (V15b) Qué versión del servidor está contestando (el commit que Vercel ha desplegado). Pública: no dice nada de nadie.
   app.get('/api/logros/version', (_req, res) => res.json({ ok: true, commit: env.VERCEL_GIT_COMMIT_SHA ?? null, entorno: env.VERCEL ? 'vercel' : 'local', ahora: new Date().toISOString() }))

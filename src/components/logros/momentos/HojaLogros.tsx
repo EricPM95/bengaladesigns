@@ -10,6 +10,7 @@ import { mismaRespuesta } from '../../../lib/logrosEnCache'
 import { COLOR_DE_GRADO } from './BotonFlotanteLogros'
 import { BotonDeReclamar } from '../reclamar/Reclamar'
 import { TarjetaDeCompanero } from '../companero/Companero'
+import { cargarCompanero } from '../../../lib/companero'
 import { bannerAntes, etiquetaDeFase, faseDelViaje, lineaDeGrado, marcaDeColeccion, notaDeSecretos, textoDeLoQueQueda, TEXTO_AL_COMPLETAR, tituloDeSecretos, type FaseDelViaje } from './hoja/textosHoja'
 import { piezaDeInsignia } from './hoja/piezaDeInsignia'
 import './momentos.css'
@@ -75,6 +76,10 @@ export default function HojaLogros(): ReactNode {
       vivo = false
     }
   }, [tripId])
+  // (V15b) La hoja de un viaje pregunta por SU viaje al abrirse (no por el que estuviera activo antes): la tarjeta «Eric consiguió N sitios…» sale de ahí.
+  useEffect(() => {
+    if (tripId) void cargarCompanero(tripId)
+  }, [tripId])
   const cerrar = () => useMomentosUI.getState().cerrarHojaLogros()
   const fase = faseDelViaje(estado?.viaje)
   const etiqueta = estado ? etiquetaDeFase(fase, estado.viaje, estado.ciudad) : null
@@ -130,7 +135,7 @@ export default function HojaLogros(): ReactNode {
           )}
           <div data-cabeza-de-logros style={{ flex: 'none', margin: '-8px -20px -6px' }}>
             <BotonDeReclamar ciudad={estado?.ciudad} />
-            <TarjetaDeCompanero />
+            <TarjetaDeCompanero tripId={tripId} />
           </div>
           {!estado ? (
             cargado ? (

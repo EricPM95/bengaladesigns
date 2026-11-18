@@ -16,7 +16,8 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
     },
     /** (V7) Los miembros de un viaje compartido (el dueño y los invitados), con cuándo se unieron. */
     async miembrosDe(tripId) {
-      const viaje = ok(await admin.from('trips').select('traveler_id, created_at').eq('id', tripId).maybeSingle(), 'miembrosDe(viaje)')
+      // (V15b) `trips` NO tiene `created_at` (solo `updated_at`): pedirla daba «column trips.created_at does not exist» y TODA llamada de «Yo también estaba» acababa en 500 desde la V7. El dueño no lleva fecha de entrada.
+      const viaje = ok(await admin.from('trips').select('traveler_id').eq('id', tripId).maybeSingle(), 'miembrosDe(viaje)')
       const otros = ok(await admin.from('trip_members').select('user_id, created_at').eq('trip_id', tripId), 'miembrosDe(miembros)')
       return [...(viaje ? [{ user_id: viaje.traveler_id, desde: null }] : []), ...otros.map((m) => ({ user_id: m.user_id, desde: m.created_at }))]
     },

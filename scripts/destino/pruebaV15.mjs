@@ -149,6 +149,11 @@ console.log('2. El código')
   for (const f of ['src/components/logros/momentos/ResumenViaje.tsx', 'src/components/logros/pantallas/ViajeGuardado.tsx', 'src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx', 'src/components/logros/pantallas/perfil/ListaDeViajes.tsx']) {
     debe(/usePortadaDeViaje\(/.test(leer(f)), 'portada', `${f.split('/').pop()} usa la misma regla de portada`)
   }
+  // El 500 de verdad: `trips` no tiene `created_at` (solo `updated_at`); pedirla rompía TODA llamada de «Yo también estaba». Ninguna lectura de `trips` del servidor pide una columna que no exista.
+  const columnasDeTrips = ['id', 'traveler_id', 'route', 'bookings', 'wishlist', 'ui_state', 'updated_at', 'generation_state', 'guardado_en']
+  const pedidas = leer('server/logros/repo.js').split("from('trips').select('").slice(1).flatMap((t) => t.slice(0, t.indexOf("'")).split(',').map((c) => c.trim()))
+  const malas = pedidas.filter((c) => !columnasDeTrips.includes(c))
+  debe(pedidas.length >= 3 && malas.length === 0, 'columnas', `el servidor de logros solo pide columnas de trips que existen (${malas.length ? 'NO existen: ' + malas.join(', ') : pedidas.length + ' lecturas bien'})`)
   const host = leer('src/components/logros/companero/Companero.tsx')
   debe(/reintentos = \[3000, 10000, 25000\]/.test(host) && /visibilitychange/.test(host), 'reintento', 'la app vuelve a preguntar por el compañero si la respuesta no fue buena, al volver a la app y al volver la red')
   debe(!/desde\)\.slice\(0, 10\) <= viaje\.fin/.test(leer('server/logros/servicio.js')), 'alicia', 'el servidor ya no deja fuera a quien se unió después del último día')
@@ -290,6 +295,18 @@ try {
   const r2 = await abrirResumen()
   debe(!r2.preparando && r2.muestras > 20, 'resumen', `la segunda vez, el resumen abre al momento, sin «Preparando tu resumen…» (primera vez: ${r1.preparando ? 'sí salió' : 'no salió'}; segunda: ${r2.preparando ? 'salió' : 'no salió'})`)
   await ev("__imp('/src/components/logros/momentos/useMomentosUI.ts').then((ui) => { ui.useMomentosUI.getState().cerrarResumenViaje(); return true })")
+
+  /* 3e2. Se pregunta por TODOS los viajes terminados dentro del plazo, no solo por el activo. */
+  const plazo = await ev(`Promise.all([__imp('/src/store/useSyncStore.ts'), __imp('/src/components/sync/TripSync.tsx'), __imp('/src/components/logros/companero/Companero.tsx')]).then(([s, t, c]) => {
+    const base = t.buildTripPayload()
+    const iso = (n) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10)
+    const crear = (id, fin) => ({ ...base, id, route: { ...base.route, id, answers: { ...base.route.answers, dateRange: { start: iso(fin - 5), end: iso(fin) } } }, generationState: null })
+    s.useSyncStore.getState().setSavedTrips([crear('terminado-reciente', -3), crear('terminado-viejo', -40), crear('por-hacer', 2), crear('termino-ayer', -1)])
+    return c.viajesTerminadosEnPlazo()
+  })`)
+  debe(JSON.stringify(plazo) === JSON.stringify(['terminado-reciente', 'termino-ayer']), 'todos', `se pregunta por los viajes terminados dentro de los 30 días (no por los de hace 40 días ni por los que aún no han acabado) (${JSON.stringify(plazo)})`)
+  const tarjeta = leer('src/components/logros/companero/Companero.tsx')
+  debe(tarjeta.includes('TarjetaDeCompanero({ tripId }') && tarjeta.includes('p.viaje === tripId') && leer('src/components/logros/momentos/HojaLogros.tsx').includes('<TarjetaDeCompanero tripId={tripId} />'), 'todos', 'la hoja «Tus logros en …» enseña la tarjeta de SU viaje y pregunta por él al abrirse')
 
   /* 3f. El panel ?admin=logros lleva el diagnóstico de «Yo también estaba» (también sin ser administrador). */
   await ev("__imp('/src/lib/companero.ts').then((m) => m.cargarCompanero('viaje-de-prueba-123')).then(() => true)")

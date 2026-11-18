@@ -21,13 +21,17 @@ export interface PendienteDeCompanero {
   emblema: boolean
   foto_url: string | null
   instante: string | null
+  /** (V15b) El viaje al que pertenece (el pedido): cada pendiente sabe de qué viaje es. */
+  viaje?: string
 }
 
-type Abierta = { tipo: 'sitio'; sitio: string } | { tipo: 'lista' } | null
+type Abierta = { tipo: 'sitio'; sitio: string; viaje?: string } | { tipo: 'lista'; viaje?: string } | null
 
 interface Estado {
   tripId: string | null
+  /** TODOS los pendientes de todos los viajes terminados dentro del plazo (cada uno con su `viaje`). */
   pendientes: PendienteDeCompanero[]
+  porViaje: Record<string, PendienteDeCompanero[]>
   sinPase: boolean
   cargado: boolean
   /** (V15b) La última pregunta no se pudo contestar bien (sin sesión, sin red, error o «viaje sin fechas»): conviene volver a preguntar. */
@@ -35,22 +39,23 @@ interface Estado {
   abierta: Abierta
   error: string | null
   ocupado: boolean
-  abrirSitio: (sitio: string) => void
-  abrirLista: () => void
+  abrirSitio: (sitio: string, viaje?: string) => void
+  abrirLista: (viaje?: string) => void
   cerrar: () => void
 }
 
 export const useCompaneroStore = create<Estado>((set) => ({
   tripId: null,
   pendientes: [],
+  porViaje: {},
   sinPase: false,
   cargado: false,
   fallo: false,
   abierta: null,
   error: null,
   ocupado: false,
-  abrirSitio: (sitio) => set({ abierta: { tipo: 'sitio', sitio }, error: null }),
-  abrirLista: () => set({ abierta: { tipo: 'lista' }, error: null }),
+  abrirSitio: (sitio, viaje) => set({ abierta: { tipo: 'sitio', sitio, viaje }, error: null }),
+  abrirLista: (viaje) => set({ abierta: { tipo: 'lista', viaje }, error: null }),
   cerrar: () => set({ abierta: null, error: null }),
 }))
 
@@ -87,8 +92,9 @@ export async function cargarCompanero(tripId: string): Promise<PendienteDeCompan
   } catch {
     /* sin almacenamiento */
   }
-  const lista = r?.ok ? (r.pendientes ?? []) : []
-  useCompaneroStore.setState({ tripId, pendientes: lista, sinPase: Boolean(r?.sin_pase), cargado: true, fallo: !r?.ok })
+  const lista = (r?.ok ? (r.pendientes ?? []) : []).map((p) => ({ ...p, viaje: tripId }))
+  const porViaje = { ...useCompaneroStore.getState().porViaje, [tripId]: lista }
+  useCompaneroStore.setState({ tripId, porViaje, pendientes: Object.values(porViaje).flat(), sinPase: Boolean(r?.sin_pase), cargado: true, fallo: !r?.ok })
   return lista
 }
 
