@@ -5679,7 +5679,8 @@ function ownPhotoFor(name, city, dateIso) {
   // La miniatura WebP (Tanda 8A2, `node scripts/generarMiniaturas.mjs`): la foto pequeña de las listas de paradas. Solo si existe.
   const miniPath = base.replace(/^(.*)\/([^/]+)\.jpg$/, '$1/mini/$2.webp')
   const photo_mini = existsSync(join(__dirname, '../public', miniPath)) ? versionedPhotoUrl(miniPath) : null
-  return { photo_source: 'propia', photo_url: versionedPhotoUrl(base), photo_small: versionedPhotoUrl(small), photo_mini, photo_credit: credit, photo_night: foto.cuando === 'noche' }
+  // (V16b) Las fotos pequeñas (`solo_tarjetas`: El Grifo 800 px, La Garita 675, el Gesù 850, Largo Gaetana Agnesi 1000) salen solo en tarjetas y miniaturas: su versión «grande» es la misma pequeña, así que nunca se estiran a pantalla completa.
+  return { photo_source: 'propia', photo_url: versionedPhotoUrl(foto.solo_tarjetas ? small : base), photo_small: versionedPhotoUrl(small), photo_mini, photo_credit: credit, photo_night: foto.cuando === 'noche' }
 }
 
 /**

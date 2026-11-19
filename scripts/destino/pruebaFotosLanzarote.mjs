@@ -30,8 +30,9 @@ const ruta = JSON.parse(leer('docs/dias/_hoy3_ruta_eric.json')).route
 // ── 1. Las 28 de Eric (las 27 del paquete y, en la V4, la del Puerto Viejo) ──
 const deEric = tabla.fotos.filter((f) => f.origen === 'Eric')
 const numeradas = paquete.filter((f) => /^\d+$/.test(f.n))
-debe(numeradas.length === 28 && deEric.length === 28, '1a', `28 fotos de Eric en la tabla (hay ${deEric.length}, el paquete trae ${numeradas.length})`)
-debe(new Set(deEric.map((f) => f.archivo)).size === 28, '1b', 'cada una con su archivo, sin repetir')
+// (V16b) +3 de Eric (El Grifo, La Geria, Bosquecillo): 31; la de La Garita es de Turismo de Haría (con permiso), no de Eric.
+debe(numeradas.length === 28 && deEric.length === 31, '1a', `31 fotos de Eric en la tabla (las 28 del paquete y las 3 de la V16b; hay ${deEric.length}, el paquete trae ${numeradas.length})`)
+debe(new Set(deEric.map((f) => f.archivo)).size === 31, '1b', 'cada una con su archivo, sin repetir')
 for (const p of numeradas) {
   const f = ownPhotoFile(tabla, p.parada, null)
   debe(f && f.origen === 'Eric', '1c', `«${p.parada}» lleva la foto de Eric (${f?.archivo ?? 'ninguna'})`)
@@ -66,7 +67,7 @@ for (const n of nombres) {
   debe(fotoOculta('lanzarote', n), '3b', `«${n}» no tiene foto nuestra: tiene que salir con el fondo de color (fotoOculta), nunca la de Wikipedia`)
 }
 debe(fotoOculta('lanzarote', 'Un sitio que no está en los datos') === true, '3c', 'un nombre cualquiera de Lanzarote, sin foto nuestra, nunca busca en Wikipedia ni en Unsplash')
-debe(sinFoto.includes('Mirador del Bosquecillo (Risco de Famara)'), '3d', 'el Mirador del Bosquecillo sigue sin foto (fondo de color)')
+debe(!sinFoto.includes('Mirador del Bosquecillo (Risco de Famara)') && !sinFoto.includes('Playa de La Garita'), '3d', '(V16b) el Mirador del Bosquecillo y La Garita ya tienen foto')
 console.log(`  (paradas de Lanzarote sin foto, con fondo de color: ${sinFoto.join(' · ')})`)
 
 // ── 4. Los cruces que fallaban ──
@@ -129,9 +130,9 @@ try {
       debe(k.photo_source === 'propia' && k.photo_url?.includes(f), '7b', `/api/place-photo de «${n}» da la foto de Eric (${k.photo_source} ${k.photo_url})`)
     }
     const sin = await (await fetch(`${API}/api/place-photo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Mirador del Bosquecillo (Risco de Famara)', city: 'Lanzarote' }) })).json()
-    debe(sin.photo_source === 'none', '7c', `el Mirador del Bosquecillo sale SIN foto (${sin.photo_source})`)
+    debe(sin.photo_source === 'propia', '7c', `(V16b) el Mirador del Bosquecillo sale con su foto propia (${sin.photo_source})`)
     const rareza = await (await fetch(`${API}/api/place-photo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Playa de La Garita', city: 'Lanzarote' }) })).json()
-    debe(rareza.photo_source === 'none', '7d', `una parada sin foto nuestra (Playa de La Garita) sale SIN foto, no de Wikipedia (${rareza.photo_source})`)
+    debe(rareza.photo_source === 'propia' && rareza.photo_credit?.autor === 'Turismo de Haría', '7d', `(V16b) Playa de La Garita sale con su foto propia y su crédito (${rareza.photo_source})`)
   }
 } catch {
   api = false

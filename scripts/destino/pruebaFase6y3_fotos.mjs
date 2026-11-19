@@ -24,9 +24,7 @@ const leer = (p) => fs.readFileSync(p, 'utf8')
 const TIVOLI = "Excursión a Tívoli — Villa d'Este y Villa Adriana"
 const POMPEYA = 'Excursión a Pompeya y Sorrento'
 const OCHO = [
-  'Cripta de los Capuchinos',
   'Trastevere al atardecer',
-  'Via dei Coronari',
   'Borgo Pio',
   'Excursión a Florencia y Pisa',
   'Excursión a Nápoles y Pompeya en tren',
@@ -97,8 +95,8 @@ const wiki = JSON.parse(leer('data/dias/roma/_fotos_wikimedia.json'))
   const archivos = new Set((wiki.fotos ?? []).map((f) => f.archivo))
   ok(FICHEROS_MALOS.every((a) => !archivos.has(a)), `3b siguen los ficheros equivocados: ${FICHEROS_MALOS.filter((a) => archivos.has(a)).join(' | ')}`)
   ok((wiki.sin_autor ?? []).every((s) => !rechazadas.has(s.lugar)), '3c `sin_autor` guarda un sitio rechazado')
-  ok((wiki.fotos ?? []).length === 21, `3d deberían quedar 21 fotos buenas y hay ${(wiki.fotos ?? []).length}`)
-  for (const buena of ['Plaza Colonna', 'Campo de\' Fiori', 'Iglesia del Gesù', 'Isla Tiberina', 'Museos Vaticanos y Capilla Sixtina', 'Monti']) {
+  ok((wiki.fotos ?? []).length === 18, `3d (V16b: Iglesia del Gesù, San Ignacio y Quirinal ya son propias) deberían quedar 18 fotos buenas y hay ${(wiki.fotos ?? []).length}`)
+  for (const buena of ['Plaza Colonna', 'Campo de\' Fiori', 'Isla Tiberina', 'Museos Vaticanos y Capilla Sixtina', 'Monti']) {
     ok((wiki.fotos ?? []).some((f) => f.lugares.includes(buena)), `3e ha desaparecido la foto buena de ${buena}`)
   }
 }

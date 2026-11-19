@@ -45,9 +45,7 @@ async function empaquetar(entrada, nombre, extra = {}) {
 }
 
 const OCHO = [
-  'Cripta de los Capuchinos',
   'Trastevere al atardecer',
-  'Via dei Coronari',
   'Borgo Pio',
   'Excursión a Florencia y Pisa',
   'Excursión a Nápoles y Pompeya en tren',

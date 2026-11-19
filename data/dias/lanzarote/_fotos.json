@@ -65,12 +65,7 @@
     }
   ],
   "_portadas_candidatas": "Las 5 mejores candidatas a portada para el REPASO (la 1 es la puesta por defecto). Las rutas son de public/fotos/lanzarote/.",
-  "sin_foto": [
-    {
-      "lugar": "Mirador del Bosquecillo (Risco de Famara)",
-      "motivo": "En Commons no hay una foto con ese nombre y licencia libre; no se pone una de «Risco de Famara» a ojo."
-    }
-  ],
+  "sin_foto": [],
   "fotos_rechazadas": [],
   "fotos": [
     {
@@ -575,6 +570,64 @@
       "origen": "Eric",
       "derechos": "libre",
       "nota": "El paseo marítimo del Puerto Viejo (V4, 17-nov): foto propia de Eric, sin problema de derechos."
+    },
+    {
+      "archivo": "bodega_el_grifo.jpg",
+      "lugares": [
+        "Bodega El Grifo"
+      ],
+      "place_id": "bodega_el_grifo",
+      "cuando": "dia",
+      "ancho": 800,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento",
+      "solo_tarjetas": true
+    },
+    {
+      "archivo": "bodega_la_geria.jpg",
+      "lugares": [
+        "Bodega La Geria"
+      ],
+      "place_id": "bodega_la_geria",
+      "cuando": "dia",
+      "ancho": 1024,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "mirador_del_bosquecillo.jpg",
+      "lugares": [
+        "Mirador del Bosquecillo (Risco de Famara)"
+      ],
+      "place_id": "mirador_del_bosquecillo",
+      "cuando": "dia",
+      "ancho": 1200,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "playa_de_la_garita.jpg",
+      "lugares": [
+        "Playa de La Garita"
+      ],
+      "place_id": "playa_de_la_garita",
+      "cuando": "dia",
+      "ancho": 675,
+      "fuente": "turismoharia.com · con permiso del autor",
+      "autor": "Turismo de Haría",
+      "enlace": "https://turismoharia.com",
+      "origen": "Turismo de Haría",
+      "derechos": "con permiso del autor",
+      "credito": {
+        "autor": "Turismo de Haría",
+        "licencia": "con permiso del autor",
+        "enlace": "https://turismoharia.com"
+      },
+      "credito_texto": "Foto: Turismo de Haría",
+      "solo_tarjetas": true
     }
   ],
   "huecos": [

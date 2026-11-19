@@ -10,16 +10,8 @@
   "_fotos_rechazadas": "Tanda 6y2: fotos de Wikipedia que NO son el sitio. Estos lugares van SIN foto (el color neutro de la app) hasta que Eric elija una buena: el servidor no busca nada para ellos ni en Unsplash ni en Wikipedia ni en la caché ni en la foto de su zona (una foto propia suya, si la hay en `fotos`, sí sale). Para sacarlos de la lista: poner la foto propia (docs/dias/FOTOS_ROMA_CANDIDATAS.html tiene 3 candidatas por lugar) y borrar la línea de aquí. Un solo sitio: `fotoOculta` en server/engine/writtenDays.js.",
   "fotos_rechazadas": [
     {
-      "lugar": "Cripta de los Capuchinos",
-      "motivo": "Wikipedia servía la «Kapuzinergruft» de Viena (Wien_-_Kapuzinergruft…): una cripta de otra ciudad."
-    },
-    {
       "lugar": "Trastevere al atardecer",
       "motivo": "Wikipedia servía el reloj del Quirinal (6h-orologioQuirinale.jpg), que no es Trastevere."
-    },
-    {
-      "lugar": "Via dei Coronari",
-      "motivo": "Compartía con Borgo Pio la foto del Passetto di Borgo (Passetto_di_Borgo_from_Castel_Sant'Angelo…): no es la calle."
     },
     {
       "lugar": "Borgo Pio",
@@ -1115,23 +1107,6 @@
       }
     },
     {
-      "archivo": "dia_iglesia_del_gesu.jpg",
-      "lugares": [
-        "Iglesia del Gesù (por dentro)"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "",
-      "autor": "",
-      "enlace": "",
-      "nota": "La cúpula y el techo, por dentro (foto propia del usuario, 8-oct-2026, Tanda 6j). Solo cuando la parada se visita por dentro (nombre con « (por dentro)»); de camino o por fuera no la usa.",
-      "credito": {
-        "autor": "",
-        "licencia": "",
-        "enlace": ""
-      }
-    },
-    {
       "archivo": "dia_piazza_colonna.jpg",
       "lugares": [
         "Piazza Colonna"
@@ -1318,6 +1293,131 @@
         "licencia": "",
         "enlace": ""
       }
+    },
+    {
+      "archivo": "dia_iglesia_del_gesu.jpg",
+      "lugares": [
+        "Iglesia del Gesù",
+        "Iglesia del Gesù (por dentro)"
+      ],
+      "cuando": "dia",
+      "ancho": 850,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento",
+      "solo_tarjetas": true
+    },
+    {
+      "archivo": "dia_san_ignacio_de_loyola.jpg",
+      "lugares": [
+        "Iglesia de San Ignacio de Loyola"
+      ],
+      "cuando": "dia",
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "dia_via_del_babuino.jpg",
+      "lugares": [
+        "Via del Babuino"
+      ],
+      "cuando": "dia",
+      "ancho": 1920,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "dia_via_dei_coronari.jpg",
+      "lugares": [
+        "Via dei Coronari"
+      ],
+      "cuando": "dia",
+      "ancho": 1200,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "dia_testaccio.jpg",
+      "lugares": [
+        "Testaccio"
+      ],
+      "cuando": "dia",
+      "ancho": 1800,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "dia_via_di_ripetta.jpg",
+      "lugares": [
+        "Via di Ripetta"
+      ],
+      "cuando": "dia",
+      "ancho": 1024,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "dia_terraza_largo_gaetana_agnesi.jpg",
+      "lugares": [
+        "Terraza de Largo Gaetana Agnesi"
+      ],
+      "cuando": "dia",
+      "ancho": 1000,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento",
+      "solo_tarjetas": true
+    },
+    {
+      "archivo": "dia_cripta_capuchinos.jpg",
+      "lugares": [
+        "Cripta de los Capuchinos"
+      ],
+      "cuando": "dia",
+      "ancho": 1200,
+      "fuente": "Eric",
+      "origen": "Eric",
+      "derechos": "revisar antes del lanzamiento"
+    },
+    {
+      "archivo": "dia_ponte_sisto.jpg",
+      "lugares": [
+        "Ponte Sisto"
+      ],
+      "cuando": "dia",
+      "ancho": 1920,
+      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
+      "autor": "Livioandronico2013",
+      "enlace": "https://commons.wikimedia.org/wiki/File:Ponte_Sisto_Roma.jpg",
+      "credito": {
+        "autor": "Livioandronico2013",
+        "licencia": "CC BY-SA 4.0",
+        "enlace": "https://commons.wikimedia.org/wiki/File:Ponte_Sisto_Roma.jpg"
+      },
+      "derechos": "libre (con crédito)"
+    },
+    {
+      "archivo": "dia_plaza_del_quirinal.jpg",
+      "lugares": [
+        "Plaza del Quirinal"
+      ],
+      "cuando": "dia",
+      "ancho": 1920,
+      "fuente": "Wikimedia Commons · CC BY 2.5",
+      "autor": "Wolfgang Moroder",
+      "enlace": "https://commons.wikimedia.org/wiki/File:Quirinale_palazzo_e_obelisco_con_dioscuri_Roma.jpg",
+      "credito": {
+        "autor": "Wolfgang Moroder",
+        "licencia": "CC BY 2.5",
+        "enlace": "https://commons.wikimedia.org/wiki/File:Quirinale_palazzo_e_obelisco_con_dioscuri_Roma.jpg"
+      },
+      "derechos": "libre (con crédito)"
     }
   ],
   "notas_revision": {

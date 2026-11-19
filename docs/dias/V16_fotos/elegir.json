@@ -1,0 +1,130 @@
+{
+  "lungotevere": {
+    "sitio": "Lungotevere",
+    "candidatas": [
+      {
+        "letra": "A",
+        "archivo": "Prati - palazzaccio dal tevere 1170069.JPG",
+        "licencia": "CC BY-SA 3.0",
+        "autor": "Lalupa",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Prati_-_palazzaccio_dal_tevere_1170069.JPG",
+        "ancho": 2816,
+        "alto": 2112
+      },
+      {
+        "letra": "B",
+        "archivo": "Trastevere - porto di ripa grande 040227.jpg",
+        "licencia": "CC BY-SA 3.0",
+        "autor": "Lalupa",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Trastevere_-_porto_di_ripa_grande_040227.jpg",
+        "ancho": 2048,
+        "alto": 1536
+      },
+      {
+        "letra": "C",
+        "archivo": "Beautiful View of Rome (492459530).jpg",
+        "licencia": "CC BY 2.0",
+        "autor": "edwin.11",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Beautiful_View_of_Rome_(492459530).jpg",
+        "ancho": 1600,
+        "alto": 1200
+      }
+    ]
+  },
+  "borgo_pio": {
+    "sitio": "Borgo Pio",
+    "candidatas": [
+      {
+        "letra": "A",
+        "archivo": "Borgo 2946.JPG",
+        "licencia": "CC BY-SA 3.0",
+        "autor": "Carlomorino",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Borgo_2946.JPG",
+        "ancho": 2048,
+        "alto": 1536
+      },
+      {
+        "letra": "B",
+        "archivo": "Borgo 2947.JPG",
+        "licencia": "CC BY-SA 3.0",
+        "autor": "Carlomorino",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Borgo_2947.JPG",
+        "ancho": 1536,
+        "alto": 2048
+      },
+      {
+        "letra": "C",
+        "archivo": "Ул. Борго-Пио (Borgo Pio) - вид в сторону виа Плауто - panoramio.jpg",
+        "licencia": "CC BY 3.0",
+        "autor": "tiger rus",
+        "pagina": "https://commons.wikimedia.org/wiki/File:%D0%A3%D0%BB._%D0%91%D0%BE%D1%80%D0%B3%D0%BE-%D0%9F%D0%B8%D0%BE_(Borgo_Pio)_-_%D0%B2%D0%B8%D0%B4_%D0%B2_%D1%81%D1%82%D0%BE%D1%80%D0%BE%D0%BD%D1%83_%D0%B2%D0%B8%D0%B0_%D0%9F%D0%BB%D0%B0%D1%83%D1%82%D0%BE_-_panoramio.jpg",
+        "ancho": 5184,
+        "alto": 3456
+      }
+    ]
+  },
+  "mirador_san_pietro_in_montorio": {
+    "sitio": "Mirador de San Pietro in Montorio",
+    "candidatas": [
+      {
+        "letra": "A",
+        "archivo": "Rom, Blick vom Piazza San Pietro in Montorio zur Innenstadt.JPG",
+        "licencia": "CC BY 3.0",
+        "autor": "Dguendel",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Rom,_Blick_vom_Piazza_San_Pietro_in_Montorio_zur_Innenstadt.JPG",
+        "ancho": 2551,
+        "alto": 1701
+      },
+      {
+        "letra": "B",
+        "archivo": "View of Rome from Piazza San Pietro in Montorio (2).jpg",
+        "licencia": "CC BY-SA 4.0",
+        "autor": "Krzysztof Golik",
+        "pagina": "https://commons.wikimedia.org/wiki/File:View_of_Rome_from_Piazza_San_Pietro_in_Montorio_(2).jpg",
+        "ancho": 5991,
+        "alto": 3033
+      },
+      {
+        "letra": "C",
+        "archivo": "Panoramic view of Rome from Piazza San Pietro in Montorio (1).jpg",
+        "licencia": "CC BY-SA 4.0",
+        "autor": "Krzysztof Golik",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Panoramic_view_of_Rome_from_Piazza_San_Pietro_in_Montorio_(1).jpg",
+        "ancho": 9447,
+        "alto": 2397
+      }
+    ]
+  },
+  "colle_oppio": {
+    "sitio": "Colle Oppio",
+    "candidatas": [
+      {
+        "letra": "A",
+        "archivo": "Il Colosseo dal parco di Colle Oppio.JPG",
+        "licencia": "CC BY-SA 3.0",
+        "autor": "Shardan",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Il_Colosseo_dal_parco_di_Colle_Oppio.JPG",
+        "ancho": 1668,
+        "alto": 1706
+      },
+      {
+        "letra": "B",
+        "archivo": "Thermes Trajan - Rome (IT62) - 2021-08-29 - 11.jpg",
+        "licencia": "CC BY-SA 4.0",
+        "autor": "Chabe01",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Thermes_Trajan_-_Rome_(IT62)_-_2021-08-29_-_11.jpg",
+        "ancho": 4032,
+        "alto": 3024
+      },
+      {
+        "letra": "C",
+        "archivo": "Fontana delle Anfore, Parco del Colle Oppio, Roma, Italia Oct 03, 2025 10-58-42 AM.jpeg",
+        "licencia": "CC BY-SA 4.0",
+        "autor": "Dieterdreist",
+        "pagina": "https://commons.wikimedia.org/wiki/File:Fontana_delle_Anfore,_Parco_del_Colle_Oppio,_Roma,_Italia_Oct_03,_2025_10-58-42_AM.jpeg",
+        "ancho": 8064,
+        "alto": 6048
+      }
+    ]
+  }
+}

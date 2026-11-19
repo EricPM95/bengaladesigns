@@ -23,7 +23,7 @@ const DESTINO = opt('destino', 'roma')
 const SERVIDOR = opt('servidor', 'http://localhost:8787')
 const PAUSA = Number(opt('pausa', '1200'))
 const REHACER = args.includes('--rehacer')
-const UA = 'ViajesBengala/1.0 (route planner; contacto: bengala.ingresos@gmail.com) creditosWikimedia.mjs'
+const UA = 'JutripFotos/1.0 (revision de fotos de destinos; script de creditos)'
 const SALIDA = join(ROOT, 'data', 'dias', DESTINO, '_fotos_wikimedia.json')
 const QUE_ES =
   'Autor y licencia de las fotos de Wikipedia / Wikimedia Commons que la app enseña cuando no hay foto propia ni de Unsplash. ' +

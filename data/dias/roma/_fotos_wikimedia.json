@@ -14,28 +14,6 @@
     },
     {
       "lugares": [
-        "Iglesia del Gesù"
-      ],
-      "archivo": "Chiesa_gesu_facade.jpg",
-      "pagina": "https://commons.wikimedia.org/wiki/File:Chiesa_gesu_facade.jpg",
-      "autor": "Alessio Damato",
-      "licencia": "CC BY-SA 3.0",
-      "licencia_url": "http://creativecommons.org/licenses/by-sa/3.0/",
-      "dominio_publico": false
-    },
-    {
-      "lugares": [
-        "Iglesia de San Ignacio de Loyola"
-      ],
-      "archivo": "Church_of_Sant'Ignazio_di_Loyola.jpg",
-      "pagina": "https://commons.wikimedia.org/wiki/File:Church_of_Sant%27Ignazio_di_Loyola.jpg",
-      "autor": "Fiat 500e",
-      "licencia": "CC BY 4.0",
-      "licencia_url": "https://creativecommons.org/licenses/by/4.0",
-      "dominio_publico": false
-    },
-    {
-      "lugares": [
         "Plaza Colonna"
       ],
       "archivo": "Columna_de_Marco_Aurelio,_plaza_Colonna,_Roma,_Italia,_2022-09-14,_DD_24-26_HDR.jpg",
@@ -140,17 +118,6 @@
       "archivo": "PICT0510_-_Largo_di_Torre_Argentina.jpg",
       "pagina": "https://commons.wikimedia.org/wiki/File:PICT0510_-_Largo_di_Torre_Argentina.jpg",
       "autor": "Adam Carr at English Wikipedia",
-      "licencia": "Public domain",
-      "licencia_url": "",
-      "dominio_publico": true
-    },
-    {
-      "lugares": [
-        "Plaza del Quirinal"
-      ],
-      "archivo": "Quirinal_Hill_Luigi_Rossini.jpg",
-      "pagina": "https://commons.wikimedia.org/wiki/File:Quirinal_Hill_Luigi_Rossini.jpg",
-      "autor": "",
       "licencia": "Public domain",
       "licencia_url": "",
       "dominio_publico": true
