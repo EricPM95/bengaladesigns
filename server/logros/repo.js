@@ -11,6 +11,8 @@ const ok = (resultado, donde) => {
 
 /** (V26) La última ruta bajada de cada viaje, con su sello (`updated_at`): solo se vuelve a bajar si cambia. Vive en la memoria del servidor (una instancia caliente la conserva entre llamadas). */
 const cacheDeViajes = new Map()
+/** (V26) Las direcciones firmadas de las fotos de los logros (id de foto → dirección y cuándo caduca). */
+const cacheDeFotos = new Map()
 const MAXIMO_DE_VIAJES_EN_MEMORIA = 150
 /** Por si algo cambió el viaje sin tocar `updated_at`: pasado este tiempo se vuelve a bajar entero. */
 const EDAD_MAXIMA_DE_UN_VIAJE_MS = 15 * 60 * 1000
@@ -36,10 +38,20 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
     },
     /** (V7) Una dirección firmada (1 hora) de una foto del compañero, o null. */
     async fotoUrl(fotoId) {
+      // (V26) ANTES se firmaba la foto GRANDE, nueva cada vez, para un cuadrito de 52-150 px: cada vez que se abría una colección, el móvil bajaba entera cada foto de cada sitio. Ahora: la MINIATURA (si la hay),
+      // con una firma que dura 6 días y se guarda en memoria (la misma dirección = el móvil no la vuelve a bajar).
+      const guardada = cacheDeFotos.get(fotoId)
+      if (guardada && guardada.hasta > Date.now() + 24 * 3600 * 1000) return guardada.url
       const f = ok(await admin.from('trip_photos').select('storage_path').eq('id', fotoId).maybeSingle(), 'fotoUrl')
       if (!f?.storage_path) return null
-      const r = await admin.storage.from('fotos-viaje').createSignedUrl(f.storage_path, 3600)
-      return r.data?.signedUrl ?? null
+      const mini = f.storage_path.replace(/\.jpe?g$/i, '_min.jpg')
+      const r = await admin.storage.from('fotos-viaje').createSignedUrls(mini !== f.storage_path ? [mini, f.storage_path] : [f.storage_path], 6 * 24 * 3600)
+      const firmadas = r.data ?? []
+      const elegida = firmadas.find((x) => x.path === mini && x.signedUrl && !x.error) ?? firmadas.find((x) => x.path === f.storage_path && x.signedUrl && !x.error)
+      const url = elegida?.signedUrl ?? null
+      if (url) cacheDeFotos.set(fotoId, { url, hasta: Date.now() + 6 * 24 * 3600 * 1000 })
+      if (cacheDeFotos.size > 500) for (const k of [...cacheDeFotos.keys()].slice(0, 100)) cacheDeFotos.delete(k)
+      return url
     },
     /** (V16) Los hechos con foto de esta persona que aún NO tienen su foto unida (`foto_id` vacío): { id, instante }. */
     async hechosConFotoSinUnir(userId) {

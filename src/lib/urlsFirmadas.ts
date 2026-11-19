@@ -81,6 +81,21 @@ export async function firmarConCache(bucket: string, rutas: string[], firmador: 
   return salida
 }
 
+/**
+ * (V26) Una dirección firmada que MANDA EL SERVIDOR (las fotos de las colecciones de logros): el servidor puede dar otra distinta cada vez para la misma foto; aquí se guarda la primera que se vio y se reutiliza hasta 5 días
+ * (la firma dura 6): la misma foto, la misma dirección, el móvil no la vuelve a bajar. La clave es la dirección sin la firma.
+ */
+const vistasDelServidor = new Map<string, { url: string; desde: number }>()
+export function urlEstable(url: string | null | undefined, ahora: number = Date.now()): string | null {
+  if (!url) return null
+  const clave = url.split('?')[0]
+  const vista = vistasDelServidor.get(clave)
+  if (vista && ahora - vista.desde < 5 * 24 * 3600 * 1000) return vista.url
+  vistasDelServidor.set(clave, { url, desde: ahora })
+  if (vistasDelServidor.size > 400) for (const k of [...vistasDelServidor.keys()].slice(0, 100)) vistasDelServidor.delete(k)
+  return url
+}
+
 /** Una foto que se borra o cambia: su dirección guardada ya no vale. */
 export function olvidarUrlFirmada(bucket: string, ruta: string, almacen: Almacen = almacenDelMovil): void {
   if (enMemoria.delete(`${bucket}/${ruta}`)) guardarEnElMovil(almacen)

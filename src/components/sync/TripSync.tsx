@@ -92,8 +92,6 @@ export function TripSync() {
   const campaignCode = useRouteStore((state) => state.campaignCode)
   const sales = useRouteStore((state) => state.sales)
   const wishlist = useRouteStore((state) => state.wishlist)
-  const mode = useRouteStore((state) => state.mode)
-  const activeDayId = useRouteStore((state) => state.activeDayId)
   const travelerId = useSyncStore((state) => state.travelerId)
 
   const hydratedRef = useRef(false)
@@ -275,7 +273,9 @@ export function TripSync() {
     const timeout = setTimeout(() => attemptSave(travelerId), SAVE_DEBOUNCE_MS)
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [travelerId, route, accommodationSelections, transportBookings, insuranceBooking, n26Added, rentalVehicleBooking, esimSelections, esimPrecios, dondeComprado, reservations, campaignCode, sales, wishlist, mode, activeDayId])
+  }, [travelerId, route, accommodationSelections, transportBookings, insuranceBooking, n26Added, rentalVehicleBooking, esimSelections, esimPrecios, dondeComprado, reservations, campaignCode, sales, wishlist])
+
+  // (V26) Abrir una pestaña o un día NO guarda nada: cualquier guardado en la nube hace que Realtime mande la fila entera (ruta incluida) a todos los móviles. La pestaña y el día viajan con el siguiente cambio real.
 
   // Si el viajero acaba creando OTRO viaje, ya no hay a dónde volver desde el formulario.
   useEffect(

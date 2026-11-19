@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
+import { urlEstable } from '../../../lib/urlsFirmadas'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { pedirColeccion, type ColeccionDentroDatos } from '../pantallas/destino/api'
 import { useLogrosPantallas } from '../pantallas/useLogrosPantallas'
@@ -37,7 +38,7 @@ export function useFotosDeColeccion(destino: string, coleccion: string, tripId: 
     void pedirColeccion(destino, coleccion, tripId).then((d: ColeccionDentroDatos | null) => {
       if (!vivo || !d) return
       const m: Record<string, string | null> = {}
-      for (const s of d.sitios) m[s.sitio] = s.foto_url ?? null
+      for (const s of d.sitios) m[s.sitio] = urlEstable(s.foto_url ?? null)
       fotosEnMemoria.set(clave, m)
       setFotos(m)
     })

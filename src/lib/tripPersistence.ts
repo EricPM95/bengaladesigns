@@ -255,6 +255,12 @@ export async function selloDelViaje(tripId: string): Promise<string | null | und
   return selloDe(fila.updated_at, fila.guardado_en)
 }
 
+/** (V26) El sello del guardado que acabamos de hacer: así el eco de Realtime de lo PROPIO se reconoce con una pregunta de 100 bytes y no baja el viaje entero. */
+function apuntarSelloPropio(tripId: string, hecho: unknown): void {
+  const fila = Array.isArray(hecho) ? (hecho[0] as { updated_at?: string | null; guardado_en?: string | null } | undefined) : undefined
+  if (fila?.updated_at) recordarSello(tripId, fila.updated_at, fila.guardado_en)
+}
+
 /** El mismo texto para la misma ruta aunque las claves vengan en otro orden (la base de datos las reordena): así se reconoce el eco del propio guardado. */
 export function canonico(valor: unknown): string {
   const ordenar = (v: unknown): unknown => (Array.isArray(v) ? v.map(ordenar) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v as object).sort().map((k) => [k, ordenar((v as Record<string, unknown>)[k])])) : v)
@@ -303,14 +309,16 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
       recordarGuardado(tripId, canonico(ruta))
       // (Tanda 10N §4a) Quien tiene «Puede editar» guarda la ruta y la lista de deseos (NO el vuelo, el alojamiento ni las fechas, que son del administrador).
       if (permisoDeEsteViaje() === 'editar') {
-        const { error } = await supabase.from('trips').update({ route: ruta, wishlist: payload.wishlist, updated_at: row.updated_at }).eq('id', tripId).select('id')
+        const { data: hecho, error } = await supabase.from('trips').update({ route: ruta, wishlist: payload.wishlist, updated_at: row.updated_at }).eq('id', tripId).select('id, updated_at, guardado_en')
         if (error) throw error
+        apuntarSelloPropio(tripId, hecho)
         recordarBase(tripId, ruta)
         return tripId
       }
       // Solo el administrador cambia el viaje: si es de otra persona (esta está invitada), la base de datos no toca nada y aquí tampoco se avisa de un fallo.
-      const { error } = await supabase.from('trips').update({ ...row, route: ruta }).eq('id', tripId).eq('traveler_id', travelerId).select('id')
+      const { data: hecho, error } = await supabase.from('trips').update({ ...row, route: ruta }).eq('id', tripId).eq('traveler_id', travelerId).select('id, updated_at, guardado_en')
       if (error) throw error
+      apuntarSelloPropio(tripId, hecho)
       recordarBase(tripId, ruta)
       return tripId
     }

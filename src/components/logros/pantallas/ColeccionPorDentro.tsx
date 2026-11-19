@@ -11,6 +11,7 @@ import { diaDeRuta, fechaCorta } from './destino/formato'
 import { BotonVolver, Esperando, FONDO_PAPEL, useCarga } from './destino/piezas'
 import './destino/destino.css'
 import { Capa } from './Capa'
+import { urlEstable } from '../../../lib/urlsFirmadas'
 import { todayIso } from '../../../lib/dateRange'
 import { zonaDelDestino } from '../../../lib/zonaHoraria'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
@@ -118,7 +119,7 @@ function Tarjeta({ s, k, coleccion, total, datos, tocada, alTocar }: { s: Colecc
   const botones = !s.visto && conViaje && !terminado
   return (
     <div data-sitio-de-coleccion={s.sitio} data-ganado={s.visto ? '1' : '0'} role="button" tabIndex={0} onClick={alTocar} onKeyDown={(e) => e.key === 'Enter' && alTocar()} style={{ position: 'relative', display: 'flex', flexDirection: 'column', borderRadius: 22, background: s.visto ? '#FFFDF8' : '#EFE7D8', border: tocada ? '2px solid #C99A4C' : `1px solid rgba(28,34,48,${s.visto ? 0.08 : 0.1})`, overflow: 'hidden', boxShadow: tocada ? '0 10px 22px -12px rgba(150,105,30,.7)' : s.visto ? '0 8px 20px -16px rgba(28,34,48,.35)' : 'none', cursor: 'pointer' }}>
-      <FotoDeSitio url={s.foto_url} nombre={s.nombre} ciudad={datos.ciudad} gris={!s.visto} />
+      <FotoDeSitio url={urlEstable(s.foto_url)} nombre={s.nombre} ciudad={datos.ciudad} gris={!s.visto} />
       {trozo && (
         <span data-trozo-de-sitio aria-hidden="true" style={{ position: 'absolute', left: 8, top: 8, width: 46, height: 46, borderRadius: '50%', background: '#FFFDF8', boxShadow: '0 4px 10px -4px rgba(28,34,48,.5)', overflow: 'hidden' }}>
           <span style={{ position: 'absolute', left: 23 - trozo.centro[0] * TAM, top: 23 - trozo.centro[1] * TAM, width: TAM, height: TAM, clipPath: recorteDeTrozo(trozo, TAM) }}>

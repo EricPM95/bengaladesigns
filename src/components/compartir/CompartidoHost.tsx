@@ -57,7 +57,8 @@ function Encendido() {
     // (10N10) Quién espera a quién (el cambio del viaje y su aviso llegan por canales distintos) está en lib/anfitrionDeCambios.ts.
     const anfitrion = crearAnfitrionDeCambios({
       tripId,
-      refrescar: refrescarViajeActivo,
+      // (V26) Cada guardado llegaba a TODOS (también al propio móvil) y cada uno bajaba el viaje ENTERO para ver si había cambiado. Ahora se pregunta primero por el sello (~100 bytes): lo propio y lo que no cambió no baja nada.
+      refrescar: () => refrescarViajeActivo({ sondeo: true }),
       cargarAvisos: () => useAvisosStore.getState().cargar(),
       anunciados: avisosAnunciados,
       decir,

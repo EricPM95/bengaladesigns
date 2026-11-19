@@ -1,0 +1,5 @@
+export * as TP from '../../src/lib/tripPersistence'
+export { refrescarViajeActivo } from '../../src/lib/viajeEnDirecto'
+export { useSyncStore } from '../../src/store/useSyncStore'
+export { useRouteStore } from '../../src/store/useRouteStore'
+export { firmarConCache, olvidarTodasLasUrlsFirmadas } from '../../src/lib/urlsFirmadas'

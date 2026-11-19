@@ -154,5 +154,24 @@ console.log('5. Los números')
   debe(mbAhora < mbAntes / 15, 'numeros', `la ruta entera ya no es lo que más sale: de ~${mbAntes.toFixed(0)} MB a ~${mbAhora.toFixed(1)} MB por persona y día`)
 }
 
+/* ---- V26b: guardados, Realtime y fotos de logros ---- */
+{
+  const sync = leer('src/components/sync/TripSync.tsx')
+  const tp = leer('src/lib/tripPersistence.ts')
+  const deps = (sync.match(/[travelerId, route, accommodationSelections[^]]*]/) ?? [''])[0]
+  debe(deps !== '' && !/mode|activeDayId/.test(deps), 'guardados', 'abrir una pestaña o un día NO dispara un guardado del viaje (mode y activeDayId fuera de las dependencias del autoguardado)')
+  debe(!/saveUiState/.test(sync + tp), 'guardados', 'no queda un guardado aparte de la pestaña o el día (cualquier escritura en la fila hace que Realtime mande la fila entera a todos)')
+  debe(/apuntarSelloPropio/.test(tp), 'sello', 'tras guardar, el sello propio se apunta: el eco de Realtime de lo propio se reconoce sin bajar el viaje')
+  debe(/sondeo: true/.test(leer('src/components/compartir/CompartidoHost.tsx')), 'sello', 'el aviso de Realtime refresca con el sondeo del sello (100 bytes) y no baja el viaje si no ha cambiado')
+  const repo = leer('server/logros/repo.js')
+  debe(/_min.jpg/.test(repo) && /cacheDeFotos/.test(repo), 'fotos_logros', 'las fotos de los logros se firman en MINIATURA y la firma se reutiliza (cuadritos de 52-150 px no bajan la foto grande)')
+  debe(!/createSignedUrl(f.storage_path, 3600)/.test(repo), 'fotos_logros', 'ya no se firma la foto grande con una firma de 1 hora, nueva cada vez')
+  const { urlEstable } = await import('../../src/lib/urlsFirmadas.ts')
+  const a = urlEstable('https://x/obj/sign/fotos-viaje/a_min.jpg?token=1', 1000)
+  const b = urlEstable('https://x/obj/sign/fotos-viaje/a_min.jpg?token=2', 2000)
+  debe(a === b, 'fotos_logros', 'el cliente reutiliza la dirección firmada que vio primero para la misma foto (el móvil no la vuelve a bajar)')
+  debe(urlEstable('https://x/obj/sign/fotos-viaje/a_min.jpg?token=3', 1000 + 6 * 24 * 3600 * 1000) !== a, 'fotos_logros', 'y la renueva pasados 5 días')
+}
+
 console.log(`\nPrueba de la Tanda V26: ${comprobaciones} comprobaciones · ${fallos.length} fallos`)
 process.exit(fallos.length ? 1 : 0)
