@@ -138,9 +138,8 @@ try {
   debe(b != null, 'el botón flotante no sale antes del viaje')
   if (b) {
     debe(b.grado === 'ninguno', `el botón antes del viaje tiene grado «${b.grado}»`)
-    debe(b.w === 52 && b.h === 52 && b.der === 14, `el botón no mide 52 px a 14 px del borde (V5: igual que la cámara) (${b.w}x${b.h}, ${b.der})`)
-    debe(b.pista === '4 3', `el aro del botón antes del viaje no es a rayas (${b.pista})`)
-    debe(b.aro === 'transparent', `el aro de avance del botón antes del viaje debería ir vacío (${b.aro})`)
+    debe(b.w === 44 && b.h === 44, `(V18) el botón mide 44 px, igual que la cámara (${b.w}x${b.h})`)
+    debe(b.aro === undefined, `(V18) el botón ya no lleva aro de avance (${b.aro})`)
     // (V5, 4c) Sin nada ganado, el botón lleva el trofeo en oro sobre fondo crema en vez del sello al 50 %.
     debe(b.opSello === null || b.opSello === undefined || b.opSello === '' || b.opSello === '0.5', `el botón antes del viaje: sin el sello gris (lleva el trofeo dorado) (${b.opSello})`)
     debe(await a.evaluar("Boolean(document.querySelector('[data-boton-logros-trofeo]'))"), 'el botón antes del viaje debería llevar el trofeo en oro (V5)')

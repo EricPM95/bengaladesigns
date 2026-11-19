@@ -15,7 +15,7 @@ import { abrirGaleriaDeReclamo } from '../../logros/reclamar/Reclamar'
 import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
 import { BotonGuardarEnGaleria } from '../fotos/BotonGuardarEnGaleria'
-import { SOBRE_LOS_LOGROS, useFlotantes } from '../../flotantes/flotantes'
+import { ESTILO_FLOTANTE, SOBRE_LOS_LOGROS, useFlotantes } from '../../flotantes/flotantes'
 import { useBotonReorganizarVisible } from '../../reorganizar/useBotonReorganizarVisible'
 import { useLapizVisible } from '../../propuesta/BotonDePropuesta'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -324,9 +324,9 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
         data-modo={modo}
         aria-label="Tu cámara de viaje"
         className="zona-toque flex items-center justify-center transition-transform active:scale-95"
-        style={{ position: 'fixed', right: 14, bottom: `calc(${sueloLogros} + ${SOBRE_LOS_LOGROS + (hayOtroFlotante ? SOBRE_LOS_LOGROS : 0)}px)`, zIndex: debajo ? 40 : 85, width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', border: '1.5px solid #9A7228', boxShadow: '0 12px 22px -8px rgba(60,40,10,.6),inset 0 1px 0 rgba(255,255,255,.7)', boxSizing: 'border-box', color: '#3E2A0C' }}
+        style={{ ...ESTILO_FLOTANTE, position: 'fixed', right: 21, bottom: `calc(${sueloLogros} + ${SOBRE_LOS_LOGROS + (hayOtroFlotante ? SOBRE_LOS_LOGROS : 0)}px)`, zIndex: debajo ? 40 : 85 }}
       >
-        <Trazo d={CAMARA} tam={19} />
+        <Trazo d={CAMARA} tam={20} color="#7A5A1E" grosor={1.8} />
       </button>
       {hoja && <HojaCamara modo={hoja} conAcceso={conAcceso} destino={route.destination} rango={rango} onCerrar={() => setHoja(null)} onAbrir={abrirDesdeLaHoja} onVerPase={() => { setHoja(null); abrirPase() }} />}
       {camara && <CamaraApp nombre={camara.nombre ?? 'Tu recuerdo de hoy'} oculto={camara.oculto} alFoto={(f) => void hacerFoto(f)} alCerrar={() => setCamara(null)} />}

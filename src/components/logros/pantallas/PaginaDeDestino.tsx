@@ -27,7 +27,7 @@ export default function PaginaDeDestino({ pantalla }: { pantalla: Pagina }): Rea
   const destino = alias?.destino ?? pantalla.destino
   const resaltar = pantalla.resaltar ?? alias?.resaltar ?? null
   const tripId = useSyncStore((s) => s.activeTripId) ?? null
-  const datos = useCarga(() => pedirDestino(destino, tripId), [destino, tripId])
+  const datos = useCarga(() => pedirDestino(destino, tripId), [destino, tripId], `pantalla:destino:${destino}:${tripId ?? ''}`)
   const volver = () => useLogrosPantallas.getState().volver()
   return (
     <Capa etiqueta="Página de un destino" fondo={FONDO_PAPEL}>

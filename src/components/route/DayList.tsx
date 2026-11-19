@@ -32,6 +32,7 @@ import { DayCardSwitch } from './DayCardSwitch'
 import { useInterruptorUiStore } from '../../store/useInterruptorUiStore'
 import { logrosActivos } from '../../lib/logros'
 import { ExcursionCardMeta } from './dayDetail/excursion/ExcursionCardMeta'
+import { ExcursionEstadoDelDia } from './dayDetail/ExcursionBloque'
 import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '../../lib/dayInterruptor'
 import { diaDeHoy, diaQueSeAbreAlEntrar } from '../../lib/diaDeHoy'
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../lib/diaCompleto'
@@ -310,7 +311,15 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 )}
                 {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3); en el día 4 con interruptor, con sus horas y la reserva. */}
                 {enExcursion && !travel && <ExcursionCardMeta excursion={viewedExcursion(day)} reservedName={excursionReservationOf(route, reservations, day)?.name.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '') ?? null} />}
-                {day.dayType === 'excursion' && !enExcursion && !travel && <p className="text-[12.5px] font-medium text-accent">Día de excursión</p>}
+                {day.dayType === 'excursion' && !enExcursion && !travel && (
+                  <>
+                    <p className="text-[12.5px] font-medium text-accent">Día de excursión</p>
+                    {/* (V18, Design E5) El día cerrado dice si la excursión está reservada: «Sin reservar» en rojo o «Reservada · salida 08:15» en verde. */}
+                    {(day.excursions ?? []).length > 0 && (
+                      <ExcursionEstadoDelDia reserva={excursionReservationOf(route, reservations, day)} />
+                    )}
+                  </>
+                )}
                 {/* (Tanda 10M: ya no hay aquí las pastillas de los avisos de fechas —«Panteón cerrado», «Año Nuevo»…—: van a la campana de arriba.) */}
                 {/* (Ya no hay aquí la línea de lo reservado con su hora, «Coliseo · 10:00» con candado: la hora está en la pestañita verde de la parada. Tanda 6z3.) */}
                 {/* (Ya no hay aquí el contador «17 paradas»: Tanda 6y4.) */}

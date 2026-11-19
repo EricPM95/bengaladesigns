@@ -61,3 +61,13 @@ export const CARD_STYLE: Record<TarjetaDeExplorar, { color: string; shadow: stri
 
 /** Un color sólido de un fondo que puede ser un degradado (para bordes y sombras). */
 export const solidOf = (color: string) => (color.startsWith('linear') ? 'oklch(0.66 0.17 38)' : color)
+
+/** (V18) Un TEMA de EXPLORAR como botón de arriba del mapa: el mismo que su tarjeta (nombre, icono, color y número). */
+export interface TemaDeExplorar {
+  id: string
+  label: string
+  icono: NombreIcono
+  /** El color del cuadro de icono (sólido o degradado), el de la tarjeta. */
+  color: string
+  cuantos: number
+}

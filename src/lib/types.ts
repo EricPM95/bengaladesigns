@@ -711,6 +711,9 @@ export interface Excursion {
   photoUrlBig?: string | null
   /** La más reservada del destino: solo si el dato es real (PARA_CODE_EXCURSIONES, 2). */
   bestSeller?: boolean
+  /** (V18) Lo que incluye y cómo es la recogida, tal como lo dice la ficha del operador (`_civitatis.json`); sin dato, null: las etiquetas de la tarjeta solo salen si son verdad. */
+  incluye?: string | null
+  recogida?: string | null
   /** Tanda 6g: lo que enseña la página de la excursión del día 4 (datos de `_excursiones.json`). */
   page?: ExcursionPage
 }

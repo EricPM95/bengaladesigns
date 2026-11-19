@@ -196,6 +196,47 @@
    "verificar": "Coordenadas del punto exacto en el mar sin confirmar.",
    "fuente": "https://www.divecollegelanzarote.com/en/museo-atlantico/",
    "comprobado": "2026-11-02"
+  },
+  {
+   "id": "bodega_el_grifo",
+   "name": "Bodega El Grifo",
+   "zone": "centro",
+   "coordinates": [
+    28.998,
+    -13.618
+   ],
+   "coordinates_fuente": "Aproximada: la de la parada de aparcar de data/dias/lanzarote/_paradas.json (verificar:true). Por comprobar con Google Maps.",
+   "type": "interior",
+   "tags": [
+    "vino",
+    "bodega"
+   ],
+   "duration_minutes": 45,
+   "por_que_recomendamos": "Una bodega de 1775 con museo del vino. La visita «El Grifo a tu aire» (45 minutos) lleva audioguía y dos vinos; se visita de lunes a viernes y conviene reservar.",
+   "nota": "Va en EXPLORAR (Bodegas), no es una parada de la ruta: La Geria ya lleva sus bodegas.",
+   "verificar": "Coordenada aproximada, por comprobar.",
+   "fuente": "https://elgrifo.com/en/pages/museo-del-vino-el-grifo",
+   "comprobado": "2026-11-19"
+  },
+  {
+   "id": "bodega_la_geria",
+   "name": "Bodega La Geria",
+   "zone": "centro",
+   "coordinates": [
+    28.968,
+    -13.703
+   ],
+   "coordinates_fuente": "Aproximada: la de la parada de aparcar de data/dias/lanzarote/_paradas.json (verificar:true). Por comprobar con Google Maps.",
+   "type": "interior",
+   "tags": [
+    "vino",
+    "bodega"
+   ],
+   "duration_minutes": 45,
+   "por_que_recomendamos": "Una bodega junto a la carretera de La Geria, con su bar: para probar la malvasía entre las viñas plantadas en hoyos de ceniza.",
+   "nota": "Va en EXPLORAR (Bodegas), no es una parada de la ruta: La Geria ya lleva sus bodegas.",
+   "verificar": "Coordenada y días de apertura sin confirmar.",
+   "comprobado": "2026-11-19"
   }
  ],
  "places": [
@@ -2153,6 +2194,7 @@
    {
     "id": "la_graciosa",
     "name": "La Graciosa",
+    "civitatis_id": "graciosa_velero",
     "tipo": "ferry_o_excursion",
     "con_coche": {
      "ferry": {
@@ -2208,6 +2250,7 @@
    {
     "id": "fuerteventura",
     "name": "Fuerteventura (Corralejo y dunas)",
+    "civitatis_id": "fuerteventura",
     "tipo": "ferry_o_excursion",
     "con_coche": {
      "ferry": {
@@ -2226,6 +2269,7 @@
    {
     "id": "isla_de_lobos",
     "name": "Isla de Lobos",
+    "civitatis_id": "isla_lobos",
     "tipo": "excursion",
     "sin_coche": {
      "civitatis": "Excursión a Isla de Lobos desde Puerto del Carmen",

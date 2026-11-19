@@ -4,7 +4,7 @@ import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { logrosActivos } from '../../lib/logros'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useBotonReorganizarVisible } from '../reorganizar/useBotonReorganizarVisible'
-import { AIRE_BAJO_LOS_BOTONES, SOBRE_LOS_LOGROS as SUBE, useFlotantes, useLapizALaVista } from '../flotantes/flotantes'
+import { AIRE_BAJO_LOS_BOTONES, LADO_DE_LOS_FLOTANTES, SOBRE_LOS_LOGROS as SUBE, useFlotantes, useLapizALaVista } from '../flotantes/flotantes'
 
 /**
  * EL LÁPIZ FLOTANTE DE LA PROPUESTA (Tanda 10N, apartado 6; «Propuesta Botón · A»): un círculo azul noche con el lápiz y, encima, el numerito de cambios en oro, justo ENCIMA del botón de los logros.
@@ -99,7 +99,7 @@ export function useHuecoAlFinal(minimo = 40): number {
   const { suelo } = useFlotantes()
   // (V5) La cámara de viaje va ahora en TODAS las pantallas, encima del botón de los logros: el hueco cuenta los dos botones (52 + 12 de aire cada uno) y, si está, el lápiz.
   void logrosActivos
-  return Math.max(minimo, suelo + (visible ? SOBRE_LOS_LOGROS + ALTO_DEL_LAPIZ : 0) + SOBRE_LOS_LOGROS + 52 + AIRE_BAJO_LOS_BOTONES)
+  return Math.max(minimo, suelo + (visible ? SOBRE_LOS_LOGROS + ALTO_DEL_LAPIZ : 0) + SOBRE_LOS_LOGROS + LADO_DE_LOS_FLOTANTES + AIRE_BAJO_LOS_BOTONES)
 }
 
 /** El hueco que se deja al final de DÍAS y EXPLORAR cuando el lápiz está a la vista, para que no tape la última parada ni la última tarjeta. */

@@ -18,7 +18,7 @@ import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
 const conAvance = (l: LogroDeColeccion): boolean => l.ganado || (l.avance != null && l.avance.n > 0)
 
 export default function MiColeccion({ pantalla }: { pantalla: PantallaDe<'mi_coleccion'> }): ReactNode {
-  const datos = useCarga(pedirMiColeccion, [])
+  const datos = useCarga(pedirMiColeccion, [], 'pantalla:mi_coleccion')
   const volver = () => useLogrosPantallas.getState().volver()
   const [abierto, setAbierto] = useState<LogroDeColeccion | null>(null)
   return (
@@ -89,6 +89,7 @@ function Hueco({ l, abrir }: { l: LogroDeColeccion; abrir: () => void }): ReactN
   const pasos = l.avance && l.n_total === 1 ? l.avance.total : l.n_total
   const hechos = l.avance && l.n_total === 1 ? l.avance.n : l.n_ganados
   const nombre = hay ? (l.nombre ?? l.nombre_logro ?? NOMBRE_DE_FAMILIA[l.id] ?? '') : 'Por conseguir'
+  const punto = Math.max(3, Math.min(5, Math.floor((84 - (pasos - 1) * 2) / Math.max(1, pasos))))
   return (
     <button type="button" onClick={abrir} style={{ minHeight: 44, border: 'none', background: 'transparent', padding: '6px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
       <span style={{ position: 'relative', width: 78, height: 78, borderRadius: '50%', background: 'radial-gradient(circle at 50% 60%,#1E070C,#2A0C14 70%)', boxShadow: 'inset 0 5px 10px rgba(0,0,0,.75),inset 0 -2px 3px rgba(243,213,154,.12),0 1px 0 rgba(243,213,154,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -100,11 +101,10 @@ function Hueco({ l, abrir }: { l: LogroDeColeccion; abrir: () => void }): ReactN
           </span>
         )}
       </span>
-      {pasos > 1 && (
-        <span aria-hidden="true" style={{ display: 'flex', gap: 3, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 84 }}>
-          {Array.from({ length: pasos }, (_, k) => <span key={k} style={{ width: 5, height: 5, borderRadius: '50%', background: k < hechos ? '#F3D59A' : 'rgba(243,213,154,.22)' }} />)}
-        </span>
-      )}
+      {/* (V18) Los puntitos de avance, SIEMPRE en una sola fila (más pequeños si son muchos) y con su hueco reservado aunque no haya: así todos los nombres quedan a la misma altura. */}
+      <span aria-hidden="true" data-puntos-de-avance={pasos > 1 ? pasos : 0} style={{ display: 'flex', gap: 2, flexWrap: 'nowrap', justifyContent: 'center', height: 5, maxWidth: 84 }}>
+        {pasos > 1 && Array.from({ length: pasos }, (_, k) => <span key={k} style={{ width: punto, height: punto, flex: 'none', borderRadius: '50%', background: k < hechos ? '#F3D59A' : 'rgba(243,213,154,.22)' }} />)}
+      </span>
       <span style={{ font: "500 11px/1.2 'Geist'", color: hay ? '#FFF3D6' : 'rgba(243,213,154,.45)', textWrap: 'balance', textAlign: 'center' }}>{nombre}</span>
     </button>
   )

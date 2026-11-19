@@ -17,7 +17,7 @@ import { EspacioParaElLapiz } from '../propuesta/BotonDePropuesta'
 import { FreeTourSheet, freeTourAvailable } from './reservas/FreeTourSheet'
 import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
-import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId, type TarjetaDeExplorar } from '../../lib/exploreStyle'
+import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId, type TarjetaDeExplorar, type TemaDeExplorar } from '../../lib/exploreStyle'
 import { Icono } from '../ui/Icono'
 import type { NombreIcono } from '../../lib/iconos'
 import { usePasePintable } from '../../lib/pago'
@@ -268,6 +268,39 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     onSelectResultId(null)
   }
 
+  /** (V18) Los botones de arriba del mapa = los temas de las tarjetas (mismo orden, icono y color), sin «Hoteles»; el tocado sale marcado y al tocar otro cambia todo sin salir. */
+  const temasDeArriba = (): TemaDeExplorar[] => {
+    if (deCoche && hasCuratedCatalog) {
+      const lista: TemaDeExplorar[] = []
+      for (const categoria of CATEGORIAS_EXPLORAR_LANZAROTE) {
+        if (categoria.id === 'excursiones' && excursions.length === 0) continue
+        const cuantos = categoria.id === 'excursiones' ? excursions.length : lugaresDeCategoriaLanzarote(categoria, curatedPool).filter((place) => !place.fuera_de_lista || place.name === 'Charco del Palo').length
+        lista.push({ id: categoria.id, label: categoria.label, icono: categoria.icono, color: CARD_STYLE[categoria.estilo].color, cuantos })
+      }
+      lista.push({ id: 'restaurantes', label: 'Restaurantes', icono: EXPLORE_ICONOS[CARD_STYLE.restaurantes.icon], color: CARD_STYLE.restaurantes.color, cuantos: countFor('restaurantes') ?? 0 })
+      return lista
+    }
+    return EXPLORE_CARDS.filter((card) => card.id !== 'hoteles' && (card.id !== 'excursiones' || excursions.length > 0) && (card.id !== 'banos' || (hasToilets && estadoPase !== 'pendiente' && banosYFuentes)) && (card.id !== 'fuentes' || (hasFountains && estadoPase !== 'pendiente' && banosYFuentes))).map((card) => ({
+      id: card.id,
+      label: card.label,
+      icono: EXPLORE_ICONOS[CARD_STYLE[card.id].icon],
+      color: CARD_STYLE[card.id].color,
+      cuantos: countFor(card.id) ?? 0,
+    }))
+  }
+  const cambiarDeTema = (id: string) => {
+    const categoria = CATEGORIAS_EXPLORAR_LANZAROTE.find((x) => x.id === id && x.id !== 'excursiones')
+    setOrigenApertura(null)
+    setAperturaCerca(false)
+    if (categoria && deCoche) {
+      setActiveCard(null)
+      setCategoriaLz(categoria)
+      return
+    }
+    setCategoriaLz(null)
+    setActiveCard(id as ExploreCardId)
+  }
+
   /** Cuántos elementos hay detrás de cada tarjeta. */
   const countFor = (id: TarjetaDeExplorar): number | null => {
     if (id === 'hoteles') return null
@@ -304,6 +337,9 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         excursions={excursions}
         title={`Explorar ${city}`}
         subtitle={categoriaLz ? categoriaLz.label : (EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null)}
+        temas={temasDeArriba()}
+        temaActivo={categoriaLz ? categoriaLz.id : activeCard}
+        onTema={cambiarDeTema}
         route={route}
         initialFilters={activeCard ? [activeCard] : []}
         pinsDeLaLista={categoriaLz !== null}

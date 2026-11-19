@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · BOTONES FLOTANTES Y PASE</span><span style="font:400 40px/1 'Instrument Serif',serif">Cámara y trofeo, mismo estilo</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:10px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">B1 · Los tres botones flotantes (el de avisar, más pequeño)</span>
+      <div style="position:relative;width:390px;height:520px;border-radius:32px;overflow:hidden;background:#F5EFE4;box-shadow:0 30px 60px -30px rgba(28,34,48,.5)">
+        <div style="position:absolute;left:0;right:0;bottom:0;height:78px;background:#1C2230"></div>
+        <div style="position:absolute;right:16px;bottom:96px;display:flex;flex-direction:column;gap:12px"><span style="align-self:center;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 32% 26%,#FFFFFF 0%,#FBF1DA 55%,#F0DEB0 100%);border:1.5px solid #C9A45A;box-shadow:0 10px 18px -10px rgba(90,64,16,.5),inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 3px rgba(255,253,246,.9),inset 0 0 0 4px rgba(201,164,90,.35);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9.5v4.5M12 17.2h.01"></path></svg></span>
+          <span style="position:relative;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 32% 26%,#FFFFFF 0%,#FBF1DA 55%,#F0DEB0 100%);border:1.5px solid #C9A45A;box-shadow:0 12px 22px -10px rgba(90,64,16,.55),0 2px 4px rgba(90,64,16,.18),inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 3px rgba(255,253,246,.9),inset 0 0 0 4px rgba(201,164,90,.35);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"></path></svg></span>
+          <span style="position:relative;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 32% 26%,#FFFFFF 0%,#FBF1DA 55%,#F0DEB0 100%);border:1.5px solid #C9A45A;box-shadow:0 12px 22px -10px rgba(90,64,16,.55),0 2px 4px rgba(90,64,16,.18),inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 3px rgba(255,253,246,.9),inset 0 0 0 4px rgba(201,164,90,.35);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"></path></svg></span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">P1 · Pase Roma activo, en verde pastel</span>
+      <div style="width:390px;border-radius:32px;background:#F5EFE4;padding:22px 16px;box-shadow:0 30px 60px -30px rgba(28,34,48,.5);display:flex;flex-direction:column;gap:18px">
+        <div style="border-radius:26px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);padding:16px 16px 14px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:14px"><span style="width:60px;height:60px;border-radius:16px;background:linear-gradient(90deg,#1F9A55 0 33%,#F2EFE8 33% 66%,#D8323C 66%)"></span><span style="display:flex;flex-direction:column;gap:2px"><span style="font:400 30px/1 'Instrument Serif',serif">Roma</span><span style="font:400 14px 'Geist';color:rgba(28,34,48,.55)">5 días · 4 noches</span></span></div>
+          <div style="border-top:1px solid rgba(28,34,48,.1);padding-top:12px;display:flex;align-items:center;gap:10px">
+            <span style="height:40px;padding:0 16px 0 12px;border-radius:999px;background:linear-gradient(135deg,#E4F5E3,#C4E6C9 60%,#A9D9B3);border:1px solid #8CC59A;display:inline-flex;align-items:center;gap:7px;font:700 14.5px 'Geist';color:#2F6B43;box-shadow:0 6px 14px -8px rgba(47,107,67,.5),inset 0 1px 0 rgba(255,255,255,.7)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2F6B43" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Pase Roma</span>
+            <span style="height:40px;padding:0 16px;border-radius:999px;background:linear-gradient(135deg,#F6E8BE,#E5CD93);display:inline-flex;align-items:center;font:700 14.5px 'Geist';color:#5A4116">Compartir</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">B2 · Al tocarlo: la hoja para avisar</span>
+      <div style="position:relative;width:390px;height:640px;border-radius:32px;overflow:hidden;background:#F5EFE4;box-shadow:0 30px 60px -30px rgba(28,34,48,.5)">
+        <div style="position:absolute;inset:0;background:rgba(28,34,48,.42)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;border-radius:30px 30px 0 0;background:#FFFDF8;padding:10px 18px 22px;display:flex;flex-direction:column;gap:14px">
+          <span style="align-self:center;width:42px;height:5px;border-radius:5px;background:rgba(28,34,48,.18)"></span>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between"><span style="font:400 28px/1.05 'Instrument Serif',serif">¿Qué ha pasado?</span><span style="width:34px;height:34px;border-radius:50%;background:#F1EADC;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div style="height:84px;border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.12);padding:12px;display:flex;flex-direction:column;justify-content:space-between"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg><span style="font:600 13.5px 'Geist'">Algo no funciona</span></div><div style="height:84px;border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.12);padding:12px;display:flex;flex-direction:column;justify-content:space-between"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21zM12 12.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path></svg><span style="font:600 13.5px 'Geist'">Un dato está mal</span></div><div style="height:84px;border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.12);padding:12px;display:flex;flex-direction:column;justify-content:space-between"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg><span style="font:600 13.5px 'Geist'">Falta un sitio</span></div><div style="height:84px;border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.12);padding:12px;display:flex;flex-direction:column;justify-content:space-between"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"></path></svg><span style="font:600 13.5px 'Geist'">Una idea</span></div></div>
+          <div style="height:84px;border-radius:16px;background:#fff;border:1px solid rgba(28,34,48,.14);padding:12px 14px;font:400 14px 'Geist';color:rgba(28,34,48,.4)">Cuéntanos qué ha pasado · opcional</div>
+          <span style="height:52px;border-radius:16px;background:linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440);box-shadow:0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 15.5px 'Geist'">Enviar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

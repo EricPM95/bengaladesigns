@@ -78,7 +78,7 @@ export const CATEGORIAS_EXPLORAR_LANZAROTE: CategoriaExplorarLanzarote[] = [
       'Playa Blanca y el Faro de Pechiguera',
     ],
   },
-  { id: 'bodegas', label: 'Bodegas', estilo: 'restaurantes', icono: 'copa', foto: 'La Geria y sus bodegas', nombres: ['La Geria y sus bodegas'] },
+  { id: 'bodegas', label: 'Bodegas', estilo: 'restaurantes', icono: 'copa', foto: 'La Geria y sus bodegas', nombres: ['La Geria y sus bodegas', 'Bodega El Grifo', 'Bodega La Geria'] },
   { id: 'excursiones', label: 'Excursiones', estilo: 'excursiones', icono: 'excursion', foto: null, nombres: [] },
 ]
 

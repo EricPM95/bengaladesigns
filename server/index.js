@@ -53,6 +53,7 @@ import { registrarRutasDestinosCurados, DESTINOS_OCULTOS } from './destinosCurad
 import { crearGuardianDestinosOcultos } from './destinoOculto.js'
 import { crearServicioAvisos, registrarRutasAvisos } from './avisos.js'
 import { crearServicioAvisosViaje, registrarRutasAvisosViaje } from './avisosViaje.js'
+import { cocheDataFor } from './engine/cocheData.js'
 import { crearClienteCivitatis, modoDeCivitatis } from './civitatis/cliente.js'
 import { crearPermisoAdminCivitatis } from './civitatis/permiso.js'
 import { crearCache as crearCacheCivitatis } from './civitatis/cache.js'
@@ -5338,8 +5339,39 @@ function logGeographicCoherence(day) {
  * integre la API de afiliados. Viaja el flag hasta el cliente para que, el día que se decida no
  * enseñar una nota inventada como si fuera real, no haya que volver a adivinar cuál lo es.
  */
+/**
+ * (V18) Los datos REALES de Civitatis de una excursión (`data/dias/<destino>/_civitatis.json`), cuando el JSON del destino dice cuál es con `civitatis_id` (Lanzarote). Lo que la opción ya trae, manda;
+ * esto solo rellena lo que falta (el «desde», la nota, las opiniones, la duración, la cancelación, la foto, lo que incluye y la recogida). Roma no lleva `civitatis_id`: no cambia nada.
+ */
+function datosCivitatisDeOpcion(destData, option) {
+  if (!option?.civitatis_id) return null
+  const clave = String(destData?.destination ?? '').trim().toLowerCase()
+  const entrada = cocheDataFor(clave)?.civitatis?.excursiones?.find((x) => x.id === option.civitatis_id)
+  return entrada ?? null
+}
+
 function excursionsAvailablePayload(destData, dayNumber, options, totalDays) {
-  return (options ?? excursionOptionsFor(destData, totalDays)).map((option) => ({
+  return (options ?? excursionOptionsFor(destData, totalDays)).map((option) => excursionPayload(destData, dayNumber, option))
+}
+
+function excursionPayload(destData, dayNumber, optionBase) {
+  const civ = datosCivitatisDeOpcion(destData, optionBase)
+  const option = civ
+    ? {
+        ...optionBase,
+        price_from_eur: optionBase.price_from_eur ?? civ.price_from_eur,
+        rating: optionBase.rating ?? civ.rating,
+        rating_max: optionBase.rating_max ?? civ.rating_max,
+        review_count: optionBase.review_count ?? civ.review_count,
+        duration_label: optionBase.duration_label ?? civ.duration_label,
+        cancellation: optionBase.cancellation ?? civ.cancellation,
+        photo_url: optionBase.photo_url ?? civ.photo_url,
+        checked: optionBase.checked ?? civ.checked,
+        incluye: optionBase.incluye ?? civ.incluye ?? null,
+        recogida: optionBase.recogida ?? civ.recogida_o_punto ?? null,
+      }
+    : optionBase
+  return ({
     id: option.id,
     name: option.name,
     duration: option.half_day ? 'half_day' : 'full_day',
@@ -5376,7 +5408,10 @@ function excursionsAvailablePayload(destData, dayNumber, options, totalDays) {
     // Con qué se busca su foto (en inglés: "Pompeii ruins"): con el nombre en español salía cualquier cosa.
     photo_name: option.photo_name ?? null,
     suggested_day: dayNumber,
-  }))
+    // (V18) Lo que incluye y cómo es la recogida, tal como lo dice la ficha del operador; sin dato, null (las etiquetas de la tarjeta solo salen si son verdad).
+    incluye: option.incluye ?? null,
+    recogida: option.recogida ?? null,
+  })
 }
 
 

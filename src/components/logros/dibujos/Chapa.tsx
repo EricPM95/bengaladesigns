@@ -82,6 +82,9 @@ export function nombreDeCiudadDeDestino(destino?: string | null): string {
 /** (V12) Cuánto de su caja llena el DIBUJO de cada logro de viajero cuando se pintan todos «del mismo tamaño» (el bronce llenaba el 74 %, los exclusivos más del 100 %). */
 export const LLENADO_IGUAL = 0.9
 
+/** (V18) Lo que llena su caja el aro de «Las cuatro estaciones» (sus tics llegan a 96,5 de 100): no se mide por trazos porque sus copos, pétalos y destellos se salen de la caja y encogían el aro (salía pequeño en «Mi colección»). */
+export const LLENADO_CUATRO_ESTACIONES = 0.97
+
 /**
  * (V12) Los logros de viajero, todos del MISMO tamaño: una caja cuadrada de `tam` y, dentro, el dibujo, medido (la unión de sus trazos visibles, sin los brillos ni los textos) y escalado y centrado para que llene
  * `LLENADO_IGUAL` de la caja, sea una medalla de bronce, un exclusivo con su marco o «Día perfecto». Cada uno conserva su dibujo y su marco. Si la medida no vale (un dibujo hecho con otras cosas), se deja como está.
@@ -191,7 +194,7 @@ export function ChapaDibujo({
   if (igual) {
     return (
       <span className={animada ? 'dib-mov' : 'dib-quieto'} style={{ display: 'inline-block', width: tam, height: tam, flex: 'none', filter: bloqueado ? 'grayscale(1)' : undefined, opacity: bloqueado ? 0.5 : undefined }}>
-        <CajaIgual tam={tam} fijo={EXCLUSIVOS[logro] ? 1 : undefined}>
+        <CajaIgual tam={tam} fijo={EXCLUSIVOS[logro] ? 1 : logro === 'cuatro_estaciones' ? LLENADO_CUATRO_ESTACIONES : undefined}>
           <span style={{ display: 'inline-block', width: tam, height: alto }}>
             <Suspense fallback={null}>{dibujo}</Suspense>
           </span>

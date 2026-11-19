@@ -6,7 +6,7 @@ import { Icono } from '../ui/Icono'
 /**
  * LA PASTILLA DEL PASE (Tanda 10G; «Piezas/Pase Incluye», P0c y P0d, con los colores de Marca JUTRIP), en la tarjeta de cada destino de RUTA:
  *  - sin el pase (10N8 §2b): fondo azul oscuro con el candado dorado; mientras no se sabe, el hueco en gris claro sin texto (del mismo tamaño);
- *  - con el pase (P0d): «Pase Roma» con el ✓, sobre oro.
+ *  - con el pase (V18, Design P1): «✓ Pase Roma» en VERDE pastel (el pase de ese destino está comprado).
  * Al tocarla se abre `abrirPase()` (la misma función de todos los candados y de [Ver el Pase Roma]). Con varios destinos, cada tarjeta lleva la suya («Pase Florencia»…): el nombre sale de los datos del tramo.
  * `conPase` solo lo usan las capturas y la prueba (por defecto, la versión que se está viendo, `pagoActivo()`).
  */
@@ -25,12 +25,12 @@ export function PastillaPase({ destino, conPase: aMano }: { destino: string; con
       className="zona-toque flex h-[30px] w-fit items-center gap-1.5 rounded-full pl-2.5 pr-3.5"
       style={
         conPase
-          ? { background: 'linear-gradient(100deg,#E6CB8E 0%,#D2AE62 55%,#B38B3A 100%)', color: '#2E2008', border: '1px solid rgba(166,124,82,.45)', boxShadow: '0 1px 2px rgba(111,78,55,.25)' }
+          ? { background: 'linear-gradient(135deg,#E4F5E3,#C4E6C9 60%,#A9D9B3)', color: '#2F6B43', border: '1px solid #8CC59A', boxShadow: '0 6px 14px -8px rgba(47,107,67,.5),inset 0 1px 0 rgba(255,255,255,.7)' }
           : { background: '#1C2230', color: '#F3E2B0', border: '1px solid #1C2230' }
       }
     >
-      <span style={{ display: 'flex', color: conPase ? '#2E2008' : '#D2B67A' }}>
-        <Icono nombre={conPase ? 'hecho' : 'candado'} size={13} grosor={2} />
+      <span style={{ display: 'flex', color: conPase ? '#2F6B43' : '#D2B67A' }}>
+        <Icono nombre={conPase ? 'hecho' : 'candado'} size={13} grosor={conPase ? 3 : 2} />
       </span>
       <span style={{ font: "700 13px 'Geist'", letterSpacing: '.005em', whiteSpace: 'nowrap' }}>Pase {destino}</span>
     </button>

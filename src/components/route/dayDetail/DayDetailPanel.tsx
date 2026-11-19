@@ -1371,6 +1371,7 @@ export function DayDetailPanel({
                   options={excursionOptions}
                   selectedId={day.selectedExcursionId ?? null}
                   socialProof={day.excursionSocialProof}
+                  dayNumber={day.dayNumber}
                   onSelect={(id) => selectDayExcursion(day.id, id)}
                   // Rechazar no decide por el viajero: "ruta" devuelve el día a ciudad (el motor ya
                   // tiene el core day desplazado esperando, así que no queda vacío ni repetido) y

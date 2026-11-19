@@ -20,7 +20,7 @@ import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
  */
 export default function ColeccionPorDentro({ pantalla }: { pantalla: PantallaDe<'coleccion'> }): ReactNode {
   const tripId = useSyncStore((s) => s.activeTripId) ?? null
-  const datos = useCarga(() => pedirColeccion(pantalla.destino, pantalla.coleccion, tripId), [pantalla.destino, pantalla.coleccion, tripId])
+  const datos = useCarga(() => pedirColeccion(pantalla.destino, pantalla.coleccion, tripId), [pantalla.destino, pantalla.coleccion, tripId], `pantalla:coleccion:${pantalla.destino}:${pantalla.coleccion}:${tripId ?? ''}`)
   const volver = () => useLogrosPantallas.getState().volver()
   return (
     <Capa etiqueta="Una colección por dentro" fondo={FONDO_PAPEL}>

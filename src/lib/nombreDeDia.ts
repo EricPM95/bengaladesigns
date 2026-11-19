@@ -38,6 +38,25 @@ function diaDeLaSemana(dateIso: string): number {
   return new Date(Date.UTC(anio, mes - 1, dia)).getUTCDay()
 }
 
+const NOMBRE_DE_OTRO_DIA = /^\s*d[ií]a\s*(\d+)\s+(lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\s*$/i
+const sinTildes = (t: string): string => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
+/**
+ * (V18) ¿El nombre de este día es de OTRO día? Un título con la forma «Dia 2 Lunes» (número de día + día de la semana) que no es el de la posición ni la fecha de este día
+ * (le salió solo: por ejemplo a un día movido, copiado o de más; en el jueves 12 salía «Dia 2 Lunes»). NUNCA toca un nombre que el viajero escribió (`nameByUser`).
+ * Si el día es el que dice el título (el número y el día de la semana cuadran), no es de otro. Sin fechas solo se mira el número.
+ */
+export function esNombreDeOtroDia(route: Pick<Route, 'answers'>, day: { dayNumber: number; title?: string | null; curatedTitle?: string | null; nameByUser?: boolean }): boolean {
+  if (day.nameByUser) return false
+  const m = NOMBRE_DE_OTRO_DIA.exec(day.curatedTitle ?? day.title ?? '')
+  if (!m) return false
+  const iso = fechaDelDia(route, day.dayNumber)
+  const semanaDelDia = iso ? sinTildes(SEMANA_LARGA[diaDeLaSemana(iso)]) : null
+  const numeroCuadra = Number(m[1]) === day.dayNumber
+  const semanaCuadra = semanaDelDia === null || sinTildes(m[2]) === semanaDelDia
+  return !(numeroCuadra && semanaCuadra)
+}
+
 /** La ficha de la fecha («LUN» arriba y «13» debajo), o null sin fechas (entonces va el número del día). */
 export function fichaDelDia(fuente: FuenteDeFechas, dayNumber: number): { semana: string; numero: string } | null {
   const iso = fechaDelDia(fuente, dayNumber)

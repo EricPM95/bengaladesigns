@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}.rr::-webkit-scrollbar{display:none}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · RUTA · PÁGINA DEL DESTINO</span><span style="font:400 40px/1 'Instrument Serif',serif">Roma: actividades y dónde dormir</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
+    <div style="display:flex;flex-direction:column;gap:10px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ b.cap }}</span>
+      <div style="position:relative;width:390px;overflow:hidden;border-radius:40px;background:#F5EFE4;box-shadow:0 30px 60px -30px rgba(28,34,48,.5);padding-bottom:34px">
+        <div style="position:relative;height:250px">
+          <div style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%,0 90%);background:linear-gradient(135deg,#E8B070 0%,#B8602A 50%,#5A2A18 100%)"></div>
+          <div style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%,0 90%);background:linear-gradient(180deg,rgba(20,24,40,.25),rgba(20,24,40,0) 40%,rgba(20,24,40,.6))"></div>
+          <span style="position:absolute;left:22px;top:60px;width:44px;height:44px;border-radius:50%;background:#FFFDF8;border:1.5px solid #B58A2E;box-shadow:0 8px 16px -8px rgba(28,34,48,.5);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+          <div style="position:absolute;left:24px;right:24px;bottom:34px;display:flex;flex-direction:column;gap:6px;color:#FFFDF8">
+            <span style="display:flex;align-items:center;gap:10px"><span style="width:32px;height:22px;border-radius:4px;background:linear-gradient(90deg,#1F9A55 0 33%,#F2EFE8 33% 66%,#D8323C 66%);box-shadow:0 2px 6px rgba(0,0,0,.3)"></span><span style="font:400 40px/1 'Instrument Serif',serif">Roma</span></span>
+            <span style="font:500 14px 'Geist';opacity:.92">5 días · 4 noches · 25 – 29 nov</span>
+          </div>
+        </div>
+        <div style="padding:6px 0 0;display:flex;flex-direction:column;gap:34px">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="padding:0 24px;display:flex;flex-direction:column;gap:3px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:#8E6820">QUÉ HACER</span><span style="font:400 28px/1.05 'Instrument Serif',serif">Actividades en <em style="color:#8E6820">Roma</em></span></div>
+            <div class="rr" style="{{ b.actCont }}">
+              <sc-for list="{{ acts }}" as="a" hint-placeholder-count="6">
+                <div style="flex:none;width:{{ b.aw }};scroll-snap-align:start;border-radius:24px;background:#FFFFFF;border:1px solid rgba(28,34,48,.08);box-shadow:0 14px 26px -20px rgba(28,34,48,.5);overflow:hidden">
+                  <div style="position:relative;height:128px"><div style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%,0 86%);background:{{ a.bg }}"></div><div style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%,0 86%);background:linear-gradient(180deg,rgba(20,30,50,.05),rgba(20,30,50,.38))"></div>
+                    <span style="position:absolute;right:10px;top:10px;padding:5px 11px;border-radius:12px;background:#1C2230;color:#FFFDF8;display:flex;align-items:baseline;gap:5px;white-space:nowrap"><span style="font:500 9px 'Geist Mono',monospace;letter-spacing:.1em;opacity:.7;display:{{ a.dd }}">DESDE</span><span style="font:400 20px/1 'Instrument Serif',serif">{{ a.p }}</span></span></div>
+                  <div style="padding:6px 14px 14px;display:flex;flex-direction:column;gap:8px">
+                    <span style="font:400 21px/1.1 'Instrument Serif',serif;height:46px;display:flex;align-items:flex-start;overflow:hidden">{{ a.n }}</span>
+                    <span style="display:flex;align-items:center;gap:8px"><span style="display:flex;align-items:center;gap:5px;height:28px;padding:0 10px 0 8px;border-radius:999px;background:#F6E8BE;border:1px solid #D8BE84;color:#4A3510;font:700 15px 'Geist'"><svg width="14" height="14" viewBox="0 0 24 24" fill="#8E6820"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"></path></svg>{{ a.r }}</span><span style="display:flex;flex-direction:column;justify-content:center;line-height:1.25;height:34px"><span style="font:600 13px 'Geist';color:#1C2230;white-space:nowrap">{{ a.o }} opiniones</span><span style="font:400 12px 'Geist';color:rgba(28,34,48,.55);white-space:nowrap">{{ a.d }}</span></span></span>
+                  </div>
+                </div>
+              </sc-for>
+              <span style="flex:none;width:{{ b.sp }}"></span>
+            </div>
+            <div style="padding:0 24px"><span style="height:46px;border-radius:15px;background:#1C2230;box-shadow:0 12px 20px -14px rgba(28,34,48,.8),inset 0 0 0 1.5px rgba(243,213,154,.5);color:#FFFDF8;display:flex;align-items:center;justify-content:center;gap:9px;font:700 14.5px 'Geist'">Ver todas las actividades</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="padding:0 24px;display:flex;flex-direction:column;gap:3px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:#8E6820">DÓNDE DORMIR</span><span style="font:400 28px/1.05 'Instrument Serif',serif">Alojamientos en <em style="color:#8E6820">Roma</em></span></div>
+            <sc-if value="{{ b.stay }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:0 24px;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;gap:12px;padding:10px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(181,138,46,.4);box-shadow:0 14px 26px -20px rgba(110,80,24,.5)">
+                  <span style="flex:none;width:86px;height:86px;border-radius:16px;background:linear-gradient(135deg,#E8C89A,#A8683A)"></span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;color:#8E6820">TU ALOJAMIENTO</span><span style="font:400 22px/1.1 'Instrument Serif',serif">Hotel Palatino</span><span style="font:400 12.5px 'Geist';color:rgba(28,34,48,.55)">Monti · 25 – 29 nov</span></span>
+                  <span style="flex:none;align-self:flex-start;width:28px;height:28px;border-radius:50%;background:oklch(0.5 0.1 150);color:#fff;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+                </div>
+                <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.5);padding-top:6px">OTRAS OPCIONES</span>
+              </div>
+            </sc-if>
+            <div class="rr" style="display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:4px 24px 14px;scroll-padding:0 24px;scroll-snap-type:x mandatory">
+              <sc-for list="{{ hotels }}" as="h" hint-placeholder-count="6">
+                <div style="flex:none;width:236px;scroll-snap-align:start;border-radius:24px;background:#FFFFFF;border:1px solid rgba(28,34,48,.08);box-shadow:0 14px 26px -20px rgba(28,34,48,.5);overflow:hidden">
+                  <div style="position:relative;height:136px"><div style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%,0 86%);background:{{ h.bg }}"></div><div style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%,0 86%);background:linear-gradient(180deg,rgba(20,30,50,.05),rgba(20,30,50,.38))"></div>
+                    <span style="position:absolute;left:10px;bottom:20px;height:26px;padding:0 11px;border-radius:999px;background:rgba(255,253,248,.95);display:flex;align-items:center;gap:6px;font:600 11.5px 'Geist';white-space:nowrap"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8E6820" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path></svg>{{ h.t }}</span></div>
+                  <div style="padding:6px 14px 14px;display:flex;flex-direction:column;gap:7px">
+                    <span style="font:400 21px/1.1 'Instrument Serif',serif">{{ h.n }}</span>
+                    <span style="font:500 12.5px 'Geist';color:rgba(28,34,48,.55)">{{ h.z }}</span>
+                    <span style="display:flex;align-items:center;gap:8px"><span style="display:flex;align-items:center;gap:5px;height:28px;padding:0 10px 0 8px;border-radius:999px;background:#F6E8BE;border:1px solid #D8BE84;color:#4A3510;font:700 15px 'Geist'"><svg width="14" height="14" viewBox="0 0 24 24" fill="#8E6820"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"></path></svg>{{ h.r }}</span><span style="font:600 13px 'Geist';color:#1C2230">{{ h.o }} opiniones</span></span>
+                  </div>
+                </div>
+              </sc-for>
+              <span style="flex:none;width:12px"></span>
+            </div>
+            <div style="padding:0 24px"><span style="height:46px;border-radius:15px;background:#1C2230;box-shadow:0 12px 20px -14px rgba(28,34,48,.8),inset 0 0 0 1.5px rgba(243,213,154,.5);color:#FFFDF8;display:flex;align-items:center;justify-content:center;gap:9px;font:700 14.5px 'Geist'"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14"></path></svg>Ver todos en el mapa</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const RC='display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:4px 24px 14px;scroll-padding:0 24px;scroll-snap-type:x mandatory';
+const LC='display:flex;flex-direction:column;gap:14px;padding:4px 24px 4px';
+class Component extends DCLogic {
+  renderVals(){
+    const A=[['Coliseo, Foro y Palatino','3 h','9,1','4.812','28 €','linear-gradient(135deg,#E8B070,#8A4A1C)'],['Museos Vaticanos y Capilla Sixtina','3 h','9,0','3.906','42 €','linear-gradient(135deg,#C8A8E0,#4A2A7A)'],['Free Tour por Roma','2 h 30','9,4','2.332','Gratis','linear-gradient(135deg,#9AD0C0,#1A6A5A)'],['Panteón con audioguía','1 h','8,8','1.245','14 €','linear-gradient(135deg,#E8C8A0,#8A5A2A)'],['Roma de noche en bici','3 h','9,3','986','39 €','linear-gradient(135deg,#7A8AC8,#1C2A5A)'],['Excursión a Tívoli','6 h','8,8','1.120','74 €','linear-gradient(135deg,#A8D098,#3A6A28)'],['Catacumbas y Vía Apia','2 h','9,2','868','25 €','linear-gradient(135deg,#C8B090,#5A4228)']];
+    const acts=A.map(([n,d,r,o,p,bg])=>({n,d,r,o,p,bg,dd:p==='Gratis'?'none':'block'}));
+    const H=[['Hotel Palatino','Monti','9,5','839','Mejor nota de Monti','linear-gradient(135deg,#E8C89A,#A8683A)'],['Casa Trastevere','Trastevere','9,2','1.204','El más acogedor de Trastevere','linear-gradient(135deg,#9AC8A8,#2A6A4A)'],['Residenza Prati','Prati','8,9','702','Junto al Vaticano','linear-gradient(135deg,#9AB4E0,#2A4A94)'],['Suite Navona','Centro histórico','9,0','1.511','A un paso de Navona','linear-gradient(135deg,#E0A8A8,#8A3A4A)'],['Hotel Termini Corte','Termini','8,6','2.015','Ideal para llegar en tren','linear-gradient(135deg,#B8B0D8,#4A3A7A)'],['Villa Aventino','Aventino','9,3','418','Tranquilo y con jardín','linear-gradient(135deg,#B8D098,#4A6A2A)'],['Hotel Testaccio','Testaccio','9,1','655','Para comer como un romano','linear-gradient(135deg,#E8B898,#9A5A3A)']];
+    const hotels=H.map(([n,z,r,o,t,bg])=>({n,z,r,o,t,bg}));
+    return{acts,hotels,boards:[
+      {cap:'D1 · Sin alojamiento · actividades en carrusel',stay:false,actCont:RC,aw:'232px',sp:'12px'},
+      {cap:'D2 · Con alojamiento · actividades en lista',stay:true,actCont:LC,aw:'100%',sp:'0px'}
+    ]};}
+}
+</script>
+</body>
+</html>

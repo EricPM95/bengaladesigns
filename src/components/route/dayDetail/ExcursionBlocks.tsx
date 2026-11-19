@@ -4,6 +4,7 @@ import { ExcursionBookArea, ExcursionReservedTop, useExcursionReservation } from
 import type { CuratedAlternative, Excursion } from '../../../lib/types'
 import { Icono } from '../../ui/Icono'
 import { AvisosExcursion } from '../excursions/AvisosExcursion'
+import { ExcursionDayBloque } from './ExcursionBloque'
 
 /**
  * Prompt 4 — las piezas de excursión de la ficha de un día, en un solo sitio porque comparten el
@@ -510,24 +511,15 @@ export function FreeAfternoonBlock({
 }
 
 /**
- * El día de excursión, tal como se le presenta al viajero: una propuesta concreta, no un formulario
- * en blanco con seis opciones iguales.
- *
- * Tres piezas, en este orden y por este motivo:
- *   1. La prueba social arriba, porque es lo que contesta "¿y esto por qué me lo propones?".
- *   2. UNA excursión en grande, ya elegida — la más popular del destino. El viajero que dice que sí
- *      no tiene que hacer nada.
- *   3. Las alternativas PLEGADAS. Seis tarjetas abiertas a la vez no se comparan; abrirlas es un
- *      toque para quien quiera comparar de verdad.
- *
- * Y abajo del todo, la salida: seguir en la ciudad. Nunca escondida — un día de excursión que no se
- * pueda rechazar es una imposición, no una propuesta.
+ * El día de excursión, tal como se le presenta al viajero (V18: el bloque de Design, `ExcursionBloque.tsx`): una propuesta concreta con la foto, el «desde», la nota y la cancelación reales,
+ * «Ver más excursiones» (hoja con [Elegir esta]) y la salida «¿Qué hacemos con este día?». Reservada: «✓ Reservada · mié 11», la salida, el código y [Cambiar].
  */
 export function ExcursionDayProposal({
   destination,
   options,
   selectedId,
   socialProof,
+  dayNumber = null,
   onSelect,
   onDecline,
 }: {
@@ -535,120 +527,10 @@ export function ExcursionDayProposal({
   options: Excursion[]
   selectedId: string | null
   socialProof?: string | null
+  /** El día de ESTE bloque (para «Reservada · mié 11»). */
+  dayNumber?: number | null
   onSelect: (id: string | null) => void
   onDecline: (fill: 'route' | 'empty') => void
 }) {
-  const [showAll, setShowAll] = useState(false)
-  // Quitar la excursión no decide sola qué hacer con el día: hay quien quiere que le montemos otra
-  // cosa y hay quien quiere el día libre para organizarlo por su cuenta. Decidirlo por él es
-  // quitarle el día que acaba de recuperar.
-  const [asking, setAsking] = useState(false)
-  const featured = options.find((option) => option.id === selectedId) ?? options[0] ?? null
-  // Una excursión reservada es el día: no se cambia por otra ni se deja (PARA_CODE_RESERVAS, 6).
-  const reserved = Boolean(useExcursionReservation(featured?.id))
-  const alternatives = reserved ? [] : options.filter((option) => option.id !== featured?.id)
-  if (!featured) return null
-
-  return (
-    <div className="space-y-3">
-      {socialProof && (
-        <p className="rounded-xl bg-accent-soft px-3 py-2.5 text-small leading-relaxed text-accent-hover">
-          <Icono nombre="destello" size={14} className="mr-1.5 inline-block align-[-2px]" />
-          {socialProof}
-        </p>
-      )}
-
-      <div className="rounded-xl border border-accent bg-accent-soft p-3">
-        <ExcursionReservedTop excursion={featured} />
-        <div className="flex items-start gap-3">
-          <span className="text-3xl leading-none" aria-hidden="true">
-            <Icono nombre="excursion" size={26} />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-body font-semibold text-text">{featured.title}</p>
-            <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-caption text-text-soft">
-              <span className="whitespace-nowrap">{featured.durationLabel}</span>
-              {formatPrice(featured) && (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <span className="whitespace-nowrap">desde {formatPrice(featured)}</span>
-                </>
-              )}
-              {featured.rating ? (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <RatingLabel excursion={featured} />
-                </>
-              ) : null}
-            </p>
-            <AvisosExcursion excursion={featured} className="mt-1" />
-          </div>
-        </div>
-        {featured.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{featured.description}</p>}
-        <ExcursionBookArea excursion={featured}>
-          {featured.bookUrl && (
-            <a
-              href={featured.bookUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 block w-full rounded-xl btn-champan py-2.5 text-center text-small font-semibold transition-opacity hover:opacity-90"
-            >
-              Ver disponibilidad
-            </a>
-          )}
-        </ExcursionBookArea>
-      </div>
-
-      {alternatives.length > 0 && (
-        <>
-          <button
-            type="button"
-            onClick={() => setShowAll((open) => !open)}
-            aria-expanded={showAll}
-            className="w-full rounded-xl border border-border bg-bg-card py-2 text-caption font-semibold text-text-soft transition-colors hover:bg-bg-hover"
-          >
-            {showAll ? 'Ocultar alternativas' : `Ver más excursiones (${alternatives.length})`}
-          </button>
-          {showAll && <ExcursionOptions options={alternatives} selectedId={selectedId} onSelect={onSelect} />}
-        </>
-      )}
-
-      {reserved ? null : asking ? (
-        <div className="space-y-2 rounded-xl border border-border bg-bg-card p-3">
-          <p className="text-small font-semibold text-text">¿Qué hacemos con este día?</p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => onDecline('route')}
-              className="flex-1 rounded-xl btn-champan py-2 text-caption font-semibold transition-opacity hover:opacity-90"
-            >
-              Montadme ruta por {destination}
-            </button>
-            <button
-              type="button"
-              onClick={() => onDecline('empty')}
-              className="flex-1 rounded-xl border border-border py-2 text-caption font-semibold text-text-soft transition-colors hover:bg-bg-hover"
-            >
-              Lo organizo yo
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={() => setAsking(false)}
-            className="w-full text-center text-caption text-text-muted underline hover:text-text-soft"
-          >
-            Mejor me quedo con la excursión
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setAsking(true)}
-          className="w-full pt-1 text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
-        >
-          ¿Prefieres seguir en {destination}? Te montamos otro día de ruta
-        </button>
-      )}
-    </div>
-  )
+  return <ExcursionDayBloque destination={destination} options={options} selectedId={selectedId} socialProof={socialProof} dayNumber={dayNumber} onSelect={onSelect} onDecline={onDecline} />
 }

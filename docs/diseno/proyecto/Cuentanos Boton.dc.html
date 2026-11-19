@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · BOTÓN «CUÉNTANOS»</span><span style="font:400 40px/1 'Instrument Serif',serif">Elegir con el pulgar, contar lo justo</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="10">
+    <div style="display:flex;flex-direction:column;gap:10px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:390px;height:{{ b.h }}px;border-radius:32px;overflow:hidden;background:#F5EFE4;box-shadow:0 30px 60px -30px rgba(28,34,48,.5)">
+        <sc-if value="{{ b.sheet }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:rgba(28,34,48,.45)"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;border-radius:30px 30px 0 0;background:#FFFDF8;padding:10px 18px 20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 -20px 40px -20px rgba(28,34,48,.5)">
+            <span style="align-self:center;width:42px;height:5px;border-radius:5px;background:rgba(28,34,48,.18)"></span>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+              <span style="display:flex;align-items:center;gap:10px;min-width:0"><sc-if value="{{ b.hasIc }}" hint-placeholder-val="{{ false }}"><span style="flex:none;width:38px;height:38px;border-radius:12px;background:{{ b.bg }};display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ b.fg }}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ b.ic }}"></path></svg></span></sc-if><span style="font:400 27px/1.05 'Instrument Serif',serif">{{ b.title }}</span></span>
+              <span style="flex:none;width:34px;height:34px;border-radius:50%;background:#F1EADC;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+            </div>
+            <sc-if value="{{ b.grid }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="6">
+                  <div style="height:112px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(28,34,48,.1);box-shadow:0 10px 20px -16px rgba(28,34,48,.4);padding:12px;display:flex;flex-direction:column;justify-content:space-between">
+                    <span style="width:46px;height:46px;border-radius:15px;background:{{ t.bg }};display:flex;align-items:center;justify-content:center"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="{{ t.fg }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.ic }}"></path></svg></span>
+                    <span style="display:flex;flex-direction:column;gap:1px"><span style="font:600 14px/1.15 'Geist'">{{ t.n }}</span><span style="font:400 11px/1.2 'Geist';color:rgba(28,34,48,.5)">{{ t.s }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ b.form }}" hint-placeholder-val="{{ false }}">
+              <sc-for list="{{ b.fields }}" as="f" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <span style="font:600 13px 'Geist';color:#1C2A52">{{ f.l }}<sc-if value="{{ f.opt }}" hint-placeholder-val="{{ false }}"><span style="font-weight:400;color:rgba(28,34,48,.45)"> · opcional</span></sc-if></span>
+                  <sc-if value="{{ f.site }}" hint-placeholder-val="{{ false }}"><div style="height:46px;border-radius:14px;background:#F7F1E4;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;gap:10px;padding:0 14px;font:600 14px 'Geist'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"></path></svg>{{ f.v }}</div></sc-if>
+                  <sc-if value="{{ f.search }}" hint-placeholder-val="{{ false }}"><div style="height:46px;border-radius:14px;background:#fff;border:1px solid rgba(28,34,48,.14);display:flex;align-items:center;gap:10px;padding:0 14px;font:400 14px 'Geist';color:rgba(28,34,48,.4)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>{{ f.ph }}</div></sc-if>
+                  <sc-if value="{{ f.input }}" hint-placeholder-val="{{ false }}"><div style="height:46px;border-radius:14px;background:#fff;border:1px solid rgba(28,34,48,.14);display:flex;align-items:center;padding:0 14px;font:400 14px 'Geist';color:rgba(28,34,48,.4)">{{ f.ph }}</div></sc-if>
+                  <sc-if value="{{ f.text }}" hint-placeholder-val="{{ false }}"><div style="height:{{ f.th }}px;border-radius:14px;background:#fff;border:1px solid rgba(28,34,48,.14);padding:12px 14px;font:400 14px/1.35 'Geist';color:rgba(28,34,48,.4)">{{ f.ph }}</div></sc-if>
+                  <sc-if value="{{ f.chips }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="3"><span style="height:42px;min-width:{{ f.mw }}px;padding:0 14px;border-radius:13px;background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.bd }};display:flex;align-items:center;justify-content:center;gap:6px;font:600 13.5px 'Geist'">{{ o.t }}</span></sc-for></div></sc-if>
+                  <sc-if value="{{ f.photo }}" hint-placeholder-val="{{ false }}"><div style="height:46px;border-radius:14px;border:1.5px dashed rgba(28,34,48,.25);display:flex;align-items:center;justify-content:center;gap:9px;font:600 13.5px 'Geist';color:#7A5A1E"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"></path></svg>Añadir foto</div></sc-if>
+                  <sc-if value="{{ f.big }}" hint-placeholder-val="{{ false }}"><div style="position:relative;height:190px;border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#E8C89A,#B8864A 55%,#6A4A28);box-shadow:0 12px 22px -14px rgba(28,34,48,.6)"><svg viewBox="0 0 320 190" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><path d="M30 170V92h260v78M60 92V60h200v32M90 60V38h140v22" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="3"></path></svg><span style="position:absolute;right:10px;bottom:10px;height:34px;padding:0 14px;border-radius:999px;background:rgba(255,253,248,.95);display:flex;align-items:center;gap:7px;font:700 13px 'Geist'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"></path></svg>Cambiar</span></div></sc-if>
+                  <sc-if value="{{ f.empty }}" hint-placeholder-val="{{ false }}"><div style="height:120px;border-radius:18px;border:1.5px dashed rgba(28,34,48,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#7A5A1E"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4"></path></svg><span style="font:700 14px 'Geist'">Elegir foto</span></div></sc-if>
+                  <sc-if value="{{ f.check }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:flex-start;gap:12px"><span style="flex:none;width:26px;height:26px;border-radius:8px;border:1.8px solid rgba(28,34,48,.35);background:#fff"></span><span style="font:400 13.5px/1.4 'Geist';color:#1C2230">{{ f.v }}</span></div></sc-if>
+                  <sc-if value="{{ f.shot }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:12px"><span style="position:relative;width:62px;height:92px;border-radius:12px;background:linear-gradient(160deg,#F5EFE4,#E3D6BA);border:1px solid rgba(28,34,48,.14);box-shadow:0 8px 14px -8px rgba(28,34,48,.4)"><span style="position:absolute;left:8px;right:8px;top:12px;height:8px;border-radius:3px;background:rgba(28,34,48,.18)"></span><span style="position:absolute;left:8px;right:22px;top:26px;height:6px;border-radius:3px;background:rgba(28,34,48,.12)"></span><span style="position:absolute;left:8px;right:8px;bottom:10px;height:20px;border-radius:6px;background:rgba(201,164,90,.55)"></span><span style="position:absolute;right:-8px;top:-8px;width:22px;height:22px;border-radius:50%;background:#1C2230;color:#fff;display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></span><span style="font:400 12.5px/1.35 'Geist';color:rgba(28,34,48,.6)">La pantalla en la que estabas</span></div></sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ b.foot }}" hint-placeholder-val="{{ true }}">
+                <div style="display:{{ b.togD }};align-items:center;justify-content:space-between;gap:12px;padding:2px 2px 0"><span style="font:500 14px 'Geist'">{{ b.tog }}</span><span style="flex:none;width:46px;height:28px;border-radius:999px;background:#1C2230;position:relative"><span style="position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#F3D88F"></span></span></div>
+                <span style="height:52px;border-radius:16px;background:linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440);box-shadow:0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 15.5px 'Geist'">Enviar</span>
+                <span style="text-align:center;font:400 11.5px/1.35 'Geist';color:rgba(28,34,48,.5);text-wrap:balance">{{ b.legal }}</span>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{ b.thanks }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:30px 12px 24px;text-align:center">
+                <span style="width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 32% 26%,#FFFFFF,#F0DEB0);border:1.5px solid #C9A45A;box-shadow:0 14px 24px -12px rgba(90,64,16,.55),inset 0 0 0 5px rgba(255,253,246,.9);display:flex;align-items:center;justify-content:center"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+                <span style="font:400 28px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ b.thT }}</span>
+                <span style="font:italic 400 17px 'Instrument Serif',serif;color:#8E6820">{{ b.thS }}</span>
+              </div>
+              <span style="height:50px;border-radius:16px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;justify-content:center;font:700 15px 'Geist'">Cerrar</span>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ b.map }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:#F3EBD8">
+            <svg viewBox="0 0 390 760" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%">
+              <rect width="390" height="760" fill="#F3EBD8"></rect>
+              <path d="M-20 560 C 80 520, 140 600, 230 560 S 380 500, 420 540 L 420 620 C 340 580, 270 640, 200 620 S 60 590, -20 640Z" fill="#CFE3EA"></path>
+              <path d="M250 80 h120 v110 h-120z M20 300 h90 v80 h-90z" fill="#DCE8C6"></path>
+              <g stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" fill="none"><path d="M-10 170 L400 210"></path><path d="M-10 420 L400 400"></path><path d="M120 -10 L160 780"></path><path d="M300 -10 L260 780"></path></g>
+              <g stroke="#E6D9BC" stroke-width="4" stroke-linecap="round" fill="none"><path d="M-10 90 L400 80"></path><path d="M-10 300 L400 330"></path><path d="M-10 500 L400 470"></path><path d="M40 -10 L20 780"></path><path d="M210 -10 L220 780"></path><path d="M350 -10 L370 780"></path></g>
+              <g font-family="Geist" font-size="11" fill="#8A7A5A"><text x="150" y="196" transform="rotate(4 150 196)">Via del Corso</text><text x="30" y="296">Piazza Navona</text><text x="262" y="132" fill="#5E7A3A">Villa Borghese</text></g>
+            </svg>
+            <span style="position:absolute;left:50%;top:50%;margin:-62px 0 0 -22px;display:flex;flex-direction:column;align-items:center"><svg width="44" height="54" viewBox="0 0 44 54"><path d="M22 52 C 22 52 4 32 4 20 a18 18 0 0 1 36 0 C 40 32 22 52 22 52z" fill="#1C2230" stroke="#F3D88F" stroke-width="2.4"></path><circle cx="22" cy="20" r="6.5" fill="#F3D88F"></circle></svg><span style="width:14px;height:5px;margin-top:-3px;border-radius:50%;background:rgba(28,34,48,.28)"></span></span>
+            <div style="position:absolute;left:14px;right:14px;top:56px;display:flex;align-items:center;gap:10px">
+              <span style="flex:none;width:46px;height:46px;border-radius:50%;background:#FFFDF8;box-shadow:0 8px 16px -8px rgba(28,34,48,.5);border:1px solid rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></span>
+              <span style="flex:1;height:46px;border-radius:999px;background:#FFFDF8;box-shadow:0 8px 16px -8px rgba(28,34,48,.5);border:1px solid rgba(28,34,48,.08);display:flex;align-items:center;gap:10px;padding:0 16px;font:400 14px 'Geist';color:rgba(28,34,48,.45)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>Busca una calle o un sitio</span>
+            </div>
+            <div style="position:absolute;left:14px;right:14px;bottom:22px;border-radius:26px;background:#FFFDF8;box-shadow:0 18px 34px -14px rgba(28,34,48,.55);padding:16px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;gap:12px"><span style="flex:none;width:42px;height:42px;border-radius:13px;background:#F7F1E4;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21zM12 12.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span style="font:600 15px/1.2 'Geist'">Via dei Cappellari, 30</span><span style="font:400 12.5px 'Geist';color:rgba(28,34,48,.55)">00186 Roma</span></span></div>
+              <span style="height:52px;border-radius:16px;background:linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440);box-shadow:0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 15.5px 'Geist'">Este es el sitio</span>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ b.bell }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;padding:70px 16px 0;display:flex;flex-direction:column;gap:14px">
+            <span style="font:400 30px/1 'Instrument Serif',serif;padding:0 4px">Avisos</span>
+            <sc-for list="{{ b.bn }}" as="n" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:20px;background:#FFFFFF;border:1px solid rgba(181,138,46,.35);box-shadow:0 10px 20px -16px rgba(28,34,48,.4)">
+                <span style="flex:none;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 32% 26%,#FFFFFF,#F0DEB0);border:1.5px solid #C9A45A;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.ic }}"></path></svg></span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:600 14px/1.3 'Geist'">{{ n.t }}</span><span style="font:400 12px 'Geist';color:rgba(28,34,48,.5)">Ahora</span></span>
+                <span style="flex:none;width:9px;height:9px;border-radius:50%;background:oklch(0.55 0.17 5)"></span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const P={rest:'M7 3v8a3 3 0 0 0 3 3v7M7 3v5M10 3v5M17 3c-2 2-2 6 0 8v10',pin:'M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21zM12 12.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',edit:'M4 20l1-4L16 5l3 3L8 19zM14 7l3 3',bulb:'M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z',warn:'M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z',idea:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',check:'M5 12.5l4.5 4.5L19 7.5',globe:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18',cam:'M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z',tip:'M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z'};
+const C={rest:['#F9E4D8','#A8481C'],lug:['#DDEBFA','#1F5CA8'],dato:['#FBEFC8','#8A6210'],cons:['#DDF1DC','#2F6B43'],app:['#FADCDC','#A32A2A'],idea:['#F1E6FA','#6A3A9A'],dest:['#D8F0EE','#16706A'],foto:['#FCE3EC','#A02A5A']};
+const ch=(arr,sel)=>arr.map((t,i)=>({t,bg:i===sel?'#1C2230':'#FFFFFF',fg:i===sel?'#F3D88F':'#1C2230',bd:i===sel?'#1C2230':'rgba(28,34,48,.18)'}));
+const F={
+ nom:(ph)=>({l:'Nombre',input:true,ph}),
+ loc:()=>({l:'¿Dónde está?',chips:true,mw:150,opts:[{...ch(['Estoy aquí'],0)[0],t:'Estoy aquí'},...ch(['Buscar en el mapa'],-1)]}),
+ txt:(l,ph,th,opt)=>({l,text:true,ph,th:th||70,opt}),
+ foto:()=>({l:'Foto',photo:true,opt:true}),
+ sitioF:()=>({l:'¿De qué sitio?',site:true,v:'Coliseo'}),
+ sitioB:()=>({l:'¿De qué sitio?',search:true,ph:'Busca un sitio'})
+};
+const LEG='Con tu aviso enviamos la pantalla en la que estabas y el modelo de tu móvil, para encontrar el fallo.';
+class Component extends DCLogic {
+  renderVals(){
+    const tiles=[['Añadir un restaurante','Un sitio para comer','rest','rest'],['Añadir un lugar','Algo que ver o hacer','pin','lug'],['Añadir un destino','Una ciudad o un país','globe','dest'],['Comparte tu foto','Para que salga en la app','cam','foto'],['Un dato está mal','Horario, precio, cerrado…','edit','dato'],['Un consejo','«Llega antes de las 9»','bulb','cons'],['Algo no funciona','En la app','warn','app'],['Una idea','Para mejorar JUTRIP','idea','idea']].map(([n,s,i,c])=>({n,s,ic:P[i],bg:C[c][0],fg:C[c][1]}));
+    const frm=(id,cap,title,i,c,fields,h,legal)=>({id,cap,title,h:h||820,sheet:true,hasIc:true,ic:P[i],bg:C[c][0],fg:C[c][1],form:true,foot:true,legal:legal||'',fields});
+    const THX='Te avisaremos en la campana',TOG='Avísame cuando lo revisemos';
+    const boards=[
+      {id:'U1',cap:'«¿Qué quieres contarnos?» · 8 opciones',title:'¿Qué quieres contarnos?',h:760,sheet:true,grid:true,hasIc:false},
+      frm('U2a','Añadir un restaurante','Añadir un restaurante','rest','rest',[F.nom('Ej.: Trattoria da Enzo'),F.loc(),{l:'Precio',chips:true,mw:64,opts:ch(['€','€€','€€€'],1)},F.txt('¿Qué tiene de bueno?','Cuéntanos qué pedirías',64,true),F.foto()],900),
+      frm('U2b','Añadir un lugar','Añadir un lugar','pin','lug',[F.nom('Ej.: Mirador del Gianicolo'),F.loc(),F.txt('¿Por qué merece la pena?','Cuéntanos qué lo hace especial',64,true),F.foto()],820),
+      {id:'U2h',cap:'Buscar en el mapa · desde restaurante y lugar',title:'',h:760,map:true},
+      frm('U2c','Un dato está mal · viene de una ficha','Un dato está mal','edit','dato',[F.sitioF(),{l:'¿Qué falla?',chips:true,mw:0,opts:ch(['Horario','Precio','Está cerrado','Ubicación','La foto','Otro'],0)},F.txt('Cuéntanos más','Ej.: Ahora cierra a las 18:00',64,true),{l:'Foto',photo:true,opt:true}],900),
+      frm('U2d','Un dato está mal · desde cualquier pantalla','Un dato está mal','edit','dato',[F.sitioB(),{l:'¿Qué falla?',chips:true,mw:0,opts:ch(['Horario','Precio','Está cerrado','Ubicación','La foto','Otro'],-1)},F.txt('Cuéntanos más','Ej.: Ahora cierra a las 18:00',64,true),{l:'Foto',photo:true,opt:true}],900),
+      frm('U2e','Un consejo','Un consejo','bulb','cons',[F.sitioF(),F.txt('Tu consejo','Ej.: Llega antes de las 9, después hay cola',96)],640),
+      frm('U2f','Algo no funciona','Algo no funciona','warn','app',[F.txt('¿Qué tocaste y qué pasó?','Cuéntanos qué hacías y qué ha pasado',96),{l:'Captura',shot:true,opt:true}],740,LEG),
+      frm('U2g','Una idea','Una idea','idea','idea',[F.txt('Tu idea','Cuéntanos qué mejorarías',120)],600),
+      {id:'U3',cap:'Gracias',title:'',h:560,sheet:true,hasIc:false,thanks:true,thT:'Gracias. Lo revisamos y, si encaja, lo añadimos.',thS:THX},
+      {id:'U4',cap:'Los avisos en la campana',title:'',h:420,bell:true,bn:[{ic:P.check,t:'Gracias a ti, ya está arreglado: el horario del Coliseo.'},{ic:P.pin,t:'Hemos añadido Trattoria da Enzo. ¡Gracias!'}]},
+      {...frm('U2i','Añadir un destino','Añadir un destino','globe','dest',[{l:'¿Qué destino?',search:true,ph:'Ej.: Lisboa'},{l:'¿Cuándo te gustaría ir?',chips:true,mw:0,opts:ch(['Este año','El año que viene','Algún día'],1)},F.txt('¿Algo más?','Cuéntanos qué te atrae',64,true)],700),tog:'Avísame cuando esté'},
+      {id:'U2i-g',cap:'Añadir un destino · gracias',title:'',h:520,sheet:true,hasIc:false,thanks:true,thT:'¡Apuntado! Te avisaremos cuando Lisboa esté en JUTRIP.',thS:THX},
+      {id:'U2i-c',cap:'Añadir un destino · aviso de la campana',title:'',h:300,bell:true,bn:[{ic:P.globe,t:'¡Lisboa ya está en JUTRIP! Tú lo pediste.'}]},
+      {...frm('U2j','Comparte tu foto','Comparte tu foto','cam','foto',[F.sitioF(),{l:'Tu foto',big:true},{l:'Permiso',check:true,v:'Es mi foto y dejo que JUTRIP la use en la app con mi nombre'},{l:'Tu nombre en la foto',input:true,ph:'Foto: Laura G.'}],900),foot:true,noTog:true,tog:'',legal:''},
+      {...frm('U2j-b','Comparte tu foto · sin foto todavía','Comparte tu foto','cam','foto',[F.sitioB(),{l:'Tu foto',empty:true},{l:'Permiso',check:true,v:'Es mi foto y dejo que JUTRIP la use en la app con mi nombre'},{l:'Tu nombre en la foto',input:true,ph:'Foto: Laura G.'}],820),noTog:true,tog:'',legal:''},
+      {id:'U2j-g',cap:'Comparte tu foto · gracias',title:'',h:520,sheet:true,hasIc:false,thanks:true,thT:'¡Gracias! Si la elegimos, saldrá en la app con tu nombre.',thS:''},
+      {id:'U2j-c',cap:'Comparte tu foto · aviso de la campana',title:'',h:300,bell:true,bn:[{ic:P.cam,t:'Tu foto del Coliseo ya está en JUTRIP. ¡Gracias, Laura!'}]}
+    ];
+    boards.forEach(b=>{if(b.form&&b.tog==null)b.tog=TOG;b.togD=b.noTog?'none':'flex';});
+    return{boards,tiles};
+  }
+}
+</script>
+</body>
+</html>

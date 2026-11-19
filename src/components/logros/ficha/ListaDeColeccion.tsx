@@ -3,6 +3,7 @@ import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { pedirColeccion, type ColeccionDentroDatos } from '../pantallas/destino/api'
 import { useLogrosPantallas } from '../pantallas/useLogrosPantallas'
+import { guardarEnCache, leerEnCache, mismaRespuesta } from '../../../lib/logrosEnCache'
 
 /**
  * (V14) LA LISTA DE UNA COLECCIÓN, la misma en la hoja de logros, el resumen del viaje, «Todos mis logros» y la pestaña «Logros» de la ficha: cada sitio con su FOTO (la tuya si lo ganaste con una foto;
@@ -155,11 +156,17 @@ export function ListaDeColeccion({
 export function ListaDeColeccionPedida({ destino, coleccion, ciudad, tripId }: { destino: string; coleccion: string; ciudad: string; tripId?: string | null }): ReactNode {
   const activo = useSyncStore((x) => x.activeTripId) ?? null
   const id = tripId === undefined ? activo : tripId
-  const [datos, setDatos] = useState<ColeccionDentroDatos | null>(null)
+  // (V18) Lo último que se vio sale al instante (la misma clave que «la colección por dentro»); lo nuevo llega por detrás y solo cambia si cambia.
+  const clave = `pantalla:coleccion:${destino}:${coleccion}:${id ?? ''}`
+  const [datos, setDatos] = useState<ColeccionDentroDatos | null>(() => leerEnCache<ColeccionDentroDatos>(clave))
   useEffect(() => {
-    setDatos(null)
+    setDatos(leerEnCache<ColeccionDentroDatos>(clave))
     let vivo = true
-    void pedirColeccion(destino, coleccion, id).then((d) => vivo && setDatos(d))
+    void pedirColeccion(destino, coleccion, id).then((d) => {
+      if (!vivo || !d) return
+      guardarEnCache(clave, d)
+      setDatos((antes) => (antes && mismaRespuesta(antes, d) ? antes : d))
+    })
     return () => {
       vivo = false
     }

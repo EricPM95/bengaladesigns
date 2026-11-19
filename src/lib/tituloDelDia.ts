@@ -4,6 +4,7 @@ import { FREE_DAY_DEFAULT_NAME } from './freeDays'
 import { isManualRoute } from './manualPlan'
 import { manualDayTitle } from './bookings'
 import { parseTimeToMinutes } from './time'
+import { esNombreDeOtroDia } from './nombreDeDia'
 import type { DayPlan, Route, Stop } from './types'
 
 /**
@@ -140,7 +141,9 @@ function nombreDeSiempre(route: Route, day: DayPlan, conTrayecto: boolean): { ti
 }
 
 /** El nombre de un día (título y trayecto). `grupos` null: el destino no los trae y todo queda como siempre. */
-export function nombreDelDia(route: Route, day: DayPlan, grupos: GruposDelDestino | null): NombreDelDia {
+export function nombreDelDia(route: Route, diaGuardado: DayPlan, grupos: GruposDelDestino | null): NombreDelDia {
+  // (V18) Un nombre que es de OTRO día («Dia 2 Lunes» en el jueves 12) no se enseña: el día se nombra como si no tuviera nombre propio. Los que el viajero escribió no se tocan.
+  const day: DayPlan = esNombreDeOtroDia(route, diaGuardado) ? { ...diaGuardado, curatedTitle: undefined, title: diaGuardado.userAdded ? FREE_DAY_DEFAULT_NAME : diaGuardado.city } : diaGuardado
   if (!grupos) {
     const antiguo = nombreDeSiempre(route, day, true)
     return { titulo: antiguo.titulo, viaje: null, ponleNombre: antiguo.ponleNombre }

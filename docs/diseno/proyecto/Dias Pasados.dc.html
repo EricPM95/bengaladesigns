@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · DÍAS · DÍAS QUE YA PASARON</span><span style="font:400 40px/1 'Instrument Serif',serif">Un día pasado queda bloqueado</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ b.cap }}</span>
+      <div style="position:relative;width:390px;height:720px;border-radius:36px;overflow:hidden;background:#F5EFE4;box-shadow:0 30px 60px -30px rgba(28,34,48,.5)">
+        <div style="height:170px;background:linear-gradient(135deg,#E6EBDD,#D2DEC8);display:flex;align-items:flex-end;justify-content:center;padding-bottom:30px"><span style="height:36px;padding:0 18px;border-radius:999px;background:#FFFDF8;border:1.5px solid #B58A2E;display:flex;align-items:center;gap:8px;font:400 19px 'Instrument Serif',serif">Roma <span style="font:500 12.5px 'Geist';color:rgba(28,34,48,.6)">· 26 – 29 nov</span></span></div>
+        <div style="margin-top:-18px;border-radius:26px 26px 0 0;background:#F5EFE4;padding:26px 18px 20px 36px;display:flex;flex-direction:column;gap:22px;position:relative">
+          <span style="position:absolute;left:50%;top:8px;margin-left:-20px;width:40px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+          <sc-for list="{{ b.days }}" as="d" hint-placeholder-count="4">
+            <div style="position:relative;display:flex;align-items:center;gap:10px;padding:8px 10px 8px 12px;border-radius:20px;background:{{ d.bg }};box-shadow:{{ d.sh }};border-left:5px solid {{ d.col }}">
+              <sc-if value="{{ d.free }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:-19px;top:50%;margin-top:-6px;width:13px;height:12px;display:flex;flex-direction:column;justify-content:space-between"><span style="height:1.6px;border-radius:2px;background:rgba(28,34,48,.4)"></span><span style="height:1.6px;border-radius:2px;background:rgba(28,34,48,.4)"></span><span style="height:1.6px;border-radius:2px;background:rgba(28,34,48,.4)"></span></span></sc-if>
+              <span style="flex:none;width:44px;height:44px;border-radius:12px;background:#EFE7D6;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:600 8.5px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ d.w }}</span><span style="font:400 19px/1 'Instrument Serif',serif">{{ d.n }}</span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 17.5px/1.1 'Instrument Serif',serif;color:{{ d.fg }}">{{ d.t }}</span><sc-if value="{{ d.past }}" hint-placeholder-val="{{ false }}"><span style="font:500 11.5px 'Geist';color:rgba(28,34,48,.6)">{{ d.sub }}</span></sc-if></span>
+              <sc-if value="{{ d.past }}" hint-placeholder-val="{{ false }}"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:#DCEBDD;color:#2F6B43;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></sc-if>
+              <sc-if value="{{ d.free }}" hint-placeholder-val="{{ true }}"><span style="flex:none;width:30px;height:30px;border-radius:50%;border:1px solid rgba(28,34,48,.15);display:flex;align-items:center;justify-content:center;color:rgba(28,34,48,.5)">···</span></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    const D=[['JUE','26','Free Tour y Vaticano','#2F7FD8'],['VIE','27','Roma antigua y Trastevere','#F29A1A'],['SÁB','28','Villa Borghese y Plaza de España','#4CAF50'],['DOM','29','Hoy vuelves a casa','#C9BFA8']];
+    const mk=cur=>D.map(([w,n,t,col],i)=>{const past=i<cur,now=i===cur;return{w,n,t,col:past?'#CFC8B6':col,past,now,free:!past,bg:past?'#F3EEE2':'#FFFDF8',sh:past?'0 6px 14px -12px rgba(28,34,48,.3)':'0 10px 20px -16px rgba(28,34,48,.45)',fg:'#1C2230',sub:i===0?'Hecho · 12 fotos':'Hecho · Ver tu día'};});
+    return{boards:[{cap:'P1 · Estamos en el día 2: el día 1 queda bloqueado',days:mk(1)},{cap:'P2 · Estamos en el día 3: los días 1 y 2 quedan bloqueados',days:mk(2)}]};
+  }
+}
+</script>
+</body>
+</html>

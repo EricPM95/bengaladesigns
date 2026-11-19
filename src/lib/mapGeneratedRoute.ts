@@ -386,6 +386,8 @@ export interface GeneratedExcursion {
   cancellation_note?: string | null
   photo_url?: string | null
   photo_url_big?: string | null
+  incluye?: string | null
+  recogida?: string | null
   /** La más reservada del destino (dato real del destino, nunca inventado). */
   best_seller?: boolean
   suggested_day?: number
@@ -749,6 +751,8 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       photoUrl: excursion.photo_url ?? null,
       photoUrlBig: excursion.photo_url_big ?? excursion.photo_url ?? null,
       bestSeller: excursion.best_seller === true,
+      incluye: excursion.incluye ?? null,
+      recogida: excursion.recogida ?? null,
       bookUrl: excursion.civitatis_url || buildExcursionSearchUrl(excursion.name, excursion.civitatis_search),
     }
     byDay.set(dayNumber, [...(byDay.get(dayNumber) ?? []), mapped])

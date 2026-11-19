@@ -28,7 +28,7 @@ import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { CERRADO_ESTE_DIA, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
-import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
+import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName, type TemaDeExplorar } from '../../../lib/exploreStyle'
 import { Icono } from '../../ui/Icono'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { usePasePintable } from '../../../lib/pago'
@@ -94,6 +94,10 @@ interface PlaceExplorerScreenProps {
   onQuickAddExcursion?: (excursion: Excursion) => void
   /** Con él, el botón "Hoteles" de la fila de filtros: no filtra, abre la pantalla del mapa de alojamientos (Tanda 6z). */
   onHotels?: () => void
+  /** (V18) Los TEMAS de las tarjetas de EXPLORAR como botones de arriba (los mismos, en el mismo orden, con su icono y su color; sin «Hoteles»): uno marcado, y al tocar otro cambian el mapa, la lista y el subtítulo sin salir. Sin esto, la fila de filtros de siempre (el «+» de DÍAS). */
+  temas?: TemaDeExplorar[]
+  temaActivo?: string | null
+  onTema?: (id: string) => void
   /** "Cambiar" restaurante de una comida o cena: los de esta zona van primero, con "Recomendado". */
   recommendedZone?: string | null
   /** Texto del botón de cada sitio ("+ Añadir" por defecto; "Elegir" al cambiar un restaurante). */
@@ -357,6 +361,9 @@ export function PlaceExplorerScreen({
   onQuickAdd,
   onQuickAddExcursion,
   onHotels,
+  temas,
+  temaActivo = null,
+  onTema,
   recommendedZone = null,
   quickAddLabel = '+ Añadir',
   toiletsEnabled = false,
@@ -409,6 +416,10 @@ export function PlaceExplorerScreen({
   const [position, setPosition] = useState<Coordinates | null>(null)
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
   const chipsRowRef = useRef<HTMLDivElement>(null)
+  // (V18) El tema marcado se ve siempre en la fila de arriba (si está fuera de la pantalla, la fila se desliza hasta él).
+  useEffect(() => {
+    if (temaActivo) chipsRowRef.current?.querySelector("[data-tema][aria-pressed=true]")?.scrollIntoView({ inline: "center", block: "nearest" })
+  }, [temaActivo])
   /** El mapa grande (por defecto) o pequeño: el tirador de la hoja lo cambia. */
   const [mapH, setMapH] = useState(() => Math.round(window.innerHeight * 0.38))
   const [draggingSheet, setDraggingSheet] = useState(false)
@@ -860,7 +871,28 @@ export function PlaceExplorerScreen({
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}
         <div className="flex shrink-0 items-center gap-1.5 px-4 pb-3">
           <div ref={chipsRowRef} className="flex flex-1 items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-            {chipRow.map((chip) => {
+            {temas?.map((tema) => {
+              const active = temaActivo === tema.id
+              return (
+                <button
+                  key={tema.id}
+                  type="button"
+                  onClick={() => onTema?.(tema.id)}
+                  aria-pressed={active}
+                  data-active={active}
+                  data-tema={tema.id}
+                  className="zona-toque flex shrink-0 items-center gap-2 rounded-full transition-colors"
+                  style={{ height: 38, padding: '0 14px 0 6px', border: `1px solid ${active ? 'rgb(var(--text))' : 'rgba(28,34,48,.12)'}`, background: active ? 'rgb(var(--text))' : '#FFFDF8', color: active ? '#FFFDF8' : 'rgb(var(--text))', font: "500 14px 'Geist'" }}
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full text-white" style={{ background: tema.color }}>
+                    <Icono nombre={tema.icono} size={15} />
+                  </span>
+                  {tema.label}
+                  <span style={{ font: "500 11px 'Geist Mono',monospace", opacity: 0.6 }}>{tema.cuantos}</span>
+                </button>
+              )
+            })}
+            {(temas ? [] : chipRow).map((chip) => {
               const active = activeFilters.includes(chip.id)
               return (
                 <button
@@ -890,7 +922,7 @@ export function PlaceExplorerScreen({
                 </button>
               )
             })}
-            {onHotels && (
+            {onHotels && !temas && (
               <button
                 type="button"
                 onClick={onHotels}
@@ -914,16 +946,18 @@ export function PlaceExplorerScreen({
               </button>
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => setActiveFilters([])}
-            aria-label="Quitar todos los filtros"
-            title="Quitar todos los filtros"
-            className="zona-toque flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full transition-opacity"
-            style={{ border: '1px solid rgba(28,34,48,.12)', background: '#FFFDF8', color: 'rgba(28,34,48,.6)', opacity: activeFilters.length > 0 ? 1 : 0.35 }}
-          >
-            {iconBox('close')}
-          </button>
+          {!temas && (
+            <button
+              type="button"
+              onClick={() => setActiveFilters([])}
+              aria-label="Quitar todos los filtros"
+              title="Quitar todos los filtros"
+              className="zona-toque flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full transition-opacity"
+              style={{ border: '1px solid rgba(28,34,48,.12)', background: '#FFFDF8', color: 'rgba(28,34,48,.6)', opacity: activeFilters.length > 0 ? 1 : 0.35 }}
+            >
+              {iconBox('close')}
+            </button>
+          )}
         </div>
 
         {/* Segunda fila, solo con Restaurantes activo: sub-categorías excluyentes. */}

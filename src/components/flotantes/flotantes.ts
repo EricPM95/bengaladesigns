@@ -18,10 +18,25 @@ import { useRouteStore } from '../../store/useRouteStore'
 const HOJAS = '[role="dialog"]:not([data-flotantes]), [role="alertdialog"], [data-hoja], .map-cover-overlay.items-end'
 // (V2) HOY ya no esquiva: los flotantes se quedan quietos y HOY deja espacio libre al final para que con el scroll nada quede tapado.
 const BOTONES_A_ESQUIVAR = '[data-evitar-flotantes]'
-/** (V5, 4c) El botón de los logros y la cámara miden lo mismo (52 px): lo que sube el de encima es 52 de botón + 12 de aire. */
-export const LADO_DE_LOS_FLOTANTES = 52
-export const SOBRE_LOS_LOGROS = 64
-const LADO = 52
+/** (V18, Design «Botones Flotantes» B1) Los botones flotantes (la cámara y el trofeo) son IGUALES: crema con aro dorado, 44 px; lo que sube el de encima es 44 de botón + 12 de aire. */
+export const LADO_DE_LOS_FLOTANTES = 44
+export const SOBRE_LOS_LOGROS = 56
+const LADO = 44
+export const ESTILO_FLOTANTE = {
+  width: 44,
+  height: 44,
+  padding: 0,
+  borderRadius: '50%',
+  background: 'radial-gradient(circle at 32% 26%,#FFFFFF 0%,#FBF1DA 55%,#F0DEB0 100%)',
+  border: '1.5px solid #C9A45A',
+  boxShadow: '0 12px 22px -10px rgba(90,64,16,.55),0 2px 4px rgba(90,64,16,.18),inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 3px rgba(255,253,246,.9),inset 0 0 0 4px rgba(201,164,90,.35)',
+  boxSizing: 'border-box',
+  color: '#7A5A1E',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+} as const
+
 /** (10S5) Lo que mide el lápiz y el aire que se deja entre el último contenido y los botones flotantes. */
 export const LADO_DEL_LAPIZ = 56
 export const AIRE_BAJO_LOS_BOTONES = 16

@@ -215,8 +215,8 @@ console.log('2. El código')
   debe(/data-camara-viaje="hacer-foto"/.test(hoja) && /data-camara-viaje="subir-galeria"/.test(hoja) && /abrirGaleriaDeReclamo()/.test(hoja) && /Subir de la galería/.test(hoja), 'camara', 'la cámara flotante ofrece [Hacer foto] y [Subir de la galería] (con pase, durante el viaje); la galería usa lo del reclamo')
   const logrosBtn = leer('src/components/logros/momentos/BotonFlotanteLogros.tsx')
   const flot = leer('src/components/flotantes/flotantes.ts')
-  debe(/width: 52, height: 52/.test(logrosBtn) && /width: 52, height: 52/.test(hoja) && /LADO_DE_LOS_FLOTANTES = 52/.test(flot), 'flotantes', 'la cámara y el botón de los logros miden lo mismo (52 px) y van uno encima del otro')
-  debe(/data-boton-logros-trofeo/.test(logrosBtn) && /#B58A2E/.test(logrosBtn) && /linear-gradient\(160deg,#FFF8E4/.test(logrosBtn), 'flotantes', 'el botón de logros sin nada ganado lleva el trofeo en oro sobre un fondo crema')
+  debe(/ESTILO_FLOTANTE/.test(logrosBtn) && /ESTILO_FLOTANTE/.test(hoja) && /LADO_DE_LOS_FLOTANTES = 44/.test(flot) && flot.includes("width: 44,"), 'flotantes', '(V18) la cámara y el botón de los logros miden lo mismo (44 px) y van uno encima del otro');
+  debe(/data-boton-logros-trofeo/.test(logrosBtn) && /#7A5A1E/.test(logrosBtn) && flot.includes("radial-gradient(circle at 32% 26%"), 'flotantes', '(V18) el botón de logros lleva el trofeo sobre fondo crema con aro dorado');
 }
 
 /* ───────── 3. En pantalla ───────── */
@@ -263,9 +263,9 @@ if (abrirApp && BASE) {
       const c = await rect('[data-camara-viaje=boton]')
       const l = await rect('[data-boton-logros]')
       rects[nombre] = { c, l }
-      debe(c && c.w === 52 && c.h === 52, 'camara_5', `${nombre}: sale la cámara de viaje (52×52)`)
-      debe(l && l.w === 52 && l.h === 52, 'flotantes', `${nombre}: el botón de logros mide 52×52, como la cámara`)
-      if (c && l) debe(c.x === l.x && l.y - c.y >= 52, 'flotantes', `${nombre}: la cámara va justo encima del botón de logros (misma columna)`)
+      debe(c && c.w === 44 && c.h === 44, 'camara_5', `${nombre}: sale la cámara de viaje (44×44)`)
+      debe(l && l.w === 44 && l.h === 44, 'flotantes', `${nombre}: el botón de logros mide 44×44, como la cámara`)
+      if (c && l) debe(c.x === l.x && l.y - c.y >= 44, 'flotantes', `${nombre}: la cámara va justo encima del botón de logros (misma columna)`)
       if (nombre === 'Ruta' || nombre === 'Hoy') await app.captura(`${CAPTURAS}/camara_${nombre.toLowerCase()}.jpg`)
     }
     const xs = new Set(Object.values(rects).map((r) => r.c && r.c.x))
