@@ -287,16 +287,39 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
   // (Tanda 10S3) Mientras se escribe en un campo, la tarjeta sube arriba y los resultados salen justo debajo, entre el campo y el teclado; se esconde lo que estorba (logo, «Volver a mi viaje», título, mapa). Al soltar el campo (teclado cerrado) o elegir, todo vuelve.
   const escribiendo = !enTransporte && foco !== null
   const [visible, setVisible] = useState(alto)
+  // (V23) Lo que el iPhone ha desplazado la pantalla al sacar el teclado (visualViewport.offsetTop): la tarjeta se coloca según lo que de verdad se ve.
+  const [desplazo, setDesplazo] = useState(0)
   useEffect(() => {
-    const medir = () => setVisible(Math.max(200, Math.min(alto, Math.round(window.visualViewport?.height ?? window.innerHeight))))
+    const medir = () => {
+      setVisible(Math.max(200, Math.min(alto, Math.round(window.visualViewport?.height ?? window.innerHeight))))
+      setDesplazo(Math.max(0, Math.round(window.visualViewport?.offsetTop ?? 0)))
+    }
     medir()
     window.visualViewport?.addEventListener('resize', medir)
+    window.visualViewport?.addEventListener('scroll', medir)
     window.addEventListener('resize', medir)
     return () => {
       window.visualViewport?.removeEventListener('resize', medir)
+      window.visualViewport?.removeEventListener('scroll', medir)
       window.removeEventListener('resize', medir)
     }
   }, [alto])
+  // (V23) Mientras se escribe, la página no se desplaza sola: se sujeta arriba y, si el iPhone la mueve, se devuelve.
+  useEffect(() => {
+    if (!escribiendo) return
+    const sujetar = () => {
+      if (window.scrollY !== 0 || window.scrollX !== 0) window.scrollTo(0, 0)
+    }
+    sujetar()
+    window.addEventListener('scroll', sujetar, { passive: true })
+    const html = document.documentElement
+    const antes = html.style.overflow
+    html.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('scroll', sujetar)
+      html.style.overflow = antes
+    }
+  }, [escribiendo])
   const soltarFoco = (cual: 'o' | 'd') => {
     setTimeout(() => setFoco((f) => (f === cual && document.activeElement !== (cual === 'o' ? origenRef.current : destinoRef.current) ? null : f)), 250)
   }
@@ -446,7 +469,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
       {/* (10S3) Con un campo en uso: tarjeta arriba y, debajo, sus resultados (en flujo, entre el campo y el teclado). Sin campo en uso, `contents`: nada cambia. */}
       <div
         data-zona-escribir={escribiendo ? '' : undefined}
-        style={escribiendo ? { position: 'absolute', left: 14, right: 14, top: 'max(10px, calc(env(safe-area-inset-top) + 6px))', zIndex: 6, display: 'flex', flexDirection: 'column', gap: 6, maxHeight: Math.max(160, visible - 12) } : { display: 'contents' }}
+        style={escribiendo ? { position: 'absolute', left: 14, right: 14, top: `calc(max(10px, calc(env(safe-area-inset-top) + 6px)) + ${desplazo}px)`, zIndex: 6, display: 'flex', flexDirection: 'column', gap: 6, maxHeight: Math.max(160, visible - 12) } : { display: 'contents' }}
       >
       {noHay && (
         <div data-aviso-destino style={{ order: 2, padding: 16, borderRadius: 20, background: 'rgba(255,253,248,.96)', border: '1px solid #E4D2A4', display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -560,6 +583,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
             <input
               ref={origenRef}
               data-campo-origen
+              autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} enterKeyHint="search" name="trazo-buscar-ciudad-salida" data-form-type="other" data-lpignore="true" aria-autocomplete="list"
               value={foco === 'o' ? oq : (origin?.name ?? oq)}
               onFocus={() => {
                 setFoco('o')
@@ -582,6 +606,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
             <input
               ref={destinoRef}
               data-campo-destino
+              autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} enterKeyHint="search" name="trazo-buscar-ciudad-destino" data-form-type="other" data-lpignore="true" aria-autocomplete="list"
               value={foco === 'd' ? dq : (destination?.name ?? dq)}
               onFocus={() => {
                 setFoco('d')

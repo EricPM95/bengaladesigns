@@ -185,7 +185,7 @@ const cerrarPago = async (a) => {
   await modo(g, 'bookings')
   const reservas = await g.evaluar('document.body.innerText')
   debe(/Llegada y vuelta/.test(reservas), 'gratis', 'RESERVAS: «Llegada y vuelta» sale sin pase (para apuntar el vuelo o el tren)')
-  debe(/0 de 3/.test(reservas), 'gratis', `RESERVAS: el resumen dice «0 de 3 listo» (${(reservas.match(/\d de \d\s*listo/i) ?? [''])[0]})`)
+  debe(/0 de 4/.test(reservas), 'gratis', `RESERVAS: el resumen dice «0 de 4 listo» (V22: con el seguro) (${(reservas.match(/\d de \d\s*listo/i) ?? [''])[0]})`)
   // Se guarda el vuelo de llegada (gratis) y debajo sale el candado del ajuste.
   const diasAntes = await g.evaluar(`${store}.then((s) => JSON.stringify(s.route.days.map((d) => d.stops.map((p) => p.name + '@' + p.time))))`)
   await g.evaluar(`${store}.then((s) => { s.setArrivalFlightTime('15:40'); return true })`)

@@ -44,6 +44,8 @@ export const ICONOS = {
   adelante: 'M9 6l6 6-6 6',
   /** La flecha larga hacia la derecha (la pantalla de elegir cómo se monta el itinerario, Tanda 6y). */
   flecha: 'M5 12h14M13 6l6 6-6 6',
+  /** (V23) La flechita hacia arriba a la derecha: el botón sale de la app (abre otra página). */
+  fuera: 'M7 17L17 7M9 7h8v8',
   /** Intercambiar (⇄): dos flechas en sentidos contrarios. «Cambiar parada» (Tanda 7): sustituye al «+» de cada tarjeta. */
   intercambiar: 'M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4',
   abajo: 'M6 9l6 6 6-6',

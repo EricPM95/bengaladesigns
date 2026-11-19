@@ -81,7 +81,7 @@ function Campo({ etiqueta, opcional = false, children }: { etiqueta: string; opc
   )
 }
 const Linea = ({ valor, onCambia, ph, dato }: { valor: string; onCambia: (v: string) => void; ph: string; dato: string }) => (
-  <input data-campo={dato} value={valor} onChange={(e) => onCambia(e.target.value)} placeholder={ph} maxLength={160} style={{ ...caja, height: 46, padding: '0 14px', width: '100%', boxSizing: 'border-box' }} />
+  <input autoComplete="off" autoCorrect="off" spellCheck={false} enterKeyHint="search" data-campo={dato} value={valor} onChange={(e) => onCambia(e.target.value)} placeholder={ph} maxLength={160} style={{ ...caja, height: 46, padding: '0 14px', width: '100%', boxSizing: 'border-box' }} />
 )
 const Area = ({ valor, onCambia, ph, alto, dato }: { valor: string; onCambia: (v: string) => void; ph: string; alto: number; dato: string }) => (
   <textarea data-campo={dato} value={valor} onChange={(e) => onCambia(e.target.value)} placeholder={ph} maxLength={1000} style={{ ...caja, height: alto, padding: '12px 14px', width: '100%', boxSizing: 'border-box', lineHeight: 1.35, resize: 'none' }} />
@@ -120,7 +120,7 @@ function BuscadorDeSitio({ valor, onElige, ph = 'Busca un sitio' }: { valor: { n
   }, [texto, nombres, valor])
   return (
     <div style={{ position: 'relative' }}>
-      <input data-campo="sitio" value={texto} onChange={(e) => { setTexto(e.target.value); onElige(e.target.value.trim() ? { nombre: e.target.value } : null) }} placeholder={ph} style={{ ...caja, height: 46, padding: '0 14px', width: '100%', boxSizing: 'border-box' }} />
+      <input autoComplete="off" autoCorrect="off" spellCheck={false} enterKeyHint="search" data-campo="sitio" value={texto} onChange={(e) => { setTexto(e.target.value); onElige(e.target.value.trim() ? { nombre: e.target.value } : null) }} placeholder={ph} style={{ ...caja, height: 46, padding: '0 14px', width: '100%', boxSizing: 'border-box' }} />
       {coincidencias.length > 0 && (
         <div data-resultados-sitio style={{ marginTop: 6, borderRadius: 14, background: '#fff', border: '1px solid rgba(28,34,48,.14)', overflow: 'hidden' }}>
           {coincidencias.map((n) => (

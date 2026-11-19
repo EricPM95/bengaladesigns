@@ -180,6 +180,7 @@ console.log('5. Lo que hay en el código')
   debe(/solo lo tuyo/.test(pdf) && /modoDeCuentas/.test(pdf), '0b-6', '(10N10) el PDF lleva el modo y «Mi cuenta, solo lo tuyo»')
   for (const f of ['PurchaseSection', 'StopReservation', 'ArrivalDetailSheet']) {
     const dir = f === 'StopReservation' ? 'reservas' : 'dayDetail'
+    if (f === 'StopReservation') { debe(/precioTiendaEnVista/.test(leer('src/components/route/reservas/EntradaDeLaFicha.tsx')), 'moneda', 'StopReservation (V23: ahora en EntradaDeLaFicha): el precio sale en la moneda del viajero'); continue }
     debe(/precioTiendaEnVista/.test(leer(`src/components/route/${dir}/${f}.tsx`)), 'moneda', `${f}: el precio sale en la moneda del viajero`)
   }
 }

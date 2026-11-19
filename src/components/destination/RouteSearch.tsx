@@ -124,6 +124,7 @@ export function RouteSearch({ onConfirm, defaultOpen = false }: RouteSearchProps
       </p>
       <div className="flex gap-2">
         <input
+          autoComplete="off" autoCorrect="off" spellCheck={false} enterKeyHint="search"
           value={text}
           onChange={(event) => {
             setText(event.target.value)

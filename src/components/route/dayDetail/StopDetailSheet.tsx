@@ -378,6 +378,17 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   const ticketInfo = stop?.ticketInfo ?? []
   const entradasDelSitio = useStopEntradas(stop)
   const hasEntradas = entradasDelSitio != null
+  // (V23) Las fotos pequeñas de las entradas empiezan a cargarse al ABRIR la ficha, no al tocar la pestaña: al llegar a «Entradas» ya están en el móvil (la caché del navegador) y salen al instante.
+  useEffect(() => {
+    for (const entrada of entradasDelSitio?.entradas ?? []) {
+      const url = entrada.civitatis?.fotos.principal?.url
+      if (url) {
+        const imagen = new Image()
+        imagen.decoding = 'async'
+        imagen.src = url
+      }
+    }
+  }, [entradasDelSitio])
   // La API de consulta (parte 1, con el interruptor encendido): las actividades cerca del sitio, si no tiene entradas escritas a mano ni «No necesitas entrada». Nuestros sitios no traen el número de lugar de Google: se busca por coordenadas.
   const coordenadasDelSitio = dayStops.find((dayStop) => dayStop.id === stop?.id)?.coordinates
   const actividadesCerca = useActividadesCerca(coordenadasDelSitio?.lat, coordenadasDelSitio?.lng, Boolean(stop) && !stop?.isFreeTour && !hasEntradas && sinEntrada == null)

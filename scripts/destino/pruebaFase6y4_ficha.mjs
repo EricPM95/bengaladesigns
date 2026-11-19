@@ -327,7 +327,7 @@ const hojaSimple = (stop, { version = 'completa', extra = {}, voces } = {}) => {
   const resumen = plano(aTexto(hojaSimple(fontana)))
   debe(/Entradas/.test(resumen), '5 fontana', 'la ficha de la Fontana no tiene la pestaña «Entradas»')
   const coliseoTickets = plano(aTexto(hojaSimple(coliseoCat, { extra: { initialTab: 'tickets' } })))
-  debe(!/No necesitas entrada/.test(coliseoTickets) && /Reservar/.test(coliseoTickets), '5 fontana', 'el Coliseo (con entrada) enseña «No necesitas entrada» o no su [Reservar]')
+  debe(!/No necesitas entrada/.test(coliseoTickets) && (/Reservar/.test(coliseoTickets) || /Coliseo, Foro y Palatino/.test(coliseoTickets)), '5 fontana', 'el Coliseo (con entrada) enseña «No necesitas entrada» o no su entrada (V23: la tarjeta cerrada; [Ver horas y reservar] sale al tocarla)')
 }
 
 // ═══════════ D. La etiqueta en las cuatro pantallas ═══════════

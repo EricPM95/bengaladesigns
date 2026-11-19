@@ -150,7 +150,7 @@ const entradasAbiertas = (a) =>
       primerosTextos: primeros.map((c) => c.innerText.replace(/\\s+/g, ' ').slice(0, 60)),
       fijada: /Fijada/.test(columna.innerText),
       topCaja: caja ? Math.round(caja.getBoundingClientRect().top - tabs.getBoundingClientRect().bottom) : null,
-      entradasParaComprar: Array.from(columna.querySelectorAll('button')).filter((b) => /^Reservar$/.test((b.textContent || '').trim())).length,
+      entradasParaComprar: Array.from(columna.querySelectorAll('button')).filter((b) => b.hasAttribute('data-entrada-tarjeta')).length,
       alto: window.innerHeight,
       bajoElPliegue: caja ? caja.getBoundingClientRect().bottom > window.innerHeight : null,
     }

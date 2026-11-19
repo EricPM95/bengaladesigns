@@ -78,6 +78,7 @@ export function OtraReservaBuscador({ route, sitiosConEntrada, enRuta, onElegir,
           <label className="mt-5 block">
             <span className="sr-only">Escribe de qué es la reserva</span>
             <input
+              autoCorrect="off" spellCheck={false} enterKeyHint="search"
               ref={entrada}
               type="text"
               value={texto}
