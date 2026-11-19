@@ -1,0 +1,90 @@
+{
+  "_que_es": "Los hoteles de la página del destino (V21): uno por zona, elegidos por Eric de su guía. La nota y las opiniones son las de Booking del día de `nota_de` (se vuelven a mirar con `node scripts/destino/notasHoteles.mjs`). `stay22` es el enlace de afiliado que generó Eric (AID viajesbengala, campaña jutrip) y se usa tal cual. `foto`: null mientras no haya una foto con permiso (las de Booking no se pueden copiar); `permiso` dice cómo va.",
+  "destino": "Roma",
+  "hoteles": [
+    {
+      "id": "torre_argentina_relais",
+      "nombre": "Torre Argentina Relais",
+      "zona": "Centro Histórico",
+      "booking": "https://www.booking.com/hotel/it/torre-argentina-relais-residenze-di-charme.es.html",
+      "stay22": "https://booking.stay22.com/viajesbengala/W2tifSYtI0",
+      "nota": 9.3,
+      "opiniones": 1552,
+      "nota_de": "2026-11-19",
+      "foto": null,
+      "permiso": "pendiente"
+    },
+    {
+      "id": "nikis_trastevere",
+      "nombre": "Nikis Collection Trastevere",
+      "zona": "Trastevere",
+      "booking": "https://www.booking.com/hotel/it/nikis-collection-trastevere.es.html",
+      "stay22": "https://booking.stay22.com/viajesbengala/ZnfYv4gsY7",
+      "nota": 9.1,
+      "opiniones": 1039,
+      "nota_de": "2026-11-19",
+      "foto": null,
+      "permiso": "pendiente"
+    },
+    {
+      "id": "polinari_san_pietro",
+      "nombre": "Polinari Rooms San Pietro",
+      "zona": "Prati – Vaticano",
+      "booking": "https://www.booking.com/hotel/it/polinari-rooms-san-pietro-roma.es.html",
+      "stay22": "https://booking.stay22.com/viajesbengala/7BzGI3MdUt",
+      "nota": 9.4,
+      "opiniones": 534,
+      "nota_de": "2026-11-19",
+      "foto": null,
+      "permiso": "pendiente"
+    },
+    {
+      "id": "casa_cleo",
+      "nombre": "Casa Cleo",
+      "zona": "Monti",
+      "booking": "https://www.booking.com/hotel/it/casacleo.es.html",
+      "stay22": "https://booking.stay22.com/viajesbengala/Rmip5Gear4",
+      "nota": 9.6,
+      "opiniones": 835,
+      "nota_de": "2026-11-19",
+      "foto": null,
+      "permiso": "pendiente"
+    },
+    {
+      "id": "spagna_boutique",
+      "nombre": "Spagna Boutique",
+      "zona": "Plaza de España",
+      "booking": "https://www.booking.com/hotel/it/dependance-deco.es.html",
+      "stay22": "https://booking.stay22.com/viajesbengala/tSWZYf8x5N",
+      "nota": 9.6,
+      "opiniones": 932,
+      "nota_de": "2026-11-19",
+      "foto": null,
+      "permiso": "pendiente"
+    },
+    {
+      "id": "colosseo_relais",
+      "nombre": "Colosseo Relais",
+      "zona": "Zona Coliseo",
+      "booking": "https://www.booking.com/hotel/it/al-foro-romano.es.html",
+      "stay22": "https://booking.stay22.com/viajesbengala/i2FUGOonBU",
+      "nota": 9.2,
+      "opiniones": 874,
+      "nota_de": "2026-11-19",
+      "foto": null,
+      "permiso": "pendiente"
+    },
+    {
+      "id": "evergreen",
+      "nombre": "Evergreen",
+      "zona": "Termini",
+      "booking": "https://www.booking.com/hotel/it/evergreen.es.html",
+      "stay22": "https://booking.stay22.com/viajesbengala/D22pW_dGex",
+      "nota": 9.2,
+      "opiniones": 618,
+      "nota_de": "2026-11-19",
+      "foto": null,
+      "permiso": "pendiente"
+    }
+  ]
+}

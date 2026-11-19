@@ -1,0 +1,109 @@
+/**
+ * (V21) LA PÁGINA DEL DESTINO: las actividades de Civitatis y los hoteles, con datos de verdad de cada destino.
+ *   POST /api/destino-pagina  { destination }  →  { ok, destino, actividades: [...], hoteles: [...] }
+ * ACTIVIDADES: de `data/dias/<destino>/_civitatis.json` (Lanzarote: excursiones y free tours) o, si el destino no lo tiene, de las excursiones del JSON del destino (`data/pipeline_v2/<destino>.json`, Roma).
+ * Solo las de nota 8,5 o más (sobre 10), sin repetir el mismo tipo (no tres de Timanfaya) y de la MÁS popular a la MENOS (por número de opiniones); como mucho 7.
+ * HOTELES: de `data/dias/<destino>/_hoteles.json` (uno por zona, elegidos por Eric; la nota y las opiniones son las de Booking del día de `nota_de`). Los marcados `pendiente` no salen.
+ * Los enlaces de afiliado: los de los hoteles (Stay22) van tal cual; los de Civitatis los sella la app con nuestro `aid` al abrirlos. Sin precio de hoteles. Pura: no lee la red.
+ */
+import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+const NOTA_MINIMA = 8.5
+const MAXIMO = 7
+
+/** Pura: de qué «tipo» es una actividad (para no repetir): Timanfaya, La Graciosa, Papagayo… Sin tipo conocido, ella misma. */
+export function tipoDeActividad(nombre, id = '') {
+  const t = `${nombre} ${id}`.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  const tipos = [
+    ['graciosa', /graciosa/],
+    ['lobos', /lobos/],
+    ['fuerteventura', /fuerteventura|corralejo/],
+    ['timanfaya', /timanfaya|fuego/],
+    ['papagayo', /papagayo/],
+    ['pompeya', /pompey|pompei|napoles|sorrento|amalfi/],
+    ['florencia', /florencia|pisa/],
+    ['venecia', /venecia/],
+    ['tivoli', /tivoli|villa adriana|villa d.este/],
+    ['ostia', /ostia/],
+    ['vaticano', /vatican/],
+    ['coliseo', /coliseo|foro romano|palatino/],
+    ['catacumbas', /catacumba|via apia/],
+  ]
+  return tipos.find(([, re]) => re.test(t))?.[0] ?? id ?? nombre
+}
+
+const sobre10 = (nota, max) => (typeof nota === 'number' ? (max === 5 ? nota * 2 : nota) : null)
+
+/** Pura: de una lista de actividades en bruto ({ id, nombre, foto, nota (sobre 10), opiniones, duracion, desde, url }) deja las que valen, sin repetir tipo, de más a menos opiniones. */
+export function elegirActividades(brutas, { notaMinima = NOTA_MINIMA, maximo = MAXIMO } = {}) {
+  const validas = brutas
+    .filter((a) => a && a.nombre && a.url && typeof a.nota === 'number' && a.nota >= notaMinima && Number.isFinite(a.opiniones) && a.opiniones > 0)
+    .sort((a, b) => b.opiniones - a.opiniones)
+  const vistos = new Set()
+  const salida = []
+  for (const a of validas) {
+    const tipo = tipoDeActividad(a.nombre, a.id)
+    if (vistos.has(tipo)) continue
+    vistos.add(tipo)
+    salida.push({ ...a, tipo })
+    if (salida.length >= maximo) break
+  }
+  return salida
+}
+
+const leer = (f) => (existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : null)
+
+/** Las actividades en bruto de un destino (Civitatis del destino si lo tiene; si no, las excursiones de su JSON). */
+export function actividadesEnBruto({ civitatis, datosDestino }) {
+  const salida = []
+  if (civitatis?.excursiones?.length) {
+    for (const e of [...civitatis.excursiones, ...(civitatis.free_tours ?? [])]) {
+      salida.push({ id: e.id, nombre: e.name, foto: e.photo_url ?? null, nota: sobre10(e.rating, e.rating_max), opiniones: e.review_count, duracion: e.duration_label ?? null, desde: typeof e.price_from_eur === 'number' ? e.price_from_eur : null, gratis: e.price_from_eur === 0, url: e.url ?? null })
+    }
+    return salida
+  }
+  const ciudad = datosDestino?.excursions?.civitatis_city ?? String(datosDestino?.destination ?? '').toLowerCase()
+  for (const o of datosDestino?.excursions?.options ?? []) {
+    salida.push({
+      id: o.id,
+      nombre: o.name,
+      foto: o.photo_url_big || o.photo_url || null,
+      nota: sobre10(o.rating, o.rating_max),
+      opiniones: o.review_count,
+      duracion: o.duration_label ?? (o.duration_hours ? `${o.duration_hours} h` : null),
+      desde: typeof o.price_from_eur === 'number' ? Math.round(o.price_from_eur) : null,
+      gratis: o.price_from_eur === 0,
+      url: o.civitatis_slug ? `https://www.civitatis.com/es/${ciudad}/${o.civitatis_slug}/` : null,
+    })
+  }
+  return salida
+}
+
+/** Pura: los hoteles que salen (sin los pendientes ni los que no tienen todo), con su etiqueta «Mejor nota de …». */
+export function hotelesDeLaPagina(archivo) {
+  return (archivo?.hoteles ?? [])
+    .filter((h) => !h.pendiente && h.nombre && h.stay22 && typeof h.nota === 'number' && Number.isFinite(h.opiniones))
+    .map((h) => ({ id: h.id, nombre: h.nombre, zona: h.zona, etiqueta: h.etiqueta ?? `Mejor nota de ${h.zona}`, nota: h.nota, opiniones: h.opiniones, nota_de: h.nota_de ?? null, foto: h.foto ?? null, enlace: h.stay22 }))
+}
+
+export function paginaDelDestino({ raiz, destination, datosDestino }) {
+  const clave = String(destination ?? '').trim().toLowerCase()
+  const dir = join(raiz, 'data', 'dias', clave)
+  const actividades = elegirActividades(actividadesEnBruto({ civitatis: leer(join(dir, '_civitatis.json')), datosDestino }))
+  const hoteles = hotelesDeLaPagina(leer(join(dir, '_hoteles.json')))
+  return { ok: true, destino: destination, actividades, hoteles }
+}
+
+export function registrarRutaPaginaDestino(app, { raiz, findDatos }) {
+  app.post('/api/destino-pagina', (req, res) => {
+    const destination = String(req.body?.destination ?? '').trim()
+    if (!destination) return res.status(400).json({ ok: false, error: 'Falta el destino.' })
+    try {
+      return res.json(paginaDelDestino({ raiz, destination, datosDestino: findDatos(destination) }))
+    } catch (e) {
+      console.error('[destino-pagina]', e?.message ?? e)
+      return res.json({ ok: true, destino: destination, actividades: [], hoteles: [] })
+    }
+  })
+}

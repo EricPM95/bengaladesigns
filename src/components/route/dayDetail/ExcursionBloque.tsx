@@ -14,7 +14,7 @@ import { D, etiquetasDeExcursion, textoDeRutaPorDestino } from '../../../lib/exc
  *   E1 sin reservar (foto, «desde», nota y opiniones, cancelación y etiquetas; [Ver disponibilidad] y «¿Ya la has reservado? Añade tu confirmación»),
  *   E2 reservada («✓ Reservada · mié 11» y «Salida a las 08:15» con el código y [Cambiar]),
  *   E3 «¿Qué hacemos con este día?» y E4 la hoja «Más excursiones» con [Elegir esta].
- * Los datos son los de verdad de cada excursión (`_civitatis.json` o la API): foto de Civitatis, el «desde» real, la nota y las opiniones. Lo que no se sabe, no sale: nada de «Con guía» si la ficha no lo dice.
+ * Los datos son los de verdad de cada excursión (los datos del destino o la API): foto del operador, el «desde» real, la nota y las opiniones. Lo que no se sabe, no sale: nada de «Con guía» si la ficha no lo dice.
  */
 
 const precio = (e: Excursion): string => e.priceLabel ?? (e.price > 0 ? precioTiendaEnVista(e.price) : '')
@@ -71,7 +71,7 @@ export function TarjetaDeExcursion({ excursion, dayNumber, reservada }: { excurs
   return (
     <div data-excursion-tarjeta={reservada ? 'reservada' : 'sin-reservar'} style={{ position: 'relative', overflow: 'hidden', borderRadius: 22, background: '#FFFFFF', border: '1px solid rgba(181,138,46,.28)', boxShadow: '0 14px 28px -22px rgba(110,80,24,.55)' }}>
       <div style={{ position: 'relative', height: 132, overflow: 'hidden' }}>
-        <div data-excursion-foto={foto ? 'civitatis' : 'degradado'} style={{ position: 'absolute', inset: 0, clipPath: 'polygon(0 0,100% 0,100% 100%,0 82%)', background: foto ? `url("${foto}") center/cover, ${DEGRADADO}` : DEGRADADO }} />
+        <div data-excursion-foto={foto ? 'operador' : 'degradado'} style={{ position: 'absolute', inset: 0, clipPath: 'polygon(0 0,100% 0,100% 100%,0 82%)', background: foto ? `url("${foto}") center/cover, ${DEGRADADO}` : DEGRADADO }} />
         <div style={{ position: 'absolute', inset: 0, clipPath: 'polygon(0 0,100% 0,100% 100%,0 82%)', background: 'linear-gradient(180deg,rgba(20,30,50,.3),rgba(20,30,50,0) 45%,rgba(20,30,50,.3))' }} />
         <span style={{ position: 'absolute', left: 12, top: 12, height: 26, padding: '0 11px', borderRadius: 999, background: 'rgba(255,253,248,.94)', display: 'flex', alignItems: 'center', gap: 6, font: "600 10px 'Geist Mono',monospace", letterSpacing: '.1em' }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 17l2 3h14l2-3M5 17l1-6h12l1 6M12 11V4l5 3-5 2" /></svg>

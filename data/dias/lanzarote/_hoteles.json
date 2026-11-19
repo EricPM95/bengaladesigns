@@ -1,0 +1,73 @@
+{
+  "_que_es": "Los hoteles de la página del destino (V21): los 5 que eligió Eric (19-nov). Se miraron entrando en cada enlace de Stay22: el 2 y el 5 abren la ficha de su hotel en Booking; el 1, el 3 y el 4 abren solo una BÚSQUEDA por zona (Playa Blanca, Costa Teguise…) y no dicen qué hotel es: quedan `pendiente: true` (no salen en la página) hasta que Eric diga cuáles son. La nota y las opiniones son las de Booking del día de `nota_de` (`node scripts/destino/notasHoteles.mjs`). `foto`: null mientras no haya una con permiso.",
+  "destino": "Lanzarote",
+  "hoteles": [
+    {
+      "id": "enlace_1",
+      "nombre": null,
+      "zona": "Playa Blanca (según el enlace)",
+      "booking": null,
+      "stay22": "https://booking.stay22.com/viajesbengala/cJ6DAQpvwl",
+      "nota": null,
+      "opiniones": null,
+      "nota_de": null,
+      "foto": null,
+      "permiso": "pendiente",
+      "pendiente": true,
+      "motivo": "El enlace de Stay22 abre una búsqueda en Playa Blanca, no un hotel concreto."
+    },
+    {
+      "id": "la_isla_y_el_mar",
+      "nombre": "La Isla y el Mar, Hotel Boutique",
+      "zona": "Puerto del Carmen",
+      "booking": "https://www.booking.com/hotel/es/la-isla-y-el-mar-hotel-boutique.html",
+      "stay22": "https://booking.stay22.com/viajesbengala/SXta1vs2SS",
+      "nota": 9.1,
+      "opiniones": 744,
+      "nota_de": "2026-11-19",
+      "foto": null,
+      "permiso": "pendiente"
+    },
+    {
+      "id": "enlace_3",
+      "nombre": null,
+      "zona": "Costa Teguise (según el enlace)",
+      "booking": null,
+      "stay22": "https://booking.stay22.com/viajesbengala/Mo8nNFRwYl",
+      "nota": null,
+      "opiniones": null,
+      "nota_de": null,
+      "foto": null,
+      "permiso": "pendiente",
+      "pendiente": true,
+      "motivo": "El enlace de Stay22 abre una búsqueda en Costa Teguise, no un hotel concreto."
+    },
+    {
+      "id": "enlace_4",
+      "nombre": null,
+      "zona": "(según el enlace)",
+      "booking": null,
+      "stay22": "https://booking.stay22.com/viajesbengala/xbPevMDIc6",
+      "nota": null,
+      "opiniones": null,
+      "nota_de": null,
+      "foto": null,
+      "permiso": "pendiente",
+      "pendiente": true,
+      "motivo": "El enlace de Stay22 abre una búsqueda por zona, no un hotel concreto."
+    },
+    {
+      "id": "sentido_aequora",
+      "nombre": "SENTIDO Aequora Lanzarote Suites",
+      "zona": "Puerto del Carmen",
+      "booking": "https://www.booking.com/hotel/es/sentido-lanzarote-aequora-suites.html",
+      "stay22": "https://booking.stay22.com/viajesbengala/_Hhb1B6XvY",
+      "nota": 8.7,
+      "opiniones": 1649,
+      "nota_de": "2026-11-19",
+      "foto": null,
+      "permiso": "pendiente",
+      "aviso": "Nota por debajo de 9"
+    }
+  ]
+}

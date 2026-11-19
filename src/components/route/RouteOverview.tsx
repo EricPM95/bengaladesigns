@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useDestinationTips } from '../../lib/destinationTips'
 import { TripTipsSheet } from './TripTipsSheet'
 import type { Route } from '../../lib/types'
-import { buildDestinationSegments, formatSegmentNightsLabel, segmentCentroid } from '../../lib/destinationSegments'
+import { buildDestinationSegments, segmentCentroid } from '../../lib/destinationSegments'
 import { PastillaPase } from '../pase/PastillaPase'
 import { dayCountryCode } from '../../lib/flagColors'
 import { addDaysToIso } from '../../lib/dateRange'
@@ -73,32 +73,38 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
   // La varita sale en cada destino y recupera solo los días de ese destino (la copia de la ruta inicial se filtra por destino).
   const canRestoreRoute = Boolean(route.originalRoute)
 
+  // (V21) UNA sola cuenta de los días y las noches de cada tramo: la usan la tarjeta de RUTA y la página del destino («5 días · 4 noches · 25 – 29 nov»), así nunca dicen cosas distintas.
+  const resumenDelTramo = (segment: (typeof segments)[number], index: number) => {
+    const segmentDays = route.days.filter((day) => segment.dayIds.includes(day.id) && !day.isReturnLeg)
+    const count = segmentDays.length
+    const firstNumber = segmentDays[0]?.dayNumber ?? 1
+    const lastNumber = segmentDays[segmentDays.length - 1]?.dayNumber ?? firstNumber
+    // «5 días · 4 noches» (Tanda 7, punto 1): el último tramo cuenta también el día de vuelta (que duerme en casa, no en el destino), con su fecha.
+    const esElUltimo = index === segments.length - 1
+    const conVuelta = esElUltimo && route.days.some((day) => day.isReturnLeg)
+    // (Un tramo que no es el último duerme todos sus días; el último, uno menos si no lleva el día de vuelta aparte.)
+    let duracion = textoDeDuracion(count + (conVuelta ? 1 : 0), esElUltimo && !conVuelta ? count - 1 : count)
+    let dates = tripStart ? `${shortDate(addDaysToIso(tripStart, firstNumber - 1))} – ${shortDate(addDaysToIso(tripStart, lastNumber - 1 + (conVuelta ? 1 : 0)))}` : null
+    // (V15) Las fechas del viaje mandan: el último tramo acaba el día que acaba el viaje (dateRange.end), no donde acabe la cuenta de los días de la ruta guardada (que podía llevar un día de más: «08 – 14 nov» en un viaje del 8 al 13).
+    const rangoDelViaje = route.answers.dateRange
+    if (esElUltimo && tripStart && rangoDelViaje?.end) {
+      const inicioDelTramo = addDaysToIso(tripStart, firstNumber - 1)
+      const n = diasEntreFechas(inicioDelTramo, rangoDelViaje.end)
+      if (n) {
+        duracion = textoDeDuracion(n)
+        dates = `${shortDate(inicioDelTramo)} – ${shortDate(rangoDelViaje.end)}`
+      }
+    }
+    return { duracion, dates }
+  }
+
   return (
     <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-6 pt-4">
       {/* (Tanda 10N: ya no hay [Recomendar otra ruta]: quien solo recomienda cambia la ruta directamente y cada cambio va a su propuesta, con el lápiz flotante.) */}
       <TarjetaRecuerdosEnRuta route={route} />
       {segments.map((segment, index) => {
-        const segmentDays = route.days.filter((day) => segment.dayIds.includes(day.id) && !day.isReturnLeg)
-        const count = segmentDays.length
         const cityChanged = destinoCambiado(route, segment.city)
-        const firstNumber = segmentDays[0]?.dayNumber ?? 1
-        const lastNumber = segmentDays[segmentDays.length - 1]?.dayNumber ?? firstNumber
-        // «5 días · 4 noches» (Tanda 7, punto 1): el último tramo cuenta también el día de vuelta (que duerme en casa, no en el destino), con su fecha.
-        const esElUltimo = index === segments.length - 1
-        const conVuelta = esElUltimo && route.days.some((day) => day.isReturnLeg)
-        // (Un tramo que no es el último duerme todos sus días; el último, uno menos si no lleva el día de vuelta aparte.)
-        let duracion = textoDeDuracion(count + (conVuelta ? 1 : 0), esElUltimo && !conVuelta ? count - 1 : count)
-        let dates = tripStart ? `${shortDate(addDaysToIso(tripStart, firstNumber - 1))} – ${shortDate(addDaysToIso(tripStart, lastNumber - 1 + (conVuelta ? 1 : 0)))}` : null
-        // (V15) Las fechas del viaje mandan: el último tramo acaba el día que acaba el viaje (dateRange.end), no donde acabe la cuenta de los días de la ruta guardada (que podía llevar un día de más: «08 – 14 nov» en un viaje del 8 al 13).
-        const rangoDelViaje = route.answers.dateRange
-        if (esElUltimo && tripStart && rangoDelViaje?.end) {
-          const inicioDelTramo = addDaysToIso(tripStart, firstNumber - 1)
-          const n = diasEntreFechas(inicioDelTramo, rangoDelViaje.end)
-          if (n) {
-            duracion = textoDeDuracion(n)
-            dates = `${shortDate(inicioDelTramo)} – ${shortDate(rangoDelViaje.end)}`
-          }
-        }
+        const { duracion, dates } = resumenDelTramo(segment, index)
         return (
           <div key={segment.id}>
             {index > 0 && <DestinationDistanceConnector from={segmentCentroid(segments[index - 1], route.days)} to={segmentCentroid(segment, route.days)} />}
@@ -171,7 +177,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
       <DestinationDetailModal
         city={detailCity}
         days={route.days}
-        nightsLabel={detailSegment ? formatSegmentNightsLabel(detailSegment, route.days, route.answers.dateRange?.start) : null}
+        nightsLabel={detailSegment ? [resumenDelTramo(detailSegment, segments.indexOf(detailSegment)).duracion, resumenDelTramo(detailSegment, segments.indexOf(detailSegment)).dates].filter(Boolean).join(' · ') : null}
         isCamper={route.transportContext.vehicle_type === 'camper'}
         onClose={() => setDetailCity(null)}
       />

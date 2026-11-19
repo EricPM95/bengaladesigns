@@ -54,6 +54,7 @@ import { crearGuardianDestinosOcultos } from './destinoOculto.js'
 import { crearServicioAvisos, registrarRutasAvisos } from './avisos.js'
 import { crearServicioAvisosViaje, registrarRutasAvisosViaje } from './avisosViaje.js'
 import { cocheDataFor } from './engine/cocheData.js'
+import { registrarRutaPaginaDestino } from './paginaDestino.js'
 import { crearClienteCivitatis, modoDeCivitatis } from './civitatis/cliente.js'
 import { crearPermisoAdminCivitatis } from './civitatis/permiso.js'
 import { crearCache as crearCacheCivitatis } from './civitatis/cache.js'
@@ -1181,6 +1182,8 @@ registrarRutaErrores(app, { servicio: salesAdmin })
 registrarRutaPropuestasSitio(app, { servicio: salesAdmin })
 // «Cuéntanos» (V20): avisos del viajero, su subida de fotos y el panel de administrador (0085/0086).
 registrarRutasAvisosViajeros(app, { admin: salesAdmin })
+// (V21) La página del destino: actividades de Civitatis y hoteles, con datos de verdad del destino.
+registrarRutaPaginaDestino(app, { raiz: join(__dirname, '..'), findDatos: findPipelineV2Data })
 
 app.post('/api/sales/ingest', async (req, res) => {
   const secret = process.env.SALES_INGEST_SECRET
