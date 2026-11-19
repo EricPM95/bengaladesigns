@@ -145,9 +145,9 @@ for (const dias of [1, 2, 3, 4, 5, 6]) {
         if (version === 'gratis') {
           for (const re of PAGO) debe(!re.test(r.texto), '1 pago en gratis', `${etiqueta}: sale algo de pago (${re})`)
           // (Tanda 6z6: el resumen es el mismo en la gratis, «x de 2 listo» con Alojamiento · Entradas; solo «Llegada y vuelta» es de pago.)
-          // (Tanda 10G: la gratis lleva «Llegada y vuelta» abierto y el resumen «x de 3 listo».)
+          // (Tanda 10G: la gratis lleva «Llegada y vuelta» abierto y el resumen «x de 3 listo»; V22: ahora «x de 4», con el seguro.)
           debe(r.bloques.includes('llegada'), '1 pago en gratis', `${etiqueta}: falta «Llegada y vuelta» en la gratis (${r.bloques.join(' · ')})`)
-          debe(/\b\d+ de 3 listo\b/.test(r.texto), '1 resumen en gratis', `${etiqueta}: la gratis no tiene el resumen «x de 3 listo»`)
+          debe(/\b\d+ de 4 listo\b/.test(r.texto), '1 resumen en gratis', `${etiqueta}: la gratis no tiene el resumen «x de 4 listo» (V22)`)
         } else {
           debe(r.bloques.includes('llegada'), '1 pago ausente', `${etiqueta}: en la versión de pago no sale «Llegada y vuelta»`)
           debe(r.bloques.includes('resumen') || /Tu viaje a Roma/.test(r.texto), '1 pago ausente', `${etiqueta}: en la versión de pago no sale el resumen`)

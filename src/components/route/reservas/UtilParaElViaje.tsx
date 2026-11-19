@@ -10,7 +10,10 @@ import { ENLACE_ESIM, ENLACE_SEGURO, ENLACE_TARJETA } from '../../../lib/enlaces
 import { GR, ICONOS } from './BloqueReservas'
 import { HojaPrecio } from './HojaPrecio'
 import { leerImporte, precioGuardado, type Importe } from '../../../lib/dinero'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
+import { esimNecesaria, idDeTarjetaEsim, paisDeSalida } from '../../../lib/esim'
 import { Icono } from '../../ui/Icono'
 import type { NombreIcono } from '../../../lib/iconos'
 
@@ -29,6 +32,10 @@ interface Tarjeta {
   conPrecio: boolean
   /** Tanda 6y4: la clave de «¿Dónde lo has comprado?» (seguro, tarjeta, eSIM de cada país); sin ella (coche, buscar vuelos), la hoja no lo pregunta. */
   claveDonde?: string
+  /** (V22) «Ya tengo seguro» / «Ya la tengo»: para quien ya lo tiene (con el banco, con otro seguro…); pregunta solo «¿Cuál?», opcional, sin precio. */
+  yaLoTengo?: { texto: string; guardar: (cual: string) => void }
+  /** (V22) La eSIM que no hace falta (mismo país o roaming como en casa): sin botones, solo el aviso pequeño. */
+  noHaceFalta?: string
   guardar: (precio: Importe | null, donde: string) => void
   quitar: () => void
 }
@@ -39,6 +46,31 @@ interface Tarjeta {
  * con nuestro enlace y nada más (**comprar no marca nada como añadido**). [Añadir] es para quien ya lo tiene: abre la hoja de precio opcional (`HojaPrecio`), que suma al presupuesto. Ya añadida, la tarjeta dice
  * «✓ Lo tienes» (con su precio) en vez de los botones; al tocarla se cambia o se elimina. Igual en la gratis y en la de pago. Nunca el nombre de un proveedor en los textos.
  */
+/** (V22) «Ya tengo seguro» / «Ya la tengo»: solo pregunta «¿Cuál?» (opcional, sin precio) y deja la ficha en verde. */
+function HojaYaLoTengo({ tarjeta, onClose }: { tarjeta: Tarjeta | null; onClose: () => void }) {
+  const [cual, setCual] = useState('')
+  if (!tarjeta?.yaLoTengo) return null
+  const guardar = () => {
+    tarjeta.yaLoTengo?.guardar(cual.trim())
+    onClose()
+  }
+  return createPortal(
+    <div data-hoja-ya-lo-tengo className="fixed inset-0 z-[95]" role="dialog" aria-modal="true" aria-label={tarjeta.yaLoTengo.texto}>
+      <div onClick={onClose} className="absolute inset-0 bg-text/40" />
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3.5 rounded-t-[30px] bg-[#FFFDF8] px-[18px] pb-[calc(env(safe-area-inset-bottom,0px)+20px)] pt-2.5">
+        <span className="h-[5px] w-[42px] self-center rounded bg-text/20" />
+        <span className="text-[26px] leading-[1.05]" style={{ fontFamily: "'Instrument Serif',serif" }}>{tarjeta.yaLoTengo.texto}</span>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-semibold">¿Cuál? <span className="font-normal text-text/45">· opcional</span></span>
+          <input data-campo-cual value={cual} onChange={(e) => setCual(e.target.value)} placeholder="Ej.: el de mi tarjeta" maxLength={80} className="h-[46px] rounded-[14px] border border-text/15 bg-white px-3.5 text-[14px]" />
+        </label>
+        <button type="button" data-guardar-ya-lo-tengo onClick={guardar} className="zona-toque h-[52px] rounded-2xl btn-champan text-[15.5px] font-bold">Guardar</button>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 export function UtilParaElViaje({ route }: { route: Route; /** (Ya no se usa: «Buscar vuelos» salió de aquí.) */ pago?: boolean }) {
   useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   const dateRange = route.answers.dateRange
@@ -55,6 +87,10 @@ export function UtilParaElViaje({ route }: { route: Route; /** (Ya no se usa: «
   const dondeComprado = useRouteStore((state) => state.dondeComprado)
   const setDondeComprado = useRouteStore((state) => state.setDondeComprado)
   const [hojaPrecio, setHojaPrecio] = useState<string | null>(null)
+  const [hojaYa, setHojaYa] = useState<string | null>(null)
+  const utilPedida = useReservasFocusStore((s) => s.utilPedida)
+  const limpiarUtil = useReservasFocusStore((s) => s.limpiarUtil)
+  const origenPais = paisDeSalida(route.answers)
   /** Los países del viaje, sin repetir y en orden: una eSIM por país (el estado se guarda por país, así que va igual que antes en el acordeón de cada destino). */
   const paises = [...new Set(buildDestinationSegments(route.days).flatMap((segment) => (segment.countryCode ? [segment.countryCode] : [])))]
   const isCamper = route.transportContext.vehicle_type === 'camper'
@@ -76,6 +112,13 @@ export function UtilParaElViaje({ route }: { route: Route; /** (Ya no se usa: «
       precio: precioGuardado(insurance),
       conPrecio: true,
       claveDonde: 'seguro',
+      yaLoTengo: {
+        texto: 'Ya tengo seguro',
+        guardar: (cual) => {
+          setInsuranceBooking({ provider: 'Ya tengo seguro', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', precio: null })
+          setDondeComprado('seguro', cual)
+        },
+      },
       guardar: (precio, donde) => {
         setInsuranceBooking({ provider: 'Seguro de viaje', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', precio })
         setDondeComprado('seguro', donde)
@@ -86,7 +129,16 @@ export function UtilParaElViaje({ route }: { route: Route; /** (Ya no se usa: «
       },
     },
     ...paises.map((countryCode, indice) => ({
-      id: indice === 0 ? 'esim' : `esim-${countryCode}`,
+      id: idDeTarjetaEsim(indice, countryCode),
+      noHaceFalta: esimNecesaria(origenPais, countryCode) === 'no' ? `No la necesitas: tu tarifa vale en ${countryDisplayName(countryCode)}` : undefined,
+      yaLoTengo: {
+        texto: 'Ya la tengo',
+        guardar: (cual: string) => {
+          setEsimSelection(countryCode, 'booked')
+          setEsimPrecio(countryCode, null)
+          setDondeComprado(`esim-${countryCode}`, cual)
+        },
+      },
       nombre: 'eSIM de datos',
       sirve: paises.length > 1 ? `Internet en el móvil en ${countryDisplayName(countryCode)}.` : 'Internet en el móvil nada más llegar.',
       etiqueta: '5 % dto.',
@@ -148,6 +200,17 @@ export function UtilParaElViaje({ route }: { route: Route; /** (Ya no se usa: «
     // (6-nov, Eric) Fuera la tarjeta «Buscar vuelos»: el vuelo ya tiene su bloque con [Buscar vuelos] (LlegadaYVuelta). En los destinos con el bloque del coche (Lanzarote) tampoco sale la del alquiler: está repetida.
   ]
   const abierta = tarjetas.find((tarjeta) => tarjeta.id === hojaPrecio) ?? null
+  // (V22) Una ficha del resumen de arriba («Seguro de viaje», «eSIM») pide su tarjeta: se baja a ella en el carril y se abre (si no la necesitas o ya la tienes, solo se baja).
+  useEffect(() => {
+    if (!utilPedida) return
+    const tarjeta = tarjetas.find((t) => t.id === utilPedida)
+    limpiarUtil()
+    window.setTimeout(() => {
+      document.querySelector(`[data-util-tarjeta="${utilPedida}"]`)?.scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'smooth' })
+      if (tarjeta && !tarjeta.anadida && !tarjeta.noHaceFalta) setHojaPrecio(tarjeta.id)
+    }, 450)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [utilPedida])
   /** [Añadir] o tocar la tarjeta ya añadida: con precio, la hoja; sin precio (la tarjeta sin comisiones), se marca o se quita directamente. */
   // (Tanda 6y4: también la tarjeta sin comisiones abre su hoja, que es solo el campo «¿Dónde lo has comprado?».)
   const gestionar = (tarjeta: Tarjeta) => setHojaPrecio(tarjeta.id)
@@ -172,11 +235,11 @@ export function UtilParaElViaje({ route }: { route: Route; /** (Ya no se usa: «
               <span className="flex h-9 w-9 items-center justify-center rounded-[11px]" style={{ background: 'rgb(var(--accent-soft))', color: 'rgb(var(--accent))' }}>
                 <Icono nombre={tarjeta.icono} size={18} />
               </span>
-              {tarjeta.etiqueta && <span className="h-[20px] rounded-full bg-[#F5EFE4] px-2 font-mono text-[10.5px] font-semibold leading-[20px] text-text/70">{tarjeta.etiqueta}</span>}
+              {tarjeta.etiqueta && !tarjeta.noHaceFalta && <span className="h-[20px] rounded-full bg-[#F5EFE4] px-2 font-mono text-[10.5px] font-semibold leading-[20px] text-text/70">{tarjeta.etiqueta}</span>}
             </span>
             <span className="flex min-w-0 flex-col gap-1">
               <span style={{ font: "400 19px/1.1 'Instrument Serif',serif" }}>{tarjeta.nombre}</span>
-              <span className="text-[12.5px] leading-[1.35] text-text/65">{tarjeta.sirve}</span>
+              {!tarjeta.noHaceFalta && <span className="text-[12.5px] leading-[1.35] text-text/65">{tarjeta.sirve}</span>}
             </span>
             {tarjeta.anadida ? (
               <button
@@ -197,19 +260,31 @@ export function UtilParaElViaje({ route }: { route: Route; /** (Ya no se usa: «
                 {/* Con el lugar y el precio juntos («Lo tienes · Mi banco · 30 €») no cabe la palabra «Cambiar» en 220 px: la tarjeta entera sigue siendo el botón. */}
                 {!(dondeDe(tarjeta) && tarjeta.precio) && <span className="flex-none text-[12px] font-medium underline underline-offset-2">Cambiar</span>}
               </button>
+            ) : tarjeta.noHaceFalta ? (
+              <span data-esim-no-hace-falta className="mt-auto text-[12.5px] leading-[1.35] text-text/60">
+                {tarjeta.noHaceFalta}
+              </span>
             ) : (
-              <span className="mt-auto flex gap-2">
+              <span className="mt-auto flex flex-col gap-1.5">
+                <span className="flex gap-2">
                 <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="zona-toque flex h-10 flex-1 items-center justify-center rounded-full btn-champan text-[13.5px] font-semibold no-underline">
                   Comprar
                 </a>
                 <button type="button" onClick={() => gestionar(tarjeta)} className="zona-toque flex h-10 flex-1 items-center justify-center rounded-full border border-text/20 bg-white text-[13.5px] font-semibold text-text">
                   Añadir
                 </button>
+                </span>
+                {tarjeta.yaLoTengo && (
+                  <button type="button" data-ya-lo-tengo={tarjeta.id} onClick={() => setHojaYa(tarjeta.id)} className="zona-toque min-h-[36px] text-center text-[12.5px] font-medium text-text/60 underline underline-offset-2">
+                    {tarjeta.yaLoTengo.texto}
+                  </button>
+                )}
               </span>
             )}
           </div>
         ))}
       </div>
+      {hojaYa && <HojaYaLoTengo tarjeta={tarjetas.find((t) => t.id === hojaYa) ?? null} onClose={() => setHojaYa(null)} />}
       {abierta && (
         <HojaPrecio
           titulo={abierta.nombre}

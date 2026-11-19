@@ -1,0 +1,8 @@
+{
+  "_que_es": "Dónde NO hace falta eSIM (V22): los países donde el móvil de quien sale de otro país de la lista funciona «como en casa» (roaming sin recargo). La regla (src/lib/esim.ts): NO hace falta eSIM si el origen y el destino son el mismo país, o si los dos están en esta lista (Unión Europea y Espacio Económico Europeo). En todo lo demás SÍ (México → Roma, Argentina → Lanzarote, Estados Unidos → Roma…), también Reino Unido → UE, porque allí muchas compañías cobran el roaming: por eso el Reino Unido NO está en la lista. Se cambia aquí, sin tocar el código. Códigos de país ISO en minúscula.",
+  "roaming_como_en_casa": [
+    "at", "be", "bg", "hr", "cy", "cz", "dk", "ee", "fi", "fr", "de", "gr", "hu", "ie", "it", "lv", "lt", "lu", "mt", "nl", "pl", "pt", "ro", "sk", "si", "es",
+    "is", "li", "no"
+  ],
+  "_nota_territorios": "Lanzarote, Canarias, Madeira y Azores son de España y Portugal y entran en el roaming como en casa: sus códigos de país son es y pt."
+}

@@ -123,7 +123,7 @@ function TarjetaDeAviso({ a, alCambiar }: { a: Aviso; alCambiar: () => void }): 
           {a.punto && (
             <div className="mt-2">
               {mapa && <img src={mapa} alt="Punto del mapa" loading="lazy" className="rounded-xl" width={280} height={150} />}
-              <p className="text-[12px] text-text/60">📍 {a.punto.direccion ?? `${a.punto.lat.toFixed(5)}, ${a.punto.lng.toFixed(5)}`}</p>
+              <p className="text-[12px] text-text/60">Punto: {a.punto.direccion ?? `${a.punto.lat.toFixed(5)}, ${a.punto.lng.toFixed(5)}`}</p>
             </div>
           )}
           {a.errores && a.errores.length > 0 && <pre className="mt-2 max-h-28 overflow-auto rounded-lg bg-text/5 p-2 text-[11px]">{a.errores.join('\n')}</pre>}

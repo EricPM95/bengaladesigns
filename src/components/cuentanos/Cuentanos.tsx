@@ -227,7 +227,7 @@ function DondeEsta({ tipo }: { tipo: TipoAviso }): ReactNode {
       </div>
       {b.punto && (
         <span data-punto-elegido style={{ font: `500 12.5px ${SANS}`, color: 'rgba(28,34,48,.6)' }}>
-          {b.punto.direccion ? `📍 ${b.punto.direccion}` : `📍 ${b.punto.lat.toFixed(4)}, ${b.punto.lng.toFixed(4)}`}
+          {b.punto.direccion ?? `${b.punto.lat.toFixed(4)}, ${b.punto.lng.toFixed(4)}`}
         </span>
       )}
     </Campo>

@@ -2,7 +2,7 @@
 //   node scripts/destino/pruebaTanda6z6a.mjs        (con el servidor de la app encendido en http://localhost:8787)
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
 //   1. la barra no tiene cuatro pestañas en la gratis (sin Hoy, ni con candado) y cinco en la de pago, igual con y sin fechas y antes, durante y después; si un 'today' guardado no cae a 'route' en la gratis;
-//   2. la tarjeta de arriba de RESERVAS no sale (gratis y de pago) antes con «empieza en» y debajo el resumen («x de 3 listo» con Llegada y vuelta · Alojamiento · Entradas en la de pago; «x de 2 listo» con Alojamiento · Entradas en la gratis), sin fechas con [Pon tus fechas], durante con «Estás en…»; o si sale después del viaje;
+//   2. la tarjeta de arriba de RESERVAS no sale (gratis y de pago) antes con «empieza en» y debajo el resumen («x de 4 listo» (V22) con Llegada y vuelta · Alojamiento · Entradas · Seguro en la de pago; «x de 2 listo» con Alojamiento · Entradas en la gratis), sin fechas con [Pon tus fechas], durante con «Estás en…»; o si sale después del viaje;
 //      o si la cuenta de lo que falta no es la de los bloques; o si la tarjeta no va antes del presupuesto;
 //   3. DÍAS no abre el día de hoy durante el viaje (y solo entonces), no lo marca con «HOY» (una sola vez), o respeta mal un día ya abierto;
 //   4. la línea «Hoy es un día completo…» sale cuando no toca, o falta cuando toca, o el día cambia (ni su ruta ni su cabecera) por salir;
@@ -57,9 +57,9 @@ async function viaje(dias, { fechas }) {
   }
 }
 const estadoBase = { screen: 'route', mode: 'today', reservations: [], accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {}, esimPrecios: {}, dev_simulated_today_iso: null }
-function pintaHtml(componente, props, route, { version = 'completa', hoy = null, mode = 'today', reservas = [], hoteles = {} } = {}) {
+function pintaHtml(componente, props, route, { version = 'completa', hoy = null, mode = 'today', reservas = [], hoteles = {}, extra = {} } = {}) {
   ponerVersion(version)
-  useRouteStore.setState({ ...estadoBase, route, mode, reservations: reservas, accommodationSelections: hoteles, dev_simulated_today_iso: hoy })
+  useRouteStore.setState({ ...estadoBase, route, mode, reservations: reservas, accommodationSelections: hoteles, dev_simulated_today_iso: hoy, ...extra })
   return renderToStaticMarkup(createElement(componente, props))
 }
 const pinta = (...args) => aTexto(pintaHtml(...args))
@@ -144,12 +144,12 @@ for (const [clave, route] of Object.entries(rutas)) {
       const html = pintaHtml(ReservasPanel, { route, onClose() {} }, route, { version, hoy: m.hoy, mode: 'bookings' })
       const texto = aTexto(html)
       const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
-      const total = 3 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis)
+      const total = 4 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis) (V22: +1 por «Seguro de viaje»)
       if (m.clave === 'despues') {
         debe(!/data-blk="resumen"/.test(html) && !/Antes del viaje|Durante el viaje|empieza en|Estás en|\d de \d listo/.test(texto), '2 tarjeta', `${nombre}: después del viaje sale la tarjeta (${plano(texto).slice(0, 200)})`)
         continue
       }
-      // El resumen de siempre dentro de la tarjeta, también en la gratis: «0 de 3 listo» (pago) o «0 de 2 listo» (gratis), con sus fichas.
+      // El resumen de siempre dentro de la tarjeta, también en la gratis: «0 de 4 listo» (V22; pago) o «0 de 2 listo» (gratis), con sus fichas.
       debe(new RegExp(`0 de ${total} listo`).test(texto), '2 tarjeta', `${nombre}: no dice «0 de ${total} listo» (${plano(texto).slice(0, 300)})`)
       const entradasHechas = enRuta.filter((item) => item.reservation).length
       debe(new RegExp(`Entradas ${entradasHechas}/${enRuta.length}`).test(texto) && /^Alojamiento$/m.test(texto), '2 tarjeta', `${nombre}: faltan las fichas Alojamiento y Entradas ${entradasHechas}/${enRuta.length} en el resumen`)
@@ -175,13 +175,13 @@ for (const [clave, route] of Object.entries(rutas)) {
       debe((html.match(/data-blk="resumen"/g) ?? []).length === 1 && (texto.match(/\d de \d listo/g) ?? []).length === 1, '2 tarjeta', `${nombre}: hay más de un resumen en la pantalla`)
     }
   }
-  // Todo resuelto: «2 de 2 listo» (gratis) o «3 de 3 listo» (de pago), con todas las fichas en verde.
+  // Todo resuelto: «2 de 2 listo» (gratis) o «4 de 4 listo» (V22; de pago), con todas las fichas en verde.
   for (const version of ['gratis', 'completa']) {
     const { reservas, hoteles, route: listo } = await reservasListas(route, version)
-    const total = 3
+    const total = 4 // (V22: +1 por «Seguro de viaje»)
     for (const hoy of clave === 'con' ? ['2027-03-01', INICIO] : [null]) {
       const nombre = `RESERVAS · ${clave} fechas · ${version} · todo listo${hoy ? ` · ${hoy}` : ''}`
-      const html = pintaHtml(ReservasPanel, { route: listo, onClose() {} }, listo, { version, hoy, mode: 'bookings', reservas, hoteles })
+      const html = pintaHtml(ReservasPanel, { route: listo, onClose() {} }, listo, { version, hoy, mode: 'bookings', reservas, hoteles, extra: { insuranceBooking: { provider: 'Seguro de viaje', startDate: '', endDate: '', precio: null } } }) // (V22: el escenario pone también el seguro)
       const texto = aTexto(html)
       debe(new RegExp(`${total} de ${total} listo`).test(texto), '2 tarjeta', `${nombre}: con todo hecho no dice «${total} de ${total} listo» (${plano(texto).slice(0, 300)})`)
     }
@@ -190,7 +190,7 @@ for (const [clave, route] of Object.entries(rutas)) {
 {
   // Cada ficha baja a su bloque: el panel le pasa a la tarjeta el pedido de bloque; y en la gratis solo hay dos fichas.
   const panel = fs.readFileSync('src/components/route/ReservasPanel.tsx', 'utf8')
-  debe(/<ResumenViaje[^>]*onFicha=\{\(bloque\) => pedir\(bloque\)\}/.test(panel) && /\{ bloque: 'llegada' as const, nombre: 'Llegada y vuelta'/.test(panel) && !/\.\.\.\(pago \? \[\{ bloque: 'llegada'/.test(panel), '2 tarjeta', 'las fichas no bajan a su bloque o «Llegada y vuelta» sigue siendo solo de pago (Tanda 10G: es gratis)')
+  debe(/<ResumenViaje[^>]*onFicha=\{\(bloque(?:, ficha)?\) => pedir\(bloque(?:, undefined, undefined, ficha\.tarjeta)?\)\}/.test(panel) && /\{ bloque: 'llegada' as const, nombre: 'Llegada y vuelta'/.test(panel) && !/\.\.\.\(pago \? \[\{ bloque: 'llegada'/.test(panel), '2 tarjeta', 'las fichas no bajan a su bloque o «Llegada y vuelta» sigue siendo solo de pago (Tanda 10G: es gratis)')
   debe(!/useFaltaPorReservar|Te faltan/.test(fs.readFileSync('src/components/route/reservas/TarjetaCuentaAtras.tsx', 'utf8')), '2 tarjeta', 'queda la línea «Te faltan n cosas» en la tarjeta')
 }
 {

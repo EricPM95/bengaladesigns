@@ -2,7 +2,7 @@
 //   node scripts/destino/pruebaCorr6z6_reservas.mjs        (con el servidor de la app encendido en http://localhost:8787)
 // Pinta con el código de verdad de la app (react-dom/server; ver _ssr.mjs), gratis y de pago, con y sin fechas, antes, durante y después. Da fallo si:
 //   1a. la tarjeta oscura lleva «Te faltan…», «Lo tienes todo listo», «x de n listo» o fichas dentro; no lleva la cuenta atrás (antes), «Estás en…» (durante) o [Pon tus fechas] (sin fechas); sale después del viaje;
-//   1b. la tarjeta clara «Tu viaje a Roma · x de 3 listo» (gratis «x de 2») no va aparte y DEBAJO de la oscura, antes de los bloques; no tiene la barra y las fichas en su orden (Llegada y vuelta · Alojamiento · Entradas x/n);
+//   1b. la tarjeta clara «Tu viaje a Roma · x de 3 listo» (gratis «x de 2») no va aparte y DEBAJO de la oscura, antes de los bloques; no tiene la barra y las fichas en su orden (Llegada y vuelta · Alojamiento · Entradas x/n · Seguro de viaje; V22);
 //       una ficha hecha no va en verde con ✓; las fichas no bajan a su bloque (`pedir`); sale con varios destinos o después del viaje;
 //   1c. queda el «0%» (TripReadinessBadge) en la cabecera de RESERVAS;
 //   1d. el «Falta» de Llegada y vuelta, Alojamiento y Entradas no es el mismo componente/estilo (monoespaciado frambuesa) ni va debajo del nombre; queda la píldora a la derecha;
@@ -100,7 +100,7 @@ const estilosFalta = new Set()
 for (const [clave, route] of Object.entries(rutas)) {
   const lista = clave === 'con' ? momentos : [{ clave: 'sin-fechas', hoy: null }]
   for (const version of ['gratis', 'completa']) {
-    const total = 3 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis)
+    const total = 4 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis) (V22: +1 por «Seguro de viaje»)
     for (const m of lista) {
       const nombre = `RESERVAS · ${clave} fechas · ${version} · ${m.clave}`
       const html = pintaHtml(ReservasPanel, { route, onClose() {} }, route, { version, hoy: m.hoy })
@@ -134,7 +134,7 @@ for (const [clave, route] of Object.entries(rutas)) {
         const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
         debe(new RegExp(`0 de ${total} listo`).test(claraTexto.replace(/\n/g, ' ')) && !/Tu viaje a/.test(claraTexto), '1b clara', `${nombre}: no dice solo «0 de ${total} listo», sin «Tu viaje a…» delante (${plano(claraTexto)})`)
         const fichas = [...clara.matchAll(/data-ficha="(\w+)"/g)].map((x) => x[1])
-        const esperadas = ['llegada', 'aloj', 'entradas']
+        const esperadas = ['llegada', 'aloj', 'entradas', 'util'] // (V22: termina en el seguro)
         debe(fichas.join() === esperadas.join(), '1b clara', `${nombre}: las fichas son ${fichas.join()} y deberían ser ${esperadas.join()}`)
         debe(new RegExp(`Entradas 0/${enRuta.length}`).test(claraTexto) && /Llegada y vuelta/.test(claraTexto), '1b clara', `${nombre}: fichas con textos mal (${plano(claraTexto)})`)
         debe((clara.match(/class="h-1 flex-1 rounded/g) ?? []).length === total, '1b clara', `${nombre}: la barra no tiene ${total} tramos`)
@@ -177,9 +177,9 @@ debe(estilosFalta.size === 1, '1d falta', `el «Falta» tiene ${estilosFalta.siz
 // 1b/1d. Todo listo: verde con ✓, y el «Falta» pasa a verde con el mismo componente.
 for (const [clave, route] of Object.entries(rutas)) {
   for (const version of ['gratis', 'completa']) {
-    const total = 3 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis)
+    const total = 4 // (Tanda 10G: «Llegada y vuelta» cuenta también en la gratis) (V22: +1 por «Seguro de viaje»)
     const { reservas, hoteles, route: listo } = todoListo(route, version)
-    const html = pintaHtml(ReservasPanel, { route: listo, onClose() {} }, listo, { version, hoy: clave === 'con' ? '2027-03-01' : null, reservas, hoteles })
+    const html = pintaHtml(ReservasPanel, { route: listo, onClose() {} }, listo, { version, hoy: clave === 'con' ? '2027-03-01' : null, reservas, hoteles, extra: { insuranceBooking: { provider: 'Seguro de viaje', startDate: '', endDate: '', precio: null } } }) // (V22: el escenario pone también el seguro)
     const clara = html.slice(html.indexOf('data-blk="resumen"'), html.indexOf('data-blk="', html.indexOf('data-blk="resumen"') + 12))
     const nombre = `todo listo · ${clave} fechas · ${version}`
     debe(new RegExp(`${total} de ${total} listo`).test(aTexto(clara)), '1b clara', `${nombre}: no dice «${total} de ${total} listo»`)
@@ -196,7 +196,7 @@ for (const [clave, route] of Object.entries(rutas)) {
   const hayVarios = !/data-blk="aloj"/.test(html)
   if (hayVarios) debe(!/data-blk="resumen"/.test(html), '1b clara', 'con varios destinos sale el resumen')
   // Antes (6z6): <ResumenViaje> directo tras la condición → ahora (10S4, agente I): puede ir dentro de <PiezaSegura> (con paréntesis) → decisión de Eric (10S4, 30-oct): PiezaSegura en cada bloque de RESERVAS; misma condición y mismo pedir(bloque).
-  debe(/unDestino && !viajeAcabado && (?:\(\s*<PiezaSegura[^>]*>\s*)?<ResumenViaje[^>]*onFicha=\{\(bloque\) => pedir\(bloque\)\}/.test(panelSrc), '1b clara', 'las fichas no bajan a su bloque con pedir(bloque) o el resumen sale con varios destinos / después del viaje')
+  debe(/unDestino && !viajeAcabado && (?:\(\s*<PiezaSegura[^>]*>\s*)?<ResumenViaje[^>]*onFicha=\{\(bloque(?:, ficha)?\) => pedir\(bloque(?:, undefined, undefined, ficha\.tarjeta)?\)\}/.test(panelSrc), '1b clara', 'las fichas no bajan a su bloque con pedir(bloque) o el resumen sale con varios destinos / después del viaje')
   const sinComentarios = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
   const codigoOscura = sinComentarios(leer('src/components/route/reservas/TarjetaCuentaAtras.tsx'))
   const codigoClara = sinComentarios(leer('src/components/route/reservas/ResumenViaje.tsx'))

@@ -5,7 +5,7 @@ import type { Excursion } from '../lib/types'
  * «Llévame a ese bloque de RESERVAS» (Tanda 6s): las fichas del resumen de arriba, el «+ AÑADIR VUELO» de la barra de DÍAS y el «Editar» de la ventana de llegada piden
  * un bloque; RESERVAS lo abre, baja hasta él (y, si es la llegada y vuelta, abre la mitad que se pide) y borra el pedido. Estado de pantalla: no se guarda con el viaje.
  */
-export type BloqueReservasId = 'llegada' | 'aloj' | 'entradas' | 'excursiones' | 'coche'
+export type BloqueReservasId = 'llegada' | 'aloj' | 'entradas' | 'excursiones' | 'coche' | 'util'
 
 interface PedidoReservas {
   bloque: BloqueReservasId
@@ -26,7 +26,10 @@ interface PedidoExcursion {
 interface ReservasFocusState {
   pedido: PedidoReservas | null
   excursionPedida: PedidoExcursion | null
-  pedir: (bloque: BloqueReservasId, mitad?: 'arrival' | 'departure', soloBloque?: boolean) => void
+  /** (V22) La tarjeta de «Útil para el viaje» que pidió una ficha del resumen (el seguro, la eSIM de un país): baja a ella y la abre. */
+  utilPedida: string | null
+  limpiarUtil: () => void
+  pedir: (bloque: BloqueReservasId, mitad?: 'arrival' | 'departure', soloBloque?: boolean, tarjeta?: string) => void
   pedirExcursion: (excursion: Excursion, dayId: string) => void
   limpiarExcursion: () => void
   limpiar: () => void
@@ -35,7 +38,9 @@ interface ReservasFocusState {
 export const useReservasFocusStore = create<ReservasFocusState>((set) => ({
   pedido: null,
   excursionPedida: null,
-  pedir: (bloque, mitad, soloBloque) => set({ pedido: { bloque, mitad, soloBloque, id: Date.now() } }),
+  utilPedida: null,
+  limpiarUtil: () => set({ utilPedida: null }),
+  pedir: (bloque, mitad, soloBloque, tarjeta) => set({ pedido: { bloque, mitad, soloBloque, id: Date.now() }, utilPedida: tarjeta ?? null }),
   pedirExcursion: (excursion, dayId) => set({ pedido: { bloque: 'excursiones', id: Date.now() }, excursionPedida: { excursion, dayId, id: Date.now() } }),
   limpiarExcursion: () => set({ excursionPedida: null }),
   limpiar: () => set({ pedido: null }),

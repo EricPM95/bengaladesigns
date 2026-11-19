@@ -112,7 +112,7 @@ try {
   // antes → ahora → decisión de Eric (10S8, 31-oct): Alojamiento también mide lo que su cabecera de Design (14 + 44 + 14 = 72-74 px): antes ≥ 76, ahora ≥ 72 como Entradas; Llegada y vuelta sigue ≥ 76.
   debe(alturas[0] >= 76 && alturas[1] >= 72 && alturas[2] >= 72, '7a', `las tres tarjetas son más amplias (alturas ${alturas.join(', ')})`)
   const resto = await ev("document.body.innerText.replace(/\\s+/g, ' ')")
-  debe(/de 3 listo/i.test(resto) && /Útil para el viaje/i.test(resto) && /Entradas y Free Tour/i.test(resto), '7a', 'sigue todo lo nuestro: «x de 3 listo», «Útil para el viaje», «Entradas y Free Tour»')
+  debe(/de 4 listo/i.test(resto) && /Útil para el viaje/i.test(resto) && /Entradas y Free Tour/i.test(resto), '7a', 'sigue todo lo nuestro: «x de 4 listo» (V22), «Útil para el viaje», «Entradas y Free Tour»')
   await a.captura(foto('01_reservas'))
 
   /* ═══ 7b · el vuelo del administrador (con dos personas) ═══ */

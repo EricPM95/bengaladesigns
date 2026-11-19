@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
+import { esimNecesaria, idDeTarjetaEsim, paisDeSalida } from '../../lib/esim'
+import { countryDisplayName } from '../../lib/readiness'
 import { useReservasFocusStore, type BloqueReservasId } from '../../store/useReservasFocusStore'
 import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
 import type { EnCambioDeVuelo } from '../../lib/cambioDeVuelo'
@@ -68,6 +70,8 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   const accommodationZone = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
   const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
+  const insuranceBooking = useRouteStore((state) => state.insuranceBooking)
+  const esimSelections = useRouteStore((state) => state.esimSelections)
   const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
   /** Después del viaje ya no queda nada por reservar: ni la tarjeta oscura (se esconde sola) ni la clara salen. */
   const viajeAcabado = getTodayTripStatus(route, simulada ?? undefined)?.phase === 'after'
@@ -132,6 +136,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   // El bloque del coche: solo en los destinos de coche (Lanzarote), con un destino y sin ser invitado de un viaje compartido (lo del coche lo pone quien lo reserva).
   const llevaCoche = esDestinoDeCoche(route.destination) && unDestino && !(grupo.esInvitado && grupo.compartido)
   const cocheElegido = route.answers.coche === 'propio' ? 'propio' : 'alquiler'
+  const paisesDelViaje = [...new Set(segments.flatMap((segment) => (segment.countryCode ? [segment.countryCode] : [])))]
   const fichas = [
     // (Tanda 10G: «Llegada y vuelta» es GRATIS —guardar el vuelo o el tren es del viajero—; lo del pase es lo que la app hace con él, y sale cerrado debajo.)
     { bloque: 'llegada' as const, nombre: 'Llegada y vuelta', hecho: legs.arrival.done && legs.departure.done },
@@ -140,6 +145,9 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
     ...(llevaCoche ? [{ bloque: 'coche' as const, nombre: cocheElegido === 'propio' ? 'Mi coche' : 'Alquiler coche', hecho: cocheElegido === 'propio' || Boolean(rentalVehicleBooking) }] : []),
     ...(entradas.length > 0 ? [{ bloque: 'entradas' as const, nombre: `Entradas ${entradas.filter((item) => item.reservation).length}/${entradas.length}`, hecho: entradas.every((item) => item.reservation) }] : []),
     ...(hayExcursiones ? excursionesDeRuta.map((x) => ({ id: `excursion-${x.excursion.id}`, bloque: 'excursiones' as const, nombre: nombreCortoDeExcursion(x.excursion), hecho: Boolean(x.reservation) })) : []),
+    // (V22) Al final, el seguro (siempre) y la eSIM (solo de los países donde hace falta según el origen y el destino): cuentan como algo que hay que tener listo, y bajan a su tarjeta de «Útil para el viaje».
+    { id: 'util-seguro', bloque: 'util' as const, nombre: 'Seguro de viaje', hecho: Boolean(insuranceBooking), tarjeta: 'seguro' },
+    ...paisesDelViaje.flatMap((cc, indice) => (esimNecesaria(paisDeSalida(route.answers), cc) === 'si' ? [{ id: `util-${idDeTarjetaEsim(indice, cc)}`, bloque: 'util' as const, nombre: paisesDelViaje.length > 1 ? `eSIM ${countryDisplayName(cc)}` : 'eSIM', hecho: Boolean(esimSelections[cc]), tarjeta: idDeTarjetaEsim(indice, cc) }] : [])),
   ]
 
   const adminId = grupo.gente.find((p) => p.esAdmin)?.id ?? null
@@ -194,7 +202,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
             </PiezaSegura>
             {unDestino && !viajeAcabado && (
               <PiezaSegura nombre="RESERVAS: resumen del viaje">
-                <ResumenViaje fichas={fichas} onFicha={(bloque) => pedir(bloque)} />
+                <ResumenViaje fichas={fichas} onFicha={(bloque, ficha) => pedir(bloque, undefined, undefined, ficha.tarjeta)} />
               </PiezaSegura>
             )}
 

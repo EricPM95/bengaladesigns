@@ -7,7 +7,8 @@ import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { addDaysToIso, formatWeekdayAbbrEs } from '../../../lib/dateRange'
 import { AddReservationSheet, type ReservationTarget } from '../reservas/AddReservationSheet'
 import { RemoveReservationDialog, useExcursionReservation } from '../reservas/ReservedMarks'
-import { D, etiquetasDeExcursion, textoDeRutaPorDestino } from '../../../lib/excursionEtiquetas'
+import { Icono } from '../../ui/Icono'
+import { etiquetasDeExcursion, textoDeRutaPorDestino } from '../../../lib/excursionEtiquetas'
 
 /**
  * (V18, Design «Excursion Bloque» E1 a E4) EL BLOQUE DE LA EXCURSIÓN en DÍAS, rehecho:
@@ -119,7 +120,7 @@ export function TarjetaDeExcursion({ excursion, dayNumber, reservada }: { excurs
               {etiquetas.map((c) => (
                 <span key={c.id} data-etiqueta={c.id} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 28, padding: '0 11px 0 6px', borderRadius: 999, background: '#FBF3E2', font: "600 12px 'Geist'" }}>
                   <span style={{ width: 20, height: 20, borderRadius: '50%', background: '#F3E3B2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={c.icono} /></svg>
+                    <span style={{ display: 'flex', color: '#6E5018' }}><Icono nombre={c.icono} size={11} /></span>
                   </span>
                   {c.texto}
                 </span>
@@ -149,7 +150,7 @@ export function TarjetaDeExcursion({ excursion, dayNumber, reservada }: { excurs
               </a>
             )}
             <button type="button" data-anadir-confirmacion onClick={() => setAnadiendo(true)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 44, font: "italic 400 16px 'Instrument Serif',serif", color: 'rgba(28,34,48,.7)' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={D.entradas} /></svg>
+              <Icono nombre="reservas" size={14} />
               ¿Ya la has reservado? <u style={{ textUnderlineOffset: 3, color: '#6E5018' }}>Añade tu confirmación</u>
             </button>
           </div>

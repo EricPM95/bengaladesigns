@@ -7,6 +7,8 @@ export interface FichaResumen {
   bloque: BloqueReservasId
   nombre: string
   hecho: boolean
+  /** (V22) La tarjeta de «Útil para el viaje» a la que baja (el seguro, la eSIM de un país). */
+  tarjeta?: string
 }
 
 /**
@@ -14,7 +16,7 @@ export interface FichaResumen {
  * redonda por bloque. De pago: Llegada y vuelta · Alojamiento · Entradas 1/8 («x de 3»); gratis: Alojamiento · Entradas («x de 2»; la llegada y la vuelta son de pago). Una ficha hecha va en verde con ✓. Al tocar
  * una, la pantalla baja a su bloque y lo abre (`pedir(bloque)`). Es la ÚNICA tarjeta que dice lo que falta: ni la oscura ni ninguna otra línea repite «Te faltan…» o «Lo tienes todo listo».
  */
-export function ResumenViaje({ fichas, onFicha }: { fichas: FichaResumen[]; onFicha: (bloque: BloqueReservasId) => void }) {
+export function ResumenViaje({ fichas, onFicha }: { fichas: FichaResumen[]; onFicha: (bloque: BloqueReservasId, ficha: FichaResumen) => void }) {
   const listas = fichas.filter((ficha) => ficha.hecho).length
   const todas = listas === fichas.length
   return (
@@ -34,7 +36,7 @@ export function ResumenViaje({ fichas, onFicha }: { fichas: FichaResumen[]; onFi
           <button
             key={ficha.id ?? ficha.bloque}
             type="button"
-            onClick={() => onFicha(ficha.bloque)}
+            onClick={() => onFicha(ficha.bloque, ficha)}
             data-ficha={ficha.bloque}
             data-clave-resumen={ficha.id ?? ficha.bloque}
             className="zona-toque flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-3 text-[12.5px] font-medium transition-colors"
