@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { ICONOS } from '../../../lib/iconos'
 import { usePaseParaDocumentos } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { Icono } from '../../ui/Icono'
@@ -51,7 +52,7 @@ export function BotonAnadirDocumento({
       >
         {icono ?? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A3510" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12" />
+            <path d={ICONOS.pase} />
           </svg>
         )}
         {texto}

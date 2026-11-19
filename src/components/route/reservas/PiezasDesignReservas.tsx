@@ -1,4 +1,5 @@
 import { type CSSProperties, type ReactNode } from 'react'
+import { ICONOS } from '../../../lib/iconos'
 import { LapizDeReserva } from './BotonesDeReserva'
 import type { Persona } from '../../../store/useViajeCompartido'
 import { inicialDe, nombreDe } from '../../../store/useViajeCompartido'
@@ -16,7 +17,7 @@ const NOMBRE_TRAZOS = {
   lapiz: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
   papelera: 'M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v5M14 11v5',
   euro: 'M17 7a6 6 0 1 0 0 10M5 10h8M5 14h8',
-  entrada: 'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12',
+  entrada: ICONOS.pase,
   cama: 'M3 18V8M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-8v5',
   direccion: 'M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z',
   horas: 'M14 10a4 4 0 1 0-3.5 4L14 17.5h2.5V20H19v-2.5M10 10h.01',

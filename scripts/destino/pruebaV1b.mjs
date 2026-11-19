@@ -63,7 +63,7 @@ async function avisosCon(env, { pases = [], esAdmin = false } = {}) {
   const otroPase = await avisosCon({ PASES_COBRO_ACTIVO: 'true' }, { pases: [{ estado: 'activo', destino: 'Roma' }] })
   debe(otroPase.length === 0, 'avisos', 'con el cobro encendido, el pase de otro destino no vale')
   const fuente = leer('server/avisosViaje.js')
-  debe(/if \(!cobroActivo\(env\)\) return \[\]/.test(fuente) && /import \{ cobroActivo \} from '\.\/logros\/pase\.js'/.test(fuente), 'avisos', 'la regla es la de siempre del servidor: cobroActivo(env), la misma que usan el pase y los logros')
+  debe(/if \(!cobroActivo\(env\)\) return \[\]/.test(fuente) && /import \{ cobroActivo(, cobroSoloAdmins)? \} from '\.\/logros\/pase\.js'/.test(fuente), 'avisos', 'la regla es la de siempre del servidor: cobroActivo(env), la misma que usan el pase y los logros')
 }
 
 /* ───────────────────────── 2. La lista ligera, con el código de verdad ───────────────────────── */
@@ -278,7 +278,7 @@ debe(cuentaDespues < cuentaAntes * 0.25, 'egress', `abrir la app cuesta ${kb(cue
 console.log('3. Los sitios que abren viajes de la lista')
 {
   const sync = leer('src/components/sync/TripSync.tsx')
-  debe((sync.match(/hydrateTrip\(await viajeEntero\(/g) ?? []).length === 3, 'abrir', 'TripSync pide entero el viaje que abre al arrancar (el del enlace, el de hoy y el próximo)')
+  debe((sync.match(/hydrateTrip\(await viajeEntero\(/g) ?? []).length === 4, 'abrir', 'TripSync pide entero el viaje que abre al arrancar (el del enlace, el de hoy, el próximo y, desde la V17, el último cuando todos pasaron: el Perfil)')
   debe(/ponerListaDelMovil\(\)/.test(sync) && /guardarListaDeViajes\(trips\)/.test(sync), 'sin red', 'la lista se guarda en el móvil y, sin red o con el servidor caído, se enseña la guardada')
   debe(/borrarListaDeViajes/.test(leer('src/lib/cuentas.ts')), 'sin red', 'al cerrar sesión se borra la lista del móvil')
   debe(/payload\.route\?\.ligero/.test(leer('src/store/useRouteStore.ts')) && /payload\.route\?\.ligero/.test(leer('src/lib/tripPersistence.ts')), 'ligera', 'hydrateTrip y saveTrip vigilan la ruta ligera')

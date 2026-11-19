@@ -278,7 +278,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
             <span className="font-display text-[26px] leading-none">Mi vitrina</span>
             <span className="flex items-center gap-2">
             {perfil.vitrina.recientes.length > 0 && (
-              <button type="button" onClick={() => abrir({ t: 'todos', pestana: 'vitrina' })} aria-label="Poner un logro en mi vitrina" data-mas-de-vitrina-cabecera className="flex h-[28px] w-[28px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(243,213,154,.14)', border: '1px solid rgba(243,213,154,.5)', color: DORADO }}>
+              <button type="button" onClick={() => abrir({ t: 'todos', pestana: 'vitrina' })} aria-label="Poner un logro en mi vitrina" data-mas-de-vitrina-cabecera className="zona-toque flex h-[28px] w-[28px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(243,213,154,.14)', border: '1px solid rgba(243,213,154,.5)', color: DORADO }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
               </button>
             )}

@@ -136,7 +136,7 @@ for (const fechas of [true, false]) {
   for (const f of ['src/components/route/ExplorePanel.tsx', 'src/components/route/freeDay/AddToTripScreen.tsx']) debe(/freeTourAvailable\(route\)/.test(fs.readFileSync(f, 'utf8')), '1 free tour', `${f} no ofrece el Free Tour con freeTourAvailable`)
   const reservas = fs.readFileSync('src/components/route/reservas/EntradasYFreeTour.tsx', 'utf8')
   // (10S4: antes → el «Añádela» del Free Tour a mano salía en «Ver n más» solo con isManualRoute → ahora «Ver n más» ya no existe y el Free Tour sale en «En tu ruta» con su «Añádela» siempre → decisión de Eric (10S4, 30-oct).)
-  debe(/onAdd=\{\(\) => setTarget\(targetOf\(item\)\)\}/.test(reservas) && !/Ver \$\{masEntradas/.test(reservas), '1 reservas', 'RESERVAS no ofrece «Añádela» en el Free Tour de una ruta a mano')
+  debe(/onAdd=\{\(\) => setTarget\(/.test(reservas) && !/Ver \$\{masEntradas/.test(reservas), '1 reservas', 'RESERVAS no ofrece «Añádela» en el Free Tour de una ruta a mano')
 }
 // Ruta nuestra: el Free Tour sin parada sigue sin ser Free Tour en el bloque (nada cambia fuera de la ruta a mano).
 {

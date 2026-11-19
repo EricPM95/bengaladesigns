@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { ICONOS as ICONOS_FAMILIA } from '../../../lib/iconos'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useBilleteStore } from '../../../store/useBilleteStore'
 import { useSyncStore } from '../../../store/useSyncStore'
@@ -44,7 +45,7 @@ const ICONOS = {
   fechas: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',
   horas: 'M14 10a4 4 0 1 0-3.5 4L14 17.5h2.5V20H19v-2.5M10 10h.01',
   telefono: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2',
-  localizador: 'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12',
+  localizador: ICONOS_FAMILIA.pase,
 } as const
 
 function Trazo({ d, size, color }: { d: string; size: number; color: string }) {

@@ -1,4 +1,4 @@
-// (V21) Vuelve a mirar en Booking la nota y las opiniones de cada hotel de data/dias/<destino>/_hoteles.json y las deja al día (con la fecha de hoy). Pasarlo ANTES de cada tanda de destino.
+// (V21) Vuelve a mirar en Booking la nota y las opiniones de cada hotel de data/dias/<destino>/_hoteles.json y las deja al día (con la fecha de hoy). Correrlo ANTES de cada tanda de destino.
 //   node scripts/destino/notasHoteles.mjs [roma|lanzarote|todos]
 // Abre cada ficha con un Chrome sin ventana (UNO a la vez, y se cierra solo) y lee la nota y el número de opiniones que Booking da en la propia página (`aggregateRating`). Si Booking pide comprobar que eres una
 // persona o no se puede leer, esa nota se queda como estaba y lo dice. Si un hotel baja de 9, lo dice al final («AVISO»). No se inventa nada.

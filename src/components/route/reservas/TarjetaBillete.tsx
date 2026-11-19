@@ -1,4 +1,5 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
+import { ICONOS } from '../../../lib/iconos'
 import { createPortal } from 'react-dom'
 import type { LegState } from '../../../lib/reservasLegs'
 import { diaEntero } from '../../../lib/billete'
@@ -30,12 +31,12 @@ function IconoDeFila({ children }: { children: ReactNode }) {
 /** Los dibujos de las filas, los del diseño (avión, reloj, terminal, asiento, tren, billete). */
 const DIBUJO = {
   avion: <path d="M21 15v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8l-8 5v2l8-2.5V18l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-5.5z" />,
-  tren: <path d="M8 3.1V7a4 4 0 0 0 8 0V3.1M9 15l-1-1M15 15l1-1M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5zM8 19l-2 3M16 19l2 3" />,
+  tren: <path d={ICONOS.tren} />,
   reloj: <path d="M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z" />,
   terminal: <path d="M4 20V8l8-4 8 4v12M9 20v-6h6v6" />,
   asiento: <path d="M8 4v8h7l2 5M8 12v6M13 12v6" />,
   coche: <path d="M4 7h16v10H4zM4 12h16M9 7v10" />,
-  billete: <path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12" />,
+  billete: <path d={ICONOS.pase} />,
 }
 
 export interface FilaDeDato {

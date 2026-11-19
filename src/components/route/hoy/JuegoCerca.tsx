@@ -115,7 +115,7 @@ export function RetoDelDiaTarjeta({ reto, onCerrar }: { reto: RetoDelDia; onCerr
   return (
     <div data-reto-del-dia={reto.coleccion} className="flex flex-none flex-col gap-3" style={{ borderRadius: 22, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.07)', padding: 14 }}>
       <span className="flex items-center justify-between">
-        <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'oklch(0.5 0.12 65)' }}>Reto del día</span>
+        <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: '#6F4E37' }}>Reto del día</span>
         {onCerrar && <CruzDeAviso onClick={onCerrar} />}
       </span>
       <span style={{ font: "400 24px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>

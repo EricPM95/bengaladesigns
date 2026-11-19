@@ -116,7 +116,7 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, onRecuerdos, edi
             ))}
           </span>
         </button>
-        <button type="button" onClick={onRecuerdos} disabled={editando} data-recuerdos-del-viaje={viaje.id} aria-label="Recuerdos del viaje" title="Recuerdos del viaje" style={{ flex: 'none', width: 38, height: 38, borderRadius: '50%', border: 'none', padding: 0, background: '#F3E6C8', color: '#6E5018', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: editando ? 0.45 : 1 }}>
+        <button type="button" onClick={onRecuerdos} disabled={editando} data-recuerdos-del-viaje={viaje.id} className="zona-toque" aria-label="Recuerdos del viaje" title="Recuerdos del viaje" style={{ flex: 'none', width: 38, height: 38, borderRadius: '50%', border: 'none', padding: 0, background: '#F3E6C8', color: '#6E5018', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: editando ? 0.45 : 1 }}>
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <rect x="7" y="3.5" width="13.5" height="13.5" rx="3" />
             <path d="M4 7.5v10A3.5 3.5 0 0 0 7.5 21h10M7 14l3.5-3.5L14 14l2-2 4.5 4.5M16 8.2h.01" />

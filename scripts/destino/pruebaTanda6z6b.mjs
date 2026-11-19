@@ -137,14 +137,21 @@ function crearFalso({ fallaSubida = false } = {}) {
         },
       }),
       select: () => {
-        const q = { eq: () => q, order: () => q, then: (res) => res({ data: [...estado.filas.values()], error: null }) }
+        // (al día, 19-nov) Los filtros `.eq(columna, valor)` se aplican de verdad (la app pregunta por el tamaño exacto para no subir dos veces la misma foto).
+        const filtros = []
+        const q = { eq: (c, v) => (filtros.push([c, v]), q), order: () => q, then: (res) => res({ data: [...estado.filas.values()].filter((fila) => filtros.every(([c, v]) => fila[c] === undefined || fila[c] === v)), error: null }) }
         return q
       },
     }),
   }
   return estado
 }
-const preparada = { blob: new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xd9])], { type: 'image/jpeg' }), width: 1600, height: 1200, bytes: 4 }
+// (al día, 19-nov) Desde la V-de-fotos-repetidas, una foto con el mismo tamaño ya subida se rechaza («Esta foto ya está en tu viaje»): cada foto de la prueba es distinta (su tamaño).
+let numeroDeFoto = 0
+const nuevaFoto = () => {
+  numeroDeFoto++
+  return { blob: new Blob([new Uint8Array([0xff, 0xd8, numeroDeFoto & 255, (numeroDeFoto >> 8) & 255, 0xff, 0xd9])], { type: 'image/jpeg' }), width: 1600, height: 1200, bytes: 100 + numeroDeFoto }
+}
 const args = (stopName, dayNumber = 1) => ({ tripId: 'r1', dayId: `r1d${dayNumber}`, dayNumber, stopName })
 const silenciar = console.warn
 console.warn = () => {}
@@ -153,41 +160,41 @@ console.warn = () => {}
 ponerVersion('gratis')
 debe(F.limiteDeFotos().porParada === 1, 'A1', `gratis: el límite por parada es ${F.limiteDeFotos().porParada}, no 1`)
 let e = crearFalso()
-const f1 = (await F.subirRespetandoLimite(args('Coliseo'), preparada)).foto
+const f1 = (await F.subirRespetandoLimite(args('Coliseo'), nuevaFoto())).foto
 debe(!!f1 && e.filas.size === 1, 'A2', 'gratis: la primera foto de la parada no se sube')
 debe(F.modoDeFoto([f1], 1, 'Coliseo') === 'cambiar', 'A2', 'gratis: con su foto, la parada no pasa a «Cambiar foto»')
 debe(F.modoDeFoto([f1], 1, 'Foro Romano') === 'anadir' && F.modoDeFoto([f1], 2, 'Coliseo') === 'anadir' && F.modoDeFoto([f1], 1, null) === 'anadir', 'A2', 'gratis: otra parada, otro día o «todo el día» deberían seguir en «Añadir foto»')
-const f2 = (await F.subirRespetandoLimite(args('Coliseo'), preparada)).foto
+const f2 = (await F.subirRespetandoLimite(args('Coliseo'), nuevaFoto())).foto
 debe(e.filas.size === 1 && e.objetos.size === 1 && !e.filas.has(f1.id) && e.filas.has(f2.id), 'A2', `gratis: la segunda foto no sustituye a la primera (filas ${e.filas.size}, objetos ${e.objetos.size})`)
 debe(e.llamadas.join() === 'upload,upload,remove', 'A3', `gratis: el orden no es subir la nueva y luego borrar la vieja (${e.llamadas.join()})`)
-await F.subirRespetandoLimite(args('Foro Romano'), preparada)
-await F.subirRespetandoLimite(args(null), preparada)
-await F.subirRespetandoLimite(args(null), preparada)
+await F.subirRespetandoLimite(args('Foro Romano'), nuevaFoto())
+await F.subirRespetandoLimite(args(null), nuevaFoto())
+await F.subirRespetandoLimite(args(null), nuevaFoto())
 debe(e.filas.size === 3, 'A1', `gratis: tras Coliseo×2, Foro y «todo el día»×2 debería haber 3 fotos y hay ${e.filas.size}`)
 const porSitio = new Map()
 for (const fila of e.filas.values()) porSitio.set(`${fila.day_number}|${fila.stop_name}`, (porSitio.get(`${fila.day_number}|${fila.stop_name}`) ?? 0) + 1)
 debe([...porSitio.values()].every((n) => n === 1), 'A1', 'gratis: algún sitio tiene más de una foto')
 // Si falla la subida de la nueva, la vieja se queda.
 e = crearFalso()
-const vieja = (await F.subirRespetandoLimite(args('Panteón'), preparada)).foto
+const vieja = (await F.subirRespetandoLimite(args('Panteón'), nuevaFoto())).foto
 const fallida = crearFalso({ fallaSubida: true })
 fallida.filas.set(vieja.id, { ...e.filas.get(vieja.id) })
-const r = await F.subirRespetandoLimite(args('Panteón'), preparada)
+const r = await F.subirRespetandoLimite(args('Panteón'), nuevaFoto())
 debe(!r.foto && !!r.error && fallida.filas.has(vieja.id), 'A3', 'gratis: si falla la subida de la nueva, la vieja se pierde')
 // Con fotos de antes de un límite (varias en el mismo sitio), al cambiar queda una.
 e = crearFalso()
 ponerVersion('completa')
-await F.subirRespetandoLimite(args('Panteón'), preparada)
-await F.subirRespetandoLimite(args('Panteón'), preparada)
+await F.subirRespetandoLimite(args('Panteón'), nuevaFoto())
+await F.subirRespetandoLimite(args('Panteón'), nuevaFoto())
 ponerVersion('gratis')
-await F.subirRespetandoLimite(args('Panteón'), preparada)
+await F.subirRespetandoLimite(args('Panteón'), nuevaFoto())
 debe(e.filas.size === 1, 'A2', `gratis: al cambiar la foto de una parada con varias de antes debería quedar una y hay ${e.filas.size}`)
 
 // De pago
 ponerVersion('completa')
 debe(F.limiteDeFotos().porParada === null, 'A1', 'de pago: hay un límite de fotos')
 e = crearFalso()
-for (let i = 0; i < 5; i++) await F.subirRespetandoLimite(args('Coliseo'), preparada)
+for (let i = 0; i < 5; i++) await F.subirRespetandoLimite(args('Coliseo'), nuevaFoto())
 debe(e.filas.size === 5 && e.objetos.size === 5, 'A1', `de pago: 5 fotos en la misma parada deberían quedar 5 y hay ${e.filas.size}`)
 debe(F.modoDeFoto([...e.filas.values()].map((x) => ({ dayNumber: x.day_number, stopName: x.stop_name })), 1, 'Coliseo') === 'anadir', 'A2', 'de pago: con fotos, la parada pasa a «Cambiar foto»')
 console.warn = silenciar
@@ -245,7 +252,7 @@ for (const v of lista) debe(textoPerfil.includes(v.destino) && (!v.cuando || tex
   debe(pos('r1') < pos('r2') && pos('r2') < pos('r3') && pos('r5') < pos('r1'), 'B5', 'el Perfil no pinta los viajes en orden')
 }
 debe(/data-anadir-viaje/.test(fs.readFileSync('src/components/layout/PerfilSheet.tsx', 'utf8')) && !/Tips del viaje/.test(textoPerfil), 'B5', 'falta el [+] Añadir un viaje (10N5) en el Perfil, o sigue ahí [Tips del viaje] (ahora es la bombilla de RUTA)')
-debe(/(En \d+ días|Mañana|Hoy|Próximo)/.test(textoPerfil) && /Hecho/.test(textoPerfil), 'B5', '10N9: cada tarjeta del Perfil lleva su etiqueta de Design («En N días» o «Próximo» / «Hecho»)')
+debe(/(En \d+ días|Mañana|Hoy|Próximo)/.test(textoPerfil) && !/Hecho/.test(textoPerfil), 'B5', '10N9 (al día, V8: el Perfil ya no lleva la etiqueta «Hecho»): cada tarjeta lleva su etiqueta de Design («En N días» o «Próximo»)')
 debe(/Mis viajes/.test(textoPerfil), 'B5', 'falta el rótulo «Mis viajes»')
 
 // (Tanda 10N4: las chinchetas y el mapa de mis viajes se quitaron con el Perfil viejo; el pasaporte local cuenta países y ciudades.)

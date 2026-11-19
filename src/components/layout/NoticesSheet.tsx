@@ -198,7 +198,7 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
         {botones.length > 0 && (
           <span style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4, pointerEvents: seleccionando ? 'none' : undefined }}>
             {botones.map((boton) => (
-              <button key={boton.label} type="button" onClick={boton.ir} className="rounded-full border border-accent px-3 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
+              <button key={boton.label} type="button" onClick={boton.ir} className="zona-toque rounded-full border border-accent px-3 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
                 {boton.label}
               </button>
             ))}

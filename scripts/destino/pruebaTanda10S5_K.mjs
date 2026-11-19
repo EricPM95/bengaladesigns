@@ -207,7 +207,7 @@ for (const [ancho, alto] of [[390, 844], [375, 667]]) {
     await ev("window.__enviados = []; const orig = window.fetch; window.fetch = (u, o) => { if (String(u).includes('/api/proponer-sitio')) { window.__enviados.push(JSON.parse(o.body)); return Promise.resolve(new Response(JSON.stringify({ ok: true, guardado: true }), { status: 200 })) } return orig(u, o) }; return true")
     await ev("st().setMode('bookings'); return true")
     await app.esp(1800)
-    await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); if (b && b.children.length < 2) b.firstElementChild?.click(); return true })()`)
+    await ev(`(() => { const b = document.querySelector('[data-blk="entradas"]'); if (b && b.children.length < 2) (b.querySelector('[data-cabecera-clara]') ?? b.firstElementChild)?.click(); return true })()`)
     await app.esp(1200)
     const hayBoton = await ev("return Boolean(document.querySelector('[data-anadir-otra-reserva]'))")
     debe(hayBoton, `6 ${etiqueta}`, 'está [Añadir otra reserva]')
@@ -235,12 +235,7 @@ for (const [ancho, alto] of [[390, 844], [375, 667]]) {
     await app.esp(700)
     debe((await ev("return document.querySelector('[data-campo=\"nombre\"]')?.value ?? null")) === 'Café Procope', `6 ${etiqueta}`, 'U2b se abre desde cualquier sitio con abrirProponerSitio()')
     await ev("document.querySelector('[data-hoja-cuentanos] button[aria-label=Cerrar]')?.click(); return true")
-
-    // Desde cualquier sitio: sin pasar por [Añadir otra reserva] (como lo haría un botón de otra pantalla).
-    await ev("const S = await import('/src/store/useProponerSitioStore.ts'); S.abrirProponerSitio({ nombre: 'Café Procope', origen: 'prueba' }); return true")
-    await app.esp(700)
-    debe((await ev("return document.querySelector('[data-proponer-sitio-nombre]')?.value ?? null")) === 'Café Procope', `6 ${etiqueta}`, 'la hoja se abre desde cualquier sitio con abrirProponerSitio()')
-    await ev("document.querySelector('[data-proponer-sitio-cerrar]')?.click(); return true")
+    // (al día, 19-nov: la hoja vieja «Propón un sitio» ya no existe; es la U2b de Cuéntanos, que se comprueba justo encima)
     await app.esp(400)
 
     // La hoja de la reserva escrita a mano: el aviso y los días a todo el ancho.
