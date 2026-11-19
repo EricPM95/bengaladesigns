@@ -137,10 +137,10 @@ function mundo(destino, opciones = {}) {
   const sol = Math.round(sunsetMinutesOn('2026-11-10', datos.destinos.lanzarote.momentos.atardecer_atlantico.punto, 'Atlantic/Canary')) - 20
   const hhmm = `${String(Math.floor(sol / 60)).padStart(2, '0')}:${String(sol % 60).padStart(2, '0')}:00`
   const pa = mad.persona()
-  const ra = await mad.foto(pa, { tomada_en: `2026-11-10T${hhmm}`, ubicacion: alNorte('lanzarote', 'playa_de_famara', 0) })
+  const ra = await mad.foto(pa, { tomada_en: `2026-11-10T${hhmm}`, ubicacion: alNorte('lanzarote', 'caleta_de_famara_y_playa_de_famara', 0) })
   debe(ra.cuenta && mad.emblemas(pa).includes('atardecer_atlantico'), 'horas', 'una foto de la galería a la puesta de sol en la Playa de Famara da el «Atardecer atlántico»')
   const pn = mad.persona()
-  await mad.foto(pn, { tomada_en: '2026-11-10T12:00:00', ubicacion: alNorte('lanzarote', 'playa_de_famara', 0) })
+  await mad.foto(pn, { tomada_en: '2026-11-10T12:00:00', ubicacion: alNorte('lanzarote', 'caleta_de_famara_y_playa_de_famara', 0) })
   debe(!mad.emblemas(pn).includes('atardecer_atlantico') && !mad.emblemas(pn).includes('lz_madrugador'), 'horas', 'a mediodía no da ni Madrugador ni el Atardecer')
   const rom = mundo('Roma')
   const pr = rom.persona()

@@ -23,38 +23,6 @@
       "coordinates_fuente": "Aproximada (Caleta de Sebo): por comprobar con Mapbox/Google Maps",
       "nota": "No es parada de la ruta ni está en lugares_solo_lista: solo existe para ganar su emblema (foto con ubicación en la isla)."
     },
-    "caleta_de_famara": {
-      "name": "Caleta de Famara",
-      "coordinates": [
-        29.115758,
-        -13.563593
-      ],
-      "coordinates_fuente": "La del pueblo en data/pipeline_v2/lanzarote.json (DATOS_NATURALEZA_PUEBLOS_COCHE.md); Mapbox pone el pueblo a 230 m al noroeste."
-    },
-    "playa_de_famara": {
-      "name": "Playa de Famara",
-      "coordinates": [
-        29.115813,
-        -13.553589
-      ],
-      "coordinates_fuente": "La playa, según el mismo documento (a unos 1.000 m al este del pueblo). La playa mide unos 5 km: este es el punto de acceso."
-    },
-    "el_golfo_pueblo": {
-      "name": "El Golfo",
-      "coordinates": [
-        28.982748,
-        -13.830632
-      ],
-      "coordinates_fuente": "Mapbox (localidad El Golfo, 4-nov-2026 → V4, 17-nov). A unos 750 m del Charco."
-    },
-    "charco_de_los_clicos": {
-      "name": "Charco de los Clicos",
-      "coordinates": [
-        28.977147,
-        -13.827658
-      ],
-      "coordinates_fuente": "La coordenada que ya tenía la parada (mirador del charco); OpenStreetMap pone el Charco a 75 m (28.97647, -13.82785)."
-    },
     "haria_pueblo": {
       "name": "Haría",
       "coordinates": [
@@ -95,13 +63,11 @@
     },
     "atardecer_atlantico": {
       "sitios": [
-        "el_golfo_pueblo",
-        "charco_de_los_clicos",
+        "el_golfo_y_el_charco_de_los_clicos",
         "los_hervideros",
         "salinas_de_janubio",
         "playa_de_montana_bermeja",
-        "caleta_de_famara",
-        "playa_de_famara",
+        "caleta_de_famara_y_playa_de_famara",
         "playa_blanca_y_el_faro_de_pechiguera"
       ],
       "punto": [
@@ -303,34 +269,6 @@
       "motivo_radio": "Isla entera (Caleta de Sebo y playas). Solo se llega en barco.",
       "foto_dentro": null
     },
-    "caleta_de_famara": {
-      "pais": "España",
-      "capital": false,
-      "radio_m": 450,
-      "motivo_radio": "El pueblo, con su paseo marítimo y sus casas bajas. La playa (a 950 m) es otro sitio.",
-      "foto_dentro": null
-    },
-    "playa_de_famara": {
-      "pais": "España",
-      "capital": false,
-      "radio_m": 500,
-      "motivo_radio": "La playa, desde el acceso principal. Es larga (5 km) pero el sitio es el tramo de siempre, a 950 m del pueblo: así una foto en una no vale para la otra.",
-      "foto_dentro": null
-    },
-    "el_golfo_pueblo": {
-      "pais": "España",
-      "capital": false,
-      "radio_m": 350,
-      "motivo_radio": "El pueblo pesquero de El Golfo. El Charco queda a 750 m: otro sitio.",
-      "foto_dentro": null
-    },
-    "charco_de_los_clicos": {
-      "pais": "España",
-      "capital": false,
-      "radio_m": 300,
-      "motivo_radio": "El Charco y su mirador del cráter.",
-      "foto_dentro": null
-    },
     "haria_pueblo": {
       "pais": "España",
       "capital": false,
@@ -370,6 +308,28 @@
       "capital": false,
       "radio_m": 400,
       "motivo_radio": "El Puerto Viejo (La Tiñosa) y su paseo marítimo, hasta los restaurantes del muelle.",
+      "foto_dentro": null
+    },
+    "el_golfo_y_el_charco_de_los_clicos": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 700,
+      "centro": {
+        "lat": 28.9799475,
+        "lng": -13.829145
+      },
+      "motivo_radio": "El pueblo de El Golfo y el Charco de los Clicos (a unos 750 m uno del otro) son UN solo sitio: vale una foto hecha en el pueblo o en el charco. El centro es el punto medio de los dos.",
+      "foto_dentro": null
+    },
+    "caleta_de_famara_y_playa_de_famara": {
+      "pais": "España",
+      "capital": false,
+      "radio_m": 990,
+      "centro": {
+        "lat": 29.1157855,
+        "lng": -13.558591
+      },
+      "motivo_radio": "La Caleta de Famara y la Playa de Famara (a unos 950 m una de la otra) son UN solo sitio: vale una foto hecha en el pueblo o en la playa. El centro es el punto medio de las dos.",
       "foto_dentro": null
     }
   },
@@ -420,7 +380,7 @@
         "cueva_de_los_verdes",
         "mirador_del_rio",
         "fundacion_cesar_manrique",
-        "charco_de_los_clicos",
+        "el_golfo_y_el_charco_de_los_clicos",
         "la_geria_y_sus_bodegas"
       ]
     },
@@ -480,8 +440,8 @@
       "sitios": [
         "playas_de_papagayo",
         "caleton_blanco",
-        "charco_de_los_clicos",
-        "playa_de_famara",
+        "el_golfo_y_el_charco_de_los_clicos",
+        "caleta_de_famara_y_playa_de_famara",
         "punta_mujeres_y_arrieta",
         "playa_de_la_garita",
         "playa_de_montana_bermeja"
@@ -496,9 +456,9 @@
       "sitios": [
         "teguise",
         "arrecife_charco_de_san_gines_y_el_paseo",
-        "el_golfo_pueblo",
+        "el_golfo_y_el_charco_de_los_clicos",
         "haria_pueblo",
-        "caleta_de_famara",
+        "caleta_de_famara_y_playa_de_famara",
         "puerto_del_carmen_puerto_viejo"
       ]
     },
@@ -560,7 +520,7 @@
     {
       "id": "el_golfo",
       "tipo": "sitio",
-      "sitio": "charco_de_los_clicos",
+      "sitio": "el_golfo_y_el_charco_de_los_clicos",
       "nombre": "El charco verde",
       "linea": "Una laguna verde dentro de un cráter, a un paso del mar."
     },
@@ -614,14 +574,6 @@
   },
   "_nota_sitios_de_parada": "V4 (17-nov). Una parada del catálogo (la de los días) que lleva a más de un sitio de logro. Un Visto en la parada vale para todos; una foto con ubicación vale solo para el sitio donde está; lo ganado ANTES de separarlos (hechos con el id viejo) vale para todos, con la misma fecha.",
   "sitios_de_parada": {
-    "caleta_de_famara_y_playa_de_famara": [
-      "caleta_de_famara",
-      "playa_de_famara"
-    ],
-    "el_golfo_y_el_charco_de_los_clicos": [
-      "el_golfo_pueblo",
-      "charco_de_los_clicos"
-    ],
     "haria_y_la_casa_museo_cesar_manrique": [
       "haria_pueblo",
       "casa_museo_cesar_manrique"

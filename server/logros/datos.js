@@ -42,9 +42,14 @@ export function cargarDatos() {
 export function cargarCatalogo(clave) {
   const catalogo = leer(`../../data/pipeline_v2/${clave}.json`)
   // (LZ3) Sitios que no son parada ni están en EXPLORAR (La Graciosa) pero tienen emblema: `sitios_extra` de data/logros/<destino>.json. Solo para los logros; el motor de rutas no los ve.
-  const extra = fs.existsSync(new URL(`../../data/logros/${clave}.json`, import.meta.url)) ? leer(`../../data/logros/${clave}.json`).sitios_extra : null
-  if (!extra) return catalogo
-  return { ...catalogo, places: [...(catalogo.places ?? []), ...Object.entries(extra).map(([id, e]) => ({ id, name: e.name, coordinates: e.coordinates }))] }
+  const logros = fs.existsSync(new URL(`../../data/logros/${clave}.json`, import.meta.url)) ? leer(`../../data/logros/${clave}.json`) : null
+  const extra = logros?.sitios_extra ?? null
+  // (V16) Un sitio de logro que junta DOS lugares (El Golfo y el Charco, la Caleta y la Playa de Famara) lleva su `centro` (el punto medio) en los datos de logros: para los logros, el sitio se mide desde ahí
+  // (así vale una foto en cualquiera de los dos). Solo para los logros; el motor de rutas sigue con la coordenada de la parada.
+  const centros = Object.entries(logros?.sitios ?? {}).filter(([, s]) => s?.centro && Number.isFinite(s.centro.lat) && Number.isFinite(s.centro.lng))
+  const con = (places) => (centros.length === 0 ? places : places.map((p) => { const c = centros.find(([id]) => id === p.id)?.[1].centro; return c ? { ...p, coordinates: [c.lat, c.lng] } : p }))
+  if (!extra) return centros.length === 0 ? catalogo : { ...catalogo, places: con(catalogo.places ?? []) }
+  return { ...catalogo, places: con([...(catalogo.places ?? []), ...Object.entries(extra).map(([id, e]) => ({ id, name: e.name, coordinates: e.coordinates }))]) }
 }
 
 /**

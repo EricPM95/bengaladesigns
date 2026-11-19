@@ -1,5 +1,6 @@
 import { todayIso } from '../../../lib/dateRange'
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { enSitio } from '../../../lib/articulos'
 import { cargarCompanero, lineaDeLaTarjeta, quienEs, subirMiFoto, useCompaneroStore, yoTambienEstaba, type PendienteDeCompanero } from '../../../lib/companero'
@@ -8,7 +9,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { CandadoRedondo } from '../../pase/Candado'
 import { abrirGaleriaDeReclamo } from '../reclamar/Reclamar'
-import { BTN_CAM_ORO, Capa, Cruz, EstilosDelVisto, MONO, SERIF, TINTA } from '../visto/Hojas'
+import { BTN_CAM_ORO, Capa, Cruz, EstilosDelVisto, SERIF, TINTA } from '../visto/Hojas'
 import { TRAZO, Trazo } from '../visto/trazos'
 
 /**
@@ -30,7 +31,21 @@ export function viajesTerminadosEnPlazo(): string[] {
     .map((t) => t.id)
 }
 
-const fotoDe = (url: string | null) => (url ? `center/cover url(${url})` : 'linear-gradient(140deg,#E2C6A8,#A8734A)')
+/**
+ * (V16, decisión de Eric) «Yo también estaba» enseña SIEMPRE la foto del sitio de nuestros datos (la de las fichas), nunca la foto del compañero: no se guarda en tu cuenta, así que de nada sirve verla.
+ * Un degradado cálido solo mientras llega.
+ */
+function FotoDelSitio({ p, grande = false, style }: { p: PendienteDeCompanero; grande?: boolean; style?: CSSProperties }): ReactNode {
+  const [url, setUrl] = useState<string | null>(null)
+  useEffect(() => {
+    let vivo = true
+    void fetchPlacePhoto(p.nombre, p.ciudad ?? '', null, grande ? 'regular' : 'small').then((u) => vivo && setUrl(u))
+    return () => {
+      vivo = false
+    }
+  }, [p.nombre, p.ciudad, grande])
+  return <span data-foto-del-sitio={url ? '1' : '0'} className="block" style={{ background: url ? `center/cover url(${url})` : 'linear-gradient(140deg,#E2C6A8,#A8734A)', ...style }} />
+}
 
 /** Y0: la tarjeta pequeña, solo si hay algo pendiente. Va en la hoja «Tus logros en …», debajo del plazo de «Reclamar con tus fotos». */
 export function TarjetaDeCompanero({ tripId }: { tripId?: string | null } = {}): ReactNode {
@@ -48,7 +63,9 @@ export function TarjetaDeCompanero({ tripId }: { tripId?: string | null } = {}):
     <button type="button" data-companero="tarjeta" onClick={abrir} className="mx-4 mb-2 flex flex-none items-center gap-3 rounded-2xl border px-3 py-2.5 text-left" style={{ background: '#FFFDF8', borderColor: 'rgba(181,138,46,.45)', color: TINTA, cursor: 'pointer' }}>
       <span className="flex flex-none">
         {pendientes.slice(0, 3).map((p, i) => (
-          <span key={p.sitio} className="flex-none" style={{ width: 34, height: 34, borderRadius: 10, marginLeft: i === 0 ? 0 : -10, border: '2px solid #FFFDF8', background: fotoDe(p.foto_url) }} />
+          <span key={p.sitio} className="flex-none" style={{ marginLeft: i === 0 ? 0 : -10 }}>
+            <FotoDelSitio p={p} style={{ width: 34, height: 34, borderRadius: 10, border: '2px solid #FFFDF8' }} />
+          </span>
         ))}
       </span>
       <span className="flex-1" style={{ font: "500 13.5px/1.35 'Geist'" }}>{lineaDeLaTarjeta(pendientes)}</span>
@@ -57,7 +74,7 @@ export function TarjetaDeCompanero({ tripId }: { tripId?: string | null } = {}):
   )
 }
 
-/** Y1: un solo sitio. La foto grande con «Foto de Eric», lo que dice, [Yo también estaba] y, debajo, [Subir mi foto]. */
+/** Y1: un solo sitio. La foto grande (la del sitio de la app), lo que dice, [Yo también estaba] y, debajo, [Subir mi foto]. */
 function HojaDeUnSitio({ p, tripId }: { p: PendienteDeCompanero; tripId: string }): ReactNode {
   const error = useCompaneroStore((s) => s.error)
   const ocupado = useCompaneroStore((s) => s.ocupado)
@@ -70,8 +87,8 @@ function HojaDeUnSitio({ p, tripId }: { p: PendienteDeCompanero; tripId: string 
     <Capa onCerrar={cerrar} etiqueta="Yo también estaba" z={90}>
       <div data-companero="sitio" className="relative flex flex-col gap-3 overflow-hidden rounded-t-[28px] bg-[#FFFDF8] pb-[28px]" style={{ color: TINTA }}>
         <Cruz onCerrar={cerrar} oscura />
-        <div data-companero="foto" className="relative w-full" style={{ height: 230, background: fotoDe(p.foto_url) }}>
-          <span className="absolute bottom-3 left-4 rounded-full px-3 py-1" style={{ background: 'rgba(28,34,48,.7)', color: '#FFFDF8', font: `600 11px ${MONO}`, letterSpacing: '.08em' }}>Foto de {quien}</span>
+        <div data-companero="foto" className="relative w-full" style={{ height: 230 }}>
+          <FotoDelSitio p={p} grande style={{ width: '100%', height: '100%' }} />
         </div>
         <div className="flex flex-col gap-3 px-[18px]">
           <span style={{ font: `400 26px/1.1 ${SERIF}`, textWrap: 'balance' as never }}>{quien} lo consiguió {enSitio(p.nombre)}. ¿Estabais juntos?</span>
@@ -112,7 +129,7 @@ function HojaDeVarios({ pendientes, tripId }: { pendientes: PendienteDeCompanero
           {pendientes.map((p) => (
             <div key={p.sitio} data-companero="fila" className="flex items-center gap-2.5 rounded-2xl py-2 pl-2 pr-2" style={{ background: '#F5EFE4' }}>
               <button type="button" onClick={() => useCompaneroStore.getState().abrirSitio(p.sitio)} className="flex min-w-0 flex-1 items-center gap-2.5 border-0 bg-transparent p-0 text-left">
-                <span className="flex-none" style={{ width: 44, height: 44, borderRadius: 12, background: fotoDe(p.foto_url) }} />
+                <FotoDelSitio p={p} style={{ width: 44, height: 44, borderRadius: 12, flex: 'none' }} />
                 <span className="min-w-0 flex-1" style={{ font: "500 14px/1.3 'Geist'" }}>{p.nombre}</span>
               </button>
               <button type="button" data-companero="yo-tambien-uno" disabled={ocupado} onClick={() => gana([p.sitio])} className="h-10 flex-none rounded-full border-0 px-3.5 disabled:opacity-60" style={{ ...BTN_CAM_ORO, font: "700 12.5px 'Geist'" }}>

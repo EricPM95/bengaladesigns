@@ -80,12 +80,12 @@ console.log('1. El servidor: el sello con 3 sitios, las dos-en-uno y los textos 
   debe(r.acabados.some((a) => a.trip_id === 'lz1') && !r.sin.some((v) => v.trip_id === 'lz1'), 'sello', 'con 3 sitios vistos el sello del viaje terminado queda listo para estampar')
   // (b) Una parada de dos en uno sale en DOS filas, cada una con el nombre de su sitio y su colección.
   const nombreDe = (s) => nombreDeSitio(catalogos, 'lanzarote', s)
-  const viajeDosEnUno = { id: 'v2', destino: 'lanzarote', inicio: '2026-11-09', fin: '2026-11-13', dias: [{ fecha: '2026-11-11', numero: 3, paradas: [{ nombre: 'Haría y la Casa-Museo César Manrique', stop_id: 's1', sitios: ['haria_pueblo', 'casa_museo_cesar_manrique'] }, { nombre: 'El Golfo y el Charco de los Clicos', stop_id: 's2', sitios: ['el_golfo_pueblo', 'charco_de_los_clicos'] }] }] }
+  const viajeDosEnUno = { id: 'v2', destino: 'lanzarote', inicio: '2026-11-09', fin: '2026-11-13', dias: [{ fecha: '2026-11-11', numero: 3, paradas: [{ nombre: 'Haría y la Casa-Museo César Manrique', stop_id: 's1', sitios: ['haria_pueblo', 'casa_museo_cesar_manrique'] }, { nombre: 'El Golfo y el Charco de los Clicos', stop_id: 's2', sitios: ['el_golfo_y_el_charco_de_los_clicos'] }] }] }
   const pend = pendientes({ datos, destino: 'lanzarote', viaje: viajeDosEnUno, items: new Map(), hoy: '2026-11-18', nombreDe })
   const filas = pend.pendientes.filter((p) => p.falta.includes('pedazo'))
-  debe(filas.length === 4, 'dos en uno', `las 2 paradas de dos en uno dan 4 filas, una por sitio (${filas.map((f) => f.nombre).join(' / ')})`)
-  debe(filas.every((f) => !/ y (la|el) /.test(f.nombre ?? '')) && filas.every((f) => f.colecciones.length > 0), 'dos en uno', 'cada fila lleva el nombre de SU sitio (no el de la parada de dos en uno) y su colección')
-  debe(['Haría', 'Casa-Museo César Manrique', 'El Golfo', 'Charco de los Clicos'].every((nom) => filas.some((f) => f.nombre === nom)), 'dos en uno', `los nombres son «Haría», «Casa-Museo César Manrique», «El Golfo» y «Charco de los Clicos» (${filas.map((f) => f.nombre)})`)
+  debe(filas.length === 3, 'dos en uno', `Haría y la Casa-Museo (dos en uno) dan 2 filas y El Golfo y el Charco (V16: un solo sitio) da 1: 3 filas (${filas.map((f) => f.nombre).join(' / ')})`)
+  debe(filas.every((f) => f.nombre === 'El Golfo y el Charco de los Clicos' || !/ y (la|el) /.test(f.nombre ?? '')) && filas.every((f) => f.colecciones.length > 0), 'dos en uno', 'cada fila lleva el nombre de SU sitio (no el de la parada de dos en uno) y su colección')
+  debe(['Haría', 'Casa-Museo César Manrique', 'El Golfo y el Charco de los Clicos'].every((nom) => filas.some((f) => f.nombre === nom)), 'dos en uno', `los nombres son «Haría», «Casa-Museo César Manrique» y «El Golfo y el Charco de los Clicos» (${filas.map((f) => f.nombre)})`)
   // (c) Ningún texto del servidor lleva un hueco {…} sin rellenar.
   const estado = estadoDestino({ datos, destino: 'lanzarote', items: new Map(), viaje: viajeDosEnUno, hoy: '2026-11-18' })
   const res = resumen({ datos, destino: 'lanzarote', items: new Map(), viaje: viajeDosEnUno, hoy: '2026-11-18', nombreDe })

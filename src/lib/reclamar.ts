@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { datosDeFotoDeLaGaleria, enviarFotoDeGaleria, llamar, type Momento, type RespuestaDeHecho } from './logros'
+import { datosDeFotoDeLaGaleria, enviarFotoDeGaleria, llamar, pedirUnirFotos, type Momento, type RespuestaDeHecho } from './logros'
 import { subirFoto } from './fotosViaje'
 import { useLogrosStore } from '../store/useLogrosStore'
 import { useRouteStore } from '../store/useRouteStore'
@@ -169,6 +169,8 @@ export async function alAlbum(archivo: File, fecha: string | null) {
   } catch {
     /* el álbum va aparte */
   }
+  // (V16) La foto ya está en el álbum (o ya estaba: la misma foto no se duplica): se une a los hechos que ganó.
+  void pedirUnirFotos(true)
 }
 
 async function cargarLista(tripId: string) {

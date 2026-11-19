@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { displayStopName } from '../../../lib/format'
 import { subirFoto, urlParaMostrar } from '../../../lib/fotosViaje'
-import { demoActivo, enviarDeshacerVisto, enviarFotoDeGaleria, enviarFotoDeLaCamara, enviarVisto, llamar, ubicacionDeAhora, type RespuestaDeHecho } from '../../../lib/logros'
+import { demoActivo, enviarDeshacerVisto, enviarFotoDeGaleria, enviarFotoDeLaCamara, enviarVisto, llamar, pedirUnirFotos, ubicacionDeAhora, type RespuestaDeHecho } from '../../../lib/logros'
 import { reproducirMomentos } from '../../../lib/sonidos'
 import { listarFotos } from '../../../lib/fotosViaje'
 import { useLogrosStore } from '../../../store/useLogrosStore'
@@ -191,6 +191,8 @@ async function subirAlAlbum(destino: DestinoDeFoto, archivo: File) {
   } catch {
     /* sin Supabase o sin red: la foto de los logros ya se mandó; el álbum es aparte */
   }
+  // (V16) La foto ya está en el álbum: se une al hecho que ganó (su `foto_id`).
+  void pedirUnirFotos(true)
 }
 
 /** Una foto hecha o elegida: se manda al servidor; si vale, va al álbum y lo ganado cae en el almacén; si no vale, se enseña el motivo con [Elegir otra foto]. */

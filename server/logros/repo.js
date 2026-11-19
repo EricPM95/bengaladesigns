@@ -33,6 +33,19 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
       const r = await admin.storage.from('fotos-viaje').createSignedUrl(f.storage_path, 3600)
       return r.data?.signedUrl ?? null
     },
+    /** (V16) Los hechos con foto de esta persona que aún NO tienen su foto unida (`foto_id` vacío): { id, instante }. */
+    async hechosConFotoSinUnir(userId) {
+      return ok(await admin.from('logro_hechos').select('id, instante').eq('user_id', userId).eq('tipo', 'foto').is('foto_id', null).is('deshecho_en', null), 'hechosConFotoSinUnir')
+    },
+    /** (V16) Las fotos de esta persona con la fecha y hora de cámara que se leyó al subirlas (`trip_photo_meta`): { photo_id, taken_at }. */
+    async fotosConFecha(userId) {
+      return ok(await admin.from('trip_photo_meta').select('photo_id, taken_at').eq('user_id', userId).not('taken_at', 'is', null), 'fotosConFecha')
+    },
+    /** (V16) Une una foto a unos hechos de esta persona (solo los que aún no tienen): devuelve cuántos. */
+    async unirFoto(userId, hechoIds, fotoId) {
+      const r = ok(await admin.from('logro_hechos').update({ foto_id: fotoId }).eq('user_id', userId).in('id', hechoIds).is('foto_id', null).select('id'), 'unirFoto')
+      return r.length
+    },
     async insertarHecho(fila) {
       return ok(await admin.from('logro_hechos').insert(fila).select().single(), 'insertarHecho')
     },

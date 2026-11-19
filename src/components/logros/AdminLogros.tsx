@@ -45,8 +45,11 @@ export function AdminLogros() {
     void llamar<Panel>('/api/admin/logros/datos').then((r) => (r?.ok ? setPanel(r) : setError('No tienes permiso, o no has entrado con tu cuenta de administrador.')))
   }, [])
   if (!logrosActivos()) return <p className="p-6 text-[14px]">Los logros están apagados.</p>
-  // (V15b) El diagnóstico de «Yo también estaba» sale SIEMPRE (también sin ser administrador: solo habla de la propia cuenta).
-  if (error) return <main className="mx-auto max-w-3xl p-5 text-text"><DiagnosticoCompanero /><p className="text-[14px]">{error}</p></main>
+  // (V16) El panel y su diagnóstico son SOLO para administradores: para cualquier otra cuenta, como si no existiera (se va a la app de siempre).
+  if (error) {
+    if (typeof window !== 'undefined') window.location.replace('/')
+    return null
+  }
   if (!panel) return <p className="p-6 text-[14px]">Cargando…</p>
   const destino = Object.values(panel.destinos)[0]
   return (

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { subirFoto } from './fotosViaje'
+import { pedirUnirFotos } from './logros'
 
 /**
  * LA CÁMARA DE VIAJE DE HOY (Tanda HOY1, K1 a K4). Piezas sin pantalla: qué enseña el botón según el momento, el almacén del «pedido de foto» (para que el botón de la cabecera, la tarjeta
@@ -189,6 +190,8 @@ export async function subirFotosPendientes(): Promise<number> {
   } finally {
     subiendo = false
   }
+  // (V16) Las fotos de la cámara llegan al álbum DESPUÉS de mandar el hecho: ahora que están, se unen a su hecho (su `foto_id`).
+  if (subidas > 0) void pedirUnirFotos(true)
   return subidas
 }
 

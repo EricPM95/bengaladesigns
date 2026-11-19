@@ -23,6 +23,8 @@ export interface PendienteDeCompanero {
   instante: string | null
   /** (V15b) El viaje al que pertenece (el pedido): cada pendiente sabe de qué viaje es. */
   viaje?: string
+  /** (V16) La ciudad del destino (para buscar la foto del sitio de nuestros datos). */
+  ciudad?: string
 }
 
 type Abierta = { tipo: 'sitio'; sitio: string; viaje?: string } | { tipo: 'lista'; viaje?: string } | null
@@ -78,7 +80,7 @@ export const CLAVE_ULTIMO_COMPANERO = 'jutrip.ultimo_companero'
 
 export async function cargarCompanero(tripId: string): Promise<PendienteDeCompanero[]> {
   const cruda = await llamarCrudo(`/api/logros/companero?trip_id=${encodeURIComponent(tripId)}`)
-  let r: { ok: boolean; pendientes?: PendienteDeCompanero[]; sin_pase?: boolean } | null = null
+  let r: { ok: boolean; pendientes?: PendienteDeCompanero[]; sin_pase?: boolean; ciudad?: string } | null = null
   try {
     r = cruda.estado === 200 ? (JSON.parse(cruda.cuerpo) as typeof r) : null
   } catch {
@@ -92,7 +94,7 @@ export async function cargarCompanero(tripId: string): Promise<PendienteDeCompan
   } catch {
     /* sin almacenamiento */
   }
-  const lista = (r?.ok ? (r.pendientes ?? []) : []).map((p) => ({ ...p, viaje: tripId }))
+  const lista = (r?.ok ? (r.pendientes ?? []) : []).map((p) => ({ ...p, viaje: tripId, ciudad: r?.ciudad }))
   const porViaje = { ...useCompaneroStore.getState().porViaje, [tripId]: lista }
   useCompaneroStore.setState({ tripId, porViaje, pendientes: Object.values(porViaje).flat(), sinPase: Boolean(r?.sin_pase), cargado: true, fallo: !r?.ok })
   return lista

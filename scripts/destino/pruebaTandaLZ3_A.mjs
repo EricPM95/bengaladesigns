@@ -138,9 +138,9 @@ const tiene = (items, logro, escalon) => items.has(clave('lanzarote', logro, esc
 }
 {
   // Atardecer atlántico: la hora de la puesta de sol de ese día (sunset.js, hora de Canarias); de 60 min antes a 15 después; solo en la costa oeste.
-  // (V4) Los 6 del documento; El Golfo y Famara, que eran «dos en uno», cuentan ahora por sus dos sitios cada uno.
-  const oeste = ['el_golfo_pueblo', 'charco_de_los_clicos', 'los_hervideros', 'salinas_de_janubio', 'playa_de_montana_bermeja', 'caleta_de_famara', 'playa_de_famara', 'playa_blanca_y_el_faro_de_pechiguera']
-  debe(JSON.stringify(L.momentos.atardecer_atlantico.sitios) === JSON.stringify(oeste), 'atardecer', 'los sitios de la costa oeste del documento (6, con El Golfo y Famara en sus dos sitios)')
+  // (V16) Los 6 del documento; El Golfo y Famara vuelven a ser UN solo sitio cada uno (antes, en la V4, cada uno cuenta por sus dos sitios).
+  const oeste = ['el_golfo_y_el_charco_de_los_clicos', 'los_hervideros', 'salinas_de_janubio', 'playa_de_montana_bermeja', 'caleta_de_famara_y_playa_de_famara', 'playa_blanca_y_el_faro_de_pechiguera']
+  debe(JSON.stringify(L.momentos.atardecer_atlantico.sitios) === JSON.stringify(oeste), 'atardecer', 'los sitios de la costa oeste del documento (6, con El Golfo y Famara como UN sitio cada uno)')
   const fecha = '2027-03-11'
   const sol = sunsetMinutesOn(fecha, L.momentos.atardecer_atlantico.punto, 'Atlantic/Canary')
   debe(sol > 17 * 60 && sol < 21 * 60, 'atardecer', `la puesta de sol de marzo es plausible (${sol} min)`)

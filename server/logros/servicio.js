@@ -547,7 +547,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
         if (faltan.length === 0 || por.has(sitio)) continue
         const delSitio = hechos.filter((h) => sitiosDeId(d, h.sitio).includes(sitio))
         const hecho = delSitio.filter((h) => h.tipo === 'foto').sort((a, b) => new Date(a.instante) - new Date(b.instante))[0] ?? delSitio[0] ?? null
-        const foto_url = hecho?.foto_id && typeof repo.fotoUrl === 'function' ? await repo.fotoUrl(hecho.foto_id).catch(() => null) : null
+        // (V16, decisión de Eric) NUNCA la foto del compañero (no se guarda en tu cuenta): la app enseña la foto del sitio de nuestros datos. Ni `repo.fotoUrl` ni direcciones firmadas de fotos de otra cuenta.
+        const foto_url = null
         por.set(sitio, { sitio, nombre: nombreDeSitio(catalogos, viaje.destino, sitio), de: m.user_id, de_nombre: null, falta: faltan, colecciones: colsFaltan.map((col) => d.colecciones.find((x) => x.id === col)?.nombre ?? col), emblema: faltan.includes('emblema'), foto_url, instante: hecho?.instante ?? null })
       }
     }
@@ -558,7 +559,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     }
     const pase = await puedeGanar(userId, c, viaje, hoy)
     paso(`7. ya tengo ${mios.size} cosas; pendientes que salen: ${lista.map((p) => p.sitio).join(', ') || 'NINGUNA'}${lista.length === 0 ? ' (SE QUEDA VACÍO AQUÍ: nada de lo del compañero me falta, o el compañero no tiene nada de este viaje)' : ''}; pase: ${pase.puede ? 'puede ganar' : `NO (${pase.motivo})`}`)
-    return { ok: true, pendientes: lista, sin_pase: !pase.puede }
+    return { ok: true, pendientes: lista, sin_pase: !pase.puede, ciudad: d.ciudad }
   }
 
   /** «Yo también estaba»: gana, con su propio momento, lo que el compañero consiguió (`sitios` = ids, o 'todos'). El origen queda apuntado como «compañero» (hecho con motivo 'companero' y `detalle.origen` del logro). */
@@ -711,14 +712,42 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
    * (V9) La foto con la que se ganó cada sitio (la de la foto o el Visto que lo dio; sin foto suya —un Visto, «Yo también estaba»— no hay: la pantalla usa la del sitio de nuestros datos).
    * `c`: lo ya cargado de la cuenta (`cargar`). Devuelve { sitio: url }.
    */
-  async function fotosDeSitios(c, sitios) {
+  async function fotosDeSitios(c, sitios, userId = null) {
     const fotos = {}
     if (typeof repo.fotoUrl !== 'function') return fotos
+    // (V16) Antes de buscar la foto de cada sitio, une a sus hechos las fotos que ya estén subidas (la foto llega al álbum un poco DESPUÉS del hecho).
+    if (userId && c.hechos.some((x) => x.tipo === 'foto' && !x.foto_id && !x.deshecho_en)) {
+      const r = await unirFotos(userId).catch(() => null)
+      if (r && r.unidos > 0) c = { ...c, hechos: await repo.hechosDe(userId) }
+    }
     for (const s of sitios) {
       const h = c.hechos.find((x) => !x.deshecho_en && x.foto_id && (x.sitio === s || (Array.isArray(x.sitios) && x.sitios.includes(s))))
       if (h) fotos[s] = await repo.fotoUrl(h.foto_id).catch(() => null)
     }
     return fotos
+  }
+
+  /**
+   * (V16) UNE CADA HECHO CON FOTO A SU FOTO. La app manda el hecho y sube la foto al álbum por separado (y la de la cámara, desde una cola del móvil), así que el hecho se guardaba con `foto_id` vacío y no había foto
+   * que enseñar. Aquí se busca, para cada hecho con foto sin unir, la foto de la MISMA persona cuya fecha y hora de cámara (`trip_photo_meta.taken_at`) coincide con la del hecho (el instante del hecho ES la hora de
+   * toma de esa foto). Solo se une si hay UNA sola foto que cuadre (si hay dudas, se queda sin unir). Varios hechos de una misma foto (una foto que da dos sitios) la comparten. Devuelve cuántos unió y cuántos no.
+   */
+  async function unirFotos(userId) {
+    if (typeof repo.hechosConFotoSinUnir !== 'function' || typeof repo.fotosConFecha !== 'function') return { ok: true, unidos: 0, sin_unir: 0 }
+    const hechos = await repo.hechosConFotoSinUnir(userId)
+    if (hechos.length === 0) return { ok: true, unidos: 0, sin_unir: 0 }
+    const fotos = await repo.fotosConFecha(userId)
+    const porFoto = new Map()
+    let sinUnir = 0
+    for (const h of hechos) {
+      const t = Date.parse(h.instante)
+      const candidatas = [...new Set(fotos.filter((f) => Number.isFinite(t) && Math.abs(Date.parse(f.taken_at) - t) < 1000).map((f) => f.photo_id))]
+      if (candidatas.length === 1) porFoto.set(candidatas[0], [...(porFoto.get(candidatas[0]) ?? []), h.id])
+      else sinUnir++
+    }
+    let unidos = 0
+    for (const [fotoId, ids] of porFoto) unidos += await repo.unirFoto(userId, ids, fotoId)
+    return { ok: true, unidos, sin_unir: sinUnir }
   }
 
   async function ficha(userId, tripId, sitio) {
@@ -845,7 +874,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return repo.encolarAvisos(puestos)
   }
 
-  return { aItems, cargar, fotosDeSitios, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, cerca, deshacer, recalcular, estado, ficha, loDeAyer, sitiosParaReclamar, companeroPendientes, yoTambien, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
+  return { unirFotos, aItems, cargar, fotosDeSitios, expDe, sorteoDe, sorteoDeCuenta, registrarInvitacion, resolverInvitacion, visto, foto, cerca, deshacer, recalcular, estado, ficha, loDeAyer, sitiosParaReclamar, companeroPendientes, yoTambien, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
 }
 
 /** El instante (ISO, UTC) en que son las `hhmm` de esa fecha en la hora del destino. */

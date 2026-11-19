@@ -129,6 +129,25 @@ async function cabeceras(): Promise<Record<string, string> | null> {
   return { 'Content-Type': 'application/json', Authorization: `Bearer ${sesion.access_token}` }
 }
 
+/**
+ * (V16) Pide al servidor que una cada hecho con foto a su foto (la del álbum del viaje con la misma fecha y hora de cámara). Se llama al abrir la app y después de subir una foto al álbum; varias peticiones juntas
+ * se funden en una, y como mucho una cada 20 s. Sin red o sin cuenta, no hace nada.
+ */
+let unirEnCurso: Promise<void> | null = null
+let ultimaUnion = 0
+export function pedirUnirFotos(forzar = false): Promise<void> {
+  if (unirEnCurso) return unirEnCurso
+  if (!forzar && Date.now() - ultimaUnion < 20000) return Promise.resolve()
+  unirEnCurso = llamar('/api/logros/unir-fotos', { metodo: 'POST', cuerpo: {} })
+    .then(() => undefined)
+    .catch(() => undefined)
+    .finally(() => {
+      ultimaUnion = Date.now()
+      unirEnCurso = null
+    })
+  return unirEnCurso
+}
+
 /** (V15b) Una llamada GET tal cual: el estado HTTP y el cuerpo sin tocar (`llamar` convierte cualquier fallo en «sin respuesta»). Para el panel de diagnóstico. */
 export async function llamarCrudo(ruta: string): Promise<{ estado: number | null; cuerpo: string; error?: string }> {
   if (import.meta.env.DEV && demoActivo()) {

@@ -44,7 +44,7 @@ export function DiagnosticoCompanero(): ReactNode {
   const [ocupado, setOcupado] = useState(false)
 
   useEffect(() => {
-    void fetch('/api/logros/version').then(async (r) => setVersion(`${r.status} ${(await r.text()).slice(0, 300)}`)).catch((e) => setVersion(`error: ${String(e)}`))
+    void llamarCrudo('/api/logros/version').then((r) => setVersion(`${r.estado ?? 'sin respuesta'} ${(r.error ?? r.cuerpo).slice(0, 300)}`))
     try {
       setUltimo(JSON.parse(localStorage.getItem(CLAVE_ULTIMO_COMPANERO) ?? 'null'))
     } catch {

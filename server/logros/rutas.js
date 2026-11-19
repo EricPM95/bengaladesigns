@@ -93,9 +93,11 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
   // (V5) Los sitios con logro del destino del viaje, para elegir de qué sitio es una foto de la galería sin ubicación.
   app.get('/api/logros/sitios', conUsuario(async (req, res, u) => res.json(await servicio.sitiosParaReclamar(u.id, String(req.query.trip_id ?? '')))))
   // (V7) «Yo también estaba»: lo que un compañero del viaje ganó y yo no (solo con el viaje acabado), y ganarlo.
-  // (V15b) `?pasos=1` añade los pasos que da el servidor (para el panel de diagnóstico; solo habla de los viajes de esa misma cuenta).
+  // (V16) Une los hechos con foto a sus fotos (la app lo pide al abrir y al subir una foto; también se hace solo al pedir las fotos de una colección).
+  app.post('/api/logros/unir-fotos', conUsuario(async (_req, res, u) => res.json(await servicio.unirFotos(u.id))))
+  // (V15b) `?pasos=1` añade los pasos que da el servidor (para el panel de diagnóstico). (V16) SOLO para administradores: para cualquier otra cuenta, el parámetro no existe.
   app.get('/api/logros/companero', conUsuario(async (req, res, u) => {
-    const traza = req.query.pasos ? [] : null
+    const traza = req.query.pasos && esAdmin(u, env) ? [] : null
     try {
       const r = await servicio.companeroPendientes(u.id, String(req.query.trip_id ?? ''), null, traza)
       res.json(traza ? { ...r, pasos: traza, servidor: { commit: env.VERCEL_GIT_COMMIT_SHA ?? null, ahora: new Date().toISOString() } } : r)
@@ -107,7 +109,8 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
     }
   }))
   // (V15b) Qué versión del servidor está contestando (el commit que Vercel ha desplegado). Pública: no dice nada de nadie.
-  app.get('/api/logros/version', (_req, res) => res.json({ ok: true, commit: env.VERCEL_GIT_COMMIT_SHA ?? null, entorno: env.VERCEL ? 'vercel' : 'local', ahora: new Date().toISOString() }))
+  // (V16) Solo administradores (para cualquier otra cuenta, como si no existiera).
+  app.get('/api/logros/version', conAdmin(async (_req, res) => res.json({ ok: true, commit: env.VERCEL_GIT_COMMIT_SHA ?? null, entorno: env.VERCEL ? 'vercel' : 'local', ahora: new Date().toISOString() })))
   app.post('/api/logros/yo-tambien', conUsuario(async (req, res, u) => res.json(await servicio.yoTambien(u.id, req.body ?? {}))))
   app.get('/api/logros/lo-de-ayer', conUsuario(async (req, res, u) => res.json(await servicio.loDeAyer(u.id, String(req.query.trip_id ?? '')))))
   app.get('/api/logros/resumen', conUsuario(async (req, res, u) => res.json(await servicio.resumenDe(u.id, String(req.query.trip_id ?? ''), { dia: req.query.dia ? String(req.query.dia) : null }))))

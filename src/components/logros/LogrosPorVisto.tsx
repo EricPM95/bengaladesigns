@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { demoActivo, enviarDeshacerVisto, logrosActivos, vaciarCola } from '../../lib/logros'
+import { demoActivo, enviarDeshacerVisto, logrosActivos, pedirUnirFotos, vaciarCola } from '../../lib/logros'
 import { cambiosDeVistos } from '../../lib/vistosPorPersona'
 import { sonar, vibrar } from '../../lib/sonidos'
 import { alQuitarVisto, procesarVisto, VistoFlujo } from './visto/VistoFlujo'
@@ -32,6 +32,8 @@ function Encendido() {
     if (!hayCuenta) return undefined
     const mandar = () => void vaciarCola().then((rs) => rs.forEach((r) => useLogrosStore.getState().recibir(r)))
     mandar()
+    // (V16) Al abrir la app: une a sus fotos los hechos que aún no la tengan (los de antes y los que acaban de llegar de la cola).
+    void pedirUnirFotos()
     window.addEventListener('online', mandar)
     return () => window.removeEventListener('online', mandar)
   }, [hayCuenta])
