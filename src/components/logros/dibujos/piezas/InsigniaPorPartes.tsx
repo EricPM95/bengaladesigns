@@ -111,3 +111,46 @@ InsigniaPorPartes.defaultProps = {"col":"1","set":"","med":false,"nw":"","ph":4,
 
 InsigniaPorPartes.prototype.render = function () { return T(this.renderVals()) }
 export default InsigniaPorPartes as unknown as React.ComponentType<any>
+
+/**
+ * (V28) EL POLÍGONO EXACTO DEL TROZO `k` de la insignia `col` (en el cuadrado de 0 a 200 del dibujo): la forma de la baldosa tal cual la pinta esta pieza (sector del trozo, recortado por el contorno de la insignia).
+ * Sirve para enseñar SOLO ese trozo, entero, en el círculo de su sitio (colección por dentro), sin restos de los vecinos. Mismo cálculo que las baldosas de arriba (`q0` y `sh0`).
+ */
+export function poligonoDelTrozo(col: string, k: number): [number, number][] | null {
+  const C = COL[String(col)]
+  if (!C) return null
+  if (C.bub) {
+    const BP = [[62, 64, 34], [118, 46, 22], [152, 86, 28], [108, 106, 24], [54, 128, 26], [100, 156, 28], [152, 148, 22]]
+    const b = BP[k]
+    return b ? Array.from({ length: 28 }, (_, i) => [b[0] + Math.cos((i * 2 * Math.PI) / 28) * b[2] * 0.9, b[1] + Math.sin((i * 2 * Math.PI) / 28) * b[2] * 0.9] as [number, number]) : null
+  }
+  const SH = SHAPES[C.shape]()
+  const pts = SH.pts
+  const cc = SH.c
+  const cx = cc[0]
+  const cy = cc[1]
+  const n = C.n
+  if (!(k >= 0 && k < n)) return null
+  const A = -90 + (k * 360) / n
+  const B = -90 + ((k + 1) * 360) / n
+  const pt = (a: number, kk: number): [number, number] => {
+    const dd = dist(pts, cc, a) * kk
+    return [cx + Math.cos(a * R) * dd, cy + Math.sin(a * R) * dd]
+  }
+  const zz = (a: number): [number, number][] => {
+    const KS = [0.07, 0.3, 0.5, 0.72, 1.02]
+    const OF = [0, 7, -7, 6, 0]
+    const dd = dist(pts, cc, a)
+    const ux = Math.cos(a * R)
+    const uy = Math.sin(a * R)
+    return KS.map((kk, i) => [cx + ux * dd * kk - uy * OF[i], cy + uy * dd * kk + ux * OF[i]] as [number, number])
+  }
+  const q0: [number, number][] = C.jag
+    ? [...zz(A), ...zz(B).reverse()]
+    : C.arc
+      ? [pt(A, 0.07), ...Array.from({ length: 7 }, (_, i) => pt(A + ((B - A) * i) / 6, 1.02)), pt(B, 0.07)]
+      : [pt(A, 0.07), pt(A, 1.02), pt(B, 1.02), pt(B, 0.07)]
+  const mx = q0.reduce((s, v) => s + v[0], 0) / q0.length
+  const my = q0.reduce((s, v) => s + v[1], 0) / q0.length
+  return q0.map((v) => [mx + (v[0] - mx) * 0.985, my + (v[1] - my) * 0.985] as [number, number])
+}

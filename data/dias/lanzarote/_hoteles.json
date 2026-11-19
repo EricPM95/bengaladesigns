@@ -1,20 +1,20 @@
 {
-  "_que_es": "Los hoteles de la página del destino (V21): los 5 que eligió Eric (19-nov). Se miraron entrando en cada enlace de Stay22: el 2 y el 5 abren la ficha de su hotel en Booking; el 1, el 3 y el 4 abren solo una BÚSQUEDA por zona (Playa Blanca, Costa Teguise…) y no dicen qué hotel es: quedan `pendiente: true` (no salen en la página) hasta que Eric diga cuáles son. La nota y las opiniones son las de Booking del día de `nota_de` (`node scripts/destino/notasHoteles.mjs`). `foto`: null mientras no haya una con permiso.",
+  "_que_es": "Los hoteles de la página del destino (V21): los 5 que eligió Eric (19-nov). Los 5 enlaces de Stay22 se comprobaron (19-nov): cada uno redirige a la ficha de su hotel en Booking. La nota y las opiniones son las de Booking del día de `nota_de` (`node scripts/destino/notasHoteles.mjs`). `foto`/`foto_pequena`: foto principal de la ficha de Booking, con el permiso del hotel/Booking aún pendiente (`permiso`).",
   "destino": "Lanzarote",
   "hoteles": [
     {
-      "id": "enlace_1",
-      "nombre": null,
-      "zona": "Playa Blanca (según el enlace)",
-      "booking": null,
+      "id": "princesa_yaiza",
+      "nombre": "Princesa Yaiza Suite Hotel Resort",
+      "zona": "Playa Blanca",
+      "booking": "https://www.booking.com/hotel/es/princesa-yaiza-suite-resort.es.html",
       "stay22": "https://booking.stay22.com/viajesbengala/cJ6DAQpvwl",
-      "nota": null,
-      "opiniones": null,
-      "nota_de": null,
-      "foto": null,
-      "permiso": "pendiente",
-      "pendiente": true,
-      "motivo": "El enlace de Stay22 abre una búsqueda en Playa Blanca, no un hotel concreto."
+      "nota": 8.8,
+      "opiniones": 518,
+      "nota_de": "2026-11-19",
+      "foto": "/fotos/lanzarote/hoteles/princesa_yaiza.jpg",
+      "foto_pequena": "/fotos/lanzarote/hoteles/princesa_yaiza_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/es/princesa-yaiza-suite-resort.es.html; imagen de bstatic.com, bajada el 2026-11-19",
+      "permiso": "pendiente"
     },
     {
       "id": "la_isla_y_el_mar",
@@ -25,36 +25,38 @@
       "nota": 9.1,
       "opiniones": 744,
       "nota_de": "2026-11-19",
-      "foto": null,
+      "foto": "/fotos/lanzarote/hoteles/la_isla_y_el_mar.jpg",
+      "foto_pequena": "/fotos/lanzarote/hoteles/la_isla_y_el_mar_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/es/la-isla-y-el-mar-hotel-boutique.html; imagen de bstatic.com, bajada el 2026-11-19",
       "permiso": "pendiente"
     },
     {
-      "id": "enlace_3",
-      "nombre": null,
-      "zona": "Costa Teguise (según el enlace)",
-      "booking": null,
+      "id": "oasis_lanz_beach_mate",
+      "nombre": "Oasis Lanz Beach Mate",
+      "zona": "Costa Teguise",
+      "booking": "https://www.booking.com/hotel/es/oasis-lanz-club.es.html",
       "stay22": "https://booking.stay22.com/viajesbengala/Mo8nNFRwYl",
-      "nota": null,
-      "opiniones": null,
-      "nota_de": null,
-      "foto": null,
-      "permiso": "pendiente",
-      "pendiente": true,
-      "motivo": "El enlace de Stay22 abre una búsqueda en Costa Teguise, no un hotel concreto."
+      "nota": 8.9,
+      "opiniones": 985,
+      "nota_de": "2026-11-19",
+      "foto": "/fotos/lanzarote/hoteles/oasis_lanz_beach_mate.jpg",
+      "foto_pequena": "/fotos/lanzarote/hoteles/oasis_lanz_beach_mate_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/es/oasis-lanz-club.es.html; imagen de bstatic.com, bajada el 2026-11-19",
+      "permiso": "pendiente"
     },
     {
-      "id": "enlace_4",
-      "nombre": null,
-      "zona": "(según el enlace)",
-      "booking": null,
+      "id": "sandos_papagayo",
+      "nombre": "Sandos Papagayo",
+      "zona": "Playa Blanca",
+      "booking": "https://www.booking.com/hotel/es/papagayo-arena.es.html",
       "stay22": "https://booking.stay22.com/viajesbengala/xbPevMDIc6",
-      "nota": null,
-      "opiniones": null,
-      "nota_de": null,
-      "foto": null,
-      "permiso": "pendiente",
-      "pendiente": true,
-      "motivo": "El enlace de Stay22 abre una búsqueda por zona, no un hotel concreto."
+      "nota": 8.3,
+      "opiniones": 578,
+      "nota_de": "2026-11-19",
+      "foto": "/fotos/lanzarote/hoteles/sandos_papagayo.jpg",
+      "foto_pequena": "/fotos/lanzarote/hoteles/sandos_papagayo_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/es/papagayo-arena.es.html; imagen de bstatic.com, bajada el 2026-11-19",
+      "permiso": "pendiente"
     },
     {
       "id": "sentido_aequora",
@@ -65,9 +67,11 @@
       "nota": 8.7,
       "opiniones": 1649,
       "nota_de": "2026-11-19",
-      "foto": null,
-      "permiso": "pendiente",
-      "aviso": "Nota por debajo de 9"
+      "foto": "/fotos/lanzarote/hoteles/sentido_aequora.jpg",
+      "aviso": "Nota por debajo de 9",
+      "foto_pequena": "/fotos/lanzarote/hoteles/sentido_aequora_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/es/sentido-lanzarote-aequora-suites.html; imagen de bstatic.com, bajada el 2026-11-19",
+      "permiso": "pendiente"
     }
   ]
 }

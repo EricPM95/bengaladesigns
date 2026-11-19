@@ -68,7 +68,8 @@ export function actividadesEnBruto({ civitatis, datosDestino }) {
     salida.push({
       id: o.id,
       nombre: o.name,
-      foto: o.photo_url_big || o.photo_url || null,
+      // (V28) La foto PEQUEÑA de la tarjeta (`-list.jpg`, ~7 KB), no la grande (~730 KB): el iPhone tardaba en cargarla.
+      foto: o.photo_url || o.photo_url_big || null,
       nota: sobre10(o.rating, o.rating_max),
       opiniones: o.review_count,
       duracion: o.duration_label ?? (o.duration_hours ? `${o.duration_hours} h` : null),
@@ -80,11 +81,11 @@ export function actividadesEnBruto({ civitatis, datosDestino }) {
   return salida
 }
 
-/** Pura: los hoteles que salen (sin los pendientes ni los que no tienen todo), con su etiqueta «Mejor nota de …». */
+/** Pura: los hoteles que salen (sin los pendientes ni los que no tienen todo). (V28, decisión de Eric) SIN etiqueta encima de la foto («Mejor nota de …» ni otra): foto, nombre, zona y nota con sus opiniones. */
 export function hotelesDeLaPagina(archivo) {
   return (archivo?.hoteles ?? [])
     .filter((h) => !h.pendiente && h.nombre && h.stay22 && typeof h.nota === 'number' && Number.isFinite(h.opiniones))
-    .map((h) => ({ id: h.id, nombre: h.nombre, zona: h.zona, etiqueta: h.etiqueta ?? `Mejor nota de ${h.zona}`, nota: h.nota, opiniones: h.opiniones, nota_de: h.nota_de ?? null, foto: h.foto ?? null, enlace: h.stay22 }))
+    .map((h) => ({ id: h.id, nombre: h.nombre, zona: h.zona, nota: h.nota, opiniones: h.opiniones, nota_de: h.nota_de ?? null, foto: h.foto ?? null, foto_pequena: h.foto_pequena ?? null, enlace: h.stay22 }))
 }
 
 export function paginaDelDestino({ raiz, destination, datosDestino }) {

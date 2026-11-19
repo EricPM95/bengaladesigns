@@ -5,7 +5,7 @@ import { Insignia } from '../dibujos'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { useMomentosUI } from '../momentos/useMomentosUI'
-import { recorteDeTrozo, trozoDeInsignia } from './destino/trozo'
+import { encajeEnCirculo, trozoEntero } from './destino/trozo'
 import { pedirColeccion, type ColeccionDentroDatos } from './destino/api'
 import { diaDeRuta, fechaCorta } from './destino/formato'
 import { BotonVolver, Esperando, FONDO_PAPEL, useCarga } from './destino/piezas'
@@ -71,7 +71,7 @@ function Album({ datos }: { datos: ColeccionDentroDatos }): ReactNode {
   const TAM = 190
   // El orden: primero los ganados (y cada grupo en el orden de la colección, que es el del trozo de la insignia).
   const ordenados = datos.sitios.map((x, k) => ({ x, k })).sort((a, b) => Number(b.x.visto) - Number(a.x.visto) || a.k - b.k)
-  const trozoTocado = tocado ? (() => { const k = datos.sitios.findIndex((x) => x.sitio === tocado); return k >= 0 ? trozoDeInsignia(c.id, total, k) : null })() : null
+  const trozoTocado = tocado ? (() => { const k = datos.sitios.findIndex((x) => x.sitio === tocado); return k >= 0 ? trozoEntero(c.id, total, k) : null })() : null
   const tocar = (sitio: string) => {
     setTocado(sitio)
     window.clearTimeout(temporizador.current)
@@ -85,7 +85,7 @@ function Album({ datos }: { datos: ColeccionDentroDatos }): ReactNode {
           <Insignia coleccion={c.id} ganados={ganados} completa={c.completa} tam={TAM} />
           {trozoTocado && tocado && (
             <span data-trozo-iluminado={tocado} aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', filter: 'drop-shadow(0 0 10px #F3D59A) drop-shadow(0 0 4px #FFF1C8)', animation: 'clPulso 1.3s ease-in-out infinite' }}>
-              <span style={{ position: 'absolute', inset: 0, clipPath: recorteDeTrozo(trozoTocado, TAM) }}>
+              <span style={{ position: 'absolute', inset: 0, clipPath: `polygon(${trozoTocado.puntos.map(([x, y]) => `${(x * TAM).toFixed(1)}px ${(y * TAM).toFixed(1)}px`).join(',')})` }}>
                 <Insignia coleccion={c.id} ganados={[tocado]} tam={TAM} />
               </span>
             </span>
@@ -109,8 +109,11 @@ function Album({ datos }: { datos: ColeccionDentroDatos }): ReactNode {
 
 /** Una tarjeta de sitio (V9): la foto (en color si está ganado, en gris suave si no), su trozo de la insignia pequeño en una esquina y lo que toque (fecha, día y [Cómo llegar], [Añadir a mi viaje] o nada). */
 function Tarjeta({ s, k, coleccion, total, datos, tocada, alTocar }: { s: ColeccionDentroDatos['sitios'][number]; k: number; coleccion: string; total: number; datos: ColeccionDentroDatos; tocada: boolean; alTocar: () => void }): ReactNode {
-  const trozo = useMemo(() => trozoDeInsignia(coleccion, total, k), [coleccion, total, k])
-  const TAM = 150
+  // (V28) En el círculo va SOLO su trozo, entero, con su forma exacta, centrado y a escala para que quepa con margen (nada de los trozos de al lado).
+  const encaje = useMemo(() => {
+    const t = trozoEntero(coleccion, total, k)
+    return t ? encajeEnCirculo(t, 46) : null
+  }, [coleccion, total, k])
   // (V25) El «hoy» es el de ahora en el destino (no el que trajera lo guardado): el mismo momento del viaje que en la hoja de logros.
   const hoy = todayIso(zonaDelDestino(datos.destino) ?? zonaDelDestino(datos.ciudad))
   const terminado = Boolean(datos.viaje && hoy > datos.viaje.fin)
@@ -120,10 +123,10 @@ function Tarjeta({ s, k, coleccion, total, datos, tocada, alTocar }: { s: Colecc
   return (
     <div data-sitio-de-coleccion={s.sitio} data-ganado={s.visto ? '1' : '0'} role="button" tabIndex={0} onClick={alTocar} onKeyDown={(e) => e.key === 'Enter' && alTocar()} style={{ position: 'relative', display: 'flex', flexDirection: 'column', borderRadius: 22, background: s.visto ? '#FFFDF8' : '#EFE7D8', border: tocada ? '2px solid #C99A4C' : `1px solid rgba(28,34,48,${s.visto ? 0.08 : 0.1})`, overflow: 'hidden', boxShadow: tocada ? '0 10px 22px -12px rgba(150,105,30,.7)' : s.visto ? '0 8px 20px -16px rgba(28,34,48,.35)' : 'none', cursor: 'pointer' }}>
       <FotoDeSitio url={urlEstable(s.foto_url)} nombre={s.nombre} ciudad={datos.ciudad} gris={!s.visto} />
-      {trozo && (
+      {encaje && (
         <span data-trozo-de-sitio aria-hidden="true" style={{ position: 'absolute', left: 8, top: 8, width: 46, height: 46, borderRadius: '50%', background: '#FFFDF8', boxShadow: '0 4px 10px -4px rgba(28,34,48,.5)', overflow: 'hidden' }}>
-          <span style={{ position: 'absolute', left: 23 - trozo.centro[0] * TAM, top: 23 - trozo.centro[1] * TAM, width: TAM, height: TAM, clipPath: recorteDeTrozo(trozo, TAM) }}>
-            <Insignia coleccion={coleccion} ganados={s.visto ? [s.sitio] : []} tam={TAM} />
+          <span style={{ position: 'absolute', left: encaje.left, top: encaje.top, width: encaje.lado, height: encaje.lado, clipPath: encaje.clip }}>
+            <Insignia coleccion={coleccion} ganados={s.visto ? [s.sitio] : []} tam={encaje.lado} />
           </span>
         </span>
       )}

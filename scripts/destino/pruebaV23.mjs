@@ -105,7 +105,7 @@ console.log('2b. Enlaces de reservar')
   const entradas = Object.values(roma).flatMap((l) => l.entradas ?? l)
   const conPagina = entradas.filter((e) => e.url).length
   console.log(`   (Roma: ${conPagina} de ${entradas.length} entradas con página propia; el resto abre la búsqueda de ese sitio con nuestro aid)`)
-  debe(entradas.filter((e) => e.url).every((e) => /^https:\/\/www\.civitatis\.com\/es\/roma\//.test(e.url) && /aid=5206/.test(e.url)), 'roma', 'las entradas de Roma que llevan enlace propio son de su página y con nuestro aid')
+  debe(entradas.filter((e) => e.url).every((e) => /^https:\/\/www\.civitatis\.com\/es\/roma\//.test(e.url) && new URL(stampCivitatis(e.url, { campaignCode: 'ABC' })).searchParams.get('aid') === '5206' && !/buscar/.test(e.url)), 'roma', 'las entradas de Roma que llevan enlace propio son de su página (V28: 9 de las 22; el aid se pone al abrirlas) y salen con nuestro aid=5206')
 }
 
 /* ───────── resumen ───────── */

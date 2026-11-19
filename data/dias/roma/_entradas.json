@@ -30,7 +30,7 @@
         "nombre": "Panteón",
         "incluye": "Se compra online o en taquilla (taquilla hasta las 18:00).",
         "desde": 7,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entrada-panteon-agripa-audioguia/"
       }
     ],
     "Museos Vaticanos y Capilla Sixtina": [
@@ -38,7 +38,7 @@
         "nombre": "Museos Vaticanos y Capilla Sixtina",
         "incluye": "Museos Vaticanos y Capilla Sixtina.",
         "desde": 20,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entradas-museos-vaticanos-capilla-sixtina/"
       }
     ],
     "Castillo de Sant'Angelo": [
@@ -46,7 +46,7 @@
         "nombre": "Castillo de Sant'Angelo",
         "incluye": null,
         "desde": 18,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entrada-castillo-sant-angelo-audioguia/"
       }
     ],
     "Galería Borghese": [
@@ -54,7 +54,7 @@
         "nombre": "Galería Borghese",
         "incluye": null,
         "desde": 16,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entradas-galeria-borghese/"
       }
     ],
     "Bioparque de Roma": [
@@ -62,7 +62,7 @@
         "nombre": "Bioparque de Roma",
         "incluye": null,
         "desde": null,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entrada-bioparco-roma/"
       }
     ],
     "Galería Nacional de Arte Moderno": [
@@ -110,7 +110,7 @@
         "nombre": "Museos Capitolinos",
         "incluye": null,
         "desde": 15,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entradas-museos-capitolinos/"
       }
     ],
     "Domus Aurea": [
@@ -126,7 +126,7 @@
         "nombre": "Termas de Caracalla",
         "incluye": null,
         "desde": 8,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entradas-termas-caracalla/"
       }
     ],
     "Villa Farnesina": [
@@ -142,7 +142,7 @@
         "nombre": "Palazzo Doria Pamphilj",
         "incluye": null,
         "desde": null,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entrada-galeria-doria-pamphilj/"
       }
     ],
     "Catacumbas de San Calixto": [
@@ -166,7 +166,7 @@
         "nombre": "Free Tour por Roma",
         "incluye": "Recorrido a pie por el centro histórico, de 2 h 30 min.",
         "desde": null,
-        "url": "https://www.civitatis.com/es/roma/free-tour-roma/?aid=5206&cmp=Routy"
+        "url": "https://www.civitatis.com/es/roma/free-tour-roma/"
       }
     ],
     "Basílica de San Clemente": [

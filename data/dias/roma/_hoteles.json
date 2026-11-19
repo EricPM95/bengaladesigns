@@ -11,7 +11,9 @@
       "nota": 9.3,
       "opiniones": 1552,
       "nota_de": "2026-11-19",
-      "foto": null,
+      "foto": "/fotos/roma/hoteles/torre_argentina_relais.jpg",
+      "foto_pequena": "/fotos/roma/hoteles/torre_argentina_relais_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/it/torre-argentina-relais-residenze-di-charme.es.html; imagen de bstatic.com, bajada el 2026-11-19",
       "permiso": "pendiente"
     },
     {
@@ -23,7 +25,9 @@
       "nota": 9.1,
       "opiniones": 1039,
       "nota_de": "2026-11-19",
-      "foto": null,
+      "foto": "/fotos/roma/hoteles/nikis_trastevere.jpg",
+      "foto_pequena": "/fotos/roma/hoteles/nikis_trastevere_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/it/nikis-collection-trastevere.es.html; imagen de bstatic.com, bajada el 2026-11-19",
       "permiso": "pendiente"
     },
     {
@@ -35,7 +39,9 @@
       "nota": 9.4,
       "opiniones": 534,
       "nota_de": "2026-11-19",
-      "foto": null,
+      "foto": "/fotos/roma/hoteles/polinari_san_pietro.jpg",
+      "foto_pequena": "/fotos/roma/hoteles/polinari_san_pietro_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/it/polinari-rooms-san-pietro-roma.es.html; imagen de bstatic.com, bajada el 2026-11-19",
       "permiso": "pendiente"
     },
     {
@@ -47,7 +53,9 @@
       "nota": 9.6,
       "opiniones": 835,
       "nota_de": "2026-11-19",
-      "foto": null,
+      "foto": "/fotos/roma/hoteles/casa_cleo.jpg",
+      "foto_pequena": "/fotos/roma/hoteles/casa_cleo_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/it/casacleo.es.html; imagen de bstatic.com, bajada el 2026-11-19",
       "permiso": "pendiente"
     },
     {
@@ -59,7 +67,9 @@
       "nota": 9.6,
       "opiniones": 932,
       "nota_de": "2026-11-19",
-      "foto": null,
+      "foto": "/fotos/roma/hoteles/spagna_boutique.jpg",
+      "foto_pequena": "/fotos/roma/hoteles/spagna_boutique_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/it/dependance-deco.es.html; imagen de bstatic.com, bajada el 2026-11-19",
       "permiso": "pendiente"
     },
     {
@@ -71,7 +81,9 @@
       "nota": 9.2,
       "opiniones": 874,
       "nota_de": "2026-11-19",
-      "foto": null,
+      "foto": "/fotos/roma/hoteles/colosseo_relais.jpg",
+      "foto_pequena": "/fotos/roma/hoteles/colosseo_relais_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/it/al-foro-romano.es.html; imagen de bstatic.com, bajada el 2026-11-19",
       "permiso": "pendiente"
     },
     {
@@ -83,7 +95,9 @@
       "nota": 9.2,
       "opiniones": 618,
       "nota_de": "2026-11-19",
-      "foto": null,
+      "foto": "/fotos/roma/hoteles/evergreen.jpg",
+      "foto_pequena": "/fotos/roma/hoteles/evergreen_p.jpg",
+      "foto_origen": "Foto principal (og:image) de la ficha de Booking https://www.booking.com/hotel/it/evergreen.es.html; imagen de bstatic.com, bajada el 2026-11-19",
       "permiso": "pendiente"
     }
   ]

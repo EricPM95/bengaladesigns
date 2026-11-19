@@ -25,10 +25,9 @@ interface DestinationDetailModalProps {
 /**
  * (V21, Design «Destino Pagina» D1 a D3) LA PÁGINA DEL DESTINO: arriba la foto grande con la bandera, el nombre y «5 días · 4 noches · 25 – 29 nov»; «Actividades en …» (de la más popular a la menos, de nota 8,5 o más,
  * con su foto, nota, opiniones, duración y «desde X €» o «Gratis»; toda la tarjeta se toca y abre la actividad en Civitatis con nuestro enlace de afiliado); y «Alojamientos en …» (tu alojamiento si ya lo tienes y los hoteles
- * elegidos, uno por zona, con zona, nota, opiniones y «Mejor nota de …»; sin precio; toda la tarjeta abre ese hotel en Stay22). Se hunde un poco al tocar y se abre fuera de la app sin perder la página.
+ * elegidos, uno por zona, con zona, nota, opiniones y etiqueta; sin precio; toda la tarjeta abre ese hotel en Stay22). Se hunde un poco al tocar y se abre fuera de la app sin perder la página.
  * Sin los botones azul Booking ni rojo Civitatis: todo con el estilo de la app.
  */
-const GRADIENTES = ['linear-gradient(135deg,#E8B070,#8A4A1C)', 'linear-gradient(135deg,#C8A8E0,#4A2A7A)', 'linear-gradient(135deg,#9AD0C0,#1A6A5A)', 'linear-gradient(135deg,#E8C8A0,#8A5A2A)', 'linear-gradient(135deg,#7A8AC8,#1C2A5A)', 'linear-gradient(135deg,#A8D098,#3A6A28)', 'linear-gradient(135deg,#C8B090,#5A4228)']
 const CORTE = 'polygon(0 0,100% 0,100% 100%,0 86%)'
 const SERIE = { fontFamily: "'Instrument Serif',serif" } as const
 
@@ -47,10 +46,17 @@ const Pastilla = ({ nota }: { nota: number }) => (
 )
 const tarjeta = 'block overflow-hidden rounded-[24px] border border-text/[.08] bg-white shadow-[0_14px_26px_-20px_rgba(28,34,48,.5)] transition-transform active:scale-[.97]'
 
-function Foto({ url, fondo, alto, children }: { url: string | null; fondo: string; alto: number; children?: ReactNode }) {
+/**
+ * (V28) La foto de una tarjeta: un fondo suave del MISMO tamaño (sin saltos) y la foto encima como imagen de verdad (se guarda en el móvil: las del operador llevan caché de un año). `prioridad`: las primeras del carrusel se piden
+ * antes que las demás. Sin foto, solo el fondo suave.
+ */
+const FONDO_SUAVE = 'linear-gradient(135deg,#EFE8D8,#E3D8C0)'
+function Foto({ url, alto, prioridad = false, children }: { url: string | null; fondo?: string; alto: number; prioridad?: boolean; children?: ReactNode }) {
   return (
     <div className="relative" style={{ height: alto }}>
-      <div className="absolute inset-0" style={{ clipPath: CORTE, background: url ? `url("${url}") center/cover, ${fondo}` : fondo }} />
+      <div className="absolute inset-0 overflow-hidden" style={{ clipPath: CORTE, background: FONDO_SUAVE }}>
+        {url && <img src={url} alt="" width={236} height={alto} loading={prioridad ? 'eager' : 'lazy'} decoding="async" {...(prioridad ? { fetchPriority: 'high' as const } : {})} className="h-full w-full object-cover" />}
+      </div>
       <div className="absolute inset-0" style={{ clipPath: CORTE, background: 'linear-gradient(180deg,rgba(20,30,50,.05),rgba(20,30,50,.38))' }} />
       {children}
     </div>
@@ -61,7 +67,7 @@ function TarjetaDeActividad({ a, i, ancho }: { a: ActividadDeDestino; i: number;
   const precio = desdeTexto(a)
   return (
     <a href={withCampaign(a.url, null)} target="_blank" rel="noopener noreferrer" data-actividad={a.id} className={tarjeta} style={{ flex: 'none', width: ancho, scrollSnapAlign: 'start' }}>
-      <Foto url={a.foto} fondo={GRADIENTES[i % GRADIENTES.length]} alto={128}>
+      <Foto url={a.foto} prioridad={i < 2} alto={128}>
         {precio && (
           <span className="absolute right-2.5 top-2.5 flex items-baseline gap-[5px] whitespace-nowrap rounded-xl bg-text px-[11px] py-[5px] text-bg">
             {precio !== 'Gratis' && <span className="font-mono text-[9px] tracking-[.1em] opacity-70">DESDE</span>}
@@ -86,12 +92,7 @@ function TarjetaDeActividad({ a, i, ancho }: { a: ActividadDeDestino; i: number;
 function TarjetaDeHotel({ h, i, viaje }: { h: HotelDeDestino; i: number; viaje: { entrada: string | null; salida: string | null; personas: number | null } }) {
   return (
     <a href={enlaceDeHotel(h.enlace, viaje)} target="_blank" rel="noopener noreferrer" data-hotel={h.id} className={tarjeta} style={{ flex: 'none', width: 236, scrollSnapAlign: 'start' }}>
-      <Foto url={h.foto} fondo={GRADIENTES[(i + 3) % GRADIENTES.length]} alto={136}>
-        <span className="absolute bottom-5 left-2.5 flex h-[26px] items-center gap-1.5 whitespace-nowrap rounded-full bg-[rgba(255,253,248,.95)] px-[11px] text-[11.5px] font-semibold">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8E6820" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z" /></svg>
-          {h.etiqueta}
-        </span>
-      </Foto>
+      <Foto url={h.foto} prioridad={i < 1} alto={136} />
       <div className="flex flex-col gap-[7px] px-3.5 pb-3.5 pt-1.5">
         <span className="text-[21px] leading-[1.1]" style={SERIE}>{h.nombre}</span>
         <span className="text-[12.5px] font-medium text-text/55">{h.zona}</span>
@@ -118,7 +119,17 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
     if (!city) return undefined
     let vivo = true
     setPagina(paginaEnMemoria(city))
-    void pedirPaginaDeDestino(city).then((p) => vivo && setPagina(p))
+    void pedirPaginaDeDestino(city).then((p) => {
+      if (!vivo) return
+      setPagina(p)
+      // (V28) Las fotos empiezan a bajar en cuanto llega la lista (las primeras del carrusel antes) y se quedan en el móvil para la próxima vez.
+      for (const url of [...p.actividades.map((a) => a.foto), ...p.hoteles.map((h) => h.foto)]) {
+        if (!url) continue
+        const im = new Image()
+        im.decoding = 'async'
+        im.src = url
+      }
+    })
     // La foto grande: la del destino; si no hay, la de su primera parada con foto, y si no, el degradado.
     const deParada = cityDays.flatMap((d) => d.stops).find((st) => st.photoUrl)?.photoUrl ?? null
     setFoto(deParada)
@@ -141,7 +152,9 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
   const fechasDelViaje = { entrada, salida, personas: companion === 'solo' ? 1 : companion === 'couple' ? 2 : null }
   const actividades = pagina?.actividades ?? []
   const hoteles = pagina?.hoteles ?? []
-  const lista = Boolean(alojamiento)
+  // (V28) Tu alojamiento: si lo añadiste desde nuestros hoteles, su foto; si no, el icono de la cama en grande (nunca un cuadrado de color vacío).
+  const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+  const fotoDeTuAlojamiento = alojamiento ? (hoteles.find((h) => norm(h.nombre) === norm(alojamiento.name))?.foto ?? null) : null
 
   // (En el body, por encima de la barra, la cabecera y el mapa: pantalla completa de verdad. PARA_CODE_TODO_2026-10-01, 6.1.)
   return createPortal(
@@ -173,16 +186,11 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
                     <span className="font-mono text-[10px] font-semibold tracking-[.14em] text-[#8E6820]">QUÉ HACER</span>
                     <span className="text-[28px] leading-[1.05]" style={SERIE}>Actividades en <em className="text-[#8E6820]">{city}</em></span>
                   </div>
-                  {lista ? (
-                    <div className="flex flex-col gap-3.5 px-6">
-                      {actividades.map((a, i) => <TarjetaDeActividad key={a.id} a={a} i={i} ancho="100%" />)}
-                    </div>
-                  ) : (
-                    <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-3.5 pt-1" style={{ scrollbarWidth: 'none', scrollPaddingLeft: 24 }}>
-                      {actividades.map((a, i) => <TarjetaDeActividad key={a.id} a={a} i={i} ancho="232px" />)}
-                      <span style={{ flex: 'none', width: 12 }} />
-                    </div>
-                  )}
+                  {/* (V28) En carrusel en TODOS los destinos, tengas o no tu alojamiento puesto. */}
+                  <div data-carrusel-actividades className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-3.5 pt-1" style={{ scrollbarWidth: 'none', scrollPaddingLeft: 24 }}>
+                    {actividades.map((a, i) => <TarjetaDeActividad key={a.id} a={a} i={i} ancho="232px" />)}
+                    <span style={{ flex: 'none', width: 12 }} />
+                  </div>
                   <div className="px-6">
                     <a href={withCampaign(buildActivitySearchUrl(city), null)} target="_blank" rel="noopener noreferrer" data-ver-todas-actividades className={botonOscuro}>Ver todas las actividades</a>
                   </div>
@@ -199,7 +207,9 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
                   {alojamiento && (
                     <div className="flex flex-col gap-2.5 px-6">
                       <div data-tu-alojamiento className="flex gap-3 rounded-[22px] border border-[rgba(181,138,46,.4)] bg-white p-2.5 shadow-[0_14px_26px_-20px_rgba(110,80,24,.5)]">
-                        <span className="h-[86px] w-[86px] flex-none rounded-2xl" style={{ background: 'linear-gradient(135deg,#E8C89A,#A8683A)' }} />
+                        <span data-foto-tu-alojamiento={fotoDeTuAlojamiento ? 'hotel' : 'cama'} className="flex h-[86px] w-[86px] flex-none items-center justify-center overflow-hidden rounded-2xl" style={{ background: FONDO_SUAVE, color: '#8E6820' }}>
+                          {fotoDeTuAlojamiento ? <img src={fotoDeTuAlojamiento} alt="" width={86} height={86} decoding="async" className="h-full w-full object-cover" /> : <Icono nombre="cama" size={40} grosor={1.5} />}
+                        </span>
                         <span className="flex min-w-0 flex-1 flex-col justify-center gap-[3px]">
                           <span className="font-mono text-[10px] font-semibold tracking-[.12em] text-[#8E6820]">TU ALOJAMIENTO</span>
                           <span className="text-[22px] leading-[1.1]" style={SERIE}>{alojamiento.name}</span>

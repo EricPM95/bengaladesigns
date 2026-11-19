@@ -17,11 +17,11 @@ export interface HotelDeDestino {
   id: string
   nombre: string
   zona: string
-  etiqueta: string
   nota: number
   opiniones: number
   nota_de: string | null
   foto: string | null
+  foto_pequena?: string | null
   /** El enlace de afiliado de Stay22, tal cual. */
   enlace: string
 }

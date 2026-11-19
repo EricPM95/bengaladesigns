@@ -1,0 +1,723 @@
+{
+ "_que_es": "Enlaces directos a la pagina exacta de cada actividad en Civitatis (es), para sustituir el buscador en las entradas de Roma. Cada entrada: url limpia (sin parametros; el afiliado se anade aparte), titulo que tiene en Civitatis, nota, opiniones y precio \"desde\" leido de los datos de la propia pagina el dia de la comprobacion (puede variar por modalidad y fecha). confianza alta = mismo producto; media = producto muy parecido pero con diferencias (audioguia, guia, precio); baja = no hay pagina exacta (url null) y se dan candidatas si las hay.",
+ "comprobado": "2026-11-19",
+ "entradas": [
+  {
+   "lugar": "Coliseo",
+   "variante": "Coliseo, Foro y Palatino",
+   "url": "https://www.civitatis.com/es/roma/entradas-coliseo-foro-palatino/",
+   "titulo_civitatis": "Entradas al Coliseo, Foro y Palatino con audioguía",
+   "nota": 6.1,
+   "opiniones": 749,
+   "desde": 36,
+   "confianza": "media",
+   "comentario": "Es la entrada de Civitatis al mismo conjunto, pero con audioguia; el precio de Civitatis (36) es el doble del oficial (18)",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/visita-guiada-roma-antigua/",
+     "titulo": "Visita guiada por el Coliseo, Foro y Palatino",
+     "por_que_dudo": "Es visita guiada (47 a 69 EUR), no la entrada suelta; mejor nota (9,4) pero otro producto"
+    }
+   ]
+  },
+  {
+   "lugar": "Foro Romano y Palatino",
+   "variante": "Coliseo, Foro y Palatino",
+   "url": "https://www.civitatis.com/es/roma/entradas-coliseo-foro-palatino/",
+   "titulo_civitatis": "Entradas al Coliseo, Foro y Palatino con audioguía",
+   "nota": 6.1,
+   "opiniones": 749,
+   "desde": 36,
+   "confianza": "media",
+   "comentario": "Misma entrada conjunta que el Coliseo",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/visita-guiada-roma-antigua/",
+     "titulo": "Visita guiada por el Coliseo, Foro y Palatino",
+     "por_que_dudo": "Es visita guiada (47 a 69 EUR), no la entrada suelta; mejor nota (9,4) pero otro producto"
+    }
+   ]
+  },
+  {
+   "lugar": "Fontana de Trevi",
+   "variante": "Zona junto a la fuente",
+   "url": null,
+   "titulo_civitatis": null,
+   "nota": null,
+   "opiniones": null,
+   "desde": null,
+   "confianza": "baja",
+   "comentario": "Civitatis no vende la entrada a la zona junto al agua (los 2 EUR oficiales). Lo unico de Trevi es un tour a los subterraneos",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/tour-fontana-trevi-subterraneos/",
+     "titulo": "Tour de la Fontana de Trevi y sus subterráneos",
+     "por_que_dudo": "Es un tour a los subterraneos de Trevi (Vicus Caprarius), no la zona junto a la fuente"
+    },
+    {
+     "url": "https://www.civitatis.com/es/roma/fontana-trevi/",
+     "titulo": "Fontana de Trevi (pagina de lugar con actividades)",
+     "por_que_dudo": "No es una actividad: es el listado de actividades de Trevi"
+    }
+   ]
+  },
+  {
+   "lugar": "Panteón",
+   "variante": "Panteón",
+   "url": "https://www.civitatis.com/es/roma/entrada-panteon-agripa-audioguia/",
+   "titulo_civitatis": "Entrada al Panteón de Agripa sin colas",
+   "nota": 7.8,
+   "opiniones": 2248,
+   "desde": 11,
+   "confianza": "alta",
+   "comentario": "Entrada sin colas al Panteon (11 EUR)",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/entradas-panteon-agripa/",
+     "titulo": "Entradas al Panteón de Agripa con audioguía",
+     "por_que_dudo": "Misma entrada con audioguia, peor nota (6,1)"
+    }
+   ]
+  },
+  {
+   "lugar": "Museos Vaticanos y Capilla Sixtina",
+   "variante": "Museos Vaticanos y Capilla Sixtina",
+   "url": "https://www.civitatis.com/es/roma/entradas-museos-vaticanos-capilla-sixtina/",
+   "titulo_civitatis": "Entradas a los Museos Vaticanos y la Capilla Sixtina sin colas",
+   "nota": 7.5,
+   "opiniones": 567,
+   "desde": 42,
+   "confianza": "alta",
+   "comentario": "Entrada sin colas; el precio incluye la reserva (42 vs 20 oficial)",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/primer-acceso-museos-vaticanos-sixtina/",
+     "titulo": "Visita guiada por los Museos Vaticanos y la Capilla Sixtina en grupo reducido de hasta 12 personas",
+     "por_que_dudo": "Visita guiada en grupo reducido, otro producto"
+    }
+   ]
+  },
+  {
+   "lugar": "Castillo de Sant'Angelo",
+   "variante": "Castillo de Sant'Angelo",
+   "url": "https://www.civitatis.com/es/roma/entrada-castillo-sant-angelo-audioguia/",
+   "titulo_civitatis": "Entradas al Castillo de Sant Angelo con audioguía",
+   "nota": 6.8,
+   "opiniones": 347,
+   "desde": 27,
+   "confianza": "alta",
+   "comentario": "Entrada con audioguia, visita por libre",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/visita-castillo-sant-angelo/",
+     "titulo": "Tour por el Castillo de Sant'Angelo con entradas y subida a la terraza",
+     "por_que_dudo": "Tour guiado con entradas y terraza (45 EUR), nota 9,7 y 3.393 opiniones; es otro producto pero mejor valorado"
+    }
+   ]
+  },
+  {
+   "lugar": "Galería Borghese",
+   "variante": "Galería Borghese",
+   "url": "https://www.civitatis.com/es/roma/entradas-galeria-borghese/",
+   "titulo_civitatis": "Entradas a la Galería Borghese con audioguía",
+   "nota": 6,
+   "opiniones": 22,
+   "desde": 20,
+   "confianza": "alta",
+   "comentario": "Entrada con audioguia",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/visita-guiada-galeria-borghese/",
+     "titulo": "Visita guiada por la Galería Borghese",
+     "por_que_dudo": "Visita guiada (89 EUR), mejor nota (9,7), otro producto"
+    }
+   ]
+  },
+  {
+   "lugar": "Bioparque de Roma",
+   "variante": "Bioparque de Roma",
+   "url": "https://www.civitatis.com/es/roma/entrada-bioparco-roma/",
+   "titulo_civitatis": "Entrada al Bioparco de Roma",
+   "nota": 8.7,
+   "opiniones": 24,
+   "desde": 26,
+   "confianza": "alta",
+   "comentario": "En Civitatis se llama Bioparco (nombre italiano del mismo zoo)",
+   "candidatas": []
+  },
+  {
+   "lugar": "Galería Nacional de Arte Moderno",
+   "variante": "Galería Nacional de Arte Moderno",
+   "url": null,
+   "titulo_civitatis": null,
+   "nota": null,
+   "opiniones": null,
+   "desde": null,
+   "confianza": "baja",
+   "comentario": "Civitatis no tiene actividad de este museo",
+   "candidatas": []
+  },
+  {
+   "lugar": "Altar de la Patria",
+   "variante": "Terraza panorámica con ascensor",
+   "url": "https://www.civitatis.com/es/roma/entradas-monumento-vittorio-emanuele/",
+   "titulo_civitatis": "Entradas a las terrazas del Monumento a Vittorio Emanuele II",
+   "nota": 6.2,
+   "opiniones": 13,
+   "desde": 34,
+   "confianza": "media",
+   "comentario": "Entrada a las terrazas del Monumento a Vittorio Emanuele II (el Altar de la Patria) con audioguia; la ficha no dice nada del ascensor ni del horario",
+   "candidatas": []
+  },
+  {
+   "lugar": "Mercados de Trajano",
+   "variante": "Mercados de Trajano",
+   "url": null,
+   "titulo_civitatis": null,
+   "nota": null,
+   "opiniones": null,
+   "desde": null,
+   "confianza": "baja",
+   "comentario": "Civitatis no tiene entrada a los Mercados de Trajano (solo los pasa de largo en el tour de los Museos Capitolinos)",
+   "candidatas": []
+  },
+  {
+   "lugar": "Cúpula de San Pedro",
+   "variante": "Cúpula de San Pedro",
+   "url": null,
+   "titulo_civitatis": null,
+   "nota": null,
+   "opiniones": null,
+   "desde": null,
+   "confianza": "baja",
+   "comentario": "Civitatis no vende la subida a la cupula. La pagina con \"cupula\" en la direccion es una visita guiada a la Basilica y su FAQ dice que NO incluye la subida",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/subida-cupula-san-pedro/",
+     "titulo": "Visita guiada por la Basílica de San Pedro",
+     "por_que_dudo": "Direccion con \"cupula\" pero es visita guiada a la basilica y NO incluye la subida a la cupula (FAQ de la propia ficha)"
+    },
+    {
+     "url": "https://www.civitatis.com/es/roma/entrada-basilica-san-pedro-audioguia/",
+     "titulo": "Entrada a la Basílica de San Pedro con audioguía",
+     "por_que_dudo": "Entrada a la basilica con audioguia (10 EUR), no a la cupula"
+    }
+   ]
+  },
+  {
+   "lugar": "Ara Pacis",
+   "variante": "Ara Pacis",
+   "url": null,
+   "titulo_civitatis": null,
+   "nota": null,
+   "opiniones": null,
+   "desde": null,
+   "confianza": "baja",
+   "comentario": "Civitatis no tiene actividad del Ara Pacis",
+   "candidatas": []
+  },
+  {
+   "lugar": "Museos Capitolinos",
+   "variante": "Museos Capitolinos",
+   "url": "https://www.civitatis.com/es/roma/entradas-museos-capitolinos/",
+   "titulo_civitatis": "Entradas a los Museos Capitolinos",
+   "nota": 8.4,
+   "opiniones": 46,
+   "desde": 36,
+   "confianza": "alta",
+   "comentario": "Entrada a los Museos Capitolinos",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/visita-guiada-museos-capitolinos/",
+     "titulo": "Visita guiada por los Museos Capitolinos y alrededores",
+     "por_que_dudo": "Visita guiada (50 EUR), otro producto"
+    }
+   ]
+  },
+  {
+   "lugar": "Domus Aurea",
+   "variante": "Domus Aurea",
+   "url": null,
+   "titulo_civitatis": null,
+   "nota": null,
+   "opiniones": null,
+   "desde": null,
+   "confianza": "baja",
+   "comentario": "Civitatis no tiene actividad de la Domus Aurea",
+   "candidatas": []
+  },
+  {
+   "lugar": "Termas de Caracalla",
+   "variante": "Termas de Caracalla",
+   "url": "https://www.civitatis.com/es/roma/entradas-termas-caracalla/",
+   "titulo_civitatis": "Entradas a las termas de Caracalla con audioguía",
+   "nota": 6.9,
+   "opiniones": 49,
+   "desde": 17.5,
+   "confianza": "alta",
+   "comentario": "Entrada con audioguia",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/visita-guiada-termas-caracalla/",
+     "titulo": "Visita guiada por las termas de Caracalla y el Circo Máximo",
+     "por_que_dudo": "Visita guiada con Circo Maximo (66,50 EUR), otro producto"
+    }
+   ]
+  },
+  {
+   "lugar": "Villa Farnesina",
+   "variante": "Villa Farnesina",
+   "url": null,
+   "titulo_civitatis": null,
+   "nota": null,
+   "opiniones": null,
+   "desde": null,
+   "confianza": "baja",
+   "comentario": "Civitatis no tiene actividad de la Villa Farnesina",
+   "candidatas": []
+  },
+  {
+   "lugar": "Palazzo Doria Pamphilj",
+   "variante": "Palazzo Doria Pamphilj",
+   "url": "https://www.civitatis.com/es/roma/entrada-galeria-doria-pamphilj/",
+   "titulo_civitatis": "Entradas a la Galleria Doria Pamphilj con audioguía",
+   "nota": null,
+   "opiniones": null,
+   "desde": 29,
+   "confianza": "alta",
+   "comentario": "Entrada a la Galleria Doria Pamphilj con audioguia; es nueva y aun sin opiniones",
+   "candidatas": []
+  },
+  {
+   "lugar": "Catacumbas de San Calixto",
+   "variante": "Catacumbas de San Calixto",
+   "url": null,
+   "titulo_civitatis": null,
+   "nota": null,
+   "opiniones": null,
+   "desde": null,
+   "confianza": "baja",
+   "comentario": "Civitatis no vende la entrada suelta a San Calixto; solo tours con transporte que la visitan (o San Sebastian si esta cerrada)",
+   "candidatas": [
+    {
+     "url": "https://www.civitatis.com/es/roma/tour-catacumbas-via-appia/",
+     "titulo": "Tour por las Catacumbas de la Vía Appia",
+     "por_que_dudo": "Tour con guia y transporte (58,40 EUR) que va a San Calixto; mas caro que la entrada y es otro producto"
+    },
+    {
+     "url": "https://www.civitatis.com/es/roma/excursion-catacumbas-roma/",
+     "titulo": "Catacumbas de la Vía Appia + San Sebastián y San Pablo Extramuros",
+     "por_que_dudo": "Catacumbas de la Via Appia + San Sebastian y San Pablo Extramuros (67,50 EUR); no dice San Calixto en el titulo"
+    }
+   ]
+  },
+  {
+   "lugar": "Cripta de los Capuchinos",
+   "variante": "Cripta de los Capuchinos",
+   "url": "https://www.civitatis.com/es/roma/cripta-capuchinos-santa-maria-victoria/",
+   "titulo_civitatis": "Cripta de los Capuchinos y Santa María de la Victoria",
+   "nota": 8.9,
+   "opiniones": 53,
+   "desde": 30,
+   "confianza": "media",
+   "comentario": "Visita guiada que incluye la cripta y el museo de los Capuchinos mas Santa Maria de la Victoria (Extasis de Santa Teresa); 30 EUR frente a 10 de la entrada oficial",
+   "candidatas": []
+  },
+  {
+   "lugar": "Free Tour",
+   "variante": "Free Tour por Roma",
+   "url": "https://www.civitatis.com/es/roma/free-tour-roma/",
+   "titulo_civitatis": "Free tour por Roma",
+   "nota": 8.9,
+   "opiniones": 52607,
+   "desde": 0,
+   "confianza": "alta",
+   "comentario": "Ya llevaba su pagina; se deja la direccion limpia (sin aid ni cmp)",
+   "candidatas": []
+  },
+  {
+   "lugar": "Basílica de San Clemente",
+   "variante": "Excavaciones de San Clemente",
+   "url": null,
+   "titulo_civitatis": null,
+   "nota": null,
+   "opiniones": null,
+   "desde": null,
+   "confianza": "baja",
+   "comentario": "Civitatis no tiene actividad de San Clemente",
+   "candidatas": []
+  }
+ ],
+ "excursiones_roma": [
+  {
+   "id": "pompeya_sorrento",
+   "url": "https://www.civitatis.com/es/roma/excursion-pompeya-sorrento/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a Pompeya y Sorrento",
+   "nota": 8.3,
+   "opiniones": 405,
+   "desde": 80.92,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.3, 793 opiniones, desde 98.26. Foto cdn2 comprobada (200)."
+  },
+  {
+   "id": "florencia_pisa",
+   "url": "https://www.civitatis.com/es/roma/excursion-florencia-pisa/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a Florencia y Pisa",
+   "nota": 8.6,
+   "opiniones": 708,
+   "desde": 95.4,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.6, 704 opiniones, desde 95.4. Foto cdn2 comprobada (200)."
+  },
+  {
+   "id": "napoles_pompeya_tren",
+   "url": "https://www.civitatis.com/es/roma/excursion-pompeya-tren/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a Nápoles y Pompeya en tren de alta velocidad",
+   "nota": 8.7,
+   "opiniones": 344,
+   "desde": 139,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.7, 343 opiniones, desde 139. Foto cdn2 comprobada (200)."
+  },
+  {
+   "id": "costa_amalfitana",
+   "url": "https://www.civitatis.com/es/roma/excursion-amalfi-positano/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a la Costa Amalfitana en autobús + Barco a Positano y Amalfi",
+   "nota": 7.8,
+   "opiniones": 66,
+   "desde": 115,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 7.9, 60 opiniones, desde 115. Foto cdn2 comprobada (200)."
+  },
+  {
+   "id": "florencia_tren",
+   "url": "https://www.civitatis.com/es/roma/excursion-florencia/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a Florencia en tren de alta velocidad",
+   "nota": 8.6,
+   "opiniones": 691,
+   "desde": 149,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.6, 689 opiniones, desde 149. Foto cdn2 comprobada (200)."
+  },
+  {
+   "id": "venecia_tren",
+   "url": "https://www.civitatis.com/es/roma/excursion-venecia/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a Venecia en tren de alta velocidad",
+   "nota": 9,
+   "opiniones": 315,
+   "desde": 287,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9, 315 opiniones, desde 243.95. Foto cdn2 comprobada (200)."
+  },
+  {
+   "id": "ostia_antica",
+   "url": "https://www.civitatis.com/es/roma/excursion-ostia-antica/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a Ostia Antica",
+   "nota": 9.6,
+   "opiniones": 297,
+   "desde": 50,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.6, 294 opiniones, desde 52. Foto cdn2 comprobada (200)."
+  },
+  {
+   "id": "tivoli_villas",
+   "url": "https://www.civitatis.com/es/roma/excursion-villa-adriana-villa-este/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a Tívoli",
+   "nota": 8.8,
+   "opiniones": 385,
+   "desde": 132,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.7, 725 opiniones, desde 118.8. Foto cdn2 comprobada (200)."
+  }
+ ],
+ "lanzarote": [
+  {
+   "id": "graciosa_velero",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-isla-graciosa/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a La Graciosa + Paseo en velero",
+   "nota": 9.1,
+   "opiniones": 2336,
+   "desde": 74,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.1, 2332 opiniones, desde 74."
+  },
+  {
+   "id": "lanzarote_completo",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/tour-lanzarote-completo/",
+   "ok": true,
+   "titulo_civitatis": "Tour por lo mejor de Lanzarote con entradas",
+   "nota": 8.2,
+   "opiniones": 3025,
+   "desde": 88,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.2, 3018 opiniones, desde 88."
+  },
+  {
+   "id": "timanfaya_jameos",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-timanfaya-jameos-agua/",
+   "ok": true,
+   "titulo_civitatis": "Timanfaya, Jameos del Agua y Charco de los Clicos",
+   "nota": 8.4,
+   "opiniones": 1587,
+   "desde": 87,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.4, 1584 opiniones, desde 87."
+  },
+  {
+   "id": "timanfaya_medio_dia",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-expres-sur-lanzarote/",
+   "ok": true,
+   "titulo_civitatis": "Excursión al Parque Nacional de Timanfaya",
+   "nota": 8.4,
+   "opiniones": 456,
+   "desde": 59,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.4, 455 opiniones, desde 59."
+  },
+  {
+   "id": "sur_lanzarote",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-sur-lanzarote/",
+   "ok": true,
+   "titulo_civitatis": "Excursión al Timanfaya, La Geria y el Charco de los Clicos",
+   "nota": 8.1,
+   "opiniones": 315,
+   "desde": 65,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.1, 310 opiniones, desde 65."
+  },
+  {
+   "id": "norte_lanzarote",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-norte-lanzarote/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a los Jameos del Agua y la Cueva de los Verdes",
+   "nota": 7.9,
+   "opiniones": 158,
+   "desde": 69,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 7.9, 153 opiniones, desde 69."
+  },
+  {
+   "id": "cesar_manrique",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/tour-cesar-manrique-lanzarote/",
+   "ok": true,
+   "titulo_civitatis": "Tour de César Manrique por Lanzarote",
+   "nota": 8.5,
+   "opiniones": 230,
+   "desde": 85,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.5, 228 opiniones, desde 85."
+  },
+  {
+   "id": "ferry_graciosa",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/ferry-isla-la-graciosa/",
+   "ok": true,
+   "titulo_civitatis": "Ferry de ida y vuelta entre Lanzarote y la isla de La Graciosa",
+   "nota": 9.1,
+   "opiniones": 930,
+   "desde": 29,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.2, 927 opiniones, desde 29."
+  },
+  {
+   "id": "fuerteventura",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-fuerteventura/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a Fuerteventura",
+   "nota": 7.2,
+   "opiniones": 490,
+   "desde": 62,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 7.2, 488 opiniones, desde 62."
+  },
+  {
+   "id": "ferry_fuerteventura",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/playa-blanca/ferry-fuerteventura/",
+   "ok": true,
+   "titulo_civitatis": "Ferry de Lanzarote a Fuerteventura",
+   "nota": 9,
+   "opiniones": 141,
+   "desde": 21,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9, 141 opiniones, desde 21."
+  },
+  {
+   "id": "isla_lobos",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-isla-lobos/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a la isla de Lobos",
+   "nota": 8.5,
+   "opiniones": 56,
+   "desde": 72,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.5, 56 opiniones, desde 72."
+  },
+  {
+   "id": "corralejo_lobos",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/playa-blanca/excursion-corralejo-isla-lobos/",
+   "ok": true,
+   "titulo_civitatis": "Excursión a Corralejo e isla de Lobos",
+   "nota": 8.5,
+   "opiniones": 34,
+   "desde": 110,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.5, 34 opiniones, desde 110."
+  },
+  {
+   "id": "dunas_fuerteventura",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-dunas-fuerteventura/",
+   "ok": true,
+   "titulo_civitatis": "Dunas de Fuerteventura por libre",
+   "nota": 7.7,
+   "opiniones": 32,
+   "desde": 45,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 7.7, 32 opiniones, desde 45."
+  },
+  {
+   "id": "kayak_papagayo",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/playa-blanca/kayak-snorkel-playa-papagayo/",
+   "ok": true,
+   "titulo_civitatis": "Kayak y snorkel en la playa de Papagayo desde Playa Blanca",
+   "nota": 9.5,
+   "opiniones": 348,
+   "desde": 50,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.5, 347 opiniones, desde 50."
+  },
+  {
+   "id": "velero_papagayo",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/playa-blanca/excursion-velero-playas-papagayo/",
+   "ok": true,
+   "titulo_civitatis": "Tour en velero por las playas de Papagayo",
+   "nota": 8.6,
+   "opiniones": 138,
+   "desde": 74,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.6, 138 opiniones, desde 74."
+  },
+  {
+   "id": "catamaran_atardecer",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/puerto-del-carmen/paseo-catamaran-puerto-carmen-atardecer/",
+   "ok": true,
+   "titulo_civitatis": "Paseo en catamarán por Puerto del Carmen al atardecer",
+   "nota": 8.5,
+   "opiniones": 132,
+   "desde": 53,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.5, 132 opiniones, desde 53."
+  },
+  {
+   "id": "delfines",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/puerto-del-carmen/avistamiento-delfines-snorkel/",
+   "ok": true,
+   "titulo_civitatis": "Avistamiento de delfines",
+   "nota": 7.1,
+   "opiniones": 213,
+   "desde": 35,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 7.1, 213 opiniones, desde 35."
+  },
+  {
+   "id": "senderismo_volcanes",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/tinajo/senderismo-parque-natural-volcanes/",
+   "ok": true,
+   "titulo_civitatis": "Senderismo por el Parque Natural de los Volcanes",
+   "nota": 9.4,
+   "opiniones": 367,
+   "desde": 44,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.4, 367 opiniones, desde 44."
+  },
+  {
+   "id": "salinas_janubio",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/yaiza/visita-guiada-salinas-janubio/",
+   "ok": true,
+   "titulo_civitatis": "Visita guiada por las Salinas de Janubio",
+   "nota": 9.3,
+   "opiniones": 90,
+   "desde": 22,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.3, 90 opiniones, desde 22."
+  },
+  {
+   "id": "submarino",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/playa-blanca/paseo-submarino-lanzarote/",
+   "ok": true,
+   "titulo_civitatis": "Paseo en submarino por Puerto Calero",
+   "nota": 8.9,
+   "opiniones": 98,
+   "desde": 65,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 8.9, 98 opiniones, desde 65."
+  },
+  {
+   "id": "grupo_reducido",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/playa-blanca/tour-lanzarote-grupo-reducido/",
+   "ok": true,
+   "titulo_civitatis": "Tour por Lanzarote en grupo reducido",
+   "nota": 9.2,
+   "opiniones": 8,
+   "desde": 75,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.2, 8 opiniones, desde 75."
+  },
+  {
+   "id": "buggy_volcanes",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/costa-teguise/tour-buggy-senderismo-parque-volcanes/",
+   "ok": true,
+   "titulo_civitatis": "Tour en buggy y senderismo por el Parque Natural de Los Volcanes y Timanfaya",
+   "nota": 9.1,
+   "opiniones": 77,
+   "desde": 180,
+   "nota_comprobacion": "Titulo de Civitatis distinto del nuestro (Tour en buggy y senderismo por el Parque Natural de Los Volcanes): misma actividad. Nuestros datos: nota 9.2, 76 opiniones, desde 180."
+  },
+  {
+   "id": "privada",
+   "tipo": "excursion",
+   "url": "https://www.civitatis.com/es/arrecife/excursion-privada-lanzarote/",
+   "ok": true,
+   "titulo_civitatis": "Excursión privada por Lanzarote",
+   "nota": 9.5,
+   "opiniones": 41,
+   "desde": 700,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.4, 40 opiniones, desde 700."
+  }
+ ],
+ "free_tours": [
+  {
+   "id": "free_tour_teguise",
+   "tipo": "free_tour",
+   "url": "https://www.civitatis.com/es/teguise/free-tour-teguise/",
+   "ok": true,
+   "titulo_civitatis": "Free tour por Teguise",
+   "nota": 9.3,
+   "opiniones": 1203,
+   "desde": 0,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.3, 1196 opiniones, desde 0."
+  },
+  {
+   "id": "free_tour_arrecife",
+   "tipo": "free_tour",
+   "url": "https://www.civitatis.com/es/arrecife/free-tour-arrecife/",
+   "ok": true,
+   "titulo_civitatis": "Free tour por Arrecife",
+   "nota": 9.1,
+   "opiniones": 2604,
+   "desde": 0,
+   "nota_comprobacion": "Pagina de actividad, titulo igual al nuestro. Nuestros datos: nota 9.1, 2592 opiniones, desde 0."
+  }
+ ],
+ "free_tour_roma": {
+  "url": "https://www.civitatis.com/es/roma/free-tour-roma/",
+  "ok": true,
+  "nota": "Pagina de actividad correcta"
+ },
+ "foto_free_tour_arrecife": {
+  "actual": "https://f.civitatis.com/espana/arrecife/free-tour-arrecife-m.jpg",
+  "es_del_sitio": true,
+  "propuesta": "https://f.civitatis.com/espana/arrecife/galeria/charco-san-gines.jpg",
+  "comentario": "La foto actual es la que Civitatis pone a esa actividad (og:image) y SI es de Arrecife: es la plaza de la Iglesia de San Gines; en la galeria de la ficha es la misma imagen que \"Iglesia de San Gines\". Se parece a la iglesia de Teguise (blanca, torre con cupula, palmeras) pero la de Teguise tiene la torre de piedra oscura y otra plaza. Si se quiere una foto mas inconfundible de Arrecife, propuesta opcional: el Charco de San Gines (barcas y fachada de Arrecife), de la galeria de la misma ficha (780 px de ancho; la -m actual es panoramica de 640x262). Otras de la galeria (misma carpeta galeria/): castillo-san-gabriel.jpg, casa-amarilla.jpg, estatua-parranda-buches.jpg."
+ }
+}

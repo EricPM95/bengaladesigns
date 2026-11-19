@@ -54,3 +54,45 @@ export function trozoDeInsignia(coleccion: string, total: number, k: number): Tr
 
 /** `clip-path` de un trozo para una insignia de `tam` px de lado. */
 export const recorteDeTrozo = (t: Trozo, tam: number): string => `polygon(${t.puntos.map(([x, y]) => `${(x * tam).toFixed(1)}px ${(y * tam).toFixed(1)}px`).join(',')})`
+
+/* ───────── (V28) El trozo ENTERO en su círculo ───────── */
+
+import { COLECCIONES_POR_PARTES } from '../../dibujos/partes'
+import { poligonoDelTrozo } from '../../dibujos/piezas/InsigniaPorPartes'
+
+export interface TrozoEntero {
+  /** El polígono exacto del trozo, de 0 a 1 dentro del cuadrado de la insignia. */
+  puntos: [number, number][]
+  /** Su caja (de 0 a 1). */
+  caja: { x0: number; y0: number; x1: number; y1: number }
+}
+
+/**
+ * El trozo `k` de la colección con su forma exacta (la baldosa que pinta la insignia, no un recorte aproximado). Una colección de una sola pieza (sin trozos) devuelve el círculo del centro de la insignia, con su icono.
+ */
+export function trozoEntero(coleccion: string, total: number, k: number): TrozoEntero | null {
+  const col = COLECCIONES_POR_PARTES[coleccion]?.col
+  const poli = total > 1 && col ? poligonoDelTrozo(col, k) : null
+  const puntos: [number, number][] = poli ? poli.map(([x, y]) => [x / 200, y / 200]) : Array.from({ length: 36 }, (_, i) => [0.5 + Math.cos((i * 2 * Math.PI) / 36) * 0.17, 0.5 + Math.sin((i * 2 * Math.PI) / 36) * 0.17] as [number, number])
+  if (puntos.length === 0) return null
+  const xs = puntos.map((p) => p[0])
+  const ys = puntos.map((p) => p[1])
+  return { puntos, caja: { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) } }
+}
+
+/**
+ * Cómo poner el trozo entero en un círculo de `diametro` px, centrado y a escala para que quepa con margen (`margen`: 0,8 = deja un 10 % libre por cada lado). Devuelve el lado (px) al que dibujar la insignia entera,
+ * dónde ponerla (`left`/`top`, relativos al círculo) y el `clip-path` del trozo para ese lado.
+ */
+export function encajeEnCirculo(t: TrozoEntero, diametro: number, margen = 0.8): { lado: number; left: number; top: number; clip: string } {
+  const w = t.caja.x1 - t.caja.x0
+  const h = t.caja.y1 - t.caja.y0
+  // Centrado en el centro de su caja; la escala la manda el punto del trozo que MÁS se aleja de ese centro (así cabe entero seguro).
+  const cx = (t.caja.x0 + t.caja.x1) / 2
+  const cy = (t.caja.y0 + t.caja.y1) / 2
+  const radio = Math.max(...t.puntos.map(([x, y]) => Math.hypot(x - cx, y - cy)), 0.0001)
+  const lado = (diametro * margen) / 2 / radio
+  void w
+  void h
+  return { lado, left: diametro / 2 - cx * lado, top: diametro / 2 - cy * lado, clip: `polygon(${t.puntos.map(([x, y]) => `${(x * lado).toFixed(1)}px ${(y * lado).toFixed(1)}px`).join(',')})` }
+}
