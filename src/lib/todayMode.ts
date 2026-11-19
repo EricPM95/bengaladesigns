@@ -2,6 +2,7 @@ import type { DayPlan, MealSlot, Route, Stop } from './types'
 import { addDaysToIso, todayIso } from './dateRange'
 import { parseTimeToMinutes } from './time'
 import { seedStopsFromTemplate } from './mockDayDetail'
+import { zonaDelDestino } from './zonaHoraria'
 import { COMIDA_HASTA_MIN } from '../../shared/routeEngine/comida.js'
 
 /**
@@ -63,7 +64,7 @@ export function getTodayTripContext(route: Route, todayIsoOverride?: string): To
   const tripStartIso = route.answers.dateRange?.start
   if (!tripStartIso) return null
 
-  const currentIso = todayIsoOverride ?? todayIso()
+  const currentIso = todayIsoOverride ?? todayIso(zonaDelDestino(route.destination)) // (V24) el día cambia a medianoche en el destino, no en el móvil
   const dayIndex = route.days.findIndex((day) => addDaysToIso(tripStartIso, day.dayNumber - 1) === currentIso)
   if (dayIndex === -1) return null
 
@@ -91,7 +92,7 @@ export function getTodayTripStatus(route: Route, todayIsoOverride?: string): Tod
   if (!startIso || !lastDay) return null
 
   const endIso = addDaysToIso(startIso, lastDay.dayNumber - 1)
-  const currentIso = todayIsoOverride ?? todayIso()
+  const currentIso = todayIsoOverride ?? todayIso(zonaDelDestino(route.destination))
 
   if (currentIso < startIso) return { phase: 'before', startIso, endIso }
   if (currentIso > endIso) return { phase: 'after', startIso, endIso }

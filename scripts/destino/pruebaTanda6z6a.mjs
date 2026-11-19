@@ -230,10 +230,10 @@ for (const [clave, route] of Object.entries(rutas)) {
     const abierto = diaQueSeAbreAlEntrar(route, hoy, null)
     const html = pintaHtml(DayList, { route, activeDayId: abierto, onSelectDay() {}, showAllDaysOnMap: false }, route, { mode: 'days', hoy })
     const etiquetas = (html.match(/data-etiqueta-hoy/g) ?? []).length
-    debe(etiquetas === (esperado ? 1 : 0), '3 DÍAS', `con ${hoy}, la etiqueta «HOY» sale ${etiquetas} veces y debería salir ${esperado ? 1 : 0}`)
+    debe(etiquetas === 0, '3 DÍAS', `(V24) con ${hoy}, la etiqueta «HOY» ya no sale (sale ${etiquetas} veces): decisión de Eric, 19-nov`)
     if (esperado) {
       const tarjeta = tarjetaDe(html, esperado)
-      debe(/data-etiqueta-hoy/.test(tarjeta) && />HOY</.test(tarjeta.replace(/\s+/g, '')) || /HOY/.test(aTexto(tarjeta)), '3 DÍAS', `con ${hoy}, «HOY» no está en la cabecera de ${esperado}`)
+      debe(!/data-etiqueta-hoy/.test(tarjeta), '3 DÍAS', `(V24) con ${hoy}, sin «HOY» en la cabecera de ${esperado}`)
       debe(/rotate\(90deg\)/.test(tarjeta), '3 DÍAS', `con ${hoy}, el día de hoy (${esperado}) no está abierto`)
       for (const otro of route.days.map((d) => d.id).filter((id) => id !== esperado)) debe(!/rotate\(90deg\)/.test(tarjetaDe(html, otro)), '3 DÍAS', `con ${hoy}, se abre también ${otro}`)
     }
@@ -243,7 +243,7 @@ for (const [clave, route] of Object.entries(rutas)) {
   // En la gratis también (HOY de DÍAS es el «hoy» de la versión gratis).
   {
     const html = pintaHtml(DayList, { route, activeDayId: 'd2', onSelectDay() {}, showAllDaysOnMap: false }, route, { mode: 'days', hoy: sumaDias(INICIO, 1), version: 'gratis' })
-    debe((html.match(/data-etiqueta-hoy/g) ?? []).length === 1, '3 DÍAS', 'en la gratis no sale la etiqueta «HOY»')
+    debe((html.match(/data-etiqueta-hoy/g) ?? []).length === 0, '3 DÍAS', '(V24) en la gratis tampoco sale la etiqueta «HOY»')
   }
 
   // El día completo. Un día pesado (el 2) con una reserva suya; los otros, ligeros.

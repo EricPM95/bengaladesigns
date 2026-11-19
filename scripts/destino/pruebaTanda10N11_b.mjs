@@ -39,7 +39,7 @@ console.log('2. Con el pase')
     await modo(a, 'days', 0)
     // 01: sin alojamiento
     let t = await textoDe(a, '[data-alojamiento-dia-bloque]')
-    debe(t && /ALOJAMIENTO · /.test(t) && /Añade tu alojamiento/.test(t) && /Añadir/.test(t), '01', `DÍAS día 1 sin alojamiento: «Alojamiento · Roma · Añade tu alojamiento» + [+ Añadir] (${t})`)
+    debe(t && /Añade tu alojamiento/.test(t) && /Para ajustar tu ruta a tu zona/.test(t), '01', `DÍAS día 1 sin alojamiento: «Alojamiento · Roma · Añade tu alojamiento» + [+ Añadir] (${t})`)
     await a.captura(foto('alojamiento_dias_01'))
     // 02: con alojamiento, zona y dirección
     await poner(a, `const id = e.route.days[0].id; e.setAccommodationHotel(id, { name: 'Hotel Aurora', precio: null }); e.setAccommodationAddress(${JSON.stringify(DIR)})`)

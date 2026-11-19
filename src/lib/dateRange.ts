@@ -1,6 +1,14 @@
-/** Fecha de hoy en formato ISO yyyy-mm-dd, en huso horario local. */
-export function todayIso(): string {
+/** Fecha de hoy en formato ISO yyyy-mm-dd, en huso horario local o, si se da `zona` (p. ej. `Europe/Rome`), en la de ese sitio (V24: el día cambia a medianoche allí, no en el móvil). */
+export function todayIso(zona?: string | null): string {
   const now = new Date()
+  if (zona) {
+    try {
+      const partes = new Intl.DateTimeFormat('en-CA', { timeZone: zona, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
+      if (/^\d{4}-\d{2}-\d{2}$/.test(partes)) return partes
+    } catch {
+      /* zona rara: la del móvil */
+    }
+  }
   const offsetMs = now.getTimezoneOffset() * 60_000
   return new Date(now.getTime() - offsetMs).toISOString().slice(0, 10)
 }

@@ -54,7 +54,6 @@ import { ZoneWalkCard } from './ZoneWalkCard'
 import { DndContext, PointerSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { SortableStop } from './SortableStop'
-import { AccommodationBlock } from './AccommodationBlock'
 import { COMIDA_HASTA_MIN } from '../../../../shared/routeEngine/comida.js'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { ArrivalReturnBar } from './ArrivalReturnBar'
@@ -86,7 +85,6 @@ import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { CambioParada } from '../../propuesta/CambioParada'
 import { useParejasDeLaPropuesta, useMarcasDePropuesta } from '../../../hooks/useParejasDeLaPropuesta'
-import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
@@ -103,16 +101,12 @@ interface DayDetailPanelProps {
   travel: DayTravelInfo | null
   isLastDay: boolean
   origin: string
-  /** Presente solo cuando `day` es el primer día de una estancia (ver DayList.tsx) — dispara el bloque de alojamiento. */
-  stay: { segmentDayId: string; totalNights: number } | null
   /** Todos los días del viaje (menos el sintético de vuelta) — para el "Mover a otro día" del menú "..." de cada parada. */
   allDays: { id: string; dayNumber: number; city: string }[]
   /** true solo para `route.days[0]` — el bloque de vehículo es una reserva única para todo el viaje, nunca se repite por estancia/día (ver VehicleBlock.tsx). */
   isFirstDayOfTrip: boolean
-  /** vehicle_type camper + vehicle_ownership rental — sustituye a AccommodationBlock (donde duermes es la propia camper). */
-  showCamperBlock: boolean
-  /** vehicle_type car + vehicle_ownership rental — aparece ADEMÁS de AccommodationBlock (logística de vehículo aparte del alojamiento). */
-  showRentalCarBlock: boolean
+  /** (V24) Un día que ya pasó: se ve y nada más (sin menú de cada parada, sin añadir ni mover; las herramientas con `data-edit-tool` las esconde `[data-dia-pasado]` en index.css). */
+  soloLectura?: boolean
   /** Día abierto como acordeón en la lista (diseño "Trazo Itinerario", 2026-09-27): el mapa es el
       compartido de RouteView, que enseña lo que este panel le publica aquí (null al cerrarse). */
   onMapChange?: (map: DayMapView | null) => void
@@ -283,11 +277,9 @@ export function DayDetailPanel({
   travel,
   isLastDay,
   origin,
-  stay,
   allDays,
   isFirstDayOfTrip,
-  showCamperBlock,
-  showRentalCarBlock,
+  soloLectura = false,
   onMapChange,
   onOverlayChange,
   showAllDaysOnMap = false,
@@ -1187,7 +1179,7 @@ export function DayDetailPanel({
                 setDetailTab('tickets')
                 setDetailIndex(index)
               }}
-              menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} moverEnLaLinea={moverEnLaLinea} lugarEnLaLinea={lugarEnLaLinea(realStop?.id ?? stop.id)} onVerFicha={() => { setDetailTab(null); setDetailIndex(index) }} />}
+              menu={soloLectura ? undefined : <StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} moverEnLaLinea={moverEnLaLinea} lugarEnLaLinea={lugarEnLaLinea(realStop?.id ?? stop.id)} onVerFicha={() => { setDetailTab(null); setDetailIndex(index) }} />}
             />
           )}
           {/* (10S3, apartado 6) Sin pase, una reserva cuya hora no cuadra con la franja de la parada: la línea gris del pase. */}
@@ -1407,12 +1399,7 @@ export function DayDetailPanel({
             </div>
           )}
 
-          {isFirstDayOfTrip && showCamperBlock && <VehicleBlock kind="camper" />}
-
-          {stay && <AccommodationBlock city={day.city} segmentDayId={stay.segmentDayId} totalNights={stay.totalNights} onAnadir={() => { setMode('bookings'); pedirReservas('aloj') }} />}
-
-          {isFirstDayOfTrip && showRentalCarBlock && <VehicleBlock kind="rental-car" />}
-
+          {/* (V24) El alojamiento y el vehículo ya no van dentro del día: van arriba de la lista de días (DayList › BloquesDelViaje). El día 1 se queda con «Cómo llegar». */}
           {/* Llegada o vuelta: la misma tarjeta, en azul petróleo, sin número (no es una parada). */}
           {/* La llegada: el primer día, después del alojamiento y antes del primer tramo. */}
           {isFirstDayOfTrip && route && (
@@ -1527,7 +1514,7 @@ export function DayDetailPanel({
           )}
 
           {/* Tanda 6: lo que no cabía, plegado al final del día. */}
-          {muestraParadas && <SpareStopsSection dayId={day.id} stops={day.spareStops ?? []} onAdd={(stopId) => addSpareStop(day.id, stopId)} />}
+          {muestraParadas && !soloLectura && <SpareStopsSection dayId={day.id} stops={day.spareStops ?? []} onAdd={(stopId) => addSpareStop(day.id, stopId)} />}
 
           {/* Día libre sin paradas con su comida o su cena ya elegida: se ve igual. */}
           {dayType === 'manual' && day.meals.some((meal) => meal.chosenRestaurant) && (

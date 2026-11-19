@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { closestCenter, DndContext, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -40,6 +40,11 @@ import { Icono } from '../ui/Icono'
 import { usePagoActivo } from '../../lib/pago'
 import { reorganizarDias, sePuedeReorganizar } from '../../lib/reorganizarDia'
 import { PiezaSegura } from '../PiezaSegura'
+import { AccommodationBlock } from './dayDetail/AccommodationBlock'
+import { VehicleBlock } from './dayDetail/VehicleBlock'
+import { diasPasados, ordenRespetaLosPasados } from '../../lib/diasPasados'
+import { useFotosPorDia } from '../../hooks/useFotosPorDia'
+import { useReservasFocusStore } from '../../store/useReservasFocusStore'
 
 interface DayListProps {
   route: Route
@@ -70,6 +75,8 @@ function ChevronIcon() {
  */
 export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDayOverlayChange, showAllDaysOnMap }: DayListProps) {
   const reorderDays = useRouteStore((state) => state.reorderDays)
+  const setMode = useRouteStore((state) => state.setMode)
+  const pedirReservas = useReservasFocusStore((state) => state.pedir)
   const listRef = useRef<HTMLDivElement>(null)
   // La pregunta antes de recuperar el original de un día («Recuperar este día», en los tres puntos). La de toda la ruta vive en la tarjeta del destino, en Ruta.
   const [askRestore, setAskRestore] = useState<{ dayId: string; dayNumber: number } | null>(null)
@@ -111,6 +118,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const simuladaIso = useRouteStore((state) => state.dev_simulated_today_iso)
   // Durante el viaje, DÍAS se abre sola en el día de hoy y lo marca con «HOY» (Tanda 6z6). Solo al entrar (o si cambia el día de hoy): si el viajero lo cierra, se queda cerrado.
   const hoyId = diaDeHoy(route, simuladaIso)?.id ?? null
+  // (V24) Los días que ya pasaron: «Hecho», sin cambios (ver src/lib/diasPasados.ts).
+  const pasados = diasPasados(route, simuladaIso)
+  const fotosPorDia = useFotosPorDia(pasados.size > 0)
   useEffect(() => {
     const abrir = diaQueSeAbreAlEntrar(route, simuladaIso, activeDayId)
     if (abrir) onSelectDay(abrir)
@@ -159,6 +169,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
 
     const next = [...ids]
     next.splice(to, 0, next.splice(from, 1)[0])
+    // (V24) Un día que ya pasó no se mueve y ningún día se pone delante de él.
+    if (!ordenRespetaLosPasados(route, next, simuladaIso)) return
     setDayReorderWarning(closureWarningFor(next))
     reorderDays(next)
   }
@@ -220,25 +232,39 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         // Solo en los destinos sin grupos: un día a mano sin nombre ya enseña su fecha en el cuadrito y el título dice «Ponle nombre» (gris, cursiva); al tocarlo se abre DayNameSheet (Tanda 6y2).
         const sinNombre = nombre.ponleNombre
         const toggle = () => onSelectDay(expanded ? null : day.id)
-        const esHoy = day.id === hoyId
+        const pasado = pasados.has(day.id)
+        const fotosDelDia = fotosPorDia.get(day.dayNumber) ?? 0
         // «Hoy es un día completo: te recomendamos madrugar.» solo avisa: no mueve ni quita nada del día (Tanda 6z6).
         const diaCompleto = esDiaCompleto(route, day, reservations)
         // El color va con el día, no con su posición (PROMPT_UI, Parte 1).
         const colorIndex = dayColorIndex(day, nonReturnIndex.get(day.id) ?? index)
+        // (V24) Antes de este día, los bloques del viaje: el alojamiento de su destino (y, en el primero, el vehículo de alquiler). Fuera de los días y no repetidos dentro de ellos.
+        const estancia = stayByFirstDayId.get(day.id)
+        const conAlojamiento = !isCamper && Boolean(estancia) && (estancia?.nights ?? 0) > 0
+        const conVehiculo = index === 0 && hasRentalVehicle
 
         return (
-          <SortableDay key={day.id} id={day.id} disabled={soloRecomienda || !isMovableDay(day, index) || isDayPinned(route, reservations, day)}>
+          <Fragment key={day.id}>
+          {(conAlojamiento || conVehiculo) && (
+            <div data-bloques-del-viaje={day.id} className="space-y-2">
+              {conAlojamiento && <AccommodationBlock city={day.city} segmentDayId={day.id} totalNights={estancia?.nights ?? 0} onAnadir={() => { setMode('bookings'); pedirReservas('aloj') }} />}
+              {conVehiculo && <VehicleBlock kind={isCamper ? 'camper' : 'rental-car'} />}
+            </div>
+          )}
+          <SortableDay id={day.id} disabled={soloRecomienda || pasado || !isMovableDay(day, index) || isDayPinned(route, reservations, day)}>
             {(dragHandle) => (
           <PiezaSegura nombre={`día ${day.dayNumber} de DÍAS`}>
           <div
             data-day-id={day.id}
-            className={`relative scroll-mt-3 ml-2.5 rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
+            data-dia-pasado={pasado ? '1' : undefined}
+            style={pasado ? { background: '#F3EEE2' } : undefined}
+            className={`relative scroll-mt-3 ml-2.5 rounded-3xl border ${pasado ? '' : 'bg-bg-card'} shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
           >
             {/* La franja del color del día, fina y en diagonal (el mismo color que sus pines y su línea en el mapa). Solo
                 cerrado: abierto, el color del día se queda en los números de las paradas (decisión del usuario, 2026-09-29). */}
             {!day.isReturnLeg && !expanded && (
               <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-[14px] overflow-hidden rounded-l-3xl">
-                <span className="absolute inset-0" style={{ background: dayColor(colorIndex), clipPath: 'polygon(0 0, 9px 0, 4px 100%, 0 100%)' }} />
+                <span className="absolute inset-0" style={{ background: pasado ? '#CFC8B6' : dayColor(colorIndex), clipPath: 'polygon(0 0, 9px 0, 4px 100%, 0 100%)' }} />
               </span>
             )}
             {/* El asa, a la izquierda del todo y asomando por el borde (44 × 44 de zona de toque). */}
@@ -253,7 +279,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                   toggle()
                 }
               }}
-              className="flex min-h-20 w-full cursor-pointer items-center gap-3.5 py-3 pl-4 pr-3 text-left"
+              className="flex min-h-[60px] w-full cursor-pointer items-center gap-3 py-2 pl-3.5 pr-2.5 text-left"
             >
               {/* El cuadrado, en el color neutro de siempre en todos los días: la franja ya dice qué color es. Con fechas es la ficha de la fecha («LUN» y «13»);
                   sin fechas, el número del día (tanda 6z3, punto 5). */}
@@ -261,28 +287,22 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 <span
                   className={`flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
                 >
-                  <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[.12em] opacity-60">{ficha.semana}</span>
-                  <span className="mt-[3px] font-display text-[22px] leading-none">{ficha.numero}</span>
+                  <span className="font-mono text-[8.5px] font-medium uppercase leading-none tracking-[.12em] opacity-60">{ficha.semana}</span>
+                  <span className="mt-[3px] font-display text-[19px] leading-none">{ficha.numero}</span>
                 </span>
               ) : (
                 <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[22px] leading-none transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[19px] leading-none transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
                 >
                   {day.dayNumber}
                 </span>
               )}
 
-              <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+              <div className="flex min-w-0 flex-1 flex-col gap-[2px]">
                 {/* Con fechas la ficha ya dice qué día es: la línea pequeña solo queda sin fechas («DÍA 3»). */}
-                {(!ficha || esHoy) && (
-                  <p className="flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">
-                    {!ficha && diaCorto(route, day.dayNumber)}
-                    {esHoy && (
-                      <span data-etiqueta-hoy="1" className="rounded-full bg-text px-2 py-[3px] text-[9.5px] font-semibold leading-none tracking-[.14em] text-bg">
-                        HOY
-                      </span>
-                    )}
-                  </p>
+                {/* (V24) Sin etiqueta «HOY» en el día de hoy (decisión de Eric). */}
+                {!ficha && (
+                  <p className="flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{diaCorto(route, day.dayNumber)}</p>
                 )}
                 {sinNombre ? (
                   <button
@@ -292,12 +312,17 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                       event.stopPropagation()
                       setNameSheet({ dayId: day.id })
                     }}
-                    className="self-start text-left font-display text-[22px] italic leading-[1.08] text-text/45"
+                    className="self-start text-left font-display text-[18px] italic leading-[1.08] text-text/45"
                   >
                     Ponle nombre
                   </button>
                 ) : (
-                  <p data-titulo-del-dia="1" className="min-h-[24px] font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
+                  <p data-titulo-del-dia="1" className="min-h-[20px] font-display text-[18px] leading-[1.1] text-text [overflow-wrap:anywhere]">{title}</p>
+                )}
+                {pasado && (
+                  <p data-dia-hecho="1" className="text-[11.5px] font-medium leading-snug text-text/60">
+                    {fotosDelDia > 0 ? `Hecho · ${fotosDelDia} ${fotosDelDia === 1 ? 'foto' : 'fotos'}` : 'Hecho · Ver tu día'}
+                  </p>
                 )}
                 <EtiquetaRecomendacion dayId={day.id} />
                 {diaCompleto && <p className="text-[12px] leading-snug text-text/60">{TEXTO_DIA_COMPLETO}</p>}
@@ -326,7 +351,13 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               </div>
 
               <span onClick={(event) => event.stopPropagation()}>
-                {soloRecomienda ? null : (
+                {pasado ? (
+                  <span data-dia-hecho-marca="1" aria-label="Día hecho" role="img" className="flex h-[26px] w-[26px] items-center justify-center rounded-full" style={{ background: '#DCEBDD', color: '#2F6B43' }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M5 12.5l4.5 4.5L19 7.5" />
+                    </svg>
+                  </span>
+                ) : soloRecomienda ? null : (
                 <DayMenu
                   titulo={[diaProsa(route, day.dayNumber).replace(/^./, (c) => c.toUpperCase()), title].filter(Boolean).join(' · ')}
                   // «Recuperar este día»: solo en los días con cambios; nunca en uno del viajero (no hay ruta nuestra que recuperar) ni en uno fijado por una reserva.
@@ -363,7 +394,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
             </div>
 
             {/* El interruptor [Roma | Excursión] del día 4: debajo del título, a la vista aunque la tarjeta esté plegada (Tanda 6g). */}
-            {day.interruptor && <DayCardSwitch day={day} route={route} reservations={reservations} />}
+            {day.interruptor && !pasado && <DayCardSwitch day={day} route={route} reservations={reservations} />}
 
             {expanded && (
               <DayDetailPanel
@@ -371,15 +402,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 travel={travel}
                 isLastDay={index === route.days.length - 1}
                 origin={route.origin}
-                stay={
-                  !isCamper && stayByFirstDayId.has(day.id) && stayByFirstDayId.get(day.id)!.nights > 0
-                    ? { segmentDayId: day.id, totalNights: stayByFirstDayId.get(day.id)!.nights }
-                    : null
-                }
                 allDays={allDays}
                 isFirstDayOfTrip={index === 0}
-                showCamperBlock={isCamper && hasRentalVehicle}
-                showRentalCarBlock={!isCamper && hasRentalVehicle}
+                soloLectura={pasado}
                 onMapChange={onDayMapChange}
                 onOverlayChange={onDayOverlayChange}
                 showAllDaysOnMap={showAllDaysOnMap}
@@ -389,6 +414,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
           </PiezaSegura>
             )}
           </SortableDay>
+          </Fragment>
         )
       })}
       </SortableContext>

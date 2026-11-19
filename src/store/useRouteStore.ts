@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { diaPasado, ordenRespetaLosPasados } from '../lib/diasPasados'
 import { dayCountryCode } from '../lib/flagColors'
 import type { TuAlojamiento } from '../lib/tuAlojamiento'
 import type { Importe } from '../lib/dinero'
@@ -2098,6 +2099,42 @@ for (const name of MANUAL_EDIT_ACTIONS) {
       })
       useRouteStore.setState({ route: { ...after, days, editedManually: true } })
       return result
+    },
+  } as Partial<RouteStoreState>)
+}
+
+// (V24) UN DÍA QUE YA PASÓ NO SE CAMBIA: no se borra, no se mueve, no se le añaden, quitan ni mueven paradas y ningún día se arrastra delante de él. Se envuelven las acciones que lo harían
+// (la pantalla ya esconde las herramientas; esto es la red de seguridad de verdad, para HOY, las propuestas y todo lo demás). Con otro día, o antes/sin fechas, todo igual que siempre.
+const DIA_PASADO_PRIMER_ARGUMENTO = [
+  'deleteDay', 'removeFreeDay', 'moveFreeDay', 'addPlaceToDay', 'removeStop', 'reorderStops', 'reorganizeDay', 'moveMeal', 'colocarLinea', 'updateStopTime', 'addStop', 'insertStopAt', 'addSpareStop', 'addSuggestedStop',
+] as const
+for (const name of DIA_PASADO_PRIMER_ARGUMENTO) {
+  const original = useRouteStore.getState()[name] as (...args: unknown[]) => unknown
+  useRouteStore.setState({
+    [name]: (...args: unknown[]) => {
+      const estado = useRouteStore.getState()
+      if (typeof args[0] === 'string' && diaPasado(estado.route, args[0], estado.dev_simulated_today_iso)) return undefined
+      return original(...args)
+    },
+  } as Partial<RouteStoreState>)
+}
+{
+  const original = useRouteStore.getState().moveStopToDay as (...args: unknown[]) => unknown
+  useRouteStore.setState({
+    moveStopToDay: (...args: unknown[]) => {
+      const estado = useRouteStore.getState()
+      if (args.slice(1, 3).some((id) => typeof id === 'string' && diaPasado(estado.route, id, estado.dev_simulated_today_iso))) return undefined
+      return original(...args)
+    },
+  } as Partial<RouteStoreState>)
+}
+{
+  const original = useRouteStore.getState().reorderDays as (...args: unknown[]) => unknown
+  useRouteStore.setState({
+    reorderDays: (...args: unknown[]) => {
+      const estado = useRouteStore.getState()
+      if (estado.route && Array.isArray(args[0]) && !ordenRespetaLosPasados(estado.route, args[0] as string[], estado.dev_simulated_today_iso)) return undefined
+      return original(...args)
     },
   } as Partial<RouteStoreState>)
 }
