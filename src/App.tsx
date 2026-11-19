@@ -30,6 +30,7 @@ import { MomentosHost } from './components/logros/momentos/MomentosHost'
 import { PantallasHost } from './components/logros/pantallas/PantallasHost'
 import { AvisoInstalar } from './components/logros/AvisoInstalar'
 import { EliminarViajeHost } from './components/perfil/EliminarViajeHost'
+import { JuntarViajeHost } from './components/perfil/JuntarViajeHost'
 import { CampaignLinks } from './components/sync/CampaignLinks'
 import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
 import { PiezaSegura } from './components/PiezaSegura'
@@ -41,7 +42,6 @@ import { AvisosDeVueloWatcher } from './components/route/AvisosDeVueloWatcher'
 // Lo que no es de la primera pantalla se carga cuando se abre (Tanda 8A3): la ruta con todas sus pestañas y mapas, Mis viajes, «Preparando tu viaje…» y la pantalla de desarrollo.
 const cargarRouteScreen = () => import('./components/route/RouteScreen')
 const RouteScreen = pantallaPerezosa(cargarRouteScreen)
-const MyTripsScreen = pantallaPerezosa(() => import('./components/myTrips/MyTripsScreen').then((m) => ({ default: m.MyTripsScreen })))
 const PreparandoViaje = pantallaPerezosa(() => import('./components/loading/PreparandoViaje').then((m) => ({ default: m.PreparandoViaje })))
 const DevQuickRouteScreen = pantallaPerezosa(() => import('./components/dev/DevQuickRouteScreen').then((m) => ({ default: m.DevQuickRouteScreen })))
 
@@ -94,7 +94,7 @@ function App() {
 
   // Mientras se prepara el viaje (tarda un buen rato), ya se va bajando la pantalla de la ruta: cuando termina, está lista.
   useEffect(() => {
-    if (screen === 'loading' || screen === 'myTrips') void cargarRouteScreen()
+    if (screen === 'loading') void cargarRouteScreen()
   }, [screen])
 
   useEffect(() => {
@@ -181,6 +181,9 @@ function App() {
       <PiezaSegura nombre="EliminarViajeHost">
         <EliminarViajeHost />
       </PiezaSegura>
+      <PiezaSegura nombre="JuntarViajeHost">
+        <JuntarViajeHost />
+      </PiezaSegura>
       <PiezaSegura nombre="PrecioVuela">
         <PrecioVuela />
       </PiezaSegura>
@@ -204,11 +207,6 @@ function App() {
         {/* (Tanda 10N §5: con un enlace de invitación en marcha NO sale «Crear viaje», ni al abrirlo ni al tocar [Unirme].) */}
         {(screen === 'destination' || screen === 'questionnaire') && !invitacionEnMarcha && !cargaHecha && <CargandoApp key="cargando-app" />}
         {(screen === 'destination' || screen === 'questionnaire') && !invitacionEnMarcha && cargaHecha && <TrazoFlow key="trazo" />}
-        {screen === 'myTrips' && (
-          <Suspense key="myTrips" fallback={<Cargando />}>
-            <MyTripsScreen />
-          </Suspense>
-        )}
         {screen === 'loading' && (
           <Suspense key="loading" fallback={<Cargando />}>
             <PreparandoViajeContainer />

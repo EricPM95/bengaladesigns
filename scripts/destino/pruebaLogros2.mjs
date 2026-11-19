@@ -149,7 +149,7 @@ console.log('1c. Vercel y los avisos al móvil')
 console.log('1d. El código partido: al abrir solo carga la primera pantalla')
 {
   const app = leer('src/App.tsx')
-  for (const pantalla of ['RouteScreen', 'MyTripsScreen', 'PreparandoViaje', 'DevQuickRouteScreen']) {
+  for (const pantalla of ['RouteScreen', 'PreparandoViaje', 'DevQuickRouteScreen']) {
     debe(new RegExp(`const ${pantalla} = (lazy|pantallaPerezosa)\\(`).test(app) && !new RegExp(`^import \\{ ${pantalla} \\}`, 'm').test(app), 'partir', `${pantalla} se carga cuando se abre (lazy), no al abrir la app`)
   }
   debe(/<Suspense[^>]*fallback=\{<Cargando \/>\}/.test(app) && /export function Cargando\(\)[\s\S]*h-dvh/.test(leer('src/components/layout/PantallaPerezosa.tsx')), 'partir', 'mientras llega una parte, un fondo del mismo tamaño (sin pantallas en blanco que salten)')

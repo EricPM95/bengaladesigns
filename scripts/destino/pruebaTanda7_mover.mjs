@@ -317,7 +317,6 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
     'src/components/trazo/StepManualSummary.tsx': 1,
     'src/components/trazo/StepElegir.tsx': 1,
     'src/components/trazo/TrazoFlow.tsx': 1,
-    'src/components/myTrips/TripCard.tsx': 1,
     'src/lib/exportPdf.ts': 1,
     'src/components/route/RouteOverview.tsx': 1,
     'src/components/route/ReservasPanel.tsx': 1,

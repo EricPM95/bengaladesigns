@@ -7,6 +7,9 @@ import { getTodayTripContext, getTodayTripStatus } from '../../lib/todayMode'
 import { todayIso } from '../../lib/dateRange'
 import { demoActivo } from '../../lib/logros'
 import { dondeAbrir } from '../../lib/dondeAbrir'
+import { leerFranjaDeUnion } from '../../lib/franjaDeUnion'
+import { proponerJuntarSiHaceFalta } from '../../lib/juntarViaje'
+import { usePerfilUi } from '../../store/usePerfilUi'
 import { olvidarViajeAAbrir, viajeAAbrir } from '../../lib/invitaciones'
 import { esEcoRemoto } from '../../lib/viajeEnDirecto'
 import { cuentasActivas, esFalloDeServidor, hayRespaldoDeSesion } from '../../lib/cuentas'
@@ -191,6 +194,9 @@ export function TripSync() {
             hydrateTrip(await viajeEntero(delEnlace)) // (V1b) la lista es ligera: el viaje que se abre se pide entero
             useRouteStore.getState().setMode('route')
             useRouteStore.getState().setActiveDayId(null)
+            // (V17) Acabas de unirte y ya tenías un viaje propio al mismo destino con días que se pisan: «¿Lo juntamos?»
+            const franja = leerFranjaDeUnion()
+            if (franja && !franja.yaEstaba) proponerJuntarSiHaceFalta(delEnlace.id, franja.invitador)
           } else if (resumable && resumable.generationState) {
             // Generación a medias — retomarla en vez de abrir la ruta directamente (que aún no
             // existe completa). PreparandoViajeContainer (App.tsx) consume pendingResume y continúa
@@ -211,8 +217,13 @@ export function TripSync() {
             useRouteStore.getState().setMode(donde.modo)
             useRouteStore.getState().setActiveDayId(null)
           } else if (donde.tipo === 'misViajes') {
-            // (Tanda 10K: todos sus viajes ya pasaron: «Mis viajes», con [Crear viaje] a la vista.)
-            setScreen('myTrips')
+            // (V17) Todos sus viajes ya pasaron: se abre el PERFIL (Mis viajes, con «Crear un viaje» a la vista), sobre el último viaje que tocó.
+            // La pantalla vieja «Mis viajes» ya no existe: nadie la ve.
+            useSyncStore.getState().setActiveTripId(trips[0].id)
+            hydrateTrip(await viajeEntero(trips[0]))
+            useRouteStore.getState().setMode('route')
+            useRouteStore.getState().setActiveDayId(null)
+            usePerfilUi.getState().abrir()
           }
         }
 

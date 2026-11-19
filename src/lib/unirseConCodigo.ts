@@ -6,7 +6,8 @@ import { recargarSinApertura } from './recargarSinApertura'
 import { demoActivo } from './logros'
 import { loadAllTrips } from './tripPersistence'
 import { usePedirNombre } from '../store/usePedirNombre'
-import { guardarFranjaDeUnion, type FranjaDeUnion } from './franjaDeUnion'
+import { guardarFranjaDeUnion, leerFranjaDeUnion, type FranjaDeUnion } from './franjaDeUnion'
+import { proponerJuntarSiHaceFalta } from './juntarViaje'
 
 /**
  * UNIRSE A UN VIAJE ESCRIBIENDO EL CÓDIGO (Tanda 10N5, apartado 3, `Piezas/Unirse Codigo`): la lógica, para la hoja de la primera pantalla y la del Perfil.
@@ -63,8 +64,13 @@ async function hayCuentaDeVerdad(): Promise<boolean> {
 
 /** Abre ese viaje en la app SIN recargar si se puede (trae de nuevo la lista de viajes, que ahora lo incluye); si no, lo deja pedido y recarga. */
 export async function abrirViajeRecienUnido(tripId: string): Promise<void> {
+  const preguntarSiJuntar = () => {
+    const f = leerFranjaDeUnion()
+    if (f && !f.yaEstaba) proponerJuntarSiHaceFalta(tripId, f.invitador)
+  }
   if (abrirViajeGuardado(tripId)) {
     olvidarViajeAAbrir()
+    preguntarSiJuntar()
     return
   }
   try {
@@ -74,6 +80,7 @@ export async function abrirViajeRecienUnido(tripId: string): Promise<void> {
       useSyncStore.getState().setSavedTrips(viajes)
       if (abrirViajeGuardado(tripId)) {
         olvidarViajeAAbrir()
+        preguntarSiJuntar()
         return
       }
     }

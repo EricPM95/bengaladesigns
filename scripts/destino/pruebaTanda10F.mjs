@@ -190,14 +190,14 @@ console.log('B. La app en un Chrome')
     cuerpo: leer('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx'),
     host: leer('src/components/perfil/EliminarViajeHost.tsx'),
     store: leer('src/lib/eliminarViaje.ts'),
-    antigua: leer('src/components/myTrips/MyTripsScreen.tsx') + leer('src/components/myTrips/TripCard.tsx'),
+    antigua: '',
     app: leer('src/App.tsx'),
   }
   debe(!/window\.confirm|\bconfirm\(|\balert\(/.test(Object.values(src).join('\n')), 'hoja', 'no hay ninguna ventana del navegador (confirm/alert): es una hoja de abajo')
   debe(/Hoja,|<Hoja /.test(src.host) && /EliminarViajeHost/.test(src.app), 'hoja', 'la hoja es la de siempre (`Hoja`) y está montada una vez en App.tsx')
   debe(/BotonEditarViajes/.test(src.cuerpo), 'editar', '[Editar] está en el Perfil (único desde la 10N4)')
   debe(/editando/.test(src.tarjeta), 'editar', 'la tarjeta con foto enseña la papelera en modo editar')
-  debe(/useEliminarViaje/.test(src.antigua) && !/deleteTrip|confirming/.test(src.antigua), 'antigua', 'la pantalla antigua «Mis viajes» usa la misma hoja y el mismo camino (sin su confirmación propia)')
+  debe(!fs.existsSync('src/components/myTrips/MyTripsScreen.tsx'), 'antigua', '(V17) la pantalla antigua «Mis viajes» ya no existe: eliminar solo sale por el Perfil')
   debe(/rgb\(var\(--accent-red\)\)/.test(src.host) && /Eliminar viaje/.test(src.host) && /Salir de este viaje/.test(src.host) && /Cancelar/.test(src.host), 'hoja', '[Eliminar viaje] en el rojo de los avisos importantes, [Salir de este viaje] y [Cancelar]')
 }
 
