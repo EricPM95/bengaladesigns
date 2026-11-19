@@ -96,7 +96,8 @@ interface PlaceExplorerScreenProps {
   onHotels?: () => void
   /** (V18) Los TEMAS de las tarjetas de EXPLORAR como botones de arriba (los mismos, en el mismo orden, con su icono y su color; sin «Hoteles»): uno marcado, y al tocar otro cambian el mapa, la lista y el subtítulo sin salir. Sin esto, la fila de filtros de siempre (el «+» de DÍAS). */
   temas?: TemaDeExplorar[]
-  temaActivo?: string | null
+  /** (V25) Los temas marcados (varios a la vez): cada botón de arriba se enciende o se apaga. */
+  temasActivos?: string[]
   onTema?: (id: string) => void
   /** "Cambiar" restaurante de una comida o cena: los de esta zona van primero, con "Recomendado". */
   recommendedZone?: string | null
@@ -362,7 +363,7 @@ export function PlaceExplorerScreen({
   onQuickAddExcursion,
   onHotels,
   temas,
-  temaActivo = null,
+  temasActivos = [],
   onTema,
   recommendedZone = null,
   quickAddLabel = '+ Añadir',
@@ -418,8 +419,9 @@ export function PlaceExplorerScreen({
   const chipsRowRef = useRef<HTMLDivElement>(null)
   // (V18) El tema marcado se ve siempre en la fila de arriba (si está fuera de la pantalla, la fila se desliza hasta él).
   useEffect(() => {
-    if (temaActivo) chipsRowRef.current?.querySelector("[data-tema][aria-pressed=true]")?.scrollIntoView({ inline: "center", block: "nearest" })
-  }, [temaActivo])
+    if (temasActivos.length > 0) chipsRowRef.current?.querySelector("[data-tema][aria-pressed=true]")?.scrollIntoView({ inline: "center", block: "nearest" })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [temasActivos.join(",")])
   /** El mapa grande (por defecto) o pequeño: el tirador de la hoja lo cambia. */
   const [mapH, setMapH] = useState(() => Math.round(window.innerHeight * 0.38))
   const [draggingSheet, setDraggingSheet] = useState(false)
@@ -870,9 +872,9 @@ export function PlaceExplorerScreen({
 
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}
         <div className="flex shrink-0 items-center gap-1.5 px-4 pb-3">
-          <div ref={chipsRowRef} className="flex flex-1 items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+          <div ref={chipsRowRef} data-fila-de-temas className="flex flex-1 items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none', overflowY: 'hidden', overscrollBehaviorX: 'contain' }}>
             {temas?.map((tema) => {
-              const active = temaActivo === tema.id
+              const active = temasActivos.includes(tema.id)
               return (
                 <button
                   key={tema.id}

@@ -19,6 +19,7 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { quienEs, tokenDe } from './cuentas.js'
 import { detalleDelAviso, franjaDelAviso, ponerTablaDeArticulos, quienDelAviso, textoDelAviso, textoDelPush } from '../shared/avisos/textos.js'
+import { sorteoVisible } from './logros/sorteoVisible.js'
 
 const AQUI = dirname(fileURLToPath(import.meta.url))
 // (Tanda 10N3 §2.2) Los avisos que nombran un sitio («ha añadido la Fontana de Trevi al sábado 28») llevan su artículo, de la misma tabla que los logros.
@@ -129,7 +130,8 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
     } catch (error) {
       log.warn?.('[avisos] no se pudo mirar lo de los logros:', error.message)
     }
-    const todos = (await rpc('avisos_de', { p_uid: uid })) ?? []
+    // (V25) Con el sorteo escondido, los avisos del sorteo que hubiera ya en la campana tampoco salen (ver logros/sorteoVisible.js).
+    const todos = ((await rpc('avisos_de', { p_uid: uid })) ?? []).filter((a) => sorteoVisible() || a.tipo !== 'sorteo')
     // (Tanda 10N4 §2) «Mañana empieza tu viaje a Roma» salía aunque las fechas del viaje ya fueran otras: el aviso de los 10 días se crea UNA vez (con las fechas de ese momento) y se quedaba para siempre.
     // Ahora solo vale si ese viaje sigue existiendo, sigue empezando el mismo día, y de verdad faltan de 1 a 10 días (en la hora del destino); y su «mañana» / «en N días» se cuenta con la fecha de hoy.
     const instanteDeHoy = ahora()

@@ -16,6 +16,10 @@ export interface SitioDeLista {
   visto: boolean
   /** «Estás aquí · te falta este» (la ficha del propio sitio). */
   este?: boolean
+  /** (V25) Lo que dice la fila en lugar de «Visto» / «Por ver»: antes del viaje, «En tu ruta · jueves 26» o «Fuera de tu ruta». */
+  nota?: string
+  /** (V25) La nota va en verde (el sitio está en la ruta). */
+  notaVerde?: boolean
 }
 
 const VERDE = 'oklch(0.55 0.11 150)'
@@ -66,8 +70,8 @@ export function FotoDeSitioDeLista({ url, nombre, ciudad, visto, tam = 52 }: { u
 export function FilaDeSitioDeLista({ s, ciudad, url, accion, alTocar }: { s: SitioDeLista; ciudad: string; url?: string | null; accion?: ReactNode; alTocar?: () => void }): ReactNode {
   const estado = s.visto ? 'visto' : s.este ? 'este' : 'pendiente'
   const color = estado === 'visto' ? 'oklch(0.36 0.09 150)' : '#1C2230'
-  const texto = estado === 'visto' ? 'Visto' : estado === 'este' ? 'Estás aquí · te falta este' : 'Por ver'
-  const colorTexto = estado === 'visto' ? 'oklch(0.45 0.11 150)' : estado === 'este' ? '#8E6820' : 'rgba(28,34,48,.5)'
+  const texto = s.nota ?? (s.visto ? 'Visto' : s.este ? 'Estás aquí · te falta este' : 'Por ver')
+  const colorTexto = s.nota ? (s.notaVerde ? '#2F6B43' : 'rgba(28,34,48,.45)') : estado === 'visto' ? 'oklch(0.45 0.11 150)' : estado === 'este' ? '#8E6820' : 'rgba(28,34,48,.5)'
   const cuerpo = (
     <>
       <FotoDeSitioDeLista url={url} nombre={s.nombre} ciudad={ciudad} visto={s.visto} />

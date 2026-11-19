@@ -11,6 +11,8 @@ import { diaDeRuta, fechaCorta } from './destino/formato'
 import { BotonVolver, Esperando, FONDO_PAPEL, useCarga } from './destino/piezas'
 import './destino/destino.css'
 import { Capa } from './Capa'
+import { todayIso } from '../../../lib/dateRange'
+import { zonaDelDestino } from '../../../lib/zonaHoraria'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
 
 /**
@@ -108,9 +110,11 @@ function Album({ datos }: { datos: ColeccionDentroDatos }): ReactNode {
 function Tarjeta({ s, k, coleccion, total, datos, tocada, alTocar }: { s: ColeccionDentroDatos['sitios'][number]; k: number; coleccion: string; total: number; datos: ColeccionDentroDatos; tocada: boolean; alTocar: () => void }): ReactNode {
   const trozo = useMemo(() => trozoDeInsignia(coleccion, total, k), [coleccion, total, k])
   const TAM = 150
-  const terminado = Boolean(datos.viaje && datos.viaje.hoy > datos.viaje.fin)
+  // (V25) El «hoy» es el de ahora en el destino (no el que trajera lo guardado): el mismo momento del viaje que en la hoja de logros.
+  const hoy = todayIso(zonaDelDestino(datos.destino) ?? zonaDelDestino(datos.ciudad))
+  const terminado = Boolean(datos.viaje && hoy > datos.viaje.fin)
   const conViaje = Boolean(datos.viaje)
-  const dia = s.dia ? diaDeRuta(s.dia) + (s.dia.fecha && datos.viaje && s.dia.fecha === datos.viaje.hoy ? ' · Hoy' : '') : ''
+  const dia = s.dia ? diaDeRuta(s.dia) + (s.dia.fecha && datos.viaje && s.dia.fecha === hoy ? ' · Hoy' : '') : ''
   const botones = !s.visto && conViaje && !terminado
   return (
     <div data-sitio-de-coleccion={s.sitio} data-ganado={s.visto ? '1' : '0'} role="button" tabIndex={0} onClick={alTocar} onKeyDown={(e) => e.key === 'Enter' && alTocar()} style={{ position: 'relative', display: 'flex', flexDirection: 'column', borderRadius: 22, background: s.visto ? '#FFFDF8' : '#EFE7D8', border: tocada ? '2px solid #C99A4C' : `1px solid rgba(28,34,48,${s.visto ? 0.08 : 0.1})`, overflow: 'hidden', boxShadow: tocada ? '0 10px 22px -12px rgba(150,105,30,.7)' : s.visto ? '0 8px 20px -16px rgba(28,34,48,.35)' : 'none', cursor: 'pointer' }}>

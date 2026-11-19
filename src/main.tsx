@@ -1,4 +1,5 @@
 import { StrictMode } from 'react'
+import { avisarVersionNueva } from './lib/cargaSegura.ts'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
@@ -13,6 +14,12 @@ import { instalarFetchConCuenta } from './lib/fetchConCuenta.ts'
 
 // (Arreglo, 5-nov) Toda llamada a /api lleva la sesión del viajero: sin ella, el administrador no podía crear un viaje a un destino oculto (Lanzarote).
 instalarFetchConCuenta()
+
+// (V25) Si una parte de la app ya no existe porque se publicó una versión nueva con la app abierta, Vite avisa con este evento: NO se recarga sola (se perdería lo que se estuviera haciendo); sale «Hay una versión nueva · [Actualizar]».
+window.addEventListener('vite:preloadError', (evento) => {
+  evento.preventDefault()
+  avisarVersionNueva()
+})
 
 // Solo en desarrollo: window.__rutaPrueba() crea el viaje de pruebas de siempre (src/dev/rutaDePrueba.ts).
 if (import.meta.env.DEV) void import('./dev/rutaDePrueba.ts')

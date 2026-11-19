@@ -1,4 +1,5 @@
 import { cuentasActivas } from './cuentas'
+import { conLimite } from './cargaSegura'
 import { supabase } from './supabaseClient'
 import { leerDatosDeFoto, type DatosDeFoto } from './exifFoto'
 
@@ -123,8 +124,12 @@ export interface RespuestaDeHecho {
   exp?: ExpDeRespuesta | null
 }
 
+/** (V25) Ninguna llamada de logros espera sin fin: la sesión, 8 s; la respuesta, 15 s. Pasado el tope devuelve «no hay respuesta» y la pantalla sigue con lo que tenga (y ofrece reintentar). */
+const TOPE_SESION_MS = 8000
+const TOPE_RESPUESTA_MS = 15000
+
 async function cabeceras(): Promise<Record<string, string> | null> {
-  const sesion = (await supabase?.auth.getSession())?.data.session
+  const sesion = (await conLimite(Promise.resolve(supabase?.auth.getSession()), TOPE_SESION_MS, null))?.data.session
   if (!sesion?.access_token) return null
   return { 'Content-Type': 'application/json', Authorization: `Bearer ${sesion.access_token}` }
 }
@@ -157,8 +162,14 @@ export async function llamarCrudo(ruta: string): Promise<{ estado: number | null
   try {
     const cab = await cabeceras()
     if (!cab) return { estado: null, cuerpo: '', error: 'sin sesión (no has entrado con tu cuenta en este navegador)' }
-    const r = await fetch(ruta, { method: 'GET', headers: cab })
-    return { estado: r.status, cuerpo: await r.text() }
+    const control = new AbortController()
+    const tope = window.setTimeout(() => control.abort(), TOPE_RESPUESTA_MS)
+    try {
+      const r = await fetch(ruta, { method: 'GET', headers: cab, signal: control.signal })
+      return { estado: r.status, cuerpo: await r.text() }
+    } finally {
+      window.clearTimeout(tope)
+    }
   } catch (e) {
     return { estado: null, cuerpo: '', error: String((e as Error)?.message ?? e) }
   }
@@ -175,9 +186,15 @@ export async function llamar<T = unknown>(ruta: string, opciones: { metodo?: str
   try {
     const cab = await cabeceras()
     if (!cab) return null
-    const r = await fetch(ruta, { method: opciones.metodo ?? (opciones.cuerpo ? 'POST' : 'GET'), headers: cab, body: opciones.cuerpo ? JSON.stringify(opciones.cuerpo) : undefined })
-    if (!r.ok) return null
-    return (await r.json()) as T
+    const control = new AbortController()
+    const tope = window.setTimeout(() => control.abort(), TOPE_RESPUESTA_MS)
+    try {
+      const r = await fetch(ruta, { method: opciones.metodo ?? (opciones.cuerpo ? 'POST' : 'GET'), headers: cab, body: opciones.cuerpo ? JSON.stringify(opciones.cuerpo) : undefined, signal: control.signal })
+      if (!r.ok) return null
+      return (await r.json()) as T
+    } finally {
+      window.clearTimeout(tope)
+    }
   } catch {
     return null
   }

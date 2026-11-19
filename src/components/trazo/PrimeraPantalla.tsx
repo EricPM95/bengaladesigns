@@ -556,7 +556,7 @@ export function PrimeraPantalla({ origin, destination, onOrigin, onDestination, 
           <>
         {/* (Tanda 10C: las fotos de los destinos curados van pegadas a la tarjeta de ORIGEN, 8 px por encima, no a una altura fija.) */}
         {foco === 'd' && coinciden.length > 0 && (
-          <div className="trazo-noscroll" data-destinos-fila onMouseDown={(e) => e.preventDefault()} style={{ order: 5, margin: '0 -8px', padding: '0 8px', display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
+          <div className="trazo-noscroll" data-destinos-fila onMouseDown={(e) => e.preventDefault()} style={{ order: 5, margin: '0 -8px', padding: '0 8px', display: 'flex', gap: 8, overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain', scrollbarWidth: 'none' }}>
             {coinciden.map((d, i) => (
               <div
                 key={d.clave}

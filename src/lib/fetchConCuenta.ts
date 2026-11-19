@@ -1,3 +1,4 @@
+import { conLimite } from './cargaSegura'
 import { tokenDeLaCuenta } from './servidor'
 
 /**
@@ -23,7 +24,7 @@ export function crearFetchConCuenta(original: typeof fetch, obtenerToken: () => 
       if (!rutaDe(entrada).startsWith('/api/')) return original(entrada, init)
       const cabeceras = new Headers(init?.headers ?? (entrada instanceof Request ? entrada.headers : undefined))
       if (cabeceras.has('Authorization')) return original(entrada, init)
-      const token = await obtenerToken()
+      const token = await conLimite(obtenerToken(), 6000, null) // (V25) nunca esperar sin fin a la sesión
       if (!token) return original(entrada, init)
       cabeceras.set('Authorization', `Bearer ${token}`)
       return entrada instanceof Request && !init ? original(new Request(entrada, { headers: cabeceras })) : original(entrada, { ...init, headers: cabeceras })

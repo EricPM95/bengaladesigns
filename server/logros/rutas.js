@@ -36,6 +36,7 @@ import { logrosYVisibilidad, llevarAVitrina } from './vistas.js'
 import { enviarAvisosPendientes, pushActivo } from './avisos.js'
 import { registrarPantallas } from './pantallas/index.js'
 import { reiniciarMisPruebas, empezarDeCero } from './reiniciar.js'
+import { sorteoVisible } from './sorteoVisible.js'
 
 export function logrosActivos(env = process.env) {
   const on = (v) => String(v ?? '').toLowerCase() === 'true'
@@ -116,7 +117,7 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
   app.get('/api/logros/resumen', conUsuario(async (req, res, u) => res.json(await servicio.resumenDe(u.id, String(req.query.trip_id ?? ''), { dia: req.query.dia ? String(req.query.dia) : null }))))
   app.get('/api/logros/viajero', conUsuario(async (_req, res, u) => res.json(await servicio.logrosDeViajero(u.id))))
   app.get('/api/logros/exp', conUsuario(async (_req, res, u) => res.json(await servicio.expDe(u.id))))
-  app.get('/api/logros/sorteo', conUsuario(async (_req, res, u) => res.json(await servicio.sorteoDeCuenta(u.id))))
+  app.get('/api/logros/sorteo', conUsuario(async (_req, res, u) => (sorteoVisible() ? res.json(await servicio.sorteoDeCuenta(u.id)) : res.status(404).json({ ok: false, oculto: true }))))
   app.get('/api/logros/pasaporte', conUsuario(async (_req, res, u) => res.json(await servicio.pasaporteDe(u.id))))
   app.get('/api/logros/vitrina', conUsuario(async (_req, res, u) => res.json(await servicio.vitrinaDe(u.id))))
 

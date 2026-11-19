@@ -55,7 +55,7 @@ console.log('1. El código')
 /* ─────────────────────────── 2. La pantalla, con logros ─────────────────────────── */
 console.log('2. La pantalla con los logros')
 const preparar = async (ruta) => {
-  const app = await abrirApp('http://localhost:5173', { ancho: 390, alto: 844, ruta })
+  const app = await abrirApp('http://localhost:5173', { ancho: 390, alto: 844, ruta, antes: 'window.__sorteoVisible = true' })
   const ev = (js) => app.evaluar(js)
   const esperar = async (js, intentos = 40, ms = 400) => {
     for (let i = 0; i < intentos; i++) {

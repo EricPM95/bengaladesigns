@@ -59,7 +59,7 @@ function Paginas({ datos, grupo, abrir }: { datos: MiColeccionDatos; grupo?: str
     if (el && inicio > 0) el.scrollLeft = el.clientWidth * inicio
   }, [inicio])
   return (
-    <div ref={lista} style={{ flex: 1, minHeight: 0, display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}>
+    <div ref={lista} style={{ flex: 1, minHeight: 0, display: 'flex', overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain', scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}>
       {paginas.map((p, i) => (
         <div key={`${p.grupo}-${i}`} style={{ flex: 'none', width: '100%', scrollSnapAlign: 'start', padding: '4px 16px calc(env(safe-area-inset-bottom,0px) + 24px)', display: 'flex', alignItems: 'flex-start', overflowY: 'auto' }}>
           <div style={{ flex: 1, borderRadius: 24, background: 'linear-gradient(160deg,#5A2230,#3A121C)', boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.25),0 20px 40px -24px rgba(0,0,0,.6)', padding: '16px 14px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>

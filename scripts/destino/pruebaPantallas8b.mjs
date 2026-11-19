@@ -378,7 +378,7 @@ console.log('9. Tanda 8C1: dibujos del Dashboard, hoja de secretos, título de H
   debe(pant.includes('<Chapa logro={ch.logro}') && leer('src/components/logros/momentos/ResumenViaje.tsx').includes('<Chapa logro={n.id}'), 'dibujos', '«Y además…», los avisos de lo ganado y el resumen del viaje usan las chapas nuevas')
   // La hoja de logros
   const hoja = leer('src/components/logros/momentos/HojaLogros.tsx')
-  debe(/tituloDeSecretos|lineaDeSecretos/.test(hoja) && !/de 12 secretos/.test(sinComentarios(hoja).replace(/«N de 12 secretos»/g, '')), 'hoja', 'la hoja de logros dice lo mismo que el resumen: «Roma aún esconde N secretos.» (8C2: desde hoja/textosHoja.ts)')
+  debe((/tituloDeSecretos|lineaDeSecretos/.test(hoja) || /secretos encontrados/i.test(hoja)) && !/de 12 secretos/.test(sinComentarios(hoja).replace(/«N de 12 secretos»/g, '')), 'hoja', 'la hoja de logros cuenta los secretos desde el servidor (V25: «N de M secretos encontrados», con siluetas; antes «Roma aún esconde N secretos»)')
   // El título del día de HOY
   const hoyV2 = leer('src/components/route/hoy/v2/HoyDuranteV2.tsx')
   debe(hoyV2.includes('nombreDelDia(route, day,') && hoyV2.includes('tituloLimpio'), 'hoy', 'el título del día de HOY v2 sale de nombreDelDia: el mismo que DÍAS (con el nombre del viajero si lo cambió)')

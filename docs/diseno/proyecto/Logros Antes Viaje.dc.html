@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}@keyframes lbIn{0%{opacity:0;transform:translateY(14px) scale(.97)}100%{opacity:1;transform:none}}@keyframes lbOpen{0%{max-height:0;opacity:0}100%{max-height:2000px;opacity:1}}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">LOGROS · TUS LOGROS EN ROMA · ANTES DEL VIAJE</span><span style="font:400 40px/1 'Instrument Serif',serif">Un juego que te espera</span><button onClick="{{ replay }}" style="align-self:flex-start;height:38px;padding:0 18px;border-radius:999px;border:1px solid rgba(28,34,48,.25);background:#FFFDF8;font:600 13px 'Geist';cursor:pointer">Repetir la apertura (L3b)</button></div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="4">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:390px;border-radius:36px;overflow:hidden;background:#FFFDF8;box-shadow:0 30px 60px -30px rgba(28,34,48,.5);padding:10px 18px 30px;display:flex;flex-direction:column;gap:16px">
+        <span style="align-self:center;width:42px;height:5px;border-radius:5px;background:rgba(28,34,48,.18)"></span>
+        <div style="display:flex;align-items:center;justify-content:space-between"><span style="font:400 28px/1 'Instrument Serif',serif">{{ b.head }} <em style="font-style:italic;color:#8A6A2C">{{ b.dest }}</em></span><span style="width:36px;height:36px;border-radius:50%;background:#F1EADC;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+        <sc-if value="{{ b.showMed }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ b.meds }}" as="m" hint-placeholder-count="2">
+            <div style="position:relative;overflow:hidden;border-radius:26px;background:radial-gradient(120% 140% at 0% 0%,#3A3F5C 0%,#232840 45%,#1C2230 100%);border:1px solid rgba(243,213,154,.35);box-shadow:0 16px 28px -18px rgba(28,34,48,.8);padding:14px 16px;display:flex;align-items:center;gap:14px"><span style="position:absolute;left:-30px;top:-50px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(243,213,154,.22),transparent 68%)"></span>
+              <span style="position:relative;flex:none;width:84px;height:84px;display:flex;align-items:center;justify-content:center"><dc-import name="Piezas/Sello Logro" grade="none" icon="{{ m.ic }}" shape="{{ m.sh }}" size="{{ 84 }}" label="{{ m.lb }}" hint-size="84px,84px"></dc-import></span>
+              <span style="position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:5px"><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:#F3D59A">{{ m.eye }}</span><span style="font:400 22px/1.08 'Instrument Serif',serif;color:#FFFDF8;text-wrap:balance">{{ m.t }}</span><span style="font:400 12.5px/1.3 'Geist';color:rgba(255,253,248,.8)">{{ m.s }}</span>
+                </span>
+            </div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ b.showTake }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">LO QUE TE PUEDES LLEVAR DE ROMA</span>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+              <sc-for list="{{ take }}" as="k" hint-placeholder-count="3"><div style="border-radius:18px;background:#F7F1E4;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center"><span style="font:400 28px/1 'Instrument Serif',serif;color:#8A6A2C">{{ k.n }}</span><span style="font:500 11.5px/1.25 'Geist';color:rgba(28,34,48,.7)">{{ k.l }}</span></div></sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;padding:14px 0 14px 14px;border-radius:20px;background:radial-gradient(120% 100% at 50% 0%,#2A3050 0%,#1C2230 70%)"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:#F3D59A">0 DE 11 SECRETOS ENCONTRADOS</span><div style="display:flex;gap:10px;overflow-x:auto;padding:2px 14px 4px 0;scrollbar-width:none"><sc-for list="{{ sil }}" as="q" hint-placeholder-count="11"><span style="flex:none;width:66px;height:66px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#394168,#12172A);clip-path:{{ q.cp }};border-radius:{{ q.br }};box-shadow:inset 0 0 0 1.5px rgba(243,213,154,.28)"><span style="font:400 28px/1 'Instrument Serif',serif;color:rgba(243,213,154,.75)">?</span></span></sc-for></div></div>
+          </div>
+        </sc-if>
+        
+        
+        <sc-if value="{{ b.cols }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ b.tog }}" style="cursor:pointer;border-radius:22px;background:linear-gradient(135deg,#FFF6DC,#F6E3B4);border:1px solid #D8BE84;padding:14px 16px;display:flex;align-items:center;gap:12px"><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 21px/1.1 'Instrument Serif',serif;text-wrap:balance">Con tu ruta puedes completar <em style="color:#8A6A2C">4 de las 11</em> colecciones</span></span><span style="flex:none;display:grid;grid-template-columns:repeat(2,52px);grid-auto-rows:52px;gap:4px;justify-items:center;align-items:center"><sc-for list="{{ mini }}" as="q" hint-placeholder-count="4"><span style="position:relative;width:{{ q.s }}px;height:{{ q.s }}px;flex:none;display:flex;align-items:center;justify-content:center"><sc-if value="{{ q.pz }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Pieza" kind="{{ q.pk }}" have="{{ q.have }}" neu="{{ -1 }}" dark="{{ false }}" delay="{{ -30 }}" scale="{{ q.sc }}" hint-size="{{ q.s }}px,{{ q.s }}px"></dc-import><span style="position:absolute;left:50%;top:50%;width:{{ q.ms }}px;height:{{ q.ms }}px;margin:{{ q.mo }}px 0 0 {{ q.mo }}px;pointer-events:none"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ q.rk }}" set="{{ q.set }}" med="{{ true }}" size="{{ q.ms }}" hint-size="{{ q.ms }}px,{{ q.ms }}px"></dc-import></span></sc-if><sc-if value="{{ q.lc }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ q.rk }}" set="{{ q.set }}" size="{{ q.s }}" hint-size="{{ q.s }}px,{{ q.s }}px"></dc-import></sc-if></span></sc-for></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A6A2C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:{{ b.rot }}"><path d="M6 9l6 6 6-6"></path></svg></div>
+          <sc-if value="{{ b.isOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:12px;overflow:hidden;animation:{{ b.openAnim }}">
+            <sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="5">
+              <div style="position:relative;flex:none;border-radius:24px;background:#FFFFFF;border:1px solid rgba(28,34,48,.08);box-shadow:0 10px 22px -18px rgba(28,34,48,.45);padding:12px 14px;display:flex;flex-direction:column;gap:10px;animation:{{ r.anim }}">
+                <div onClick="{{ r.tg }}" style="cursor:pointer;display:flex;align-items:center;gap:14px">
+                  <span style="flex:none;width:84px;height:84px;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:size"><span style="position:relative;width:{{ r.s }}px;height:{{ r.s }}px;flex:none;display:flex;align-items:center;justify-content:center"><sc-if value="{{ r.pz }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Pieza" kind="{{ r.pk }}" have="{{ r.have }}" neu="{{ -1 }}" dark="{{ false }}" delay="{{ -30 }}" scale="{{ r.sc }}" hint-size="{{ r.s }}px,{{ r.s }}px"></dc-import><span style="position:absolute;left:50%;top:50%;width:{{ r.ms }}px;height:{{ r.ms }}px;margin:{{ r.mo }}px 0 0 {{ r.mo }}px;pointer-events:none"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ r.rk }}" set="{{ r.set }}" med="{{ true }}" size="{{ r.ms }}" hint-size="{{ r.ms }}px,{{ r.ms }}px"></dc-import></span></sc-if><sc-if value="{{ r.lc }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ r.rk }}" set="{{ r.set }}" size="{{ r.s }}" hint-size="{{ r.s }}px,{{ r.s }}px"></dc-import></sc-if></span>
+                  <span style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:5px"><span style="font:400 18px/1.12 'Instrument Serif',serif;text-wrap:balance">{{ r.n }}</span><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:600 11.5px 'Geist Mono',monospace;color:#8A6A2C">{{ r.cnt }}</span><sc-if value="{{ r.ruta }}" hint-placeholder-val="{{ false }}"><span style="height:20px;padding:0 9px;border-radius:999px;background:#E3F1E4;color:#2F6B43;display:flex;align-items:center;font:600 10.5px 'Geist'">Se completa con tu ruta</span></sc-if></span></span>
+                  <sc-if value="{{ b.lock }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;background:#1C2230;color:#F3D88F;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span></sc-if>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.5)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:{{ r.rot }}"><path d="M6 9l6 6 6-6"></path></svg>
+                </div>
+                <sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;border-top:1px solid rgba(28,34,48,.08)">
+                  <sc-for list="{{ r.sites }}" as="s" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:12px;padding:9px 2px;border-bottom:1px solid rgba(28,34,48,.06)"><dc-import name="Piezas/Parada Foto" n="{{ s.n }}" seen="{{ false }}" size="{{ 48 }}" hint-size="48px,48px"></dc-import><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:500 14px/1.2 'Geist'">{{ s.n }}</span><span style="font:600 11.5px 'Geist';color:{{ s.tc }}">{{ s.t }}</span></span></div></sc-for>
+                  <span style="padding-top:12px;align-self:flex-end;font:600 13.5px 'Geist';color:#8A6A2C">Ver la colección ›</span>
+                </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ b.sell }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius:26px;background:#1C2230;border:1.5px solid #D8BE84;box-shadow:0 18px 32px -18px rgba(28,34,48,.8);padding:18px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden"><span style="position:absolute;right:-40px;top:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(243,213,154,.28),transparent 68%)"></span>
+            <span style="position:relative;font:400 25px/1.1 'Instrument Serif',serif;color:#FFFDF8;text-wrap:balance">Los logros vienen con el <em style="color:#F3D59A">Pase Roma</em></span>
+            <sc-for list="{{ pts }}" as="p" hint-placeholder-count="3"><span style="position:relative;display:flex;align-items:center;gap:10px;font:400 14px/1.3 'Geist';color:rgba(255,253,248,.88)"><span style="flex:none;width:20px;height:20px;border-radius:50%;background:#F3D59A;color:#2A1D10;display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>{{ p }}</span></sc-for>
+            <span style="position:relative;height:54px;border-radius:16px;background:linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440);box-shadow:0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 15.5px 'Geist'">Conseguir el pase · 6,99 €</span>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const LAD=[['#C98A5A',1],['#C9CFD8',1],['#EAC46A',1],['#BFE6FF',1]];
+const K={impr:['Los imprescindibles de Roma',8,'Tu primer pedazo te espera en el Coliseo'],vati:['El país más pequeño del mundo',3,'Tres trozos, un país entero'],joyas:['Las 4 joyas de Roma',4,'Cuatro joyas, cuatro paradas'],ant:['La Roma antigua',6,'Empieza por el Foro Romano'],tras:['El alma de Trastevere',4,'Pasea por Trastevere'],mig:['La Roma de Miguel Ángel',4,'Sigue su huella'],ber:['La Roma de Bernini',5,'Esculturas y fuentes te esperan'],car:['Tras los pasos de Caravaggio',3,'Luz y sombra en tres iglesias'],pyf:['Plazas y fuentes de Roma',7,'Agua y piedra, siete paradas'],mir:['Los miradores',3,'Roma a tus pies'],sec:['La Roma secreta',5,'Lo que pocos ven']};
+const ORD=['impr','vati','joyas','ant','tras','mig','ber','car','pyf','mir','sec'],RUTA=['impr','vati','joyas','ant'];
+const SITES={impr:['Coliseo','Foro Romano y Palatino','Fontana de Trevi','Panteón','Piazza Navona','Plaza de España',"Castillo de Sant'Angelo",'Trastevere'],vati:['Museos Vaticanos y Capilla Sixtina','Basílica de San Pedro','Plaza de San Pedro'],joyas:['Coliseo','Fontana de Trevi','Panteón','Museos Vaticanos y Capilla Sixtina'],ant:['Coliseo','Foro Romano y Palatino','Largo di Torre Argentina',"Castillo de Sant'Angelo",'Circo Máximo','Termas de Caracalla'],tras:['Isla Tiberina','Santa Maria in Trastevere','San Pietro in Montorio','Tempietto de Bramante'],mig:['Museos Vaticanos y Capilla Sixtina','Basílica de San Pedro','Plaza del Campidoglio','Santa Maria sopra Minerva'],ber:['Piazza Navona','Elefantino','Plaza de San Pedro','Basílica de San Pedro',"Puente Sant'Angelo"],car:['San Luigi dei Francesi','Santa Maria del Popolo','Galería Borghese'],pyf:['Piazza Navona','Piazza del Popolo','Plaza de España','Plaza Venecia','Fontana de Trevi',"Fontana dell'Acqua Paola",'Fuente del Tritón'],mir:['Mirador del Janículo','Terraza del Pincio','Jardín de los Naranjos'],sec:['Ojo de la cerradura del Aventino','Pirámide Cestia','Basílica de San Clemente','Tempietto de Bramante','Fuente de las Tortugas']};
+const DAY={'Coliseo':'jueves 26','Foro Romano y Palatino':'jueves 26','Circo Máximo':'jueves 26','Termas de Caracalla':'jueves 26','Fontana de Trevi':'viernes 27','Panteón':'viernes 27','Piazza Navona':'viernes 27','Plaza de España':'viernes 27','Largo di Torre Argentina':'viernes 27','Museos Vaticanos y Capilla Sixtina':'sábado 28','Basílica de San Pedro':'sábado 28','Plaza de San Pedro':'sábado 28',"Castillo de Sant'Angelo":'sábado 28','Trastevere':'sábado 28','Isla Tiberina':'sábado 28'};
+const PIN='M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21zM12 12.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z';
+class Component extends DCLogic {
+  state={open:{L3b:true,L3c:true},rowOpen:{'L3c:impr':true},n:0};
+  tgRow=key=>()=>this.setState(s=>({rowOpen:{...s.rowOpen,[key]:!s.rowOpen[key]}}));
+  tog=id=>()=>this.setState(s=>({open:{...s.open,[id]:!s.open[id]}}));
+  replay=()=>this.setState(s=>({open:{...s.open,L3b:false},n:s.n+1}),()=>setTimeout(()=>this.setState(s=>({open:{...s.open,L3b:true}})),350));
+  renderVals(){
+    const st=this.state;
+    const med=[{ic:'coliseo',sh:'round',lb:'ROMA',eye:'POR CONSEGUIR · 0 DE 8 IMPRESCINDIBLES',t:'Empieza en bronce: 1 sitio',s:'Tu primer pedazo te espera en el Coliseo',lad:LAD.map(([c,o])=>({c,o}))},{ic:'cupula',sh:'oval',lb:'VATICANO',eye:'EL VATICANO · 0 DE 3 SITIOS',t:'Empieza en plata: 1 sitio',s:'Un país entero te espera',lad:LAD.slice(1).map(([c,o])=>({c,o}))}];
+    const lz=[{ic:'cupula',sh:'round',lb:'LANZAROTE',eye:'POR CONSEGUIR · 0 DE 7 IMPRESCINDIBLES',t:'Empieza en bronce: 1 sitio',s:'Tu primer pedazo te espera en Timanfaya',lad:LAD.map(([c,o])=>({c,o}))}];
+    const IDX={impr:0,vati:1,joyas:2,tras:3,mig:4,ber:5,car:6,ant:7,mir:8,pyf:9,sec:10};
+    const ins=(k,s,have)=>{const pz=k==='impr'||k==='joyas',n=K[k][1];return{pz,lc:!pz,pk:k,have,rk:'r'+(IDX[k]+1),set:Array.from({length:have},(_,j)=>j).join(','),s,sc:+(.85*s/128).toFixed(3),ms:Math.round(s*.6),mo:-Math.round(s*.3)};};
+    const mkRows=(anim,id)=>ORD.map(k=>{const sites=SITES[k].map(n=>{const d=DAY[n],ok=!!d;return{n,t:ok?'En tu ruta · '+d:'Fuera de tu ruta',tc:ok?'#2F6B43':'rgba(28,34,48,.45)',pb:ok?'#E3F1E4':'#F1EADC',pc:ok?'#2F6B43':'rgba(28,34,48,.4)',pd:PIN};});
+      const pr=id==='L1'?26:0,key=id+':'+k,op=!!this.state.rowOpen[key];return{...ins(k,80,0),k,n:K[k][0],cnt:'0 de '+K[k][1],pr,tg:this.tgRow(key),open:op,rot:op?'rotate(180deg)':'none',ruta:sites.every(s=>s.t.startsWith('En tu')),bd:'rgba(28,34,48,.08)',sites};}).sort((a,b)=>(b.ruta?1:0)-(a.ruta?1:0)).map((x,i)=>({...x,anim:anim?'lbIn .5s ease-out '+(0.25+i*0.28).toFixed(2)+'s both':'none'}));
+    const mini=['impr','vati','joyas','ant'].map(k=>ins(k,52,Math.ceil(K[k][1]/2)));
+    const base={head:'Tus logros en',dest:'Roma',showMed:true,meds:med,showTake:false,sell:false,ready:false,cols:true};
+    const col=(id,open,extra={})=>({...base,...extra,tog:this.tog(id),isOpen:!!open,hint:open?'Toca para cerrar':'Toca para ver tus colecciones',rot:open?'rotate(180deg)':'none',openAnim:'none',rows:mkRows(false,id)});
+    return{
+      take:[{n:'4',l:'medallas, de bronce a diamante'},{n:'11',l:'insignias por completar'},{n:'1',l:'sello en tu pasaporte'}],
+      pts:['Medallas, insignias y 11 emblemas secretos','Tu sello en el pasaporte de Roma','Experiencia, niveles y sorteo anual'],
+      mini,
+      sil:['polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)','none','polygon(50% 0,100% 20%,100% 65%,50% 100%,0 65%,0 20%)','none','polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)','none','polygon(50% 0,100% 50%,50% 100%,0 50%)','none','polygon(0 100%,0 40%,50% 0,100% 40%,100% 100%)','none','polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)'].map((cp,i)=>({cp,br:i%2?(i===1?'50%':i===3?'18px':i===5?'50% 50% 14px 14px':'30%'):'0'})),
+      boards:[
+        {id:'L1',cap:'Sin pase · la hoja vende el pase',...col('L1',st.open.L1,{showTake:true,sell:true,lock:true})},
+        {id:'L2',cap:'Con pase, antes del viaje · motiva',...col('L2',st.open.L2,{showTake:true,ready:true})},
+        {id:'L3a',cap:'Las colecciones · franja cerrada',...col('L3a',st.open.L3a,{showMed:false})},
+        {id:'L3b',cap:'Las colecciones · el momento en que se abren, una a una',...col('L3b',st.open.L3b,{showMed:false}),rows:mkRows(true,'L3b').map(r=>({...r,anim:st.n>=0?r.anim:'none'})),openAnim:'lbOpen .6s ease-out both'},
+        {id:'L3c',cap:'Las colecciones · ya abiertas',...col('L3c',st.open.L3c,{showMed:false})},
+        {id:'L4',cap:'Las medallas con el sello de cada ciudad',head:'Medallas de',dest:'viaje',showMed:true,meds:[...med,...lz],showTake:false,sell:false,ready:false,cols:false,rows:[]}
+      ],
+      replay:this.replay
+    };
+  }
+}
+</script>
+</body>
+</html>

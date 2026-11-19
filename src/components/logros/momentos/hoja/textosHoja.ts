@@ -41,8 +41,8 @@ export function etiquetaDeFase(fase: FaseDelViaje, viaje: { inicio?: string; fin
   if (fase === 'despues') return `Viaje terminado · ${rangoCorto(viaje.inicio, viaje.fin)}`
   const hoy = viaje.hoy ?? viaje.inicio
   const dia = `${DIAS[diaDeLaSemana(hoy)]} ${partes(hoy).d}`
-  if (hoy === viaje.fin && viaje.fin !== viaje.inicio) return `${dia} · último día${ciudad ? ` en ${ciudad}` : ''}`
-  return `${dia} · día ${diasEntre(viaje.inicio, hoy) + 1}`
+  if (hoy === viaje.fin && viaje.fin !== viaje.inicio) return `En curso · ${dia} · último día${ciudad ? ` en ${ciudad}` : ''}`
+  return `En curso · ${dia} · día ${diasEntre(viaje.inicio, hoy) + 1}`
 }
 
 const NOMBRE_GRADO: Record<string, string> = { bronce: 'Bronce', plata: 'Plata', oro: 'Oro', diamante: 'Diamante' }

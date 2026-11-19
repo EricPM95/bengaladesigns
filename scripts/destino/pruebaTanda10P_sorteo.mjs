@@ -9,6 +9,7 @@
 // 4. El código: ninguna cifra, año, destino ni premio escritos en el cerebro ni en las pantallas del sorteo.
 // 5. La pantalla (hace falta Vite en APP_URL, por defecto http://localhost:5183 con API_TARGET apuntando a un servidor; sin él se salta): el billete en sus tres estados, la página (sin [Bases legales] sin enlace),
 //    el aviso dorado de la campana, el Perfil sin el mapa suelto y con la tarjeta del pasaporte como P1, y dentro «Pasaporte de {nombre}» con el mapa grande. Capturas en docs/dias/capturas_jutrip/.
+process.env.SORTEO_VISIBLE = 'true' // (V25) el sorteo está escondido por defecto; esta prueba es de su lógica y lo enciende
 import fs from 'node:fs'
 import { crearBaseDePrueba } from './_baseDeDatosPrueba.mjs'
 import { crearRepoPG } from './_repoLogrosPG.mjs'

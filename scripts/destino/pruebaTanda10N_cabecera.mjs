@@ -91,7 +91,7 @@ const modo = async (a, m) => {
   const v = leer('src/components/route/hoy/v2/HoyAntesV2.tsx')
   debe(/filasDeHoy/.test(v) && !/VISTA_PREVIA/.test(v), 'hoy_lista', 'HoyAntesV2 usa la lista compartida')
 
-  await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => { m.useRouteStore.setState({ dev_simulated_today_iso: null }); return true })")
+  await a.evaluar("import('/src/store/useRouteStore.ts').then((m) => { m.useRouteStore.setState({ dev_simulated_today_iso: '2026-10-10' }); return true })")
   // La pastilla del pase en RUTA y HOY dicen lo mismo.
   await modo(a, 'route')
   const pastilla = () => a.evaluar("document.querySelector('[data-pastilla-pase]')?.getAttribute('data-pastilla-pase') ?? null")

@@ -1,4 +1,7 @@
-import { llamar } from '../../../lib/logros'
+import { demoActivo, llamar } from '../../../lib/logros'
+import { conLimite } from '../../../lib/cargaSegura'
+import { todayIso } from '../../../lib/dateRange'
+import { zonaDelDestino } from '../../../lib/zonaHoraria'
 import { guardarEnCache, leerEnCache } from '../../../lib/logrosEnCache'
 
 /** Lo que el servidor cuenta del destino (GET /api/logros/estado): sellos, colecciones (con sus sitios vistos), secretos, lo pendiente y el puntito. */
@@ -59,9 +62,11 @@ export interface ResumenLogros {
 export const datosDePrueba: { estado: EstadoLogros | null; resumen: ResumenLogros | null } = { estado: null, resumen: null }
 
 /** El servidor de pruebas (y un servidor viejo) pueden mandar el estado sin alguna lista: aquí siempre salen todas. */
-function completar(e: EstadoLogros): EstadoLogros {
+function completar(e: EstadoLogros, dePrueba = false): EstadoLogros {
   return {
     ...e,
+    // (V25) El momento del viaje (antes, durante, después) se cuenta SIEMPRE con las fechas del viaje y el «hoy» de ahora en la zona del destino (la misma regla que RUTA, DÍAS y HOY), no con el «hoy» que trajera lo guardado: un estado guardado el día antes decía «ANTES DEL VIAJE» de un viaje que ya había pasado. Solo las series de prueba traen el suyo.
+    viaje: e.viaje && !dePrueba && !demoActivo() ? { ...e.viaje, hoy: todayIso(zonaDelDestino(e.destino) ?? zonaDelDestino(e.ciudad)) } : e.viaje,
     sellos: e.sellos ?? [],
     colecciones: e.colecciones ?? [],
     ciudad: e.ciudad ?? '',
@@ -72,7 +77,7 @@ function completar(e: EstadoLogros): EstadoLogros {
 
 /** (V9) Lo último que se vio del estado de este viaje (memoria o móvil), para enseñarlo AL INSTANTE al abrir la hoja de logros mientras llega lo nuevo. Con datos puestos a mano (pruebas), esos. */
 export function estadoGuardado(tripId: string | null): EstadoLogros | null {
-  if (datosDePrueba.estado) return completar(datosDePrueba.estado)
+  if (datosDePrueba.estado) return completar(datosDePrueba.estado, true)
   if (!tripId) return null
   const g = leerEnCache<EstadoLogros>(`estado:${tripId}`)
   return g?.ok ? completar(g) : null
@@ -81,17 +86,27 @@ export function estadoGuardado(tripId: string | null): EstadoLogros | null {
 /** Las peticiones en vuelo, para que el botón flotante (que pide el estado al abrir el viaje) y la hoja (al abrirse) no pregunten dos veces lo mismo a la vez. */
 const enVuelo = new Map<string, Promise<EstadoLogros | null>>()
 
+/** (V25) Al tocar [Reintentar]: se olvida la petición que pudiera estar colgada para que la nueva sea de verdad nueva. */
+export function olvidarPeticionDelEstado(tripId: string | null): void {
+  if (tripId) enVuelo.delete(tripId)
+}
+
 export async function pedirEstado(tripId: string | null): Promise<EstadoLogros | null> {
-  if (datosDePrueba.estado) return completar(datosDePrueba.estado)
+  if (datosDePrueba.estado) return completar(datosDePrueba.estado, true)
   if (!tripId) return null
   const ya = enVuelo.get(tripId)
   if (ya) return ya
-  const p = (async () => {
-    const r = await llamar<EstadoLogros>(`/api/logros/estado?trip_id=${encodeURIComponent(tripId)}`)
-    if (!r?.ok) return null
-    guardarEnCache(`estado:${tripId}`, r)
-    return completar(r)
-  })().finally(() => enVuelo.delete(tripId))
+  // (V25) Con tope: si la respuesta no llega, `enVuelo` no se queda para siempre con una promesa muerta (todas las llamadas siguientes esperaban a esa y nunca acababan).
+  const p = conLimite(
+    (async () => {
+      const r = await llamar<EstadoLogros>(`/api/logros/estado?trip_id=${encodeURIComponent(tripId)}`)
+      if (!r?.ok) return null
+      guardarEnCache(`estado:${tripId}`, r)
+      return completar(r)
+    })(),
+    18000,
+    null as EstadoLogros | null,
+  ).finally(() => enVuelo.delete(tripId))
   enVuelo.set(tripId, p)
   return p
 }

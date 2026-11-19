@@ -13,6 +13,7 @@ import { plural, cifrasDelPerfil, type ResumenViaje } from '../../../../lib/viaj
 import { logrosActivos } from '../../../../lib/logros'
 import { Avatar } from '../../../ajustes/Avatar'
 import { BilleteDelSorteo } from '../sorteo/Billete'
+import { SORTEO_VISIBLE } from '../../../../lib/sorteo'
 import { TarjetaPasaporte } from './TarjetaPasaporte'
 import { useLogrosPantallas } from '../useLogrosPantallas'
 import { elegirTitulo, pedirPerfil, type PerfilLogros } from './api'
@@ -170,7 +171,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
       )}
       {viajes.length === 0 && antes === 0 && <p style={{ margin: '12px 20px 0', font: "400 13px 'Geist'", color: 'rgba(28,34,48,.6)' }}>Aún no tienes viajes guardados en este dispositivo.</p>}
       {(viajes.length > 0 || antes > 0) && (
-        <div data-fila-de-viajes data-ancho-tarjeta={anchoDeTarjeta} className="trazo-noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollPaddingLeft: 20, padding: '14px 20px 6px 20px', scrollbarWidth: 'none' }}>
+        <div data-fila-de-viajes data-ancho-tarjeta={anchoDeTarjeta} className="trazo-noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain', scrollSnapType: 'x mandatory', scrollPaddingLeft: 20, padding: '14px 20px 6px 20px', scrollbarWidth: 'none' }}>
           {enFila.map(({ viaje, etiqueta }) => (
             <TarjetaDeViaje key={viaje.id} viaje={viaje} etiqueta={etiqueta} onAbrirViaje={() => onAbrirViaje(viaje)} onRecuerdos={() => abrirDentro(viaje)} editando={editando} onEliminar={() => eliminar(viaje)} ancho={anchoDeTarjeta} />
           ))}
@@ -316,7 +317,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
         <TarjetaPasaporte pasaporte={perfil.pasaporte} onAbrir={() => abrir({ t: 'pasaporte' })} />
 
         {/* El billete del sorteo, abajo del todo. */}
-        {perfil.sorteo && <BilleteDelSorteo sorteo={perfil.sorteo} onAbrir={() => abrir({ t: 'sorteo' })} />}
+        {SORTEO_VISIBLE && perfil.sorteo && <BilleteDelSorteo sorteo={perfil.sorteo} onAbrir={() => abrir({ t: 'sorteo' })} />}
       </div>
 
       {eligiendo && <ElegirTitulo titulos={perfil.titulos} elegido={perfil.titulo?.clave ?? null} onElegir={(c) => void elegir(c)} onCerrar={() => setEligiendo(false)} />}

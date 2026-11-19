@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
+import { Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
+import { lazyReintentable } from '../../../lib/cargaSegura'
 import type { ExpDeRespuesta } from '../../../lib/logros'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { pasoTrasLaExp, type Paso } from './pasoTrasLaExp'
@@ -15,10 +16,10 @@ import { useMomentosUI } from './useMomentosUI'
  * DE UNO EN UNO (V3): la «+EXP», la subida de nivel y el cambio de rango piden su turno en la fila (`fila.ts`) como cualquier otra pantalla de los momentos; si llegan sorpresas nuevas
  * mientras esperan, las sorpresas van primero, y nunca salen encima de otra cosa. Las tres van pegadas (un solo turno: «+EXP», después el nivel o el rango).
  */
-const ExpGanada = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.ExpGanada })))
-const SubeDeNivel = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.SubeDeNivel })))
-const CambioDeRango = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.CambioDeRango })))
-const ExpYNivel = lazy(() => import('../pantallas/perfil').then((m) => ({ default: m.ExpYNivel })))
+const ExpGanada = lazyReintentable(() => import('../pantallas/perfil').then((m) => ({ default: m.ExpGanada })))
+const SubeDeNivel = lazyReintentable(() => import('../pantallas/perfil').then((m) => ({ default: m.SubeDeNivel })))
+const CambioDeRango = lazyReintentable(() => import('../pantallas/perfil').then((m) => ({ default: m.CambioDeRango })))
+const ExpYNivel = lazyReintentable(() => import('../pantallas/perfil').then((m) => ({ default: m.ExpYNivel })))
 
 /** Lo que tarda el dibujo en volar al botón flotante y que éste dé su latido (vuelo.ts: 800 ms + 420 ms), con un respiro. */
 export const ESPERA_TRAS_EL_VUELO_MS = 1400

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { unaSolaVez } from '../lib/sondeo'
 import { useLoSuyo } from '../store/useLoSuyo'
 import { useSyncStore } from '../store/useSyncStore'
 import { useViajeCompartido } from '../store/useViajeCompartido'
@@ -20,8 +21,9 @@ export function useLoSuyoDelViaje(): void {
     usuarios++
     if (usuarios === 1) {
       reloj = window.setInterval(() => {
-        if (document.visibilityState === 'visible') void useLoSuyo.getState().cargar(useSyncStore.getState().activeTripId)
-      }, 30000)
+        // (V26) antes cada 30 s; ahora cada 2 minutos, solo con la app a la vista y una sola vez aunque lo pidan varias pantallas (lib/sondeo.ts)
+        if (document.visibilityState === 'visible') void unaSolaVez('lo-suyo', () => useLoSuyo.getState().cargar(useSyncStore.getState().activeTripId), 15_000)
+      }, 120_000)
     }
     return () => {
       usuarios--

@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient'
+import { firmarConCache, olvidarUrlFirmada } from './urlsFirmadas'
 import { bootstrapTraveler } from './tripPersistence'
 import { pagoActivo } from './pago'
 import { cuentasActivas } from './cuentas'
@@ -27,6 +28,14 @@ export const LADO_MINIATURA_PX = 400
 export const CALIDAD_MINIATURA = 0.78
 /** Cuánto vive una URL firmada (el bucket es privado). La app las pide de nuevo al refrescar. */
 export const SEGUNDOS_URL_FIRMADA = 3600
+/** (V26) Las fotos no cambian nunca (cada una tiene su ruta): el móvil las puede guardar un año. */
+export const CACHE_DE_LAS_FOTOS = '31536000'
+
+/** (V26) Las direcciones firmadas de estas rutas, con las ya guardadas reutilizadas. */
+async function firmarFotos(rutas: string[]): Promise<Map<string, string>> {
+  if (!supabase) return new Map()
+  return firmarConCache(BUCKET_FOTOS, rutas, async (faltan, segundos) => (await supabase!.storage.from(BUCKET_FOTOS).createSignedUrls(faltan, segundos)).data)
+}
 
 const SIN_CUENTA = 'Las fotos necesitan conexión con tu cuenta; ahora mismo no está disponible.'
 
@@ -442,7 +451,7 @@ export async function subirFotoPreparada(args: Omit<SubirFotoArgs, 'file'>, prep
   try {
     const userId = await bootstrapTraveler()
     ruta = `${userId}/${args.tripId}/${idUnico()}.jpg`
-    const { error: errorSubida } = await supabase.storage.from(BUCKET_FOTOS).upload(ruta, preparada.blob, { contentType: 'image/jpeg', upsert: false })
+    const { error: errorSubida } = await supabase.storage.from(BUCKET_FOTOS).upload(ruta, preparada.blob, { contentType: 'image/jpeg', upsert: false, cacheControl: CACHE_DE_LAS_FOTOS })
     if (errorSubida) {
       console.warn('[fotos] no se pudo subir:', errorSubida.message)
       return { foto: null, error: 'No se ha podido subir la foto. Inténtalo de nuevo en un momento.' }
@@ -450,7 +459,7 @@ export async function subirFotoPreparada(args: Omit<SubirFotoArgs, 'file'>, prep
     // La copia pequeña, junto a la grande: si no sube, la foto vale igual (se enseñará la grande).
     let hayMiniatura = false
     if (preparada.miniatura) {
-      const { error: errorMin } = await supabase.storage.from(BUCKET_FOTOS).upload(rutaMiniatura(ruta), preparada.miniatura.blob, { contentType: 'image/jpeg', upsert: false })
+      const { error: errorMin } = await supabase.storage.from(BUCKET_FOTOS).upload(rutaMiniatura(ruta), preparada.miniatura.blob, { contentType: 'image/jpeg', upsert: false, cacheControl: CACHE_DE_LAS_FOTOS })
       if (errorMin) console.warn('[fotos] no se pudo subir la copia pequeña:', errorMin.message)
       else hayMiniatura = true
     }
@@ -464,8 +473,10 @@ export async function subirFotoPreparada(args: Omit<SubirFotoArgs, 'file'>, prep
       await supabase.storage.from(BUCKET_FOTOS).remove([ruta, rutaMiniatura(ruta)]).catch(() => undefined)
       return { foto: null, error: 'No se ha podido guardar la foto. Inténtalo de nuevo en un momento.' }
     }
-    const { data: firmada } = await supabase.storage.from(BUCKET_FOTOS).createSignedUrl(ruta, SEGUNDOS_URL_FIRMADA)
-    const { data: firmadaMin } = hayMiniatura ? await supabase.storage.from(BUCKET_FOTOS).createSignedUrl(rutaMiniatura(ruta), SEGUNDOS_URL_FIRMADA) : { data: null }
+    // (V26) Las direcciones se guardan y se reutilizan (urlsFirmadas.ts): la misma foto, la misma dirección, y el móvil no la vuelve a bajar.
+    const firmadasNuevas = await firmarFotos(hayMiniatura ? [ruta, rutaMiniatura(ruta)] : [ruta])
+    const firmada = { signedUrl: firmadasNuevas.get(ruta) ?? '' }
+    const firmadaMin = hayMiniatura ? { signedUrl: firmadasNuevas.get(rutaMiniatura(ruta)) ?? '' } : null
     // Lo que se leyó de la foto antes de quitarle los datos (cuándo, dónde, si es de cámara): aparte, en nuestra tabla. Si falla, la foto vale igual.
     if (preparada.datos && cuentasActivas()) {
       const { error: errorDatos } = await supabase.from('trip_photo_meta').insert({
@@ -503,12 +514,8 @@ export async function listarFotos(tripId: string): Promise<FotoViaje[]> {
     const filas = data as Fila[]
     if (filas.length === 0) return []
     // Las grandes y las pequeñas, de una vez; una foto anterior a la 6z6 no tiene pequeña y su entrada sale sin URL.
-    const { data: firmadas } = await supabase.storage.from(BUCKET_FOTOS).createSignedUrls(
-      filas.flatMap((f) => [f.storage_path, rutaMiniatura(f.storage_path)]),
-      SEGUNDOS_URL_FIRMADA,
-    )
-    const porRuta = new Map<string, string>()
-    for (const f of firmadas ?? []) if (f.path && f.signedUrl) porRuta.set(f.path, f.signedUrl)
+    // (V26) Las que ya se tenían firmadas se reutilizan (la misma dirección = el móvil no baja la foto otra vez); solo se firma lo que falta.
+    const porRuta = await firmarFotos(filas.flatMap((f) => [f.storage_path, rutaMiniatura(f.storage_path)]))
     return filas.map((fila) => deFila(fila, porRuta.get(fila.storage_path) ?? '', porRuta.get(rutaMiniatura(fila.storage_path)) ?? ''))
   } catch (error) {
     console.warn('[fotos] fallo leyendo las fotos:', error)
@@ -527,6 +534,8 @@ export async function borrarFoto(foto: Pick<FotoViaje, 'id' | 'storagePath'>): P
   try {
     // Se borran las dos: la grande y la pequeña (si la pequeña no existe, no pasa nada).
     const { error: errorObjeto } = await supabase.storage.from(BUCKET_FOTOS).remove([foto.storagePath, rutaMiniatura(foto.storagePath)])
+    olvidarUrlFirmada(BUCKET_FOTOS, foto.storagePath)
+    olvidarUrlFirmada(BUCKET_FOTOS, rutaMiniatura(foto.storagePath))
     if (errorObjeto) {
       console.warn('[fotos] no se pudo borrar el archivo:', errorObjeto.message)
       return 'No se ha podido eliminar la foto. Inténtalo de nuevo.'

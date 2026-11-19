@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { unaSolaVez } from '../../../lib/sondeo'
 import { llamar, logrosActivos, type Ubicacion } from '../../../lib/logros'
 
 /**
@@ -69,7 +70,7 @@ export interface RespuestaCerca {
   retos?: RetoDeHoy[]
 }
 
-const CADA_MS = 45000
+const CADA_MS = 75000 // (V26) antes 45 s; solo con la app a la vista y una sola vez aunque haya varias pantallas de HOY pidiéndolo (ver lib/sondeo.ts)
 
 interface VentanaDePrueba {
   __hoy1Ubicacion?: Ubicacion | null
@@ -118,7 +119,8 @@ export function useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche = false }: {
       }
       ultima.current = Date.now()
       const ubicacion = await ubicacionConPermiso()
-      const r = await llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo: { trip_id: tripId, ubicacion, sitios_hoy: sitiosHoy, en_coche: enCoche } })
+      const cuerpo = { trip_id: tripId, ubicacion, sitios_hoy: sitiosHoy, en_coche: enCoche }
+      const r = await unaSolaVez(`cerca:${JSON.stringify(cuerpo)}`, () => llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo }), 20_000)
       if (vivo && r?.ok) setDatos(r)
     }
     void preguntar()

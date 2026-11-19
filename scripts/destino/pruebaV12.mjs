@@ -100,7 +100,7 @@ console.log('2. El código')
   const exp = json('data/logros/exp.json')
   debe(exp.viaje_acabado.paradas_minimas === 3, 'sello', 'el sello pide 3 sitios vistos (era 5), para todos los destinos')
   const hoja = leer('src/components/logros/momentos/HojaLogros.tsx')
-  debe(/EMBLEMAS OCULTOS/.test(hoja) && /data-ver-resumen-del-viaje/.test(hoja) && /height: 52, minHeight: 52/.test(hoja), 'hoja', 'la hoja lleva «EMBLEMAS OCULTOS» y el botón del resumen de 52 px que no se aplasta')
+  debe(/SECRETOS ENCONTRADOS|secretos encontrados/.test(hoja) && /data-ver-resumen-del-viaje/.test(hoja) && /height: 52, minHeight: 52/.test(hoja), 'hoja', 'la hoja lleva los secretos (V25: «N de M secretos encontrados») y el botón del resumen de 52 px que no se aplasta')
   const fotos = leer('src/lib/fotosViaje.ts')
   debe(/urlGrande/.test(fotos) && /MENSAJE_FOTO_REPETIDA/.test(fotos), 'fotos', 'la foto grande y el aviso de foto repetida existen')
   const guardado = leer('src/components/logros/pantallas/ViajeGuardado.tsx')
@@ -293,6 +293,9 @@ const medirChapas = (raiz) => `(() => {
     estado.viaje = { ...estado.viaje, hoy: '2026-11-18' }
     await ev("window.__demoHoy = '2026-11-18'; __imp('/src/store/useRouteStore.ts').then((m) => { m.useRouteStore.setState({ dev_simulated_today_iso: '2026-11-18' }); return true })")
     await ev(`Promise.all([__imp('/src/components/logros/momentos/api.ts'), __imp('/src/components/logros/momentos/useMomentosUI.ts')]).then(([api, ui]) => { api.datosDePrueba.estado = ${JSON.stringify(estado)}; ui.useMomentosUI.getState().cerrarHojaLogros(); setTimeout(() => ui.useMomentosUI.getState().abrirHojaLogros(), 50); return true })`)
+    // (V25) Si «Tu primer día» (Lanzarote, día 1) aún está en pantalla, tiene el turno de la fila: se cierra antes de pedir la hoja.
+    await ev("Array.from(document.querySelectorAll('button')).find((b) => /Empezar mi día/.test(b.textContent || ''))?.click(); true")
+    await app.esp(1500)
     await esperar("Boolean(document.querySelector('[data-hoja-logros]'))", 40, 250)
     await app.esp(1800)
     console.log('   diag ruta:', JSON.stringify(await ev(`Promise.all([__imp('/src/store/useRouteStore.ts'), __imp('/src/lib/reclamar.ts')]).then(([s, m]) => { const route = s.useRouteStore.getState().route; return { id: route?.id, rango: route?.answers?.dateRange, fase: m.faseDeReclamo(route), hay: m.hayBotonDeReclamar(route) } })`)))
@@ -314,7 +317,7 @@ const medirChapas = (raiz) => `(() => {
     // (V14) La cabecera ya no es un bloque grande fijo: solo una barra fina con el título y la X; la etiqueta de fase y el botón de reclamar van dentro del scroll (lo mira pruebaV14).
     debe(h.et && h.boton && h.boton.t - h.et.b >= 10, 'aire', `entre la etiqueta de fase y [Reclamar con tus fotos] hay ${h.boton && h.et ? h.boton.t - h.et.b : '?'} px`)
     debe(h.plazo && h.sello && h.sello.t - h.plazo.b >= 22, 'aire', `entre «Puedes reclamar hasta…» y la tarjeta de la medalla hay ${h.plazo && h.sello ? h.sello.t - h.plazo.b : '?'} px (≈24)`)
-    debe(/3 de 11 secretos encontrados/.test(h.secretos ?? '') && h.ocultos, 'emblemas', `el bloque dice «EMBLEMAS OCULTOS» y «${h.secretos}»`)
+    debe(/3 de 11 secretos encontrados/i.test(h.secretos ?? ''), 'emblemas', `(V25) el bloque de secretos dice «${h.secretos}»`)
     debe(!h.llaves, 'llaves', 'ningún texto con {…} en la hoja de logros')
     await app.captura?.(`${CAPTURAS}/hoja_arriba.jpg`)
     await ev("(() => { const e = document.querySelector('[data-hoja-logros] [style*=\"overflow-y: auto\"]'); if (e) e.scrollTop = 99999; return true })()")

@@ -100,7 +100,7 @@ try {
   debe(h.conAlgo >= 1 && h.mas === 'plegado' && Number(h.masN) >= 1, 'hoja', `arriba las colecciones con algún pedazo (${h.conAlgo}) y al final «Más colecciones de …» plegado con ${h.masN}`)
   debe(/Te quedan \d+ para/.test(h.sello ?? '') && h.nSellos === 1, 'hoja', `la medalla y lo que queda en una sola tarjeta («${h.sello}»)`)
   debe(h.reclamar && /Puedes reclamar hasta/.test(h.plazo ?? ''), 'hoja', 'el botón [Reclamar con tus fotos] con su plazo')
-  debe(h.rej && h.hijos.length === 11 && h.hijos.every((c) => c.left >= h.rej.left - 1 && c.right <= h.rej.right + 1 && c.right <= 390), 'emblemas', `los 11 huecos de Lanzarote caben enteros a lo ancho (4 columnas; rejilla ${JSON.stringify(h.rej)})`)
+  debe(h.rej && h.hijos.length === 11, 'emblemas', `(V25: los secretos van en una fila que se desliza de lado, ya no en una rejilla) los 11 huecos de Lanzarote están en la fila (${h.hijos.length})`)
   debe(!h.llaves, 'llaves', 'ningún texto con {…} en la hoja')
   await b.captura(`${CAPTURAS}/hoja_arriba.jpg`)
   // Abrir «Más colecciones de Lanzarote».
@@ -116,6 +116,9 @@ try {
   cero.colecciones = cero.colecciones.map((c) => ({ ...c, n: 0, completa: false, sitios: c.sitios.map((s) => ({ ...s, visto: false })) }))
   await ev(`import('/src/components/logros/momentos/api.ts').then((api) => { api.datosDePrueba.estado = ${JSON.stringify(cero)}; return import('/src/components/logros/momentos/useMomentosUI.ts') }).then((ui) => { ui.useMomentosUI.getState().cerrarHojaLogros(); setTimeout(() => ui.useMomentosUI.getState().abrirHojaLogros(), 50); return true })`)
   await b.esp(2200)
+  // (V25) Antes del viaje las colecciones salen al tocar la franja.
+  await ev("document.querySelector('[data-franja-colecciones]')?.click(); true")
+  await b.esp(3500)
   const todas0 = await ev("({ mas: Boolean(document.querySelector('[data-mas-colecciones]')), filas: document.querySelectorAll('[data-coleccion]').length })")
   debe(!todas0.mas && todas0.filas >= 5, 'hoja', `si todas están a 0, sin plegar (${todas0.filas} filas, sin «Más colecciones»)`)
   await ev("import('/src/components/logros/momentos/useMomentosUI.ts').then((ui) => { ui.useMomentosUI.getState().cerrarHojaLogros(); return true })")

@@ -5,6 +5,7 @@ import { demoActivo } from '../../lib/logros'
 import { dejarDeVerElViaje } from '../../lib/personasViaje'
 import { supabase } from '../../lib/supabaseClient'
 import { refrescarViajeActivo } from '../../lib/viajeEnDirecto'
+import { unaSolaVez } from '../../lib/sondeo'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { avisosAnunciados, useFranjaStore } from '../../store/useFranjaStore'
 import { crearAnfitrionDeCambios } from '../../lib/anfitrionDeCambios'
@@ -16,7 +17,7 @@ import { useLoSuyoDelViaje } from '../../hooks/useLoSuyoDelViaje'
 
 const PersonasDelViaje = lazy(() => import('./PersonasDelViaje').then((m) => ({ default: m.PersonasDelViaje })))
 
-const CADA_MS = 30_000
+const CADA_MS = 45_000 // (V26) antes 30 s; el cambio de otra persona llega al momento por Realtime (solo con el viaje compartido abierto); esto es el respaldo y solo pregunta el sello (~100 bytes), ver lib/sondeo.ts
 
 /**
  * EL ANFITRIÓN DEL VIAJE COMPARTIDO EN DIRECTO (Tanda 10N §4a y §10). Siempre montado; con las cuentas apagadas no hace nada.
@@ -78,7 +79,7 @@ function Encendido() {
     // El refresco de siempre, por si Realtime no está o se cayó.
     const sondear = () => {
       if (document.visibilityState !== 'visible') return
-      void refrescarViajeActivo({ sondeo: true }).then((r) => {
+      void unaSolaVez(`viaje:${tripId}`, () => refrescarViajeActivo({ sondeo: true }), 20_000).then((r) => {
         if (!vivo) return
         if (r === 'cambiado') void anfitrion.alSondeo()
         else if (r === 'fuera') {

@@ -16,6 +16,7 @@ import { calcularExp, edicionDeAnio, entradaEnEdicion, estadoDelSorteo, expDeMom
 import { coordenadasDeSitio, datosVisiblesPara, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto, metros } from './fotos.js'
 import { sitiosDeId, sitiosDeLaParada } from './sitios.js'
+import { sorteoVisible } from './sorteoVisible.js'
 import { armarMomentos } from './momentos.js'
 import { elegirRetos, queEnsenar, retoDelDia, retosDelDia, sitioDeFotoLibre, sitiosCerca, sitiosConLogro, sitiosDeFotoLibre } from './cerca.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
@@ -283,6 +284,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
    * campana («¡Ya estás en el sorteo de 2027!»): UNA sola vez (la clave del aviso es el año).
    */
   async function sorteoDeCuenta(userId, c = null) {
+    // (V25) Escondido hasta que salga en las tiendas: ni billete, ni página, ni aviso dorado (el código y los datos siguen; ver sorteoVisible.js).
+    if (!sorteoVisible()) return null
     const cuenta = c ?? (await cargar(userId))
     const estado = estadoDelSorteo({ tabla: datos.exp, ...datosDelSorteo(cuenta), ahora: ahora() })
     if (estado.estado === 'dentro' && repo.crearAvisoCampana) {

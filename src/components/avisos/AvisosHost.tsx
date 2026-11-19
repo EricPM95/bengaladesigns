@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { unaSolaVez } from '../../lib/sondeo'
 import { avisoDeLaDireccion } from '../../lib/avisos'
 import { abrirHoy, hoyDeLaDireccion } from '../../lib/abrirHoyDeAviso'
 import { cuentasActivas } from '../../lib/cuentas'
@@ -11,7 +12,7 @@ import { useMiPerfil } from '../../store/useMiPerfil'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useCuenta } from '../cuenta/useCuenta'
 
-const CADA_MS = 60_000
+const CADA_MS = 180_000 // (V26) antes cada minuto; también al abrir y al volver a la app (ver lib/sondeo.ts)
 
 const hoyEnLocal = (): string => {
   const d = new Date()
@@ -68,10 +69,10 @@ function Encendido() {
       if (delAviso) abrir(delAviso)
     })
     const t = window.setInterval(() => {
-      if (document.visibilityState === 'visible') void cargar()
+      if (document.visibilityState === 'visible') void unaSolaVez('avisos', () => cargar(), 20_000)
     }, CADA_MS)
     const alVolver = () => {
-      if (document.visibilityState === 'visible') void cargar()
+      if (document.visibilityState === 'visible') void unaSolaVez('avisos', () => cargar(), 20_000)
     }
     document.addEventListener('visibilitychange', alVolver)
     // El aviso del móvil con la app ya abierta: el service worker avisa por mensaje.

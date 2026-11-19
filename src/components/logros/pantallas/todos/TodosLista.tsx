@@ -69,7 +69,7 @@ export function TodosLista({ g, vistaInicial = 'destinos' }: { g: Ganados; vista
             {grupo.nombre}
             <VerTodo grupo={grupo.id} pequeno style={{ marginLeft: 'auto' }} />
           </div>
-          <div className="vt-oculto" style={{ display: 'flex', gap: 8, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollPaddingInline: 20, scrollbarWidth: 'none', padding: '2px 20px 6px' }}>
+          <div className="vt-oculto" style={{ display: 'flex', gap: 8, overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain', scrollSnapType: 'x mandatory', scrollPaddingInline: 20, scrollbarWidth: 'none', padding: '2px 20px 6px' }}>
             {grupo.filas.map((f) => (
               <TarjetaDeFila key={f.id} f={f} enVitrina={Boolean(f.clave && enVitrina.has(f.clave))} abrir={() => abrirFicha(f.clave ?? `pendiente:${f.id}`)} />
             ))}

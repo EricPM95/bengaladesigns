@@ -1,4 +1,5 @@
-import { lazy, Suspense, type ComponentType, type ReactNode } from 'react'
+import { Suspense, type ComponentType, type ReactNode } from 'react'
+import { lazyReintentable } from '../../../lib/cargaSegura'
 import { logrosActivos } from '../../../lib/logros'
 import { CapaOculta } from './Capa'
 import { useLogrosPantallas, type Pantalla } from './useLogrosPantallas'
@@ -19,7 +20,7 @@ const cargadores: { [T in Pantalla['t']]: Cargador<T> } = {
   pasaporte: () => import('./PasaporteScreen'),
   sorteo: () => import('./sorteo/PaginaDelSorteo'),
 }
-const perezosas = Object.fromEntries(Object.entries(cargadores).map(([t, c]) => [t, lazy(c as () => Promise<{ default: ComponentType<{ pantalla: Pantalla }> }>)])) as unknown as Record<Pantalla['t'], ComponentType<{ pantalla: Pantalla }>>
+const perezosas = Object.fromEntries(Object.entries(cargadores).map(([t, c]) => [t, lazyReintentable(c as () => Promise<{ default: ComponentType<{ pantalla: Pantalla }> }>)])) as unknown as Record<Pantalla['t'], ComponentType<{ pantalla: Pantalla }>>
 
 export function PantallasHost(): ReactNode {
   if (!logrosActivos()) return null

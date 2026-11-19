@@ -50,7 +50,7 @@ export function Vitrina({ g, abiertaInicial = null }: { g: Ganados; abiertaInici
               </span>
             </span>
             <div style={{ position: 'relative', borderRadius: 18, background: 'linear-gradient(180deg,rgba(200,210,255,.06),rgba(255,255,255,.02))', padding: '14px 6px 10px' }}>
-              <div className="vt-oculto" style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollbarWidth: 'none', padding: '0 8px' }}>
+              <div className="vt-oculto" style={{ display: 'flex', gap: 16, overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain', scrollbarWidth: 'none', padding: '0 8px' }}>
                 {exclusivos.map((x) => (
                   <button key={x.clave} type="button" aria-label={x.nombre} onClick={() => setAbierta({ clave: x.clave })} style={{ flex: 'none', minWidth: 44, minHeight: 44, border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <DibujoDeItem item={x} tam={86} />

@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
+import { unaSolaVez } from '../../lib/sondeo'
 import { cuentasActivas } from '../../lib/cuentas'
 import { demoActivo } from '../../lib/logros'
 import { esInvitadoFingido, useModoInvitado } from '../../hooks/useModoInvitado'
@@ -22,7 +23,7 @@ const HojaPropuestaDelDueno = lazy(() => import('./HojaPropuestaDelDueno').then(
 const HojaVerPropuesta = lazy(() => import('./HojaVerPropuesta').then((m) => ({ default: m.HojaVerPropuesta })))
 const PropuestaEnviada = lazy(() => import('./PropuestaEnviada').then((m) => ({ default: m.PropuestaEnviada })))
 
-const CADA_MS = 45_000
+const CADA_MS = 120_000 // (V26) antes 45 s (ver lib/sondeo.ts)
 
 /**
  * EL ANFITRIÓN DEL VIAJE COMPARTIDO (cuentas parte 3; rehecho en la Tanda 10N). Siempre montado.
@@ -96,10 +97,10 @@ function Encendido() {
     if (!cuentasActivas() || !tripActivo || demoActivo()) return undefined
     void cargar(tripActivo)
     const t = window.setInterval(() => {
-      if (document.visibilityState === 'visible') void cargar(tripActivo)
+      if (document.visibilityState === 'visible') void unaSolaVez(`propuesta:${tripActivo}`, () => cargar(tripActivo), 15_000)
     }, CADA_MS)
     const alVolver = () => {
-      if (document.visibilityState === 'visible') void cargar(tripActivo)
+      if (document.visibilityState === 'visible') void unaSolaVez(`propuesta:${tripActivo}`, () => cargar(tripActivo), 15_000)
     }
     document.addEventListener('visibilitychange', alVolver)
     return () => {

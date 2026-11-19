@@ -9,6 +9,14 @@ const ok = (resultado, donde) => {
   return resultado.data
 }
 
+/** (V26) La última ruta bajada de cada viaje, con su sello (`updated_at`): solo se vuelve a bajar si cambia. Vive en la memoria del servidor (una instancia caliente la conserva entre llamadas). */
+const cacheDeViajes = new Map()
+const MAXIMO_DE_VIAJES_EN_MEMORIA = 150
+/** Por si algo cambió el viaje sin tocar `updated_at`: pasado este tiempo se vuelve a bajar entero. */
+const EDAD_MAXIMA_DE_UN_VIAJE_MS = 15 * 60 * 1000
+/** Para las pruebas: vacía la memoria de rutas. */
+export const olvidarViajesEnMemoria = () => cacheDeViajes.clear()
+
 export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
   return {
     async hechosDe(userId) {
@@ -53,19 +61,32 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
       ok(await admin.from('logro_hechos').update({ deshecho_en: cuando }).eq('id', id), 'deshacerHecho')
     },
     async viajesDe(userId) {
-      // (V9) Menos rondas: los propios y los de miembro a la vez; y luego los ajenos y las invitaciones (de los ids ya conocidos) a la vez. Antes eran cuatro rondas seguidas.
-      const [propiosR, miembrosR] = await Promise.all([admin.from('trips').select('id, route, traveler_id').eq('traveler_id', userId), admin.from('trip_members').select('trip_id').eq('user_id', userId)])
+      // (V26) ANTES esto bajaba la RUTA ENTERA de cada viaje de la persona (cientos de KB cada uno) en CADA llamada de logros (HOY pregunta cada 45 s: «cerca de aquí», la hoja, las fotos…): era lo que más salía de Supabase.
+      // AHORA se pregunta primero solo por lo ligero (id y updated_at: unos 100 bytes por viaje) y la ruta solo se baja si ese viaje cambió (o no se tenía) desde la última vez; el servidor guarda la última en memoria.
+      const [propiosR, miembrosR] = await Promise.all([admin.from('trips').select('id, traveler_id, updated_at').eq('traveler_id', userId), admin.from('trip_members').select('trip_id').eq('user_id', userId)])
       const propios = ok(propiosR, 'viajesDe')
       const miembros = ok(miembrosR, 'viajesDe(miembro)')
       const idsAjenos = miembros.map((m) => m.trip_id).filter((id) => !propios.some((p) => p.id === id))
       if (propios.length === 0 && miembros.length === 0) return []
       // Con el Pase Dúo, el viaje es «en pareja» para los dos: hay una invitación con un pase Dúo en ese viaje.
       const [ajenosR, invitacionesR] = await Promise.all([
-        idsAjenos.length > 0 ? admin.from('trips').select('id, route, traveler_id').in('id', idsAjenos) : Promise.resolve({ data: [], error: null }),
+        idsAjenos.length > 0 ? admin.from('trips').select('id, traveler_id, updated_at').in('id', idsAjenos) : Promise.resolve({ data: [], error: null }),
         admin.from('trip_invitations').select('trip_id, pass_id').in('trip_id', [...propios.map((t) => t.id), ...idsAjenos]).not('pass_id', 'is', null),
       ])
       const ajenos = idsAjenos.length > 0 ? ok(ajenosR, 'viajesDe(ajenos)') : []
-      const todos = [...propios, ...ajenos]
+      const ligeros = [...propios, ...ajenos]
+      if (ligeros.length === 0) return []
+      const ahoraMs = Date.now()
+      const faltan = ligeros.filter((t) => {
+        const c = cacheDeViajes.get(t.id)
+        return !c || c.sello !== `${t.updated_at ?? ''}|${t.traveler_id}` || ahoraMs - c.en > EDAD_MAXIMA_DE_UN_VIAJE_MS
+      })
+      if (faltan.length > 0) {
+        const completas = ok(await admin.from('trips').select('id, route, traveler_id, updated_at').in('id', faltan.map((t) => t.id)), 'viajesDe(rutas)')
+        for (const t of completas) cacheDeViajes.set(t.id, { sello: `${t.updated_at ?? ''}|${t.traveler_id}`, en: ahoraMs, fila: { id: t.id, route: t.route, traveler_id: t.traveler_id } })
+        if (cacheDeViajes.size > MAXIMO_DE_VIAJES_EN_MEMORIA) for (const clave of [...cacheDeViajes.keys()].slice(0, cacheDeViajes.size - MAXIMO_DE_VIAJES_EN_MEMORIA)) cacheDeViajes.delete(clave)
+      }
+      const todos = ligeros.map((t) => cacheDeViajes.get(t.id)?.fila).filter(Boolean)
       if (todos.length === 0) return []
       const invitaciones = ok(invitacionesR, 'viajesDe(invitaciones)')
       let duo = new Set()

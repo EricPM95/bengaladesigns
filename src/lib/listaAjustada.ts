@@ -1,4 +1,5 @@
 import ajustes from '../../data/pase/lista_ajustes.json'
+import { sinSorteo } from './sorteo'
 import { LISTA_DEL_PASE as LISTA_DE_DESIGN, type GrupoDeLista as GrupoDeDesign, type ItemDeLista as ItemDeDesign } from './listaDelPase'
 
 /**
@@ -17,7 +18,7 @@ export const LISTA_DEL_PASE: GrupoDeLista[] = LISTA_DE_DESIGN.map((g) => ({
   ...g,
   items: g.items
     .filter((i) => !FILAS_OCULTAS.includes(i.titulo))
-    .map((i) => ({ ...i, tituloDesign: i.titulo, titulo: TITULOS_NUEVOS[i.titulo] ?? i.titulo, linea: TEXTOS_DE_LINEA[i.titulo] ?? i.linea })),
+    .map((i) => ({ ...i, tituloDesign: i.titulo, titulo: TITULOS_NUEVOS[i.titulo] ?? i.titulo, linea: sinSorteo(TEXTOS_DE_LINEA[i.titulo] ?? i.linea) })),
 }))
 
 /** Una línea partida en trozos, con «HOY» marcado para ponerlo en oro (<Marca>). */

@@ -1,4 +1,5 @@
 import { precioEnVista, useMonedaViajero } from '../../lib/moneda'
+import { unaSolaVez } from '../../lib/sondeo'
 import { useEffect } from 'react'
 import { useGastosCompartidos, backendDeGastos } from '../../store/useGastosCompartidos'
 import { useViajeCompartido, nombreDe } from '../../store/useViajeCompartido'
@@ -6,7 +7,7 @@ import { useSyncStore } from '../../store/useSyncStore'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
 import { useFranjaStore } from '../../store/useFranjaStore'
 
-const CADA_MS = 20_000
+const CADA_MS = 120_000 // (V26) antes 20 s; el cambio llega por `escuchar` (en directo), esto es el respaldo (ver lib/sondeo.ts)
 
 /**
  * LOS GASTOS COMPARTIDOS, EN DIRECTO (Tanda 10N, apartado 9). Siempre montado. Cuando el viaje abierto tiene más gente (o soy invitada): carga los gastos, escucha los cambios en tiempo real (Realtime de Supabase)
@@ -26,10 +27,10 @@ export function GastosCompartidosHost() {
     void cargar(tripId)
     const dejarDeEscuchar = backendDeGastos().escuchar(tripId, () => void recargar())
     const t = window.setInterval(() => {
-      if (document.visibilityState === 'visible') void recargar()
+      if (document.visibilityState === 'visible') void unaSolaVez(`gastos:${tripId}`, () => recargar(), 15_000)
     }, CADA_MS)
     const alVolver = () => {
-      if (document.visibilityState === 'visible') void recargar()
+      if (document.visibilityState === 'visible') void unaSolaVez(`gastos:${tripId}`, () => recargar(), 15_000)
     }
     document.addEventListener('visibilitychange', alVolver)
     return () => {

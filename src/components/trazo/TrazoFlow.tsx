@@ -514,7 +514,7 @@ export function TrazoFlow() {
               style={{
                 display: 'flex',
                 gap: 6,
-                overflowX: 'auto',
+                overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain',
                 height: 28,
                 pointerEvents: 'auto',
                 WebkitMaskImage: 'linear-gradient(90deg,#000 82%,transparent)',

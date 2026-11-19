@@ -1,3 +1,4 @@
+import { SORTEO_VISIBLE } from './sorteo'
 import { llamarServidor } from './servidor'
 import { franjaDelAviso, ponerTablaDeArticulos } from '../../shared/avisos/textos.js'
 import tablasDeArticulos from '../../data/logros/articulos.json'
@@ -43,7 +44,9 @@ export function franjaDe(aviso: AvisoDeCuenta): DatosDeFranja {
 export async function cargarAvisos(): Promise<{ avisos: AvisoDeCuenta[]; sinLeer: number } | null> {
   const r = await llamarServidor<{ ok: boolean; avisos: AvisoDeCuenta[]; sin_leer: number }>('/api/avisos')
   if (!r.datos?.ok || !Array.isArray(r.datos.avisos)) return null
-  return { avisos: r.datos.avisos, sinLeer: r.datos.sin_leer }
+  // (V25) Con el sorteo escondido, sus avisos no salen en la campana (el servidor ya no los da; esto cubre la caché de antes).
+  const avisos = SORTEO_VISIBLE ? r.datos.avisos : r.datos.avisos.filter((a) => a.tipo !== 'sorteo')
+  return { avisos, sinLeer: SORTEO_VISIBLE ? r.datos.sin_leer : avisos.filter((a) => !a.leido && !a.etiqueta).length }
 }
 
 export async function marcarAvisosLeidos(ids: string[] | null): Promise<void> {

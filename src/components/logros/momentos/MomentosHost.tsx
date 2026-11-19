@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
+import { lazyReintentable } from '../../../lib/cargaSegura'
 import { logrosActivos } from '../../../lib/logros'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -19,12 +20,12 @@ import { useMomentosUI } from './useMomentosUI'
  * `useMomentosUI.fila`) y solo se enseña cuando le toca; al cerrarse la que había, sale la siguiente que esperaba. «Compartir» y la hoja del Visto los abre la persona encima de lo
  * que mira: mientras estén abiertos, no sale nada de la fila.
  */
-const Reproductor = lazy(() => import('./Reproductor'))
-const ResumenDia = lazy(() => import('./ResumenDia').then((m) => ({ default: m.ResumenDia })))
-const ResumenViaje = lazy(() => import('./ResumenViaje'))
-const Compartir = lazy(() => import('./Compartir'))
-const HojaLogros = lazy(() => import('./HojaLogros'))
-const PrimerDia = lazy(() => import('./PrimerDia'))
+const Reproductor = lazyReintentable(() => import('./Reproductor'))
+const ResumenDia = lazyReintentable(() => import('./ResumenDia').then((m) => ({ default: m.ResumenDia })))
+const ResumenViaje = lazyReintentable(() => import('./ResumenViaje'))
+const Compartir = lazyReintentable(() => import('./Compartir'))
+const HojaLogros = lazyReintentable(() => import('./HojaLogros'))
+const PrimerDia = lazyReintentable(() => import('./PrimerDia'))
 
 export function MomentosHost() {
   if (!logrosActivos()) return null

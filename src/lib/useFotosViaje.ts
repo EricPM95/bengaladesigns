@@ -3,7 +3,7 @@ import { useRouteStore } from '../store/useRouteStore'
 import { alCambiarFotos, listarFotos, type FotoViaje } from './fotosViaje'
 
 /** Las URLs firmadas duran una hora (fotosViaje.ts): se renuevan antes de que caduquen. */
-const REFRESCO_MS = 45 * 60 * 1000
+const REFRESCO_MS = 6 * 60 * 60 * 1000 // (V26) las direcciones firmadas ya duran 6 días y se reutilizan (urlsFirmadas.ts): no hace falta renovarlas cada 45 minutos
 
 /**
  * Las fotos del viaje actual (`route.id`). Se cargan al entrar, se refrescan cuando se sube o borra

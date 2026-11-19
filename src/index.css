@@ -401,3 +401,9 @@ html[data-solo-ver] [data-edit-tool] { display: none !important; }
   0%, 100% { transform: scaleY(0.35); }
   50% { transform: scaleY(1); }
 }
+
+/* (V25) Las filas que se deslizan de lado se quedan quietas en vertical (sin rebotar arriba y abajo) en el iPhone (Safari y la app de inicio) y en Android; solo van de lado. */
+.overflow-x-auto:not(.overflow-y-auto):not([class*='overflow-y-']) {
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+}

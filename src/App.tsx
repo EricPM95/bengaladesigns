@@ -1,4 +1,6 @@
 import { Suspense, useEffect } from 'react'
+import { AvisoDeVersionNueva } from './components/AvisoDeVersionNueva'
+import { reintentarLogros, soltarLaFilaDeLogros } from './components/logros/momentos/reintentarLogros'
 import { Cargando, pantallaPerezosa } from './components/layout/PantallaPerezosa'
 import { CargandoApp } from './components/layout/CargandoApp'
 import { useSyncStore } from './store/useSyncStore'
@@ -180,10 +182,11 @@ function App() {
       <PiezaSegura nombre="LogrosPorVisto">
         <LogrosPorVisto />
       </PiezaSegura>
-      <PiezaSegura nombre="MomentosHost">
+      <AvisoDeVersionNueva />
+      <PiezaSegura nombre="MomentosHost" reintentable alReintentar={reintentarLogros} alFallar={soltarLaFilaDeLogros}>
         <MomentosHost />
       </PiezaSegura>
-      <PiezaSegura nombre="PantallasHost">
+      <PiezaSegura nombre="PantallasHost" reintentable alReintentar={reintentarLogros}>
         <PantallasHost />
       </PiezaSegura>
       <PiezaSegura nombre="AvisoInstalar">

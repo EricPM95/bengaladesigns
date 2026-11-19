@@ -189,6 +189,12 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const [activeCard, setActiveCard] = useState<ExploreCardId | null>(null)
   // (LZ2b1) Lanzarote: la categoría abierta (Volcanes, César Manrique…); las demás tarjetas de siempre siguen con `activeCard`.
   const [categoriaLz, setCategoriaLz] = useState<CategoriaExplorarLanzarote | null>(null)
+  // (V25) Los temas marcados arriba del mapa: VARIOS a la vez. Al entrar desde una tarjeta, solo ese; cada botón se enciende o se apaga al tocarlo; sin ninguno, se ve todo el destino.
+  const [marcados, setMarcados] = useState<string[]>([])
+  const temaDeEntrada = categoriaLz ? categoriaLz.id : activeCard
+  useEffect(() => {
+    setMarcados(temaDeEntrada ? [temaDeEntrada] : [])
+  }, [temaDeEntrada])
   const [pendingStop, setPendingStop] = useState<Stop | null>(null)
   const [results, setResults] = useState<NearbyPlaceResult[] | null>(null)
   /** "+ Añadir" desde Explorar (decisión del usuario, 2026-09-28): la ventana pregunta a qué día. */
@@ -288,17 +294,29 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
       cuantos: countFor(card.id) ?? 0,
     }))
   }
+  /** (V25) Tocar un tema lo enciende o lo apaga (no cambia de tema): el mapa y la lista enseñan los sitios de todos los marcados, sin repetir uno que esté en dos. */
   const cambiarDeTema = (id: string) => {
-    const categoria = CATEGORIAS_EXPLORAR_LANZAROTE.find((x) => x.id === id && x.id !== 'excursiones')
     setOrigenApertura(null)
     setAperturaCerca(false)
-    if (categoria && deCoche) {
-      setActiveCard(null)
-      setCategoriaLz(categoria)
-      return
+    setMarcados((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  }
+  const categoriasLzMarcadas = deCoche ? CATEGORIAS_EXPLORAR_LANZAROTE.filter((categoria) => categoria.id !== 'excursiones' && marcados.includes(categoria.id)) : []
+  const filtrosMarcados = marcados.filter((id) => !categoriasLzMarcadas.some((categoria) => categoria.id === id)) as ExploreCardId[]
+  const lugaresMarcados = (): DestinationPlace[] => {
+    if (categoriasLzMarcadas.length === 0) return curatedPool
+    const vistos = new Set<string>()
+    const unidos: DestinationPlace[] = []
+    const sumar = (lista: DestinationPlace[]) => {
+      for (const place of lista) {
+        const clave = `${place.kind}:${place.name}`
+        if (vistos.has(clave)) continue
+        vistos.add(clave)
+        unidos.push(place)
+      }
     }
-    setCategoriaLz(null)
-    setActiveCard(id as ExploreCardId)
+    for (const categoria of categoriasLzMarcadas) sumar(lugaresDeCategoriaLanzarote(categoria, curatedPool))
+    if (filtrosMarcados.length > 0) sumar(curatedPool)
+    return unidos
   }
 
   /** Cuántos elementos hay detrás de cada tarjeta. */
@@ -332,17 +350,17 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
       <PlaceExplorerScreen
         open
         destination={city}
-        places={categoriaLz ? lugaresDeCategoriaLanzarote(categoriaLz, curatedPool) : curatedPool}
+        places={lugaresMarcados()}
         toiletsEnabled={banosYFuentes}
         excursions={excursions}
         title={`Explorar ${city}`}
         subtitle={categoriaLz ? categoriaLz.label : (EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null)}
         temas={temasDeArriba()}
-        temaActivo={categoriaLz ? categoriaLz.id : activeCard}
+        temasActivos={marcados}
         onTema={cambiarDeTema}
         route={route}
-        initialFilters={activeCard ? [activeCard] : []}
-        pinsDeLaLista={categoriaLz !== null}
+        initialFilters={filtrosMarcados}
+        pinsDeLaLista={categoriasLzMarcadas.length > 0}
         initialOrigin={origenApertura}
         initialNearby={aperturaCerca}
         onHotels={() => useAlojamientoUi.getState().abrirMapa()}
@@ -410,7 +428,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-2.5" data-explorar-categorias={deCoche && hasCuratedCatalog ? "lanzarote" : undefined}>
+      <div className="grid grid-cols-2 gap-2.5" data-explorar-categorias={deCoche && hasCuratedCatalog ? "lanzarote" : "general"}>
         {deCoche && hasCuratedCatalog
           ? [...CATEGORIAS_EXPLORAR_LANZAROTE.map((categoria) => ({ categoria })), { restaurantes: true as const }, { hoteles: true as const }].map((item, index) => {
               if ('categoria' in item) {

@@ -1,26 +1,26 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
+import { Suspense, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { lazyReintentable } from '../../../lib/cargaSegura'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { abrirMapaEnOtraPestana, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { ICONOS } from '../../../lib/iconos'
 import { Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
 import { ORDEN_EMBLEMAS_LANZAROTE, idDeDibujoLanzarote } from '../dibujos/emblemasLanzarote'
-import { estadoGuardado, pedirEstado, type ColeccionDeEstado, type EstadoLogros } from './api'
+import { estadoGuardado, olvidarPeticionDelEstado, pedirEstado, type ColeccionDeEstado, type EstadoLogros } from './api'
 import { mismaRespuesta } from '../../../lib/logrosEnCache'
-import { COLOR_DE_GRADO } from './BotonFlotanteLogros'
 import { BotonDeReclamar } from '../reclamar/Reclamar'
 import { TarjetaDeCompanero } from '../companero/Companero'
 import { cargarCompanero } from '../../../lib/companero'
-import { bannerAntes, etiquetaDeFase, faseDelViaje, lineaDeGrado, marcaDeColeccion, notaDeSecretos, textoDeLoQueQueda, TEXTO_AL_COMPLETAR, tituloDeSecretos, type FaseDelViaje } from './hoja/textosHoja'
-import { piezaDeInsignia } from './hoja/piezaDeInsignia'
+import { bannerAntes, etiquetaDeFase, faseDelViaje, lineaDeGrado, marcaDeColeccion, textoDeLoQueQueda, TEXTO_AL_COMPLETAR, type FaseDelViaje } from './hoja/textosHoja'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
 import { usePasePintable } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { Candado } from '../../pase/Candado'
 import { ListaDeColeccion } from '../ficha/ListaDeColeccion'
+import { BloqueDelPase, ColeccionesAntes, LoQueTePuedesLlevar } from './hoja/AntesDelViaje'
 
-const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
+const EscenaDeEmblema = lazyReintentable(() => import('./EscenaDeEmblema'))
 
 /**
  * LA HOJA DE LOGROS (Tanda 8C2, «Logros · el botón del destino», partes 2, 3 y 4). Lo que abre el botón flotante: antes, durante y después del viaje.
@@ -32,24 +32,6 @@ const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
  * Nunca enseña un emblema antes de encontrarlo, ni dice cuáles faltan ni dónde están. Todos los números salen de `GET /api/logros/estado`.
  */
 const ID_EMBLEMAS = ['coliseo', 'foro_romano', 'panteon', 'fontana_de_trevi', 'museos_vaticanos', 'plaza_san_pedro', 'basilica_san_pedro', 'boca_de_la_verdad', 'ojo_cerradura', 'catacumbas', 'plaza_de_espana', 'castillo_de_santangelo', 'madrugador', 'nocturno']
-/** La forma del hueco de cada emblema («?» dentro): ancho, alto, radio y giro, como en el diseño. */
-const FORMA_HUECO: [number, number, string, string][] = [
-  [69, 78, '50% 50% 14px 14px', 'none'],
-  [69, 69, '18px', 'rotate(45deg)'],
-  [75, 75, '50%', 'none'],
-  [66, 81, '50% 50% 50% 50% / 58% 58% 42% 42%', 'none'],
-  [75, 63, '50%', 'none'],
-  [72, 72, '21px', 'none'],
-  [69, 78, '22px 22px 50% 50%', 'none'],
-  [75, 75, '50%', 'none'],
-  [66, 66, '15px', 'rotate(45deg)'],
-  [69, 81, '50% 50% 12px 12px', 'none'],
-  // Plaza de España (la escalinata) y Castillo de Sant’Angelo (redondo), Tanda 10.
-  [75, 72, '14px 14px 6px 6px', 'none'],
-  [75, 75, '50%', 'none'],
-  [75, 75, '50%', 'none'],
-  [75, 75, '50%', 'none'],
-]
 const UNIDAD_DE_SELLO: Record<string, string> = { roma: 'imprescindibles', lanzarote: 'imprescindibles' }
 
 const ETIQUETA = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' } as const
@@ -65,17 +47,25 @@ export default function HojaLogros(): ReactNode {
   const [escena, setEscena] = useState<string | null>(null)
   // (LZ3b, V3) Al tocar un emblema de Lanzarote sale SU escena (la de Design, directo al sitio, sin frase de suspense) con SU nombre y SU línea, como en Roma.
   const [escenaTexto, setEscenaTexto] = useState<{ nombre: string; linea: string } | null>(null)
+  // (V25) Si lo de logros no llega (falla o tarda), la hoja no se queda en el esqueleto para siempre: a los 10 s dice «No se ha podido cargar, vuelve a probar» con [Reintentar] y sigue funcionando con lo que tenga.
+  const [intento, setIntento] = useState(0)
+  const [tardaMucho, setTardaMucho] = useState(false)
   useEffect(() => {
     let vivo = true
+    setCargado(false)
+    setTardaMucho(false)
+    const reloj = window.setTimeout(() => vivo && setTardaMucho(true), 10000)
     void pedirEstado(tripId).then((e) => {
       if (!vivo) return
+      window.clearTimeout(reloj)
       setEstado((prev) => (prev && e && mismaRespuesta(prev, e) ? prev : e ?? prev))
       setCargado(true)
     })
     return () => {
       vivo = false
+      window.clearTimeout(reloj)
     }
-  }, [tripId])
+  }, [tripId, intento])
   // (V15b) La hoja de un viaje pregunta por SU viaje al abrirse (no por el que estuviera activo antes): la tarjeta «Eric consiguió N sitios…» sale de ahí.
   useEffect(() => {
     if (tripId) void cargarCompanero(tripId)
@@ -87,6 +77,8 @@ export default function HojaLogros(): ReactNode {
   // Tanda 10G: sin el pase, la vitrina y las colecciones se ven, cerradas (en gris), con lo que ganarías; tocarlas abre el pase. [Visto] no suma sin pase, salvo el día de prueba (lo decide el servidor).
   const estadoPase = usePasePintable()
   const sinPase = estadoPase === 'sin'
+  // (V25) Antes del viaje, sin pase: la hoja es un juego a la vista y al final VENDE el pase (nada en gris ni bloqueado). Durante y después, como siempre.
+  const cerrado = sinPase && fase !== 'antes'
 
   // (V9) Arriba, las colecciones con algún pedazo (en el orden del servidor); al final, las que están a 0, juntas y plegadas en «Más colecciones de …». Si todas están a 0, sin plegar.
   const [masAbierto, setMasAbierto] = useState(false)
@@ -133,35 +125,45 @@ export default function HojaLogros(): ReactNode {
               {etiqueta}
             </span>
           )}
-          <div data-cabeza-de-logros style={{ flex: 'none', margin: '-8px -20px -6px' }}>
-            <BotonDeReclamar ciudad={estado?.ciudad} />
-            <TarjetaDeCompanero tripId={tripId} />
-          </div>
+          {/* (V25) ANTES del viaje no se ha visitado nada: ni [Reclamar con tus fotos], ni «Puedes reclamar hasta…», ni «Yo también estaba». Solo durante y después (hasta el fin del plazo de reclamar). */}
+          {!(estado?.viaje && fase === 'antes') && (
+            <div data-cabeza-de-logros style={{ flex: 'none', margin: '-8px -20px -6px' }}>
+              <BotonDeReclamar ciudad={estado?.ciudad} />
+              <TarjetaDeCompanero tripId={tripId} />
+            </div>
+          )}
           {!estado ? (
-            cargado ? (
-              <p style={{ textAlign: 'center', font: "400 13.5px 'Geist'", color: 'rgba(28,34,48,.6)', margin: '24px 0' }}>Todavía no hay logros que enseñar.</p>
+            cargado || tardaMucho ? (
+              <div data-logros-sin-cargar="1" role="alert" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, margin: '28px 0', textAlign: 'center' }}>
+                <p style={{ margin: 0, font: "400 15px/1.35 'Geist'", color: 'rgba(28,34,48,.7)' }}>No se ha podido cargar, vuelve a probar.</p>
+                <button type="button" data-reintentar-logros onClick={() => {
+                    olvidarPeticionDelEstado(tripId)
+                    setIntento((n) => n + 1)
+                  }} style={{ height: 48, padding: '0 24px', borderRadius: 999, border: 0, cursor: 'pointer', background: 'linear-gradient(180deg,#FBF3E2,#EBD9AE)', color: '#6F4E37', font: "700 15px 'Geist'" }}>
+                  Reintentar
+                </button>
+              </div>
             ) : (
               <EsqueletoDeLogros />
             )
           ) : (
             <>
-              {sinPase && <Candado datos="logros-sin-pase" destino={estado.ciudad} titulo="Tus logros del viaje" texto="Con el {pase}, cada sitio que ves suma." />}
-              <div data-logros-cerrados={sinPase ? '1' : undefined} onClickCapture={sinPase ? (e) => { e.stopPropagation(); e.preventDefault(); abrirAvisoPase('logros', { destino: estado.ciudad }) } : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 18, ...(sinPase ? { filter: 'grayscale(1)', opacity: 0.55, cursor: 'pointer' } : {}), ...(estadoPase === 'pendiente' ? { visibility: 'hidden' as const } : {}) }}>
-              {estado.sellos[0] && <TarjetaDeSello key={estado.sellos[0].id} sello={estado.sellos[0]} grande fase={fase} />}
-              {estado.sellos.length > 1 && (
-                <div style={{ display: 'grid', gridTemplateColumns: estado.sellos.length > 2 ? '1fr 1fr' : '1fr', gap: 8 }}>
-                  {estado.sellos.slice(1).map((s) => (
-                    <TarjetaDeSello key={s.id} sello={s} grande={false} fase={fase} />
-                  ))}
-                </div>
-              )}
-              <Franja fase={fase} estado={estado} hayViaje={hayViaje} />
-              <div data-colecciones-con-algo="1" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {cerrado && <Candado datos="logros-sin-pase" destino={estado.ciudad} titulo="Tus logros del viaje" texto="Con el {pase}, cada sitio que ves suma." />}
+              <div data-logros-cerrados={cerrado ? '1' : undefined} onClickCapture={cerrado ? (e) => { e.stopPropagation(); e.preventDefault(); abrirAvisoPase('logros', { destino: estado.ciudad }) } : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 18, ...(cerrado ? { filter: 'grayscale(1)', opacity: 0.55, cursor: 'pointer' } : {}), ...(estadoPase === 'pendiente' ? { visibility: 'hidden' as const } : {}) }}>
+              {/* (V25) Roma, el Vaticano y lo que haya: la MISMA tarjeta (la oscura y grande), una debajo de otra. */}
+              {estado.sellos.map((sello) => (
+                <TarjetaDeSello key={sello.id} sello={sello} fase={fase} />
+              ))}
+              {fase === 'antes' && <LoQueTePuedesLlevar ciudad={estado.ciudad} insignias={estado.colecciones.length} medallas={4} />}
+              {fase === 'antes' && <Secretos fase={fase} estado={estado} verEscena={(id, texto) => { setEscenaTexto(texto ?? null); setEscena(id) }} />}
+              {fase === 'antes' && <ColeccionesAntes estado={estado} sinPase={sinPase} ciudad={estado.ciudad} destino={estado.destino} cerrarHoja={cerrar} />}
+              {fase !== 'antes' && <Franja fase={fase} estado={estado} hayViaje={hayViaje} />}
+              {fase !== 'antes' && <div data-colecciones-con-algo="1" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {(plegar ? conAlgo : estado.colecciones).map((c, i) => (
                   <FilaDeColeccion key={c.id} c={c} i={i} fase={fase} ciudad={estado.ciudad} destino={estado.destino} abierta={abiertas.has(c.id)} alternar={() => alternar(c.id)} cerrarHoja={cerrar} />
                 ))}
-              </div>
-              {plegar && (
+              </div>}
+              {fase !== 'antes' && plegar && (
                 <div data-mas-colecciones={masAbierto ? 'abierto' : 'plegado'} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <button type="button" aria-expanded={masAbierto} onClick={() => setMasAbierto((v) => !v)} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 52, padding: '14px 16px', borderRadius: 18, background: '#F5EFE4', border: '1px solid rgba(28,34,48,.06)', cursor: 'pointer', textAlign: 'left', color: 'inherit' }}>
                     <span style={{ flex: 1, font: "500 14.5px 'Geist'" }}>Más colecciones de {estado.ciudad}</span>
@@ -174,8 +176,10 @@ export default function HojaLogros(): ReactNode {
                     aCero.map((c, i) => <FilaDeColeccion key={c.id} c={c} i={i} fase={fase} ciudad={estado.ciudad} destino={estado.destino} abierta={abiertas.has(c.id)} alternar={() => alternar(c.id)} cerrarHoja={cerrar} />)}
                 </div>
               )}
-              <Secretos fase={fase} estado={estado} verEscena={(id, texto) => { setEscenaTexto(texto ?? null); setEscena(id) }} />
+              {fase !== 'antes' && <Secretos fase={fase} estado={estado} verEscena={(id, texto) => { setEscenaTexto(texto ?? null); setEscena(id) }} />}
               </div>
+              {/* (V25) Sin pase y antes del viaje: la hoja vende el pase (el precio sale del servidor). Con pase, la misma hoja sin este bloque. */}
+              {fase === 'antes' && sinPase && <BloqueDelPase ciudad={estado.ciudad} secretos={estado.secretos.total} />}
               {fase === 'despues' && (
                 <button
                   type="button"
@@ -225,14 +229,16 @@ function EsqueletoDeLogros(): ReactNode {
   )
 }
 
-function TarjetaDeSello({ sello, grande, fase }: { sello: EstadoLogros['sellos'][number]; grande: boolean; fase: FaseDelViaje }): ReactNode {
+function TarjetaDeSello({ sello, fase }: { sello: EstadoLogros['sellos'][number]; fase: FaseDelViaje }): ReactNode {
   const grado = sello.grado
-  const color = grado ? COLOR_DE_GRADO[grado] : 'rgba(28,34,48,.45)'
   const siguiente = sello.siguiente ? { grado: sello.siguiente.grado, faltan: sello.siguiente.faltan } : null
   // (V9) UNA sola tarjeta con la medalla, su barra y lo que queda: «Te quedan 2 para la plata · 6 para el diamante» (después del viaje y durante); antes, «Empieza en bronce».
   const texto = textoDeLoQueQueda({ fase, grado, siguiente, n: sello.n, total: sello.total, alCompletar: TEXTO_AL_COMPLETAR[sello.id] ?? null })
   const pct = sello.total > 0 ? (sello.n / sello.total) * 100 : 0
-  if (grande) {
+  // (V25) Sin grado, el título dice lo que viene («Empieza en bronce: 1 sitio»); el «Por conseguir» ya está en la línea de arriba (nunca dos veces) y debajo no se repite.
+  const tituloSello = sello.nombre_grado ?? (siguiente ? `Empieza en ${siguiente.grado}${siguiente.faltan > 0 ? `: ${siguiente.faltan} ${siguiente.faltan === 1 ? 'sitio' : 'sitios'}` : ''}` : 'Por conseguir')
+  const textoDebajo = grado ? texto : null
+  {
     return (
       <div data-sello={sello.id} style={{ position: 'relative', overflow: 'hidden', borderRadius: 26, background: 'radial-gradient(120% 140% at 0% 0%,#3A3F5C 0%,#232840 45%,#1C2230 100%)', border: '1px solid rgba(243,213,154,.35)', boxShadow: '0 16px 28px -18px rgba(28,34,48,.8)', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, color: '#FFFDF8' }}>
         <span style={{ position: 'relative', zIndex: 1, flex: 'none', ...(grado ? { opacity: 1 } : { filter: 'grayscale(.4) sepia(.3) saturate(1.2)', opacity: 0.9 }) }}>
@@ -241,28 +247,15 @@ function TarjetaDeSello({ sello, grande, fase }: { sello: EstadoLogros['sellos']
         <span aria-hidden="true" style={{ position: 'absolute', left: -30, top: -50, width: 190, height: 190, borderRadius: '50%', background: 'radial-gradient(circle,rgba(243,213,154,.22),transparent 68%)' }} />
         <span style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 5 }}>
           <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: '#F3D59A' }}>{lineaDeGrado(grado, sello.n, sello.total, UNIDAD_DE_SELLO[sello.id] ?? 'sitios')}</span>
-          <span style={{ font: "400 23px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>{sello.nombre_grado ?? 'Por conseguir'}</span>
+          <span data-sello-titulo style={{ font: "400 23px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>{tituloSello}</span>
           <span style={{ height: 5, borderRadius: 5, background: 'rgba(255,253,248,.16)', overflow: 'hidden', marginTop: 2 }}>
             <span style={{ display: 'block', height: '100%', width: `${pct}%`, borderRadius: 5, background: 'linear-gradient(90deg,#E4C58A,#F8E7BC)', animation: 'moGrow 1.1s .4s cubic-bezier(.3,0,.2,1) both' }} />
           </span>
-          {texto && <span data-sello-texto style={{ font: "400 12.5px/1.3 'Geist'", color: 'rgba(255,253,248,.82)' }}>{texto}</span>}
+          {textoDebajo && <span data-sello-texto style={{ font: "400 12.5px/1.3 'Geist'", color: 'rgba(255,253,248,.82)' }}>{textoDebajo}</span>}
         </span>
       </div>
     )
   }
-  return (
-    <div data-sello={sello.id} style={{ borderRadius: 22, background: '#FFFFFF', border: '1px solid rgba(28,34,48,.07)', padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, textAlign: 'center' }}>
-      <span style={grado ? { opacity: 1 } : { filter: 'grayscale(.4) sepia(.3) saturate(1.2)', opacity: 0.9 }}>
-        <Sello id={sello.id} grado={(grado ?? 'bronce') as GradoDeSello} apagado={!grado} tam={60} animado={false} etiqueta={false} />
-      </span>
-      <span style={{ font: "400 16px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>{sello.nombre_grado ?? 'Por conseguir'}</span>
-      <span style={{ ...ETIQUETA, letterSpacing: '.1em', color }}>{lineaDeGrado(grado, sello.n, sello.total, UNIDAD_DE_SELLO[sello.id] ?? 'sitios')}</span>
-      <div style={{ width: '100%', height: 5, borderRadius: 5, background: 'rgba(28,34,48,.08)', overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${pct}%`, borderRadius: 5, background: color }} />
-      </div>
-      {texto && <span data-sello-texto style={{ font: "500 11.5px/1.3 'Geist'", color: grado ? 'oklch(0.48 0.17 5)' : '#8E6820', textWrap: 'balance' as never }}>{texto}</span>}
-    </div>
-  )
 }
 
 function Franja({ fase, estado, hayViaje }: { fase: FaseDelViaje; estado: EstadoLogros; hayViaje: boolean }): ReactNode {
@@ -283,36 +276,19 @@ function FilaDeColeccion({ c, i, fase, ciudad, destino, abierta, alternar, cerra
   const marca = marcaDeColeccion({ fase, completa: c.completa, nuevo: c.nuevo_hoy, enTuRuta: c.en_tu_ruta, ciudad })
   const nuevo = marca.etiqueta === 'nuevo'
   const verdeMarca = marca.etiqueta === 'completa' || marca.etiqueta === 'en_ruta'
-  const puedeAbrir = fase !== 'antes'
+  const puedeAbrir = true // (V25) Se abre al tocarla también antes del viaje.
   const ganados = useMemo(() => c.sitios.filter((s) => s.visto).map((s) => s.sitio), [c.sitios])
-  const [pieza, setPieza] = useState<string | null>(null)
-  const temporizador = useRef<number | undefined>(undefined)
-  useEffect(() => () => window.clearTimeout(temporizador.current), [])
-  const tocarInsignia = (e: MouseEvent<HTMLSpanElement>) => {
-    const caja = e.currentTarget.getBoundingClientRect()
-    const k = piezaDeInsignia(c.id, c.sitios.length, (e.clientX - caja.left) / caja.width, (e.clientY - caja.top) / caja.height)
-    if (k == null) return
-    e.stopPropagation()
-    setPieza(c.sitios[k]?.nombre ?? null)
-    window.clearTimeout(temporizador.current)
-    temporizador.current = window.setTimeout(() => setPieza(null), 2200)
-  }
   return (
     <div data-coleccion={c.id} style={{ borderRadius: 22, background: '#FFFDF8', border: `1px solid ${nuevo ? 'oklch(0.55 0.17 5 / .3)' : 'rgba(28,34,48,.08)'}`, boxShadow: '0 8px 20px -16px rgba(28,34,48,.35)', animation: `moPop .4s ${(0.05 + i * 0.04).toFixed(2)}s ease both` }}>
       <div onClick={puedeAbrir ? alternar : undefined} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px 10px 10px', cursor: puedeAbrir ? 'pointer' : 'default', minHeight: 76 }}>
-        <span onClick={tocarInsignia} style={{ width: 76, height: 76, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ width: 76, height: 76, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Insignia coleccion={c.id} ganados={ganados} completa={c.completa} tam={76} />
         </span>
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 22 }}>
             <span style={{ flex: 1, minWidth: 0, font: "400 19px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{c.nombre}</span>
-            {pieza ? (
-              <span role="status" style={{ height: 22, padding: '0 8px', borderRadius: 999, background: '#1C2230', color: '#FFFDF8', font: "600 11px/22px 'Geist'", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '55%' }}>
-                {pieza}
-              </span>
-            ) : (
-              marca.texto && <span style={{ flex: 'none', height: 20, padding: '0 8px', borderRadius: 999, background: nuevo ? 'oklch(0.55 0.17 5 / .12)' : verdeMarca ? 'oklch(0.96 0.035 150)' : '#F1EADC', color: nuevo ? 'oklch(0.48 0.17 5)' : 'oklch(0.38 0.1 150)', font: nuevo ? "600 10px/20px 'Geist Mono',monospace" : "600 11px/20px 'Geist'", letterSpacing: nuevo ? '.08em' : 0, whiteSpace: 'nowrap', textTransform: nuevo ? 'uppercase' : 'none' }}>{nuevo ? 'Hoy' : marca.texto}</span>
-            )}
+            {/* (V25) Fuera la etiqueta negra con el nombre de un sitio (salía al tocar un trozo de la insignia). */}
+            {marca.texto && <span style={{ flex: 'none', height: 20, padding: '0 8px', borderRadius: 999, background: nuevo ? 'oklch(0.55 0.17 5 / .12)' : verdeMarca ? 'oklch(0.96 0.035 150)' : '#F1EADC', color: nuevo ? 'oklch(0.48 0.17 5)' : 'oklch(0.38 0.1 150)', font: nuevo ? "600 10px/20px 'Geist Mono',monospace" : "600 11px/20px 'Geist'", letterSpacing: nuevo ? '.08em' : 0, whiteSpace: 'nowrap', textTransform: nuevo ? 'uppercase' : 'none' }}>{nuevo ? 'Hoy' : marca.texto}</span>}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ flex: 1, height: 5, borderRadius: 5, background: 'rgba(28,34,48,.09)', overflow: 'hidden' }}>
@@ -362,11 +338,24 @@ function FilaDeColeccion({ c, i, fase, ciudad, destino, abierta, alternar, cerra
   )
 }
 
+/** (V25) Las siluetas de los secretos de Design (`Logros Antes Viaje`): cada emblema oculto es una silueta oscura con «?», en una fila que se desliza de lado (y solo de lado). */
+const SILUETAS: { cp: string; br: string }[] = [
+  { cp: 'polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)', br: '0' },
+  { cp: 'none', br: '50%' },
+  { cp: 'polygon(50% 0,100% 20%,100% 65%,50% 100%,0 65%,0 20%)', br: '0' },
+  { cp: 'none', br: '18px' },
+  { cp: 'polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)', br: '0' },
+  { cp: 'none', br: '50% 50% 14px 14px' },
+  { cp: 'polygon(50% 0,100% 50%,50% 100%,0 50%)', br: '0' },
+  { cp: 'none', br: '30%' },
+  { cp: 'polygon(0 100%,0 40%,50% 0,100% 40%,100% 100%)', br: '0' },
+  { cp: 'none', br: '30%' },
+  { cp: 'polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)', br: '0' },
+]
+
 function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: EstadoLogros; verEscena: (id: string, texto?: { nombre: string; linea: string }) => void }): ReactNode {
   const { total, encontrados_lista: lista } = estado.secretos
-  const titulo = tituloDeSecretos(fase, estado.ciudad, total, lista.length)
-  const nota = notaDeSecretos(fase, total, lista.length)
-  // Los encontrados van en su sitio de siempre; el resto de los huecos solo llevan un «?» (nunca se dice cuál es cuál).
+  // Los encontrados van en su sitio de siempre; el resto de los huecos solo llevan una silueta con «?» (nunca se dice cuál es cuál).
   // (LZ3) Lanzarote tiene sus 11 emblemas, en su orden y con su dibujo (ids «lz_…»; V3: cada uno con su escena, que se abre al tocarlo).
   const lanza = estado.destino === 'lanzarote'
   const ORDEN = lanza ? ORDEN_EMBLEMAS_LANZAROTE : ID_EMBLEMAS
@@ -376,39 +365,33 @@ function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: Est
   let extra = ORDEN.length
   for (const e of lista) porSitio.set(posicion(e.id) >= 0 ? posicion(e.id) : extra++, e)
   if (!(total > 0) && lista.length === 0) return null
+  void fase
   return (
-    <div data-secretos="1" style={{ marginTop: 6, borderRadius: 24, background: '#1C2230', color: '#FFFDF8', padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {titulo && (
-        <span style={{ flex: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center' }}>
-          <span style={{ whiteSpace: 'nowrap', font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3D59A' }}>EMBLEMAS OCULTOS</span>
-          <span data-titulo-secretos style={{ padding: '0 4px', font: "400 24px/1.1 'Instrument Serif',serif" }}>{titulo}</span>
-        </span>
-      )}
-      <div data-rejilla-de-emblemas style={{ display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: '10px 4px', justifyItems: 'center' }}>
+    <div data-secretos="1" style={{ marginTop: 6, borderRadius: 20, background: 'radial-gradient(120% 100% at 50% 0%,#2A3050 0%,#1C2230 70%)', color: '#FFFDF8', padding: '14px 0 14px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <span data-titulo-secretos style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#F3D59A', textTransform: 'uppercase' }}>{`${lista.length} de ${Math.max(total, lista.length)} ${Math.max(total, lista.length) === 1 ? 'secreto encontrado' : 'secretos encontrados'}`}</span>
+      <div data-rejilla-de-emblemas style={{ display: 'flex', gap: 10, overflowX: 'auto', overflowY: 'hidden', padding: '2px 14px 4px 0', scrollbarWidth: 'none', touchAction: 'pan-x', overscrollBehavior: 'contain' }}>
         {Array.from({ length: huecos }, (_, k) => {
           const e = porSitio.get(k)
-          const h = FORMA_HUECO[k] ?? FORMA_HUECO[2]!
+          const sil = SILUETAS[k % SILUETAS.length]
           return (
-            <span key={k} style={{ width: '100%', maxWidth: 78, aspectRatio: '1 / 1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span key={k} style={{ flex: 'none', width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {e && lanza ? (
                 <button type="button" aria-label={`Volver a ver ${e.nombre}`} onClick={() => verEscena(idDeDibujoLanzarote(e.id), { nombre: e.nombre, linea: e.linea })} style={{ width: '100%', height: '100%', border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Emblema id={idDeDibujoLanzarote(e.id)} tam={72} animado={false} />
+                  <Emblema id={idDeDibujoLanzarote(e.id)} tam={66} animado={false} />
                 </button>
               ) : e ? (
                 <button type="button" aria-label={`Volver a ver ${e.nombre}`} onClick={() => verEscena(e.id)} style={{ width: '100%', height: '100%', border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Emblema id={e.id} tam={72} animado={false} fecha={e.en ? e.en.slice(0, 10) : null} />
+                  <Emblema id={e.id} tam={66} animado={false} fecha={e.en ? e.en.slice(0, 10) : null} />
                 </button>
               ) : (
-                <span aria-hidden data-hueco-emblema="1" style={{ width: Math.round(h[0] * 0.8), height: Math.round(h[1] * 0.8), borderRadius: h[2], transform: h[3], background: 'rgba(255,253,248,.06)', border: '1.5px dashed rgba(243,213,154,.38)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ transform: h[3] === 'none' ? 'none' : 'rotate(-45deg)', font: "400 30px/1 'Instrument Serif',serif", color: 'rgba(243,213,154,.6)' }}>?</span>
+                <span aria-hidden data-hueco-emblema="1" style={{ width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg,#394168,#12172A)', clipPath: sil.cp, borderRadius: sil.br, boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.25)' }}>
+                  <span style={{ font: "400 28px/1 'Instrument Serif',serif", color: 'rgba(243,213,154,.75)' }}>?</span>
                 </span>
               )}
             </span>
           )
         })}
       </div>
-      {nota && <span style={{ padding: '0 4px', font: "italic 400 15px/1.35 'Instrument Serif',serif", color: 'rgba(255,253,248,.7)', textAlign: 'center' }}>{nota}</span>}
     </div>
   )
 }
-

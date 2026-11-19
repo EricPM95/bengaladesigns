@@ -82,11 +82,17 @@ try {
     await a.evaluar("import('/src/components/logros/momentos/useMomentosUI.ts').then((m) => { m.useMomentosUI.getState().cerrarHojaLogros(); return true })")
     await a.esp(500)
   }
-  const leerHoja = () =>
+  // (V25) Antes del viaje las colecciones salen al tocar la franja: se abre antes de leer.
+  const leerHoja = async () => {
+    await a.evaluar("document.querySelector('[data-colecciones-antes=\"cerrada\"] [data-franja-colecciones]')?.click(); true")
+    await a.esp(4000)
+    return leerHojaBase()
+  }
+  const leerHojaBase = () =>
     a.evaluar(`(() => {
       const sellos = Array.from(document.querySelectorAll('[data-sello]')).map((e) => ({ id: e.dataset.sello, texto: e.innerText, filtro: e.querySelector('span')?.style.filter || '', opacidad: e.querySelector('span')?.style.opacity || '' }))
       const filas = Array.from(document.querySelectorAll('[data-coleccion]'))
-      return { fase: document.querySelector('[data-hoja-logros]')?.dataset.hojaLogros, sellos, banner: Array.from(document.querySelectorAll('svg path')).length ? (document.body.innerText.match(/Con tu ruta puedes completar[^\\n]*/) || [''])[0] : '', enRuta: filas.filter((f) => /En tu ruta/.test(f.innerText)).length, filas: filas.length, abiertas: filas.filter((f) => f.querySelector('[style*="F5EFE4"]') && f.innerText.includes('Cómo llegar')).length, gajos: document.querySelectorAll('[data-insignia-partes]').length, titulo: document.querySelector('[role=dialog]')?.innerText.split('\\n').slice(0, 3).join(' | '), secretos: document.querySelector('[data-titulo-secretos]')?.innerText || '', secretosHuecos: document.querySelectorAll('[data-hueco-emblema]').length, cuenta: Array.from(document.querySelectorAll('[data-secretos] [data-emblema], [data-secretos] [data-emblema-lanza]')).length }
+      return { fase: document.querySelector('[data-hoja-logros]')?.dataset.hojaLogros, sellos, banner: Array.from(document.querySelectorAll('svg path')).length ? (document.body.innerText.match(/Con tu ruta puedes completar[^\\n]*/) || [''])[0] : '', enRuta: filas.filter((f) => /En tu ruta|Se completa con tu ruta/.test(f.innerText)).length, filas: filas.length, abiertas: filas.filter((f) => f.querySelector('[style*="F5EFE4"]') && f.innerText.includes('Cómo llegar')).length, gajos: document.querySelectorAll('[data-colecciones-una-a-una] [data-insignia-partes], [data-coleccion] [data-insignia-partes]').length, titulo: document.querySelector('[role=dialog]')?.innerText.split('\\n').slice(0, 3).join(' | '), secretos: document.querySelector('[data-titulo-secretos]')?.innerText || '', secretosHuecos: document.querySelectorAll('[data-hueco-emblema]').length, cuenta: Array.from(document.querySelectorAll('[data-secretos] [data-emblema], [data-secretos] [data-emblema-lanza]')).length }
     })()`)
 
   // ── Roma ──
@@ -104,7 +110,7 @@ try {
   debe(h.banner === `Con tu ruta puedes completar ${antesRoma.con_tu_ruta_puedes_completar} de las ${antesRoma.colecciones.length} colecciones`, `Roma: la línea verde no dice los números de verdad: «${h.banner}»`)
   debe(h.enRuta === antesRoma.colecciones.filter((c) => c.en_tu_ruta).length, `Roma: «En tu ruta» sale en ${h.enRuta} colecciones, son ${antesRoma.colecciones.filter((c) => c.en_tu_ruta).length}`)
   debe(h.filas === 11, `Roma: salen ${h.filas} colecciones, no 11`)
-  debe(/esconde 14 secretos|esconde \d+ secretos/.test(h.secretos), `Roma: el bloque de secretos no dice «Roma esconde N secretos»: «${h.secretos}»`)
+  debe(/esconde 14 secretos|esconde \d+ secretos|\d+ DE \d+ SECRETOS ENCONTRADOS/i.test(h.secretos), `Roma: el bloque de secretos no dice «Roma esconde N secretos»: «${h.secretos}»`)
   debe(!/Lo nuevo de hoy/.test(await a.evaluar('document.body.innerText')), 'Roma: antes del viaje no hay «Lo nuevo de hoy»')
   await a.captura(path.join(SALIDA, 'lg1_hoja_antes_roma_1.jpg'))
   await cerrar()
