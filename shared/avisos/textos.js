@@ -150,6 +150,9 @@ export function queCambioEnElViaje(p, plural = false) {
 export function textoDelAviso(aviso) {
   const p = aviso.payload ?? {}
   switch (aviso.tipo) {
+    case 'gracias_viajero':
+      // (V20) El aviso de «Cuéntanos» cuando se revisa lo que mandó el viajero («Gracias a ti, ya está arreglado: …», «¡Lisboa ya está en JUTRIP! Tú lo pediste.»): el texto lo escribe el servidor.
+      return String(p.texto ?? '').trim()
     case 'recomendacion':
       // Tanda 10N: una propuesta de cambios sueltos (migración 0039 pone `n_cambios`): «Ana te propone 5 cambios en tu viaje a Roma».
       if (Number.isInteger(p.n_cambios) && p.n_cambios > 0) return `${nombreDe(p.autor) ? `${nombreDe(p.autor)} te ha mandado` : 'Te han mandado'} una propuesta de ${p.n_cambios} ${p.n_cambios === 1 ? 'cambio' : 'cambios'}${p.destino ? ` para el viaje a ${p.destino}` : ''}`
@@ -394,6 +397,8 @@ export function franjaDelAviso(aviso) {
       return { titulo: 'Tu resumen del viaje está listo', detalle: p.destino ?? '', icono: 'estrella' }
     case 'sorpresas':
       return { titulo: Number(p.dias) === 1 ? 'Te queda 1 día para tus sorpresas' : `Te quedan ${p.dias ?? 3} días para tus sorpresas`, detalle: p.destino ?? '', icono: 'estrella' }
+    case 'gracias_viajero':
+      return { titulo: String(p.texto ?? '').trim(), detalle: '', icono: 'estrella' }
     case 'sorteo':
       return { titulo: 'Ya tienes tu billete', detalle: p.anio ? `Para el sorteo de ${p.anio}` : 'Para el sorteo', icono: 'estrella' }
     case 'amigo_viaje':

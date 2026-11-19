@@ -26,6 +26,8 @@ function marcaEnElHtml(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  // (V20) La versión de la app (el commit) para «Cuéntanos»: en Vercel, el commit del despliegue; en local, «local».
+  define: { __COMMIT_APP__: JSON.stringify((process.env.VERCEL_GIT_COMMIT_SHA ?? 'local').slice(0, 8)) },
   plugins: [react(), marcaEnElHtml()],
   build: {
     rollupOptions: {

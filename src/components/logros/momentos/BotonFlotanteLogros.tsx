@@ -86,6 +86,7 @@ function Boton({ soloEn }: { soloEn: string[] | null }): ReactNode {
     <button
       type="button"
       data-boton-logros="1"
+      data-flotante="1"
       data-grado={grado ?? 'ninguno'}
       aria-label={`${estado?.ciudad ? `Tus logros en ${estado.ciudad}` : 'Tus logros'}${puntito ? ' (hay algo nuevo)' : ''}`}
       onClick={() => useMomentosUI.getState().abrirHojaLogros()}

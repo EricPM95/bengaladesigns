@@ -3,6 +3,7 @@ import { logrosActivos, llamar } from '../../lib/logros'
 import { useSinPasePrueba } from '../../store/useSinPasePrueba'
 import { empezarDeCero, puedeEmpezarDeCero } from '../../lib/empezarDeCero'
 import { DiagnosticoCompanero } from './DiagnosticoCompanero'
+import { AvisosDeViajeros } from './AvisosDeViajeros'
 
 /**
  * /admin/logros (Tanda 8A, apartado 10): una página solo para Eric (la cuenta de administrador sale de una variable del servidor, LOGROS_ADMIN_EMAILS).
@@ -34,12 +35,17 @@ interface Panel {
   interruptores: { logros: boolean; push: boolean; cobro: boolean }
 }
 
-const PESTANAS = ['Resumen', 'Sellos y colecciones', 'Emblemas', 'Patrimonios', 'Logros de viajero', 'Simulador', 'Personas', 'Sorteo', 'Probador', 'Mis pruebas', 'Destinos pedidos'] as const
+const PESTANAS = ['Resumen', 'Sellos y colecciones', 'Emblemas', 'Patrimonios', 'Logros de viajero', 'Simulador', 'Personas', 'Sorteo', 'Probador', 'Mis pruebas', 'Destinos pedidos', 'Avisos de viajeros'] as const
 
 export function AdminLogros() {
   const [panel, setPanel] = useState<Panel | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [pestana, setPestana] = useState<(typeof PESTANAS)[number]>('Resumen')
+  // (V20) Cuántos avisos nuevos hay (el número que sale en la pestaña, para enterarse sin abrirla).
+  const [nuevosAvisos, setNuevosAvisos] = useState<number | null>(null)
+  useEffect(() => {
+    void llamar<{ ok: boolean; nuevos: number }>('/api/admin/avisos-viajeros?limite=1').then((r) => r?.ok && setNuevosAvisos(r.nuevos))
+  }, [])
   useEffect(() => {
     if (!logrosActivos()) return
     void llamar<Panel>('/api/admin/logros/datos').then((r) => (r?.ok ? setPanel(r) : setError('No tienes permiso, o no has entrado con tu cuenta de administrador.')))
@@ -61,6 +67,7 @@ export function AdminLogros() {
         {PESTANAS.map((p) => (
           <button key={p} type="button" onClick={() => setPestana(p)} className={`rounded-full border px-3 py-1.5 text-[13px] ${p === pestana ? 'border-text bg-text text-bg' : 'border-text/20'}`}>
             {p}
+            {p === 'Avisos de viajeros' && nuevosAvisos ? <span data-numero-de-avisos className="ml-1.5 rounded-full bg-accent px-1.5 text-[11px] text-white">{nuevosAvisos}</span> : null}
           </button>
         ))}
       </nav>
@@ -136,6 +143,7 @@ export function AdminLogros() {
           </>
         )}
         {pestana === 'Destinos pedidos' && <DestinosPedidos />}
+        {pestana === 'Avisos de viajeros' && <AvisosDeViajeros alContar={setNuevosAvisos} />}
       </div>
     </main>
   )

@@ -154,6 +154,7 @@ export function ReorganizarHost(): ReactNode {
           aria-label="Reorganizar tu día"
           onClick={() => useReorganizarStore.getState().abrirAlerta()}
           className="hoja-pop"
+          data-flotante="1"
           style={{
             position: 'fixed',
             right: 15,

@@ -321,6 +321,7 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
         type="button"
         onClick={tocar}
         data-camara-viaje="boton"
+        data-flotante="1"
         data-modo={modo}
         aria-label="Tu cámara de viaje"
         className="zona-toque flex items-center justify-center transition-transform active:scale-95"

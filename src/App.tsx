@@ -19,7 +19,9 @@ import { AvisoPaseHost } from './components/pase/AvisoPase'
 import { SinPasePrueba } from './components/pase/SinPasePrueba'
 import { useSinPasePrueba } from './store/useSinPasePrueba'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
-import { ProponerSitioHost } from './components/proponerSitio/ProponerSitioHost'
+import { CuentanosHost } from './components/cuentanos/Cuentanos'
+import { BotonCuentanos } from './components/cuentanos/BotonCuentanos'
+import { encenderLaCola, instalarRegistroDeErrores } from './lib/cuentanos/envio'
 import { AvisosHost } from './components/avisos/AvisosHost'
 import { GastosCompartidosHost } from './components/presupuesto/GastosCompartidosHost'
 import { ModoCuentasHost } from './components/route/presupuesto/CuentaModo'
@@ -93,6 +95,12 @@ function App() {
   const setScreen = useRouteStore((state) => state.setScreen)
 
   // Mientras se prepara el viaje (tarda un buen rato), ya se va bajando la pantalla de la ruta: cuando termina, está lista.
+  // (V20) «Cuéntanos»: el registro de los últimos errores y la cola de avisos sin red.
+  useEffect(() => {
+    instalarRegistroDeErrores()
+    encenderLaCola()
+  }, [])
+
   useEffect(() => {
     if (screen === 'loading') void cargarRouteScreen()
   }, [screen])
@@ -145,8 +153,11 @@ function App() {
       <PiezaSegura nombre="SinPasePrueba">
         <SinPasePrueba />
       </PiezaSegura>
-      <PiezaSegura nombre="ProponerSitioHost">
-        <ProponerSitioHost />
+      <PiezaSegura nombre="CuentanosHost">
+        <CuentanosHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="BotonCuentanos">
+        <BotonCuentanos />
       </PiezaSegura>
       <PiezaSegura nombre="PropuestaHost">
         <PropuestaHost />

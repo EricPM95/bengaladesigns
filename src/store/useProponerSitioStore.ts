@@ -1,37 +1,20 @@
-import { create } from 'zustand'
+import { abrirCuentanos } from './useCuentanosStore'
 
 /**
- * (10S5) «Propón un sitio»: la hoja se puede abrir DESDE CUALQUIER SITIO (hoy, desde [Añadir otra reserva] cuando el sitio no está en JUTRIP; mañana, desde un botón de proponer sitios o de avisar de un error).
- * Basta con llamar a `abrirProponerSitio({ nombre, origen })` (fuera de React) o a `useProponerSitio()` (en un componente): `ProponerSitioHost`, montado una sola vez en App, pinta la hoja.
- * `nombre` = lo que ya había escrito (sale escrito en «Nombre del sitio»); `origen` = desde qué pantalla se manda (se guarda: «reservas», «explorar»…).
+ * (10S5, V20) «Propón un sitio»: desde la V20 es la pantalla U2b de «Cuéntanos» («Añadir un lugar») con el nombre ya escrito: un solo camino. Todo lo que abría la hoja vieja llama a
+ * `abrirProponerSitio({ nombre, origen })` (fuera de React) o a `useProponerSitio()`; ahora abren U2b.
  */
 export interface AperturaProponerSitio {
   nombre?: string
   origen?: string
 }
 
-interface ProponerSitioState {
-  abierta: boolean
-  nombre: string
-  origen: string
-  abrir: (apertura?: AperturaProponerSitio) => void
-  cerrar: () => void
-}
-
-export const useProponerSitioStore = create<ProponerSitioState>((set) => ({
-  abierta: false,
-  nombre: '',
-  origen: '',
-  abrir: (apertura) => set({ abierta: true, nombre: (apertura?.nombre ?? '').trim(), origen: apertura?.origen ?? '' }),
-  cerrar: () => set({ abierta: false }),
-}))
-
-/** Abre la hoja «Propón un sitio» desde donde sea (no hace falta estar dentro de un componente). */
+/** Abre «Añadir un lugar» (U2b) con el nombre ya escrito, desde donde sea. */
 export function abrirProponerSitio(apertura?: AperturaProponerSitio): void {
-  useProponerSitioStore.getState().abrir(apertura)
+  abrirCuentanos({ tipo: 'lugar', nombre: apertura?.nombre, origen: apertura?.origen })
 }
 
 /** El gancho global: `const proponerSitio = useProponerSitio(); proponerSitio({ nombre: 'Torre Eiffel', origen: 'reservas' })`. */
 export function useProponerSitio(): (apertura?: AperturaProponerSitio) => void {
-  return useProponerSitioStore((s) => s.abrir)
+  return abrirProponerSitio
 }

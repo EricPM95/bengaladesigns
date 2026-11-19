@@ -53,6 +53,7 @@ for (const n of NECESARIAS) debe(!noAplicadas.some((x) => x.startsWith(n)), 'mig
 // 0071 (10S5): empezar_de_cero también borra billetes_personales. Su comprobación (docs/dias/COMPROBAR_0071.sql) dice «Aplicada» con todas las migraciones y «FALTA» con la función de la 0032 sola.
 debe(!noAplicadas.some((x) => /^007[012]/.test(x)), 'migracion', `las migraciones 0070, 0071 y 0072 se aplican (${noAplicadas.filter((x) => /^007[012]/.test(x)).join(' | ')})`)
 // HOY3 (5-nov): la 0074 (avisos del viaje + empezar_de_cero con su tabla) y la 0075 (planificador pg_cron/pg_net, que aquí no programa nada porque PGlite no tiene esas extensiones) se aplican sin fallar.
+debe(!noAplicadas.some((x) => /^008[56]/.test(x)), 'migracion', `las migraciones 0085 y 0086 se aplican (${noAplicadas.filter((x) => /^008[56]/.test(x)).join(' | ')})`)
 debe(!noAplicadas.some((x) => /^007[45]/.test(x)), 'migracion', `las migraciones 0074 y 0075 se aplican (${noAplicadas.filter((x) => /^007[45]/.test(x)).join(' | ')})`)
 const comprobar0071 = fs.readFileSync('docs/dias/COMPROBAR_0071.sql', 'utf8')
 // 10S7: antes → ahora → decisión de Eric (31-oct): antes, con todas las migraciones, COMPROBAR_0071 decía «Aplicada»; ahora la 0072 (que ya no borra la prueba gastada) es la función vigente y la 0071 deja de encajar a
@@ -76,6 +77,16 @@ await db.exec(fs.readFileSync('supabase/migrations/0074_avisos_del_viaje.sql', '
 await db.exec(fs.readFileSync('supabase/migrations/0074_avisos_del_viaje.sql', 'utf8')) // idempotente: pegada dos veces
 debe((await db.query(comprobar0074)).rows[0]?.migracion_0074 === 'Aplicada', 'migracion', 'y «Aplicada» tras la 0074 (pegada dos veces)')
 debe((await db.query(comprobar0072)).rows[0]?.migracion_0072 === 'Aplicada', 'migracion', 'COMPROBAR_0072.sql sigue diciendo «Aplicada» con la 0074 vigente (la función sigue sin nombrar hoy_prueba)')
+// V20 (Cuéntanos): la vigente es ahora la de la 0086 (parte de la 0074 y solo añade avisos_de_viajeros). COMPROBAR_0086 dice «aplicada: false» con la función de la 0074 y true con la 0086 (pegada dos veces).
+const comprobar0085 = fs.readFileSync('docs/dias/COMPROBAR_0085.sql', 'utf8')
+const comprobar0086 = fs.readFileSync('docs/dias/COMPROBAR_0086.sql', 'utf8')
+debe((await db.query(comprobar0086)).rows[0]?.migracion_0086?.aplicada === false, 'migracion', 'COMPROBAR_0086.sql dice «false» con la función de la 0074 (que aún no borra avisos_de_viajeros)')
+await db.exec(fs.readFileSync('supabase/migrations/0086_empezar_de_cero_avisos_de_viajeros.sql', 'utf8'))
+await db.exec(fs.readFileSync('supabase/migrations/0086_empezar_de_cero_avisos_de_viajeros.sql', 'utf8')) // idempotente: pegada dos veces
+await db.exec(fs.readFileSync('supabase/migrations/0085_avisos_de_viajeros.sql', 'utf8')) // idempotente: pegada otra vez
+debe((await db.query(comprobar0086)).rows[0]?.migracion_0086?.aplicada === true && (await db.query(comprobar0086)).rows[0]?.migracion_0086?.faltan === 0, 'migracion', 'y «true» y 0 que faltan tras la 0086 (pegada dos veces)')
+debe((await db.query(comprobar0085)).rows[0]?.migracion_0085?.aplicada === true && (await db.query(comprobar0085)).rows[0]?.migracion_0085?.faltan === 0, 'migracion', 'COMPROBAR_0085.sql dice «true» y 0 que faltan con la 0085 aplicada')
+debe((await db.query(comprobar0074)).rows[0]?.migracion_0074 === 'Aplicada', 'migracion', 'COMPROBAR_0074.sql sigue diciendo «Aplicada» con la 0086 vigente')
 await db.exec(`
   grant usage on schema public, auth, storage to anon, authenticated, service_role;
   grant all on all tables in schema public to authenticated, service_role;
@@ -105,7 +116,7 @@ const S = (sql, params = []) => servidor(() => q(sql, params))
 /** El inventario: TODA tabla con datos de una cuenta y la columna que dice de quién es. Lo que se borra. */
 const INVENTARIO = [
   ['stop_visits', 'user_id'], ['trip_photo_meta', 'user_id'], ['trip_photos', 'user_id'], ['logro_hechos', 'user_id'], ['achievements', 'user_id'], ['logro_avisos', 'user_id'], ['logro_perfil', 'user_id'],
-  ['push_suscripciones', 'user_id'], /* hoy_prueba: 0072, se queda */ ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_viaje_enviados', 'user_id'] /* 0074 (HOY3): los avisos del viaje ya mandados */, ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
+  ['push_suscripciones', 'user_id'], /* hoy_prueba: 0072, se queda */ ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_viaje_enviados', 'user_id'] /* 0074 (HOY3): los avisos del viaje ya mandados */, ['avisos_de_viajeros', 'user_id'] /* 0085/0086 (V20): lo que la persona mandó desde «Cuéntanos» con avísame */, ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
   ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['admin_sin_pase', 'user_id'] /* 0040 */, ['trip_gastos', 'autor_id'] /* 0037/0040 */, ['trip_pagos', 'marcado_por'] /* 0040 */, ['trip_ex_miembros', 'user_id'] /* 0040 */, ['lo_suyo_del_viaje', 'user_id'] /* 0049, añadida en la 0071 */, ['reservas_invitado', 'user_id'] /* 0038, 0071 */, ['reservas_privadas_admin', 'user_id'] /* 0062/0064, 0071 */, /* historia_de_prueba: 0072, se queda */ ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
 ]
 /** Lo que se queda (de la cuenta). */
@@ -134,6 +145,7 @@ async function sembrar(uid, etiqueta, { invitado = null, amiga = null } = {}) {
   await S("insert into public.hoy_prueba (user_id, trip_id, fecha, gastada_en) values ($1,$2,'2026-10-10', now()) on conflict (user_id) do nothing", [uid, viaje])
   await S("insert into public.avisos (user_id, tipo, clave) values ($1,'unido',$2)", [uid, unico('aviso')])
   await S("insert into public.avisos_viaje_enviados (user_id, trip_id, clave, tipo, para) values ($1,$2,$3,'manana', now())", [uid, viaje, unico('viaje|manana')])
+  await S("insert into public.avisos_de_viajeros (tipo, datos, avisame, user_id) values ('idea', '{\"texto\": \"Una idea\"}'::jsonb, true, $1)", [uid])
   await S("insert into public.avisos_destino (destino, destino_norm, email, email_norm, user_id) values ('Lisboa','lisboa',$1,$1,$2)", [`${etiqueta}@x.es`, uid])
   await S("insert into public.place_likes (place_name, destination, user_id) values ('Coliseo','roma',$1)", [uid])
   await S('insert into public.admin_sin_pase (user_id, activo) values ($1, true) on conflict (user_id) do nothing', [uid])
@@ -474,7 +486,10 @@ console.log('3. El código')
   // HOY3: la vigente es ahora la de la 0074 (parte de la 0072 y solo añade avisos_viaje_enviados); se mira solo el trozo de la función (el resto de la 0074 son las funciones de los avisos del viaje).
   const sql72 = sin(fs.readFileSync('supabase/migrations/0072_empezar_de_cero_no_devuelve_pruebas.sql', 'utf8'))
   const sql74completa = sin(fs.readFileSync('supabase/migrations/0074_avisos_del_viaje.sql', 'utf8'))
-  const sql = sql74completa.slice(sql74completa.indexOf('create or replace function public.empezar_de_cero'))
+  const sql74 = sql74completa.slice(sql74completa.indexOf('create or replace function public.empezar_de_cero'))
+  // V20: la vigente es ahora la de la 0086 (parte de la 0074 y solo añade avisos_de_viajeros).
+  const sql86completa = sin(fs.readFileSync('supabase/migrations/0086_empezar_de_cero_avisos_de_viajeros.sql', 'utf8'))
+  const sql = sql86completa.slice(sql86completa.indexOf('create or replace function public.empezar_de_cero'))
   const sql71 = sin(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8'))
   const sql32 = sin(fs.readFileSync('supabase/migrations/0032_empezar_de_cero.sql', 'utf8'))
   debe(!/billetes_personales/.test(sql32) && /billetes_personales/.test(sql), 'inventario', 'la 0032 no está editada y la 0071 añade billetes_personales')
@@ -491,7 +506,7 @@ console.log('3. El código')
   debe(/conAdmin\(async \(req, res, usuario\)/.test(bloque) && /esAdmin\(usuario, env\)/.test(bloque), 'admin', 'el servidor decide con LOGROS_ADMIN_EMAILS (esAdmin) en las dos rutas')
   debe(!/@[a-z0-9-]+\.(com|es|org)/i.test(reiniciar + bloque), 'admin', 'ningún email escrito en el código')
   debe(!/from\('(?!admin_sin_pase')/.test(reiniciar), 'filtro', 'el servicio no hace consultas sueltas a tablas: todo pasa por la función de la base de datos')
-  const motor = ['server/logros/reiniciar.js', 'src/lib/empezarDeCero.ts', 'supabase/migrations/0032_empezar_de_cero.sql', 'supabase/migrations/0071_empezar_de_cero_billetes.sql', 'supabase/migrations/0072_empezar_de_cero_no_devuelve_pruebas.sql', 'supabase/migrations/0074_avisos_del_viaje.sql'].map((f) => fs.readFileSync(f, 'utf8')).join('\n')
+  const motor = ['server/logros/reiniciar.js', 'src/lib/empezarDeCero.ts', 'supabase/migrations/0032_empezar_de_cero.sql', 'supabase/migrations/0071_empezar_de_cero_billetes.sql', 'supabase/migrations/0072_empezar_de_cero_no_devuelve_pruebas.sql', 'supabase/migrations/0074_avisos_del_viaje.sql', 'supabase/migrations/0085_avisos_de_viajeros.sql', 'supabase/migrations/0086_empezar_de_cero_avisos_de_viajeros.sql'].map((f) => fs.readFileSync(f, 'utf8')).join('\n')
   debe(!/routeEngine|server\/engine|shared\//.test(motor), 'motor', 'no toca el motor de rutas')
   // El inventario de la prueba es el de la migración
   const tablasSql = [...sql.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
@@ -509,7 +524,10 @@ console.log('3. El código')
   debe(JSON.stringify(tablas71.filter((x) => !tablas72.includes(x)).sort()) === JSON.stringify(SE_QUITAN_EN_LA_0072), 'inventario', `la 0072 solo le quita a la 0071 hoy_prueba e historia_de_prueba (quita: ${tablas71.filter((x) => !tablas72.includes(x)).join(', ') || 'nada'})`)
   debe(tablas72.every((x) => tablas71.includes(x)), 'inventario', `y no añade nada que la 0071 no tuviera (añade: ${tablas72.filter((x) => !tablas71.includes(x)).join(', ') || 'nada'})`)
   // HOY3: la 0074 parte de la ÚLTIMA versión (la de la 0072) y su ÚNICA diferencia es una línea más: avisos_viaje_enviados.
-  debe(tablas72.every((x) => tablasSql.includes(x)) && JSON.stringify(tablasSql.filter((x) => !tablas72.includes(x))) === JSON.stringify(['avisos_viaje_enviados.user_id']), 'inventario', `la 0074 conserva todo lo de la 0072 y solo añade avisos_viaje_enviados (añade: ${tablasSql.filter((x) => !tablas72.includes(x)).join(', ') || 'nada'}; pierde: ${tablas72.filter((x) => !tablasSql.includes(x)).join(', ') || 'nada'})`)
+  const tablas74 = [...sql74.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
+  debe(tablas72.every((x) => tablas74.includes(x)) && JSON.stringify(tablas74.filter((x) => !tablas72.includes(x))) === JSON.stringify(['avisos_viaje_enviados.user_id']), 'inventario', `la 0074 conserva todo lo de la 0072 y solo añade avisos_viaje_enviados (añade: ${tablas74.filter((x) => !tablas72.includes(x)).join(', ') || 'nada'})`)
+  // V20: la 0086 parte de la ÚLTIMA versión (la de la 0074) y su ÚNICA diferencia es una línea más: avisos_de_viajeros.
+  debe(tablas74.every((x) => tablasSql.includes(x)) && JSON.stringify(tablasSql.filter((x) => !tablas74.includes(x))) === JSON.stringify(['avisos_de_viajeros.user_id']), 'inventario', `la 0086 conserva todo lo de la 0074 y solo añade avisos_de_viajeros (añade: ${tablasSql.filter((x) => !tablas74.includes(x)).join(', ') || 'nada'}; pierde: ${tablas74.filter((x) => !tablasSql.includes(x)).join(', ') || 'nada'})`)
   debe(!/hoy_prueba|historia_de_prueba/.test(sql), 'pruebas', 'el código de la 0072 (sin comentarios) no nombra hoy_prueba ni historia_de_prueba: no se borran nunca')
   // El cliente
   const cliente = fs.readFileSync('src/lib/empezarDeCero.ts', 'utf8')

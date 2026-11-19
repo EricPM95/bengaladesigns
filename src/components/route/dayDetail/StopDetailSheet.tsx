@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { abrirCuentanos } from '../../../store/useCuentanosStore'
 import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
@@ -783,6 +784,13 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
               onClose={() => setSitioDeLogros(null)}
             />,
             document.body,
+          )}
+
+          {/* (V20) «Un dato está mal» desde la ficha: «Cuéntanos» se abre con el sitio ya puesto. */}
+          {!stop.isBreak && (
+            <button type="button" data-cuentanos-dato-mal="1" onClick={() => abrirCuentanos({ tipo: 'dato_mal', sitio: { nombre: stop.name }, origen: 'ficha', parada: stop.id })} className="mx-auto mt-2 flex min-h-[44px] items-center justify-center px-4 text-[13px] text-text/55 underline">
+              ¿Hay algún dato mal? Cuéntanoslo
+            </button>
           )}
 
           <HowToGetThereSheet open={directionsOpen} onClose={() => setDirectionsOpen(false)} destination={description?.address ?? stop.name} />

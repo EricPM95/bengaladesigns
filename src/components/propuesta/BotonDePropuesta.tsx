@@ -39,6 +39,7 @@ export function BotonDePropuesta() {
       aria-label={n > 0 ? `Tu propuesta: ${n} ${n === 1 ? 'cambio' : 'cambios'}` : `Tu propuesta enviada: ${enEsperaN} ${enEsperaN === 1 ? 'cambio' : 'cambios'}`}
       onClick={() => abrirHoja({ modo: 'mia' })}
       className="hoja-pop"
+      data-flotante="1"
       style={{
         position: 'fixed',
         right: 15,

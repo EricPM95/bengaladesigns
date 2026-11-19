@@ -66,6 +66,7 @@ import { registrarRutasLogros, logrosActivos, esAdmin as esAdminLogros } from '.
 import { registrarRutaErrores } from './errores.js'
 import { registrarLeerBillete } from './billete/lectura.js'
 import { registrarRutaPropuestasSitio } from './propuestasSitio.js'
+import { registrarRutasAvisosViajeros } from './avisosViajeros.js'
 import { cobroSoloAdmins } from './logros/pase.js'
 import { cobroListo, crearServicioPagos, modoDePago, pasarelaDeMentira, pasarelaStripe, registrarRutasPagos } from './pagos.js'
 import { precioTienda } from '../shared/dinero/formato.js'
@@ -1178,6 +1179,8 @@ const CAMPAIGN_PATTERN = /^(app|v)-[A-Z0-9]{5}$/
 registrarRutaErrores(app, { servicio: salesAdmin })
 // (10S5) «Propón un sitio»: el viajero propone un sitio que no está en JUTRIP; se guarda sin datos privados (server/propuestasSitio.js, migración 0069).
 registrarRutaPropuestasSitio(app, { servicio: salesAdmin })
+// «Cuéntanos» (V20): avisos del viajero, su subida de fotos y el panel de administrador (0085/0086).
+registrarRutasAvisosViajeros(app, { admin: salesAdmin })
 
 app.post('/api/sales/ingest', async (req, res) => {
   const secret = process.env.SALES_INGEST_SECRET

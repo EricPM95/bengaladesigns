@@ -19,6 +19,10 @@ export interface ApartadoDePrivacidad {
   escrito?: string[]
 }
 
+/** (V20) Lo que manda el botón «Cuéntanos» y para qué (un solo sitio: lo enseña la página de privacidad). */
+export const AVISO_DE_CUENTANOS_PRIVACIDAD =
+  'Cuéntanos: cuando mandas un aviso (un sitio, un dato que está mal, una idea, una foto…) enviamos lo que escribes y, sin que tengas que escribir nada, el destino y el viaje, la pantalla en la que estabas, la versión de la app, el modelo de tu móvil y el navegador, y la hora, para poder encontrar el fallo o revisar el sitio. En «Algo no funciona» enviamos además los últimos errores de la app y la captura de la pantalla (puedes quitarla antes de enviar). Las fotos que acompañan un aviso se mandan reducidas; en «Comparte tu foto» se manda entera, con tu permiso (la casilla es obligatoria), la fecha y el nombre que pongas, y solo sale en la app con «Foto: tu nombre» si la elegimos. Si no tienes cuenta, o si apagas «Avísame», no guardamos nada que te identifique. Si tienes cuenta y dejas «Avísame» encendido, guardamos quién eres solo para avisarte en la campana cuando lo revisemos. Si no hay red, el aviso se guarda en tu móvil y se manda solo al volver.'
+
 export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
   { id: 'quien', titulo: 'Quién es el responsable', pregunta: 'Quién trata tus datos y cómo contactar con él.' },
   { id: 'que-guardamos', titulo: 'Qué guardamos', pregunta: 'Tu email, tus viajes, tus Vistos, tus fotos (y la fecha y el sitio de cada una), tus logros y tus pases.' },
@@ -26,7 +30,7 @@ export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
     id: 'para-que',
     titulo: 'Para qué lo usamos',
     pregunta: 'Para qué sirve cada dato y en qué se basa tratarlo.',
-    escrito: [AVISO_DE_DESTINOS_PRIVACIDAD],
+    escrito: [AVISO_DE_DESTINOS_PRIVACIDAD, AVISO_DE_CUENTANOS_PRIVACIDAD],
   },
   { id: 'cuanto-tiempo', titulo: 'Cuánto tiempo lo guardamos', pregunta: 'Cuánto dura cada dato y qué pasa cuando dejas de usar la app.' },
   { id: 'con-quien', titulo: 'Con quién lo compartimos', pregunta: 'Los servicios de fuera que tratan datos para que la app funcione (lista de abajo).' },
