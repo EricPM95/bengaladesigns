@@ -26,6 +26,14 @@ export function cobroActivo(env = process.env) {
   return String(env.PASES_COBRO_ACTIVO ?? '').toLowerCase() === 'true'
 }
 
+/**
+ * (V19) El cobro SOLO para los administradores, mientras se prueba (PASES_COBRO_SOLO_ADMINS=true): con él, la hoja de compra, los candados y «Mis pases» salen solo a los correos de administrador;
+ * todos los demás siguen como con el cobro apagado (todo abierto, sin hoja de compra). Solo tiene efecto si el cobro está encendido.
+ */
+export function cobroSoloAdmins(env = process.env) {
+  return String(env.PASES_COBRO_SOLO_ADMINS ?? '').toLowerCase() === 'true'
+}
+
 /* ------------------------------------------------------------------ */
 /* Los precios y quién paga                                            */
 /* ------------------------------------------------------------------ */

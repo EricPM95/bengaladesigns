@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { tokenDe, quienEs } from './cuentas.js'
-import { cobroActivo } from './logros/pase.js'
+import { cobroActivo, cobroSoloAdmins } from './logros/pase.js'
 import { pushEncendido } from './avisos.js'
 import { tiempoPorHoras, coordenadasValidas } from './tiempo.js'
 import { addDias, avisosDebidos, localDe, MAX_RETRASO_MIN, planDelViaje, TIEMPO_NOCHE_MIN, ZONA_POR_DEFECTO } from '../shared/avisos/avisosDelViaje.js'
@@ -106,6 +106,11 @@ export function crearServicioAvisosViaje({ admin, destinos = {}, ahora = () => n
   async function diasConAviso(uid, viaje, caches) {
     // (V1b, 15-nov; la regla del 7-nov) Con PASES_COBRO_ACTIVO=false todo está abierto menos leer documentos: los avisos también. Con el cobro encendido, como siempre: pase del destino, administrador o día de prueba.
     if (!cobroActivo(env)) return []
+    // (V19) Con el cobro solo para administradores, las demás cuentas están como con el cobro apagado: todos los avisos.
+    if (cobroSoloAdmins(env)) {
+      if (!caches.admins.has(uid)) caches.admins.set(uid, Boolean(await esAdminDeCuenta(uid).catch(() => false)))
+      if (!caches.admins.get(uid)) return []
+    }
     const destino = String(viaje.route?.destination ?? '').toLowerCase()
     if (!caches.pases.has(uid)) caches.pases.set(uid, (await rpc('pases_de', { p_uid: uid }).catch(() => [])) ?? [])
     if (caches.pases.get(uid).some((p) => p.estado === 'activo' && String(p.destino).toLowerCase() === destino)) return []

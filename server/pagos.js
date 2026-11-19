@@ -20,7 +20,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { quienEs, tokenDe } from './cuentas.js'
-import { cobroActivo, precioDelPase } from './logros/pase.js'
+import { cobroActivo, cobroSoloAdmins, precioDelPase } from './logros/pase.js'
 
 /** El nombre de la app (data/marca.json, un solo sitio): sale en el nombre del pase que se ve al pagar. */
 const nombreDeLaApp = () => {
@@ -292,7 +292,10 @@ export function crearServicioPagos({ admin, precios, destinos, pasarela, env = p
     return { estado: 200, cuerpo: { ok: true, url } }
   }
 
-  return { config, crearPago, procesarEvento, estadoDeSesion, pasesDe, recibo, pasarela, env }
+  /** (V19) Si las claves de Stripe están puestas y si la secreta es de PRUEBA: solo sí o no, NUNCA el valor. Solo lo ve el administrador (con PASES_COBRO_SOLO_ADMINS). */
+  const claves = () => ({ secreta_puesta: Boolean(env.STRIPE_SECRET_KEY), secreta_de_prueba: String(env.STRIPE_SECRET_KEY ?? '').startsWith('sk_test_'), secreta_de_verdad: String(env.STRIPE_SECRET_KEY ?? '').startsWith('sk_live_'), aviso_puesto: Boolean(env.STRIPE_WEBHOOK_SECRET) })
+
+  return { config, claves, crearPago, procesarEvento, estadoDeSesion, pasesDe, recibo, pasarela, env }
 }
 
 /* ------------------------------------------------------------------ */
@@ -306,12 +309,15 @@ export function origenSeguro(env, req) {
   return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origen) ? origen : null
 }
 
-export function registrarRutasPagos(app, { admin, servicio, env = process.env }) {
-  const conUsuario = (manejador) => async (req, res) => {
+export function registrarRutasPagos(app, { admin, servicio, env = process.env, esAdmin = () => false }) {
+  // (V19) Con PASES_COBRO_SOLO_ADMINS=true, el cobro es solo de los administradores: para los demás, como si no hubiera cobro.
+  const soloAdmins = cobroSoloAdmins(env)
+  const conUsuario = (manejador, { sinAcceso = null } = {}) => async (req, res) => {
     if (!admin) return res.status(503).json({ ok: false, error: SIN_PASARELA })
     try {
       const usuario = await quienEs(admin, tokenDe(req))
       if (!usuario) return res.status(401).json({ ok: false, error: 'Tu sesión no es válida. Entra otra vez.' })
+      if (soloAdmins && !esAdmin(usuario, env)) return sinAcceso ? res.json(sinAcceso) : res.status(403).json({ ok: false, error: 'El cobro todavía no está abierto.' })
       await manejador(req, res, usuario)
     } catch (error) {
       console.error('[pagos]', error)
@@ -320,10 +326,19 @@ export function registrarRutasPagos(app, { admin, servicio, env = process.env })
   }
   const responder = (res, { estado, cuerpo }) => res.status(estado).json(cuerpo)
 
-  app.get('/api/pase/config', (_req, res) => res.json(servicio.config()))
+  app.get('/api/pase/config', async (req, res) => {
+    if (!soloAdmins) return res.json(servicio.config())
+    // (V19) Solo los administradores ven el cobro; sin sesión, con sesión anónima o con otro correo: sin cobro.
+    try {
+      const usuario = admin ? await quienEs(admin, tokenDe(req)) : null
+      return res.json(usuario && esAdmin(usuario, env) ? { ...servicio.config(), claves: servicio.claves() } : { ok: true, cobro: false, modo: null })
+    } catch {
+      return res.json({ ok: true, cobro: false, modo: null })
+    }
+  })
   app.post('/api/pago/crear', conUsuario(async (req, res, u) => responder(res, await servicio.crearPago(u, req.body ?? {}, origenSeguro(env, req)))))
   app.get('/api/pago/estado', conUsuario(async (req, res, u) => res.json(await servicio.estadoDeSesion(u, String(req.query.sesion ?? '')))))
-  app.get('/api/pases/mios', conUsuario(async (_req, res, u) => res.json(await servicio.pasesDe(u))))
+  app.get('/api/pases/mios', conUsuario(async (_req, res, u) => res.json(await servicio.pasesDe(u)), { sinAcceso: { ok: true, pases: [] } }))
   app.get('/api/pases/recibo', conUsuario(async (req, res, u) => responder(res, await servicio.recibo(u, String(req.query.pase ?? '')))))
 
   // El aviso de Stripe. Sin sesión de usuario: manda la firma. El cuerpo se comprueba TAL CUAL llegó (`req.rawBody`, que guarda el lector de JSON de index.js).

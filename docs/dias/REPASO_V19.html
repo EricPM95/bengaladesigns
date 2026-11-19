@@ -1,0 +1,53 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Repaso de la tanda V19 · Cobro del pase en pruebas</title>
+<style>:root{--bg:#FBF6EC;--tx:#1C2230}@media (prefers-color-scheme:dark){:root{--bg:#1C2230;--tx:#FFFDF8}}body{margin:0;padding:16px;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,sans-serif;max-width:780px}h1{font-size:24px}h2{font-size:19px;margin-top:28px}code{font-size:13px}label{display:block;margin:6px 0}</style></head><body>
+<h1>Probar el cobro del pase con Stripe, solo para administradores (V19)</h1>
+<p>Probado con <code>pruebaV19</code> (nueva, 40 comprobaciones, con el pago de mentira y una base de datos de verdad), <code>pruebaCuentas3</code>, <code>pruebaTanda10J</code>, <code>pruebaJutrip</code> y las de logros y pase. <b>No se ha pagado nada en producción desde aquí</b> (no tengo tu sesión y un pago con tarjeta hay que hacerlo tú): los seis pasos de producción están abajo, listos para que los hagas.</p>
+
+<h2>0. Dónde estamos y las claves</h2>
+<ul>
+<li>El cobro (<code>server/pagos.js</code>, <code>src/lib/pagoPase.ts</code>, migración 0026) ya estaba hecho. En producción sigue apagado hasta que pongas <code>PASES_COBRO_ACTIVO=true</code> (ver «PARA ERIC»).</li>
+<li><b>Las claves de Stripe:</b> no puedo leer las variables de Vercel, así que no puedo confirmar desde aquí que estén puestas ni que la secreta sea <code>sk_test_</code>. He añadido una comprobación que <b>no enseña nunca ninguna clave</b>: con tu sesión de administrador, <code>/api/pase/config</code> devuelve un apartado «claves» con solo sí/no: <code>secreta_puesta</code>, <code>secreta_de_prueba</code>, <code>secreta_de_verdad</code> (si es <code>sk_live_</code>) y <code>aviso_puesto</code>. Si sale <code>secreta_de_verdad: true</code>, para y quítala.</li>
+<li><b>La versión de la API del aviso (<code>2026-09-30.endive</code>):</b> el cobro solo lee de <code>checkout.session.completed</code>: <code>id, payment_status, payment_intent, amount_total, currency, metadata</code>; y de <code>charge.refunded</code>: <code>id, payment_intent, amount, amount_refunded, refunded, metadata</code>. En la lista de cambios de Stripe, ninguno de los de esa versión toca esos campos (lo que cambia de Checkout es un parámetro de la <i>petición</i>, <code>payment_method_types</code>, que la app no manda). Ojo: lo he leído en los títulos de la lista de cambios, no en cada página de detalle; la prueba confirma que el código procesa avisos con la forma de Stripe, y el primer pago de verdad lo confirma del todo.</li></ul>
+
+<h2>1. Cobro solo para administradores: <code>PASES_COBRO_SOLO_ADMINS=true</code></h2>
+<ul>
+<li>Con él, la hoja de compra, los candados y «Mis pases» salen <b>solo a los correos de administrador</b> (los de <code>LOGROS_ADMIN_EMAILS</code>). Los demás (Alicia, una sesión anónima, sin sesión) siguen como hoy: <b>todo abierto, sin hoja de compra</b>: <code>/api/pase/config</code> les dice «sin cobro» y no manda ni los precios; crear un pago, ver su estado o pedir un recibo a mano da 403; «Mis pases» sale vacío. Los logros y los avisos del móvil los tratan también como con el cobro apagado.</li>
+<li><code>admin_sin_pase</code> («Verme como viajero sin pase») sigue funcionando para el administrador.</li>
+<li><b>Lanzarote:</b> con este interruptor, un administrador puede comprar también el pase de un destino oculto (Lanzarote). Sin el interruptor, sigue como antes.</li>
+<li>El pago de mentira sigue solo fuera de producción (no existe con <code>VERCEL</code> ni con <code>NODE_ENV=production</code>): probado.</li></ul>
+
+<h2>2. Lo que se ha probado (en local, con el pago de mentira)</h2>
+<ul>
+<li><b>Pase de 1 persona (6,99 €) en Lanzarote:</b> pago bueno → pase activo → la app, al volver, ve el pase (<code>listo: true</code>); sale en «Mis pases» con recibo y sin datos internos; el recibo devuelve su enlace; no se vuelve a cobrar.</li>
+<li><b>Dúo (10,99 €) en Roma:</b> lo paga Eric; Alicia entra con la segunda plaza sin pagar nada (un solo cobro, el Dúo queda 2 de 2) y, aunque tenga plaza, no ve el cobro.</li>
+<li><b>Tarjeta rechazada:</b> ningún pase y la app puede decirlo (<code>rechazado: true</code>, su mensaje «No te hemos cobrado nada»).</li>
+<li><b>Devolución entera</b> (como desde el panel de Stripe): el pase queda anulado y la app lo enseña (<code>devuelto: true</code>); en «Mis pases» ya no está activo.</li>
+<li><b>Cerrar la página de Stripe sin pagar:</b> ni pase ni error (<code>listo: false</code>).</li>
+<li><b>El precio lo pone siempre el servidor:</b> aunque el móvil mande 0,01 € (como «precio», «importe» o «amount»), se cobra 6,99 €; la app solo manda destino, plan y personas.</li>
+<li><b>Cuánto tarda en activarse el pase después de pagar:</b> con el pago de mentira es inmediato. Con Stripe de verdad es lo que tarda el aviso: normalmente 1 a 3 segundos; la app, al volver del pago, lo pregunta cada poco hasta que llega. Lo medirás tú en el paso 1 de abajo (y lo apuntamos).</li></ul>
+
+<h2>Para probarlo tú en producción (con tu cuenta de administrador)</h2>
+<ol>
+<li>En Vercel, añade <code>PASES_COBRO_ACTIVO=true</code> y <code>PASES_COBRO_SOLO_ADMINS=true</code> (y <code>APP_URL=https://bengaladesigns.vercel.app</code> si no está). Vuelve a desplegar. Mira <code>/api/pase/config</code> con tu sesión: <code>cobro: true</code>, <code>modo: stripe</code> y <code>claves.secreta_de_prueba: true</code>.</li>
+<li>Pase de 1 persona en Lanzarote con la tarjeta <code>4242 4242 4242 4242</code>: vuelves a la app, el pase se activa, sale en «Mis pases» con su recibo. Apunta los segundos.</li>
+<li>Pase Dúo en Roma: lo pagas tú; Alicia (o una cuenta de prueba de administrador) usa la segunda plaza y no paga.</li>
+<li>Tarjeta rechazada <code>4000 0000 0000 0002</code>: sin pase y con el mensaje claro.</li>
+<li>Devolución entera desde el panel de Stripe: el pase queda anulado.</li>
+<li>Cerrar la página de Stripe sin pagar: la app vuelve como estaba.</li></ol>
+
+<h2>3. PARA ERIC antes del cobro de verdad (solo lista, nada cambiado)</h2>
+<ol>
+<li><b>Stripe:</b> activar la cuenta con los datos de la empresa y el banco, y cambiar a las claves <code>sk_live_</code> (y un webhook nuevo en modo real con su <code>whsec_</code>).</li>
+<li><b>Condiciones de compra:</b> hoy <b>no hay ninguna casilla ni texto</b> en la hoja de compra (<code>ListaDelPase.tsx</code>) que diga «acepto las condiciones y que pierdo el derecho a devolver en 14 días». Habría que ponerla justo encima del botón de pagar (sin marcar, y el botón apagado hasta marcarla), con el texto que decida tu abogado, y guardar que se aceptó.</li>
+<li><b>La factura:</b> hoy se manda a Stripe el nombre del producto («JUTRIP · Pase Roma · 1 persona»), el importe y el email del comprador; el recibo que ve la persona es el de Stripe, con el nombre de la empresa que tengas en la cuenta de Stripe. <b>Faltan:</b> el NIF y la dirección fiscal en la cuenta de Stripe, cómo se trata el IVA (hoy el precio se cobra tal cual, sin desglosar IVA) y, si hace falta factura y no solo recibo, quién la emite.</li>
+<li><b>Textos legales:</b> la app enlaza una sola página, «Privacidad y condiciones» (en la pantalla de entrar y en Ajustes), pero <b>todos sus apartados dicen «Texto pendiente»</b>: están la estructura y la lista de servicios de fuera, sin los textos. <b>Faltan:</b> política de privacidad, condiciones de uso, condiciones de compra del pase y política de devoluciones/desistimiento (y un aviso legal con los datos de la empresa).</li></ol>
+
+<h2>Lista de comprobación de ESTA tanda</h2>
+<label><input type="checkbox"> Vercel con las dos variables nuevas y <code>claves.secreta_de_prueba: true</code></label>
+<label><input type="checkbox"> Pase individual en Lanzarote (4242…): se activa y sale en «Mis pases» con recibo (¿cuántos segundos?)</label>
+<label><input type="checkbox"> Dúo en Roma: Alicia entra sin pagar</label>
+<label><input type="checkbox"> Tarjeta rechazada: sin pase y mensaje claro</label>
+<label><input type="checkbox"> Devolución desde Stripe: pase anulado</label>
+<label><input type="checkbox"> Cerrar la página de Stripe: la app vuelve como estaba</label>
+<label><input type="checkbox"> Una cuenta que no es de administrador no ve candados, ni hoja de compra, ni «Mis pases» con cobro</label>
+</body></html>

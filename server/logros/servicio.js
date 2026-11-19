@@ -94,7 +94,7 @@ export function contextoDeViaje({ id, route }, datos, catalogos, { esDuo = false
   }
 }
 
-export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new Date(), cobro = false, azar = Math.random, ocultos = new Set(), esAdminDeCuenta = null }) {
+export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new Date(), cobro = false, cobroSoloAdmins = false, azar = Math.random, ocultos = new Set(), esAdminDeCuenta = null }) {
   const sitioInfo = (destino, sitio, radioSinDatos = 150) => {
     const d = datos.destinos[destino]
     const dato = d.sitios[sitio] ?? null
@@ -370,8 +370,12 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
   /** «Verme como viajero sin pase» (Tanda 10B, solo pruebas del administrador): la cuenta se trata como la de alguien que no ha comprado el pase. Sin la tabla o sin la función del repo, apagado. */
   const sinPaseDe = async (userId) => (typeof repo.sinPaseDe === 'function' ? Boolean(await repo.sinPaseDe(userId)) : false)
 
+  /** (V19) ¿Se cobra a esta cuenta? Con el cobro solo para administradores (PASES_COBRO_SOLO_ADMINS), solo si es administradora; las demás, como con el cobro apagado. */
+  const cobroDe = async (userId) => Boolean(cobro) && (!cobroSoloAdmins || (typeof esAdminDeCuenta === 'function' && Boolean(await esAdminDeCuenta(userId).catch(() => false))))
+
   async function puedeGanar(userId, c, viaje, fecha, usar = null) {
     if (await sinPaseDe(userId)) return { puede: false, motivo: 'sin_pase_prueba' }
+    const cobro = await cobroDe(userId)
     if (!cobro) return { puede: true, motivo: 'cobro_apagado' }
     const pases = await repo.pasesDe(userId)
     const { prueba } = await pruebaDeLaCuenta(userId, c)
@@ -598,6 +602,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
         precios: datos.pase.precios,
       }
     }
+    const cobro = await cobroDe(userId)
     const c = await cargar(userId)
     const viaje = tripId ? c.viajes[tripId] : null
     const pases = await repo.pasesDe(userId)

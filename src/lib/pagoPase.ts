@@ -90,7 +90,7 @@ const SIN_COBRO: ConfigPase = { ok: true, cobro: false, modo: null }
 /** ¿Se cobra? Lo dice el servidor (público). Sin servidor o con un fallo, no: todo abierto. Se recuerda un minuto. */
 export async function configDelPase(): Promise<ConfigPase> {
   if (cache && Date.now() - cache.en < 60_000) return cache.config
-  const r = await llamarServidor<ConfigPase>('/api/pase/config', { sinCuenta: true })
+  const r = await llamarServidor<ConfigPase>('/api/pase/config')
   const config = r.datos?.ok ? r.datos : SIN_COBRO
   cache = { en: Date.now(), config }
   return config
