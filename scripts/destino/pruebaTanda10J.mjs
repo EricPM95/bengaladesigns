@@ -196,6 +196,11 @@ async function foto(uidFuera) {
     const cols = (await S("select column_name from information_schema.columns where table_schema = 'public' and table_name = $1", [t])).map((c) => c.column_name)
     const dueno = INVENTARIO.concat(SE_QUEDA).filter(([tabla]) => tabla === t).map(([, c]) => c)
     // Una fila es "de la cuenta" si cualquiera de sus columnas de dueño es ella (trips: traveler_id); lo demás se compara tal cual.
+    // (0087) trip_cambios no lleva ninguna cuenta: es una fila por viaje y se va con el viaje; se compara solo la de los viajes que no son de la cuenta.
+    if (t === 'trip_cambios') {
+      r[t] = JSON.stringify(await S(`select * from public.trip_cambios where trip_id not in (select id from public.trips where traveler_id::text = '${uidFuera}') order by trip_id::text`))
+      continue
+    }
     const filtro = dueno.length ? ` where not (${dueno.map((c) => `coalesce(${c}::text, '') = '${uidFuera}'`).join(' or ')})` : ''
     const orden = cols.includes('id') ? 'id' : cols[0]
     r[t] = JSON.stringify(await S(`select * from public.${t}${filtro} order by ${orden}::text`))

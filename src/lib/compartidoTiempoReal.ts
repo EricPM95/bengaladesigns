@@ -3,7 +3,7 @@
  *   · `alViaje`   — la fila del viaje cambió (el dueño o quien puede editar la guardó);
  *   · `alGente`   — alguien entró, salió, o le cambiaron el permiso (`trip_members`);
  *   · `alAviso`   — me llegó un aviso nuevo a la campana (`avisos` con mi `user_id`): «ha cambiado el viaje», «te han quitado», «tu permiso»…
- * Sin dependencias de la app: el cliente de Supabase entra por parámetro, así la prueba lo cambia por uno de mentira. Necesita la migración 0036 (pone las tres tablas en la publicación de Realtime);
+ * Sin dependencias de la app: el cliente de Supabase entra por parámetro, así la prueba lo cambia por uno de mentira. Necesita la migración 0036 (pone `trip_members` y `avisos` en la publicación de Realtime) y la 0087 (`trip_cambios`, el aviso pequeño de que el viaje cambió);
  * sin ella el canal se conecta igual pero no llega nada, y la app sigue con el refresco al volver y cada poco.
  */
 import { textoDelAviso } from '../../shared/avisos/textos.js'
@@ -25,7 +25,8 @@ export interface EscuchasDelViaje {
 export function conectarViaje(nube: ClienteTiempoReal, tripId: string, uid: string | null, escuchas: EscuchasDelViaje): () => void {
   let canal = nube
     .channel(`viaje:${tripId}`)
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'trips', filter: `id=eq.${tripId}` }, () => escuchas.alViaje())
+    // (V26b, migración 0087) Se escucha `trip_cambios` (una fila de ~80 bytes por viaje), NO `trips`: Realtime mandaba la fila entera (la ruta, 70-80 KB) a cada móvil en cada guardado.
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_cambios', filter: `trip_id=eq.${tripId}` }, () => escuchas.alViaje())
     .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_members', filter: `trip_id=eq.${tripId}` }, () => escuchas.alGente())
   if (uid) {
     canal = canal.on('postgres_changes', { event: '*', schema: 'public', table: 'avisos', filter: `user_id=eq.${uid}` }, (carga: { new?: Record<string, unknown> }) => {

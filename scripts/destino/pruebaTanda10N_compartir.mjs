@@ -240,7 +240,7 @@ console.log('2. El código (esbuild): mismo código, tiempo real, textos')
   const visto = []
   const soltar = M.conectarViaje(nube, 'T1', 'U1', { alViaje: () => visto.push('viaje'), alGente: () => visto.push('gente'), alAviso: (a) => visto.push(a.tipo) })
   const c = bus[0]
-  debe(c.n === 'viaje:T1' && c.ons.length === 3 && c.ons.some((o) => o.f.table === 'trips' && o.f.filter === 'id=eq.T1') && c.ons.some((o) => o.f.table === 'trip_members' && o.f.filter === 'trip_id=eq.T1') && c.ons.some((o) => o.f.table === 'avisos' && o.f.filter === 'user_id=eq.U1'), '10', 'escucha el viaje, su gente y mis avisos')
+  debe(c.n === 'viaje:T1' && c.ons.length === 3 && c.ons.some((o) => o.f.table === 'trip_cambios' && o.f.filter === 'trip_id=eq.T1') && c.ons.some((o) => o.f.table === 'trip_members' && o.f.filter === 'trip_id=eq.T1') && c.ons.some((o) => o.f.table === 'avisos' && o.f.filter === 'user_id=eq.U1'), '10', 'escucha el viaje, su gente y mis avisos')
   c.ons[0].cb({})
   c.ons[1].cb({})
   c.ons[2].cb({ new: { tipo: 'viaje_cambiado', payload: {} } })

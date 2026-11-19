@@ -128,3 +128,11 @@ console.log('\nFotos de logros: antes', MB(fotos.logros_antes), '-> ahora', MB(f
 console.log('Fotos del viaje (listados): antes', MB(fotos.viaje_antes), '-> ahora', MB(fotos.viaje_ahora))
 console.log('\nUNA PERSONA, UN DIA DE VIAJE (viaje compartido de 2): antes', MB(unaPersonaAntes), '-> ahora', MB(unaPersonaAhora))
 console.log('1.000 personas, viaje de 5 dias al mes: antes', (unaPersonaAntes * 5 * 1000 / 1073741824).toFixed(0), 'GB -> ahora', (unaPersonaAhora * 5 * 1000 / 1073741824).toFixed(0), 'GB')
+
+/* ---- 0087 trip_cambios: Realtime ya no manda la fila entera, solo {trip_id, cambiado_en} (~80 bytes) a cada móvil ---- */
+const avisoPequeno = bytes({ trip_id: '00000000-0000-0000-0000-000000000000', cambiado_en: '2026-11-19T10:00:00.000Z' }) * MOVILES
+const cambioAntes = guardado.subida + guardado.bajada + echoRealtime() + ajeno.bajada
+const cambioAhora = guardado.subida + guardado.bajada + avisoPequeno + ajeno.bajada
+console.log('\nUN cambio real con 2 móviles: Realtime reparte', KB(echoRealtime()), '->', avisoPequeno, 'bytes')
+console.log('  total del cambio (sube el que guarda + aviso + baja el otro):', KB(cambioAntes), '->', KB(cambioAhora))
+console.log('  un día de viaje compartido (15 cambios reales):', MB(15 * cambioAntes), '->', MB(15 * cambioAhora))
