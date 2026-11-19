@@ -92,10 +92,34 @@ interface RespuestaEstado {
   useSyncStore.subscribe((st) => mirar(st.activeTripId))
 }
 
+/** (V27) El viaje avisa de que algo cambió (Realtime, `trip_cambios`): quien no tiene pase vuelve a preguntar si ya se lo han dado. */
+export const EVENTO_PASE_POSIBLE_CAMBIO = 'trazo:pase-posible-cambio'
+
 export function usePaseEstado(tripId: string | null): EstadoPase {
   const forzado = paseForzado()
   // (Tanda 10N4 §1) Antes arrancaba en ABIERTO («cobro apagado, todo abierto») y la pastilla salía «comprada» hasta que llegaba la respuesta. Ahora, si hay que preguntar al servidor, arranca en DESCONOCIDO.
   const [real, setReal] = useState<EstadoPase>(() => (!forzado && tripId && logrosActivos() ? (leerCache(tripId) ?? DESCONOCIDO) : ABIERTO))
+  // (V27) Sin pase en un viaje con cobro: si alguien del viaje te da la plaza (o canjeas su código) se vuelve a preguntar solo, al volver a la app y cuando el viaje avisa de un cambio (migración 0088), sin cerrar la app.
+  const [vuelta, setVuelta] = useState(0)
+  const sinPaseConCobro = real.sabido === true && real.cobro && !real.conPase
+  useEffect(() => {
+    if (forzado || !tripId || !sinPaseConCobro) return undefined
+    let ultimo = 0
+    const otraVez = () => {
+      if (Date.now() - ultimo < 15000) return
+      ultimo = Date.now()
+      setVuelta((v) => v + 1)
+    }
+    const alVolver = () => {
+      if (document.visibilityState === 'visible') otraVez()
+    }
+    document.addEventListener('visibilitychange', alVolver)
+    window.addEventListener(EVENTO_PASE_POSIBLE_CAMBIO, otraVez)
+    return () => {
+      document.removeEventListener('visibilitychange', alVolver)
+      window.removeEventListener(EVENTO_PASE_POSIBLE_CAMBIO, otraVez)
+    }
+  }, [forzado, tripId, sinPaseConCobro])
   useEffect(() => {
     if (forzado || !tripId || !logrosActivos()) return undefined
     let vivo = true
@@ -117,7 +141,7 @@ export function usePaseEstado(tripId: string | null): EstadoPase {
     return () => {
       vivo = false
     }
-  }, [forzado, tripId])
+  }, [forzado, tripId, vuelta])
   // Si el viaje abierto cambia, hasta que conteste el servidor por el nuevo no se sabe.
   useEffect(() => {
     if (!forzado && tripId && logrosActivos()) {

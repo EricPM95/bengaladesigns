@@ -342,11 +342,14 @@ export function HojaLoDeAyer({ paradas, plazo, miniaturas, texto, onReclamar, on
             <span data-visto="lo-de-ayer-texto" style={{ font: "400 14px/1.5 'Geist'", color: 'rgba(255,253,248,.8)' }}>
               {texto ?? `Ayer tenías en tu ruta: ${nombres.join(', ')}${quedan > 0 ? ` y ${quedan} más` : ''}…`}
             </span>
+            {/* (V27) Solo las paradas con foto: nunca huecos de colores vacíos. */}
+            {paradas.some((p) => miniaturas[p.stopId]) && (
             <div className="flex gap-1.5">
-              {paradas.slice(0, 4).map((p, i) => (
+              {paradas.filter((p) => miniaturas[p.stopId]).slice(0, 4).map((p, i) => (
                 <span key={p.stopId} className="h-16 flex-1 overflow-hidden rounded-xl opacity-90" style={{ background: miniaturas[p.stopId] ? `center/cover url(${miniaturas[p.stopId]})` : PH[i % 4] }} />
               ))}
             </div>
+            )}
             <span style={{ font: "400 14px/1.5 'Geist'", color: 'rgba(255,253,248,.8)' }}>Sube tus fotos y descubre lo que ganaste.</span>
             {plazo && <span style={{ font: `600 11px ${MONO}`, color: 'oklch(0.86 0.12 85)' }}>{plazo}</span>}
             {onReclamar ? (

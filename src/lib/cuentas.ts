@@ -468,6 +468,7 @@ export function completarEntrada(sesion: Session): Promise<void> {
           entroEnUnViaje = true
         } else if (resultado.tripId) {
           // (Tanda 10N §5) Ya estaba dentro: directo a ese viaje, sin la pantalla de la invitación.
+          if (resultado.plazaDada) guardarAvisoDeInvitacion('Ya tienes tu plaza del pase.')
           entroEnUnViaje = true
         }
       }

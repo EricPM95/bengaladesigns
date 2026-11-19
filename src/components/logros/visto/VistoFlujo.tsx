@@ -103,7 +103,7 @@ export function hojaSegunRespuesta(r: RespuestaDeHecho | null, parada: ParadaVis
  * Lo que pasa al tocar [Visto] con los logros encendidos: permisos (la primera vez), el aviso de 5 segundos con [Deshacer], el envío al servidor y, pasados los 5 segundos, la tarjeta que toque.
  * Las sorpresas esperan desde el toque hasta que se cierra la tarjeta. Si se deshace dentro de los 5 segundos, lo que había caído en el almacén se quita.
  */
-export async function procesarVisto(p: { tripId: string; dayId: string; stopId: string; nombre: string }): Promise<void> {
+export async function procesarVisto(p: { tripId: string; dayId: string; stopId: string; nombre: string; /** (V27) Viaje terminado: se manda el Visto pero no se abre ninguna hoja. */ sinHoja?: boolean }): Promise<void> {
   const parada = paradaDe(p.dayId, p.stopId, p.tripId)
   if (!parada) return
   const { poner } = useVistoStore.getState()
@@ -139,7 +139,7 @@ export async function procesarVisto(p: { tripId: string; dayId: string; stopId: 
     return
   }
   const hoja = hojaSegunRespuesta(r, parada)
-  if (!hoja) return
+  if (!hoja || p.sinHoja) return
   const falta = faltaDe(hoja.tipo)
   if (falta) useVistoStore.getState().anotarPendiente(p.stopId, { tripId: p.tripId, falta, nombre: parada.nombre, fotoDentro: hoja.fotoDentro ?? null })
   abrirHoja(hoja)
@@ -250,7 +250,8 @@ export async function mostrarLoDeAyer(tripId: string, forzar = false): Promise<b
   const route = useRouteStore.getState().route
   const f = fechasDelViaje(route)
   const hoy = hoyLocal()
-  if (!forzar && (!f || hoy < f.inicio)) return false
+  // (V27) Con el viaje ya terminado no sale sola (a Alicia le salió en un viaje que acabó el 13); lo de después se reclama desde la hoja de logros.
+  if (!forzar && (!f || hoy < f.inicio || hoy > f.fin)) return false
   const marca = `trazo:logros:ayer:${tripId}:${hoy}`
   if (!forzar && leerMarca(marca)) return false
   const lista = await refrescarPendientes(tripId)

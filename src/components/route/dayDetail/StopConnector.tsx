@@ -102,7 +102,8 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
   return (
     // Diseño "Trazo Itinerario": la línea punteada del día la pinta el contenedor; aquí solo la fila.
     // (Tanda 6i: un hueco sin nada que enseñar —solo «+ Añadir parada»— no deja la línea punteada suelta, como un puntito: tapa la línea con el fondo y es más bajo.)
-    <div className={`flex items-center gap-1.5 text-[12.5px] text-text/60 ${transitLabel || connector ? 'min-h-[44px]' : 'relative -ml-[26px] min-h-[36px] bg-bg-card pl-[26px]'}`}>
+    // (V27) El hueco que solo trae «+ Añadir parada» (`data-hueco-solo-anadir`) se quita cuando esa herramienta no se ve (día pasado, o quien solo mira): antes quedaba una FRANJA BLANCA vacía entre una parada y la comida.
+    <div data-hueco-solo-anadir={transitLabel || connector ? undefined : '1'} className={`flex items-center gap-1.5 text-[12.5px] text-text/60 ${transitLabel || connector ? 'min-h-[44px]' : 'relative -ml-[26px] min-h-[36px] bg-bg-card pl-[26px]'}`}>
       {/* El bus o el metro escrito, como la fila de andar (PROMPT_UI_REPASO 12): su icono, «Bus 115 · 20 min», «Rutas»
           (Maps en transporte público, hasta la parada) y «+ Añadir parada». */}
       {transitLabel && transitRow && (

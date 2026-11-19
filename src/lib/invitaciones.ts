@@ -66,7 +66,7 @@ export function textoDeInvitacionNoValida(motivo: MotivoNoValida | undefined): s
 export function titularDeInvitacion(v: VistaDeInvitacion): string {
   const quien = v.invitador && v.invitador.trim() ? v.invitador.trim() : 'Alguien'
   const destino = v.destino?.trim() || 'su viaje'
-  return v.con_pase ? `${quien} te invita a su Pase ${destino}` : `${quien} te invita a su viaje a ${destino}`
+  return v.con_pase ? `${quien} te regala una plaza de su Pase ${destino}` : `${quien} te invita a su viaje a ${destino}`
 }
 
 /** (P7b) Al tocar [Unirme] se apunta que la invitación está aceptada: solo entonces se canjea después de entrar. Abrir el enlace por sí solo no mete a nadie en un viaje. */
@@ -198,17 +198,35 @@ export async function verInvitacion(codigo: string): Promise<VistaDeInvitacion> 
 }
 
 /** Entrar en el viaje. Solo con una cuenta de verdad. Devuelve el viaje al que entró, o un error en palabras sencillas. */
-export async function canjearInvitacion(codigo: string): Promise<{ tripId: string | null; yaEstaba: boolean; error: string | null }> {
+export async function canjearInvitacion(codigo: string): Promise<{ tripId: string | null; yaEstaba: boolean; plazaDada?: boolean; error: string | null }> {
   if (!supabase) return { tripId: null, yaEstaba: false, error: SIN_NUBE }
   const { data, error } = await supabase.rpc('canjear_invitacion', { p_codigo: normalizarCodigo(codigo) })
   if (error || !data) return { tripId: null, yaEstaba: false, error: mensajeDe(error, 'No se ha podido entrar en el viaje. Inténtalo de nuevo.') }
   // (0047) El código que no existe ya no hace «raise» en la base de datos (así queda apuntado el fallo): llega como { error: 'no_existe' }.
   if ((data as { error?: string }).error === 'no_existe') return { tripId: null, yaEstaba: false, error: 'Esa invitación no existe.' }
-  const d = data as { trip_id: string; ya_estaba: boolean }
+  const d = data as { trip_id: string; ya_estaba: boolean; plaza_dada?: boolean }
   olvidarInvitacionPendiente()
   recordarCanjeada(codigo)
   pedirAbrirViaje(d.trip_id)
-  return { tripId: d.trip_id, yaEstaba: d.ya_estaba, error: null }
+  return { tripId: d.trip_id, yaEstaba: d.ya_estaba, plazaDada: d.plaza_dada === true, error: null }
+}
+
+/** (V27, 0088) Las personas del viaje del pase que aún no tienen plaza: a ellas se les puede dar sin código. Solo lo ve quien compró el pase. */
+export interface PersonaSinPlaza {
+  id: string
+  nombre: string | null
+}
+export async function plazasSinDar(passId: string): Promise<PersonaSinPlaza[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase.rpc('plazas_sin_dar', { p_pase: passId })
+  return error || !Array.isArray(data) ? [] : (data as PersonaSinPlaza[])
+}
+
+/** (V27, 0088) Dar una plaza libre del pase a alguien que YA está en el viaje, de un toque, sin código. Devuelve un error en palabras sencillas, o null. */
+export async function darPlazaDelPase(passId: string, userId: string): Promise<string | null> {
+  if (!supabase) return SIN_NUBE
+  const { error } = await supabase.rpc('dar_plaza_del_pase', { p_pase: passId, p_user: userId })
+  return error ? mensajeDe(error, 'No se ha podido dar la plaza. Inténtalo de nuevo.') : null
 }
 
 /* ------------------------------------------------------------------ */

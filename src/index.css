@@ -346,6 +346,8 @@ html[data-solo-ver] [data-edit-tool] { display: none !important; }
 
 /* (V24) Un día que ya pasó (DÍAS): se abre para verlo, sin herramientas de cambiar (asas, «+ Añadir parada»). Además el almacén no deja cambiarlo (useRouteStore, al final). */
 [data-dia-pasado] [data-edit-tool] { display: none !important; }
+/* (V27) El hueco que solo llevaba «+ Añadir parada»: sin la herramienta no queda una franja blanca vacía. */
+html[data-solo-ver] [data-hueco-solo-anadir], [data-dia-pasado] [data-hueco-solo-anadir] { display: none !important; }
 
 /* TANDA 10E · EL BOTÓN PRINCIPAL, CHAMPÁN («Marca JUTRIP 02»: Continuar, Comprar, Cómo llegar): degradado del marfil #FBF3E2 al champán #EBD9AE, la letra en el oro profundo #6F4E37, su brillo de arriba
    y su sombra. Es el estilo de TODOS los botones principales de la app (en React, con inline style, vive igual en `botonChampan()` de src/lib/marcaBoton.ts). Con `.btn-champan` no hace falta `text-white`. */

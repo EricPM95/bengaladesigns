@@ -140,10 +140,20 @@ function nombreDeSiempre(route: Route, day: DayPlan, conTrayecto: boolean): { ti
   return { titulo: day.curatedTitle ?? day.city, ponleNombre: false }
 }
 
+/**
+ * (V27) ¿Este día de excursión lleva el nombre de la excursión de OTRO día? En el viaje a Lanzarote de noviembre el miércoles 11 y el jueves 12 eran los dos «La Graciosa (excursión)»: el jueves era un día cambiado por la excursión que
+ * heredó el mismo nombre, y no tenía ninguna elegida. El primero se queda con el nombre; los demás se llaman «Excursión desde {ciudad}». Nunca toca un nombre que el viajero escribió.
+ */
+export function esNombreDeLaExcursionDeOtroDia(route: Pick<Route, 'days'>, day: DayPlan): boolean {
+  if (day.nameByUser || !day.curatedTitle || !esDiaDeExcursion(day)) return false
+  return route.days.some((otro) => otro.id !== day.id && otro.dayNumber < day.dayNumber && esDiaDeExcursion(otro) && !otro.nameByUser && otro.curatedTitle === day.curatedTitle)
+}
+
 /** El nombre de un día (título y trayecto). `grupos` null: el destino no los trae y todo queda como siempre. */
 export function nombreDelDia(route: Route, diaGuardado: DayPlan, grupos: GruposDelDestino | null): NombreDelDia {
   // (V18) Un nombre que es de OTRO día («Dia 2 Lunes» en el jueves 12) no se enseña: el día se nombra como si no tuviera nombre propio. Los que el viajero escribió no se tocan.
   const day: DayPlan = esNombreDeOtroDia(route, diaGuardado) ? { ...diaGuardado, curatedTitle: undefined, title: diaGuardado.userAdded ? FREE_DAY_DEFAULT_NAME : diaGuardado.city } : diaGuardado
+  if (esNombreDeLaExcursionDeOtroDia(route, diaGuardado)) return { titulo: `Excursión desde ${diaGuardado.city}`, viaje: grupos ? viajeDelDia(route, diaGuardado) : null, ponleNombre: false }
   if (!grupos) {
     const antiguo = nombreDeSiempre(route, day, true)
     return { titulo: antiguo.titulo, viaje: null, ponleNombre: antiguo.ponleNombre }

@@ -131,7 +131,8 @@ try {
   debe(p.d1.pasado && /^Hecho · (\d+ fotos?|Ver tu día)$/.test(p.d1.hecho.trim()) && p.d1.marca, 'hecho', `estando en el día 2, el día 1 sale en «Hecho» con su ✓ verde (${p.d1.hecho.trim()})`)
   debe(!p.d2.pasado && !p.d2.marca && p.d2.hecho === '', 'hoy', 'el día de hoy (2) sale normal, no en «Hecho»')
   debe(!p.hoy, 'sin-HOY', 'sin etiqueta «HOY» en el día de hoy')
-  debe(p.d1.fondo === 'rgb(243, 238, 226)', 'gris', `el día pasado va en gris suave (${p.d1.fondo})`)
+  // (V27, decisión de Eric) El día pasado ya NO va en gris: el fondo es el de un día normal; solo se distingue por el ✓ verde y «Hecho · …».
+  debe(p.d1.fondo !== 'rgb(243, 238, 226)' && p.d1.fondo === p.d2.fondo, 'gris', `el día pasado tiene el fondo de un día normal, sin gris (${p.d1.fondo} · ${p.d2.fondo})`)
   await arriba(app)
   await app.captura(`${CAP}/dias_dia1_hecho.jpg`)
   const asa = await app.evaluar(`(() => { const t = document.querySelector('[data-day-id="${d1}"]'); const cont = t.parentElement; const e = cont.querySelector('[data-edit-tool]'); return { tieneAsa: Boolean(e), visible: e ? getComputedStyle(e).display !== 'none' && e.offsetParent !== null : false, menu: Boolean(t.querySelector('button[aria-haspopup], button[aria-label*="Más"], button[aria-label*="opciones"]')) } })()`)

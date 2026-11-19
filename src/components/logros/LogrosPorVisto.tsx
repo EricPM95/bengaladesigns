@@ -3,6 +3,8 @@ import { demoActivo, enviarDeshacerVisto, logrosActivos, pedirUnirFotos, vaciarC
 import { cambiosDeVistos } from '../../lib/vistosPorPersona'
 import { sonar, vibrar } from '../../lib/sonidos'
 import { alQuitarVisto, procesarVisto, VistoFlujo } from './visto/VistoFlujo'
+import { esEcoRemoto } from '../../lib/viajeEnDirecto'
+import { fechasDelViaje, hoyLocal } from './visto/fechas'
 import { useLogrosStore } from '../../store/useLogrosStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
@@ -41,7 +43,10 @@ function Encendido() {
   useEffect(() => {
     if (!hayCuenta || !tripId) return undefined
     return useRouteStore.subscribe((estado, previo) => {
-      for (const cambio of cambiosDeVistos(previo.route, estado.route)) {
+      // (V27) Los [Visto] que llegan de OTRO móvil (el viaje compartido que se refresca) no son un toque de esta persona: ni suenan ni abren ninguna hoja («Guarda un recuerdo de…» le salía sola a Alicia).
+      const cambios = cambiosDeVistos(previo.route, estado.route)
+      if (cambios.length === 0 || esEcoRemoto(estado.route)) return
+      for (const cambio of cambios) {
         const parada = estado.route?.days.find((d) => d.id === cambio.dayId)?.stops.find((s) => s.id === cambio.stopId)
         if (!parada) continue
         const datos = { tripId, stopId: cambio.stopId, nombre: parada.name }
@@ -50,7 +55,9 @@ function Encendido() {
           void sonar('visto')
           vibrar('visto')
           // 8b: el aviso de 5 segundos, la tarjeta que toque y el envío (src/components/logros/visto/VistoFlujo.tsx).
-          void procesarVisto({ ...datos, dayId: cambio.dayId })
+          // (V27) Con el viaje ya terminado no sale ninguna hoja (el Visto se manda igual).
+          const f = fechasDelViaje(estado.route)
+          void procesarVisto({ ...datos, dayId: cambio.dayId, sinHoja: Boolean(f && hoyLocal() > f.fin) })
         } else {
           alQuitarVisto(cambio.stopId)
           void enviarDeshacerVisto(datos).then((r) => useLogrosStore.getState().recibir(r))

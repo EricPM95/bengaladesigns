@@ -8,6 +8,7 @@ import { Icono } from '../ui/Icono'
 import { nombreDelTipo, textoDeCompartirPase, type PaseMio } from '../../lib/pagoPase'
 import { TextoConPase } from '../cuenta/TextoConPase'
 import { BotonHoja, Hoja } from '../ui/Hoja'
+import { CodigoDeLaPlaza, DarLaPlaza } from './PlazaDelPase'
 
 /**
  * LA HOJA DEL ENLACE Y EL CÓDIGO (cuentas parte 3). Es la misma hoja para:
@@ -97,12 +98,17 @@ export function HojaInvitar({
           </button>
         </div>
       )}
+      {conPase ? (
+        <CodigoDeLaPlaza codigo={codigo} sub={sub} textoBoton="Compartir la plaza" onCompartir={() => void compartir()} deshabilitado={!enlace} />
+      ) : (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: 14, borderRadius: 18, background: '#F5EFE4' }}>
         <span data-codigo-invitacion style={{ font: "600 26px 'Geist Mono',monospace", letterSpacing: '.3em', minHeight: 32 }}>
           {codigo ?? '········'}
         </span>
         <span style={{ font: "500 12px 'Geist'", color: 'rgba(28,34,48,.6)', textAlign: 'center' }}>{sub}</span>
       </div>
+      )}
+      {conPase && pase && <DarLaPlaza passId={pase.id} />}
       {error && (
         <p role="alert" style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>
           {error}
@@ -113,9 +119,11 @@ export function HojaInvitar({
           {aviso}
         </p>
       )}
-      <BotonHoja tipo="principal" onClick={() => void compartir()} disabled={!enlace} datos="compartir-enlace">
-        Compartir el enlace
-      </BotonHoja>
+      {!conPase && (
+        <BotonHoja tipo="principal" onClick={() => void compartir()} disabled={!enlace} datos="compartir-enlace">
+          Compartir el enlace
+        </BotonHoja>
+      )}
       {modo === 'viaje' && gente.length > 1 && (
         <button type="button" data-personas-del-viaje onClick={abrirPersonas} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 4px 0', border: 'none', borderTop: '1px solid rgba(28,34,48,.1)', background: 'transparent', cursor: 'pointer', textAlign: 'left', color: '#1C2230' }}>
           <CarasDelViaje personas={gente} max={4} />

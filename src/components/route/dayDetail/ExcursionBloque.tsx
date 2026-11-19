@@ -8,6 +8,7 @@ import { addDaysToIso, formatWeekdayAbbrEs } from '../../../lib/dateRange'
 import { AddReservationSheet, type ReservationTarget } from '../reservas/AddReservationSheet'
 import { RemoveReservationDialog, useExcursionReservation } from '../reservas/ReservedMarks'
 import { Icono } from '../../ui/Icono'
+import { useExcursionesCompletas } from '../../../lib/excursionesDatos'
 import { etiquetasDeExcursion, textoDeRutaPorDestino } from '../../../lib/excursionEtiquetas'
 
 /**
@@ -232,7 +233,7 @@ export function HojaMasExcursiones({ opciones, dia, onElegir, onCerrar }: { opci
 /** El día de excursión entero (E1, E2, E3 y E4): la propuesta, «Ver más excursiones» (con [Elegir esta]) y la salida «¿Qué hacemos con este día?». */
 export function ExcursionDayBloque({
   destination,
-  options,
+  options: opcionesDelViaje,
   selectedId,
   socialProof,
   dayNumber,
@@ -247,6 +248,8 @@ export function ExcursionDayBloque({
   onSelect: (id: string | null) => void
   onDecline: (fill: 'route' | 'empty') => void
 }): ReactNode {
+  // (V27) Un viaje guardado con las excursiones sin su ficha (foto vacía, sin «desde» ni nota) se completa con nuestros datos: nunca el degradado vacío.
+  const options = useExcursionesCompletas(opcionesDelViaje)
   const [masAbierto, setMasAbierto] = useState(false)
   const [preguntando, setPreguntando] = useState(false)
   const destacada = options.find((o) => o.id === selectedId) ?? options[0] ?? null

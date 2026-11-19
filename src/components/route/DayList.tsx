@@ -257,18 +257,16 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
           <div
             data-day-id={day.id}
             data-dia-pasado={pasado ? '1' : undefined}
-            style={pasado ? { background: '#F3EEE2' } : undefined}
-            className={`relative scroll-mt-3 ml-2.5 rounded-3xl border ${pasado ? '' : 'bg-bg-card'} shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
+            className={`relative scroll-mt-3 rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
           >
             {/* La franja del color del día, fina y en diagonal (el mismo color que sus pines y su línea en el mapa). Solo
                 cerrado: abierto, el color del día se queda en los números de las paradas (decisión del usuario, 2026-09-29). */}
             {!day.isReturnLeg && !expanded && (
               <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-[14px] overflow-hidden rounded-l-3xl">
-                <span className="absolute inset-0" style={{ background: pasado ? '#CFC8B6' : dayColor(colorIndex), clipPath: 'polygon(0 0, 9px 0, 4px 100%, 0 100%)' }} />
+                <span className="absolute inset-0" style={{ background: dayColor(colorIndex), clipPath: 'polygon(0 0, 9px 0, 4px 100%, 0 100%)' }} />
               </span>
             )}
-            {/* El asa, a la izquierda del todo y asomando por el borde (44 × 44 de zona de toque). */}
-            {dragHandle && <span className="absolute -left-[34px] top-[18px] z-10">{dragHandle}</span>}
+            {/* (V27) El asa ya NO asoma por la izquierda: va dentro de la tarjeta, junto al menú, así todos los días (con asa o sin ella, «Hecho» o no) tienen el mismo borde y el mismo ancho que los bloques del alojamiento y del vehículo. */}
             <div
               role="button"
               tabIndex={0}
@@ -340,7 +338,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                   <>
                     <p className="text-[12.5px] font-medium text-accent">Día de excursión</p>
                     {/* (V18, Design E5) El día cerrado dice si la excursión está reservada: «Sin reservar» en rojo o «Reservada · salida 08:15» en verde. */}
-                    {(day.excursions ?? []).length > 0 && (
+                    {!pasado && (day.excursions ?? []).length > 0 && (
                       <ExcursionEstadoDelDia reserva={excursionReservationOf(route, reservations, day)} />
                     )}
                   </>
@@ -350,7 +348,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 {/* (Ya no hay aquí el contador «17 paradas»: Tanda 6y4.) */}
               </div>
 
-              <span onClick={(event) => event.stopPropagation()}>
+              <span onClick={(event) => event.stopPropagation()} className="flex items-center">
+                {!pasado && dragHandle}
                 {pasado ? (
                   <span data-dia-hecho-marca="1" aria-label="Día hecho" role="img" className="flex h-[26px] w-[26px] items-center justify-center rounded-full" style={{ background: '#DCEBDD', color: '#2F6B43' }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

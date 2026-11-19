@@ -65,7 +65,14 @@ function Encendido() {
       alQuitado: () => dejarDeVerElViaje(tripId),
     })
     const desconectar = conectarViaje(supabase, tripId, uid, {
-      alViaje: () => anfitrion.alViaje(),
+      alViaje: () => {
+        anfitrion.alViaje()
+        try {
+          window.dispatchEvent(new Event('trazo:pase-posible-cambio'))
+        } catch {
+          /* sin ventana */
+        }
+      },
       alGente: () => void useViajeCompartido.getState().cargar(tripId),
       alAviso: (aviso) => {
         const que = accionPorAviso(aviso, tripId)

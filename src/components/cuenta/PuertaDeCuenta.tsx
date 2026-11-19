@@ -81,7 +81,7 @@ function PuertaEncendida() {
       setAceptada(false)
       return
     }
-    guardarAvisoDeInvitacion(r.yaEstaba ? 'Ya estabas en ese viaje.' : 'Has entrado en el viaje como invitado.')
+    guardarAvisoDeInvitacion(r.plazaDada ? 'Ya tienes tu plaza del pase.' : r.yaEstaba ? 'Ya estabas en ese viaje.' : 'Has entrado en el viaje como invitado.')
     recargarSinApertura()
   }
   const seguir = () => {

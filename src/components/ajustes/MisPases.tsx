@@ -5,6 +5,7 @@ import { compartirEnlace } from '../../lib/compartirEnlace'
 import { crearInvitacion, enlaceDeInvitacion } from '../../lib/invitaciones'
 import { misPases, textoDeCompartirPase, verRecibo, type PaseMio } from '../../lib/pagoPase'
 import { Icono } from '../ui/Icono'
+import { CodigoDeLaPlaza, DarLaPlaza } from '../pase/PlazaDelPase'
 
 const DEGRADADOS = ['linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)', 'linear-gradient(160deg,#F2D3A6,#D98A5E 55%,#7A3E34)', 'linear-gradient(160deg,#B8C7E0,#6F86B5 55%,#2E3E5E)', 'linear-gradient(160deg,#C9D9B8,#7FA06B 55%,#33503A)']
 const degradadoDe = (destino: string) => DEGRADADOS[[...destino].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 997, 0) % DEGRADADOS.length]
@@ -100,17 +101,10 @@ export function MisPases({ onVolver, pasesIniciales = null, hoy = hoyEnLocal() }
                     </div>
                   ))}
                   {p.es_mio && p.estado === 'activo' && (
-                    <div className="flex items-center gap-2 rounded-[14px] border border-dashed border-text/20 bg-white py-2.5 pl-3.5 pr-2.5">
-                      <span className="flex flex-1 flex-col gap-0.5">
-                        <span className="text-[11px] font-medium text-text/55">Código para invitar</span>
-                        <span data-codigo-del-pase style={{ font: "600 17px 'Geist Mono',monospace", letterSpacing: '.12em' }}>
-                          {p.invitacion?.codigo ?? '········'}
-                        </span>
-                      </span>
-                      <button type="button" onClick={() => (p.invitacion ? void enlace(p) : void crearCodigo(p))} className="flex h-11 items-center gap-1.5 rounded-full btn-champan px-3.5 text-[12.5px] font-semibold ">
-                        {p.invitacion ? 'Enlace' : 'Crear código'}
-                      </button>
-                    </div>
+                    <>
+                      <CodigoDeLaPlaza codigo={p.invitacion?.codigo ?? null} textoBoton={p.invitacion ? 'Compartir la plaza' : 'Crear código'} onCompartir={() => (p.invitacion ? void enlace(p) : void crearCodigo(p))} />
+                      <DarLaPlaza passId={p.id} alDar={() => void recargar()} />
+                    </>
                   )}
                 </div>
               )}

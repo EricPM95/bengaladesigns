@@ -103,12 +103,12 @@ console.log('1. Entrar en la cuenta (A1 a A4, I1, I2, P7b)')
   // P7b: lo que ve quien recibe el enlace.
   const vista = { valida: true, destino: 'Roma', invitador: 'Laura', inicio: '2026-10-16', fin: '2026-10-19', con_pase: true }
   const p7b = M.pintaInvitacion(vista)
-  debe(/Laura te invita a su /.test(p7b) && /Pase Roma/.test(p7b), 'P7b', '«Laura te invita a su Pase Roma»')
+  debe(/Laura te regala una plaza de su /.test(p7b) && /Pase Roma/.test(p7b), 'P7b', '«Laura te invita a su Pase Roma»')
   debe(/Sin pagar nada/.test(p7b) && />Unirme</.test(p7b), 'P7b', 'P7b dice «Sin pagar nada» y tiene [Unirme]')
   debe(/Roma · 16 – 19 oct 2026/.test(p7b), 'P7b', 'P7b lleva el destino y las fechas («Roma · 16 – 19 oct 2026»)')
   debe(/>L</.test(p7b), 'P7b', 'P7b lleva la inicial de quien invita')
   debe(!/Sin pagar nada/.test(M.pintaInvitacion({ ...vista, con_pase: false })) && /te invita a su viaje a Roma/.test(M.pintaInvitacion({ ...vista, con_pase: false })), 'P7b', 'sin pase no dice «Sin pagar nada» y habla del viaje')
-  debe(/Alguien te invita/.test(M.titularDeInvitacion({ valida: true, destino: 'Roma', invitador: null, con_pase: true })), 'P7b', 'sin nombre puesto, «Alguien te invita…»')
+  debe(/Alguien te regala una plaza/.test(M.titularDeInvitacion({ valida: true, destino: 'Roma', invitador: null, con_pase: true })), 'P7b', 'sin nombre puesto, «Alguien te invita…»')
   debe(/se ha anulado/.test(M.pintaInvitacion({ valida: false, motivo: 'anulada' })) && />Seguir</.test(M.pintaInvitacion({ valida: false, motivo: 'anulada' })), 'P7b', 'una invitación anulada lo dice y deja seguir')
   debe(/<em[^>]*data-pase-resaltado/.test(M.pintaTextoPase('Con el Pase Florencia, tu primer día')), 'P7b', 'el «Pase de …» se resalta con cualquier destino')
 
@@ -472,12 +472,12 @@ console.log('2b. Las pantallas del pase (P1, P6, P7, P8b, P9)')
   // P7 y RS2: la misma hoja del enlace y el código.
   const duo = { id: 'p', destino: 'Roma', tipo: 'duo', estado: 'activo', usos_max: 2, usos_usados: 1, es_mio: true, invitacion: null, viaje: null, miembros: [] }
   const p7 = M.pintaInvitar({ modo: 'pase', destino: 'Roma', tripId: 'v1', pase: duo, codigoInicial: 'K7MQ4XWH' })
-  debe(/Pase Dúo/.test(p7) && /Únete a mi /.test(p7) && /Pase Roma/.test(p7) && /K7MQ4XWH/.test(p7) && /1 de 2 usados/.test(p7) && /Compartir el enlace/.test(p7), 'P7', 'P7: «Pase Dúo», «Únete a mi Pase Roma», su código y «1 de 2 usados» con [Compartir el enlace]')
+  debe(/Pase Dúo/.test(p7) && /Te regalo una plaza de mi /.test(p7) && /Pase Roma/.test(p7) && /K7MQ4XWH/.test(p7) && /1 de 2 usados/.test(p7) && /Compartir la plaza/.test(p7), 'P7', 'P7: «Pase Dúo», «Únete a mi Pase Roma», su código y «1 de 2 usados» con [Compartir el enlace]')
   const rs2 = M.pintaInvitar({ modo: 'viaje', destino: 'Roma', tripId: 'v1', pase: duo, codigoInicial: 'K7MQ4XWH' })
   debe(/Compartir viaje/.test(rs2) && /Invita a los tuyos a tu viaje a Roma/.test(rs2) && /1 de 2 plazas del pase usadas/.test(rs2), 'RS2', 'RS2 con un Dúo: la misma hoja, «Invita a los tuyos a tu viaje a Roma» y «1 de 2 plazas del pase usadas»')
   debe(/^[A-Z2-9]{8}$/.test('K7MQ4XWH'), 'codigo', 'el código es de 8 caracteres sin 0, O, 1, I ni L (el de siempre)')
   debe(!/\bK7MQ4XWH\b/.test(M.pintaInvitar({ modo: 'viaje', destino: 'Roma', tripId: 'v1', pase: null })) && /········/.test(M.pintaInvitar({ modo: 'viaje', destino: 'Roma', tripId: 'v1', pase: null })), 'RS2', 'sin código todavía, la hoja espera (puntos) y [Compartir el enlace] no se puede pulsar')
-  debe(M.textoDeCompartirPase('Roma') === 'Únete a mi Pase Roma' && M.nombreDelTipo('grupo') === 'Pase Grupo', 'P7', 'los textos de compartir')
+  debe(M.textoDeCompartirPase('Roma') === 'Te regalo una plaza de mi Pase Roma' && M.nombreDelTipo('grupo') === 'Pase Grupo', 'P7', 'los textos de compartir')
 
   // P8b y P9: solo con dos viajes a Roma que se pisan.
   const vA = { id: 'a', route: { destination: 'Roma', answers: { dateRange: { start: '2026-10-16', end: '2026-10-19' } } }, guardadoEn: null }
@@ -955,7 +955,7 @@ console.log('5. Ajustes (P3), Mis pases (P4) y Borrar la cuenta (P5)')
   debe(pers.length === 2 && pers[0].nombre === 'Elena · tú' && pers[0].estado === 'Quien lo compró' && pers[1].nombre === 'Laura' && pers[1].estado === '✓ Dentro', 'P4', 'con quién lo comparte: «Elena · tú · Quien lo compró» y «Laura · ✓ Dentro»')
   debe(M.personasDelPase({ ...duo, miembros: [duo.miembros[0]] }).some((p) => p.libre && p.nombre === 'Plaza libre'), 'P4', 'una plaza sin ocupar se enseña como libre')
   const mp = M.pintaMisPases({ pasesIniciales: [duo, uno], hoy: '2026-10-11' })
-  debe(/Mis pases/.test(mp) && /PASE DÚO · 2 PERSONAS/.test(mp) && /Roma/.test(mp) && /En curso/.test(mp) && /Próximo/.test(mp) && /Lo compartes con/.test(mp) && /Código para invitar/.test(mp) && /K7MQ4XWH/.test(mp) && />Enlace</.test(mp) && (mp.match(/Ver recibo/g) ?? []).length === 2, 'P4', 'P4: tipo, destino, estado, compra, precio, viaje, con quién, código, enlace y [Ver recibo] (uno por pase)')
+  debe(/Mis pases/.test(mp) && /PASE DÚO · 2 PERSONAS/.test(mp) && /Roma/.test(mp) && /En curso/.test(mp) && /Próximo/.test(mp) && /Lo compartes con/.test(mp) && /Código de la plaza del pase/.test(mp) && /K7MQ4XWH/.test(mp) && /Compartir la plaza/.test(mp) && (mp.match(/Ver recibo/g) ?? []).length === 2, 'P4', 'P4: tipo, destino, estado, compra, precio, viaje, con quién, código, enlace y [Ver recibo] (uno por pase)')
   debe(!/Lo compartes con/.test(M.pintaMisPases({ pasesIniciales: [uno], hoy: '2026-10-11' })), 'P4', 'un pase de una persona no lleva «Lo compartes con»')
   debe(/Ver recibo/.test(M.pintaMisPases({ pasesIniciales: [duo] })) && !/Ver recibo/.test(M.pintaMisPases({ pasesIniciales: [{ ...duo, es_mio: false, tiene_recibo: false, importe_cent: null, invitacion: null }] })), 'P4', '[Ver recibo] solo para quien pagó')
   debe(/Anulado/.test(M.pintaMisPases({ pasesIniciales: [{ ...duo, estado: 'anulado' }] })) && !/Código para invitar/.test(M.pintaMisPases({ pasesIniciales: [{ ...duo, estado: 'anulado' }] })), 'P4', 'un pase anulado se ve como anulado y ya no deja invitar')
