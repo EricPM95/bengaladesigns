@@ -350,31 +350,80 @@ async function tokenDeLaAnonima(anonima: AnonimaGuardada): Promise<string | null
 }
 
 /** Pide al servidor que pase a esta cuenta lo de la sesión anónima de este móvil. Devuelve true si se pasó algo (hay que recargar para que la app lea con la cuenta). */
-async function reclamarLoDelMovil(sesion: Session): Promise<boolean> {
+/**
+ * `intento`: se llamó al servidor y salió bien (la sesión anónima ya no existe). `movido`: había algo que pasar (viajes, fotos, vistos, «me gusta», pases, plazas, logros…); solo entonces lo que la app
+ * ya había leído está viejo. Sin respuesta clara del servidor se cuenta como «movido» (ante la duda, se recarga).
+ */
+type ResultadoReclamar = { intento: boolean; movido: boolean }
+const NADA_RECLAMADO: ResultadoReclamar = { intento: false, movido: false }
+/** ¿Esta sesión va a necesitar pasar lo del móvil a la cuenta? (Para tapar la app mientras se hace, y no enseñarla un segundo antes de recargar.) */
+function hayQueReclamar(sesion: Session): boolean {
   const anonima = leerAnonima()
-  if (!anonima) return false
+  return !!anonima && anonima.uid !== sesion.user.id
+}
+async function reclamarLoDelMovil(sesion: Session): Promise<ResultadoReclamar> {
+  const anonima = leerAnonima()
+  if (!anonima) return NADA_RECLAMADO
   if (anonima.uid === sesion.user.id) {
     olvidarAnonima() // (mismo `uid`: la cuenta se hizo sobre la sesión anónima y no hay nada que pasar)
-    return false
+    return NADA_RECLAMADO
   }
   try {
     const tokenViejo = await tokenDeLaAnonima(anonima)
     if (!tokenViejo) {
       olvidarAnonima()
-      return false
+      return NADA_RECLAMADO
     }
     const respuesta = await fetch('/api/cuenta/reclamar', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sesion.access_token}` }, body: JSON.stringify({ anonToken: tokenViejo }) })
     if (!respuesta.ok) {
       console.warn('[cuentas] no se pudo pasar lo del móvil:', await respuesta.text().catch(() => respuesta.status))
-      return false // (se deja guardada la sesión anónima para reintentarlo la próxima vez)
+      return NADA_RECLAMADO // (se deja guardada la sesión anónima para reintentarlo la próxima vez)
     }
     olvidarAnonima()
-    return true
+    const cuerpo = (await respuesta.json().catch(() => null)) as { pasado?: Record<string, number> | null; archivosMovidos?: number; otros?: number } | null
+    const contado = cuerpo?.pasado ? Object.values(cuerpo.pasado).reduce((a, n) => a + (Number(n) || 0), 0) : null
+    const movido = !cuerpo || contado === null || contado > 0 || (cuerpo.archivosMovidos ?? 0) > 0 || (cuerpo.otros ?? 1) > 0
+    return { intento: true, movido }
   } catch (error) {
     console.warn('[cuentas] fallo pasando lo del móvil:', error)
-    return false
+    return NADA_RECLAMADO
   }
 }
+
+/**
+ * ENTRAR SIN QUE SE VEA LA APP DOS VECES. Al abrir con una cuenta, la app arranca y enseña todo mientras `completarEntrada` hace sus gestiones (pasar lo del móvil, fecha de alta…) y, si algo cambia, recarga.
+ * Eso es lo que se veía: la app entera un segundo y luego «otra carga». Aquí se pone una cortina del color de la app (con «Entrando…») mientras dura esa gestión; si se recarga, la cortina sigue hasta la recarga
+ * (y la pantalla de apertura no sale otra vez), y si no hace falta recargar, se quita. Con tope de seguridad.
+ */
+const ID_CORTINA = 'jutrip-entrando'
+function ponerCortina(): void {
+  try {
+    if (typeof document === 'undefined' || document.getElementById(ID_CORTINA)) return
+    const c = document.createElement('div')
+    c.id = ID_CORTINA
+    c.setAttribute('data-entrando', '')
+    c.setAttribute('role', 'status')
+    c.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:#FBF6EC;color:#1C2230;display:flex;align-items:center;justify-content:center;font:500 15px 'Geist',system-ui,sans-serif"
+    c.textContent = 'Entrando…'
+    document.body.appendChild(c)
+    window.setTimeout(quitarCortina, 12000)
+  } catch {
+    /* sin documento: nada que tapar */
+  }
+}
+function quitarCortina(): void {
+  try {
+    document.getElementById(ID_CORTINA)?.remove()
+  } catch {
+    /* nada que quitar */
+  }
+}
+
+/** ¿La primera lectura de la sesión al abrir la app ya era una cuenta de verdad? (Vuelta de Google: sí. Escribir el código con la app ya abierta: no, era la anónima.) */
+let resolverPrimeraLectura: (esCuenta: boolean) => void = () => undefined
+const primeraLectura = new Promise<boolean>((r) => {
+  resolverPrimeraLectura = r
+})
 
 /** Recarga la app con la dirección limpia (sin lo que dejó el enlace mágico). Una navegación dentro de la propia app, no un enlace a otra web. */
 function recargarLimpio(ruta: string): void {
@@ -435,8 +484,12 @@ let entradaEnCurso: Promise<void> | null = null
 export function completarEntrada(sesion: Session): Promise<void> {
   if (!supabase || esAnonimo(sesion.user)) return Promise.resolve()
   if (!entradaEnCurso) {
+    const tapar = hayQueReclamar(sesion) || !!invitacionPendiente()
+    if (tapar) ponerCortina()
+    let recargando = false
     entradaEnCurso = (async () => {
-      const pasado = await reclamarLoDelMovil(sesion)
+      const reclamado = await reclamarLoDelMovil(sesion)
+      const pasado = reclamado.movido
       await supabase!.rpc('marcar_alta').then(({ error }) => {
         if (error) console.warn('[cuentas] no se pudo guardar la fecha de alta (¿falta aplicar la migración 0020?):', error.message)
       })
@@ -479,9 +532,16 @@ export function completarEntrada(sesion: Session): Promise<void> {
         olvidarAmigoPendiente()
       }
       // Con el `uid` cambiado, o con un viaje nuevo, todo lo que la app cargó está viejo: se recarga una vez, con la dirección limpia.
-      if (pasado || entroEnUnViaje) recargarLimpio(window.location.pathname)
+      // (Entrar sin doble carga) Si NO había nada que pasar y la app ya abrió con la cuenta (vuelta de Google), lo leído ya es lo bueno: no se recarga. Con el código escrito con la app abierta, se recarga siempre
+      // (lo leído era de la sesión anónima).
+      const alArrancar = reclamado.intento && !reclamado.movido ? await Promise.race([primeraLectura, new Promise<boolean>((r) => setTimeout(() => r(false), 3000))]) : false
+      if (pasado || entroEnUnViaje || (reclamado.intento && !alArrancar)) {
+        recargando = true
+        recargarLimpio(window.location.pathname)
+      }
     })().finally(() => {
       entradaEnCurso = null
+      if (tapar && !recargando) quitarCortina()
     })
   }
   return entradaEnCurso
@@ -524,6 +584,7 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
         reintento = window.setTimeout(() => void supabase!.auth.getSession().then(() => undefined), 15000)
         return undefined
       }
+      resolverPrimeraLectura(!!data.session && !esAnonimo(data.session.user))
       alCambiar(estadoDeSesion(data.session))
       guardarAnonima(data.session)
       guardarRespaldo(data.session)
@@ -532,6 +593,7 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
       return undefined
     })
     .catch(() => {
+      resolverPrimeraLectura(false)
       if (hayRespaldoDeSesion()) void recuperar()
       else alCambiar({ tipo: 'sin_sesion' })
     })

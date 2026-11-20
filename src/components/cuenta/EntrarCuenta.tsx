@@ -156,6 +156,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
       {paso === 'enviado' && (
         <Hoja onCerrar={() => setPaso('email')} titulo={`Te hemos enviado un enlace a ${emailResumido(email)}`} z={95} datos="A3">
           <p style={{ margin: 0, font: "400 13.5px/1.5 'Geist'", opacity: 0.75 }}>Ábrelo desde este móvil para entrar.</p>
+          <p data-aviso-spam style={{ margin: '-6px 0 0', font: "400 12px/1.4 'Geist'", color: 'rgba(28,34,48,.55)' }}>Si no lo ves en unos segundos, mira en Spam o Promociones.</p>
           <a
             href={enlaceDeCorreo(email)}
             target={enlaceDeCorreo(email).startsWith('http') ? '_blank' : undefined}

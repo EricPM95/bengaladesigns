@@ -102,13 +102,25 @@ export async function reclamarCuenta(admin, tokenNuevo, tokenViejo) {
     return { estado: 500, cuerpo: { error: 'No se pudieron pasar tus logros. No se ha movido nada; vuelve a probar.', detalle: errorLogros.message } }
   }
 
+  // 1c. (Entrar sin doble carga) Cuánto hay de lo que `reclamar_anonimo` no cuenta (pases, plazas, logros, recomendaciones): con la cuenta del móvil vacía, la app no necesita recargarse. Ante la duda (falla la consulta), se cuenta como «hay».
+  let otros = 0
+  try {
+    for (const [tabla, columna] of [['passes', 'comprador_id'], ['passes', 'para_id'], ['pass_members', 'user_id'], ['trip_members', 'user_id'], ['achievements', 'user_id'], ['trip_recommendations', 'author_id']]) {
+      const { count, error: errorCuenta } = await admin.from(tabla).select('*', { count: 'exact', head: true }).eq(columna, viejo.id)
+      if (errorCuenta) throw new Error(errorCuenta.message)
+      otros += count ?? 0
+    }
+  } catch {
+    otros = 1
+  }
+
   // 2. Las filas, a la cuenta nueva (y fuera la sesión anónima, ya vacía).
   const { data, error } = await admin.rpc('reclamar_anonimo', { p_viejo: viejo.id, p_nuevo: nuevo.id })
   if (error) {
     for (const [origen, destino] of movidos) await almacen.move(destino, origen)
     return { estado: 500, cuerpo: { error: 'No se pudo pasar lo de este móvil a tu cuenta. No se ha cambiado nada; vuelve a probar.', detalle: error.message } }
   }
-  return { estado: 200, cuerpo: { ok: true, pasado: data ?? null, archivosMovidos: movidos.length } }
+  return { estado: 200, cuerpo: { ok: true, pasado: data ?? null, archivosMovidos: movidos.length, otros } }
 }
 
 /** Monta las dos rutas en la aplicación de Express. `admin` = cliente de Supabase con la clave de servicio (o null). */
