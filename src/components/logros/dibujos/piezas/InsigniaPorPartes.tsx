@@ -154,3 +154,12 @@ export function poligonoDelTrozo(col: string, k: number): [number, number][] | n
   const my = q0.reduce((s, v) => s + v[1], 0) / q0.length
   return q0.map((v) => [mx + (v[0] - mx) * 0.985, my + (v[1] - my) * 0.985] as [number, number])
 }
+
+/** (V28c) Lo que hace falta para recortar la baldosa de una colección por partes: el centro de su forma (de 0 a 200), cuántos trozos tiene y si es de burbujas. */
+export function geometriaDeColeccion(col: string): { cx: number; cy: number; n: number; burbujas: boolean } | null {
+  const C = COL[String(col)]
+  if (!C) return null
+  if (C.bub) return { cx: 100, cy: 100, n: 7, burbujas: true }
+  const SH = SHAPES[C.shape]()
+  return { cx: SH.c[0], cy: SH.c[1], n: C.n, burbujas: false }
+}

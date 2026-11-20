@@ -65,3 +65,6 @@ InsigniaPieza.defaultProps = {"kind":"impr","have":7,"neu":7,"dark":false,"scale
 
 InsigniaPieza.prototype.render = function () { return T(this.renderVals()) }
 export default InsigniaPieza as unknown as React.ComponentType<any>
+
+/** (V28c) Los iconos de los sitios de Roma de esta pieza (arco, foro, fuente, panteón…), para dibujarlos derechos en el círculo de la colección. */
+export const ICONOS_DE_PIEZA: Record<string, string> = IC

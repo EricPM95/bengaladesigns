@@ -7,6 +7,7 @@ import viajero from '../../data/logros/viajero.json'
 import roma from '../../data/logros/roma.json'
 import { COLECCIONES_POR_PARTES } from '../components/logros/dibujos/partes'
 import { IDS_EMBLEMAS_LANZA } from '../components/logros/dibujos/EmblemaLanza'
+import { BaldosaEnCirculo } from '../components/logros/pantallas/destino/baldosa'
 
 const MARAVILLAS = ['coliseo', 'chichen_itza', 'cristo_redentor', 'gran_muralla', 'machu_picchu', 'petra', 'taj_mahal']
 const Titulo = ({ t }: { t: string }) => <h2 style={{ font: "600 11px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', margin: '28px 0 10px', color: 'rgba(28,34,48,.6)' }}>{t}</h2>
@@ -96,6 +97,24 @@ export function DibujosPrueba() {
           )
         })}
       </Fila>
+
+      <Titulo t="(V28c) Las 18 insignias: cada baldosa en su círculo (ganada y sin ganar), como en «Ver la colección»" />
+      <div data-baldosas-hoja="1" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {Object.entries(COLECCIONES_POR_PARTES).map(([id, info]) => (
+          <div key={id} data-baldosas-de={id} style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ width: 150, font: "500 11px 'Geist Mono',monospace" }}>{id}</span>
+            {[true, false].map((ganado) => (
+              <span key={String(ganado)} style={{ display: 'flex', gap: 6 }}>
+                {info.sitios.map((s, k) => (
+                  <span key={s} data-baldosa-circulo={`${id}:${k}`} style={{ position: 'relative', width: 46, height: 46, borderRadius: '50%', background: '#FFFDF8', boxShadow: '0 4px 10px -4px rgba(28,34,48,.5)', overflow: 'hidden', display: 'block' }}>
+                    <BaldosaEnCirculo coleccion={id} total={info.sitios.length} k={k} sitio={s} ganado={ganado} diametro={46} />
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
 
       <Titulo t="Países · los 9 escalones" />
       <Fila>{(ESCALONES_DE.paises ?? []).map((n) => <Cel key={n} pie={'países ' + n}><Chapa logro="paises" escalon={n} tam={110} /></Cel>)}</Fila>

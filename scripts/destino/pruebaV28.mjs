@@ -180,40 +180,61 @@ for (const destino of ['Roma', 'Lanzarote']) {
   }
 }
 
-/* ───────── 4. La colección por dentro: cada trozo, ENTERO en su círculo ───────── */
-console.log('4. Las 18 insignias: cada círculo con SU trozo entero')
+/* ───────── 4. La colección por dentro: cada baldosa ENTERA, derecha y grande en su círculo (V28c) ───────── */
+console.log('4. Las 18 insignias: cada círculo con SU baldosa, entera, derecha y grande (V28c)')
 {
-  const a = await abrirApp(APP, { ruta: '/?cuentas=off&logros=on&logrosDemo=1&apertura=0', ancho: 390, alto: 844 })
+  const a = await abrirApp(APP, { ruta: '/?dibujos=1', ancho: 900, alto: 1400, escala: 2, sinEsperarRoot: true, esperaFija: 10 })
   try {
-    for (let i = 0; i < 120 && !(await a.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await a.esp(500)
-    const r = JSON.parse(await a.evaluar(`Promise.all([import('/src/components/logros/pantallas/destino/trozo.ts'), import('/src/components/logros/dibujos/partes.ts')]).then(([T, P]) => {
-      const dentro = (p, poli) => { let c = false; for (let i = 0, j = poli.length - 1; i < poli.length; j = i++) { const [xi, yi] = poli[i], [xj, yj] = poli[j]; if ((yi > p[1]) !== (yj > p[1]) && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi) + xi) c = !c } return c }
-      const salida = { colecciones: 0, trozos: 0, fueraDelCirculo: [], restos: [], sinForma: [] }
+    await a.esp(6000)
+    const r = JSON.parse(await a.evaluar(`Promise.all([import('/src/components/logros/pantallas/destino/baldosa.tsx'), import('/src/components/logros/dibujos/partes.ts')]).then(([B, P]) => {
+      const salida = { colecciones: 0, baldosas: 0, sinForma: [], enElCentro: [], fueraDelCirculo: [], pequenas: [], torcidas: [], sinIcono: [], circulos: document.querySelectorAll('[data-baldosa-circulo]').length, esperados: 0, conIcono: 0 }
       for (const [id, info] of Object.entries(P.COLECCIONES_POR_PARTES)) {
         const total = info.sitios.length
         salida.colecciones++
-        const polis = info.sitios.map((_, k) => T.trozoEntero(id, total, k))
-        polis.forEach((t, k) => {
-          salida.trozos++
-          if (!t || t.puntos.length < 3) { salida.sinForma.push(id + ':' + k); return }
-          const e = T.encajeEnCirculo(t, 46)
-          // todos los puntos del trozo, ya escalados y puestos, dentro del círculo de 46 px
-          const peor = Math.max(...t.puntos.map(([x, y]) => Math.hypot(e.left + x * e.lado - 23, e.top + y * e.lado - 23)))
-          if (peor > 23.01) salida.fueraDelCirculo.push(id + ':' + k + ':' + peor.toFixed(1))
-          // ningún punto del trozo cae dentro de otro trozo de la misma insignia
-          const muestra = []
-          for (let i = 0; i <= 12; i++) for (let j = 0; j <= 12; j++) { const p = [t.caja.x0 + ((t.caja.x1 - t.caja.x0) * i) / 12, t.caja.y0 + ((t.caja.y1 - t.caja.y0) * j) / 12]; if (dentro(p, t.puntos)) muestra.push(p) }
-          polis.forEach((o, j) => { if (j !== k && o && muestra.some((p) => dentro(p, o.puntos))) salida.restos.push(id + ':' + k + ' pisa a ' + j) })
+        salida.esperados += total * 2
+        info.sitios.forEach((_, k) => {
+          salida.baldosas++
+          const g = B.geometriaDeBaldosa(id, total, k)
+          if (!g || g.puntos.length < 3) { salida.sinForma.push(id + ':' + k); return }
+          // ningún punto de la baldosa cae dentro de la medalla / el octógono del centro
+          const [cx, cy] = [g.centro[0], g.centro[1]]
+          const lado = g.familia === 'impr' || g.familia === 'joyas' ? 150 : 200
+          const minimo = g.familia === 'partes' ? 29.9 : g.familia === 'impr' ? 29.9 : 0
+          const cerca = Math.min(...g.puntos.map(([x, y]) => Math.hypot((x - cx) * lado, (y - cy) * lado)))
+          if (cerca < minimo) salida.enElCentro.push(id + ':' + k + ':' + cerca.toFixed(1))
+          const e = B.encajeDeBaldosa(g, 46)
+          // todo el trozo dentro del círculo de 46 px
+          const peor = Math.max(...g.girados.map(([x, y]) => Math.hypot(e.dx + x * e.lado - 23, e.dy + y * e.lado - 23)))
+          if (peor > 23.05) salida.fueraDelCirculo.push(id + ':' + k + ':' + peor.toFixed(1))
+          // ocupa al menos el 70 % del ancho del círculo
+          if (e.ancho < 0.7 * 46 - 0.05 && !(g.familia === 'burbujas' || g.familia === 'una')) salida.pequenas.push(id + ':' + k + ':' + (e.ancho / 46).toFixed(2))
+          // derecha: el lado de fuera arriba (el punto más lejano del centro de la insignia queda sobre él)
+          if (g.familia === 'partes' || g.familia === 'impr') {
+            const lejano = g.girados.reduce((m, p) => (Math.hypot(p[0] - cx, p[1] - cy) > Math.hypot(m[0] - cx, m[1] - cy) ? p : m))
+            const medio = g.girados.reduce((s, p) => [s[0] + p[0] / g.girados.length, s[1] + p[1] / g.girados.length], [0, 0])
+            if (!(medio[1] < cy - 0.05) || Math.abs(medio[0] - cx) > 0.06) salida.torcidas.push(id + ':' + k)
+            void lejano
+          }
         })
       }
+      document.querySelectorAll('[data-baldosa-circulo]').forEach((c) => {
+        const fam = c.querySelector('[data-baldosa]')?.getAttribute('data-baldosa')
+        if (fam === 'impr' || fam === 'joyas') { if (c.querySelector('svg[data-baldosa-icono="1"] path[stroke-linecap]')) salida.conIcono++; else salida.sinIcono.push(c.getAttribute('data-baldosa-circulo')) }
+      })
       return JSON.stringify(salida)
     })`))
     debe(r.colecciones === 18, 'insignias', `las 18 insignias (${r.colecciones})`)
-    debe(r.sinForma.length === 0, 'insignias', `cada sitio tiene su trozo con forma propia (${r.trozos} trozos; sin forma: ${r.sinForma.join(', ') || 'ninguno'})`)
-    debe(r.fueraDelCirculo.length === 0, 'insignias', `cada trozo cabe ENTERO en su círculo de 46 px, centrado y a escala (se salen: ${r.fueraDelCirculo.join(', ') || 'ninguno'})`)
-    debe(r.restos.length === 0, 'insignias', `ningún trozo lleva restos de los de al lado (${r.restos.join(', ') || 'ninguno'})`)
+    debe(r.sinForma.length === 0, 'insignias', `cada sitio tiene su baldosa (${r.baldosas}; sin forma: ${r.sinForma.join(', ') || 'ninguna'})`)
+    debe(r.enElCentro.length === 0, 'insignias', `ningún punto de la baldosa cae dentro del centro (medalla u octógono de la estrella): ${r.enElCentro.join(', ') || 'ninguno'}`)
+    debe(r.fueraDelCirculo.length === 0, 'insignias', `cada baldosa cabe ENTERA en su círculo de 46 px (se salen: ${r.fueraDelCirculo.join(', ') || 'ninguna'})`)
+    debe(r.pequenas.length === 0, 'insignias', `cada baldosa ocupa al menos el 70 % del ancho del círculo (menos: ${r.pequenas.join(', ') || 'ninguna'})`)
+    debe(r.torcidas.length === 0, 'insignias', `cada baldosa va derecha, con su lado de fuera arriba (torcidas: ${r.torcidas.join(', ') || 'ninguna'})`)
+    debe(r.circulos === r.esperados && r.sinIcono.length === 0 && r.conIcono >= 24, 'insignias', `en la hoja de las 18, ${r.circulos} círculos (ganadas y sin ganar) y el icono de los Imprescindibles y las 4 joyas se ve en los ${r.conIcono} (sin icono: ${r.sinIcono.join(', ') || 'ninguno'})`)
     const codigo = leer('src/components/logros/pantallas/ColeccionPorDentro.tsx')
-    debe(/encajeEnCirculo/.test(codigo) && !/recorteDeTrozo\(trozo,/.test(codigo), 'insignias', 'la colección por dentro usa el trozo exacto, no el recorte con el casco convexo')
+    debe(/BaldosaEnCirculo/.test(codigo) && !/encajeEnCirculo/.test(codigo), 'insignias', 'la colección por dentro dibuja la baldosa suelta (no el recorte con la medalla del centro)')
+    await a.evaluar("document.querySelector('[data-baldosas-hoja]').scrollIntoView(); true")
+    await a.esp(1200)
+    await a.captura(`${CAP}/baldosas_18.jpg`)
   } finally {
     a.cerrar()
   }

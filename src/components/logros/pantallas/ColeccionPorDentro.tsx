@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { abrirMapaEnOtraPestana, buildAppleMapsUrlFromHere, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { Insignia } from '../dibujos'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { useMomentosUI } from '../momentos/useMomentosUI'
-import { encajeEnCirculo, trozoEntero } from './destino/trozo'
+import { BaldosaEnCirculo, geometriaDeBaldosa } from './destino/baldosa'
 import { pedirColeccion, type ColeccionDentroDatos } from './destino/api'
 import { diaDeRuta, fechaCorta } from './destino/formato'
 import { BotonVolver, Esperando, FONDO_PAPEL, useCarga } from './destino/piezas'
@@ -71,7 +71,7 @@ function Album({ datos }: { datos: ColeccionDentroDatos }): ReactNode {
   const TAM = 190
   // El orden: primero los ganados (y cada grupo en el orden de la colección, que es el del trozo de la insignia).
   const ordenados = datos.sitios.map((x, k) => ({ x, k })).sort((a, b) => Number(b.x.visto) - Number(a.x.visto) || a.k - b.k)
-  const trozoTocado = tocado ? (() => { const k = datos.sitios.findIndex((x) => x.sitio === tocado); return k >= 0 ? trozoEntero(c.id, total, k) : null })() : null
+  const trozoTocado = tocado ? (() => { const k = datos.sitios.findIndex((x) => x.sitio === tocado); return k >= 0 ? geometriaDeBaldosa(c.id, total, k) : null })() : null
   const tocar = (sitio: string) => {
     setTocado(sitio)
     window.clearTimeout(temporizador.current)
@@ -109,11 +109,6 @@ function Album({ datos }: { datos: ColeccionDentroDatos }): ReactNode {
 
 /** Una tarjeta de sitio (V9): la foto (en color si está ganado, en gris suave si no), su trozo de la insignia pequeño en una esquina y lo que toque (fecha, día y [Cómo llegar], [Añadir a mi viaje] o nada). */
 function Tarjeta({ s, k, coleccion, total, datos, tocada, alTocar }: { s: ColeccionDentroDatos['sitios'][number]; k: number; coleccion: string; total: number; datos: ColeccionDentroDatos; tocada: boolean; alTocar: () => void }): ReactNode {
-  // (V28) En el círculo va SOLO su trozo, entero, con su forma exacta, centrado y a escala para que quepa con margen (nada de los trozos de al lado).
-  const encaje = useMemo(() => {
-    const t = trozoEntero(coleccion, total, k)
-    return t ? encajeEnCirculo(t, 46) : null
-  }, [coleccion, total, k])
   // (V25) El «hoy» es el de ahora en el destino (no el que trajera lo guardado): el mismo momento del viaje que en la hoja de logros.
   const hoy = todayIso(zonaDelDestino(datos.destino) ?? zonaDelDestino(datos.ciudad))
   const terminado = Boolean(datos.viaje && hoy > datos.viaje.fin)
@@ -123,13 +118,10 @@ function Tarjeta({ s, k, coleccion, total, datos, tocada, alTocar }: { s: Colecc
   return (
     <div data-sitio-de-coleccion={s.sitio} data-ganado={s.visto ? '1' : '0'} role="button" tabIndex={0} onClick={alTocar} onKeyDown={(e) => e.key === 'Enter' && alTocar()} style={{ position: 'relative', display: 'flex', flexDirection: 'column', borderRadius: 22, background: s.visto ? '#FFFDF8' : '#EFE7D8', border: tocada ? '2px solid #C99A4C' : `1px solid rgba(28,34,48,${s.visto ? 0.08 : 0.1})`, overflow: 'hidden', boxShadow: tocada ? '0 10px 22px -12px rgba(150,105,30,.7)' : s.visto ? '0 8px 20px -16px rgba(28,34,48,.35)' : 'none', cursor: 'pointer' }}>
       <FotoDeSitio url={urlEstable(s.foto_url)} nombre={s.nombre} ciudad={datos.ciudad} gris={!s.visto} />
-      {encaje && (
-        <span data-trozo-de-sitio aria-hidden="true" style={{ position: 'absolute', left: 8, top: 8, width: 46, height: 46, borderRadius: '50%', background: '#FFFDF8', boxShadow: '0 4px 10px -4px rgba(28,34,48,.5)', overflow: 'hidden' }}>
-          <span style={{ position: 'absolute', left: encaje.left, top: encaje.top, width: encaje.lado, height: encaje.lado, clipPath: encaje.clip }}>
-            <Insignia coleccion={coleccion} ganados={s.visto ? [s.sitio] : []} tam={encaje.lado} />
-          </span>
-        </span>
-      )}
+      <span data-trozo-de-sitio aria-hidden="true" style={{ position: 'absolute', left: 8, top: 8, width: 46, height: 46, borderRadius: '50%', background: '#FFFDF8', boxShadow: '0 4px 10px -4px rgba(28,34,48,.5)', overflow: 'hidden' }}>
+        {/* (V28c) SOLO la baldosa de este sitio, derecha, grande y sin el centro crema ni los vecinos. */}
+        <BaldosaEnCirculo coleccion={coleccion} total={total} k={k} sitio={s.sitio} ganado={s.visto} diametro={46} />
+      </span>
       {s.visto && (
         <span aria-hidden="true" style={{ position: 'absolute', right: 8, top: 8, width: 26, height: 26, borderRadius: '50%', background: 'oklch(0.5 0.1 150)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
