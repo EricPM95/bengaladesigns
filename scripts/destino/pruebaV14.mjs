@@ -327,7 +327,7 @@ try {
   })()`)
   debe(tj.sellos.length >= 1 && tj.sellos.every((s) => s === 'suyo'), 'tarjeta', `en la tarjeta solo salen sellos de verdad (${tj.sellos.join(', ')}: ${tj.etiquetas.join(' / ')})`)
   const sellosPuro = await ev(`__imp('/src/components/logros/pantallas/perfil/TarjetaPasaporte.tsx').then((m) => ({ ninguno: m.sellosDeLaEsquina([]).length, uno: m.sellosDeLaEsquina([{ ciudad: 'Lanzarote', fecha: '2026-11-08' }]).map((s) => s.ciudad + ':' + s.forma), tres: m.sellosDeLaEsquina([{ ciudad: 'A', fecha: '2026-11-08' }, { ciudad: 'B', fecha: '2026-11-07' }, { ciudad: 'C', fecha: '2026-11-06' }]).length }))`)
-  debe(sellosPuro.ninguno === 2 && sellosPuro.uno.length === 2 && sellosPuro.uno[0] === 'Lanzarote:oval' && sellosPuro.tres === 2, 'tarjeta', `(V34) siempre dos sellos: sin viajes, los dos de ejemplo; con uno, el de Lanzarote (ovalado) y uno de ejemplo; como mucho 2 (${JSON.stringify(sellosPuro)})`)
+  debe(sellosPuro.ninguno === 2 && sellosPuro.uno.length === 1 && sellosPuro.uno[0] === 'Lanzarote:oval' && sellosPuro.tres === 2, 'tarjeta', `(V34B) sin sellos, los dos de ejemplo; con uno propio, solo ese (el de Lanzarote, ovalado); como mucho 2 (${JSON.stringify(sellosPuro)})`)
   await ev("localStorage.removeItem('jutrip.globo_pasaporte'); true")
   // Arrastrar el globo: se mueve, NO abre el pasaporte y guarda su posición.
   const cdp = app.cdp

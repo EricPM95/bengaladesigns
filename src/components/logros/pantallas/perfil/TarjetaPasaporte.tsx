@@ -19,7 +19,7 @@ const COLOCACION = [
   { left: 40, top: 20, giro: 7 },
 ]
 const TAM_SELLO = 46
-/** (V34) Los dos sellos de EJEMPLO (los del diseño P1: el redondo azul y el cuadrado verde de Roma): la tarjeta lleva SIEMPRE dos sellos; los de verdad del viajero van primero y los de ejemplo rellenan lo que falte. */
+/** (V34) Los dos sellos de EJEMPLO (los del diseño P1: el redondo azul y el cuadrado verde de Roma): los de ejemplo salen SOLO cuando no hay ningún sello propio (apagados y con la palabra «Ejemplo»). */
 const SELLOS_DE_EJEMPLO: { ciudad: string; fecha: string; forma: FormaDeSello; tinta: string }[] = [
   { ciudad: 'Roma', fecha: '2025-03-14', forma: 'round', tinta: TINTAS[0] },
   { ciudad: 'Roma', fecha: '2026-10-13', forma: 'rect', tinta: TINTAS[1] },
@@ -31,8 +31,9 @@ const SELLOS_DE_EJEMPLO: { ciudad: string; fecha: string; forma: FormaDeSello; t
  */
 export function sellosDeLaEsquina(recientes: { ciudad: string; fecha: string }[] | undefined): { ciudad: string; fecha: string; forma: FormaDeSello; tinta: string; ejemplo: boolean }[] {
   const suyos = (recientes ?? []).slice(0, 2).map((s) => ({ ...s, ...aspectoDeSello(s.ciudad, s.fecha), ejemplo: false }))
-  const relleno = SELLOS_DE_EJEMPLO.slice(suyos.length).map((s) => ({ ...s, ejemplo: true }))
-  return [...suyos, ...relleno].slice(0, 2)
+  // (V34B) Los de ejemplo, SOLO si no tiene ningún sello; en cuanto tiene uno propio, solo los suyos.
+  if (suyos.length > 0) return suyos
+  return SELLOS_DE_EJEMPLO.map((s) => ({ ...s, ejemplo: true }))
 }
 
 export function TarjetaPasaporte({ pasaporte, onAbrir }: { pasaporte: PerfilLogros['pasaporte']; onAbrir?: () => void }): ReactNode {
@@ -73,8 +74,9 @@ export function TarjetaPasaporte({ pasaporte, onAbrir }: { pasaporte: PerfilLogr
       </span>
       <span aria-hidden="true" className="absolute" style={{ right: estrecho ? -12 : -14, bottom: estrecho ? -14 : -16, width: estrecho ? 92 : 108, height: estrecho ? 72 : 84, borderRadius: 8, background: '#F3EBDB', transform: 'rotate(-8deg)', boxShadow: '-6px 6px 16px -6px rgba(0,0,0,.5)' }}>
         {sellos.map((s, i) => (
-          <span key={`${s.ciudad}-${s.fecha}-${i}`} data-sello-asomando={s.ejemplo ? 'ejemplo' : 'suyo'} className="absolute" style={{ left: colocacion[i].left, top: colocacion[i].top, transform: `rotate(${colocacion[i].giro}deg)` }}>
+          <span key={`${s.ciudad}-${s.fecha}-${i}`} data-sello-asomando={s.ejemplo ? 'ejemplo' : 'suyo'} className="absolute" style={{ left: colocacion[i].left, top: colocacion[i].top, transform: `rotate(${colocacion[i].giro}deg)`, ...(s.ejemplo ? { opacity: 0.5, filter: 'grayscale(.5)' } : {}) }}>
             <SelloPasaporte forma={s.forma} sitio={s.ciudad} fecha={fechaDeSello(s.fecha)} tinta={s.tinta} tam={tamSello} />
+            {s.ejemplo && <span data-palabra-ejemplo style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%) rotate(-12deg)', padding: '1px 5px', borderRadius: 4, background: 'rgba(243,235,219,.92)', color: '#5A4A32', font: "700 8.5px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase' }}>Ejemplo</span>}
           </span>
         ))}
       </span>

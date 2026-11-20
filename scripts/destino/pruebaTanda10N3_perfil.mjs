@@ -132,7 +132,7 @@ try {
   await E(`window.__perfilUi.getState().abrir(); true`)
   await esp(2500)
   const uno = await sellosCon()
-  debe(uno.length === 2 && uno[0].tipo === 'suyo' && uno[1].tipo === 'ejemplo', 'sellos', '(V34) con un solo sello ganado: el suyo y uno de ejemplo (siempre dos)')
+  debe(uno.length === 1 && uno[0].tipo === 'suyo', 'sellos', '(V34B) con un solo sello ganado: solo el suyo, sin ejemplos')
   const pisa = await E(`Array.from(document.querySelectorAll('[data-abrir-pasaporte] [data-sello-asomando]')).map((e) => e.textContent).join('|')`)
   debe(/PISA/i.test(pisa), 'sellos', 'el sello suyo es el que ganó (Pisa)')
   // El mapa se va pintando con lo visitado: con 'it' hay un país con color; sin países, ninguno.

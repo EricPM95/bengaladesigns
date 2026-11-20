@@ -142,9 +142,10 @@ for (const ancho of [320, 375, 430]) {
       const dentro = sellos.map((s) => { const b = s.getBoundingClientRect(); return b.left >= c.left + 1 && b.right <= c.right - 1 && b.top >= c.top + 1 && b.bottom <= c.bottom - 1 })
       const sheet = t.querySelector('span[aria-hidden][class*="absolute"]'); const num = t.querySelector('[data-numeros-pasaporte]').getBoundingClientRect(); const tit = [...t.querySelectorAll('span')].find((s) => s.textContent === 'Mi pasaporte').getBoundingClientRect()
       const h = sheet.getBoundingClientRect()
-      return { tipos: sellos.map((s) => s.dataset.selloAsomando), dentro, ancho: Math.round(c.width), tapa: tit.right > h.left + 18 || num.right > h.left + 18, solape: Math.round(Math.max(tit.right, num.right) - h.left) }
+      return { tipos: sellos.map((s) => s.dataset.selloAsomando), palabras: t.querySelectorAll('[data-palabra-ejemplo]').length, apagados: sellos.every((s) => parseFloat(getComputedStyle(s).opacity) < 0.7), dentro, ancho: Math.round(c.width), tapa: tit.right > h.left + 18 || num.right > h.left + 18, solape: Math.round(Math.max(tit.right, num.right) - h.left) }
     })()`))
-    debe(p.tipos.length === 2 && p.tipos.every((x) => x === 'ejemplo'), 'pasaporte', `[${ancho}] la tarjeta lleva SIEMPRE dos sellos; sin viajes, los dos de ejemplo (${p.tipos.join()})`)
+    debe(p.tipos.length === 2 && p.tipos.every((x) => x === 'ejemplo'), 'pasaporte', `[${ancho}] sin ningún sello propio, la tarjeta lleva los dos de ejemplo (${p.tipos.join()})`)
+    debe(p.palabras === 2 && p.apagados, 'pasaporte', `[${ancho}] los dos de ejemplo llevan la palabra «Ejemplo» y van apagados`)
     debe(p.dentro.every(Boolean), 'pasaporte', `[${ancho}] los dos sellos caben enteros dentro de la tarjeta (no se cortan) (${p.dentro.join()})`)
     debe(!p.tapa, 'pasaporte', `[${ancho}] la hoja de la derecha no tapa «Mi pasaporte» ni los números (solape ${p.solape} px)`)
     if (ancho === 375) {
@@ -171,7 +172,7 @@ console.log('2b. El mismo Perfil con 1, 2 y 3 logros: tres huecos iguales, sin �
 }
 {
   const t = leer('src/components/logros/pantallas/perfil/TarjetaPasaporte.tsx')
-  debe(/SELLOS_DE_EJEMPLO/.test(t) && /\.slice\(0, 2\)/.test(t), 'pasaporte', 'los sellos de ejemplo siguen en el código, para rellenar hasta los dos de la tarjeta')
+  debe(/SELLOS_DE_EJEMPLO/.test(t) && t.includes('if (suyos.length > 0) return suyos') && /data-palabra-ejemplo/.test(t), 'pasaporte', '(V34B) los de ejemplo solo sin ningún sello propio, apagados y con la palabra «Ejemplo»')
 }
 
 /* ───────── 3. La tarjeta y la página del destino ───────── */
