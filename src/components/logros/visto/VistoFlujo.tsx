@@ -126,7 +126,7 @@ export async function procesarVisto(p: { tripId: string; dayId: string; stopId: 
   poner({ aviso: { id, parada, nombre: parada.nombre } })
   const llegada = enviarVisto({ tripId: p.tripId, stopId: p.stopId, nombre: p.nombre }).then((r) => {
     useLogrosStore.getState().recibir(r)
-    if (r?.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo))
+    if (r?.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo), r.nuevos)
     return r
   })
   const [r] = await Promise.all([llegada, fin])
@@ -215,7 +215,7 @@ async function resolverFoto(destino: DestinoDeFoto, archivo: File, origen: 'app'
   void refrescarPendientes(parada.tripId)
   if (r) {
     useLogrosStore.getState().recibir(r)
-    if (r.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo))
+    if (r.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo), r.nuevos)
   }
   poner({ galeria: null, nota: r ? (r.nuevos?.length ? null : 'Foto guardada') : 'Foto guardada. Tus sorpresas saldrán al volver la señal.' })
 }

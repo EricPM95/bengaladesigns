@@ -5,6 +5,7 @@ import type { EstadoLogros } from './api'
 import { Centro, FONDO_CALIDO, FONDO_NOCHE, Ojo, ORO, PantallaOscura, Rayos, Estrellas, Sub, Titulo, Vuelo } from './base'
 import { FinalSieteMaravillas } from './FinalSieteMaravillas'
 import { gradoAnterior, type Pantalla } from './plan'
+import { TIEMPOS_DE_PEDAZO, TIEMPOS_DE_PEDAZO_REDUCIDO } from '../../../lib/sonidos/tiempos'
 
 const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
 
@@ -87,7 +88,7 @@ function unaPorColeccion<T extends { id: string; n: number; completa: boolean; v
  * (V13, Design `Pedazo Nuevo Lanza` M1 y M2) La insignia de una colección con su pedazo nuevo, con su tiempo (~2 s hasta que sale [Seguir]): 0 la insignia con lo que ya tenías; 1 el trozo nuevo llega volando con un brillo;
  * 2 encaja en su hueco; 3 se llena de color con un destello en el borde; 4 queda y el número sube («2 de 6 → 3 de 6»). Con «Reducir movimiento» del iPhone, sin vuelo: solo el color.
  */
-export const TIEMPOS_DE_PEDAZO = { llega: 0.3, encaja: 1.2, color: 1.35, fin: 2.0 } as const
+export { TIEMPOS_DE_PEDAZO }
 function InsigniaEncendiendo({ coleccion, vistos, nuevos, completa = false, tam, retraso = 0.9, pie }: { coleccion: string; vistos: string[]; nuevos: string[]; completa?: boolean; tam: number; retraso?: number; pie?: { nombre: string; n: number; total: number; grande: boolean } }): ReactNode {
   const antes = vistos.filter((x) => !nuevos.includes(x))
   const [fase, setFase] = useState<0 | 1 | 2 | 3 | 4>(0)
@@ -96,7 +97,8 @@ function InsigniaEncendiendo({ coleccion, vistos, nuevos, completa = false, tam,
   const sinMovimiento = typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => {
     const t = TIEMPOS_DE_PEDAZO
-    const pasos: [number, 0 | 1 | 2 | 3 | 4][] = sinMovimiento ? [[0, 3], [t.fin - 1.2, 4]] : [[t.llega, 1], [t.encaja, 2], [t.color, 3], [t.fin, 4]]
+    const r = TIEMPOS_DE_PEDAZO_REDUCIDO
+    const pasos: [number, 0 | 1 | 2 | 3 | 4][] = sinMovimiento ? [[r.color, 3], [r.fin, 4]] : [[t.llega, 1], [t.encaja, 2], [t.color, 3], [t.fin, 4]]
     const hs = pasos.map(([seg, f]) => window.setTimeout(() => setFase(f), (espera + seg) * 1000))
     return () => hs.forEach((h) => window.clearTimeout(h))
   }, [espera, sinMovimiento])

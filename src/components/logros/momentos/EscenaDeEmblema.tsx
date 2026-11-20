@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import './momentos.css'
+import { TIEMPOS_DE_EMBLEMA } from '../../../lib/sonidos/tiempos'
 
 /**
  * LA ESCENA DE UN EMBLEMA (Tanda 8B). Es lo que sale al descubrirlo y lo que se repite al tocar un emblema guardado (la 8c lo usa así):
@@ -57,7 +58,7 @@ function Escena({ id, nombre, linea, primeraVez, onSeguir, onSaltarTodo }: Props
 
 /** La espera de antes del emblema: la frase al azar, una luz que late cada vez más rápido y estalla (≈ 3,2 s). Se salta tocando. */
 function Suspense3({ frase, alTerminar }: { frase: string; alTerminar: () => void }): ReactNode {
-  const aros = [0.75, 1.47, 2.05, 2.5, 2.82]
+  const aros: readonly number[] = TIEMPOS_DE_EMBLEMA.aros
   const conv = useMemo(
     () =>
       Array.from({ length: 18 }, (_, k) => {
@@ -68,7 +69,7 @@ function Suspense3({ frase, alTerminar }: { frase: string; alTerminar: () => voi
     [],
   )
   useEffect(() => {
-    const h = window.setTimeout(alTerminar, 3600)
+    const h = window.setTimeout(alTerminar, TIEMPOS_DE_EMBLEMA.estalla * 1000)
     return () => window.clearTimeout(h)
   }, [alTerminar])
   return (

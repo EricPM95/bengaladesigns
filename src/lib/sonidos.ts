@@ -14,7 +14,36 @@
  * Con los logros apagados nadie llama a esto.
  */
 
+import { partituraDe } from './sonidos/partituras'
+import { cortar, iniciarPartitura, precargar, FUNDIDO_AL_SALTAR_MS } from './sonidos/motor'
+
 const CLAVE_SONIDO = 'trazo:sonido'
+
+/** (V29) «Reducir movimiento» del móvil: las animaciones son más cortas y el sonido las sigue. */
+const movimientoReducido = (): boolean => {
+  try {
+    return Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
+  } catch {
+    return false
+  }
+}
+
+/** (V29) El viajero salta la animación: lo que suena se corta con un fundido corto (nunca de golpe ni dejándolo sonar debajo de la siguiente). */
+/** (V29) El contexto de audio de la app (para la página de sonidos del administrador). */
+export function contextoDeAudioDeLaApp(): AudioContext | null {
+  return contextoDeAudio()
+}
+
+export function cortarSonidos(fundidoMs = FUNDIDO_AL_SALTAR_MS): void {
+  if (contexto) cortar(contexto, fundidoMs)
+}
+
+/** (V29) Tener listos los archivos de premio de la siguiente animación (si hace falta), sin que suene nada. */
+export function prepararSonido(momento: string): void {
+  const ctx = contextoDeAudio()
+  if (!ctx || !sonidoActivado()) return
+  void precargar(ctx, momento, { reducido: movimientoReducido() }).catch(() => undefined)
+}
 
 interface ListaDeSonidos {
   maximo_segundos?: number
@@ -114,6 +143,17 @@ export async function sonar(momento: string): Promise<void> {
     if (ctx.state !== 'running') {
       await Promise.race([ctx.resume().catch(() => undefined), new Promise((r) => setTimeout(r, 400))])
     }
+    // (V29) Si la animación tiene partitura, cada sonido suena en su instante exacto (lo que dura el giro, el golpe al parar…); si no, el archivo de siempre.
+    if (partituraDe(momento)) {
+      const o = { reducido: movimientoReducido() }
+      await Promise.race([precargar(ctx, momento, o).catch(() => undefined), new Promise((r) => setTimeout(r, 300))])
+      if (ctx.state !== 'running') {
+        pendiente = { momento, en: Date.now() }
+        return
+      }
+      iniciarPartitura(ctx, momento, o)
+      return
+    }
     const buffer = await cargar(momento)
     if (!buffer) return
     if (ctx.state !== 'running') {
@@ -141,9 +181,14 @@ export function vibrar(momento: string): boolean {
 }
 
 /** Tras ganar cosas: suena y vibra lo más importante. */
-export function reproducirMomentos(tipos: string[]) {
-  const s = sonidoDeMomentos(tipos)
+export function reproducirMomentos(tipos: string[], momentos: { tipo?: string; grado?: unknown }[] = []) {
+  let s = sonidoDeMomentos(tipos)
   if (!s) return
+  // (V29) Un sello que sube de grado suena a la medalla de ese grado (bronce < plata < oro < diamante).
+  if (s === 'sello') {
+    const g = String(momentos.find((m) => m.tipo === 'sello')?.grado ?? '')
+    if (['bronce', 'plata', 'oro', 'diamante'].includes(g)) s = `medalla_${g}`
+  }
   void sonar(s)
   vibrar(s)
 }

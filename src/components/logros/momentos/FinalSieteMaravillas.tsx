@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import { MedallaMaravillas } from '../dibujos'
 import './FinalSieteMaravillas.css'
+import { TIEMPOS_FINAL_SIETE } from '../../../lib/sonidos/tiempos'
 
 const EmblemaOro = lazy(() => import('../dibujos/piezas/EmblemaOro'))
 
@@ -12,7 +13,7 @@ const EmblemaOro = lazy(() => import('../dibujos/piezas/EmblemaOro'))
 const KS = ['coliseo', 'muralla', 'petra', 'cristo', 'machu', 'chichen', 'taj'] as const
 const NOMBRES: Record<(typeof KS)[number], string> = { coliseo: 'Coliseo', muralla: 'Gran Muralla China', petra: 'Petra', cristo: 'Cristo Redentor', machu: 'Machu Picchu', chichen: 'Chichén Itzá', taj: 'Taj Mahal' }
 const TODAS = ['coliseo', 'gran_muralla', 'petra', 'cristo_redentor', 'machu_picchu', 'chichen_itza', 'taj_mahal']
-const INICIO_FIN = 1.8 // segundos que las 7 monedas se quedan quietas antes de juntarse
+const INICIO_FIN = TIEMPOS_FINAL_SIETE.quietas // segundos que las 7 monedas se quedan quietas antes de juntarse (V29: de lib/sonidos/tiempos.ts, igual que su sonido)
 const rnd = (q: number) => {
   const x = Math.sin(q * 12.9898 + 78.233) * 43758.5453
   return x - Math.floor(x)
@@ -55,8 +56,8 @@ function precalcular() {
   return { monedas, grietas, estallidos, brillos, atraidos, chispas }
 }
 
-const ONDAS_LATIDO: [number, string, number][] = [[2.1, '1.5px', 1], [2.6, '2px', 0.9], [3, '2.5px', 0.75], [3.3, '3px', 0.6], [3.55, '3.5px', 0.5], [3.72, '4px', 0.4]]
-const ONDAS_CHOQUE: [string, string, number, number][] = [['3px', '#FFFFFF', 1.4, 3.8], ['2.5px', '#F3D59A', 1.8, 3.9], ['2px', 'oklch(0.8 0.14 70)', 2.2, 4.05]]
+const ONDAS_LATIDO: [number, string, number][] = TIEMPOS_FINAL_SIETE.latidos.map((t, i) => [t, ['1.5px', '2px', '2.5px', '3px', '3.5px', '4px'][i]!, [1, 0.9, 0.75, 0.6, 0.5, 0.4][i]!])
+const ONDAS_CHOQUE: [string, string, number, number][] = TIEMPOS_FINAL_SIETE.choque.map((t, i) => [['3px', '2.5px', '2px'][i]!, ['#FFFFFF', '#F3D59A', 'oklch(0.8 0.14 70)'][i]!, [1.4, 1.8, 2.2][i]!, t])
 
 export function FinalSieteMaravillas({ tam = 340 }: { tam?: number }): ReactNode {
   const d = useMemo(precalcular, [])
@@ -114,11 +115,11 @@ export function FinalSieteMaravillas({ tam = 340 }: { tam?: number }): ReactNode
         </div>
         {fin && (
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-            <span style={{ position: 'absolute', left: 110, top: 110, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle,#FFFFFF 0%,#FFE7A8 32%,rgba(255,200,120,.3) 56%,transparent 72%)', opacity: 0, animation: 'm7Core 1.9s 1.90s ease-in both,m7Big .3s 3.80s ease forwards' }} />
+            <span style={{ position: 'absolute', left: 110, top: 110, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle,#FFFFFF 0%,#FFE7A8 32%,rgba(255,200,120,.3) 56%,transparent 72%)', opacity: 0, animation: `m7Core 1.9s ${TIEMPOS_FINAL_SIETE.nucleo.toFixed(2)}s ease-in both,m7Big .3s ${TIEMPOS_FINAL_SIETE.choque[0].toFixed(2)}s ease forwards` }} />
             {ONDAS_LATIDO.map(([t, w, l], i) => <span key={i} style={{ position: 'absolute', left: 120, top: 120, width: 100, height: 100, borderRadius: '50%', border: `${w} solid #F3D59A`, boxShadow: '0 0 14px rgba(243,213,154,.7)', opacity: 0, animation: `m7Beat ${l}s ${t}s ease-out both` }} />)}
             <span className="mo-con-mov" style={{ position: 'absolute', left: -120, top: -120, width: 580, height: 580, borderRadius: '50%', background: 'repeating-conic-gradient(rgba(255,230,170,.32) 0 3deg,transparent 3deg 15deg)', WebkitMask: 'radial-gradient(circle,#000 14%,transparent 64%)', mask: 'radial-gradient(circle,#000 14%,transparent 64%)', opacity: 0, animation: 'm7GodR 6s 3.90s ease-out both,m7Ring 50s 9.90s linear infinite' }} />
             <span style={{ position: 'absolute', left: -30, top: -30, width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle,rgba(255,214,140,.6),transparent 66%)', opacity: 0, animation: 'm7Rise 1.2s 3.90s ease both,m7Halo 3.4s 5.10s ease-in-out infinite' }} />
-            <div data-medalla-final="" style={{ position: 'absolute', left: 0, top: 2, opacity: 0, animation: 'm7SpinIn 2.2s 3.85s cubic-bezier(.2,.8,.2,1) both' }}>
+            <div data-medalla-final="" style={{ position: 'absolute', left: 0, top: 2, opacity: 0, animation: `m7SpinIn ${TIEMPOS_FINAL_SIETE.giraDura}s ${TIEMPOS_FINAL_SIETE.giraEmpieza}s cubic-bezier(.2,.8,.2,1) both` }}>
               <MedallaMaravillas encendidas={TODAS} tam={340} animada={false} />
             </div>
             {d.atraidos.map((q, i) => <span key={i} style={{ position: 'absolute', left: 167, top: 167, width: 6, height: 6, borderRadius: '50%', background: '#FFE7B0', boxShadow: '0 0 8px #FFD58A', ['--sx' as string]: px(q.sx.toFixed(0)), ['--sy' as string]: px(q.sy.toFixed(0)), opacity: 0, animation: `m7Pull ${q.l.toFixed(2)}s ${q.d.toFixed(2)}s cubic-bezier(.5,0,.8,.6) both` } as CSSProperties} />)}

@@ -30,6 +30,9 @@ if (import.meta.env.DEV) void import('./dev/escaparate.ts')
 // Solo en desarrollo: ?dibujos=1 enseña todos los dibujos de los logros (src/dev/DibujosPrueba.tsx), cargado a demanda.
 const DibujosPrueba = import.meta.env.DEV && new URLSearchParams(window.location.search).get('dibujos') ? lazy(() => import('./dev/DibujosPrueba.tsx').then((m) => ({ default: m.DibujosPrueba }))) : null
 
+// (V29) La página de sonidos de Eric (/admin/sonidos o /?admin=sonidos): se baja a demanda y solo la ven los administradores (la comprueba el servidor).
+const AdminSonidos = window.location.pathname === '/admin/sonidos' || new URLSearchParams(window.location.search).get('admin') === 'sonidos' ? lazy(() => import('./components/logros/AdminSonidos.tsx').then((m) => ({ default: m.AdminSonidos }))) : null
+
 // Solo en desarrollo: ?tarjeta=verano enseña la tarjeta de temporada sola (src/dev/SeasonCardPreview.tsx).
 const previewSeason = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('tarjeta') : null
 
@@ -40,7 +43,7 @@ const paginaDeLogros = logrosActivos() ? (window.location.pathname === '/admin/l
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      {DibujosPrueba ? <Suspense fallback={null}><DibujosPrueba /></Suspense> : previewSeason ? <SeasonCardPreview season={previewSeason} /> : paginaDeLogros === 'admin' ? <AdminLogros /> : paginaDeLogros === 'fotos' ? <PruebaFotos /> : <App />}
+      {AdminSonidos ? <Suspense fallback={null}><AdminSonidos /></Suspense> : DibujosPrueba ? <Suspense fallback={null}><DibujosPrueba /></Suspense> : previewSeason ? <SeasonCardPreview season={previewSeason} /> : paginaDeLogros === 'admin' ? <AdminLogros /> : paginaDeLogros === 'fotos' ? <PruebaFotos /> : <App />}
     </ErrorBoundary>
   </StrictMode>,
 )

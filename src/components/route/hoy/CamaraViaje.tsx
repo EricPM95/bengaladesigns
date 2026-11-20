@@ -311,7 +311,7 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
     const r = resultado.respuesta
     setResultado(null)
     useLogrosStore.getState().recibir(r)
-    if (r.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo))
+    if (r.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo), r.nuevos)
   }
 
   return (

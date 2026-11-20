@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Momento } from '../../../lib/logros'
-import { sonar, vibrar } from '../../../lib/sonidos'
+import { cortarSonidos, prepararSonido, sonar, vibrar } from '../../../lib/sonidos'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { marcarAnimacionVista, pedirEstado, type EstadoLogros } from './api'
@@ -17,6 +17,15 @@ import { useMomentosUI } from './useMomentosUI'
  *   - la EXP ganada va como una línea pequeña («+40 EXP») dentro de la primera pantalla.
  * Lo que se ha visto entero se marca como visto en el servidor (el botón late y no hay puntito); lo que se salta deja el puntito.
  */
+/** El sonido de una pantalla: el de siempre por tipo, y para un sello que sube de grado, la medalla de ese grado (bronce < plata < oro < diamante). */
+function sonidoDeLaPantalla(p: { tipo: Parameters<typeof sonidoDePantalla>[0]; momentos: Momento[] }): string {
+  if (p.tipo === 'sello') {
+    const g = String(p.momentos[0]?.grado ?? '')
+    if (['bronce', 'plata', 'oro', 'diamante'].includes(g)) return `medalla_${g}`
+  }
+  return sonidoDePantalla(p.tipo)
+}
+
 export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: { momentos: Momento[]; exp?: { ganada: number } | null; onTerminar: () => void }): ReactNode {
   const pantallas = useMemo(() => planificar(ordenarComoElServidor(momentos)), [momentos])
   const tripId = useSyncStore((s) => s.activeTripId)
@@ -38,9 +47,12 @@ export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: 
   useEffect(() => {
     const p = pantallas[i]
     if (!p || i === 0) return
-    const so = sonidoDePantalla(p.tipo)
+    const so = sonidoDeLaPantalla(p)
     void sonar(so)
     vibrar(so)
+    // (V29) Los archivos de la pantalla siguiente, listos antes de que llegue.
+    const sig = pantallas[i + 1]
+    if (sig) prepararSonido(sonidoDeLaPantalla(sig))
   }, [i, pantallas])
 
   const cerrar = useCallback(() => {
@@ -53,6 +65,8 @@ export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: 
   const avanzar = useCallback(() => {
     const p = pantallas[i]
     if (!p) return
+    // (V29) Saltar la animación: el sonido se corta con un fundido corto (la siguiente trae el suyo).
+    cortarSonidos()
     vistas.current.push(...clavesDe(p))
     // Cada cosa vuela a su sitio: lo del destino al botón de logros, lo de viajero al Perfil (el diseño puede marcar el suyo con data-vuelo).
     for (const el of Array.from(contenedor.current?.querySelectorAll<HTMLElement>('[data-vuelo]') ?? [])) {
@@ -66,6 +80,7 @@ export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: 
 
   const saltarTodo = useCallback(() => {
     saltadas.current = true
+    cortarSonidos()
     // (V6) [Saltar todo] cierra la fila entera (también la EXP del final) y lleva a la hoja de logros.
     useMomentosUI.getState().saltarTodoYAbrirLogros()
     cerrar()

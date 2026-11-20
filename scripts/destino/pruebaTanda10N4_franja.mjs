@@ -115,11 +115,16 @@ console.log('4. La franja en la app (390 px)')
 let a
 try {
   const falsoAudio = `
-    window.__arrancados = 0
-    class FalsoContexto { constructor(){ this.state = 'running'; this.destination = {} }
+    // (V29) El aviso ya no es un archivo: es una partitura (la campanita, sintetizada). Cada vez que se programa una campanita cuenta como «una reproducción».
+    Object.defineProperty(window, '__arrancados', { get() { return (window.__sonidosAgendados || []).filter((x) => x.id === 'campanita').length }, set() {} })
+    const param = () => ({ value: 1, setValueAtTime() {}, exponentialRampToValueAtTime() {}, linearRampToValueAtTime() {}, cancelScheduledValues() {} })
+    const nodo = () => ({ gain: param(), frequency: param(), Q: param(), connect() {}, disconnect() {}, start() {}, stop() {}, type: '', buffer: null })
+    class FalsoContexto { constructor(){ this.state = 'running'; this.destination = {}; this.currentTime = 0; this.sampleRate = 22050 }
       resume(){ return Promise.resolve() }
       decodeAudioData(){ return Promise.resolve({ duration: 0.72 }) }
-      createBufferSource(){ return { connect(){}, start(){ window.__arrancados++ } } } }
+      createBuffer(c, n){ return { getChannelData(){ return new Float32Array(n) } } }
+      createGain(){ return nodo() } createOscillator(){ return nodo() } createBiquadFilter(){ return nodo() } createConvolver(){ return nodo() }
+      createBufferSource(){ return nodo() } }
     window.AudioContext = FalsoContexto; window.webkitAudioContext = FalsoContexto;
   `
   a = await abrirApp(APP, { ancho: 390, alto: 844, ruta: '/?cuentas=off&logros=on&logrosDemo=1&version=pago&apertura=0', antes: falsoAudio })
