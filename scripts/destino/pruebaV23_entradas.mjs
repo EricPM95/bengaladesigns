@@ -22,7 +22,9 @@ const { limpiarImportes, precioConNumero } = await import('../../src/lib/importe
 debe(limpiarImportes('Entrada (24EUR)') === 'Entrada (24 €)' && limpiarImportes('Guía 10 EUR y 5,50EUR') === 'Guía 10 € y 5,50 €' && limpiarImportes('Sin importes') === 'Sin importes', 'importes', 'los importes de fuera («24EUR») salen con el formato de la app («24 €»)')
 debe(!precioConNumero('€') && !precioConNumero('') && !precioConNumero(null) && precioConNumero('7 €'), 'euro-suelto', 'un «€» sin número no cuenta como precio')
 const tab = leer('src/components/route/reservas/StopReservation.tsx')
-debe(tab.includes('entrada.civitatis?.url ?? entrada.url ?? buildActivitySearchUrl'), 'enlace', 'el botón abre la página de ESA actividad (la de los datos) y solo si no hay ninguna, el buscador')
+// (V28, 20-nov) El enlace sale de lib/entradaEnlace.ts: la página de ESA actividad en Civitatis; si no la hay, la web oficial del sitio (sin aid); si tampoco, ningún botón (nunca el buscador de las entradas con `sin_civitatis`).
+const reglaEnlace = fs.readFileSync('src/lib/entradaEnlace.ts', 'utf8')
+debe(tab.includes('enlaceDeCompraDeEntrada(entrada, route.destination)') && reglaEnlace.includes('entrada.civitatis?.url ?? entrada.url') && reglaEnlace.includes('entrada.oficial') && reglaEnlace.includes('entrada.sin_civitatis'), 'enlace', 'el botón abre la página de ESA actividad (la de los datos), si no la hay la web oficial, y si tampoco, ningún botón; el buscador solo en las entradas antiguas')
 debe(tab.includes('Ver horas y reservar') && tab.includes('EntradaDeLaFicha'), 'boton', 'la pestaña usa la tarjeta nueva y el botón [Ver horas y reservar ↗]')
 debe(leer('src/components/route/dayDetail/StopDetailSheet.tsx').includes('new Image()'), 'precarga', 'las fotos de las entradas se piden al abrir la ficha, no al tocar la pestaña')
 

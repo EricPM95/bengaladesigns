@@ -3,7 +3,7 @@ import { dateOfDay } from '../../../lib/bookings'
 import { recomendarHora, useHorasEnRango } from '../../../lib/civitatis'
 import { useMonedaViajero } from '../../../lib/moneda'
 import type { Reservation } from '../../../lib/bookings'
-import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
+import { enlaceDeCompraDeEntrada, textoDelBotonDeEntrada } from '../../../lib/entradaEnlace'
 import type { SinEntrada } from '../../../lib/destinationExcursions'
 import { notaDeLlegadaSinHora } from '../../../lib/notaDeLlegada'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -76,9 +76,9 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
         <EntradaDeLaFicha
           key={entrada.nombre}
           entrada={entrada}
-          reservarTexto={stop.isFreeTour ? 'Reservar Free Tour' : 'Ver horas y reservar'}
+          reservarTexto={textoDelBotonDeEntrada(enlaceDeCompraDeEntrada(entrada, route.destination), stop.isFreeTour ? 'Reservar Free Tour' : 'Ver horas y reservar')}
           recomendada={recomendada && horasDelViaje?.actividadId === entrada.civitatis?.id ? recomendada : null}
-          onReservar={() => openTicketShop(entrada.civitatis?.url ?? entrada.url ?? buildActivitySearchUrl(`${entrada.nombre} ${route.destination}`))}
+          onReservar={enlaceDeCompraDeEntrada(entrada, route.destination) ? () => openTicketShop(enlaceDeCompraDeEntrada(entrada, route.destination)?.url ?? null) : null}
         />
       ))}
       {reservation ? (

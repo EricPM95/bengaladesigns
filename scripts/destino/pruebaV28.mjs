@@ -66,7 +66,12 @@ console.log('2. Los enlaces: cada uno a su página de Civitatis, con nuestro aid
   debe(conUrl.every((v) => /[?&]aid=5206(&|$)/.test(stampCivitatis(v.url, { campaignParam: 'cmp', campaignCode: 'app-8F3K2' })) && /cmp=app-8F3K2/.test(stampCivitatis(v.url, { campaignParam: 'cmp', campaignCode: 'app-8F3K2' }))), 'aid', 'y al abrirlo lleva nuestro aid=5206 y la campaña del viaje')
   const sinUrl = variantes.filter((v) => !v.url)
   const dudosas = new Set(enl.entradas.filter((e) => e.confianza !== 'alta').map((e) => e.variante))
-  debe(sinUrl.every((v) => dudosas.has(v.nombre)), 'pendientes', `las ${sinUrl.length} sin página propia son SOLO las que no se encontraron con seguridad (están en «PARA ERIC» con sus candidatas): ${sinUrl.map((v) => v.nombre).join(' · ')}`)
+  // (20-nov, decisión de Eric) Sin página de Civitatis: la web OFICIAL de entradas del sitio (sin aid) o ningún botón; nunca el buscador ni una página que no es la de ese sitio.
+  const OFICIAL = (u) => { try { const h = new URL(u); return h.protocol === 'https:' && !/(civitatis|getyourguide|viator|tiqets)/.test(h.hostname) } catch { return false } }
+  debe(sinUrl.every((v) => v.sin_civitatis === true && (v.oficial == null || (OFICIAL(v.oficial) && !/aid=/.test(v.oficial)))), 'pendientes', `las ${sinUrl.length} sin página de Civitatis llevan sin_civitatis (nunca el buscador) y, si tienen web oficial, es de verdad oficial y sin aid`)
+  const conOficial = sinUrl.filter((v) => v.oficial)
+  debe(conOficial.length >= 4 && conOficial.every((v) => !/civitatis/.test(v.oficial)), 'oficial', `${conOficial.length} sitios con «Entradas en la web oficial» (${conOficial.map((v) => v.nombre).join(' · ')}); los demás, sin botón`)
+  debe(['Coliseo, Foro y Palatino', 'Terraza panorámica con ascensor', 'Cripta de los Capuchinos'].every((n) => variantes.find((v) => v.nombre === n)?.url), 'decididas', 'Coliseo/Foro, Altar de la Patria y Cripta de los Capuchinos usan la candidata de Civitatis que incluye la entrada a ese sitio')
   debe(enl.entradas.filter((e) => e.confianza !== 'alta').every((e) => (e.candidatas ?? []).length >= 1 || e.comentario), 'pendientes', 'cada dudosa lleva sus candidatas o el motivo')
   // Excursiones y free tours
   const lzc = json('data/dias/lanzarote/_civitatis.json')
@@ -230,6 +235,15 @@ console.log('4. Las 18 insignias: cada círculo con SU baldosa, entera, derecha 
     debe(r.pequenas.length === 0, 'insignias', `cada baldosa ocupa al menos el 70 % del ancho del círculo (menos: ${r.pequenas.join(', ') || 'ninguna'})`)
     debe(r.torcidas.length === 0, 'insignias', `cada baldosa va derecha, con su lado de fuera arriba (torcidas: ${r.torcidas.join(', ') || 'ninguna'})`)
     debe(r.circulos === r.esperados && r.sinIcono.length === 0 && r.conIcono >= 24, 'insignias', `en la hoja de las 18, ${r.circulos} círculos (ganadas y sin ganar) y el icono de los Imprescindibles y las 4 joyas se ve en los ${r.conIcono} (sin icono: ${r.sinIcono.join(', ') || 'ninguno'})`)
+    const botones = JSON.parse(await a.evaluar(`import('/src/lib/entradaEnlace.ts').then((m) => JSON.stringify({
+      civ: m.enlaceDeCompraDeEntrada({ nombre: 'Panteón', url: 'https://www.civitatis.com/es/roma/entrada-panteon-agripa-audioguia/' }, 'Roma'),
+      oficial: m.enlaceDeCompraDeEntrada({ nombre: 'Ara Pacis', url: null, sin_civitatis: true, oficial: 'https://www.arapacis.it/en/node/516' }, 'Roma'),
+      ninguno: m.enlaceDeCompraDeEntrada({ nombre: 'Domus Aurea', url: null, sin_civitatis: true }, 'Roma'),
+      textoOficial: m.textoDelBotonDeEntrada({ url: 'x', oficial: true }, 'Ver horas y reservar'), textoCiv: m.textoDelBotonDeEntrada({ url: 'x', oficial: false }, 'Ver horas y reservar'),
+    }))`))
+    debe(/civitatis\.com\/es\/roma\//.test(botones.civ?.url ?? '') && botones.civ.oficial === false, 'boton_entrada', 'con página de Civitatis: el botón lleva a esa página (con aid al abrirla)')
+    debe(botones.oficial?.oficial === true && botones.textoOficial === 'Entradas en la web oficial' && botones.textoCiv === 'Ver horas y reservar', 'boton_entrada', 'sin Civitatis y con web oficial: «Entradas en la web oficial», a esa web y sin aid')
+    debe(botones.ninguno === null, 'boton_entrada', 'sin Civitatis ni web oficial: ningún botón (nunca el buscador)')
     const codigo = leer('src/components/logros/pantallas/ColeccionPorDentro.tsx')
     debe(/BaldosaEnCirculo/.test(codigo) && !/encajeEnCirculo/.test(codigo), 'insignias', 'la colección por dentro dibuja la baldosa suelta (no el recorte con la medalla del centro)')
     await a.evaluar("document.querySelector('[data-baldosas-hoja]').scrollIntoView(); true")

@@ -32,7 +32,7 @@ export function precioDeLaEntrada(entrada: StopEntrada): string | null {
   return precioConNumero(texto) ? `desde ${texto}` : null
 }
 
-export function EntradaDeLaFicha({ entrada, reservarTexto, recomendada, onReservar }: { entrada: StopEntrada; reservarTexto: string; recomendada: { tipo: string; texto: string } | null; onReservar: () => void }) {
+export function EntradaDeLaFicha({ entrada, reservarTexto, recomendada, onReservar }: { entrada: StopEntrada; reservarTexto: string; recomendada: { tipo: string; texto: string } | null; /** null = sin botón (no hay página de ese sitio en ninguna tienda): nunca un botón que lleve a otra página. */ onReservar: (() => void) | null }) {
   const [abierta, setAbierta] = useState(false)
   const [cargada, setCargada] = useState(false)
   const c = entrada.civitatis
@@ -138,12 +138,12 @@ export function EntradaDeLaFicha({ entrada, reservarTexto, recomendada, onReserv
               <p className="m-0 font-medium">{recomendada.texto}</p>
             </div>
           )}
-          <button type="button" onClick={onReservar} data-ver-horas-y-reservar className="h-11 w-full whitespace-nowrap rounded-full btn-champan text-small font-semibold active:scale-[.97]">
+          {onReservar && <button type="button" onClick={onReservar} data-ver-horas-y-reservar className="h-11 w-full whitespace-nowrap rounded-full btn-champan text-small font-semibold active:scale-[.97]">
             <span className="inline-flex items-center justify-center gap-1.5">
               {reservarTexto}
               <Icono nombre="fuera" size={15} />
             </span>
-          </button>
+          </button>}
         </div>
       )}
     </div>

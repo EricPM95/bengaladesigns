@@ -6,7 +6,7 @@
         "nombre": "Coliseo, Foro y Palatino",
         "incluye": "Entrada conjunta: Coliseo, Foro Romano y Palatino.",
         "desde": 18,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entradas-coliseo-foro-palatino/"
       }
     ],
     "Foro Romano y Palatino": [
@@ -14,7 +14,7 @@
         "nombre": "Coliseo, Foro y Palatino",
         "incluye": "Entrada conjunta: Coliseo, Foro Romano y Palatino.",
         "desde": 18,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entradas-coliseo-foro-palatino/"
       }
     ],
     "Fontana de Trevi": [
@@ -22,7 +22,9 @@
         "nombre": "Zona junto a la fuente",
         "incluye": "Entrada a la zona de dentro, junto al agua.",
         "desde": 2,
-        "url": null
+        "url": null,
+        "sin_civitatis": true,
+        "oficial": "https://fontanaditrevi.vivaticket.it/"
       }
     ],
     "Panteón": [
@@ -70,7 +72,8 @@
         "nombre": "Galería Nacional de Arte Moderno",
         "incluye": "Gratis el primer domingo de mes, con reserva.",
         "desde": null,
-        "url": null
+        "url": null,
+        "sin_civitatis": true
       }
     ],
     "Altar de la Patria": [
@@ -78,7 +81,7 @@
         "nombre": "Terraza panorámica con ascensor",
         "incluye": "Terraza panorámica con ascensor, de 09:30 a 19:30 (última subida 19:00).",
         "desde": 18,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/entradas-monumento-vittorio-emanuele/"
       }
     ],
     "Mercados de Trajano": [
@@ -86,7 +89,9 @@
         "nombre": "Mercados de Trajano",
         "incluye": null,
         "desde": 15,
-        "url": null
+        "url": null,
+        "sin_civitatis": true,
+        "oficial": "https://www.mercatiditraiano.it/it/infopage/acquista"
       }
     ],
     "Cúpula de San Pedro": [
@@ -94,7 +99,9 @@
         "nombre": "Cúpula de San Pedro",
         "incluye": "Con ascensor o solo por escaleras.",
         "desde": 10,
-        "url": null
+        "url": null,
+        "sin_civitatis": true,
+        "oficial": "https://www.basilicasanpietro.va/en/products/the-dome"
       }
     ],
     "Ara Pacis": [
@@ -102,7 +109,9 @@
         "nombre": "Ara Pacis",
         "incluye": null,
         "desde": 14,
-        "url": null
+        "url": null,
+        "sin_civitatis": true,
+        "oficial": "https://www.arapacis.it/en/node/516"
       }
     ],
     "Museos Capitolinos": [
@@ -118,7 +127,8 @@
         "nombre": "Domus Aurea",
         "incluye": "Solo con visita guiada reservada online.",
         "desde": 26,
-        "url": null
+        "url": null,
+        "sin_civitatis": true
       }
     ],
     "Termas de Caracalla": [
@@ -134,7 +144,8 @@
         "nombre": "Villa Farnesina",
         "incluye": null,
         "desde": 12,
-        "url": null
+        "url": null,
+        "sin_civitatis": true
       }
     ],
     "Palazzo Doria Pamphilj": [
@@ -150,7 +161,9 @@
         "nombre": "Catacumbas de San Calixto",
         "incluye": null,
         "desde": 10,
-        "url": null
+        "url": null,
+        "sin_civitatis": true,
+        "oficial": "https://www.catacombesancallisto.it/en/biglietti.php"
       }
     ],
     "Cripta de los Capuchinos": [
@@ -158,7 +171,7 @@
         "nombre": "Cripta de los Capuchinos",
         "incluye": null,
         "desde": 10,
-        "url": null
+        "url": "https://www.civitatis.com/es/roma/cripta-capuchinos-santa-maria-victoria/"
       }
     ],
     "Free Tour": [
@@ -174,7 +187,8 @@
         "nombre": "Excavaciones de San Clemente",
         "incluye": "Las excavaciones bajo la basílica (la entrada a la basílica es libre).",
         "desde": 10,
-        "url": null
+        "url": null,
+        "sin_civitatis": true
       }
     ]
   }

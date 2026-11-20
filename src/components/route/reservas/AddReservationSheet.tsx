@@ -28,6 +28,7 @@ import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
 import { useMisReservas } from '../../../store/useMisReservas'
 import { openTicketShop } from './EntradaCard'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
+import { enlaceDeCompraDeEntrada } from '../../../lib/entradaEnlace'
 import { diaDeLaReservaEnPalabras, horaCorta } from '../../../lib/reservasGrupo'
 import { nombreDe } from '../../../store/useViajeCompartido'
 import { cuentaDelViaje, esFamilia } from '../../../lib/cuentaDelViaje'
@@ -812,7 +813,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               {(() => {
                 // [Reservar la mía a la misma hora] (Tanda 10N8 §8): «Comprar a las 14:00» abre la web; «Ya la tengo · Guardarla» la guarda en RESERVAS con ese día y esa hora, sin abrir la web.
                 const comprando = igual?.modo === 'comprar'
-                const urlDeCompra = entradasPorSitio?.[isFreeTour ? 'Free Tour' : (target.placeNames[0] ?? '')]?.[0]?.url ?? buildActivitySearchUrl(`${target.name} ${route.destination}`)
+                const entradaDeCompra = entradasPorSitio?.[isFreeTour ? 'Free Tour' : (target.placeNames[0] ?? '')]?.[0]
+                const urlDeCompra = entradaDeCompra ? (enlaceDeCompraDeEntrada(entradaDeCompra, route.destination)?.url ?? null) : buildActivitySearchUrl(`${target.name} ${route.destination}`)
                 return (
                   <>
                     {comprando && igual && (

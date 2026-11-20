@@ -1,0 +1,58 @@
+{
+  "comprobado": "2026-11-20",
+  "sitios": {
+    "Fontana de Trevi": {
+      "url": "https://fontanaditrevi.vivaticket.it/",
+      "titulo_pagina": "(sin titulo en el HTML; carga con 200) Enlace de los botones «Acquista i biglietti» de fontanaditrevi.roma.it (web oficial del Ayuntamiento)",
+      "nota": "Entrada de 2 euros para no residentes en Roma y su area metropolitana, desde el 2 de febrero de 2026. Web informativa oficial: https://fontanaditrevi.roma.it/ (200, «Fontana di Trevi - Una storia lunga 2000 anni»). La entrada comprada es abierta (sin fecha ni hora) y no se devuelve. Tambien se vende en Musei Civici, Tourist Info Points y taquilla de Via della Stamperia (en la entrada, solo con tarjeta)."
+    },
+    "Cúpula de San Pedro": {
+      "url": "https://www.basilicasanpietro.va/en/products/the-dome",
+      "titulo_pagina": "Visit St. Peter's Dome | St. Peter's Basilica",
+      "nota": "Web oficial de la Basilica (Fabbrica di San Pietro). La pagina de la cupula ofrece «View and book» (reserva online). No he podido confirmar el precio ni si tambien se paga en taquilla; mirar la pagina antes de mostrar precios."
+    },
+    "Catacumbas de San Calixto": {
+      "url": "https://www.catacombesancallisto.it/en/biglietti.php",
+      "titulo_pagina": "The Catacombs of Saint Callixtus. The Christian Catacombs of Rome",
+      "nota": "Web oficial de las catacumbas. La pagina dice que la venta online esta delegada en la Opera Romana Pellegrinaggi («la unica oficialmente autorizada»); el enlace de compra sale de esa pagina hacia el sitio Omniavaticanrome. Solo visita guiada. Tambien se paga en taquilla."
+    },
+    "Galería Nacional de Arte Moderno": {
+      "url": null,
+      "titulo_pagina": "Plan your visit (titulo segun el buscador; NO pude cargarla desde esta red: connect ECONNREFUSED)",
+      "nota": "Web oficial de la Galleria Nazionale d'Arte Moderna e Contemporanea (Ministerio de Cultura). La compra online es por TicketOne (segun Turismo Roma: www.ticketone.it/la-galleria-biglietti.html, tampoco carga desde esta red, por eso no es la url principal). Entrada valida 3 horas a elegir al comprar. Reverificar la URL a mano.",
+      "url_candidata": "https://gnamc.cultura.gov.it/en/informazioni-per-la-visita/",
+      "decision": "sin botón (20-nov): Solo hay una página de información de la visita, sin compra directa (la compra va por TicketOne): sin botón."
+    },
+    "Mercados de Trajano": {
+      "url": "https://www.mercatiditraiano.it/it/infopage/acquista",
+      "titulo_pagina": "ACQUISTA | Mercati di Traiano Museo dei Fori Imperiali",
+      "nota": "Web oficial del museo (Musei in Comune di Roma). Enlace «Acquista» del menu; la compra va por Vivaticket. Otra pagina: https://www.mercatiditraiano.it/it/informazioni_pratiche/biglietti_e_videoguide"
+    },
+    "Ara Pacis": {
+      "url": "https://www.arapacis.it/en/node/516",
+      "titulo_pagina": "Tickets and videoguides | Museo dell'Ara Pacis",
+      "nota": "Web oficial del museo (Musei in Comune di Roma). Compra online via Vivaticket desde el portal https://www.museiincomuneroma.it/en/node/2017 (200, «Tickets and audioguide | Portale dei Musei in Comune»). Entradas anticipadas no reembolsables ni cambiables."
+    },
+    "Domus Aurea": {
+      "url": null,
+      "titulo_pagina": "(pagina oficial del Parco archeologico del Colosseo, aparece en el buscador; NO pude cargarla desde esta red: connect ECONNREFUSED)",
+      "nota": "Web oficial del Parco archeologico del Colosseo. Segun el buscador: visita guiada con realidad virtual a 26 euros y opcion sin guia con horas fijas. La venta online general del parque es https://ticketing.colosseo.it/ (200, pero con comprobacion anti-bot). Reverificar la URL a mano; la Domus Aurea tiene cierres por obras.",
+      "url_candidata": "https://colosseo.it/biglietti/domus-aurea/",
+      "decision": "sin botón (20-nov): No se pudo abrir desde aquí (sin respuesta): sin botón hasta que Eric la compruebe."
+    },
+    "Villa Farnesina": {
+      "url": null,
+      "titulo_pagina": "Opening Hours and Info • Villa Farnesina",
+      "nota": "Web oficial (Accademia Nazionale dei Lincei). Taquilla en Via della Lungara 230; segun el buscador las ventas online pasan por lincei.it / villafarnesina.it, pero no he visto un enlace de compra concreto. La reserva no es obligatoria. Abierta de lunes a sabado por la manana (verificar en la pagina).",
+      "url_candidata": "https://www.villafarnesina.it/en/opening-hours-and-info/",
+      "decision": "sin botón (20-nov): Solo página de horarios e información; no hay compra directa y la reserva no es obligatoria: sin botón."
+    },
+    "Basílica de San Clemente": {
+      "url": null,
+      "titulo_pagina": "Opening hours and information - Basilica di San Clemente",
+      "nota": "Web oficial de la basilica. Dice que para entrar en las excavaciones hace falta reserva online, pero no he encontrado un enlace directo de compra; la pagina es la mas cercana (portada: https://www.basilicasanclemente.com/eng/). La iglesia de arriba es gratis; las excavaciones se pagan (segun terceros 12 euros, sin confirmar en oficial).",
+      "url_candidata": "https://www.basilicasanclemente.com/eng/opening-hours-and-info/",
+      "decision": "sin botón (20-nov): Solo página de horarios e información; no hay enlace directo de compra: sin botón."
+    }
+  }
+}

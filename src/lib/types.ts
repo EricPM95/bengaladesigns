@@ -233,6 +233,10 @@ export interface StopEntrada {
   incluye: string | null
   desde: number | null
   url: string | null
+  /** (V28) La web OFICIAL de entradas del sitio, para cuando Civitatis no tiene su página (sin aid). */
+  oficial?: string | null
+  /** (V28) Civitatis no vende esta entrada: nunca el buscador; la web oficial o ningún botón. */
+  sin_civitatis?: boolean
   /** Los datos reales de la actividad (API de consulta; solo con el interruptor encendido): precio, nota, fotos, qué incluye… Sin él, la entrada es la de los datos de siempre. */
   civitatis?: DatosDeActividad
 }
