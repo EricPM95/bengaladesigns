@@ -143,7 +143,7 @@ const medidas = `(() => {
     tamPeque: Array.from(document.querySelectorAll('[data-actividad] img')).map((i) => i.currentSrc || i.src),
   }
 })()`
-for (const destino of ['Roma', 'Lanzarote']) {
+for (const destino of process.env.SIN_LANZAROTE ? ['Roma'] : ['Roma', 'Lanzarote']) {
   console.log(`3. En la app (iPhone 390 px): la página de ${destino}`)
   const a = await abrirApp(APP, { ruta: '/?cuentas=off&logros=off&apertura=0&version=completa', ancho: 390, alto: 844 })
   try {
@@ -183,7 +183,7 @@ for (const destino of ['Roma', 'Lanzarote']) {
 /* ───────── 4. La colección por dentro: cada baldosa ENTERA, derecha y grande en su círculo (V28c) ───────── */
 console.log('4. Las 18 insignias: cada círculo con SU baldosa, entera, derecha y grande (V28c)')
 {
-  const a = await abrirApp(APP, { ruta: '/?dibujos=1', ancho: 900, alto: 1400, escala: 2, sinEsperarRoot: true, esperaFija: 10 })
+  const a = await abrirApp(APP, { ruta: '/?dibujos=1&baldosas=1', ancho: 900, alto: 1400, escala: 2, sinEsperarRoot: true, esperaFija: 10 })
   try {
     await a.esp(6000)
     const r = JSON.parse(await a.evaluar(`Promise.all([import('/src/components/logros/pantallas/destino/baldosa.tsx'), import('/src/components/logros/dibujos/partes.ts')]).then(([B, P]) => {

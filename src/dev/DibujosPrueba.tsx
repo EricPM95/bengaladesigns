@@ -99,7 +99,8 @@ export function DibujosPrueba() {
       </Fila>
 
       <Titulo t="(V28c) Las 18 insignias: cada baldosa en su círculo (ganada y sin ganar), como en «Ver la colección»" />
-      <div data-baldosas-hoja="1" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Solo con «?dibujos=1&baldosas=1»: no cuenta como insignias de la hoja de dibujos (pruebaV13 las cuenta). */}
+      {new URLSearchParams(window.location.search).get('baldosas') && <div data-baldosas-hoja="1" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {Object.entries(COLECCIONES_POR_PARTES).map(([id, info]) => (
           <div key={id} data-baldosas-de={id} style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span style={{ width: 150, font: "500 11px 'Geist Mono',monospace" }}>{id}</span>
@@ -114,7 +115,7 @@ export function DibujosPrueba() {
             ))}
           </div>
         ))}
-      </div>
+      </div>}
 
       <Titulo t="Países · los 9 escalones" />
       <Fila>{(ESCALONES_DE.paises ?? []).map((n) => <Cel key={n} pie={'países ' + n}><Chapa logro="paises" escalon={n} tam={110} /></Cel>)}</Fila>
