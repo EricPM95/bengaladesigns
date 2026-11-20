@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import marca from '../../../../../data/marca.json'
-import { cerrarTarjetaDeAvisos, debeEnseñarTarjetaDeAvisos, pasosParaInstalar, plataformaDe, tarjetaDeAvisosCerrada, yaEstaInstalada } from '../../../../lib/instalar'
+import { avisoInstalarVisible, cerrarTarjetaDeAvisos, debeEnseñarTarjetaDeAvisos, pasosParaInstalar, plataformaDe, tarjetaDeAvisosCerrada, yaEstaInstalada } from '../../../../lib/instalar'
 import { Icono } from '../../../ui/Icono'
 import { AvisoDeHoy, CruzDeAviso } from './AvisosHoy'
 
@@ -11,7 +11,7 @@ import { AvisoDeHoy, CruzDeAviso } from './AvisosHoy'
 export function TarjetaInstalarAvisos({ dateIso, inicioDelViaje, conPase }: { dateIso: string; inicioDelViaje: string | null | undefined; conPase: boolean }) {
   const [cerrada, setCerrada] = useState(() => tarjetaDeAvisosCerrada())
   const plataforma = plataformaDe(typeof navigator === 'undefined' ? '' : navigator.userAgent, typeof navigator === 'undefined' ? 0 : navigator.maxTouchPoints)
-  if (!debeEnseñarTarjetaDeAvisos({ plataforma, instalada: yaEstaInstalada(), esPrimerDia: Boolean(inicioDelViaje) && dateIso === inicioDelViaje, conPase, cerrada })) return null
+  if (!avisoInstalarVisible() || !debeEnseñarTarjetaDeAvisos({ plataforma, instalada: yaEstaInstalada(), esPrimerDia: Boolean(inicioDelViaje) && dateIso === inicioDelViaje, conPase, cerrada })) return null
   const pasos = pasosParaInstalar('ios', marca.nombre, false)
   return (
     <AvisoDeHoy id="instalar-avisos" prio={4}>

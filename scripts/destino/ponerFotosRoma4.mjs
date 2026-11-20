@@ -46,7 +46,7 @@ for (const f of FOTOS) {
     const buf = Buffer.from(await r.arrayBuffer())
     fs.writeFileSync(grandeRuta, await sharp(buf).rotate().resize({ width: 1600, withoutEnlargement: true }).jpeg({ quality: 80, mozjpeg: true }).toBuffer())
     fs.writeFileSync(pequenaRuta, await sharp(buf).rotate().resize({ width: 640, withoutEnlargement: true }).jpeg({ quality: 78, mozjpeg: true }).toBuffer())
-    await dormir(4000)
+    await dormir(15000)
   }
   const m = await sharp(grandeRuta).metadata()
   arch.fotos = arch.fotos.filter((x) => x.archivo !== `${f.id}.jpg`)

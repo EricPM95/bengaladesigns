@@ -37,6 +37,26 @@ export const tiemposDeLaApertura = (duracion: number) => ({
   lema: FRACCIONES_APERTURA.lema[0] * duracion,
 })
 
+/**
+ * (V30) Los tiempos DE VERDAD de las pantallas de lo ganado (los mismos números que usan sus animaciones en `pantallas.tsx`):
+ *   · sello nuevo: cae con «moDrop» de `cae` a `cae + caeDura` (la estampa asienta ahí);
+ *   · sello que sube de grado (la medalla): el viejo se apaga y se llena de luz (`evolucion.frase`…`evolucion.nuevo`) y el nuevo entra con «evoNew» a los `evolucion.nuevo` s (ahí cae el golpe);
+ *   · colección completa: la insignia empieza a `coleccion.retraso` s (el último pedazo encaja y se cierra el círculo a `retraso + TIEMPOS_DE_PEDAZO.fin`), el título entra a `coleccion.titulo`;
+ *   · país, destino y continente («sellado»): la estampa de PASAPORTE cae con «moStamp» de `sellado.empieza` y dura `sellado.dura`.
+ */
+export const TIEMPOS_SELLO = { cae: 0.2, caeDura: 0.9, evolucion: { frase: 0.3, vieja: 0.2, nuevo: 3.3, nuevoDura: 1.1 } } as const
+export const TIEMPOS_DE_COLECCION_PANTALLA = { retraso: RETRASO_DEL_PEDAZO + 0.1, titulo: 2.4, cta: 4.2 } as const
+export const TIEMPOS_SELLADO = { empieza: 1.0, dura: 0.9, tinta: 1.0 } as const
+/** (V30) El cine de las escenas de cada sitio: la luz estalla («flash») a los `fl` s (por defecto 8) y todo se apaga a los `dim` s; el emblema y su nombre entran en `x`. Lo lee la escena Y su sonido. */
+export interface ConfigDeTiemposDeEscena {
+  fl?: number
+  dim?: number
+  x?: number[]
+}
+export const tiemposDeEscena = (c: ConfigDeTiemposDeEscena = {}) => {
+  const fl = c.fl ?? 8
+  return { fl, dim: c.dim ?? 7.6, x: c.x ?? [fl + 1.2, fl + 1.45, fl + 1.7, fl + 2.1] }
+}
 /** (V9/8B) La medalla del grado (bronce → plata → oro → diamante): el redoble empieza a la vez que empieza a girar, sube mientras gira y el golpe cae cuando para. */
 export const TIEMPOS_DE_MEDALLA = { gira: 1.4, para: 1.4, brilla: 1.55 } as const
 /** El sello estampándose, la colección completa, el país y el destino nuevo: entrada, golpe y remate. */

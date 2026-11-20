@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { cortarSonidoDe, prepararSonido, sonar } from '../../../../lib/sonidos'
 import { Emblema } from '../../dibujos'
 import '../momentos.css'
 import './lanza/lanza.css'
@@ -49,6 +50,15 @@ export default function CineLanza({ config, primeraVez = false, onSeguir, onSalt
       }),
     [],
   )
+
+  // (V30) Sonido propio de la escena de Lanzarote: el destello de partículas cae a los 9,9 s de su línea de tiempo y la línea del emblema entra a los 13,4 s (menos lo que se adelanta sin suspense).
+  useEffect(() => {
+    const o = { escena: { fl: 9.9 - t0, dim: 9.5 - t0, x: [10.7 - t0, 11.6 - t0, 12.5 - t0, 13.4 - t0] } }
+    prepararSonido('escena', o)
+    if (!sinMovimiento()) void sonar('escena', o)
+    return () => cortarSonidoDe('escena')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Sin suspense, la película empieza ya en el sitio: todas las animaciones se adelantan lo que dura la frase.
   useLayoutEffect(() => {

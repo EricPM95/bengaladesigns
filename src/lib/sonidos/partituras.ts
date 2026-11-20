@@ -3,18 +3,19 @@ import type { SonidoSintetico } from './sintesis'
 import {
   paraFinalSiete,
   RETRASO_DEL_PEDAZO,
-  TIEMPOS_DE_COLECCION,
+  TIEMPOS_DE_COLECCION_PANTALLA,
   TIEMPOS_DE_EMBLEMA,
-  TIEMPOS_DE_MEDALLA,
-  TIEMPOS_DE_PAIS,
   TIEMPOS_DE_PEDAZO,
   TIEMPOS_DE_PEDAZO_REDUCIDO,
   TIEMPOS_DE_RESUMEN,
-  TIEMPOS_DE_SELLO,
   TIEMPOS_DE_VUELO,
+  TIEMPOS_SELLADO,
+  TIEMPOS_SELLO,
+  tiemposDeEscena,
   TIEMPOS_DEL_AVISO,
   TIEMPOS_FINAL_SIETE,
   tiemposDeLaApertura,
+  type ConfigDeTiemposDeEscena,
 } from './tiempos'
 
 /**
@@ -38,11 +39,13 @@ export interface Partitura {
 export interface OpcionesDePartitura {
   /** «Reducir movimiento» del móvil: las animaciones son más cortas y el sonido las sigue. */
   reducido?: boolean
+  /** (V30) Los tiempos de la escena (, , ) cuando es una escena de sitio con tiempos propios. */
+  escena?: ConfigDeTiemposDeEscena
 }
 
 export const GRADOS_DE_MEDALLA = ['bronce', 'plata', 'oro', 'diamante'] as const
-/** Los archivos de premio (hechos por código en el PC, `scripts/destino/generarSonidosPremio.mjs`), cada uno en tres versiones A, B y C. */
-export const ARCHIVOS_DE_PREMIO = ['medalla_bronce', 'medalla_plata', 'medalla_oro', 'medalla_diamante', 'coleccion', 'emblema', 'maravilla', 'pais', 'apertura'] as const
+/** (V30) Los sonidos grabados de verdad (`public/sonidos/v30/`, con candidatos A a E; `scripts/destino/sonidos/prepararCandidatos.mjs`). Los de [Visto], la campanita del aviso y el tic se quedan hechos por código. */
+export const ARCHIVOS_DE_PREMIO = ['clic', 'vuelo', 'brillo', 'redoble', 'medalla_bronce', 'medalla_plata', 'medalla_oro', 'medalla_diamante', 'coleccion', 'emblema', 'maravilla', 'pais', 'apertura'] as const
 
 const sint = (sonido: SonidoSintetico, en: number, extra: { dura?: number; vol?: number } = {}): Nota => ({ tipo: 'sint', sonido, en, ...extra })
 const archivo = (a: string, golpe: number, vol?: number): Nota => ({ tipo: 'archivo', archivo: a, golpe, ...(vol ? { vol } : {}) })
@@ -61,22 +64,24 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
   const e = (s: number) => s * k
   switch (id) {
     case 'visto':
+      // FIJO (Eric, V30): el toque y el brillo pequeño de [Visto] se quedan como están (hechos por código).
       return { id, dura: 0.5, premio: false, notas: [sint('toque', 0), sint('brillo', 0.06, { vol: 0.5 })] }
     case 'aviso':
+      // FIJO (Eric, V30): la campanita del aviso se queda como está.
       return { id, dura: TIEMPOS_DEL_AVISO.remate + 0.9, premio: false, notas: [sint('campanita', TIEMPOS_DEL_AVISO.campanita)] }
     case 'pedazo': {
       const t = TIEMPOS_DE_PEDAZO
       const r = TIEMPOS_DE_PEDAZO_REDUCIDO
-      if (reducido) return { id, dura: RETRASO_DEL_PEDAZO + r.fin, premio: false, notas: [sint('clic', RETRASO_DEL_PEDAZO + r.color), sint('brillo', RETRASO_DEL_PEDAZO + r.color + 0.02, { vol: 0.8 }), sint('tic', RETRASO_DEL_PEDAZO + r.fin)] }
+      if (reducido) return { id, dura: RETRASO_DEL_PEDAZO + r.fin, premio: false, notas: [archivo('clic', RETRASO_DEL_PEDAZO + r.color), archivo('brillo', RETRASO_DEL_PEDAZO + r.color + 0.05, 0.8), sint('tic', RETRASO_DEL_PEDAZO + r.fin)] }
       return {
         id,
         dura: RETRASO_DEL_PEDAZO + t.fin,
         premio: false,
         notas: [
-          // el trozo llega volando (de `llega` a `encaja`), encaja con un clic, se llena de color con un brillo y el número sube
-          sint('vuelo', RETRASO_DEL_PEDAZO + t.llega, { dura: t.encaja - t.llega }),
-          sint('clic', RETRASO_DEL_PEDAZO + t.encaja),
-          sint('brillo', RETRASO_DEL_PEDAZO + t.color, { vol: 0.9 }),
+          // el trozo llega volando (de `llega` a `encaja`): la cresta del vuuush cae justo antes de encajar; encaja con un clic; se llena de color con un brillo; el número sube con un tic (el tic se queda fijo)
+          archivo('vuelo', RETRASO_DEL_PEDAZO + t.encaja - 0.06, 0.9),
+          archivo('clic', RETRASO_DEL_PEDAZO + t.encaja),
+          archivo('brillo', RETRASO_DEL_PEDAZO + t.color + 0.05, 0.8),
           sint('tic', RETRASO_DEL_PEDAZO + t.fin),
         ],
       }
@@ -87,7 +92,7 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
         id,
         dura: e(t.estalla) + 0.6,
         premio: true,
-        // un latido por aro, cada vez más rápido, y el golpe del premio cae cuando la luz estalla
+        // un latido por aro, cada vez más rápido (el latido es el toque de siempre), y el golpe del premio cae cuando la luz estalla
         notas: [...t.aros.map((a, i) => sint('toque', e(a), { vol: 0.35 + 0.1 * i })), archivo('emblema', e(t.estalla))],
       }
     }
@@ -99,56 +104,72 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
         premio: true,
         notas: [
           ...t.latidos.map((l, i) => sint('toque', l, { vol: 0.3 + 0.08 * i })),
-          // el redoble dura lo que dura el giro de la medalla y el golpe final cae cuando para
-          sint('redoble', t.giraEmpieza, { dura: t.giraDura }),
+          // el redoble dura lo que dura el giro de la medalla (el grabado se alinea por el final: nunca estirado) y el golpe final cae cuando para
+          archivo('redoble', paraFinalSiete(), 0.55),
           archivo('maravilla', paraFinalSiete()),
         ],
       }
     }
     case 'coleccion': {
-      const t = TIEMPOS_DE_COLECCION
-      return { id, dura: e(t.remate), premio: true, notas: [sint('redoble', 0, { dura: e(t.golpe) }), archivo('coleccion', e(t.golpe))] }
+      // La insignia empieza a `retraso`; el último pedazo encaja y se cierra el círculo cuando acaba el giro de la pieza final.
+      const t = TIEMPOS_DE_COLECCION_PANTALLA
+      const cierra = t.retraso + TIEMPOS_DE_PEDAZO.fin
+      return { id, dura: e(t.cta) + 0.6, premio: true, notas: [archivo('redoble', e(cierra), 0.55), archivo('coleccion', e(cierra))] }
     }
     case 'sello': {
-      const t = TIEMPOS_DE_SELLO
-      return { id, dura: t.remate + 0.4, premio: false, notas: [sint('vuelo', 0, { dura: t.baja }), sint('clic', t.golpe, { vol: 1 }), sint('brillo', t.golpe + 0.05, { vol: 0.7 })] }
+      // Un sello nuevo (sin subir de grado): cae con «moDrop» y la estampa asienta al acabar; clic y brillo ahí.
+      const t = TIEMPOS_SELLO
+      const asienta = t.cae + t.caeDura
+      return { id, dura: e(asienta) + 0.9, premio: false, notas: [archivo('vuelo', e(asienta) - 0.06, 0.9), archivo('clic', e(asienta)), archivo('brillo', e(asienta) + 0.05, 0.7)] }
     }
     case 'pais':
     case 'destino_nuevo':
     case 'continente': {
-      const t = TIEMPOS_DE_PAIS
-      return { id, dura: e(t.remate), premio: true, notas: [sint('vuelo', e(t.aparece), { dura: e(t.golpe - t.aparece) }), archivo('pais', e(t.golpe))] }
+      // El sellado de pasaporte: la estampa cae con «moStamp» y asienta al acabar; ahí cae el golpe del premio.
+      const t = TIEMPOS_SELLADO
+      const asienta = t.empieza + t.dura
+      return { id, dura: e(asienta) + 0.9, premio: true, notas: [archivo('vuelo', e(asienta) - 0.2, 0.5), archivo('pais', e(asienta))] }
     }
     case 'patrimonio':
     case 'viajero':
     case 'dia_completo': {
       const t = TIEMPOS_DE_RESUMEN
-      return { id, dura: t.golpe + 0.6, premio: false, notas: [...tics(0, t.sube, t.tic), sint('brillo', t.golpe, { vol: 0.9 })] }
+      return { id, dura: t.golpe + 0.6, premio: false, notas: [...tics(0, t.sube, t.tic), archivo('brillo', t.golpe, 0.9)] }
     }
     case 'vuelo':
-      return { id, dura: TIEMPOS_DE_VUELO.dura + 0.1, premio: false, notas: [sint('vuelo', 0, { dura: TIEMPOS_DE_VUELO.dura })] }
+      return { id, dura: TIEMPOS_DE_VUELO.dura + 0.1, premio: false, notas: [archivo('vuelo', TIEMPOS_DE_VUELO.dura * 0.7)] }
     case 'apertura': {
       // La firma de la app: cae justo cuando la estrella salta sobre la I. En la web NO suena (el navegador no deja sonar antes del primer toque); queda lista para la app de las tiendas.
       const t = tiemposDeLaApertura(DURACION_APERTURA)
-      return { id, dura: t.duracion, premio: true, notas: [sint('vuelo', t.letras[0], { dura: t.letras[1] - t.letras[0], vol: 0.5 }), archivo('apertura', t.estrella)] }
+      return { id, dura: t.duracion, premio: true, notas: [archivo('vuelo', t.letras[1] - 0.05, 0.6), archivo('apertura', t.estrella)] }
+    }
+    case 'escena': {
+      // (V30) Las escenas de cada sitio (Roma y Lanzarote): la luz estalla a los `fl` s (el golpe del emblema), después entran el emblema y su nombre (un clic y un brillo) y todo se apaga a los `dim`.
+      const t = tiemposDeEscena(o.escena)
+      return {
+        id,
+        dura: t.fl + 4,
+        premio: true,
+        notas: [archivo('redoble', t.fl, 0.55), archivo('emblema', t.fl), archivo('clic', t.x[0], 0.8), archivo('brillo', t.x[2], 0.8)],
+      }
+    }
+    case 'fuegos': {
+      // (V30) Los fuegos: un golpe de premio al estallar y brillos que caen detrás.
+      return { id, dura: 3.2, premio: false, notas: [archivo('emblema', 0.2, 0.8), archivo('brillo', 1.0, 0.7), archivo('brillo', 1.8, 0.6)] }
     }
     default: {
       const m = /^medalla_(bronce|plata|oro|diamante)$/.exec(id)
       if (!m) return null
-      const t = TIEMPOS_DE_MEDALLA
-      return {
-        id,
-        dura: e(t.brilla) + 0.7,
-        premio: true,
-        // el redoble empieza cuando empieza a girar, sube mientras gira, y el golpe final cae justo cuando para
-        notas: [sint('redoble', 0, { dura: e(t.gira) }), archivo(id, e(t.para))],
-      }
+      // El sello que sube de grado: el viejo se apaga y se llena de luz y el nuevo entra con «evoNew» a los 3,3 s (redoble hasta que entra); la medalla asienta al acabar la entrada.
+      const t = TIEMPOS_SELLO.evolucion
+      const asienta = t.nuevo + t.nuevoDura
+      return { id, dura: e(asienta) + 0.9, premio: true, notas: [archivo('redoble', e(t.nuevo + 0.4), 0.55), archivo(id, e(asienta))] }
     }
   }
 }
 
 /** Todas las animaciones que tienen partitura (para la prueba, la página de sonidos y el repaso). */
-export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero', 'dia_completo', 'vuelo', 'apertura', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
+export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero', 'dia_completo', 'vuelo', 'apertura', 'escena', 'fuegos', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
 
 /** Cada partitura, en palabras (para el repaso y la página de sonidos). */
 export const EN_PALABRAS: Record<string, string> = {
@@ -166,12 +187,14 @@ export const EN_PALABRAS: Record<string, string> = {
   viajero: 'Logro de viajero: igual que patrimonio.',
   dia_completo: 'El resumen del día y del viaje: los números que suben con tics y un brillo al acabar.',
   vuelo: 'Lo ganado que vuela al botón o al Perfil: un vuuush de lo que dura el vuelo.',
+  escena: 'Las escenas de cada sitio (Roma y Lanzarote): un redoble que sube y el golpe del premio cuando estalla la luz, y un clic y un brillo cuando entran el emblema y su nombre.',
+  fuegos: 'Los fuegos: el golpe del premio al estallar y dos brillos que caen detrás.',
   apertura: 'La apertura: la firma de la app, que cae cuando la estrella salta sobre la I (en la web no suena: el navegador no deja antes del primer toque).',
-  medalla_bronce: 'La medalla de bronce: redoble mientras gira y golpe al parar (el más suave).',
+  medalla_bronce: 'La medalla de bronce: redoble hasta que entra el sello nuevo y golpe al asentarse (el más suave).',
   medalla_plata: 'La medalla de plata: redoble mientras gira y golpe al parar (suena a más que el bronce).',
   medalla_oro: 'La medalla de oro: redoble mientras gira y golpe al parar (suena a más que la plata).',
   medalla_diamante: 'La medalla de diamante: redoble mientras gira y golpe al parar (el más rico).',
 }
 
 /** Las animaciones de la lista de la V29 que NO tienen partitura todavía (se dice en el repaso): sus tiempos viven en CSS dentro de cada escena y habría que sacarlos a `tiempos.ts` uno a uno. */
-export const SIN_PARTITURA = ['las escenas de cada sitio (momentos/escenas, también Lanzarote)', 'los fuegos', 'el resumen del día y del viaje (solo los tics y el brillo del final)']
+export const SIN_PARTITURA: string[] = []

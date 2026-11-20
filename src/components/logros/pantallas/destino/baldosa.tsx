@@ -98,8 +98,37 @@ export function geometriaDeBaldosa(coleccion: string, total: number, k: number):
     }
     puntos = lista.map(([x, y]) => [x / 200, y / 200] as [number, number])
     centro = [cx / 200, cy / 200]
-    const am = -90 + ((k + 0.5) * 360) / g.n
+    // (V30) Derecha SIEMPRE: el lado de fuera de la baldosa arriba. Se mira hacia dónde cae el centro de la baldosa respecto al centro de la insignia (en las baldosas en forma de cuña es lo mismo que el
+    // ángulo de su sector; en las que no lo son —trozos sueltos, tiras, mosaicos— es lo que las dejaba tumbadas o en diagonal) y se gira hasta que ese lado quede arriba.
+    // El eje de la baldosa: el medio del ángulo que ocupa (desde el centro de la insignia), sin contar lo que está pegado a la medalla. (La media de los puntos no vale: donde el borde tiene más puntos pesa más y la baldosa salía torcida.)
+    const sector = -90 + ((k + 0.5) * 360) / g.n
+    let menor = 0
+    let mayor = 0
+    for (const [px, py] of fuera) {
+      if (Math.hypot(px - cx, py - cy) < RADIO_MEDALLA + 1) continue
+      const d = ((((Math.atan2(py - cy, px - cx) * 180) / Math.PI - sector + 540) % 360) + 360) % 360 - 180
+      menor = Math.min(menor, d)
+      mayor = Math.max(mayor, d)
+    }
+    const am = sector + (menor + mayor) / 2
     giro = -90 - am
+    // Las de 4 baldosas son cuadrantes (90°) de lados rectos: con la punta al centro y el eje arriba un cuadrante queda como un rombo, en diagonal.
+    // Se prueba cada giro hasta 45° a cada lado y se queda el que deja la baldosa más compacta (la caja más pequeña que la envuelve): ahí sus lados rectos quedan horizontales y verticales, derechos.
+    if (g.n === 4) {
+      let mejor = giro
+      let area = Infinity
+      for (let d = -45; d <= 45; d++) {
+        const p = girar(lista, [cx, cy], giro + d)
+        const xs = p.map((q) => q[0])
+        const ys = p.map((q) => q[1])
+        const ar = (Math.max(...xs) - Math.min(...xs)) * (Math.max(...ys) - Math.min(...ys))
+        if (ar < area - 0.5 || (Math.abs(ar - area) <= 0.5 && Math.abs(d) < Math.abs(mejor - giro))) {
+          area = ar
+          mejor = giro + d
+        }
+      }
+      giro = mejor
+    }
   }
   return { familia, puntos, centro, giro, girados: girar(puntos, centro, giro) }
 }

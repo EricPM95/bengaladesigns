@@ -477,6 +477,7 @@ if (process.env.SIN_NAVEGADOR === '1') {
   console.log('8. El navegador: la tarjeta de iPhone en HOY y calcularAvisos (TypeScript) = el puerto del servidor')
   const { abrirApp } = await import('./_enLaApp.mjs')
   const ANTES = (ua, standalone) => `(function(){const RD=Date;const base=RD.now();function fijo(){if(window.__horaFalsa==null)return null;const d=new RD();d.setHours(Math.floor(window.__horaFalsa/60),window.__horaFalsa%60,0,0);return d.getTime()+(RD.now()-base)%60000}class FD extends RD{constructor(...a){if(a.length===0){const f=fijo();super(f==null?RD.now():f)}else super(...a)}static now(){const f=fijo();return f==null?RD.now():f}}window.Date=FD;
+try{localStorage.setItem('trazo:aviso_instalar_visible','si')}catch(e){}
 Object.defineProperty(navigator,'geolocation',{value:{getCurrentPosition(ok,no){no&&no({code:1})},watchPosition(){return 1},clearWatch(){}},configurable:true});
 try{navigator.permissions.query=async()=>({state:'denied',addEventListener(){},removeEventListener(){}})}catch(e){}
 ${ua ? `Object.defineProperty(navigator,'userAgent',{get:()=>${JSON.stringify(ua)},configurable:true});Object.defineProperty(navigator,'maxTouchPoints',{get:()=>5,configurable:true});` : ''}

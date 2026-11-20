@@ -105,3 +105,20 @@ export function cerrarTarjetaDeAvisos(): void {
     /* sin almacenamiento: puede volver a salir */
   }
 }
+
+/**
+ * (V30, Eric 20-nov) Los avisos que invitan a «añadir a la pantalla de inicio» desde el navegador están APAGADOS: la app va a salir en la App Store y en Google Play. Es un interruptor, no se ha borrado nada:
+ * poner `VITE_AVISO_INSTALAR_VISIBLE=true` (o cambiar el valor de aquí) los vuelve a encender. Dónde salían: (1) el recuadro «Añádela a tu pantalla de inicio» con los pasos (`AvisoInstalar`, al entrar, una vez);
+ * (2) la tarjeta «Añade JUTRIP a tu pantalla de inicio para recibir los avisos del viaje» de HOY el primer día del viaje en iPhone (`TarjetaInstalarAvisos`). Los demás textos que nombran la pantalla de inicio no invitan a instalar
+ * (explican por qué no se pueden encender los avisos en iPhone sin ella; son un mensaje solo si la persona pulsa «Encender avisos»).
+ */
+export const AVISO_INSTALAR_VISIBLE: boolean = (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_AVISO_INSTALAR_VISIBLE === 'true'
+/** ¿Se enseñan los avisos de instalar? El interruptor de arriba, o (solo para las pruebas que comprueban esos avisos) la marca `trazo:aviso_instalar_visible` = si en el móvil. */
+export function avisoInstalarVisible(): boolean {
+  if (AVISO_INSTALAR_VISIBLE) return true
+  try {
+    return window.localStorage.getItem('trazo:aviso_instalar_visible') === 'si'
+  } catch {
+    return false
+  }
+}

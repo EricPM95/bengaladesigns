@@ -1,0 +1,675 @@
+{
+ "clic": {
+  "A": {
+   "nombre": "clic",
+   "fuentes": [
+    "Cinematic Sound Design - Interface & Infographics · Interface Percussion Snap"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.253,
+   "golpe": 0.005,
+   "bytes": 2112
+  },
+  "B": {
+   "nombre": "clic",
+   "fuentes": [
+    "Cinematic Sound Design - Interface & Infographics · Interface Pop High Short"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.116,
+   "golpe": 0.007,
+   "bytes": 1584
+  },
+  "C": {
+   "nombre": "clic",
+   "fuentes": [
+    "Cinematic Sound Design - Interface & Infographics · Interface Accept Glassy Snap"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.278,
+   "golpe": 0.016,
+   "bytes": 2928
+  },
+  "E": {
+   "nombre": "clic",
+   "fuentes": [
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Foley Coin Flip Single Fast"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.254,
+   "golpe": 0.012,
+   "bytes": 3020
+  }
+ },
+ "vuelo": {
+  "B": {
+   "nombre": "vuelo",
+   "fuentes": [
+    "Cinematic Sound Design - Cartoon & Animation Vol 2 · Cartoon Pull Swoosh Readout"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.605,
+   "golpe": 0.129,
+   "bytes": 6159
+  },
+  "C": {
+   "nombre": "vuelo",
+   "fuentes": [
+    "Cinematic Sound Design - Colossal Impacts · Woosh Debris"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.688,
+   "golpe": 0.208,
+   "bytes": 8001
+  },
+  "D": {
+   "nombre": "vuelo",
+   "fuentes": [
+    "Epic Stock Media - Elemental Mutation Whooshes and Impacts · GLASMvmt_Whoosh Glass Crystal Fragments Sharp Shards Dry 05_ESM_EMWI"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.698,
+   "golpe": 0.202,
+   "bytes": 8128
+  }
+ },
+ "brillo": {
+  "A": {
+   "nombre": "brillo",
+   "fuentes": [
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.085,
+   "golpe": 0.101,
+   "bytes": 12219
+  },
+  "B": {
+   "nombre": "brillo",
+   "fuentes": [
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.628,
+   "golpe": 0.106,
+   "bytes": 7071
+  },
+  "C": {
+   "nombre": "brillo",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Kalimba 3 Up_CB Sounddesign_APPlicable Sounds",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.006,
+   "golpe": 0.031,
+   "bytes": 11347
+  },
+  "D": {
+   "nombre": "brillo",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Xylophone Ringtone 2_CB Sounddesign_APPlicable Sounds"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.077,
+   "golpe": 0.092,
+   "bytes": 12015
+  },
+  "E": {
+   "nombre": "brillo",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · GAMEMisc_Magic Creation 23_CB Sounddesign_APPlicable Sounds"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.097,
+   "golpe": 0.109,
+   "bytes": 12293
+  }
+ },
+ "redoble": {
+  "A": {
+   "nombre": "redoble",
+   "fuentes": [
+    "Epic Stock Media - Elemental Mutation Whooshes and Impacts · GLASMvmt_Whoosh Glass Crystal Fragments Sharp Shards Dry 05_ESM_EMWI"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.455,
+   "golpe": 1.217,
+   "bytes": 15844
+  },
+  "B": {
+   "nombre": "redoble",
+   "fuentes": [
+    "Cinematic Sound Design - Cartoon & Animation Vol 2 · Cartoon Pull Swoosh Readout"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.244,
+   "golpe": 0.977,
+   "bytes": 13617
+  },
+  "C": {
+   "nombre": "redoble",
+   "fuentes": [
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Transition Braam Slow Dark Creepy"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 2.57,
+   "golpe": 2.269,
+   "bytes": 27270
+  },
+  "D": {
+   "nombre": "redoble",
+   "fuentes": [
+    "Cinematic Sound Design - Colossal Impacts · Impact Cut Sweep"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.921,
+   "golpe": 0.643,
+   "bytes": 10142
+  },
+  "E": {
+   "nombre": "redoble",
+   "fuentes": [
+    "Cinematic Sound Design - Cartoon & Animation Vol 2 · Cartoon Transition Bass Down"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.868,
+   "golpe": 0.554,
+   "bytes": 9710
+  }
+ },
+ "coleccion": {
+  "A": {
+   "nombre": "coleccion",
+   "fuentes": [
+    "Cinematic Sound Design - UI Interaction Elements · Ting Coins",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle",
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.379,
+   "golpe": 0.169,
+   "bytes": 15108
+  },
+  "B": {
+   "nombre": "coleccion",
+   "fuentes": [
+    "Epic Stock Media - Fantasy Game 2 - Sound Kit for Enchanted Realms · MAGAngl_Magic Light Spell Enchantment Potion Effect Tonal Bright 03_ESM_FG2",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 2.27,
+   "golpe": 0.386,
+   "bytes": 24401
+  },
+  "C": {
+   "nombre": "coleccion",
+   "fuentes": [
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Impact Hit Rapid Chord Reverb",
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-32"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.887,
+   "golpe": 0.3,
+   "bytes": 20212
+  },
+  "D": {
+   "nombre": "coleccion",
+   "fuentes": [
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Game Entry Happy Short",
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Cofetti Whoosh Pluck Spill",
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.721,
+   "golpe": 0.17,
+   "bytes": 18491
+  }
+ },
+ "emblema": {
+  "B": {
+   "nombre": "emblema",
+   "fuentes": [
+    "Epic Stock Media - Fantasy Game 2 - Sound Kit for Enchanted Realms · MAGAngl_Magic Light Spell Enchantment Potion Effect Tonal Bright 03_ESM_FG2",
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Kalimba 3 Up_CB Sounddesign_APPlicable Sounds"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.866,
+   "golpe": 0.305,
+   "bytes": 19992
+  },
+  "C": {
+   "nombre": "emblema",
+   "fuentes": [
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Transition Braam Slow Dark Creepy",
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Impact Hit Rapid Chord Reverb"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.884,
+   "golpe": 0.302,
+   "bytes": 20125
+  },
+  "D": {
+   "nombre": "emblema",
+   "fuentes": [
+    "Sonic Bat - Music Boxes · SBmb_Music Box C Wind Up 006",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.511,
+   "golpe": 0.403,
+   "bytes": 16236
+  },
+  "E": {
+   "nombre": "emblema",
+   "fuentes": [
+    "Cinematic Sound Design - System & UI Feedback Elements · Interface Arp Reveal Down Long",
+    "Epic Stock Media - Fantasy Game 2 - Sound Kit for Enchanted Realms · MAGAngl_Magic Light Spell Enchantment Potion Effect Tonal Bright 03_ESM_FG2"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.862,
+   "golpe": 0.305,
+   "bytes": 19931
+  }
+ },
+ "maravilla": {
+  "A": {
+   "nombre": "maravilla",
+   "fuentes": [
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-67",
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Impact Hit Rapid Chord Reverb",
+    "Epic Stock Media - Fantasy Game 2 - Sound Kit for Enchanted Realms · MAGAngl_Magic Light Spell Enchantment Potion Effect Tonal Bright 03_ESM_FG2",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 2.384,
+   "golpe": 0.3,
+   "bytes": 25361
+  },
+  "B": {
+   "nombre": "maravilla",
+   "fuentes": [
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-32",
+    "Epic Stock Media - Anime Game · DSGNStngr_Power Up Bright Positive Successful Light Saturation Crash Shimmer 05_ESM_AG",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.876,
+   "golpe": 0.338,
+   "bytes": 19839
+  },
+  "C": {
+   "nombre": "maravilla",
+   "fuentes": [
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Impact Hit Rapid Chord Reverb",
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-32",
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-67"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.895,
+   "golpe": 0.3,
+   "bytes": 20254
+  },
+  "D": {
+   "nombre": "maravilla",
+   "fuentes": [
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Game Entry Happy Short",
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Cofetti Whoosh Pluck Spill",
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-67"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.895,
+   "golpe": 0.306,
+   "bytes": 20091
+  }
+ },
+ "pais": {
+  "A": {
+   "nombre": "pais",
+   "fuentes": [
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Game Entry Happy Short",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.379,
+   "golpe": 0.206,
+   "bytes": 15012
+  },
+  "B": {
+   "nombre": "pais",
+   "fuentes": [
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.379,
+   "golpe": 0.127,
+   "bytes": 15232
+  },
+  "C": {
+   "nombre": "pais",
+   "fuentes": [
+    "Cinematic Sound Design - Interface & Infographics · Interface Pop High Short",
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Kalimba 3 Up_CB Sounddesign_APPlicable Sounds",
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Xylophone Ringtone 2_CB Sounddesign_APPlicable Sounds"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.71,
+   "golpe": 0.177,
+   "bytes": 18585
+  },
+  "D": {
+   "nombre": "pais",
+   "fuentes": [
+    "Cinematic Sound Design - UI Interaction Elements · Ting Coins",
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.553,
+   "golpe": 0.106,
+   "bytes": 16898
+  },
+  "E": {
+   "nombre": "pais",
+   "fuentes": [
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Cofetti Whoosh Pluck Spill",
+    "Cinematic Sound Design - Interface & Infographics · Interface Pop High Short"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.747,
+   "golpe": 0.196,
+   "bytes": 18893
+  }
+ },
+ "apertura": {
+  "A": {
+   "nombre": "apertura",
+   "fuentes": [
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Game Entry Happy Short",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 2.029,
+   "golpe": 0.206,
+   "bytes": 21860
+  },
+  "B": {
+   "nombre": "apertura",
+   "fuentes": [
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Cofetti Whoosh Pluck Spill",
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 2.201,
+   "golpe": 0.234,
+   "bytes": 23456
+  },
+  "C": {
+   "nombre": "apertura",
+   "fuentes": [
+    "Sonic Bat - Music Boxes · SBmb_Music Box C Wind Up 006",
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Kalimba 3 Up_CB Sounddesign_APPlicable Sounds",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.735,
+   "golpe": 0.491,
+   "bytes": 18294
+  },
+  "D": {
+   "nombre": "apertura",
+   "fuentes": [
+    "Epic Stock Media - Anime Game · DSGNStngr_Power Up Bright Positive Successful Light Saturation Crash Shimmer 05_ESM_AG",
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy",
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Impact Hit Rapid Chord Reverb"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 2.045,
+   "golpe": 0.317,
+   "bytes": 21839
+  },
+  "E": {
+   "nombre": "apertura",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Xylophone Ringtone 2_CB Sounddesign_APPlicable Sounds",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle",
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Game Entry Happy Short"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.718,
+   "golpe": 0.497,
+   "bytes": 18546
+  }
+ },
+ "medalla_bronce": {
+  "A": {
+   "nombre": "monedas",
+   "fuentes": [
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Foley Coin Flip Single Fast",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.377,
+   "golpe": 0.181,
+   "bytes": 14967,
+   "estilo": "monedas"
+  },
+  "B": {
+   "nombre": "mágico",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Kalimba 3 Up_CB Sounddesign_APPlicable Sounds",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.238,
+   "golpe": 0.03,
+   "bytes": 13742,
+   "estilo": "mágico"
+  },
+  "C": {
+   "nombre": "orquestal",
+   "fuentes": [
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Impact Hit Rapid Chord Reverb"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.682,
+   "golpe": 0.302,
+   "bytes": 18172,
+   "estilo": "orquestal"
+  },
+  "D": {
+   "nombre": "juego alegre",
+   "fuentes": [
+    "Cinematic Sound Design - Interface & Infographics · Interface Pop High Short",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.129,
+   "golpe": 0.007,
+   "bytes": 11835,
+   "estilo": "juego alegre"
+  },
+  "E": {
+   "nombre": "poder",
+   "fuentes": [
+    "Cinematic Sound Design - Interface & Infographics · Interface Accept Glassy Snap",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.133,
+   "golpe": 0.009,
+   "bytes": 12257,
+   "estilo": "poder"
+  }
+ },
+ "medalla_plata": {
+  "A": {
+   "nombre": "monedas",
+   "fuentes": [
+    "Cinematic Sound Design - UI Interaction Elements · Ting Coins",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.237,
+   "golpe": 0.04,
+   "bytes": 13729,
+   "estilo": "monedas"
+  },
+  "B": {
+   "nombre": "mágico",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Xylophone Ringtone 2_CB Sounddesign_APPlicable Sounds"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.719,
+   "golpe": 0.294,
+   "bytes": 18523,
+   "estilo": "mágico"
+  },
+  "C": {
+   "nombre": "orquestal",
+   "fuentes": [
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Impact Hit Rapid Chord Reverb"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.972,
+   "golpe": 0.3,
+   "bytes": 21068,
+   "estilo": "orquestal"
+  },
+  "D": {
+   "nombre": "juego alegre",
+   "fuentes": [
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.367,
+   "golpe": 0.106,
+   "bytes": 14748,
+   "estilo": "juego alegre"
+  },
+  "E": {
+   "nombre": "poder",
+   "fuentes": [
+    "Epic Stock Media - Anime Game · DSGNStngr_Power Up Bright Positive Successful Light Saturation Crash Shimmer 05_ESM_AG"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.347,
+   "golpe": 0.212,
+   "bytes": 14713,
+   "estilo": "poder"
+  }
+ },
+ "medalla_oro": {
+  "A": {
+   "nombre": "monedas",
+   "fuentes": [
+    "Cinematic Sound Design - UI Interaction Elements · Ting Coins",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.379,
+   "golpe": 0.175,
+   "bytes": 15082,
+   "estilo": "monedas"
+  },
+  "B": {
+   "nombre": "mágico",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Xylophone Ringtone 2_CB Sounddesign_APPlicable Sounds",
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · GAMEMisc_Magic Creation 23_CB Sounddesign_APPlicable Sounds"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.896,
+   "golpe": 0.31,
+   "bytes": 20417,
+   "estilo": "mágico"
+  },
+  "C": {
+   "nombre": "orquestal",
+   "fuentes": [
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Impact Hit Rapid Chord Reverb",
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-32"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.887,
+   "golpe": 0.302,
+   "bytes": 20177,
+   "estilo": "orquestal"
+  },
+  "D": {
+   "nombre": "juego alegre",
+   "fuentes": [
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy",
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Cofetti Whoosh Pluck Spill"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.722,
+   "golpe": 0.178,
+   "bytes": 18533,
+   "estilo": "juego alegre"
+  }
+ },
+ "medalla_diamante": {
+  "A": {
+   "nombre": "monedas",
+   "fuentes": [
+    "Cinematic Sound Design - UI Interaction Elements · Ting Coins",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle",
+    "Epic Stock Media - Fantasy Game 2 - Sound Kit for Enchanted Realms · MAGAngl_Magic Light Spell Enchantment Potion Effect Tonal Bright 03_ESM_FG2",
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-67"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.961,
+   "golpe": 0.374,
+   "bytes": 20837,
+   "estilo": "monedas"
+  },
+  "B": {
+   "nombre": "mágico",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Xylophone Ringtone 2_CB Sounddesign_APPlicable Sounds",
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · GAMEMisc_Magic Creation 23_CB Sounddesign_APPlicable Sounds",
+    "Epic Stock Media - Fantasy Game 2 - Sound Kit for Enchanted Realms · MAGAngl_Magic Light Spell Enchantment Potion Effect Tonal Bright 03_ESM_FG2",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 2.384,
+   "golpe": 0.305,
+   "bytes": 25263,
+   "estilo": "mágico"
+  },
+  "C": {
+   "nombre": "orquestal",
+   "fuentes": [
+    "Cinematic Sound Design - Ultra Transitions & Impacts · Impact Hit Rapid Chord Reverb",
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-32",
+    "Jake Fielding - Cinematic Horn Braams · DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-67",
+    "Epic Stock Media - Fantasy Game 2 - Sound Kit for Enchanted Realms · MAGAngl_Magic Light Spell Enchantment Potion Effect Tonal Bright 03_ESM_FG2"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 2.012,
+   "golpe": 0.301,
+   "bytes": 21404,
+   "estilo": "orquestal"
+  },
+  "D": {
+   "nombre": "juego alegre",
+   "fuentes": [
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Game Entry Happy Short",
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy",
+    "Cinematic Sound Design - Hybrid Game & UI Elements · Cofetti Whoosh Pluck Spill",
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.721,
+   "golpe": 0.175,
+   "bytes": 18493,
+   "estilo": "juego alegre"
+  }
+ }
+}

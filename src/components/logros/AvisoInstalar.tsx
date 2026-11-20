@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import marca from '../../../data/marca.json'
 import { logrosActivos } from '../../lib/logros'
-import { avisoYaMostrado, debeEnseñarAvisoDeInstalar, marcarAvisoMostrado, pasosParaInstalar, plataformaDe, prepararInstalacion, yaEstaInstalada } from '../../lib/instalar'
+import { avisoInstalarVisible, avisoYaMostrado, debeEnseñarAvisoDeInstalar, marcarAvisoMostrado, pasosParaInstalar, plataformaDe, prepararInstalacion, yaEstaInstalada } from '../../lib/instalar'
 
 /**
  * «AÑÁDELA A TU PANTALLA DE INICIO» (Tanda 8A, provisional: el diseño llega con Design). Sale una vez, se puede cerrar y no sale si la web ya está instalada.
@@ -11,6 +11,8 @@ type AvisoDelNavegador = Event & { prompt: () => Promise<void>; userChoice: Prom
 
 export function AvisoInstalar() {
   if (!logrosActivos()) return null
+  // (V30) Apagado por defecto: la app saldrá en las tiendas (ver `AVISO_INSTALAR_VISIBLE` en `lib/instalar.ts`).
+  if (!avisoInstalarVisible()) return null
   return <Encendido />
 }
 

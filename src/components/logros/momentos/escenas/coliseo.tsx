@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { cortarSonidoDe, prepararSonido, sonar } from '../../../../lib/sonidos'
 import { Emblema } from '../../dibujos'
 import { Destellos, Fuegos } from '../Fuegos'
 import { estiloBoton, estiloSaltar, Lienzo, sinMovimiento, TEXTOS } from './cine'
@@ -154,6 +155,15 @@ export default function PeliculaColiseo({ nombre, linea, onSeguir, onSaltarTodo 
     }
   }
   const tEmb = 23.6
+  // (V30) La película del Coliseo tiene su propia partitura: el destello a los 23,6 s y los textos a los 24 s.
+  useEffect(() => {
+    if (reducido) return undefined
+    const o = { escena: { fl: tEmb - off, dim: tEmb - 0.4 - off, x: [24 - off, 24.3 - off, 24.6 - off, 25.6 - off] } }
+    prepararSonido('escena', o)
+    void sonar('escena', o)
+    return () => cortarSonidoDe('escena')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reducido])
   const tTextos = 24
   const tFuera = 999 // los textos se quedan; «Tu primera maravilla» va en «Y además…» como tarjeta pequeña (8B4)
   const tBoton = 25.6

@@ -19,66 +19,12 @@ const CAP = 'docs/dias/V29_capturas'
 fs.mkdirSync(CAP, { recursive: true })
 
 /* ───────── 1. Los archivos ───────── */
-console.log('1. Los archivos de premio: tamaño, volumen y dónde caen los golpes')
-const IDS = ['medalla_bronce', 'medalla_plata', 'medalla_oro', 'medalla_diamante', 'coleccion', 'emblema', 'maravilla', 'pais', 'apertura']
-const leerWav = (f) => {
-  const b = fs.readFileSync(f)
-  const sr = b.readUInt32LE(24)
-  const n = (b.length - 44) / 2
-  const s = new Float32Array(n)
-  for (let i = 0; i < n; i++) s[i] = b.readInt16LE(44 + i * 2) / 32768
-  return { sr, s, bytes: b.length, formato: b.toString('ascii', 8, 12), canales: b.readUInt16LE(22) }
-}
+console.log('1. Los archivos de premio (desde la V30 son los grabados m4a; su tamaño, volumen y golpes los mira pruebaV30)')
 {
-  const mf = JSON.parse(leer('public/sonidos/premio/manifiesto.json'))
-  let elegidos = 0
-  const rms = {}
-  const nivel = { bronce: [], plata: [], oro: [], diamante: [] }
-  for (const id of IDS) {
-    for (const v of ['A', 'B', 'C']) {
-      const f = `public/sonidos/premio/${id}_${v}.wav`
-      debe(fs.existsSync(f), 'archivos', `existe ${id}_${v}.wav`)
-      if (!fs.existsSync(f)) continue
-      const w = leerWav(f)
-      debe(w.formato === 'WAVE' && w.canales === 1 && w.sr === 11025 && !w.s.some((x) => Number.isNaN(x)), 'archivos', `${id}_${v}: WAV mono de 11.025 Hz sin errores`)
-      debe(w.bytes < 40 * 1024, 'peso', `${id}_${v}: pesa ${(w.bytes / 1024).toFixed(1)} KB (menos de 40 KB)`)
-      if (v === 'A') elegidos += w.bytes
-      const g = mf[id][v].golpe
-      const i0 = Math.floor((g - 0.4) * w.sr)
-      const i1 = Math.floor((g + 0.6) * w.sr)
-      let suma = 0
-      let pico = 0
-      let tPico = 0
-      for (let i = Math.max(0, i0); i < Math.min(w.s.length, i1); i++) {
-        suma += w.s[i] * w.s[i]
-        if (Math.abs(w.s[i]) > pico) {
-          pico = Math.abs(w.s[i])
-          tPico = i / w.sr
-        }
-      }
-      rms[`${id}_${v}`] = Math.sqrt(suma / (i1 - i0))
-      debe(pico > 0.2 && pico <= 0.95, 'volumen', `${id}_${v}: ni flojo ni saturado (pico ${pico.toFixed(2)})`)
-      debe(tPico >= g - 0.05 && tPico <= g + 0.2, 'golpe', `${id}_${v}: su golpe final cae en ${g.toFixed(2)} s (el pico, en ${tPico.toFixed(3)} s)`)
-      const m = /^medalla_(\w+)$/.exec(id)
-      if (m) nivel[m[1]].push(rms[`${id}_${v}`] + pico * 0)
-    }
-  }
-  const valores = Object.values(rms)
-  const db = (x) => 20 * Math.log10(x)
-  debe(Math.max(...valores.map(db)) - Math.min(...valores.map(db)) < 2.5, 'volumen', `todos suenan igual de fuerte (diferencia ${(Math.max(...valores.map(db)) - Math.min(...valores.map(db))).toFixed(1)} dB, menos de 2,5)`)
-  debe(elegidos < 400 * 1024, 'peso', `los 9 sonidos de premio elegidos juntos pesan ${(elegidos / 1024).toFixed(0)} KB (menos de 400 KB)`)
-  // bronce < plata < oro < diamante: cada nivel dura más y lleva más energía en la cola
-  const cola = (id) => {
-    const w = leerWav(`public/sonidos/premio/${id}_A.wav`)
-    const g = mf[id].A.golpe
-    let e = 0
-    for (let i = Math.floor((g + 0.15) * w.sr); i < Math.min(w.s.length, Math.floor((g + 0.65) * w.sr)); i++) e += w.s[i] * w.s[i]
-    return e / w.sr
-  }
-  const e4 = ['bronce', 'plata', 'oro', 'diamante'].map((g) => cola(`medalla_${g}`))
-  debe(e4[0] < e4[1] && e4[1] < e4[2] && e4[2] < e4[3], 'niveles', `cada nivel suena a más: bronce ${e4[0].toFixed(3)} < plata ${e4[1].toFixed(3)} < oro ${e4[2].toFixed(3)} < diamante ${e4[3].toFixed(3)} (energía de lo que suena tras el golpe)`)
-  const pesos = fs.readdirSync('public/sonidos').filter((x) => x.endsWith('.wav'))
-  void pesos
+  const mf = JSON.parse(leer('public/sonidos/v30/manifiesto.json'))
+  for (const id of ['medalla_bronce', 'medalla_plata', 'medalla_oro', 'medalla_diamante', 'coleccion', 'emblema', 'maravilla', 'pais', 'apertura', 'clic', 'vuelo', 'brillo', 'redoble'])
+    debe(Object.keys(mf[id] ?? {}).length >= 3, 'archivos', `${id}: tiene al menos 3 candidatos grabados (${Object.keys(mf[id] ?? {}).join(', ')})`)
+  debe(!fs.existsSync('public/sonidos/premio'), 'archivos', 'los WAV sintetizados de la V29 ya no están')
 }
 
 /* ───────── 2. El código ───────── */
@@ -128,29 +74,29 @@ try {
       if (!p || p.notas.length === 0) { salida.sinPartitura.push(id); continue }
       for (const n of p.notas) {
         if (n.tipo === 'sint' && !S.SONIDOS_SINTETICOS.includes(n.sonido)) salida.sintMalo.push(id + ':' + n.sonido)
-        if (n.tipo === 'archivo' && !(mf?.[n.archivo]?.A)) salida.archivoMalo.push(id + ':' + n.archivo)
+        if (n.tipo === 'archivo' && !(mf?.[n.archivo] && Object.keys(mf[n.archivo]).length)) salida.archivoMalo.push(id + ':' + n.archivo)
         const en = n.tipo === 'sint' ? n.en : n.golpe
         if (en < 0 || en > p.dura + 0.01) salida.fueraDelAnimacion = [...(salida.fueraDeLaAnimacion), id + ':' + en]
       }
     }
     // 1. si una animación dura más, el sonido se mueve con ella (los instantes salen de tiempos.ts)
-    const antes = P.partituraDe('pedazo').notas.find((n) => n.tipo === 'sint' && n.sonido === 'clic').en
-    const emb = P.partituraDe('emblema').notas.find((n) => n.tipo === 'archivo').golpe
-    const fin7 = P.partituraDe('maravilla').notas.find((n) => n.tipo === 'archivo').golpe
-    const apert = P.partituraDe('apertura').notas.find((n) => n.tipo === 'archivo').golpe
+    const antes = P.partituraDe('pedazo').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'clic').golpe
+    const emb = P.partituraDe('emblema').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'emblema').golpe
+    const fin7 = P.partituraDe('maravilla').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'maravilla').golpe
+    const apert = P.partituraDe('apertura').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'apertura').golpe
     T.TIEMPOS_DE_PEDAZO.encaja += 0.5
     T.TIEMPOS_DE_EMBLEMA.estalla += 1
     T.TIEMPOS_FINAL_SIETE.giraDura += 0.8
-    const despues = P.partituraDe('pedazo').notas.find((n) => n.tipo === 'sint' && n.sonido === 'clic').en
-    const emb2 = P.partituraDe('emblema').notas.find((n) => n.tipo === 'archivo').golpe
-    const fin72 = P.partituraDe('maravilla').notas.find((n) => n.tipo === 'archivo').golpe
+    const despues = P.partituraDe('pedazo').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'clic').golpe
+    const emb2 = P.partituraDe('emblema').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'emblema').golpe
+    const fin72 = P.partituraDe('maravilla').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'maravilla').golpe
     T.TIEMPOS_DE_PEDAZO.encaja -= 0.5
     T.TIEMPOS_DE_EMBLEMA.estalla -= 1
     T.TIEMPOS_FINAL_SIETE.giraDura -= 0.8
     salida.sigue = { pedazo: Math.round((despues - antes) * 100) / 100, emblema: Math.round((emb2 - emb) * 100) / 100, final7: Math.round((fin72 - fin7) * 100) / 100 }
     salida.exactos = { pedazoClic: antes, emblemaGolpe: emb, final7Golpe: fin7, aperturaEstrella: apert, aperturaDuracion: P.partituraDe('apertura').dura, esperadoClic: T.RETRASO_DEL_PEDAZO + T.TIEMPOS_DE_PEDAZO.encaja, esperadoEmblema: T.TIEMPOS_DE_EMBLEMA.estalla, esperadoFinal7: T.paraFinalSiete(), esperadoEstrella: 0.6 * P.partituraDe('apertura').dura }
     // 2. reducir movimiento: más cortas y el sonido las sigue
-    for (const id of ['coleccion', 'emblema', 'pais', 'medalla_oro']) { const n = P.partituraDe(id), r = P.partituraDe(id, { reducido: true }); if (!(r.dura < n.dura)) salida.reducidas.push(id); const gn = n.notas.find((x) => x.tipo === 'archivo').golpe, gr = r.notas.find((x) => x.tipo === 'archivo').golpe; if (!(gr < gn)) salida.reducidas.push(id + ':golpe') }
+    for (const id of ['coleccion', 'emblema', 'pais', 'medalla_oro']) { const n = P.partituraDe(id), r = P.partituraDe(id, { reducido: true }); if (!(r.dura < n.dura)) salida.reducidas.push(id); const gn = n.notas.filter((x) => x.tipo === 'archivo').at(-1).golpe, gr = r.notas.filter((x) => x.tipo === 'archivo').at(-1).golpe; if (!(gr < gn)) salida.reducidas.push(id + ':golpe') }
     // 3. la partitura renderizada (sin altavoces): cada golpe cae donde dice la partitura (menos de 30 ms de diferencia)
     const medidas = []
     for (const id of ['medalla_bronce', 'medalla_plata', 'medalla_oro', 'medalla_diamante', 'coleccion', 'emblema', 'maravilla', 'pais', 'apertura']) {
@@ -163,8 +109,8 @@ try {
       window.__sonidosAgendados = []
       const buf = await off.startRendering()
       const d = buf.getChannelData(0)
-      const golpe = p.notas.find((n) => n.tipo === 'archivo').golpe + 0.04 // el motor empieza 40 ms después de «ahora»
-      const archivoAgendado = ag.find((x) => x.tipo === 'archivo')
+      const golpe = p.notas.filter((n) => n.tipo === 'archivo').at(-1).golpe + 0.04 // el motor empieza 40 ms después de «ahora»
+      const archivoAgendado = ag.filter((x) => x.tipo === 'archivo').at(-1)
       let pico = 0, tPico = 0
       for (let i = Math.floor((golpe - 0.1) * 44100); i < Math.min(d.length, Math.floor((golpe + 0.35) * 44100)); i++) if (Math.abs(d[i]) > pico) { pico = Math.abs(d[i]); tPico = i / 44100 }
       medidas.push({ id, golpe: +golpe.toFixed(3), tPico: +tPico.toFixed(3), pico: +pico.toFixed(2), programado: archivoAgendado ? +(archivoAgendado.programado + 0.04).toFixed(3) : null, desajusteAgendado: archivoAgendado ? Math.abs(archivoAgendado.programado - archivoAgendado.en) : null })
@@ -252,7 +198,7 @@ console.log('5. La página de sonidos: solo administradores')
     await adm.esp(7000)
     const m = JSON.parse(await adm.evaluar(`JSON.stringify({ animaciones: document.querySelectorAll('[data-animacion]').length, ver: document.querySelectorAll('[data-ver]').length, oir: document.querySelectorAll('[data-oir]').length, elegir: document.querySelectorAll('[data-elegir]').length, resumen: document.querySelector('[data-resumen-elegido]')?.innerText ?? '', volumen: Boolean(document.querySelector('input[aria-label="Volumen general"]')), lineas: document.querySelectorAll('[data-linea-de-tiempo]').length })`))
     debe(m.animaciones >= 18 && m.ver === m.animaciones && m.lineas === m.animaciones, 'admin', `cada animación (${m.animaciones}) con su ▶ y su línea de tiempo`)
-    debe(m.oir === 16 * 3 && m.elegir === 16 * 3, 'admin', `cada sonido (16) con sus versiones A, B y C para oír (${m.oir}) y elegir (${m.elegir})`)
+    debe(m.oir >= 40 && m.oir === m.elegir, 'admin', `cada sonido grabado con sus candidatos para oír (${m.oir}) y elegir (${m.elegir})`)
     debe(m.volumen && /medalla_oro: A/.test(m.resumen) && /volumen general/.test(m.resumen), 'admin', 'control de volumen general y un resumen con lo elegido para copiar')
     await adm.evaluar("document.querySelector('[data-elegir=\"medalla_oro:B\"]').click(); true")
     await adm.esp(500)

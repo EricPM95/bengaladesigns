@@ -14,7 +14,7 @@
  * Con los logros apagados nadie llama a esto.
  */
 
-import { partituraDe } from './sonidos/partituras'
+import { partituraDe, type OpcionesDePartitura } from './sonidos/partituras'
 import { cortar, iniciarPartitura, precargar, FUNDIDO_AL_SALTAR_MS } from './sonidos/motor'
 
 const CLAVE_SONIDO = 'trazo:sonido'
@@ -38,11 +38,16 @@ export function cortarSonidos(fundidoMs = FUNDIDO_AL_SALTAR_MS): void {
   if (contexto) cortar(contexto, fundidoMs)
 }
 
+/** (V30) Corta (con fundido) solo la partitura `id` (la escena que se cierra no corta lo que ya suena de la pantalla siguiente). */
+export function cortarSonidoDe(id: string, fundidoMs = FUNDIDO_AL_SALTAR_MS): void {
+  if (contexto) cortar(contexto, fundidoMs, { id })
+}
+
 /** (V29) Tener listos los archivos de premio de la siguiente animación (si hace falta), sin que suene nada. */
-export function prepararSonido(momento: string): void {
+export function prepararSonido(momento: string, extra: OpcionesDePartitura = {}): void {
   const ctx = contextoDeAudio()
   if (!ctx || !sonidoActivado()) return
-  void precargar(ctx, momento, { reducido: movimientoReducido() }).catch(() => undefined)
+  void precargar(ctx, momento, { reducido: movimientoReducido(), ...extra }).catch(() => undefined)
 }
 
 interface ListaDeSonidos {
@@ -127,7 +132,7 @@ async function cargar(momento: string): Promise<AudioBuffer | null> {
 }
 
 /** Hace sonar un momento. Llamarla dentro del toque del dedo (el primer toque desbloquea el audio). Nunca lanza. */
-export async function sonar(momento: string): Promise<void> {
+export async function sonar(momento: string, extra: OpcionesDePartitura = {}): Promise<void> {
   if (!sonidoActivado()) return
   // (Tanda 10N4) Para las pruebas: cada vez que de verdad se pide un sonido, queda apuntado.
   try {
@@ -137,6 +142,8 @@ export async function sonar(momento: string): Promise<void> {
   }
   const ctx = contextoDeAudio()
   if (!ctx) return
+  // (V30) El instante en que la animación empezó de verdad: si el archivo tarda en llegar, la partitura sigue alineada con la animación (el sonido arranca a mitad, nunca tarde).
+  const inicio = ctx.currentTime
   try {
     // (10N10) No solo 'suspended': en el iPhone, al volver de segundo plano o tras una llamada, el audio queda en 'interrupted' y el sonido se «tocaba» sin salir. Se reanuda (sin esperar para siempre: sin un toque reciente la
     // reanudación no llega) y, si sigue sin sonar, se deja apuntado para el siguiente toque (prepararAudioAlPrimerToque lo reproduce si es reciente).
@@ -145,13 +152,13 @@ export async function sonar(momento: string): Promise<void> {
     }
     // (V29) Si la animación tiene partitura, cada sonido suena en su instante exacto (lo que dura el giro, el golpe al parar…); si no, el archivo de siempre.
     if (partituraDe(momento)) {
-      const o = { reducido: movimientoReducido() }
+      const o = { reducido: movimientoReducido(), ...extra }
       await Promise.race([precargar(ctx, momento, o).catch(() => undefined), new Promise((r) => setTimeout(r, 300))])
       if (ctx.state !== 'running') {
         pendiente = { momento, en: Date.now() }
         return
       }
-      iniciarPartitura(ctx, momento, o)
+      iniciarPartitura(ctx, momento, ctx.state === 'running' && ctx.currentTime - inicio < 1.5 ? { ...o, en: inicio } : o)
       return
     }
     const buffer = await cargar(momento)

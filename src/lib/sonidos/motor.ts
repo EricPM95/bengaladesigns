@@ -1,5 +1,9 @@
 import { partituraDe, type Nota, type OpcionesDePartitura } from './partituras'
-import { tocarSintetico, VERSIONES, type Version } from './sintesis'
+import { tocarSintetico, type Version } from './sintesis'
+
+/** (V30) Los sonidos grabados tienen hasta cinco candidatos por momento (A a E). */
+export type Letra = 'A' | 'B' | 'C' | 'D' | 'E'
+export const LETRAS: Letra[] = ['A', 'B', 'C', 'D', 'E']
 
 /**
  * (V29) EL MOTOR DE LAS PARTITURAS: toma la partitura de una animación (`partituras.ts`) y programa CADA sonido en su instante exacto con el reloj de audio (no con temporizadores: no se retrasa si el móvil va justo).
@@ -17,12 +21,15 @@ const ADELANTO = 0.04
 export const FUNDIDO_AL_SALTAR_MS = 140
 
 export interface DatosDeArchivo {
+  nombre?: string
+  fuentes?: string[]
+  licencia?: string
   /** El instante, en segundos desde el principio del archivo, en que cae el golpe final. */
   golpe: number
   dura: number
   bytes: number
 }
-export type Manifiesto = Record<string, Partial<Record<Version, DatosDeArchivo>>>
+export type Manifiesto = Record<string, Partial<Record<Letra, DatosDeArchivo>>>
 
 const leerJson = <T,>(clave: string, por: T): T => {
   try {
@@ -40,23 +47,29 @@ const guardarJson = (clave: string, valor: unknown) => {
   }
 }
 
+let manifiestoEnMemoria: Manifiesto | null = null
 /** La versión (A, B o C) elegida de cada sonido; sin elegir, la A. */
-export const leerElegidos = (): Record<string, Version> => leerJson<Record<string, Version>>(CLAVE_ELEGIDOS, {})
-export const versionDe = (id: string): Version => {
+export const leerElegidos = (): Record<string, Letra> => leerJson<Record<string, Letra>>(CLAVE_ELEGIDOS, {})
+/** La letra elegida de un sonido; sin elegir (o si esa letra no existe porque se descartó), la primera que haya. */
+export const versionDe = (id: string): Letra => {
   const v = leerElegidos()[id]
-  return v && VERSIONES.includes(v) ? v : 'A'
+  const hay = manifiestoEnMemoria?.[id]
+  if (v && LETRAS.includes(v) && (!hay || hay[v])) return v
+  if (hay) return LETRAS.find((l) => hay[l]) ?? 'A'
+  return 'A'
 }
-export const elegirVersion = (id: string, v: Version) => guardarJson(CLAVE_ELEGIDOS, { ...leerElegidos(), [id]: v })
+/** (V30) Los sonidos que se quedan hechos por código (el toque y el brillo pequeño de [Visto], la campanita y el tic) están FIJOS en la versión A que eligió Eric: ya no se cambian. */
+export const versionSint = (_id: string): Version => 'A'
+export const elegirVersion = (id: string, v: Letra) => guardarJson(CLAVE_ELEGIDOS, { ...leerElegidos(), [id]: v })
 export const volumenGeneral = (): number => Math.min(1, Math.max(0, leerJson<number>(CLAVE_VOLUMEN, 0.8)))
 export const ponerVolumenGeneral = (v: number) => guardarJson(CLAVE_VOLUMEN, Math.min(1, Math.max(0, v)))
 export const volumenDe = (id: string): number => Math.min(2, Math.max(0.2, leerJson<Record<string, number>>(CLAVE_VOLUMEN_DE, {})[id] ?? 1))
 export const ponerVolumenDe = (id: string, v: number) => guardarJson(CLAVE_VOLUMEN_DE, { ...leerJson<Record<string, number>>(CLAVE_VOLUMEN_DE, {}), [id]: v })
 
-let manifiestoEnMemoria: Manifiesto | null = null
 export async function manifiesto(): Promise<Manifiesto | null> {
   if (manifiestoEnMemoria) return manifiestoEnMemoria
   try {
-    const r = await fetch('/sonidos/premio/manifiesto.json')
+    const r = await fetch('/sonidos/v30/manifiesto.json')
     if (!r.ok) return null
     manifiestoEnMemoria = (await r.json()) as Manifiesto
     return manifiestoEnMemoria
@@ -67,12 +80,12 @@ export async function manifiesto(): Promise<Manifiesto | null> {
 
 const buffers = new Map<string, AudioBuffer>()
 /** Baja y descodifica un archivo de premio (solo cuando hace falta; con caché larga de Vercel la segunda vez no baja nada). */
-export async function cargarPremio(ctx: BaseAudioContext, id: string, v: Version): Promise<AudioBuffer | null> {
+export async function cargarPremio(ctx: BaseAudioContext, id: string, v: Letra): Promise<AudioBuffer | null> {
   const clave = `${id}_${v}`
   const ya = buffers.get(clave)
   if (ya) return ya
   try {
-    const r = await fetch(`/sonidos/premio/${clave}.wav`)
+    const r = await fetch(`/sonidos/v30/${clave}.m4a`)
     if (!r.ok) return null
     const b = await ctx.decodeAudioData(await r.arrayBuffer())
     buffers.set(clave, b)
@@ -85,8 +98,8 @@ export async function cargarPremio(ctx: BaseAudioContext, id: string, v: Version
 /** Los archivos que necesita una partitura (para tenerlos listos antes de que la animación empiece). */
 export const archivosDe = (id: string, o: OpcionesDePartitura = {}): string[] => (partituraDe(id, o)?.notas ?? []).filter((n): n is Extract<Nota, { tipo: 'archivo' }> => n.tipo === 'archivo').map((n) => n.archivo)
 export async function precargar(ctx: BaseAudioContext, id: string, o: OpcionesDePartitura = {}): Promise<void> {
-  await Promise.all(archivosDe(id, o).map((a) => cargarPremio(ctx, a, versionDe(a))))
   await manifiesto()
+  await Promise.all(archivosDe(id, o).map((a) => cargarPremio(ctx, a, versionDe(a))))
 }
 
 interface Activa {
@@ -170,7 +183,7 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
   activas.push(activa)
   for (const n of p.notas) {
     if (n.tipo === 'sint') {
-      tocarSintetico(ctx, master, n.sonido, versionDe(n.sonido), t0 + n.en, n.vol ?? 1, n.dura)
+      tocarSintetico(ctx, master, n.sonido, versionSint(n.sonido), t0 + n.en, n.vol ?? 1, n.dura)
       registrar({ partitura: id, tipo: 'sint', id: n.sonido, en: n.en, programado: n.en })
     } else {
       const v = versionDe(n.archivo)

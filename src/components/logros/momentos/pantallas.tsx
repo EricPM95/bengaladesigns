@@ -5,7 +5,7 @@ import type { EstadoLogros } from './api'
 import { Centro, FONDO_CALIDO, FONDO_NOCHE, Ojo, ORO, PantallaOscura, Rayos, Estrellas, Sub, Titulo, Vuelo } from './base'
 import { FinalSieteMaravillas } from './FinalSieteMaravillas'
 import { gradoAnterior, type Pantalla } from './plan'
-import { TIEMPOS_DE_PEDAZO, TIEMPOS_DE_PEDAZO_REDUCIDO } from '../../../lib/sonidos/tiempos'
+import { TIEMPOS_DE_COLECCION_PANTALLA, TIEMPOS_DE_PEDAZO, TIEMPOS_DE_PEDAZO_REDUCIDO, TIEMPOS_SELLADO, TIEMPOS_SELLO } from '../../../lib/sonidos/tiempos'
 
 const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
 
@@ -53,13 +53,13 @@ function PantallaSello({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePantal
               {Array.from({ length: 16 }, (_, i) => (
                 <span key={i} aria-hidden className="mo-con-mov" style={{ position: 'absolute', left: 103, top: 103, width: i % 3 ? 7 : 11, height: i % 3 ? 7 : 11, borderRadius: '50%', background: i % 4 ? '#FFE9B0' : '#fff', ['--r' as string]: `${i * 22.5 + (i % 2) * 8}deg`, opacity: 0, animation: `evoBurst 1.1s ${3.3 + (i % 4) * 0.05}s ease-out both` } as React.CSSProperties} />
               ))}
-              <div style={{ position: 'absolute', inset: 0, opacity: 0, animation: 'evoNew 1.1s 3.3s both' }}>
+              <div style={{ position: 'absolute', inset: 0, opacity: 0, animation: `evoNew ${TIEMPOS_SELLO.evolucion.nuevoDura}s ${TIEMPOS_SELLO.evolucion.nuevo}s both` }}>
                 <Sello id={id} grado={grado} tam={210} />
               </div>
               <span className="mo-con-mov" style={{ position: 'absolute', left: 0, right: 0, top: -44, font: "italic 400 24px/1.2 'Instrument Serif',serif", color: '#F3E3B8', opacity: 0, animation: 'moFrase 3s .3s ease both' }}>{FRASE_EVO[grado] ?? 'Algo está cambiando…'}</span>
             </>
           ) : (
-            <div style={{ opacity: 0, animation: 'moDrop .9s .2s cubic-bezier(.2,.8,.2,1) both' }}>
+            <div style={{ opacity: 0, animation: `moDrop ${TIEMPOS_SELLO.caeDura}s ${TIEMPOS_SELLO.cae}s cubic-bezier(.2,.8,.2,1) both` }}>
               <Sello id={id} grado={grado} tam={210} />
             </div>
           )}
@@ -166,9 +166,9 @@ function PantallaColeccion({ pantalla, estado, onSeguir, onSaltarTodo, paso }: P
       <Centro>
         <Ojo en=".3s" color="#9FE0B4">¡Colección completa!</Ojo>
         <Vuelo>
-          <InsigniaEncendiendo coleccion={id} vistos={vistos} nuevos={ultimo} completa tam={230} retraso={1.0} />
+          <InsigniaEncendiendo coleccion={id} vistos={vistos} nuevos={ultimo} completa tam={230} retraso={TIEMPOS_DE_COLECCION_PANTALLA.retraso} />
         </Vuelo>
-        <Titulo en="2.4s">{m.nombre}</Titulo>
+        <Titulo en={`${TIEMPOS_DE_COLECCION_PANTALLA.titulo}s`}>{m.nombre}</Titulo>
         <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#9FE0B4', opacity: 0, animation: 'moUp .7s 2.6s ease both' }}>{`${total || vistos.length} DE ${total || vistos.length} · COMPLETA`}</span>
         {m.linea && <Sub en="2.9s">{m.linea}</Sub>}
       </Centro>
@@ -208,7 +208,7 @@ function PantallaSellado({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePant
               return <circle key={k} cx={125 + Math.cos(a) * (84 + (k % 4) * 9)} cy={85 + Math.sin(a) * (54 + (k % 3) * 8)} r={1.4 + (k % 4) * 0.9} fill={color} style={{ opacity: 0, animation: `moInk 1.2s ${1.0 + k * 0.02}s ease-out both` }} />
             })}
           </svg>
-          <div style={{ position: 'relative', border: `3px solid ${color}`, color, borderRadius: 14, padding: '14px 18px', transform: 'rotate(-8deg)', opacity: 0, animation: 'moStamp .9s 1.0s cubic-bezier(.2,.8,.2,1) both', font: "700 20px/1.1 'Geist Mono',monospace", letterSpacing: '.08em', textTransform: 'uppercase', background: 'rgba(255,246,234,.06)' }}>
+          <div style={{ position: 'relative', border: `3px solid ${color}`, color, borderRadius: 14, padding: '14px 18px', transform: 'rotate(-8deg)', opacity: 0, animation: `moStamp ${TIEMPOS_SELLADO.dura}s ${TIEMPOS_SELLADO.empieza}s cubic-bezier(.2,.8,.2,1) both`, font: "700 20px/1.1 'Geist Mono',monospace", letterSpacing: '.08em', textTransform: 'uppercase', background: 'rgba(255,246,234,.06)' }}>
             <div style={{ fontSize: 10, letterSpacing: '.3em', opacity: 0.8, marginBottom: 6 }}>PASAPORTE</div>
             <div>{nombreLugar}</div>
             <div style={{ fontSize: 11, marginTop: 6, letterSpacing: '.2em' }}>{fechaCorta(s(m, 'en'))}</div>

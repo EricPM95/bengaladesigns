@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { cortarSonidoDe, prepararSonido, sonar } from '../../../../lib/sonidos'
 import { Emblema } from '../../dibujos'
 import '../momentos.css'
 import './escenas.css'
@@ -127,23 +128,38 @@ export const capaAbs: CSSProperties = { position: 'absolute', inset: 0 }
 /** Un svg de 390 × 844 a pantalla completa. */
 export const svgAbs: CSSProperties = { position: 'absolute', inset: 0 }
 
-/** Un lienzo de 390 × 844 que se ajusta (sin deformar) al tamaño de la pantalla. */
+/**
+ * (V30) Cuánto agrandar el lienzo de 390 × 844 y dónde ponerlo para LLENAR la pantalla de borde a borde, sin deformar. Pura (se prueba sin pantalla).
+ * Antes solo se «ajustaba» (la escena entera dentro de la pantalla): en un iPhone con barra de Safari (390 × 664) quedaban franjas oscuras a los lados y la escena parecía un recuadro. Ahora se agranda hasta cubrir todo el ancho
+ * y el alto; lo que sobra se recorta MÁS por arriba (el cielo) que por abajo (donde van las frases y el emblema), y nunca se recorta de lo importante: si cubrir exigiera cortar más del 22 % del alto del lienzo (una pantalla
+ * muy ancha, como un ordenador), se ajusta como antes.
+ */
+export function ajusteDeLienzo(ancho: number, alto: number): { k: number; desplazamientoY: number } {
+  const cubre = Math.max(ancho / 390, alto / 844)
+  const cabe = Math.min(ancho / 390, alto / 844)
+  const sobra = (cubre * 844 - alto) / cubre // lo que se recortaría del alto del lienzo, en unidades del lienzo
+  if (sobra > 844 * 0.22) return { k: Math.max(0.5, cabe), desplazamientoY: 0 }
+  // El recorte se reparte 70 % arriba / 30 % abajo (centrado sería 50 / 50): el lienzo sube 0,2 del recorte total (en píxeles de pantalla).
+  return { k: Math.max(0.5, cubre), desplazamientoY: -0.2 * (cubre * 844 - alto) }
+}
+
+/** Un lienzo de 390 × 844 que llena la pantalla de borde a borde sin deformarse (ver `ajusteDeLienzo`). */
 export function Lienzo({ children }: { children: ReactNode }): ReactNode {
   const ref = useRef<HTMLDivElement>(null)
-  const [k, setK] = useState(1)
+  const [a, setA] = useState({ k: 1, desplazamientoY: 0 })
   useLayoutEffect(() => {
     const medir = () => {
       const el = ref.current
       if (!el) return
-      setK(Math.max(0.5, Math.min(el.clientWidth / 390, el.clientHeight / 844)))
+      setA(ajusteDeLienzo(el.clientWidth, el.clientHeight))
     }
     medir()
     window.addEventListener('resize', medir)
     return () => window.removeEventListener('resize', medir)
   }, [])
   return (
-    <div ref={ref} style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 390, height: 844, marginLeft: -195, marginTop: -422, transform: `scale(${k})`, transformOrigin: 'center' }}>{children}</div>
+    <div ref={ref} data-lienzo-k={a.k.toFixed(3)} style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 390, height: 844, marginLeft: -195, marginTop: -422, transform: `translateY(${a.desplazamientoY.toFixed(1)}px) scale(${a.k})`, transformOrigin: 'center' }}>{children}</div>
     </div>
   )
 }
@@ -197,6 +213,14 @@ export default function CineEmblema({ id, config, nombre, linea, onSeguir, onSal
   const dim = config.dim ?? 7.6
   const xs = config.x ?? [fl + 1.2, fl + 1.45, fl + 1.7, fl + 2.1]
   const x4 = xs[3]
+  // (V30) La escena tiene su propia partitura con SUS tiempos (la luz estalla a los `fl` s, el emblema y su nombre entran en `xs`).
+  useEffect(() => {
+    const o = { escena: { fl, dim, x: xs } }
+    prepararSonido('escena', o)
+    if (!sinMovimiento()) void sonar('escena', o)
+    return () => cortarSonidoDe('escena')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [fin, setFin] = useState(sinMovimiento())
   const [verBoton, setVerBoton] = useState(sinMovimiento())
   useEffect(() => {

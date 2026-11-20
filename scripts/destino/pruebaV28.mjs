@@ -212,12 +212,19 @@ console.log('4. Las 18 insignias: cada círculo con SU baldosa, entera, derecha 
           const peor = Math.max(...g.girados.map(([x, y]) => Math.hypot(e.dx + x * e.lado - 23, e.dy + y * e.lado - 23)))
           if (peor > 23.05) salida.fueraDelCirculo.push(id + ':' + k + ':' + peor.toFixed(1))
           // ocupa al menos el 70 % del ancho del círculo
-          if (e.ancho < 0.7 * 46 - 0.05 && !(g.familia === 'burbujas' || g.familia === 'una')) salida.pequenas.push(id + ':' + k + ':' + (e.ancho / 46).toFixed(2))
+          // (V30) Las de 4 trozos son cuadrantes de lados rectos puestos derechos (horizontal y vertical): llenan el círculo por su diagonal, así que su ancho es menor (mínimo 62 %)
+          const minimoAncho = g.familia === 'partes' && total === 4 ? 0.62 : 0.7
+          if (e.ancho < minimoAncho * 46 - 0.05 && !(g.familia === 'burbujas' || g.familia === 'una')) salida.pequenas.push(id + ':' + k + ':' + (e.ancho / 46).toFixed(2))
           // derecha: el lado de fuera arriba (el punto más lejano del centro de la insignia queda sobre él)
           if (g.familia === 'partes' || g.familia === 'impr') {
             const lejano = g.girados.reduce((m, p) => (Math.hypot(p[0] - cx, p[1] - cy) > Math.hypot(m[0] - cx, m[1] - cy) ? p : m))
             const medio = g.girados.reduce((s, p) => [s[0] + p[0] / g.girados.length, s[1] + p[1] / g.girados.length], [0, 0])
-            if (!(medio[1] < cy - 0.05) || Math.abs(medio[0] - cx) > 0.06) salida.torcidas.push(id + ':' + k)
+            if (g.familia === 'partes' && total === 4) {
+              // (V30) Cuadrante: sus lados rectos horizontales y verticales (caja casi cuadrada) y por encima del centro
+              const xs = g.girados.map((p) => p[0]), ys = g.girados.map((p) => p[1])
+              const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys)
+              if (!((Math.min(...ys) + Math.max(...ys)) / 2 < cy - 0.02) || w / h > 1.45 || h / w > 1.45) salida.torcidas.push(id + ':' + k)
+            } else if (!(medio[1] < cy - 0.05) || Math.abs(medio[0] - cx) > 0.06) salida.torcidas.push(id + ':' + k)
             void lejano
           }
         })
