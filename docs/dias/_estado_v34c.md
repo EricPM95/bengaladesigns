@@ -1,13 +1,13 @@
-# Estado de la tanda V34
+# Estado de la tanda V34C
 
-**Última actualización: 20/11/26, 19:45**
+**Última actualización: 20/11/26, 21:34**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V34 hecha y subida (1b377967); produccion comprobada; api reiniciada
+Estudio de sonidos hecho: pruebaV34C 84/0, V29/V30/V33 adaptadas y en 0
 
 ## Qué falta
-nada: a la espera de Eric
+REPASO, push, produccion, reiniciar api
 
 ## Procesos abiertos ahora mismo
 - node: 4
