@@ -121,6 +121,6 @@
 
 ## Al cerrar la cola
 
-- **Commits:** V30 `6b6ac5b8` · V31 `5672b5b2` · V32 `4a0b2c99` · V33 (el último de esta lista).
+- **Commits:** V30 `6b6ac5b8` · V31 `5672b5b2` · V32 `4a0b2c99` · V33 `a4b80929`.
 - **Queda abierto:** fotos de Roma (Borgo Pio y Colle Oppio), `pruebaPantallas8b` y `pruebaTanda10N8_perfil` (fallan desde antes), elegir sonidos, y los paneles de la V32.
 - **Servidores:** la API y Vite siguen encendidos (como pediste); no se ha apagado el PC.
