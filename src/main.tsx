@@ -31,19 +31,23 @@ if (import.meta.env.DEV) void import('./dev/escaparate.ts')
 const DibujosPrueba = import.meta.env.DEV && new URLSearchParams(window.location.search).get('dibujos') ? lazy(() => import('./dev/DibujosPrueba.tsx').then((m) => ({ default: m.DibujosPrueba }))) : null
 
 // (V29) La página de sonidos de Eric (/admin/sonidos o /?admin=sonidos): se baja a demanda y solo la ven los administradores (la comprueba el servidor).
-const AdminSonidos = window.location.pathname === '/admin/sonidos' || new URLSearchParams(window.location.search).get('admin') === 'sonidos' ? lazy(() => import('./components/logros/AdminSonidos.tsx').then((m) => ({ default: m.AdminSonidos }))) : null
+const AdminSonidos = new URLSearchParams(window.location.search).get('admin') === 'sonidos' ? lazy(() => import('./components/logros/AdminSonidos.tsx').then((m) => ({ default: m.AdminSonidos }))) : null
+
+// (V33) EL PANEL DE JUTRIP: /admin (y /admin/usuarios, /admin/logros, /admin/sonidos…), solo administradores (lo comprueba el servidor). Se baja a demanda. Las direcciones viejas con ?admin=logros / ?admin=sonidos siguen abriendo lo de siempre.
+const enElPanel = window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/') || new URLSearchParams(window.location.search).get('admin') === 'panel'
+const PanelJutrip = enElPanel ? lazy(() => import('./components/panel/PanelJutrip.tsx').then((m) => ({ default: m.PanelJutrip }))) : null
 
 // Solo en desarrollo: ?tarjeta=verano enseña la tarjeta de temporada sola (src/dev/SeasonCardPreview.tsx).
 const previewSeason = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('tarjeta') : null
 
 // Con los logros encendidos (Tanda 8A): el panel de Eric (/admin/logros o /?admin=logros) y la prueba de las fotos (?pruebaFotos=1). Apagados, nada de esto existe.
 const parametros = new URLSearchParams(window.location.search)
-const paginaDeLogros = logrosActivos() ? (window.location.pathname === '/admin/logros' || parametros.get('admin') === 'logros' ? 'admin' : parametros.get('pruebaFotos') ? 'fotos' : null) : null
+const paginaDeLogros = logrosActivos() ? (parametros.get('admin') === 'logros' ? 'admin' : parametros.get('pruebaFotos') ? 'fotos' : null) : null
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      {AdminSonidos ? <Suspense fallback={null}><AdminSonidos /></Suspense> : DibujosPrueba ? <Suspense fallback={null}><DibujosPrueba /></Suspense> : previewSeason ? <SeasonCardPreview season={previewSeason} /> : paginaDeLogros === 'admin' ? <AdminLogros /> : paginaDeLogros === 'fotos' ? <PruebaFotos /> : <App />}
+      {PanelJutrip ? <Suspense fallback={null}><PanelJutrip /></Suspense> : AdminSonidos ? <Suspense fallback={null}><AdminSonidos /></Suspense> : DibujosPrueba ? <Suspense fallback={null}><DibujosPrueba /></Suspense> : previewSeason ? <SeasonCardPreview season={previewSeason} /> : paginaDeLogros === 'admin' ? <AdminLogros /> : paginaDeLogros === 'fotos' ? <PruebaFotos /> : <App />}
     </ErrorBoundary>
   </StrictMode>,
 )

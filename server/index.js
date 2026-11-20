@@ -50,6 +50,7 @@ import { registrarRutasTiempo } from './tiempo.js'
 import { registrarRutasCuentas, quienEs as quienEsCuenta, tokenDe as tokenDeCuenta } from './cuentas.js'
 import { registrarRutasAvisosDestino } from './avisosDestino.js'
 import { registrarRutasPrimeraVez } from './primeraVez.js'
+import { registrarRutasPanel } from './panel/index.js'
 import { registrarRutasDestinosCurados, DESTINOS_OCULTOS } from './destinosCurados.js'
 import { crearGuardianDestinosOcultos } from './destinoOculto.js'
 import { crearServicioAvisos, registrarRutasAvisos } from './avisos.js'
@@ -4723,6 +4724,8 @@ registrarRutasDestinosCurados(app, join(__dirname, '../data'), { esAdminDe: esAd
 registrarRutasAvisosDestino(app, { admin: salesAdmin })
 // (V31) Las preguntas de la primera vez (frecuencia, con quién, año de nacimiento): GET y PUT /api/primera-vez.
 registrarRutasPrimeraVez(app, { admin: salesAdmin })
+// (V33) El Panel de Jutrip (/admin): inicio, usuarios, ventas, responder a reportes y destinos; solo administradores (migración 0090).
+registrarRutasPanel(app, { admin: salesAdmin })
 // La campanita de avisos (cuentas parte 3): lista, leídos, avisos con fecha (nunca de noche), aviso al móvil (con PUSH_ACTIVO) y la tarea programada de Vercel (con CRON_SECRET).
 const servicioAvisos = salesAdmin ? crearServicioAvisos({ admin: salesAdmin, destinos: cargarDatosLogros().destinos }) : null
 if (salesAdmin) registrarRutasAvisos(app, { admin: salesAdmin, servicio: servicioAvisos })

@@ -90,3 +90,37 @@
 8. **En los dos móviles (Eric y Alicia):** borrar el icono viejo de la pantalla de inicio. Abrir `https://jutrip.app` en Safari › Compartir › «Añadir a pantalla de inicio». Entrar con el correo. *Comprobar:* la app abre en pantalla completa y vuestros viajes están.
 9. **Pegar las plantillas de correo** de `docs/jutrip_app/PLANTILLAS_CORREOS_SUPABASE.md` en Supabase › Authentication › Emails › Templates (Magic Link, Confirm signup, Change Email Address). *Comprobar:* pedir un código de entrada: llega «Tu código para entrar en Jutrip: …» desde «Jutrip <no-reply@jutrip.app>».
 10. **Decirme «paneles hechos»:** entonces compruebo en producción, en modo iPhone: jutrip.app carga y el mapa sale, entrar con código y con Google, un enlace de invitación abre el viaje, la dirección vieja lleva a la nueva y el webhook de prueba da 200 (esto último lo verás tú en Stripe: yo no puedo mandar un webhook firmado sin la clave).
+
+---
+
+## V33 · El panel de Jutrip (/admin) — HECHO (código); falta aplicar la 0090 y poner la clave de correo
+
+**Qué cambia, en palabras sencillas**
+
+- **Una sola entrada, `/admin`, solo para administradores** (la comprobación es en el servidor: cada `/api/admin/*` da 401 sin sesión y 403 a quien no es administrador; la pantalla dice «Esta página es solo para administradores»). Menú de Design: Inicio · Reportes · Fotos · Destinos y «Avísame» · Ventas · Usuarios · Logros · Sonidos (ordenador y móvil). `/admin/logros` y `/admin/sonidos` llevan a su apartado.
+- **Inicio** (reportes sin mirar, fotos por aprobar, pases e ingresos de hoy y del mes, usuarios nuevos, gráfico de 14 días, lo último que ha llegado, totales de la primera vez), **Reportes** con **[Responder]** (a la campana; por correo solo si mandó el reporte con cuenta y «avísame»; desde soporte@), **Fotos**, **Destinos y «Avísame»** con **[Ya está disponible: avisarles]** (una sola vez por persona y destino), **Ventas** y **Usuarios** (lista de 50 en 50 con buscador, filtros y orden, totales en porcentajes y ficha; solo lectura, sin exportar, sin datos de tarjeta).
+- **Correo a soporte@jutrip.app** cuando entra un reporte nuevo (sin el correo del viajero en el asunto; como mucho uno cada 15 minutos, los seguidos juntos). **Sin `RESEND_API_KEY` el panel funciona igual** y lo dice; solo no manda correos.
+- **Importes de los pases:** no hizo falta tocar nada: la tabla de cobros (`pagos_registro`, 0026) ya guardaba importe y moneda de cada compra. Los pases dados a mano o con código cuentan 0 €; no hay pases antiguos sin importe.
+
+**Pruebas:** `pruebaV33` (pantalla) 47 en 0 y `pruebaV33_servidor` 181 en 0; `pruebaJutrip`, `pruebaV20` (Cuéntanos), `pruebaV29`, `pruebaV30`, `pruebaV31`, `pruebaTanda10J` y `pruebaCuentas3` en 0. Muestra de 60 de Roma idéntica (motor sin tocar).
+
+**Lo que no se pudo / lo que hay que saber**
+
+- **El panel con datos reales y los correos de verdad no se han podido probar** (no tengo cuenta de administrador de producción, ni clave de correo, ni la 0090 aplicada). Todo está probado con bases y correos de mentira.
+- **El correo interno no tiene temporizador propio** (Vercel no lo permite): sale cuando entra otro reporte, cuando alguien abre el Inicio del panel o cuando corre la tarea programada de avisos.
+- **Comprobación en producción con cuenta de administrador y con cuenta normal:** pendiente (necesito que me digas «paneles hechos» y que la 0090 esté aplicada; con cuenta de administrador real no puedo entrar yo).
+
+**PARA ERIC (V33), en orden**
+
+1. **Pegar el SQL** `supabase/migrations/0090_panel_jutrip.sql` en el SQL editor de Supabase (se puede pegar entera y repetir) y pasar `docs/dias/COMPROBAR_0090.sql`: **una sola fila**, `migracion_0090 = 'Aplicada'`. (Después de la 0089 de la V31.) *Sin la 0090 el panel abre pero sus apartados dan error claro; el resto de la app sigue igual.*
+2. **Clave de correo `RESEND_API_KEY`** (la creas y la pones tú; yo nunca la veo): Resend › API Keys › Create API Key › permiso «Sending access» y dominio `jutrip.app` › copiar la clave › Vercel › Settings › Environment Variables › nombre `RESEND_API_KEY`, entorno Production › redesplegar. *Comprobar:* en el panel, Inicio ya no dice «Los correos están apagados». Hace falta que `jutrip.app` esté verificado en Resend (ya lo está) y `APP_URL` puesto (V32, paso 2) para el enlace del correo a soporte@.
+3. **Para el gestor (política de privacidad), en palabras sencillas:** los administradores de JUTRIP pueden ver, para gestionar la app y dar soporte, los datos de cada usuario: nombre y correo, fecha de alta y último acceso, nivel, sus viajes (destino, fechas, si fue en grupo), sus pases y lo que pagó, sus logros y su pasaporte, los reportes que ha mandado y lo que contestó en las preguntas de la primera vez (cada cuánto viaja, con quién y año de nacimiento). Nunca datos de tarjeta (los lleva Stripe) ni contraseñas. El acceso es solo de lectura, solo para administradores y no se exporta. **No escribo yo el texto legal.**
+4. Probar con tu cuenta: `/admin` abre con cifras reales; con otra cuenta, «solo para administradores». Mandar un reporte de prueba desde la app: llega UN correo a soporte@ (y varios seguidos, juntos, cada 15 minutos).
+
+---
+
+## Al cerrar la cola
+
+- **Commits:** V30 `6b6ac5b8` · V31 `5672b5b2` · V32 `4a0b2c99` · V33 (el último de esta lista).
+- **Queda abierto:** fotos de Roma (Borgo Pio y Colle Oppio), `pruebaPantallas8b` y `pruebaTanda10N8_perfil` (fallan desde antes), elegir sonidos, y los paneles de la V32.
+- **Servidores:** la API y Vite siguen encendidos (como pediste); no se ha apagado el PC.

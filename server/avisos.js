@@ -18,6 +18,8 @@ import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { quienEs, tokenDe } from './cuentas.js'
+import { crearCorreo } from './correo.js'
+import { crearAvisoInterno } from './panel/avisoInterno.js'
 import { detalleDelAviso, franjaDelAviso, ponerTablaDeArticulos, quienDelAviso, textoDelAviso, textoDelPush } from '../shared/avisos/textos.js'
 import { sorteoVisible } from './logros/sorteoVisible.js'
 
@@ -327,7 +329,10 @@ export function registrarRutasAvisos(app, { admin, servicio, env = process.env }
   app.get('/api/cron/avisos', async (req, res) => {
     if (!env.CRON_SECRET || tokenDe(req) !== env.CRON_SECRET) return res.status(404).json({ ok: false })
     try {
-      res.json(await servicio.tareaProgramada())
+      const resultado = await servicio.tareaProgramada()
+      // (V33) De paso, el aviso interno a soporte@ de los reportes que estén esperando (nunca rompe la tarea).
+      await crearAvisoInterno({ admin, correo: crearCorreo({ apiKey: env.RESEND_API_KEY }), env }).intentar()
+      res.json(resultado)
     } catch (error) {
       console.error('[avisos/cron]', error)
       res.status(500).json({ ok: false })

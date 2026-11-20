@@ -18,6 +18,8 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { limpiarTexto, crearFreno } from './errores.js'
 import { quienEs, tokenDe } from './cuentas.js'
 import { esAdmin } from './logros/rutas.js'
+import { crearCorreo } from './correo.js'
+import { crearAvisoInterno } from './panel/avisoInterno.js'
 
 export const BUCKET_AVISOS = 'avisos-viajeros'
 export const BUCKET_FOTOS_PUBLICAS = 'fotos-de-viajeros'
@@ -169,7 +171,9 @@ function limitadorPorHora(maximo, ahora) {
   }
 }
 
-export function registrarRutasAvisosViajeros(app, { admin = null, env = process.env, consola = console, ahora = () => Date.now() } = {}) {
+export function registrarRutasAvisosViajeros(app, { admin = null, env = process.env, consola = console, ahora = () => Date.now(), correo = crearCorreo({ apiKey: env.RESEND_API_KEY }) } = {}) {
+  // (V33) El aviso interno a soporte@ cuando entra un reporte (como mucho uno cada 15 minutos; sin RESEND_API_KEY no hace nada).
+  const avisoInterno = admin ? crearAvisoInterno({ admin, correo, env, ahora: () => new Date(ahora()), consola }) : null
   const frena = crearFreno(ahora)
   const frenaSubidas = crearFreno(ahora)
   const porHora = limitadorPorHora(POR_HORA, ahora)
@@ -258,6 +262,7 @@ export function registrarRutasAvisosViajeros(app, { admin = null, env = process.
       // Solo con cuenta de verdad Y avisame se guarda quién es; en cualquier otro caso, nada de la persona.
       const user_id = deVerdad && fila.avisame ? u.id : null
       const id = await rpc('aviso_viajero_guardar', { p: { ...fila, user_id } })
+      if (avisoInterno) await avisoInterno.intentar()
       return res.status(200).json({ ok: true, id, guardado: true })
     } catch (e) {
       return falloInterno(res, e, 'guardar')

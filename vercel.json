@@ -5,6 +5,14 @@
       "destination": "/api"
     },
     {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/:seccion",
+      "destination": "/index.html"
+    },
+    {
       "source": "/admin/logros",
       "destination": "/index.html"
     },
