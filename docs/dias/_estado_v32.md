@@ -1,13 +1,13 @@
-# Estado de la tanda v31
+# Estado de la tanda v32
 
-**Última actualización: 20/11/26, 14:42**
+**Última actualización: 20/11/26, 14:51**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V31 subida a main; empiezo V32 (codigo) y V33
+V32 codigo subido a main; falta que Eric haga los paneles. Sigo con V33
 
 ## Qué falta
-V32 codigo, V33 panel; resumen final
+V33 panel de Jutrip; resumen final
 
 ## Procesos abiertos ahora mismo
 - node: 5
