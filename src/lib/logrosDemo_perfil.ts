@@ -102,7 +102,20 @@ export function reiniciarPerfilDemo(): void {
   viajesConGanado.clear()
 }
 
+/** (V34) Una cuenta NUEVA de la demo (`trazo:demo:primera_vez_nueva` = si): el Perfil de verdad de quien acaba de llegar: nivel 1, sin título, vitrina vacía, sin países ni sellos. */
+const cuentaNuevaDeLaDemo = (): boolean => {
+  try {
+    return window.localStorage.getItem('trazo:demo:primera_vez_nueva') === 'si' && window.localStorage.getItem('trazo:demo:perfil_con_logros') !== 'si'
+  } catch {
+    return false
+  }
+}
+function perfilVacio(): PerfilLogros {
+  return { ok: true, exp: expDeEjemplo(expEnNivel(1, 0)), titulo: null, titulos: [], vitrina: resumenDeVitrina({ items: new Map() }), pasaporte: { paises: 0, ciudades: 0, sellos: 0, paises_iso: [], sellos_recientes: [] } as never, previos: { paises: 0 } }
+}
+
 export function responder(ruta: string, url: URL, cuerpo: Record<string, unknown>, opciones: { metodo?: string; cuerpo?: unknown }): unknown {
+  if (ruta === '/api/logros/perfil' && cuentaNuevaDeLaDemo()) return { ...perfilVacio(), sorteo: sorteoDeEjemplo() }
   if (ruta === '/api/logros/perfil') {
     const vivo = perfilDeEjemplo()
     return { ...perfil, ...(puestoAMano.has('pasaporte') ? {} : { pasaporte: vivo.pasaporte }), ...(puestoAMano.has('previos') ? {} : { previos: vivo.previos }), sorteo: sorteoDeEjemplo() }

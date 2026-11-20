@@ -32,7 +32,7 @@ console.log('1. El código')
   debe(/width: 34, height: 34/.test(lapiz) && /M4 20l1-4L16\.5 4\.5/.test(lapiz) && !/>\s*\{editando \? 'Hecho' : 'Editar'\}\s*</.test(lapiz), 'lápiz', 'el lápiz redondo de 34 px (no el texto «Editar»)')
   debe(!/'Hecho' : TEXTO_DE_ETIQUETA/.test(tarjeta) && /\{!hecho && \(/.test(tarjeta), 'tarjeta', 'sin la etiqueta «Hecho»')
   debe(!/Abrir este viaje\s*$/m.test(tarjeta.replace(/aria-label[^\n]*/g, '')) && /data-recuerdos-del-viaje/.test(tarjeta), 'tarjeta', '(V12) el botón redondo de recuerdos sustituye a la flecha')
-  debe(/data-mas-de-vitrina/.test(cuerpo) && /h-\[38px\] w-\[38px\]/.test(cuerpo) && /dashed rgba\(243,213,154,\.4\)/.test(cuerpo), 'vitrina', 'el [+] de 38 px y los huecos con borde de puntos')
+  debe(!/data-mas-de-vitrina(?!-cabecera)/.test(cuerpo) && cuerpo.includes('dashed rgba(243,213,154,.4)'), 'vitrina', '(V34) los tres huecos iguales con borde de puntos y SIN el [+] del medio')
   debe(/marginTop: 40/.test(cuerpo) && /margin: '40px 20px 0'/.test(cuerpo), 'aire', 'más aire entre bloques que en Design (40 px; Design deja 14)')
 }
 
@@ -191,14 +191,14 @@ const foto = async (app, nombre) => {
     const n1 = await ev(`(() => { const d = document.querySelector('[role="dialog"][aria-label="Perfil"]'); return { titulo: Boolean(d.querySelector('[data-titulo-del-perfil]')), nivel: d.querySelector('[data-nivel-y-rango]')?.innerText, huecos: Array.from(d.querySelectorAll('[data-hueco-de-vitrina]')).map((h) => h.dataset.huecoDeVitrina), mas: (() => { const b = d.querySelector('[data-mas-de-vitrina]')?.getBoundingClientRect(); return b ? { w: Math.round(b.width), h: Math.round(b.height) } : null })(), pill: d.querySelector('[data-abrir-vitrina]')?.innerText.trim(), dashed: Array.from(d.querySelectorAll('[data-hueco-de-vitrina="vacio"] span')).some((s) => getComputedStyle(s).borderTopStyle === 'dashed') } })()`)
     debe(!n1.titulo, 'nivel 1', 'sin títulos ganados, no sale el distintivo')
     debe(/^Nivel 1 ·/.test(n1.nivel ?? ''), 'nivel 1', `«${n1.nivel}»`)
-    debe(n1.huecos.join(',') === 'vacio,mas,vacio' && n1.mas && n1.mas.w === 38 && n1.mas.h === 38 && n1.dashed, 'vitrina', `sin logros: hueco de puntos, [+] de 38 px y hueco de puntos (${n1.huecos.join(',')})`)
+    debe(n1.huecos.join(',') === 'vacio,vacio,vacio' && !n1.mas && n1.dashed, 'vitrina', `(V34) sin logros: tres huecos iguales de puntos y sin [+] (${n1.huecos.join(',')})`)
     debe(/^0 logros/.test(n1.pill ?? ''), 'vitrina', `«${n1.pill}»`)
     await app.captura?.(`${CAPTURAS}/perfil_nivel_1.jpg`)
-    // El [+] lleva a la vitrina.
-    await ev("document.querySelector('[data-mas-de-vitrina]').click(); true")
+    // «0 logros ›» lleva a la vitrina (V34: ya no hay [+] en el hueco del medio).
+    await ev("document.querySelector('[data-abrir-vitrina]').click(); true")
     await app.esp(1200)
     const pila = await ev("__imp('/src/components/logros/pantallas/useLogrosPantallas.ts').then((m) => m.useLogrosPantallas.getState().pila.length)")
-    debe(pila >= 1, 'vitrina', `el [+] abre la pantalla de «Todos mis logros» (pila ${pila})`)
+    debe(pila >= 1, 'vitrina', `«0 logros ›» abre la pantalla de «Todos mis logros» (pila ${pila})`)
   } finally {
     await app.cerrar()
   }

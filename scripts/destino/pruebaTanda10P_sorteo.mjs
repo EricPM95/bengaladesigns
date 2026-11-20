@@ -305,7 +305,7 @@ console.log('4. El código: nada escrito a mano')
   debe(/edicion\.bases_url\s*&&/.test(pag), 'codigo', '[Bases legales] solo sale si hay enlace')
   const cuerpoEntero = fs.readFileSync('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx', 'utf8')
   const cuerpo = cuerpoEntero.slice(cuerpoEntero.indexOf('const { exp } = perfil')) // (10N4) antes de esa línea va la rama sin logros
-  const orden = ['<ExpEnPequeno', '{misViajes}', 'data-vitrina-del-perfil', '<TarjetaPasaporte', '<BilleteDelSorteo'].map((k) => (k === '{misViajes}' ? cuerpo.lastIndexOf(k) : cuerpo.indexOf(k)))
+  const orden = ['<ExpEnPequeno', '{vistaDeViajes}', 'data-vitrina-del-perfil', '<TarjetaPasaporte', '<BilleteDelSorteo'].map((k) => (k === '{vistaDeViajes}' ? cuerpo.lastIndexOf(k) : cuerpo.indexOf(k)))
   debe(orden.every((x, i) => x > 0 && (i === 0 || x > orden[i - 1])), 'perfil', 'el orden del perfil en el código (10N5 §4): EXP en la cabecera, Mis viajes, Mi vitrina, Mi pasaporte y el billete abajo del todo')
   debe(!/MapaMisViajes/.test(sinComentarios(cuerpo)), 'perfil', 'el mapa suelto (MapaMisViajes) ya no está en el perfil con logros')
 }

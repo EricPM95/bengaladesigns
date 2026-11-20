@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as PE, type Rea
 import { useDestinosCurados } from '../../lib/destinosCurados'
 import { destinosDelMapa, porContinente, usePrimeraVezUi, type DestinoDelMapa } from '../../lib/primeraVez'
 import { FlagIcon } from '../ui/FlagIcon'
+import { precargarDestinos } from './LoQueTePuedesLlevar'
 import { usePaisesYTierra } from '../logros/pantallas/mundo/paises'
 import { giroPara, puntoDe, rejilla, trazadoDe, type Vista } from '../logros/pantallas/mundo/proyeccion'
 
@@ -133,6 +134,10 @@ export function MapaDeDestinos(): ReactNode {
   const destinos = useMemo(() => destinosDelMapa(curados), [curados])
   const tarjeta = usePrimeraVezUi((s) => s.tarjeta)
   const abrirTarjeta = usePrimeraVezUi((s) => s.abrirTarjeta)
+  // (V34) Los números de «Lo que te puedes llevar» de cada destino listo se piden ya, antes de que se toque ninguno: la tarjeta los trae al momento.
+  useEffect(() => {
+    precargarDestinos(destinos.filter((d) => d.listo).map((d) => d.clave))
+  }, [destinos])
   // Al salir del Perfil (o al cambiar a un viaje) no se queda nada abierto.
   useEffect(() => () => usePrimeraVezUi.getState().abrirTarjeta(null), [])
   return (

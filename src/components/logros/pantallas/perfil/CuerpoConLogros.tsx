@@ -66,7 +66,7 @@ const CHEVRON = 'M9 5l7 7-7 7'
 /** (V8) Los tres huecos de la vitrina como en Design: lo ganado primero; el siguiente hueco es el [+] (más pequeño, para poner un logro) y los demás, con su borde de puntos. Sin logros: vacío, [+], vacío. */
 function huecosDeVitrina(recientes: PerfilLogros['vitrina']['recientes']): { p: PerfilLogros['vitrina']['recientes'][number] | null; mas: boolean }[] {
   const rec = recientes.slice(0, 3)
-  if (rec.length === 0) return [{ p: null, mas: false }, { p: null, mas: true }, { p: null, mas: false }]
+  // (V34) Con 0, 1, 2 o 3 logros, los tres huecos son iguales (cada uno con su círculo grande bajo su foco): ya no hay [+] en el del medio; la vitrina se abre desde «N logros ›».
   // (V12) Con algún logro, el [+] ya no ocupa un hueco (tapaba al del medio): va pequeño en la cabecera, junto a «N logros». Los huecos libres, con su borde de puntos.
   return Array.from({ length: 3 }, (_, i) => ({ p: rec[i] ?? null, mas: false }))
 }
@@ -301,17 +301,13 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
           </span>
           <div className="relative grid flex-1 grid-cols-3 items-end px-1 pb-3 pt-2">
             {huecosDeVitrina(perfil.vitrina.recientes).map((it, i) => (
-              <div key={it.p ? it.p.clave : `hueco${i}`} className="relative flex flex-col items-center" data-hueco-de-vitrina={it.p ? 'pieza' : it.mas ? 'mas' : 'vacio'}>
+              <div key={it.p ? it.p.clave : `hueco${i}`} className="relative flex flex-col items-center" data-hueco-de-vitrina={it.p ? 'pieza' : 'vacio'}>
                 <span aria-hidden="true" className="absolute left-1/2 -top-[22px] -ml-12 h-[130px] w-24" style={{ background: 'radial-gradient(ellipse 50% 90% at 50% 0%,rgba(255,226,170,.36),transparent 72%)', clipPath: 'polygon(36% 0,64% 0,100% 100%,0 100%)' }} />
                 <span className="relative flex h-[116px] items-end justify-center" data-pieza-de-vitrina-caja>
                   {it.p ? (
                     <PiezaDeVitrina pieza={it.p} tam={TAM_DE_VITRINA} />
-                  ) : it.mas ? (
-                    <button type="button" onClick={() => abrir({ t: 'todos', pestana: 'vitrina' })} aria-label="Poner un logro en mi vitrina" data-mas-de-vitrina className="mb-[36px] flex h-[38px] w-[38px] items-center justify-center rounded-full" style={{ background: 'radial-gradient(circle at 35% 25%,rgba(255,253,248,.2),rgba(255,253,248,.06))', border: '1px solid rgba(243,213,154,.55)', color: DORADO, boxShadow: '0 6px 16px -6px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,253,248,.25)' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-                    </button>
                   ) : (
-                    <span aria-hidden="true" className="mb-2.5 h-[84px] w-[84px] rounded-full" style={{ border: '1.5px dashed rgba(243,213,154,.4)' }} />
+                    <span aria-hidden="true" data-circulo-vacio className="mb-2.5 rounded-full" style={{ width: TAM_DE_VITRINA - 8, height: TAM_DE_VITRINA - 8, border: '1.5px dashed rgba(243,213,154,.4)' }} />
                   )}
                 </span>
                 <span aria-hidden="true" className="mt-[3px] h-2 w-[76px] rounded-[50%] bg-black/50" />

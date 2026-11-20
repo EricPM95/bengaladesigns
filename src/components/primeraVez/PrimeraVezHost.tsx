@@ -28,6 +28,7 @@ export function PrimeraVezHost(): ReactNode {
             pais: destino.pais,
             linea: destino.linea,
             iso: destino.iso,
+            portada: curado?.portada ?? destino.portada,
             alCrear: () => {
               abrirPagina(null)
               usePerfilUi.getState().cerrar()

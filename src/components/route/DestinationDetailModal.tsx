@@ -25,7 +25,7 @@ interface DestinationDetailModalProps {
    * (V31, Design «Primera Vez» D1 y D2) La página del destino SIN viaje, desde el mapa del Perfil del viajero nuevo: la portada sin fechas (con el país y una línea corta), las mismas actividades y alojamientos, SIN «Tu alojamiento»
    * y SIN «Ver todos en el mapa», «Lo que te puedes llevar» de ESE destino y [Crear mi viaje a …] fijo abajo. Dentro de un viaje la página es la de siempre.
    */
-  sinViaje?: { clave: string; pais: string; linea: string | null; iso: string | null; alCrear: () => void }
+  sinViaje?: { clave: string; pais: string; linea: string | null; iso: string | null; /** (V34) la foto de portada del destino (la misma de la tarjeta del mapa): sin viaje no hay paradas de donde sacar otra. */ portada?: string | null; alCrear: () => void }
 }
 
 /**
@@ -122,7 +122,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
   const llevar = useLoQueTePuedesLlevar(sinViaje ? sinViaje.clave : '')
   const [bajado, setBajado] = useState(false)
   const [pagina, setPagina] = useState<PaginaDeDestino | null>(() => (city ? paginaEnMemoria(city) : null))
-  const [foto, setFoto] = useState<string | null>(null)
+  const [foto, setFoto] = useState<string | null>(() => sinViaje?.portada ?? null)
   useEffect(() => {
     if (!city) return undefined
     let vivo = true
@@ -139,9 +139,10 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
       }
     })
     // La foto grande: la del destino; si no hay, la de su primera parada con foto, y si no, el degradado.
+    // (V34) Sin viaje: la portada del destino (la de la tarjeta del mapa); nunca el degradado si el destino tiene foto. Con viaje, como siempre.
     const deParada = cityDays.flatMap((d) => d.stops).find((st) => st.photoUrl)?.photoUrl ?? null
-    setFoto(deParada)
-    void fetchPlacePhoto(city, city, null, 'regular').then((u) => vivo && u && setFoto(u)).catch(() => undefined)
+    setFoto(sinViaje?.portada ?? deParada)
+    if (!sinViaje?.portada) void fetchPlacePhoto(city, city, null, 'regular').then((u) => vivo && u && setFoto(u)).catch(() => undefined)
     return () => {
       vivo = false
     }
@@ -169,14 +170,14 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
     <AnimatePresence>
       {city && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} data-pagina-destino className="map-cover-overlay fixed inset-0 z-[80] flex flex-col overflow-y-auto bg-bg" onScroll={sinViaje ? (e) => setBajado(e.currentTarget.scrollTop > 150) : undefined}>
-          <div className="mx-auto w-full max-w-lg" style={{ paddingBottom: sinViaje ? huecoAlFinal + 110 : huecoAlFinal }}>
+          <div className="mx-auto w-full max-w-lg" style={{ paddingBottom: sinViaje ? 'calc(env(safe-area-inset-bottom,0px) + 138px)' : huecoAlFinal }}>
             {/* D1: la foto grande, la bandera y el nombre, y «5 días · 4 noches · 25 – 29 nov». */}
             <div className="relative h-[250px]">
               <div className="absolute inset-0" style={{ clipPath: 'polygon(0 0,100% 0,100% 100%,0 90%)', background: foto ? `url("${foto}") center/cover, linear-gradient(135deg,#E8B070,#5A2A18)` : 'linear-gradient(135deg,#E8B070 0%,#B8602A 50%,#5A2A18 100%)' }} />
               <div className="absolute inset-0" style={{ clipPath: 'polygon(0 0,100% 0,100% 100%,0 90%)', background: 'linear-gradient(180deg,rgba(20,24,40,.25),rgba(20,24,40,0) 40%,rgba(20,24,40,.6))' }} />
-              <button type="button" hidden={Boolean(sinViaje)} onClick={onClose} aria-label="Cerrar" title="Cerrar" className="zona-toque absolute left-[22px] top-[calc(env(safe-area-inset-top,0px)+16px)] flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-[#B58A2E] bg-[#FFFDF8] shadow-[0_8px_16px_-8px_rgba(28,34,48,.5)]">
+              {!sinViaje && <button type="button" onClick={onClose} aria-label="Cerrar" title="Cerrar" className="zona-toque absolute left-[22px] top-[calc(env(safe-area-inset-top,0px)+16px)] flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-[#B58A2E] bg-[#FFFDF8] shadow-[0_8px_16px_-8px_rgba(28,34,48,.5)]">
                 <Icono nombre="cerrar" size={17} />
-              </button>
+              </button>}
               <div className="absolute bottom-[34px] left-6 right-6 flex flex-col gap-1.5 text-[#FFFDF8]">
                 <span className="flex items-center gap-2.5">
                   <FlagIcon countryCode={countryCode} />

@@ -18,6 +18,7 @@ import { usePasePintable } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { Candado } from '../../pase/Candado'
 import { ListaDeColeccion } from '../ficha/ListaDeColeccion'
+import { SiluetaDeEmblema } from '../dibujos/SiluetaDeEmblema'
 import { BloqueDelPase, ColeccionesAntes, LoQueTePuedesLlevar } from './hoja/AntesDelViaje'
 
 const EscenaDeEmblema = lazyReintentable(() => import('./EscenaDeEmblema'))
@@ -338,21 +339,6 @@ function FilaDeColeccion({ c, i, fase, ciudad, destino, abierta, alternar, cerra
   )
 }
 
-/** (V25) Las siluetas de los secretos de Design (`Logros Antes Viaje`): cada emblema oculto es una silueta oscura con «?», en una fila que se desliza de lado (y solo de lado). */
-const SILUETAS: { cp: string; br: string }[] = [
-  { cp: 'polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)', br: '0' },
-  { cp: 'none', br: '50%' },
-  { cp: 'polygon(50% 0,100% 20%,100% 65%,50% 100%,0 65%,0 20%)', br: '0' },
-  { cp: 'none', br: '18px' },
-  { cp: 'polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)', br: '0' },
-  { cp: 'none', br: '50% 50% 14px 14px' },
-  { cp: 'polygon(50% 0,100% 50%,50% 100%,0 50%)', br: '0' },
-  { cp: 'none', br: '30%' },
-  { cp: 'polygon(0 100%,0 40%,50% 0,100% 40%,100% 100%)', br: '0' },
-  { cp: 'none', br: '30%' },
-  { cp: 'polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)', br: '0' },
-]
-
 function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: EstadoLogros; verEscena: (id: string, texto?: { nombre: string; linea: string }) => void }): ReactNode {
   const { total, encontrados_lista: lista } = estado.secretos
   // Los encontrados van en su sitio de siempre; el resto de los huecos solo llevan una silueta con «?» (nunca se dice cuál es cuál).
@@ -372,7 +358,6 @@ function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: Est
       <div data-rejilla-de-emblemas style={{ display: 'flex', gap: 10, overflowX: 'auto', overflowY: 'hidden', padding: '2px 14px 4px 0', scrollbarWidth: 'none', touchAction: 'pan-x', overscrollBehavior: 'contain' }}>
         {Array.from({ length: huecos }, (_, k) => {
           const e = porSitio.get(k)
-          const sil = SILUETAS[k % SILUETAS.length]
           return (
             <span key={k} style={{ flex: 'none', width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {e && lanza ? (
@@ -384,9 +369,7 @@ function Secretos({ fase, estado, verEscena }: { fase: FaseDelViaje; estado: Est
                   <Emblema id={e.id} tam={66} animado={false} fecha={e.en ? e.en.slice(0, 10) : null} />
                 </button>
               ) : (
-                <span aria-hidden data-hueco-emblema="1" style={{ width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg,#394168,#12172A)', clipPath: sil.cp, borderRadius: sil.br, boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.25)' }}>
-                  <span style={{ font: "400 28px/1 'Instrument Serif',serif", color: 'rgba(243,213,154,.75)' }}>?</span>
-                </span>
+                <SiluetaDeEmblema k={k} tam={66} />
               )}
             </span>
           )

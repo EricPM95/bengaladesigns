@@ -419,6 +419,29 @@ function quitarCortina(): void {
   }
 }
 
+/**
+ * (V34) LA CORTINA, DESDE EL PRIMER INSTANTE: si al abrir la app se ve que va a haber que pasar lo del móvil a una cuenta (hay una sesión anónima guardada Y la dirección trae la vuelta de Google / del enlace, o ya hay una sesión de
+ * cuenta distinta), la cortina se pone YA, al cargar este archivo, antes de que la app pinte nada. Se quita sola si al final no hay cuenta (o a los 12 s).
+ */
+function tapaTempranaSiHaceFalta(): void {
+  try {
+    if (typeof window === 'undefined' || typeof document === 'undefined' || !document.body) return
+    const anonima = leerAnonima()
+    if (!anonima) return
+    const url = `${window.location.search}&${window.location.hash.replace(/^#/, '')}`
+    let cuentaDistinta = false
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const clave = window.localStorage.key(i)
+      if (!clave || !/^sb-.*-auth-token$/.test(clave)) continue
+      const usuario = (JSON.parse(window.localStorage.getItem(clave) ?? 'null') as { user?: { id?: string; is_anonymous?: boolean } } | null)?.user
+      if (usuario?.id && !usuario.is_anonymous && usuario.id !== anonima.uid) cuentaDistinta = true
+    }
+    if ((/(^|&)(code|access_token)=/.test(url) && !hayErrorDeEntrar(url)) || cuentaDistinta) ponerCortina()
+  } catch {
+    /* sin almacenamiento: no se tapa nada */
+  }
+}
+
 /** ¿La primera lectura de la sesión al abrir la app ya era una cuenta de verdad? (Vuelta de Google: sí. Escribir el código con la app ya abierta: no, era la anónima.) */
 let resolverPrimeraLectura: (esCuenta: boolean) => void = () => undefined
 const primeraLectura = new Promise<boolean>((r) => {
@@ -585,6 +608,7 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
         return undefined
       }
       resolverPrimeraLectura(!!data.session && !esAnonimo(data.session.user))
+      if (!data.session || esAnonimo(data.session.user)) quitarCortina()
       alCambiar(estadoDeSesion(data.session))
       guardarAnonima(data.session)
       guardarRespaldo(data.session)
@@ -594,6 +618,7 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
     })
     .catch(() => {
       resolverPrimeraLectura(false)
+      quitarCortina()
       if (hayRespaldoDeSesion()) void recuperar()
       else alCambiar({ tipo: 'sin_sesion' })
     })
@@ -689,3 +714,5 @@ export async function borrarMiCuenta(): Promise<string | null> {
     return 'No se ha podido borrar la cuenta. Inténtalo de nuevo.'
   }
 }
+
+tapaTempranaSiHaceFalta()

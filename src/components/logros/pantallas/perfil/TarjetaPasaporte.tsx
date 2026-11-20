@@ -3,7 +3,7 @@ import { Globo } from '../mundo/Globo'
 import { mapaDeVisitados } from '../mundo/mapaDeVisitados'
 import { usePaisesYTierra } from '../mundo/paises'
 import { SelloPasaporte } from '../mundo/SelloPasaporte'
-import { aspectoDeSello, fechaDeSello, type FormaDeSello } from '../mundo/selloDatos'
+import { TINTAS, aspectoDeSello, fechaDeSello, type FormaDeSello } from '../mundo/selloDatos'
 import { cargarGloboDeLaCuenta, guardarGlobo, leerGloboLocal, type PosicionDelGlobo } from '../../../../lib/globoDelPasaporte'
 import { useMiPerfil } from '../../../../store/useMiPerfil'
 import { plural } from '../../../../lib/viajesPerfil'
@@ -13,17 +13,26 @@ import type { PerfilLogros } from './api'
  * LA TARJETA «MI PASAPORTE» DEL PERFIL (`Piezas/Perfil`, P1 de Design): el círculo con el mapa a la izquierda, «Mi pasaporte» y SOLO «6 países · 9 ciudades» (los días viajando van dentro), y los sellos
  * asomando a la derecha. Todo es lo VISITADO y sale del mismo sitio que el pasaporte por dentro (`perfil.pasaporte`): el viaje planeado no cuenta. Al tocarla se abre el pasaporte.
  */
+/** (V34) Colocación de los dos sellos dentro de la parte de la hoja que SE VE (la hoja asoma por la esquina: lo que cae fuera de la tarjeta se corta, así que los sellos caben enteros en lo visible). */
 const COLOCACION = [
-  { left: 4, top: 4, giro: -9 },
-  { left: 52, top: 26, giro: 7 },
+  { left: 2, top: 0, giro: -9 },
+  { left: 40, top: 20, giro: 7 },
+]
+const TAM_SELLO = 46
+/** (V34) Los dos sellos de EJEMPLO (los del diseño P1: el redondo azul y el cuadrado verde de Roma): la tarjeta lleva SIEMPRE dos sellos; los de verdad del viajero van primero y los de ejemplo rellenan lo que falte. */
+const SELLOS_DE_EJEMPLO: { ciudad: string; fecha: string; forma: FormaDeSello; tinta: string }[] = [
+  { ciudad: 'Roma', fecha: '2025-03-14', forma: 'round', tinta: TINTAS[0] },
+  { ciudad: 'Roma', fecha: '2026-10-13', forma: 'rect', tinta: TINTAS[1] },
 ]
 
 /**
- * (V14) Los sellos de la esquina: SOLO los de verdad del viajero, los DOS ÚLTIMOS estampados (sin ninguno, la página vacía; ya no hay sellos de muestra). Cada uno con su aspecto de Design
- * (el de Lanzarote, ovalado en tinta de lava con el volcán). Pura: la prueba la usa.
+ * (V34) Los sellos de la esquina: SIEMPRE dos. Los DOS ÚLTIMOS estampados del viajero (cada uno con su aspecto de Design: el de Lanzarote, ovalado en tinta de lava con el volcán) y, si tiene menos de dos, los de ejemplo
+ * (sin ninguno, los dos de ejemplo; con uno, el suyo y uno de ejemplo). Los quitó la V14 («ya no hay sellos de muestra») y dejó la hoja en blanco y cortada en el Perfil de un viajero nuevo. Pura: la prueba la usa.
  */
-export function sellosDeLaEsquina(recientes: { ciudad: string; fecha: string }[] | undefined): { ciudad: string; fecha: string; forma: FormaDeSello; tinta: string }[] {
-  return (recientes ?? []).slice(0, 2).map((s) => ({ ...s, ...aspectoDeSello(s.ciudad, s.fecha) }))
+export function sellosDeLaEsquina(recientes: { ciudad: string; fecha: string }[] | undefined): { ciudad: string; fecha: string; forma: FormaDeSello; tinta: string; ejemplo: boolean }[] {
+  const suyos = (recientes ?? []).slice(0, 2).map((s) => ({ ...s, ...aspectoDeSello(s.ciudad, s.fecha), ejemplo: false }))
+  const relleno = SELLOS_DE_EJEMPLO.slice(suyos.length).map((s) => ({ ...s, ejemplo: true }))
+  return [...suyos, ...relleno].slice(0, 2)
 }
 
 export function TarjetaPasaporte({ pasaporte, onAbrir }: { pasaporte: PerfilLogros['pasaporte']; onAbrir?: () => void }): ReactNode {
@@ -42,6 +51,11 @@ export function TarjetaPasaporte({ pasaporte, onAbrir }: { pasaporte: PerfilLogr
       vivo = false
     }
   }, [uid])
+  // (V34) En móviles estrechos (320) todo se encoge un poco para que el texto no quede bajo la hoja.
+  const estrecho = typeof window !== 'undefined' && window.innerWidth < 350
+  const lado = estrecho ? 76 : 104
+  const tamSello = estrecho ? 40 : TAM_SELLO
+  const colocacion = estrecho ? [{ left: 2, top: 0, giro: -9 }, { left: 34, top: 16, giro: 7 }] : COLOCACION
   const inicial = guardada ? { lat: guardada.lat, lng: guardada.lng, z: vista.inicial.z } : vista.inicial
   return (
     <button
@@ -52,23 +66,23 @@ export function TarjetaPasaporte({ pasaporte, onAbrir }: { pasaporte: PerfilLogr
       data-abrir-pasaporte
       aria-label="Mi pasaporte"
       className="relative flex flex-none items-center gap-3.5 overflow-hidden rounded-[24px] border-0 text-left"
-      style={{ background: 'linear-gradient(150deg,#7A2034,#3E0E18)', color: '#F3D59A', boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.3),0 14px 26px -18px rgba(62,14,24,.8)', padding: '14px 16px 14px 14px' }}
+      style={{ background: 'linear-gradient(150deg,#7A2034,#3E0E18)', color: '#F3D59A', boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.3),0 14px 26px -18px rgba(62,14,24,.8)', padding: estrecho ? '12px 14px 12px 12px' : '14px 16px 14px 14px' }}
     >
-      <span data-mapa-pasaporte className="relative block h-[104px] w-[104px] flex-none overflow-hidden rounded-full" style={{ boxShadow: '0 0 0 2px rgba(243,213,154,.55),0 8px 16px -8px rgba(0,0,0,.6)', background: '#F1E9D6' }}>
-        {tierra && <Globo key={`${inicial.lat}-${inicial.lng}-${inicial.z}`} tierra={tierra} rellenos={vista.rellenos} inicial={inicial} estilo="papel" lado={104} interactivo onArrastrado={() => { arrastrado.current = true }} onGiro={(c) => { void guardarGlobo(uid, c) }} etiqueta="El mapa de los países que has visitado" />}
+      <span data-mapa-pasaporte className="relative block flex-none overflow-hidden rounded-full" style={{ width: lado, height: lado, boxShadow: '0 0 0 2px rgba(243,213,154,.55),0 8px 16px -8px rgba(0,0,0,.6)', background: '#F1E9D6' }}>
+        {tierra && <Globo key={`${inicial.lat}-${inicial.lng}-${inicial.z}`} tierra={tierra} rellenos={vista.rellenos} inicial={inicial} estilo="papel" lado={lado} interactivo onArrastrado={() => { arrastrado.current = true }} onGiro={(c) => { void guardarGlobo(uid, c) }} etiqueta="El mapa de los países que has visitado" />}
       </span>
-      <span aria-hidden="true" className="absolute" style={{ right: -18, bottom: -22, width: 118, height: 92, borderRadius: 8, background: '#F3EBDB', transform: 'rotate(-8deg)', boxShadow: '-6px 6px 16px -6px rgba(0,0,0,.5)' }}>
+      <span aria-hidden="true" className="absolute" style={{ right: estrecho ? -12 : -14, bottom: estrecho ? -14 : -16, width: estrecho ? 92 : 108, height: estrecho ? 72 : 84, borderRadius: 8, background: '#F3EBDB', transform: 'rotate(-8deg)', boxShadow: '-6px 6px 16px -6px rgba(0,0,0,.5)' }}>
         {sellos.map((s, i) => (
-          <span key={`${s.ciudad}-${s.fecha}-${i}`} data-sello-asomando="suyo" className="absolute" style={{ left: COLOCACION[i].left, top: COLOCACION[i].top, transform: `rotate(${COLOCACION[i].giro}deg)` }}>
-            <SelloPasaporte forma={s.forma} sitio={s.ciudad} fecha={fechaDeSello(s.fecha)} tinta={s.tinta} tam={58} />
+          <span key={`${s.ciudad}-${s.fecha}-${i}`} data-sello-asomando={s.ejemplo ? 'ejemplo' : 'suyo'} className="absolute" style={{ left: colocacion[i].left, top: colocacion[i].top, transform: `rotate(${colocacion[i].giro}deg)` }}>
+            <SelloPasaporte forma={s.forma} sitio={s.ciudad} fecha={fechaDeSello(s.fecha)} tinta={s.tinta} tam={tamSello} />
           </span>
         ))}
       </span>
-      <span className="relative flex flex-1 flex-col items-start gap-1.5" style={{ paddingRight: 70 }}>
+      <span className="relative flex flex-1 flex-col items-start gap-1.5" style={{ paddingRight: estrecho ? 40 : 52 }}>
         <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.18em', color: 'rgba(243,213,154,.7)' }}>PASAPORTE</span>
-        <span style={{ font: "400 24px/1 'Instrument Serif',serif" }}>Mi pasaporte</span>
+        <span style={{ font: `400 ${estrecho ? 21 : 24}px/1 'Instrument Serif',serif` }}>Mi pasaporte</span>
         <span data-numeros-pasaporte style={{ font: "500 12px/1.4 'Geist'", color: 'rgba(255,241,214,.85)' }}>
-          {plural(pasaporte.paises, 'país', 'países')} · {plural(pasaporte.ciudades, 'ciudad', 'ciudades')}
+          {plural(pasaporte.paises, 'país', 'países')}{estrecho ? <br /> : ' · '}{plural(pasaporte.ciudades, 'ciudad', 'ciudades')}
         </span>
       </span>
     </button>

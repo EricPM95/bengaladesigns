@@ -110,7 +110,7 @@ export function PanelJutrip(): ReactNode {
             <span style={{ font: `400 25px/1 ${SERIE}`, color: '#F3D88F', letterSpacing: '.06em' }}>JUTRIP</span>
             <span style={{ font: "600 9px 'Geist Mono',monospace", letterSpacing: '.14em', color: 'rgba(255,253,248,.5)' }}>ADMINISTRACIÓN</span>
           </div>
-          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', margin: '0 -18px', padding: '0 18px', scrollbarWidth: 'none' }}>
+          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', overflowY: 'hidden', margin: '0 -18px', padding: '0 18px', scrollbarWidth: 'none' }}>
             {SECCIONES.map((s) => {
               const on = s.id === seccion
               const n = insignia(s.id)

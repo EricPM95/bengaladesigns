@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Insignia, Sello } from '../logros/dibujos'
+import { SiluetaDeEmblema } from '../logros/dibujos/SiluetaDeEmblema'
 import { pedirDestino, type PaginaDeDestinoDatos } from '../logros/pantallas/destino/api'
 
 /**
@@ -7,17 +8,52 @@ import { pedirDestino, type PaginaDeDestinoDatos } from '../logros/pantallas/des
  * Coliseo, y el Vaticano; Lanzarote, la suya), sus colecciones con su insignia de verdad y su número de sitios, y cuántos emblemas secretos tiene de verdad. Nada del prototipo de Design (sus datos eran de ejemplo).
  * `resumen`: los tres números de la tarjeta del mapa. `pagina`: la sección completa de [Ver destino], como un adelanto: cada colección con algunos pedazos en color y el resto sin rellenar (ni completas ni todas en gris).
  */
+/**
+ * (V34) LOS NÚMEROS AL MOMENTO: los datos de cada destino se guardan en memoria en cuanto llegan, y se piden POR ADELANTADO (`precargarDestinos`, al abrir el mapa y mientras la persona contesta las preguntas), así que al tocar
+ * un destino la tarjeta y la página ya los tienen y no se ven los puntitos. Si aún no han llegado, se enseñan en cuanto lleguen (como antes).
+ */
+const MEMORIA = new Map<string, PaginaDeDestinoDatos | null>()
+const EN_VUELO = new Map<string, Promise<PaginaDeDestinoDatos | null>>()
+function pedirConMemoria(clave: string): Promise<PaginaDeDestinoDatos | null> {
+  const ya = EN_VUELO.get(clave)
+  if (ya) return ya
+  const p = pedirDestino(clave, null)
+    .then((d) => {
+      const datos = d && d.ok ? d : null
+      if (datos) MEMORIA.set(clave, datos)
+      return datos
+    })
+    .catch(() => null)
+    .finally(() => EN_VUELO.delete(clave))
+  EN_VUELO.set(clave, p)
+  return p
+}
+/** Pide ya los datos de estos destinos (los que están listos), sin esperar a que se toque ninguno. */
+export function precargarDestinos(claves: string[]): void {
+  for (const c of claves) if (c && !MEMORIA.has(c)) void pedirConMemoria(c)
+}
+/** Solo la prueba: vacía lo guardado. */
+export function olvidarDatosDeDestinos(): void {
+  MEMORIA.clear()
+  EN_VUELO.clear()
+}
 export function useLoQueTePuedesLlevar(clave: string): PaginaDeDestinoDatos | null | undefined {
-  const [datos, setDatos] = useState<PaginaDeDestinoDatos | null | undefined>(undefined)
+  const [datos, setDatos] = useState<{ clave: string; d: PaginaDeDestinoDatos | null | undefined }>({ clave, d: MEMORIA.get(clave) })
   useEffect(() => {
     let vivo = true
-    setDatos(undefined)
-    void pedirDestino(clave, null).then((d) => vivo && setDatos(d && d.ok ? d : null))
+    if (!clave) return undefined
+    const guardado = MEMORIA.get(clave)
+    if (guardado) setDatos({ clave, d: guardado })
+    else {
+      setDatos({ clave, d: undefined })
+      void pedirConMemoria(clave).then((d) => vivo && setDatos({ clave, d }))
+    }
     return () => {
       vivo = false
     }
   }, [clave])
-  return datos
+  // Al cambiar de destino, en el primer pintado ya se usa lo guardado (nunca los datos del anterior ni los puntitos si ya los tenemos).
+  return datos.clave === clave ? datos.d : MEMORIA.get(clave)
 }
 
 /** Cuántos pedazos «de adelanto» lleva en color la colección número `i` (como Design: 5, 3, 2, 3, 1, 0…), sin pasarse de su total ni completarla. */
@@ -73,10 +109,10 @@ export function LoQueTePuedesLlevar({ datos }: { datos: PaginaDeDestinoDatos | n
       </div>
       <div data-llevar-emblemas style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 0 14px 14px', borderRadius: 20, background: 'radial-gradient(120% 100% at 50% 0%,#2A3050 0%,#1C2230 70%)' }}>
         <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#F3D59A' }}>{datos.emblemas.total} {datos.emblemas.total === 1 ? 'EMBLEMA SECRETO TE ESPERA' : 'EMBLEMAS SECRETOS TE ESPERAN'}</span>
-        <div style={{ display: 'flex', gap: 10, overflowX: 'auto', padding: '2px 14px 4px 0', scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', gap: 10, overflowX: 'auto', overflowY: 'hidden', padding: '2px 14px 4px 0', scrollbarWidth: 'none', touchAction: 'pan-x', overscrollBehavior: 'contain' }}>
           {Array.from({ length: datos.emblemas.total }, (_, i) => (
-            <span key={i} data-emblema-silueta style={{ flex: 'none', width: 62, height: 62, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: 'linear-gradient(145deg,#394168,#12172A)' }}>
-              <span style={{ font: "400 26px/1 'Instrument Serif',serif", color: 'rgba(243,213,154,.75)' }}>?</span>
+            <span key={i} data-emblema-silueta style={{ flex: 'none', width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <SiluetaDeEmblema k={i} tam={66} />
             </span>
           ))}
         </div>

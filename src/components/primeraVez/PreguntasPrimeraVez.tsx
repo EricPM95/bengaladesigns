@@ -1,6 +1,11 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { aniosPosibles, guardarPrimeraVez, type Compania, type Frecuencia } from '../../lib/primeraVez'
+import { marca } from '../../lib/marca'
+import { useDestinosCurados } from '../../lib/destinosCurados'
+import { destinosDelMapa } from '../../lib/primeraVez'
+import { precargarDestinos } from './LoQueTePuedesLlevar'
+import { PalabraJutrip } from '../ui/LogoJutrip'
 
 /**
  * (V31, Design «Primera Vez» Q1 a Q4) LAS PREGUNTAS DE LA PRIMERA VEZ: una por pantalla, con la barra de progreso, «Saltar» y [Continuar]. La pantalla «Listo» no va: al acabar la última se cierra y sale el Perfil.
@@ -57,6 +62,7 @@ function Tilde({ t = 13 }: { t?: number }): ReactNode {
 
 export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }): ReactNode {
   const [paso, setPaso] = useState(0)
+  const [bienvenida, setBienvenida] = useState(true)
   const [frecuencia, setFrecuencia] = useState<Frecuencia | null>(null)
   const [compania, setCompania] = useState<Compania | null>(null)
   const [anio, setAnio] = useState<number | null>(null)
@@ -64,6 +70,11 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
   const [ritmo, setRitmo] = useState<string | null>(null)
   const [gustos, setGustos] = useState<string[]>([])
   const [guardando, setGuardando] = useState(false)
+  // (V34) Mientras la persona contesta, se piden ya los números de «Lo que te puedes llevar» de cada destino: al llegar al mapa, la tarjeta los trae al momento.
+  const curados = useDestinosCurados()
+  useEffect(() => {
+    precargarDestinos(destinosDelMapa(curados).filter((d) => d.listo).map((d) => d.clave))
+  }, [curados])
 
   const terminar = async (r: { frecuencia: Frecuencia | null; compania: Compania | null; anio: number | null }) => {
     if (guardando) return
@@ -90,6 +101,31 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
 
   const tarjeta = (on: boolean) => ({ background: on ? '#1C2230' : '#FFFFFF', border: `1.5px solid ${on ? '#1C2230' : 'rgba(28,34,48,.1)'}`, boxShadow: on ? '0 14px 24px -16px rgba(28,34,48,.8)' : '0 8px 18px -16px rgba(28,34,48,.35)' })
   const titulo = ['¿Cada cuánto viajas?', '¿Con quién sueles viajar?', '¿Cómo te gusta viajar?', '¿En qué año naciste?'][paso]
+
+  // (V34) La bienvenida, antes de la primera pregunta (la primera pregunta se sentía fría). «Saltar» deja las cuatro preguntas sin contestar (como saltarlas una a una).
+  if (bienvenida) {
+    return createPortal(
+      <div data-bienvenida-primera-vez role="dialog" aria-modal="true" aria-label="Bienvenido a JUTRIP" className="fixed inset-0 z-[90] flex flex-col" style={{ background: '#F5EFE4', color: '#1C2230', fontFamily: "'Geist',sans-serif" }}>
+        <div className="flex flex-none items-center justify-end px-[22px]" style={{ paddingTop: 'calc(env(safe-area-inset-top,0px) + 22px)' }}>
+          <button type="button" data-saltar-bienvenida onClick={() => void terminar({ frecuencia: null, compania: null, anio: null })} disabled={guardando} className="zona-toque" style={{ font: "600 14px 'Geist'", color: 'rgba(28,34,48,.55)', background: 'none', border: 'none', minHeight: 44, minWidth: 56 }}>
+            Saltar
+          </button>
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-5 px-[30px] text-center">
+          <PalabraJutrip tam={46} tono="claro" />
+          <h1 style={{ margin: 0, font: `400 36px/1.05 ${SERIE}`, textWrap: 'balance' }}>Bienvenido a JUTRIP</h1>
+          <span style={{ font: "600 11px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: '#8A6A2C' }}>{marca.lema}</span>
+          <p style={{ margin: 0, maxWidth: 300, font: "400 16px/1.45 'Geist'", color: 'rgba(28,34,48,.7)' }}>Cuatro preguntas rápidas para conocerte y empezamos</p>
+        </div>
+        <div className="flex-none px-[22px] pt-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 28px)' }}>
+          <button type="button" data-empezar onClick={() => setBienvenida(false)} className="zona-toque flex w-full items-center justify-center" style={{ height: 56, borderRadius: 18, border: 'none', background: ORO, boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: "700 16px 'Geist'" }}>
+            Empezar
+          </button>
+        </div>
+      </div>,
+      document.body,
+    )
+  }
 
   return createPortal(
     <div data-preguntas-primera-vez data-pregunta={paso + 1} role="dialog" aria-modal="true" aria-label="Preguntas rápidas" className="fixed inset-0 z-[90] flex flex-col" style={{ background: '#F5EFE4', color: '#1C2230', fontFamily: "'Geist',sans-serif" }}>

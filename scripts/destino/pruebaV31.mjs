@@ -75,6 +75,11 @@ const esperar = async (a, js, n = 60) => {
   }
   return false
 }
+// (V34) Antes de la primera pregunta sale la bienvenida: [Empezar] pasa a las preguntas.
+const pasarBienvenida = async (a) => {
+  await esperar(a, "Boolean(document.querySelector('[data-bienvenida-primera-vez]'))")
+  await a.evaluar("document.querySelector('[data-empezar]')?.click(); true")
+}
 const clic = (a, sel) => a.evaluar(`(() => { const e = document.querySelector('${sel}'); if (!e) return false; e.click(); return true })()`)
 const CURADOS_PRUEBA = "window.__destinosCurados = [{ clave: 'roma', nombre: 'Roma', pais: 'Italia', iso: 'it', lat: 41.9028, lng: 12.4964, linea: 'La ciudad eterna', portada: '/fotos/roma/dia_coliseo.jpg', portada_pequena: '/fotos/roma/dia_coliseo_p.jpg' }, { clave: 'lanzarote', nombre: 'Lanzarote', pais: 'España', iso: 'es', lat: 29.0469, lng: -13.59, linea: 'Isla de volcanes', portada: '/fotos/lanzarote/playas_de_papagayo.jpg', portada_pequena: '/fotos/lanzarote/playas_de_papagayo_p.jpg' }];"
 
@@ -84,6 +89,7 @@ console.log('3. Una cuenta nueva ve las preguntas una vez y acaba en el Perfil')
 {
   const a = await abrirApp(APP, { ruta: RUTA, ancho: 390, alto: 844, antes: NUEVA + CURADOS_ROMA })
   try {
+    await pasarBienvenida(a)
     const salen = await esperar(a, "Boolean(document.querySelector('[data-preguntas-primera-vez]'))")
     debe(salen, 'preguntas', 'una cuenta nueva (sin ningún viaje) ve las preguntas al entrar')
     debe(Boolean(await a.evaluar("document.querySelector('[data-pregunta=\"1\"]') && /Cada cuánto viajas/.test(document.body.innerText) && document.querySelectorAll('[data-opcion]').length === 3")), 'preguntas', 'pregunta 1: ¿Cada cuánto viajas? con tres tarjetas')
@@ -212,6 +218,7 @@ console.log('7. Lanzarote (solo administradores): su tarjeta, [Crear viaje] y su
 {
   const a = await abrirApp(APP, { ruta: RUTA, ancho: 390, alto: 844, antes: NUEVA + CURADOS_PRUEBA })
   try {
+    await pasarBienvenida(a)
     await esperar(a, "Boolean(document.querySelector('[data-preguntas-primera-vez]'))")
     await clic(a, '[data-saltar]')
     for (let i = 0; i < 3; i++) {
@@ -237,6 +244,7 @@ console.log('7. Lanzarote (solo administradores): su tarjeta, [Crear viaje] y su
 {
   const a = await abrirApp(APP, { ruta: RUTA, ancho: 390, alto: 844, antes: NUEVA + CURADOS_PRUEBA })
   try {
+    await pasarBienvenida(a)
     await esperar(a, "Boolean(document.querySelector('[data-preguntas-primera-vez]'))")
     for (let i = 0; i < 4; i++) {
       await clic(a, '[data-saltar]')
