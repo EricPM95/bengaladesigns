@@ -1,13 +1,13 @@
 # Estado de la tanda v33
 
-**Última actualización: 20/11/26, 15:03**
+**Última actualización: 20/11/26, 15:24**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V33: panel de pantalla hecho (47 comprobaciones en 0); el agente hace el servidor, migracion 0090 y pruebaV33_servidor
+COLA TERMINADA: V30 6b6ac5b8, V31 5672b5b2, V32 4a0b2c99 (codigo), V33 a4b80929; produccion: /admin abre y sin sesion dice solo administradores; API 401
 
 ## Qué falta
-juntar servidor, probar todo, repaso, resumen final y push
+nada: espero a Eric (SQL 0089 y 0090, RESEND_API_KEY, paneles V32)
 
 ## Procesos abiertos ahora mismo
 - node: 5
