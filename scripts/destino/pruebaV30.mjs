@@ -139,26 +139,17 @@ if (!(await fetch(APP).then((r) => r.ok).catch(() => false))) {
 console.log('3. Cada golpe cae a menos de 30 ms del final de su animación (leído de las animaciones de la pantalla)')
 const MOCK_ADMIN = "const f = window.fetch.bind(window); window.fetch = (u, i) => String(u).includes('/api/admin/avisos-viajeros') ? Promise.resolve(new Response(JSON.stringify({ ok: true, nuevos: 0, avisos: [] }), { status: 200, headers: { 'Content-Type': 'application/json' } })) : f(u, i);"
 {
-  const adm = await abrirApp(APP, { ruta: '/?cuentas=off&logros=on&logrosDemo=1&admin=sonidos&apertura=0', ancho: 390, alto: 844, sinEsperarRoot: true, esperaFija: 6, antes: MOCK_ADMIN })
+  const adm = await abrirApp(APP, { ruta: '/?cuentas=off&logros=on&logrosDemo=1&visor-sonidos=1&apertura=0', ancho: 393, alto: 852, sinEsperarRoot: true, esperaFija: 6, antes: MOCK_ADMIN })
   try {
     await adm.esp(7000)
-    const pag = JSON.parse(
-      await adm.evaluar(
-        "JSON.stringify({ fijos: document.querySelectorAll('[data-fijo]').length, candidatos: document.querySelectorAll('[data-candidato]').length, conAnimacion: document.querySelectorAll('[data-con-animacion]').length, fuentes: [...document.querySelectorAll('[data-candidato]')].every((c) => /Sonniss/.test(c.innerText)), duraciones: [...document.querySelectorAll('[data-candidato]')].every((c) => /[0-9][.][0-9][0-9] s · [0-9]+ KB/.test(c.innerText)), animaciones: document.querySelectorAll('[data-animacion]').length, resumen: document.querySelector('[data-resumen-elegido]')?.innerText ?? '' })",
-      ),
-    )
-    debe(pag.fijos === 4, 'admin', `la página marca como «fijo» lo que se queda: toque y brillo de Visto, campanita y tic (${pag.fijos})`)
-    debe(pag.candidatos === candidatos, 'admin', `la página enseña cada candidato (${pag.candidatos} de ${candidatos}) con su fuente, su duración y su peso`)
-    debe(pag.fuentes && pag.duraciones, 'admin', 'cada candidato lleva su nombre/fuente, licencia, duración y peso')
-    debe(pag.conAnimacion >= 20, 'admin', `«Con su animación» en los candidatos de medalla, colección, emblema, apertura y país (${pag.conAnimacion})`)
-    debe(/fijos \(no se cambian\)/.test(pag.resumen) && /volumen general: 0\.80/.test(pag.resumen), 'admin', '«Lo elegido» con los fijos y el volumen 0,80')
+    // (V34C) La página de sonidos es ahora el estudio (la animación va dentro de un marco): las comprobaciones de la página viven en pruebaV34C; aquí se sigue midiendo la animación de verdad contra su golpe, pidiéndosela al visor.
     // La animación DE VERDAD con su sonido: se lee el final de la animación de la pantalla y se compara con el golpe de su partitura.
     const casos = [
       ['medalla_oro:A', 'evoNew', 'medalla_oro'],
       ['pais:A', 'moStamp', 'pais'],
     ]
     for (const [boton, anim, id] of casos) {
-      await adm.evaluar(`document.querySelector('[data-con-animacion="${boton}"]').click(); true`)
+      await adm.evaluar(`window.__estudioVisor.ver({ animacion: '${id === 'medalla_oro' ? 'medalla_oro' : 'pais'}' }); true`)
       let fin = null
       for (let i = 0; i < 20 && fin === null; i++) {
         await adm.esp(500)
@@ -228,10 +219,10 @@ for (const [nombre, ancho, alto] of [
   ['iphone_se', 375, 667],
   ['android', 360, 740],
 ]) {
-  const adm = await abrirApp(APP, { ruta: '/?cuentas=off&logros=on&logrosDemo=1&admin=sonidos&apertura=0', ancho, alto, sinEsperarRoot: true, esperaFija: 6, antes: MOCK_ADMIN })
+  const adm = await abrirApp(APP, { ruta: '/?cuentas=off&logros=on&logrosDemo=1&visor-sonidos=1&apertura=0', ancho, alto, sinEsperarRoot: true, esperaFija: 6, antes: MOCK_ADMIN })
   try {
     await adm.esp(7000)
-    await adm.evaluar("document.querySelector('[data-con-animacion=\"emblema:B\"]').click(); true")
+    await adm.evaluar("window.__estudioVisor.ver({ animacion: 'emblema' }); true")
     let k = null
     for (let i = 0; i < 40 && k === null; i++) {
       await adm.esp(500)

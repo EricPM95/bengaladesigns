@@ -102,6 +102,21 @@ export async function precargar(ctx: BaseAudioContext, id: string, o: OpcionesDe
   await Promise.all(archivosDe(id, o).map((a) => cargarPremio(ctx, a, versionDe(a))))
 }
 
+/**
+ * (V34C) «PROBAR CON MI SONIDO» (solo la página de sonidos del administrador): un archivo del propio Eric, ya descodificado en el navegador (nunca sale de él), que sustituye a UN sonido de la partitura. `ms` lo adelanta (negativo)
+ * o lo atrasa (positivo) respecto al sitio donde caería el sonido que sustituye. Por defecto es null: la app no cambia en nada.
+ */
+export interface SonidoPropio {
+  objetivo: { tipo: 'archivo' | 'sint'; id: string }
+  buffer: AudioBuffer
+  ms: number
+  vol: number
+}
+let propio: SonidoPropio | null = null
+export const ponerSonidoPropio = (p: SonidoPropio | null) => {
+  propio = p
+}
+
 interface Activa {
   id: string
   master: GainNode
@@ -182,6 +197,22 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
   const activa: Activa = { id, master, premio: p.premio, fin: t0 + p.dura + 0.6, fuentes: [] }
   activas.push(activa)
   for (const n of p.notas) {
+    // (V34C) Su sonido, en el sitio del que sustituye (si lo hay).
+    if (propio && propio.objetivo.tipo === n.tipo && propio.objetivo.id === (n.tipo === 'sint' ? n.sonido : n.archivo)) {
+      const datosDelQueSustituye = n.tipo === 'archivo' ? manifiestoEnMemoria?.[n.archivo]?.[versionDe(n.archivo)] : undefined
+      const base = n.tipo === 'sint' ? t0 + n.en : t0 + n.golpe - (datosDelQueSustituye?.golpe ?? 0)
+      const f = ctx.createBufferSource()
+      f.buffer = propio.buffer
+      const gp = ctx.createGain()
+      gp.gain.value = propio.vol * (n.vol ?? 1)
+      f.connect(gp)
+      gp.connect(master)
+      const arranquePropio = base + propio.ms / 1000
+      f.start(Math.max(arranquePropio, ctx.currentTime), Math.max(0, ctx.currentTime - arranquePropio))
+      activa.fuentes.push(f)
+      registrar({ partitura: id, tipo: n.tipo, id: `propio:${n.tipo === 'sint' ? n.sonido : n.archivo}`, en: n.tipo === 'sint' ? n.en : n.golpe, programado: arranquePropio - t0 + (datosDelQueSustituye?.golpe ?? 0) })
+      continue
+    }
     if (n.tipo === 'sint') {
       tocarSintetico(ctx, master, n.sonido, versionSint(n.sonido), t0 + n.en, n.vol ?? 1, n.dura)
       registrar({ partitura: id, tipo: 'sint', id: n.sonido, en: n.en, programado: n.en })

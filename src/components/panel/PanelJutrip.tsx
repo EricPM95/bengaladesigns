@@ -80,7 +80,7 @@ export function PanelJutrip(): ReactNode {
       {seccion === 'ventas' && <Ventas movil={movil} />}
       {seccion === 'usuarios' && <Usuarios movil={movil} />}
       {seccion === 'logros' && <AdminLogros />}
-      {seccion === 'sonidos' && <AdminSonidos />}
+      {seccion === 'sonidos' && <AdminSonidos embebido />}
     </Suspense>
   )
   const hoy = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })

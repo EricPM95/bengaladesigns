@@ -102,6 +102,14 @@ const buffers = new Map<string, AudioBuffer>()
 function contextoDeAudio(): AudioContext | null {
   if (contexto) return contexto
   try {
+    // (V34C) El visor de la página de sonidos (un marco dentro de /admin/sonidos) usa el audio de la página que lo contiene: el primer toque se da allí y suena a la primera, también en el iPhone.
+    if (window.parent !== window) {
+      const prestado = (window.parent as unknown as { __estudioContexto?: AudioContext }).__estudioContexto
+      if (prestado) {
+        contexto = prestado
+        return contexto
+      }
+    }
     const Clase = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!Clase) return null
     const sesion = (navigator as unknown as { audioSession?: { type: string } }).audioSession

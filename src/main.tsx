@@ -33,6 +33,9 @@ const DibujosPrueba = import.meta.env.DEV && new URLSearchParams(window.location
 // (V29) La página de sonidos de Eric (/admin/sonidos o /?admin=sonidos): se baja a demanda y solo la ven los administradores (la comprueba el servidor).
 const AdminSonidos = new URLSearchParams(window.location.search).get('admin') === 'sonidos' ? lazy(() => import('./components/logros/AdminSonidos.tsx').then((m) => ({ default: m.AdminSonidos }))) : null
 
+// (V34C) El visor del estudio de sonidos (un marco de iPhone dentro de /admin/sonidos): la app con una sola animación. Solo administradores (lo comprueba el servidor).
+const VisorDeSonidos = new URLSearchParams(window.location.search).get('visor-sonidos') === '1' ? lazy(() => import('./components/logros/sonidos/VisorDeAnimacion.tsx').then((m) => ({ default: m.VisorDeAnimacion }))) : null
+
 // (V33) EL PANEL DE JUTRIP: /admin (y /admin/usuarios, /admin/logros, /admin/sonidos…), solo administradores (lo comprueba el servidor). Se baja a demanda. Las direcciones viejas con ?admin=logros / ?admin=sonidos siguen abriendo lo de siempre.
 const enElPanel = window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/') || new URLSearchParams(window.location.search).get('admin') === 'panel'
 const PanelJutrip = enElPanel ? lazy(() => import('./components/panel/PanelJutrip.tsx').then((m) => ({ default: m.PanelJutrip }))) : null
@@ -47,7 +50,7 @@ const paginaDeLogros = logrosActivos() ? (parametros.get('admin') === 'logros' ?
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      {PanelJutrip ? <Suspense fallback={null}><PanelJutrip /></Suspense> : AdminSonidos ? <Suspense fallback={null}><AdminSonidos /></Suspense> : DibujosPrueba ? <Suspense fallback={null}><DibujosPrueba /></Suspense> : previewSeason ? <SeasonCardPreview season={previewSeason} /> : paginaDeLogros === 'admin' ? <AdminLogros /> : paginaDeLogros === 'fotos' ? <PruebaFotos /> : <App />}
+      {VisorDeSonidos ? <Suspense fallback={null}><VisorDeSonidos /></Suspense> : PanelJutrip ? <Suspense fallback={null}><PanelJutrip /></Suspense> : AdminSonidos ? <Suspense fallback={null}><AdminSonidos /></Suspense> : DibujosPrueba ? <Suspense fallback={null}><DibujosPrueba /></Suspense> : previewSeason ? <SeasonCardPreview season={previewSeason} /> : paginaDeLogros === 'admin' ? <AdminLogros /> : paginaDeLogros === 'fotos' ? <PruebaFotos /> : <App />}
     </ErrorBoundary>
   </StrictMode>,
 )

@@ -1,0 +1,124 @@
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
+import { aperturaInteriorHtml, DURACION as DURACION_APERTURA } from '../../../../shared/marca/aperturaJutrip.js'
+import { contextoDeAudioDeLaApp, sonar } from '../../../lib/sonidos'
+import { cortar, ponerSonidoPropio, precargar, type SonidoPropio } from '../../../lib/sonidos/motor'
+import { ANIMACIONES, animacionDe, MOMENTOS_DEL_ESTUDIO } from '../../../lib/sonidos/estudio'
+import { partituraDe } from '../../../lib/sonidos/partituras'
+import { Fuegos } from '../momentos/Fuegos'
+import { useEsAdministrador } from './useEsAdministrador'
+
+/**
+ * (V34C) EL VISOR del estudio de sonidos: la propia app dentro de un marco de iPhone (393 x 852). `/admin/sonidos` lo mete en un `<iframe src="/?visor-sonidos=1">`; así cada animación se ve con el tamaño de pantalla, los
+ * `100vh` y los `fixed inset-0` de un iPhone de verdad, y es la MISMA pieza que usa la app (`Reproductor`, las escenas, `ResumenDia`, la apertura…), no una copia. El sonido lo pone el motor de siempre (`sonar`), con el audio
+ * de la página que lo contiene (el primer toque se da allí y suena a la primera). La página le habla por `window.__estudioVisor`. Solo para administradores.
+ */
+const Reproductor = lazy(() => import('../momentos/Reproductor'))
+const ResumenDia = lazy(() => import('../momentos/ResumenDia').then((m) => ({ default: m.ResumenDia })))
+const ResumenViaje = lazy(() => import('../momentos/ResumenViaje'))
+
+export interface OpcionesDeVer {
+  animacion: string
+  propio?: SonidoPropio | null
+  /** Se llama cuando la animación acaba (o a los segundos que dura la partitura, si no hay un final claro). */
+  alFinal?: () => void
+}
+export interface VisorApi {
+  listo: true
+  ver: (o: OpcionesDeVer) => Promise<void>
+  parar: () => void
+}
+
+function Animacion({ id, alFinal }: { id: string; alFinal: () => void }): ReactNode {
+  const a = animacionDe(id)
+  const [pulsado, setPulsado] = useState(false)
+  // Suena al empezar la animación, igual que en la app (la pantalla de logros pone el sonido al ganarlo; aquí, al montarla).
+  useEffect(() => {
+    if (!a) return undefined
+    for (const s of a.suena) void sonar(s)
+    if (a.visor === 'boton') window.setTimeout(() => setPulsado(true), 350)
+    // El final: lo que dura la partitura más larga (las pantallas de logros avisan antes, al terminar).
+    const dura = Math.max(...a.suena.map((s) => partituraDe(s)?.dura ?? 3), a.visor === 'apertura' ? DURACION_APERTURA : 0)
+    const t = window.setTimeout(alFinal, (dura + 0.8) * 1000)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
+  if (!a) return null
+  if (a.visor === 'momentos' || a.visor === 'resumen_dia') {
+    const momentos = MOMENTOS_DEL_ESTUDIO[a.momentos ?? a.id]?.() ?? []
+    return (
+      <Suspense fallback={null}>
+        {a.visor === 'momentos' ? <Reproductor momentos={momentos} onTerminar={alFinal} /> : <ResumenDia ganado={momentos} estado={null} alCerrar={alFinal} />}
+      </Suspense>
+    )
+  }
+  if (a.visor === 'resumen_viaje')
+    return (
+      <Suspense fallback={null}>
+        <ResumenViaje />
+      </Suspense>
+    )
+  if (a.visor === 'fuegos')
+    return (
+      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(120% 100% at 50% 30%,#2A3050,#0B0E1C)' }}>
+        <Fuegos desde={0} />
+      </div>
+    )
+  if (a.visor === 'apertura') return <div data-visor-apertura style={{ position: 'fixed', inset: 0, background: '#FBF6EC' }} dangerouslySetInnerHTML={{ __html: aperturaInteriorHtml({ lema: 'Viaja con calma' }) }} />
+  // `boton` y `solo`: una pantalla sencilla con el gesto donde suena (o solo el nombre).
+  return (
+    <div data-visor-gesto={a.id} style={{ position: 'fixed', inset: 0, background: 'radial-gradient(120% 100% at 50% 20%,#2A3050,#12172A)', color: '#FFFDF8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 22, fontFamily: "'Geist',sans-serif", padding: 30, textAlign: 'center' }}>
+      <span style={{ font: "400 34px/1.05 'Instrument Serif',serif" }}>{a.nombre}</span>
+      {a.visor === 'boton' && (
+        <button type="button" data-boton-del-gesto onClick={() => void sonar(a.suena[0])} style={{ height: 56, padding: '0 30px', borderRadius: 999, border: '1.5px solid #D8BE84', background: pulsado ? '#F3D88F' : 'transparent', color: pulsado ? '#1C2230' : '#F3D88F', font: "700 17px 'Geist'", transition: 'transform .15s,background .15s', transform: pulsado ? 'scale(.94)' : 'none' }}>
+          {a.gesto}
+        </button>
+      )}
+      <span style={{ font: "400 13px/1.4 'Geist'", opacity: 0.7, maxWidth: 260 }}>{a.visor === 'boton' ? 'Toca el botón para oírlo otra vez.' : 'Solo el sonido: no tiene una animación propia.'}</span>
+    </div>
+  )
+}
+
+export function VisorDeAnimacion(): ReactNode {
+  const admin = useEsAdministrador()
+  const [actual, setActual] = useState<{ n: number; id: string } | null>(null)
+  const final = useRef<() => void>(() => undefined)
+  const contador = useRef(0)
+
+  useEffect(() => {
+    const api: VisorApi = {
+      listo: true,
+      ver: async (o) => {
+        const ctx = contextoDeAudioDeLaApp()
+        if (!ctx) return
+        if (ctx.state !== 'running') void ctx.resume().catch(() => undefined)
+        cortar(ctx, 60)
+        ponerSonidoPropio(o.propio ?? null)
+        const a = animacionDe(o.animacion)
+        if (!a) return
+        // Todo lo que suena, descargado ANTES de empezar (así cada sonido cae en su instante, sin esperas).
+        await Promise.all([...a.suena, ...a.partituras, ...(a.visor === 'momentos' ? ['escena'] : [])].map((p) => precargar(ctx, p)))
+        final.current = o.alFinal ?? (() => undefined)
+        setActual(null)
+        window.setTimeout(() => setActual({ n: ++contador.current, id: o.animacion }), 30)
+      },
+      parar: () => {
+        const ctx = contextoDeAudioDeLaApp()
+        if (ctx) cortar(ctx, 80)
+        setActual(null)
+      },
+    }
+    ;(window as unknown as { __estudioVisor?: VisorApi }).__estudioVisor = api
+    return () => {
+      delete (window as unknown as { __estudioVisor?: VisorApi }).__estudioVisor
+    }
+  }, [])
+
+  if (admin === null) return <div style={{ padding: 20, font: "400 14px 'Geist'" }}>Comprobando…</div>
+  if (!admin) return <div data-solo-administradores style={{ padding: 20, font: "400 15px/1.4 'Geist'" }}>Esta página es solo para administradores.</div>
+  return (
+    <div data-visor-de-animacion data-animacion-actual={actual?.id ?? ''} style={{ position: 'fixed', inset: 0, background: actual ? 'transparent' : 'radial-gradient(120% 100% at 50% 20%,#2A3050,#12172A)', overflow: 'hidden' }}>
+      {!actual && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,253,248,.55)', font: "500 14px 'Geist'" }}>{ANIMACIONES.length} animaciones · elige una</div>}
+      {actual && <Animacion key={actual.n} id={actual.id} alFinal={() => final.current()} />}
+    </div>
+  )
+}
