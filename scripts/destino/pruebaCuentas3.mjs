@@ -1304,9 +1304,9 @@ console.log('9. Tanda 9: reiniciar mis pruebas')
   const env = { LOGROS_ADMIN_EMAILS: 'eric@correo.es' }
   debe(esAdmin({ id: 'a', email: 'ERIC@correo.es', is_anonymous: false }, env) === true && esAdmin({ id: 'b', email: 'otra@correo.es' }, env) === false && esAdmin({ id: 'a', email: 'eric@correo.es', is_anonymous: true }, env) === false && esAdmin(null, env) === false, 'reinicio', 'solo los emails de LOGROS_ADMIN_EMAILS (y no anónimos)')
   const quien = (f) => /reiniciar-mis-pruebas|MisPruebas/.test(leer(f))
-  const otros = fs.readdirSync('src', { recursive: true }).map((f) => path.join('src', f)).filter((f) => /\.(ts|tsx)$/.test(f) && !/AdminLogros\.tsx$/.test(f) && quien(f))
-  debe(otros.length === 0, 'reinicio', `el botón no está en ninguna otra pantalla (${otros.join(', ') || 'solo en AdminLogros'})`)
-  const admin = leer('src/components/logros/AdminLogros.tsx')
+  const otros = fs.readdirSync('src', { recursive: true }).map((f) => path.join('src', f)).filter((f) => /\.(ts|tsx)$/.test(f) && !/panel[\\/]logros[\\/]Herramientas\.tsx$|logrosDemo_a_logrosPanel/.test(f) && quien(f))
+  debe(otros.length === 0, 'reinicio', `el botón no está en ninguna otra pantalla (${otros.join(', ') || 'solo en Logros y sonidos › Herramientas'})`)
+  const admin = leer('src/components/panel/logros/Herramientas.tsx')
   debe(/Reiniciar mis pruebas/.test(admin) && /¿Seguro\?/.test(admin) && /confirmar: true/.test(admin), 'reinicio', 'el botón pide confirmación antes de reiniciar')
 }
 

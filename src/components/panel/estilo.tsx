@@ -5,7 +5,10 @@ export const SERIE = "'Instrument Serif',serif"
 export const TINTA = '#1C2230'
 export const ORO = '#F3D88F'
 
-export const tarjeta: CSSProperties = { borderRadius: 22, background: '#FFFFFF', border: '1px solid rgba(28,34,48,.08)', padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }
+export const tarjeta: CSSProperties = { borderRadius: 22, background: '#FFFFFF', border: '1px solid rgba(28,34,48,.08)', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }
+/** (V35A) La tarjeta grande de Design (los bloques con título en serif: «Desde dónde viajan», «Lo que contestaron…»). */
+export const tarjetaGrande: CSSProperties = { borderRadius: 24, background: '#FFFFFF', border: '1px solid rgba(28,34,48,.08)', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }
+export const etiquetaMono: CSSProperties = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)' }
 export const boton = (oscuro = false, desactivado = false): CSSProperties => ({
   minHeight: 44,
   padding: '0 16px',
@@ -22,16 +25,16 @@ export function Pastilla({ children, fondo = '#F1EADC', color = TINTA }: { child
   return <span style={{ flex: 'none', height: 22, padding: '0 9px', borderRadius: 999, background: fondo, color, display: 'inline-flex', alignItems: 'center', font: "600 11px 'Geist'", whiteSpace: 'nowrap' }}>{children}</span>
 }
 
-export function Cifra({ etiqueta, valor, pie, destacada = false, oscura = false, chica = false }: { etiqueta: string; valor: ReactNode; pie?: ReactNode; destacada?: boolean; oscura?: boolean; chica?: boolean }): ReactNode {
+export function Cifra({ etiqueta, valor, pie, destacada = false, oscura = false, chica = false, relleno, tamano }: { etiqueta: string; valor: ReactNode; pie?: ReactNode; destacada?: boolean; oscura?: boolean; chica?: boolean; relleno?: string; tamano?: number }): ReactNode {
   const fondo = oscura ? TINTA : destacada ? 'oklch(0.97 0.03 5)' : '#FFFFFF'
   const borde = oscura ? TINTA : destacada ? 'oklch(0.58 0.19 5 / .35)' : 'rgba(28,34,48,.08)'
   const lc = oscura ? ORO : destacada ? 'oklch(0.5 0.19 5)' : 'rgba(28,34,48,.5)'
   const vc = oscura ? '#FFFDF8' : destacada ? 'oklch(0.5 0.19 5)' : TINTA
   return (
-    <div data-cifra={etiqueta} style={{ padding: 16, borderRadius: 20, background: fondo, border: `1px solid ${borde}`, display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+    <div data-cifra={etiqueta} style={{ padding: relleno ?? (chica ? 14 : '14px 16px'), borderRadius: 20, background: fondo, border: `1px solid ${borde}`, display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
       <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', color: lc, textTransform: 'uppercase' }}>{etiqueta}</span>
-      <span style={{ font: `400 ${chica ? 28 : 34}px/1 ${SERIE}`, color: vc }}>{valor}</span>
-      {pie && <span style={{ font: "400 12px 'Geist'", color: oscura ? 'rgba(255,253,248,.65)' : 'rgba(28,34,48,.5)' }}>{pie}</span>}
+      <span style={{ font: `400 ${tamano ?? (chica ? 26 : 30)}px/1 ${SERIE}`, color: vc }}>{valor}</span>
+      {pie && <span style={{ font: "400 12.5px/1.35 'Geist'", color: oscura ? 'rgba(255,253,248,.65)' : 'rgba(28,34,48,.5)' }}>{pie}</span>}
     </div>
   )
 }

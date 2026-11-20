@@ -19,13 +19,13 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
 /* ───────────────────────── A. Sin navegador ───────────────────────── */
 console.log('A. «Empezar de cero»')
 {
-  const panel = leer('src/components/logros/AdminLogros.tsx')
-  const dialogo = panel.match(/<p className="font-semibold">(Se borrará[^<]*)<\/p>/)?.[1] ?? ''
+  const panel = leer('src/components/panel/logros/Herramientas.tsx')
+  const dialogo = panel.match(/<span style=\{\{[^>]*\}\}>(Se borrará[^<]*)<\/span>/)?.[1] ?? ''
   debe(dialogo === 'Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia y los pases. La cuenta se queda. Las pruebas gratis que ya has usado no vuelven. ¿Seguro?', 'dialogo', `el diálogo dice el texto nuevo (${dialogo})`)
   debe(!/el día de prueba/.test(dialogo) && /Las pruebas gratis que ya has usado no vuelven\./.test(dialogo), 'dialogo', 'sin «el día de prueba» y con la línea nueva')
-  const explicacion = panel.match(/<section data-empezar-de-cero[^>]*>\s*<p className="text-text\/60">([^<]*)<\/p>/)?.[1] ?? ''
+  const explicacion = panel.match(/QUE_BORRA_EMPEZAR_DE_CERO =\s*'([^']*)'/)?.[1] ?? ''
   debe(explicacion.length > 0 && !/día de prueba/.test(explicacion), 'dialogo', 'la explicación de encima del botón tampoco promete borrar el día de prueba')
-  const reinicio = panel.match(/Deja a cero lo de pruebas de TU cuenta[^<]*/)?.[0] ?? ''
+  const reinicio = panel.match(/QUE_BORRA_REINICIAR =\s*'([^']*)'/)?.[1] ?? ''
   debe(/el día de prueba de HOY/.test(reinicio), 'dialogo', '«Reiniciar mis pruebas» no se toca (sigue hablando del día de prueba de HOY)')
   const j = leer('scripts/destino/pruebaTanda10J.mjs')
   debe(/Las pruebas gratis que ya has usado no vuelven/.test(j) && !/experiencia, el día de prueba y los pases\. La cuenta se queda\. ¿Seguro\?'/.test(j), 'dialogo', 'pruebaTanda10J comprueba el texto nuevo y lo dejó escrito «antes → ahora → decisión de Eric (10S7b, 31-oct)»')

@@ -4,15 +4,37 @@ import { llamar } from '../../lib/logros'
  * (V33) LO QUE CUENTA EL SERVIDOR AL PANEL DE JUTRIP (`/api/admin/*`, carpeta `server/panel/`). Todo es solo para administradores: el servidor responde 401/403 al que no lo es y aquí eso llega como «sin respuesta».
  * Solo lectura (salvo [Responder], [Ya está disponible] y lo de Reportes). Nunca datos de tarjeta.
  */
+export interface InfoPeriodo {
+  periodo: string
+  desde: string | null
+  hasta: string
+  etiqueta: string
+  titulo: string
+}
+export interface Cubeta {
+  clave: string
+  etiqueta: string
+  pases: number
+}
+export interface OpcionDeRespuesta {
+  valor: string
+  nombre: string
+  n: number
+  pct: number
+}
 export interface Inicio {
   ok: boolean
+  periodo: InfoPeriodo
+  hoy: string
   reportes_nuevos: number
   fotos_por_aprobar: number
   pases: { hoy: number; mes: number }
   ingresos: { hoy_cent: number; mes_cent: number; moneda: string }
-  usuarios: { hoy: number; semana: number; total: number; con_viaje: number }
-  serie14: { dia: string; pases: number }[]
-  atencion: { tipo: 'reporte' | 'foto' | 'venta' | 'fallo'; titulo: string; en: string }[]
+  usuarios: { total: number; hoy: number; semana: number; con_viaje: number; pct_con_viaje: number }
+  serie: { tipo: 'dia' | 'semana' | 'mes'; cubetas: Cubeta[]; total: number }
+  atencion: { tipo: 'reporte' | 'foto' | 'venta' | 'fallo'; titulo: string; en: string; id?: string }[]
+  primera_vez: { contestaron: number; bloques: { id: string; titulo: string; total: number; opciones: OpcionDeRespuesta[] }[] }
+  desde_donde: { paises: { iso: string; n: number }[]; ciudades: { nombre: string; iso: string | null; n: number }[] }
   correo: { activo: boolean }
 }
 export interface PrimeraVezDeUsuario {
@@ -62,33 +84,58 @@ export interface FichaDeUsuario {
   logros: { sellos: { destino: string; nombre: string; grado: string }[]; colecciones: { hechas: number; total: number }; paises: string[]; destinos: string[] }
   reportes: { id: string; tipo: string; titulo: string; estado: string; en: string }[]
 }
+export interface CompraDelPanel {
+  fecha: string
+  destino: string
+  tipo: string
+  personas: number | null
+  persona: { id: string; nombre: string } | null
+  estado: 'comprado' | 'regalado' | 'reembolsado'
+  importe_cent: number
+  moneda: string
+}
 export interface Ventas {
   ok: boolean
-  importes_conocidos: boolean
-  pases_hoy: number
-  pases_mes: number
-  ingresos_mes_cent: number
+  periodo: InfoPeriodo
+  hoy: string
   moneda: string
-  por_destino: { destino: string; n: number }[]
-  por_dia: { dia: string; n: number }[]
-  compras: { fecha: string; destino: string; tipo: string; importe_cent: number | null; moneda: string }[]
+  pases: { periodo: number; hoy: number }
+  ingresos_cent: number
+  te_queda: { cent: number; comision_cent: number | null; antes_de_impuestos: boolean }
+  conversion: { pct: number; compraron: number; viajeros: number }
+  por_dia: { tipo: 'dia' | 'semana' | 'mes'; cubetas: Cubeta[] }
+  por_destino: { destino: string; n: number; importe_cent: number }[]
+  compras: CompraDelPanel[]
+  total_compras: number
+  afiliados: { clics: null; enlaces: { civitatis: string; stay22: string } }
 }
 export interface DestinosDelPanel {
   ok: boolean
-  pedidos: { destino: string; veces: number }[]
-  proximamente: { destino: string; avisos: number; avisados: number }[]
+  periodo: InfoPeriodo
+  pedidos: { destino: string; veces: number; quieren_aviso: number; avisados: number; ultimo_aviso: string | null; proximamente: boolean; lanzado?: boolean }[]
+  proximamente: { destino: string; iso: string | null; avisos: number; avisados: number }[]
   correo: { activo: boolean }
 }
 
 export const pedir = <T,>(ruta: string): Promise<T | null> => llamar<T>(ruta)
 export const mandar = <T,>(ruta: string, cuerpo: unknown, metodo = 'POST'): Promise<T | null> => llamar<T>(ruta, { metodo, cuerpo })
 
-/** Pura: dinero en céntimos → «28,97 €» (sin importe = «—»). */
+/** Pura: un número con el punto de los miles («3.482»), también de cuatro cifras. */
+export const miles = (n: number): string => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+
+/** Pura: dinero en céntimos → «6,99 €» (SIEMPRE con «€», con coma y dos decimales: «0,00 €»; sin importe = «—»). */
 export const euros = (cent: number | null | undefined, moneda = 'EUR'): string => {
   if (cent === null || cent === undefined) return '—'
-  const simbolo = moneda === 'EUR' ? '€' : moneda
-  const t = (cent / 100).toLocaleString('es-ES', { minimumFractionDigits: cent % 100 === 0 ? 0 : 2, maximumFractionDigits: 2 })
-  return `${t} ${simbolo}`
+  const simbolo = String(moneda).toUpperCase() === 'EUR' ? '€' : String(moneda).toUpperCase()
+  const entero = Math.floor(Math.abs(cent) / 100)
+  const dec = String(Math.abs(cent) % 100).padStart(2, '0')
+  return `${cent < 0 ? '−' : ''}${miles(entero)},${dec} ${simbolo}`
+}
+
+/** Pura: el tipo de pase como lo ve Eric: Individual · Dúo · Grupo (nunca «uno» ni «duo»). */
+export const nombreDePase = (tipo: string | null | undefined): string => {
+  const t = String(tipo ?? '').toLowerCase()
+  return t === 'uno' || t === 'individual' ? 'Individual' : t === 'duo' || t === 'dúo' ? 'Dúo' : t === 'grupo' ? 'Grupo' : t ? t.charAt(0).toUpperCase() + t.slice(1) : '—'
 }
 
 export const ETIQUETA_FRECUENCIA: Record<string, string> = { una_vez_al_anio: 'Una vez al año', dos_o_tres: '2 o 3 veces al año', cuatro_o_mas: '4 o más' }
@@ -110,5 +157,98 @@ export const hace = (iso: string | null | undefined, ahora = Date.now()): string
   if (m < 60) return `hace ${m} min`
   if (m < 60 * 24) return `hace ${Math.round(m / 60)} h`
   const d = Math.round(m / 1440)
-  return d === 1 ? 'ayer' : d < 7 ? `hace ${d} días` : fechaCorta(iso)
+  const f = new Date(iso)
+  return d === 1 ? 'ayer' : d < 7 ? `hace ${d} días` : f.getFullYear() === new Date(ahora).getFullYear() ? f.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '') : fechaCorta(iso)
 }
+
+// ── (V35A) USUARIOS: lo que contesta `/api/admin/usuarios*` (server/panel/usuarios.js + calculosUsuarios.js) ──────────────────────────────────────────────────────────────────────────────────────────────────
+export interface PaseDeUsuario {
+  destino: string
+  tipo: string
+  origen: 'comprado' | 'regalado' | 'compartido'
+  de: string | null
+  etiqueta: string
+}
+export interface ViajeProximo {
+  destino: string
+  iso: string | null
+  inicio: string
+  fin: string
+}
+export interface UsuarioFila {
+  id: string
+  nombre: string
+  email: string
+  alta: string | null
+  ultimo_acceso: string | null
+  nivel: number
+  rango: string
+  exp: number
+  pase: { tiene: boolean; destinos: PaseDeUsuario[] }
+  viajes: { creados: number; hechos: number }
+  proximo_viaje: ViajeProximo | null
+  gastado_cent: number
+  moneda: string
+  primera_vez: PrimeraVezDeUsuario | null
+}
+export interface UsuariosLista {
+  ok: boolean
+  pagina: number
+  por_pagina: number
+  total: number
+  con_entre: boolean
+  usuarios: UsuarioFila[]
+  destinos: string[]
+}
+export interface SegmentoDeCalendario {
+  clave: string
+  destino: string
+  n: number
+  color: string
+}
+export interface HuecoDeCalendario {
+  clave: string
+  nombre: string
+  desde: string
+  hasta: string
+  total: number
+  segmentos: SegmentoDeCalendario[]
+}
+export interface OpcionDeRespuesta {
+  valor: string
+  nombre: string
+  n: number
+  pct: number
+}
+export interface UsuariosResumen {
+  ok: boolean
+  periodo: { periodo: string; desde: string | null; hasta: string; etiqueta: string; titulo: string }
+  hoy: string
+  total: number
+  nuevos: number
+  activos: number
+  embudo: { id: string; etiqueta: string; n: number; ancho: number; pasa_pct: number | null }[]
+  actividad: { dia: number; semana: number; mes: number; retencion_pct: number | null }
+  viajando: { hoy: number; proximos30: number; destinos: { clave: string; destino: string; iso: string | null; hoy: number; en30: number }[] }
+  calendario: { leyenda: { clave: string; destino: string; color: string }[]; meses: HuecoDeCalendario[]; semanas: HuecoDeCalendario[]; mes_fuerte: string | null; frase: string }
+  quienes: { contestaron: number; frecuencia: OpcionDeRespuesta[]; compania: OpcionDeRespuesta[]; edad: OpcionDeRespuesta[] }
+  donde_viven: null
+  desde_donde: { paises: { iso: string; nombre: string; n: number }[]; ciudades: { nombre: string; iso: string | null; n: number }[] }
+  niveles: { nivel: number; n: number }[]
+  entran: { total: number; correo: number; google: number; otros: number; correo_pct: number; google_pct: number; otros_pct: number }
+  cobros_sin_pase: { n: number; importe_cent: number; moneda: string; detalle: { destino: string; importe_cent: number; fecha: string }[] }
+}
+export interface UsuarioFicha {
+  ok: boolean
+  usuario: UsuarioFila
+  vive_en: string | null
+  hoy: string
+  ahora: string
+  pase_texto: string
+  viajes: { id: string; destino: string; iso: string | null; inicio: string | null; fin: string | null; hecho: boolean; personas: number; con_quien: string; suyo: boolean; de: string | null; de_id: string | null }[]
+  pases: { fecha: string | null; destino: string; tipo: string; plan: string; origen: 'comprado' | 'regalado' | 'compartido'; de: string | null; de_id: string | null; etiqueta: string; importe_cent: number; moneda: string; reembolsado: boolean }[]
+  logros: { medallas: { grado: string; texto: string }[]; colecciones: { texto: string }[]; emblemas: { texto: string; tipo: string }[]; pasaporte: { paises: number; sellos: number; texto: string } }
+  reportes: { id: string; tipo: string; titulo: string; estado: string; en: string }[]
+}
+/** Pura: el enlace a la ficha de una persona (para las demás pantallas del panel). */
+export const enlaceAFicha = (id: string): string => `/admin/usuarios?ficha=${encodeURIComponent(id)}`

@@ -248,10 +248,21 @@ try {
   debe(emb0 && emb0.enc === '', 'foto', 'el emblema enseña la foto centrada mientras nadie la ha ajustado')
   await cap('03a_foto_sin_ajustar')
   await E(`document.querySelector('[data-editar-perfil]').click(); true`)
-  await esp(1000)
+  for (let i = 0; i < 20 && !(await E(`Boolean(document.querySelector('[data-hoja="editar-perfil"] [data-visor-foto]'))`)); i++) await esp(300)
+  await esp(600)
   const hojaP = await E(`Boolean(document.querySelector('[data-hoja="editar-perfil"] [data-visor-foto]')) && Boolean(document.querySelector('[data-hoja="editar-perfil"] [data-hacer-foto]')) && Boolean(document.querySelector('[data-hoja="editar-perfil"] [data-elegir-foto]'))`)
   debe(hojaP, 'foto', 'al tocar la foto: se puede ajustar (el visor con el círculo) y también cambiar por otra (hacer una foto / elegir de la galería)')
-  const rect = await E(`(() => { const r = document.querySelector('[data-visor-foto]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width } })()`)
+  // (V35A) La hoja se desliza al abrirse: se espera a que el visor deje de moverse antes de tocarlo (si no, los dedos caen donde ya no está).
+  const leerRect = () => E(`(() => { const r = document.querySelector('[data-visor-foto]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width } })()`)
+  for (let i = 0; i < 25 && !(await E(`Boolean(document.querySelector('[data-visor-foto]'))`)); i++) await esp(300)
+  let rect = await leerRect()
+  for (let i = 0; i < 20; i++) {
+    await esp(200)
+    const otro = await leerRect()
+    const quieto = Math.abs(otro.x - rect.x) < 0.5 && Math.abs(otro.y - rect.y) < 0.5
+    rect = otro
+    if (quieto) break
+  }
   const toque = (tipo, pts) => app.cdp('Input.dispatchTouchEvent', { type: tipo, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) })
   const enc = () => E(`document.querySelector('[data-visor-foto] [data-foto-encuadrada]').getAttribute('data-encuadre')`)
   // Pinch: dos dedos que se separan.

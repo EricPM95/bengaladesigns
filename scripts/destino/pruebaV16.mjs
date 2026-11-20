@@ -149,8 +149,8 @@ console.log('3. El panel, solo para administradores')
   debe(esAdmin({ email: 'eric@ejemplo.com', id: 'u1' }, env) && !esAdmin({ email: 'alicia@ejemplo.com', id: 'u2' }, env), 'panel', 'el servidor distingue al administrador de cualquier otra cuenta')
   const rutas = leer('server/logros/rutas.js')
   debe(/req\.query\.pasos && esAdmin\(u, env\)/.test(rutas) && /app\.get\('\/api\/logros\/version', conAdmin/.test(rutas), 'panel', '`?pasos=1` y `/api/logros/version` solo para administradores (a cualquier otra cuenta, el parámetro no existe)')
-  const admin = leer('src/components/logros/AdminLogros.tsx')
-  debe(/window\.location\.replace\('\/'\)/.test(admin) && !/<DiagnosticoCompanero \/><p/.test(admin), 'panel', '`?admin=logros` con una cuenta que no es de administrador no enseña nada: vuelve a la app, como si no existiera')
+  const admin = leer('src/main.tsx') + leer('src/components/panel/PanelJutrip.tsx')
+  debe(admin.includes("admin') === 'logros'") && admin.includes('data-solo-administradores') && !admin.includes('<DiagnosticoCompanero /><p'), 'panel', '`?admin=logros` lleva a /admin/logros y, con una cuenta que no es de administrador, no enseña nada (el panel dice que es solo para administradores)')
 }
 
 /* ───────── 4. «Yo también estaba» con la foto del sitio de la app ───────── */

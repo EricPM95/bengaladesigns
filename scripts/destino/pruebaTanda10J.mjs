@@ -549,10 +549,10 @@ console.log('3. El código')
   debe(!/hoy_prueba|historia_de_prueba/.test(sql), 'pruebas', 'el código de la 0072 (sin comentarios) no nombra hoy_prueba ni historia_de_prueba: no se borran nunca')
   // El cliente
   const cliente = fs.readFileSync('src/lib/empezarDeCero.ts', 'utf8')
-  const panel = fs.readFileSync('src/components/logros/AdminLogros.tsx', 'utf8')
+  const panel = fs.readFileSync('src/components/panel/logros/Herramientas.tsx', 'utf8') // (V35A) el panel viejo AdminLogros.tsx se sustituyó por «Logros y sonidos» › Herramientas
   // antes: «…experiencia, el día de prueba y los pases. La cuenta se queda. ¿Seguro?» → ahora: sin «el día de prueba» y con «Las pruebas gratis que ya has usado no vuelven.» → decisión de Eric (10S7b, 31-oct): la 0072 ya no borra la prueba gastada, el diálogo no debe prometerlo.
   debe(/Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia y los pases. La cuenta se queda. Las pruebas gratis que ya has usado no vuelven. ¿Seguro?\?/.test(panel) && /Sí, empezar de cero/.test(panel) && />Cancelar</.test(panel), 'pantalla', 'el diálogo lleva el texto exacto y los dos botones')
-  debe(panel.indexOf('<VermeSinPase />') < panel.indexOf('<EmpezarDeCero />') && panel.indexOf('<EmpezarDeCero />') < panel.indexOf('<MisPruebas />'), 'pantalla', 'el botón está junto a «Verme como viajero sin pase»')
+  debe(panel.indexOf('data-ver-sin-pase ') < panel.indexOf('data-empezar-de-cero ') && panel.indexOf('data-empezar-de-cero ') < panel.indexOf('data-reiniciar-pruebas '), 'pantalla', 'el botón está junto a «Ver la app sin pase»')
   debe(/location\.replace\('\/'\)/.test(cliente) && !/recargarSinApertura|MARCA_SIN_APERTURA/.test(cliente), 'pantalla', 'al acabar vuelve a la raíz SIN la marca de «sin apertura»: sale la apertura como la primera vez')
   debe(/signOut/.test(cliente) && /indexedDB/.test(cliente) && /localStorage/.test(cliente) && /sessionStorage/.test(cliente), 'pantalla', 'cierra la sesión y limpia localStorage, sessionStorage, IndexedDB')
 }
@@ -573,16 +573,16 @@ if (!hayDev) {
   const SALIDA = path.resolve('docs/dias/capturas_jutrip')
   fs.mkdirSync(SALIDA, { recursive: true })
   const abrirPanel = async (extra = '') => {
-    const a = await abrirApp('http://localhost:5173', { ruta: '/?admin=logros&logrosDemo=1&cuentas=on&logros=on', antes: extra })
-    for (let i = 0; i < 40 && !(await a.evaluar("Boolean(document.querySelector('[data-admin-logros]'))").catch(() => false)); i++) await esp(500)
-    await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('nav button')).find((x) => x.textContent.trim() === 'Mis pruebas'); b.click(); return true })()")
+    const a = await abrirApp('http://localhost:5173', { ruta: '/?admin=logros&logrosDemo=1&cuentas=on&logros=on', antes: extra }) // (V35A) la dirección vieja lleva a /admin/logros
+    for (let i = 0; i < 60 && !(await a.evaluar("Boolean(document.querySelector('[data-pestanas]')) || Boolean(document.querySelector('[data-solo-administradores]'))").catch(() => false)); i++) await esp(500)
+    await a.evaluar("(() => { document.querySelector('[data-pestana=\"herramientas\"]')?.click(); return true })()")
     await esp(1200)
     return a
   }
   // La cuenta que NO es de administrador: el botón no existe
   {
     const a = await abrirPanel("try { sessionStorage.setItem('trazo:demo-no-admin', '1') } catch (e) {}")
-    debe((await a.evaluar("Boolean(document.querySelector('[data-ver-sin-pase]'))")) === true, 'pantalla', 'el panel se abre en «Mis pruebas» con «Verme como viajero sin pase»')
+    debe((await a.evaluar("Boolean(document.querySelector('[data-solo-administradores]'))")) === true, 'pantalla', 'una cuenta que no es de administrador no entra en el panel («solo para administradores»)')
     debe((await a.evaluar("Boolean(document.querySelector('[data-empezar-de-cero]'))")) === false, 'pantalla', 'si el servidor dice que no eres administrador, el botón NO sale')
     a.cerrar()
   }

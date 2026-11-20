@@ -7,7 +7,8 @@
  *   GET  /api/admin/usuarios/totales
  *   GET  /api/admin/usuarios/:id                 (404 si el id no vale o no existe)
  *   GET  /api/admin/ventas
- *   POST /api/admin/reportes/:id/responder       { texto }
+ *   GET  /api/admin/reportes · GET /api/admin/reportes/:id   (V35A: la lista y el detalle de los reportes)
+ *   POST /api/admin/reportes/:id/responder       { texto, hecho? }
  *   GET  /api/admin/destinos
  *   POST /api/admin/destinos/ya-disponible       { destino }
  * (Los de Reportes y Fotos ya existían: server/avisosViajeros.js.) Todas pasan por el mismo guardián que las demás /api/admin/* (401 sin sesión, 403 si no es administrador).
@@ -22,6 +23,7 @@ import { crearServicioUsuarios } from './usuarios.js'
 import { crearServicioVentas } from './ventas.js'
 import { crearServicioReportes } from './reportes.js'
 import { crearServicioDestinos } from './destinos.js'
+import { registrarRutasLogrosPanel } from './logrosPanel.js' // (V35A logros)
 
 const leerProximamente = () => {
   try {
@@ -43,24 +45,32 @@ export function registrarRutasPanel(app, { admin, env = process.env, correo = cr
   const reportes = crearServicioReportes({ admin, correo })
   const destinos = crearServicioDestinos({ admin, correo, proximamente, env, consola })
 
-  app.get('/api/admin/inicio', conAdmin(async (_req, res) => res.json(await inicio.leer())))
+  app.get('/api/admin/inicio', conAdmin(async (req, res) => res.json(await inicio.leer(req.query))))
   app.get('/api/admin/usuarios', conAdmin(async (req, res) => res.json(await usuarios.listar(req.query))))
   // (Esta va antes que la de :id.)
-  app.get('/api/admin/usuarios/totales', conAdmin(async (_req, res) => res.json(await usuarios.totales())))
+  app.get('/api/admin/usuarios/totales', conAdmin(async (req, res) => res.json(await usuarios.totales(req.query))))
   app.get('/api/admin/usuarios/:id', conAdmin(async (req, res) => {
     const ficha = await usuarios.ficha(req.params.id)
     if (!ficha) return res.status(404).json({ ok: false, error: 'Esa persona no existe.' })
     return res.json(ficha)
   }))
-  app.get('/api/admin/ventas', conAdmin(async (_req, res) => res.json(await ventas.leer())))
+  app.get('/api/admin/ventas', conAdmin(async (req, res) => res.json(await ventas.leer(req.query))))
+  // (V35A) La lista y el detalle de los reportes (con quién lo mandó, el contexto en palabras y el historial). La lista va antes que la de :id.
+  app.get('/api/admin/reportes', conAdmin(async (req, res) => res.json(await reportes.lista(req.query))))
+  app.get('/api/admin/reportes/:id', conAdmin(async (req, res) => {
+    const d = await reportes.detalle(req.params.id)
+    if (!d) return res.status(404).json({ ok: false, error: 'Ese reporte no existe.' })
+    return res.json(d)
+  }))
   app.post('/api/admin/reportes/:id/responder', conAdmin(async (req, res) => {
     const r = await reportes.responder(req.params.id, req.body)
     return res.status(r.estado).json(r.cuerpo)
   }))
-  app.get('/api/admin/destinos', conAdmin(async (_req, res) => res.json(await destinos.leer())))
+  app.get('/api/admin/destinos', conAdmin(async (req, res) => res.json(await destinos.leer(req.query))))
   app.post('/api/admin/destinos/ya-disponible', conAdmin(async (req, res) => {
     const r = await destinos.yaDisponible(req.body)
     return res.status(r.estado).json(r.cuerpo)
   }))
+  registrarRutasLogrosPanel(app, { admin, conAdmin, ahora }) // (V35A logros)
   return { avisoInterno }
 }

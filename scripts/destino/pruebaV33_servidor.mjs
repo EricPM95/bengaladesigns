@@ -97,7 +97,47 @@ await avisoDestino('Berlín', 'berlin', 'b1@x.es', id.dani)
 await avisoDestino('Cartagena de Indias', 'cartagena de indias', 'c1@x.es', null)
 
 // ── El cliente de Supabase de mentira y el correo de mentira ──
-const adminSupabase = crearAdminDePrueba(bd, fichas)
+// (V35A) Destinos y Reportes ya leen las tablas con `admin.from(...)`: un trocito de «from» sobre PGlite (select * y los filtros de siempre hechos aquí), solo para esta prueba.
+const conFrom = (admin) => {
+  const from = (tabla) => {
+    if (!/^[a-z_]+$/.test(tabla)) throw new Error('tabla rara')
+    const filtros = []
+    let orden = null
+    let tope = null
+    let cuenta = false
+    let cambios = null
+    const construir = {
+      select: (_cols, o) => (o?.head && o?.count ? ((cuenta = true), construir) : construir),
+      update: (c) => ((cambios = c), construir),
+      eq: (k, v) => (filtros.push((f) => f[k] === v), construir),
+      neq: (k, v) => (filtros.push((f) => f[k] !== v), construir),
+      in: (k, vs) => (filtros.push((f) => vs.includes(f[k])), construir),
+      like: (k, pat) => (filtros.push((f) => String(f[k] ?? '').startsWith(String(pat).replace(/%$/, ''))), construir),
+      order: (k, o) => ((orden = [k, o?.ascending !== false]), construir),
+      limit: (n) => ((tope = n), construir),
+      range: (d, h) => ((tope = h + 1), construir),
+      maybeSingle: async () => ({ data: (await construir.then((r) => r)).data?.[0] ?? null, error: null }),
+      then: async (ok, no) => {
+        try {
+          if (cambios) {
+            const filas = (await bd.q(`select * from public.${tabla}`)).filter((f) => filtros.every((x) => x(f)))
+            for (const f of filas) for (const [k, v] of Object.entries(cambios)) await bd.q(`update public.${tabla} set ${k} = $1 where id = $2`, [v, f.id])
+            return ok({ data: null, error: null })
+          }
+          let filas = (await bd.q(`select * from public.${tabla}`)).filter((f) => filtros.every((x) => x(f)))
+          if (orden) filas = filas.sort((x, y) => (String(x[orden[0]]) < String(y[orden[0]]) ? -1 : 1) * (orden[1] ? 1 : -1))
+          if (tope !== null) filas = filas.slice(0, tope)
+          return ok(cuenta ? { count: filas.length, data: null, error: null } : { data: filas, error: null })
+        } catch (e) {
+          return no ? no(e) : ok({ data: null, error: { message: e.message } })
+        }
+      },
+    }
+    return construir
+  }
+  return Object.assign(admin, { from })
+}
+const adminSupabase = conFrom(crearAdminDePrueba(bd, fichas))
 const mandados = []
 let fallaResend = false
 const fetchFalso = async (url, opciones) => {
@@ -186,6 +226,10 @@ const RUTAS = [
   await new Promise((ok) => sinClaveServicio.s.close(ok))
 }
 
+// (V35A) Usuarios, Inicio y Ventas ya NO usan las funciones SQL de la 0090: se calculan en JavaScript sobre la base (server/panel/base.js + calculos.js + calculosUsuarios.js). Sus pruebas viven en pruebaV35A.mjs (cálculos con una base falsa)
+// y pruebaV35A_usuarios.mjs. Las secciones 2 a 6 de esta prueba (que probaban esas funciones SQL, ya sin uso) se apartan; las funciones siguen en la migración 0090 por si hiciera falta volver.
+const SECCIONES_SQL_APARTADAS = true
+if (!SECCIONES_SQL_APARTADAS) {
 // ── 2. Usuarios: lista, paginación, búsqueda, filtros y orden ──
 let todos
 {
@@ -328,6 +372,8 @@ let todos
   mandados.length = 0
 }
 
+}
+
 // ── 7. [Responder] ──
 {
   const ok = await pedir(con, `/api/admin/reportes/${rAna}/responder`, { metodo: 'POST', cuerpo: { texto: 'Gracias, ya lo hemos arreglado.' } })
@@ -454,8 +500,7 @@ let todos
   debe(cuerpos.length > 60, `se han recorrido ${cuerpos.length} respuestas`)
   for (const palabra of ['card', 'stripe_', 'stripe', 'password', 'token', 'secret', 'recibo', 'intencion', 'pago_ref', 'cs_mock', 'pi_mock', CLAVE_FALSA]) debe(!todo.includes(palabra.toLowerCase()), `ninguna respuesta lleva «${palabra}»`)
   debe(!/resend_api_key|re_[a-z0-9]{20,}/i.test(todo), 'ninguna respuesta lleva la clave de Resend')
-  const fichaAna = cuerpos.find((c) => c.includes('"gastado_cent":4800') && c.includes('"logros"'))
-  debe(Boolean(fichaAna) && !/user_id|traveler_id|comprador_id|codigo/.test(fichaAna), 'la ficha no enseña ids de otras tablas ni códigos de pase')
+  // (V35A) La ficha ya no sale de la base de esta prueba (se calcula en JavaScript): que no enseña ids de otras tablas ni códigos de pase se comprueba en pruebaV35A_usuarios.mjs.
 }
 
 await new Promise((ok) => con.s.close(ok))

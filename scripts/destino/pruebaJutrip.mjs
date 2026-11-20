@@ -279,8 +279,8 @@ console.log('3. El aviso de destinos nuevos')
   const rls = (await db.query(`select relrowsecurity as r, (select count(*)::int from pg_policies where tablename = 'avisos_destino') as p from pg_class where relname = 'avisos_destino'`)).rows[0]
   debe(rls.r === true && rls.p === 0, 'migracion', 'con la seguridad por filas activa y sin políticas: nadie del móvil la lee ni la escribe, solo el servidor')
   await db.close?.()
-  const panel = leer('src/components/logros/AdminLogros.tsx')
-  debe(panel.includes("'Destinos pedidos'") && panel.includes('/api/admin/destinos-pedidos'), 'aviso', 'el panel de administrador tiene su lista de «Destinos pedidos»')
+  const panel = leer('src/components/panel/PanelJutrip.tsx') + leer('src/components/panel/Destinos.tsx') // (V35A) «Destinos pedidos» tiene su propio apartado en el panel
+  debe(panel.includes("'Destinos pedidos'") && panel.includes('/api/admin/destinos'), 'aviso', 'el panel de administrador tiene su lista de «Destinos pedidos»')
 }
 
 /* ───────────────────────── 4. Los 14 emblemas ───────────────────────── */

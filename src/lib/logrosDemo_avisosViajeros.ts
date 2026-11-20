@@ -20,6 +20,6 @@ export function responder(ruta: string, url: URL, c: Record<string, unknown>, op
   }
   if (ruta === '/api/admin/avisos-viajeros/destinos') return [{ destino: 'Lisboa', cuantos: 7, primero: hace(9000), ultimo: hace(600), avisables: 5, pendientes: 7 }, { destino: 'Oporto', cuantos: 3, primero: hace(5000), ultimo: hace(2000), avisables: 2, pendientes: 3 }]
   if (ruta === '/api/admin/avisos-viajeros/destinos/ya-esta') return { ok: true, avisados: 5 }
-  if (/^\/api\/admin\/avisos-viajeros\/[^/]+(\/usar-foto)?$/.test(ruta) && opciones.metodo !== 'GET') return { ok: true, avisado: c.estado === 'hecho' }
+  if (/^\/api\/admin\/avisos-viajeros\/[^/]+(\/usar-foto)?$/.test(ruta) && opciones.metodo !== 'GET' && !(opciones.metodo === 'PATCH' && /\/a[1-6]$/.test(ruta))) return { ok: true, avisado: c.estado === 'hecho' } // (V35A: el cambio de estado de a1 a a6 lo contesta y apunta la demo del panel)
   return undefined
 }

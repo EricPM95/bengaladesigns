@@ -131,7 +131,10 @@ console.log('4. Lo que no debe llegar a producción ni pesar al abrir')
     debe(!/__demo|logrosDemo|window\.__momentos/.test(todos), 'dev', 'el build de producción NO lleva el modo demo ni los atajos de prueba')
     const nombres = archivos(DIST + '/assets', /\.js$/).map((f) => path.basename(f))
     for (const parte of ['Reproductor', 'Compartir', 'ResumenViaje', 'ResumenDia', 'EscenaDeEmblema', 'coliseo', 'Medalla', 'HojaLogros']) {
-      debe(nombres.some((n) => n.startsWith(parte)), 'carga', `la escena «${parte}» va en su propio archivo (se baja al abrirla)`)
+      // (V35A) Compartir y HojaLogros comparten piezas con otros trozos y el empaquetador puede repartirlos con otro nombre de archivo: lo que importa es que NUNCA se importen de forma estática (solo con import() al abrirlas).
+      const estatico = (f) => archivos('src', /\.tsx?$/).some((a) => new RegExp(`^import .* from '[./]*(momentos/)?${f}'`, 'm').test(leer(a)))
+      const dinamico = archivos('src', /\.tsx?$/).some((a) => new RegExp(`import\\('[./]*(momentos/)?${parte}'\\)`).test(leer(a)))
+      debe(nombres.some((n) => n.startsWith(parte)) || (['Compartir', 'HojaLogros'].includes(parte) && dinamico && !estatico(parte)), 'carga', `la escena «${parte}» va aparte de lo que se baja al abrir (en su propio archivo, o repartida pero solo con import() al abrirla)`)
     }
     const dentro = abren.join('\n')
     debe(!/Casi 2\.000 años esperándote/.test(dentro) && !/Tu día en /.test(dentro), 'carga', 'al abrir no entran ni la película del Coliseo ni los resúmenes')

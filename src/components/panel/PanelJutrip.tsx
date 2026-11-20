@@ -7,24 +7,25 @@ import { Reportes } from './Reportes'
 import { Usuarios } from './Usuarios'
 import { Ventas } from './Ventas'
 import { SERIE } from './estilo'
+import { useTituloDelPanel } from './tituloDelPanel'
+import { useCuenta } from '../cuenta/useCuenta'
+import { useMiNombreYFoto } from '../../store/useMiPerfil'
 
 /**
  * (V33, Design «Panel Jutrip») EL PANEL DE JUTRIP: una sola entrada, /admin, solo para administradores (la comprobación, SIEMPRE en el servidor: cada /api/admin/* responde 403 a quien no lo es; aquí, sin respuesta del servidor,
  * se ve «Esta página es solo para administradores.»). Con el menú de Design: Inicio · Reportes · Fotos · Destinos y «Avísame» · Ventas · Usuarios · Logros · Sonidos. Para ordenador (menú a la izquierda) y en el móvil
  * (menú de pastillas arriba). /admin/logros y /admin/sonidos llevan a su apartado. Logros y Sonidos son lo de siempre, dentro del panel. Se baja a demanda.
  */
-const AdminLogros = lazy(() => import('../logros/AdminLogros').then((m) => ({ default: m.AdminLogros })))
-const AdminSonidos = lazy(() => import('../logros/AdminSonidos').then((m) => ({ default: m.AdminSonidos })))
+const LogrosYSonidos = lazy(() => import('./logros/LogrosYSonidos'))
 
 export const SECCIONES = [
   { id: 'inicio', nombre: 'Inicio', icono: 'M4 11l8-7 8 7v9h-5v-6H9v6H4z' },
   { id: 'reportes', nombre: 'Reportes', icono: 'M5 21V4M5 4h11l-2 4 2 4H5' },
-  { id: 'fotos', nombre: 'Fotos', icono: 'M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z' },
-  { id: 'destinos', nombre: 'Destinos y «Avísame»', icono: 'M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21zM12 12.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' },
+  { id: 'fotos', nombre: 'Fotos de viajeros', icono: 'M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z' },
+  { id: 'destinos', nombre: 'Destinos pedidos', icono: 'M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21zM12 12.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' },
   { id: 'ventas', nombre: 'Ventas', icono: 'M17 6a6 6 0 1 0 0 12M5 10h9M5 14h9' },
   { id: 'usuarios', nombre: 'Usuarios', icono: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 11a2.5 2.5 0 1 0 0-5M21 19c0-2.4-1.6-4.4-4-5' },
-  { id: 'logros', nombre: 'Logros', icono: 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z' },
-  { id: 'sonidos', nombre: 'Sonidos', icono: 'M4 10v4h4l5 4V6L8 10zM16 9a4 4 0 0 1 0 6' },
+  { id: 'logros', nombre: 'Logros y sonidos', icono: 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z' },
 ] as const
 type Id = (typeof SECCIONES)[number]['id']
 
@@ -32,6 +33,8 @@ type Id = (typeof SECCIONES)[number]['id']
 export function seccionDe(ruta: string, consulta = ''): Id {
   const p = ruta.replace(/\/+$/, '').split('/')
   const trozo = p[1] === 'admin' ? p[2] : new URLSearchParams(consulta).get('s')
+  // (V35A) «Sonidos» ya no es una entrada del menú: es una pestaña de «Logros y sonidos» (la dirección /admin/sonidos sigue valiendo).
+  if (trozo === 'sonidos') return 'logros'
   return (SECCIONES.find((s) => s.id === trozo)?.id ?? 'inicio') as Id
 }
 
@@ -46,11 +49,15 @@ function useAncho(): number {
 }
 
 export function PanelJutrip(): ReactNode {
+  const cuenta = useCuenta()
+  const tituloEspecial = useTituloDelPanel((x) => x.titulo)
+  const yo = useMiNombreYFoto()
+  const nombreDelAdmin = (yo.tieneNombre ? yo.nombre : '') || (cuenta.tipo === 'cuenta' ? String(cuenta.email ?? '').split('@')[0] : '') || 'Administrador'
   const [inicio, setInicio] = useState<DatosInicio | null | undefined>(undefined)
   const [seccion, setSeccion] = useState<Id>(() => seccionDe(window.location.pathname, window.location.search))
   const movil = useAncho() < 900
   useEffect(() => {
-    void pedir<DatosInicio>('/api/admin/inicio').then((r) => setInicio(r && r.ok ? r : null))
+    void pedir<DatosInicio>('/api/admin/inicio?resumen=1').then((r) => setInicio(r && r.ok ? r : null))
   }, [])
   useEffect(() => {
     const f = () => setSeccion(seccionDe(window.location.pathname, window.location.search))
@@ -79,11 +86,11 @@ export function PanelJutrip(): ReactNode {
       {seccion === 'destinos' && <Destinos movil={movil} />}
       {seccion === 'ventas' && <Ventas movil={movil} />}
       {seccion === 'usuarios' && <Usuarios movil={movil} />}
-      {seccion === 'logros' && <AdminLogros />}
-      {seccion === 'sonidos' && <AdminSonidos embebido />}
+      {seccion === 'logros' && <LogrosYSonidos movil={movil} pestana={window.location.pathname.includes('/sonidos') ? 'sonidos' : (parametros.get('pestana') ?? undefined)} />}
     </Suspense>
   )
-  const hoy = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })
+  const ahoraF = new Date()
+  const hoy = `${ahoraF.toLocaleDateString('es-ES', { weekday: 'long' })} ${ahoraF.getDate()} ${['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'][ahoraF.getMonth()]} ${ahoraF.getFullYear()}`
   return (
     <div data-panel-jutrip data-movil={movil ? '1' : '0'} data-seccion-actual={seccion} style={{ minHeight: '100vh', display: 'flex', flexDirection: movil ? 'column' : 'row', background: '#F6EFE0', color: '#1C2230', fontFamily: "'Geist',sans-serif" }}>
       {!movil ? (
@@ -103,6 +110,13 @@ export function PanelJutrip(): ReactNode {
               </button>
             )
           })}
+          <div data-tarjeta-admin style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 10, padding: 10, borderRadius: 14, background: 'rgba(255,253,248,.06)' }}>
+            <span style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(140deg,#F8E7BC,#C99A4C)', color: '#2A1D10', display: 'flex', alignItems: 'center', justifyContent: 'center', font: `400 18px ${SERIE}` }}>{nombreDelAdmin.charAt(0).toUpperCase()}</span>
+            <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <span style={{ font: "600 13px 'Geist'", color: '#FFFDF8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombreDelAdmin}</span>
+              <span style={{ font: "400 11px 'Geist'", color: 'rgba(255,253,248,.5)' }}>Administrador</span>
+            </span>
+          </div>
         </nav>
       ) : (
         <nav aria-label="Panel" style={{ flex: 'none', background: '#1C2230', padding: '18px 18px 12px', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -126,7 +140,7 @@ export function PanelJutrip(): ReactNode {
       )}
       <main style={{ flex: 1, minWidth: 0, padding: movil ? '18px 18px 60px' : '28px 32px 60px', display: 'flex', flexDirection: 'column', gap: movil ? 14 : 18 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <h1 style={{ margin: 0, font: `400 ${movil ? 28 : 34}px/1 ${SERIE}` }}>{actual.nombre}</h1>
+          <h1 style={{ margin: 0, font: `400 ${movil ? 28 : 34}px/1 ${SERIE}` }}>{tituloEspecial ?? actual.nombre}</h1>
           {!movil && <span style={{ font: "500 13px 'Geist'", color: 'rgba(28,34,48,.55)' }}>{hoy.charAt(0).toUpperCase() + hoy.slice(1)}</span>}
         </div>
         {contenido}

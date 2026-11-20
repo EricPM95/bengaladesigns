@@ -64,7 +64,8 @@ console.log('2b. La pastilla del pase')
 {
   const p = leer('src/components/pase/PastillaPase.tsx')
   debe(/background: '#1C2230'/.test(p) && /#D2B67A/.test(p), 'pastilla', 'sin pase: azul oscuro con candado dorado')
-  debe(/linear-gradient\(100deg,#E6CB8E/.test(p) && /'hecho'/.test(p), 'pastilla', 'con pase: dorado con ✓')
+  // (V35A) Desde la V18 (Design P1) con el pase es VERDE pastel con ✓.
+  debe(/#E4F5E3/.test(p) && /#2F6B43/.test(p) && /'hecho'/.test(p), 'pastilla', 'con pase: verde pastel con ✓')
   debe(/data-pastilla-pase="cargando"[^>]*h-\[30px\] w-\[118px\][^>]*rounded-full/.test(p) && /rgba\(28,34,48,\.08\)/.test(p), 'pastilla', 'mientras no se sabe: hueco gris claro del mismo alto, sin texto')
 }
 

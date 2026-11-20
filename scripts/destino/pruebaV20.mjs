@@ -56,7 +56,7 @@ console.log('2. El código')
   const envio = leer('src/lib/cuentanos/envio.ts')
   debe(/reducirFoto/.test(envio) && /fotosEnteras/.test(envio) && /guardarEnCola/.test(envio) && /vaciarCola/.test(envio) && /addEventListener\('online'/.test(envio), 'envio', 'fotos reducidas (enteras solo en «Comparte tu foto»), cola sin red y envío al volver la red')
   debe(/erroresRecientes\(\)/.test(leer('src/components/cuentanos/Cuentanos.tsx')) && /tacharLlaves/.test(envio), 'errores', '«Algo no funciona» manda los últimos errores, limpios con tacharLlaves')
-  debe(/AvisosDeViajeros/.test(leer('src/components/logros/AdminLogros.tsx')) && /Destinos más pedidos/.test(leer('src/components/logros/AvisosDeViajeros.tsx')) && /Fotos de viajeros/.test(leer('src/components/logros/AvisosDeViajeros.tsx')), 'panel', 'el panel tiene «Avisos de viajeros», «Destinos más pedidos» y «Fotos de viajeros»')
+  debe(/Reportes/.test(leer('src/components/panel/PanelJutrip.tsx')) && /Fotos de viajeros/.test(leer('src/components/panel/PanelJutrip.tsx')) && /Destinos pedidos/.test(leer('src/components/panel/PanelJutrip.tsx')), 'panel', 'el panel tiene «Reportes», «Fotos de viajeros» y «Destinos pedidos» (cada uno con su apartado)')
   debe(/AVISO_DE_CUENTANOS_PRIVACIDAD/.test(leer('src/lib/privacidad.ts')), 'privacidad', 'la pantalla de Privacidad dice qué manda «Cuéntanos» y para qué')
   debe(/data-cuentanos-dato-mal/.test(leer('src/components/route/dayDetail/StopDetailSheet.tsx')), 'ficha', 'la ficha de un sitio tiene «Un dato está mal» con el sitio ya puesto')
 }
