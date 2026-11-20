@@ -96,13 +96,36 @@ export function sintesDeLaAnimacion(a: Animacion): string[] {
   return s
 }
 
-/** La línea de «Lo elegido» de una animación (pura: la prueba la comprueba). */
-export function lineaElegida(a: Animacion, e: { letra: string; volumen: number; propio?: { nombre: string; ms: number; volumen: number } | null; fijo?: boolean }): string {
-  const v = (x: number) => x.toFixed(2).replace('.', ',')
+/** (V35A2) Lo que dura la animación entera (la partitura más larga de las que arrancan al empezar), en segundos. */
+export const duracionDe = (a: Animacion): number => Math.max(...a.suena.map((s) => partituraDe(s)?.dura ?? 0), 0)
+/** (V35A2) El instante, en segundos desde el primer fotograma, en que cae el golpe (el del sonido principal; si no hay, el final de la animación): la referencia de «En el golpe» y la raya roja. */
+export function golpeDe(a: Animacion): number {
+  for (const id of a.suena) for (const n of partituraDe(id)?.notas ?? []) if (n.tipo === 'archivo' && a.principal.tipo === 'archivo' && n.archivo === a.principal.id) return n.golpe
+  const golpes = a.suena.flatMap((id) => (partituraDe(id)?.notas ?? []).flatMap((n) => (n.tipo === 'archivo' ? [n.golpe] : [])))
+  return golpes.length ? Math.max(...golpes) : duracionDe(a)
+}
+
+/** Un sonido de Code en «Lo elegido»: silenciado, con su candidato (si es grabado) y su volumen. */
+export interface CodigoElegido {
+  nombre: string
+  silenciado: boolean
+  letra?: string
+  volumen: number
+}
+export interface PropioElegido {
+  nombre: string
+  empieza: 'principio' | 'golpe'
+  ms: number
+  volumen: number
+}
+/** La línea de «Lo elegido» de una animación: todo lo que suena (pura: la prueba la comprueba). Ejemplo: «Medalla de bronce → golpe: candidato B · 80 % · redoble: SILENCIADO · MÍO: x.mp3 · desde el principio +120 ms · 70 %». */
+export function lineaElegida(a: Animacion, e: { codigo: CodigoElegido[]; propios: PropioElegido[] }): string {
+  const pct = (x: number) => `${Math.round(x * 100)} %`
   const ms = (x: number) => `${x >= 0 ? '+' : '−'}${Math.abs(x)} ms`
-  if (e.propio) return `${a.nombre} → MI SONIDO: ${e.propio.nombre} · ${ms(e.propio.ms)} · volumen ${v(e.propio.volumen)}`
-  if (e.fijo) return `${a.nombre} → se queda como está (hecho por código)`
-  return `${a.nombre} → candidato ${e.letra} · volumen ${v(e.volumen)}`
+  const partes: string[] = []
+  for (const c of e.codigo) partes.push(c.silenciado ? `${c.nombre}: SILENCIADO` : c.letra ? `${c.nombre}: candidato ${c.letra} · ${pct(c.volumen)}` : `${c.nombre}: se queda como está · ${pct(c.volumen)}`)
+  for (const p of e.propios) partes.push(`MÍO: ${p.nombre} · ${p.empieza === 'principio' ? 'desde el principio' : 'desde el golpe'} ${ms(p.ms)} · ${pct(p.volumen)}`)
+  return `${a.nombre} → ${partes.length ? partes.join(' · ') : 'sin sonido'}`
 }
 
 export const AVISO_DE_LOS_SONIDOS_PROPIOS = 'Los sonidos tuyos: guárdalos en Descargas › sonidos_jutrip con el nombre de la animación (por ejemplo, medalla_oro.mp3) y pasa esta lista a Claude. En la siguiente tanda se recortan, se igualan de volumen y se ponen en la app'

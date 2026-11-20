@@ -63,7 +63,8 @@ export const versionSint = (_id: string): Version => 'A'
 export const elegirVersion = (id: string, v: Letra) => guardarJson(CLAVE_ELEGIDOS, { ...leerElegidos(), [id]: v })
 export const volumenGeneral = (): number => Math.min(1, Math.max(0, leerJson<number>(CLAVE_VOLUMEN, 0.8)))
 export const ponerVolumenGeneral = (v: number) => guardarJson(CLAVE_VOLUMEN, Math.min(1, Math.max(0, v)))
-export const volumenDe = (id: string): number => Math.min(2, Math.max(0.2, leerJson<Record<string, number>>(CLAVE_VOLUMEN_DE, {})[id] ?? 1))
+/** (V35A2) El volumen de CADA sonido, de 0 a 200 %. Los grabados se guardan por su nombre (`redoble`); los hechos por código, con `s:` delante (`s:tic`). */
+export const volumenDe = (id: string): number => Math.min(2, Math.max(0, leerJson<Record<string, number>>(CLAVE_VOLUMEN_DE, {})[id] ?? 1))
 export const ponerVolumenDe = (id: string, v: number) => guardarJson(CLAVE_VOLUMEN_DE, { ...leerJson<Record<string, number>>(CLAVE_VOLUMEN_DE, {}), [id]: v })
 
 export async function manifiesto(): Promise<Manifiesto | null> {
@@ -103,18 +104,41 @@ export async function precargar(ctx: BaseAudioContext, id: string, o: OpcionesDe
 }
 
 /**
- * (V34C) «PROBAR CON MI SONIDO» (solo la página de sonidos del administrador): un archivo del propio Eric, ya descodificado en el navegador (nunca sale de él), que sustituye a UN sonido de la partitura. `ms` lo adelanta (negativo)
- * o lo atrasa (positivo) respecto al sitio donde caería el sonido que sustituye. Por defecto es null: la app no cambia en nada.
+ * (V35A2) EL ESTUDIO (solo la página de sonidos del administrador, a través del visor): los sonidos de Eric se SUMAN a los de Code (ya no sustituyen a ninguno) y cualquier sonido de Code se puede silenciar.
+ *   · `propios`: cada archivo de Eric (ya descodificado en el navegador, nunca sale de él) con su volumen y su momento: `ms` desde el primer fotograma de la animación (`empieza: 'principio'`) o desde el golpe (`'golpe'`).
+ *   · `silenciados`: los sonidos de Code que no se programan (`archivo:redoble`, `sint:tic`).
+ *   · `golpe`: segundos desde el principio en que cae el golpe (o acaba la animación), la referencia de «En el golpe».
+ * Un sonido que cae ANTES del primer fotograma no se recorta: se retrasa la animación (`esperaDeLaAnimacion`) y el sonido se oye entero. Por defecto todo está vacío: la app no cambia en nada.
  */
+export type Empieza = 'principio' | 'golpe'
 export interface SonidoPropio {
-  objetivo: { tipo: 'archivo' | 'sint'; id: string }
+  id: string
+  nombre: string
   buffer: AudioBuffer
   ms: number
   vol: number
+  empieza: Empieza
 }
-let propio: SonidoPropio | null = null
-export const ponerSonidoPropio = (p: SonidoPropio | null) => {
-  propio = p
+export interface EstudioDelMotor {
+  propios: SonidoPropio[]
+  silenciados: string[]
+  golpe: number
+}
+const VACIO: EstudioDelMotor = { propios: [], silenciados: [], golpe: 0 }
+let estudio: EstudioDelMotor = VACIO
+export const ponerEstudio = (e: Partial<EstudioDelMotor> | null) => {
+  estudio = e ? { ...VACIO, ...e } : VACIO
+}
+export const claveDeSilencio = (tipo: 'archivo' | 'sint', id: string) => `${tipo}:${id}`
+/** Segundos desde el primer fotograma en que arranca el sonido propio (puede ser negativo). */
+export const arranqueDelPropio = (p: Pick<SonidoPropio, 'empieza' | 'ms'>, golpe: number): number => (p.empieza === 'golpe' ? golpe : 0) + p.ms / 1000
+/** Lo que hay que esperar antes del primer fotograma para que ningún sonido propio caiga antes de «ahora» (así no se recorta). */
+export const esperaDeLaAnimacion = (propios: Pick<SonidoPropio, 'empieza' | 'ms'>[], golpe: number): number => Math.max(0, ...propios.map((p) => -arranqueDelPropio(p, golpe)))
+
+/** Si la página del estudio fija el primer fotograma en el reloj de audio (para poder adelantar sonidos de verdad), la siguiente partitura arranca ahí. */
+let inicioFijado: { t: number; hasta: number } | null = null
+export const fijarInicioDeLaAnimacion = (ctx: BaseAudioContext, t: number) => {
+  inicioFijado = { t, hasta: ctx.currentTime + 4 }
 }
 
 interface Activa {
@@ -136,6 +160,10 @@ export interface Agendado {
   en: number
   /** Segundos desde el principio de la animación en que se ha programado de verdad (el golpe, para un archivo). */
   programado: number
+  /** (V35A2) Solo los sonidos de Eric: el primer fotograma y el arranque en el reloj de audio, y los segundos que se han recortado del principio (0 = entero). */
+  t0?: number
+  t?: number
+  recorte?: number
 }
 const registrar = (a: Agendado) => {
   try {
@@ -182,6 +210,32 @@ export function cortar(ctx: BaseAudioContext, fundidoMs = FUNDIDO_AL_SALTAR_MS, 
 
 export const haySonando = (): boolean => activas.length > 0
 
+/** (V35A2) Programa cada sonido de Eric, entero (nunca recortado), en su instante respecto al primer fotograma `t0`. */
+export function programarPropios(ctx: BaseAudioContext, partitura: string, t0: number) {
+  if (estudio.propios.length === 0) return
+  // Se programan YA (antes de que la animación se monte): así uno que tiene que sonar antes del primer fotograma se oye entero.
+  const master = ctx.createGain()
+  master.gain.value = volumenGeneral()
+  master.connect(ctx.destination)
+  const activa: Activa = { id: `propios:${partitura}`, master, premio: false, fin: t0 + 30, fuentes: [] }
+  activas.push(activa)
+  for (const p of estudio.propios) {
+    const rel = arranqueDelPropio(p, estudio.golpe)
+    const f = ctx.createBufferSource()
+    f.buffer = p.buffer
+    const g = ctx.createGain()
+    g.gain.value = p.vol
+    f.connect(g)
+    g.connect(master)
+    const cuando = t0 + rel
+    // Nunca se recorta a propósito: si llegara tarde (el móvil va justo), se dice cuánto (`recorte`) para que la página lo avise.
+    const recorte = Math.max(0, ctx.currentTime - cuando)
+    f.start(Math.max(cuando, ctx.currentTime), recorte)
+    activa.fuentes.push(f)
+    registrar({ partitura, tipo: 'archivo', id: `propio:${p.id}`, en: rel, programado: rel, t0, t: cuando, recorte })
+  }
+}
+
 /**
  * Programa la partitura `id` a partir de ahora. Devuelve lo que dura, o null si no hay partitura o el audio no está listo. Si es un premio, corta antes (con fundido) el premio que estuviera sonando: nunca dos golpes finales a la vez.
  * `en` solo lo usan las pruebas (empezar en otro instante del reloj de audio).
@@ -190,31 +244,20 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
   const p = partituraDe(id, o)
   if (!p) return null
   if (p.premio) cortar(ctx, FUNDIDO_AL_SALTAR_MS, { premios: true })
-  const t0 = (o.en ?? ctx.currentTime) + ADELANTO
+  // (V35A2) Si el estudio ha fijado el primer fotograma en el reloj de audio, la partitura arranca justo ahí (una sola vez).
+  const fijado = inicioFijado && inicioFijado.hasta >= ctx.currentTime ? inicioFijado.t : null
+  inicioFijado = null
+  const t0 = (fijado ?? o.en ?? ctx.currentTime) + (fijado === null ? ADELANTO : 0)
   const master = ctx.createGain()
-  master.gain.value = volumenGeneral() * volumenDe(id)
+  master.gain.value = volumenGeneral()
   master.connect(ctx.destination)
   const activa: Activa = { id, master, premio: p.premio, fin: t0 + p.dura + 0.6, fuentes: [] }
   activas.push(activa)
   for (const n of p.notas) {
-    // (V34C) Su sonido, en el sitio del que sustituye (si lo hay).
-    if (propio && propio.objetivo.tipo === n.tipo && propio.objetivo.id === (n.tipo === 'sint' ? n.sonido : n.archivo)) {
-      const datosDelQueSustituye = n.tipo === 'archivo' ? manifiestoEnMemoria?.[n.archivo]?.[versionDe(n.archivo)] : undefined
-      const base = n.tipo === 'sint' ? t0 + n.en : t0 + n.golpe - (datosDelQueSustituye?.golpe ?? 0)
-      const f = ctx.createBufferSource()
-      f.buffer = propio.buffer
-      const gp = ctx.createGain()
-      gp.gain.value = propio.vol * (n.vol ?? 1)
-      f.connect(gp)
-      gp.connect(master)
-      const arranquePropio = base + propio.ms / 1000
-      f.start(Math.max(arranquePropio, ctx.currentTime), Math.max(0, ctx.currentTime - arranquePropio))
-      activa.fuentes.push(f)
-      registrar({ partitura: id, tipo: n.tipo, id: `propio:${n.tipo === 'sint' ? n.sonido : n.archivo}`, en: n.tipo === 'sint' ? n.en : n.golpe, programado: arranquePropio - t0 + (datosDelQueSustituye?.golpe ?? 0) })
-      continue
-    }
+    // (V35A2) Un sonido de Code silenciado no se programa.
+    if (estudio.silenciados.includes(claveDeSilencio(n.tipo, n.tipo === 'sint' ? n.sonido : n.archivo))) continue
     if (n.tipo === 'sint') {
-      tocarSintetico(ctx, master, n.sonido, versionSint(n.sonido), t0 + n.en, n.vol ?? 1, n.dura)
+      tocarSintetico(ctx, master, n.sonido, versionSint(n.sonido), t0 + n.en, (n.vol ?? 1) * volumenDe(`s:${n.sonido}`), n.dura)
       registrar({ partitura: id, tipo: 'sint', id: n.sonido, en: n.en, programado: n.en })
     } else {
       const v = versionDe(n.archivo)

@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { aperturaInteriorHtml, DURACION as DURACION_APERTURA } from '../../../../shared/marca/aperturaJutrip.js'
 import { contextoDeAudioDeLaApp, sonar } from '../../../lib/sonidos'
-import { cortar, ponerSonidoPropio, precargar, type SonidoPropio } from '../../../lib/sonidos/motor'
-import { ANIMACIONES, animacionDe, MOMENTOS_DEL_ESTUDIO } from '../../../lib/sonidos/estudio'
+import { cortar, esperaDeLaAnimacion, fijarInicioDeLaAnimacion, ponerEstudio, precargar, programarPropios, type SonidoPropio } from '../../../lib/sonidos/motor'
+import { ANIMACIONES, animacionDe, golpeDe, MOMENTOS_DEL_ESTUDIO } from '../../../lib/sonidos/estudio'
 import { partituraDe } from '../../../lib/sonidos/partituras'
 import { Fuegos } from '../momentos/Fuegos'
 import { useEsAdministrador } from './useEsAdministrador'
@@ -18,7 +18,9 @@ const ResumenViaje = lazy(() => import('../momentos/ResumenViaje'))
 
 export interface OpcionesDeVer {
   animacion: string
-  propio?: SonidoPropio | null
+  /** (V35A2) Los sonidos de Eric (se suman) y los de Code que se silencian (`archivo:redoble`, `sint:tic`). */
+  propios?: SonidoPropio[]
+  silenciados?: string[]
   /** Se llama cuando la animación acaba (o a los segundos que dura la partitura, si no hay un final claro). */
   alFinal?: () => void
 }
@@ -92,14 +94,23 @@ export function VisorDeAnimacion(): ReactNode {
         if (!ctx) return
         if (ctx.state !== 'running') void ctx.resume().catch(() => undefined)
         cortar(ctx, 60)
-        ponerSonidoPropio(o.propio ?? null)
         const a = animacionDe(o.animacion)
         if (!a) return
+        const propios = o.propios ?? []
+        const golpe = golpeDe(a)
+        ponerEstudio({ propios, silenciados: o.silenciados ?? [], golpe })
         // Todo lo que suena, descargado ANTES de empezar (así cada sonido cae en su instante, sin esperas).
         await Promise.all([...a.suena, ...a.partituras, ...(a.visor === 'momentos' ? ['escena'] : [])].map((p) => precargar(ctx, p)))
         final.current = o.alFinal ?? (() => undefined)
         setActual(null)
-        window.setTimeout(() => setActual({ n: ++contador.current, id: o.animacion }), 30)
+        // (V35A2) El primer fotograma se fija en el reloj de audio: si un sonido de Eric tiene que sonar ANTES, se espera ese tiempo (el sonido no se recorta, se retrasa la animación).
+        const espera = esperaDeLaAnimacion(propios, golpe)
+        const inicio = ctx.currentTime + 0.05 + espera
+        fijarInicioDeLaAnimacion(ctx, inicio)
+        programarPropios(ctx, o.animacion, inicio) // los de Eric se suman a los de Code, programados ya (no recortados)
+        const w = window as unknown as { __esperaDeLaAnimacion?: number }
+        w.__esperaDeLaAnimacion = espera
+        window.setTimeout(() => setActual({ n: ++contador.current, id: o.animacion }), Math.max(0, (inicio - ctx.currentTime) * 1000 - 20))
       },
       parar: () => {
         const ctx = contextoDeAudioDeLaApp()

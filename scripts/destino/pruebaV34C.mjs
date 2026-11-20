@@ -127,10 +127,10 @@ try {
   await adm.esp(1500)
   const p1 = await J(adm, `JSON.stringify({ nombre: document.querySelector('[data-nombre-propio]')?.textContent, ag: (document.querySelector('[data-visor-iframe]').contentWindow.__sonidosAgendados ?? []).filter((x) => String(x.id).startsWith('propio:')).map((x) => [x.id, +x.programado.toFixed(3), +x.en.toFixed(3)]), onda: Boolean(document.querySelector('[data-onda]')), leyenda: document.querySelector('[data-onda-leyenda]')?.textContent, ms: document.querySelector('[data-ms]') ? { min: document.querySelector('[data-ms]').min, max: document.querySelector('[data-ms]').max, step: document.querySelector('[data-ms]').step, valor: document.querySelector('[data-ms-valor]').textContent } : null, vol: document.querySelector('[data-vol-propio-valor]')?.textContent, quitar: Boolean(document.querySelector('[data-quitar-propio]')) })`)
   debe(activo && /campana_bonita\.wav/.test(p1.nombre ?? ''), 'propio', `la página reconoce el archivo (${p1.nombre})`)
-  debe(p1.ag.length >= 1 && p1.ag[0][0] === 'propio:medalla_oro', 'propio', `la animación se reproduce con mi sonido en el sitio del golpe de la medalla de oro (${JSON.stringify(p1.ag)})`)
-  debe(p1.ms && p1.ms.min === '-1000' && p1.ms.max === '1000' && p1.ms.step === '10' && p1.ms.valor === '+0 ms', 'propio', `la barra va de −1000 a +1000 de 10 en 10 con el número a la vista (${JSON.stringify(p1.ms)})`)
+  debe(p1.ag.length >= 1 && /^propio:/.test(p1.ag[0][0]) && p1.ag[0][1] === 0, 'propio', `(V35A2) mi sonido se SUMA y por defecto empieza con la animación, en su primer fotograma (${JSON.stringify(p1.ag)})`)
+  debe(p1.ms && Number(p1.ms.min) === -Number(p1.ms.max) && Number(p1.ms.max) >= 5300 && p1.ms.step === '10' && p1.ms.valor === '+0 ms', 'propio', `(V35A2) la barra cubre toda la animación (de −duración a +duración) de 10 en 10 con el número a la vista (${JSON.stringify(p1.ms)})`)
   debe(p1.vol === '70 %' && p1.quitar && p1.onda, 'propio', `su volumen (${p1.vol}), el botón de quitarlo y la onda están`)
-  debe(/Raya roja/.test(p1.leyenda ?? ''), 'propio', 'la onda lleva su raya donde acaba la animación')
+  debe(await adm.evaluar("Boolean(document.querySelector('[data-raya-verde]') && document.querySelector('[data-raya-roja]'))"), 'propio', '(V35A2) la línea de tiempo lleva la raya verde (empieza) y la roja (golpe / final)')
   // La barra de ms mueve el momento en que empieza
   await adm.evaluar(`(() => { const r = document.querySelector('[data-ms]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(r, '200'); r.dispatchEvent(new Event('input', { bubbles: true })); return true })()`)
   await adm.esp(300)
@@ -157,13 +157,13 @@ try {
   debe(!/fetch\(|XMLHttpRequest|sendBeacon|supabase/.test(pagina), 'sin_red', 'la página no tiene código de red: el archivo se lee con arrayBuffer() y se descodifica en el navegador')
   // Lo elegido con mi sonido
   const lo = await adm.evaluar("document.querySelector('[data-lo-elegido]').textContent")
-  debe(/Medalla de oro → MI SONIDO: campana_bonita\.wav · −300 ms · volumen 0,70/.test(lo), 'lo_elegido', 'con mi sonido: «Medalla de oro → MI SONIDO: campana_bonita.wav · −300 ms · volumen 0,70»')
+  debe(/Medalla de oro → .*candidato B · 100 %.* · MÍO: campana_bonita\.wav · desde el principio −300 ms · 70 %/.test(lo), 'lo_elegido', '(V35A2) con mi sonido: «Medalla de oro → …candidato B · 100 % · MÍO: campana_bonita.wav · desde el principio −300 ms · 70 %»')
   // Quitar mi sonido
   await toque(adm, '[data-quitar-propio]')
   await adm.esp(1000)
   const lo2 = await adm.evaluar("document.querySelector('[data-lo-elegido]').textContent")
-  debe(/Medalla de oro → candidato B · volumen 1,00/.test(lo2) && !(await adm.evaluar("Boolean(document.querySelector('[data-propio-activo]'))")), 'lo_elegido', 'al quitar mi sonido vuelve el candidato elegido: «Medalla de oro → candidato B · volumen 1,00»')
-  debe(/Visto \(el toque y el brillo\) → se queda como está/.test(lo2) && /volumen general: 0,80/.test(lo2), 'lo_elegido', 'los sonidos hechos por código salen como «se queda como está» y el volumen general')
+  debe(/Medalla de oro → .*candidato B · 100 %/.test(lo2) && !/Medalla de oro → [^\n]*MÍO/.test(lo2) && !(await adm.evaluar("Boolean(document.querySelector('[data-propio-activo]'))")), 'lo_elegido', 'al quitar mi sonido vuelve el candidato elegido: «Medalla de oro → candidato B · volumen 1,00»')
+  debe(/Visto \(el toque y el brillo\) → toque: se queda como está · 100 %/.test(lo2) && /volumen general: 0,80/.test(lo2), 'lo_elegido', 'los sonidos hechos por código salen como «se queda como está» y el volumen general')
   debe(/Los sonidos tuyos: guárdalos en Descargas › sonidos_jutrip con el nombre de la animación \(por ejemplo, medalla_oro\.mp3\) y pasa esta lista a Claude\. En la siguiente tanda se recortan, se igualan de volumen y se ponen en la app/.test(await adm.evaluar("document.querySelector('[data-aviso-propios]').textContent")), 'lo_elegido', 'el aviso fijo, con el texto pedido')
   // Un archivo que no es de audio
   await adm.evaluar(`(() => { const dt = new DataTransfer(); dt.items.add(new File(['no soy audio'], 'roto.mp3', { type: 'audio/mpeg' })); const i = document.querySelector('[data-archivo-propio]'); i.files = dt.files; i.dispatchEvent(new Event('change', { bubbles: true })); return true })()`)
