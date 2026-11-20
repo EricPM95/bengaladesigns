@@ -26,6 +26,8 @@ export interface DestinoCurado {
   /** La foto de portada del destino (Tanda 10G), de su `_mapa.json`; null si no tiene. `portada_pequena`: la misma, en pequeño, para las tarjetas. */
   portada?: string | null
   portada_pequena?: string | null
+  /** (V31) La línea corta de la página del destino sin viaje («La ciudad eterna»), de su `_mapa.json`. */
+  linea?: string | null
 }
 
 let lista: Promise<DestinoCurado[]> | null = null

@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCuenta } from '../../../cuenta/useCuenta'
+import { MapaDeDestinos } from '../../../primeraVez/MapaDeDestinos'
 import { Chapa } from '../../dibujos'
 import { agruparViajes } from '../../../perfil/agruparViajes'
 import { Icono } from '../../../ui/Icono'
@@ -194,6 +196,12 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
     </section>
   )
 
+  // (V31) El Perfil del viajero NUEVO (una cuenta sin ningún viaje): lo de siempre, y en el sitio de «Mis viajes» el mapa «¿A dónde te apetece ir?». Sin el botón grande [Crear viaje]: está el «+» flotante.
+  // En cuanto tiene su primer viaje, vuelve a ser el de siempre.
+  const cuenta = useCuenta()
+  const nuevoViajero = cuenta.tipo === 'cuenta' && viajes.length === 0
+  const vistaDeViajes = nuevoViajero ? <MapaDeDestinos /> : misViajes
+
   const lista = verTodos && (
     <ListaDeViajes
       grupos={grupos}
@@ -220,7 +228,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
             </h2>
           </div>
         </div>
-        {misViajes}
+        {vistaDeViajes}
         <div style={{ margin: '20px 20px 0' }}>
           <TarjetaPasaporte pasaporte={pasaporteLocal} />
         </div>
@@ -234,7 +242,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
     return (
       <>
         <PerfilEsqueleto nombre={yo.tieneNombre ? nombre : null} titulo={false} />
-        {misViajes}
+        {vistaDeViajes}
         {lista}
       </>
     )
@@ -271,7 +279,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
         </div>
       </div>
 
-      {misViajes}
+      {vistaDeViajes}
 
       <div style={{ margin: '40px 20px 0', display: 'flex', flexDirection: 'column', gap: 22 }}>
         <section className="relative flex flex-none flex-col overflow-hidden rounded-[26px] px-[18px] py-3.5 text-[#FFFDF8]" style={{ background: 'radial-gradient(circle at 50% 0%,#1E2648 0%,#0B0E1C 70%)', minHeight: 200 }} aria-label="Mi vitrina" data-vitrina-del-perfil>

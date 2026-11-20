@@ -10,6 +10,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { Icono } from '../ui/Icono'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
 import { addDaysToIso } from '../../lib/dateRange'
+import { LoQueTePuedesLlevar, useLoQueTePuedesLlevar } from '../primeraVez/LoQueTePuedesLlevar'
 import { desdeTexto, enlaceDeHotel, notaTexto, opinionesTexto, paginaEnMemoria, pedirPaginaDeDestino, type ActividadDeDestino, type HotelDeDestino, type PaginaDeDestino } from '../../lib/paginaDestino'
 
 interface DestinationDetailModalProps {
@@ -20,6 +21,11 @@ interface DestinationDetailModalProps {
   /** Vehículo camper/autocaravana en este destino — se omite la sección de alojamientos, igual que en DIAS/RESERVAS. */
   isCamper: boolean
   onClose: () => void
+  /**
+   * (V31, Design «Primera Vez» D1 y D2) La página del destino SIN viaje, desde el mapa del Perfil del viajero nuevo: la portada sin fechas (con el país y una línea corta), las mismas actividades y alojamientos, SIN «Tu alojamiento»
+   * y SIN «Ver todos en el mapa», «Lo que te puedes llevar» de ESE destino y [Crear mi viaje a …] fijo abajo. Dentro de un viaje la página es la de siempre.
+   */
+  sinViaje?: { clave: string; pais: string; linea: string | null; iso: string | null; alCrear: () => void }
 }
 
 /**
@@ -107,12 +113,14 @@ function TarjetaDeHotel({ h, i, viaje }: { h: HotelDeDestino; i: number; viaje: 
 
 const botonOscuro = 'zona-toque flex h-[46px] w-full items-center justify-center gap-[9px] rounded-[15px] bg-text text-[14.5px] font-bold text-bg shadow-[0_12px_20px_-14px_rgba(28,34,48,.8),inset_0_0_0_1.5px_rgba(243,213,154,.5)] transition-transform active:scale-[.98]'
 
-export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onClose }: DestinationDetailModalProps) {
+export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onClose, sinViaje }: DestinationDetailModalProps) {
   const huecoAlFinal = useHuecoAlFinal(32) // (10S5) los botones flotantes no tapan lo último de la ficha
   const route = useRouteStore((s) => s.route)
   const selecciones = useRouteStore((s) => s.accommodationSelections)
   const cityDays = city ? days.filter((day) => day.city === city) : []
-  const countryCode = cityDays[0]?.countryCode ?? null
+  const countryCode = cityDays[0]?.countryCode ?? sinViaje?.iso ?? null
+  const llevar = useLoQueTePuedesLlevar(sinViaje ? sinViaje.clave : '')
+  const [bajado, setBajado] = useState(false)
   const [pagina, setPagina] = useState<PaginaDeDestino | null>(() => (city ? paginaEnMemoria(city) : null))
   const [foto, setFoto] = useState<string | null>(null)
   useEffect(() => {
@@ -160,13 +168,13 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
   return createPortal(
     <AnimatePresence>
       {city && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} data-pagina-destino className="map-cover-overlay fixed inset-0 z-[80] flex flex-col overflow-y-auto bg-bg">
-          <div className="mx-auto w-full max-w-lg" style={{ paddingBottom: huecoAlFinal }}>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} data-pagina-destino className="map-cover-overlay fixed inset-0 z-[80] flex flex-col overflow-y-auto bg-bg" onScroll={sinViaje ? (e) => setBajado(e.currentTarget.scrollTop > 150) : undefined}>
+          <div className="mx-auto w-full max-w-lg" style={{ paddingBottom: sinViaje ? huecoAlFinal + 110 : huecoAlFinal }}>
             {/* D1: la foto grande, la bandera y el nombre, y «5 días · 4 noches · 25 – 29 nov». */}
             <div className="relative h-[250px]">
               <div className="absolute inset-0" style={{ clipPath: 'polygon(0 0,100% 0,100% 100%,0 90%)', background: foto ? `url("${foto}") center/cover, linear-gradient(135deg,#E8B070,#5A2A18)` : 'linear-gradient(135deg,#E8B070 0%,#B8602A 50%,#5A2A18 100%)' }} />
               <div className="absolute inset-0" style={{ clipPath: 'polygon(0 0,100% 0,100% 100%,0 90%)', background: 'linear-gradient(180deg,rgba(20,24,40,.25),rgba(20,24,40,0) 40%,rgba(20,24,40,.6))' }} />
-              <button type="button" onClick={onClose} aria-label="Cerrar" title="Cerrar" className="zona-toque absolute left-[22px] top-[calc(env(safe-area-inset-top,0px)+16px)] flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-[#B58A2E] bg-[#FFFDF8] shadow-[0_8px_16px_-8px_rgba(28,34,48,.5)]">
+              <button type="button" hidden={Boolean(sinViaje)} onClick={onClose} aria-label="Cerrar" title="Cerrar" className="zona-toque absolute left-[22px] top-[calc(env(safe-area-inset-top,0px)+16px)] flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-[#B58A2E] bg-[#FFFDF8] shadow-[0_8px_16px_-8px_rgba(28,34,48,.5)]">
                 <Icono nombre="cerrar" size={17} />
               </button>
               <div className="absolute bottom-[34px] left-6 right-6 flex flex-col gap-1.5 text-[#FFFDF8]">
@@ -174,7 +182,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
                   <FlagIcon countryCode={countryCode} />
                   <span data-nombre-destino className="text-[40px] leading-none" style={SERIE}>{city}</span>
                 </span>
-                {nightsLabel && <span data-noches-destino className="text-[14px] font-medium opacity-90">{nightsLabel}</span>}
+                {sinViaje ? <span data-linea-destino className="text-[14px] font-medium opacity-90">{sinViaje.linea ? `${sinViaje.pais} · ${sinViaje.linea}` : sinViaje.pais}</span> : nightsLabel && <span data-noches-destino className="text-[14px] font-medium opacity-90">{nightsLabel}</span>}
               </div>
             </div>
 
@@ -228,15 +236,31 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
                     </div>
                   )}
                   <div className="px-6">
-                    <button type="button" data-ver-todos-mapa onClick={() => useAlojamientoUi.getState().abrirMapa()} className={botonOscuro}>
+                    {!sinViaje && <button type="button" data-ver-todos-mapa onClick={() => useAlojamientoUi.getState().abrirMapa()} className={botonOscuro}>
                       <Icono nombre="mapa" size={17} className="text-[#F3D88F]" />
                       Ver todos en el mapa
-                    </button>
+                    </button>}
                   </div>
                 </section>
               )}
+              {sinViaje && <LoQueTePuedesLlevar datos={llevar} />}
             </div>
           </div>
+          {sinViaje && (
+            <>
+              {/* La ✕ de arriba no se monta encima del texto al bajar: va en una barra con su fondo que aparece al bajar. */}
+              <div data-barra-superior className="pointer-events-none fixed inset-x-0 top-0 z-[85]" style={{ height: 'calc(env(safe-area-inset-top,0px) + 72px)', background: bajado ? 'linear-gradient(180deg,#F6EFE0 70%,rgba(246,239,224,0))' : 'transparent', transition: 'background .2s' }} />
+              <button type="button" data-cerrar-destino onClick={onClose} aria-label="Cerrar" title="Cerrar" className="zona-toque fixed left-[22px] top-[calc(env(safe-area-inset-top,0px)+16px)] z-[86] flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-[#B58A2E] bg-[#FFFDF8] text-text shadow-[0_8px_16px_-8px_rgba(28,34,48,.5)]">
+                <Icono nombre="cerrar" size={17} />
+              </button>
+              <div data-crear-mi-viaje-barra className="pointer-events-none fixed inset-x-0 bottom-0 z-[85] flex justify-center" style={{ padding: '34px 22px calc(env(safe-area-inset-bottom,0px) + 22px)', background: 'linear-gradient(180deg,rgba(246,239,224,0),#F6EFE0 55%)' }}>
+                <button type="button" data-crear-mi-viaje onClick={sinViaje.alCrear} className="pointer-events-auto zona-toque flex h-[58px] w-full max-w-lg items-center justify-center gap-2.5 rounded-[18px] text-[16.5px] font-bold" style={{ background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                  Crear mi viaje a {city}
+                </button>
+              </div>
+            </>
+          )}
         </motion.div>
       )}
     </AnimatePresence>,

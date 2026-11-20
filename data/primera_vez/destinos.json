@@ -1,0 +1,22 @@
+{
+  "_nota": "Los destinos del mapa «¿A dónde te apetece ir?» del Perfil del viajero nuevo (V31). Este archivo lo puede cambiar Eric sin tocar código. `salida`: los destinos de salida; de ellos solo se enseñan los que YA tienen sus datos en la app (los que dice /api/destinos-curados: hoy Roma, y Lanzarote solo para administradores); los demás todavía no salen. `proximamente`: siempre salen, en gris, con «Lo estamos preparando» y [Avísame]. Para añadir un destino listo basta con que esté en la app (sus datos) y en `salida`. `clave` es la carpeta de sus datos (data/dias/<clave>) y `iso` el país en minúsculas (para la bandera: Cancún lleva la de México). `continente` agrupa la lista de debajo del mapa.",
+  "continentes": ["Europa", "América y Caribe"],
+  "salida": [
+    { "clave": "roma", "nombre": "Roma", "pais": "Italia", "iso": "it", "continente": "Europa", "lat": 41.9028, "lng": 12.4964 },
+    { "clave": "paris", "nombre": "París", "pais": "Francia", "iso": "fr", "continente": "Europa", "lat": 48.8566, "lng": 2.3522 },
+    { "clave": "londres", "nombre": "Londres", "pais": "Reino Unido", "iso": "gb", "continente": "Europa", "lat": 51.5074, "lng": -0.1278 },
+    { "clave": "madrid", "nombre": "Madrid", "pais": "España", "iso": "es", "continente": "Europa", "lat": 40.4168, "lng": -3.7038 },
+    { "clave": "barcelona", "nombre": "Barcelona", "pais": "España", "iso": "es", "continente": "Europa", "lat": 41.3874, "lng": 2.1686 },
+    { "clave": "lisboa", "nombre": "Lisboa", "pais": "Portugal", "iso": "pt", "continente": "Europa", "lat": 38.7223, "lng": -9.1393 },
+    { "clave": "amsterdam", "nombre": "Ámsterdam", "pais": "Países Bajos", "iso": "nl", "continente": "Europa", "lat": 52.3676, "lng": 4.9041 },
+    { "clave": "praga", "nombre": "Praga", "pais": "Chequia", "iso": "cz", "continente": "Europa", "lat": 50.0755, "lng": 14.4378 },
+    { "clave": "lanzarote", "nombre": "Lanzarote", "pais": "España", "iso": "es", "continente": "Europa", "lat": 29.0469, "lng": -13.59 },
+    { "clave": "nueva_york", "nombre": "Nueva York", "pais": "Estados Unidos", "iso": "us", "continente": "América y Caribe", "lat": 40.7128, "lng": -74.006 },
+    { "clave": "cancun", "nombre": "Cancún", "pais": "México", "iso": "mx", "continente": "América y Caribe", "lat": 21.1619, "lng": -86.8515 }
+  ],
+  "proximamente": [
+    { "clave": "florencia", "nombre": "Florencia", "pais": "Italia", "iso": "it", "continente": "Europa", "lat": 43.7696, "lng": 11.2558 },
+    { "clave": "berlin", "nombre": "Berlín", "pais": "Alemania", "iso": "de", "continente": "Europa", "lat": 52.52, "lng": 13.405 },
+    { "clave": "cartagena_de_indias", "nombre": "Cartagena de Indias", "pais": "Colombia", "iso": "co", "continente": "América y Caribe", "lat": 10.391, "lng": -75.4794 }
+  ]
+}

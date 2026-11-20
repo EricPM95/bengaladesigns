@@ -1,4 +1,6 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
+import { BotonMas } from '../primeraVez/BotonMas'
+import { PrimeraVezHost } from '../primeraVez/PrimeraVezHost'
 import { createPortal } from 'react-dom'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
@@ -108,25 +110,13 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
                   Créditos
                 </button>
               </div>
-              {/* El [+] flotante, abajo en medio (Tanda 10N5, `Piezas/Perfil Orden`): sustituye a «Nuevo viaje» y a «Añadir un viaje que ya hiciste». */}
-              <div className="pointer-events-none absolute inset-x-0 z-[5] flex justify-center" style={{ bottom: 'calc(28px + env(safe-area-inset-bottom))' }}>
-                <button
-                  type="button"
-                  onClick={() => setAnadirOpen(true)}
-                  aria-label="Añadir un viaje"
-                  data-anadir-viaje
-                  className="pointer-events-auto flex items-center justify-center rounded-full"
-                  style={{ width: 64, height: 64, background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', border: 'none', boxShadow: '0 0 0 6px rgba(246,239,224,.85),0 14px 26px -8px rgba(110,80,24,.85),inset 0 1px 0 rgba(255,255,255,.6)' }}
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4A3510" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
-                </button>
-              </div>
+              {/* El [+] flotante (V31: la versión C de Design, con reflejo y chispa; sin texto; se esconde con la tarjeta de un destino o su página abiertas). */}
+              <BotonMas onClick={() => setAnadirOpen(true)} />
             </div>,
             document.body,
           )
         ))}
+      {open && <PrimeraVezHost />}
       {open && creditosOpen && <Creditos onVolver={() => setCreditosOpen(false)} />}
       {open && anadirOpen && (
         <HojaOpciones etiqueta="Añadir" titulo="¿Qué quieres hacer?" onCerrar={() => setAnadirOpen(false)} datos="anadir-viaje" z={96}>

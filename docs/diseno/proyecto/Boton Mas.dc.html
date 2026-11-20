@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}
+@keyframes bmHalo{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.32);opacity:0}}
+@keyframes bmBeat{0%,100%{transform:scale(1)}8%{transform:scale(1.08)}16%{transform:scale(1)}24%{transform:scale(1.05)}32%{transform:scale(1)}}
+@keyframes bmBreath{0%,100%{box-shadow:0 0 0 6px rgba(246,239,224,.9),0 0 18px 2px rgba(243,216,143,.35),0 16px 28px -8px rgba(20,24,40,.7)}50%{box-shadow:0 0 0 6px rgba(246,239,224,.9),0 0 34px 8px rgba(243,216,143,.7),0 16px 28px -8px rgba(20,24,40,.7)}}
+@keyframes bmSpin{to{transform:rotate(360deg)}}
+@keyframes bmShine{0%,62%{transform:translateX(-120%) skewX(-20deg)}100%{transform:translateX(220%) skewX(-20deg)}}
+@keyframes bmSpark{0%,70%,100%{opacity:0;transform:scale(.3)}80%{opacity:1;transform:scale(1)}90%{opacity:0;transform:scale(.4)}}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · BOTÓN FLOTANTE «+»</span><span style="font:400 40px/1 'Instrument Serif',serif">Tres versiones del «+», solo el icono</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+    <sc-for list="{{ vs }}" as="v" hint-placeholder-count="3">
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ v.id }} · {{ v.cap }}</span>
+        <div style="position:relative;width:390px;height:520px;border-radius:40px;overflow:hidden;background:#F6EFE0;box-shadow:0 30px 60px -30px rgba(28,34,48,.5)">
+          <div style="padding:40px 20px 0;display:flex;flex-direction:column;gap:14px">
+            <div style="height:150px;border-radius:26px;background:radial-gradient(circle at 50% 0%,#1E2648 0%,#0B0E1C 70%)"></div>
+            <div style="height:128px;border-radius:26px;background:linear-gradient(135deg,#5A1428,#7A2034 60%,#36101A)"></div>
+            <div style="height:128px;border-radius:26px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08)"></div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:30px;display:flex;justify-content:center">
+            <div style="position:relative;width:{{ v.s }}px;height:{{ v.s }}px;display:flex;align-items:center;justify-content:center">
+              <sc-if value="{{ v.halo }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(243,216,143,.7),rgba(243,216,143,0) 70%);animation:bmHalo 2.8s ease-out infinite"></span><span style="position:absolute;inset:0;border-radius:50%;border:2px solid #E4C36E;animation:bmHalo 2.8s ease-out 1.4s infinite"></span></sc-if>
+              <sc-if value="{{ v.spin }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:-9px;border-radius:50%;background:conic-gradient(from 0deg,rgba(243,216,143,0),#F3D88F 14%,rgba(243,216,143,0) 30%,rgba(243,216,143,0) 55%,#E4C36E 70%,rgba(243,216,143,0) 85%);-webkit-mask:radial-gradient(circle,transparent 62%,#000 64%);mask:radial-gradient(circle,transparent 62%,#000 64%);animation:bmSpin 5s linear infinite"></span></sc-if>
+              <span style="position:relative;overflow:hidden;width:{{ v.s }}px;height:{{ v.s }}px;border-radius:50%;background:{{ v.bg }};display:flex;align-items:center;justify-content:center;box-shadow:{{ v.sh }};animation:{{ v.an }}">
+                <sc-if value="{{ v.gloss }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:12%;right:12%;top:5%;height:42%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0))"></span></sc-if>
+                <sc-if value="{{ v.shine }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-10%;bottom:-10%;width:34%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:bmShine 4.5s ease-in-out infinite"></span></sc-if>
+                <svg width="{{ v.i }}" height="{{ v.i }}" viewBox="0 0 24 24" fill="none" stroke="{{ v.ic }}" stroke-width="2.6" stroke-linecap="round" style="position:relative"><path d="M12 5v14M5 12h14"></path></svg>
+              </span>
+              <sc-if value="{{ v.shine }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" style="position:absolute;right:-4px;top:-4px;animation:bmSpark 4.5s ease-in-out infinite"><path d="M12 1l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z" fill="#FFF3C4"></path></svg></sc-if>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){return{vs:[
+    {id:'A',cap:'Oro brillante con halo que late',s:72,i:32,halo:true,spin:false,gloss:true,shine:false,ic:'#4A3510',bg:'linear-gradient(145deg,#FFF3C4 0%,#F0D27A 35%,#D4A94A 70%,#F2D88A 100%)',sh:'0 0 0 6px rgba(246,239,224,.9),0 16px 28px -8px rgba(110,80,24,.85),inset 0 2px 0 rgba(255,255,255,.8),inset 0 -3px 6px rgba(150,105,30,.4)',an:'bmBeat 5s ease-in-out infinite'},
+    {id:'B',cap:'Azul noche con aro de luz dorada que gira',s:70,i:30,halo:false,spin:true,gloss:false,shine:false,ic:'#F3D88F',bg:'radial-gradient(circle at 35% 28%,#3A4272,#1C2230 70%)',sh:'0 0 0 6px rgba(246,239,224,.9),0 0 22px 3px rgba(243,216,143,.4),0 16px 28px -8px rgba(20,24,40,.7),inset 0 0 0 1.5px rgba(243,216,143,.6)',an:'bmBreath 3.4s ease-in-out infinite'},
+    {id:'C',cap:'Oro con reflejo que pasa y una chispa',s:72,i:32,halo:false,spin:false,gloss:true,shine:true,ic:'#4A3510',bg:'linear-gradient(145deg,#F6E8BE 0%,#E2C070 40%,#C99A44 75%,#EBCF86 100%)',sh:'0 0 0 6px rgba(246,239,224,.9),0 16px 28px -8px rgba(110,80,24,.85),inset 0 2px 0 rgba(255,255,255,.7),inset 0 -3px 6px rgba(150,105,30,.35)',an:'none'}
+  ]};}
+}
+</script>
+</body>
+</html>

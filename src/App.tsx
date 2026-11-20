@@ -32,6 +32,7 @@ import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
 import { MomentosHost } from './components/logros/momentos/MomentosHost'
 import { PantallasHost } from './components/logros/pantallas/PantallasHost'
 import { AvisoInstalar } from './components/logros/AvisoInstalar'
+import { PrimeraVezArranque } from './components/primeraVez/PrimeraVezArranque'
 import { EliminarViajeHost } from './components/perfil/EliminarViajeHost'
 import { JuntarViajeHost } from './components/perfil/JuntarViajeHost'
 import { CampaignLinks } from './components/sync/CampaignLinks'
@@ -185,6 +186,9 @@ function App() {
       </PiezaSegura>
       <PiezaSegura nombre="PantallasHost" reintentable alReintentar={reintentarLogros}>
         <PantallasHost />
+      </PiezaSegura>
+      <PiezaSegura nombre="PrimeraVezArranque">
+        <PrimeraVezArranque />
       </PiezaSegura>
       <PiezaSegura nombre="AvisoInstalar">
         <AvisoInstalar />
