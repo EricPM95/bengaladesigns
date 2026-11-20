@@ -1,4 +1,4 @@
--- 0088 · LA PLAZA DEL PASE DÚO PARA QUIEN YA ESTÁ EN EL VIAJE (V27, fallo de Alicia, 19-nov). SIN APLICAR: se aplica a mano en el SQL editor de Supabase (entera y en una sola ejecución). Va DESPUÉS de la 0087.
+-- 0088 · LA PLAZA DEL PASE DÚO PARA QUIEN YA ESTÁ EN EL VIAJE (V27, fallo de Alicia, 19-nov). APLICADA el 19-nov-2026 (comprobada con docs/dias/COMPROBAR_0088.sql). Va DESPUÉS de la 0087.
 --
 -- Qué pasaba, en palabras sencillas:
 --   Eric compró el Pase Dúo y le dieron un código para la plaza de Alicia. Alicia YA estaba en el viaje (por el código del viaje compartido). `canjear_invitacion` (0047) mira primero «¿ya estás en el viaje?» y, si sí,

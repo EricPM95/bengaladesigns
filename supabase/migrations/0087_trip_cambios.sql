@@ -1,4 +1,4 @@
--- 0087 · AVISOS DE CAMBIO DEL VIAJE SIN LA FILA ENTERA (V26b, el gasto de Supabase). SIN APLICAR: se aplica a mano en el SQL editor de Supabase (entera y en una sola ejecución).
+-- 0087 · AVISOS DE CAMBIO DEL VIAJE SIN LA FILA ENTERA (V26b, el gasto de Supabase). APLICADA el 19-nov-2026 (comprobada con docs/dias/COMPROBAR_0087.sql).
 --
 -- Qué hace, en palabras sencillas:
 --   Hasta ahora, cada vez que se guardaba un viaje compartido, Realtime mandaba la FILA ENTERA del viaje (la ruta, 70-80 KB o más) a cada móvil que lo tenía abierto. Con dos móviles y 15 cambios al día, son megas y megas.
