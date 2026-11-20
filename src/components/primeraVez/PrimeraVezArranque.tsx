@@ -1,12 +1,13 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useRef, type ReactNode } from 'react'
 import { cuentasActivas } from '../../lib/cuentas'
 import { debeEnseñarPreguntas, pedirEstadoPrimeraVez, usePrimeraVezUi } from '../../lib/primeraVez'
 import { useRouteStore } from '../../store/useRouteStore'
 import { usePerfilUi } from '../../store/usePerfilUi'
 import { useSyncStore } from '../../store/useSyncStore'
 import { useCuenta } from '../cuenta/useCuenta'
-import { PerfilSheet } from '../layout/PerfilSheet'
-import { PreguntasPrimeraVez } from './PreguntasPrimeraVez'
+// (Cada una en su archivo: no pesan al abrir la app; solo se bajan cuando hacen falta.)
+const PerfilSheet = lazy(() => import('../layout/PerfilSheet').then((m) => ({ default: m.PerfilSheet })))
+const PreguntasPrimeraVez = lazy(() => import('./PreguntasPrimeraVez').then((m) => ({ default: m.PreguntasPrimeraVez })))
 
 /**
  * (V31) LA PRIMERA VEZ al abrir la app: solo para el viajero NUEVO (una cuenta, no anónima, sin ningún viaje, ni propio ni compartido). Cuando ya se sabe que no tiene viajes, se pregunta al servidor si ya contestó (o saltó) las
@@ -42,14 +43,20 @@ export function PrimeraVezArranque(): ReactNode {
   return (
     <>
       {/* Sin ningún viaje no hay cabecera (que es donde vive el Perfil): aquí se monta el Perfil del viajero nuevo. Con un viaje abierto lo monta la cabecera de siempre. */}
-      {!ruta && <PerfilSheet open={perfilAbierto} onClose={() => usePerfilUi.getState().cerrar()} />}
+      {!ruta && perfilAbierto && (
+        <Suspense fallback={null}>
+          <PerfilSheet open onClose={() => usePerfilUi.getState().cerrar()} />
+        </Suspense>
+      )}
       {preguntas && (
-        <PreguntasPrimeraVez
-          onTerminar={() => {
-            usePrimeraVezUi.getState().cerrarPreguntas()
-            usePerfilUi.getState().abrir()
-          }}
-        />
+        <Suspense fallback={null}>
+          <PreguntasPrimeraVez
+            onTerminar={() => {
+              usePrimeraVezUi.getState().cerrarPreguntas()
+              usePerfilUi.getState().abrir()
+            }}
+          />
+        </Suspense>
       )}
     </>
   )

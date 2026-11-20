@@ -1,3 +1,4 @@
+import { CORREO_PRIVACIDAD, CORREO_SOPORTE } from './contacto'
 /**
  * La estructura de la página de privacidad (cuentas, parte 1) y la lista de servicios de fuera que tratan datos. Los textos legales NO están escritos: cada apartado
  * lleva «Texto pendiente» hasta que Eric los escriba. La lista de servicios sale de lo que la app usa de verdad (ver docs/dias/INFORME_CUENTAS_1.md): si se añade o se
@@ -24,7 +25,7 @@ export const AVISO_DE_CUENTANOS_PRIVACIDAD =
   'Cuéntanos: cuando mandas un aviso (un sitio, un dato que está mal, una idea, una foto…) enviamos lo que escribes y, sin que tengas que escribir nada, el destino y el viaje, la pantalla en la que estabas, la versión de la app, el modelo de tu móvil y el navegador, y la hora, para poder encontrar el fallo o revisar el sitio. En «Algo no funciona» enviamos además los últimos errores de la app y la captura de la pantalla (puedes quitarla antes de enviar). Las fotos que acompañan un aviso se mandan reducidas; en «Comparte tu foto» se manda entera, con tu permiso (la casilla es obligatoria), la fecha y el nombre que pongas, y solo sale en la app con «Foto: tu nombre» si la elegimos. Si no tienes cuenta, o si apagas «Avísame», no guardamos nada que te identifique. Si tienes cuenta y dejas «Avísame» encendido, guardamos quién eres solo para avisarte en la campana cuando lo revisemos. Si no hay red, el aviso se guarda en tu móvil y se manda solo al volver.'
 
 export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
-  { id: 'quien', titulo: 'Quién es el responsable', pregunta: 'Quién trata tus datos y cómo contactar con él.' },
+  { id: 'quien', titulo: 'Quién es el responsable', pregunta: 'Quién trata tus datos y cómo contactar con él.', escrito: [`Para cualquier duda o para contactar con nosotros: ${CORREO_SOPORTE}.`] },
   { id: 'que-guardamos', titulo: 'Qué guardamos', pregunta: 'Tu email, tus viajes, tus Vistos, tus fotos (y la fecha y el sitio de cada una), tus logros y tus pases.' },
   {
     id: 'para-que',
@@ -37,7 +38,7 @@ export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
   { id: 'como-borrarlo', titulo: 'Cómo borrarlo', pregunta: 'Cómo borrar tu cuenta y todo lo tuyo desde la app, y qué se borra.' },
   { id: 'tus-derechos', titulo: 'Tus derechos', pregunta: 'Acceder, corregir, llevarte tus datos y reclamar.' },
   { id: 'condiciones', titulo: 'Condiciones de uso y de compra', pregunta: 'Las reglas de uso de la app y de la compra del pase: qué incluye, el derecho de desistimiento en lo digital, las devoluciones y cómo reclamar.' },
-  { id: 'a-quien-escribir', titulo: 'A quién escribir', pregunta: 'El correo para dudas de privacidad.' },
+  { id: 'a-quien-escribir', titulo: 'A quién escribir', pregunta: 'El correo para dudas de privacidad.', escrito: [`Para dudas de privacidad: ${CORREO_PRIVACIDAD}.`] },
 ]
 
 export interface ServicioDeFuera {

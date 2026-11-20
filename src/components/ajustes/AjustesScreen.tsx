@@ -1,3 +1,4 @@
+import { CORREO_SOPORTE, enlaceDeCorreo } from '../../lib/contacto'
 import { useUnirseUi } from '../../store/useUnirseUi'
 import { useEffect, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
@@ -201,6 +202,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
         </Grupo>
         <Grupo>
           <Fila icono="compartido" titulo="Invitar a un amigo" sub={<TextoConPase texto={listaAjustes.textos['Invita a un amigo']} />} boton="Compartir el enlace" onClick={() => void invitarAmigo()} datos="invitar-amigo" />
+          <Fila icono="correo" titulo="Contactar" sub={CORREO_SOPORTE} chevron onClick={() => { window.location.href = enlaceDeCorreo(CORREO_SOPORTE, 'Ayuda con JUTRIP') }} datos="contactar" />
           <Fila icono="candado" titulo="Privacidad y condiciones" chevron onClick={() => setPrivacidad(true)} datos="privacidad" />
         </Grupo>
         {/* (Tanda 10N8 §1b) «Cerrar sesión», al final de todo, sola en su bloque. */}

@@ -1,0 +1,43 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Repaso de la tanda V32 · La app en jutrip.app</title>
+<style>:root{--bg:#FBF6EC;--tx:#1C2230}@media (prefers-color-scheme:dark){:root{--bg:#1C2230;--tx:#FFFDF8}}body{margin:0;padding:16px;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,sans-serif;max-width:900px}h1{font-size:24px}table{border-collapse:collapse;font-size:13px}td,th{border:1px solid #9994;padding:4px 8px;text-align:left;vertical-align:top}label{display:block;margin:6px 0}code{font-size:13px}</style></head><body>
+<h1>V32 · La app en su dominio, jutrip.app (solo código)</h1>
+<p>Probado con <code>pruebaV32</code> (29 comprobaciones, 0 fallos), <code>pruebaJutrip</code>, <code>pruebaCuentas1</code> (invitaciones), <code>pruebaCuentas3</code> (pase y pago), <code>pruebaEntrar</code> y <code>pruebaV31</code> en 0. El motor de rutas no se ha tocado: la muestra de 60 de Roma queda idéntica. <b>La parte de producción (jutrip.app, redirección, webhook, entrar con Google) no se ha podido probar todavía: espera a que Eric haga los paneles.</b></p>
+<h2>1. Las direcciones que había y dónde</h2>
+<table><tr><th>Qué</th><th>Cuántas</th><th>Dónde</th></tr>
+<tr><td>«bengaladesigns.vercel.app» escrita a mano en el código de la app</td><td><b>0</b></td><td>No había ninguna en <code>src/</code>, <code>server/</code>, <code>api/</code>, <code>public/</code> ni <code>vercel.json</code>. Solo 2 menciones, ambas fuera de la app: un ejemplo dentro de <code>scripts/destino/pruebaCuentas1.mjs</code> y un texto de un informe viejo (<code>generarRepasoV2b.mjs</code>).</td></tr>
+<tr><td>Enlaces de compartir viaje e invitaciones</td><td>1 sitio</td><td><code>src/lib/invitaciones.ts › enlaceDeInvitacion(origen, código)</code>: se monta con <code>window.location.origin</code>, la dirección en la que esté abierta la app (vale en las dos).</td></tr>
+<tr><td>Regresos de entrar (código y Google)</td><td>1 sitio</td><td><code>src/lib/cuentas.ts › volverA()</code> = <code>window.location.origin</code>.</td></tr>
+<tr><td>Regreso de Stripe (éxito y cancelar)</td><td>1 sitio</td><td><code>server/pagos.js › origenSeguro</code>: usa <code>APP_URL</code> de Vercel (ya existía). Sin <code>APP_URL</code>, solo localhost en desarrollo.</td></tr>
+<tr><td>Manifest de la app instalada</td><td>1</td><td><code>/api/manifest.webmanifest</code> con <code>start_url</code> y <code>scope</code> relativos («/»): valen en cualquier dirección.</td></tr>
+<tr><td>og:url, og:image, sitemap, robots, canonical</td><td>0</td><td>La app no tiene ninguno (no hay nada que cambiar; si algún día se quieren, que salgan de <code>APP_URL</code>).</td></tr>
+<tr><td>localhost en producción</td><td>0 de verdad</td><td>Solo valores por defecto de desarrollo: <code>server/index.js</code> y <code>server/pagos.js</code> (pasarela de mentira) y una base inofensiva en <code>fetchConCuenta.ts</code>.</td></tr>
+</table>
+<p>Conclusión: la app ya funcionaba en cualquier dirección; no había nada que mover a <code>APP_URL</code> salvo lo de Stripe, que ya lo usaba. Lo único que hay que hacer en Vercel es cambiar <code>APP_URL</code>.</p>
+<h2>2. Lo que se hizo</h2>
+<ul>
+<li><b>Redirección de la dirección vieja a jutrip.app (y www → jutrip.app)</b>, conservando la ruta, lo de después del <code>?</code> y lo de después del <code>#</code> (el regreso de entrar con Google y las invitaciones). Está en <code>index.html</code> y se enciende SOLO cuando Eric pone <code>VITE_APP_URL_NUEVA=https://jutrip.app</code> en Vercel y redespliega. <b>Sin esa variable no hace nada</b>: la app sirve igual en las dos direcciones. Así el código se sube ANTES de tocar los paneles y no se rompe nada si el dominio aún no está conectado.</li>
+<li><b>No se redirigen las llamadas al servidor</b> (<code>/api/*</code>, el webhook de Stripe en <code>/api/pago/webhook</code>): la redirección es de páginas (en el navegador), nunca pasa por el servidor. Siguen funcionando en las dos direcciones hasta que Eric cambie el webhook.</li>
+<li><b>Una redirección en el navegador, no un 301 de servidor:</b> es lo único que se puede dejar apagado hasta que Eric quiera con Vercel. Para quien entra, el efecto es el mismo (va a jutrip.app con su ruta). Cuando Eric lo vea bien, el www → jutrip.app lo puede dejar también como redirección de dominio en Vercel (paso 1).</li>
+<li><b>El correo de la marca</b> en un solo archivo (<code>src/lib/contacto.ts</code>): Ajustes tiene ahora «Contactar» (soporte@jutrip.app); «Mis pases» dice a quién escribir si hay un problema con un pago; la página de privacidad da soporte@jutrip.app como contacto y <b>privacidad@jutrip.app</b> para dudas de privacidad. «Cuéntanos» no enseña ningún correo, así que no se ha tocado.</li>
+<li><b>Plantillas de los correos de Supabase</b> en <code>docs/jutrip_app/PLANTILLAS_CORREOS_SUPABASE.md</code> (asunto y texto en español, el código bien grande): solo las 3 que la app usa de verdad (el código de entrada, la primera vez y añadir el correo a la cuenta).</li>
+</ul>
+<h2>3. Lo que se guarda SOLO en el móvil (y se pierde al cambiar de dirección)</h2>
+<p>El navegador guarda <code>localStorage</code> e IndexedDB <b>por dirección</b>: en jutrip.app todo empieza en blanco. Esto es lo que había solo en el móvil:</p>
+<table><tr><th>Qué</th><th>Se pierde</th><th>¿Importa?</th><th>Qué hacer</th></tr>
+<tr><td>La sesión (y su respaldo, <code>trazo:cuenta:respaldo</code>)</td><td>Sí</td><td>Poco: hay que volver a entrar una vez (código o Google); los viajes, fotos y logros están en Supabase.</td><td>Nada.</td></tr>
+<tr><td><b>La cuenta de invitado (sin correo)</b> (<code>trazo:cuenta:anonima</code>)</td><td>Sí</td><td><b>Sí, mucho:</b> quien no haya añadido su correo pierde el acceso a sus viajes (siguen en Supabase, pero no hay forma de entrar).</td><td><b>Antes de cambiar:</b> Eric y Alicia (y cualquiera que use la app sin correo) deben entrar con su correo en la app vieja («Entrar con mi email»), que enlaza el correo a su cuenta de invitado.</td></tr>
+<tr><td><b>Fotos de la cámara de viaje sin subir</b> (IndexedDB, cola sin conexión)</td><td>Sí</td><td><b>Sí:</b> una foto sin subir se pierde para siempre.</td><td>Abrir la app con señal y esperar a que suban antes de cambiar.</td></tr>
+<tr><td>Avisos de «Cuéntanos» sin enviar (cola)</td><td>Sí</td><td>Poco.</td><td>Abrir con señal antes.</td></tr>
+<tr><td>Copias para usar sin conexión (viaje y lista de viajes, IndexedDB)</td><td>Sí</td><td>No: se vuelven a bajar con señal.</td><td>Nada (pero el primer HOY en jutrip.app necesita señal).</td></tr>
+<tr><td>Lo «mío» del viaje (vuelo y alojamiento de cada uno) y las entradas del invitado</td><td>Sí, en local</td><td>Depende: también están en la nube si las migraciones 0049 y 0038 están aplicadas (la app lo dice en su código).</td><td>Eric: comprobar que la 0049 y la 0038 están aplicadas.</td></tr>
+<tr><td>Ajustes del móvil: sonido, volumen y sonidos elegidos, moneda, sugerencias del compañero, avisos ocultos o leídos, tutorial visto, portadas elegidas, aviso de instalar</td><td>Sí</td><td>Poco: vuelven a sus valores de siempre.</td><td>Nada.</td></tr>
+<tr><td>La app instalada en la pantalla de inicio (Eric y Alicia)</td><td>Es otra «app» con su propio almacén</td><td>Hay que reinstalarla desde jutrip.app.</td><td>Ver el paso 8 de la lista PARA ERIC.</td></tr>
+</table>
+<p><b>Propuesta para no perder lo importante:</b> los dos únicos riesgos reales son las cuentas de invitado y las fotos sin subir; los dos se evitan con los dos pasos de la tabla ANTES de encender la redirección. No he montado un traspaso automático de la sesión entre las dos direcciones (habría que pasar la llave de sesión por la dirección de la página, que es lo menos seguro posible); con pocas personas, volver a entrar una vez es más seguro.</p>
+<h2>Lista de comprobación de ESTA tanda</h2>
+<label><input type="checkbox"> Antes de nada: Eric y Alicia entran con su correo en la app vieja y esperan a que suban sus fotos</label>
+<label><input type="checkbox"> Hacer los 8 pasos de «PARA ERIC» del resumen, en orden, y comprobar cada uno</label>
+<label><input type="checkbox"> Decirme «paneles hechos» para que compruebe producción en modo iPhone</label>
+<label><input type="checkbox"> Pegar las 3 plantillas de correo en Supabase y pedir un código de entrada: llega «Tu código para entrar en Jutrip: 123456»</label>
+<label><input type="checkbox"> Ajustes ahora tiene «Contactar» con soporte@jutrip.app; la página de privacidad da privacidad@jutrip.app</label>
+</body></html>

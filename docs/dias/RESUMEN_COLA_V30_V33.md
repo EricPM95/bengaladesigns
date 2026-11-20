@@ -62,3 +62,31 @@
 3. **Qué añadir a la política de privacidad:** que se recoge el año de nacimiento (opcional), la frecuencia de viaje y con quién viaja, para qué (mejorar el servicio), dónde (Supabase) y que se pueden borrar. **No escribo yo los textos legales:** que los redacte el gestor.
 4. **Menores de 14 años:** en España necesitan el permiso de sus padres para dar sus datos. Hay que mirarlo con el gestor (por ejemplo, si la app debe pedir la edad o un aviso a los padres).
 5. Probar en un iPhone: girar y acercar el mapa, tocar los destinos (en Europa también), y comprobar que «Crear viaje» sale con el destino puesto.
+
+---
+
+## V32 · La app en jutrip.app — HECHO el código; FALTA que Eric toque los paneles
+
+**Qué cambia, en palabras sencillas**
+
+- **No había ninguna dirección de bengaladesigns.vercel.app escrita en el código de la app** (0; solo 2 menciones en un ejemplo de una prueba y en un informe viejo). Los enlaces de invitación y los regresos de entrar salen de la dirección en la que esté abierta la app, y el de Stripe de `APP_URL`: **ya funcionaba en cualquier dirección**. Detalle en `docs/dias/REPASO_V32.html`.
+- **Redirección de la dirección vieja (y de www) a jutrip.app**, conservando ruta, `?` y `#`. **Está apagada hasta que Eric ponga una variable en Vercel** (paso 2): así el código ya subido funciona en las dos direcciones y nada se rompe si el dominio aún no está conectado. Las llamadas al servidor (`/api/*`, el webhook de Stripe) **no se redirigen**.
+- **El correo de la marca:** Ajustes ahora tiene «Contactar» (soporte@jutrip.app); «Mis pases» dice a quién escribir si hay un problema con un pago; la privacidad da soporte@jutrip.app y privacidad@jutrip.app.
+- **Plantillas de los correos de Supabase** en `docs/jutrip_app/PLANTILLAS_CORREOS_SUPABASE.md` (el código bien grande).
+- **Lo que se pierde al cambiar de dirección** (sesión, cuentas de invitado sin correo, fotos sin subir…): tabla en el REPASO. Los dos riesgos reales: **las cuentas de invitado sin correo** y **las fotos sin subir**.
+
+**Pruebas:** `pruebaV32` 29 en 0; `pruebaJutrip`, `pruebaCuentas1` (invitaciones), `pruebaCuentas3` (pase y pago), `pruebaEntrar` y `pruebaV31` en 0. Muestra de 60 de Roma idéntica (motor sin tocar). Arreglado de paso: la V31 había subido el peso de arranque por encima del tope (402 KB > 340): ahora sus piezas pesadas se bajan solo al hacer falta.
+
+**PARA ERIC (V32), en orden — los paneles los tocas tú**
+
+0. **Antes de nada** (para no perder nada): en la app vieja, tú y Alicia entrad con vuestro correo («Entrar con mi email»), con señal, y esperad a que suban las fotos pendientes. Comprobar: Ajustes muestra vuestro correo.
+1. **Vercel › Settings › Domains:** añadir `jutrip.app` y `www.jutrip.app`. Vercel te dirá los registros DNS: cópialos en **Cloudflare › DNS** con la **nube gris («DNS only»)**. En Vercel deja `www.jutrip.app` como redirección a `jutrip.app`. *Comprobar:* los dos dominios en verde («Valid Configuration») en Vercel.
+2. **Vercel › Settings › Environment Variables:** poner `APP_URL` = `https://jutrip.app` (para el regreso de Stripe) **y** `VITE_APP_URL_NUEVA` = `https://jutrip.app` (enciende la redirección de la dirección vieja; solo cuando el paso 1 esté en verde). Redesplegar. *Comprobar:* abrir `https://bengaladesigns.vercel.app/ruta` te lleva a `https://jutrip.app/ruta`. Para apagarla: borrar `VITE_APP_URL_NUEVA` y redesplegar.
+3. **Supabase › Authentication › URL Configuration:** Site URL = `https://jutrip.app`; en Redirect URLs añadir `https://jutrip.app/**` y `https://www.jutrip.app/**` (dejar las de bengaladesigns.vercel.app unas semanas). *Comprobar:* entrar con el correo en jutrip.app: el enlace del correo vuelve a jutrip.app.
+4. **Mapbox:** abre mapbox.com › Tokens y mira si el token público (el que usa la web) tiene «URL restrictions». **No puedo verlo desde aquí.** Si las tiene, añade `https://jutrip.app` y `https://www.jutrip.app` (sin barra final). Si no, no hay que hacer nada. *Comprobar:* en jutrip.app el mapa sale.
+5. **Google (entrar con Google):** el regreso va a la dirección de Supabase (`…supabase.co/auth/v1/callback`), que **no cambia**: en Credentials › tu cliente OAuth no hay que tocar nada. Solo en «OAuth consent screen» (Pantalla de consentimiento) añadir `jutrip.app` en «Authorized domains» y poner la web de la app = `https://jutrip.app` (es la marca que ve la gente). *Comprobar:* «Continuar con Google» en jutrip.app entra y vuelve a jutrip.app.
+6. **Stripe (modo prueba):** Developers › Webhooks › «jutrip-pagos»: cambiar la URL a `https://jutrip.app/api/pago/webhook` (mismo secreto, no cambia). Settings › Business › Public details: web `https://jutrip.app` y correo de soporte `soporte@jutrip.app`. *Comprobar:* «Send test webhook» da **200**; y un pago de prueba con la tarjeta 4242 4242 4242 4242 acaba en «Pase activo».
+7. **Civitatis y Stay22:** en sus paneles, la web = `jutrip.app` (los enlaces de afiliado, aid y Stay22, **no cambian**).
+8. **En los dos móviles (Eric y Alicia):** borrar el icono viejo de la pantalla de inicio. Abrir `https://jutrip.app` en Safari › Compartir › «Añadir a pantalla de inicio». Entrar con el correo. *Comprobar:* la app abre en pantalla completa y vuestros viajes están.
+9. **Pegar las plantillas de correo** de `docs/jutrip_app/PLANTILLAS_CORREOS_SUPABASE.md` en Supabase › Authentication › Emails › Templates (Magic Link, Confirm signup, Change Email Address). *Comprobar:* pedir un código de entrada: llega «Tu código para entrar en Jutrip: …» desde «Jutrip <no-reply@jutrip.app>».
+10. **Decirme «paneles hechos»:** entonces compruebo en producción, en modo iPhone: jutrip.app carga y el mapa sale, entrar con código y con Google, un enlace de invitación abre el viaje, la dirección vieja lleva a la nueva y el webhook de prueba da 200 (esto último lo verás tú en Stripe: yo no puedo mandar un webhook firmado sin la clave).

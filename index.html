@@ -2,6 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- (V32) El cambio de dirección: con `VITE_APP_URL_NUEVA=https://jutrip.app` en Vercel (se pone cuando el dominio ya funciona), quien entra por la dirección vieja (bengaladesigns.vercel.app) o por www va a la nueva, conservando la ruta, lo de después del ? y lo de después del #
+         (el regreso de entrar con Google y los enlaces de invitación). Sin esa variable no hace NADA: la app sirve igual en las dos direcciones. Solo cambia páginas; las llamadas al servidor (/api/*, el webhook de Stripe) no pasan por aquí. -->
+    <script>
+      ;(function () {
+        try {
+          var nueva = '%VITE_APP_URL_NUEVA%'
+          if (nueva.indexOf('https://') !== 0) return
+          var viejas = ['bengaladesigns.vercel.app', 'www.' + nueva.replace('https://', '')]
+          if (viejas.indexOf(location.hostname) === -1) return
+          location.replace((nueva.slice(-1) === '/' ? nueva.slice(0, -1) : nueva) + location.pathname + location.search + location.hash)
+        } catch (e) {}
+      })()
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="mobile-web-app-capable" content="yes" />

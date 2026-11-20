@@ -1,3 +1,4 @@
+import { CORREO_SOPORTE, enlaceDeCorreo } from '../../lib/contacto'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { estadoDelPase, etiquetaDelPase, filasDelPase, personasDelPase } from '../../lib/ajustes'
@@ -117,6 +118,7 @@ export function MisPases({ onVolver, pasesIniciales = null, hoy = hoyEnLocal() }
             </section>
           )
         })}
+        <p data-contacto-pagos className="m-0 px-1.5 text-center text-[12px] leading-[1.4] text-text/55">¿Algún problema con un pago o con un pase? Escribe a <a href={enlaceDeCorreo(CORREO_SOPORTE, 'Mi pase de JUTRIP')} className="underline underline-offset-2">{CORREO_SOPORTE}</a></p>
       </main>
     </div>,
     document.body,
