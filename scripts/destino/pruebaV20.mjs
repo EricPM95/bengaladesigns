@@ -50,7 +50,7 @@ console.log('1. Qué se puede enviar y qué datos salen')
 console.log('2. El código')
 {
   const app = leer('src/App.tsx')
-  debe(app.includes('<CuentanosHost />') && app.includes('<BotonCuentanos />'), 'montaje', 'el botón y las pantallas están montados una vez en App (en todas las pestañas y destinos, con o sin viaje y cuenta)')
+  debe(app.includes('<CuentanosHost />') && !app.includes('<BotonCuentanos />') && fs.readFileSync('src/components/route/RouteScreen.tsx', 'utf8').includes('<BotonCuentanos />'), 'montaje', '(V28b) la hoja está montada una vez en App; el botón flotante, junto a la cámara y el trofeo, en RouteScreen (dentro del viaje)')
   debe(!fs.existsSync('src/components/proponerSitio/HojaProponerSitio.tsx') && /abrirCuentanos\(\{ tipo: 'lugar'/.test(leer('src/store/useProponerSitioStore.ts')), 'un_camino', '«Propón un sitio» ya no es una hoja aparte: abre U2b con el nombre ya escrito')
   debe(/abrirProponerSitio\(\{ nombre: limpio, origen: 'reservas' \}\)/.test(leer('src/components/route/reservas/OtraReservaBuscador.tsx')), 'un_camino', 'y lo que la abría (Añadir otra reserva) abre U2b')
   const envio = leer('src/lib/cuentanos/envio.ts')
@@ -86,7 +86,7 @@ console.log('3. En la app')
       return true
     })()`)
     // Sin viaje ni cuenta: el botón ya está.
-    debe(await ev("Boolean(document.querySelector('[data-boton-cuentanos]'))"), 'boton', 'el botón «Cuéntanos» sale también sin viaje y sin cuenta')
+    debe(!(await ev("Boolean(document.querySelector('[data-boton-cuentanos]'))")), 'boton', '(V28b, decisión de Eric) sin viaje y sin cuenta el botón «Cuéntanos» NO sale: solo dentro del viaje')
     await ev('window.__rutaPrueba().then(() => true)')
     for (let i = 0; i < 60 && !(await ev("import('/src/store/useRouteStore.ts').then((m) => Boolean(m.useRouteStore.getState().route))")); i++) await a.esp(1000)
     await a.esp(4500)

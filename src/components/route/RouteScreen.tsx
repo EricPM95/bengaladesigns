@@ -5,6 +5,8 @@ import { AvisoSolape } from './reservas/AvisoSolape'
 import { AlojamientoHost } from './alojamiento/AlojamientoHost'
 import { BotonFlotanteLogros } from '../logros/momentos/BotonFlotanteLogros'
 import { CamaraDeViajeGlobal } from './CamaraDeViajeGlobal'
+import { BotonCuentanos } from '../cuentanos/BotonCuentanos'
+import { PiezaSegura } from '../PiezaSegura'
 import { ReorganizarHost } from '../reorganizar/ReorganizarHost'
 import { PantallaPresupuesto } from './presupuesto/PantallaPresupuesto'
 
@@ -22,6 +24,9 @@ export default function RouteScreen() {
       <PantallaPresupuesto />
       <BotonFlotanteLogros />
       <CamaraDeViajeGlobal />
+      <PiezaSegura nombre="BotonCuentanos">
+        <BotonCuentanos />
+      </PiezaSegura>
       <ReorganizarHost />
     </motion.div>
   )

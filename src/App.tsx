@@ -22,7 +22,6 @@ import { SinPasePrueba } from './components/pase/SinPasePrueba'
 import { useSinPasePrueba } from './store/useSinPasePrueba'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
 import { CuentanosHost } from './components/cuentanos/Cuentanos'
-import { BotonCuentanos } from './components/cuentanos/BotonCuentanos'
 import { encenderLaCola, instalarRegistroDeErrores } from './lib/cuentanos/envio'
 import { AvisosHost } from './components/avisos/AvisosHost'
 import { GastosCompartidosHost } from './components/presupuesto/GastosCompartidosHost'
@@ -158,9 +157,7 @@ function App() {
       <PiezaSegura nombre="CuentanosHost">
         <CuentanosHost />
       </PiezaSegura>
-      <PiezaSegura nombre="BotonCuentanos">
-        <BotonCuentanos />
-      </PiezaSegura>
+      {/* (V28b) El botón flotante «Cuéntanos» ya no es de toda la app: sale junto a la cámara y el trofeo, dentro del viaje (RouteScreen). La hoja (CuentanosHost) sigue aquí. */}
       <PiezaSegura nombre="PropuestaHost">
         <PropuestaHost />
       </PiezaSegura>
