@@ -1,0 +1,960 @@
+{
+ "filas": [
+  {
+   "id": "medalla_bronce",
+   "nombre": "Medalla de bronce",
+   "grupo": "Medallas",
+   "visor": "momentos",
+   "momentos": "medalla_bronce",
+   "suena": [
+    "medalla_bronce"
+   ],
+   "partituras": [
+    "medalla_bronce"
+   ],
+   "tipos": [
+    "sello"
+   ],
+   "grado": "bronce",
+   "sonidoApp": "medalla_bronce",
+   "dura": 5.300000000000001,
+   "golpe": 4.4,
+   "duraPartituras": [
+    [
+     "medalla_bronce",
+     5.300000000000001
+    ]
+   ],
+   "notas": [
+    "redoble@3.70",
+    "medalla_bronce@4.40"
+   ],
+   "candidatos": {
+    "medalla_bronce": "ABCDE",
+    "redoble": "ABCDE"
+   }
+  },
+  {
+   "id": "medalla_plata",
+   "nombre": "Medalla de plata",
+   "grupo": "Medallas",
+   "visor": "momentos",
+   "momentos": "medalla_plata",
+   "suena": [
+    "medalla_plata"
+   ],
+   "partituras": [
+    "medalla_plata"
+   ],
+   "tipos": [
+    "sello"
+   ],
+   "grado": "plata",
+   "sonidoApp": "medalla_plata",
+   "dura": 5.300000000000001,
+   "golpe": 4.4,
+   "duraPartituras": [
+    [
+     "medalla_plata",
+     5.300000000000001
+    ]
+   ],
+   "notas": [
+    "redoble@3.70",
+    "medalla_plata@4.40"
+   ],
+   "candidatos": {
+    "medalla_plata": "ABCDE",
+    "redoble": "ABCDE"
+   }
+  },
+  {
+   "id": "medalla_oro",
+   "nombre": "Medalla de oro",
+   "grupo": "Medallas",
+   "visor": "momentos",
+   "momentos": "medalla_oro",
+   "suena": [
+    "medalla_oro"
+   ],
+   "partituras": [
+    "medalla_oro"
+   ],
+   "tipos": [
+    "sello"
+   ],
+   "grado": "oro",
+   "sonidoApp": "medalla_oro",
+   "dura": 5.300000000000001,
+   "golpe": 4.4,
+   "duraPartituras": [
+    [
+     "medalla_oro",
+     5.300000000000001
+    ]
+   ],
+   "notas": [
+    "redoble@3.70",
+    "medalla_oro@4.40"
+   ],
+   "candidatos": {
+    "medalla_oro": "ABCD",
+    "redoble": "ABCDE"
+   }
+  },
+  {
+   "id": "medalla_diamante",
+   "nombre": "Medalla de diamante",
+   "grupo": "Medallas",
+   "visor": "momentos",
+   "momentos": "medalla_diamante",
+   "suena": [
+    "medalla_diamante"
+   ],
+   "partituras": [
+    "medalla_diamante"
+   ],
+   "tipos": [
+    "sello"
+   ],
+   "grado": "diamante",
+   "sonidoApp": "medalla_diamante",
+   "dura": 5.300000000000001,
+   "golpe": 4.4,
+   "duraPartituras": [
+    [
+     "medalla_diamante",
+     5.300000000000001
+    ]
+   ],
+   "notas": [
+    "redoble@3.70",
+    "medalla_diamante@4.40"
+   ],
+   "candidatos": {
+    "medalla_diamante": "ABCD",
+    "redoble": "ABCDE"
+   }
+  },
+  {
+   "id": "coleccion",
+   "nombre": "Colección completa",
+   "grupo": "Logros",
+   "visor": "momentos",
+   "momentos": "coleccion",
+   "suena": [
+    "coleccion"
+   ],
+   "partituras": [
+    "coleccion"
+   ],
+   "tipos": [
+    "coleccion"
+   ],
+   "grado": "",
+   "sonidoApp": "coleccion",
+   "dura": 4.8,
+   "golpe": 3,
+   "duraPartituras": [
+    [
+     "coleccion",
+     4.8
+    ]
+   ],
+   "notas": [
+    "redoble@3.00",
+    "coleccion@3.00"
+   ],
+   "candidatos": {
+    "coleccion": "ABCD",
+    "redoble": "ABCDE"
+   }
+  },
+  {
+   "id": "emblema",
+   "nombre": "Emblema secreto",
+   "grupo": "Logros",
+   "visor": "momentos",
+   "momentos": "emblema",
+   "suena": [
+    "emblema"
+   ],
+   "partituras": [
+    "emblema",
+    "escena"
+   ],
+   "tipos": [
+    "emblema"
+   ],
+   "grado": "",
+   "sonidoApp": "emblema",
+   "dura": 4.2,
+   "golpe": 3.6,
+   "duraPartituras": [
+    [
+     "emblema",
+     4.2
+    ]
+   ],
+   "notas": [
+    "toque@0.75",
+    "toque@1.47",
+    "toque@2.05",
+    "toque@2.50",
+    "toque@2.82",
+    "emblema@3.60"
+   ],
+   "candidatos": {
+    "emblema": "BCDE",
+    "redoble": "ABCDE",
+    "clic": "ABCE",
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "emblema_maravilla",
+   "nombre": "Emblema maravilla (el Coliseo)",
+   "grupo": "Logros",
+   "visor": "momentos",
+   "momentos": "emblema_maravilla",
+   "suena": [
+    "emblema"
+   ],
+   "partituras": [
+    "emblema",
+    "escena"
+   ],
+   "tipos": [
+    "emblema"
+   ],
+   "grado": "",
+   "sonidoApp": "emblema",
+   "dura": 4.2,
+   "golpe": 3.6,
+   "duraPartituras": [
+    [
+     "emblema",
+     4.2
+    ]
+   ],
+   "notas": [
+    "toque@0.75",
+    "toque@1.47",
+    "toque@2.05",
+    "toque@2.50",
+    "toque@2.82",
+    "emblema@3.60"
+   ],
+   "candidatos": {
+    "emblema": "BCDE",
+    "redoble": "ABCDE",
+    "clic": "ABCE",
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "maravilla",
+   "nombre": "Final de las 7 maravillas",
+   "grupo": "Logros",
+   "visor": "momentos",
+   "momentos": "maravilla",
+   "suena": [
+    "maravilla"
+   ],
+   "partituras": [
+    "maravilla"
+   ],
+   "tipos": [
+    "final7"
+   ],
+   "grado": "",
+   "sonidoApp": "maravilla",
+   "dura": 6.750000000000001,
+   "golpe": 6.050000000000001,
+   "duraPartituras": [
+    [
+     "maravilla",
+     6.750000000000001
+    ]
+   ],
+   "notas": [
+    "toque@2.10",
+    "toque@2.60",
+    "toque@3.00",
+    "toque@3.30",
+    "toque@3.55",
+    "toque@3.72",
+    "redoble@6.05",
+    "maravilla@6.05"
+   ],
+   "candidatos": {
+    "maravilla": "ABCD",
+    "redoble": "ABCDE"
+   }
+  },
+  {
+   "id": "pais",
+   "nombre": "País nuevo",
+   "grupo": "Logros",
+   "visor": "momentos",
+   "momentos": "pais",
+   "suena": [
+    "pais"
+   ],
+   "partituras": [
+    "pais"
+   ],
+   "tipos": [
+    "pais"
+   ],
+   "grado": "",
+   "sonidoApp": "pais",
+   "dura": 2.8,
+   "golpe": 1.9,
+   "duraPartituras": [
+    [
+     "pais",
+     2.8
+    ]
+   ],
+   "notas": [
+    "vuelo@1.70",
+    "pais@1.90"
+   ],
+   "candidatos": {
+    "pais": "ABCDE",
+    "vuelo": "BCD"
+   }
+  },
+  {
+   "id": "sello",
+   "nombre": "Sello del pasaporte",
+   "grupo": "Logros",
+   "visor": "pasaporte",
+   "momentos": null,
+   "suena": [
+    "sello_pasaporte"
+   ],
+   "partituras": [
+    "sello_pasaporte"
+   ],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 3.7,
+   "golpe": 2.05,
+   "duraPartituras": [
+    [
+     "sello_pasaporte",
+     3.7
+    ]
+   ],
+   "notas": [
+    "vuelo@1.55",
+    "clic@2.05",
+    "brillo@2.10"
+   ],
+   "candidatos": {
+    "clic": "ABCE",
+    "vuelo": "BCD",
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "pedazo",
+   "nombre": "Pedazo que entra en su círculo",
+   "grupo": "Logros",
+   "visor": "momentos",
+   "momentos": "pedazo",
+   "suena": [
+    "pedazo"
+   ],
+   "partituras": [
+    "pedazo"
+   ],
+   "tipos": [
+    "pedazos"
+   ],
+   "grado": "",
+   "sonidoApp": "pedazo",
+   "dura": 2.9,
+   "golpe": 2.1,
+   "duraPartituras": [
+    [
+     "pedazo",
+     2.9
+    ]
+   ],
+   "notas": [
+    "vuelo@2.04",
+    "clic@2.10",
+    "brillo@2.30",
+    "tic@2.90"
+   ],
+   "candidatos": {
+    "clic": "ABCE",
+    "vuelo": "BCD",
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "patrimonio",
+   "nombre": "Patrimonio de la UNESCO",
+   "grupo": "Logros",
+   "visor": "momentos",
+   "momentos": "patrimonio",
+   "suena": [
+    "patrimonio"
+   ],
+   "partituras": [
+    "patrimonio"
+   ],
+   "tipos": [
+    "patrimonio"
+   ],
+   "grado": "",
+   "sonidoApp": "patrimonio",
+   "dura": 1.9,
+   "golpe": 1.3,
+   "duraPartituras": [
+    [
+     "patrimonio",
+     1.9
+    ]
+   ],
+   "notas": [
+    "tic@0.00",
+    "tic@0.08",
+    "tic@0.16",
+    "tic@0.24",
+    "tic@0.32",
+    "tic@0.40",
+    "tic@0.48",
+    "tic@0.56",
+    "tic@0.64",
+    "tic@0.72",
+    "tic@0.80",
+    "tic@0.88",
+    "tic@0.96",
+    "tic@1.04",
+    "tic@1.12",
+    "brillo@1.30"
+   ],
+   "candidatos": {
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "viajero",
+   "nombre": "Logro de viajero",
+   "grupo": "Logros",
+   "visor": "momentos",
+   "momentos": "viajero",
+   "suena": [
+    "viajero"
+   ],
+   "partituras": [
+    "viajero"
+   ],
+   "tipos": [
+    "viajero"
+   ],
+   "grado": "",
+   "sonidoApp": "viajero",
+   "dura": 1.9,
+   "golpe": 1.3,
+   "duraPartituras": [
+    [
+     "viajero",
+     1.9
+    ]
+   ],
+   "notas": [
+    "tic@0.00",
+    "tic@0.08",
+    "tic@0.16",
+    "tic@0.24",
+    "tic@0.32",
+    "tic@0.40",
+    "tic@0.48",
+    "tic@0.56",
+    "tic@0.64",
+    "tic@0.72",
+    "tic@0.80",
+    "tic@0.88",
+    "tic@0.96",
+    "tic@1.04",
+    "tic@1.12",
+    "brillo@1.30"
+   ],
+   "candidatos": {
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "escena_roma",
+   "nombre": "Escena de Roma (Fontana de Trevi)",
+   "grupo": "Escenas",
+   "visor": "momentos",
+   "momentos": "escena_roma",
+   "suena": [
+    "emblema"
+   ],
+   "partituras": [
+    "escena"
+   ],
+   "tipos": [
+    "emblema"
+   ],
+   "grado": "",
+   "sonidoApp": "emblema",
+   "dura": 4.2,
+   "golpe": 3.6,
+   "duraPartituras": [
+    [
+     "emblema",
+     4.2
+    ]
+   ],
+   "notas": [
+    "toque@0.75",
+    "toque@1.47",
+    "toque@2.05",
+    "toque@2.50",
+    "toque@2.82",
+    "emblema@3.60"
+   ],
+   "candidatos": {
+    "emblema": "BCDE",
+    "redoble": "ABCDE",
+    "clic": "ABCE",
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "escena_lanzarote",
+   "nombre": "Escena de Lanzarote (Timanfaya)",
+   "grupo": "Escenas",
+   "visor": "momentos",
+   "momentos": "escena_lanzarote",
+   "suena": [
+    "emblema"
+   ],
+   "partituras": [
+    "escena"
+   ],
+   "tipos": [
+    "emblema"
+   ],
+   "grado": "",
+   "sonidoApp": "emblema",
+   "dura": 4.2,
+   "golpe": 3.6,
+   "duraPartituras": [
+    [
+     "emblema",
+     4.2
+    ]
+   ],
+   "notas": [
+    "toque@0.75",
+    "toque@1.47",
+    "toque@2.05",
+    "toque@2.50",
+    "toque@2.82",
+    "emblema@3.60"
+   ],
+   "candidatos": {
+    "emblema": "BCDE",
+    "redoble": "ABCDE",
+    "clic": "ABCE",
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "fuegos",
+   "nombre": "Los fuegos",
+   "grupo": "Resúmenes",
+   "visor": "fuegos",
+   "momentos": null,
+   "suena": [
+    "fuegos"
+   ],
+   "partituras": [
+    "fuegos"
+   ],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 3.2,
+   "golpe": 0.2,
+   "duraPartituras": [
+    [
+     "fuegos",
+     3.2
+    ]
+   ],
+   "notas": [
+    "emblema@0.20",
+    "brillo@1.00",
+    "brillo@1.80"
+   ],
+   "candidatos": {
+    "emblema": "BCDE",
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "resumen_dia",
+   "nombre": "Resumen del día",
+   "grupo": "Resúmenes",
+   "visor": "resumen_dia",
+   "momentos": "resumen_dia",
+   "suena": [
+    "dia_completo"
+   ],
+   "partituras": [
+    "dia_completo"
+   ],
+   "tipos": [
+    "emblema",
+    "sello",
+    "pais"
+   ],
+   "grado": "",
+   "sonidoApp": "emblema",
+   "dura": 1.9,
+   "golpe": 1.3,
+   "duraPartituras": [
+    [
+     "dia_completo",
+     1.9
+    ]
+   ],
+   "notas": [
+    "tic@0.00",
+    "tic@0.08",
+    "tic@0.16",
+    "tic@0.24",
+    "tic@0.32",
+    "tic@0.40",
+    "tic@0.48",
+    "tic@0.56",
+    "tic@0.64",
+    "tic@0.72",
+    "tic@0.80",
+    "tic@0.88",
+    "tic@0.96",
+    "tic@1.04",
+    "tic@1.12",
+    "brillo@1.30"
+   ],
+   "candidatos": {
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "resumen_viaje",
+   "nombre": "Resumen del viaje",
+   "grupo": "Resúmenes",
+   "visor": "resumen_viaje",
+   "momentos": null,
+   "suena": [
+    "dia_completo"
+   ],
+   "partituras": [
+    "dia_completo"
+   ],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 1.9,
+   "golpe": 1.3,
+   "duraPartituras": [
+    [
+     "dia_completo",
+     1.9
+    ]
+   ],
+   "notas": [
+    "tic@0.00",
+    "tic@0.08",
+    "tic@0.16",
+    "tic@0.24",
+    "tic@0.32",
+    "tic@0.40",
+    "tic@0.48",
+    "tic@0.56",
+    "tic@0.64",
+    "tic@0.72",
+    "tic@0.80",
+    "tic@0.88",
+    "tic@0.96",
+    "tic@1.04",
+    "tic@1.12",
+    "brillo@1.30"
+   ],
+   "candidatos": {
+    "brillo": "ABCDE"
+   }
+  },
+  {
+   "id": "primer_dia",
+   "nombre": "Tu primer día",
+   "grupo": "Logros",
+   "visor": "primer_dia",
+   "momentos": null,
+   "suena": [
+    "primer_dia"
+   ],
+   "partituras": [
+    "primer_dia"
+   ],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 2,
+   "golpe": 0.3,
+   "duraPartituras": [
+    [
+     "primer_dia",
+     2
+    ]
+   ],
+   "notas": [
+    "brillo@0.30",
+    "clic@0.50",
+    "clic@0.65",
+    "clic@0.80",
+    "brillo@1.40"
+   ],
+   "candidatos": {
+    "brillo": "ABCDE",
+    "clic": "ABCE"
+   }
+  },
+  {
+   "id": "apertura",
+   "nombre": "Apertura de JUTRIP",
+   "grupo": "Apertura",
+   "visor": "apertura",
+   "momentos": null,
+   "suena": [
+    "apertura"
+   ],
+   "partituras": [
+    "apertura"
+   ],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 3.5,
+   "golpe": 2.1,
+   "duraPartituras": [
+    [
+     "apertura",
+     3.5
+    ]
+   ],
+   "notas": [
+    "vuelo@1.70",
+    "apertura@2.10"
+   ],
+   "candidatos": {
+    "apertura": "ABCDE",
+    "vuelo": "BCD"
+   }
+  },
+  {
+   "id": "visto",
+   "nombre": "Visto (el toque y el brillo)",
+   "grupo": "Sonidos cortos",
+   "visor": "boton",
+   "momentos": null,
+   "suena": [
+    "visto"
+   ],
+   "partituras": [
+    "visto"
+   ],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 0.5,
+   "golpe": 0.5,
+   "duraPartituras": [
+    [
+     "visto",
+     0.5
+    ]
+   ],
+   "notas": [
+    "toque@0.00",
+    "brillo@0.06"
+   ],
+   "candidatos": {}
+  },
+  {
+   "id": "aviso",
+   "nombre": "Campanita del aviso",
+   "grupo": "Sonidos cortos",
+   "visor": "boton",
+   "momentos": null,
+   "suena": [
+    "aviso"
+   ],
+   "partituras": [
+    "aviso"
+   ],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 1.25,
+   "golpe": 1.25,
+   "duraPartituras": [
+    [
+     "aviso",
+     1.25
+    ]
+   ],
+   "notas": [
+    "campanita@0.00"
+   ],
+   "candidatos": {}
+  },
+  {
+   "id": "tic",
+   "nombre": "Tic de los números que suben",
+   "grupo": "Sonidos cortos",
+   "visor": "solo",
+   "momentos": null,
+   "suena": [
+    "dia_completo"
+   ],
+   "partituras": [],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 1.9,
+   "golpe": 1.3,
+   "duraPartituras": [
+    [
+     "dia_completo",
+     1.9
+    ]
+   ],
+   "notas": [
+    "tic@0.00",
+    "tic@0.08",
+    "tic@0.16",
+    "tic@0.24",
+    "tic@0.32",
+    "tic@0.40",
+    "tic@0.48",
+    "tic@0.56",
+    "tic@0.64",
+    "tic@0.72",
+    "tic@0.80",
+    "tic@0.88",
+    "tic@0.96",
+    "tic@1.04",
+    "tic@1.12",
+    "brillo@1.30"
+   ],
+   "candidatos": {}
+  },
+  {
+   "id": "toque",
+   "nombre": "Toque (el latido de los aros)",
+   "grupo": "Sonidos cortos",
+   "visor": "solo",
+   "momentos": null,
+   "suena": [
+    "emblema"
+   ],
+   "partituras": [],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 4.2,
+   "golpe": 3.6,
+   "duraPartituras": [
+    [
+     "emblema",
+     4.2
+    ]
+   ],
+   "notas": [
+    "toque@0.75",
+    "toque@1.47",
+    "toque@2.05",
+    "toque@2.50",
+    "toque@2.82",
+    "emblema@3.60"
+   ],
+   "candidatos": {}
+  },
+  {
+   "id": "vuelo",
+   "nombre": "Lo ganado que vuela",
+   "grupo": "Sonidos cortos",
+   "visor": "solo",
+   "momentos": null,
+   "suena": [
+    "vuelo"
+   ],
+   "partituras": [
+    "vuelo"
+   ],
+   "tipos": [],
+   "grado": "",
+   "sonidoApp": null,
+   "dura": 1,
+   "golpe": 0.63,
+   "duraPartituras": [
+    [
+     "vuelo",
+     1
+    ]
+   ],
+   "notas": [
+    "vuelo@0.63"
+   ],
+   "candidatos": {
+    "vuelo": "BCD"
+   }
+  }
+ ],
+ "estampado": {
+  "golpe": 2.05,
+  "dura": 2.3,
+  "fin": 3.7
+ },
+ "textos": {
+  "medalla_bronce": "Saltar todo ROMA TU SELLO DE ROMA · BRONCE Primeros pasos en Roma Has visto tu primer imprescindible. Seguir",
+  "medalla_plata": "Saltar todo ROMA ROMA Algo está cambiando… TU SELLO DE ROMA · PLATA Roma te atrapa Cuatro imprescindibles vistos: ya eres de aquí. Seguir",
+  "medalla_oro": "Saltar todo ROMA ROMA ¿Lo notas? TU SELLO DE ROMA · ORO Roma es casi tuya Seis imprescindibles de ocho. Seguir",
+  "medalla_diamante": "Saltar todo ROMA ROMA Esto brilla mucho… TU SELLO DE ROMA · DIAMANTE Roma es tuya Todos los imprescindibles de Roma. Seguir",
+  "coleccion": "Saltar todo ¡COLECCIÓN COMPLETA! Las 4 joyas de Roma 0 DE 0 · COMPLETA Cuatro joyas, cuatro recuerdos para siempre. Seguir",
+  "emblema": "¡Eh! Aquí hay algo…",
+  "emblema_maravilla": "MARAVILLA DEL MUNDO ENCONTRADO EL 21 de noviembre de 2026 COLISEO ¡HAS DESCUBIERTO UN EMBLEMA OCULTO! Una maravilla del mundo El mayor anfiteatro de la Antigüedad. Casi2.000añosesperándote… Elanfiteatromásgrandejamásconstruido. Saltar todo Toca para ir al emblema",
+  "maravilla": "Saltar todo DE 7 LAS 7 MARAVILLAS 7 MARAVILLA DEL MUNDO ENCONTRADO EL 11 de octubre de 2026 COLISEO MARAVILLA DEL MUNDO ENCONTRADO EL 4 de abril de 2028 GRAN MURALLA CHINA MARAVILLA DEL MUNDO ENCONTRADO EL 9 de marzo de 2027 PETRA MARAVILLA DEL MUNDO ENCONTRADO EL 20 de enero de 2028 CRISTO REDENTOR MARAVILLA DEL MUNDO ENCONTRADO EL 14 de agosto de 2027 MACHU PICCHU MARAVILLA DEL MUNDO ENCONTRADO EL 2 de diciembre de 2027 CHICHÉN ITZÁ MARAVILLA DEL MUNDO ENCONTRADO EL 18 de abril de 2028 TAJ MAHAL LAS 7 MARAVILLAS DEL MUNDO ¡Las has visto todas! Seguir",
+  "pais": "Saltar todo PASAPORTE ITALIA 20 NOV 2026 PAÍS NUEVO Tu país número 1: Italia Seguir",
+  "sello": "",
+  "pedazo": "Saltar todo UN PEDAZO NUEVO Los miradores 0 DE 3 Seguir",
+  "patrimonio": "Saltar todo PATRIMONIO DE LA HUMANIDAD Tu Patrimonio número 1: Centro histórico de Roma Seguir",
+  "viajero": "Saltar todo LOGRO DE VIAJERO Trotamundos Países distintos que has visitado con la app. Seguir",
+  "escena_roma": "Pero… ¿qué es esto?",
+  "escena_lanzarote": "Bajo tus pies, la tierra respira… Las Montañas del Fuego, rojas y quietas… …y el calor sube del suelo. El calor de la tierra A trece metros bajo tus pies, la tierra pasa de 600 grados. Saltar todo",
+  "fuegos": "",
+  "resumen_dia": "TU DÍA Lo que te llevas de hoy Tu sello de Roma, en bronce 1 Emblema Oculto 1 País nuevo Seguir",
+  "resumen_viaje": "TU VIAJE · 17 – 20 NOV Lo que te llevas de Roma 4 DÍAS 17 PARADAS 31 KM 12 FOTOS ROMA Has conseguido la plata de Roma COLECCIONES +2 Los miradores EMBLEMAS OCULTOS El Panteón La Fontana de Trevi +10 secretos por descubrir LOGROS DE VIAJERO NUEVOS Primer país Te quedan 2 sorpresas por reclamar Compartir mi viaje Ver mi viaje",
+  "primer_dia": "TU PRIMER DÍA Hoy empiezas a ganar logros Toca Visto en cada sitio y gana sus pedazos. Algunos sitios esconden un Emblema Oculto: haz la foto y descúbrelo. Todo se guarda en el botón flotante. Empezar mi día",
+  "apertura": "JUTRI P VIAJA CON CALMA",
+  "visto": "Visto (el toque y el brillo) Visto Toca el botón para oírlo otra vez.",
+  "aviso": "Campanita del aviso Llega un aviso Toca el botón para oírlo otra vez.",
+  "tic": "Tic de los números que suben Solo el sonido: no tiene una animación propia.",
+  "toque": "Toque (el latido de los aros) Solo el sonido: no tiene una animación propia.",
+  "vuelo": "Lo ganado que vuela Solo el sonido: no tiene una animación propia."
+ }
+}

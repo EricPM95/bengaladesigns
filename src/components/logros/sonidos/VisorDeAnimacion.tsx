@@ -5,6 +5,8 @@ import { cortar, esperaDeLaAnimacion, esperaPorCodeMovido, fijarInicioDeLaAnimac
 import { ANIMACIONES, animacionDe, golpeDe, MOMENTOS_DEL_ESTUDIO } from '../../../lib/sonidos/estudio'
 import { partituraDe } from '../../../lib/sonidos/partituras'
 import { Fuegos } from '../momentos/Fuegos'
+import { cargarPaises, cargarTierra, cargarTierraDetallada } from '../pantallas/mundo/paises'
+import { PASAPORTE_DE_EJEMPLO, VIAJE_DEL_SELLO_DE_EJEMPLO } from './ejemploPasaporte'
 import { useEsAdministrador } from './useEsAdministrador'
 import { ejemploDelResumenDelViaje } from './ejemploResumenViaje'
 
@@ -16,6 +18,7 @@ import { ejemploDelResumenDelViaje } from './ejemploResumenViaje'
 const Reproductor = lazy(() => import('../momentos/Reproductor'))
 const ResumenDia = lazy(() => import('../momentos/ResumenDia').then((m) => ({ default: m.ResumenDia })))
 const ResumenViaje = lazy(() => import('../momentos/ResumenViaje'))
+const PasaporteScreen = lazy(() => import('../pantallas/PasaporteScreen'))
 const PrimerDia = lazy(() => import('../momentos/PrimerDia'))
 
 export interface OpcionesDeVer {
@@ -61,6 +64,15 @@ function Animacion({ id, alFinal }: { id: string; alFinal: () => void }): ReactN
       </Suspense>
     )
   }
+  // (V36C) El sello que se estampa en el pasaporte: la hoja de verdad (con un pasaporte y un viaje de EJEMPLO), no otra animación.
+  if (a.visor === 'pasaporte')
+    return (
+      <Suspense fallback={null}>
+        <div data-visor-pasaporte style={{ position: 'fixed', inset: 0, overflow: 'hidden', background: '#F6EFE0' }}>
+          <PasaporteScreen pantalla={{ t: 'pasaporte', pagina: `sello:${VIAJE_DEL_SELLO_DE_EJEMPLO}` }} ejemplo={PASAPORTE_DE_EJEMPLO} />
+        </div>
+      </Suspense>
+    )
   if (a.visor === 'resumen_viaje')
     return (
       <Suspense fallback={null}>
@@ -116,6 +128,8 @@ export function VisorDeAnimacion(): ReactNode {
         ponerEstudio({ propios, silenciados: o.silenciados ?? [], golpe, ajustes: o.ajustes ?? {}, letras: o.letras ?? {}, volumenes: o.volumenes ?? {}, editados: o.editados ?? {} })
         // Todo lo que suena, descargado ANTES de empezar (así cada sonido cae en su instante, sin esperas).
         await Promise.all([...a.suena, ...a.partituras, ...(a.visor === 'momentos' ? ['escena'] : [])].map((p) => precargar(ctx, p)))
+        // (V36C) La hoja del pasaporte necesita su catálogo y sus costas ya cargados para que el golpe del sello arranque justo al empezar (así el sonido cae con él).
+        if (a.visor === 'pasaporte') await Promise.all([cargarPaises(), cargarTierra(), cargarTierraDetallada()]).catch(() => undefined)
         final.current = o.alFinal ?? (() => undefined)
         setActual(null)
         // (V35A2) El primer fotograma se fija en el reloj de audio: si un sonido de Eric tiene que sonar ANTES, se espera ese tiempo (el sonido no se recorta, se retrasa la animación).

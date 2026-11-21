@@ -9,7 +9,7 @@ import { partituraDe } from './partituras'
  *   · `partituras`: de dónde salen los sonidos que se pueden elegir (cada archivo, con sus candidatos A a E).
  *   · `principal`: el sonido que «Probar con mi sonido» sustituye por defecto (el golpe de la animación).
  */
-export type TipoDeVisor = 'momentos' | 'fuegos' | 'resumen_dia' | 'resumen_viaje' | 'apertura' | 'primer_dia' | 'boton' | 'solo'
+export type TipoDeVisor = 'momentos' | 'pasaporte' | 'fuegos' | 'resumen_dia' | 'resumen_viaje' | 'apertura' | 'primer_dia' | 'boton' | 'solo'
 export interface Animacion {
   id: string
   nombre: string
@@ -62,7 +62,7 @@ export const ANIMACIONES: Animacion[] = [
   { id: 'emblema_maravilla', nombre: 'Emblema maravilla (el Coliseo)', grupo: 'Logros', visor: 'momentos', momentos: 'emblema_maravilla', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' } },
   { id: 'maravilla', nombre: 'Final de las 7 maravillas', grupo: 'Logros', visor: 'momentos', momentos: 'maravilla', suena: ['maravilla'], partituras: ['maravilla'], principal: { tipo: 'archivo', id: 'maravilla' } },
   { id: 'pais', nombre: 'País nuevo', grupo: 'Logros', visor: 'momentos', momentos: 'pais', suena: ['pais'], partituras: ['pais'], principal: { tipo: 'archivo', id: 'pais' }, nota: 'Destino nuevo y continente suenan igual.' },
-  { id: 'sello', nombre: 'Sello del pasaporte', grupo: 'Logros', visor: 'momentos', momentos: 'sello', suena: ['sello'], partituras: ['sello'], principal: { tipo: 'archivo', id: 'clic' } },
+  { id: 'sello', nombre: 'Sello del pasaporte', grupo: 'Logros', visor: 'pasaporte', suena: ['sello_pasaporte'], partituras: ['sello_pasaporte'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'El sello que se estampa en la hoja del pasaporte (la hoja del Perfil, con sus piezas de verdad y un viaje de ejemplo). En la app todavía se estampa SIN sonido. No es la medalla (esa es «Medalla de bronce»…).' },
   { id: 'pedazo', nombre: 'Pedazo que entra en su círculo', grupo: 'Logros', visor: 'momentos', momentos: 'pedazo', suena: ['pedazo'], partituras: ['pedazo'], principal: { tipo: 'archivo', id: 'clic' } },
   { id: 'patrimonio', nombre: 'Patrimonio de la UNESCO', grupo: 'Logros', visor: 'momentos', momentos: 'patrimonio', suena: ['patrimonio'], partituras: ['patrimonio'], principal: { tipo: 'archivo', id: 'brillo' } },
   { id: 'viajero', nombre: 'Logro de viajero', grupo: 'Logros', visor: 'momentos', momentos: 'viajero', suena: ['viajero'], partituras: ['viajero'], principal: { tipo: 'archivo', id: 'brillo' } },

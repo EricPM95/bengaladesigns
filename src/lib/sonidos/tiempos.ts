@@ -47,6 +47,11 @@ export const tiemposDeLaApertura = (duracion: number) => ({
 export const TIEMPOS_SELLO = { cae: 0.2, caeDura: 0.9, evolucion: { frase: 0.3, vieja: 0.2, nuevo: 3.3, nuevoDura: 1.1 } } as const
 export const TIEMPOS_DE_COLECCION_PANTALLA = { retraso: RETRASO_DEL_PEDAZO + 0.1, titulo: 2.4, cta: 4.2 } as const
 export const TIEMPOS_SELLADO = { empieza: 1.0, dura: 0.9, tinta: 1.0 } as const
+/**
+ * (V36C) EL SELLO QUE SE ESTAMPA EN EL PASAPORTE (`PasaporteScreen` con `sello:<viaje>`, el golpe `muSlam` de `mundo.css`): cae 2,3 s y toca la hoja al 88 % (2,02 s), rebota al 94 % (2,16 s) y suelta tinta y anillos; el último anillo acaba a los 3,7 s.
+ * No es la medalla de los logros (`TIEMPOS_SELLO`: el sello de ciudad que cae en la pantalla de logros).
+ */
+export const TIEMPOS_ESTAMPADO = { golpe: 2.05, dura: 2.3, fin: 3.7 } as const
 /** (V30) El cine de las escenas de cada sitio: la luz estalla («flash») a los `fl` s (por defecto 8) y todo se apaga a los `dim` s; el emblema y su nombre entran en `x`. Lo lee la escena Y su sonido. */
 export interface ConfigDeTiemposDeEscena {
   fl?: number

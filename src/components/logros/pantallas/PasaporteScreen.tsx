@@ -85,10 +85,10 @@ function colocar(sellos: SelloDePagina[], sub: number, ancho: number): Array<{ s
  * viaje, 4 por página), la lista de países en una hoja, el Vaticano como página aparte, «Por conseguir» en gris y el sello que se estampa al acabar un viaje. `pagina`:
  * un país («Italia»), un país y su página de sellos («Italia:2»), «lista» (abre la lista) o «sello:<id del viaje>» (estampa el sello de ese viaje).
  */
-export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pasaporte'> }): ReactNode {
+export default function PasaporteScreen({ pantalla, ejemplo }: { pantalla: PantallaDe<'pasaporte'>; /** (V36C) Solo el estudio de sonidos: un pasaporte de EJEMPLO (no pide nada al servidor ni apunta ningún sello como estampado). */ ejemplo?: RespuestaPasaporte }): ReactNode {
   const { paises: catalogo, tierra } = usePaisesYTierra(true)
   // (V11) Abre AL INSTANTE con lo último que se vio del pasaporte (países, sellos y el globo); lo nuevo llega por detrás y solo cambia lo que cambie.
-  const [datos, setDatos] = useState<RespuestaPasaporte | 'error' | null>(() => pasaporteGuardado())
+  const [datos, setDatos] = useState<RespuestaPasaporte | 'error' | null>(() => ejemplo ?? pasaporteGuardado())
   const [idx, setIdx] = useState(0)
   const [sub, setSub] = useState(0)
   const [lista, setLista] = useState(false)
@@ -105,6 +105,7 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
   const lado = Math.max(220, Math.min(322, (typeof window !== 'undefined' ? window.innerWidth : 390) - 44))
 
   useEffect(() => {
+    if (ejemplo) return undefined
     let vivo = true
     void pedirPasaporte().then((r) => vivo && setDatos((prev) => (r?.ok ? (prev && prev !== 'error' && mismaRespuesta(prev, r) ? prev : r) : prev && prev !== 'error' ? prev : 'error')))
     return () => {
@@ -146,9 +147,9 @@ export default function PasaporteScreen({ pantalla }: { pantalla: PantallaDe<'pa
       if (k >= 0) {
         i = k
         // (V14) El sello se estampa UNA sola vez por viaje: si ya se estampó (o se pide [Ver mi sello]), la página se abre en su sitio sin estampar otra vez.
-        if (pedida.startsWith('sello:') && !selloYaEstampado(trip)) {
+        if (pedida.startsWith('sello:') && (ejemplo || !selloYaEstampado(trip))) {
           setEstampar(trip)
-          marcarSelloEstampado(trip, paginas[k].sellos.find((x) => x.trip_id === trip)?.fecha ?? null)
+          if (!ejemplo) marcarSelloEstampado(trip, paginas[k].sellos.find((x) => x.trip_id === trip)?.fecha ?? null)
         }
         s = Math.floor(paginas[k].sellos.findIndex((x) => x.trip_id === trip) / SELLOS_POR_PAGINA)
       } else {
@@ -429,7 +430,7 @@ function Golpe({ x, y, r, tam, s }: { x: number; y: number; r: number; tam: numb
   })
   const tinta = a.tinta
   return (
-    <div aria-hidden="true" style={{ position: 'absolute', left: x + tam / 2, top: y + tam / 2, width: 0, height: 0, pointerEvents: 'none' }}>
+    <div aria-hidden="true" data-golpe-del-sello style={{ position: 'absolute', left: x + tam / 2, top: y + tam / 2, width: 0, height: 0, pointerEvents: 'none' }}>
       <span style={{ position: 'absolute', left: -70, top: -70, width: 140, height: 140, borderRadius: '50%', border: `3px solid ${tinta.replace(')', ' / .6)')}`, opacity: 0, animation: 'muRing 1.1s 2.15s ease-out both' }} />
       <span style={{ position: 'absolute', left: -70, top: -70, width: 140, height: 140, borderRadius: '50%', border: `2px solid ${tinta.replace(')', ' / .45)')}`, opacity: 0, animation: 'muRing 1.4s 2.3s ease-out both' }} />
       {gotas.map((g, i) => (

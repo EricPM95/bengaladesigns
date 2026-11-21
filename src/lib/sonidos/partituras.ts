@@ -10,6 +10,7 @@ import {
   TIEMPOS_DE_RESUMEN,
   TIEMPOS_DE_VUELO,
   TIEMPOS_SELLADO,
+  TIEMPOS_ESTAMPADO,
   TIEMPOS_SELLO,
   tiemposDeEscena,
   TIEMPOS_DEL_AVISO,
@@ -156,6 +157,11 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
         premio: true,
         notas: [archivo('redoble', t.fl, 0.55), archivo('emblema', t.fl), archivo('clic', t.x[0], 0.8), archivo('brillo', t.x[2], 0.8)],
       }
+    }
+    case 'sello_pasaporte': {
+      // (V36C) El sello que se estampa en la hoja del pasaporte: baja con un vuuush mientras cae y estampa con un clic y un brillo cuando toca la hoja. (La app todavía NO hace sonar este golpe: aquí suena como estaba pensado.)
+      const t = TIEMPOS_ESTAMPADO
+      return { id, dura: e(t.fin), premio: false, notas: [archivo('vuelo', e(t.golpe) - 0.5, 0.7), archivo('clic', e(t.golpe)), archivo('brillo', e(t.golpe) + 0.05, 0.7)] }
     }
     case 'fuegos': {
       // (V30) Los fuegos: un golpe de premio al estallar y brillos que caen detrás.
