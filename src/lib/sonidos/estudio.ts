@@ -114,12 +114,16 @@ export interface CodigoElegido {
   volumen: number
   /** (V35B2) Movido respecto a su sitio: «sitio» = 0 ms donde suena de siempre; «principio» / «golpe» = 0 ms en ese instante. */
   movido?: { ms: number; empieza: 'sitio' | 'principio' | 'golpe' }
+  /** (V36B) Lo retocado, en palabras (`descripcionDe`); vacío si nada. */
+  retocado?: string
 }
 export interface PropioElegido {
   nombre: string
   empieza: 'principio' | 'golpe'
   ms: number
   volumen: number
+  /** (V36B) Lo retocado, en palabras; vacío si nada. */
+  retocado?: string
 }
 /** La línea de «Lo elegido» de una animación: todo lo que suena (pura: la prueba la comprueba). Ejemplo: «Medalla de bronce → golpe: candidato B · 80 % · redoble: SILENCIADO · MÍO: x.mp3 · desde el principio +120 ms · 70 %». */
 export function lineaElegida(a: Animacion, e: { codigo: CodigoElegido[]; propios: PropioElegido[]; anadidos?: PropioElegido[] }): string {
@@ -127,9 +131,9 @@ export function lineaElegida(a: Animacion, e: { codigo: CodigoElegido[]; propios
   const ms = (x: number) => `${x >= 0 ? '+' : '−'}${Math.abs(x)} ms`
   const partes: string[] = []
   const movido = (c: CodigoElegido): string => (c.movido && (c.movido.ms !== 0 || c.movido.empieza !== 'sitio') ? ` · movido ${c.movido.empieza === 'sitio' ? '' : `${c.movido.empieza === 'principio' ? 'desde el principio' : 'desde el golpe'} `}${ms(c.movido.ms)}` : '')
-  for (const c of e.codigo) partes.push(c.silenciado ? `${c.nombre}: SILENCIADO` : c.letra ? `${c.nombre}: candidato ${c.letra}${movido(c)} · ${pct(c.volumen)}` : `${c.nombre}: se queda como está${movido(c)} · ${pct(c.volumen)}`)
-  for (const p of e.anadidos ?? []) partes.push(`añadido: ${p.nombre} · ${p.empieza === 'principio' ? 'desde el principio' : 'desde el golpe'} ${ms(p.ms)} · ${pct(p.volumen)}`)
-  for (const p of e.propios) partes.push(`MÍO: ${p.nombre} · ${p.empieza === 'principio' ? 'desde el principio' : 'desde el golpe'} ${ms(p.ms)} · ${pct(p.volumen)}`)
+  for (const c of e.codigo) partes.push(c.silenciado ? `${c.nombre}: SILENCIADO` : c.letra ? `${c.nombre}: candidato ${c.letra}${movido(c)}${c.retocado ? ` · retocado: ${c.retocado}` : ''} · ${pct(c.volumen)}` : `${c.nombre}: se queda como está${movido(c)} · ${pct(c.volumen)}`)
+  for (const p of e.anadidos ?? []) partes.push(`añadido: ${p.nombre} · ${p.empieza === 'principio' ? 'desde el principio' : 'desde el golpe'} ${ms(p.ms)}${p.retocado ? ` · retocado: ${p.retocado}` : ''} · ${pct(p.volumen)}`)
+  for (const p of e.propios) partes.push(`MÍO: ${p.nombre} · ${p.empieza === 'principio' ? 'desde el principio' : 'desde el golpe'} ${ms(p.ms)}${p.retocado ? ` · retocado: ${p.retocado}` : ''} · ${pct(p.volumen)}`)
   return `${a.nombre} → ${partes.length ? partes.join(' · ') : 'sin sonido'}`
 }
 

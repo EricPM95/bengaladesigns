@@ -27,6 +27,8 @@ export interface OpcionesDeVer {
   ajustes?: Record<string, AjusteDeCode>
   letras?: Record<string, Letra>
   volumenes?: Record<string, number>
+  /** (V36B) Sonidos de Code retocados (por `archivo_letra`). */
+  editados?: Record<string, { buffer: AudioBuffer; golpe: number; dura: number }>
   /** Se llama cuando la animación acaba (o a los segundos que dura la partitura, si no hay un final claro). */
   alFinal?: () => void
 }
@@ -111,7 +113,7 @@ export function VisorDeAnimacion(): ReactNode {
         if (!a) return
         const propios = o.propios ?? []
         const golpe = golpeDe(a)
-        ponerEstudio({ propios, silenciados: o.silenciados ?? [], golpe, ajustes: o.ajustes ?? {}, letras: o.letras ?? {}, volumenes: o.volumenes ?? {} })
+        ponerEstudio({ propios, silenciados: o.silenciados ?? [], golpe, ajustes: o.ajustes ?? {}, letras: o.letras ?? {}, volumenes: o.volumenes ?? {}, editados: o.editados ?? {} })
         // Todo lo que suena, descargado ANTES de empezar (así cada sonido cae en su instante, sin esperas).
         await Promise.all([...a.suena, ...a.partituras, ...(a.visor === 'momentos' ? ['escena'] : [])].map((p) => precargar(ctx, p)))
         final.current = o.alFinal ?? (() => undefined)

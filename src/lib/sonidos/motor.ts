@@ -135,8 +135,10 @@ export interface EstudioDelMotor {
   /** (V35B2) La letra de cada sonido grabado en ESTA animación y el volumen de cada sonido (si no se dicen, valen los de siempre). */
   letras: Record<string, Letra>
   volumenes: Record<string, number>
+  /** (V36B) Sonidos de Code retocados en el estudio (por `archivo_letra`): el sonido ya hecho y dónde cae ahora su golpe y cuánto dura. */
+  editados: Record<string, { buffer: AudioBuffer; golpe: number; dura: number }>
 }
-const VACIO: EstudioDelMotor = { propios: [], silenciados: [], golpe: 0, ajustes: {}, letras: {}, volumenes: {} }
+const VACIO: EstudioDelMotor = { propios: [], silenciados: [], golpe: 0, ajustes: {}, letras: {}, volumenes: {}, editados: {} }
 let estudio: EstudioDelMotor = VACIO
 export const ponerEstudio = (e: Partial<EstudioDelMotor> | null) => {
   estudio = e ? { ...VACIO, ...e } : VACIO
@@ -155,7 +157,7 @@ export function desplazamientoDeCode(primeraNota: number, ajuste: AjusteDeCode |
   if (ajuste.empieza === 'sitio') return ajuste.ms / 1000
   return (ajuste.empieza === 'golpe' ? golpe : 0) + ajuste.ms / 1000 - primeraNota
 }
-const golpeDentro = (n: Nota): number => (n.tipo === 'archivo' ? (manifiestoEnMemoria?.[n.archivo]?.[versionDe(n.archivo)]?.golpe ?? 0) : 0)
+const golpeDentro = (n: Nota): number => (n.tipo === 'archivo' ? (estudio.editados[`${n.archivo}_${versionDe(n.archivo)}`]?.golpe ?? manifiestoEnMemoria?.[n.archivo]?.[versionDe(n.archivo)]?.golpe ?? 0) : 0)
 const claveDeNota = (n: Nota): string => claveDeSilencio(n.tipo, n.tipo === 'sint' ? n.sonido : n.archivo)
 /** Para cada sonido de una partitura, el arranque natural de su primera nota. */
 function primerasNotas(notas: Nota[]): Map<string, number> {
@@ -317,8 +319,11 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
       registrar({ partitura: id, tipo: 'sint', id: n.sonido, en: n.en, programado: n.en + delta })
     } else {
       const v = versionDe(n.archivo)
-      const buffer = buffers.get(`${n.archivo}_${v}`)
-      const datos = manifiestoEnMemoria?.[n.archivo]?.[v]
+      // (V36B) Un sonido de Code retocado en el estudio suena con su versión ya hecha y con su golpe donde cae ahora.
+      const retocado = estudio.editados[`${n.archivo}_${v}`]
+      const buffer = retocado?.buffer ?? buffers.get(`${n.archivo}_${v}`)
+      const datosBase = manifiestoEnMemoria?.[n.archivo]?.[v]
+      const datos = retocado && datosBase ? { ...datosBase, golpe: retocado.golpe, dura: retocado.dura } : datosBase
       if (!buffer || !datos) continue // el archivo aún no ha llegado: la partitura suena sin él (los sonidos pequeños siguen en su sitio)
       const fuente = ctx.createBufferSource()
       fuente.buffer = buffer

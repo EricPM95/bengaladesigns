@@ -4,8 +4,8 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { leerZip, validarEstudio, describir, jsonOrdenado, leerAnimacionesYManifiesto } from '../sonidos/aplicarEstudio.mjs'
-import { escribirZip, estudioDeEjemplo, zipDeEjemplo } from '../sonidos/_zipDeEjemplo.mjs'
+import { leerZip, leerWav, validarEstudio, describir, jsonOrdenado, leerAnimacionesYManifiesto } from '../sonidos/aplicarEstudio.mjs'
+import { escribirZip, estudioDeEjemplo, zipDeEjemplo, ejemploEditado, zipDeEditado, wavDeEjemplo, RETOQUES_CODE } from '../sonidos/_zipDeEjemplo.mjs'
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url))
 const SCRIPT = path.resolve(AQUI, '..', 'sonidos', 'aplicarEstudio.mjs')
@@ -19,7 +19,7 @@ let n = 0
 const cli = (buf, ...args) => {
   const z = path.join(tmp, `z${++n}.zip`)
   fs.writeFileSync(z, buf)
-  const r = spawnSync(process.execPath, [SCRIPT, z, ...args], { encoding: 'utf8' })
+  const r = spawnSync(process.execPath, [SCRIPT, z, ...args], { encoding: 'utf8', env: { ...process.env, JUTRIP_SIN_FFMPEG: '1' } })
   return { code: r.status, out: (r.stdout || '') + (r.stderr || '') }
 }
 const lista = (d) => (fs.existsSync(d) ? fs.readdirSync(d, { recursive: true }) : [])
@@ -111,6 +111,90 @@ try {
   rechaza('zip truncado', bueno.subarray(0, bueno.length - 40), 'truncado')
   rechaza('zip casi vacio', Buffer.from('PK'), 'truncado')
   rechaza('no es un zip', Buffer.from('esto no es un zip, para nada, de verdad que no lo es'), 'truncado')
+
+  // --- sonidos editados (V36B): el wav final ya viene hecho; solo se comprueba y se copia
+  const ed = ejemploEditado()
+  const nomEd = Object.keys(ed.archivos)
+  const eEd = JSON.parse(JSON.stringify(ed.estudio))
+  const mapa = new Map(Object.entries(ed.archivos))
+  t('editado: el ejemplo vale', validarEstudio(eEd, { animaciones, manifiesto, archivos: mapa }).length === 0, validarEstudio(eEd, { animaciones, manifiesto, archivos: mapa }).join(' | '))
+  t('editado: el zip viejo sin editados sigue valiendo', validarEstudio(estudioDeEjemplo(), { animaciones, manifiesto, archivos: new Map(nombres.map((x) => [x, Buffer.alloc(0)])) }).length === 0)
+  const de = describir(eEd).join('\n')
+  const quieroEd = [
+    '    Editado · recortado 0,12 s – 2,40 s · fundido entrada 50 ms · salida 300 ms · +3 semitonos (velocidad) · sin graves · brillo +2 dB · eco 15 % · igualado a −1 dB de pico · 44100 Hz · 4410 muestras · pico 0,89',
+    '    Editado · fundido salida 200 ms · −2 semitonos (velocidad) · brillo −1,5 dB · 8000 Hz · 800 muestras · pico 0,40',
+    '    Editado · sin retoques activos · 16000 Hz · 1600 muestras · pico 0,70',
+  ]
+  for (const l of quieroEd) t(`describe editado: ${l.slice(0, 70)}`, de.includes(l), l)
+  t('describe editado: tres lineas Editado', de.split('\n').filter((l) => l.startsWith('    Editado')).length === 3)
+  t('describe: la capa de Eric editada nombra el wav final', de.includes('archivo de Eric medalla_bronce_1.wav (original: mi sonido.mp3)'))
+
+  const destE = path.join(tmp, 'destinoE')
+  fs.mkdirSync(destE)
+  r = cli(zipDeEditado(ed), '--destino', destE)
+  t('editado seco: codigo 0', r.code === 0, r.out)
+  t('editado seco: dice los retoques', r.out.includes('recortado 0,12 s – 2,40 s') && r.out.includes('EN SECO'))
+  t('editado seco: no escribe nada', vacio(destE))
+  r = cli(zipDeEditado(ed), '--escribir', '--destino', destE)
+  t('editado escribir: codigo 0', r.code === 0, r.out)
+  t('editado escribir: dice sin ffmpeg (forzado)', r.out.includes('sin ffmpeg: se deja el .wav; conviértelo después'))
+  const dE = path.join(destE, 'public', 'sonidos', 'estudio')
+  for (const nm of ['medalla_bronce_1.wav', 'medalla_bronce_emblema_C.wav', 'medalla_bronce_golpe_B.wav']) t(`editado escribir: copia el final ${nm} identico`, fs.existsSync(path.join(dE, nm)) && fs.readFileSync(path.join(dE, nm)).equals(ed.archivos[nm]))
+  t('editado escribir: copia el original en originales/', fs.readFileSync(path.join(dE, 'originales', 'medalla_bronce_1_original.mp3'), 'utf8') === 'ID3-original-uno')
+  t('editado escribir: el wav sin editar tambien se copia', fs.readFileSync(path.join(dE, 'medalla_bronce_2.wav'), 'utf8') === 'RIFF-falso-dos')
+  t('editado escribir: estudio.json identico', fs.readFileSync(path.join(destE, 'data', 'sonidos', 'estudio.json'), 'utf8') === jsonOrdenado(eEd))
+  t('editado escribir: 6 archivos y nada de m4a', lista(destE).filter((x) => fs.statSync(path.join(destE, x)).isFile()).length === 6 && !lista(destE).some((x) => String(x).endsWith('.m4a')))
+  t('editado escribir: no reaplica retoques (el wav copiado tiene las mismas muestras)', fs.readFileSync(path.join(dE, 'medalla_bronce_1.wav')).length === ed.archivos['medalla_bronce_1.wav'].length)
+
+  // con ffmpeg de verdad (si esta): convierte a m4a y comprueba la duracion
+  const hayFf = !spawnSync('ffmpeg', ['-version']).error && !spawnSync('ffprobe', ['-version']).error
+  if (hayFf) {
+    const destF = path.join(tmp, 'destinoF')
+    fs.mkdirSync(destF)
+    const z = path.join(tmp, 'zF.zip')
+    fs.writeFileSync(z, zipDeEditado(ed))
+    const rf = spawnSync(process.execPath, [SCRIPT, z, '--escribir', '--destino', destF], { encoding: 'utf8' })
+    t('ffmpeg: codigo 0', rf.status === 0, rf.stdout + rf.stderr)
+    const dF = path.join(destF, 'public', 'sonidos', 'estudio')
+    for (const nm of ['medalla_bronce_1', 'medalla_bronce_emblema_C', 'medalla_bronce_golpe_B']) t(`ffmpeg: ${nm}.m4a creado`, fs.existsSync(path.join(dF, nm + '.m4a')) && fs.statSync(path.join(dF, nm + '.m4a')).size > 100)
+    t('ffmpeg: dice que dura igual', (rf.stdout || '').includes('dura igual que el wav'))
+  }
+
+  // rechazos de editados
+  const variante = (f, quitar = []) => { const c = ejemploEditado(); f(c); return zipDeEditado(c, quitar) }
+  const cap = (c) => c.estudio.animaciones.medalla_bronce.capas[1]
+  const capCode = (c) => c.estudio.animaciones.medalla_bronce.capas[0]
+  rechaza('retoques: semitonos 7', variante((c) => { cap(c).retoques.semitonos = 7 }), 'semitonos')
+  rechaza('retoques: entrada_ms 3000', variante((c) => { cap(c).retoques.entrada_ms = 3000 }), 'entrada_ms')
+  rechaza('retoques: eco 40', variante((c) => { cap(c).retoques.eco_pct = 40 }), 'eco_pct')
+  rechaza('retoques: brillo 9', variante((c) => { capCode(c).retoques.brillo_db = 9 }), 'brillo_db')
+  rechaza('retoques: fin menor que ini', variante((c) => { cap(c).retoques.fin = 0.05 }), 'fin')
+  rechaza('retoques: ini negativo', variante((c) => { cap(c).retoques.ini = -1 }), 'ini')
+  rechaza('retoques: igualar no booleano', variante((c) => { cap(c).retoques.igualar = 1 }), 'igualar')
+  rechaza('retoques: clave desconocida dentro', variante((c) => { cap(c).retoques.truco = 1 }), 'truco')
+  rechaza('retoques: falta una clave', variante((c) => { delete cap(c).retoques.eco_pct }), 'eco_pct')
+  rechaza('campos a medias: solo retoques en capa de Eric', variante((c) => { for (const k of ['muestras', 'tasa', 'pico', 'original']) delete cap(c)[k] }), 'a medias')
+  rechaza('campos a medias: falta el original', variante((c) => { delete cap(c).original }), 'original')
+  rechaza('campos a medias: falta pico en capa de Code', variante((c) => { delete capCode(c).pico }), 'pico')
+  rechaza('campos a medias: solo muestras en un sonido de Code', variante((c) => { const s = c.estudio.animaciones.medalla_bronce.sonidos_de_code[0]; delete s.archivo; delete s.retoques; delete s.tasa; delete s.pico }), 'a medias')
+  rechaza('original en una capa de Code (clave desconocida)', variante((c) => { capCode(c).original = 'x.mp3' }), 'desconocida')
+  rechaza('editado en un sonido por codigo (sint)', variante((c) => { const s = c.estudio.animaciones.medalla_bronce.sonidos_de_code[1]; Object.assign(s, { archivo: 'medalla_bronce_golpe_B.wav', retoques: { ...RETOQUES_CODE }, muestras: 1600, tasa: 16000, pico: 0.7 }) }), 'tipo archivo')
+  rechaza('final que no es WAV', variante((c) => { c.archivos['medalla_bronce_1.wav'] = Buffer.from('esto no es un wav, para nada') }), 'WAV')
+  rechaza('muestras que no coincide', variante((c) => { cap(c).muestras += 1 }), 'muestras')
+  rechaza('tasa que no coincide', variante((c) => { cap(c).tasa = 48000 }), 'tasa')
+  rechaza('pico que no coincide', variante((c) => { cap(c).pico = 0.5 }), 'pico')
+  rechaza('wav de 8 bits', variante((c) => { c.archivos['medalla_bronce_emblema_C.wav'] = wavDeEjemplo({ tasa: 8000, muestras: 800, bits: 8 }).buf }), '16 bits')
+  rechaza('wav de 3 canales', variante((c) => { c.archivos['medalla_bronce_emblema_C.wav'] = wavDeEjemplo({ tasa: 8000, muestras: 800, canales: 3 }).buf }), 'canales')
+  rechaza('falta el original en el zip', variante(() => {}, ['medalla_bronce_1_original.mp3']), 'original')
+  rechaza('falta el wav final en el zip', variante(() => {}, ['medalla_bronce_golpe_B.wav']), 'no esta en el zip')
+  rechaza('final con extension .mp3', variante((c) => { cap(c).archivo = 'medalla_bronce_1_original.mp3' }), '.wav')
+  rechaza('original con extension rara', variante((c) => { cap(c).original = 'medalla_bronce_1.exe'; c.archivos['medalla_bronce_1.exe'] = Buffer.from('x') }), 'mp3')
+  rechaza('final con ruta (..)', variante((c) => { cap(c).archivo = '../fuera.wav' }), '..')
+  rechaza('original igual que el final', variante((c) => { cap(c).original = cap(c).archivo }), 'mismo')
+  // wav con trozo extra (LIST) entre fmt y data y pico justo en el borde de la tolerancia
+  t('wav con LIST se lee bien', leerWav(ed.archivos['medalla_bronce_emblema_C.wav']).muestras === 800)
+  const ok2 = ejemploEditado(); cap(ok2).pico = Math.round((ok2.wavs['medalla_bronce_1.wav'].pico + 0.009) * 1000) / 1000
+  t('pico dentro de la tolerancia (0,009) vale', validarEstudio(ok2.estudio, { animaciones, manifiesto, archivos: new Map(Object.entries(ok2.archivos)) }).length === 0)
 
   // --- limites y argumentos
   let lanzo = false

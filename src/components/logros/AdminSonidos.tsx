@@ -24,6 +24,8 @@ import {
 } from '../../lib/sonidos/motor'
 import { ANIMACIONES, animacionDe, archivosDeLaAnimacion, AVISO_DE_LOS_SONIDOS_PROPIOS, duracionDe, golpeDe, lineaElegida, sintesDeLaAnimacion, type Animacion } from '../../lib/sonidos/estudio'
 import { partituraDe, type Nota } from '../../lib/sonidos/partituras'
+import { aplicarRetoques, codificarWav, descripcionDe, golpeTras, limitar, picoDe, SIN_RETOQUES, sinCambios, type Retoques } from '../../lib/sonidos/editar'
+import { EditorDeSonido } from './sonidos/EditorDeSonido'
 import {
   AVISO_SIN_ALMACEN,
   borrarGuardado,
@@ -34,6 +36,7 @@ import {
   HUELLA_VACIA,
   huellaDe,
   leerEstudioJson,
+  type FinalDeSonido,
   leerGuardados,
   type CapaGuardada,
   type EstadoDeAnimacion,
@@ -77,7 +80,7 @@ const hhmm = (iso: string) => {
 }
 
 /** Una capa: un archivo de Eric o un sonido de Code de otra animación. Lleva lo de un sonido propio del motor y lo que hace falta para guardarla. */
-type Capa = SonidoPropio & { origen: 'archivo' | 'code'; bytes?: ArrayBuffer; tipoMime?: string; sonido?: string; letra?: Letra }
+type Capa = SonidoPropio & { origen: 'archivo' | 'code'; bytes?: ArrayBuffer; tipoMime?: string; sonido?: string; letra?: Letra; /** (V36B) El sonido SIN retocar (el `buffer` es el ya retocado) y los retoques. */ original?: AudioBuffer; retoques?: Retoques }
 /** Todo lo que se toca en UNA animación. */
 interface EstadoRT {
   silenciados: string[]
@@ -85,13 +88,21 @@ interface EstadoRT {
   letras: Record<string, Letra>
   volumenes: Record<string, number>
   capas: Capa[]
+  /** (V36B) Retoques de los sonidos de Code (por `archivo_letra`). */
+  ediciones: Record<string, Retoques>
 }
-const VACIO_RT: EstadoRT = { silenciados: [], ajustes: {}, letras: {}, volumenes: {}, capas: [] }
+const VACIO_RT: EstadoRT = { silenciados: [], ajustes: {}, letras: {}, volumenes: {}, capas: [], ediciones: {} }
+const claveEd = (id: string, letra: string) => `${id}_${letra}`
+interface Procesado {
+  buffer: AudioBuffer
+  golpe: number
+  dura: number
+}
 const capaAGuardada = (c: Capa): CapaGuardada =>
   c.origen === 'code'
-    ? { id: c.id, origen: 'code', nombre: c.nombre, ms: c.ms, vol: c.vol, empieza: c.empieza, sonido: c.sonido, letra: c.letra }
-    : { id: c.id, origen: 'archivo', nombre: c.nombre, ms: c.ms, vol: c.vol, empieza: c.empieza, archivo: { nombre: c.nombre, tipo: c.tipoMime ?? '', bytes: c.bytes ?? new ArrayBuffer(0) } }
-const aGuardable = (e: EstadoRT): EstadoDeAnimacion => ({ silenciados: e.silenciados, ajustes: e.ajustes, letras: e.letras, volumenes: e.volumenes, capas: e.capas.map(capaAGuardada) })
+    ? { id: c.id, origen: 'code', nombre: c.nombre, ms: c.ms, vol: c.vol, empieza: c.empieza, sonido: c.sonido, letra: c.letra, retoques: c.retoques && !sinCambios(c.retoques) ? c.retoques : undefined }
+    : { id: c.id, origen: 'archivo', nombre: c.nombre, ms: c.ms, vol: c.vol, empieza: c.empieza, archivo: { nombre: c.nombre, tipo: c.tipoMime ?? '', bytes: c.bytes ?? new ArrayBuffer(0) }, retoques: c.retoques && !sinCambios(c.retoques) ? c.retoques : undefined }
+const aGuardable = (e: EstadoRT): EstadoDeAnimacion => ({ silenciados: e.silenciados, ajustes: e.ajustes, letras: e.letras, volumenes: e.volumenes, capas: e.capas.map(capaAGuardada), ediciones: e.ediciones })
 const huellaRT = (e: EstadoRT) => huellaDe(aGuardable(e))
 
 /** Un sonido de Code de una animación: su clave de silencio y el sitio donde guarda su volumen. */
@@ -309,6 +320,21 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
   const [selector, setSelector] = useState(false)
   const [buscar, setBuscar] = useState('')
   const [errorArchivo, setErrorArchivo] = useState<string | null>(null)
+  // (V36B) Editar: qué se está editando, los sonidos de Code ya retocados, los originales y si se repite sola la animación al cambiar.
+  const [editando, setEditando] = useState<string | null>(null)
+  const [procesados, setProcesados] = useState<Record<string, Procesado>>({})
+  const [originalesCode, setOriginalesCode] = useState<Record<string, AudioBuffer>>({})
+  const [repetirAlCambiar, setRepetirAlCambiar] = useState(() => {
+    try {
+      return window.localStorage.getItem('jutrip.estudio.repetir_al_cambiar') === '1'
+    } catch {
+      return false
+    }
+  })
+  const procesadosRef = useRef(procesados)
+  procesadosRef.current = procesados
+  const historial = useRef<Record<string, Retoques[]>>({})
+  const secuencia = useRef(0)
   const [visorListo, setVisorListo] = useState(false)
   const [haSonado, setHaSonado] = useState(false)
   const [ancho, setAncho] = useState(() => (typeof window === 'undefined' ? 1200 : window.innerWidth))
@@ -385,7 +411,12 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     if (!v || !audio()) return
     setHaSonado(true)
     const x = { ...(vivo.current.estados[id] ?? VACIO_RT), ...sobre }
-    await v.ver({ animacion: id, propios: x.capas, silenciados: x.silenciados, ajustes: x.ajustes, letras: x.letras, volumenes: x.volumenes })
+    const editados: Record<string, Procesado> = {}
+    for (const k of Object.keys(x.ediciones ?? {})) {
+      const p = procesadosRef.current[`${id}|${k}`]
+      if (p) editados[k] = p
+    }
+    await v.ver({ animacion: id, propios: x.capas, silenciados: x.silenciados, ajustes: x.ajustes, letras: x.letras, volumenes: x.volumenes, editados })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const abrirY = (id: string) => {
@@ -403,17 +434,37 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
       if (!c) break
       try {
         if (k.origen === 'archivo' && k.archivo) {
-          const buffer = await c.decodeAudioData(k.archivo.bytes.slice(0))
-          capas.push({ id: k.id, origen: 'archivo', nombre: k.nombre, buffer, ms: k.ms, vol: k.vol, empieza: k.empieza, bytes: k.archivo.bytes, tipoMime: k.archivo.tipo })
+          const original = await c.decodeAudioData(k.archivo.bytes.slice(0))
+          const buffer = k.retoques ? await aplicarRetoques(original, k.retoques) : original
+          capas.push({ id: k.id, origen: 'archivo', nombre: k.nombre, buffer, original, retoques: k.retoques, ms: k.ms, vol: k.vol, empieza: k.empieza, bytes: k.archivo.bytes, tipoMime: k.archivo.tipo })
         } else if (k.origen === 'code' && k.sonido && k.letra) {
-          const buffer = await cargarPremio(c, k.sonido, k.letra)
-          if (buffer) capas.push({ id: k.id, origen: 'code', nombre: k.nombre, buffer, ms: k.ms, vol: k.vol, empieza: k.empieza, sonido: k.sonido, letra: k.letra })
+          const original = await cargarPremio(c, k.sonido, k.letra)
+          if (original) capas.push({ id: k.id, origen: 'code', nombre: k.nombre, buffer: k.retoques ? await aplicarRetoques(original, k.retoques) : original, original, retoques: k.retoques, ms: k.ms, vol: k.vol, empieza: k.empieza, sonido: k.sonido, letra: k.letra })
         }
       } catch {
         /* una capa que no se puede abrir se salta */
       }
     }
-    return { silenciados: g.silenciados, ajustes: g.ajustes, letras: g.letras, volumenes: g.volumenes, capas }
+    return { silenciados: g.silenciados, ajustes: g.ajustes, letras: g.letras, volumenes: g.volumenes, capas, ediciones: g.ediciones ?? {} }
+  }, [])
+  /** (V36B) Rehace los sonidos de Code retocados de una animación (los retoques están guardados; el sonido ya hecho se calcula al abrir). */
+  const rehacer = useCallback(async (animId: string, ediciones: Record<string, Retoques>) => {
+    const c = audio()
+    if (!c) return
+    const m = await manifiesto()
+    const nuevos: Record<string, Procesado> = {}
+    for (const [k, r] of Object.entries(ediciones)) {
+      if (sinCambios(r)) continue
+      const corte = k.lastIndexOf('_')
+      const id = k.slice(0, corte)
+      const letra = k.slice(corte + 1) as Letra
+      const original = await cargarPremio(c, id, letra)
+      if (!original) continue
+      const buffer = await aplicarRetoques(original, r)
+      nuevos[`${animId}|${k}`] = { buffer, golpe: golpeTras(m?.[id]?.[letra]?.golpe ?? 0, r), dura: buffer.duration }
+    }
+    procesadosRef.current = { ...procesadosRef.current, ...nuevos }
+    setProcesados(procesadosRef.current)
   }, [])
   useEffect(() => {
     if (!admin) return
@@ -430,6 +481,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
           if (!animacionDe(g.animacion)) continue
           const x = await hidratar(g)
           nuevos[g.animacion] = x
+          await rehacer(g.animacion, x.ediciones)
           marcas[g.animacion] = { huella: huellaRT(x), en: g.guardado_en }
         }
         if (!vigente) return
@@ -511,9 +563,10 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
       letra: c.tipo === 'archivo' ? (x.letras[c.id] ?? versionDe(c.id)) : undefined,
       volumen: x.volumenes[c.claveVolumen] ?? volumenDe(c.claveVolumen),
       movido: x.ajustes[c.clave],
+      retocado: c.tipo === 'archivo' && x.ediciones?.[claveEd(c.id, x.letras[c.id] ?? versionDe(c.id))] ? descripcionDe(x.ediciones[claveEd(c.id, x.letras[c.id] ?? versionDe(c.id))]) : undefined,
     }))
-    const propios = x.capas.filter((c) => c.origen === 'archivo').map((c) => ({ nombre: c.nombre, empieza: c.empieza, ms: c.ms, volumen: c.vol }))
-    const anadidos = x.capas.filter((c) => c.origen === 'code').map((c) => ({ nombre: c.nombre, empieza: c.empieza, ms: c.ms, volumen: c.vol }))
+    const propios = x.capas.filter((c) => c.origen === 'archivo').map((c) => ({ nombre: c.nombre, empieza: c.empieza, ms: c.ms, volumen: c.vol, retocado: c.retoques ? descripcionDe(c.retoques) : undefined }))
+    const anadidos = x.capas.filter((c) => c.origen === 'code').map((c) => ({ nombre: c.nombre, empieza: c.empieza, ms: c.ms, volumen: c.vol, retocado: c.retoques ? descripcionDe(c.retoques) : undefined }))
     return lineaElegida(a, { codigo, propios, anadidos })
   }
 
@@ -542,9 +595,37 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
             })),
             capas: g.capas,
             lineaElegida: lineaDe(a, g),
+            animacionDatos: a,
+            guardado: g,
           }
         })
-      const zip = construirZip(datos, volumenGeneral())
+      const ctx = audio()
+      const hacerFinal = async (original: AudioBuffer, r: Retoques): Promise<FinalDeSonido> => {
+        const limpios = limitar(r, original.duration)
+        const b = await aplicarRetoques(original, limpios)
+        return { wav: codificarWav(b), muestras: b.length, tasa: b.sampleRate, pico: picoDe(b), retoques: limpios }
+      }
+      const conFinales = []
+      for (const d of datos) {
+        const g = d.guardado
+        const finales: { capas: Record<string, FinalDeSonido>; codigo: Record<string, FinalDeSonido> } = { capas: {}, codigo: {} }
+        if (ctx) {
+          for (const k of g.capas) {
+            if (!k.retoques || sinCambios(k.retoques)) continue
+            const original = k.origen === 'archivo' && k.archivo ? await ctx.decodeAudioData(k.archivo.bytes.slice(0)) : k.sonido && k.letra ? await cargarPremio(ctx, k.sonido, k.letra) : null
+            if (original) finales.capas[k.id] = await hacerFinal(original, k.retoques)
+          }
+          for (const c of deCodeDe(d.animacionDatos)) {
+            if (c.tipo !== 'archivo') continue
+            const r = g.ediciones?.[claveEd(c.id, g.letras[c.id] ?? versionDe(c.id))]
+            if (!r || sinCambios(r)) continue
+            const original = await cargarPremio(ctx, c.id, g.letras[c.id] ?? versionDe(c.id))
+            if (original) finales.codigo[c.clave] = await hacerFinal(original, r)
+          }
+        }
+        conFinales.push({ ...d, finales })
+      }
+      const zip = construirZip(conFinales, volumenGeneral())
       if (import.meta.env.DEV) (window as unknown as { __estudioZip?: Uint8Array }).__estudioZip = zip
       const url = URL.createObjectURL(new Blob([zip as BlobPart], { type: 'application/zip' }))
       const enlace = document.createElement('a')
@@ -579,6 +660,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
           setAlmacen(false)
         }
         const x = await hidratar(g)
+        await rehacer(id, x.ediciones)
         // Los nombres de las capas de Code, con el de su animación.
         x.capas = x.capas.map((c) => (c.origen === 'code' && c.sonido ? { ...c, nombre: `${nombreDe(c.sonido)} · ${c.letra}` } : c))
         vivo.current = { estados: { ...vivo.current.estados, [id]: x } }
@@ -650,7 +732,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
       // Se lee y se descodifica AQUÍ, en el navegador: el archivo no se envía a ningún sitio.
       const bytes = await f.arrayBuffer()
       const buffer = await c.decodeAudioData(bytes.slice(0))
-      const nueva: Capa = { id: `m${++contador.current}`, origen: 'archivo', nombre: f.name, buffer, bytes, tipoMime: f.type, ms: 0, vol: 0.7, empieza: 'principio' }
+      const nueva: Capa = { id: `m${++contador.current}`, origen: 'archivo', nombre: f.name, buffer, original: buffer, bytes, tipoMime: f.type, ms: 0, vol: 0.7, empieza: 'principio' }
       const nuevas = [...(vivo.current.estados[anim.id]?.capas ?? []), nueva]
       actualizar(anim.id, (x) => ({ ...x, capas: nuevas }))
       void ver(anim.id, { capas: nuevas })
@@ -664,7 +746,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     if (!ctx) return setErrorArchivo('Este navegador no deja reproducir audio.')
     const buffer = await cargarPremio(ctx, c.archivo, c.letra)
     if (!buffer) return setErrorArchivo('No he podido abrir ese sonido de Code.')
-    const nueva: Capa = { id: `c${++contador.current}`, origen: 'code', nombre: c.rotulo, buffer, ms: 0, vol: 1, empieza: 'principio', sonido: c.archivo, letra: c.letra }
+    const nueva: Capa = { id: `c${++contador.current}`, origen: 'code', nombre: c.rotulo, buffer, original: buffer, ms: 0, vol: 1, empieza: 'principio', sonido: c.archivo, letra: c.letra }
     const nuevas = [...(vivo.current.estados[anim.id]?.capas ?? []), nueva]
     actualizar(anim.id, (x) => ({ ...x, capas: nuevas }))
     setSelector(false)
@@ -686,6 +768,75 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
   const candidatos = useMemo(() => candidatosDe(mf), [mf])
   const visibles = candidatos.filter((c) => c.rotulo.toLowerCase().includes(buscar.trim().toLowerCase()))
 
+  /* ───────── (V36B) Editar un sonido ───────── */
+  const apuntarHistorial = (clave: string, r: Retoques) => {
+    ;(historial.current[clave] ??= []).push(r)
+    if (historial.current[clave].length > 30) historial.current[clave].shift()
+  }
+  const marcarRepetir = (v: boolean) => {
+    setRepetirAlCambiar(v)
+    try {
+      window.localStorage.setItem('jutrip.estudio.repetir_al_cambiar', v ? '1' : '0')
+    } catch {
+      /* sin almacenamiento */
+    }
+  }
+  /** Cambia los retoques de una capa (de Eric o añadida): el sonido nuevo se calcula encima del original, que no se toca. */
+  const retocarCapa = async (id: string, nuevos: Retoques, conHistorial = true) => {
+    const capa = vivo.current.estados[anim.id]?.capas.find((c) => c.id === id)
+    if (!capa?.original) return
+    const r = limitar(nuevos, capa.original.duration)
+    if (conHistorial) apuntarHistorial(`capa:${id}`, capa.retoques ?? SIN_RETOQUES)
+    ponerCapa(id, { retoques: sinCambios(r) ? undefined : r })
+    const mia = ++secuencia.current
+    const buffer = await aplicarRetoques(capa.original, r)
+    if (mia !== secuencia.current) return
+    actualizar(anim.id, (x) => ({ ...x, capas: x.capas.map((c) => (c.id === id ? { ...c, buffer } : c)) }))
+    repintar((n) => n + 1)
+    if (repetirAlCambiar) window.setTimeout(() => void ver(anim.id), 0)
+  }
+  /** Lo mismo para un sonido de Code de la animación (por su archivo y su letra). */
+  const retocarCode = async (id: string, letra: Letra, nuevos: Retoques, conHistorial = true) => {
+    const key = claveEd(id, letra)
+    const ctx = audio()
+    const original = originalesCode[key] ?? (ctx ? await cargarPremio(ctx, id, letra) : null)
+    if (!original) return
+    const r = limitar(nuevos, original.duration)
+    if (conHistorial) apuntarHistorial(`code:${key}`, vivo.current.estados[anim.id]?.ediciones?.[key] ?? SIN_RETOQUES)
+    actualizar(anim.id, (x) => {
+      const ediciones = { ...x.ediciones }
+      if (sinCambios(r)) delete ediciones[key]
+      else ediciones[key] = r
+      return { ...x, ediciones }
+    })
+    const mia = ++secuencia.current
+    const buffer = await aplicarRetoques(original, r)
+    if (mia !== secuencia.current) return
+    const guardado = `${anim.id}|${key}`
+    const nuevosProcesados = { ...procesadosRef.current }
+    if (sinCambios(r)) delete nuevosProcesados[guardado]
+    else nuevosProcesados[guardado] = { buffer, golpe: golpeTras(mf?.[id]?.[letra]?.golpe ?? 0, r), dura: buffer.duration }
+    procesadosRef.current = nuevosProcesados
+    setProcesados(nuevosProcesados)
+    repintar((n) => n + 1)
+    if (repetirAlCambiar) window.setTimeout(() => void ver(anim.id), 0)
+  }
+  const abrirEditorDeCode = async (id: string, letra: Letra) => {
+    const key = claveEd(id, letra)
+    if (editando === `code:${key}`) return setEditando(null)
+    const ctx = audio()
+    if (ctx && !originalesCode[key]) {
+      const o = await cargarPremio(ctx, id, letra)
+      if (o) setOriginalesCode((m) => ({ ...m, [key]: o }))
+    }
+    setEditando(`code:${key}`)
+  }
+  const deshacerDe = (clave: string, aplicar: (r: Retoques) => void) => {
+    const antes = historial.current[clave]?.pop()
+    repintar((n) => n + 1)
+    if (antes) aplicar(antes)
+  }
+
   const limite = Math.max(500, Math.ceil((dura * 1000) / 10) * 10)
   const espera = esperaDeLaAnimacion(susCapas, golpe)
 
@@ -696,7 +847,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     const porClave = new Map<string, FilaDeTiempo>()
     for (const s of anim.suena) {
       const notas: Nota[] = partituraDe(s)?.notas ?? []
-      const golpeDe1 = (n: Nota): number => (n.tipo === 'archivo' ? (mf?.[n.archivo]?.[versionDeEn(e, n.archivo)]?.golpe ?? 0.3) : 0)
+      const golpeDe1 = (n: Nota): number => (n.tipo === 'archivo' ? (procesados[`${anim.id}|${claveEd(n.archivo, versionDeEn(e, n.archivo))}`]?.golpe ?? mf?.[n.archivo]?.[versionDeEn(e, n.archivo)]?.golpe ?? 0.3) : 0)
       const primera = new Map<string, number>()
       for (const n of notas) {
         const k = claveDeSilencio(n.tipo, n.tipo === 'sint' ? n.sonido : n.archivo)
@@ -715,8 +866,9 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
           largo = n.dura ?? 0.25
         } else {
           const datos = mf?.[n.archivo]?.[versionDeEn(e, n.archivo)]
-          de = n.golpe - (datos?.golpe ?? 0.3) + delta
-          largo = datos?.dura ?? 0.6
+          const retocado = procesados[`${anim.id}|${claveEd(n.archivo, versionDeEn(e, n.archivo))}`]
+          de = n.golpe - (retocado?.golpe ?? datos?.golpe ?? 0.3) + delta
+          largo = retocado?.dura ?? datos?.dura ?? 0.6
         }
         let fila = porClave.get(clave)
         if (!fila) {
@@ -733,7 +885,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     }
     return salida
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [anim.id, susCapas, susSilencios, e.ajustes, e.letras, mf, cambios, golpe])
+  }, [anim.id, susCapas, susSilencios, e.ajustes, e.letras, mf, cambios, golpe, procesados])
 
   /** Arrastrar un trozo: mueve el sonido tantos ms (los de Code, su ajuste; las capas, su ms). */
   const arrastrar = (clave: string, deltaMs: number) => {
@@ -892,6 +1044,28 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
                       volver={movido ? () => volverASuSitio(c.clave) : undefined}
                     />
                   )}
+                  {c.tipo === 'archivo' && !apagado && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                        <button type="button" data-editar-code={c.id} aria-pressed={editando === `code:${claveEd(c.id, laLetra)}`} onClick={() => void abrirEditorDeCode(c.id, laLetra)} disabled={!visorListo} style={{ ...botonPeq, background: editando === `code:${claveEd(c.id, laLetra)}` ? '#2A4A94' : '#FFFFFF', color: editando === `code:${claveEd(c.id, laLetra)}` ? '#FFFFFF' : '#2A4A94', border: '1.5px solid #2A4A94' }}>
+                          Editar
+                        </button>
+                        {e.ediciones[claveEd(c.id, laLetra)] && <span data-retocado style={{ font: "600 11.5px 'Geist'", color: '#2A4A94' }}>Retocado: {descripcionDe(e.ediciones[claveEd(c.id, laLetra)])}</span>}
+                      </div>
+                      {editando === `code:${claveEd(c.id, laLetra)}` && originalesCode[claveEd(c.id, laLetra)] && (
+                        <EditorDeSonido
+                          original={originalesCode[claveEd(c.id, laLetra)]}
+                          retoques={e.ediciones[claveEd(c.id, laLetra)] ?? SIN_RETOQUES}
+                          alCambiar={(x) => void retocarCode(c.id, laLetra, x)}
+                          puedeDeshacer={(historial.current[`code:${claveEd(c.id, laLetra)}`]?.length ?? 0) > 0}
+                          alDeshacer={() => deshacerDe(`code:${claveEd(c.id, laLetra)}`, (x) => void retocarCode(c.id, laLetra, x, false))}
+                          alVolverAlOriginal={() => void retocarCode(c.id, laLetra, SIN_RETOQUES)}
+                          repetirAlCambiar={repetirAlCambiar}
+                          alMarcarRepetir={marcarRepetir}
+                        />
+                      )}
+                    </div>
+                  )}
                 </div>
               )
             })}
@@ -907,8 +1081,15 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
               <div key={c.id} data-propio-activo data-capa={c.id} style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 14px', borderRadius: 14, border: `1.5px solid ${ORO}`, background: '#FFFBF0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                   <span data-nombre-propio style={{ font: "600 13px 'Geist'", overflowWrap: 'anywhere' }}>Tu sonido {k + 1}: {c.nombre}</span>
-                  <button type="button" data-quitar-propio onClick={() => quitarCapa(c.id)} style={botonPeq}>Quitar</button>
+                  <span style={{ display: 'flex', gap: 8 }}>
+                    <button type="button" data-editar-capa={c.id} aria-pressed={editando === `capa:${c.id}`} onClick={() => setEditando(editando === `capa:${c.id}` ? null : `capa:${c.id}`)} style={{ ...botonPeq, background: editando === `capa:${c.id}` ? '#2A4A94' : '#FFFFFF', color: editando === `capa:${c.id}` ? '#FFFFFF' : '#2A4A94', border: '1.5px solid #2A4A94' }}>Editar</button>
+                    <button type="button" data-quitar-propio onClick={() => quitarCapa(c.id)} style={botonPeq}>Quitar</button>
+                  </span>
                 </div>
+                {c.retoques && !sinCambios(c.retoques) && <span data-retocado style={{ font: "600 11.5px 'Geist'", color: '#2A4A94' }}>Retocado: {descripcionDe(c.retoques)}</span>}
+                {editando === `capa:${c.id}` && c.original && (
+                  <EditorDeSonido original={c.original} retoques={c.retoques ?? SIN_RETOQUES} alCambiar={(x) => void retocarCapa(c.id, x)} puedeDeshacer={(historial.current[`capa:${c.id}`]?.length ?? 0) > 0} alDeshacer={() => deshacerDe(`capa:${c.id}`, (x) => void retocarCapa(c.id, x, false))} alVolverAlOriginal={() => void retocarCapa(c.id, SIN_RETOQUES)} repetirAlCambiar={repetirAlCambiar} alMarcarRepetir={marcarRepetir} />
+                )}
                 <ControlDeMomento
                   ms={c.ms}
                   empieza={c.empieza}
@@ -933,8 +1114,15 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
               <div key={c.id} data-capa-anadida data-capa={c.id} style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 14px', borderRadius: 14, border: '1.5px solid rgba(28,34,48,.25)', background: '#F7F1E4' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                   <span data-nombre-anadida style={{ font: "600 13px 'Geist'", overflowWrap: 'anywhere' }}>Añadido de Code: {c.nombre}</span>
-                  <button type="button" data-quitar-anadida onClick={() => quitarCapa(c.id)} style={botonPeq}>Quitar</button>
+                  <span style={{ display: 'flex', gap: 8 }}>
+                    <button type="button" data-editar-capa={c.id} aria-pressed={editando === `capa:${c.id}`} onClick={() => setEditando(editando === `capa:${c.id}` ? null : `capa:${c.id}`)} style={{ ...botonPeq, background: editando === `capa:${c.id}` ? '#2A4A94' : '#FFFFFF', color: editando === `capa:${c.id}` ? '#FFFFFF' : '#2A4A94', border: '1.5px solid #2A4A94' }}>Editar</button>
+                    <button type="button" data-quitar-anadida onClick={() => quitarCapa(c.id)} style={botonPeq}>Quitar</button>
+                  </span>
                 </div>
+                {c.retoques && !sinCambios(c.retoques) && <span data-retocado style={{ font: "600 11.5px 'Geist'", color: '#2A4A94' }}>Retocado: {descripcionDe(c.retoques)}</span>}
+                {editando === `capa:${c.id}` && c.original && (
+                  <EditorDeSonido original={c.original} retoques={c.retoques ?? SIN_RETOQUES} alCambiar={(x) => void retocarCapa(c.id, x)} puedeDeshacer={(historial.current[`capa:${c.id}`]?.length ?? 0) > 0} alDeshacer={() => deshacerDe(`capa:${c.id}`, (x) => void retocarCapa(c.id, x, false))} alVolverAlOriginal={() => void retocarCapa(c.id, SIN_RETOQUES)} repetirAlCambiar={repetirAlCambiar} alMarcarRepetir={marcarRepetir} />
+                )}
                 <ControlDeMomento
                   pre="anadida-"
                   ms={c.ms}

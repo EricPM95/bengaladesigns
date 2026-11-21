@@ -1,5 +1,6 @@
 import { LETRAS, type AjusteDeCode, type Empieza, type Letra } from './motor'
 import { crearZip, nombreSeguro, type EntradaDeZip } from './zip'
+import { limitar, type Retoques } from './editar'
 
 /**
  * (V35B2) LO QUE EL ESTUDIO DE SONIDOS GUARDA (solo la página del administrador): todo lo de UNA animación (qué sonidos de Code están silenciados, su letra, su volumen, sus movimientos, las capas añadidas y los archivos de Eric ENTEROS)
@@ -21,6 +22,8 @@ export interface CapaGuardada {
   /** Solo origen «code»: el sonido grabado y su letra. */
   sonido?: string
   letra?: Letra
+  /** (V36B) Los retoques de esta capa (el original se guarda aparte, intacto). */
+  retoques?: Retoques
 }
 export interface EstadoDeAnimacion {
   silenciados: string[]
@@ -28,12 +31,14 @@ export interface EstadoDeAnimacion {
   letras: Record<string, Letra>
   volumenes: Record<string, number>
   capas: CapaGuardada[]
+  /** (V36B) Retoques de los sonidos de Code de esta animación (por `archivo_letra`). */
+  ediciones?: Record<string, Retoques>
 }
 export interface Guardado extends EstadoDeAnimacion {
   animacion: string
   guardado_en: string
 }
-export const ESTADO_VACIO = (): EstadoDeAnimacion => ({ silenciados: [], ajustes: {}, letras: {}, volumenes: {}, capas: [] })
+export const ESTADO_VACIO = (): EstadoDeAnimacion => ({ silenciados: [], ajustes: {}, letras: {}, volumenes: {}, capas: [], ediciones: {} })
 
 const ordenado = <T,>(o: Record<string, T>): Record<string, T> => Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]))
 /** Una «huella» del estado (sin los bytes: nombre y tamaño del archivo): dos estados iguales dan la misma. Sirve para saber si hay cambios sin guardar. */
@@ -43,7 +48,8 @@ export function huellaDe(e: EstadoDeAnimacion): string {
     a: ordenado(e.ajustes),
     l: ordenado(e.letras),
     v: ordenado(e.volumenes),
-    c: e.capas.map((c) => [c.origen, c.nombre, c.ms, c.vol, c.empieza, c.sonido ?? '', c.letra ?? '', c.archivo ? `${c.archivo.nombre}:${c.archivo.bytes.byteLength}` : '']),
+    d: ordenado(e.ediciones ?? {}),
+    c: e.capas.map((c) => [c.origen, c.nombre, c.ms, c.vol, c.empieza, c.sonido ?? '', c.letra ?? '', c.archivo ? `${c.archivo.nombre}:${c.archivo.bytes.byteLength}` : '', c.retoques ?? null]),
   })
 }
 export const HUELLA_VACIA = huellaDe(ESTADO_VACIO())
@@ -113,7 +119,17 @@ export interface SonidoDeCodeDeLaAnimacion {
   ms: number
   empieza: 'sitio' | 'principio' | 'golpe'
 }
+/** (V36B) Un sonido retocado ya HECHO (el wav final) con sus datos para comprobarlo. */
+export interface FinalDeSonido {
+  wav: Uint8Array
+  muestras: number
+  tasa: number
+  pico: number
+  retoques: Retoques
+}
 export interface DatosParaElZip {
+  /** Los finales de las capas retocadas (por id de capa) y de los sonidos de Code retocados (por clave `archivo:id`). */
+  finales?: { capas: Record<string, FinalDeSonido>; codigo: Record<string, FinalDeSonido> }
   animacion: string
   nombre: string
   duracion: number
@@ -139,10 +155,24 @@ export function construirZip(animaciones: DatosParaElZip[], volumenGeneral: numb
   const json: { version: 1; generado: string; volumen_general: number; animaciones: Record<string, unknown> } = { version: 1, generado: ahora.toISOString(), volumen_general: redondea(volumenGeneral, 2), animaciones: {} }
   for (const a of [...animaciones].sort((x, y) => x.animacion.localeCompare(y.animacion))) {
     let n = 0
+    const datosFinal = (f: FinalDeSonido) => ({ retoques: f.retoques, muestras: f.muestras, tasa: f.tasa, pico: redondea(f.pico, 4) })
+    let anadidas = 0
     const capas = a.capas.map((c) => {
-      if (c.origen === 'code') return { origen: 'code', sonido: c.sonido, version: c.letra, volumen: redondea(c.vol, 2), ms: Math.round(c.ms), empieza: c.empieza }
+      const fin = a.finales?.capas[c.id]
+      if (c.origen === 'code') {
+        if (!fin) return { origen: 'code', sonido: c.sonido, version: c.letra, volumen: redondea(c.vol, 2), ms: Math.round(c.ms), empieza: c.empieza }
+        const wav = `${a.animacion}_anadido_${++anadidas}_${c.sonido}_${c.letra}.wav`
+        entradas.push({ nombre: wav, datos: fin.wav })
+        return { origen: 'code', sonido: c.sonido, version: c.letra, volumen: redondea(c.vol, 2), ms: Math.round(c.ms), empieza: c.empieza, archivo: wav, ...datosFinal(fin) }
+      }
       n++
-      const nombreEnElZip = `${a.animacion}_${n}.${extensionDe(c.archivo?.nombre ?? c.nombre, c.archivo?.tipo ?? '')}`
+      const ext = extensionDe(c.archivo?.nombre ?? c.nombre, c.archivo?.tipo ?? '')
+      const nombreEnElZip = fin ? `${a.animacion}_${n}.wav` : `${a.animacion}_${n}.${ext}`
+      if (fin) {
+        const original = `${a.animacion}_${n}_original.${ext}`
+        entradas.push({ nombre: nombreEnElZip, datos: fin.wav }, { nombre: original, datos: new Uint8Array(c.archivo?.bytes ?? new ArrayBuffer(0)) })
+        return { origen: 'archivo', archivo: nombreEnElZip, original, nombre: c.archivo?.nombre ?? c.nombre, volumen: redondea(c.vol, 2), ms: Math.round(c.ms), empieza: c.empieza, ...datosFinal(fin) }
+      }
       entradas.push({ nombre: nombreEnElZip, datos: new Uint8Array(c.archivo?.bytes ?? new ArrayBuffer(0)) })
       return { origen: 'archivo', archivo: nombreEnElZip, nombre: c.archivo?.nombre ?? c.nombre, volumen: redondea(c.vol, 2), ms: Math.round(c.ms), empieza: c.empieza }
     })
@@ -150,7 +180,14 @@ export function construirZip(animaciones: DatosParaElZip[], volumenGeneral: numb
       nombre: a.nombre,
       duracion: redondea(a.duracion),
       golpe: redondea(a.golpe),
-      sonidos_de_code: a.codigo.map((c) => ({ clave: c.clave, tipo: c.tipo, sonido: c.sonido, version: c.version, silenciado: c.silenciado, volumen: redondea(c.volumen, 2), ms: Math.round(c.ms), empieza: c.empieza })),
+      sonidos_de_code: a.codigo.map((c) => {
+        const fin = a.finales?.codigo[c.clave]
+        const base = { clave: c.clave, tipo: c.tipo, sonido: c.sonido, version: c.version, silenciado: c.silenciado, volumen: redondea(c.volumen, 2), ms: Math.round(c.ms), empieza: c.empieza }
+        if (!fin) return base
+        const wav = `${a.animacion}_${c.sonido}_${c.version}.wav`
+        entradas.push({ nombre: wav, datos: fin.wav })
+        return { ...base, archivo: wav, ...datosFinal(fin) }
+      }),
       capas,
     }
   }
@@ -162,8 +199,8 @@ export function construirZip(animaciones: DatosParaElZip[], volumenGeneral: numb
 
 /** Lo que dice un estudio.json de una animación, ya validado a lo básico (lo estricto lo hace aplicarEstudio.mjs). */
 export interface AnimacionDelJson {
-  sonidos_de_code: SonidoDeCodeDeLaAnimacion[]
-  capas: ({ origen: 'code'; sonido: string; version: Letra; volumen: number; ms: number; empieza: EmpiezaCapa } | { origen: 'archivo'; archivo: string; nombre: string; volumen: number; ms: number; empieza: EmpiezaCapa })[]
+  sonidos_de_code: (SonidoDeCodeDeLaAnimacion & { retoques?: Retoques })[]
+  capas: ({ origen: 'code'; sonido: string; version: Letra; volumen: number; ms: number; empieza: EmpiezaCapa; retoques?: Retoques } | { origen: 'archivo'; archivo: string; original?: string; nombre: string; volumen: number; ms: number; empieza: EmpiezaCapa; retoques?: Retoques })[]
 }
 const num = (x: unknown, por = 0): number => (typeof x === 'number' && Number.isFinite(x) ? x : por)
 const EMPIEZAS: string[] = ['principio', 'golpe']
@@ -184,19 +221,22 @@ export function estadoDesdeJson(a: AnimacionDelJson, archivos: Map<string, Uint8
     if (c.silenciado) e.silenciados.push(c.clave)
     if (c.version && (LETRAS as string[]).includes(c.version)) e.letras[c.sonido] = c.version
     e.volumenes[c.tipo === 'sint' ? `s:${c.sonido}` : c.sonido] = Math.min(2, Math.max(0, num(c.volumen, 1)))
+    if (c.retoques && c.version) (e.ediciones ??= {})[`${c.sonido}_${c.version}`] = limitar(c.retoques, 1e6)
     if (num(c.ms) !== 0 || c.empieza !== 'sitio') e.ajustes[c.clave] = { ms: Math.round(num(c.ms)), empieza: c.empieza === 'principio' || c.empieza === 'golpe' ? c.empieza : 'sitio' }
   }
   let k = 0
   for (const c of a.capas) {
     const empieza = (EMPIEZAS.includes(c.empieza) ? c.empieza : 'principio') as EmpiezaCapa
     if (c.origen === 'code') {
-      e.capas.push({ id: `z${++k}`, origen: 'code', nombre: `${c.sonido} · ${c.version}`, ms: Math.round(num(c.ms)), vol: Math.min(2, Math.max(0, num(c.volumen, 1))), empieza, sonido: c.sonido, letra: c.version })
+      e.capas.push({ id: `z${++k}`, origen: 'code', nombre: `${c.sonido} · ${c.version}`, ms: Math.round(num(c.ms)), vol: Math.min(2, Math.max(0, num(c.volumen, 1))), empieza, sonido: c.sonido, letra: c.version, retoques: c.retoques ? limitar(c.retoques, 1e6) : undefined })
     } else {
-      if (!nombreSeguro(c.archivo)) throw new Error(`Archivo con un nombre raro: ${c.archivo}`)
-      const datos = archivos.get(c.archivo)
-      if (!datos) throw new Error(`En el zip falta el archivo ${c.archivo}.`)
+      // Con retoques, el sonido de Eric de verdad es el ORIGINAL (los retoques se aplican encima al abrirlo); el .wav final solo sirve a la app.
+      const quien = c.retoques && c.original ? c.original : c.archivo
+      if (!nombreSeguro(quien)) throw new Error(`Archivo con un nombre raro: ${quien}`)
+      const datos = archivos.get(quien)
+      if (!datos) throw new Error(`En el zip falta el archivo ${quien}.`)
       const copia = new Uint8Array(datos).buffer
-      e.capas.push({ id: `z${++k}`, origen: 'archivo', nombre: c.nombre, ms: Math.round(num(c.ms)), vol: Math.min(2, Math.max(0, num(c.volumen, 0.7))), empieza, archivo: { nombre: c.nombre, tipo: mime(c.archivo), bytes: copia } })
+      e.capas.push({ id: `z${++k}`, origen: 'archivo', nombre: c.nombre, ms: Math.round(num(c.ms)), vol: Math.min(2, Math.max(0, num(c.volumen, 0.7))), empieza, archivo: { nombre: c.nombre, tipo: mime(quien), bytes: copia }, retoques: c.retoques ? limitar(c.retoques, 1e6) : undefined })
     }
   }
   return e
