@@ -53,6 +53,10 @@
    null
   ],
   [
+   "primer_dia",
+   null
+  ],
+  [
    "escena_roma",
    null
   ],
@@ -678,46 +682,46 @@
    "id": "sello",
    "agendados": [
     [
-     "sello",
+     "sello_pasaporte",
      "archivo",
      "vuelo",
-     1.04,
-     1.04
+     1.55,
+     1.55
     ],
     [
-     "sello",
+     "sello_pasaporte",
      "archivo",
      "clic",
-     1.1,
-     1.1
+     2.05,
+     2.05
     ],
     [
-     "sello",
+     "sello_pasaporte",
      "archivo",
      "brillo",
-     1.15,
-     1.15
+     2.1,
+     2.1
     ],
     [
-     "sello",
+     "sello_pasaporte",
      "archivo",
      "vuelo",
-     1.04,
-     1.04
+     1.55,
+     1.55
     ],
     [
-     "sello",
+     "sello_pasaporte",
      "archivo",
      "clic",
-     1.1,
-     1.1
+     2.05,
+     2.05
     ],
     [
-     "sello",
+     "sello_pasaporte",
      "archivo",
      "brillo",
-     1.15,
-     1.15
+     2.1,
+     2.1
     ]
    ],
    "contenido": 1,

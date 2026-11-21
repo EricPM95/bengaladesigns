@@ -16,7 +16,7 @@ const ORO_CLARO = 'rgba(243,213,154,.85)'
 type Abierta = { clave: string | null; pedestal?: boolean }
 
 /**
- * (V14) TODO DEL MISMO TAMAÑO que los «Sellos de ciudad»: lo que se VE de cada pieza (su cuerpo, no el aire de su dibujo) mide ~68 px en todas las baldas. Cada dibujo ocupa un poco distinto de su caja
+ * (V14) TODO DEL MISMO TAMAÑO que los «Medallas de ciudad»: lo que se VE de cada pieza (su cuerpo, no el aire de su dibujo) mide ~68 px en todas las baldas. Cada dibujo ocupa un poco distinto de su caja
  * (las chapas de viajero ~85 %, las insignias ~90 %, los emblemas ~72 %), así que el `tam` de cada balda compensa ese aire. Y los huecos vacíos miden lo mismo (68 px), no 62.
  */
 export const TAM_POR_BALDA: Record<Balda, number> = { viajero: 80, sellos: 66, colecciones: 74, emblemas: 90 }

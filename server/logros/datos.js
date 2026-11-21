@@ -127,10 +127,10 @@ export function validarDatos(datos, catalogos) {
     if (!d.pais_defecto) aviso(clave, 'Sin país por defecto: los sitios sin país no cuentan para ningún país.')
     for (const sello of d.sellos) {
       const col = d.colecciones.find((c) => c.id === sello.coleccion)
-      if (!col) error(`${clave}/${sello.id}`, `El sello apunta a una colección que no existe (${sello.coleccion}).`)
+      if (!col) error(`${clave}/${sello.id}`, `La medalla apunta a una colección que no existe (${sello.coleccion}).`)
       else if (sello.grados[sello.grados.length - 1].desde > col.sitios.length) error(`${clave}/${sello.id}`, 'El último grado pide más sitios de los que tiene la colección.')
     }
-    if (!d.sellos.some((s) => s.id === d.sello_principal)) error(clave, 'El sello principal no existe.')
+    if (!d.sellos.some((s) => s.id === d.sello_principal)) error(clave, 'La medalla principal no existe.')
     const secretos = d.emblemas.length
     if (secretos < 1) aviso(clave, 'Sin emblemas.')
     void nombres

@@ -3,7 +3,7 @@ import { guardarBalda, TITULO_DE_BALDA, useGanados, useHojasDeLogros, type Ganad
 import { DibujoDeItem } from './dibujo'
 
 /**
- * ELEGIR HUECO EN LA VITRINA (V3): «Llevar a mi vitrina» → «Sellos de ciudad · elige un hueco» → [Colocar aquí]. Si el hueco está lleno, avisa de qué pieza vuelve a Todos mis logros.
+ * ELEGIR HUECO EN LA VITRINA (V3): «Llevar a mi vitrina» → «Medallas de ciudad · elige un hueco» → [Colocar aquí]. Si el hueco está lleno, avisa de qué pieza vuelve a Todos mis logros.
  * Guarda la balda entera (lo que se ve es lo que queda): si la balda aún se rellenaba sola, queda fijada tal cual con el cambio.
  */
 const ORO = 'oklch(0.8 0.14 70)'

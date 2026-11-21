@@ -14,6 +14,7 @@ import { olvidarViajeAAbrir, viajeAAbrir } from '../../lib/invitaciones'
 import { esEcoRemoto } from '../../lib/viajeEnDirecto'
 import { cuentasActivas, esFalloDeServidor, hayRespaldoDeSesion } from '../../lib/cuentas'
 import { limpiarPropuestasHuerfanas } from '../../lib/propuestasHuerfanas'
+import { sinCopiaOriginal } from '../../lib/copiaOriginal'
 
 const SAVE_DEBOUNCE_MS = 1500
 
@@ -22,7 +23,7 @@ export function buildTripPayload(): TripPayload | null {
   const state = useRouteStore.getState()
   if (!state.route) return null
   return {
-    route: state.route,
+    route: sinCopiaOriginal(state.route), // (V37) la copia original no se sube ni va a la caché de HOY
     bookings: {
       accommodationSelections: state.accommodationSelections,
       transportBookings: state.transportBookings,

@@ -112,7 +112,7 @@ function pintarDibujo(ctx: CanvasRenderingContext2D, img: HTMLImageElement | nul
   texto(ctx, etiqueta, cx, cy + 12, "600 36px 'Geist Mono',monospace", '#1C2230', tam * 0.8)
 }
 
-const QUE_ES: Record<string, string> = { emblema: 'Emblema oculto', coleccion: 'Colección completada', sello: 'Sello', pais: 'País nuevo', destino_nuevo: 'Destino nuevo', continente: 'Nuevo continente', maravilla: 'Maravilla del mundo', patrimonio: 'Patrimonio de la Humanidad', viajero: 'Logro de viajero' }
+const QUE_ES: Record<string, string> = { emblema: 'Emblema oculto', coleccion: 'Colección completada', sello: 'Medalla', pais: 'País nuevo', destino_nuevo: 'Destino nuevo', continente: 'Nuevo continente', maravilla: 'Maravilla del mundo', patrimonio: 'Patrimonio de la Humanidad', viajero: 'Logro de viajero' }
 
 /** C1 · Compartir un logro. */
 export async function imagenDeLogro(m: Momento, fecha = new Date(), pie: DatosDelPie | null = null): Promise<Blob | null> {

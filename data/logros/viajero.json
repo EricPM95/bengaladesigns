@@ -28,7 +28,7 @@
   "logros": [
     { "id": "paises", "version": 1, "como": "Visita países nuevos con la app.", "grupo": "mundo", "tipo": "contar", "que": "paises", "linea": "Países distintos que has visitado con la app.",
       "escalones": [
-        { "n": 1, "nombre": "Primer sello" }, { "n": 3, "nombre": "Trotamundos" }, { "n": 5, "nombre": "Alma viajera" }, { "n": 8, "nombre": "Pasaporte en marcha" },
+        { "n": 1, "nombre": "Primera medalla" }, { "n": 3, "nombre": "Trotamundos" }, { "n": 5, "nombre": "Alma viajera" }, { "n": 8, "nombre": "Pasaporte en marcha" },
         { "n": 10, "nombre": "Ciudadano del mundo" }, { "n": 15, "nombre": "Horizonte sin fin" }, { "n": 20, "nombre": "Veinte banderas" }, { "n": 25, "nombre": "Medio mundo en la maleta" }, { "n": 30, "nombre": "El mundo es tu casa" }
       ] },
     { "id": "destinos", "version": 1, "como": "Haz viajes a ciudades nuevas.", "grupo": "mundo", "tipo": "contar", "que": "destinos", "linea": "Destinos distintos que has visitado con la app.",
@@ -88,9 +88,9 @@
       "escalones": [ { "n": 5, "nombre": "Coleccionista" }, { "n": 10, "nombre": "Álbum lleno" }, { "n": 15, "nombre": "Gran coleccionista" } ] },
     { "id": "ciudad_completa", "version": 1, "como": "Completa todas las colecciones de una ciudad.", "grupo": "coleccionista", "tipo": "ciudad_completa", "nombre": "{ciudad} al completo", "linea": "Todas las colecciones de {ciudad}." },
     { "id": "todos_secretos", "version": 2, "activo": false, "como": "Encuentra todos los emblemas de una ciudad.", "grupo": "coleccionista", "tipo": "todos_secretos", "nombre": "Todos los secretos de {ciudad}", "linea": "Sus {total} emblemas ocultos." },
-    { "id": "diamante_primera", "version": 1, "como": "Consigue un sello de diamante en tu primer viaje a una ciudad.", "grupo": "coleccionista", "tipo": "diamante_primera", "nombre": "Diamante a la primera", "linea": "El sello de diamante de una ciudad en tu primer viaje." },
-    { "id": "tres_oro", "version": 1, "como": "Consigue el sello de oro en 3 ciudades.", "grupo": "coleccionista", "tipo": "ciudades_sello", "grado": "oro", "n": 3, "nombre": "Tres ciudades de oro", "linea": "Tres ciudades con su sello en oro o más." },
-    { "id": "tres_diamante", "version": 1, "como": "Consigue el sello de diamante en 3 ciudades.", "grupo": "coleccionista", "tipo": "ciudades_sello", "grado": "diamante", "n": 3, "nombre": "Tres ciudades de diamante", "linea": "Tres ciudades con su sello en diamante." },
+    { "id": "diamante_primera", "version": 1, "como": "Consigue una medalla de diamante en tu primer viaje a una ciudad.", "grupo": "coleccionista", "tipo": "diamante_primera", "nombre": "Diamante a la primera", "linea": "La medalla de diamante de una ciudad en tu primer viaje." },
+    { "id": "tres_oro", "version": 1, "como": "Consigue la medalla de oro en 3 ciudades.", "grupo": "coleccionista", "tipo": "ciudades_sello", "grado": "oro", "n": 3, "nombre": "Tres ciudades de oro", "linea": "Tres ciudades con su medalla en oro o más." },
+    { "id": "tres_diamante", "version": 1, "como": "Consigue la medalla de diamante en 3 ciudades.", "grupo": "coleccionista", "tipo": "ciudades_sello", "grado": "diamante", "n": 3, "nombre": "Tres ciudades de diamante", "linea": "Tres ciudades con su medalla en diamante." },
 
     { "id": "fundador", "version": 1, "como": "Solo en ocasiones especiales: no se pueden buscar.", "grupo": "exclusivos", "tipo": "fundador", "nombre": "Viajero fundador", "linea": "Un viaje con la app durante su primer año." },
     { "id": "pionero", "version": 1, "como": "Solo en ocasiones especiales: no se pueden buscar.", "grupo": "exclusivos", "tipo": "pionero", "nombre": "Pionero", "linea": "Entre los primeros {limite} viajeros de {ciudad}." },

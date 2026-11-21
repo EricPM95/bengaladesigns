@@ -100,9 +100,12 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
   const [borrando, setBorrando] = useState(borrandoInicial)
   const [errorBorrar, setErrorBorrar] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
+  const [palabra, setPalabra] = useState('')
   const [mensaje, setMensaje] = useState<string | null>(null)
 
   const email = emailInicial ?? (cuenta.tipo === 'cuenta' ? cuenta.email : null)
+  // (V37) Borrar la cuenta: solo con sesión de verdad (hay correo) y nunca un administrador.
+  const noPuedeBorrar = esAdmin || !email
   const proveedor = proveedorInicial ?? (cuenta.tipo === 'cuenta' ? (cuenta.proveedor ?? null) : null)
 
   useEffect(() => {
@@ -148,6 +151,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
     setMensaje(r === 'copiado' ? 'Enlace copiado' : r === 'error' ? 'No se ha podido compartir.' : null)
   }
   const borrar = async () => {
+    if (palabra.trim() !== 'BORRAR') return
     setOcupado(true)
     setErrorBorrar(null)
     const e = await borrarMiCuenta()
@@ -254,17 +258,44 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
               <Icono nombre="papelera" size={24} grosor={1.8} />
             </span>
             <span className="font-display text-[26px] leading-[1.05]">¿Borrar tu cuenta?</span>
-            <span className="text-[14px] leading-[1.5] text-text/75">Se borrarán tu cuenta, tus fotos y tus logros. No se puede deshacer.</span>
+            {noPuedeBorrar ? (
+              // (V37) Un administrador no se borra solo (lo hace otro administrador) y una sesión sin cuenta no tiene nada que borrar.
+              <span data-borrar-no-puede className="text-[14px] leading-[1.5] text-text/75">
+                {esAdmin ? 'Pídeselo a otro administrador.' : 'Entra con tu cuenta para poder borrarla.'}
+              </span>
+            ) : (
+              <>
+                <span data-borrar-explicacion className="text-[14px] leading-[1.5] text-text/75">
+                  Se borran tus viajes, fotos, logros y datos. Los pases que pagaste se pierden; los que usa otra persona pasan a ella. Por ley guardamos el registro de tus pagos (fecha e importe). No se puede deshacer.
+                </span>
+                <label className="flex w-full flex-col gap-1.5 text-left text-[13px] text-text/70">
+                  Para confirmar, escribe BORRAR
+                  <input
+                    type="text"
+                    value={palabra}
+                    onChange={(e) => setPalabra(e.target.value)}
+                    disabled={ocupado}
+                    autoCapitalize="characters"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    data-borrar-palabra
+                    className="h-11 w-full rounded-xl border border-text/[.18] bg-white px-3 text-[16px] tracking-wide text-text"
+                  />
+                </label>
+              </>
+            )}
             {errorBorrar && (
               <p role="alert" className="m-0 text-[13px]" style={{ color: ROJO }}>
                 {errorBorrar}
               </p>
             )}
-            <button type="button" disabled={ocupado} onClick={() => void borrar()} data-confirmar-borrar className="mt-1.5 h-[50px] w-full rounded-full text-[14.5px] font-semibold text-white disabled:opacity-60" style={{ background: ROJO }}>
-              Borrar mi cuenta
-            </button>
+            {!(noPuedeBorrar) && (
+              <button type="button" disabled={ocupado || palabra.trim() !== 'BORRAR'} onClick={() => void borrar()} data-confirmar-borrar className="mt-1.5 h-[50px] w-full rounded-full text-[14.5px] font-semibold text-white disabled:opacity-40" style={{ background: ROJO }}>
+                Borrar mi cuenta para siempre
+              </button>
+            )}
             <button type="button" disabled={ocupado} onClick={() => setBorrando(false)} className="h-[46px] w-full rounded-full bg-[#F1EADC] text-[14px] font-semibold text-[#1C2230]">
-              Cancelar
+              {noPuedeBorrar ? 'Cerrar' : 'Cancelar'}
             </button>
           </div>
         </div>

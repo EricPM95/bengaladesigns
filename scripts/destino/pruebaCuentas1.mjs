@@ -1012,7 +1012,7 @@ console.log('6. Las rutas del servidor')
   const servida = new Map()
   registrarRutasCuentas({ post: (p, h) => servida.set(p, h), delete: (p, h) => servida.set(p, h) }, adminDe())
   const r = respuesta()
-  await servida.get('/api/cuenta')({ headers: { authorization: 'Bearer tok-zoe' }, get: (n) => (n.toLowerCase() === 'authorization' ? 'Bearer tok-zoe' : ''), body: {} }, r)
+  await servida.get('/api/cuenta')({ headers: { authorization: 'Bearer tok-zoe' }, get: (n) => (n.toLowerCase() === 'authorization' ? 'Bearer tok-zoe' : ''), body: { confirmar: 'BORRAR' } }, r)
   debe(r.estado === 200 && (await q('select 1 from auth.users where id = $1', [fichas.get('tok-zoe')])).length === 0, 'rutas', 'DELETE /api/cuenta con token válido borra la cuenta')
   // Con el servidor real encendido (si está): sin clave de servicio responde 503; con ella, 401 sin token.
   const API = process.env.API_URL ?? 'http://localhost:8787'

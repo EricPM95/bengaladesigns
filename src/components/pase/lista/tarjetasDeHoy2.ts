@@ -20,7 +20,7 @@ export function tarjetasDeHoy2(destino: string | null | undefined): PuntoDeLista
     { icono: dibujo('Más visitas, si te sobra tiempo'), titulo: 'Cambiar plan', linea: 'Sin mover nada sin tu permiso.' },
     { icono: dibujo('Los avisos del día'), titulo: 'Los avisos del tiempo', linea: coche ? 'Lluvia, nubes y viento, con su alternativa.' : 'Si llueve, te damos una alternativa.' },
     { icono: dibujo('Cerca de ti'), titulo: 'Cerca de ti', linea: coche ? 'Gasolineras, aparcamientos y dónde comer, los más cercanos.' : 'Baños, fuentes de agua y dónde comer, los más cercanos.' },
-    { icono: dibujo('Tus logros, mientras viajas'), titulo: 'La cámara y los logros', linea: 'Sellos, colecciones y emblemas secretos.' },
+    { icono: dibujo('Tus logros, mientras viajas'), titulo: 'La cámara y los logros', linea: 'Medallas, colecciones y emblemas secretos.' },
     { icono: dibujo('Escucha la historia de cada sitio'), titulo: 'Las historias, para escuchar', linea: 'Como una audioguía, en tu móvil.' },
     { icono: dibujo('Tu billete, el día que toca'), titulo: 'Tus entradas, sin internet', linea: 'Lo de hoy, guardado en tu móvil.' },
     { icono: CAMPANA, titulo: 'Avisos en el móvil bloqueado', linea: 'Te avisamos a tiempo, sin abrir la app.' },

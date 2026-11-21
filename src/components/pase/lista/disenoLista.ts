@@ -88,8 +88,8 @@ export const SECCIONES_DE_LA_LISTA: SeccionDeLista[] = [
   "filas": [
    {
     "icono": "<svg width=\"42\" height=\"42\" viewBox=\"0 0 64 64\"><path fill=\"#FFFDF8\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M24 8h16v14a8 8 0 0 0 8 10H16a8 8 0 0 0 8-10z\"/><rect x=\"12\" y=\"34\" width=\"40\" height=\"8\" rx=\"3\" fill=\"#E9C77A\" stroke=\"#B58A2E\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"32\" cy=\"54\" r=\"0\"/><path d=\"M10 56h44\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\"/><circle cx=\"32\" cy=\"52\" r=\"0\"/><ellipse cx=\"32\" cy=\"50\" rx=\"19\" ry=\"5\" fill=\"none\" stroke=\"#8E2A3A\" stroke-width=\"1.8\" opacity=\".85\" stroke-dasharray=\"6 2.5\"/></svg>",
-    "titulo": "Los sellos de Roma y del Vaticano",
-    "linea": "Consigue el sello de cada sitio que visitas."
+    "titulo": "Las medallas de Roma y del Vaticano",
+    "linea": "Consigue la medalla de cada destino que visitas."
    },
    {
     "icono": "<svg width=\"42\" height=\"42\" viewBox=\"0 0 64 64\"><path fill=\"#FFFDF8\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M4 12q14-5 28 2v42q-14-7-28-2z\"/><path fill=\"#FFFDF8\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M60 12q-14-5-28 2v42q14-7 28-2z\"/><circle cx=\"18\" cy=\"30\" r=\"8\" fill=\"none\" stroke=\"#8E2A3A\" stroke-width=\"1.8\" opacity=\".85\"/><path d=\"M14 30h8M18 26v8\" stroke=\"#8E2A3A\" stroke-width=\"1.4\" opacity=\".8\"/><rect x=\"11\" y=\"42\" width=\"14\" height=\"8\" rx=\"2\" fill=\"none\" stroke=\"#2F6FA6\" stroke-width=\"1.8\" transform=\"rotate(-6 18 46)\"/><path d=\"M40 22h14M40 28h10\" stroke=\"#1C2230\" stroke-width=\"2\" stroke-linecap=\"round\"/><ellipse cx=\"47\" cy=\"42\" rx=\"8\" ry=\"6\" fill=\"none\" stroke=\"#B58A2E\" stroke-width=\"1.8\" transform=\"rotate(8 47 42)\"/></svg>",
@@ -173,7 +173,7 @@ export const TARJETAS_DE_HOY: PuntoDeLista[] = [
  {
   "icono": "<svg width=\"42\" height=\"42\" viewBox=\"0 0 64 64\"><path fill=\"#FFFDF8\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M24 8h16v14a8 8 0 0 0 8 10H16a8 8 0 0 0 8-10z\"/><rect x=\"12\" y=\"34\" width=\"40\" height=\"8\" rx=\"3\" fill=\"#E9C77A\" stroke=\"#B58A2E\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"32\" cy=\"54\" r=\"0\"/><path d=\"M10 56h44\" stroke=\"#1C2230\" stroke-width=\"2.2\" stroke-linecap=\"round\"/><circle cx=\"32\" cy=\"52\" r=\"0\"/><ellipse cx=\"32\" cy=\"50\" rx=\"19\" ry=\"5\" fill=\"none\" stroke=\"#8E2A3A\" stroke-width=\"1.8\" opacity=\".85\" stroke-dasharray=\"6 2.5\"/></svg>",
   "titulo": "Tus logros, mientras viajas",
-  "linea": "Sellos, colecciones y emblemas secretos."
+  "linea": "Medallas, colecciones y emblemas secretos."
  }
 ]
 export const CABECERA_DE_HOY = "Cuando estés en Roma, HOY te lleva de la mano, parada a parada."

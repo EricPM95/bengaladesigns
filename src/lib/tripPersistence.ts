@@ -14,6 +14,7 @@ import { cuentasActivas, hayRespaldoDeSesion, recuperarSesionDeRespaldo } from '
 import { useViajeCompartido } from '../store/useViajeCompartido'
 import { useSyncStore } from '../store/useSyncStore'
 import { recordarBase, sellarRuta } from './sellarCambio'
+import { guardarCopiaOriginal, sinCopiaOriginal } from './copiaOriginal'
 
 /**
  * Viajes guardados antes de pedir el mes (Estaciones, Parte 1): solo traen temporada. Se les asigna
@@ -197,9 +198,15 @@ type FilaDeViaje = { id: string; traveler_id?: string; guardado_en?: string | nu
 
 function filaAViaje(row: FilaDeViaje, travelerId: string, conInvitados: boolean): SavedTrip {
   const generationState = row.generation_state as GenerationResumeState | null
+  // (V37) Un viaje viejo aún trae `originalRoute` en la nube: se entrega a este móvil (copiaOriginal.ts), se apunta que la nube pesa de más (el próximo guardado SÍ se sube, ya limpio) y NO pasa a la pantalla ni a la lista.
+  const cruda = row.route as Route
+  if (cruda && typeof cruda === 'object' && cruda.originalRoute) {
+    guardarCopiaOriginal(cruda.id, cruda.originalRoute)
+    nubeConCopia.add(row.id as string)
+  }
   return {
     id: row.id as string,
-    route: withCurrentFreeTourName(withTripMonth(row.route as Route)),
+    route: withCurrentFreeTourName(withTripMonth(sinCopiaOriginal(cruda))),
     bookings: withCurrentFreeTourName(reservasConDefectos(row.bookings as Partial<TripBookings> | null)),
     wishlist: (row.wishlist ?? []) as WishlistItem[],
     uiState: uiConDefectos(row.ui_state as Partial<TripUiState> | null),
@@ -267,7 +274,7 @@ function apuntarSelloPropio(tripId: string, hecho: unknown): void {
 
 /** El mismo texto para la misma ruta aunque las claves vengan en otro orden (la base de datos las reordena): así se reconoce el eco del propio guardado. */
 export function canonico(valor: unknown): string {
-  const ordenar = (v: unknown): unknown => (Array.isArray(v) ? v.map(ordenar) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v as object).sort().map((k) => [k, ordenar((v as Record<string, unknown>)[k])])) : v)
+  const ordenar = (v: unknown): unknown => (Array.isArray(v) ? v.map(ordenar) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v as object).filter((k) => k !== 'originalRoute').sort().map((k) => [k, ordenar((v as Record<string, unknown>)[k])])) : v)
   return JSON.stringify(ordenar(valor))
 }
 
@@ -276,6 +283,9 @@ export function canonico(valor: unknown): string {
  * (abrir la app, cargar el viaje, un efecto que repone la misma ruta…) subía 49-79 KB y avisaba por Realtime a los demás móviles, que bajaban el viaje entero para ver que no había cambiado nada.
  */
 const huellasDeLaNube = new Map<string, string>()
+/** (V37) Viajes cuya fila en la nube aún lleva `originalRoute`: `canonico` la ignora (un viaje viejo y el mismo limpio son la misma huella), pero el próximo guardado SÍ se sube una vez, ya sin ella, para aligerar la nube. */
+const nubeConCopia = new Set<string>()
+const yaEstaEnLaNube = (tripId: string, ruta: unknown, reservas: unknown, deseos: unknown): boolean => huellasDeLaNube.get(tripId) === huellaDelViaje(ruta, reservas, deseos) && !nubeConCopia.has(tripId)
 const huellaDelViaje = (ruta: unknown, reservas: unknown, deseos: unknown): string => canonico({ r: ruta, b: reservas, w: deseos })
 function apuntarHuella(tripId: string, ruta: unknown, reservas: unknown, deseos: unknown): void {
   huellasDeLaNube.set(tripId, huellaDelViaje(ruta, reservas, deseos))
@@ -305,6 +315,8 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
   if (!supabase) throw new Error('Supabase no configurado.')
   // (V1b) La ruta ligera de la lista de viajes NUNCA se guarda: pisaría el viaje de verdad con uno sin detalle.
   if (payload.route?.ligero) throw new Error('Esa ruta es la ligera de la lista de viajes: no se guarda.')
+  // (V37) La copia original NUNCA se sube (ni en el insert, ni en el update).
+  payload = { ...payload, route: sinCopiaOriginal(payload.route) }
 
   const row = {
     route: payload.route,
@@ -321,7 +333,7 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
       const respaldo = useSyncStore.getState().savedTrips?.find((v) => v.id === tripId)?.route ?? null
       const ruta = sellarRuta(tripId, payload.route, respaldo)
       // (V36) Nada ha cambiado desde lo último de la nube: no se guarda.
-      if (huellasDeLaNube.get(tripId) === huellaDelViaje(ruta, payload.bookings, payload.wishlist)) return tripId
+      if (yaEstaEnLaNube(tripId, ruta, payload.bookings, payload.wishlist)) return tripId
       recordarGuardado(tripId, canonico(ruta))
       // (Tanda 10N §4a) Quien tiene «Puede editar» guarda la ruta y la lista de deseos (NO el vuelo, el alojamiento ni las fechas, que son del administrador).
       if (permisoDeEsteViaje() === 'editar') {
@@ -330,6 +342,7 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
         apuntarSelloPropio(tripId, hecho)
         recordarBase(tripId, ruta)
         apuntarHuella(tripId, ruta, payload.bookings, payload.wishlist)
+        nubeConCopia.delete(tripId)
         return tripId
       }
       // Solo el administrador cambia el viaje: si es de otra persona (esta está invitada), la base de datos no toca nada y aquí tampoco se avisa de un fallo.
@@ -338,12 +351,14 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
       apuntarSelloPropio(tripId, hecho)
       recordarBase(tripId, ruta)
       apuntarHuella(tripId, ruta, payload.bookings, payload.wishlist)
+      nubeConCopia.delete(tripId)
       return tripId
     }
-    if (huellasDeLaNube.get(tripId) === huellaDelViaje(payload.route, payload.bookings, payload.wishlist)) return tripId // (V36) idéntico a lo de la nube: no se guarda
+    if (yaEstaEnLaNube(tripId, payload.route, payload.bookings, payload.wishlist)) return tripId // (V36) idéntico a lo de la nube: no se guarda
     const { error } = await supabase.from('trips').update(row).eq('id', tripId)
     if (error) throw error
     apuntarHuella(tripId, payload.route, payload.bookings, payload.wishlist)
+    nubeConCopia.delete(tripId)
     return tripId
   }
 

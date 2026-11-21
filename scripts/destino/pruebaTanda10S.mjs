@@ -62,7 +62,7 @@ console.log('1. El aviso de Logros')
   const t = leer('src/lib/avisoPaseTextos.ts')
   const m = t.match(/logros:\s*\{[^}]*linea2:\s*'([^']*)'/)
   const linea = (m?.[1] ?? '').replace('{pase}', 'Pase Roma')
-  debe(linea === 'Con el Pase Roma, consigues el sello de cada sitio que visitas, las colecciones y los emblemas secretos.', 'aviso', `el aviso de Logros dice lo pedido (${linea})`)
+  debe(linea === 'Con el Pase Roma, consigues la medalla de cada destino que visitas, las colecciones y los emblemas secretos.', 'aviso', `el aviso de Logros dice lo pedido (${linea})`)
   debe(!/suma a tus logros del viaje/.test(t), 'aviso', 'el texto viejo de Logros ya no está')
 }
 

@@ -67,7 +67,7 @@ export const mono10 = (color = 'rgba(28,34,48,.5)', espacio = '.12em'): CSSPrope
 /** La barra de pestañas de Design: una píldora crema con las pestañas dentro; la activa, oscura con letra dorada. */
 export function Pestanas({ ids, activa, alElegir }: { ids: { id: string; nombre: string }[]; activa: string; alElegir: (id: string) => void }): ReactNode {
   return (
-    <div role="tablist" data-pestanas style={{ display: 'flex', gap: 6, padding: 4, borderRadius: 999, background: '#EDE3CD', alignSelf: 'flex-start', maxWidth: '100%', overflowX: 'auto', scrollbarWidth: 'none' }}>
+    <div role="tablist" data-pestanas style={{ display: 'flex', gap: 6, padding: 4, borderRadius: 999, background: '#EDE3CD', alignSelf: 'flex-start', maxWidth: '100%', overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
       {ids.map((t) => (
         <button key={t.id} type="button" role="tab" aria-selected={t.id === activa} data-pestana={t.id} onClick={() => alElegir(t.id)} style={{ flex: 'none', minHeight: 36, padding: '0 18px', borderRadius: 999, border: 'none', cursor: 'pointer', background: t.id === activa ? TINTA : 'transparent', color: t.id === activa ? ORO : 'rgba(28,34,48,.65)', font: "600 13px 'Geist'", whiteSpace: 'nowrap' }}>
           {t.nombre}
@@ -98,7 +98,7 @@ export function fechasDe(p: Periodo, ahora = new Date()): { desde: string | null
 /** El selector de periodo («PERIODO · Últimos 7 días · Este mes … · Personalizado»). */
 export function SelectorDePeriodo({ periodo, alCambiar, movil }: { periodo: Periodo; alCambiar: (p: Periodo) => void; movil: boolean }): ReactNode {
   const [abierto, setAbierto] = useState(periodo.id === 'custom')
-  const caja: CSSProperties = { display: 'flex', alignItems: 'center', gap: 6, padding: 4, borderRadius: 999, background: '#EDE3CD', maxWidth: '100%', overflowX: 'auto', scrollbarWidth: 'none' }
+  const caja: CSSProperties = { display: 'flex', alignItems: 'center', gap: 6, padding: 4, borderRadius: 999, background: '#EDE3CD', maxWidth: '100%', overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }
   const pastilla = (activo: boolean): CSSProperties => ({ flex: 'none', minHeight: 36, padding: '0 14px', borderRadius: 999, border: 'none', cursor: 'pointer', background: activo ? TINTA : 'transparent', color: activo ? ORO : 'rgba(28,34,48,.65)', font: "600 13px 'Geist'", whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 8 })
   return (
     <div data-periodo style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

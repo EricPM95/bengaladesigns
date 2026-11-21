@@ -55,7 +55,7 @@ export const AVISO_PASE_TEXTOS: Record<string, TextoAviso> = {
   },
   logros: {
     linea1: '',
-    linea2: 'Con el {pase}, consigues el sello de cada sitio que visitas, las colecciones y los emblemas secretos.',
+    linea2: 'Con el {pase}, consigues la medalla de cada destino que visitas, las colecciones y los emblemas secretos.',
   },
   // (10S8 §2) Añadir un documento (tarjeta de embarque, billete, entrada, reserva) es del pase.
   documento_vuelo: {

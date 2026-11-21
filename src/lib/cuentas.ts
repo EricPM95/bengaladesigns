@@ -677,6 +677,7 @@ function limpiarElMovil(): void {
 export async function cerrarSesion(): Promise<void> {
   olvidarRespaldoDeSesion() // (V1) a propósito: sin respaldo, la app no la recupera
   await import('./sinConexion').then((m) => m.borrarListaDeViajes()).catch(() => undefined) // (V1b) la lista de viajes del móvil es de esta cuenta
+  await import('./copiaOriginal').then((m) => m.borrarCopiasOriginales()).catch(() => undefined) // (V37) las rutas originales del móvil también
   try {
     await supabase?.auth.signOut()
   } finally {
@@ -700,7 +701,8 @@ export async function borrarMiCuenta(): Promise<string | null> {
   try {
     const { data } = await supabase.auth.getSession()
     if (!data.session) return 'No has entrado con ninguna cuenta.'
-    const respuesta = await fetch('/api/cuenta', { method: 'DELETE', headers: { Authorization: `Bearer ${data.session.access_token}` } })
+    // (V37) Una petición, solo al pulsar el botón de la hoja (nada en bucle); el servidor exige { confirmar: 'BORRAR' }.
+    const respuesta = await fetch('/api/cuenta', { method: 'DELETE', headers: { Authorization: `Bearer ${data.session.access_token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ confirmar: 'BORRAR' }) })
     if (!respuesta.ok) {
       const cuerpo = (await respuesta.json().catch(() => null)) as { error?: string } | null
       return cuerpo?.error ?? 'No se ha podido borrar la cuenta. Inténtalo de nuevo.'

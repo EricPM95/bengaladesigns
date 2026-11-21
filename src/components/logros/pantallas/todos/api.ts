@@ -129,8 +129,8 @@ export const useGanados = create<Almacen>((set, get) => ({
 }))
 
 export const ORDEN_BALDAS: Balda[] = ['viajero', 'sellos', 'colecciones', 'emblemas']
-export const TITULO_DE_BALDA: Record<Balda, string> = { viajero: 'Logros de viajero', sellos: 'Sellos de ciudad', colecciones: 'Colecciones completadas', emblemas: 'Emblemas secretos' }
-export const VACIA_DE_BALDA: Record<Balda, string> = { viajero: 'Tu primer logro de viajero irá aquí', sellos: 'Tu primer sello de ciudad irá aquí', colecciones: 'Tu primera colección completada irá aquí', emblemas: 'Tu primer emblema secreto irá aquí' }
+export const TITULO_DE_BALDA: Record<Balda, string> = { viajero: 'Logros de viajero', sellos: 'Medallas de ciudad', colecciones: 'Colecciones completadas', emblemas: 'Emblemas secretos' }
+export const VACIA_DE_BALDA: Record<Balda, string> = { viajero: 'Tu primer logro de viajero irá aquí', sellos: 'Tu primera medalla de ciudad irá aquí', colecciones: 'Tu primera colección completada irá aquí', emblemas: 'Tu primer emblema secreto irá aquí' }
 
 /** Guarda una balda entera (hasta 4 claves). Devuelve la vitrina nueva o null si no se ha podido. */
 export async function guardarBalda(balda: Balda, huecos: string[]): Promise<VitrinaGanada | null> {

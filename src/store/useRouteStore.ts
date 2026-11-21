@@ -60,6 +60,7 @@ import {
   withStopAt,
   withUserDaysBack,
 } from '../lib/freeDays'
+import { guardarCopiaOriginal, leerCopiaOriginal } from '../lib/copiaOriginal'
 import { withManualDayNames } from '../lib/manualRoute'
 import { bookingsAfterRemovingDays, planManualResize, resizeManualRoute, reservationsOfDays } from '../lib/manualDuration'
 import { recuperarDestino } from '../lib/recuperarDestino'
@@ -1158,6 +1159,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       // (Tanda 10N9) Si lo que rehace los días es «Guardar el vuelo» del administrador (mismas fechas), el aviso sigue siendo ese: UNO, con la ida y la vuelta juntas, no un «ha rehecho la ruta» aparte.
       const sigueElVuelo = Boolean(state.keepBookingsOnNextRoute && state.route && (state.route.ultimoCambio as { accion?: { tipo?: string } } | null | undefined)?.accion?.tipo === 'vuelo' && JSON.stringify(state.route.answers.dateRange ?? null) === JSON.stringify(colored.answers?.dateRange ?? state.route.answers.dateRange ?? null))
       const route = conUltimoCambio(state.route, { ...colored, ...avisosHeredados, ...(sigueElVuelo ? { ultimoCambio: state.route!.ultimoCambio } : {}), ...(state.keepBookingsOnNextRoute ? camposDelViajero(state.route) : {}), editedManually: false, originalRoute: originalRouteOf(colored) }, state.keepBookingsOnNextRoute && state.route && !sigueElVuelo ? { tipo: 'fechas' } : null)
+      // (V37) La copia original se guarda aparte, en este móvil (no viaja dentro del viaje): ver copiaOriginal.ts.
+      guardarCopiaOriginal(route.id, route.originalRoute, true)
       return {
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))
@@ -1203,7 +1206,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       route: (() => {
         // (Tanda 7: un viaje guardado con hora de vuelta de antes de sellarse se sella al abrirlo con la fecha de vuelta de ese momento; si luego cambian las fechas, la campana avisa.)
         const colored = sellarVueltaAlAbrir(withDayColors(payload.route))
-        return colored.originalRoute || colored.editedManually ? colored : { ...colored, originalRoute: originalRouteOf(colored) }
+        // (V37) La copia original ya no viene en el viaje de la nube (los viejos aún la traen): la de ESTE móvil manda; si no hay, la del viaje viejo; si tampoco, la ruta tal como se abre (y se apunta aquí). Nunca se vuelve a subir.
+        const guardada = leerCopiaOriginal(colored.id)
+        const original = guardada ?? colored.originalRoute ?? (colored.editedManually ? null : originalRouteOf(colored))
+        if (!guardada) guardarCopiaOriginal(colored.id, original)
+        return original ? { ...colored, originalRoute: original } : colored
       })(),
       // (10S2) Con las reservas o el estado vacíos (`{}`), cada campo toma su valor de siempre: antes quedaban `undefined` y el presupuesto tumbaba la app entera.
       accommodationSelections: reservas.accommodationSelections,

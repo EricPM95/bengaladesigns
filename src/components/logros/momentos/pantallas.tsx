@@ -38,7 +38,7 @@ function PantallaSello({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePantal
   const n = NOMBRES_SELLO[id] ?? { de: id, etiqueta: id.toUpperCase() }
   const t = antes ? 3.5 : 1.5
   return (
-    <PantallaOscura etiqueta={`Tu sello ${n.de}, ${grado}`} fondo={grado === 'diamante' ? 'radial-gradient(circle at 50% 36%,#33416B 0%,#141826 70%)' : FONDO_CALIDO} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn={`${t + 0.9}s`}>
+    <PantallaOscura etiqueta={`Tu medalla ${n.de}, ${grado}`} fondo={grado === 'diamante' ? 'radial-gradient(circle at 50% 36%,#33416B 0%,#141826 70%)' : FONDO_CALIDO} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn={`${t + 0.9}s`}>
       {grado === 'diamante' && <Estrellas n={26} />}
       {!antes && <Rayos color={c.rayo} halo={c.halo} />}
       <Centro>
@@ -64,7 +64,7 @@ function PantallaSello({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePantal
             </div>
           )}
         </Vuelo>
-        <Ojo color={c.ojo} en={`${t}s`}>{`Tu sello ${n.de} · ${grado}`}</Ojo>
+        <Ojo color={c.ojo} en={`${t}s`}>{`Tu medalla ${n.de} · ${grado}`}</Ojo>
         <Titulo en={`${t + 0.2}s`}>{m.nombre}</Titulo>
         {m.linea && <Sub en={`${t + 0.4}s`}>{m.linea}</Sub>}
       </Centro>

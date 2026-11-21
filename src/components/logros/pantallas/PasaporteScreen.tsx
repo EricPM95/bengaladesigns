@@ -18,6 +18,7 @@ import './mundo/mundo.css'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { marcarSelloEstampado, selloYaEstampado } from '../../../lib/selloEstampado'
+import { prepararSonido, sonar } from '../../../lib/sonidos'
 
 const BURDEOS = 'linear-gradient(150deg,#7A2034,#4A1220 60%,#36101A)'
 const ORO = 'oklch(0.8 0.14 70)'
@@ -221,6 +222,20 @@ export default function PasaporteScreen({ pantalla, ejemplo }: { pantalla: Panta
   const colocados = pagina ? colocar(pagina.sellos, sub, anchoDePagina) : []
   const estampando = estampar && !reducido ? colocados.find((c) => c.s.trip_id === estampar) : undefined
   const numeros = datos && datos !== 'error' ? datos.numeros : null
+  // (V37) El sello CON SONIDO: al montar el golpe (`Golpe`, que cae a los 2,05 s: `TIEMPOS_ESTAMPADO.golpe`) suena la partitura `sello_pasaporte`, que ya cuenta con 0,5 s de vuelo antes del golpe. UNA vez por estampado
+  // (otra, solo si se toca [Repetir el golpe]); nada al volver a una página ya estampada ([Ver mi sello]: ahí `estampar` no se pone); nada en el estudio (`ejemplo` y `__estudioVisor`: el visor ya hace sonar la suya);
+  // y con «reducir movimiento» no hay golpe (`estampando` vacío) y por tanto tampoco sonido: el sonido sigue a la animación.
+  const sonoPara = useRef('')
+  const hayGolpe = Boolean(estampando)
+  useEffect(() => {
+    if (!estampar || ejemplo || (window as unknown as { __estudioVisor?: unknown }).__estudioVisor) return
+    prepararSonido('sello_pasaporte') // los archivos listos antes de que caiga el sello
+    if (!hayGolpe) return
+    const k = `${estampar}:${golpe}`
+    if (sonoPara.current === k) return
+    sonoPara.current = k
+    void sonar('sello_pasaporte')
+  }, [estampar, golpe, hayGolpe, ejemplo])
 
   return (
     <Capa etiqueta="PasaporteScreen" fondo="#F1E8D6">

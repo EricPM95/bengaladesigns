@@ -199,7 +199,7 @@ export function construirGanados({ datos, catalogos, items, cuentan = [], viajes
       const g = s?.grados.find((x) => x.grado === grado)
       if (!s || !g) continue
       tipo = 'sello'
-      nombre = `Sello ${/^El /.test(s.nombre) ? `del ${s.nombre.slice(3)}` : `de ${s.nombre}`}`
+      nombre = `Medalla ${/^El /.test(s.nombre) ? `del ${s.nombre.slice(3)}` : `de ${s.nombre}`}`
       extra = { sello: sid, grado, nombre_grado: g.nombre, superado: superadas.has(it.clave) }
     } else if (it.logro === 'coleccion' && d) {
       const c = d.colecciones.find((x) => x.id === it.escalon)

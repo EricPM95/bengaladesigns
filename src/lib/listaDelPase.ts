@@ -462,7 +462,7 @@ export const LISTA_DEL_PASE: GrupoDeLista[] = [
     }
    },
    {
-    "titulo": "Sellos y medallas",
+    "titulo": "Medallas de ciudad",
     "linea": "Los ganas en cada destino.",
     "icono": {
      "t": "svg",

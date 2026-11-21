@@ -159,7 +159,7 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
       }
     }
     case 'sello_pasaporte': {
-      // (V36C) El sello que se estampa en la hoja del pasaporte: baja con un vuuush mientras cae y estampa con un clic y un brillo cuando toca la hoja. (La app todavía NO hace sonar este golpe: aquí suena como estaba pensado.)
+      // (V36C) El sello que se estampa en la hoja del pasaporte: baja con un vuuush mientras cae y estampa con un clic y un brillo cuando toca la hoja. (V37) La app la hace sonar de verdad: PasaporteScreen la pide al montar el golpe del sello (la misma partitura que la tarjeta del estudio; el vuelo arranca 0,5 s antes del golpe).
       const t = TIEMPOS_ESTAMPADO
       return { id, dura: e(t.fin), premio: false, notas: [archivo('vuelo', e(t.golpe) - 0.5, 0.7), archivo('clic', e(t.golpe)), archivo('brillo', e(t.golpe) + 0.05, 0.7)] }
     }
@@ -179,7 +179,7 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
 }
 
 /** Todas las animaciones que tienen partitura (para la prueba, la página de sonidos y el repaso). */
-export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero', 'dia_completo', 'primer_dia', 'vuelo', 'apertura', 'escena', 'fuegos', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
+export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero', 'dia_completo', 'primer_dia', 'vuelo', 'apertura', 'escena', 'fuegos', 'sello_pasaporte', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
 
 /** Cada partitura, en palabras (para el repaso y la página de sonidos). */
 export const EN_PALABRAS: Record<string, string> = {
@@ -200,6 +200,7 @@ export const EN_PALABRAS: Record<string, string> = {
   vuelo: 'Lo ganado que vuela al botón o al Perfil: un vuuush de lo que dura el vuelo.',
   escena: 'Las escenas de cada sitio (Roma y Lanzarote): un redoble que sube y el golpe del premio cuando estalla la luz, y un clic y un brillo cuando entran el emblema y su nombre.',
   fuegos: 'Los fuegos: el golpe del premio al estallar y dos brillos que caen detrás.',
+  sello_pasaporte: 'El sello del pasaporte: baja con un vuuush y estampa con un clic y un brillo cuando toca la hoja.',
   apertura: 'La apertura: la firma de la app, que cae cuando la estrella salta sobre la I (en la web no suena: el navegador no deja antes del primer toque).',
   medalla_bronce: 'La medalla de bronce: redoble hasta que entra el sello nuevo y golpe al asentarse (el más suave).',
   medalla_plata: 'La medalla de plata: redoble mientras gira y golpe al parar (suena a más que el bronce).',

@@ -931,10 +931,10 @@
   "fin": 3.7
  },
  "textos": {
-  "medalla_bronce": "Saltar todo ROMA TU SELLO DE ROMA · BRONCE Primeros pasos en Roma Has visto tu primer imprescindible. Seguir",
-  "medalla_plata": "Saltar todo ROMA ROMA Algo está cambiando… TU SELLO DE ROMA · PLATA Roma te atrapa Cuatro imprescindibles vistos: ya eres de aquí. Seguir",
-  "medalla_oro": "Saltar todo ROMA ROMA ¿Lo notas? TU SELLO DE ROMA · ORO Roma es casi tuya Seis imprescindibles de ocho. Seguir",
-  "medalla_diamante": "Saltar todo ROMA ROMA Esto brilla mucho… TU SELLO DE ROMA · DIAMANTE Roma es tuya Todos los imprescindibles de Roma. Seguir",
+  "medalla_bronce": "Saltar todo ROMA TU MEDALLA DE ROMA · BRONCE Primeros pasos en Roma Has visto tu primer imprescindible. Seguir",
+  "medalla_plata": "Saltar todo ROMA ROMA Algo está cambiando… TU MEDALLA DE ROMA · PLATA Roma te atrapa Cuatro imprescindibles vistos: ya eres de aquí. Seguir",
+  "medalla_oro": "Saltar todo ROMA ROMA ¿Lo notas? TU MEDALLA DE ROMA · ORO Roma es casi tuya Seis imprescindibles de ocho. Seguir",
+  "medalla_diamante": "Saltar todo ROMA ROMA Esto brilla mucho… TU MEDALLA DE ROMA · DIAMANTE Roma es tuya Todos los imprescindibles de Roma. Seguir",
   "coleccion": "Saltar todo ¡COLECCIÓN COMPLETA! Las 4 joyas de Roma 0 DE 0 · COMPLETA Cuatro joyas, cuatro recuerdos para siempre. Seguir",
   "emblema": "¡Eh! Aquí hay algo…",
   "emblema_maravilla": "MARAVILLA DEL MUNDO ENCONTRADO EL 21 de noviembre de 2026 COLISEO ¡HAS DESCUBIERTO UN EMBLEMA OCULTO! Una maravilla del mundo El mayor anfiteatro de la Antigüedad. Casi2.000añosesperándote… Elanfiteatromásgrandejamásconstruido. Saltar todo Toca para ir al emblema",
@@ -947,7 +947,7 @@
   "escena_roma": "Pero… ¿qué es esto?",
   "escena_lanzarote": "Bajo tus pies, la tierra respira… Las Montañas del Fuego, rojas y quietas… …y el calor sube del suelo. El calor de la tierra A trece metros bajo tus pies, la tierra pasa de 600 grados. Saltar todo",
   "fuegos": "",
-  "resumen_dia": "TU DÍA Lo que te llevas de hoy Tu sello de Roma, en bronce 1 Emblema Oculto 1 País nuevo Seguir",
+  "resumen_dia": "TU DÍA Lo que te llevas de hoy Tu medalla de Roma, en bronce 1 Emblema Oculto 1 País nuevo Seguir",
   "resumen_viaje": "TU VIAJE · 17 – 20 NOV Lo que te llevas de Roma 4 DÍAS 17 PARADAS 31 KM 12 FOTOS ROMA Has conseguido la plata de Roma COLECCIONES +2 Los miradores EMBLEMAS OCULTOS El Panteón La Fontana de Trevi +10 secretos por descubrir LOGROS DE VIAJERO NUEVOS Primer país Te quedan 2 sorpresas por reclamar Compartir mi viaje Ver mi viaje",
   "primer_dia": "TU PRIMER DÍA Hoy empiezas a ganar logros Toca Visto en cada sitio y gana sus pedazos. Algunos sitios esconden un Emblema Oculto: haz la foto y descúbrelo. Todo se guarda en el botón flotante. Empezar mi día",
   "apertura": "JUTRI P VIAJA CON CALMA",

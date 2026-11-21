@@ -3,6 +3,7 @@ import type { Route } from './types'
 import { usePropuestaStore } from '../store/usePropuestaStore'
 import { fueGuardadaAqui, loadOneTrip, rutaGuardadaAqui, rutaVista, SELLO_CADUCA_MS, selloConocido, selloDelViaje } from './tripPersistence'
 import { useRouteStore } from '../store/useRouteStore'
+import { sinCopiaOriginal } from './copiaOriginal'
 import { useSyncStore } from '../store/useSyncStore'
 
 /**
@@ -68,7 +69,7 @@ export const useViajeEnDirecto = create<EnDirectoState>((set) => ({
 
 /** El `route` de la pantalla justo después de aplicar lo de la nube: si el siguiente guardado es idéntico, es un eco y no se manda. */
 let ecoRemoto: string | null = null
-export const esEcoRemoto = (route: Route | null | undefined): boolean => ecoRemoto !== null && route != null && JSON.stringify(route) === ecoRemoto
+export const esEcoRemoto = (route: Route | null | undefined): boolean => ecoRemoto !== null && route != null && JSON.stringify(sinCopiaOriginal(route)) === ecoRemoto
 
 export type ResultadoRefresco = 'cambiado' | 'igual' | 'fuera' | 'sin_datos'
 
@@ -107,7 +108,7 @@ export function refrescarViajeActivo(opciones: { sondeo?: boolean } = {}): Promi
     const diaAbierto = ruta.activeDayId && r.viaje.route.days.some((d) => d.id === ruta.activeDayId) ? ruta.activeDayId : null
     ruta.hydrateTrip({ ...r.viaje, uiState: { ...r.viaje.uiState, mode: ruta.mode, activeDayId: diaAbierto } })
     rutaVista.set(tripId, r.canonica)
-    ecoRemoto = JSON.stringify(useRouteStore.getState().route)
+    ecoRemoto = JSON.stringify(sinCopiaOriginal(useRouteStore.getState().route)) // (V37) sin la copia original: lo que se guardaría es lo mismo
     const lista = useSyncStore.getState().savedTrips
     if (lista) useSyncStore.getState().setSavedTrips(lista.map((v) => (v.id === tripId ? r.viaje : v)))
     const cambios = cambiosEntreRutas(antes, r.viaje.route)

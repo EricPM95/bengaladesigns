@@ -22,10 +22,10 @@ export const fila = (clave: string, n: number): string => FILAS[clave]?.[n === 1
 const DE = (nombre: string): string => (/^el\s/i.test(nombre) ? `del ${nombre.replace(/^el\s/i, '')}` : `de ${nombre}`)
 const NOMBRE_SELLO: Record<string, string> = { roma: 'Roma', vaticano: 'El Vaticano' }
 
-/** La fila del sello (sin número): si nace, «Tu sello de Roma, en bronce» («Tu sello del Vaticano, en plata»); si solo sube, «Tu sello sube a oro». */
+/** La fila del sello (sin número): si nace, «Tu medalla de Roma, en bronce» («Tu medalla del Vaticano, en plata»); si solo sube, «Tu medalla sube a oro». */
 export function textoDeSello(nace: boolean, selloId: string, grado: string, nombre?: string | null): string {
-  if (!nace) return `Tu sello sube a ${grado}`
-  return `Tu sello ${DE(nombre || NOMBRE_SELLO[selloId] || selloId)}, en ${grado}`
+  if (!nace) return `Tu medalla sube a ${grado}`
+  return `Tu medalla ${DE(nombre || NOMBRE_SELLO[selloId] || selloId)}, en ${grado}`
 }
 
 /** La línea de abajo del resumen: «Roma aún esconde 9 secretos.» / «…1 secreto.» / «Has encontrado todos los secretos de Roma.». */

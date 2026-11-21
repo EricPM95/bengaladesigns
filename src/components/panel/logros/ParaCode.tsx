@@ -79,7 +79,7 @@ function Detalle({ panel }: { panel: Panel }): ReactNode {
               <button key={x.clave} type="button" aria-pressed={x.clave === d.clave} onClick={() => setClave(x.clave)} style={{ minHeight: 36, padding: '0 12px', borderRadius: 10, border: '1.5px solid rgba(28,34,48,.16)', background: x.clave === d.clave ? '#1C2230' : '#FFFFFF', color: x.clave === d.clave ? '#F3D88F' : '#1C2230', font: "600 13px 'Geist'", cursor: 'pointer' }}>{x.ciudad}</button>
             ))}
           </div>
-          <b style={{ font: "600 13px 'Geist'" }}>Sellos</b>
+          <b style={{ font: "600 13px 'Geist'" }}>Medallas</b>
           {d.sellos.map((s) => <p key={s.id} style={mini}><b>{s.nombre}</b>: {s.grados.map((g) => `${g.grado} desde ${g.desde} («${g.nombre}»)`).join(' · ')}</p>)}
           <b style={{ font: "600 13px 'Geist'" }}>Colecciones</b>
           {d.colecciones.map((c) => <p key={c.id} style={mini}><b>{c.nombre}</b> ({c.grupo}, {c.sitios.length} sitios) · al completarla: «{c.al_completar}»<br />{c.sitios.join(' · ')}</p>)}

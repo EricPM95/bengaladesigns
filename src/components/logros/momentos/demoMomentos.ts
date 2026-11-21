@@ -106,7 +106,7 @@ const MOMENTOS: Record<string, () => Momento[]> = {
   ademas: () => [
     m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', n: 1, nombre: 'Centro histórico de Roma', en }),
     m({ tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: '*|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', en }),
-    m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|1', logro: 'paises', escalon: '1', destino: '*', nombre: 'Primer sello', linea: 'Países distintos que has visitado con la app.', en }),
+    m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|1', logro: 'paises', escalon: '1', destino: '*', nombre: 'Primera medalla', linea: 'Países distintos que has visitado con la app.', en }),
   ],
 }
 for (const id of ['foro_romano', 'museos_vaticanos', 'plaza_san_pedro', 'basilica_san_pedro', 'panteon', 'fontana_de_trevi', 'boca_de_la_verdad', 'ojo_cerradura', 'catacumbas', 'plaza_de_espana', 'castillo_de_santangelo', 'madrugador', 'nocturno']) {
@@ -126,7 +126,7 @@ function ponerDatos(acabado = false, tipo: 'wow' | 'con_ganas' = 'wow', escenari
   datosDePruebaViajero.v = {
     ok: true,
     logros: [
-      { id: 'paises', grupo: 'mundo', nombre: null, linea: null, escalones: [{ n: 1, nombre: 'Primer sello', ganado: true }, { n: 3, nombre: 'Trotamundos', ganado: false }] },
+      { id: 'paises', grupo: 'mundo', nombre: null, linea: null, escalones: [{ n: 1, nombre: 'Primera medalla', ganado: true }, { n: 3, nombre: 'Trotamundos', ganado: false }] },
       { id: 'patrimonios', grupo: 'mundo', nombre: null, linea: null, escalones: [{ n: 1, nombre: 'Testigo de la historia', ganado: true }] },
     ],
   }
@@ -185,7 +185,7 @@ const api = {
       v('destinos', '25', 'Pasión por el mundo', 'Haz viajes a ciudades nuevas.'),
       v('viajes', '15', 'Viajero de ida y vuelta', 'Completa viajes con la app.'),
       v('cazador_emblemas', '10', 'Ojo de lince', 'Encuentra Emblemas Ocultos.'),
-      v('tres_oro', '', 'Tres ciudades de oro', 'Consigue el sello de oro en 3 ciudades.'),
+      v('tres_oro', '', 'Tres ciudades de oro', 'Consigue la medalla de oro en 3 ciudades.'),
       v('cuatro_estaciones', '', 'Las cuatro estaciones', 'Viaja en primavera, verano, otoño e invierno.'),
     ]
     useLogrosStore.getState().recibir({ ok: true, nuevos: todo })

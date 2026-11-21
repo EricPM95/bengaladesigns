@@ -71,7 +71,7 @@ console.log('3. La ficha')
   debe(!/Sello/.test(JSON.stringify(diana.logros.medallas)), 'nunca «Sello» en las medallas')
   debe(diana.logros.colecciones[0]?.texto.endsWith('en Roma') && /^\d+ de \d+ en Roma$/.test(diana.logros.colecciones[0].texto), 'colecciones: «N de M en Roma»')
   debe(diana.logros.pasaporte.texto === '1 país · 2 sellos', 'pasaporte: «1 país · 2 sellos»')
-  debe(diana.logros.emblemas.some((e) => e.texto === 'Primer sello'), 'logros especiales: «Primer sello»')
+  debe(diana.logros.emblemas.some((e) => e.texto === 'Primera medalla'), 'logros especiales: «Primera medalla»')
   debe((await s.ficha('no-existe')) === null && (await s.ficha('x y')) === null, 'una persona que no existe (o un id raro) da «no hay ficha»')
   debe(diana.vive_en === null, '«Vive en» sin dato (V35B)')
 }

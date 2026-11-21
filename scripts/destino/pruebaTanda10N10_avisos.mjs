@@ -18,7 +18,7 @@ globalThis.window = { localStorage: { getItem: () => null, setItem: () => undefi
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'n10avisos-'))
 const R = (p) => path.resolve(p).replace(/\\/g, '/')
-fs.writeFileSync(path.join(tmp, 'e.ts'), `export * from '${R('src/lib/sellarCambio.ts')}'\nexport { useFranjaStore, anunciarAvisosNuevos, avisosAnunciados } from '${R('src/store/useFranjaStore.ts')}'\nexport { crearAnfitrionDeCambios } from '${R('src/lib/anfitrionDeCambios.ts')}'\nexport * from '${R('shared/avisos/textos.js')}'\n`)
+fs.writeFileSync(path.join(tmp, 'e.ts'), `export * from '${R('src/lib/sellarCambio.ts')}'\nexport { useFranjaStore, anunciarAvisosNuevos, avisosAnunciados } from '${R('src/store/useFranjaStore.ts')}'\nexport { useRouteStore } from '${R('src/store/useRouteStore.ts')}'\nexport { crearAnfitrionDeCambios } from '${R('src/lib/anfitrionDeCambios.ts')}'\nexport * from '${R('shared/avisos/textos.js')}'\n`)
 buildSync({ entryPoints: [path.join(tmp, 'e.ts')], bundle: true, format: 'esm', platform: 'node', outfile: path.join(tmp, 'app.mjs'), logLevel: 'silent', define: { 'import.meta.env.DEV': 'false', 'import.meta.env': '{}' } })
 const app = await import('file://' + path.join(tmp, 'app.mjs').replace(/\\/g, '/'))
 
@@ -133,6 +133,8 @@ console.log('3. El anfitrión de cambios (la línea «Han cambiado el viaje» ya
 console.log('4. La franja y el sonido: cada aviso distinto suena')
 {
   const aviso = (id, creado) => ({ id, tipo: 'viaje_cambiado', texto: 'x', quien: 'Eric', creado_en: creado ?? new Date().toISOString(), leido: false, payload: { trip_id: 't1', quien: 'Eric', cambio: { id, quitadas: [{ nombre: 'Panteón' }], n_quitadas: 1, dias_antes: 3, dias_despues: 3 } }, etiqueta: null })
+  // (V37) Desde el arreglo del 6-nov la franja solo sale con la ruta abierta (antes espera): la prueba abre la ruta, como la persona. Sin esto los avisos se quedaban esperando y fallaban sonido, contador y clave.
+  app.useRouteStore.setState({ screen: 'route' })
   window.__sonidosPedidos.length = 0
   app.anunciarAvisosNuevos([], [aviso('u1')])
   const antes = app.avisosAnunciados()

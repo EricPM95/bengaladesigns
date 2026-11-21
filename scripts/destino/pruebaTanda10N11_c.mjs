@@ -35,7 +35,8 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
   const gen = leer('src/components/pase/lista/disenoLista.ts')
   const titulos = [...gen.matchAll(/"titulo": "([^"]*)"/g)].map((m) => m[1]).filter((t) => !/^[IVX]+ · /.test(t))
   debe(titulos.length === 20 + 8, 'diseno', `28 títulos (20 de la lista —10S7: +1— + 8 de HOY) y hay ${titulos.length}`)
-  debe(titulos.every((t) => diseno.includes(t)), 'diseno', 'todos los títulos están en la pieza de Design')
+  // (V37) Eric: en los textos la medalla se llama «medalla»; la pieza de Design aún dice «Los sellos de Roma y del Vaticano»: ese título (y solo ese) se compara con su texto de Design.
+  debe(titulos.every((t) => diseno.includes(t) || diseno.includes(t.replace('Las medallas de Roma y del Vaticano', 'Los sellos de Roma y del Vaticano'))), 'diseno', 'todos los títulos están en la pieza de Design (salvo «sellos» → «medallas», V37)')
   // Cada punto de la lista existe de verdad en la app.
   const incluye = JSON.parse(leer('data/pase/incluye.json')).ventajas.map((v) => v.id)
   const respaldo = {
@@ -53,7 +54,7 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
     'Todas las fotos que quieras': ['logros_guarda_recuerdo'],
     'Tus fotos, guardadas en la nube': ['logros_guarda_recuerdo'],
     'El resumen de cada día y de tu viaje': ['despues_resumen_dia', 'despues_resumen_viaje'],
-    'Los sellos de Roma y del Vaticano': ['logros_sellos'],
+    'Las medallas de Roma y del Vaticano': ['logros_sellos'],
     'Tu pasaporte de viajero': ['logros_viajero'],
     'Tu mapa del mundo': ['logros_viajero'],
     '11 colecciones y 12 emblemas secretos': ['logros_colecciones', 'logros_emblemas'],

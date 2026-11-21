@@ -152,7 +152,7 @@ console.log('4. Un viaje guardado con las reservas vacías no tumba la app (la c
   debe(/getDerivedStateFromError/.test(piezaSegura) && /avisarDeError\(error, info\.componentStack \?\? undefined, this\.props\.nombre\)/.test(piezaSegura) && /alternativa \?\? null/.test(piezaSegura), 'pieza', 'PiezaSegura: si se rompe, esa pieza no se pinta (o su alternativa) y se avisa al servidor con su nombre')
   const app = leer('src/App.tsx')
   const hosts = ['TripSync', 'PuertaDeCuenta', 'CompartidoHost', 'PagoHost', 'PrecioVuela', 'FotoVuela', 'MomentosHost', 'AvisosHost', 'GastosCompartidosHost', 'HojaResumenVuelo']
-  debe(hosts.every((h) => new RegExp(`<PiezaSegura nombre="${h}">\\s*<${h} />\\s*</PiezaSegura>`).test(app)), 'pieza', 'App.tsx: cada «host» (TripSync, PuertaDeCuenta, PrecioVuela, MomentosHost…) va en su PiezaSegura')
+  debe(hosts.every((h) => new RegExp(`<PiezaSegura nombre="${h}"[^>]*>\\s*<${h} />\\s*</PiezaSegura>`).test(app) /* (V37) con o sin `reintentable`/`alReintentar`: MomentosHost los lleva desde la V25 */), 'pieza', 'App.tsx: cada «host» (TripSync, PuertaDeCuenta, PrecioVuela, MomentosHost…) va en su PiezaSegura')
   debe(/<PiezaSegura key=\{v\.id\} nombre="fila de Mis viajes">/.test(leer('src/components/logros/pantallas/perfil/ListaDeViajes.tsx')), 'pieza', 'cada fila de Mis viajes va en su PiezaSegura')
   const presupuesto = leer('src/lib/presupuesto.ts')
   debe(/Object\.entries\(entrada\.transportBookings \?\? \{\}\)/.test(presupuesto) && /Object\.entries\(entrada\.esimPrecios \?\? \{\}\)/.test(presupuesto), 'presupuesto', 'el presupuesto tampoco revienta con las reservas sin rellenar')

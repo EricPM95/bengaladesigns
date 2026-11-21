@@ -164,8 +164,9 @@ for (const [destino, hoy, coche] of [['roma', '2026-10-17', false], ['lanzarote'
     debe(/Cómo llegar/.test(t) && /Cambiar plan/.test(t) && /Ya he llegado/.test(t), 'etiquetas', `${etq}: [Cómo llegar], [Cambiar plan] y «¿No te detecta el GPS? Ya he llegado»`)
     debe(!(await app.evaluar("Boolean(document.querySelector('[data-boton-cama-hoy]'))")), 'cama', `${etq}: sin la cama de arriba`)
     // Los flotantes: solo dos (la cámara y los logros), fijos; nada encima de la foto.
+    // (V37) El botón flotante «Cuéntanos» (V28b, 19-nov) es un tercer flotante de la app, no de HOY: la regla cuenta los de HOY (cámara y logros). Antes la prueba lo contaba y fallaba sin que HOY cambiara.
     const flot = await app.evaluar(`(() => Array.from(document.querySelectorAll('button')).filter((b) => getComputedStyle(b).position === 'fixed' && b.getBoundingClientRect().width >= 40 && b.getBoundingClientRect().width <= 60 && !/Pruebas/.test(b.textContent || '')).map((b) => b.getAttribute('data-camara-viaje') ? 'camara' : b.getAttribute('data-boton-logros') ? 'logros' : 'otro:' + (b.getAttribute('aria-label') || b.textContent)))()`)
-    debe(flot.length === 2 && flot.includes('camara') && flot.includes('logros'), 'flotantes', `${etq}: flotantes, solo dos: la cámara de viaje y el de los logros (${flot.join(', ')})`)
+    debe(flot.filter((x) => x !== 'otro:Cuéntanos').length === 2 && flot.includes('camara') && flot.includes('logros'), 'flotantes', `${etq}: flotantes, solo dos: la cámara de viaje y el de los logros (${flot.join(', ')})`)
     const sobreFoto = await app.evaluar("(() => { const f = document.querySelector('[data-hoy-foto-parada]'); if (!f) return 0; const r = f.getBoundingClientRect(); return Array.from(f.querySelectorAll('button, a')).length })()")
     debe(sobreFoto === 0, 'flotantes', `${etq}: encima de la foto, nada (ningún botón dentro de la foto)`)
     debe(await app.evaluar("document.querySelector('[data-camara-viaje=\"boton\"]')?.getAttribute('aria-label')?.length > 0"), 'flotantes', `${etq}: la cámara lleva su aria-label`)

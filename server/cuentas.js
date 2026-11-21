@@ -3,8 +3,9 @@
  *
  *   POST   /api/cuenta/reclamar   Entrar con una cuenta que ya existía desde un móvil que tenía una sesión anónima: pasa a la cuenta lo del móvil.
  *                                 Cabecera Authorization: Bearer <token de la cuenta>; cuerpo { anonToken } (el de la sesión anónima de antes).
- *   DELETE /api/cuenta            Borra la cuenta y todo lo suyo: archivos de las fotos y, en cascada, viajes, invitaciones, vistos, fotos, logros y pases.
- *                                 Cabecera Authorization: Bearer <token de la cuenta>.
+ *   DELETE /api/cuenta            Borra la cuenta y todo lo suyo (V37, RGPD): hace lo mismo que `empezar_de_cero` (viajes, fotos, logros, datos, pases; un viaje o un pase con otras personas pasa a ellas) y además borra
+ *                                 los archivos de las fotos y la cuenta de acceso (Supabase Auth). Se queda el registro de los pagos (`pagos_registro`: fecha e importe; contabilidad, la ley lo pide).
+ *                                 Cabecera Authorization: Bearer <token de la cuenta>; cuerpo { confirmar: 'BORRAR' }. Solo desde la propia cuenta, con sesión de verdad (nunca anónima) y nunca la de un administrador.
  *
  * Sin la clave de servicio (SUPABASE_SERVICE_ROLE_KEY) las dos responden 503 con un aviso claro y no tocan nada. El cliente de Supabase con la clave de servicio
  * se pasa de fuera (`admin`), así las pruebas lo cambian por uno de mentira sin red. No toca el motor de rutas.
@@ -18,6 +19,13 @@ const SIN_CLAVE = 'Las cuentas todavía no están preparadas en el servidor (fal
 export const tokenDe = (req) => {
   const cabecera = String(req.get?.('authorization') ?? req.headers?.authorization ?? '')
   return cabecera.startsWith('Bearer ') ? cabecera.slice(7).trim() || null : null
+}
+
+/** (V37) ¿Es una cuenta de administrador? (por variables del servidor, nunca un correo escrito en el código; igual que `esAdmin` de logros/rutas.js, que no se puede importar aquí sin un círculo.) */
+export function esCuentaAdministradora(usuario, env = process.env) {
+  const lista = String(env.LOGROS_ADMIN_EMAILS ?? '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean)
+  const ids = String(env.LOGROS_ADMIN_IDS ?? '').split(',').map((x) => x.trim()).filter(Boolean)
+  return Boolean(usuario) && (lista.includes(String(usuario.email ?? '').toLowerCase()) || ids.includes(usuario.id))
 }
 
 /** El usuario de ese token, o null si no vale. */
@@ -49,12 +57,31 @@ export async function archivosDe(admin, uid, bucket = BUCKET_FOTOS) {
  * Borra la cuenta sin que pierdan nada los demás (parte 2): primero `preparar_borrado` (un viaje con invitados pasa a administrarlo el invitado que entró primero; un pase con otras
  * personas se queda con ellas), después los archivos de las fotos (no caen en cascada) y por último el usuario, que se lleva en cascada lo que quede suyo.
  */
-export async function borrarCuenta(admin, token) {
+export async function borrarCuenta(admin, token, { env = process.env } = {}) {
   const usuario = await quienEs(admin, token)
   if (!usuario) return { estado: 401, cuerpo: { error: 'Tu sesión no es válida. Entra otra vez y vuelve a probar.' } }
-  const { data: preparado, error: errorPreparar } = await admin.rpc('preparar_borrado', { p_uid: usuario.id })
-  if (errorPreparar) return { estado: 500, cuerpo: { error: 'No se pudo preparar el borrado. No se ha borrado nada; vuelve a probar.' } }
-  const archivos = await archivosDe(admin, usuario.id)
+  // (V37) Solo desde la propia cuenta, con sesión de verdad: una sesión anónima no tiene cuenta que borrar, y la de un administrador la borra otro administrador.
+  if (usuario.is_anonymous === true) return { estado: 403, cuerpo: { error: 'Entra con tu cuenta para poder borrarla.', anonima: true } }
+  if (esCuentaAdministradora(usuario, env)) return { estado: 403, cuerpo: { error: 'Pídeselo a otro administrador.', administrador: true } }
+  // 1. Se listan los archivos (si falla, no se ha borrado nada).
+  let archivos
+  try {
+    archivos = await archivosDe(admin, usuario.id)
+  } catch {
+    return { estado: 500, cuerpo: { error: 'No se han podido leer tus fotos. No se ha borrado nada; vuelve a probar.' } }
+  }
+  // 2. Lo mismo que «Empezar de cero» (`empezar_de_cero`, migración 0091: viajes, fotos, logros, datos y pases; lo compartido pasa a los demás antes de borrar nada y los pagos NO se tocan). Si la función aún no existe (migración sin aplicar), se cae al camino de siempre: `preparar_borrado` y la cascada.
+  let preparado = null
+  const { data: hecho, error: errorBorrar } = await admin.rpc('empezar_de_cero', { p_uid: usuario.id })
+  if (errorBorrar) {
+    const falta = /empezar_de_cero|PGRST202|42883/.test(`${errorBorrar.code ?? ''} ${errorBorrar.message ?? ''}`)
+    if (!falta) return { estado: 500, cuerpo: { error: 'No se pudo preparar el borrado. No se ha borrado nada; vuelve a probar.' } }
+    const { data: prep, error: errorPreparar } = await admin.rpc('preparar_borrado', { p_uid: usuario.id })
+    if (errorPreparar) return { estado: 500, cuerpo: { error: 'No se pudo preparar el borrado. No se ha borrado nada; vuelve a probar.' } }
+    preparado = prep ?? null
+  } else {
+    preparado = hecho?.traspasado ?? null
+  }
   for (let i = 0; i < archivos.length; i += 100) {
     const { error } = await admin.storage.from(BUCKET_FOTOS).remove(archivos.slice(i, i + 100))
     if (error) return { estado: 500, cuerpo: { error: 'No se pudieron borrar tus fotos. No se ha borrado nada más; vuelve a probar.' } }
@@ -152,6 +179,8 @@ export function registrarRutasCuentas(app, admin) {
   app.delete('/api/cuenta', async (req, res) => {
     if (!admin) return res.status(503).json({ error: SIN_CLAVE })
     try {
+      // (V37) Hay que mandar { confirmar: 'BORRAR' } (la app lo manda al escribir la palabra en la hoja): un DELETE suelto no borra nada.
+      if (req.body?.confirmar !== 'BORRAR') return res.status(400).json({ error: 'Escribe BORRAR para confirmar que quieres borrar tu cuenta.' })
       responder(res, await borrarCuenta(admin, tokenDe(req)))
     } catch (error) {
       console.error('[cuenta/borrar]', error)

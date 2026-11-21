@@ -60,7 +60,7 @@ const nombresCatalogo = new Set([...(D.places ?? []), ...(D.lugares_solo_lista ?
 const nombresDeCategorias = [...exp.matchAll(/'([^']+)'/g)].map((m) => m[1]).filter((n) => /^[A-ZÁÉÍÓÚ]/.test(n) && !/^(Volcanes|César Manrique|Playas y charcos|Miradores|Pueblos|Bodegas|Excursiones|atracciones|entradas|excursiones|restaurantes|hoteles|miradores)$/.test(n))
 debe(nombresDeCategorias.length > 30 && nombresDeCategorias.every((n) => nombresCatalogo.has(n)), '4c', `cada sitio de las categorías existe en el catálogo (${nombresDeCategorias.filter((n) => !nombresCatalogo.has(n)).join('; ') || 'todos'})`)
 const panelExp = crudo('src/components/route/ExplorePanel.tsx')
-debe(panelExp.includes('CATEGORIAS_EXPLORAR_LANZAROTE') && panelExp.includes('lugaresDeCategoriaLanzarote(categoriaLz, curatedPool)'), '4d', 'EXPLORAR de Lanzarote pinta sus categorías y abre cada una con sus sitios')
+debe(panelExp.includes('CATEGORIAS_EXPLORAR_LANZAROTE') && /lugaresDeCategoriaLanzarote\(\w+, curatedPool\)/.test(panelExp) /* (V37) la variable ya no se llama categoriaLz */, '4d', 'EXPLORAR de Lanzarote pinta sus categorías y abre cada una con sus sitios')
 debe(/\['Mirador del Río'|'Mirador del Río'/.test(exp) && (exp.match(/'Mirador del Río'/g) ?? []).length === 3 /* (6-nov: dos en sus listas + la foto de la tarjeta Miradores) */, '4e', 'un sitio puede estar en dos categorías (el Mirador del Río, en Manrique y en Miradores)')
 debe((D.lugares_solo_lista ?? []).some((p) => p.id === 'charco_del_palo' && p.nudista === true) && /place\.nudista === true \? 'Zona nudista'/.test(servidor), '4f', 'el Charco del Palo solo en EXPLORAR, con «Zona nudista»')
 debe(!(D.places ?? []).some((p) => p.id === 'charco_del_palo' || p.id === 'museo_atlantico'), '4g', 'el Charco del Palo y el Museo Atlántico no son paradas de la ruta')
@@ -92,7 +92,7 @@ const lista = crudo('src/components/pase/lista/listaDeCoche.ts')
 for (const t of ['o el ferry', 'los minutos en coche', 'Gasolineras, aparcamientos y dónde comer', 'los 12 sitios', 'Vuelve a Lanzarote cuando quieras', 'Los avisos del día', 'LOGROS']) debe(lista.includes(t), '6c', `la lista del pase de Lanzarote lleva «${t}»`)
 debe(crudo('src/components/pase/ListaDelPase.tsx').includes('listaParaDestino(SECCIONES_DE_LA_LISTA, destino)') && crudo('src/components/route/hoy/HoySinPase.tsx').includes('tarjetasDeHoy2(destino)'), '6d', 'la lista del pase y HoySinPase usan la de Lanzarote')
 const textosLz = [lista, crudo('src/lib/exploreLanzarote.ts'), bloque, aparcarFn, cerca.slice(cerca.indexOf('deCoche ?'))].join('\n')
-debe(!/Pompeya|Florencia|Ciampino|Vaticano|Fiumicino|Coliseo/.test(sinComentarios(textosLz.replace(/'Los sellos de Roma[^']*'/g, ''))), '6e', 'los textos nuevos de Lanzarote no nombran nada de Roma')
+debe(!/Pompeya|Florencia|Ciampino|Vaticano|Fiumicino|Coliseo/.test(sinComentarios(textosLz.replace(/'Las medallas de Roma[^']*'/g, ''))), '6e', 'los textos nuevos de Lanzarote no nombran nada de Roma')
 
 // ── Por HTTP (solo si la API enseña Lanzarote) ───────────────────
 const B = 'http://localhost:8787'

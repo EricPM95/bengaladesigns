@@ -90,7 +90,8 @@ for (const n of [0, 1, 6]) {
   const iCred = marco.indexOf('>Créditos<')
   const iNuevo = marco.indexOf('data-anadir-viaje')
   debe(iCred > 0 && iNuevo > iCred && marco.indexOf('<button', iNuevo) === -1, 'A', `con ${n} viajes: «Créditos» y el [+] flotante no están al final del todo, en ese orden`)
-  debe(/width:64px;height:64px/.test(marco.slice(iNuevo - 300, iNuevo + 800)), 'A', `con ${n} viajes: el [+] flotante no es el círculo de 64 px del diseño (10N5)`)
+  // (V37) antes → ahora → decisión de Eric (V31, Design «Boton Mas» versión C): el círculo del [+] pasó de 64 a 72 px (`BotonMas.tsx`); la prueba seguía pidiendo 64.
+  debe(/width:72px;height:72px/.test(marco.slice(iNuevo - 300, iNuevo + 800)), 'A', `con ${n} viajes: el [+] flotante no es el círculo de 72 px del diseño (V31)`)
   // El cuerpo SIN logros: el perfil nuevo sin EXP, vitrina ni billete.
   debe(/data-cabecera-sin-logros/.test(html) && /Hola, <em>Viajero<\/em>/.test(html), 'A', `con ${n} viajes y sin logros: falta «Hola, <em>Viajero</em>» en la cabecera del perfil nuevo`)
   debe(/data-editar-perfil/.test(html) && /data-ajustes/.test(marco), 'A', `con ${n} viajes y sin logros: faltan la foto que se toca y los Ajustes`)

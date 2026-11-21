@@ -80,7 +80,7 @@ function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; r
       </div>
 
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <Titulo>Sellos de ciudad</Titulo>
+        <Titulo>Medallas de ciudad</Titulo>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {datos.sellos.map((s) => <TarjetaDeSello pin={s.grado ? enVitrina(`${datos.destino}|sello|${s.id}:${s.grado}`) : undefined} key={s.id} s={s} aqui={resaltar === s.id} />)}
         </div>
@@ -147,7 +147,7 @@ function TarjetaDeSello({ s, aqui, pin }: { s: SelloDePagina; aqui: boolean; pin
   return (
     <div style={{ position: 'relative', borderRadius: 20, background: '#FFFDF8', border: `1px solid ${aqui ? 'oklch(0.8 0.14 70)' : 'rgba(28,34,48,.07)'}`, boxShadow: aqui ? '0 0 0 3px oklch(0.8 0.14 70 / .35)' : 'none', padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center' }}>
       <Sello id={s.id} grado={(s.grado ?? 'bronce') as GradoDeSello} tam={72} apagado={!s.grado} animado={false} />
-      <span style={{ font: "400 15px/1.1 'Instrument Serif',serif" }}>{`Sello ${conDe(s.nombre)}`}</span>
+      <span style={{ font: "400 15px/1.1 'Instrument Serif',serif" }}>{`Medalla ${conDe(s.nombre)}`}</span>
       <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.08em', color, textTransform: 'uppercase' }}>{s.grado ?? 'Por conseguir'}</span>
       {aqui && <span style={{ height: 22, padding: '0 9px', borderRadius: 999, background: '#F1E3BF', color: '#6F4E37', font: "700 10.5px/22px 'Geist'" }}>Estás aquí</span>}
       <PinDeVitrina puesto={pin} arriba={8} derecha={8} />

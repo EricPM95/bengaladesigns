@@ -23,9 +23,9 @@
     { "id": "hoy_avisos_dia", "grupo": "HOY", "texto": "Los avisos del día", "origen": "Los avisos del día" },
     { "id": "hoy_aviso_lluvia", "grupo": "HOY", "texto": "El aviso de lluvia con [Ver alternativa]", "origen": "Los avisos del día" },
 
-    { "id": "logros_sellos", "grupo": "Logros", "texto": "Los sellos de Roma y del Vaticano", "origen": "Los sellos de Roma" },
-    { "id": "logros_colecciones", "grupo": "Logros", "texto": "Las 11 colecciones", "origen": "Los sellos de Roma" },
-    { "id": "logros_emblemas", "grupo": "Logros", "texto": "Los 12 emblemas secretos", "origen": "Los sellos de Roma" },
+    { "id": "logros_sellos", "grupo": "Logros", "texto": "Las medallas de Roma y del Vaticano", "origen": "Las medallas de Roma" },
+    { "id": "logros_colecciones", "grupo": "Logros", "texto": "Las 11 colecciones", "origen": "Las medallas de Roma" },
+    { "id": "logros_emblemas", "grupo": "Logros", "texto": "Los 12 emblemas secretos", "origen": "Las medallas de Roma" },
     { "id": "logros_viajero", "grupo": "Logros", "texto": "Los logros de viajero (países, destinos, maravillas, el tiempo…)", "origen": "Los logros de viajero" },
     { "id": "logros_boton_flotante", "grupo": "Logros", "texto": "El botón flotante", "origen": "El botón flotante" },
     { "id": "logros_pantalla", "grupo": "Logros", "texto": "La pantalla de Logros", "origen": "El botón flotante" },

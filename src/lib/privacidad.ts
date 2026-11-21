@@ -43,7 +43,12 @@ export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
   },
   { id: 'cuanto-tiempo', titulo: 'Cuánto tiempo lo guardamos', pregunta: 'Cuánto dura cada dato y qué pasa cuando dejas de usar la app.' },
   { id: 'con-quien', titulo: 'Con quién lo compartimos', pregunta: 'Los servicios de fuera que tratan datos para que la app funcione (lista de abajo).' },
-  { id: 'como-borrarlo', titulo: 'Cómo borrarlo', pregunta: 'Cómo borrar tu cuenta y todo lo tuyo desde la app, y qué se borra.' },
+  { id: 'como-borrarlo', titulo: 'Cómo borrarlo', pregunta: 'Cómo borrar tu cuenta y todo lo tuyo desde la app, y qué se borra.',
+    escrito: [
+      'Puedes borrar tu cuenta cuando quieras desde Ajustes, al final: «Borrar mi cuenta». Se borran tus viajes, fotos, logros y datos. Los pases que pagaste se pierden; los que usa otra persona pasan a ella.',
+      'Por ley guardamos el registro de tus pagos (fecha e importe). Si no puedes entrar en la app, escríbenos y lo borramos nosotros: ' + CORREO_PRIVACIDAD + '.',
+    ],
+  },
   { id: 'tus-derechos', titulo: 'Tus derechos', pregunta: 'Acceder, corregir, llevarte tus datos y reclamar.' },
   { id: 'condiciones', titulo: 'Condiciones de uso y de compra', pregunta: 'Las reglas de uso de la app y de la compra del pase: qué incluye, el derecho de desistimiento en lo digital, las devoluciones y cómo reclamar.' },
   { id: 'a-quien-escribir', titulo: 'A quién escribir', pregunta: 'El correo para dudas de privacidad.', escrito: [`Para dudas de privacidad: ${CORREO_PRIVACIDAD}.`] },

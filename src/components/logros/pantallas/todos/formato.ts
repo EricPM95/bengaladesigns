@@ -28,13 +28,13 @@ export const GRUPO: Record<string, { color: string; matiz: number }> = {
 }
 export const NOMBRE_DE_GRUPO: Record<string, string> = { mundo: 'El mundo', tiempo: 'El tiempo', como_viajas: 'Cómo viajas', coleccionista: 'Coleccionista' }
 
-/** «Logro de viajero · El mundo», «Sello de ciudad · Oro»…: la etiqueta de arriba de cada pieza. */
+/** «Logro de viajero · El mundo», «Medalla de ciudad · Oro»…: la etiqueta de arriba de cada pieza. */
 export function etiquetaDe(it: Pick<ItemGanado, 'tipo' | 'grupo' | 'grado'>): string {
   switch (it.tipo) {
     case 'viajero':
       return `Logro de viajero · ${NOMBRE_DE_GRUPO[it.grupo ?? ''] ?? ''}`.replace(/ · $/, '')
     case 'sello':
-      return `Sello de ciudad · ${NOMBRE_DE_GRADO[it.grado ?? ''] ?? ''}`.replace(/ · $/, '')
+      return `Medalla de ciudad · ${NOMBRE_DE_GRADO[it.grado ?? ''] ?? ''}`.replace(/ · $/, '')
     case 'coleccion':
       return 'Colección completada'
     case 'emblema':

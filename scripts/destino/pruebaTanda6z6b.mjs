@@ -251,7 +251,8 @@ for (const v of lista) debe(textoPerfil.includes(v.destino) && (!v.cuando || tex
   const pos = (id) => textoPerfil.indexOf(lista.find((v) => v.id === id).cuando)
   debe(pos('r1') < pos('r2') && pos('r2') < pos('r3') && pos('r5') < pos('r1'), 'B5', 'el Perfil no pinta los viajes en orden')
 }
-debe(/data-anadir-viaje/.test(fs.readFileSync('src/components/layout/PerfilSheet.tsx', 'utf8')) && !/Tips del viaje/.test(textoPerfil), 'B5', 'falta el [+] Añadir un viaje (10N5) en el Perfil, o sigue ahí [Tips del viaje] (ahora es la bombilla de RUTA)')
+// (V37) Desde la V31 el [+] vive en `BotonMas.tsx` (lo pinta PerfilSheet): antes se buscaba `data-anadir-viaje` en PerfilSheet y fallaba sin que nada se hubiera roto.
+debe(/<BotonMas /.test(fs.readFileSync('src/components/layout/PerfilSheet.tsx', 'utf8')) && /data-anadir-viaje/.test(fs.readFileSync('src/components/primeraVez/BotonMas.tsx', 'utf8')) && !/Tips del viaje/.test(textoPerfil), 'B5', 'falta el [+] Añadir un viaje (10N5) en el Perfil, o sigue ahí [Tips del viaje] (ahora es la bombilla de RUTA)')
 debe(/(En \d+ días|Mañana|Hoy|Próximo)/.test(textoPerfil) && !/Hecho/.test(textoPerfil), 'B5', '10N9 (al día, V8: el Perfil ya no lleva la etiqueta «Hecho»): cada tarjeta lleva su etiqueta de Design («En N días» o «Próximo»)')
 debe(/Mis viajes/.test(textoPerfil), 'B5', 'falta el rótulo «Mis viajes»')
 
