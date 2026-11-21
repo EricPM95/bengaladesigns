@@ -1,13 +1,13 @@
-# Estado de la tanda v35b
+# Estado de la tanda v35b2
 
-**Última actualización: 21/11/26, 1:17**
+**Última actualización: 21/11/26, 12:04**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-Tanda terminada y subida a main (4cd74d3e); produccion carga sin la 0091; API reiniciada
+Tanda terminada y subida a main (d40e5fc4); produccion carga; API reiniciada
 
 ## Qué falta
-Nada: Eric aplica la 0091 (ver PARA ERIC en REPASO_V35B)
+Nada
 
 ## Procesos abiertos ahora mismo
 - node: 3
