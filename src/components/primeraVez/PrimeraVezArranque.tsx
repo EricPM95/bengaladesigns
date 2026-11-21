@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'rea
 import { cuentasActivas } from '../../lib/cuentas'
 import { LogoJutrip } from '../ui/LogoJutrip'
 import { debeEnseñarPreguntas, pedirEstadoPrimeraVez, usePrimeraVezUi } from '../../lib/primeraVez'
+import { avisarDeUsoUnaVezAlDia } from '../../lib/usoDiario'
 import { useRouteStore } from '../../store/useRouteStore'
 import { usePerfilUi } from '../../store/usePerfilUi'
 import { useSyncStore } from '../../store/useSyncStore'
@@ -58,6 +59,12 @@ export function PrimeraVezArranque(): ReactNode {
         setDecidido(true)
       })
   }, [cargaHecha, cuenta.tipo, sinViajes])
+
+  // (V35B) Una vez al día, la app avisa de que esta cuenta ha estado activa (aparato e instalada; sin IP ni ubicación). Solo cuentas de verdad.
+  useEffect(() => {
+    if (cuenta.tipo !== 'cuenta' || !cuentasActivas()) return
+    void avisarDeUsoUnaVezAlDia()
+  }, [cuenta.tipo])
 
   const perfilAbierto = usePerfilUi((s) => s.abierto)
   return (

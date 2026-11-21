@@ -1,4 +1,5 @@
 import { llamar } from '../../lib/logros'
+import { conFiltroDePruebas, useSinPruebas } from './pruebas'
 
 /**
  * (V33) LO QUE CUENTA EL SERVIDOR AL PANEL DE JUTRIP (`/api/admin/*`, carpeta `server/panel/`). Todo es solo para administradores: el servidor responde 401/403 al que no lo es y aquí eso llega como «sin respuesta».
@@ -22,6 +23,10 @@ export interface OpcionDeRespuesta {
   n: number
   pct: number
 }
+export interface DondeViven {
+  total: number
+  paises: { iso: string; nombre: string; n: number; pct: number }[]
+}
 export interface Inicio {
   ok: boolean
   periodo: InfoPeriodo
@@ -35,6 +40,8 @@ export interface Inicio {
   atencion: { tipo: 'reporte' | 'foto' | 'venta' | 'fallo'; titulo: string; en: string; id?: string }[]
   primera_vez: { contestaron: number; bloques: { id: string; titulo: string; total: number; opciones: OpcionDeRespuesta[] }[] }
   desde_donde: { paises: { iso: string; n: number }[]; ciudades: { nombre: string; iso: string | null; n: number }[] }
+  /** (V35B) Personas por país donde viven; `null` = aún no se guarda («Pronto»). */
+  donde_viven: DondeViven | null
   correo: { activo: boolean }
 }
 export interface PrimeraVezDeUsuario {
@@ -101,23 +108,27 @@ export interface Ventas {
   moneda: string
   pases: { periodo: number; hoy: number }
   ingresos_cent: number
-  te_queda: { cent: number; comision_cent: number | null; antes_de_impuestos: boolean }
+  devoluciones_cent?: number
+  te_queda: { cent: number; comision_cent: number | null; devoluciones_cent?: number; sin_comision?: number; antes_de_impuestos: boolean }
   conversion: { pct: number; compraron: number; viajeros: number }
   por_dia: { tipo: 'dia' | 'semana' | 'mes'; cubetas: Cubeta[] }
   por_destino: { destino: string; n: number; importe_cent: number }[]
   compras: CompraDelPanel[]
   total_compras: number
-  afiliados: { clics: null; enlaces: { civitatis: string; stay22: string } }
+  /** (V35B) clics null = falta la migración 0091 («Pronto»). */
+  afiliados: { clics: number | null; por_destino?: { destino: string; actividad: number; hotel: number }[]; por_proveedor?: { civitatis: number; stay22: number } | null; enlaces: { civitatis: string; stay22: string } }
 }
 export interface DestinosDelPanel {
   ok: boolean
   periodo: InfoPeriodo
   pedidos: { destino: string; veces: number; quieren_aviso: number; avisados: number; ultimo_aviso: string | null; proximamente: boolean; lanzado?: boolean }[]
-  proximamente: { destino: string; iso: string | null; avisos: number; avisados: number }[]
+  /** (V35B) ¿Se pueden cambiar los Próximamente? false = falta la migración 0091 (los botones salen apagados con «Pronto»). */
+  puede_editar?: boolean
+  proximamente: { clave?: string | null; destino: string; iso: string | null; publicado?: boolean; avisos: number; avisados: number }[]
   correo: { activo: boolean }
 }
 
-export const pedir = <T,>(ruta: string): Promise<T | null> => llamar<T>(ruta)
+export const pedir = <T,>(ruta: string): Promise<T | null> => llamar<T>(conFiltroDePruebas(ruta, useSinPruebas.getState().on))
 export const mandar = <T,>(ruta: string, cuerpo: unknown, metodo = 'POST'): Promise<T | null> => llamar<T>(ruta, { metodo, cuerpo })
 
 /** Pura: un número con el punto de los miles («3.482»), también de cuatro cifras. */
@@ -179,6 +190,8 @@ export interface UsuarioFila {
   id: string
   nombre: string
   email: string
+  /** (V35B) Cuenta de prueba o de administrador: la lista la enseña con la etiqueta «Prueba». */
+  prueba?: boolean
   alta: string | null
   ultimo_acceso: string | null
   nivel: number
@@ -228,11 +241,13 @@ export interface UsuariosResumen {
   nuevos: number
   activos: number
   embudo: { id: string; etiqueta: string; n: number; ancho: number; pasa_pct: number | null }[]
-  actividad: { dia: number; semana: number; mes: number; retencion_pct: number | null }
+  actividad: { dia: number; semana: number; mes: number; retencion_pct: number | null; retencion_base: number; retencion_vuelven: number; de_uso: boolean }
+  /** (V35B) Aparato y dónde la usan (de `uso_diario`); `null` = «Pronto». */
+  uso: { aparato: OpcionDeRespuesta[]; donde: OpcionDeRespuesta[]; con_dato: number } | null
   viajando: { hoy: number; proximos30: number; destinos: { clave: string; destino: string; iso: string | null; hoy: number; en30: number }[] }
   calendario: { leyenda: { clave: string; destino: string; color: string }[]; meses: HuecoDeCalendario[]; semanas: HuecoDeCalendario[]; mes_fuerte: string | null; frase: string }
   quienes: { contestaron: number; frecuencia: OpcionDeRespuesta[]; compania: OpcionDeRespuesta[]; edad: OpcionDeRespuesta[] }
-  donde_viven: null
+  donde_viven: DondeViven | null
   desde_donde: { paises: { iso: string; nombre: string; n: number }[]; ciudades: { nombre: string; iso: string | null; n: number }[] }
   niveles: { nivel: number; n: number }[]
   entran: { total: number; correo: number; google: number; otros: number; correo_pct: number; google_pct: number; otros_pct: number }
@@ -241,7 +256,7 @@ export interface UsuariosResumen {
 export interface UsuarioFicha {
   ok: boolean
   usuario: UsuarioFila
-  vive_en: string | null
+  vive_en: { iso: string; nombre: string } | null
   hoy: string
   ahora: string
   pase_texto: string

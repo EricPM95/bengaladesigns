@@ -45,12 +45,12 @@ console.log('1. Una cuenta nueva nunca ve ORIGEN/DESTINO antes de las preguntas 
     const sale = await esperar(a, "Boolean(document.querySelector('[data-bienvenida-primera-vez]'))")
     debe(sale, 'bienvenida', 'sale la bienvenida ANTES de la primera pregunta')
     const b = (await J(a, `JSON.stringify({ texto: document.querySelector('[data-bienvenida-primera-vez]').innerText.replace(/\\s+/g, ' '), logo: Boolean(document.querySelector('[data-bienvenida-primera-vez] svg')), empezar: Boolean(document.querySelector('[data-empezar]')), saltar: Boolean(document.querySelector('[data-saltar-bienvenida]')), preguntas: Boolean(document.querySelector('[data-preguntas-primera-vez]')) })`))
-    debe(/Bienvenido a JUTRIP/.test(b.texto) && /De viajeros, para viajeros/i.test(b.texto) && /Cuatro preguntas rápidas para conocerte y empezamos/.test(b.texto), 'bienvenida', `la bienvenida dice «Bienvenido a JUTRIP», el lema y «Cuatro preguntas rápidas para conocerte y empezamos» (${b.texto})`)
+    debe(/Bienvenido a JUTRIP/.test(b.texto) && /De viajeros, para viajeros/i.test(b.texto) && /Cinco preguntas rápidas para conocerte y empezamos/.test(b.texto), 'bienvenida', `la bienvenida dice «Bienvenido a JUTRIP», el lema y «Cinco preguntas rápidas para conocerte y empezamos» (${b.texto})`)
     debe(b.logo && b.empezar && b.saltar && !b.preguntas, 'bienvenida', 'lleva el logo con su estrella, [Empezar] y «Saltar»; todavía no hay ninguna pregunta')
     await clic(a, '[data-empezar]')
     await esperar(a, "Boolean(document.querySelector('[data-pregunta=\"1\"]'))")
     debe(/Cada cuánto viajas/.test(await a.evaluar('document.body.innerText')), 'bienvenida', 'tras [Empezar], la pregunta 1')
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       await clic(a, '[data-saltar]')
       await a.esp(250)
     }
@@ -62,7 +62,7 @@ console.log('1. Una cuenta nueva nunca ve ORIGEN/DESTINO antes de las preguntas 
     a.cerrar()
   }
 }
-console.log('1b. «Saltar» en la bienvenida salta las cuatro preguntas')
+console.log('1b. «Saltar» en la bienvenida salta las cinco preguntas')
 {
   const a = await abrirApp(APP, { ruta: RUTA, ancho: 390, alto: 844, antes: `${NUEVA}${CURADOS}${VIGILA}` })
   try {

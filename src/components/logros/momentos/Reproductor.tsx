@@ -68,12 +68,15 @@ export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: 
     // (V29) Saltar la animación: el sonido se corta con un fundido corto (la siguiente trae el suyo).
     cortarSonidos()
     vistas.current.push(...clavesDe(p))
+    let vuela = false
     // Cada cosa vuela a su sitio: lo del destino al botón de logros, lo de viajero al Perfil (el diseño puede marcar el suyo con data-vuelo).
     for (const el of Array.from(contenedor.current?.querySelectorAll<HTMLElement>('[data-vuelo]') ?? [])) {
       const marca = el.getAttribute('data-vuelo')
       const destino: DestinoVuelo = marca === 'perfil' || marca === 'logros' ? marca : destinoDelVuelo(p.tipo)
-      volar(el, destino)
+      if (volar(el, destino) > 0) vuela = true
     }
+    // (V35B) Lo ganado que vuela al botón o al Perfil suena (un solo «vuuush», aunque vuelen varias cosas a la vez), salvo dentro del visor de /admin/sonidos, que ya lo hace sonar él.
+    if (vuela && !(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) void sonar('vuelo')
     if (i + 1 >= pantallas.length) cerrar()
     else setI(i + 1)
   }, [i, pantallas, cerrar])

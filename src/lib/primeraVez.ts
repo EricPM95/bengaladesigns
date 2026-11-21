@@ -1,4 +1,5 @@
 import destinosDelArchivo from '../../data/primera_vez/destinos.json'
+import { proximamenteDelServidor } from './proximamente'
 import { llamar } from './logros'
 import type { DestinoCurado } from './destinosCurados'
 import { create } from 'zustand'
@@ -15,6 +16,8 @@ export interface RespuestasPrimeraVez {
   frecuencia: Frecuencia | null
   compania: Compania | null
   anio_nacimiento: number | null
+  /** (V35B) El país donde vive (2 letras, mayúsculas), opcional. */
+  pais_vive?: string | null
 }
 export interface EstadoPrimeraVez extends RespuestasPrimeraVez {
   hecho: boolean
@@ -30,12 +33,12 @@ export const debeEnseñarPreguntas = (d: { nuevo: boolean; hecho: boolean | null
 /** Lo que dice el servidor, o null si no contesta (sin la tabla, sin red…): entonces las preguntas NO salen y la app sigue como siempre. */
 export async function pedirEstadoPrimeraVez(): Promise<EstadoPrimeraVez | null> {
   const r = await llamar<{ ok?: boolean } & EstadoPrimeraVez>('/api/primera-vez')
-  return r && r.ok ? { hecho: Boolean(r.hecho), frecuencia: r.frecuencia ?? null, compania: r.compania ?? null, anio_nacimiento: r.anio_nacimiento ?? null } : null
+  return r && r.ok ? { hecho: Boolean(r.hecho), frecuencia: r.frecuencia ?? null, compania: r.compania ?? null, anio_nacimiento: r.anio_nacimiento ?? null, pais_vive: r.pais_vive ?? null } : null
 }
 
 /** Guarda lo contestado (o nada, si se saltó: queda «hecho» igual y no vuelven). Solo viajan los tres datos. */
 export async function guardarPrimeraVez(r: Partial<RespuestasPrimeraVez>): Promise<boolean> {
-  const cuerpo: RespuestasPrimeraVez = { frecuencia: r.frecuencia ?? null, compania: r.compania ?? null, anio_nacimiento: r.anio_nacimiento ?? null }
+  const cuerpo: RespuestasPrimeraVez = { frecuencia: r.frecuencia ?? null, compania: r.compania ?? null, anio_nacimiento: r.anio_nacimiento ?? null, pais_vive: r.pais_vive ?? null }
   const res = await llamar<{ ok?: boolean }>('/api/primera-vez', { metodo: 'PUT', cuerpo })
   return Boolean(res?.ok)
 }
@@ -98,7 +101,9 @@ export function destinosDelMapa(curados: DestinoCurado[] | null): DestinoDelMapa
     if (!c) continue
     listos.push({ clave: s.clave, nombre: c.nombre || s.nombre, pais: c.pais || s.pais, iso: c.iso ?? s.iso, continente: s.continente, lat: c.lat, lng: c.lng, listo: true, linea: c.linea ?? null, portada: c.portada_pequena ?? c.portada ?? null })
   }
-  const pronto: DestinoDelMapa[] = archivo.proximamente.map((s) => ({ ...s, listo: false, linea: null, portada: null }))
+  // (V35B) Los Próximamente salen de la base de datos si la hay (los que cambia Eric desde el panel); si no, del JSON de siempre. Uno que ya está listo en la app nunca sale en gris además.
+  const clavesListas = new Set(listos.map((l) => l.clave))
+  const pronto: DestinoDelMapa[] = (proximamenteDelServidor() ?? archivo.proximamente).filter((s) => !clavesListas.has(s.clave)).map((s) => ({ ...s, listo: false, linea: null, portada: null }))
   return [...listos, ...pronto]
 }
 

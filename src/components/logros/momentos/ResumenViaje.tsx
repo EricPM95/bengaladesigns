@@ -18,6 +18,7 @@ import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { selloYaEstampado } from '../../../lib/selloEstampado'
+import { sonar } from '../../../lib/sonidos'
 
 /**
  * EL RESUMEN DEL VIAJE, REHECHO (Tanda V9, apartado 6; «Resumen del viaje» de Design, la versión con la foto arriba). Es el RECUERDO de lo ganado en ESTE viaje (no la hoja de logros, que dice cómo vas):
@@ -70,17 +71,34 @@ interface SitioPorReclamar {
   falta: string[]
 }
 
-export default function ResumenViaje(): ReactNode {
+/** (V35B) Un viaje de EJEMPLO para el estudio de sonidos (/admin/sonidos): el resumen sale lleno, no con lo que tenga la cuenta de quien mira. El viajero real nunca pasa este dato. */
+export interface DatosDeEjemploDelResumen {
+  estado: EstadoLogros
+  resumen: ResumenLogros
+  viajero: LogrosViajero
+  dias: number
+  paradas: number
+  km: number
+  fotos: number
+}
+
+export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelResumen } = {}): ReactNode {
   const route = useRouteStore((s) => s.route)
-  const tripId = useSyncStore((s) => s.activeTripId) ?? route?.id ?? null
+  const tripIdReal = useSyncStore((s) => s.activeTripId) ?? route?.id ?? null
+  const tripId = ejemplo ? null : tripIdReal
   // (V15) Abre AL INSTANTE con lo último que se vio de este viaje (lo guardado en el móvil); solo la primera vez sale «Preparando tu resumen…». Lo nuevo llega por detrás.
-  const [estado, setEstado] = useState<EstadoLogros | null>(() => estadoGuardado(tripId))
-  const [resumen, setResumen] = useState<ResumenLogros | null>(() => resumenGuardado(tripId))
-  const [viajero, setViajero] = useState<LogrosViajero | null>(() => viajeroGuardado())
-  const [cargado, setCargado] = useState(false)
+  const [estado, setEstado] = useState<EstadoLogros | null>(() => ejemplo?.estado ?? estadoGuardado(tripId))
+  const [resumen, setResumen] = useState<ResumenLogros | null>(() => ejemplo?.resumen ?? resumenGuardado(tripId))
+  const [viajero, setViajero] = useState<LogrosViajero | null>(() => ejemplo?.viajero ?? viajeroGuardado())
+  const [cargado, setCargado] = useState(Boolean(ejemplo))
   const [coleccionAbierta, setColeccionAbierta] = useState<string | null>(null)
   const [hojaSorpresas, setHojaSorpresas] = useState(false)
+  // (V35B) Suena al abrirse (los números del resumen, con el brillo al final), salvo dentro del visor de /admin/sonidos, que ya lo hace sonar él.
   useEffect(() => {
+    if (!(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) void sonar('dia_completo')
+  }, [])
+  useEffect(() => {
+    if (ejemplo) return undefined
     let vivo = true
     void Promise.all([pedirEstado(tripId), pedirResumen(tripId, null), pedirViajero()]).then(([e, r, v]) => {
       if (!vivo) return
@@ -95,9 +113,9 @@ export default function ResumenViaje(): ReactNode {
   }, [tripId])
   // (V14) Las fotos del viaje se cuentan y se buscan con el id de la RUTA (`route.id`), que es con el que se guardan (y con el que las cuenta el Perfil). Antes se contaban con el id del viaje en la nube,
   // que no es el mismo, y salían «2 fotos» donde el Perfil decía «6». Las dos cuentas son ahora la misma: TODAS las fotos del viaje.
-  const idDeFotos = route?.id ?? tripId ?? ''
+  const idDeFotos = ejemplo ? '' : (route?.id ?? tripId ?? '')
   const cuentaDeFotos = useNumeroFotos(idDeFotos ? [idDeFotos] : [])
-  const fotos = cuentaDeFotos?.get(idDeFotos) ?? 0
+  const fotos = ejemplo ? ejemplo.fotos : (cuentaDeFotos?.get(idDeFotos) ?? 0)
   const ciudad = estado?.ciudad ?? ''
   // (V14) La portada: lo que eligió el viajero; si no eligió, una foto hecha EN el destino (mejor la de un sitio con logro); y si no hay ninguna, la del destino de nuestros datos.
   // (V15) La misma regla de portada que el Perfil y los recuerdos (una sola para toda la app): lo que eligió el viajero; si no, una foto hecha en el destino (mejor la de un sitio con logro); si no, la del destino.
@@ -135,9 +153,9 @@ export default function ResumenViaje(): ReactNode {
   const secretos = estado?.secretos
   const porDescubrir = secretos ? Math.max(0, secretos.total - secretos.encontrados) : 0
   const lanza = estado?.destino === 'lanzarote'
-  const dias = estado?.viaje ? Math.round((Date.parse(`${estado.viaje.fin}T12:00:00Z`) - Date.parse(`${estado.viaje.inicio}T12:00:00Z`)) / 86400000) + 1 : null
-  const paradas = (route?.days ?? []).reduce((n, d) => n + (d.stops ?? []).filter((s) => !s.isZoneWalk).length, 0)
-  const km = kmDelViaje(route?.days as never)
+  const dias = ejemplo ? ejemplo.dias : estado?.viaje ? Math.round((Date.parse(`${estado.viaje.fin}T12:00:00Z`) - Date.parse(`${estado.viaje.inicio}T12:00:00Z`)) / 86400000) + 1 : null
+  const paradas = ejemplo ? ejemplo.paradas : (route?.days ?? []).reduce((n, d) => n + (d.stops ?? []).filter((s) => !s.isZoneWalk).length, 0)
+  const km = ejemplo ? ejemplo.km : kmDelViaje(route?.days as never)
   const cifras = [
     ...(dias ? [{ n: String(dias), l: dias === 1 ? 'DÍA' : 'DÍAS' }] : []),
     { n: String(paradas), l: paradas === 1 ? 'PARADA' : 'PARADAS' },

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Place } from './types'
+import { cargarProximamente } from './proximamente'
 
 /** (LZ1) La cabecera con la sesión, con el cliente de Supabase cargado a demanda (no pesa en la primera pantalla). Sin sesión o ante cualquier fallo: sin cabecera. */
 async function cabecerasConSesion(): Promise<Record<string, string>> {
@@ -66,7 +67,8 @@ export function useDestinosCurados(): DestinoCurado[] | null {
   const [destinos, setDestinos] = useState<DestinoCurado[] | null>(null)
   useEffect(() => {
     let vivo = true
-    void cargarDestinosCurados().then((d) => vivo && setDestinos(d))
+    // (V35B) Se espera también a los Próximamente (de la base de datos, o el JSON si no hay): el mapa sale una sola vez.
+    void Promise.all([cargarDestinosCurados(), cargarProximamente()]).then(([d]) => vivo && setDestinos(d))
     return () => {
       vivo = false
     }

@@ -8,6 +8,7 @@ import './momentos.css'
 import { fila, lineaDeSecretos, ORDEN_FILAS, textoDeSello } from './textosResumen'
 import { useMomentosUI } from './useMomentosUI'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { sonar } from '../../../lib/sonidos'
 
 /**
  * EL RESUMEN DEL DÍA (Tanda 8B). El mismo al acabar la ruta y al final de las sorpresas. Cuenta lo ganado hoy (del servidor, `GET /api/logros/resumen`; si no
@@ -57,6 +58,10 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
   const tripId = useSyncStore((s) => s.activeTripId) ?? null
   const [estado, setEstado] = useState<EstadoLogros | null>(estadoInicial)
   const [resumen, setResumen] = useState<ResumenLogros | null>(null)
+  // (V35B) Suena al abrirse el resumen (los tics de los números y el brillo al final), salvo dentro del visor de /admin/sonidos, que ya lo hace sonar él.
+  useEffect(() => {
+    if (!(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) void sonar('dia_completo')
+  }, [])
   useEffect(() => {
     let vivo = true
     void (async () => {

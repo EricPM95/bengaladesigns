@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url'
 import { cargarDatos, cargarCatalogo, validarDatos } from '../logros/datos.js'
 import { leerDestinosCurados } from '../destinosCurados.js'
 import { rpc } from './guardian.js'
+import { leerBaseDelPanel } from './pruebas.js' // (V35B) «Sin cuentas de prueba»
 import { filasDeDestinos, paginaDeDestino, resumenDeLogros } from './logrosPanelDatos.js'
 
 const RAIZ = new URL('../../data/', import.meta.url)
@@ -70,7 +71,7 @@ async function leerLogros(admin) {
 
 const fechaValida = (v) => (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v) && Number.isFinite(Date.parse(v)) ? new Date(v).toISOString() : null)
 
-export function registrarRutasLogrosPanel(app, { admin, conAdmin, ahora = () => new Date() }) {
+export function registrarRutasLogrosPanel(app, { admin, conAdmin, ahora = () => new Date(), env = process.env }) {
   app.get('/api/admin/logros-panel/destinos', conAdmin(async (_req, res) => {
     res.json({ ok: true, destinos: filasDeDestinos(cargarFuentes()) })
   }))
@@ -81,11 +82,19 @@ export function registrarRutasLogrosPanel(app, { admin, conAdmin, ahora = () => 
   }))
   app.get('/api/admin/logros-panel/resumen', conAdmin(async (req, res) => {
     const datos = cargarDatos()
-    const { filas, truncado } = await leerLogros(admin)
+    const { filas: todasLasFilas, truncado } = await leerLogros(admin)
+    // (V35B) Las cuentas de prueba (con el interruptor) y las de administrador no cuentan.
+    let fuera = new Set()
+    try {
+      fuera = new Set((await leerBaseDelPanel(admin, req.query, env)).ids_fuera)
+    } catch {
+      fuera = new Set()
+    }
+    const filas = todasLasFilas.filter((x) => !fuera.has(x.user_id))
     let cuentas = null
     try {
       const t = await rpc(admin, 'panel_usuarios_totales', { p_ahora: ahora().toISOString() })
-      cuentas = Number(t?.total) || 0
+      cuentas = Math.max(0, (Number(t?.total) || 0) - fuera.size)
     } catch {
       cuentas = null
     }

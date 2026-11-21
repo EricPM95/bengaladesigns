@@ -153,7 +153,8 @@ const datos = cargarDatos()
 const montar = ({ admin = adminSupabase, correo = correoConClave } = {}) => {
   const app = express()
   app.use(express.json())
-  registrarRutasPanel(app, { admin, env: ENV, correo, ahora: () => reloj, consola, datos })
+  // (V35B) Solo se avisa de lo que YA está publicado en la app: aquí Florencia lo está (como cuando Eric la publique).
+  registrarRutasPanel(app, { admin, env: ENV, correo, ahora: () => reloj, consola, datos, lanzados: () => [{ clave: 'florencia', nombre: 'Florencia' }, { clave: 'berlin', nombre: 'Berlín' }, { clave: 'cartagena', nombre: 'Cartagena de Indias' }] })
   registrarRutasAvisosViajeros(app, { admin, env: ENV, correo, ahora: () => reloj, consola })
   return new Promise((ok) => {
     const s = app.listen(0, '127.0.0.1', () => ok({ s, base: `http://127.0.0.1:${s.address().port}` }))

@@ -1,5 +1,6 @@
 import { ICONOS as ICONOS_FAMILIA } from '../../../lib/iconos'
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
+import { sonar } from '../../../lib/sonidos'
 import { pedirEstado } from './api'
 import { FONDO_NOCHE, ORO } from './base'
 import './momentos.css'
@@ -35,8 +36,14 @@ const ICONOS = {
   pin: ICONOS_FAMILIA.mapa,
 }
 
-export default function PrimerDia(): ReactNode {
+export default function PrimerDia({ alCerrar }: { alCerrar?: () => void } = {}): ReactNode {
+  // (V35B) Suena al abrirse (un brillo, un clic por fila y un brillo al acabar), salvo dentro del visor de /admin/sonidos, que ya lo hace sonar él.
+  useEffect(() => {
+    if (!(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) void sonar('primer_dia')
+  }, [])
   const cerrar = () => {
+    // (V35B) Dentro del estudio de sonidos no se apunta que «ya se vio»: solo se cierra.
+    if (alCerrar) return alCerrar()
     try {
       window.localStorage.setItem(CLAVE_PRIMER_DIA, 'si')
     } catch {

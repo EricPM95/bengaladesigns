@@ -8,6 +8,8 @@ import { PiezaSegura } from '../PiezaSegura'
 import { useAvisosStore } from '../../store/useAvisosStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { claveDeAviso, ListaDeAvisos } from '../avisos/ListaDeAvisos'
+import { RespuestaAbierta } from '../avisos/RespuestaAbierta'
+import type { AvisoDeCuenta } from '../../lib/avisos'
 import { abrirAviso } from '../avisos/abrirAviso'
 import { FilaDeAviso, letraDeAviso, SIN_SELECCION, type SeleccionDeAvisos } from '../avisos/FilaDeAviso'
 import { useFotosDePerfil } from '../../hooks/useFotosDePerfil'
@@ -51,6 +53,17 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
     const id = (aviso.payload.autor_id ?? aviso.payload.persona_id ?? aviso.payload.admin_id) as string | undefined
     const ruta = gente.find((p) => p.id === id)?.foto
     return ruta ? (enlacesDeFotos[ruta] ?? null) : null
+  }
+
+  // (V35B) La respuesta de Eric a un reporte (o el «ya está arreglado»), abierta entera: lo que nos contestó y lo que había mandado el viajero.
+  const [respuestaAbierta, setRespuestaAbierta] = useState<AvisoDeCuenta | null>(null)
+  const tocarDeLaCuenta = (aviso: AvisoDeCuenta) => {
+    if (aviso.tipo === 'gracias_viajero') {
+      void marcarLeidosDeLaCuenta([aviso.id])
+      setRespuestaAbierta(aviso)
+      return
+    }
+    void abrirAviso(aviso)
   }
 
   const [seleccionando, setSeleccionando] = useState(false)
@@ -273,13 +286,13 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
               <span style={{ font: "400 24px/1.1 'Instrument Serif',serif" }}>No tienes avisos</span>
             </div>
           )}
-          {cuentaNuevos.length > 0 && <ListaDeAvisos avisos={cuentaNuevos} resaltado={resaltado} onTocar={(aviso) => void abrirAviso(aviso)} alLeer={(aviso) => void marcarLeidosDeLaCuenta([aviso.id])} fotoDe={fotoDeLaPersona} seleccion={seleccion} />}
+          {cuentaNuevos.length > 0 && <ListaDeAvisos avisos={cuentaNuevos} resaltado={resaltado} onTocar={tocarDeLaCuenta} alLeer={(aviso) => void marcarLeidosDeLaCuenta([aviso.id])} fotoDe={fotoDeLaPersona} seleccion={seleccion} />}
           {appNuevos.map((i) => (
             <PiezaSegura key={i.id} nombre="aviso de la campana (app)">
               {fila(i)}
             </PiezaSegura>
           ))}
-          {cuentaLeidos.length > 0 && <ListaDeAvisos avisos={cuentaLeidos} resaltado={resaltado} onTocar={(aviso) => void abrirAviso(aviso)} alLeer={(aviso) => void marcarLeidosDeLaCuenta([aviso.id])} fotoDe={fotoDeLaPersona} seleccion={seleccion} />}
+          {cuentaLeidos.length > 0 && <ListaDeAvisos avisos={cuentaLeidos} resaltado={resaltado} onTocar={tocarDeLaCuenta} alLeer={(aviso) => void marcarLeidosDeLaCuenta([aviso.id])} fotoDe={fotoDeLaPersona} seleccion={seleccion} />}
           {appLeidos.map((i) => (
             <PiezaSegura key={i.id} nombre="aviso de la campana (app)">
               {fila(i)}
@@ -318,6 +331,8 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
             <OpcionTarjeta tono="rojo" peligro icono={ICONOS_OPCION.papelera} titulo="Eliminar" linea="Se quitan de tu campana. Puedes deshacerlo" datos="eliminar" onClick={eliminar} />
           </div>
         </div>
+
+        {respuestaAbierta && <RespuestaAbierta aviso={respuestaAbierta} onCerrar={() => setRespuestaAbierta(null)} />}
 
         {toast && !seleccionando && (
           <div data-campana-toast style={{ position: 'absolute', left: 14, right: 14, bottom: 'calc(26px + env(safe-area-inset-bottom))', height: 54, borderRadius: 18, background: '#1C2230', color: '#FBF3E2', display: 'flex', alignItems: 'center', padding: '0 16px', font: "500 14px 'Geist'", boxShadow: '0 18px 30px -14px rgba(14,21,48,.8)' }}>

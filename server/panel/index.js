@@ -23,6 +23,8 @@ import { crearServicioUsuarios } from './usuarios.js'
 import { crearServicioVentas } from './ventas.js'
 import { crearServicioReportes } from './reportes.js'
 import { crearServicioDestinos } from './destinos.js'
+import { crearServicioProximamente } from './proximamente.js' // (V35B)
+import { crearServicioCuentasDePrueba } from './cuentasDePrueba.js' // (V35B)
 import { registrarRutasLogrosPanel } from './logrosPanel.js' // (V35A logros)
 
 const leerProximamente = () => {
@@ -33,17 +35,27 @@ const leerProximamente = () => {
   }
 }
 
-export function registrarRutasPanel(app, { admin, env = process.env, correo = crearCorreo({ apiKey: env.RESEND_API_KEY }), ahora = () => new Date(), consola = console, datos = null, proximamente = leerProximamente } = {}) {
+export function registrarRutasPanel(app, { admin, env = process.env, correo = crearCorreo({ apiKey: env.RESEND_API_KEY }), ahora = () => new Date(), consola = console, datos = null, proximamente = leerProximamente, geocodificar, lanzados } = {}) {
   const conAdmin = crearGuardian({ admin, env, consola })
   // Los datos de los logros (tabla de niveles y nombres de sellos) se cargan una sola vez, la primera que hace falta.
   let cache = datos
   const datosLogros = () => (cache ??= cargarDatos())
   const avisoInterno = admin ? crearAvisoInterno({ admin, correo, env, ahora, consola }) : null
-  const inicio = crearServicioInicio({ admin, correo, avisoInterno, ahora })
-  const usuarios = crearServicioUsuarios({ admin, datos: datosLogros, ahora })
-  const ventas = crearServicioVentas({ admin, ahora })
+  const inicio = crearServicioInicio({ admin, correo, avisoInterno, ahora, env })
+  const usuarios = crearServicioUsuarios({ admin, datos: datosLogros, ahora, env })
+  const ventas = crearServicioVentas({ admin, ahora, env })
   const reportes = crearServicioReportes({ admin, correo })
-  const destinos = crearServicioDestinos({ admin, correo, proximamente, env, consola })
+  // (V35B) Los Próximamente en la base de datos (0091): sin la tabla, siguen saliendo del JSON y el panel dice «Pronto».
+  const servicioProximamente = crearServicioProximamente({ admin, ...(geocodificar ? { geocodificar } : {}), ...(lanzados ? { lanzados } : {}), consola })
+  const destinos = crearServicioDestinos({ admin, correo, proximamente, servicioProximamente, ...(lanzados ? { lanzados } : {}), env, consola })
+  // La lista pública para el mapa de la app (nada personal).
+  app.get('/api/destinos-proximamente', async (_req, res) => {
+    try {
+      res.set('Cache-Control', 'public, max-age=60').json(await servicioProximamente.publica())
+    } catch {
+      res.json({ ok: true, origen: 'archivo', destinos: [] })
+    }
+  })
 
   app.get('/api/admin/inicio', conAdmin(async (req, res) => res.json(await inicio.leer(req.query))))
   app.get('/api/admin/usuarios', conAdmin(async (req, res) => res.json(await usuarios.listar(req.query))))
@@ -71,6 +83,34 @@ export function registrarRutasPanel(app, { admin, env = process.env, correo = cr
     const r = await destinos.yaDisponible(req.body)
     return res.status(r.estado).json(r.cuerpo)
   }))
-  registrarRutasLogrosPanel(app, { admin, conAdmin, ahora }) // (V35A logros)
+  // (V35B) Los clics en «Reservar» (Civitatis y Stay22), contados por día, destino y tipo. SIN saber quién: no se lee la cuenta, la IP ni nada del aparato. Sin la 0091 (no existe la función) responde igual y no guarda nada.
+  // (V35B) «Cuentas que no cuentan» (Herramientas): marcar o desmarcar una cuenta, por correo, como de prueba.
+  const cuentasDePrueba = crearServicioCuentasDePrueba({ admin, env, consola })
+  app.get('/api/admin/cuentas-de-prueba', conAdmin(async (_req, res) => res.json(await cuentasDePrueba.leer())))
+  app.post('/api/admin/cuentas-de-prueba', conAdmin(async (req, res) => {
+    const r = await cuentasDePrueba.marcar(req.body)
+    return res.status(r.estado).json(r.cuerpo)
+  }))
+  app.post('/api/afiliados/clic', async (req, res) => {
+    const c = req.body ?? {}
+    const destino = String(c.destino ?? '').replace(/\s+/g, ' ').trim().slice(0, 60)
+    if (admin && destino && ['actividad', 'hotel'].includes(c.tipo) && ['civitatis', 'stay22'].includes(c.proveedor)) {
+      try {
+        await admin.rpc('afiliado_clic', { p_destino: destino, p_tipo: c.tipo, p_proveedor: c.proveedor })
+      } catch {
+        /* sin la 0091: nada */
+      }
+    }
+    res.status(204).end()
+  })
+  app.post('/api/admin/destinos/proximamente', conAdmin(async (req, res) => {
+    const r = await servicioProximamente.anadir(req.body)
+    return res.status(r.estado).json(r.cuerpo)
+  }))
+  app.post('/api/admin/destinos/proximamente/quitar', conAdmin(async (req, res) => {
+    const r = await servicioProximamente.quitar(req.body)
+    return res.status(r.estado).json(r.cuerpo)
+  }))
+  registrarRutasLogrosPanel(app, { admin, conAdmin, ahora, env }) // (V35A logros)
   return { avisoInterno }
 }

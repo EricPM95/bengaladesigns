@@ -20,8 +20,10 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
 console.log('A. «Empezar de cero»')
 {
   const panel = leer('src/components/panel/logros/Herramientas.tsx')
-  const dialogo = panel.match(/<span style=\{\{[^>]*\}\}>(Se borrará[^<]*)<\/span>/)?.[1] ?? ''
-  debe(dialogo === 'Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia y los pases. La cuenta se queda. Las pruebas gratis que ya has usado no vuelven. ¿Seguro?', 'dialogo', `el diálogo dice el texto nuevo (${dialogo})`)
+  // (V35B) El diálogo ya puede llevar dentro más cosas (p. ej. el aviso de los pases pagados) y el «¿Seguro?» en su propia línea: se mira la frase fija y que el «¿Seguro?» siga dentro del mismo diálogo.
+  const bloque = panel.match(/data-empezar-de-cero-dialogo[\s\S]*?(?=data-reiniciar|<\/div>\s*\)\}\s*\n\s*\{confirmando === 'reiniciar')/)?.[0] ?? panel.slice(panel.indexOf('data-empezar-de-cero-dialogo'), panel.indexOf('data-empezar-de-cero-dialogo') + 1800)
+  const dialogo = (bloque.match(/Se borrará todo[^<{\n]*/)?.[0] ?? '').replace(/\s*¿Seguro\?\s*$/, '').trim() // (con el «¿Seguro?» en la misma línea o en la siguiente)
+  debe(dialogo === 'Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia y los pases. La cuenta se queda. Las pruebas gratis que ya has usado no vuelven.' && /¿Seguro\?/.test(bloque), 'dialogo', `el diálogo dice el texto nuevo (${dialogo})`)
   debe(!/el día de prueba/.test(dialogo) && /Las pruebas gratis que ya has usado no vuelven\./.test(dialogo), 'dialogo', 'sin «el día de prueba» y con la línea nueva')
   const explicacion = panel.match(/QUE_BORRA_EMPEZAR_DE_CERO =\s*'([^']*)'/)?.[1] ?? ''
   debe(explicacion.length > 0 && !/día de prueba/.test(explicacion), 'dialogo', 'la explicación de encima del botón tampoco promete borrar el día de prueba')
@@ -40,8 +42,13 @@ console.log('A. La reserva del hotel: el localizador es privado, sin migración'
   debe(/delDueno[\s\S]*datos\.alojamientos/.test(store), 'privado', 'y solo sube a la fila privada de quien lo puso (delDueno)')
   debe(/const compartida = nueva \? \{ \.\.\.nueva, localizador: null \}/.test(fuente), 'privado', 'al guardar, la reserva compartida del alojamiento NO lleva localizador')
   // antes → ahora → decisión de Eric (10S8, 31-oct): la 0073 (contador de lecturas de documentos) es de la 10S8, no de la 10S7b; la 10S7b sigue sin migración propia.
-  const migs = fs.readdirSync('supabase/migrations').filter((f) => /^007[4-9]_/.test(f) || /^0073_(?!lecturas_de_documentos)/.test(f))
-  debe(migs.length === 0, 'migracion', `sin migración nueva de la 10S7b (${migs.join(', ') || 'ninguna'})`)
+  // (V35B) Ya no se cuentan las migraciones por su número (hay migraciones nuevas legítimas de otras tandas hasta la 0091): lo que importaba es que el localizador del hotel NO tiene tabla ni columna propia,
+  // vive en el documento privado de `billetes_personales` (0070), y que ninguna migración posterior a la 0070 toca un «localizador» (ni de alojamiento ni de nada).
+  const todas = fs.readdirSync('supabase/migrations').filter((f) => /^\d{4}_.*\.sql$/.test(f)).sort()
+  const m70 = todas.find((f) => /^0070_billetes_personales/.test(f))
+  debe(Boolean(m70) && /billetes_personales/.test(leer(`supabase/migrations/${m70}`)), 'migracion', 'la tabla privada billetes_personales (0070) existe')
+  const conLocalizador = todas.filter((f) => f > '0070_zzz' && /localizador/i.test(leer(`supabase/migrations/${f}`)))
+  debe(conLocalizador.length === 0, 'migracion', `ninguna migración posterior a la 0070 añade un «localizador» (la 10S7b sigue sin migración propia): ${conLocalizador.join(', ') || 'ninguna'}`)
 }
 
 if (process.env.SOLO_SECO) {

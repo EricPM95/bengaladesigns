@@ -9,7 +9,7 @@ import { partituraDe } from './partituras'
  *   · `partituras`: de dónde salen los sonidos que se pueden elegir (cada archivo, con sus candidatos A a E).
  *   · `principal`: el sonido que «Probar con mi sonido» sustituye por defecto (el golpe de la animación).
  */
-export type TipoDeVisor = 'momentos' | 'fuegos' | 'resumen_dia' | 'resumen_viaje' | 'apertura' | 'boton' | 'solo'
+export type TipoDeVisor = 'momentos' | 'fuegos' | 'resumen_dia' | 'resumen_viaje' | 'apertura' | 'primer_dia' | 'boton' | 'solo'
 export interface Animacion {
   id: string
   nombre: string
@@ -69,14 +69,15 @@ export const ANIMACIONES: Animacion[] = [
   { id: 'escena_roma', nombre: 'Escena de Roma (Fontana de Trevi)', grupo: 'Escenas', visor: 'momentos', momentos: 'escena_roma', suena: ['emblema'], partituras: ['escena'], principal: { tipo: 'archivo', id: 'emblema' } },
   { id: 'escena_lanzarote', nombre: 'Escena de Lanzarote (Timanfaya)', grupo: 'Escenas', visor: 'momentos', momentos: 'escena_lanzarote', suena: ['emblema'], partituras: ['escena'], principal: { tipo: 'archivo', id: 'emblema' } },
   { id: 'fuegos', nombre: 'Los fuegos', grupo: 'Resúmenes', visor: 'fuegos', suena: ['fuegos'], partituras: ['fuegos'], principal: { tipo: 'archivo', id: 'emblema' } },
-  { id: 'resumen_dia', nombre: 'Resumen del día', grupo: 'Resúmenes', visor: 'resumen_dia', momentos: 'resumen_dia', suena: ['dia_completo'], partituras: ['dia_completo'], principal: { tipo: 'archivo', id: 'brillo' }, nota: 'La app todavía NO hace sonar esta partitura al abrir el resumen: aquí suena como estaba pensada.' },
-  { id: 'resumen_viaje', nombre: 'Resumen del viaje', grupo: 'Resúmenes', visor: 'resumen_viaje', suena: ['dia_completo'], partituras: ['dia_completo'], principal: { tipo: 'archivo', id: 'brillo' }, nota: 'Lleva los datos de TU cuenta (el último viaje); sin viajes se ve vacío. La app tampoco lo hace sonar todavía.' },
+  { id: 'resumen_dia', nombre: 'Resumen del día', grupo: 'Resúmenes', visor: 'resumen_dia', momentos: 'resumen_dia', suena: ['dia_completo'], partituras: ['dia_completo'], principal: { tipo: 'archivo', id: 'brillo' }, nota: 'Suena al abrirse el resumen del día, en la app y aquí (el candidato A de cada sonido hasta que elijas).' },
+  { id: 'resumen_viaje', nombre: 'Resumen del viaje', grupo: 'Resúmenes', visor: 'resumen_viaje', suena: ['dia_completo'], partituras: ['dia_completo'], principal: { tipo: 'archivo', id: 'brillo' }, nota: 'Aquí se ve con un viaje de EJEMPLO (Roma, con sus días, paradas, logros y fotos); en la app lleva los datos de cada viajero. Suena al abrirse el resumen.' },
+  { id: 'primer_dia', nombre: 'Tu primer día', grupo: 'Logros', visor: 'primer_dia', suena: ['primer_dia'], partituras: ['primer_dia'], principal: { tipo: 'archivo', id: 'brillo' }, nota: '«Hoy empiezas a ganar logros»: sale una sola vez, el primer día del viaje. Un brillo al entrar el título, un clic por cada fila y un brillo al acabar (el candidato A de cada sonido hasta que elijas).' },
   { id: 'apertura', nombre: 'Apertura de JUTRIP', grupo: 'Apertura', visor: 'apertura', suena: ['apertura'], partituras: ['apertura'], principal: { tipo: 'archivo', id: 'apertura' }, nota: 'En la web la apertura no suena (el navegador no deja sonar antes del primer toque): queda lista para la app de las tiendas.' },
   { id: 'visto', nombre: 'Visto (el toque y el brillo)', grupo: 'Sonidos cortos', visor: 'boton', gesto: 'Visto', suena: ['visto'], partituras: ['visto'], principal: { tipo: 'sint', id: 'toque' }, nota: 'Toca el botón [Visto] del marco, como en cada sitio de DÍAS.' },
   { id: 'aviso', nombre: 'Campanita del aviso', grupo: 'Sonidos cortos', visor: 'boton', gesto: 'Llega un aviso', suena: ['aviso'], partituras: ['aviso'], principal: { tipo: 'sint', id: 'campanita' }, nota: 'Suena cuando llega un aviso nuevo a la campana.' },
   { id: 'tic', nombre: 'Tic de los números que suben', grupo: 'Sonidos cortos', visor: 'solo', suena: ['dia_completo'], partituras: [], principal: { tipo: 'sint', id: 'tic' }, nota: 'Suena en el resumen del día y en patrimonio/viajero. Aquí se oye dentro de la partitura del resumen.' },
   { id: 'toque', nombre: 'Toque (el latido de los aros)', grupo: 'Sonidos cortos', visor: 'solo', suena: ['emblema'], partituras: [], principal: { tipo: 'sint', id: 'toque' }, nota: 'Suena en [Visto] y en los latidos del emblema. Aquí se oye dentro de la partitura del emblema.' },
-  { id: 'vuelo', nombre: 'Lo ganado que vuela', grupo: 'Sonidos cortos', visor: 'solo', suena: ['vuelo'], partituras: ['vuelo'], principal: { tipo: 'archivo', id: 'vuelo' }, nota: 'Solo el sonido: el vuelo de verdad se ve al pasar de pantalla en cualquiera de los logros.' },
+  { id: 'vuelo', nombre: 'Lo ganado que vuela', grupo: 'Sonidos cortos', visor: 'solo', suena: ['vuelo'], partituras: ['vuelo'], principal: { tipo: 'archivo', id: 'vuelo' }, nota: 'Solo el sonido: el vuelo de verdad se ve (y suena) al pasar de pantalla en cualquiera de los logros, cuando lo ganado vuela al botón o al Perfil.' },
 ]
 
 export const animacionDe = (id: string): Animacion | undefined => ANIMACIONES.find((a) => a.id === id)

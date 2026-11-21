@@ -1,4 +1,6 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { FlagIcon } from '../ui/FlagIcon'
+import { nombreDelPais, paisDelAparato, paisesOrdenados } from '../../lib/paisVive'
 import { createPortal } from 'react-dom'
 import { aniosPosibles, guardarPrimeraVez, type Compania, type Frecuencia } from '../../lib/primeraVez'
 import { marca } from '../../lib/marca'
@@ -44,6 +46,8 @@ const RITMOS: { id: string; n: string; s: string; i: keyof typeof IC }[] = [
   { id: 'intenso', n: 'Intenso', s: 'Verlo todo', i: 'int' },
 ]
 const GUSTOS = ['Historia', 'Comida', 'Naturaleza', 'Playas', 'Arte', 'Ciudades', 'Pueblos']
+/** La última pantalla (0 a 4): frecuencia, con quién, ritmo (no se guarda), año de nacimiento y país donde vive (V35B). */
+const ULTIMO = 4
 
 function Icono({ d, color }: { d: string; color: string }): ReactNode {
   return (
@@ -66,6 +70,10 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
   const [frecuencia, setFrecuencia] = useState<Frecuencia | null>(null)
   const [compania, setCompania] = useState<Compania | null>(null)
   const [anio, setAnio] = useState<number | null>(null)
+  // (V35B) El país donde vive sale ya marcado con el que dice el idioma del móvil (sin ubicación y sin IP); si no hay, ninguno. Se puede cambiar, quitar o saltar.
+  const delMovil = useMemo(() => paisDelAparato(), [])
+  const [pais, setPais] = useState<string | null>(delMovil)
+  const paises = useMemo(() => paisesOrdenados(delMovil), [delMovil])
   // La pregunta 3 NO se guarda: solo se ve y se toca.
   const [ritmo, setRitmo] = useState<string | null>(null)
   const [gustos, setGustos] = useState<string[]>([])
@@ -76,18 +84,15 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
     precargarDestinos(destinosDelMapa(curados).filter((d) => d.listo).map((d) => d.clave))
   }, [curados])
 
-  const terminar = async (r: { frecuencia: Frecuencia | null; compania: Compania | null; anio: number | null }) => {
+  const terminar = async (r: { frecuencia: Frecuencia | null; compania: Compania | null; anio: number | null; pais: string | null }) => {
     if (guardando) return
     setGuardando(true)
     // Aunque no se pueda guardar (sin red), las preguntas se cierran: no se atasca a nadie. Si no llegó a guardarse, volverán a salir la próxima vez.
-    await guardarPrimeraVez({ frecuencia: r.frecuencia, compania: r.compania, anio_nacimiento: r.anio }).catch(() => false)
+    await guardarPrimeraVez({ frecuencia: r.frecuencia, compania: r.compania, anio_nacimiento: r.anio, pais_vive: r.pais }).catch(() => false)
     onTerminar()
   }
-  const siguiente = (r?: { frecuencia?: Frecuencia | null; compania?: Compania | null; anio?: number | null }) => {
-    const f = r && 'frecuencia' in r ? (r.frecuencia ?? null) : frecuencia
-    const c = r && 'compania' in r ? (r.compania ?? null) : compania
-    const a = r && 'anio' in r ? (r.anio ?? null) : anio
-    if (paso >= 3) void terminar({ frecuencia: f, compania: c, anio: a })
+  const siguiente = () => {
+    if (paso >= ULTIMO) void terminar({ frecuencia, compania, anio, pais })
     else setPaso(paso + 1)
   }
   // «Saltar» pasa a la pregunta siguiente SIN guardar lo de esta (si ya había algo marcado en ella, se quita).
@@ -95,19 +100,20 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
     if (paso === 0) setFrecuencia(null)
     if (paso === 1) setCompania(null)
     if (paso === 3) setAnio(null)
-    if (paso >= 3) void terminar({ frecuencia: paso === 0 ? null : frecuencia, compania: paso === 1 ? null : compania, anio: null })
+    if (paso === 4) setPais(null)
+    if (paso >= ULTIMO) void terminar({ frecuencia, compania, anio, pais: null })
     else setPaso(paso + 1)
   }
 
   const tarjeta = (on: boolean) => ({ background: on ? '#1C2230' : '#FFFFFF', border: `1.5px solid ${on ? '#1C2230' : 'rgba(28,34,48,.1)'}`, boxShadow: on ? '0 14px 24px -16px rgba(28,34,48,.8)' : '0 8px 18px -16px rgba(28,34,48,.35)' })
-  const titulo = ['¿Cada cuánto viajas?', '¿Con quién sueles viajar?', '¿Cómo te gusta viajar?', '¿En qué año naciste?'][paso]
+  const titulo = ['¿Cada cuánto viajas?', '¿Con quién sueles viajar?', '¿Cómo te gusta viajar?', '¿En qué año naciste?', '¿En qué país vives?'][paso]
 
   // (V34) La bienvenida, antes de la primera pregunta (la primera pregunta se sentía fría). «Saltar» deja las cuatro preguntas sin contestar (como saltarlas una a una).
   if (bienvenida) {
     return createPortal(
       <div data-bienvenida-primera-vez role="dialog" aria-modal="true" aria-label="Bienvenido a JUTRIP" className="fixed inset-0 z-[90] flex flex-col" style={{ background: '#F5EFE4', color: '#1C2230', fontFamily: "'Geist',sans-serif" }}>
         <div className="flex flex-none items-center justify-end px-[22px]" style={{ paddingTop: 'calc(env(safe-area-inset-top,0px) + 22px)' }}>
-          <button type="button" data-saltar-bienvenida onClick={() => void terminar({ frecuencia: null, compania: null, anio: null })} disabled={guardando} className="zona-toque" style={{ font: "600 14px 'Geist'", color: 'rgba(28,34,48,.55)', background: 'none', border: 'none', minHeight: 44, minWidth: 56 }}>
+          <button type="button" data-saltar-bienvenida onClick={() => void terminar({ frecuencia: null, compania: null, anio: null, pais: null })} disabled={guardando} className="zona-toque" style={{ font: "600 14px 'Geist'", color: 'rgba(28,34,48,.55)', background: 'none', border: 'none', minHeight: 44, minWidth: 56 }}>
             Saltar
           </button>
         </div>
@@ -115,7 +121,7 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
           <PalabraJutrip tam={46} tono="claro" />
           <h1 style={{ margin: 0, font: `400 36px/1.05 ${SERIE}`, textWrap: 'balance' }}>Bienvenido a JUTRIP</h1>
           <span style={{ font: "600 11px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: '#8A6A2C' }}>{marca.lema}</span>
-          <p style={{ margin: 0, maxWidth: 300, font: "400 16px/1.45 'Geist'", color: 'rgba(28,34,48,.7)' }}>Cuatro preguntas rápidas para conocerte y empezamos</p>
+          <p style={{ margin: 0, maxWidth: 300, font: "400 16px/1.45 'Geist'", color: 'rgba(28,34,48,.7)' }}>Cinco preguntas rápidas para conocerte y empezamos</p>
         </div>
         <div className="flex-none px-[22px] pt-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 28px)' }}>
           <button type="button" data-empezar onClick={() => setBienvenida(false)} className="zona-toque flex w-full items-center justify-center" style={{ height: 56, borderRadius: 18, border: 'none', background: ORO, boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: "700 16px 'Geist'" }}>
@@ -130,8 +136,8 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
   return createPortal(
     <div data-preguntas-primera-vez data-pregunta={paso + 1} role="dialog" aria-modal="true" aria-label="Preguntas rápidas" className="fixed inset-0 z-[90] flex flex-col" style={{ background: '#F5EFE4', color: '#1C2230', fontFamily: "'Geist',sans-serif" }}>
       <div className="flex flex-none items-center gap-3.5 px-[22px]" style={{ paddingTop: 'calc(env(safe-area-inset-top,0px) + 22px)' }}>
-        <span className="flex flex-1 gap-1.5" aria-label={`Pregunta ${paso + 1} de 4`}>
-          {[0, 1, 2, 3].map((i) => (
+        <span className="flex flex-1 gap-1.5" aria-label={`Pregunta ${paso + 1} de 5`}>
+          {[0, 1, 2, 3, 4].map((i) => (
             <span key={i} style={{ flex: 1, height: 5, borderRadius: 5, background: i < paso ? '#1C2230' : i === paso ? '#D8BE84' : 'rgba(28,34,48,.14)' }} />
           ))}
         </span>
@@ -227,9 +233,29 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
             <span style={{ textAlign: 'center', font: "400 13px 'Geist'", color: 'rgba(28,34,48,.5)' }}>Opcional. Nos ayuda a mejorar Jutrip; nunca lo enseñamos</span>
           </>
         )}
+
+        {paso === 4 && (
+          <>
+            <div data-paises className="flex flex-col items-center overflow-y-auto" style={{ height: 300, flex: 'none', borderRadius: 26, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.08)', scrollbarWidth: 'none', padding: '6px 0' }}>
+              {paises.map((p) => {
+                const on = pais === p
+                return (
+                  <button key={p} type="button" data-pais={p} aria-pressed={on} onClick={() => setPais(on ? null : p)} className="flex flex-none items-center gap-3 text-left" style={{ minHeight: 52, width: 'calc(100% - 28px)', padding: '0 14px', borderRadius: 16, border: on ? '1.5px dashed rgba(28,34,48,.45)' : '1.5px solid transparent', background: on ? '#FBF3E2' : 'transparent', font: `400 ${on ? 21 : 19}px ${SERIE}`, color: on ? '#1C2230' : 'rgba(28,34,48,.6)' }}>
+                    <span className="flex flex-none items-center justify-center" style={{ width: 28, height: 20, fontSize: 28, overflow: 'hidden', borderRadius: 3 }}>
+                      <FlagIcon countryCode={p.toLowerCase()} className="!block !h-full !w-full !rounded-none" />
+                    </span>
+                    <span className="flex-1">{nombreDelPais(p)}</span>
+                    {on && <Tilde />}
+                  </button>
+                )
+              })}
+            </div>
+            <span data-pais-nota style={{ textAlign: 'center', font: "400 13px 'Geist'", color: 'rgba(28,34,48,.5)' }}>Opcional. Nos ayuda a saber desde dónde viaja la gente; nunca lo enseñamos. Lo puedes cambiar en Ajustes</span>
+          </>
+        )}
       </div>
       <div className="flex-none px-[22px] pt-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 28px)' }}>
-        <button type="button" data-continuar onClick={() => siguiente()} disabled={guardando} className="zona-toque flex w-full items-center justify-center" style={{ height: 56, borderRadius: 18, border: 'none', background: ORO, boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: "700 16px 'Geist'" }}>
+        <button type="button" data-continuar onClick={siguiente} disabled={guardando} className="zona-toque flex w-full items-center justify-center" style={{ height: 56, borderRadius: 18, border: 'none', background: ORO, boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: "700 16px 'Geist'" }}>
           Continuar
         </button>
       </div>

@@ -76,7 +76,7 @@ function FilaDeEscritorio({ u, abrir }: { u: UsuarioFila; abrir: () => void }): 
       <span style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
         <Avatar id={u.id} nombre={u.nombre} />
         <span style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.nombre}</span>
+          <span style={{ fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.nombre}{u.prueba && <span data-etiqueta-prueba style={{ marginLeft: 8, padding: '2px 8px', borderRadius: 999, background: '#E3E8F4', color: '#2A4A94', font: "700 10.5px 'Geist'", letterSpacing: '.04em' }}>Prueba</span>}</span>
           <span style={{ fontSize: 12, color: 'rgba(28,34,48,.5)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.email}</span>
         </span>
       </span>
@@ -98,7 +98,7 @@ function TarjetaDeMovil({ u, abrir }: { u: UsuarioFila; abrir: () => void }): Re
       <span style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
         <Avatar id={u.id} nombre={u.nombre} tam={40} />
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-          <span style={{ font: "700 14.5px 'Geist'" }}>{u.nombre}</span>
+          <span style={{ font: "700 14.5px 'Geist'" }}>{u.nombre}{u.prueba && <span data-etiqueta-prueba style={{ marginLeft: 8, padding: '2px 8px', borderRadius: 999, background: '#E3E8F4', color: '#2A4A94', font: "700 10.5px 'Geist'", letterSpacing: '.04em' }}>Prueba</span>}</span>
           <span style={{ font: "400 12px 'Geist'", color: 'rgba(28,34,48,.5)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.email}</span>
         </span>
         <PasePill u={u} />

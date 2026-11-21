@@ -55,9 +55,12 @@ function ActividadYViajando({ r, movil }: { r: UsuariosResumen; movil: boolean }
           <span data-actividad="mes">{tile(numero(r.actividad.mes), 'Al mes')}</span>
         </div>
         <div data-retencion style={{ padding: 14, borderRadius: 16, background: '#1C2230', display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ font: `400 40px/1 ${SERIE}`, color: '#F3D88F' }}>{r.actividad.retencion_pct === null ? '—' : `${r.actividad.retencion_pct} %`}</span>
+          <span data-retencion-valor style={{ font: `400 40px/1 ${SERIE}`, color: '#F3D88F' }}>{r.actividad.retencion_pct === null ? '—' : `${r.actividad.retencion_pct} %`}</span>
           <span style={{ flex: 1, font: "400 12.5px/1.4 'Geist'", color: 'rgba(255,253,248,.75)' }}>
-            De los que entraron una semana, volvieron la siguiente.{r.actividad.retencion_pct === null && ' Pronto: hace falta guardar cada visita, no solo la última.'}
+            De los que entraron una semana, volvieron la siguiente.
+            {!r.actividad.de_uso && <> <b data-pronto style={{ color: '#F3D88F' }}>Pronto</b>: todavía no se guarda cada día de uso.</>}
+            {r.actividad.de_uso && r.actividad.retencion_pct !== null && ` (${r.actividad.retencion_vuelven} de ${r.actividad.retencion_base})`}
+            {r.actividad.de_uso && r.actividad.retencion_pct === null && ' Aún no hay una semana anterior con gente.'}
           </span>
         </div>
       </Cuadro>
@@ -172,7 +175,16 @@ function DesdeDonde({ r, movil }: { r: UsuariosResumen; movil: boolean }): React
     <div style={{ display: 'grid', gridTemplateColumns: movil ? '1fr' : '1fr 1fr', gap: 14 }}>
       <Cuadro dato="donde-viven">
         <Titulo>Dónde viven</Titulo>
-        <Pronto>Todavía no guardamos en qué país vive cada persona (llega en la próxima versión).</Pronto>
+        {r.donde_viven === null ? (
+          <Pronto>Todavía no se guarda en qué país vive cada persona.</Pronto>
+        ) : r.donde_viven.paises.length === 0 ? (
+          <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Todavía nadie ha dicho en qué país vive.</span>
+        ) : (
+          <div data-lista="paises-viven" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {etiqueta('PAÍSES')}
+            {r.donde_viven.paises.slice(0, 8).map((p) => <span key={p.iso} data-vive={p.nombre} style={{ display: 'flex', alignItems: 'center', gap: 9, font: "500 13px 'Geist'" }}><Bandera iso={p.iso} tam={16} /><span style={{ flex: 1, minWidth: 0 }}>{p.nombre}</span><b>{p.n}</b><span style={{ color: 'rgba(28,34,48,.5)', width: 40, textAlign: 'right' }}>{p.pct} %</span></span>)}
+          </div>
+        )}
       </Cuadro>
       <Cuadro dato="desde-donde">
         <Titulo>Desde dónde viajan</Titulo>
@@ -207,6 +219,22 @@ function Niveles({ r }: { r: UsuariosResumen }): ReactNode {
   )
 }
 
+/** Un reparto en barras (aparato; dónde la usan). `null` = sin la tabla de uso: «Pronto». */
+function repartoDeUso(filas: OpcionDeRespuesta[] | null, pronto: string): ReactNode {
+  if (filas === null) return <Pronto>{pronto}</Pronto>
+  if (filas.length === 0) return <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Todavía no hay días de uso en este periodo.</span>
+  return (
+    <>
+      {filas.map((q) => (
+        <div key={q.valor} data-uso-opcion={q.nombre} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ display: 'flex', justifyContent: 'space-between', font: "500 12.5px 'Geist'" }}><span>{q.nombre}</span><b>{q.pct} %</b></span>
+          <span style={{ height: 8, borderRadius: 8, background: '#F1EADC', overflow: 'hidden' }}><span style={{ display: 'block', height: '100%', width: `${q.pct}%`, background: ORO_BARRA }} /></span>
+        </div>
+      ))}
+    </>
+  )
+}
+
 function ComoEntran({ r, movil }: { r: UsuariosResumen; movil: boolean }): ReactNode {
   const e = r.entran
   const partes = [
@@ -229,8 +257,8 @@ function ComoEntran({ r, movil }: { r: UsuariosResumen; movil: boolean }): React
           </span>
         ))}
       </Cuadro>
-      <Cuadro dato="aparato"><Titulo>Aparato</Titulo><Pronto>iPhone, Android u ordenador: llega en la próxima versión.</Pronto></Cuadro>
-      <Cuadro dato="donde-la-usan"><Titulo>Dónde la usan</Titulo><Pronto>App instalada o navegador: llega en la próxima versión.</Pronto></Cuadro>
+      <Cuadro dato="aparato"><Titulo>Aparato</Titulo>{repartoDeUso(r.uso?.aparato ?? null, 'iPhone, Android u ordenador: todavía no se guarda.')}</Cuadro>
+      <Cuadro dato="donde-la-usan"><Titulo>Dónde la usan</Titulo>{repartoDeUso(r.uso?.donde ?? null, 'App instalada o navegador: todavía no se guarda.')}</Cuadro>
     </div>
   )
 }

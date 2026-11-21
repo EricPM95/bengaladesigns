@@ -144,8 +144,16 @@ export function Inicio({ ir, movil }: { ir: (seccion: string) => void; movil: bo
         <div data-bloque="donde-viven" style={{ ...tarjetaGrande, gap: 12 }}>
           <span style={{ font: `400 24px ${SERIE}` }}>Dónde viven</span>
           <span style={etiquetaMono}>PAÍSES</span>
-          <span data-pronto style={{ alignSelf: 'flex-start', height: 26, padding: '0 12px', borderRadius: 999, background: '#F1EADC', color: '#8A6A2C', display: 'inline-flex', alignItems: 'center', font: "700 12px 'Geist'" }}>Pronto</span>
-          <span style={{ font: "400 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.55)' }}>Todavía no se guarda en qué país vive cada persona.</span>
+          {!d.donde_viven ? (
+            <>
+              <span data-pronto style={{ alignSelf: 'flex-start', height: 26, padding: '0 12px', borderRadius: 999, background: '#F1EADC', color: '#8A6A2C', display: 'inline-flex', alignItems: 'center', font: "700 12px 'Geist'" }}>Pronto</span>
+              <span style={{ font: "400 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.55)' }}>Todavía no se guarda en qué país vive cada persona.</span>
+            </>
+          ) : d.donde_viven.paises.length === 0 ? (
+            <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Todavía nadie ha dicho en qué país vive.</span>
+          ) : (
+            d.donde_viven.paises.slice(0, 8).map((o) => <FilaDeOrigen key={o.iso} iso={o.iso} nombre={o.nombre} n={o.n} />)
+          )}
         </div>
       </div>
     </div>

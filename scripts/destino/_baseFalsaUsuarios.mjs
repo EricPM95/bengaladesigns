@@ -63,3 +63,22 @@ export function baseFalsa() {
   }
   return { usuarios, travelers, trips, miembros, pases, miembros_pase: miembrosPase, pagos, logros, perfiles, primera_vez: primeraVez, avisos_destino: [], avisos: [] }
 }
+
+// (V35B) La misma base, con los datos nuevos de la migración 0091 (país donde viven y días de uso) y `hay` en true: así el panel enseña «Dónde viven», la actividad de verdad, la retención, el aparato y dónde la usan.
+// Con la base de arriba (sin `hay`), todo eso sale como «Pronto» (la 0091 sin aplicar).
+// Cuentas: Eric (iPhone, app instalada), Alice (Android, navegador), Bruno (ordenador, navegador), Carla (iPhone, navegador), Diana (Android, hace mucho). Viven: Eric y Diana en España, Bruno en México.
+export function baseFalsaConPersonas() {
+  const base = baseFalsa()
+  const paises = { 'u-eric': 'ES', 'u-bruno': 'MX', 'u-diana': 'ES' }
+  base.primera_vez = base.primera_vez.map((p) => ({ ...p, pais_vive: paises[p.user_id] ?? null }))
+  const uso = (user_id, dia, aparato, instalada) => ({ user_id, dia, aparato, instalada })
+  base.uso_diario = [
+    uso('u-eric', '2026-11-20', 'iphone', true), uso('u-eric', '2026-11-19', 'iphone', true), uso('u-eric', '2026-11-13', 'iphone', true), uso('u-eric', '2026-11-12', 'iphone', true),
+    uso('u-alice', '2026-11-19', 'android', false), uso('u-alice', '2026-11-12', 'android', false),
+    uso('u-bruno', '2026-11-14', 'ordenador', false), uso('u-bruno', '2026-11-13', 'ordenador', false),
+    uso('u-carla', '2026-11-10', 'iphone', false),
+    uso('u-diana', '2026-10-01', 'android', false),
+  ]
+  base.hay = { pagos: true, pais: true, uso: true, clics: false, pruebas: true, proximamente: true }
+  return base
+}

@@ -128,7 +128,7 @@ debe(/<AdminSonidos embebido \/>/.test(shell), 'sonidos', 'la pestaña Sonidos m
 debe(!/AvisosDeViajeros|DestinosPedidos|Avisos de viajeros'/.test(todo.replace(/\/\*\*[\s\S]*?\*\//g, '')), 'quitado', 'no queda «Avisos de viajeros» ni «Destinos pedidos» en esta sección')
 debe(!fs.existsSync('src/components/logros/AdminLogros.tsx'), 'quitado', 'el panel viejo (AdminLogros.tsx) ya no existe: no hay dos versiones')
 debe(!/\bBandera\b[^;]*linear-gradient/.test(todo) && /from '\.\.\/banderas'/.test(todo), 'banderas', 'las banderas salen de la pieza compartida (banderas.tsx), no dibujadas a mano')
-debe(leer('server/panel/index.js').includes('registrarRutasLogrosPanel(app, { admin, conAdmin, ahora }) // (V35A logros)'), 'servidor', 'las rutas nuevas se montan en server/panel/index.js con el guardián conAdmin')
+debe(leer('server/panel/index.js').includes('registrarRutasLogrosPanel(app, { admin, conAdmin, ahora, env }) // (V35A logros)'), 'servidor', 'las rutas nuevas se montan en server/panel/index.js con el guardián conAdmin')
 debe(/conAdmin\(/.test(leer('server/panel/logrosPanel.js')) && (leer('server/panel/logrosPanel.js').match(/app\.get\(/g) ?? []).length === (leer('server/panel/logrosPanel.js').match(/conAdmin\(async/g) ?? []).length, 'servidor', 'todas las rutas nuevas pasan por conAdmin')
 debe(/hoy_prueba/.test(leer('server/logros/reiniciar.js')) && /día de prueba de HOY/.test(leer('src/components/panel/logros/Herramientas.tsx')) && /viajes \(con sus reservas, gastos y fotos\)/.test(leer('src/components/panel/logros/Herramientas.tsx')), 'borra', 'las líneas de «qué borra» dicen lo que de verdad borran (reiniciar.js y empezar_de_cero)')
 {
@@ -290,7 +290,7 @@ const reglaTexto = (txt, donde) => {
     debe(hr.botones.join('|') === 'Ver la app sin pase|Empezar de cero|Reiniciar mis pruebas', 'herramientas', `Mis pruebas: ${hr.botones.join(' · ')}`)
     debe(/viajes/.test(hr.cero) && /logros/.test(hr.cero) && /pases/.test(hr.cero) && /La cuenta se queda/.test(hr.cero), 'borra', `debajo de [Empezar de cero]: «${hr.cero.slice(0, 90)}…»`)
     debe(/día de prueba de HOY/.test(hr.reinicio) && /No toca tus viajes/.test(hr.reinicio), 'borra', `debajo de [Reiniciar mis pruebas]: «${hr.reinicio.slice(0, 90)}…»`)
-    debe(hr.orden.join('|') === 'probador|mis-pruebas|para-code' && hr.codePlegado === 'false' && !hr.codeContenido, 'herramientas', '«Para Code» está plegado y al final')
+    debe(hr.orden.join('|') === 'probador|mis-pruebas|cuentas-que-no-cuentan|para-code' && hr.codePlegado === 'false' && !hr.codeContenido, 'herramientas', '«Para Code» está plegado y al final')
     // Los dos botones de borrar piden confirmar y [Cancelar] no borra
     await clic(a, '[data-reiniciar-boton]')
     await a.esp(300)

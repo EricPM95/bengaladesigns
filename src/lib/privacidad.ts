@@ -24,6 +24,14 @@ export interface ApartadoDePrivacidad {
 export const AVISO_DE_CUENTANOS_PRIVACIDAD =
   'Cuéntanos: cuando mandas un aviso (un sitio, un dato que está mal, una idea, una foto…) enviamos lo que escribes y, sin que tengas que escribir nada, el destino y el viaje, la pantalla en la que estabas, la versión de la app, el modelo de tu móvil y el navegador, y la hora, para poder encontrar el fallo o revisar el sitio. En «Algo no funciona» enviamos además los últimos errores de la app y la captura de la pantalla (puedes quitarla antes de enviar). Las fotos que acompañan un aviso se mandan reducidas; en «Comparte tu foto» se manda entera, con tu permiso (la casilla es obligatoria), la fecha y el nombre que pongas, y solo sale en la app con «Foto: tu nombre» si la elegimos. Si no tienes cuenta, o si apagas «Avísame», no guardamos nada que te identifique. Si tienes cuenta y dejas «Avísame» encendido, guardamos quién eres solo para avisarte en la campana cuando lo revisemos. Si no hay red, el aviso se guarda en tu móvil y se manda solo al volver.'
 
+/** (V35B) El país donde vives: lo que preguntamos, para qué y cómo se cambia (un solo sitio: lo enseña la página de privacidad). */
+export const AVISO_DE_PAIS_PRIVACIDAD =
+  'País donde vives: en las primeras preguntas te preguntamos en qué país vives. Es opcional: puedes saltarlo, y lo puedes cambiar o quitar cuando quieras en Ajustes. Lo usamos para saber desde dónde viaja la gente y mejorar JUTRIP. Si te lo proponemos ya marcado, sale del idioma de tu móvil: nunca de tu ubicación ni de tu dirección IP. No lo enseñamos a nadie.'
+
+/** (V35B) El uso de la app: lo mínimo que se guarda (un solo sitio: lo enseña la página de privacidad). */
+export const AVISO_DE_USO_PRIVACIDAD =
+  'Uso de la app: guardamos un día de uso por cuenta (la fecha, sin hora), el tipo de aparato (iPhone, Android u ordenador, sin el modelo) y si usas la app instalada en tu pantalla de inicio o desde el navegador. Lo usamos para saber cuánta gente usa JUTRIP y desde qué tipo de aparato, y así mejorarlo. Con esto no guardamos tu dirección IP ni tu ubicación.'
+
 export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
   { id: 'quien', titulo: 'Quién es el responsable', pregunta: 'Quién trata tus datos y cómo contactar con él.', escrito: [`Para cualquier duda o para contactar con nosotros: ${CORREO_SOPORTE}.`] },
   { id: 'que-guardamos', titulo: 'Qué guardamos', pregunta: 'Tu email, tus viajes, tus Vistos, tus fotos (y la fecha y el sitio de cada una), tus logros y tus pases.' },
@@ -31,7 +39,7 @@ export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
     id: 'para-que',
     titulo: 'Para qué lo usamos',
     pregunta: 'Para qué sirve cada dato y en qué se basa tratarlo.',
-    escrito: [AVISO_DE_DESTINOS_PRIVACIDAD, AVISO_DE_CUENTANOS_PRIVACIDAD],
+    escrito: [AVISO_DE_DESTINOS_PRIVACIDAD, AVISO_DE_CUENTANOS_PRIVACIDAD, AVISO_DE_PAIS_PRIVACIDAD, AVISO_DE_USO_PRIVACIDAD],
   },
   { id: 'cuanto-tiempo', titulo: 'Cuánto tiempo lo guardamos', pregunta: 'Cuánto dura cada dato y qué pasa cuando dejas de usar la app.' },
   { id: 'con-quien', titulo: 'Con quién lo compartimos', pregunta: 'Los servicios de fuera que tratan datos para que la app funcione (lista de abajo).' },

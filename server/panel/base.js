@@ -29,6 +29,24 @@ async function todas(admin, tabla, columnas, avisos, ordenar = null) {
   return filas
 }
 
+/**
+ * (V35B) Lo que depende de la migración 0091: se intenta con las columnas nuevas y, si la base aún no las tiene (la 0091 está sin aplicar), con las de siempre. Devuelve las filas y si las columnas nuevas existen
+ * (`nuevo`): el panel enseña «Pronto» donde falta, y nunca se rompe.
+ */
+async function conRespaldo(admin, tabla, columnasNuevas, columnasViejas, avisos) {
+  const sin = []
+  const filas = await todas(admin, tabla, columnasNuevas, sin)
+  if (sin.length === 0) return { filas, nuevo: true }
+  return { filas: columnasViejas ? await todas(admin, tabla, columnasViejas, avisos) : [], nuevo: false }
+}
+
+/** Una tabla que solo existe con la 0091: si no existe, lista vacía y `nuevo: false` (sin avisos: es lo esperado). */
+async function soloSiExiste(admin, tabla, columnas) {
+  const sin = []
+  const filas = await todas(admin, tabla, columnas, sin)
+  return { filas, nuevo: sin.length === 0 }
+}
+
 /** Todas las cuentas de verdad con su correo, alta, último acceso y cómo entran (correo o Google). */
 async function leerUsuarios(admin, avisos) {
   const salida = []
@@ -62,18 +80,27 @@ async function leerUsuarios(admin, avisos) {
 /** Lee todo lo que necesita el panel. `avisos` recoge lo que no se pudo leer (el panel sigue con lo que haya). */
 export async function leerBase(admin) {
   const avisos = []
-  const [usuarios, travelers, trips, miembros, pases, miembrosPase, pagos, logros, perfiles, primeraVez, avisosDestino] = await Promise.all([
+  const [usuarios, travelers, trips, miembros, pases, miembrosPase, pagos, logros, perfiles, primeraVez, avisosDestino, uso, clics, pruebas, proximamente] = await Promise.all([
     leerUsuarios(admin, avisos),
     todas(admin, 'travelers', 'id,nombre,alta_cuenta,zona', avisos),
     todas(admin, 'trips', 'id,traveler_id,destino:route->>destination,origen:route->>origin,lugar:route->answers->originPlace,inicio:route->answers->dateRange->>start,fin:route->answers->dateRange->>end', avisos),
     todas(admin, 'trip_members', 'trip_id,user_id,rol,created_at', avisos),
     todas(admin, 'passes', 'id,comprador_id,para_id,destino,tipo,estado,pago_ref,created_at,trip_id', avisos),
     todas(admin, 'pass_members', 'pass_id,user_id,unido_en', avisos),
-    todas(admin, 'pagos_registro', 'pago_ref,destino,plan,personas,importe_cent,moneda,estado,proveedor,creado_en,devuelto_en', avisos),
+    conRespaldo(admin, 'pagos_registro', 'pago_ref,destino,plan,personas,importe_cent,moneda,estado,proveedor,creado_en,devuelto_en,user_id,comision_cent,devuelto_cent', 'pago_ref,destino,plan,personas,importe_cent,moneda,estado,proveedor,creado_en,devuelto_en', avisos),
     todas(admin, 'achievements', 'user_id,logro,escalon,destino,ganado_en', avisos),
     todas(admin, 'logro_perfil', 'user_id,exp_max', avisos),
-    todas(admin, 'viajero_primera_vez', 'user_id,frecuencia,compania,anio_nacimiento,hecho_en', avisos),
+    conRespaldo(admin, 'viajero_primera_vez', 'user_id,frecuencia,compania,anio_nacimiento,hecho_en,pais_vive', 'user_id,frecuencia,compania,anio_nacimiento,hecho_en', avisos),
     todas(admin, 'avisos_destino', 'destino,destino_norm,creado_en,avisado_campana_en,avisado_correo_en', avisos),
+    soloSiExiste(admin, 'uso_diario', 'user_id,dia,aparato,instalada'),
+    soloSiExiste(admin, 'afiliados_clics', 'dia,destino,tipo,proveedor,clics'),
+    soloSiExiste(admin, 'cuentas_de_prueba', 'email'),
+    soloSiExiste(admin, 'destinos_proximamente', 'clave,nombre,pais,iso,continente,lat,lng,orden,creado_en'),
   ])
-  return { usuarios, travelers, trips, miembros, pases, miembros_pase: miembrosPase, pagos, logros, perfiles, primera_vez: primeraVez, avisos_destino: avisosDestino, avisos }
+  // (V35B) `hay`: qué datos nuevos existen en la base (con la 0091 aplicada). Donde falta, el panel enseña «Pronto».
+  const hay = { pagos: pagos.nuevo, pais: primeraVez.nuevo, uso: uso.nuevo, clics: clics.nuevo, pruebas: pruebas.nuevo, proximamente: proximamente.nuevo }
+  return {
+    usuarios, travelers, trips, miembros, pases, miembros_pase: miembrosPase, pagos: pagos.filas, logros, perfiles, primera_vez: primeraVez.filas, avisos_destino: avisosDestino,
+    uso_diario: uso.filas, afiliados_clics: clics.filas, cuentas_de_prueba: pruebas.filas.map((x) => String(x.email).toLowerCase()), destinos_proximamente: proximamente.filas, hay, avisos,
+  }
 }

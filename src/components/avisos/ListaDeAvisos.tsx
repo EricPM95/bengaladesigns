@@ -10,6 +10,9 @@ import { ConSeleccion, FilaDeAviso, letraDeAviso, letraDeCuando, SIN_SELECCION, 
 
 const ICONO: Partial<Record<AvisoDeCuenta['tipo'], NombreIcono>> = { d10: 'avion', resumen: 'estrella', sorpresas: 'gema', sorteo: 'pase', amigo_viaje: 'compartido' }
 
+/** El triángulo del botón «Cuéntanos» (el mismo trazo que en BotonCuentanos). */
+export const ICONO_CUENTANOS = 'M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9.5v4.5M12 17.2h.01'
+
 /** La clave con la que «Seleccionar» elige un aviso de la cuenta. */
 export const claveDeAviso = (id: string) => `c:${id}`
 
@@ -72,6 +75,13 @@ export function ListaDeAvisos({
             icono={
               a.quien ? (
                 <Avatar foto={fotoDe?.(a) ?? null} inicial={(a.quien[0] ?? '·').toUpperCase()} tam={42} radio={13} fondo={especial ? fondoEspecial : leido ? '#F1EADC' : '#F3E2B0'} color="#1C2230" />
+              ) : a.tipo === 'gracias_viajero' ? (
+                // (V35B) Las respuestas y los «ya está arreglado» llevan el icono del botón «Cuéntanos» (el triángulo), no un puntito.
+                <span data-aviso-icono="cuentanos" style={{ width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d={ICONO_CUENTANOS} />
+                  </svg>
+                </span>
               ) : icono ? (
                 <span style={{ width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', background: especial ? fondoEspecial : undefined }}>
                   <Icono nombre={icono} size={20} />

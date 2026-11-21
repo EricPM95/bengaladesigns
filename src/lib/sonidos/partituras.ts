@@ -136,6 +136,10 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
       const t = TIEMPOS_DE_RESUMEN
       return { id, dura: t.golpe + 0.6, premio: false, notas: [...tics(0, t.sube, t.tic), archivo('brillo', t.golpe, 0.9)] }
     }
+    case 'primer_dia': {
+      // (V35B) «Tu primer día» («Hoy empiezas a ganar logros»): el título entra a los 0,1 s y cada fila de lo que hay que hacer sube a los 0,3, 0,45 y 0,6 s (`moUp` de PrimerDia.tsx): un clic suave por fila y un brillo al acabar. Con los archivos de premio de siempre.
+      return { id, dura: e(1.4) + 0.6, premio: false, notas: [archivo('brillo', e(0.3), 0.6), archivo('clic', e(0.5), 0.55), archivo('clic', e(0.65), 0.55), archivo('clic', e(0.8), 0.55), archivo('brillo', e(1.4), 0.9)] }
+    }
     case 'vuelo':
       return { id, dura: TIEMPOS_DE_VUELO.dura + 0.1, premio: false, notas: [archivo('vuelo', TIEMPOS_DE_VUELO.dura * 0.7)] }
     case 'apertura': {
@@ -169,7 +173,7 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
 }
 
 /** Todas las animaciones que tienen partitura (para la prueba, la página de sonidos y el repaso). */
-export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero', 'dia_completo', 'vuelo', 'apertura', 'escena', 'fuegos', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
+export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero', 'dia_completo', 'primer_dia', 'vuelo', 'apertura', 'escena', 'fuegos', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
 
 /** Cada partitura, en palabras (para el repaso y la página de sonidos). */
 export const EN_PALABRAS: Record<string, string> = {
@@ -186,6 +190,7 @@ export const EN_PALABRAS: Record<string, string> = {
   patrimonio: 'Patrimonio: los números que suben con un tic cada vez y un brillo al acabar.',
   viajero: 'Logro de viajero: igual que patrimonio.',
   dia_completo: 'El resumen del día y del viaje: los números que suben con tics y un brillo al acabar.',
+  primer_dia: 'Tu primer día («Hoy empiezas a ganar logros»): un brillo al entrar el título, un clic suave por cada fila que aparece y un brillo al acabar.',
   vuelo: 'Lo ganado que vuela al botón o al Perfil: un vuuush de lo que dura el vuelo.',
   escena: 'Las escenas de cada sitio (Roma y Lanzarote): un redoble que sube y el golpe del premio cuando estalla la luz, y un clic y un brillo cuando entran el emblema y su nombre.',
   fuegos: 'Los fuegos: el golpe del premio al estallar y dos brillos que caen detrás.',

@@ -24,7 +24,7 @@ fs.mkdirSync(CAP, { recursive: true })
 console.log('1. El servidor guarda SOLO la frecuencia, con quién y el año; del ritmo y los gustos, nada')
 {
   const l = limpiarRespuestas({ frecuencia: 'dos_o_tres', compania: 'pareja', anio_nacimiento: 1990, ritmo: 'intenso', gustos: ['Arte'], extra: 1 }, 2026)
-  debe(JSON.stringify(Object.keys(l).sort()) === '["anio_nacimiento","compania","frecuencia"]', 'tres_datos', 'lo que se guarda tiene solo esas tres claves (el ritmo y los gustos se descartan)')
+  debe(JSON.stringify(Object.keys(l).sort()) === '["anio_nacimiento","compania","frecuencia","pais_vive"]', 'tres_datos', 'lo que se guarda tiene solo esas cuatro claves (tres + el país donde vive; el ritmo y los gustos se descartan)')
   debe(l.frecuencia === 'dos_o_tres' && l.compania === 'pareja' && l.anio_nacimiento === 1990, 'tres_datos', 'los tres datos buenos pasan tal cual')
   debe(limpiarRespuestas({ anio_nacimiento: 1919 }, 2026).anio_nacimiento === null && limpiarRespuestas({ anio_nacimiento: 2027 }, 2026).anio_nacimiento === null && limpiarRespuestas({ anio_nacimiento: 1920 }, 2026).anio_nacimiento === 1920 && limpiarRespuestas({ anio_nacimiento: 2026 }, 2026).anio_nacimiento === 2026, 'anio', 'el año va de 1920 al año actual; fuera de eso, no se guarda')
   debe(limpiarRespuestas({}, 2026).anio_nacimiento === null && limpiarRespuestas({ frecuencia: 'mucho', compania: 'solo' }, 2026).frecuencia === null && limpiarRespuestas({ frecuencia: 'mucho', compania: 'solo' }, 2026).compania === null, 'anio', 'sin año no se guarda; un valor que no es de la lista tampoco')
@@ -119,11 +119,16 @@ console.log('3. Una cuenta nueva ve las preguntas una vez y acaba en el Perfil')
     debe(/Opcional\. Nos ayuda a mejorar Jutrip; nunca lo enseñamos/.test(j4.texto), 'anio', 'debajo, en pequeño: «Opcional. Nos ayuda a mejorar Jutrip; nunca lo enseñamos»')
     await a.captura(`${CAP}/Q4.jpg`)
     await clic(a, '[data-continuar]') // sin marcar ningún año
-    const sale = await esperar(a, "Boolean(document.querySelector('[data-mapa-primera-vez]'))")
+    await a.esp(300)
+    // (V35B) La quinta pantalla: ¿En qué país vives? (opcional; sin idioma con región no sale ninguno marcado). Aquí se salta con [Continuar] sin marcar nada.
+    debe(/En qué país vives/.test(await a.evaluar('document.body.innerText')) && (await a.evaluar("document.querySelectorAll('[data-pais]').length")) > 100, 'pais', 'pregunta 5: ¿En qué país vives? con la lista de países')
+    await a.evaluar("document.querySelector('[data-pais][aria-pressed=\"true\"]')?.click(); true")
+    await clic(a, '[data-continuar]')
+    const sale =await esperar(a, "Boolean(document.querySelector('[data-mapa-primera-vez]'))")
     debe(sale, 'perfil', 'al acabar la última pregunta, directo al Perfil (con el mapa)')
     const g = JSON.parse(await a.evaluar('JSON.stringify(window.__demoPrimeraVez)'))
     debe(g.guardados === 1 && g.frecuencia === 'dos_o_tres' && g.compania === 'pareja' && g.anio_nacimiento === null, 'tres_datos', 'se guardó la frecuencia y con quién; el año sin marcar NO se guardó')
-    debe(JSON.stringify(Object.keys(g.ultimo).sort()) === '["anio_nacimiento","compania","frecuencia"]', 'tres_datos', `lo enviado al servidor lleva SOLO esas tres claves (${Object.keys(g.ultimo).join(', ')}): del ritmo y los gustos, nada`)
+    debe(JSON.stringify(Object.keys(g.ultimo).sort()) === '["anio_nacimiento","compania","frecuencia","pais_vive"]', 'tres_datos', `lo enviado al servidor lleva SOLO esas cuatro claves (tres + el país;${Object.keys(g.ultimo).join(', ')}): del ritmo y los gustos, nada`)
     debe(!(await a.evaluar("document.querySelector('[data-preguntas-primera-vez]') !== null")), 'preguntas', 'las preguntas se cierran')
     // El cuestionario de crear viaje sale sin rellenar (nada de lo contestado se usa)
     const q = JSON.parse(await a.evaluar(`import('/src/store/useRouteStore.ts').then((m) => { const s = m.useRouteStore.getState(); return JSON.stringify({ origen: s.answers.origin ?? null, destino: s.destination ?? null, companion: s.answers.companion ?? null, ritmo: s.answers.pace ?? null, experiencias: (s.answers.experiences ?? []).length }) })`))
@@ -221,7 +226,7 @@ console.log('7. Lanzarote (solo administradores): su tarjeta, [Crear viaje] y su
     await pasarBienvenida(a)
     await esperar(a, "Boolean(document.querySelector('[data-preguntas-primera-vez]'))")
     await clic(a, '[data-saltar]')
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       await a.esp(200)
       await clic(a, '[data-saltar]')
     }
@@ -246,7 +251,7 @@ console.log('7. Lanzarote (solo administradores): su tarjeta, [Crear viaje] y su
   try {
     await pasarBienvenida(a)
     await esperar(a, "Boolean(document.querySelector('[data-preguntas-primera-vez]'))")
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       await clic(a, '[data-saltar]')
       await a.esp(250)
     }

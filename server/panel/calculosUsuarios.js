@@ -10,6 +10,7 @@ import { diaDe, diasEntre, rangoDePeriodo, sumarDias, enRango } from './periodo.
 import { clavePanel, esCobroReal, gastadoDe, indiceDe, nombreDe, nombreDePlan, pasesDe, etiquetaDePase, viajesDe } from './comunes.js'
 import { desdeDondeViajan, primeraVez } from './calculos.js'
 import { nivelDeExp } from '../logros/exp.js'
+import { dondeViven, paisDeVive, usoDeLaApp } from './calculosPersonas.js'
 
 const n = (v) => Number(v) || 0
 const pct = (x, total) => (total > 0 ? Math.round((x / total) * 100) : 0)
@@ -143,6 +144,7 @@ export function prepararUsuarios(base, { hoy, datos, conocidos }) {
       moneda: pases.find((p) => p.moneda)?.moneda ?? 'eur',
       primera_vez: pv ? { frecuencia: pv.frecuencia ?? null, compania: pv.compania ?? null, anio_nacimiento: pv.anio_nacimiento ?? null } : null,
       logros: logros.get(u.id) ?? [],
+      vive: paisDeVive(base, u.id),
     }
   })
   return { registros, ix }
@@ -211,6 +213,8 @@ export function filaDe(r, hoy, entre = null) {
     id: r.id,
     nombre: r.nombre,
     email: r.email,
+    // (V35B) Cuenta de prueba (Herramientas › «Cuentas que no cuentan»): la lista la enseña con la etiqueta «Prueba».
+    prueba: Boolean(r.prueba),
     alta: r.alta,
     ultimo_acceso: r.ultimo_acceso,
     nivel: r.nivel,
@@ -257,7 +261,8 @@ export function ficha(registros, id, { hoy, ahora, datos, reportes = [] }) {
     ok: true,
     usuario: filaDe(u, hoy),
     // «Hoy · 09:14»: la hora de Madrid del último acceso (la pone la pantalla).
-    vive_en: null,
+    // (V35B) El país donde vive ({ iso, nombre }), o null si no lo ha dicho o aún no se guarda (0091 sin aplicar).
+    vive_en: u.vive ?? null,
     hoy,
     ahora: ahora.toISOString(),
     pase_texto: u.pases.length ? `Sí · ${destinosConPase} ${destinosConPase === 1 ? 'destino' : 'destinos'}` : 'No',
@@ -396,20 +401,24 @@ export function resumen(base, { periodo = {}, ahora = new Date(), datos, conocid
   const maximo = Math.max(6, ...niveles.keys())
   const entran = { correo: registros.filter((u) => u.proveedor === 'correo').length, google: registros.filter((u) => u.proveedor === 'google').length }
   entran.otros = total - entran.correo - entran.google
+  // (V35B) Con la tabla `uso_diario` (0091), la actividad sale de ella; sin ella, del último acceso y la retención es «Pronto» (null).
+  const uso = usoDeLaApp(base, rango)
   return {
     ok: true,
     periodo: { periodo: rango.periodo, desde: rango.desde, hasta: rango.hasta, etiqueta: rango.etiqueta, titulo: rango.titulo },
     hoy,
     total,
     nuevos: registros.filter((u) => u.alta && enRango(u.alta, rango)).length,
-    activos: registros.filter((u) => u.ultimo_acceso && enRango(u.ultimo_acceso, rango)).length,
+    activos: uso ? uso.periodo : registros.filter((u) => u.ultimo_acceso && enRango(u.ultimo_acceso, rango)).length,
     embudo,
-    // La retención («de los que entraron una semana, volvieron la siguiente») necesita guardar cada visita: solo se guarda el ÚLTIMO acceso. Hasta entonces, sin inventar.
-    actividad: { dia: activosEn(1), semana: activosEn(7), mes: activosEn(30), retencion_pct: null },
+    // La retención («de los que entraron una semana, volvieron la siguiente») sale de `uso_diario`. Sin esa tabla, `null` («Pronto»): no se inventa.
+    actividad: uso ? { dia: uso.dia, semana: uso.semana, mes: uso.mes, retencion_pct: uso.retencion.pct, retencion_base: uso.retencion.base, retencion_vuelven: uso.retencion.vuelven, de_uso: true } : { dia: activosEn(1), semana: activosEn(7), mes: activosEn(30), retencion_pct: null, retencion_base: 0, retencion_vuelven: 0, de_uso: false },
+    // Aparato y dónde la usan (de las personas activas del periodo). null = «Pronto».
+    uso: uso ? { aparato: uso.aparato, donde: uso.donde, con_dato: uso.con_dato } : null,
     viajando: viajando(registros, hoy),
     calendario: calendario(registros, hoy),
     quienes: { contestaron: pv.contestaron, frecuencia: bloque('frecuencia').opciones, compania: bloque('compania').opciones, edad: bloque('edad').opciones },
-    donde_viven: null,
+    donde_viven: dondeViven(base),
     desde_donde: { paises: dondeViajan.paises.map((p) => ({ iso: p.iso, nombre: nombreDePais(p.iso), n: p.n })), ciudades: dondeViajan.ciudades.map((c) => ({ nombre: c.nombre, iso: c.iso, n: c.n })) },
     niveles: Array.from({ length: maximo }, (_, i) => ({ nivel: i + 1, n: niveles.get(i + 1) ?? 0 })),
     entran: { total, ...entran, correo_pct: pct(entran.correo, total), google_pct: pct(entran.google, total), otros_pct: pct(entran.otros, total) },

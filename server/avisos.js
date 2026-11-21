@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url'
 import { quienEs, tokenDe } from './cuentas.js'
 import { crearCorreo } from './correo.js'
 import { crearAvisoInterno } from './panel/avisoInterno.js'
+import { tituloDeReporte, textoDeReporte } from './panel/reportes.js'
 import { detalleDelAviso, franjaDelAviso, ponerTablaDeArticulos, quienDelAviso, textoDelAviso, textoDelPush } from '../shared/avisos/textos.js'
 import { sorteoVisible } from './logros/sorteoVisible.js'
 
@@ -120,6 +121,32 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
   /** (Tanda 10P) Lo que se mira justo antes de leer la campanita de una persona (el servicio de logros lo pone: si ya cumple el sorteo, su aviso dorado se crea ahora). Sin logros, nada. */
   let antesDeListar = null
 
+  /**
+   * (V35B) Para cada aviso `gracias_viajero` con `aviso_id`: si es una respuesta de Eric (su clave empieza por `respuesta:`) y el reporte original ({titulo, texto}).
+   * Devuelve un mapa id-del-aviso → campos que se suman al payload. Nunca lanza: sin reporte (o sin permiso de lectura) el aviso sale como antes.
+   */
+  async function reportesDeLosAvisos(avisos) {
+    const mapa = new Map()
+    try {
+      const propios = avisos.filter((a) => a.tipo === 'gracias_viajero')
+      if (!propios.length || typeof admin?.from !== 'function') return mapa
+      const claves = new Map(((await admin.from('avisos').select('id,clave').in('id', propios.map((a) => a.id)))?.data ?? []).map((x) => [x.id, String(x.clave ?? '')]))
+      const ids = [...new Set(propios.map((a) => a.payload?.aviso_id).filter(Boolean))]
+      const reportes = new Map()
+      if (ids.length) for (const r of (await admin.from('avisos_de_viajeros').select('id,tipo,datos').in('id', ids))?.data ?? []) reportes.set(r.id, { titulo: tituloDeReporte(r.tipo, r.datos), texto: textoDeReporte(r.tipo, r.datos) })
+      for (const a of propios) {
+        const extra = {}
+        if ((claves.get(a.id) ?? '').startsWith('respuesta:')) extra.es_respuesta = true
+        const r = reportes.get(a.payload?.aviso_id)
+        if (r && (r.titulo || r.texto)) extra.reporte = r
+        if (Object.keys(extra).length) mapa.set(a.id, extra)
+      }
+    } catch (error) {
+      log.warn?.('[avisos] no se pudo leer el reporte de las respuestas:', error.message)
+    }
+    return mapa
+  }
+
   /** La lista de la campanita de una persona: prepara lo que ya toca y devuelve los avisos con su texto. */
   async function listar(uid) {
     try {
@@ -175,16 +202,18 @@ export function crearServicioAvisos({ admin, destinos = {}, ahora = () => new Da
       const estado = estadoDeGasto.get(a.payload?.gasto_id) ?? 'retirado'
       return estado === 'pendiente' ? null : estado === 'aceptado' ? 'Aceptado' : estado === 'rechazado' ? 'Rechazado' : 'Retirado'
     }
+    // (V35B) Las respuestas de Eric y los «ya está arreglado» llevan lo que mandó el viajero («Tu reporte: Coliseo · Horario» y su texto): se lee el reporte aquí, con la clave de servicio, sin tocar la base.
+    const delReporte = await reportesDeLosAvisos(avisos)
     const lista = avisos.map((a) => ({
       id: a.id,
       tipo: a.tipo,
-      texto: textoDelAviso(a),
-      franja: franjaDelAviso(a),
+      texto: textoDelAviso(delReporte.get(a.id) ? { ...a, payload: { ...a.payload, ...delReporte.get(a.id) } } : a),
+      franja: franjaDelAviso(delReporte.get(a.id) ? { ...a, payload: { ...a.payload, ...delReporte.get(a.id) } } : a),
       quien: quienDelAviso(a),
       creado_en: a.creado_en,
       leido: a.leido,
-      payload: a.tipo === 'gasto_pendiente' ? { ...a.payload, gasto_estado: estadoDeGasto.get(a.payload?.gasto_id) ?? 'retirado' } : a.payload,
-      detalle: detalleDelAviso(a),
+      payload: a.tipo === 'gasto_pendiente' ? { ...a.payload, gasto_estado: estadoDeGasto.get(a.payload?.gasto_id) ?? 'retirado' } : delReporte.get(a.id) ? { ...a.payload, ...delReporte.get(a.id) } : a.payload,
+      detalle: detalleDelAviso(delReporte.get(a.id) ? { ...a, payload: { ...a.payload, ...delReporte.get(a.id) } } : a),
       // AV3: una recomendación ya contestada queda «Aceptada» o «No aceptada» (la contesta el administrador desde R2).
       etiqueta: a.tipo === 'recomendacion' && a.estado_rec && a.estado_rec !== 'pendiente' ? (a.estado_rec === 'aceptada' ? 'Aceptada' : 'No aceptada') : etiquetaDeGasto(a),
     }))

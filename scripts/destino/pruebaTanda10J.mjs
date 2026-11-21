@@ -90,6 +90,17 @@ debe((await db.query(comprobar0089)).rows[0]?.migracion_0089 === 'FALTA', 'migra
 await db.exec(fs.readFileSync('supabase/migrations/0089_viajero_primera_vez.sql', 'utf8'))
 await db.exec(fs.readFileSync('supabase/migrations/0089_viajero_primera_vez.sql', 'utf8')) // idempotente: pegada dos veces
 debe((await db.query(comprobar0089)).rows[0]?.migracion_0089 === 'Aplicada', 'migracion', 'y «Aplicada» tras la 0089 (pegada dos veces)')
+// V35B: la vigente es ahora la de la 0091 (parte de la 0089 y solo añade uso_diario). COMPROBAR_0091 no da true con la 0089 y da UNA fila con todo true con la 0091 (pegada dos veces).
+const comprobar0091 = fs.readFileSync('docs/dias/COMPROBAR_0091.sql', 'utf8')
+let antes0091 = false
+try {
+  antes0091 = (await db.query(comprobar0091)).rows[0]?.todo === true
+} catch {
+  antes0091 = false
+}
+debe(antes0091 === false, 'migracion', 'COMPROBAR_0091.sql no da true con la función de la 0089 (que aún no borra uso_diario)')
+await db.exec(fs.readFileSync('supabase/migrations/0091_panel_datos.sql', 'utf8'))
+await db.exec(fs.readFileSync('supabase/migrations/0091_panel_datos.sql', 'utf8')) // idempotente: pegada dos veces
 debe((await db.query(comprobar0086)).rows[0]?.migracion_0086?.aplicada === true && (await db.query(comprobar0086)).rows[0]?.migracion_0086?.faltan === 0, 'migracion', 'y «true» y 0 que faltan tras la 0086 (pegada dos veces)')
 debe((await db.query(comprobar0085)).rows[0]?.migracion_0085?.aplicada === true && (await db.query(comprobar0085)).rows[0]?.migracion_0085?.faltan === 0, 'migracion', 'COMPROBAR_0085.sql dice «true» y 0 que faltan con la 0085 aplicada')
 debe((await db.query(comprobar0074)).rows[0]?.migracion_0074 === 'Aplicada', 'migracion', 'COMPROBAR_0074.sql sigue diciendo «Aplicada» con la 0086 vigente')
@@ -122,12 +133,12 @@ const S = (sql, params = []) => servidor(() => q(sql, params))
 /** El inventario: TODA tabla con datos de una cuenta y la columna que dice de quién es. Lo que se borra. */
 const INVENTARIO = [
   ['stop_visits', 'user_id'], ['trip_photo_meta', 'user_id'], ['trip_photos', 'user_id'], ['logro_hechos', 'user_id'], ['achievements', 'user_id'], ['logro_avisos', 'user_id'], ['logro_perfil', 'user_id'],
-  ['push_suscripciones', 'user_id'], /* hoy_prueba: 0072, se queda */ ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_viaje_enviados', 'user_id'] /* 0074 (HOY3): los avisos del viaje ya mandados */, ['avisos_de_viajeros', 'user_id'] /* 0085/0086 (V20): lo que la persona mandó desde «Cuéntanos» con avísame */, ['viajero_primera_vez', 'user_id'] /* 0089 (V31): las preguntas de la primera vez */, ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
+  ['push_suscripciones', 'user_id'], /* hoy_prueba: 0072, se queda */ ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_viaje_enviados', 'user_id'] /* 0074 (HOY3): los avisos del viaje ya mandados */, ['avisos_de_viajeros', 'user_id'] /* 0085/0086 (V20): lo que la persona mandó desde «Cuéntanos» con avísame */, ['viajero_primera_vez', 'user_id'] /* 0089 (V31): las preguntas de la primera vez */, ['uso_diario', 'user_id'] /* 0091 (V35B): un día activo por cuenta, aparato e instalada */, ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
   ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['admin_sin_pase', 'user_id'] /* 0040 */, ['trip_gastos', 'autor_id'] /* 0037/0040 */, ['trip_pagos', 'marcado_por'] /* 0040 */, ['trip_ex_miembros', 'user_id'] /* 0040 */, ['lo_suyo_del_viaje', 'user_id'] /* 0049, añadida en la 0071 */, ['reservas_invitado', 'user_id'] /* 0038, 0071 */, ['reservas_privadas_admin', 'user_id'] /* 0062/0064, 0071 */, /* historia_de_prueba: 0072, se queda */ ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
 ]
 /** Lo que se queda (de la cuenta). */
 // 10S7: hoy_prueba e historia_de_prueba pasan aquí (0072): las pruebas gastadas se quedan SIEMPRE («una por cuenta, para siempre»).
-const SE_QUEDA = [['travelers', 'id'], ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id'], ['hoy_prueba', 'user_id'], ['historia_de_prueba', 'user_id'], ['lecturas_de_documentos', 'user_id']]
+const SE_QUEDA = [['travelers', 'id'], ['invitaciones_app', 'user_id'], ['logro_referidos', 'invitado_id'], ['hoy_prueba', 'user_id'], ['historia_de_prueba', 'user_id'], ['lecturas_de_documentos', 'user_id'], ['pagos_registro', 'user_id'] /* 0091 (V35B): contabilidad, se guarda años: NUNCA se borra */]
 // 10S8: el contador de lecturas del día (0073) no se borra, para que empezar de cero no devuelva lecturas (como las pruebas gastadas).
 
 const usuario = async (email) => (await q('insert into auth.users (email, is_anonymous) values ($1, false) returning id', [email]))[0].id
@@ -153,6 +164,8 @@ async function sembrar(uid, etiqueta, { invitado = null, amiga = null } = {}) {
   await S("insert into public.avisos_viaje_enviados (user_id, trip_id, clave, tipo, para) values ($1,$2,$3,'manana', now())", [uid, viaje, unico('viaje|manana')])
   await S("insert into public.avisos_de_viajeros (tipo, datos, avisame, user_id) values ('idea', '{\"texto\": \"Una idea\"}'::jsonb, true, $1)", [uid])
   await S("insert into public.viajero_primera_vez (user_id, frecuencia, compania, anio_nacimiento) values ($1, 'dos_o_tres', 'pareja', 1990)", [uid])
+  await S("insert into public.uso_diario (user_id, dia, aparato, instalada) values ($1, '2026-11-20', 'iphone', true)", [uid])
+  await S("insert into public.pagos_registro (pago_ref, proveedor, destino, plan, personas, importe_cent, user_id) values ($1, 'stripe', 'Roma', 'uno', 1, 699, $2)", [unico('cs_pago'), uid])
   await S("insert into public.avisos_destino (destino, destino_norm, email, email_norm, user_id) values ('Lisboa','lisboa',$1,$1,$2)", [`${etiqueta}@x.es`, uid])
   await S("insert into public.place_likes (place_name, destination, user_id) values ('Coliseo','roma',$1)", [uid])
   await S('insert into public.admin_sin_pase (user_id, activo) values ($1, true) on conflict (user_id) do nothing', [uid])
@@ -254,7 +267,7 @@ const sinColumnaDeCuenta = (await S("select table_name from information_schema.t
 debe(sinColumnaDeCuenta.includes('pagos_registro') && !apuntanAUsuarios.some((x) => x.tabla === 'pagos_registro'), 'stripe', 'el registro de cobros no cuelga de ninguna cuenta (no se puede borrar por cuenta)')
 
 const antesDeLosDemas = await foto(A)
-const pagosAntes = (await S('select count(*)::int as n from public.pagos_registro'))[0].n
+let pagosAntes = (await S('select count(*)::int as n from public.pagos_registro'))[0].n
 
 // El móvil no puede llamarla
 {
@@ -352,6 +365,7 @@ const D = await usuario(ADMIN_EMAIL) // otra fila de auth con el email de admini
 const X = await usuario('otra-persona@ejemplo.es') // NO es de LOGROS_ADMIN_EMAILS
 await sembrar(D, 'D')
 const dueña = await sembrar(X, 'X')
+pagosAntes = (await S('select count(*)::int as n from public.pagos_registro'))[0].n // (V35B: sembrar también apunta un cobro con user_id; hay que contarlo antes de empezar de cero)
 const usuarios = {
   admin: { id: D, email: ADMIN_EMAIL, is_anonymous: false, user_metadata: { pelicula_pase_vista: true, otro_dato: 'queda' } },
   otra: { id: X, email: 'otra-persona@ejemplo.es', is_anonymous: false, user_metadata: { pelicula_pase_vista: true } },
@@ -503,7 +517,8 @@ console.log('3. El código')
   const sql86completa = sin(fs.readFileSync('supabase/migrations/0086_empezar_de_cero_avisos_de_viajeros.sql', 'utf8'))
   const sql86 = sql86completa.slice(sql86completa.indexOf('create or replace function public.empezar_de_cero'))
   // V31: la vigente es ahora la de la 0089 (parte de la 0086 y solo añade viajero_primera_vez); se mira solo el trozo de la función (el resto son la tabla y sus políticas).
-  const sql89completa = sin(fs.readFileSync('supabase/migrations/0089_viajero_primera_vez.sql', 'utf8'))
+  // V35B: la vigente es ahora la de la 0091 (parte de la 0089 y solo añade uso_diario).
+  const sql89completa = sin(fs.readFileSync('supabase/migrations/0091_panel_datos.sql', 'utf8'))
   const sql = sql89completa.slice(sql89completa.indexOf('create or replace function public.empezar_de_cero'))
   const sql71 = sin(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8'))
   const sql32 = sin(fs.readFileSync('supabase/migrations/0032_empezar_de_cero.sql', 'utf8'))
@@ -544,8 +559,12 @@ console.log('3. El código')
   // V20: la 0086 parte de la ÚLTIMA versión (la de la 0074) y su ÚNICA diferencia es una línea más: avisos_de_viajeros.
   const tablas86 = [...sql86.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
   debe(tablas74.every((x) => tablas86.includes(x)) && JSON.stringify(tablas86.filter((x) => !tablas74.includes(x))) === JSON.stringify(['avisos_de_viajeros.user_id']), 'inventario', `la 0086 conserva todo lo de la 0074 y solo añade avisos_de_viajeros (añade: ${tablas86.filter((x) => !tablas74.includes(x)).join(', ') || 'nada'})`)
+  // V35B: la 0091 parte de la ÚLTIMA versión (la de la 0089) y su ÚNICA diferencia es una línea más: uso_diario.user_id. Los pagos (pagos_registro) NO entran: contabilidad, se guarda años.
+  const sql89f = sin(fs.readFileSync('supabase/migrations/0089_viajero_primera_vez.sql', 'utf8'))
+  const tablas89 = [...sql89f.slice(sql89f.indexOf('create or replace function public.empezar_de_cero')).matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
+  debe(tablas89.every((x) => tablasSql.includes(x)) && JSON.stringify(tablasSql.filter((x) => !tablas89.includes(x))) === JSON.stringify(['uso_diario.user_id']) && !tablasSql.some((x) => /^pagos_registro\./.test(x)), 'inventario', `la 0091 conserva todo lo de la 0089 y solo añade uso_diario (añade: ${tablasSql.filter((x) => !tablas89.includes(x)).join(', ')}; pierde: ${tablas89.filter((x) => !tablasSql.includes(x)).join(', ') || 'nada'}; los pagos no entran)`)
   // V31: la 0089 parte de la ÚLTIMA versión (la de la 0086) y su ÚNICA diferencia es una línea más: viajero_primera_vez.
-  debe(tablas86.every((x) => tablasSql.includes(x)) && JSON.stringify(tablasSql.filter((x) => !tablas86.includes(x))) === JSON.stringify(['viajero_primera_vez.user_id']), 'inventario', `la 0089 conserva todo lo de la 0086 y solo añade viajero_primera_vez (añade: ${tablasSql.filter((x) => !tablas86.includes(x)).join(', ') || 'nada'}; pierde: ${tablas86.filter((x) => !tablasSql.includes(x)).join(', ') || 'nada'})`)
+  debe(tablas86.every((x) => tablas89.includes(x)) && JSON.stringify(tablas89.filter((x) => !tablas86.includes(x))) === JSON.stringify(['viajero_primera_vez.user_id']), 'inventario', `la 0089 conserva todo lo de la 0086 y solo añade viajero_primera_vez (añade: ${tablas89.filter((x) => !tablas86.includes(x)).join(', ') || 'nada'}; pierde: ${tablas86.filter((x) => !tablas89.includes(x)).join(', ') || 'nada'})`)
   debe(!/hoy_prueba|historia_de_prueba/.test(sql), 'pruebas', 'el código de la 0072 (sin comentarios) no nombra hoy_prueba ni historia_de_prueba: no se borran nunca')
   // El cliente
   const cliente = fs.readFileSync('src/lib/empezarDeCero.ts', 'utf8')

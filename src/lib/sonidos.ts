@@ -142,6 +142,8 @@ async function cargar(momento: string): Promise<AudioBuffer | null> {
 /** Hace sonar un momento. Llamarla dentro del toque del dedo (el primer toque desbloquea el audio). Nunca lanza. */
 export async function sonar(momento: string, extra: OpcionesDePartitura = {}): Promise<void> {
   if (!sonidoActivado()) return
+  // (V35B) La apertura va en SILENCIO en la web (el navegador no deja sonar antes del primer toque): la app no la pide nunca. Solo el visor del estudio de sonidos (/admin/sonidos) puede oírla; queda lista para la app de las tiendas.
+  if (momento === 'apertura' && !(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) return
   // (Tanda 10N4) Para las pruebas: cada vez que de verdad se pide un sonido, queda apuntado.
   try {
     ;((window as unknown as { __sonidosPedidos?: string[] }).__sonidosPedidos ??= []).push(momento)

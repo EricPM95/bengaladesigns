@@ -114,6 +114,17 @@ export function pasarelaStripe({ clave, secretoAviso, fetchFn = fetch }) {
       return { id: datos.id, url: datos.url }
     },
     verificarAviso: (cuerpo, firma, opciones) => verificarAvisoStripe(cuerpo, firma, secretoAviso, opciones),
+    /** (V35B) La comisión que se queda Stripe de un cobro (céntimos), de su `balance_transaction`. null si no se pudo saber. */
+    async comision(intencionRef) {
+      try {
+        const r = await fetchFn(`${base}/payment_intents/${encodeURIComponent(intencionRef)}?expand[]=latest_charge.balance_transaction`, { headers: { Authorization: `Bearer ${clave}` } })
+        const datos = await r.json().catch(() => null)
+        const fee = datos?.latest_charge?.balance_transaction?.fee
+        return r.ok && Number.isInteger(fee) ? fee : null
+      } catch {
+        return null
+      }
+    },
     /** El recibo de un pago (su dirección pública, con el email del comprador en la página de Stripe). */
     async recibo(intencionRef) {
       const r = await fetchFn(`${base}/payment_intents/${encodeURIComponent(intencionRef)}?expand[]=latest_charge`, { headers: { Authorization: `Bearer ${clave}` } })
@@ -140,6 +151,11 @@ export function pasarelaDeMentira({ origen = 'http://localhost:5173' } = {}) {
     },
     async recibo(intencionRef) {
       return `https://recibo.invalid/${encodeURIComponent(intencionRef)}`
+    },
+    /** (V35B) Una comisión de mentira con la forma de la de Stripe (1,4 % + 0,25 €), para las pruebas. */
+    async comision(intencionRef) {
+      const s = [...sesiones.values()].find((x) => x.intencion === intencionRef)
+      return s ? Math.round(s.importe_cent * 0.014) + 25 : null
     },
     /** El aviso que mandaría Stripe para ese resultado (o null si es un rechazo: Stripe no avisa de un pago que no se hizo). */
     eventoDe(sesionId, resultado) {
@@ -221,6 +237,23 @@ export function crearServicioPagos({ admin, precios, destinos, pasarela, env = p
     return { estado: 200, cuerpo: { ok: true, url: sesion.url, sesion: sesion.id, precio: { total: p.precio.total, por_persona: p.precio.por_persona, personas: p.personas, plan: p.plan } } }
   }
 
+  /** (V35B) Anota en el registro quién pagó (`user_id`) y la comisión de Stripe. Nunca rompe el cobro: sin la 0091, o si Stripe no contesta, se sigue. */
+  async function anotarCobro(o, uid) {
+    try {
+      const comision = o.payment_intent && pasarela?.comision ? await pasarela.comision(o.payment_intent) : null
+      await rpc('pago_anotar', { p_pago_ref: o.id, p_comprador: uid, p_comision_cent: Number.isInteger(comision) ? comision : null })
+    } catch (e) {
+      log.warn?.('[pagos] no se pudo anotar quién pagó (¿0091 sin aplicar?):', e?.message ?? e)
+    }
+  }
+  async function anotarDevolucion(o) {
+    try {
+      if (Number.isInteger(o.amount_refunded)) await rpc('pago_anotar_devolucion', { p_ref: o.payment_intent ?? o.id, p_devuelto_cent: o.amount_refunded })
+    } catch (e) {
+      log.warn?.('[pagos] no se pudo anotar la devolución (¿0091 sin aplicar?):', e?.message ?? e)
+    }
+  }
+
   /** El aviso de Stripe (ya con la firma comprobada). Si llega dos veces, un solo pase. */
   async function procesarEvento(evento) {
     const tipo = evento?.type
@@ -247,10 +280,14 @@ export function crearServicioPagos({ admin, precios, destinos, pasarela, env = p
         p_moneda: o.currency ?? 'eur',
         p_trip: m.trip_id || null,
       })
+      // (V35B) Quién pagó y la comisión de Stripe, anotados en el registro. Si la 0091 aún no está aplicada, la función no existe: no pasa nada (el pase ya está creado).
+      await anotarCobro(o, m.uid)
       return { ok: true, accion: r?.repetido ? 'repetido' : r?.sin_comprador ? 'sin_comprador' : 'pase_creado', pase_id: r?.pase_id ?? null }
     }
     if (tipo === 'charge.refunded') {
       // Solo la devolución completa anula el pase.
+      // (V35B) Cuánto se ha devuelto, anotado en el registro (entera o por partes).
+      await anotarDevolucion(o)
       const entera = o.refunded === true || (Number.isInteger(o.amount) && Number.isInteger(o.amount_refunded) && o.amount_refunded >= o.amount)
       if (!entera) return { ok: true, accion: 'devolucion_parcial' }
       const r = await rpc('devolver_pago', { p_ref: o.payment_intent ?? o.id })

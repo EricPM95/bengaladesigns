@@ -2,8 +2,10 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { llamar } from '../../../lib/logros'
 import { useSinPasePrueba } from '../../../store/useSinPasePrueba'
 import { empezarDeCero, puedeEmpezarDeCero } from '../../../lib/empezarDeCero'
+import { misPases, type PaseMio } from '../../../lib/pagoPase'
 import { ROSA, ROSA_FONDO, tarjetaBlanca, titulo14, TINTA, ORO } from './comun'
 import { ParaCode } from './ParaCode'
+import { CuentasQueNoCuentan } from './CuentasQueNoCuentan'
 
 /**
  * (V35A, Design P7c / M7c) HERRAMIENTAS: «Dar Probador», «Mis pruebas» y, plegado al final, «Para Code».
@@ -21,7 +23,16 @@ export const QUE_BORRA_EMPEZAR_DE_CERO =
 export const QUE_BORRA_REINICIAR =
   'Borra solo lo de pruebas de tu cuenta: el día de prueba de HOY, los logros ganados (y los hechos con que se calculan), la experiencia, los pases comprados con sus plazas y los avisos de los logros y de la campana. No toca tus viajes, tus fotos ni la cuenta.'
 
-const botonRosa = { minHeight: 48, padding: '0 20px', borderRadius: 14, background: ROSA_FONDO, border: '1.5px solid oklch(0.58 0.19 5 / .4)', color: ROSA, font: "700 14px 'Geist'", cursor: 'pointer' } as const
+/**
+ * (V35B) Pura: cuántos pases PAGADOS perdería quien pulsa «Empezar de cero». `empezar_de_cero` (migración 0089) borra los pases donde la cuenta es la compradora (`passes.comprador_id`); antes, `preparar_borrado` (0021)
+ * pasa el pase a otra persona si alguien más lo usa o es su destinatario. El registro de cobros (`pagos_registro`) NO se borra: el dinero cobrado se queda en la contabilidad y no se devuelve.
+ * Pagado = activo, comprado por esta cuenta y con cobro (`tiene_recibo`: lleva referencia de pago); no cuentan los regalados ni los de prueba.
+ */
+export function pasesPagadosQueSePierden(pases: PaseMio[]): number {
+  return pases.filter((p) => p.es_mio && p.estado === 'activo' && p.tiene_recibo && !p.miembros.some((m) => !m.es_yo)).length
+}
+
+const botonRosa ={ minHeight: 48, padding: '0 20px', borderRadius: 14, background: ROSA_FONDO, border: '1.5px solid oklch(0.58 0.19 5 / .4)', color: ROSA, font: "700 14px 'Geist'", cursor: 'pointer' } as const
 const lineaQueBorra = { margin: 0, font: "400 12px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' } as const
 
 export function Herramientas({ movil }: { movil: boolean }): ReactNode {
@@ -29,6 +40,7 @@ export function Herramientas({ movil }: { movil: boolean }): ReactNode {
     <>
       <Probador movil={movil} />
       <MisPruebas movil={movil} />
+      <CuentasQueNoCuentan movil={movil} />
       <ParaCode movil={movil} />
     </>
   )
@@ -74,6 +86,16 @@ function MisPruebas({ movil }: { movil: boolean }): ReactNode {
       vivo = false
     }
   }, [])
+  // (V35B) Al abrir la confirmación de «Empezar de cero», se miran los pases PAGADOS que se perderían (activos, comprados por esta cuenta y que nadie más usa: si otra persona lo usa, el pase pasa a ella).
+  const [pagados, setPagados] = useState(0)
+  useEffect(() => {
+    if (confirmando !== 'cero') return undefined
+    let vivo = true
+    void misPases().then((lista) => vivo && setPagados(pasesPagadosQueSePierden(lista)))
+    return () => {
+      vivo = false
+    }
+  }, [confirmando])
   const cambiarSinPase = async () => {
     const nuevo = !sinPase
     const r = await llamar<{ ok: boolean; activo?: boolean }>('/api/admin/logros/sin-pase', { cuerpo: { activo: nuevo } })
@@ -125,7 +147,14 @@ function MisPruebas({ movil }: { movil: boolean }): ReactNode {
       </div>
       {confirmando === 'cero' && (
         <div data-empezar-de-cero-dialogo role="alertdialog" aria-label="Empezar de cero" style={caja}>
-          <span style={{ flex: 1, minWidth: 220, font: "500 13.5px/1.4 'Geist'" }}>Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia y los pases. La cuenta se queda. Las pruebas gratis que ya has usado no vuelven. ¿Seguro?</span>
+          <span style={{ flex: 1, minWidth: 220, font: "500 13.5px/1.4 'Geist'" }}>
+            {pagados > 0 && (
+              <b data-aviso-pases-pagados style={{ display: 'block', margin: '0 0 6px', color: ROSA }}>
+                Tienes {pagados} {pagados === 1 ? 'pase pagado' : 'pases pagados'}: se {pagados === 1 ? 'borrará' : 'borrarán'} con todo lo demás y no se devuelve el dinero.
+              </b>
+            )}
+            Se borrará todo lo de tu cuenta: viajes, reservas, fotos, logros, experiencia y los pases. La cuenta se queda. Las pruebas gratis que ya has usado no vuelven. ¿Seguro?
+          </span>
           <button type="button" data-empezar-de-cero-no disabled={ocupado} onClick={() => setConfirmando(null)} style={no}>Cancelar</button>
           <button type="button" data-empezar-de-cero-si disabled={ocupado} onClick={() => void borrarTodo()} style={si}>Sí, empezar de cero</button>
         </div>

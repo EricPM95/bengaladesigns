@@ -4,12 +4,21 @@
  * `window.__demoPanel` deja cambiar quién es administrador y si hay clave de correo, y apunta lo que el panel ha pedido.
  */
 const HOY = '2026-11-20'
+// (V35B) `sessionStorage['trazo:demo-sin-0091'] = '1'`: la demo contesta como el servidor SIN la migración 0091 (lo nuevo, «Pronto»).
+const sinLa0091 = (): boolean => { try { return window.sessionStorage.getItem('trazo:demo-sin-0091') === '1' } catch { return false } }
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 const corto = (d: string) => `${Number(d.slice(8, 10))} ${MESES[Number(d.slice(5, 7)) - 1]}`
 const sumar = (d: string, n: number) => new Date(Date.parse(`${d}T12:00:00Z`) + n * 864e5).toISOString().slice(0, 10)
 const entre = (a: string, b: string) => Math.round((Date.parse(`${b}T12:00:00Z`) - Date.parse(`${a}T12:00:00Z`)) / 864e5)
 
-export const demoPanel: { admin: boolean; correo: boolean; avisados: Record<string, string[]>; respuestas: { id: string; texto: string; correo: string; hecho: boolean }[]; pedidos: string[]; estados: Record<string, string> } = {
+interface ProximamenteDemo {
+  clave: string
+  destino: string
+  iso: string
+  publicado: boolean
+  avisos: number
+}
+export const demoPanel: { admin: boolean; correo: boolean; avisados: Record<string, string[]>; respuestas: { id: string; texto: string; correo: string; hecho: boolean }[]; pedidos: string[]; estados: Record<string, string>; sin0091: boolean; proximamente: ProximamenteDemo[]; pruebas: string[] } = {
   // Con `sessionStorage['trazo:demo-no-admin'] = '1'` contesta como una cuenta que NO es de administrador: el servidor de verdad daría 403.
   admin: typeof window === 'undefined' ? true : (() => { try { return window.sessionStorage.getItem('trazo:demo-no-admin') !== '1' } catch { return true } })(),
   correo: false,
@@ -17,6 +26,14 @@ export const demoPanel: { admin: boolean; correo: boolean; avisados: Record<stri
   respuestas: [],
   pedidos: [],
   estados: {},
+  // (V35B) Con `sessionStorage['trazo:demo-sin-0091'] = '1'` contesta como el servidor SIN la migración 0091 (los botones nuevos salen apagados con «Pronto»).
+  sin0091: typeof window === 'undefined' ? false : (() => { try { return window.sessionStorage.getItem('trazo:demo-sin-0091') === '1' } catch { return false } })(),
+  proximamente: [
+    { clave: 'florencia', destino: 'Florencia', iso: 'it', publicado: true, avisos: 143 },
+    { clave: 'berlin', destino: 'Berlín', iso: 'de', publicado: false, avisos: 98 },
+    { clave: 'cartagena_de_indias', destino: 'Cartagena de Indias', iso: 'co', publicado: false, avisos: 0 },
+  ],
+  pruebas: ['pruebas1@demo.test'],
 }
 if (typeof window !== 'undefined') (window as unknown as { __demoPanel: typeof demoPanel }).__demoPanel = demoPanel
 
@@ -71,7 +88,7 @@ export function responder(ruta: string, url: URL, c: Record<string, unknown>, op
     return { ok: true, avisado: false }
   }
   // Las rutas de siempre (Avisos de viajeros) las contesta su propia demo; aquí solo lo del panel (y el 403 de quien no es administrador).
-  const nuevas = /^\/api\/admin\/(inicio|ventas|destinos|reportes)/.test(ruta)
+  const nuevas = /^\/api\/admin\/(inicio|ventas|destinos|reportes|cuentas-de-prueba)/.test(ruta)
   if (!nuevas) return undefined
   demoPanel.pedidos.push(`${metodo} ${ruta}${url.search}`)
   if (!demoPanel.admin) return null
@@ -89,7 +106,9 @@ export function responder(ruta: string, url: URL, c: Record<string, unknown>, op
       fotos_por_aprobar: 12,
       pases: { hoy: 1, mes: 9 },
       ingresos: { hoy_cent: 1099, mes_cent: 8400, moneda: 'eur' },
-      usuarios: { total: 3, hoy: 1, semana: 1, con_viaje: 2, pct_con_viaje: 67 },
+      // (V35B) Con «Sin cuentas de prueba» apagado cuenta una más (la de pruebas).
+      sin_pruebas: url.searchParams.get('sin_pruebas') !== '0',
+      usuarios: { total: 3 + (url.searchParams.get('sin_pruebas') === '0' ? 1 : 0), hoy: 1, semana: 1, con_viaje: 2, pct_con_viaje: 67 },
       serie: { ...s, total: s.cubetas.reduce((a, b) => a + b.pases, 0) },
       atencion: [
         { tipo: 'fallo', titulo: 'Algo no funciona: No me deja pagar el pase', en: new Date(ahora - 36e5).toISOString() },
@@ -106,6 +125,7 @@ export function responder(ruta: string, url: URL, c: Record<string, unknown>, op
         ],
       },
       desde_donde: { paises: [{ iso: 'es', n: 2 }, { iso: 'mx', n: 1 }], ciudades: [{ nombre: 'Barcelona', iso: 'es', n: 2 }, { nombre: 'Madrid', iso: 'es', n: 1 }, { nombre: 'Ciudad de México', iso: 'mx', n: 1 }] },
+      donde_viven: sinLa0091() ? null : { total: 3, paises: [{ iso: 'es', nombre: 'España', n: 2, pct: 67 }, { iso: 'mx', nombre: 'México', n: 1, pct: 33 }] },
       correo: { activo: demoPanel.correo },
     }
   }
@@ -119,13 +139,17 @@ export function responder(ruta: string, url: URL, c: Record<string, unknown>, op
       moneda: 'eur',
       pases: { periodo: total, hoy: 1 },
       ingresos_cent: total * 750,
-      te_queda: { cent: total * 750, comision_cent: null, antes_de_impuestos: true },
+      // (V35B) «Lo que te queda» = ingresos − comisión de Stripe − devoluciones (sin la 0091, la comisión es null → «pronto»).
+      devoluciones_cent: 699,
+      te_queda: demoPanel.sin0091 ? { cent: total * 750 - 699, comision_cent: null, devoluciones_cent: 699, antes_de_impuestos: true } : { cent: total * 750 - total * 36 - 699, comision_cent: total * 36, devoluciones_cent: 699, antes_de_impuestos: true },
       conversion: { pct: 50, compraron: 1, viajeros: 2 },
       por_dia: s,
       por_destino: [{ destino: 'Roma', n: Math.ceil(total / 2), importe_cent: Math.ceil(total / 2) * 750 }, { destino: 'Lanzarote', n: Math.floor(total / 2), importe_cent: Math.floor(total / 2) * 750 }].filter((d) => d.n > 0),
       compras: COMPRAS,
       total_compras: COMPRAS.length,
-      afiliados: { clics: null, enlaces: { civitatis: 'https://www.civitatis.com/es/afiliados/', stay22: 'https://www.stay22.com/dashboard' } },
+      afiliados: demoPanel.sin0091
+        ? { clics: null, enlaces: { civitatis: 'https://www.civitatis.com/es/afiliados/', stay22: 'https://www.stay22.com/dashboard' } }
+        : { clics: 41, por_destino: [{ destino: 'Roma', actividad: 24, hotel: 11 }, { destino: 'Lanzarote', actividad: 6, hotel: 0 }], por_proveedor: { civitatis: 30, stay22: 11 }, enlaces: { civitatis: 'https://www.civitatis.com/es/afiliados/', stay22: 'https://www.stay22.com/dashboard' } },
     }
   }
   if (ruta === '/api/admin/destinos')
@@ -138,14 +162,33 @@ export function responder(ruta: string, url: URL, c: Record<string, unknown>, op
         { destino: 'Cartagena de Indias', veces: 137, quieren_aviso: 0, avisados: 0, ultimo_aviso: null, proximamente: true },
         { destino: 'Ámsterdam', veces: 112, quieren_aviso: 98, avisados: 0, ultimo_aviso: null, proximamente: false },
         { destino: 'Tokio', veces: 66, quieren_aviso: 0, avisados: 0, ultimo_aviso: null, proximamente: false },
-      ],
-      proximamente: [
-        { destino: 'Florencia', iso: 'it', avisos: 143, avisados: (demoPanel.avisados.Florencia ?? []).length },
-        { destino: 'Berlín', iso: 'de', avisos: 98, avisados: 0 },
-        { destino: 'Cartagena de Indias', iso: 'co', avisos: 0, avisados: 0 },
-      ],
+      ].map((x) => ({ ...x, proximamente: demoPanel.proximamente.some((p) => p.destino === x.destino) && !x.lanzado })),
+      // (V35B) `puede_editar`: false = falta la 0091 (botones apagados con «Pronto»). Un destino nunca sale a la vez en «Los más pedidos» y en Próximamente.
+      puede_editar: !demoPanel.sin0091,
+      proximamente: demoPanel.proximamente.map((p) => ({ clave: p.clave, destino: p.destino, iso: p.iso, publicado: p.publicado, avisos: p.avisos, avisados: (demoPanel.avisados[p.destino] ?? []).length })),
       correo: { activo: demoPanel.correo },
     }
+  if (ruta === '/api/admin/destinos/proximamente' && metodo === 'POST') {
+    if (demoPanel.sin0091) return { ok: false, pronto: true, error: 'Falta aplicar la migración 0091 en Supabase.' }
+    const nombre = String((c as { destino?: string }).destino ?? '').trim()
+    if (!nombre || demoPanel.proximamente.some((p) => p.destino === nombre)) return { ok: false, error: `${nombre} ya está en Próximamente.` }
+    demoPanel.proximamente.push({ clave: nombre.toLowerCase().replace(/[^a-z0-9]+/g, '_'), destino: nombre, iso: '', publicado: false, avisos: 0 })
+    return { ok: true, destino: { nombre }, con_pin: true }
+  }
+  if (ruta === '/api/admin/destinos/proximamente/quitar' && metodo === 'POST') {
+    if (demoPanel.sin0091) return { ok: false, pronto: true }
+    demoPanel.proximamente = demoPanel.proximamente.filter((p) => p.clave !== String((c as { clave?: string }).clave ?? ''))
+    return { ok: true }
+  }
+  if (ruta === '/api/admin/cuentas-de-prueba') {
+    if (metodo === 'POST') {
+      if (demoPanel.sin0091) return { ok: false, pronto: true }
+      const e = String((c as { email?: string }).email ?? '').trim().toLowerCase()
+      demoPanel.pruebas = (c as { marcar?: boolean }).marcar === false ? demoPanel.pruebas.filter((x) => x !== e) : [...new Set([...demoPanel.pruebas, e])]
+      return { ok: true }
+    }
+    return { ok: true, disponible: !demoPanel.sin0091, cuentas: demoPanel.sin0091 ? [] : demoPanel.pruebas.map((email) => ({ email, marcado_en: '2026-11-21T09:00:00Z' })), administradores: ['admin@demo.test'] }
+  }
   if (ruta === '/api/admin/destinos/ya-disponible' && metodo === 'POST') {
     const destino = String(c.destino ?? '')
     const personas = Array.from({ length: destino === 'Florencia' ? 143 : 0 }, (_, i) => `p${i}`)

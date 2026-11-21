@@ -25,6 +25,8 @@ import { TextoConPase } from '../cuenta/TextoConPase'
 import { HojaMonedaViajero } from '../moneda/HojaMonedaViajero'
 import { useMonedaViajero } from '../../lib/moneda'
 import { monedaConNombre } from '../../lib/dinero'
+import { guardarPaisVive, leerPaisVive, nombreDelPais } from '../../lib/paisVive'
+import { HojaPaisVive } from './HojaPaisVive'
 
 const ROJO = 'oklch(0.52 0.19 25)'
 
@@ -91,6 +93,9 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
   const [sugerencias, setSugerencias] = useState(() => sugerenciasDelCompanero())
   const [privacidad, setPrivacidad] = useState(false)
   const [hojaMoneda, setHojaMoneda] = useState(false)
+  // (V35B) El país donde vive (opcional): se lee al abrir y se cambia con la hoja.
+  const [paisVive, setPaisVive] = useState<string | null>(null)
+  const [hojaPais, setHojaPais] = useState(false)
   const { moneda: monedaViajero } = useMonedaViajero()
   const [borrando, setBorrando] = useState(borrandoInicial)
   const [errorBorrar, setErrorBorrar] = useState<string | null>(null)
@@ -100,6 +105,13 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
   const email = emailInicial ?? (cuenta.tipo === 'cuenta' ? cuenta.email : null)
   const proveedor = proveedorInicial ?? (cuenta.tipo === 'cuenta' ? (cuenta.proveedor ?? null) : null)
 
+  useEffect(() => {
+    let vivo = true
+    void leerPaisVive().then((p) => vivo && setPaisVive(p))
+    return () => {
+      vivo = false
+    }
+  }, [])
   useEffect(() => {
     if (pasesIniciales) return undefined
     let vivo = true
@@ -156,6 +168,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
         <Grupo titulo="Mi cuenta">
           <Fila icono="correo" titulo={email ?? 'Tu cuenta'} sub={textoDeComoEntra(proveedor)} datos="cuenta" />
           <Fila icono="presupuesto" titulo="Moneda" sub={monedaConNombre(monedaViajero)} chevron onClick={() => setHojaMoneda(true)} datos="moneda" />
+          <Fila icono="mapa" titulo="País donde vives" sub={paisVive ? nombreDelPais(paisVive) : 'Sin decirlo'} chevron onClick={() => setHojaPais(true)} datos="pais-vive" />
           <Fila icono="llave" titulo="Tengo un código de invitación" chevron onClick={() => useUnirseUi.getState().abrir()} datos="codigo" />
         </Grupo>
         <Grupo titulo="Mis pases">
@@ -219,6 +232,19 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
         </button>
       </main>
       {privacidad && <PrivacidadScreen onVolver={() => setPrivacidad(false)} />}
+      {hojaPais && (
+        <HojaPaisVive
+          actual={paisVive}
+          onCerrar={() => setHojaPais(false)}
+          onElegir={(iso) => {
+            setPaisVive(iso)
+            setHojaPais(false)
+            void guardarPaisVive(iso).then((ok) => {
+              if (!ok) setMensaje('No se ha podido guardar el país. Inténtalo de nuevo.')
+            })
+          }}
+        />
+      )}
       {hojaMoneda && <HojaMonedaViajero etiqueta="Ajustes" onCerrar={() => setHojaMoneda(false)} z={90} />}
       {borrando && (
         <div className="fixed inset-0 z-[90]" role="alertdialog" aria-modal="true" aria-label="Borrar la cuenta" data-borrar-dialogo>

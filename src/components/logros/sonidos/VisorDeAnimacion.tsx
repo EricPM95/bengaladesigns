@@ -6,6 +6,7 @@ import { ANIMACIONES, animacionDe, golpeDe, MOMENTOS_DEL_ESTUDIO } from '../../.
 import { partituraDe } from '../../../lib/sonidos/partituras'
 import { Fuegos } from '../momentos/Fuegos'
 import { useEsAdministrador } from './useEsAdministrador'
+import { ejemploDelResumenDelViaje } from './ejemploResumenViaje'
 
 /**
  * (V34C) EL VISOR del estudio de sonidos: la propia app dentro de un marco de iPhone (393 x 852). `/admin/sonidos` lo mete en un `<iframe src="/?visor-sonidos=1">`; así cada animación se ve con el tamaño de pantalla, los
@@ -15,6 +16,7 @@ import { useEsAdministrador } from './useEsAdministrador'
 const Reproductor = lazy(() => import('../momentos/Reproductor'))
 const ResumenDia = lazy(() => import('../momentos/ResumenDia').then((m) => ({ default: m.ResumenDia })))
 const ResumenViaje = lazy(() => import('../momentos/ResumenViaje'))
+const PrimerDia = lazy(() => import('../momentos/PrimerDia'))
 
 export interface OpcionesDeVer {
   animacion: string
@@ -56,7 +58,14 @@ function Animacion({ id, alFinal }: { id: string; alFinal: () => void }): ReactN
   if (a.visor === 'resumen_viaje')
     return (
       <Suspense fallback={null}>
-        <ResumenViaje />
+        {/* (V35B) Con datos de EJEMPLO (un viaje a Roma lleno), no con los de la cuenta de quien mira. */}
+        <ResumenViaje ejemplo={ejemploDelResumenDelViaje()} />
+      </Suspense>
+    )
+  if (a.visor === 'primer_dia')
+    return (
+      <Suspense fallback={null}>
+        <PrimerDia alCerrar={alFinal} />
       </Suspense>
     )
   if (a.visor === 'fuegos')

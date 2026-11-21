@@ -8,7 +8,7 @@ import { parametrosDePeriodo, SelectorDePeriodo, TituloConPeriodo, usePeriodo } 
 
 /**
  * (V35A, Design P5/P5b/M5/M5b) VENTAS: lo vendido en el periodo elegido, solo cobros reales. Tarjetas (pases vendidos, ingresos, «lo que te queda» antes de impuestos, conversión), «Pases por día», «Pases por destino» con bandera
- * e ingresos, «Últimas compras» (quién compró, con enlace a su ficha; Comprado, «Regalado» o «Reembolsado»; importe) y «Afiliados» (los dos paneles; los clics, «Pronto»). La comisión de Stripe y los reembolsos llegan en la V35B.
+ * e ingresos, «Últimas compras» (quién compró, con enlace a su ficha; Comprado, «Regalado» o «Reembolsado»; importe) y «Afiliados» (los dos paneles; los clics, «Pronto»). (V35B) «Lo que te queda» = ingresos − comisión de Stripe − devoluciones, antes de impuestos; las devoluciones salen en rojo suave y tachadas; los clics de afiliados son de verdad (sin saber quién).
  * Nunca datos de tarjeta.
  */
 const textoDeFecha = (iso: string): string => fechaCorta(iso).replace(/\s\d{2}$/, '').replace('.', '')
@@ -20,7 +20,7 @@ function Pastillita({ children, fondo, color }: { children: ReactNode; fondo: st
 export function FilaDeCompra({ c, movil }: { c: CompraDelPanel; movil: boolean }): ReactNode {
   const tipo = `${nombreDePase(c.tipo)}${c.tipo === 'grupo' && c.personas ? ` ×${c.personas}` : ''}`
   return (
-    <div data-compra={c.estado} style={{ display: 'flex', alignItems: 'center', gap: movil ? 8 : 12, padding: '10px 0', borderTop: '1px solid rgba(28,34,48,.06)', flexWrap: movil ? 'wrap' : 'nowrap' }}>
+    <div data-compra={c.estado} style={{ display: 'flex', alignItems: 'center', gap: movil ? 8 : 12, padding: c.estado === 'reembolsado' ? '10px 8px' : '10px 0', borderTop: '1px solid rgba(28,34,48,.06)', flexWrap: movil ? 'wrap' : 'nowrap', background: c.estado === 'reembolsado' ? 'oklch(0.97 0.03 5)' : 'transparent', borderRadius: c.estado === 'reembolsado' ? 10 : 0, textDecoration: c.estado === 'reembolsado' ? 'line-through' : 'none', textDecorationColor: 'oklch(0.5 0.19 5)' }}>
       <span style={{ width: 46, font: "400 13px 'Geist'", color: 'rgba(28,34,48,.5)' }}>{textoDeFecha(c.fecha)}</span>
       <span style={{ display: 'flex', alignItems: 'center', gap: 8, width: movil ? 110 : 130, font: "600 13px 'Geist'" }}>
         <Bandera iso={c.destino} tam={15} />
@@ -66,7 +66,7 @@ export function Ventas({ movil }: { movil: boolean }): ReactNode {
       <div data-tarjetas style={{ display: 'grid', gridTemplateColumns: movil ? '1fr 1fr' : 'repeat(4,minmax(0,1fr))', gap: 12 }}>
         <Cifra etiqueta="Pases vendidos" valor={miles(v.pases.periodo)} pie={`${v.pases.hoy} hoy`} relleno={rel} tamano={tam} />
         <Cifra etiqueta="Ingresos" valor={eur(v.ingresos_cent)} pie="Lo que pagaron los clientes" relleno={rel} tamano={tam} />
-        <Cifra etiqueta="Lo que te queda" valor={eur(v.te_queda.cent)} pie={<><span>{`Comisión de Stripe: ${v.te_queda.comision_cent === null ? 'pronto' : eur(v.te_queda.comision_cent)}`}</span><span data-antes-de-impuestos style={{ display: 'block', marginTop: 3, font: "400 11px 'Geist'", color: 'rgba(255,253,248,.5)' }}>antes de impuestos</span></>} oscura relleno={rel} tamano={tam} />
+        <Cifra etiqueta="Lo que te queda" valor={eur(v.te_queda.cent)} pie={<><span>{`Comisión de Stripe: ${v.te_queda.comision_cent === null ? 'pronto' : eur(v.te_queda.comision_cent)}`}</span>{(v.te_queda.devoluciones_cent ?? 0) > 0 && <span data-devoluciones style={{ display: 'block' }}>{`Devoluciones: ${eur(v.te_queda.devoluciones_cent ?? 0)}`}</span>}<span data-antes-de-impuestos style={{ display: 'block', marginTop: 3, font: "400 11px 'Geist'", color: 'rgba(255,253,248,.5)' }}>antes de impuestos</span></>} oscura relleno={rel} tamano={tam} />
         <Cifra etiqueta="Conversión" valor={`${v.conversion.pct} %`} pie={`De los que crean un viaje compran el pase · ${v.conversion.compraron} de ${v.conversion.viajeros} viajeros`} relleno={rel} tamano={tam} />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: movil ? '1fr' : '1.3fr 1fr', gap: 14 }}>
@@ -103,10 +103,11 @@ export function Ventas({ movil }: { movil: boolean }): ReactNode {
           <span style={{ ...etiquetaMono, letterSpacing: '.1em' }}>DESTINO</span>
           <span style={{ ...etiquetaMono, letterSpacing: '.1em', textAlign: 'right' }}>ACTIV.</span>
           <span style={{ ...etiquetaMono, letterSpacing: '.1em', textAlign: 'right' }}>HOTELES</span>
-          {v.por_destino.map((d) => (
-            <FilaAfiliado key={d.destino} destino={d.destino} />
+          {(v.afiliados.por_destino ?? []).map((d) => (
+            <FilaAfiliado key={d.destino} destino={d.destino} actividad={d.actividad} hotel={d.hotel} />
           ))}
-          {v.por_destino.length === 0 && <span style={{ gridColumn: '1 / -1', color: 'rgba(28,34,48,.55)' }}>Pronto: los clics a Civitatis y Stay22 se verán aquí.</span>}
+          {v.afiliados.clics === null && <span data-pronto style={{ gridColumn: '1 / -1', color: 'rgba(28,34,48,.55)' }}>Pronto: los clics a Civitatis y Stay22 se verán aquí.</span>}
+          {v.afiliados.clics !== null && (v.afiliados.por_destino ?? []).length === 0 && <span data-sin-clics style={{ gridColumn: '1 / -1', color: 'rgba(28,34,48,.55)' }}>Nadie ha pulsado «Reservar» en este periodo.</span>}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
           {[['Abrir el panel de Civitatis ↗', v.afiliados.enlaces.civitatis, 'civitatis'], ['Abrir el panel de Stay22 ↗', v.afiliados.enlaces.stay22, 'stay22']].map(([texto, url, id]) => (
@@ -118,12 +119,12 @@ export function Ventas({ movil }: { movil: boolean }): ReactNode {
   )
 }
 
-function FilaAfiliado({ destino }: { destino: string }): ReactNode {
+function FilaAfiliado({ destino, actividad, hotel }: { destino: string; actividad: number; hotel: number }): ReactNode {
   return (
     <>
-      <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Bandera iso={destino} tam={15} />{destino}</span>
-      <b data-pronto style={{ textAlign: 'right', color: '#8A6A2C' }}>Pronto</b>
-      <b style={{ textAlign: 'right', color: '#8A6A2C' }}>Pronto</b>
+      <span data-afiliado-destino={destino} style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Bandera iso={destino} tam={15} />{destino}</span>
+      <b data-clics-actividades style={{ textAlign: 'right', color: '#8A6A2C' }}>{actividad}</b>
+      <b data-clics-hoteles style={{ textAlign: 'right', color: '#8A6A2C' }}>{hotel}</b>
     </>
   )
 }

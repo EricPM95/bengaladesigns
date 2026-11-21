@@ -16,16 +16,19 @@ import { enRango, leerPeriodo, rangoDePeriodo } from './periodo.js'
 export const MAX_CORREOS_POR_VEZ = 100
 const n = (v) => Number(v) || 0
 
-/** Los destinos que ya están abiertos en el lanzamiento (data/primera_vez/destinos.json › salida). */
+/**
+ * Los destinos PUBLICADOS en la app (V35B): los de data/primera_vez/destinos.json › salida que además YA tienen sus datos (la carpeta data/dias/<clave>). Solo de esos se puede avisar («ya está disponible»): si no, el aviso sería mentira.
+ */
 const leerLanzados = () => {
   try {
-    return JSON.parse(fs.readFileSync(new URL('../../data/primera_vez/destinos.json', import.meta.url), 'utf8')).salida ?? []
+    const salida = JSON.parse(fs.readFileSync(new URL('../../data/primera_vez/destinos.json', import.meta.url), 'utf8')).salida ?? []
+    return salida.filter((d) => fs.existsSync(new URL(`../../data/dias/${d.clave}`, import.meta.url)))
   } catch {
     return []
   }
 }
 
-export function crearServicioDestinos({ admin, correo, proximamente, lanzados = leerLanzados, env = process.env, consola = console, ahora = () => new Date() }) {
+export function crearServicioDestinos({ admin, correo, proximamente, servicioProximamente = null, lanzados = leerLanzados, env = process.env, consola = console, ahora = () => new Date() }) {
   return {
     /**
      * (V35A) Los destinos que pide la gente en el periodo elegido (de «Añadir un destino» de Cuéntanos y de [Avísame]), de más a menos, y los «Próximamente» con cuánta gente espera. SIN funciones SQL nuevas: lee las tablas.
@@ -33,7 +36,8 @@ export function crearServicioDestinos({ admin, correo, proximamente, lanzados = 
      */
     async leer(query = {}) {
       const rango = rangoDePeriodo(leerPeriodo(query), new Date(ahora()))
-      const lista = proximamente()
+      // (V35B) Los Próximamente salen de la base de datos (tabla de la 0091); sin ella, del JSON y sin poder cambiarlos (`puede_editar: false` → «Pronto»).
+      const { deBase, destinos: lista } = servicioProximamente ? await servicioProximamente.leer() : { deBase: false, destinos: await proximamente() }
       const [{ data: avisosDestino }, { data: pedidosCuentanos }] = await Promise.all([
         admin.from('avisos_destino').select('destino,destino_norm,creado_en,avisado_campana_en,avisado_correo_en').limit(20000),
         admin.from('avisos_de_viajeros').select('datos,creado,avisame,user_id,estado').eq('tipo', 'destino').neq('estado', 'descartado').limit(20000),
@@ -68,7 +72,7 @@ export function crearServicioDestinos({ admin, correo, proximamente, lanzados = 
       }
       for (const a of pedidosCuentanos ?? []) {
         if (!enRango(a.creado, rango)) continue
-        const nombre = String(a.datos?.destino ?? '').replace(/s+/g, ' ').trim()
+        const nombre = String(a.datos?.destino ?? '').replace(/\s+/g, ' ').trim()
         const g = grupo(nombre)
         if (!g) continue
         apuntar(g, nombre)
@@ -77,6 +81,7 @@ export function crearServicioDestinos({ admin, correo, proximamente, lanzados = 
       }
       const normasProximamente = new Set(lista.map((d) => limpiar(d.nombre)))
       const normasLanzadas = new Set(lanzados().map((d) => limpiar(d.nombre)))
+      // «En Próximamente» bien calculado: solo si está en la lista de Próximamente Y todavía NO está publicado en la app (un destino nunca sale como «próximamente» y como «ya en la app» a la vez).
       const pedidos = [...grupos.values()]
         .map((g) => ({
           destino: [...g.nombres.entries()].sort((x, y) => y[1] - x[1])[0]?.[0] ?? g.norma,
@@ -84,7 +89,7 @@ export function crearServicioDestinos({ admin, correo, proximamente, lanzados = 
           quieren_aviso: g.quieren,
           avisados: g.avisados,
           ultimo_aviso: g.ultimo_aviso,
-          proximamente: normasProximamente.has(g.norma),
+          proximamente: normasProximamente.has(g.norma) && !normasLanzadas.has(g.norma),
           lanzado: normasLanzadas.has(g.norma),
         }))
         .sort((x, y) => y.veces - x.veces || String(x.destino).localeCompare(String(y.destino)))
@@ -93,13 +98,16 @@ export function crearServicioDestinos({ admin, correo, proximamente, lanzados = 
         ok: true,
         periodo: { periodo: rango.periodo, desde: rango.desde, hasta: rango.hasta, etiqueta: rango.etiqueta, titulo: rango.titulo },
         pedidos,
-        proximamente: lista.map((d) => ({ destino: d.nombre, iso: d.iso ?? null, avisos: n(esperando.get(limpiar(d.nombre))?.avisos), avisados: n(esperando.get(limpiar(d.nombre))?.avisados) })),
+        puede_editar: deBase,
+        proximamente: lista.map((d) => ({ clave: d.clave ?? null, destino: d.nombre, iso: d.iso ?? null, publicado: normasLanzadas.has(limpiar(d.nombre)), avisos: n(esperando.get(limpiar(d.nombre))?.avisos), avisados: n(esperando.get(limpiar(d.nombre))?.avisados) })),
         correo: { activo: Boolean(correo?.activo) },
       }
     },
     async yaDisponible(cuerpo) {
       const destino = String(cuerpo?.destino ?? '').replace(/\s+/g, ' ').trim()
       if (destino.length < 2 || destino.length > 80) return { estado: 400, cuerpo: { ok: false, error: 'Falta el destino.' } }
+      // (V35B) Solo se avisa de lo que YA está publicado en la app.
+      if (!lanzados().some((d) => limpiar(d.nombre) === limpiar(destino))) return { estado: 409, cuerpo: { ok: false, no_publicado: true, error: 'Aún no está en la app.' } }
       const activo = Boolean(correo?.activo)
       const texto = `¡${destino} ya está en JUTRIP! Tú lo pediste.`
       const r = (await rpc(admin, 'panel_destino_ya_disponible', { p_norm: limpiar(destino), p_texto: texto, p_correo: activo, p_max: MAX_CORREOS_POR_VEZ })) ?? {}

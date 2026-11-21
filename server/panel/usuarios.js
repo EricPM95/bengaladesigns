@@ -5,6 +5,7 @@
  */
 import fs from 'node:fs'
 import { leerBase } from './base.js'
+import { idsQueNoCuentan, sinCuentas, sinPruebasDe } from './pruebas.js' // (V35B)
 import { diaDe, leerPeriodo } from './periodo.js'
 import { tituloDeAviso } from './calculos.js'
 import { ficha as fichaDe, indiceDeDestinos, listar, prepararUsuarios, resumen } from './calculosUsuarios.js'
@@ -20,7 +21,7 @@ const leerDestinos = () => {
   }
 }
 
-export function crearServicioUsuarios({ admin, datos, ahora = () => new Date(), leer = leerBase, ttl = 30000, destinos = leerDestinos }) {
+export function crearServicioUsuarios({ admin, datos, ahora = () => new Date(), leer = leerBase, ttl = 30000, destinos = leerDestinos, env = process.env }) {
   const conocidos = indiceDeDestinos(destinos())
   let cache = null
   const base = async () => {
@@ -32,7 +33,11 @@ export function crearServicioUsuarios({ admin, datos, ahora = () => new Date(), 
   }
   const registros = async () => {
     const b = await base()
-    return { b, ...prepararUsuarios(b, { hoy: diaDe(ahora()), datos: datos(), conocidos }) }
+    const p = prepararUsuarios(b, { hoy: diaDe(ahora()), datos: datos(), conocidos })
+    // (V35B) La lista y la ficha enseñan TODAS las cuentas; las de prueba y las de administrador llevan la etiqueta «Prueba».
+    const marcadas = idsQueNoCuentan(b, env)
+    for (const x of p.registros) x.prueba = marcadas.ids.has(x.id)
+    return { b, ...p }
   }
   return {
     async listar(query) {
@@ -41,7 +46,12 @@ export function crearServicioUsuarios({ admin, datos, ahora = () => new Date(), 
     },
     /** El resumen de arriba. `query` lleva el periodo (`?periodo=30d`). */
     async totales(query = {}) {
-      return resumen(await base(), { periodo: leerPeriodo(query), ahora: ahora(), datos: datos(), conocidos })
+      // (V35B) Con «Sin cuentas de prueba» (por defecto) las cifras no cuentan las de prueba ni las de administrador (estas, nunca).
+      const b = await base()
+      const quienes = idsQueNoCuentan(b, env)
+      const sin = sinPruebasDe(query)
+      const fuera = sin ? quienes.ids : quienes.administrador
+      return { ...resumen(sinCuentas(b, fuera), { periodo: leerPeriodo(query), ahora: ahora(), datos: datos(), conocidos }), sin_pruebas: sin, cuentas_ocultas: fuera.size }
     },
     /** La ficha, o null si el id no es válido o no existe. */
     async ficha(id) {

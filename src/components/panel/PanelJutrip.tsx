@@ -8,6 +8,7 @@ import { Usuarios } from './Usuarios'
 import { Ventas } from './Ventas'
 import { SERIE } from './estilo'
 import { useTituloDelPanel } from './tituloDelPanel'
+import { useSinPruebas } from './pruebas'
 import { useCuenta } from '../cuenta/useCuenta'
 import { useMiNombreYFoto } from '../../store/useMiPerfil'
 
@@ -56,6 +57,8 @@ export function PanelJutrip(): ReactNode {
   const [inicio, setInicio] = useState<DatosInicio | null | undefined>(undefined)
   const [seccion, setSeccion] = useState<Id>(() => seccionDe(window.location.pathname, window.location.search))
   const movil = useAncho() < 900
+  const sinPruebas = useSinPruebas((x) => x.on)
+  const ponerSinPruebas = useSinPruebas((x) => x.poner)
   useEffect(() => {
     void pedir<DatosInicio>('/api/admin/inicio?resumen=1').then((r) => setInicio(r && r.ok ? r : null))
   }, [])
@@ -79,7 +82,7 @@ export function PanelJutrip(): ReactNode {
   const actual = SECCIONES.find((s) => s.id === seccion) ?? SECCIONES[0]
   const parametros = new URLSearchParams(window.location.search)
   const contenido = (
-    <Suspense fallback={<p>Cargando…</p>}>
+    <Suspense key={sinPruebas ? 'sin' : 'con'} fallback={<p>Cargando…</p>}>
       {seccion === 'inicio' && <Inicio ir={ir} movil={movil} />}
       {seccion === 'reportes' && <Reportes movil={movil} abrirId={parametros.get('reporte')} />}
       {seccion === 'fotos' && <Fotos movil={movil} />}
@@ -143,6 +146,12 @@ export function PanelJutrip(): ReactNode {
           <h1 style={{ margin: 0, font: `400 ${movil ? 28 : 34}px/1 ${SERIE}` }}>{tituloEspecial ?? actual.nombre}</h1>
           {!movil && <span style={{ font: "500 13px 'Geist'", color: 'rgba(28,34,48,.55)' }}>{hoy.charAt(0).toUpperCase() + hoy.slice(1)}</span>}
         </div>
+        {['inicio', 'ventas', 'usuarios', 'logros'].includes(seccion) && (
+          <label data-interruptor-pruebas style={{ alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 10, minHeight: 44, cursor: 'pointer', font: "600 13px 'Geist'", color: 'rgba(28,34,48,.75)' }}>
+            <input type="checkbox" role="switch" data-sin-pruebas checked={sinPruebas} onChange={(e) => ponerSinPruebas(e.target.checked)} style={{ width: 40, height: 24, accentColor: '#C99A44' }} />
+            Sin cuentas de prueba
+          </label>
+        )}
         {contenido}
       </main>
     </div>

@@ -8,6 +8,7 @@
  */
 import { cubetasDeRango, diaDe, enRango, rangoDePeriodo, sumarDias, ZONA } from './periodo.js'
 import { clavePanel, esCobroReal, indiceDe, nombreDe, nombreDePlan, pasesDe, viajesDe } from './comunes.js'
+import { dondeViven } from './calculosPersonas.js'
 
 const n = (v) => Number(v) || 0
 const pct = (x, total) => (total > 0 ? Math.round((x / total) * 100) : 0)
@@ -135,7 +136,7 @@ export function calcularInicio(base, avisos, { periodo = {}, ahora = new Date() 
     atencion,
     primera_vez: primeraVez(base, ahora),
     desde_donde: desdeDondeViajan(base),
-    dondeViven: null,
+    donde_viven: dondeViven(base),
   }
 }
 
@@ -145,7 +146,14 @@ export function calcularVentas(base, { periodo = {}, ahora = new Date(), limiteC
   const hoy = diaDe(ahora)
   const ix = indiceDe(base)
   const cobros = cobrosDe(base, rango)
-  const ingresosCent = cobros.reduce((s, p) => s + n(p.importe_cent), 0)
+  // (V35B) Ingresos = todo lo que se cobró en el periodo (también lo que luego se devolvió); «lo que te queda» = ingresos − comisión de Stripe − devoluciones, antes de impuestos.
+  const cobrosTodos = (base.pagos ?? []).filter((p) => esCobroReal(p) && enRango(p.creado_en, rango))
+  const ingresosCent = cobrosTodos.reduce((s, p) => s + n(p.importe_cent), 0)
+  const devueltoDe = (p) => (p.estado === 'devuelto' ? n(p.devuelto_cent) || n(p.importe_cent) : n(p.devuelto_cent))
+  const devolucionesCent = cobrosTodos.reduce((s, p) => s + Math.min(devueltoDe(p), n(p.importe_cent)), 0)
+  const hayComision = base.hay?.pagos === true
+  const comisionCent = hayComision ? cobrosTodos.reduce((s, p) => s + n(p.comision_cent), 0) : null
+  const sinComision = hayComision ? cobrosTodos.filter((p) => p.comision_cent === null || p.comision_cent === undefined).length : 0
   const serie = serieDePases(base, rango)
   // Por destino (con ingresos), del que más al que menos.
   const porDestino = new Map()
@@ -160,9 +168,9 @@ export function calcularVentas(base, { periodo = {}, ahora = new Date(), limiteC
   const pasePorCobro = new Map((base.pases ?? []).filter((p) => p.pago_ref).map((p) => [p.pago_ref, p]))
   const persona = (id) => (id ? { id, nombre: nombreDe(ix, id) } : null)
   const compras = []
-  for (const p of (base.pagos ?? []).filter((x) => esCobroReal(x) && enRango(x.creado_en, rango))) {
+  for (const p of cobrosTodos) {
     const pase = pasePorCobro.get(p.pago_ref)
-    compras.push({ fecha: p.creado_en, destino: p.destino, tipo: p.plan, personas: n(p.personas) || null, persona: persona(pase?.comprador_id), estado: p.estado === 'devuelto' ? 'reembolsado' : 'comprado', importe_cent: n(p.importe_cent), moneda: p.moneda ?? 'eur' })
+    compras.push({ fecha: p.creado_en, destino: p.destino, tipo: p.plan, personas: n(p.personas) || null, persona: persona(p.user_id ?? pase?.comprador_id), estado: p.estado === 'devuelto' ? 'reembolsado' : 'comprado', importe_cent: n(p.importe_cent), moneda: p.moneda ?? 'eur' })
   }
   for (const p of base.pases ?? []) {
     if (p.pago_ref || p.estado !== 'activo' || !enRango(p.created_at, rango)) continue
@@ -185,14 +193,35 @@ export function calcularVentas(base, { periodo = {}, ahora = new Date(), limiteC
     moneda: String((base.pagos ?? []).find(esCobroReal)?.moneda ?? 'eur'),
     pases: { periodo: cobros.length, hoy: cobrosDe(base, { desde: hoy, hasta: hoy }).length },
     ingresos_cent: ingresosCent,
-    // «Lo que te queda»: lo cobrado (sin devueltos) antes de impuestos. La comisión de Stripe y los reembolsos llegan en la V35B.
-    te_queda: { cent: ingresosCent, comision_cent: null, antes_de_impuestos: true },
+    // «Lo que te queda»: ingresos − comisión de Stripe − devoluciones, antes de impuestos. Sin la 0091 la comisión es null («pronto»).
+    devoluciones_cent: devolucionesCent,
+    te_queda: { cent: ingresosCent - n(comisionCent) - devolucionesCent, comision_cent: comisionCent, devoluciones_cent: devolucionesCent, sin_comision: sinComision, antes_de_impuestos: true },
     conversion: { pct: pct(compraron, conViaje.length), compraron, viajeros: conViaje.length },
     por_dia: serie,
     por_destino: [...porDestino.values()].sort((a, b) => b.n - a.n || String(a.destino).localeCompare(String(b.destino))),
     compras: compras.slice(0, limiteCompras),
     total_compras: compras.length,
-    afiliados: { clics: null },
+    afiliados: afiliadosDe(base, rango),
+  }
+}
+
+/** (V35B) Los clics en «Reservar» (Civitatis y Stay22) del periodo, por destino y tipo (sin saber quién). `clics: null` = falta la 0091 («Pronto»). */
+export function afiliadosDe(base, rango) {
+  if (base.hay?.clics !== true) return { clics: null, por_destino: [], por_proveedor: null }
+  const filas = (base.afiliados_clics ?? []).filter((c) => enRango(c.dia, rango))
+  const porDestino = new Map()
+  const porProveedor = { civitatis: 0, stay22: 0 }
+  for (const c of filas) {
+    const k = clavePanel(c.destino)
+    const d = porDestino.get(k) ?? { destino: c.destino, actividad: 0, hotel: 0 }
+    d[c.tipo === 'hotel' ? 'hotel' : 'actividad'] += n(c.clics)
+    porDestino.set(k, d)
+    if (c.proveedor in porProveedor) porProveedor[c.proveedor] += n(c.clics)
+  }
+  return {
+    clics: filas.reduce((t, c) => t + n(c.clics), 0),
+    por_destino: [...porDestino.values()].sort((a, b) => b.actividad + b.hotel - (a.actividad + a.hotel) || String(a.destino).localeCompare(String(b.destino))),
+    por_proveedor: porProveedor,
   }
 }
 

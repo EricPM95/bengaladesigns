@@ -152,6 +152,8 @@ export function textoDelAviso(aviso) {
   switch (aviso.tipo) {
     case 'gracias_viajero':
       // (V20) El aviso de «Cuéntanos» cuando se revisa lo que mandó el viajero («Gracias a ti, ya está arreglado: …», «¡Lisboa ya está en JUTRIP! Tú lo pediste.»): el texto lo escribe el servidor.
+      // (V35B) Una respuesta de Eric a un reporte: «Te hemos respondido» y, en la segunda línea, el principio de lo que dice (`detalleDelAviso`). `es_respuesta` lo pone el servidor al servir la campana.
+      if (p.es_respuesta === true) return 'Te hemos respondido'
       return String(p.texto ?? '').trim()
     case 'recomendacion':
       // Tanda 10N: una propuesta de cambios sueltos (migración 0039 pone `n_cambios`): «Ana te propone 5 cambios en tu viaje a Roma».
@@ -241,9 +243,16 @@ export function textoDelAviso(aviso) {
   }
 }
 
+/** (V35B) El principio de una respuesta, para la lista de la campana: una línea, con «…» si se corta. */
+export function principioDeRespuesta(texto, max = 70) {
+  const t = String(texto ?? '').replace(/\s+/g, ' ').trim()
+  return t.length <= max ? t : `${t.slice(0, max).replace(/\s+\S*$/, '').trimEnd() || t.slice(0, max)}…`
+}
+
 /** La segunda línea de un aviso de gasto (Tanda 10N): «Cena día 1 · 30 € · ya suma en el grupo» / «… · se queda solo para ti»; null en los demás avisos. */
 export function detalleDelAviso(aviso) {
   const p = aviso.payload ?? {}
+  if (aviso.tipo === 'gracias_viajero' && p.es_respuesta === true) return principioDeRespuesta(p.texto)
   if (aviso.tipo !== 'gasto_resuelto') return null
   const importe = p.precio && Number.isFinite(Number(p.precio.amount)) ? formatoImporte({ amount: Number(p.precio.amount), currency: p.precio.currency }) : null
   return [p.nombre, importe, p.resultado === 'aceptado' ? 'ya suma en el grupo' : 'se queda solo para ti'].filter(Boolean).join(' · ')
@@ -398,7 +407,7 @@ export function franjaDelAviso(aviso) {
     case 'sorpresas':
       return { titulo: Number(p.dias) === 1 ? 'Te queda 1 día para tus sorpresas' : `Te quedan ${p.dias ?? 3} días para tus sorpresas`, detalle: p.destino ?? '', icono: 'estrella' }
     case 'gracias_viajero':
-      return { titulo: String(p.texto ?? '').trim(), detalle: '', icono: 'estrella' }
+      return p.es_respuesta === true ? { titulo: 'Te hemos respondido', detalle: principioDeRespuesta(p.texto), icono: 'estrella' } : { titulo: String(p.texto ?? '').trim(), detalle: '', icono: 'estrella' }
     case 'sorteo':
       return { titulo: 'Ya tienes tu billete', detalle: p.anio ? `Para el sorteo de ${p.anio}` : 'Para el sorteo', icono: 'estrella' }
     case 'amigo_viaje':

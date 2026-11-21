@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { ETIQUETA_COMPANIA, euros, type UsuarioFicha } from '../api'
 import { SERIE } from '../estilo'
+import { Bandera } from '../banderas'
 import { Avatar, MONO, diaCorto, fechaLarga, rangoLargo, ultimoAcceso } from './piezas'
 
 /**
@@ -62,7 +63,7 @@ export function Ficha({ f, movil, volver }: { f: UsuarioFicha; movil: boolean; v
           <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <Avatar id={u.id} nombre={u.nombre} tam={56} />
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-              <span data-ficha-nombre style={{ font: `400 26px/1.05 ${SERIE}` }}>{u.nombre}</span>
+              <span data-ficha-nombre style={{ font: `400 26px/1.05 ${SERIE}` }}>{u.nombre}{u.prueba && <span data-etiqueta-prueba style={{ marginLeft: 8, padding: '2px 8px', borderRadius: 999, background: '#E3E8F4', color: '#2A4A94', font: "700 10.5px 'Geist'", letterSpacing: '.04em' }}>Prueba</span>}</span>
               <span style={{ font: "400 12.5px 'Geist'", color: 'rgba(255,253,248,.6)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.email}</span>
             </span>
           </span>
@@ -73,7 +74,13 @@ export function Ficha({ f, movil, volver }: { f: UsuarioFicha; movil: boolean; v
             {dato('Viajes', `${u.viajes.creados} · ${u.viajes.hechos} ${u.viajes.hechos === 1 ? 'hecho' : 'hechos'}`, 'viajes')}
             {dato('Gastado', euros(u.gastado_cent, u.moneda), 'gastado')}
             {dato('Pase', f.pase_texto, 'pase')}
-            {dato('Vive en', f.vive_en ?? '—', 'vive')}
+            <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ color: 'rgba(255,253,248,.5)' }}>Vive en</span>
+              <b data-ficha-dato="vive" style={{ fontSize: 14, display: 'flex', alignItems: 'center', gap: 7 }}>
+                {f.vive_en && <Bandera iso={f.vive_en.iso} tam={16} />}
+                {f.vive_en ? f.vive_en.nombre : '—'}
+              </b>
+            </span>
           </div>
           <div style={{ marginTop: 'auto', padding: 12, borderRadius: 14, background: 'rgba(255,253,248,.07)', font: "400 12px/1.4 'Geist'", color: 'rgba(255,253,248,.6)' }}>{frasePrimeraVez(u.primera_vez)}</div>
         </div>

@@ -8,20 +8,24 @@ import expJson from '../../data/logros/exp.json'
 import lanzarote from '../../data/logros/lanzarote.json'
 import roma from '../../data/logros/roma.json'
 import viajero from '../../data/logros/viajero.json'
-import { AHORA, baseFalsa } from '../../scripts/destino/_baseFalsaUsuarios.mjs'
+import { AHORA, baseFalsa, baseFalsaConPersonas } from '../../scripts/destino/_baseFalsaUsuarios.mjs'
 import { ficha, indiceDeDestinos, listar, prepararUsuarios, resumen } from '../../server/panel/calculosUsuarios.js'
 import { leerPeriodo } from '../../server/panel/periodo.js'
 import { demoPanel } from './logrosDemo_panel'
 
 const datos = { exp: expJson, destinos: { roma, lanzarote }, viajero }
 const conocidos = indiceDeDestinos([...(destinosDelLanzamiento.salida ?? []), ...(destinosDelLanzamiento.proximamente ?? [])])
-const base = baseFalsa()
+// (V35B) Con la 0091 aplicada (los datos de país y de uso) o sin ella: con `sessionStorage['trazo:demo-sin-0091'] = '1'` la demo contesta como el servidor SIN la migración (todo lo nuevo, «Pronto»).
+const sinLa0091 = (): boolean => { try { return window.sessionStorage.getItem('trazo:demo-sin-0091') === '1' } catch { return false } }
+const conNuevos = baseFalsaConPersonas()
+const sinNuevos = baseFalsa()
 const hoy = '2026-11-20'
 
 export function responder(ruta: string, url: URL, _c: Record<string, unknown>, opciones: { metodo?: string; cuerpo?: unknown }): unknown {
   if (!ruta.startsWith('/api/admin/usuarios')) return undefined
   demoPanel.pedidos.push(`${opciones.metodo ?? 'GET'} ${ruta}${url.search}`)
   if (!demoPanel.admin) return null
+  const base = sinLa0091() ? sinNuevos : conNuevos
   const query: Record<string, string> = {}
   url.searchParams.forEach((v, k) => {
     query[k] = v
