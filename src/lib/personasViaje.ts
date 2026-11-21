@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient'
+import { supabase, usuarioLocal } from './supabaseClient'
 import { olvidarPropuestaDe } from './propuestasHuerfanas'
 import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
@@ -54,7 +54,7 @@ export async function salirDelViaje(tripId: string): Promise<string | null> {
   const { error } = await supabase.rpc('salir_del_viaje', { p_trip: tripId })
   if (!error) return null
   if (mensajeDe(error, '') === SIN_LA_0036) {
-    const { data: sesion } = await supabase.auth.getUser()
+    const { data: sesion } = await usuarioLocal()
     const uid = sesion.user?.id
     if (!uid) return 'Hace falta una sesión.'
     const { error: e2 } = await supabase.from('trip_members').delete().eq('trip_id', tripId).eq('user_id', uid)

@@ -7,7 +7,7 @@ import { useSyncStore } from '../../store/useSyncStore'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
 import { useFranjaStore } from '../../store/useFranjaStore'
 
-const CADA_MS = 120_000 // (V26) antes 20 s; el cambio llega por `escuchar` (en directo), esto es el respaldo (ver lib/sondeo.ts)
+const CADA_MS = 600_000 // (V36) 10 minutos (antes 2 min; en V26 antes 20 s); el cambio llega por `escuchar` (en directo), esto es el respaldo (ver lib/sondeo.ts)
 
 /**
  * LOS GASTOS COMPARTIDOS, EN DIRECTO (Tanda 10N, apartado 9). Siempre montado. Cuando el viaje abierto tiene más gente (o soy invitada): carga los gastos, escucha los cambios en tiempo real (Realtime de Supabase)

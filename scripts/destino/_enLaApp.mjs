@@ -98,8 +98,11 @@ export async function abrirApp(baseIn = 'http://localhost:5173', opciones = {}) 
   const pend = new Map()
   /** Las direcciones que ha pedido la página (para ver que el mapa no sale a internet). */
   const peticiones = []
+  /** (V36) Quien quiere los eventos de CDP (p. ej. `Fetch.requestPaused`): `escuchar((mensaje) => ...)`. */
+  const oyentes = new Set()
   ws.onmessage = (m) => {
     const d = JSON.parse(m.data)
+    for (const f of oyentes) f(d)
     if (d.method === 'Network.requestWillBeSent') peticiones.push(d.params.request.url)
     if (d.id && pend.has(d.id)) {
       pend.get(d.id)(d)
@@ -218,5 +221,9 @@ export async function abrirApp(baseIn = 'http://localhost:5173', opciones = {}) 
     if (lanzar) throw new Error(`${lanzar} (esperé ${segundos} s)`)
     return false
   }
-  return { evaluar, esp, cerrar, cdp, captura, escribir, peticiones, hasta }
+  const escuchar = (f) => {
+    oyentes.add(f)
+    return () => oyentes.delete(f)
+  }
+  return { evaluar, esp, cerrar, cdp, captura, escribir, peticiones, hasta, escuchar }
 }

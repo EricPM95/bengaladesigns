@@ -1889,7 +1889,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (!state.route) return state
       const antes = state.route.cuentaConjuntaCon
       const nuevaCon = conjuntaCon && conjuntaCon.length === 2 ? conjuntaCon : antes
-      if (state.route.cuentasPersonas === personas && nuevaCon === antes) return state
+      // (V36) Se compara por CONTENIDO: cada vez que se recargaba la lista de personas llegaba una lista nueva con las mismas personas, la ruta cambiaba de objeto y se guardaba entera (49-97 KB) y los demás móviles la bajaban entera.
+      const mismas = nuevaCon === antes || (Array.isArray(nuevaCon) && Array.isArray(antes) && nuevaCon.length === antes.length && nuevaCon.every((id, i) => id === antes[i]))
+      if (state.route.cuentasPersonas === personas && mismas) return state
       return { route: { ...state.route, cuentasPersonas: personas, cuentaConjuntaCon: nuevaCon } }
     }),
 

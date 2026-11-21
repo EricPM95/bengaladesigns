@@ -138,18 +138,28 @@ export function AvisosDelTiempo({ route, day, dateIso, ubicacion = null, enCoche
   useEffect(() => {
     if (!lanza || !at) return undefined
     let vivo = true
+    let ultima = 0
     const mirar = () => {
       const falsa = previsionInyectada()
       if (falsa) return setMeteo(falsa)
+      ultima = Date.now()
       void fetchHourlyRain(at, dateIso).then((m) => vivo && setMeteo(m))
     }
     mirar()
-    const t = window.setInterval(mirar, 20 * 60 * 1000)
+    // (V36) Con la app en segundo plano no se pregunta (antes el reloj de 20 min seguía preguntando con la pantalla apagada); al volver a verla se pregunta si ya han pasado 20 minutos.
+    const t = window.setInterval(() => {
+      if (document.visibilityState === 'visible') mirar()
+    }, 20 * 60 * 1000)
+    const alVolver = () => {
+      if (document.visibilityState === 'visible' && Date.now() - ultima > 20 * 60 * 1000) mirar()
+    }
+    document.addEventListener('visibilitychange', alVolver)
     const alCambiar = () => mirar()
     window.addEventListener('hoy1-tiempo', alCambiar)
     return () => {
       vivo = false
       window.clearInterval(t)
+      document.removeEventListener('visibilitychange', alVolver)
       window.removeEventListener('hoy1-tiempo', alCambiar)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

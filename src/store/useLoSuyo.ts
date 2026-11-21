@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { supabase } from '../lib/supabaseClient'
+import { supabase, usuarioLocal } from '../lib/supabaseClient'
 import type { Reservation } from '../lib/bookings'
 import { leerLoSuyo, type LoSuyoDeCadaUno, type MiAlojamiento, type MiVuelo, type QuienTieneLoSuyo, VACIO } from '../lib/loSuyo'
 import { useSyncStore } from './useSyncStore'
@@ -49,7 +49,7 @@ async function guardarEnLaNube(tripId: string | null, datos: LoSuyoDeCadaUno) {
   if (!supabase || !tripId) return
   marcarPendiente(tripId, true)
   try {
-    const { data } = await supabase.auth.getUser()
+    const { data } = await usuarioLocal()
     const uid = data.user?.id
     if (!uid) return
     const { error } = await supabase.from('lo_suyo_del_viaje').upsert({ trip_id: tripId, user_id: uid, vuelo: datos.vuelo, alojamiento: datos.alojamiento, actualizado_en: new Date().toISOString() })
@@ -89,7 +89,7 @@ export const useLoSuyo = create<LoSuyoState>((set, get) => ({
     set({ tripId, mio: leerLocal(tripId) })
     if (!supabase || !tripId) return
     try {
-      const { data: usuario } = await supabase.auth.getUser()
+      const { data: usuario } = await usuarioLocal()
       if (!usuario.user) return
       const uid = usuario.user.id
       // (Tanda 10N8 §0b-2) El administrador recupera sus reservas «Solo para mí», guardadas aparte.

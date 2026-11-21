@@ -108,7 +108,7 @@ await build({
       setup(b) {
         b.onResolve({ filter: /supabaseClient$/ }, () => ({ path: 'supabaseClient', namespace: 'mentira' }))
         b.onResolve({ filter: /useSyncStore$/ }, () => ({ path: 'useSyncStore', namespace: 'mentira' }))
-        b.onLoad({ filter: /^supabaseClient$/, namespace: 'mentira' }, () => ({ contents: 'module.exports = { supabase: globalThis.__nube }', loader: 'js' }))
+        b.onLoad({ filter: /^supabaseClient$/, namespace: 'mentira' }, () => ({ contents: 'module.exports = { supabase: globalThis.__nube, usuarioLocal: async () => ({ data: { user: (await globalThis.__nube.auth.getUser()).data.user } }) }' /* (V36) quién soy, sin red */, loader: 'js' }))
         b.onLoad({ filter: /^useSyncStore$/, namespace: 'mentira' }, () => ({ contents: "module.exports = { useSyncStore: { getState: () => ({ activeTripId: globalThis.__viajeActivo }) } }", loader: 'js' }))
       },
     },
@@ -116,7 +116,7 @@ await build({
 })
 let quienSoy = luis
 globalThis.__nube = {
-  auth: { getUser: async () => ({ data: { user: { id: quienSoy } } }) },
+  auth: { getUser: async () => ({ data: { user: { id: quienSoy } } }), getSession: async () => ({ data: { session: { user: { id: quienSoy } } } }) }, // (V36) el código pregunta por la sesión guardada (sin red)
   from: () => ({
     upsert: async (fila) => {
       try {

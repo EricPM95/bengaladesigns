@@ -72,6 +72,17 @@ export interface RespuestaCerca {
 
 const CADA_MS = 75000 // (V26) antes 45 s; solo con la app a la vista y una sola vez aunque haya varias pantallas de HOY pidiéndolo (ver lib/sondeo.ts)
 
+/** (V36) Parado = a menos de esto de donde se preguntó la última vez; y lo más que se aguanta sin volver a preguntar aunque no se mueva nadie. */
+const QUIETO_METROS = 60
+const MAXIMO_SIN_PREGUNTAR_MS = 5 * 60 * 1000
+function metrosEntre(a: Ubicacion, b: Ubicacion): number {
+  const rad = Math.PI / 180
+  const dLat = (b.lat - a.lat) * rad
+  const dLng = (b.lng - a.lng) * rad
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2
+  return 2 * 6371000 * Math.asin(Math.min(1, Math.sqrt(h)))
+}
+
 interface VentanaDePrueba {
   __hoy1Ubicacion?: Ubicacion | null
   __hoy1Cerca?: RespuestaCerca | null
@@ -102,13 +113,16 @@ export function useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche = false }: {
   const [datos, setDatos] = useState<RespuestaCerca | null>(null)
   const clave = sitiosHoy.join('|')
   const ultima = useRef(0)
+  const ultimaPregunta = useRef<{ en: number; ubicacion: Ubicacion | null; clave: string } | null>(null)
   useEffect(() => {
     if (!activo || !tripId || !logrosActivos()) {
       setDatos(null)
       return undefined
     }
     let vivo = true
-    const preguntar = async () => {
+    // `reloj`: lo pide el reloj de respaldo o el volver a la app (no una orden directa). (V36) Con el viajero parado (a menos de 60 m de donde se preguntó la última vez) y la última respuesta de hace menos de 5 minutos,
+    // NO se vuelve a preguntar: la respuesta sería la misma. Antes se preguntaba cada 75 s aunque no se moviera nadie (unas 380 veces en un día de HOY).
+    const preguntar = async (reloj = false) => {
       if (document.hidden) return
       if (import.meta.env.DEV) {
         const falsa = (window as unknown as VentanaDePrueba).__hoy1Cerca
@@ -117,16 +131,19 @@ export function useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche = false }: {
           return
         }
       }
-      ultima.current = Date.now()
       const ubicacion = await ubicacionConPermiso()
+      const previa = ultimaPregunta.current
+      if (reloj && previa && Date.now() - previa.en < MAXIMO_SIN_PREGUNTAR_MS && previa.clave === `${tripId}|${clave}|${enCoche}` && (ubicacion === null ? previa.ubicacion === null : previa.ubicacion !== null && metrosEntre(previa.ubicacion, ubicacion) < QUIETO_METROS)) return
+      ultima.current = Date.now()
       const cuerpo = { trip_id: tripId, ubicacion, sitios_hoy: sitiosHoy, en_coche: enCoche }
+      ultimaPregunta.current = { en: Date.now(), ubicacion, clave: `${tripId}|${clave}|${enCoche}` }
       const r = await unaSolaVez(`cerca:${JSON.stringify(cuerpo)}`, () => llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo }), 20_000)
       if (vivo && r?.ok) setDatos(r)
     }
     void preguntar()
-    const t = window.setInterval(() => void preguntar(), CADA_MS)
+    const t = window.setInterval(() => void preguntar(true), CADA_MS)
     const alVolver = () => {
-      if (!document.hidden && Date.now() - ultima.current > CADA_MS / 2) void preguntar()
+      if (!document.hidden && Date.now() - ultima.current > CADA_MS / 2) void preguntar(true)
     }
     document.addEventListener('visibilitychange', alVolver)
     // Solo desarrollo: las pruebas piden otra vez lo de ahora sin esperar a los 45 segundos.

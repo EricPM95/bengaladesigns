@@ -23,7 +23,7 @@ const HojaPropuestaDelDueno = lazy(() => import('./HojaPropuestaDelDueno').then(
 const HojaVerPropuesta = lazy(() => import('./HojaVerPropuesta').then((m) => ({ default: m.HojaVerPropuesta })))
 const PropuestaEnviada = lazy(() => import('./PropuestaEnviada').then((m) => ({ default: m.PropuestaEnviada })))
 
-const CADA_MS = 120_000 // (V26) antes 45 s (ver lib/sondeo.ts)
+const CADA_MS = 600_000 // (V36) 10 minutos (antes 2 min; en V26 antes 45 s) (ver lib/sondeo.ts)
 
 /**
  * EL ANFITRIÓN DEL VIAJE COMPARTIDO (cuentas parte 3; rehecho en la Tanda 10N). Siempre montado.

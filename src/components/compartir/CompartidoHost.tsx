@@ -17,7 +17,7 @@ import { useLoSuyoDelViaje } from '../../hooks/useLoSuyoDelViaje'
 
 const PersonasDelViaje = lazy(() => import('./PersonasDelViaje').then((m) => ({ default: m.PersonasDelViaje })))
 
-const CADA_MS = 45_000 // (V26) antes 30 s; el cambio de otra persona llega al momento por Realtime (solo con el viaje compartido abierto); esto es el respaldo y solo pregunta el sello (~100 bytes), ver lib/sondeo.ts
+const CADA_MS = 300_000 // (V36) 5 minutos (antes 45 s; en V26 antes 30 s); el cambio de otra persona llega al momento por Realtime (solo con el viaje compartido abierto); esto es el respaldo y solo pregunta el sello (~100 bytes), ver lib/sondeo.ts
 
 /**
  * EL ANFITRIÓN DEL VIAJE COMPARTIDO EN DIRECTO (Tanda 10N §4a y §10). Siempre montado; con las cuentas apagadas no hace nada.

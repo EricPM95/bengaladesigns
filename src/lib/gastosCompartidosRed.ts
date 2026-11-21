@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient'
+import { supabase, usuarioLocal } from './supabaseClient'
 import { convertir, leerImporte, type Cambio, type Importe } from './dinero'
 import type { AmbitoGasto, EstadoGasto, GastoCompartido } from './gastosCompartidos'
 import type { PagoMarcado } from './cuentasGrupo'
@@ -90,7 +90,7 @@ export const backendSupabase: Backend = {
   yo: async () => {
     if (!supabase) return null
     try {
-      const { data } = await supabase.auth.getUser()
+      const { data } = await usuarioLocal()
       return data.user?.id ?? null
     } catch {
       return null

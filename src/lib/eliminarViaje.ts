@@ -245,7 +245,7 @@ export async function procesarPendienteAlAbrir(): Promise<boolean> {
  */
 export async function guardarTodasMisFotos(rutaId: string, alAvanzar?: (hechas: number, total: number) => void): Promise<string | null> {
   const ERROR = 'No se han podido bajar las fotos. Inténtalo de nuevo.'
-  const fotos = await listarFotos(rutaId)
+  const fotos = await listarFotos(rutaId, { fresco: true })
   if (fotos.length === 0) return null
   try {
     const archivos: File[] = []

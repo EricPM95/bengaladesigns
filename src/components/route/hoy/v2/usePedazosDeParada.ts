@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { llamar, logrosActivos } from '../../../../lib/logros'
+import { unaSolaVez } from '../../../../lib/sondeo'
 import type { Stop } from '../../../../lib/types'
 import { hasRealCoordinates } from '../../../../lib/distanceMock'
 import type { RespuestaCerca } from '../useCercaDeAqui'
@@ -21,7 +22,9 @@ export function usePedazosDeParada(tripId: string | null, parada: Stop, activo: 
     }
     if (!activo || !tripId || !logrosActivos() || !hasRealCoordinates(parada.coordinates)) return undefined
     let vivo = true
-    void llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo: { trip_id: tripId, ubicacion: { lat: parada.coordinates.lat, lng: parada.coordinates.lng }, sitios_hoy: [parada.name], en_coche: false } }).then((r) => {
+    // (V36) Una sola pregunta por parada y viaje cada 2 minutos, aunque la ruta se vuelva a pintar (antes, cada vez que cambiaba el objeto `coordinates` se volvía a preguntar al servidor).
+    const cuerpo = { trip_id: tripId, ubicacion: { lat: parada.coordinates.lat, lng: parada.coordinates.lng }, sitios_hoy: [parada.name], en_coche: false }
+    void unaSolaVez(`pedazos:${tripId}:${parada.id}`, () => llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo }), 120_000).then((r) => {
       if (!vivo || !r?.ok) return
       const aqui = r.cerca.find((c) => c.dentro && c.hay_pedazo)
       setNombres({ id: parada.id, lista: aqui?.pedazos_nombres ?? (aqui?.coleccion_nombre ? [aqui.coleccion_nombre] : []) })
@@ -29,7 +32,8 @@ export function usePedazosDeParada(tripId: string | null, parada: Stop, activo: 
     return () => {
       vivo = false
     }
-  }, [activo, tripId, parada.id, parada.name, parada.coordinates])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- las coordenadas se miran por sus números (el objeto cambia de identidad con cada pintado de la ruta)
+  }, [activo, tripId, parada.id, parada.name, parada.coordinates?.lat, parada.coordinates?.lng])
   return nombres && nombres.id === parada.id ? nombres.lista : []
 }
 

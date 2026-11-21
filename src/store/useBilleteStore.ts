@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { supabase } from '../lib/supabaseClient'
+import { supabase, usuarioLocal } from '../lib/supabaseClient'
 
 /**
  * EL BILLETE DE CADA PERSONA (Tanda 10S5 §4). El código de la tarjeta de embarque, el asiento, el localizador, la terminal y el coche son PRIVADOS: viven solo en el móvil de quien los pone
@@ -210,7 +210,7 @@ export const useBilleteStore = create<BilleteState>((set, get) => ({
   sincronizar: async (tripId) => {
     try {
       if (!supabase || !tripId) return
-      const { data: u } = await supabase.auth.getUser()
+      const { data: u } = await usuarioLocal()
       const uid = u.user?.id
       if (!uid) return
       const { data, error } = await supabase.from('billetes_personales').select('datos, actualizado_en').eq('trip_id', tripId).eq('user_id', uid).maybeSingle()
@@ -272,7 +272,7 @@ async function tocado(tripId: string | null, datos: Datos) {
 async function subir(tripId: string | null, datos: Datos) {
   try {
     if (!supabase || !tripId) return
-    const { data: u } = await supabase.auth.getUser()
+    const { data: u } = await usuarioLocal()
     const uid = u.user?.id
     if (!uid) return
     // Lo guardado sin saber quién era (la lista de gente aún no había cargado) se apunta ahora a esta persona.

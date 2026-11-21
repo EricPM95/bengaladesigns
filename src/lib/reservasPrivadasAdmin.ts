@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient'
+import { supabase, usuarioLocal } from './supabaseClient'
 import type { Reservation } from './bookings'
 import { useRouteStore } from '../store/useRouteStore'
 import type { Route } from './types'
@@ -66,7 +66,7 @@ export async function fusionarPrivadasDelAdmin(tripId: string | null): Promise<n
   try {
     const { data, error } = await supabase.from('reservas_privadas_admin').select('reservas').eq('trip_id', tripId).maybeSingle()
     if (error) return 0
-    miId = (await supabase.auth.getUser()).data.user?.id ?? null
+    miId = (await usuarioLocal()).data.user?.id ?? null
     const lista = (Array.isArray((data as { reservas?: unknown } | null)?.reservas) ? (data as { reservas: Reservation[] }).reservas : []).filter((r) => r && typeof r.id === 'string')
     if (tripActual !== tripId) {
       vistas = new Set()

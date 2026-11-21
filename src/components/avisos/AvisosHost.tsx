@@ -12,7 +12,7 @@ import { useMiPerfil } from '../../store/useMiPerfil'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useCuenta } from '../cuenta/useCuenta'
 
-const CADA_MS = 180_000 // (V26) antes cada minuto; también al abrir y al volver a la app (ver lib/sondeo.ts)
+const CADA_MS = 300_000 // (V36) 5 minutos (antes 3 min; en V26 antes cada minuto); también al abrir y al volver a la app (ver lib/sondeo.ts)
 
 const hoyEnLocal = (): string => {
   const d = new Date()

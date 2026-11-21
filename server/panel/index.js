@@ -17,6 +17,7 @@ import fs from 'node:fs'
 import { crearCorreo } from '../correo.js'
 import { cargarDatos } from '../logros/datos.js'
 import { crearGuardian } from './guardian.js'
+import { olvidarBase } from './base.js' // (V36)
 import { crearAvisoInterno } from './avisoInterno.js'
 import { crearServicioInicio } from './inicio.js'
 import { crearServicioUsuarios } from './usuarios.js'
@@ -37,6 +38,11 @@ const leerProximamente = () => {
 
 export function registrarRutasPanel(app, { admin, env = process.env, correo = crearCorreo({ apiKey: env.RESEND_API_KEY }), ahora = () => new Date(), consola = console, datos = null, proximamente = leerProximamente, geocodificar, lanzados } = {}) {
   const conAdmin = crearGuardian({ admin, env, consola })
+  // (V36) La base del panel se guarda en memoria (base.js): cualquier escritura del panel (POST/PUT/DELETE) la olvida al acabar, para que lo guardado se vea al momento.
+  app.use('/api/admin', (req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') res.on('finish', () => olvidarBase(admin))
+    next()
+  })
   // Los datos de los logros (tabla de niveles y nombres de sellos) se cargan una sola vez, la primera que hace falta.
   let cache = datos
   const datosLogros = () => (cache ??= cargarDatos())
@@ -97,6 +103,7 @@ export function registrarRutasPanel(app, { admin, env = process.env, correo = cr
     if (admin && destino && ['actividad', 'hotel'].includes(c.tipo) && ['civitatis', 'stay22'].includes(c.proveedor)) {
       try {
         await admin.rpc('afiliado_clic', { p_destino: destino, p_tipo: c.tipo, p_proveedor: c.proveedor })
+        olvidarBase(admin) // (V36) el panel enseña el clic nuevo al momento
       } catch {
         /* sin la 0091: nada */
       }

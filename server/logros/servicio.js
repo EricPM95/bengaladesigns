@@ -95,7 +95,26 @@ export function contextoDeViaje({ id, route }, datos, catalogos, { esDuo = false
   }
 }
 
-export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new Date(), cobro = false, cobroSoloAdmins = false, azar = Math.random, ocultos = new Set(), esAdminDeCuenta = null }) {
+/** (V36) Lo que cambia datos: al llamarlo se olvida la lectura ligera guardada (ver `cargarLigero`). */
+const MUTADORES_DEL_REPO = new Set(['insertarHecho', 'deshacerHecho', 'unirFoto', 'insertarLogros', 'borrarLogros', 'guardarPrueba', 'guardarPerfil', 'marcarAnimacion', 'apuntarInvitacion', 'marcarInvitacionCumplida', 'ponerSinPase', 'guardarSuscripcion'])
+/** (V36) Cuánto vale la lectura ligera de «cerca de aquí» (HOY la pide cada 75 s: así casi nunca llega a la base). */
+const VIDA_LECTURA_LIGERA_MS = 30000
+
+export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora = () => new Date(), cobro = false, cobroSoloAdmins = false, azar = Math.random, ocultos = new Set(), esAdminDeCuenta = null, vidaLecturaLigeraMs = VIDA_LECTURA_LIGERA_MS }) {
+  // (V36) La lectura ligera guardada en memoria (usuario → { en, c }). Cualquier escritura del repo la vacía.
+  const lecturaLigera = new Map()
+  const repo = new Proxy(repoBruto, {
+    get(objetivo, nombre) {
+      const valor = objetivo[nombre]
+      if (typeof valor !== 'function') return valor
+      if (!MUTADORES_DEL_REPO.has(nombre)) return valor.bind(objetivo)
+      return (...args) => {
+        lecturaLigera.clear()
+        const r = valor.apply(objetivo, args)
+        return r && typeof r.then === 'function' ? r.finally(() => lecturaLigera.clear()) : r
+      }
+    },
+  })
   const sitioInfo = (destino, sitio, radioSinDatos = 150) => {
     const d = datos.destinos[destino]
     const dato = d.sitios[sitio] ?? null
@@ -121,9 +140,21 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
   const hoyEn = (destino) => parteLocal(ahora(), datos.destinos[destino].timezone).fecha
 
   /** Todo lo de una persona que hace falta para calcular. */
-  async function cargar(userId) {
+  /**
+   * (V36) Lo MÍNIMO para «cerca de aquí» (HOY lo pide cada 75 s con la app a la vista): los viajes y lo ganado. Antes cada vuelta hacía las ~14 lecturas completas de `cargar` (hechos, EXP, pioneros, perfil,
+   * referidos…) que esa respuesta ni usa; ahora son 2-5 consultas pequeñas y, mientras dura la lectura guardada, ninguna (cualquier escritura de esta instancia la vacía).
+   */
+  async function cargarLigero(userId) {
+    const guardada = lecturaLigera.get(userId)
+    if (guardada && Date.now() - guardada.en < vidaLecturaLigeraMs) return guardada.c
+    const c = await cargar(userId, { ligero: true })
+    lecturaLigera.set(userId, { en: Date.now(), c })
+    if (lecturaLigera.size > 200) lecturaLigera.delete(lecturaLigera.keys().next().value)
+    return c
+  }
+  async function cargar(userId, { ligero = false } = {}) {
     // (V9) TODAS las lecturas a la vez, en una sola ronda (antes el perfil y los referidos esperaban a las otras seis y la invitación, a todas): cada ronda al servidor de datos son ~150-300 ms.
-    const [hechos, filas, logros, cuenta, pionero, probador, perfil, referidos, invitador] = await Promise.all([
+    const [hechos, filas, logros, cuenta, pionero, probador, perfil, referidos, invitador] = await Promise.all(ligero ? [[], repo.viajesDe(userId), repo.logrosDe(userId), null, {}, null, null, [], undefined] : [
       repo.hechosDe(userId),
       repo.viajesDe(userId),
       repo.logrosDe(userId),
@@ -316,7 +347,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
    * `sitios_hoy` (nombres de las paradas de hoy, tal como las ve el móvil) manda sobre la ruta guardada, que puede ir por detrás. La ubicación no se guarda.
    */
   async function cerca(userId, { trip_id, ubicacion = null, sitios_hoy = null, en_coche = false }) {
-    const c = await cargar(userId)
+    const c = await cargarLigero(userId)
     const viaje = c.viajes[trip_id]
     if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas', cerca: [] }
     const hoy = hoyEn(viaje.destino)

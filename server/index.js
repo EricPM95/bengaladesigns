@@ -16,6 +16,7 @@ import { adaptarDiaAlVuelo } from '../shared/routeEngine/adaptarDiaVuelo.js'
 import { travelTimesFor } from './engine/buildDayV3.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
+import { medirSupabase } from './medidorSupabase.js' // (V36) contador de peticiones a Supabase, solo en desarrollo
 import { entradaDeTabla, claveDeOrigen } from './transportOrigen.js'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -110,7 +111,7 @@ const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Faltan VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY — el caché de tips_anclas estará desactivado (cada tip de ancla se genera de nuevo, sin persistir).')
 }
-const supabaseAdmin = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null
+const supabaseAdmin = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey, { ...medirSupabase('anon') }) : null
 
 // En local, la clave viene de .env.local (dotenv, arriba); en Vercel viene directamente de las
 // Environment Variables del proyecto (sin archivo — dotenv.config() ahí simplemente no encuentra
@@ -1174,7 +1175,7 @@ ${text.slice(0, 20000)}` : intro })
 // supabase/migrations/0017_affiliate_sales.sql (sin aplicar). Fuera de producción y sin secreto puesto, se puede ingerir sin cabecera (pruebas).
 const salesStore = new Map()
 // (Sirve también a las cuentas. La clave puede ser la antigua `service_role` o una nueva `sb_secret_…`: supabase-js 2.114 reconoce las dos y manda la nueva solo en la cabecera `apikey`.)
-const salesAdmin = supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } }) : null
+const salesAdmin = supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false }, ...medirSupabase('servicio') }) : null
 // (10S5) Leer un billete (tarjeta de embarque o billete de tren, autobús, barco), una entrada o la reserva de un hotel: ver server/billete/lectura.js. No guarda nada. (10S8) Solo con sesión, con el pase y con límite.
 registrarLeerBillete(app, { anthropic, MODEL, logCallCost, extractJsonText, logAnthropicError, express, admin: salesAdmin, quienEs: quienEsCuenta, tokenDe: tokenDeCuenta })
 const CAMPAIGN_PATTERN = /^(app|v)-[A-Z0-9]{5}$/

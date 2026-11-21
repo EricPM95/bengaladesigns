@@ -23,7 +23,7 @@ export function useLoSuyoDelViaje(): void {
       reloj = window.setInterval(() => {
         // (V26) antes cada 30 s; ahora cada 2 minutos, solo con la app a la vista y una sola vez aunque lo pidan varias pantallas (lib/sondeo.ts)
         if (document.visibilityState === 'visible') void unaSolaVez('lo-suyo', () => useLoSuyo.getState().cargar(useSyncStore.getState().activeTripId), 15_000)
-      }, 120_000)
+      }, 600_000) // (V36) cada 10 minutos (antes 2)
     }
     return () => {
       usuarios--

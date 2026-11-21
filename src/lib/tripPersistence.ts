@@ -166,7 +166,7 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
 
   const ligeros = await loadTripList(travelerId, cuentasActivas())
   if (ligeros) {
-    for (const v of ligeros) if (!v.ligero) recordarBase(v.id, v.route)
+    for (const v of ligeros) if (!v.ligero) { recordarBase(v.id, v.route); apuntarHuella(v.id, v.route, v.bookings, v.wishlist) }
     return ligeros
   }
 
@@ -186,7 +186,10 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
   }
   const viajes = (data ?? []).map((row) => filaAViaje(row, travelerId, conInvitados))
   // (10N8 §4) La ruta con la que se compara el siguiente guardado es la que se pone en pantalla (con los nombres ya al día), no la cruda de la nube.
-  for (const v of viajes) recordarBase(v.id, v.route)
+  for (const v of viajes) {
+    recordarBase(v.id, v.route)
+    apuntarHuella(v.id, v.route, v.bookings, v.wishlist)
+  }
   return viajes
 }
 
@@ -231,6 +234,7 @@ export async function loadOneTrip(travelerId: string, tripId: string): Promise<{
   recordarSello(tripId, fila.updated_at, fila.guardado_en)
   const viaje = filaAViaje(fila, travelerId, cuentasActivas())
   recordarBase(tripId, viaje.route)
+  apuntarHuella(tripId, viaje.route, viaje.bookings, viaje.wishlist)
   return { viaje, canonica: canonico(fila.route) }
 }
 
@@ -239,7 +243,7 @@ export async function loadOneTrip(travelerId: string, tripId: string): Promise<{
  * (unos 100 bytes) y baja el viaje únicamente si el sello es distinto (o si hace más de 10 min que no se baja, por si algo cambió sin tocar `updated_at`).
  */
 const sellos = new Map<string, { sello: string; en: number }>()
-export const SELLO_CADUCA_MS = 10 * 60 * 1000
+export const SELLO_CADUCA_MS = 3 * 60 * 60 * 1000 // (V36) 3 horas (antes 10 min: bajaba el viaje entero, 49-79 KB, 48 veces en un día de HOY aunque nadie lo hubiera cambiado; todo guardado pone `updated_at`, así que el sello basta)
 const selloDe = (actualizado: string | null | undefined, guardado: string | null | undefined): string => `${actualizado ?? ''}|${guardado ?? ''}`
 export function recordarSello(tripId: string, actualizado: string | null | undefined, guardado: string | null | undefined): void {
   if (actualizado) sellos.set(tripId, { sello: selloDe(actualizado, guardado), en: Date.now() })
@@ -265,6 +269,16 @@ function apuntarSelloPropio(tripId: string, hecho: unknown): void {
 export function canonico(valor: unknown): string {
   const ordenar = (v: unknown): unknown => (Array.isArray(v) ? v.map(ordenar) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v as object).sort().map((k) => [k, ordenar((v as Record<string, unknown>)[k])])) : v)
   return JSON.stringify(ordenar(valor))
+}
+
+/**
+ * (V36) LA HUELLA DE LO ÚLTIMO QUE SE SABE DE LA NUBE (ruta + reservas + lista de deseos, en forma canónica), por viaje: lo cargado o lo guardado. Un guardado cuyo contenido es IDÉNTICO no se manda: antes cada pintado nuevo de la ruta
+ * (abrir la app, cargar el viaje, un efecto que repone la misma ruta…) subía 49-79 KB y avisaba por Realtime a los demás móviles, que bajaban el viaje entero para ver que no había cambiado nada.
+ */
+const huellasDeLaNube = new Map<string, string>()
+const huellaDelViaje = (ruta: unknown, reservas: unknown, deseos: unknown): string => canonico({ r: ruta, b: reservas, w: deseos })
+function apuntarHuella(tripId: string, ruta: unknown, reservas: unknown, deseos: unknown): void {
+  huellasDeLaNube.set(tripId, huellaDelViaje(ruta, reservas, deseos))
 }
 
 /** El `route` que esta pestaña guardó la última vez, tal cual (para no tratar como «cambio de otra persona» el eco de nuestro propio guardado). */
@@ -306,6 +320,8 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
       // (Tanda 10N8 §4) La ruta sale con lo que ha pasado (`ultimoCambio`): de ahí sale el aviso nuevo de los demás.
       const respaldo = useSyncStore.getState().savedTrips?.find((v) => v.id === tripId)?.route ?? null
       const ruta = sellarRuta(tripId, payload.route, respaldo)
+      // (V36) Nada ha cambiado desde lo último de la nube: no se guarda.
+      if (huellasDeLaNube.get(tripId) === huellaDelViaje(ruta, payload.bookings, payload.wishlist)) return tripId
       recordarGuardado(tripId, canonico(ruta))
       // (Tanda 10N §4a) Quien tiene «Puede editar» guarda la ruta y la lista de deseos (NO el vuelo, el alojamiento ni las fechas, que son del administrador).
       if (permisoDeEsteViaje() === 'editar') {
@@ -313,6 +329,7 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
         if (error) throw error
         apuntarSelloPropio(tripId, hecho)
         recordarBase(tripId, ruta)
+        apuntarHuella(tripId, ruta, payload.bookings, payload.wishlist)
         return tripId
       }
       // Solo el administrador cambia el viaje: si es de otra persona (esta está invitada), la base de datos no toca nada y aquí tampoco se avisa de un fallo.
@@ -320,10 +337,13 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
       if (error) throw error
       apuntarSelloPropio(tripId, hecho)
       recordarBase(tripId, ruta)
+      apuntarHuella(tripId, ruta, payload.bookings, payload.wishlist)
       return tripId
     }
+    if (huellasDeLaNube.get(tripId) === huellaDelViaje(payload.route, payload.bookings, payload.wishlist)) return tripId // (V36) idéntico a lo de la nube: no se guarda
     const { error } = await supabase.from('trips').update(row).eq('id', tripId)
     if (error) throw error
+    apuntarHuella(tripId, payload.route, payload.bookings, payload.wishlist)
     return tripId
   }
 

@@ -82,14 +82,18 @@ export function registrarRutasLogrosPanel(app, { admin, conAdmin, ahora = () => 
   }))
   app.get('/api/admin/logros-panel/resumen', conAdmin(async (req, res) => {
     const datos = cargarDatos()
-    const { filas: todasLasFilas, truncado } = await leerLogros(admin)
+    // (V36) Los logros salen de la MISMA lectura (guardada 60 s) que usan Inicio, Ventas y Usuarios: antes esta pestaña bajaba otra vez la tabla `achievements` entera, aparte, en cada clic.
     // (V35B) Las cuentas de prueba (con el interruptor) y las de administrador no cuentan.
     let fuera = new Set()
+    let lectura = null
     try {
-      fuera = new Set((await leerBaseDelPanel(admin, req.query, env)).ids_fuera)
+      const base = await leerBaseDelPanel(admin, req.query, env)
+      fuera = new Set(base.ids_fuera)
+      lectura = { filas: [...(base.completa?.logros ?? [])].sort((a, b) => String(a.ganado_en).localeCompare(String(b.ganado_en))), truncado: (base.completa?.logros ?? []).length >= 20000 }
     } catch {
-      fuera = new Set()
+      lectura = null
     }
+    const { filas: todasLasFilas, truncado } = lectura ?? (await leerLogros(admin))
     const filas = todasLasFilas.filter((x) => !fuera.has(x.user_id))
     let cuentas = null
     try {

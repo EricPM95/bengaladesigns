@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { Reservation } from '../lib/bookings'
-import { supabase } from '../lib/supabaseClient'
+import { supabase, usuarioLocal } from '../lib/supabaseClient'
 import { useSyncStore } from './useSyncStore'
 
 /**
@@ -52,7 +52,7 @@ async function guardarEnLaNube(tripId: string | null, lista: Reservation[]) {
   if (!supabase || !tripId) return
   marcarPendiente(tripId, true)
   try {
-    const { data } = await supabase.auth.getUser()
+    const { data } = await usuarioLocal()
     const uid = data.user?.id
     if (!uid) return
     const { error } = await supabase.from('reservas_invitado').upsert({ trip_id: tripId, user_id: uid, reservas: lista, actualizado_en: new Date().toISOString() })
@@ -79,7 +79,7 @@ export const useMisReservas = create<MisReservasState>((set, get) => ({
     set({ tripId, lista: leer(tripId) })
     if (!supabase || !tripId) return
     try {
-      const { data: usuario } = await supabase.auth.getUser()
+      const { data: usuario } = await usuarioLocal()
       if (!usuario.user) return
       const { data, error } = await supabase.from('reservas_invitado').select('reservas').eq('trip_id', tripId).eq('user_id', usuario.user.id).maybeSingle()
       if (error) return

@@ -36,7 +36,7 @@ interface ViajeCompartidoState {
   poner: (datos: { tripId?: string | null; gente?: Persona[]; recomendaciones?: Recomendacion[] }) => void
 }
 
-export const useViajeCompartido = create<ViajeCompartidoState>((set) => ({
+export const useViajeCompartido = create<ViajeCompartidoState>((set, get) => ({
   tripId: null,
   gente: [],
   recomendaciones: [],
@@ -48,6 +48,9 @@ export const useViajeCompartido = create<ViajeCompartidoState>((set) => ({
     const [gente, recomendaciones] = await Promise.all([gentePorRpc(tripId), listarRecomendaciones(tripId)])
     // (Si mientras tanto se abrió otro viaje, esta respuesta ya no vale.)
     if (useSyncStore.getState().activeTripId !== tripId) return
+    // (V36) Si lo que llega es IGUAL a lo que ya hay (lo normal en cada recarga de respaldo), no se cambia nada: antes cada recarga ponía listas nuevas y despertaba a todo lo que mira a la gente (cuentas del viaje, reservas privadas, guardado de la ruta…).
+    const ahora = get()
+    if (ahora.tripId === tripId && JSON.stringify(ahora.gente) === JSON.stringify(gente) && JSON.stringify(ahora.recomendaciones) === JSON.stringify(recomendaciones)) return
     set({ tripId, gente, recomendaciones })
   },
   poner: (datos) => set((s) => ({ ...s, ...datos, tripId: datos.tripId ?? s.tripId })),

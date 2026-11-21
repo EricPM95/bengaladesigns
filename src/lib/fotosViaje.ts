@@ -299,6 +299,7 @@ export function alCambiarFotos(oyente: () => void): () => void {
   }
 }
 function avisarCambio() {
+  listasRecientes.clear() // (V36) lo que había en memoria ya no vale
   oyentes.forEach((oyente) => oyente())
 }
 /** Para quien borra fotos por su cuenta (eliminar un viaje, Tanda 10F): que las listas y el contador de «Mis viajes» se vuelvan a contar. */
@@ -438,7 +439,7 @@ export async function yaEstaLaFoto(tripId: string, preparada: Pick<FotoPreparada
 export async function subirRespetandoLimite(args: Omit<SubirFotoArgs, 'file'>, preparada: FotoPreparada): Promise<ResultadoSubida> {
   if (await yaEstaLaFoto(args.tripId, preparada)) return { foto: null, error: MENSAJE_FOTO_REPETIDA }
   const { porParada } = limiteDeFotos()
-  const previas = porParada === null ? [] : fotosDelSitio(await listarFotos(args.tripId), args.dayNumber, args.stopName)
+  const previas = porParada === null ? [] : fotosDelSitio(await listarFotos(args.tripId, { fresco: true }), args.dayNumber, args.stopName)
   const resultado = await subirFotoPreparada(args, preparada)
   if (resultado.foto) for (const vieja of previas) await borrarFoto(vieja)
   return resultado
@@ -501,7 +502,22 @@ export async function subirFotoPreparada(args: Omit<SubirFotoArgs, 'file'>, prep
 }
 
 /** Las fotos del viaje, por día y hora, con URLs firmadas de corta duración. Sin Supabase o sin la migración: []. */
-export async function listarFotos(tripId: string): Promise<FotoViaje[]> {
+const listasRecientes = new Map<string, { en: number; p: Promise<FotoViaje[]> }>()
+const VALE_LA_LISTA_MS = 20_000
+
+/**
+ * (V36) La lista de fotos de un viaje: varias pantallas de HOY (el botón de foto de cada parada, «Tus fotos de hoy», los recuerdos…) la pedían cada una por su cuenta al abrirse (una consulta a `trip_photos` y la firma de direcciones por pantalla).
+ * Ahora, aunque la pidan a la vez o en los siguientes 20 s, se hace UNA consulta; cualquier cambio de fotos (subir, borrar) la olvida. `fresco: true` se salta eso (para comprobar antes de subir o borrar).
+ */
+export function listarFotos(tripId: string, opciones: { fresco?: boolean } = {}): Promise<FotoViaje[]> {
+  const ya = listasRecientes.get(tripId)
+  if (!opciones.fresco && ya && Date.now() - ya.en < VALE_LA_LISTA_MS) return ya.p
+  const p = listarFotosDeLaNube(tripId)
+  listasRecientes.set(tripId, { en: Date.now(), p })
+  return p
+}
+
+async function listarFotosDeLaNube(tripId: string): Promise<FotoViaje[]> {
   if (!supabase) return []
   try {
     const userId = await bootstrapTraveler().catch(() => null)

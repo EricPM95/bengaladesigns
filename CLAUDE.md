@@ -47,3 +47,12 @@ Al volver a crear una función con `create or replace` (por ejemplo `empezar_de_
 
 ## Las pruebas gastadas no se devuelven al empezar de cero (Eric, 31-oct, 10S7)
 `hoy_prueba` (el día de prueba de HOY) e `historia_de_prueba` son «una por cuenta, para siempre»: **`empezar_de_cero` NO las borra** (migración 0072, que parte de la 0071 y solo les quita esas dos líneas; `docs/dias/COMPROBAR_0072.sql`). **La última versión de la función `empezar_de_cero` es ahora la de la 0072**: la próxima migración que la rehaga parte de ahí, con `diff`. En `pruebaTanda10J` esas dos tablas están en `SE_QUEDA`, no en el inventario de lo que se borra. (Ojo: «Reiniciar mis pruebas» del panel de administrador es otra cosa y sigue borrándolas, a petición expresa del administrador.)
+
+## Consultas a Supabase: cada una dice cada cuánto se hace y cuánto baja; nada en bucle (Eric, 21-nov, V36)
+El plan gratis de Supabase tiene 5 GB de «egress» al mes; la app llegó a 10 GB (el 99,8 % era PostgREST: consultas repetidas o que bajan de más; dos personas de viaje gastaron ~1 GB al día). Con más de 5 GB Supabase puede bloquear la app (402). Reglas fijas:
+1. **Toda consulta nueva a Supabase (`supabase.from`, `rpc`, Realtime, o una ruta de `server/` que lea de la base) lleva un comentario que dice CADA CUÁNTO se hace y CUÁNTO BAJA** (filas y KB aproximados). Si no sabes uno de los dos, mídelo con el contador de desarrollo antes de subir.
+2. **Nada en bucle.** Si hace falta saber algo nuevo: Realtime, o intervalos largos (5 minutos como mínimo) y SOLO con la pantalla visible (`document.visibilityState === 'visible'`); nunca en segundo plano. Usa `src/lib/sondeo.ts` (una sola petición aunque la pidan dos piezas).
+3. **El GPS no pregunta a Supabase a cada paso.** Los logros y las visitas se calculan en el móvil y solo se manda lo nuevo, una vez.
+4. **Bajar solo lo que hace falta:** `select` con las columnas justas (nunca `*` ni el `route` entero de un viaje si basta un sello), filtrado por cuenta y viaje; lo que no cambia se guarda en el móvil y se pide una vez. El panel cuenta en la base de datos, no baja tablas enteras.
+5. **Los servidores de desarrollo (la API en 8787) no hacen tareas programadas contra producción.**
+6. Hay un **contador de peticiones en desarrollo** (consola: «Supabase: X peticiones, Y KB» cada minuto, aviso en rojo si pasa del límite) y **`pruebaV36`**, que falla si el día simulado de HOY baja más de 5 MB o si la app quieta hace peticiones. Toda tanda que toque algo que pregunte a Supabase pasa `pruebaV36`.

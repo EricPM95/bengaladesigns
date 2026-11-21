@@ -77,8 +77,28 @@ async function leerUsuarios(admin, avisos) {
   return salida
 }
 
+/**
+ * (V36) La base del panel se guarda en memoria un rato (por cliente de Supabase): Inicio, Ventas, Usuarios y Logros la pedían ENTERA cada uno por su lado (15 tablas y todas las cuentas) en cada clic, cada cambio de periodo y
+ * cada tecla del buscador. Ahora, una lectura sirve a todos durante PANEL_BASE_TTL_MS (60 s por defecto; 0 = sin guardar) y dos peticiones a la vez comparten la misma lectura. Las escrituras del panel la olvidan (olvidarBase).
+ */
+const guardadas = new WeakMap()
+const TTL_POR_DEFECTO_MS = 60000
+export function olvidarBase(admin) {
+  if (admin && typeof admin === 'object') guardadas.delete(admin)
+}
+export async function leerBase(admin, { ttl = null, env = process.env } = {}) {
+  const vida = ttl ?? (Number.isFinite(Number(env.PANEL_BASE_TTL_MS)) && env.PANEL_BASE_TTL_MS !== undefined && env.PANEL_BASE_TTL_MS !== '' ? Number(env.PANEL_BASE_TTL_MS) : TTL_POR_DEFECTO_MS)
+  if (vida <= 0 || !admin || typeof admin !== 'object') return leerBaseDeVerdad(admin)
+  const g = guardadas.get(admin)
+  if (g && Date.now() - g.en < vida) return g.promesa
+  const promesa = leerBaseDeVerdad(admin)
+  guardadas.set(admin, { en: Date.now(), promesa })
+  promesa.catch(() => guardadas.delete(admin))
+  return promesa
+}
+
 /** Lee todo lo que necesita el panel. `avisos` recoge lo que no se pudo leer (el panel sigue con lo que haya). */
-export async function leerBase(admin) {
+async function leerBaseDeVerdad(admin) {
   const avisos = []
   const [usuarios, travelers, trips, miembros, pases, miembrosPase, pagos, logros, perfiles, primeraVez, avisosDestino, uso, clics, pruebas, proximamente] = await Promise.all([
     leerUsuarios(admin, avisos),
