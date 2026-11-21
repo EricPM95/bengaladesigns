@@ -52,7 +52,8 @@ let manifiestoEnMemoria: Manifiesto | null = null
 export const leerElegidos = (): Record<string, Letra> => leerJson<Record<string, Letra>>(CLAVE_ELEGIDOS, {})
 /** La letra elegida de un sonido; sin elegir (o si esa letra no existe porque se descartó), la primera que haya. */
 export const versionDe = (id: string): Letra => {
-  const v = leerElegidos()[id]
+  // (V35B2) El estudio puede fijar la letra de cada sonido para UNA animación (lo que guardó Eric); si no, la de siempre.
+  const v = estudio.letras[id] ?? leerElegidos()[id]
   const hay = manifiestoEnMemoria?.[id]
   if (v && LETRAS.includes(v) && (!hay || hay[v])) return v
   if (hay) return LETRAS.find((l) => hay[l]) ?? 'A'
@@ -119,17 +120,68 @@ export interface SonidoPropio {
   vol: number
   empieza: Empieza
 }
+/** (V35B2) Dónde cuenta el 0 ms de un sonido de Code movido: «sitio» = donde suena de siempre; «principio» = el primer fotograma; «golpe» = el golpe. */
+export type EmpiezaCode = 'sitio' | 'principio' | 'golpe'
+export interface AjusteDeCode {
+  ms: number
+  empieza: EmpiezaCode
+}
 export interface EstudioDelMotor {
   propios: SonidoPropio[]
   silenciados: string[]
   golpe: number
+  /** (V35B2) Sonidos de Code movidos (por clave `archivo:redoble`). */
+  ajustes: Record<string, AjusteDeCode>
+  /** (V35B2) La letra de cada sonido grabado en ESTA animación y el volumen de cada sonido (si no se dicen, valen los de siempre). */
+  letras: Record<string, Letra>
+  volumenes: Record<string, number>
 }
-const VACIO: EstudioDelMotor = { propios: [], silenciados: [], golpe: 0 }
+const VACIO: EstudioDelMotor = { propios: [], silenciados: [], golpe: 0, ajustes: {}, letras: {}, volumenes: {} }
 let estudio: EstudioDelMotor = VACIO
 export const ponerEstudio = (e: Partial<EstudioDelMotor> | null) => {
   estudio = e ? { ...VACIO, ...e } : VACIO
 }
 export const claveDeSilencio = (tipo: 'archivo' | 'sint', id: string) => `${tipo}:${id}`
+/** (V35B2) El volumen de un sonido en el estudio: el de esta animación si lo hay, y si no el de siempre. */
+const volumenEn = (clave: string): number => Math.min(2, Math.max(0, estudio.volumenes[clave] ?? volumenDe(clave)))
+
+/** (V35B2) El arranque natural (segundos desde el primer fotograma) de una nota: el de un sonido hecho por código, o el del principio de un archivo (su golpe menos el golpe dentro del archivo). */
+export function arranqueNatural(n: Nota, golpeEnElArchivo: number): number {
+  return n.tipo === 'sint' ? n.en : n.golpe - golpeEnElArchivo
+}
+/** (V35B2) Cuántos segundos hay que mover TODAS las notas de un sonido de Code para cumplir su ajuste (la primera nota manda). Sin ajuste, 0. Pura. */
+export function desplazamientoDeCode(primeraNota: number, ajuste: AjusteDeCode | undefined, golpe: number): number {
+  if (!ajuste) return 0
+  if (ajuste.empieza === 'sitio') return ajuste.ms / 1000
+  return (ajuste.empieza === 'golpe' ? golpe : 0) + ajuste.ms / 1000 - primeraNota
+}
+const golpeDentro = (n: Nota): number => (n.tipo === 'archivo' ? (manifiestoEnMemoria?.[n.archivo]?.[versionDe(n.archivo)]?.golpe ?? 0) : 0)
+const claveDeNota = (n: Nota): string => claveDeSilencio(n.tipo, n.tipo === 'sint' ? n.sonido : n.archivo)
+/** Para cada sonido de una partitura, el arranque natural de su primera nota. */
+function primerasNotas(notas: Nota[]): Map<string, number> {
+  const m = new Map<string, number>()
+  for (const n of notas) {
+    const k = claveDeNota(n)
+    const a = arranqueNatural(n, golpeDentro(n))
+    if (!m.has(k) || a < (m.get(k) as number)) m.set(k, a)
+  }
+  return m
+}
+/** (V35B2) Lo que hay que esperar antes del primer fotograma para que ningún sonido de Code movido caiga antes de «ahora» (como con los de Eric: no se recorta, se retrasa la animación). */
+export function esperaPorCodeMovido(partituras: string[], o: OpcionesDePartitura = {}): number {
+  let minimo = 0
+  for (const id of partituras) {
+    const notas = partituraDe(id, o)?.notas ?? []
+    const primeras = primerasNotas(notas)
+    for (const n of notas) {
+      const k = claveDeNota(n)
+      if (estudio.silenciados.includes(k) || !estudio.ajustes[k]) continue
+      const nuevo = arranqueNatural(n, golpeDentro(n)) + desplazamientoDeCode(primeras.get(k) as number, estudio.ajustes[k], estudio.golpe)
+      if (nuevo < minimo) minimo = nuevo
+    }
+  }
+  return -minimo
+}
 /** Segundos desde el primer fotograma en que arranca el sonido propio (puede ser negativo). */
 export const arranqueDelPropio = (p: Pick<SonidoPropio, 'empieza' | 'ms'>, golpe: number): number => (p.empieza === 'golpe' ? golpe : 0) + p.ms / 1000
 /** Lo que hay que esperar antes del primer fotograma para que ningún sonido propio caiga antes de «ahora» (así no se recorta). */
@@ -253,12 +305,16 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
   master.connect(ctx.destination)
   const activa: Activa = { id, master, premio: p.premio, fin: t0 + p.dura + 0.6, fuentes: [] }
   activas.push(activa)
+  const primeras = primerasNotas(p.notas)
   for (const n of p.notas) {
     // (V35A2) Un sonido de Code silenciado no se programa.
-    if (estudio.silenciados.includes(claveDeSilencio(n.tipo, n.tipo === 'sint' ? n.sonido : n.archivo))) continue
+    const clave = claveDeNota(n)
+    if (estudio.silenciados.includes(clave)) continue
+    // (V35B2) Un sonido de Code movido: todas sus notas se mueven lo mismo.
+    const delta = desplazamientoDeCode(primeras.get(clave) as number, estudio.ajustes[clave], estudio.golpe)
     if (n.tipo === 'sint') {
-      tocarSintetico(ctx, master, n.sonido, versionSint(n.sonido), t0 + n.en, (n.vol ?? 1) * volumenDe(`s:${n.sonido}`), n.dura)
-      registrar({ partitura: id, tipo: 'sint', id: n.sonido, en: n.en, programado: n.en })
+      tocarSintetico(ctx, master, n.sonido, versionSint(n.sonido), t0 + n.en + delta, (n.vol ?? 1) * volumenEn(`s:${n.sonido}`), n.dura)
+      registrar({ partitura: id, tipo: 'sint', id: n.sonido, en: n.en, programado: n.en + delta })
     } else {
       const v = versionDe(n.archivo)
       const buffer = buffers.get(`${n.archivo}_${v}`)
@@ -267,11 +323,11 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
       const fuente = ctx.createBufferSource()
       fuente.buffer = buffer
       const g = ctx.createGain()
-      g.gain.value = (n.vol ?? 1) * volumenDe(n.archivo)
+      g.gain.value = (n.vol ?? 1) * volumenEn(n.archivo)
       fuente.connect(g)
       g.connect(master)
       // El golpe cae en `n.golpe`: el archivo arranca `datos.golpe` segundos antes (o a mitad, si ya vamos tarde).
-      const arranque = t0 + n.golpe - datos.golpe
+      const arranque = t0 + n.golpe - datos.golpe + delta
       const tarde = Math.max(0, ctx.currentTime - arranque)
       fuente.start(Math.max(arranque, ctx.currentTime), tarde)
       activa.fuentes.push(fuente)

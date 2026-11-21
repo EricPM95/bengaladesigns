@@ -41,7 +41,7 @@ console.log('1. El código')
 const pagina = leer('src/components/logros/AdminSonidos.tsx')
 const motor = leer('src/lib/sonidos/motor.ts')
 debe(!/Sustituye a/.test(pagina) && !/data-objetivo-propio/.test(pagina), 'suma', 'ya no existe «Sustituye a»: los sonidos de Eric se suman')
-debe(/data-silenciar-todos/.test(pagina) && /data-anadir-otro/.test(pagina) && /data-empieza=/.test(pagina) && /data-linea-de-tiempo/.test(pagina), 'pantalla', 'la página tiene [Silenciar todos los de Code], [+ Añadir otro sonido mío], «Empieza…» y la línea de tiempo')
+debe(/data-silenciar-todos/.test(pagina) && /data-anadir-otro/.test(pagina) && /\}empieza/.test(pagina) && /data-linea-de-tiempo/.test(pagina), 'pantalla', 'la página tiene [Silenciar todos los de Code], [+ Añadir otro sonido mío], «Empieza…» y la línea de tiempo')
 debe(/Math\.max\(0, leerJson<Record<string, number>>\(CLAVE_VOLUMEN_DE, \{\}\)\[id\] \?\? 1\)/.test(motor), 'volumen', 'el volumen de un sonido llega a 0 (ya no se queda en 20 %)')
 debe(!/f\.start\(Math\.max\(arranque, ahora\)/.test(motor), 'recorte', 'el motor no recorta el principio de un sonido propio a propósito')
 

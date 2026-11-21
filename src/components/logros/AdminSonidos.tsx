@@ -1,19 +1,57 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { contextoDeAudioDeLaApp } from '../../lib/sonidos'
-import { arranqueDelPropio, claveDeSilencio, elegirVersion, esperaDeLaAnimacion, manifiesto, ponerVolumenDe, ponerVolumenGeneral, versionDe, volumenDe, volumenGeneral, LETRAS, type Empieza, type Letra, type Manifiesto, type SonidoPropio } from '../../lib/sonidos/motor'
-import { ANIMACIONES, archivosDeLaAnimacion, AVISO_DE_LOS_SONIDOS_PROPIOS, duracionDe, golpeDe, lineaElegida, sintesDeLaAnimacion, type Animacion } from '../../lib/sonidos/estudio'
-import { partituraDe } from '../../lib/sonidos/partituras'
+import {
+  arranqueDelPropio,
+  arranqueNatural,
+  cargarPremio,
+  claveDeSilencio,
+  desplazamientoDeCode,
+  elegirVersion,
+  esperaDeLaAnimacion,
+  manifiesto,
+  ponerVolumenDe,
+  ponerVolumenGeneral,
+  versionDe,
+  volumenDe,
+  volumenGeneral,
+  LETRAS,
+  type AjusteDeCode,
+  type Empieza,
+  type EmpiezaCode,
+  type Letra,
+  type Manifiesto,
+  type SonidoPropio,
+} from '../../lib/sonidos/motor'
+import { ANIMACIONES, animacionDe, archivosDeLaAnimacion, AVISO_DE_LOS_SONIDOS_PROPIOS, duracionDe, golpeDe, lineaElegida, sintesDeLaAnimacion, type Animacion } from '../../lib/sonidos/estudio'
+import { partituraDe, type Nota } from '../../lib/sonidos/partituras'
+import {
+  AVISO_SIN_ALMACEN,
+  borrarGuardado,
+  construirZip,
+  estadoDesdeJson,
+  ESTADO_VACIO,
+  guardarEnElNavegador,
+  HUELLA_VACIA,
+  huellaDe,
+  leerEstudioJson,
+  leerGuardados,
+  type CapaGuardada,
+  type EstadoDeAnimacion,
+  type Guardado,
+} from '../../lib/sonidos/estudioGuardado'
+import { leerZip } from '../../lib/sonidos/zip'
 import type { VisorApi } from './sonidos/VisorDeAnimacion'
 import { useEsAdministrador } from './sonidos/useEsAdministrador'
 
 /**
- * (V29, rehecha en la V34C con el diseño «Panel Jutrip › Logros y sonidos › Sonidos», y otra vez en la V35A2) EL ESTUDIO DE SONIDOS: /admin/sonidos (o /?admin=sonidos), solo para administradores (la cuenta sale de LOGROS_ADMIN_EMAILS; el servidor lo comprueba).
- *   1. Cada animación se ve DENTRO DE UN MARCO DE IPHONE (393 x 852) tal cual sale en la app, con su partitura de verdad: el marco es la propia app con una sola animación (`VisorDeAnimacion`).
- *   2. Cada sonido de Code (golpe, redoble, chispas…) en su fila: candidatos A a E, [Silenciar] y su propio volumen de 0 a 200 %. Arriba, [Silenciar todos los de Code].
- *   3. Los sonidos de Eric son CAPAS que se SUMAN (no sustituyen a ninguno): cada uno con su nombre, su volumen, su barra de ms (de −duración a +duración), «Empieza…» (al empezar la animación o en el golpe) y [Quitar].
- *      Si un sonido cae antes del primer fotograma NO se recorta: la animación espera para que se oiga entero. El archivo NO se sube a ningún sitio: se queda en este navegador.
- *   4. Una línea de tiempo de la animación entera, con una fila por sonido que suena, la raya verde (empieza) y la roja (golpe / final).
- *   5. «Lo elegido»: una línea por animación con todo lo que suena, para copiar y pasar a Claude. Esta página no cambia ningún sonido de la app por sí sola.
+ * (V29, rehecha en la V34C con el diseño «Panel Jutrip › Logros y sonidos › Sonidos», otra vez en la V35A2 y en la V35B2) EL ESTUDIO DE SONIDOS: /admin/sonidos (o /?admin=sonidos), solo para administradores (la cuenta sale de LOGROS_ADMIN_EMAILS; el servidor lo comprueba).
+ *   1. Cada animación se ve DENTRO DE UN MARCO DE IPHONE (393 x 852) tal cual sale en la app, con su partitura de verdad.
+ *   2. Cada sonido de Code en su fila: candidatos A a E, [Silenciar], su volumen de 0 a 200 % y (V35B2) MOVERLO: barra de ms, «Empieza…» y [Volver a su sitio]. Arriba, [Silenciar todos los de Code].
+ *   3. Los sonidos de Eric y los sonidos de Code de OTRAS animaciones ([+ Añadir un sonido de Code]) son capas que se SUMAN: nombre, volumen, barra de ms, «Empieza…» y [Quitar]. Si algo cae antes del primer fotograma NO se recorta: la animación espera.
+ *   4. Una línea de tiempo con una fila por sonido; cada trozo se puede ARRASTRAR con el dedo o el ratón.
+ *   5. «Lo elegido»: una línea por animación con todo lo que suena y dónde.
+ *   6. (V35B2) [Guardar] por animación (IndexedDB de ESTE navegador, con los archivos de Eric enteros; nunca en un servidor), «Sin guardar», [Eliminar lo guardado], [Descargar todo lo guardado] (zip con LO_ELEGIDO.txt, los archivos y estudio.json) y [Cargar un zip].
+ *   Esta página no cambia ningún sonido de la app por sí sola.
  */
 const SERIE = "'Instrument Serif',serif"
 const ANCHO = 393
@@ -30,15 +68,38 @@ const NOMBRE_DE_SONIDO: Record<string, string> = {
 const nombreDe = (id: string) => NOMBRE_DE_SONIDO[id] ?? id
 const coma = (x: number, d = 2) => x.toFixed(d).replace('.', ',')
 const conSigno = (ms: number) => `${ms >= 0 ? '+' : '−'}${Math.abs(ms)} ms`
+const hhmm = (iso: string) => {
+  try {
+    return new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })
+  } catch {
+    return ''
+  }
+}
 
-/** Un sonido de Eric (una capa): vive solo en esta página, en la memoria del navegador. */
-type Capa = SonidoPropio
+/** Una capa: un archivo de Eric o un sonido de Code de otra animación. Lleva lo de un sonido propio del motor y lo que hace falta para guardarla. */
+type Capa = SonidoPropio & { origen: 'archivo' | 'code'; bytes?: ArrayBuffer; tipoMime?: string; sonido?: string; letra?: Letra }
+/** Todo lo que se toca en UNA animación. */
+interface EstadoRT {
+  silenciados: string[]
+  ajustes: Record<string, AjusteDeCode>
+  letras: Record<string, Letra>
+  volumenes: Record<string, number>
+  capas: Capa[]
+}
+const VACIO_RT: EstadoRT = { silenciados: [], ajustes: {}, letras: {}, volumenes: {}, capas: [] }
+const capaAGuardada = (c: Capa): CapaGuardada =>
+  c.origen === 'code'
+    ? { id: c.id, origen: 'code', nombre: c.nombre, ms: c.ms, vol: c.vol, empieza: c.empieza, sonido: c.sonido, letra: c.letra }
+    : { id: c.id, origen: 'archivo', nombre: c.nombre, ms: c.ms, vol: c.vol, empieza: c.empieza, archivo: { nombre: c.nombre, tipo: c.tipoMime ?? '', bytes: c.bytes ?? new ArrayBuffer(0) } }
+const aGuardable = (e: EstadoRT): EstadoDeAnimacion => ({ silenciados: e.silenciados, ajustes: e.ajustes, letras: e.letras, volumenes: e.volumenes, capas: e.capas.map(capaAGuardada) })
+const huellaRT = (e: EstadoRT) => huellaDe(aGuardable(e))
+
 /** Un sonido de Code de una animación: su clave de silencio y el sitio donde guarda su volumen. */
 interface DeCode {
   tipo: 'archivo' | 'sint'
   id: string
   clave: string
-  /** Dónde se guarda su volumen (los grabados, por su nombre; los hechos por código, con `s:`). */
+  /** Dónde se guarda su volumen (los grabados, por su nombre; los hechos por código, con `s:` delante). */
   claveVolumen: string
 }
 const deCodeDe = (a: Animacion): DeCode[] => [
@@ -48,6 +109,7 @@ const deCodeDe = (a: Animacion): DeCode[] => [
 
 const boton = { minHeight: 44, minWidth: 44, padding: '0 16px', borderRadius: 12, border: '1.5px solid rgba(28,34,48,.2)', background: '#FFFFFF', font: "700 13.5px 'Geist'", cursor: 'pointer', color: OSCURO } as const
 const botonOscuro = { ...boton, background: OSCURO, color: '#F3D88F', border: `1.5px solid ${OSCURO}` } as const
+const botonPeq = { ...boton, minHeight: 36, padding: '0 12px' } as const
 const etiqueta = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)' } as const
 
 function Triangulo({ t = 11 }: { t?: number }): ReactNode {
@@ -58,7 +120,7 @@ function Triangulo({ t = 11 }: { t?: number }): ReactNode {
   )
 }
 
-/** La onda de un sonido de Eric (solo la forma: las rayas van en la línea de tiempo). */
+/** La onda de un sonido (solo la forma: las rayas van en la línea de tiempo). */
 function Onda({ buffer }: { buffer: AudioBuffer }): ReactNode {
   const ref = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
@@ -86,7 +148,56 @@ function Onda({ buffer }: { buffer: AudioBuffer }): ReactNode {
   return <canvas ref={ref} data-onda width={300} height={28} style={{ width: '100%', height: '100%', display: 'block' }} aria-label="Onda de tu sonido" />
 }
 
-/** Un trozo de la línea de tiempo: un sonido (de Code o de Eric) colocado donde suena. */
+/** (V35B2) Lo que hay que tocar para colocar un sonido: «Empieza…», la barra de ms (de −duración a +duración, de 10 en 10), −100 / −10 / 0 / +10 / +100 y, si se pide, [Volver a su sitio]. El mismo para los de Eric, los de Code y los añadidos. */
+function ControlDeMomento({ pre = '', ms, empieza, opciones, limite, significado, alCambiarMs, alCambiarEmpieza, alSoltar, volver }: {
+  pre?: string
+  ms: number
+  empieza: string
+  opciones: [string, string][]
+  limite: number
+  significado: string
+  alCambiarMs: (v: number) => void
+  alCambiarEmpieza: (e: string) => void
+  alSoltar: () => void
+  volver?: () => void
+}): ReactNode {
+  const d = (n: string) => ({ [`data-${pre}${n}`]: '' }) as Record<string, string>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{ font: "600 12.5px 'Geist'" }}>Empieza…</span>
+        {opciones.map(([e, texto]) => (
+          <button key={e} type="button" {...{ [`data-${pre}empieza`]: e }} aria-pressed={empieza === e} onClick={() => alCambiarEmpieza(e)} style={{ ...botonPeq, background: empieza === e ? OSCURO : '#FFFFFF', color: empieza === e ? '#F3D88F' : OSCURO }}>
+            {texto}
+          </button>
+        ))}
+        {volver && (
+          <button type="button" {...d('volver-a-su-sitio')} onClick={volver} style={botonPeq}>
+            Volver a su sitio
+          </button>
+        )}
+      </div>
+      <span {...d('significado')} style={{ font: "400 11.5px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' }}>{significado}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <span style={{ display: 'flex', justifyContent: 'space-between', font: "600 12.5px 'Geist'" }}>
+          <span>Adelantar ‹</span>
+          <span {...d('ms-valor')} style={{ color: '#8A6A2C' }}>{conSigno(ms)}</span>
+          <span>› Atrasar</span>
+        </span>
+        <input type="range" {...d('ms')} min={-limite} max={limite} step={10} value={ms} aria-label="Adelantar o atrasar el sonido, en milisegundos" style={{ width: '100%', minHeight: 44, accentColor: ORO }} onChange={(e) => alCambiarMs(Number(e.target.value))} onPointerUp={alSoltar} onKeyUp={alSoltar} />
+        <span style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {([['menos100', -100, '−100'], ['menos', -10, '−10'], ['cero', 0, '0'], ['mas', 10, '+10'], ['mas100', 100, '+100']] as [string, number, string][]).map(([n, paso, texto]) => (
+            <button key={n} type="button" {...d(`ms-${n}`)} style={botonPeq} onClick={() => alCambiarMs(paso === 0 ? 0 : Math.max(-limite, Math.min(limite, ms + paso)))}>
+              {texto}
+            </button>
+          ))}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/** Un trozo de la línea de tiempo: un sonido (de Code, de Eric o añadido) colocado donde suena. */
 interface Trozo {
   de: number
   a: number
@@ -99,25 +210,57 @@ interface FilaDeTiempo {
   buffer?: AudioBuffer
 }
 
-/** La franja de 0 a la duración con una fila por sonido que suena y las rayas verde (empieza) y roja (golpe / final). */
-function LineaDeTiempo({ filas, dura, golpe }: { filas: FilaDeTiempo[]; dura: number; golpe: number }): ReactNode {
+/** La franja de 0 a la duración con una fila por sonido que suena y las rayas verde (empieza) y roja (golpe / final). Cada trozo se arrastra con el dedo o el ratón (de 10 en 10 ms). */
+function LineaDeTiempo({ filas, dura, golpe, alArrastrar }: { filas: FilaDeTiempo[]; dura: number; golpe: number; alArrastrar: (clave: string, deltaMs: number) => void }): ReactNode {
   const todos = filas.flatMap((f) => f.trozos)
   const lo = Math.min(0, ...todos.map((t) => t.de))
   const hi = Math.max(dura, golpe, ...todos.map((t) => t.a))
   const largo = Math.max(0.001, hi - lo)
   const pos = (t: number) => `${(((t - lo) / largo) * 100).toFixed(3)}%`
   const ancho = (t: Trozo) => `${(((t.a - t.de) / largo) * 100).toFixed(3)}%`
+  const franja = useRef<HTMLDivElement>(null)
+  const arrastre = useRef<{ clave: string; x0: number; aplicado: number } | null>(null)
+  const alBajar = (e: React.PointerEvent, clave: string) => {
+    arrastre.current = { clave, x0: e.clientX, aplicado: 0 }
+    try {
+      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    } catch {
+      /* sin captura */
+    }
+  }
+  const alMover = (e: React.PointerEvent) => {
+    const a = arrastre.current
+    const ancha = franja.current?.getBoundingClientRect().width ?? 0
+    if (!a || ancha <= 0) return
+    const total = Math.round(((e.clientX - a.x0) / ancha) * largo * 100) * 10 // ms, de 10 en 10
+    if (total !== a.aplicado) {
+      alArrastrar(a.clave, total - a.aplicado)
+      a.aplicado = total
+    }
+  }
+  const alSoltar = () => {
+    arrastre.current = null
+  }
   return (
     <div data-linea-de-tiempo data-lo={lo.toFixed(3)} data-hi={hi.toFixed(3)} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <span style={etiqueta}>LÍNEA DE TIEMPO · {coma(dura, 1)} s</span>
+      <span style={etiqueta}>LÍNEA DE TIEMPO · {coma(dura, 1)} s · arrastra un sonido para moverlo</span>
       <div style={{ position: 'relative', paddingTop: 20 }}>
         <span style={{ position: 'absolute', top: 0, left: pos(0), transform: 'translateX(-2px)', font: "600 10.5px 'Geist'", color: '#2F6B43', whiteSpace: 'nowrap' }}>empieza la animación</span>
         <span style={{ position: 'absolute', top: 0, left: pos(golpe), transform: 'translateX(calc(-100% + 2px))', font: "600 10.5px 'Geist'", color: '#B0183A', whiteSpace: 'nowrap' }}>golpe / final</span>
-        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 0', background: '#F7F1E4', borderRadius: 10, minHeight: 40 }}>
+        <div ref={franja} data-franja style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 0', background: '#F7F1E4', borderRadius: 10, minHeight: 40 }}>
           {filas.map((f) => (
             <div key={f.clave} data-fila-de-tiempo={f.clave} style={{ position: 'relative', height: 28 }}>
               {f.trozos.map((t, i) => (
-                <div key={i} data-trozo style={{ position: 'absolute', left: pos(t.de), width: ancho(t), minWidth: 3, top: 0, bottom: 0, borderRadius: 6, background: f.propio ? 'rgba(201,154,68,.28)' : 'rgba(28,34,48,.16)', border: f.propio ? `1px solid ${ORO}` : '1px solid rgba(28,34,48,.3)', overflow: 'hidden' }}>
+                <div
+                  key={i}
+                  data-trozo
+                  data-arrastrable
+                  onPointerDown={(e) => alBajar(e, f.clave)}
+                  onPointerMove={alMover}
+                  onPointerUp={alSoltar}
+                  onPointerCancel={alSoltar}
+                  style={{ position: 'absolute', left: pos(t.de), width: ancho(t), minWidth: 6, top: 0, bottom: 0, borderRadius: 6, background: f.propio ? 'rgba(201,154,68,.28)' : 'rgba(28,34,48,.16)', border: f.propio ? `1px solid ${ORO}` : '1px solid rgba(28,34,48,.3)', overflow: 'hidden', cursor: 'grab', touchAction: 'none' }}
+                >
                   {f.buffer && <Onda buffer={f.buffer} />}
                 </div>
               ))}
@@ -132,14 +275,39 @@ function LineaDeTiempo({ filas, dura, golpe }: { filas: FilaDeTiempo[]; dura: nu
   )
 }
 
+/** Todos los candidatos de todas las animaciones (sin repetir) para [+ Añadir un sonido de Code]. */
+interface Candidato {
+  archivo: string
+  letra: Letra
+  rotulo: string
+}
+const candidatosDe = (mf: Manifiesto | null): Candidato[] => {
+  const vistos = new Set<string>()
+  const salida: Candidato[] = []
+  for (const a of ANIMACIONES)
+    for (const id of archivosDeLaAnimacion(a))
+      for (const l of LETRAS) {
+        const k = `${id}:${l}`
+        if (!mf?.[id]?.[l] || vistos.has(k)) continue
+        vistos.add(k)
+        salida.push({ archivo: id, letra: l, rotulo: `${a.nombre} · ${nombreDe(id)} · ${l}` })
+      }
+  return salida
+}
+
 export function AdminSonidos({ embebido = false }: { embebido?: boolean }): ReactNode {
   const admin = useEsAdministrador()
   const [vol, setVol] = useState(() => volumenGeneral())
   const [cambios, repintar] = useState(0)
   const [mf, setMf] = useState<Manifiesto | null>(null)
   const [abierta, setAbierta] = useState<string>(ANIMACIONES[0].id)
-  const [capas, setCapas] = useState<Record<string, Capa[]>>({})
-  const [silenciados, setSilenciados] = useState<Record<string, string[]>>({})
+  const [estados, setEstados] = useState<Record<string, EstadoRT>>({})
+  const [guardados, setGuardados] = useState<Record<string, { huella: string; en: string }>>({})
+  const [almacen, setAlmacen] = useState<boolean | null>(null)
+  const [aviso, setAviso] = useState('')
+  const [borrando, setBorrando] = useState(false)
+  const [selector, setSelector] = useState(false)
+  const [buscar, setBuscar] = useState('')
   const [errorArchivo, setErrorArchivo] = useState<string | null>(null)
   const [visorListo, setVisorListo] = useState(false)
   const [haSonado, setHaSonado] = useState(false)
@@ -147,10 +315,17 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
   const [copiado, setCopiado] = useState(false)
   const iframe = useRef<HTMLIFrameElement>(null)
   const entrada = useRef<HTMLInputElement>(null)
+  const entradaZip = useRef<HTMLInputElement>(null)
   const contador = useRef(0)
   // Lo último que hay en pantalla, para que `ver` (que se crea una vez) no vea datos viejos.
-  const vivo = useRef({ capas, silenciados })
-  vivo.current = { capas, silenciados }
+  const vivo = useRef({ estados })
+  vivo.current = { estados }
+
+  const est = (id: string): EstadoRT => estados[id] ?? VACIO_RT
+  const actualizar = (id: string, f: (e: EstadoRT) => EstadoRT) => {
+    vivo.current = { estados: { ...vivo.current.estados, [id]: f(vivo.current.estados[id] ?? VACIO_RT) } }
+    setEstados(vivo.current.estados)
+  }
 
   useEffect(() => {
     void manifiesto().then(setMf)
@@ -162,8 +337,11 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
   const movil = ancho < 820
   const escala = movil ? Math.min(0.62, (Math.min(ancho, 520) - 64) / ANCHO) : 0.62
   const anim = ANIMACIONES.find((a) => a.id === abierta) ?? ANIMACIONES[0]
-  const susCapas = capas[anim.id] ?? []
-  const susSilencios = silenciados[anim.id] ?? []
+  const e = est(anim.id)
+  const susCapas = e.capas
+  const capasDeEric = susCapas.filter((c) => c.origen === 'archivo')
+  const capasAnadidas = susCapas.filter((c) => c.origen === 'code')
+  const susSilencios = e.silenciados
   const dura = duracionDe(anim)
   const golpe = golpeDe(anim)
 
@@ -202,45 +380,264 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     return c
   }
   /** Reproduce la animación con lo que haya (o con lo que se pase, cuando el estado de React aún no se ha puesto al día). */
-  const ver = useCallback(async (id: string, sobre?: { capas?: Capa[]; silenciados?: string[] }) => {
+  const ver = useCallback(async (id: string, sobre?: Partial<EstadoRT>) => {
     const v = visor()
     if (!v || !audio()) return
     setHaSonado(true)
-    await v.ver({ animacion: id, propios: sobre?.capas ?? vivo.current.capas[id] ?? [], silenciados: sobre?.silenciados ?? vivo.current.silenciados[id] ?? [] })
+    const x = { ...(vivo.current.estados[id] ?? VACIO_RT), ...sobre }
+    await v.ver({ animacion: id, propios: x.capas, silenciados: x.silenciados, ajustes: x.ajustes, letras: x.letras, volumenes: x.volumenes })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const abrirY = (id: string) => {
     setAbierta(id)
+    setBorrando(false)
+    setSelector(false)
     window.setTimeout(() => void ver(id), 0)
   }
 
+  /* ───────── Lo guardado en este navegador ───────── */
+  const hidratar = useCallback(async (g: Guardado): Promise<EstadoRT> => {
+    const c = audio()
+    const capas: Capa[] = []
+    for (const k of g.capas) {
+      if (!c) break
+      try {
+        if (k.origen === 'archivo' && k.archivo) {
+          const buffer = await c.decodeAudioData(k.archivo.bytes.slice(0))
+          capas.push({ id: k.id, origen: 'archivo', nombre: k.nombre, buffer, ms: k.ms, vol: k.vol, empieza: k.empieza, bytes: k.archivo.bytes, tipoMime: k.archivo.tipo })
+        } else if (k.origen === 'code' && k.sonido && k.letra) {
+          const buffer = await cargarPremio(c, k.sonido, k.letra)
+          if (buffer) capas.push({ id: k.id, origen: 'code', nombre: k.nombre, buffer, ms: k.ms, vol: k.vol, empieza: k.empieza, sonido: k.sonido, letra: k.letra })
+        }
+      } catch {
+        /* una capa que no se puede abrir se salta */
+      }
+    }
+    return { silenciados: g.silenciados, ajustes: g.ajustes, letras: g.letras, volumenes: g.volumenes, capas }
+  }, [])
+  useEffect(() => {
+    if (!admin) return
+    let vigente = true
+    void (async () => {
+      try {
+        const lista = await leerGuardados()
+        if (!vigente) return
+        setAlmacen(true)
+        await manifiesto()
+        const nuevos: Record<string, EstadoRT> = {}
+        const marcas: Record<string, { huella: string; en: string }> = {}
+        for (const g of lista) {
+          if (!animacionDe(g.animacion)) continue
+          const x = await hidratar(g)
+          nuevos[g.animacion] = x
+          marcas[g.animacion] = { huella: huellaRT(x), en: g.guardado_en }
+        }
+        if (!vigente) return
+        vivo.current = { estados: { ...vivo.current.estados, ...nuevos } }
+        setEstados(vivo.current.estados)
+        setGuardados(marcas)
+      } catch {
+        if (vigente) setAlmacen(false)
+      }
+    })()
+    return () => {
+      vigente = false
+    }
+  }, [admin, hidratar])
+
+  const sinGuardar = (id: string): boolean => {
+    const h = huellaRT(est(id))
+    const g = guardados[id]
+    return g ? h !== g.huella : h !== HUELLA_VACIA
+  }
+  const hayCambios = ANIMACIONES.some((a) => sinGuardar(a.id))
+  useEffect(() => {
+    if (!hayCambios) return undefined
+    const f = (ev: BeforeUnloadEvent) => {
+      ev.preventDefault()
+      ev.returnValue = ''
+    }
+    window.addEventListener('beforeunload', f)
+    return () => window.removeEventListener('beforeunload', f)
+  }, [hayCambios])
+
+  /** El estado con la letra y el volumen EFECTIVOS de cada sonido de Code de la animación (así lo guardado es exacto aunque no se tocara nada). */
+  const llenado = (id: string): EstadoRT => {
+    const a = animacionDe(id) ?? anim
+    const x = est(id)
+    const letras = { ...x.letras }
+    const volumenes = { ...x.volumenes }
+    for (const c of deCodeDe(a)) {
+      if (c.tipo === 'archivo') letras[c.id] = x.letras[c.id] ?? versionDe(c.id)
+      volumenes[c.claveVolumen] = x.volumenes[c.claveVolumen] ?? volumenDe(c.claveVolumen)
+    }
+    return { ...x, letras, volumenes }
+  }
+  const guardar = async () => {
+    const lleno = llenado(anim.id)
+    const g: Guardado = { animacion: anim.id, guardado_en: new Date().toISOString(), ...aGuardable(lleno) }
+    try {
+      await guardarEnElNavegador(g)
+      actualizar(anim.id, () => lleno)
+      setGuardados((m) => ({ ...m, [anim.id]: { huella: huellaRT(lleno), en: g.guardado_en } }))
+      setAlmacen(true)
+      setAviso('')
+    } catch {
+      setAlmacen(false)
+    }
+  }
+  const eliminarGuardado = async () => {
+    setBorrando(false)
+    try {
+      await borrarGuardado(anim.id)
+    } catch {
+      setAlmacen(false)
+      return
+    }
+    actualizar(anim.id, () => VACIO_RT)
+    setGuardados((m) => {
+      const n = { ...m }
+      delete n[anim.id]
+      return n
+    })
+    void ver(anim.id, VACIO_RT)
+  }
+
+  /** La línea de «Lo elegido» de una animación (con lo que haya en pantalla). */
+  const lineaDe = (a: Animacion, x: EstadoDeAnimacion): string => {
+    const codigo = deCodeDe(a).map((c) => ({
+      nombre: nombreDe(c.id),
+      silenciado: x.silenciados.includes(c.clave),
+      letra: c.tipo === 'archivo' ? (x.letras[c.id] ?? versionDe(c.id)) : undefined,
+      volumen: x.volumenes[c.claveVolumen] ?? volumenDe(c.claveVolumen),
+      movido: x.ajustes[c.clave],
+    }))
+    const propios = x.capas.filter((c) => c.origen === 'archivo').map((c) => ({ nombre: c.nombre, empieza: c.empieza, ms: c.ms, volumen: c.vol }))
+    const anadidos = x.capas.filter((c) => c.origen === 'code').map((c) => ({ nombre: c.nombre, empieza: c.empieza, ms: c.ms, volumen: c.vol }))
+    return lineaElegida(a, { codigo, propios, anadidos })
+  }
+
+  const descargarTodo = async () => {
+    try {
+      const lista = await leerGuardados()
+      if (lista.length === 0) return setAviso('Todavía no hay nada guardado: toca [Guardar] en alguna animación.')
+      const datos = lista
+        .filter((g) => animacionDe(g.animacion))
+        .map((g) => {
+          const a = animacionDe(g.animacion) as Animacion
+          return {
+            animacion: g.animacion,
+            nombre: a.nombre,
+            duracion: duracionDe(a),
+            golpe: golpeDe(a),
+            codigo: deCodeDe(a).map((c) => ({
+              clave: c.clave,
+              tipo: c.tipo,
+              sonido: c.id,
+              version: c.tipo === 'archivo' ? (g.letras[c.id] ?? versionDe(c.id)) : null,
+              silenciado: g.silenciados.includes(c.clave),
+              volumen: g.volumenes[c.claveVolumen] ?? volumenDe(c.claveVolumen),
+              ms: g.ajustes[c.clave]?.ms ?? 0,
+              empieza: (g.ajustes[c.clave]?.empieza ?? 'sitio') as EmpiezaCode,
+            })),
+            capas: g.capas,
+            lineaElegida: lineaDe(a, g),
+          }
+        })
+      const zip = construirZip(datos, volumenGeneral())
+      if (import.meta.env.DEV) (window as unknown as { __estudioZip?: Uint8Array }).__estudioZip = zip
+      const url = URL.createObjectURL(new Blob([zip as BlobPart], { type: 'application/zip' }))
+      const enlace = document.createElement('a')
+      enlace.href = url
+      enlace.download = 'sonidos_jutrip.zip'
+      document.body.appendChild(enlace)
+      enlace.click()
+      enlace.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 4000)
+      setAviso(`Zip hecho con ${datos.length} ${datos.length === 1 ? 'animación' : 'animaciones'}: sonidos_jutrip.zip.`)
+    } catch {
+      setAlmacen(false)
+    }
+  }
+  const cargarZip = async (f: File | undefined) => {
+    if (!f) return
+    try {
+      const entradas = await leerZip(new Uint8Array(await f.arrayBuffer()))
+      const json = entradas.find((x) => x.nombre === 'estudio.json')
+      if (!json) throw new Error('Ese zip no trae estudio.json: no es de este estudio.')
+      const animaciones = leerEstudioJson(new TextDecoder().decode(json.datos))
+      const archivos = new Map(entradas.map((x) => [x.nombre, x.datos]))
+      const mime = (n: string) => (/\.wav$/i.test(n) ? 'audio/wav' : /\.ogg$/i.test(n) ? 'audio/ogg' : /\.m4a$/i.test(n) ? 'audio/mp4' : 'audio/mpeg')
+      let cuantas = 0
+      for (const [id, a] of Object.entries(animaciones)) {
+        const animacion = animacionDe(id)
+        if (!animacion) continue
+        const g: Guardado = { animacion: id, guardado_en: new Date().toISOString(), ...estadoDesdeJson(a, archivos, mime) }
+        try {
+          await guardarEnElNavegador(g)
+        } catch {
+          setAlmacen(false)
+        }
+        const x = await hidratar(g)
+        // Los nombres de las capas de Code, con el de su animación.
+        x.capas = x.capas.map((c) => (c.origen === 'code' && c.sonido ? { ...c, nombre: `${nombreDe(c.sonido)} · ${c.letra}` } : c))
+        vivo.current = { estados: { ...vivo.current.estados, [id]: x } }
+        setEstados(vivo.current.estados)
+        setGuardados((m) => ({ ...m, [id]: { huella: huellaRT(x), en: g.guardado_en } }))
+        cuantas++
+      }
+      setAviso(`Cargado: ${cuantas} ${cuantas === 1 ? 'animación' : 'animaciones'} del zip.`)
+      void ver(abierta)
+    } catch (err) {
+      setAviso(err instanceof Error ? err.message : 'No he podido abrir ese zip.')
+    }
+    if (entradaZip.current) entradaZip.current.value = ''
+  }
+
+  /* ───────── Cambios en la animación abierta ───────── */
   const elegirCandidato = (archivo: string, letra: Letra) => {
     elegirVersion(archivo, letra)
+    actualizar(anim.id, (x) => ({ ...x, letras: { ...x.letras, [archivo]: letra } }))
     repintar((n) => n + 1)
-    void ver(anim.id)
+    void ver(anim.id, { letras: { ...est(anim.id).letras, [archivo]: letra } })
   }
   const ponerVolumen = (clave: string, v: number) => {
     ponerVolumenDe(clave, v)
+    actualizar(anim.id, (x) => ({ ...x, volumenes: { ...x.volumenes, [clave]: v } }))
     repintar((n) => n + 1)
   }
   const alternarSilencio = (clave: string) => {
     const ya = susSilencios.includes(clave)
     const nuevo = ya ? susSilencios.filter((c) => c !== clave) : [...susSilencios, clave]
-    setSilenciados((m) => ({ ...m, [anim.id]: nuevo }))
+    actualizar(anim.id, (x) => ({ ...x, silenciados: nuevo }))
     void ver(anim.id, { silenciados: nuevo })
   }
   const deCode = deCodeDe(anim)
   const todosSilenciados = deCode.length > 0 && deCode.every((c) => susSilencios.includes(c.clave))
   const silenciarTodos = () => {
     const nuevo = todosSilenciados ? [] : deCode.map((c) => c.clave)
-    setSilenciados((m) => ({ ...m, [anim.id]: nuevo }))
+    actualizar(anim.id, (x) => ({ ...x, silenciados: nuevo }))
     void ver(anim.id, { silenciados: nuevo })
   }
-
-  const ponerCapa = (id: string, cambio: Partial<Capa>) => setCapas((m) => ({ ...m, [anim.id]: (m[anim.id] ?? []).map((c) => (c.id === id ? { ...c, ...cambio } : c)) }))
+  const ajusteDe = (clave: string): AjusteDeCode => e.ajustes[clave] ?? { ms: 0, empieza: 'sitio' }
+  const ponerAjuste = (clave: string, cambio: Partial<AjusteDeCode>) =>
+    actualizar(anim.id, (x) => {
+      const nuevo = { ...(x.ajustes[clave] ?? { ms: 0, empieza: 'sitio' as EmpiezaCode }), ...cambio }
+      const ajustes = { ...x.ajustes }
+      if (nuevo.ms === 0 && nuevo.empieza === 'sitio') delete ajustes[clave]
+      else ajustes[clave] = nuevo
+      return { ...x, ajustes }
+    })
+  const volverASuSitio = (clave: string) => {
+    const ajustes = { ...e.ajustes }
+    delete ajustes[clave]
+    actualizar(anim.id, (x) => ({ ...x, ajustes }))
+    void ver(anim.id, { ajustes })
+  }
+  const ponerCapa = (id: string, cambio: Partial<Capa>) => actualizar(anim.id, (x) => ({ ...x, capas: x.capas.map((c) => (c.id === id ? { ...c, ...cambio } : c)) }))
   const quitarCapa = (id: string) => {
     const nuevas = susCapas.filter((c) => c.id !== id)
-    setCapas((m) => ({ ...m, [anim.id]: nuevas }))
+    actualizar(anim.id, (x) => ({ ...x, capas: nuevas }))
     void ver(anim.id, { capas: nuevas })
   }
 
@@ -251,38 +648,74 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     if (!c) return setErrorArchivo('Este navegador no deja reproducir audio.')
     try {
       // Se lee y se descodifica AQUÍ, en el navegador: el archivo no se envía a ningún sitio.
-      const buffer = await c.decodeAudioData(await f.arrayBuffer())
-      const nueva: Capa = { id: `m${++contador.current}`, nombre: f.name, buffer, ms: 0, vol: 0.7, empieza: 'principio' }
-      const nuevas = [...(vivo.current.capas[anim.id] ?? []), nueva]
-      setCapas((m) => ({ ...m, [anim.id]: nuevas }))
+      const bytes = await f.arrayBuffer()
+      const buffer = await c.decodeAudioData(bytes.slice(0))
+      const nueva: Capa = { id: `m${++contador.current}`, origen: 'archivo', nombre: f.name, buffer, bytes, tipoMime: f.type, ms: 0, vol: 0.7, empieza: 'principio' }
+      const nuevas = [...(vivo.current.estados[anim.id]?.capas ?? []), nueva]
+      actualizar(anim.id, (x) => ({ ...x, capas: nuevas }))
       void ver(anim.id, { capas: nuevas })
     } catch {
       setErrorArchivo('No he podido abrir ese archivo. Prueba con un mp3, m4a, wav u ogg.')
     }
     if (entrada.current) entrada.current.value = ''
   }
+  const anadirDeCode = async (c: Candidato) => {
+    const ctx = audio()
+    if (!ctx) return setErrorArchivo('Este navegador no deja reproducir audio.')
+    const buffer = await cargarPremio(ctx, c.archivo, c.letra)
+    if (!buffer) return setErrorArchivo('No he podido abrir ese sonido de Code.')
+    const nueva: Capa = { id: `c${++contador.current}`, origen: 'code', nombre: c.rotulo, buffer, ms: 0, vol: 1, empieza: 'principio', sonido: c.archivo, letra: c.letra }
+    const nuevas = [...(vivo.current.estados[anim.id]?.capas ?? []), nueva]
+    actualizar(anim.id, (x) => ({ ...x, capas: nuevas }))
+    setSelector(false)
+    void ver(anim.id, { capas: nuevas })
+  }
+  const probarCandidato = async (c: Candidato) => {
+    const ctx = audio()
+    if (!ctx) return
+    const buffer = await cargarPremio(ctx, c.archivo, c.letra)
+    if (!buffer) return
+    const f = ctx.createBufferSource()
+    f.buffer = buffer
+    const g = ctx.createGain()
+    g.gain.value = 0.8
+    f.connect(g)
+    g.connect(ctx.destination)
+    f.start()
+  }
+  const candidatos = useMemo(() => candidatosDe(mf), [mf])
+  const visibles = candidatos.filter((c) => c.rotulo.toLowerCase().includes(buscar.trim().toLowerCase()))
 
   const limite = Math.max(500, Math.ceil((dura * 1000) / 10) * 10)
   const espera = esperaDeLaAnimacion(susCapas, golpe)
 
-  // La línea de tiempo: los sonidos de Code que suenan (los silenciados no salen) y los de Eric, cada uno donde suena.
+  // La línea de tiempo: los sonidos de Code que suenan (movidos si se han movido; los silenciados no salen), los de Eric y los añadidos, cada uno donde suena.
   const filas: FilaDeTiempo[] = useMemo(() => {
     void cambios
     const salida: FilaDeTiempo[] = []
     const porClave = new Map<string, FilaDeTiempo>()
     for (const s of anim.suena) {
-      for (const n of partituraDe(s)?.notas ?? []) {
+      const notas: Nota[] = partituraDe(s)?.notas ?? []
+      const golpeDe1 = (n: Nota): number => (n.tipo === 'archivo' ? (mf?.[n.archivo]?.[versionDeEn(e, n.archivo)]?.golpe ?? 0.3) : 0)
+      const primera = new Map<string, number>()
+      for (const n of notas) {
+        const k = claveDeSilencio(n.tipo, n.tipo === 'sint' ? n.sonido : n.archivo)
+        const a = arranqueNatural(n, golpeDe1(n))
+        if (!primera.has(k) || a < (primera.get(k) as number)) primera.set(k, a)
+      }
+      for (const n of notas) {
         const id = n.tipo === 'sint' ? n.sonido : n.archivo
         const clave = claveDeSilencio(n.tipo, id)
         if (susSilencios.includes(clave)) continue
+        const delta = desplazamientoDeCode(primera.get(clave) as number, e.ajustes[clave], golpe)
         let de: number
         let largo: number
         if (n.tipo === 'sint') {
-          de = n.en
+          de = n.en + delta
           largo = n.dura ?? 0.25
         } else {
-          const datos = mf?.[n.archivo]?.[versionDe(n.archivo)]
-          de = n.golpe - (datos?.golpe ?? 0.3)
+          const datos = mf?.[n.archivo]?.[versionDeEn(e, n.archivo)]
+          de = n.golpe - (datos?.golpe ?? 0.3) + delta
           largo = datos?.dura ?? 0.6
         }
         let fila = porClave.get(clave)
@@ -296,27 +729,27 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     }
     for (const c of susCapas) {
       const de = arranqueDelPropio(c, golpe)
-      salida.push({ clave: `propio:${c.id}`, nombre: `MÍO: ${c.nombre}`, propio: true, trozos: [{ de, a: de + c.buffer.duration }], buffer: c.buffer })
+      salida.push({ clave: c.origen === 'code' ? `anadido:${c.id}` : `propio:${c.id}`, nombre: c.origen === 'code' ? `AÑADIDO: ${c.nombre}` : `MÍO: ${c.nombre}`, propio: true, trozos: [{ de, a: de + c.buffer.duration }], buffer: c.buffer })
     }
     return salida
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [anim.id, susCapas, susSilencios, mf, cambios, golpe])
+  }, [anim.id, susCapas, susSilencios, e.ajustes, e.letras, mf, cambios, golpe])
+
+  /** Arrastrar un trozo: mueve el sonido tantos ms (los de Code, su ajuste; las capas, su ms). */
+  const arrastrar = (clave: string, deltaMs: number) => {
+    if (clave.startsWith('propio:') || clave.startsWith('anadido:')) {
+      const id = clave.slice(clave.indexOf(':') + 1)
+      actualizar(anim.id, (x) => ({ ...x, capas: x.capas.map((c) => (c.id === id ? { ...c, ms: Math.max(-limite, Math.min(limite, c.ms + deltaMs)) } : c)) }))
+      return
+    }
+    ponerAjuste(clave, { ms: Math.max(-limite, Math.min(limite, ajusteDe(clave).ms + deltaMs)) })
+  }
 
   const elegido = useMemo(() => {
     void cambios
-    return ANIMACIONES.map((a) => {
-      const sil = silenciados[a.id] ?? []
-      const codigo = deCodeDe(a).map((c) => ({
-        nombre: nombreDe(c.id),
-        silenciado: sil.includes(c.clave),
-        letra: c.tipo === 'archivo' ? versionDe(c.id) : undefined,
-        volumen: volumenDe(c.claveVolumen),
-      }))
-      const propios = (capas[a.id] ?? []).map((c) => ({ nombre: c.nombre, empieza: c.empieza, ms: c.ms, volumen: c.vol }))
-      return lineaElegida(a, { codigo, propios })
-    }).join('\n') + `\nvolumen general: ${coma(vol)}`
+    return ANIMACIONES.map((a) => lineaDe(a, aGuardable(estados[a.id] ?? VACIO_RT))).join('\n') + `\nvolumen general: ${coma(vol)}`
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [capas, silenciados, cambios, vol, mf])
+  }, [estados, cambios, vol, mf])
 
   if (admin === null) return <div style={{ padding: 24, font: "400 15px 'Geist'" }}>Comprobando…</div>
   if (!admin) return <div data-solo-administradores style={{ padding: 24, font: "400 17px/1.4 'Geist'" }}>Esta página es solo para administradores.</div>
@@ -336,15 +769,24 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
       </div>
     </div>
   )
-
-  const botonPeq = { ...boton, minHeight: 36, padding: '0 12px' } as const
+  const g = guardados[anim.id]
+  const pendiente = sinGuardar(anim.id)
 
   return (
     <div data-admin-sonidos data-estudio-sonidos style={{ color: OSCURO, padding: embebido ? 0 : '16px 16px 80px', maxWidth: 1100, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18, fontFamily: "'Geist',system-ui,sans-serif" }}>
       {!embebido && <h1 style={{ margin: 0, font: `400 34px/1.05 ${SERIE}` }}>Sonidos</h1>}
       <p style={{ margin: 0, font: "400 13.5px/1.5 'Geist'", color: 'rgba(28,34,48,.65)' }}>
-        Cada animación se ve dentro de un iPhone, tal cual sale en la app y con su sonido cuadrado. Toca [▶ Ver con sonido]; elige un candidato, silencia los de Code que no quieras o suma sonidos tuyos. Esta página no cambia ningún sonido de la app.
+        Cada animación se ve dentro de un iPhone, tal cual sale en la app y con su sonido cuadrado. Toca [▶ Ver con sonido]; elige un candidato, silencia o mueve los de Code, o suma sonidos tuyos y de otras animaciones. Esta página no cambia ningún sonido de la app.
       </p>
+
+      {/* Lo guardado: todo queda en ESTE navegador (nunca en un servidor). */}
+      <div data-barra-guardado style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+        <button type="button" data-descargar-todo onClick={() => void descargarTodo()} style={botonOscuro}>Descargar todo lo guardado</button>
+        <input ref={entradaZip} type="file" data-cargar-zip accept=".zip,application/zip" hidden onChange={(ev) => void cargarZip(ev.target.files?.[0])} />
+        <button type="button" data-cargar-zip-boton onClick={() => entradaZip.current?.click()} style={boton}>Cargar un zip</button>
+        {aviso && <span data-aviso-guardado role="status" style={{ font: "500 12.5px 'Geist'", color: 'rgba(28,34,48,.7)' }}>{aviso}</span>}
+      </div>
+      {almacen === false && <p data-aviso-sin-almacen role="alert" style={{ margin: 0, padding: '10px 14px', borderRadius: 12, background: '#FBEAE6', border: '1.5px solid #A33A2A', font: "500 13px/1.45 'Geist'", color: '#7A2A1D' }}>{AVISO_SIN_ALMACEN}</p>}
 
       {/* La tarjeta abierta (marco de iPhone, sonidos de Code, mis sonidos, línea de tiempo). */}
       <div data-tarjeta-abierta={anim.id} style={{ borderRadius: 24, background: '#FFFFFF', border: `1.5px solid ${ORO}`, boxShadow: '0 18px 34px -22px rgba(28,34,48,.5)', padding: movil ? 16 : 22, display: 'flex', flexDirection: movil ? 'column' : 'row', alignItems: movil ? 'center' : 'flex-start', gap: movil ? 18 : 26 }}>
@@ -363,6 +805,24 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
               Repetir
             </button>
           </div>
+          {/* Guardar / Eliminar lo guardado de ESTA animación. */}
+          <div data-guardado-de-la-animacion style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+            <button type="button" data-guardar onClick={() => void guardar()} style={botonOscuro}>Guardar</button>
+            {g && !pendiente && <span data-estado-guardado style={{ font: "600 12.5px 'Geist'", color: '#2F6B43' }}>Guardado ✓ · {hhmm(g.en)}</span>}
+            {pendiente && <span data-sin-guardar style={{ padding: '3px 10px', borderRadius: 999, background: '#FFF1D6', border: '1px solid #D8BE84', font: "700 11.5px 'Geist'", color: '#8E6820' }}>Sin guardar</span>}
+            {!borrando && (
+              <button type="button" data-eliminar-guardado disabled={!g} onClick={() => setBorrando(true)} style={{ ...boton, opacity: g ? 1 : 0.45 }}>
+                Eliminar lo guardado
+              </button>
+            )}
+            {borrando && (
+              <span data-confirmar-borrar style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', font: "600 13px 'Geist'" }}>
+                ¿Borrar lo guardado de {anim.nombre}?
+                <button type="button" data-borrar-si onClick={() => void eliminarGuardado()} style={{ ...botonPeq, background: '#A33A2A', color: '#fff', border: '1.5px solid #A33A2A' }}>Sí, borrar</button>
+                <button type="button" data-borrar-no onClick={() => setBorrando(false)} style={botonPeq}>No</button>
+              </span>
+            )}
+          </div>
           {anim.nota && <span data-nota-de-la-animacion style={{ font: "400 12.5px/1.45 'Geist'", color: '#8E6820' }}>{anim.nota}</span>}
 
           {/* Los sonidos de Code, cada uno en su fila. */}
@@ -377,9 +837,12 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
             {deCode.map((c, k) => {
               const letras = c.tipo === 'archivo' ? LETRAS.filter((l) => mf?.[c.id]?.[l]) : []
               const apagado = susSilencios.includes(c.clave)
-              const v = volumenDe(c.claveVolumen)
+              const v = e.volumenes[c.claveVolumen] ?? volumenDe(c.claveVolumen)
+              const laLetra = e.letras[c.id] ?? versionDe(c.id)
+              const aj = ajusteDe(c.clave)
+              const movido = aj.ms !== 0 || aj.empieza !== 'sitio'
               return (
-                <div key={c.clave} data-sonido={c.id} data-sonido-clave={c.clave} data-silenciado={apagado ? '1' : '0'} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '10px 12px', borderRadius: 14, border: `1px solid ${apagado ? 'rgba(163,58,42,.4)' : 'rgba(28,34,48,.1)'}`, background: apagado ? 'rgba(163,58,42,.05)' : '#FFFFFF' }}>
+                <div key={c.clave} data-sonido={c.id} data-sonido-clave={c.clave} data-silenciado={apagado ? '1' : '0'} data-movido={movido ? '1' : '0'} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '10px 12px', borderRadius: 14, border: `1px solid ${apagado ? 'rgba(163,58,42,.4)' : 'rgba(28,34,48,.1)'}`, background: apagado ? 'rgba(163,58,42,.05)' : '#FFFFFF' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                     <span style={{ font: `${k === 0 ? 700 : 600} 13px 'Geist'`, textDecoration: apagado ? 'line-through' : 'none', opacity: apagado ? 0.6 : 1 }}>
                       {nombreDe(c.id)}
@@ -395,7 +858,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
                   {letras.length > 0 && (
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', opacity: apagado ? 0.45 : 1 }}>
                       {letras.map((l) => {
-                        const on = !apagado && versionDe(c.id) === l
+                        const on = !apagado && laLetra === l
                         return (
                           <button key={l} type="button" data-candidato={`${c.id}:${l}`} aria-pressed={on} onClick={() => elegirCandidato(c.id, l)} disabled={!visorListo} style={{ flex: '1 1 100px', minWidth: 100, height: 54, borderRadius: 14, background: on ? OSCURO : '#FFFFFF', color: on ? '#FFFDF8' : OSCURO, border: `1.5px solid ${on ? OSCURO : 'rgba(28,34,48,.18)'}`, display: 'flex', alignItems: 'center', gap: 8, padding: '0 10px', font: "700 13.5px 'Geist'", whiteSpace: 'nowrap', cursor: 'pointer' }}>
                             <span style={{ width: 28, height: 28, borderRadius: '50%', background: on ? '#F3D88F' : OSCURO, color: on ? OSCURO : '#F3D88F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -409,64 +872,92 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
                   )}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <span style={{ font: "600 12.5px 'Geist'", width: 62 }}>Volumen</span>
-                    <input type="range" data-volumen-candidato={c.claveVolumen} min={0} max={2} step={0.05} value={v} aria-label={`Volumen de ${nombreDe(c.id)}`} style={{ flex: 1, minHeight: 44, accentColor: ORO }} onChange={(e) => ponerVolumen(c.claveVolumen, Number(e.target.value))} onPointerUp={() => void ver(anim.id)} onKeyUp={() => void ver(anim.id)} />
+                    <input type="range" data-volumen-candidato={c.claveVolumen} min={0} max={2} step={0.05} value={v} aria-label={`Volumen de ${nombreDe(c.id)}`} style={{ flex: 1, minHeight: 44, accentColor: ORO }} onChange={(ev) => ponerVolumen(c.claveVolumen, Number(ev.target.value))} onPointerUp={() => void ver(anim.id)} onKeyUp={() => void ver(anim.id)} />
                     <b data-volumen-candidato-valor={c.claveVolumen} style={{ font: "700 12.5px 'Geist'", width: 52, textAlign: 'right' }}>{Math.round(v * 100)} %</b>
                   </div>
+                  {!apagado && (
+                    <ControlDeMomento
+                      pre="code-"
+                      ms={aj.ms}
+                      empieza={aj.empieza}
+                      opciones={[['sitio', 'Donde está ahora'], ['principio', 'Al empezar la animación'], ['golpe', 'En el golpe']]}
+                      limite={limite}
+                      significado={aj.empieza === 'sitio' ? '0 ms es su sitio de siempre.' : aj.empieza === 'principio' ? '0 ms es el primer fotograma de la animación.' : `0 ms es el golpe (a los ${coma(golpe, 1)} s).`}
+                      alCambiarMs={(n) => ponerAjuste(c.clave, { ms: n })}
+                      alCambiarEmpieza={(x) => {
+                        ponerAjuste(c.clave, { empieza: x as EmpiezaCode })
+                        void ver(anim.id, { ajustes: { ...e.ajustes, [c.clave]: { ...aj, empieza: x as EmpiezaCode } } })
+                      }}
+                      alSoltar={() => void ver(anim.id)}
+                      volver={movido ? () => volverASuSitio(c.clave) : undefined}
+                    />
+                  )}
                 </div>
               )
             })}
           </div>
 
-          {/* Los sonidos de Eric: capas que se suman. */}
+          {/* Los sonidos de Eric y los añadidos de Code: capas que se suman. */}
           <div data-probar-propio style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 4, borderTop: '1px solid rgba(28,34,48,.08)' }}>
-            <input ref={entrada} type="file" data-archivo-propio accept="audio/*,.mp3,.m4a,.wav,.ogg" hidden onChange={(e) => void alElegirArchivo(e.target.files?.[0])} />
+            <input ref={entrada} type="file" data-archivo-propio accept="audio/*,.mp3,.m4a,.wav,.ogg" hidden onChange={(ev) => void alElegirArchivo(ev.target.files?.[0])} />
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', paddingTop: 12 }}>
               <span style={etiqueta}>MIS SONIDOS (se suman a los de Code)</span>
             </div>
-            {susCapas.map((c, k) => {
-              const arranque = arranqueDelPropio(c, golpe)
-              return (
-                <div key={c.id} data-propio-activo data-capa={c.id} style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 14px', borderRadius: 14, border: `1.5px solid ${ORO}`, background: '#FFFBF0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                    <span data-nombre-propio style={{ font: "600 13px 'Geist'", overflowWrap: 'anywhere' }}>Tu sonido {k + 1}: {c.nombre}</span>
-                    <button type="button" data-quitar-propio onClick={() => quitarCapa(c.id)} style={botonPeq}>Quitar</button>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                    <span style={{ font: "600 12.5px 'Geist'" }}>Empieza…</span>
-                    {(['principio', 'golpe'] as Empieza[]).map((e) => (
-                      <button key={e} type="button" data-empieza={e} aria-pressed={c.empieza === e} onClick={() => { ponerCapa(c.id, { empieza: e }); void ver(anim.id, { capas: susCapas.map((x) => (x.id === c.id ? { ...x, empieza: e } : x)) }) }} style={{ ...botonPeq, background: c.empieza === e ? OSCURO : '#FFFFFF', color: c.empieza === e ? '#F3D88F' : OSCURO }}>
-                        {e === 'principio' ? 'Al empezar la animación' : 'En el golpe'}
-                      </button>
-                    ))}
-                  </div>
-                  <span data-significado style={{ font: "400 11.5px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' }}>
-                    {c.empieza === 'principio' ? '0 ms es el primer fotograma de la animación.' : `0 ms es el golpe (a los ${coma(golpe, 1)} s).`} Tu sonido arranca a los {coma(arranque, 2)} s y dura {coma(c.buffer.duration)} s.
-                  </span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <span style={{ display: 'flex', justifyContent: 'space-between', font: "600 12.5px 'Geist'" }}>
-                      <span>Adelantar ‹</span>
-                      <span data-ms-valor style={{ color: '#8A6A2C' }}>{conSigno(c.ms)}</span>
-                      <span>› Atrasar</span>
-                    </span>
-                    <input type="range" data-ms min={-limite} max={limite} step={10} value={c.ms} aria-label="Adelantar o atrasar tu sonido, en milisegundos" style={{ width: '100%', minHeight: 44, accentColor: ORO }} onChange={(e) => ponerCapa(c.id, { ms: Number(e.target.value) })} onPointerUp={() => void ver(anim.id)} onKeyUp={() => void ver(anim.id)} />
-                    <span style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                      <button type="button" data-ms-menos100 style={botonPeq} onClick={() => ponerCapa(c.id, { ms: Math.max(-limite, c.ms - 100) })}>−100</button>
-                      <button type="button" data-ms-menos style={botonPeq} onClick={() => ponerCapa(c.id, { ms: Math.max(-limite, c.ms - 10) })}>−10</button>
-                      <button type="button" data-ms-cero style={botonPeq} onClick={() => ponerCapa(c.id, { ms: 0 })}>0</button>
-                      <button type="button" data-ms-mas style={botonPeq} onClick={() => ponerCapa(c.id, { ms: Math.min(limite, c.ms + 10) })}>+10</button>
-                      <button type="button" data-ms-mas100 style={botonPeq} onClick={() => ponerCapa(c.id, { ms: Math.min(limite, c.ms + 100) })}>+100</button>
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ font: "600 12.5px 'Geist'", width: 62 }}>Volumen</span>
-                    <input type="range" data-vol-propio min={0} max={2} step={0.05} value={c.vol} aria-label="Volumen de tu sonido" style={{ flex: 1, minHeight: 44, accentColor: ORO }} onChange={(e) => ponerCapa(c.id, { vol: Number(e.target.value) })} onPointerUp={() => void ver(anim.id)} onKeyUp={() => void ver(anim.id)} />
-                    <b data-vol-propio-valor style={{ font: "700 12.5px 'Geist'", width: 52, textAlign: 'right' }}>{Math.round(c.vol * 100)} %</b>
-                  </div>
+            {capasDeEric.map((c, k) => (
+              <div key={c.id} data-propio-activo data-capa={c.id} style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 14px', borderRadius: 14, border: `1.5px solid ${ORO}`, background: '#FFFBF0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                  <span data-nombre-propio style={{ font: "600 13px 'Geist'", overflowWrap: 'anywhere' }}>Tu sonido {k + 1}: {c.nombre}</span>
+                  <button type="button" data-quitar-propio onClick={() => quitarCapa(c.id)} style={botonPeq}>Quitar</button>
                 </div>
-              )
-            })}
+                <ControlDeMomento
+                  ms={c.ms}
+                  empieza={c.empieza}
+                  opciones={[['principio', 'Al empezar la animación'], ['golpe', 'En el golpe']]}
+                  limite={limite}
+                  significado={`${c.empieza === 'principio' ? '0 ms es el primer fotograma de la animación.' : `0 ms es el golpe (a los ${coma(golpe, 1)} s).`} Tu sonido arranca a los ${coma(arranqueDelPropio(c, golpe), 2)} s y dura ${coma(c.buffer.duration)} s.`}
+                  alCambiarMs={(n) => ponerCapa(c.id, { ms: n })}
+                  alCambiarEmpieza={(x) => {
+                    ponerCapa(c.id, { empieza: x as Empieza })
+                    void ver(anim.id, { capas: susCapas.map((y) => (y.id === c.id ? { ...y, empieza: x as Empieza } : y)) })
+                  }}
+                  alSoltar={() => void ver(anim.id)}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ font: "600 12.5px 'Geist'", width: 62 }}>Volumen</span>
+                  <input type="range" data-vol-propio min={0} max={2} step={0.05} value={c.vol} aria-label="Volumen de tu sonido" style={{ flex: 1, minHeight: 44, accentColor: ORO }} onChange={(ev) => ponerCapa(c.id, { vol: Number(ev.target.value) })} onPointerUp={() => void ver(anim.id)} onKeyUp={() => void ver(anim.id)} />
+                  <b data-vol-propio-valor style={{ font: "700 12.5px 'Geist'", width: 52, textAlign: 'right' }}>{Math.round(c.vol * 100)} %</b>
+                </div>
+              </div>
+            ))}
+            {capasAnadidas.map((c) => (
+              <div key={c.id} data-capa-anadida data-capa={c.id} style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 14px', borderRadius: 14, border: '1.5px solid rgba(28,34,48,.25)', background: '#F7F1E4' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                  <span data-nombre-anadida style={{ font: "600 13px 'Geist'", overflowWrap: 'anywhere' }}>Añadido de Code: {c.nombre}</span>
+                  <button type="button" data-quitar-anadida onClick={() => quitarCapa(c.id)} style={botonPeq}>Quitar</button>
+                </div>
+                <ControlDeMomento
+                  pre="anadida-"
+                  ms={c.ms}
+                  empieza={c.empieza}
+                  opciones={[['principio', 'Al empezar la animación'], ['golpe', 'En el golpe']]}
+                  limite={limite}
+                  significado={`${c.empieza === 'principio' ? '0 ms es el primer fotograma de la animación.' : `0 ms es el golpe (a los ${coma(golpe, 1)} s).`} Arranca a los ${coma(arranqueDelPropio(c, golpe), 2)} s y dura ${coma(c.buffer.duration)} s.`}
+                  alCambiarMs={(n) => ponerCapa(c.id, { ms: n })}
+                  alCambiarEmpieza={(x) => {
+                    ponerCapa(c.id, { empieza: x as Empieza })
+                    void ver(anim.id, { capas: susCapas.map((y) => (y.id === c.id ? { ...y, empieza: x as Empieza } : y)) })
+                  }}
+                  alSoltar={() => void ver(anim.id)}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ font: "600 12.5px 'Geist'", width: 62 }}>Volumen</span>
+                  <input type="range" data-anadida-vol min={0} max={2} step={0.05} value={c.vol} aria-label="Volumen del sonido añadido" style={{ flex: 1, minHeight: 44, accentColor: ORO }} onChange={(ev) => ponerCapa(c.id, { vol: Number(ev.target.value) })} onPointerUp={() => void ver(anim.id)} onKeyUp={() => void ver(anim.id)} />
+                  <b data-anadida-vol-valor style={{ font: "700 12.5px 'Geist'", width: 52, textAlign: 'right' }}>{Math.round(c.vol * 100)} %</b>
+                </div>
+              </div>
+            ))}
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-              {susCapas.length === 0 ? (
+              {capasDeEric.length === 0 ? (
                 <button type="button" data-boton-probar-propio onClick={() => entrada.current?.click()} disabled={!visorListo} style={{ ...boton, alignSelf: 'flex-start', height: 44, display: 'flex', alignItems: 'center', gap: 8, padding: '0 20px' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 20h14" /></svg>
                   Probar con mi sonido
@@ -476,8 +967,28 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
                   + Añadir otro sonido mío
                 </button>
               )}
+              <button type="button" data-anadir-de-code onClick={() => setSelector((s) => !s)} disabled={!visorListo} style={{ ...boton, alignSelf: 'flex-start', height: 44, padding: '0 20px' }}>
+                + Añadir un sonido de Code
+              </button>
             </div>
-            <span style={{ font: "400 11.5px/1.4 'Geist'", color: 'rgba(28,34,48,.55)' }}>El archivo no se sube a ningún sitio: se queda en este navegador, solo para probar.</span>
+            {selector && (
+              <div data-selector-de-code style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 14, border: '1.5px solid rgba(28,34,48,.2)', background: '#FFFFFF' }}>
+                <input data-buscar-candidato value={buscar} onChange={(ev) => setBuscar(ev.target.value)} placeholder="Buscar (por ejemplo: emblema, redoble, C)" aria-label="Buscar un sonido de Code" style={{ minHeight: 44, borderRadius: 12, border: '1.5px solid rgba(28,34,48,.2)', padding: '0 12px', font: "500 14px 'Geist'" }} />
+                <div style={{ maxHeight: 280, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {visibles.length === 0 && <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.55)' }}>No hay ningún sonido con ese nombre.</span>}
+                  {visibles.map((c) => (
+                    <div key={`${c.archivo}:${c.letra}`} data-candidato-de-code={`${c.archivo}:${c.letra}`} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
+                      <button type="button" data-probar-candidato={`${c.archivo}:${c.letra}`} aria-label={`Oír ${c.rotulo}`} onClick={() => void probarCandidato(c)} style={{ ...botonPeq, width: 44, padding: 0, borderRadius: '50%', background: OSCURO, color: '#F3D88F' }}>
+                        <Triangulo t={13} />
+                      </button>
+                      <span style={{ flex: 1, font: "500 13px 'Geist'" }}>{c.rotulo}</span>
+                      <button type="button" data-anadir-candidato={`${c.archivo}:${c.letra}`} onClick={() => void anadirDeCode(c)} style={botonPeq}>Añadir</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            <span style={{ font: "400 11.5px/1.4 'Geist'", color: 'rgba(28,34,48,.55)' }}>El archivo no se sube a ningún sitio: se queda en este navegador (lo guardado, también).</span>
             {errorArchivo && <span role="alert" data-error-archivo style={{ font: "500 13px 'Geist'", color: '#A33A2A' }}>{errorArchivo}</span>}
             {espera > 0 && (
               <span data-aviso-espera style={{ font: "500 12px/1.4 'Geist'", color: '#8E6820' }}>
@@ -486,18 +997,18 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
             )}
           </div>
 
-          <LineaDeTiempo filas={filas} dura={dura} golpe={golpe} />
+          <LineaDeTiempo filas={filas} dura={dura} golpe={golpe} alArrastrar={arrastrar} />
         </div>
       </div>
 
       {/* Las tarjetas cerradas, por grupos. */}
-      {(['Medallas', 'Logros', 'Escenas', 'Resúmenes', 'Apertura', 'Sonidos cortos'] as const).map((g) => (
-        <div key={g} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <span style={etiqueta}>{g.toUpperCase()}</span>
+      {(['Medallas', 'Logros', 'Escenas', 'Resúmenes', 'Apertura', 'Sonidos cortos'] as const).map((gr) => (
+        <div key={gr} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <span style={etiqueta}>{gr.toUpperCase()}</span>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${movil ? 2 : 4},minmax(0,1fr))`, gap: 14 }}>
-            {ANIMACIONES.filter((a) => a.grupo === g).map((a) => {
+            {ANIMACIONES.filter((a) => a.grupo === gr).map((a) => {
               const d = duracionDe(a)
-              const aviso = solo(a)
+              const aviso1 = solo(a)
               return (
                 <button key={a.id} type="button" data-animacion-tarjeta={a.id} aria-pressed={a.id === anim.id} onClick={() => abrirY(a.id)} style={{ textAlign: 'left', padding: 14, borderRadius: 18, background: '#FFFFFF', border: a.id === anim.id ? `1.5px solid ${ORO}` : '1px solid rgba(28,34,48,.08)', display: 'flex', flexDirection: 'column', gap: 10, cursor: 'pointer' }}>
                   <span style={{ font: "600 13.5px/1.25 'Geist'" }}>{a.nombre}</span>
@@ -506,7 +1017,8 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
                     <span style={{ flex: 1, height: 6, borderRadius: 6, background: FONDO_BARRA }} />
                     <span style={{ font: "500 11.5px 'Geist'", color: 'rgba(28,34,48,.5)' }}>{coma(d, 1)} s</span>
                   </span>
-                  {aviso && <span data-solo-uno style={{ font: "500 11px/1.3 'Geist'", color: '#8E6820' }}>{aviso}</span>}
+                  {aviso1 && <span data-solo-uno style={{ font: "500 11px/1.3 'Geist'", color: '#8E6820' }}>{aviso1}</span>}
+                  {sinGuardar(a.id) ? <span data-tarjeta-sin-guardar style={{ alignSelf: 'flex-start', padding: '2px 8px', borderRadius: 999, background: '#FFF1D6', border: '1px solid #D8BE84', font: "700 10.5px 'Geist'", color: '#8E6820' }}>Sin guardar</span> : guardados[a.id] ? <span data-tarjeta-guardada style={{ font: "600 11px 'Geist'", color: '#2F6B43' }}>Guardado ✓</span> : null}
                 </button>
               )
             })}
@@ -516,7 +1028,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
 
       <section style={{ padding: 16, borderRadius: 18, background: '#FFFFFF', border: '1px solid rgba(28,34,48,.08)', display: 'flex', flexDirection: 'column', gap: 8 }}>
         <span style={{ font: "600 14px 'Geist'" }}>Volumen general</span>
-        <input type="range" data-volumen-general min={0} max={1} step={0.05} value={vol} aria-label="Volumen general" style={{ width: '100%', minHeight: 44, accentColor: ORO }} onChange={(e) => { setVol(Number(e.target.value)); ponerVolumenGeneral(Number(e.target.value)) }} />
+        <input type="range" data-volumen-general min={0} max={1} step={0.05} value={vol} aria-label="Volumen general" style={{ width: '100%', minHeight: 44, accentColor: ORO }} onChange={(ev) => { setVol(Number(ev.target.value)); ponerVolumenGeneral(Number(ev.target.value)) }} />
       </section>
 
       <section style={{ padding: 16, borderRadius: 18, background: '#FFFFFF', border: '1px solid rgba(28,34,48,.08)', display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -530,3 +1042,11 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     </div>
   )
 }
+
+/** La letra con la que suena un sonido grabado en el estado de una animación (la suya, o la de siempre). */
+function versionDeEn(e: EstadoRT, id: string): Letra {
+  return e.letras[id] ?? versionDe(id)
+}
+
+// (Para que las otras piezas del estudio tengan un estado vacío con la misma forma.)
+export const estadoVacioDelEstudio = ESTADO_VACIO
