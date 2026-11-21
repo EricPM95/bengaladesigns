@@ -121,6 +121,8 @@ try {
     const idNuevo = await P.saveTrip('yo-prueba', null, payloadNuevo)
     const posts = peticiones.filter((p) => p.metodo === 'POST')
     salida.postNuevo = posts.length === 1 ? { bytes: posts[0].bytes, tieneCopia: posts[0].tieneCopia } : null
+    salida.postNuevoLlevaRouteOriginal = posts.length === 1 && Boolean(JSON.parse(posts[0].cuerpo).route_original)  // (V37b) la original de verdad sube con el primer guardado
+    salida.nuevaYaSubida = C.copiaPendienteDeSubir(nueva.id) === null
     salida.romaAntes = bytes(nueva) // la ruta con su copia, como se subía antes
     salida.romaAhora = bytes(payloadNuevo.route)
     salida.idNuevo = idNuevo
@@ -142,6 +144,8 @@ try {
     await P.saveTrip('yo-prueba', 'viaje-prueba-1', cargado.viaje)
     salida.subidasViejoIdentico = [a1, peticiones.length]
     salida.viejoLimpioBytes = peticiones[0] ? peticiones[0].bytes : 0
+    // (V37b) El primer guardado del viaje viejo lleva la copia original UNA vez, en su columna aparte (route_original); la ruta (route) pesa la mitad.
+    { const c0 = peticiones[0] ? JSON.parse(peticiones[0].cuerpo) : {}; salida.viejoRutaBytes = bytes(c0.route || {}); salida.viejoLlevaRouteOriginal = Boolean(c0.route_original && c0.route_original.days && c0.route_original.days.length === lz.days.length); salida.viejoPendienteTrasSubir = C.copiaPendienteDeSubir(lz.id) !== null }
     salida.viejoLimpioTieneCopia = peticiones[0] ? peticiones[0].tieneCopia : null
     store.getState().hydrateTrip(cargado.viaje)
     const abierta = store.getState().route
@@ -158,6 +162,7 @@ try {
     await P.saveTrip('yo-prueba', 'viaje-prueba-1', p2)
     const ult = peticiones[peticiones.length - 1]
     salida.editadoSubido = peticiones.length >= 2 && ult.cuerpo.includes('Mi día de prueba') && !ult.tieneCopia
+    salida.editadoSinRouteOriginal = !ult.cuerpo.includes('route_original')
     salida.copiaSigueEnMemoriaTrasEditar = Boolean(store.getState().route.originalRoute)
     salida.huellaIgnoraCopia = P.canonico({ a: 1, originalRoute: { x: 1 } }) === P.canonico({ a: 1 })
     // la varita: vuelve a la original aunque el viaje se subiera sin ella
@@ -173,12 +178,13 @@ try {
     salida.otroMovilCopiaDeLoAbierto = Boolean(otra.originalRoute) && otra.originalRoute.days.length === lz.days.length
     salida.otroMovilLaGuarda = Boolean(C.leerCopiaOriginal(lz.id))
     salida.otroMovilNoSubeCopia = !('originalRoute' in T.buildTripPayload().route)
+    salida.otroMovilNadaPendiente = C.copiaPendienteDeSubir(lz.id) === null && !C.copiaEsReal(lz.id) // (V37b) la «derivada» nunca se sube: pisaría la original de verdad
 
     // === D. El mismo viaje de nuevo y rutas ligeras: sin copia ni errores ===
     salida.sinCopiaEsLaMismaRuta = C.sinCopiaOriginal(lz) === lz
     salida.menosDe8Copias = (() => { for (let i = 0; i < 12; i++) C.guardarCopiaOriginal('r' + i, { days: [], answers: {} }); let n = 0; for (let i = 0; i < localStorage.length; i++) if (localStorage.key(i).startsWith('jutrip-ruta-original:r')) n++; return n <= 8 })()
     C.borrarCopiasOriginales()
-    salida.borrarLasQuita = !Object.keys(localStorage).some((k) => k.startsWith('jutrip-ruta-original:'))
+    salida.borrarLasQuita = !Object.keys(localStorage).some((k) => k.startsWith('jutrip-ruta-original'))
     window.fetch = fetchReal
     return JSON.stringify(salida)
   })()`)
@@ -197,7 +203,11 @@ debe(r.viejoSinCopiaAlBajar === true && r.viejoCopiaEnElMovil === true, 'un viaj
 debe(r.viejoCopiaEnMemoria === true && r.viejoCopiaIgual === true, 'al abrirlo vuelve a tener su copia original (la del móvil) en memoria')
 debe(r.payloadViejoSinCopia === true && r.viejoLimpioTieneCopia === false, 'lo que se guarda de un viaje viejo ya no la lleva')
 debe(JSON.stringify(r.subidasViejoIdentico) === '[1,1]', `la huella ignora la copia pero el viaje viejo SÍ se sube una vez limpio, y solo una (peticiones: ${JSON.stringify(r.subidasViejoIdentico)})`)
-debe(r.viejoLimpioBytes <= 0.55 * r.lzAntes, 'lo que se subió del viaje viejo pesa ≤ 55 % de lo que pesaba con la copia')
+debe(r.viejoRutaBytes <= 0.55 * r.lzAntes, `la ruta (route) del viaje viejo que se sube pesa ≤ 55 % de lo que pesaba con la copia (${r.viejoRutaBytes} de ${r.lzAntes})`)
+debe(r.viejoLlevaRouteOriginal === true && r.viejoPendienteTrasSubir === false, 'ese primer guardado lleva la copia en su columna aparte (route_original) y ya no queda pendiente')
+debe(r.editadoSinRouteOriginal === true, 'los guardados siguientes NO vuelven a mandarla (una sola vez)')
+debe(r.postNuevoLlevaRouteOriginal === true && r.nuevaYaSubida === true, 'un viaje nuevo sube su original con el primer guardado (una vez)')
+debe(r.otroMovilNadaPendiente === true, 'abrir un viaje en otro móvil no sube nada (la copia «derivada» nunca se sube)')
 debe(r.editadoSubido === true, 'un viaje viejo se edita y se guarda con el cambio y sin la copia')
 debe(r.copiaSigueEnMemoriaTrasEditar === true, 'editar no pierde la copia en memoria')
 debe(r.huellaIgnoraCopia === true, '`canonico` (la huella) ignora la copia')

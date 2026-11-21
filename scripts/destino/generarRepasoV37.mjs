@@ -20,7 +20,7 @@ const sello = [
 ]
 const viaje = [
   'La copia <code>originalRoute</code> (la de «Volver a mi ruta original») ya no sube, ni baja, ni se guarda en la caché de HOY. Se guarda UNA vez, aparte, solo en ese móvil (<code>localStorage</code>, hasta 8 viajes, se borra al cerrar sesión). La varita sigue funcionando. Informe completo: <code>docs/dias/V37_ORIGINALROUTE.md</code> (dónde se usaba cada cosa).',
-  '<b>Lo que se pierde:</b> otro móvil u otro navegador no tiene la copia: allí la «original» es la ruta tal como se abre por primera vez (igual que ya pasaba con los viajes anteriores a la varita). Si la quieres entre aparatos, la opción limpia es una columna aparte <code>trips.route_original</code> (migración tuya).',
+  '<b>Lo que se perdía</b> en la primera versión (otro móvil no tenía la copia) se resuelve en la V37b: ver más abajo.',
   'Un viaje viejo con copia en la nube se abre, se edita y se guarda y queda limpio; la nube se limpia sola, una vez, en el siguiente guardado. SQL opcional <code>docs/dias/LIMPIAR_ORIGINALROUTE.sql</code> + <code>COMPROBAR_LIMPIAR_ORIGINALROUTE.sql</code> (SIN APLICAR; probados en PGlite con las migraciones reales).',
   '<code>pruebaV37_viaje</code>: 40 comprobaciones (viaje nuevo sin copia en la petición, viejo abierto/editado/guardado, peso ≤ 55 %, huella, SQL, tope de 8 copias).',
 ]
@@ -28,6 +28,13 @@ const pesos = `<table><thead><tr><th>Viaje</th><th>Antes</th><th>Después</th><t
 <tr><td>Lanzarote (el real de Eric)</td><td>96.883 B (94,6 KB)</td><td>49.278 B (48,1 KB)</td><td>50,9 %</td></tr>
 <tr><td>Roma (la ruta de prueba)</td><td>161.666 B (157,9 KB)</td><td>81.640 B (79,7 KB)</td><td>50,5 %</td></tr>
 <tr><td>Lanzarote: cuerpo real del guardado</td><td>96.883 B</td><td>49.254 B</td><td>50,8 %</td></tr></tbody></table>`
+const nube = [
+  'Decidido por Eric: la copia original también entre aparatos, pero <b>solo se baja al pulsar «Sí, recuperar»</b>, nunca al abrir o sincronizar.',
+  'Migración <code>0092_route_original.sql</code> (SIN APLICAR; <code>docs/dias/COMPROBAR_0092.sql</code>): columna <code>trips.route_original</code> y un disparador que no deja pisar la original mientras la ruta sea la misma.',
+  '<b>Subida:</b> una vez, con un guardado normal (primer guardado de la ruta creada o rehecha, o el primero de un viaje viejo): ~50 KB una vez en la vida de la ruta; los guardados siguientes no la llevan. La «derivada» de otro móvil nunca se sube.',
+  '<b>Bajada:</b> solo al confirmar la varita, una fila y una columna (~50 KB), una vez por viaje y móvil. Listar, abrir y sincronizar no la piden (comprobado).',
+  'Sin la 0092 la app sigue igual (reintenta el guardado sin la columna). <code>pruebaV37b</code>: 26 comprobaciones; <code>pruebaV37_viaje</code> ahora 44.',
+]
 const cuenta = [
   'Servidor: <code>DELETE /api/cuenta</code> exige <code>{ confirmar: "BORRAR" }</code>; 403 si la sesión es anónima («Entra con tu cuenta…») o es de administrador («Pídeselo a otro administrador»). Hace lo mismo que <code>empezar_de_cero</code> (con respaldo a <code>preparar_borrado</code> si la función faltara), borra los archivos (fotos y foto de perfil) y la cuenta de Supabase Auth. <b>Se queda <code>pagos_registro</code></b> (fecha e importe).',
   'Ajustes, al final: [Borrar mi cuenta] rojo suave → hoja con la explicación, campo «escribe BORRAR» y [Borrar mi cuenta para siempre] apagado hasta escribirlo. Después la app limpia el móvil y vuelve a la bienvenida (código de siempre).',
@@ -57,10 +64,10 @@ const pruebas = [
 const paraEric = [
   '<b>Civitatis:</b> no hay nada que borrar: el código usa <code>CIVITATIS_API_USER</code> y <code>CIVITATIS_API_PASSWORD</code> (si dejas de usar los scripts <code>civitatis*.mjs</code> y la API está apagada, <code>CIVITATIS_API_ACTIVA</code> sin <code>true</code>, la contraseña podría quitarse de <code>.env.local</code>; en Vercel, solo si algún día apagas la API de Civitatis).',
   '<b>SQL de limpieza (opcional):</b> en el SQL editor de Supabase pega el PASO 1 de <code>docs/dias/LIMPIAR_ORIGINALROUTE.sql</code> (solo lee), mira cuántos viajes la llevan y, si te vale, el PASO 2 (repetible); después <code>COMPROBAR_LIMPIAR_ORIGINALROUTE.sql</code> (una fila, todo en true). Sin él, la app funciona igual y cada viaje se limpia solo al guardarse. Si un móvil con la app vieja guarda después, repite el PASO 2.',
-  '<b>Decisión tuya:</b> ¿quieres la copia original también entre aparatos (columna <code>trips.route_original</code>, migración nueva)? Hoy solo la conserva el móvil donde se creó la ruta.',
+  '<b>Aplicar la 0092</b> (SQL editor de Supabase: pega <code>supabase/migrations/0092_route_original.sql</code> y luego <code>docs/dias/COMPROBAR_0092.sql</code>: una fila con todo en true). Hasta entonces la app va igual y la original solo está en el móvil donde se creó. Para los viajes que ya existen, la original de verdad solo está en el móvil donde se creó la ruta: sube a la nube con su próximo guardado desde ese móvil.',
   '<b>Oírlo en un iPhone:</b> el sonido del sello del pasaporte (clic al tocar la hoja) y el resto de sonidos no se pueden oír en Chrome sin pantalla.',
   '<b>Pieza de Design:</b> «Pase Lista.dc.html» aún dice «Los sellos de Roma y del Vaticano»; la app dice «medallas». Si quieres, actualiza la pieza.',
-  'Sigue pendiente de V35B: aplicar la migración 0091 (la app va bien sin ella, con «Pronto»).',
+  'La 0091 ya está aplicada (Eric pasó el COMPROBAR con todo en true).',
 ]
 const lista = [
   'Abrir una animación de medalla (p. ej. al ganar la de bronce de Roma): dice «TU MEDALLA DE ROMA · BRONCE».',
@@ -77,6 +84,7 @@ ${fig('medalla_bronce.jpg', 'Medalla de bronce: «TU MEDALLA DE ROMA · BRONCE»
 <p><small>Textos leídos en pantalla: ${t.medalla_bronce}<br>${t.medalla_oro}</small></p>
 <h2>2. El sello del pasaporte, con sonido</h2>${li(sello)}
 <h2>3. Viaje sin <code>originalRoute</code></h2>${li(viaje)}${pesos}
+<h2>3b. La original entre aparatos (V37b)</h2>${li(nube)}
 <h2>4. Borrar mi cuenta</h2>${li(cuenta)}
 ${fig('borrar_cuenta_normal.jpg', 'La hoja (cuenta normal): botón apagado hasta escribir')}${fig('borrar_cuenta_escrito.jpg', 'Con BORRAR escrito: botón encendido')}${fig('borrar_cuenta_administrador.jpg', 'Cuenta de administrador: «Pídeselo a otro administrador»')}
 <h2>5. Limpieza</h2>${li(limpieza)}<h3>Pruebas viejas, una a una</h3>${viejas}

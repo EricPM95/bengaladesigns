@@ -7,6 +7,7 @@ const PARTES = [
   ['textos', 'scripts/destino/pruebaV37_textos.mjs'],
   ['cuenta', 'scripts/destino/pruebaV37_cuenta.mjs'],
   ['viaje', 'scripts/destino/pruebaV37_viaje.mjs'],
+  ['nube', 'scripts/destino/pruebaV37b.mjs'], // (V37b) la original en la nube: se sube una vez, se baja solo en la varita
   ['sello', 'scripts/destino/pruebaV37_sello.mjs'], // la última: usa el navegador (un solo Chrome)
 ]
 const pedida = process.argv.find((a) => a.startsWith('parte='))?.slice(6)

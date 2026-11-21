@@ -46,3 +46,10 @@ Un `update ... set route = route - 'originalRoute'` suelto dispararía (cambia `
 ## 5. Prueba
 
 `APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaV37_viaje.mjs` (40 comprobaciones, 0 fallos): código, peso, viaje nuevo sin copia en la petición, viaje viejo que se abre, se edita, se guarda limpio y conserva la varita, huella, otro móvil sin copia, límite de 8 copias y SQL (PASO 1, PASO 2, repetible, disparadores, COMPROBAR).
+
+## V37b · La original también entre aparatos (decidido por Eric, 21-nov)
+
+- Migración **0092** (SIN APLICAR, `docs/dias/COMPROBAR_0092.sql`): columna `trips.route_original jsonb` + disparador que, mientras la ruta tenga el mismo `id`, no deja pisar la original ya puesta.
+- **Se sube UNA vez**, junto a un guardado normal (nunca sola, así no despierta a los otros móviles): solo la original de verdad (al crear o rehacer la ruta, o la que entregaba un viaje viejo de la nube). Sube ~50 KB una vez en la vida de la ruta; los guardados siguientes no la llevan. La «derivada» de abrir un viaje en otro móvil NO se sube.
+- **Se baja SOLO al pulsar «Sí, recuperar»** en la varita (`copiaOriginalNube.ts`): una fila, una columna, ~50 KB, una vez por viaje y móvil, y solo si ese móvil no tiene ya la original de verdad. Abrir, listar y sincronizar nunca la piden (todas las consultas de `trips` listan sus columnas una a una). Comprobado con `pruebaV37b`.
+- Sin la 0092 la app va igual: al guardar, la columna no existe, se reintenta sin ella y no se vuelve a mandar en esa sesión; la varita usa la copia del móvil.

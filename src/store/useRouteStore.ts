@@ -1160,7 +1160,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       const sigueElVuelo = Boolean(state.keepBookingsOnNextRoute && state.route && (state.route.ultimoCambio as { accion?: { tipo?: string } } | null | undefined)?.accion?.tipo === 'vuelo' && JSON.stringify(state.route.answers.dateRange ?? null) === JSON.stringify(colored.answers?.dateRange ?? state.route.answers.dateRange ?? null))
       const route = conUltimoCambio(state.route, { ...colored, ...avisosHeredados, ...(sigueElVuelo ? { ultimoCambio: state.route!.ultimoCambio } : {}), ...(state.keepBookingsOnNextRoute ? camposDelViajero(state.route) : {}), editedManually: false, originalRoute: originalRouteOf(colored) }, state.keepBookingsOnNextRoute && state.route && !sigueElVuelo ? { tipo: 'fechas' } : null)
       // (V37) La copia original se guarda aparte, en este móvil (no viaja dentro del viaje): ver copiaOriginal.ts.
-      guardarCopiaOriginal(route.id, route.originalRoute, true)
+      guardarCopiaOriginal(route.id, route.originalRoute, true, true) // (V37b) la original de verdad: se sube una vez con el próximo guardado
       return {
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))

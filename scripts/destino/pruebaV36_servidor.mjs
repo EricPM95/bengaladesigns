@@ -356,7 +356,8 @@ console.log('5. Los avisos del viaje (la tarea de cada 5 minutos) no bajan la ru
 
 /* ───────── 6. Sin la 0092 ───────── */
 console.log('6. No hace falta ninguna migración nueva')
-debe(!fs.readdirSync('supabase/migrations').some((f) => f.startsWith('0092')), 'esta tanda no añade migración (0092 libre): el panel y los logros funcionan con las funciones de siempre')
+// (V37b) antes: «0092 libre». Ahora la 0092 existe (columna trips.route_original, otra tanda): lo que importa es que NINGUNA migración posterior a la 0091 rehaga las funciones que usa la V36 (panel, logros, empezar_de_cero).
+debe(!fs.readdirSync('supabase/migrations').filter((f) => /^009[2-9]|^01\d\d/.test(f)).some((f) => /function public\.(empezar_de_cero|panel_|logro_)/.test(fs.readFileSync(`supabase/migrations/${f}`, 'utf8'))), 'esta tanda no añade migración: ninguna posterior a la 0091 rehace las funciones del panel, los logros ni empezar_de_cero')
 
 console.log(`\nLa prueba de la V36 (servidor): ${comprobaciones} comprobaciones · ${fallos.length} fallos`)
 process.exit(fallos.length ? 1 : 0)

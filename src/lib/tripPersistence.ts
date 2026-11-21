@@ -14,7 +14,7 @@ import { cuentasActivas, hayRespaldoDeSesion, recuperarSesionDeRespaldo } from '
 import { useViajeCompartido } from '../store/useViajeCompartido'
 import { useSyncStore } from '../store/useSyncStore'
 import { recordarBase, sellarRuta } from './sellarCambio'
-import { guardarCopiaOriginal, sinCopiaOriginal } from './copiaOriginal'
+import { copiaPendienteDeSubir, guardarCopiaOriginal, marcarCopiaSubida, sinCopiaOriginal } from './copiaOriginal'
 
 /**
  * Viajes guardados antes de pedir el mes (Estaciones, Parte 1): solo traen temporada. Se les asigna
@@ -201,7 +201,7 @@ function filaAViaje(row: FilaDeViaje, travelerId: string, conInvitados: boolean)
   // (V37) Un viaje viejo aún trae `originalRoute` en la nube: se entrega a este móvil (copiaOriginal.ts), se apunta que la nube pesa de más (el próximo guardado SÍ se sube, ya limpio) y NO pasa a la pantalla ni a la lista.
   const cruda = row.route as Route
   if (cruda && typeof cruda === 'object' && cruda.originalRoute) {
-    guardarCopiaOriginal(cruda.id, cruda.originalRoute)
+    guardarCopiaOriginal(cruda.id, cruda.originalRoute, false, true)
     nubeConCopia.add(row.id as string)
   }
   return {
@@ -311,6 +311,26 @@ export const rutaGuardadaAqui = (tripId: string): string | undefined => ultimoGu
  * useSyncStore.activeTripId) para que los guardados siguientes actualicen ESA fila en vez de crear
  * una nueva cada vez. Con `tripId` ya conocido, actualiza esa fila.
  */
+/** (V37b) Si la columna `trips.route_original` aún no existe (migración 0092 sin aplicar), se deja de mandar en esta sesión y el viaje se guarda igual. */
+let sinColumnaCopia = false
+
+/**
+ * (V37b) Escribe en `trips` y, si hay una copia original de verdad pendiente de subir, la manda JUNTO a ese guardado (nunca sola): UNA vez por ruta creada o rehecha, ~50 KB una vez en la vida de la ruta (no cada guardado).
+ * Cada cuánto: una vez por ruta. Cuánto baja: nada (la respuesta pide solo `id, updated_at, guardado_en`). Si la columna no existe (0092 sin aplicar) reintenta sin ella.
+ */
+async function escribirConCopia<T extends { error: { message?: string; details?: string } | null; data: unknown }>(rutaId: string | undefined, hacer: (extra: Record<string, unknown>) => PromiseLike<T>): Promise<T> {
+  const copia = sinColumnaCopia ? null : copiaPendienteDeSubir(rutaId)
+  const resultado = await hacer(copia ? { route_original: copia } : {})
+  if (!copia) return resultado
+  if (resultado.error && /route_original/i.test(`${resultado.error.message ?? ''} ${resultado.error.details ?? ''}`)) {
+    sinColumnaCopia = true
+    return hacer({})
+  }
+  // Con el guardado del administrador, si la base de datos no tocó ninguna fila (el viaje es de otra persona) no se da por subida.
+  if (!resultado.error && !(Array.isArray(resultado.data) && resultado.data.length === 0)) marcarCopiaSubida(rutaId)
+  return resultado
+}
+
 export async function saveTrip(travelerId: string, tripId: string | null, payload: TripPayload): Promise<string> {
   if (!supabase) throw new Error('Supabase no configurado.')
   // (V1b) La ruta ligera de la lista de viajes NUNCA se guarda: pisaría el viaje de verdad con uno sin detalle.
@@ -346,7 +366,8 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
         return tripId
       }
       // Solo el administrador cambia el viaje: si es de otra persona (esta está invitada), la base de datos no toca nada y aquí tampoco se avisa de un fallo.
-      const { data: hecho, error } = await supabase.from('trips').update({ ...row, route: ruta }).eq('id', tripId).eq('traveler_id', travelerId).select('id, updated_at, guardado_en')
+      const sb = supabase
+      const { data: hecho, error } = await escribirConCopia(payload.route?.id, (extra) => sb.from('trips').update({ ...row, route: ruta, ...extra }).eq('id', tripId).eq('traveler_id', travelerId).select('id, updated_at, guardado_en'))
       if (error) throw error
       apuntarSelloPropio(tripId, hecho)
       recordarBase(tripId, ruta)
@@ -355,14 +376,16 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
       return tripId
     }
     if (yaEstaEnLaNube(tripId, payload.route, payload.bookings, payload.wishlist)) return tripId // (V36) idéntico a lo de la nube: no se guarda
-    const { error } = await supabase.from('trips').update(row).eq('id', tripId)
+    const sb = supabase
+    const { error } = await escribirConCopia(payload.route?.id, (extra) => sb.from('trips').update({ ...row, ...extra }).eq('id', tripId))
     if (error) throw error
     apuntarHuella(tripId, payload.route, payload.bookings, payload.wishlist)
     nubeConCopia.delete(tripId)
     return tripId
   }
 
-  const { data, error } = await supabase.from('trips').insert({ traveler_id: travelerId, ...row }).select('id').single()
+  const sb = supabase
+  const { data, error } = await escribirConCopia(payload.route?.id, (extra) => sb.from('trips').insert({ traveler_id: travelerId, ...row, ...extra }).select('id').single())
   if (error) throw error
   // (Tanda 10S3 §3) El primer guardado de un viaje nuevo también es NUESTRO: se apunta para que su eco de Realtime no salga como «Han cambiado el viaje».
   anotarGuardadoPropio(data.id as string, payload.route)

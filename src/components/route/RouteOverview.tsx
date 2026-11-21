@@ -11,6 +11,7 @@ import { DestinationDistanceConnector } from './DestinationDistanceConnector'
 import { DestinationDetailModal } from './DestinationDetailModal'
 import { ConfirmDialog } from './ConfirmDialog'
 import { destinoCambiado } from '../../lib/recuperarDestino'
+import { asegurarCopiaOriginal } from '../../lib/copiaOriginalNube'
 import { withUndo } from '../../store/useAddFlowStore'
 import { Icono } from '../ui/Icono'
 import { BanderaDestino } from '../ui/BanderaDestino'
@@ -167,7 +168,8 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
           onCancel={() => setAskRestoreCity(null)}
           onConfirm={() => {
             setAskRestoreCity(null)
-            withUndo('Ruta recuperada', () => restoreOriginalRoute(askRestoreCity))
+            // (V37b) La original de verdad se baja de la nube SOLO aquí, y solo si este móvil no la tiene (copiaOriginalNube.ts); entonces se recupera con ella.
+            void asegurarCopiaOriginal().then(() => withUndo('Ruta recuperada', () => restoreOriginalRoute(askRestoreCity)))
           }}
         />
       )}

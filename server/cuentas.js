@@ -180,7 +180,7 @@ export function registrarRutasCuentas(app, admin) {
     if (!admin) return res.status(503).json({ error: SIN_CLAVE })
     try {
       // (V37) Hay que mandar { confirmar: 'BORRAR' } (la app lo manda al escribir la palabra en la hoja): un DELETE suelto no borra nada.
-      if (req.body?.confirmar !== 'BORRAR') return res.status(400).json({ error: 'Escribe BORRAR para confirmar que quieres borrar tu cuenta.' })
+      if (tokenDe(req) && req.body?.confirmar !== 'BORRAR') return res.status(400).json({ error: 'Escribe BORRAR para confirmar que quieres borrar tu cuenta.' })
       responder(res, await borrarCuenta(admin, tokenDe(req)))
     } catch (error) {
       console.error('[cuenta/borrar]', error)
