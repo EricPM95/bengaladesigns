@@ -1,5 +1,6 @@
 import type { Momento } from '../logros'
 import { partituraDe } from './partituras'
+import { MOMENTOS_DE_COLECCIONES } from './ejemploEstado'
 
 /**
  * (V34C) EL ESTUDIO DE SONIDOS (/admin/sonidos): la lista de TODAS las animaciones que llevan sonido, con lo que hace falta para verlas igual que en la app dentro de un marco de iPhone (el visor: un marco con la propia app, que
@@ -39,8 +40,8 @@ export const MOMENTOS_DEL_ESTUDIO: Record<string, () => Momento[]> = {
   medalla_oro: () => [sello('oro', 'Roma es casi tuya', 'Seis imprescindibles de ocho.')],
   medalla_diamante: () => [sello('diamante', 'Roma es tuya', 'Todos los imprescindibles de Roma.')],
   sello: () => [sello('bronce', 'Primeros pasos en Roma', 'Has visto tu primer imprescindible.')],
-  coleccion: () => [m({ tipo: 'coleccion', cat: 'coleccion', clave: 'demo|coleccion', id: 'cuatro_joyas', destino: 'roma', nombre: 'Las 4 joyas de Roma', linea: 'Cuatro joyas, cuatro recuerdos para siempre.' })],
-  pedazo: () => [m({ tipo: 'suma', cat: 'pedazo', coleccion: 'miradores', destino: 'roma', nombre: 'Los miradores', n: 1, total: 3, sitios: ['janiculo'], linea: '1 de 3' })],
+  // (V37C) Colección completa y pedazo, con el estado de ejemplo de `ejemploEstado.ts` (sin él la insignia salía vacía).
+  ...MOMENTOS_DE_COLECCIONES,
   emblema: () => [emblema('panteon', 'roma', { nombre: 'El Panteón', linea: 'Casi dos mil años con la puerta abierta.', frase: '¡Eh! Aquí hay algo…' })],
   emblema_maravilla: () => [emblema('coliseo', 'roma', { nombre: 'Una maravilla del mundo', linea: 'El mayor anfiteatro de la Antigüedad.', maravilla: 'coliseo', frase: '¡Eh! Aquí hay algo…' })],
   escena_roma: () => [emblema('fontana_de_trevi', 'roma')],
@@ -58,12 +59,14 @@ export const ANIMACIONES: Animacion[] = [
   { id: 'medalla_oro', nombre: 'Medalla de oro', grupo: 'Medallas', visor: 'momentos', momentos: 'medalla_oro', suena: ['medalla_oro'], partituras: ['medalla_oro'], principal: { tipo: 'archivo', id: 'medalla_oro' } },
   { id: 'medalla_diamante', nombre: 'Medalla de diamante', grupo: 'Medallas', visor: 'momentos', momentos: 'medalla_diamante', suena: ['medalla_diamante'], partituras: ['medalla_diamante'], principal: { tipo: 'archivo', id: 'medalla_diamante' } },
   { id: 'coleccion', nombre: 'Colección completa', grupo: 'Logros', visor: 'momentos', momentos: 'coleccion', suena: ['coleccion'], partituras: ['coleccion'], principal: { tipo: 'archivo', id: 'coleccion' } },
+  { id: 'coleccion_imprescindibles', nombre: 'Colección completa (Los imprescindibles)', grupo: 'Logros', visor: 'momentos', momentos: 'coleccion_imprescindibles', suena: ['coleccion'], partituras: ['coleccion'], principal: { tipo: 'archivo', id: 'coleccion' }, nota: 'Los imprescindibles de Roma: 7 de 8 → 8 de 8. El sonido es el mismo que el de «Colección completa»: cae cuando se cierra el círculo.' },
   { id: 'emblema', nombre: 'Emblema secreto', grupo: 'Logros', visor: 'momentos', momentos: 'emblema', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' }, nota: 'Se ve el Panteón: la escena del sitio pone además su propia partitura («escena»), como en la app.' },
   { id: 'emblema_maravilla', nombre: 'Emblema maravilla (el Coliseo)', grupo: 'Logros', visor: 'momentos', momentos: 'emblema_maravilla', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' } },
   { id: 'maravilla', nombre: 'Final de las 7 maravillas', grupo: 'Logros', visor: 'momentos', momentos: 'maravilla', suena: ['maravilla'], partituras: ['maravilla'], principal: { tipo: 'archivo', id: 'maravilla' } },
   { id: 'pais', nombre: 'País nuevo', grupo: 'Logros', visor: 'momentos', momentos: 'pais', suena: ['pais'], partituras: ['pais'], principal: { tipo: 'archivo', id: 'pais' }, nota: 'Destino nuevo y continente suenan igual.' },
   { id: 'sello', nombre: 'Sello del pasaporte', grupo: 'Logros', visor: 'pasaporte', suena: ['sello_pasaporte'], partituras: ['sello_pasaporte'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'El sello que se estampa en la hoja del pasaporte (la hoja del Perfil, con sus piezas de verdad y un viaje de ejemplo). En la app suena igual (la misma partitura) al tocar el golpe la hoja. No es la medalla (esa es «Medalla de bronce»…).' },
   { id: 'pedazo', nombre: 'Pedazo que entra en su círculo', grupo: 'Logros', visor: 'momentos', momentos: 'pedazo', suena: ['pedazo'], partituras: ['pedazo'], principal: { tipo: 'archivo', id: 'clic' } },
+  { id: 'pedazo_dos', nombre: 'Pedazos nuevos (dos colecciones a la vez)', grupo: 'Logros', visor: 'momentos', momentos: 'pedazo_dos', suena: ['pedazo'], partituras: ['pedazo'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'El Coliseo suma a la vez en «Los imprescindibles» y en «La Roma antigua». En la app suena la misma partitura del pedazo al empezar; la segunda insignia encaja 1,6 s después.' },
   { id: 'patrimonio', nombre: 'Patrimonio de la UNESCO', grupo: 'Logros', visor: 'momentos', momentos: 'patrimonio', suena: ['patrimonio'], partituras: ['patrimonio'], principal: { tipo: 'archivo', id: 'brillo' } },
   { id: 'viajero', nombre: 'Logro de viajero', grupo: 'Logros', visor: 'momentos', momentos: 'viajero', suena: ['viajero'], partituras: ['viajero'], principal: { tipo: 'archivo', id: 'brillo' } },
   { id: 'escena_roma', nombre: 'Escena de Roma (Fontana de Trevi)', grupo: 'Escenas', visor: 'momentos', momentos: 'escena_roma', suena: ['emblema'], partituras: ['escena'], principal: { tipo: 'archivo', id: 'emblema' } },

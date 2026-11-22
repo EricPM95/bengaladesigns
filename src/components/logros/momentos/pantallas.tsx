@@ -5,7 +5,7 @@ import type { EstadoLogros } from './api'
 import { Centro, FONDO_CALIDO, FONDO_NOCHE, Ojo, ORO, PantallaOscura, Rayos, Estrellas, Sub, Titulo, Vuelo } from './base'
 import { FinalSieteMaravillas } from './FinalSieteMaravillas'
 import { gradoAnterior, type Pantalla } from './plan'
-import { TIEMPOS_DE_COLECCION_PANTALLA, TIEMPOS_DE_PEDAZO, TIEMPOS_DE_PEDAZO_REDUCIDO, TIEMPOS_SELLADO, TIEMPOS_SELLO } from '../../../lib/sonidos/tiempos'
+import { RETRASO_DEL_PEDAZO, TIEMPOS_DE_COLECCION_PANTALLA, TIEMPOS_DE_PEDAZO, TIEMPOS_DE_PEDAZO_REDUCIDO, TIEMPOS_SELLADO, TIEMPOS_SELLO } from '../../../lib/sonidos/tiempos'
 
 const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
 
@@ -136,14 +136,14 @@ function PantallaPedazos({ pantalla, estado, onSeguir, onSaltarTodo, paso }: Pro
   const solo = filas.length === 1
   const ojo = solo ? 'Un pedazo nuevo' : 'Pedazos nuevos'
   return (
-    <PantallaOscura etiqueta={ojo} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn={`${(0.6 + (filas.length - 1) * 1.6 + 2.4).toFixed(1)}s`}>
+    <PantallaOscura etiqueta={ojo} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn={`${(RETRASO_DEL_PEDAZO + (filas.length - 1) * 1.6 + 2.4).toFixed(1)}s`}>
       <Rayos color="rgba(255,225,170,.16)" halo="rgba(255,215,160,.32)" />
       <Centro estilo={{ gap: solo ? 10 : 14 }}>
         <Ojo en=".3s">{ojo}</Ojo>
         <Vuelo estilo={{ flexDirection: solo ? 'column' : 'row', flexWrap: 'wrap', gap: solo ? 8 : 18, justifyContent: 'center', maxWidth: 360, padding: '0 14px' }}>
           {filas.map((f, i) => (
             <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: solo ? 'auto' : 150, opacity: 0, animation: `moIn .8s ${(0.2 + i * 0.5).toFixed(1)}s cubic-bezier(.3,1.3,.5,1) both` }}>
-              <InsigniaEncendiendo coleccion={f.id} vistos={f.vistos} nuevos={f.nuevos} tam={solo ? 220 : 124} retraso={0.6 + i * 1.6} pie={{ nombre: f.nombre, n: f.n, total: f.total, grande: solo }} />
+              <InsigniaEncendiendo coleccion={f.id} vistos={f.vistos} nuevos={f.nuevos} tam={solo ? 220 : 124} retraso={RETRASO_DEL_PEDAZO + i * 1.6} pie={{ nombre: f.nombre, n: f.n, total: f.total, grande: solo }} />
             </div>
           ))}
         </Vuelo>

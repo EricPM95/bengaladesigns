@@ -3,7 +3,7 @@ import type { Momento } from '../../../lib/logros'
 import { cortarSonidos, prepararSonido, sonar, vibrar } from '../../../lib/sonidos'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useSyncStore } from '../../../store/useSyncStore'
-import { marcarAnimacionVista, pedirEstado, type EstadoLogros } from './api'
+import { datosDePrueba, estadoGuardado, marcarAnimacionVista, pedirEstado, type EstadoLogros } from './api'
 import { PantallaDeMomento } from './pantallas'
 import { clavesDe, destinoDelVuelo, ordenarComoElServidor, planificar, sonidoDePantalla } from './plan'
 import { volar, type DestinoVuelo } from './vuelo'
@@ -30,7 +30,8 @@ export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: 
   const pantallas = useMemo(() => planificar(ordenarComoElServidor(momentos)), [momentos])
   const tripId = useSyncStore((s) => s.activeTripId)
   const [i, setI] = useState(0)
-  const [estado, setEstado] = useState<EstadoLogros | null>(null)
+  // (V37C) Con un estado puesto a mano (la demo de logros y el estudio de sonidos), la insignia sale ya con lo que tenías, sin un primer fotograma vacío. En la app de verdad sigue pidiéndolo al servidor, como siempre.
+  const [estado, setEstado] = useState<EstadoLogros | null>(() => (datosDePrueba.estado ? estadoGuardado(null) : null))
   const vistas = useRef<{ destino: string; logro: string; escalon: string }[]>([])
   const saltadas = useRef(false)
   const contenedor = useRef<HTMLDivElement>(null)

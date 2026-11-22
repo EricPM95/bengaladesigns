@@ -9,6 +9,8 @@ import { cargarPaises, cargarTierra, cargarTierraDetallada } from '../pantallas/
 import { PASAPORTE_DE_EJEMPLO, VIAJE_DEL_SELLO_DE_EJEMPLO } from './ejemploPasaporte'
 import { useEsAdministrador } from './useEsAdministrador'
 import { ejemploDelResumenDelViaje } from './ejemploResumenViaje'
+import { ESTADO_DEL_ESTUDIO } from '../../../lib/sonidos/ejemploEstado'
+import { datosDePrueba } from '../momentos/api'
 
 /**
  * (V34C) EL VISOR del estudio de sonidos: la propia app dentro de un marco de iPhone (393 x 852). `/admin/sonidos` lo mete en un `<iframe src="/?visor-sonidos=1">`; así cada animación se ve con el tamaño de pantalla, los
@@ -130,6 +132,8 @@ export function VisorDeAnimacion(): ReactNode {
         await Promise.all([...a.suena, ...a.partituras, ...(a.visor === 'momentos' ? ['escena'] : [])].map((p) => precargar(ctx, p)))
         // (V36C) La hoja del pasaporte necesita su catálogo y sus costas ya cargados para que el golpe del sello arranque justo al empezar (así el sonido cae con él).
         if (a.visor === 'pasaporte') await Promise.all([cargarPaises(), cargarTierra(), cargarTierraDetallada()]).catch(() => undefined)
+        // (V37C) El estado de ejemplo de esta tarjeta (la insignia con lo que ya tenías); las que no lo necesitan, ninguno. Nunca se pide a la cuenta ni a la base de datos.
+        datosDePrueba.estado = ESTADO_DEL_ESTUDIO[a.momentos ?? a.id]?.() ?? null
         final.current = o.alFinal ?? (() => undefined)
         setActual(null)
         // (V35A2) El primer fotograma se fija en el reloj de audio: si un sonido de Eric tiene que sonar ANTES, se espera ese tiempo (el sonido no se recorta, se retrasa la animación).
@@ -144,12 +148,14 @@ export function VisorDeAnimacion(): ReactNode {
       parar: () => {
         const ctx = contextoDeAudioDeLaApp()
         if (ctx) cortar(ctx, 80)
+        datosDePrueba.estado = null
         setActual(null)
       },
     }
     ;(window as unknown as { __estudioVisor?: VisorApi }).__estudioVisor = api
     return () => {
       delete (window as unknown as { __estudioVisor?: VisorApi }).__estudioVisor
+      datosDePrueba.estado = null
     }
   }, [])
 
