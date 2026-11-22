@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Momento } from '../../../lib/logros'
 import { cortarSonidos, prepararSonido, sonar, vibrar } from '../../../lib/sonidos'
+import { animacionDe } from '../../../lib/sonidos/animacionDe'
+import { aplicarYa, esperaDe } from '../../../lib/sonidos/estudioDeEric'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { datosDePrueba, estadoGuardado, marcarAnimacionVista, pedirEstado, type EstadoLogros } from './api'
@@ -26,6 +28,10 @@ function sonidoDeLaPantalla(p: { tipo: Parameters<typeof sonidoDePantalla>[0]; m
   return sonidoDePantalla(p.tipo)
 }
 
+/** (V40) De qué animación del estudio de sonidos es esta pantalla (el emblema del Coliseo, una o varias colecciones, la maravilla 4…). */
+const animacionDeLaPantalla = (p: { tipo: Parameters<typeof sonidoDePantalla>[0]; momentos: Momento[] }): string | null => animacionDe(sonidoDeLaPantalla(p), p.momentos)
+const enElVisor = (): boolean => Boolean((window as unknown as { __estudioVisor?: unknown }).__estudioVisor)
+
 export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: { momentos: Momento[]; exp?: { ganada: number } | null; onTerminar: () => void }): ReactNode {
   const pantallas = useMemo(() => planificar(ordenarComoElServidor(momentos)), [momentos])
   const tripId = useSyncStore((s) => s.activeTripId)
@@ -49,11 +55,11 @@ export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: 
     const p = pantallas[i]
     if (!p || i === 0) return
     const so = sonidoDeLaPantalla(p)
-    void sonar(so)
+    void sonar(so, { animacion: animacionDeLaPantalla(p) ?? undefined })
     vibrar(so)
-    // (V29) Los archivos de la pantalla siguiente, listos antes de que llegue.
+    // (V29) Los archivos de la pantalla siguiente, listos antes de que llegue (V40: con lo de Eric para esa animación).
     const sig = pantallas[i + 1]
-    if (sig) prepararSonido(sonidoDeLaPantalla(sig))
+    if (sig) prepararSonido(sonidoDeLaPantalla(sig), { animacion: animacionDeLaPantalla(sig) ?? undefined })
   }, [i, pantallas])
 
   const cerrar = useCallback(() => {
@@ -95,7 +101,21 @@ export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: 
     if (pantallas.length === 0) cerrar()
   }, [pantallas.length, cerrar])
   const p = pantallas[i]
+  // (V40) Como el estudio: si un sonido de Eric cae ANTES del primer fotograma (ms negativos, p. ej. la medalla de oro), no se recorta: la pantalla espera ese rato. Solo desde la 2.ª pantalla (la 1.ª ya sonó al ganarla y llega con su propio retraso).
+  const esperaMs = p && i > 0 && !enElVisor() ? Math.round(esperaDe(animacionDeLaPantalla(p) ?? '') * 1000) : 0
+  const [listaLa, setListaLa] = useState(0)
+  useEffect(() => {
+    if (esperaMs <= 0) return undefined
+    const t = window.setTimeout(() => setListaLa(i), esperaMs)
+    return () => window.clearTimeout(t)
+  }, [i, esperaMs])
+  // (V40) El estudio de esta pantalla puesto ya, antes de pintarla (el hueco entre pedazos lo lee al pintarse).
+  useMemo(() => {
+    if (p && !enElVisor()) aplicarYa(animacionDeLaPantalla(p))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i, pantallas])
   if (!p) return null
+  if (esperaMs > 0 && listaLa !== i) return null
   return (
     <div ref={contenedor}>
       <PantallaDeMomento key={`${p.id}${i}`} pantalla={p} estado={estado} onSeguir={avanzar} onSaltarTodo={saltarTodo} paso={{ actual: i, total: pantallas.length }} />

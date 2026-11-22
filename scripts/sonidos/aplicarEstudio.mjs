@@ -245,7 +245,11 @@ export function validarEstudio(json, { animaciones, manifiesto, archivos }) {
     const sonidoCode = (x, donde) => {
       const s = x.sonido
       if (typeof s !== 'string') { errs.push(`${donde}: falta el sonido`); return }
-      if (tiene(manifiesto, s)) {
+      // (V40) Un sonido de Code de tipo «sint» es el hecho por codigo de siempre, aunque comparta nombre con uno grabado (el «brillo» pequeño de [Visto]): sin version (null) y sin candidatos.
+      if (x.tipo === 'sint') {
+        if (!SINTETICOS.includes(s)) errs.push(`${donde}: «${s}» no es un sonido hecho por codigo`)
+        else if (x.version !== null && x.version !== undefined) errs.push(`${donde}: un sonido hecho por codigo («${s}») no lleva version`)
+      } else if (tiene(manifiesto, s)) {
         if (typeof x.version !== 'string' || !tiene(manifiesto[s], x.version)) errs.push(`${donde}: la version ${JSON.stringify(x.version)} de «${s}» no existe (hay ${Object.keys(manifiesto[s]).join(', ')})`)
       } else if (SINTETICOS.includes(s)) {
         if (x.version !== null && x.version !== undefined) errs.push(`${donde}: un sonido hecho por codigo («${s}») no lleva version`)

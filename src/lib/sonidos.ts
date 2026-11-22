@@ -15,7 +15,9 @@
  */
 
 import { partituraDe, type OpcionesDePartitura } from './sonidos/partituras'
-import { cortar, finSonoroDe, iniciarPartitura, precargar, FUNDIDO_AL_SALTAR_MS } from './sonidos/motor'
+import { cortar, estudioActual, finSonoroDe, fijarInicioDeLaAnimacion, iniciarPartitura, ponerEstudio, precargar, programarPropios, FUNDIDO_AL_SALTAR_MS } from './sonidos/motor'
+import { animacionDe, SONIDOS_EFIMEROS } from './sonidos/animacionDe'
+import { cargarEstudioDeEric, esperaDe, prepararEstudioDeEric } from './sonidos/estudioDeEric'
 
 const CLAVE_SONIDO = 'trazo:sonido'
 
@@ -47,11 +49,18 @@ export function cortarSonidoDe(id: string, fundidoMs = FUNDIDO_AL_SALTAR_MS): vo
 export const finSonoroDelPedazo = (): number => finSonoroDe('pedazo', { reducido: movimientoReducido() })
 
 /** (V29) Tener listos los archivos de premio de la siguiente animación (si hace falta), sin que suene nada. */
-export function prepararSonido(momento: string, extra: OpcionesDePartitura = {}): void {
+export function prepararSonido(momento: string, extra: OpcionesDePartitura & { animacion?: string } = {}): void {
   const ctx = contextoDeAudio()
   if (!ctx || !sonidoActivado()) return
-  void precargar(ctx, momento, { reducido: movimientoReducido(), ...extra }).catch(() => undefined)
+  const { animacion, ...o } = extra
+  const anim = animacion ?? animacionDe(momento)
+  // (V40) Lo de Eric para esa animación (sus archivos), listo antes de que suene.
+  if (anim && !enElVisor()) void prepararEstudioDeEric(ctx, anim).catch(() => undefined)
+  void precargar(ctx, momento, { reducido: movimientoReducido(), ...o }).catch(() => undefined)
 }
+
+/** (V40) Dentro del visor del estudio de sonidos, el estudio manda: la app no pone lo de Eric por su cuenta. */
+const enElVisor = (): boolean => Boolean((window as unknown as { __estudioVisor?: unknown }).__estudioVisor)
 
 interface ListaDeSonidos {
   maximo_segundos?: number
@@ -145,7 +154,7 @@ async function cargar(momento: string): Promise<AudioBuffer | null> {
 }
 
 /** Hace sonar un momento. Llamarla dentro del toque del dedo (el primer toque desbloquea el audio). Nunca lanza. */
-export async function sonar(momento: string, extra: OpcionesDePartitura = {}): Promise<void> {
+export async function sonar(momento: string, extra: OpcionesDePartitura & { animacion?: string } = {}): Promise<void> {
   if (!sonidoActivado()) return
   // (V35B) La apertura va en SILENCIO en la web (el navegador no deja sonar antes del primer toque): la app no la pide nunca. Solo el visor del estudio de sonidos (/admin/sonidos) puede oírla; queda lista para la app de las tiendas.
   if (momento === 'apertura' && !(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) return
@@ -167,13 +176,37 @@ export async function sonar(momento: string, extra: OpcionesDePartitura = {}): P
     }
     // (V29) Si la animación tiene partitura, cada sonido suena en su instante exacto (lo que dura el giro, el golpe al parar…); si no, el archivo de siempre.
     if (partituraDe(momento)) {
-      const o = { reducido: movimientoReducido(), ...extra }
-      await Promise.race([precargar(ctx, momento, o).catch(() => undefined), new Promise((r) => setTimeout(r, 300))])
+      const { animacion, ...resto } = extra
+      const o = { reducido: movimientoReducido(), ...resto }
+      // (V40) Los sonidos definitivos de Eric: se aplican UNA vez al empezar la animación (la escena, las repeticiones de un pedazo y lo que ya está en el visor del estudio siguen con lo que hay).
+      const anim = animacion ?? animacionDe(momento)
+      const aplicar = !enElVisor() && momento !== 'escena' && !o.repeticion
+      const efimero = SONIDOS_EFIMEROS.includes(momento)
+      const est = aplicar && anim ? await Promise.race([prepararEstudioDeEric(ctx, anim).catch(() => null), new Promise<null>((r) => setTimeout(() => r(null), 4000))]) : null
+      const previo = estudioActual()
+      // Lo que se descarga depende de qué candidato suena (cada animación puede llevar el suyo): se pide con el estudio de esta animación puesto (la parte que mira el estudio es síncrona).
+      if (aplicar) ponerEstudio(est)
+      const cargando = precargar(ctx, momento, o).catch(() => undefined)
+      if (aplicar && efimero) ponerEstudio(previo)
+      await Promise.race([cargando, new Promise((r) => setTimeout(r, 300))])
       if (ctx.state !== 'running') {
         pendiente = { momento, en: Date.now() }
         return
       }
-      iniciarPartitura(ctx, momento, ctx.state === 'running' && ctx.currentTime - inicio < 1.5 ? { ...o, en: inicio } : o)
+      const aTiempo = ctx.currentTime - inicio < 1.5
+      if (aplicar) {
+        const antes = estudioActual()
+        ponerEstudio(est)
+        // Como el estudio: un sonido de Eric que cae antes del primer fotograma no se recorta; el primer fotograma cuenta desde ahí.
+        const espera = est && anim ? esperaDe(anim) : 0
+        const t = (aTiempo ? inicio : ctx.currentTime) + 0.04 + espera
+        fijarInicioDeLaAnimacion(ctx, t)
+        if (est) programarPropios(ctx, anim as string, t)
+        iniciarPartitura(ctx, momento, o)
+        if (efimero) ponerEstudio(antes)
+        return
+      }
+      iniciarPartitura(ctx, momento, aTiempo ? { ...o, en: inicio } : o)
       return
     }
     const buffer = await cargar(momento)
@@ -203,7 +236,7 @@ export function vibrar(momento: string): boolean {
 }
 
 /** Tras ganar cosas: suena y vibra lo más importante. */
-export function reproducirMomentos(tipos: string[], momentos: { tipo?: string; grado?: unknown }[] = []) {
+export function reproducirMomentos(tipos: string[], momentos: { tipo?: string; grado?: unknown; id?: unknown; destino?: unknown; n?: unknown; coleccion?: unknown }[] = []) {
   let s = sonidoDeMomentos(tipos, momentos)
   if (!s) return
   // (V29) Un sello que sube de grado suena a la medalla de ese grado (bronce < plata < oro < diamante).
@@ -211,7 +244,7 @@ export function reproducirMomentos(tipos: string[], momentos: { tipo?: string; g
     const g = String(momentos.find((m) => m.tipo === 'sello')?.grado ?? '')
     if (['bronce', 'plata', 'oro', 'diamante'].includes(g)) s = `medalla_${g}`
   }
-  void sonar(s)
+  void sonar(s, { animacion: animacionDe(s, momentos) ?? undefined })
   vibrar(s)
 }
 
@@ -240,6 +273,8 @@ export function prepararAudioAlPrimerToque() {
       }
       // El sonido del aviso, ya listo.
       if (!buffers.has('aviso')) void cargar('aviso')
+      // (V40) Lo de Eric (un trocito aparte): ya en la mano cuando llegue el primer sonido.
+      void cargarEstudioDeEric()
       if (pendiente && Date.now() - pendiente.en < 3_000) {
         const m = pendiente.momento
         pendiente = null

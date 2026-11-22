@@ -58,7 +58,7 @@ export const cifraQueSube = (n: number, progreso: number): number => Math.round(
  * Hace sonar el resumen UNA vez, a la vez que empiezan a subir los números: solo si de verdad suben (`conCifras`) y sin «Reducir movimiento» (sin movimiento no hay nada que suene).
  * Dentro del estudio de sonidos no suena (lo hace sonar él al pulsar ▶).
  */
-export function sonarResumenUnaVez(conCifras: boolean): void {
+export function sonarResumenUnaVez(conCifras: boolean, animacion: 'resumen_dia' | 'resumen_viaje' = 'resumen_dia'): void {
   if (!conCifras || movimientoReducido() || dentroDelEstudio()) return
-  void sonar('dia_completo')
+  void sonar('dia_completo', { animacion })
 }

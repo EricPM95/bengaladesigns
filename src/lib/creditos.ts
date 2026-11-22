@@ -44,6 +44,16 @@ export const CREDITOS: Credito[] = [
     ],
   },
   {
+    clave: 'sonidos',
+    titulo: 'Sonidos de las animaciones',
+    // (V40) Pixabay y Mixkit permiten usarlos en una app de pago sin citar; se nombran por cortesía. Detalle por archivo: docs/sonidos/LICENCIAS_SONIDOS.md.
+    texto: 'Algunos sonidos de las animaciones vienen de Pixabay (Pixabay Content License) y de Mixkit (Mixkit Sound Effects Free License), y otros son propios.',
+    enlaces: [
+      { texto: 'Pixabay', url: 'https://pixabay.com/sound-effects/' },
+      { texto: 'Mixkit', url: 'https://mixkit.co/free-sound-effects/' },
+    ],
+  },
+  {
     clave: 'fotos_entrada',
     titulo: 'Fotos de la pantalla de entrada',
     // Se lee de data/entrada/fotos.json (autor y licencia de cada foto del mosaico). Las CC0 no exigen cita; se listan igualmente.

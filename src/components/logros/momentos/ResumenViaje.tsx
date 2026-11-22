@@ -180,7 +180,7 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
     if (!sube || ejemplo || dentroDelEstudio() || !tripId) return
     if (yaSeVio(claveResumenViaje(tripId))) return // (en desarrollo React lo monta dos veces: la 2.ª ya lo encuentra marcado)
     marcarVisto(claveResumenViaje(tripId))
-    sonarResumenUnaVez(true)
+    sonarResumenUnaVez(true, 'resumen_viaje')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sube])
   // «Te quedan N sorpresas por reclamar»: N es EXACTAMENTE la lista de la hoja (sitios de la ruta que dan algún pedazo y aún no se tiene; un emblema oculto nunca cuenta ni se nombra).

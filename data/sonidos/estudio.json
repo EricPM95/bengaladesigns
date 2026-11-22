@@ -1,0 +1,1595 @@
+{
+  "animaciones": {
+    "apertura": {
+      "capas": [
+        {
+          "archivo": "apertura_1.wav",
+          "empieza": "principio",
+          "ms": 190,
+          "muestras": 56112,
+          "nombre": "universfield-new-notification-017-352293.mp3",
+          "origen": "archivo",
+          "original": "apertura_1_original.mp3",
+          "pico": 0.4094,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 1.169,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0
+        },
+        {
+          "archivo": "apertura_2.wav",
+          "empieza": "principio",
+          "ms": 1970,
+          "muestras": 27120,
+          "nombre": "freesound_community-scale-e6-14577.mp3",
+          "origen": "archivo",
+          "original": "apertura_2_original.mp3",
+          "pico": 0.4128,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 0.565,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.65
+        },
+        {
+          "archivo": "apertura_3.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "muestras": 119137,
+          "nombre": "mixkit-magical-light-sweep-2586.wav",
+          "origen": "archivo",
+          "original": "apertura_3_original.wav",
+          "pico": 0.4546,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 3.024,
+            "igualar": false,
+            "ini": 0.542,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.25
+        }
+      ],
+      "duracion": 3.5,
+      "golpe": 2.1,
+      "nombre": "Apertura de JUTRIP",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:apertura",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "apertura",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:vuelo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "vuelo",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "apertura"
+        }
+      ]
+    },
+    "aviso": {
+      "capas": [],
+      "duracion": 1.25,
+      "golpe": 1.25,
+      "nombre": "Campanita del aviso",
+      "sonidos_de_code": [
+        {
+          "clave": "sint:campanita",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "campanita",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "aviso"
+        }
+      ]
+    },
+    "coleccion": {
+      "capas": [
+        {
+          "archivo": "coleccion_1.wav",
+          "empieza": "principio",
+          "ms": 2750,
+          "nombre": "mixkit-happy-bell-alert-601.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        },
+        {
+          "archivo": "coleccion_2.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "mixkit-shot-light-energy-flowing-2589 (1).wav",
+          "origen": "archivo",
+          "volumen": 0.3
+        },
+        {
+          "archivo": "coleccion_3.wav",
+          "empieza": "principio",
+          "ms": 3540,
+          "nombre": "mixkit-sweeping-sparkle-presentation-intro-2633.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 4.8,
+      "golpe": 3,
+      "nombre": "Colección completa",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:coleccion",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "coleccion",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:redoble",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "redoble",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 0.95
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "coleccion"
+        }
+      ]
+    },
+    "coleccion_imprescindibles": {
+      "capas": [
+        {
+          "archivo": "coleccion_imprescindibles_1.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "mixkit-shot-light-energy-flowing-2589 (1).wav",
+          "origen": "archivo",
+          "volumen": 0.25
+        },
+        {
+          "archivo": "coleccion_imprescindibles_2.wav",
+          "empieza": "principio",
+          "ms": 3040,
+          "nombre": "mixkit-sweeping-sparkle-presentation-intro-2633.wav",
+          "origen": "archivo",
+          "volumen": 0.4
+        },
+        {
+          "archivo": "coleccion_imprescindibles_3.wav",
+          "empieza": "principio",
+          "ms": 2730,
+          "nombre": "mixkit-happy-bell-alert-601.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 4.8,
+      "golpe": 3,
+      "nombre": "Colección completa (Los imprescindibles)",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:coleccion",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "coleccion",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:redoble",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "redoble",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 0.95
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "coleccion"
+        }
+      ]
+    },
+    "emblema": {
+      "capas": [
+        {
+          "archivo": "emblema_1.mp3",
+          "empieza": "principio",
+          "ms": 3530,
+          "nombre": "dragon-studio-dramatic-riser-631472.mp3",
+          "origen": "archivo",
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 13.7,
+      "golpe": 3.6,
+      "nombre": "Emblema de Roma",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:emblema",
+          "empieza": "principio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "emblema",
+          "tipo": "archivo",
+          "version": "B",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:estallido",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "estallido",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:redoble",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "redoble",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 0.95
+        },
+        {
+          "clave": "archivo:clic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "clic",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 0.3
+        },
+        {
+          "clave": "sint:toque",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "toque",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "emblema"
+        },
+        {
+          "empieza": 3.6,
+          "partitura": "escena"
+        }
+      ]
+    },
+    "emblema_maravilla": {
+      "capas": [
+        {
+          "archivo": "emblema_maravilla_1.mp3",
+          "empieza": "principio",
+          "ms": 3680,
+          "nombre": "dragon-studio-dramatic-riser-631472.mp3",
+          "origen": "archivo",
+          "volumen": 0.45
+        },
+        {
+          "archivo": "emblema_maravilla_2.mp3",
+          "empieza": "principio",
+          "ms": 19680,
+          "nombre": "floraphonic-fairy-dust-shimmer-1-175611.mp3",
+          "origen": "archivo",
+          "volumen": 0.1
+        },
+        {
+          "archivo": "emblema_maravilla_3.mp3",
+          "empieza": "principio",
+          "ms": 14490,
+          "nombre": "djartmusic-magical-sparkle-whoosh-298750.mp3",
+          "origen": "archivo",
+          "volumen": 0.7
+        },
+        {
+          "archivo": "emblema_maravilla_4.mp3",
+          "empieza": "principio",
+          "ms": 16630,
+          "nombre": "fxprosound-magic-glitter-wand-5-248607.mp3",
+          "origen": "archivo",
+          "volumen": 0.7
+        },
+        {
+          "archivo": "emblema_maravilla_5.wav",
+          "empieza": "principio",
+          "ms": 27290,
+          "muestras": 175728,
+          "nombre": "FIRE.mp3",
+          "origen": "archivo",
+          "original": "emblema_maravilla_5_original.mp3",
+          "pico": 0.988,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 3.661,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.7
+        },
+        {
+          "archivo": "emblema_maravilla_6.wav",
+          "empieza": "principio",
+          "ms": 26170,
+          "nombre": "mixkit-sweeping-sparkle-presentation-intro-2633.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        },
+        {
+          "empieza": "principio",
+          "ms": 24990,
+          "origen": "code",
+          "sonido": "medalla_oro",
+          "version": "A",
+          "volumen": 0.5
+        }
+      ],
+      "duracion": 29.2,
+      "golpe": 3.6,
+      "nombre": "Coliseo",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:emblema",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "emblema",
+          "tipo": "archivo",
+          "version": "B",
+          "volumen": 2
+        },
+        {
+          "clave": "archivo:estallido",
+          "empieza": "sitio",
+          "ms": 19070,
+          "silenciado": true,
+          "sonido": "estallido",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:redoble",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "redoble",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 0.95
+        },
+        {
+          "clave": "archivo:clic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "clic",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo",
+          "empieza": "golpe",
+          "ms": 22840,
+          "silenciado": true,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 0.3
+        },
+        {
+          "clave": "sint:toque",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "toque",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "emblema"
+        },
+        {
+          "empieza": 3.6,
+          "partitura": "escena"
+        }
+      ]
+    },
+    "fuegos": {
+      "capas": [
+        {
+          "archivo": "fuegos_1.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "muestras": 157872,
+          "nombre": "FIRE.mp3",
+          "origen": "archivo",
+          "original": "fuegos_1_original.mp3",
+          "pico": 0.988,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 3.289,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 3.2,
+      "golpe": 0.2,
+      "nombre": "Los fuegos",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:emblema",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "emblema",
+          "tipo": "archivo",
+          "version": "E",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "fuegos"
+        }
+      ]
+    },
+    "maravilla_nueva": {
+      "capas": [
+        {
+          "archivo": "maravilla_nueva_1.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "mixkit-sweeping-sparkle-presentation-intro-2633.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        },
+        {
+          "archivo": "maravilla_nueva_2.wav",
+          "empieza": "principio",
+          "ms": 1870,
+          "nombre": "mixkit-happy-bell-alert-601.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 3.4,
+      "golpe": 1.88,
+      "nombre": "Maravilla nueva (1 de 7)",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:clic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "clic",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:vuelo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "vuelo",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 0.3
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "maravilla_nueva"
+        }
+      ]
+    },
+    "maravilla_nueva_cuatro": {
+      "capas": [
+        {
+          "archivo": "maravilla_nueva_cuatro_1.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "mixkit-sweeping-sparkle-presentation-intro-2633.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        },
+        {
+          "archivo": "maravilla_nueva_cuatro_2.wav",
+          "empieza": "principio",
+          "ms": 1890,
+          "nombre": "mixkit-happy-bell-alert-601.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 3.4,
+      "golpe": 1.88,
+      "nombre": "Maravilla nueva (4 de 7)",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:clic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "clic",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:vuelo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "vuelo",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 0.3
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "maravilla_nueva"
+        }
+      ]
+    },
+    "medalla_bronce": {
+      "capas": [
+        {
+          "archivo": "medalla_bronce_1.mp3",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "shine.mp3",
+          "origen": "archivo",
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 5.3,
+      "golpe": 4.4,
+      "nombre": "Medalla de bronce",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:medalla_bronce",
+          "empieza": "sitio",
+          "ms": -30,
+          "silenciado": true,
+          "sonido": "medalla_bronce",
+          "tipo": "archivo",
+          "version": "E",
+          "volumen": 0.6
+        },
+        {
+          "clave": "archivo:redoble",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "redoble",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "medalla_bronce"
+        }
+      ]
+    },
+    "medalla_diamante": {
+      "capas": [
+        {
+          "archivo": "medalla_diamante_1.mp3",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "aberrantrealities-hi-tech-reveal-riser-19-531953.mp3",
+          "origen": "archivo",
+          "volumen": 0.3
+        },
+        {
+          "archivo": "medalla_diamante_2.wav",
+          "empieza": "principio",
+          "ms": 3750,
+          "muestras": 102960,
+          "nombre": "dimante.mp3",
+          "origen": "archivo",
+          "original": "medalla_diamante_2_original.mp3",
+          "pico": 0.3557,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 0,
+            "fin": 2.145,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 0,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 5.3,
+      "golpe": 4.4,
+      "nombre": "Medalla de diamante",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:medalla_diamante",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "medalla_diamante",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:redoble",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "redoble",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 0.95
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "medalla_diamante"
+        }
+      ]
+    },
+    "medalla_oro": {
+      "capas": [
+        {
+          "archivo": "medalla_oro_1.mp3",
+          "empieza": "principio",
+          "ms": 40,
+          "nombre": "aberrantrealities-hi-tech-reveal-riser-19-531953.mp3",
+          "origen": "archivo",
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 5.3,
+      "golpe": 4.4,
+      "nombre": "Medalla de oro",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:medalla_oro",
+          "empieza": "sitio",
+          "ms": -470,
+          "silenciado": false,
+          "sonido": "medalla_oro",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:redoble",
+          "empieza": "sitio",
+          "ms": 840,
+          "silenciado": true,
+          "sonido": "redoble",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 0.95
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "medalla_oro"
+        }
+      ]
+    },
+    "medalla_plata": {
+      "capas": [
+        {
+          "archivo": "medalla_plata_1.mp3",
+          "empieza": "principio",
+          "ms": 410,
+          "nombre": "aberrantrealities-hi-tech-reveal-riser-19-531953.mp3",
+          "origen": "archivo",
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 5.3,
+      "golpe": 4.4,
+      "nombre": "Medalla de plata",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:medalla_plata",
+          "empieza": "sitio",
+          "ms": -470,
+          "silenciado": false,
+          "sonido": "medalla_plata",
+          "tipo": "archivo",
+          "version": "E",
+          "volumen": 0.85
+        },
+        {
+          "clave": "archivo:redoble",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "redoble",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "medalla_plata"
+        }
+      ]
+    },
+    "pais": {
+      "capas": [],
+      "duracion": 3,
+      "golpe": 1.9,
+      "nombre": "País nuevo",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:pais",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "pais",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:vuelo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "vuelo",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "pais"
+        }
+      ]
+    },
+    "patrimonio": {
+      "capas": [
+        {
+          "archivo": "patrimonio_1.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "mixkit-sweeping-sparkle-presentation-intro-2633.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 2.6,
+      "golpe": 1.3,
+      "nombre": "Patrimonio de la UNESCO",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "sint:tic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "tic",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 0.1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "patrimonio"
+        }
+      ]
+    },
+    "pedazo": {
+      "capas": [
+        {
+          "archivo": "pedazo_1.wav",
+          "empieza": "principio",
+          "ms": 2110,
+          "nombre": "mixkit-happy-bell-alert-601.wav",
+          "origen": "archivo",
+          "volumen": 0.85
+        },
+        {
+          "archivo": "pedazo_2.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "muestras": 242016,
+          "nombre": "mixkit-shot-light-energy-flowing-2589 (1).wav",
+          "origen": "archivo",
+          "original": "pedazo_2_original.wav",
+          "pico": 0.8921,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 5.042,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 3.3,
+      "golpe": 2.1,
+      "nombre": "Pedazo que entra en su círculo",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:clic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "clic",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:vuelo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "vuelo",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "sint:tic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "tic",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "pedazo"
+        }
+      ]
+    },
+    "pedazo_dos": {
+      "capas": [
+        {
+          "archivo": "pedazo_dos_1.wav",
+          "empieza": "principio",
+          "ms": 2100,
+          "nombre": "mixkit-happy-bell-alert-601.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        },
+        {
+          "archivo": "pedazo_dos_2.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "muestras": 181248,
+          "nombre": "mixkit-shot-light-energy-flowing-2589 (1).wav",
+          "origen": "archivo",
+          "original": "pedazo_dos_2_original.wav",
+          "pico": 0.8921,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 3.776,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 5.884,
+      "golpe": 2.1,
+      "nombre": "Pedazos nuevos (dos colecciones a la vez)",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:clic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "clic",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:vuelo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "vuelo",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "sint:tic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "tic",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "pedazo"
+        }
+      ]
+    },
+    "pedazo_tres": {
+      "capas": [
+        {
+          "archivo": "pedazo_tres_1.wav",
+          "empieza": "principio",
+          "ms": 2160,
+          "nombre": "mixkit-happy-bell-alert-601.wav",
+          "origen": "archivo",
+          "volumen": 0.7
+        },
+        {
+          "archivo": "pedazo_tres_2.wav",
+          "empieza": "principio",
+          "ms": 20,
+          "muestras": 168768,
+          "nombre": "mixkit-shot-light-energy-flowing-2589 (1).wav",
+          "origen": "archivo",
+          "original": "pedazo_tres_2_original.wav",
+          "pico": 0.8921,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 3.516,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 8.468,
+      "golpe": 2.1,
+      "nombre": "Pedazos nuevos (tres colecciones a la vez)",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:clic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "clic",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:vuelo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "vuelo",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        },
+        {
+          "clave": "sint:tic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "tic",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "pedazo"
+        }
+      ]
+    },
+    "primer_dia": {
+      "capas": [
+        {
+          "archivo": "primer_dia_1.mp3",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "universfield-new-notification-018-363746.mp3",
+          "origen": "archivo",
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 2,
+      "golpe": 1.4,
+      "nombre": "Tu primer día",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:brillo",
+          "empieza": "principio",
+          "ms": -2000,
+          "silenciado": true,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo_titulo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "brillo_titulo",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:clic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "clic",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "primer_dia"
+        }
+      ]
+    },
+    "resumen_dia": {
+      "capas": [
+        {
+          "archivo": "resumen_dia_1.mp3",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "universfield-new-notification-017-352293.mp3",
+          "origen": "archivo",
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 1.9,
+      "golpe": 1.3,
+      "nombre": "Resumen del día",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 0.3
+        },
+        {
+          "clave": "sint:tic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "tic",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 0.1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "dia_completo"
+        }
+      ]
+    },
+    "resumen_viaje": {
+      "capas": [
+        {
+          "archivo": "resumen_viaje_1.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "muestras": 111552,
+          "nombre": "mixkit-magic-transition-sweep-presentation-2638.wav",
+          "origen": "archivo",
+          "original": "resumen_viaje_1_original.wav",
+          "pico": 0.6994,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 2.324,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 1.9,
+      "golpe": 1.3,
+      "nombre": "Resumen del viaje",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "sint:tic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "tic",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 0.1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "dia_completo"
+        }
+      ]
+    },
+    "sello": {
+      "capas": [
+        {
+          "archivo": "sello_1.wav",
+          "empieza": "principio",
+          "ms": 1500,
+          "muestras": 48720,
+          "nombre": "freesound_community-traditional-stamp-44189.mp3",
+          "origen": "archivo",
+          "original": "sello_1_original.mp3",
+          "pico": 0.9413,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 1.015,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 3.7,
+      "golpe": 2.05,
+      "nombre": "Sello del pasaporte",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:clic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "clic",
+          "tipo": "archivo",
+          "version": "B",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:vuelo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "vuelo",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 1
+        },
+        {
+          "clave": "archivo:brillo",
+          "empieza": "sitio",
+          "ms": 310,
+          "silenciado": false,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "C",
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "sello_pasaporte"
+        }
+      ]
+    },
+    "tic": {
+      "capas": [],
+      "duracion": 1.9,
+      "golpe": 1.3,
+      "nombre": "Tic de los números que suben",
+      "sonidos_de_code": [
+        {
+          "clave": "sint:tic",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "tic",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 0.1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "dia_completo"
+        }
+      ]
+    },
+    "toque": {
+      "capas": [],
+      "duracion": 4.2,
+      "golpe": 3.6,
+      "nombre": "Toque (el latido de los aros)",
+      "sonidos_de_code": [
+        {
+          "clave": "sint:toque",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "toque",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "emblema"
+        }
+      ]
+    },
+    "viajero": {
+      "capas": [
+        {
+          "archivo": "viajero_1.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "nombre": "mixkit-sweeping-sparkle-presentation-intro-2633.wav",
+          "origen": "archivo",
+          "volumen": 0.4
+        }
+      ],
+      "duracion": 2.6,
+      "golpe": 1.3,
+      "nombre": "Logro de viajero",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:brillo",
+          "empieza": "golpe",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "brillo",
+          "tipo": "archivo",
+          "version": "A",
+          "volumen": 1
+        },
+        {
+          "clave": "sint:tic",
+          "empieza": "golpe",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "tic",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "viajero"
+        }
+      ]
+    },
+    "visto": {
+      "capas": [],
+      "duracion": 0.5,
+      "golpe": 0.5,
+      "nombre": "Visto (el toque y el brillo)",
+      "sonidos_de_code": [
+        {
+          "clave": "sint:toque",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "toque",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        },
+        {
+          "clave": "sint:brillo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": false,
+          "sonido": "brillo",
+          "tipo": "sint",
+          "version": null,
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "visto"
+        }
+      ]
+    },
+    "vuelo": {
+      "capas": [
+        {
+          "archivo": "vuelo_1.wav",
+          "empieza": "principio",
+          "ms": 0,
+          "muestras": 66768,
+          "nombre": "stereogenicstudio-swish-swoosh-woosh-sfx-19-357184.mp3",
+          "origen": "archivo",
+          "original": "vuelo_1_original.mp3",
+          "pico": 0.6867,
+          "retoques": {
+            "brillo_db": 0,
+            "eco_pct": 0,
+            "entrada_ms": 10,
+            "fin": 1.391,
+            "igualar": false,
+            "ini": 0,
+            "salida_ms": 300,
+            "semitonos": 0,
+            "sin_graves": false
+          },
+          "tasa": 48000,
+          "volumen": 0.7
+        }
+      ],
+      "duracion": 1,
+      "golpe": 0.63,
+      "nombre": "Lo ganado que vuela",
+      "sonidos_de_code": [
+        {
+          "clave": "archivo:vuelo",
+          "empieza": "sitio",
+          "ms": 0,
+          "silenciado": true,
+          "sonido": "vuelo",
+          "tipo": "archivo",
+          "version": "D",
+          "volumen": 1
+        }
+      ],
+      "tramos": [
+        {
+          "empieza": 0,
+          "partitura": "vuelo"
+        }
+      ]
+    }
+  },
+  "generado": "2026-11-22T22:41:28.666Z",
+  "version": 1,
+  "volumen_general": 0.8
+}

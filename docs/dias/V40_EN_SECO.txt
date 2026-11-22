@@ -1,0 +1,203 @@
+Estudio version 1 · generado 2026-11-22T22:41:28.666Z · volumen general 80 %
+
+Apertura de JUTRIP (apertura) · dura 3.5 s · golpe a los 2.1 s
+  Partes: «apertura» empieza en el segundo 0,00
+  Code · grabado «apertura» version D · SILENCIADO
+  Code · grabado «vuelo» version C · SILENCIADO
+  Capa · archivo de Eric apertura_1.wav (original: universfield-new-notification-017-352293.mp3) · volumen 0 % · +190 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 0,19 de la animacion
+    Editado · recortado hasta 1,17 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 56112 muestras · pico 0,41
+  Capa · archivo de Eric apertura_2.wav (original: freesound_community-scale-e6-14577.mp3) · volumen 65 % · +1970 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 1,97 de la animacion
+    Editado · recortado hasta 0,56 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 27120 muestras · pico 0,41
+  Capa · archivo de Eric apertura_3.wav (original: mixkit-magical-light-sweep-2586.wav) · volumen 25 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+    Editado · recortado 0,54 s – 3,02 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 119137 muestras · pico 0,45
+
+Campanita del aviso (aviso) · dura 1.25 s · golpe a los 1.25 s
+  Partes: «aviso» empieza en el segundo 0,00
+  Code · por codigo «campanita» · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+
+Colección completa (coleccion) · dura 4.8 s · golpe a los 3 s
+  Partes: «coleccion» empieza en el segundo 0,00
+  Code · grabado «coleccion» version A · SILENCIADO
+  Code · grabado «redoble» version A · SILENCIADO
+  Capa · archivo de Eric coleccion_1.wav (original: mixkit-happy-bell-alert-601.wav) · volumen 70 % · +2750 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 2,75 de la animacion
+  Capa · archivo de Eric coleccion_2.wav (original: mixkit-shot-light-energy-flowing-2589 (1).wav) · volumen 30 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+  Capa · archivo de Eric coleccion_3.wav (original: mixkit-sweeping-sparkle-presentation-intro-2633.wav) · volumen 70 % · +3540 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 3,54 de la animacion
+
+Colección completa (Los imprescindibles) (coleccion_imprescindibles) · dura 4.8 s · golpe a los 3 s
+  Partes: «coleccion» empieza en el segundo 0,00
+  Code · grabado «coleccion» version D · SILENCIADO
+  Code · grabado «redoble» version A · SILENCIADO
+  Capa · archivo de Eric coleccion_imprescindibles_1.wav (original: mixkit-shot-light-energy-flowing-2589 (1).wav) · volumen 25 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+  Capa · archivo de Eric coleccion_imprescindibles_2.wav (original: mixkit-sweeping-sparkle-presentation-intro-2633.wav) · volumen 40 % · +3040 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 3,04 de la animacion
+  Capa · archivo de Eric coleccion_imprescindibles_3.wav (original: mixkit-happy-bell-alert-601.wav) · volumen 70 % · +2730 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 2,73 de la animacion
+
+Emblema de Roma (emblema) · dura 13.7 s · golpe a los 3.6 s
+  Partes: «emblema» empieza en el segundo 0,00 · «escena» empieza en el segundo 3,60
+  Code · grabado «emblema» version B · suena · volumen 100 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+  Code · grabado «estallido» version A · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+  Code · grabado «redoble» version D · SILENCIADO
+  Code · grabado «clic» version C · SILENCIADO
+  Code · grabado «brillo» version A · suena · volumen 30 % · sin moverlo, desde donde suena de siempre
+  Code · por codigo «toque» · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+  Capa · archivo de Eric emblema_1.mp3 (original: dragon-studio-dramatic-riser-631472.mp3) · volumen 70 % · +3530 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 3,53 de la animacion
+
+Coliseo (emblema_maravilla) · dura 29.2 s · golpe a los 3.6 s
+  Partes: «emblema» empieza en el segundo 0,00 · «escena» empieza en el segundo 3,60
+  Code · grabado «emblema» version B · SILENCIADO
+  Code · grabado «estallido» version A · SILENCIADO
+  Code · grabado «redoble» version D · SILENCIADO
+  Code · grabado «clic» version C · SILENCIADO
+  Code · grabado «brillo» version A · SILENCIADO
+  Code · por codigo «toque» · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+  Capa · archivo de Eric emblema_maravilla_1.mp3 (original: dragon-studio-dramatic-riser-631472.mp3) · volumen 45 % · +3680 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 3,68 de la animacion
+  Capa · archivo de Eric emblema_maravilla_2.mp3 (original: floraphonic-fairy-dust-shimmer-1-175611.mp3) · volumen 10 % · +19680 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 19,68 de la animacion
+  Capa · archivo de Eric emblema_maravilla_3.mp3 (original: djartmusic-magical-sparkle-whoosh-298750.mp3) · volumen 70 % · +14490 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 14,49 de la animacion
+  Capa · archivo de Eric emblema_maravilla_4.mp3 (original: fxprosound-magic-glitter-wand-5-248607.mp3) · volumen 70 % · +16630 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 16,63 de la animacion
+  Capa · archivo de Eric emblema_maravilla_5.wav (original: FIRE.mp3) · volumen 70 % · +27290 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 27,29 de la animacion
+    Editado · recortado hasta 3,66 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 175728 muestras · pico 0,99
+  Capa · archivo de Eric emblema_maravilla_6.wav (original: mixkit-sweeping-sparkle-presentation-intro-2633.wav) · volumen 70 % · +26170 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 26,17 de la animacion
+  Capa · Code «medalla_oro» version A · volumen 50 % · +24990 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 24,99 de la animacion
+
+Los fuegos (fuegos) · dura 3.2 s · golpe a los 0.2 s
+  Partes: «fuegos» empieza en el segundo 0,00
+  Code · grabado «emblema» version E · SILENCIADO
+  Code · grabado «brillo» version D · SILENCIADO
+  Capa · archivo de Eric fuegos_1.wav (original: FIRE.mp3) · volumen 70 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+    Editado · recortado hasta 3,29 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 157872 muestras · pico 0,99
+
+Maravilla nueva (1 de 7) (maravilla_nueva) · dura 3.4 s · golpe a los 1.88 s
+  Partes: «maravilla_nueva» empieza en el segundo 0,00
+  Code · grabado «clic» version C · SILENCIADO
+  Code · grabado «vuelo» version D · SILENCIADO
+  Code · grabado «brillo» version A · SILENCIADO
+  Capa · archivo de Eric maravilla_nueva_1.wav (original: mixkit-sweeping-sparkle-presentation-intro-2633.wav) · volumen 70 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+  Capa · archivo de Eric maravilla_nueva_2.wav (original: mixkit-happy-bell-alert-601.wav) · volumen 70 % · +1870 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 1,87 de la animacion
+
+Maravilla nueva (4 de 7) (maravilla_nueva_cuatro) · dura 3.4 s · golpe a los 1.88 s
+  Partes: «maravilla_nueva» empieza en el segundo 0,00
+  Code · grabado «clic» version C · SILENCIADO
+  Code · grabado «vuelo» version D · SILENCIADO
+  Code · grabado «brillo» version A · SILENCIADO
+  Capa · archivo de Eric maravilla_nueva_cuatro_1.wav (original: mixkit-sweeping-sparkle-presentation-intro-2633.wav) · volumen 70 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+  Capa · archivo de Eric maravilla_nueva_cuatro_2.wav (original: mixkit-happy-bell-alert-601.wav) · volumen 70 % · +1890 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 1,89 de la animacion
+
+Medalla de bronce (medalla_bronce) · dura 5.3 s · golpe a los 4.4 s
+  Partes: «medalla_bronce» empieza en el segundo 0,00
+  Code · grabado «medalla_bronce» version E · SILENCIADO
+  Code · grabado «redoble» version C · SILENCIADO
+  Capa · archivo de Eric medalla_bronce_1.mp3 (original: shine.mp3) · volumen 70 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+
+Medalla de diamante (medalla_diamante) · dura 5.3 s · golpe a los 4.4 s
+  Partes: «medalla_diamante» empieza en el segundo 0,00
+  Code · grabado «medalla_diamante» version A · SILENCIADO
+  Code · grabado «redoble» version A · SILENCIADO
+  Capa · archivo de Eric medalla_diamante_1.mp3 (original: aberrantrealities-hi-tech-reveal-riser-19-531953.mp3) · volumen 30 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+  Capa · archivo de Eric medalla_diamante_2.wav (original: dimante.mp3) · volumen 70 % · +3750 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 3,75 de la animacion
+    Editado · recortado hasta 2,15 s · 48000 Hz · 102960 muestras · pico 0,36
+
+Medalla de oro (medalla_oro) · dura 5.3 s · golpe a los 4.4 s
+  Partes: «medalla_oro» empieza en el segundo 0,00
+  Code · grabado «medalla_oro» version A · suena · volumen 100 % · -470 ms (antes) desde donde suena de siempre
+  Code · grabado «redoble» version A · SILENCIADO
+  Capa · archivo de Eric medalla_oro_1.mp3 (original: aberrantrealities-hi-tech-reveal-riser-19-531953.mp3) · volumen 30 % · +40 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 0,04 de la animacion
+
+Medalla de plata (medalla_plata) · dura 5.3 s · golpe a los 4.4 s
+  Partes: «medalla_plata» empieza en el segundo 0,00
+  Code · grabado «medalla_plata» version E · suena · volumen 85 % · -470 ms (antes) desde donde suena de siempre
+  Code · grabado «redoble» version C · SILENCIADO
+  Capa · archivo de Eric medalla_plata_1.mp3 (original: aberrantrealities-hi-tech-reveal-riser-19-531953.mp3) · volumen 30 % · +410 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 0,41 de la animacion
+
+País nuevo (pais) · dura 3 s · golpe a los 1.9 s
+  Partes: «pais» empieza en el segundo 0,00
+  Code · grabado «pais» version A · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+  Code · grabado «vuelo» version C · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+
+Patrimonio de la UNESCO (patrimonio) · dura 2.6 s · golpe a los 1.3 s
+  Partes: «patrimonio» empieza en el segundo 0,00
+  Code · grabado «brillo» version A · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+  Code · por codigo «tic» · suena · volumen 10 % · sin moverlo, desde donde suena de siempre
+  Capa · archivo de Eric patrimonio_1.wav (original: mixkit-sweeping-sparkle-presentation-intro-2633.wav) · volumen 70 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+
+Pedazo que entra en su círculo (pedazo) · dura 3.3 s · golpe a los 2.1 s
+  Partes: «pedazo» empieza en el segundo 0,00
+  Code · grabado «clic» version C · SILENCIADO
+  Code · grabado «vuelo» version C · SILENCIADO
+  Code · grabado «brillo» version C · SILENCIADO
+  Code · por codigo «tic» · SILENCIADO
+  Capa · archivo de Eric pedazo_1.wav (original: mixkit-happy-bell-alert-601.wav) · volumen 85 % · +2110 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 2,11 de la animacion
+  Capa · archivo de Eric pedazo_2.wav (original: mixkit-shot-light-energy-flowing-2589 (1).wav) · volumen 30 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+    Editado · recortado hasta 5,04 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 242016 muestras · pico 0,89
+
+Pedazos nuevos (dos colecciones a la vez) (pedazo_dos) · dura 5.884 s · golpe a los 2.1 s
+  Partes: «pedazo» empieza en el segundo 0,00
+  Code · grabado «clic» version C · SILENCIADO
+  Code · grabado «vuelo» version C · SILENCIADO
+  Code · grabado «brillo» version C · SILENCIADO
+  Code · por codigo «tic» · SILENCIADO
+  Capa · archivo de Eric pedazo_dos_1.wav (original: mixkit-happy-bell-alert-601.wav) · volumen 70 % · +2100 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 2,10 de la animacion
+  Capa · archivo de Eric pedazo_dos_2.wav (original: mixkit-shot-light-energy-flowing-2589 (1).wav) · volumen 30 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+    Editado · recortado hasta 3,78 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 181248 muestras · pico 0,89
+
+Pedazos nuevos (tres colecciones a la vez) (pedazo_tres) · dura 8.468 s · golpe a los 2.1 s
+  Partes: «pedazo» empieza en el segundo 0,00
+  Code · grabado «clic» version C · SILENCIADO
+  Code · grabado «vuelo» version C · SILENCIADO
+  Code · grabado «brillo» version C · SILENCIADO
+  Code · por codigo «tic» · SILENCIADO
+  Capa · archivo de Eric pedazo_tres_1.wav (original: mixkit-happy-bell-alert-601.wav) · volumen 70 % · +2160 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 2,16 de la animacion
+  Capa · archivo de Eric pedazo_tres_2.wav (original: mixkit-shot-light-energy-flowing-2589 (1).wav) · volumen 30 % · +20 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 0,02 de la animacion
+    Editado · recortado hasta 3,52 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 168768 muestras · pico 0,89
+
+Tu primer día (primer_dia) · dura 2 s · golpe a los 1.4 s
+  Partes: «primer_dia» empieza en el segundo 0,00
+  Code · grabado «brillo» version D · SILENCIADO
+  Code · grabado «brillo_titulo» version A · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+  Code · grabado «clic» version C · SILENCIADO
+  Capa · archivo de Eric primer_dia_1.mp3 (original: universfield-new-notification-018-363746.mp3) · volumen 70 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+
+Resumen del día (resumen_dia) · dura 1.9 s · golpe a los 1.3 s
+  Partes: «dia_completo» empieza en el segundo 0,00
+  Code · grabado «brillo» version A · suena · volumen 30 % · sin moverlo, desde donde suena de siempre
+  Code · por codigo «tic» · SILENCIADO
+  Capa · archivo de Eric resumen_dia_1.mp3 (original: universfield-new-notification-017-352293.mp3) · volumen 70 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+
+Resumen del viaje (resumen_viaje) · dura 1.9 s · golpe a los 1.3 s
+  Partes: «dia_completo» empieza en el segundo 0,00
+  Code · grabado «brillo» version A · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+  Code · por codigo «tic» · SILENCIADO
+  Capa · archivo de Eric resumen_viaje_1.wav (original: mixkit-magic-transition-sweep-presentation-2638.wav) · volumen 30 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+    Editado · recortado hasta 2,32 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 111552 muestras · pico 0,70
+
+Sello del pasaporte (sello) · dura 3.7 s · golpe a los 2.05 s
+  Partes: «sello_pasaporte» empieza en el segundo 0,00
+  Code · grabado «clic» version B · SILENCIADO
+  Code · grabado «vuelo» version D · SILENCIADO
+  Code · grabado «brillo» version C · suena · volumen 100 % · +310 ms (despues) desde donde suena de siempre
+  Capa · archivo de Eric sello_1.wav (original: freesound_community-traditional-stamp-44189.mp3) · volumen 70 % · +1500 ms (despues) desde el primer fotograma de la animacion · empieza en el segundo 1,50 de la animacion
+    Editado · recortado hasta 1,01 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 48720 muestras · pico 0,94
+
+Tic de los números que suben (tic) · dura 1.9 s · golpe a los 1.3 s
+  Partes: «dia_completo» empieza en el segundo 0,00
+  Code · por codigo «tic» · suena · volumen 10 % · sin moverlo, desde donde suena de siempre
+
+Toque (el latido de los aros) (toque) · dura 4.2 s · golpe a los 3.6 s
+  Partes: «emblema» empieza en el segundo 0,00
+  Code · por codigo «toque» · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+
+Logro de viajero (viajero) · dura 2.6 s · golpe a los 1.3 s
+  Partes: «viajero» empieza en el segundo 0,00
+  Code · grabado «brillo» version A · suena · volumen 100 % · sin moverlo, desde el golpe · empieza en el segundo 1,30 de la animacion
+  Code · por codigo «tic» · SILENCIADO
+  Capa · archivo de Eric viajero_1.wav (original: mixkit-sweeping-sparkle-presentation-intro-2633.wav) · volumen 40 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+
+Visto (el toque y el brillo) (visto) · dura 0.5 s · golpe a los 0.5 s
+  Partes: «visto» empieza en el segundo 0,00
+  Code · por codigo «toque» · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+  Code · por codigo «brillo» · suena · volumen 100 % · sin moverlo, desde donde suena de siempre
+
+Lo ganado que vuela (vuelo) · dura 1 s · golpe a los 0.63 s
+  Partes: «vuelo» empieza en el segundo 0,00
+  Code · grabado «vuelo» version D · SILENCIADO
+  Capa · archivo de Eric vuelo_1.wav (original: stereogenicstudio-swish-swoosh-woosh-sfx-19-357184.mp3) · volumen 70 % · sin moverlo, desde el primer fotograma de la animacion · empieza en el segundo 0,00 de la animacion
+    Editado · recortado hasta 1,39 s · fundido entrada 10 ms · salida 300 ms · 48000 Hz · 66768 muestras · pico 0,69
+ EN SECO: no se ha escrito nada. Con --escribir se copian los archivos y se escribe data/sonidos/estudio.json.

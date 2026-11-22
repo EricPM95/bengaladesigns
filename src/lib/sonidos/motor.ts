@@ -252,6 +252,8 @@ export interface Agendado {
   recorte?: number
   /** (V38B) Semitonos más agudo con que suena (pedazos repetidos). */
   semitonos?: number
+  /** (V40) El volumen con que suena (para comparar la app con el estudio). */
+  vol?: number
 }
 const registrar = (a: Agendado) => {
   try {
@@ -322,7 +324,7 @@ export function programarPropios(ctx: BaseAudioContext, partitura: string, t0: n
     const recorte = Math.max(0, ctx.currentTime - cuando)
     f.start(Math.max(cuando, ctx.currentTime), recorte)
     activa.fuentes.push(f)
-    registrar({ partitura, tipo: 'archivo', id: `propio:${p.id}`, en: rel, programado: rel, t0, t: cuando, recorte })
+    registrar({ partitura, tipo: 'archivo', id: `propio:${p.id}`, en: rel, programado: rel, t0, t: cuando, recorte, vol: p.vol })
   }
 }
 
@@ -360,7 +362,7 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
     if (n.tipo === 'sint') {
       if (desdeLocal > 0 && n.en + delta < desdeLocal - 0.02) continue
       tocarSintetico(ctx, master, n.sonido, versionSint(n.sonido), t0 + n.en + delta, (n.vol ?? 1) * volumenEn(`s:${n.sonido}`), n.dura)
-      registrar({ partitura: id, tipo: 'sint', id: n.sonido, en: n.en, programado: n.en + delta })
+      registrar({ partitura: id, tipo: 'sint', id: n.sonido, en: n.en, programado: n.en + delta, vol: (n.vol ?? 1) * volumenEn(`s:${n.sonido}`) })
     } else {
       const v = versionDe(n.archivo)
       // (V36B) Un sonido de Code retocado en el estudio suena con su versión ya hecha y con su golpe donde cae ahora.
@@ -384,7 +386,7 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
       const tarde = Math.max(0, ctx.currentTime - arranque) * velocidad
       fuente.start(Math.max(arranque, ctx.currentTime), tarde)
       activa.fuentes.push(fuente)
-      registrar({ partitura: id, tipo: 'archivo', id: n.archivo, en: n.golpe, programado: arranque + datos.golpe / velocidad - t0, ...(semitonos ? { semitonos } : {}) })
+      registrar({ partitura: id, tipo: 'archivo', id: n.archivo, en: n.golpe, programado: arranque + datos.golpe / velocidad - t0, vol: (n.vol ?? 1) * volumenEn(n.archivo), ...(semitonos ? { semitonos } : {}) })
     }
   }
   return { dura: p.dura, cortar: (ms = FUNDIDO_AL_SALTAR_MS) => apagar(ctx, activa, ms) }
@@ -397,3 +399,5 @@ export function reiniciarMotor() {
 
 /** Para las pruebas: cuántas partituras suenan ahora (y cuántas de ellas son premios). */
 export const cuantasSuenan = (): { todas: number; premios: number } => ({ todas: activas.length, premios: activas.filter((a) => a.premio).length })
+/** (V40) Lo que tiene puesto el motor ahora (para devolverlo tras un sonido suelto, como [Visto] o el vuelo). */
+export const estudioActual = (): EstudioDelMotor => estudio
