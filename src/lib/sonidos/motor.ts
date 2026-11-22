@@ -137,8 +137,13 @@ export interface EstudioDelMotor {
   volumenes: Record<string, number>
   /** (V36B) Sonidos de Code retocados en el estudio (por `archivo_letra`): el sonido ya hecho y dónde cae ahora su golpe y cuánto dura. */
   editados: Record<string, { buffer: AudioBuffer; golpe: number; dura: number }>
+  /** (V38E) En qué segundo de la animación ENTERA empieza cada partitura (la escena de un emblema de Roma, a los 3,6 s): «desde el principio» y «desde el golpe» cuentan desde el principio de la animación. */
+  inicios: Record<string, number>
+  /** (V38E) «▶ desde aquí»: se empieza a oír desde este segundo de la animación entera. */
+  desde?: number
 }
-const VACIO: EstudioDelMotor = { propios: [], silenciados: [], golpe: 0, ajustes: {}, letras: {}, volumenes: {}, editados: {} }
+const VACIO: EstudioDelMotor = { propios: [], silenciados: [], golpe: 0, ajustes: {}, letras: {}, volumenes: {}, editados: {}, inicios: {} }
+const inicioDe = (id: string, o: { inicio?: number } = {}): number => o.inicio ?? estudio.inicios[id] ?? 0
 let estudio: EstudioDelMotor = VACIO
 export const ponerEstudio = (e: Partial<EstudioDelMotor> | null) => {
   estudio = e ? { ...VACIO, ...e } : VACIO
@@ -178,7 +183,7 @@ export function esperaPorCodeMovido(partituras: string[], o: OpcionesDePartitura
     for (const n of notas) {
       const k = claveDeNota(n)
       if (estudio.silenciados.includes(k) || !estudio.ajustes[k]) continue
-      const nuevo = arranqueNatural(n, golpeDentro(n)) + desplazamientoDeCode(primeras.get(k) as number, estudio.ajustes[k], estudio.golpe)
+      const nuevo = arranqueNatural(n, golpeDentro(n)) + desplazamientoDeCode((primeras.get(k) as number) + inicioDe(id, o), estudio.ajustes[k], estudio.golpe)
       if (nuevo < minimo) minimo = nuevo
     }
   }
@@ -196,7 +201,7 @@ export function finSonoroDe(id: string, o: OpcionesDePartitura = {}): number {
   for (const n of p.notas) {
     const k = claveDeNota(n)
     if (estudio.silenciados.includes(k)) continue
-    const delta = desplazamientoDeCode(primeras.get(k) as number, estudio.ajustes[k], estudio.golpe)
+    const delta = desplazamientoDeCode((primeras.get(k) as number) + inicioDe(id, o), estudio.ajustes[k], estudio.golpe)
     if (n.tipo === 'sint') fin = Math.max(fin, n.en + delta + (n.dura ?? 0.3))
     else {
       const v = versionDe(n.archivo)
@@ -294,7 +299,7 @@ export function cortar(ctx: BaseAudioContext, fundidoMs = FUNDIDO_AL_SALTAR_MS, 
 export const haySonando = (): boolean => activas.length > 0
 
 /** (V35A2) Programa cada sonido de Eric, entero (nunca recortado), en su instante respecto al primer fotograma `t0`. */
-export function programarPropios(ctx: BaseAudioContext, partitura: string, t0: number) {
+export function programarPropios(ctx: BaseAudioContext, partitura: string, t0: number, desde = 0) {
   if (estudio.propios.length === 0) return
   // Se programan YA (antes de que la animación se monte): así uno que tiene que sonar antes del primer fotograma se oye entero.
   const master = ctx.createGain()
@@ -310,6 +315,8 @@ export function programarPropios(ctx: BaseAudioContext, partitura: string, t0: n
     g.gain.value = p.vol
     f.connect(g)
     g.connect(master)
+    // (V38E) «▶ desde aquí»: un sonido de Eric que acaba antes del punto elegido no suena; el que está sonando en ese punto entra a mitad.
+    if (desde > 0 && rel + p.buffer.duration < desde) continue
     const cuando = t0 + rel
     // Nunca se recorta a propósito: si llegara tarde (el móvil va justo), se dice cuánto (`recorte`) para que la página lo avise.
     const recorte = Math.max(0, ctx.currentTime - cuando)
@@ -330,7 +337,11 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
   // (V35A2) Si el estudio ha fijado el primer fotograma en el reloj de audio, la partitura arranca justo ahí (una sola vez).
   const fijado = inicioFijado && inicioFijado.hasta >= ctx.currentTime ? inicioFijado.t : null
   inicioFijado = null
-  const t0 = (fijado ?? o.en ?? ctx.currentTime) + (fijado === null ? ADELANTO : 0)
+  // (V38E) «▶ desde aquí»: el reloj de esta partitura ya va `desdeLocal` s adelantado (lo que pasó antes del punto elegido no suena; lo que está sonando entra a mitad).
+  const inicio = inicioDe(id, o)
+  const desde = o.desde ?? estudio.desde ?? 0
+  const desdeLocal = Math.max(0, desde - inicio)
+  const t0 = (fijado ?? o.en ?? ctx.currentTime) + (fijado === null ? ADELANTO : 0) - desdeLocal
   const master = ctx.createGain()
   master.gain.value = volumenGeneral()
   master.connect(ctx.destination)
@@ -345,8 +356,9 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
     const clave = claveDeNota(n)
     if (estudio.silenciados.includes(clave)) continue
     // (V35B2) Un sonido de Code movido: todas sus notas se mueven lo mismo.
-    const delta = desplazamientoDeCode(primeras.get(clave) as number, estudio.ajustes[clave], estudio.golpe)
+    const delta = desplazamientoDeCode((primeras.get(clave) as number) + inicio, estudio.ajustes[clave], estudio.golpe)
     if (n.tipo === 'sint') {
+      if (desdeLocal > 0 && n.en + delta < desdeLocal - 0.02) continue
       tocarSintetico(ctx, master, n.sonido, versionSint(n.sonido), t0 + n.en + delta, (n.vol ?? 1) * volumenEn(`s:${n.sonido}`), n.dura)
       registrar({ partitura: id, tipo: 'sint', id: n.sonido, en: n.en, programado: n.en + delta })
     } else {
@@ -368,6 +380,7 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
       g.connect(master)
       // El golpe cae en `n.golpe`: el archivo arranca `datos.golpe` segundos antes (o a mitad, si ya vamos tarde).
       const arranque = t0 + n.golpe - datos.golpe / velocidad + delta
+      if (desdeLocal > 0 && n.golpe - datos.golpe / velocidad + delta + datos.dura / velocidad < desdeLocal) continue
       const tarde = Math.max(0, ctx.currentTime - arranque) * velocidad
       fuente.start(Math.max(arranque, ctx.currentTime), tarde)
       activa.fuentes.push(fuente)

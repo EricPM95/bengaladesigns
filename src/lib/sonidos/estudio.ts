@@ -1,5 +1,7 @@
 import type { Momento } from '../logros'
-import { partituraDe } from './partituras'
+import { partituraDe, type OpcionesDePartitura } from './partituras'
+import { ctaDeLosPedazos, FRACCIONES_APERTURA, paraFinalSiete, TIEMPOS_DE_EMBLEMA, TIEMPOS_ESTAMPADO, TIEMPOS_FINAL_SIETE, tiemposDeEscena } from './tiempos'
+import { finSonoroDe } from './motor'
 import { MOMENTOS_DE_COLECCIONES } from './ejemploEstado'
 
 /**
@@ -137,7 +139,112 @@ export function sintesDeLaAnimacion(a: Animacion): string[] {
 }
 
 /** (V35A2) Lo que dura la animación entera (la partitura más larga de las que arrancan al empezar), en segundos. */
-export const duracionDe = (a: Animacion): number => Math.max(...a.suena.map((s) => partituraDe(s)?.dura ?? 0), 0)
+/**
+ * (V38E) LA LÍNEA DE TIEMPO DE UNA TARJETA: la animación ENTERA que se ve en el marco, de principio a [Seguir], no la de una partitura.
+ *   · `dura`: hasta que sale [Seguir] (o hasta que acaba, si no hay [Seguir]); sale de los mismos números que la animación (tiempos.ts y los de cada escena).
+ *   · `tramos`: qué partituras suenan y cuándo EMPIEZA cada una dentro de la animación entera (la escena de un emblema de Roma empieza cuando acaba su suspense: a los 3,6 s). Los sonidos de cada tramo se colocan en el segundo que les toca.
+ *   · `marcas`: los momentos clave, con su rótulo (los latidos, la luz que estalla, aparece el emblema, el nombre, [Seguir]…).
+ */
+export interface Marca {
+  t: number
+  rotulo: string
+}
+export interface Tramo {
+  partitura: string
+  /** Segundos desde el principio de la animación entera en que empieza esa partitura. */
+  empieza: number
+  opciones?: OpcionesDePartitura
+}
+export interface LineaDeTiempo {
+  dura: number
+  /** Segundos en que sale [Seguir] (null si la animación no tiene). */
+  seguir: number | null
+  marcas: Marca[]
+  tramos: Tramo[]
+}
+const ESCENA_LANZAROTE = { fl: 9.9, dim: 9.5, x: [10.7, 11.6, 12.5, 13.4] }
+const ESCENA_COLISEO = { fl: 23.6, dim: 23.2, x: [24, 24.3, 24.6, 25.6] }
+const MARCAS_DE_LATIDOS: Marca = { t: TIEMPOS_DE_EMBLEMA.aros[0], rotulo: 'latidos' }
+/** Cuánto dura de verdad la parte de «Seguir» de cada tarjeta: el `ctaEn` de su pantalla (pantallas.tsx) y, en los emblemas, el [Seguir] de la escena. */
+const SEGUIR_DE: Record<string, number> = { medalla_bronce: 2.4, medalla_plata: 4.4, medalla_oro: 4.4, medalla_diamante: 4.4, coleccion: 4.2, coleccion_imprescindibles: 4.2, pais: 3, patrimonio: 2.6, viajero: 2.6 }
+export function lineaDeTiempo(a: Animacion): LineaDeTiempo {
+  const porDefecto: Tramo[] = a.suena.map((s) => ({ partitura: s, empieza: 0 }))
+  const dePartitura = Math.max(...a.suena.map((s) => partituraDe(s)?.dura ?? 0), 0)
+  const marcaSeguir = (t: number): Marca => ({ t, rotulo: '[Seguir]' })
+  switch (a.id) {
+    case 'emblema': {
+      // Roma: la espera de antes del emblema (los latidos y el estallido, 3,6 s) y después su escena.
+      const e = tiemposDeEscena()
+      const s0 = TIEMPOS_DE_EMBLEMA.estalla
+      const seguir = s0 + e.x[3]
+      return {
+        dura: seguir,
+        seguir,
+        tramos: [{ partitura: 'emblema', empieza: 0 }, { partitura: 'escena', empieza: s0 }],
+        marcas: [MARCAS_DE_LATIDOS, { t: s0, rotulo: 'estalla la luz · empieza la escena' }, { t: s0 + e.dim, rotulo: 'todo se apaga' }, { t: s0 + e.fl, rotulo: 'estalla la luz del emblema' }, { t: s0 + e.x[0], rotulo: 'aparece el emblema' }, { t: s0 + e.x[2], rotulo: 'el nombre' }, marcaSeguir(seguir)],
+      }
+    }
+    case 'emblema_lanzarote': {
+      const e = ESCENA_LANZAROTE
+      return {
+        dura: e.x[3],
+        seguir: e.x[3],
+        tramos: [{ partitura: 'emblema', empieza: 0 }, { partitura: 'escena', empieza: 0, opciones: { escena: e } }],
+        marcas: [MARCAS_DE_LATIDOS, { t: TIEMPOS_DE_EMBLEMA.estalla, rotulo: 'estalla la luz del suspense' }, { t: e.dim, rotulo: 'todo se apaga' }, { t: e.fl, rotulo: 'estalla la luz del emblema' }, { t: e.x[0], rotulo: 'aparece el emblema' }, { t: e.x[2], rotulo: 'el nombre' }, marcaSeguir(e.x[3])],
+      }
+    }
+    case 'emblema_maravilla': {
+      // El Coliseo: su película entera (coliseo.tsx), con el suspense por dentro, sin pantalla de suspense aparte.
+      const e = ESCENA_COLISEO
+      return {
+        dura: e.x[3],
+        seguir: e.x[3],
+        tramos: [{ partitura: 'emblema', empieza: 0 }, { partitura: 'escena', empieza: 0, opciones: { escena: e } }],
+        marcas: [
+          MARCAS_DE_LATIDOS,
+          { t: 0.3, rotulo: '«Casi 2.000 años esperándote…»' },
+          { t: 5.4, rotulo: 'segunda frase' },
+          { t: 11.3, rotulo: 'vuelan las partículas de oro' },
+          { t: 15.8, rotulo: 'se dibuja el Coliseo' },
+          { t: 16.8, rotulo: 'se enciende' },
+          { t: 22.35, rotulo: 'el oro se junta' },
+          { t: e.fl, rotulo: 'estalla el destello' },
+          { t: e.x[0], rotulo: 'los textos' },
+          marcaSeguir(e.x[3]),
+        ],
+      }
+    }
+    case 'maravilla': {
+      const t = TIEMPOS_FINAL_SIETE
+      return {
+        dura: 10.4,
+        seguir: 9,
+        tramos: porDefecto,
+        marcas: [{ t: t.quietas, rotulo: 'las 7 monedas quietas' }, { t: t.latidos[0], rotulo: 'latidos' }, { t: t.choque[0], rotulo: 'el choque' }, { t: t.giraEmpieza, rotulo: 'gira la medalla' }, { t: paraFinalSiete(), rotulo: 'la medalla para' }, { t: t.barrido, rotulo: 'barrido de brillo' }, marcaSeguir(9), { t: 9.6, rotulo: 'el título' }],
+      }
+    }
+    case 'pedazo':
+    case 'pedazo_dos':
+    case 'pedazo_tres': {
+      const n = a.id === 'pedazo' ? 1 : a.id === 'pedazo_dos' ? 2 : 3
+      const fin = finSonoroDe('pedazo')
+      const seguir = ctaDeLosPedazos(n, fin)
+      return { dura: seguir, seguir, tramos: porDefecto, marcas: [marcaSeguir(seguir)] }
+    }
+    case 'sello': {
+      return { dura: TIEMPOS_ESTAMPADO.fin, seguir: null, tramos: porDefecto, marcas: [{ t: TIEMPOS_ESTAMPADO.golpe, rotulo: 'el sello toca la hoja' }] }
+    }
+    case 'apertura':
+      return { dura: Math.max(dePartitura, 0), seguir: null, tramos: porDefecto, marcas: [{ t: FRACCIONES_APERTURA.estrella * dePartitura, rotulo: 'la estrella salta sobre la I' }] }
+    default: {
+      const seguir = SEGUIR_DE[a.id] ?? null
+      // (La duración nunca es menor que la de su sonido: el golpe y la cola de un sonido no se salen de la línea de tiempo. Ojo: la medalla de bronce da [Seguir] a los 2,4 s pero su golpe cae a los 4,4 s: ya era así.)
+      return { dura: seguir === null ? dePartitura : Math.max(seguir, golpeDe(a), dePartitura), seguir, tramos: porDefecto, marcas: seguir === null ? [] : [marcaSeguir(seguir)] }
+    }
+  }
+}
+/** Lo que dura la animación entera (la línea de tiempo del estudio), en segundos. */
+export const duracionDe = (a: Animacion): number => lineaDeTiempo(a).dura
 /** (V35A2) El instante, en segundos desde el primer fotograma, en que cae el golpe (el del sonido principal; si no hay, el final de la animación): la referencia de «En el golpe» y la raya roja. */
 export function golpeDe(a: Animacion): number {
   for (const id of a.suena) for (const n of partituraDe(id)?.notas ?? []) if (n.tipo === 'archivo' && a.principal.tipo === 'archivo' && n.archivo === a.principal.id) return n.golpe

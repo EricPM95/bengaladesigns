@@ -132,8 +132,11 @@ export interface DatosParaElZip {
   finales?: { capas: Record<string, FinalDeSonido>; codigo: Record<string, FinalDeSonido> }
   animacion: string
   nombre: string
+  /** (V38E) Lo que dura la animación ENTERA (hasta [Seguir]). */
   duracion: number
   golpe: number
+  /** (V38E) Qué partituras suenan y en qué segundo de la animación entera empieza cada una (la escena de un emblema de Roma, a los 3,6 s): con esto cada «desde el principio» / «desde el golpe» cae en su segundo exacto. */
+  tramos?: { partitura: string; empieza: number }[]
   codigo: SonidoDeCodeDeLaAnimacion[]
   capas: CapaGuardada[]
   lineaElegida: string
@@ -180,6 +183,7 @@ export function construirZip(animaciones: DatosParaElZip[], volumenGeneral: numb
       nombre: a.nombre,
       duracion: redondea(a.duracion),
       golpe: redondea(a.golpe),
+      ...(a.tramos ? { tramos: a.tramos.map((x) => ({ partitura: x.partitura, empieza: redondea(x.empieza) })) } : {}),
       sonidos_de_code: a.codigo.map((c) => {
         const fin = a.finales?.codigo[c.clave]
         const base = { clave: c.clave, tipo: c.tipo, sonido: c.sonido, version: c.version, silenciado: c.silenciado, volumen: redondea(c.volumen, 2), ms: Math.round(c.ms), empieza: c.empieza }

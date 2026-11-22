@@ -89,7 +89,7 @@ try {
       debe(f.suena[0] === f.sonidoApp, 'sonido', `${f.id}: suena «${f.suena[0]}» = lo que suena en la app para esa pantalla («${f.sonidoApp}»)`)
     }
     const maxP = Math.max(...f.duraPartituras.map((d) => d[1] ?? 0))
-    debe(f.duraPartituras.every((d) => d[1] !== null) && Math.abs(f.dura - maxP) < 1e-9 && f.dura > 0, 'duracion', `${f.id}: la duración de la tarjeta (${f.dura.toFixed(2)} s) es la de su partitura más larga (${maxP.toFixed(2)} s)`)
+    debe(f.duraPartituras.every((d) => d[1] !== null) && f.dura >= maxP - 1e-9 && f.dura > 0, 'duracion', `${f.id}: la duración de la tarjeta (${f.dura.toFixed(2)} s) cubre su partitura más larga (${maxP.toFixed(2)} s) (V38E: es la de la animación entera, de principio a [Seguir], y nunca menos que su sonido)`)
   }
   const sello = filas.find((f) => f.id === 'sello')
   debe(sello.visor === 'pasaporte' && sello.suena.join() === 'sello_pasaporte' && !sello.tipos.length, 'sello', 'la tarjeta del sello monta el pasaporte y suena su partitura (no la de la medalla)')

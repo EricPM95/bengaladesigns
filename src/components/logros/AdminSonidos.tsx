@@ -22,7 +22,7 @@ import {
   type Manifiesto,
   type SonidoPropio,
 } from '../../lib/sonidos/motor'
-import { ANIMACIONES, animacionDe, archivosDeLaAnimacion, AVISO_DE_LOS_SONIDOS_PROPIOS, duracionDe, golpeDe, lineaElegida, sintesDeLaAnimacion, type Animacion } from '../../lib/sonidos/estudio'
+import { ANIMACIONES, animacionDe, archivosDeLaAnimacion, AVISO_DE_LOS_SONIDOS_PROPIOS, duracionDe, golpeDe, lineaDeTiempo, lineaElegida, sintesDeLaAnimacion, type Animacion, type Marca } from '../../lib/sonidos/estudio'
 import { partituraDe, type Nota } from '../../lib/sonidos/partituras'
 import { aplicarRetoques, codificarWav, descripcionDe, golpeTras, limitar, picoDe, SIN_RETOQUES, sinCambios, type Retoques } from '../../lib/sonidos/editar'
 import { EditorDeSonido } from './sonidos/EditorDeSonido'
@@ -221,17 +221,27 @@ interface FilaDeTiempo {
   buffer?: AudioBuffer
 }
 
-/** La franja de 0 a la duración con una fila por sonido que suena y las rayas verde (empieza) y roja (golpe / final). Cada trozo se arrastra con el dedo o el ratón (de 10 en 10 ms). */
-function LineaDeTiempo({ filas, dura, golpe, alArrastrar }: { filas: FilaDeTiempo[]; dura: number; golpe: number; alArrastrar: (clave: string, deltaMs: number) => void }): ReactNode {
+/**
+ * (V38E) LA LÍNEA DE TIEMPO DE LA ANIMACIÓN ENTERA: de 0 a [Seguir] (no a lo que dura una partitura), con una regla de segundos, las marcas de los momentos clave con su rótulo, una fila por sonido, las rayas verde (empieza) y roja (golpe / final)
+ * y una raya azul (el punto elegido para [▶ desde aquí]). Zoom (+ / −) para afinar en un trozo; se desliza de lado cuando está ampliada. Cada trozo se ARRASTRA (de 10 en 10 ms) en toda su longitud, y debajo de cada sonido hay un campo para
+ * escribir el segundo exacto («empieza en 12,40 s»), contado desde el principio de la animación. Tocar la franja elige el punto de [▶ desde aquí].
+ */
+const ZOOMS = [1, 2, 4, 8]
+const PASOS_DE_REGLA = [0.5, 1, 2, 5, 10, 20]
+function LineaDeTiempo({ filas, dura, golpe, marcas, desde, alArrastrar, alPonerSegundo, alElegirPunto, alReproducirDesde }: { filas: FilaDeTiempo[]; dura: number; golpe: number; marcas: Marca[]; desde: number | null; alArrastrar: (clave: string, deltaMs: number) => void; alPonerSegundo: (clave: string, segundos: number) => void; alElegirPunto: (t: number) => void; alReproducirDesde: () => void }): ReactNode {
+  const [zoom, setZoom] = useState(1)
   const todos = filas.flatMap((f) => f.trozos)
   const lo = Math.min(0, ...todos.map((t) => t.de))
-  const hi = Math.max(dura, golpe, ...todos.map((t) => t.a))
+  const hi = Math.max(dura, golpe, ...todos.map((t) => t.a), ...marcas.map((m) => m.t))
   const largo = Math.max(0.001, hi - lo)
   const pos = (t: number) => `${(((t - lo) / largo) * 100).toFixed(3)}%`
   const ancho = (t: Trozo) => `${(((t.a - t.de) / largo) * 100).toFixed(3)}%`
   const franja = useRef<HTMLDivElement>(null)
   const arrastre = useRef<{ clave: string; x0: number; aplicado: number } | null>(null)
+  /** Soltar un trozo tras arrastrarlo no cuenta como tocar la línea (no elige el punto de «desde aquí»). */
+  const acabaDeArrastrar = useRef(false)
   const alBajar = (e: React.PointerEvent, clave: string) => {
+    e.stopPropagation()
     arrastre.current = { clave, x0: e.clientX, aplicado: 0 }
     try {
       ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
@@ -247,42 +257,140 @@ function LineaDeTiempo({ filas, dura, golpe, alArrastrar }: { filas: FilaDeTiemp
     if (total !== a.aplicado) {
       alArrastrar(a.clave, total - a.aplicado)
       a.aplicado = total
+      acabaDeArrastrar.current = true
     }
   }
   const alSoltar = () => {
     arrastre.current = null
+    if (acabaDeArrastrar.current) window.setTimeout(() => (acabaDeArrastrar.current = false), 250)
+  }
+  // La regla: marcas cada `paso` segundos, el paso más pequeño que no apelmaza (unas 8 por pantalla).
+  const visibles = largo / zoom
+  const paso = PASOS_DE_REGLA.find((p) => visibles / p <= 9) ?? 20
+  const ticks: number[] = []
+  for (let t = Math.ceil(lo / paso) * paso; t <= hi + 1e-9; t += paso) ticks.push(Math.round(t * 100) / 100)
+  const primeraDe = (f: FilaDeTiempo): number => Math.min(...f.trozos.map((t) => t.de))
+  const alTocarFranja = (e: React.MouseEvent) => {
+    if (acabaDeArrastrar.current) return
+    const r = franja.current?.getBoundingClientRect()
+    if (!r || r.width <= 0) return
+    alElegirPunto(Math.max(lo, Math.min(hi, lo + ((e.clientX - r.left) / r.width) * largo)))
   }
   return (
-    <div data-linea-de-tiempo data-lo={lo.toFixed(3)} data-hi={hi.toFixed(3)} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <span style={etiqueta}>LÍNEA DE TIEMPO · {coma(dura, 1)} s · arrastra un sonido para moverlo</span>
-      <div style={{ position: 'relative', paddingTop: 20 }}>
-        <span style={{ position: 'absolute', top: 0, left: pos(0), transform: 'translateX(-2px)', font: "600 10.5px 'Geist'", color: '#2F6B43', whiteSpace: 'nowrap' }}>empieza la animación</span>
-        <span style={{ position: 'absolute', top: 0, left: pos(golpe), transform: 'translateX(calc(-100% + 2px))', font: "600 10.5px 'Geist'", color: '#B0183A', whiteSpace: 'nowrap' }}>golpe / final</span>
-        <div ref={franja} data-franja style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 0', background: '#F7F1E4', borderRadius: 10, minHeight: 40 }}>
-          {filas.map((f) => (
-            <div key={f.clave} data-fila-de-tiempo={f.clave} style={{ position: 'relative', height: 28 }}>
-              {f.trozos.map((t, i) => (
-                <div
-                  key={i}
-                  data-trozo
-                  data-arrastrable
-                  onPointerDown={(e) => alBajar(e, f.clave)}
-                  onPointerMove={alMover}
-                  onPointerUp={alSoltar}
-                  onPointerCancel={alSoltar}
-                  style={{ position: 'absolute', left: pos(t.de), width: ancho(t), minWidth: 6, top: 0, bottom: 0, borderRadius: 6, background: f.propio ? 'rgba(201,154,68,.28)' : 'rgba(28,34,48,.16)', border: f.propio ? `1px solid ${ORO}` : '1px solid rgba(28,34,48,.3)', overflow: 'hidden', cursor: 'grab', touchAction: 'none' }}
-                >
-                  {f.buffer && <Onda buffer={f.buffer} />}
+    <div data-linea-de-tiempo data-lo={lo.toFixed(3)} data-hi={hi.toFixed(3)} data-dura={dura.toFixed(3)} data-zoom={zoom} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <span style={etiqueta}>LÍNEA DE TIEMPO · {coma(dura, 1)} s · arrastra un sonido, o escribe su segundo</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button type="button" data-zoom-menos aria-label="Alejar la línea de tiempo" disabled={zoom <= ZOOMS[0]} onClick={() => setZoom((z) => ZOOMS[Math.max(0, ZOOMS.indexOf(z) - 1)])} style={{ ...botonPeq, minWidth: 44, opacity: zoom <= ZOOMS[0] ? 0.4 : 1 }}>−</button>
+          <span data-zoom-valor style={{ font: "600 12px 'Geist Mono',monospace", minWidth: 28, textAlign: 'center' }}>×{zoom}</span>
+          <button type="button" data-zoom-mas aria-label="Acercar la línea de tiempo" disabled={zoom >= ZOOMS[ZOOMS.length - 1]} onClick={() => setZoom((z) => ZOOMS[Math.min(ZOOMS.length - 1, ZOOMS.indexOf(z) + 1)])} style={{ ...botonPeq, minWidth: 44, opacity: zoom >= ZOOMS[ZOOMS.length - 1] ? 0.4 : 1 }}>+</button>
+        </span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <button type="button" data-desde-aqui disabled={desde === null} onClick={alReproducirDesde} style={{ ...botonOscuro, display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 16px', opacity: desde === null ? 0.5 : 1 }}>
+          <Triangulo t={12} /> desde aquí{desde === null ? '' : ` · ${coma(desde, 2)} s`}
+        </button>
+        <span style={{ font: "400 11.5px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' }}>{desde === null ? 'Toca la línea de tiempo para elegir el punto.' : 'Reproduce la animación y los sonidos desde la raya azul.'}</span>
+      </div>
+      <div data-scroll-de-la-linea style={{ overflowX: zoom > 1 ? 'auto' : 'hidden', paddingBottom: 4 }}>
+        <div style={{ width: `${zoom * 100}%`, minWidth: '100%', position: 'relative' }}>
+          {/* La regla de segundos */}
+          <div data-regla style={{ position: 'relative', height: 18, borderBottom: '1px solid rgba(28,34,48,.25)' }}>
+            {ticks.map((t) => (
+              <span key={t} data-tick={t} style={{ position: 'absolute', left: pos(t), bottom: 0, height: 6, borderLeft: '1px solid rgba(28,34,48,.4)', font: "500 9.5px 'Geist Mono',monospace", color: 'rgba(28,34,48,.6)', paddingLeft: 3, whiteSpace: 'nowrap', lineHeight: '12px', transform: 'translateY(-6px)' }}>
+                {Number.isInteger(t) ? t : coma(t, 1)} s
+              </span>
+            ))}
+          </div>
+          {/* Los momentos clave, con su rótulo (en tres alturas para que no se pisen) */}
+          <div data-marcas style={{ position: 'relative', height: 14 * 3 + 6 }}>
+            {marcas.map((m, i) => {
+              // (Las del final de la línea llevan el rótulo a la izquierda de su raya, para que no se salga.)
+              const alFinal = (m.t - lo) / largo > 0.78
+              return (
+                <span key={`${m.t}:${m.rotulo}`} data-marca={m.rotulo} data-marca-t={m.t.toFixed(2)} style={{ position: 'absolute', left: pos(m.t), top: (i % 3) * 14, transform: alFinal ? 'translateX(-100%)' : undefined, [alFinal ? 'borderRight' : 'borderLeft']: '1px dashed rgba(28,34,48,.45)', [alFinal ? 'paddingRight' : 'paddingLeft']: 3, font: "600 9.5px 'Geist'", color: 'rgba(28,34,48,.75)', whiteSpace: 'nowrap', height: 14 * 3 + 6 - (i % 3) * 14, lineHeight: '13px', textAlign: alFinal ? 'right' : 'left' }}>
+                  {m.rotulo} · {coma(m.t, 1)} s
+                </span>
+              )
+            })}
+          </div>
+          <div style={{ position: 'relative', paddingTop: 2 }}>
+            <div ref={franja} data-franja onClick={alTocarFranja} style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 0', background: '#F7F1E4', borderRadius: 10, minHeight: 40, cursor: 'crosshair' }}>
+              {filas.map((f) => (
+                <div key={f.clave} data-fila-de-tiempo={f.clave} style={{ position: 'relative', height: 28 }}>
+                  {f.trozos.map((t, i) => (
+                    <div
+                      key={i}
+                      data-trozo
+                      data-arrastrable
+                      data-de={t.de.toFixed(3)}
+                      onClick={(e) => e.stopPropagation()}
+                      onPointerDown={(e) => alBajar(e, f.clave)}
+                      onPointerMove={alMover}
+                      onPointerUp={(e) => {
+                        alMover(e) // el último punto del dedo o del ratón cuenta (el movimiento final puede llegar junto con el soltar)
+                        alSoltar()
+                      }}
+                      onPointerCancel={alSoltar}
+                      style={{ position: 'absolute', left: pos(t.de), width: ancho(t), minWidth: 6, top: 0, bottom: 0, borderRadius: 6, background: f.propio ? 'rgba(201,154,68,.28)' : 'rgba(28,34,48,.16)', border: f.propio ? `1px solid ${ORO}` : '1px solid rgba(28,34,48,.3)', overflow: 'hidden', cursor: 'grab', touchAction: 'none' }}
+                    >
+                      {f.buffer && <Onda buffer={f.buffer} />}
+                    </div>
+                  ))}
+                  <span style={{ position: 'absolute', left: 6, top: 6, font: "600 10px 'Geist'", color: OSCURO, pointerEvents: 'none', textShadow: '0 0 3px #F7F1E4,0 0 3px #F7F1E4' }}>{f.nombre}</span>
                 </div>
               ))}
-              <span style={{ position: 'absolute', left: 6, top: 6, font: "600 10px 'Geist'", color: OSCURO, pointerEvents: 'none', textShadow: '0 0 3px #F7F1E4,0 0 3px #F7F1E4' }}>{f.nombre}</span>
+              <div data-raya-verde style={{ position: 'absolute', top: 0, bottom: 0, left: pos(0), width: 2, background: '#2F9E5B', pointerEvents: 'none' }} />
+              <div data-raya-roja style={{ position: 'absolute', top: 0, bottom: 0, left: pos(golpe), width: 2, background: '#D21E45', pointerEvents: 'none' }} />
+              {desde !== null && <div data-raya-azul style={{ position: 'absolute', top: 0, bottom: 0, left: pos(desde), width: 2, background: '#2B6CB0', pointerEvents: 'none' }} />}
             </div>
-          ))}
-          <div data-raya-verde style={{ position: 'absolute', top: 0, bottom: 0, left: pos(0), width: 2, background: '#2F9E5B', pointerEvents: 'none' }} />
-          <div data-raya-roja style={{ position: 'absolute', top: 0, bottom: 0, left: pos(golpe), width: 2, background: '#D21E45', pointerEvents: 'none' }} />
+          </div>
         </div>
       </div>
+      <span style={{ display: 'flex', gap: 14, flexWrap: 'wrap', font: "500 10.5px 'Geist'", color: 'rgba(28,34,48,.6)' }}>
+        <span><b style={{ color: '#2F9E5B' }}>▌</b> empieza la animación</span>
+        <span><b style={{ color: '#D21E45' }}>▌</b> golpe / final</span>
+        <span><b style={{ color: '#2B6CB0' }}>▌</b> punto de «desde aquí»</span>
+      </span>
+      {/* El segundo exacto de cada sonido, desde el principio de la animación */}
+      <div data-segundos-exactos style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {filas.map((f) => (
+          <label key={f.clave} style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', font: "500 12px 'Geist'" }}>
+            <span style={{ minWidth: 150, flex: '1 1 150px' }}>{f.nombre}</span>
+            <span>empieza en</span>
+            <CampoDeSegundo valor={primeraDe(f)} maximo={Math.max(dura, hi)} alCambiar={(s) => alPonerSegundo(f.clave, s)} clave={f.clave} />
+            <span>s</span>
+          </label>
+        ))}
+      </div>
     </div>
+  )
+}
+
+/** (V38E) El campo para escribir el segundo exacto en que empieza un sonido («12,40»). Se aplica al salir del campo o con Intro; admite coma o punto. */
+function CampoDeSegundo({ valor, maximo, alCambiar, clave }: { valor: number; maximo: number; alCambiar: (s: number) => void; clave: string }): ReactNode {
+  const [texto, setTexto] = useState<string | null>(null)
+  const mostrado = texto ?? valor.toFixed(2).replace('.', ',')
+  const aplicar = () => {
+    if (texto === null) return
+    const n = Number(texto.replace(',', '.'))
+    setTexto(null)
+    if (Number.isFinite(n)) alCambiar(Math.max(0, Math.min(maximo, n)))
+  }
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      data-empieza-en={clave}
+      aria-label="Segundo en que empieza el sonido, desde el principio de la animación"
+      value={mostrado}
+      onChange={(e) => setTexto(e.target.value)}
+      onBlur={aplicar}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+      }}
+      style={{ width: 84, height: 44, padding: '0 10px', borderRadius: 10, border: '1.5px solid rgba(28,34,48,.2)', font: "600 14px 'Geist Mono',monospace", textAlign: 'right', background: '#fff' }}
+    />
   )
 }
 
@@ -370,6 +478,10 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
   const susSilencios = e.silenciados
   const dura = duracionDe(anim)
   const golpe = golpeDe(anim)
+  const linea = useMemo(() => lineaDeTiempo(anim), [anim])
+  // (V38E) El punto elegido en la línea de tiempo para «▶ desde aquí» (segundos de la animación entera), por tarjeta.
+  const [desdeAqui, setDesdeAqui] = useState<Record<string, number>>({})
+  const puntoDesde = desdeAqui[anim.id] ?? null
 
   // El visor (la app dentro del marco): la marca de «sin pantalla de apertura» se deja antes de cargarlo y se espera a que tenga su API.
   const srcDelVisor = useMemo(() => {
@@ -409,7 +521,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     return c
   }
   /** Reproduce la animación con lo que haya (o con lo que se pase, cuando el estado de React aún no se ha puesto al día). */
-  const ver = useCallback(async (id: string, sobre?: Partial<EstadoRT>) => {
+  const ver = useCallback(async (id: string, sobre?: Partial<EstadoRT>, extra?: { desde?: number }) => {
     const v = visor()
     if (!v || !audio()) return
     setHaSonado(true)
@@ -419,7 +531,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
       const p = procesadosRef.current[`${id}|${k}`]
       if (p) editados[k] = p
     }
-    await v.ver({ animacion: id, escena: escenaVista.current[id], propios: x.capas, silenciados: x.silenciados, ajustes: x.ajustes, letras: x.letras, volumenes: x.volumenes, editados })
+    await v.ver({ animacion: id, escena: escenaVista.current[id], desde: extra?.desde, propios: x.capas, silenciados: x.silenciados, ajustes: x.ajustes, letras: x.letras, volumenes: x.volumenes, editados })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const abrirY = (id: string) => {
@@ -590,6 +702,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
             nombre: a.nombre,
             duracion: duracionDe(a),
             golpe: golpeDe(a),
+            tramos: lineaDeTiempo(a).tramos.map((x) => ({ partitura: x.partitura, empieza: x.empieza })),
             codigo: deCodeDe(a).map((c) => ({
               clave: c.clave,
               tipo: c.tipo,
@@ -852,8 +965,10 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     void cambios
     const salida: FilaDeTiempo[] = []
     const porClave = new Map<string, FilaDeTiempo>()
-    for (const s of anim.suena) {
-      const notas: Nota[] = partituraDe(s)?.notas ?? []
+    for (const tramo of linea.tramos) {
+      const s = tramo.partitura
+      const empieza = tramo.empieza
+      const notas: Nota[] = partituraDe(s, tramo.opciones)?.notas ?? []
       const golpeDe1 = (n: Nota): number => (n.tipo === 'archivo' ? (procesados[`${anim.id}|${claveEd(n.archivo, versionDeEn(e, n.archivo))}`]?.golpe ?? mf?.[n.archivo]?.[versionDeEn(e, n.archivo)]?.golpe ?? 0.3) : 0)
       const primera = new Map<string, number>()
       for (const n of notas) {
@@ -865,7 +980,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
         const id = n.tipo === 'sint' ? n.sonido : n.archivo
         const clave = claveDeSilencio(n.tipo, id)
         if (susSilencios.includes(clave)) continue
-        const delta = desplazamientoDeCode(primera.get(clave) as number, e.ajustes[clave], golpe)
+        const delta = desplazamientoDeCode((primera.get(clave) as number) + empieza, e.ajustes[clave], golpe)
         let de: number
         let largo: number
         if (n.tipo === 'sint') {
@@ -883,7 +998,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
           porClave.set(clave, fila)
           salida.push(fila)
         }
-        fila.trozos.push({ de, a: de + largo })
+        fila.trozos.push({ de: de + empieza, a: de + empieza + largo })
       }
     }
     for (const c of susCapas) {
@@ -892,7 +1007,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     }
     return salida
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [anim.id, susCapas, susSilencios, e.ajustes, e.letras, mf, cambios, golpe, procesados])
+  }, [anim.id, linea, susCapas, susSilencios, e.ajustes, e.letras, mf, cambios, golpe, procesados])
 
   /** Arrastrar un trozo: mueve el sonido tantos ms (los de Code, su ajuste; las capas, su ms). */
   const arrastrar = (clave: string, deltaMs: number) => {
@@ -901,7 +1016,25 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
       actualizar(anim.id, (x) => ({ ...x, capas: x.capas.map((c) => (c.id === id ? { ...c, ms: Math.max(-limite, Math.min(limite, c.ms + deltaMs)) } : c)) }))
       return
     }
-    ponerAjuste(clave, { ms: Math.max(-limite, Math.min(limite, ajusteDe(clave).ms + deltaMs)) })
+    // (V38E) Sobre lo ÚLTIMO (no sobre lo pintado): varios movimientos seguidos del dedo, antes de repintar, se suman todos.
+    actualizar(anim.id, (x) => {
+      const actual = x.ajustes[clave] ?? { ms: 0, empieza: 'sitio' as EmpiezaCode }
+      const nuevo = { ...actual, ms: Math.max(-limite, Math.min(limite, actual.ms + deltaMs)) }
+      const ajustes = { ...x.ajustes }
+      if (nuevo.ms === 0 && nuevo.empieza === 'sitio') delete ajustes[clave]
+      else ajustes[clave] = nuevo
+      return { ...x, ajustes }
+    })
+  }
+
+  /** (V38E) Escribir el segundo exacto: el sonido empieza a los `segundos` s desde el principio de la animación (los de Code, «desde el principio»; las capas, también). */
+  const ponerSegundo = (clave: string, segundos: number) => {
+    const ms = Math.round(segundos * 1000)
+    if (clave.startsWith('propio:') || clave.startsWith('anadido:')) {
+      const id = clave.slice(clave.indexOf(':') + 1)
+      actualizar(anim.id, (x) => ({ ...x, capas: x.capas.map((c) => (c.id === id ? { ...c, empieza: 'principio' as Empieza, ms } : c)) }))
+    } else ponerAjuste(clave, { empieza: 'principio', ms })
+    window.setTimeout(() => void ver(anim.id), 0)
   }
 
   const elegido = useMemo(() => {
@@ -954,7 +1087,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={etiqueta}>{anim.grupo.toUpperCase()}</span>
             <span data-nombre-abierta style={{ font: `400 30px/1.05 ${SERIE}` }}>{anim.nombre}</span>
-            <span data-dura style={{ font: "500 12px 'Geist Mono',monospace", color: 'rgba(28,34,48,.55)' }}>dura {coma(dura, 1)} s con su sonido</span>
+            <span data-dura style={{ font: "500 12px 'Geist Mono',monospace", color: 'rgba(28,34,48,.55)' }}>dura {coma(dura, 1)} s{linea.seguir !== null ? ' (hasta [Seguir])' : ''} con su sonido</span>
           </div>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button type="button" data-ver-con-sonido onClick={() => void ver(anim.id)} disabled={!visorListo} style={{ ...botonOscuro, display: 'flex', alignItems: 'center', gap: 9, height: 48, padding: '0 20px', opacity: visorListo ? 1 : 0.5 }}>
@@ -1219,7 +1352,17 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
             )}
           </div>
 
-          <LineaDeTiempo filas={filas} dura={dura} golpe={golpe} alArrastrar={arrastrar} />
+          <LineaDeTiempo
+            filas={filas}
+            dura={dura}
+            golpe={golpe}
+            marcas={linea.marcas}
+            desde={puntoDesde}
+            alArrastrar={arrastrar}
+            alPonerSegundo={ponerSegundo}
+            alElegirPunto={(tt) => setDesdeAqui((x) => ({ ...x, [anim.id]: Math.round(tt * 100) / 100 }))}
+            alReproducirDesde={() => void ver(anim.id, undefined, { desde: puntoDesde ?? 0 })}
+          />
         </div>
       </div>
 

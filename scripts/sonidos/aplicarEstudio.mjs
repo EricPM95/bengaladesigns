@@ -224,7 +224,12 @@ export function validarEstudio(json, { animaciones, manifiesto, archivos }) {
     const d = `animacion «${id}»`
     if (!ids.has(id)) { errs.push(`${d}: no existe en el estudio de la app`); continue }
     if (!esObj(a)) { errs.push(`${d}: no es un objeto`); continue }
-    sinClavesExtra(a, ['nombre', 'duracion', 'golpe', 'sonidos_de_code', 'capas'], d, errs)
+    sinClavesExtra(a, ['nombre', 'duracion', 'golpe', 'tramos', 'sonidos_de_code', 'capas'], d, errs)
+    // (V38E) `tramos`: en qué segundo de la animacion ENTERA empieza cada partitura (opcional; un zip de antes no lo trae).
+    if (a.tramos !== undefined) {
+      if (!Array.isArray(a.tramos)) errs.push(`${d}: tramos tiene que ser una lista`)
+      else for (const x of a.tramos) if (!esObj(x) || typeof x.partitura !== 'string' || !esNum(x.empieza) || x.empieza < 0 || (esNum(a.duracion) && x.empieza > a.duracion)) errs.push(`${d}: un tramo no vale (partitura y segundo de 0 a la duracion)`)
+    }
     if (typeof a.nombre !== 'string' || !a.nombre) errs.push(`${d}: falta el nombre`)
     if (!esNum(a.duracion) || a.duracion <= 0 || a.duracion > 600) errs.push(`${d}: duracion no valida`)
     if (!esNum(a.golpe) || a.golpe < 0 || (esNum(a.duracion) && a.golpe > a.duracion)) errs.push(`${d}: golpe no valido (de 0 a la duracion)`)
@@ -303,6 +308,12 @@ export function validarEstudio(json, { animaciones, manifiesto, archivos }) {
 const pct = (v) => `${Math.round(v * 100)} %`
 const mov = (ms, desde) => (ms === 0 ? `sin moverlo, desde ${desde}` : `${ms > 0 ? '+' : ''}${ms} ms (${ms > 0 ? 'despues' : 'antes'}) desde ${desde}`)
 const DESDE = { sitio: 'donde suena de siempre', principio: 'el primer fotograma de la animacion', golpe: 'el golpe' }
+/** (V38E) El segundo EXACTO de la animacion entera en que suena (solo cuando se cuenta desde el principio o desde el golpe; «donde suena de siempre» depende del sonido). */
+export const segundoExacto = (ms, desde, golpe) => (desde === 'principio' ? ms / 1000 : desde === 'golpe' ? golpe + ms / 1000 : null)
+const enSegundo = (ms, desde, golpe) => {
+  const s = segundoExacto(ms, desde, golpe)
+  return s === null ? '' : ` · empieza en el segundo ${seg(s)} de la animacion`
+}
 
 const coma = (v, dec = 2) => Number(v.toFixed(dec)).toString().replace('.', ',')
 const seg = (v) => v.toFixed(2).replace('.', ',')
@@ -333,18 +344,19 @@ export function describir(json) {
   for (const id of Object.keys(json.animaciones).sort()) {
     const a = json.animaciones[id]
     out.push('', `${a.nombre} (${id}) · dura ${a.duracion} s · golpe a los ${a.golpe} s`)
+    if (a.tramos?.length) out.push(`  Partes: ${a.tramos.map((x) => `«${x.partitura}» empieza en el segundo ${seg(x.empieza)}`).join(' · ')}`)
     for (const s of a.sonidos_de_code) {
       const que = s.tipo === 'archivo' ? `grabado «${s.sonido}» version ${s.version}` : `por codigo «${s.sonido}»`
       out.push(s.silenciado
         ? `  Code · ${que} · SILENCIADO`
-        : `  Code · ${que} · suena · volumen ${pct(s.volumen)} · ${mov(s.ms, DESDE[s.empieza])}`)
+        : `  Code · ${que} · suena · volumen ${pct(s.volumen)} · ${mov(s.ms, DESDE[s.empieza])}${enSegundo(s.ms, s.empieza, a.golpe)}`)
       if (s.retoques) out.push(lineaEditado(s))
     }
     for (const c of a.capas) {
       const que = c.origen === 'code'
         ? `Code «${c.sonido}»${c.version ? ` version ${c.version}` : ''}`
         : `archivo de Eric ${c.archivo} (original: ${c.nombre})`
-      out.push(`  Capa · ${que} · volumen ${pct(c.volumen)} · ${mov(c.ms, DESDE[c.empieza])}`)
+      out.push(`  Capa · ${que} · volumen ${pct(c.volumen)} · ${mov(c.ms, DESDE[c.empieza])}${enSegundo(c.ms, c.empieza, a.golpe)}`)
       if (c.retoques) out.push(lineaEditado(c))
     }
     if (!a.sonidos_de_code.length && !a.capas.length) out.push('  (sin sonidos)')

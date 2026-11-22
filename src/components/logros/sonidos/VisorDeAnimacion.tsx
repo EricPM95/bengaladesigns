@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'rea
 import { aperturaInteriorHtml, DURACION as DURACION_APERTURA } from '../../../../shared/marca/aperturaJutrip.js'
 import { contextoDeAudioDeLaApp, sonar } from '../../../lib/sonidos'
 import { cortar, esperaDeLaAnimacion, esperaPorCodeMovido, fijarInicioDeLaAnimacion, ponerEstudio, precargar, programarPropios, type AjusteDeCode, type Letra, type SonidoPropio } from '../../../lib/sonidos/motor'
-import { ANIMACIONES, animacionDe, golpeDe, momentoDeEscena, MOMENTOS_DEL_ESTUDIO } from '../../../lib/sonidos/estudio'
+import { ANIMACIONES, animacionDe, golpeDe, lineaDeTiempo, momentoDeEscena, MOMENTOS_DEL_ESTUDIO } from '../../../lib/sonidos/estudio'
 import { partituraDe } from '../../../lib/sonidos/partituras'
 import { Fuegos } from '../momentos/Fuegos'
 import { cargarPaises, cargarTierra, cargarTierraDetallada } from '../pantallas/mundo/paises'
@@ -27,6 +27,8 @@ export interface OpcionesDeVer {
   animacion: string
   /** (V38B) «Ver otra escena» dentro de la tarjeta de un destino: el emblema que se ve (el sonido guardado es el del destino, el mismo para todos). */
   escena?: string
+  /** (V38E) «▶ desde aquí»: se empieza a ver y a oír desde este segundo de la animación ENTERA (la animación salta ahí y los sonidos que caen después suenan en su sitio). Sin él, desde el principio. */
+  desde?: number
   /** (V35A2) Los sonidos de Eric (se suman) y los de Code que se silencian (`archivo:redoble`, `sint:tic`). */
   propios?: SonidoPropio[]
   silenciados?: string[]
@@ -45,9 +47,49 @@ export interface VisorApi {
   parar: () => void
 }
 
-function Animacion({ id, escena, alFinal }: { id: string; escena?: string; alFinal: () => void }): ReactNode {
+function Animacion({ id, escena, desde = 0, alFinal }: { id: string; escena?: string; desde?: number; alFinal: () => void }): ReactNode {
   const a = animacionDe(id)
   const [pulsado, setPulsado] = useState(false)
+  // (V38E) «▶ desde aquí»: la animación salta al segundo elegido (todas sus animaciones de pantalla a la vez). Si el punto cae DESPUÉS de la espera de un emblema (su suspense), se salta la espera y la escena entra ya.
+  useEffect(() => {
+    if (!a || !(desde > 0)) return undefined
+    const linea = lineaDeTiempo(a)
+    const escenaTramo = linea.tramos.find((x) => x.partitura === 'escena')
+    const conEspera = Boolean(escenaTramo && escenaTramo.empieza > 0)
+    const hacia = conEspera && escenaTramo && desde >= escenaTramo.empieza ? desde - escenaTramo.empieza : desde
+    let saltoHecho = false
+    let esperaSaltada = !(conEspera && escenaTramo && desde >= escenaTramo.empieza)
+    const h = window.setInterval(() => {
+      if (!esperaSaltada) {
+        const susp = document.querySelector<HTMLElement>('[data-suspense]')
+        if (susp) {
+          susp.click()
+          esperaSaltada = true
+        }
+        return
+      }
+      if (saltoHecho) return
+      const anims = document.getAnimations()
+      if (anims.length === 0) return
+      for (const an of anims) {
+        try {
+          an.pause()
+          an.currentTime = hacia * 1000
+          an.play()
+        } catch {
+          /* una animación que no se deja mover */
+        }
+      }
+      saltoHecho = true
+      ;(window as unknown as { __saltoDesde?: number }).__saltoDesde = hacia
+    }, 80)
+    const fin = window.setTimeout(() => window.clearInterval(h), 6000)
+    return () => {
+      window.clearInterval(h)
+      window.clearTimeout(fin)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, desde])
   // Suena al empezar la animación, igual que en la app (la pantalla de logros pone el sonido al ganarlo; aquí, al montarla).
   useEffect(() => {
     if (!a) return undefined
@@ -113,7 +155,7 @@ function Animacion({ id, escena, alFinal }: { id: string; escena?: string; alFin
 
 export function VisorDeAnimacion(): ReactNode {
   const admin = useEsAdministrador()
-  const [actual, setActual] = useState<{ n: number; id: string; escena?: string } | null>(null)
+  const [actual, setActual] = useState<{ n: number; id: string; escena?: string; desde?: number } | null>(null)
   const final = useRef<() => void>(() => undefined)
   const contador = useRef(0)
 
@@ -129,7 +171,12 @@ export function VisorDeAnimacion(): ReactNode {
         if (!a) return
         const propios = o.propios ?? []
         const golpe = golpeDe(a)
-        ponerEstudio({ propios, silenciados: o.silenciados ?? [], golpe, ajustes: o.ajustes ?? {}, letras: o.letras ?? {}, volumenes: o.volumenes ?? {}, editados: o.editados ?? {} })
+        const linea = lineaDeTiempo(a)
+        // (V38E) En qué segundo de la animación entera empieza cada partitura (la escena de un emblema empieza cuando acaba su espera) y, si es «▶ desde aquí», desde dónde.
+        const inicios: Record<string, number> = {}
+        for (const x of linea.tramos) inicios[x.partitura] = x.empieza
+        const desde = o.desde && o.desde > 0 ? o.desde : 0
+        ponerEstudio({ propios, silenciados: o.silenciados ?? [], golpe, ajustes: o.ajustes ?? {}, letras: o.letras ?? {}, volumenes: o.volumenes ?? {}, editados: o.editados ?? {}, inicios, desde: desde || undefined })
         // Todo lo que suena, descargado ANTES de empezar (así cada sonido cae en su instante, sin esperas).
         await Promise.all([...a.suena, ...a.partituras, ...(a.visor === 'momentos' ? ['escena'] : [])].map((p) => precargar(ctx, p)))
         // (V36C) La hoja del pasaporte necesita su catálogo y sus costas ya cargados para que el golpe del sello arranque justo al empezar (así el sonido cae con él).
@@ -139,13 +186,14 @@ export function VisorDeAnimacion(): ReactNode {
         final.current = o.alFinal ?? (() => undefined)
         setActual(null)
         // (V35A2) El primer fotograma se fija en el reloj de audio: si un sonido de Eric tiene que sonar ANTES, se espera ese tiempo (el sonido no se recorta, se retrasa la animación).
-        const espera = Math.max(esperaDeLaAnimacion(propios, golpe), esperaPorCodeMovido(a.suena)) // (V35B2) también los sonidos de Code movidos antes del primer fotograma
+        // (V38E) Con «▶ desde aquí» no hay espera previa: se empieza a oír ya, en el punto elegido.
+        const espera = desde > 0 ? 0 : Math.max(esperaDeLaAnimacion(propios, golpe), ...linea.tramos.filter((x) => x.empieza === 0).map((x) => esperaPorCodeMovido([x.partitura], { inicio: x.empieza, ...(x.opciones ?? {}) }))) // (V35B2) también los sonidos de Code movidos antes del primer fotograma
         const inicio = ctx.currentTime + 0.05 + espera
         fijarInicioDeLaAnimacion(ctx, inicio)
-        programarPropios(ctx, o.animacion, inicio) // los de Eric se suman a los de Code, programados ya (no recortados)
+        programarPropios(ctx, o.animacion, inicio - desde, desde) // los de Eric se suman a los de Code, programados ya (no recortados)
         const w = window as unknown as { __esperaDeLaAnimacion?: number }
         w.__esperaDeLaAnimacion = espera
-        window.setTimeout(() => setActual({ n: ++contador.current, id: o.animacion, escena: o.escena }), Math.max(0, (inicio - ctx.currentTime) * 1000 - 20))
+        window.setTimeout(() => setActual({ n: ++contador.current, id: o.animacion, escena: o.escena, desde: o.desde }), Math.max(0, (inicio - ctx.currentTime) * 1000 - 20))
       },
       parar: () => {
         const ctx = contextoDeAudioDeLaApp()
@@ -166,7 +214,7 @@ export function VisorDeAnimacion(): ReactNode {
   return (
     <div data-visor-de-animacion data-animacion-actual={actual?.id ?? ''} style={{ position: 'fixed', inset: 0, background: actual ? 'transparent' : 'radial-gradient(120% 100% at 50% 20%,#2A3050,#12172A)', overflow: 'hidden' }}>
       {!actual && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,253,248,.55)', font: "500 14px 'Geist'" }}>{ANIMACIONES.length} animaciones · elige una</div>}
-      {actual && <Animacion key={actual.n} id={actual.id} escena={actual.escena} alFinal={() => final.current()} />}
+      {actual && <Animacion key={actual.n} id={actual.id} escena={actual.escena} desde={actual.desde} alFinal={() => final.current()} />}
     </div>
   )
 }

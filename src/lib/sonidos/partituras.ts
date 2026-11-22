@@ -44,6 +44,10 @@ export interface OpcionesDePartitura {
   escena?: ConfigDeTiemposDeEscena
   /** (V38B) Pedazos repetidos en una pantalla: los sonidos grabados suenan estos semitonos más agudos (el golpe sigue cayendo en su sitio). 0 = tal cual. */
   semitonos?: number
+  /** (V38E) En qué segundo de la animación ENTERA empieza esta partitura (la escena de un emblema empieza cuando acaba su suspense): «desde el principio» y «desde el golpe» se cuentan desde el principio de la animación, no de la partitura. Sin él, el que fijó el estudio (`ponerEstudio`) o 0. */
+  inicio?: number
+  /** (V38E) «▶ desde aquí» (solo el estudio): se empieza a oír desde este segundo de la animación entera; lo que ya sonó antes no suena y lo que está sonando entra a mitad. Sin él, el que fijó el estudio o desde el principio. */
+  desde?: number
   /** (V38B) Es la 2.ª, 3.ª… vez del mismo sonido en la misma pantalla: los sonidos de Eric del estudio se repiten también. */
   repeticion?: boolean
 }

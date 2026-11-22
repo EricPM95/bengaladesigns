@@ -1,0 +1,69 @@
+{
+ "redoble18": [
+  {
+   "p": "escena",
+   "id": "redoble",
+   "en": 23.6,
+   "prog": 20.269
+  },
+  {
+   "p": "escena",
+   "id": "redoble",
+   "en": 23.6,
+   "prog": 20.269
+  }
+ ],
+ "desde18": [
+  {
+   "p": "escena",
+   "id": "emblema",
+   "en": 23.6,
+   "prog": 23.6
+  },
+  {
+   "p": "escena",
+   "id": "clic",
+   "en": 24,
+   "prog": 24
+  },
+  {
+   "p": "escena",
+   "id": "brillo",
+   "en": 24.6,
+   "prog": 24.6
+  },
+  {
+   "p": "escena",
+   "id": "emblema",
+   "en": 23.6,
+   "prog": 23.6
+  },
+  {
+   "p": "escena",
+   "id": "clic",
+   "en": 24,
+   "prog": 24
+  },
+  {
+   "p": "escena",
+   "id": "brillo",
+   "en": 24.6,
+   "prog": 24.6
+  }
+ ],
+ "seguir": [
+  "medalla_bronce 2.4/2.4",
+  "medalla_plata 4.4/4.4",
+  "medalla_oro 4.4/4.4",
+  "medalla_diamante 4.4/4.4",
+  "coleccion 4.2/4.2",
+  "coleccion_imprescindibles 4.2/4.2",
+  "pais 3/3",
+  "patrimonio 2.6/2.6",
+  "viajero 2.6/2.6",
+  "pedazo 3.3/3.3",
+  "pedazo_dos 5.9/5.9",
+  "pedazo_tres 8.5/8.5",
+  "maravilla 9/9"
+ ]
+}
