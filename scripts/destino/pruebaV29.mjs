@@ -81,14 +81,14 @@ try {
     }
     // 1. si una animación dura más, el sonido se mueve con ella (los instantes salen de tiempos.ts)
     const antes = P.partituraDe('pedazo').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'clic').golpe
-    const emb = P.partituraDe('emblema').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'emblema').golpe
+    const emb = P.partituraDe('emblema').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'estallido').golpe
     const fin7 = P.partituraDe('maravilla').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'maravilla').golpe
     const apert = P.partituraDe('apertura').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'apertura').golpe
     T.TIEMPOS_DE_PEDAZO.encaja += 0.5
     T.TIEMPOS_DE_EMBLEMA.estalla += 1
     T.TIEMPOS_FINAL_SIETE.giraDura += 0.8
     const despues = P.partituraDe('pedazo').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'clic').golpe
-    const emb2 = P.partituraDe('emblema').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'emblema').golpe
+    const emb2 = P.partituraDe('emblema').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'estallido').golpe
     const fin72 = P.partituraDe('maravilla').notas.find((n) => n.tipo === 'archivo' && n.archivo === 'maravilla').golpe
     T.TIEMPOS_DE_PEDAZO.encaja -= 0.5
     T.TIEMPOS_DE_EMBLEMA.estalla -= 1

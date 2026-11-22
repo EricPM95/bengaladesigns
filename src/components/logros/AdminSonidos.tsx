@@ -64,7 +64,7 @@ const ORO = '#C99A44'
 const FONDO_BARRA = '#F1EADC'
 
 const NOMBRE_DE_SONIDO: Record<string, string> = {
-  clic: 'clic', vuelo: 'vuelo (vuuush)', brillo: 'brillo', redoble: 'redoble', emblema: 'golpe del emblema', maravilla: 'golpe de las 7 maravillas', coleccion: 'golpe de la colección', pais: 'golpe de país', apertura: 'firma de la apertura',
+  clic: 'clic', vuelo: 'vuelo (vuuush)', brillo: 'brillo', redoble: 'redoble', emblema: 'golpe del emblema', estallido: 'estallido del suspense', brillo_titulo: 'brillo del título', maravilla: 'golpe de las 7 maravillas', coleccion: 'golpe de la colección', pais: 'golpe de país', apertura: 'firma de la apertura',
   medalla_bronce: 'golpe de la medalla de bronce', medalla_plata: 'golpe de la medalla de plata', medalla_oro: 'golpe de la medalla de oro', medalla_diamante: 'golpe de la medalla de diamante',
   toque: 'toque', campanita: 'campanita', tic: 'tic',
 }

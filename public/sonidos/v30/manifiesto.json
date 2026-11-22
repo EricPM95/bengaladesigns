@@ -671,5 +671,111 @@
    "bytes": 18493,
    "estilo": "juego alegre"
   }
+ },
+ "estallido": {
+  "A": {
+   "nombre": "estallido del suspense",
+   "fuentes": [
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.628,
+   "golpe": 0.106,
+   "bytes": 7071
+  },
+  "B": {
+   "nombre": "estallido del suspense",
+   "fuentes": [
+    "Cinematic Sound Design - Cartoon & Animation Vol 2 · Cartoon Pull Swoosh Readout"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.605,
+   "golpe": 0.129,
+   "bytes": 6159
+  },
+  "C": {
+   "nombre": "estallido del suspense",
+   "fuentes": [
+    "Cinematic Sound Design - Colossal Impacts · Woosh Debris"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.688,
+   "golpe": 0.208,
+   "bytes": 8001
+  },
+  "D": {
+   "nombre": "estallido del suspense",
+   "fuentes": [
+    "Epic Stock Media - Elemental Mutation Whooshes and Impacts · GLASMvmt_Whoosh Glass Crystal Fragments Sharp Shards Dry 05_ESM_EMWI"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.698,
+   "golpe": 0.202,
+   "bytes": 8128
+  },
+  "E": {
+   "nombre": "estallido del suspense",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Kalimba 3 Up_CB Sounddesign_APPlicable Sounds",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.006,
+   "golpe": 0.031,
+   "bytes": 11347
+  }
+ },
+ "brillo_titulo": {
+  "A": {
+   "nombre": "brillo del título",
+   "fuentes": [
+    "Cinematic Sound Design - User Interface · Button Arp Twinkle"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.085,
+   "golpe": 0.101,
+   "bytes": 12219
+  },
+  "B": {
+   "nombre": "brillo del título",
+   "fuentes": [
+    "Cinematic Sound Design - User Interface · Interface Plucks Happy"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 0.628,
+   "golpe": 0.106,
+   "bytes": 7071
+  },
+  "C": {
+   "nombre": "brillo del título",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Kalimba 3 Up_CB Sounddesign_APPlicable Sounds",
+    "344 Audio - Christmas Vol. 1 · MAGMisc_Magic Christmas Bells 2_344 Audio_Christmas"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.006,
+   "golpe": 0.031,
+   "bytes": 11347
+  },
+  "D": {
+   "nombre": "brillo del título",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · UIMisc_Xylophone Ringtone 2_CB Sounddesign_APPlicable Sounds"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.077,
+   "golpe": 0.092,
+   "bytes": 12015
+  },
+  "E": {
+   "nombre": "brillo del título",
+   "fuentes": [
+    "CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX · GAMEMisc_Magic Creation 23_CB Sounddesign_APPlicable Sounds"
+   ],
+   "licencia": "Sonniss GDC Game Audio Bundle 2026: uso comercial, sin citar al autor",
+   "dura": 1.097,
+   "golpe": 0.109,
+   "bytes": 12293
+  }
  }
 }

@@ -50,7 +50,7 @@ export interface OpcionesDePartitura {
 
 export const GRADOS_DE_MEDALLA = ['bronce', 'plata', 'oro', 'diamante'] as const
 /** (V30) Los sonidos grabados de verdad (`public/sonidos/v30/`, con candidatos A a E; `scripts/destino/sonidos/prepararCandidatos.mjs`). Los de [Visto], la campanita del aviso y el tic se quedan hechos por código. */
-export const ARCHIVOS_DE_PREMIO = ['clic', 'vuelo', 'brillo', 'redoble', 'medalla_bronce', 'medalla_plata', 'medalla_oro', 'medalla_diamante', 'coleccion', 'emblema', 'maravilla', 'pais', 'apertura'] as const
+export const ARCHIVOS_DE_PREMIO = ['clic', 'vuelo', 'brillo', 'brillo_titulo', 'estallido', 'redoble', 'medalla_bronce', 'medalla_plata', 'medalla_oro', 'medalla_diamante', 'coleccion', 'emblema', 'maravilla', 'pais', 'apertura'] as const
 
 const sint = (sonido: SonidoSintetico, en: number, extra: { dura?: number; vol?: number } = {}): Nota => ({ tipo: 'sint', sonido, en, ...extra })
 const archivo = (a: string, golpe: number, vol?: number): Nota => ({ tipo: 'archivo', archivo: a, golpe, ...(vol ? { vol } : {}) })
@@ -97,8 +97,8 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
         id,
         dura: e(t.estalla) + 0.6,
         premio: true,
-        // un latido por aro, cada vez más rápido (el latido es el toque de siempre), y el golpe del premio cae cuando la luz estalla
-        notas: [...t.aros.map((a, i) => sint('toque', e(a), { vol: 0.35 + 0.1 * i })), archivo('emblema', e(t.estalla))],
+        // un latido por aro, cada vez más rápido (el latido es el toque de siempre), y cuando la luz estalla un ESTALLIDO suave y corto (V38D: no es el golpe del premio; ese suena solo cuando aparece el emblema, en la partitura «escena»)
+        notas: [...t.aros.map((a, i) => sint('toque', e(a), { vol: 0.35 + 0.1 * i })), archivo('estallido', e(t.estalla), 0.9)],
       }
     }
     case 'maravilla': {
@@ -142,8 +142,8 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
       return { id, dura: t.golpe + 0.6, premio: false, notas: [...tics(0, t.sube, t.tic), archivo('brillo', t.golpe, 0.9)] }
     }
     case 'primer_dia': {
-      // (V35B) «Tu primer día» («Hoy empiezas a ganar logros»): el título entra a los 0,1 s y cada fila de lo que hay que hacer sube a los 0,3, 0,45 y 0,6 s (`moUp` de PrimerDia.tsx): un clic suave por fila y un brillo al acabar. Con los archivos de premio de siempre.
-      return { id, dura: e(1.4) + 0.6, premio: false, notas: [archivo('brillo', e(0.3), 0.6), archivo('clic', e(0.5), 0.55), archivo('clic', e(0.65), 0.55), archivo('clic', e(0.8), 0.55), archivo('brillo', e(1.4), 0.9)] }
+      // (V35B) «Tu primer día» («Hoy empiezas a ganar logros»): el título entra a los 0,1 s y cada fila de lo que hay que hacer sube a los 0,3, 0,45 y 0,6 s (`moUp` de PrimerDia.tsx): un clic suave por fila y un brillo al acabar. (V38D) El brillo del título y el del final son dos sonidos con su fila cada uno (`brillo_titulo` y `brillo`): antes compartían archivo y Eric no podía separarlos.
+      return { id, dura: e(1.4) + 0.6, premio: false, notas: [archivo('brillo_titulo', e(0.3), 0.6), archivo('clic', e(0.5), 0.55), archivo('clic', e(0.65), 0.55), archivo('clic', e(0.8), 0.55), archivo('brillo', e(1.4), 0.9)] }
     }
     case 'vuelo':
       return { id, dura: TIEMPOS_DE_VUELO.dura + 0.1, premio: false, notas: [archivo('vuelo', TIEMPOS_DE_VUELO.dura * 0.7)] }
@@ -192,7 +192,7 @@ export const EN_PALABRAS: Record<string, string> = {
   pedazo: 'El pedazo que encaja: el «vuuush» del vuelo hasta que encaja, un clic al encajar, un brillo cuando se llena de color y un tic cuando sube el número.',
   sello: 'El sello: baja con un vuuush y estampa con un clic y un brillo.',
   coleccion: 'La colección completa: un redoble que sube hasta el golpe del premio, que cae al acabar el giro.',
-  emblema: 'El emblema secreto: un latido por cada aro de luz (cada vez más seguidos) y el golpe del premio cuando la luz estalla.',
+  emblema: 'El emblema secreto (el suspense): un latido por cada aro de luz (cada vez más seguidos) y, cuando la luz estalla, un estallido suave y corto. El golpe del premio NO suena aquí: suena cuando aparece el emblema (la escena).',
   pais: 'País nuevo: un vuuush hasta que aparece y el golpe del premio al asentarse.',
   destino_nuevo: 'Destino nuevo: igual que país nuevo.',
   continente: 'Continente: igual que país nuevo.',
@@ -200,7 +200,7 @@ export const EN_PALABRAS: Record<string, string> = {
   patrimonio: 'Patrimonio: los números que suben con un tic cada vez y un brillo al acabar.',
   viajero: 'Logro de viajero: igual que patrimonio.',
   dia_completo: 'El resumen del día y del viaje: los números que suben con tics y un brillo al acabar.',
-  primer_dia: 'Tu primer día («Hoy empiezas a ganar logros»): un brillo al entrar el título, un clic suave por cada fila que aparece y un brillo al acabar.',
+  primer_dia: 'Tu primer día («Hoy empiezas a ganar logros»): el brillo del título al entrar, un clic suave por cada fila que aparece y el brillo del final al acabar.',
   vuelo: 'Lo ganado que vuela al botón o al Perfil: un vuuush de lo que dura el vuelo.',
   escena: 'Las escenas de cada sitio (Roma y Lanzarote): un redoble que sube y el golpe del premio cuando estalla la luz, y un clic y un brillo cuando entran el emblema y su nombre.',
   fuegos: 'Los fuegos: el golpe del premio al estallar y dos brillos que caen detrás.',

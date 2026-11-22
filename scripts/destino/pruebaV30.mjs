@@ -174,7 +174,7 @@ const MOCK_ADMIN = "const f = window.fetch.bind(window); window.fetch = (u, i) =
       const salida = { sinPartitura: [], golpes: [], medidas: [] }
       for (const id of P.IDS_DE_PARTITURA) { const p = P.partituraDe(id); if (!p || !p.notas.length) salida.sinPartitura.push(id) }
       const e = T.tiemposDeEscena({})
-      const principal = { escena: 'emblema' }
+      const principal = { escena: 'emblema', emblema: 'estallido' }
       const ultimo = (id, o) => P.partituraDe(id, o).notas.filter((n) => n.tipo === 'archivo' && n.archivo === (principal[id] ?? id)).at(-1).golpe
       salida.golpes = [
         ['medalla_oro', ultimo('medalla_oro'), T.TIEMPOS_SELLO.evolucion.nuevo + T.TIEMPOS_SELLO.evolucion.nuevoDura],
