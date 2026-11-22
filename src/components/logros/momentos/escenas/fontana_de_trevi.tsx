@@ -25,7 +25,7 @@ const bub = Array.from({ length: 14 }, (_, k) => ({ x: 20 + ((k * 61) % 350), y:
 const trail = Array.from({ length: 10 }, (_, k) => {
   const t = (k + 1) / 11
   const [x, y] = pt(t)
-  return { x: Math.round(x + (k % 2 ? 6 : -6)), y: Math.round(y), s: 3 + (k % 3), d: 3.4 + t * 3.4 }
+  return { x: Math.round(x + (k % 2 ? 6 : -6)), y: Math.round(y), s: 3 + (k % 3), d: 3.4 + t * 2.975 }
 })
 const spl = Array.from({ length: 12 }, (_, k) => {
   const a = (k / 12) * Math.PI * 2
@@ -65,7 +65,7 @@ function Arte({ u }: { u: string }): ReactNode {
             <ellipse key={k} cx="200" cy="104" rx="70" ry="10" style={{ transformBox: 'fill-box', transformOrigin: 'center', opacity: 0, animation: `ecRip 1.5s ${s(3.35 + k * 0.3)} ease-out both` }} />
           ))}
         </g>
-        <circle cx="195" cy="300" r="80" fill="#FFE7A8" filter={`url(#${u}bl)`} style={{ transformBox: 'fill-box', transformOrigin: 'center', opacity: 0, animation: 'ecGlowUp 1.5s 7s ease-in both' }} />
+        <circle cx="195" cy="300" r="80" fill="#FFE7A8" filter={`url(#${u}bl)`} style={{ transformBox: 'fill-box', transformOrigin: 'center', opacity: 0, animation: 'ecGlowUp 1.5s 6.55s ease-in both' }} />
       </svg>
       {bub.map((b, i) => (
         <span key={'b' + i} style={{ position: 'absolute', left: b.x, top: b.y, width: b.s, height: b.s, borderRadius: '50%', border: '1px solid rgba(235,255,252,.75)', background: 'radial-gradient(circle at 35% 30%,rgba(255,255,255,.7),rgba(255,255,255,.05) 60%)', opacity: 0, animation: `ecBub ${s(b.l)} ${s(b.d)} ease-in infinite` }} />
@@ -76,9 +76,9 @@ function Arte({ u }: { u: string }): ReactNode {
       {spl.map((p, i) => (
         <span key={'s' + i} style={{ position: 'absolute', left: 198, top: 104, width: p.s, height: p.s, borderRadius: '50%', border: '1px solid rgba(240,255,252,.9)', ['--dx' as string]: `${p.x}px`, ['--dy' as string]: `${p.y}px`, opacity: 0, animation: `ecSpl 1s ${s(p.d)} cubic-bezier(.2,.7,.4,1) both` } as CSSProperties} />
       ))}
-      <span style={{ position: 'absolute', inset: 0, animation: 'ecOut .5s 8.45s ease both', pointerEvents: 'none' }}>
-        <span style={{ position: 'absolute', left: 0, top: 0, width: 30, height: 30, margin: '-15px 0 0 -15px', offsetPath: "path('M200 104 C 140 160 250 200 175 240 S 200 285 195 300')", offsetRotate: '0deg', opacity: 0, animation: 'ecSink 3.6s 3.4s cubic-bezier(.25,.6,.35,1) both' }}>
-          <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%,#FFF6D2,#E2B65A 55%,#8C6420)', boxShadow: '0 0 16px rgba(255,214,130,.9)', animation: 'ecFlip .7s 3.4s linear 5, ecBeat .55s 7.1s ease-in-out 3' }} />
+      <span style={{ position: 'absolute', inset: 0, animation: 'ecOut .5s 8s ease both', pointerEvents: 'none' }}>
+        <span style={{ position: 'absolute', left: 0, top: 0, width: 30, height: 30, margin: '-15px 0 0 -15px', offsetPath: "path('M200 104 C 140 160 250 200 175 240 S 200 285 195 300')", offsetRotate: '0deg', opacity: 0, animation: 'ecSink 3.15s 3.4s cubic-bezier(.25,.6,.35,1) both' }}>
+          <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%,#FFF6D2,#E2B65A 55%,#8C6420)', boxShadow: '0 0 16px rgba(255,214,130,.9)', animation: 'ecFlip .63s 3.4s linear 5, ecBeat .55s 6.65s ease-in-out 3' }} />
         </span>
       </span>
     </>
@@ -88,9 +88,6 @@ const config: ConfigEscena = {
   fondo: 'linear-gradient(180deg,#5FC6CF 0%,#1F8A9A 20%,#0F5466 52%,#06283A 100%)',
   frases: [{ t: 'De espaldas, con la mano derecha…', d: 1, l: 2.8 }, { t: '…y Roma te espera de vuelta.', d: 4.3, l: 3 }],
   y: 560,
-  dim: 8.1,
-  fl: 8.45,
-  x: [9.9, 10.15, 10.4, 10.8],
   halo: 'rgba(160,240,245,.5)',
   anillo: '#BFF3F4',
   Arte,

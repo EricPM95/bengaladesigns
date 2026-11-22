@@ -332,7 +332,7 @@ async function buildDayBlockV3Inner(
   // «Crear mi propio día»: una segunda vuelta con lo que el motor hizo de verdad en la primera (un sitio ya visto por dentro en el viaje pasa a verse por fuera, y dura menos), para repartir bien la mañana y la tarde.
   if (propio && writtenPlan) {
     const hecho = writtenPlan.days.find((day) => day.curatedDay?.id === propio.id)
-    const overrides = Object.fromEntries((hecho?.escritoRows ?? []).filter((row) => row.tipo === 'parada' && row.lugar && !row.llegada).map((row) => [row.lugar, { modo: row.modo ?? null, min: row.min }]))
+    const overrides = Object.fromEntries((hecho?.escritoRows ?? []).filter((row) => row.tipo === 'parada' && row.lugar && !row.llegada).map((row) => [row.lugar, { modo: row.modo ?? null, min: row.min, yaDentroDia: row.fuera_ya_dentro_dia ?? null }]))
     if (Object.keys(overrides).length > 0) {
       propio = montarPropio(overrides)
       writtenPlan = writtenPlanFor(written, destKey, planArgs())

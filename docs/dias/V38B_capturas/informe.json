@@ -1,0 +1,565 @@
+{
+ "pedazo": {
+  "reg": [
+   {
+    "t": 3.184,
+    "act": "",
+    "fases": []
+   },
+   {
+    "t": 3.216,
+    "act": "pedazo",
+    "fases": [
+     "0"
+    ]
+   },
+   {
+    "t": 4.417,
+    "act": "pedazo",
+    "fases": [
+     "1"
+    ]
+   },
+   {
+    "t": 5.316,
+    "act": "pedazo",
+    "fases": [
+     "2"
+    ]
+   },
+   {
+    "t": 5.468,
+    "act": "pedazo",
+    "fases": [
+     "3"
+    ]
+   },
+   {
+    "t": 6.117,
+    "act": "pedazo",
+    "fases": [
+     "4"
+    ]
+   }
+  ],
+  "ped": [
+   [
+    "pedazo",
+    3.205
+   ],
+   [
+    "pedazo",
+    3.205
+   ]
+  ],
+  "agend": [
+   {
+    "p": "pedazo",
+    "id": "vuelo",
+    "en": 2.04,
+    "prog": 2.04,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "clic",
+    "en": 2.1,
+    "prog": 2.1,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "brillo",
+    "en": 2.3,
+    "prog": 2.3,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "tic",
+    "en": 2.9,
+    "prog": 2.9,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "vuelo",
+    "en": 2.04,
+    "prog": 2.04,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "clic",
+    "en": 2.1,
+    "prog": 2.1,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "brillo",
+    "en": 2.3,
+    "prog": 2.3,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "tic",
+    "en": 2.9,
+    "prog": 2.9,
+    "st": 0
+   }
+  ],
+  "cta": [
+   3.3
+  ],
+  "fin": null
+ },
+ "pedazo_dos": {
+  "reg": [
+   {
+    "t": 8.731,
+    "act": "",
+    "fases": []
+   },
+   {
+    "t": 8.758,
+    "act": "pedazo_dos",
+    "fases": [
+     "0",
+     "0"
+    ]
+   },
+   {
+    "t": 9.968,
+    "act": "pedazo_dos",
+    "fases": [
+     "1",
+     "0"
+    ]
+   },
+   {
+    "t": 10.866,
+    "act": "pedazo_dos",
+    "fases": [
+     "2",
+     "0"
+    ]
+   },
+   {
+    "t": 11.016,
+    "act": "pedazo_dos",
+    "fases": [
+     "3",
+     "0"
+    ]
+   },
+   {
+    "t": 11.666,
+    "act": "pedazo_dos",
+    "fases": [
+     "4",
+     "0"
+    ]
+   },
+   {
+    "t": 12.55,
+    "act": "pedazo_dos",
+    "fases": [
+     "4",
+     "1"
+    ]
+   },
+   {
+    "t": 13.449,
+    "act": "pedazo_dos",
+    "fases": [
+     "4",
+     "2"
+    ]
+   },
+   {
+    "t": 13.599,
+    "act": "pedazo_dos",
+    "fases": [
+     "4",
+     "3"
+    ]
+   },
+   {
+    "t": 14.249,
+    "act": "pedazo_dos",
+    "fases": [
+     "4",
+     "4"
+    ]
+   }
+  ],
+  "ped": [
+   [
+    "pedazo",
+    8.748
+   ],
+   [
+    "pedazo",
+    8.748
+   ],
+   [
+    "pedazo",
+    11.334
+   ]
+  ],
+  "agend": [
+   {
+    "p": "pedazo",
+    "id": "vuelo",
+    "en": 2.04,
+    "prog": 2.040000000000001,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "clic",
+    "en": 2.1,
+    "prog": 2.0999999999999996,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "brillo",
+    "en": 2.3,
+    "prog": 2.299999999999999,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "tic",
+    "en": 2.9,
+    "prog": 2.9,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "vuelo",
+    "en": 2.04,
+    "prog": 2.04,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "clic",
+    "en": 2.1,
+    "prog": 2.1000000000000005,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "brillo",
+    "en": 2.3,
+    "prog": 2.3,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "tic",
+    "en": 2.9,
+    "prog": 2.9,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "vuelo",
+    "en": 2.04,
+    "prog": 2.039999999999999,
+    "st": 1
+   },
+   {
+    "p": "pedazo",
+    "id": "clic",
+    "en": 2.1,
+    "prog": 2.0999999999999996,
+    "st": 1
+   },
+   {
+    "p": "pedazo",
+    "id": "brillo",
+    "en": 2.3,
+    "prog": 2.3000000000000007,
+    "st": 1
+   },
+   {
+    "p": "pedazo",
+    "id": "tic",
+    "en": 2.9,
+    "prog": 2.9,
+    "st": 0
+   }
+  ],
+  "cta": [
+   5.9
+  ],
+  "fin": null
+ },
+ "pedazo_tres": {
+  "reg": [
+   {
+    "t": 17.216,
+    "act": "",
+    "fases": []
+   },
+   {
+    "t": 17.258,
+    "act": "pedazo_tres",
+    "fases": [
+     "0",
+     "0",
+     "0"
+    ]
+   },
+   {
+    "t": 18.485,
+    "act": "pedazo_tres",
+    "fases": [
+     "1",
+     "0",
+     "0"
+    ]
+   },
+   {
+    "t": 19.383,
+    "act": "pedazo_tres",
+    "fases": [
+     "2",
+     "0",
+     "0"
+    ]
+   },
+   {
+    "t": 19.534,
+    "act": "pedazo_tres",
+    "fases": [
+     "3",
+     "0",
+     "0"
+    ]
+   },
+   {
+    "t": 20.183,
+    "act": "pedazo_tres",
+    "fases": [
+     "4",
+     "0",
+     "0"
+    ]
+   },
+   {
+    "t": 21.052,
+    "act": "pedazo_tres",
+    "fases": [
+     "4",
+     "1",
+     "0"
+    ]
+   },
+   {
+    "t": 21.966,
+    "act": "pedazo_tres",
+    "fases": [
+     "4",
+     "2",
+     "0"
+    ]
+   },
+   {
+    "t": 22.117,
+    "act": "pedazo_tres",
+    "fases": [
+     "4",
+     "3",
+     "0"
+    ]
+   },
+   {
+    "t": 22.767,
+    "act": "pedazo_tres",
+    "fases": [
+     "4",
+     "4",
+     "0"
+    ]
+   },
+   {
+    "t": 23.651,
+    "act": "pedazo_tres",
+    "fases": [
+     "4",
+     "4",
+     "1"
+    ]
+   },
+   {
+    "t": 24.533,
+    "act": "pedazo_tres",
+    "fases": [
+     "4",
+     "4",
+     "2"
+    ]
+   },
+   {
+    "t": 24.7,
+    "act": "pedazo_tres",
+    "fases": [
+     "4",
+     "4",
+     "3"
+    ]
+   },
+   {
+    "t": 25.35,
+    "act": "pedazo_tres",
+    "fases": [
+     "4",
+     "4",
+     "4"
+    ]
+   }
+  ],
+  "ped": [
+   [
+    "pedazo",
+    17.26
+   ],
+   [
+    "pedazo",
+    17.261
+   ],
+   [
+    "pedazo",
+    19.851
+   ],
+   [
+    "pedazo",
+    22.434
+   ]
+  ],
+  "agend": [
+   {
+    "p": "pedazo",
+    "id": "vuelo",
+    "en": 2.04,
+    "prog": 2.040000000000001,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "clic",
+    "en": 2.1,
+    "prog": 2.0999999999999996,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "brillo",
+    "en": 2.3,
+    "prog": 2.299999999999999,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "tic",
+    "en": 2.9,
+    "prog": 2.9,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "vuelo",
+    "en": 2.04,
+    "prog": 2.039999999999999,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "clic",
+    "en": 2.1,
+    "prog": 2.1000000000000014,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "brillo",
+    "en": 2.3,
+    "prog": 2.3000000000000007,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "tic",
+    "en": 2.9,
+    "prog": 2.9,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "vuelo",
+    "en": 2.04,
+    "prog": 2.039999999999999,
+    "st": 1
+   },
+   {
+    "p": "pedazo",
+    "id": "clic",
+    "en": 2.1,
+    "prog": 2.1000000000000014,
+    "st": 1
+   },
+   {
+    "p": "pedazo",
+    "id": "brillo",
+    "en": 2.3,
+    "prog": 2.3000000000000007,
+    "st": 1
+   },
+   {
+    "p": "pedazo",
+    "id": "tic",
+    "en": 2.9,
+    "prog": 2.9,
+    "st": 0
+   },
+   {
+    "p": "pedazo",
+    "id": "vuelo",
+    "en": 2.04,
+    "prog": 2.039999999999999,
+    "st": 2
+   },
+   {
+    "p": "pedazo",
+    "id": "clic",
+    "en": 2.1,
+    "prog": 2.1000000000000014,
+    "st": 2
+   },
+   {
+    "p": "pedazo",
+    "id": "brillo",
+    "en": 2.3,
+    "prog": 2.3000000000000007,
+    "st": 2
+   },
+   {
+    "p": "pedazo",
+    "id": "tic",
+    "en": 2.9,
+    "prog": 2.9,
+    "st": 0
+   }
+  ],
+  "cta": [
+   8.5
+  ],
+  "fin": null
+ }
+}

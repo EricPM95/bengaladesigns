@@ -152,7 +152,7 @@ try {
 
   /* ───────── 5. Dos colecciones a la vez ───────── */
   console.log('5. Pedazos nuevos: el Coliseo en dos colecciones a la vez')
-  r = await jugar('pedazo_dos', 5600)
+  r = await jugar('pedazo_dos', 7000)
   informe.pedazo_dos = r
   a0 = primero(r, (x) => x.ins.length >= 2)
   debe(a0 && a0.ins.join() === 'imprescindibles:1/8,roma_antigua:1/6', 'dos', `salen las dos insignias con lo que ya tenían (${a0?.ins.join()})`)
@@ -162,7 +162,7 @@ try {
   debe(/Pedazos nuevos/i.test(fin?.texto ?? '') && /Los imprescindibles de Roma/.test(fin?.texto ?? '') && /La Roma antigua/.test(fin?.texto ?? ''), 'dos', 'con el título «Pedazos nuevos» y los nombres de las dos colecciones')
   const seg = primero(r, (x) => x.fases[1] === '2')
   const pri = primero(r, (x) => x.fases[0] === '2')
-  debe(pri && seg && seg.t - pri.t > 1.2 && seg.t - pri.t < 2.0, 'dos', `la segunda encaja unos 1,6 s después de la primera (${pri && seg ? (seg.t - pri.t).toFixed(2) : '?'} s)`)
+  debe(pri && seg && seg.t - pri.t > 2.2 && seg.t - pri.t < 3.1, 'dos', `la segunda encaja cuando la primera ha acabado del todo (animación y sonido) más una pausa corta, unos 2,6 s después (${pri && seg ? (seg.t - pri.t).toFixed(2) : '?'} s; V38B: uno detrás de otro)`)
   debe(r.recursos.length === 0, 'base', 'sin peticiones a Supabase ni a /api/logros')
   await sacar('pedazo_dos_despues')
 
@@ -199,7 +199,7 @@ try {
   /* ───────── 7. El «antes»: lo que se veía sin estado (para el REPASO) ───────── */
   console.log('7. El «antes» (sin estado de ejemplo), solo para las capturas')
   await adm.evaluar(`${IFR}.contentWindow.Function("return import('/src/components/logros/momentos/api.ts')")().then((m) => { Object.defineProperty(m.datosDePrueba, 'estado', { get() { return null }, set() {}, configurable: true }); return true })`)
-  for (const [id, ms] of [['coleccion', 4200], ['coleccion_imprescindibles', 4200], ['pedazo', 3800], ['pedazo_dos', 5600]]) {
+  for (const [id, ms] of [['coleccion', 4200], ['coleccion_imprescindibles', 4200], ['pedazo', 3800], ['pedazo_dos', 7000]]) {
     const ra = await jugar(id, ms)
     const f = ultimo(ra, (x) => x.ins.length || x.texto)
     informe[`${id}_antes`] = f?.texto ?? ''

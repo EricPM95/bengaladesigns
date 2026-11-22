@@ -78,10 +78,10 @@ try {
     return JSON.stringify({ filas, estampado: T.TIEMPOS_ESTAMPADO })
   })`)
   const filas = datos.filas
-  debe(filas.length === 27 && new Set(filas.map((f) => f.id)).size === 27, 'lista', `las 25 de la V36C y las 2 de la V37C (los imprescindibles y dos colecciones a la vez): 27 tarjetas, cada una con su id (${filas.length})`)
+  debe(filas.length === 27 && new Set(filas.map((f) => f.id)).size === 27, 'lista', `las de la V36C, la V37C (los imprescindibles y dos colecciones a la vez) y la V38B (tres colecciones; un emblema por destino): 27 tarjetas, cada una con su id (${filas.length})`)
   const ESPERADO = {
-    medalla_bronce: ['sello'], medalla_plata: ['sello'], medalla_oro: ['sello'], medalla_diamante: ['sello'], coleccion: ['coleccion'], coleccion_imprescindibles: ['coleccion'], pedazo_dos: ['pedazos'], emblema: ['emblema'], emblema_maravilla: ['emblema'], maravilla: ['final7'], pais: ['pais'],
-    pedazo: ['pedazos'], patrimonio: ['patrimonio'], viajero: ['viajero'], escena_roma: ['emblema'], escena_lanzarote: ['emblema'], resumen_dia: ['ademas'],
+    medalla_bronce: ['sello'], medalla_plata: ['sello'], medalla_oro: ['sello'], medalla_diamante: ['sello'], coleccion: ['coleccion'], coleccion_imprescindibles: ['coleccion'], pedazo_dos: ['pedazos'], pedazo_tres: ['pedazos'], emblema: ['emblema'], emblema_lanzarote: ['emblema'], emblema_maravilla: ['emblema'], maravilla: ['final7'], pais: ['pais'],
+    pedazo: ['pedazos'], patrimonio: ['patrimonio'], viajero: ['viajero'], resumen_dia: ['ademas'],
   }
   for (const f of filas) {
     if (f.visor === 'momentos') {

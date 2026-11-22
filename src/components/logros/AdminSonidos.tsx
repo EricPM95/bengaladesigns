@@ -396,6 +396,9 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
     }
   }, [admin])
 
+  /** (V38B) La otra escena que se está viendo dentro de la tarjeta de un destino (por tarjeta). */
+  const escenaVista = useRef<Record<string, string>>({})
+  const [escenaMostrada, setEscenaMostrada] = useState<Record<string, string>>({})
   const visor = (): VisorApi | null => ((iframe.current?.contentWindow as (Window & { __estudioVisor?: VisorApi }) | null | undefined)?.__estudioVisor ?? null)
   /** El audio es de ESTA página (se desbloquea con el toque de quien lo pulsa) y el marco lo usa. */
   const audio = (): AudioContext | null => {
@@ -416,7 +419,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
       const p = procesadosRef.current[`${id}|${k}`]
       if (p) editados[k] = p
     }
-    await v.ver({ animacion: id, propios: x.capas, silenciados: x.silenciados, ajustes: x.ajustes, letras: x.letras, volumenes: x.volumenes, editados })
+    await v.ver({ animacion: id, escena: escenaVista.current[id], propios: x.capas, silenciados: x.silenciados, ajustes: x.ajustes, letras: x.letras, volumenes: x.volumenes, editados })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const abrirY = (id: string) => {
@@ -477,7 +480,11 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
         await manifiesto()
         const nuevos: Record<string, EstadoRT> = {}
         const marcas: Record<string, { huella: string; en: string }> = {}
-        for (const g of lista) {
+        // (V38B) Las tarjetas sueltas «Escena de Roma / Lanzarote» pasaron a ser UNA por destino: lo que se guardó en ellas se enseña en la tarjeta del destino (solo si esa no tiene guardado propio). El guardado viejo NO se borra.
+        const PASAN_A: Record<string, string> = { escena_roma: 'emblema', escena_lanzarote: 'emblema_lanzarote' }
+        for (const g0 of lista) {
+          const destino = PASAN_A[g0.animacion]
+          const g = destino && !lista.some((o) => o.animacion === destino) ? { ...g0, animacion: destino } : g0
           if (!animacionDe(g.animacion)) continue
           const x = await hidratar(g)
           nuevos[g.animacion] = x
@@ -975,6 +982,33 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
               </span>
             )}
           </div>
+          {anim.otrasEscenas && (
+            <div data-otras-escenas={anim.destinoDeEscenas} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={etiqueta}>VER OTRA ESCENA (el sonido guardado vale para todas)</span>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {anim.otrasEscenas.map((e) => {
+                  const activa = (escenaMostrada[anim.id] ?? anim.otrasEscenas?.[0]?.id) === e.id
+                  return (
+                    <button
+                      key={e.id}
+                      type="button"
+                      data-ver-escena={e.id}
+                      aria-pressed={activa}
+                      disabled={!visorListo}
+                      onClick={() => {
+                        escenaVista.current[anim.id] = e.id
+                        setEscenaMostrada((x) => ({ ...x, [anim.id]: e.id }))
+                        void ver(anim.id)
+                      }}
+                      style={{ ...botonPeq, background: activa ? OSCURO : '#FFFFFF', color: activa ? '#FFFFFF' : OSCURO, border: `1.5px solid ${activa ? OSCURO : 'rgba(28,34,48,.2)'}`, opacity: visorListo ? 1 : 0.5 }}
+                    >
+                      {e.nombre}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
           {anim.nota && <span data-nota-de-la-animacion style={{ font: "400 12.5px/1.45 'Geist'", color: '#8E6820' }}>{anim.nota}</span>}
 
           {/* Los sonidos de Code, cada uno en su fila. */}

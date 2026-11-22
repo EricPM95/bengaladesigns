@@ -49,6 +49,8 @@ export const ESTADO_DEL_ESTUDIO: Record<string, () => EstadoLogros> = {
   pedazo: () => estado([col('miradores', ['terraza_del_pincio', 'mirador_del_janiculo'])]),
   // El Coliseo suma a la vez en dos colecciones (después de ganarlo: 2 de 8 y 2 de 6).
   pedazo_dos: () => estado([col('imprescindibles', ['coliseo', 'piazza_navona']), col('roma_antigua', ['coliseo', 'circo_maximo'])]),
+  // (V38B) El Coliseo suma a la vez en TRES colecciones (después de ganarlo: 2 de 8, 2 de 6 y 2 de 4).
+  pedazo_tres: () => estado([col('imprescindibles', ['coliseo', 'piazza_navona']), col('roma_antigua', ['coliseo', 'circo_maximo']), col('cuatro_joyas', ['coliseo', joyas.find((s) => s !== 'coliseo') as string])]),
   // El resumen del día: la ciudad, la medalla de la ciudad y la línea de secretos salen de aquí.
   resumen_dia: () => estado([col('imprescindibles', ['coliseo']), col('cuatro_joyas', ['coliseo']), col('roma_antigua', ['coliseo'])], { pendiente: { sorpresas: 2, pedazos: 0, dias_para_reclamar: 27, texto: 'Te quedan 27 días para reclamar tus 2 sorpresas de Roma' } }),
 }
@@ -66,4 +68,5 @@ export const MOMENTOS_DE_COLECCIONES: Record<string, () => Momento[]> = {
   coleccion_imprescindibles: () => [completa('imprescindibles', 'Lo esencial de Roma, visto.')],
   pedazo: () => [suma('miradores', 2, ['mirador_del_janiculo'])],
   pedazo_dos: () => [suma('imprescindibles', 2, ['coliseo']), suma('roma_antigua', 2, ['coliseo'])],
+  pedazo_tres: () => [suma('imprescindibles', 2, ['coliseo']), suma('roma_antigua', 2, ['coliseo']), suma('cuatro_joyas', 2, ['coliseo'])],
 }

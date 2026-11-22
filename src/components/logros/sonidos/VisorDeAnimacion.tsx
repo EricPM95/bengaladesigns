@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'rea
 import { aperturaInteriorHtml, DURACION as DURACION_APERTURA } from '../../../../shared/marca/aperturaJutrip.js'
 import { contextoDeAudioDeLaApp, sonar } from '../../../lib/sonidos'
 import { cortar, esperaDeLaAnimacion, esperaPorCodeMovido, fijarInicioDeLaAnimacion, ponerEstudio, precargar, programarPropios, type AjusteDeCode, type Letra, type SonidoPropio } from '../../../lib/sonidos/motor'
-import { ANIMACIONES, animacionDe, golpeDe, MOMENTOS_DEL_ESTUDIO } from '../../../lib/sonidos/estudio'
+import { ANIMACIONES, animacionDe, golpeDe, momentoDeEscena, MOMENTOS_DEL_ESTUDIO } from '../../../lib/sonidos/estudio'
 import { partituraDe } from '../../../lib/sonidos/partituras'
 import { Fuegos } from '../momentos/Fuegos'
 import { cargarPaises, cargarTierra, cargarTierraDetallada } from '../pantallas/mundo/paises'
@@ -25,6 +25,8 @@ const PrimerDia = lazy(() => import('../momentos/PrimerDia'))
 
 export interface OpcionesDeVer {
   animacion: string
+  /** (V38B) «Ver otra escena» dentro de la tarjeta de un destino: el emblema que se ve (el sonido guardado es el del destino, el mismo para todos). */
+  escena?: string
   /** (V35A2) Los sonidos de Eric (se suman) y los de Code que se silencian (`archivo:redoble`, `sint:tic`). */
   propios?: SonidoPropio[]
   silenciados?: string[]
@@ -43,7 +45,7 @@ export interface VisorApi {
   parar: () => void
 }
 
-function Animacion({ id, alFinal }: { id: string; alFinal: () => void }): ReactNode {
+function Animacion({ id, escena, alFinal }: { id: string; escena?: string; alFinal: () => void }): ReactNode {
   const a = animacionDe(id)
   const [pulsado, setPulsado] = useState(false)
   // Suena al empezar la animación, igual que en la app (la pantalla de logros pone el sonido al ganarlo; aquí, al montarla).
@@ -59,7 +61,7 @@ function Animacion({ id, alFinal }: { id: string; alFinal: () => void }): ReactN
   }, [id])
   if (!a) return null
   if (a.visor === 'momentos' || a.visor === 'resumen_dia') {
-    const momentos = MOMENTOS_DEL_ESTUDIO[a.momentos ?? a.id]?.() ?? []
+    const momentos = escena && a.destinoDeEscenas && a.otrasEscenas?.some((e) => e.id === escena) ? momentoDeEscena(a.destinoDeEscenas, escena) : (MOMENTOS_DEL_ESTUDIO[a.momentos ?? a.id]?.() ?? [])
     return (
       <Suspense fallback={null}>
         {a.visor === 'momentos' ? <Reproductor momentos={momentos} onTerminar={alFinal} /> : <ResumenDia ganado={momentos} estado={null} alCerrar={alFinal} />}
@@ -111,7 +113,7 @@ function Animacion({ id, alFinal }: { id: string; alFinal: () => void }): ReactN
 
 export function VisorDeAnimacion(): ReactNode {
   const admin = useEsAdministrador()
-  const [actual, setActual] = useState<{ n: number; id: string } | null>(null)
+  const [actual, setActual] = useState<{ n: number; id: string; escena?: string } | null>(null)
   const final = useRef<() => void>(() => undefined)
   const contador = useRef(0)
 
@@ -143,7 +145,7 @@ export function VisorDeAnimacion(): ReactNode {
         programarPropios(ctx, o.animacion, inicio) // los de Eric se suman a los de Code, programados ya (no recortados)
         const w = window as unknown as { __esperaDeLaAnimacion?: number }
         w.__esperaDeLaAnimacion = espera
-        window.setTimeout(() => setActual({ n: ++contador.current, id: o.animacion }), Math.max(0, (inicio - ctx.currentTime) * 1000 - 20))
+        window.setTimeout(() => setActual({ n: ++contador.current, id: o.animacion, escena: o.escena }), Math.max(0, (inicio - ctx.currentTime) * 1000 - 20))
       },
       parar: () => {
         const ctx = contextoDeAudioDeLaApp()
@@ -164,7 +166,7 @@ export function VisorDeAnimacion(): ReactNode {
   return (
     <div data-visor-de-animacion data-animacion-actual={actual?.id ?? ''} style={{ position: 'fixed', inset: 0, background: actual ? 'transparent' : 'radial-gradient(120% 100% at 50% 20%,#2A3050,#12172A)', overflow: 'hidden' }}>
       {!actual && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,253,248,.55)', font: "500 14px 'Geist'" }}>{ANIMACIONES.length} animaciones · elige una</div>}
-      {actual && <Animacion key={actual.n} id={actual.id} alFinal={() => final.current()} />}
+      {actual && <Animacion key={actual.n} id={actual.id} escena={actual.escena} alFinal={() => final.current()} />}
     </div>
   )
 }

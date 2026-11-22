@@ -184,6 +184,33 @@ export function esperaPorCodeMovido(partituras: string[], o: OpcionesDePartitura
   }
   return -minimo
 }
+/**
+ * (V38B) CUÁNDO ACABA DE SONAR de verdad la partitura `id` (segundos desde que se pide): el final del último sonido, con lo que hay ahora en el estudio (sonidos de Code silenciados o movidos, retocados, y los de Eric que se suman).
+ * Sin el manifiesto cargado, un archivo cuenta 1 s y uno hecho por código lo que dura el suyo. Pura aparte de leer el estudio. La usan los pedazos para empezar la siguiente insignia cuando la anterior ha acabado del todo.
+ */
+export function finSonoroDe(id: string, o: OpcionesDePartitura = {}): number {
+  const p = partituraDe(id, o)
+  if (!p) return 0
+  const primeras = primerasNotas(p.notas)
+  let fin = 0
+  for (const n of p.notas) {
+    const k = claveDeNota(n)
+    if (estudio.silenciados.includes(k)) continue
+    const delta = desplazamientoDeCode(primeras.get(k) as number, estudio.ajustes[k], estudio.golpe)
+    if (n.tipo === 'sint') fin = Math.max(fin, n.en + delta + (n.dura ?? 0.3))
+    else {
+      const v = versionDe(n.archivo)
+      const retocado = estudio.editados[`${n.archivo}_${v}`]
+      const base = manifiestoEnMemoria?.[n.archivo]?.[v]
+      const dura = retocado?.dura ?? base?.dura ?? 1
+      const golpe = retocado?.golpe ?? base?.golpe ?? 0
+      fin = Math.max(fin, n.golpe - golpe + delta + dura)
+    }
+  }
+  for (const s of estudio.propios) fin = Math.max(fin, arranqueDelPropio(s, estudio.golpe) + s.buffer.duration)
+  return fin
+}
+
 /** Segundos desde el primer fotograma en que arranca el sonido propio (puede ser negativo). */
 export const arranqueDelPropio = (p: Pick<SonidoPropio, 'empieza' | 'ms'>, golpe: number): number => (p.empieza === 'golpe' ? golpe : 0) + p.ms / 1000
 /** Lo que hay que esperar antes del primer fotograma para que ningún sonido propio caiga antes de «ahora» (así no se recorta). */
@@ -218,6 +245,8 @@ export interface Agendado {
   t0?: number
   t?: number
   recorte?: number
+  /** (V38B) Semitonos más agudo con que suena (pedazos repetidos). */
+  semitonos?: number
 }
 const registrar = (a: Agendado) => {
   try {
@@ -308,6 +337,9 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
   const activa: Activa = { id, master, premio: p.premio, fin: t0 + p.dura + 0.6, fuentes: [] }
   activas.push(activa)
   const primeras = primerasNotas(p.notas)
+  const semitonos = o.semitonos ?? 0
+  // (V38B) Una repetición del mismo sonido en la misma pantalla (el 2.º pedazo…): los sonidos de Eric del estudio suenan otra vez, tal cual, con la misma cuenta que la primera.
+  if (o.repeticion) programarPropios(ctx, id, t0)
   for (const n of p.notas) {
     // (V35A2) Un sonido de Code silenciado no se programa.
     const clave = claveDeNota(n)
@@ -327,16 +359,19 @@ export function iniciarPartitura(ctx: BaseAudioContext, id: string, o: OpcionesD
       if (!buffer || !datos) continue // el archivo aún no ha llegado: la partitura suena sin él (los sonidos pequeños siguen en su sitio)
       const fuente = ctx.createBufferSource()
       fuente.buffer = buffer
+      // (V38B) Un pedazo repetido suena unos semitonos más agudo (más rápido: el golpe dentro del archivo cae antes, y se cuenta).
+      const velocidad = semitonos === 0 ? 1 : Math.pow(2, semitonos / 12)
+      if (velocidad !== 1) fuente.playbackRate.value = velocidad
       const g = ctx.createGain()
       g.gain.value = (n.vol ?? 1) * volumenEn(n.archivo)
       fuente.connect(g)
       g.connect(master)
       // El golpe cae en `n.golpe`: el archivo arranca `datos.golpe` segundos antes (o a mitad, si ya vamos tarde).
-      const arranque = t0 + n.golpe - datos.golpe + delta
-      const tarde = Math.max(0, ctx.currentTime - arranque)
+      const arranque = t0 + n.golpe - datos.golpe / velocidad + delta
+      const tarde = Math.max(0, ctx.currentTime - arranque) * velocidad
       fuente.start(Math.max(arranque, ctx.currentTime), tarde)
       activa.fuentes.push(fuente)
-      registrar({ partitura: id, tipo: 'archivo', id: n.archivo, en: n.golpe, programado: arranque + datos.golpe - t0 })
+      registrar({ partitura: id, tipo: 'archivo', id: n.archivo, en: n.golpe, programado: arranque + datos.golpe / velocidad - t0, ...(semitonos ? { semitonos } : {}) })
     }
   }
   return { dura: p.dura, cortar: (ms = FUNDIDO_AL_SALTAR_MS) => apagar(ctx, activa, ms) }

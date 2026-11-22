@@ -24,7 +24,41 @@ export interface Animacion {
   gesto?: string
   /** Lo que hay que saber de esta animación (se enseña en la tarjeta y sale en el repaso). */
   nota?: string
+  /** (V38B) Las tarjetas de emblema son una por DESTINO: lo que se guarda vale para todos sus emblemas (mismos momentos clave). Estas son las otras escenas del destino que se pueden ver dentro de la tarjeta, sin guardar aparte. */
+  otrasEscenas?: { id: string; nombre: string }[]
+  /** El destino de esas escenas (`roma` o `lanzarote`). */
+  destinoDeEscenas?: string
 }
+
+/** (V38B) Los emblemas de cada destino con escena propia: los de Roma comparten momentos clave entre sí, los de Lanzarote también; el Coliseo tiene los suyos. */
+export const ESCENAS_DE_ROMA = [
+  { id: 'panteon', nombre: 'El Panteón' },
+  { id: 'fontana_de_trevi', nombre: 'La Fontana de Trevi' },
+  { id: 'foro_romano', nombre: 'El Foro Romano' },
+  { id: 'museos_vaticanos', nombre: 'Los Museos Vaticanos' },
+  { id: 'plaza_san_pedro', nombre: 'La Plaza de San Pedro' },
+  { id: 'basilica_san_pedro', nombre: 'La Basílica de San Pedro' },
+  { id: 'boca_de_la_verdad', nombre: 'La Boca de la Verdad' },
+  { id: 'ojo_cerradura', nombre: 'El ojo de la cerradura' },
+  { id: 'catacumbas', nombre: 'Las Catacumbas' },
+  { id: 'plaza_de_espana', nombre: 'La Plaza de España' },
+  { id: 'castillo_de_santangelo', nombre: 'El Castillo de Sant Angelo' },
+  { id: 'madrugador', nombre: 'El madrugador' },
+  { id: 'nocturno', nombre: 'El nocturno' },
+]
+export const ESCENAS_DE_LANZAROTE = [
+  { id: 'timanfaya', nombre: 'Timanfaya' },
+  { id: 'jameos', nombre: 'Los Jameos del Agua' },
+  { id: 'cueva_de_los_verdes', nombre: 'La Cueva de los Verdes' },
+  { id: 'mirador_del_rio', nombre: 'El Mirador del Río' },
+  { id: 'fundacion_manrique', nombre: 'La Fundación Manrique' },
+  { id: 'el_golfo', nombre: 'El Golfo' },
+  { id: 'la_geria', nombre: 'La Geria' },
+  { id: 'la_graciosa', nombre: 'La Graciosa' },
+  { id: 'papagayo', nombre: 'Papagayo' },
+  { id: 'lz_madrugador', nombre: 'El madrugador' },
+  { id: 'atardecer_atlantico', nombre: 'El atardecer atlántico' },
+]
 
 const EN = '2026-11-20T10:00:00.000Z'
 const m = (o: Record<string, unknown>): Momento => ({ nombre: '', primera_vez: true, en: EN, ...o }) as unknown as Momento
@@ -32,6 +66,9 @@ const sello = (grado: string, nombre: string, linea: string): Momento =>
   m({ tipo: 'sello', cat: 'sello', clave: `demo|sello|${grado}`, sello: 'roma', destino: 'roma', grado, nombre, linea })
 const emblema = (id: string, destino: string, extra: Record<string, unknown> = {}): Momento =>
   m({ tipo: 'emblema', cat: 'emblema', clave: `demo|emblema|${id}`, id, destino, nombre: '', linea: '', momento: false, frase: 'Pero… ¿qué es esto?', ...extra })
+
+/** (V38B) El emblema de ejemplo de OTRA escena del destino (para «Ver otra escena» dentro de la tarjeta del destino). */
+export const momentoDeEscena = (destino: string, id: string): Momento[] => [emblema(id, destino, destino === 'lanzarote' ? { frase: '¡Eh! Aquí hay algo…' } : {})]
 
 /** Los momentos de ejemplo de cada animación (los mismos datos que usa la demo de logros). */
 export const MOMENTOS_DEL_ESTUDIO: Record<string, () => Momento[]> = {
@@ -44,8 +81,7 @@ export const MOMENTOS_DEL_ESTUDIO: Record<string, () => Momento[]> = {
   ...MOMENTOS_DE_COLECCIONES,
   emblema: () => [emblema('panteon', 'roma', { nombre: 'El Panteón', linea: 'Casi dos mil años con la puerta abierta.', frase: '¡Eh! Aquí hay algo…' })],
   emblema_maravilla: () => [emblema('coliseo', 'roma', { nombre: 'Una maravilla del mundo', linea: 'El mayor anfiteatro de la Antigüedad.', maravilla: 'coliseo', frase: '¡Eh! Aquí hay algo…' })],
-  escena_roma: () => [emblema('fontana_de_trevi', 'roma')],
-  escena_lanzarote: () => [emblema('timanfaya', 'lanzarote', { frase: '¡Eh! Aquí hay algo…' })],
+  emblema_lanzarote: () => [emblema('timanfaya', 'lanzarote', { frase: '¡Eh! Aquí hay algo…' })],
   maravilla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: 'demo|maravilla|taj_mahal', id: 'taj_mahal', n: 7, nombre: 'El Taj Mahal', linea: 'La séptima maravilla del mundo.' })],
   pais: () => [m({ tipo: 'pais', cat: 'pais', clave: 'demo|pais', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia' })],
   patrimonio: () => [m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', n: 1, nombre: 'Centro histórico de Roma' })],
@@ -60,17 +96,17 @@ export const ANIMACIONES: Animacion[] = [
   { id: 'medalla_diamante', nombre: 'Medalla de diamante', grupo: 'Medallas', visor: 'momentos', momentos: 'medalla_diamante', suena: ['medalla_diamante'], partituras: ['medalla_diamante'], principal: { tipo: 'archivo', id: 'medalla_diamante' } },
   { id: 'coleccion', nombre: 'Colección completa', grupo: 'Logros', visor: 'momentos', momentos: 'coleccion', suena: ['coleccion'], partituras: ['coleccion'], principal: { tipo: 'archivo', id: 'coleccion' } },
   { id: 'coleccion_imprescindibles', nombre: 'Colección completa (Los imprescindibles)', grupo: 'Logros', visor: 'momentos', momentos: 'coleccion_imprescindibles', suena: ['coleccion'], partituras: ['coleccion'], principal: { tipo: 'archivo', id: 'coleccion' }, nota: 'Los imprescindibles de Roma: 7 de 8 → 8 de 8. El sonido es el mismo que el de «Colección completa»: cae cuando se cierra el círculo.' },
-  { id: 'emblema', nombre: 'Emblema secreto', grupo: 'Logros', visor: 'momentos', momentos: 'emblema', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' }, nota: 'Se ve el Panteón: la escena del sitio pone además su propia partitura («escena»), como en la app.' },
-  { id: 'emblema_maravilla', nombre: 'Emblema maravilla (el Coliseo)', grupo: 'Logros', visor: 'momentos', momentos: 'emblema_maravilla', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' } },
+  { id: 'emblema', nombre: 'Emblema de Roma', grupo: 'Logros', visor: 'momentos', momentos: 'emblema', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' }, destinoDeEscenas: 'roma', otrasEscenas: ESCENAS_DE_ROMA, nota: 'Una sola tarjeta para TODOS los emblemas de Roma (menos el Coliseo): todos tienen los mismos momentos clave (la luz estalla a los 8 s, todo se apaga a los 7,6 s y el emblema entra a los 9,2 s), así que lo que guardes aquí vale para todos. Se ve el Panteón; con «Ver otra escena» miras otro emblema, sin guardar aparte.' },
+  { id: 'emblema_lanzarote', nombre: 'Emblema de Lanzarote', grupo: 'Logros', visor: 'momentos', momentos: 'emblema_lanzarote', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' }, destinoDeEscenas: 'lanzarote', otrasEscenas: ESCENAS_DE_LANZAROTE, nota: 'Una sola tarjeta para TODOS los emblemas de Lanzarote: todos comparten sus momentos clave (la luz estalla a los 9,9 s). Se ve Timanfaya; con «Ver otra escena» miras otro emblema, sin guardar aparte.' },
+  { id: 'emblema_maravilla', nombre: 'Coliseo', grupo: 'Logros', visor: 'momentos', momentos: 'emblema_maravilla', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' }, nota: 'El Coliseo tiene sus propios momentos clave (su escena es más larga): es la única que no sigue la regla de su destino.' },
   { id: 'maravilla', nombre: 'Final de las 7 maravillas', grupo: 'Logros', visor: 'momentos', momentos: 'maravilla', suena: ['maravilla'], partituras: ['maravilla'], principal: { tipo: 'archivo', id: 'maravilla' } },
   { id: 'pais', nombre: 'País nuevo', grupo: 'Logros', visor: 'momentos', momentos: 'pais', suena: ['pais'], partituras: ['pais'], principal: { tipo: 'archivo', id: 'pais' }, nota: 'Destino nuevo y continente suenan igual.' },
   { id: 'sello', nombre: 'Sello del pasaporte', grupo: 'Logros', visor: 'pasaporte', suena: ['sello_pasaporte'], partituras: ['sello_pasaporte'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'El sello que se estampa en la hoja del pasaporte (la hoja del Perfil, con sus piezas de verdad y un viaje de ejemplo). En la app suena igual (la misma partitura) al tocar el golpe la hoja. No es la medalla (esa es «Medalla de bronce»…).' },
-  { id: 'pedazo', nombre: 'Pedazo que entra en su círculo', grupo: 'Logros', visor: 'momentos', momentos: 'pedazo', suena: ['pedazo'], partituras: ['pedazo'], principal: { tipo: 'archivo', id: 'clic' } },
-  { id: 'pedazo_dos', nombre: 'Pedazos nuevos (dos colecciones a la vez)', grupo: 'Logros', visor: 'momentos', momentos: 'pedazo_dos', suena: ['pedazo'], partituras: ['pedazo'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'El Coliseo suma a la vez en «Los imprescindibles» y en «La Roma antigua». En la app suena la misma partitura del pedazo al empezar; la segunda insignia encaja 1,6 s después.' },
+  { id: 'pedazo', nombre: 'Pedazo que entra en su círculo', grupo: 'Logros', visor: 'momentos', momentos: 'pedazo', suena: ['pedazo'], partituras: ['pedazo'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'Una sola colección: un pedazo, un sonido.' },
+  { id: 'pedazo_dos', nombre: 'Pedazos nuevos (dos colecciones a la vez)', grupo: 'Logros', visor: 'momentos', momentos: 'pedazo_dos', suena: ['pedazo'], partituras: ['pedazo'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'El Coliseo suma a la vez en «Los imprescindibles» y en «La Roma antigua». Uno detrás de otro: la segunda insignia empieza cuando la primera ha acabado del todo (su animación y su sonido) más una pausa corta, y suena su propio pedazo un semitono más agudo.' },
+  { id: 'pedazo_tres', nombre: 'Pedazos nuevos (tres colecciones a la vez)', grupo: 'Logros', visor: 'momentos', momentos: 'pedazo_tres', suena: ['pedazo'], partituras: ['pedazo'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'El Coliseo suma a la vez en «Los imprescindibles», «La Roma antigua» y «Las 4 joyas de Roma». Cada insignia empieza cuando la anterior ha acabado del todo, y su pedazo suena +1 y +2 semitonos más agudo (para que no suene a copia). [Seguir] sale al acabar la última.' },
   { id: 'patrimonio', nombre: 'Patrimonio de la UNESCO', grupo: 'Logros', visor: 'momentos', momentos: 'patrimonio', suena: ['patrimonio'], partituras: ['patrimonio'], principal: { tipo: 'archivo', id: 'brillo' } },
   { id: 'viajero', nombre: 'Logro de viajero', grupo: 'Logros', visor: 'momentos', momentos: 'viajero', suena: ['viajero'], partituras: ['viajero'], principal: { tipo: 'archivo', id: 'brillo' } },
-  { id: 'escena_roma', nombre: 'Escena de Roma (Fontana de Trevi)', grupo: 'Escenas', visor: 'momentos', momentos: 'escena_roma', suena: ['emblema'], partituras: ['escena'], principal: { tipo: 'archivo', id: 'emblema' } },
-  { id: 'escena_lanzarote', nombre: 'Escena de Lanzarote (Timanfaya)', grupo: 'Escenas', visor: 'momentos', momentos: 'escena_lanzarote', suena: ['emblema'], partituras: ['escena'], principal: { tipo: 'archivo', id: 'emblema' } },
   { id: 'fuegos', nombre: 'Los fuegos', grupo: 'Resúmenes', visor: 'fuegos', suena: ['fuegos'], partituras: ['fuegos'], principal: { tipo: 'archivo', id: 'emblema' } },
   { id: 'resumen_dia', nombre: 'Resumen del día', grupo: 'Resúmenes', visor: 'resumen_dia', momentos: 'resumen_dia', suena: ['dia_completo'], partituras: ['dia_completo'], principal: { tipo: 'archivo', id: 'brillo' }, nota: 'Suena al abrirse el resumen del día, en la app y aquí (el candidato A de cada sonido hasta que elijas).' },
   { id: 'resumen_viaje', nombre: 'Resumen del viaje', grupo: 'Resúmenes', visor: 'resumen_viaje', suena: ['dia_completo'], partituras: ['dia_completo'], principal: { tipo: 'archivo', id: 'brillo' }, nota: 'Aquí se ve con un viaje de EJEMPLO (Roma, con sus días, paradas, logros y fotos); en la app lleva los datos de cada viajero. Suena al abrirse el resumen.' },

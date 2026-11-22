@@ -40,7 +40,7 @@ const MOCK = (esAdmin) => `const f = window.fetch.bind(window); window.__red = [
 /* ───────── 1. Los datos: todas las animaciones con sonido ───────── */
 console.log('1. La lista de animaciones: todas las que llevan sonido')
 const ids = [...leer('src/lib/sonidos/estudio.ts').matchAll(/^  \{ id: '([a-z_0-9]+)'/gm)].map((x) => x[1])
-const PIDE = ['medalla_bronce', 'medalla_plata', 'medalla_oro', 'medalla_diamante', 'coleccion', 'emblema', 'emblema_maravilla', 'maravilla', 'pais', 'sello', 'pedazo', 'escena_roma', 'escena_lanzarote', 'fuegos', 'resumen_dia', 'resumen_viaje', 'apertura', 'visto', 'aviso', 'tic', 'toque']
+const PIDE = ['medalla_bronce', 'medalla_plata', 'medalla_oro', 'medalla_diamante', 'coleccion', 'emblema', 'emblema_maravilla', 'maravilla', 'pais', 'sello', 'pedazo', 'emblema_lanzarote', 'fuegos', 'resumen_dia', 'resumen_viaje', 'apertura', 'visto', 'aviso', 'tic', 'toque']
 debe(PIDE.every((x) => ids.includes(x)), 'lista', `están todas las del prompt (medallas, colección, emblema, emblema maravilla, 7 maravillas, país, sello, pedazo, escenas de Roma y Lanzarote, fuegos, resúmenes, apertura y los sonidos cortos): ${ids.length} en la lista`)
 debe(ids.includes('vuelo') && ids.includes('patrimonio') && ids.includes('viajero'), 'lista', 'y las que me faltaban en el prompt: el vuelo de lo ganado, patrimonio y logro de viajero')
 const pagina = leer('src/components/logros/AdminSonidos.tsx')
@@ -186,7 +186,7 @@ console.log('6. En el iPhone (390 x 844): se ve bien y suena a la primera; sin s
     debe(r.sonando >= 1 && r.estadoAudio === 'running' && r.mismoAudio, 'iphone', `suena a la primera con el toque en la página: el marco usa el audio de la página (${r.estadoAudio})`)
     debe(r.toque, 'iphone', 'los botones se tocan bien con el dedo (44 px o más)')
     await a.captura('docs/dias/V34C_capturas/iphone_abierta.jpg')
-    await a.evaluar("document.querySelector('[data-animacion-tarjeta=\"escena_roma\"]').scrollIntoView(); true")
+    await a.evaluar("document.querySelector('[data-animacion-tarjeta=\"emblema_lanzarote\"]').scrollIntoView(); true")
     await a.esp(300)
     await a.captura('docs/dias/V34C_capturas/iphone_tarjetas.jpg')
   } finally {

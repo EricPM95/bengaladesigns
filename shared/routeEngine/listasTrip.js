@@ -302,6 +302,7 @@ export function planListasTrip(args) {
   const estado = {
     vistos: new Set(hasFreeTour ? [...tourCovers] : []), // lo que ya salió como parada o de camino (para «la primera vez»)
     dentro: new Set(), // lo que ya va por dentro
+    dentroEn: new Map(), // (V38B) y en qué día del viaje va por dentro (para decir «ya lo ves por dentro el día N» en el día que lo ve por fuera)
     mesas: new Set(), // restaurantes ya usados
     noches: new Set(), // nocturnas ya usadas
     cerrados: new Set(), // lugares que cierran y se quedan como «Cerrado este día» (no vistos)
@@ -790,7 +791,7 @@ export function planListasTrip(args) {
       const sePuedeFuera = source?.minutos_fuera != null || source?.pass_by || source?.type === 'exterior'
       if (item.hora_tipo === 'reserva' || item.hora || !sePuedeFuera) return item
       log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'modo+min', causa: 'por dentro una sola vez en el viaje: ya va por dentro otro día' })
-      return { ...item, modo: 'fuera', min: Math.min(item.min, source?.minutos_fuera ?? OUTSIDE_MINUTES), hora_tipo: undefined }
+      return { ...item, modo: 'fuera', min: Math.min(item.min, source?.minutos_fuera ?? OUTSIDE_MINUTES), hora_tipo: undefined, fuera_ya_dentro_dia: estado.dentroEn.get(item.lugar) ?? null }
     })
 
     // 5.5 La «Llegada a…» de cada reserva, turno y Free Tour: 30 min antes de una reserva, 15 antes de un turno o del tour.
@@ -1713,12 +1714,18 @@ export function planListasTrip(args) {
       if (item.cerrado_este_dia) { estado.cerrados.add(item.lugar); continue }
       estado.vistos.add(item.lugar)
       if (item.modo !== 'camino' && !estado.visitadoEn.has(item.lugar)) estado.visitadoEn.set(item.lugar, dayNumber)
-      if (item.modo === 'dentro') estado.dentro.add(item.lugar)
+      if (item.modo === 'dentro') {
+        estado.dentro.add(item.lugar)
+        if (!estado.dentroEn.has(item.lugar)) estado.dentroEn.set(item.lugar, dayNumber)
+      }
       // (Una visita que cubre a otra —la Cúpula con la Basílica por dentro, Tanda 11— cuenta también como visto el sitio que cubre.)
       for (const name of item.cubre ?? []) {
         estado.vistos.add(name)
         if (item.modo !== 'camino' && !estado.visitadoEn.has(name)) estado.visitadoEn.set(name, dayNumber)
-        if (item.modo === 'dentro') estado.dentro.add(name)
+        if (item.modo === 'dentro') {
+          estado.dentro.add(name)
+          if (!estado.dentroEn.has(name)) estado.dentroEn.set(name, dayNumber)
+        }
       }
     }
     for (const nocheItem of noches) estado.noches.add(nocheItem.noche)
@@ -1867,7 +1874,7 @@ export function planListasTrip(args) {
       // el tour es una parada con su hora
     } else if (modo === 'fuera' || item.motivo_fuera) {
       ready = {
-        ...source, visitOutside: true, outsideReason: item.motivo_fuera ?? source.por_fuera ?? null, outsideKind: item.mirador_por_cierre ? 'al_lado' : item.fuera_por_horario ? (String(item.motivo_fuera ?? '').startsWith('A esta hora aún no ha abierto') ? 'no_abre' : 'ya_cerrado') : item.motivo_fuera === OUTSIDE_REASONS.cerrado || item.cerrado_este_dia ? 'cerrado' : item.motivo_fuera ? 'no_abre' : 'a_proposito', outsideAuthored: !item.motivo_fuera,
+        ...source, visitOutside: true, outsideReason: item.motivo_fuera ?? (item.fuera_ya_dentro_dia ? `ya lo ves por dentro el día ${item.fuera_ya_dentro_dia}` : null) ?? source.por_fuera ?? null, outsideKind: item.mirador_por_cierre ? 'al_lado' : item.fuera_por_horario ? (String(item.motivo_fuera ?? '').startsWith('A esta hora aún no ha abierto') ? 'no_abre' : 'ya_cerrado') : item.motivo_fuera === OUTSIDE_REASONS.cerrado || item.cerrado_este_dia ? 'cerrado' : item.motivo_fuera ? 'no_abre' : 'a_proposito', outsideAuthored: !item.motivo_fuera && !item.fuera_ya_dentro_dia,
         coordinates: source.pass_by?.coordinates ?? source.coordinates, duration_minutes: item.min, windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior',
       }
     } else if (modo === 'camino') {
@@ -2004,7 +2011,7 @@ export function planListasTrip(args) {
       untypedAfternoon: false, reorderedBlocks: [], closedAnchors: [], otherRestaurants: [],
       written: { version: null, escrito: true, tabla: draft.id, grupo: draft.parteKey },
       escritoNights, escritoLog: log.map((entry) => ({ ...entry, fecha: fecha ?? null })),
-      escritoRows: final.map((item) => ({ cubre: item.cubre ?? null, id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, franja_doc: item.franja_doc ?? item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null, visitado_dia: item.visitado_dia ?? null, no_quita_noche: item.no_quita_noche === true, cerrado_este_dia: item.cerrado_este_dia === true })),
+      escritoRows: final.map((item) => ({ cubre: item.cubre ?? null, id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, franja_doc: item.franja_doc ?? item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null, visitado_dia: item.visitado_dia ?? null, no_quita_noche: item.no_quita_noche === true, cerrado_este_dia: item.cerrado_este_dia === true, fuera_ya_dentro_dia: item.fuera_ya_dentro_dia ?? null })),
       tardeLibre,
       spare: spareVisits,
       spareRows: spare.map((item) => ({ razon: item.razon ?? null, id: item.id, lugar: item.lugar, titulo: item.titulo ?? null, franja: item.franja, nivel: nivelDe(item.lugar), modo: item.modo ?? null, protegido: item.protegido === true, por_llegada: item.por_llegada === true })),

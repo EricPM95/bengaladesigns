@@ -42,6 +42,10 @@ export interface OpcionesDePartitura {
   reducido?: boolean
   /** (V30) Los tiempos de la escena (, , ) cuando es una escena de sitio con tiempos propios. */
   escena?: ConfigDeTiemposDeEscena
+  /** (V38B) Pedazos repetidos en una pantalla: los sonidos grabados suenan estos semitonos más agudos (el golpe sigue cayendo en su sitio). 0 = tal cual. */
+  semitonos?: number
+  /** (V38B) Es la 2.ª, 3.ª… vez del mismo sonido en la misma pantalla: los sonidos de Eric del estudio se repiten también. */
+  repeticion?: boolean
 }
 
 export const GRADOS_DE_MEDALLA = ['bronce', 'plata', 'oro', 'diamante'] as const

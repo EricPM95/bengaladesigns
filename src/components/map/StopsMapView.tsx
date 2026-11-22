@@ -189,7 +189,12 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       openPinId = null
     })
 
+    // (V38B) Esta pasada ya no vale (el efecto se limpió o se volvió a lanzar): su pintado, si llega tarde, no hace nada. Sin esto, un pintado que llegaba DESPUÉS de la limpieza dejaba en el mapa compartido pines «zombi» (con los ocultos de entonces, todos) que nadie volvía a tocar.
+    let cancelado = false
+    let pintado = false
     const populate = () => {
+      if (cancelado || pintado) return
+      pintado = true
       // Ronda 9 (Mejora 1A): líneas rectas de ruta, una capa por día — SIEMPRE debajo de los pines
       // (añadidas antes de los mapboxgl.Marker, que van en su propio overlay HTML por encima del
       // canvas del mapa base sin importar el orden de inserción, pero mantener el orden lógico
@@ -329,9 +334,18 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       }
     }
     // Un mapa nuevo pinta al cargar; uno que ya estaba cargado (compartido) pinta ya.
-    if (persisted && map.isStyleLoaded()) populate()
-    else if (persisted) map.once('style.load', populate)
-    else map.on('load', populate)
+    // (V38B) `isStyleLoaded()` es falso también mientras el mapa baja teselas, y entonces `style.load` NO vuelve a llegar: el pintado se quedaba esperando para siempre (en Explorar, tras pasar un rato por DÍAS, todos los pines salían ocultos).
+    // Los pines son elementos de la página (no capas del mapa): no necesitan el estilo cargado. Solo las líneas lo necesitan; con líneas, se espera a `style.load` o a `idle`, lo primero que llegue.
+    const alListo = () => {
+      map.off('style.load', alListo)
+      map.off('idle', alListo)
+      populate()
+    }
+    if (persisted && (map.isStyleLoaded() || lines.length === 0)) populate()
+    else if (persisted) {
+      map.on('style.load', alListo)
+      map.on('idle', alListo)
+    } else map.on('load', populate)
 
     // Mapbox GL no detecta solo que su contenedor cambió de tamaño (p.ej. al arrastrar el tirador
     // del panel en móvil) — sin esto el canvas se queda fijo en el tamaño que tenía al crearse.
@@ -339,6 +353,9 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
     resizeObserver.observe(containerRef.current)
 
     return () => {
+      cancelado = true
+      map.off('style.load', alListo)
+      map.off('idle', alListo)
       resizeObserver.disconnect()
       if (persistKey) {
         // El mapa compartido no se destruye: se le quitan SOLO los pines y líneas de esta pantalla y se descuelga (si otra pantalla no lo ha cogido ya).

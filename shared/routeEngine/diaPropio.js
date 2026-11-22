@@ -32,7 +32,8 @@ export function diaPropio({ destData, written, placeNames, insideMinutes = {}, i
     const inside = place.type === 'interior'
     const min = inside ? insideMinutes[place.name] ?? place.duration_minutes ?? 60 : place.minutos_fuera ?? Math.min(place.duration_minutes ?? 15, 20)
     const real = overrides[place.name]
-    return { tipo: 'parada', lugar: place.name, modo: real ? real.modo : inside ? 'dentro' : null, doc: place.name, min: real?.min ?? min }
+    // (V38B) Un sitio que el viaje ya lleva por dentro otro día pasa a verse por fuera; la parada dice en qué día (`fuera_ya_dentro_dia`: «Por fuera · ya lo ves por dentro el día 2»).
+    return { tipo: 'parada', lugar: place.name, modo: real ? real.modo : inside ? 'dentro' : null, doc: place.name, min: real?.min ?? min, ...(real?.yaDentroDia ? { fuera_ya_dentro_dia: real.yaDentroDia } : {}) }
   }
   // La mañana llega hasta donde pone la comida ese orden; si todo cabe en la mañana (un solo sitio), no hay tarde.
   const lunchAt = orden.mealAfter.lunch ?? ordered.length - 1

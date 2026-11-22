@@ -114,6 +114,8 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
     const short = (stop.outsideKind === 'no_abre' || stop.outsideKind === 'cerrado') && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
     if (closed && short) meta.push({ text: short, warn: true })
   }
+  // (V38B) Por fuera porque el viaje ya lo lleva por dentro otro día: la tarjeta lo dice claro («Por fuera · ya lo ves por dentro el día 2»), sin rojo (no es un problema).
+  if (stop.visitMode === 'fuera' && !cerradoEsteDia && /^ya lo ves por dentro el día \d+/i.test(stop.outsideReason ?? '')) meta.push({ text: `Por fuera · ${stop.outsideReason}` })
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
   if (freeDay) {
     // («Cerrado este día» ya lo dice la línea del horario o la propia parada: una sola vez.)

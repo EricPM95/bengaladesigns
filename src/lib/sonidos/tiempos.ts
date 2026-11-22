@@ -9,6 +9,27 @@ export const TIEMPOS_DE_PEDAZO = { llega: 0.3, encaja: 1.2, color: 1.35, fin: 2.
 export const TIEMPOS_DE_PEDAZO_REDUCIDO = { color: 0, fin: TIEMPOS_DE_PEDAZO.fin - 1.2 } as const
 /** Lo que espera la insignia antes de empezar (la pantalla de «Un pedazo nuevo»). */
 export const RETRASO_DEL_PEDAZO = 0.9
+/** (V38B) Margen que sale [Seguir] después de que acabe la última animación (el de siempre: 2,0 s de animación + 0,4 s). */
+export const MARGEN_DEL_SEGUIR = 0.4
+/** (V38B) Pausa corta entre una insignia que acaba del todo (animación y sonido) y la siguiente que empieza. */
+export const PAUSA_ENTRE_PEDAZOS = 0.2
+/** (V38B) Cada pedazo repetido en la misma pantalla suena un semitono más agudo que el anterior (1.er pedazo: tal cual; 2.º: +1; 3.º: +2…), con un tope de +4 para que nunca suene a otra cosa. */
+export const SEMITONOS_POR_REPETICION = 1
+export const MAX_SEMITONOS_DE_PEDAZO = 4
+export const semitonosDelPedazo = (i: number): number => Math.min(MAX_SEMITONOS_DE_PEDAZO, Math.max(0, i) * SEMITONOS_POR_REPETICION)
+/**
+ * (V38B) PEDAZOS UNO DETRÁS DE OTRO. `finSonoro` = cuándo acaba de sonar el pedazo, en segundos desde que se pide el sonido (la partitura «pedazo» ya lleva dentro `RETRASO_DEL_PEDAZO`: lo que tarda en empezar la insignia).
+ * La insignia i empieza a `RETRASO_DEL_PEDAZO + i * hueco`; el hueco es lo que dura la anterior de verdad (su animación `TIEMPOS_DE_PEDAZO.fin` y su sonido, lo que sea mayor) más una pausa corta. Nunca un 1,6 fijo.
+ */
+export const finDeLaAnimacionDelPedazo = (reducido = false): number => (reducido ? TIEMPOS_DE_PEDAZO_REDUCIDO.fin : TIEMPOS_DE_PEDAZO.fin)
+export const duracionDelPedazo = (finSonoro: number, reducido = false): number => Math.max(finDeLaAnimacionDelPedazo(reducido), finSonoro - RETRASO_DEL_PEDAZO)
+export const huecoEntrePedazos = (finSonoro: number, reducido = false): number => duracionDelPedazo(finSonoro, reducido) + PAUSA_ENTRE_PEDAZOS
+export const retrasoDelPedazoN = (i: number, hueco: number): number => RETRASO_DEL_PEDAZO + i * hueco
+/** Cuándo sale [Seguir] (en segundos desde que se monta la pantalla): al acabar la última insignia (animación y sonido) más el margen de siempre. */
+export const ctaDeLosPedazos = (n: number, finSonoro: number, reducido = false): number => {
+  const hueco = huecoEntrePedazos(finSonoro, reducido)
+  return retrasoDelPedazoN(Math.max(1, n) - 1, hueco) + Math.max(finDeLaAnimacionDelPedazo(reducido) + MARGEN_DEL_SEGUIR, finSonoro - RETRASO_DEL_PEDAZO)
+}
 
 /** (8B) La espera de antes del emblema secreto: la luz late cada vez más rápido (un latido por aro) y estalla a los 3,6 s. */
 export const TIEMPOS_DE_EMBLEMA = { aros: [0.75, 1.47, 2.05, 2.5, 2.82], estalla: 3.6 } as const

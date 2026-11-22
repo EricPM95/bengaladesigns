@@ -15,7 +15,7 @@
  */
 
 import { partituraDe, type OpcionesDePartitura } from './sonidos/partituras'
-import { cortar, iniciarPartitura, precargar, FUNDIDO_AL_SALTAR_MS } from './sonidos/motor'
+import { cortar, finSonoroDe, iniciarPartitura, precargar, FUNDIDO_AL_SALTAR_MS } from './sonidos/motor'
 
 const CLAVE_SONIDO = 'trazo:sonido'
 
@@ -42,6 +42,9 @@ export function cortarSonidos(fundidoMs = FUNDIDO_AL_SALTAR_MS): void {
 export function cortarSonidoDe(id: string, fundidoMs = FUNDIDO_AL_SALTAR_MS): void {
   if (contexto) cortar(contexto, fundidoMs, { id })
 }
+
+/** (V38B) Cuándo acaba de sonar de verdad el pedazo (segundos desde que se pide), con lo que hay ahora en el estudio: los pedazos de una pantalla empiezan uno detrás de otro con este número. */
+export const finSonoroDelPedazo = (): number => finSonoroDe('pedazo', { reducido: movimientoReducido() })
 
 /** (V29) Tener listos los archivos de premio de la siguiente animación (si hace falta), sin que suene nada. */
 export function prepararSonido(momento: string, extra: OpcionesDePartitura = {}): void {

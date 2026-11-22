@@ -140,7 +140,7 @@ try {
   await toque(adm, '[data-anadir-candidato="emblema:C"]')
   debe(await esperar(adm, "Boolean(document.querySelector('[data-capa-anadida]'))", 40), 'anadir', 'el elegido se suma como una capa más')
   const capa = await J(adm, `JSON.stringify({ nombre: document.querySelector('[data-nombre-anadida]').textContent, opciones: [...document.querySelectorAll('[data-capa-anadida] [data-anadida-empieza]')].map((x) => x.getAttribute('data-anadida-empieza')), vol: Boolean(document.querySelector('[data-anadida-vol]')), quitar: Boolean(document.querySelector('[data-quitar-anadida]')), ms: Boolean(document.querySelector('[data-anadida-ms]')) })`)
-  debe(/Emblema secreto · golpe del emblema · C/.test(capa.nombre) && capa.vol && capa.quitar && capa.ms && capa.opciones.join() === 'principio,golpe', 'anadir', `con su nombre («${capa.nombre}»), su volumen, su barra de ms, su «Empieza…» y [Quitar]`)
+  debe(/Emblema de Roma · golpe del emblema · C/.test(capa.nombre) && capa.vol && capa.quitar && capa.ms && capa.opciones.join() === 'principio,golpe', 'anadir', `con su nombre («${capa.nombre}»), su volumen, su barra de ms, su «Empieza…» y [Quitar]`)
   await poner(adm, '[data-capa-anadida] [data-anadida-ms]', '1200')
   await adm.esp(300)
   await poner(adm, '[data-capa-anadida] [data-anadida-vol]', '0.6')
@@ -160,7 +160,7 @@ try {
   await adm.esp(300)
   lo = await adm.evaluar("document.querySelector('[data-lo-elegido]').textContent")
   const bronce = lo.split('\n').find((l) => /^Medalla de bronce/.test(l)) ?? ''
-  debe(/movido −300 ms/.test(bronce) && /añadido: Emblema secreto · golpe del emblema · C · desde el principio \+1200 ms · 60 %/.test(bronce) && /MÍO: mi_sonido\.wav · desde el principio \+0 ms · 70 %/.test(bronce), 'lo_elegido', `«Lo elegido» lo apunta todo («${bronce.slice(0, 260)}»)`)
+  debe(/movido −300 ms/.test(bronce) && /añadido: Emblema de Roma · golpe del emblema · C · desde el principio \+1200 ms · 60 %/.test(bronce) && /MÍO: mi_sonido\.wav · desde el principio \+0 ms · 70 %/.test(bronce), 'lo_elegido', `«Lo elegido» lo apunta todo («${bronce.slice(0, 260)}»)`)
   const redBronce = await adm.evaluar("document.querySelector('[data-sonido-clave=\"archivo:redoble\"] [data-volumen-candidato-valor]').textContent")
   await adm.captura('docs/dias/V35B2_capturas/despues_capas.jpg')
 
