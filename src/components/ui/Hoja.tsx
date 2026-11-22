@@ -129,8 +129,10 @@ export function useArrastreParaCerrar(onCerrar?: () => void) {
 }
 
 /** Los botones de las hojas del diseño: principal y oscuro (los dos, en champán desde la Tanda 10E) y secundario (borde). */
-export function BotonHoja({ children, tipo = 'principal', onClick, disabled, datos, enviar = false }: { children: ReactNode; tipo?: 'principal' | 'oscuro' | 'secundario'; onClick?: () => void; disabled?: boolean; datos?: string; enviar?: boolean }) {
+export function BotonHoja({ children, tipo = 'principal', onClick, disabled, datos, enviar = false }: { children: ReactNode; tipo?: 'principal' | 'oscuro' | 'secundario' | 'dorado'; onClick?: () => void; disabled?: boolean; datos?: string; enviar?: boolean }) {
   const estilos = {
+    /* (V39C) El botón dorado del diseño «Pase y cuenta» (el 'g' de la pantalla de entrar). */
+    dorado: { height: 54, background: 'linear-gradient(135deg,#F6E6C4,#D8B98E 55%,#A67C52)', color: '#3E2A14', border: 'none', font: "700 15px 'Geist'" },
     principal: { height: 54, ...botonChampan(), border: 'none', font: "700 15px 'Geist'" },
     oscuro: { height: 54, ...botonChampan(), border: 'none', font: "600 15px 'Geist'" },
     secundario: { height: 46, background: 'transparent', color: 'inherit', border: '1px solid rgba(128,128,128,.3)', font: "600 13.5px 'Geist'" },

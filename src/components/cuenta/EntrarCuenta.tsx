@@ -1,4 +1,3 @@
-import { botonChampan } from '../../lib/marcaBoton'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { entrarConCodigo, entrarConEmail, entrarConGoogle, errorDeEntradaPendiente } from '../../lib/cuentas'
@@ -6,6 +5,7 @@ import { enlaceDeCorreo, emailResumido, esperaRestante, textoDeEspera } from '..
 import { marca } from '../../lib/marca'
 import { BotonHoja, EnlaceHoja, Hoja } from '../ui/Hoja'
 import { PalabraJutrip } from '../ui/LogoJutrip'
+import { MosaicoDeDestinos } from './MosaicoDeDestinos'
 import { PrivacidadScreen } from './PrivacidadScreen'
 
 type Paso = 'inicio' | 'email' | 'enviado'
@@ -86,13 +86,14 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
       aria-modal="true"
       aria-label={`Entrar en ${marca.nombre}`}
       data-entrar
-      style={{ position: 'fixed', inset: 0, zIndex: 90, background: '#FFFFFF', color: '#1C2230', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'max(150px, 18vh) 26px calc(44px + env(safe-area-inset-bottom))', gap: 14, textAlign: 'center', overflowY: 'auto' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 90, background: 'radial-gradient(120% 70% at 50% 28%,#FFFFFF 0%,#FBF3E2 55%,#E7D9BC 100%)', color: '#1C2230', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', padding: '0 26px calc(44px + env(safe-area-inset-bottom))', gap: 14, textAlign: 'center', overflowY: 'auto' }}
     >
-      <h1 data-nombre-app aria-label={marca.nombre} style={{ margin: 0, lineHeight: 1 }}>
+      {/* (V39C) El mosaico de destinos que se mueve despacio, arriba, detrás del logo. */}
+      <MosaicoDeDestinos />
+      <h1 data-nombre-app aria-label={marca.nombre} style={{ margin: 0, lineHeight: 1, position: 'relative' }}>
         <PalabraJutrip tam={46} />
       </h1>
-      <p style={{ margin: 0, font: "400 15px/1.45 'Geist'", color: 'rgba(28,34,48,.72)' }} data-entrar-para-unirte={paraUnirte ? "1" : undefined}>{paraUnirte ? "Entra o crea tu cuenta para unirte." : "Guarda tus viajes, tus fotos y tus logros."}</p>
-      <span style={{ flex: 1, minHeight: 24 }} />
+      <p style={{ margin: '0 0 8px', position: 'relative', font: "400 15px/1.45 'Geist'", color: 'rgba(28,34,48,.72)' }} data-entrar-para-unirte={paraUnirte ? "1" : undefined}>{paraUnirte ? "Entra o crea tu cuenta para unirte." : "Guarda tus viajes, tus fotos y tus logros."}</p>
       {mensaje && paso === 'inicio' && (
         <p role="alert" data-mensaje-entrar style={{ margin: 0, font: "500 13px/1.4 'Geist'", color: 'rgb(var(--accent-red))' }}>
           {mensaje}
@@ -103,16 +104,21 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
         onClick={() => void alGoogle()}
         disabled={ocupado}
         data-entrar-google
-        style={{ width: '100%', maxWidth: 420, height: 54, flex: 'none', borderRadius: 999, border: 'none', background: 'linear-gradient(180deg,#FBF3E2 0%,#EBD9AE 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.8),0 8px 14px -8px rgba(111,78,55,.45)', color: '#6F4E37', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, font: "600 15px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}
+        style={{ position: 'relative', width: '100%', maxWidth: 420, height: 54, flex: 'none', borderRadius: 999, border: '1px solid rgba(166,124,82,.45)', background: '#FFFFFF', boxShadow: '0 8px 14px -10px rgba(111,78,55,.4)', color: '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, font: "600 15px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}
       >
-        <span aria-hidden="true" style={{ width: 20, height: 20, borderRadius: '50%', background: 'conic-gradient(#EA4335 0 25%,#FBBC05 0 50%,#34A853 0 75%,#4285F4 0)' }} />
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z" />
+          <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z" />
+          <path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z" />
+          <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z" />
+        </svg>
         Continuar con Google
       </button>
       <button
         type="button"
         onClick={() => setPaso('email')}
         data-entrar-email
-        style={{ width: '100%', maxWidth: 420, height: 54, flex: 'none', borderRadius: 999, border: '1px solid rgba(28,34,48,.2)', background: '#FFFDF8', color: '#1C2230', font: "600 15px 'Geist'", cursor: 'pointer' }}
+        style={{ position: 'relative', width: '100%', maxWidth: 420, height: 54, flex: 'none', borderRadius: 999, border: 'none', background: 'linear-gradient(135deg,#F6E6C4,#D8B98E 55%,#A67C52)', boxShadow: '0 10px 16px -10px rgba(111,78,55,.55)', color: '#3E2A14', font: "700 15px 'Geist'", cursor: 'pointer' }}
       >
         Entrar con mi email
       </button>
@@ -145,7 +151,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
                 {mensaje}
               </p>
             )}
-            <BotonHoja tipo="oscuro" enviar disabled={ocupado || email.trim().length === 0 || restante > 0} datos="enviar-enlace">
+            <BotonHoja tipo="dorado" enviar disabled={ocupado || email.trim().length === 0 || restante > 0} datos="enviar-enlace">
               Enviarme el enlace
             </BotonHoja>
             {restante > 0 && <p style={{ margin: 0, textAlign: 'center', font: "400 11.5px 'Geist'", color: 'rgba(28,34,48,.55)' }}>{textoDeEspera(restante)}</p>}
@@ -162,7 +168,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
             target={enlaceDeCorreo(email).startsWith('http') ? '_blank' : undefined}
             rel="noopener noreferrer"
             data-abrir-correo
-            style={{ height: 54, flex: 'none', borderRadius: 999, ...botonChampan(), display: 'flex', alignItems: 'center', justifyContent: 'center', font: "600 15px 'Geist'", textDecoration: 'none' }}
+            style={{ height: 54, flex: 'none', borderRadius: 999, background: 'linear-gradient(135deg,#F6E6C4,#D8B98E 55%,#A67C52)', color: '#3E2A14', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 15px 'Geist'", textDecoration: 'none' }}
           >
             Abrir mi correo
           </a>

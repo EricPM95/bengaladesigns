@@ -6,6 +6,8 @@
  *  · Fotos de lugares (Tanda 6y2: la cabecera de las excursiones lleva el crédito en pequeño sobre una esquina de la foto; las fotos pequeñas de las tarjetas, ninguna línea): las de Unsplash llevan el nombre de su autor y su enlace bajo la foto (ficha de la parada); las de Wikipedia/Wikimedia Commons llevan autor y licencia bajo la foto (Tanda 6z6f, data/dias/<destino>/_fotos_wikimedia.json; las de dominio público, nada). Las fotos propias (de Eric) NUNCA llevan crédito, ni aquí ni en pantalla (Tanda 6z6e).
  * Las empresas con las que tenemos enlaces de compra no piden que se las cite, así que no salen. Las fotos propias y las del viajero no llevan crédito.
  */
+import fotosEntrada from '../../data/entrada/fotos.json'
+
 export interface Credito {
   clave: string
   titulo: string
@@ -39,6 +41,19 @@ export const CREDITOS: Credito[] = [
     enlaces: [
       { texto: 'Wikimedia Commons', url: 'https://commons.wikimedia.org/' },
       { texto: 'Unsplash', url: 'https://unsplash.com/' },
+    ],
+  },
+  {
+    clave: 'fotos_entrada',
+    titulo: 'Fotos de la pantalla de entrada',
+    // Se lee de data/entrada/fotos.json (autor y licencia de cada foto del mosaico). Las CC0 no exigen cita; se listan igualmente.
+    texto: Object.values(fotosEntrada)
+      .map((f) => `${f.nombre}: ${f.autor}, ${f.licencia}`)
+      .join('. ') + '.',
+    enlaces: [
+      { texto: 'Wikimedia Commons', url: 'https://commons.wikimedia.org/' },
+      { texto: 'Licencia CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
+      { texto: 'Licencia CC BY 2.0', url: 'https://creativecommons.org/licenses/by/2.0/' },
     ],
   },
 ]
