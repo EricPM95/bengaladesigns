@@ -207,6 +207,8 @@ try {
   debe(v.compras.some((c) => c.estado === 'reembolsado') && v.compras.some((c) => c.persona?.nombre === 'Bea'), 'las compras llevan quién pagó (por su user_id) y las devoluciones salen como «reembolsado»')
   for (const d of [['Roma', 'actividad', 'civitatis'], ['Roma', 'actividad', 'civitatis'], ['Lanzarote', 'hotel', 'stay22']]) await P1.pedir('/api/afiliados/clic', { metodo: 'POST', token: null, cuerpo: { destino: d[0], tipo: d[1], proveedor: d[2] } })
   r = await P1.pedir('/api/afiliados/clic', { metodo: 'POST', token: null, cuerpo: { destino: 'Roma', tipo: 'coche', proveedor: 'x' } })
+  // (V39) Los clics se apuntan con el día REAL de la base (hoy); el reloj de esta prueba está parado el 21-nov. Se llevan al 20-nov, como las compras de arriba: si no, desde el 22-nov caen fuera del periodo y salen a 0.
+  await servidor(() => q("update public.afiliados_clics set dia = '2026-11-20'"))
   debe(r.estado === 204, 'el clic responde 204 sin enseñar nada, también si no vale')
   r = await P1.pedir('/api/admin/ventas?periodo=30d')
   const af = r.json.afiliados
@@ -250,6 +252,7 @@ try {
   r = await P0.pedir('/api/admin/destinos/proximamente', { metodo: 'POST', cuerpo: { destino: 'Lima', pais: 'Perú' } })
   debe(r.estado === 409 && r.json.pronto === true, 'y [+ Añadir un destino] contesta «Pronto» sin romper nada')
   await servidor(() => sin.q("select public.registrar_pago('cs_sin', 'pi_sin', 'stripe', $1, 'Roma', 'uno', 1, 699, 'eur', null)", [ids.sin.fran]))
+  await servidor(() => sin.q("update public.pagos_registro set creado_en = '2026-11-20T09:00:00Z'")) // (V39) igual que arriba: el reloj de la prueba está parado el 21-nov
   r = await P0.pedir('/api/admin/ventas?periodo=todo')
   debe(r.estado === 200 && r.json.te_queda.comision_cent === null && r.json.afiliados.clics === null && r.json.ingresos_cent > 0, 'SIN la 0091 Ventas funciona: la comisión y los clics salen «pronto»')
   r = await P0.pedir('/api/admin/inicio?periodo=todo')

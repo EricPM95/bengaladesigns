@@ -11,6 +11,7 @@
  *   POST /api/admin/reportes/:id/responder       { texto, hecho? }
  *   GET  /api/admin/destinos
  *   POST /api/admin/destinos/ya-disponible       { destino }
+ *   POST /api/admin/destinos/sonados/avisar      { tipo, destino, iso }   (V39: avisar a quien soñaba ese destino)
  * (Los de Reportes y Fotos ya existían: server/avisosViajeros.js.) Todas pasan por el mismo guardián que las demás /api/admin/* (401 sin sesión, 403 si no es administrador).
  */
 import fs from 'node:fs'
@@ -87,6 +88,10 @@ export function registrarRutasPanel(app, { admin, env = process.env, correo = cr
   app.get('/api/admin/destinos', conAdmin(async (req, res) => res.json(await destinos.leer(req.query))))
   app.post('/api/admin/destinos/ya-disponible', conAdmin(async (req, res) => {
     const r = await destinos.yaDisponible(req.body)
+    return res.status(r.estado).json(r.cuerpo)
+  }))
+  app.post('/api/admin/destinos/sonados/avisar', conAdmin(async (req, res) => {
+    const r = await destinos.sonadosAvisar(req.body)
     return res.status(r.estado).json(r.cuerpo)
   }))
   // (V35B) Los clics en «Reservar» (Civitatis y Stay22), contados por día, destino y tipo. SIN saber quién: no se lee la cuenta, la IP ni nada del aparato. Sin la 0091 (no existe la función) responde igual y no guarda nada.

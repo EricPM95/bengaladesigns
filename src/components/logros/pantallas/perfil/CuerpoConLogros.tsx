@@ -201,6 +201,8 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
   const cuenta = useCuenta()
   const nuevoViajero = cuenta.tipo === 'cuenta' && viajes.length === 0
   const vistaDeViajes = nuevoViajero ? <MapaDeDestinos /> : misViajes
+  // (V39) La bola «¿A dónde te apetece ir?» es de TODOS: el viajero nuevo la lleva arriba (de siempre); el que ya viaja, debajo del pasaporte, diciendo de cada destino lo suyo (ya has estado, tu viaje).
+  const bolaParaTodos = !nuevoViajero ? <MapaDeDestinos paraTodos viajes={viajes} destinosDelPerfil={perfil?.destinos ?? null} onAbrirViaje={onAbrirViaje} /> : null
 
   const lista = verTodos && (
     <ListaDeViajes
@@ -232,6 +234,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
         <div style={{ margin: '20px 20px 0' }}>
           <TarjetaPasaporte pasaporte={pasaporteLocal} />
         </div>
+        {bolaParaTodos && <div data-bola-del-perfil style={{ margin: '34px 20px 0' }}>{bolaParaTodos}</div>}
         {lista}
       </>
     )
@@ -319,6 +322,9 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
 
         {/* (10P, 1.8) Un solo «Mi pasaporte»: lo visitado, con su mapa en el círculo. */}
         <TarjetaPasaporte pasaporte={perfil.pasaporte} onAbrir={() => abrir({ t: 'pasaporte' })} />
+
+        {/* (V39) «¿A dónde te apetece ir?» para todos, debajo del pasaporte. */}
+        {bolaParaTodos && <div data-bola-del-perfil>{bolaParaTodos}</div>}
 
         {/* El billete del sorteo, abajo del todo. */}
         {SORTEO_VISIBLE && perfil.sorteo && <BilleteDelSorteo sorteo={perfil.sorteo} onAbrir={() => abrir({ t: 'sorteo' })} />}

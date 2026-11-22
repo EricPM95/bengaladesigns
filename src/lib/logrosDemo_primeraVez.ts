@@ -21,12 +21,16 @@ const nueva = (): boolean => {
 }
 
 /** Por defecto el viajero de la demo ya las contestó (así las demás pruebas no las ven); para ver las preguntas: `localStorage['trazo:demo:primera_vez_nueva'] = 'si'` antes de abrir. */
-export const demoPrimeraVez: { hecho: boolean; frecuencia: string | null; compania: string | null; anio_nacimiento: number | null; pais_vive: string | null; guardados: number; ultimo: Record<string, unknown> | null; avisos: { destino: string; email: string }[]; usos: Record<string, unknown>[]; paises: unknown[] } = {
+export const demoPrimeraVez: { hecho: boolean; frecuencia: string | null; compania: string | null; anio_nacimiento: number | null; pais_vive: string | null; sueno: { tipo: string; nombre: string; iso: string } | null; suenos_disponibles: boolean; suenos: unknown[]; guardados: number; ultimo: Record<string, unknown> | null; avisos: { destino: string; email: string }[]; usos: Record<string, unknown>[]; paises: unknown[] } = {
   hecho: typeof window === 'undefined' ? true : !nueva() || yaHecha(),
   frecuencia: null,
   compania: null,
   anio_nacimiento: null,
   pais_vive: null,
+  // (V39) El viaje de sus sueños (pregunta 3 y Ajustes). `suenos_disponibles` false = como un servidor sin la migración 0093 (la pregunta no sale): `localStorage['trazo:demo:sin_suenos'] = 'si'`.
+  sueno: null,
+  suenos_disponibles: typeof window === 'undefined' ? true : (() => { try { return window.localStorage.getItem('trazo:demo:sin_suenos') !== 'si' } catch { return true } })(),
+  suenos: [],
   guardados: 0,
   ultimo: null,
   avisos: [],
@@ -36,10 +40,18 @@ export const demoPrimeraVez: { hecho: boolean; frecuencia: string | null; compan
 }
 if (typeof window !== 'undefined') (window as unknown as { __demoPrimeraVez: typeof demoPrimeraVez }).__demoPrimeraVez = demoPrimeraVez
 
+/** Como el servidor: un sueño válido ({ tipo, nombre, iso }) o nada. */
+const suenoValido = (v: unknown): { tipo: string; nombre: string; iso: string } | null => {
+  const s = v as { tipo?: string; nombre?: string; iso?: string } | null
+  const nombre = String(s?.nombre ?? '').replace(/\s+/g, ' ').trim()
+  const iso = String(s?.iso ?? '').toLowerCase()
+  return s && (s.tipo === 'pais' || s.tipo === 'destino') && nombre.length >= 2 && nombre.length <= 80 && /^[a-z]{2}$/.test(iso) ? { tipo: s.tipo, nombre, iso } : null
+}
+
 export function responder(ruta: string, _url: URL, c: Record<string, unknown>, opciones: { metodo?: string; cuerpo?: unknown }): unknown {
   // Sin la marca de «cuenta nueva», el servidor de la demo no tiene nada que decir (como un servidor sin la migración): así las demás pruebas no ven ni las preguntas ni el Perfil con el mapa.
   if (ruta === '/api/primera-vez' && (opciones.metodo ?? 'GET') === 'GET' && !nueva()) return { ok: false }
-  if (ruta === '/api/primera-vez' && (opciones.metodo ?? 'GET') === 'GET') return { ok: true, hecho: demoPrimeraVez.hecho, frecuencia: demoPrimeraVez.frecuencia, compania: demoPrimeraVez.compania, anio_nacimiento: demoPrimeraVez.anio_nacimiento, pais_vive: demoPrimeraVez.pais_vive }
+  if (ruta === '/api/primera-vez' && (opciones.metodo ?? 'GET') === 'GET') return { ok: true, hecho: demoPrimeraVez.hecho, frecuencia: demoPrimeraVez.frecuencia, compania: demoPrimeraVez.compania, anio_nacimiento: demoPrimeraVez.anio_nacimiento, pais_vive: demoPrimeraVez.pais_vive, suenos_disponibles: demoPrimeraVez.suenos_disponibles, sueno: demoPrimeraVez.sueno }
   if (ruta === '/api/uso') {
     demoPrimeraVez.usos.push({ ...c })
     return { ok: true, guardado: true }
@@ -49,6 +61,14 @@ export function responder(ruta: string, _url: URL, c: Record<string, unknown>, o
     if ((opciones.metodo ?? 'GET') === 'GET') return { ok: true, pais_vive: demoPrimeraVez.pais_vive }
     demoPrimeraVez.paises.push(c.pais_vive ?? null)
     demoPrimeraVez.pais_vive = /^[A-Za-z]{2}$/.test(String(c.pais_vive ?? '')) ? String(c.pais_vive).toUpperCase() : null
+    return { ok: true, guardado: true }
+  }
+  // (V39) El viaje de sus sueños de Ajustes: GET lo lee y PUT lo cambia (solo eso).
+  if (ruta === '/api/primera-vez/sueno') {
+    if ((opciones.metodo ?? 'GET') === 'GET') return { ok: true, sueno: demoPrimeraVez.sueno, disponible: demoPrimeraVez.suenos_disponibles }
+    demoPrimeraVez.suenos.push(c.sueno ?? null)
+    if (!demoPrimeraVez.suenos_disponibles) return { ok: true, guardado: false }
+    demoPrimeraVez.sueno = suenoValido(c.sueno)
     return { ok: true, guardado: true }
   }
   if (ruta === '/api/primera-vez') {
@@ -65,6 +85,7 @@ export function responder(ruta: string, _url: URL, c: Record<string, unknown>, o
     demoPrimeraVez.compania = COMPANIAS.includes(String(c.compania)) ? String(c.compania) : null
     demoPrimeraVez.anio_nacimiento = Number.isInteger(anio) && anio >= 1920 && anio <= new Date().getFullYear() ? anio : null
     demoPrimeraVez.pais_vive = /^[A-Za-z]{2}$/.test(String(c.pais_vive ?? '')) ? String(c.pais_vive).toUpperCase() : null
+    if (demoPrimeraVez.suenos_disponibles) demoPrimeraVez.sueno = suenoValido(c.sueno)
     return { ok: true }
   }
   if (ruta === '/api/avisos-destino') {

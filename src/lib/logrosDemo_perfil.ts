@@ -48,6 +48,8 @@ export function perfilDeEjemplo(): PerfilLogros {
     titulos: TITULOS_DE_EJEMPLO,
     vitrina: resumenDeVitrina({ items: itemsDeLosGanados() }),
     pasaporte: { paises, ciudades, sellos, ...mapaDelPasaporte() },
+    // (V39) Lo que lleva en Roma (el viaje entero de ejemplo): los mismos números que calcularía el servidor (`destinosDeLaPersona`).
+    destinos: [{ clave: 'roma', medallas: { n: 7, total: 7 }, colecciones: { n: 11, total: 11 }, secretos: { n: 5, total: 14 } }],
     previos: { paises: previos },
   }
 }

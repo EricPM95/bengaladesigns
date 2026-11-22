@@ -79,6 +79,7 @@ export function Ficha({ f, movil, volver }: { f: UsuarioFicha; movil: boolean; v
               <b data-ficha-dato="vive" style={{ fontSize: 14, display: 'flex', alignItems: 'center', gap: 7 }}>
                 {f.vive_en && <Bandera iso={f.vive_en.iso} tam={16} />}
                 {f.vive_en ? f.vive_en.nombre : '—'}
+                {f.vive_en?.fuente === 'origen' && <span data-vive-fuente="origen" style={{ fontWeight: 400, fontSize: 11, color: 'rgba(255,253,248,.5)' }}>(por el origen de su viaje)</span>}
               </b>
             </span>
           </div>

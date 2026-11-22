@@ -38,9 +38,14 @@ const ESCALONADOS: Record<string, { icono: string; pasos: number[]; grados?: num
   conocedor: { icono: 'ciudad', pasos: [25, 50], grados: [5, 10] },
 }
 
+/**
+ * (V39) «Tu país» (viajero_nacional): el dibujo del Dashboard de Design («Viajero nacional», 1 · 3 destinos de tu país): el MISMO icono (el pin con la casita) en «Medalla Destino» grado 10;
+ * «Turista en tu país» (escalón 1) SIN las gemas del borde (`gems="0"`) y «Viajero nacional» (escalón 3) con ellas. El escalón 5 (apagado) se dibuja como el 3.
+ */
+const ICONO_TU_PAIS = 'M12 21s-6-5-6-10a6 6 0 0 1 12 0c0 5-6 10-6 10zM9.5 11.5l2.5-2.2 2.5 2.2v3h-5z'
+
 /** Los de un solo paso: el nombre que les da el Dashboard (para su icono). Se dibujan con «Medalla Destino» en su último grado. */
 const DE_UN_PASO: Record<string, string> = {
-  viajero_nacional: 'Viajero nacional',
   destino_cuatro_estaciones: 'Un destino, cuatro estaciones',
   navidad_fuera: 'Navidad fuera de casa',
   nochevieja_fuera: 'Nochevieja fuera de casa',
@@ -67,11 +72,11 @@ const TODOS_LOS_MESES = '1,2,3,4,5,6,7,8,9,10,11,12'
 
 /** Ids de todos los logros que sabe dibujar (para la página de prueba). */
 export const LOGROS_CON_CHAPA: string[] = [
-  ...Object.keys(ESCALONADOS), 'maravillas', ...Object.keys(DE_UN_PASO), ...Object.keys(EXCLUSIVOS), 'tres_oro', 'tres_diamante', 'doce_meses', 'cuatro_estaciones',
+  ...Object.keys(ESCALONADOS), 'viajero_nacional', 'maravillas', ...Object.keys(DE_UN_PASO), ...Object.keys(EXCLUSIVOS), 'tres_oro', 'tres_diamante', 'doce_meses', 'cuatro_estaciones',
   'dos_paises_en_un_dia', 'continentes', 'pequenos_gigantes',
 ]
 /** Escalones de cada familia con escalones (para la página de prueba). */
-export const ESCALONES_DE: Record<string, (string | number)[]> = { ...Object.fromEntries(Object.entries(ESCALONADOS).map(([k, v]) => [k, v.pasos])), maravillas: [1, 2, 3, 4, 5, 6, 7] }
+export const ESCALONES_DE: Record<string, (string | number)[]> = { ...Object.fromEntries(Object.entries(ESCALONADOS).map(([k, v]) => [k, v.pasos])), viajero_nacional: [1, 3], maravillas: [1, 2, 3, 4, 5, 6, 7] }
 
 /** (V9) «lanzarote» → «Lanzarote»; «roma» → «Roma» (el nombre de la ciudad para la moneda `{ciudad} {anio}`); sin destino, Roma como siempre. */
 export function nombreDeCiudadDeDestino(destino?: string | null): string {
@@ -167,6 +172,8 @@ export function ChapaDibujo({
     dibujo = esc.icono === 'globo' || esc.icono === 'pin'
       ? <MedallaDestino stage={grado} icon={esc.icono} size={tam} />
       : <MedallaDestino stage={grado} icon="path" icd={IC_ESCALONES[esc.icono]} size={tam} />
+  } else if (logro === 'viajero_nacional') {
+    dibujo = <MedallaDestino stage={10} icon="path" icd={ICONO_TU_PAIS} size={tam} gems={n != null && n < 3 ? '0' : '1'} />
   } else if (logro === 'maravillas') {
     const ORD = ['coliseo', 'gran_muralla', 'petra', 'cristo_redentor', 'machu_picchu', 'chichen_itza', 'taj_mahal']
     alto = (tam * 400) / 340

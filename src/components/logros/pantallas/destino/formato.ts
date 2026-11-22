@@ -52,6 +52,7 @@ export const NOMBRE_DE_FAMILIA: Record<string, string> = {
   cazador_emblemas: 'Cazador de emblemas',
   coleccionista: 'Coleccionista',
   conocedor: 'Conocedor',
+  viajero_nacional: 'Tu país',
   ciudad_completa: 'Ciudad al completo',
   todos_secretos: 'Todos sus secretos',
 }

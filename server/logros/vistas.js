@@ -62,7 +62,7 @@ function posible(def, cap, esc = null) {
     case 'hemisferio_sur':
       return cap.hemisferioSur
     case 'viajero_nacional':
-      return cap.mismoPais >= def.n
+      return cap.mismoPais >= (esc ? esc.n : def.n) // (V39) ahora con escalones («Tu país»)
     case 'ciudades_sello':
       return cap.ciudadesConSello >= def.n
     case 'pionero':
@@ -94,6 +94,7 @@ export function logrosVisibles(datos, ahora = new Date()) {
     if (def.escalones) {
       const escalones = []
       for (const esc of def.escalones) {
+        if (esc.activo === false) continue // (V39) un escalón preparado pero sin encender
         const primero = capPorK.find((x) => posible(def, x.cap, esc))
         if (primero) escalones.push({ ...esc, visible_desde: primero.d.anadido, nuevo: nuevoSi(primero.k, primero.d) })
       }

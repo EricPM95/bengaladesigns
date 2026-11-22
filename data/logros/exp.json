@@ -36,7 +36,7 @@
 
     "escapada": 25,
     "dos_paises_en_un_dia": 50,
-    "viajero_nacional": 75,
+    "viajero_nacional": { "1": 25, "3": 75, "5": 125 },
     "dia_perfecto": 75,
     "el_fotografo": 75,
     "nunca_ultima_vez": 75,

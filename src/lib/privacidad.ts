@@ -28,6 +28,10 @@ export const AVISO_DE_CUENTANOS_PRIVACIDAD =
 export const AVISO_DE_PAIS_PRIVACIDAD =
   'País donde vives: en las primeras preguntas te preguntamos en qué país vives. Es opcional: puedes saltarlo, y lo puedes cambiar o quitar cuando quieras en Ajustes. Lo usamos para saber desde dónde viaja la gente y mejorar JUTRIP. Si te lo proponemos ya marcado, sale del idioma de tu móvil: nunca de tu ubicación ni de tu dirección IP. No lo enseñamos a nadie.'
 
+/** (V39) El viaje de tus sueños: lo que preguntamos, para qué y cómo se cambia (un solo sitio: lo enseña la página de privacidad). */
+export const AVISO_DE_SUENO_PRIVACIDAD =
+  'El viaje de tus sueños: en las primeras preguntas te preguntamos qué país o destino te encantaría visitar. Es opcional: puedes saltarlo, y lo puedes cambiar o quitar cuando quieras en Ajustes. Lo usamos para saber qué destinos desea la gente y para avisarte en la campana, una sola vez, si ese destino (o uno de ese país) llega a JUTRIP. No lo enseñamos a nadie.'
+
 /** (V35B) El uso de la app: lo mínimo que se guarda (un solo sitio: lo enseña la página de privacidad). */
 export const AVISO_DE_USO_PRIVACIDAD =
   'Uso de la app: guardamos un día de uso por cuenta (la fecha, sin hora), el tipo de aparato (iPhone, Android u ordenador, sin el modelo) y si usas la app instalada en tu pantalla de inicio o desde el navegador. Lo usamos para saber cuánta gente usa JUTRIP y desde qué tipo de aparato, y así mejorarlo. Con esto no guardamos tu dirección IP ni tu ubicación.'
@@ -39,7 +43,7 @@ export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
     id: 'para-que',
     titulo: 'Para qué lo usamos',
     pregunta: 'Para qué sirve cada dato y en qué se basa tratarlo.',
-    escrito: [AVISO_DE_DESTINOS_PRIVACIDAD, AVISO_DE_CUENTANOS_PRIVACIDAD, AVISO_DE_PAIS_PRIVACIDAD, AVISO_DE_USO_PRIVACIDAD],
+    escrito: [AVISO_DE_DESTINOS_PRIVACIDAD, AVISO_DE_CUENTANOS_PRIVACIDAD, AVISO_DE_PAIS_PRIVACIDAD, AVISO_DE_SUENO_PRIVACIDAD, AVISO_DE_USO_PRIVACIDAD],
   },
   { id: 'cuanto-tiempo', titulo: 'Cuánto tiempo lo guardamos', pregunta: 'Cuánto dura cada dato y qué pasa cuando dejas de usar la app.' },
   { id: 'con-quien', titulo: 'Con quién lo compartimos', pregunta: 'Los servicios de fuera que tratan datos para que la app funcione (lista de abajo).' },

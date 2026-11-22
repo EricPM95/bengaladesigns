@@ -25,7 +25,9 @@ export interface OpcionDeRespuesta {
 }
 export interface DondeViven {
   total: number
-  paises: { iso: string; nombre: string; n: number; pct: number }[]
+  paises: { iso: string; nombre: string; n: number; pct: number; contestado?: number; origen?: number }[]
+  /** (V39) Cuántas personas lo contestaron y cuántas se sacan del origen de su último viaje. */
+  fuentes?: { contestado: number; origen: number }
 }
 export interface Inicio {
   ok: boolean
@@ -126,6 +128,8 @@ export interface DestinosDelPanel {
   puede_editar?: boolean
   proximamente: { clave?: string | null; destino: string; iso: string | null; publicado?: boolean; avisos: number; avisados: number }[]
   correo: { activo: boolean }
+  /** (V39) «Destinos soñados»: el viaje de sus sueños que eligió la gente en el periodo. `disponible: false` = falta la migración 0093 (el bloque enseña «Pronto»). `lanzado`: ya está publicado en la app (de un país, algún destino suyo). */
+  sonados?: { disponible: boolean; lista: { tipo: 'pais' | 'destino'; destino: string; iso: string; veces: number; lanzado: boolean }[] }
 }
 
 export const pedir = <T,>(ruta: string): Promise<T | null> => llamar<T>(conFiltroDePruebas(ruta, useSinPruebas.getState().on))
@@ -256,7 +260,7 @@ export interface UsuariosResumen {
 export interface UsuarioFicha {
   ok: boolean
   usuario: UsuarioFila
-  vive_en: { iso: string; nombre: string } | null
+  vive_en: { iso: string; nombre: string; fuente?: 'contestado' | 'origen' } | null
   hoy: string
   ahora: string
   pase_texto: string

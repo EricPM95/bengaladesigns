@@ -11,7 +11,7 @@
 
 import { libreDeLlegada } from '../../shared/routeEngine/llegadaDia1.js'
 import { datosDeVuelta } from '../../shared/routeEngine/vueltaDia.js'
-import { GLOBAL, avanceViajero, calcular, clave, diferencia, diasEntre, hechosQueCuentan, logroActivo, parteLocal, sumarDias } from './motor.js'
+import { GLOBAL, avanceViajero, calcular, clave, diferencia, diasEntre, hechosQueCuentan, logroActivo, nombreDePaisIso, parteLocal, sumarDias } from './motor.js'
 import { calcularExp, edicionDeAnio, entradaEnEdicion, estadoDelSorteo, expDeMomento, expFinal, invitacionDaExp, resumenDeExp, viajesConHoy } from './exp.js'
 import { coordenadasDeSitio, datosVisiblesPara, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto, metros } from './fotos.js'
@@ -90,7 +90,9 @@ export function contextoDeViaje({ id, route }, datos, catalogos, { esDuo = false
     // Las horas del billete (si las puso) y, de ellas, cuándo queda libre el día de llegada y cuándo hay que salir el último día: las MISMAS que calcula el motor para la ruta (según
     // el aeropuerto, la estación y el medio). De ahí sale el día de prueba de HOY. Si el motor no da la hora, se usan los respaldos de data/pase/ajustes.json (`libre_origen`).
     ...horasDelViaje(route, destino, catalogo),
-    origen_pais: null,
+    // (V39) El país de ORIGEN del viaje (el de la ciudad de la que sale, que ya se guarda con el viaje): sirve para «Tu país» de quien no contestó en qué país vive.
+    origen_pais: nombreDePaisIso(route?.answers?.originPlace?.countryCode),
+    origen_iso: /^[A-Za-z]{2}$/.test(String(route?.answers?.originPlace?.countryCode ?? '')) ? String(route.answers.originPlace.countryCode).toUpperCase() : null,
     dias,
   }
 }
@@ -154,7 +156,7 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
   }
   async function cargar(userId, { ligero = false } = {}) {
     // (V9) TODAS las lecturas a la vez, en una sola ronda (antes el perfil y los referidos esperaban a las otras seis y la invitación, a todas): cada ronda al servidor de datos son ~150-300 ms.
-    const [hechos, filas, logros, cuenta, pionero, probador, perfil, referidos, invitador] = await Promise.all(ligero ? [[], repo.viajesDe(userId), repo.logrosDe(userId), null, {}, null, null, [], undefined] : [
+    const [hechos, filas, logros, cuenta, pionero, probador, perfil, referidos, invitador, paisVive] = await Promise.all(ligero ? [[], repo.viajesDe(userId), repo.logrosDe(userId), null, {}, null, null, [], undefined, null] : [
       repo.hechosDe(userId),
       repo.viajesDe(userId),
       repo.logrosDe(userId),
@@ -164,6 +166,7 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
       repo.perfilDe(userId),
       repo.referidosDe ? repo.referidosDe(userId) : [],
       repo.invitadorDe ? repo.invitadorDe(userId).catch(() => undefined) : undefined,
+      repo.paisViveDe ? repo.paisViveDe(userId).catch(() => null) : null, // (V39) el país que contestó (si lo contestó)
     ])
     const viajes = {}
     for (const fila of filas) {
@@ -189,13 +192,15 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
     const hechosCanon = alias.size ? hechos.map((h) => (alias.has(h.trip_id) ? { ...h, trip_id: canon(h.trip_id) } : h)) : hechos
     const logrosCanon = alias.size ? logros.map((l) => (alias.has(l.trip_id) ? { ...l, trip_id: canon(l.trip_id) } : l)) : logros
     // (8C1) La EXP que ya tenía (nunca baja) y los amigos que ha invitado; (V9) y quién le invitó, ya leído.
-    return { hechos: hechosCanon, viajes, logros: logrosCanon, cuenta, pionero, probador, perfil, referidos, invitador }
+    return { hechos: hechosCanon, viajes, logros: logrosCanon, cuenta, pionero, probador, perfil, referidos, invitador, pais_vive: paisVive ?? null }
   }
-  const calcularCon = (c, hechos = c.hechos, pionero = c.pionero) => calcular({ datos, hechos, viajes: c.viajes, cuenta: c.cuenta, ahora: ahora(), pionero, probador: aIso(c.probador) })
-  const aMapa = (filas) => new Map(filas.map((f) => [clave(f.destino, f.logro, f.escalon), f]))
+  const calcularCon = (c, hechos = c.hechos, pionero = c.pionero) => calcular({ datos, hechos, viajes: c.viajes, cuenta: c.cuenta, ahora: ahora(), pionero, probador: aIso(c.probador), pais_vive: c.pais_vive ?? null })
+  const aMapa = (filas) => new Map(filas.map((f) => [clave(f.destino, f.logro, escalonDe(f)), f]))
   const aIso = (v) => (v instanceof Date ? v.toISOString() : v)
   /** Lo ganado (filas de la base) como el cerebro lo entiende: clave → { logro, escalon, destino, trip_id, en }. */
-  const aItems = (logros) => new Map(logros.filter((f) => logroActivo(datos, f.logro)).map((f) => [clave(f.destino, f.logro, f.escalon), { clave: clave(f.destino, f.logro, f.escalon), logro: f.logro, escalon: String(f.escalon), destino: f.destino, trip_id: f.trip_id ?? null, en: aIso(f.ganado_en), animacion_vista: f.animacion_vista }]))
+  // (V39) «Viajero nacional» era un logro sin escalones (escalón vacío) y ahora es el escalón 3 de «Tu país»: lo que alguien ya tuviera guardado se lee como el escalón 3 (no se quita ni se duplica).
+  const escalonDe = (f) => (f.logro === 'viajero:viajero_nacional' && String(f.escalon) === '' ? '3' : String(f.escalon))
+  const aItems = (logros) => new Map(logros.filter((f) => logroActivo(datos, f.logro)).map((f) => [clave(f.destino, f.logro, escalonDe(f)), { clave: clave(f.destino, f.logro, escalonDe(f)), logro: f.logro, escalon: escalonDe(f), destino: f.destino, trip_id: f.trip_id ?? null, en: aIso(f.ganado_en), animacion_vista: f.animacion_vista }]))
 
   /** Concede lo nuevo (ya calculado) guardándolo; devuelve solo lo que de verdad se ha insertado (nunca da dos veces lo mismo). */
   async function conceder(userId, nuevos, extra = {}, global = {}) {
@@ -210,7 +215,7 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
   async function respuestaDeNuevos(userId, antes, despues, c, hechosDespues = c.hechos, global = {}) {
     const nuevos = diferencia(antes, despues, datos.ajustes)
     const ultima = await repo.ultimaFrase(userId)
-    const momentos = armarMomentos({ datos, nuevos, despues, antes, ultimaFrase: ultima, azar })
+    const momentos = armarMomentos({ datos, nuevos, despues, antes, ultimaFrase: ultima, azar, viajes: c.viajes })
     const frases = Object.fromEntries(momentos.filter((m) => m.tipo === 'emblema').map((m) => [m.clave, { frase: m.frase }]))
     const concedidos = await conceder(userId, nuevos, frases, global)
     const claves = new Set(concedidos.map((it) => it.clave))
@@ -714,7 +719,7 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
     const calculado = calcularCon(c)
     const guardado = aMapa(c.logros)
     const faltan = [...calculado.values()].filter((it) => !guardado.has(it.clave))
-    const sobran = [...guardado.values()].filter((f) => !calculado.has(clave(f.destino, f.logro, f.escalon)) && f.logro !== 'viajero:probador')
+    const sobran = [...guardado.values()].filter((f) => !calculado.has(clave(f.destino, f.logro, escalonDe(f))) && f.logro !== 'viajero:probador')
     // Solo se añade lo que falta; lo que sobra se enseña (por ejemplo, si cambian los datos) pero no se quita solo.
     const puestos = aplicar ? await conceder(userId, faltan) : []
     return { faltan: faltan.map((it) => it.clave), puestos: puestos.map((it) => it.clave), sobran: sobran.map((f) => clave(f.destino, f.logro, f.escalon)) }

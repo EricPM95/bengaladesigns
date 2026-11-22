@@ -2,6 +2,9 @@
  * LOS DESTINOS DEL PANEL (V33):
  *   GET  /api/admin/destinos → { ok, pedidos:[{destino, veces}], proximamente:[{destino, avisos, avisados}], correo:{activo} }
  *   POST /api/admin/destinos/ya-disponible { destino } → { ok, campana, correos, ya_avisados, correo:'activo'|'sin_clave', quedan }
+ * (V39) «Destinos soñados»: el bloque `sonados` de GET /api/admin/destinos cuenta, en la base de datos, el viaje de sus sueños que eligió la gente (migración 0093; sin ella `sonados.disponible` es false y el panel enseña «Pronto»).
+ *   POST /api/admin/destinos/sonados/avisar { tipo, destino, iso } → { ok, avisadas, ya_avisadas }: deja en la campana «¡Tu viaje soñado ya está en Jutrip: Tokio!» a quien lo soñaba (el destino, o su país), UNA vez por persona y sueño.
+ *   [Ya está disponible] de un destino publicado también avisa a quien lo soñaba (devuelve `suenos`).
  * «Próximamente» sale de data/primera_vez/destinos.json (V31). «Avísame» vive en `avisos_destino` (0028). El [Ya está disponible] avisa UNA sola vez por persona y destino: la campana (si tiene cuenta) y el correo
  * (a su email) quedan marcados en `avisado_campana_en` / `avisado_correo_en` (0090). Sin RESEND_API_KEY solo se avisa por la campana y el correo queda sin marcar, para mandarlo después.
  * Cada vez se mandan como mucho 100 correos (límite de tiempo del servidor); si quedan más, `quedan` lo dice y se vuelve a pulsar.
@@ -14,6 +17,7 @@ import { rpc } from './guardian.js'
 import { enRango, leerPeriodo, rangoDePeriodo } from './periodo.js'
 
 export const MAX_CORREOS_POR_VEZ = 100
+const textoDeSueno = (nombre) => `¡Tu viaje soñado ya está en Jutrip: ${nombre}!`
 const n = (v) => Number(v) || 0
 
 /**
@@ -25,6 +29,26 @@ const leerLanzados = () => {
     return salida.filter((d) => fs.existsSync(new URL(`../../data/dias/${d.clave}`, import.meta.url)))
   } catch {
     return []
+  }
+}
+
+/**
+ * (V39) «Destinos soñados» del periodo: [{ tipo, destino, iso, veces, lanzado }] de más a menos. `lanzado`: el destino YA está publicado en la app (de un país: hay algún destino publicado en él). Sin la migración 0093 (no existe la función)
+ * o sin base, `disponible: false` y el panel enseña «Pronto».
+ */
+async function leerSonados(rango, publicados, admin) {
+  try {
+    const data = await rpc(admin, 'panel_suenos', { p_desde: rango.desde ?? null, p_hasta: rango.hasta ?? null, p_limite: 50 })
+    const lista = (Array.isArray(data) ? data : []).map((x) => ({
+      tipo: x.tipo === 'pais' ? 'pais' : 'destino',
+      destino: String(x.nombre ?? ''),
+      iso: String(x.iso ?? '').toLowerCase(),
+      veces: n(x.veces),
+      lanzado: x.tipo === 'pais' ? publicados.some((d) => String(d.iso ?? '').toLowerCase() === String(x.iso ?? '').toLowerCase()) : publicados.some((d) => limpiar(d.nombre) === String(x.norm ?? '')),
+    }))
+    return { disponible: true, lista }
+  } catch {
+    return { disponible: false, lista: [] }
   }
 }
 
@@ -79,6 +103,8 @@ export function crearServicioDestinos({ admin, correo, proximamente, servicioPro
         g.veces += 1
         if (a.avisame && a.user_id) g.quieren += 1
       }
+      // (V39) Lo que sueña la gente: se cuenta en la base de datos (función panel_suenos, 0093: una consulta por apertura del panel o cambio de periodo, hasta 50 filas de ~100 bytes). Sin la 0093, «Pronto».
+      const sonados = await leerSonados(rango, lanzados(), admin)
       const normasProximamente = new Set(lista.map((d) => limpiar(d.nombre)))
       const normasLanzadas = new Set(lanzados().map((d) => limpiar(d.nombre)))
       // «En Próximamente» bien calculado: solo si está en la lista de Próximamente Y todavía NO está publicado en la app (un destino nunca sale como «próximamente» y como «ya en la app» a la vez).
@@ -101,6 +127,25 @@ export function crearServicioDestinos({ admin, correo, proximamente, servicioPro
         puede_editar: deBase,
         proximamente: lista.map((d) => ({ clave: d.clave ?? null, destino: d.nombre, iso: d.iso ?? null, publicado: normasLanzadas.has(limpiar(d.nombre)), avisos: n(esperando.get(limpiar(d.nombre))?.avisos), avisados: n(esperando.get(limpiar(d.nombre))?.avisados) })),
         correo: { activo: Boolean(correo?.activo) },
+        sonados,
+      }
+    },
+    /** (V39) [Avisar] de «Destinos soñados»: a quien soñaba ese destino (o ese país), la campana, una sola vez. Solo de lo que YA está publicado en la app. */
+    async sonadosAvisar(cuerpo) {
+      const tipo = cuerpo?.tipo === 'pais' ? 'pais' : 'destino'
+      const nombre = String(cuerpo?.destino ?? '').replace(/\s+/g, ' ').trim()
+      const iso = String(cuerpo?.iso ?? '').trim().toLowerCase()
+      if (nombre.length < 2 || nombre.length > 80) return { estado: 400, cuerpo: { ok: false, error: 'Falta el destino.' } }
+      const publicados = lanzados()
+      // De un país se avisa con el primer destino publicado de ese país (el texto lleva su nombre); de un destino, solo si ya está publicado.
+      const publicado = tipo === 'pais' ? publicados.find((d) => String(d.iso ?? '').toLowerCase() === iso) : publicados.find((d) => limpiar(d.nombre) === limpiar(nombre))
+      if (!publicado) return { estado: 409, cuerpo: { ok: false, no_publicado: true, error: 'Aún no está en la app.' } }
+      try {
+        const r = (await rpc(admin, 'panel_sueno_avisar', { p_norm: tipo === 'destino' ? limpiar(publicado.nombre) : null, p_iso: tipo === 'pais' ? iso : null, p_nombre: publicado.nombre, p_texto: textoDeSueno(publicado.nombre) })) ?? {}
+        return { estado: 200, cuerpo: { ok: true, avisadas: n(r.avisadas), ya_avisadas: n(r.ya_avisadas), destino: publicado.nombre } }
+      } catch {
+        // Sin la 0093 (no existe la función): no se puede avisar todavía.
+        return { estado: 503, cuerpo: { ok: false, pronto: true, error: 'Falta aplicar la migración 0093 en Supabase.' } }
       }
     },
     async yaDisponible(cuerpo) {
@@ -129,7 +174,16 @@ export function crearServicioDestinos({ admin, correo, proximamente, servicioPro
           }
         }
       }
-      return { estado: 200, cuerpo: { ok: true, campana: n(r.campana), correos: enviados, ya_avisados: n(r.ya_avisados), correo: activo ? 'activo' : 'sin_clave', quedan: n(r.quedan) + fallidos.length } }
+      // (V39) Quien soñaba este destino (o su país) recibe también «¡Tu viaje soñado ya está en Jutrip: …!» en la campana, una sola vez. Sin la 0093, nada.
+      let suenos = { avisadas: 0, ya_avisadas: 0 }
+      try {
+        const publicado = lanzados().find((d) => limpiar(d.nombre) === limpiar(destino))
+        const s = (await rpc(admin, 'panel_sueno_avisar', { p_norm: limpiar(destino), p_iso: String(publicado?.iso ?? '').toLowerCase() || null, p_nombre: destino, p_texto: textoDeSueno(destino) })) ?? {}
+        suenos = { avisadas: n(s.avisadas), ya_avisadas: n(s.ya_avisadas) }
+      } catch {
+        /* sin la 0093: no hay sueños que avisar */
+      }
+      return { estado: 200, cuerpo: { ok: true, campana: n(r.campana), correos: enviados, ya_avisados: n(r.ya_avisados), correo: activo ? 'activo' : 'sin_clave', quedan: n(r.quedan) + fallidos.length, suenos } }
     },
   }
 }

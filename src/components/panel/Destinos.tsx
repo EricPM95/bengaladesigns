@@ -46,7 +46,17 @@ export function Destinos({ movil }: { movil: boolean }): ReactNode {
     setMensaje(r?.ok ? `${nombre} ya no está en Próximamente.` : (r?.error ?? 'No se ha podido quitar.'))
     cargar()
   }
+  // (V39) [Avisar] de «Destinos soñados»: la campana de quien soñaba ese destino (o país), una sola vez por persona.
+  const avisarSonado = async (tipo: string, destino: string, iso: string) => {
+    setOcupado(true)
+    const r = await mandar<{ ok: boolean; avisadas: number; ya_avisadas: number; destino?: string; error?: string }>('/api/admin/destinos/sonados/avisar', { tipo, destino, iso })
+    setOcupado(false)
+    setMensaje(r?.ok ? `${r.destino ?? destino}: avisadas ${r.avisadas} personas que lo soñaban${r.ya_avisadas ? ` (${r.ya_avisadas} ya estaban avisadas)` : ''}.` : 'No se ha podido avisar (¿falta la migración 0093?).')
+    cargar()
+  }
   const max = Math.max(1, ...d.pedidos.map((x) => x.veces))
+  const sonados = d.sonados
+  const maxSonados = Math.max(1, ...(sonados?.lista ?? []).map((x) => x.veces))
   return (
     <div data-seccion="destinos" style={{ display: 'flex', flexDirection: 'column', gap: movil ? 12 : 14 }}>
       {periodo}
@@ -129,6 +139,30 @@ export function Destinos({ movil }: { movil: boolean }): ReactNode {
           {mensaje && <p data-mensaje-destinos role="status" style={{ margin: 0, font: "400 13px/1.4 'Geist'", color: 'rgba(28,34,48,.75)' }}>{mensaje}</p>}
           {!d.correo.activo && <p style={{ margin: 0, font: "400 12.5px/1.4 'Geist'", color: '#8A6210' }}>Los correos están apagados (falta RESEND_API_KEY en Vercel): [Ya está disponible] solo avisa en la campana.</p>}
         </div>
+      </div>
+      {/* (V39) «Destinos soñados»: lo que eligió la gente en «El viaje de tus sueños» (primera vez y Ajustes), con las mismas barras, banderas y periodo que «Los más pedidos». Sin la 0093, «Pronto». */}
+      <div data-bloque="sonados" style={{ borderRadius: 24, background: '#FFFFFF', border: '1px solid rgba(28,34,48,.08)', padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <TituloConPeriodo texto="Destinos soñados" titulo={d.periodo.titulo} />
+        {(!sonados || !sonados.disponible) && <span data-pronto-sonados style={{ font: "500 12.5px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Pronto: falta aplicar la migración 0093</span>}
+        {sonados?.disponible && sonados.lista.length === 0 && <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Nadie ha elegido un viaje soñado en este periodo.</span>}
+        {sonados?.disponible &&
+          sonados.lista.map((x) => (
+            <div key={`${x.tipo}-${x.destino}`} data-sonado={x.destino} style={{ padding: 12, borderRadius: 18, background: '#F7F1E4', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Bandera iso={x.iso || isoDe(x.destino)} tam={20} />
+                <span style={{ width: movil ? 100 : 130, font: "600 14px/1.2 'Geist'" }}>
+                  {x.destino}
+                  <span style={{ display: 'block', font: "400 11.5px 'Geist'", color: 'rgba(28,34,48,.5)' }}>{x.tipo === 'pais' ? 'País' : 'Destino'}</span>
+                </span>
+                <span style={{ flex: 1, height: 10, borderRadius: 10, background: '#E8DFC9', overflow: 'hidden' }}><span style={{ display: 'block', height: '100%', width: `${Math.round((x.veces / maxSonados) * 100)}%`, background: 'linear-gradient(90deg,#E4C36E,#C99A44)' }} /></span>
+                <b style={{ width: 36, textAlign: 'right', font: "700 14px 'Geist'" }}>{x.veces}</b>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <button type="button" data-avisar-sonado={x.destino} disabled={ocupado || !x.lanzado} onClick={() => void avisarSonado(x.tipo, x.destino, x.iso)} style={botonOro(ocupado || !x.lanzado)}>Avisar</button>
+                {!x.lanzado && <span data-aun-no-esta style={{ font: "500 12px 'Geist'", color: 'rgba(28,34,48,.5)' }}>Aún no está en la app</span>}
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   )

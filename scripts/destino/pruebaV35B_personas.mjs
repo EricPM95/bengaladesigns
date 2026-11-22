@@ -123,7 +123,9 @@ const s35 = servicioFalso({ base })
   debe(dn.instalada === 25 && dn.navegador === 75 && r.uso.donde.find((x) => x.valor === 'instalada').nombre === 'App instalada', 'donde_la_usan', `dónde la usan: app instalada 25 %, navegador 75 % (${JSON.stringify(dn)})`)
   debe(r.entran.correo + r.entran.google === 60 && r.entran.google > 0 && r.entran.correo > 0, 'entran', 'cómo entran (correo/Google) sigue saliendo de la cuenta')
   const v = r.donde_viven
-  debe(v && v.total === 3 && v.paises[0].iso === 'es' && v.paises[0].nombre === 'España' && v.paises[0].n === 2 && v.paises[1].iso === 'mx' && v.paises[1].nombre === 'México', 'donde_viven', 'dónde viven: España 2 y México 1 (con su código para la bandera)')
+  // (V39) Quien no contestó se cuenta por el ORIGEN de su último viaje (aquí, Madrid): los 3 que contestaron (España 2, México 1) siguen siendo los suyos y se distinguen de los demás.
+  const contestados = v.paises.map((p) => `${p.iso}:${p.contestado}`).join()
+  debe(v && v.fuentes.contestado === 3 && v.fuentes.origen > 0 && v.total === v.fuentes.contestado + v.fuentes.origen && v.paises[0].iso === 'es' && v.paises[0].nombre === 'España' && v.paises[0].contestado === 2 && v.paises[1].iso === 'mx' && v.paises[1].nombre === 'México' && v.paises[1].n === 1 && v.paises[1].origen === 0, 'donde_viven', `dónde viven: contestado España 2 y México 1 (con su código para la bandera), y el resto por el origen de su viaje (${contestados}; origen ${v.fuentes.origen})`)
   const s7 = await s35.totales({ periodo: '7d' })
   debe(s7.activos === 3 && s7.uso.aparato.find((x) => x.valor === 'iphone').n === 1 && s7.uso.aparato.length === 3, 'periodo', `respeta el selector: en los últimos 7 días hay 3 personas activas y el reparto cambia (${s7.activos})`)
   const dia = await s35.totales({ periodo: 'custom', desde: '2026-11-01', hasta: '2026-11-12' })
@@ -132,7 +134,7 @@ const s35 = servicioFalso({ base })
   debe(ficha.vive_en?.iso === 'es' && ficha.vive_en.nombre === 'España', 'ficha', 'la ficha de Eric dice «Vive en: España» (con su código para la bandera)')
   debe((await s35.ficha('u-bruno')).vive_en?.nombre === 'México' && (await s35.ficha('u-alice')).vive_en === null, 'ficha', 'Bruno vive en México; Alice no lo ha dicho: sin dato')
   const inicio = calcularInicio(base, { nuevos: 0, fotos: 0, recientes: [] }, { periodo: {}, ahora: AHORA })
-  debe(inicio.donde_viven?.paises[0].iso === 'es' && inicio.donde_viven.paises[0].n === 2, 'inicio', '«Dónde viven» de Inicio sale con los mismos datos')
+  debe(inicio.donde_viven?.paises[0].iso === 'es' && inicio.donde_viven.paises[0].contestado === 2 && inicio.donde_viven.total === v.total, 'inicio', '«Dónde viven» de Inicio sale con los mismos datos')
   debe(!/"ip"|ubicaci|email|correo|@|"lat"|"lng"/i.test(JSON.stringify(r.uso)), 'sin_ip', 'lo que sale del uso no lleva IP, ubicación ni correos')
 }
 
@@ -177,7 +179,7 @@ console.log('4. SIN la migración 0091: la base no falla, nada se inventa y el p
 console.log('5. El código, la privacidad y la nota de «Empezar de cero»')
 {
   const p = leer('src/lib/privacidad.ts')
-  debe(/AVISO_DE_PAIS_PRIVACIDAD/.test(p) && /AVISO_DE_USO_PRIVACIDAD/.test(p) && /escrito: \[AVISO_DE_DESTINOS_PRIVACIDAD, AVISO_DE_CUENTANOS_PRIVACIDAD, AVISO_DE_PAIS_PRIVACIDAD, AVISO_DE_USO_PRIVACIDAD\]/.test(p), 'privacidad', 'la página de privacidad lleva el texto del país y el del uso')
+  debe(/AVISO_DE_PAIS_PRIVACIDAD/.test(p) && /AVISO_DE_USO_PRIVACIDAD/.test(p) && /escrito: \[AVISO_DE_DESTINOS_PRIVACIDAD, AVISO_DE_CUENTANOS_PRIVACIDAD, AVISO_DE_PAIS_PRIVACIDAD, AVISO_DE_SUENO_PRIVACIDAD, AVISO_DE_USO_PRIVACIDAD\]/.test(p), 'privacidad', 'la página de privacidad lleva el texto del país y el del uso')
   debe(/sin el modelo/.test(p) && /no guardamos tu dirección IP ni tu ubicación/.test(p) && /nunca de tu ubicación ni de tu dirección IP/.test(p), 'privacidad', 'los textos dicen: sin modelo, sin IP, sin ubicación')
   const m = leer('src/lib/paisVive.ts')
   debe(!/geolocation|ipify|ipapi|ip-api|ipinfo|fetch\(/.test(m), 'sin_ip', 'el país del móvil sale solo del idioma: sin ubicación ni consultas de IP')
@@ -239,7 +241,7 @@ console.log('6. La pregunta del país en la primera vez: sale ya marcada con el 
     await esperar(a, "Boolean(document.querySelector('[data-mapa-primera-vez]'))")
     const g = await J(a, 'JSON.stringify(window.__demoPrimeraVez)')
     debe(g.guardados === 1 && g.pais_vive === 'ES' && g.ultimo.pais_vive === 'ES', 'pais', 'con [Continuar] se guarda el país: ES')
-    debe(JSON.stringify(Object.keys(g.ultimo).sort()) === '["anio_nacimiento","compania","frecuencia","pais_vive"]', 'sin_ip', `lo enviado lleva solo esas cuatro claves: ${Object.keys(g.ultimo)}`)
+    debe(JSON.stringify(Object.keys(g.ultimo).sort()) === '["anio_nacimiento","compania","frecuencia","pais_vive","sueno"]', 'sin_ip', `lo enviado lleva solo esas cinco claves (V39: + el viaje soñado): ${Object.keys(g.ultimo)}`)
   } finally {
     a.cerrar()
   }

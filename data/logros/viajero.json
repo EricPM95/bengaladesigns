@@ -47,7 +47,13 @@
     { "id": "dos_paises_en_un_dia", "version": 1, "como": "Visita dos países el mismo día.", "grupo": "mundo", "tipo": "dos_paises_en_un_dia", "nombre": "Dos países en un día", "linea": "Italia y el Vaticano, el mismo día." },
     { "id": "pequenos_gigantes", "version": 2, "activo": false, "como": "Visita los microestados de Europa.", "grupo": "mundo", "tipo": "microestados", "nombre": "Los pequeños gigantes", "linea": "{n} de 6 microestados." },
     { "id": "otro_lado_ecuador", "version": 2, "activo": false, "como": "Viaja al hemisferio sur.", "grupo": "mundo", "tipo": "hemisferio_sur", "nombre": "Al otro lado del ecuador", "linea": "Has viajado al hemisferio sur." },
-    { "id": "viajero_nacional", "version": 1, "como": "Visita 3 destinos de tu propio país.", "grupo": "mundo", "tipo": "viajero_nacional", "nombre": "Viajero nacional", "linea": "También se viaja cerca: 3 destinos de tu país.", "n": 3 },
+    { "id": "viajero_nacional", "version": 2, "como": "Viaja por tu propio país.", "grupo": "mundo", "tipo": "viajero_nacional", "linea": "Destinos distintos de tu país.",
+      "_nota": "(V39) La serie «Tu país»: cuenta destinos DISTINTOS del país de la persona (el que contestó en «¿En qué país vives?»; si no lo contestó, el del ORIGEN de cada viaje). Sustituye a «País nuevo» cuando es su propio país. {pais} se sustituye por el nombre del país. El escalón 5 está preparado pero apagado (activo:false) hasta que haya más destinos de un mismo país. Antes era un solo logro «Viajero nacional» (3 destinos): ahora es el escalón 3 y lo ya ganado se conserva.",
+      "escalones": [
+        { "n": 1, "nombre": "Turista en tu país", "linea": "Has empezado a descubrir {pais}." },
+        { "n": 3, "nombre": "Viajero nacional", "linea": "También se viaja cerca: 3 destinos de tu país." },
+        { "n": 5, "nombre": "Conocedor de tu país", "linea": "Cinco destinos de {pais}, y los que te quedan.", "activo": false }
+      ] },
     { "id": "patrimonios", "version": 1, "como": "Visita sitios Patrimonio de la Humanidad.", "grupo": "mundo", "tipo": "contar", "que": "patrimonios", "linea": "Patrimonios de la Humanidad que has visitado.",
       "escalones": [ { "n": 1, "nombre": "Testigo de la historia" }, { "n": 5, "nombre": "Pasos por la historia" }, { "n": 10, "nombre": "Guardián del patrimonio" }, { "n": 15, "nombre": "Memoria del mundo" }, { "n": 25, "nombre": "Heredero del mundo" } ] },
 

@@ -37,6 +37,8 @@ export interface PerfilLogros {
    * mapa de la tarjeta; `sellos_recientes` son los dos últimos sellos de viaje, que asoman a la derecha. `dias_viajando` solo se enseña dentro del pasaporte.
    */
   pasaporte: { paises: number; ciudades: number; sellos: number; dias_viajando?: number; paises_iso?: string[]; sellos_recientes?: { ciudad: string; fecha: string; destino: string }[] }
+  /** (V39) Lo que lleva en cada destino donde ya ha estado (para la bola «¿A dónde te apetece ir?»). Sin él (un servidor viejo) la bola solo sabe de los viajes de este móvil. */
+  destinos?: import('../../../../lib/bolaDelMundo').DestinoDelPerfil[]
   /** El billete del sorteo (Tanda 10P, 1.6). Si el servidor no lo manda, el billete no sale. */
   sorteo?: EstadoDelSorteo
   /** Los países que marcó en «¿Dónde has estado ya?»: los viajes de antes de la app. */

@@ -7,7 +7,7 @@
  * al volver a verlo guardado, sin frase.
  */
 
-import { GLOBAL, categoriaDe, clave } from './motor.js'
+import { GLOBAL, categoriaDe, clave, paisDeDestino } from './motor.js'
 
 const rellenar = (texto, v) => String(texto ?? '').replace(/\{(\w+)\}/g, (_, k) => (v[k] ?? `{${k}}`))
 const MAYUS = (s) => s.charAt(0).toUpperCase() + s.slice(1)
@@ -26,10 +26,11 @@ export function elegirFrase(frases, ultima, azar = Math.random) {
  * @param {Map}    e.despues     todo lo ganado después
  * @param {Map}    e.antes       todo lo ganado antes
  * @param {string|null} e.ultimaFrase  la última frase de suspense que vio esta persona
+ * @param {object} [e.viajes]    (V39) los viajes conocidos { [trip_id]: { destino… } }: de ahí sale el país de «Tu país» cuando lo ganado viene de la base (sin la marca del cálculo)
  * @param {Function} [e.azar]
  * @returns {Array<object>} los momentos, en orden
  */
-export function armarMomentos({ datos, nuevos, despues, antes, ultimaFrase = null, azar = Math.random }) {
+export function armarMomentos({ datos, nuevos, despues, antes, ultimaFrase = null, azar = Math.random, viajes = null }) {
   const ajustes = datos.ajustes
   const salida = []
   const orden = (tipo) => {
@@ -64,6 +65,8 @@ export function armarMomentos({ datos, nuevos, despues, antes, ultimaFrase = nul
       // Solo sube un grado a la vez en pantalla: si se ganan varios de golpe, sale el más alto.
       if (!anterior || s.grados.indexOf(g) > s.grados.indexOf(anterior.g)) sellosPorId.set(sid, { s, g, it, d })
     } else if (cat === 'pais') {
+      // (V39) Su propio país no saca «País nuevo»: cuenta (pasaporte, EXP) pero la pantalla es el primer escalón de «Tu país».
+      if (it.propio) continue
       salida.push({ tipo: 'pais', cat: 'pais', clave: it.clave, pais: it.escalon, n: cuenta('pais', it), nombre: `Tu país número ${cuenta('pais', it)}: ${it.escalon}`, primera_vez: true, en: it.en })
     } else if (cat === 'destino_nuevo') {
       const dd = datos.destinos[it.escalon]
@@ -83,7 +86,9 @@ export function armarMomentos({ datos, nuevos, despues, antes, ultimaFrase = nul
       const def = datos.viajero.logros.find((x) => x.id === id)
       const esc = def?.escalones?.find((x) => String(x.n) === String(it.escalon))
       const dd = datos.destinos[it.destino]
-      const vals = { ciudad: dd?.ciudad ?? '', anio: it.escalon, total: dd?.emblemas?.length ?? '', limite: dd?.pionero?.limite ?? '', n: it.escalon }
+      // (V39) {pais}: el país de «Tu país» (de la marca del cálculo o, si viene de la base, del destino de su viaje); sin saberlo, «tu país».
+      const pais = it.pais ?? paisDeDestino(datos.destinos[viajes?.[it.trip_id]?.destino]) ?? 'tu país'
+      const vals = { ciudad: dd?.ciudad ?? '', anio: it.escalon, total: dd?.emblemas?.length ?? '', limite: dd?.pionero?.limite ?? '', n: it.escalon, pais }
       const nombre = rellenar(esc?.nombre ?? def?.nombre ?? id, vals)
       const linea = rellenar(esc?.linea ?? def?.linea ?? '', vals)
       salida.push({ tipo: 'viajero', cat: 'viajero', clave: it.clave, logro: id, escalon: it.escalon, destino: it.destino, nombre: MAYUS(nombre), linea, primera_vez: true, en: it.en })

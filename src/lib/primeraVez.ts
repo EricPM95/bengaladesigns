@@ -3,6 +3,7 @@ import { proximamenteDelServidor } from './proximamente'
 import { llamar } from './logros'
 import type { DestinoCurado } from './destinosCurados'
 import { create } from 'zustand'
+import type { Sueno } from './suenos'
 
 /**
  * LA PRIMERA VEZ (V31). Quién la ve, qué se guarda y los destinos del mapa. Puro salvo las llamadas al servidor (`/api/primera-vez`).
@@ -18,9 +19,13 @@ export interface RespuestasPrimeraVez {
   anio_nacimiento: number | null
   /** (V35B) El país donde vive (2 letras, mayúsculas), opcional. */
   pais_vive?: string | null
+  /** (V39) El viaje de sus sueños: un país o un destino, opcional. Solo viaja si el servidor puede guardarlo (migración 0093). */
+  sueno?: Sueno | null
 }
 export interface EstadoPrimeraVez extends RespuestasPrimeraVez {
   hecho: boolean
+  /** (V39) ¿Puede el servidor guardar el viaje de sus sueños (0093 aplicada)? Si no, esa pregunta se salta sola y quedan cuatro. */
+  suenos_disponibles: boolean
 }
 
 export const ANIO_MINIMO = 1920
@@ -33,12 +38,12 @@ export const debeEnseñarPreguntas = (d: { nuevo: boolean; hecho: boolean | null
 /** Lo que dice el servidor, o null si no contesta (sin la tabla, sin red…): entonces las preguntas NO salen y la app sigue como siempre. */
 export async function pedirEstadoPrimeraVez(): Promise<EstadoPrimeraVez | null> {
   const r = await llamar<{ ok?: boolean } & EstadoPrimeraVez>('/api/primera-vez')
-  return r && r.ok ? { hecho: Boolean(r.hecho), frecuencia: r.frecuencia ?? null, compania: r.compania ?? null, anio_nacimiento: r.anio_nacimiento ?? null, pais_vive: r.pais_vive ?? null } : null
+  return r && r.ok ? { hecho: Boolean(r.hecho), frecuencia: r.frecuencia ?? null, compania: r.compania ?? null, anio_nacimiento: r.anio_nacimiento ?? null, pais_vive: r.pais_vive ?? null, suenos_disponibles: r.suenos_disponibles === true } : null
 }
 
 /** Guarda lo contestado (o nada, si se saltó: queda «hecho» igual y no vuelven). Solo viajan los tres datos. */
 export async function guardarPrimeraVez(r: Partial<RespuestasPrimeraVez>): Promise<boolean> {
-  const cuerpo: RespuestasPrimeraVez = { frecuencia: r.frecuencia ?? null, compania: r.compania ?? null, anio_nacimiento: r.anio_nacimiento ?? null, pais_vive: r.pais_vive ?? null }
+  const cuerpo: RespuestasPrimeraVez = { frecuencia: r.frecuencia ?? null, compania: r.compania ?? null, anio_nacimiento: r.anio_nacimiento ?? null, pais_vive: r.pais_vive ?? null, sueno: r.sueno ?? null }
   const res = await llamar<{ ok?: boolean }>('/api/primera-vez', { metodo: 'PUT', cuerpo })
   return Boolean(res?.ok)
 }
@@ -46,18 +51,21 @@ export async function guardarPrimeraVez(r: Partial<RespuestasPrimeraVez>): Promi
 /** Qué está abierto de la primera vez (las preguntas, la tarjeta de un destino, su página): el «+» flotante se esconde con la tarjeta o la página abiertas. */
 interface UiPrimeraVez {
   preguntas: boolean
+  /** (V39) ¿Sale la pregunta «El viaje de tus sueños»? Solo si el servidor puede guardarla (0093 aplicada). */
+  suenos: boolean
   tarjeta: string | null
   pagina: string | null
-  abrirPreguntas: () => void
+  abrirPreguntas: (conSuenos?: boolean) => void
   cerrarPreguntas: () => void
   abrirTarjeta: (clave: string | null) => void
   abrirPagina: (clave: string | null) => void
 }
 export const usePrimeraVezUi = create<UiPrimeraVez>((set) => ({
   preguntas: false,
+  suenos: true,
   tarjeta: null,
   pagina: null,
-  abrirPreguntas: () => set({ preguntas: true }),
+  abrirPreguntas: (conSuenos = true) => set({ preguntas: true, suenos: conSuenos }),
   cerrarPreguntas: () => set({ preguntas: false }),
   abrirTarjeta: (tarjeta) => set({ tarjeta }),
   abrirPagina: (pagina) => set({ pagina }),

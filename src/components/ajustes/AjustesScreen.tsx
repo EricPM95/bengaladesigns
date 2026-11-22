@@ -27,6 +27,8 @@ import { useMonedaViajero } from '../../lib/moneda'
 import { monedaConNombre } from '../../lib/dinero'
 import { guardarPaisVive, leerPaisVive, nombreDelPais } from '../../lib/paisVive'
 import { HojaPaisVive } from './HojaPaisVive'
+import { HojaSueno } from './HojaSueno'
+import { guardarSueno, leerSueno, type Sueno } from '../../lib/suenos'
 
 const ROJO = 'oklch(0.52 0.19 25)'
 
@@ -96,6 +98,10 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
   // (V35B) El país donde vive (opcional): se lee al abrir y se cambia con la hoja.
   const [paisVive, setPaisVive] = useState<string | null>(null)
   const [hojaPais, setHojaPais] = useState(false)
+  // (V39) El viaje de sus sueños (opcional). `suenoDisponible` false = el servidor no puede guardarlo (falta la 0093): la fila no sale.
+  const [sueno, setSueno] = useState<Sueno | null>(null)
+  const [suenoDisponible, setSuenoDisponible] = useState(false)
+  const [hojaSueno, setHojaSueno] = useState(false)
   const { moneda: monedaViajero } = useMonedaViajero()
   const [borrando, setBorrando] = useState(borrandoInicial)
   const [errorBorrar, setErrorBorrar] = useState<string | null>(null)
@@ -111,6 +117,12 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
   useEffect(() => {
     let vivo = true
     void leerPaisVive().then((p) => vivo && setPaisVive(p))
+    // (V39) Una consulta al abrir Ajustes (una fila de ~150 bytes); nada en bucle.
+    void leerSueno().then((r) => {
+      if (!vivo) return
+      setSueno(r.sueno)
+      setSuenoDisponible(r.disponible)
+    })
     return () => {
       vivo = false
     }
@@ -173,6 +185,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
           <Fila icono="correo" titulo={email ?? 'Tu cuenta'} sub={textoDeComoEntra(proveedor)} datos="cuenta" />
           <Fila icono="presupuesto" titulo="Moneda" sub={monedaConNombre(monedaViajero)} chevron onClick={() => setHojaMoneda(true)} datos="moneda" />
           <Fila icono="mapa" titulo="País donde vives" sub={paisVive ? nombreDelPais(paisVive) : 'Sin decirlo'} chevron onClick={() => setHojaPais(true)} datos="pais-vive" />
+          {suenoDisponible && <Fila icono="mapa" titulo="El viaje de tus sueños" sub={sueno ? sueno.nombre : 'Sin decirlo'} chevron onClick={() => setHojaSueno(true)} datos="sueno" />}
           <Fila icono="llave" titulo="Tengo un código de invitación" chevron onClick={() => useUnirseUi.getState().abrir()} datos="codigo" />
         </Grupo>
         <Grupo titulo="Mis pases">
@@ -245,6 +258,19 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
             setHojaPais(false)
             void guardarPaisVive(iso).then((ok) => {
               if (!ok) setMensaje('No se ha podido guardar el país. Inténtalo de nuevo.')
+            })
+          }}
+        />
+      )}
+      {hojaSueno && (
+        <HojaSueno
+          actual={sueno}
+          onCerrar={() => setHojaSueno(false)}
+          onElegir={(s) => {
+            setSueno(s)
+            setHojaSueno(false)
+            void guardarSueno(s).then((ok) => {
+              if (!ok) setMensaje('No se ha podido guardar tu viaje soñado. Inténtalo de nuevo.')
             })
           }}
         />

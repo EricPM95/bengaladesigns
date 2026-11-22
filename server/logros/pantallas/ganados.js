@@ -9,7 +9,7 @@
  * encontrado no aparecen en ningún sitio: aquí solo entran los encontrados.
  */
 
-import { GLOBAL, clave, hechosQueCuentan, parteLocal } from '../motor.js'
+import { GLOBAL, clave, destinosDeSuPais, hechosQueCuentan, parteLocal } from '../motor.js'
 import { armarMomentos } from '../momentos.js'
 import { datosDeSitio } from '../sitios.js'
 import { estadoDestino, logrosVisibles, pasaporte } from '../vistas.js'
@@ -37,6 +37,7 @@ export const FAMILIAS = {
   conocedor: ['Conocedor', 'sitio visto', 'sitios vistos'],
   cazador_emblemas: ['Cazador de emblemas', 'emblema encontrado', 'emblemas encontrados'],
   coleccionista: ['Coleccionista', 'colección completada', 'colecciones completadas'],
+  viajero_nacional: ['Tu país', 'destino de tu país', 'destinos de tu país'],
 }
 
 const MAYUS = (s) => String(s).charAt(0).toUpperCase() + String(s).slice(1)
@@ -136,7 +137,7 @@ export function ponerBalda({ items, guardada, balda, huecos, superadas = new Set
 /* ------------------------------------------------------------------ */
 
 /** Cuánto lleva la persona de cada familia con escalones (pura): de lo ganado y de los hechos que cuentan. */
-export function cuentasDeFamilias({ datos, items, cuentan, viajes }) {
+export function cuentasDeFamilias({ datos, items, cuentan, viajes, paisVive = null }) {
   const n = (logro) => [...items.values()].filter((it) => it.logro === logro).length
   const viajesHechos = new Map()
   for (const h of cuentan) if (!viajesHechos.has(h.trip_id)) viajesHechos.set(h.trip_id, viajes[h.trip_id]?.con_quien ?? null)
@@ -165,11 +166,13 @@ export function cuentasDeFamilias({ datos, items, cuentan, viajes }) {
     conocedor: Math.max(0, ...[...sitiosPorCiudad.values()].map((s) => s.size)),
     cazador_emblemas: n('emblema'),
     coleccionista: n('coleccion'),
+    // (V39) «Tu país»: los destinos DISTINTOS de su país (los mismos que suma el motor).
+    viajero_nacional: destinosDeSuPais({ datos, cuentan, viajes, paisVive }).length,
   }
 }
 
 /** Pura: todo lo que enseñan «Mi vitrina» y «Todos mis logros». `items` ya sin lo apagado; `cuentan` = hechosQueCuentan(...); `viajes` = los viajes conocidos. */
-export function construirGanados({ datos, catalogos, items, cuentan = [], viajes = {}, perfil = {}, ahora = new Date() }) {
+export function construirGanados({ datos, catalogos, items, cuentan = [], viajes = {}, perfil = {}, ahora = new Date(), paisVive = null }) {
   void catalogos
   const destinoDe = (it) => (datos.destinos[it.destino] ? it.destino : (viajes[it.trip_id]?.destino ?? Object.keys(datos.destinos)[0]))
   const fechaDe = (it) => parteLocal(it.en, datos.destinos[destinoDe(it)].timezone)?.fecha ?? String(it.en).slice(0, 10)
@@ -180,7 +183,7 @@ export function construirGanados({ datos, catalogos, items, cuentan = [], viajes
   const todos = [...items.values()]
   const visibles = logrosVisibles(datos, ahora)
   const momentoDe = (it) => {
-    const m = armarMomentos({ datos, nuevos: [it], despues: items, antes: new Map(), ultimaFrase: null, azar: () => 0 }).find((x) => x.clave === it.clave) ?? null
+    const m = armarMomentos({ datos, nuevos: [it], despues: items, antes: new Map(), ultimaFrase: null, azar: () => 0, viajes }).find((x) => x.clave === it.clave) ?? null
     return m ? { ...m, primera_vez: false, frase: null } : null
   }
 
@@ -255,7 +258,7 @@ export function construirGanados({ datos, catalogos, items, cuentan = [], viajes
   const vitrina = vitrinaDeGanados({ items, guardada: perfil.vitrina ?? { baldas: {}, titulo: null }, superadas })
 
   /* ── Los logros de viajero, por grupos (también los que aún no se tienen, con cómo conseguirlos) ── */
-  const cuentas = cuentasDeFamilias({ datos, items, cuentan, viajes })
+  const cuentas = cuentasDeFamilias({ datos, items, cuentan, viajes, paisVive })
   const avance = avanceDeTiempo({ datos, cuentan })
   const filas = []
   for (const def of visibles) {
@@ -386,7 +389,7 @@ export function registrar(app, { conUsuario, servicio, repo, datos, catalogos, a
   app.get('/api/logros/ganados', conUsuario(async (_req, res, u) => {
     const { c, perfil, items } = await cargarTodo(u.id)
     const cuentan = hechosQueCuentan(c.hechos, c.viajes, datos)
-    res.json(construirGanados({ datos, catalogos, items, cuentan, viajes: c.viajes, perfil, ahora: ahora() }))
+    res.json(construirGanados({ datos, catalogos, items, cuentan, viajes: c.viajes, perfil, ahora: ahora(), paisVive: c.pais_vive ?? null }))
   }))
   app.put('/api/logros/ganados/vitrina', conUsuario(async (req, res, u) => {
     const { perfil, items } = await cargarTodo(u.id)

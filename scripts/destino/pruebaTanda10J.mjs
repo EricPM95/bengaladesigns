@@ -101,6 +101,17 @@ try {
 debe(antes0091 === false, 'migracion', 'COMPROBAR_0091.sql no da true con la función de la 0089 (que aún no borra uso_diario)')
 await db.exec(fs.readFileSync('supabase/migrations/0091_panel_datos.sql', 'utf8'))
 await db.exec(fs.readFileSync('supabase/migrations/0091_panel_datos.sql', 'utf8')) // idempotente: pegada dos veces
+// V39: la 0093 añade el viaje soñado como COLUMNAS de viajero_primera_vez (tabla que ya está en el inventario): NO vuelve a crear empezar_de_cero (la vigente sigue siendo la de la 0091). COMPROBAR_0093 da UNA fila con todo true tras aplicarla (pegada dos veces).
+const comprobar0093 = fs.readFileSync('docs/dias/COMPROBAR_0093.sql', 'utf8')
+{
+  debe(!noAplicadas.some((x) => /^0093/.test(x)), 'migracion', `la migración 0093 se aplica (${noAplicadas.filter((x) => /^0093/.test(x)).join(' | ')})`)
+  await db.exec(fs.readFileSync('supabase/migrations/0093_turista_y_suenos.sql', 'utf8'))
+  await db.exec(fs.readFileSync('supabase/migrations/0093_turista_y_suenos.sql', 'utf8')) // idempotente: pegada dos veces
+  const f93 = (await db.query(comprobar0093)).rows
+  debe(f93.length === 1 && f93[0].todo === true, 'migracion', 'y UNA fila con todo = true tras la 0093 (pegada dos veces)')
+  const defHoy = (await db.query("select pg_get_functiondef('public.empezar_de_cero(uuid)'::regprocedure) as def")).rows[0].def
+  debe(defHoy.includes('viajero_primera_vez') && defHoy.includes('uso_diario'), 'migracion', 'la 0093 NO toca empezar_de_cero: sigue siendo la de la 0091 (con viajero_primera_vez y uso_diario)')
+}
 debe((await db.query(comprobar0086)).rows[0]?.migracion_0086?.aplicada === true && (await db.query(comprobar0086)).rows[0]?.migracion_0086?.faltan === 0, 'migracion', 'y «true» y 0 que faltan tras la 0086 (pegada dos veces)')
 debe((await db.query(comprobar0085)).rows[0]?.migracion_0085?.aplicada === true && (await db.query(comprobar0085)).rows[0]?.migracion_0085?.faltan === 0, 'migracion', 'COMPROBAR_0085.sql dice «true» y 0 que faltan con la 0085 aplicada')
 debe((await db.query(comprobar0074)).rows[0]?.migracion_0074 === 'Aplicada', 'migracion', 'COMPROBAR_0074.sql sigue diciendo «Aplicada» con la 0086 vigente')
@@ -163,7 +174,8 @@ async function sembrar(uid, etiqueta, { invitado = null, amiga = null } = {}) {
   await S("insert into public.avisos (user_id, tipo, clave) values ($1,'unido',$2)", [uid, unico('aviso')])
   await S("insert into public.avisos_viaje_enviados (user_id, trip_id, clave, tipo, para) values ($1,$2,$3,'manana', now())", [uid, viaje, unico('viaje|manana')])
   await S("insert into public.avisos_de_viajeros (tipo, datos, avisame, user_id) values ('idea', '{\"texto\": \"Una idea\"}'::jsonb, true, $1)", [uid])
-  await S("insert into public.viajero_primera_vez (user_id, frecuencia, compania, anio_nacimiento) values ($1, 'dos_o_tres', 'pareja', 1990)", [uid])
+  // V39: la fila de la primera vez lleva también el viaje soñado (columnas de la 0093): se va con la fila.
+  await S("insert into public.viajero_primera_vez (user_id, frecuencia, compania, anio_nacimiento, sueno_tipo, sueno_nombre, sueno_iso, sueno_norm, sueno_en) values ($1, 'dos_o_tres', 'pareja', 1990, 'destino', 'Tokio', 'jp', 'tokio', now())", [uid])
   await S("insert into public.uso_diario (user_id, dia, aparato, instalada) values ($1, '2026-11-20', 'iphone', true)", [uid])
   await S("insert into public.pagos_registro (pago_ref, proveedor, destino, plan, personas, importe_cent, user_id) values ($1, 'stripe', 'Roma', 'uno', 1, 699, $2)", [unico('cs_pago'), uid])
   await S("insert into public.avisos_destino (destino, destino_norm, email, email_norm, user_id) values ('Lisboa','lisboa',$1,$1,$2)", [`${etiqueta}@x.es`, uid])
@@ -325,6 +337,9 @@ const cambiadas = Object.keys(antesDeLosDemas).filter((t) => antesDeLosDemas[t] 
 debe(cambiadas.length === 0, 'otra', `OTRA cuenta con datos queda IDÉNTICA: ninguna tabla cambia fuera de la cuenta (cambian: ${cambiadas.join(', ') || 'ninguna'})`)
 debe(Object.values(await contar(B)).filter((n) => n > 0).length >= 18, 'otra', 'la otra cuenta sigue con datos en todas sus tablas')
 // Y repetirlo no rompe nada
+// V39: el viaje soñado de A se fue con su fila; el de la OTRA cuenta sigue ahí.
+debe((await S('select count(*)::int as n from public.viajero_primera_vez where user_id = $1 and sueno_norm is not null', [A]))[0].n === 0, 'sueno', 'el viaje soñado de la cuenta se borra con su fila de la primera vez')
+debe((await S("select count(*)::int as n from public.viajero_primera_vez where user_id = $1 and sueno_norm = 'tokio'", [B]))[0].n === 1, 'sueno', 'y el de la OTRA cuenta sigue intacto')
 const otraVez = (await S('select public.empezar_de_cero($1) as r', [A]))[0].r
 debe(Object.values(otraVez.borrados).every((n) => n === 0), 'repetir', 'repetirlo con la cuenta ya vacía no borra nada y no falla')
 debe(!('hoy_prueba' in resultado.borrados) && !('historia_de_prueba' in resultado.borrados), 'pruebas', 'la función ni cuenta ni toca las tablas de las pruebas gastadas')

@@ -11,7 +11,7 @@
  */
 import { GLOBAL, clave } from '../motor.js'
 import { nivelDeExp } from '../exp.js'
-import { logrosVisibles, pasaporte } from '../vistas.js'
+import { estadoDestino, logrosVisibles, pasaporte } from '../vistas.js'
 import { viajesAcabados } from '../exp.js'
 import { catalogoDePaises, paginasDelPasaporte, paisesConocidos, recuerdosDe, resumenDePasaporte } from './previos.js'
 
@@ -73,6 +73,28 @@ export function numerosDePasaporte({ datos, items, previos, ahora, catalogo }) {
 }
 
 /** Lo que el Perfil recibe, a partir de lo ya calculado. `exp`: lo que devuelve `servicio.expDe`. `guardada`: `perfil.vitrina` de la cuenta. */
+/**
+ * (V39) LO QUE LLEVA LA PERSONA EN CADA DESTINO donde ya ha estado (para la bola «¿A dónde te apetece ir?» del Perfil de todos): sus medallas (grados alcanzados de sus medallas de ciudad), sus colecciones completas
+ * y sus emblemas secretos encontrados, cada uno «n de total» (los mismos números de «Lo que te puedes llevar»). Un destino cuenta como «ya has estado» si tiene su «destino nuevo» o cualquier cosa ganada en él.
+ * Va dentro de la respuesta del Perfil (una sola petición al abrirlo; sale de lo ya cargado: no pregunta nada más). Pesa unas decenas de bytes por destino.
+ */
+export function destinosDeLaPersona({ datos, items }) {
+  const todos = [...items.values()]
+  const salida = []
+  for (const [claveDestino, d] of Object.entries(datos.destinos ?? {})) {
+    if (!(items.has(clave(GLOBAL, 'destino_nuevo', d.clave ?? claveDestino)) || todos.some((it) => it.destino === (d.clave ?? claveDestino)))) continue
+    const id = d.clave ?? claveDestino
+    const est = estadoDestino({ datos, destino: id, items })
+    salida.push({
+      clave: id,
+      medallas: { n: est.sellos.reduce((n, s) => n + s.alcanzados.length, 0), total: d.sellos.reduce((n, s) => n + s.grados.length, 0) },
+      colecciones: { n: est.colecciones.filter((c) => c.completa).length, total: est.colecciones.length },
+      secretos: { n: est.secretos.encontrados, total: est.secretos.total },
+    })
+  }
+  return salida
+}
+
 export function construirPerfil({ datos, items, exp, guardada = { baldas: {}, titulo: null }, previos, ahora, catalogo }) {
   const titulos = titulosGanados({ datos, items, ahora })
   const elegido = guardada?.titulo ? titulos.find((t) => t.clave === guardada.titulo) ?? null : null
@@ -95,6 +117,8 @@ export function construirPerfil({ datos, items, exp, guardada = { baldas: {}, ti
     titulos,
     vitrina: resumenDeVitrina({ items }),
     pasaporte: numerosDePasaporte({ datos, items, previos, ahora, catalogo }),
+    // (V39) Lo que lleva en cada destino donde ya ha estado.
+    destinos: destinosDeLaPersona({ datos, items }),
     // Los países que marcó en «¿Dónde has estado ya?» (los viajes de antes de la app): solo cuántos.
     previos: { paises: paisesConocidos(previos, catalogo).length },
   }

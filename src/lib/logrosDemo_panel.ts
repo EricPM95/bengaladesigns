@@ -167,7 +167,15 @@ export function responder(ruta: string, url: URL, c: Record<string, unknown>, op
       puede_editar: !demoPanel.sin0091,
       proximamente: demoPanel.proximamente.map((p) => ({ clave: p.clave, destino: p.destino, iso: p.iso, publicado: p.publicado, avisos: p.avisos, avisados: (demoPanel.avisados[p.destino] ?? []).length })),
       correo: { activo: demoPanel.correo },
+      // (V39) «Destinos soñados»: con la marca «sin migraciones» (sin0091) se ve el «Pronto» de la 0093.
+      sonados: demoPanel.sin0091
+        ? { disponible: false, lista: [] }
+        : { disponible: true, lista: [{ tipo: 'destino', destino: 'Tokio', iso: 'jp', veces: 58, lanzado: false }, { tipo: 'pais', destino: 'Japón', iso: 'jp', veces: 41, lanzado: false }, { tipo: 'destino', destino: 'Roma', iso: 'it', veces: 22, lanzado: true }, { tipo: 'destino', destino: 'Bali', iso: 'id', veces: 17, lanzado: false }] },
     }
+  if (ruta === '/api/admin/destinos/sonados/avisar' && metodo === 'POST') {
+    if (demoPanel.sin0091) return { ok: false, pronto: true, error: 'Falta aplicar la migración 0093 en Supabase.' }
+    return { ok: true, avisadas: 22, ya_avisadas: 0, destino: String((c as { destino?: string }).destino ?? '') }
+  }
   if (ruta === '/api/admin/destinos/proximamente' && metodo === 'POST') {
     if (demoPanel.sin0091) return { ok: false, pronto: true, error: 'Falta aplicar la migración 0091 en Supabase.' }
     const nombre = String((c as { destino?: string }).destino ?? '').trim()

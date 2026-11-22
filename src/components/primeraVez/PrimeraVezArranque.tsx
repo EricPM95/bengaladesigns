@@ -50,7 +50,7 @@ export function PrimeraVezArranque(): ReactNode {
     void pedirEstadoPrimeraVez()
       .then((e) => {
         if (!e) return
-        if (debeEnseñarPreguntas({ nuevo: true, hecho: e.hecho })) usePrimeraVezUi.getState().abrirPreguntas()
+        if (debeEnseñarPreguntas({ nuevo: true, hecho: e.hecho })) usePrimeraVezUi.getState().abrirPreguntas(e.suenos_disponibles)
         // Ya contestó (o saltó) y sigue sin viajes: el Perfil con el mapa es su casa (desde la pantalla de crear viaje no hay otra puerta).
         else usePerfilUi.getState().abrir()
       })

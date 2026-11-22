@@ -100,10 +100,11 @@ export async function leerBase(admin, { ttl = null, env = process.env } = {}) {
 /** Lee todo lo que necesita el panel. `avisos` recoge lo que no se pudo leer (el panel sigue con lo que haya). */
 async function leerBaseDeVerdad(admin) {
   const avisos = []
+  // (V39) `trips` lleva ahora `updated_at` (+~30 bytes por viaje) para saber cuál es el último viaje de cada persona («Dónde viven» sin contestar: el origen de su último viaje). Misma lectura que ya había, guardada 60 s.
   const [usuarios, travelers, trips, miembros, pases, miembrosPase, pagos, logros, perfiles, primeraVez, avisosDestino, uso, clics, pruebas, proximamente] = await Promise.all([
     leerUsuarios(admin, avisos),
     todas(admin, 'travelers', 'id,nombre,alta_cuenta,zona', avisos),
-    todas(admin, 'trips', 'id,traveler_id,destino:route->>destination,origen:route->>origin,lugar:route->answers->originPlace,inicio:route->answers->dateRange->>start,fin:route->answers->dateRange->>end', avisos),
+    todas(admin, 'trips', 'id,traveler_id,destino:route->>destination,origen:route->>origin,lugar:route->answers->originPlace,inicio:route->answers->dateRange->>start,fin:route->answers->dateRange->>end,actualizado:updated_at', avisos),
     todas(admin, 'trip_members', 'trip_id,user_id,rol,created_at', avisos),
     todas(admin, 'passes', 'id,comprador_id,para_id,destino,tipo,estado,pago_ref,created_at,trip_id', avisos),
     todas(admin, 'pass_members', 'pass_id,user_id,unido_en', avisos),

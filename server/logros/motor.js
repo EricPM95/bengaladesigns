@@ -108,6 +108,54 @@ export function momentosDeLaFoto(h, d, ajustes) {
 }
 
 /* ------------------------------------------------------------------ */
+/* «Tu país» (V39)                                                     */
+/* ------------------------------------------------------------------ */
+
+const sinTildes = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase()
+let nombresDeRegion = null
+/** El nombre en español de un país a partir de su código de 2 letras («ES» → «España»); null si no se sabe. */
+export function nombreDePaisIso(iso) {
+  if (!/^[A-Za-z]{2}$/.test(String(iso ?? '').trim())) return null
+  try {
+    nombresDeRegion ??= new Intl.DisplayNames(['es'], { type: 'region' })
+    const n = nombresDeRegion.of(String(iso).trim().toUpperCase())
+    return n && n.toUpperCase() !== String(iso).trim().toUpperCase() ? n : null
+  } catch {
+    return null
+  }
+}
+/** El país de un destino, como lo cuentan los logros (el de sus sitios por defecto). */
+export const paisDeDestino = (d) => d?.pais_defecto ?? Object.values(d?.sitios ?? {})[0]?.pais ?? null
+/**
+ * (V39) El país de la persona para UN viaje, por su nombre en español (el de los datos): si CONTESTÓ «¿En qué país vives?» (`paisVive`, código de 2 letras) manda su respuesta, siempre;
+ * si no lo contestó, el del ORIGEN de ese viaje (`origen_pais`, o `origen_iso`). null si no se sabe.
+ */
+export function paisDeLaPersona(viaje, paisVive = null) {
+  const contestado = nombreDePaisIso(paisVive)
+  if (contestado) return contestado
+  return viaje?.origen_pais ?? nombreDePaisIso(viaje?.origen_iso) ?? null
+}
+/** ¿Es el mismo país? (sin mirar tildes ni mayúsculas). */
+export const mismoPais = (a, b) => Boolean(a) && Boolean(b) && sinTildes(a) === sinTildes(b)
+
+/**
+ * (V39) Los destinos de SU país, en el orden en que los visitó: de los hechos que cuentan, el primer viaje a cada destino cuyo país es el de la persona (ver `paisDeLaPersona`).
+ * Lo usan el motor (la serie «Tu país») y la ficha (la cuenta de «Te faltan X»), para que las dos sumen lo mismo.
+ * @returns {Array<{ destino, trip_id, en }>}
+ */
+export function destinosDeSuPais({ datos, cuentan, viajes = {}, paisVive = null }) {
+  const primeraPorViaje = new Map()
+  for (const h of cuentan) if (!primeraPorViaje.has(h.trip_id)) primeraPorViaje.set(h.trip_id, h)
+  const porDestino = new Map()
+  for (const [trip, h] of [...primeraPorViaje].sort((a, b) => new Date(a[1].instante) - new Date(b[1].instante))) {
+    const d = datos.destinos[h.destino]
+    if (!d || porDestino.has(h.destino)) continue
+    if (mismoPais(paisDeDestino(d), paisDeLaPersona(viajes[trip] ?? h, paisVive))) porDestino.set(h.destino, { destino: h.destino, trip_id: trip, en: h.instante })
+  }
+  return [...porDestino.values()]
+}
+
+/* ------------------------------------------------------------------ */
 /* Claves                                                              */
 /* ------------------------------------------------------------------ */
 
@@ -179,6 +227,7 @@ export function hechosQueCuentan(hechos, viajes, datos) {
  * @param {Date|string} [e.ahora]    para lo que depende de que un viaje haya acabado (El fotógrafo)
  * @param {object} [e.pionero]       { [destino]: número de orden de esta persona entre los viajeros de ese destino }
  * @param {string|null} [e.probador] fecha ISO en que se le dio Probador a mano
+ * @param {string|null} [e.pais_vive] (V39) el país que CONTESTÓ («¿En qué país vives?», código de 2 letras); si es null, cada viaje se mira por su origen (`origen_pais`)
  * @returns {Map<string, {clave, logro, escalon, destino, trip_id, en}>}
  */
 export function calcular(e) {
@@ -297,7 +346,12 @@ function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoD
 
   /* Países, destinos, capitales, continentes, maravillas y Patrimonios: con el primer Visto (o foto) válido allí. */
   const porPais = primeras((h) => sitioDe(h)?.pais ?? null)
-  for (const [pais, h] of porPais) dar(GLOBAL, 'pais', pais, h.trip_id, h.instante)
+  for (const [pais, h] of porPais) {
+    dar(GLOBAL, 'pais', pais, h.trip_id, h.instante)
+    // (V39) Su propio país cuenta igual (pasaporte, número de países, EXP) pero NO saca la pantalla «País nuevo»: en su lugar sale el primer escalón de «Tu país» (viajero_nacional).
+    // La marca `propio` solo vive en lo recién calculado (lo ya guardado no la lleva: no hace falta, ya se enseñó).
+    if (mismoPais(pais, paisDeLaPersona(viajes[h.trip_id] ?? h, e.pais_vive ?? null))) items.get(clave(GLOBAL, 'pais', pais)).propio = true
+  }
   const porDestinoNuevo = primeras((h) => h.destino)
   for (const [d, h] of porDestinoNuevo) dar(GLOBAL, 'destino_nuevo', d, h.trip_id, h.instante)
   const porCapital = primeras((h) => {
@@ -331,6 +385,7 @@ function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoD
   const conTiempos = (logro) => [...items.values()].filter((it) => it.logro === logro).sort((a, b) => new Date(a.en) - new Date(b.en))
   const escalonesDe = (def, lista) => {
     for (const esc of def.escalones ?? []) {
+      if (esc.activo === false) continue // (V39) un escalón preparado pero sin encender
       if (lista.length >= esc.n) dar(GLOBAL, `viajero:${def.id}`, esc.n, lista[esc.n - 1].trip_id, lista[esc.n - 1].en)
     }
   }
@@ -417,16 +472,14 @@ function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoD
         break
       }
       case 'viajero_nacional': {
-        const porPaisOrigen = new Map()
-        for (const v of listaViajes) {
-          if (!v.origen_pais) continue
-          const d = datos.destinos[v.destino]
-          const sitioPais = d.pais_defecto ?? Object.values(d.sitios)[0]?.pais
-          if (sitioPais !== v.origen_pais) continue
-          if (!porPaisOrigen.has(v.destino)) porPaisOrigen.set(v.destino, v)
+        // (V39) «Tu país»: una serie con escalones (1 destino de tu país: «Turista en tu país»; 3: «Viajero nacional»; 5, sin encender). Cuenta destinos DISTINTOS de su país.
+        const suyos = destinosDeSuPais({ datos, cuentan, viajes, paisVive: e.pais_vive ?? null })
+        escalonesDe(def, suyos)
+        // El país, para el texto («Has empezado a descubrir España»): solo vive en lo recién calculado; la ficha lo vuelve a sacar del viaje.
+        for (const esc of def.escalones ?? []) {
+          const it = items.get(clave(GLOBAL, `viajero:${def.id}`, esc.n))
+          if (it && suyos[esc.n - 1]) it.pais = paisDeDestino(datos.destinos[suyos[esc.n - 1].destino])
         }
-        const lista = [...porPaisOrigen.values()].sort((a, b) => new Date(a.primera) - new Date(b.primera))
-        if (lista.length >= def.n) dar(GLOBAL, `viajero:${def.id}`, '', lista[def.n - 1].trip_id, lista[def.n - 1].primera)
         break
       }
       case 'estaciones': {

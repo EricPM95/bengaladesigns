@@ -123,6 +123,15 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
     async borrarLogros(userId, claves) {
       for (const c of claves) ok(await admin.from('achievements').delete().eq('user_id', userId).eq('destino', c.destino).eq('logro', c.logro).eq('escalon', String(c.escalon)), 'borrarLogros')
     },
+    /**
+     * (V39) El país que la persona CONTESTÓ en «¿En qué país vives?» (2 letras, mayúsculas) o null (no contestó, o la 0091 sin aplicar). Para saber qué destinos son «de su país» (la serie «Tu país»).
+     * Se hace con cada lectura completa de logros (al recibir un Visto o una foto, o al abrir la pestaña Logros; NO con la de «cerca de aquí» de HOY): 1 fila de ~40 bytes.
+     */
+    async paisViveDe(userId) {
+      const r = await admin.from('viajero_primera_vez').select('pais_vive').eq('user_id', userId).maybeSingle()
+      if (r.error) return null // sin la tabla o sin la columna (migración sin aplicar): como si no hubiera contestado
+      return /^[A-Z]{2}$/.test(String(r.data?.pais_vive ?? '')) ? r.data.pais_vive : null
+    },
     async cuentaDe(userId) {
       const viajero = ok(await admin.from('travelers').select('alta_cuenta').eq('id', userId).maybeSingle(), 'cuentaDe')
       const conf = ok(await admin.from('app_config').select('value').eq('key', 'salida_app').maybeSingle(), 'cuentaDe(salida)')
