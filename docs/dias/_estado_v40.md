@@ -1,15 +1,15 @@
 # Estado de la tanda v40
 
-**Última actualización: 22/11/26, 23:58**
+**Última actualización: 23/11/26, 0:50**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V40: lector arreglado (version null de los sonidos por codigo), zip aplicado, motor de la app que lee lo de Eric hecho; falta prueba
+V40: pruebaV40 en 0, regresiones pedidas en 0; repaso hecho; pasando mas pruebas de sonido antes del push
 
 ## Qué falta
-pruebaV40, licencias, creditos, repaso, regresiones
+push, produccion, reiniciar api, apagar PC (Eric lo pidio)
 
 ## Procesos abiertos ahora mismo
-- node: 3
-- esbuild: 0
-- Chrome de prueba (con remote-debugging-port): 0
+- node: 7
+- esbuild: 1
+- Chrome de prueba (con remote-debugging-port): 1
