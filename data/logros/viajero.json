@@ -19,7 +19,7 @@
     "coliseo": { "nombre": "El Coliseo", "linea": "El mayor anfiteatro de la Antigüedad." },
     "gran_muralla": { "nombre": "La Gran Muralla", "linea": "Más de 20.000 km de muralla, levantada durante siglos." },
     "petra": { "nombre": "Petra", "linea": "La ciudad tallada en la roca." },
-    "cristo_redentor": { "nombre": "El Cristo Redentor", "linea": "30 metros de brazos abiertos sobre Río." },
+    "cristo_redentor": { "nombre": "El Cristo Redentor", "linea": "Una estatua de 30 metros con los brazos abiertos sobre Río." },
     "machu_picchu": { "nombre": "Machu Picchu", "linea": "La ciudad de los incas, a 2.430 metros de altura." },
     "chichen_itza": { "nombre": "Chichén Itzá", "linea": "La pirámide maya por la que baja una serpiente de luz." },
     "taj_mahal": { "nombre": "El Taj Mahal", "linea": "Un mausoleo de mármol blanco levantado por amor." }

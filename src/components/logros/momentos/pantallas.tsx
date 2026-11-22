@@ -6,7 +6,7 @@ import { Centro, FONDO_CALIDO, FONDO_NOCHE, Ojo, ORO, PantallaOscura, Rayos, Est
 import { FinalSieteMaravillas } from './FinalSieteMaravillas'
 import { gradoAnterior, type Pantalla } from './plan'
 import { sonar, vibrar, finSonoroDelPedazo } from '../../../lib/sonidos'
-import { ctaDeLosPedazos, huecoEntrePedazos, retrasoDelPedazoN, semitonosDelPedazo, TIEMPOS_DE_COLECCION_PANTALLA, TIEMPOS_DE_PEDAZO, TIEMPOS_DE_PEDAZO_REDUCIDO, TIEMPOS_SELLADO, TIEMPOS_SELLO } from '../../../lib/sonidos/tiempos'
+import { ctaDeLosPedazos, huecoEntrePedazos, retrasoDelPedazoN, semitonosDelPedazo, TIEMPOS_DE_COLECCION_PANTALLA, TIEMPOS_DE_MARAVILLA_NUEVA, TIEMPOS_DE_PEDAZO, TIEMPOS_DE_PEDAZO_REDUCIDO, TIEMPOS_SELLADO, TIEMPOS_SELLO } from '../../../lib/sonidos/tiempos'
 
 const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
 
@@ -255,6 +255,34 @@ function PantallaFinal7({ onSeguir, onSaltarTodo, paso }: PropsDePantalla): Reac
   )
 }
 
+/* ── (V39B) «Una maravilla nueva»: la 1.ª a la 6.ª maravilla (Design `Maravilla Nueva`, M1 y M2). La medalla de las 7 con las ya conseguidas en oro y las demás en plata; a los 0,8 s la moneda nueva baja girando, encaja y se enciende (con la etiqueta de su nombre), y el número del centro cuenta una más. Debajo, «El Coliseo · 1 de 7» y su línea. ── */
+function PantallaUnaMaravillaNueva({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePantalla): ReactNode {
+  const m = pantalla.momentos[0]
+  const id = s(m, 'id')
+  const lista = Array.isArray(m.maravillas) ? (m.maravillas as string[]) : [id]
+  const encendidas = lista.includes(id) ? lista : [...lista, id]
+  // La medalla (alto = 1,18 × ancho) tiene que caber con sus textos y el botón también en un móvil bajo: 330 de ancho como en Design, menos si no hay sitio.
+  const alto = typeof window !== 'undefined' ? window.innerHeight : 844
+  const tam = Math.max(200, Math.min(330, Math.round((alto - 236) / 1.18)))
+  const t = TIEMPOS_DE_MARAVILLA_NUEVA
+  return (
+    <PantallaOscura etiqueta="Una maravilla nueva" fondo="radial-gradient(circle at 50% 30%,#1E2744 0%,#0C1020 72%)" onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn={`${t.cta}s`}>
+      <Centro estilo={{ gap: 10 }}>
+        <span style={{ font: "600 11px 'Geist Mono',monospace", letterSpacing: '.2em', color: ORO, opacity: 0, animation: 'moFade .8s both', marginBottom: 12 }}>UNA MARAVILLA NUEVA</span>
+        <Vuelo>
+          <MedallaDeSiete encendidas={encendidas} gana={id} tam={tam} />
+        </Vuelo>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '0 32px', marginTop: 12 }}>
+          <span data-maravilla-nombre="" style={{ font: "400 34px/1.05 'Instrument Serif',serif", color: '#FFFDF8', opacity: 0, animation: `moUp .7s ${t.nombre}s both` }}>
+            {s(m, 'nombre')} · <em style={{ color: ORO }}>{`${Number(m.n ?? lista.length)} de 7`}</em>
+          </span>
+          {m.linea && <span data-maravilla-linea="" style={{ font: "400 15.5px/1.4 'Geist'", color: 'rgba(255,253,248,.72)', textWrap: 'balance', maxWidth: 330, opacity: 0, animation: `moUp .7s ${t.linea}s both` }}>{m.linea}</span>}
+        </div>
+      </Centro>
+    </PantallaOscura>
+  )
+}
+
 /* ── Patrimonio y logro de viajero: la chapa ── */
 const TITULO_CHAPA: Record<string, string> = { patrimonio: 'Patrimonio de la Humanidad', viajero: 'Logro de viajero', maravilla: 'Maravilla del mundo', destino_nuevo: 'Destino nuevo', pais: 'País nuevo', continente: 'Nuevo continente' }
 const ORDINAL_MARAVILLA = ['', 'primera', 'segunda', 'tercera', 'cuarta', 'quinta', 'sexta', 'séptima']
@@ -304,11 +332,11 @@ function PantallaAdemas({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePanta
             const ch = chapaDe(m)
             return (
               <div key={`${m.tipo}${i}`} style={{ display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', opacity: 0, animation: `moUp .7s ${(0.5 + i * 0.3).toFixed(1)}s ease both` }}>
-                {m.tipo === 'maravilla' ? <MedallaDeSiete encendidas={Array.isArray(m.maravillas) ? (m.maravillas as string[]) : [s(m, 'id')]} tam={96} /> : <Chapa logro={ch.logro} escalon={ch.escalon} destino={typeof m.destino === 'string' ? m.destino : undefined} tam={78} />}
+                <Chapa logro={ch.logro} escalon={ch.escalon} destino={typeof m.destino === 'string' ? m.destino : undefined} tam={78} />
                 <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
                   <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: ORO }}>{TITULO_CHAPA[m.tipo] ?? 'Logro'}</span>
                   <span style={{ font: "400 22px/1.05 'Instrument Serif',serif" }}>{tituloDeMomento(m)}</span>
-                  {m.tipo === 'maravilla' ? <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{`${m.nombre} · ${Number(m.n ?? 1)} de 7`}</span> : m.linea && <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{m.linea}</span>}
+                  {m.linea && <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{m.linea}</span>}
                 </span>
               </div>
             )
@@ -335,6 +363,8 @@ export function PantallaDeMomento(p: PropsDePantalla): ReactNode {
       return <PantallaSellado {...p} />
     case 'final7':
       return <PantallaFinal7 {...p} />
+    case 'maravilla_nueva':
+      return <PantallaUnaMaravillaNueva {...p} />
     case 'ademas':
       return <PantallaAdemas {...p} />
     default:

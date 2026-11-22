@@ -130,7 +130,7 @@ debe(!porId('emblema_maravilla')?.otrasEscenas, 'tarjetas', 'el Coliseo no tiene
 debe(porId('emblema')?.destinoDeEscenas === 'roma' && porId('emblema_lanzarote')?.destinoDeEscenas === 'lanzarote', 'tarjetas', 'cada tarjeta sabe de qué destino es')
 const nPedazos = (id) => (E.MOMENTOS_DEL_ESTUDIO[id]?.() ?? []).length
 debe(nPedazos('pedazo') === 1 && nPedazos('pedazo_dos') === 2 && nPedazos('pedazo_tres') === 3, 'tarjetas', `tarjetas de pedazo con 1, 2 y 3 colecciones (${nPedazos('pedazo')}, ${nPedazos('pedazo_dos')}, ${nPedazos('pedazo_tres')})`)
-debe(A.length === 27, 'tarjetas', `el estudio tiene sus 27 tarjetas (${A.length})`)
+debe(A.length === 29, 'tarjetas', `el estudio tiene sus 29 tarjetas (27 + las dos de «Maravilla nueva», V39B) (${A.length})`)
 debe(sinComentarios(leer('src/components/logros/sonidos/VisorDeAnimacion.tsx')).includes('momentoDeEscena(a.destinoDeEscenas, escena)'), 'tarjetas', 'el visor sabe ver otra escena del destino')
 
 /* ───────── 4. El Coliseo por fuera en un día propio (motor, sin servidores) ───────── */
@@ -195,7 +195,7 @@ try {
   debe(await esperar(adm, "document.querySelectorAll('[data-animacion-tarjeta]').length >= 20"), 'pagina', 'la página sale con su lista')
   debe(await esperar(adm, `Boolean(${IFR}?.contentWindow?.__estudioVisor?.listo)`, 160), 'marco', 'el marco carga y queda listo')
   const ids = await J(adm, `JSON.stringify([...document.querySelectorAll('[data-animacion-tarjeta]')].map((e) => e.getAttribute('data-animacion-tarjeta')))`)
-  debe(ids.length === 27 && ids.includes('emblema') && ids.includes('emblema_lanzarote') && ids.includes('emblema_maravilla') && ids.includes('pedazo_tres') && !ids.includes('escena_roma') && !ids.includes('escena_lanzarote'), 'tarjetas', `la página lista las 27 tarjetas con una de emblema por destino (${ids.length})`)
+  debe(ids.length === 29 && ids.includes('emblema') && ids.includes('emblema_lanzarote') && ids.includes('emblema_maravilla') && ids.includes('pedazo_tres') && !ids.includes('escena_roma') && !ids.includes('escena_lanzarote'), 'tarjetas', `la página lista las 29 tarjetas con una de emblema por destino (${ids.length})`)
 
   // El registro de los fotogramas y de CUÁNDO se pide cada sonido, dentro del marco.
   const INSTALAR = `(() => { const w = ${IFR}.contentWindow; w.__reg = []; w.__t0 = null; w.__ped = []; if (w.__regVivo) return true; w.__regVivo = true; let ult = '';

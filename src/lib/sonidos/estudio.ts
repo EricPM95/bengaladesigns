@@ -1,8 +1,9 @@
 import type { Momento } from '../logros'
 import { partituraDe, type OpcionesDePartitura } from './partituras'
-import { ctaDeLosPedazos, FRACCIONES_APERTURA, paraFinalSiete, TIEMPOS_DE_EMBLEMA, TIEMPOS_ESTAMPADO, TIEMPOS_FINAL_SIETE, tiemposDeEscena } from './tiempos'
+import { ctaDeLosPedazos, FRACCIONES_APERTURA, paraFinalSiete, TIEMPOS_DE_EMBLEMA, TIEMPOS_DE_MARAVILLA_NUEVA, TIEMPOS_ESTAMPADO, TIEMPOS_FINAL_SIETE, tiemposDeEscena } from './tiempos'
 import { finSonoroDe } from './motor'
 import { MOMENTOS_DE_COLECCIONES } from './ejemploEstado'
+import viajeroLogros from '../../../data/logros/viajero.json'
 
 /**
  * (V34C) EL ESTUDIO DE SONIDOS (/admin/sonidos): la lista de TODAS las animaciones que llevan sonido, con lo que hace falta para verlas igual que en la app dentro de un marco de iPhone (el visor: un marco con la propia app, que
@@ -69,6 +70,13 @@ const sello = (grado: string, nombre: string, linea: string): Momento =>
 const emblema = (id: string, destino: string, extra: Record<string, unknown> = {}): Momento =>
   m({ tipo: 'emblema', cat: 'emblema', clave: `demo|emblema|${id}`, id, destino, nombre: '', linea: '', momento: false, frase: 'Pero… ¿qué es esto?', ...extra })
 
+/** (V39B) La maravilla nueva de ejemplo: `tiene` son las que lleva el viajero y la última es la recién ganada (como los momentos del servidor: `id`, `n`, `maravillas`, `nombre` y `linea` de los datos). */
+const maravillaNueva = (tiene: string[]): Momento => {
+  const id = tiene[tiene.length - 1]!
+  const d = (viajeroLogros.maravillas as Record<string, { nombre: string; linea: string }>)[id]!
+  return m({ tipo: 'maravilla', cat: 'maravilla', clave: `*|maravilla|${id}`, id, n: tiene.length, maravillas: tiene, nombre: d.nombre, linea: d.linea })
+}
+
 /** (V38B) El emblema de ejemplo de OTRA escena del destino (para «Ver otra escena» dentro de la tarjeta del destino). */
 export const momentoDeEscena = (destino: string, id: string): Momento[] => [emblema(id, destino, destino === 'lanzarote' ? { frase: '¡Eh! Aquí hay algo…' } : {})]
 
@@ -85,6 +93,9 @@ export const MOMENTOS_DEL_ESTUDIO: Record<string, () => Momento[]> = {
   emblema_maravilla: () => [emblema('coliseo', 'roma', { nombre: 'Una maravilla del mundo', linea: 'El mayor anfiteatro de la Antigüedad.', maravilla: 'coliseo', frase: '¡Eh! Aquí hay algo…' })],
   emblema_lanzarote: () => [emblema('timanfaya', 'lanzarote', { frase: '¡Eh! Aquí hay algo…' })],
   maravilla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: 'demo|maravilla|taj_mahal', id: 'taj_mahal', n: 7, nombre: 'El Taj Mahal', linea: 'La séptima maravilla del mundo.' })],
+  // (V39B) «Una maravilla nueva»: la 1.ª (el Coliseo, 1 de 7) y la 4.ª (el Cristo Redentor, 4 de 7), con el nombre y la línea de los datos de la app (`data/logros/viajero.json › maravillas`), no escritos aparte.
+  maravilla_nueva: () => [maravillaNueva(['coliseo'])],
+  maravilla_nueva_cuatro: () => [maravillaNueva(['coliseo', 'gran_muralla', 'petra', 'cristo_redentor'])],
   pais: () => [m({ tipo: 'pais', cat: 'pais', clave: 'demo|pais', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia' })],
   patrimonio: () => [m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', n: 1, nombre: 'Centro histórico de Roma' })],
   viajero: () => [m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|3', logro: 'paises', escalon: '3', destino: '*', nombre: 'Trotamundos', linea: 'Países distintos que has visitado con la app.' })],
@@ -100,8 +111,10 @@ export const ANIMACIONES: Animacion[] = [
   { id: 'coleccion_imprescindibles', nombre: 'Colección completa (Los imprescindibles)', grupo: 'Logros', visor: 'momentos', momentos: 'coleccion_imprescindibles', suena: ['coleccion'], partituras: ['coleccion'], principal: { tipo: 'archivo', id: 'coleccion' }, nota: 'Los imprescindibles de Roma: 7 de 8 → 8 de 8. El sonido es el mismo que el de «Colección completa»: cae cuando se cierra el círculo.' },
   { id: 'emblema', nombre: 'Emblema de Roma', grupo: 'Logros', visor: 'momentos', momentos: 'emblema', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' }, destinoDeEscenas: 'roma', otrasEscenas: ESCENAS_DE_ROMA, nota: 'Una sola tarjeta para TODOS los emblemas de Roma (menos el Coliseo): todos tienen los mismos momentos clave (la luz estalla a los 8 s, todo se apaga a los 7,6 s y el emblema entra a los 9,2 s), así que lo que guardes aquí vale para todos. Se ve el Panteón; con «Ver otra escena» miras otro emblema, sin guardar aparte.' },
   { id: 'emblema_lanzarote', nombre: 'Emblema de Lanzarote', grupo: 'Logros', visor: 'momentos', momentos: 'emblema_lanzarote', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' }, destinoDeEscenas: 'lanzarote', otrasEscenas: ESCENAS_DE_LANZAROTE, nota: 'Una sola tarjeta para TODOS los emblemas de Lanzarote: todos comparten sus momentos clave (la luz estalla a los 9,9 s). Se ve Timanfaya; con «Ver otra escena» miras otro emblema, sin guardar aparte.' },
-  { id: 'emblema_maravilla', nombre: 'Coliseo', grupo: 'Logros', visor: 'momentos', momentos: 'emblema_maravilla', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' }, nota: 'El Coliseo tiene sus propios momentos clave (su escena es más larga): es la única que no sigue la regla de su destino.' },
+  { id: 'emblema_maravilla', nombre: 'Coliseo', grupo: 'Logros', visor: 'momentos', momentos: 'emblema_maravilla', suena: ['emblema'], partituras: ['emblema', 'escena'], principal: { tipo: 'archivo', id: 'emblema' }, nota: 'Empieza, la primera vez, con la espera de siempre (la frase, los latidos y el estallido: 3,6 s) y después su película, que tiene sus propios momentos clave y es más larga: es la única que no sigue la regla de su destino. Lo que guardaste antes se movió +3,6 s para seguir cayendo en el mismo fotograma de la película (hay una copia de lo de antes).' },
   { id: 'maravilla', nombre: 'Final de las 7 maravillas', grupo: 'Logros', visor: 'momentos', momentos: 'maravilla', suena: ['maravilla'], partituras: ['maravilla'], principal: { tipo: 'archivo', id: 'maravilla' } },
+  { id: 'maravilla_nueva', nombre: 'Maravilla nueva (1 de 7)', grupo: 'Logros', visor: 'momentos', momentos: 'maravilla_nueva', suena: ['maravilla_nueva'], partituras: ['maravilla_nueva'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'La 1.ª a la 6.ª maravilla (la 7.ª tiene su final): la medalla de las 7 con las monedas ya conseguidas en oro; la nueva baja girando, encaja con un clic y se enciende con un brillo, y el número del centro cuenta una más. Aquí, el Coliseo (1 de 7). Usa los mismos sonidos que el pedazo (clic y brillo, el vuuush al bajar).' },
+  { id: 'maravilla_nueva_cuatro', nombre: 'Maravilla nueva (4 de 7)', grupo: 'Logros', visor: 'momentos', momentos: 'maravilla_nueva_cuatro', suena: ['maravilla_nueva'], partituras: ['maravilla_nueva'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'La misma pantalla con tres monedas ya en oro y la cuarta (el Cristo Redentor) que encaja. Suena igual que «Maravilla nueva (1 de 7)».' },
   { id: 'pais', nombre: 'País nuevo', grupo: 'Logros', visor: 'momentos', momentos: 'pais', suena: ['pais'], partituras: ['pais'], principal: { tipo: 'archivo', id: 'pais' }, nota: 'Destino nuevo y continente suenan igual.' },
   { id: 'sello', nombre: 'Sello del pasaporte', grupo: 'Logros', visor: 'pasaporte', suena: ['sello_pasaporte'], partituras: ['sello_pasaporte'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'El sello que se estampa en la hoja del pasaporte (la hoja del Perfil, con sus piezas de verdad y un viaje de ejemplo). En la app suena igual (la misma partitura) al tocar el golpe la hoja. No es la medalla (esa es «Medalla de bronce»…).' },
   { id: 'pedazo', nombre: 'Pedazo que entra en su círculo', grupo: 'Logros', visor: 'momentos', momentos: 'pedazo', suena: ['pedazo'], partituras: ['pedazo'], principal: { tipo: 'archivo', id: 'clic' }, nota: 'Una sola colección: un pedazo, un sonido.' },
@@ -194,23 +207,26 @@ export function lineaDeTiempo(a: Animacion): LineaDeTiempo {
       }
     }
     case 'emblema_maravilla': {
-      // El Coliseo: su película entera (coliseo.tsx), con el suspense por dentro, sin pantalla de suspense aparte.
+      // El Coliseo (V39B): la espera de siempre (los latidos y el estallido, 3,6 s) y DESPUÉS su película entera (coliseo.tsx): la película empieza a los 3,6 s.
       const e = ESCENA_COLISEO
+      const s0 = TIEMPOS_DE_EMBLEMA.estalla
+      const seguir = s0 + e.x[3]
       return {
-        dura: e.x[3],
-        seguir: e.x[3],
-        tramos: [{ partitura: 'emblema', empieza: 0 }, { partitura: 'escena', empieza: 0, opciones: { escena: e } }],
+        dura: seguir,
+        seguir,
+        tramos: [{ partitura: 'emblema', empieza: 0 }, { partitura: 'escena', empieza: s0, opciones: { escena: e } }],
         marcas: [
           MARCAS_DE_LATIDOS,
-          { t: 0.3, rotulo: '«Casi 2.000 años esperándote…»' },
-          { t: 5.4, rotulo: 'segunda frase' },
-          { t: 11.3, rotulo: 'vuelan las partículas de oro' },
-          { t: 15.8, rotulo: 'se dibuja el Coliseo' },
-          { t: 16.8, rotulo: 'se enciende' },
-          { t: 22.35, rotulo: 'el oro se junta' },
-          { t: e.fl, rotulo: 'estalla el destello' },
-          { t: e.x[0], rotulo: 'los textos' },
-          marcaSeguir(e.x[3]),
+          { t: s0, rotulo: 'estalla la luz · empieza la película' },
+          { t: s0 + 0.3, rotulo: '«Casi 2.000 años esperándote…»' },
+          { t: s0 + 5.4, rotulo: 'segunda frase' },
+          { t: s0 + 11.3, rotulo: 'vuelan las partículas de oro' },
+          { t: s0 + 15.8, rotulo: 'se dibuja el Coliseo' },
+          { t: s0 + 16.8, rotulo: 'se enciende' },
+          { t: s0 + 22.35, rotulo: 'el oro se junta' },
+          { t: s0 + e.fl, rotulo: 'estalla el destello' },
+          { t: s0 + e.x[0], rotulo: 'los textos' },
+          marcaSeguir(seguir),
         ],
       }
     }
@@ -221,6 +237,17 @@ export function lineaDeTiempo(a: Animacion): LineaDeTiempo {
         seguir: 9,
         tramos: porDefecto,
         marcas: [{ t: t.quietas, rotulo: 'las 7 monedas quietas' }, { t: t.latidos[0], rotulo: 'latidos' }, { t: t.choque[0], rotulo: 'el choque' }, { t: t.giraEmpieza, rotulo: 'gira la medalla' }, { t: paraFinalSiete(), rotulo: 'la medalla para' }, { t: t.barrido, rotulo: 'barrido de brillo' }, marcaSeguir(9), { t: 9.6, rotulo: 'el título' }],
+      }
+    }
+    case 'maravilla_nueva':
+    case 'maravilla_nueva_cuatro': {
+      // (V39B) La animación entera de «Una maravilla nueva»: la moneda baja girando a los 0,8 s, encaja a los 1,88 s, su emblema llega al brillo más fuerte a los 2,24 s, el nombre y la línea suben a los 2,7 y 3 s y [Seguir] sale a los 3,4 s.
+      const t = TIEMPOS_DE_MARAVILLA_NUEVA
+      return {
+        dura: t.cta,
+        seguir: t.cta,
+        tramos: porDefecto,
+        marcas: [{ t: t.llega, rotulo: 'baja la moneda' }, { t: t.encaja, rotulo: 'encaja la moneda' }, { t: t.brilla, rotulo: 'se enciende' }, { t: t.nombre, rotulo: 'el nombre' }, { t: t.linea, rotulo: 'la línea' }, marcaSeguir(t.cta)],
       }
     }
     case 'pedazo':

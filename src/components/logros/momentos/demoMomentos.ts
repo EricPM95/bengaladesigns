@@ -4,6 +4,7 @@ import { datosDePrueba, datosDePruebaViajero, type EstadoLogros, type ResumenLog
 import { filaVacia } from './fila'
 import { useMomentosUI } from './useMomentosUI'
 import romaLogros from '../../../../data/logros/roma.json'
+import viajeroLogros from '../../../../data/logros/viajero.json'
 
 /**
  * PRUEBAS DE LOS MOMENTOS (Tanda 8B, SOLO en desarrollo: se carga con `import()` desde `MomentosHost` y no entra en la versión de producción).
@@ -80,6 +81,12 @@ const resumenBase = (tipo: 'wow' | 'con_ganas', acabado: boolean): ResumenLogros
 })
 
 const m = (o: Partial<Momento> & { tipo: Momento['tipo'] }): Momento => ({ nombre: '', primera_vez: true, ...o }) as Momento
+/** (V39B) Una maravilla recién ganada: `tiene` son las del viajero (la última es la nueva); el nombre y la línea salen de los datos de la app (`data/logros/viajero.json › maravillas`), no escritos aparte. */
+const maravillaGanada = (tiene: string[]): Momento => {
+  const id = tiene[tiene.length - 1]!
+  const d = (viajeroLogros.maravillas as Record<string, { nombre: string; linea: string }>)[id]!
+  return m({ tipo: 'maravilla', cat: 'maravilla', clave: `*|maravilla|${id}`, id, n: tiene.length, maravillas: tiene, nombre: d.nombre, linea: d.linea, en })
+}
 
 const MOMENTOS: Record<string, () => Momento[]> = {
   sello: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:bronce', sello: 'roma', destino: 'roma', grado: 'bronce', nombre: 'Primeros pasos en Roma', linea: 'Has visto tu primer imprescindible.', en })],
@@ -94,13 +101,15 @@ const MOMENTOS: Record<string, () => Momento[]> = {
     m({ tipo: 'suma', cat: 'pedazo', coleccion: 'roma_antigua', destino: 'roma', nombre: 'La Roma antigua', n: 1, total: 6, sitios: ['coliseo'], linea: '1 de 6' }),
   ],
   coleccion: () => [m({ tipo: 'coleccion', cat: 'coleccion', clave: 'roma|coleccion|cuatro_joyas', id: 'cuatro_joyas', destino: 'roma', nombre: 'Las 4 joyas de Roma', linea: 'Cuatro joyas, cuatro recuerdos para siempre.', en })],
-  coliseo: () => [m({ tipo: 'emblema', cat: 'emblema', clave: 'roma|emblema|coliseo', id: 'coliseo', destino: 'roma', nombre: 'Una maravilla del mundo', linea: 'El mayor anfiteatro de la Antigüedad.', momento: false, maravilla: 'coliseo', frase: '¡Eh! Aquí hay algo…', en }), m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, maravillas: ['coliseo'], nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', en })],
+  coliseo: () => [m({ tipo: 'emblema', cat: 'emblema', clave: 'roma|emblema|coliseo', id: 'coliseo', destino: 'roma', nombre: 'Una maravilla del mundo', linea: 'El mayor anfiteatro de la Antigüedad.', momento: false, maravilla: 'coliseo', frase: '¡Eh! Aquí hay algo…', en }), maravillaGanada(['coliseo'])],
   emblema: () => MOMENTOS['emblema:panteon'](),
   pais: () => [m({ tipo: 'pais', cat: 'pais', clave: '*|pais|Italia', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia', en })],
   destino: () => [m({ tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: '*|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', en })],
-  medalla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, maravillas: ['coliseo'], nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', en })],
+  medalla: () => [maravillaGanada(['coliseo'])],
   final7: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|taj_mahal', id: 'taj_mahal', n: 7, nombre: 'El Taj Mahal', linea: 'La séptima maravilla del mundo.', en })],
-  maravilla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|petra', id: 'petra', n: 2, maravillas: ['coliseo', 'petra'], nombre: 'Petra', linea: 'La ciudad rosada tallada en la roca.', en })],
+  /** (V39B) «Una maravilla nueva» con la 4.ª (el Cristo Redentor, 4 de 7: tres monedas ya en oro y la cuarta que encaja). */
+  maravilla4: () => [maravillaGanada(['coliseo', 'gran_muralla', 'petra', 'cristo_redentor'])],
+  maravilla: () => [maravillaGanada(['coliseo', 'petra'])],
   patrimonio: () => [m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', n: 1, nombre: 'Centro histórico de Roma', en })],
   viajero: () => [m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|3', logro: 'paises', escalon: '3', destino: '*', nombre: 'Trotamundos', linea: 'Países distintos que has visitado con la app.', en })],
   ademas: () => [

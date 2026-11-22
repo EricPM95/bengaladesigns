@@ -78,9 +78,9 @@ try {
     return JSON.stringify({ filas, estampado: T.TIEMPOS_ESTAMPADO })
   })`)
   const filas = datos.filas
-  debe(filas.length === 27 && new Set(filas.map((f) => f.id)).size === 27, 'lista', `las de la V36C, la V37C (los imprescindibles y dos colecciones a la vez) y la V38B (tres colecciones; un emblema por destino): 27 tarjetas, cada una con su id (${filas.length})`)
+  debe(filas.length === 29 && new Set(filas.map((f) => f.id)).size === 29, 'lista', `las de la V36C, la V37C (los imprescindibles y dos colecciones a la vez), la V38B (tres colecciones; un emblema por destino) y la V39B (la maravilla nueva, 1 de 7 y 4 de 7): 29 tarjetas, cada una con su id (${filas.length})`)
   const ESPERADO = {
-    medalla_bronce: ['sello'], medalla_plata: ['sello'], medalla_oro: ['sello'], medalla_diamante: ['sello'], coleccion: ['coleccion'], coleccion_imprescindibles: ['coleccion'], pedazo_dos: ['pedazos'], pedazo_tres: ['pedazos'], emblema: ['emblema'], emblema_lanzarote: ['emblema'], emblema_maravilla: ['emblema'], maravilla: ['final7'], pais: ['pais'],
+    medalla_bronce: ['sello'], medalla_plata: ['sello'], medalla_oro: ['sello'], medalla_diamante: ['sello'], coleccion: ['coleccion'], coleccion_imprescindibles: ['coleccion'], pedazo_dos: ['pedazos'], pedazo_tres: ['pedazos'], emblema: ['emblema'], emblema_lanzarote: ['emblema'], emblema_maravilla: ['emblema'], maravilla: ['final7'], maravilla_nueva: ['maravilla_nueva'], maravilla_nueva_cuatro: ['maravilla_nueva'], pais: ['pais'],
     pedazo: ['pedazos'], patrimonio: ['patrimonio'], viajero: ['viajero'], resumen_dia: ['ademas'],
   }
   for (const f of filas) {
@@ -114,7 +114,7 @@ try {
   for (const f of filas) {
     await toque(adm, `[data-animacion-tarjeta="${f.id}"]`)
     await esperar(adm, `document.querySelector('[data-visor-iframe]').contentDocument.querySelector('[data-visor-de-animacion]')?.getAttribute('data-animacion-actual') === '${f.id}'`, 60)
-    await adm.esp(f.id === 'sello' ? 3200 : 1700)
+    await adm.esp(f.id === 'sello' ? 3200 : f.id === 'emblema_maravilla' ? 5800 : 1700)
     const r = await J(adm, `JSON.stringify((() => { const d = document.querySelector('[data-visor-iframe]').contentDocument; const raiz = d.querySelector('[data-visor-de-animacion]'); return { texto: (raiz?.innerText ?? '').replace(/\\s+/g, ' ').trim(), golpe: Boolean(d.querySelector('[data-golpe-del-sello]')), contenido: (d.body.textContent ?? '').replace(/s+/g, ' ').trim(), pasaporte: Boolean(d.querySelector('[data-visor-pasaporte]')), hijos: raiz ? raiz.children.length : 0 } })())`)
     textos[f.id] = r.texto
     debe(r.hijos > 0, 'marco', `${f.id}: se ve algo en el marco`)

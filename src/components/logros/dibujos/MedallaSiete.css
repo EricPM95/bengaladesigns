@@ -4,3 +4,16 @@
   animation: none !important;
   transition: none !important;
 }
+
+/* (V39B) «Una maravilla nueva» (Design Piezas/Medalla Siete con `gain`): las claves de animación de la moneda que llega, tal cual. */
+@keyframes m7Rays{to{transform:rotate(360deg)}}
+@keyframes m7Lit{0%{filter:grayscale(1) brightness(.78) contrast(1.05)}35%{filter:grayscale(0) brightness(2.2) contrast(1)}100%{filter:none}}
+@keyframes m7Flash{0%{opacity:0;transform:scale(.4)}25%{opacity:1}100%{opacity:0;transform:scale(1.9)}}
+@keyframes m7Glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes m7Sheen{0%{transform:translateX(-160%) skewX(-18deg)}40%,100%{transform:translateX(360%) skewX(-18deg)}}
+@keyframes m7Join{0%{opacity:0;transform:perspective(600px) translate(var(--jx),-250px) scale(2.6) rotateY(0)}18%{opacity:1}72%{transform:perspective(600px) translate(0,0) scale(.88) rotateY(720deg)}84%{transform:perspective(600px) scale(1.16) rotateY(720deg)}100%{opacity:1;transform:perspective(600px) rotateY(720deg)}}
+@keyframes m7Trail{0%{opacity:0;transform:translateY(-230px) scaleY(.3)}20%{opacity:.9}70%{opacity:.6;transform:translateY(0) scaleY(1)}100%{opacity:0;transform:translateY(0) scaleY(.2)}}
+@keyframes m7Shock{0%{opacity:0;transform:scale(.6)}6%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+@keyframes m7Spk{0%{opacity:0;transform:translate(0,0) scale(.4)}12%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1)}}
+@keyframes m7ThudA{0%,100%{transform:none}30%{transform:translateY(4px) scale(.99)}60%{transform:translateY(-2px)}}
+@keyframes m7ThudB{0%,100%{transform:none}30%{transform:translateY(4px) scale(.99)}60%{transform:translateY(-2px)}}

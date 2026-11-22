@@ -76,7 +76,7 @@ export const LOGROS_CON_CHAPA: string[] = [
   'dos_paises_en_un_dia', 'continentes', 'pequenos_gigantes',
 ]
 /** Escalones de cada familia con escalones (para la página de prueba). */
-export const ESCALONES_DE: Record<string, (string | number)[]> = { ...Object.fromEntries(Object.entries(ESCALONADOS).map(([k, v]) => [k, v.pasos])), viajero_nacional: [1, 3], maravillas: [1, 2, 3, 4, 5, 6, 7] }
+export const ESCALONES_DE: Record<string, (string | number)[]> = { ...Object.fromEntries(Object.entries(ESCALONADOS).map(([k, v]) => [k, v.pasos])), viajero_nacional: [1, 3, 5], maravillas: [1, 2, 3, 4, 5, 6, 7] }
 
 /** (V9) «lanzarote» → «Lanzarote»; «roma» → «Roma» (el nombre de la ciudad para la moneda `{ciudad} {anio}`); sin destino, Roma como siempre. */
 export function nombreDeCiudadDeDestino(destino?: string | null): string {

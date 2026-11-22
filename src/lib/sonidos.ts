@@ -59,7 +59,7 @@ interface ListaDeSonidos {
 }
 
 /** Los momentos por importancia: cuando se ganan varias cosas de golpe suena la más importante. */
-export const IMPORTANCIA_DE_MOMENTOS = ['maravilla', 'emblema', 'sello', 'coleccion', 'patrimonio', 'pais', 'viajero', 'pedazo', 'visto']
+export const IMPORTANCIA_DE_MOMENTOS = ['maravilla', 'emblema', 'maravilla_nueva', 'sello', 'coleccion', 'patrimonio', 'pais', 'viajero', 'pedazo', 'visto']
 const DE_TIPO_A_SONIDO: Record<string, string> = {
   emblema: 'emblema',
   suma: 'pedazo',
@@ -70,13 +70,15 @@ const DE_TIPO_A_SONIDO: Record<string, string> = {
   destino_nuevo: 'pais',
   continente: 'pais',
   maravilla: 'maravilla',
+  maravilla_nueva: 'maravilla_nueva',
   patrimonio: 'patrimonio',
   viajero: 'viajero',
 }
 
 /** Pura: de los tipos de momento que se acaban de ganar, el sonido que toca (el más importante), o null si ninguno suena. */
-export function sonidoDeMomentos(tipos: string[]): string | null {
-  const sonidos = tipos.map((t) => DE_TIPO_A_SONIDO[t]).filter(Boolean)
+export function sonidoDeMomentos(tipos: string[], momentos: { tipo?: string; n?: unknown }[] = []): string | null {
+  // (V39B) La 1.ª a la 6.ª maravilla tienen su pantalla «Una maravilla nueva» (su propio sonido); solo la 7.ª suena al final de las 7.
+  const sonidos = tipos.map((t) => (t === 'maravilla' && momentos.some((m) => m.tipo === 'maravilla' && Number(m.n ?? 0) < 7) && !momentos.some((m) => m.tipo === 'maravilla' && Number(m.n ?? 0) >= 7) ? 'maravilla_nueva' : t)).map((t) => DE_TIPO_A_SONIDO[t]).filter(Boolean)
   for (const s of IMPORTANCIA_DE_MOMENTOS) if (sonidos.includes(s)) return s
   return null
 }
@@ -189,7 +191,7 @@ export async function sonar(momento: string, extra: OpcionesDePartitura = {}): P
   }
 }
 
-const PATRONES: Record<string, number[]> = { visto: [18], pedazo: [20, 40, 20], coleccion: [30, 50, 30], sello: [40, 60, 40], emblema: [30, 40, 30, 40, 60], pais: [25, 40, 25], maravilla: [50, 60, 50, 60, 80] }
+const PATRONES: Record<string, number[]> = { visto: [18], pedazo: [20, 40, 20], coleccion: [30, 50, 30], sello: [40, 60, 40], emblema: [30, 40, 30, 40, 60], pais: [25, 40, 25], maravilla: [50, 60, 50, 60, 80], maravilla_nueva: [30, 40, 30] }
 /** Una vibración pequeña, solo donde el móvil la deja. */
 export function vibrar(momento: string): boolean {
   try {
@@ -202,7 +204,7 @@ export function vibrar(momento: string): boolean {
 
 /** Tras ganar cosas: suena y vibra lo más importante. */
 export function reproducirMomentos(tipos: string[], momentos: { tipo?: string; grado?: unknown }[] = []) {
-  let s = sonidoDeMomentos(tipos)
+  let s = sonidoDeMomentos(tipos, momentos)
   if (!s) return
   // (V29) Un sello que sube de grado suena a la medalla de ese grado (bronce < plata < oro < diamante).
   if (s === 'sello') {

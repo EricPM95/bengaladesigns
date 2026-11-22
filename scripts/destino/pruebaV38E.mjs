@@ -53,7 +53,7 @@ const manifiesto = JSON.parse(leer('public/sonidos/v30/manifiesto.json'))
 const A = E.ANIMACIONES
 const lin = (id) => E.lineaDeTiempo(E.animacionDe(id))
 {
-  debe(A.length === 27, 'tarjetas', `se revisan las 27 tarjetas (${A.length})`)
+  debe(A.length === 29, 'tarjetas', `se revisan las 29 tarjetas (${A.length})`)
   for (const a of A) {
     const l = E.lineaDeTiempo(a)
     debe(l.dura > 0 && l.tramos.length > 0 && l.marcas.every((m) => m.t >= 0 && m.t <= l.dura + 0.01), 'tarjetas', `${a.id}: dura ${l.dura.toFixed(2)} s, con sus partes y sus marcas dentro de la duración`)
@@ -62,7 +62,7 @@ const lin = (id) => E.lineaDeTiempo(E.animacionDe(id))
   }
   // El Coliseo y los emblemas: la animación entera, no la partitura del suspense.
   const col = lin('emblema_maravilla')
-  debe(col.dura > 20 && Math.abs(col.dura - 25.6) < 1e-9, 'coliseo', `el Coliseo dura ${col.dura} s (más de 20; antes decía 4,2)`)
+  debe(col.dura > 20 && Math.abs(col.dura - (T.TIEMPOS_DE_EMBLEMA.estalla + 25.6)) < 1e-9, 'coliseo', `el Coliseo dura ${col.dura} s (el suspense de 3,6 s y su película de 25,6 s; antes de la V38E decía 4,2)`)
   debe(['estalla el destello', 'los textos', '[Seguir]', '«Casi 2.000 años esperándote…»', 'se dibuja el Coliseo'].every((r) => col.marcas.some((m) => m.rotulo === r)), 'coliseo', 'con sus momentos propios marcados')
   const roma = lin('emblema')
   const e = T.tiemposDeEscena()
@@ -103,7 +103,7 @@ console.log('2. El zip y su lector: segundos de la animación entera')
         nombre: 'Coliseo',
         duracion: 25.6,
         golpe: 3.6,
-        tramos: [{ partitura: 'emblema', empieza: 0 }, { partitura: 'escena', empieza: 0 }],
+        tramos: [{ partitura: 'emblema', empieza: 0 }, { partitura: 'escena', empieza: 3.6 }],
         sonidos_de_code: [{ clave: 'archivo:redoble', tipo: 'archivo', sonido: 'redoble', version: 'A', silenciado: false, volumen: 1, ms: 18000, empieza: 'principio' }],
         capas: [],
       },
@@ -113,7 +113,7 @@ console.log('2. El zip y su lector: segundos de la animación entera')
   const errores = AP.validarEstudio(json, { animaciones, manifiesto, archivos: new Map() })
   debe(errores.length === 0, 'zip', `el lector da por buenos los 18 s en una animación de 25,6 s y sus partes (${errores.join(' | ') || 'sin errores'})`)
   const texto = AP.describir(json).join('\n')
-  debe(/empieza en el segundo 18,00 de la animacion/.test(texto) && /dura 25\.6 s · golpe a los 3\.6 s/.test(texto) && /«escena» empieza en el segundo 0,00/.test(texto), 'zip', 'el lector dice «empieza en el segundo 18,00 de la animación» y las partes de la animación')
+  debe(/empieza en el segundo 18,00 de la animacion/.test(texto) && /dura 25\.6 s · golpe a los 3\.6 s/.test(texto) && /«escena» empieza en el segundo 3,60/.test(texto), 'zip', 'el lector dice «empieza en el segundo 18,00 de la animación» y las partes de la animación')
   debe(AP.segundoExacto(18000, 'principio', 3.6) === 18 && Math.abs(AP.segundoExacto(500, 'golpe', 3.6) - 4.1) < 1e-9 && AP.segundoExacto(0, 'sitio', 3.6) === null, 'zip', 'el segundo exacto: desde el principio = ms; desde el golpe = golpe + ms')
   const roma = lin('emblema')
   debe(roma.tramos.find((x) => x.partitura === 'escena').empieza === 3.6, 'zip', 'la escena de Roma empieza a los 3,6 s: lo que se cuenta «desde el principio» cae en el segundo de la animación entera, no de la escena')
@@ -147,25 +147,25 @@ try {
   const durasDeLaPagina = await J(a, `JSON.stringify([...document.querySelectorAll('[data-animacion-tarjeta]')].map((e) => [e.getAttribute('data-animacion-tarjeta'), (e.textContent.match(/(\\d+,\\d) s/) ?? [])[1] ?? '']))`)
   const malas = []
   for (const [id, txt] of durasDeLaPagina) if (txt !== E.duracionDe(E.animacionDe(id)).toFixed(1).replace('.', ',')) malas.push(`${id}: ${txt}`)
-  debe(durasDeLaPagina.length === 27 && malas.length === 0, 'duraciones', `las 27 tarjetas dicen su duración real en su botón (${malas.join(' | ') || 'todas'})`)
+  debe(durasDeLaPagina.length === 29 && malas.length === 0, 'duraciones', `las 29 tarjetas dicen su duración real en su botón (${malas.join(' | ') || 'todas'})`)
 
   /* ── El Coliseo ── */
   await toque(a, '[data-animacion-tarjeta="emblema_maravilla"]')
   await a.esp(1500)
   const dura = await a.evaluar("document.querySelector('[data-dura]')?.textContent ?? ''")
-  debe(/dura 25,6 s \(hasta \[Seguir\]\)/.test(dura), 'coliseo', `la tarjeta abierta dice «${dura}»`)
+  debe(/dura 29,2 s \(hasta \[Seguir\]\)/.test(dura), 'coliseo', `la tarjeta abierta dice «${dura}»`)
   const linea = await J(a, `JSON.stringify((() => { const l = document.querySelector('[data-linea-de-tiempo]'); return { lo: Number(l.dataset.lo), hi: Number(l.dataset.hi), dura: Number(l.dataset.dura), marcas: [...l.querySelectorAll('[data-marca]')].map((m) => m.dataset.marca), ticks: [...l.querySelectorAll('[data-tick]')].map((t) => Number(t.dataset.tick)), regla: Boolean(l.querySelector('[data-regla]')), filas: [...l.querySelectorAll('[data-fila-de-tiempo]')].map((f) => f.dataset.filaDeTiempo) } })())`)
-  debe(linea.dura > 25.5 && linea.hi >= 25.6, 'linea', `la línea de tiempo llega hasta ${linea.hi.toFixed(1)} s (la animación entera)`)
+  debe(linea.dura > 29.1 && linea.hi >= 29.2, 'linea', `la línea de tiempo llega hasta ${linea.hi.toFixed(1)} s (la animación entera)`)
   debe(linea.regla && Math.max(...linea.ticks) >= 24 && linea.ticks.includes(0), 'linea', `la regla de segundos va de 0 a ${Math.max(...linea.ticks)} s`)
   debe(['estalla el destello', 'los textos', '[Seguir]', 'se dibuja el Coliseo', 'latidos'].every((r) => linea.marcas.includes(r)), 'linea', `con las marcas de sus momentos (${linea.marcas.join(' · ')})`)
   debe(linea.filas.includes('archivo:redoble') && linea.filas.includes('archivo:emblema'), 'linea', `y sus sonidos, cada uno en su fila (${linea.filas.join(', ')})`)
   const limites = await J(a, `JSON.stringify([...document.querySelectorAll('input[type=range][aria-label^="Adelantar o atrasar"]')].map((i) => [Number(i.min), Number(i.max)]))`)
-  debe(limites.length >= 3 && limites.every(([lo, hi]) => lo <= -25600 && hi >= 25600), 'barras', `las barras de ms de TODOS los sonidos (${limites.length}) van de −25.600 a +25.600 ms (antes llegaban a ±4.200)`)
+  debe(limites.length >= 3 && limites.every(([lo, hi]) => lo <= -29200 && hi >= 29200), 'barras', `las barras de ms de TODOS los sonidos (${limites.length}) van de −29.200 a +29.200 ms (antes llegaban a ±4.200)`)
   await a.evaluar("document.querySelector('[data-linea-de-tiempo]').scrollIntoView({ block: 'start' }); window.scrollBy(0, -80); true")
   await a.captura(`${CAPTURAS}/coliseo_linea_de_tiempo.jpg`)
 
   // Lo guardado antes sigue en su sitio: el redoble en su candidato C y movido +300 ms.
-  const natural = 23.6 - manifiesto.redoble.C.golpe
+  const natural = 3.6 + 23.6 - manifiesto.redoble.C.golpe // (la película empieza a los 3,6 s, después de su suspense)
   const deRedoble = async () => Number(await a.evaluar("document.querySelector('[data-fila-de-tiempo=\"archivo:redoble\"] [data-trozo]')?.dataset.de ?? 'NaN'"))
   debe(Math.abs((await deRedoble()) - (natural + 0.3)) < 0.01, 'guardado', `lo guardado antes sigue donde estaba: el redoble (candidato C, +300 ms) empieza a los ${natural + 0.3 > 0 ? (natural + 0.3).toFixed(2) : ''} s (${(await deRedoble()).toFixed(2)})`)
   debe((await a.evaluar("document.querySelector('[data-candidato=\"redoble:C\"]')?.getAttribute('aria-pressed')")) === 'true', 'guardado', 'y el candidato C sigue elegido')
@@ -212,9 +212,9 @@ try {
   }
   const letraRedoble = await a.evaluar(`${IFR}.contentWindow.Function("return import('/src/lib/sonidos/motor.ts')")().then((m) => m.versionDe('redoble'))`)
   const golpeArchivo = manifiesto.redoble[letraRedoble].golpe
-  let ag = await agendados()
+  let ag = await agendados(5200)
   const red = ag.filter((x) => x.p === 'escena' && x.id === 'redoble')
-  debe(red.length >= 1 && red.every((x) => Math.abs(x.prog - golpeArchivo - 18) < 0.01), 'programado', `el redoble puesto a los 18 s se programa a los 18 s (empieza a los ${red[0] ? (red[0].prog - golpeArchivo).toFixed(2) : '?'} s)`)
+  debe(red.length >= 1 && red.every((x) => Math.abs(x.prog - golpeArchivo - (18 - 3.6)) < 0.01), 'programado', `el redoble puesto a los 18 s de la animación entera se programa a los 18 s (a los ${(18 - 3.6).toFixed(1)} s de la película, que empieza a los 3,6 s; sale a los ${red[0] ? (red[0].prog - golpeArchivo).toFixed(2) : '?'})`)
   informe.redoble18 = red
 
   // Un sonido de Eric puesto a los 18 s también.
@@ -256,7 +256,7 @@ try {
   debe(/desde aquí · 1[78],/.test(boton) && (await a.evaluar("Boolean(document.querySelector('[data-raya-azul]'))")), 'desde', `tocar la línea de tiempo elige el punto: «${boton.trim()}» y la raya azul`)
   ag = await agendados(2500, 18)
   const salto = await a.evaluar(`${IFR}.contentWindow.__saltoDesde ?? null`)
-  debe(salto !== null && Math.abs(salto - 18) < 0.06, 'desde', `la animación empieza en el segundo 18 (salto a ${salto})`)
+  debe(salto !== null && Math.abs(salto - (18 - 3.6)) < 0.06, 'desde', `la animación empieza en el segundo 18 (salta la espera y la película entra a los ${(18 - 3.6).toFixed(1)} s de la suya: ${salto})`)
   const sonaron = ag.map((x) => `${x.p}:${x.id}`)
   debe(!ag.some((x) => x.p === 'emblema' && x.id === 'toque') && !ag.some((x) => x.p === 'emblema' && x.id === 'estallido'), 'desde', `los sonidos que ya habían pasado (los latidos y el estallido del suspense) no suenan (${sonaron.join(', ')})`)
   debe(ag.some((x) => x.p === 'escena' && x.id === 'emblema') && ag.some((x) => x.p === 'escena' && x.id === 'clic'), 'desde', 'y los que caen después (el golpe del emblema, el clic, el brillo) suenan en su sitio')

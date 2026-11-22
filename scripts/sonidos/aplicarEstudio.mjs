@@ -226,6 +226,8 @@ export function validarEstudio(json, { animaciones, manifiesto, archivos }) {
     if (!esObj(a)) { errs.push(`${d}: no es un objeto`); continue }
     sinClavesExtra(a, ['nombre', 'duracion', 'golpe', 'tramos', 'sonidos_de_code', 'capas'], d, errs)
     // (V38E) `tramos`: en qué segundo de la animacion ENTERA empieza cada partitura (opcional; un zip de antes no lo trae).
+    // (V39B) El Coliseo empieza con su suspense (3,6 s) y la película entra después: un zip de antes (sin partes, o con la película a los 0 s) tiene sus sonidos contados desde el principio de la película. Se baja otra vez del estudio.
+    if (id === 'emblema_maravilla' && !(Array.isArray(a.tramos) && a.tramos.some((x) => esObj(x) && x.partitura === 'escena' && esNum(x.empieza) && x.empieza >= 3))) errs.push(`${d}: este zip es de antes de que el Coliseo empezara con su suspense (los sonidos van contados desde el principio de la pelicula): vuelve a bajarlo del estudio`)
     if (a.tramos !== undefined) {
       if (!Array.isArray(a.tramos)) errs.push(`${d}: tramos tiene que ser una lista`)
       else for (const x of a.tramos) if (!esObj(x) || typeof x.partitura !== 'string' || !esNum(x.empieza) || x.empieza < 0 || (esNum(a.duracion) && x.empieza > a.duracion)) errs.push(`${d}: un tramo no vale (partitura y segundo de 0 a la duracion)`)

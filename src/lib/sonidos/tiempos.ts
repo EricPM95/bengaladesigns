@@ -48,6 +48,14 @@ export const TIEMPOS_FINAL_SIETE = {
 /** Cuándo para la medalla del final de las siete (el golpe final cae aquí). Función: se lee en el momento, así si cambia `giraDura` el sonido lo sigue. */
 export const paraFinalSiete = (): number => TIEMPOS_FINAL_SIETE.giraEmpieza + TIEMPOS_FINAL_SIETE.giraDura
 
+/**
+ * (V39B) «UNA MARAVILLA NUEVA» (Design `Maravilla Nueva`, M1 y M2: la medalla de las 7 con `gain` y `gainDelay` = 0,8 s): del 1.er al 6.º se ve en SU pantalla (la 7.ª tiene «El final de las 7 maravillas»).
+ * Todo en segundos desde que se monta la pantalla: a `llega` la moneda nueva baja girando desde arriba (`m7Join`, 1,5 s) y el número del centro cuenta una más; a `encaja` (el 72 % del giro) toca su sitio y
+ * se oye el clic (un fogonazo, dos ondas y chispas salen a la vez); a `brilla` el emblema de la moneda llega a su brillo más fuerte (`m7Lit`: de gris a oro, 1,4 s que empiezan a 0,95 s del giro); el nombre y
+ * la línea suben a `nombre` y `linea`, y [Seguir] sale a `cta`. El sonido sigue a estos números (partitura «maravilla_nueva»).
+ */
+export const TIEMPOS_DE_MARAVILLA_NUEVA = { llega: 0.8, giraDura: 1.5, encaja: 0.8 + 1.5 * 0.72, brilla: 0.8 + 0.95 + 1.4 * 0.35, nombre: 2.7, linea: 3.0, cta: 3.4 } as const
+
 /** (10E) La apertura: dura `duracion` s; la estrella salta sobre la I entre el 50 y el 68 % (a su 60 % llega al tope); las letras entran del 6 al 50 %; el destello cruza del 24 al 40 %; el lema entra del 80 al 94 %. */
 export const FRACCIONES_APERTURA = { letras: [0.06, 0.5], destello: [0.24, 0.4], estrella: 0.6, lema: [0.8, 0.94] } as const
 export const tiemposDeLaApertura = (duracion: number) => ({

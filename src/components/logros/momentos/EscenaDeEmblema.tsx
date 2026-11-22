@@ -9,7 +9,7 @@ import { TIEMPOS_DE_EMBLEMA } from '../../../lib/sonidos/tiempos'
  *
  * - `primeraVez` + `frase` (las trae el momento del servidor): antes de la escena sale la frase de suspense («¡Eh! Aquí hay algo…») con su espera. Al volver a verlo
  *   guardado (`primeraVez` falso), sin frase ni suspense: va directo a la escena.
- * - La película del Coliseo («Casi 2.000 años esperándote…») sale SIEMPRE entera, también al repetirla: es su principio, no una frase de suspense.
+ * - La película del Coliseo («Casi 2.000 años esperándote…») sale SIEMPRE entera, también al repetirla (sus frases son su guion, no una espera). (V39B) Y, como los demás, la PRIMERA vez empieza con la espera: la frase al azar, los aros que laten y el estallido; solo entonces, la película.
  * - Cada escena está en su archivo (`escenas/`) y se carga solo al abrirla.
  * Ocupa toda la pantalla (fija, por encima de todo). `onSeguir` se llama al pulsar [Seguir].
  */
@@ -95,7 +95,7 @@ function Suspense3({ frase, alTerminar }: { frase: string; alTerminar: () => voi
 export function EscenaDeEmblema(props: PropsEscena): ReactNode {
   const { id, primeraVez = false, frase = null } = props
   const sinMov = typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
-  const conSuspense = primeraVez && Boolean(frase) && id !== 'coliseo' && !sinMov && !ESCENAS_LANZAROTE.includes(id)
+  const conSuspense = primeraVez && Boolean(frase) && !sinMov && !ESCENAS_LANZAROTE.includes(id)
   const [espera, setEspera] = useState(conSuspense)
   if (espera && frase) return <Suspense3 frase={frase} alTerminar={() => setEspera(false)} />
   return (

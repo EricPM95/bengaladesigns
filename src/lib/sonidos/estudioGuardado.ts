@@ -37,7 +37,29 @@ export interface EstadoDeAnimacion {
 export interface Guardado extends EstadoDeAnimacion {
   animacion: string
   guardado_en: string
+  /** (V39B) 2 = la línea de tiempo del Coliseo ya lleva el suspense delante de la película (ver `migrarColiseoV39B`). Sin él (guardado de antes), 1. */
+  version_linea?: number
 }
+
+/**
+ * (V39B) EL COLISEO AHORA EMPIEZA CON SU SUSPENSE (3,6 s: la frase, los latidos y el estallido) y la película entra DESPUÉS. Todo lo guardado antes en esa tarjeta contaba «desde el principio» de la animación, que era el de la película:
+ * para que cada sonido siga cayendo en el MISMO fotograma de la película, se mueve lo mismo que se movió ella (+3,6 s):
+ *   · los sonidos de Code de la película (redoble, golpe del emblema, clic, brillo) movidos «desde el principio» o «desde el golpe»: +3.600 ms (los «donde suena de siempre» van con la película solos);
+ *   · los de la espera (el toque de los latidos y el estallido) se quedan: la espera sigue donde estaba;
+ *   · los sonidos de Eric y los añadidos (capas), «desde el principio» o «desde el golpe»: +3.600 ms.
+ * (La referencia del «golpe» es el estallido, a los 3,6 s, y no se mueve: por eso lo «desde el golpe» de la película también suma.) Pura; no toca el original.
+ */
+export const SEGUNDOS_DE_SUSPENSE_DEL_COLISEO = 3.6
+const CLAVES_DE_LA_ESPERA = ['archivo:estallido', 'sint:toque']
+export function migrarColiseoV39B<T extends EstadoDeAnimacion>(e: T): T {
+  const ms = Math.round(SEGUNDOS_DE_SUSPENSE_DEL_COLISEO * 1000)
+  const ajustes: EstadoDeAnimacion['ajustes'] = {}
+  for (const [k, a] of Object.entries(e.ajustes)) ajustes[k] = a.empieza === 'sitio' || CLAVES_DE_LA_ESPERA.includes(k) ? a : { ...a, ms: a.ms + ms }
+  const capas = e.capas.map((c) => (c.empieza === 'principio' || c.empieza === 'golpe' ? { ...c, ms: c.ms + ms } : c))
+  return { ...e, ajustes, capas }
+}
+/** La copia de seguridad de lo guardado del Coliseo (antes de moverlo) vive bajo este id (no es una tarjeta: la página no la enseña ni la borra). */
+export const ID_DE_LA_COPIA_DEL_COLISEO = 'copia_antes_de_v39b:emblema_maravilla'
 export const ESTADO_VACIO = (): EstadoDeAnimacion => ({ silenciados: [], ajustes: {}, letras: {}, volumenes: {}, capas: [], ediciones: {} })
 
 const ordenado = <T,>(o: Record<string, T>): Record<string, T> => Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]))
@@ -203,6 +225,8 @@ export function construirZip(animaciones: DatosParaElZip[], volumenGeneral: numb
 
 /** Lo que dice un estudio.json de una animación, ya validado a lo básico (lo estricto lo hace aplicarEstudio.mjs). */
 export interface AnimacionDelJson {
+  /** (V38E) Qué partituras suenan y cuándo empieza cada una dentro de la animación entera. Un zip de antes de la V39B no trae el suspense del Coliseo delante. */
+  tramos?: { partitura: string; empieza: number }[]
   sonidos_de_code: (SonidoDeCodeDeLaAnimacion & { retoques?: Retoques })[]
   capas: ({ origen: 'code'; sonido: string; version: Letra; volumen: number; ms: number; empieza: EmpiezaCapa; retoques?: Retoques } | { origen: 'archivo'; archivo: string; original?: string; nombre: string; volumen: number; ms: number; empieza: EmpiezaCapa; retoques?: Retoques })[]
 }
@@ -214,7 +238,7 @@ export function leerEstudioJson(texto: string): Record<string, AnimacionDelJson>
   const salida: Record<string, AnimacionDelJson> = {}
   for (const [id, a] of Object.entries(j.animaciones)) {
     if (!/^[a-z0-9_]{1,40}$/.test(id)) throw new Error(`Animación con un nombre raro: ${id}`)
-    salida[id] = { sonidos_de_code: Array.isArray(a.sonidos_de_code) ? a.sonidos_de_code : [], capas: Array.isArray(a.capas) ? a.capas : [] }
+    salida[id] = { ...(Array.isArray(a.tramos) ? { tramos: a.tramos } : {}), sonidos_de_code: Array.isArray(a.sonidos_de_code) ? a.sonidos_de_code : [], capas: Array.isArray(a.capas) ? a.capas : [] }
   }
   return salida
 }

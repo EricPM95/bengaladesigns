@@ -45,6 +45,6 @@ export function MedallaMaravillas({ encendidas = [], tam = 220, animada = true, 
 }
 
 /** (8B5) La medalla NUEVA de las 7 maravillas («Medalla Siete» de Design), QUIETA: un disco dorado con las 7 monedas alrededor; en oro las que el viajero tiene (`encendidas`: ids como coliseo, petra…), en plata las que le faltan, y en el centro cuántas lleva. `tam` es el ancho; el alto es 1,18 veces. Es la que sale en «Y además…», en Logros y en la vitrina; `MedallaMaravillas` (la de antes, con las 7 juntas) solo queda en «El final de las 7 maravillas», como en Design. */
-export function MedallaDeSiete({ encendidas = [], tam = 112 }: { encendidas?: string[]; tam?: number }): ReactNode {
-  return <MedallaSiete encendidas={encendidas} tam={tam} />
+export function MedallaDeSiete({ encendidas = [], tam = 112, gana, retraso }: { encendidas?: string[]; tam?: number; gana?: string; retraso?: number }): ReactNode {
+  return <MedallaSiete encendidas={encendidas} tam={tam} gana={gana} retraso={retraso} />
 }

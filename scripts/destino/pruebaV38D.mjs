@@ -102,7 +102,7 @@ console.log('3. Ningún archivo suena en dos momentos distintos de una misma ani
       }
     }
   }
-  debe(animaciones === 27, 'repetidos', `se revisan las 27 tarjetas (${animaciones})`)
+  debe(animaciones === 29, 'repetidos', `se revisan las 29 tarjetas (${animaciones})`)
   debe(repetidos.length === 0, 'repetidos', `ningún archivo repetido en dos momentos de una misma animación (${repetidos.join(' | ') || 'ninguno'})`)
 }
 

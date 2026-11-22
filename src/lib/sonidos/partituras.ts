@@ -5,6 +5,7 @@ import {
   RETRASO_DEL_PEDAZO,
   TIEMPOS_DE_COLECCION_PANTALLA,
   TIEMPOS_DE_EMBLEMA,
+  TIEMPOS_DE_MARAVILLA_NUEVA,
   TIEMPOS_DE_PEDAZO,
   TIEMPOS_DE_PEDAZO_REDUCIDO,
   TIEMPOS_DE_RESUMEN,
@@ -119,6 +120,11 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
         ],
       }
     }
+    case 'maravilla_nueva': {
+      // (V39B) «Una maravilla nueva» (1.ª a 6.ª): la moneda baja girando (el «vuuush», con su cresta justo antes de tocar), encaja con un clic y, cuando su emblema llega al brillo más fuerte, un brillo. Con los mismos archivos de premio que el pedazo: ningún sonido nuevo, y distinta del final de las 7 (que es el redoble y el golpe grande).
+      const t = TIEMPOS_DE_MARAVILLA_NUEVA
+      return { id, dura: e(t.cta), premio: false, notas: [archivo('vuelo', e(t.encaja) - 0.06, 0.9), archivo('clic', e(t.encaja)), archivo('brillo', e(t.brilla), 0.8)] }
+    }
     case 'coleccion': {
       // La insignia empieza a `retraso`; el último pedazo encaja y se cierra el círculo cuando acaba el giro de la pieza final.
       const t = TIEMPOS_DE_COLECCION_PANTALLA
@@ -187,7 +193,7 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
 }
 
 /** Todas las animaciones que tienen partitura (para la prueba, la página de sonidos y el repaso). */
-export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero', 'dia_completo', 'primer_dia', 'vuelo', 'apertura', 'escena', 'fuegos', 'sello_pasaporte', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
+export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'maravilla_nueva', 'patrimonio', 'viajero', 'dia_completo', 'primer_dia', 'vuelo', 'apertura', 'escena', 'fuegos', 'sello_pasaporte', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
 
 /** Cada partitura, en palabras (para el repaso y la página de sonidos). */
 export const EN_PALABRAS: Record<string, string> = {
@@ -201,6 +207,7 @@ export const EN_PALABRAS: Record<string, string> = {
   destino_nuevo: 'Destino nuevo: igual que país nuevo.',
   continente: 'Continente: igual que país nuevo.',
   maravilla: 'Final de las siete maravillas: latidos cada vez más rápidos, un redoble durante todo el giro de la medalla y el golpe final cuando para.',
+  maravilla_nueva: 'Una maravilla nueva (1.ª a 6.ª): el «vuuush» de la moneda que baja girando, un clic al encajar en la medalla y un brillo cuando su emblema se enciende.',
   patrimonio: 'Patrimonio: los números que suben con un tic cada vez y un brillo al acabar.',
   viajero: 'Logro de viajero: igual que patrimonio.',
   dia_completo: 'El resumen del día y del viaje: los números que suben con tics y un brillo al acabar.',

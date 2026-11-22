@@ -6,13 +6,13 @@ import ajustes from '../../../../data/logros/ajustes.json'
  * sitio donde se decide) y aquí solo se AGRUPA lo que llega, en ese mismo orden:
  *   (V3, regla de Eric, de uno en uno: lo del SITIO primero, lo GENERAL después; nunca dos pantallas a la vez)
  *   (V6) 1) los pedazos nuevos de TODAS las colecciones que avanzan sin completarse, en UNA pantalla;
- *   2) el Emblema Oculto (si es de una maravilla, su película; la maravilla va en «Y además…» como una tarjeta pequeña, 8B4);
+ *   2) el Emblema Oculto (si es de una maravilla, su película; (V39B) después, la maravilla: «Una maravilla nueva», su propia pantalla);
  *   3) cada colección completada, una pantalla por colección;
  *   4) el sello, si sube;
- *   5) «Y además…» (país, destino, continente, maravilla, Patrimonio, logros de viajero), en el sitio del primero;
- *   6) la SÉPTIMA maravilla tiene su propia pantalla: «El final de las 7 maravillas» (la única animación de la medalla).
+ *   5) «Y además…» (país, destino, continente, Patrimonio, logros de viajero), en el sitio del primero;
+ *   6) (V39B) cada maravilla de la 1.ª a la 6.ª tiene su pantalla «Una maravilla nueva» (de una en una, justo después del sello, ya NO dentro de «Y además…»); la SÉPTIMA tiene «El final de las 7 maravillas» (la animación grande de la medalla).
  */
-export type TipoPantalla = 'sello' | 'pedazos' | 'coleccion' | 'emblema' | 'ademas' | 'pais' | 'destino_nuevo' | 'continente' | 'maravilla' | 'final7' | 'patrimonio' | 'viajero'
+export type TipoPantalla = 'sello' | 'pedazos' | 'coleccion' | 'emblema' | 'ademas' | 'pais' | 'destino_nuevo' | 'continente' | 'maravilla' | 'maravilla_nueva' | 'final7' | 'patrimonio' | 'viajero'
 
 export interface Pantalla {
   id: string
@@ -20,7 +20,7 @@ export interface Pantalla {
   momentos: Momento[]
 }
 
-const FAMILIA_ADEMAS = new Set(['patrimonio', 'viajero', 'destino_nuevo', 'pais', 'continente', 'maravilla'])
+const FAMILIA_ADEMAS = new Set(['patrimonio', 'viajero', 'destino_nuevo', 'pais', 'continente'])
 export const GRADOS = ['bronce', 'plata', 'oro', 'diamante'] as const
 
 const texto = (m: Momento, k: string): string => String(m[k] ?? '')
@@ -40,7 +40,7 @@ export function ordenarComoElServidor(momentos: Momento[]): Momento[] {
 }
 
 /** (V6, regla de Eric) El orden de las pantallas: las colecciones que avanzan (todas juntas) → cada colección completa → cada emblema oculto → el sello → lo demás (lo del viajero). */
-const RANGO: Partial<Record<TipoPantalla, number>> = { pedazos: 0, coleccion: 1, emblema: 2, sello: 3, final7: 4 }
+const RANGO: Partial<Record<TipoPantalla, number>> = { pedazos: 0, coleccion: 1, emblema: 2, sello: 3, maravilla_nueva: 4, final7: 4 }
 
 export function planificar(momentos: Momento[]): Pantalla[] {
   const salida: Pantalla[] = []
@@ -62,13 +62,16 @@ export function planificar(momentos: Momento[]): Pantalla[] {
       // El avance del sello ya se ve en las insignias y en el propio sello: sin pantalla.
     } else if (m.tipo === 'maravilla' && Number(m.n ?? 0) >= 7) {
       salida.push({ id: 'final7', tipo: 'final7', momentos: [m] })
+    } else if (m.tipo === 'maravilla') {
+      // (V39B) La 1.ª a la 6.ª: su propia pantalla, de una en una (antes iban dentro de «Y además…»).
+      salida.push({ id: `maravilla_nueva${i}`, tipo: 'maravilla_nueva', momentos: [m] })
     } else if (FAMILIA_ADEMAS.has(m.tipo)) {
       if (!ademas) salida.push((ademas = { id: 'ademas', tipo: 'ademas', momentos: [] }))
       ademas.momentos.push(m)
     } else salida.push({ id: `${m.tipo}${i}`, tipo: m.tipo as TipoPantalla, momentos: [m] })
   })
   // «Y además…» con uno solo es la pantalla de ese logro.
-  if (ademas && ademas.momentos.length === 1 && ademas.momentos[0].tipo !== 'maravilla') {
+  if (ademas && ademas.momentos.length === 1) {
     ademas.tipo = ademas.momentos[0].tipo as TipoPantalla
     ademas.id = 'uno'
   }
@@ -92,7 +95,7 @@ export function clavesDe(p: Pantalla): { destino: string; logro: string; escalon
 
 /** El sonido de la pantalla (los nombres de `sonidos.json`). */
 export function sonidoDePantalla(t: TipoPantalla): string {
-  const mapa: Record<TipoPantalla, string> = { sello: 'sello', pedazos: 'pedazo', coleccion: 'coleccion', emblema: 'emblema', pais: 'pais', destino_nuevo: 'pais', continente: 'pais', maravilla: 'maravilla', final7: 'maravilla', patrimonio: 'patrimonio', viajero: 'viajero', ademas: 'viajero' }
+  const mapa: Record<TipoPantalla, string> = { sello: 'sello', pedazos: 'pedazo', coleccion: 'coleccion', emblema: 'emblema', pais: 'pais', destino_nuevo: 'pais', continente: 'pais', maravilla: 'maravilla', maravilla_nueva: 'maravilla_nueva', final7: 'maravilla', patrimonio: 'patrimonio', viajero: 'viajero', ademas: 'viajero' }
   return mapa[t]
 }
 

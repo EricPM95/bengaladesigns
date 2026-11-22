@@ -41,6 +41,8 @@ import {
   type CapaGuardada,
   type EstadoDeAnimacion,
   type Guardado,
+  ID_DE_LA_COPIA_DEL_COLISEO,
+  migrarColiseoV39B,
 } from '../../lib/sonidos/estudioGuardado'
 import { leerZip } from '../../lib/sonidos/zip'
 import type { VisorApi } from './sonidos/VisorDeAnimacion'
@@ -66,7 +68,7 @@ const FONDO_BARRA = '#F1EADC'
 const NOMBRE_DE_SONIDO: Record<string, string> = {
   clic: 'clic', vuelo: 'vuelo (vuuush)', brillo: 'brillo', redoble: 'redoble', emblema: 'golpe del emblema', estallido: 'estallido del suspense', brillo_titulo: 'brillo del título', maravilla: 'golpe de las 7 maravillas', coleccion: 'golpe de la colección', pais: 'golpe de país', apertura: 'firma de la apertura',
   medalla_bronce: 'golpe de la medalla de bronce', medalla_plata: 'golpe de la medalla de plata', medalla_oro: 'golpe de la medalla de oro', medalla_diamante: 'golpe de la medalla de diamante',
-  toque: 'toque', campanita: 'campanita', tic: 'tic',
+  toque: 'toque (latidos)', campanita: 'campanita', tic: 'tic',
 }
 const nombreDe = (id: string) => NOMBRE_DE_SONIDO[id] ?? id
 const coma = (x: number, d = 2) => x.toFixed(d).replace('.', ',')
@@ -596,7 +598,13 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
         const PASAN_A: Record<string, string> = { escena_roma: 'emblema', escena_lanzarote: 'emblema_lanzarote' }
         for (const g0 of lista) {
           const destino = PASAN_A[g0.animacion]
-          const g = destino && !lista.some((o) => o.animacion === destino) ? { ...g0, animacion: destino } : g0
+          let g = destino && !lista.some((o) => o.animacion === destino) ? { ...g0, animacion: destino } : g0
+          // (V39B) El Coliseo ahora empieza con su suspense: lo guardado antes se mueve lo mismo que la película (+3,6 s) para que cada sonido siga en el mismo fotograma. ANTES se guarda una copia de lo de antes, intacta. Una sola vez (`version_linea`).
+          if (g.animacion === 'emblema_maravilla' && (g.version_linea ?? 1) < 2) {
+            await guardarEnElNavegador({ ...g, animacion: ID_DE_LA_COPIA_DEL_COLISEO })
+            g = { ...g, ...migrarColiseoV39B(g), version_linea: 2 }
+            await guardarEnElNavegador(g)
+          }
           if (!animacionDe(g.animacion)) continue
           const x = await hidratar(g)
           nuevos[g.animacion] = x
@@ -646,7 +654,7 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
   }
   const guardar = async () => {
     const lleno = llenado(anim.id)
-    const g: Guardado = { animacion: anim.id, guardado_en: new Date().toISOString(), ...aGuardable(lleno) }
+    const g: Guardado = { animacion: anim.id, guardado_en: new Date().toISOString(), version_linea: 2, ...aGuardable(lleno) }
     try {
       await guardarEnElNavegador(g)
       actualizar(anim.id, () => lleno)
@@ -773,7 +781,9 @@ export function AdminSonidos({ embebido = false }: { embebido?: boolean }): Reac
       for (const [id, a] of Object.entries(animaciones)) {
         const animacion = animacionDe(id)
         if (!animacion) continue
-        const g: Guardado = { animacion: id, guardado_en: new Date().toISOString(), ...estadoDesdeJson(a, archivos, mime) }
+        // (V39B) Un zip de antes de la V39B no trae el suspense del Coliseo delante: sus sonidos se mueven lo mismo que la película.
+        const estadoZip = estadoDesdeJson(a, archivos, mime)
+        const g: Guardado = { animacion: id, guardado_en: new Date().toISOString(), version_linea: 2, ...(id === 'emblema_maravilla' && !a.tramos?.some((x) => x.partitura === 'escena' && x.empieza > 0) ? migrarColiseoV39B(estadoZip) : estadoZip) }
         try {
           await guardarEnElNavegador(g)
         } catch {
