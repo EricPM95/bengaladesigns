@@ -1,15 +1,15 @@
-# Estado de la tanda v37c
+# Estado de la tanda v38
 
-**Última actualización: 22/11/26, 1:02**
+**Última actualización: 22/11/26, 13:43**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-Tanda V37C terminada: pusheada 502e7117 a main, produccion comprobada, api-server reiniciado
+V38: puntos 1 (aviso de cerrado, hecho y probado: pruebaV38_avisos 16) y agentes A (dias/mapas) y B (resumen/sorpresas/punto 5) trabajando
 
 ## Qué falta
-Nada: a la espera de Eric
+Esperar a los agentes, pruebaV38 envoltorio, REPASO, push
 
 ## Procesos abiertos ahora mismo
-- node: 2
-- esbuild: 0
+- node: 6
+- esbuild: 1
 - Chrome de prueba (con remote-debugging-port): 0
