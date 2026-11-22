@@ -18,7 +18,7 @@ import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { selloYaEstampado } from '../../../lib/selloEstampado'
-import { sonar } from '../../../lib/sonidos'
+import { cifraQueSube, claveResumenViaje, dentroDelEstudio, marcarVisto, movimientoReducido, sonarResumenUnaVez, useProgresoDeCifras, yaSeVio } from './cifrasQueSuben'
 import { useGanados, useHojasDeLogros } from '../pantallas/todos/api'
 import { HojasDeLogros } from '../pantallas/todos/HojasDeLogros'
 import '../pantallas/todos/todos.css'
@@ -105,10 +105,9 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
     useHojasDeLogros.getState().abrirFicha(clave)
   }
   useEffect(() => () => useHojasDeLogros.getState().limpiar(), [])
-  // (V35B) Suena al abrirse (los números del resumen, con el brillo al final), salvo dentro del visor de /admin/sonidos, que ya lo hace sonar él.
-  useEffect(() => {
-    if (!(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) void sonar('dia_completo')
-  }, [])
+  // (V38C) Suena SOLO la primera vez que se ve este resumen (el del viaje acabado) y SOLO cuando los números suben de verdad en pantalla; abierto otra vez (desde el viaje, LOGROS o el Perfil), en silencio y con los números ya puestos.
+  // En el estudio de sonidos (con datos de ejemplo) suben siempre y suena al pulsar ▶ (lo hace sonar él).
+  const [primera] = useState(() => (ejemplo ? true : tripId ? !yaSeVio(claveResumenViaje(tripId)) && !movimientoReducido() : false))
   useEffect(() => {
     if (ejemplo) return undefined
     let vivo = true
@@ -174,6 +173,16 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
     ...(km > 0 ? [{ n: String(km), l: 'KM' }] : []),
     { n: String(fotos), l: fotos === 1 ? 'FOTO' : 'FOTOS' },
   ]
+  const hayCifras = cifras.some((c) => Number(c.n) > 0)
+  const sube = primera && estado !== null && hayCifras
+  const progreso = useProgresoDeCifras(sube)
+  useEffect(() => {
+    if (!sube || ejemplo || dentroDelEstudio() || !tripId) return
+    if (yaSeVio(claveResumenViaje(tripId))) return // (en desarrollo React lo monta dos veces: la 2.ª ya lo encuentra marcado)
+    marcarVisto(claveResumenViaje(tripId))
+    sonarResumenUnaVez(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sube])
   // «Te quedan N sorpresas por reclamar»: N es EXACTAMENTE la lista de la hoja (sitios de la ruta que dan algún pedazo y aún no se tiene; un emblema oculto nunca cuenta ni se nombra).
   const pend = (resumen?.pendiente ?? estado?.pendiente) as ((ResumenLogros['pendiente']) & { pendientes?: SitioPorReclamar[] }) | undefined
   const lista = (pend?.pendientes ?? []).filter((x) => x.falta.includes('pedazo'))
@@ -206,7 +215,7 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
             <span data-cifras-del-viaje style={{ position: 'relative', display: 'flex', gap: 6 }}>
               {cifras.map((c) => (
                 <span key={c.l} style={{ flex: 1, minWidth: 0, height: 44, borderRadius: 14, background: 'rgba(255,253,248,.14)', border: '1px solid rgba(255,253,248,.22)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ font: "600 16px/1 'Geist'", color: '#FFFDF8' }}>{c.n}</span>
+                  <span style={{ font: "600 16px/1 'Geist'", color: '#FFFDF8' }}>{cifraQueSube(Number(c.n), progreso)}</span>
                   <span style={{ font: "500 9px 'Geist Mono',monospace", letterSpacing: '.08em', color: 'rgba(255,253,248,.75)', marginTop: 3 }}>{c.l}</span>
                 </span>
               ))}

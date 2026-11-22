@@ -148,7 +148,7 @@ function Encendido() {
         if (e && e.ganada > 0) useLogrosStore.setState((s) => ({ exp: s.exp ? { ...s.exp, antes: e.antes, final: true } : { ...e, final: true } }))
         ui.getState().soltar('ronda')
       }} />}
-      {tocaResumenDia && <ResumenDia ganado={[]} estado={null} alCerrar={() => ui.getState().cerrarResumenDia()} />}
+      {tocaResumenDia && <ResumenDia primeraVez ganado={[]} estado={null} alCerrar={() => ui.getState().cerrarResumenDia()} />}
       {tocaResumenViaje && <ResumenViaje />}
       {compartir && <Compartir />}
       {tocaHoja && <HojaLogros />}

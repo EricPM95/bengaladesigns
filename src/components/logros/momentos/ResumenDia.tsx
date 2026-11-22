@@ -8,7 +8,7 @@ import './momentos.css'
 import { fila, lineaDeSecretos, ORDEN_FILAS, textoDeSello } from './textosResumen'
 import { useMomentosUI } from './useMomentosUI'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
-import { sonar } from '../../../lib/sonidos'
+import { cifraQueSube, dentroDelEstudio, movimientoReducido, sonarResumenUnaVez, useProgresoDeCifras } from './cifrasQueSuben'
 
 /**
  * EL RESUMEN DEL DÍA (Tanda 8B). El mismo al acabar la ruta y al final de las sorpresas. Cuenta lo ganado hoy (del servidor, `GET /api/logros/resumen`; si no
@@ -54,14 +54,11 @@ export function contarMomentos(ganado: Momento[]): Record<string, number> {
   return c
 }
 
-export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado: Momento[]; estado: EstadoLogros | null; alCerrar: () => void }): ReactNode {
+/** `primeraVez`: el resumen sale por primera vez (al acabar el día; lo pide el anfitrión): solo entonces suben los números y suena. Sin él (abierto otra vez) o con «Reducir movimiento», en silencio y con los números puestos. El estudio de sonidos lo enseña siempre moviéndose. */
+export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez = false }: { ganado: Momento[]; estado: EstadoLogros | null; alCerrar: () => void; primeraVez?: boolean }): ReactNode {
   const tripId = useSyncStore((s) => s.activeTripId) ?? null
   const [estado, setEstado] = useState<EstadoLogros | null>(estadoInicial)
   const [resumen, setResumen] = useState<ResumenLogros | null>(null)
-  // (V35B) Suena al abrirse el resumen (los tics de los números y el brillo al final), salvo dentro del visor de /admin/sonidos, que ya lo hace sonar él.
-  useEffect(() => {
-    if (!(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) void sonar('dia_completo')
-  }, [])
   useEffect(() => {
     let vivo = true
     void (async () => {
@@ -90,6 +87,12 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
   const filasSello = sellosDelDia.map((x) => textoDeSello(x.nace, x.sello, x.grado, estado?.sellos.find((e) => e.id === x.sello)?.nombre))
   const lineas = ORDEN_FILAS.filter((k) => (cuentas[k] ?? 0) > 0)
   const hayAlgo = lineas.length > 0 || filasSello.length > 0
+  // (V38C) Los números suben (y suena) solo la primera vez y solo si hay números que subir.
+  const sube = (primeraVez || dentroDelEstudio()) && !movimientoReducido() && lineas.length > 0
+  const progreso = useProgresoDeCifras(sube)
+  useEffect(() => {
+    if (sube) sonarResumenUnaVez(true)
+  }, [sube])
   const ciudad = estado?.ciudad ?? ''
   const sello = estado?.sellos[0]
   const pendiente = (resumen?.pendiente ?? estado?.pendiente)?.texto ?? null
@@ -117,7 +120,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
           ))}
           {lineas.map((k, n0) => { const n = n0 + filasSello.length; return (
             <li key={k} style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '14px 4px', borderBottom: '1px solid rgba(28,34,48,.1)', animation: `moUp .5s ${(0.3 + n * 0.08).toFixed(2)}s ease both` }}>
-              <span style={{ font: "400 28px/1 'Instrument Serif',serif", minWidth: 36, color: '#A67C52' }}>{cuentas[k]}</span>
+              <span style={{ font: "400 28px/1 'Instrument Serif',serif", minWidth: 36, color: '#A67C52' }}>{cifraQueSube(cuentas[k] ?? 0, progreso)}</span>
               <span style={{ font: "500 15px 'Geist'" }}>{fila(k, cuentas[k])}</span>
             </li>
           ) })}

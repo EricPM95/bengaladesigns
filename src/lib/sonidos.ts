@@ -97,7 +97,7 @@ export function ponerSonido(activo: boolean) {
 }
 
 let contexto: AudioContext | null = null
-/** Un sonido que no pudo salir porque el audio estaba parado: suena en el siguiente toque si es reciente (menos de 20 s). */
+/** Un sonido que no pudo salir porque el audio estaba parado: suena en el siguiente toque solo si es muy reciente (menos de 3 s: V38C, un sonido que llega con la animación ya acabada no suena). */
 let pendiente: { momento: string; en: number } | null = null
 let lista: ListaDeSonidos | null = null
 const buffers = new Map<string, AudioBuffer>()
@@ -238,7 +238,7 @@ export function prepararAudioAlPrimerToque() {
       }
       // El sonido del aviso, ya listo.
       if (!buffers.has('aviso')) void cargar('aviso')
-      if (pendiente && Date.now() - pendiente.en < 20_000) {
+      if (pendiente && Date.now() - pendiente.en < 3_000) {
         const m = pendiente.momento
         pendiente = null
         window.setTimeout(() => void sonar(m), 60)

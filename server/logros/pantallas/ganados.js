@@ -263,10 +263,13 @@ export function construirGanados({ datos, catalogos, items, cuentan = [], viajes
     const ganados = salida.filter((x) => x.def === def.id && (x.tipo === 'viajero'))
     const alto = def.escalones ? ganados.filter((x) => !x.superado).sort((a, b) => Number(b.escalon) - Number(a.escalon))[0] : ganados[0]
     const fam = FAMILIAS[def.id]
-    const cur = def.escalones ? (cuentas[def.id] ?? 0) : null
+    // (V38C) Lo que cuenta la ficha y la regla que dio el logro salen de la MISMA cuenta: el logro se da y se queda, pero la cuenta se vuelve a hacer con los viajes de ahora (el «con quién» de un viaje puede cambiar, un viaje compartido puede no estar, un [Visto] se deshace…) y podía dar menos que lo ganado («Conseguido» con «0 viajes en familia» y «Te falta 1 para Todos a bordo»). Quien tiene un escalón lleva, como mínimo, los de ese escalón.
+    const cur = def.escalones ? Math.max(cuentas[def.id] ?? 0, alto ? Number(alto.escalon) || 0 : 0) : null
     const sig = def.escalones ? (def.escalones.find((e) => e.n > (cur ?? 0)) ?? null) : null
     const objetivo = def.escalones ? (sig?.n ?? def.escalones[def.escalones.length - 1].n) : (avance[def.id]?.total ?? 1)
-    const actual = def.escalones ? cur : (avance[def.id]?.n ?? (alto ? 1 : 0))
+    // (V38C) Un logro ya conseguido nunca enseña un avance por debajo de su objetivo.
+    const actualBase = def.escalones ? cur : (avance[def.id]?.n ?? (alto ? 1 : 0))
+    const actual = alto && !def.escalones ? Math.max(actualBase ?? 0, objetivo) : actualBase
     const ultimo = def.escalones ? def.escalones[def.escalones.length - 1] : null
     filas.push({
       id: def.id,
