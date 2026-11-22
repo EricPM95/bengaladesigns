@@ -152,7 +152,7 @@ export function esNombreDeLaExcursionDeOtroDia(route: Pick<Route, 'days'>, day: 
 /** El nombre de un día (título y trayecto). `grupos` null: el destino no los trae y todo queda como siempre. */
 export function nombreDelDia(route: Route, diaGuardado: DayPlan, grupos: GruposDelDestino | null): NombreDelDia {
   // (V18) Un nombre que es de OTRO día («Dia 2 Lunes» en el jueves 12) no se enseña: el día se nombra como si no tuviera nombre propio. Los que el viajero escribió no se tocan.
-  const day: DayPlan = esNombreDeOtroDia(route, diaGuardado) ? { ...diaGuardado, curatedTitle: undefined, title: diaGuardado.userAdded ? FREE_DAY_DEFAULT_NAME : diaGuardado.city } : diaGuardado
+  const day: DayPlan = esNombreDeOtroDia(route, diaGuardado) ? { ...diaGuardado, curatedTitle: undefined, title: diaGuardado.ownDay ? `Tu día en ${diaGuardado.city || route.destination}` : diaGuardado.userAdded ? FREE_DAY_DEFAULT_NAME : diaGuardado.city } : diaGuardado
   if (esNombreDeLaExcursionDeOtroDia(route, diaGuardado)) return { titulo: `Excursión desde ${diaGuardado.city}`, viaje: grupos ? viajeDelDia(route, diaGuardado) : null, ponleNombre: false }
   if (!grupos) {
     const antiguo = nombreDeSiempre(route, day, true)

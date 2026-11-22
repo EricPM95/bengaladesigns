@@ -15,7 +15,7 @@ function Escena({ children }: { children: React.ReactNode }) {
   return (
     <div className={`relative ${ALTO_ESCENA}`} style={{ background: ESCENA }} aria-hidden="true">
       <div className="absolute left-1/2 top-[74px] h-[260px] w-[260px] -translate-x-1/2 rounded-full [@media(max-height:760px)]:top-[44px]" style={{ background: 'radial-gradient(circle,oklch(0.9 0.1 80 / .5),transparent 65%)' }} />
-      <p className="absolute inset-x-0 top-16 whitespace-nowrap text-center font-mono text-[11px] font-medium uppercase tracking-[.2em] text-[rgba(120,78,30,.85)] max-[420px]:text-[10px] max-[420px]:tracking-[.1em] [@media(max-height:760px)]:top-9">
+      <p data-titulo-fechas className="absolute inset-x-0 top-[58px] px-14 text-center font-mono text-[10.5px] font-medium uppercase leading-[14px] tracking-[.14em] text-[rgba(120,78,30,.85)] [text-wrap:balance] max-[420px]:text-[10px] max-[420px]:tracking-[.08em] [@media(max-height:760px)]:top-9">
         Hemos preparado tu viaje para estas fechas
       </p>
       {children}

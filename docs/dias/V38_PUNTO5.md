@@ -1,0 +1,19 @@
+# V38, punto 5: lo que se ve en las capturas (en palabras sencillas)
+
+## (i) «Día 8» en el cuarto día
+- **Lo que he podido comprobar:** un día que monta «Crear mi propio día» NO se llama «Día N»: el servidor le pone «Mi día en Roma» (`src/lib/dayInterruptor.ts`, `crearDiaPropio`, línea con `ownName`; `server/engine/index.js` línea del `montarPropio`, `name: options.nombreDiaPropio ?? 'Mi día'`) y su título interno es «Roma — día 4» con el número bueno (`server/engine/buildDayV3.js`, `title: \`${city} — día ${tripDay.dayNumber}\``). En ningún archivo de datos existe el texto «Día 8».
+- **Dónde SÍ sale «Día N» junto a una fecha:** la hoja «Te quedan N sorpresas por reclamar» (`src/components/logros/momentos/ResumenViaje.tsx`, `diaEnPalabras`: «Día 3 · mié 11»). Ese número lo guarda el servidor al registrar el viaje (`server/logros/servicio.js`, `numero: dia.dayNumber`) y NO se recalcula si el viaje cambia de fechas o de orden: de ahí un «Día 8» en un domingo 29 que es el cuarto día. **Es una causa probable, no la he podido ver en la captura de Eric.**
+- **Arreglado (cambio mínimo, sin tocar OwnDayScreen/reorganizarDia/useRouteStore):**
+  1. La hoja de sorpresas calcula el número del día con las FECHAS del viaje de ahora (fecha del sitio menos el primer día), no con el número guardado (`ResumenViaje.tsx`, `numeroDelDia`). Fuera del viaje, sin número.
+  2. Red de seguridad para cualquier nombre de día: un título que sea solo «Día N» con un N que no es el del día (el «Día 8» del cuarto día) ya no se enseña (`src/lib/nombreDeDia.ts`, `esNombreDeOtroDia`, nuevo `NUMERO_DE_DIA_SUELTO`); si lo escribió la persona (`nameByUser`) se respeta. Y un día propio sin nombre usable se llama «Tu día en {ciudad}» (`src/lib/tituloDelDia.ts`, `nombreDelDia`), no «Día libre» ni un número.
+- **Si el «Día 8» era otra pantalla**, dime cuál y lo sigo; no lo he podido reproducir leyendo el código.
+
+## (ii) El Coliseo con «20 min» en «Crear mi propio día»
+- **De dónde sale:** `shared/routeEngine/diaPropio.js` (`stopOf`, `min`) y la segunda vuelta de `server/engine/index.js` (`montarPropio(overrides)`): la regla de la app es «un sitio se ve POR DENTRO una sola vez en el viaje». Si el Coliseo ya está dentro en otro día curado, en el día propio pasa a «por fuera» y dura 20 min (`minutos_fuera`: 20; su ficha dice 90 por dentro). Lo comprobé con el motor: Coliseo `modo: fuera`, 20 min; Panteón `fuera`, 15.
+- **No lo he cambiado:** no es un fallo de cálculo, es la regla «por dentro una vez» funcionando; cambiarlo rompería esa regla y los días curados. **Propuesta:** que la parada diga «Por fuera: ya lo ves por dentro el día N» (hoy solo enseña «20 min» sin explicar), o que la persona pueda elegir «verlo por dentro» en ese día. Eso lo decide Eric.
+
+## (iii) «Cena · Osteria dell'Angelo · 62 min andando desde Coliseo»
+- **¿Se elige cerca del alojamiento?** No. Nunca se mira el alojamiento. En los días curados la cena la fija el documento escrito de cada día, junto a donde acaba ese día; en el día propio la pone el motor en el restaurante libre más cercano a la última parada (`shared/routeEngine/diaPropio.js`, antes de la V38).
+- **Días curados de Roma:** medí 51 cenas (3 a 6 días, tres fechas): la peor está a 8 min andando de la última parada (Pirámide Cestia → Felice a Testaccio) y ninguna pasa de 25 min. Así que los días curados están bien.
+- **El «62 min»:** es el aviso honesto de `DayDetailPanel.tsx` (`mealWalkNote`: «N min andando desde {la parada de antes}»). Salía en el día propio, que dejaba la cena tras el Coliseo aunque el restaurante quedara lejos. Con el punto 3 (el día propio ya no lleva comida ni cena) ya no sale.
+- **No he cambiado el texto** a «cerca de tu alojamiento» porque no es verdad que se elija así. Si la persona cambia el restaurante a mano con «Cambiar» y queda lejos, la nota sigue diciendo los minutos reales.

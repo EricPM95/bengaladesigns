@@ -5,7 +5,7 @@ import type { CSSProperties, ReactNode } from 'react'
  * Toda hoja que sube desde abajo y toda pantalla que tapa la app la lleva (la hoja se cierra también arrastrando y tocando fuera, pero no todo el mundo lo sabe).
  * Se coloca con `position: absolute` en la esquina de su hoja (la hoja tiene que ser `relative`/`absolute`/`fixed`); `estilo` cambia la posición si hace falta.
  */
-export function CruzDeHoja({ onCerrar, oscura = false, estilo, etiqueta = 'Cerrar' }: { onCerrar: () => void; oscura?: boolean; estilo?: CSSProperties; etiqueta?: string }): ReactNode {
+export function CruzDeHoja({ onCerrar, oscura = false, fuerte = false, estilo, etiqueta = 'Cerrar' }: { onCerrar: () => void; oscura?: boolean; /** (V38) Con más contraste (círculo más oscuro y borde) para una hoja clara donde el círculo suave se perdía. */ fuerte?: boolean; estilo?: CSSProperties; etiqueta?: string }): ReactNode {
   return (
     <button
       type="button"
@@ -17,8 +17,8 @@ export function CruzDeHoja({ onCerrar, oscura = false, estilo, etiqueta = 'Cerra
       data-cruz-de-hoja
       style={{ position: 'absolute', right: 6, top: 6, zIndex: 5, width: 48, height: 48, flex: 'none', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', ...estilo }}
     >
-      <span style={{ width: 40, height: 40, borderRadius: '50%', background: oscura ? 'rgba(255,253,248,.14)' : '#F1EADC', color: oscura ? '#FFFDF8' : '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <span style={{ width: 40, height: 40, borderRadius: '50%', background: oscura ? 'rgba(255,253,248,.14)' : fuerte ? '#E4DAC6' : '#F1EADC', border: fuerte && !oscura ? '1px solid rgba(28,34,48,.32)' : undefined, boxSizing: 'border-box', color: oscura ? '#FFFDF8' : '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={fuerte ? 2.4 : 2} strokeLinecap="round" aria-hidden="true">
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </span>

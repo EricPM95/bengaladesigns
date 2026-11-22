@@ -22,6 +22,7 @@ async function viaje(inicio, total) {
   return { avisos: dias.find((d) => d?.date_notices)?.date_notices ?? [], nota: dias.find((d) => d?.season_note)?.season_note ?? null, dias }
 }
 const nota = (fechas) => seasonNoteFor(D, { calendar: { hasDates: true }, days: [] }, { tripDates: fechas })
+const HECHO_REAL = /hemos (puesto|repartido)|no entra/
 const FRASE = 'Hemos preparado tu ruta para que disfrutes de todo lo que está abierto y tengas una experiencia fantástica.'
 
 /* ───────── 1. Las tarjetas especiales ───────── */
@@ -89,10 +90,11 @@ console.log('2. Un aviso por fecha, con la frase de todos y la excepción')
         tarjetas++
         if (!/^\d{4}-\d{2}-\d{2}:/.test(a.id) || /\d+$/.test(a.id.split(':')[1] ?? '')) rotas.push(`${salida}: id ${a.id}`)
         if (!Array.isArray(a.cierran) || typeof a.campana !== 'string' || !a.campana || !a.title || !a.tag || !Array.isArray(a.texts) || !a.texts[0] || !a.date_iso || !a.icon || !a.kind) rotas.push(`${salida}: campos de ${a.id}`)
-        if (a.hecho === FRASE) {
+        // (V38) Lo hecho de verdad: «Por eso … hemos puesto … el lunes 7», o «… no entran en tu ruta». La frase general solo queda para un cambio de horario sin sitios cerrados.
+        if (a.hecho && HECHO_REAL.test(a.hecho)) {
           conFrase++
-          if (!a.texts[0].endsWith(FRASE)) rotas.push(`${salida}: ${a.id} no acaba con la frase`)
-          if (palabras(a.texts[0]) > 35) largas.push(`${salida}/${total} ${a.id} (${palabras(a.texts[0])})`)
+          if (!a.texts[0].includes(a.hecho)) rotas.push(`${salida}: ${a.id} no lleva lo hecho`)
+          if (palabras(a.texts[0]) > 35 && !/por fuera|En tu viaje no hay otro día/.test(a.texts[0])) largas.push(`${salida}/${total} ${a.id} (${palabras(a.texts[0])})`)
         }
         if (/Hemos puesto tu visita el|Hemos puesto el Vaticano otro d/.test(a.texts.join(' '))) rotas.push(`${salida}: ${a.id} conserva una variante vieja`)
       }
@@ -105,7 +107,7 @@ console.log('2. Un aviso por fecha, con la frase de todos y la excepción')
   const n = await viaje('2026-12-24', 4)
   const nav = n.avisos.find((a) => a.id === '2026-12-25:navidad')
   debe(nav && nav.date_iso === '2026-12-25' && nav.cierran.includes('Coliseo') && nav.cierran.includes('Panteón') && nav.cierran.includes('Museos Vaticanos y Capilla Sixtina'), 'un_aviso', 'el 25 de diciembre cierran el Coliseo, el Panteón y los Museos Vaticanos: lo lleva la tarjeta (`cierran`)')
-  debe(n.avisos.find((a) => a.id === '2026-12-26:san_esteban')?.texts[0] === `Es festivo y cierran los Museos Vaticanos. ${FRASE}`, 'un_aviso', 'San Esteban: qué pasa + la frase de todos')
+  debe(/^Es festivo y cierran los Museos Vaticanos\. (Por eso los hemos puesto el [a-zéá]+ \d{1,2}, para que los disfrutes con calma\.|Ese día los Museos Vaticanos están cerrados, así que no entran en tu ruta\. Si cambias las fechas, te los ponemos\.|En tu viaje no hay otro día para)/.test(n.avisos.find((a) => a.id === '2026-12-26:san_esteban')?.texts[0] ?? ''), 'un_aviso', 'San Esteban: qué pasa + lo que hemos hecho de verdad (el día al que los hemos pasado, o que no caben)')
   // Sale aunque nada de su ruta cierre: el 15 de agosto sin Vaticano en el viaje (viaje de 2 días con el Vaticano otro día).
   const f = await viaje('2027-08-14', 3)
   debe(f.avisos.some((a) => a.id === '2027-08-15:ferragosto' && a.title === '15 de agosto · Ferragosto' && a.texts[0].startsWith('Es festivo y cierran los Museos Vaticanos y muchos comercios.')), 'un_aviso', 'Ferragosto: «15 de agosto · Ferragosto» con su texto, esté o no el Vaticano en la ruta')
@@ -125,7 +127,7 @@ console.log('3. Cierres de la semana: domingo + Vaticanos, lunes + Borghese')
   // El viaje de Eric: del jueves 5 al domingo 8 de noviembre de 2026 (4 días: el domingo es el de vuelta). El Vaticano cae solo el viernes.
   const v = await viaje('2026-11-05', 4)
   const dom = v.avisos.find((a) => a.date_iso === '2026-11-08')
-  debe(dom?.texts[0] === `Los domingos cierran los Museos Vaticanos. ${FRASE}`, 'semana', 'domingo 8 con los Vaticanos en la ruta (otro día): «Los domingos cierran los Museos Vaticanos.» + la frase de todos')
+  debe(dom?.texts[0] === 'Los domingos cierran los Museos Vaticanos. Por eso los hemos puesto el viernes 6, para que los disfrutes con calma.', 'semana', `domingo 8 con los Vaticanos en la ruta (otro día): «Los domingos cierran los Museos Vaticanos.» + a qué día los hemos pasado (el viernes 6) (${dom?.texts[0]})`)
   debe(dom?.title === 'Domingo 8 · Museos Vaticanos cerrados' && dom.day_number === 4 && dom.kind === 'auto', 'semana', 'su título nombra el sitio, nunca «los museos», y cae en el día 4 del viaje')
   debe(JSON.stringify(dom?.cierran) === JSON.stringify(['Museos Vaticanos y Capilla Sixtina']) && dom?.campana === 'Museos Vaticanos cierran el domingo 8 de noviembre.', 'semana', `su campana: «${dom?.campana}»`)
   // Un viaje con el lunes dentro y la Borghese en la ruta.

@@ -19,6 +19,9 @@ import { useMomentosUI } from './useMomentosUI'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { selloYaEstampado } from '../../../lib/selloEstampado'
 import { sonar } from '../../../lib/sonidos'
+import { useGanados, useHojasDeLogros } from '../pantallas/todos/api'
+import { HojasDeLogros } from '../pantallas/todos/HojasDeLogros'
+import '../pantallas/todos/todos.css'
 
 /**
  * EL RESUMEN DEL VIAJE, REHECHO (Tanda V9, apartado 6; «Resumen del viaje» de Design, la versión con la foto arriba). Es el RECUERDO de lo ganado en ESTE viaje (no la hoja de logros, que dice cómo vas):
@@ -93,6 +96,15 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
   const [cargado, setCargado] = useState(Boolean(ejemplo))
   const [coleccionAbierta, setColeccionAbierta] = useState<string | null>(null)
   const [hojaSorpresas, setHojaSorpresas] = useState(false)
+  // (V38) Tocar un logro de viajero abre SU ficha: la misma pieza de la pestaña Logros (FichaHoja, dentro de HojasDeLogros), no una copia. Lo ganado (`useGanados`) es lo mismo que enseña esa pestaña.
+  // Consulta: GET /api/logros/ganados, UNA vez al abrir una ficha (y solo si aún no se había pedido); baja unos 20-40 KB (lo ganado de la cuenta), nunca en bucle ni en segundo plano.
+  const ganados = useGanados((x) => x.datos)
+  const fichaAbierta = useHojasDeLogros((x) => x.ficha)
+  const abrirFicha = (clave: string) => {
+    void useGanados.getState().cargar()
+    useHojasDeLogros.getState().abrirFicha(clave)
+  }
+  useEffect(() => () => useHojasDeLogros.getState().limpiar(), [])
   // (V35B) Suena al abrirse (los números del resumen, con el brillo al final), salvo dentro del visor de /admin/sonidos, que ya lo hace sonar él.
   useEffect(() => {
     if (!(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) void sonar('dia_completo')
@@ -137,7 +149,7 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
       const id = g.logro.slice('viajero:'.length)
       const def = viajero?.logros?.find((l) => l.id === id)
       const esc = def?.escalones?.find((e) => String(e.n) === String(g.escalon))
-      return { id, escalon: g.escalon || null, destino: g.destino, nombre: rellenarNombre(esc?.nombre ?? def?.nombre ?? null, ciudad, g.escalon) }
+      return { id, clave: g.clave, escalon: g.escalon || null, destino: g.destino, nombre: rellenarNombre(esc?.nombre ?? def?.nombre ?? null, ciudad, g.escalon) }
     })
     .filter((x) => x.nombre)
   const sumadas = useMemo(() => {
@@ -262,12 +274,12 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
               <span style={ETIQUETA}>Logros de viajero nuevos</span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '16px 8px' }}>
                 {nuevos.map((n, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                  <button key={i} type="button" data-logro-de-viajero={n.id} onClick={() => !ejemplo && abrirFicha(n.clave)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, border: 'none', background: 'transparent', padding: 0, color: 'inherit', font: 'inherit', cursor: ejemplo ? 'default' : 'pointer' }}>
                     <span style={{ width: 92, height: 92, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Chapa logro={n.id} escalon={n.escalon} destino={n.destino} ciudad={n.id === "edicion_anio" ? ciudad : undefined} tam={92} igual />
                     </span>
                     <span style={{ font: "400 15px/1.12 'Instrument Serif',serif", textAlign: 'center', textWrap: 'balance' as never, maxWidth: 104 }}>{n.nombre}</span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -303,7 +315,12 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
           </div>
         </div>
       )}
-      {hojaSorpresas && tripId && <HojaDeSorpresas lista={lista} ciudad={ciudad} tripId={tripId} quedanSecretos={porDescubrir > 0 && (pend?.pendientes ?? []).some((x) => x.falta.includes('emblema'))} onCerrar={() => setHojaSorpresas(false)} onCerrarResumen={cerrar} />}
+      {fichaAbierta && !ejemplo && ganados?.items.some((i) => i.clave === fichaAbierta) && (
+        <div className="vt" data-ficha-del-resumen style={{ position: 'fixed', inset: 0, zIndex: 9100 }}>
+          <HojasDeLogros g={ganados} />
+        </div>
+      )}
+      {hojaSorpresas && tripId && <HojaDeSorpresas lista={lista} ciudad={ciudad} tripId={tripId} inicio={estado?.viaje?.inicio ?? route?.answers?.dateRange?.start ?? null} quedanSecretos={porDescubrir > 0 && (pend?.pendientes ?? []).some((x) => x.falta.includes('emblema'))} onCerrar={() => setHojaSorpresas(false)} onCerrarResumen={cerrar} />}
     </div>
   )
 }
@@ -313,6 +330,12 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
  * («Tierra de fuego · Los imprescindibles»), con [Subir foto] en cada uno; abajo, [Reclamar con tus fotos] para subir varias a la vez. Los emblemas ocultos nunca se nombran: como mucho, una línea al final.
  */
 const DIAS_CORTOS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
+/** (V38) El número del día sale de las FECHAS del viaje de ahora (la fecha del sitio menos el primer día), no del «número» que guardó el servidor: con un viaje cuyas fechas se cambiaron salía «Día 8» el cuarto día. Fuera del viaje, sin número. */
+function numeroDelDia(fecha: string, inicio: string | null | undefined): number | null {
+  if (!inicio) return null
+  const n = Math.round((Date.parse(`${fecha}T12:00:00Z`) - Date.parse(`${inicio}T12:00:00Z`)) / 86400000) + 1
+  return n >= 1 ? n : null
+}
 function diaEnPalabras(dia: number | null, fecha: string): string {
   const f = new Date(`${fecha}T12:00:00Z`)
   return `${dia != null ? `Día ${dia} · ` : ''}${DIAS_CORTOS[f.getUTCDay()]} ${f.getUTCDate()}`
@@ -328,16 +351,16 @@ function FotoDe({ nombre, ciudad }: { nombre: string; ciudad: string }): ReactNo
   }, [nombre, ciudad])
   return <span style={{ flex: 'none', width: 48, height: 48, borderRadius: 14, background: u ? `center/cover url(${u})` : 'linear-gradient(160deg,#E7B98A,#9A6A48)' }} />
 }
-function HojaDeSorpresas({ lista, ciudad, tripId, quedanSecretos, onCerrar, onCerrarResumen }: { lista: SitioPorReclamar[]; ciudad: string; tripId: string; quedanSecretos: boolean; onCerrar: () => void; onCerrarResumen: () => void }): ReactNode {
+function HojaDeSorpresas({ lista, ciudad, tripId, inicio, quedanSecretos, onCerrar, onCerrarResumen }: { lista: SitioPorReclamar[]; inicio?: string | null; ciudad: string; tripId: string; quedanSecretos: boolean; onCerrar: () => void; onCerrarResumen: () => void }): ReactNode {
   const [elegido, setElegido] = useState<string | null>(null)
   const plazo = fraseDelPlazo(useRouteStore.getState().route)?.replace('Puedes reclamar hasta', 'Hasta')
   return (
     <div role="dialog" aria-modal="true" aria-label="Sorpresas por reclamar" data-hoja-sorpresas style={{ position: 'fixed', inset: 0, zIndex: 9100 }}>
       <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.5)' }} />
-      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '88vh', borderRadius: '30px 30px 0 0', background: '#FFFDF8', padding: '12px 0 calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#1C2230' }}>
-        <CruzDeHoja onCerrar={onCerrar} />
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: 'min(88%, calc(100% - env(safe-area-inset-top,0px) - 28px))', borderRadius: '30px 30px 0 0', background: '#FFFDF8', padding: '12px 0 calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#1C2230' }}>
+        <CruzDeHoja onCerrar={onCerrar} fuerte />
         <span style={{ flex: 'none', width: 40, height: 5, borderRadius: 3, background: 'rgba(28,34,48,.2)' }} />
-        <span style={{ font: "400 26px/1.1 'Instrument Serif',serif", textAlign: 'center', padding: '0 20px' }}>{`Te quedan ${lista.length} ${lista.length === 1 ? 'sorpresa' : 'sorpresas'} por reclamar`}</span>
+        <span style={{ font: "400 26px/1.1 'Instrument Serif',serif", textAlign: 'center', padding: '0 56px', textWrap: 'balance' as never }}>{`Te quedan ${lista.length} ${lista.length === 1 ? 'sorpresa' : 'sorpresas'} por reclamar`}</span>
         <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.6)', textAlign: 'center', padding: '0 24px' }}>{`Sitios de tu ruta${ciudad ? ` en ${ciudad}` : ''} que se quedaron sin su pedazo.${plazo ? ` ${plazo}.` : ''}`}</span>
         <input type="file" accept="image/*" className="hidden" data-sorpresa-entrada onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; const sitio = elegido; setElegido(null); if (f && sitio) { onCerrar(); onCerrarResumen(); void subirMiFoto(tripId, sitio, f) } }} />
         <div style={{ alignSelf: 'stretch', flex: '0 1 auto', overflowY: 'auto', scrollbarWidth: 'none', padding: '4px 20px', display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -346,7 +369,7 @@ function HojaDeSorpresas({ lista, ciudad, tripId, quedanSecretos, onCerrar, onCe
               <FotoDe nombre={s.nombre ?? s.sitio} ciudad={ciudad} />
               <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <span style={{ font: "600 14.5px/1.2 'Geist'" }}>{s.nombre ?? s.sitio}</span>
-                <span style={{ font: "400 12px/1.3 'Geist'", color: 'rgba(28,34,48,.6)' }}>{[diaEnPalabras(s.dia, s.fecha), ...(s.colecciones.length > 0 ? [s.colecciones.join(' · ')] : [])].join(' — ')}</span>
+                <span style={{ font: "400 12px/1.3 'Geist'", color: 'rgba(28,34,48,.6)' }}>{[diaEnPalabras(inicio !== undefined ? numeroDelDia(s.fecha, inicio) : s.dia, s.fecha), ...(s.colecciones.length > 0 ? [s.colecciones.join(' · ')] : [])].join(' — ')}</span>
               </span>
               <button type="button" data-subir-foto-de-sorpresa onClick={() => { setElegido(s.sitio); setTimeout(() => document.querySelector<HTMLInputElement>('[data-sorpresa-entrada]')?.click(), 0) }} style={{ flex: 'none', minHeight: 44, height: 44, padding: 0, border: 'none', background: 'transparent', cursor: 'pointer' }}>
                 <span style={{ height: 32, padding: '0 12px', borderRadius: 999, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.18)', display: 'flex', alignItems: 'center', font: "600 12.5px 'Geist'" }}>Subir foto</span>

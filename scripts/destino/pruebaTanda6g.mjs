@@ -172,7 +172,7 @@ const panel = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
 if (!/grid grid-cols-3 rounded-2xl bg-bg-hover/.test(panel) || !/showsRoute && !enExcursion && stops.length > 0/.test(panel)) falla('resumen_del_dia', 'DayDetailPanel.tsx: el resumen del día no tiene su fondo y sus tres columnas, o sale en el día de excursión')
 viajes++
 
-// 7 (servidor). «Crear mi propio día»: el día se monta con los sitios elegidos, con su comida, sin repetir restaurantes del viaje y sin sitios cerrados por dentro.
+// 7 (servidor). «Crear mi propio día»: el día se monta con los sitios elegidos, SIN comida ni cena (V38), sin repetir restaurantes del viaje y sin sitios cerrados por dentro.
 const { buildDayBlockV3 } = await import('../../server/engine/index.js')
 const JUEGOS = [['Coliseo', 'Foro Romano y Palatino', 'Panteón', 'Piazza Navona'], ['Galería Borghese', 'Terraza del Pincio', 'Plaza de España'], ["Castillo de Sant'Angelo", 'Cúpula de San Pedro', 'Trastevere', 'Isla Tiberina', 'Mirador del Janículo']]
 for (const juego of JUEGOS) {
@@ -183,7 +183,7 @@ for (const juego of JUEGOS) {
     if (!day || day.own_day !== true) { falla('dia_propio', `${etiqueta}: no sale el día propio`); continue }
     const nombres = new Set([...(day.stops ?? []).map((x) => x.name), ...(day.spare_stops ?? []).map((x) => x.name), ...(day.not_included ?? []).map((x) => x.name)])
     for (const sitio of juego) if (!nombres.has(sitio) && !(day.engine_log ?? []).some((l) => (l.sitio ?? l.lugar) === sitio)) falla('dia_propio', `${etiqueta}: «${sitio}» no sale ni tiene causa`)
-    if ((day.meals ?? []).length === 0) falla('dia_propio', `${etiqueta}: el día no lleva comida`)
+    if ((day.meals ?? []).length > 0) falla('dia_propio', `${etiqueta}: el día lleva comida o cena sin pedirlas (V38)`)
     const mesas = (day.meals ?? []).map((m) => m.restaurant)
     if (new Set(mesas).size !== mesas.length) falla('dia_propio', `${etiqueta}: la comida y la cena son el mismo restaurante`)
   }

@@ -17,7 +17,7 @@ import { EspacioParaElLapiz } from '../propuesta/BotonDePropuesta'
 import { FreeTourSheet, freeTourAvailable } from './reservas/FreeTourSheet'
 import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
-import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId, type TarjetaDeExplorar, type TemaDeExplorar } from '../../lib/exploreStyle'
+import { CARD_STYLE, EXPLORE_ICONOS, estiloDeCategoriaLanzarote, solidOf, type ExploreCardId, type TarjetaDeExplorar, type TemaDeExplorar } from '../../lib/exploreStyle'
 import { Icono } from '../ui/Icono'
 import type { NombreIcono } from '../../lib/iconos'
 import { usePasePintable } from '../../lib/pago'
@@ -281,7 +281,9 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
       for (const categoria of CATEGORIAS_EXPLORAR_LANZAROTE) {
         if (categoria.id === 'excursiones' && excursions.length === 0) continue
         const cuantos = categoria.id === 'excursiones' ? excursions.length : lugaresDeCategoriaLanzarote(categoria, curatedPool).filter((place) => !place.fuera_de_lista || place.name === 'Charco del Palo').length
-        lista.push({ id: categoria.id, label: categoria.label, icono: categoria.icono, color: CARD_STYLE[categoria.estilo].color, cuantos })
+        // (V38) Icono y color del filtro: la misma fuente que el punto del mapa (exploreStyle.ts).
+        const estilo = estiloDeCategoriaLanzarote(categoria.id)
+        lista.push({ id: categoria.id, label: categoria.label, icono: estilo?.icono ?? categoria.icono, color: estilo?.color ?? CARD_STYLE[categoria.estilo].color, cuantos })
       }
       lista.push({ id: 'restaurantes', label: 'Restaurantes', icono: EXPLORE_ICONOS[CARD_STYLE.restaurantes.icon], color: CARD_STYLE.restaurantes.color, cuantos: countFor('restaurantes') ?? 0 })
       return lista

@@ -280,7 +280,7 @@ export function ExcursionDayPage({
 
       {view.halfDay && (
         <div className="flex flex-col gap-2">
-          <span className="text-center text-[13px] text-text/70">Vuelves a {destination} a las {view.returnTime ?? '14:00'}. La tarde es para ti.</span>
+          <span className="text-center text-[13px] text-text/70">Vuelves a {destination} a las {view.returnTime ?? '14:00'}. La tarde es para ti: añade los sitios que quieras con «Añadir lugares».</span>
           <button
             type="button"
             onClick={onAddPlaces}

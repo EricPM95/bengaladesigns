@@ -364,12 +364,12 @@ export function SeasonCard({ route }: { route: Route }) {
               </div>
             </>
           )}
-          <p className="absolute inset-x-0 top-16 whitespace-nowrap text-center font-mono text-[11px] font-medium uppercase tracking-[.2em] max-[420px]:text-[10px] max-[420px]:tracking-[.1em]" style={{ color: scene.eyebrow }}>
+          <p data-titulo-fechas className="absolute inset-x-0 top-[58px] px-14 text-center font-mono text-[10.5px] font-medium uppercase leading-[14px] tracking-[.14em] [text-wrap:balance] max-[420px]:text-[10px] max-[420px]:tracking-[.08em]" style={{ color: scene.eyebrow }}>
             Hemos preparado tu viaje para estas fechas
           </p>
           <h2
             id="season-card-title"
-            className="absolute inset-x-0 top-[88px] whitespace-nowrap text-center font-display italic leading-none"
+            className="absolute inset-x-0 top-[92px] whitespace-nowrap text-center font-display italic leading-none"
             style={{ fontSize: title.length > 18 ? Math.min(48, Math.floor(340 / (title.length * 0.4))) : scene.titleSize, color: scene.title, textShadow: scene.titleShadow }}
           >
             {title}

@@ -23,6 +23,8 @@ function computeBounds(markers: { coordinates: Coordinates }[]): mapboxgl.LngLat
  * y solo entran los pines. Sin `persistKey`, cada mapa se crea y se destruye como siempre.
  */
 const persistedMaps = new Map<string, { map: mapboxgl.Map; el: HTMLDivElement }>()
+// (V38) Solo en desarrollo: las pruebas leen y mueven la cámara del mapa compartido desde aquí.
+if (import.meta.env.DEV && typeof window !== 'undefined') (window as unknown as { __mapas?: typeof persistedMaps }).__mapas = persistedMaps
 
 export interface StopsMapMarker {
   id: string
@@ -255,6 +257,8 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
           if (esNombreIcono(marker.icon)) inner.innerHTML = iconoSvg(marker.icon, marker.small ? 11 : 14)
           else inner.textContent = marker.icon ?? String(marker.number)
         }
+        // (V38) Para las pruebas: qué pin es cada punto del mapa.
+        root.setAttribute('data-pin-id', marker.id)
         root.appendChild(inner)
         root.addEventListener('click', (event) => {
           event.stopPropagation()
@@ -307,7 +311,17 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       const toFit = visible.length > 1 ? visible : markers
       syncPinsRef.current()
       // (En un mapa compartido entre pantallas la cámara no se toca: se queda donde está.)
-      if (persistKey) return
+      // SALVO si la cámara está en otro sitio (V38): el mapa compartido se conserva entre viajes y quien abría Roma después de Lanzarote veía Lanzarote.
+      // Si ningún pin de esta pantalla cae dentro de lo que enseña la cámara, se lleva al destino (a sus pines o, sin pines, a su centro).
+      // Es cálculo del mapa: no hace ninguna petición.
+      if (persistKey) {
+        const dentro = (point: Coordinates) => map.getBounds()?.contains([point.lng, point.lat]) ?? true
+        if (toFit.length > 0 && !toFit.some((marker) => dentro(marker.coordinates))) {
+          if (toFit.length > 1) map.fitBounds(computeBounds(toFit), { padding: encuadre, maxZoom: 15, duration: 0 })
+          else map.jumpTo({ center: [toFit[0].coordinates.lng, toFit[0].coordinates.lat], zoom: 14 })
+        } else if (toFit.length === 0 && center && !dentro(center)) map.jumpTo({ center: [center.lng, center.lat], zoom: 12 })
+        return
+      }
       if (focusCenter) {
         map.jumpTo({ center: [focusCenter.lng, focusCenter.lat], zoom: focusZoom })
       } else if (toFit.length > 1) {

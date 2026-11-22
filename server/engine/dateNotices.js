@@ -32,6 +32,11 @@ const FRASES = {
   se_queda: 'En tu viaje no hay otro día para {sitio}: {se_quedan} en su día y decides tú.',
   semanal: 'Los {dias} {cierra} {lugares}.',
   festivo: 'Es festivo y {cierra} {lugares}.',
+  // (V38) Lo que hemos hecho DE VERDAD con lo que cierra: pasarlo a otro día (con el día real) o decir que no cabe.
+  movido: 'Por eso {lo} hemos puesto {cuando}, para que {lo} disfrutes con calma.',
+  movido_con_nombre: 'Por eso hemos puesto {sitios} {cuando}, para que {lo} disfrutes con calma.',
+  movido_varios: 'Por eso {lo} hemos repartido en otros días: {cada}, para que {lo} disfrutes con calma.',
+  no_cabe: 'Ese día {sitio} {estan} {cerrado}, así que no {entran} en tu ruta. Si cambias las fechas, te {lo} ponemos.',
 }
 /** Sin la última frase de lo que hemos hecho ("Hemos puesto…"): para el aviso sin fechas. */
 const withoutPromise = (text) => String(text ?? '').replace(/\s*Hemos [^.]*\.\s*$/, '')
@@ -196,7 +201,30 @@ export function dateNoticesFor(destData, trip, options = {}) {
   }
 
   /** La parte de lo que hemos hecho: la frase de todos; si un sitio que no se quita se queda en un día que cierra, su excepción; y si se enseña por fuera, el aviso de siempre. */
-  const hechoFor = (iso) => {
+  /** (V38) El día de este viaje, distinto de `iso`, en que de verdad entra ese sitio (una parada de visita, no por fuera ni de paso ni cerrada). Null si no está en ningún otro día. */
+  const movedTo = (place, iso) => {
+    for (const date of tripDates) {
+      if (date === iso) continue
+      if (visitsOn(date).some((visit) => visit.place.name === place.name && !visit.place.visitOutside && !visit.place.passThrough && !visit.place.closedThisDay)) return date
+    }
+    return null
+  }
+  /** «lunes 7» (con el mes si es otro mes distinto al del día que cierra). */
+  const labelOf = (date, iso) => (date.slice(0, 7) === iso.slice(0, 7) ? shortDate(date) : longDate(date))
+  /** El pronombre de unos sitios: lo, la, los, las. */
+  const pronoun = (list) => {
+    const feminine = list.every((place) => /^(la|las)\s/i.test(shortNamed(place)))
+    return list.length > 1 || grammar(list[0]).plural ? (feminine ? 'las' : 'los') : feminine ? 'la' : 'lo'
+  }
+
+  /**
+   * La parte de lo que hemos hecho de verdad con lo que cierra (V38): cada sitio cerrado se cuenta como está en la ruta:
+   *   · se queda en su día (no hay otro): `se_queda`;  · se enseña por fuera: el aviso de siempre;
+   *   · lo hemos pasado a otro día: «Por eso los hemos puesto el lunes 7, para que los disfrutes con calma.» (el día real);
+   *   · no cabe en ningún otro día: «Ese día los Museos Vaticanos están cerrados, así que no entran en tu ruta. Si cambias las fechas, te los ponemos.»
+   * Solo si no hay ningún sitio cerrado (un cambio de horario) queda la frase general.
+   */
+  const hechoFor = (iso, closing = [], quePasa = '') => {
     const weekday = weekdayOf(iso)
     const stays = []
     const outside = []
@@ -214,6 +242,39 @@ export function dateNoticesFor(destData, trip, options = {}) {
     for (const place of outside) {
       const text = closedOutsideNotice(destData, place, { dateIso: iso, weekday })
       if (text) parts.push(text)
+    }
+    // Lo que cierra y no se queda ni se ve por fuera: o está en otro día, o no cabe.
+    const handled = new Set([...stays, ...outside].map((place) => place.name))
+    const moved = new Map()
+    const noFit = []
+    for (const place of closing) {
+      if (handled.has(place.name)) continue
+      const date = movedTo(place, iso)
+      if (date) moved.set(date, [...(moved.get(date) ?? []), place])
+      // (Solo los grandes —imprescindibles y joyas— cuentan como «no cabe»: de un sitio menor que nunca iba a estar en la ruta no se avisa.)
+      else if (place.level === 1 || joyas.has(place.name)) noFit.push(place)
+    }
+    const movedAll = [...moved.values()].flat()
+    // El aviso entero cabe en 35 palabras (regla de Eric): si repartir los sitios por días no cabe, se dice solo que están en otros días.
+    const words = (text) => String(text).trim().split(/\s+/).length
+    const rest = [quePasa, ...parts, ...(noFit.length > 0 ? ['Ese día los sitios están cerrados, así que no entran en tu ruta. Si cambias las fechas, te los ponemos.'] : [])].join(' ')
+    const detail = moved.size > 1 ? `Por eso hemos repartido ${listText(movedAll)} en otros días: ${[...moved.entries()].map(([date, list]) => `${listText(list)} el ${labelOf(date, iso)}`).join(' y ')}.` : ''
+    const compact = moved.size > 1 && words(`${rest} ${detail}`) > 35
+    if (movedAll.length > 0) {
+      if (moved.size === 1 || movedAll.length > 4 || compact) {
+        const date = [...moved.keys()].sort()[0]
+        const where = moved.size === 1 ? `el ${labelOf(date, iso)}` : 'en otros días de tu viaje'
+        // Si es lo único que se cuenta, con pronombre («Por eso los hemos puesto…»); si hay más cosas en el aviso, con el nombre, para que no haya dudas de cuál es.
+        const alone = parts.length === 0 && noFit.length === 0
+        parts.push(fill(alone ? (frases.movido ?? FRASES.movido) : (frases.movido_con_nombre ?? FRASES.movido_con_nombre), { lo: pronoun(movedAll), sitios: listText(movedAll), cuando: where }))
+      } else {
+        const each = [...moved.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, list]) => `${listText(list)} el ${labelOf(date, iso)}`)
+        parts.push(fill(frases.movido_varios ?? FRASES.movido_varios, { lo: pronoun(movedAll), cada: joinSpanish(each) }))
+      }
+    }
+    if (noFit.length > 0) {
+      const g = grammarOf(noFit)
+      parts.push(fill(frases.no_cabe ?? FRASES.no_cabe, { sitio: g.named, estan: g.plural ? 'están' : 'está', cerrado: g.cerrado, entran: g.plural ? 'entran' : 'entra', lo: pronoun(noFit) }))
     }
     return parts.length > 0 ? parts.join(' ') : frases.hecho
   }
@@ -266,6 +327,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       const affects = closing.length + changing.length > 0
       const title = entry.titulo_con_fecha ? `${datesTitle([iso])} · ${entry.titulo_con_fecha}` : entry.titulo
       const transit = holidayTransitRule(destData, iso)?.texto
+      const quePasaCurado = fill(entry.contexto ?? entry.texto, { dia })
       if (affects) closureDates.add(iso)
       cards.push(makeCard({
         iso,
@@ -274,8 +336,8 @@ export function dateNoticesFor(destData, trip, options = {}) {
         title,
         tag: tagOf(entry),
         kind: 'curado',
-        quePasa: fill(entry.contexto ?? entry.texto, { dia }),
-        hecho: !entry.sin_frase && affects ? hechoFor(iso) : null,
+        quePasa: quePasaCurado,
+        hecho: !entry.sin_frase && affects ? hechoFor(iso, closing, quePasaCurado) : null,
         // (`aviso_restaurantes`: Navidad y Ferragosto, muchos restaurantes cierran; y el transporte recortado de ese festivo: frases aparte, fuera de las 35 palabras.)
         extraTexts: [...(transit ? [transit] : []), ...(entry.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])],
         closing,
@@ -299,6 +361,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       const tagName = name ? capital(stripArticle(name)) : dayOfMonth(iso)
       const title = name ? `${dayOfMonth(iso)} · ${tagName}` : dayOfMonth(iso)
       closureDates.add(iso)
+      const quePasaFestivo = fill(frases.festivo, { cierra: closing.length > 1 || grammar(closing[0]).plural ? 'cierran' : 'cierra', lugares: listText(closing) })
       cards.push(makeCard({
         iso,
         id: `${iso}:festivo`,
@@ -306,8 +369,8 @@ export function dateNoticesFor(destData, trip, options = {}) {
         title,
         tag: tagName,
         kind: 'auto',
-        quePasa: fill(frases.festivo, { cierra: closing.length > 1 || grammar(closing[0]).plural ? 'cierran' : 'cierra', lugares: listText(closing) }),
-        hecho: hechoFor(iso),
+        quePasa: quePasaFestivo,
+        hecho: hechoFor(iso, closing, quePasaFestivo),
         closing,
         changing,
         label: title,
@@ -315,12 +378,14 @@ export function dateNoticesFor(destData, trip, options = {}) {
       continue
     }
     // 2b. Cierre de la semana: un lugar de su ruta que ese día de la semana cierra (aunque la ruta lo esquive). Nombrando el sitio, nunca «los museos».
-    const weekly = places.filter((place) => named(place) && routeNames.has(place.name) && reasonOf(place)?.kind === 'semanal').sort(byLevel)
+    // (V38) También un imprescindible que no está en la ruta de ese viaje (el domingo de un viaje de un solo día): el aviso dice que no entra.
+    const weekly = places.filter((place) => named(place) && (routeNames.has(place.name) || place.level === 1) && reasonOf(place)?.kind === 'semanal').sort(byLevel)
     if (weekly.length > 0) {
       const g = grammarOf(weekly)
       const { closing, changing } = affected(iso)
       const tag = `${capital(g.bare)} ${g.cerrado}`
       closureDates.add(iso)
+      const quePasaSemanal = fill(frases.semanal, { dias: pluralWeekday(weekday), cierra: g.cierra, lugares: g.named })
       cards.push(makeCard({
         iso,
         id: `${iso}:${tag}`,
@@ -328,8 +393,8 @@ export function dateNoticesFor(destData, trip, options = {}) {
         title: `${datesTitle([iso])} · ${tag}`,
         tag,
         kind: 'auto',
-        quePasa: fill(frases.semanal, { dias: pluralWeekday(weekday), cierra: g.cierra, lugares: g.named }),
-        hecho: hechoFor(iso),
+        quePasa: quePasaSemanal,
+        hecho: hechoFor(iso, closing, quePasaSemanal),
         closing,
         changing,
         weekly: true,

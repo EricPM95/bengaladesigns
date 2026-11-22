@@ -86,7 +86,7 @@ const cuerpo = trips.map(({ viaje, dias }) => {
       const opciones = day.excursion_page?.options ?? []
       const ver = (viaje.medioDia ? opciones.find((o) => o.id === viaje.medioDia) : null) ?? opciones[0]
       const linea = ver ? ver.stops.map((p) => `${esc(p.time)} ${esc(p.name)}`).join(' → ') : ''
-      return `<h3>Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · Excursión desde Roma <em>Día de excursión</em></h3><p><b>${ver ? esc(`${ver.name_before} ${ver.name_destination}${ver.name_after}`) : 'Excursión'}</b> · ${ver ? esc(ver.price_label) : ''}</p><p class="m">${linea}</p>${ver?.half_day ? '<p class="m">Vuelves a Roma a las 14:00. La tarde es para ti. [+ Añadir lugares]</p>' : ''}<p class="m">Otras excursiones: ${opciones.filter((o) => o !== ver).map((o) => esc(`${o.name_destination}${o.name_after}`)).join(', ')}.</p>`
+      return `<h3>Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · Excursión desde Roma <em>Día de excursión</em></h3><p><b>${ver ? esc(`${ver.name_before} ${ver.name_destination}${ver.name_after}`) : 'Excursión'}</b> · ${ver ? esc(ver.price_label) : ''}</p><p class="m">${linea}</p>${ver?.half_day ? '<p class="m">Vuelves a Roma a las 14:00. La tarde es para ti: añade los sitios que quieras con «Añadir lugares». [+ Añadir lugares]</p>' : ''}<p class="m">Otras excursiones: ${opciones.filter((o) => o !== ver).map((o) => esc(`${o.name_destination}${o.name_after}`)).join(', ')}.</p>`
     }
     // Con lluvia: lo que sale se va y lo que entra va al final de su franja (la alternativa aplicada).
     const sale = new Set(conLluvia ? day.rain_plan?.remove ?? [] : [])

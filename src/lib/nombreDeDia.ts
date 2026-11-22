@@ -39,6 +39,8 @@ function diaDeLaSemana(dateIso: string): number {
 }
 
 const NOMBRE_DE_OTRO_DIA = /^\s*d[ií]a\s*(\d+)\s+(lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\s*$/i
+/** (V38) «Día 8» a secas (un número de día sin día de la semana). */
+const NUMERO_DE_DIA_SUELTO = /^\s*d[ií]a\s*(\d+)\s*$/i
 const sinTildes = (t: string): string => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
 /**
@@ -48,7 +50,11 @@ const sinTildes = (t: string): string => t.normalize('NFD').replace(/[̀-ͯ]/g, 
  */
 export function esNombreDeOtroDia(route: Pick<Route, 'answers'>, day: { dayNumber: number; title?: string | null; curatedTitle?: string | null; nameByUser?: boolean }): boolean {
   if (day.nameByUser) return false
-  const m = NOMBRE_DE_OTRO_DIA.exec(day.curatedTitle ?? day.title ?? '')
+  const nombre = day.curatedTitle ?? day.title ?? ''
+  // (V38) Un título que es solo «Día N» con un N que no es el de este día («Día 8» en el cuarto día) tampoco se enseña: es un número que no cuadra.
+  const suelto = NUMERO_DE_DIA_SUELTO.exec(nombre)
+  if (suelto) return Number(suelto[1]) !== day.dayNumber
+  const m = NOMBRE_DE_OTRO_DIA.exec(nombre)
   if (!m) return false
   const iso = fechaDelDia(route, day.dayNumber)
   const semanaDelDia = iso ? sinTildes(SEMANA_LARGA[diaDeLaSemana(iso)]) : null

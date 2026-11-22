@@ -28,7 +28,9 @@ import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { CERRADO_ESTE_DIA, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
-import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName, type TemaDeExplorar } from '../../../lib/exploreStyle'
+import { CARD_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, estiloDelFiltro, estiloDelPunto, solidOf, type ExploreIconName, type TemaDeExplorar } from '../../../lib/exploreStyle'
+import { ICONOS } from '../../../lib/iconos'
+import type { NombreIcono } from '../../../lib/iconos'
 import { Icono } from '../../ui/Icono'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { usePasePintable } from '../../../lib/pago'
@@ -205,7 +207,7 @@ const MAX_SEARCH_RESULTS = 8
  * La foto de una fila en el diseño «Trazo Explorar»: una franja con el borde izquierdo en diagonal. Misma foto y misma carga perezosa
  * que PlaceThumb; si no hay foto se queda el degradado del color de la categoría con su icono.
  */
-function PlacePhotoPanel({ place, city, color, icon, fixedUrl = null }: { place: DestinationPlace; city: string; color: string; icon: ExploreIconName; fixedUrl?: string | null }) {
+function PlacePhotoPanel({ place, city, color, icon, fixedUrl = null }: { place: DestinationPlace; city: string; color: string; icon: NombreIcono; fixedUrl?: string | null }) {
   const ref = useRef<HTMLSpanElement>(null)
   const [inView, setInView] = useState(false)
   const [photoBuscada, setPhoto] = useState<string | null>(null)
@@ -277,7 +279,7 @@ function ExcursionResultCard({ excursion, destination, open, onToggle, onAdd }: 
         style={{ borderRadius: 18, border: `1px solid ${open ? color : 'rgba(28,34,48,.08)'}`, boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)' }}
       >
         <button type="button" onClick={onToggle} aria-expanded={open} className="flex min-w-0 flex-1 text-left">
-          <PlacePhotoPanel place={comoLugar} city={destination} color={color} icon="excursion" fixedUrl={excursion.photoUrl ?? null} />
+          <PlacePhotoPanel place={comoLugar} city={destination} color={color} icon={EXPLORE_ICONOS.excursion} fixedUrl={excursion.photoUrl ?? null} />
           <span className="flex min-w-0 flex-1 flex-col justify-center gap-1" style={{ padding: '10px 0 10px 18px' }}>
             <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
               {excursion.title}
@@ -688,7 +690,8 @@ export function PlaceExplorerScreen({
 
   const markers: StopsMapMarker[] = useMemo(() => {
     const poiMarkers: StopsMapMarker[] = poiPlaces.map((place) => {
-      const style = place.filter_category ? CATEGORY_STYLE[place.filter_category] : null
+      // (V38) El icono y el color de su filtro (los mismos que el botón de arriba): una sola fuente, exploreStyle.ts.
+      const style = estiloDelPunto(place, destination, temasActivos)
       return {
         id: poiId(place),
         name: place.name,
@@ -696,7 +699,7 @@ export function PlaceExplorerScreen({
         number: 0,
         bg: solidOf(style?.color ?? '#6B7280'),
         text: '#FFFFFF',
-        iconPath: EXPLORE_ICONS[style?.icon ?? 'temple'],
+        iconPath: ICONOS[style?.icono ?? EXPLORE_ICONOS.temple],
         size: 28,
         ...(closedToday(place) ? { opacity: 0.35 } : {}),
       }
@@ -716,7 +719,7 @@ export function PlaceExplorerScreen({
         ...(closedToday(place) ? { opacity: 0.35 } : {}),
       }))
     return [...dayMarkers, ...poiMarkers, ...ticketMarkers, ...excursionMarkers]
-  }, [dayMarkers, poiPlaces, excursionMarkers])
+  }, [dayMarkers, poiPlaces, excursionMarkers, destination, temasActivos.join(',')])
 
   /** Nombres que SÍ se ven en el mapa ahora mismo — mismo criterio que la lista: sin ningún filtro
       ni búsqueda, el mapa no enseña el catálogo entero, solo las paradas del día; durante una
@@ -825,7 +828,8 @@ export function PlaceExplorerScreen({
   const iconBox = (name: ExploreIconName, size = 15) => (
     <Icono nombre={EXPLORE_ICONOS[name]} size={size} />
   )
-  const chipIcon: Record<PlaceFilterId, ExploreIconName> = { atracciones: 'museum', miradores: 'sunset', restaurantes: 'fork', entradas: 'ticket', excursiones: 'excursion', banos: 'toilet', fuentes: 'drop' }
+  // (V38) El icono de cada filtro sale de CARD_STYLE (la misma fuente que el punto del mapa).
+  const chipIcon: Record<PlaceFilterId, ExploreIconName> = { atracciones: CARD_STYLE.atracciones.icon, miradores: CARD_STYLE.miradores.icon, restaurantes: CARD_STYLE.restaurantes.icon, entradas: CARD_STYLE.entradas.icon, excursiones: CARD_STYLE.excursiones.icon, banos: CARD_STYLE.banos.icon, fuentes: CARD_STYLE.fuentes.icon }
   const warm = 'rgb(var(--accent))'
 
   return createPortal(
@@ -903,6 +907,7 @@ export function PlaceExplorerScreen({
                   onClick={() => toggleFilter(chip.id)}
                   aria-pressed={active}
                   data-active={active}
+                  data-filtro={chip.id}
                   className="zona-toque flex shrink-0 items-center gap-2 rounded-full transition-colors"
                   style={{
                     height: 38,
@@ -915,7 +920,8 @@ export function PlaceExplorerScreen({
                 >
                   <span
                     className="flex h-7 w-7 items-center justify-center rounded-full transition-colors"
-                    style={{ background: active ? 'rgb(var(--accent))' : '#EFE7D8', color: active ? '#FFFDF8' : 'rgba(28,34,48,.7)' }}
+                    // (V38) El círculo del icono lleva el color de su filtro (el mismo del punto del mapa), con el icono en blanco.
+                    style={{ background: solidOf(estiloDelFiltro(chip.id).color), color: '#FFFFFF' }}
                   >
                     {iconBox(chipIcon[chip.id])}
                   </span>
@@ -1219,7 +1225,7 @@ export function PlaceExplorerScreen({
 
             <div className="flex flex-col gap-2.5">
               {results.map((place, index) => {
-                const style = place.filter_category ? CATEGORY_STYLE[place.filter_category] : null
+                const style = estiloDelPunto(place, destination, temasActivos)
                 const color = solidOf(style?.color ?? '#6B7280')
                 const toilet = isOsmPoint(place)
                 // El Free Tour no es una parada con su nombre: «en ruta» es que la ruta lo lleve (la hora se elige en su hoja).
@@ -1256,7 +1262,7 @@ export function PlaceExplorerScreen({
                       }}
                       className={`flex min-w-0 flex-1 text-left ${closedToday(place) ? 'opacity-50' : ''}`}
                     >
-                      <PlacePhotoPanel place={place} city={destination} color={color} icon={style?.icon ?? 'temple'} />
+                      <PlacePhotoPanel place={place} city={destination} color={color} icon={style?.icono ?? EXPLORE_ICONOS.temple} />
                       <span className="flex min-w-0 flex-1 flex-col justify-center gap-1" style={{ padding: '10px 0 10px 18px' }}>
                         <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
                           {place.name}
